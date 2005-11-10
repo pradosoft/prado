@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<configuration>
+  <authorization>
+    <deny pages="member" users="?" />
+  </authorization>
+  <pages>
+    <page id="member" type="MemberPage" />
+  </pages>
+</configuration>

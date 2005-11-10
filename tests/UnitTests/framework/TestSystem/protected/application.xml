@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<configuration>
+  <paths>
+    <alias id="Test" path="pages" />
+    <using namespace="Test" />
+  </paths>
+  <modules>
+    <module id="request" />
+    <module id="cache" type="System.Data.TSqliteCache" DbFile="TestSystem/protected/data/test.db" />
+  </modules>
+  <services>
+    <service id="page" RootPath="TestSystem/protected/pages" />
+  </services>
+  <parameters>
+    <parameter id="param1">value 1</parameter>
+    <parameter id="param2"></parameter>
+    <parameter id="param3" type="System.TComponent" />
+    <parameter id="param4" type="TComponent" />
+  </parameters>
+</configuration>

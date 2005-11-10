@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<configuration>
+  <authorization>
+    <deny pages="home" users="?" verb="post" />
+  </authorization>
+  <pages>
+    <page id="home" type="HomePage" />
+    <page id="login" type="LoginPage" />
+    <page id="plain" type="TPage" TemplateFile="Demo.pages.PlainPage" />
+  </pages>
+</configuration>

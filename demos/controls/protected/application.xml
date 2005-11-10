@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<configuration>
+  <paths>
+    <alias id="Demo" path="." />
+  </paths>
+  <modules>
+  <!--
+    <module id="cache" type="System.Data.TSqliteCache" DbFile="Demo.cache"/>
+   -->
+    <module id="session" type="THttpSession" />
+    <module id="users" type="System.Security.TUserManager" PasswordMode="Clear">
+      <user name="xue" password="qiang" />
+      <user name="xue2" password="qiang2" />
+    </module>
+    <module id="auth" type="System.Security.TAuthManager" UserManager="users" LoginPage="login" />
+  </modules>
+  <services>
+    <service id="page" RootPath="Demo.pages" DefaultPage="home" />
+  </services>
+</configuration>

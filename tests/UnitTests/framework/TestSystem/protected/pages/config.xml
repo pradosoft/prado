@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<configuration>
+  <pages>
+  </pages>
+  <parameters>
+    <parameter id="param1">value 1</parameter>
+    <parameter id="param2"></parameter>
+    <parameter id="param3" type="System.TComponent" />
+    <parameter id="param4" type="TComponent" />
+  </parameters>
+</configuration>

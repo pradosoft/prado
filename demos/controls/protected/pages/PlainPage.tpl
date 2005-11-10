@@ -1,0 +1,1 @@
+This is a page without explicitly defined page class.
