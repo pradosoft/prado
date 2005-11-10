@@ -66,7 +66,7 @@ class TUser extends TComponent implements IUser
 		$this->_isGuest=TPropertyValue::ensureBoolean($value);
 		if($this->_isGuest)
 		{
-			$this->_name='';
+			$this->_name=$this->_manager->getGuestName();
 			$this->_roles=array();
 		}
 	}
