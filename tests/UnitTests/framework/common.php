@@ -17,7 +17,7 @@ class Prado extends PradoBase
 
 function __autoload($className)
 {
-	require_once($className);
+	require_once($className.Prado::CLASS_FILE_EXT);
 }
 
 error_reporting(E_ALL);

@@ -15,7 +15,7 @@ class TestFolder
 		while(($entry=readdir($dir))!==false)
 		{
 			$fullpath="$path/$entry";
-			if($entry!=='.' && $entry!=='..' && is_dir($fullpath))
+			if($entry!=='.' && $entry!=='..' && $entry!=='.svn' && is_dir($fullpath))
 			{
 				$folder=new TestFolder($fullpath,$rootPath,$rootUri);
 				if(!empty($folder->subFolders) || !empty($folder->testFiles))
@@ -48,7 +48,7 @@ function addTests($test,$path,$recursive)
 	{
 		if(is_file($path.'/'.$entry) && strncmp($entry,'ut',2)===0)
 			$test->addTestFile($path.'/'.$entry);
-		else if($entry!=='.' && $entry!=='..' && is_dir($path.'/'.$entry) && $recursive)
+		else if($entry!=='.' && $entry!=='..' && $entry!=='.svn' && is_dir($path.'/'.$entry) && $recursive)
 			addTests($test,$path.'/'.$entry,$recursive);
 	}
 	closedir($dir);
