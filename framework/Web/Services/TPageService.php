@@ -148,7 +148,7 @@ class TPageService extends TComponent implements IService
 			{
 				$component=Prado::createComponent($parameter[0]);
 				foreach($parameter[1] as $name=>$value)
-					$component->setPropertyByPath($name,$value);
+					$component->setSubProperty($name,$value);
 				$parameters->add($id,$component);
 			}
 		}
@@ -159,7 +159,7 @@ class TPageService extends TComponent implements IService
 			$module=Prado::createComponent($moduleConfig[0]);
 			$application->setModule($id,$module);
 			foreach($moduleConfig[1] as $name=>$value)
-				$module->setPropertyByPath($name,$value);
+				$module->setSubProperty($name,$value);
 			$module->init($this->_application,$moduleConfig[2]);
 		}
 

@@ -206,7 +206,7 @@ class TComponent
 	 * @param string property path
 	 * @return mixed the property path value
 	 */
-	public function getPropertyByPath($path)
+	public function getSubProperty($path)
 	{
 		$object=$this;
 		foreach(explode('.',$path) as $property)
@@ -222,14 +222,14 @@ class TComponent
 	 * @param string property path
 	 * @param mixed the property path value
 	 */
-	public function setPropertyByPath($path,$value)
+	public function setSubProperty($path,$value)
 	{
 		$object=$this;
 		if(($pos=strrpos($path,'.'))===false)
 			$property=$path;
 		else
 		{
-			$object=$this->getPropertyByPath(substr($path,0,$pos));
+			$object=$this->getSubProperty(substr($path,0,$pos));
 			$property=substr($path,$pos+1);
 		}
 		$object->$property=$value;
@@ -344,7 +344,7 @@ class TComponent
 					list($object,$method)=$handler;
 					if(($pos=strrpos($method,'.'))!==false)
 					{
-						$object=$this->getPropertyByPath(substr($method,0,$pos));
+						$object=$this->getSubProperty(substr($method,0,$pos));
 						$method=substr($method,$pos+1);
 					}
 					$object->$method($sender,$param);

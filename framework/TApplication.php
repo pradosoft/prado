@@ -362,7 +362,7 @@ class TApplication extends TComponent implements IApplication
 
 		// set application properties
 		foreach($config->getProperties() as $name=>$value)
-			$this->setPropertyByPath($name,$value);
+			$this->setSubProperty($name,$value);
 
 		// load parameters
 		$this->_parameters=new TMap;
@@ -374,7 +374,7 @@ class TApplication extends TComponent implements IApplication
 			{
 				$component=Prado::createComponent($parameter[0]);
 				foreach($parameter[1] as $name=>$value)
-					$component->setPropertyByPath($name,$value);
+					$component->setSubProperty($name,$value);
 				$this->_parameters->add($id,$component);
 			}
 		}
@@ -390,7 +390,7 @@ class TApplication extends TComponent implements IApplication
 				throw new TConfigurationException('application_module_invalid',$id,self::$_moduleTypes[$id]);
 			$this->_modules[$id]=$module;
 			foreach($moduleConfig[1] as $name=>$value)
-				$module->setPropertyByPath($name,$value);
+				$module->setSubProperty($name,$value);
 			$module->init($this,$moduleConfig[2]);
 		}
 
@@ -403,7 +403,7 @@ class TApplication extends TComponent implements IApplication
 				throw new TConfigurationException('application_service_invalid',$serviceID);
 			$this->_service=$service;
 			foreach($serviceConfig[1] as $name=>$value)
-				$service->setPropertyByPath($name,$value);
+				$service->setSubProperty($name,$value);
 			$service->init($this,$serviceConfig[2]);
 			$this->attachEventHandler('RunService',array($service,'run'));
 		}

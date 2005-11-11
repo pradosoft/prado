@@ -148,11 +148,11 @@ class TTemplate extends TComponent implements ITemplate
 						else	// complex property
 						{
 							if(is_string($value))
-								$component->setPropertyByPath($name,$value);
+								$component->setSubProperty($name,$value);
 							else if($value[0]===0)
 								$component->bindProperty($name,$value[1]);
 							else
-								$component->setPropertyByPath($component->evaluateExpression($value[1]));
+								$component->setSubProperty($component->evaluateExpression($value[1]));
 						}
 					}
 					$parent=isset($controls[$object[0]])?$controls[$object[0]]:$tplControl;

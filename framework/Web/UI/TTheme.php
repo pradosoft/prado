@@ -52,7 +52,7 @@ class TTheme extends TComponent
 		{
 			foreach($this->_skins[$type][$id] as $name=>$value)
 			{
-				$control->setPropertyByPath($name,$value);
+				$control->setSubProperty($name,$value);
 			}
 		}
 		else

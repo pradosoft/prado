@@ -51,7 +51,7 @@ class TPage extends TTemplateControl
 		if(is_array($initProperties))
 		{
 			foreach($initProperties as $name=>$value)
-				$this->setPropertyByPath($name,$value);
+				$this->setSubProperty($name,$value);
 		}
 		parent::__construct();
 	}

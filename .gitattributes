@@ -34,7 +34,6 @@ framework/TODO.txt -text
 framework/Web/Javascripts/WebForms.js -text
 framework/Web/Services/TAssetService.php -text
 framework/Web/Services/TPageService.php -text
-framework/Web/TCacheManager.php -text
 framework/Web/THttpRequest.php -text
 framework/Web/THttpResponse.php -text
 framework/Web/THttpSession.php -text

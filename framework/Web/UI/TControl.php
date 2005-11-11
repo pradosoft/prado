@@ -613,7 +613,7 @@ class TControl extends TComponent
 		if(isset($this->_rf[self::RF_DATA_BINDINGS]))
 		{
 			foreach($this->_rf[self::RF_DATA_BINDINGS] as $property=>$expression)
-				$this->setPropertyByPath($property,$this->evaluateExpression($expression));
+				$this->setSubProperty($property,$this->evaluateExpression($expression));
 			if($raiseOnDataBinding)
 				$this->onDataBinding(null);
 			if(isset($this->_rf[self::RF_CONTROLS]))

@@ -73,7 +73,7 @@ class TTemplateControl extends TControl implements INamingContainer
 		if(($tpl=$this->getTemplate(true))!==null)
 		{
 			foreach($tpl->getDirective() as $name=>$value)
-				$this->setPropertyByPath($name,$value);
+				$this->setSubProperty($name,$value);
 		}
 	}
 
