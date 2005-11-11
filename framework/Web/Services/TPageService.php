@@ -38,7 +38,7 @@ class TPageService extends TComponent implements IService
 	/**
 	 * @var string root path of pages
 	 */
-	private $_rootPath;
+	private $_pageRootPath;
 	/**
 	 * @var string default page
 	 */
@@ -51,6 +51,14 @@ class TPageService extends TComponent implements IService
 	 * @var string requested page type
 	 */
 	private $_pageType;
+	/**
+	 * @var string the base URL for accessing published assets
+	 */
+	private $_assetBaseUrl;
+	/**
+	 * @var string the root path for storing published asset files
+	 */
+	private $_assetRootPath;
 	/**
 	 * @var array list of initial page property values
 	 */
@@ -78,8 +86,8 @@ class TPageService extends TComponent implements IService
 	{
 		$this->_application=$application;
 
-		if(($rootPath=Prado::getPathOfNamespace($this->_rootPath))===null || !is_dir($rootPath))
-			throw new TConfigurationException('pageservice_rootpath_invalid',$this->_rootPath);
+		if(($pageRootPath=Prado::getPathOfNamespace($this->_pageRootPath))===null || !is_dir($pageRootPath))
+			throw new TConfigurationException('pageservice_pagerootpath_invalid',$this->_pageRootPath);
 
 		$this->_pagePath=$application->getRequest()->getServiceParameter();
 		if(empty($this->_pagePath))
@@ -89,8 +97,9 @@ class TPageService extends TComponent implements IService
 
 		if(($cache=$application->getCache())===null)
 		{
-			$config=new TPageConfiguration;
-			$config->loadConfiguration($this->_pagePath,$rootPath);
+			$pageConfig=new TPageConfiguration;
+			$pageConfig->loadXmlElement($config,dirname($application->getConfigurationFile()),null);
+			$pageConfig->loadConfigurationFiles($this->_pagePath,$pageRootPath);
 		}
 		else
 		{
@@ -98,13 +107,13 @@ class TPageService extends TComponent implements IService
 			$arr=$cache->get(self::CONFIG_CACHE_PREFIX.$this->_pagePath);
 			if(is_array($arr))
 			{
-				list($config,$timestamp)=$arr;
+				list($pageConfig,$timestamp)=$arr;
 				if($this->_cacheExpire<0)
 				{
 					// check to see if cache is the latest
 					$paths=explode('.',$this->_pagePath);
 					array_pop($paths);
-					$configPath=$rootPath;
+					$configPath=$pageRootPath;
 					foreach($paths as $path)
 					{
 						if(@filemtime($configPath.'/'.self::CONFIG_FILE)>$timestamp)
@@ -114,7 +123,7 @@ class TPageService extends TComponent implements IService
 						}
 						$configPath.='/'.$path;
 					}
-					if(@filemtime($configPath.'/'.self::CONFIG_FILE)>$timestamp)
+					if($configCached && (@filemtime($application->getConfigurationFile())>$timestamp || @filemtime($configPath.'/'.self::CONFIG_FILE)>$timestamp))
 						$configCached=false;
 				}
 			}
@@ -122,25 +131,26 @@ class TPageService extends TComponent implements IService
 				$configCached=false;
 			if(!$configCached)
 			{
-				$config=new TPageConfiguration;
-				$config->loadConfiguration($this->_pagePath,$rootPath);
-				$cache->set(self::CONFIG_CACHE_PREFIX.$this->_pagePath,array($config,time()),$this->_cacheExpire<0?0:$this->_cacheExpire);
+				$pageConfig=new TPageConfiguration;
+				$pageConfig->loadXmlElement($config,dirname($application->getConfigurationFile()),null);
+				$pageConfig->loadConfigurationFiles($this->_pagePath,$pageRootPath);
+				$cache->set(self::CONFIG_CACHE_PREFIX.$this->_pagePath,array($pageConfig,time()),$this->_cacheExpire<0?0:$this->_cacheExpire);
 			}
 		}
 
-		$this->_pageType=$config->getPageType();
+		$this->_pageType=$pageConfig->getPageType();
 
 		// set path aliases and using namespaces
-		foreach($config->getAliases() as $alias=>$path)
+		foreach($pageConfig->getAliases() as $alias=>$path)
 			Prado::setPathAlias($alias,$path);
-		foreach($config->getUsings() as $using)
+		foreach($pageConfig->getUsings() as $using)
 			Prado::using($using);
 
-		$this->_properties=$config->getProperties();
+		$this->_properties=$pageConfig->getProperties();
 
 		// load parameters
 		$parameters=$application->getParameters();
-		foreach($config->getParameters() as $id=>$parameter)
+		foreach($pageConfig->getParameters() as $id=>$parameter)
 		{
 			if(is_string($parameter))
 				$parameters->add($id,$parameter);
@@ -154,7 +164,7 @@ class TPageService extends TComponent implements IService
 		}
 
 		// load modules specified in app config
-		foreach($config->getModules() as $id=>$moduleConfig)
+		foreach($pageConfig->getModules() as $id=>$moduleConfig)
 		{
 			$module=Prado::createComponent($moduleConfig[0]);
 			$application->setModule($id,$module);
@@ -164,7 +174,7 @@ class TPageService extends TComponent implements IService
 		}
 
 		if(($auth=$application->getAuthManager())!==null)
-			$auth->getAuthorizationRules()->mergeWith($config->getRules());
+			$auth->getAuthorizationRules()->mergeWith($pageConfig->getRules());
 
 		$this->_initialized=true;
 	}
@@ -191,6 +201,14 @@ class TPageService extends TComponent implements IService
 	public function getTemplateManager()
 	{
 		return $this->_application->getModule('template');
+	}
+
+	/**
+	 * @return TAssetManager asset manager
+	 */
+	public function getAssetManager()
+	{
+		return $this->_application->getModule('asset');
 	}
 
 	/**
@@ -256,21 +274,61 @@ class TPageService extends TComponent implements IService
 	/**
 	 * @return string root directory (in namespace form) storing pages
 	 */
-	public function getRootPath()
+	public function getPageRootPath()
 	{
-		return $this->_rootPath;
+		return $this->_pageRootPath;
 	}
 
 	/**
 	 * @param string root directory (in namespace form) storing pages
-	 * @throws TInvalidOperationException if application is initialized
+	 * @throws TInvalidOperationException if the service is initialized already
 	 */
-	public function setRootPath($value)
+	public function setPageRootPath($value)
 	{
 		if($this->_initialized)
-			throw new TInvalidOperationException('pageservice_rootpath_unchangeable');
+			throw new TInvalidOperationException('pageservice_pagerootpath_unchangeable');
 		else
-			$this->_rootPath=$value;
+			$this->_pageRootPath=$value;
+	}
+
+	/**
+	 * @return string the root directory storing published asset files
+	 */
+	public function getAssetRootPath()
+	{
+		return $this->_assetRootPath;
+	}
+
+	/**
+	 * @param string the root directory storing published asset files
+	 * @throws TInvalidOperationException if the service is initialized already
+	 */
+	public function setAssetRootPath($value)
+	{
+		if($this->_initialized)
+			throw new TInvalidOperationException('pageservice_assetrootpath_unchangeable');
+		else
+			$this->_assetRootPath=$value;
+	}
+
+	/**
+	 * @return string the base url that the published asset files can be accessed
+	 */
+	public function getAssetBaseUrl()
+	{
+		return $this->_assetBaseUrl;
+	}
+
+	/**
+	 * @param string the base url that the published asset files can be accessed
+	 * @throws TInvalidOperationException if the service is initialized already
+	 */
+	public function setAssetBaseUrl($value)
+	{
+		if($this->_initialized)
+			throw new TInvalidOperationException('pageservice_assetbaseurl_unchangeable');
+		else
+			$this->_assetBaseUrl=$value;
 	}
 
 	/**
@@ -289,7 +347,7 @@ class TPageService extends TComponent implements IService
 				$p=explode('.',$this->_pagePath);
 				array_pop($p);
 				array_push($p,$className);
-				$path=Prado::getPathOfNamespace($this->_rootPath).'/'.implode('/',$p).Prado::CLASS_FILE_EXT;
+				$path=Prado::getPathOfNamespace($this->_pageRootPath).'/'.implode('/',$p).Prado::CLASS_FILE_EXT;
 				require_once($path);
 			}
 		}
@@ -361,6 +419,7 @@ class TPageConfiguration extends TComponent
 	 */
 	private $_modules=array(
 		'template'=>array('System.Web.UI.TTemplateManager',array(),null),
+		//'asset'=>array('System.Web.TAssetManager',array(),null)
 	);
 	/**
 	 * @var array list of parameters
@@ -466,11 +525,11 @@ class TPageConfiguration extends TComponent
 	 * @param string path to the page (dot-connected format)
 	 * @param string root path for pages
 	 */
-	public function loadConfiguration($pagePath,$rootPath)
+	public function loadConfigurationFiles($pagePath,$pageRootPath)
 	{
 		$paths=explode('.',$pagePath);
 		$page=array_pop($paths);
-		$path=$rootPath;
+		$path=$pageRootPath;
 		foreach($paths as $p)
 		{
 			$this->loadFromFile($path.'/'.TPageService::CONFIG_FILE,null);
@@ -492,10 +551,21 @@ class TPageConfiguration extends TComponent
 			if($page===null)
 				return;
 		}
-		$configPath=dirname($fname);
 		$dom=new TXmlDocument;
-		$dom->loadFromFile($fname);
+		if($dom->loadFromFile($fname))
+			$this->loadXmlElement($dom,dirname($fname),$page);
+		else
+			throw new TConfigurationException('pageservice_configfile_invalid',$fname);
+	}
 
+	/**
+	 * Loads a specific configuration xml element.
+	 * @param TXmlElement config xml element
+	 * @param string base path corresponding to this xml element
+	 * @param string page name, null if page is not required
+	 */
+	public function loadXmlElement($dom,$configPath,$page)
+	{
 		// paths
 		if(($pathsNode=$dom->getElementByTagName('paths'))!==null)
 		{

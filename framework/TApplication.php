@@ -141,7 +141,8 @@ class TApplication extends TComponent implements IApplication
 	{
 		parent::__construct();
 		Prado::setApplication($this);
-		$this->_configFile=$configFile;
+		if(($this->_configFile=realpath($configFile))===false)
+			throw new TIOException('application_configfile_invalid',$configFile);
 		$this->_cacheFile=$cacheFile;
 	}
 
@@ -204,6 +205,14 @@ class TApplication extends TComponent implements IApplication
 	public function getUniqueID()
 	{
 		return $this->_uniqueID;
+	}
+
+	/**
+	 * @return string configuration file path
+	 */
+	public function getConfigurationFile()
+	{
+		return $this->_configFile;
 	}
 
 	/**

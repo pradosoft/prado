@@ -110,15 +110,15 @@ class utComponent extends UnitTestCase
 		}
 	}
 
-	public function testGetPropertyByPath()
+	public function testGetSubProperty()
 	{
-		$this->assertTrue('object text'===$this->component->getPropertyByPath('Object.Text'));
+		$this->assertTrue('object text'===$this->component->getSubProperty('Object.Text'));
 	}
 
-	public function testSetPropertyByPath()
+	public function testSetSubProperty()
 	{
-		$this->component->setPropertyByPath('Object.Text','new object text');
-		$this->assertEqual('new object text',$this->component->getPropertyByPath('Object.Text'));
+		$this->component->setSubProperty('Object.Text','new object text');
+		$this->assertEqual('new object text',$this->component->getSubProperty('Object.Text'));
 	}
 
 	public function testHasEvent()
