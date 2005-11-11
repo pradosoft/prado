@@ -284,12 +284,13 @@ class TXmlDocument extends TXmlElement
 	/**
 	 * Loads and parses an XML document.
 	 * @param string the XML file path
+	 * @return boolean whether the XML file is parsed successfully
 	 * @throws TIOException if the file fails to be opened.
 	 */
 	public function loadFromFile($file)
 	{
-		if(($str=file_get_contents($file))!==false)
-			$this->loadFromString($str);
+		if(($str=@file_get_contents($file))!==false)
+			return $this->loadFromString($str);
 		else
 			throw new TIOException('xmldocument_file_read_failed',$file);
 	}
@@ -298,11 +299,13 @@ class TXmlDocument extends TXmlElement
 	 * Loads and parses an XML string.
 	 * The version and encoding will be determined based on the parsing result.
 	 * @param string the XML string
+	 * @return boolean whether the XML string is parsed successfully
 	 */
 	public function loadFromString($string)
 	{
 		$doc=new DOMDocument();
-		$doc->loadXML($string);
+		if($doc->loadXML($string)===false)
+			return false;
 
 		$this->setEncoding($doc->encoding);
 		$this->setVersion($doc->version);
@@ -321,6 +324,8 @@ class TXmlDocument extends TXmlElement
 			if($child instanceof DOMElement)
 				$elements->add($this->buildElement($child));
 		}
+
+		return true;
 	}
 
 	/**

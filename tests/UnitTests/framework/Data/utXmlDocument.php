@@ -16,6 +16,20 @@ class utXmlDocument extends UnitTestCase
 	{
 		$dir=dirname(__FILE__).'/xml';
 
+		$doc=new TXmlDocument;
+		try
+		{
+			$doc->loadFromFile('nonexisting.xml');
+			$this->fail('exception not raised when openning a nonexistent file.');
+		}
+		catch(TIOException $e)
+		{
+			$this->pass();
+		}
+
+		$doc=new TXmlDocument;
+		$this->assertFalse(@$doc->loadFromString('$12341'));
+
 		// a regular XML file
 		$doc=new TXmlDocument;
 		$doc->loadFromFile($dir.'/data1.xml');
