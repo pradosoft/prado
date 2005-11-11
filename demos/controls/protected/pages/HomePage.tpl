@@ -1,5 +1,5 @@
 <com:TForm>
-<h1>Welcome! <%=$this->Application->User->Name %></h1>
+<h1>Welcome! <%=$this->User->Name %></h1>
 <com:TLiteral Text="literal" />
 <com:TTextBox Text="textbox" />
 <com:TLabel Text="label" /><br/>

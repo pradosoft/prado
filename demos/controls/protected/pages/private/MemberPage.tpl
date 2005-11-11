@@ -1,5 +1,5 @@
 <com:TForm>
-Congratulations, <com:TLabel Text=<%=$this->Application->User->Name%> />!<br/>
+Congratulations, <com:TLabel Text=<%=$this->User->Name%> />!<br/>
 <%=
  $this->Application->User->Name;
 %>

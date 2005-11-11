@@ -239,6 +239,38 @@ class TControl extends TComponent
 	}
 
 	/**
+	 * @return THttpRequest the current user request
+	 */
+	public function getRequest()
+	{
+		return Prado::getApplication()->getRequest();
+	}
+
+	/**
+	 * @return THttpResponse the response
+	 */
+	public function getResponse()
+	{
+		return Prado::getApplication()->getResponse();
+	}
+
+	/**
+	 * @return THttpSession user session
+	 */
+	public function getSession()
+	{
+		return Prado::getApplication()->getSession();
+	}
+
+	/**
+	 * @return IUser user
+	 */
+	public function getUser()
+	{
+		return Prado::getApplication()->getUser();
+	}
+
+	/**
 	 * Returns the id of the control.
 	 * Control ID can be either manually set or automatically generated.
 	 * If $hideAutoID is true, automatically generated ID will be returned as an empty string.
