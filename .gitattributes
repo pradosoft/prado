@@ -6,6 +6,7 @@ demos/controls/protected/pages/HomePage.tpl -text
 demos/controls/protected/pages/LoginPage.php -text
 demos/controls/protected/pages/LoginPage.tpl -text
 demos/controls/protected/pages/PlainPage.tpl -text
+demos/controls/protected/pages/assets/fungii_logo.gif -text
 demos/controls/protected/pages/config.xml -text
 demos/controls/protected/pages/private/MemberPage.php -text
 demos/controls/protected/pages/private/MemberPage.tpl -text
