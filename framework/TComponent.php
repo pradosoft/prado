@@ -437,13 +437,14 @@ class TPropertyValue
 	 * Converts a value to boolean type.
 	 * Note, string 'true' (case-insensitive) will be converted to true,
 	 * string 'false' (case-insensitive) will be converted to false.
+	 * If a string represents a non-zero number, it will be treated as true.
 	 * @param mixed the value to be converted.
 	 * @return boolean
 	 */
 	public static function ensureBoolean($value)
 	{
 		if (is_string($value))
-			return strcasecmp($value,'true')==0;
+			return strcasecmp($value,'true')==0 || $value!=0;
 		else
 			return (boolean)$value;
 	}
