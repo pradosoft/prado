@@ -10,7 +10,7 @@
     <module id="cache" type="System.Data.TSqliteCache" DbFile="TestSystem/protected/data/test.db" />
   </modules>
   <services>
-    <service id="page" RootPath="TestSystem/protected/pages" />
+    <service id="page" BasePath="TestSystem/protected/pages" />
   </services>
   <parameters>
     <parameter id="param1">value 1</parameter>

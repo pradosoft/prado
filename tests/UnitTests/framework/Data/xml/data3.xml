@@ -11,7 +11,7 @@
 	</module>
   </modules>
   <services default="page">
-    <service id="page" RootPath="protected/pages">
+    <service id="page" BasePath="protected/pages">
 	  <modules>
         <module id="template" type="System.Modules.TTemplateManager" />
 	    <module id="session" type="System.Modules.TSession" />

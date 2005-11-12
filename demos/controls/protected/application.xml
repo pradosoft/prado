@@ -12,8 +12,8 @@
     <module id="session" type="THttpSession" />
   </modules>
   <services>
-    <!-- page service, PageRootPath is required -->
-    <service id="page" PageRootPath="Demo.pages" DefaultPage="home">
+    <!-- page service, PageBasePath is required -->
+    <service id="page" PageBasePath="Demo.pages" DefaultPage="home">
       <!-- modules configured and loaded when page service is requested -->
       <modules>
         <!-- user manager module -->
