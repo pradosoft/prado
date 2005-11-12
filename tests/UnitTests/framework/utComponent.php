@@ -165,7 +165,7 @@ class utComponent extends UnitTestCase
 		{
 			$this->pass();
 		}
-		$this->component->MyEvent[]='foo2';
+		/*$this->component->MyEvent[]='foo2';
 		$this->assertTrue($this->component->getEventHandlers('MyEvent')->getCount()===2);
 		$this->component->getEventHandlers('MyEvent')->add('foo3');
 		$this->assertTrue($this->component->getEventHandlers('MyEvent')->getCount()===3);
@@ -174,7 +174,7 @@ class utComponent extends UnitTestCase
 		$this->component->getEventHandlers('MyEvent')->addAt(0,'foo5');
 		$this->assertTrue($this->component->MyEvent->Count===4 && $this->component->MyEvent[0]==='foo5');
 		$this->component->MyEvent='foo6';
-		$this->assertTrue($this->component->MyEvent->Count===5 && $this->component->MyEvent[4]==='foo6');
+		$this->assertTrue($this->component->MyEvent->Count===5 && $this->component->MyEvent[4]==='foo6');*/
 	}
 
 	public function testRaiseEvent()
@@ -219,6 +219,88 @@ class utComponent extends UnitTestCase
 			$this->pass();
 		}
 	}
+	
+	
+	/**
+	 * Tests the TPropertyValue::ensureBoolean function
+	 */
+	public function testEnsureBoolean()
+	{
+		// Note: we must use assertEqual not assertTrue or assertFalse because then we can check that the return value is strictly of type boolean
+		$this->assertEqual(TPropertyValue::ensureBoolean('false'), false);
+		$this->assertEqual(TPropertyValue::ensureBoolean('False'), false);
+		$this->assertEqual(TPropertyValue::ensureBoolean(false), false);
+		$this->assertEqual(TPropertyValue::ensureBoolean(0), false);
+		$this->assertEqual(TPropertyValue::ensureBoolean(0.0), false);
+		$this->assertEqual(TPropertyValue::ensureBoolean(""), false);
+		$this->assertEqual(TPropertyValue::ensureBoolean("0"), false);
+		$this->assertEqual(TPropertyValue::ensureBoolean(array()), false);
+		$this->assertEqual(TPropertyValue::ensureBoolean(null), false);
+		
+		$this->assertEqual(TPropertyValue::ensureBoolean('true'), true);
+		$this->assertEqual(TPropertyValue::ensureBoolean('True'), true);
+		$this->assertEqual(TPropertyValue::ensureBoolean(1), true);
+		$this->assertEqual(TPropertyValue::ensureBoolean("1"), true);
+		$this->assertEqual(TPropertyValue::ensureBoolean("-1"), true);
+		$this->assertEqual(TPropertyValue::ensureBoolean(array("foboar")), true);
+	}
+	
+	/**
+	 * Tests the TPropertyValue::ensureString function
+	 */
+	public function testEnsureString()
+	{
+		$this->assertEqual(TPropertyValue::ensureString("foobar"), "foobar");
+		$this->assertEqual(TPropertyValue::ensureString(true), "true");
+		$this->assertEqual(TPropertyValue::ensureString(false), "false");
+		$this->assertEqual(TPropertyValue::ensureString(array("foo","bar")), (string)array("foo","bar"));
+	}
+	
+	/**
+	 * Tests the TPropertyValue::ensureInteger function
+	 */
+	public function testEnsureInteger()
+	{
+		$this->assertEqual(TPropertyValue::ensureInteger(123), 123);
+		$this->assertEqual(TPropertyValue::ensureInteger("123"), 123);
+		$this->assertEqual(TPropertyValue::ensureInteger(""), 0);
+	}
+	
+	/**
+	 * Tests the TPropertyValue::ensureFloat function
+	 */
+	public function testEnsureFloat()
+	{
+		$this->assertEqual(TPropertyValue::ensureFloat(123.123), 123.123);
+		$this->assertEqual(TPropertyValue::ensureFloat("123.123"), 123.123);
+		$this->assertEqual(TPropertyValue::ensureFloat(""), 0.0);
+	}
+	
+	/**
+	 * Tests the TPropertyValue::ensureArray function
+	 */
+	public function testEnsureArray()
+	{
+
+	}
+	
+	/**
+	 * Tests the TPropertyValue::ensureObject function
+	 */
+	public function testEnsureObject()
+	{
+		
+	}
+	
+	/**
+	 * Tests the TPropertyValue::ensureEnum function
+	 */
+	public function testEnsureEnum()
+	{
+		
+	}
+	
+	
 }
 
 ?>
