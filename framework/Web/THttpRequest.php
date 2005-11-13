@@ -62,8 +62,6 @@ class THttpRequest extends TComponent implements IModule
 	 */
 	private $_items;
 
-	private $_authenticated=false;
-
 	/**
 	 * Constructor.
 	 * Analyzes and resolves user request.
@@ -431,16 +429,6 @@ class THttpRequest extends TComponent implements IModule
 	protected function setServiceParameter($value)
 	{
 		$this->_serviceParam=$value;
-	}
-
-	public function getIsAuthenticated()
-	{
-		return $this->_authenticated;
-	}
-
-	public function setIsAuthenticated($value)
-	{
-		$this->_authenticated=$value;
 	}
 }
 
