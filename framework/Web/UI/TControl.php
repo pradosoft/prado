@@ -199,9 +199,23 @@ class TControl extends TComponent
 	 */
 	public function getPage()
 	{
-		if(!$this->_page && $this->_parent)
-			$this->_page=$this->_parent->getPage();
-		return $this->_page;
+		if($this->_page)
+			return $this->_page;
+		else
+		{
+			if($this->_parent)
+			{
+				$this->_page=$this->_parent->getPage();
+				return $this->_page;
+			}
+			else if($this->_tplControl)
+			{
+				$this->_page=$this->_tplControl->getPage();
+				return $this->_page;
+			}
+			else
+				return null;
+		}
 	}
 
 	/**
@@ -229,9 +243,15 @@ class TControl extends TComponent
 	 */
 	public function getTemplateControl()
 	{
-		if(!$this->_tplControl && $this->_parent)
+		if($this->_tplControl)
+			return $this->_tplControl;
+		else if($this->_parent)
+		{
 			$this->_tplControl=$this->_parent->getTemplateControl();
-		return $this->_tplControl;
+			return $this->_tplControl;
+		}
+		else
+			return null;
 	}
 
 	/**
@@ -339,7 +359,7 @@ class TControl extends TComponent
 		{
 			if($namingContainer=$this->getNamingContainer())
 			{
-				if($this->_page===$namingContainer)
+				if($this->getPage()===$namingContainer)
 					return ($this->_uid=$this->_id);
 				else if(($prefix=$namingContainer->getUniqueID())==='')
 					return $this->_id;
