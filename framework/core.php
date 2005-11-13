@@ -551,7 +551,7 @@ class PradoBase
 			$className=$type;
 			if(!class_exists($className,false))
 			{
-				require_once($className.self::CLASS_FILE_EXT);
+				include_once($className.self::CLASS_FILE_EXT);
 			}
 			if(class_exists($className,false))
 				return new $className;
