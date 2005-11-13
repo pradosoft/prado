@@ -342,12 +342,17 @@ class TComponent
 				{
 					// an array: 0 - object, 1 - method name/path
 					list($object,$method)=$handler;
-					if(($pos=strrpos($method,'.'))!==false)
+					if(is_string($object))	// static method call
+						call_user_func($handler,$sender,$param);
+					else
 					{
-						$object=$this->getSubProperty(substr($method,0,$pos));
-						$method=substr($method,$pos+1);
+						if(($pos=strrpos($method,'.'))!==false)
+						{
+							$object=$this->getSubProperty(substr($method,0,$pos));
+							$method=substr($method,$pos+1);
+						}
+						$object->$method($sender,$param);
 					}
-					$object->$method($sender,$param);
 				}
 				else
 					throw new TInvalidDataValueException('component_event_handler_invalid',$handler);
