@@ -281,7 +281,10 @@ class utComponent extends UnitTestCase
 	 */
 	public function testEnsureArray()
 	{
-
+		$this->assertEqual(TPropertyValue::ensureArray(array()), array());
+		$this->assertEqual(TPropertyValue::ensureArray(array(1,2,3)), array(1,2,3));
+		$this->assertEqual(TPropertyValue::ensureArray("(1,2,3)"), array(1,2,3));
+		$this->assertEqual(TPropertyValue::ensureArray(""), array());
 	}
 	
 	/**
@@ -289,7 +292,10 @@ class utComponent extends UnitTestCase
 	 */
 	public function testEnsureObject()
 	{
-		
+		$this->assertEqual(TPropertyValue::ensureObject($this->component), $this->component);
+		$this->assertNull(TPropertyValue::ensureObject(array(1,2,3)));
+		$this->assertNull(TPropertyValue::ensureObject(1));
+		$this->assertNull(TPropertyValue::ensureObject("foo"));
 	}
 	
 	/**
@@ -297,10 +303,30 @@ class utComponent extends UnitTestCase
 	 */
 	public function testEnsureEnum()
 	{
-		
+		$this->assertEqual(TPropertyValue::ensureEnum("foo", array("foo", "bar", "BAR")), "foo");
+		$this->assertEqual(TPropertyValue::ensureEnum("bar", array("foo", "bar", "BAR")), "bar");
+		$this->assertEqual(TPropertyValue::ensureEnum("BAR", array("foo", "bar", "BAR")), "BAR");
+		$pass = false;
+		try {
+			$this->assertEqual(TPropertyValue::ensureEnum("xxx", array("foo", "bar", "BAR")), "BAR");
+		} catch (TInvalidDataValueException $e) {
+			$this->pass();
+			$pass = true;
+		}
+		if (!$pass) {
+			$this->fail("ensureEnun didn't raise a TInvalidDataValueException when it should have");
+		}
+		$pass = false;
+		try {
+			$this->assertEqual(TPropertyValue::ensureEnum("FOO", array("foo", "bar", "BAR")), "BAR");
+		} catch (TInvalidDataValueException $e) {
+			$this->pass();
+			$pass = true;
+		}
+		if (!$pass) {
+			$this->fail("ensureEnun didn't raise a TInvalidDataValueException when it should have");
+		}
 	}
-	
-	
 }
 
 ?>
