@@ -306,7 +306,7 @@ class TPageService extends TComponent implements IService
 		else
 		{
 			$className=substr($this->_pageType,$pos+1);
-			if(($path=self::getPathOfNamespace($this->_pageType,Prado::CLASS_FILE_EXT))!==null)
+			if(($path=Prado::getPathOfNamespace($this->_pageType,Prado::CLASS_FILE_EXT))!==null)
 			{
 				if(!class_exists($className,false))
 				{
