@@ -255,14 +255,17 @@ class THttpResponse extends TComponent implements IModule, ITextWriter
 	}
 
 	/**
-	 * Writes a log message into system log.
-	 * @param string message to be written
-	 * @param integer priority level of this message
-	 * @see http://us2.php.net/manual/en/function.syslog.php
+	 * Writes a log message into error log.
+	 * This method is simple wrapper of PHP function error_log.
+	 * @param string The error message that should be logged
+	 * @param integer where the error should go
+	 * @param string The destination. Its meaning depends on the message parameter as described above
+	 * @param string The extra headers. It's used when the message parameter is set to 1. This message type uses the same internal function as mail() does.
+	 * @see http://us2.php.net/manual/en/function.error-log.php
 	 */
-	public function appendLog($message,$priority=LOG_INFO)
+	public function appendLog($message,$messageType=0,$destination='',$extraHeaders='')
 	{
-		syslog($priority,$message);
+		error_log($message,$messageType,$destination,$extraHeaders);
 	}
 
 	/**
