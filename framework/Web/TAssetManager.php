@@ -1,14 +1,60 @@
 <?php
+/**
+ * TAssetManager class
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Web
+ */
 
+/**
+ * TAssetManager class
+ *
+ * TAssetManager provides a scheme to allow web clients visiting
+ * private files that are normally web-inaccessible.
+ *
+ * TAssetManager will copy the file to be published into a web-accessible
+ * directory. The default base directory for storing the file is "assets", which
+ * should be under the application directory. This can be changed by setting
+ * the BasePath property together with the BaseUrl property that refers to
+ * the URL for accessing the base path.
+ *
+ * By default, TAssetManager will not publish a file or directory if it already
+ * exists in the publishing directory. You may require a timestamp checking by
+ * setting CheckTimestamp to true (which is false by default). You may also require
+ * so when calling {@link publishFile} or {@link publishDirectory). This is usually
+ * very useful during development. In production sites, the timestamp checking
+ * should be turned off to improve performance.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web
+ * @since 3.0
+ */
 class TAssetManager extends TComponent implements IModule
 {
+	/**
+	 * Default web accessible base path for storing private files
+	 */
 	const DEFAULT_BASEPATH='assets';
+	/**
+	 * @var string base web accessible path for storing private files
+	 */
 	private $_basePath=null;
+	/**
+	 * @var string base URL for accessing the publishing directory.
+	 */
 	private $_baseUrl=null;
 	/**
 	 * @var string module ID
 	 */
 	private $_id;
+	/**
+	 * @var boolean whether to use timestamp checking to ensure files are published with up-to-date versions.
+	 */
 	private $_checkTimestamp=false;
 
 	/**
@@ -85,11 +131,17 @@ class TAssetManager extends TComponent implements IModule
 			$this->_baseUrl=$value;
 	}
 
+	/**
+	 * @return boolean whether file modify time should be used to ensure a published file is latest. Defaults to false.
+	 */
 	public function getCheckTimestamp()
 	{
 		return $this->_checkTimestamp;
 	}
 
+	/**
+	 * @param boolean whether file modify time should be used to ensure a published file is latest. Defaults to false.
+	 */
 	public function setCheckTimestamp($value)
 	{
 		if($this->_initialized)
@@ -98,6 +150,14 @@ class TAssetManager extends TComponent implements IModule
 			$this->_checkTimestamp=TPropertyValue::ensureBoolean($value);
 	}
 
+	/**
+	 * Publishes a directory (recursively).
+	 * This method will copy the content in a directory (recursively) to
+	 * a web accessible directory and returns the URL for the directory.
+	 * @param string the path to be published
+	 * @param boolean whether to use file modify time to ensure every published file is latest
+	 * @return string an absolute URL to the published directory
+	 */
 	public function publishDirectory($path,$checkTimestamp=false)
 	{
 		if(($fullpath=realpath($path))!==false && is_dir($fullpath))
@@ -111,6 +171,13 @@ class TAssetManager extends TComponent implements IModule
 			throw new TInvalidDataValueException('assetmanager_directory_invalid',$path);
 	}
 
+	/**
+	 * Copies a directory recursively as another.
+	 * If the destination directory does not exist, it will be created.
+	 * File modification time is used to ensure the copied files are latest.
+	 * @param string the source directory
+	 * @param string the destination directory
+	 */
 	protected function copyDirectory($src,$dst)
 	{
 		@mkdir($dst);
@@ -130,6 +197,14 @@ class TAssetManager extends TComponent implements IModule
 		closedir($folder);
 	}
 
+	/**
+	 * Publishes a file.
+	 * This method will copy a file to a web accessible directory and
+	 * returns the URL for the file.
+	 * @param string the file to be published
+	 * @param boolean whether to use file modify time to ensure the published file is latest
+	 * @return string an absolute URL to the published file
+	 */
 	public function publishFile($path,$checkTimestamp=false)
 	{
 		if(($fullpath=realpath($path))!==false && is_file($fullpath))
