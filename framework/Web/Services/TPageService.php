@@ -38,7 +38,7 @@ class TPageService extends TComponent implements IService
 	/**
 	 * @var string root path of pages
 	 */
-	private $_pageBasePath;
+	private $_basePath;
 	/**
 	 * @var string default page
 	 */
@@ -78,8 +78,8 @@ class TPageService extends TComponent implements IService
 	{
 		$this->_application=$application;
 
-		if(($pageBasePath=Prado::getPathOfNamespace($this->_pageBasePath))===null || !is_dir($pageBasePath))
-			throw new TConfigurationException('pageservice_pagebasepath_invalid',$this->_pageBasePath);
+		if(($basePath=Prado::getPathOfNamespace($this->_basePath))===null || !is_dir($basePath))
+			throw new TConfigurationException('pageservice_basepath_invalid',$this->_basePath);
 
 		$this->_pagePath=$application->getRequest()->getServiceParameter();
 		if(empty($this->_pagePath))
@@ -91,7 +91,7 @@ class TPageService extends TComponent implements IService
 		{
 			$pageConfig=new TPageConfiguration;
 			$pageConfig->loadXmlElement($config,dirname($application->getConfigurationFile()),null);
-			$pageConfig->loadConfigurationFiles($this->_pagePath,$pageBasePath);
+			$pageConfig->loadConfigurationFiles($this->_pagePath,$basePath);
 		}
 		else
 		{
@@ -105,7 +105,7 @@ class TPageService extends TComponent implements IService
 					// check to see if cache is the latest
 					$paths=explode('.',$this->_pagePath);
 					array_pop($paths);
-					$configPath=$pageBasePath;
+					$configPath=$basePath;
 					foreach($paths as $path)
 					{
 						if(@filemtime($configPath.'/'.self::CONFIG_FILE)>$timestamp)
@@ -125,7 +125,7 @@ class TPageService extends TComponent implements IService
 			{
 				$pageConfig=new TPageConfiguration;
 				$pageConfig->loadXmlElement($config,dirname($application->getConfigurationFile()),null);
-				$pageConfig->loadConfigurationFiles($this->_pagePath,$pageBasePath);
+				$pageConfig->loadConfigurationFiles($this->_pagePath,$basePath);
 				$cache->set(self::CONFIG_CACHE_PREFIX.$this->_pagePath,array($pageConfig,time()),$this->_cacheExpire<0?0:$this->_cacheExpire);
 			}
 		}
@@ -266,21 +266,21 @@ class TPageService extends TComponent implements IService
 	/**
 	 * @return string root directory (in namespace form) storing pages
 	 */
-	public function getPageBasePath()
+	public function getBasePath()
 	{
-		return $this->_pageBasePath;
+		return $this->_basePath;
 	}
 
 	/**
 	 * @param string root directory (in namespace form) storing pages
 	 * @throws TInvalidOperationException if the service is initialized already
 	 */
-	public function setPageBasePath($value)
+	public function setBasePath($value)
 	{
 		if($this->_initialized)
-			throw new TInvalidOperationException('pageservice_pagebasepath_unchangeable');
+			throw new TInvalidOperationException('pageservice_basepath_unchangeable');
 		else
-			$this->_pageBasePath=$value;
+			$this->_basePath=$value;
 	}
 
 	/**
@@ -299,7 +299,7 @@ class TPageService extends TComponent implements IService
 				$p=explode('.',$this->_pagePath);
 				array_pop($p);
 				array_push($p,$className);
-				$path=Prado::getPathOfNamespace($this->_pageBasePath).'/'.implode('/',$p).Prado::CLASS_FILE_EXT;
+				$path=Prado::getPathOfNamespace($this->_basePath).'/'.implode('/',$p).Prado::CLASS_FILE_EXT;
 				require_once($path);
 			}
 		}
@@ -477,11 +477,11 @@ class TPageConfiguration extends TComponent
 	 * @param string path to the page (dot-connected format)
 	 * @param string root path for pages
 	 */
-	public function loadConfigurationFiles($pagePath,$pageBasePath)
+	public function loadConfigurationFiles($pagePath,$basePath)
 	{
 		$paths=explode('.',$pagePath);
 		$page=array_pop($paths);
-		$path=$pageBasePath;
+		$path=$basePath;
 		foreach($paths as $p)
 		{
 			$this->loadFromFile($path.'/'.TPageService::CONFIG_FILE,null);
