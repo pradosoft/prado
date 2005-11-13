@@ -114,7 +114,7 @@ class THttpRequest extends TComponent implements IModule
 	 */
 	public function stripSlashes(&$data)
 	{
-		return is_array($data)?array_map('pradoStripSlashes',$data):stripslashes($data);
+		return is_array($data)?array_map(array('Prado','stripSlashes'),$data):stripslashes($data);
 	}
 
 	/**
