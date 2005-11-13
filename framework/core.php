@@ -502,7 +502,7 @@ class PradoBase
 	 */
 	public static function getFrameworkPath()
 	{
-		return dirname(__FILE__);
+		return PRADO_DIR;
 	}
 
 	/**
