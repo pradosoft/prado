@@ -9,6 +9,7 @@ class TAssetManager extends TComponent implements IModule
 	 * @var string module ID
 	 */
 	private $_id;
+	private $_checkTimestamp=false;
 
 	/**
 	 * Initializes the module.
@@ -84,13 +85,26 @@ class TAssetManager extends TComponent implements IModule
 			$this->_baseUrl=$value;
 	}
 
-	public function publishDirectory($path,$forceOverwrite=false)
+	public function getCheckTimestamp()
+	{
+		return $this->_checkTimestamp;
+	}
+
+	public function setCheckTimestamp($value)
+	{
+		if($this->_initialized)
+			throw new TInvalidOperationException('pageservice_checktimestamp_unchangeable');
+		else
+			$this->_checkTimestamp=TPropertyValue::ensureBoolean($value);
+	}
+
+	public function publishDirectory($path,$checkTimestamp=false)
 	{
 		if(($fullpath=realpath($path))!==false && is_dir($fullpath))
 		{
 			$dir=md5($fullpath);
-			if(!is_dir($this->_basePath.'/'.$dir))
-				$this->copyDirectory($this->_basePath.'/'.$dir);
+			if(!is_dir($this->_basePath.'/'.$dir) || $checkTimestamp || $this->_checkTimestamp)
+				$this->copyDirectory($fullpath,$this->_basePath.'/'.$dir);
 			return $this->_baseUrl.'/'.$dir;
 		}
 		else
@@ -99,27 +113,31 @@ class TAssetManager extends TComponent implements IModule
 
 	protected function copyDirectory($src,$dst)
 	{
-		mkdir($dst);
+		@mkdir($dst);
 		$folder=opendir($src);
 		while($file=readdir($folder))
 		{
 			if($file==='.' || $file==='..')
 				continue;
 			else if(is_file($src.'/'.$file))
-				copy($src.'/'.$file,$dst.'/'.$file);
+			{
+				if(@filemtime($dst.'/'.$file)<filemtime($src.'/'.$file))
+					copy($src.'/'.$file,$dst.'/'.$file);
+			}
 			else
 				$this->copyDirectory($src.'/'.$file,$dst.'/'.$file);
 		}
 		closedir($folder);
 	}
 
-	public function publishFile($path,$forceOverwrite=false)
+	public function publishFile($path,$checkTimestamp=false)
 	{
 		if(($fullpath=realpath($path))!==false && is_file($fullpath))
 		{
 			$dir=md5(dirname($fullpath));
 			$file=$this->_basePath.'/'.$dir.'/'.basename($fullpath);
-			if(!is_file($file))
+
+			if(!is_file($file) || (($checkTimestamp || $this->_checkTimestamp) && filemtime($file)<filemtime($path)))
 			{
 				@mkdir($this->_basePath.'/'.$dir);
 				copy($fullpath,$file);
