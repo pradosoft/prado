@@ -33,7 +33,6 @@ framework/TApplication.php -text
 framework/TComponent.php -text
 framework/TODO.txt -text
 framework/Web/Javascripts/WebForms.js -text
-framework/Web/Services/TAssetService.php -text
 framework/Web/Services/TPageService.php -text
 framework/Web/TAssetManager.php -text
 framework/Web/THttpRequest.php -text
