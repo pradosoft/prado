@@ -31,14 +31,14 @@ class TTemplateManager extends TComponent implements IModule
 		$this->_id=$value;
 	}
 
-	public function loadTemplateByClassName($className)
+	public function getTemplateByClassName($className)
 	{
 		$class=new ReflectionClass($className);
 		$tplFile=dirname($class->getFileName()).'/'.$className.self::TEMPLATE_FILE_EXT;
-		return $this->loadTemplateByFileName($tplFile);
+		return $this->getTemplateByFileName($tplFile);
 	}
 
-	public function loadTemplateByFileName($fileName)
+	public function getTemplateByFileName($fileName)
 	{
 		if(is_file($fileName))
 		{
