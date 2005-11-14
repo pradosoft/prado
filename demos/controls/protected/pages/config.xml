@@ -4,7 +4,7 @@
   <authorization>
     <deny pages="home" users="?" verb="post" />
   </authorization>
-  <pages>
+  <pages Theme="BlueTheme">
     <page id="home" type="HomePage" />
     <page id="login" type="LoginPage" />
     <page id="plain" type="TPage" TemplateFile="Demo.pages.PlainPage" />

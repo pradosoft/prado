@@ -11,6 +11,8 @@ demos/controls/protected/pages/config.xml -text
 demos/controls/protected/pages/private/MemberPage.php -text
 demos/controls/protected/pages/private/MemberPage.tpl -text
 demos/controls/protected/pages/private/config.xml -text
+demos/controls/protected/themes/BlueTheme/buttons.skin -text
+demos/controls/protected/themes/BlueTheme/labels.skin -text
 demos/images/fungii_logo.gif -text
 docs/conceptual-structure.vsd -text
 docs/request-sequence.vsd -text
