@@ -141,7 +141,13 @@ class TTemplate extends TComponent implements ITemplate
 									throw new TTemplateRuntimeException('property_read_only',get_class($component).'.'.$name);
 							}
 							else if($component->getAllowCustomAttributes())
+							{
+								if(is_array($value) && $value[0]===1)
+									$value=$component->evaluateExpression($value[1]);
+								else
+									throw new TTemplateRuntimeException('template_attribute_unbindable',$name);
 								$component->getAttributes()->add($name,$value);
+							}
 							else
 								throw new TTemplateRuntimeException('property_not_defined',get_class($component).'.'.$name);
 						}

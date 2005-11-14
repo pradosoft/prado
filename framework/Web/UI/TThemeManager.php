@@ -150,7 +150,7 @@ class TTheme extends TTemplate
 			foreach($this->_skins[$type][$id] as $name=>$value)
 			{
 				if(is_array($value))
-					$value=$this->evaluateExpression($value);
+					$value=$this->evaluateExpression($value[1]);
 				if(strpos($name,'.')===false)	// is simple property or custom attribute
 				{
 					if($control->hasProperty($name))
