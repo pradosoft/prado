@@ -1,4 +1,5 @@
-
+checkbox if checked, posted, unchecked and then post, it will be checked.
+add application state: off, debug, normal, performance
 think more about encoding/decoding
 <%@ MasterClass="Pages.MasterPage" %>
 THtmlTextWriter::addStyleAttribute(), also change how TStyle renders its content.
