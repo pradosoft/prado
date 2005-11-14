@@ -629,20 +629,23 @@ class TPageConfiguration extends TComponent
 		}
 
 		// pages
-		if($page!==null && ($pagesNode=$dom->getElementByTagName('pages'))!==null)
+		if(($pagesNode=$dom->getElementByTagName('pages'))!==null)
 		{
-			$baseProperties=$pagesNode->getAttributes();
-			foreach($pagesNode->getElementsByTagName('page') as $node)
+			$this->_properties=array_merge($this->_properties,$pagesNode->getAttributes()->toArray());
+			if($page!==null)   // at the page folder
 			{
-				$properties=$node->getAttributes();
-				$type=$properties->remove('type');
-				$id=$properties->itemAt('id');
-				if($id===null || $type===null)
-					throw new TConfigurationException('pageservice_page_element_invalid',$fname);
-				if($id===$page)
+				foreach($pagesNode->getElementsByTagName('page') as $node)
 				{
-					$this->_properties=array_merge($baseProperties->toArray(),$properties->toArray());
-					$this->_pageType=$type;
+					$properties=$node->getAttributes();
+					$type=$properties->remove('type');
+					$id=$properties->itemAt('id');
+					if($id===null || $type===null)
+						throw new TConfigurationException('pageservice_page_element_invalid',$fname);
+					if($id===$page)
+					{
+						$this->_properties=array_merge($this->_properties,$properties->toArray());
+						$this->_pageType=$type;
+					}
 				}
 			}
 		}
