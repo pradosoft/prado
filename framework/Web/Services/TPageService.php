@@ -204,6 +204,14 @@ class TPageService extends TComponent implements IService
 	}
 
 	/**
+	 * @return TThemeManager theme manager
+	 */
+	public function getThemeManager()
+	{
+		return $this->_application->getModule('theme');
+	}
+
+	/**
 	 * @return boolean true if the pagepath is currently being requested, false otherwise
 	 */
 	public function isRequestingPage($pagePath)
@@ -371,7 +379,8 @@ class TPageConfiguration extends TComponent
 	 */
 	private $_modules=array(
 		'template'=>array('System.Web.UI.TTemplateManager',array(),null),
-		'asset'=>array('System.Web.TAssetManager',array(),null)
+		'asset'=>array('System.Web.TAssetManager',array(),null),
+		'theme'=>array('System.Web.UI.TThemeManager',array(),null)
 	);
 	/**
 	 * @var array list of parameters
