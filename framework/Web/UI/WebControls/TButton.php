@@ -284,7 +284,7 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	 */
 	public function setOnClientClick($value)
 	{
-		$this->setViewState('OClientClick',$value,'');
+		$this->setViewState('ClientClick',$value,'');
 	}
 }
 
