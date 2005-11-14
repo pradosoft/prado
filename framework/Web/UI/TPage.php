@@ -66,7 +66,7 @@ class TPage extends TTemplateControl
 			return parent::loadTemplate();
 		else
 		{
-			$template=Prado::getApplication()->getService()->getTemplateManager()->loadTemplateByFileName(Prado::getPathOfNamespace($this->_templateFile,'.tpl'));
+			$template=Prado::getApplication()->getService()->getTemplateManager()->getTemplateByFileName(Prado::getPathOfNamespace($this->_templateFile,'.tpl'));
 			$this->setTemplate($template);
 			return $template;
 		}
@@ -326,9 +326,9 @@ EOD;
 	private function initializeThemes()
 	{
 		if($this->_themeName!=='')
-			$this->_theme=new TTheme($this->_themeName);
+			$this->_theme=$this->getService()->getThemeManager()->getTheme($this->_themeName);
 		if($this->_styleSheetName!=='')
-			$this->_styleSheet=new TTheme($this->_styleSheetName);
+			$this->_styleSheet=$this->getService()->getThemeManager()->getTheme($this->_styleSheetName);
 	}
 
 	/**

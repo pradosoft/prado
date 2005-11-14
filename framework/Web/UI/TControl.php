@@ -263,6 +263,14 @@ class TControl extends TComponent
 	}
 
 	/**
+	 * @return TPageService the page service
+	 */
+	public function getService()
+	{
+		return Prado::getApplication()->getService();
+	}
+
+	/**
 	 * @return THttpRequest the current user request
 	 */
 	public function getRequest()
@@ -296,12 +304,12 @@ class TControl extends TComponent
 
 	public function publishFile($file)
 	{
-		return Prado::getApplication()->getService()->getAssetManager()->publishFile($file);
+		return $this->getService()->getAssetManager()->publishFile($file);
 	}
 
 	public function publishDirectory($directory)
 	{
-		return Prado::getApplication()->getService()->getAssetManager()->publishDirectory($directory);
+		return $this->getService()->getAssetManager()->publishDirectory($directory);
 	}
 
 	public function getAsset($assetName)
