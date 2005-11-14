@@ -93,7 +93,18 @@ class TTemplate extends TComponent implements ITemplate
 			if(isset($object[2]))	// component
 			{
 				if(strpos($object[1],'.')===false)
-					$component=new $object[1];
+				{
+					if(class_exists($object[1],false))
+						$component=new $object[1];
+					else
+					{
+						include_once($object[1].Prado::CLASS_FILE_EXT);
+						if(class_exists($object[1],false))
+							$component=new $object[1];
+						else
+							throw new TTemplateRuntimeException('template_component_unknown',$object[1]);
+					}
+				}
 				else
 					$component=Prado::createComponent($object[1]);
 				if($component instanceof TControl)
