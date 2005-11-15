@@ -1,3 +1,5 @@
+<%@ MasterClass="Pages.master.MasterPage" %>
+<com:TContent id="header" >
 <com:TForm>
 <h1>Welcome! <%=$this->User->Name %></h1>
 <com:TLiteral Text="literal" />
@@ -10,3 +12,4 @@
 <com:THyperLink Text="Visit a 'classless' page" NavigateUrl="?sp=page.plain" /> |
 <com:THyperLink Text="Visit member only page" NavigateUrl="?sp=page.private.member" />
 </com:TForm>
+</com:TContent>

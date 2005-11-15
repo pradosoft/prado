@@ -3,6 +3,7 @@
 <configuration>
   <paths>
     <alias id="Demo" path="." />
+    <alias id="Pages" path="pages" />
   </paths>
   <!-- modules configured and loaded for all services -->
   <modules>

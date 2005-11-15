@@ -637,7 +637,7 @@ class TApplicationConfiguration extends TComponent
 				if(($id=$aliasNode->getAttribute('id'))!==null && ($path=$aliasNode->getAttribute('path'))!==null)
 				{
 					$path=str_replace('\\','/',$path);
-					if(preg_match('/^\\/|.:\\//',$path))	// if absolute path
+					if(preg_match('/^\\/|.:\\/|.:\\\\/',$path))	// if absolute path
 						$p=realpath($path);
 					else
 						$p=realpath($configPath.'/'.$path);
