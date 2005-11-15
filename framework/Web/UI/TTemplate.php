@@ -518,6 +518,15 @@ class TTemplate extends TComponent implements ITemplate
 		{
 			$name=strtolower($matches[$i][1]);
 			$value=$matches[$i][2];
+			if($value[0]==='\'' || $value[0]==='"')
+			{
+				$value=substr($value,1,strlen($value)-2);
+				if(!preg_match('/(<%#.*?%>|<%=.*?%>|<%~.*?%>)/msS',$value))
+				{
+					$attributes[$name]=$value;
+					continue;
+				}
+			}
 			if($value[0]==='<')
 			{
 				if($value[2]==='#') // databind
@@ -529,8 +538,6 @@ class TTemplate extends TComponent implements ITemplate
 				else
 					$attributes[$name]=substr($value,2,strlen($value)-4);
 			}
-			else
-				$attributes[$name]=substr($value,1,strlen($value)-2);
 		}
 		return $attributes;
 	}
