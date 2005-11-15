@@ -7,6 +7,8 @@ demos/controls/protected/pages/LoginPage.php -text
 demos/controls/protected/pages/LoginPage.tpl -text
 demos/controls/protected/pages/PlainPage.tpl -text
 demos/controls/protected/pages/config.xml -text
+demos/controls/protected/pages/master/MasterPage.php -text
+demos/controls/protected/pages/master/MasterPage.tpl -text
 demos/controls/protected/pages/private/MemberPage.php -text
 demos/controls/protected/pages/private/MemberPage.tpl -text
 demos/controls/protected/pages/private/config.xml -text
