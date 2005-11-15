@@ -219,7 +219,7 @@ class THttpRequest extends TComponent implements IModule
 	 */
 	public function getPhysicalApplicationPath()
 	{
-		return $_SERVER['SCRIPT_FILENAME'];
+		return strtr($_SERVER['SCRIPT_FILENAME'],'\\','/');
 	}
 
 	/**

@@ -69,10 +69,6 @@ class TControl extends TComponent
 	 * prefix to an ID automatically generated
 	 */
 	const AUTOMATIC_ID_PREFIX='ctl';
-	/**
-	 * default control asset path
-	 */
-	const ASSET_PATH='assets';
 
 	/**
 	 * the stage of lifecycles that the control is currently at
@@ -302,26 +298,11 @@ class TControl extends TComponent
 		return Prado::getApplication()->getUser();
 	}
 
-	public function publishFile($file)
-	{
-		return $this->getService()->getAssetManager()->publishFile($file);
-	}
-
-	public function publishDirectory($directory)
-	{
-		return $this->getService()->getAssetManager()->publishDirectory($directory);
-	}
-
-	public function getAsset($assetName)
+	public function getAsset($assetPath)
 	{
 		$class=new ReflectionClass(get_class($this));
-		$assetFile=dirname($class->getFileName()).'/'.self::ASSET_PATH.'/'.$assetName;
-		if(is_file($assetFile))
-			return $this->publishFile($assetFile);
-		else if(is_dir($assetFile))
-			return $this->publishDirectory($assetFile);
-		else
-			return '';
+		$assetPath=dirname($class->getFileName()).'/'.$assetPath;
+		return $this->getService()->getAssetManager()->publishFilePath($assetPath);
 	}
 
 	/**

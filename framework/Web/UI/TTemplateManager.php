@@ -40,10 +40,10 @@ class TTemplateManager extends TComponent implements IModule
 
 	public function getTemplateByFileName($fileName)
 	{
-		if(is_file($fileName))
+		if(($fileName=realpath($fileName))!==false && is_file($fileName))
 		{
 			if(($cache=$this->_application->getCache())===null)
-				return new TTemplate(file_get_contents($fileName));
+				return new TTemplate(file_get_contents($fileName),dirname($fileName));
 			else
 			{
 				$array=$cache->get(self::TEMPLATE_CACHE_PREFIX.$fileName);
@@ -53,7 +53,7 @@ class TTemplateManager extends TComponent implements IModule
 					if(filemtime($fileName)<$timestamp)
 						return $template;
 				}
-				$template=new TTemplate(file_get_contents($fileName));
+				$template=new TTemplate(file_get_contents($fileName),dirname($fileName));
 				$cache->set(self::TEMPLATE_CACHE_PREFIX.$fileName,array($template,time()));
 				return $template;
 			}

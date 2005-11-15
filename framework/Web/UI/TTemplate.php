@@ -58,14 +58,19 @@ class TTemplate extends TComponent implements ITemplate
 	 * @var array list of directive settings
 	 */
 	private $_directive=array();
+	/**
+	 * @var string context path
+	 */
+	private $_contextPath;
 
 	/**
 	 * Constructor.
 	 * The template will be parsed after construction.
 	 * @param string the template string
 	 */
-	public function __construct($template)
+	public function __construct($template,$contextPath)
 	{
+		$this->_contextPath=$contextPath;
 		$this->parse($template);
 	}
 
@@ -87,6 +92,7 @@ class TTemplate extends TComponent implements ITemplate
 	public function instantiateIn($tplControl)
 	{
 		$page=$tplControl->getPage();
+		$assetManager=$page->getService()->getAssetManager();
 		$controls=array();
 		foreach($this->_tpl as $key=>$object)
 		{
@@ -145,18 +151,28 @@ class TTemplate extends TComponent implements ITemplate
 										$component->$setter($value);
 									else if($value[0]===0)
 										$component->bindProperty($name,$value[1]);
-									else
+									else if($value[0]===1)
 										$component->$setter($component->evaluateExpression($value[1]));
+									else  // url
+									{
+										$url=$assetManager->publishFilePath($this->_contextPath.'/'.$value[1]);
+										$component->$setter($url);
+									}
 								}
 								else
 									throw new TTemplateRuntimeException('property_read_only',get_class($component).'.'.$name);
 							}
 							else if($component->getAllowCustomAttributes())
 							{
-								if(is_array($value) && $value[0]===1)
-									$value=$component->evaluateExpression($value[1]);
-								else
-									throw new TTemplateRuntimeException('template_attribute_unbindable',$name);
+								if(is_array($value))
+								{
+									if($value[0]===1)
+										$value=$component->evaluateExpression($value[1]);
+									else if($value[0]===2)
+										$value=$assetManager->publishFilePath($this->_contextPath.'/'.$value[1]);
+									else
+										throw new TTemplateRuntimeException('template_attribute_unbindable',$name);
+								}
 								$component->getAttributes()->add($name,$value);
 							}
 							else
@@ -168,8 +184,13 @@ class TTemplate extends TComponent implements ITemplate
 								$component->setSubProperty($name,$value);
 							else if($value[0]===0)
 								$component->bindProperty($name,$value[1]);
-							else
+							else if($value[0]===1)
 								$component->setSubProperty($component->evaluateExpression($value[1]));
+							else
+							{
+								$url=$assetManager->publishFilePath($this->_contextPath.'/'.$value[1]);
+								$component->$setter($url);
+							}
 						}
 					}
 					$parent=isset($controls[$object[0]])?$controls[$object[0]]:$tplControl;
@@ -194,6 +215,11 @@ class TTemplate extends TComponent implements ITemplate
 									$component->$setter($value);
 								else if($value[0]===1)
 									$component->$setter($component->evaluateExpression($value[1]));
+								else if($value[0]===2)
+								{
+									$url=$assetManager->publishFilePath($this->_contextPath.'/'.$value[1]);
+									$component->$setter($url);
+								}
 								else
 									throw new TTemplateRuntimeException('template_component_property_unbindable',get_class($component),$name);
 							}
@@ -498,6 +524,8 @@ class TTemplate extends TComponent implements ITemplate
 					$attributes[$name]=array(0,substr($value,3,strlen($value)-5));
 				else if($value[2]==='=') // a dynamic initialization
 					$attributes[$name]=array(1,substr($value,3,strlen($value)-5));
+				else if($value[2]==='~') // a URL
+					$attributes[$name]=array(2,trim(substr($value,3,strlen($value)-5)));
 				else
 					$attributes[$name]=substr($value,2,strlen($value)-4);
 			}

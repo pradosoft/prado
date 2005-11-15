@@ -31,7 +31,7 @@ class TThemeManager extends TComponent implements IModule
 	{
 		$this->_application=$application;
 		if($this->_themePath===null)
-			$this->_themePath=dirname($application->getConfigurationFile()).'/'.self::DEFAULT_THEME_PATH;
+			$this->_themePath=dirname($application->getRequest()->getPhysicalApplicationPath()).'/'.self::DEFAULT_THEME_PATH;
 
 		$this->_initialized=true;
 	}
@@ -111,14 +111,21 @@ class TThemeManager extends TComponent implements IModule
 
 class TTheme extends TTemplate
 {
-	const ASSET_PATH='assets';
 	private $_themePath;
-	private $_themeFile;
+	private $_themeUrl;
 	private $_skins=array();
 
 	public function __construct($content,$themePath)
 	{
-		$this->_themePath=$themePath;
+		$this->_themePath=strtr($themePath,'\\','/');
+		$basePath=dirname(Prado::getApplication()->getRequest()->getPhysicalApplicationPath());
+		if(($pos=strpos($this->_themePath,$basePath))===false)
+			throw new TConfigurationException('theme_themepath_invalid',$themePath);
+		else
+		{
+			$baseUrl=dirname(Prado::getApplication()->getRequest()->getApplicationPath());
+			$this->_themeUrl=$baseUrl.'/'.strtr(substr($this->_themePath,strlen($basePath)),'\\','/');
+		}
 		$theme=&$this->parse($content);
 		foreach($theme as $skin)
 		{
@@ -150,7 +157,12 @@ class TTheme extends TTemplate
 			foreach($this->_skins[$type][$id] as $name=>$value)
 			{
 				if(is_array($value))
-					$value=$this->evaluateExpression($value[1]);
+				{
+					if($value[0]===1)
+						$value=$this->evaluateExpression($value[1]);
+					else if($value[0]===2)
+						$value=$this->_themeUrl.'/'.$value[1];
+				}
 				if(strpos($name,'.')===false)	// is simple property or custom attribute
 				{
 					if($control->hasProperty($name))
@@ -176,28 +188,6 @@ class TTheme extends TTemplate
 		else
 			return false;
 	}
-
-	public function publishFile($file)
-	{
-		return Prado::getApplication()->getService()->getAssetManager()->publishFile($file);
-	}
-
-	public function publishDirectory($directory)
-	{
-		return Prado::getApplication()->getService()->getAssetManager()->publishDirectory($directory);
-	}
-
-	public function getAsset($assetName)
-	{
-		$assetFile=$this->_themePath.'/'.self::ASSET_PATH.'/'.$assetName;
-		if(is_file($assetFile))
-			return $this->publishFile($assetFile);
-		else if(is_dir($assetFile))
-			return $this->publishDirectory($assetFile);
-		else
-			return '';
-	}
-
 }
 
 

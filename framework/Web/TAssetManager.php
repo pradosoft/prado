@@ -25,7 +25,7 @@
  * By default, TAssetManager will not publish a file or directory if it already
  * exists in the publishing directory. You may require a timestamp checking by
  * setting CheckTimestamp to true (which is false by default). You may also require
- * so when calling {@link publishFile} or {@link publishDirectory). This is usually
+ * so when calling {@link publishFilePath}. This is usually
  * very useful during development. In production sites, the timestamp checking
  * should be turned off to improve performance.
  *
@@ -151,24 +151,36 @@ class TAssetManager extends TComponent implements IModule
 	}
 
 	/**
-	 * Publishes a directory (recursively).
+	 * Publishes a file or a directory (recursively).
 	 * This method will copy the content in a directory (recursively) to
 	 * a web accessible directory and returns the URL for the directory.
 	 * @param string the path to be published
 	 * @param boolean whether to use file modify time to ensure every published file is latest
 	 * @return string an absolute URL to the published directory
 	 */
-	public function publishDirectory($path,$checkTimestamp=false)
+	public function publishFilePath($path,$checkTimestamp=false)
 	{
-		if(($fullpath=realpath($path))!==false && is_dir($fullpath))
+		if(($fullpath=realpath($path))===false)
+			throw new TInvalidDataValueException('assetmanager_filepath_invalid',$path);
+		else if(is_file($fullpath))
+		{
+			$dir=md5(dirname($fullpath));
+			$file=$this->_basePath.'/'.$dir.'/'.basename($fullpath);
+
+			if(!is_file($file) || (($checkTimestamp || $this->_checkTimestamp) && filemtime($file)<filemtime($path)))
+			{
+				@mkdir($this->_basePath.'/'.$dir);
+				copy($fullpath,$file);
+			}
+			return $this->_baseUrl.'/'.$dir.'/'.basename($fullpath);
+		}
+		else
 		{
 			$dir=md5($fullpath);
 			if(!is_dir($this->_basePath.'/'.$dir) || $checkTimestamp || $this->_checkTimestamp)
 				$this->copyDirectory($fullpath,$this->_basePath.'/'.$dir);
 			return $this->_baseUrl.'/'.$dir;
 		}
-		else
-			throw new TInvalidDataValueException('assetmanager_directory_invalid',$path);
 	}
 
 	/**
@@ -195,32 +207,6 @@ class TAssetManager extends TComponent implements IModule
 				$this->copyDirectory($src.'/'.$file,$dst.'/'.$file);
 		}
 		closedir($folder);
-	}
-
-	/**
-	 * Publishes a file.
-	 * This method will copy a file to a web accessible directory and
-	 * returns the URL for the file.
-	 * @param string the file to be published
-	 * @param boolean whether to use file modify time to ensure the published file is latest
-	 * @return string an absolute URL to the published file
-	 */
-	public function publishFile($path,$checkTimestamp=false)
-	{
-		if(($fullpath=realpath($path))!==false && is_file($fullpath))
-		{
-			$dir=md5(dirname($fullpath));
-			$file=$this->_basePath.'/'.$dir.'/'.basename($fullpath);
-
-			if(!is_file($file) || (($checkTimestamp || $this->_checkTimestamp) && filemtime($file)<filemtime($path)))
-			{
-				@mkdir($this->_basePath.'/'.$dir);
-				copy($fullpath,$file);
-			}
-			return $this->_baseUrl.'/'.$dir.'/'.basename($fullpath);
-		}
-		else
-			throw new TInvalidDataValueException('assetmanager_file_invalid',$path);
 	}
 }
 
