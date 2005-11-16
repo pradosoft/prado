@@ -3,12 +3,13 @@
 <configuration>
   <paths>
     <alias id="Application" path="." />
-    <alias id="Pages" path="pages" />
+    <alias id="Pages" path="Pages" />
+    <alias id="Data" path="Data" />
   </paths>
   <!-- modules configured and loaded for all services -->
   <modules>
     <!-- make sure the path "protected" is writable by web server process if you enable this cache
-    <module id="cache" type="System.Data.TSqliteCache" DbFile="Application.cache"/>
+    <module id="cache" type="System.Data.TSqliteCache" DbFile="Data.Cache"/>
     -->
     <module id="session" type="THttpSession" />
   </modules>
@@ -23,7 +24,7 @@
         </module>
         <!-- auth manager module -->
         <module id="auth" type="System.Security.TAuthManager" UserManager="users" LoginPage="login" />
-        <module id="data" type="Application.data.DataModule" />
+        <module id="data" type="Modules.DataModule" DbFile="Data.Site" />
       </modules>
     </service>
   </services>

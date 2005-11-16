@@ -14,7 +14,7 @@ class DataModule extends TComponent implements IModule
 	 * @var string id of this module
 	 */
 	private $_id='';
-	private $_file='Application.data.site';
+	private $_file=null;
 	/**
 	 * @var SQLiteDatabase the sqlite database instance
 	 */
