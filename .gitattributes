@@ -26,6 +26,7 @@ demos/personal/protected/Pages/LoginPage.tpl -text
 demos/personal/protected/Pages/config.xml -text
 demos/personal/protected/application.xml -text
 demos/personal/protected/data/DataModule.php -text
+demos/personal/protected/data1/DataModule.php -text
 demos/personal/themes/BlueTheme/buttons.skin -text
 demos/personal/themes/BlueTheme/icon_profile.gif -text
 demos/personal/themes/BlueTheme/labels.skin -text
