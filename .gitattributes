@@ -17,7 +17,6 @@ demos/controls/themes/BlueTheme/buttons.skin -text
 demos/controls/themes/BlueTheme/icon_profile.gif -text
 demos/controls/themes/BlueTheme/labels.skin -text
 demos/personal/index.php -text
-demos/personal/protected/application.cache -text
 demos/personal/protected/application.xml -text
 demos/personal/protected/data/DataModule.php -text
 demos/personal/protected/data/site.db -text
