@@ -41,7 +41,7 @@ class TTemplateControl extends TControl implements INamingContainer
 	/**
 	 * @var ITemplate the parsed template structure shared by the same control class
 	 */
-	protected static $_template=null;
+	protected static $_template=array();
 	/**
 	 * @var ITemplate the parsed template structure specific for this control instance
 	 */
@@ -85,7 +85,8 @@ class TTemplateControl extends TControl implements INamingContainer
 	{
 		if($this->_localTemplate===null)
 		{
-			eval('$tpl='.get_class($this).'::$_template;');
+			$class=get_class($this);
+			$tpl=isset(self::$_template[$class])?self::$_template[$class]:null;
 			return ($tpl===null && $load)?$this->loadTemplate():$tpl;
 		}
 		else
@@ -110,7 +111,7 @@ class TTemplateControl extends TControl implements INamingContainer
 	protected function loadTemplate()
 	{
 		$template=Prado::getApplication()->getService()->getTemplateManager()->getTemplateByClassName(get_class($this));
-		eval(get_class($this).'::$_template=$template;');
+		self::$_template[get_class($this)]=$template;
 		return $template;
 	}
 
