@@ -79,6 +79,7 @@ class THttpSession extends TComponent implements IModule
 		if($this->_autoStart)
 			session_start();
 		$this->_initialized=true;
+		$application->setSession($this);
 	}
 
 	/**

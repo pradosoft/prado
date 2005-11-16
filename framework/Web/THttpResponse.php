@@ -68,6 +68,7 @@ class THttpResponse extends TComponent implements IModule, ITextWriter
 		if($this->_bufferOutput)
 			ob_start();
 		$this->_initialized=true;
+		$application->setResponse($this);
 	}
 
 	/**

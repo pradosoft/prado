@@ -21,6 +21,7 @@ class TErrorHandler extends TComponent implements IErrorHandler
 	{
 		$application->attachEventHandler('Error',array($this,'handle'));
 		$this->_initialized=true;
+		$application->setErrorHandler($this);
 	}
 
 	/**

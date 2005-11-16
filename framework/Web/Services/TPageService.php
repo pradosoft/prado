@@ -165,8 +165,7 @@ class TPageService extends TComponent implements IService
 			$module->init($this->_application,$moduleConfig[2]);
 		}
 
-		if(($auth=$application->getAuthManager())!==null)
-			$auth->getAuthorizationRules()->mergeWith($pageConfig->getRules());
+		$application->getAuthorizationRules()->mergeWith($pageConfig->getRules());
 
 		$this->_initialized=true;
 	}

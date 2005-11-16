@@ -129,8 +129,9 @@ class TSqliteCache extends TComponent implements IModule, ICache
 		}
 		else
 			throw new TConfigurationException('sqlitecache_table_creation_failed',sqlite_error_string(sqlite_last_error()));
-		$this->_initialized=true;
 		$this->_db->query('DELETE FROM '.self::CACHE_TABLE.' WHERE expire<>0 AND expire<'.time());
+		$this->_initialized=true;
+		$application->setCache($this);
 	}
 
 	/**

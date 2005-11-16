@@ -111,6 +111,7 @@ class TMemCache extends TComponent implements IModule, ICache
 		if($application instanceof IApplication)
 			$this->_prefix=$application->getUniqueID();
 		$this->_initialized=true;
+		$application->setCache($this);
 	}
 
 	/**

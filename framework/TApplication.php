@@ -72,16 +72,6 @@ class TApplication extends TComponent implements IApplication
 		'PostSaveState',
 		'EndRequest'
 	);
-	/**
-	 * @var array list of types that the named modules must be of
-	 */
-	private static $_moduleTypes=array(
-		'request'=>'THttpRequest',
-		'response'=>'THttpResponse',
-		'session'=>'THttpSession',
-		'cache'=>'ICache',
-		'error'=>'IErrorHandler'
-	);
 
 	/**
 	 * @var string application ID
@@ -124,9 +114,33 @@ class TApplication extends TComponent implements IApplication
 	 */
 	private $_userType='System.Security.TUser';
 	/**
-	 * @var IUser user instance
+	 * @var TErrorHandler error handler module
+	 */
+	private $_errorHandler=null;
+	/**
+	 * @var THttpRequest request module
+	 */
+	private $_request=null;
+	/**
+	 * @var THttpResponse response module
+	 */
+	private $_response=null;
+	/**
+	 * @var THttpSession session module, could be null
+	 */
+	private $_session=null;
+	/**
+	 * @var ICache cache module, could be null
+	 */
+	private $_cache=null;
+	/**
+	 * @var IUser user instance, could be null
 	 */
 	private $_user=null;
+	/**
+	 * @var TAuthorizationRuleCollection collection of authorization rules
+	 */
+	private $_authRules=null;
 
 	/**
 	 * Constructor.
@@ -264,51 +278,83 @@ class TApplication extends TComponent implements IApplication
 	}
 
 	/**
-	 * @return THttpRequest the request object
+	 * @return THttpRequest the request module
 	 */
 	public function getRequest()
 	{
-		return isset($this->_modules['request'])?$this->_modules['request']:null;
+		return $this->_request;
 	}
 
 	/**
-	 * @return THttpResponse the response object
+	 * @param THttpRequest the request module
+	 */
+	public function setRequest(THttpRequest $request)
+	{
+		$this->_request=$request;
+	}
+
+	/**
+	 * @return THttpResponse the response module
 	 */
 	public function getResponse()
 	{
-		return isset($this->_modules['response'])?$this->_modules['response']:null;
+		return $this->_response;
 	}
 
 	/**
-	 * @return THttpSession the session object
+	 * @param THttpRequest the request module
 	 */
-	public function getSession()
+	public function setResponse(THttpResponse $response)
 	{
-		return isset($this->_modules['session'])?$this->_modules['session']:null;
+		$this->_response=$response;
 	}
 
 	/**
-	 * @return ICache the cache object, null if not exists
-	 */
-	public function getCache()
-	{
-		return isset($this->_modules['cache'])?$this->_modules['cache']:null;
-	}
-
-	/**
-	 * @return IErrorHandler the error hanlder module
+	 * @return TErrorHandler the error hanlder module
 	 */
 	public function getErrorHandler()
 	{
-		return isset($this->_modules['error'])?$this->_modules['error']:null;
+		return $this->_errorHandler;
 	}
 
 	/**
-	 * @return IRoleProvider provider for user auth management
+	 * @param TErrorHandler the error hanlder module
 	 */
-	public function getAuthManager()
+	public function setErrorHandler(TErrorHandler $handler)
 	{
-		return isset($this->_modules['auth'])?$this->_modules['auth']:null;
+		$this->_errorHandler=$handler;
+	}
+
+	/**
+	 * @return THttpSession the session module, null if session module is not installed
+	 */
+	public function getSession()
+	{
+		return $this->_session;
+	}
+
+	/**
+	 * @param THttpSession the session module
+	 */
+	public function setSession(THttpSession $session)
+	{
+		$this->_session=$session;
+	}
+
+	/**
+	 * @return ICache the cache module, null if cache module is not installed
+	 */
+	public function getCache()
+	{
+		return $this->_cache;
+	}
+
+	/**
+	 * @param ICache the cache module
+	 */
+	public function setCache(ICache $cache)
+	{
+		$this->_cache=$cache;
 	}
 
 	/**
@@ -325,6 +371,16 @@ class TApplication extends TComponent implements IApplication
 	public function setUser(IUser $user)
 	{
 		$this->_user=$user;
+	}
+
+	/**
+	 * @return TAuthorizationRuleCollection list of authorization rules that may be applied
+	 */
+	public function getAuthorizationRules()
+	{
+		if($this->_authRules===null)
+			$this->_authRules=new TAuthorizationRuleCollection;
+		return $this->_authRules;
 	}
 
 	/**
@@ -395,8 +451,6 @@ class TApplication extends TComponent implements IApplication
 			if(isset($this->_modules[$id]))
 				throw new TConfigurationException('application_module_redefined',$id);
 			$module=Prado::createComponent($moduleConfig[0]);
-			if(isset(self::$_moduleTypes[$id]) && !($module instanceof self::$_moduleTypes[$id]))
-				throw new TConfigurationException('application_module_invalid',$id,self::$_moduleTypes[$id]);
 			$this->_modules[$id]=$module;
 			foreach($moduleConfig[1] as $name=>$value)
 				$module->setSubProperty($name,$value);
@@ -597,9 +651,9 @@ class TApplicationConfiguration extends TComponent
 	 * @var array list of module configurations
 	 */
 	private $_modules=array(
+			'error'=>array('TErrorHandler',array(),null),
 			'request'=>array('THttpRequest',array(),null),
-			'response'=>array('THttpResponse',array(),null),
-			'error'=>array('TErrorHandler',array(),null)
+			'response'=>array('THttpResponse',array(),null)
 		);
 	/**
 	 * @var array list of service configurations

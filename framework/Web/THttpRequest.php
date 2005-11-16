@@ -68,6 +68,28 @@ class THttpRequest extends TComponent implements IModule
 	 */
 	public function __construct()
 	{
+	}
+
+	/**
+	 * Strips slashes from input data.
+	 * This method is applied when magic quotes is enabled.
+	 * Do not call this method.
+	 * @param mixed input data to be processed
+	 * @param mixed processed data
+	 */
+	public function stripSlashes(&$data)
+	{
+		return is_array($data)?array_map(array($this,'stripSlashes'),$data):stripslashes($data);
+	}
+
+	/**
+	 * Initializes the module.
+	 * This method is required by IModule and is invoked by application.
+	 * @param IApplication application
+	 * @param TXmlElement module configuration
+	 */
+	public function init($application,$config)
+	{
 		// Info about server variables:
 		// PHP_SELF contains real URI (w/ path info, w/o query string)
 		// SCRIPT_NAME is the real URI for the requested script (w/o path info and query string)
@@ -101,29 +123,8 @@ class THttpRequest extends TComponent implements IModule
 		$this->_items=new TMap(array_merge($_POST,$_GET));
 
 		$this->resolveRequest();
-	}
-
-	/**
-	 * Strips slashes from input data.
-	 * This method is applied when magic quotes is enabled.
-	 * Do not call this method.
-	 * @param mixed input data to be processed
-	 * @param mixed processed data
-	 */
-	public function stripSlashes(&$data)
-	{
-		return is_array($data)?array_map(array($this,'stripSlashes'),$data):stripslashes($data);
-	}
-
-	/**
-	 * Initializes the module.
-	 * This method is required by IModule and is invoked by application.
-	 * @param IApplication application
-	 * @param TXmlElement module configuration
-	 */
-	public function init($application,$config)
-	{
 		$this->_initialized=true;
+		$application->setRequest($this);
 	}
 
 	/**

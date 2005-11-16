@@ -191,10 +191,6 @@ interface IApplication
 	 * @return IErrorHandler error handler
 	 */
 	public function getErrorHandler();
-	/**
-	 * @return IAuthManager the auth (authentication/authorization) manager
-	 */
-	public function getAuthManager();
 }
 
 /**

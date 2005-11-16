@@ -3,10 +3,6 @@
 class TAuthManager extends TComponent implements IModule
 {
 	const RETURN_URL_VAR='ReturnUrl';
-	/**
-	 * @var TAuthorizationRuleCollection list of authorization rules
-	 */
-	private $_authRules=null;
 	private $_guest='Guest';
 	private $_initialized=false;
 	private $_application;
@@ -137,7 +133,7 @@ class TAuthManager extends TComponent implements IModule
 	{
 		if($this->hasEventHandler('Authenticate'))
 			$this->raiseEvent('Authorize',$this,$this->_application);
-		if($this->_authRules!==null && !$this->_authRules->isUserAllowed($this->_application->getUser(),$this->_application->getRequest()->getRequestType()))
+		if(!$this->_application->getAuthorizationRules()->isUserAllowed($this->_application->getUser(),$this->_application->getRequest()->getRequestType()))
 		{
 			$this->_application->getResponse()->setStatusCode(401);
 			$this->_application->completeRequest();
@@ -189,16 +185,6 @@ class TAuthManager extends TComponent implements IModule
 			$userManager->logout($this->_application->getUser());
 			$session->destroy();
 		}
-	}
-	/**
-	 * @return TAuthorizationRuleCollection list of authorization rules that may be applied
-	 */
-
-	public function getAuthorizationRules()
-	{
-		if($this->_authRules===null)
-			$this->_authRules=new TAuthorizationRuleCollection;
-		return $this->_authRules;
 	}
 }
 
