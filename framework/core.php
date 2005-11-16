@@ -631,6 +631,8 @@ class PradoBase
 	{
 		if(isset(self::$_usings[$namespace]))
 			return self::$_usings[$namespace];
+		else if(isset(self::$_aliases[$namespace]))
+			return self::$_aliases[$namespace];
 		else
 		{
 			$segs=explode('.',$namespace);
