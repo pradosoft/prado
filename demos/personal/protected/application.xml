@@ -8,7 +8,7 @@
   <!-- modules configured and loaded for all services -->
   <modules>
     <!-- make sure the path "protected" is writable by web server process if you enable this cache
-    <module id="cache" type="System.Data.TSqliteCache" DbFile="Demo.cache"/>
+    <module id="cache" type="System.Data.TSqliteCache" DbFile="Application.cache"/>
     -->
     <module id="session" type="THttpSession" />
   </modules>
