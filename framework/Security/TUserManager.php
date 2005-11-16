@@ -84,13 +84,19 @@ class TUser extends TComponent implements IUser
 		{
 			$this->_roles=array();
 			foreach(explode(',',$value) as $role)
-				$this->_roles[]=trim($value);
+			{
+				if(($role=trim($role))!=='')
+					$this->_roles[]=$role;
+			}
 		}
 	}
 
 	public function isInRole($role)
 	{
-		return in_array($role,$this->_roles);
+		foreach($this->_roles as $r)
+			if(strcasecmp($role,$r)===0)
+				return true;
+		return false;
 	}
 
 	public function saveToString()
@@ -116,13 +122,22 @@ class TUserManager extends TComponent implements IModule
 {
 	private $_id;
 	private $_users=array();
+	private $_roles=array();
 	private $_guestName='Guest';
 	private $_passwordMode='MD5';
 
 	public function init($application,$config)
 	{
 		foreach($config->getElementsByTagName('user') as $node)
-			$this->_users[$node->getAttribute('name')]=$node->getAttribute('password');
+			$this->_users[strtolower($node->getAttribute('name'))]=$node->getAttribute('password');
+		foreach($config->getElementsByTagName('role') as $node)
+		{
+			foreach(explode(',',$node->getAttribute('users')) as $user)
+			{
+				if(($user=trim($user))!=='')
+					$this->_roles[strtolower($user)][]=$node->getAttribute('name');
+			}
+		}
 	}
 
 	public function getID()
@@ -161,6 +176,7 @@ class TUserManager extends TComponent implements IModule
 			$password=md5($password);
 		else if($this->_passwordMode==='SHA1')
 			$password=sha1($password);
+		$username=strtolower($username);
 		return (isset($this->_users[$username]) && $this->_users[$username]===$password);
 	}
 
@@ -168,6 +184,7 @@ class TUserManager extends TComponent implements IModule
 	{
 		$user->setIsGuest(true);
 		$user->setName($this->getGuestName());
+		$user->setRoles(array());
 	}
 
 	public function getUser($username=null)
@@ -178,14 +195,20 @@ class TUserManager extends TComponent implements IModule
 			$user->setIsGuest($username===null);
 			return $user;
 		}
-		else if(isset($this->_users[$username]))
-		{
-			$user=new TUser($this);
-			$user->setName($username);
-			return $user;
-		}
 		else
-			return null;
+		{
+			$username=strtolower($username);
+			if(isset($this->_users[$username]))
+			{
+				$user=new TUser($this);
+				$user->setName($username);
+				if(isset($this->_roles[$username]))
+					$user->setRoles($this->_roles[$username]);
+				return $user;
+			}
+			else
+				return null;
+		}
 	}
 }
 
