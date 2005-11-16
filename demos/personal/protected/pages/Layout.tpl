@@ -10,14 +10,16 @@
   <h1>Your Name Here</h1>
   <h2>My Personal Site</h2>
   <div class="nav">
-    <a href="?sp=page.home">HOME</a> |
-    <a href="?sp=page.resume">RESUME</a> |
-    <a href="?sp=page.links">LINKS</a> |
-    <a href="?sp=page.albums">ALBUMS</a> |
-    <a href="?sp=page.login">LOGIN</a>
+    <a href=<%=$this->Service->constructUrl('home') %> >HOME</a> |
+    <a href=<%=$this->Service->constructUrl('resume') %> >RESUME</a> |
+    <a href=<%=$this->Service->constructUrl('links') %> >LINKS</a> |
+    <a href=<%=$this->Service->constructUrl('albums') %> >ALBUMS</a> |
+    <a href=<%=$this->Service->constructUrl('login') %> >LOGIN</a>
   </div>
 </div>
+<div class="main">
 <com:TContentPlaceHolder ID="main" />
+</div>
 <div class="footer">
   Copyright &copy; 2005 Your Name here.<br/>
   Powered by <a href="http://www.pradosoft.com/">PRADO</a>.
