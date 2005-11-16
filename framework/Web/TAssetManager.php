@@ -161,7 +161,7 @@ class TAssetManager extends TComponent implements IModule
 	public function publishFilePath($path,$checkTimestamp=false)
 	{
 		if(($fullpath=realpath($path))===false)
-			throw new TInvalidDataValueException('assetmanager_filepath_invalid',$path);
+			return '';
 		else if(is_file($fullpath))
 		{
 			$dir=md5(dirname($fullpath));
@@ -170,7 +170,7 @@ class TAssetManager extends TComponent implements IModule
 			if(!is_file($file) || (($checkTimestamp || $this->_checkTimestamp) && filemtime($file)<filemtime($path)))
 			{
 				@mkdir($this->_basePath.'/'.$dir);
-				copy($fullpath,$file);
+				@copy($fullpath,$file);
 			}
 			return $this->_baseUrl.'/'.$dir.'/'.basename($fullpath);
 		}
@@ -193,15 +193,15 @@ class TAssetManager extends TComponent implements IModule
 	protected function copyDirectory($src,$dst)
 	{
 		@mkdir($dst);
-		$folder=opendir($src);
-		while($file=readdir($folder))
+		$folder=@opendir($src);
+		while($file=@readdir($folder))
 		{
 			if($file==='.' || $file==='..')
 				continue;
 			else if(is_file($src.'/'.$file))
 			{
-				if(@filemtime($dst.'/'.$file)<filemtime($src.'/'.$file))
-					copy($src.'/'.$file,$dst.'/'.$file);
+				if(@filemtime($dst.'/'.$file)<@filemtime($src.'/'.$file))
+					@copy($src.'/'.$file,$dst.'/'.$file);
 			}
 			else
 				$this->copyDirectory($src.'/'.$file,$dst.'/'.$file);
