@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <configuration>
-  <pages MasterClass="Pages.Layout">
+  <pages MasterClass="Application.Pages.Layout">
     <page id="home" type="HomePage" />
     <page id="login" type="LoginPage" />
   </pages>

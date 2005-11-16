@@ -3,8 +3,6 @@
 <configuration>
   <paths>
     <alias id="Application" path="." />
-    <alias id="Pages" path="Pages" />
-    <alias id="Data" path="Data" />
   </paths>
   <!-- modules configured and loaded for all services -->
   <modules>
@@ -15,7 +13,7 @@
   </modules>
   <services>
     <!-- page service, BasePath is required -->
-    <service id="page" BasePath="Pages" DefaultPage="home">
+    <service id="page" BasePath="Application.Pages" DefaultPage="home">
       <!-- modules configured and loaded when page service is requested -->
       <modules>
         <!-- user manager module -->
@@ -24,7 +22,7 @@
         </module>
         <!-- auth manager module -->
         <module id="auth" type="System.Security.TAuthManager" UserManager="users" LoginPage="login" />
-        <module id="data" type="Modules.DataModule" DbFile="Data.Site" />
+        <module id="data" type="Application.Modules.DataModule" DbFile="Application.Data.Site" />
       </modules>
     </service>
   </services>
