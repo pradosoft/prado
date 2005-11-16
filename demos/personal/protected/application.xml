@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<configuration>
+  <paths>
+    <alias id="Application" path="." />
+    <alias id="Pages" path="pages" />
+  </paths>
+  <!-- modules configured and loaded for all services -->
+  <modules>
+    <!-- make sure the path "protected" is writable by web server process if you enable this cache
+    <module id="cache" type="System.Data.TSqliteCache" DbFile="Demo.cache"/>
+    -->
+    <module id="session" type="THttpSession" />
+  </modules>
+  <services>
+    <!-- page service, BasePath is required -->
+    <service id="page" BasePath="Pages" DefaultPage="home">
+      <!-- modules configured and loaded when page service is requested -->
+      <modules>
+        <!-- user manager module -->
+        <module id="users" type="System.Security.TUserManager" PasswordMode="Clear">
+          <user name="demo" password="demo" />
+        </module>
+        <!-- auth manager module -->
+        <module id="auth" type="System.Security.TAuthManager" UserManager="users" LoginPage="login" />
+        <module id="data" type="Application.data.DataModule" />
+      </modules>
+    </service>
+  </services>
+</configuration>

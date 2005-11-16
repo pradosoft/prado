@@ -1,0 +1,3 @@
+<com:TContent ID="main" >
+main content
+</com:TContent>
