@@ -87,7 +87,6 @@ class utPradoBase extends UnitTestCase
 
 		$this->assertTrue(Prado::getPathOfNamespace('TestSystem.*')===realpath($testSystem));
 		$this->assertTrue(Prado::getPathOfNamespace('TestSystem.protected.*')===realpath($testSystem).'/protected');
-		$this->assertTrue(Prado::getPathOfNamespace('TestSystem')===null);
 
 		// test repeatedly using the same namespaces
 		Prado::using('System.*');
