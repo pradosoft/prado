@@ -40,23 +40,11 @@ class PradoUnitTestCase extends UnitTestCase {
 	 * @param string the type of exception that should be raised.
 	 * @return boolean true
 	 */
-	public function assertException(string $code, string $exception) {
-		$pass = false;
-		$code = "
-try {
-	$code
-} catch ($exception \$e) {
-	\$pass = true;
-}";
-		eval($code);
-		if ($pass) {
-			$this->pass();
-		} else {
-			$this->fail("Code did not produce correct exception (wanted $exception, got something else");
-		}
+	public function assertException(string $code, string $exceptionType) {
+		$ex = null;
+		eval("try { $code } catch ($exceptionType \$e) { \$ex = \$e; }");
+		$this->assertIsA($ex, $exceptionType);
 	}
 }
-		
-		
 
 ?>

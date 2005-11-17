@@ -490,13 +490,29 @@ class TPropertyValue
 	}
 
 	/**
-	 * Converts a value to array type.
+	 * Converts a value to array type. If the value is a string and it is
+	 * in the form (a,b,c) then an array consisting of each of the elements
+	 * will be returned. If the value is a string and it is not in this form
+	 * then an array consisting of just the string will be returned. If the value
+	 * is not a string then 
 	 * @param mixed the value to be converted.
 	 * @return array
 	 */
 	public static function ensureArray($value)
 	{
-		return (array)$value;
+		if (is_string($value)) {
+			$trimmed = trim($value);
+			$len = strlen($value);
+			if ($len >= 2 && $trimmed{0} == '(' && $trimmed{$len-1} == ')') {
+				return explode(",", substr($trimmed,1,$len-2));
+			} else if ($len > 0) {
+				return array($value);
+			} else {
+				return array();
+			}
+		} else {
+			return (array)$value;
+		}
 	}
 
 	/**

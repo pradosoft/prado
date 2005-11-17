@@ -293,9 +293,6 @@ class utComponent extends UnitTestCase
 	public function testEnsureObject()
 	{
 		$this->assertEqual(TPropertyValue::ensureObject($this->component), $this->component);
-		$this->assertNull(TPropertyValue::ensureObject(array(1,2,3)));
-		$this->assertNull(TPropertyValue::ensureObject(1));
-		$this->assertNull(TPropertyValue::ensureObject("foo"));
 	}
 	
 	/**
