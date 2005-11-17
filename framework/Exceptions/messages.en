@@ -1,4 +1,11 @@
 component_property_undefined			= Component property '%s.%s' is not defined.
+component_property_readonly				= Component property '%s.%s' is read-only.
+component_event_undefined				= Component event '%s.%s' is not defined.
+component_eventhandler_invalid			= Component event '%s.%s' is attached with an invalid event handler.
+component_expression_invalid			= Component '%s' is evaluating an invalid expression '%s' : %s.
+component_statements_invalid			= Component '%s' is evaluating invalid PHP statements '%s' : %s.
+
+propertyvalue_enumvalue_invalid			= Value '%s' is a not valid enumeration value (%s).
 
 application_configfile_inexistent		= Application configuration file "%s" does not exist.
 application_module_existing				= Application module "%s" cannot be registered twice.

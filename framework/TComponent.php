@@ -1,6 +1,6 @@
 <?php
 /**
- * TComponent, TList, TPropertyValue classes
+ * TComponent, TPropertyValue classes
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
@@ -355,7 +355,7 @@ class TComponent
 					}
 				}
 				else
-					throw new TInvalidDataValueException('component_event_handler_invalid',$handler);
+					throw new TInvalidDataValueException('component_eventhandler_invalid',get_class($this),$name);
 			}
 		}
 		else if(!$this->hasEvent($name))
@@ -377,7 +377,7 @@ class TComponent
 		}
 		catch(Exception $e)
 		{
-			throw new TInvalidOperationException('component_expression_invalid',$expression,$e->getMessage());
+			throw new TInvalidOperationException('component_expression_invalid',get_class($this),$expression,$e->getMessage());
 		}
 	}
 
@@ -400,7 +400,7 @@ class TComponent
 		}
 		catch(Exception $e)
 		{
-			throw new TInvalidOperationException('component_statements_invalid',$statements,$e->getMessage());
+			throw new TInvalidOperationException('component_statements_invalid',get_class($this),$statements,$e->getMessage());
 		}
 	}
 }
@@ -427,7 +427,9 @@ class TComponent
  *            string 'false' (case-insensitive) will be converted to false.
  * - integer
  * - float
- * - array
+ * - array: string starting with '(' and ending with ')' will be considered as
+ *          as an array expression and will be evaluated. Otherwise, an array
+ *          with the value to be ensured is returned.
  * - object
  * - enum: enumerable type, represented by an array of strings.
  *
@@ -494,24 +496,24 @@ class TPropertyValue
 	 * in the form (a,b,c) then an array consisting of each of the elements
 	 * will be returned. If the value is a string and it is not in this form
 	 * then an array consisting of just the string will be returned. If the value
-	 * is not a string then 
+	 * is not a string then
 	 * @param mixed the value to be converted.
 	 * @return array
 	 */
 	public static function ensureArray($value)
 	{
-		if(is_string($value)) 
+		if(is_string($value))
 		{
 			$trimmed = trim($value);
 			$len = strlen($value);
-			if ($len >= 2 && $trimmed[0] == '(' && $trimmed[$len-1] == ')') 
+			if ($len >= 2 && $trimmed[0] == '(' && $trimmed[$len-1] == ')')
 			{
 				eval('$array=array'.$trimmed.';');
 				return $array;
 			}
 			else
 				return $len>0?array($value):array();
-		} 
+		}
 		else
 			return (array)$value;
 	}
@@ -539,7 +541,7 @@ class TPropertyValue
 		if(($index=array_search($value,$enum))!==false)
 			return $enum[$index];
 		else
-			throw new TInvalidDataValueException('propertyvalue_enumvalue_invalid',$value,implode(',',$enum));
+			throw new TInvalidDataValueException('propertyvalue_enumvalue_invalid',$value,implode(' | ',$enum));
 	}
 }
 
