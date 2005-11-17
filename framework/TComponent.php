@@ -500,19 +500,20 @@ class TPropertyValue
 	 */
 	public static function ensureArray($value)
 	{
-		if (is_string($value)) {
+		if(is_string($value)) 
+		{
 			$trimmed = trim($value);
 			$len = strlen($value);
-			if ($len >= 2 && $trimmed{0} == '(' && $trimmed{$len-1} == ')') {
-				return explode(",", substr($trimmed,1,$len-2));
-			} else if ($len > 0) {
-				return array($value);
-			} else {
-				return array();
+			if ($len >= 2 && $trimmed[0] == '(' && $trimmed[$len-1] == ')') 
+			{
+				eval('$array=array'.$trimmed.';');
+				return $array;
 			}
-		} else {
+			else
+				return $len>0?array($value):array();
+		} 
+		else
 			return (array)$value;
-		}
 	}
 
 	/**
@@ -527,6 +528,7 @@ class TPropertyValue
 
 	/**
 	 * Converts a value to enum type.
+	 * Note, enumeration values are case-sensitive strings.
 	 * @param mixed the value to be converted.
 	 * @param array array of strings representing the enum type.
 	 * @return string
