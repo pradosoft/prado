@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<configuration id="controls" mode="Debug">
+<application id="controls" mode="Debug">
   <paths>
     <alias id="Demo" path="." />
     <alias id="Pages" path="pages" />
@@ -25,4 +25,4 @@
       </modules>
     </service>
   </services>
-</configuration>
+</application>
