@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * include TTemplate class file
+ */
+Prado::using('System.Web.UI.TTemplate');
+
 class TTemplateManager extends TComponent implements IModule
 {
 	const TEMPLATE_FILE_EXT='.tpl';
@@ -13,6 +18,7 @@ class TTemplateManager extends TComponent implements IModule
 	public function init($application,$config)
 	{
 		$this->_application=$application;
+		$application->getService()->setTemplateManager($this);
 	}
 
 	/**

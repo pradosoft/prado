@@ -11,11 +11,6 @@
  */
 
 /**
- * include TTemplate class file
- */
-require_once(PRADO_DIR.'/Web/UI/TTemplate.php');
-
-/**
  * TTemplateControl class.
  * TTemplateControl is the base class for all controls that use templates.
  * By default, a control template is assumed to be in a file under the same
@@ -33,10 +28,6 @@ class TTemplateControl extends TControl implements INamingContainer
 	 * template file extension.
 	 */
 	const EXT_TEMPLATE='.tpl';
-	/**
-	 * template cache file extension
-	 */
-	const EXT_TEMPLATE_CACHE='.tpc';
 
 	/**
 	 * @var ITemplate the parsed template structure shared by the same control class

@@ -71,6 +71,7 @@ class TAssetManager extends TComponent implements IModule
 			throw new TConfigurationException('assetmanager_basepath_invalid',$this->_basePath);
 		if($this->_baseUrl===null)
 			$this->_baseUrl=dirname($application->getRequest()->getApplicationPath()).'/'.self::DEFAULT_BASEPATH;
+		$application->getService()->setAssetManager($this);
 	}
 
 	/**

@@ -11,6 +11,10 @@
  */
 
 Prado::using('System.Web.UI.TPage');
+Prado::using('System.Web.UI.TTemplateManager');
+Prado::using('System.Web.UI.TThemeManager');
+Prado::using('System.Web.TAssetManager');
+
 /**
  * TPageService class.
  *
@@ -63,6 +67,18 @@ class TPageService extends TComponent implements IService
 	 * @var TApplication application
 	 */
 	private $_application;
+	/**
+	 * @var TAssetManager asset manager
+	 */
+	private $_assetManager;
+	/**
+	 * @var TThemeManager theme manager
+	 */
+	private $_themeManager;
+	/**
+	 * @var TTemplateManager template manager
+	 */
+	private $_templateManager;
 
 	/**
 	 * Initializes the service.
@@ -187,7 +203,15 @@ class TPageService extends TComponent implements IService
 	 */
 	public function getTemplateManager()
 	{
-		return $this->_application->getModule('template');
+		return $this->_templateManager;
+	}
+
+	/**
+	 * @param TTemplateManager template manager
+	 */
+	public function setTemplateManager(TTemplateManager $value)
+	{
+		$this->_templateManager=$value;
 	}
 
 	/**
@@ -195,7 +219,15 @@ class TPageService extends TComponent implements IService
 	 */
 	public function getAssetManager()
 	{
-		return $this->_application->getModule('asset');
+		return $this->_assetManager;
+	}
+
+	/**
+	 * @param TAssetManager asset manager
+	 */
+	public function setAssetManager(TAssetManager $value)
+	{
+		$this->_assetManager=$value;
 	}
 
 	/**
@@ -203,7 +235,15 @@ class TPageService extends TComponent implements IService
 	 */
 	public function getThemeManager()
 	{
-		return $this->_application->getModule('theme');
+		return $this->_themeManager;
+	}
+
+	/**
+	 * @param TThemeManager theme manager
+	 */
+	public function setThemeManager(TThemeManager $value)
+	{
+		$this->_themeManager=$value;
 	}
 
 	/**
@@ -341,9 +381,9 @@ class TPageConfiguration extends TComponent
 	 * @var array list of module configurations
 	 */
 	private $_modules=array(
-		'template'=>array('System.Web.UI.TTemplateManager',array(),null),
-		'asset'=>array('System.Web.TAssetManager',array(),null),
-		'theme'=>array('System.Web.UI.TThemeManager',array(),null)
+		'template'=>array('TTemplateManager',array(),null),
+		'asset'=>array('TAssetManager',array(),null),
+		'theme'=>array('TThemeManager',array(),null)
 	);
 	/**
 	 * @var array list of parameters

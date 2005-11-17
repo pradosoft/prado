@@ -34,6 +34,7 @@ class TThemeManager extends TComponent implements IModule
 			$this->_themePath=dirname($application->getRequest()->getPhysicalApplicationPath()).'/'.self::DEFAULT_THEME_PATH;
 
 		$this->_initialized=true;
+		$application->getService()->setThemeManager($this);
 	}
 
 	/**
