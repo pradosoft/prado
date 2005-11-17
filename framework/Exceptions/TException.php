@@ -51,8 +51,9 @@ class TException extends Exception
 
 	protected function translateErrorCode($key)
 	{
-	//	$msgFile=dirname(__FILE__).'/messages.'.Prado::getLocale();
-	//	if(!is_file($msgFile))
+		$languages=Prado::getUserLanguages();
+		$msgFile=dirname(__FILE__).'/messages.'.$languages[0];
+		if(!is_file($msgFile))
 			$msgFile=dirname(__FILE__).'/messages.en';
 		if(($entries=@file($msgFile))===false)
 			return $key;

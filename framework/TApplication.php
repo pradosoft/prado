@@ -11,6 +11,26 @@
  */
 
 /**
+ * Includes TErrorHandler class
+ */
+require_once(PRADO_DIR.'/Exceptions/TErrorHandler.php');
+/**
+ * Includes THttpRequest class
+ */
+require_once(PRADO_DIR.'/Web/THttpRequest.php');
+/**
+ * Includes THttpResponse class
+ */
+require_once(PRADO_DIR.'/Web/THttpResponse.php');
+/**
+ * Includes THttpSession class
+ */
+require_once(PRADO_DIR.'/Web/THttpSession.php');
+/**
+ * Includes TAuthorizationRule class
+ */
+require_once(PRADO_DIR.'/Security/TAuthorizationRule.php');
+/**
  * Includes TPageService class (default service)
  */
 require_once(PRADO_DIR.'/Web/Services/TPageService.php');
@@ -48,7 +68,7 @@ require_once(PRADO_DIR.'/Web/Services/TPageService.php');
  * @package System
  * @since 3.0
  */
-class TApplication extends TComponent implements IApplication
+class TApplication extends TComponent
 {
 	/**
 	 * Default service ID
@@ -110,10 +130,6 @@ class TApplication extends TComponent implements IApplication
 	 */
 	private $_cacheFile;
 	/**
-	 * @var string user type
-	 */
-	private $_userType='System.Security.TUser';
-	/**
 	 * @var TErrorHandler error handler module
 	 */
 	private $_errorHandler=null;
@@ -144,24 +160,28 @@ class TApplication extends TComponent implements IApplication
 
 	/**
 	 * Constructor.
-	 * Loads application configuration and initializes application.
-	 * If a cache is specified and present, it will be used instead of the configuration file.
-	 * If the cache file is specified but is not present, the configuration file
-	 * will be parsed and the result is saved in the cache file.
+	 * Initializes the application singleton. This method ensures that users can
+	 * only create one application instance.
 	 * @param string configuration file path (absolute or relative to current running script)
-	 * @param string cache file path
+	 * @param string cache file path. This is optional. If it is present, it will
+	 *               be used to store and load parsed application configuration (to improve performance).
 	 */
-	public function __construct($configFile,$cacheFile='')
+	public function __construct($configFile,$cacheFile=null)
 	{
 		parent::__construct();
 		Prado::setApplication($this);
-		if(($this->_configFile=realpath($configFile))===false)
-			throw new TIOException('application_configfile_invalid',$configFile);
+		if(($this->_configFile=realpath($configFile))===false || !is_file($this->_configFile))
+			throw new TIOException('application_configfile_inexistent',$configFile);
 		$this->_cacheFile=$cacheFile;
+		// generates unique ID by hashing the configuration file path
+		$this->_uniqueID=md5($this->_configFile);
+		$this->_errorHandler=new TErrorHandler;
 	}
 
 	/**
 	 * Executes the lifecycles of the application.
+	 * This is the main entry function that leads to the running of the whole
+	 * Prado application.
 	 */
 	public function run()
 	{
@@ -174,7 +194,7 @@ class TApplication extends TComponent implements IApplication
 			while($this->_step<$n)
 			{
 				$method='on'.self::$_steps[$this->_step];
-				$this->$method(null);
+				$this->$method($this);
 				if($this->_requestCompleted && $this->_step<$n-1)
 					$this->_step=$n-1;
 				else
@@ -240,17 +260,12 @@ class TApplication extends TComponent implements IApplication
 	/**
 	 * Adds a module to application.
 	 * Note, this method does not do module initialization.
-	 * Also, if there is already a module with the same ID, an exception will be raised.
 	 * @param string ID of the module
 	 * @param IModule module object
-	 * @throws TInvalidOperationException if a module with the same ID already exists
 	 */
 	public function setModule($id,IModule $module)
 	{
-		if(isset($this->_modules[$id]))
-			throw new TInvalidOperationException('application_module_existing',$id);
-		else
-			$this->_modules[$id]=$module;
+		$this->_modules[$id]=$module;
 	}
 
 	/**
@@ -270,6 +285,9 @@ class TApplication extends TComponent implements IApplication
 	}
 
 	/**
+	 * Returns the list of application parameters.
+	 * Since the parameters are returned as a {@link TMap} object, you may use
+	 * the returned result to access, add or remove individual parameters.
 	 * @return TMap the list of application parameters
 	 */
 	public function getParameters()
@@ -374,7 +392,7 @@ class TApplication extends TComponent implements IApplication
 	}
 
 	/**
-	 * @return TAuthorizationRuleCollection list of authorization rules that may be applied
+	 * @return TAuthorizationRuleCollection list of authorization rules for the current request
 	 */
 	public function getAuthorizationRules()
 	{
@@ -385,22 +403,20 @@ class TApplication extends TComponent implements IApplication
 
 	/**
 	 * Loads configuration and initializes application.
-	 * Configuration file will be read and parsed (if a valid cache version exists,
+	 * Configuration file will be read and parsed (if a valid cached version exists,
 	 * it will be used instead). Then, modules are created and initialized;
-	 * The requested service is created and initialized.
+	 * Afterwards, the requested service is created and initialized.
 	 * @param string configuration file path (absolute or relative to current executing script)
 	 * @param string cache file path, empty if no present or needed
-	 * @throws TConfigurationException if config file is not given, or module is redefined of invalid type, or service not defined or of invalid type
+	 * @throws TConfigurationException if module is redefined of invalid type, or service not defined or of invalid type
 	 */
 	protected function initApplication($configFile,$cacheFile)
 	{
-		if($cacheFile==='' || @filemtime($cacheFile)<filemtime($configFile))
+		if($cacheFile===null || @filemtime($cacheFile)<filemtime($configFile))
 		{
 			$config=new TApplicationConfiguration;
-			if(empty($configFile))
-				throw new TConfigurationException('application_configfile_required');
 			$config->loadFromFile($configFile);
-			if($cacheFile!=='')
+			if($cacheFile!==null)
 			{
 				if(($fp=fopen($cacheFile,'wb'))!==false)
 				{
@@ -408,16 +424,13 @@ class TApplication extends TComponent implements IApplication
 					fclose($fp);
 				}
 				else
-					syslog(LOG_WARNING,'Prado application config cache file '.$cacheFile.' cannot be created.');
+					syslog(LOG_WARNING,'Prado application config cache file "'.$cacheFile.'" cannot be created.');
 			}
 		}
 		else
 		{
 			$config=Prado::unserialize(file_get_contents($cacheFile));
 		}
-
-		// generates unique ID by hashing the configuration file path
-		$this->_uniqueID=md5(realpath($configFile));
 
 		// set path aliases and using namespaces
 		foreach($config->getAliases() as $alias=>$path)
@@ -448,8 +461,6 @@ class TApplication extends TComponent implements IApplication
 		$this->_modules=array();
 		foreach($config->getModules() as $id=>$moduleConfig)
 		{
-			if(isset($this->_modules[$id]))
-				throw new TConfigurationException('application_module_redefined',$id);
 			$module=Prado::createComponent($moduleConfig[0]);
 			$this->_modules[$id]=$module;
 			foreach($moduleConfig[1] as $name=>$value)
@@ -485,7 +496,7 @@ class TApplication extends TComponent implements IApplication
 		if($this->hasEventHandler('Error'))
 			$this->raiseEvent('Error',$this,$param);
 		else
-			echo $param;
+			$this->_errorHandler->handleError($this,$param);
 	}
 
 	/**
@@ -651,7 +662,6 @@ class TApplicationConfiguration extends TComponent
 	 * @var array list of module configurations
 	 */
 	private $_modules=array(
-			'error'=>array('TErrorHandler',array(),null),
 			'request'=>array('THttpRequest',array(),null),
 			'response'=>array('THttpResponse',array(),null)
 		);
@@ -669,12 +679,10 @@ class TApplicationConfiguration extends TComponent
 	/**
 	 * Parses the application configuration file.
 	 * @param string configuration file name
-	 * @throws TConfigurationException if config file cannot be read or any parsing error is found
+	 * @throws TConfigurationException if there is any parsing error
 	 */
 	public function loadFromFile($fname)
 	{
-		if(!is_file($fname))
-			throw new TConfigurationException('application_configuration_inexistent',$fname);
 		$configPath=dirname($fname);
 		$dom=new TXmlDocument;
 		$dom->loadFromFile($fname);
@@ -696,18 +704,18 @@ class TApplicationConfiguration extends TComponent
 					else
 						$p=realpath($configPath.'/'.$path);
 					if($p===false || !is_dir($p))
-						throw new TConfigurationException('application_alias_path_invalid',$id,$path);
+						throw new TConfigurationException('appconfig_aliaspath_invalid',$id,$path);
 					$this->_aliases[$id]=$p;
 				}
 				else
-					throw new TConfigurationException('application_alias_element_invalid');
+					throw new TConfigurationException('appconfig_aliasid_required');
 			}
 			foreach($pathsNode->getElementsByTagName('using') as $usingNode)
 			{
 				if(($namespace=$usingNode->getAttribute('namespace'))!==null)
 					$this->_usings[]=$namespace;
 				else
-					throw new TConfigurationException('application_using_element_invalid');
+					throw new TConfigurationException('appconfig_using_invalid');
 			}
 		}
 
@@ -718,21 +726,13 @@ class TApplicationConfiguration extends TComponent
 			{
 				$properties=$node->getAttributes();
 				if(($id=$properties->itemAt('id'))===null)
-					throw new TConfigurationException('application_module_element_invalid');
+					throw new TConfigurationException('appconfig_moduleid_required');
 				if(($type=$properties->remove('type'))===null && isset($this->_modules[$id]) && $this->_modules[$id][2]===null)
-				{
 					$type=$this->_modules[$id][0];
-					unset($this->_modules[$id]);
-				}
 				if($type===null)
-					throw new TConfigurationException('application_module_element_invalid');
-				if(isset($this->_modules[$id]))
-					throw new TConfigurationException('application_module_redefined',$id);
-				else
-				{
-					$node->setParent(null);
-					$this->_modules[$id]=array($type,$properties->toArray(),$node);
-				}
+					throw new TConfigurationException('appconfig_moduletype_required',$id);
+				$node->setParent(null);
+				$this->_modules[$id]=array($type,$properties->toArray(),$node);
 			}
 		}
 
@@ -743,21 +743,13 @@ class TApplicationConfiguration extends TComponent
 			{
 				$properties=$node->getAttributes();
 				if(($id=$properties->itemAt('id'))===null)
-					throw new TConfigurationException('application_service_element_invalid');
+					throw new TConfigurationException('appconfig_serviceid_required');
 				if(($type=$properties->remove('type'))===null && isset($this->_services[$id]) && $this->_services[$id][2]===null)
-				{
 					$type=$this->_services[$id][0];
-					unset($this->_services[$id]);
-				}
 				if($type===null)
-					throw new TConfigurationException('application_service_element_invalid');
-				if(isset($this->_services[$id]))
-					throw new TConfigurationException('application_service_redefined',$id);
-				else
-				{
-					$node->setParent(null);
-					$this->_services[$id]=array($type,$properties->toArray(),$node);
-				}
+					throw new TConfigurationException('appconfig_servicetype_required',$id);
+				$node->setParent(null);
+				$this->_services[$id]=array($type,$properties->toArray(),$node);
 			}
 		}
 
@@ -768,7 +760,7 @@ class TApplicationConfiguration extends TComponent
 			{
 				$properties=$node->getAttributes();
 				if(($id=$properties->remove('id'))===null)
-					throw new TConfigurationException('application_parameter_element_invalid');
+					throw new TConfigurationException('appconfig_parameterid_required');
 				if(($type=$properties->remove('type'))===null)
 					$this->_parameters[$id]=$node->getValue();
 				else

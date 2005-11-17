@@ -2,7 +2,7 @@
 /**
  * Prado core interfaces and classes.
  *
- * This file contains and includes the definitions of prado core interfaces and classes.
+ * This file contains and includes the definitions of Prado core interfaces and classes.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
@@ -38,160 +38,6 @@ require_once(PRADO_DIR.'/Collections/TMap.php');
  */
 require_once(PRADO_DIR.'/Data/TXmlDocument.php');
 
-/**
- * IApplication interface.
- *
- * This interface must be implemented by application classes.
- *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
- * @package System
- * @since 3.0
- */
-interface IApplication
-{
-	/**
-	 * Defines Error event.
-	 */
-	public function onError($param);
-	/**
-	 * Defines BeginRequest event.
-	 * @param mixed event parameter
-	 */
-	public function onBeginRequest($param);
-	/**
-	 * Defines Authentication event.
-	 * @param mixed event parameter
-	 */
-	public function onAuthentication($param);
-	/**
-	 * Defines PostAuthentication event.
-	 * @param mixed event parameter
-	 */
-	public function onPostAuthentication($param);
-	/**
-	 * Defines Authorization event.
-	 * @param mixed event parameter
-	 */
-	public function onAuthorization($param);
-	/**
-	 * Defines PostAuthorization event.
-	 * @param mixed event parameter
-	 */
-	public function onPostAuthorization($param);
-	/**
-	 * Defines LoadState event.
-	 * @param mixed event parameter
-	 */
-	public function onLoadState($param);
-	/**
-	 * Defines PostLoadState event.
-	 * @param mixed event parameter
-	 */
-	public function onPostLoadState($param);
-	/**
-	 * Defines PreRunService event.
-	 * @param mixed event parameter
-	 */
-	public function onPreRunService($param);
-	/**
-	 * Defines RunService event.
-	 * @param mixed event parameter
-	 */
-	public function onRunService($param);
-	/**
-	 * Defines PostRunService event.
-	 * @param mixed event parameter
-	 */
-	public function onPostRunService($param);
-	/**
-	 * Defines SaveState event.
-	 * @param mixed event parameter
-	 */
-	public function onSaveState($param);
-	/**
-	 * Defines PostSaveState event.
-	 * @param mixed event parameter
-	 */
-	public function onPostSaveState($param);
-	/**
-	 * Defines EndRequest event.
-	 * @param mixed event parameter
-	 */
-	public function onEndRequest($param);
-	/**
-	 * Runs the application.
-	 */
-	public function run();
-	/**
-	 * Completes and terminates the current request processing.
-	 */
-	public function completeRequest();
-	/**
-	 * @return string application ID
-	 */
-	public function getID();
-	/**
-	 * @param string application ID
-	 */
-	public function setID($id);
-	/**
-	 * @return string a unique ID that can uniquely identify the application from the others
-	 */
-	public function getUniqueID();
-	/**
-	 * @return IUser application user
-	 */
-	public function getUser();
-	/**
-	 * @param IUser application user
-	 */
-	public function setUser(IUser $user);
-	/**
-	 * @param string module ID
-	 * @return IModule module corresponding to the ID, null if not found
-	 */
-	public function getModule($id);
-	/**
-	 * Adds a module into application.
-	 * @param string module ID
-	 * @param IModule module to be added
-	 * @throws TInvalidOperationException if module with the same ID already exists
-	 */
-	public function setModule($id,IModule $module);
-	/**
-	 * @return array list of modules
-	 */
-	public function getModules();
-	/**
-	 * @return TMap list of parameters
-	 */
-	public function getParameters();
-	/**
-	 * @return IService the currently requested service
-	 */
-	public function getService();
-	/**
-	 * @return THttpRequest the current user request
-	 */
-	public function getRequest();
-	/**
-	 * @return THttpResponse the response to the request
-	 */
-	public function getResponse();
-	/**
-	 * @return THttpSession the user session
-	 */
-	public function getSession();
-	/**
-	 * @return ICache cache that is available to use
-	 */
-	public function getCache();
-	/**
-	 * @return IErrorHandler error handler
-	 */
-	public function getErrorHandler();
-}
 
 /**
  * IModule interface.
@@ -207,7 +53,7 @@ interface IModule
 {
 	/**
 	 * Initializes the module.
-	 * @param IApplication the application object
+	 * @param TApplication the application object
 	 * @param TXmlElement the configuration for the module
 	 */
 	public function init($application,$configuration);
@@ -235,7 +81,7 @@ interface IService
 {
 	/**
 	 * Initializes the service.
-	 * @param IApplication the application object
+	 * @param TApplication the application object
 	 * @param TXmlElement the configuration for the service
 	 */
 	public function init($application,$configuration);
@@ -251,11 +97,6 @@ interface IService
 	 * Runs the service.
 	 */
 	public function run();
-}
-
-interface IErrorHandler
-{
-	public function handle($sender,$param);
 }
 
 /**
@@ -419,7 +260,7 @@ class PradoBase
 	 */
 	private static $_usings=array();
 	/**
-	 * @var IApplication the application instance
+	 * @var TApplication the application instance
 	 */
 	private static $_application=null;
 
@@ -460,7 +301,7 @@ class PradoBase
 	{
 		if(self::$_application!==null && ($errorHandler=self::$_application->getErrorHandler())!==null)
 		{
-			$errorHandler->handle($exception);
+			$errorHandler->handleError($exception);
 		}
 		else
 		{
@@ -475,18 +316,18 @@ class PradoBase
 	 * Repeated invocation of this method or the application constructor
 	 * will cause the throw of an exception.
 	 * This method should only be used by framework developers.
-	 * @param IApplication the application instance
+	 * @param TApplication the application instance
 	 * @throws TInvalidOperationException if this method is invoked twice or more.
 	 */
-	public static function setApplication(IApplication $app)
+	public static function setApplication($application)
 	{
 		if(self::$_application!==null)
 			throw new TInvalidOperationException('prado_application_singleton_required');
-		self::$_application=$app;
+		self::$_application=$application;
 	}
 
 	/**
-	 * @return IApplication the application singleton, null if the singleton has not be created yet.
+	 * @return TApplication the application singleton, null if the singleton has not be created yet.
 	 */
 	public static function getApplication()
 	{
@@ -670,12 +511,11 @@ class PradoBase
 
 	/**
 	 * Fatal error handler.
-	 * This method is used in places where exceptions usually cannot be raised
-	 * (e.g. magic methods).
-	 * It displays the debug backtrace.
+	 * This method displays an error message together with the current call stack.
+	 * The application will exit after calling this method.
 	 * @param string error message
 	 */
-	function fatalError($msg)
+	public static function fatalError($msg)
 	{
 		echo '<h1>Fatal Error</h1>';
 		echo '<p>'.$msg.'</p>';
@@ -707,27 +547,32 @@ class PradoBase
 		echo '</pre>';
 		exit(1);
 	}
-}
 
-/**
- * Includes TErrorHandler class
- */
-require_once(PRADO_DIR.'/Exceptions/TErrorHandler.php');
-/**
- * Includes THttpRequest class
- */
-require_once(PRADO_DIR.'/Web/THttpRequest.php'); // include TUser
-/**
- * Includes THttpResponse class
- */
-require_once(PRADO_DIR.'/Web/THttpResponse.php');
-/**
- * Includes THttpSession class
- */
-require_once(PRADO_DIR.'/Web/THttpSession.php');
-/**
- * Includes TAuthorizationRule class
- */
-require_once(PRADO_DIR.'/Security/TAuthorizationRule.php');
+	/**
+	 * Returns a list of user preferred languages.
+	 * The languages are returned as an array. Each array element
+	 * represents a single language preference. The languages are ordered
+	 * according to user preferences. The first language is the most preferred.
+	 * @return array list of user preferred languages. 
+	 */
+	public static function getUserLanguages()
+	{
+		static $languages=null;
+		if($languages===null)
+		{
+			$languages=array();
+			foreach(explode(',',$_SERVER['HTTP_ACCEPT_LANGUAGE']) as $language)
+			{
+				$array=split(';q=',trim($language));
+				$languages[trim($array[0])]=isset($array[1])?(float)$array[1]:1.0;
+			}
+			arsort($languages);
+			$languages=array_keys($languages);
+			if(empty($languages))
+				$languages[0]='en';
+		}
+		return $languages;
+	}
+}
 
 ?>

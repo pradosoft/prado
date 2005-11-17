@@ -97,7 +97,7 @@ class TMemCache extends TComponent implements IModule, ICache
 	 * This method is required by the IModule interface. It makes sure that
 	 * UniquePrefix has been set, creates a Memcache instance and connects
 	 * to the memcache server.
-	 * @param IApplication Prado application, can be null
+	 * @param TApplication Prado application, can be null
 	 * @param TXmlElement configuration for this module, can be null
 	 * @throws TConfigurationException if memcache extension is not installed or memcache sever connection fails
 	 */
@@ -108,7 +108,7 @@ class TMemCache extends TComponent implements IModule, ICache
 		$this->_cache=new Memcache;
 		if($this->_cache->connect($this->_host,$this->_port)===false)
 			throw new TInvalidConfigurationException('memcache_connection_failed');
-		if($application instanceof IApplication)
+		if($application instanceof TApplication)
 			$this->_prefix=$application->getUniqueID();
 		$this->_initialized=true;
 		$application->setCache($this);

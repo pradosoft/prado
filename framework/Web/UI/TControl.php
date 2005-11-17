@@ -251,7 +251,7 @@ class TControl extends TComponent
 	}
 
 	/**
-	 * @return IApplication the application object that the current page is using
+	 * @return TApplication the application object that the current page is using
 	 */
 	public function getApplication()
 	{

@@ -1,3 +1,19 @@
+component_property_undefined			= Component property '%s.%s' is not defined.
+
+application_configfile_inexistent		= Application configuration file "%s" does not exist.
+application_module_existing				= Application module "%s" cannot be registered twice.
+application_service_invalid				= Service "%s" must implement IService interface.
+application_service_unknown				= Requested service "%s" is not defined.
+
+appconfig_aliaspath_invalid				= Application configuration <alias id="%s"> uses an invalid file path "%s".
+appconfig_aliasid_required				= Application configuration <alias> element must have an "id" attribute.
+appconfig_using_invalid					= Application configuration <using> element must have a "namespace" attribute.
+appconfig_moduleid_required				= Application configuration <module> element must have an "id" attribute.
+appconfig_moduletype_required			= Application configuration <module id="%s"> must have a "type" attribute.
+appconfig_serviceid_required			= Application configuration <service> element must have an "id" attribute.
+appconfig_servicetype_required			= Application configuration <service id="%s"> must have a "type" attribute.
+appconfig_parameterid_required			= Application configuration <parameter> element must have an "id" attribute.
+
 body_contents_not_allowed	= %s: body contents are not allowed.
 control_id_not_unique		= Control ID '%s' is not unique for control type '%s'.
 control_not_found		= Unable to find a control with ID '%s'.

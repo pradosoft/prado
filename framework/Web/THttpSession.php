@@ -72,7 +72,7 @@ class THttpSession extends TComponent implements IModule
 	 * Initializes the module.
 	 * This method is required by IModule.
 	 * If AutoStart is true, the session will be started.
-	 * @param IApplication prado application instance
+	 * @param TApplication prado application instance
 	 */
 	public function init($application,$config)
 	{

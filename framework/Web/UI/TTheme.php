@@ -18,14 +18,14 @@ class TThemeManager extends TComponent implements IModule
 	 */
 	private $_themePath=null;
 	/**
-	 * @var IApplication application
+	 * @var TApplication application
 	 */
 	private $_application;
 
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
-	 * @param IApplication application
+	 * @param TApplication application
 	 * @param TXmlElement module configuration
 	 */
 	public function init($application,$config)

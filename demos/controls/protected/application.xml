@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<configuration>
+<configuration id="controls">
   <paths>
     <alias id="Demo" path="." />
     <alias id="Pages" path="pages" />

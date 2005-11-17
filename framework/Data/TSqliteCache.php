@@ -103,7 +103,7 @@ class TSqliteCache extends TComponent implements IModule, ICache
 	 * property is set, and creates a SQLiteDatabase instance for it.
 	 * The database or the cache table does not exist, they will be created.
 	 * Expired values are also deleted.
-	 * @param IApplication Prado application, can be null
+	 * @param TApplication Prado application, can be null
 	 * @param TXmlElement configuration for this module, can be null
 	 * @throws TConfigurationException if sqlite extension is not installed,
 	 *         DbFile is set invalid, or any error happens during creating database or cache table.

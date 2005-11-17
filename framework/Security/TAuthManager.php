@@ -29,7 +29,7 @@ class TAuthManager extends TComponent implements IModule
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
-	 * @param IApplication Prado application, can be null
+	 * @param TApplication Prado application, can be null
 	 * @param TXmlElement configuration for this module, can be null
 	 */
 	public function init($application,$config)

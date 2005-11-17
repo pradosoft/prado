@@ -64,14 +64,14 @@ class TPageService extends TComponent implements IService
 	 */
 	private $_initialized=false;
 	/**
-	 * @var IApplication application
+	 * @var TApplication application
 	 */
 	private $_application;
 
 	/**
 	 * Initializes the service.
 	 * This method is required by IService interface and is invoked by application.
-	 * @param IApplication application
+	 * @param TApplication application
 	 * @param TXmlElement service configuration
 	 */
 	public function init($application,$config)
@@ -536,20 +536,20 @@ class TPageConfiguration extends TComponent
 					$p=str_replace('\\','/',$p);
 					$path=realpath(preg_match('/^\\/|.:\\//',$p)?$p:$configPath.'/'.$p);
 					if($path===false || !is_dir($path))
-						throw new TConfigurationException('pageservice_alias_path_invalid',$fname,$id,$p);
+						throw new TConfigurationException('pageservice_alias_path_invalid',$configPath,$id,$p);
 					if(isset($this->_aliases[$id]))
-						throw new TConfigurationException('pageservice_alias_redefined',$fname,$id);
+						throw new TConfigurationException('pageservice_alias_redefined',$configPath,$id);
 					$this->_aliases[$id]=$path;
 				}
 				else
-					throw new TConfigurationException('pageservice_alias_element_invalid',$fname);
+					throw new TConfigurationException('pageservice_alias_element_invalid',$configPath);
 			}
 			foreach($pathsNode->getElementsByTagName('using') as $usingNode)
 			{
 				if(($namespace=$usingNode->getAttribute('namespace'))!==null)
 					$this->_usings[]=$namespace;
 				else
-					throw new TConfigurationException('pageservice_using_element_invalid',$fname);
+					throw new TConfigurationException('pageservice_using_element_invalid',$configPath);
 			}
 		}
 
@@ -561,7 +561,7 @@ class TPageConfiguration extends TComponent
 				$properties=$node->getAttributes();
 				$type=$properties->remove('type');
 				if(($id=$properties->itemAt('id'))===null)
-					throw new TConfigurationException('pageservice_module_element_invalid',$fname);
+					throw new TConfigurationException('pageservice_module_element_invalid',$configPath);
 				if(isset($this->_modules[$id]))
 				{
 					if($type===null)
@@ -572,10 +572,10 @@ class TPageConfiguration extends TComponent
 							$elements->add($element);
 					}
 					else
-						throw new TConfigurationException('pageservice_module_redefined',$fname,$id);
+						throw new TConfigurationException('pageservice_module_redefined',$configPath,$id);
 				}
 				else if($type===null)
-					throw new TConfigurationException('pageservice_module_element_invalid',$fname);
+					throw new TConfigurationException('pageservice_module_element_invalid',$configPath);
 				else
 				{
 					$node->setParent(null);
@@ -639,7 +639,7 @@ class TPageConfiguration extends TComponent
 					$type=$properties->remove('type');
 					$id=$properties->itemAt('id');
 					if($id===null || $type===null)
-						throw new TConfigurationException('pageservice_page_element_invalid',$fname);
+						throw new TConfigurationException('pageservice_page_element_invalid',$configPath);
 					if($id===$page)
 					{
 						$this->_properties=array_merge($this->_properties,$properties->toArray());

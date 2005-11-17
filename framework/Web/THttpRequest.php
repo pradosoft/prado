@@ -85,7 +85,7 @@ class THttpRequest extends TComponent implements IModule
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
-	 * @param IApplication application
+	 * @param TApplication application
 	 * @param TXmlElement module configuration
 	 */
 	public function init($application,$config)
@@ -290,12 +290,15 @@ class THttpRequest extends TComponent implements IModule
 	}
 
 	/**
-	 * @return string languages user browser supports
+	 * Returns a list of user preferred languages.
+	 * The languages are returned as an array. Each array element
+	 * represents a single language preference. The languages are ordered
+	 * according to user preferences. The first language is the most preferred.
+	 * @return array list of user preferred languages.
 	 */
 	public function getUserLanguages()
 	{
-		// TBD ask wei about this
-		return $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+		return Prado::getUserLanguages();
 	}
 
 	/**

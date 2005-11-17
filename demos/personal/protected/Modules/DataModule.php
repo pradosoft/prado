@@ -36,7 +36,7 @@ class DataModule extends TComponent implements IModule
 	 * This method is required by the IModule interface. It checks if the DbFile
 	 * property is set, and creates a SQLiteDatabase instance for it.
 	 * If the database or the tables do not exist, they will be created.
-	 * @param IApplication Prado application, can be null
+	 * @param TApplication Prado application, can be null
 	 * @param TXmlElement configuration for this module, can be null
 	 * @throws TConfigurationException DbFile is set invalid
 	 */
