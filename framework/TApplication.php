@@ -157,6 +157,10 @@ class TApplication extends TComponent
 	 * @var TAuthorizationRuleCollection collection of authorization rules
 	 */
 	private $_authRules=null;
+	/**
+	 * @var string application mode
+	 */
+	private $_mode='Debug';
 
 	/**
 	 * Constructor.
@@ -239,6 +243,22 @@ class TApplication extends TComponent
 	public function getUniqueID()
 	{
 		return $this->_uniqueID;
+	}
+
+	/**
+	 * @return string application mode (Off|Debug|Normal|Peformance), defaults to Debug.
+	 */
+	public function getMode()
+	{
+		return $this->_mode;
+	}
+
+	/**
+	 * @param string application mode. Valid values include Off, Debug, Normal, or Peformance
+	 */
+	public function setMode($value)
+	{
+		$this->_mode=TPropertyValue::ensureEnum($value,array('Off','Debug','Normal','Performance'));
 	}
 
 	/**

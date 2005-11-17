@@ -5,8 +5,8 @@ class HomePage extends TPage
 	public function onPreInit($param)
 	{
 		parent::onPreInit($param);
-		if(!$this->getUser()->getIsGuest())
-			$this->setTheme('');
+		if(!$this->User->IsGuest)
+			$this->Theme='';
 	}
 
 	public function testClick($sender,$param)

@@ -56,10 +56,6 @@ class TPageService extends TComponent implements IService
 	 */
 	private $_properties;
 	/**
-	 * @var integer cache expiration
-	 */
-	private $_cacheExpire=-1;
-	/**
 	 * @var boolean whether service is initialized
 	 */
 	private $_initialized=false;
@@ -100,7 +96,7 @@ class TPageService extends TComponent implements IService
 			if(is_array($arr))
 			{
 				list($pageConfig,$timestamp)=$arr;
-				if($this->_cacheExpire<0)
+				if($application->getMode()!=='Performance')
 				{
 					// check to see if cache is the latest
 					$paths=explode('.',$this->_pagePath);
@@ -126,7 +122,7 @@ class TPageService extends TComponent implements IService
 				$pageConfig=new TPageConfiguration;
 				$pageConfig->loadXmlElement($config,dirname($application->getConfigurationFile()),null);
 				$pageConfig->loadConfigurationFiles($this->_pagePath,$basePath);
-				$cache->set(self::CONFIG_CACHE_PREFIX.$this->_pagePath,array($pageConfig,time()),$this->_cacheExpire<0?0:$this->_cacheExpire);
+				$cache->set(self::CONFIG_CACHE_PREFIX.$this->_pagePath,array($pageConfig,time()));
 			}
 		}
 
@@ -216,38 +212,6 @@ class TPageService extends TComponent implements IService
 	public function isRequestingPage($pagePath)
 	{
 		return $this->_pagePath===$pagePath;
-	}
-
-	/**
-	 * @return integer the expiration time of the configuration saved in cache,
-	 *       -1 (default) ensures the cached configuration always catches up the latest configuration files,
-	 *        0 means never expire,
-	 *        a number less or equal than 60*60*24*30 means the number of seconds that the value will remain valid.
-	 *        a number greater than 60 means a UNIX timestamp after which the value will expire.
-	 */
-	public function getCacheExpire()
-	{
-		return $this->_cacheExpire;
-	}
-
-	/**
-	 * Sets the expiration time of the configuration saved in cache.
-	 * TPageService will try to use cache to save parsed configuration files.
-	 * CacheExpire is used to control the caching policy.
-	 * If you have changed this property, make sure to clean up cache first.
-	 * @param integer the expiration time of the configuration saved in cache,
-	 *       -1 (default) ensures the cached configuration always catches up the latest configuration files,
-	 *        0 means never expire,
-	 *        a number less or equal than 60*60*24*30 means the number of seconds that the value will remain valid.
-	 *        a number greater than 60 means a UNIX timestamp after which the value will expire.
-	 * @throws TInvalidOperationException if the service is already initialized
-	 */
-	public function setCacheExpire($value)
-	{
-		if($this->_initialized)
-			throw new TInvalidOperationException('pageservice_cacheexpire_unchangeable');
-		else
-			$this->_cacheExpire=TPropertyValue::ensureInteger($value);
 	}
 
 	/**

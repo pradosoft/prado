@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<configuration id="controls">
+<configuration id="controls" mode="Debug">
   <paths>
     <alias id="Demo" path="." />
     <alias id="Pages" path="pages" />
   </paths>
   <!-- modules configured and loaded for all services -->
   <modules>
-    <!-- make sure the path "protected" is writable by web server process if you enable this cache
     <module id="cache" type="System.Data.TSqliteCache" DbFile="Demo.cache"/>
-    -->
     <module id="session" type="THttpSession" />
   </modules>
   <services>

@@ -39,11 +39,23 @@ class TErrorHandler extends TComponent implements IModule
 
 	public function handleError($sender,$param)
 	{
-		$type='Unhandled Exception';
-		$this->displayException($param,$type);
+		if(($response=Prado::getApplication()->getResponse())!==null)
+			$response->clear();
+		switch(Prado::getApplication()->getMode())
+		{
+			case 'Off':
+			case 'Debug':
+				$this->displayException($param);
+				exit(1);
+			case 'Normal':
+			case 'Performance':
+				error_log($param->__toString());
+				header("HTTP/1.0 500 Internal Error");
+				exit(1);
+		}
 	}
 
-	protected function displayException($exception,$type)
+	protected function displayException($exception)
 	{
 		$lines=file($exception->getFile());
 		$errorLine=$exception->getLine();
@@ -66,7 +78,8 @@ class TErrorHandler extends TComponent implements IModule
 			'%%SourceFile%%',
 			'%%SourceCode%%',
 			'%%StackTrace%%',
-			'%%Version%%'
+			'%%Version%%',
+			'%%Time%%'
 		);
 		$values=array(
 			get_class($exception),
@@ -74,7 +87,8 @@ class TErrorHandler extends TComponent implements IModule
 			htmlspecialchars($exception->getFile()).' ('.$exception->getLine().')',
 			$source,
 			htmlspecialchars($exception->getTraceAsString()),
-			$_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion()
+			$_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion(),
+			strftime('%Y-%m-%d %H:%m',time())
 		);
 		$languages=Prado::getUserLanguages();
 		$errorFile=dirname(__FILE__).'/error.'.$languages[0];

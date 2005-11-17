@@ -64,17 +64,20 @@ class TThemeManager extends TComponent implements IModule
 			{
 				list($theme,$timestamp)=$array;
 				$cacheValid=true;
-				if(($dir=opendir($themePath))===false)
-					throw new TIOException('thememanager_themepath_invalid',$themePath);
-				while(($file=readdir($dir))!==false)
+				if($this->_application->getMode()!=='Performance')
 				{
-					if(basename($file,'.skin')!==$file && filemtime($themePath.'/'.$file)>$timestamp)
+					if(($dir=opendir($themePath))===false)
+						throw new TIOException('thememanager_themepath_invalid',$themePath);
+					while(($file=readdir($dir))!==false)
 					{
-						$cacheValid=false;
-						break;
+						if(basename($file,'.skin')!==$file && filemtime($themePath.'/'.$file)>$timestamp)
+						{
+							$cacheValid=false;
+							break;
+						}
 					}
+					closedir($dir);
 				}
-				closedir($dir);
 				if($cacheValid)
 					return $theme;
 			}
