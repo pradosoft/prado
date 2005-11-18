@@ -43,6 +43,8 @@ framework/Exceptions/error.tpl -text
 framework/Exceptions/error404-en.tpl -text
 framework/Exceptions/error404-zh.tpl -text
 framework/Exceptions/error404.tpl -text
+framework/Exceptions/error500-en.tpl -text
+framework/Exceptions/error500-zh.tpl -text
 framework/Exceptions/error500.tpl -text
 framework/Exceptions/exception.tpl -text
 framework/Exceptions/messages.en -text
