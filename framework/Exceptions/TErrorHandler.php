@@ -27,7 +27,12 @@ class TErrorHandler extends TComponent implements IModule
 		$application->attachEventHandler('Error',array($this,'handleError'));
 		$application->setErrorHandler($this);
 		foreach($config->getElementsByTagName('error') as $node)
-			$this->_errorPages[$node->getAttribute('code')]=$node->getAttribute('page');
+		{
+			if(($code=$node->getAttribute('code'))===null || $code==='*')
+				$code=0;
+			else
+				$this->_errorPages[$node->getAttribute('code')]=$node->getAttribute('page');
+		}
 	}
 
 	/**
@@ -70,9 +75,12 @@ class TErrorHandler extends TComponent implements IModule
 	{
 		if(!($exception instanceof THttpException))
 			error_log($exception->__toString());
-		if(isset($this->_errorPages["$statusCode"]))
+		if(isset($this->_errorPages["$statusCode"]) || isset($this->_errorPages[0]))
 		{
-			$page=Prado::createComponent($this->_errorPages["$statusCode"]);
+			if(isset($this->_errorPages["$statusCode"]))
+				$page=Prado::createComponent($this->_errorPages["$statusCode"]);
+			else
+				$page=Prado::createComponent($this->_errorPages[0]);
 			$writer=new THtmlTextWriter($this->_application->getResponse());
 			$page->run($writer);
 			$writer->flush();
