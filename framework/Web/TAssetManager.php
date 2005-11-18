@@ -56,6 +56,7 @@ class TAssetManager extends TComponent implements IModule
 	 * @var boolean whether to use timestamp checking to ensure files are published with up-to-date versions.
 	 */
 	private $_checkTimestamp=false;
+	private $_application;
 
 	/**
 	 * Initializes the module.
@@ -65,6 +66,7 @@ class TAssetManager extends TComponent implements IModule
 	 */
 	public function init($application,$config)
 	{
+		$this->_application=$application;
 		if($this->_basePath===null)
 			$this->_basePath=dirname($application->getRequest()->getPhysicalApplicationPath()).'/'.self::DEFAULT_BASEPATH;
 		if(!is_writable($this->_basePath) || !is_dir($this->_basePath))
@@ -167,18 +169,19 @@ class TAssetManager extends TComponent implements IModule
 		{
 			$dir=md5(dirname($fullpath));
 			$file=$this->_basePath.'/'.$dir.'/'.basename($fullpath);
-
-			if(!is_file($file) || (($checkTimestamp || $this->_checkTimestamp) && filemtime($file)<filemtime($path)))
+			if(!is_file($file) || $checkTimestamp || $this->_application->getMode()!=='Performance')
 			{
-				@mkdir($this->_basePath.'/'.$dir);
-				@copy($fullpath,$file);
+				if(!is_dir($this->_basePath.'/'.$dir))
+					@mkdir($this->_basePath.'/'.$dir);
+				if(!is_file($file) || @filemtime($file)<@filemtime($fullpath))
+					@copy($fullpath,$file);
 			}
 			return $this->_baseUrl.'/'.$dir.'/'.basename($fullpath);
 		}
 		else
 		{
 			$dir=md5($fullpath);
-			if(!is_dir($this->_basePath.'/'.$dir) || $checkTimestamp || $this->_checkTimestamp)
+			if(!is_dir($this->_basePath.'/'.$dir) || $checkTimestamp || $this->_application->getMode()!=='Performance')
 				$this->copyDirectory($fullpath,$this->_basePath.'/'.$dir);
 			return $this->_baseUrl.'/'.$dir;
 		}
@@ -193,7 +196,8 @@ class TAssetManager extends TComponent implements IModule
 	 */
 	protected function copyDirectory($src,$dst)
 	{
-		@mkdir($dst);
+		if(!is_dir($dst))
+			@mkdir($dst);
 		$folder=@opendir($src);
 		while($file=@readdir($folder))
 		{
