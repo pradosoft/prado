@@ -2,6 +2,9 @@
 
 class TErrorHandler extends TComponent implements IModule
 {
+	const ERROR_FILE_NAME='error';
+	const EXCEPTION_FILE_NAME='exception';
+
 	/**
 	 * @var string module ID
 	 */
@@ -11,9 +14,9 @@ class TErrorHandler extends TComponent implements IModule
 	 */
 	private $_application;
 	/**
-	 * @var array list of pages for displaying various HTTP errors
+	 * @var string error template directory
 	 */
-	private $_errorPages=array();
+	private $_templatePath=null;
 
 	/**
 	 * Initializes the module.
@@ -26,13 +29,6 @@ class TErrorHandler extends TComponent implements IModule
 		$this->_application=$application;
 		$application->attachEventHandler('Error',array($this,'handleError'));
 		$application->setErrorHandler($this);
-		foreach($config->getElementsByTagName('error') as $node)
-		{
-			if(($code=$node->getAttribute('code'))===null || $code==='*')
-				$code=0;
-			else
-				$this->_errorPages[$node->getAttribute('code')]=$node->getAttribute('page');
-		}
 	}
 
 	/**
@@ -51,10 +47,28 @@ class TErrorHandler extends TComponent implements IModule
 		$this->_id=$value;
 	}
 
+	public function getErrorTemplatePath()
+	{
+		return $this->_templatePath;
+	}
+
+	public function setErrorTemplatePath($value)
+	{
+		if(($templatePath=Prado::getPathOfNamespace($this->_templatePath))!==null && is_dir($templatePath))
+			$this->_templatePath=$templatePath;
+		else
+			throw new TConfigurationException('errorhandler_errortemplatepath_invalid',$value);
+	}
+
 	public function handleError($sender,$param)
 	{
 		static $handling=false;
-		if($handling)
+		// We need to restore error and exception handlers,
+		// otherwise because errors occured in error handler
+		// will not be handled properly.
+		restore_error_handler();
+		restore_exception_handler();
+		if($handling)	// ensure that we do not enter infinite loop of error handling
 			$this->handleRecursiveError($param);
 		else
 		{
@@ -75,49 +89,39 @@ class TErrorHandler extends TComponent implements IModule
 	{
 		if(!($exception instanceof THttpException))
 			error_log($exception->__toString());
-		if(isset($this->_errorPages["$statusCode"]) || isset($this->_errorPages[0]))
-		{
-			if(isset($this->_errorPages["$statusCode"]))
-				$page=Prado::createComponent($this->_errorPages["$statusCode"]);
-			else
-				$page=Prado::createComponent($this->_errorPages[0]);
-			$writer=new THtmlTextWriter($this->_application->getResponse());
-			$page->run($writer);
-			$writer->flush();
-		}
+		if($this->_templatePath===null)
+			$this->_templatePath=dirname(__FILE__);
+		$base=$this->_templatePath.'/'.self::ERROR_FILE_NAME;
+		$lang=array_shift(explode('-',array_shift(Prado::getUserLanguages())));
+		if(!empty($lang) && !ctype_alpha($lang))
+			die('No hack attempt please.');
+		if(is_file("$base$statusCode-$lang.tpl"))
+			$errorFile="$base$statusCode-$lang.tpl";
+		else if(is_file("$base$statusCode.tpl"))
+			$errorFile="$base$statusCode.tpl";
+		else if(is_file("$base-$lang.tpl"))
+			$errorFile="$base-$lang.tpl";
 		else
-		{
-			$base=dirname(__FILE__).'/error';
-			$languages=Prado::getUserLanguages();
-			$lang=$languages[0];
-			if(is_file("$base$statusCode.$lang"))
-				$errorFile="$base$statusCode.$lang";
-			else if(is_file("$base$statusCode.en"))
-				$errorFile="$base$statusCode.en";
-			else if(is_file("$base.$lang"))
-				$errorFile="$base.$lang";
-			else
-				$errorFile="$base.en";
-			if(($content=@file_get_contents($errorFile))===false)
-				die("Unable to open error template file '$errorFile'.");
+			$errorFile="$base.tpl";
+		if(($content=@file_get_contents($errorFile))===false)
+			die("Unable to open error template file '$errorFile'.");
 
-			$serverAdmin=isset($_SERVER['SERVER_ADMIN'])?$_SERVER['SERVER_ADMIN']:'';
-			$fields=array(
-				'%%StatusCode%%',
-				'%%ErrorMessage%%',
-				'%%ServerAdmin%%',
-				'%%Version%%',
-				'%%Time%%'
-			);
-			$values=array(
-				"$statusCode",
-				htmlspecialchars($exception->getMessage()),
-				$serverAdmin,
-				$_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion(),
-				strftime('%Y-%m-%d %H:%m',time())
-			);
-			echo str_replace($fields,$values,$content);
-		}
+		$serverAdmin=isset($_SERVER['SERVER_ADMIN'])?$_SERVER['SERVER_ADMIN']:'';
+		$fields=array(
+			'%%StatusCode%%',
+			'%%ErrorMessage%%',
+			'%%ServerAdmin%%',
+			'%%Version%%',
+			'%%Time%%'
+		);
+		$values=array(
+			"$statusCode",
+			htmlspecialchars($exception->getMessage()),
+			$serverAdmin,
+			$_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion(),
+			strftime('%Y-%m-%d %H:%m',time())
+		);
+		echo str_replace($fields,$values,$content);
 	}
 
 	protected function handleRecursiveError($exception)
@@ -171,12 +175,14 @@ class TErrorHandler extends TComponent implements IModule
 			$_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion(),
 			strftime('%Y-%m-%d %H:%m',time())
 		);
-		$languages=Prado::getUserLanguages();
-		$exceptionFile=dirname(__FILE__).'/exception.'.$languages[0];
+		$lang=array_shift(explode('-',array_shift(Prado::getUserLanguages())));
+		if(!empty($lang) && !ctype_alpha($lang))
+			die('No hack attempt please.');
+		$exceptionFile=dirname(__FILE__).'/'.self::EXCEPTION_FILE_NAME.'-'.$lang.'.tpl';
 		if(!is_file($exceptionFile))
-			$exceptionFile=dirname(__FILE__).'/exception.en';
+			$exceptionFile=dirname(__FILE__).'/'.self::EXCEPTION_FILE_NAME.'.tpl';
 		if(($content=@file_get_contents($exceptionFile))===false)
-			die("Unable to open exception template file '$errorFile'.");
+			die("Unable to open exception template file '$exceptionFile'.");
 		echo str_replace($fields,$values,$content);
 	}
 }
