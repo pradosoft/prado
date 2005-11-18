@@ -43,6 +43,9 @@ assetmanager_basepath_invalid			= TAssetManager.BasePath '%s' is invalid. Make s
 assetmanager_basepath_unchangeable		= TAssetManager.BasePath cannot be modified after the module is initialized.
 assetmanager_baseurl_unchangeable		= TAssetManager.BaseUrl cannot be modified after the module is initialized.
 
+pageservice_page_unknown				= Page not found: %s
+
+
 body_contents_not_allowed	= %s: body contents are not allowed.
 control_id_not_unique		= Control ID '%s' is not unique for control type '%s'.
 control_not_found		= Unable to find a control with ID '%s'.

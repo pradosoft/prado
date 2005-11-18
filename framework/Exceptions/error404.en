@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>%%ErrorMessage%%</title>
+<title>Page Not Found</title>
 <style>
 body {font-family:"Verdana";font-weight:normal;color:black;}
 h1 { font-family:"Verdana";font-weight:normal;font-size:18pt;color:red }
@@ -12,10 +12,11 @@ p {font-family:"Verdana";font-weight:normal;color:black;font-size:9pt;margin-top
 </head>
 
 <body bgcolor="white">
-<h1>Error %%StatusCode%%</h1>
-<h2>%%ErrorMessage%%</h2>
+<h1>%%ErrorMessage%%</h1>
+<h2>Error 404</h2>
 <p>
-The above error happened when the server was processing your request.
+The requested URL was not found on this server. 
+If you entered the URL manually please check your spelling and try again. 
 </p>
 <p>
 If you think this is a server error, please contact the <a href="mailto:%%ServerAdmin%%">webmaster</a>.

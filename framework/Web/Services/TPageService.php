@@ -97,7 +97,7 @@ class TPageService extends TComponent implements IService
 		if(empty($this->_pagePath))
 			$this->_pagePath=$this->_defaultPage;
 		if(empty($this->_pagePath))
-			throw new THttpException('pageservice_page_required');
+			throw new THttpException(400,'pageservice_page_required');
 
 		if(($cache=$application->getCache())===null)
 		{
@@ -328,7 +328,7 @@ class TPageService extends TComponent implements IService
 		if(class_exists($className,false))
 			$page=new $className($this->_properties);
 		else
-			throw new THttpException('pageservice_page_unknown',$this->_pageType);
+			throw new THttpException(404,'pageservice_page_unknown',$this->_pageType);
 		$writer=new THtmlTextWriter($this->_application->getResponse());
 		$page->run($writer);
 		$writer->flush();
@@ -653,7 +653,7 @@ class TPageConfiguration extends TComponent
 			}
 		}
 		if($page!==null && $this->_pageType===null)
-			throw new THttpException('pageservice_page_inexistent',$page);
+			throw new THttpException(404,'pageservice_page_unknown',$page);
 	}
 }
 

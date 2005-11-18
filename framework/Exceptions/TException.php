@@ -40,16 +40,16 @@ class TException extends Exception
 {
 	private $_errorCode='';
 
-	public function __construct($errorCode)
+	public function __construct($errorMessage)
 	{
-		$this->_errorCode=$errorCode;
+		$this->_errorCode=$errorMessage;
 		$args=func_get_args();
-		$args[0]=$this->translateErrorCode($errorCode);
+		$args[0]=$this->translateErrorMessage($errorMessage);
 		$str=call_user_func_array('sprintf',$args);
 		parent::__construct($str);
 	}
 
-	protected function translateErrorCode($key)
+	protected function translateErrorMessage($key)
 	{
 		$languages=Prado::getUserLanguages();
 		$msgFile=dirname(__FILE__).'/messages.'.$languages[0];
@@ -74,19 +74,9 @@ class TException extends Exception
 		return $this->_errorCode;
 	}
 
-	public function setErrorCode($errorCode)
-	{
-		$this->_errorCode=$errorCode;
-	}
-
 	public function getErrorMessage()
 	{
 		return $this->getMessage();
-	}
-
-	public function setErrorMessage($msg)
-	{
-		$this->message=$msg;
 	}
 }
 
@@ -142,10 +132,6 @@ class TSecurityException extends TException
 {
 }
 
-class THttpException extends TException
-{
-}
-
 class TNotSupportedException extends TException
 {
 }
@@ -170,6 +156,25 @@ class TPhpErrorException extends TException
 		);
 		$errorType=isset($errorTypes[$errno])?$errorTypes[$errno]:'Unknown Error';
 		parent::__construct("[$errorType] $errstr (@line $errline in file $errfile).");
+	}
+}
+
+
+class THttpException extends TException
+{
+	private $_statusCode;
+
+	public function __construct($statusCode,$errorMessage)
+	{
+		$args=func_get_args();
+		array_shift($args);
+		call_user_func_array(array('parent', '__construct'), $args);
+		$this->_statusCode=TPropertyValue::ensureInteger($statusCode);
+	}
+
+	public function getStatusCode()
+	{
+		return $this->_statusCode;
 	}
 }
 

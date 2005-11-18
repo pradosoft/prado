@@ -10,6 +10,10 @@ class TErrorHandler extends TComponent implements IModule
 	 * @var TApplication application instance
 	 */
 	private $_application;
+	/**
+	 * @var array list of pages for displaying various HTTP errors
+	 */
+	private $_errorPages=array();
 
 	/**
 	 * Initializes the module.
@@ -22,6 +26,8 @@ class TErrorHandler extends TComponent implements IModule
 		$this->_application=$application;
 		$application->attachEventHandler('Error',array($this,'handleError'));
 		$application->setErrorHandler($this);
+		foreach($config->getElementsByTagName('error') as $node)
+			$this->_errorPages[$node->getAttribute('code')]=$node->getAttribute('page');
 	}
 
 	/**
@@ -42,19 +48,83 @@ class TErrorHandler extends TComponent implements IModule
 
 	public function handleError($sender,$param)
 	{
-		if(($response=Prado::getApplication()->getResponse())!==null)
-			$response->clear();
-		switch(Prado::getApplication()->getMode())
+		static $handling=false;
+		if($handling)
+			$this->handleRecursiveError($param);
+		else
 		{
-			case 'Off':
-			case 'Debug':
+			$handling=true;
+			if(($response=Prado::getApplication()->getResponse())!==null)
+				$response->clear();
+			if($param instanceof THttpException)
+				$this->handleExternalError($param->getStatusCode(),$param);
+			else if(Prado::getApplication()->getMode()==='Debug')
 				$this->displayException($param);
-				exit(1);
-			case 'Normal':
-			case 'Performance':
-				error_log($param->__toString());
-				header("HTTP/1.0 500 Internal Error");
-				exit(1);
+			else
+				$this->handleExternalError(500,$param);
+		}
+		exit(1);
+	}
+
+	protected function handleExternalError($statusCode,$exception)
+	{
+		if(!($exception instanceof THttpException))
+			error_log($exception->__toString());
+		if(isset($this->_errorPages["$statusCode"]))
+		{
+			$page=Prado::createComponent($this->_errorPages["$statusCode"]);
+			$writer=new THtmlTextWriter($this->_application->getResponse());
+			$page->run($writer);
+			$writer->flush();
+		}
+		else
+		{
+			$base=dirname(__FILE__).'/error';
+			$languages=Prado::getUserLanguages();
+			$lang=$languages[0];
+			if(is_file("$base$statusCode.$lang"))
+				$errorFile="$base$statusCode.$lang";
+			else if(is_file("$base$statusCode.en"))
+				$errorFile="$base$statusCode.en";
+			else if(is_file("$base.$lang"))
+				$errorFile="$base.$lang";
+			else
+				$errorFile="$base.en";
+			if(($content=@file_get_contents($errorFile))===false)
+				die("Unable to open error template file '$errorFile'.");
+
+			$serverAdmin=isset($_SERVER['SERVER_ADMIN'])?$_SERVER['SERVER_ADMIN']:'';
+			$fields=array(
+				'%%StatusCode%%',
+				'%%ErrorMessage%%',
+				'%%ServerAdmin%%',
+				'%%Version%%',
+				'%%Time%%'
+			);
+			$values=array(
+				"$statusCode",
+				htmlspecialchars($exception->getMessage()),
+				$serverAdmin,
+				$_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion(),
+				strftime('%Y-%m-%d %H:%m',time())
+			);
+			echo str_replace($fields,$values,$content);
+		}
+	}
+
+	protected function handleRecursiveError($exception)
+	{
+		if(Prado::getApplication()->getMode()==='Debug')
+		{
+			echo "<html><head><title>Recursive Error</title></head>\n";
+			echo "<body><h1>Recursive Error</h1>\n";
+			echo "<pre>".$exception."</pre>\n";
+			echo "</body></html>";
+		}
+		else
+		{
+			error_log("Error happened while processing an existing error:\n".$param->__toString());
+			header('HTTP/1.0 500 Internal Error');
 		}
 	}
 
@@ -94,11 +164,11 @@ class TErrorHandler extends TComponent implements IModule
 			strftime('%Y-%m-%d %H:%m',time())
 		);
 		$languages=Prado::getUserLanguages();
-		$errorFile=dirname(__FILE__).'/error.'.$languages[0];
-		if(!is_file($errorFile))
-			$errorFile=dirname(__FILE__).'/error.en';
-		if(($content=@file_get_contents($errorFile))===false)
-			die("Unable to open error template file '$errorFile'.");
+		$exceptionFile=dirname(__FILE__).'/exception.'.$languages[0];
+		if(!is_file($exceptionFile))
+			$exceptionFile=dirname(__FILE__).'/exception.en';
+		if(($content=@file_get_contents($exceptionFile))===false)
+			die("Unable to open exception template file '$errorFile'.");
 		echo str_replace($fields,$values,$content);
 	}
 }

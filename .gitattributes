@@ -40,6 +40,8 @@ framework/Data/TXmlDocument.php -text
 framework/Exceptions/TErrorHandler.php -text
 framework/Exceptions/TException.php -text
 framework/Exceptions/error.en -text
+framework/Exceptions/error404.en -text
+framework/Exceptions/exception.en -text
 framework/Exceptions/messages.en -text
 framework/IO/TTextWriter.php -text
 framework/Security/TAuthManager.php -text
