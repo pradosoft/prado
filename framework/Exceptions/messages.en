@@ -39,6 +39,8 @@ httpsession_gcprobability_invalid		= Session GCProbability must be an integer be
 httpsession_transid_unchangeable		= Session UseTransparentSessionID cannot be modified after the session is started.
 httpsession_maxlifetime_unchangeable	= Session Timeout cannot be modified after the session is started.
 
+assetmanager_basepath_invalid			= TAssetManager.BasePath '%s' is invalid. Make sure the directory exists and is writable by the Web server process.
+
 body_contents_not_allowed	= %s: body contents are not allowed.
 control_id_not_unique		= Control ID '%s' is not unique for control type '%s'.
 control_not_found		= Unable to find a control with ID '%s'.
