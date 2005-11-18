@@ -127,7 +127,7 @@ class TAssetManager extends TComponent implements IModule
 	public function setBaseUrl($value)
 	{
 		if($this->_initialized)
-			throw new TInvalidOperationException('pageservice_baseurl_unchangeable');
+			throw new TInvalidOperationException('assetmanager_baseurl_unchangeable');
 		else
 			$this->_baseUrl=$value;
 	}

@@ -1,6 +1,6 @@
 <?php
 /**
- * THttpRequest class
+ * THttpRequest, THttpCookie, THttpCookieCollection, TUri class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
@@ -16,7 +16,13 @@
  * THttpRequest provides storage and access scheme for user request sent via HTTP.
  * It also encapsulates a uniform way to parse and construct URLs.
  *
- * THttpRequest is the default "request" module for prado application.
+ * To retrieve user POST and GET variables, use {@link getItems()} method.
+ * To construct a URL that can be recognized by Prado, use {@link constructUrl()}.
+ * THttpRequest also provides the cookies sent by the user, user information such
+ * as his browser capabilities, accepted languages, etc.
+ *
+ * By default, THttpRequest is registered with {@link TApplication} as the
+ * request module. It can be accessed via {@link TApplication::getRequest()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -63,26 +69,6 @@ class THttpRequest extends TComponent implements IModule
 	private $_items;
 
 	/**
-	 * Constructor.
-	 * Analyzes and resolves user request.
-	 */
-	public function __construct()
-	{
-	}
-
-	/**
-	 * Strips slashes from input data.
-	 * This method is applied when magic quotes is enabled.
-	 * Do not call this method.
-	 * @param mixed input data to be processed
-	 * @param mixed processed data
-	 */
-	public function stripSlashes(&$data)
-	{
-		return is_array($data)?array_map(array($this,'stripSlashes'),$data):stripslashes($data);
-	}
-
-	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
 	 * @param TApplication application
@@ -95,7 +81,6 @@ class THttpRequest extends TComponent implements IModule
 		// SCRIPT_NAME is the real URI for the requested script (w/o path info and query string)
 		// REQUEST_URI contains the URI part entered in the browser address bar
 		// SCRIPT_FILENAME is the file path to the executing script
-		parent::__construct();
 		if(isset($_SERVER['REQUEST_URI']))
 			$this->_requestUri=$_SERVER['REQUEST_URI'];
 		else  // TBD: in this case, SCRIPT_NAME need to be escaped
@@ -111,13 +96,13 @@ class THttpRequest extends TComponent implements IModule
 		if(get_magic_quotes_gpc())
 		{
 			if(isset($_GET))
-				$_GET=array_map(array($this,'stripSlashes'),$_GET);
+				$_GET=$this->stripSlashes($_GET);
 			if(isset($_POST))
-				$_POST=array_map(array($this,'stripSlashes'),$_POST);
+				$_POST=$this->stripSlashes($_POST);
 			if(isset($_REQUEST))
-				$_REQUEST=array_map(array($this,'stripSlashes'),$_REQUEST);
+				$_REQUEST=$this->stripSlashes($_REQUEST);
 			if(isset($_COOKIE))
-				$_COOKIE=array_map(array($this,'stripSlashes'),$_COOKIE);
+				$_COOKIE=$this->stripSlashes($_COOKIE);
 		}
 
 		$this->_items=new TMap(array_merge($_POST,$_GET));
@@ -125,6 +110,17 @@ class THttpRequest extends TComponent implements IModule
 		$this->resolveRequest();
 		$this->_initialized=true;
 		$application->setRequest($this);
+	}
+
+	/**
+	 * Strips slashes from input data.
+	 * This method is applied when magic quotes is enabled.
+	 * @param mixed input data to be processed
+	 * @param mixed processed data
+	 */
+	public function stripSlashes(&$data)
+	{
+		return is_array($data)?array_map(array($this,'stripSlashes'),$data):stripslashes($data);
 	}
 
 	/**
@@ -220,7 +216,7 @@ class THttpRequest extends TComponent implements IModule
 	 */
 	public function getPhysicalApplicationPath()
 	{
-		return strtr($_SERVER['SCRIPT_FILENAME'],'\\','/');
+		return realpath($_SERVER['SCRIPT_FILENAME']);
 	}
 
 	/**

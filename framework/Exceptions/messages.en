@@ -7,6 +7,8 @@ component_statements_invalid			= Component '%s' is evaluating invalid PHP statem
 
 propertyvalue_enumvalue_invalid			= Value '%s' is a not valid enumeration value (%s).
 
+uri_format_invalid						= '%s' is not a valid URI.
+
 application_configfile_inexistent		= Application configuration file "%s" does not exist.
 application_module_existing				= Application module "%s" cannot be registered twice.
 application_service_invalid				= Service "%s" must implement IService interface.
@@ -20,6 +22,22 @@ appconfig_moduletype_required			= Application configuration <module id="%s"> mus
 appconfig_serviceid_required			= Application configuration <service> element must have an "id" attribute.
 appconfig_servicetype_required			= Application configuration <service id="%s"> must have a "type" attribute.
 appconfig_parameterid_required			= Application configuration <parameter> element must have an "id" attribute.
+
+httpresponse_bufferoutput_unchangeable	= Property THttpResponse.BufferOutput cannot be modified after THttpResponse is initialized.
+httpresponse_file_inexistent			= THttpResponse cannot send file '%s'. The file does not exist.
+
+httpsession_sessionid_unchangeable		= Session ID cannot be modified after the session is started.
+httpsession_sessionname_unchangeable	= Session name cannot be modified after the session is started.
+httpsession_sessionname_invalid			= Session name must contain alphanumeric characters only.
+httpsession_savepath_unchangeable		= Session SavePath cannot be modified after the session is started.
+httpsession_savepath_invalid			= Session SavePath '%s' is invalid.
+httpsession_storage_unchangeable		= Session storage cannot be modified after the session is started.
+httpsession_cookiemode_unchangeable		= Session CookieMode cannot be modified after the session is started.
+httpsession_autostart_unchangeable		= Session AutoStart cannot be modified after the session module is initialized.
+httpsession_gcprobability_unchangeable	= Session GCProbability cannot be modified after the session is started.
+httpsession_gcprobability_invalid		= Session GCProbability must be an integer between 0 and 100.
+httpsession_transid_unchangeable		= Session UseTransparentSessionID cannot be modified after the session is started.
+httpsession_maxlifetime_unchangeable	= Session Timeout cannot be modified after the session is started.
 
 body_contents_not_allowed	= %s: body contents are not allowed.
 control_id_not_unique		= Control ID '%s' is not unique for control type '%s'.

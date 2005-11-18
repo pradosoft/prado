@@ -58,8 +58,14 @@ require_once(PRADO_DIR.'/Web/Services/TPageService.php');
  * the application, the modules, the services, the parameters, and so on.
  *
  * Examples:
+ * - Create and run a Prado application:
  * <code>
  * $application=new TApplication($configFile);
+ * $application->run();
+ * </code>
+ * - The parsed application configuration file is cached.
+ * <code>
+ * $application=new TApplication($configFile,$cacheFile);
  * $application->run();
  * </code>
  *

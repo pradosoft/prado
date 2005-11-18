@@ -13,9 +13,19 @@
 /**
  * THttpResponse class
  *
- * THttpResponse implements a scheme to output response to user requests.
+ * THttpResponse implements the mechanism for sending output to client users.
  *
- * THttpResponse is the default "response" module for prado application.
+ * To output a string to client, use {@link write()}. By default, the output is
+ * buffered until {@link flush()} is called or the application ends. The output in
+ * the buffer can also be cleaned by {@link clear()}. To disable output buffering,
+ * set BufferOutput property to false.
+ *
+ * To send cookies to client, use {@link getCookies()}.
+ * To redirect client browser to a new URL, use {@link redirect()}.
+ * To send a file to client, use {@link writeFile()}.
+ *
+ * By default, THttpResponse is registered with {@link TApplication} as the
+ * response module. It can be accessed via {@link TApplication::getResponse()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -41,7 +51,7 @@ class THttpResponse extends TComponent implements IModule, ITextWriter
 	 */
 	private $_cookies=null;
 	/**
-	 * @var integer status code
+	 * @var integer response status code
 	 */
 	private $_status=200;
 

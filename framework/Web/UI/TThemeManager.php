@@ -121,9 +121,9 @@ class TTheme extends TTemplate
 
 	public function __construct($content,$themePath)
 	{
-		$this->_themePath=strtr($themePath,'\\','/');
+		$this->_themePath=realpath($themePath);
 		$basePath=dirname(Prado::getApplication()->getRequest()->getPhysicalApplicationPath());
-		if(($pos=strpos($this->_themePath,$basePath))===false)
+		if($this->_themePath===false || ($pos=strpos($this->_themePath,$basePath))===false)
 			throw new TConfigurationException('theme_themepath_invalid',$themePath);
 		else
 		{

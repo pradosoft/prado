@@ -28,13 +28,16 @@
  * </code>
  *
  * The following configurations are available for session:
- * AutoStart, Cookie, CacheExpire, CacheLimiter, SavePath, Storage, GCProbability, CookieUsage, Timeout.
+ * AutoStart, Cookie, CacheLimiter, SavePath, Storage, GCProbability, CookieUsage, Timeout.
  * See the corresponding setter and getter documentation for more information.
  * Note, these properties must be set before the session is started.
  *
  * THttpSession can be inherited with customized session storage method.
  * Override {@link _open}, {@link _close}, {@link _read}, {@link _write}, {@link _destroy} and {@link _gc}
- * and set Storage as 'user' to store session using methods other than files and shared memory.
+ * and set Storage as 'Custom' to store session using methods other than files and shared memory.
+ *
+ * By default, THttpSession is registered with {@link TApplication} as the
+ * request module. It can be accessed via {@link TApplication::getSession()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -211,7 +214,7 @@ class THttpSession extends TComponent implements IModule
 	public function setSavePath($value)
 	{
 		if($this->_started)
-			throw new TInvalidOperationException('httpsession_cachelimiter_unchangeable');
+			throw new TInvalidOperationException('httpsession_savepath_unchangeable');
 		else if(is_dir($value))
 			session_save_path($value);
 		else
@@ -219,19 +222,29 @@ class THttpSession extends TComponent implements IModule
 	}
 
 	/**
-	 * @return string (files|mm|user) storage mode of session, defaults to 'files'.
+	 * @return string (File|SharedMemory|Custom) storage medium of session, defaults to 'File'.
+	 * @see setStorage
 	 */
 	public function getStorage()
 	{
-		return session_module_name();
+		switch(session_module_name())
+		{
+			case 'files': return 'File';
+			case 'mm': return 'SharedMemory';
+			case 'user': return 'Custom';
+			default: return 'Unknown';
+		}
 	}
 
 	/**
-	 * @param string (files|mm|user) storage mode of session. By default, the session
-	 * data is stored in files. You may change to shared memory (mm) for better performance.
-	 * Or you may choose your own storage (user). If you do so, make sure you
-	 * override {@link _open}, {@link _close}, {@link _read}, {@link _write},
-	 * {@link _destroy}, and {@link _gc}.
+	 * Sets the storage medium of session data.
+	 * By default, the session data is stored in files (File).
+	 * You may change to use shared memory (SharedMemory) for better performance
+	 * if shared memory is available on the server.
+	 * Or you may choose to use your own storage (Custom). If you do so,
+	 * make sure you override {@link _open}, {@link _close}, {@link _read},
+	 * {@link _write}, {@link _destroy}, and {@link _gc}.
+	 * @param string (File|SharedMemory|Custom) storage medium of session.
 	 * @throws TInvalidOperationException if session is started already
 	 */
 	public function setStorage($value)
@@ -240,10 +253,21 @@ class THttpSession extends TComponent implements IModule
 			throw new TInvalidOperationException('httpsession_storage_unchangeable');
 		else
 		{
-			$value=TPropertyValue::ensureEnum($value,array('files','mm','user'));
-			if($value==='user')
+			$value=TPropertyValue::ensureEnum($value,array('File','SharedMemory','Custom'));
+			if($value==='Custom')
 				session_set_save_handler(array($this,'_open'),array($this,'_close'),array($this,'_read'),array($this,'_write'),array($this,'_destroy'),array($this,'_gc'));
-			session_module_name($value);
+			switch($value)
+			{
+				case 'Custom':
+					session_module_name('user');
+					break;
+				case 'SharedMemory':
+					session_module_name('mm');
+					break;
+				default:
+					session_module_name('files');
+					break;
+			}
 		}
 	}
 
@@ -258,22 +282,22 @@ class THttpSession extends TComponent implements IModule
 	}
 
 	/**
-	 * @return string (none|allow|only) how to use cookie to store session ID
-	 *               'none' means not using cookie, 'allow' means using cookie, and 'only' means using cookie only, defaults to 'allow'.
+	 * @return string (None|Allow|Only) how to use cookie to store session ID
+	 *               'None' means not using cookie, 'Allow' means using cookie, and 'Only' means using cookie only, defaults to 'Allow'.
 	 */
 	public function getCookieMode()
 	{
 		if(ini_get('session.use_cookies')==='0')
-			return 'none';
+			return 'None';
 		else if(ini_get('session.use_only_cookies')==='0')
-			return 'allow';
+			return 'Allow';
 		else
-			return 'only';
+			return 'Only';
 	}
 
 	/**
-	 * @param string (none|allow|only) how to use cookie to store session ID
-	 *               'none' means not using cookie, 'allow' means using cookie, and 'only' means using cookie only.
+	 * @param string (None|Allow|Only) how to use cookie to store session ID
+	 *               'None' means not using cookie, 'Allow' means using cookie, and 'Only' means using cookie only.
 	 * @throws TInvalidOperationException if session is started already
 	 */
 	public function setCookieMode($value)
@@ -282,10 +306,10 @@ class THttpSession extends TComponent implements IModule
 			throw new TInvalidOperationException('httpsession_cookiemode_unchangeable');
 		else
 		{
-			$value=TPropertyValue::ensureEnum($value,array('none','allow','only'));
-			if($value==='none')
+			$value=TPropertyValue::ensureEnum($value,array('None','Allow','Only'));
+			if($value==='None')
 				ini_set('session.use_cookies','0');
-			else if($value==='allow')
+			else if($value==='Allow')
 			{
 				ini_set('session.use_cookies','1');
 				ini_set('session.use_only_cookies','0');
@@ -353,7 +377,7 @@ class THttpSession extends TComponent implements IModule
 	 */
 	public function getUseTransparentSessionID()
 	{
-		return ini_get('session.use_trans_sid')==='1'?true:false;
+		return ini_get('session.use_trans_sid')==='1';
 	}
 
 	/**
