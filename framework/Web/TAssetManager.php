@@ -23,11 +23,11 @@
  * the URL for accessing the base path.
  *
  * By default, TAssetManager will not publish a file or directory if it already
- * exists in the publishing directory. You may require a timestamp checking by
- * setting CheckTimestamp to true (which is false by default). You may also require
- * so when calling {@link publishFilePath}. This is usually
- * very useful during development. In production sites, the timestamp checking
- * should be turned off to improve performance.
+ * exists in the publishing directory and has an older modification time.
+ * If the application mode is set as 'Performance', the modification time check
+ * will be skipped. You can explicitly require a modification time check
+ * with the function {@link publishFilePath}. This is usually
+ * very useful during development.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -56,6 +56,9 @@ class TAssetManager extends TComponent implements IModule
 	 * @var boolean whether to use timestamp checking to ensure files are published with up-to-date versions.
 	 */
 	private $_checkTimestamp=false;
+	/**
+	 * @var TApplication application instance
+	 */
 	private $_application;
 
 	/**
@@ -108,9 +111,7 @@ class TAssetManager extends TComponent implements IModule
 	{
 		if($this->_initialized)
 			throw new TInvalidOperationException('assetmanager_basepath_unchangeable');
-		else if(is_dir($value))
-			$this->_basePath=realpath($value);
-		else
+		else if(($this->_basePath=realpath($value))===false)
 			throw new TInvalidDataValueException('assetmanage_basepath_invalid',$value);
 	}
 
@@ -132,25 +133,6 @@ class TAssetManager extends TComponent implements IModule
 			throw new TInvalidOperationException('assetmanager_baseurl_unchangeable');
 		else
 			$this->_baseUrl=$value;
-	}
-
-	/**
-	 * @return boolean whether file modify time should be used to ensure a published file is latest. Defaults to false.
-	 */
-	public function getCheckTimestamp()
-	{
-		return $this->_checkTimestamp;
-	}
-
-	/**
-	 * @param boolean whether file modify time should be used to ensure a published file is latest. Defaults to false.
-	 */
-	public function setCheckTimestamp($value)
-	{
-		if($this->_initialized)
-			throw new TInvalidOperationException('pageservice_checktimestamp_unchangeable');
-		else
-			$this->_checkTimestamp=TPropertyValue::ensureBoolean($value);
 	}
 
 	/**

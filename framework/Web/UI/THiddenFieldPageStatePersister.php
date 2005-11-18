@@ -50,7 +50,7 @@ class THiddenFieldPageStatePersister extends TPageStatePersister
 	{
 		if (strlen($key) > 64)
 			$key = pack('H32', md5($key));
-		elseif (strlen($key) < 64)
+		else if (strlen($key) < 64)
 			$key = str_pad($key, 64, "\0");
 		return md5((str_repeat("\x5c", 64) ^ substr($key, 0, 64)) . pack('H32', md5((str_repeat("\x36", 64) ^ substr($key, 0, 64)) . $data)));
 	}

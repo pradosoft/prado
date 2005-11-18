@@ -6,6 +6,9 @@ class TErrorHandler extends TComponent implements IModule
 	 * @var string module ID
 	 */
 	private $_id;
+	/**
+	 * @var TApplication application instance
+	 */
 	private $_application;
 
 	/**
