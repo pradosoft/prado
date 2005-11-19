@@ -49,7 +49,7 @@ framework/Exceptions/error500.tpl -text
 framework/Exceptions/exception-en.tpl -text
 framework/Exceptions/exception-zh.tpl -text
 framework/Exceptions/exception.tpl -text
-framework/Exceptions/messages.en -text
+framework/Exceptions/messages.txt -text
 framework/IO/TTextWriter.php -text
 framework/Security/TAuthManager.php -text
 framework/Security/TAuthorizationRule.php -text

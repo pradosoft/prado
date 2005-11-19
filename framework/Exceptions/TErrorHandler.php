@@ -94,7 +94,7 @@ class TErrorHandler extends TComponent implements IModule
 		$base=$this->_templatePath.'/'.self::ERROR_FILE_NAME;
 		$lang=array_shift(explode('-',array_shift(Prado::getUserLanguages())));
 		if(!empty($lang) && !ctype_alpha($lang))
-			die('No hack attempt please.');
+			$lang='';
 		if(is_file("$base$statusCode-$lang.tpl"))
 			$errorFile="$base$statusCode-$lang.tpl";
 		else if(is_file("$base$statusCode.tpl"))
@@ -177,7 +177,7 @@ class TErrorHandler extends TComponent implements IModule
 		);
 		$lang=array_shift(explode('-',array_shift(Prado::getUserLanguages())));
 		if(!empty($lang) && !ctype_alpha($lang))
-			die('No hack attempt please.');
+			$lang='';
 		$exceptionFile=dirname(__FILE__).'/'.self::EXCEPTION_FILE_NAME.'-'.$lang.'.tpl';
 		if(!is_file($exceptionFile))
 			$exceptionFile=dirname(__FILE__).'/'.self::EXCEPTION_FILE_NAME.'.tpl';
