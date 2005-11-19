@@ -11,6 +11,7 @@ application_configfile_inexistent		= Application configuration file '%s' does no
 application_module_existing				= Application module '%s' cannot be registered twice.
 application_service_invalid				= Service '%s' must implement IService interface.
 application_service_unknown				= Requested service '%s' is not defined.
+application_service_unavailable			= Service Unavailable.
 
 appconfig_aliaspath_invalid				= Application configuration <alias id="%s"> uses an invalid file path "%s".
 appconfig_aliasid_required				= Application configuration <alias> element must have an "id" attribute.
@@ -54,6 +55,8 @@ memcache_extension_required				= TMemCache requires memcache PHP extension.
 memcache_connection_failed				= TMemCache failed to connect to memcache server %s:%d.
 memcache_host_unchangeable				= TMemCache.Host cannot be modified after the module is initialized.
 memcache_port_unchangeable				= TMemCache.Port cannot be modified after the module is initialized.
+
+errorhandler_errortemplatepath_invalid	= TErrorHandler.ErrorTemplatePath '%s' is invalid. Make sure it is in namespace form and points to a valid directory containing error template files.
 
 pageservice_page_unknown				= Page '%s' Not Found
 

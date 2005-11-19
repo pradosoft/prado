@@ -46,6 +46,9 @@ framework/Exceptions/error404.html -text
 framework/Exceptions/error500-en.html -text
 framework/Exceptions/error500-zh.html -text
 framework/Exceptions/error500.html -text
+framework/Exceptions/error503-en.html -text
+framework/Exceptions/error503-zh.html -text
+framework/Exceptions/error503.html -text
 framework/Exceptions/exception-en.html -text
 framework/Exceptions/exception-zh.html -text
 framework/Exceptions/exception.html -text

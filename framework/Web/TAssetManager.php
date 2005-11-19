@@ -19,8 +19,8 @@
  * TAssetManager will copy the file to be published into a web-accessible
  * directory. The default base directory for storing the file is "assets", which
  * should be under the application directory. This can be changed by setting
- * the BasePath property together with the BaseUrl property that refers to
- * the URL for accessing the base path.
+ * the {@link setBasePath BasePath} property together with the
+ * {@link setBaseUrl BaseUrl} property that refers to the URL for accessing the base path.
  *
  * By default, TAssetManager will not publish a file or directory if it already
  * exists in the publishing directory and has an older modification time.

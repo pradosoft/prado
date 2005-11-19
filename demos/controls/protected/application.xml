@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<application id="controls" mode="Debug">
+<application id="controls" mode="Off">
   <paths>
     <alias id="Demo" path="." />
     <alias id="Pages" path="pages" />

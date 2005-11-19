@@ -41,6 +41,9 @@ require_once(PRADO_DIR.'/Web/Services/TPageService.php');
  * TApplication coordinates modules and services, and serves as a configuration
  * context for all Prado components.
  *
+ * TApplication uses a configuration file to specify the settings of
+ * the application, the modules, the services, the parameters, and so on.
+ *
  * TApplication adopts a modular structure. A TApplication instance is a composition
  * of multiple modules. A module is an instance of class implementing
  * {@link IModule} interface. Each module accomplishes certain functionalities
@@ -50,12 +53,44 @@ require_once(PRADO_DIR.'/Web/Services/TPageService.php');
  * Modules cooperate with each other to serve a user request by following
  * a sequence of lifecycles predefined in TApplication.
  *
+ * TApplication has four modes that can be changed by setting {@link setMode Mode}
+ * property (in the application configuration file).
+ * - <b>Off</b> mode will prevent the application from serving user requests.
+ * - <b>Debug</b> mode is mainly used during application development. It ensures
+ *   the cache is always up-to-date if caching is enabled. It also allows
+ *   exceptions are displayed with rich context information if they occur.
+ * - <b>Normal</b> mode is mainly used during production stage. Exception information
+ *   will only be recorded in system error logs. The cache is ensured to be
+ *   up-to-date if it is enabled.
+ * - <b>Performance</b> mode is similar to <b>Normal</b> mode except that it
+ *   does not ensure the cache is up-to-date.
+ *
  * TApplication dispatches each user request to a particular service which
  * finishes the actual work for the request with the aid from the application
  * modules.
  *
- * TApplication uses a configuration file to specify the settings of
- * the application, the modules, the services, the parameters, and so on.
+ * TApplication maintains a lifecycle with the following stages:
+ * - [construct] : construction of the application instance
+ * - [initApplication] : load application configuration and instantiate modules and the requested service
+ * - BeginRequest : this event happens right after application initialization
+ * - Authentication : this event happens when authentication is needed for the current request
+ * - PostAuthentication : this event happens right after the authentication is done for the current request
+ * - Authorization : this event happens when authorization is needed for the current request
+ * - PostAuthorization : this event happens right after the authorization is done for the current request
+ * - LoadState : this event happens when application state needs to be loaded
+ * - PostLoadState : this event happens right after the application state is loaded
+ * - PreRunService : this event happens right before the requested service is to run
+ * - RunService : this event happens when the requested service runs
+ * - PostRunService : this event happens right after the requested service finishes running
+ * - SaveState : this event happens when application needs to save its state
+ * - PostSaveState : this event happens right after the application saves its state
+ * - EndRequest : this is the last stage an application runs
+ * - [destruct] : destruction of the application instance
+ * Modules and services can attach their methods to one or several of the above
+ * events and do appropriate processing when the events are raised. By this way,
+ * the application is able to coordinate the activities of modules and services
+ * in the above order. To terminate an application before the whole lifecycle
+ * completes, call {@link completeRequest}.
  *
  * Examples:
  * - Create and run a Prado application:
@@ -203,6 +238,8 @@ class TApplication extends TComponent
 			$this->_requestCompleted=false;
 			while($this->_step<$n)
 			{
+				if($this->_mode==='Off')
+					throw new THttpException(503,'application_service_unavailable');
 				$method='on'.self::$_steps[$this->_step];
 				$this->$method($this);
 				if($this->_requestCompleted && $this->_step<$n-1)
