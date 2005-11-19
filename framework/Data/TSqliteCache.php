@@ -17,7 +17,8 @@
  *
  * The database file is specified by the DbFile property. This property must
  * be set before {@link init} is invoked. If the specified database file does not
- * exist, it will be created automatically. Make sure the database file is writable.
+ * exist, it will be created automatically.  Make sure the directory containing
+ * the specified DB file and the file itself must be writable by the Web server process.
  *
  * The following basic cache operations are implemented:
  * - {@link get} : retrieve the value with a key (if any) from cache
@@ -49,6 +50,14 @@
  * $cache->add('object',$object);
  * $object2=$cache->get('object');
  * </code>
+ *
+ * If loaded, TSqliteCache will register itself with {@link TApplication} as the
+ * cache module. It can be accessed via {@link TApplication::getCache()}.
+ *
+ * TMemCache may be configured in application configuration file as follows
+ * <module id="cache" type="System.Data.TSqliteCache" DbFile="Application.Data.site" />
+ * where {@link getDbFile DbFile} is a property specifying the location of the
+ * SQLite DB file (in the namespace format).
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -113,11 +122,9 @@ class TSqliteCache extends TComponent implements IModule, ICache
 		if(!function_exists('sqlite_open'))
 			throw new TConfigurationException('sqlitecache_extension_required');
 		if($this->_file===null)
-			throw new TConfigurationException('sqlitecache_filename_required');
+			throw new TConfigurationException('sqlitecache_dbfile_required');
 		$error='';
-		if(($fname=Prado::getPathOfNamespace($this->_file,self::DB_FILE_EXT))===null)
-			throw new TConfigurationException('sqlitecache_dbfile_invalid',$this->_file);
-		if(($this->_db=new SQLiteDatabase($fname,0666,$error))===false)
+		if(($this->_db=new SQLiteDatabase($this->_file,0666,$error))===false)
 			throw new TConfigurationException('sqlitecache_connection_failed',$error);
 		if(($res=$this->_db->query('SELECT * FROM sqlite_master WHERE tbl_name=\''.self::CACHE_TABLE.'\' AND type=\'table\''))!=false)
 		{
@@ -166,8 +173,8 @@ class TSqliteCache extends TComponent implements IModule, ICache
 	{
 		if($this->_initialized)
 			throw new TInvalidOperationException('sqlitecache_dbfile_unchangeable');
-		else
-			$this->_file=$value;
+		else if(($this->_file=Prado::getPathOfNamespace($value,self::DB_FILE_EXT))===null)
+			throw new TConfigurationException('sqlitecache_dbfile_invalid',$value);
 	}
 
 	/**

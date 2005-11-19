@@ -49,6 +49,14 @@
  * $object2=$cache->get('object');
  * </code>
  *
+ * If loaded, TMemCache will register itself with {@link TApplication} as the
+ * cache module. It can be accessed via {@link TApplication::getCache()}.
+ *
+ * TMemCache may be configured in application configuration file as follows
+ * <module id="cache" type="System.Data.TMemCache" Host="localhost" Port=11211 />
+ * where {@link getHost Host} and {@link getPort Port} are configurable properties
+ * of TMemCache.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Data
@@ -107,7 +115,7 @@ class TMemCache extends TComponent implements IModule, ICache
 			throw new TConfigurationException('memcache_extension_required');
 		$this->_cache=new Memcache;
 		if($this->_cache->connect($this->_host,$this->_port)===false)
-			throw new TInvalidConfigurationException('memcache_connection_failed');
+			throw new TInvalidConfigurationException('memcache_connection_failed',$this->_host,$this->_port);
 		if($application instanceof TApplication)
 			$this->_prefix=$application->getUniqueID();
 		$this->_initialized=true;

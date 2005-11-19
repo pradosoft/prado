@@ -150,7 +150,7 @@ class TTheme extends TTemplate
 			if(strpos($themePath,$appPath)===false)
 				throw new TConfigurationException('theme_baseurl_required');
 			$appUrl=dirname(Prado::getApplication()->getRequest()->getApplicationPath());
-			$this->_themeUrl=$appUrl.'/'.strtr(substr($theme,strlen($basePath)),'\\','/');
+			$this->_themeUrl=$appUrl.'/'.strtr(substr($themePath,strlen($appPath)),'\\','/');
 		}
 		else
 			$this->_themeUrl=$baseUrl.'/'.basename($themePath);

@@ -43,6 +43,18 @@ assetmanager_basepath_invalid			= TAssetManager.BasePath '%s' is invalid. Make s
 assetmanager_basepath_unchangeable		= TAssetManager.BasePath cannot be modified after the module is initialized.
 assetmanager_baseurl_unchangeable		= TAssetManager.BaseUrl cannot be modified after the module is initialized.
 
+sqlitecache_extension_required			= TSqliteCache requires SQLite PHP extension.
+sqlitecache_dbfile_required				= TSqliteCache.DbFile is required.
+sqlitecache_connection_failed			= TSqliteCache database connection failed. %s.
+sqlitecache_table_creation_failed		= TSqliteCache failed to create cache database. %s.
+sqlitecache_dbfile_unchangeable			= TSqliteCache.DbFile cannot be modified after the module is initialized.
+sqlitecache_dbfile_invalid				= TSqliteCache.DbFile is invalid. Make sure it is in a proper namespace format.
+
+memcache_extension_required				= TMemCache requires memcache PHP extension.
+memcache_connection_failed				= TMemCache failed to connect to memcache server %s:%d.
+memcache_host_unchangeable				= TMemCache.Host cannot be modified after the module is initialized.
+memcache_port_unchangeable				= TMemCache.Port cannot be modified after the module is initialized.
+
 pageservice_page_unknown				= Page '%s' Not Found
 
 
