@@ -303,6 +303,7 @@ class TXmlDocument extends TXmlElement
 	 */
 	public function loadFromString($string)
 	{
+		// TODO: since PHP 5.1, we can get parsing errors and throw them as exception
 		$doc=new DOMDocument();
 		if($doc->loadXML($string)===false)
 			return false;
