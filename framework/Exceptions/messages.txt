@@ -43,7 +43,7 @@ assetmanager_basepath_invalid			= TAssetManager.BasePath '%s' is invalid. Make s
 assetmanager_basepath_unchangeable		= TAssetManager.BasePath cannot be modified after the module is initialized.
 assetmanager_baseurl_unchangeable		= TAssetManager.BaseUrl cannot be modified after the module is initialized.
 
-pageservice_page_unknown				= Page not found: %s
+pageservice_page_unknown				= Page '%s' Not Found
 
 
 body_contents_not_allowed	= %s: body contents are not allowed.
