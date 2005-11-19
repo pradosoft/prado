@@ -39,6 +39,16 @@
  * By default, THttpSession is registered with {@link TApplication} as the
  * request module. It can be accessed via {@link TApplication::getSession()}.
  *
+ * THttpSession may be configured in application configuration file as follows,
+ * <module id="session" type="THttpSession" SessionName="SSID" SavePath="/tmp"
+ *         CookieMode="Allow" Storage="File" AutoStart="true" GCProbability="1"
+ *         UseTransparentSessionID="true" TimeOut="3600" />
+ * where {@link getSessionName SessionName}, {@link getSavePath SavePath},
+ * {@link getCookieMode CookieMode}, {@link getStorage Storage},
+ * {@link getAutoStart AutoStart}, {@link getGCProbability GCProbability},
+ * {@link getUseTransparentSessionID UseTransparentSessionID} and
+ * {@link getTimeOut TimeOut} are configurable properties of THttpSession.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web
