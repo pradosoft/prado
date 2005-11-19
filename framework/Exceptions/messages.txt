@@ -39,7 +39,7 @@ httpsession_gcprobability_invalid		= THttpSession.GCProbability must be an integ
 httpsession_transid_unchangeable		= THttpSession.UseTransparentSessionID cannot be modified after the session is started.
 httpsession_maxlifetime_unchangeable	= THttpSession.Timeout cannot be modified after the session is started.
 
-assetmanager_basepath_invalid			= TAssetManager.BasePath '%s' is invalid. Make sure the directory exists and is writable by the Web server process.
+assetmanager_basepath_invalid			= TAssetManager.BasePath '%s' is invalid. Make sure it is in namespace form and points to a directory writable by the Web server process.
 assetmanager_basepath_unchangeable		= TAssetManager.BasePath cannot be modified after the module is initialized.
 assetmanager_baseurl_unchangeable		= TAssetManager.BaseUrl cannot be modified after the module is initialized.
 

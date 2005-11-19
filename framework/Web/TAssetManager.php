@@ -29,6 +29,13 @@
  * with the function {@link publishFilePath}. This is usually
  * very useful during development.
  *
+ * TAssetManager may be configured in application configuration file within
+ * page service element as follows,
+ * <module id="asset" BasePath="Application.assets" BaseUrl="/assets" />
+ * where {@link getBasePath BasePath} and {@link getBaseUrl BaseUrl} are
+ * configurable properties of TAssetManager. Make sure that BasePath is a namespace
+ * pointing to a valid directory writable by the Web server process.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web
@@ -104,6 +111,8 @@ class TAssetManager extends TComponent implements IModule
 	}
 
 	/**
+	 * Sets the root directory storing published asset files.
+	 * The directory must be in namespace format.
 	 * @param string the root directory storing published asset files
 	 * @throws TInvalidOperationException if the service is initialized already
 	 */
@@ -111,8 +120,12 @@ class TAssetManager extends TComponent implements IModule
 	{
 		if($this->_initialized)
 			throw new TInvalidOperationException('assetmanager_basepath_unchangeable');
-		else if(($this->_basePath=realpath($value))===false)
-			throw new TInvalidDataValueException('assetmanage_basepath_invalid',$value);
+		else
+		{
+			$this->_basePath=Prado::getPathOfAlias($value);
+			if($this->_basePath===null || !is_dir($this->_basePath) || !is_writable($this->_basePath))
+				throw new TInvalidDataValueException('assetmanage_basepath_invalid',$value);
+		}
 	}
 
 	/**

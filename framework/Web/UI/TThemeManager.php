@@ -1,9 +1,13 @@
 <?php
 
+// TODO: use namespace for BasePath
+// add ThemesUrl
+
+
 class TThemeManager extends TComponent implements IModule
 {
 	const THEME_CACHE_PREFIX='prado:theme:';
-	const DEFAULT_THEME_PATH='themes';
+	const DEFAULT_BASEPATH='themes';
 	/**
 	 * @var string module ID
 	 */
@@ -15,7 +19,8 @@ class TThemeManager extends TComponent implements IModule
 	/**
 	 * @var string the directory containing all themes
 	 */
-	private $_themePath=null;
+	private $_basePath=null;
+	private $_baseUrl=null;
 	/**
 	 * @var TApplication application
 	 */
@@ -30,9 +35,11 @@ class TThemeManager extends TComponent implements IModule
 	public function init($application,$config)
 	{
 		$this->_application=$application;
-		if($this->_themePath===null)
-			$this->_themePath=dirname($application->getRequest()->getPhysicalApplicationPath()).'/'.self::DEFAULT_THEME_PATH;
-
+		if($this->_basePath===null)
+			$this->_basePath=dirname($application->getRequest()->getPhysicalApplicationPath()).'/'.self::DEFAULT_BASEPATH;
+		if(($basePath=realpath($this->_basePath))===false || !is_dir($basePath))
+			throw new TConfigurationException('thememanager_basepath_invalid',$this->_basePath);
+		$this->_basePath=$basePath;
 		$this->_initialized=true;
 		$application->getService()->setThemeManager($this);
 	}
@@ -55,9 +62,8 @@ class TThemeManager extends TComponent implements IModule
 
 	public function getTheme($name)
 	{
-		$themePath=realpath($this->_themePath.'/'.$name);
-		if($themePath===false || !is_dir($this->_themePath))
-			throw new TConfigurationException('thememanager_themepath_invalid',$themePath);
+		if(($themePath=realpath($this->_basePath.'/'.$name))===false || !is_dir($themePath))
+			throw new TConfigurationException('thememanager_theme_inexistent',$name);
 		if(($cache=$this->_application->getCache())!==null)
 		{
 			$array=$cache->get(self::THEME_CACHE_PREFIX.$themePath);
@@ -68,7 +74,7 @@ class TThemeManager extends TComponent implements IModule
 				if($this->_application->getMode()!=='Performance')
 				{
 					if(($dir=opendir($themePath))===false)
-						throw new TIOException('thememanager_themepath_invalid',$themePath);
+						throw new TIOException('thememanager_theme_inexistent',$name);
 					while(($file=readdir($dir))!==false)
 					{
 						if(basename($file,'.skin')!==$file && filemtime($themePath.'/'.$file)>$timestamp)
@@ -83,33 +89,49 @@ class TThemeManager extends TComponent implements IModule
 					return $theme;
 			}
 		}
-		// not cached, so we parse all skin files
+		// not cached, so we collect all skin files
 		$content='';
 		if(($dir=opendir($themePath))===false)
-			throw new TIOException('thememanager_themepath_invalid',$themePath);
+			throw new TIOException('thememanager_theme_inexistent',$name);
 		while(($file=readdir($dir))!==false)
 		{
 			if(basename($file,'.skin')!==$file)
 				$content.=file_get_contents($themePath.'/'.$file);
 		}
 		closedir($dir);
-		$theme=new TTheme($content,$themePath);
+
+		$theme=new TTheme($content,$themePath,$this->_baseUrl);
 		if($cache!==null)
 			$cache->set(self::THEME_CACHE_PREFIX.$themePath,array($theme,time()));
 		return $theme;
 	}
 
-	public function getThemePath()
+	public function getBasePath()
 	{
-		return $this->_themePath;
+		return $this->_basePath;
 	}
 
-	public function setThemePath($value)
+	public function setBasePath($value)
 	{
 		if($this->_initialized)
-			throw new TInvalidOperationException('thememanager_themepath_unchangeable');
+			throw new TInvalidOperationException('thememanager_basepath_unchangeable');
 		else
-			$this->_themePath=$value;
+		{
+			$this->_basePath=Prado::getPathOfAlias($value);
+			if($this->_basePath===null || !is_dir($this->_basePath))
+				throw new TInvalidDataValueException('thememanager_basepath_invalid',$value);
+			$this->_basePath=$value;
+		}
+	}
+
+	public function getBaseUrl()
+	{
+		return $this->_baseUrl;
+	}
+
+	public function setBaseUrl($value)
+	{
+		$this->_baseUrl=$value;
 	}
 }
 
@@ -119,17 +141,20 @@ class TTheme extends TTemplate
 	private $_themeUrl;
 	private $_skins=array();
 
-	public function __construct($content,$themePath)
+	public function __construct($content,$themePath,$baseUrl)
 	{
-		$this->_themePath=realpath($themePath);
-		$basePath=dirname(Prado::getApplication()->getRequest()->getPhysicalApplicationPath());
-		if($this->_themePath===false || ($pos=strpos($this->_themePath,$basePath))===false)
-			throw new TConfigurationException('theme_themepath_invalid',$themePath);
-		else
+		$this->_themePath=$themePath;
+		if($baseUrl===null)
 		{
-			$baseUrl=dirname(Prado::getApplication()->getRequest()->getApplicationPath());
-			$this->_themeUrl=$baseUrl.'/'.strtr(substr($this->_themePath,strlen($basePath)),'\\','/');
+			$appPath=dirname(Prado::getApplication()->getRequest()->getPhysicalApplicationPath());
+			if(strpos($themePath,$appPath)===false)
+				throw new TConfigurationException('theme_baseurl_required');
+			$appUrl=dirname(Prado::getApplication()->getRequest()->getApplicationPath());
+			$this->_themeUrl=$appUrl.'/'.strtr(substr($theme,strlen($basePath)),'\\','/');
 		}
+		else
+			$this->_themeUrl=$baseUrl.'/'.basename($themePath);
+
 		$theme=&$this->parse($content);
 		foreach($theme as $skin)
 		{

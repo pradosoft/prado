@@ -212,7 +212,7 @@ class THttpRequest extends TComponent implements IModule
 	}
 
 	/**
-	 * @return string application entry script file path
+	 * @return string application entry script file path (processed w/ realpath())
 	 */
 	public function getPhysicalApplicationPath()
 	{

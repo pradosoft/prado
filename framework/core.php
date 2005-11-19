@@ -553,7 +553,7 @@ class PradoBase
 	 * The languages are returned as an array. Each array element
 	 * represents a single language preference. The languages are ordered
 	 * according to user preferences. The first language is the most preferred.
-	 * @return array list of user preferred languages. 
+	 * @return array list of user preferred languages.
 	 */
 	public static function getUserLanguages()
 	{
@@ -572,6 +572,21 @@ class PradoBase
 				$languages[0]='en';
 		}
 		return $languages;
+	}
+
+	public static function getPreferredLanguage()
+	{
+		static $language=null;
+		if($language===null)
+		{
+			$langs=Prado::getUserLanguages();
+			$lang=explode('-',$langs[0]);
+			if(empty($lang[0]) || !ctype_alpha($lang[0]))
+				$language='en';
+			else
+				$language=$lang[0];
+		}
+		return $language;
 	}
 }
 

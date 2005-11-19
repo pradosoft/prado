@@ -92,9 +92,7 @@ class TErrorHandler extends TComponent implements IModule
 		if($this->_templatePath===null)
 			$this->_templatePath=dirname(__FILE__);
 		$base=$this->_templatePath.'/'.self::ERROR_FILE_NAME;
-		$lang=array_shift(explode('-',array_shift(Prado::getUserLanguages())));
-		if(!empty($lang) && !ctype_alpha($lang))
-			$lang='';
+		$lang=Prado::getPreferredLanguage();
 		if(is_file("$base$statusCode-$lang.html"))
 			$errorFile="$base$statusCode-$lang.html";
 		else if(is_file("$base$statusCode.html"))
@@ -175,9 +173,7 @@ class TErrorHandler extends TComponent implements IModule
 			$_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion(),
 			strftime('%Y-%m-%d %H:%m',time())
 		);
-		$lang=array_shift(explode('-',array_shift(Prado::getUserLanguages())));
-		if(!empty($lang) && !ctype_alpha($lang))
-			$lang='';
+		$lang=Prado::getPreferredLanguage();
 		$exceptionFile=dirname(__FILE__).'/'.self::EXCEPTION_FILE_NAME.'-'.$lang.'.html';
 		if(!is_file($exceptionFile))
 			$exceptionFile=dirname(__FILE__).'/'.self::EXCEPTION_FILE_NAME.'.html';
