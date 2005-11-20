@@ -11,8 +11,8 @@
  */
 
 Prado::using('System.Web.UI.TPage');
-Prado::using('System.Web.UI.TTemplateManager');
-Prado::using('System.Web.UI.TThemeManager');
+Prado::using('System.Web.TTemplateManager');
+Prado::using('System.Web.TThemeManager');
 Prado::using('System.Web.TAssetManager');
 
 /**

@@ -33,8 +33,8 @@
  * The templates <b>error.html</b> and <b>exception.html</b> are default ones
  * that are used if no other appropriate templates are available.
  * Note, these templates are not Prado control templates. They are simply
- * templates with keywords (e.g. %%ErrorMessage%%, %%Version%%)
- * to be replaced with corresponding information.
+ * html files with keywords (e.g. %%ErrorMessage%%, %%Version%%)
+ * to be replaced with the corresponding information.
  *
  * By default, TErrorHandler is registered with {@link TApplication} as the
  * error handler module. It can be accessed via {@link TApplication::getErrorHandler()}.
@@ -60,7 +60,7 @@ class TErrorHandler extends TComponent implements IModule
 	 */
 	const EXCEPTION_FILE_NAME='exception';
 	/**
-	 * number of lines to be displayed in case of an exception
+	 * number of lines before and after the error line to be displayed in case of an exception
 	 */
 	const SOURCE_LINES=12;
 
@@ -106,6 +106,9 @@ class TErrorHandler extends TComponent implements IModule
 		$this->_id=$value;
 	}
 
+	/**
+	 * @return string the directory containing error template files.
+	 */
 	public function getErrorTemplatePath()
 	{
 		return $this->_templatePath;
@@ -217,7 +220,7 @@ class TErrorHandler extends TComponent implements IModule
 		{
 			echo "<html><head><title>Recursive Error</title></head>\n";
 			echo "<body><h1>Recursive Error</h1>\n";
-			echo "<pre>".$exception."</pre>\n";
+			echo "<pre>".$exception->__toString()."</pre>\n";
 			echo "</body></html>";
 		}
 		else
