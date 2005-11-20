@@ -59,6 +59,10 @@ class TErrorHandler extends TComponent implements IModule
 	 * exception template file basename
 	 */
 	const EXCEPTION_FILE_NAME='exception';
+	/**
+	 * number of lines to be displayed in case of an exception
+	 */
+	const SOURCE_LINES=12;
 
 	/**
 	 * @var string module ID
@@ -223,6 +227,7 @@ class TErrorHandler extends TComponent implements IModule
 		}
 	}
 
+
 	/**
 	 * Displays exception information.
 	 * Exceptions are displayed with rich context information, including
@@ -234,19 +239,19 @@ class TErrorHandler extends TComponent implements IModule
 	{
 		$lines=file($exception->getFile());
 		$errorLine=$exception->getLine();
-		$beginLine=$errorLine-9>=0?$errorLine-9:0;
-		$endLine=$errorLine+8<=count($lines)?$errorLine+8:count($lines);
+		$beginLine=$errorLine-self::SOURCE_LINES>=0?$errorLine-self::SOURCE_LINES:0;
+		$endLine=$errorLine+self::SOURCE_LINES<=count($lines)?$errorLine+self::SOURCE_LINES:count($lines);
 
 		$source='';
-		for($i=$beginLine;$i<$endLine;++$i)
+		for($i=$beginLine-1;$i<$endLine;++$i)
 		{
 			if($i===$errorLine-1)
 			{
-				$line=highlight_string(sprintf("Line %4d: %s",$i+1,$lines[$i]),true);
-				$source.="<div style=\"background-color: #ffeeee\">".$line."</div>";
+				$line=htmlspecialchars(sprintf("%04d: %s",$i+1,str_replace("\t",'    ',$lines[$i])));
+				$source.="<div class=\"error\">".$line."</div>";
 			}
 			else
-				$source.=highlight_string(sprintf("Line %4d: %s",$i+1,$lines[$i]),true);
+				$source.=htmlspecialchars(sprintf("%04d: %s",$i+1,str_replace("\t",'    ',$lines[$i])));
 		}
 
 		$fields=array(

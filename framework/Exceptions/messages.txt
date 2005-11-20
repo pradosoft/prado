@@ -79,6 +79,12 @@ xmldocument_file_write_failed			= TXmlDocument is unable to write file '%s'.
 authorizationrule_action_invalid		= TAuthorizationRule.Action can only take 'allow' or 'deny' as the value.
 authorizationrule_verb_invalid			= TAuthorizationRule.Verb can only take 'get' or 'post' as the value.
 
+authmanager_usermanager_required		= TAuthManager.UserManager must be assigned a value.
+authmanager_usermanager_inexistent		= TAuthManager.UserManager '%s' does not refer to an ID of application module.
+authmanager_usermanager_invalid			= TAuthManager.UserManager '%s' does not refer to a valid TUserManager application module.
+authmanager_usermanager_unchangeable	= TAuthManager.UserManager cannot be modified after the module is initialized.
+authmanager_session_required			= TAuthManager requires a session application module.
+
 body_contents_not_allowed	= %s: body contents are not allowed.
 control_id_not_unique		= Control ID '%s' is not unique for control type '%s'.
 control_not_found		= Unable to find a control with ID '%s'.
