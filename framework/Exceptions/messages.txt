@@ -60,6 +60,18 @@ errorhandler_errortemplatepath_invalid	= TErrorHandler.ErrorTemplatePath '%s' is
 
 pageservice_page_unknown				= Page '%s' Not Found
 
+template_templatefile_invalid			= Template file '%s' cannot open.
+template_closingtag_unexpected			= %s: Unexpected closing tag '%s' is found.
+template_closingtag_expected			= %s: Closing tag '%s' is expected.
+template_directive_nonunique			= %s: Directive '<%@ ... %>' must appear at most once in a template.
+template_comments_forbidden				= %s: Template comments are not allowed within property tags.
+template_component_unknown				= Component '%s' configured in template is not defined.
+template_event_invalid					= Event '%s.%s' configured in template is not defined.
+template_property_readonly				= Property '%s.%s' configured in template is read only.
+template_attribute_unbindable			= Attribute '%s.%s' configured in template cannot be bound to an expression.
+template_property_undefined				= Property '%s.%s' configured in template is not defined.
+template_property_unbindable			= Property '%s.%s' configured in template cannot be bound to an expression. Only properties of controls can be bound.
+template_component_required				= '%s' is not a component. Only components can be configured in template.
 
 body_contents_not_allowed	= %s: body contents are not allowed.
 control_id_not_unique		= Control ID '%s' is not unique for control type '%s'.

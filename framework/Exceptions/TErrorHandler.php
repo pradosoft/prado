@@ -236,6 +236,7 @@ class TErrorHandler extends TComponent implements IModule
 		$errorLine=$exception->getLine();
 		$beginLine=$errorLine-9>=0?$errorLine-9:0;
 		$endLine=$errorLine+8<=count($lines)?$errorLine+8:count($lines);
+
 		$source='';
 		for($i=$beginLine;$i<$endLine;++$i)
 		{
@@ -247,6 +248,7 @@ class TErrorHandler extends TComponent implements IModule
 			else
 				$source.=highlight_string(sprintf("Line %4d: %s",$i+1,$lines[$i]),true);
 		}
+
 		$fields=array(
 			'%%ErrorType%%',
 			'%%ErrorMessage%%',
@@ -266,9 +268,9 @@ class TErrorHandler extends TComponent implements IModule
 			strftime('%Y-%m-%d %H:%m',time())
 		);
 		$lang=Prado::getPreferredLanguage();
-		$exceptionFile=$this->_templatePath.'/'.self::EXCEPTION_FILE_NAME.'-'.$lang.'.html';
+		$exceptionFile=dirname(__FILE__).'/'.self::EXCEPTION_FILE_NAME.'-'.$lang.'.html';
 		if(!is_file($exceptionFile))
-			$exceptionFile=$this->_templatePath.'/'.self::EXCEPTION_FILE_NAME.'.html';
+			$exceptionFile=dirname(__FILE__).'/'.self::EXCEPTION_FILE_NAME.'.html';
 		if(($content=@file_get_contents($exceptionFile))===false)
 			die("Unable to open exception template file '$exceptionFile'.");
 		echo str_replace($fields,$values,$content);

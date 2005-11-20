@@ -16,15 +16,10 @@
  * TException is the base class for all PRADO exceptions.
  * TException
  *     TSystemException
- *         TNullReferenceException
- *         TIndexOutOfRangeException
- *         TArithmeticException
- *         TInvalidValueException
- *         TInvalidTypeException
- *         TInvalidFormatException
+ *         TInvalidDataValueException
+ *         TInvalidDataTypeException
  *         TInvalidOperationException
  *         TConfigurationException
- *         TSecurityException
  *         TIOException
  *         TDBException
  *         THttpException
@@ -88,18 +83,6 @@ class TApplicationException extends TException
 {
 }
 
-class TNullReferenceException extends TSystemException
-{
-}
-
-class TIndexOutOfRangeException extends TSystemException
-{
-}
-
-class TArithmeticException extends TSystemException
-{
-}
-
 class TInvalidOperationException extends TSystemException
 {
 }
@@ -120,19 +103,27 @@ class TConfigurationException extends TSystemException
 {
 }
 
-class TIOException extends TException
+class TIOException extends TSystemException
 {
 }
 
-class TDBException extends TException
+class TDBException extends TSystemException
 {
 }
 
-class TSecurityException extends TException
+class TSecurityException extends TSystemException
 {
 }
 
-class TNotSupportedException extends TException
+class TNotSupportedException extends TSystemException
+{
+}
+
+class TTemplateParsingException extends TSystemException
+{
+}
+
+class TTemplateRuntimeException extends TSystemException
 {
 }
 

@@ -1,8 +1,5 @@
 <?php
 
-// TODO: use namespace for BasePath
-// add ThemesUrl
-
 
 class TThemeManager extends TComponent implements IModule
 {
@@ -64,46 +61,19 @@ class TThemeManager extends TComponent implements IModule
 	{
 		if(($themePath=realpath($this->_basePath.'/'.$name))===false || !is_dir($themePath))
 			throw new TConfigurationException('thememanager_theme_inexistent',$name);
-		if(($cache=$this->_application->getCache())!==null)
-		{
-			$array=$cache->get(self::THEME_CACHE_PREFIX.$themePath);
-			if(is_array($array))
-			{
-				list($theme,$timestamp)=$array;
-				$cacheValid=true;
-				if($this->_application->getMode()!=='Performance')
-				{
-					if(($dir=opendir($themePath))===false)
-						throw new TIOException('thememanager_theme_inexistent',$name);
-					while(($file=readdir($dir))!==false)
-					{
-						if(basename($file,'.skin')!==$file && filemtime($themePath.'/'.$file)>$timestamp)
-						{
-							$cacheValid=false;
-							break;
-						}
-					}
-					closedir($dir);
-				}
-				if($cacheValid)
-					return $theme;
-			}
-		}
-		// not cached, so we collect all skin files
-		$content='';
-		if(($dir=opendir($themePath))===false)
-			throw new TIOException('thememanager_theme_inexistent',$name);
-		while(($file=readdir($dir))!==false)
-		{
-			if(basename($file,'.skin')!==$file)
-				$content.=file_get_contents($themePath.'/'.$file);
-		}
-		closedir($dir);
 
-		$theme=new TTheme($content,$themePath,$this->_baseUrl);
-		if($cache!==null)
-			$cache->set(self::THEME_CACHE_PREFIX.$themePath,array($theme,time()));
-		return $theme;
+		if($this->_baseUrl===null)
+		{
+			$appPath=dirname(Prado::getApplication()->getRequest()->getPhysicalApplicationPath());
+			if(strpos($themePath,$appPath)===false)
+				throw new TConfigurationException('theme_baseurl_required');
+			$appUrl=dirname(Prado::getApplication()->getRequest()->getApplicationPath());
+			$themeUrl=$appUrl.'/'.strtr(substr($themePath,strlen($appPath)),'\\','/');
+		}
+		else
+			$themeUrl=$baseUrl.'/'.basename($themePath);
+		return new TTheme($this->_application,$themePath,$themeUrl);
+
 	}
 
 	public function getBasePath()
@@ -137,43 +107,73 @@ class TThemeManager extends TComponent implements IModule
 
 class TTheme extends TTemplate
 {
+	const THEME_CACHE_PREFIX='prado:theme:';
+	const SKIN_FILE_EXT='.skin';
 	private $_themePath;
 	private $_themeUrl;
-	private $_skins=array();
+	private $_skins=null;
 
-	public function __construct($content,$themePath,$baseUrl)
+	public function __construct($application,$themePath,$themeUrl)
 	{
-		$this->_themePath=$themePath;
-		if($baseUrl===null)
+		$this->_themeUrl=$themeUrl;
+		if(($cache=$application->getCache())!==null)
 		{
-			$appPath=dirname(Prado::getApplication()->getRequest()->getPhysicalApplicationPath());
-			if(strpos($themePath,$appPath)===false)
-				throw new TConfigurationException('theme_baseurl_required');
-			$appUrl=dirname(Prado::getApplication()->getRequest()->getApplicationPath());
-			$this->_themeUrl=$appUrl.'/'.strtr(substr($themePath,strlen($appPath)),'\\','/');
-		}
-		else
-			$this->_themeUrl=$baseUrl.'/'.basename($themePath);
-
-		$theme=&$this->parse($content);
-		foreach($theme as $skin)
-		{
-			if($skin[0]!==-1)
-				throw new TConfigurationException('theme_control_nested',$skin[1]);
-			else if(!isset($skin[2]))  // a text string, ignored
-				continue;
-			$type=$skin[1];
-			$id=isset($skin[2]['skinid'])?$skin[2]['skinid']:0;
-			unset($skin[2]['skinid']);
-			if(isset($this->_skins[$type][$id]))
-				throw new TConfigurationException('theme_skinid_duplicated',$type,$id);
-			foreach($skin[2] as $name=>$value)
+			$array=$cache->get(self::THEME_CACHE_PREFIX.$themePath);
+			if(is_array($array))
 			{
-				if(is_array($value) && $value[0]===0)
-					throw new TConfigurationException('theme_databind_unsupported',$type,$id,$name);
+				list($skins,$timestamp)=$array;
+				$cacheValid=true;
+				if($application->getMode()!=='Performance')
+				{
+					if(($dir=opendir($themePath))===false)
+						throw new TIOException('theme_path_inexistent',$themePath);
+					while(($file=readdir($dir))!==false)
+					{
+						if(basename($file,self::SKIN_FILE_EXT)!==$file && filemtime($themePath.'/'.$file)>$timestamp)
+						{
+							$cacheValid=false;
+							break;
+						}
+					}
+					closedir($dir);
+				}
+				if($cacheValid)
+					$this->_skins=$skins;
 			}
-			$this->_skins[$type][$id]=$skin[2];
 		}
+		if($this->_skins===null)
+		{
+			if(($dir=opendir($themePath))===false)
+				throw new TIOException('theme_path_inexistent',$themePath);
+			while(($file=readdir($dir))!==false)
+			{
+				if(basename($file,self::SKIN_FILE_EXT)!==$file)
+				{
+					$template=new TTemplate(file_get_contents($themePath.'/'.$file),$themePath,$themePath.'/'.$file);
+					foreach($template->getItems() as $skin)
+					{
+						if($skin[0]!==-1)
+							throw new TConfigurationException('theme_control_nested',$skin[1]);
+						else if(!isset($skin[2]))  // a text string, ignored
+							continue;
+						$type=$skin[1];
+						$id=isset($skin[2]['skinid'])?$skin[2]['skinid']:0;
+						unset($skin[2]['skinid']);
+						if(isset($this->_skins[$type][$id]))
+							throw new TConfigurationException('theme_skinid_duplicated',$type,$id);
+						foreach($skin[2] as $name=>$value)
+						{
+							if(is_array($value) && $value[0]===0)
+								throw new TConfigurationException('theme_databind_forbidden',$type,$id,$name);
+						}
+						$this->_skins[$type][$id]=$skin[2];
+					}
+				}
+			}
+			closedir($dir);
+		}
+		if($cache!==null)
+			$cache->set(self::THEME_CACHE_PREFIX.$themePath,array($this->_skins,time()));
 	}
 
 	public function applySkin($control)
