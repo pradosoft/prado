@@ -112,7 +112,7 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 			$this->addedItem($key,$value);
 		}
 		else
-			throw new TInvalidOperationException('map_item_invalid');
+			throw new TInvalidOperationException('map_addition_disallowed');
 	}
 
 	/**

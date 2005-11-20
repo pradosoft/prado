@@ -88,14 +88,14 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 * This method is exactly the same as {@link offsetGet}.
 	 * @param integer the index of the item
 	 * @return mixed the item at the index
-	 * @throws TIndexOutOfRangeException if the index is out of the range
+	 * @throws TInvalidDataValueException if the index is out of the range
 	 */
 	public function itemAt($index)
 	{
 		if(isset($this->_d[$index]))
 			return $this->_d[$index];
 		else
-			throw new TIndexOutOfRangeException('list_index_invalid',$index);
+			throw new TInvalidDataValueException('list_index_invalid',$index);
 	}
 
 	/**
@@ -120,7 +120,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 * will be moved one step towards the end.
 	 * @param integer the speicified position.
 	 * @param mixed new item
-	 * @throws TIndexOutOfRangeException If the index specified exceeds the bound
+	 * @throws TInvalidDataValueException If the index specified exceeds the bound
 	 * @throws TInvalidOperationException If the item is not allowed to be added
 	 */
 	public function addAt($index,$item)
@@ -136,7 +136,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 				$this->addedItem($item);
 			}
 			else
-				throw new TIndexOutOfRangeException('list_index_invalid',$index);
+				throw new TInvalidDataValueException('list_index_invalid',$index);
 		}
 		else
 			throw new TInvalidOperationException('list_addition_disallowed');
@@ -190,7 +190,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 				throw new TInvalidOperationException('list_item_unremovable');
 		}
 		else
-			throw new TIndexOutOfRangeException('list_index_invalid',$index);
+			throw new TInvalidDataValueException('list_index_invalid',$index);
 	}
 
 	/**
@@ -283,14 +283,14 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 * This method is required by the interface ArrayAccess.
 	 * @param integer the offset to retrieve item.
 	 * @return mixed the item at the offset
-	 * @throws TIndexOutOfRangeException if the offset is invalid
+	 * @throws TInvalidDataValueException if the offset is invalid
 	 */
 	public function offsetGet($offset)
 	{
 		if(isset($this->_d[$offset]))
 			return $this->_d[$offset];
 		else
-			throw new TIndexOutOfRangeException('list_index_invalid',$offset);
+			throw new TInvalidDataValueException('list_index_invalid',$offset);
 	}
 
 	/**
