@@ -32,8 +32,6 @@
  * @package System.Web.UI
  * @since 3.0
  */
-
-
 class TTemplateManager extends TComponent implements IModule
 {
 	/**

@@ -1,66 +1,96 @@
 <?php
+/**
+ * TUser, TUserManager class
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Security
+ */
 
 /**
- * IUser interface.
+ * TUser class
  *
- * This interface must be implemented by user objects.
+ * TUser implements basic user functionality for a prado application.
+ * To get the name of the user, use {@link getName Name} property.
+ * The property {@link getIsGuest IsGuest} tells if the user a guest/anonymous user.
+ * To obtain or test the roles that the user is in, use property
+ * {@link getRoles Roles} and call {@link isInRole()}, respectively.
+ *
+ * TUser is meant to be used together with {@link TUserManager} and
+ * {@link TAuthManager}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Security
  * @since 3.0
  */
-interface IUser
-{
-	public function getManager();
-	public function getName();
-	public function setName($value);
-	public function getIsGuest();
-	public function setIsGuest($value);
-	public function getRoles();
-	public function setRoles($value);
-	/**
-	 * @param string role to be tested
-	 * @return boolean whether the user is of this role
-	 */
-	public function isInRole($role);
-	public function saveToString();
-	public function loadFromString($string);
-}
-
 class TUser extends TComponent implements IUser
 {
+	/**
+	 * @var TUserManager user manager
+	 */
 	private $_manager;
-	private $_isGuest=false;
+	/**
+	 * @var boolean if the user is a guest
+	 */
+	private $_isGuest=true;
+	/**
+	 * @var string username
+	 */
 	private $_name='';
+	/**
+	 * @var array user roles
+	 */
 	private $_roles=array();
 
+	/**
+	 * Constructor.
+	 * @param TUserManager user manager
+	 */
 	public function __construct($manager=null)
 	{
 		parent::__construct();
 		$this->_manager=$manager;
 	}
 
+	/**
+	 * @return TUserManager user manager
+	 */
 	public function getManager()
 	{
 		return $this->_manager;
 	}
 
+	/**
+	 * @return string username
+	 */
 	public function getName()
 	{
 		return $this->_name;
 	}
 
+	/**
+	 * @param string username
+	 */
 	public function setName($value)
 	{
 		$this->_name=$value;
 	}
 
+	/**
+	 * @return boolean if the user is a guest
+	 */
 	public function getIsGuest()
 	{
 		return $this->_isGuest;
 	}
 
+	/**
+	 * @param boolean if the user is a guest
+	 */
 	public function setIsGuest($value)
 	{
 		$this->_isGuest=TPropertyValue::ensureBoolean($value);
@@ -71,11 +101,17 @@ class TUser extends TComponent implements IUser
 		}
 	}
 
+	/**
+	 * @return array list of roles that the user is of
+	 */
 	public function getRoles()
 	{
 		return $this->_roles;
 	}
 
+	/**
+	 * @return array|string list of roles that the user is of. If it is a string, roles are assumed by separated by comma
+	 */
 	public function setRoles($value)
 	{
 		if(is_array($value))
@@ -91,6 +127,10 @@ class TUser extends TComponent implements IUser
 		}
 	}
 
+	/**
+	 * @param string role to be tested. Note, role is case-insensitive.
+	 * @return boolean whether the user is of this role
+	 */
 	public function isInRole($role)
 	{
 		foreach($this->_roles as $r)
@@ -99,11 +139,18 @@ class TUser extends TComponent implements IUser
 		return false;
 	}
 
+	/**
+	 * @return string user data that is serialized and will be stored in session
+	 */
 	public function saveToString()
 	{
 		return serialize(array($this->_name,$this->_roles,$this->_isGuest));
 	}
 
+	/**
+	 * @param string user data that is serialized and restored from session
+	 * @return IUser the user object
+	 */
 	public function loadFromString($data)
 	{
 		if(!empty($data))
@@ -117,15 +164,61 @@ class TUser extends TComponent implements IUser
 	}
 }
 
-
+/**
+ * TUserManager class
+ *
+ * TUserManager manages a static list of users {@link TUser}.
+ * The user information is specified via module configuration using the following XML syntax,
+ * <code>
+ * <user name="Joe" password="demo" />
+ * <user name="John" password="demo" />
+ * <role name="Administrator" users="John" />
+ * <role name="Writer" users="Joe,John" />
+ * </code>
+ *
+ * The user passwords may be specified as clear text, SH1 or MD5 hashed by setting
+ * {@link setPasswordMode PasswordMode} as <b>Clear</b>, <b>SH1</b> or <b>MD5</b>.
+ * The default name for a guest user is <b>Guest</b>. It may be changed
+ * by setting {@link setGuestName GuestName} property.
+ *
+ * TUserManager may be used together with {@link TAuthManager} which manages
+ * how users are authenticated and authorized in a Prado application.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Security
+ * @since 3.0
+ */
 class TUserManager extends TComponent implements IModule
 {
+	/**
+	 * @var string id of this module
+	 */
 	private $_id;
+	/**
+	 * @var array list of users managed by this module
+	 */
 	private $_users=array();
+	/**
+	 * @var array list of roles managed by this module
+	 */
 	private $_roles=array();
+	/**
+	 * @var string guest name
+	 */
 	private $_guestName='Guest';
+	/**
+	 * @var string password mode, Clear|MD5|SH1
+	 */
 	private $_passwordMode='MD5';
 
+	/**
+	 * Initializes the module.
+	 * This method is required by IModule and is invoked by application.
+	 * It loads user/role information from the module configuration.
+	 * @param TApplication application
+	 * @param TXmlElement module configuration
+	 */
 	public function init($application,$config)
 	{
 		foreach($config->getElementsByTagName('user') as $node)
@@ -140,36 +233,60 @@ class TUserManager extends TComponent implements IModule
 		}
 	}
 
+	/**
+	 * @return string id of this module
+	 */
 	public function getID()
 	{
 		return $this->_id;
 	}
 
+	/**
+	 * @param string id of this module
+	 */
 	public function setID($value)
 	{
 		$this->_id=$value;
 	}
 
+	/**
+	 * @return string guest name, defaults to 'Guest'
+	 */
 	public function getGuestName()
 	{
 		return $this->_guestName;
 	}
 
+	/**
+	 * @param string name to be used for guest users.
+	 */
 	public function setGuestName($value)
 	{
 		$this->_guestName=$value;
 	}
 
+	/**
+	 * @return string (Clear|MD5|SH1) how password is stored, clear text, or MD5 or SH1 hashed. Default to MD5.
+	 */
 	public function getPasswordMode()
 	{
 		return $this->_passwordMode;
 	}
 
+	/**
+	 * @param string (Clear|MD5|SH1) how password is stored, clear text, or MD5 or SH1 hashed.
+	 */
 	public function setPasswordMode($value)
 	{
 		$this->_passwordMode=TPropertyValue::ensureEnum($value,array('Clear','MD5','SHA1'));
 	}
 
+	/**
+	 * Validates if the username and password are correct.
+	 * @param string user name
+	 * @param string password
+	 * @return boolean true if validation is successful, false otherwise.
+	 */
 	public function validateUser($username,$password)
 	{
 		if($this->_passwordMode==='MD5')
@@ -180,19 +297,17 @@ class TUserManager extends TComponent implements IModule
 		return (isset($this->_users[$username]) && $this->_users[$username]===$password);
 	}
 
-	public function logout($user)
-	{
-		$user->setIsGuest(true);
-		$user->setName($this->getGuestName());
-		$user->setRoles(array());
-	}
-
+	/**
+	 * Returns a user instance given the user name.
+	 * @param string user name, null if it is a guest.
+	 * @return TUser the user instance, null if the specified username is not in the user database.
+	 */
 	public function getUser($username=null)
 	{
 		if($username===null)
 		{
 			$user=new TUser($this);
-			$user->setIsGuest($username===null);
+			$user->setIsGuest(true);
 			return $user;
 		}
 		else
@@ -202,6 +317,7 @@ class TUserManager extends TComponent implements IModule
 			{
 				$user=new TUser($this);
 				$user->setName($username);
+				$user->setIsGuest(false);
 				if(isset($this->_roles[$username]))
 					$user->setRoles($this->_roles[$username]);
 				return $user;
@@ -209,6 +325,18 @@ class TUserManager extends TComponent implements IModule
 			else
 				return null;
 		}
+	}
+
+	/**
+	 * Sets a user as a guest.
+	 * User name is changed as guest name, and roles are emptied.
+	 * @param TUser the user to be changed to a guest.
+	 */
+	public function switchToGuest($user)
+	{
+		$user->setIsGuest(true);
+		$user->setName($this->getGuestName());
+		$user->setRoles(array());
 	}
 }
 

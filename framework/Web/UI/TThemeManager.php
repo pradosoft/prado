@@ -105,7 +105,7 @@ class TThemeManager extends TComponent implements IModule
 	}
 }
 
-class TTheme extends TTemplate
+class TTheme extends TComponent
 {
 	const THEME_CACHE_PREFIX='prado:theme:';
 	const SKIN_FILE_EXT='.skin';
@@ -171,9 +171,9 @@ class TTheme extends TTemplate
 				}
 			}
 			closedir($dir);
+			if($cache!==null)
+				$cache->set(self::THEME_CACHE_PREFIX.$themePath,array($this->_skins,time()));
 		}
-		if($cache!==null)
-			$cache->set(self::THEME_CACHE_PREFIX.$themePath,array($this->_skins,time()));
 	}
 
 	public function applySkin($control)

@@ -73,6 +73,12 @@ template_property_undefined				= Property '%s.%s' configured in template is not 
 template_property_unbindable			= Property '%s.%s' configured in template cannot be bound to an expression. Only properties of controls can be bound.
 template_component_required				= '%s' is not a component. Only components can be configured in template.
 
+xmldocument_file_read_failed			= TXmlDocument is unable to read file '%s'.
+xmldocument_file_write_failed			= TXmlDocument is unable to write file '%s'.
+
+authorizationrule_action_invalid		= TAuthorizationRule.Action can only take 'allow' or 'deny' as the value.
+authorizationrule_verb_invalid			= TAuthorizationRule.Verb can only take 'get' or 'post' as the value.
+
 body_contents_not_allowed	= %s: body contents are not allowed.
 control_id_not_unique		= Control ID '%s' is not unique for control type '%s'.
 control_not_found		= Unable to find a control with ID '%s'.

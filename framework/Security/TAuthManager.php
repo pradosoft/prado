@@ -1,9 +1,32 @@
 <?php
+/**
+ * TAuthManager class file
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Security
+ */
+
+/**
+ * TAuthManager class
+ *
+ * TAuthManager performs user authentication and authorization for a Prado application.
+ *
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Security
+ * @since 3.0
+ */
+
+Prado::using('System.Security.TUserManager');
 
 class TAuthManager extends TComponent implements IModule
 {
 	const RETURN_URL_VAR='ReturnUrl';
-	private $_guest='Guest';
 	private $_initialized=false;
 	private $_application;
 	private $_users=null;
@@ -39,16 +62,6 @@ class TAuthManager extends TComponent implements IModule
 		$application->attachEventHandler('EndRequest',array($this,'leave'));
 		$application->attachEventHandler('Authorization',array($this,'doAuthorization'));
 		$this->_initialized=true;
-	}
-
-	public function getGuestName()
-	{
-		return $this->_guest;
-	}
-
-	public function setGuestName($value)
-	{
-		$this->_guest=$value;
 	}
 
 	public function getUserManager()
@@ -182,7 +195,7 @@ class TAuthManager extends TComponent implements IModule
 			throw new TConfigurationException('authenticator_session_required');
 		else
 		{
-			$userManager->logout($this->_application->getUser());
+			$userManager->switchToGuest($this->_application->getUser());
 			$session->destroy();
 		}
 	}
