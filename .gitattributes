@@ -69,6 +69,8 @@ framework/Web/THttpRequest.php -text
 framework/Web/THttpResponse.php -text
 framework/Web/THttpSession.php -text
 framework/Web/THttpUtility.php -text
+framework/Web/TTemplateManager.php -text
+framework/Web/TThemeManager.php -text
 framework/Web/UI/TClientScriptManager.php -text
 framework/Web/UI/TControl.php -text
 framework/Web/UI/TForm.php -text
