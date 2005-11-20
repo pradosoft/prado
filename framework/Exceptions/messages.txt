@@ -1,3 +1,9 @@
+prado_application_singleton_required	= Prado.Application must only be set once.
+prado_component_unknown					= Unable to create unknown component '%s'.
+prado_using_invalid						= '%s' is not a valid namespace to be used. Make sure '.*' is appended if you want to use a namespace referring to a directory.
+prado_alias_redefined					= Alias '%s' cannot be redefined.
+prado_alias_invalid						= Alias '%s' refers to an invalid path '%s'. Only existing directories can be aliased.
+
 component_property_undefined			= Component property '%s.%s' is not defined.
 component_property_readonly				= Component property '%s.%s' is read-only.
 component_event_undefined				= Component event '%s.%s' is not defined.

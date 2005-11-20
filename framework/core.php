@@ -480,7 +480,7 @@ class PradoBase
 				throw new TInvalidDataValueException('prado_using_invalid',$namespace);
 			else
 			{
-				if($namespace[strlen($namespace)-1]==='*')  // a file
+				if($namespace[strlen($namespace)-1]==='*')  // a directory
 				{
 					if(is_dir($path))
 					{
@@ -490,7 +490,7 @@ class PradoBase
 					else
 						throw new TInvalidDataValueException('prado_using_invalid',$namespace);
 				}
-				else  // a directory
+				else  // a file
 				{
 					if(is_file($path))
 					{
