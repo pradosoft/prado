@@ -15,17 +15,12 @@
  *
  * TTemplateManager manages the loading and parsing of control templates.
  *
- * By default, TTemplateManager is registered with {@link TPageService} as the
- * template manager module that can be accessed via {@link TPageService::getTemplateManager()}.
- *
  * Given a class name, TTemplateManager tries to locate the corresponding template
  * file under the directory containing the class file. The name of the template file
  * is the class name with the extension '.tpl'.
- * where {@link getCacheExpire CacheExpire}, {@link getCacheControl CacheControl}
- * and {@link getBufferOutput BufferOutput} are configurable properties of THttpResponse.
  *
- * If cache is enabled for the application, TTemplateManager will try to make
- * of the cache to save the parsing time.
+ * By default, TTemplateManager is registered with {@link TPageService} as the
+ * template manager module that can be accessed via {@link TPageService::getTemplateManager()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -186,6 +181,8 @@ class TTemplate extends TComponent implements ITemplate
 	 * Constructor.
 	 * The template will be parsed after construction.
 	 * @param string the template string
+	 * @param string the template context directory
+	 * @param string the template file, null if no file
 	 */
 	public function __construct($template,$contextPath,$tplFile=null)
 	{
@@ -202,7 +199,10 @@ class TTemplate extends TComponent implements ITemplate
 		return $this->_directive;
 	}
 
-	public function getItems()
+	/**
+	 * @return array the parsed template
+	 */
+	public function &getItems()
 	{
 		return $this->_tpl;
 	}
@@ -389,10 +389,9 @@ class TTemplate extends TComponent implements ITemplate
 	 * If an object has no container, its container index is -1.
 	 *
 	 * @param string the template string
-	 * @return array the parsed result
 	 * @throws TTemplateParsingException if a parsing error is encountered
 	 */
-	protected function &parse($input)
+	protected function parse($input)
 	{
 		$tpl=&$this->_tpl;
 		$n=preg_match_all(self::REGEX_RULES,$input,$matches,PREG_SET_ORDER|PREG_OFFSET_CAPTURE);

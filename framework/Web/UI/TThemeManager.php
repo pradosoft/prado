@@ -1,6 +1,29 @@
 <?php
+/**
+ * TThemeManager class
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI
+ */
 
-
+/**
+ * TThemeManager class
+ *
+ * TThemeManager manages the themes used in a Prado application.
+ *
+ * Themes are stored in under {@link setBasePath BasePath} that can be accessed
+ * via URL {@link setBaseUrl BaseUrl}. Each theme is defined by a subdirectory
+ * and all the files under that directory.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI
+ * @since 3.0
+ */
 class TThemeManager extends TComponent implements IModule
 {
 	const THEME_CACHE_PREFIX='prado:theme:';
@@ -71,7 +94,7 @@ class TThemeManager extends TComponent implements IModule
 			$themeUrl=$appUrl.'/'.strtr(substr($themePath,strlen($appPath)),'\\','/');
 		}
 		else
-			$themeUrl=$baseUrl.'/'.basename($themePath);
+			$themeUrl=$this->_baseUrl.'/'.basename($themePath);
 		return new TTheme($this->_application,$themePath,$themeUrl);
 
 	}
