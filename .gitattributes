@@ -116,6 +116,7 @@ tests/UnitTests/framework/TestSystem/protected/application.xml -text
 tests/UnitTests/framework/TestSystem/protected/data/test.db -text
 tests/UnitTests/framework/TestSystem/protected/pages/config.xml -text
 tests/UnitTests/framework/Web/UI/utControl.php -text
+tests/UnitTests/framework/Web/utHttpRequest.php -text
 tests/UnitTests/framework/common.php -text
 tests/UnitTests/framework/index.php -text
 tests/UnitTests/framework/utApplication.php -text

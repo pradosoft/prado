@@ -79,6 +79,7 @@ class THttpRequest extends TComponent implements IModule
 		// Info about server variables:
 		// PHP_SELF contains real URI (w/ path info, w/o query string)
 		// SCRIPT_NAME is the real URI for the requested script (w/o path info and query string)
+		// QUERY_STRING is the string following the '?' in the ur (eg the a=x part in http://foo/bar?a=x)
 		// REQUEST_URI contains the URI part entered in the browser address bar
 		// SCRIPT_FILENAME is the file path to the executing script
 		if(isset($_SERVER['REQUEST_URI']))
