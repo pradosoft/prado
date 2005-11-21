@@ -10,6 +10,9 @@
  * @package System.Web.Services
  */
 
+/**
+ * Include classes to be used by page service
+ */
 Prado::using('System.Web.UI.TPage');
 Prado::using('System.Web.TTemplateManager');
 Prado::using('System.Web.TThemeManager');
@@ -18,7 +21,46 @@ Prado::using('System.Web.TAssetManager');
 /**
  * TPageService class.
  *
- * TPageService implements a service that can serve user requested pages.
+ * TPageService implements the service for serving user page requests.
+ *
+ * Pages that are available to client users are stored under a directory specified by
+ * {@link setBasePath BasePath}. The directory may contain subdirectories.
+ * A directory may be used to group together the pages serving for the similar goal.
+ * Each directory must contain a configuration file <b>config.xml</b> that is similar to the application
+ * configuration file. The only difference is that the page directory configuration
+ * contains a mapping between page IDs and page types. The page IDs are visible
+ * by client users while page types are used on the server side.
+ * A page is requested via page path, which is a dot-connected directory names
+ * appended by the page ID. Assume '<BasePath>/Users/Admin' is the directory
+ * containing the page 'Update' whose type is UpdateUserPage. Then the page can
+ * be requested via 'Users.Admin.Update'.
+ *
+ * Modules can be configured and loaded in page directory configurations.
+ * Configuration of a module in a subdirectory will overwrite its parent
+ * directory's configuration, if both configurations refer to the same module.
+ *
+ * By default, TPageService will automatically load three modules:
+ * - {@link TTemplateManager} : manages page and control templates
+ * - {@link TThemeManager} : manages themes used in a Prado application
+ * - {@link TAssetManager} : manages assets used in a Prado application.
+ *
+ * In page directory configurations, static authorization rules can also be specified,
+ * which governs who and which roles can access particular pages.
+ * Refer to {@link TAuthorizationRule} for more details about authorization rules.
+ * Page authorization rules can be configured within an <authorization> tag in
+ * each page directory configuration as follows,
+ * <authorization>
+ *   <deny pages="Update" users="?" />
+ *   <allow pages="Admin" roles="administrator" />
+ *   <deny pages="Admin" users="*" />
+ * </authorization>
+ * where the 'pages' attribute may be filled with a sequence of comma-separated
+ * page IDs. If 'pages' attribute does not appear in a rule, the rule will be
+ * applied to all pages in this directory and all subdirectories (recursively).
+ * Application of authorization rules are in a bottom-up fashion, starting from
+ * the directory containing the requested page up to all parent directories.
+ * The first matching rule will be used. The last rule always allows all users
+ * accessing to any resources.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -32,6 +74,10 @@ class TPageService extends TComponent implements IService
 	 */
 	const CONFIG_FILE='config.xml';
 	/**
+	 * Default base path
+	 */
+	const DEFAULT_BASEPATH='pages';
+	/**
 	 * Prefix of ID used for storing parsed configuration in cache
 	 */
 	const CONFIG_CACHE_PREFIX='prado:pageservice:';
@@ -42,7 +88,7 @@ class TPageService extends TComponent implements IService
 	/**
 	 * @var string root path of pages
 	 */
-	private $_basePath;
+	private $_basePath=null;
 	/**
 	 * @var string default page
 	 */
@@ -90,8 +136,12 @@ class TPageService extends TComponent implements IService
 	{
 		$this->_application=$application;
 
-		if(($basePath=Prado::getPathOfNamespace($this->_basePath))===null || !is_dir($basePath))
-			throw new TConfigurationException('pageservice_basepath_invalid',$this->_basePath);
+		if($this->_basePath===null)
+		{
+			$basePath=dirname($application->getConfigurationPath()).'/'.self::DEFAULT_BASEPATH;
+			if(($this->_basePath=realpath($basePath))===false || !is_dir($this->_basePath))
+				throw new TConfigurationException('pageservice_basepath_invalid',$basePath);
+		}
 
 		$this->_pagePath=$application->getRequest()->getServiceParameter();
 		if(empty($this->_pagePath))
@@ -103,7 +153,7 @@ class TPageService extends TComponent implements IService
 		{
 			$pageConfig=new TPageConfiguration;
 			$pageConfig->loadXmlElement($config,dirname($application->getConfigurationFile()),null);
-			$pageConfig->loadConfigurationFiles($this->_pagePath,$basePath);
+			$pageConfig->loadConfigurationFiles($this->_pagePath,$this->_basePath);
 		}
 		else
 		{
@@ -117,7 +167,7 @@ class TPageService extends TComponent implements IService
 					// check to see if cache is the latest
 					$paths=explode('.',$this->_pagePath);
 					array_pop($paths);
-					$configPath=$basePath;
+					$configPath=$this->_basePath;
 					foreach($paths as $path)
 					{
 						if(@filemtime($configPath.'/'.self::CONFIG_FILE)>$timestamp)
@@ -137,7 +187,7 @@ class TPageService extends TComponent implements IService
 			{
 				$pageConfig=new TPageConfiguration;
 				$pageConfig->loadXmlElement($config,dirname($application->getConfigurationFile()),null);
-				$pageConfig->loadConfigurationFiles($this->_pagePath,$basePath);
+				$pageConfig->loadConfigurationFiles($this->_pagePath,$this->_basePath);
 				$cache->set(self::CONFIG_CACHE_PREFIX.$this->_pagePath,array($pageConfig,time()));
 			}
 		}
@@ -247,11 +297,11 @@ class TPageService extends TComponent implements IService
 	}
 
 	/**
-	 * @return boolean true if the pagepath is currently being requested, false otherwise
+	 * @return string the requested page path
 	 */
-	public function isRequestingPage($pagePath)
+	public function getRequestedPagePath()
 	{
-		return $this->_pagePath===$pagePath;
+		return $this->_pagePath;
 	}
 
 	/**
@@ -284,14 +334,14 @@ class TPageService extends TComponent implements IService
 
 	/**
 	 * @param string root directory (in namespace form) storing pages
-	 * @throws TInvalidOperationException if the service is initialized already
+	 * @throws TInvalidOperationException if the service is initialized already or basepath is invalid
 	 */
 	public function setBasePath($value)
 	{
 		if($this->_initialized)
 			throw new TInvalidOperationException('pageservice_basepath_unchangeable');
-		else
-			$this->_basePath=$value;
+		else if(($this->_basePath=realpath(Prado::getPathOfNamespace($value)))===false || !is_dir($this->_basePath))
+			throw new TConfigurationException('pageservice_basepath_invalid',$value);
 	}
 
 	/**
@@ -310,8 +360,8 @@ class TPageService extends TComponent implements IService
 				$p=explode('.',$this->_pagePath);
 				array_pop($p);
 				array_push($p,$className);
-				$path=Prado::getPathOfNamespace($this->_basePath).'/'.implode('/',$p).Prado::CLASS_FILE_EXT;
-				require_once($path);
+				$path=$this->_basePath.'/'.implode('/',$p).Prado::CLASS_FILE_EXT;
+				include_once($path);
 			}
 		}
 		else
@@ -321,7 +371,7 @@ class TPageService extends TComponent implements IService
 			{
 				if(!class_exists($className,false))
 				{
-					require_once($path);
+					include_once($path);
 				}
 			}
 		}
@@ -519,7 +569,7 @@ class TPageConfiguration extends TComponent
 		if($dom->loadFromFile($fname))
 			$this->loadXmlElement($dom,dirname($fname),$page);
 		else
-			throw new TConfigurationException('pageservice_configfile_invalid',$fname);
+			throw new TConfigurationException('pageserviceconf_file_invalid',$fname);
 	}
 
 	/**
@@ -540,20 +590,20 @@ class TPageConfiguration extends TComponent
 					$p=str_replace('\\','/',$p);
 					$path=realpath(preg_match('/^\\/|.:\\//',$p)?$p:$configPath.'/'.$p);
 					if($path===false || !is_dir($path))
-						throw new TConfigurationException('pageservice_alias_path_invalid',$configPath,$id,$p);
+						throw new TConfigurationException('pageserviceconf_aliaspath_invalid',$id,$p,$configPath);
 					if(isset($this->_aliases[$id]))
-						throw new TConfigurationException('pageservice_alias_redefined',$configPath,$id);
+						throw new TConfigurationException('pageserviceconf_alias_redefined',$id,$configPath);
 					$this->_aliases[$id]=$path;
 				}
 				else
-					throw new TConfigurationException('pageservice_alias_element_invalid',$configPath);
+					throw new TConfigurationException('pageserviceconf_alias_invalid',$configPath);
 			}
 			foreach($pathsNode->getElementsByTagName('using') as $usingNode)
 			{
 				if(($namespace=$usingNode->getAttribute('namespace'))!==null)
 					$this->_usings[]=$namespace;
 				else
-					throw new TConfigurationException('pageservice_using_element_invalid',$configPath);
+					throw new TConfigurationException('pageserviceconf_using_invalid',$configPath);
 			}
 		}
 
@@ -565,10 +615,10 @@ class TPageConfiguration extends TComponent
 				$properties=$node->getAttributes();
 				$type=$properties->remove('type');
 				if(($id=$properties->itemAt('id'))===null)
-					throw new TConfigurationException('pageservice_module_element_invalid',$configPath);
+					throw new TConfigurationException('pageserviceconf_module_invalid',$configPath);
 				if(isset($this->_modules[$id]))
 				{
-					if($type===null)
+					if($type===null || $type===$this->_modules[$id][0])
 					{
 						$this->_modules[$id][1]=array_merge($this->_modules[$id][1],$properties->toArray());
 						$elements=$this->_modules[$id][2]->getElements();
@@ -576,10 +626,13 @@ class TPageConfiguration extends TComponent
 							$elements->add($element);
 					}
 					else
-						throw new TConfigurationException('pageservice_module_redefined',$configPath,$id);
+					{
+						$node->setParent(null);
+						$this->_modules[$id]=array($type,$properties->toArray(),$node);
+					}
 				}
 				else if($type===null)
-					throw new TConfigurationException('pageservice_module_element_invalid',$configPath);
+					throw new TConfigurationException('pageserviceconf_moduletype_required',$id,$configPath);
 				else
 				{
 					$node->setParent(null);
@@ -595,7 +648,7 @@ class TPageConfiguration extends TComponent
 			{
 				$properties=$node->getAttributes();
 				if(($id=$properties->remove('id'))===null)
-					throw new TConfigurationException('pageservice_parameter_element_invalid');
+					throw new TConfigurationException('pageserviceconf_parameter_invalid',$configPath);
 				if(($type=$properties->remove('type'))===null)
 					$this->_parameters[$id]=$node->getValue();
 				else
@@ -643,7 +696,7 @@ class TPageConfiguration extends TComponent
 					$type=$properties->remove('type');
 					$id=$properties->itemAt('id');
 					if($id===null || $type===null)
-						throw new TConfigurationException('pageservice_page_element_invalid',$configPath);
+						throw new TConfigurationException('pageserviceconf_page_invalid',$configPath);
 					if($id===$page)
 					{
 						$this->_properties=array_merge($this->_properties,$properties->toArray());

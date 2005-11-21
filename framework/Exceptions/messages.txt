@@ -30,7 +30,8 @@ application_service_unknown				= Requested service '%s' is not defined.
 application_service_unavailable			= Service Unavailable.
 
 appconfig_aliaspath_invalid				= Application configuration <alias id="%s"> uses an invalid file path "%s".
-appconfig_aliasid_required				= Application configuration <alias> element must have an "id" attribute.
+appconfig_alias_invalid					= Application configuration <alias> element must have an "id" attribute and a "path" attribute.
+appconfig_alias_redefined				= Application configuration <alias id="%s"> cannot be redefined.
 appconfig_using_invalid					= Application configuration <using> element must have a "namespace" attribute.
 appconfig_moduleid_required				= Application configuration <module> element must have an "id" attribute.
 appconfig_moduletype_required			= Application configuration <module id="%s"> must have a "type" attribute.
@@ -75,6 +76,19 @@ memcache_port_unchangeable				= TMemCache.Port cannot be modified after the modu
 errorhandler_errortemplatepath_invalid	= TErrorHandler.ErrorTemplatePath '%s' is invalid. Make sure it is in namespace form and points to a valid directory containing error template files.
 
 pageservice_page_unknown				= Page '%s' Not Found
+pageservice_basepath_invalid			= TPageService.BasePath '%s' is not a valid directory.
+pageservice_page_required				= Page Name Required
+pageservice_defaultpage_unchangeable	= TPageService.DefaultPage cannot be modified after the service is initialized.
+pageservice_basepath_unchangeable		= TPageService.BasePath cannot be modified after the service is initialized.
+
+pageserviceconf_file_invalid			= Unable to open page directory configuration file '%s'.
+pageserviceconf_aliaspath_invalid		= <alias id="%s"> uses an invalid file path "%s" in page directory configuration file '%s'.
+pageserviceconf_alias_invalid			= <alias> element must have an "id" attribute and a "path" attribute in page directory configuration file '%s'.
+pageserviceconf_using_invalid			= <using> element must have a "namespace" attribute in page directory configuration file '%s'.
+pageserviceconf_module_invalid			= <module> element must have an "id" attribute in page directory configuration file '%s'.
+pageserviceconf_moduletype_required		= <module id="%s"> must have a "type" attribute in page directory configuration file '%s'.
+pageserviceconf_parameter_invalid		= <parameter> element must have an "id" attribute in page directory configuration file '%s'.
+pageserviceconf_page_invalid			= <page> element must have an "id" attribute and a "type" attribute in page directory configuration file '%s'.
 
 template_templatefile_invalid			= Template file '%s' cannot open.
 template_closingtag_unexpected			= %s: Unexpected closing tag '%s' is found.

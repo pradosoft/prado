@@ -768,10 +768,12 @@ class TApplicationConfiguration extends TComponent
 						$p=realpath($configPath.'/'.$path);
 					if($p===false || !is_dir($p))
 						throw new TConfigurationException('appconfig_aliaspath_invalid',$id,$path);
+					if(isset($this->_aliases[$id]))
+						throw new TConfigurationException('appconfig_alias_redefined',$id);
 					$this->_aliases[$id]=$p;
 				}
 				else
-					throw new TConfigurationException('appconfig_aliasid_required');
+					throw new TConfigurationException('appconfig_alias_invalid');
 			}
 			foreach($pathsNode->getElementsByTagName('using') as $usingNode)
 			{

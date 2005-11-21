@@ -155,7 +155,7 @@ class TAuthManager extends TComponent implements IModule
 		$this->onAuthenticate($param);
 
 		$service=$this->_application->getService();
-		if(($service instanceof TPageService) && $service->isRequestingPage($this->getLoginPage()))
+		if(($service instanceof TPageService) && $service->getRequestedPagePath()===$this->getLoginPage())
 			$this->_skipAuthorization=true;
 	}
 

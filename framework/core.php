@@ -626,6 +626,10 @@ class PradoBase
 		return $languages;
 	}
 
+	/**
+	 * Returns the most preferred language by the client user.
+	 * @return string the most preferred language by the client user, defaults to English.
+	 */
 	public static function getPreferredLanguage()
 	{
 		static $language=null;
