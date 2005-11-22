@@ -175,7 +175,7 @@ class TErrorHandler extends TComponent implements IModule
 		if(!($exception instanceof THttpException))
 			error_log($exception->__toString());
 		if($this->_templatePath===null)
-			$this->_templatePath=dirname(__FILE__);
+			$this->_templatePath=Prado::getFrameworkPath().'/Exceptions/templates';
 		$base=$this->_templatePath.'/'.self::ERROR_FILE_NAME;
 		$lang=Prado::getPreferredLanguage();
 		if(is_file("$base$statusCode-$lang.html"))
@@ -276,9 +276,9 @@ class TErrorHandler extends TComponent implements IModule
 			strftime('%Y-%m-%d %H:%m',time())
 		);
 		$lang=Prado::getPreferredLanguage();
-		$exceptionFile=dirname(__FILE__).'/'.self::EXCEPTION_FILE_NAME.'-'.$lang.'.html';
+		$exceptionFile=Prado::getFrameworkPath().'/Exceptions/templates/'.self::EXCEPTION_FILE_NAME.'-'.$lang.'.html';
 		if(!is_file($exceptionFile))
-			$exceptionFile=dirname(__FILE__).'/'.self::EXCEPTION_FILE_NAME.'.html';
+			$exceptionFile=Prado::getFrameworkPath().'/Exceptions/templates/'.self::EXCEPTION_FILE_NAME.'.html';
 		if(($content=@file_get_contents($exceptionFile))===false)
 			die("Unable to open exception template file '$exceptionFile'.");
 		echo str_replace($fields,$values,$content);
