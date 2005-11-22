@@ -436,32 +436,23 @@ class PradoBase
 			return new $type;
 		if(($pos=strrpos($type,'.'))===false)
 		{
-			// a class name is supplied
-			$className=$type;
-			if(!class_exists($className,false))
-			{
-				include_once($className.self::CLASS_FILE_EXT);
-			}
-			if(class_exists($className,false))
-				return new $className;
-			else
-				throw new TInvalidDataValueException('prado_component_unknown',$type);
+			include_once($type.self::CLASS_FILE_EXT);
+			if(class_exists($type,false))
+				return new $type;
 		}
 		else
 		{
 			$className=substr($type,$pos+1);
-			if(($path=self::getPathOfNamespace($type))!==null)
+			if(class_exists($className,false))
+				return new $className;
+			else if(($path=self::getPathOfNamespace($type))!==null)
 			{
-				// the class type is given in a namespace form
-				if(!class_exists($className,false))
-				{
-					require_once($path.self::CLASS_FILE_EXT);
-				}
+				include_once($path.self::CLASS_FILE_EXT);
 				if(class_exists($className,false))
 					return new $className;
 			}
-			throw new TInvalidDataValueException('prado_component_unknown',$type);
 		}
+		throw new TInvalidDataValueException('prado_component_unknown',$type);
 	}
 
 	/**
