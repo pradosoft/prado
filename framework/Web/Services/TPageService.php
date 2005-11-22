@@ -344,6 +344,11 @@ class TPageService extends TComponent implements IService
 			throw new TConfigurationException('pageservice_basepath_invalid',$value);
 	}
 
+	protected function createHtmlTextWriter()
+	{
+		$writer=new THtmlTextWriter($this->_application->getResponse());
+	}
+
 	/**
 	 * Runs the service.
 	 * This will create the requested page, initializes it with the property values

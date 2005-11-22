@@ -13,7 +13,7 @@
 /**
  * TImage class file
  */
-require_once(dirname(__FILE__).'/TImage.php');
+Prado::using('System.Web.UI.WebControls.TImage');
 
 /**
  * TImageButton class
