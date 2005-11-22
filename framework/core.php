@@ -37,7 +37,10 @@ require_once(PRADO_DIR.'/Collections/TMap.php');
  * Includes TXmlDocument, TXmlElement definition
  */
 require_once(PRADO_DIR.'/Data/TXmlDocument.php');
-
+/**
+ * Includes THttpUtility definition
+ */
+require_once(PRADO_DIR.'/Web/THttpUtility.php');
 
 /**
  * IModule interface.

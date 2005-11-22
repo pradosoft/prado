@@ -384,7 +384,7 @@ class TPageService extends TComponent implements IService
 			$page=new $className($this->_properties);
 		else
 			throw new THttpException(404,'pageservice_page_unknown',$this->_pageType);
-		$writer=new THtmlTextWriter($this->_application->getResponse());
+		$writer=$this->_application->getResponse()->createHtmlWriter();
 		$page->run($writer);
 		$writer->flush();
 	}

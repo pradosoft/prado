@@ -59,6 +59,10 @@ class THttpResponse extends TComponent implements IModule, ITextWriter
 	 * @var integer response status code
 	 */
 	private $_status=200;
+	/**
+	 * @var string HTML writer type
+	 */
+	private $_htmlWriterType='System.Web.UI.THtmlWriter';
 
 	/**
 	 * Destructor.
@@ -302,6 +306,34 @@ class THttpResponse extends TComponent implements IModule, ITextWriter
 	public function removeCookie($cookie)
 	{
 		setcookie($cookie->getName(),null,0,$cookie->getPath(),$cookie->getDomain(),$cookie->getSecure());
+	}
+
+	/**
+	 * @return string the type of HTML writer to be used, defaults to THtmlWriter
+	 */
+	public function getHtmlWriterType()
+	{
+		return $this->_htmlWriterType;
+	}
+
+	/**
+	 * @param string the type of HTML writer to be used, may be the class name or the namespace
+	 */
+	public function setHtmlWriterType($value)
+	{
+		$this->_htmlWriterType=$value;
+	}
+
+	/**
+	 * Creates a new instance of HTML writer.
+	 * If the type of the HTML writer is not supplied, {@link getHtmlWriterType HtmlWriterType} will be assumed.
+	 * @param string type of the HTML writer to be created. If null, {@link getHtmlWriterType HtmlWriterType} will be assumed.
+	 */
+	public function createHtmlWriter($type=null)
+	{
+		if($type===null)
+			$type=$this->_htmlWriterType;
+		return Prado::createComponent($type,$this);
 	}
 }
 

@@ -74,7 +74,7 @@ framework/Web/UI/TClientScriptManager.php -text
 framework/Web/UI/TControl.php -text
 framework/Web/UI/TForm.php -text
 framework/Web/UI/THiddenFieldPageStatePersister.php -text
-framework/Web/UI/THtmlTextWriter.php -text
+framework/Web/UI/THtmlWriter.php -text
 framework/Web/UI/TPage.php -text
 framework/Web/UI/TPageStatePersister.php -text
 framework/Web/UI/TPostBackOptions.php -text

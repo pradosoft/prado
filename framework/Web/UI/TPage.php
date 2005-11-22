@@ -1,6 +1,5 @@
 <?php
 
-Prado::using('System.Web.*');
 Prado::using('System.Web.UI.*');
 Prado::using('System.Web.UI.WebControls.*');
 

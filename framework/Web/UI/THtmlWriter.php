@@ -4,7 +4,7 @@
 // keep nonclosing tag only
 // add more utility methods (e.g. render....)
 // implment encoding (for text and url)
-class THtmlTextWriter extends TComponent implements ITextWriter
+class THtmlWriter extends TComponent implements ITextWriter
 {
 	const TAG_INLINE=0;
 	const TAG_NONCLOSING=1;
