@@ -426,33 +426,46 @@ class PradoBase
 	 * or a namespace referring to the path of the component class file.
 	 * For example, 'TButton', 'System.Web.UI.WebControls.TButton' are both
 	 * valid component type.
+	 * This method can also pass parameters to component constructors.
+	 * All paramters passed to this method except the first one (the component type)
+	 * will be supplied as component constructor paramters.
 	 * @param string component type
 	 * @return TComponent component instance of the specified type
 	 * @throws TInvalidDataValueException if the component type is unknown
 	 */
 	public static function createComponent($type)
 	{
-		if(class_exists($type,false))
-			return new $type;
-		if(($pos=strrpos($type,'.'))===false)
+		if(!class_exists($type,false))
 		{
-			include_once($type.self::CLASS_FILE_EXT);
-			if(class_exists($type,false))
-				return new $type;
-		}
-		else
-		{
-			$className=substr($type,$pos+1);
-			if(class_exists($className,false))
-				return new $className;
-			else if(($path=self::getPathOfNamespace($type))!==null)
+			if(($pos=strrpos($type,'.'))===false)
 			{
-				include_once($path.self::CLASS_FILE_EXT);
-				if(class_exists($className,false))
-					return new $className;
+				include_once($type.self::CLASS_FILE_EXT);
+				if(!class_exists($type,false))
+					throw new TInvalidDataValueException('prado_component_unknown',$type);
+			}
+			else
+			{
+				$className=substr($type,$pos+1);
+				if(!class_exists($className,false) && ($path=self::getPathOfNamespace($type))!==null)
+				{
+					include_once($path.self::CLASS_FILE_EXT);
+					if(!class_exists($className,false))
+						throw new TInvalidDataValueException('prado_component_unknown',$type);
+				}
+				$type=$className;
 			}
 		}
-		throw new TInvalidDataValueException('prado_component_unknown',$type);
+		if(($n=func_num_args())>1)
+		{
+			$args=func_get_args();
+			$s='$args[1]';
+			for($i=2;$i<$n;++$i)
+				$s.=",\$args[$i]";
+			eval("\$component=new $type($s);");
+			return $component;
+		}
+		else
+			return new $type;
 	}
 
 	/**
