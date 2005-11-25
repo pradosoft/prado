@@ -41,6 +41,10 @@ class TAuthManager extends TComponent implements IModule
 	 */
 	const RETURN_URL_VAR='ReturnUrl';
 	/**
+	 * @var string module ID
+	 */
+	private $_id;
+	/**
 	 * @var boolean if the module has been initialized
 	 */
 	private $_initialized=false;
