@@ -49,7 +49,7 @@ class TExpression extends TControl
 
 	/**
 	 * Renders the evaluation result of the expression.
-	 * @param THtmlTextWriter the writer used for the rendering purpose
+	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
 	protected function render($writer)
 	{

@@ -125,3 +125,12 @@ theme_skinid_duplicated					= SkinID '%s.%s' is duplicated in theme '%s'.
 theme_databind_forbidden				= Databind cannot be used in theme '%s' for control skin '%s.%s' about property '%s'.
 theme_property_readonly					= Skin is being applied to a read-only control property '%s.%s'.
 theme_property_undefined				= Skin is being applied to an inexistent control property '%s.%s'.
+
+control_id_invalid						= %s.ID '%s' is invalid. Only alphanumeric and underline characters are allowed. The first character must be an alphabetic or underline character.
+control_skinid_unchangeable				= %s.SkinID cannot be modified after a skin has been applied to the control or the child controls have been created.
+control_enabletheming_unchangeable		= %s.EnableTheming cannot be modified after the child controls have been created.
+control_stylesheet_applied				= StyleSheet skin has already been applied to %s.
+control_id_nonunique					= %s.ID '%s' is not unique among all controls under the same naming container.
+
+webcontrol_accesskey_invalid			= %s.AccessKey '%s' is invalid. It must be a single character only.
+webcontrol_style_invalid				= %s.Style must take string value only.

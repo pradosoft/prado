@@ -3,9 +3,9 @@
  * TFont class file.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @link http://www.xisc.com/
- * @copyright Copyright &copy; 2004-2005, Qiang Xue
- * @license http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
  */
@@ -214,7 +214,7 @@ class TFont extends TComponent
 	 */
 	public function mergeWith($font)
 	{
-		if($font===null)
+		if($font===null || $font->_flags===0)
 			return;
 		if($font->_flags & self::IS_SET_BOLD)
 			$this->setBold($font->getBold());
@@ -248,7 +248,7 @@ class TFont extends TComponent
 	 */
 	public function toString()
 	{
-		if($this->getIsEmpty())
+		if($this->_flags===0)
 			return '';
 		$str='';
 		if($this->_flags & self::IS_SET_BOLD)
@@ -271,6 +271,33 @@ class TFont extends TComponent
 			$str.='font-family:'.$this->_name.';';
 		return $str;
 	}
-}
 
+	/**
+	 * Adds attributes related to CSS styles to renderer.
+	 * @param THtmlWriter the writer used for the rendering purpose
+	 */
+	public function addAttributesToRender($writer)
+	{
+		if($this->_flags===0)
+			return;
+		if($this->_flags & self::IS_SET_BOLD)
+			$writer->addStyleAttribute('font-weight',(($this->_flags & self::IS_BOLD)?'bold':'normal'));
+		if($this->_flags & self::IS_SET_ITALIC)
+			$writer->addStyleAttribute('font-style',(($this->_flags & self::IS_ITALIC)?'italic':'normal'));
+		$textDec='';
+		if($this->_flags & self::IS_UNDERLINE)
+			$textDec.='underline';
+		if($this->_flags & self::IS_OVERLINE)
+			$textDec.=' overline';
+		if($this->_flags & self::IS_STRIKEOUT)
+			$textDec.=' line-through';
+		$textDec=ltrim($textDec);
+		if($textDec!=='')
+			$writer->addStyleAttribute('text-decoration',$textDec);
+		if($this->_size!=='')
+			$writer->addStyleAttribute('font-size',$this->_size);
+		if($this->_name!=='')
+			$writer->addStyleAttribute('font-family',$this->_name);
+	}
+}
 ?>

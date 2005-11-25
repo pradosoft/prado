@@ -59,7 +59,7 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This overrides the parent implementation with additional button specific attributes.
-	 * @param THtmlTextWriter the writer used for the rendering purpose
+	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{

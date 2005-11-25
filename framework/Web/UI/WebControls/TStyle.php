@@ -3,9 +3,9 @@
  * TStyle class file.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @link http://www.xisc.com/
- * @copyright Copyright &copy; 2004-2005, Qiang Xue
- * @license http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
  */
@@ -23,35 +23,28 @@
 class TStyle extends TComponent
 {
 	/**
-	 * @var array The enumerable type for border styles
-	 */
-	public static $ENUM_BORDER_STYLE=array('NotSet','None','Dashed','Dotted','Solid','Double','Groove','Ridge','Inset','Outset');
-
-	/**
-	 * Various CSS fields
-	 */
-	const FLD_BACKCOLOR=0;
-	const FLD_BORDERCOLOR=1;
-	const FLD_BORDERWIDTH=2;
-	const FLD_BORDERSTYLE=3;
-	const FLD_FONT=4;
-	const FLD_FORECOLOR=5;
-	const FLD_HEIGHT=6;
-	const FLD_WIDTH=7;
-	const FLD_CSSCLASS=8;
-	const FLD_STYLE=9;
-
-	/**
 	 * @var array storage of CSS fields
 	 */
 	private $_data=array();
+	/**
+	 * @var TFont font object
+	 */
+	private $_font=null;
+	/**
+	 * @var string CSS class name
+	 */
+	private $_class='';
+	/**
+	 * @var string CSS style string (those not represented by specific fields of TStyle)
+	 */
+	private $_style='';
 
 	/**
 	 * @return string the background color of the control
 	 */
 	public function getBackColor()
 	{
-		return isset($this->_data[self::FLD_BACKCOLOR])?$this->_data[self::FLD_BACKCOLOR]:'';
+		return isset($this->_data['background-color'])?$this->_data['background-color']:'';
 	}
 
 	/**
@@ -60,9 +53,9 @@ class TStyle extends TComponent
 	public function setBackColor($value)
 	{
 		if($value==='')
-			unset($this->_data[self::FLD_BACKCOLOR]);
+			unset($this->_data['background-color']);
 		else
-			$this->_data[self::FLD_BACKCOLOR]=$value;
+			$this->_data['background-color']=$value;
 	}
 
 	/**
@@ -70,7 +63,7 @@ class TStyle extends TComponent
 	 */
 	public function getBorderColor()
 	{
-		return isset($this->_data[self::FLD_BORDERCOLOR])?$this->_data[self::FLD_BORDERCOLOR]:'';
+		return isset($this->_data['border-color'])?$this->_data['border-color']:'';
 	}
 
 	/**
@@ -79,9 +72,9 @@ class TStyle extends TComponent
 	public function setBorderColor($value)
 	{
 		if($value==='')
-			unset($this->_data[self::FLD_BORDERCOLOR]);
+			unset($this->_data['border-color']);
 		else
-			$this->_data[self::FLD_BORDERCOLOR]=$value;
+			$this->_data['border-color']=$value;
 	}
 
 	/**
@@ -89,21 +82,19 @@ class TStyle extends TComponent
 	 */
 	public function getBorderStyle()
 	{
-		return isset($this->_data[self::FLD_BORDERSTYLE])?$this->_data[self::FLD_BORDERSTYLE]:'';
+		return isset($this->_data['border-style'])?$this->_data['border-style']:'';
 	}
 
 	/**
 	 * Sets the border style of the control.
-	 * Valid values include: 
-	 * 'NotSet','None','Dashed','Dotted','Solid','Double','Groove','Ridge','Inset','Outset'
 	 * @param string the border style of the control
 	 */
 	public function setBorderStyle($value)
 	{
 		if($value==='')
-			unset($this->_data[self::FLD_BORDERSTYLE]);
+			unset($this->_data['border-style']);
 		else
-			$this->_data[self::FLD_BORDERSTYLE]=TPropertyValue::ensureEnum($value,self::$ENUM_BORDER_STYLE);
+			$this->_data['border-style']=$value;
 	}
 
 	/**
@@ -111,7 +102,7 @@ class TStyle extends TComponent
 	 */
 	public function getBorderWidth()
 	{
-		return isset($this->_data[self::FLD_BORDERWIDTH])?$this->_data[self::FLD_BORDERWIDTH]:'';
+		return isset($this->_data['border-width'])?$this->_data['border-width']:'';
 	}
 
 	/**
@@ -120,9 +111,9 @@ class TStyle extends TComponent
 	public function setBorderWidth($value)
 	{
 		if($value==='')
-			unset($this->_data[self::FLD_BORDERWIDTH]);
+			unset($this->_data['border-width']);
 		else
-			$this->_data[self::FLD_BORDERWIDTH]=$value;
+			$this->_data['border-width']=$value;
 	}
 
 	/**
@@ -130,7 +121,7 @@ class TStyle extends TComponent
 	 */
 	public function getCssClass()
 	{
-		return isset($this->_data[self::FLD_CSSCLASS])?$this->_data[self::FLD_CSSCLASS]:'';
+		return $this->_class;
 	}
 
 	/**
@@ -138,10 +129,7 @@ class TStyle extends TComponent
 	 */
 	public function setCssClass($value)
 	{
-		if($value==='')
-			unset($this->_data[self::FLD_CSSCLASS]);
-		else
-			$this->_data[self::FLD_CSSCLASS]=$value;
+		$this->_class=$value;
 	}
 
 	/**
@@ -149,9 +137,9 @@ class TStyle extends TComponent
 	 */
 	public function getFont()
 	{
-		if(!isset($this->_data[self::FLD_FONT]))
-			$this->_data[self::FLD_FONT]=new TFont;
-		return $this->_data[self::FLD_FONT];
+		if($this->_font===null)
+			$this->_font=new TFont;
+		return $this->_font;
 	}
 
 	/**
@@ -159,7 +147,7 @@ class TStyle extends TComponent
 	 */
 	public function getForeColor()
 	{
-		return isset($this->_data[self::FLD_FORECOLOR])?$this->_data[self::FLD_FORECOLOR]:'';
+		return isset($this->_data['color'])?$this->_data['color']:'';
 	}
 
 	/**
@@ -168,9 +156,9 @@ class TStyle extends TComponent
 	public function setForeColor($value)
 	{
 		if($value==='')
-			unset($this->_data[self::FLD_FORECOLOR]);
+			unset($this->_data['color']);
 		else
-			$this->_data[self::FLD_FORECOLOR]=$value;
+			$this->_data['color']=$value;
 	}
 
 	/**
@@ -178,7 +166,7 @@ class TStyle extends TComponent
 	 */
 	public function getHeight()
 	{
-		return isset($this->_data[self::FLD_HEIGHT])?$this->_data[self::FLD_HEIGHT]:'';
+		return isset($this->_data['height'])?$this->_data['height']:'';
 	}
 
 	/**
@@ -187,9 +175,9 @@ class TStyle extends TComponent
 	public function setHeight($value)
 	{
 		if($value==='')
-			unset($this->_data[self::FLD_HEIGHT]);
+			unset($this->_data['height']);
 		else
-			$this->_data[self::FLD_HEIGHT]=$value;
+			$this->_data['height']=$value;
 	}
 
 	/**
@@ -197,7 +185,7 @@ class TStyle extends TComponent
 	 */
 	public function getStyle()
 	{
-		return isset($this->_data[self::FLD_STYLE])?$this->_data[self::FLD_STYLE]:'';
+		return $this->_style;
 	}
 
 	/**
@@ -205,10 +193,7 @@ class TStyle extends TComponent
 	 */
 	public function setStyle($value)
 	{
-		if($value==='')
-			unset($this->_data[self::FLD_STYLE]);
-		else
-			$this->_data[self::FLD_STYLE]=$value;
+		$this->_style=$value;
 	}
 
 	/**
@@ -216,7 +201,7 @@ class TStyle extends TComponent
 	 */
 	public function getWidth()
 	{
-		return isset($this->_data[self::FLD_WIDTH])?$this->_data[self::FLD_WIDTH]:'';
+		return isset($this->_data['width'])?$this->_data['width']:'';
 	}
 
 	/**
@@ -225,9 +210,9 @@ class TStyle extends TComponent
 	public function setWidth($value)
 	{
 		if($value==='')
-			unset($this->_data[self::FLD_WIDTH]);
+			unset($this->_data['width']);
 		else
-			$this->_data[self::FLD_WIDTH]=$value;
+			$this->_data['width']=$value;
 	}
 
 	/**
@@ -235,7 +220,7 @@ class TStyle extends TComponent
 	 */
 	public function getIsEmpty()
 	{
-		return empty($this->_data) || (isset($this->_data[self::FLD_FONT]) && $this->_data[self::FLD_FONT]->getIsEmpty());
+		return empty($this->_data) && $this->_class==='' && $this->_style==='' && (!$this->_font || $this->_font->getIsEmpty());
 	}
 
 	/**
@@ -244,7 +229,9 @@ class TStyle extends TComponent
 	public function reset()
 	{
 		$this->_data=array();
-		$this->flags=0;
+		$this->_font=null;
+		$this->_class='';
+		$this->_style='';
 	}
 
 	/**
@@ -257,24 +244,14 @@ class TStyle extends TComponent
 	{
 		if($style===null)
 			return;
-		if(isset($style->_data[self::FLD_BACKCOLOR]))
-			$this->_data[self::FLD_BACKCOLOR]=$style->_data[self::FLD_BACKCOLOR];
-		if(isset($style->_data[self::FLD_BORDERCOLOR]))
-			$this->_data[self::FLD_BORDERCOLOR]=$style->_data[self::FLD_BORDERCOLOR];
-		if(isset($style->_data[self::FLD_BORDERWIDTH]))
-			$this->_data[self::FLD_BORDERWIDTH]=$style->_data[self::FLD_BORDERWIDTH];
-		if(isset($style->_data[self::FLD_BORDERSTYLE]))
-			$this->_data[self::FLD_BORDERSTYLE]=$style->_data[self::FLD_BORDERSTYLE];
-		if(isset($style->_data[self::FLD_FORECOLOR]))
-			$this->_data[self::FLD_FORECOLOR]=$style->_data[self::FLD_FORECOLOR];
-		if(isset($style->_data[self::FLD_HEIGHT]))
-			$this->_data[self::FLD_HEIGHT]=$style->_data[self::FLD_HEIGHT];
-		if(isset($style->_data[self::FLD_WIDTH]))
-			$this->_data[self::FLD_WIDTH]=$style->_data[self::FLD_WIDTH];
-		if(isset($style->_data[self::FLD_FONT]))
-			$this->getFont()->mergeWith($style->_data[self::FLD_FONT]);
-		if(isset($style->_data[self::FLD_CSSCLASS]))
-			$this->_data[self::FLD_CSSCLASS]=$style->_data[self::FLD_CSSCLASS];
+		foreach($style->_data as $name=>$value)
+			$this->_data[$name]=$value;
+		if($style->_class!=='')
+			$this->_class=$style->_class;
+		if($style->_style!=='')
+			$this->_style=$style->_style;
+		if($style->_font!==null)
+			$this->getFont()->mergeWith($style->_font);
 	}
 
 	/**
@@ -294,40 +271,35 @@ class TStyle extends TComponent
 	 */
 	public function toString()
 	{
-		if($this->getIsEmpty())
-			return '';
-		if(($str=$this->getStyle())!=='')
-			$str=rtrim($str).';';
-		if(isset($this->_data[self::FLD_BACKCOLOR]))
-			$str.='background-color:'.$this->_data[self::FLD_BACKCOLOR].';';
-		if(isset($this->_data[self::FLD_BORDERCOLOR]))
-			$str.='border-color:'.$this->_data[self::FLD_BORDERCOLOR].';';
-		if(isset($this->_data[self::FLD_BORDERWIDTH]))
-			$str.='border-width:'.$this->_data[self::FLD_BORDERWIDTH].';';
-		if(isset($this->_data[self::FLD_BORDERSTYLE]))
-			$str.='border-style:'.$this->_data[self::FLD_BORDERSTYLE].';';
-		if(isset($this->_data[self::FLD_FORECOLOR]))
-			$str.='color:'.$this->_data[self::FLD_FORECOLOR].';';
-		if(isset($this->_data[self::FLD_HEIGHT]))
-			$str.='height:'.$this->_data[self::FLD_HEIGHT].';';
-		if(isset($this->_data[self::FLD_WIDTH]))
-			$str.='width:'.$this->_data[self::FLD_WIDTH].';';
-		if(isset($this->_data[self::FLD_FONT]))
-			$str.=$this->_data[self::FLD_FONT]->toString();
+		$str='';
+		foreach($this->_data as $name=>$value)
+			$str.=' '.$name.':'.$value.';';
+		if($this->_font)
+			$str.=$this->_font->toString();
 		return $str;
 	}
 
 	/**
 	 * Adds attributes related to CSS styles to renderer.
-	 * @param THtmlTextWriter the writer used for the rendering purpose
+	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
 	public function addAttributesToRender($writer)
 	{
-		$str=$this->toString();
-		if($str!=='')
-			$writer->addAttribute('style',$str);
-		if(isset($this->_data[self::FLD_CSSCLASS]))
-			$writer->addAttribute('class',$this->_data[self::FLD_CSSCLASS]);
+		if($this->_style!=='')
+		{
+			foreach(explode(';',$this->_style) as $style)
+			{
+				$arr=explode(':',$style);
+				if(isset($arr[1]) && trim($arr[0])!=='')
+					$writer->addStyleAttribute(trim($arr[0]),trim($arry[1]));
+			}
+		}
+		foreach($this->_data as $name=>$value)
+			$writer->addStyleAttribute($name,$value);
+		if($this->_font!==null)
+			$this->_font->addAttributesToRender($writer);
+		if($this->_class!=='')
+			$writer->addAttribute('class',$this->_class);
 	}
 }
 

@@ -70,7 +70,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This overrides the parent implementation with additional textbox specific attributes.
-	 * @param THtmlTextWriter the writer used for the rendering purpose
+	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -235,7 +235,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 
 	/**
 	 * Renders the body content of the textbox when it is in MultiLine text mode.
-	 * @param THtmlTextWriter the writer for rendering
+	 * @param THtmlWriter the writer for rendering
 	 */
 	protected function renderContents($writer)
 	{

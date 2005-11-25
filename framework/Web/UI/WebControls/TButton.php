@@ -58,7 +58,7 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This overrides the parent implementation with additional button specific attributes.
-	 * @param THtmlTextWriter the writer used for the rendering purpose
+	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -90,7 +90,7 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	/**
 	 * Renders the body content enclosed between the control tag.
 	 * This overrides the parent implementation with nothing to be rendered.
-	 * @param THtmlTextWriter the writer used for the rendering purpose
+	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
 	protected function renderContents($writer)
 	{

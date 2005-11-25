@@ -33,7 +33,7 @@ class TPanel extends TWebControl
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlTextWriter the renderer
+	 * @param THtmlWriter the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{

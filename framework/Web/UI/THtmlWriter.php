@@ -165,10 +165,15 @@ class THtmlWriter extends TComponent implements ITextWriter
 		'width'=>false,
 		'wrap'=>false
 	);
-
+	private static $_styleEncode=array(
+		'background-image'=>true,
+		'font-family'=>false,
+		'list-style-image'=>true
+	);
 	private $_attributes=array();
 	private $_openTags=array();
 	private $_writer=null;
+	private $_styles=array();
 
 	public function __construct($writer)
 	{
@@ -183,6 +188,14 @@ class THtmlWriter extends TComponent implements ITextWriter
 	public function addAttribute($name,$value)
 	{
 		$this->_attributes[$name]=isset(self::$_attrEncode[$name])?THttpUtility::htmlEncode($value):$value;
+	}
+
+	public function addStyleAttribute($name,$value)
+	{
+		if(isset(self::$_styleEncode[$name]))
+			$this->_styles[$name]=HttpUtility::htmlEncode($value);
+		else
+			$this->_styles[$name]=$value;
 	}
 
 	public function flush()
@@ -211,6 +224,13 @@ class THtmlWriter extends TComponent implements ITextWriter
 		$str='<'.$tagName;
 		foreach($this->_attributes as $name=>$value)
 			$str.=' '.$name.'="'.$value.'"';
+		if(!empty($this->_styles))
+		{
+			$str.=' style="';
+			foreach($this->_styles as $name=>$value)
+				$str.=$name.':'.$value.';';
+			$str.='"';
+		}
 		if($tagType===self::TAG_NONCLOSING)
 		{
 			$str.=' />';
@@ -223,6 +243,7 @@ class THtmlWriter extends TComponent implements ITextWriter
 		}
 		$this->_writer->write($str);
 		$this->_attributes=array();
+		$this->_styles=array();
 	}
 
 	public function renderEndTag()

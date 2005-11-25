@@ -3,9 +3,9 @@
  * TWebControl class file.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @link http://www.xisc.com/
- * @copyright Copyright &copy; 2004-2005, Qiang Xue
- * @license http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
  */
@@ -14,13 +14,18 @@
  * TWebControl class
  *
  * TWebControl is the base class for controls that share a common set
- * of UI-related properties and methods. TWebControl derived controls 
- * are usually corresponding to HTML tags. They thus have tag name, attributes
+ * of UI-related properties and methods. TWebControl-derived controls
+ * are usually associated with HTML tags. They thus have tag name, attributes
  * and body contents. You can override {@link getTagName} to specify the tag name,
  * {@link addAttributesToRender} to specify the attributes to be rendered,
  * and {@link renderContents} to customize the body content rendering.
  * TWebControl encapsulates a set of properties related with CSS style fields,
- * such as <b>BackColor</b>, <b>BorderWidth</b>, etc.
+ * such as {@link getBackColor BackColor}, {@link getBorderWidth BorderWidth}, etc.
+ *
+ * Subclasses of TWebControl typically needs to override {@link addAttributesToRender}
+ * and {@link renderContent}. The former is used to render the attributes
+ * of the HTML tag associated with the control, while the latter is to render
+ * the body contents enclosed within the HTML tag.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -40,14 +45,14 @@ class TWebControl extends TControl
 	/**
 	 * Sets the access key of the control.
 	 * Only one-character string can be set, or an exception will be raised.
-	 * Pass empty string if you want to disable access key.
+	 * Pass in an empty string if you want to disable access key.
 	 * @param string the access key to be set
 	 * @throws TInvalidDataValueException if the access key is specified with more than one character
 	 */
 	public function setAccessKey($value)
 	{
 		if(strlen($value)>1)
-			throw new TInvalidDataValueException('invalid_accesskey',get_class($this));
+			throw new TInvalidDataValueException('webcontrol_accesskey_invalid',get_class($this),$value);
 		$this->setViewState('AccessKey',$value,'');
 	}
 
@@ -192,7 +197,10 @@ class TWebControl extends TControl
 		$this->getStyle()->setHeight($value);
 	}
 
-	public function getStyleCreated()
+	/**
+	 * @return boolean whether the control has defined any style information
+	 */
+	public function getHasStyle()
 	{
 		return $this->getViewState('Style',null)!==null;
 	}
@@ -223,7 +231,7 @@ class TWebControl extends TControl
 		if(is_string($value))
 			$this->getStyle()->setStyle($value);
 		else
-			throw new TInvalidDataValueException('invalid_style_value',get_class($this));
+			throw new TInvalidDataValueException('webcontrol_style_invalid',get_class($this));
 	}
 
 	/**
@@ -265,7 +273,7 @@ class TWebControl extends TControl
 
 	/**
 	 * Sets the tooltip of the control.
-	 * Pass empty string if you want to disable tooltip.
+	 * Pass an empty string if you want to disable tooltip.
 	 * @param string the tooltip to be set
 	 */
 	public function setToolTip($value)
@@ -294,8 +302,10 @@ class TWebControl extends TControl
 
 	/**
 	 * Adds attribute name-value pairs to renderer.
-	 * This method can be overriden to provide customized attributes to be rendered.
-	 * @param THtmlTextWriter the writer used for the rendering purpose
+	 * By default, the method will render 'id', 'accesskey', 'disabled',
+	 * 'tabindex', 'title' and all custom attributes.
+	 * The method can be overriden to provide customized attribute rendering.
+	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -306,7 +316,7 @@ class TWebControl extends TControl
 		if(!$this->getEnabled())
 			$writer->addAttribute('disabled','disabled');
 		if(($tabIndex=$this->getTabIndex())>0)
-			$writer->addAttribute('tabindex',$tabIndex);
+			$writer->addAttribute('tabindex',"$tabIndex");
 		if(($toolTip=$this->getToolTip())!=='')
 			$writer->addAttribute('title',$toolTip);
 		if($style=$this->getViewState('Style',null))
@@ -325,7 +335,7 @@ class TWebControl extends TControl
 	 * - {@link renderBeginTag}
 	 * - {@link renderContents}
 	 * - {@link renderEndTag}
-	 * @param THtmlTextWriter the writer used for the rendering purpose
+	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
 	protected function render($writer)
 	{
@@ -336,7 +346,7 @@ class TWebControl extends TControl
 
 	/**
 	 * Renders the openning tag for the control (including attributes)
-	 * @param THtmlTextWriter the writer used for the rendering purpose
+	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
 	protected function renderBeginTag($writer)
 	{
@@ -348,7 +358,7 @@ class TWebControl extends TControl
 	 * Renders the body content enclosed between the control tag.
 	 * By default, child controls and text strings will be rendered.
 	 * You can override this method to provide customized content rendering.
-	 * @param THtmlTextWriter the writer used for the rendering purpose
+	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
 	protected function renderContents($writer)
 	{
@@ -357,7 +367,7 @@ class TWebControl extends TControl
 
 	/**
 	 * Renders the closing tag for the control
-	 * @param THtmlTextWriter the writer used for the rendering purpose
+	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
 	protected function renderEndTag($writer)
 	{

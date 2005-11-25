@@ -3,15 +3,9 @@ how to do this for Theme (skin files)?
 how to correctly highlight source code displayed for exception context?
 
 checkbox if checked, posted, unchecked and then post, it will be checked.
-add application state: off, debug, normal, performance
 think more about encoding/decoding
 <%@ MasterClass="Pages.MasterPage" %>
-THtmlTextWriter::addStyleAttribute(), also change how TStyle renders its content.
 
-
-callback
-
-http://www.xisc.com/index.php?page=homepage
 
 Features to be implemented later:
 - SmartNavigation: TForm, TPage

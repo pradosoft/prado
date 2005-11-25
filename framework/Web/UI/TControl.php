@@ -16,15 +16,24 @@
  * TControl is the base class for all components on a page hierarchy.
  * It implements the following features for UI-related functionalities:
  * - databinding feature
- * - naming container and containee relationship
  * - parent and child relationship
+ * - naming container and containee relationship
  * - viewstate and controlstate features
  * - rendering scheme
  * - control lifecycles
  *
- * A property can be data-bound with an expression. By calling {@link dataBind}
+ * A property can be data-bound with an expression. By calling {@link dataBind},
  * expressions bound to properties will be evaluated and the results will be
  * set to the corresponding properties.
+ *
+ * Parent and child relationship determines how the presentation of controls are
+ * enclosed within each other. A parent will determine where to place
+ * the presentation of its child controls. For example, a TPanel will enclose
+ * all its child controls' presentation within a div html tag. A control's parent
+ * can be obtained via {@link getParent Parent} property, and its
+ * {@link getControls Controls} property returns a list of the control's children,
+ * including controls and static texts. The property can be manipulated
+ * like an array for adding or removing a child (see {@link TList} for more details).
  *
  * A naming container control implements INamingContainer and ensures that
  * its containee controls can be differentiated by their ID property values.
@@ -32,15 +41,17 @@
  * identify an arbitrary control on a page hierarchy by an ID path (concatenation
  * of all naming containers' IDs and the target control's ID).
  *
- * Parent and child relationship determines how the presentation of controls are
- * enclosed within each other. A parent will determine where to place
- * the presentation of its child controls. For example, a TPanel will enclose
- * all its child controls' presentation within a div html tag.
- *
  * Viewstate and controlstate are two approaches to preserve state across
  * page postback requests. ViewState is mainly related with UI specific state
  * and can be disabled if not needed. ControlState represents crucial logic state
  * and cannot be disabled.
+ *
+ * A control is rendered via its {@link render()} method (the method is invoked
+ * by the framework.) Descendant control classes may override this method for
+ * customized rendering. By default, {@link render()} invokes {@link renderChildren()}
+ * which is responsible for rendering of children of the control.
+ * Control's {@link getVisible Visible} property governs whether the control
+ * should be rendered or not.
  *
  * Each control on a page will undergo a series of lifecycles, including
  * control construction, OnInit, OnLoad, OnPreRender, Render, and OnUnload.
@@ -84,13 +95,12 @@ class TControl extends TComponent
 	 * State bits.
 	 */
 	const IS_ID_SET=0x01;
-	const IS_INVISIBLE=0x02;
-	const IS_DISABLE_VIEWSTATE=0x04;
-	const IS_SKIN_APPLIED=0x08;
-	const IS_STYLESHEET_APPLIED=0x10;
-	const IS_DISABLE_THEMING=0x20;
-	const IS_CHILD_CREATED=0x40;
-	const IS_CREATING_CHILD=0x80;
+	const IS_DISABLE_VIEWSTATE=0x02;
+	const IS_SKIN_APPLIED=0x04;
+	const IS_STYLESHEET_APPLIED=0x08;
+	const IS_DISABLE_THEMING=0x10;
+	const IS_CHILD_CREATED=0x20;
+	const IS_CREATING_CHILD=0x40;
 
 	/**
 	 * Indexes for the rare fields.
@@ -186,7 +196,12 @@ class TControl extends TComponent
 	public function getNamingContainer()
 	{
 		if(!$this->_namingContainer && $this->_parent)
-			$this->_namingContainer=$this->_parent->getNamingContainer();
+		{
+			if($this->_parent instanceof INamingContainer)
+				$this->_namingContainer=$this->_parent;
+			else
+				$this->_namingContainer=$this->_parent->getNamingContainer();
+		}
 		return $this->_namingContainer;
 	}
 
@@ -195,23 +210,14 @@ class TControl extends TComponent
 	 */
 	public function getPage()
 	{
-		if($this->_page)
-			return $this->_page;
-		else
+		if(!$this->_page)
 		{
 			if($this->_parent)
-			{
 				$this->_page=$this->_parent->getPage();
-				return $this->_page;
-			}
 			else if($this->_tplControl)
-			{
 				$this->_page=$this->_tplControl->getPage();
-				return $this->_page;
-			}
-			else
-				return null;
 		}
+		return $this->_page;
 	}
 
 	/**
@@ -239,15 +245,9 @@ class TControl extends TComponent
 	 */
 	public function getTemplateControl()
 	{
-		if($this->_tplControl)
-			return $this->_tplControl;
-		else if($this->_parent)
-		{
+		if(!$this->_tplControl && $this->_parent)
 			$this->_tplControl=$this->_parent->getTemplateControl();
-			return $this->_tplControl;
-		}
-		else
-			return null;
+		return $this->_tplControl;
 	}
 
 	/**
@@ -298,6 +298,14 @@ class TControl extends TComponent
 		return Prado::getApplication()->getUser();
 	}
 
+	/**
+	 * Publishes a private asset and gets its URL.
+	 * This method will publish a private asset (file or directory)
+	 * and gets the URL to the asset. Note, if the asset refers to
+	 * a directory, all contents under that directory will be published.
+	 * @param string path of the asset that is relative to the directory containing the control class file.
+	 * @return string URL to the asset path.
+	 */
 	public function getAsset($assetPath)
 	{
 		$class=new ReflectionClass(get_class($this));
@@ -327,7 +335,7 @@ class TControl extends TComponent
 	public function setID($id)
 	{
 		if(!preg_match(self::ID_FORMAT,$id))
-			throw new TInvalidDataValueException('control_id_invalid',$id,get_class($this));
+			throw new TInvalidDataValueException('control_id_invalid',get_class($this),$id);
 		$this->_id=$id;
 		$this->_flags |= self::IS_ID_SET;
 		$this->clearCachedUniqueID($this instanceof INamingContainer);
@@ -375,7 +383,7 @@ class TControl extends TComponent
 	}
 
 	/**
-	 * @return string the skin ID of this control
+	 * @return string the skin ID of this control, '' if not set
 	 */
 	public function getSkinID()
 	{
@@ -389,7 +397,7 @@ class TControl extends TComponent
 	public function setSkinID($value)
 	{
 		if(($this->_flags & self::IS_SKIN_APPLIED) || $this->_stage>=self::CS_CHILD_INITIALIZED)
-			throw new TInvalidOperationException('control_skinid_unchangeable',get_class($this),$this->getUniqueID());
+			throw new TInvalidOperationException('control_skinid_unchangeable',get_class($this));
 		else
 			$this->_rf[self::RF_SKIN_ID]=$value;
 	}
@@ -439,26 +447,31 @@ class TControl extends TComponent
 	}
 
 	/**
+	 * Checks if a control is visible.
+	 * If parent check is required, then a control is visible only if the control
+	 * and all its ancestors are visible.
+	 * @param boolean whether the parents should also be checked if visible
+	 * @return boolean whether the control is visible (default=true).
+	 */
+	public function getVisible($checkParents=false)
+	{
+		if($checkParents)
+		{
+			for($control=$this;$control;$control=$control->_parent)
+				if(!$control->getViewState('Visible',true))
+					return false;
+			return true;
+		}
+		else
+			return $this->getViewState('Visible',true);
+	}
+
+	/**
 	 * @param boolean whether the control is visible
 	 */
 	public function setVisible($value)
 	{
-		if(TPropertyValue::ensureBoolean($value))
-			$this->_flags &= ~self::IS_INVISIBLE;
-		else
-			$this->_flags |= self::IS_INVISIBLE;
-	}
-
-	/**
-	 * @return boolean whether the control is visible (default=true).
-	 * A control is visible if all its parents and itself are visible.
-	 */
-	public function getVisible()
-	{
-		if($this->_flags & self::IS_INVISIBLE)
-			return false;
-		else
-			return $this->_parent?$this->_parent->getVisible():true;
+		$this->setViewState('Visible',TPropertyValue::ensureBoolean($value),true);
 	}
 
 	/**
@@ -476,7 +489,7 @@ class TControl extends TComponent
 		if($checkParents)
 		{
 			for($control=$this;$control;$control=$control->_parent)
-				if(!$control->getEnabled())
+				if(!$control->getViewState('Enabled',true))
 					return false;
 			return true;
 		}
@@ -504,17 +517,6 @@ class TControl extends TComponent
 	}
 
 	/**
-	 * Returns a value indicating whether this control type can take attributes in template.
-	 * This method can be overriden.
-	 * Only framework developers and control developers should use this method.
-	 * @return boolean whether the control allows attributes in template (default=true)
-	 */
-	public function getAllowCustomAttributes()
-	{
-		return true;
-	}
-
-	/**
 	 * Returns the list of custom attributes.
 	 * Custom attributes are name-value pairs that may be rendered
 	 * as HTML tags' attributes.
@@ -530,6 +532,58 @@ class TControl extends TComponent
 			$this->setViewState('Attributes',$attributes,null);
 			return $attributes;
 		}
+	}
+
+	/**
+	 * @return boolean whether the named attribute exists
+	 */
+	public function hasAttribute($name)
+	{
+		if($attributes=$this->getViewState('Attributes',null))
+			return $attributes->contains($name);
+		else
+			return false;
+	}
+
+	/**
+	 * @return string attribute value, '' if attribute does not exist
+	 */
+	public function getAttribute($name)
+	{
+		if($attributes=$this->getViewState('Attributes',null))
+			return $attributes->itemAt($name);
+		else
+			return '';
+	}
+
+	/**
+	 * @param string attribute name
+	 * @param string value of the attribute
+	 */
+	public function setAttribute($name,$value)
+	{
+		$this->getAttributes()->add($name,$value);
+	}
+
+	/**
+	 * Removes the named attribute.
+	 * @param string the name of the attribute to be removed.
+	 */
+	public function removeAttribute($name)
+	{
+		if($attributes=$this->getViewState('Attributes',null))
+			$attributes->remove($name);
+	}
+
+	/**
+	 * Returns a value indicating whether this control type can take attributes in template.
+	 * This method can be overriden.
+	 * Only framework developers and control developers should use this method.
+	 * @return boolean whether the control allows attributes in template (default=true)
+	 */
+	public function getAllowCustomAttributes()
+	{
+		return true;
 	}
 
 	/**
@@ -688,7 +742,7 @@ class TControl extends TComponent
 	/**
 	 * Ensures child controls are created.
 	 * If child controls are not created yet, this method will invoke
-	 * {@link createChildControl} to create them.
+	 * {@link createChildControls} to create them.
 	 */
 	public function ensureChildControls()
 	{
@@ -795,7 +849,7 @@ class TControl extends TComponent
 
 	/**
 	 * Processes an object that is created during parsing template.
-	 * The object can be either a control or a static text string.
+	 * The object can be either a component or a static text string.
 	 * By default, the object will be added into the child control collection.
 	 * This method can be overriden to customize the handling of newly created objects in template.
 	 * Only framework developers and control developers should use this method.
@@ -955,20 +1009,12 @@ class TControl extends TComponent
 	 */
 	protected function preRenderRecursive()
 	{
-		if($this->getVisible())
+		$this->onPreRender(null);
+		if($this->getHasControls())
 		{
-			$this->_flags &= ~self::IS_INVISIBLE;
-			$this->onPreRender(null);
-			if($this->getHasControls())
-			{
-				foreach($this->_rf[self::RF_CONTROLS] as $control)
-					if($control instanceof TControl)
-						$control->preRenderRecursive();
-			}
-		}
-		else
-		{
-			$this->_flags |= self::IS_INVISIBLE;
+			foreach($this->_rf[self::RF_CONTROLS] as $control)
+				if($control instanceof TControl)
+					$control->preRenderRecursive();
 		}
 		$this->_stage=self::CS_PRERENDERED;
 	}
@@ -1083,11 +1129,11 @@ class TControl extends TComponent
 	/**
 	 * Renders the control.
 	 * Only when the control is visible will the control be rendered.
-	 * @param THtmlTextWriter the writer used for the rendering purpose
+	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
 	protected function renderControl($writer)
 	{
-		if(!($this->_flags & self::IS_INVISIBLE))
+		if($this->getVisible())
 			$this->render($writer);
 	}
 
@@ -1096,7 +1142,7 @@ class TControl extends TComponent
 	 * This method is invoked by {@link renderControl} when the control is visible.
 	 * You can override this method to provide customized rendering of the control.
 	 * By default, the control simply renders all its child contents.
-	 * @param THtmlTextWriter the writer used for the rendering purpose
+	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
 	protected function render($writer)
 	{
@@ -1107,7 +1153,7 @@ class TControl extends TComponent
 	 * Renders the children of the control.
 	 * This method iterates through all child controls and static text strings
 	 * and renders them in order.
-	 * @param THtmlTextWriter the writer used for the rendering purpose
+	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
 	protected function renderChildren($writer)
 	{
@@ -1131,7 +1177,6 @@ class TControl extends TComponent
 	 */
 	protected function onSaveState($param)
 	{
-		$this->setViewState('Visible',!($this->_flags & self::IS_INVISIBLE),true);
 		$this->raiseEvent('SaveState',$this,$param);
 	}
 
@@ -1143,7 +1188,6 @@ class TControl extends TComponent
 	 */
 	protected function onLoadState($param)
 	{
-		$this->setVisible($this->getViewState('Visible',true));
 		$this->raiseEvent('LoadState',$this,$param);
 	}
 
@@ -1255,7 +1299,7 @@ class TControl extends TComponent
 			$this->_flags |= self::IS_STYLESHEET_APPLIED;
 		}
 		else if($this->_flags & self::IS_STYLESHEET_APPLIED)
-			throw new TInvalidOperationException('control_stylesheet_applied',get_class($this),$this->getUniqueID());
+			throw new TInvalidOperationException('control_stylesheet_applied',get_class($this));
 	}
 
 	/**
@@ -1310,7 +1354,7 @@ class TControl extends TComponent
 				if($control->_id!=='')
 				{
 					if(isset($container->_rf[self::RF_NAMED_CONTROLS][$control->_id]))
-						throw new TInvalidDataValueException('control_id_not_unique',$control->_id,get_class($control));
+						throw new TInvalidDataValueException('control_id_nonunique',get_class($control),$control->_id);
 					else
 						$container->_rf[self::RF_NAMED_CONTROLS][$control->_id]=$control;
 				}

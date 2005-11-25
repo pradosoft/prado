@@ -47,7 +47,7 @@ class THyperLink extends TWebControl
 
 	/**
 	 * Renders the body content of the hyperlink.
-	 * @param THtmlTextWriter the writer for rendering
+	 * @param THtmlWriter the writer for rendering
 	 */
 	protected function renderContents($writer)
 	{

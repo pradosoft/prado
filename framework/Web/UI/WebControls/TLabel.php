@@ -41,7 +41,7 @@ class TLabel extends TWebControl
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlTextWriter the renderer
+	 * @param THtmlWriter the renderer
 	 * @throws TInvalidDataValueException if associated control cannot be found using the ID
 	 */
 	protected function addAttributesToRender($writer)
@@ -58,7 +58,7 @@ class TLabel extends TWebControl
 
 	/**
 	 * Renders the body content of the label.
-	 * @param THtmlTextWriter the renderer
+	 * @param THtmlWriter the renderer
 	 */
 	protected function renderContents($writer)
 	{

@@ -44,7 +44,7 @@ class TImage extends TWebControl
 	/**
 	 * Renders the body content of the image.
 	 * None will be rendered for an image.
-	 * @param THtmlTextWriter the writer for rendering
+	 * @param THtmlWriter the writer for rendering
 	 */
 	protected function renderContents($writer)
 	{
