@@ -1,8 +1,8 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset="utf-8"/>
-<meta http-equiv="content-language" content="en"/>
-<title>Service Unavailable</title>
+<meta http-equiv="content-language" content="zh"/>
+<title>%%ErrorMessage%%</title>
 <style>
 body {font-family:"Verdana";font-weight:normal;color:black;}
 h1 { font-family:"Verdana";font-weight:normal;font-size:18pt;color:red }
@@ -14,12 +14,13 @@ p {font-family:"Verdana";font-weight:normal;color:black;font-size:9pt;margin-top
 </head>
 
 <body bgcolor="white">
-<h1>Service Unavailable</h1>
+<h1>Error %%StatusCode%%</h1>
+<h2>%%ErrorMessage%%</h2>
 <p>
-Our system is currently under maintenance. Please come back later.
+The above error happened when the server was processing your request.
 </p>
 <p>
-Thank you.
+If you think this is a server error, please contact the <a href="mailto:%%ServerAdmin%%">webmaster</a>.
 </p>
 <div class="version">
 %%Version%%<br/>
