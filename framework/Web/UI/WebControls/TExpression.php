@@ -3,9 +3,9 @@
  * TExpression class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @link http://www.xisc.com/
- * @copyright Copyright &copy; 2004-2005, Qiang Xue
- * @license http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
  */
@@ -14,12 +14,12 @@
  * TExpression class
  *
  * TExpression evaluates a PHP expression and renders the result.
- * The expression is evaluated during rendering stage. You can set
- * it via the property <b>Expression</b>. You should also specify
- * the context object by <b>Context</b> property which is used as
- * the object in which the expression is evaluated. If the <b>Context</b>
- * property is not set, the TExpression component itself will be
- * assumed as the context.
+ * The expression is evaluated during the rendering stage. The expression being
+ * evaluated can be set via the property {@link setExpression Expression}.
+ * The context of the expression evaluated is the TExpression object itself.
+ *
+ * Note, since TExpression allows evaluation of arbitrary PHP expression,
+ * make sure {@link setExpression Expression} does not come directly from user input.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -28,6 +28,9 @@
  */
 class TExpression extends TControl
 {
+	/**
+	 * @var string PHP expression to be evaluated
+	 */
 	private $_e='';
 
 	/**
@@ -39,8 +42,7 @@ class TExpression extends TControl
 	}
 
 	/**
-	 * Sets the expression of the TExpression
-	 * @param string the expression to be set
+	 * @param string the expression to be evaluated
 	 */
 	public function setExpression($value)
 	{

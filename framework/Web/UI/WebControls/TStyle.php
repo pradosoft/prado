@@ -11,6 +11,11 @@
  */
 
 /**
+ * Includes TFont definition
+ */
+Prado::using('System.Web.UI.WebControls.TFont');
+
+/**
  * TStyle class
  *
  * TStyle encapsulates the CSS style applied to a control.

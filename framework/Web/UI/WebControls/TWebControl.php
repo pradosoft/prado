@@ -11,6 +11,11 @@
  */
 
 /**
+ * Includes TStyle definition
+ */
+Prado::using('System.Web.UI.WebControls.TStyle');
+
+/**
  * TWebControl class
  *
  * TWebControl is the base class for controls that share a common set

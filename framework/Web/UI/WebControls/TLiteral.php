@@ -3,9 +3,9 @@
  * TLiteral class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @link http://www.xisc.com/
- * @copyright Copyright &copy; 2004-2005, Qiang Xue
- * @license http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
  */
@@ -13,18 +13,15 @@
 /**
  * TLiteral class
  *
- * TLiteral reserves a location on the Web page to display static text or body content.
- * The TLiteral control is similar to the TLabel control, except the TLiteral
- * control does not allow you to apply a style to the displayed text.
+ * TLiteral displays a static text on the Web page.
+ * TLiteral is similar to the TLabel control, except that the TLiteral
+ * control does not allow child controls and do not have style properties (e.g. BackColor, Font, etc.)
  * You can programmatically control the text displayed in the control by setting
- * the <b>Text</b> property. If the <b>Text</b> property is empty, the content
- * enclosed within the TLiteral control will be displayed. This is very useful
- * for reserving a location on a page because you can add text and controls
- * as children of TLiteral control and they will be rendered at the place.
+ * the {@link setText Text} property. The text displayed may be HTML-encoded
+ * if the {@link setEncode Encode} property is set true (defaults to false).
  *
- * Note, <b>Text</b> is not HTML encoded before it is displayed in the TLiteral component.
- * If the values for the component come from user input, be sure to validate the values
- * to help prevent security vulnerabilities.
+ * Note, if {@link setEncode Encode} is false, make sure {@link setText Text}
+ * does not contain unwanted characters that may bring security vulnerabilities.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -33,6 +30,17 @@
  */
 class TLiteral extends TControl
 {
+	/**
+	 * Processes an object that is created during parsing template.
+	 * This method overrides the parent implementation by forbidding any child controls.
+	 * @param string|TComponent text string or component parsed and instantiated in template
+	 */
+	public function addParsedObject($object)
+	{
+		if($object instanceof TComponent)
+			throw new TConfigurationException('literal_body_forbidden');
+	}
+
 	/**
 	 * @return string the static text of the TLiteral
 	 */
@@ -50,18 +58,24 @@ class TLiteral extends TControl
 		$this->setViewState('Text',$value,'');
 	}
 
+	/**
+	 * @return boolean whether the rendered text should be HTML-encoded. Defaults to false.
+	 */
 	public function getEncode()
 	{
 		return $this->getViewState('Encode',false);
 	}
 
+	/**
+	 * @param boolean  whether the rendered text should be HTML-encoded.
+	 */
 	public function setEncode($value)
 	{
-		$this->setViewState('Encode',$value,false);
+		$this->setViewState('Encode',TPropertyValue::ensureBoolean($value),false);
 	}
 
 	/**
-	 * Renders the evaluation result of the statements.
+	 * Renders the literal control.
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
 	protected function render($writer)

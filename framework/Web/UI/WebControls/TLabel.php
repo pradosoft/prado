@@ -3,9 +3,9 @@
  * TLabel class file.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @link http://www.xisc.com/
- * @copyright Copyright &copy; 2004-2005, Qiang Xue
- * @license http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
  */
@@ -14,14 +14,14 @@
  * TLabel class
  *
  * TLabel represents a label control that displays text on a Web pagge.
- * Use <b>Text</b> property to set the text to be displayed.
+ * Use {@link setText Text} property to set the text to be displayed.
  * TLabel will render the contents enclosed within its component tag
- * if <b>Text</b> is empty.
+ * if {@link setText Text} is empty.
  * To use TLabel as a form label, associate it with a control by setting the
- * <b>AssociateControlID</b> property. The associated control must be locatable
- * within the label's naming container.
+ * {@link setAssociateControlID AssociateControlID} property.
+ * The associated control must be locatable within the label's naming container.
  *
- * Note, <b>Text</b> will NOT be encoded for rendering.
+ * Note, {@link setText Text} will NOT be encoded for rendering.
  * Make usre it does not contain dangerous characters that you want to avoid.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -51,7 +51,7 @@ class TLabel extends TWebControl
 			if($control=$this->findControl($aid))
 				$writer->addAttribute('for',$control->getClientID());
 			else
-				throw new TInvalidDataValueException('control_not_found',$aid);
+				throw new TInvalidDataValueException('label_associatedcontrol_invalid',$aid);
 		}
 		parent::addAttributesToRender($writer);
 	}
