@@ -159,7 +159,7 @@ class THttpException extends TException
 	{
 		$args=func_get_args();
 		array_shift($args);
-		call_user_func_array(array('parent', '__construct'), $args);
+		call_user_func_array(array('TException', '__construct'), $args);
 		$this->_statusCode=TPropertyValue::ensureInteger($statusCode);
 	}
 

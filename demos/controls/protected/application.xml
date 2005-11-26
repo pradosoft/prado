@@ -7,7 +7,9 @@
   </paths>
   <!-- modules configured and loaded for all services -->
   <modules>
+  <!--
     <module id="cache" type="System.Data.TSqliteCache" DbFile="Demo.cache"/>
+    -->
     <module id="session" type="THttpSession" />
   </modules>
   <services>

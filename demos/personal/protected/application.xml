@@ -22,7 +22,9 @@
         </module>
         <!-- auth manager module -->
         <module id="auth" type="System.Security.TAuthManager" UserManager="users" LoginPage="login" />
+        <!--
         <module id="data" type="Application.Modules.DataModule" DbFile="Application.Data.Site" />
+        -->
       </modules>
     </service>
   </services>
