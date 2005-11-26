@@ -11,5 +11,12 @@
 <com:TImageButton ImageUrl=<%~/fungii_logo.gif %> /><br/>
 <com:THyperLink Text="Visit a 'classless' page" NavigateUrl="?sp=page.plain" /> |
 <com:THyperLink Text="Visit member only page" NavigateUrl="?sp=page.private.member" />
+<com:TPanel GroupingText="test" Direction="rtl" BackImageUrl=<%~/fungii_logo.gif%>>
+this is my first test. this is my first test.this is my first test.this is my first test.this is my first test.this is my first test.
+this is my first test. this is my first test.this is my first test.this is my first test.this is my first test.this is my first test.
+this is my first test. this is my first test.this is my first test.this is my first test.this is my first test.this is my first test.
+this is my first test. this is my first test.this is my first test.this is my first test.this is my first test.this is my first test.
+this is my first test. this is my first test.this is my first test.this is my first test.this is my first test.this is my first test.
+</com:TPanel>
 </com:TForm>
 </com:TContent>

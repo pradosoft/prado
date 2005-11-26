@@ -193,7 +193,7 @@ class THtmlWriter extends TComponent implements ITextWriter
 	public function addStyleAttribute($name,$value)
 	{
 		if(isset(self::$_styleEncode[$name]))
-			$this->_styles[$name]=HttpUtility::htmlEncode($value);
+			$this->_styles[$name]=THttpUtility::htmlEncode($value);
 		else
 			$this->_styles[$name]=$value;
 	}

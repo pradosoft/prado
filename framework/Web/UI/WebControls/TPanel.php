@@ -23,6 +23,7 @@
  */
 class TPanel extends TWebControl
 {
+	private $_defaultButton='';
 	/**
 	 * @return string tag name of the panel
 	 */
@@ -37,55 +38,23 @@ class TPanel extends TWebControl
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$url=trim($this->getBackImageUrl());
-		if($url!=='')
-			$this->getStyle
-     base.AddAttributesToRender(writer);
-      string text1 = this.BackImageUrl;
-      if (text1.Trim().Length > 0)
-      {
-            writer.AddStyleAttribute(HtmlTextWriterStyle.BackgroundImage, "url(" + base.ResolveClientUrl(text1) + ")");
-      }
-      this.AddScrollingAttribute(this.ScrollBars, writer);
-      HorizontalAlign align1 = this.HorizontalAlign;
-      if (align1 != HorizontalAlign.NotSet)
-      {
-            TypeConverter converter1 = TypeDescriptor.GetConverter(typeof(HorizontalAlign));
-            writer.AddStyleAttribute(HtmlTextWriterStyle.TextAlign, converter1.ConvertToInvariantString(align1).ToLowerInvariant());
-      }
-      if (!this.Wrap)
-      {
-            if (base.EnableLegacyRendering)
-            {
-                  writer.AddAttribute(HtmlTextWriterAttribute.Nowrap, "nowrap", false);
-            }
-            else
-            {
-                  writer.AddStyleAttribute(HtmlTextWriterStyle.WhiteSpace, "nowrap");
-            }
-      }
-      if (this.Direction == ContentDirection.LeftToRight)
-      {
-            writer.AddAttribute(HtmlTextWriterAttribute.Dir, "ltr");
-      }
-      else if (this.Direction == ContentDirection.RightToLeft)
-      {
-            writer.AddAttribute(HtmlTextWriterAttribute.Dir, "rtl");
-      }
-      if (((!base.DesignMode && (this.Page != null)) && ((this.Page.Request != null) && (this.Page.Request.Browser.EcmaScriptVersion.Major > 0))) && ((this.Page.Request.Browser.W3CDomVersion.Major > 0) && (this.DefaultButton.Length > 0)))
-      {
-            Control control1 = this.FindControl(this.DefaultButton);
-            if (control1 is IButtonControl)
-            {
-                  this.Page.ClientScript.RegisterDefaultButtonScript(control1, writer, true);
-            }
-            else
-            {
-                  object[] objArray1 = new object[1] { this.ID } ;
-                  throw new InvalidOperationException(SR.GetString("HtmlForm_OnlyIButtonControlCanBeDefaultButton", objArray1));
-            }
-      }
-
+		parent::addAttributesToRender($writer);
+		if(($url=trim($this->getBackImageUrl()))!=='')
+			$writer->addStyleAttribute('background-image','url('.$url.')');
+		//this.AddScrollingAttribute(this.ScrollBars, writer);
+		if(($align=$this->getHorizontalAlign())!=='')
+			$writer->addStyleAttribute('text-align',$align);
+		if(!$this->getWrap())
+			$writer->addStyleAttribute('white-space','nowrap');
+		if(($dir=$this->getDirection())!=='')  // ltr or rtl
+			$writer->addStyleAttribute('direction',$dir);
+		if(($butt=$this->getDefaultButton())!=='')
+		{
+			if(($button=$this->findControl($butt))===null)
+				throw new TInvalidOperationException('panel_defaultbutton_invalid');
+			else
+				$this->getPage()->getClientScript()->registerDefaultButtonScript($button,$writer);
+		}
 	}
 
 	/**
@@ -102,7 +71,7 @@ class TPanel extends TWebControl
 	 */
 	public function setWrap($value)
 	{
-		$this->setViewState('Wrap',$value,true);
+		$this->setViewState('Wrap',TPropertyValue::ensureBoolean($value),true);
 	}
 
 	/**
@@ -140,22 +109,62 @@ class TPanel extends TWebControl
 		$this->setViewState('BackImageUrl',$value,'');
 	}
 
-	/**
-	 * This overrides the parent implementation by rendering more TPanel-specific attributes.
-	 * @return ArrayObject the attributes to be rendered
-	 */
-	protected function getAttributesToRender()
+	public function getDirection()
 	{
-		$url=$this->getBackImageUrl();
-		if(strlen($url))
-			$this->setStyle(array('background-image'=>"url($url)"));
-		$attributes=parent::getAttributesToRender();
-		$align=$this->getHorizontalAlign();
-		if(strlen($align))
-			$attributes['align']=$align;
-		if(!$this->isWrap())
-			$attributes['nowrap']='nowrap';
-		return $attributes;
+		return $this->getViewState('Direction','');
+	}
+
+	// valid values include 'ltr' and 'rtl'.
+	public function setDirection($value)
+	{
+		$this->setViewState('Direction',$value,'');
+	}
+
+	public function getDefaultButton()
+	{
+		return $this->_defaultButton;
+	}
+
+	public function setDefaultButton($value)
+	{
+		$this->_defaultButton=$value;
+	}
+
+	public function getGroupingText()
+	{
+		return $this->getViewState('GroupingText','');
+	}
+
+	public function setGroupingText($value)
+	{
+		$this->setViewState('GroupingText',$value,'');
+	}
+
+	/**
+	 * Renders the openning tag for the control (including attributes)
+	 * @param THtmlWriter the writer used for the rendering purpose
+	 */
+	protected function renderBeginTag($writer)
+	{
+		parent::renderBeginTag($writer);
+		if(($text=$this->getGroupingText())!=='')
+		{
+			$writer->renderBeginTag('fieldset');
+			$writer->renderBeginTag('legend');
+			$writer->write($text);
+			$writer->renderEndTag();
+		}
+	}
+
+	/**
+	 * Renders the closing tag for the control
+	 * @param THtmlWriter the writer used for the rendering purpose
+	 */
+	protected function renderEndTag($writer)
+	{
+		if(($text=$this->getGroupingText())!=='')
+			$writer->renderEndTag();
+		parent::renderEndTag($writer);
 	}
 }
 
