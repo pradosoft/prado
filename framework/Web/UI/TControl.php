@@ -371,6 +371,14 @@ class TControl extends TComponent
 	}
 
 	/**
+	 * Sets input focus to this control.
+	 */
+	public function focus()
+	{
+		$this->getPage()->setFocus($this);
+	}
+
+	/**
 	 * Returns the client ID of the control.
 	 * The client ID can be used to uniquely identify
 	 * the control in client-side scripts (such as JavaScript).

@@ -138,3 +138,10 @@ webcontrol_style_invalid				= %s.Style must take string value only.
 label_associatedcontrol_invalid			= TLabel.AssociatedControl '%s' cannot be found.
 
 literal_body_forbidden					= TLiteral controls do not allow body contents.
+
+image_body_forbidden					= TImage controls do not allow body contents.
+
+hiddenfield_body_forbidden				= THiddenField controls do not allow body contents.
+hiddenfield_focus_unsupported			= THiddenField does not support setting input focus.
+hiddenfield_theming_unsupported			= THiddenField does not support theming.
+hiddenfield_skinid_unsupported			= THiddenField does not support control skin.

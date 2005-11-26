@@ -13,6 +13,11 @@
 /**
  * THiddenField class
  *
+ * THiddenField displays a hidden input field on a Web page.
+ * The value of the input field can be accessed via {@link getValue Value} property.
+ * If upon postback the value is changed, a {@link onValueChanged ValueChanged}
+ * event will be raised.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
@@ -21,61 +26,54 @@
 class THiddenField extends TControl implements IPostBackDataHandler
 {
 	/**
-	 * @return string tag name of the hyperlink
+	 * @return string tag name of the hidden field.
 	 */
 	protected function getTagName()
 	{
 		return 'input';
 	}
 
+	/**
+	 * Sets focus to this control.
+	 * This method overrides the parent implementation by forbidding setting focus to this control.
+	 */
 	public function focus()
 	{
-		throw new TInvalidOperationException('xxx');
+		throw new TNotSupportedException('hiddenfield_focus_unsupported');
 	}
 
-	protected function addAttributesToRender($writer)
+	/**
+	 * Processes an object that is created during parsing template.
+	 * This method overrides the parent implementation by forbidding any child controls.
+	 * @param string|TComponent text string or component parsed and instantiated in template
+	 */
+	public function addParsedObject($object)
 	{
+		if($object instanceof TComponent)
+			throw new TConfigurationException('hiddenfield_body_forbidden');
+	}
+
+	/**
+	 * Renders the control.
+	 * This method overrides the parent implementation by rendering
+	 * the hidden field input element.
+	 * @param THtmlWriter the writer used for the rendering purpose
+	 */
+	protected function render($writer)
+	{
+		$uniqueID=$this->getUniqueID();
 		$page=$this->getPage();
 		$page->ensureRenderInForm($this);
+		//$page->getClientScript()->registerForEventValidation($uniqueID);
 		$writer->addAttribute('type','hidden');
-		if(($uid=$this->getUniqueID())!=='')
-			$writer->addAttribute('name',$uid);
-		if(($id=$this->getID())!=='')
-			$writer->addAttribute('id',$id);
+		if($uniqueID!=='')
+			$writer->addAttribute('name',$uniqueID);
+		if($this->getID()!=='')
+			$writer->addAttribute('id',$this->getClientID());
 		if(($value=$this->getValue())!=='')
 			$writer->addAttribute('value',$value);
-	}
-
-	/**
-	 * @return string the value of the THiddenField
-	 */
-	public function getValue()
-	{
-		return $this->getViewState('Value','');
-	}
-
-	/**
-	 * Sets the value of the THiddenField
-	 * @param string the value to be set
-	 */
-	public function setValue($value)
-	{
-		$this->setViewState('Value',$value,'');
-	}
-
-	public function getEnableTheming()
-	{
-		return false;
-	}
-
-	public function setEnableTheming($value)
-	{
-		throw new TInvalidOperationException('no_theming_support');
-	}
-
-	public function setSkinID($value)
-	{
-		throw new TInvalidOperationException('no_theming_support');
+		$writer->renderBeginTag('input');
+		$writer->renderEndTag();
 	}
 
 	/**
@@ -104,19 +102,62 @@ class THiddenField extends TControl implements IPostBackDataHandler
 	 */
 	public function raisePostDataChangedEvent()
 	{
-		$this->onValueChanged(new TEventParameter);
+		$this->onValueChanged(null);
 	}
 
 	/**
-	 * This method is invoked when the value of the <b>Value</b> property changes between posts to the server.
+	 * This method is invoked when the value of the {@link getValue Value} property changes between posts to the server.
 	 * The method raises 'ValueChanged' event to fire up the event delegates.
 	 * If you override this method, be sure to call the parent implementation
-	 * so that the event delegates can be invoked.
+	 * so that the attached event handlers can be invoked.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
 	public function onValueChanged($param)
 	{
 		$this->raiseEvent('ValueChanged',$this,$param);
+	}
+
+	/**
+	 * @return string the value of the THiddenField
+	 */
+	public function getValue()
+	{
+		return $this->getViewState('Value','');
+	}
+
+	/**
+	 * Sets the value of the THiddenField
+	 * @param string the value to be set
+	 */
+	public function setValue($value)
+	{
+		$this->setViewState('Value',$value,'');
+	}
+
+	/**
+	 * @return boolean whether theming is enabled for this control. Defaults to false.
+	 */
+	public function getEnableTheming()
+	{
+		return false;
+	}
+
+	/**
+	 * @param boolean whether theming is enabled for this control.
+	 * @throws TNotSupportedException This method is always thrown when calling this method.
+	 */
+	public function setEnableTheming($value)
+	{
+		throw new TNotSupportedException('hiddenfield_theming_unsupported');
+	}
+
+	/**
+	 * @param string Skin ID
+	 * @throws TNotSupportedException This method is always thrown when calling this method.
+	 */
+	public function setSkinID($value)
+	{
+		throw new TNotSupportedException('hiddenfield_skinid_unsupported');
 	}
 }
 

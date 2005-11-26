@@ -36,6 +36,17 @@ class TImage extends TWebControl
 	}
 
 	/**
+	 * Processes an object that is created during parsing template.
+	 * This method overrides the parent implementation by forbidding any child controls.
+	 * @param string|TComponent text string or component parsed and instantiated in template
+	 */
+	public function addParsedObject($object)
+	{
+		if($object instanceof TComponent)
+			throw new TConfigurationException('image_body_forbidden');
+	}
+
+	/**
 	 * Adds attributes related to an HTML image element to renderer.
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
