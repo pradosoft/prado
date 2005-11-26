@@ -294,7 +294,7 @@ class TTemplate extends TComponent implements ITemplate
 									if($value[0]===1)
 										$value=$component->evaluateExpression($value[1]);
 									else if($value[0]===2)
-										$value=$assetManager->publishFilePath($this->_contextPath.'/'.$value[1]);
+										$value=$assetManager->publishFilePath($this->_contextPath.'/'.ltrim($value[1],'/'));
 									else
 										throw new TTemplateRuntimeException('template_attribute_unbindable',get_class($component),$name);
 								}
@@ -342,7 +342,7 @@ class TTemplate extends TComponent implements ITemplate
 									$component->$setter($component->evaluateExpression($value[1]));
 								else if($value[0]===2)
 								{
-									$url=$assetManager->publishFilePath($this->_contextPath.'/'.$value[1]);
+									$url=$assetManager->publishFilePath($this->_contextPath.'/'.ltrim($value[1],'/'));
 									$component->$setter($url);
 								}
 								else

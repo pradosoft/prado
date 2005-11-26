@@ -3,9 +3,9 @@
  * TTextBox class file.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @link http://www.xisc.com/
- * @copyright Copyright &copy; 2004-2005, Qiang Xue
- * @license http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
  */

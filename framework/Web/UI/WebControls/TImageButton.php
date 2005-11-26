@@ -3,15 +3,15 @@
  * TImageButton class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @link http://www.xisc.com/
- * @copyright Copyright &copy; 2004-2005, Qiang Xue
- * @license http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
  */
 
 /**
- * TImage class file
+ * Includes TImage class file
  */
 Prado::using('System.Web.UI.WebControls.TImage');
 
@@ -19,7 +19,7 @@ Prado::using('System.Web.UI.WebControls.TImage');
  * TImageButton class
  *
  * TImageButton displays an image on the Web page and responds to mouse clicks on the image.
- * It is similar to the TButton component except that the TImageButton also captures the
+ * It is similar to the {@link TButton} control except that the TImageButton also captures the
  * coordinates where the image is clicked.
  *
  * Write a <b>OnClick</b> event handler to programmatically determine the coordinates
@@ -42,7 +42,6 @@ Prado::using('System.Web.UI.WebControls.TImage');
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-
 class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEventHandler
 {
 	private $_x=0;

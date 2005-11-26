@@ -3,15 +3,22 @@
  * TImage class file.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @link http://www.xisc.com/
- * @copyright Copyright &copy; 2004-2005, Qiang Xue
- * @license http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
  */
 
 /**
  * TImage class
+ *
+ * TImage displays an image on a page. The image is specified via the
+ * {@link setImageUrl ImageUrl} property which takes a relative or absolute
+ * URL to the image file. The alignment of the image displayed is set by
+ * the {@link setImageAlign ImageAlign} property. To set alternative texts
+ * or long description of the image, use {@link setAlternativeText AlternativeText}
+ * or {@link setDescriptionUrl DescriptionUrl} property, respectively.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -20,30 +27,34 @@
  */
 class TImage extends TWebControl
 {
-	public static $IMAGE_ALIGN=array('NotSet','AbsBottom','AbsMiddle','Baseline','Bottom','Left','Middle','Right','TextTop','Top');
-	// todo: TControl::resolveClientUrl()
 	/**
-	 * @return string tag name of the image
+	 * @return string tag name of image control
 	 */
 	protected function getTagName()
 	{
 		return 'img';
 	}
 
+	/**
+	 * Adds attributes related to an HTML image element to renderer.
+	 * @param THtmlWriter the writer used for the rendering purpose
+	 */
 	protected function addAttributesToRender($writer)
 	{
 		$writer->addAttribute('src',$this->getImageUrl());
 		$writer->addAttribute('alt',$this->getAlternateText());
 		if(($desc=$this->getDescriptionUrl())!=='')
-			$writer->addAttribute('longdesc',$this->resolveClientUrl($desc));
-		if(($align=$this->getImageAlign())!=='NotSet')
-			$writer->addAttribute('align',strtolower($align));
+			$writer->addAttribute('longdesc',$desc);
+		if(($align=$this->getImageAlign())!=='')
+			$writer->addAttribute('align',$align);
+		if(($width=$this->getBorderWidth())==='')
+			$writer->addStyleAttribute('border-width','0px');
 		parent::addAttributesToRender($writer);
 	}
 
 	/**
 	 * Renders the body content of the image.
-	 * None will be rendered for an image.
+	 * Nothing to be rendered within image tags.
 	 * @param THtmlWriter the writer for rendering
 	 */
 	protected function renderContents($writer)
@@ -68,7 +79,7 @@ class TImage extends TWebControl
 	}
 
 	/**
-	 * @return string the alignment of the image with respective to other elements on the page.
+	 * @return string the alignment of the image with respective to other elements on the page, defaults to empty.
 	 */
 	public function getImageAlign()
 	{
@@ -77,15 +88,18 @@ class TImage extends TWebControl
 
 	/**
 	 * Sets the alignment of the image with respective to other elements on the page.
+	 * Possible values include: absbottom, absmiddle, baseline, bottom, left,
+	 * middle, right, texttop, and top. If an empty string is passed in,
+	 * imagealign attribute will not be rendered.
 	 * @param string the alignment of the image
 	 */
 	public function setImageAlign($value)
 	{
-		$this->setViewState('ImageAlign',TPropertyValue::ensureEnum($value,self::$IMAGE_ALIGN),'NotSet');
+		$this->setViewState('ImageAlign',$value,'');
 	}
 
 	/**
-	 * @return string the location of the image file to be displayed
+	 * @return string the URL of the image file
 	 */
 	public function getImageUrl()
 	{
@@ -93,8 +107,7 @@ class TImage extends TWebControl
 	}
 
 	/**
-	 * Sets the location of the image file to be displayed.
-	 * @param string the location of the image file (file path or URL)
+	 * @param string the URL of the image file
 	 */
 	public function setImageUrl($value)
 	{
@@ -110,8 +123,7 @@ class TImage extends TWebControl
 	}
 
 	/**
-	 * Sets the link to long description
-	 * @param string the link to long description
+	 * @param string the URL to the long description of the image.
 	 */
 	public function setDescriptionUrl($value)
 	{

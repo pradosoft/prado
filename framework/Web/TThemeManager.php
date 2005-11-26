@@ -150,7 +150,7 @@ class TThemeManager extends TComponent implements IModule
 			if(strpos($basePath,$appPath)===false)
 				throw new TConfigurationException('thememanager_baseurl_required');
 			$appUrl=dirname($this->_application->getRequest()->getApplicationPath());
-			$this->_baseUrl=$appUrl.'/'.strtr(substr($basePath,strlen($appPath)),'\\','/');
+			$this->_baseUrl=$appUrl.strtr(substr($basePath,strlen($appPath)),'\\','/');
 		}
 		return $this->_baseUrl;
 	}
@@ -306,7 +306,7 @@ class TTheme extends TComponent
 					if($value[0]===1)
 						$value=$this->evaluateExpression($value[1]);
 					else if($value[0]===2)
-						$value=$this->_themeUrl.'/'.$value[1];
+						$value=$this->_themeUrl.'/'.ltrim($value[1],'/');
 				}
 				if(strpos($name,'.')===false)	// is simple property or custom attribute
 				{
