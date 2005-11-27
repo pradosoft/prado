@@ -7,7 +7,6 @@ class TPostBackOptions extends TComponent
 	public $AutoPostBack;
 	public $ClientSubmit;
 	public $PerformValidation;
-	public $RequiresJavaScriptProtocol;
 	public $TargetControl;
 	public $TrackFocus;
 	public $ValidationGroup;
@@ -16,17 +15,16 @@ class TPostBackOptions extends TComponent
 								$argument='',
 								$actionUrl='',
 								$autoPostBack=false,
-								$requiresJavaScriptProtocol=false,
 								$trackFocus=false,
 								$clientSubmit=true,
 								$performValidation=false,
 								$validationGroup='')
 	{
 		$this->ActionUrl=$actionUrl;
+		$this->Argument=$argument;
 		$this->AutoPostBack=$autoPostBack;
 		$this->ClientSubmit=$clientSubmit;
 		$this->PerformValidation=$performValidation;
-		$this->RequiresJavaScriptProtocol=$requiresJavaScriptProtocol;
 		$this->TargetControl=$targetControl;
 		$this->TrackFocus=$trackFocus;
 		$this->ValidationGroup=$validationGroup;

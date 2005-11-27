@@ -1,7 +1,39 @@
 <?php
 
+class TPostBackOptions extends TComponent
+{
+	public $ActionUrl;
+	public $Argument;
+	public $AutoPostBack;
+	public $ClientSubmit;
+	public $PerformValidation;
+	public $TargetControl;
+	public $TrackFocus;
+	public $ValidationGroup;
+
+	public function __construct($targetControl=null,
+								$argument='',
+								$actionUrl='',
+								$autoPostBack=false,
+								$trackFocus=false,
+								$clientSubmit=true,
+								$performValidation=false,
+								$validationGroup='')
+	{
+		$this->ActionUrl=$actionUrl;
+		$this->Argument=$argument;
+		$this->AutoPostBack=$autoPostBack;
+		$this->ClientSubmit=$clientSubmit;
+		$this->PerformValidation=$performValidation;
+		$this->TargetControl=$targetControl;
+		$this->TrackFocus=$trackFocus;
+		$this->ValidationGroup=$validationGroup;
+	}
+}
+
 class TClientScriptManager extends TComponent
 {
+	const POSTBACK_FUNC='__doPostBack';
 	private $_owner;
 	private $_hiddenFields=array();
 	private $_scriptBlocks=array();
@@ -9,24 +41,22 @@ class TClientScriptManager extends TComponent
 	private $_scriptIncludes=array();
 	private $_onSubmitStatements=array();
 	private $_arrayDeclares=array();
+	private $_expandoAttributes=array();
 
 	public function __construct(TPage $owner)
 	{
 		$this->_owner=$owner;
 	}
 
-	final public function getPostBackEventReference($options)
+	public function getPostBackEventReference($options,$javascriptPrefix=true)
 	{
-		if($options->RequiresJavaScriptProtocol)
-			$str='javascript:';
-		else
-			$str='';
+		$str=$javascriptPrefix?'javascript:':'';
 		if($options->AutoPostBack)
 			$str.="setTimeout('";
 		if(!$options->PerformValidation && !$options->TrackFocus && $options->ClientSubmit && $options->ActionUrl==='')
 		{
-			$this->_owner->registerPostBackScript();
-			$postback="__doPostBack('".$options->TargetControl->getUniqueID()."','".THttpUtility::quoteJavaScriptString($options->Argument)."')";
+			$this->registerPostBackScript();
+			$postback=self::POSTBACK_FUNC.'(\''.$options->TargetControl->getUniqueID().'\',\''.THttpUtility::quoteJavaScriptString($options->Argument).'\')';
 			if($options->AutoPostBack)
 			{
 				$str.=THttpUtility::quoteJavaScriptString($postback);
@@ -92,64 +122,67 @@ class TClientScriptManager extends TComponent
 			return '';
 	}
 
-	final public function isHiddenFieldRegistered($key)
+	public function isHiddenFieldRegistered($key)
 	{
 		return isset($this->_hiddenFields[$key]);
 	}
 
-	final public function isClientScriptBlockRegistered($key)
+	public function isScriptBlockRegistered($key)
 	{
 		return isset($this->_scriptBlocks[$key]);
 	}
 
-	final public function isClientScriptIncludeRegistered($key)
+	public function isScriptIncludeRegistered($key)
 	{
 		return isset($this->_scriptIncludes[$key]);
 	}
 
-	final public function isStartupScriptRegistered($key)
+	public function isStartupScriptRegistered($key)
 	{
 		return isset($this->_startupScripts[$key]);
 	}
 
-	final public function isOnSubmitStatementRegistered($key)
+	public function isOnSubmitStatementRegistered($key)
 	{
 		return isset($this->_onSubmitStatements[$key]);
 	}
 
-	final public function registerArrayDeclaration($name,$value)
+	public function registerArrayDeclaration($name,$value)
 	{
 		$this->_arrayDeclares[$name][]=$value;
 	}
 
-	final public function registerClientScriptBlock($key,$script)
+	public function registerScriptBlock($key,$script)
 	{
-		$this->_criptBlocks[$key]=$script;
+		$this->_scriptBlocks[$key]=$script;
 	}
 
-	final public function registerClientScriptInclude($key,$url)
+	public function registerScriptInclude($key,$url)
 	{
 		$this->_scriptIncludes[$key]=$url;
 	}
 
-	// todo: register an asset
-
-	final public function registerHiddenField($name,$value)
+	public function registerHiddenField($name,$value)
 	{
 		$this->_hiddenFields[$name]=$value;
 	}
 
-	final public function registerOnSubmitStatement($key,$script)
+	public function registerOnSubmitStatement($key,$script)
 	{
 		$this->_onSubmitStatements[$key]=$script;
 	}
 
-	final public function registerStartupScript($key,$script)
+	public function registerStartupScript($key,$script)
 	{
 		$this->_startupScripts[$key]=$script;
 	}
 
-	final public function renderArrayDeclarations($writer)
+	public function registerExpandoAttribute($controlID,$name,$value)
+	{
+		$this->_expandoAttributes[$controlID][$name]=$value;
+	}
+
+	public function renderArrayDeclarations($writer)
 	{
 		if(count($this->_arrayDeclares))
 		{
@@ -175,14 +208,14 @@ class TClientScriptManager extends TComponent
 		}
 	}
 
-	final public function renderClientScriptBlocks($writer)
+	public function renderScriptBlocks($writer)
 	{
 		$str='';
 		foreach($this->_scriptBlocks as $script)
-			$str.=$script;
+			$str.="\n".$script;
 		if($this->_owner->getClientOnSubmitEvent()!=='' && $this->_owner->getClientSupportsJavaScript())
 		{
-			$str.="function WebForm_OnSubmit() {\n";
+			$str.="\nfunction WebForm_OnSubmit() {\n";
 			foreach($this->_onSubmitStatements as $script)
 				$str.=$script;
 			$str.="\nreturn true;\n}";
@@ -191,19 +224,19 @@ class TClientScriptManager extends TComponent
 			$writer->write("\n<script type=\"text/javascript\">\n<!--\n".$str."// -->\n</script>\n");
 	}
 
-	final public function renderClientStartupScripts($writer)
+	public function renderStartupScripts($writer)
 	{
 		if(count($this->_startupScripts))
 		{
 			$str="\n<script type=\"text/javascript\">\n<!--\n";
 			foreach($this->_startupScripts as $script)
-				$str.=$script;
+				$str.="\n".$script;
 			$str.="// -->\n</script>\n";
 			$writer->write($str);
 		}
 	}
 
-	final public function renderHiddenFields($writer)
+	public function renderHiddenFields($writer)
 	{
 		$str='';
 		foreach($this->_hiddenFields as $name=>$value)
@@ -216,20 +249,66 @@ class TClientScriptManager extends TComponent
 		$this->_hiddenFields=array();
 	}
 
-	/**
-	 * @internal
-	 */
-	final public function getHasHiddenFields()
+	public function renderExpandoAttribute($writer)
+	{
+		if(count($this->_expandoAttributes))
+		{
+			$str="\n<script type=\"text/javascript\">\n<!--\n";
+			foreach($this->_expandoAttributes as $controlID=>$attrs)
+			{
+				$str.="var $controlID = document.all ? document.all[\"$controlID\"] : document.getElementById(\"$controlID\");\n";
+				foreach($attrs as $name=>$value)
+				{
+					if($value===null)
+						$str.="{$key}[\"$name\"]=null;\n";
+					else
+						$str.="{$key}[\"$name\"]=\"$value\";\n";
+				}
+			}
+			$str.="// -->\n</script>\n";
+			$writer->write($str);
+		}
+	}
+
+	public function getHasHiddenFields()
 	{
 		return count($this->_hiddenFields)>0;
 	}
 
-	/**
-	 * @internal
-	 */
-	final public function getHasSubmitStatements()
+	public function getHasSubmitStatements()
 	{
 		return count($this->_onSubmitStatements)>0;
+	}
+
+
+	/*
+	internal void RenderWebFormsScript(HtmlTextWriter writer)
+	private void EnsureEventValidationFieldLoaded();
+	internal string GetEventValidationFieldValue();
+	public string GetWebResourceUrl(Type type, string resourceName);
+	public void RegisterClientScriptResource(Type type, string resourceName);
+	internal void RegisterDefaultButtonScript(Control button, $writer, bool useAddAttribute);
+	public function SaveEventValidationField();
+	public void ValidateEvent(string uniqueId, string argument);
+	public function getCallbackEventReference()
+	*/
+
+	public function registerPostBackScript()
+	{
+		$this->registerHiddenField('__EVENTTARGET','');
+		$this->registerHiddenField('__EVENTPARAM','');
+		$id=$this->_owner->getForm()->getUniqueID();
+		$script=<<<EOD
+function __doPostBack(eventTarget, eventParameter) {
+	var validation = typeof(Prado) != 'undefined' && typeof(Prado.Validation) != 'undefined';
+	var theform = document.getElementById ? document.getElementById('$id') : document.forms['$id'];
+	theform.__EVENTTARGET.value = eventTarget.split('\$').join(':');
+	theform.__EVENTPARAMETER.value = eventParameter;
+	if(!validation || Prado.Validation.OnSubmit(theform))
+	   theform.submit();
+}
+EOD;
+		$this->registerStartupScript('form',$script);
 	}
 }
 

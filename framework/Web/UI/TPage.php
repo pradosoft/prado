@@ -251,7 +251,7 @@ EOD;
 			if($this->_requireWebFormsScript)
 				$this->renderWebFormsScript($writer);
 		}
-		$this->getClientScript()->renderClientScriptBlocks($writer);
+		$this->getClientScript()->renderScriptBlocks($writer);
 		// todo: more ....
 	}
 
@@ -276,7 +276,7 @@ EOD;
 			if($this->_requireWebFormsScript && !$this->_webFormsScriptRendered)
 				$this->renderWebFormsScript($writer);
 		}
-		$cs->renderClientStartupScripts($writer);
+		$cs->renderStartupScripts($writer);
 		$this->_inFormRender=false;
 	}
 
