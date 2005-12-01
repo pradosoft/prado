@@ -67,6 +67,10 @@ class TAssetManager extends TComponent implements IModule
 	 * @var TApplication application instance
 	 */
 	private $_application;
+	/**
+	 * @var array published assets
+	 */
+	private $_published=array();
 
 	/**
 	 * Initializes the module.
@@ -158,7 +162,9 @@ class TAssetManager extends TComponent implements IModule
 	 */
 	public function publishFilePath($path,$checkTimestamp=false)
 	{
-		if(($fullpath=realpath($path))===false)
+		if(isset($this->_published[$path]))
+			return $this->_published[$path];
+		else if(($fullpath=realpath($path))===false)
 			return '';
 		else if(is_file($fullpath))
 		{
@@ -171,14 +177,16 @@ class TAssetManager extends TComponent implements IModule
 				if(!is_file($file) || @filemtime($file)<@filemtime($fullpath))
 					@copy($fullpath,$file);
 			}
-			return $this->_baseUrl.'/'.$dir.'/'.basename($fullpath);
+			$this->_published[$path]=$this->_baseUrl.'/'.$dir.'/'.basename($fullpath);
+			return $this->_published[$path];
 		}
 		else
 		{
 			$dir=md5($fullpath);
 			if(!is_dir($this->_basePath.'/'.$dir) || $checkTimestamp || $this->_application->getMode()!=='Performance')
 				$this->copyDirectory($fullpath,$this->_basePath.'/'.$dir);
-			return $this->_baseUrl.'/'.$dir;
+			$this->_published[$path]=$this->_baseUrl.'/'.$dir;
+			return $this->_published[$path];
 		}
 	}
 
