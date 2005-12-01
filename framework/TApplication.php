@@ -220,7 +220,6 @@ class TApplication extends TComponent
 		$this->_cacheFile=$cacheFile;
 		// generates unique ID by hashing the configuration file path
 		$this->_uniqueID=md5($this->_configFile);
-		$this->_errorHandler=new TErrorHandler;
 	}
 
 	/**
@@ -363,6 +362,11 @@ class TApplication extends TComponent
 	 */
 	public function getRequest()
 	{
+		if(!$this->_request)
+		{
+			$this->_request=new THttpRequest;
+			$this->_request->init($this,null);
+		}
 		return $this->_request;
 	}
 
@@ -379,6 +383,11 @@ class TApplication extends TComponent
 	 */
 	public function getResponse()
 	{
+		if(!$this->_response)
+		{
+			$this->_response=new THttpResponse;
+			$this->_response->init($this,null);
+		}
 		return $this->_response;
 	}
 
@@ -391,26 +400,15 @@ class TApplication extends TComponent
 	}
 
 	/**
-	 * @return TErrorHandler the error hanlder module
-	 */
-	public function getErrorHandler()
-	{
-		return $this->_errorHandler;
-	}
-
-	/**
-	 * @param TErrorHandler the error hanlder module
-	 */
-	public function setErrorHandler(TErrorHandler $handler)
-	{
-		$this->_errorHandler=$handler;
-	}
-
-	/**
 	 * @return THttpSession the session module, null if session module is not installed
 	 */
 	public function getSession()
 	{
+		if(!$this->_session)
+		{
+			$this->_session=new THttpSession;
+			$this->_session->init($this,null);
+		}
 		return $this->_session;
 	}
 
@@ -420,6 +418,27 @@ class TApplication extends TComponent
 	public function setSession(THttpSession $session)
 	{
 		$this->_session=$session;
+	}
+
+	/**
+	 * @return TErrorHandler the error hanlder module
+	 */
+	public function getErrorHandler()
+	{
+		if(!$this->_errorHandler)
+		{
+			$this->_errorHandler=new TErrorHandler;
+			$this->_errorHandler->init($this,null);
+		}
+		return $this->_errorHandler;
+	}
+
+	/**
+	 * @param TErrorHandler the error hanlder module
+	 */
+	public function setErrorHandler(TErrorHandler $handler)
+	{
+		$this->_errorHandler=$handler;
 	}
 
 	/**
@@ -559,7 +578,7 @@ class TApplication extends TComponent
 		if($this->hasEventHandler('Error'))
 			$this->raiseEvent('Error',$this,$param);
 		else
-			$this->_errorHandler->handleError($this,$param);
+			$this->getErrorHandler()->handleError($this,$param);
 	}
 
 	/**
@@ -724,10 +743,7 @@ class TApplicationConfiguration extends TComponent
 	/**
 	 * @var array list of module configurations
 	 */
-	private $_modules=array(
-			'request'=>array('THttpRequest',array(),null),
-			'response'=>array('THttpResponse',array(),null)
-		);
+	private $_modules=array();
 	/**
 	 * @var array list of service configurations
 	 */

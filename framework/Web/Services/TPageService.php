@@ -116,15 +116,15 @@ class TPageService extends TComponent implements IService
 	/**
 	 * @var TAssetManager asset manager
 	 */
-	private $_assetManager;
+	private $_assetManager=null;
 	/**
 	 * @var TThemeManager theme manager
 	 */
-	private $_themeManager;
+	private $_themeManager=null;
 	/**
 	 * @var TTemplateManager template manager
 	 */
-	private $_templateManager;
+	private $_templateManager=null;
 
 	/**
 	 * Initializes the service.
@@ -253,6 +253,11 @@ class TPageService extends TComponent implements IService
 	 */
 	public function getTemplateManager()
 	{
+		if(!$this->_templateManager)
+		{
+			$this->_templateManager=new TTemplateManager;
+			$this->_templateManager->init($this->_application,null);
+		}
 		return $this->_templateManager;
 	}
 
@@ -269,6 +274,11 @@ class TPageService extends TComponent implements IService
 	 */
 	public function getAssetManager()
 	{
+		if(!$this->_assetManager)
+		{
+			$this->_assetManager=new TAssetManager;
+			$this->_assetManager->init($this->_application,null);
+		}
 		return $this->_assetManager;
 	}
 
@@ -285,6 +295,11 @@ class TPageService extends TComponent implements IService
 	 */
 	public function getThemeManager()
 	{
+		if(!$this->_themeManager)
+		{
+			$this->_themeManager=new TThemeManager;
+			$this->_themeManager->init($this->_application,null);
+		}
 		return $this->_themeManager;
 	}
 
@@ -430,11 +445,7 @@ class TPageConfiguration extends TComponent
 	/**
 	 * @var array list of module configurations
 	 */
-	private $_modules=array(
-		'template'=>array('TTemplateManager',array(),null),
-		'asset'=>array('TAssetManager',array(),null),
-		'theme'=>array('TThemeManager',array(),null)
-	);
+	private $_modules=array();
 	/**
 	 * @var array list of parameters
 	 */
