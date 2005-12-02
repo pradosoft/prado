@@ -29,6 +29,7 @@ demos/personal/protected/application.xml -text
 demos/personal/themes/BlueTheme/buttons.skin -text
 demos/personal/themes/BlueTheme/icon_profile.gif -text
 demos/personal/themes/BlueTheme/labels.skin -text
+docs/application.xml -text
 docs/conceptual-structure.vsd -text
 docs/request-sequence.vsd -text
 framework/.htaccess -text

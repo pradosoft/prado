@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<application id="controls" mode="Debug">
+  <paths>
+    <alias id="Demo" path="." />
+    <alias id="Pages" path="pages" />
+    
+  </paths>
+  
+  <!-- modules configured and loaded for all services -->
+  <modules>
+    <module id="cache" type="System.Data.TSqliteCache" DbFile="Demo.cache"/>
+    <module id="session" type="THttpSession" />
+  </modules>
+  
+  <services>
+    <!-- page service, BasePath is required -->
+    <service id="page" BasePath="Demo.pages" DefaultPage="home">
+      <!-- modules configured and loaded when page service is requested -->
+      <modules>
+        <!-- user manager module -->
+        <module id="users" type="System.Security.TUserManager" PasswordMode="Clear">
+          <user name="demo" password="work" />
+          <user name="demo2" password="work2" />
+        </module>
+        <!-- auth manager module -->
+        <module id="auth" type="System.Security.TAuthManager" UserManager="users" LoginPage="login" />
+      </modules>
+    </service>
+  </services>
+</application>
+
+application.xml::::
+<application id [mode]>
+	<paths>
+		<alias id path/>
+		<using namespace/>
+	</paths>
+	
+	<modules>
+		<module id type /> other params get stored as an array.
+		<!-- user manager module -->
+		<module id="users" type="System.Security.TUserManager" PasswordMode="Clear|MD5|SHA1">
+        	<user name password />
+        	<user name password />
+        </module>
+        <!-- auth manager module -->
+        <module id="auth" type="System.Security.TAuthManager" UserManager="users" LoginPage="login" />
+		
+		
+	</modules>
+	
+	<services>
+		<service id type /> extra params get stored as an array.
+	</services>
+	
+	<parameters>
+		<parameter id [type] /> extra params get stored as an array.
+	</parameters>
+</application>	
+
+
+config.xml
+<configuration>
+  <authorization>
+    <deny pages="home" users="?" verb="post" />
+  </authorization>
+  <pages Theme="BlueTheme">
+    <page id="home" type="HomePage" />
+    <page id="login" type="LoginPage" />
+    <page id="plain" type="TPage" TemplateFile="Demo.pages.PlainPage" />
+  </pages>
+</configuration>
+
+
+
+	
+config.xml:::::
+<configuration>
+	<paths>
+		<alias id path/>
+		<using namespace/>
+	</paths>
+	
+	<modules>
+		<module id type /> other params get stored as an array.
+	</modules>
+
+	<parameters>
+		<parameter id [type] /> extra params get stored as an array.
+	</parameters>
+	
+	<authorization>
+		<allow|deny [pages=",delimited"] [users=",delimited *|?|username"] [roles=",delimited"] verb="get|post" />
+	</authorization>
+	
+	<pages>
+		<page id type />
+	</pages>
+</configuration>
+
+TUserManager:::
