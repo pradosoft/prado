@@ -94,9 +94,36 @@ config.xml:::::
 		<allow|deny [pages=",delimited"] [users=",delimited *|?|username"] [roles=",delimited"] verb="get|post" />
 	</authorization>
 	
-	<pages>
-		<page id type />
+	<pages [MasterClass]>
+		<page id type  [MasterClass] [TemplateFile]/>
 	</pages>
 </configuration>
 
-TUserManager:::
+MasterClass: Refrences the Masterpage for this <Pages> or <Page> element.
+TemplateFile: Refrences the template file for the <Page> element
+
+TUserManager::
+
+All elements that are derivied from TWebControl can access the following Style elements like this:
+Style.BackColor="#FF00FF"
+or
+Style.Font.Size="12px"
+
+TStyle::
+BackColor
+BorderColor
+BorderStyle
+BorderWidth
+CssClass
+ForeColor
+Height
+Style
+Width
+Font :: TFont
+	Bold
+	Italic
+	Overline
+	Strikeout
+	Underline
+	Size
+	Name
