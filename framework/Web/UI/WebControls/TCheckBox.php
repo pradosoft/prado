@@ -381,10 +381,10 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 				$option->AutoPostBack=true;
 			if(!empty($onclick))
 				$onclick=rtrim($onclick,';').';';
-			$onclick.=$page->getClientScript()->getPostBackEventReference($option);
+			$onclick.=$page->getClientScript()->getPostBackEventReference($this,'',$option,false);
 		}
 		if(!empty($onclick))
-			$writer->addAttribute('onclick',$onclick);
+			$writer->addAttribute('onclick','javascript:'.$onclick);
 		if(($accesskey=$this->getAccessKey())!=='')
 			$writer->addAttribute('accesskey',$accesskey);
 		if(($tabindex=$this->getTabIndex())>0)

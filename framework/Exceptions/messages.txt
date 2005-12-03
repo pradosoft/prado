@@ -34,9 +34,9 @@ appconfig_alias_invalid					= Application configuration <alias> element must hav
 appconfig_alias_redefined				= Application configuration <alias id="%s"> cannot be redefined.
 appconfig_using_invalid					= Application configuration <using> element must have a "namespace" attribute.
 appconfig_moduleid_required				= Application configuration <module> element must have an "id" attribute.
-appconfig_moduletype_required			= Application configuration <module id="%s"> must have a "type" attribute.
+appconfig_moduletype_required			= Application configuration <module id="%s"> must have a "class" attribute.
 appconfig_serviceid_required			= Application configuration <service> element must have an "id" attribute.
-appconfig_servicetype_required			= Application configuration <service id="%s"> must have a "type" attribute.
+appconfig_servicetype_required			= Application configuration <service id="%s"> must have a "class" attribute.
 appconfig_parameterid_required			= Application configuration <parameter> element must have an "id" attribute.
 
 uri_format_invalid						= '%s' is not a valid URI.
@@ -86,9 +86,9 @@ pageserviceconf_aliaspath_invalid		= <alias id="%s"> uses an invalid file path "
 pageserviceconf_alias_invalid			= <alias> element must have an "id" attribute and a "path" attribute in page directory configuration file '%s'.
 pageserviceconf_using_invalid			= <using> element must have a "namespace" attribute in page directory configuration file '%s'.
 pageserviceconf_module_invalid			= <module> element must have an "id" attribute in page directory configuration file '%s'.
-pageserviceconf_moduletype_required		= <module id="%s"> must have a "type" attribute in page directory configuration file '%s'.
+pageserviceconf_moduletype_required		= <module id="%s"> must have a "class" attribute in page directory configuration file '%s'.
 pageserviceconf_parameter_invalid		= <parameter> element must have an "id" attribute in page directory configuration file '%s'.
-pageserviceconf_page_invalid			= <page> element must have an "id" attribute and a "type" attribute in page directory configuration file '%s'.
+pageserviceconf_page_invalid			= <page> element must have an "id" attribute and a "class" attribute in page directory configuration file '%s'.
 
 template_templatefile_invalid			= Template file '%s' cannot open.
 template_closingtag_unexpected			= %s: Unexpected closing tag '%s' is found.

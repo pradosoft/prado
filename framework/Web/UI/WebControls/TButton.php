@@ -78,7 +78,7 @@ class TButton extends TWebControl implements IPostBackEventHandler
 			$onclick=$this->getOnClientClick();
 			if($onclick!=='')
 				$onclick=rtrim($onclick,';').';';
-			$onclick.=$page->getClientScript()->getPostBackEventReference($this->getPostBackOptions());
+			$onclick.=$page->getClientScript()->getPostBackEventReference($this,'',$this->getPostBackOptions(),false);
 		}
 		else if($this->getEnabled())   // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');

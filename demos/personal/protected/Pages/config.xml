@@ -2,7 +2,7 @@
 
 <configuration>
   <pages MasterClass="Application.Pages.Layout">
-    <page id="home" type="HomePage" />
-    <page id="login" type="LoginPage" />
+    <page id="home" class="HomePage" />
+    <page id="login" class="LoginPage" />
   </pages>
 </configuration>

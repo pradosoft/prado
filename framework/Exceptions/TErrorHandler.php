@@ -67,7 +67,7 @@ class TErrorHandler extends TComponent implements IModule
 	/**
 	 * @var string module ID
 	 */
-	private $_id;
+	private $_id='error';
 	/**
 	 * @var TApplication application instance
 	 */
@@ -86,7 +86,6 @@ class TErrorHandler extends TComponent implements IModule
 	public function init($application,$config)
 	{
 		$this->_application=$application;
-		$application->attachEventHandler('Error',array($this,'handleError'));
 		$application->setErrorHandler($this);
 	}
 

@@ -8,9 +8,9 @@
   <!-- modules configured and loaded for all services -->
   <modules>
   <!--
-    <module id="cache" type="System.Data.TSqliteCache" DbFile="Demo.cache"/>
+    <module id="cache" class="System.Data.TSqliteCache" DbFile="Demo.cache"/>
     -->
-    <module id="session" type="THttpSession" />
+    <module id="session" class="THttpSession" />
   </modules>
   <services>
     <!-- page service, BasePath is required -->
@@ -18,12 +18,12 @@
       <!-- modules configured and loaded when page service is requested -->
       <modules>
         <!-- user manager module -->
-        <module id="users" type="System.Security.TUserManager" PasswordMode="Clear">
+        <module id="users" class="System.Security.TUserManager" PasswordMode="Clear">
           <user name="demo" password="work" />
           <user name="demo2" password="work2" />
         </module>
         <!-- auth manager module -->
-        <module id="auth" type="System.Security.TAuthManager" UserManager="users" LoginPage="login" />
+        <module id="auth" class="System.Security.TAuthManager" UserManager="users" LoginPage="login" />
       </modules>
     </service>
   </services>

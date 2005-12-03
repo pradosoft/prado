@@ -45,7 +45,7 @@ class TThemeManager extends TComponent implements IModule
 	/**
 	 * @var string module ID
 	 */
-	private $_id;
+	private $_id='theme';
 	/**
 	 * @var boolean whether this module has been initialized
 	 */
@@ -212,6 +212,10 @@ class TTheme extends TComponent
 	 * @var array list of skins for the theme
 	 */
 	private $_skins=null;
+	/**
+	 * @var string theme name
+	 */
+	private $_name='';
 
 	/**
 	 * Constructor.
@@ -223,6 +227,7 @@ class TTheme extends TComponent
 	public function __construct($application,$themePath,$themeUrl)
 	{
 		$this->_themeUrl=$themeUrl;
+		$this->_name=basename($themePath);
 		if(($cache=$application->getCache())!==null)
 		{
 			$array=$cache->get(self::THEME_CACHE_PREFIX.$themePath);
@@ -281,6 +286,14 @@ class TTheme extends TComponent
 			if($cache!==null)
 				$cache->set(self::THEME_CACHE_PREFIX.$themePath,array($this->_skins,time()));
 		}
+	}
+
+	/**
+	 * @return string theme name
+	 */
+	public function getName()
+	{
+		return $this->_name;
 	}
 
 	/**

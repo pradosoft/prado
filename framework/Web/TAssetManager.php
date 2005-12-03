@@ -58,7 +58,7 @@ class TAssetManager extends TComponent implements IModule
 	/**
 	 * @var string module ID
 	 */
-	private $_id;
+	private $_id='asset';
 	/**
 	 * @var boolean whether to use timestamp checking to ensure files are published with up-to-date versions.
 	 */

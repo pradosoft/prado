@@ -17,6 +17,7 @@ Prado::using('System.Web.UI.TPage');
 Prado::using('System.Web.TTemplateManager');
 Prado::using('System.Web.TThemeManager');
 Prado::using('System.Web.TAssetManager');
+Prado::using('System.Web.THiddenFieldPageStatePersister');
 
 /**
  * TPageService class.
@@ -102,6 +103,10 @@ class TPageService extends TComponent implements IService
 	 */
 	private $_pageType;
 	/**
+	 * @var TPage the requested page
+	 */
+	private $_page=null;
+	/**
 	 * @var array list of initial page property values
 	 */
 	private $_properties;
@@ -125,6 +130,10 @@ class TPageService extends TComponent implements IService
 	 * @var TTemplateManager template manager
 	 */
 	private $_templateManager=null;
+	/**
+	 * @var IPageStatePersister page state persister
+	 */
+	private $_pageStatePersister=null;
 
 	/**
 	 * Initializes the service.
@@ -312,11 +321,40 @@ class TPageService extends TComponent implements IService
 	}
 
 	/**
+	 * @return IPageStatePersister page state persister
+	 */
+	public function getPageStatePersister()
+	{
+		if(!$this->_pageStatePersister)
+		{
+			$this->_pageStatePersister=new THiddenFieldPageStatePersister;
+			$this->_pageStatePersister->init($this->_application,null);
+		}
+		return $this->_pageStatePersister;
+	}
+
+	/**
+	 * @param IPageStatePersister page state persister
+	 */
+	public function setPageStatePersister(IPageStatePersister $value)
+	{
+		$this->_pageStatePersister=$value;
+	}
+
+	/**
 	 * @return string the requested page path
 	 */
 	public function getRequestedPagePath()
 	{
 		return $this->_pagePath;
+	}
+
+	/**
+	 * @return TPage the requested page
+	 */
+	public function getRequestedPage()
+	{
+		return $this->_page;
 	}
 
 	/**
@@ -391,11 +429,11 @@ class TPageService extends TComponent implements IService
 			}
 		}
 		if(class_exists($className,false))
-			$page=new $className($this->_properties);
+			$this->_page=new $className($this->_properties);
 		else
 			throw new THttpException(404,'pageservice_page_unknown',$this->_pageType);
 		$writer=$this->_application->getResponse()->createHtmlWriter();
-		$page->run($writer);
+		$this->_page->run($writer);
 		$writer->flush();
 	}
 
@@ -624,7 +662,7 @@ class TPageConfiguration extends TComponent
 			foreach($modulesNode->getElementsByTagName('module') as $node)
 			{
 				$properties=$node->getAttributes();
-				$type=$properties->remove('type');
+				$type=$properties->remove('class');
 				if(($id=$properties->itemAt('id'))===null)
 					throw new TConfigurationException('pageserviceconf_module_invalid',$configPath);
 				if(isset($this->_modules[$id]))
@@ -660,7 +698,7 @@ class TPageConfiguration extends TComponent
 				$properties=$node->getAttributes();
 				if(($id=$properties->remove('id'))===null)
 					throw new TConfigurationException('pageserviceconf_parameter_invalid',$configPath);
-				if(($type=$properties->remove('type'))===null)
+				if(($type=$properties->remove('class'))===null)
 					$this->_parameters[$id]=$node->getValue();
 				else
 					$this->_parameters[$id]=array($type,$properties->toArray());
@@ -704,7 +742,7 @@ class TPageConfiguration extends TComponent
 				foreach($pagesNode->getElementsByTagName('page') as $node)
 				{
 					$properties=$node->getAttributes();
-					$type=$properties->remove('type');
+					$type=$properties->remove('class');
 					$id=$properties->itemAt('id');
 					if($id===null || $type===null)
 						throw new TConfigurationException('pageserviceconf_page_invalid',$configPath);

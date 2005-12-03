@@ -983,7 +983,7 @@ class TControl extends TComponent
 		if($this->_stage<self::CS_INITIALIZED)
 		{
 			$this->_stage=self::CS_CHILD_INITIALIZED;
-			if(($page=$this->getPage()) && $page->getContainsTheme() && $this->getEnableTheming() && !($this->_flags & self::IS_SKIN_APPLIED))
+			if(($page=$this->getPage()) && $this->getEnableTheming() && !($this->_flags & self::IS_SKIN_APPLIED))
 			{
 				$page->applyControlSkin($this);
 				$this->_flags |= self::IS_SKIN_APPLIED;

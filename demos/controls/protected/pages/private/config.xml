@@ -5,6 +5,6 @@
     <deny pages="member" users="?" />
   </authorization>
   <pages>
-    <page id="member" type="MemberPage" />
+    <page id="member" class="MemberPage" />
   </pages>
 </configuration>

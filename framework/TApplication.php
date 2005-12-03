@@ -808,7 +808,7 @@ class TApplicationConfiguration extends TComponent
 				$properties=$node->getAttributes();
 				if(($id=$properties->itemAt('id'))===null)
 					throw new TConfigurationException('appconfig_moduleid_required');
-				if(($type=$properties->remove('type'))===null && isset($this->_modules[$id]) && $this->_modules[$id][2]===null)
+				if(($type=$properties->remove('class'))===null && isset($this->_modules[$id]) && $this->_modules[$id][2]===null)
 					$type=$this->_modules[$id][0];
 				if($type===null)
 					throw new TConfigurationException('appconfig_moduletype_required',$id);
@@ -825,7 +825,7 @@ class TApplicationConfiguration extends TComponent
 				$properties=$node->getAttributes();
 				if(($id=$properties->itemAt('id'))===null)
 					throw new TConfigurationException('appconfig_serviceid_required');
-				if(($type=$properties->remove('type'))===null && isset($this->_services[$id]) && $this->_services[$id][2]===null)
+				if(($type=$properties->remove('class'))===null && isset($this->_services[$id]) && $this->_services[$id][2]===null)
 					$type=$this->_services[$id][0];
 				if($type===null)
 					throw new TConfigurationException('appconfig_servicetype_required',$id);
@@ -842,7 +842,7 @@ class TApplicationConfiguration extends TComponent
 				$properties=$node->getAttributes();
 				if(($id=$properties->remove('id'))===null)
 					throw new TConfigurationException('appconfig_parameterid_required');
-				if(($type=$properties->remove('type'))===null)
+				if(($type=$properties->remove('class'))===null)
 					$this->_parameters[$id]=$node->getValue();
 				else
 					$this->_parameters[$id]=array($type,$properties->toArray());

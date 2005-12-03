@@ -5,8 +5,8 @@
     <deny pages="home" users="?" verb="post" />
   </authorization>
   <pages Theme="BlueTheme">
-    <page id="home" type="HomePage" />
-    <page id="login" type="LoginPage" />
-    <page id="plain" type="TPage" TemplateFile="Demo.pages.PlainPage" />
+    <page id="home" class="HomePage" />
+    <page id="login" class="LoginPage" />
+    <page id="plain" class="TPage" TemplateFile="Demo.pages.PlainPage" />
   </pages>
 </configuration>

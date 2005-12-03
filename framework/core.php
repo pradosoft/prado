@@ -287,6 +287,30 @@ interface IUser
 }
 
 /**
+ * IPageStatePersister class.
+ *
+ * This interface must be implemented by all page state persister classes.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System
+ * @since 3.0
+ */
+interface IPageStatePersister
+{
+	/**
+	 * Loads state from a persistent storage.
+	 * @return mixed the state
+	 */
+	public function load();
+	/**
+	 * Saves state into a persistent storage.
+	 * @param mixed the state to be saved
+	 */
+	public function save($state);
+}
+
+/**
  * PradoBase class.
  *
  * PradoBase implements a few fundamental static methods.

@@ -5,19 +5,44 @@ Prado::using('System.Web.UI.WebControls.*');
 
 class TPage extends TTemplateControl
 {
+	/**
+	 * @var TApplication application instance
+	 */
 	private $_application;
-	private $_contentTemplateCollection=null;
+	/**
+	 * @var TPageService page service instance
+	 */
+	private $_pageService;
+	/**
+	 * @var string template file name
+	 */
+	private $_templateFile=null;
+	/**
+	 * @var array list of registered validators
+	 */
+	private $_validators=array();
+	/**
+	 * @var boolean if validation has been performed
+	 */
+	private $_validated=false;
+	/**
+	 * @var TTheme page theme
+	 */
+	private $_theme=null;
+	/**
+	 * @var TTheme page stylesheet theme
+	 */
+	private $_styleSheet=null;
+	/**
+	 * @var TClientScriptManager client script manager
+	 */
+	private $_clientScript=null;
+
 	private $_maxPageStateFieldLength=10;
 	private $_enableViewStateMac=true;
 	private $_performPreRendering=true;
 	private $_performRendering=true;
-	private $_supportsStyleSheet=true;
-	private $_theme=null;
-	private $_themeName='';
-	private $_styleSheet=null;
-	private $_styleSheetName='';
 
-	private $_clientScript=null;
 	private $_form=null;
 	private $_formRendered=false;
 	private $_inFormRender=false;
@@ -34,18 +59,20 @@ class TPage extends TTemplateControl
 	private $_controlsRequiringPostBack=array();
 	private $_registeredControlThatRequireRaiseEvent=null;
 	private $_registeredControlsThatRequirePostBack=null;
-	private $_validators=array();
-	private $_validated=false;
 	private $_autoPostBackControl=null;
 	private $_webFormsScriptRendered=false;
 	private $_requireWebFormsScript=false;
 	private static $_systemPostFields=array('__EVENTTARGET','__EVENTPARAM','__STATE','__PREVPAGE','__CALLBACKID','__CALLBACKPARAM','__LASTFOCUS');
-	private $_contents=array();
-	private $_templateFile=null;
 
+	/**
+	 * Constructor.
+	 * If initial property values are given, they will be set to the page.
+	 * @param array initial property values for the page.
+	 */
 	public function __construct($initProperties=null)
 	{
 		$this->_application=Prado::getApplication();
+		$this->_pageService=$this->_application->getService();
 		$this->setPage($this);
 		if(is_array($initProperties))
 		{
@@ -56,7 +83,9 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * Loads and parses the control template
+	 * Loads and parses the page template.
+	 * This method overrides the parent implementation by allowing loading
+	 * a page template from a specified template file.
 	 * @return ITemplate the parsed template structure
 	 */
 	protected function loadTemplate()
@@ -65,46 +94,337 @@ class TPage extends TTemplateControl
 			return parent::loadTemplate();
 		else
 		{
-			$template=Prado::getApplication()->getService()->getTemplateManager()->getTemplateByFileName(Prado::getPathOfNamespace($this->_templateFile,'.tpl'));
+			$template=$this->_pageService->getTemplateManager()->getTemplateByFileName($this->_templateFile);
 			$this->setTemplate($template);
 			return $template;
 		}
 	}
 
+	/**
+	 * @return string the user-specified template file, defaults to null.
+	 */
 	public function getTemplateFile()
 	{
 		return $this->_templateFile;
 	}
 
+	/**
+	 * Sets the user-specified template file.
+	 * The template file must be specified in a namespace format.
+	 * @param string the user-specified template file.
+	 * @throws TInvalidDataValueException if the file is not in namespace format.
+	 */
 	public function setTemplateFile($value)
 	{
-		$this->_templateFile=$value;
+		if(($templateFile=Prado::getPathOfNamespace($value,TTemplateManager::TEMPLATE_FILE_EXT))===null)
+			throw new TInvalidDataValueException('page_templatefile_invalid',$value);
+		else
+			$this->_templateFile=$templateFile;
 	}
 
-	final public function setForm($form)
+	/**
+	 * Registers a TForm instance to the page.
+	 * Note, a page can contain at most one TForm instance.
+	 * @param TForm the form on the page
+	 * @throws TInvalidOperationException if this method is invoked twice or more.
+	 */
+	public function setForm(TForm $form)
 	{
-		$this->_form=$form;
+		if($this->_form===null)
+			$this->_form=$form;
+		else
+			throw new TInvalidOperationException('page_form_duplicated');
 	}
 
-	final public function getForm()
+	/**
+	 * @return TForm the form on the page
+	 */
+	public function getForm()
 	{
 		return $this->_form;
 	}
 
+	/**
+	 * Returns a list of registered validators.
+	 * If validation group is specified, only the validators in that group will be returned.
+	 * @param string validation group
+	 * @return TList registered validators
+	 */
+	public function getValidators($validationGroup='')
+	{
+		if(!$this->_validators)
+			$this->_validators=new TList;
+		if($validationGroup==='')
+			return $this->_validators;
+		else
+		{
+			$list=new TList;
+			foreach($this->_validators as $validator)
+				if($validator->getValidationGroup()===$validationGroup)
+					$list->add($validator);
+			return $list;
+		}
+	}
+
+	/**
+	 * Performs input validation.
+	 * This method will invoke the registered validators to perform the actual validation.
+	 * If validation group is specified, only the validators in that group will be invoked.
+	 * @param string validation group
+	 */
 	public function validate($validationGroup='')
 	{
 		$this->_validated=true;
-		if($validationGroup==='')
+		if($this->_validators && $this->_validators->getCount())
 		{
-			foreach($this->_validators as $validator)
-				$validator->validate();
+			if($validationGroup==='')
+			{
+				foreach($this->_validators as $validator)
+					$validator->validate();
+			}
+			else
+			{
+				foreach($this->_validators as $validator)
+					if($validator->getValidationGroup()===$validationGroup)
+						$validator->validate();
+			}
+		}
+	}
+
+	/**
+	 * Returns whether user input is valid or not.
+	 * This method must be invoked after {@link validate} is called.
+	 * @return boolean whether the user input is valid or not.
+	 * @throws TInvalidOperationException if {@link validate} is not invoked yet.
+	 */
+	public function getIsValid()
+	{
+		if($this->_validated)
+		{
+			if($this->_validators && $this->_validators->getCount())
+			{
+				foreach($this->_validators as $validator)
+					if(!$validator->getIsValid())
+						return false;
+			}
+			return true;
 		}
 		else
-		{
-			foreach($this->_validators as $validator)
-				if($validator->getValidationGroup()===$validationGroup)
-					$validator->validate();
-		}
+			throw new TInvalidOperationException('page_isvalid_unknown');
+	}
+
+	/**
+	 * @return TTheme the theme used for the page. Defaults to null.
+	 */
+	public function getTheme()
+	{
+		if(is_string($this->_theme))
+			$this->_theme=$this->_pageService->getThemeManager()->getTheme($this->_theme);
+		return $this->_theme;
+	}
+
+	/**
+	 * Sets the theme to be used for the page.
+	 * @param string|TTheme the theme name or the theme object to be used for the page.
+	 * @throws TInvalidDataTypeException if the parameter is neither a string nor a TTheme object
+	 */
+	public function setTheme($value)
+	{
+		$this->_theme=$value;
+	}
+
+
+	/**
+	 * @return TTheme the stylesheet theme used for the page. Defaults to null.
+	 */
+	public function getStyleSheetTheme()
+	{
+		if(is_string($this->_styleSheet))
+			$this->_styleSheet=$this->_pageService->getThemeManager()->getTheme($this->_styleSheet);
+		return $this->_styleSheet;
+	}
+
+	/**
+	 * Sets the stylesheet theme to be used for the page.
+	 * @param string|TTheme the stylesheet theme name or the stylesheet theme object to be used for the page.
+	 * @throws TInvalidDataTypeException if the parameter is neither a string nor a TTheme object
+	 */
+	public function setStyleSheetTheme($value)
+	{
+		$this->_styleSheet=$value;
+	}
+
+	/**
+	 * Applies a skin in the current theme to a control.
+	 * This method should only be used by framework developers.
+	 * @param TControl a control to be applied skin with
+	 */
+	public function applyControlSkin($control)
+	{
+		if(($theme=$this->getTheme())!==null)
+			$theme->applySkin($control);
+	}
+
+	/**
+	 * Applies a stylesheet skin in the current theme to a control.
+	 * This method should only be used by framework developers.
+	 * @param TControl a control to be applied stylesheet skin with
+	 */
+	public function applyControlStyleSheet($control)
+	{
+		if(($theme=$this->getStyleSheetTheme())!==null)
+			$theme->applySkin($control);
+	}
+
+	/**
+	 * @return TClientScriptManager client script manager
+	 */
+	public function getClientScript()
+	{
+		if(!$this->_clientScript)
+			$this->_clientScript=new TClientScriptManager($this);
+		return $this->_clientScript;
+	}
+
+	/**
+	 * Raises PreInit event.
+	 * This method is invoked right before {@link onInit Init} stage.
+	 * You may override this method to provide additional initialization that
+	 * should be done before {@link onInit Init} (e.g. setting {@link setTheme Theme} or
+	 * {@link setStyleSheetTheme StyleSheetTheme}).
+	 * Remember to call the parent implementation to ensure PreInit event is raised.
+	 * @param mixed event parameter
+	 */
+	protected function onPreInit($param)
+	{
+		$this->raiseEvent('PreInit',$this,$param);
+	}
+
+	/**
+	 * Raises InitComplete event.
+	 * This method is invoked right after {@link onInit Init} stage and before {@link onLoad Load} stage.
+	 * You may override this method to provide additional initialization that
+	 * should be done after {@link onInit Init}.
+	 * Remember to call the parent implementation to ensure InitComplete event is raised.
+	 * @param mixed event parameter
+	 */
+	protected function onInitComplete($param)
+	{
+		$this->raiseEvent('InitComplete',$this,$param);
+	}
+
+	/**
+	 * Raises PreLoad event.
+	 * This method is invoked right before {@link onLoad Load} stage.
+	 * You may override this method to provide additional page loading logic that
+	 * should be done before {@link onLoad Load}.
+	 * Remember to call the parent implementation to ensure PreLoad event is raised.
+	 * @param mixed event parameter
+	 */
+	protected function onPreLoad($param)
+	{
+		$this->raiseEvent('PreLoad',$this,$param);
+	}
+
+	/**
+	 * Raises LoadComplete event.
+	 * This method is invoked right after {@link onLoad Load} stage.
+	 * You may override this method to provide additional page loading logic that
+	 * should be done after {@link onLoad Load}.
+	 * Remember to call the parent implementation to ensure LoadComplete event is raised.
+	 * @param mixed event parameter
+	 */
+	protected function onLoadComplete($param)
+	{
+		$this->raiseEvent('LoadComplete',$this,$param);
+	}
+
+	/**
+	 * Raises PreRenderComplete event.
+	 * This method is invoked right after {@link onPreRender PreRender} stage.
+	 * You may override this method to provide additional preparation for page rendering
+	 * that should be done after {@link onPreRender PreRender}.
+	 * Remember to call the parent implementation to ensure PreRenderComplete event is raised.
+	 * @param mixed event parameter
+	 */
+	protected function onPreRenderComplete($param)
+	{
+		$this->raiseEvent('PreRenderComplete',$this,$param);
+	}
+
+	/**
+	 * Raises SaveStateComplete event.
+	 * This method is invoked right after {@link onSaveState SaveState} stage.
+	 * You may override this method to provide additional logic after page state is saved.
+	 * Remember to call the parent implementation to ensure SaveStateComplete event is raised.
+	 * @param mixed event parameter
+	 */
+	protected function onSaveStateComplete($param)
+	{
+		$this->raiseEvent('SaveStateComplete',$this,$param);
+	}
+
+	/**
+	 * Determines whether the current page request is a postback.
+	 * Call {@link getIsPostBack} to get the result.
+	 */
+	private function determinePostBackMode()
+	{
+		$postData=$this->_application->getRequest()->getItems();
+		if($postData->contains(TClientScriptManager::FIELD_PAGE_STATE) || $postData->contains(TClientScriptManager::FIELD_POSTBACK_TARGET))
+			$this->_postData=$postData;
+	}
+
+	/**
+	 * @return boolean whether the current page request is a postback
+	 */
+	public function getIsPostBack()
+	{
+		return $this->_postData!==null;
+	}
+
+	/**
+	 * @return IPageStatePersister page state persister
+	 */
+	protected function getPageStatePersister()
+	{
+		return $this->_pageService->getPageStatePersister();
+	}
+
+	/**
+	 * Loads page state from persistent storage.
+	 */
+	protected function loadPageState()
+	{
+		$state=$this->getPageStatePersister()->load();
+		$this->loadStateRecursive($state,$this->getEnableViewState());
+	}
+
+	/**
+	 * Saves page state from persistent storage.
+	 */
+	protected function savePageState()
+	{
+		$state=&$this->saveStateRecursive($this->getEnableViewState());
+		$this->getPageStatePersister()->save($state);
+	}
+
+	/**
+	 * Loads page state data from a hidden field.
+	 * @return string page state data stored in hidden field
+	 */
+	public function loadStateField()
+	{
+		return base64_decode($this->_postData->itemAt(TClientScriptManager::FIELD_PAGE_STATE));
+	}
+
+	/**
+	 * Saves page state data in a hidden field.
+	 * @param string string representation of the page state data.
+	 */
+	public function saveStateField($state)
+	{
+		$this->getClientScript()->registerHiddenField(TClientScriptManager::FIELD_PAGE_STATE,base64_encode($state));
 	}
 
 	public function RegisterEnabledControl($control)
@@ -144,46 +464,6 @@ class TPage extends TTemplateControl
 	{
 		if(!$this->_inFormRender)
 			throw new THttpException('control_not_in_form',$control->getUniqueID());
-	}
-
-	/**
-	 * @internal
-	 */
-	final protected function addContentTemplate($name,$template)
-	{
-		if(!$this->_contentTemplateCollection)
-			$this->_contentTemplateCollection=new TMap;
-		if($this->_contentTemplateCollection->has($name))
-			throw new Exception("Content '$name' duplicated.");
-		$this->_contentTemplateCollection->add($name,$template);
-	}
-
-	/**
-	 * @internal
-	 */
-	final public function applyControlSkin($control)
-	{
-		if($this->_theme)
-			$this->_theme->applySkin($control);
-	}
-
-	/**
-	 * @internal
-	 */
-	final public function applyControlStyleSheet($control)
-	{
-		if($this->_styleSheet)
-		{
-			$this->_styleSheet->applySkin($control);
-			return true;
-		}
-		else
-			return false;
-	}
-
-	private function renderStateFields($writer)
-	{
-		$writer->write("\n<input type=\"hidden\" name=\"__STATE\" id=\"__STATE\" value=\"".$this->_pageState."\" />\n");
 	}
 
 	private function renderPostBackScript($writer)
@@ -232,7 +512,6 @@ EOD;
 		$this->_inFormRender=true;
 
 		$this->getClientScript()->renderHiddenFields($writer);
-		//$this->renderStateFields($writer);
 		if($this->getClientSupportsJavaScript())
 		{
 			/*
@@ -280,13 +559,6 @@ EOD;
 		$this->_inFormRender=false;
 	}
 
-	final public function getClientScript()
-	{
-		if(!$this->_clientScript)
-			$this->_clientScript=new TClientScriptManager($this);
-		return $this->_clientScript;
-	}
-
 	final public function getClientOnSubmitEvent()
 	{
 		// todo
@@ -296,38 +568,8 @@ EOD;
 			return '';
 	}
 
-	final public function getValidators($validationGroup='')
-	{
-		if(!$this->_validators)
-			$this->_validators=new TList;
-		if($validationGroup==='')
-			return $this->_validators;
-		$list=new TList;
-		foreach($this->_validators as $validator)
-			if($validator->getValidationGroup()===$validationGroup)
-				$list->add($validator);
-		return $list;
-	}
-
 	protected function initializeCulture()
 	{
-	}
-
-	/**
-	 * @internal
-	 */
-	public function initializeStyleSheet()
-	{
-		if($this->_styleSheet!=='')
-			$this->_styleSheet=new TTheme($this->_styleSheetName);
-	}
-
-	private function initializeThemes()
-	{
-		if($this->_themeName!=='')
-			$this->_theme=$this->getService()->getThemeManager()->getTheme($this->_themeName);
-		if($this->_styleSheetName!=='')
-			$this->_styleSheet=$this->getService()->getThemeManager()->getTheme($this->_styleSheetName);
 	}
 
 	/**
@@ -344,44 +586,6 @@ EOD;
 		}
 	}
 
-	protected function onInit($param)
-	{
-		parent::onInit($param);/*
-		if($this->_theme)
-			$this->_theme->setStyleSheet();
-		if($this->_styleSheet)
-			$this->_styleSheet->setStyleSheet();*/
-	}
-
-	protected function onInitComplete($param)
-	{
-		$this->raiseEvent('InitComplete',$this,$param);
-	}
-
-	protected function onLoadComplete($param)
-	{
-		$this->raiseEvent('LoadComplete',$this,$param);
-	}
-
-	protected function onPreInit($param)
-	{
-		$this->raiseEvent('PreInit',$this,$param);
-	}
-
-	protected function onPreLoad($param)
-	{
-		$this->raiseEvent('PreLoad',$this,$param);
-	}
-
-	protected function onPreRenderComplete($param)
-	{
-		$this->raiseEvent('PreRenderComplete',$this,$param);
-	}
-
-	protected function onSaveStateComplete($param)
-	{
-		$this->raiseEvent('SaveStateComplete',$this,$param);
-	}
 
 	final public function registerAsyncTask()
 	{
@@ -402,64 +606,6 @@ EOD;
 	public function getApplication()
 	{
 		return $this->_application;
-	}
-
-	public function loadStateField()
-	{
-		return base64_decode($this->_postData->itemAt('__STATE'));
-	}
-
-	public function saveStateField($state)
-	{
-		$this->getClientScript()->registerHiddenField('__STATE',base64_encode($state));
-	}
-
-	protected function determinePostBackMode()
-	{
-		/*
-		$application=$this->getApplication();
-		if($application->getPreventPostBack())
-			return null;
-		*/
-		$postData=new TMap($this->_application->getRequest()->getItems());
-		if($postData->itemAt('__STATE')!==null || $postData->itemAt('__EVENTTARGET')!==null)
-			return $postData;
-		else
-			return null;
-	}
-
-	final public function getIsPostBack()
-	{
-		if($this->_postData)
-		{
-			if($this->_isCrossPagePostBack)
-				return true;
-			if($this->_previousPagePath!=='')
-				return false;
-			return !$this->_pageStateChanged;
-		}
-		else
-			return false;
-	}
-
-	protected function getPageStatePersister()
-	{
-		require_once(PRADO_DIR.'/Web/UI/THiddenFieldPageStatePersister.php');
-		return new THiddenFieldPageStatePersister($this);
-	}
-
-	protected function loadPageState()
-	{
-		$persister=$this->getPageStatePersister();
-		$state=$persister->load();
-		$this->loadStateRecursive($state,$this->getEnableViewState());
-	}
-
-	protected function savePageState()
-	{
-		$state=&$this->saveStateRecursive($this->getEnableViewState());
-		$persister=$this->getPageStatePersister();
-		$persister->save($state);
 	}
 
 	protected function processPostData($postData,$beforeLoad)
@@ -551,11 +697,10 @@ EOD;
 
 	public function run($writer)
 	{
-		$this->_postData=$this->determinePostBackMode();
+		$this->determinePostBackMode();
 		$this->_restPostData=new TMap;
 
 		$this->onPreInit(null);
-		$this->initializeThemes();
 		$this->_preInitWorkComplete=true;
 
 		$this->initRecursive(null);
@@ -587,30 +732,6 @@ EOD;
 		$this->unloadRecursive();
 	}
 
-	public function getTheme()
-	{
-		return $this->_themeName;
-	}
-
-	public function setTheme($value)
-	{
-		$this->_themeName=$value;
-	}
-
-	public function getStyleSheetTheme()
-	{
-		return $this->_styleSheetName;
-	}
-
-	public function setStyleSheetTheme($value)
-	{
-		$this->_styleSheetName=$value;
-	}
-
-	public function getContainsTheme()
-	{
-		return $this->_theme!==null;
-	}
 }
 
 ?>

@@ -33,7 +33,13 @@ class TPostBackOptions extends TComponent
 
 class TClientScriptManager extends TComponent
 {
-	const POSTBACK_FUNC='__doPostBack';
+	const SCRIPT_DIR='Web/Javascripts/js';
+	const POSTBACK_FUNC='Prado.PostBack.perform';
+	const POSTBACK_OPTIONS='Prado.PostBack.Options';
+	const FIELD_POSTBACK_TARGET='PRADO_POSTBACK_TARGET';
+	const FIELD_POSTBACK_PARAMETER='PRADO_POSTBACK_PARAMETER';
+	const FIELD_LASTFOCUS='PRADO_LASTFOCUS';
+	const FIELD_PAGE_STATE='PRADO_PAGE_STATE';
 	private $_owner;
 	private $_hiddenFields=array();
 	private $_scriptBlocks=array();
@@ -48,78 +54,89 @@ class TClientScriptManager extends TComponent
 		$this->_owner=$owner;
 	}
 
-	public function getPostBackEventReference($options,$javascriptPrefix=true)
+	public function getPostBackEventReference($control,$parameter='',$options=null,$javascriptPrefix=true)
 	{
-		$str=$javascriptPrefix?'javascript:':'';
-		if($options->AutoPostBack)
-			$str.="setTimeout('";
-		if(!$options->PerformValidation && !$options->TrackFocus && $options->ClientSubmit && $options->ActionUrl==='')
+		if($options)
 		{
-			$this->registerPostBackScript();
-			$postback=self::POSTBACK_FUNC.'(\''.$options->TargetControl->getUniqueID().'\',\''.THttpUtility::quoteJavaScriptString($options->Argument).'\')';
-			if($options->AutoPostBack)
+			$flag=false;
+			$opt='new '.self::POSTBACK_OPTIONS.'(';
+			if($options->PerformValidation)
 			{
-				$str.=THttpUtility::quoteJavaScriptString($postback);
-				$str.="',0)";
+				$flag=true;
+				$this->registerValidationScript();
+				$opt.='true,';
 			}
 			else
-				$str.=$postback;
-			return $str;
-		}
-		$str.='WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions("';
-		$str.=$options->TargetControl->getUniqueID().'", ';
-		if(($arg=$options->Argument)==='')
-			$str.='"", ';
-		else
-			$str.='"'.THttpUtility::quoteJavaScriptString($arg).'", ';
-		$flag=false;
-		if($options->PerformValidation)
-		{
-			$flag=true;
-			$str.='true, ';
-		}
-		else
-			$str.='false, ';
-		if($options->ValidationGroup!=='')
-		{
-			$flag=true;
-			$str.='"'.$options->ValidationGroup.'", ';
-		}
-		else
-			$str.='"", ';
-		if($options->ActionUrl!=='')
-		{
-			$flag=true;
-			$this->_owner->setContainsCrossPagePost(true);
-			$str.='"'.THttpUtility::quoteJavaScriptString($options->ActionUrl).'", ';
-		}
-		else
-			$str.='"", ';
-		if($options->TrackFocus)
-		{
-			$this->_owner->registerFocusScript();
-			$flag=true;
-			$str.='true, ';
+				$opt.='false,';
+			if($options->ValidationGroup!=='')
+			{
+				$flag=true;
+				$opt.='"'.$options->ValidationGroup.'",';
+			}
+			else
+				$opt.='"",';
+			if($options->ActionUrl!=='')
+			{
+				$flag=true;
+				$this->_owner->setCrossPagePostBack(true);
+				$opt.='"'.THttpUtility::quoteJavaScriptString($options->ActionUrl).'",';
+			}
+			else
+				$opt.='"",';
+			if($options->TrackFocus)
+			{
+				$flag=true;
+				$this->registerFocusScript();
+				$opt.='true,';
+			}
+			else
+				$opt.='false,';
+			if($options->ClientSubmit)
+			{
+				$flag=true;
+				$opt.='true)';
+			}
+			else
+				$opt.='false)';
+			//if(!$flag)
+			//	return '';
 		}
 		else
-			$str.='false, ';
-		if($options->ClientSubmit)
-		{
-			$flag=true;
-			$this->_owner->registerPostBackScript();
-			$str.='true))';
-		}
-		else
-			$str.='false))';
-		if($options->AutoPostBack)
-			$str.="', 0)";
-		if($flag)
-		{
-			$this->_owner->registerWebFormsScript();
-			return $str;
-		}
-		else
-			return '';
+			$opt='null';
+		$this->registerPostBackScript();
+		$formID=$this->_owner->getForm()->getUniqueID();
+		$postback=self::POSTBACK_FUNC.'(\''.$formID.'\',\''.$control->getUniqueID().'\',\''.THttpUtility::quoteJavaScriptString($parameter).'\','.$opt.')';
+		if($options && $options->AutoPostBack)
+			$postback='setTimeout(\''.THttpUtility::quoteJavaScriptString($postback).'\',0)';
+		return $javascriptPrefix?'javascript:'.$postback:$postback;
+	}
+
+	protected function registerPostBackScript()
+	{
+		$this->registerHiddenField(self::FIELD_POSTBACK_TARGET,'');
+		$this->registerHiddenField(self::FIELD_POSTBACK_PARAMETER,'');
+		$am=$this->_owner->getService()->getAssetManager();
+		$url=$am->publishFilePath(Prado::getFrameworkPath().'/'.self::SCRIPT_DIR.'/base.js');
+		$this->registerScriptInclude('prado:base',$url);
+	}
+
+	public function registerFocusScript()
+	{
+		// need Focus.js
+	}
+
+	public function registerScrollScript()
+	{
+		$this->registerHiddenField(self::FIELD_SCROLL_X,$this->_owner->getScrollPositionX());
+		$this->registerHiddenField(self::FIELD_SCROLL_Y,$this->_owner->getScrollPositionY());
+		/*
+		this.ClientScript.RegisterStartupScript(typeof(Page), "PageScrollPositionScript", "\r\ntheForm.oldSubmit = theForm.submit;\r\ntheForm.submit = WebForm_SaveScrollPositionSubmit;\r\n\r\ntheForm.oldOnSubmit = theForm.onsubmit;\r\ntheForm.onsubmit = WebForm_SaveScrollPositionOnSubmit;\r\n" + (this.IsPostBack ? "\r\ntheForm.oldOnLoad = window.onload;\r\nwindow.onload = WebForm_RestoreScrollPosition;\r\n" : string.Empty), true);
+		need base.js
+		*/
+	}
+
+	public function registerValidationScript()
+	{
 	}
 
 	public function isHiddenFieldRegistered($key)
@@ -226,11 +243,14 @@ class TClientScriptManager extends TComponent
 
 	public function renderStartupScripts($writer)
 	{
+		$str='';
+		foreach($this->_scriptIncludes as $include)
+			$str.="\n<script type=\"text/javascript\" src=\"".THttpUtility::htmlEncode($include)."\"></script>";
 		if(count($this->_startupScripts))
 		{
-			$str="\n<script type=\"text/javascript\">\n<!--\n";
+			$str.="\n<script type=\"text/javascript\">\n<!--\n";
 			foreach($this->_startupScripts as $script)
-				$str.="\n".$script;
+				$str.=$script;
 			$str.="// -->\n</script>\n";
 			$writer->write($str);
 		}
@@ -292,24 +312,6 @@ class TClientScriptManager extends TComponent
 	public void ValidateEvent(string uniqueId, string argument);
 	public function getCallbackEventReference()
 	*/
-
-	public function registerPostBackScript()
-	{
-		$this->registerHiddenField('__EVENTTARGET','');
-		$this->registerHiddenField('__EVENTPARAM','');
-		$id=$this->_owner->getForm()->getUniqueID();
-		$script=<<<EOD
-function __doPostBack(eventTarget, eventParameter) {
-	var validation = typeof(Prado) != 'undefined' && typeof(Prado.Validation) != 'undefined';
-	var theform = document.getElementById ? document.getElementById('$id') : document.forms['$id'];
-	theform.__EVENTTARGET.value = eventTarget.split('\$').join(':');
-	theform.__EVENTPARAMETER.value = eventParameter;
-	if(!validation || Prado.Validation.OnSubmit(theform))
-	   theform.submit();
-}
-EOD;
-		$this->registerStartupScript('form',$script);
-	}
 }
 
 ?>
