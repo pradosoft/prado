@@ -7,7 +7,7 @@
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Revision: $  $Date: $
- * @package System.Web
+ * @package System.Web.UI
  */
 
 /**
@@ -38,7 +38,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
- * @package System.Web
+ * @package System.Web.UI
  * @since 3.0
  */
 class TAssetManager extends TComponent implements IModule

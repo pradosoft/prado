@@ -11,7 +11,7 @@ class THiddenFieldPageStatePersister extends TComponent implements IPageStatePer
 	 * @param TApplication application
 	 * @param TXmlElement module configuration
 	 */
-	public function init($application,$config)
+	public function init($application, $config)
 	{
 		$this->_application=$application;
 	}

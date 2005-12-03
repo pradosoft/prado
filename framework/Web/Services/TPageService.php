@@ -14,10 +14,10 @@
  * Include classes to be used by page service
  */
 Prado::using('System.Web.UI.TPage');
-Prado::using('System.Web.TTemplateManager');
-Prado::using('System.Web.TThemeManager');
-Prado::using('System.Web.TAssetManager');
-Prado::using('System.Web.THiddenFieldPageStatePersister');
+Prado::using('System.Web.UI.TTemplateManager');
+Prado::using('System.Web.UI.TThemeManager');
+Prado::using('System.Web.UI.TAssetManager');
+Prado::using('System.Web.UI.THiddenFieldPageStatePersister');
 
 /**
  * TPageService class.
