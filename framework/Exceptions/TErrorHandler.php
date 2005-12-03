@@ -190,21 +190,14 @@ class TErrorHandler extends TComponent implements IModule
 			die("Unable to open error template file '$errorFile'.");
 
 		$serverAdmin=isset($_SERVER['SERVER_ADMIN'])?$_SERVER['SERVER_ADMIN']:'';
-		$fields=array(
-			'%%StatusCode%%',
-			'%%ErrorMessage%%',
-			'%%ServerAdmin%%',
-			'%%Version%%',
-			'%%Time%%'
+		$tokens=array(
+			'%%StatusCode%%' => "$statusCode",
+			'%%ErrorMessage%%' => htmlspecialchars($exception->getMessage()),
+			'%%ServerAdmin%%' => $serverAdmin,
+			'%%Version%%' => $_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion(),
+			'%%Time%%' => strftime('%Y-%m-%d %H:%m',time())
 		);
-		$values=array(
-			"$statusCode",
-			htmlspecialchars($exception->getMessage()),
-			$serverAdmin,
-			$_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion(),
-			strftime('%Y-%m-%d %H:%m',time())
-		);
-		echo str_replace($fields,$values,$content);
+		echo strtr($content,$tokens);
 	}
 
 	/**
@@ -257,23 +250,14 @@ class TErrorHandler extends TComponent implements IModule
 				$source.=htmlspecialchars(sprintf("%04d: %s",$i+1,str_replace("\t",'    ',$lines[$i])));
 		}
 
-		$fields=array(
-			'%%ErrorType%%',
-			'%%ErrorMessage%%',
-			'%%SourceFile%%',
-			'%%SourceCode%%',
-			'%%StackTrace%%',
-			'%%Version%%',
-			'%%Time%%'
-		);
-		$values=array(
-			get_class($exception),
-			htmlspecialchars($exception->getMessage()),
-			htmlspecialchars($exception->getFile()).' ('.$exception->getLine().')',
-			$source,
-			htmlspecialchars($exception->getTraceAsString()),
-			$_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion(),
-			strftime('%Y-%m-%d %H:%m',time())
+		$tokens=array(
+			'%%ErrorType%%' => get_class($exception),
+			'%%ErrorMessage%%' => htmlspecialchars($exception->getMessage()),
+			'%%SourceFile%%' => htmlspecialchars($exception->getFile()).' ('.$exception->getLine().')',
+			'%%SourceCode%%' => $source,
+			'%%StackTrace%%' => htmlspecialchars($exception->getTraceAsString()),
+			'%%Version%%' => $_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion(),
+			'%%Time%%' => strftime('%Y-%m-%d %H:%m',time())
 		);
 		$lang=Prado::getPreferredLanguage();
 		$exceptionFile=Prado::getFrameworkPath().'/Exceptions/templates/'.self::EXCEPTION_FILE_NAME.'-'.$lang.'.html';
@@ -281,7 +265,7 @@ class TErrorHandler extends TComponent implements IModule
 			$exceptionFile=Prado::getFrameworkPath().'/Exceptions/templates/'.self::EXCEPTION_FILE_NAME.'.html';
 		if(($content=@file_get_contents($exceptionFile))===false)
 			die("Unable to open exception template file '$exceptionFile'.");
-		echo str_replace($fields,$values,$content);
+		echo strtr($content,$tokens);
 	}
 }
 

@@ -14,6 +14,7 @@ class THiddenFieldPageStatePersister extends TComponent implements IPageStatePer
 	public function init($application, $config)
 	{
 		$this->_application=$application;
+		$application->getService()->setPageStatePersister($this);
 	}
 
 	/**
@@ -36,19 +37,19 @@ class THiddenFieldPageStatePersister extends TComponent implements IPageStatePer
 	{
 		$data=Prado::serialize($state);
 		$hmac=$this->computeHMAC($data,$this->getKey());
-		if(function_exists('gzuncompress') && function_exists('gzcompress'))
+		if(extension_loaded('zlib'))
 			$data=gzcompress($hmac.$data);
 		else
 			$data=$hmac.$data;
-		$this->_application->getService()->getRequestedPage()->saveStateField($data);
+		$this->_application->getService()->getRequestedPage()->getClientScript()->registerHiddenField(TClientScriptManager::FIELD_PAGE_STATE,base64_encode($data));
 	}
 
 	public function load()
 	{
-		$str=$this->_application->getService()->getRequestedPage()->loadStateField();
+		$str=base64_decode($this->_application->getRequest()->getItems()->itemAt(TClientScriptManager::FIELD_PAGE_STATE));
 		if($str==='')
 			return null;
-		if(function_exists('gzuncompress') && function_exists('gzcompress'))
+		if(extension_loaded('zlib'))
 			$data=gzuncompress($str);
 		else
 			$data=$str;

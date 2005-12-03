@@ -14,6 +14,10 @@ class TPage extends TTemplateControl
 	 */
 	private $_pageService;
 	/**
+	 * @var TForm form instance
+	 */
+	private $_form=null;
+	/**
 	 * @var string template file name
 	 */
 	private $_templateFile=null;
@@ -37,25 +41,28 @@ class TPage extends TTemplateControl
 	 * @var TClientScriptManager client script manager
 	 */
 	private $_clientScript=null;
+	/**
+	 * @var TMap data post back by user
+	 */
+	private $_postData;
+	/**
+	 * @var TMap postback data that is not handled during first invocation of LoadPostData.
+	 */
+	private $_restPostData;
 
 	private $_maxPageStateFieldLength=10;
 	private $_enableViewStateMac=true;
 	private $_performPreRendering=true;
 	private $_performRendering=true;
 
-	private $_form=null;
 	private $_formRendered=false;
 	private $_inFormRender=false;
-	private $_pageState='';
 	private $_requirePostBackScript=false;
 	private $_postBackScriptRendered=false;
 	private $_isCrossPagePostBack=false;
 	private $_previousPagePath='';
 	private $_preInitWorkComplete=false;
 	private $_changedPostDataConsumers=array();
-	private $_postData;
-	private $_restPostData;
-	private $_pageStateChanged=false;
 	private $_controlsRequiringPostBack=array();
 	private $_registeredControlThatRequireRaiseEvent=null;
 	private $_registeredControlsThatRequirePostBack=null;
@@ -409,24 +416,6 @@ class TPage extends TTemplateControl
 		$this->getPageStatePersister()->save($state);
 	}
 
-	/**
-	 * Loads page state data from a hidden field.
-	 * @return string page state data stored in hidden field
-	 */
-	public function loadStateField()
-	{
-		return base64_decode($this->_postData->itemAt(TClientScriptManager::FIELD_PAGE_STATE));
-	}
-
-	/**
-	 * Saves page state data in a hidden field.
-	 * @param string string representation of the page state data.
-	 */
-	public function saveStateField($state)
-	{
-		$this->getClientScript()->registerHiddenField(TClientScriptManager::FIELD_PAGE_STATE,base64_encode($state));
-	}
-
 	public function RegisterEnabledControl($control)
 	{
 		$this->getEna.EnabledControls.Add(control);
@@ -601,11 +590,6 @@ EOD;
 	final public function registerRequiresRaiseEvent($control)
 	{
 		$this->_registeredControlThatRequireRaiseEvent=$control;
-	}
-
-	public function getApplication()
-	{
-		return $this->_application;
 	}
 
 	protected function processPostData($postData,$beforeLoad)

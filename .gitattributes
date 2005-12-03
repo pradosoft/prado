@@ -105,6 +105,11 @@ framework/Web/UI/WebControls/TTextBox.php -text
 framework/Web/UI/WebControls/TWebControl.php -text
 framework/core.php -text
 framework/prado.php -text
+requirements/index.php -text
+requirements/messages-zh.txt -text
+requirements/messages.txt -text
+requirements/template-zh.html -text
+requirements/template.html -text
 tests/UnitTests/TODO.txt -text
 tests/UnitTests/framework/Collections/utList.php -text
 tests/UnitTests/framework/Collections/utMap.php -text
