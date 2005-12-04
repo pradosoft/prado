@@ -5,6 +5,24 @@ Prado::using('System.Web.UI.WebControls.*');
 
 class TPage extends TTemplateControl
 {
+	const FIELD_POSTBACK_TARGET='PRADO_POSTBACK_TARGET';
+	const FIELD_POSTBACK_PARAMETER='PRADO_POSTBACK_PARAMETER';
+	const FIELD_LASTFOCUS='PRADO_LASTFOCUS';
+	const FIELD_PAGESTATE='PRADO_PAGESTATE';
+	const FIELD_SCROLLX='PRADO_SCROLLX';
+	const FIELD_SCROLLY='PRADO_SCROLLY';
+	/**
+	 * @var array system post fields
+	 */
+	private static $_systemPostFields=array(
+		self::FIELD_POSTBACK_TARGET=>true,
+		self::FIELD_POSTBACK_PARAMETER=>true,
+		self::FIELD_LASTFOCUS=>true,
+		self::FIELD_PAGESTATE=>true,
+		self::FIELD_SCROLLX=>true,
+		self::FIELD_SCROLLY=>true,
+		'__PREVPAGE','__CALLBACKID','__CALLBACKPARAM'
+	);
 	/**
 	 * @var TApplication application instance
 	 */
@@ -49,27 +67,47 @@ class TPage extends TTemplateControl
 	 * @var TMap postback data that is not handled during first invocation of LoadPostData.
 	 */
 	private $_restPostData;
+	/**
+	 * @var array list of controls whose data have been changed due to the postback
+	 */
+	private $_controlsPostDataChanged=array();
+	/**
+	 * @var array list of controls that need to load post data in the current request
+	 */
+	private $_controlsRequiringPostBack=array();
+	/**
+	 * @var array list of controls that need to load post data in the next postback
+	 */
+	private $_controlsRegisteredForPostBack=array();
+	/**
+	 * @var TControl control that needs to raise postback event
+	 */
+	private $_postBackEventTarget=null;
+	/**
+	 * @var mixed postback event parameter
+	 */
+	private $_postBackEventParameter=null;
+	/**
+	 * @var boolean whether form has rendered
+	 */
+	private $_formRendered=false;
+	/**
+	 * @var boolean whether the current rendering is within a form
+	 */
+	private $_inFormRender=false;
+	/**
+	 * @var TControl the control to be focused when the page is sent back to user
+	 */
+	private $_focusedControl=null;
+	/**
+	 * @var boolean whether or not to maintain page scroll position
+	 */
+	private $_maintainScrollPosition=false;
 
 	private $_maxPageStateFieldLength=10;
 	private $_enableViewStateMac=true;
-	private $_performPreRendering=true;
-	private $_performRendering=true;
-
-	private $_formRendered=false;
-	private $_inFormRender=false;
-	private $_requirePostBackScript=false;
-	private $_postBackScriptRendered=false;
 	private $_isCrossPagePostBack=false;
 	private $_previousPagePath='';
-	private $_preInitWorkComplete=false;
-	private $_changedPostDataConsumers=array();
-	private $_controlsRequiringPostBack=array();
-	private $_registeredControlThatRequireRaiseEvent=null;
-	private $_registeredControlsThatRequirePostBack=null;
-	private $_autoPostBackControl=null;
-	private $_webFormsScriptRendered=false;
-	private $_requireWebFormsScript=false;
-	private static $_systemPostFields=array('__EVENTTARGET','__EVENTPARAM','__STATE','__PREVPAGE','__CALLBACKID','__CALLBACKPARAM','__LASTFOCUS');
 
 	/**
 	 * Constructor.
@@ -87,6 +125,48 @@ class TPage extends TTemplateControl
 				$this->setSubProperty($name,$value);
 		}
 		parent::__construct();
+	}
+
+	/**
+	 * Runs through the page lifecycles.
+	 * This method runs through the page lifecycles.
+	 * @param THtmlTextWriter the HTML writer
+	 */
+	public function run($writer)
+	{
+		$this->determinePostBackMode();
+
+		$this->onPreInit(null);
+		$this->initRecursive();
+		$this->onInitComplete(null);
+
+		if($this->getIsPostBack())
+		{
+			$this->_restPostData=new TMap;
+			$this->loadPageState();
+			$this->processPostData($this->_postData,true);
+			$this->onPreLoad(null);
+			$this->loadRecursive();
+			$this->processPostData($this->_restPostData,false);
+			$this->raiseChangedEvents();
+			$this->raisePostBackEvent();
+			$this->onLoadComplete(null);
+		}
+		else
+		{
+			$this->onPreLoad(null);
+			$this->loadRecursive();
+			$this->onLoadComplete(null);
+		}
+
+		$this->preRenderRecursive();
+		$this->onPreRenderComplete(null);
+
+		$this->savePageState();
+		$this->onSaveStateComplete(null);
+
+		$this->renderControl($writer);
+		$this->unloadRecursive();
 	}
 
 	/**
@@ -378,7 +458,7 @@ class TPage extends TTemplateControl
 	private function determinePostBackMode()
 	{
 		$postData=$this->_application->getRequest()->getItems();
-		if($postData->contains(TClientScriptManager::FIELD_PAGE_STATE) || $postData->contains(TClientScriptManager::FIELD_POSTBACK_TARGET))
+		if($postData->contains(self::FIELD_PAGESTATE) || $postData->contains(self::FIELD_POSTBACK_TARGET))
 			$this->_postData=$postData;
 	}
 
@@ -399,6 +479,30 @@ class TPage extends TTemplateControl
 	}
 
 	/**
+	 * This method is invoked when control state is to be saved.
+	 * You can override this method to do last step state saving.
+	 * Parent implementation must be invoked.
+	 * @param TEventParameter event parameter
+	 */
+	protected function onSaveState($param)
+	{
+		parent::onSaveState($param);
+		$this->setViewState('ControlsRequiringPostBack',$this->_controlsRegisteredForPostBack,array());
+	}
+
+	/**
+	 * This method is invoked right after the control has loaded its state.
+	 * You can override this method to initialize data from the control state.
+	 * Parent implementation must be invoked.
+	 * @param TEventParameter
+	 */
+	protected function onLoadState($param)
+	{
+		$this->_controlsRequiringPostBack=$this->getViewState('ControlsRequiringPostBack',array());
+		parent::onLoadState($param);
+	}
+
+	/**
 	 * Loads page state from persistent storage.
 	 */
 	protected function loadPageState()
@@ -416,139 +520,211 @@ class TPage extends TTemplateControl
 		$this->getPageStatePersister()->save($state);
 	}
 
-	public function RegisterEnabledControl($control)
+	/**
+	 * @param string the field name
+	 * @return boolean whether the specified field is a system field in postback data
+	 */
+	protected function isSystemPostField($field)
 	{
-		$this->getEna.EnabledControls.Add(control);
+		return isset(self::$_systemPostFields[$field]);
 	}
 
-
+	/**
+	 * Registers a control for loading post data in the next postback.
+	 * @param TControl control registered for loading post data
+	 */
+	public function registerRequiresPostBack(TControl $control)
+	{
+		$this->_controlsRegisteredForPostBack[$control->getUniqueID()]=true;
+	}
 
 	/**
-	 * @internal
+	 * @return TControl the control responsible for the current postback event, null if nonexistent
 	 */
-	public function registerPostBackScript()
+	public function getPostBackEventTarget()
 	{
-		if($this->getClientSupportsJavaScript() && !$this->_postBackScriptRendered)
+		if($this->_postBackEventTarget===null)
 		{
-			if(!$this->_requirePostBackScript)
+			$eventTarget=$this->_postData->itemAt(self::FIELD_POSTBACK_TARGET);
+			if(!empty($eventTarget))
+				$this->_postBackEventTarget=$this->findControl($eventTarget);
+		}
+		return $this->_postBackEventTarget;
+	}
+
+	/**
+	 * Registers a control to raise postback event in the current request.
+	 * @param TControl control registered to raise postback event.
+	 */
+	public function setPostBackEventTarget(TControl $control)
+	{
+		$this->_postBackEventTarget=$control;
+	}
+
+	/**
+	 * @return mixed postback event parameter
+	 */
+	public function getPostBackEventParameter()
+	{
+		if($this->_postBackEventParameter===null)
+			$this->_postBackEventParameter=$this->_postData->itemAt(self::FIELD_POSTBACK_PARAMETER);
+		return $this->_postBackEventParameter;
+	}
+
+	/**
+	 * @param mixed postback event parameter
+	 */
+	public function setPostBackEventParameter($value)
+	{
+		$this->_postBackEventParameter=$value;
+	}
+
+	/**
+	 * Registers a control as the
+	 */
+	public function registerAutoPostBackControl(TControl $control)
+	{
+		$this->_autoPostBackControl=$control;
+	}
+
+	/**
+	 * Processes post data.
+	 * @param TMap post data to be processed
+	 * @param boolean whether this method is invoked before {@link onLoad Load}.
+	 */
+	protected function processPostData($postData,$beforeLoad)
+	{
+		if($beforeLoad)
+			$this->_restPostData=new TMap;
+		foreach($postData as $key=>$value)
+		{
+			if($this->isSystemPostField($key))
+				continue;
+			else if($control=$this->findControl($key))
 			{
-				$this->getClientScript()->registerHiddenField('__EVENTTARGET','');
-				$this->getClientScript()->registerHiddenField('__EVENTPARAM','');
-				$this->_requirePostBackScript=true;
+				if($control instanceof IPostBackDataHandler)
+				{
+					if($control->loadPostData($key,$postData))
+						$this->_controlsPostDataChanged[]=$control;
+				}
+				else if($control instanceof IPostBackEventHandler)
+					$this->setPostBackEventTarget($control);
+				unset($this->_controlsRequiringPostBack[$key]);
+			}
+			else if($beforeLoad)
+				$this->_restPostData->add($key,$value);
+		}
+		foreach($this->_controlsRequiringPostBack as $key=>$value)
+		{
+			if($control=$this->findControl($key))
+			{
+				if($control instanceof IPostBackDataHandler)
+				{
+					if($control->loadPostData($key,$this->_postData))
+						$this->_controlsPostDataChanged[]=$control;
+				}
+				else
+					throw new TInvalidDataValueException('page_postbackcontrol_invalid',$key);
+				unset($this->_controlsRequiringPostBack[$key]);
 			}
 		}
 	}
 
-	public function registerWebFormsScript()
+	/**
+	 * Raises PostDataChangedEvent for controls whose data have been changed due to the postback.
+	 */
+	private function raiseChangedEvents()
 	{
-		if($this->getClientSupportsJavaScript() && !$this->_webFormsScriptRendered)
-		{
-			$this->registerPostBackScript();
-			$this->_requireWebFormsScript=true;
-		}
+		foreach($this->_controlsPostDataChanged as $control)
+			$control->raisePostDataChangedEvent();
 	}
 
+	/**
+	 * Raises PostBack event.
+	 */
+	private function raisePostBackEvent()
+	{
+		if(($postBackHandler=$this->getPostBackEventTarget())===null)
+			$this->validate();
+		else if($postBackHandler instanceof IPostBackEventHandler)
+			$postBackHandler->raisePostBackEvent($this->getPostBackEventParameter());
+	}
 
+	/**
+	 * Ensures the control is rendered within a form.
+	 * @param TControl the control to be rendered
+	 * @throws TInvalidConfigurationException if the control is outside of the form
+	 */
 	public function ensureRenderInForm($control)
 	{
 		if(!$this->_inFormRender)
-			throw new THttpException('control_not_in_form',$control->getUniqueID());
+			throw new TInvalidConfigurationException('page_control_outofform',get_class($control),$control->getID(false));
 	}
 
-	private function renderPostBackScript($writer)
+	/**
+	 * @internal
+	 */
+	public function beginFormRender($writer)
 	{
-		$id=$this->_form->getUniqueID();
-		$str=<<<EOD
-\n<script type="text/javascript">
-<!--
-var theForm=document.forms['$id'];
-if(!theForm)
-	theForm=document.$id;
-function __doPostBack(eventTarget,eventParam) {
-	if(!theForm.onsubmit || (theForm.onsubmit()!=false)) {
-		theForm.__EVENTTARGET.value = eventTarget;
-		theForm.__EVENTPARAM.value = eventParam;
-		theForm.submit();
-	}
-}
-// -->
-</script>\n
-EOD;
-		$writer->write($str);
-		$this->_postBackScriptRendered=true;
+		if($this->_formRendered)
+			throw new TInvalidConfigurationException('page_singleform_required');
+		$this->_formRendered=true;
+		$this->_inFormRender=true;
+		$this->getClientScript()->renderBeginScripts($writer);
 	}
 
-	private function renderWebFormsScript($writer)
+	/**
+	 * @internal
+	 */
+	public function endFormRender($writer)
 	{
-		$writer->write("\n<script src=\"js/WebForms.js\" type=\"text/javascript\"></script>\n");
-		$this->_webFormsScriptRendered=true;
+		$cs=$this->getClientScript();
+		if($this->getClientSupportsJavaScript())
+		{
+			if($this->_focusedControl && $this->_focusedControl->getVisible(true))
+				$cs->registerFocusScript($this->_focusedControl->getClientID());
+			else if($this->_postData && ($lastFocus=$this->_postData->itemAt(self::FIELD_LASTFOCUS))!==null)
+				$cs->registerFocusScript($lastFocus);
+			if($this->_maintainScrollPosition && $this->_postData)
+			{
+				$x=TPropertyValue::ensureInteger($this->_postData->itemAt(self::PRADO_SCROLLX));
+				$y=TPropertyValue::ensureInteger($this->_postData->itemAt(self::PRADO_SCROLLY));
+				$cs->registerScrollScript($x,$y);
+			}
+			$cs->renderHiddenFields($writer);
+			$cs->renderArrayDeclarations($writer);
+			$cs->renderExpandoAttributes($writer);
+			$cs->renderScriptIncludes($writer);
+			$cs->renderEndScripts($writer);
+		}
+		else
+			$cs->renderHiddenFields($writer);
+		$this->_inFormRender=false;
 	}
 
-	final public function getClientSupportsJavaScript()
+	public function setFocus(TControl $value)
+	{
+		$this->_focusedControl=$value;
+	}
+
+	public function getMaintainScrollPosition()
+	{
+		return $this->_maintainScrollPosition;
+	}
+
+	public function setMaintainScrollPosition($value)
+	{
+		$this->_maintainScrollPosition=TPropertyValue::ensureBoolean($value);
+	}
+
+	public function getClientSupportsJavaScript()
 	{
 		// todo
 		return true;
 	}
 
-	/**
-	 * @internal
-	 */
-	final public function beginFormRender($writer)
-	{
-		if($this->_formRendered)
-			throw new THttpException('multiple_form_not_allowed');
-		$this->_formRendered=true;
-		$this->_inFormRender=true;
 
-		$this->getClientScript()->renderHiddenFields($writer);
-		if($this->getClientSupportsJavaScript())
-		{
-			/*
-			if($this->getMaintainScrollPositionOnPostBack() && !$this->_requireScrollScript)
-			{
-				$cs=$this->getClientScript();
-				$cs->registerHiddenField('_SCROLLPOSITIONX',$this->_scrollPositionX);
-				$cs->registerHiddenField('_SCROLLPOSITIONY',$this->_scrollPositionY);
-				$cs->registerStartupScript(get_class($this),"PageScrollPositionScript", "\r\nvar WebForm_ScrollPositionSubmit = theForm.submit;\r\ntheForm.submit = WebForm_SaveScrollPositionSubmit;\r\n\r\nvar WebForm_ScrollPositionOnSubmit = theForm.onsubmit;\r\ntheForm.onsubmit = WebForm_SaveScrollPositionOnSubmit;\r\n\r\nvar WebForm_ScrollPositionLoad = window.onload;\r\nwindow.onload = WebForm_RestoreScrollPosition;\r\n", true);
-				$this->registerWebFormScript();
-				$this->_requireScrollScript=true;
-			}
-			*/
-			if($this->_requirePostBackScript)
-				$this->renderPostBackScript($writer,$this->_form->getUniqueID());
-			if($this->_requireWebFormsScript)
-				$this->renderWebFormsScript($writer);
-		}
-		$this->getClientScript()->renderScriptBlocks($writer);
-		// todo: more ....
-	}
-
-	final public function getIsPostBackEventControlRegistered()
-	{
-		return $this->_registeredControlThatRequireRaiseEvent!==null;
-	}
-
-	/**
-	 * @internal
-	 */
-	final public function endFormRender($writer)
-	{
-		$cs=$this->getClientScript();
-		if($this->getClientSupportsJavaScript())
-			$cs->renderArrayDeclarations($writer);
-		$cs->renderHiddenFields($writer);
-		if($this->getClientSupportsJavaScript())
-		{
-			if($this->_requirePostBackScript && !$this->_postBackScriptRendered)
-				$this->renderPostBackScript($writer);
-			if($this->_requireWebFormsScript && !$this->_webFormsScriptRendered)
-				$this->renderWebFormsScript($writer);
-		}
-		$cs->renderStartupScripts($writer);
-		$this->_inFormRender=false;
-	}
-
-	final public function getClientOnSubmitEvent()
+	public function getClientOnSubmitEvent()
 	{
 		// todo
 		if($this->getClientScript()->getHasSubmitStatements())
@@ -579,143 +755,6 @@ EOD;
 	final public function registerAsyncTask()
 	{
 	}
-
-	final public function registerRequiresPostBack($control)
-	{
-		if(!$this->_registeredControlsThatRequirePostBack)
-			$this->_registeredControlsThatRequirePostBack=new TList;
-		$this->_registeredControlsThatRequirePostBack->add($control->getUniqueID());
-	}
-
-	final public function registerRequiresRaiseEvent($control)
-	{
-		$this->_registeredControlThatRequireRaiseEvent=$control;
-	}
-
-	protected function processPostData($postData,$beforeLoad)
-	{
-		$eventTarget=$postData->itemAt('__EVENTTARGET');
-		foreach($postData as $key=>$value)
-		{
-			if(in_array($key,self::$_systemPostFields))
-				continue;
-			else if($control=$this->findControl($key))
-			{
-				if($control instanceof IPostBackDataHandler)
-				{
-					if($control->loadPostData($key,$this->_postData))
-						$this->_changedPostDataConsumers[]=$control;
-					unset($this->_controlsRequiringPostBack[$key]);
-				}
-				else
-				{
-					if(empty($eventTarget))
-					{
-						if($control instanceof IPostBackEventHandler)
-							$this->registerRequiresRaiseEvent($control);
-					}
-					else
-						unset($this->_controlsRequiringPostBack[$key]);
-				}
-			}
-			else if($beforeLoad)
-				$this->_restPostData->add($key,$value);
-		}
-		$list=new TMap;
-		foreach($this->_controlsRequiringPostBack as $key=>$value)
-		{
-			if($control=$this->findControl($key))
-			{
-				if($control instanceof IPostBackDataHandler)
-				{
-					if($control->loadPostData($key,$this->_postData))
-						$this->_changedPostDataConsumers->add($control);
-				}
-				else
-					throw new THttpException('postback_control_not_found',$key);
-			}
-			else if($beforeLoad)
-				$list->add($key,null);
-		}
-		$this->_controlsRequiringPostBack=$list;
-	}
-
-	final public function getAutoPostBackControl()
-	{
-		return $this->_autoPostBackControl;
-	}
-
-	final public function setAutoPostBackControl($control)
-	{
-		$this->_autoPostBackControl=$control;
-	}
-
-	private function raiseChangedEvents()
-	{
-		foreach($this->_changedPostDataConsumers as $control)
-			$control->raisePostDataChangedEvent();
-	}
-
-	private function raisePostBackEvent($postData)
-	{
-		if($this->_registeredControlThatRequireRaiseEvent)
-		{
-			$this->_registeredControlThatRequireRaiseEvent->raisePostBackEvent(null);
-		}
-		else
-		{
-			$eventTarget=$postData->itemAt('__EVENTTARGET');
-			if(!empty($eventTarget) || $this->getAutoPostBackControl())
-			{
-				if(!empty($eventTarget))
-					$control=$this->findControl($eventTarget);
-				else
-					$control=null;
-				if($control instanceof IPostBackEventHandler)
-					$control->raisePostBackEvent($postData->itemAt('__EVENTPARAM'));
-			}
-			else
-				$this->validate();
-		}
-	}
-
-	public function run($writer)
-	{
-		$this->determinePostBackMode();
-		$this->_restPostData=new TMap;
-
-		$this->onPreInit(null);
-		$this->_preInitWorkComplete=true;
-
-		$this->initRecursive(null);
-		$this->onInitComplete(null);
-
-		if($this->getIsPostBack())
-		{
-			$this->loadPageState();
-			$this->processPostData($this->_postData,true);
-		}
-
-		$this->onPreLoad(null);
-		$this->loadRecursive(null);
-		if($this->getIsPostBack())
-		{
-			$this->processPostData($this->_restPostData,false);
-			$this->raiseChangedEvents();
-			$this->raisePostBackEvent($this->_postData);
-		}
-		$this->onLoadComplete(null);
-
-		$this->preRenderRecursive();
-		$this->onPreRenderComplete(null);
-
-		$this->savePageState();
-		$this->onSaveStateComplete(null);
-
-		$this->renderControl($writer);
-		$this->unloadRecursive();
-	}
-
 }
 
 ?>

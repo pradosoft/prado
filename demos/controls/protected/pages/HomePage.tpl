@@ -4,7 +4,7 @@
 <com:THiddenField Value="test" />
 <h1>Welcome! <%=$this->User->Name %></h1>
 <com:TLiteral Text="<literal>" Encode="true"/>
-<com:TTextBox Text="textbox" />
+<com:TTextBox ID="TextBox" Text="textbox" />
 <com:TLabel Text="test" AssociatedControlID="checkbox"/><br/>
 <com:System.Web.UI.WebControls.TButton text="Toggle Button" ForeColor="red" Font.size="18" Click="testClick" /> (requires membership)<br/>
 <com:TCheckBox Text="Checkbox" ID="checkbox"/><br/>

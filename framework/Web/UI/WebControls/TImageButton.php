@@ -117,7 +117,7 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 		{
 			$this->_x=intval($values["{$uid}_x"]);
 			$this->_y=intval($values["{$uid}_y"]);
-			$page=$this->getPage()->registerRequiresRaiseEvent($this);
+			$page=$this->getPage()->setPostBackEventTarget($this);
 		}
 		return false;
 	}

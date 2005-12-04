@@ -224,15 +224,14 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	public function raisePostDataChangedEvent()
 	{
 		$page=$this->getPage();
-		if($this->getAutoPostBack() && !$page->getIsPostBackEventControlRegistered())
+		if($this->getAutoPostBack() && !$page->getPostBackEventTarget())
 		{
-			$page->setAutoPostBackControl($this);
+			$page->setPostBackEventTarget($this);
 			if($this->getCausesValidation())
 				$page->validate($this->getValidationGroup());
 		}
 		$this->onTextChanged(new TEventParameter);
 	}
-
 	/**
 	 * Renders the body content of the textbox when it is in MultiLine text mode.
 	 * @param THtmlWriter the writer for rendering

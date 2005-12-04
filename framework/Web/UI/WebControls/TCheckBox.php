@@ -103,9 +103,9 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	public function raisePostDataChangedEvent()
 	{
 		$page=$this->getPage();
-		if($this->getAutoPostBack() && !$page->getIsPostBackEventControlRegistered())
+		if($this->getAutoPostBack() && !$page->getPostBackEventTarget())
 		{
-			$page->setAutoPostBackControl($this);
+			$page->setPostBackEventTarget($this);
 			if($this->getCausesValidation())
 				$page->validate($this->getValidationGroup());
 		}
@@ -393,7 +393,41 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 		$writer->renderBeginTag('input');
 		$writer->renderEndTag();
 	}
-	// todo: onprerender???
+
+	protected function onPreRender($param)
+	{
+		parent::onPreRender($param);
+		$this->getPage()->registerRequiresPostBack($this);
+	}
+
+	/*
+protected internal override void OnPreRender(EventArgs e)
+{
+      base.OnPreRender(e);
+      bool flag1 = this.AutoPostBack;
+      if ((this.Page != null) && base.IsEnabled)
+      {
+            this.Page.RegisterRequiresPostBack(this);
+            if (flag1)
+            {
+                  this.Page.RegisterPostBackScript();
+                  this.Page.RegisterFocusScript();
+                  if (this.CausesValidation && (this.Page.GetValidators(this.ValidationGroup).Count > 0))
+                  {
+                        this.Page.RegisterWebFormsScript();
+                  }
+            }
+      }
+      if (!this.SaveCheckedViewState(flag1))
+      {
+            this.ViewState.SetItemDirty("Checked", false);
+            if ((this.Page != null) && base.IsEnabled)
+            {
+                  this.Page.RegisterEnabledControl(this);
+            }
+      }
+}
+*/
 }
 
 ?>

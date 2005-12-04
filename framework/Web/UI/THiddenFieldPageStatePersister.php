@@ -41,12 +41,12 @@ class THiddenFieldPageStatePersister extends TComponent implements IPageStatePer
 			$data=gzcompress($hmac.$data);
 		else
 			$data=$hmac.$data;
-		$this->_application->getService()->getRequestedPage()->getClientScript()->registerHiddenField(TClientScriptManager::FIELD_PAGE_STATE,base64_encode($data));
+		$this->_application->getService()->getRequestedPage()->getClientScript()->registerHiddenField(TPage::FIELD_PAGESTATE,base64_encode($data));
 	}
 
 	public function load()
 	{
-		$str=base64_decode($this->_application->getRequest()->getItems()->itemAt(TClientScriptManager::FIELD_PAGE_STATE));
+		$str=base64_decode($this->_application->getRequest()->getItems()->itemAt(TPage::FIELD_PAGESTATE));
 		if($str==='')
 			return null;
 		if(extension_loaded('zlib'))

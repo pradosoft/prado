@@ -15,6 +15,7 @@ class HomePage extends TPage
 			$sender->BackColor='blue';
 		else
 			$sender->BackColor='';
+		$this->TextBox->focus();
 	}
 }
 

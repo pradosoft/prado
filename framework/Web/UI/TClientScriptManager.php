@@ -36,18 +36,18 @@ class TClientScriptManager extends TComponent
 	const SCRIPT_DIR='Web/Javascripts/js';
 	const POSTBACK_FUNC='Prado.PostBack.perform';
 	const POSTBACK_OPTIONS='Prado.PostBack.Options';
-	const FIELD_POSTBACK_TARGET='PRADO_POSTBACK_TARGET';
-	const FIELD_POSTBACK_PARAMETER='PRADO_POSTBACK_PARAMETER';
-	const FIELD_LASTFOCUS='PRADO_LASTFOCUS';
-	const FIELD_PAGE_STATE='PRADO_PAGE_STATE';
 	private $_owner;
 	private $_hiddenFields=array();
-	private $_scriptBlocks=array();
-	private $_startupScripts=array();
+	private $_beginScripts=array();
+	private $_endScripts=array();
 	private $_scriptIncludes=array();
 	private $_onSubmitStatements=array();
 	private $_arrayDeclares=array();
 	private $_expandoAttributes=array();
+	private $_postBackScriptRegistered=false;
+	private $_focusScriptRegistered=false;
+	private $_scrollScriptRegistered=false;
+	private $_publishedScriptFiles=array();
 
 	public function __construct(TPage $owner)
 	{
@@ -113,26 +113,47 @@ class TClientScriptManager extends TComponent
 
 	protected function registerPostBackScript()
 	{
-		$this->registerHiddenField(self::FIELD_POSTBACK_TARGET,'');
-		$this->registerHiddenField(self::FIELD_POSTBACK_PARAMETER,'');
-		$am=$this->_owner->getService()->getAssetManager();
-		$url=$am->publishFilePath(Prado::getFrameworkPath().'/'.self::SCRIPT_DIR.'/base.js');
-		$this->registerScriptInclude('prado:base',$url);
+		if(!$this->_postBackScriptRegistered)
+		{
+			$this->_postBackScriptRegistered=true;
+			$this->registerHiddenField(TPage::FIELD_POSTBACK_TARGET,'');
+			$this->registerHiddenField(TPage::FIELD_POSTBACK_PARAMETER,'');
+			$this->registerScriptInclude('prado:base',$this->publishScriptFile('base.js'));
+		}
 	}
 
-	public function registerFocusScript()
+	private function publishScriptFile($jsFile)
 	{
-		// need Focus.js
+		if(!isset($this->_publishedScriptFiles[$jsFile]))
+		{
+			$am=$this->_owner->getService()->getAssetManager();
+			$this->_publishedScriptFiles[$jsFile]=$am->publishFilePath(Prado::getFrameworkPath().'/'.self::SCRIPT_DIR.'/'.$jsFile);
+		}
+		return $this->_publishedScriptFiles[$jsFile];
 	}
 
-	public function registerScrollScript()
+	public function registerFocusScript($target)
 	{
-		$this->registerHiddenField(self::FIELD_SCROLL_X,$this->_owner->getScrollPositionX());
-		$this->registerHiddenField(self::FIELD_SCROLL_Y,$this->_owner->getScrollPositionY());
-		/*
-		this.ClientScript.RegisterStartupScript(typeof(Page), "PageScrollPositionScript", "\r\ntheForm.oldSubmit = theForm.submit;\r\ntheForm.submit = WebForm_SaveScrollPositionSubmit;\r\n\r\ntheForm.oldOnSubmit = theForm.onsubmit;\r\ntheForm.onsubmit = WebForm_SaveScrollPositionOnSubmit;\r\n" + (this.IsPostBack ? "\r\ntheForm.oldOnLoad = window.onload;\r\nwindow.onload = WebForm_RestoreScrollPosition;\r\n" : string.Empty), true);
-		need base.js
-		*/
+		if(!$this->_focusScriptRegistered)
+		{
+			$this->_focusScriptRegistered=true;
+			$this->registerScriptInclude('prado:base',$this->publishScriptFile('base.js'));
+			$this->registerEndScript('prado:focus','Prado.Focus.setFocus("'.THttpUtility::quoteJavaScriptString($target).'");');
+		}
+	}
+
+	public function registerScrollScript($x,$y)
+	{
+		if(!$this->_scrollScriptRegistered)
+		{
+			$this->_scrollScriptRegistered=true;
+			$this->registerHiddenField(TPage::FIELD_SCROLL_X,$this->_owner->getScrollPositionX());
+			$this->registerHiddenField(TPage::FIELD_SCROLL_Y,$this->_owner->getScrollPositionY());
+			/*
+			this.ClientScript.RegisterStartupScript(typeof(Page), "PageScrollPositionScript", "\r\ntheForm.oldSubmit = theForm.submit;\r\ntheForm.submit = WebForm_SaveScrollPositionSubmit;\r\n\r\ntheForm.oldOnSubmit = theForm.onsubmit;\r\ntheForm.onsubmit = WebForm_SaveScrollPositionOnSubmit;\r\n" + (this.IsPostBack ? "\r\ntheForm.oldOnLoad = window.onload;\r\nwindow.onload = WebForm_RestoreScrollPosition;\r\n" : string.Empty), true);
+			need base.js
+			*/
+		}
 	}
 
 	public function registerValidationScript()
@@ -154,9 +175,14 @@ class TClientScriptManager extends TComponent
 		return isset($this->_scriptIncludes[$key]);
 	}
 
-	public function isStartupScriptRegistered($key)
+	public function isBeginScriptRegistered($key)
 	{
-		return isset($this->_startupScripts[$key]);
+		return isset($this->_beginScripts[$key]);
+	}
+
+	public function isEndScriptRegistered($key)
+	{
+		return isset($this->_endScripts[$key]);
 	}
 
 	public function isOnSubmitStatementRegistered($key)
@@ -167,11 +193,6 @@ class TClientScriptManager extends TComponent
 	public function registerArrayDeclaration($name,$value)
 	{
 		$this->_arrayDeclares[$name][]=$value;
-	}
-
-	public function registerScriptBlock($key,$script)
-	{
-		$this->_scriptBlocks[$key]=$script;
 	}
 
 	public function registerScriptInclude($key,$url)
@@ -189,9 +210,14 @@ class TClientScriptManager extends TComponent
 		$this->_onSubmitStatements[$key]=$script;
 	}
 
-	public function registerStartupScript($key,$script)
+	public function registerBeginScript($key,$script)
 	{
-		$this->_startupScripts[$key]=$script;
+		$this->_beginScripts[$key]=$script;
+	}
+
+	public function registerEndScript($key,$script)
+	{
+		$this->_endScripts[$key]=$script;
 	}
 
 	public function registerExpandoAttribute($controlID,$name,$value)
@@ -203,57 +229,35 @@ class TClientScriptManager extends TComponent
 	{
 		if(count($this->_arrayDeclares))
 		{
-			$str="\n<script type=\"text/javascript\">\n<!--\n";
+			$str="<script type=\"text/javascript\"><!--\n";
 			foreach($this->_arrayDeclares as $name=>$array)
-			{
-				$str.="var $name=new Array(";
-				$flag=true;
-				foreach($array as $value)
-				{
-					if($flag)
-					{
-						$flag=false;
-						$str.=$value;
-					}
-					else
-						$str.=','.$value;
-				}
-				$str.=");\n";
-			}
-			$str.="// -->\n</script>\n";
+				$str.="var $name=new Array(".implode(',',$array).");\n";
+			$str.="\n// --></script>\n";
 			$writer->write($str);
 		}
 	}
 
-	public function renderScriptBlocks($writer)
+	public function renderScriptIncludes($writer)
 	{
-		$str='';
-		foreach($this->_scriptBlocks as $script)
-			$str.="\n".$script;
-		if($this->_owner->getClientOnSubmitEvent()!=='' && $this->_owner->getClientSupportsJavaScript())
-		{
-			$str.="\nfunction WebForm_OnSubmit() {\n";
-			foreach($this->_onSubmitStatements as $script)
-				$str.=$script;
-			$str.="\nreturn true;\n}";
-		}
-		if($str!=='')
-			$writer->write("\n<script type=\"text/javascript\">\n<!--\n".$str."// -->\n</script>\n");
-	}
-
-	public function renderStartupScripts($writer)
-	{
-		$str='';
 		foreach($this->_scriptIncludes as $include)
-			$str.="\n<script type=\"text/javascript\" src=\"".THttpUtility::htmlEncode($include)."\"></script>";
-		if(count($this->_startupScripts))
-		{
-			$str.="\n<script type=\"text/javascript\">\n<!--\n";
-			foreach($this->_startupScripts as $script)
-				$str.=$script;
-			$str.="// -->\n</script>\n";
-			$writer->write($str);
-		}
+			$writer->write("<script type=\"text/javascript\" src=\"".THttpUtility::htmlEncode($include)."\"></script>\n");
+	}
+
+	public function renderOnSubmitStatements($writer)
+	{
+		// ???
+	}
+
+	public function renderBeginScripts($writer)
+	{
+		if(count($this->_beginScripts))
+			$writer->write("<script type=\"text/javascript\"><!--\n".implode("\n",$this->_beginScripts)."\n// --></script>\n");
+	}
+
+	public function renderEndScripts($writer)
+	{
+		if(count($this->_endScripts))
+			$writer->write("<script type=\"text/javascript\"><!--\n".implode("\n",$this->_endScripts)."\n// --></script>\n");
 	}
 
 	public function renderHiddenFields($writer)
@@ -262,18 +266,17 @@ class TClientScriptManager extends TComponent
 		foreach($this->_hiddenFields as $name=>$value)
 		{
 			$value=THttpUtility::htmlEncode($value);
-			$str.="\n<input type=\"hidden\" name=\"$name\" id=\"$name\" value=\"$value\" />";
+			$str.="<input type=\"hidden\" name=\"$name\" id=\"$name\" value=\"$value\" />\n";
 		}
 		if($str!=='')
 			$writer->write($str);
-		$this->_hiddenFields=array();
 	}
 
-	public function renderExpandoAttribute($writer)
+	public function renderExpandoAttributes($writer)
 	{
 		if(count($this->_expandoAttributes))
 		{
-			$str="\n<script type=\"text/javascript\">\n<!--\n";
+			$str="<script type=\"text/javascript\"><!--\n";
 			foreach($this->_expandoAttributes as $controlID=>$attrs)
 			{
 				$str.="var $controlID = document.all ? document.all[\"$controlID\"] : document.getElementById(\"$controlID\");\n";
@@ -285,7 +288,7 @@ class TClientScriptManager extends TComponent
 						$str.="{$key}[\"$name\"]=\"$value\";\n";
 				}
 			}
-			$str.="// -->\n</script>\n";
+			$str.="\n// --></script>\n";
 			$writer->write($str);
 		}
 	}
