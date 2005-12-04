@@ -36,7 +36,7 @@ class TClientScriptManager extends TComponent
 	const SCRIPT_DIR='Web/Javascripts/js';
 	const POSTBACK_FUNC='Prado.PostBack.perform';
 	const POSTBACK_OPTIONS='Prado.PostBack.Options';
-	private $_owner;
+	private $_page;
 	private $_hiddenFields=array();
 	private $_beginScripts=array();
 	private $_endScripts=array();
@@ -51,7 +51,7 @@ class TClientScriptManager extends TComponent
 
 	public function __construct(TPage $owner)
 	{
-		$this->_owner=$owner;
+		$this->_page=$owner;
 	}
 
 	public function getPostBackEventReference($control,$parameter='',$options=null,$javascriptPrefix=true)
@@ -78,7 +78,7 @@ class TClientScriptManager extends TComponent
 			if($options->ActionUrl!=='')
 			{
 				$flag=true;
-				$this->_owner->setCrossPagePostBack(true);
+				$this->_page->setCrossPagePostBack(true);
 				$opt.='"'.THttpUtility::quoteJavaScriptString($options->ActionUrl).'",';
 			}
 			else
@@ -104,7 +104,7 @@ class TClientScriptManager extends TComponent
 		else
 			$opt='null';
 		$this->registerPostBackScript();
-		$formID=$this->_owner->getForm()->getUniqueID();
+		$formID=$this->_page->getForm()->getUniqueID();
 		$postback=self::POSTBACK_FUNC.'(\''.$formID.'\',\''.$control->getUniqueID().'\',\''.THttpUtility::quoteJavaScriptString($parameter).'\','.$opt.')';
 		if($options && $options->AutoPostBack)
 			$postback='setTimeout(\''.THttpUtility::quoteJavaScriptString($postback).'\',0)';
@@ -126,7 +126,7 @@ class TClientScriptManager extends TComponent
 	{
 		if(!isset($this->_publishedScriptFiles[$jsFile]))
 		{
-			$am=$this->_owner->getService()->getAssetManager();
+			$am=$this->_page->getService()->getAssetManager();
 			$this->_publishedScriptFiles[$jsFile]=$am->publishFilePath(Prado::getFrameworkPath().'/'.self::SCRIPT_DIR.'/'.$jsFile);
 		}
 		return $this->_publishedScriptFiles[$jsFile];
@@ -147,12 +147,9 @@ class TClientScriptManager extends TComponent
 		if(!$this->_scrollScriptRegistered)
 		{
 			$this->_scrollScriptRegistered=true;
-			$this->registerHiddenField(TPage::FIELD_SCROLL_X,$this->_owner->getScrollPositionX());
-			$this->registerHiddenField(TPage::FIELD_SCROLL_Y,$this->_owner->getScrollPositionY());
-			/*
-			this.ClientScript.RegisterStartupScript(typeof(Page), "PageScrollPositionScript", "\r\ntheForm.oldSubmit = theForm.submit;\r\ntheForm.submit = WebForm_SaveScrollPositionSubmit;\r\n\r\ntheForm.oldOnSubmit = theForm.onsubmit;\r\ntheForm.onsubmit = WebForm_SaveScrollPositionOnSubmit;\r\n" + (this.IsPostBack ? "\r\ntheForm.oldOnLoad = window.onload;\r\nwindow.onload = WebForm_RestoreScrollPosition;\r\n" : string.Empty), true);
-			need base.js
-			*/
+			$this->registerHiddenField(TPage::FIELD_SCROLL_X,$x);
+			$this->registerHiddenField(TPage::FIELD_SCROLL_Y,$y);
+			// TBD, need scroll.js
 		}
 	}
 

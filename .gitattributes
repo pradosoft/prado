@@ -68,7 +68,7 @@ framework/Security/TUserManager.php -text
 framework/TApplication.php -text
 framework/TComponent.php -text
 framework/TODO.txt -text
-framework/Web/Javascripts/WebForms.js -text
+framework/Web/Javascripts/js/base.js -text
 framework/Web/Services/TPageService.php -text
 framework/Web/THttpRequest.php -text
 framework/Web/THttpResponse.php -text
@@ -81,7 +81,6 @@ framework/Web/UI/TForm.php -text
 framework/Web/UI/THiddenFieldPageStatePersister.php -text
 framework/Web/UI/THtmlWriter.php -text
 framework/Web/UI/TPage.php -text
-framework/Web/UI/TPostBackOptions.php -text
 framework/Web/UI/TTemplateControl.php -text
 framework/Web/UI/TTemplateManager.php -text
 framework/Web/UI/TThemeManager.php -text

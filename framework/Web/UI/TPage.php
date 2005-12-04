@@ -1,8 +1,13 @@
 <?php
 
-Prado::using('System.Web.UI.*');
+//Prado::using('System.Web.UI.*');
 Prado::using('System.Web.UI.WebControls.*');
+Prado::using('System.Web.UI.TControl');
+Prado::using('System.Web.UI.TTemplateControl');
+Prado::using('System.Web.UI.TForm');
+Prado::using('System.Web.UI.TClientScriptManager');
 
+//Prado::using('System.Web
 class TPage extends TTemplateControl
 {
 	const FIELD_POSTBACK_TARGET='PRADO_POSTBACK_TARGET';
@@ -662,7 +667,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @internal
+	 * @internal This method is invoked by TForm  at the beginning of its rendering
 	 */
 	public function beginFormRender($writer)
 	{
@@ -674,7 +679,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @internal
+	 * @internal This method is invoked by TForm  at the end of its rendering
 	 */
 	public function endFormRender($writer)
 	{
@@ -702,16 +707,26 @@ class TPage extends TTemplateControl
 		$this->_inFormRender=false;
 	}
 
+	/**
+	 * Sets input focus on a control after the page is rendered to users.
+	 * @param TControl control to receive focus
+	 */
 	public function setFocus(TControl $value)
 	{
 		$this->_focusedControl=$value;
 	}
 
+	/**
+	 * @return boolean (TBD) whether to keep the page scroll position the same as users last see it
+	 */
 	public function getMaintainScrollPosition()
 	{
 		return $this->_maintainScrollPosition;
 	}
 
+	/**
+	 * @param boolean (TBD) whether to keep the page scroll position the same as users last see it
+	 */
 	public function setMaintainScrollPosition($value)
 	{
 		$this->_maintainScrollPosition=TPropertyValue::ensureBoolean($value);
@@ -723,36 +738,7 @@ class TPage extends TTemplateControl
 		return true;
 	}
 
-
-	public function getClientOnSubmitEvent()
-	{
-		// todo
-		if($this->getClientScript()->getHasSubmitStatements())
-			return 'javascript:return WebForm_OnSubmit();';
-		else
-			return '';
-	}
-
 	protected function initializeCulture()
-	{
-	}
-
-	/**
-	 * @internal
-	 */
-	public function loadScrollPosition()
-	{
-		if($this->_previousPagePath==='' && $this->_requestValueCollection)
-		{
-			if(isset($_REQUEST['__SCROLLPOSITIONX']))
-				$this->_scrollPositionX=(integer)$_REQUEST['__SCROLLPOSITIONX'];
-			if(isset($_REQUEST['__SCROLLPOSITIONY']))
-				$this->_scrollPositionX=(integer)$_REQUEST['__SCROLLPOSITIONY'];
-		}
-	}
-
-
-	final public function registerAsyncTask()
 	{
 	}
 }

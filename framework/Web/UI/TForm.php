@@ -19,6 +19,7 @@ class TForm extends TControl
 		$attributes->remove('action');
 
 		$page=$this->getPage();
+		/*
 		$onsubmit=$page->getClientOnSubmitEvent();
 		if($onsubmit!=='')
 		{
@@ -29,7 +30,7 @@ class TForm extends TControl
 			}
 			if($page->getClientSupportsJavaScript())
 				$writer->addAttribute('onsubmit',$onsubmit);
-		}
+		}*/
 		if($this->getDefaultButton()!=='')
 		{//todo
 			$control=$this->findControl($this->getDefaultButton());
