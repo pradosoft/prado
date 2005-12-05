@@ -113,7 +113,7 @@ class utList extends UnitTestCase
 			$this->list->addAt(4,$this->item3);
 			$this->fail('exception not raised when adding item at an out-of-range index');
 		}
-		catch(TIndexOutOfRangeException $e)
+		catch(TInvalidDataValueException $e)
 		{
 			$this->pass();
 		}
@@ -148,7 +148,7 @@ class utList extends UnitTestCase
 			$this->list->removeAt(2);
 			$this->fail('exception not raised when removing item with invalid index');
 		}
-		catch(TIndexOutOfRangeException $e)
+		catch(TInvalidDataValueException $e)
 		{
 			$this->pass();
 		}
@@ -223,7 +223,7 @@ class utList extends UnitTestCase
 			$a=$this->list[2];
 			$this->fail('exception not raised when accessing item with out-of-range index');
 		}
-		catch(TIndexOutOfRangeException $e)
+		catch(TInvalidDataValueException $e)
 		{
 			$this->pass();
 		}
@@ -242,7 +242,7 @@ class utList extends UnitTestCase
 			$this->list[5]=$this->item3;
 			$this->fail('exception not raised when setting item at an out-of-range index');
 		}
-		catch(TIndexOutOfRangeException $e)
+		catch(TInvalidDataValueException $e)
 		{
 			$this->pass();
 		}
@@ -251,7 +251,7 @@ class utList extends UnitTestCase
 			unset($this->list[5]);
 			$this->fail('exception not raised when unsetting item at an out-of-range index');
 		}
-		catch(TIndexOutOfRangeException $e)
+		catch(TInvalidDataValueException $e)
 		{
 			$this->pass();
 		}
