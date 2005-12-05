@@ -90,7 +90,7 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	 */
 	protected function getPostBackOptions()
 	{
-		$options=new TPostBackOptions($this);
+		$options=new TPostBackOptions();
 		$options->ClientSubmit=false;
 		$page=$this->getPage();
 		if($this->getCausesValidation() && $page->getValidators($this->getValidationGroup())->getCount()>0)
@@ -99,7 +99,7 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 			$options->ValidationGroup=$this->getValidationGroup();
 		}
 		if($this->getPostBackUrl()!=='')
-			$options->ActionUrl=$this->getPostBackUrl();
+			$options->ActionUrl=THttpUtility::quoteJavaScriptString($this->getPostBackUrl());
 		return $options;
 	}
 

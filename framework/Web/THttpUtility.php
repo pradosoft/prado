@@ -28,6 +28,17 @@ class THttpUtility
 		else
 			return strtr($js,array("\t"=>'\t',"\n"=>'\n',"\r"=>'\r','"'=>'\"','\''=>'\\\'','\\'=>'\\\\'));
 	}
+
+	public static function trimJavaScriptString($js)
+	{
+		if($js!=='' && $js!==null)
+		{
+			if(($pos=strpos($js,'javascript:'))===0)
+				$js=substr($js,11);
+			$js=rtrim($js,';').';';
+		}
+		return $js;
+	}
 }
 
 ?>

@@ -3,31 +3,21 @@
 class TPostBackOptions extends TComponent
 {
 	public $ActionUrl;
-	public $Argument;
 	public $AutoPostBack;
 	public $ClientSubmit;
 	public $PerformValidation;
-	public $TargetControl;
 	public $TrackFocus;
 	public $ValidationGroup;
 
-	public function __construct($targetControl=null,
-								$argument='',
-								$actionUrl='',
-								$autoPostBack=false,
-								$trackFocus=false,
-								$clientSubmit=true,
-								$performValidation=false,
-								$validationGroup='')
+	public function __construct($actionUrl='',$autoPostBack=false,$clientSubmit=true,
+			$performValidation=false,$validationGroup='',$trackFocus=false)
 	{
 		$this->ActionUrl=$actionUrl;
-		$this->Argument=$argument;
 		$this->AutoPostBack=$autoPostBack;
 		$this->ClientSubmit=$clientSubmit;
 		$this->PerformValidation=$performValidation;
-		$this->TargetControl=$targetControl;
-		$this->TrackFocus=$trackFocus;
 		$this->ValidationGroup=$validationGroup;
+		$this->TrackFocus=$trackFocus;
 	}
 }
 
@@ -98,8 +88,8 @@ class TClientScriptManager extends TComponent
 			}
 			else
 				$opt.='false)';
-			//if(!$flag)
-			//	return '';
+			if(!$flag)
+				return '';
 		}
 		else
 			$opt='null';

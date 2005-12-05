@@ -159,6 +159,7 @@ framework/Web/UI/WebControls/THyperLink.php -text
 framework/Web/UI/WebControls/TImage.php -text
 framework/Web/UI/WebControls/TImageButton.php -text
 framework/Web/UI/WebControls/TLabel.php -text
+framework/Web/UI/WebControls/TLinkButton.php -text
 framework/Web/UI/WebControls/TLiteral.php -text
 framework/Web/UI/WebControls/TPanel.php -text
 framework/Web/UI/WebControls/TPlaceHolder.php -text

@@ -17,6 +17,11 @@ class HomePage extends TPage
 			$sender->BackColor='';
 		$this->TextBox->focus();
 	}
+
+	public function linkClicked($sender,$param)
+	{
+		$sender->Text="Hello World";
+	}
 }
 
 ?>

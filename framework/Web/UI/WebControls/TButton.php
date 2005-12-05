@@ -3,9 +3,9 @@
  * TButton class file.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @link http://www.xisc.com/
- * @copyright Copyright &copy; 2004-2005, Qiang Xue
- * @license http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
  */
@@ -143,7 +143,7 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	 */
 	protected function getPostBackOptions()
 	{
-		$options=new TPostBackOptions($this);
+		$options=new TPostBackOptions();
 		$options->ClientSubmit=false;
 		$page=$this->getPage();
 		if($this->getCausesValidation() && $page->getValidators($this->getValidationGroup())->getCount()>0)
@@ -152,7 +152,7 @@ class TButton extends TWebControl implements IPostBackEventHandler
 			$options->ValidationGroup=$this->getValidationGroup();
 		}
 		if($this->getPostBackUrl()!=='')
-			$options->ActionUrl=$this->getPostBackUrl();
+			$options->ActionUrl=THttpUtility::quoteJavaScriptString($this->getPostBackUrl());
 		$options->ClientSubmit=!$this->getUseSubmitBehavior();
 		return $options;
 	}
@@ -276,7 +276,7 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	 */
 	public function getOnClientClick()
 	{
-		return $this->getViewState('ClientClick','');
+		return $this->getViewState('OnClientClick','');
 	}
 
 	/**
@@ -284,7 +284,7 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	 */
 	public function setOnClientClick($value)
 	{
-		$this->setViewState('ClientClick',$value,'');
+		$this->setViewState('OnClientClick',$value,'');
 	}
 }
 
