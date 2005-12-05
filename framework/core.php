@@ -468,7 +468,7 @@ class PradoBase
 			{
 				include_once($type.self::CLASS_FILE_EXT);
 				if(!class_exists($type,false))
-					throw new TInvalidDataValueException('prado_component_unknown',$type);
+					throw new TInvalidOperationException('prado_component_unknown',$type);
 			}
 			else
 			{
@@ -477,7 +477,7 @@ class PradoBase
 				{
 					include_once($path.self::CLASS_FILE_EXT);
 					if(!class_exists($className,false))
-						throw new TInvalidDataValueException('prado_component_unknown',$type);
+						throw new TInvalidOperationException('prado_component_unknown',$type);
 				}
 				$type=$className;
 			}

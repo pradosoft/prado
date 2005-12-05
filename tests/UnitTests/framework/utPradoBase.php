@@ -67,7 +67,7 @@ class utPradoBase extends UnitTestCase
 		$this->assertTrue(Prado::createComponent('System.TComponent') instanceof TComponent);
 		try
 		{
-			Prado::createComponent('System2.TComponent');
+			Prado::createComponent('System.TComponent2');
 			$this->fail('exception not raised when creating a nonexistent component');
 		}
 		catch(TInvalidDataValueException $e)
