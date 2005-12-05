@@ -9,7 +9,7 @@ class TestFolder
 
 	public function __construct($path,$rootPath,$rootUri)
 	{
-		$this->url="$rootUri?target=".strtr(substr($path,strlen($rootPath)+1),"\\",'/');
+		$this->url="$rootUri/index.php?target=".strtr(substr($path,strlen($rootPath)+1),"\\",'/');
 		$this->name=basename($path);
 		$dir=opendir($path);
 		while(($entry=readdir($dir))!==false)
@@ -86,7 +86,7 @@ else
 {
 	echo "<html>
 <head>
-<title>utList</title>
+<title>Prado Framework Unit Tests</title>
 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">
 </head>
 <body>
