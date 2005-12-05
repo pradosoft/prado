@@ -1,0 +1,70 @@
+div.Prado_Calendar
+{
+	border: 1px solid WindowText;
+	position: absolute;
+	text-align: center;
+	background-color: Window;
+	z-index: 1000;
+	font: small-caption;
+	font-weight: normal;
+	width: 20em;
+}
+
+div.Prado_Calendar .calendarHeader
+{
+	background-color: ActiveCaption;
+	padding: 1px;
+	border-bottom: 1px solid WindowText;
+}
+
+div.Prado_Calendar table
+{
+	width: 100%;
+}
+
+div.Prado_Calendar .date
+{
+	font-weight: normal;
+	cursor: pointer;
+}
+
+div.Prado_Calendar .selected
+{
+	border: 1px solid WindowText;
+}
+
+div.Prado_Calendar .today
+{
+	font-weight: bold;
+}
+
+div.Prado_Calendar .current
+{
+	border: 1px dotted WindowText;
+}
+
+div.Prado_Calendar .calendarBody td
+{
+	padding: 2px 0;
+}
+
+div.Prado_Calendar .hover
+{
+	background-color: Highlight;
+	color: HighlightText;
+}
+
+div.Prado_Calendar td.empty
+{
+	background-color: Window;
+}
+
+div.Prado_Calendar .grid td
+{
+	width: 14%;
+}
+
+div.Prado_Calendar .grid
+{
+	border-spacing: 0;
+}

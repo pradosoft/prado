@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>document.getElementsBySelector Demo</title>
+<style type="text/css">
+body {
+  margin: 1em 3em;
+  font-family: georgia;
+}
+div#foo {
+  border: 2px solid red;
+}
+</style>
+<script type="text/javascript" src="../../base.js"></script>
+<script type="text/javascript" src="../../dom.js"></script>
+<script type="text/javascript">
+function show(a) {
+  str = '';
+  for (i = 0; i != a.length; i++) {
+    str = str + a[i].toString() + '\n';
+  }
+  alert(str);
+}
+</script>
+</head>
+<body>
+<h1>document.getElementsBySelector Demo</h1>
+<p>See <a href="http://simon.incutio.com/archive/2003/03/25/#getElementsBySelector" rel="bookmark">this blog entry</a> for more information.</p>
+<p>Here are some links in a normal paragraph: <a href="http://www.google.com/" title="Google!">Google</a>, <a href="http://groups.google.com/">Google Groups</a>. This link has <code>class="blog"</code>: <a href="http://diveintomark.org/" class="blog">diveintomark</a></p>
+<div id="foo">
+<p>Everything inside the red border is inside a div with <code>id="foo"</code>.</p>
+<p>This is a normal link: <a href="http://www.yahoo.com/">Yahoo</a></p>
+
+<p>This link has <code>class="blog"</code>: <a href="http://simon.incutio.com/" class="blog">Simon Willison's Weblog</a></p>
+</div>
+
+<form action="" method="get" onsubmit="return false;">
+<p>Try them out: </p>
+<ul>
+<li><input type="submit" value="document.getElementsBySelector('a')" onclick="show(document.getElementsBySelector('a'))" /></li>
+<li><input type="submit" value="document.getElementsBySelector('p a.blog')" onclick="show(document.getElementsBySelector('p a.blog'))" /></li>
+<li><input type="submit" value="document.getElementsBySelector('div#foo a')" onclick="show(document.getElementsBySelector('div#foo a'))" /></li>
+<li><input type="submit" value="document.getElementsBySelector('#foo a.blog')" onclick="show(document.getElementsBySelector('#foo a.blog'))" /></li>
+<li><input type="submit" value="document.getElementsBySelector('.blog')" onclick="show(document.getElementsBySelector('.blog'))" /></li>
+<li><input type="submit" value="document.getElementsBySelector('a[href^=&quot;http://www&quot;]')" onclick="show(document.getElementsBySelector('a[href*=&quot;http://www&quot;]'))" /></li>
+<li><input type="submit" value="document.getElementsBySelector('a[href$=&quot;org/&quot;]')" onclick="show(document.getElementsBySelector('a[href$=&quot;org/&quot;]'))" /> (fails in Opera 7)</li>
+<li><input type="submit" value="document.getElementsBySelector('a[href*=&quot;google&quot;]')" onclick="show(document.getElementsBySelector('a[href*=&quot;google&quot;]'))" /></li>
+<li><input type="submit" value="document.getElementsBySelector('a[rel=&quot;bookmark&quot;]')" onclick="show(document.getElementsBySelector('a[rel=&quot;bookmark&quot;]'))" /></li>
+<li><input type="submit" value="document.getElementsBySelector('a[title]')" onclick="show(document.getElementsBySelector('a[title]'))" /></li>
+</ul>
+</form>
+</body>
+</html>

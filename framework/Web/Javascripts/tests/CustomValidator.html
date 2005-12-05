@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+	<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>Prado Client-Side CustomValidator Tests</title>
+<!-- base files -->
+<script type="text/javascript" src="../../base.js"></script>
+<script type="text/javascript" src="../../dom.js"></script>
+<script type="text/javascript" src="../prado/validation.js"></script>
+<script type="text/javascript" src="../prado/validators.js"></script>
+<style type="text/css">
+/*<![CDATA[*/
+
+	.message
+	{
+		color: red;
+	}
+	.required, .required1, .required2
+	{
+		border: 1px solid red;
+	}
+/*]]>*/
+</style>
+  </head>
+
+  <body>
+    <h1>Prado Client-Side CustomValidator Tests</h1>
+
+<form id="form1" action="#">
+	
+<!-- group 1 -->
+<div>
+	<input type="text" id="text1" name="text1" />
+	<span id="validator1" class="message" style="display:none">*</span>
+	<input type="submit" value="Test" id="submit1" />
+</div>
+	<script type="text/javascript">
+	<!-- 
+	/*]]>*/
+		if(typeof(Prado) != "undefined" && typeof(Prado.Validation) != "undefined")
+		{
+			Prado.Validation.AddForm("form1");
+
+			var val1 = {id : "validator1",
+						controltovalidate : "text1",
+						errormessage : "*",
+						display : "Dynamic",						
+						controlcssclass : "required2",
+						clientvalidationfunction : "CustomValidation"};
+			new Prado.Validation(Prado.Validation.TCustomValidator, val1);
+			Prado.Validation.AddTarget("submit1");
+		}
+
+		function CustomValidation(validator, value)
+		{
+			//call a custom callback function
+			setTimeout(callback.bind(validator), 500);
+			return false;
+		}
+
+		function callback()
+		{
+			this.setValid(true);
+		}
+	/*]]>*/
+	//-->
+	</script>
+</form>
+
+  </body>
+</html>
+

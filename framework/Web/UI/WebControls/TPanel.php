@@ -109,12 +109,20 @@ class TPanel extends TWebControl
 		$this->setViewState('BackImageUrl',$value,'');
 	}
 
+	/**
+	 * @return string alignment of the content in the panel.
+	 * Valid values include 'ltr' (left to right) and 'rtl' (right to left).
+	 * Defaults to empty.
+	 */
 	public function getDirection()
 	{
 		return $this->getViewState('Direction','');
 	}
 
-	// valid values include 'ltr' and 'rtl'.
+	/**
+	 * @param string alignment of the content in the panel.
+	 * Valid values include 'ltr' (left to right) and 'rtl' (right to left).
+	 */
 	public function setDirection($value)
 	{
 		$this->setViewState('Direction',$value,'');
@@ -130,11 +138,17 @@ class TPanel extends TWebControl
 		$this->_defaultButton=$value;
 	}
 
+	/**
+	 * @return string the legend text when the panel is used as a fieldset. Defaults to empty.
+	 */
 	public function getGroupingText()
 	{
 		return $this->getViewState('GroupingText','');
 	}
 
+	/**
+	 * @param string the legend text. If this value is not empty, the panel will be rendered as a fieldset.
+	 */
 	public function setGroupingText($value)
 	{
 		$this->setViewState('GroupingText',$value,'');

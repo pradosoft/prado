@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">  
+    <title>Prado Javascript Test Suite</title>
+    <link rel="stylesheet" type="text/css" href="jsunit/css/jsUnitStyle.css">
+<script language="JavaScript" type="text/javascript" src="jsunit/app/jsUnitCore.js"></script>
+<script language="JavaScript" type="text/javascript">
+function coreTestSuite() {
+  var newsuite = new top.jsUnitTestSuite();
+  return newsuite;
+}
+
+function validationTestSuite() {
+  var newsuite = new top.jsUnitTestSuite();
+  return newsuite;
+}
+
+function suite() {
+  var newsuite = new top.jsUnitTestSuite();
+  newsuite.addTestSuite(coreTestSuite());
+  newsuite.addTestSuite(validationTestSuite());
+  return newsuite;
+}
+</script>
+  </head>
+
+  <body>
+    <h1>Prado Javascript Test Suite</h1>
+
+    <p>This page contains a suite of tests for testing
+    Prado javascripts.</p>
+  </body>
+</html>
+
