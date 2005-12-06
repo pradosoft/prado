@@ -31,17 +31,6 @@
 class TLiteral extends TControl
 {
 	/**
-	 * Processes an object that is created during parsing template.
-	 * This method overrides the parent implementation by forbidding any child controls.
-	 * @param string|TComponent text string or component parsed and instantiated in template
-	 */
-	public function addParsedObject($object)
-	{
-		if($object instanceof TComponent)
-			throw new TConfigurationException('literal_body_forbidden');
-	}
-
-	/**
 	 * @return string the static text of the TLiteral
 	 */
 	public function getText()

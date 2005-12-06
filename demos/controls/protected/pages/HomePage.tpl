@@ -10,7 +10,7 @@
 <com:System.Web.UI.WebControls.TButton text="Toggle Button" ForeColor="red" Font.size="18" Click="testClick" /> (requires membership)<br/>
 <com:TCheckBox Text="Checkbox" ID="checkbox"/><br/>
 <com:TImage ImageUrl=<%~/fungii_logo.gif %> />
-<com:TImageButton ImageUrl=<%~/fungii_logo.gif %> /><br/>
+<com:TImageButton ImageUrl=<%~/fungii_logo.gif %> Click="clickImage"/><br/>
 <com:THyperLink Text="Visit a 'classless' page" NavigateUrl="?sp=page.plain" /> |
 <com:THyperLink Text="Visit member only page" NavigateUrl="?sp=page.private.member" />
 <com:TLinkButton Text="Click Me" Click="linkClicked" OnClientClick="javascript:alert('you hit me')"/>

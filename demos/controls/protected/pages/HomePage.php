@@ -18,6 +18,11 @@ class HomePage extends TPage
 		$this->TextBox->focus();
 	}
 
+	public function clickImage($sender,$param)
+	{
+		$this->TextBox->Text="You Clicked (".$param->X.", ".$param->Y.")";
+	}
+
 	public function linkClicked($sender,$param)
 	{
 		$sender->Text="Hello World";

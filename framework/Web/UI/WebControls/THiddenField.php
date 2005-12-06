@@ -43,17 +43,6 @@ class THiddenField extends TControl implements IPostBackDataHandler
 	}
 
 	/**
-	 * Processes an object that is created during parsing template.
-	 * This method overrides the parent implementation by forbidding any child controls.
-	 * @param string|TComponent text string or component parsed and instantiated in template
-	 */
-	public function addParsedObject($object)
-	{
-		if($object instanceof TComponent)
-			throw new TConfigurationException('hiddenfield_body_forbidden');
-	}
-
-	/**
 	 * Renders the control.
 	 * This method overrides the parent implementation by rendering
 	 * the hidden field input element.

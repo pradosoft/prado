@@ -38,9 +38,10 @@
  * You can provide an event handler for the {@link onClick Click} event
  * to programmatically control the actions performed when the submit button is clicked.
  *
- * By default, clicking on a TLinkButton will cause input validation (if any)
- * to be performed. You can turn this on or off by setting
- * the {@link setCausesValidation CausesValidation} property.
+ * Clicking on button can trigger form validation, if
+ * {@link setCausesValidation CausesValidation} is true.
+ * And the validation may be restricted within a certain group of validator
+ * controls by setting {@link setValidationGroup ValidationGroup} property.
  * If validation is successful, the data will be post back to the same page.
  * You can change the postback target by setting the {@link setPostBackUrl PostBackUrl}
  * property.
@@ -148,7 +149,7 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * @return string the command name associated with the <b>OnCommand</b> event.
+	 * @return string the command name associated with the {@link onCommand Command} event.
 	 */
 	public function getCommandName()
 	{
@@ -156,7 +157,7 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * Sets the command name associated with the <b>OnCommand</b> event.
+	 * Sets the command name associated with the {@link onCommand Command} event.
 	 * @param string the text caption to be set
 	 */
 	public function setCommandName($value)
@@ -165,7 +166,7 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * @return string the parameter associated with the <b>OnCommand</b> event
+	 * @return string the parameter associated with the {@link onCommand Command} event
 	 */
 	public function getCommandParameter()
 	{
@@ -173,7 +174,7 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * Sets the parameter associated with the <b>OnCommand</b> event.
+	 * Sets the parameter associated with the {@link onCommand Command} event.
 	 * @param string the text caption to be set
 	 */
 	public function setCommandParameter($value)

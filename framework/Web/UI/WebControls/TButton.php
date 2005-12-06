@@ -13,20 +13,42 @@
 /**
  * TButton class
  *
- * TButton creates a click button on the page.
+ * TButton creates a click button on the page. It is used to submit data to a page.
+ * You can create either a <b>submit</b> button or a <b>command</b> button.
  *
- * You can create either a <b>submit</b> button or a <b>client</b> button by setting
- * <b>UseSubmitBehavior</b> property. Set <b>Text</b> property to specify the button's caption.
- * Upon clicking on the button, on the server side two events are raised by the button:
- * <b>OnClick</b> and <b>OnCommand</b>. You can attach event handlers to these events
- * to respond to the button click action. For <b>OnCommand</b> event, you can associate
- * it with a command name and parameter by setting <b>CommandName</b> and <b>CommandParameter</b>
- * properties, respectively. They are passed as the event parameter to the <b>OnCommand</b>
- * event handler (see {@link TCommandEventParameter}).
+ * A <b>command</b> button has a command name (specified by
+ * the {@link setCommandName CommandName} property) and and a command parameter
+ * (specified by {@link setCommandParameter CommandParameter} property)
+ * associated with the button. This allows you to create multiple TLinkButton
+ * components on a Web page and programmatically determine which one is clicked
+ * with what parameter. You can provide an event handler for
+ * {@link onCommand Command} event to programmatically control the actions performed
+ * when the command button is clicked. In the event handler, you can determine
+ * the {@link setCommandName CommandName} property value and
+ * the {@link setCommandParameter CommandParameter} property value
+ * through the {@link TCommandParameter::getName Name} and
+ * {@link TCommandParameter::getParameter Parameter} properties of the event
+ * parameter which is of type {@link TCommandEventParameter}.
  *
- * Clicking on button can trigger form validation, if <b>CausesValidation</b> is true.
- * And the validation may be restricted within a certain group of validator controls by
- * setting <b>ValidationGroup</b> property.
+ * A <b>submit</b> button does not have a command name associated with the button
+ * and clicking on it simply posts the Web page back to the server.
+ * By default, a TButton component is a submit button.
+ * You can provide an event handler for the {@link onClick Click} event
+ * to programmatically control the actions performed when the submit button is clicked.
+ *
+ * Clicking on button can trigger form validation, if
+ * {@link setCausesValidation CausesValidation} is true.
+ * And the validation may be restricted within a certain group of validator
+ * controls by setting {@link setValidationGroup ValidationGroup} property.
+ * If validation is successful, the data will be post back to the same page.
+ * You can change the postback target by setting the {@link setPostBackUrl PostBackUrl}
+ * property.
+ *
+ * To set the client-side javascript associated with the user's click action,
+ * use the {@link setOnClientClick OnClientClick} property. The value will be rendered
+ * as the <b>onclick</b> attribute of the button.
+ *
+ * TButton displays the {@link setText Text} property as the button caption.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -44,18 +66,6 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * Processes an object that is created during parsing template.
-	 * This overrides the parent implementation by forbidding any body components.
-	 * @param mixed the newly created object in template
-	 * @throws TInvalidOperationException if a component is found within body
-	 */
-	public function addParsedObject($object)
-	{
-		if(!is_string($object))
-			throw new TInvalidOperationException('body_contents_not_allowed',get_class($this).':'.$this->getUniqueID());
-	}
-
-	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This overrides the parent implementation with additional button specific attributes.
 	 * @param THtmlWriter the writer used for the rendering purpose
@@ -64,27 +74,42 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	{
 		$page=$this->getPage();
 		$page->ensureRenderInForm($this);
-		if($this->getUseSubmitBehavior())
-			$writer->addAttribute('type','submit');
-		else
-			$writer->addAttribute('type','button');
+		$writer->addAttribute('type',$this->getUseSubmitBehavior()?'submit':'button');
 		if(($uniqueID=$this->getUniqueID())!=='')
 			$writer->addAttribute('name',$uniqueID);
 		$writer->addAttribute('value',$this->getText());
 
-		$onclick='';
 		if($this->getEnabled(true))
 		{
-			$onclick=$this->getOnClientClick();
-			if($onclick!=='')
-				$onclick=rtrim($onclick,';').';';
+			$onclick='';
+			$onclick=$this->hasAttribute('onclick')?$this->getAttributes()->remove('onclick'):'';
+			$onclick=THttpUtility::trimJavaScriptString($onclick).THttpUtility::trimJavaScriptString($this->getOnClientClick());
 			$onclick.=$page->getClientScript()->getPostBackEventReference($this,'',$this->getPostBackOptions(),false);
+			if(!empty($onclick))
+				$writer->addAttribute('onclick','javascript:'.$onclick);
 		}
 		else if($this->getEnabled())   // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');
-		if($onclick!=='')
-			$writer->addAttribute('onclick','javascript:'.$onclick);
 		parent::addAttributesToRender($writer);
+	}
+
+	/**
+	 * Returns postback specifications for the button.
+	 * This method is used by framework and control developers.
+	 * @return TPostBackOptions parameters about how the button defines its postback behavior.
+	 */
+	protected function getPostBackOptions()
+	{
+		$options=new TPostBackOptions();
+		if($this->getCausesValidation() && $this->getPage()->getValidators($this->getValidationGroup())->getCount()>0)
+		{
+			$options->setPerformValidation(true);
+			$options->setValidationGroup($this->getValidationGroup());
+		}
+		if($this->getPostBackUrl()!=='')
+			$options->setActionUrl($this->getPostBackUrl());
+		$options->setClientSubmit(!$this->getUseSubmitBehavior());
+		return $options;
 	}
 
 	/**
@@ -139,27 +164,6 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * Returns postback specifications for the button.
-	 * This method is used by framework and control developers.
-	 * @return TPostBackOptions parameters about how the button defines its postback behavior.
-	 */
-	protected function getPostBackOptions()
-	{
-		$options=new TPostBackOptions();
-		$options->setClientSubmit(false);
-		$page=$this->getPage();
-		if($this->getCausesValidation() && $page->getValidators($this->getValidationGroup())->getCount()>0)
-		{
-			$options->setPerformValidation(true);
-			$options->setValidationGroup($this->getValidationGroup());
-		}
-		if($this->getPostBackUrl()!=='')
-			$options->setActionUrl($this->getPostBackUrl());
-		$options->setClientSubmit(!$this->getUseSubmitBehavior());
-		return $options;
-	}
-
-	/**
 	 * @return string caption of the button
 	 */
 	public function getText()
@@ -192,7 +196,7 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * @return string the command name associated with the <b>OnCommand</b> event.
+	 * @return string the command name associated with the {@link onCommand Command} event.
 	 */
 	public function getCommandName()
 	{
@@ -200,7 +204,7 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * Sets the command name associated with the <b>OnCommand</b> event.
+	 * Sets the command name associated with the {@link onCommand Command} event.
 	 * @param string the text caption to be set
 	 */
 	public function setCommandName($value)
@@ -209,7 +213,7 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * @return string the parameter associated with the <b>OnCommand</b> event
+	 * @return string the parameter associated with the {@link onCommand Command} event
 	 */
 	public function getCommandParameter()
 	{
@@ -217,7 +221,7 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * Sets the parameter associated with the <b>OnCommand</b> event.
+	 * Sets the parameter associated with the {@link onCommand Command} event.
 	 * @param string the text caption to be set
 	 */
 	public function setCommandParameter($value)
@@ -274,7 +278,7 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * @return string the javascript to be executed when the button is clicked
+	 * @return string the javascript to be executed when the button is clicked.
 	 */
 	public function getOnClientClick()
 	{
@@ -282,7 +286,7 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * @param string the javascript to be executed when the button is clicked. Do not prefix it with "javascript:".
+	 * @param string the javascript to be executed when the button is clicked.
 	 */
 	public function setOnClientClick($value)
 	{

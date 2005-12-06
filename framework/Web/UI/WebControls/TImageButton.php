@@ -18,24 +18,44 @@ Prado::using('System.Web.UI.WebControls.TImage');
 /**
  * TImageButton class
  *
- * TImageButton displays an image on the Web page and responds to mouse clicks on the image.
- * It is similar to the {@link TButton} control except that the TImageButton also captures the
- * coordinates where the image is clicked.
+ * TImageButton creates an image button on the page. It is used to submit data to a page.
+ * You can create either a <b>submit</b> button or a <b>command</b> button.
  *
- * Write a <b>OnClick</b> event handler to programmatically determine the coordinates
- * where the image is clicked. The coordinates can be accessed through <b>x</b> and <b>y</b>
- * properties of the event parameter which is of type <b>TImageClickEventParameter</b>.
- * Note the origin (0, 0) is located at the upper left corner of the image.
+ * A <b>command</b> button has a command name (specified by
+ * the {@link setCommandName CommandName} property) and and a command parameter
+ * (specified by {@link setCommandParameter CommandParameter} property)
+ * associated with the button. This allows you to create multiple TLinkButton
+ * components on a Web page and programmatically determine which one is clicked
+ * with what parameter. You can provide an event handler for
+ * {@link onCommand Command} event to programmatically control the actions performed
+ * when the command button is clicked. In the event handler, you can determine
+ * the {@link setCommandName CommandName} property value and
+ * the {@link setCommandParameter CommandParameter} property value
+ * through the {@link TCommandParameter::getName Name} and
+ * {@link TCommandParameter::getParameter Parameter} properties of the event
+ * parameter which is of type {@link TCommandEventParameter}.
  *
- * Write a <b>OnCommand</b> event handler to make the TImageButton component behave
- * like a command button. A command name can be associated with the component by using
- * the <b>CommandName</b> property. The <b>CommandParameter</b> property
- * can also be used to pass additional information about the command,
- * such as specifying ascending order. This allows multiple TImageButton components to be placed
- * on the same Web page. In the event handler, you can also determine
- * the <b>CommandName</b> property value and the <b>CommandParameter</b> property value
- * through <b>name</b> and <b>parameter</b> of the event parameter which is of
- * type <b>TCommandEventParameter</b>.
+ * A <b>submit</b> button does not have a command name associated with the button
+ * and clicking on it simply posts the Web page back to the server.
+ * By default, a TImageButton control is a submit button.
+ * You can provide an event handler for the {@link onClick Click} event
+ * to programmatically control the actions performed when the submit button is clicked.
+ * The coordinates of the clicking point can be obtained from the {@link onClick Click}
+ * event parameter, which is of type {@link TImageClickEventParameter}.
+ *
+ * Clicking on button can trigger form validation, if
+ * {@link setCausesValidation CausesValidation} is true.
+ * And the validation may be restricted within a certain group of validator
+ * controls by setting {@link setValidationGroup ValidationGroup} property.
+ * If validation is successful, the data will be post back to the same page.
+ * You can change the postback target by setting the {@link setPostBackUrl PostBackUrl}
+ * property.
+ *
+ * To set the client-side javascript associated with the user's click action,
+ * use the {@link setOnClientClick OnClientClick} property. The value will be rendered
+ * as the <b>onclick</b> attribute of the button.
+ *
+ * TImageButton displays the {@link setText Text} property as the hint text to the displayed image.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -44,7 +64,13 @@ Prado::using('System.Web.UI.WebControls.TImage');
  */
 class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEventHandler
 {
+	/**
+	 * @var integer x coordinate that the image is being clicked at
+	 */
 	private $_x=0;
+	/**
+	 * @var integer y coordinate that the image is being clicked at
+	 */
 	private $_y=0;
 
 	/**
@@ -68,13 +94,14 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 		if(($uniqueID=$this->getUniqueID())!=='')
 			$writer->addAttribute('name',$uniqueID);
 
-		$onclick='';
 		if($this->getEnabled(true))
 		{
-			$onclick=$this->getOnClientClick();
-			if($onclick!=='')
-				$onclick=rtrim($onclick,';').';';
+			$onclick='';
+			$onclick=$this->hasAttribute('onclick')?$this->getAttributes()->remove('onclick'):'';
+			$onclick=THttpUtility::trimJavaScriptString($onclick).THttpUtility::trimJavaScriptString($this->getOnClientClick());
 			$onclick.=$page->getClientScript()->getPostBackEventReference($this,'',$this->getPostBackOptions(),false);
+			if(!empty($onclick))
+				$writer->addAttribute('onclick','javascript:'.$onclick);
 		}
 		else if($this->getEnabled())   // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');
@@ -91,15 +118,14 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	protected function getPostBackOptions()
 	{
 		$options=new TPostBackOptions();
-		$options->ClientSubmit=false;
-		$page=$this->getPage();
-		if($this->getCausesValidation() && $page->getValidators($this->getValidationGroup())->getCount()>0)
+		if($this->getCausesValidation() && $this->getPage()->getValidators($this->getValidationGroup())->getCount()>0)
 		{
-			$options->PerformValidation=true;
-			$options->ValidationGroup=$this->getValidationGroup();
+			$options->setPerformValidation(true);
+			$options->setValidationGroup($this->getValidationGroup());
 		}
 		if($this->getPostBackUrl()!=='')
-			$options->ActionUrl=THttpUtility::quoteJavaScriptString($this->getPostBackUrl());
+			$options->setActionUrl($this->getPostBackUrl());
+		$options->setClientSubmit(false);
 		return $options;
 	}
 
@@ -117,24 +143,9 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 		{
 			$this->_x=intval($values["{$uid}_x"]);
 			$this->_y=intval($values["{$uid}_y"]);
-			$page=$this->getPage()->setPostBackEventTarget($this);
+			$this->getPage()->setPostBackEventTarget($this);
 		}
 		return false;
-	}
-
-	/**
-	 * Raises postback event.
-	 * The implementation of this function should raise appropriate event(s) (e.g. OnClick, OnCommand)
-	 * indicating the component is responsible for the postback event.
-	 * This method is primarily used by framework developers.
-	 * @param string the parameter associated with the postback event
-	 */
-	public function raisePostBackEvent($param)
-	{
-		if($this->getCausesValidation())
-			$this->getPage()->validate($this->getValidationGroup());
-		$this->onClick(new TImageClickEventParameter($this->_x,$this->_y));
-		$this->onCommand(new TCommandEventParameter($this->getCommandName(),$this->getCommandParameter()));
 	}
 
 	/**
@@ -146,11 +157,11 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	}
 
 	/**
-	 * This method is invoked when the component is clicked.
-	 * The method raises 'Click' event to fire up the event delegates.
+	 * This method is invoked when the button is clicked.
+	 * The method raises 'Click' event to fire up the event handlers.
 	 * If you override this method, be sure to call the parent implementation
-	 * so that the event delegates can be invoked.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * so that the event handler can be invoked.
+	 * @param TImageClickEventParameter event parameter to be passed to the event handlers
 	 */
 	public function onClick($param)
 	{
@@ -158,10 +169,10 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	}
 
 	/**
-	 * This method is invoked when the component is clicked.
-	 * The method raises 'Command' event to fire up the event delegates.
+	 * This method is invoked when the button is clicked.
+	 * The method raises 'Command' event to fire up the event handlers.
 	 * If you override this method, be sure to call the parent implementation
-	 * so that the event delegates can be invoked.
+	 * so that the event handlers can be invoked.
 	 * @param TCommandEventParameter event parameter to be passed to the event handlers
 	 */
 	public function onCommand($param)
@@ -170,14 +181,41 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 		$this->raiseBubbleEvent($this,$param);
 	}
 
-	protected function onPreRender($param)
+	/**
+	 * Raises the postback event.
+	 * This method is required by {@link IPostBackEventHandler} interface.
+	 * If {@link getCausesValidation CausesValidation} is true, it will
+	 * invoke the page's {@link TPage::validate validate} method first.
+	 * It will raise {@link onClick Click} and {@link onCommand Command} events.
+	 * This method is mainly used by framework and control developers.
+	 * @param TEventParameter the event parameter
+	 */
+	public function raisePostBackEvent($param)
 	{
-		parent::onPreRender($param);
-		$this->getPage()->registerRequiresPostBack($this);
+		if($this->getCausesValidation())
+			$this->getPage()->validate($this->getValidationGroup());
+		$this->onClick(new TImageClickEventParameter($this->_x,$this->_y));
+		$this->onCommand(new TCommandEventParameter($this->getCommandName(),$this->getCommandParameter()));
 	}
 
 	/**
-	 * @return string the command name associated with the <b>OnCommand</b> event.
+	 * @return boolean whether postback event trigger by this button will cause input validation, default is true
+	 */
+	public function getCausesValidation()
+	{
+		return $this->getViewState('CausesValidation',true);
+	}
+
+	/**
+	 * @param boolean whether postback event trigger by this button will cause input validation
+	 */
+	public function setCausesValidation($value)
+	{
+		$this->setViewState('CausesValidation',TPropertyValue::ensureBoolean($value),true);
+	}
+
+	/**
+	 * @return string the command name associated with the {@link onCommand Command} event.
 	 */
 	public function getCommandName()
 	{
@@ -185,7 +223,7 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	}
 
 	/**
-	 * Sets the command name associated with the <b>OnCommand</b> event.
+	 * Sets the command name associated with the {@link onCommand Command} event.
 	 * @param string the text caption to be set
 	 */
 	public function setCommandName($value)
@@ -194,7 +232,7 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	}
 
 	/**
-	 * @return string the parameter associated with the <b>OnCommand</b> event
+	 * @return string the parameter associated with the {@link onCommand Command} event
 	 */
 	public function getCommandParameter()
 	{
@@ -202,29 +240,12 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	}
 
 	/**
-	 * Sets the parameter associated with the <b>OnCommand</b> event.
+	 * Sets the parameter associated with the {@link onCommand Command} event.
 	 * @param string the text caption to be set
 	 */
 	public function setCommandParameter($value)
 	{
 		$this->setViewState('CommandParameter',$value,'');
-	}
-
-	/**
-	 * @return boolean whether postback event trigger by this button will cause input validation
-	 */
-	public function getCausesValidation()
-	{
-		return $this->getViewState('CausesValidation',true);
-	}
-
-	/**
-	 * Sets the value indicating whether postback event trigger by this button will cause input validation.
-	 * @param string the text caption to be set
-	 */
-	public function setCausesValidation($value)
-	{
-		$this->setViewState('CausesValidation',$value,true);
 	}
 
 	/**
@@ -260,7 +281,7 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	}
 
 	/**
-	 * @return string the javascript to be executed when the button is clicked
+	 * @return string the javascript to be executed when the button is clicked.
 	 */
 	public function getOnClientClick()
 	{
@@ -268,7 +289,7 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	}
 
 	/**
-	 * @param string the javascript to be executed when the button is clicked. Do not prefix it with "javascript:".
+	 * @param string the javascript to be executed when the button is clicked.
 	 */
 	public function setOnClientClick($value)
 	{
@@ -290,17 +311,31 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	{
 		$this->setAlternateText($value);
 	}
+
+	/**
+	 * Registers the image button to receive postback data during postback.
+	 * This is necessary because an image button, when postback, does not have
+	 * direct mapping between post data and the image button name.
+	 * This method overrides the parent implementation and is invoked before render.
+	 * @param mixed event parameter
+	 */
+	protected function onPreRender($param)
+	{
+		parent::onPreRender($param);
+		$this->getPage()->registerRequiresPostBack($this);
+	}
 }
 
 /**
  * TImageClickEventParameter class
  *
- * TImageClickEventParameter encapsulates the parameter data for <b>OnClick</b>
- * event of TImageButton components.
+ * TImageClickEventParameter encapsulates the parameter data for
+ * {@link TImageButton::onClick Click} event of {@link TImageButton} controls.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version v1.0, last update on 2004/08/13 21:44:52
+ * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
+ * @since 3.0
  */
 class TImageClickEventParameter extends TEventParameter
 {
@@ -308,12 +343,55 @@ class TImageClickEventParameter extends TEventParameter
 	 * the X coordinate of the clicking point
 	 * @var integer
 	 */
-	public $x=0;
+	public $_x=0;
 	/**
 	 * the Y coordinate of the clicking point
 	 * @var integer
 	 */
-	public $y=0;
+	public $_y=0;
+
+	/**
+	 * Constructor.
+	 * @param integer X coordinate of the clicking point
+	 * @param integer Y coordinate of the clicking point
+	 */
+	public function __construct($x,$y)
+	{
+		$this->_x=$x;
+		$this->_y=$y;
+	}
+
+	/**
+	 * @return integer X coordinate of the clicking point, defaults to 0
+	 */
+	public function getX()
+	{
+		return $this->_x;
+	}
+
+	/**
+	 * @param integer X coordinate of the clicking point
+	 */
+	public function setX($value)
+	{
+		$this->_x=TPropertyValue::ensureInteger($value);
+	}
+
+	/**
+	 * @return integer Y coordinate of the clicking point, defaults to 0
+	 */
+	public function getY()
+	{
+		return $this->_y;
+	}
+
+	/**
+	 * @param integer Y coordinate of the clicking point
+	 */
+	public function setY($value)
+	{
+		$this->_y=TPropertyValue::ensureInteger($value);
+	}
 }
 
 ?>
