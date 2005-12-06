@@ -140,3 +140,5 @@ label_associatedcontrol_invalid			= TLabel.AssociatedControl '%s' cannot be foun
 hiddenfield_focus_unsupported			= THiddenField does not support setting input focus.
 hiddenfield_theming_unsupported			= THiddenField does not support theming.
 hiddenfield_skinid_unsupported			= THiddenField does not support control skin.
+
+panel_defaultbutton_invalid				= TPanel.DefaultButton '%s' does not refer to an existing button control.

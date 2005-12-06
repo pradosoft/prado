@@ -538,8 +538,8 @@ class TPropertyValue
 	 */
 	public static function ensureEnum($value,$enum)
 	{
-		if(($index=array_search($value,$enum))!==false)
-			return $enum[$index];
+		if(in_array($value,$enum))
+			return $value;
 		else
 			throw new TInvalidDataValueException('propertyvalue_enumvalue_invalid',$value,implode(' | ',$enum));
 	}

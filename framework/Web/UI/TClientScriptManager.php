@@ -195,6 +195,12 @@ class TClientScriptManager extends TComponent
 		}
 	}
 
+	public function registerDefaultButtonScript($button)
+	{
+		$this->registerScriptInclude('prado:base',$this->publishScriptFile('base.js'));
+		return 'return Prado.DefaultButton.fire(event,\''.$button->getClientID().'\')';
+	}
+
 	public function registerValidationScript()
 	{
 	}

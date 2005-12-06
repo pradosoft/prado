@@ -10,6 +10,11 @@ class LoginPage extends TPage
 		else
 			$this->error->Text='login failed';
 	}
+
+	public function defaultClicked($sender,$param)
+	{
+		$sender->Text="Clicked";
+	}
 }
 
 ?>

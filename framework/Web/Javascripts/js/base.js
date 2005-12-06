@@ -841,6 +841,23 @@ return _7;
 
 Prado=Class.create();
 Prado.version="3.0a";
+Prado.DefaultButton=Class.create();
+Prado.DefaultButton.buttonFired=false;
+Prado.DefaultButton.fire=function(_1,_2){
+if(!Prado.DefaultButton.buttonFired&&_1.keyCode==13&&!(_1.srcElement&&(_1.srcElement.tagName.toLowerCase()=="textarea"))){
+var _3=document.getElementById?document.getElementById(_2):document.all[_2];
+if(_3&&typeof (_3.click)!="undefined"){
+Prado.DefaultButton.buttonFired=true;
+_3.click();
+_1.cancelBubble=true;
+if(_1.stopPropagation){
+_1.stopPropagation();
+}
+return false;
+}
+}
+return true;
+};
 
 Prado.doPostBack=function(_1,_2,_3,_4,_5,_6,_7,_8){
 if(typeof (_4)=="undefined"){
