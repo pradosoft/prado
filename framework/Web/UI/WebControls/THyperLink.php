@@ -13,6 +13,19 @@
 /**
  * THyperLink class
  *
+ * THyperLink displays a hyperlink on a page. The hyperlink URL is specified
+ * via the {@link setNavigateUrl NavigateUrl} property, and link text is via
+ * the {@link setText Text} property. It is also possible to display an image
+ * by setting the {@link setImageUrl ImageUrl} property. In this case,
+ * {@link getText Text} is displayed as the alternate text of the image.
+ * The link target is specified via the {@link setTarget Target} property.
+ * If both {@link getImageUrl ImageUrl} and {@link getText Text} are empty,
+ * the content enclosed within the control tag will be rendered.
+ *
+ * Note, {@link getText Text} is not HTML-encoded when displayed.
+ * Make sure it does not contain unwanted characters that may bring
+ * security vulnerabilities.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
@@ -20,7 +33,6 @@
  */
 class THyperLink extends TWebControl
 {
-	// todo: TControl::resolveClientUrl
 	/**
 	 * @return string tag name of the hyperlink
 	 */
@@ -29,6 +41,10 @@ class THyperLink extends TWebControl
 		return 'a';
 	}
 
+	/**
+	 * Adds attributes related to a hyperlink element to renderer.
+	 * @param THtmlWriter the writer used for the rendering purpose
+	 */
 	protected function addAttributesToRender($writer)
 	{
 		$isEnabled=$this->getEnabled(true);
@@ -36,11 +52,7 @@ class THyperLink extends TWebControl
 			$writer->addAttribute('disabled','disabled');
 		parent::addAttributesToRender($writer);
 		if(($url=$this->getNavigateUrl())!=='' && $isEnabled)
-		{
-			// todo
-			//$url=$this->resolveClientUrl($url);
 			$writer->addAttribute('href',$url);
-		}
 		if(($target=$this->getTarget())!=='')
 			$writer->addAttribute('target',$target);
 	}
@@ -53,17 +65,17 @@ class THyperLink extends TWebControl
 	{
 		if(($imageUrl=$this->getImageUrl())==='')
 		{
-			if($this->getHasControls())
-				parent::renderContents($writer);
+			if(($text=$this->getText())!=='')
+				$writer->write($text);
 			else
-				$writer->write($this->getText());
+				parent::renderContents($writer);
 		}
 		else
 		{
 			$image=new TImage;
-			$image->setImageUrl($this->resolveClientUrl($imageUrl));
+			$image->setImageUrl($imageUrl);
 			if(($toolTip=$this->getToolTip())!=='')
-				$image->setAlternateText($toolTip);
+				$image->setToolTip($toolTip);
 			if(($text=$this->getText())!=='')
 				$image->setAlternateText($text);
 			$image->renderControl($writer);
@@ -84,8 +96,6 @@ class THyperLink extends TWebControl
 	 */
 	public function setText($value)
 	{
-		if($this->getHasControls())
-			$this->getControls()->clear();
 		$this->setViewState('Text',$value,'');
 	}
 

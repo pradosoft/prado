@@ -51,9 +51,7 @@ class THiddenField extends TControl implements IPostBackDataHandler
 	protected function render($writer)
 	{
 		$uniqueID=$this->getUniqueID();
-		$page=$this->getPage();
-		$page->ensureRenderInForm($this);
-		//$page->getClientScript()->registerForEventValidation($uniqueID);
+		$this->getPage()->ensureRenderInForm($this);
 		$writer->addAttribute('type','hidden');
 		if($uniqueID!=='')
 			$writer->addAttribute('name',$uniqueID);
