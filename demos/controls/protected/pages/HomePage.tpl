@@ -12,6 +12,6 @@
 <com:TImageButton ImageUrl=<%~/fungii_logo.gif %> /><br/>
 <com:THyperLink Text="Visit a 'classless' page" NavigateUrl="?sp=page.plain" /> |
 <com:THyperLink Text="Visit member only page" NavigateUrl="?sp=page.private.member" />
-<com:TLinkButton Text="Click Me" Click="linkClicked" />
+<com:TLinkButton Text="Click Me" Click="linkClicked" OnClientClick="javascript:alert('you hit me')"/>
 </com:TForm>
 </com:TContent>

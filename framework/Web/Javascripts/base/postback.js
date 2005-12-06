@@ -1,66 +1,54 @@
-
-Prado.PostBack = Class.create();
-
-Prado.PostBack.Options = Class.create();
-
-Prado.PostBack.Options.prototype =
+Prado.doPostBack = function(formID, eventTarget, eventParameter, performValidation, validationGroup, actionUrl, trackFocus, clientSubmit)
 {
-	initialize : function(performValidation, validationGroup, actionUrl, trackFocus, clientSubmit)
+	if (typeof(performValidation) == 'undefined')
 	{
-	    this.performValidation = performValidation;
-	    this.validationGroup = validationGroup;
-	    this.actionUrl = actionUrl;
-	    this.trackFocus = trackFocus;
-	    this.clientSubmit = clientSubmit;
-    }
-}
-
-Prado.PostBack.perform = function(formID, eventTarget, eventParameter, options)
-{
+		var performValidation = false;
+		var validationGroup = '';
+		var actionUrl = null;
+		var trackFocus = false;
+		var clientSubmit = true;
+	}
 	var theForm = document.getElementById ? document.getElementById(formID) : document.forms[formID];
 	var canSubmit = true;
-	if ((typeof(options) != 'undefined') || options == null)
+    if (performValidation)
 	{
-	    if (options.performValidation)
+		canSubmit = Prado.Validation.validate(validationGroup);
+	}
+	if (canSubmit)
+	{
+		if (actionUrl != null && (actionUrl.length > 0))
 		{
-			canSubmit = Prado.Validation.validate(options.validationGroup);
+			theForm.action = actionUrl;
 		}
-		if (canSubmit)
+		if (trackFocus)
 		{
-			if ((typeof(options.actionUrl) != 'undefined') && (options.actionUrl != null) && (options.actionUrl.length > 0))
+			var lastFocus = theForm.elements['PRADO_LASTFOCUS'];
+			if ((typeof(lastFocus) != 'undefined') && (lastFocus != null))
 			{
-				theForm.action = options.actionUrl;
-			}
-			if (options.trackFocus)
-			{
-				var lastFocus = theForm.elements['PRADO_LASTFOCUS'];
-				if ((typeof(lastFocus) != 'undefined') && (lastFocus != null))
+				var active = document.activeElement;
+				if (typeof(active) == 'undefined')
 				{
-					var active = document.activeElement;
-					if (typeof(active) == 'undefined')
+					lastFocus.value = eventTarget;
+				}
+				else
+				{
+					if ((active != null) && (typeof(active.id) != 'undefined'))
 					{
-						lastFocus.value = eventTarget;
-					}
-					else
-					{
-						if ((active != null) && (typeof(active.id) != 'undefined'))
+						if (active.id.length > 0)
 						{
-							if (active.id.length > 0)
-							{
-								lastFocus.value = active.id;
-							}
-							else if (typeof(active.name) != 'undefined')
-							{
-								lastFocus.value = active.name;
-							}
+							lastFocus.value = active.id;
+						}
+						else if (typeof(active.name) != 'undefined')
+						{
+							lastFocus.value = active.name;
 						}
 					}
 				}
 			}
-			if (!options.clientSubmit)
-			{
-				canSubmit = false;
-			}
+		}
+		if (!clientSubmit)
+		{
+			canSubmit = false;
 		}
 	}
 	if (canSubmit && (!theForm.onsubmit || theForm.onsubmit()))

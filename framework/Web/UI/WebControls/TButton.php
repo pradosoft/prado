@@ -97,23 +97,25 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * OnClick event raiser.
-	 * This method raises OnClick event.
-	 * Be sure to invoke the parent implementation if this method is overriden.
-	 * @param TEventParameter the event parameter
+	 * This method is invoked when the button is clicked.
+	 * The method raises 'Click' event to fire up the event handlers.
+	 * If you override this method, be sure to call the parent implementation
+	 * so that the event handler can be invoked.
+	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
-	protected function onClick($param)
+	public function onClick($param)
 	{
 		$this->raiseEvent('Click',$this,$param);
 	}
 
 	/**
-	 * OnCommand event raiser.
-	 * This method raises OnCommand event.
-	 * Be sure to invoke the parent implementation if this method is overriden.
-	 * @param TCommandEventParameter the event parameter
+	 * This method is invoked when the button is clicked.
+	 * The method raises 'Command' event to fire up the event handlers.
+	 * If you override this method, be sure to call the parent implementation
+	 * so that the event handlers can be invoked.
+	 * @param TCommandEventParameter event parameter to be passed to the event handlers
 	 */
-	protected function onCommand($param)
+	public function onCommand($param)
 	{
 		$this->raiseEvent('Command',$this,$param);
 		$this->raiseBubbleEvent($this,$param);
@@ -121,10 +123,10 @@ class TButton extends TWebControl implements IPostBackEventHandler
 
 	/**
 	 * Raises the postback event.
-	 * This method is required by IPostBackEventHandler interface.
-	 * If <b>CausesValidation</b> is true, it will invokes the page's {@validate}
-	 * method first.
-	 * It will raise <b>OnClick</b> and <b>OnCommand</b> events.
+	 * This method is required by {@link IPostBackEventHandler} interface.
+	 * If {@link getCausesValidation CausesValidation} is true, it will
+	 * invoke the page's {@link TPage::validate validate} method first.
+	 * It will raise {@link onClick Click} and {@link onCommand Command} events.
 	 * This method is mainly used by framework and control developers.
 	 * @param TEventParameter the event parameter
 	 */
@@ -132,7 +134,7 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	{
 		if($this->getCausesValidation())
 			$this->getPage()->validate($this->getValidationGroup());
-		$this->onClick(new TEventParameter);
+		$this->onClick(null);
 		$this->onCommand(new TCommandEventParameter($this->getCommandName(),$this->getCommandParameter()));
 	}
 
@@ -144,16 +146,16 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	protected function getPostBackOptions()
 	{
 		$options=new TPostBackOptions();
-		$options->ClientSubmit=false;
+		$options->setClientSubmit(false);
 		$page=$this->getPage();
 		if($this->getCausesValidation() && $page->getValidators($this->getValidationGroup())->getCount()>0)
 		{
-			$options->PerformValidation=true;
-			$options->ValidationGroup=$this->getValidationGroup();
+			$options->setPerformValidation(true);
+			$options->setValidationGroup($this->getValidationGroup());
 		}
 		if($this->getPostBackUrl()!=='')
-			$options->ActionUrl=THttpUtility::quoteJavaScriptString($this->getPostBackUrl());
-		$options->ClientSubmit=!$this->getUseSubmitBehavior();
+			$options->setActionUrl($this->getPostBackUrl());
+		$options->setClientSubmit(!$this->getUseSubmitBehavior());
 		return $options;
 	}
 

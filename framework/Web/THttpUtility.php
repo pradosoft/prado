@@ -33,6 +33,7 @@ class THttpUtility
 	{
 		if($js!=='' && $js!==null)
 		{
+			$js=trim($js);
 			if(($pos=strpos($js,'javascript:'))===0)
 				$js=substr($js,11);
 			$js=rtrim($js,';').';';

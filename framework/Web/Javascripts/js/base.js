@@ -842,54 +842,50 @@ return _7;
 Prado=Class.create();
 Prado.version="3.0a";
 
-Prado.PostBack=Class.create();
-Prado.PostBack.Options=Class.create();
-Prado.PostBack.Options.prototype={initialize:function(_1,_2,_3,_4,_5){
-this.performValidation=_1;
-this.validationGroup=_2;
-this.actionUrl=_3;
-this.trackFocus=_4;
-this.clientSubmit=_5;
-}};
-Prado.PostBack.perform=function(_6,_7,_8,_9){
-var _10=document.getElementById?document.getElementById(_6):document.forms[_6];
-var _11=true;
-if((typeof (_9)!="undefined")||_9==null){
-if(_9.performValidation){
-_11=Prado.Validation.validate(_9.validationGroup);
+Prado.doPostBack=function(_1,_2,_3,_4,_5,_6,_7,_8){
+if(typeof (_4)=="undefined"){
+var _4=false;
+var _5="";
+var _6=null;
+var _7=false;
+var _8=true;
 }
-if(_11){
-if((typeof (_9.actionUrl)!="undefined")&&(_9.actionUrl!=null)&&(_9.actionUrl.length>0)){
-_10.action=_9.actionUrl;
+var _9=document.getElementById?document.getElementById(_1):document.forms[_1];
+var _10=true;
+if(_4){
+_10=Prado.Validation.validate(_5);
 }
-if(_9.trackFocus){
-var _12=_10.elements["PRADO_LASTFOCUS"];
-if((typeof (_12)!="undefined")&&(_12!=null)){
-var _13=document.activeElement;
-if(typeof (_13)=="undefined"){
-_12.value=_7;
+if(_10){
+if(_6!=null&&(_6.length>0)){
+_9.action=_6;
+}
+if(_7){
+var _11=_9.elements["PRADO_LASTFOCUS"];
+if((typeof (_11)!="undefined")&&(_11!=null)){
+var _12=document.activeElement;
+if(typeof (_12)=="undefined"){
+_11.value=_2;
 }else{
-if((_13!=null)&&(typeof (_13.id)!="undefined")){
-if(_13.id.length>0){
-_12.value=_13.id;
+if((_12!=null)&&(typeof (_12.id)!="undefined")){
+if(_12.id.length>0){
+_11.value=_12.id;
 }else{
-if(typeof (_13.name)!="undefined"){
-_12.value=_13.name;
+if(typeof (_12.name)!="undefined"){
+_11.value=_12.name;
 }
 }
 }
 }
 }
 }
-if(!_9.clientSubmit){
-_11=false;
+if(!_8){
+_10=false;
 }
 }
-}
-if(_11&&(!_10.onsubmit||_10.onsubmit())){
-_10.PRADO_POSTBACK_TARGET.value=_7;
-_10.PRADO_POSTBACK_PARAMETER.value=_8;
-_10.submit();
+if(_10&&(!_9.onsubmit||_9.onsubmit())){
+_9.PRADO_POSTBACK_TARGET.value=_2;
+_9.PRADO_POSTBACK_PARAMETER.value=_3;
+_9.submit();
 }
 };
 

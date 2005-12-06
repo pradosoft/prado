@@ -2,30 +2,78 @@
 
 class TPostBackOptions extends TComponent
 {
-	public $ActionUrl;
-	public $AutoPostBack;
-	public $ClientSubmit;
-	public $PerformValidation;
-	public $TrackFocus;
-	public $ValidationGroup;
+	public $_actionUrl='';
+	public $_autoPostBack=false;
+	public $_clientSubmit=true;
+	public $_performValidation=false;
+	public $_validationGroup='';
+	public $_trackFocus=false;
 
-	public function __construct($actionUrl='',$autoPostBack=false,$clientSubmit=true,
-			$performValidation=false,$validationGroup='',$trackFocus=false)
+	public function getActionUrl()
 	{
-		$this->ActionUrl=$actionUrl;
-		$this->AutoPostBack=$autoPostBack;
-		$this->ClientSubmit=$clientSubmit;
-		$this->PerformValidation=$performValidation;
-		$this->ValidationGroup=$validationGroup;
-		$this->TrackFocus=$trackFocus;
+		return $this->_actionUrl;
+	}
+
+	public function setActionUrl($value)
+	{
+		$this->_actionUrl=THttpUtility::quoteJavaScriptString($value);
+	}
+
+	public function getAutoPostBack()
+	{
+		return $this->_autoPostBack;
+	}
+
+	public function setAutoPostBack($value)
+	{
+		$this->_autoPostBack=$value;
+	}
+
+	public function getClientSubmit()
+	{
+		return $this->_clientSubmit;
+	}
+
+	public function setClientSubmit($value)
+	{
+		$this->_clientSubmit=$value;
+	}
+
+	public function getPerformValidation()
+	{
+		return $this->_performValidation;
+	}
+
+	public function setPerformValidation($value)
+	{
+		$this->_performValidation=$value;
+	}
+
+	public function getValidationGroup()
+	{
+		return $this->_validationGroup;
+	}
+
+	public function setValidationGroup($value)
+	{
+		$this->_validationGroup=$value;
+	}
+
+	public function getTrackFocus()
+	{
+		return $this->_trackFocus;
+	}
+
+	public function setTrackFocus($value)
+	{
+		$this->_trackFocus=$value;
 	}
 }
 
 class TClientScriptManager extends TComponent
 {
 	const SCRIPT_DIR='Web/Javascripts/js';
-	const POSTBACK_FUNC='Prado.PostBack.perform';
-	const POSTBACK_OPTIONS='Prado.PostBack.Options';
+	const POSTBACK_FUNC='Prado.doPostBack';
 	private $_page;
 	private $_hiddenFields=array();
 	private $_beginScripts=array();
@@ -46,57 +94,61 @@ class TClientScriptManager extends TComponent
 
 	public function getPostBackEventReference($control,$parameter='',$options=null,$javascriptPrefix=true)
 	{
-		if($options)
+		if(!$options || (!$options->getPerformValidation() && !$options->getTrackFocus() && $options->getClientSubmit() && $options->getActionUrl()==''))
 		{
-			$flag=false;
-			$opt='new '.self::POSTBACK_OPTIONS.'(';
-			if($options->PerformValidation)
-			{
-				$flag=true;
-				$this->registerValidationScript();
-				$opt.='true,';
-			}
-			else
-				$opt.='false,';
-			if($options->ValidationGroup!=='')
-			{
-				$flag=true;
-				$opt.='"'.$options->ValidationGroup.'",';
-			}
-			else
-				$opt.='"",';
-			if($options->ActionUrl!=='')
-			{
-				$flag=true;
-				$this->_page->setCrossPagePostBack(true);
-				$opt.='"'.THttpUtility::quoteJavaScriptString($options->ActionUrl).'",';
-			}
-			else
-				$opt.='"",';
-			if($options->TrackFocus)
-			{
-				$flag=true;
-				$this->registerFocusScript();
-				$opt.='true,';
-			}
-			else
-				$opt.='false,';
-			if($options->ClientSubmit)
-			{
-				$flag=true;
-				$opt.='true)';
-			}
-			else
-				$opt.='false)';
-			if(!$flag)
-				return '';
+			$this->registerPostBackScript();
+			$formID=$this->_page->getForm()->getUniqueID();
+			$postback=self::POSTBACK_FUNC.'(\''.$formID.'\',\''.$control->getUniqueID().'\',\''.THttpUtility::quoteJavaScriptString($parameter).'\')';
+			if($options && $options->getAutoPostBack())
+				$postback='setTimeout(\''.THttpUtility::quoteJavaScriptString($postback).'\',0)';
+			return $javascriptPrefix?'javascript:'.$postback:$postback;
+		}
+		$opt='';
+		$flag=false;
+		if($options->getPerformValidation())
+		{
+			$flag=true;
+			$this->registerValidationScript();
+			$opt.=',true,';
 		}
 		else
-			$opt='null';
+			$opt.=',false,';
+		if($options->getValidationGroup()!=='')
+		{
+			$flag=true;
+			$opt.='"'.$options->getValidationGroup().'",';
+		}
+		else
+			$opt.='"",';
+		if($options->getActionUrl()!=='')
+		{
+			$flag=true;
+			$this->_page->setCrossPagePostBack(true);
+			$opt.='"'.$options->getActionUrl().'",';
+		}
+		else
+			$opt.='null,';
+		if($options->getTrackFocus())
+		{
+			$flag=true;
+			$this->registerFocusScript();
+			$opt.='true,';
+		}
+		else
+			$opt.='false,';
+		if($options->getClientSubmit())
+		{
+			$flag=true;
+			$opt.='true)';
+		}
+		else
+			$opt.='false)';
+		if(!$flag)
+			return '';
 		$this->registerPostBackScript();
 		$formID=$this->_page->getForm()->getUniqueID();
-		$postback=self::POSTBACK_FUNC.'(\''.$formID.'\',\''.$control->getUniqueID().'\',\''.THttpUtility::quoteJavaScriptString($parameter).'\','.$opt.')';
-		if($options && $options->AutoPostBack)
+		$postback=self::POSTBACK_FUNC.'(\''.$formID.'\',\''.$control->getUniqueID().'\',\''.THttpUtility::quoteJavaScriptString($parameter).'\''.$opt.')';
+		if($options && $options->getAutoPostBack())
 			$postback='setTimeout(\''.THttpUtility::quoteJavaScriptString($postback).'\',0)';
 		return $javascriptPrefix?'javascript:'.$postback:$postback;
 	}
