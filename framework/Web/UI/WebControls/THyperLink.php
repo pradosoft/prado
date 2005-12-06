@@ -63,7 +63,7 @@ class THyperLink extends TWebControl
 			$image=new TImage;
 			$image->setImageUrl($this->resolveClientUrl($imageUrl));
 			if(($toolTip=$this->getToolTip())!=='')
-				$image->setToolTip($toolTip);
+				$image->setAlternateText($toolTip);
 			if(($text=$this->getText())!=='')
 				$image->setAlternateText($text);
 			$image->renderControl($writer);

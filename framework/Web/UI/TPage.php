@@ -20,12 +20,12 @@ class TPage extends TTemplateControl
 	 * @var array system post fields
 	 */
 	private static $_systemPostFields=array(
-		self::FIELD_POSTBACK_TARGET=>true,
-		self::FIELD_POSTBACK_PARAMETER=>true,
-		self::FIELD_LASTFOCUS=>true,
-		self::FIELD_PAGESTATE=>true,
-		self::FIELD_SCROLLX=>true,
-		self::FIELD_SCROLLY=>true,
+		'PRADO_POSTBACK_TARGET'=>true,
+		'PRADO_POSTBACK_PARAMETER'=>true,
+		'PRADO_LASTFOCUS'=>true,
+		'PRADO_PAGESTATE'=>true,
+		'PRADO_SCROLLX'=>true,
+		'PRADO_SCROLLY'=>true,
 		'__PREVPAGE','__CALLBACKID','__CALLBACKPARAM'
 	);
 	/**

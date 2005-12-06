@@ -152,7 +152,8 @@ class TErrorHandler extends TComponent implements IModule
 			$handling=true;
 			if(($response=Prado::getApplication()->getResponse())!==null)
 				$response->clear();
-			header('Content-Type: text/html; charset=UTF-8');
+			if(!headers_sent())
+				header('Content-Type: text/html; charset=UTF-8');
 			if($param instanceof THttpException)
 				$this->handleExternalError($param->getStatusCode(),$param);
 			else if(Prado::getApplication()->getMode()==='Debug')
