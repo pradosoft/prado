@@ -1,4 +1,7 @@
+<%@ MasterClass="Pages.master.MasterPage" %>
+<com:TContent id="body" >
 <com:TForm>
+<div>
 <com:TPanel GroupingText="Login" Width="270px" HorizontalAlign="center">
 <com:TLabel Text="Username" AssociatedControlID="username"/>
 <com:TTextBox ID="username" /><br/>
@@ -7,4 +10,6 @@
 <com:TButton Text="Login" Click="login" />
 <com:TLabel ID="error" />
 </com:TPanel>
+</div>
 </com:TForm>
+</com:TContent>

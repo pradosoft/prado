@@ -11,7 +11,7 @@ class TForm extends TControl
 	protected function addAttributesToRender($writer)
 	{
 		$attributes=$this->getAttributes();
-		$writer->addAttribute('name',$this->getName());
+//		$writer->addAttribute('name',$this->getName());
 		$writer->addAttribute('method',$this->getMethod());
 		$writer->addAttribute('action',$this->getApplication()->getRequest()->getRequestURI());
 		$attributes->remove('name');
@@ -41,7 +41,7 @@ class TForm extends TControl
 			else
 				throw new Exception('Only IButtonControl can be default button.');
 		}
-		$writer->addAttribute('id',$this->getUniqueID());
+		$writer->addAttribute('id',$this->getClientID());
 		foreach($attributes as $name=>$value)
 			$writer->addAttribute($name,$value);
 	}

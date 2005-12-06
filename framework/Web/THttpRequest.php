@@ -369,10 +369,10 @@ class THttpRequest extends TComponent implements IModule
 		if(is_array($getItems) || $getItems instanceof Traversable)
 		{
 			foreach($getItems as $name=>$value)
-				$url.='&'.urlencode($name).'='.urlencode($value);
+				$url.='&amp;'.urlencode($name).'='.urlencode($value);
 		}
 		if(defined('SID') && SID != '')
-			$url.='&'.SID;
+			$url.='&amp;'.SID;
 		return $url;
 	}
 

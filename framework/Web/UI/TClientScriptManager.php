@@ -97,7 +97,7 @@ class TClientScriptManager extends TComponent
 		if(!$options || (!$options->getPerformValidation() && !$options->getTrackFocus() && $options->getClientSubmit() && $options->getActionUrl()==''))
 		{
 			$this->registerPostBackScript();
-			$formID=$this->_page->getForm()->getUniqueID();
+			$formID=$this->_page->getForm()->getClientID();
 			$postback=self::POSTBACK_FUNC.'(\''.$formID.'\',\''.$control->getUniqueID().'\',\''.THttpUtility::quoteJavaScriptString($parameter).'\')';
 			if($options && $options->getAutoPostBack())
 				$postback='setTimeout(\''.THttpUtility::quoteJavaScriptString($postback).'\',0)';
@@ -308,7 +308,7 @@ class TClientScriptManager extends TComponent
 			$str.="<input type=\"hidden\" name=\"$name\" id=\"$name\" value=\"$value\" />\n";
 		}
 		if($str!=='')
-			$writer->write($str);
+			$writer->write("<div>\n".$str."</div>\n");
 	}
 
 	public function renderExpandoAttributes($writer)
