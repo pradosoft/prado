@@ -39,32 +39,11 @@
 class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 {
 	/**
-	 * @var array enumeration of the valid AutoCompleteType values.
-	 */
-	public static $AUTO_COMPLETE_TYPE=array('BusinessCity','BusinessCountryRegion','BusinessFax','BusinessPhone','BusinessState','BusinessStreetAddress','BusinessUrl','BusinessZipCode','Cellular','Company','Department','Disabled','DisplayName','Email','FirstName','Gender','HomeCity','HomeCountryRegion','HomeFax','Homepage','HomePhone','HomeState','HomeStreetAddress','HomeZipCode','JobTitle','LastName','MiddleName','None','Notes','Office','Pager','Search');
-	/**
-	 * @var array enumeration of the valid TextMode values.
-	 */
-	public static $TEXT_MODE=array('SingleLine','MultiLine','Password');
-
-	/**
 	 * @return string tag name of the textbox
 	 */
 	protected function getTagName()
 	{
 		return ($this->getTextMode()==='MultiLine')?'textarea':'input';
-	}
-
-	/**
-	 * Processes an object that is created during parsing template.
-	 * This overrides the parent implementation by forbidding any body components.
-	 * @param mixed the newly created object in template
-	 * @throws TInvalidOperationException if a component is found within body
-	 */
-	public function addParsedObject($object)
-	{
-		if(!is_string($object))
-			throw new TInvalidOperationException('body_contents_not_allowed',get_class($this).':'.$this->getUniqueID());
 	}
 
 	/**
@@ -232,6 +211,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 		}
 		$this->onTextChanged(new TEventParameter);
 	}
+
 	/**
 	 * Renders the body content of the textbox when it is in MultiLine text mode.
 	 * @param THtmlWriter the writer for rendering
@@ -263,7 +243,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	 */
 	public function setAutoCompleteType($value)
 	{
-		$this->setViewState('AutoCompleteType',TPropertyValue::ensureEnum($value,self::$AUTO_COMPLETE_TYPE),'None');
+		$this->setViewState('AutoCompleteType',TPropertyValue::ensureEnum($value,array('BusinessCity','BusinessCountryRegion','BusinessFax','BusinessPhone','BusinessState','BusinessStreetAddress','BusinessUrl','BusinessZipCode','Cellular','Company','Department','Disabled','DisplayName','Email','FirstName','Gender','HomeCity','HomeCountryRegion','HomeFax','Homepage','HomePhone','HomeState','HomeStreetAddress','HomeZipCode','JobTitle','LastName','MiddleName','None','Notes','Office','Pager','Search')),'None');
 	}
 
 	/**
@@ -403,7 +383,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	 */
 	public function setTextMode($value)
 	{
-		$this->setViewState('TextMode',TPropertyValue::ensureEnum($value,self::$TEXT_MODE),'SingleLine');
+		$this->setViewState('TextMode',TPropertyValue::ensureEnum($value,array('SingleLine','MultiLine','Password')),'SingleLine');
 	}
 
 	/**
