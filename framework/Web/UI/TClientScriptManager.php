@@ -277,10 +277,10 @@ class TClientScriptManager extends TComponent
 	{
 		if(count($this->_arrayDeclares))
 		{
-			$str="<script type=\"text/javascript\"><!--\n";
+			$str="<script type=\"text/javascript\">\n//<![CDATA[\n";
 			foreach($this->_arrayDeclares as $name=>$array)
 				$str.="var $name=new Array(".implode(',',$array).");\n";
-			$str.="\n// --></script>\n";
+			$str.="\n//]]>\n</script>\n";
 			$writer->write($str);
 		}
 	}
@@ -299,13 +299,13 @@ class TClientScriptManager extends TComponent
 	public function renderBeginScripts($writer)
 	{
 		if(count($this->_beginScripts))
-			$writer->write("<script type=\"text/javascript\"><!--\n".implode("\n",$this->_beginScripts)."\n// --></script>\n");
+			$writer->write("<script type=\"text/javascript\">\n//<![CDATA[\n".implode("\n",$this->_beginScripts)."\n//]]>\n</script>\n");
 	}
 
 	public function renderEndScripts($writer)
 	{
 		if(count($this->_endScripts))
-			$writer->write("<script type=\"text/javascript\"><!--\n".implode("\n",$this->_endScripts)."\n// --></script>\n");
+			$writer->write("<script type=\"text/javascript\">\n//<![CDATA[\n".implode("\n",$this->_endScripts)."\n//]]>\n</script>\n");
 	}
 
 	public function renderHiddenFields($writer)
@@ -324,7 +324,7 @@ class TClientScriptManager extends TComponent
 	{
 		if(count($this->_expandoAttributes))
 		{
-			$str="<script type=\"text/javascript\"><!--\n";
+			$str="<script type=\"text/javascript\">\n//<![CDATA[\n";
 			foreach($this->_expandoAttributes as $controlID=>$attrs)
 			{
 				$str.="var $controlID = document.all ? document.all[\"$controlID\"] : document.getElementById(\"$controlID\");\n";
@@ -336,7 +336,7 @@ class TClientScriptManager extends TComponent
 						$str.="{$key}[\"$name\"]=\"$value\";\n";
 				}
 			}
-			$str.="\n// --></script>\n";
+			$str.="\n//]]>\n</script>\n";
 			$writer->write($str);
 		}
 	}

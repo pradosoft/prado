@@ -90,7 +90,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 			if($this->getCausesValidation())
 				$page->validate($this->getValidationGroup());
 		}
-		$this->onCheckedChanged(new TEventParameter);
+		$this->onCheckedChanged(null);
 	}
 
 	/**

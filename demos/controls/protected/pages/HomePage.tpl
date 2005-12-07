@@ -9,6 +9,7 @@
 <com:TLabel Text="test" AssociatedControlID="checkbox"/><br/>
 <com:System.Web.UI.WebControls.TButton text="Toggle Button" ForeColor="red" Font.size="18" Click="testClick" /> (requires membership)<br/>
 <com:TCheckBox Text="Checkbox" ID="checkbox" AutoPostBack="true" /><br/>
+<com:TRadioButton Text="Radiobutton" ID="radiobutton" AutoPostBack="true" /><br/>
 <com:TImage ImageUrl=<%~/fungii_logo.gif %> />
 <com:TImageButton ImageUrl=<%~/fungii_logo.gif %> Click="clickImage"/><br/>
 <com:THyperLink Text="Visit a 'classless' page" NavigateUrl="?sp=page.plain" /> |
