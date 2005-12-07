@@ -96,8 +96,7 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 
 		if($this->getEnabled(true))
 		{
-			$onclick='';
-			$onclick=$this->hasAttribute('onclick')?$this->getAttributes()->remove('onclick'):'';
+			$onclick=$this->removeAttribute('onclick');
 			$onclick=THttpUtility::trimJavaScriptString($onclick).THttpUtility::trimJavaScriptString($this->getOnClientClick());
 			$onclick.=$page->getClientScript()->getPostBackEventReference($this,'',$this->getPostBackOptions(),false);
 			if(!empty($onclick))

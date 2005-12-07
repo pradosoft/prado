@@ -81,8 +81,7 @@ class TButton extends TWebControl implements IPostBackEventHandler
 
 		if($this->getEnabled(true))
 		{
-			$onclick='';
-			$onclick=$this->hasAttribute('onclick')?$this->getAttributes()->remove('onclick'):'';
+			$onclick=$this->removeAttribute('onclick');
 			$onclick=THttpUtility::trimJavaScriptString($onclick).THttpUtility::trimJavaScriptString($this->getOnClientClick());
 			$onclick.=$page->getClientScript()->getPostBackEventReference($this,'',$this->getPostBackOptions(),false);
 			if(!empty($onclick))

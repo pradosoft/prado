@@ -79,7 +79,7 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 	{
 		$page=$this->getPage();
 		$page->ensureRenderInForm($this);
-		$onclick=$this->hasAttribute('onclick')?$this->getAttributes()->remove('onclick'):'';
+		$onclick=$this->removeAttribute('onclick');
 		$onclick=THttpUtility::trimJavaScriptString($onclick).THttpUtility::trimJavaScriptString($this->getOnClientClick());
 		if(!empty($onclick))
 			$writer->addAttribute('onclick','javascript:'.$onclick);

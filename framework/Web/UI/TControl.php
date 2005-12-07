@@ -576,11 +576,14 @@ class TControl extends TComponent
 	/**
 	 * Removes the named attribute.
 	 * @param string the name of the attribute to be removed.
+	 * @return string attribute value removed, empty string if attribute does not exist.
 	 */
 	public function removeAttribute($name)
 	{
 		if($attributes=$this->getViewState('Attributes',null))
-			$attributes->remove($name);
+			return $attributes->remove($name);
+		else
+			return '';
 	}
 
 	/**

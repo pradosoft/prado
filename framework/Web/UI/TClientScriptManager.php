@@ -119,7 +119,7 @@ class TClientScriptManager extends TComponent
 			$opt.='"'.$options->getValidationGroup().'",';
 		}
 		else
-			$opt.='"",';
+			$opt.='\'\',';
 		if($options->getActionUrl()!=='')
 		{
 			$flag=true;
@@ -139,10 +139,10 @@ class TClientScriptManager extends TComponent
 		if($options->getClientSubmit())
 		{
 			$flag=true;
-			$opt.='true)';
+			$opt.='true';
 		}
 		else
-			$opt.='false)';
+			$opt.='false';
 		if(!$flag)
 			return '';
 		$this->registerPostBackScript();
@@ -153,6 +153,19 @@ class TClientScriptManager extends TComponent
 		return $javascriptPrefix?'javascript:'.$postback:$postback;
 	}
 
+	public function registerPradoScript($scriptFile)
+	{
+		if(isset($this->_publishedScriptFiles[$scriptFile]))
+			$url=$this->_publishedScriptFiles[$scriptFile];
+		else
+		{
+			$url=$this->_page->getService()->getAssetManager()->publishFilePath(Prado::getFrameworkPath().'/'.self::SCRIPT_DIR.'/'.$scriptFile);
+			$this->_publishedScriptFiles[$scriptFile]=$url;
+			$this->registerScriptInclude('prado:'.$scriptFile,$url);
+		}
+		return $url;
+	}
+
 	protected function registerPostBackScript()
 	{
 		if(!$this->_postBackScriptRegistered)
@@ -160,18 +173,8 @@ class TClientScriptManager extends TComponent
 			$this->_postBackScriptRegistered=true;
 			$this->registerHiddenField(TPage::FIELD_POSTBACK_TARGET,'');
 			$this->registerHiddenField(TPage::FIELD_POSTBACK_PARAMETER,'');
-			$this->registerScriptInclude('prado:base',$this->publishScriptFile('base.js'));
+			$this->registerPradoScript('base.js');
 		}
-	}
-
-	private function publishScriptFile($jsFile)
-	{
-		if(!isset($this->_publishedScriptFiles[$jsFile]))
-		{
-			$am=$this->_page->getService()->getAssetManager();
-			$this->_publishedScriptFiles[$jsFile]=$am->publishFilePath(Prado::getFrameworkPath().'/'.self::SCRIPT_DIR.'/'.$jsFile);
-		}
-		return $this->_publishedScriptFiles[$jsFile];
 	}
 
 	public function registerFocusScript($target)
@@ -179,7 +182,7 @@ class TClientScriptManager extends TComponent
 		if(!$this->_focusScriptRegistered)
 		{
 			$this->_focusScriptRegistered=true;
-			$this->registerScriptInclude('prado:base',$this->publishScriptFile('base.js'));
+			$this->registerPradoScript('base.js');
 			$this->registerEndScript('prado:focus','Prado.Focus.setFocus("'.THttpUtility::quoteJavaScriptString($target).'");');
 		}
 	}
@@ -197,8 +200,8 @@ class TClientScriptManager extends TComponent
 
 	public function registerDefaultButtonScript($button)
 	{
-		$this->registerScriptInclude('prado:base',$this->publishScriptFile('base.js'));
-		return 'return Prado.DefaultButton.fire(event,\''.$button->getClientID().'\')';
+		$this->registerPradoScript('base.js');
+		return 'return Prado.Button.fireButton(event,\''.$button->getClientID().'\')';
 	}
 
 	public function registerValidationScript()

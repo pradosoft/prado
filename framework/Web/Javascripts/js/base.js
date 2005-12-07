@@ -841,19 +841,43 @@ return _7;
 
 Prado=Class.create();
 Prado.version="3.0a";
-Prado.DefaultButton=Class.create();
-Prado.DefaultButton.buttonFired=false;
-Prado.DefaultButton.fire=function(_1,_2){
-if(!Prado.DefaultButton.buttonFired&&_1.keyCode==13&&!(_1.srcElement&&(_1.srcElement.tagName.toLowerCase()=="textarea"))){
+Prado.Button=Class.create();
+Prado.Button.buttonFired=false;
+Prado.Button.fireButton=function(_1,_2){
+if(!Prado.Button.buttonFired&&_1.keyCode==13&&!(_1.srcElement&&(_1.srcElement.tagName.toLowerCase()=="textarea"))){
 var _3=document.getElementById?document.getElementById(_2):document.all[_2];
 if(_3&&typeof (_3.click)!="undefined"){
-Prado.DefaultButton.buttonFired=true;
+Prado.Button.buttonFired=true;
 _3.click();
 _1.cancelBubble=true;
 if(_1.stopPropagation){
 _1.stopPropagation();
 }
 return false;
+}
+}
+return true;
+};
+Prado.TextBox=Class.create();
+Prado.TextBox.handleReturnKey=function(_4){
+if(_4.keyCode==13){
+var _5;
+if(typeof (_4.target)!="undefined"){
+_5=_4.target;
+}else{
+if(typeof (_4.srcElement)!="undefined"){
+_5=_4.srcElement;
+}
+}
+if((typeof (_5)!="undefined")&&(_5!=null)){
+if(typeof (_5.onchange)!="undefined"){
+_5.onchange();
+_4.cancelBubble=true;
+if(_4.stopPropagation){
+_4.stopPropagation();
+}
+return false;
+}
 }
 }
 return true;
