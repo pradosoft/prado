@@ -30,6 +30,7 @@
  */
 require_once(dirname(__FILE__).'/../framework/prado.php');
 
+// TO BE CONFIRMED: PHP 5.1.0 has problem with I18N and L10N
 /**
  * @var array List of requirements (required or not, check item, hint)
  */

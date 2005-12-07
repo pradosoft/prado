@@ -3,9 +3,9 @@
  * TCheckBox class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @link http://www.xisc.com/
- * @copyright Copyright &copy; 2004-2005, Qiang Xue
- * @license http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
  */
@@ -13,49 +13,27 @@
 /**
  * TCheckBox class
  *
- * TCheckBox creates a check box on the page.
+ * TCheckBox displays a check box on the page.
  * You can specify the caption to display beside the check box by setting
- * the <b>Text</b> property.  The caption can appear either on the right
- * or left of the check box, which is determined by the <b>TextAlign</b>
+ * the {@link setText Text} property.  The caption can appear either on the right
+ * or left of the check box, which is determined by the {@link setTextAlign TextAlign}
  * property.
  *
- * To determine whether the TCheckBox component is checked,
- * test the <b>Checked</b> property. The <b>OnCheckedChanged</b> event
- * is raised when the <b>Checked</b> state of the TCheckBox component changes
+ * To determine whether the TCheckBox component is checked, test the {@link getChecked Checked}
+ * property. The {@link onCheckedChanged CheckedChanged} event is raised when
+ * the {@link getChecked Checked} state of the TCheckBox component changes
  * between posts to the server. You can provide an event handler for
- * the <b>OnCheckedChanged</b> event to  to programmatically
+ * the {@link onCheckedChanged CheckedChanged} event to  to programmatically
  * control the actions performed when the state of the TCheckBox component changes
  * between posts to the server.
  *
- * Note, <b>Text</b> will be HTML encoded before it is displayed in the TCheckBox component.
- * If you don't want it to be so, set <b>EncodeText</b> to false.
+ * If {@link setAutoPostBack AutoPostBack} is set true, changing the check box state
+ * will cause postback action. And if {@link setCausesValidation CausesValidation}
+ * is true, validation will also be processed, which can be further restricted within
+ * a {@link setValidationGroup ValidationGroup}.
  *
- * Namespace: System.Web.UI.WebControls
- *
- * Properties
- * - <b>Text</b>, string, kept in viewstate
- *   <br>Gets or sets the text caption displayed in the TCheckBox component.
- * - <b>EncodeText</b>, boolean, default=true, kept in viewstate
- *   <br>Gets or sets the value indicating whether Text should be HTML-encoded when rendering.
- * - <b>TextAlign</b>, Left|Right, default=Right, kept in viewstate
- *   <br>Gets or sets the alignment of the text label associated with the TCheckBox component.
- * - <b>Checked</b>, boolean, default=false, kept in viewstate
- *   <br>Gets or sets a value indicating whether the TCheckBox component is checked.
- * - <b>AutoPostBack</b>, boolean, default=false, kept in viewstate
- *   <br>Gets or sets a value indicating whether the TCheckBox automatically posts back to the server when clicked.
- *
- * Events
- * - <b>OnCheckedChanged</b> Occurs when the value of the <b>Checked</b> property changes between posts to the server.
- *
- * Examples
- * - On a page template file, insert the following line to create a TCheckBox component,
- * <code>
- *   <com:TCheckBox Text="Agree" OnCheckedChanged="checkAgree" />
- * </code>
- * The checkbox will show "Agree" text on its right side. If the user makes any change
- * to the <b>Checked</b> state, the checkAgree() method of the page class will be invoked automatically.
- *
- * TFont encapsulates the CSS style fields related with font settings.
+ * Note, {@link setText Text} is rendered as is. Make sure it does not contain unwanted characters
+ * that may bring security vulnerabilities.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -64,15 +42,19 @@
  */
 class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatable
 {
-	public static $TEXT_ALIGN=array('Left','Right');
-
+	/**
+	 * @return string tag name of the button
+	 */
 	protected function getTagName()
 	{
 		return 'input';
 	}
 
+	/**
+	 */
 	protected function addAttributesToRender($writer)
 	{
+		// TODO: add display inline block
 	}
 
 	/**
@@ -94,10 +76,9 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 			return false;
 	}
 
-
 	/**
 	 * Raises postdata changed event.
-	 * This method calls {@link onCheckedChanged} method.
+	 * This method raises {@link onCheckedChanged CheckedChanged} event.
 	 * This method is primarly used by framework developers.
 	 */
 	public function raisePostDataChangedEvent()
@@ -113,8 +94,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	}
 
 	/**
-	 * This method is invoked when the value of the <b>Checked</b> property changes between posts to the server.
-	 * The method raises 'CheckedChanged' event to fire up the event delegates.
+	 * Raises <b>CheckedChanged</b> event when {@link getChecked Checked} changes value during postback.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event delegates can be invoked.
 	 * @param TEventParameter event parameter to be passed to the event handlers
@@ -122,6 +102,20 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	protected function onCheckedChanged($param)
 	{
 		$this->raiseEvent('CheckedChanged',$this,$param);
+	}
+
+	/**
+	 * Registers the checkbox to receive postback data during postback.
+	 * This is necessary because a checkbox if unchecked, when postback,
+	 * does not have direct mapping between post data and the checkbox name.
+	 * This method overrides the parent implementation and is invoked before render.
+	 * @param mixed event parameter
+	 */
+	protected function onPreRender($param)
+	{
+		parent::onPreRender($param);
+		if($this->getEnabled(true))
+			$this->getPage()->registerRequiresPostBack($this);
 	}
 
 	/**
@@ -151,7 +145,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	}
 
 	/**
-	 * @return string the alignment of the text caption
+	 * @return string the alignment (Left or Right) of the text caption, defaults to Right.
 	 */
 	public function getTextAlign()
 	{
@@ -159,12 +153,11 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	}
 
 	/**
-	 * Sets the text alignment of the checkbox
-	 * @param string either 'Left' or 'Right'
+	 * @param string the alignment of the text caption. Valid values include Left and Right.
 	 */
 	public function setTextAlign($value)
 	{
-		$this->setViewState('TextAlign',TPropertyValue::ensureEnum($value,self::$TEXT_ALIGN),'Right');
+		$this->setViewState('TextAlign',TPropertyValue::ensureEnum($value,array('Left','Right')),'Right');
 	}
 
 	/**
@@ -202,7 +195,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	}
 
 	/**
-	 * @return boolean whether postback event trigger by this checkbox will cause input validation, default is true.
+	 * @return boolean whether postback event triggered by this checkbox will cause input validation, default is true.
 	 */
 	public function getCausesValidation()
 	{
@@ -235,66 +228,16 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	}
 
 	/**
-	 * Returns the attributes to be rendered.
-	 * This method overrides the parent's implementation.
-	 * @return ArrayObject attributes to be rendered
+	 * Renders the checkbox control.
+	 * This method overrides the parent implementation by rendering a checkbox input element
+	 * and a span element if needed.
+	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
-	protected function getAttributesToRender()
-	{
-		$attributes=parent::getAttributesToRender();
-		if(isset($attributes['id'])) unset($attributes['id']);
-		if(isset($attributes['accesskey'])) unset($attributes['accesskey']);
-		if(isset($attributes['tabindex'])) unset($attributes['tabindex']);
-		return $attributes;
-	}
-
-	/**
-	 * Renders the body content of the control.
-	 * This method overrides the parent's implementation.
-	 * @return string the rendering result.
-	 */
-	protected function renderBody()
-	{
-		$name=$this->getUniqueID();
-		$disabled=!$this->isEnabled();
-		$id=$this->getClientID();
-
-		$input="<input id=\"$id\" type=\"checkbox\" name=\"$name\"";
-		if($this->isChecked())
-			$input.=" checked=\"checked\"";
-		if($disabled)
-			$input.=" disabled=\"disabled\"";
-		if($this->isAutoPostBack())
-		{
-			$page=$this->getPage();
-			$script=$page->getPostBackClientEvent($this,'');
-			$input.=" onclick=\"javascript:$script\"";
-		}
-		$accessKey=$this->getAccessKey();
-		if(strlen($accessKey))
-			$input.=" accesskey=\"$accessKey\"";
-		$tabIndex=$this->getTabIndex();
-		if(!empty($tabIndex))
-			$input.=" tabindex=\"$tabIndex\"";
-		$input.='/>';
-		$text=$this->isEncodeText()?pradoEncodeData($this->getText()):$this->getText();
-		if(strlen($text))
-		{
-			$label="<label for=\"$name\">$text</label>";
-			if($this->getTextAlign()=='Left')
-				$input="{$label}{$input}";
-			else
-				$input.=$label;
-		}
-		return $input;
-	}
-
-	protected function renderControl($writer)
+	protected function render($writer)
 	{
 		$this->addAttributesToRender($writer);
-		$page=$this->getPage();
-		$page->ensureRenderInForm($this);
-		$needSpan=true;
+		$this->getPage()->ensureRenderInForm($this);
+		$needSpan=false;
 		if($this->getHasStyle())
 		{
 			$this->getStyle()->addAttributesToRender($writer);
@@ -318,10 +261,9 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 			$onclick=$attributes->remove('onclick');
 			if($attributes->getCount())
 			{
-				foreach($attributes as $name=>$value)
-					$writer->addAttribute($name,$value);
+				$writer->addAttributes($attributes);
+				$needSpan=true;
 			}
-			$needSpan=true;
 			if($value!==null)
 				$attributes->add('value',$value);
 		}
@@ -332,13 +274,13 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 		{
 			if($this->getTextAlign()==='Left')
 			{
-				$this->renderLabel($writer,$text,$clientID);
+				$this->renderLabel($writer,$clientID,$text);
 				$this->renderInputTag($writer,$clientID,$onclick);
 			}
 			else
 			{
 				$this->renderInputTag($writer,$clientID,$onclick);
-				$this->renderLabel($writer,$text,$clientID);
+				$this->renderLabel($writer,$clientID,$text);
 			}
 		}
 		else
@@ -347,15 +289,58 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 			$writer->renderEndTag();
 	}
 
-	private function renderLabel($writer,$text,$clientID)
+	/**
+	 * @return TMap list of attributes to be rendered for label beside the checkbox
+	 */
+	public function getLabelAttributes()
+	{
+		if($attributes=$this->getViewState('LabelAttributes',null))
+			return $attributes;
+		else
+		{
+			$attributes=new TMap;
+			$this->setViewState('LabelAttributes',$attributes,null);
+			return $attributes;
+		}
+	}
+
+	/**
+	 * @return TMap list of attributes to be rendered for the checkbox
+	 */
+	public function getInputAttributes()
+	{
+		if($attributes=$this->getViewState('InputAttributes',null))
+			return $attributes;
+		else
+		{
+			$attributes=new TMap;
+			$this->setViewState('InputAttributes',$attributes,null);
+			return $attributes;
+		}
+	}
+
+	/**
+	 * Renders a label beside the checkbox.
+	 * @param THtmlWriter the writer for the rendering purpose
+	 * @param string checkbox id
+	 * @param string label text
+	 */
+	protected function renderLabel($writer,$clientID,$text)
 	{
 		$writer->addAttribute('for',$clientID);
-		// todo: custom label attributes rendering
+		if($attributes=$this->getViewState('LabelAttributes',null))
+			$writer->addAttributes($attributes);
 		$writer->renderBeginTag('label');
 		$writer->write($text);
 		$writer->renderEndTag();
 	}
 
+	/**
+	 * Renders a checkbox input element.
+	 * @param THtmlWriter the writer for the rendering purpose
+	 * @param string checkbox id
+	 * @param string onclick attribute value for the checkbox
+	 */
 	protected function renderInputTag($writer,$clientID,$onclick)
 	{
 		if($clientID!=='')
@@ -363,7 +348,6 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 		$writer->addAttribute('type','checkbox');
 		if(($uniqueID=$this->getUniqueID())!=='')
 			$writer->addAttribute('name',$uniqueID);
-		//todo: render value attribute here
 		if($this->getChecked())
 			$writer->addAttribute('checked','checked');
 		if(!$this->getEnabled(true))
@@ -371,63 +355,28 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 		$page=$this->getPage();
 		if($this->getAutoPostBack() && $page->getClientSupportsJavaScript())
 		{
-			$option=new TPostBackOptions($this);
+			$option=new TPostBackOptions();
 			if($this->getCausesValidation() && $page->getValidators($this->getValidationGroup())->getCount())
 			{
-				$option->PerformValidation=true;
-				$option->ValidationGroup=$this->getValidationGroup;
+				$option->setPerformValidation(true);
+				$option->setValidationGroup($this->getValidationGroup());
 			}
-			if($page->getForm())
-				$option->AutoPostBack=true;
+			$option->setAutoPostBack(true);
 			if(!empty($onclick))
-				$onclick=rtrim($onclick,';').';';
+				$onclick=THttpUtility::trimJavaScriptString($onclick);
 			$onclick.=$page->getClientScript()->getPostBackEventReference($this,'',$option,false);
 		}
 		if(!empty($onclick))
-			$writer->addAttribute('onclick','javascript:'.$onclick);
+			$writer->addAttribute('onclick',$onclick);
 		if(($accesskey=$this->getAccessKey())!=='')
 			$writer->addAttribute('accesskey',$accesskey);
 		if(($tabindex=$this->getTabIndex())>0)
-			$writer->addAttribute('tabindex',$tabindex);
-		//todo: render input attributes
+			$writer->addAttribute('tabindex',"$tabindex");
+		if($attributes=$this->getViewState('InputAttributes',null))
+			$writer->addAttributes($attributes);
 		$writer->renderBeginTag('input');
 		$writer->renderEndTag();
 	}
-
-	protected function onPreRender($param)
-	{
-		parent::onPreRender($param);
-		$this->getPage()->registerRequiresPostBack($this);
-	}
-
-	/*
-protected internal override void OnPreRender(EventArgs e)
-{
-      base.OnPreRender(e);
-      bool flag1 = this.AutoPostBack;
-      if ((this.Page != null) && base.IsEnabled)
-      {
-            this.Page.RegisterRequiresPostBack(this);
-            if (flag1)
-            {
-                  this.Page.RegisterPostBackScript();
-                  this.Page.RegisterFocusScript();
-                  if (this.CausesValidation && (this.Page.GetValidators(this.ValidationGroup).Count > 0))
-                  {
-                        this.Page.RegisterWebFormsScript();
-                  }
-            }
-      }
-      if (!this.SaveCheckedViewState(flag1))
-      {
-            this.ViewState.SetItemDirty("Checked", false);
-            if ((this.Page != null) && base.IsEnabled)
-            {
-                  this.Page.RegisterEnabledControl(this);
-            }
-      }
-}
-*/
 }
 
 ?>

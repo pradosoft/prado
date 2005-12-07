@@ -185,6 +185,12 @@ class THtmlWriter extends TComponent implements ITextWriter
 		return true;
 	}
 
+	public function addAttributes($attrs)
+	{
+		foreach($attrs as $name=>$value)
+			$this->_attributes[$name]=isset(self::$_attrEncode[$name])?THttpUtility::htmlEncode($value):$value;
+	}
+
 	public function addAttribute($name,$value)
 	{
 		$this->_attributes[$name]=isset(self::$_attrEncode[$name])?THttpUtility::htmlEncode($value):$value;
