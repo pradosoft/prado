@@ -1,11 +1,7 @@
 <?php
 
-require_once(dirname(__FILE__).'/common.php');
 require_once(PRADO_DIR.'/Collections/TList.php');
 require_once(PRADO_DIR.'/Collections/TMap.php');
-require_once(PRADO_DIR.'/Exceptions/TInvalidOperationException.php');
-require_once(PRADO_DIR.'/Exceptions/TInvalidDataValueException.php');
-require_once(PRADO_DIR.'/Exceptions/TInvalidExpressionException.php');
 require_once(PRADO_DIR.'/Web/UI/TControl.php');
 
 class TContext extends TComponent
@@ -102,7 +98,7 @@ class WebControl extends TControl
 	}
 }
 
-class testControl extends UnitTestCase
+class utControl extends UnitTestCase
 {
 	private $context;
 	private $button1;

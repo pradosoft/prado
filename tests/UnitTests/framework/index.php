@@ -23,7 +23,7 @@ class TestFolder
 			}
 			else if(is_file($fullpath) && strncmp($entry,'ut',2)===0)
 			{
-				$this->testFiles[$entry]="$rootUri?target=".strtr(substr($fullpath,strlen($rootPath)+1),"\\",'/');
+				$this->testFiles[$entry]="$rootUri/index.php?target=".strtr(substr($fullpath,strlen($rootPath)+1),"\\",'/');
 			}
 		}
 		closedir($dir);
@@ -65,20 +65,22 @@ if(isset($_GET['target']))
 	$fullpath=realpath("$rootPath/$target");
 	if($fullpath===false || strpos($fullpath,$rootPath)!==0)
 		die('invalid test target');
-
-	require_once($rootPath.'/common.php');
-
+	include_once($rootPath.'/common.php');
+	
 	if(is_dir($fullpath))
 	{
+
 		$test=new GroupTest(basename($rootPath)."/$target");
 		addTests($test,$fullpath,$recursive);
-		$test->run(new HtmlReporterWithCoverage(__FILE__,$rootPath));
+		$test->run(new HtmlReporter());
+		//$test->run(new HtmlReporterWithCoverage('index.php',$rootPath));
 	}
 	else
 	{
 		$testClass=basename($fullpath,'.php');
-		require_once($fullpath);
+		include_once($fullpath);
 		$test=new $testClass(basename($rootPath)."/$target");
+
 		$test->run(new HtmlReporter());
 	}
 }

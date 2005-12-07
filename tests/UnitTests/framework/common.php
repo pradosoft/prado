@@ -50,13 +50,14 @@ class PradoUnitTestCase extends UnitTestCase {
 }
 
 
+
 /**
  * Generate a class called MockTApplication to mock the TApplication class 
  * for the purpose of testing IModule objects.
  */
 __autoload("TApplication");
 Mock::generate("TApplication");
- 
+
 /**
  * ModuleTestCase class.
  *
@@ -75,7 +76,7 @@ class ModuleTestCase extends PradoUnitTestCase {
 	
 	public function __construct() {
 		$file = "";
-		$tihs->mockApplication =& new MockTApplication($file);
+		$tihs->mockApplication = new MockTApplication($file);
 	}
 	
 	public function testGetSetID() {
@@ -102,6 +103,5 @@ class ModuleTestCase extends PradoUnitTestCase {
 		}
 	}
 }
-
 
 ?>
