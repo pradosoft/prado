@@ -64,7 +64,7 @@
  * @package System.Data
  * @since 3.0
  */
-class TSqliteCache extends TComponent implements IModule, ICache
+class TSqliteCache extends TModule implements ICache
 {
 	/**
 	 * name of the table storing cache data
@@ -91,10 +91,6 @@ class TSqliteCache extends TComponent implements IModule, ICache
 	 * @var string the database file name
 	 */
 	private $_file=null;
-	/**
-	 * @var string id of this module
-	 */
-	private $_id='';
 
 	/**
 	 * Destructor.
@@ -119,6 +115,8 @@ class TSqliteCache extends TComponent implements IModule, ICache
 	 */
 	public function init($application,$config)
 	{
+		parent::init($application,$config);
+
 		if(!function_exists('sqlite_open'))
 			throw new TConfigurationException('sqlitecache_extension_required');
 		if($this->_file===null)
@@ -139,22 +137,6 @@ class TSqliteCache extends TComponent implements IModule, ICache
 		$this->_db->query('DELETE FROM '.self::CACHE_TABLE.' WHERE expire<>0 AND expire<'.time());
 		$this->_initialized=true;
 		$application->setCache($this);
-	}
-
-	/**
-	 * @return string id of this module
-	 */
-	public function getID()
-	{
-		return $this->_id;
-	}
-
-	/**
-	 * @param string id of this module
-	 */
-	public function setID($value)
-	{
-		$this->_id=$value;
 	}
 
 	/**

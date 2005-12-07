@@ -62,7 +62,7 @@
  * @package System.Data
  * @since 3.0
  */
-class TMemCache extends TComponent implements IModule, ICache
+class TMemCache extends TModule implements ICache
 {
 	/**
 	 * @var boolean if the module is initialized
@@ -84,10 +84,6 @@ class TMemCache extends TComponent implements IModule, ICache
 	 * @var integer the port number of the memcache server
 	 */
 	private $_port=11211;
-	/**
-	 * @var string ID of this module
-	 */
-	private $_id='';
 
 	/**
 	 * Destructor.
@@ -111,6 +107,8 @@ class TMemCache extends TComponent implements IModule, ICache
 	 */
 	public function init($application,$config)
 	{
+		parent::init($application,$config);
+
 		if(!extension_loaded('memcache'))
 			throw new TConfigurationException('memcache_extension_required');
 		$this->_cache=new Memcache;
@@ -120,22 +118,6 @@ class TMemCache extends TComponent implements IModule, ICache
 			$this->_prefix=$application->getUniqueID();
 		$this->_initialized=true;
 		$application->setCache($this);
-	}
-
-	/**
-	 * @return string id of this module
-	 */
-	public function getID()
-	{
-		return $this->_id;
-	}
-
-	/**
-	 * @param string id of this module
-	 */
-	public function setID($value)
-	{
-		$this->_id=$value;
 	}
 
 	/**

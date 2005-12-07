@@ -34,16 +34,12 @@ Prado::using('System.Security.TUserManager');
  * @package System.Security
  * @since 3.0
  */
-class TAuthManager extends TComponent implements IModule
+class TAuthManager extends TModule
 {
 	/**
 	 * GET variable name for return url
 	 */
 	const RETURN_URL_VAR='ReturnUrl';
-	/**
-	 * @var string module ID
-	 */
-	private $_id;
 	/**
 	 * @var boolean if the module has been initialized
 	 */
@@ -66,22 +62,6 @@ class TAuthManager extends TComponent implements IModule
 	private $_skipAuthorization=false;
 
 	/**
-	 * @return string id of this module
-	 */
-	public function getID()
-	{
-		return $this->_id;
-	}
-
-	/**
-	 * @param string id of this module
-	 */
-	public function setID($value)
-	{
-		$this->_id=$value;
-	}
-
-	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
 	 * @param TApplication Prado application, can be null
@@ -90,6 +70,8 @@ class TAuthManager extends TComponent implements IModule
 	 */
 	public function init($application,$config)
 	{
+		parent::init($application,$config);
+
 		if($this->_userManager===null)
 			throw new TConfigurationException('authmanager_usermanager_required');
 		if(is_string($this->_userManager))

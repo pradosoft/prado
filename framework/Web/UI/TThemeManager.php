@@ -36,16 +36,12 @@
  * @package System.Web.UI
  * @since 3.0
  */
-class TThemeManager extends TComponent implements IModule
+class TThemeManager extends TModule
 {
 	/**
 	 * default themes base path
 	 */
 	const DEFAULT_BASEPATH='themes';
-	/**
-	 * @var string module ID
-	 */
-	private $_id='theme';
 	/**
 	 * @var boolean whether this module has been initialized
 	 */
@@ -71,25 +67,10 @@ class TThemeManager extends TComponent implements IModule
 	 */
 	public function init($application,$config)
 	{
+		parent::init($application,$config);
 		$this->_application=$application;
 		$this->_initialized=true;
 		$application->getService()->setThemeManager($this);
-	}
-
-	/**
-	 * @return string id of this module
-	 */
-	public function getID()
-	{
-		return $this->_id;
-	}
-
-	/**
-	 * @param string id of this module
-	 */
-	public function setID($value)
-	{
-		$this->_id=$value;
 	}
 
 	/**

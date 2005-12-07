@@ -29,7 +29,7 @@
  * @package System.Web
  * @since 3.0
  */
-class THttpRequest extends TComponent implements IModule
+class THttpRequest extends TModule
 {
 	/**
 	 * GET variable name to store service information
@@ -39,10 +39,6 @@ class THttpRequest extends TComponent implements IModule
 	 * @var boolean whether the module is initialized
 	 */
 	private $_initialized=false;
-	/**
-	 * @var string module ID
-	 */
-	private $_id;
 	/**
 	 * @var string requested service ID
 	 */
@@ -76,6 +72,7 @@ class THttpRequest extends TComponent implements IModule
 	 */
 	public function init($application,$config)
 	{
+		parent::init($application,$config);
 		// Info about server variables:
 		// PHP_SELF contains real URI (w/ path info, w/o query string)
 		// SCRIPT_NAME is the real URI for the requested script (w/o path info and query string)
@@ -122,22 +119,6 @@ class THttpRequest extends TComponent implements IModule
 	public function stripSlashes(&$data)
 	{
 		return is_array($data)?array_map(array($this,'stripSlashes'),$data):stripslashes($data);
-	}
-
-	/**
-	 * @return string id of this module
-	 */
-	public function getID()
-	{
-		return $this->_id;
-	}
-
-	/**
-	 * @param string id of this module
-	 */
-	public function setID($value)
-	{
-		$this->_id=$value;
 	}
 
 	/**

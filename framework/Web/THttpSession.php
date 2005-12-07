@@ -54,12 +54,8 @@
  * @package System.Web
  * @since 3.0
  */
-class THttpSession extends TComponent implements IModule
+class THttpSession extends TModule
 {
-	/**
-	 * @var string ID of this module
-	 */
-	private $_id;
 	/**
 	 * @var THttpSessionCollection list of session variables
 	 */
@@ -89,6 +85,8 @@ class THttpSession extends TComponent implements IModule
 	 */
 	public function init($application,$config)
 	{
+		parent::init($application,$config);
+
 		if($this->_autoStart)
 			session_start();
 		$this->_initialized=true;
@@ -131,22 +129,6 @@ class THttpSession extends TComponent implements IModule
 			session_destroy();
 			$this->_started=false;
 		}
-	}
-
-	/**
-	 * @return string the ID of this session module (not session ID)
-	 */
-	public function getID()
-	{
-		return $this->_id;
-	}
-
-	/**
-	 * @param string the ID of this session module (not session ID)
-	 */
-	public function setID($value)
-	{
-		$this->_id=$value;
 	}
 
 	/**

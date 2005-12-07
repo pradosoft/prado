@@ -41,7 +41,7 @@
  * @package System.Web.UI
  * @since 3.0
  */
-class TAssetManager extends TComponent implements IModule
+class TAssetManager extends TModule
 {
 	/**
 	 * Default web accessible base path for storing private files
@@ -55,10 +55,6 @@ class TAssetManager extends TComponent implements IModule
 	 * @var string base URL for accessing the publishing directory.
 	 */
 	private $_baseUrl=null;
-	/**
-	 * @var string module ID
-	 */
-	private $_id='asset';
 	/**
 	 * @var boolean whether to use timestamp checking to ensure files are published with up-to-date versions.
 	 */
@@ -80,6 +76,8 @@ class TAssetManager extends TComponent implements IModule
 	 */
 	public function init($application,$config)
 	{
+		parent::init($application,$config);
+
 		$this->_application=$application;
 		if($this->_basePath===null)
 			$this->_basePath=dirname($application->getRequest()->getPhysicalApplicationPath()).'/'.self::DEFAULT_BASEPATH;
@@ -88,22 +86,6 @@ class TAssetManager extends TComponent implements IModule
 		if($this->_baseUrl===null)
 			$this->_baseUrl=dirname($application->getRequest()->getApplicationPath()).'/'.self::DEFAULT_BASEPATH;
 		$application->getService()->setAssetManager($this);
-	}
-
-	/**
-	 * @return string id of this module
-	 */
-	public function getID()
-	{
-		return $this->_id;
-	}
-
-	/**
-	 * @param string id of this module
-	 */
-	public function setID($value)
-	{
-		$this->_id=$value;
 	}
 
 	/**

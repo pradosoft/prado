@@ -37,12 +37,8 @@
  * @package System.Web
  * @since 3.0
  */
-class THttpResponse extends TComponent implements IModule, ITextWriter
+class THttpResponse extends TModule implements ITextWriter
 {
-	/**
-	 * @var string id of this module (response)
-	 */
-	private $_id;
 	/**
 	 * @var boolean whether to buffer output
 	 */
@@ -84,28 +80,13 @@ class THttpResponse extends TComponent implements IModule, ITextWriter
 	 */
 	public function init($application,$config)
 	{
+		parent::init($application,$config);
+
 		if($this->_bufferOutput)
 			ob_start();
 		$this->_initialized=true;
 		$application->setResponse($this);
 	}
-
-	/**
-	 * @return string id of this module
-	 */
-	public function getID()
-	{
-		return $this->_id;
-	}
-
-	/**
-	 * @param string id of this module
-	 */
-	public function setID($value)
-	{
-		$this->_id=$value;
-	}
-
 
 	/**
 	 * @return integer time-to-live for cached session pages in minutes, this has no effect for nocache limiter. Defaults to 180.

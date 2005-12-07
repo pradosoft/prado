@@ -189,12 +189,8 @@ class TUser extends TComponent implements IUser
  * @package System.Security
  * @since 3.0
  */
-class TUserManager extends TComponent implements IModule
+class TUserManager extends TModule
 {
-	/**
-	 * @var string id of this module
-	 */
-	private $_id;
 	/**
 	 * @var array list of users managed by this module
 	 */
@@ -221,6 +217,8 @@ class TUserManager extends TComponent implements IModule
 	 */
 	public function init($application,$config)
 	{
+		parent::init($application,$config);
+
 		foreach($config->getElementsByTagName('user') as $node)
 			$this->_users[strtolower($node->getAttribute('name'))]=$node->getAttribute('password');
 		foreach($config->getElementsByTagName('role') as $node)
@@ -231,22 +229,6 @@ class TUserManager extends TComponent implements IModule
 					$this->_roles[strtolower($user)][]=$node->getAttribute('name');
 			}
 		}
-	}
-
-	/**
-	 * @return string id of this module
-	 */
-	public function getID()
-	{
-		return $this->_id;
-	}
-
-	/**
-	 * @param string id of this module
-	 */
-	public function setID($value)
-	{
-		$this->_id=$value;
 	}
 
 	/**

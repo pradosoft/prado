@@ -49,7 +49,7 @@
  * @package System.Exceptions
  * @since 3.0
  */
-class TErrorHandler extends TComponent implements IModule
+class TErrorHandler extends TModule
 {
 	/**
 	 * error template file basename
@@ -64,10 +64,6 @@ class TErrorHandler extends TComponent implements IModule
 	 */
 	const SOURCE_LINES=12;
 
-	/**
-	 * @var string module ID
-	 */
-	private $_id='error';
 	/**
 	 * @var TApplication application instance
 	 */
@@ -85,24 +81,10 @@ class TErrorHandler extends TComponent implements IModule
 	 */
 	public function init($application,$config)
 	{
+		parent::init($application,$config);
+
 		$this->_application=$application;
 		$application->setErrorHandler($this);
-	}
-
-	/**
-	 * @return string id of this module
-	 */
-	public function getID()
-	{
-		return $this->_id;
-	}
-
-	/**
-	 * @param string id of this module
-	 */
-	public function setID($value)
-	{
-		$this->_id=$value;
 	}
 
 	/**
