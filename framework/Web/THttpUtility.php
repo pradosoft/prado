@@ -2,7 +2,7 @@
 
 class THttpUtility
 {
-	private static $entityTable=null;
+	private static $_entityTable=null;
 
 	public static function htmlEncode($s)
 	{
@@ -11,14 +11,14 @@ class THttpUtility
 
 	public static function htmlDecode($s)
 	{
-		if(!self::$entityTable)
+		if(!self::$_entityTable)
 			self::buildEntityTable();
-		return strtr($s,self::$entityTable);
+		return strtr($s,self::$_entityTable);
 	}
 
 	private static function buildEntityTable()
 	{
-		self::$entityTable=array_flip(get_html_translation_table(HTML_ENTITIES,ENT_QUOTES));
+		self::$_entityTable=array_flip(get_html_translation_table(HTML_ENTITIES,ENT_QUOTES));
 	}
 
 	public static function quoteJavaScriptString($js,$forUrl=false)

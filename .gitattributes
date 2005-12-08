@@ -16,6 +16,7 @@ demos/controls/protected/pages/private/config.xml -text
 demos/controls/themes/BlueTheme/buttons.skin -text
 demos/controls/themes/BlueTheme/icon_profile.gif -text
 demos/controls/themes/BlueTheme/labels.skin -text
+demos/controls/themes/BlueTheme/simple.css -text
 demos/personal/index.php -text
 demos/personal/protected/Modules/DataModule.php -text
 demos/personal/protected/Pages/HomePage.php -text

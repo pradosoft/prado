@@ -79,6 +79,10 @@ class TClientScriptManager extends TComponent
 	private $_beginScripts=array();
 	private $_endScripts=array();
 	private $_scriptFiles=array();
+	private $_headScriptFiles=array();
+	private $_headScripts=array();
+	private $_styleSheetFiles=array();
+	private $_styleSheets=array();
 	private $_onSubmitStatements=array();
 	private $_arrayDeclares=array();
 	private $_expandoAttributes=array();
@@ -97,7 +101,10 @@ class TClientScriptManager extends TComponent
 		if(!$options || (!$options->getPerformValidation() && !$options->getTrackFocus() && $options->getClientSubmit() && $options->getActionUrl()==''))
 		{
 			$this->registerPostBackScript();
-			$formID=$this->_page->getForm()->getClientID();
+			if(($form=$this->_page->getForm())!==null)
+				$formID=$form->getClientID();
+			else
+				throw new TInvalidConfigurationException('clientscriptmanager_form_required');
 			$postback=self::POSTBACK_FUNC.'(\''.$formID.'\',\''.$control->getUniqueID().'\',\''.THttpUtility::quoteJavaScriptString($parameter).'\')';
 			if($options && $options->getAutoPostBack())
 				$postback='setTimeout(\''.THttpUtility::quoteJavaScriptString($postback).'\',0)';
@@ -146,7 +153,10 @@ class TClientScriptManager extends TComponent
 		if(!$flag)
 			return '';
 		$this->registerPostBackScript();
-		$formID=$this->_page->getForm()->getUniqueID();
+		if(($form=$this->_page->getForm())!==null)
+			$formID=$form->getClientID();
+		else
+			throw new TInvalidConfigurationException('clientscriptmanager_form_required');
 		$postback=self::POSTBACK_FUNC.'(\''.$formID.'\',\''.$control->getUniqueID().'\',\''.THttpUtility::quoteJavaScriptString($parameter).'\''.$opt.')';
 		if($options && $options->getAutoPostBack())
 			$postback='setTimeout(\''.THttpUtility::quoteJavaScriptString($postback).'\',0)';
@@ -213,9 +223,9 @@ class TClientScriptManager extends TComponent
 		return isset($this->_hiddenFields[$key]);
 	}
 
-	public function isScriptBlockRegistered($key)
+	public function isScriptRegistered($key)
 	{
-		return isset($this->_scriptBlocks[$key]);
+		return isset($this->_scripts[$key]);
 	}
 
 	public function isScriptFileRegistered($key)
@@ -231,6 +241,26 @@ class TClientScriptManager extends TComponent
 	public function isEndScriptRegistered($key)
 	{
 		return isset($this->_endScripts[$key]);
+	}
+
+	public function isHeadScriptFileRegistered($key)
+	{
+		return isset($this->_headScriptFiles[$key]);
+	}
+
+	public function isHeadScriptRegistered($key)
+	{
+		return isset($this->_headScripts[$key]);
+	}
+
+	public function isStyleSheetFileRegistered($key)
+	{
+		return isset($this->_styleSheetFiles[$key]);
+	}
+
+	public function isStyleSheetRegistered($key)
+	{
+		return isset($this->_styleSheets[$key]);
 	}
 
 	public function isOnSubmitStatementRegistered($key)
@@ -268,6 +298,26 @@ class TClientScriptManager extends TComponent
 		$this->_endScripts[$key]=$script;
 	}
 
+	public function registerHeadScriptFile($key,$url)
+	{
+		$this->_headScriptFiles[$key]=$url;
+	}
+
+	public function registerHeadScript($key,$script)
+	{
+		$this->_headScripts[$key]=$script;
+	}
+
+	public function registerStyleSheetFile($key,$url)
+	{
+		$this->_styleSheetFiles[$key]=$url;
+	}
+
+	public function registerStyleSheet($key,$css)
+	{
+		$this->_styleSheets[$key]=$css;
+	}
+
 	public function registerExpandoAttribute($controlID,$name,$value)
 	{
 		$this->_expandoAttributes[$controlID][$name]=$value;
@@ -287,8 +337,10 @@ class TClientScriptManager extends TComponent
 
 	public function renderScriptFiles($writer)
 	{
+		$str='';
 		foreach($this->_scriptFiles as $include)
-			$writer->write("<script type=\"text/javascript\" src=\"".THttpUtility::htmlEncode($include)."\"></script>\n");
+			$str.="<script type=\"text/javascript\" src=\"".THttpUtility::htmlEncode($include)."\"></script>\n";
+		$writer->write($str);
 	}
 
 	public function renderOnSubmitStatements($writer)
@@ -341,6 +393,36 @@ class TClientScriptManager extends TComponent
 		}
 	}
 
+	public function renderHeadScriptFiles($writer)
+	{
+		$str='';
+		foreach($this->_styleSheetFiles as $url)
+			$str.="<script type=\"text/javascript\" src=\"".THttpUtility::htmlEncode($url)."\"></script>\n";
+		$writer->write($str);
+	}
+
+	public function renderHeadScripts($writer)
+	{
+		if(count($this->_headScripts))
+			$writer->write("<script type=\"text/javascript\">\n//<![CDATA[\n".implode("\n",$this->_headScripts)."\n//]]>\n</script>\n");
+	}
+
+	public function renderStyleSheetFiles($writer)
+	{
+		$str='';
+		foreach($this->_styleSheetFiles as $url)
+		{
+			$str.="<link rel=\"stylesheet\" type=\"text/css\" href=\"".THttpUtility::htmlEncode($url)."\" />\n";
+		}
+		$writer->write($str);
+	}
+
+	public function renderStyleSheets($writer)
+	{
+		if(count($this->_styleSheets))
+			$writer->write("<style type=\"text/css\">\n".implode("\n",$this->_styleSheets)."\n</style>\n");
+	}
+
 	public function getHasHiddenFields()
 	{
 		return count($this->_hiddenFields)>0;
@@ -353,7 +435,6 @@ class TClientScriptManager extends TComponent
 
 
 	/*
-	internal void RenderWebFormsScript(HtmlTextWriter writer)
 	private void EnsureEventValidationFieldLoaded();
 	internal string GetEventValidationFieldValue();
 	public string GetWebResourceUrl(Type type, string resourceName);

@@ -197,6 +197,10 @@ class TTheme extends TComponent
 	 * @var string theme name
 	 */
 	private $_name='';
+	/**
+	 * @var array list of css files
+	 */
+	private $_cssFiles=array();
 
 	/**
 	 * Constructor.
@@ -214,24 +218,32 @@ class TTheme extends TComponent
 			$array=$cache->get(self::THEME_CACHE_PREFIX.$themePath);
 			if(is_array($array))
 			{
-				list($skins,$timestamp)=$array;
+				list($skins,$cssFiles,$timestamp)=$array;
 				$cacheValid=true;
 				if($application->getMode()!=='Performance')
 				{
-					if(($dir=opendir($themePath))===false)
-						throw new TIOException('theme_path_inexistent',$themePath);
-					while(($file=readdir($dir))!==false)
+					if(filemtime($themePath)>$timestamp)
+						$cacheValid=false;
+					else
 					{
-						if(basename($file,self::SKIN_FILE_EXT)!==$file && filemtime($themePath.'/'.$file)>$timestamp)
+						if(($dir=opendir($themePath))===false)
+							throw new TIOException('theme_path_inexistent',$themePath);
+						while(($file=readdir($dir))!==false)
 						{
-							$cacheValid=false;
-							break;
+							if(basename($file,self::SKIN_FILE_EXT)!==$file && filemtime($themePath.'/'.$file)>$timestamp)
+							{
+								$cacheValid=false;
+								break;
+							}
 						}
+						closedir($dir);
 					}
-					closedir($dir);
 				}
 				if($cacheValid)
+				{
 					$this->_skins=$skins;
+					$this->_cssFiles=$cssFiles;
+				}
 			}
 		}
 		if($this->_skins===null)
@@ -240,7 +252,11 @@ class TTheme extends TComponent
 				throw new TIOException('theme_path_inexistent',$themePath);
 			while(($file=readdir($dir))!==false)
 			{
-				if(basename($file,self::SKIN_FILE_EXT)!==$file)
+				if($file==='.' || $file==='..')
+					continue;
+				else if(basename($file,'.css')!==$file) // is a css file
+					$this->_cssFiles[]=$themeUrl.'/'.$file;
+				else if(basename($file,self::SKIN_FILE_EXT)!==$file)
 				{
 					$template=new TTemplate(file_get_contents($themePath.'/'.$file),$themePath,$themePath.'/'.$file);
 					foreach($template->getItems() as $skin)
@@ -265,7 +281,7 @@ class TTheme extends TComponent
 			}
 			closedir($dir);
 			if($cache!==null)
-				$cache->set(self::THEME_CACHE_PREFIX.$themePath,array($this->_skins,time()));
+				$cache->set(self::THEME_CACHE_PREFIX.$themePath,array($this->_skins,$this->_cssFiles,time()));
 		}
 	}
 
@@ -326,6 +342,14 @@ class TTheme extends TComponent
 		}
 		else
 			return false;
+	}
+
+	/**
+	 * @return array list of CSS files (URL) in the theme
+	 */
+	public function getStyleSheetFiles()
+	{
+		return $this->_cssFiles;
 	}
 }
 

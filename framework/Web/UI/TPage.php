@@ -446,6 +446,17 @@ class TPage extends TTemplateControl
 	protected function onPreRenderComplete($param)
 	{
 		$this->raiseEvent('PreRenderComplete',$this,$param);
+		$cs=$this->getClientScript();
+		if($this->_theme)
+		{
+			foreach($this->_theme->getStyleSheetFiles() as $url)
+				$cs->registerStyleSheetFile($url,$url);
+		}
+		if($this->_styleSheet)
+		{
+			foreach($this->_styleSheet->getStyleSheetFiles() as $url)
+				$cs->registerStyleSheetFile($url,$url);
+		}
 	}
 
 	/**

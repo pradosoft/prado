@@ -59,14 +59,6 @@
 class THead extends TControl
 {
 	/**
-	 * @var array list of javascript files to be loaded by {@link THead}
-	 */
-	private $_scriptFiles=array();
-	/**
-	 * @var array list of CSS style files to be loaded by {@link THead}
-	 */
-	private $_styleFiles=array();
-	/**
 	 * @var array list of meta name tags to be loaded by {@link THead}
 	 */
 	private $_metaTags=array();
@@ -101,28 +93,6 @@ class THead extends TControl
 	}
 
 	/**
-	 * Registers a javascript file to be loaded in client side
-	 * @param string a key that identifies the script file to avoid repetitive registration
-	 * @param string the javascript file which can be relative or absolute URL
-	 * @see isScriptFileRegistered()
-	 */
-	public function registerScriptFile($key,$scriptFile)
-	{
-		$this->_scriptFiles[$key] = $scriptFile;
-	}
-
-	/**
-	 * Registers a CSS style file to be imported with the page body
-	 * @param string a key that identifies the style file to avoid repetitive registration
-	 * @param string the javascript file which can be relative or absolute URL
-	 * @see isStyleFileRegistered()
-	 */
-	public function registerStyleFile($key,$styleFile)
-	{
-		$this->_styleFiles[$key] = $styleFile;
-	}
-
-	/**
 	 * Registers a meta tag to be imported with the page body
 	 * @param string a key that identifies the meta tag to avoid repetitive registration
 	 * @param string the content of the meta tag
@@ -132,28 +102,6 @@ class THead extends TControl
 	public function registerMetaTag($key,$metaTag)
 	{
 		$this->_metaTags[$key] = $metaTag;
-	}
-
-	/**
-	 * Indicates whether the named scriptfile has been registered before.
-	 * @param string the name of the scriptfile
-	 * @return boolean
-	 * @see registerScriptFile()
-	 */
-	public function isScriptFileRegistered($key)
-	{
-		return isset($this->_scriptFiles[$key]);
-	}
-
-	/**
-	 * Indicates whether the named CSS style file has been registered before.
-	 * @param string the name of the style file
-	 * @return boolean
-	 * @see registerStyleFile()
-	 */
-	public function isStyleFileRegistered($key)
-	{
-		return isset($this->_styleFiles[$key]);
 	}
 
 	/**
@@ -174,25 +122,19 @@ class THead extends TControl
 	 */
 	public function render($writer)
 	{
-		$writer->renderBeginTag('head');
-		$writer->writeLine();
-		$writer->renderBeginTag('title');
-		$writer->write($this->getPage()->getTitle());
-		$writer->renderEndTag();
-		$writer->writeLine();
+		$writer->write("<head>\n<title>".THttpUtility::htmlEncode($this->getTitle())."</title>\n");
 		foreach($this->_metaTags as $metaTag)
 		{
 			$metaTag->render($writer);
 			$writer->writeLine();
 		}
-		foreach($this->_scriptFiles as $scriptFile)
-		{
-		}
-		foreach($this->_styleFiles as $styleFile)
-		{
-		}
+		$cs=$this->getPage()->getClientScript();
+		$cs->renderStyleSheetFiles($writer);
+		$cs->renderStyleSheets($writer);
+		$cs->renderHeadScriptFiles($writer);
+		$cs->renderHeadScripts($writer);
 		parent::render($writer);
-		$writer->renderEndTag();
+		$writer->write("</head>\n");
 	}
 }
 
