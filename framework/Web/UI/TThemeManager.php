@@ -201,6 +201,10 @@ class TTheme extends TComponent
 	 * @var array list of css files
 	 */
 	private $_cssFiles=array();
+	/**
+	 * @var array list of js files
+	 */
+	private $_jsFiles=array();
 
 	/**
 	 * Constructor.
@@ -218,31 +222,35 @@ class TTheme extends TComponent
 			$array=$cache->get(self::THEME_CACHE_PREFIX.$themePath);
 			if(is_array($array))
 			{
-				list($skins,$cssFiles,$timestamp)=$array;
+				list($skins,$cssFiles,$jsFiles,$timestamp)=$array;
 				$cacheValid=true;
 				if($application->getMode()!=='Performance')
 				{
-					if(filemtime($themePath)>$timestamp)
-						$cacheValid=false;
-					else
+					if(($dir=opendir($themePath))===false)
+						throw new TIOException('theme_path_inexistent',$themePath);
+					while(($file=readdir($dir))!==false)
 					{
-						if(($dir=opendir($themePath))===false)
-							throw new TIOException('theme_path_inexistent',$themePath);
-						while(($file=readdir($dir))!==false)
+						if($file==='.' || $file==='..')
+							continue;
+						else if(basename($file,'.css')!==$file)
+							$this->_cssFiles[]=$themeUrl.'/'.$file;
+						else if(basename($file,'.js')!==$file)
+							$this->_jsFiles[]=$themeUrl.'/'.$file;
+						else if(basename($file,self::SKIN_FILE_EXT)!==$file && filemtime($themePath.'/'.$file)>$timestamp)
 						{
-							if(basename($file,self::SKIN_FILE_EXT)!==$file && filemtime($themePath.'/'.$file)>$timestamp)
-							{
-								$cacheValid=false;
-								break;
-							}
+							$cacheValid=false;
+							break;
 						}
-						closedir($dir);
 					}
+					closedir($dir);
+					if($cacheValid)
+						$this->_skins=$skins;
 				}
-				if($cacheValid)
+				else
 				{
-					$this->_skins=$skins;
 					$this->_cssFiles=$cssFiles;
+					$this->_jsFiles=$jsFiles;
+					$this->_skins=$skins;
 				}
 			}
 		}
@@ -254,8 +262,10 @@ class TTheme extends TComponent
 			{
 				if($file==='.' || $file==='..')
 					continue;
-				else if(basename($file,'.css')!==$file) // is a css file
+				else if(basename($file,'.css')!==$file)
 					$this->_cssFiles[]=$themeUrl.'/'.$file;
+				else if(basename($file,'.js')!==$file)
+					$this->_jsFiles[]=$themeUrl.'/'.$file;
 				else if(basename($file,self::SKIN_FILE_EXT)!==$file)
 				{
 					$template=new TTemplate(file_get_contents($themePath.'/'.$file),$themePath,$themePath.'/'.$file);
@@ -281,7 +291,7 @@ class TTheme extends TComponent
 			}
 			closedir($dir);
 			if($cache!==null)
-				$cache->set(self::THEME_CACHE_PREFIX.$themePath,array($this->_skins,$this->_cssFiles,time()));
+				$cache->set(self::THEME_CACHE_PREFIX.$themePath,array($this->_skins,$this->_cssFiles,$this->_jsFiles,time()));
 		}
 	}
 
@@ -350,6 +360,14 @@ class TTheme extends TComponent
 	public function getStyleSheetFiles()
 	{
 		return $this->_cssFiles;
+	}
+
+	/**
+	 * @return array list of Javascript files (URL) in the theme
+	 */
+	public function getJavaScriptFiles()
+	{
+		return $this->_jsFiles;
 	}
 }
 

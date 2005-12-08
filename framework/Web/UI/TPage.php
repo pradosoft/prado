@@ -451,11 +451,15 @@ class TPage extends TTemplateControl
 		{
 			foreach($this->_theme->getStyleSheetFiles() as $url)
 				$cs->registerStyleSheetFile($url,$url);
+			foreach($this->_theme->getJavaScriptFiles() as $url)
+				$cs->registerHeadScriptFile($url,$url);
 		}
 		if($this->_styleSheet)
 		{
 			foreach($this->_styleSheet->getStyleSheetFiles() as $url)
 				$cs->registerStyleSheetFile($url,$url);
+			foreach($this->_styleSheet->getJavaScriptFiles() as $url)
+				$cs->registerHeadScriptFile($url,$url);
 		}
 	}
 
