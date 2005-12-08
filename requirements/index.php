@@ -25,11 +25,6 @@
  * Its localized version is stored in template-<language code>.html.
  */
 
-/**
- * Includes Prado class file
- */
-require_once(dirname(__FILE__).'/../framework/prado.php');
-
 // TO BE CONFIRMED: PHP 5.1.0 has problem with I18N and L10N
 /**
  * @var array List of requirements (required or not, check item, hint)
@@ -81,11 +76,11 @@ else
 $tokens = array(
 	'%%Conclusion%%' => $conclusion,
 	'%%Details%%' => $results,
-	'%%Version%%' => $_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion(),
+	'%%Version%%' => $_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.getPradoVersion(),
 	'%%Time%%' => strftime('%Y-%m-%d %H:%m',time()),
 );
 
-$lang = Prado::getPreferredLanguage();
+$lang=getPreferredLanguage();
 $templateFile=dirname(__FILE__)."/template-$lang.html";
 if(!is_file($templateFile))
 	$templateFile=dirname(__FILE__).'/template.html';
@@ -105,7 +100,7 @@ function lmessage($token)
 	static $messages=null;
 	if($messages===null)
 	{
-		$lang = Prado::getPreferredLanguage();
+		$lang = getPreferredLanguage();
 		$msgFile=dirname(__FILE__)."/messages-$lang.txt";
 		if(!is_file($msgFile))
 			$msgFile=dirname(__FILE__).'/messages.txt';
@@ -119,6 +114,67 @@ function lmessage($token)
 		}
 	}
 	return isset($messages[$token])?$messages[$token]:$token;
+}
+
+/**
+ * Returns a list of user preferred languages.
+ * The languages are returned as an array. Each array element
+ * represents a single language preference. The languages are ordered
+ * according to user preferences. The first language is the most preferred.
+ * @return array list of user preferred languages.
+ */
+function getUserLanguages()
+{
+	static $languages=null;
+	if($languages===null)
+	{
+		$languages=array();
+		foreach(explode(',',$_SERVER['HTTP_ACCEPT_LANGUAGE']) as $language)
+		{
+			$array=split(';q=',trim($language));
+			$languages[trim($array[0])]=isset($array[1])?(float)$array[1]:1.0;
+		}
+		arsort($languages);
+		$languages=array_keys($languages);
+		if(empty($languages))
+			$languages[0]='en';
+	}
+	return $languages;
+}
+
+/**
+ * Returns the most preferred language by the client user.
+ * @return string the most preferred language by the client user, defaults to English.
+ */
+function getPreferredLanguage()
+{
+	static $language=null;
+	if($language===null)
+	{
+		$langs=getUserLanguages();
+		$lang=explode('-',$langs[0]);
+		if(empty($lang[0]) || !ctype_alpha($lang[0]))
+			$language='en';
+		else
+			$language=$lang[0];
+	}
+	return $language;
+}
+
+/**
+ * @return string Prado version
+ */
+function getPradoVersion()
+{
+	$coreFile=dirname(__FILE__).'/../framework/core.php';
+	if(is_file($coreFile))
+	{
+		$contents=file_get_contents($coreFile);
+		$matches=array();
+		if(preg_match('/public static function getVersion.*?return \'(.*?)\'/ms',$contents,$matches)>0)
+			return $matches[1];
+	}
+	return '';
 }
 
 ?>
