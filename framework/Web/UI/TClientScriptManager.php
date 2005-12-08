@@ -396,7 +396,7 @@ class TClientScriptManager extends TComponent
 	public function renderHeadScriptFiles($writer)
 	{
 		$str='';
-		foreach($this->_styleSheetFiles as $url)
+		foreach($this->_headScriptFiles as $url)
 			$str.="<script type=\"text/javascript\" src=\"".THttpUtility::htmlEncode($url)."\"></script>\n";
 		$writer->write($str);
 	}
