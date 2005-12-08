@@ -1,4 +1,4 @@
-<%@ MasterClass="Pages.master.MasterPage" %>
+<%@ MasterClass="Pages.master.MasterPage" Title="Main Page" %>
 <com:TContent id="body" >
 <com:TForm>
 <div>

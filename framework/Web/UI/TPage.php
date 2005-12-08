@@ -41,6 +41,10 @@ class TPage extends TTemplateControl
 	 */
 	private $_form=null;
 	/**
+	 * @var THead head instance
+	 */
+	private $_head=null;
+	/**
 	 * @var string template file name
 	 */
 	private $_templateFile=null;
@@ -699,7 +703,7 @@ class TPage extends TTemplateControl
 			$cs->renderHiddenFields($writer);
 			$cs->renderArrayDeclarations($writer);
 			$cs->renderExpandoAttributes($writer);
-			$cs->renderScriptIncludes($writer);
+			$cs->renderScriptFiles($writer);
 			$cs->renderEndScripts($writer);
 		}
 		else
@@ -740,6 +744,28 @@ class TPage extends TTemplateControl
 
 	protected function initializeCulture()
 	{
+	}
+
+	public function getHead()
+	{
+		return $this->_head;
+	}
+
+	public function setHead(THead $value)
+	{
+		if($this->_head)
+			throw new TInvalidOperationException('page_head_duplicated');
+		$this->_head=$value;
+	}
+
+	public function getTitle()
+	{
+		return $this->getViewState('Title','');
+	}
+
+	public function setTitle($value)
+	{
+		$this->setViewState('Title',$value,'');
 	}
 }
 

@@ -78,7 +78,7 @@ class TClientScriptManager extends TComponent
 	private $_hiddenFields=array();
 	private $_beginScripts=array();
 	private $_endScripts=array();
-	private $_scriptIncludes=array();
+	private $_scriptFiles=array();
 	private $_onSubmitStatements=array();
 	private $_arrayDeclares=array();
 	private $_expandoAttributes=array();
@@ -161,7 +161,7 @@ class TClientScriptManager extends TComponent
 		{
 			$url=$this->_page->getService()->getAssetManager()->publishFilePath(Prado::getFrameworkPath().'/'.self::SCRIPT_DIR.'/'.$scriptFile);
 			$this->_publishedScriptFiles[$scriptFile]=$url;
-			$this->registerScriptInclude('prado:'.$scriptFile,$url);
+			$this->registerScriptFile('prado:'.$scriptFile,$url);
 		}
 		return $url;
 	}
@@ -218,9 +218,9 @@ class TClientScriptManager extends TComponent
 		return isset($this->_scriptBlocks[$key]);
 	}
 
-	public function isScriptIncludeRegistered($key)
+	public function isScriptFileRegistered($key)
 	{
-		return isset($this->_scriptIncludes[$key]);
+		return isset($this->_scriptFiles[$key]);
 	}
 
 	public function isBeginScriptRegistered($key)
@@ -243,9 +243,9 @@ class TClientScriptManager extends TComponent
 		$this->_arrayDeclares[$name][]=$value;
 	}
 
-	public function registerScriptInclude($key,$url)
+	public function registerScriptFile($key,$url)
 	{
-		$this->_scriptIncludes[$key]=$url;
+		$this->_scriptFiles[$key]=$url;
 	}
 
 	public function registerHiddenField($name,$value)
@@ -285,9 +285,9 @@ class TClientScriptManager extends TComponent
 		}
 	}
 
-	public function renderScriptIncludes($writer)
+	public function renderScriptFiles($writer)
 	{
-		foreach($this->_scriptIncludes as $include)
+		foreach($this->_scriptFiles as $include)
 			$writer->write("<script type=\"text/javascript\" src=\"".THttpUtility::htmlEncode($include)."\"></script>\n");
 	}
 
