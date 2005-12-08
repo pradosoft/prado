@@ -165,6 +165,7 @@ framework/Web/UI/WebControls/TLinkButton.php -text
 framework/Web/UI/WebControls/TLiteral.php -text
 framework/Web/UI/WebControls/TPanel.php -text
 framework/Web/UI/WebControls/TPlaceHolder.php -text
+framework/Web/UI/WebControls/TRadioButton.php -text
 framework/Web/UI/WebControls/TStatements.php -text
 framework/Web/UI/WebControls/TStyle.php -text
 framework/Web/UI/WebControls/TTextBox.php -text
