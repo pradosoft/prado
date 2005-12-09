@@ -1,5 +1,5 @@
 <?php
-
+//test
 require_once(dirname(__FILE__).'/common.php');
 
 class NewComponent extends TComponent
