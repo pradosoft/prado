@@ -13,43 +13,20 @@
 /**
  * THead class
  *
- * This component is used to provide access to the &lt;head&gt; HTML
- * element through prado code. You can access it via the
+ * THead displays a &lt;head&gt; element on a page. It displays the content
+ * enclosed in its body. In addition, it displays the page title set by the
+ * {@link setTitle Title} property, and the meta tags registered via
+ * {@link registerMetaTag}. Stylesheet and JavaScripts registered via
+ * {@link TClientScriptManager::registerStyleSheet}, {@link TClientScriptManager::registerStyleSheetFile}
+ * {@link TClientScriptManager::registerHeadJavaScript}, and
+ * {@link TClientScriptManager::registerHeadJavaScriptFile} will also be displayed
+ * in the head.
  *
- * 	<code>
- 	$this->Page->Head
- 	</code>
- * property.
- *
- * The THead component provides functionality that is also available through
- * the TPage component (it will remain in the TPage component for cases where a THead
- * component is not included on the page), including:
- *
- * - <b>registerScriptFile</b>
- * - <b>registerStyleFile</b>
- *
- * Additionally, there are additional methods
- *
- * - <b>registerScriptBlock</b>
- * 	 <br/>Register script to be output between &lt;script&gt; tags
- * - <b>registerStyleBlock</b>
- * 	 <br/>Register script to be output between &lt;style&gt; tags
- * - <b>registerMetaInfo</b>
- *   <br/>Register information to be output in a &lt;meta&gt; tag
- *
- * Namespace: System.Web.UI.WebControls
- *
- * Properties
- * - <b>Title</b>, string, kept in viewstate
- *   <br/>Gets or sets the &lt;title&gt; of the page
- *
- * Examples
- * - On a page template file, insert the following line to create a THead component,
- * <code>
- *   <com:THead Title="My Prado Page"/>
- * </code>
- * The checkbox will show "Agree" text on its right side. If the user makes any change
- * to the <b>Checked</b> state, the checkAgree() method of the page class will be invoked automatically.
+ * Note, {@link TPage} has a property {@link TPage::getHead Head} that refers to
+ * the THead control currently on the page. A page can have at most once THead
+ * control. Although not required, it is recommended to place a THead on your page.
+ * Without a THead on the page, stylesheets and javascripts in the current page
+ * theme will not be rendered.
  *
  * @author Marcus Nyeholt <tanus@users.sourceforge.net> and Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -64,6 +41,7 @@ class THead extends TControl
 	private $_metaTags=array();
 
 	/**
+	 * Registers the head control with the current page.
 	 * This method is invoked when the control enters 'Init' stage.
 	 * The method raises 'Init' event.
 	 * If you override this method, be sure to call the parent implementation
@@ -81,34 +59,37 @@ class THead extends TControl
 	 */
 	public function getTitle()
 	{
-		return $this->getPage()->getTitle();
+		if(($page=$this->getPage())===null)
+			return '';
+		else
+			return $page->getTitle();
 	}
 
 	/**
-	 * @param string the page's title
+	 * Sets the page title. Note, if the page is not available, the title won't be set.
+	 * Try to use {@link TPage::setTitle} instead in this case.
+	 * @param string the page title.
 	 */
 	public function setTitle($value)
 	{
-		$this->getPage()->setTitle($value);
+		if(($page=$this->getPage())!==null)
+			$page->setTitle($value);
 	}
 
 	/**
 	 * Registers a meta tag to be imported with the page body
 	 * @param string a key that identifies the meta tag to avoid repetitive registration
-	 * @param string the content of the meta tag
-	 * @param string the language of the tag
+	 * @param TMetaTag the meta tag to be registered
 	 * @see isTagRegistered()
 	 */
 	public function registerMetaTag($key,$metaTag)
 	{
-		$this->_metaTags[$key] = $metaTag;
+		$this->_metaTags[$key]=$metaTag;
 	}
 
 	/**
-	 * Indicates whether the named meta tag has been registered before.
-	 * @param string the name of tag
-	 * @param string the lang of the tag
-	 * @return boolean
+	 * @param string a key identifying the meta tag.
+	 * @return boolean whether the named meta tag has been registered before
 	 * @see registerMetaTag()
 	 */
 	public function isMetaTagRegistered($key)
@@ -117,8 +98,8 @@ class THead extends TControl
 	}
 
 	/**
-	 * Render the &lt;head&gt; tag
-	 * @return the rendering result.
+	 * Renders the head control.
+	 * @param THtmlWriter the writer for rendering purpose.
 	 */
 	public function render($writer)
 	{
@@ -138,64 +119,127 @@ class THead extends TControl
 	}
 }
 
+/**
+ * TMetaTag class.
+ *
+ * TMetaTag represents a meta tag appearing in a page head section.
+ * You can set its {@link setID ID}, {@link setHttpEquiv HttpEquiv},
+ * {@link setName Name}, {@link setContent Content}, {@link setScheme Scheme}
+ * properties, which correspond to id, http-equiv, name, content, and scheme
+ * attributes for a meta tag, respectively.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 class TMetaTag extends TComponent
 {
+	/**
+	 * @var string id of the meta tag
+	 */
 	private $_id='';
+	/**
+	 * @var string http-equiv attribute of the meta tag
+	 */
 	private $_httpEquiv='';
+	/**
+	 * @var string name attribute of the meta tag
+	 */
 	private $_name='';
+	/**
+	 * @var string content attribute of the meta tag
+	 */
 	private $_content='';
+	/**
+	 * @var string scheme attribute of the meta tag
+	 */
 	private $_scheme='';
 
+	/**
+	 * @return string id of the meta tag
+	 */
 	public function getID()
 	{
 		return $this->_id;
 	}
 
+	/**
+	 * @param string id of the meta tag
+	 */
 	public function setID($value)
 	{
 		$this->_id=$value;
 	}
 
+	/**
+	 * @return string http-equiv attribute of the meta tag
+	 */
 	public function getHttpEquiv()
 	{
 		return $this->_httpEquiv;
 	}
 
+	/**
+	 * @param string http-equiv attribute of the meta tag
+	 */
 	public function setHttpEquiv($value)
 	{
 		$this->_httpEquiv=$value;
 	}
 
+	/**
+	 * @return string name attribute of the meta tag
+	 */
 	public function getName()
 	{
 		return $this->_name;
 	}
 
+	/**
+	 * @param string name attribute of the meta tag
+	 */
 	public function setName($value)
 	{
 		$this->_name=$value;
 	}
 
+	/**
+	 * @return string content attribute of the meta tag
+	 */
 	public function getContent()
 	{
 		return $this->_content;
 	}
 
+	/**
+	 * @param string content attribute of the meta tag
+	 */
 	public function setContent($value)
 	{
 		$this->_content=$value;
 	}
 
+	/**
+	 * @return string scheme attribute of the meta tag
+	 */
 	public function getScheme()
 	{
 		return $this->_scheme;
 	}
 
+	/**
+	 * @param string scheme attribute of the meta tag
+	 */
 	public function setScheme($value)
 	{
 		$this->_scheme=$value;
 	}
 
+	/**
+	 * Renders the meta tag.
+	 * @param THtmlWriter writer for the rendering purpose
+	 */
 	public function render($writer)
 	{
 		if($this->_id!=='')
