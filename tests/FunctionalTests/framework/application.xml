@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<application id="functional" mode="Debug">
+  <paths>
+    <alias id="Tests" path="." />
+  </paths>
+  <!-- modules configured and loaded for all services -->
+  <services>
+    <!-- page service, BasePath is required -->
+    <service id="page" BasePath="Tests" DefaultPage="IndexPage" />
+  </services>
+</application>
