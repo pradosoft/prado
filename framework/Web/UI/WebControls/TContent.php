@@ -39,6 +39,8 @@ class TContent extends TControl implements INamingContainer
 	 */
 	public function createdOnTemplate($parent)
 	{
+		if(($id=$this->getID())==='')
+			throw new TConfigurationException('content_id_required');
 		$this->getTemplateControl()->registerContent($this);
 		parent::createdOnTemplate($parent);
 	}

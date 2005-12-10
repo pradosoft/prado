@@ -790,7 +790,7 @@ class TControl extends TComponent
 	 * The current naming container is either the control itself
 	 * if it implements {@link INamingContainer} or the control's naming container.
 	 * The ID path is an ID sequence separated by {@link TControl::ID_SEPARATOR}.
-	 * For example, 'Repeater1:Item1:Button1' looks for a control with ID 'Button1'
+	 * For example, 'Repeater1.Item1.Button1' looks for a control with ID 'Button1'
 	 * whose naming container is 'Item1' whose naming container is 'Repeater1'.
 	 * @param string ID of the control to be looked up
 	 * @return TControl|null the control found, null if not found
@@ -798,6 +798,7 @@ class TControl extends TComponent
 	 */
 	public function findControl($id)
 	{
+		$id=strtr($id,'.',self::ID_SEPARATOR);
 		$container=($this instanceof INamingContainer)?$this:$this->getNamingContainer();
 		if(!$container || !$container->getHasControls())
 			return null;
@@ -840,6 +841,25 @@ class TControl extends TComponent
 	public function registerObject($name,$object)
 	{
 		$this->_rf[self::RF_NAMED_OBJECTS][$name]=$object;
+	}
+
+	/**
+	 * Unregisters an object by name.
+	 * @param string name of the object
+	 * @see registerObject
+	 */
+	public function unregisterObject($name)
+	{
+		unset($this->_rf[self::RF_NAMED_OBJECTS][$name]);
+	}
+
+	/**
+	 * @return boolean whether an object has been registered with the name
+	 * @see registerObject
+	 */
+	public function isObjectRegistered($name)
+	{
+		return isset($this->_rf[self::RF_NAMED_OBJECTS][$name]);
 	}
 
 	/**

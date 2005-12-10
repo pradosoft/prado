@@ -1,15 +1,13 @@
+how to properly encode a URL (e.g. used in javascript or css includes)
 how to display context information for template parsing and instantiation? File name? line number?
 how to do this for Theme (skin files)?
-how to correctly highlight source code displayed for exception context?
 
-checkbox if checked, posted, unchecked and then post, it will be checked.
 think more about encoding/decoding
 <%@ MasterClass="Pages.MasterPage" %>
 
 
 Features to be implemented later:
 - SmartNavigation: TForm, TPage
-- DefaultButton: TForm, TClientScriptManager
 
 Main Problems:
 1. How to solve viewstate ID mapping problems? What if a control has changed its ID before saving viewstate?
