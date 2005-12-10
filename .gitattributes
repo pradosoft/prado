@@ -186,8 +186,8 @@ requirements/messages.txt -text
 requirements/template-zh.html -text
 requirements/template.html -text
 tests/FunctionalTests/config.php -text
-tests/FunctionalTests/framework/Demos/testControls -text
 tests/FunctionalTests/framework/Demos/testControls.php -text
+tests/FunctionalTests/framework/Demos/testHangMan.php -text
 tests/FunctionalTests/framework/IndexPage.tpl -text
 tests/FunctionalTests/framework/Web/UI/config.xml -text
 tests/FunctionalTests/framework/Web/UI/testTButton.php -text

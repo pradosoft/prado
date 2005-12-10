@@ -7,10 +7,10 @@ class testControls extends SeleniumTestCase
 		$this->open('../../demos/controls/index.php');
 	}
 
-	function testIndexPage()
+	function testControlSamples()
 	{
 		$this->assertTextPresent("Welcome! Guest");
-		$this->clickAndWait('ctl0$header$ctl15');
+		$this->clickAndWait('//input[@value="Toggle Button"]');
 		$this->assertTextPresent("Login");
 	}
 }
