@@ -461,7 +461,7 @@ class TControl extends TComponent
 	 * @param boolean whether the parents should also be checked if visible
 	 * @return boolean whether the control is visible (default=true).
 	 */
-	public function getVisible($checkParents=false)
+	public function getVisible($checkParents=true)
 	{
 		if($checkParents)
 		{
@@ -1164,7 +1164,7 @@ class TControl extends TComponent
 	 */
 	protected function renderControl($writer)
 	{
-		if($this->getVisible())
+		if($this->getVisible(false))
 			$this->render($writer);
 	}
 
