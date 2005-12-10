@@ -9,6 +9,6 @@
     <service id="page" BasePath="Pages" DefaultPage="home" />
   </services>
   <parameters>
-    <parameter id="wordFile">Application.Data.words</parameter>
+    <parameter id="wordFile">Application.data.words</parameter>
   </parameters>
 </application>
