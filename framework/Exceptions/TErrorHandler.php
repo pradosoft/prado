@@ -178,7 +178,7 @@ class TErrorHandler extends TModule
 			'%%ErrorMessage%%' => htmlspecialchars($exception->getMessage()),
 			'%%ServerAdmin%%' => $serverAdmin,
 			'%%Version%%' => $_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion(),
-			'%%Time%%' => strftime('%Y-%m-%d %H:%m',time())
+			'%%Time%%' => @strftime('%Y-%m-%d %H:%M',time())
 		);
 		echo strtr($content,$tokens);
 	}
@@ -240,7 +240,7 @@ class TErrorHandler extends TModule
 			'%%SourceCode%%' => $source,
 			'%%StackTrace%%' => htmlspecialchars($exception->getTraceAsString()),
 			'%%Version%%' => $_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion(),
-			'%%Time%%' => strftime('%Y-%m-%d %H:%m',time())
+			'%%Time%%' => @strftime('%Y-%m-%d %H:%M',time())
 		);
 		$lang=Prado::getPreferredLanguage();
 		$exceptionFile=Prado::getFrameworkPath().'/Exceptions/templates/'.self::EXCEPTION_FILE_NAME.'-'.$lang.'.html';

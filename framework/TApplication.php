@@ -222,6 +222,7 @@ class TApplication extends TComponent
 		$this->_uniqueID=md5($this->_configFile);
 	}
 
+
 	/**
 	 * Executes the lifecycles of the application.
 	 * This is the main entry function that leads to the running of the whole
@@ -229,6 +230,8 @@ class TApplication extends TComponent
 	 */
 	public function run()
 	{
+		//init the error handlers
+		$this->applyDefaultExceptionHandlers();
 		try
 		{
 			$this->initApplication($this->_configFile,$this->_cacheFile);
@@ -251,6 +254,15 @@ class TApplication extends TComponent
 		{
 			$this->onError($e);
 		}
+	}
+
+	/**
+	 * Sets up error handler to convert PHP errors into exceptions that can be caught.
+	 */
+	protected function applyDefaultExceptionHandlers()
+	{
+		set_error_handler(array('Prado','phpErrorHandler'),error_reporting());
+		set_exception_handler(array('Prado','exceptionHandler'));
 	}
 
 	/**
@@ -514,6 +526,7 @@ class TApplication extends TComponent
 			$config=Prado::unserialize(file_get_contents($cacheFile));
 		}
 
+
 		// set path aliases and using namespaces
 		foreach($config->getAliases() as $alias=>$path)
 			Prado::setPathOfAlias($alias,$path);
@@ -552,6 +565,7 @@ class TApplication extends TComponent
 
 		if(($serviceID=$this->getRequest()->getServiceID())===null)
 			$serviceID=self::DEFAULT_SERVICE;
+
 		if(($serviceConfig=$config->getService($serviceID))!==null)
 		{
 			$service=Prado::createComponent($serviceConfig[0]);

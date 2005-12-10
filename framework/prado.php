@@ -44,15 +44,10 @@ if(!function_exists('__autoload'))
 	}
 }
 
-/**
- * Sets up error handler to convert PHP errors into exceptions that can be caught.
- */
-set_error_handler(array('Prado','phpErrorHandler'),error_reporting());
-
-/**
- * Sets up handler to handle uncaught exceptions.
- */
-set_exception_handler(array('Prado','exceptionHandler'));
+//Error handlers are set during TApplication::run(),
+//Exception stack is empty if set error handlers requires TApplication
+//and TApplication then causes an exception during instantiation.
+//see TApplication::initDefaultExceptionHandlers()
 
 /**
  * Includes TApplication class file
