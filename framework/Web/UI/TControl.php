@@ -1040,12 +1040,15 @@ class TControl extends TComponent
 	 */
 	protected function preRenderRecursive()
 	{
-		$this->onPreRender(null);
-		if($this->getHasControls())
+		if($this->getVisible(false))
 		{
-			foreach($this->_rf[self::RF_CONTROLS] as $control)
-				if($control instanceof TControl)
-					$control->preRenderRecursive();
+			$this->onPreRender(null);
+			if($this->getHasControls())
+			{
+				foreach($this->_rf[self::RF_CONTROLS] as $control)
+					if($control instanceof TControl)
+						$control->preRenderRecursive();
+			}
 		}
 		$this->_stage=self::CS_PRERENDERED;
 	}
