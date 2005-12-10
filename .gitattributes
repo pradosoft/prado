@@ -18,6 +18,7 @@ demos/controls/themes/BlueTheme/icon_profile.gif -text
 demos/controls/themes/BlueTheme/labels.skin -text
 demos/controls/themes/BlueTheme/simple.css -text
 demos/hangman/index.php -text
+demos/hangman/protected/.htaccess -text
 demos/hangman/protected/application.xml -text
 demos/hangman/protected/data/words.txt -text
 demos/hangman/protected/pages/HomePage.php -text
