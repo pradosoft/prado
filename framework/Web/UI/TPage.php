@@ -83,11 +83,11 @@ class TPage extends TTemplateControl
 	/**
 	 * @var array list of controls that need to load post data in the current request
 	 */
-	private $_controlsRequiringPostBack=array();
+	private $_controlsRequiringPostData=array();
 	/**
 	 * @var array list of controls that need to load post data in the next postback
 	 */
-	private $_controlsRegisteredForPostBack=array();
+	private $_controlsRegisteredForPostData=array();
 	/**
 	 * @var TControl control that needs to raise postback event
 	 */
@@ -511,7 +511,7 @@ class TPage extends TTemplateControl
 	protected function onSaveState($param)
 	{
 		parent::onSaveState($param);
-		$this->setViewState('ControlsRequiringPostBack',$this->_controlsRegisteredForPostBack,array());
+		$this->setViewState('ControlsRequiringPostBack',$this->_controlsRegisteredForPostData,array());
 	}
 
 	/**
@@ -522,7 +522,7 @@ class TPage extends TTemplateControl
 	 */
 	protected function onLoadState($param)
 	{
-		$this->_controlsRequiringPostBack=$this->getViewState('ControlsRequiringPostBack',array());
+		$this->_controlsRequiringPostData=$this->getViewState('ControlsRequiringPostBack',array());
 		parent::onLoadState($param);
 	}
 
@@ -557,9 +557,9 @@ class TPage extends TTemplateControl
 	 * Registers a control for loading post data in the next postback.
 	 * @param TControl control registered for loading post data
 	 */
-	public function registerRequiresPostBack(TControl $control)
+	public function registerRequiresPostData(TControl $control)
 	{
-		$this->_controlsRegisteredForPostBack[$control->getUniqueID()]=true;
+		$this->_controlsRegisteredForPostData[$control->getUniqueID()]=true;
 	}
 
 	/**
@@ -633,12 +633,12 @@ class TPage extends TTemplateControl
 				}
 				else if($control instanceof IPostBackEventHandler)
 					$this->setPostBackEventTarget($control);
-				unset($this->_controlsRequiringPostBack[$key]);
+				unset($this->_controlsRequiringPostData[$key]);
 			}
 			else if($beforeLoad)
 				$this->_restPostData->add($key,$value);
 		}
-		foreach($this->_controlsRequiringPostBack as $key=>$value)
+		foreach($this->_controlsRequiringPostData as $key=>$value)
 		{
 			if($control=$this->findControl($key))
 			{
@@ -649,7 +649,7 @@ class TPage extends TTemplateControl
 				}
 				else
 					throw new TInvalidDataValueException('page_postbackcontrol_invalid',$key);
-				unset($this->_controlsRequiringPostBack[$key]);
+				unset($this->_controlsRequiringPostData[$key]);
 			}
 		}
 	}

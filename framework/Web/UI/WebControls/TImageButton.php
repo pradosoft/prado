@@ -321,7 +321,7 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	protected function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		$this->getPage()->registerRequiresPostBack($this);
+		$this->getPage()->registerRequiresPostData($this);
 	}
 }
 

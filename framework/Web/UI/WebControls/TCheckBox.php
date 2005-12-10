@@ -115,7 +115,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	{
 		parent::onPreRender($param);
 		if($this->getEnabled(true))
-			$this->getPage()->registerRequiresPostBack($this);
+			$this->getPage()->registerRequiresPostData($this);
 	}
 
 	/**
