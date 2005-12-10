@@ -88,8 +88,6 @@ framework/Web/Javascripts/base/prado.js -text
 framework/Web/Javascripts/base/scroll.js -text
 framework/Web/Javascripts/base/validation.js -text
 framework/Web/Javascripts/base/validators.js -text
-framework/Web/Javascripts/build.php -text
-framework/Web/Javascripts/custom_rhino.jar -text
 framework/Web/Javascripts/effects/controls.js -text
 framework/Web/Javascripts/effects/dragdrop.js -text
 framework/Web/Javascripts/effects/effects.js -text
