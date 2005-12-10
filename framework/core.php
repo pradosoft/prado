@@ -571,7 +571,8 @@ class PradoBase
 					if(is_file($path))
 					{
 						self::$_usings[$namespace]=$path;
-						require_once($path);
+						if(!class_exists(substr(strrchr($namespace,'.'),1),false))
+							require_once($path);
 					}
 					else
 						throw new TInvalidDataValueException('prado_using_invalid',$namespace);
