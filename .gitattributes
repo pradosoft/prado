@@ -156,6 +156,7 @@ framework/Web/UI/TPage.php -text
 framework/Web/UI/TTemplateControl.php -text
 framework/Web/UI/TTemplateManager.php -text
 framework/Web/UI/TThemeManager.php -text
+framework/Web/UI/WebControls/TBaseValidator.php -text
 framework/Web/UI/WebControls/TButton.php -text
 framework/Web/UI/WebControls/TCheckBox.php -text
 framework/Web/UI/WebControls/TContent.php -text
