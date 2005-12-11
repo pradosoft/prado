@@ -705,8 +705,13 @@ class TPage extends TTemplateControl
 		$cs=$this->getClientScript();
 		if($this->getClientSupportsJavaScript())
 		{
-			if($this->_focusedControl && $this->_focusedControl->getVisible(true))
-				$cs->registerFocusScript($this->_focusedControl->getClientID());
+			if($this->_focusedControl)
+			{
+				if(is_string($this->_focusedControl))
+					$cs->registerFocusScript($this->_focusedControl);
+				else if(($this->_focusedControl instanceof TControl) && $this->_focusedControl->getVisible(true))
+					$cs->registerFocusScript($this->_focusedControl->getClientID());
+			}
 			else if($this->_postData && ($lastFocus=$this->_postData->itemAt(self::FIELD_LASTFOCUS))!==null)
 				$cs->registerFocusScript($lastFocus);
 			if($this->_maintainScrollPosition && $this->_postData)
@@ -728,9 +733,9 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Sets input focus on a control after the page is rendered to users.
-	 * @param TControl control to receive focus
+	 * @param TControl|string control to receive focus, or the ID of the element on the page to receive focus
 	 */
-	public function setFocus(TControl $value)
+	public function setFocus($value)
 	{
 		$this->_focusedControl=$value;
 	}
