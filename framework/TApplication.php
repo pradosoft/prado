@@ -214,12 +214,12 @@ class TApplication extends TComponent
 	public function __construct($configFile,$cacheFile=null)
 	{
 		parent::__construct();
-		Prado::setApplication($this);
 		if(($this->_configFile=realpath($configFile))===false || !is_file($this->_configFile))
 			throw new TIOException('application_configfile_inexistent',$configFile);
 		$this->_cacheFile=$cacheFile;
 		// generates unique ID by hashing the configuration file path
 		$this->_uniqueID=md5($this->_configFile);
+		Prado::setApplication($this);
 	}
 
 
