@@ -48,6 +48,8 @@ if(!function_exists('__autoload'))
 //Exception stack is empty if set error handlers requires TApplication
 //and TApplication then causes an exception during instantiation.
 //see TApplication::initDefaultExceptionHandlers()
+set_error_handler(array('Prado','phpErrorHandler'),error_reporting());
+set_exception_handler(array('Prado','exceptionHandler'));
 
 /**
  * Includes TApplication class file

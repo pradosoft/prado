@@ -2,7 +2,10 @@
 
 class testTButton extends TPage
 {
-
+	function onLoad($param)
+	{
+		$this->button2;
+	}
 }
 
 

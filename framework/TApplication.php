@@ -261,8 +261,6 @@ class TApplication extends TComponent
 	 */
 	protected function applyDefaultExceptionHandlers()
 	{
-		set_error_handler(array('Prado','phpErrorHandler'),error_reporting());
-		set_exception_handler(array('Prado','exceptionHandler'));
 	}
 
 	/**
