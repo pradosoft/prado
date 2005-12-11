@@ -105,9 +105,9 @@ class TPage extends TTemplateControl
 	 */
 	private $_inFormRender=false;
 	/**
-	 * @var TControl the control to be focused when the page is sent back to user
+	 * @var TControl|string the control or the ID of the element on the page to be focused when the page is sent back to user
 	 */
-	private $_focusedControl=null;
+	private $_focus=null;
 	/**
 	 * @var boolean whether or not to maintain page scroll position
 	 */
@@ -705,12 +705,12 @@ class TPage extends TTemplateControl
 		$cs=$this->getClientScript();
 		if($this->getClientSupportsJavaScript())
 		{
-			if($this->_focusedControl)
+			if($this->_focus)
 			{
-				if(is_string($this->_focusedControl))
-					$cs->registerFocusScript($this->_focusedControl);
-				else if(($this->_focusedControl instanceof TControl) && $this->_focusedControl->getVisible(true))
-					$cs->registerFocusScript($this->_focusedControl->getClientID());
+				if(is_string($this->_focus))
+					$cs->registerFocusScript($this->_focus);
+				else if(($this->_focus instanceof TControl) && $this->_focus->getVisible(true))
+					$cs->registerFocusScript($this->_focus->getClientID());
 			}
 			else if($this->_postData && ($lastFocus=$this->_postData->itemAt(self::FIELD_LASTFOCUS))!==null)
 				$cs->registerFocusScript($lastFocus);
@@ -737,7 +737,7 @@ class TPage extends TTemplateControl
 	 */
 	public function setFocus($value)
 	{
-		$this->_focusedControl=$value;
+		$this->_focus=$value;
 	}
 
 	/**
