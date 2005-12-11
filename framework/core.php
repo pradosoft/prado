@@ -425,7 +425,7 @@ class PradoBase
 	{
 		if(self::$_application!==null && ($errorHandler=self::$_application->getErrorHandler())!==null)
 		{
-			$errorHandler->handleError($exception);
+			$errorHandler->handleError(null,$exception);
 		}
 		else
 		{

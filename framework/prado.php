@@ -44,11 +44,13 @@ if(!function_exists('__autoload'))
 	}
 }
 
-//Error handlers are set during TApplication::run(),
-//Exception stack is empty if set error handlers requires TApplication
-//and TApplication then causes an exception during instantiation.
-//see TApplication::initDefaultExceptionHandlers()
+/**
+ * Sets error handler to be Prado::phpErrorHandler
+ */
 set_error_handler(array('Prado','phpErrorHandler'),error_reporting());
+/**
+ * Sets exception handler to be Prado::exceptionHandler
+ */
 set_exception_handler(array('Prado','exceptionHandler'));
 
 /**
