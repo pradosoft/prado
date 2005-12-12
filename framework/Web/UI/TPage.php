@@ -694,7 +694,9 @@ class TPage extends TTemplateControl
 			throw new TInvalidConfigurationException('page_singleform_required');
 		$this->_formRendered=true;
 		$this->_inFormRender=true;
-		$this->getClientScript()->renderBeginScripts($writer);
+		$cs=$this->getClientScript();
+		$cs->renderHiddenFields($writer);
+		$cs->renderBeginScripts($writer);
 	}
 
 	/**

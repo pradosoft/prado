@@ -280,7 +280,9 @@ class TClientScriptManager extends TComponent
 
 	public function registerHiddenField($name,$value)
 	{
-		$this->_hiddenFields[$name]=$value;
+		// if the named hidden field exists and has a value null, it means the hidden field is rendered already
+		if(!isset($this->_hiddenFields[$name]) || $this->_hiddenFields[$name]!==null)
+			$this->_hiddenFields[$name]=$value;
 	}
 
 	public function registerOnSubmitStatement($key,$script)
@@ -365,8 +367,14 @@ class TClientScriptManager extends TComponent
 		$str='';
 		foreach($this->_hiddenFields as $name=>$value)
 		{
-			$value=THttpUtility::htmlEncode($value);
-			$str.="<input type=\"hidden\" name=\"$name\" id=\"$name\" value=\"$value\" />\n";
+			if($value!==null)
+			{
+				$value=THttpUtility::htmlEncode($value);
+				$str.="<input type=\"hidden\" name=\"$name\" id=\"$name\" value=\"$value\" />\n";
+				// set hidden field value to null to indicate this field is rendered
+				// Note, hidden field rendering is invoked twice (at the beginning and ending of TForm)
+				$this->_hiddenFields[$name]=null;
+			}
 		}
 		if($str!=='')
 			$writer->write("<div>\n".$str."</div>\n");
