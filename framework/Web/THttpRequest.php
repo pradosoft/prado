@@ -302,33 +302,27 @@ class THttpRequest extends TModule
 	}
 
 	/**
-	 * @return TMap list of uploaded files.
+	 * @return array list of uploaded files.
 	 */
 	public function getUploadedFiles()
 	{
-		if($this->_files===null)
-			$this->_files=new TMap($_FILES);
-		return $this->_files;
+		return $_FILES;
 	}
 
 	/**
-	 * @return TMap list of server variables.
+	 * @return array list of server variables.
 	 */
 	public function getServerVariables()
 	{
-		if($this->_server===null)
-			$this->_server=new TMap($_SERVER);
-		return $this->_server;
+		return $_SERVER;
 	}
 
 	/**
-	 * @return TMap list of environment variables.
+	 * @return array list of environment variables.
 	 */
 	public function getEnvironmentVariables()
 	{
-		if($this->_env===null)
-			$this->_env=new TMap($_ENV);
-		return $this->_env;
+		return $_ENV;
 	}
 
 	/**
