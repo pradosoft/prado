@@ -600,9 +600,17 @@ class TControl extends TComponent
 	/**
 	 * @return boolean whether viewstate is enabled
 	 */
-	public function getEnableViewState()
+	public function getEnableViewState($checkParents=false)
 	{
-		return !($this->_flags & self::IS_DISABLE_VIEWSTATE);
+		if($checkParents)
+		{
+			for($control=$this;$control!==null;$control=$control->getParent())
+				if($control->_flags & self::IS_DISABLE_VIEWSTATE)
+					return false;
+			return true;
+		}
+		else
+			return !($this->_flags & self::IS_DISABLE_VIEWSTATE);
 	}
 
 	/**
