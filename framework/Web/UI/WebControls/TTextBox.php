@@ -117,22 +117,10 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 			$writer->addAttribute('readonly','readonly');
 		if(!$this->getEnabled(true) && $this->getEnabled())  // in this case parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');
-		parent::addAttributesToRender($writer);
-	}
-
-	/**
-	 * Registers the auto-postback javascript code.
-	 * If you override this method, be sure to call the parent implementation
-	 * so that the event handlers can be invoked.
-	 * @param TEventParameter event parameter to be passed to the event handlers
-	 */
-	protected function onPreRender($param)
-	{
-		if($this->getAutoPostBack() 
-			&& $this->getPage()->getClientSupportsJavaScript())
+		if($this->getAutoPostBack() && $page->getClientSupportsJavaScript())
 		{
 			$options = $this->getAutoPostBackOptions();
-			$scripts = $this->getPage()->getClientScript();			
+			$scripts = $this->getPage()->getClientScript();
 			$postback = $scripts->getPostBackEventReference($this,'',$options,false);
 			$scripts->registerClientEvent($this, "change", $postback);
 
@@ -142,12 +130,12 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 				$scripts->registerClientEvent($this, "keypress", $code);
 			}
 		}
-		parent::onPreRender($param);
+		parent::addAttributesToRender($writer);
 	}
-	
+
 	/**
 	 * Sets the post back options for this textbox.
-	 * @return TPostBackOptions 
+	 * @return TPostBackOptions
 	 */
 	protected function getAutoPostBackOptions()
 	{

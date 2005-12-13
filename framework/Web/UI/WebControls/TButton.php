@@ -74,19 +74,6 @@ class TButton extends TWebControl implements IPostBackEventHandler
 		if(($uniqueID=$this->getUniqueID())!=='')
 			$writer->addAttribute('name',$uniqueID);
 		$writer->addAttribute('value',$this->getText());
-		if(!$this->getEnabled(true) && $this->getEnabled())   // in this case, parent will not render 'disabled'
-			$writer->addAttribute('disabled','disabled');
-		parent::addAttributesToRender($writer);
-	}
-
-	/**
-	 * Registers the postback javascript code.
-	 * If you override this method, be sure to call the parent implementation
-	 * so that the event handlers can be invoked.
-	 * @param TEventParameter event parameter to be passed to the event handlers
-	 */
-	protected function onPreRender($param)
-	{
 		if($this->getEnabled(true))
 		{
 			$scripts = $this->getPage()->getClientScript();
@@ -94,7 +81,9 @@ class TButton extends TWebControl implements IPostBackEventHandler
 			$postback = $scripts->getPostBackEventReference($this, '', $options, false);
 			$scripts->registerClientEvent($this, "click", $postback);
 		}
-		parent::onPreRender($param);
+		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
+			$writer->addAttribute('disabled','disabled');
+		parent::addAttributesToRender($writer);
 	}
 
 	/**
@@ -115,7 +104,7 @@ class TButton extends TWebControl implements IPostBackEventHandler
 		if($this->getPostBackUrl()!=='')
 			$option->setActionUrl($this->getPostBackUrl());
 		$option->setClientSubmit(!$this->getUseSubmitBehavior());
-		
+
 		return $option;
 	}
 

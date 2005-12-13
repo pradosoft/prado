@@ -81,35 +81,22 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 		// We call parent implementation here because some attributes
 		// may be overwritten in the following
 		parent::addAttributesToRender($writer);
-		
+
 		if($this->getEnabled(true))
 		{
 			$url = $this->getPostBackUrl();
 			//create unique no-op url references
 			$nop = "javascript:;//{$this->ClientID}";
 			$writer->addAttribute('href', $url ? $url : $nop);
-		}		
-		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
-			$writer->addAttribute('disabled','disabled');
-	}
 
-	/**
-	 * Registers the postback javascript code.
-	 * If you override this method, be sure to call the parent implementation
-	 * so that the event handlers can be invoked.
-	 * @param TEventParameter event parameter to be passed to the event handlers
-	 */
-	protected function onPreRender($param)
-	{
-		if($this->getEnabled(true))
-		{
 			$scripts = $this->getPage()->getClientScript();
 			$options = $this->getPostBackOptions();
 			$postback = $scripts->getPostBackEventReference($this, '', $options, false);
 			$code = "{$postback}; Event.stop(e);";
 			$scripts->registerClientEvent($this, "click", $code);
 		}
-		parent::onPreRender($param);
+		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
+			$writer->addAttribute('disabled','disabled');
 	}
 
 	/**
