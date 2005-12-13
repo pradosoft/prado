@@ -188,6 +188,7 @@ requirements/messages-zh.txt -text
 requirements/messages.txt -text
 requirements/template-zh.html -text
 requirements/template.html -text
+tests/FunctionalTests/README.txt -text
 tests/FunctionalTests/config.php -text
 tests/FunctionalTests/framework/Demos/testControls.php -text
 tests/FunctionalTests/framework/Demos/testHangMan.php -text

@@ -89,7 +89,6 @@ class PradoApplicationTester extends TApplication
 
 	public function run()
 	{
-		$this->applyDefaultExceptionHandlers();
 		$this->initApplication($this->getConfigurationFile(),null);
 	}
 
