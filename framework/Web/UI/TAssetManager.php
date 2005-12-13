@@ -180,17 +180,7 @@ class TAssetManager extends TModule
 	 */
 	private function hash($dir)
 	{
-		$num = sprintf('%u', crc32($dir));
-		$base = 62;
-		$index = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-		$out = '';
-		for ( $t = floor( log10( $num ) / log10( $base ) ); $t >= 0; $t-- ) 
-		{
-			$a = floor( $num / pow( $base, $t ) );
-			$out = $out . substr( $index, $a, 1 );
-			$num = $num - ( $a * pow( $base, $t ) );
-		}
-		return $out;
+		return sprintf('%x',crc32($dir));
 	}
 
 	/**
