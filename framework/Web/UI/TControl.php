@@ -657,6 +657,15 @@ class TControl extends TComponent
 	}
 
 	/**
+	 * Clears a controlstate value.
+	 * @param string the name of the controlstate value to be cleared
+	 */
+	protected function clearControlState($key)
+	{
+		unset($this->_rf[self::RF_CONTROLSTATE][$key]);
+	}
+
+	/**
 	 * Returns a viewstate value.
 	 *
 	 * This function is very useful in defining getter functions for component properties
@@ -686,6 +695,15 @@ class TControl extends TComponent
 			unset($this->_viewState[$key]);
 		else
 			$this->_viewState[$key]=$value;
+	}
+
+	/**
+	 * Clears a viewstate value.
+	 * @param string the name of the viewstate value to be cleared
+	 */
+	protected function clearViewState($key)
+	{
+		unset($this->_viewState[$key]);
 	}
 
 	/**
