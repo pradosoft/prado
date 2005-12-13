@@ -82,14 +82,14 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 		// may be overwritten in the following
 		parent::addAttributesToRender($writer);
 		
-		if($this->getEnabled())
+		if($this->getEnabled(true))
 		{
 			$url = $this->getPostBackUrl();
 			//create unique no-op url references
 			$nop = "javascript:;//{$this->ClientID}";
 			$writer->addAttribute('href', $url ? $url : $nop);
 		}		
-		else// in this case, parent will not render 'disabled'
+		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');
 	}
 
