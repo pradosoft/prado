@@ -163,17 +163,20 @@ class TClientScriptManager extends TComponent
 		return $javascriptPrefix?'javascript:'.$postback:$postback;
 	}
 
-	public function registerPradoScript($scriptFile)
+	public function registerPradoScript($script)
 	{
-		if(isset($this->_publishedScriptFiles[$scriptFile]))
-			$url=$this->_publishedScriptFiles[$scriptFile];
-		else
+		foreach(TPradoClientScript::getScript($script) as $scriptFile)
 		{
-			$url=$this->_page->getService()->getAssetManager()->publishFilePath(Prado::getFrameworkPath().'/'.self::SCRIPT_DIR.'/'.$scriptFile);
-			$this->_publishedScriptFiles[$scriptFile]=$url;
-			$this->registerScriptFile('prado:'.$scriptFile,$url);
+			if(isset($this->_publishedScriptFiles[$scriptFile]))
+				$url=$this->_publishedScriptFiles[$scriptFile];
+			else
+			{
+				$url=$this->_page->getService()->getAssetManager()->publishFilePath(Prado::getFrameworkPath().'/'.self::SCRIPT_DIR.'/'.$scriptFile);
+				$this->_publishedScriptFiles[$scriptFile]=$url;
+				$this->registerScriptFile('prado:'.$scriptFile,$url);
+			}
 		}
-		return $url;
+		//return $url;
 	}
 
 	protected function registerPostBackScript()
@@ -183,7 +186,7 @@ class TClientScriptManager extends TComponent
 			$this->_postBackScriptRegistered=true;
 			$this->registerHiddenField(TPage::FIELD_POSTBACK_TARGET,'');
 			$this->registerHiddenField(TPage::FIELD_POSTBACK_PARAMETER,'');
-			$this->registerPradoScript('base.js');
+			$this->registerPradoScript('base');
 		}
 	}
 
@@ -192,7 +195,7 @@ class TClientScriptManager extends TComponent
 		if(!$this->_focusScriptRegistered)
 		{
 			$this->_focusScriptRegistered=true;
-			$this->registerPradoScript('base.js');
+			$this->registerPradoScript('base');
 			$this->registerEndScript('prado:focus','Prado.Focus.setFocus("'.THttpUtility::quoteJavaScriptString($target).'");');
 		}
 	}
@@ -210,7 +213,7 @@ class TClientScriptManager extends TComponent
 
 	public function registerDefaultButtonScript($button)
 	{
-		$this->registerPradoScript('base.js');
+		$this->registerPradoScript('base');
 		return 'return Prado.Button.fireButton(event,\''.$button->getClientID().'\')';
 	}
 
@@ -452,6 +455,183 @@ class TClientScriptManager extends TComponent
 	public void ValidateEvent(string uniqueId, string argument);
 	public function getCallbackEventReference()
 	*/
+}
+
+/**
+ * TJavascript class file. Javascript utilties, converts basic PHP types into
+ * appropriate javascript types.
+ *
+ * Example:
+ * <code>
+ * $options['onLoading'] = "doit";
+ * $options['onComplete'] = "more";
+ * $js = TJavascript::toList($options);
+ * //expects the following javascript code
+ * // {'onLoading':'doit','onComplete':'more'}
+ * </code>
+ *
+ * Namespace: System.Web.UI
+ *
+ * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
+ * @version $Revision: 1.3 $  $Date: 2005/11/10 23:43:26 $
+ * @package System.Web.UI
+ */
+class TJavascript
+{
+	/**
+	 * Coverts PHP arrays (only the array values) into javascript array.
+	 * @param array the array data to convert
+	 * @param string append additional javascript array data
+	 * @param boolean if true empty string and empty array will be converted
+	 * @return string javascript array as string.
+	 */
+	public static function toArray($array,$append=null,$strict=false)
+	{
+		$results = array();
+		$converter = new TJavascript();
+		foreach($array as $v)
+		{
+			if($strict || (!$strict && $v !== '' && $v !== array()))
+			{
+				$type = 'to_'.gettype($v);
+				if($type == 'to_array')
+					$results[] = $converter->toArray($v, $append, $strict);
+				else
+					$results[] = $converter->{$type}($v);
+			}
+		}
+		$extra = '';
+		if(strlen($append) > 0)
+			$extra .= count($results) > 0 ? ','.$append : $append;
+		return '['.implode(',', $results).$extra.']';
+	}
+
+	/**
+	 * Coverts PHP arrays (both key and value) into javascript objects.
+	 * @param array the array data to convert
+	 * @param string append additional javascript object data
+	 * @param boolean if true empty string and empty array will be converted
+	 * @return string javascript object as string.
+	 */
+	public static function toList($array,$append=null, $strict=false)
+	{
+		$results = array();
+		$converter = new TJavascript();
+		foreach($array as $k => $v)
+		{
+			if($strict || (!$strict && $v !== '' && $v !== array()))
+			{
+				$type = 'to_'.gettype($v);
+				if($type == 'to_array')
+					$results[] = "'{$k}':".$converter->toList($v, $append, $strict);
+				else
+					$results[] = "'{$k}':".$converter->{$type}($v);
+			}
+		}
+		$extra = '';
+		if(strlen($append) > 0)
+			$extra .= count($results) > 0 ? ','.$append : $append;
+
+		return '{'.implode(',', $results).$extra.'}';
+	}
+
+	public function to_boolean($v)
+	{
+		return $v ? 'true' : 'false';
+	}
+
+	public function to_integer($v)
+	{
+		return "{$v}";
+	}
+
+	public function to_double($v)
+	{
+		return "{$v}";
+	}
+
+	/**
+	 * If string begins with [ and ends ], or begins with { and ends }
+	 * it is assumed to be javascript arrays or objects and no further
+	 * conversion is applied.
+	 */
+	public function to_string($v)
+	{
+		if(strlen($v)>1)
+		{
+			$first = $v{0}; $last = $v{strlen($v)-1};
+			if($first == '[' && $last == ']' ||
+				($first == '{' && $last == '}'))
+				return $v;
+		}
+		return "'".addslashes($v)."'";
+	}
+
+	public function to_array($v)
+	{
+		return TJavascript::toArray($v);
+	}
+
+	public function to_null($v)
+	{
+		return 'null';
+	}
+}
+
+/**
+ * PradoClientScript class.
+ *
+ * Resolves Prado client script dependencies. e.g. TPradoClientScript::getScripts("dom");
+ *
+ * - <b>base</b> basic javascript utilities, e.g. $()
+ * - <b>dom</b> DOM and Form functions, e.g. $F(inputID) to retrive form input values.
+ * - <b>effects</b> Effects such as fade, shake, move
+ * - <b>controls</b> Prado client-side components, e.g. Slider, AJAX components
+ * - <b>validator</b> Prado client-side validators.
+ * - <b>ajax</b> Prado AJAX library including Prototype's AJAX and JSON.
+ *
+ * Dependencies for each library are automatically resolved.
+ *
+ * Namespace: System.Web.UI
+ *
+ * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
+ * @version $Revision: 1.1 $  $Date: 2005/11/06 23:02:33 $
+ * @package System.Web.UI
+ */
+class TPradoClientScript
+{
+	/**
+	 * Client-side javascript library dependencies
+	 * @var array
+	 */
+	protected static $dependencies = array(
+		'base' => array('base'),
+		'dom' => array('base', 'dom'),
+		'effects' => array('base', 'dom', 'effects'),
+		'controls' => array('base', 'dom', 'effects', 'controls'),
+		'validator' => array('base', 'dom', 'validator'),
+		'logger' => array('base', 'dom', 'logger'),
+		'ajax' => array('base', 'dom', 'ajax')
+		);
+
+	/**
+	 * Resolve dependencies for the given library.
+	 * @param array list of libraries to load.
+	 * @return array list of libraries including its dependencies.
+	 */
+	protected static function getScripts($scripts)
+	{
+		$files = array();
+		if(!is_array($scripts)) $scripts = array($scripts);
+		foreach($scripts as $script)
+		{
+			if(isset(self::$dependencies[$script]))
+				$files = array_merge($files, self::$dependencies[$script]);
+			$files[] = $script;
+		}
+		$files = array_unique($files);
+		return $files;
+	}
 }
 
 ?>

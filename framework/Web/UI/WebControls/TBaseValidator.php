@@ -108,6 +108,58 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
+	 * Returns an array of javascript validator options.
+	 * @return array javascript validator options.
+	 */
+	protected function getClientScriptAttributes()
+	{
+		$options['ID'] = $this->getClientID();
+		$options['Display'] = $this->getDisplay();
+		$options['ErrorMessage'] = $this->getErrorMessage();
+		$options['FocusOnError'] = $this->getFocusOnError();
+		$options['FocusElementID'] = $this->getFocusElementID();
+		$options['ValidationGroup'] = $this->getValidationGroup();
+		$options['ControlToValidate'] = $this->getControlToValidate();
+		return $options;
+	}
+
+	/**
+	 * Renders the javascript code to the end script.
+	 * If you override this method, be sure to call the parent implementation
+	 * so that the event handlers can be invoked.
+	 * @param TEventParameter event parameter to be passed to the event handlers
+	 */
+	protected function onPreRender($param)
+	{
+		$scripts = $this->getPage()->getClientScript();
+		$scriptKey = "prado:".get_class($this);
+		if($this->getEnableClientScript()
+			&& !$script->isEndScriptRegistered($scriptKey))
+		{
+			$scripts->registerPradoScript('validator');
+			$js = "Prado.Validation.AddForm('{$this->Page->Form->ClientID}');";
+			$scripts->registerEndScript($scriptKey, $js);
+		}
+		parent::onPreRender($param);
+	}
+
+	/**
+	 * Renders the individual validator client-side javascript code.
+	 */
+	protected function renderClientScriptValidator()
+	{
+		if($this->getEnabled(true) && $this->getEnableClientScript())
+		{
+			$class = get_class($this);
+			$scriptKey = "prado:".$this->getClientID();
+			$scripts = $this->getPage()->getClientScript();
+			$option = TJavascript::toList($this->getClientScriptAttributes());
+			$js = "new Prado.Validation(Prado.Validation.{$class}, {$option});";
+			$scripts->registerEndScript($scriptKey, $js);
+		}
+	}
+
+	/**
 	 * This method overrides the parent implementation to forbid setting AssociatedControlID.
 	 * @param string the associated control ID
 	 * @throws TNotSupportedException whenever this method is called
