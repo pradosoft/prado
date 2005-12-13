@@ -25,26 +25,41 @@ Prado.Button.fireButton = function(event, target)
 
 Prado.TextBox = Class.create();
 
-Prado.TextBox.handleReturnKey = function(event)
+/**
+ * Returns FALSE when the "Enter" key is pressed AND when onchange
+ * property is defined. The onchange function is called. However, 
+ * it does not call event listener functions.
+ * @return boolean false if "Enter" and onchange property is defined, true otherwise.
+ */
+Prado.TextBox.handleReturnKey = function(ev)
 {
-	if (event.keyCode == 13)
+	var kc = ev.keyCode != null ? ev.keyCode : ev.charCode;
+	if(kc == Event.KEY_RETURN)
 	{
-		var target;
-		if(typeof(event.target)!="undefined")
-			target=event.target;
-		else if(typeof(event.srcElement)!="undefined")
-			target=event.srcElement;
-		if((typeof(target)!="undefined") && (target!=null))
+		var target = Event.element(ev);
+		if(target && isFunction(target.onchange))
 		{
-			if(typeof(target.onchange)!="undefined")
-			{
-				target.onchange();
-				event.cancelBubble=true;
-				if(event.stopPropagation)
-					event.stopPropagation();
-				return false;
-			}
+			target.onchange();
+			Event.stop(ev);
+			return false;
 		}
 	}
 	return true;
 }
+
+/**
+ * Creates a LinkButton and register the post back to the onclick event.
+ */
+/* to finish when doPostback changes
+Prado.LinkButton = Class.create();
+Prado.LinkButton.prototype =
+{
+	initialize : function(element, name)
+	{
+		Event.observe(element, 'click', function(e)
+		{
+			Prado.doPostback(element, name, '');
+			Event.stop(e);
+		});
+	}
+}*/

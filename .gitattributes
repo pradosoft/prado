@@ -107,6 +107,7 @@ framework/Web/Javascripts/extra/logger.js -text
 framework/Web/Javascripts/extra/tp_template.js -text
 framework/Web/Javascripts/js/base.js -text
 framework/Web/Javascripts/js/dom.js -text
+framework/Web/Javascripts/js/logger.js -text
 framework/Web/Javascripts/js/validator.js -text
 framework/Web/Javascripts/prototype/ajax.js -text
 framework/Web/Javascripts/prototype/array.js -text
@@ -171,6 +172,7 @@ framework/Web/UI/WebControls/THiddenField.php -text
 framework/Web/UI/WebControls/THyperLink.php -text
 framework/Web/UI/WebControls/TImage.php -text
 framework/Web/UI/WebControls/TImageButton.php -text
+framework/Web/UI/WebControls/TJavascriptLogger.php -text
 framework/Web/UI/WebControls/TLabel.php -text
 framework/Web/UI/WebControls/TLinkButton.php -text
 framework/Web/UI/WebControls/TLiteral.php -text

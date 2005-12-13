@@ -165,13 +165,17 @@ class TClientScriptManager extends TComponent
 
 	public function registerPradoScript($script)
 	{
-		foreach(TPradoClientScript::getScript($script) as $scriptFile)
+		foreach(TPradoClientScript::getScripts($script) as $scriptFile)
 		{
 			if(isset($this->_publishedScriptFiles[$scriptFile]))
 				$url=$this->_publishedScriptFiles[$scriptFile];
 			else
 			{
-				$url=$this->_page->getService()->getAssetManager()->publishFilePath(Prado::getFrameworkPath().'/'.self::SCRIPT_DIR.'/'.$scriptFile);
+				$base = Prado::getFrameworkPath();
+				$clientScripts = self::SCRIPT_DIR;				
+				$file = "{$base}/{$clientScripts}/{$scriptFile}.js";
+				$assetManager = $this->_page->getService()->getAssetManager();
+				$url= $assetManager->publishFilePath($file);
 				$this->_publishedScriptFiles[$scriptFile]=$url;
 				$this->registerScriptFile('prado:'.$scriptFile,$url);
 			}
@@ -444,6 +448,16 @@ class TClientScriptManager extends TComponent
 		return count($this->_onSubmitStatements)>0;
 	}
 
+	public function registerClientEvent($control, $event, $code)
+	{
+		if(empty($code)) return;
+		$this->registerPradoScript("dom");
+		$script= "Event.observe('{$control->ClientID}', '{$event}', function(e){ {$code} });";
+		$key = "prado:{$control->ClientID}:{$event}";
+		$this->registerEndScript($key, $script);
+	}
+
+
 
 	/*
 	private void EnsureEventValidationFieldLoaded();
@@ -619,7 +633,7 @@ class TPradoClientScript
 	 * @param array list of libraries to load.
 	 * @return array list of libraries including its dependencies.
 	 */
-	protected static function getScripts($scripts)
+	public static function getScripts($scripts)
 	{
 		$files = array();
 		if(!is_array($scripts)) $scripts = array($scripts);

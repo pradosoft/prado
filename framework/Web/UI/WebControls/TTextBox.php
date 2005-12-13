@@ -117,29 +117,49 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 			$writer->addAttribute('readonly','readonly');
 		if(!$this->getEnabled(true) && $this->getEnabled())  // in this case parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');
-		if($this->getAutoPostBack() && $page->getClientSupportsJavaScript())
-		{
-			$option=new TPostBackOptions();
-			if($this->getCausesValidation() && $page->getValidators($this->getValidationGroup())->getCount()>0)
-			{
-				$option->setPerformValidation(true);
-				$option->setValidationGroup($this->getValidationGroup());
-			}
-			$option->setAutoPostBack(true);
-			$onchange=$this->removeAttribute('onchange');
-			$onchange.=THttpUtility::trimJavaScriptString($onchange).$page->getClientScript()->getPostBackEventReference($this,'',$option,false);
-			$writer->addAttribute('onchange','javascript:'.$onchange);
+		parent::addAttributesToRender($writer);
+	}
 
-			if($textMode!=='MultiLine')
+	/**
+	 * Registers the auto-postback javascript code.
+	 * If you override this method, be sure to call the parent implementation
+	 * so that the event handlers can be invoked.
+	 * @param TEventParameter event parameter to be passed to the event handlers
+	 */
+	protected function onPreRender($param)
+	{
+		if($this->getAutoPostBack() 
+			&& $this->getPage()->getClientSupportsJavaScript())
+		{
+			$options = $this->getAutoPostBackOptions();
+			$scripts = $this->getPage()->getClientScript();			
+			$postback = $scripts->getPostBackEventReference($this,'',$options,false);
+			$scripts->registerClientEvent($this, "change", $postback);
+
+			if($this->getTextMode() !== 'MultiLine')
 			{
-				// note, Prado.TextBox.handleReturnKey is defined in base.js,
-				// which is included when AutoPostBack is true for textbox.
-				$onkeypress='javascript:if(Prado.TextBox.handleReturnKey(event)==false) return false;';
-				$onkeypress.=THttpUtility::trimJavaScriptString($this->removeAttribute('onkeypress'));
-				$writer->addAttribute('onkeypress',$onkeypress);
+				$code = "if(Prado.TextBox.handleReturnKey(e)==false) Event.stop(e);";
+				$scripts->registerClientEvent($this, "keypress", $code);
 			}
 		}
-		parent::addAttributesToRender($writer);
+		parent::onPreRender($param);
+	}
+	
+	/**
+	 * Sets the post back options for this textbox.
+	 * @return TPostBackOptions 
+	 */
+	protected function getAutoPostBackOptions()
+	{
+		$option=new TPostBackOptions();
+		$group = $this->getValidationGroup();
+		$hasValidators = $this->getPage()->getValidators($group)->getCount()>0;
+		if($this->getCausesValidation() && $hasValidators)
+		{
+			$option->setPerformValidation(true);
+			$option->setValidationGroup($group);
+		}
+		$option->setAutoPostBack(true);
 	}
 
 	/**

@@ -859,29 +859,25 @@ return false;
 return true;
 };
 Prado.TextBox=Class.create();
-Prado.TextBox.handleReturnKey=function(_4){
-if(_4.keyCode==13){
-var _5;
-if(typeof (_4.target)!="undefined"){
-_5=_4.target;
-}else{
-if(typeof (_4.srcElement)!="undefined"){
-_5=_4.srcElement;
-}
-}
-if((typeof (_5)!="undefined")&&(_5!=null)){
-if(typeof (_5.onchange)!="undefined"){
-_5.onchange();
-_4.cancelBubble=true;
-if(_4.stopPropagation){
-_4.stopPropagation();
-}
+Prado.TextBox.handleReturnKey=function(ev){
+var kc=ev.keyCode!=null?ev.keyCode:ev.charCode;
+if(kc==Event.KEY_RETURN){
+var _6=Event.element(ev);
+if(_6&&isFunction(_6.onchange)){
+_6.onchange();
+Event.stop(ev);
 return false;
-}
 }
 }
 return true;
 };
+Prado.LinkButton=Class.create();
+Prado.LinkButton.prototype={initialize:function(_7,_8){
+Event.observe(_7,"click",function(e){
+Prado.doPostback(_7,_8,"");
+Event.stop(e);
+});
+}};
 
 Prado.doPostBack=function(_1,_2,_3,_4,_5,_6,_7,_8){
 if(typeof (_4)=="undefined"){

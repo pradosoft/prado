@@ -108,6 +108,9 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	 * Registers the checkbox to receive postback data during postback.
 	 * This is necessary because a checkbox if unchecked, when postback,
 	 * does not have direct mapping between post data and the checkbox name.
+	 * 
+	 * Auto-postback javascript code is also registered here.
+	 * 
 	 * This method overrides the parent implementation and is invoked before render.
 	 * @param mixed event parameter
 	 */
@@ -116,6 +119,15 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 		parent::onPreRender($param);
 		if($this->getEnabled(true))
 			$this->getPage()->registerRequiresPostData($this);
+
+		if($this->getAutoPostBack() 
+			&& $this->getPage()->getClientSupportsJavaScript())
+		{	
+			$options = $this->getAutoPostBackOptions();
+			$scripts = $this->getPage()->getClientScript();			
+			$postback = $scripts->getPostBackEventReference($this,'',$options,false);
+			$scripts->registerClientEvent($this, "click", $postback);
+		}
 	}
 
 	/**
@@ -353,21 +365,6 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 		if(!$this->getEnabled(true))
 			$writer->addAttribute('disabled','disabled');
 		$page=$this->getPage();
-		if($this->getAutoPostBack() && $page->getClientSupportsJavaScript())
-		{
-			$option=new TPostBackOptions();
-			if($this->getCausesValidation() && $page->getValidators($this->getValidationGroup())->getCount())
-			{
-				$option->setPerformValidation(true);
-				$option->setValidationGroup($this->getValidationGroup());
-			}
-			$option->setAutoPostBack(true);
-			if(!empty($onclick))
-				$onclick=THttpUtility::trimJavaScriptString($onclick);
-			$onclick.=$page->getClientScript()->getPostBackEventReference($this,'',$option,false);
-		}
-		if(!empty($onclick))
-			$writer->addAttribute('onclick',$onclick);
 		if(($accesskey=$this->getAccessKey())!=='')
 			$writer->addAttribute('accesskey',$accesskey);
 		if(($tabindex=$this->getTabIndex())>0)
@@ -377,6 +374,24 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 		$writer->renderBeginTag('input');
 		$writer->renderEndTag();
 	}
+
+	/**
+	 * Sets the post back options for this textbox.
+	 * @return TPostBackOptions 
+	 */
+	protected function getAutoPostBackOptions()
+	{
+		$option=new TPostBackOptions();
+		$group = $this->getValidationGroup();
+		$hasValidators = $this->getPage()->getValidators($group)->getCount()>0;
+		if($this->getCausesValidation() && $hasValidators)
+		{
+			$option->setPerformValidation(true);
+			$option->setValidationGroup($group);
+		}
+		$option->setAutoPostBack(true);
+	}
+
 }
 
 ?>

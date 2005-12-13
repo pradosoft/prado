@@ -51,10 +51,6 @@ Prado::using('System.Web.UI.WebControls.TImage');
  * You can change the postback target by setting the {@link setPostBackUrl PostBackUrl}
  * property.
  *
- * To set the client-side javascript associated with the user's click action,
- * use the {@link setOnClientClick OnClientClick} property. The value will be rendered
- * as the <b>onclick</b> attribute of the button.
- *
  * TImageButton displays the {@link setText Text} property as the hint text to the displayed image.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -93,19 +89,8 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 		$writer->addAttribute('type','image');
 		if(($uniqueID=$this->getUniqueID())!=='')
 			$writer->addAttribute('name',$uniqueID);
-
-		if($this->getEnabled(true))
-		{
-			$onclick=$this->removeAttribute('onclick');
-			$onclick=THttpUtility::trimJavaScriptString($onclick).THttpUtility::trimJavaScriptString($this->getOnClientClick());
-			$onclick.=$page->getClientScript()->getPostBackEventReference($this,'',$this->getPostBackOptions(),false);
-			if(!empty($onclick))
-				$writer->addAttribute('onclick','javascript:'.$onclick);
-		}
-		else if($this->getEnabled())   // in this case, parent will not render 'disabled'
+		if(!$this->getEnabled())   // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');
-		if($onclick!=='')
-			$writer->addAttribute('onclick','javascript:'.$onclick);
 		parent::addAttributesToRender($writer);
 	}
 
@@ -277,22 +262,6 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	public function setPostBackUrl($value)
 	{
 		$this->setViewState('PostBackUrl',$value,'');
-	}
-
-	/**
-	 * @return string the javascript to be executed when the button is clicked.
-	 */
-	public function getOnClientClick()
-	{
-		return $this->getViewState('OnClientClick','');
-	}
-
-	/**
-	 * @param string the javascript to be executed when the button is clicked.
-	 */
-	public function setOnClientClick($value)
-	{
-		$this->setViewState('OnClientClick',$value,'');
 	}
 
 	/**

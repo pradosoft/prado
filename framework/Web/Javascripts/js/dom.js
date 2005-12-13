@@ -530,7 +530,7 @@ Object.extend(Event,{OnLoad:function(fn){
 var w=document.addEventListener&&!window.addEventListener?document:window;
 Event.__observe(w,"load",fn);
 },observe:function(_3,_4,_5,_6){
-if(isElement(_3)){
+if(!isList(_3)){
 return this.__observe(_3,_4,_5,_6);
 }
 for(var i=0;i<_3.length;i++){

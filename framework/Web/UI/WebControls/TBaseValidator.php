@@ -111,7 +111,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * Returns an array of javascript validator options.
 	 * @return array javascript validator options.
 	 */
-	protected function getClientScriptAttributes()
+	protected function getClientScriptOptions()
 	{
 		$options['ID'] = $this->getClientID();
 		$options['Display'] = $this->getDisplay();
@@ -153,8 +153,8 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			$class = get_class($this);
 			$scriptKey = "prado:".$this->getClientID();
 			$scripts = $this->getPage()->getClientScript();
-			$option = TJavascript::toList($this->getClientScriptAttributes());
-			$js = "new Prado.Validation(Prado.Validation.{$class}, {$option});";
+			$options = TJavascript::toList($this->getClientScriptOptions());
+			$js = "new Prado.Validation(Prado.Validation.{$class}, {$options});";
 			$scripts->registerEndScript($scriptKey, $js);
 		}
 	}

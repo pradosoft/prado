@@ -150,7 +150,7 @@ class TAssetManager extends TModule
 			return '';
 		else if(is_file($fullpath))
 		{
-			$dir=md5(dirname($fullpath));
+			$dir=$this->hash(dirname($fullpath));
 			$file=$this->_basePath.'/'.$dir.'/'.basename($fullpath);
 			if(!is_file($file) || $checkTimestamp || $this->_application->getMode()!=='Performance')
 			{
@@ -164,12 +164,33 @@ class TAssetManager extends TModule
 		}
 		else
 		{
-			$dir=md5($fullpath);
+			$dir=$this->hash($fullpath);
 			if(!is_dir($this->_basePath.'/'.$dir) || $checkTimestamp || $this->_application->getMode()!=='Performance')
 				$this->copyDirectory($fullpath,$this->_basePath.'/'.$dir);
 			$this->_published[$path]=$this->_baseUrl.'/'.$dir;
 			return $this->_published[$path];
 		}
+	}
+
+	/**
+	 * Generate a CRC32 hash for the directory path. Collisions are higher
+	 * than MD5 but generates a much smaller hash string.
+	 * @param string string to be hashed.
+	 * @return string hashed string.
+	 */
+	private function hash($dir)
+	{
+		$num = sprintf('%u', crc32($dir));
+		$base = 62;
+		$index = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$out = '';
+		for ( $t = floor( log10( $num ) / log10( $base ) ); $t >= 0; $t-- ) 
+		{
+			$a = floor( $num / pow( $base, $t ) );
+			$out = $out . substr( $index, $a, 1 );
+			$num = $num - ( $a * pow( $base, $t ) );
+		}
+		return $out;
 	}
 
 	/**

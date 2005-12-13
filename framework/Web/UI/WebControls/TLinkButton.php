@@ -46,10 +46,6 @@
  * You can change the postback target by setting the {@link setPostBackUrl PostBackUrl}
  * property.
  *
- * To set the client-side javascript associated with the user's click action,
- * use the {@link setOnClientClick OnClientClick} property. The value will be rendered
- * as the <b>onclick</b> attribute of the link button.
- *
  * TLinkButton will display the {@link setText Text} property value
  * as the hyperlink text. If {@link setText Text} is empty, the body content
  * of TLinkButton will be displayed. Therefore, you can use TLinkButton
@@ -79,19 +75,41 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 	{
 		$page=$this->getPage();
 		$page->ensureRenderInForm($this);
-		$onclick=$this->removeAttribute('onclick');
-		$onclick=THttpUtility::trimJavaScriptString($onclick).THttpUtility::trimJavaScriptString($this->getOnClientClick());
-		if(!empty($onclick))
-			$writer->addAttribute('onclick','javascript:'.$onclick);
+
+		$writer->addAttribute('id',$this->getClientID());
 
 		// We call parent implementation here because some attributes
 		// may be overwritten in the following
 		parent::addAttributesToRender($writer);
-
-		if($this->getEnabled(true))
-			$writer->addAttribute('href',$page->getClientScript()->getPostBackEventReference($this,'',$this->getPostBackOptions(),true));
-		else if($this->getEnabled())   // in this case, parent will not render 'disabled'
+		
+		if($this->getEnabled())
+		{
+			$url = $this->getPostBackUrl();
+			//create unique no-op url references
+			$nop = "javascript:;//{$this->ClientID}";
+			$writer->addAttribute('href', $url ? $url : $nop);
+		}		
+		else// in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');
+	}
+
+	/**
+	 * Registers the postback javascript code.
+	 * If you override this method, be sure to call the parent implementation
+	 * so that the event handlers can be invoked.
+	 * @param TEventParameter event parameter to be passed to the event handlers
+	 */
+	protected function onPreRender($param)
+	{
+		if($this->getEnabled(true))
+		{
+			$scripts = $this->getPage()->getClientScript();
+			$options = $this->getPostBackOptions();
+			$postback = $scripts->getPostBackEventReference($this, '', $options, false);
+			$code = "{$postback}; Event.stop(e);";
+			$scripts->registerClientEvent($this, "click", $code);
+		}
+		parent::onPreRender($param);
 	}
 
 	/**
@@ -102,8 +120,11 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 	protected function getPostBackOptions()
 	{
 		$flag=false;
-		$options=new TPostBackOptions();
-		if($this->getCausesValidation() && $this->getPage()->getValidators($this->getValidationGroup())->getCount()>0)
+
+		$option=new TPostBackOptions();
+		$group = $this->getValidationGroup();
+		$hasValidators = $this->getPage()->getValidators($group)->getCount()>0;
+		if($this->getCausesValidation() && $hasValidators)
 		{
 			$flag=true;
 			$options->setPerformValidation(true);
@@ -180,22 +201,6 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 	public function setCommandParameter($value)
 	{
 		$this->setViewState('CommandParameter',$value,'');
-	}
-
-	/**
-	 * @return string the javascript to be executed when the button is clicked
-	 */
-	public function getOnClientClick()
-	{
-		return $this->getViewState('OnClientClick','');
-	}
-
-	/**
-	 * @param string the javascript to be executed when the button is clicked. Do not prefix it with "javascript:".
-	 */
-	public function setOnClientClick($value)
-	{
-		$this->setViewState('OnClientClick',$value,'');
 	}
 
 	/**

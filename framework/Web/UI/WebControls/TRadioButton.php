@@ -153,21 +153,6 @@ class TRadioButton extends TCheckBox
 		if(!$this->getEnabled(true))
 			$writer->addAttribute('disabled','disabled');
 		$page=$this->getPage();
-		if($this->getAutoPostBack() && $page->getClientSupportsJavaScript())
-		{
-			$option=new TPostBackOptions();
-			if($this->getCausesValidation() && $page->getValidators($this->getValidationGroup())->getCount())
-			{
-				$option->setPerformValidation(true);
-				$option->setValidationGroup($this->getValidationGroup());
-			}
-			$option->setAutoPostBack(true);
-			if(!empty($onclick))
-				$onclick=THttpUtility::trimJavaScriptString($onclick);
-			$onclick.=$page->getClientScript()->getPostBackEventReference($this,'',$option,false);
-		}
-		if(!empty($onclick))
-			$writer->addAttribute('onclick',$onclick);
 		if(($accesskey=$this->getAccessKey())!=='')
 			$writer->addAttribute('accesskey',$accesskey);
 		if(($tabindex=$this->getTabIndex())>0)
