@@ -178,6 +178,7 @@ framework/Web/UI/WebControls/TJavascriptLogger.php -text
 framework/Web/UI/WebControls/TLabel.php -text
 framework/Web/UI/WebControls/TLinkButton.php -text
 framework/Web/UI/WebControls/TListBox.php -text
+framework/Web/UI/WebControls/TListControl.php -text
 framework/Web/UI/WebControls/TLiteral.php -text
 framework/Web/UI/WebControls/TPanel.php -text
 framework/Web/UI/WebControls/TPlaceHolder.php -text
