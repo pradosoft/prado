@@ -164,6 +164,8 @@ framework/Web/UI/WebControls/TButton.php -text
 framework/Web/UI/WebControls/TCheckBox.php -text
 framework/Web/UI/WebControls/TContent.php -text
 framework/Web/UI/WebControls/TContentPlaceHolder.php -text
+framework/Web/UI/WebControls/TDataBoundControl.php -text
+framework/Web/UI/WebControls/TDropDownList.php -text
 framework/Web/UI/WebControls/TExpression.php -text
 framework/Web/UI/WebControls/TFileUpload.php -text
 framework/Web/UI/WebControls/TFont.php -text
@@ -175,6 +177,7 @@ framework/Web/UI/WebControls/TImageButton.php -text
 framework/Web/UI/WebControls/TJavascriptLogger.php -text
 framework/Web/UI/WebControls/TLabel.php -text
 framework/Web/UI/WebControls/TLinkButton.php -text
+framework/Web/UI/WebControls/TListBox.php -text
 framework/Web/UI/WebControls/TLiteral.php -text
 framework/Web/UI/WebControls/TPanel.php -text
 framework/Web/UI/WebControls/TPlaceHolder.php -text

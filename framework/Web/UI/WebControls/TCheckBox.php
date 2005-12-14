@@ -102,8 +102,6 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	 * This is necessary because a checkbox if unchecked, when postback,
 	 * does not have direct mapping between post data and the checkbox name.
 	 *
-	 * Auto-postback javascript code is also registered here.
-	 *
 	 * This method overrides the parent implementation and is invoked before render.
 	 * @param mixed event parameter
 	 */
