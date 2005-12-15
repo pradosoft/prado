@@ -150,6 +150,7 @@ class TSqliteCache extends TModule implements ICache
 	/**
 	 * @param string database file path (in namespace form)
 	 * @throws TInvalidOperationException if the module is already initialized
+	 * @throws TConfigurationException if the file is not in proper namespace format
 	 */
 	public function setDbFile($value)
 	{
