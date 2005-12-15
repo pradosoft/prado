@@ -742,12 +742,12 @@ class TControl extends TComponent
 				$this->setSubProperty($property,$this->evaluateExpression($expression));
 			if($raiseDataBindingEvent)
 				$this->onDataBinding(null);
-			if(isset($this->_rf[self::RF_CONTROLS]))
-			{
-				foreach($this->_rf[self::RF_CONTROLS] as $control)
-					if($control instanceof TControl)
-						$control->dataBind($raiseDataBindingEvent);
-			}
+		}
+		if(isset($this->_rf[self::RF_CONTROLS]))
+		{
+			foreach($this->_rf[self::RF_CONTROLS] as $control)
+				if($control instanceof TControl)
+					$control->dataBind($raiseDataBindingEvent);
 		}
 	}
 
