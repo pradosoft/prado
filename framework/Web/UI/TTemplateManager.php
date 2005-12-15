@@ -138,9 +138,9 @@ class TTemplate extends TComponent implements ITemplate
 	 *	'<\/?com:([\w\.]+)((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?"|\s*[\w\.]+=<%.*?%>)*)\s*\/?>' - component tags
 	 *	'<\/?prop:([\w\.]+)\s*>'  - property tags
 	 *	'<%@\s*(\w+)((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?")*)\s*%>'  - directives
-	 *	'<%=?(.*?)%>'  - expressions
+	 *	'<%=?(.*?)%> | <%#(.*?)%>'  - expressions
 	 */
-	const REGEX_RULES='/<!.*?!>|<!--.*?-->|<\/?com:([\w\.]+)((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?"|\s*[\w\.]+=<%.*?%>)*)\s*\/?>|<\/?prop:([\w\.]+)\s*>|<%@\s*((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?")*)\s*%>|<%=?(.*?)%>/msS';
+	const REGEX_RULES='/<!.*?!>|<!--.*?-->|<\/?com:([\w\.]+)((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?"|\s*[\w\.]+=<%.*?%>)*)\s*\/?>|<\/?prop:([\w\.]+)\s*>|<%@\s*((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?")*)\s*%>|<%[#=]?(.*?)%>/msS';
 
 	/**
 	 * @var array list of component tags and strings
@@ -461,9 +461,11 @@ class TTemplate extends TComponent implements ITemplate
 				if($matchStart>$textStart)
 					$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
 				$textStart=$matchEnd+1;
-				if($str[2]==='=')
+				if($str[2]==='=')	// expression
 					$tpl[$c++]=array($container,'TExpression',array('Expression'=>$match[5][0]));
-				else
+				else if($str[2]==='#')	// binding expression
+					$tpl[$c++]=array($container,'TLiteral',array('Text'=>array(0,$match[5][0])));
+				else	// statements
 					$tpl[$c++]=array($container,'TStatements',array('Statements'=>$match[5][0]));
 			}
 			else if(strpos($str,'<prop:')===0)	// opening property
