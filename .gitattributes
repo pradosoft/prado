@@ -13,6 +13,7 @@ demos/controls/protected/pages/master/MasterPage.tpl -text
 demos/controls/protected/pages/private/MemberPage.php -text
 demos/controls/protected/pages/private/MemberPage.tpl -text
 demos/controls/protected/pages/private/config.xml -text
+demos/controls/protected/userFile.xml -text
 demos/controls/themes/BlueTheme/buttons.skin -text
 demos/controls/themes/BlueTheme/icon_profile.gif -text
 demos/controls/themes/BlueTheme/labels.skin -text

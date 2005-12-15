@@ -18,7 +18,7 @@
       <!-- modules configured and loaded when page service is requested -->
       <modules>
         <!-- user manager module -->
-        <module id="users" class="System.Security.TUserManager" PasswordMode="Clear">
+        <module id="users" class="System.Security.TUserManager" UserFile="Demo.userFile" PasswordMode="Clear">
           <user name="demo" password="work" />
           <user name="demo2" password="work2" />
         </module>
