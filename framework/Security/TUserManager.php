@@ -241,7 +241,7 @@ class TUserManager extends TModule
 				$this->loadUserData($dom);
 			}
 			else
-				throw new TInvalidConfigurationException('usermanager_userfile_invalid',$this->_userFile);
+				throw new TConfigurationException('usermanager_userfile_invalid',$this->_userFile);
 		}
 		$this->loadUserData($config);
 		$this->_initialized=true;
