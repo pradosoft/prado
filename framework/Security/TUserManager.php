@@ -192,6 +192,11 @@ class TUser extends TComponent implements IUser
 class TUserManager extends TModule
 {
 	/**
+	 * extension name to the user file
+	 */
+	const USER_FILE_EXT='.xml';
+
+	/**
 	 * @var array list of users managed by this module
 	 */
 	private $_users=array();
@@ -278,7 +283,7 @@ class TUserManager extends TModule
 	{
 		if($this->_initialized)
 			throw new TInvalidOperationException('usermanager_userfile_unchangeable');
-		else if(($this->_userFile=Prado::getPathOfNamespace($value,self::DB_FILE_EXT))===null)
+		else if(($this->_userFile=Prado::getPathOfNamespace($value,self::USER_FILE_EXT))===null)
 			throw new TConfigurationException('usermanager_userfile_invalid',$value);
 	}
 
