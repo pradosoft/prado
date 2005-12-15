@@ -254,7 +254,15 @@ class TUserManager extends TModule
 	private function loadUserData($xmlNode)
 	{
 		foreach($xmlNode->getElementsByTagName('user') as $node)
-			$this->_users[strtolower($node->getAttribute('name'))]=$node->getAttribute('password');
+		{
+			$name=strtolower($node->getAttribute('name'));
+			$this->_users[$name]=$node->getAttribute('password');
+			if(($roles=trim($node->getAttribute('roles')))!=='')
+			{
+				foreach(explode(',',$roles) as $role)
+					$this->_roles[$name][]=$role;
+			}
+		}
 		foreach($xmlNode->getElementsByTagName('role') as $node)
 		{
 			foreach(explode(',',$node->getAttribute('users')) as $user)
