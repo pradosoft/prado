@@ -9,52 +9,68 @@
 
 <com:TLiteral Text="<literal>" Encode="true"/>
 
-<com:TTextBox 
-	ID="TextBox" 
-	Text="textbox" 
-	AutoPostBack="true" 
+<com:TTextBox
+	ID="TextBox"
+	Text="textbox"
+	AutoPostBack="true"
 	CausesValidation="false" />
 
-<com:TLabel 
-	Text="test" 
+<com:TLabel
+	Text="test"
 	AssociatedControlID="checkbox" /><br/>
 
-<com:System.Web.UI.WebControls.TButton 
-	text="Toggle Button" 
-	ForeColor="red" 
-	Font.size="18" 
+<com:System.Web.UI.WebControls.TButton
+	text="Toggle Button"
+	ForeColor="red"
+	Font.size="18"
 	Click="testClick" /> (requires membership)<br/>
 
-<com:TCheckBox 
-	Text="Checkbox" 
-	ID="checkbox" 
+<com:TCheckBox
+	Text="Checkbox"
+	ID="checkbox"
 	AutoPostBack="true" /><br/>
 
-<com:TRadioButton 
-	Text="Radiobutton" 
-	ID="radiobutton" 
+<com:TRadioButton
+	Text="Radiobutton"
+	ID="radiobutton"
 	AutoPostBack="true" /><br/>
 
-<com:TImage 
+<com:TImage
 	ImageUrl=<%~/fungii_logo.gif %> />
 
-<com:TImageButton 
-	ImageUrl=<%~/fungii_logo.gif %> 
+<com:TImageButton
+	ImageUrl=<%~/fungii_logo.gif %>
 	Click="clickImage"/><br/>
 
-<com:THyperLink 
-	Text="Visit a 'classless' page" 
+<com:THyperLink
+	Text="Visit a 'classless' page"
 	NavigateUrl="?sp=page.plain" /> |
 
-<com:THyperLink 
-	Text="Visit member only page" 
+<com:THyperLink
+	Text="Visit member only page"
 	NavigateUrl="?sp=page.private.member" />
 
-<com:TLinkButton 
-	Text="Click Me" 
-	Click="linkClicked" 
+<com:TLinkButton
+	Text="Click Me"
+	Click="linkClicked"
 	onclick="javascript:alert('you hit me')"/>
 
+<!
+<com:TListBox SelectionMode="Multiple">
+	<com:TListItem Text="a" Selected="true" />
+	<com:TListItem Text="b" />
+	<com:TListItem Text="c" />
+	<com:TListItem Text="d" Selected="true" />
+</com:TListBox>
+
+<com:TDropDownList>
+	<com:TListItem Text="a" />
+	<com:TListItem Text="b" />
+	<com:TListItem Text="c" Selected="true" />
+	<com:TListItem Text="d" />
+</com:TDropDownList>
+!>
+<%# $this->Page->TextBox->Text %>
 </div>
 </com:TForm>
 </com:TContent>

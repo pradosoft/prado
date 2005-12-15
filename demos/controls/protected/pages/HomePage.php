@@ -9,6 +9,15 @@ class HomePage extends TPage
 			$this->Theme='';
 	}
 
+	public function onLoad($param)
+	{
+		parent::onLoad($param);
+		if(!$this->IsPostBack)
+		{
+			$this->dataBind();
+		}
+	}
+
 	public function testClick($sender,$param)
 	{
 		if($sender->BackColor==='')
