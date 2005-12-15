@@ -207,6 +207,14 @@ class TUserManager extends TModule
 	 * @var string password mode, Clear|MD5|SH1
 	 */
 	private $_passwordMode='MD5';
+	/**
+	 * @var boolean whether the module has been initialized
+	 */
+	private $_initialized=false;
+	/**
+	 * @var string user/role information file
+	 */
+	private $_userFile=null;
 
 	/**
 	 * Initializes the module.
@@ -219,9 +227,30 @@ class TUserManager extends TModule
 	{
 		parent::init($application,$config);
 
-		foreach($config->getElementsByTagName('user') as $node)
+		if($this->_userFile!==null)
+		{
+			if(is_file($this->_userFile))
+			{
+				$dom=new TXmlDocument;
+				$dom->loadFromFile($this->_userFile);
+				$this->loadUserData($dom);
+			}
+			else
+				throw new TInvalidConfigurationException('usermanager_userfile_invalid',$this->_userFile);
+		}
+		$this->loadUserData($config);
+		$this->_initialized=true;
+	}
+
+	/**
+	 * Loads user/role information from an XML node.
+	 * @param TXmlElement the XML node containing the user information
+	 */
+	private function loadUserData($xmlNode)
+	{
+		foreach($xmlNode->getElementsByTagName('user') as $node)
 			$this->_users[strtolower($node->getAttribute('name'))]=$node->getAttribute('password');
-		foreach($config->getElementsByTagName('role') as $node)
+		foreach($xmlNode->getElementsByTagName('role') as $node)
 		{
 			foreach(explode(',',$node->getAttribute('users')) as $user)
 			{
@@ -229,6 +258,28 @@ class TUserManager extends TModule
 					$this->_roles[strtolower($user)][]=$node->getAttribute('name');
 			}
 		}
+	}
+
+	/**
+	 * @return string the full path to the file storing user/role information
+	 */
+	public function getUserFile()
+	{
+		return $this->_userFile;
+	}
+
+	/**
+	 * @param string user/role data file path (in namespace form). The file format is XML
+	 * whose content is similar to that user/role block in application configuration.
+	 * @throws TInvalidOperationException if the module is already initialized
+	 * @throws TConfigurationException if the file is not in proper namespace format
+	 */
+	public function setUserFile($value)
+	{
+		if($this->_initialized)
+			throw new TInvalidOperationException('usermanager_userfile_unchangeable');
+		else if(($this->_userFile=Prado::getPathOfNamespace($value,self::DB_FILE_EXT))===null)
+			throw new TConfigurationException('usermanager_userfile_invalid',$value);
 	}
 
 	/**
