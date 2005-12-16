@@ -727,22 +727,35 @@ class TControl extends TComponent
 	}
 
 	/**
-	 * Performs the databinding for this component.
-	 * Databinding a property includes evaluating the binded expression
-	 * and setting the property with the evaluation result.
+	 * Performs the databinding for this control.
 	 * @param boolean whether to raise DataBinding event.
-	 * @throws TInvalidOperationException if some bounded property is invalid
-	 * @throws TExpressionInvalidException if some bounded expression is invalid
 	 */
 	public function dataBind($raiseDataBindingEvent=true)
+	{
+		$this->dataBindProperties($raiseDataBindingEvent);
+		if($raiseDataBindingEvent)
+			$this->onDataBinding(null);
+		$this->dataBindChildren($raiseDataBindingEvent);
+	}
+
+	/**
+	 * Databinding properties of the control.
+	 */
+	protected function dataBindProperties()
 	{
 		if(isset($this->_rf[self::RF_DATA_BINDINGS]))
 		{
 			foreach($this->_rf[self::RF_DATA_BINDINGS] as $property=>$expression)
 				$this->setSubProperty($property,$this->evaluateExpression($expression));
-			if($raiseDataBindingEvent)
-				$this->onDataBinding(null);
 		}
+	}
+
+	/**
+	 * Databinding child controls.
+	 * @param boolean whether to raise DataBinding event.
+	 */
+	protected function dataBindChildren($raiseDataBindingEvent)
+	{
 		if(isset($this->_rf[self::RF_CONTROLS]))
 		{
 			foreach($this->_rf[self::RF_CONTROLS] as $control)
