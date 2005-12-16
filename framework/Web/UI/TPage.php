@@ -677,12 +677,12 @@ class TPage extends TTemplateControl
 	/**
 	 * Ensures the control is rendered within a form.
 	 * @param TControl the control to be rendered
-	 * @throws TInvalidConfigurationException if the control is outside of the form
+	 * @throws TConfigurationException if the control is outside of the form
 	 */
 	public function ensureRenderInForm($control)
 	{
 		if(!$this->_inFormRender)
-			throw new TInvalidConfigurationException('page_control_outofform',get_class($control),$control->getID(false));
+			throw new TConfigurationException('page_control_outofform',get_class($control),$control->getID(false));
 	}
 
 	/**
@@ -691,7 +691,7 @@ class TPage extends TTemplateControl
 	public function beginFormRender($writer)
 	{
 		if($this->_formRendered)
-			throw new TInvalidConfigurationException('page_singleform_required');
+			throw new TConfigurationException('page_singleform_required');
 		$this->_formRendered=true;
 		$this->_inFormRender=true;
 		$cs=$this->getClientScript();

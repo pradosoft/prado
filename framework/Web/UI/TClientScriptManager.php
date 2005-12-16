@@ -104,7 +104,7 @@ class TClientScriptManager extends TComponent
 			if(($form=$this->_page->getForm())!==null)
 				$formID=$form->getClientID();
 			else
-				throw new TInvalidConfigurationException('clientscriptmanager_form_required');
+				throw new TConfigurationException('clientscriptmanager_form_required');
 			$postback=self::POSTBACK_FUNC.'(\''.$formID.'\',\''.$control->getUniqueID().'\',\''.THttpUtility::quoteJavaScriptString($parameter).'\')';
 			if($options && $options->getAutoPostBack())
 				$postback='setTimeout(\''.THttpUtility::quoteJavaScriptString($postback).'\',0)';
@@ -156,7 +156,7 @@ class TClientScriptManager extends TComponent
 		if(($form=$this->_page->getForm())!==null)
 			$formID=$form->getClientID();
 		else
-			throw new TInvalidConfigurationException('clientscriptmanager_form_required');
+			throw new TConfigurationException('clientscriptmanager_form_required');
 		$postback=self::POSTBACK_FUNC.'(\''.$formID.'\',\''.$control->getUniqueID().'\',\''.THttpUtility::quoteJavaScriptString($parameter).'\''.$opt.')';
 		if($options && $options->getAutoPostBack())
 			$postback='setTimeout(\''.THttpUtility::quoteJavaScriptString($postback).'\',0)';
@@ -172,7 +172,7 @@ class TClientScriptManager extends TComponent
 			else
 			{
 				$base = Prado::getFrameworkPath();
-				$clientScripts = self::SCRIPT_DIR;				
+				$clientScripts = self::SCRIPT_DIR;
 				$file = "{$base}/{$clientScripts}/{$scriptFile}.js";
 				$assetManager = $this->_page->getService()->getAssetManager();
 				$url= $assetManager->publishFilePath($file);
