@@ -16,7 +16,7 @@
  * TList implements an integer-indexed collection class.
  *
  * You can access, append, insert, remove an item by using
- * {@link itemAt}, {@link add}, {@link addAt}, {@link remove}, and {@link removeAt}.
+ * {@link itemAt}, {@link add}, {@link insert}, {@link remove}, and {@link removeAt}.
  * To get the number of the items in the list, use {@link getCount}.
  * TList can also be used like a regular array as follows,
  * <code>
@@ -123,7 +123,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 * @throws TInvalidDataValueException If the index specified exceeds the bound
 	 * @throws TInvalidOperationException If the item is not allowed to be added
 	 */
-	public function addAt($index,$item)
+	public function insert($index,$item)
 	{
 		if($this->canAddItem($item))
 		{
@@ -307,7 +307,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 		else
 		{
 			$this->removeAt($offset);
-			$this->addAt($offset,$item);
+			$this->insert($offset,$item);
 		}
 	}
 

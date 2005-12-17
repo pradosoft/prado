@@ -101,16 +101,16 @@ class utList extends UnitTestCase
 	}
 
 
-	public function testAddAt()
+	public function testInsert()
 	{
-		$this->list->addAt(0,$this->item3);
+		$this->list->insert(0,$this->item3);
 		$this->assertEqual(3,$this->list->getCount());
 		$this->assertEqual(2,$this->list->indexOf($this->item2));
 		$this->assertEqual(0,$this->list->indexOf($this->item3));
 		$this->assertEqual(1,$this->list->indexOf($this->item1));
 		try
 		{
-			$this->list->addAt(4,$this->item3);
+			$this->list->insert(4,$this->item3);
 			$this->fail('exception not raised when adding item at an out-of-range index');
 		}
 		catch(TInvalidDataValueException $e)

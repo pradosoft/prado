@@ -171,7 +171,7 @@ class utComponent extends UnitTestCase
 		$this->assertTrue($this->component->getEventHandlers('MyEvent')->getCount()===3);
 		$this->component->MyEvent[0]='foo4';
 		$this->assertTrue($this->component->getEventHandlers('MyEvent')->getCount()===3);
-		$this->component->getEventHandlers('MyEvent')->addAt(0,'foo5');
+		$this->component->getEventHandlers('MyEvent')->insert(0,'foo5');
 		$this->assertTrue($this->component->MyEvent->Count===4 && $this->component->MyEvent[0]==='foo5');
 		$this->component->MyEvent='foo6';
 		$this->assertTrue($this->component->MyEvent->Count===5 && $this->component->MyEvent[4]==='foo6');*/
@@ -219,8 +219,8 @@ class utComponent extends UnitTestCase
 			$this->pass();
 		}
 	}
-	
-	
+
+
 	/**
 	 * Tests the TPropertyValue::ensureBoolean function
 	 */
@@ -236,7 +236,7 @@ class utComponent extends UnitTestCase
 		$this->assertEqual(TPropertyValue::ensureBoolean("0"), false);
 		$this->assertEqual(TPropertyValue::ensureBoolean(array()), false);
 		$this->assertEqual(TPropertyValue::ensureBoolean(null), false);
-		
+
 		$this->assertEqual(TPropertyValue::ensureBoolean('true'), true);
 		$this->assertEqual(TPropertyValue::ensureBoolean('True'), true);
 		$this->assertEqual(TPropertyValue::ensureBoolean(1), true);
@@ -244,7 +244,7 @@ class utComponent extends UnitTestCase
 		$this->assertEqual(TPropertyValue::ensureBoolean("-1"), true);
 		$this->assertEqual(TPropertyValue::ensureBoolean(array("foboar")), true);
 	}
-	
+
 	/**
 	 * Tests the TPropertyValue::ensureString function
 	 */
@@ -255,7 +255,7 @@ class utComponent extends UnitTestCase
 		$this->assertEqual(TPropertyValue::ensureString(false), "false");
 		$this->assertEqual(TPropertyValue::ensureString(array("foo","bar")), (string)array("foo","bar"));
 	}
-	
+
 	/**
 	 * Tests the TPropertyValue::ensureInteger function
 	 */
@@ -265,7 +265,7 @@ class utComponent extends UnitTestCase
 		$this->assertEqual(TPropertyValue::ensureInteger("123"), 123);
 		$this->assertEqual(TPropertyValue::ensureInteger(""), 0);
 	}
-	
+
 	/**
 	 * Tests the TPropertyValue::ensureFloat function
 	 */
@@ -275,7 +275,7 @@ class utComponent extends UnitTestCase
 		$this->assertEqual(TPropertyValue::ensureFloat("123.123"), 123.123);
 		$this->assertEqual(TPropertyValue::ensureFloat(""), 0.0);
 	}
-	
+
 	/**
 	 * Tests the TPropertyValue::ensureArray function
 	 */
@@ -286,7 +286,7 @@ class utComponent extends UnitTestCase
 		$this->assertEqual(TPropertyValue::ensureArray("(1,2,3)"), array(1,2,3));
 		$this->assertEqual(TPropertyValue::ensureArray(""), array());
 	}
-	
+
 	/**
 	 * Tests the TPropertyValue::ensureObject function
 	 */
@@ -294,7 +294,7 @@ class utComponent extends UnitTestCase
 	{
 		$this->assertEqual(TPropertyValue::ensureObject($this->component), $this->component);
 	}
-	
+
 	/**
 	 * Tests the TPropertyValue::ensureEnum function
 	 */

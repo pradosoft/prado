@@ -300,12 +300,12 @@ class TComponent
 	 * getting and setting properties, e.g.,
 	 * <code>
 	 * $component->Click[]=array($object,'buttonClicked');
-	 * $component->Click->addAt(0,array($object,'buttonClicked'));
+	 * $component->Click->insert(0,array($object,'buttonClicked'));
 	 * </code>
 	 * which are equivalent to the following
 	 * <code>
 	 * $component->getEventHandlers('Click')->add(array($object,'buttonClicked'));
-	 * $component->getEventHandlers('Click')->addAt(0,array($object,'buttonClicked'));
+	 * $component->getEventHandlers('Click')->insert(0,array($object,'buttonClicked'));
 	 * </code>
 	 *
 	 * @param string the event name
