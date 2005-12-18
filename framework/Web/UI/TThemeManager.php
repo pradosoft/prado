@@ -282,7 +282,7 @@ class TTheme extends TComponent
 							throw new TConfigurationException('theme_skinid_duplicated',$type,$id,dirname($themePath));
 						foreach($skin[2] as $name=>$value)
 						{
-							if(is_array($value) && $value[0]===0)
+							if(is_array($value) && ($value[0]===TTemplate::CONFIG_DATABIND || $value[0]===TTemplate::CONFIG_PARAMETER))
 								throw new TConfigurationException('theme_databind_forbidden',dirname($themePath),$type,$id);
 						}
 						$this->_skins[$type][$id]=$skin[2];
@@ -323,9 +323,9 @@ class TTheme extends TComponent
 			{
 				if(is_array($value))
 				{
-					if($value[0]===1)
+					if($value[0]===TTemplate::CONFIG_EXPRESSION)
 						$value=$this->evaluateExpression($value[1]);
-					else if($value[0]===2)
+					else if($value[0]===TTemplate::CONFIG_ASSET)
 						$value=$this->_themeUrl.'/'.ltrim($value[1],'/');
 				}
 				if(strpos($name,'.')===false)	// is simple property or custom attribute

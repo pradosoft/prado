@@ -143,6 +143,14 @@ class TTemplate extends TComponent implements ITemplate
 	const REGEX_RULES='/<!.*?!>|<!--.*?-->|<\/?com:([\w\.]+)((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?"|\s*[\w\.]+=<%.*?%>)*)\s*\/?>|<\/?prop:([\w\.]+)\s*>|<%@\s*((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?")*)\s*%>|<%[#=]?(.*?)%>/msS';
 
 	/**
+	 * Different configurations of component property/event/attribute
+	 */
+	const CONFIG_DATABIND=0;
+	const CONFIG_EXPRESSION=1;
+	const CONFIG_ASSET=2;
+	const CONFIG_PARAMETER=3;
+
+	/**
 	 * @var array list of component tags and strings
 	 */
 	private $_tpl=array();
@@ -158,6 +166,11 @@ class TTemplate extends TComponent implements ITemplate
 	 * @var string template file path (if available)
 	 */
 	private $_tplFile=null;
+	/**
+	 * @var TAssetManager asset manager
+	 */
+	private $_assetManager;
+
 
 	/**
 	 * Constructor.
@@ -199,27 +212,13 @@ class TTemplate extends TComponent implements ITemplate
 	public function instantiateIn($tplControl)
 	{
 		$page=$tplControl->getPage();
-		$assetManager=$page->getService()->getAssetManager();
+		$this->_assetManager=$page->getService()->getAssetManager();
 		$controls=array();
 		foreach($this->_tpl as $key=>$object)
 		{
 			if(isset($object[2]))	// component
 			{
-				if(strpos($object[1],'.')===false)
-				{
-					if(class_exists($object[1],false))
-						$component=new $object[1];
-					else
-					{
-						include_once($object[1].Prado::CLASS_FILE_EXT);
-						if(class_exists($object[1],false))
-							$component=new $object[1];
-						else
-							throw new TTemplateRuntimeException('template_component_unknown',$object[1]);
-					}
-				}
-				else
-					$component=Prado::createComponent($object[1]);
+				$component=Prado::createComponent($object[1]);
 				if($component instanceof TControl)
 				{
 					$controls[$key]=$component;
@@ -234,72 +233,7 @@ class TTemplate extends TComponent implements ITemplate
 					$component->applyStyleSheetSkin($page);
 					// apply attributes
 					foreach($object[2] as $name=>$value)
-					{
-						if($component->hasEvent($name))		// is an event
-						{
-							if(is_string($value))
-							{
-								if(strpos($value,'.')===false)
-									$component->attachEventHandler($name,array($component,'TemplateControl.'.$value));
-								else
-									$component->attachEventHandler($name,array($component,$value));
-							}
-							else
-								throw new TTemplateRuntimeException('template_event_invalid',get_class($component),$name);
-						}
-						else if(strpos($name,'.')===false)	// is simple property or custom attribute
-						{
-							if($component->hasProperty($name))
-							{
-								if($component->canSetProperty($name))
-								{
-									$setter='set'.$name;
-									if(is_string($value))
-										$component->$setter($value);
-									else if($value[0]===0)
-										$component->bindProperty($name,$value[1]);
-									else if($value[0]===1)
-										$component->$setter($component->evaluateExpression($value[1]));
-									else  // url
-									{
-										$url=$assetManager->publishFilePath($this->_contextPath.'/'.$value[1]);
-										$component->$setter($url);
-									}
-								}
-								else
-									throw new TTemplateRuntimeException('template_property_readonly',get_class($component),$name);
-							}
-							else if($component->getAllowCustomAttributes())
-							{
-								if(is_array($value))
-								{
-									if($value[0]===1)
-										$value=$component->evaluateExpression($value[1]);
-									else if($value[0]===2)
-										$value=$assetManager->publishFilePath($this->_contextPath.'/'.ltrim($value[1],'/'));
-									else
-										throw new TTemplateRuntimeException('template_attribute_unbindable',get_class($component),$name);
-								}
-								$component->getAttributes()->add($name,$value);
-							}
-							else
-								throw new TTemplateRuntimeException('template_property_undefined',get_class($component),$name);
-						}
-						else	// complex property
-						{
-							if(is_string($value))
-								$component->setSubProperty($name,$value);
-							else if($value[0]===0)
-								$component->bindProperty($name,$value[1]);
-							else if($value[0]===1)
-								$component->setSubProperty($component->evaluateExpression($value[1]));
-							else
-							{
-								$url=$assetManager->publishFilePath($this->_contextPath.'/'.$value[1]);
-								$component->$setter($url);
-							}
-						}
-					}
+						$this->configureControl($component,$name,$value);
 					$parent=isset($controls[$object[0]])?$controls[$object[0]]:$tplControl;
 					$component->createdOnTemplate($parent);
 				}
@@ -312,30 +246,7 @@ class TTemplate extends TComponent implements ITemplate
 							unset($object[2]['id']);
 					}
 					foreach($object[2] as $name=>$value)
-					{
-						if($component->hasProperty($name))
-						{
-							if($component->canSetProperty($name))
-							{
-								$setter='set'.$name;
-								if(is_string($value))
-									$component->$setter($value);
-								else if($value[0]===1)
-									$component->$setter($component->evaluateExpression($value[1]));
-								else if($value[0]===2)
-								{
-									$url=$assetManager->publishFilePath($this->_contextPath.'/'.ltrim($value[1],'/'));
-									$component->$setter($url);
-								}
-								else
-									throw new TTemplateRuntimeException('template_property_unbindable',get_class($component),$name);
-							}
-							else
-								throw new TTemplateRuntimeException('template_property_readonly',get_class($component),$name);
-						}
-						else
-							throw new TTemplateRuntimeException('template_property_undefined',get_class($component),$name);
-					}
+						$this->configureComponent($component,$name,$value);
 					$parent=isset($controls[$object[0]])?$controls[$object[0]]:$tplControl;
 					$parent->addParsedObject($component);
 				}
@@ -350,6 +261,168 @@ class TTemplate extends TComponent implements ITemplate
 					$tplControl->addParsedObject($object[1]);
 			}
 		}
+	}
+
+	/**
+	 * Configures a property/event of a control.
+	 * @param TControl control to be configured
+	 * @param string property name
+	 * @param mixed property initial value
+	 */
+	protected function configureControl($control,$name,$value)
+	{
+		if(is_string($value) && $control->hasEvent($name))		// is an event
+			$this->configureEvent($control,$name,$value);
+		else if(strpos($name,'.')===false)	// is a simple property or custom attribute
+		{
+			if($control->hasProperty($name))
+				$this->configureProperty($control,$name,$value);
+			else if($control->getAllowCustomAttributes())
+				$this->configureAttribute($control,$name,$value);
+			else
+				throw new TTemplateRuntimeException('template_property_undefined',get_class($control),$name);
+		}
+		else	// is a subproperty
+		{
+			$this->configureSubProperty($control,$name,$value);
+		}
+	}
+
+	/**
+	 * Configures a property of a non-control component.
+	 * @param TComponent component to be configured
+	 * @param string property name
+	 * @param mixed property initial value
+	 */
+	protected function configureComponent($component,$name,$value)
+	{
+		if(strpos($name,'.')===false)	// is a simple property or custom attribute
+		{
+			if($component->hasProperty($name))
+				$this->configureProperty($component,$name,$value);
+			else
+				throw new TTemplateRuntimeException('template_property_undefined',get_class($component),$name);
+		}
+		else	// is a subproperty
+		{
+			$this->configureSubProperty($component,$name,$value);
+		}
+	}
+
+	/**
+	 * Configures an event for a control.
+	 * @param TControl control to be configured
+	 * @param string event name
+	 * @param string event handler
+	 */
+	protected function configureEvent($component,$name,$value)
+	{
+		if(strpos($value,'.')===false)
+			$component->attachEventHandler($name,array($component,'TemplateControl.'.$value));
+		else
+			$component->attachEventHandler($name,array($component,$value));
+	}
+
+	/**
+	 * Configures a simple property for a component.
+	 * @param TComponent component to be configured
+	 * @param string property name
+	 * @param mixed property initial value
+	 */
+	protected function configureProperty($component,$name,$value)
+	{
+		if($component->canSetProperty($name))
+		{
+			$setter='set'.$name;
+			if(is_array($value))
+			{
+				switch($value[0])
+				{
+					case self::CONFIG_DATABIND:
+						$component->bindProperty($name,$value[1]);
+						break;
+					case self::CONFIG_EXPRESSION:
+						$component->$setter($component->evaluateExpression($value[1]));
+						break;
+					case self::CONFIG_ASSET:		// asset URL
+						$url=$this->_assetManager->publishFilePath($this->_contextPath.'/'.$value[1]);
+						$component->$setter($url);
+						break;
+					case self::CONFIG_PARAMETER:		// application parameter
+						$component->$setter(Prado::getApplication()->getParameters()->itemAt($value[1]));
+						break;
+					default:	// an error if reaching here
+						break;
+				}
+			}
+			else
+				$component->$setter($value);
+		}
+		else
+			throw new TTemplateRuntimeException('template_property_readonly',get_class($component),$name);
+	}
+
+	/**
+	 * Configures a subproperty for a component.
+	 * @param TComponent component to be configured
+	 * @param string subproperty name
+	 * @param mixed subproperty initial value
+	 */
+	protected function configureSubProperty($component,$name,$value)
+	{
+		if(is_array($value))
+		{
+			switch($value[0])
+			{
+				case self::CONFIG_DATABIND:		// databinding
+					$component->bindProperty($name,$value[1]);
+					break;
+				case self::CONFIG_EXPRESSION:		// expression
+					$component->setSubProperty($name,$component->evaluateExpression($value[1]));
+					break;
+				case self::CONFIG_ASSET:		// asset URL
+					$url=$this->_assetManager->publishFilePath($this->_contextPath.'/'.$value[1]);
+					$component->setSubProperty($name,$url);
+					break;
+				case self::CONFIG_PARAMETER:		// application parameter
+					$component->setSubProperty($name,Prado::getApplication()->getParameters()->itemAt($value[1]));
+					break;
+				default:	// an error if reaching here
+					break;
+			}
+		}
+		else
+			$component->setSubProperty($name,$value);
+	}
+
+	/**
+	 * Configures a custom attribute for a control.
+	 * @param TControl control to be configured
+	 * @param string attribute name
+	 * @param mixed attribute initial value
+	 */
+	protected function configureAttribute($control,$name,$value)
+	{
+		if(is_array($value))
+		{
+			switch($value[0])
+			{
+				case self::CONFIG_DATABIND:		// databinding
+					throw new TTemplateRuntimeException('template_attribute_unbindable',get_class($control),$name);
+				case self::CONFIG_EXPRESSION:
+					$value=$control->evaluateExpression($value[1]);
+					break;
+				case self::CONFIG_ASSET:
+					$value=$this->_assetManager->publishFilePath($this->_contextPath.'/'.ltrim($value[1],'/'));
+					break;
+				case self::CONFIG_PARAMETER:
+					$value=Prado::getApplication()->getParameters()->itemAt($value[1]);
+					break;
+				default:
+					break;
+			}
+		}
+		$control->getAttributes()->add($name,$value);
 	}
 
 	/**
@@ -589,7 +662,7 @@ class TTemplate extends TComponent implements ITemplate
 			if($value[0]==='\'' || $value[0]==='"')
 			{
 				$value=substr($value,1,strlen($value)-2);
-				if(!preg_match('/(<%#.*?%>|<%=.*?%>|<%~.*?%>)/msS',$value))
+				if(!preg_match('/(<%#.*?%>|<%=.*?%>|<%~.*?%>|<%\\$.*?%>)/msS',$value))
 				{
 					$attributes[$name]=$value;
 					continue;
@@ -598,11 +671,13 @@ class TTemplate extends TComponent implements ITemplate
 			if($value[0]==='<')
 			{
 				if($value[2]==='#') // databind
-					$attributes[$name]=array(0,substr($value,3,strlen($value)-5));
+					$attributes[$name]=array(self::CONFIG_DATABIND,substr($value,3,strlen($value)-5));
 				else if($value[2]==='=') // a dynamic initialization
-					$attributes[$name]=array(1,substr($value,3,strlen($value)-5));
+					$attributes[$name]=array(self::CONFIG_EXPRESSION,substr($value,3,strlen($value)-5));
 				else if($value[2]==='~') // a URL
-					$attributes[$name]=array(2,trim(substr($value,3,strlen($value)-5)));
+					$attributes[$name]=array(self::CONFIG_ASSET,trim(substr($value,3,strlen($value)-5)));
+				else if($value[2]==='$')
+					$attributes[$name]=array(self::CONFIG_PARAMETER,trim(substr($value,3,strlen($value)-5)));
 				else
 					$attributes[$name]=substr($value,2,strlen($value)-4);
 			}
