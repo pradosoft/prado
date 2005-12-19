@@ -318,6 +318,29 @@ class TComponent
 	}
 
 	/**
+	 * Detaches an existing event handler.
+	 * This method is the opposite of {@link attachEventHandler}.
+	 * @param string event name
+	 * @param string callback the event handler to be removed
+	 * @return boolean if the removal is successful
+	 */
+	public function detachEventHandler($name,$handler)
+	{
+		if($this->hasEventHandler($name))
+		{
+			try
+			{
+				$this->getEventHandlers($name)->remove($handler);
+				return true;
+			}
+			catch(Exception $e)
+			{
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Raises an event.
 	 * This method represents the happening of an event and will
 	 * invoke all attached event handlers for the event.
