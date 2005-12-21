@@ -55,10 +55,10 @@
 	Click="linkClicked"
 	onclick="javascript:alert('you hit me')"/>
 
-<!
-<com:TListBox SelectionMode="Multiple">
+
+<com:TListBox SelectionMode="Single" SelectedIndexChanged="testClick" AutoPostBack="true">
 	<com:TListItem Text="a" Selected="true" />
-	<com:TListItem Text="b" />
+	<com:TListItem Text=<%$ adminEmail %> />
 	<com:TListItem Text="c" />
 	<com:TListItem Text="d" Selected="true" />
 </com:TListBox>
@@ -69,7 +69,7 @@
 	<com:TListItem Text="c" Selected="true" />
 	<com:TListItem Text="d" />
 </com:TDropDownList>
-!>
+
 <%# $this->Page->TextBox->Text %>
 </div>
 </com:TForm>

@@ -728,14 +728,12 @@ class TControl extends TComponent
 
 	/**
 	 * Performs the databinding for this control.
-	 * @param boolean whether to raise DataBinding event.
 	 */
-	public function dataBind($raiseDataBindingEvent=true)
+	public function dataBind()
 	{
-		$this->dataBindProperties($raiseDataBindingEvent);
-		if($raiseDataBindingEvent)
-			$this->onDataBinding(null);
-		$this->dataBindChildren($raiseDataBindingEvent);
+		$this->dataBindProperties();
+		$this->onDataBinding(null);
+		$this->dataBindChildren();
 	}
 
 	/**
@@ -752,15 +750,14 @@ class TControl extends TComponent
 
 	/**
 	 * Databinding child controls.
-	 * @param boolean whether to raise DataBinding event.
 	 */
-	protected function dataBindChildren($raiseDataBindingEvent)
+	protected function dataBindChildren()
 	{
 		if(isset($this->_rf[self::RF_CONTROLS]))
 		{
 			foreach($this->_rf[self::RF_CONTROLS] as $control)
 				if($control instanceof TControl)
-					$control->dataBind($raiseDataBindingEvent);
+					$control->dataBind();
 		}
 	}
 

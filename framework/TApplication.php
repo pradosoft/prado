@@ -98,11 +98,6 @@ require_once(PRADO_DIR.'/Web/Services/TPageService.php');
  * $application=new TApplication($configFile);
  * $application->run();
  * </code>
- * - The parsed application configuration file is cached.
- * <code>
- * $application=new TApplication($configFile,$cacheFile);
- * $application->run();
- * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -112,9 +107,26 @@ require_once(PRADO_DIR.'/Web/Services/TPageService.php');
 class TApplication extends TComponent
 {
 	/**
+	 * application state
+	 */
+	const STATE_OFF='Off';
+	const STATE_DEBUG='Debug';
+	const STATE_NORMAL='Normal';
+	const STATE_PERFORMANCE='Performance';
+
+	/**
 	 * Default service ID
 	 */
 	const DEFAULT_SERVICE='page';
+	/**
+	 * Config cache file
+	 */
+	const CONFIGCACHE_FILE='config.cache';
+	/**
+	 * Global data file
+	 */
+	const GLOBAL_FILE='global.cache';
+
 	/**
 	 * @var array list of events that define application lifecycles
 	 */
@@ -167,6 +179,18 @@ class TApplication extends TComponent
 	 */
 	private $_configFile;
 	/**
+	 * @var string directory storing application state
+	 */
+	private $_statePath;
+	/**
+	 * @var boolean if any global state is changed during the current request
+	 */
+	private $_stateChanged=false;
+	/**
+	 * @var array global variables (persistent across sessions, requests)
+	 */
+	private $_globals=array();
+	/**
 	 * @var string cache file
 	 */
 	private $_cacheFile;
@@ -208,16 +232,24 @@ class TApplication extends TComponent
 	 * Initializes the application singleton. This method ensures that users can
 	 * only create one application instance.
 	 * @param string configuration file path (absolute or relative to current running script)
-	 * @param string cache file path. This is optional. If it is present, it will
-	 *               be used to store and load parsed application configuration (to improve performance).
+	 * @param string a directory used to store application-level persistent data. Defaults to the path having the application configuration file.
+	 * @param boolean whether to cache application configuration. Defaults to true.
+	 * @throws TConfigurationException if configuration file cannot be read or the state path is invalid.
 	 */
-	public function __construct($configFile,$cacheFile=null)
+	public function __construct($configFile,$statePath=null,$cacheConfig=true)
 	{
 		parent::__construct();
 		Prado::setApplication($this);
 		if(($this->_configFile=realpath($configFile))===false || !is_file($this->_configFile))
-			throw new TIOException('application_configfile_inexistent',$configFile);
-		$this->_cacheFile=$cacheFile;
+			throw new TConfigurationException('application_configfile_inexistent',$configFile);
+		if($statePath===null)
+			$this->_statePath=dirname($this->_configFile);
+		else if(is_dir($statePath) && is_writable($statePath))
+			$this->_statePath=$statePath;
+		else
+			throw new TConfigurationException('application_statepath_invalid',$statePath);
+		$this->_cacheFile=$cacheConfig ? $this->_statePath.'/'.self::CONFIGCACHE_FILE : null;
+
 		// generates unique ID by hashing the configuration file path
 		$this->_uniqueID=md5($this->_configFile);
 	}
@@ -232,7 +264,7 @@ class TApplication extends TComponent
 	{
 		try
 		{
-			$this->initApplication($this->_configFile,$this->_cacheFile);
+			$this->initApplication();
 			$n=count(self::$_steps);
 			$this->_step=0;
 			$this->_requestCompleted=false;
@@ -262,6 +294,82 @@ class TApplication extends TComponent
 	public function completeRequest()
 	{
 		$this->_requestCompleted=true;
+	}
+
+	/**
+	 * Returns a global value.
+	 *
+	 * A global value is one that is persistent across users sessions and requests.
+	 * @param string the name of the value to be returned
+	 * @param mixed the default value. If $key is not found, $defaultValue will be returned
+	 * @return mixed the global value corresponding to $key
+	 */
+	public function getGlobal($key,$defaultValue=null)
+	{
+		return isset($this->_globals[$key])?$this->_globals[$key]:$defaultValue;
+	}
+
+	/**
+	 * Sets a global value.
+	 *
+	 * A global value is one that is persistent across users sessions and requests.
+	 * Make sure that the value is serializable and unserializable.
+	 * @param string the name of the value to be returned
+	 * @param mixed the global value to be set
+	 * @param mixed the default value. If $key is not found, $defaultValue will be returned
+	 */
+	public function setGlobal($key,$value,$defaultValue=null)
+	{
+		if(!$this->_stateChanged && isset($this->_globals[$key]) && $this->_globals[$key]===$value)
+			$this->_stateChanged=true;
+		if($value===$defaultValue)
+			unset($this->_globals[$key]);
+		else
+			$this->_globals[$key]=$value;
+	}
+
+	/**
+	 * Loads global values from persistent storage.
+	 * This method is invoked when {@link onLoadState LoadState} event is raised.
+	 * After this method, values that are stored in previous requests become
+	 * available to the current request via {@link getGlobal}.
+	 */
+	protected function loadGlobals()
+	{
+		if(($cache=$this->getCache())!==null && ($value=$cache->get('prado:globals'))!==false)
+			$this->_globals=$value;
+		else
+		{
+			if(($content=@file_get_contents($this->getStatePath().'/'.self::GLOBAL_FILE))!==false)
+				$this->_globals=unserialize($content);
+		}
+	}
+
+	/**
+	 * Saves global values into persistent storage.
+	 * This method is invoked when {@link onSaveState SaveState} event is raised.
+	 */
+	protected function saveGlobals()
+	{
+		if(!$this->_stateChanged)
+			return;
+		$content=serialize($this->_globals);
+		$saveFile=true;
+		if(($cache=$this->getCache())!==null)
+		{
+			if($cache->get('prado:globals')!==$content)
+				$cache->set('prado:globals',$content);
+			else
+				$saveFile=false;
+		}
+		if($saveFile)
+		{
+			$fileName=$this->getStatePath().'/'.self::GLOBAL_FILE;
+			if(version_compare(phpversion(),'5.1.0','>='))
+				file_put_contents($fileName,$content,LOCK_EX);
+			else
+				file_put_contents($fileName,$content);
+		}
 	}
 
 	/**
@@ -301,7 +409,7 @@ class TApplication extends TComponent
 	 */
 	public function setMode($value)
 	{
-		$this->_mode=TPropertyValue::ensureEnum($value,array('Off','Debug','Normal','Performance'));
+		$this->_mode=TPropertyValue::ensureEnum($value,array(self::STATE_OFF,self::STATE_DEBUG,self::STATE_NORMAL,self::STATE_PERFORMANCE));
 	}
 
 	/**
@@ -310,6 +418,15 @@ class TApplication extends TComponent
 	public function getConfigurationFile()
 	{
 		return $this->_configFile;
+	}
+
+	/**
+	 * Gets the directory storing application-level persistent data.
+	 * @return string application state path
+	 */
+	public function getStatePath()
+	{
+		return $this->_statePath;
 	}
 
 	/**
@@ -377,6 +494,27 @@ class TApplication extends TComponent
 	public function setRequest(THttpRequest $request)
 	{
 		$this->_request=$request;
+	}
+
+	/**
+	 * @return TSecurityManager security manager module
+	 */
+	public function getSecurityManager()
+	{
+		if(!$this->_security)
+		{
+			$this->_security=new TSecurityManager;
+			$this->_security->init($this,null);
+		}
+		return $this->_security;
+	}
+
+	/**
+	 * @param TSecurityManager security manager module
+	 */
+	public function setSecurityManager(TSecurityManager $manager)
+	{
+		$this->_security=$manager;
 	}
 
 	/**
@@ -493,26 +631,26 @@ class TApplication extends TComponent
 	 * @param string cache file path, empty if no present or needed
 	 * @throws TConfigurationException if module is redefined of invalid type, or service not defined or of invalid type
 	 */
-	protected function initApplication($configFile,$cacheFile)
+	protected function initApplication()
 	{
-		if($cacheFile===null || @filemtime($cacheFile)<filemtime($configFile))
+		if($this->_cacheFile===null || @filemtime($this->_cacheFile)<filemtime($this->_configFile))
 		{
 			$config=new TApplicationConfiguration;
-			$config->loadFromFile($configFile);
-			if($cacheFile!==null)
+			$config->loadFromFile($this->_configFile);
+			if($this->_cacheFile!==null)
 			{
-				if(($fp=fopen($cacheFile,'wb'))!==false)
+				if(($fp=fopen($this->_cacheFile,'wb'))!==false)
 				{
 					fputs($fp,Prado::serialize($config));
 					fclose($fp);
 				}
 				else
-					syslog(LOG_WARNING,'Prado application config cache file "'.$cacheFile.'" cannot be created.');
+					syslog(LOG_WARNING,'Prado application config cache file "'.$this->_cacheFile.'" cannot be created.');
 			}
 		}
 		else
 		{
-			$config=Prado::unserialize(file_get_contents($cacheFile));
+			$config=Prado::unserialize(file_get_contents($this->_cacheFile));
 		}
 
 
@@ -644,6 +782,7 @@ class TApplication extends TComponent
 	 */
 	public function onLoadState($param)
 	{
+		$this->loadGlobals();
 		$this->raiseEvent('LoadState',$this,$param);
 	}
 
@@ -695,6 +834,7 @@ class TApplication extends TComponent
 	public function onSaveState($param)
 	{
 		$this->raiseEvent('SaveState',$this,$param);
+		$this->saveGlobals();
 	}
 
 	/**

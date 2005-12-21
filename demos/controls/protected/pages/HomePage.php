@@ -14,7 +14,7 @@ class HomePage extends TPage
 		parent::onLoad($param);
 		if(!$this->IsPostBack)
 		{
-			$this->dataBind();
+			//$this->dataBind();
 		}
 	}
 

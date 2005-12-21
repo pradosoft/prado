@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <configuration>
-  <authorization>
-    <deny pages="home" users="?" verb="post" />
-  </authorization>
   <pages Theme="BlueTheme">
     <page id="home" class="HomePage" />
     <page id="login" class="LoginPage" />

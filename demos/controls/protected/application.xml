@@ -27,4 +27,7 @@
       </modules>
     </service>
   </services>
+  <parameters>
+    <parameter id="adminEmail">foo@foo.com</parameter>
+  </parameters>
 </application>

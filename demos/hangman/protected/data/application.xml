@@ -2,8 +2,8 @@
 
 <application id="hangman" mode="Debug">
   <paths>
-    <alias id="Application" path="." />
-    <alias id="Pages" path="pages" />
+    <alias id="Application" path=".." />
+    <alias id="Pages" path="../pages" />
   </paths>
   <services>
     <service id="page" BasePath="Pages" DefaultPage="home" />

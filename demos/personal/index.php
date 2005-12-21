@@ -8,7 +8,7 @@ if(!is_writable(APPLICATION_PATH.'/assets'))
 	die('Please make sure that the directory "'.APPLICATION_PATH.'/assets'.'" is writable by Web server process.');
 
 require_once(APPLICATION_PATH.'/../../framework/prado.php');
-$application=new TApplication(APPLICATION_PATH.'/protected/application.xml',APPLICATION_PATH.'/protected/Data/application.cache');
+$application=new TApplication(APPLICATION_PATH.'/protected/Data/application.xml');
 $application->run();
 
 ?>

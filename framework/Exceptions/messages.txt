@@ -24,6 +24,7 @@ map_item_unremovable					= The item cannot be removed from the map.
 map_data_not_iterable					= Data must be either an array or an object implementing Traversable interface.
 
 application_configfile_inexistent		= Application configuration file '%s' does not exist.
+application_statepath_invalid			= Application state path '%s' does not exist or is not writable by Web server process.
 application_module_existing				= Application module '%s' cannot be registered twice.
 application_service_invalid				= Service '%s' must implement IService interface.
 application_service_unknown				= Requested service '%s' is not defined.

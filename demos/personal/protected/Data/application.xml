@@ -2,7 +2,7 @@
 
 <application>
   <paths>
-    <alias id="Application" path="." />
+    <alias id="Application" path=".." />
   </paths>
   <!-- modules configured and loaded for all services -->
   <modules>
