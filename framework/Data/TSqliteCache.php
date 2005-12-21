@@ -15,10 +15,11 @@
  *
  * TSqliteCache implements a cache application module based on SQLite database.
  *
- * The database file is specified by the DbFile property. This property must
- * be set before {@link init} is invoked. If the specified database file does not
- * exist, it will be created automatically.  Make sure the directory containing
- * the specified DB file and the file itself must be writable by the Web server process.
+ * The database file is specified by the {@link setDbFile DbFile} property.
+ * If not set, the database file will be created under the system state path.
+ * If the specified database file does not exist, it will be created automatically.
+ * Make sure the directory containing the specified DB file and the file itself is
+ * writable by the Web server process.
  *
  * The following basic cache operations are implemented:
  * - {@link get} : retrieve the value with a key (if any) from cache
@@ -120,7 +121,7 @@ class TSqliteCache extends TModule implements ICache
 		if(!function_exists('sqlite_open'))
 			throw new TConfigurationException('sqlitecache_extension_required');
 		if($this->_file===null)
-			throw new TConfigurationException('sqlitecache_dbfile_required');
+			$this->_file=$application->getStatePath().'/sqlite.cache';
 		$error='';
 		if(($this->_db=new SQLiteDatabase($this->_file,0666,$error))===false)
 			throw new TConfigurationException('sqlitecache_connection_failed',$error);
