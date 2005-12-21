@@ -17,7 +17,7 @@ Prado::using('System.Web.UI.TPage');
 Prado::using('System.Web.UI.TTemplateManager');
 Prado::using('System.Web.UI.TThemeManager');
 Prado::using('System.Web.UI.TAssetManager');
-Prado::using('System.Web.UI.THiddenFieldPageStatePersister');
+Prado::using('System.Web.UI.TPageStatePersister');
 
 /**
  * TPageService class.
@@ -327,7 +327,7 @@ class TPageService extends TComponent implements IService
 	{
 		if(!$this->_pageStatePersister)
 		{
-			$this->_pageStatePersister=new THiddenFieldPageStatePersister;
+			$this->_pageStatePersister=new TPageStatePersister;
 			$this->_pageStatePersister->init($this->_application,null);
 		}
 		return $this->_pageStatePersister;
