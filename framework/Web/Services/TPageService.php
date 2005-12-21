@@ -742,9 +742,9 @@ class TPageConfiguration extends TComponent
 				foreach($pagesNode->getElementsByTagName('page') as $node)
 				{
 					$properties=$node->getAttributes();
-					$type=$properties->remove('class');
-					$id=$properties->itemAt('id');
-					if($id===null || $type===null)
+					if(($type=$properties->remove('class'))===null)
+						$type='TPage';
+					if(($id=$properties->itemAt('id'))===null)
 						throw new TConfigurationException('pageserviceconf_page_invalid',$configPath);
 					if($id===$page)
 					{

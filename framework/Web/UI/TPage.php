@@ -212,7 +212,7 @@ class TPage extends TTemplateControl
 	 */
 	public function setTemplateFile($value)
 	{
-		if(($templateFile=Prado::getPathOfNamespace($value,TTemplateManager::TEMPLATE_FILE_EXT))===null)
+		if(($templateFile=Prado::getPathOfNamespace($value,TTemplateManager::TEMPLATE_FILE_EXT))===null || !is_file($templateFile))
 			throw new TInvalidDataValueException('page_templatefile_invalid',$value);
 		else
 			$this->_templateFile=$templateFile;
