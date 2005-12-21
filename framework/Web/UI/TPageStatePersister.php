@@ -1,9 +1,9 @@
 <?php
 
-class THiddenFieldPageStatePersister extends TComponent implements IPageStatePersister, IModule
+class TPageStatePersister extends TModule implements IPageStatePersister
 {
 	private $_application;
-	private $_id='persister';
+	private $_privateKey=null;
 
 	/**
 	 * Initializes the service.
@@ -13,30 +13,15 @@ class THiddenFieldPageStatePersister extends TComponent implements IPageStatePer
 	 */
 	public function init($application, $config)
 	{
+		parent::init($application,$config);
 		$this->_application=$application;
 		$application->getService()->setPageStatePersister($this);
-	}
-
-	/**
-	 * @return string id of this module
-	 */
-	public function getID()
-	{
-		return $this->_id;
-	}
-
-	/**
-	 * @param string id of this module
-	 */
-	public function setID($value)
-	{
-		$this->_id=$value;
 	}
 
 	public function save($state)
 	{
 		$data=Prado::serialize($state);
-		$hmac=$this->computeHMAC($data,$this->getKey());
+		$hmac=$this->computeHMAC($data,$this->getPrivateKey());
 		if(extension_loaded('zlib'))
 			$data=gzcompress($hmac.$data);
 		else
@@ -57,15 +42,38 @@ class THiddenFieldPageStatePersister extends TComponent implements IPageStatePer
 		{
 			$hmac=substr($data,0,32);
 			$state=substr($data,32);
-			if($hmac===$this->computeHMAC($state,$this->getKey()))
+			if($hmac===$this->computeHMAC($state,$this->getPrivateKey()))
 				return Prado::unserialize($state);
 		}
-		throw new Exception('viewstate data is corrupted.');
+		throw new TInvalidDataValueException('pagestatepersister_viewstate_corrupted.');
 	}
 
-	private function getKey()
+	protected function generatePrivateKey()
 	{
-		return 'abcdefe';
+		$v1=rand();
+		$v2=rand();
+		$v3=rand();
+		return md5("$v1$v2$v3");
+	}
+
+	public function getPrivateKey()
+	{
+		if(empty($this->_privateKey))
+		{
+			if(($this->_privateKey=$this->_application->getGlobalState('prado:pagestatepersister:privatekey'))===null)
+			{
+				$this->_privateKey=$this->generatePrivateKey();
+				$this->_application->setGlobalState('prado:pagestatepersister:privatekey',$this->_privateKey,null);
+			}
+		}
+		return $this->_privateKey;
+	}
+
+	public function setPrivateKey($value)
+	{
+		if(strlen($value)<8)
+			throw new TConfigurationException('pagestatepersister_privatekey_invalid');
+		$this->_privateKey=$value;
 	}
 
 	private function computeHMAC($data,$key)

@@ -154,9 +154,9 @@ framework/Web/UI/TAssetManager.php -text
 framework/Web/UI/TClientScriptManager.php -text
 framework/Web/UI/TControl.php -text
 framework/Web/UI/TForm.php -text
-framework/Web/UI/THiddenFieldPageStatePersister.php -text
 framework/Web/UI/THtmlWriter.php -text
 framework/Web/UI/TPage.php -text
+framework/Web/UI/TPageStatePersister.php -text
 framework/Web/UI/TTemplateControl.php -text
 framework/Web/UI/TTemplateManager.php -text
 framework/Web/UI/TThemeManager.php -text
