@@ -304,7 +304,7 @@ class TApplication extends TComponent
 	 * @param mixed the default value. If $key is not found, $defaultValue will be returned
 	 * @return mixed the global value corresponding to $key
 	 */
-	public function getGlobal($key,$defaultValue=null)
+	public function getGlobalState($key,$defaultValue=null)
 	{
 		return isset($this->_globals[$key])?$this->_globals[$key]:$defaultValue;
 	}
@@ -314,25 +314,50 @@ class TApplication extends TComponent
 	 *
 	 * A global value is one that is persistent across users sessions and requests.
 	 * Make sure that the value is serializable and unserializable.
-	 * @param string the name of the value to be returned
+	 * @param string the name of the value to be set
 	 * @param mixed the global value to be set
 	 * @param mixed the default value. If $key is not found, $defaultValue will be returned
 	 */
-	public function setGlobal($key,$value,$defaultValue=null)
+	public function setGlobalState($key,$value,$defaultValue=null)
 	{
-		if(!$this->_stateChanged && isset($this->_globals[$key]) && $this->_globals[$key]===$value)
-			$this->_stateChanged=true;
 		if($value===$defaultValue)
-			unset($this->_globals[$key]);
+		{
+			if(isset($this->_globals[$key]))
+			{
+				unset($this->_globals[$key]);
+				$this->_stateChanged=true;
+			}
+		}
 		else
-			$this->_globals[$key]=$value;
+		{
+			if(!isset($this->_globals[$key]) || (isset($this->_globals[$key]) && $this->_globals[$key]!==$value))
+			{
+				$this->_globals[$key]=$value;
+				$this->_stateChanged=true;
+			}
+		}
+	}
+
+	/**
+	 * Clears a global value.
+	 *
+	 * The value cleared will no longer be available in this request and the following requests.
+	 * @param string the name of the value to be cleared
+	 */
+	public function clearGlobalState($key)
+	{
+		if(isset($this->_globals[$key]))
+		{
+			unset($this->_globals[$key]);
+			$this->_stateChanged=true;
+		}
 	}
 
 	/**
 	 * Loads global values from persistent storage.
 	 * This method is invoked when {@link onLoadState LoadState} event is raised.
 	 * After this method, values that are stored in previous requests become
-	 * available to the current request via {@link getGlobal}.
+	 * available to the current request via {@link getGlobalState}.
 	 */
 	protected function loadGlobals()
 	{
@@ -494,27 +519,6 @@ class TApplication extends TComponent
 	public function setRequest(THttpRequest $request)
 	{
 		$this->_request=$request;
-	}
-
-	/**
-	 * @return TSecurityManager security manager module
-	 */
-	public function getSecurityManager()
-	{
-		if(!$this->_security)
-		{
-			$this->_security=new TSecurityManager;
-			$this->_security->init($this,null);
-		}
-		return $this->_security;
-	}
-
-	/**
-	 * @param TSecurityManager security manager module
-	 */
-	public function setSecurityManager(TSecurityManager $manager)
-	{
-		$this->_security=$manager;
 	}
 
 	/**
