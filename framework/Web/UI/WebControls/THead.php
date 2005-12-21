@@ -59,21 +59,18 @@ class THead extends TControl
 	 */
 	public function getTitle()
 	{
-		if(($page=$this->getPage())===null)
-			return '';
-		else
-			return $page->getTitle();
+		return $this->getViewState('Title','');
 	}
 
 	/**
-	 * Sets the page title. Note, if the page is not available, the title won't be set.
-	 * Try to use {@link TPage::setTitle} instead in this case.
+	 * Sets the page title.
+	 * This title will be rendered only if the {@link TPage::getTitle Title} property
+	 * of the page is empty.
 	 * @param string the page title.
 	 */
 	public function setTitle($value)
 	{
-		if(($page=$this->getPage())!==null)
-			$page->setTitle($value);
+		$this->setViewState('Title',$value,'');
 	}
 
 	/**
@@ -103,13 +100,16 @@ class THead extends TControl
 	 */
 	public function render($writer)
 	{
-		$writer->write("<head>\n<title>".THttpUtility::htmlEncode($this->getTitle())."</title>\n");
+		$page=$this->getPage();
+		if(($title=$page->getTitle())==='')
+			$title=$this->getTitle();
+		$writer->write("<head>\n<title>".THttpUtility::htmlEncode($title)."</title>\n");
 		foreach($this->_metaTags as $metaTag)
 		{
 			$metaTag->render($writer);
 			$writer->writeLine();
 		}
-		$cs=$this->getPage()->getClientScript();
+		$cs=$page->getClientScript();
 		$cs->renderStyleSheetFiles($writer);
 		$cs->renderStyleSheets($writer);
 		$cs->renderHeadScriptFiles($writer);
