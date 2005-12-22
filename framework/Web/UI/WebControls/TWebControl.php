@@ -28,7 +28,7 @@ Prado::using('System.Web.UI.WebControls.TStyle');
  * such as {@link getBackColor BackColor}, {@link getBorderWidth BorderWidth}, etc.
  *
  * Subclasses of TWebControl typically needs to override {@link addAttributesToRender}
- * and {@link renderContent}. The former is used to render the attributes
+ * and {@link renderContents}. The former is used to render the attributes
  * of the HTML tag associated with the control, while the latter is to render
  * the body contents enclosed within the HTML tag.
  *

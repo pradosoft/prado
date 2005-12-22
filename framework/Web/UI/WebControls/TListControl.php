@@ -54,9 +54,47 @@ abstract class TListControl extends TDataBoundControl
 			$this->getItems()->add($object);
 	}
 
+	protected function validateDataSource($value)
+	{
+		if(is_string($value))
+		{
+			$list=new TList;
+			foreach(TPropertyValue::ensureArray($value) as $key=>$value)
+				$list->add(array($value,is_string($key)?$key:$value));
+			return $list;
+		}
+		else
+			return parent::validateDataSource($value);
+		return $value;
+	}
+
 	protected function performDataBinding($data)
 	{
-		// TODO;
+		if($data instanceof Traversable)
+		{
+			$textField=$this->getDataTextField();
+			if($textField==='')
+				$textField=0;
+			$valueField=$this->getDataValueField();
+			if($valueField==='')
+				$valueField=1;
+			$textFormat=$this->getDataTextFormatString();
+			$items=$this->getItems();
+			if(!$this->getAppendDataBoundItems())
+				$items->clear();
+			foreach($data as $object)
+			{
+				$item=new TListItem;
+				if(isset($object[$textField]))
+					$text=$object[$textField];
+				else
+					$text=TPropertyValue::ensureString($object);
+				$item->setText($textFormat===''?$text:sprintf($textFormat,$text));
+				if(isset($object[$valueField]))
+					$item->setValue($object[$valueField]);
+				$items->add($item);
+			}
+		}
 	}
 
 	protected function onSaveState($param)
@@ -204,7 +242,7 @@ abstract class TListControl extends TDataBoundControl
 		$index=TPropertyValue::ensureInteger($index);
 		if($this->_items)
 		{
-			$this->_items->clearSelection();
+			$this->clearSelection();
 			if($index>=0 && $index<$this->_items->getCount())
 				$this->_items->itemAt($index)->setSelected(true);
 		}
@@ -221,6 +259,20 @@ abstract class TListControl extends TDataBoundControl
 					$selections[]=$i;
 		}
 		return $selections;
+	}
+
+	protected function setSelectedIndices($indices)
+	{
+		if($this->_items)
+		{
+			$this->clearSelection();
+			$n=$this->_items->getCount();
+			foreach($indices as $index)
+			{
+				if($index>=0 && $index<$n)
+					$this->_items->itemAt($index)->setSelected(true);
+			}
+		}
 	}
 
 	/**
@@ -308,6 +360,7 @@ abstract class TListControl extends TDataBoundControl
 		$this->raiseEvent('SelectedIndexChanged',$this,$param);
 	}
 
+	// ????
 	public function onTextChanged($param)
 	{
 		$this->raiseEvent('TextChanged',$this,$param);
@@ -351,12 +404,12 @@ class TListItemCollection extends TList
 			throw new TInvalidDataTypeException('listitemcollection_item_invalid');
 	}
 
-	public function addAt($index,$item)
+	public function insert($index,$item)
 	{
 		if(is_string($item))
-			parent::addAt($index,new TListItem($item));
+			parent::insert($index,new TListItem($item));
 		else if($item instanceof TListItem)
-			parent::addAt($index,$item);
+			parent::insert($index,$item);
 		else
 			throw new TInvalidDataTypeException('listitemcollection_item_invalid');
 	}

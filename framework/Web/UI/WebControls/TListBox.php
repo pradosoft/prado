@@ -6,14 +6,17 @@ class TListBox extends TListControl implements IPostBackDataHandler
 	{
 		$rows=$this->getRows();
 		$writer->addAttribute('size',"$rows");
-		$writer->addAttribute('name',$this->getUniqueID());
+		if($this->getSelectionMode()==='Multiple')
+			$writer->addAttribute('name',$this->getUniqueID().'[]');
+		else
+			$writer->addAttribute('name',$this->getUniqueID());
 		parent::addAttributesToRender($writer);
 	}
 
 	protected function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		if($this->getSelectionMode()==='Multiple' && $this->getEnabled(true))
+		if($this->getEnabled(true))
 			$this->getPage()->registerRequiresPostData($this);
 	}
 
@@ -21,7 +24,56 @@ class TListBox extends TListControl implements IPostBackDataHandler
 	{
 		if(!$this->getEnabled(true))
 			return false;
-		// ensure DataBound???
+		$selections=isset($values[$key])?$values[$key]:null;
+		$this->ensureDataBound();
+		if($selections!==null)
+		{
+			$items=$this->getItems();
+			if($this->getSelectionMode()==='Single')
+			{
+				$selection=is_array($selections)?$selections[0]:$selections;
+				$index=$items->findIndexByValue($selection,false);
+				if($this->getSelectedIndex()!==$index)
+				{
+					$this->setSelectedIndex($index);
+					return true;
+				}
+				else
+					return false;
+			}
+			if(!is_array($selections))
+				$selections=array($selections);
+			$list=array();
+			foreach($selections as $selection)
+				$list[]=$items->findIndexByValue($selection,false);
+			$list2=$this->getSelectedIndices();
+			$n=count($list);
+			$flag=false;
+			if($n===count($list2))
+			{
+				sort($list,SORT_NUMERIC);
+				for($i=0;$i<$n;++$i)
+				{
+					if($list[$i]!==$list2[$i])
+					{
+						$flag=true;
+						break;
+					}
+				}
+			}
+			else
+				$flag=true;
+			if($flag)
+				$this->setSelectedIndices($list);
+			return $flag;
+		}
+		else if($this->getSelectedIndex()!==-1)
+		{
+			$this->clearSelection();
+			return true;
+		}
+		else
+			return false;
 	}
 
 	public function raisePostDataChangedEvent()

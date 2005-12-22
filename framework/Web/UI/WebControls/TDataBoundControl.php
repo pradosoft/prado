@@ -6,8 +6,11 @@ abstract class TDataBoundControl extends TWebControl
 	private $_dataSource=null;
 	private $_requiresBindToNull=false;
 	private $_requiresDataBinding=false;
-	private $_throwOnDataPropertyChange=false;
 	private $_prerendered=false;
+	private $_currentView=null;
+	private $_currentDataSource=null;
+	private $_currentViewValid=false;
+	private $_currentDataSourceValid=false;
 
 	/**
 	 * @return Traversable data source object, defaults to null.
@@ -18,14 +21,16 @@ abstract class TDataBoundControl extends TWebControl
 	}
 
 	/**
+	 * Sets the data source object associated with the databound control.
+	 * The data source must implement Traversable interface.
+	 * If an array is given, it will be converted to xxx.
+	 * If a string is given, it will be converted to xxx.
 	 * @param Traversable|array|string data source object
 	 */
 	public function setDataSource($value)
 	{
-		if($value!==null)
-			$this->validateDataSource($value);
-		$this->_dataSource=$value;
-		$this->onDataPropertyChanged();
+		$this->_dataSource=$this->validateDataSource($value);;
+		$this->onDataSourceChanged();
 	}
 
 	/**
@@ -46,22 +51,34 @@ abstract class TDataBoundControl extends TWebControl
 		if($dsid!=='' && $value==='')
 			$this->_requiresBindToNull=true;
 		$this->setViewState('DataSourceID',$value,'');
-		$this->onDataPropertyChanged();
+		$this->onDataSourceChanged();
 	}
 
 	/**
+	 * @return boolean if the databound control uses the data source specified
+	 * by {@link setDataSourceID}, or it uses the data source object specified
+	 * by {@link setDataSource}.
+	 */
+	protected function getUsingDataSourceID()
+	{
+		return $this->getDataSourceID()!=='';
+	}
+
+	/**
+	 * Sets {@link setRequiresDataBinding RequiresDataBinding} as true if the control is initialized.
 	 * This method is invoked when either {@link setDataSource} or {@link setDataSourceID} is changed.
 	 */
-	protected function onDataPropertyChanged()
+	protected function onDataSourceChanged()
 	{
-		if($this->_throwOnDataPropertyChanged)
-			throw new TInvalidOperationException('databoundcontrol_dataproperty_unchangeable');
+		$this->_currentViewValid=false;
+		$this->_currentDataSourceValid=false;
 		if($this->getInitialized())
 			$this->setRequiresDataBinding(true);
 	}
 
 	/**
 	 * @return boolean whether the databound control has been initialized.
+	 * By default, the control is initialized after its viewstate has been restored.
 	 */
 	protected function getInitialized()
 	{
@@ -69,6 +86,10 @@ abstract class TDataBoundControl extends TWebControl
 	}
 
 	/**
+	 * Sets a value indicating whether the databound control is initialized.
+	 * If initialized, any modification to {@link setDataSource DataSource} or
+	 * {@link setDataSourceID DataSourceID} will set {@link setRequiresDataBinding RequiresDataBinding}
+	 * as true.
 	 * @param boolean a value indicating whether the databound control is initialized.
 	 */
 	protected function setInitialized($value)
@@ -77,13 +98,19 @@ abstract class TDataBoundControl extends TWebControl
 	}
 
 	/**
-	 * @return boolean if the databound control uses the data source control specified
-	 * by {@link setDataSourceID}, or it uses the data source object specified
-	 * by {@link setDataSource}.
+	 * @return boolean if databind has been invoked in the previous page request
 	 */
-	protected function getUsingDataSourceID()
+	protected function getIsDataBound()
 	{
-		return $this->getDataSourceID()!=='';
+		return $this->getViewState('IsDataBound',false);
+	}
+
+	/**
+	 * @param boolean if databind has been invoked in this page request
+	 */
+	protected function setIsDataBound($value)
+	{
+		$this->setViewState('IsDataBound',TPropertyValue::ensureBoolean($value),false);
 	}
 
 	/**
@@ -103,25 +130,13 @@ abstract class TDataBoundControl extends TWebControl
 	protected function setRequiresDataBinding($value)
 	{
 		$value=TPropertyValue::ensureBoolean($value);
-		if($value && $this->_prerendered && $this->getUsingDataSourceID())
+		if($value && $this->_prerendered)
 		{
 			$this->_requiresDataBinding=true;
 			$this->ensureDataBound();
 		}
 		else
 			$this->_requiresDataBinding=$value;
-	}
-
-	/**
-	 * Performs databinding.
-	 * This method overrides the parent implementation by calling
-	 * {@link performSelect} which fetches data from data source and does
-	 * the actual binding work.
-	 * @param boolean whether to raise DataBind event. This parameter is ignored.
-	 */
-	public function dataBind($raiseDataBindingEvent=true)
-	{
-		$this->performSelect();
 	}
 
 	/**
@@ -132,21 +147,80 @@ abstract class TDataBoundControl extends TWebControl
 	 */
 	protected function ensureDataBound()
 	{
-		try
+		if($this->_requiresDataBinding && ($this->getUsingDataSourceID() || $this->_requiresBindToNull))
 		{
-			$this->_throwOnDataPropertyChange=true;
-			if($this->_requiresDataBinding && ($this->getUsingDataSourceID() || $this->_requiresBindToNull))
-			{
-				$this->dataBind();
-				$this->_requiresBindToNull=false;
-			}
-		}
-		catch(Exception $e)
-		{
-			$this->_throwOnDataPropertyChange=false;
-			throw $e;
+			$this->dataBind();
+			$this->_requiresBindToNull=false;
 		}
 	}
+
+	/**
+	 * Performs databinding.
+	 * This method overrides the parent implementation by calling
+	 * {@link performSelect} which fetches data from data source and does
+	 * the actual binding work.
+	 */
+	public function dataBind()
+	{
+		// TODO: databinding should only be raised after data is ready
+		// what about property bindings? should they be after data is ready?
+		$this->setRequiresDataBinding(false);
+		$this->dataBindProperties();
+		$view=$this->getDataSourceView();
+		$data=$view->select($this->getSelectParameters());
+		$this->onDataBinding(null);
+		$this->performDataBinding($data);
+		$this->setIsDataBound(true);
+		$this->onDataBound(null);
+	}
+
+	public function dataSourceViewChanged($sender,$param)
+	{
+		if(!$this->_ignoreDataSourceViewChanged)
+			$this->setRequiresDataBinding(true);
+	}
+
+	protected function getDataSourceView()
+	{
+		if(!$this->_currentViewValid)
+		{
+			if($this->_currentView && $this->_currentViewIsFromDataSourceID)
+				$handlers=$this->_currentView->detachEventHandler('DataSourceViewChanged',array($this,'dataSourceViewChanged'));
+			$dataSource=$this->determineDataSource();
+			if(($view=$dataSource->getView($this->getDataMember()))===null)
+				throw new TInvalidDataValueException('databoundcontrol_datamember_invalid',$this->getDataMember());
+			if($this->_currentViewIsFromDataSourceID=$this->getUsingDataSourceID())
+				$view->attachEventHandler('DataSourceViewChanged',array($this,'dataSourceViewChanged'));
+			$this->_currentView=$view;
+			$this->_currentViewValid=true;
+		}
+		return $this->_currentView;
+	}
+
+	protected function determineDataSource()
+	{
+		if(!$this->_currentDataSourceValid)
+		{
+			$dsid=$this->getDataSourceID();
+			if($dsid!=='')
+			{
+				if(($dataSource=$this->getNamingContainer()->findControl($dsid))===null)
+					throw new TInvalidDataValueException('databoundcontrol_datasourceid_inexistent',$dsid);
+				else if(!($dataSource instanceof IDataSource))
+					throw new TInvalidDataValueException('databoundcontrol_datasourceid_invalid',$dsid);
+				else
+					$this->_currentDataSource=$dataSource;
+			}
+			else
+			{
+				$this->_currentDataSource=new TReadOnlyDataSource($this->getDataSource(),$this->getDataMember());
+			}
+			$this->_currentDataSourceValid=true;
+		}
+		return $this->_currentDataSource;
+	}
+
+	abstract protected function performDataBinding($data);
 
 	/**
 	 * Raises <b>DataBound</b> event.
@@ -170,8 +244,6 @@ abstract class TDataBoundControl extends TWebControl
 		parent::onInit($param);
 		$page=$this->getPage();
 		$page->attachEventHandler('PreLoad',array($this,'onPagePreLoad'));
-		if(!$this->getEnableViewState(true) && $page->getIsPostBack())
-			$this->setRequiresDataBinding(true);
 	}
 
 	/**
@@ -183,6 +255,9 @@ abstract class TDataBoundControl extends TWebControl
 	protected function onPagePreLoad($sender,$param)
 	{
 		$this->_initialized=true;
+		$isPostBack=$this->getPage()->getIsPostBack();
+		if(!$isPostBack || ($isPostBack && (!$this->getEnableViewState(true) || !$this->getIsDataBound())))
+			$this->setRequiresDataBinding(true);
 	}
 
 	/**
@@ -199,39 +274,17 @@ abstract class TDataBoundControl extends TWebControl
 
 	/**
 	 * Validates if the parameter is a valid data source.
-	 * @return boolean if the parameter is a valid data source
+	 * If it is a string or an array, it will be converted as a TList object.
+	 * @return Traversable the data that is traversable
+	 * @throws TInvalidDataTypeException if the data is neither null nor Traversable
 	 */
 	protected function validateDataSource($value)
 	{
-		if(!is_array($value) && !($value instanceof Traversable))
+		if(is_array($value))
+			$value=new TList($value);
+		else if($value!==null && !($value instanceof Traversable))
 			throw new TInvalidDataTypeException('databoundcontrol_datasource_invalid');
-	}
-
-	/**
-	 * @return ???
-	 */
-	protected function performSelect()
-	{
-		if(!$this->getUsingDataSourceID())
-			$this->onDataBinding(null);
-		$view=$this->getDataSourceView();
-		$this->setRequiresDataBinding(false);
-		$this->setDataBound(true);
-		$data=$view->select($this->getSelectParameters());
-		if($this->getUsingDataSourceID())
-			$this->onDataBinding(null);
-		$this->performDataBinding($data);
-		$this->onDataBound(null);
-	}
-
-	protected function getDataSourceView()
-	{
-		$source=$this->getDataSourceByID();
-		return $source->getView($this->getDataMember());
-	}
-
-	protected function performDataBinding($data)
-	{
+		return $value;
 	}
 
 	public function getDataMember()
@@ -247,13 +300,8 @@ abstract class TDataBoundControl extends TWebControl
 	public function getSelectParameters()
 	{
 		if(!$this->_parameters)
-			$this->_parameters=$this->createSelectParameters();
+			$this->_parameters=new TDataSourceSelectParameters;
 		return $this->_parameters;
-	}
-
-	protected function createSelectParameters()
-	{
-		return new TDataSourceSelectParameters;
 	}
 }
 
