@@ -205,7 +205,7 @@ class TPageService extends TComponent implements IService
 
 		// set path aliases and using namespaces
 		foreach($pageConfig->getAliases() as $alias=>$path)
-			Prado::setPathAlias($alias,$path);
+			Prado::setPathOfAlias($alias,$path);
 		foreach($pageConfig->getUsings() as $using)
 			Prado::using($using);
 
