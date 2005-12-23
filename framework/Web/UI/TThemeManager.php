@@ -224,7 +224,7 @@ class TTheme extends TComponent
 			{
 				list($skins,$cssFiles,$jsFiles,$timestamp)=$array;
 				$cacheValid=true;
-				if($application->getMode()!=='Performance')
+				if($application->getMode()!==TApplication::STATE_PERFORMANCE)
 				{
 					if(($dir=opendir($themePath))===false)
 						throw new TIOException('theme_path_inexistent',$themePath);

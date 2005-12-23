@@ -138,7 +138,7 @@ class TErrorHandler extends TModule
 				header('Content-Type: text/html; charset=UTF-8');
 			if($param instanceof THttpException)
 				$this->handleExternalError($param->getStatusCode(),$param);
-			else if(Prado::getApplication()->getMode()==='Debug')
+			else if(Prado::getApplication()->getMode()===TApplication::STATE_DEBUG)
 				$this->displayException($param);
 			else
 				$this->handleExternalError(500,$param);
@@ -192,7 +192,7 @@ class TErrorHandler extends TModule
 	 */
 	protected function handleRecursiveError($exception)
 	{
-		if(Prado::getApplication()->getMode()==='Debug')
+		if(Prado::getApplication()->getMode()===TApplication::STATE_DEBUG)
 		{
 			echo "<html><head><title>Recursive Error</title></head>\n";
 			echo "<body><h1>Recursive Error</h1>\n";

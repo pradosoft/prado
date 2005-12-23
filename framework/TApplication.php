@@ -119,6 +119,18 @@ class TApplication extends TComponent
 	 */
 	const DEFAULT_SERVICE='page';
 	/**
+	 * Page service ID
+	 */
+	const PAGE_SERVICE='page';
+	/**
+	 * Application configuration file name
+	 */
+	const CONFIG_FILE='application.xml';
+	/**
+	 * Runtime directory name
+	 */
+	const RUNTIME_PATH='runtime';
+	/**
 	 * Config cache file
 	 */
 	const CONFIGCACHE_FILE='config.cache';
@@ -165,7 +177,11 @@ class TApplication extends TComponent
 	/**
 	 * @var IService current service instance
 	 */
-	private $_service;
+	private $_service=null;
+	/**
+	 * @var TPageService page service
+	 */
+	private $_pageService=null;
 	/**
 	 * @var array list of application modules
 	 */
@@ -179,9 +195,13 @@ class TApplication extends TComponent
 	 */
 	private $_configFile;
 	/**
+	 * @var string configuration path
+	 */
+	private $_configPath;
+	/**
 	 * @var string directory storing application state
 	 */
-	private $_statePath;
+	private $_runtimePath;
 	/**
 	 * @var boolean if any global state is changed during the current request
 	 */
@@ -236,22 +256,36 @@ class TApplication extends TComponent
 	 * @param boolean whether to cache application configuration. Defaults to true.
 	 * @throws TConfigurationException if configuration file cannot be read or the state path is invalid.
 	 */
-	public function __construct($configFile,$statePath=null,$cacheConfig=true)
+	public function __construct($configPath=null,$cacheConfig=true)
 	{
 		parent::__construct();
-		Prado::setApplication($this);
-		if(($this->_configFile=realpath($configFile))===false || !is_file($this->_configFile))
-			throw new TConfigurationException('application_configfile_inexistent',$configFile);
-		if($statePath===null)
-			$this->_statePath=dirname($this->_configFile);
-		else if(is_dir($statePath) && is_writable($statePath))
-			$this->_statePath=$statePath;
-		else
-			throw new TConfigurationException('application_statepath_invalid',$statePath);
-		$this->_cacheFile=$cacheConfig ? $this->_statePath.'/'.self::CONFIGCACHE_FILE : null;
 
-		// generates unique ID by hashing the configuration file path
-		$this->_uniqueID=md5($this->_configFile);
+		// register application as a singleton
+		Prado::setApplication($this);
+
+		// determine configuration path and file
+		if($configPath===null)
+			$configPath=dirname($_SERVER['SCRIPT_FILENAME']).'/protected';
+		if(($this->_configPath=realpath($configPath))===false)
+			throw new TConfigurationException('application_configpath_inexistent',$configPath);
+		if(is_dir($this->_configPath))
+		{
+			$configFile=$this->_configPath.'/'.self::CONFIG_FILE;
+			$this->_configFile=is_file($configFile) ? $configFile : null;
+		}
+		else
+		{
+			$this->_configFile=$this->_configPath;
+			$this->_configPath=dirname($this->_configPath);
+		}
+		$this->_runtimePath=$this->_configPath.'/'.self::RUNTIME_PATH;
+		if(!is_dir($this->_runtimePath) || !is_writable($this->_runtimePath))
+			throw new TConfigurationException('application_runtimepath_invalid',$this->_runtimePath);
+
+		$this->_cacheFile=$cacheConfig ? $this->_runtimePath.'/'.self::CONFIGCACHE_FILE : null;
+
+		// generates unique ID by hashing the configuration path
+		$this->_uniqueID=md5($this->_configPath);
 	}
 
 
@@ -270,7 +304,7 @@ class TApplication extends TComponent
 			$this->_requestCompleted=false;
 			while($this->_step<$n)
 			{
-				if($this->_mode==='Off')
+				if($this->_mode===self::STATE_OFF)
 					throw new THttpException(503,'application_service_unavailable');
 				$method='on'.self::$_steps[$this->_step];
 				$this->$method($this);
@@ -365,7 +399,7 @@ class TApplication extends TComponent
 			$this->_globals=$value;
 		else
 		{
-			if(($content=@file_get_contents($this->getStatePath().'/'.self::GLOBAL_FILE))!==false)
+			if(($content=@file_get_contents($this->getRuntimePath().'/'.self::GLOBAL_FILE))!==false)
 				$this->_globals=unserialize($content);
 		}
 	}
@@ -389,7 +423,7 @@ class TApplication extends TComponent
 		}
 		if($saveFile)
 		{
-			$fileName=$this->getStatePath().'/'.self::GLOBAL_FILE;
+			$fileName=$this->getRuntimePath().'/'.self::GLOBAL_FILE;
 			if(version_compare(phpversion(),'5.1.0','>='))
 				file_put_contents($fileName,$content,LOCK_EX);
 			else
@@ -438,6 +472,14 @@ class TApplication extends TComponent
 	}
 
 	/**
+	 * @return string configuration path
+	 */
+	public function getConfigurationPath()
+	{
+		return $this->_configPath;
+	}
+
+	/**
 	 * @return string configuration file path
 	 */
 	public function getConfigurationFile()
@@ -449,9 +491,9 @@ class TApplication extends TComponent
 	 * Gets the directory storing application-level persistent data.
 	 * @return string application state path
 	 */
-	public function getStatePath()
+	public function getRuntimePath()
 	{
-		return $this->_statePath;
+		return $this->_runtimePath;
 	}
 
 	/**
@@ -498,6 +540,29 @@ class TApplication extends TComponent
 	public function getParameters()
 	{
 		return $this->_parameters;
+	}
+
+	/**
+	 * @return TPageService page service
+	 */
+	public function getPageService()
+	{
+		if(!$this->_pageService)
+		{
+			$this->_pageService=new TPageService;
+			$this->_pageService->init($this,null);
+		}
+		return $this->_pageService;
+	}
+
+	/**
+	 * Registers the page service instance.
+	 * This method should only be used by framework developers.
+	 * @param TPageService page service
+	 */
+	public function setPageService(TPageService $service)
+	{
+		$this->_pageService=$service;
 	}
 
 	/**
@@ -637,6 +702,19 @@ class TApplication extends TComponent
 	 */
 	protected function initApplication()
 	{
+		Prado::setPathOfAlias('Application',$this->_configPath);
+
+		if($this->_configFile===null)
+		{
+			if(($serviceID=$this->getRequest()->getServiceID())===null)
+				$serviceID=self::DEFAULT_SERVICE;
+			if($serviceID===self::PAGE_SERVICE)
+				$this->_service=$this->getPageService();
+			else
+				throw new THttpException(500,'application_service_unknown',$serviceID);
+			return;
+		}
+
 		if($this->_cacheFile===null || @filemtime($this->_cacheFile)<filemtime($this->_configFile))
 		{
 			$config=new TApplicationConfiguration;
@@ -656,7 +734,6 @@ class TApplication extends TComponent
 		{
 			$config=Prado::unserialize(file_get_contents($this->_cacheFile));
 		}
-
 
 		// set path aliases and using namespaces
 		foreach($config->getAliases() as $alias=>$path)
@@ -706,10 +783,11 @@ class TApplication extends TComponent
 			foreach($serviceConfig[1] as $name=>$value)
 				$service->setSubProperty($name,$value);
 			$service->init($this,$serviceConfig[2]);
-			$this->attachEventHandler('RunService',array($service,'run'));
 		}
+		else if($serviceID===self::DEFAULT_SERVICE)
+			$this->_service=$this->getPageService();
 		else
-			throw new TConfigurationException('application_service_unknown',$serviceID);
+			throw new THttpException(500,'application_service_unknown',$serviceID);
 	}
 
 	/**
@@ -894,9 +972,7 @@ class TApplicationConfiguration extends TComponent
 	/**
 	 * @var array list of service configurations
 	 */
-	private $_services=array(
-			'page'=>array('TPageService',array(),null)
-		);
+	private $_services=array();
 	/**
 	 * @var array list of parameters
 	 */

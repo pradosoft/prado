@@ -83,6 +83,10 @@ class TPageService extends TComponent implements IService
 	 */
 	const CONFIG_CACHE_PREFIX='prado:pageservice:';
 	/**
+	 * Page template file extension
+	 */
+	const PAGE_FILE_EXT='.page';
+	/**
 	 * @var string id of this service (page)
 	 */
 	private $_id;
@@ -93,15 +97,11 @@ class TPageService extends TComponent implements IService
 	/**
 	 * @var string default page
 	 */
-	private $_defaultPage=null;
+	private $_defaultPage='Home';
 	/**
 	 * @var string requested page (path)
 	 */
 	private $_pagePath;
-	/**
-	 * @var string requested page type
-	 */
-	private $_pageType;
 	/**
 	 * @var TPage the requested page
 	 */
@@ -143,11 +143,13 @@ class TPageService extends TComponent implements IService
 	 */
 	public function init($application,$config)
 	{
+		$application->setPageService($this);
+
 		$this->_application=$application;
 
 		if($this->_basePath===null)
 		{
-			$basePath=dirname($application->getConfigurationPath()).'/'.self::DEFAULT_BASEPATH;
+			$basePath=$application->getConfigurationPath().'/'.self::DEFAULT_BASEPATH;
 			if(($this->_basePath=realpath($basePath))===false || !is_dir($this->_basePath))
 				throw new TConfigurationException('pageservice_basepath_invalid',$basePath);
 		}
@@ -156,12 +158,13 @@ class TPageService extends TComponent implements IService
 		if(empty($this->_pagePath))
 			$this->_pagePath=$this->_defaultPage;
 		if(empty($this->_pagePath))
-			throw new THttpException(400,'pageservice_page_required');
+			throw new THttpException(404,'pageservice_page_required');
 
 		if(($cache=$application->getCache())===null)
 		{
 			$pageConfig=new TPageConfiguration;
-			$pageConfig->loadXmlElement($config,dirname($application->getConfigurationFile()),null);
+			if($config!==null)
+				$pageConfig->loadXmlElement($config,$application->getConfigurationPath(),null);
 			$pageConfig->loadConfigurationFiles($this->_pagePath,$this->_basePath);
 		}
 		else
@@ -171,7 +174,7 @@ class TPageService extends TComponent implements IService
 			if(is_array($arr))
 			{
 				list($pageConfig,$timestamp)=$arr;
-				if($application->getMode()!=='Performance')
+				if($application->getMode()!==TApplication::STATE_PERFORMANCE)
 				{
 					// check to see if cache is the latest
 					$paths=explode('.',$this->_pagePath);
@@ -186,8 +189,12 @@ class TPageService extends TComponent implements IService
 						}
 						$configPath.='/'.$path;
 					}
-					if($configCached && (@filemtime($application->getConfigurationFile())>$timestamp || @filemtime($configPath.'/'.self::CONFIG_FILE)>$timestamp))
-						$configCached=false;
+					if($configCached)
+					{
+						$appConfig=$application->getConfigurationFile();
+						if(!$appConfig || @filemtime($appConfig)>$timestamp || @filemtime($configPath.'/'.self::CONFIG_FILE)>$timestamp)
+							$configCached=false;
+					}
 				}
 			}
 			else
@@ -195,13 +202,13 @@ class TPageService extends TComponent implements IService
 			if(!$configCached)
 			{
 				$pageConfig=new TPageConfiguration;
-				$pageConfig->loadXmlElement($config,dirname($application->getConfigurationFile()),null);
+				if($config!==null)
+					$pageConfig->loadXmlElement($config,$application->getConfigurationPath(),null);
 				$pageConfig->loadConfigurationFiles($this->_pagePath,$this->_basePath);
 				$cache->set(self::CONFIG_CACHE_PREFIX.$this->_pagePath,array($pageConfig,time()));
 			}
 		}
 
-		$this->_pageType=$pageConfig->getPageType();
 
 		// set path aliases and using namespaces
 		foreach($pageConfig->getAliases() as $alias=>$path)
@@ -239,6 +246,8 @@ class TPageService extends TComponent implements IService
 		$application->getAuthorizationRules()->mergeWith($pageConfig->getRules());
 
 		$this->_initialized=true;
+
+		$application->attachEventHandler('RunService',array($this,'run'));
 	}
 
 	/**
@@ -405,33 +414,25 @@ class TPageService extends TComponent implements IService
 	public function run()
 	{
 		$page=null;
-		if(($pos=strpos($this->_pageType,'.'))===false)
+		$path=$this->_basePath.'/'.strtr($this->_pagePath,'.','/');
+		if(is_file($path.self::PAGE_FILE_EXT))
 		{
-			$className=$this->_pageType;
-			if(!class_exists($className,false))
+			if(is_file($path.Prado::CLASS_FILE_EXT))
 			{
-				$p=explode('.',$this->_pagePath);
-				array_pop($p);
-				array_push($p,$className);
-				$path=$this->_basePath.'/'.implode('/',$p).Prado::CLASS_FILE_EXT;
-				include_once($path);
-			}
-		}
-		else
-		{
-			$className=substr($this->_pageType,$pos+1);
-			if(($path=Prado::getPathOfNamespace($this->_pageType,Prado::CLASS_FILE_EXT))!==null)
-			{
+				$className=basename($path);
 				if(!class_exists($className,false))
-				{
-					include_once($path);
-				}
+					include_once($path.Prado::CLASS_FILE_EXT);
+				if(!class_exists($className,false))
+					throw new TConfigurationException('pageservice_pageclass_unknown',$className);
 			}
-		}
-		if(class_exists($className,false))
+			else
+				$className='TPage';
+			$this->_properties['Template']=$this->getTemplateManager()->getTemplateByFileName($path.self::PAGE_FILE_EXT);
 			$this->_page=new $className($this->_properties);
+		}
 		else
-			throw new THttpException(404,'pageservice_page_unknown',$this->_pageType);
+			throw new THttpException(404,'pageservice_page_unknown',$this->_pagePath);
+
 		$writer=$this->_application->getResponse()->createHtmlWriter();
 		$this->_page->run($writer);
 		$writer->flush();
@@ -469,10 +470,6 @@ class TPageConfiguration extends TComponent
 	 */
 	private $_properties=array();
 	/**
-	 * @var string page type
-	 */
-	private $_pageType=null;
-	/**
 	 * @var array list of namespaces to be used
 	 */
 	private $_usings=array();
@@ -502,14 +499,6 @@ class TPageConfiguration extends TComponent
 	public function getProperties()
 	{
 		return $this->_properties;
-	}
-
-	/**
-	 * @return string the requested page type
-	 */
-	public function getPageType()
-	{
-		return $this->_pageType;
 	}
 
 	/**
@@ -610,10 +599,7 @@ class TPageConfiguration extends TComponent
 	private function loadFromFile($fname,$page)
 	{
 		if(empty($fname) || !is_file($fname))
-		{
-			if($page===null)
-				return;
-		}
+			return;
 		$dom=new TXmlDocument;
 		if($dom->loadFromFile($fname))
 			$this->loadXmlElement($dom,dirname($fname),$page);
@@ -742,20 +728,13 @@ class TPageConfiguration extends TComponent
 				foreach($pagesNode->getElementsByTagName('page') as $node)
 				{
 					$properties=$node->getAttributes();
-					if(($type=$properties->remove('class'))===null)
-						$type='TPage';
 					if(($id=$properties->itemAt('id'))===null)
 						throw new TConfigurationException('pageserviceconf_page_invalid',$configPath);
 					if($id===$page)
-					{
 						$this->_properties=array_merge($this->_properties,$properties->toArray());
-						$this->_pageType=$type;
-					}
 				}
 			}
 		}
-		if($page!==null && $this->_pageType===null)
-			throw new THttpException(404,'pageservice_page_unknown',$page);
 	}
 }
 

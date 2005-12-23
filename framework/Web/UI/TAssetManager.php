@@ -152,7 +152,7 @@ class TAssetManager extends TModule
 		{
 			$dir=$this->hash(dirname($fullpath));
 			$file=$this->_basePath.'/'.$dir.'/'.basename($fullpath);
-			if(!is_file($file) || $checkTimestamp || $this->_application->getMode()!=='Performance')
+			if(!is_file($file) || $checkTimestamp || $this->_application->getMode()!==TApplication::STATE_PERFORMANCE)
 			{
 				if(!is_dir($this->_basePath.'/'.$dir))
 					@mkdir($this->_basePath.'/'.$dir);
@@ -165,7 +165,7 @@ class TAssetManager extends TModule
 		else
 		{
 			$dir=$this->hash($fullpath);
-			if(!is_dir($this->_basePath.'/'.$dir) || $checkTimestamp || $this->_application->getMode()!=='Performance')
+			if(!is_dir($this->_basePath.'/'.$dir) || $checkTimestamp || $this->_application->getMode()!==TApplication::STATE_PERFORMANCE)
 				$this->copyDirectory($fullpath,$this->_basePath.'/'.$dir);
 			$this->_published[$path]=$this->_baseUrl.'/'.$dir;
 			return $this->_published[$path];

@@ -121,7 +121,7 @@ class TSqliteCache extends TModule implements ICache
 		if(!function_exists('sqlite_open'))
 			throw new TConfigurationException('sqlitecache_extension_required');
 		if($this->_file===null)
-			$this->_file=$application->getStatePath().'/sqlite.cache';
+			$this->_file=$application->getRuntimePath().'/sqlite.cache';
 		$error='';
 		if(($this->_db=new SQLiteDatabase($this->_file,0666,$error))===false)
 			throw new TConfigurationException('sqlitecache_connection_failed',$error);
