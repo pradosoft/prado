@@ -1,0 +1,11 @@
+<com:TContent ID="body" >
+<h4>Installing PRADO</h4>
+<p>
+If you are viewing this page from your own Web server, you are already done
+with the installation. The instructions at the end of this page, however,
+may still be useful for you to troubleshoot issues happened during your
+development based on PRADO.
+</p>
+<p>
+</p>
+</com:TContent>

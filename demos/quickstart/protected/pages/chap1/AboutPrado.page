@@ -1,0 +1,19 @@
+<com:TContent ID="body" >
+<h4>What is PRADO?</h4>
+<p>
+PRADO stands for <b>P</b>HP <b>R</b>apid <b>A</b>pplication <b>D</b>evelopment
+<b>O</b>bject-oriented.
+</p>
+<p>
+PRADO is a component-based and event-driven programming framework for developing Web applications in PHP 5.
+</p>
+<p>
+PRADO stipulates a protocol of writing and using components to construct Web applications. A component is a software unit that is self-contained and can be reused with trivial customization. New components can be developed by either inheriting or composing from existing ones. Component-based programming brings great freedom in teamwork anf offers the ultimate extensibility and maintenability to the code. PRADO implements a set of elementary components that represent commonly used Web elements, such as input field, checkbox, dropdown list, etc.
+</p>
+<p>
+PRADO implements an event-driven programming scheme that allows delegation of extensible behavior to components. End-user activities, such as clicking on a submit button, changing the content in an input field, are captured as server events. Methods or functions may be attached to these events so that when the events happen, they are invoked automatically to respond to the events. Compared with the traditional Web programming in which developers have to deal with the raw POST or GET variables, event-driven programming helps developers better focus on the necessary logic and reduces significantly the low-level repetitive coding.
+</p>
+<p>
+Developing a PRADO Web application mainly involves instantiating prebuilt component types, configuring them by setting their properties, responding to their events by writing handler functions, and composing them into pages for the application. It is very similar to RAD toolkits, such as Borland Delphi and Microsoft Visual Basic, that are used to develop desktop GUI applications.
+</p>
+</com:TContent>
