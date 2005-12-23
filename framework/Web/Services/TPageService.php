@@ -27,14 +27,19 @@ Prado::using('System.Web.UI.TPageStatePersister');
  * Pages that are available to client users are stored under a directory specified by
  * {@link setBasePath BasePath}. The directory may contain subdirectories.
  * A directory may be used to group together the pages serving for the similar goal.
- * Each directory must contain a configuration file <b>config.xml</b> that is similar to the application
- * configuration file. The only difference is that the page directory configuration
- * contains a mapping between page IDs and page types. The page IDs are visible
- * by client users while page types are used on the server side.
+ * A directory may contain a configuration file <b>config.xml</b> whose content
+ * is similar to that of application configuration file.
+ *
  * A page is requested via page path, which is a dot-connected directory names
- * appended by the page ID. Assume '<BasePath>/Users/Admin' is the directory
- * containing the page 'Update' whose type is UpdateUserPage. Then the page can
- * be requested via 'Users.Admin.Update'.
+ * appended by the page name. Assume '<BasePath>/Users/Admin' is the directory
+ * containing the page 'Update'. Then the page can be requested via 'Users.Admin.Update'.
+ *
+ * Page name refers to the file name (without extension) of the page template.
+ * In order to differentiate from the common control template files, the extension
+ * name of the page template files must be '.page'. If there is a PHP file with
+ * the same page name under the same directory as the template file, that file
+ * will be considered as the page class file and the file name is the page class name.
+ * If such a file is not found, the page class is assumed as {@link TPage}.
  *
  * Modules can be configured and loaded in page directory configurations.
  * Configuration of a module in a subdirectory will overwrite its parent
@@ -170,42 +175,53 @@ class TPageService extends TComponent implements IService
 		else
 		{
 			$configCached=true;
+			$currentTimestamp=array();
 			$arr=$cache->get(self::CONFIG_CACHE_PREFIX.$this->_pagePath);
 			if(is_array($arr))
 			{
-				list($pageConfig,$timestamp)=$arr;
+				list($pageConfig,$timestamps)=$arr;
 				if($application->getMode()!==TApplication::STATE_PERFORMANCE)
 				{
-					// check to see if cache is the latest
-					$paths=explode('.',$this->_pagePath);
-					array_pop($paths);
-					$configPath=$this->_basePath;
-					foreach($paths as $path)
+					foreach($timestamps as $fileName=>$timestamp)
 					{
-						if(@filemtime($configPath.'/'.self::CONFIG_FILE)>$timestamp)
+						if($fileName===0) // application config file
 						{
-							$configCached=false;
-							break;
+							$appConfigFile=$application->getConfigurationFile();
+							$currentTimestamp[0]=$appConfigFile===null?0:@filemtime($appConfigFile);
+							if($currentTimestamp[0]>$timestamp || ($timestamp>0 && !$currentTimestamp[0]))
+								$configCached=false;
 						}
-						$configPath.='/'.$path;
-					}
-					if($configCached)
-					{
-						$appConfig=$application->getConfigurationFile();
-						if(!$appConfig || @filemtime($appConfig)>$timestamp || @filemtime($configPath.'/'.self::CONFIG_FILE)>$timestamp)
-							$configCached=false;
+						else
+						{
+							$currentTimestamp[$fileName]=@filemtime($fileName);
+							if($currentTimestamp[$fileName]>$timestamp || ($timestamp>0 && !$currentTimestamp[$fileName]))
+								$configCached=false;
+						}
 					}
 				}
 			}
 			else
+			{
 				$configCached=false;
+				$paths=explode('.',$this->_pagePath);
+				array_pop($paths);
+				$configPath=$this->_basePath;
+				foreach($paths as $path)
+				{
+					$configFile=$configPath.'/'.self::CONFIG_FILE;
+					$currentTimestamp[$configFile]=@filemtime($configFile);
+					$configPath.='/'.$path;
+				}
+				$appConfigFile=$application->getConfigurationFile();
+				$currentTimestamp[0]=$appConfigFile===null?0:@filemtime($appConfigFile);
+			}
 			if(!$configCached)
 			{
 				$pageConfig=new TPageConfiguration;
 				if($config!==null)
 					$pageConfig->loadXmlElement($config,$application->getConfigurationPath(),null);
 				$pageConfig->loadConfigurationFiles($this->_pagePath,$this->_basePath);
-				$cache->set(self::CONFIG_CACHE_PREFIX.$this->_pagePath,array($pageConfig,time()));
+				$cache->set(self::CONFIG_CACHE_PREFIX.$this->_pagePath,array($pageConfig,$currentTimestamp));
 			}
 		}
 
@@ -737,7 +753,5 @@ class TPageConfiguration extends TComponent
 		}
 	}
 }
-
-
 
 ?>

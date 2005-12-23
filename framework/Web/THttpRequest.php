@@ -64,6 +64,9 @@ class THttpRequest extends TModule
 	 */
 	private $_items;
 
+	private $_services;
+	private $_requestResolved=false;
+
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
@@ -105,7 +108,6 @@ class THttpRequest extends TModule
 
 		$this->_items=new TMap(array_merge($_POST,$_GET));
 
-		$this->resolveRequest();
 		$this->_initialized=true;
 		$application->setRequest($this);
 	}
@@ -338,9 +340,9 @@ class THttpRequest extends TModule
 	public function constructUrl($serviceID,$serviceParam,$getItems=null)
 	{
 		$url=$this->getApplicationPath();
-		$url.='?'.self::SERVICE_VAR.'='.$serviceID;
+		$url.='?'.$serviceID.'=';
 		if(!empty($serviceParam))
-			$url.='.'.$serviceParam;
+			$url.=$serviceParam;
 		if(is_array($getItems) || $getItems instanceof Traversable)
 		{
 			foreach($getItems as $name=>$value)
@@ -361,16 +363,32 @@ class THttpRequest extends TModule
 	 */
 	protected function resolveRequest()
 	{
-		if(($sp=$this->_items->itemAt(self::SERVICE_VAR))!==null)
+		$this->_requestResolved=true;
+		foreach($this->_services as $id)
 		{
-			if(($pos=strpos($sp,'.'))===false)
-				$this->setServiceID($sp);
-			else
+			if(isset($_GET[$id]))
 			{
-				$this->setServiceID(substr($sp,0,$pos));
-				$this->setServiceParameter(substr($sp,$pos+1));
+				$this->setServiceID($id);
+				$this->setServiceParameter($_GET[$id]);
+				break;
 			}
 		}
+	}
+
+	/**
+	 * @return array IDs of the available services
+	 */
+	public function getAvailableServices()
+	{
+		return $this->_services;
+	}
+
+	/**
+	 * @param array IDs of the available services
+	 */
+	public function setAvailableServices($services)
+	{
+		$this->_services=$services;
 	}
 
 	/**
@@ -378,6 +396,8 @@ class THttpRequest extends TModule
 	 */
 	public function getServiceID()
 	{
+		if(!$this->_requestResolved)
+			$this->resolveRequest();
 		return $this->_serviceID;
 	}
 
@@ -395,6 +415,8 @@ class THttpRequest extends TModule
 	 */
 	public function getServiceParameter()
 	{
+		if(!$this->_requestResolved)
+			$this->resolveRequest();
 		return $this->_serviceParam;
 	}
 

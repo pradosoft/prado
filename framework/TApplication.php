@@ -115,13 +115,9 @@ class TApplication extends TComponent
 	const STATE_PERFORMANCE='Performance';
 
 	/**
-	 * Default service ID
-	 */
-	const DEFAULT_SERVICE='page';
-	/**
 	 * Page service ID
 	 */
-	const PAGE_SERVICE='page';
+	const PAGE_SERVICE_ID='page';
 	/**
 	 * Application configuration file name
 	 */
@@ -252,9 +248,8 @@ class TApplication extends TComponent
 	 * Initializes the application singleton. This method ensures that users can
 	 * only create one application instance.
 	 * @param string configuration file path (absolute or relative to current running script)
-	 * @param string a directory used to store application-level persistent data. Defaults to the path having the application configuration file.
 	 * @param boolean whether to cache application configuration. Defaults to true.
-	 * @throws TConfigurationException if configuration file cannot be read or the state path is invalid.
+	 * @throws TConfigurationException if configuration file cannot be read or the runtime path is invalid.
 	 */
 	public function __construct($configPath=null,$cacheConfig=true)
 	{
@@ -706,12 +701,8 @@ class TApplication extends TComponent
 
 		if($this->_configFile===null)
 		{
-			if(($serviceID=$this->getRequest()->getServiceID())===null)
-				$serviceID=self::DEFAULT_SERVICE;
-			if($serviceID===self::PAGE_SERVICE)
-				$this->_service=$this->getPageService();
-			else
-				throw new THttpException(500,'application_service_unknown',$serviceID);
+			$this->getRequest()->setAvailableServices(array(self::PAGE_SERVICE_ID));
+			$this->_service=$this->getPageService();
 			return;
 		}
 
@@ -771,23 +762,28 @@ class TApplication extends TComponent
 			$module->init($this,$moduleConfig[2]);
 		}
 
-		if(($serviceID=$this->getRequest()->getServiceID())===null)
-			$serviceID=self::DEFAULT_SERVICE;
+		// load service
+		$services=$config->getServices();
+		$serviceIDs=array_keys($services);
+		array_unshift($serviceIDs,self::PAGE_SERVICE_ID);
+		$request=$this->getRequest();
+		$request->setAvailableServices($serviceIDs);
 
-		if(($serviceConfig=$config->getService($serviceID))!==null)
+		if(($serviceID=$request->getServiceID())===null)
+			$serviceID=self::PAGE_SERVICE_ID;
+		if(isset($services[$serviceID]))
 		{
+			$serviceConfig=$services[$serviceID];
 			$service=Prado::createComponent($serviceConfig[0]);
 			if(!($service instanceof IService))
-				throw new TConfigurationException('application_service_invalid',$serviceID);
+				throw new THttpException(500,'application_service_unknown',$serviceID);
 			$this->_service=$service;
 			foreach($serviceConfig[1] as $name=>$value)
 				$service->setSubProperty($name,$value);
 			$service->init($this,$serviceConfig[2]);
 		}
-		else if($serviceID===self::DEFAULT_SERVICE)
-			$this->_service=$this->getPageService();
 		else
-			throw new THttpException(500,'application_service_unknown',$serviceID);
+			$this->_service=$this->getPageService();
 	}
 
 	/**
@@ -1111,6 +1107,11 @@ class TApplicationConfiguration extends TComponent
 	public function getService($id)
 	{
 		return isset($this->_services[$id])?$this->_services[$id]:null;
+	}
+
+	public function getServices()
+	{
+		return $this->_services;
 	}
 
 	/**
