@@ -20,10 +20,11 @@ demos/controls/themes/BlueTheme/labels.skin -text
 demos/controls/themes/BlueTheme/simple.css -text
 demos/hangman/index.php -text
 demos/hangman/protected/.htaccess -text
-demos/hangman/protected/pages/HomePage.php -text
-demos/hangman/protected/pages/HomePage.tpl -text
+demos/hangman/protected/pages/Home.page -text
+demos/hangman/protected/pages/Home.php -text
 demos/hangman/protected/pages/Layout.php -text
 demos/hangman/protected/pages/Layout.tpl -text
+demos/hangman/protected/pages/words.txt -text
 demos/personal/index.php -text
 demos/personal/protected/Data/application.xml -text
 demos/personal/protected/Modules/DataModule.php -text

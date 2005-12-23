@@ -1,6 +1,6 @@
 <?php
 
-class HomePage extends TPage
+class Home extends TPage
 {
 	const EASY_LEVEL=10;
 	const MEDIUM_LEVEL=5;

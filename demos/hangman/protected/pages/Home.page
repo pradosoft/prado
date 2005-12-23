@@ -1,4 +1,4 @@
-<%@ MasterClass="Pages.Layout" Title="Prado Hangman Game" %>
+<%@ MasterClass="Application.pages.Layout" Title="Prado Hangman Game" %>
 <com:TContent ID="body" >
 <com:TForm>
 <h1>Prado Hangman Game</h1>
