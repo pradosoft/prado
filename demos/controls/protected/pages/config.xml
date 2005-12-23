@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-<configuration>
-  <pages Theme="BlueTheme">
-    <page id="home" class="HomePage" />
-    <page id="login" class="LoginPage" />
-    <page id="plain" class="TPage" TemplateFile="Demo.pages.PlainPage" />
-  </pages>
-</configuration>

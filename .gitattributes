@@ -1,23 +1,4 @@
 * text=auto !eol
-demos/controls/index.php -text
-demos/controls/protected/application.xml -text
-demos/controls/protected/pages/HomePage.php -text
-demos/controls/protected/pages/HomePage.tpl -text
-demos/controls/protected/pages/LoginPage.php -text
-demos/controls/protected/pages/LoginPage.tpl -text
-demos/controls/protected/pages/PlainPage.tpl -text
-demos/controls/protected/pages/config.xml -text
-demos/controls/protected/pages/fungii_logo.gif -text
-demos/controls/protected/pages/master/MasterPage.php -text
-demos/controls/protected/pages/master/MasterPage.tpl -text
-demos/controls/protected/pages/private/MemberPage.php -text
-demos/controls/protected/pages/private/MemberPage.tpl -text
-demos/controls/protected/pages/private/config.xml -text
-demos/controls/protected/userFile.xml -text
-demos/controls/themes/BlueTheme/buttons.skin -text
-demos/controls/themes/BlueTheme/icon_profile.gif -text
-demos/controls/themes/BlueTheme/labels.skin -text
-demos/controls/themes/BlueTheme/simple.css -text
 demos/hangman/index.php -text
 demos/hangman/protected/.htaccess -text
 demos/hangman/protected/pages/Home.page -text
