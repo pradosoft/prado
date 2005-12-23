@@ -19,7 +19,7 @@ class HomePage extends TPage
 			$this->LevelError->Visible=true;
 			return;
 		}
-		$wordFile=Prado::getPathOfNamespace($this->Application->Parameters['wordFile'],'.txt');
+		$wordFile=dirname(__FILE__).'/words.txt';
 		$words=preg_split("/[\s,]+/",file_get_contents($wordFile));
 		do
 		{
