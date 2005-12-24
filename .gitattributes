@@ -34,6 +34,10 @@ demos/quickstart/protected/pages/chap1/Installation.page -text
 demos/quickstart/protected/pages/chap1/Introduction.page -text
 demos/quickstart/protected/pages/chap1/config.xml -text
 demos/quickstart/protected/pages/chap3/Hangman.page -text
+demos/quickstart/protected/pages/chap3/Hangman/Home.page -text
+demos/quickstart/protected/pages/chap3/Hangman/Home.php -text
+demos/quickstart/protected/pages/chap3/Hangman/config.xml -text
+demos/quickstart/protected/pages/chap3/Hangman/words.txt -text
 demos/quickstart/protected/pages/chap3/HelloWorld.page -text
 demos/quickstart/protected/pages/chap3/HelloWorld/Home.page -text
 demos/quickstart/protected/pages/chap3/HelloWorld/Home.php -text

@@ -109,14 +109,16 @@ class TRadioButton extends TCheckBox
 			if($uniqueID!=='')
 			{
 				if(($pos=strrpos($uniqueID,TControl::ID_SEPARATOR))!==false)
-					$this->_uniqueGroupName=substr($uniqueID,0,$pos+1).$groupName;
-				else if($this->getNameContainer() instanceof TRadioButtonList)
-					$this->_uniqueGroupName=substr($uniqueID,0,$pos);
-				if(empty($this->_uniqueGroupName))
-					$this->_uniqueGroupName=$uniqueID;
+				{
+					if($groupName!=='')
+						$groupName=substr($uniqueID,0,$pos+1).$groupName;
+					else if($this->getNamingContainer() instanceof TRadioButtonList)
+						$groupName=substr($uniqueID,0,$pos);
+				}
+				if($groupName==='')
+					$groupName=$uniqueID;
 			}
-			else
-				$this->_uniqueGroupName=$groupName;
+			$this->_uniqueGroupName=$groupName;
 		}
 		return $this->_uniqueGroupName;
 	}
