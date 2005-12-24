@@ -2,12 +2,8 @@
 demos/personal/index.php -text
 demos/personal/protected/Data/application.xml -text
 demos/personal/protected/Modules/DataModule.php -text
-demos/personal/protected/Pages/HomePage.php -text
-demos/personal/protected/Pages/HomePage.tpl -text
 demos/personal/protected/Pages/Layout.php -text
 demos/personal/protected/Pages/Layout.tpl -text
-demos/personal/protected/Pages/LoginPage.php -text
-demos/personal/protected/Pages/LoginPage.tpl -text
 demos/personal/protected/Pages/config.xml -text
 demos/personal/themes/BlueTheme/buttons.skin -text
 demos/personal/themes/BlueTheme/icon_profile.gif -text
