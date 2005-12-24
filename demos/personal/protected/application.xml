@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<application>
+  <!-- modules configured and loaded for all services -->
+  <modules>
+    <!-- Remove this comment mark to enable caching
+    <module id="cache" class="System.Data.TSqliteCache" />
+    -->
+    <module id="session" class="THttpSession" />
+  </modules>
+  <services>
+    <!-- page service -->
+    <service id="page" class="TPageService" BasePath="Application.Pages">
+      <!-- modules configured and loaded when page service is requested -->
+      <modules>
+        <!-- user manager module -->
+        <module id="users" class="System.Security.TUserManager" PasswordMode="Clear">
+          <user name="demo" password="demo" />
+        </module>
+        <!-- auth manager module -->
+        <module id="auth" class="System.Security.TAuthManager" UserManager="users" LoginPage="Login" />
+      </modules>
+    </service>
+  </services>
+</application>
