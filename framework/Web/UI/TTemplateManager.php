@@ -140,7 +140,7 @@ class TTemplate extends TComponent implements ITemplate
 	 *	'<%@\s*(\w+)((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?")*)\s*%>'  - directives
 	 *	'<%=?(.*?)%> | <%#(.*?)%>'  - expressions
 	 */
-	const REGEX_RULES='/<!.*?!>|<!--.*?-->|<\/?com:([\w\.]+)((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?"|\s*[\w\.]+=<%.*?%>)*)\s*\/?>|<\/?prop:([\w\.]+)\s*>|<%@\s*((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?")*)\s*%>|<%[#=]?(.*?)%>/msS';
+	const REGEX_RULES='/<!.*?!>|<!--.*?-->|<\/?com:([\w\.]+)((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?"|\s*[\w\.]+=<%.*?%>)*)\s*\/?>|<\/?prop:([\w\.]+)\s*>|<%@\s*((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?")*)\s*%>|<%[%#~\\$=](.*?)%>/msS';
 
 	/**
 	 * Different configurations of component property/event/attribute
@@ -536,10 +536,10 @@ class TTemplate extends TComponent implements ITemplate
 				$textStart=$matchEnd+1;
 				if($str[2]==='=')	// expression
 					$tpl[$c++]=array($container,'TExpression',array('Expression'=>$match[5][0]));
-				else if($str[2]==='#')	// binding expression
-					$tpl[$c++]=array($container,'TLiteral',array('Text'=>array(0,$match[5][0])));
-				else	// statements
+				else if($str[2]==='%')  // statements
 					$tpl[$c++]=array($container,'TStatements',array('Statements'=>$match[5][0]));
+				else
+					$tpl[$c++]=array($container,'TLiteral',array('Text'=>$this->parseAttribute($str)));
 			}
 			else if(strpos($str,'<prop:')===0)	// opening property
 			{
@@ -582,17 +582,7 @@ class TTemplate extends TComponent implements ITemplate
 					if($matchStart>$textStart && $container>=0)
 					{
 						$value=substr($input,$textStart,$matchStart-$textStart);
-						if(preg_match('/^<%.*?%>$/msS',$value))
-						{
-							if($value[2]==='#') // databind
-								$tpl[$container][2][$prop]=array(0,substr($value,3,strlen($value)-5));
-							else if($value[2]==='=') // a dynamic initialization
-								$tpl[$container][2][$prop]=array(1,substr($value,3,strlen($value)-5));
-							else
-								$tpl[$container][2][$prop]=$value;
-						}
-						else
-							$tpl[$container][2][$prop]=$value;
+						$tpl[$container][2][$prop]=$this->parseAttribute($value);
 						$textStart=$matchEnd+1;
 					}
 					$expectPropEnd=false;
@@ -660,29 +650,24 @@ class TTemplate extends TComponent implements ITemplate
 			$name=strtolower($matches[$i][1]);
 			$value=$matches[$i][2];
 			if($value[0]==='\'' || $value[0]==='"')
-			{
 				$value=substr($value,1,strlen($value)-2);
-				if(!preg_match('/(<%#.*?%>|<%=.*?%>|<%~.*?%>|<%\\$.*?%>)/msS',$value))
-				{
-					$attributes[$name]=$value;
-					continue;
-				}
-			}
-			if($value[0]==='<')
-			{
-				if($value[2]==='#') // databind
-					$attributes[$name]=array(self::CONFIG_DATABIND,substr($value,3,strlen($value)-5));
-				else if($value[2]==='=') // a dynamic initialization
-					$attributes[$name]=array(self::CONFIG_EXPRESSION,substr($value,3,strlen($value)-5));
-				else if($value[2]==='~') // a URL
-					$attributes[$name]=array(self::CONFIG_ASSET,trim(substr($value,3,strlen($value)-5)));
-				else if($value[2]==='$')
-					$attributes[$name]=array(self::CONFIG_PARAMETER,trim(substr($value,3,strlen($value)-5)));
-				else
-					$attributes[$name]=substr($value,2,strlen($value)-4);
-			}
+			$attributes[$name]=$this->parseAttribute($value);
 		}
 		return $attributes;
+	}
+
+	protected function parseAttribute($value)
+	{
+		if(!preg_match('/(<%#.*?%>|<%=.*?%>|<%~.*?%>|<%\\$.*?%>)/msS',$value))
+			return $value;
+		else if($value[2]==='#') // databind
+			return array(self::CONFIG_DATABIND,substr($value,3,strlen($value)-5));
+		else if($value[2]==='=') // a dynamic initialization
+			return array(self::CONFIG_EXPRESSION,substr($value,3,strlen($value)-5));
+		else if($value[2]==='~') // a URL
+			return array(self::CONFIG_ASSET,trim(substr($value,3,strlen($value)-5)));
+		else if($value[2]==='$')
+			return array(self::CONFIG_PARAMETER,trim(substr($value,3,strlen($value)-5)));
 	}
 }
 

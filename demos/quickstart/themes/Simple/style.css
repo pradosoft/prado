@@ -70,6 +70,55 @@ body {
 	padding-left:10px;
 }
 
-.topic a:hover{
+.topic a:hover {
 	color:red;
+}
+
+.code {
+	padding:10px;
+	border-style:solid;
+	border-width:1px;
+	border-color:#cccccc;
+	background-color:#ffffee;
+}
+
+.runbar a:link, .runbar a:visited {
+	background-color:#BFE4FF;
+	font-size: 12px;
+	font-weight: bold;
+	padding: 3px;
+	padding-left: 6px;
+	padding-right: 6px;
+	border-top: 1px solid white;
+	border-left: 1px solid white;
+	border-bottom: 1px solid #aaaaaa;
+	border-right: 1px solid #aaaaaa;
+	text-decoration: none;
+}
+
+.runbar a:link.active, .runbar a:visited.active, .runbar a:hover {
+	background-color:#BFE4FF;
+	font-size: 12px;
+	font-weight: bold;
+	padding: 3px;
+	padding-left: 6px;
+	padding-right: 6px;
+	border-top: 1px solid #aaaaaa;
+	border-left: 1px solid #aaaaaa;
+	border-bottom: 1px solid white;
+	border-right: 1px solid white;
+}
+
+#sourceList {
+	background-color:#BFE4FF;
+	margin:10px;
+	border:1px solid silver;
+	padding:10px;
+}
+
+#sourceView {
+	background-color:#ffffee;
+	margin:10px;
+	border:1px solid silver;
+	padding:10px;
 }

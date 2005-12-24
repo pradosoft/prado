@@ -9,18 +9,17 @@
 
 <div class="topic">
 <span>Fundamentals</span><br/>
-<a href="?page=Construction">Architecture</a><br/>
-<a href="?page=Construction">Key Concepts</a><br/>
-<a href="?page=Construction">Configurations</a><br/>
-<a href="?page=Construction">Templates</a><br/>
+<a href="?page=chap2.Architecture">Architecture</a><br/>
+<a href="?page=chap2.KeyConcepts">Key Concepts</a><br/>
+<a href="?page=chap2.Structure">Application Structure</a><br/>
+<a href="?page=chap2.Configurations">Configurations</a><br/>
+<a href="?page=chap2.Templates">Templates</a><br/>
 </div>
 
 <div class="topic">
-<span>Applications</span><br/>
-<a href="?page=chap2.Structure">Directory Structure</a><br/>
-<a href="?page=chap2.Deployment">Application Deployment</a><br/>
-<a href="?page=chap2.HelloWorld">Sample: Hello World</a><br/>
-<a href="?page=chap2.HangmanGame">Sample: Hangman Game</a><br/>
+<span>Samples</span><br/>
+<a href="?page=chap3.HelloWorld">Hello World</a><br/>
+<a href="?page=chap3.Hangman">Hangman Game</a><br/>
 </div>
 
 <div class="topic">
