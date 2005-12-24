@@ -1,14 +1,16 @@
 <?php
 
-define('APPLICATION_PATH',dirname(__FILE__));
+$basePath=dirname(__FILE__);
+$frameworkPath=$basePath.'/../../framework/prado.php';
+$configPath=$basePath.'/protected/application.xml';
+$assetsPath=$basePath.'/assets';
 
-if(!is_writable(APPLICATION_PATH.'/protected/Data'))
-	die('Please make sure that the directory "'.APPLICATION_PATH.'/protected/Data'.'" is writable by Web server process.');
-if(!is_writable(APPLICATION_PATH.'/assets'))
-	die('Please make sure that the directory "'.APPLICATION_PATH.'/assets'.'" is writable by Web server process.');
+if(!is_writable($assetsPath))
+	die("Please make sure that the directory $assetsPath is writable by Web server process.");
 
-require_once(APPLICATION_PATH.'/../../framework/prado.php');
-$application=new TApplication(APPLICATION_PATH.'/protected/Data/application.xml');
+require_once($frameworkPath);
+
+$application=new TApplication($configPath,true);
 $application->run();
 
 ?>
