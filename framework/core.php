@@ -356,6 +356,59 @@ class TModule extends TComponent implements IModule
 }
 
 /**
+ * TService class.
+ *
+ * TService implements the basic methods required by IService and may be
+ * used as the basic class for application services.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System
+ * @since 3.0
+ */
+abstract class TService extends TComponent implements IService
+{
+	/**
+	 * @var string service id
+	 */
+	private $_id;
+
+	/**
+	 * Initializes the service and attaches {@link run} to the RunService event of application.
+	 * This method is required by IService and is invoked by application.
+	 * @param TApplication application
+	 * @param TXmlElement module configuration
+	 */
+	public function init($application,$config)
+	{
+		$application->attachEventHandler('RunService',array($this,'run'));
+	}
+
+	/**
+	 * @return string id of this service
+	 */
+	public function getID()
+	{
+		return $this->_id;
+	}
+
+	/**
+	 * @param string id of this service
+	 */
+	public function setID($value)
+	{
+		$this->_id=$value;
+	}
+
+	/**
+	 * Runs the service.
+	 */
+	public function run()
+	{
+	}
+}
+
+/**
  * PradoBase class.
  *
  * PradoBase implements a few fundamental static methods.

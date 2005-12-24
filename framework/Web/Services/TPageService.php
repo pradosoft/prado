@@ -73,7 +73,7 @@ Prado::using('System.Web.UI.TPageStatePersister');
  * @package System.Services
  * @since 3.0
  */
-class TPageService extends TComponent implements IService
+class TPageService extends TService
 {
 	/**
 	 * Configuration file name
@@ -263,7 +263,7 @@ class TPageService extends TComponent implements IService
 
 		$this->_initialized=true;
 
-		$application->attachEventHandler('RunService',array($this,'run'));
+		parent::init($application,$config);
 	}
 
 	/**
