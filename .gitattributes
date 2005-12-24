@@ -1,7 +1,5 @@
 * text=auto !eol
 demos/personal/index.php -text
-demos/personal/protected/Data/application.xml -text
-demos/personal/protected/Modules/DataModule.php -text
 demos/personal/protected/Pages/Home.page -text
 demos/personal/protected/Pages/Home.php -text
 demos/personal/protected/Pages/Layout.php -text
