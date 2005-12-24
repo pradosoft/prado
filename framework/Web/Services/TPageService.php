@@ -94,7 +94,7 @@ class TPageService extends TComponent implements IService
 	/**
 	 * @var string id of this service (page)
 	 */
-	private $_id;
+	private $_id='page';
 	/**
 	 * @var string root path of pages
 	 */
