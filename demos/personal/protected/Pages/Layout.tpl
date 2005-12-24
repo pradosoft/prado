@@ -10,11 +10,11 @@
   <h1>Your Name Here</h1>
   <h2>My Personal Site</h2>
   <div class="nav">
-    <a href=<%=$this->Service->constructUrl('home') %> >HOME</a> |
-    <a href=<%=$this->Service->constructUrl('resume') %> >RESUME</a> |
-    <a href=<%=$this->Service->constructUrl('links') %> >LINKS</a> |
-    <a href=<%=$this->Service->constructUrl('albums') %> >ALBUMS</a> |
-    <a href=<%=$this->Service->constructUrl('login') %> >LOGIN</a>
+    <a href=<%=$this->Service->constructUrl('Home') %> >HOME</a> |
+    <a href=<%=$this->Service->constructUrl('Resume') %> >RESUME</a> |
+    <a href=<%=$this->Service->constructUrl('Links') %> >LINKS</a> |
+    <a href=<%=$this->Service->constructUrl('Albums') %> >ALBUMS</a> |
+    <a href=<%=$this->Service->constructUrl('UserLogin') %> >LOGIN</a>
   </div>
 </div>
 <div class="main">

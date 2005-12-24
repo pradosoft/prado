@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <configuration>
-  <pages MasterClass="Application.Pages.Layout">
-    <page id="home" class="HomePage" />
-    <page id="login" class="LoginPage" />
-  </pages>
+  <pages MasterClass="Application.Pages.Layout" />
 </configuration>
