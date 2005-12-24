@@ -13,7 +13,7 @@ PRADO promotes component-based and event-driven Web programming. The button is r
 <p>
 The code that a developer needs to write is merely the following event handler function, where <code>$sender</code> refers to the button object.
 </p>
-<pre class="code">
+<pre class="source">
 public function buttonClicked($sender,$param)
 {
 	$sender->Text="Hello World";

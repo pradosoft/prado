@@ -17,11 +17,18 @@ Prado QuickStart Tutorial
 <com:TLinkButton Text="Hide TOC" Click="toggleTopicPanel" />
 </div>
 
-<com:Pages.TopicList ID="TopicPanel" />
-
-<div id="content">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">
+<div id="content" width="100%">
 <com:TContentPlaceHolder ID="body" />
 </div>
+</td>
+<td valign="top" width="1">
+<com:Pages.TopicList ID="TopicPanel" />
+</td>
+</tr>
+</table>
 
 <div id="footer">
 Copyright &copy; 2005 <a href="http://www.pradosoft.com">PradoSoft</a>.

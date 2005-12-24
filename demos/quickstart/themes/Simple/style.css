@@ -34,15 +34,13 @@ body {
 
 #toc {
 	background:#BFE4FF;
-	float:right;
 	width:200px;
 	padding:5px;
 }
 
 #content {
-	float:left;
 	background:#fff;
-	padding:5px;
+	padding:10px;
 }
 
 #footer {
@@ -51,7 +49,7 @@ body {
 	font-size:8pt;
 	text-align:center;
 	margin-top:25px;
-	padding:5px;
+	padding:10px;
 }
 
 .topic {
@@ -74,12 +72,13 @@ body {
 	color:red;
 }
 
-.code {
+.source {
 	padding:10px;
 	border-style:solid;
 	border-width:1px;
 	border-color:#cccccc;
 	background-color:#ffffee;
+	font-family: "Courier New", Courier, mono;
 }
 
 .runbar a:link, .runbar a:visited {
@@ -111,14 +110,19 @@ body {
 
 #sourceList {
 	background-color:#BFE4FF;
-	margin:10px;
+	margin:10px 10px 0px 10px;
+	padding:10px;
+	border:1px solid silver;
+}
+
+#sourceView {
+	font-family: "Courier New", Courier, mono;
+	background-color:#ffffee;
+	margin:5px 10px 10px 10px;
 	border:1px solid silver;
 	padding:10px;
 }
 
-#sourceView {
-	background-color:#ffffee;
-	margin:10px;
-	border:1px solid silver;
-	padding:10px;
+code {
+	font-family: "Courier New", Courier, mono;
 }
