@@ -317,6 +317,7 @@ class TTemplate extends TComponent implements ITemplate
 	 */
 	protected function configureEvent($component,$name,$value)
 	{
+		$value=THttpUtility::htmlDecode($value);
 		if(strpos($value,'.')===false)
 			$component->attachEventHandler($name,array($component,'TemplateControl.'.$value));
 		else
@@ -336,27 +337,28 @@ class TTemplate extends TComponent implements ITemplate
 			$setter='set'.$name;
 			if(is_array($value))
 			{
+				$v=THttpUtility::htmlDecode($value[1]);
 				switch($value[0])
 				{
 					case self::CONFIG_DATABIND:
-						$component->bindProperty($name,$value[1]);
+						$component->bindProperty($name,$v);
 						break;
 					case self::CONFIG_EXPRESSION:
-						$component->$setter($component->evaluateExpression($value[1]));
+						$component->$setter($component->evaluateExpression($v));
 						break;
 					case self::CONFIG_ASSET:		// asset URL
-						$url=$this->_assetManager->publishFilePath($this->_contextPath.'/'.$value[1]);
+						$url=$this->_assetManager->publishFilePath($this->_contextPath.'/'.$v);
 						$component->$setter($url);
 						break;
 					case self::CONFIG_PARAMETER:		// application parameter
-						$component->$setter(Prado::getApplication()->getParameters()->itemAt($value[1]));
+						$component->$setter(Prado::getApplication()->getParameters()->itemAt($v));
 						break;
 					default:	// an error if reaching here
 						break;
 				}
 			}
 			else
-				$component->$setter($value);
+				$component->$setter(THttpUtility::htmlDecode($value));
 		}
 		else
 			throw new TTemplateRuntimeException('template_property_readonly',get_class($component),$name);
@@ -372,27 +374,28 @@ class TTemplate extends TComponent implements ITemplate
 	{
 		if(is_array($value))
 		{
+			$v=THttpUtility::htmlDecode($value[1]);
 			switch($value[0])
 			{
 				case self::CONFIG_DATABIND:		// databinding
-					$component->bindProperty($name,$value[1]);
+					$component->bindProperty($name,$v);
 					break;
 				case self::CONFIG_EXPRESSION:		// expression
-					$component->setSubProperty($name,$component->evaluateExpression($value[1]));
+					$component->setSubProperty($name,$component->evaluateExpression($v));
 					break;
 				case self::CONFIG_ASSET:		// asset URL
-					$url=$this->_assetManager->publishFilePath($this->_contextPath.'/'.$value[1]);
+					$url=$this->_assetManager->publishFilePath($this->_contextPath.'/'.$v);
 					$component->setSubProperty($name,$url);
 					break;
 				case self::CONFIG_PARAMETER:		// application parameter
-					$component->setSubProperty($name,Prado::getApplication()->getParameters()->itemAt($value[1]));
+					$component->setSubProperty($name,Prado::getApplication()->getParameters()->itemAt($v));
 					break;
 				default:	// an error if reaching here
 					break;
 			}
 		}
 		else
-			$component->setSubProperty($name,$value);
+			$component->setSubProperty($name,THttpUtility::htmlDecode($value));
 	}
 
 	/**

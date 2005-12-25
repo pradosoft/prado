@@ -113,61 +113,22 @@ class THtmlWriter extends TComponent implements ITextWriter
 	private static $_attrEncode=array(
 		'abbr'=>true,
 		'accesskey'=>true,
-		'align'=>false,
 		'alt'=>true,
-		'autocomplete'=>false,
 		'axis'=>true,
 		'background'=>true,
-		'bgcolor'=>false,
-		'border'=>false,
-		'bordercolor'=>false,
-		'cellpadding'=>false,
-		'cellspacing'=>false,
-		'checked'=>false,
 		'class'=>true,
-		'cols'=>false,
-		'colspan'=>false,
 		'content'=>true,
-		'coords'=>false,
-		'dir'=>false,
-		'disabled'=>false,
-		'for'=>false,
 		'headers'=>true,
-		'height'=>false,
 		'href'=>true,
-		'id'=>false,
 		'longdesc'=>true,
-		'maxlength'=>false,
-		'multiple'=>false,
-		'name'=>false,
-		'nowrap'=>false,
 		'onclick'=>true,
 		'onchange'=>true,
-		'readonly'=>false,
-		'rel'=>false,
-		'rows'=>false,
-		'rowspan'=>false,
-		'rules'=>false,
-		'scope'=>false,
-		'selected'=>false,
-		'shape'=>false,
-		'size'=>false,
 		'src'=>true,
-		'style'=>false,
-		'tabindex'=>false,
-		'target'=>false,
 		'title'=>true,
-		'type'=>false,
-		'usemap'=>false,
-		'valign'=>false,
-		'value'=>true,
-		'vcard_name'=>false,
-		'width'=>false,
-		'wrap'=>false
+		'value'=>true
 	);
 	private static $_styleEncode=array(
 		'background-image'=>true,
-		'font-family'=>false,
 		'list-style-image'=>true
 	);
 	private $_attributes=array();
@@ -198,10 +159,7 @@ class THtmlWriter extends TComponent implements ITextWriter
 
 	public function addStyleAttribute($name,$value)
 	{
-		if(isset(self::$_styleEncode[$name]))
-			$this->_styles[$name]=THttpUtility::htmlEncode($value);
-		else
-			$this->_styles[$name]=$value;
+		$this->_styles[$name]=isset(self::$_styleEncode[$name])?THttpUtility::htmlEncode($value):$value;
 	}
 
 	public function flush()

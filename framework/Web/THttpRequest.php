@@ -335,21 +335,23 @@ class THttpRequest extends TModule
 	 * @param string service ID
 	 * @param string service parameter
 	 * @param array GET parameters, null if not needed
+	 * @param boolean whether to encode the ampersand in URL, defaults to false.
 	 * @return string URL
 	 */
-	public function constructUrl($serviceID,$serviceParam,$getItems=null)
+	public function constructUrl($serviceID,$serviceParam,$getItems=null,$encodeAmpersand=false)
 	{
 		$url=$this->getApplicationPath();
 		$url.='?'.$serviceID.'=';
 		if(!empty($serviceParam))
 			$url.=$serviceParam;
+		$amp=$encodeAmpersand?'&amp;':'&';
 		if(is_array($getItems) || $getItems instanceof Traversable)
 		{
 			foreach($getItems as $name=>$value)
-				$url.='&amp;'.urlencode($name).'='.urlencode($value);
+				$url.=$amp.urlencode($name).'='.urlencode($value);
 		}
 		if(defined('SID') && SID != '')
-			$url.='&amp;'.SID;
+			$url.=$amp.SID;
 		return $url;
 	}
 
