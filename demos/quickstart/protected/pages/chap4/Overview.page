@@ -1,5 +1,5 @@
 <com:TContent ID="body" >
-<h4>Controls Overview</h4>
+<h1>Controls Overview</h1>
 <p>
 A control is an instance of class <code>TControl</code> or its subclass. A control is a component defined in addition with user interface. The base class <code>TControl</code> defines the parent-child relationship among controls which reflects the containment relationship among user interface elements.
 </p>

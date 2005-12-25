@@ -13,7 +13,9 @@
 <a href="?page=chap2.KeyConcepts">Key Concepts</a><br/>
 <a href="?page=chap2.Structure">Application Structure</a><br/>
 <a href="?page=chap2.Configurations">Configurations</a><br/>
-<a href="?page=chap2.Templates">Templates</a><br/>
+<a href="?page=chap2.Templates1">Templates: Part I</a><br/>
+<a href="?page=chap2.Templates2">Templates: Part II</a><br/>
+<a href="?page=chap2.Templates3">Templates: Part III</a><br/>
 </div>
 
 <div class="topic">

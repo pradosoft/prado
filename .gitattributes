@@ -25,6 +25,9 @@ demos/quickstart/protected/pages/chap1/AboutPrado.page -text
 demos/quickstart/protected/pages/chap1/Installation.page -text
 demos/quickstart/protected/pages/chap1/Introduction.page -text
 demos/quickstart/protected/pages/chap1/config.xml -text
+demos/quickstart/protected/pages/chap2/Templates1.page -text
+demos/quickstart/protected/pages/chap2/Templates2.page -text
+demos/quickstart/protected/pages/chap2/Templates3.page -text
 demos/quickstart/protected/pages/chap3/Hangman.page -text
 demos/quickstart/protected/pages/chap3/Hangman/Home.page -text
 demos/quickstart/protected/pages/chap3/Hangman/Home.php -text

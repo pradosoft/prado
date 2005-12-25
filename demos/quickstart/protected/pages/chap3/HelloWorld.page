@@ -1,5 +1,5 @@
 <com:TContent ID="body" >
-<h4>Sample: Hello World</h4>
+<h1>Sample: Hello World</h1>
 <p>
 "Hello World" is the simplest <i>interactive</i> PRADO application that you can build. It displays to end-users a page with a submit button whose caption is <i>Click Me</i>. When the user clicks on the button, the button changes the caption to <i>Hello World</i>.
 </p>
