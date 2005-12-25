@@ -36,6 +36,8 @@ demos/quickstart/protected/pages/chap3/HelloWorld/Home.php -text
 demos/quickstart/protected/pages/chap3/HelloWorld/config.xml -text
 demos/quickstart/protected/pages/chap3/HelloWorld/sequence.gif -text
 demos/quickstart/protected/pages/chap3/HelloWorld/sequence.vsd -text
+demos/quickstart/protected/pages/chap4/Overview.page -text
+demos/quickstart/protected/pages/chap4/Simple1.page -text
 demos/quickstart/protected/pages/config.xml -text
 demos/quickstart/themes/Simple/style.css -text
 docs/application.xml -text

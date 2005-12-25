@@ -24,7 +24,9 @@
 
 <div class="topic">
 <span>Controls</span><br/>
-<a href="?page=Construction">Simple Controls</a><br/>
+<a href="?page=chap4.Overview">Overview</a><br/>
+<a href="?page=chap4.Simple1">Simple Controls: Part I</a><br/>
+<a href="?page=chap4.Simple2">Simple Controls: Part II</a><br/>
 <a href="?page=Construction">Validation Controls</a><br/>
 <a href="?page=Construction">List Controls</a><br/>
 <a href="?page=Construction">TRepeater</a><br/>

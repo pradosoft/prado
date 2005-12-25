@@ -6,6 +6,9 @@ Having seen the simple "Hello World" application, we now build a more complex ap
 <p>
 To facilitate the building of this game, we show the state transition diagram of the gaming process in the following,
 </p>
+<p>
+To be continued...
+</p>
 <div class="runbar">
 <a href="?page=chap3.Hangman.Home" target="_blank">Run Sample</a>
 <a href="?page=ViewSource&amp;path=/chap3/Hangman/Home.php" target="_blank">View Source</a>
