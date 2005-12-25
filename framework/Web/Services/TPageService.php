@@ -458,11 +458,12 @@ class TPageService extends TService
 	 * Constructs a URL with specified page path and GET parameters.
 	 * @param string page path
 	 * @param array list of GET parameters, null if no GET parameters required
+	 * @param boolean whether to encode the ampersand in URL, defaults to false.
 	 * @return string URL for the page and GET parameters
 	 */
-	public function constructUrl($pagePath,$getParams=null)
+	public function constructUrl($pagePath,$getParams=null,$encodeAmpersand=false)
 	{
-		return $this->_application->getRequest()->constructUrl($this->_id,$pagePath,$getParams);
+		return $this->_application->getRequest()->constructUrl($this->_id,$pagePath,$getParams,$encodeAmpersand);
 	}
 }
 
