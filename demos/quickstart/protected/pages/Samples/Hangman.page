@@ -1,0 +1,16 @@
+<com:TContent ID="body" >
+<h1>Sample: Hangman Game</h1>
+<p>
+Having seen the simple "Hello World" application, we now build a more complex application called "Hangman Game". In this game, the player is asked to guess a word, a letter at a time. If he guesses a letter right, the letter will be shown in the word. The player can continue to guess as long as the number of his misses is within a prespecified bound. The player wins the game if he finds out the word within the miss bound, or he loses.
+</p>
+<p>
+To facilitate the building of this game, we show the state transition diagram of the gaming process in the following,
+</p>
+<p>
+To be continued...
+</p>
+<div class="runbar">
+<a href="?page=Samples.Hangman.Home" target="_blank">Run Sample</a>
+<a href="?page=ViewSource&amp;path=/Samples/Hangman/Home.php" target="_blank">View Source</a>
+</div>
+</com:TContent>

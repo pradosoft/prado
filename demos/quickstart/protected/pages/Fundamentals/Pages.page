@@ -1,0 +1,8 @@
+<com:TContent ID="body" >
+
+<h1>Pages</h1>
+<p>
+Pages are top-most controls that have no parent (you may consider application as their container though). The presentation of pages are directly displayed to end-users.
+</p>
+
+</com:TContent>

@@ -1,0 +1,69 @@
+<com:TContent ID="body" >
+<h1>Templates: Part I</h1>
+<p>
+Templates are used to specify the presentational layout of controls. A template can contain static text, components, or controls that contribute to the ultimate presentation of the associated control. By default, an instance of <code>TTemplateControl</code> or its subclass may automatically load a template from a file whose name is the same as the control class name. For page templates, the file name suffix must be <code>.page</code>; for other regular template controls, the suffix is <code>.tpl</code>.
+</p>
+<p>The template format is like HTML, with a few PRADO-specifc tags, including <a href="#ct">component tags</a>, <a href="#tct">template control tags</a>, <a href="#cot">comment tags</a>, <a href="?page=Configurations.Templates2#dct">dynamic content tags</a>, and <a href="?page=Configurations.Templates3#dpt">dynamic property tags</a>. .
+</p>
+
+<a name="ct" />
+<h2>Component Tags</h2>
+<p>
+A component tag specifies a component as part of the body content of the template control. If the component is a control, it usually will become a child or grand child of the template control, and its rendering result will be inserted at the place where it is appearing in the template.
+</p>
+<p>
+The format of a component tag is as follows,
+<pre class="source">
+&lt;com:ComponentType PropertyName="PropertyValue" ... EventName="EventHandler" ...&gt;
+body content
+&lt;/com:ComponentType&gt;
+</pre>
+<code>ComponentType</code> can be either the class name or the dotted type name (e.g. <code>System.Web.UI.TControl</code>) of the component. <code>PropertyName</code> and <code>EventName</code> are both case-insensitive. <code>PropertyName</code> can be a property or subproperty name (e.g. <code>Font.Name</code>). Note, <code>PropertyValue</code> will be HTML-decoded when assigned to the corresponding property. Content enclosed between the opening and closing component tag are normally treated the body of the component.
+</p>
+<p>
+It is required that component tags nest properly with each other and an opening component tag be paired with a closing tag, similar to that in XML. The following shows a component tag specifying the <code>Text</code> property and <code>Click</code> event of a button control,
+<pre class="source">
+&lt;com:TButton Text="Register" Click="registerUser" />
+</pre>
+</p>
+<p>
+To deal conveniently with properties taking take big trunk of initial data, the following property initialization tag is introduced,
+<pre class="source">
+&lt;prop:PropertyName&gt;
+PropertyValue
+&lt;/prop:PropertyName&gt;
+</pre>
+It is equivalent to <code>...PropertyName="PropertyValue"...</code> in a component tag. Property initialization tags must be directly enclosed between the corresponding opening and closing component tag.
+</p>
+
+<a name="tct" />
+<h2>Template Control Tags</h2>
+A template control tag is used to configure the initial property values of the control owning the template. Its format is as follows,
+<pre class="source">
+&lt;%@ PropertyName="PropertyValue" ... %&gt;
+</pre>
+Like in component tags, <code>PropertyName</code> is case-insensitive and can be a property or subproperty name.
+</p>
+<p>
+Initial values specified via the template control tag are assigned to the corresponding properties when the template control is being constructed. Therefore, you may override these property values in a later stage, such as the <code>Init</code> stage of the control.
+</p>
+<p>
+Template control tag is optional in a template. Each template can contain at most one template control tag. You can place the template control tag anywhere in the template. It is recommended that you place it at the beginning of the template for better visibility.
+</p>
+
+<a name="cot" />
+<h2>Comment Tags</h2>
+<p>
+Comment tags are used to put comments in the template or the ultimate rendering result. There are two types of comment tags. One is like that in HTML and will be displayed to the end-users. The other only appear in a template and will be stripped out when the template is instantiated and displayed to the end-users. The format of these two comment tags is as follows,
+<pre class="source">
+&lt;!--
+Comments VISIBLE to end-users
+--&gt;
+
+&lt;!
+Comments INVISIBLE to end-users
+!&gt;
+</pre>
+</p>
+
+</com:TContent>

@@ -1,0 +1,6 @@
+<com:TContent ID="body" >
+<h1>Welcome to the PRADO QuickStart Tutorial</h1>
+<p>
+This QuickStart tutorial is meant to get you quickly started to build your own Web applications based on PRADO.
+</p>
+</com:TContent>
