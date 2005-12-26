@@ -349,22 +349,11 @@ class TApplication extends TComponent
 	 */
 	public function setGlobalState($key,$value,$defaultValue=null)
 	{
+		$this->_stateChanged=true;
 		if($value===$defaultValue)
-		{
-			if(isset($this->_globals[$key]))
-			{
-				unset($this->_globals[$key]);
-				$this->_stateChanged=true;
-			}
-		}
+			unset($this->_globals[$key]);
 		else
-		{
-			if(!isset($this->_globals[$key]) || (isset($this->_globals[$key]) && $this->_globals[$key]!==$value))
-			{
-				$this->_globals[$key]=$value;
-				$this->_stateChanged=true;
-			}
-		}
+			$this->_globals[$key]=$value;
 	}
 
 	/**
@@ -375,11 +364,8 @@ class TApplication extends TComponent
 	 */
 	public function clearGlobalState($key)
 	{
-		if(isset($this->_globals[$key]))
-		{
-			unset($this->_globals[$key]);
-			$this->_stateChanged=true;
-		}
+		$this->_stateChanged=true;
+		unset($this->_globals[$key]);
 	}
 
 	/**
@@ -391,7 +377,7 @@ class TApplication extends TComponent
 	protected function loadGlobals()
 	{
 		if(($cache=$this->getCache())!==null && ($value=$cache->get('prado:globals'))!==false)
-			$this->_globals=$value;
+			$this->_globals=unserialize($value);
 		else
 		{
 			if(($content=@file_get_contents($this->getRuntimePath().'/'.self::GLOBAL_FILE))!==false)
@@ -411,10 +397,10 @@ class TApplication extends TComponent
 		$saveFile=true;
 		if(($cache=$this->getCache())!==null)
 		{
-			if($cache->get('prado:globals')!==$content)
-				$cache->set('prado:globals',$content);
-			else
+			if($cache->get('prado:globals')===$content)
 				$saveFile=false;
+			else
+				$cache->set('prado:globals',$content);
 		}
 		if($saveFile)
 		{
