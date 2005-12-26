@@ -2,6 +2,6 @@
 
 <application id="QuickStart" Mode="Debug">
   <services>
-    <service id="page" class="TPageService" DefaultPage="chap1.Introduction" />
+    <service id="page" class="TPageService" DefaultPage="GettingStarted.Introduction" />
   </services>
 </application>
