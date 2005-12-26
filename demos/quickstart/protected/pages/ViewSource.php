@@ -37,7 +37,7 @@ class ViewSource extends TPage
 		$basePath=dirname($this->_fullPath);
 		if($dh=opendir($basePath))
 		{
-			$str="<h4>{$this->_path}</h4>\n";
+			$str="<h2>{$this->_path}</h2>\n";
 			while(($file=readdir($dh))!==false)
 			{
 				if(is_file($basePath.'/'.$file))

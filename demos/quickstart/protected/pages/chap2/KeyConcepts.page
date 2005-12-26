@@ -1,0 +1,37 @@
+<com:TContent ID="body" >
+<h1>Key Concepts</h1>
+
+<h2>Components</h2>
+<p>
+A component is an instance of <code>TComponent</code> or its child class. The base class <code>TComponent</code> implements the mechanism of component properties and events.
+</p>
+
+<h3>Component Properties</h3>
+<p>
+A property can be viewed as a public variable describing a specific aspect of the component, such as the background color, the font size, etc. A property is defined by the existence of a getter and/or a setter method of a component class. For example, in <code>TControl</code>, we have
+<pre class="source">
+class TControl extends TComponent {
+    public function getID() {
+        ...
+    }
+    public function setID($value) {
+        ...
+    }
+}
+</pre>
+This defines a property named <code>ID</code>. Reading the property (e.g. <code>echo $component-&gt;ID;</code>) is equivalent to invoking the getter method (e.g. <code>echo $component-&gt;getID();</code>); and writing the property (e.g. <code>$component-&gt;ID='Button';</code>) is equivalent to invoking the setter method (e.g. <code>$component-&gt;setID('Button');</code>).
+</p>
+<p>
+A property is read-only if it only has a getter method and no setter method. Since PHP method names are case-insensitive, property names are also case-insensitive.
+</p>
+
+<h3>Component Events</h3>
+
+<h2>Controls</h2>
+<p>
+A control is an instance of class <code>TControl</code> or its subclass. A control is a component defined in addition with user interface. The base class <code>TControl</code> defines the parent-child relationship among controls which reflects the containment relationship among user interface elements.
+</p>
+
+<h2>Pages</h2>
+
+</com:TContent>
