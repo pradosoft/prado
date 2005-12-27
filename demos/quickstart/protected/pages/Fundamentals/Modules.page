@@ -1,0 +1,37 @@
+<com:TContent ID="body" >
+
+<h1>Modules</h1>
+<p>
+A module is an instance of a class implementing the <code>IModule</code> interface. A module is commonly designed to provide specific functionality that may be plugged into a PRADO application and shared by all components in the application.
+</p>
+<p>
+PRADO uses configurations to specify whether to load a module, load what kind of modules, and how to initialize the loaded modules. For more details, please see the <a href="?page=Configurations.Overview">configurations</a>.
+</p>
+<p>
+There are three core modules that are loaded by default whenever an application runs. They are <a href="#request">request module</a>, <a href="#response">response module</a>, and <a href="#error">error handler module</a>. In addition, <a href="#session">session module</a> is loaded when it is used in the application. PRADO provides default implementation for all these modules.
+</p>
+<p>
+Developers may replace the core modules with their own implementations via application configuration, or they may write new modules to handle other tasks. For example, a module may be developed to provide common database logic for one or several pages.
+</p>
+
+<a name="request" />
+<h2>Request Module</h2>
+<p>
+</p>
+
+<a name="response" />
+<h2>Response Module</h2>
+<p>
+</p>
+
+<a name="error" />
+<h2>Error Handler Module</h2>
+<p>
+</p>
+
+<a name="session" />
+<h2>Session Module</h2>
+<p>
+</p>
+
+</com:TContent>

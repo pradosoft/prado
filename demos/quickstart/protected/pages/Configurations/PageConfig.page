@@ -19,7 +19,7 @@ The format of a page configuration file is as follows,
     &lt;module id="ModuleID" class="ModuleClass"  PropertyName="PropertyValue" ... /&gt;
   &lt;/modules&gt;
   &lt;authorization&gt;
-    &lt;allow pages="PageID1,PageID2" users="User1,User2" roles="Role1,Role2" verb="post" /&gt;
+    &lt;allow pages="PageID1,PageID2" users="User1,User2" roles="Role1,Role2" verb="get" /&gt;
     &lt;deny pages="PageID1,PageID2" users="User1,User2" roles="Role1,Role2" verb="post" /&gt;
   &lt;/authorization&gt;
   &lt;pages PropertyName="PropertyValue" ...&gt;
