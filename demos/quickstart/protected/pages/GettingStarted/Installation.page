@@ -13,7 +13,7 @@ Installation of PRADO is very easy. Follow the following steps,
 </ol>
 </p>
 <p>
-If you encounter any problems with the demo applications, please use the PRADO requirement checker script to check if your server configuration fullfils the conditions required by PRADO.
+If you encounter any problems with the demo applications, please use the PRADO requirement checker script to check first if your server configuration fullfils the conditions required by PRADO.
 </p>
 <p>
 The minimum requirement by PRADO is that the Web server support PHP 5. PRADO has been tested with Apache Web server on Windows and Linux. Highly possibly it may also run on other platforms with other Web servers, as long as PHP 5 is supported.
