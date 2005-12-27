@@ -878,6 +878,8 @@ class TApplication extends TComponent
 	public function onRunService($param)
 	{
 		$this->raiseEvent('RunService',$this,$param);
+		if($this->_service)
+			$this->_service->run();
 	}
 
 	/**

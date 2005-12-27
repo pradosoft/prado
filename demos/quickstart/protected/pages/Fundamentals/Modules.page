@@ -5,33 +5,33 @@
 A module is an instance of a class implementing the <code>IModule</code> interface. A module is commonly designed to provide specific functionality that may be plugged into a PRADO application and shared by all components in the application.
 </p>
 <p>
-PRADO uses configurations to specify whether to load a module, load what kind of modules, and how to initialize the loaded modules. For more details, please see the <a href="?page=Configurations.Overview">configurations</a>.
+PRADO uses configurations to specify whether to load a module, load what kind of modules, and how to initialize the loaded modules. Developers may replace the core modules with their own implementations via application configuration, or they may write new modules to handle other tasks. For example, a module may be developed to provide common database logic for one or several pages. For more details, please see the <a href="?page=Configurations.Overview">configurations</a>.
 </p>
 <p>
 There are three core modules that are loaded by default whenever an application runs. They are <a href="#request">request module</a>, <a href="#response">response module</a>, and <a href="#error">error handler module</a>. In addition, <a href="#session">session module</a> is loaded when it is used in the application. PRADO provides default implementation for all these modules.
-</p>
-<p>
-Developers may replace the core modules with their own implementations via application configuration, or they may write new modules to handle other tasks. For example, a module may be developed to provide common database logic for one or several pages.
 </p>
 
 <a name="request" />
 <h2>Request Module</h2>
 <p>
+Request module represents provides storage and access scheme for user request sent via HTTP. User request data comes from several sources, including URL, post data, session data, cookie data, etc. These data can all be accessed via the request module. By default, PRADO uses <code>THttpRequest</code> as request module. The request module can be accessed via the <code>Request</code> property of application and controls.
 </p>
 
 <a name="response" />
 <h2>Response Module</h2>
 <p>
-</p>
-
-<a name="error" />
-<h2>Error Handler Module</h2>
-<p>
+Response module implements the mechanism for sending output to client users. Response module may be configured to control how output are cached on the client side. It may also be used to send cookies back to the client side. By default, PRADO uses <code>THttpResponse</code> as response module. The response module can be accessed via the <code>Response</code> property of application and controls.
 </p>
 
 <a name="session" />
 <h2>Session Module</h2>
 <p>
+Session module encapsulates the functionalities related with user session handling. Session module is automatically loaded when an application uses session. By default, PRADO uses <code>THttpSession</code> as session module, which is a simple wrapper of the session functions provided by PHP. The session module can be accessed via the <code>Session</code> property of application and controls.
 </p>
 
+<a name="error" />
+<h2>Error Handler Module</h2>
+<p>
+Error handler module is used to capture and process all error conditions in an application. PRADO uses <code>TErrorHandler</code> as error handler module. It captures all PHP warnings, notices and exceptions, and displays in an appropriate form to end-users. The error handler module can be accessed via the <code>ErrorHandler</code> property of the application instance.
+</p>
 </com:TContent>

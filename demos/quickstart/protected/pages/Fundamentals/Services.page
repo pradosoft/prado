@@ -2,7 +2,21 @@
 
 <h1>Services</h1>
 <p>
-A service is ... TBD.
+A service is an instance of a class implementing the <code>IService</code> interface. Each kind of service processes a specific type of user requests. For example, the page service responds to users' requests for PRADO pages.
+</p>
+<p>
+A service is uniquely identified by its <code>ID</code> property. By default when <code>THttpRequest</code> is used as the <a href="?page=Fundamentals.Modules#request">request module</a>, GET variable names are used to identify which service a user is requesting. If a GET variable name is equal to some service <code>ID</code>, the request is considered for that service, and the value of the GET variable is passed as the service parameter. For page service, the name of the GET variable must be <code>page</code>. For example, the following URL requests for the <code>Fundamentals.Services</code> page,
+<pre class="source">
+http://hostname/index.php?page=Fundamentals.Services
+</pre>
+</p>
+<p>
+Developers may implement additional services for their applications. To make a service available, configure it in <a href="?page=Configurations.AppConfig">application configurations</a>.
+</p>
+
+<h2>Page Service</h2>
+<p>
+TBD
 </p>
 
 </com:TContent>

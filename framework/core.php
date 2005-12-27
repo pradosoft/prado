@@ -381,7 +381,6 @@ abstract class TService extends TComponent implements IService
 	 */
 	public function init($application,$config)
 	{
-		$application->attachEventHandler('RunService',array($this,'run'));
 	}
 
 	/**

@@ -1,0 +1,25 @@
+<com:TContent ID="body" >
+
+<h1>Applications</h1>
+<p>
+An application is an instance of <code>TApplication</code> or its derived class. Each PRADO application consists of a single application instance, one or several services, and some modules. For applications providing the page service (true for nearly all applications), they also contain one or several pages.
+</p>
+<p>
+The application instance is the only object that is accessible globally via <code>Prado::getApplication()</code> function call. It manages modules that provide different functionalities and are loaded when needed. It holds services that are available to end-users. An application instance may be configured via <a href="?page=Configurations.AppConfig">application configurations</a>.
+</p>
+<p>
+An application instance is usually created in an entry script in a PRADO application, as shown in the following,
+<pre class="source">
+require_once('/path/to/prado.php');
+$application = new TApplication;
+$application-&gt;run();
+</pre>
+where the method <code>run()</code> starts the application to handle user requests.
+</p>
+
+<h2>Application Lifecycles</h2>
+<p>
+TBD
+</p>
+
+</com:TContent>
