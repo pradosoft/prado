@@ -16,7 +16,7 @@ Developers may implement additional services for their applications. To make a s
 
 <h2>Page Service</h2>
 <p>
-TBD
+PRADO implements <code>TPageService</code> to process users' page requests.
 </p>
 
 </com:TContent>

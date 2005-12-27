@@ -2,7 +2,6 @@
 
 $basePath=dirname(__FILE__);
 $frameworkPath=$basePath.'/../../framework/prado.php';
-$configPath=$basePath.'/protected/application.xml';
 $assetsPath=$basePath.'/assets';
 
 if(!is_writable($assetsPath))
@@ -10,7 +9,7 @@ if(!is_writable($assetsPath))
 
 require_once($frameworkPath);
 
-$application=new TApplication($configPath,true);
+$application=new TApplication;
 $application->run();
 
 ?>

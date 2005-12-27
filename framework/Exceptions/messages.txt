@@ -23,7 +23,7 @@ map_addition_disallowed					= The new item cannot be added to the map.
 map_item_unremovable					= The item cannot be removed from the map.
 map_data_not_iterable					= Data must be either an array or an object implementing Traversable interface.
 
-application_configpath_inexistent		= Application configuration path '%s' does not exist.
+application_basepath_invalid			= Application base path '%s' does not exist or is not a directory.
 application_runtimepath_invalid			= Application runtime path '%s' does not exist or is not writable by Web server process.
 application_service_invalid				= Service '%s' must implement IService interface.
 application_service_unknown				= Requested service '%s' is not defined.

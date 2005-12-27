@@ -154,7 +154,7 @@ class TPageService extends TService
 
 		if($this->_basePath===null)
 		{
-			$basePath=$application->getConfigurationPath().'/'.self::DEFAULT_BASEPATH;
+			$basePath=$application->getBasePath().'/'.self::DEFAULT_BASEPATH;
 			if(($this->_basePath=realpath($basePath))===false || !is_dir($this->_basePath))
 				throw new TConfigurationException('pageservice_basepath_invalid',$basePath);
 		}
@@ -169,7 +169,7 @@ class TPageService extends TService
 		{
 			$pageConfig=new TPageConfiguration;
 			if($config!==null)
-				$pageConfig->loadXmlElement($config,$application->getConfigurationPath(),null);
+				$pageConfig->loadXmlElement($config,$application->getBasePath(),null);
 			$pageConfig->loadConfigurationFiles($this->_pagePath,$this->_basePath);
 		}
 		else
@@ -219,7 +219,7 @@ class TPageService extends TService
 			{
 				$pageConfig=new TPageConfiguration;
 				if($config!==null)
-					$pageConfig->loadXmlElement($config,$application->getConfigurationPath(),null);
+					$pageConfig->loadXmlElement($config,$application->getBasePath(),null);
 				$pageConfig->loadConfigurationFiles($this->_pagePath,$this->_basePath);
 				$cache->set(self::CONFIG_CACHE_PREFIX.$this->_pagePath,array($pageConfig,$currentTimestamp));
 			}
