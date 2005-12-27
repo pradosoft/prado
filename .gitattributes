@@ -29,6 +29,8 @@ demos/quickstart/protected/pages/Fundamentals/Controls.page -text
 demos/quickstart/protected/pages/Fundamentals/Modules.page -text
 demos/quickstart/protected/pages/Fundamentals/Pages.page -text
 demos/quickstart/protected/pages/Fundamentals/Services.page -text
+demos/quickstart/protected/pages/Fundamentals/applifecycles.gif -text
+demos/quickstart/protected/pages/Fundamentals/applifecycles.vsd -text
 demos/quickstart/protected/pages/Fundamentals/lifecycles.gif -text
 demos/quickstart/protected/pages/Fundamentals/lifecycles.vsd -text
 demos/quickstart/protected/pages/GettingStarted/AboutPrado.page -text

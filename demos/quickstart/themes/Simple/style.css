@@ -8,7 +8,7 @@ body {
 }
 
 h1 {
-	font-size:14pt;
+	font-size:13pt;
 }
 
 h2 {
@@ -138,4 +138,5 @@ h3 {
 
 code {
 	font-family: "Courier New", Courier, mono;
+	color: #408040;
 }

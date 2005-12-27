@@ -16,7 +16,19 @@ Developers may implement additional services for their applications. To make a s
 
 <h2>Page Service</h2>
 <p>
-PRADO implements <code>TPageService</code> to process users' page requests.
+PRADO implements <code>TPageService</code> to process users' page requests. Pages are stored under a directory specified by the <code>BasePath</code> property of the page service. The property defaults to <code>pages</code> directory under the application base path. You may change this default by configuring the service in the application configuration.
+</p>
+<p>
+Pages may be organized into subdirectories under the <code>BasePath</code>. In each directory, there may be a page configuration file named <code>config.xml</code>, which contains configurations effective only when a page under that directory or a sub-directory is requested. For more details, see the <a href="?page=Configurations.PageConfig">page configuration</a> section.
+</p>
+<p>
+Service parameter for the page service refers to the page being requested. A parameter like <code>Fundamentals.Services</code> refers to the <code>Services</code> page under the <code>&lt;BasePath&gt;/Fundamentals</code> directory. If such a parameter is absent in a request, a default page named <code>Home</code> is assumed. Using <code>THttpRequest</code> as the request module (default), the following URLs will request for <code>Home</code>, <code>About</code> and <code>Register</code> pages, respectively,
+<pre class="source">
+http://hostname/index.php
+http://hostname/index.php?page=About
+http://hostname/index.php?page=Users.Register
+</pre>
+where the first example takes advantage of the fact that the page service is the default service and <code>Home</code> is the default page.
 </p>
 
 </com:TContent>

@@ -2,10 +2,10 @@
 
 <h1>Application Configurations</h1>
 <p>
-Application configurations are used to specify the global behavior of an application. This consists of specifying the paths, modules, services and parameters that will be used in an application.
+Application configurations are used to specify the global behavior of an application. They include specification of path aliases, namespace usages, module and service configurations, and parameters.
 </p>
 <p>
-Application configurations are stored in an XML file which is passed as a parameter to the <code>TApplication</code> instance. The format of application configurations is shown in the following,
+Configuration for an application is stored in an XML file named <code>application.xml</code>, which should be located under the application base path. Its format is shown in the following,
 <pre class="source">
 &lt;application PropertyName="PropertyValue" ...&gt;
   &lt;paths&gt;

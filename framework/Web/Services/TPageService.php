@@ -26,13 +26,16 @@ Prado::using('System.Web.UI.TPageStatePersister');
  *
  * Pages that are available to client users are stored under a directory specified by
  * {@link setBasePath BasePath}. The directory may contain subdirectories.
- * A directory may be used to group together the pages serving for the similar goal.
+ * Pages serving for a similar goal are usually placed under the same directory.
  * A directory may contain a configuration file <b>config.xml</b> whose content
  * is similar to that of application configuration file.
  *
  * A page is requested via page path, which is a dot-connected directory names
  * appended by the page name. Assume '<BasePath>/Users/Admin' is the directory
  * containing the page 'Update'. Then the page can be requested via 'Users.Admin.Update'.
+ * By default, the {@link setBasePath BasePath} of the page service is the "pages"
+ * directory under the application base path. You may change this default
+ * by setting {@link setBasePath BasePath} with a different path you prefer.
  *
  * Page name refers to the file name (without extension) of the page template.
  * In order to differentiate from the common control template files, the extension
