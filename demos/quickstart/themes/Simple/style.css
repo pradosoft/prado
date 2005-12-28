@@ -144,3 +144,13 @@ tt {
 	font-family: "Courier New", Courier, mono;
 	border-bottom: 1px dotted silver;
 }
+
+.samplebar {
+	background:#00487D;
+	color:white;
+	padding:3px;
+}
+
+.samplebar a {
+	color:white;
+}

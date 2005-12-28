@@ -18,6 +18,8 @@ demos/quickstart/protected/controls/Layout.php -text
 demos/quickstart/protected/controls/Layout.tpl -text
 demos/quickstart/protected/controls/RunBar.php -text
 demos/quickstart/protected/controls/RunBar.tpl -text
+demos/quickstart/protected/controls/SampleLayout.php -text
+demos/quickstart/protected/controls/SampleLayout.tpl -text
 demos/quickstart/protected/controls/TopicList.php -text
 demos/quickstart/protected/controls/TopicList.tpl -text
 demos/quickstart/protected/pages/Configurations/AppConfig.page -text
@@ -28,6 +30,8 @@ demos/quickstart/protected/pages/Configurations/Templates2.page -text
 demos/quickstart/protected/pages/Configurations/Templates3.page -text
 demos/quickstart/protected/pages/Construction.page -text
 demos/quickstart/protected/pages/Controls/Overview.page -text
+demos/quickstart/protected/pages/Controls/Samples/Label.page -text
+demos/quickstart/protected/pages/Controls/Samples/config.xml -text
 demos/quickstart/protected/pages/Controls/Simple.page -text
 demos/quickstart/protected/pages/Controls/Simple1.page -text
 demos/quickstart/protected/pages/Fundamentals/Applications.page -text
