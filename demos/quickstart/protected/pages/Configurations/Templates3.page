@@ -10,7 +10,7 @@ Dynamic property tags are very similar to dynamic content tags, except that they
 body content
 &lt;/com:ComponentType&gt;
 </pre>
-where you may enclose <code>DynamicPropertyTag</code> within single or double quotes for better readability.
+where you may enclose <tt>DynamicPropertyTag</tt> within single or double quotes for better readability.
 </p>
 <p>
 We now introduce the available types of dynamic property tags that may be used in the above. Like dynamic content tags, we have <a href="#et">expression tags</a>, <a href="#dt">databind tags</a>, <a href="#pt">parameter tags</a> and <a href="#at">asset tags</a>. (Note, there is no statement tag here.)
@@ -23,7 +23,7 @@ An expression tag represents a PHP expression that is evaluated when the templat
 <pre class="source">
 &lt;%= PhpExpression %&gt;
 </pre>
-In the expression, <code>$this</code> refers to the component specified by the component tag. The following example specifies a <code>TLabel</code> control whose <code>Text</code> property is initialized as the current page title when the <code>TLabel</code> control is being constructed,
+In the expression, <tt>$this</tt> refers to the component specified by the component tag. The following example specifies a <tt>TLabel</tt> control whose <tt>Text</tt> property is initialized as the current page title when the <tt>TLabel</tt> control is being constructed,
 <pre class="source">
 &lt;com:TLabel Text=&lt;%= $this-&gt;Page-&gt;Title %&gt; /&gt;
 </pre>
@@ -35,7 +35,7 @@ Note, unlike dynamic content tags, the expressions tags for component properties
 <a name="dt" />
 <h3>Databind Tags</h3>
 <p>
-Databind tags are similar to expression tags, except that the expressions are evaluated only when a <code>dataBind()</code> call is invoked on the controls represented by the component tags. In the expression, <code>$this</code> refers to the control itself. Databind tags do not apply to all components. They can only be used for controls.
+Databind tags are similar to expression tags, except that the expressions are evaluated only when a <tt>dataBind()</tt> call is invoked on the controls represented by the component tags. In the expression, <tt>$this</tt> refers to the control itself. Databind tags do not apply to all components. They can only be used for controls.
 </p>
 <p>
 The format of databind tags is as follows,
@@ -64,7 +64,7 @@ The format of asset tags is as follows,
 <pre class="source">
 &lt;%~ LocalFileName %&gt;
 </pre>
-where <code>LocalFileName</code> refers to a file path that is relative to the directory containing the current template file. The file path can be a single file or a directory. If the latter, the content in the whole directory will be made accessible by end-users.
+where <tt>LocalFileName</tt> refers to a file path that is relative to the directory containing the current template file. The file path can be a single file or a directory. If the latter, the content in the whole directory will be made accessible by end-users.
 </p>
 <p>
 BE VERY CAUTIOUS when you are using asset tags as it may expose to end-users files that you probably do not want them to see.

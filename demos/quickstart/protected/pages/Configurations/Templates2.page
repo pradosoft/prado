@@ -14,7 +14,7 @@ An expression tag represents a PHP expression that is evaluated when the templat
 <pre class="source">
 &lt;%= PhpExpression %&gt;
 </pre>
-Inernally, an expression tag is represented by a <code>TExpression</code> control. Therefore, in the expression <code>$this</code> refers to the <code>TExpression</code> control. For example, the following expression tag will display the current page title at the place,
+Inernally, an expression tag is represented by a <tt>TExpression</tt> control. Therefore, in the expression <tt>$this</tt> refers to the <tt>TExpression</tt> control. For example, the following expression tag will display the current page title at the place,
 <pre class="source">
 &lt;%= $this-&gt;Page-&gt;Title %&gt;
 </pre>
@@ -23,7 +23,7 @@ Inernally, an expression tag is represented by a <code>TExpression</code> contro
 <a name="st" />
 <h3>Statement Tags</h3>
 <p>
-Statement tags are similar to expression tags, except that statement tags contain PHP statements rather than expressions. The output of the PHP statements (using for example <code>echo</code> or <code>print</code> in PHP) are displayed at the place where the statement tag resides in the template. Inernally, a statement tag is represented by a <code>TStatements</code> control. Therefore, in the statements <code>$this</code> refers to the <code>TStatements</code> control. The format of statement tags is as follows,
+Statement tags are similar to expression tags, except that statement tags contain PHP statements rather than expressions. The output of the PHP statements (using for example <tt>echo</tt> or <tt>print</tt> in PHP) are displayed at the place where the statement tag resides in the template. Inernally, a statement tag is represented by a <tt>TStatements</tt> control. Therefore, in the statements <tt>$this</tt> refers to the <tt>TStatements</tt> control. The format of statement tags is as follows,
 <pre class="source">
 &lt;%%
 PHP Statements
@@ -43,7 +43,7 @@ echo strftime("%A %e %B %Y",time());
 <a name="dt" />
 <h3>Databind Tags</h3>
 <p>
-Databind tags are similar to expression tags, except that the expressions are evaluated only when a <code>dataBind()</code> call is invoked on the controls representing the databind tags. Internally, a <code>TLiteral</code> control is used to represent a databind tag and <code>$this</code> in the expression would refer to the control. The format of databind tags is as follows,
+Databind tags are similar to expression tags, except that the expressions are evaluated only when a <tt>dataBind()</tt> call is invoked on the controls representing the databind tags. Internally, a <tt>TLiteral</tt> control is used to represent a databind tag and <tt>$this</tt> in the expression would refer to the control. The format of databind tags is as follows,
 <pre class="source">
 &lt;%# PhpExpression %&gt;
 </pre>
@@ -69,7 +69,7 @@ The format of asset tags is as follows,
 <pre class="source">
 &lt;%~ LocalFileName %&gt;
 </pre>
-where <code>LocalFileName</code> refers to a file path that is relative to the directory containing the current template file. The file path can be a single file or a directory. If the latter, the content in the whole directory will be made accessible by end-users.
+where <tt>LocalFileName</tt> refers to a file path that is relative to the directory containing the current template file. The file path can be a single file or a directory. If the latter, the content in the whole directory will be made accessible by end-users.
 </p>
 <p>
 BE VERY CAUTIOUS when you are using asset tags as it may expose to end-users files that you probably do not want them to see.

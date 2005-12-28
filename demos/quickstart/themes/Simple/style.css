@@ -136,7 +136,7 @@ h3 {
 	padding:10px;
 }
 
-code {
+tt {
 	font-family: "Courier New", Courier, mono;
-	color: #408040;
+	border-bottom: 1px dotted silver;
 }

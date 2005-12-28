@@ -1,12 +1,12 @@
 <com:TContent ID="body" >
 <h1>Components</h1>
 <p>
-A component is an instance of <code>TComponent</code> or its child class. The base class <code>TComponent</code> implements the mechanism of component properties and events.
+A component is an instance of <tt>TComponent</tt> or its child class. The base class <tt>TComponent</tt> implements the mechanism of component properties and events.
 </p>
 
 <h2>Component Properties</h2>
 <p>
-A component property can be viewed as a public variable describing a specific aspect of the component, such as the background color, the font size, etc. A property is defined by the existence of a getter and/or a setter method in the component class. For example, in <code>TControl</code>, we have
+A component property can be viewed as a public variable describing a specific aspect of the component, such as the background color, the font size, etc. A property is defined by the existence of a getter and/or a setter method in the component class. For example, in <tt>TControl</tt>, we define its <tt>ID</tt> property using the following getter and setter methods,
 <pre class="source">
 class TControl extends TComponent {
     public function getID() {
@@ -17,10 +17,39 @@ class TControl extends TComponent {
     }
 }
 </pre>
-This defines a property named <code>ID</code>. Reading the property (e.g. <code>echo $component-&gt;ID;</code>) is equivalent to invoking the getter method (e.g. <code>echo $component-&gt;getID();</code>); and writing the property (e.g. <code>$component-&gt;ID='Button';</code>) is equivalent to invoking the setter method (e.g. <code>$component-&gt;setID('Button');</code>).
+</p>
+<p>
+To get or set the <tt>ID</tt> property, do as follows, just like working with a variable,
+<pre class="source">
+$id = $component-&gt;ID;
+$component-&gt;ID = $id;
+</pre>
+This is equivalent to the following,
+<pre class="source">
+$id = $component-&gt;getID();
+$component-&gt;setID( $id );
+</pre>
 </p>
 <p>
 A property is read-only if it has a getter method but no setter method. Since PHP method names are case-insensitive, property names are also case-insensitive. A component class inherits all its ancestor classes' properties.
+</p>
+
+<h3>Subproperties</h3>
+<p>
+A subproperty is a property of some object-typed property. For example, <tt>TWebControl</tt> has a <tt>Font</tt> property which is of <tt>TFont</tt> type. Then the <tt>Name</tt> property of <tt>Font</tt> is referred to as a subproperty (with respect to <tt>TWebControl</tt>).
+</p>
+<p>
+To get or set the <tt>Name</tt> subproperty, use the following method,
+<pre class="source">
+$name = $component-&gt;getSubProperty('Font.Name');
+$component-&gt;setSubProperty('Font.Name', $name);
+</pre>
+This is equivalent to the following,
+<pre class="source">
+$name = $component-&gt;getFont()-&gt;getName();
+$component-&gt;getFont()-&gt;setName( $name );
+</pre>
+
 </p>
 
 <h2>Component Events</h2>
@@ -28,7 +57,7 @@ A property is read-only if it has a getter method but no setter method. Since PH
 Component events are special properties that take method names as their values. Attaching (setting) a method to an event will hook up the method to the places at which the event is raised. Therefore, the behavior of a component can be modified in a way that may not be foreseen during the development of the component.
 </p>
 <p>
-A component event is defined by the existence of an <code>on</code>-method. For example, in <code>TButton</code>, we have
+A component event is defined by the existence of an <tt>on</tt>-method. For example, in <tt>TButton</tt>, we have
 <pre class="source">
 class TButton extends TWebControl {
     public function onClick($param) {
@@ -36,14 +65,40 @@ class TButton extends TWebControl {
     }
 }
 </pre>
-This defines an event named <code>Click</code>, and a handler can be attached to the event using one of the following ways,
+This defines an event named <tt>Click</tt>, and a handler can be attached to the event using one of the following ways,
 <pre class="source">
 $button-&gt;Click=$callback;
 $button-&gt;Click-&gt;add($callback);
 $button-&gt;Click[]=$callback;
 $button-&gt;attachEventHandler('Click',$callback);
 </pre>
-where <code>$callback</code> refers to a valid PHP callback (e.g. a function name, a class method <code>array($object,'method')</code>, etc.)
+where <tt>$callback</tt> refers to a valid PHP callback (e.g. a function name, a class method <tt>array($object,'method')</tt>, etc.)
+</p>
+
+<h2>Namespaces</h2>
+<p>
+A namespace refers to a logical grouping of some class names so that they can be differentiated from other class names even if their names are the same. Since PHP does not support namespace intrinsically, you cannot create instances of two classes who have the same name but with different definitions. To differentiate from user defined classes, all PRADO classes are prefixed with a letter 'T' (meaning 'Type'). Users are advised not to name their classes like this. Instead, they may prefix their class names with any other letter(s).
+</p>
+<p>
+A namespace in PRADO is considered as a directory containing one or several class files. A class may be specified without ambiguity using such a namespace followed by the class name. Each namespace in PRADO is specified in the following format,
+<pre class="source">
+PathAlias.Dir1.Dir2
+</pre>
+where <tt>PathAlias</tt> is an alias of some directory, while <tt>Dir1</tt> and <tt>Dir2</tt> are subdirectories under that directory. A class named <tt>MyClass</tt> defined under <tt>Dir2</tt> may now be fully qualified as <tt>PathAlias.Dir1.Dir2.MyClass</tt>.
+</p>
+<p>
+To use a namespace in code, do as follows,
+<pre class="source">
+Prado::using('PathAlias.Dir1.Dir2.*');
+</pre>
+which appends the directory referred to by <tt>PathAlias.Dir1.Dir2</tt> into PHP include path so that classes defined under that directory may be instantiated without the namespace prefix. You may also include an individual class definition by
+<pre class="source">
+Prado::using('PathAlias.Dir1.Dir2.MyClass');
+</pre>
+which will include the class file if <tt>MyClass</tt> is not defined.
+</p>
+<p>
+For more details about defining path aliases, see <a href="?page=Configurations.AppConfig">application configuration</a> section.
 </p>
 
 <h2>Component Instantiation</h2>
@@ -58,12 +113,12 @@ Dynamic component instantiation means creating component instances in PHP code. 
 $component = new ComponentClassName;
 $component = Prado::createComponent('ComponentType');
 </pre>
-where <code>ComponentType</code> refers to a class name or a dot-connected type name (e.g. <code>System.Web.UI.TControl</code>). The second approach is introduced to compensate for the lack of namespace support in PHP.
+where <tt>ComponentType</tt> refers to a class name or a type name in namespace format (e.g. <tt>System.Web.UI.TControl</tt>). The second approach is introduced to compensate for the lack of namespace support in PHP.
 </p>
 
 <h3>Static Component Instantiation</h3>
 <p>
-Static component instantiation is about creating components via <a href="?page=Configurations.Overview">configurations</a>. The actual creation work is done by the PRADO framework. For example, in an <a href="?page=Configurations.AppConfig">application configuration</a>, one can configure a module to be loaded when the application runs. The module is thus a static component created by the framework. Static component instantiation is more commonly used in <a href="?page=Configurations.Templates1">templates</a>. Every component tag in a template specifies a component that will be automatically created by the framework when the template is loaded. For example, in a page template, the following tag will lead to the creation of a <code>TButton</code> component on the page,
+Static component instantiation is about creating components via <a href="?page=Configurations.Overview">configurations</a>. The actual creation work is done by the PRADO framework. For example, in an <a href="?page=Configurations.AppConfig">application configuration</a>, one can configure a module to be loaded when the application runs. The module is thus a static component created by the framework. Static component instantiation is more commonly used in <a href="?page=Configurations.Templates1">templates</a>. Every component tag in a template specifies a component that will be automatically created by the framework when the template is loaded. For example, in a page template, the following tag will lead to the creation of a <tt>TButton</tt> component on the page,
 <pre class="source">
 &lt;com:TButton Text="Register" /&gt;
 </pre>

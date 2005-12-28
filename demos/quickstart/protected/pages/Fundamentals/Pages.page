@@ -5,12 +5,12 @@
 Pages are top-most controls that have no parent. The presentation of pages are directly displayed to end-users. Users access pages by sending  page service requests.
 </p>
 <p>
-Each page must have a <a href="?page=Configurations.Templates1">template</a> file. The file name suffix must be <code>.page</code>. The file name (without suffix) is the page name. PRADO will try to locate a page class file under the directory containing the page template file. Such a page class file must have the same file name (suffixed with <code>.php</code>) as the template file. If the class file is not found, the page will take class <code>TPage</code>.
+Each page must have a <a href="?page=Configurations.Templates1">template</a> file. The file name suffix must be <tt>.page</tt>. The file name (without suffix) is the page name. PRADO will try to locate a page class file under the directory containing the page template file. Such a page class file must have the same file name (suffixed with <tt>.php</tt>) as the template file. If the class file is not found, the page will take class <tt>TPage</tt>.
 </p>
 
 <h2>PostBack</h2>
 <p>
-A form submission is called <i>postback</i> if the submission is made to the page containing the form. Postback can be considered an event happened on the client side, raised by the user. PRADO will try to identify which control on the server side is responsible for a postback event. If one is determined, for example, a <code>TButton</code>, we call it the postback event sender which will translate the postback event into some specific server-side event (e.g. <code>Click</code> and <code>Command</code> events for <code>TButton</code>).
+A form submission is called <i>postback</i> if the submission is made to the page containing the form. Postback can be considered an event happened on the client side, raised by the user. PRADO will try to identify which control on the server side is responsible for a postback event. If one is determined, for example, a <tt>TButton</tt>, we call it the postback event sender which will translate the postback event into some specific server-side event (e.g. <tt>Click</tt> and <tt>Command</tt> events for <tt>TButton</tt>).
 
 </p>
 

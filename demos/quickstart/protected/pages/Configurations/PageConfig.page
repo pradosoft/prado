@@ -2,10 +2,10 @@
 
 <h1>Page Configurations</h1>
 <p>
-Page configurations are mainly used by <code>TPageService</code> to modify or append the application configuration. As the name indicates, a page configuration is associated with a directory storing some page files. It is stored as an XML file named <code>config.xml</code>.
+Page configurations are mainly used by <tt>TPageService</tt> to modify or append the application configuration. As the name indicates, a page configuration is associated with a directory storing some page files. It is stored as an XML file named <tt>config.xml</tt>.
 </p>
 <p>
-When a user requests a page stored under <code>&lt;BasePath&gt;/dir1/dir2</code>, the <code>TPageService</code> will try to parse and load <code>config.xml</code> files under <code>&lt;BasePath&gt;/dir1</code> and <code>&lt;BasePath&gt;/dir1/dir2</code>. Paths, modules, and parameters specified in these configuration files will be appended or merged into the existing application configuration.
+When a user requests a page stored under <tt>&lt;BasePath&gt;/dir1/dir2</tt>, the <tt>TPageService</tt> will try to parse and load <tt>config.xml</tt> files under <tt>&lt;BasePath&gt;/dir1</tt> and <tt>&lt;BasePath&gt;/dir1/dir2</tt>. Paths, modules, and parameters specified in these configuration files will be appended or merged into the existing application configuration.
 </p>
 <p>
 The format of a page configuration file is as follows,
@@ -30,7 +30,7 @@ The format of a page configuration file is as follows,
   &lt;/parameters&gt;
 &lt;/configuration&gt;
 </pre>
-The <code>&lt;paths&gt;</code>, <code>&lt;modules&gt;</code> and <code>&lt;parameters&gt;</code> are similar to those in an application configuration. The <code>&lt;authorization&gt;</code> specifies the authorization rules that apply to the current page directory and all its subdirectories. It will be explained in more detail in future sections. The <code>&lt;pages&gt;</code> element specifies the initial values for the properties of pages. Each <code>&lt;page&gt;</code> element specifies the initial property values for a particular page identified by the <code>id</code attribute. Initial property values given in the <code>&lt;pages&gt;</code> element apply to all pages in the current directory and all its subdirectories.
+The <tt>&lt;paths&gt;</tt>, <tt>&lt;modules&gt;</tt> and <tt>&lt;parameters&gt;</tt> are similar to those in an application configuration. The <tt>&lt;authorization&gt;</tt> specifies the authorization rules that apply to the current page directory and all its subdirectories. It will be explained in more detail in future sections. The <tt>&lt;pages&gt;</tt> element specifies the initial values for the properties of pages. Each <tt>&lt;page&gt;</tt> element specifies the initial property values for a particular page identified by the <tt>id</code attribute. Initial property values given in the <tt>&lt;pages&gt;</tt> element apply to all pages in the current directory and all its subdirectories.
 </p>
 
 </com:TContent>

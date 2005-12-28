@@ -2,10 +2,10 @@
 
 <h1>Services</h1>
 <p>
-A service is an instance of a class implementing the <code>IService</code> interface. Each kind of service processes a specific type of user requests. For example, the page service responds to users' requests for PRADO pages.
+A service is an instance of a class implementing the <tt>IService</tt> interface. Each kind of service processes a specific type of user requests. For example, the page service responds to users' requests for PRADO pages.
 </p>
 <p>
-A service is uniquely identified by its <code>ID</code> property. By default when <code>THttpRequest</code> is used as the <a href="?page=Fundamentals.Modules#request">request module</a>, GET variable names are used to identify which service a user is requesting. If a GET variable name is equal to some service <code>ID</code>, the request is considered for that service, and the value of the GET variable is passed as the service parameter. For page service, the name of the GET variable must be <code>page</code>. For example, the following URL requests for the <code>Fundamentals.Services</code> page,
+A service is uniquely identified by its <tt>ID</tt> property. By default when <tt>THttpRequest</tt> is used as the <a href="?page=Fundamentals.Modules#request">request module</a>, GET variable names are used to identify which service a user is requesting. If a GET variable name is equal to some service <tt>ID</tt>, the request is considered for that service, and the value of the GET variable is passed as the service parameter. For page service, the name of the GET variable must be <tt>page</tt>. For example, the following URL requests for the <tt>Fundamentals.Services</tt> page,
 <pre class="source">
 http://hostname/index.php?page=Fundamentals.Services
 </pre>
@@ -16,19 +16,19 @@ Developers may implement additional services for their applications. To make a s
 
 <h2>Page Service</h2>
 <p>
-PRADO implements <code>TPageService</code> to process users' page requests. Pages are stored under a directory specified by the <code>BasePath</code> property of the page service. The property defaults to <code>pages</code> directory under the application base path. You may change this default by configuring the service in the application configuration.
+PRADO implements <tt>TPageService</tt> to process users' page requests. Pages are stored under a directory specified by the <tt>BasePath</tt> property of the page service. The property defaults to <tt>pages</tt> directory under the application base path. You may change this default by configuring the service in the application configuration.
 </p>
 <p>
-Pages may be organized into subdirectories under the <code>BasePath</code>. In each directory, there may be a page configuration file named <code>config.xml</code>, which contains configurations effective only when a page under that directory or a sub-directory is requested. For more details, see the <a href="?page=Configurations.PageConfig">page configuration</a> section.
+Pages may be organized into subdirectories under the <tt>BasePath</tt>. In each directory, there may be a page configuration file named <tt>config.xml</tt>, which contains configurations effective only when a page under that directory or a sub-directory is requested. For more details, see the <a href="?page=Configurations.PageConfig">page configuration</a> section.
 </p>
 <p>
-Service parameter for the page service refers to the page being requested. A parameter like <code>Fundamentals.Services</code> refers to the <code>Services</code> page under the <code>&lt;BasePath&gt;/Fundamentals</code> directory. If such a parameter is absent in a request, a default page named <code>Home</code> is assumed. Using <code>THttpRequest</code> as the request module (default), the following URLs will request for <code>Home</code>, <code>About</code> and <code>Register</code> pages, respectively,
+Service parameter for the page service refers to the page being requested. A parameter like <tt>Fundamentals.Services</tt> refers to the <tt>Services</tt> page under the <tt>&lt;BasePath&gt;/Fundamentals</tt> directory. If such a parameter is absent in a request, a default page named <tt>Home</tt> is assumed. Using <tt>THttpRequest</tt> as the request module (default), the following URLs will request for <tt>Home</tt>, <tt>About</tt> and <tt>Register</tt> pages, respectively,
 <pre class="source">
 http://hostname/index.php
 http://hostname/index.php?page=About
 http://hostname/index.php?page=Users.Register
 </pre>
-where the first example takes advantage of the fact that the page service is the default service and <code>Home</code> is the default page.
+where the first example takes advantage of the fact that the page service is the default service and <tt>Home</tt> is the default page.
 </p>
 
 </com:TContent>

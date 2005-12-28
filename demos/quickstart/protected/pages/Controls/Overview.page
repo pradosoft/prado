@@ -1,7 +1,7 @@
 <com:TContent ID="body" >
 <h1>Controls Overview</h1>
 <p>
-A control is an instance of class <code>TControl</code> or its subclass. A control is a component defined in addition with user interface. The base class <code>TControl</code> defines the parent-child relationship among controls which reflects the containment relationship among user interface elements.
+A control is an instance of class <tt>TControl</tt> or its subclass. A control is a component defined in addition with user interface. The base class <tt>TControl</tt> defines the parent-child relationship among controls which reflects the containment relationship among user interface elements.
 </p>
 <p>
 Control classes constitute one of the major part of PRADO framework. Nearly every generic HTML element can find its representation in terms of a PRADO control. Mastering these controls becomes extremely important to effectively and efficiently compose applications using PRADO.
