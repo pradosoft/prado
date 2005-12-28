@@ -46,4 +46,27 @@ $button-&gt;attachEventHandler('Click',$callback);
 where <code>$callback</code> refers to a valid PHP callback (e.g. a function name, a class method <code>array($object,'method')</code>, etc.)
 </p>
 
+<h2>Component Instantiation</h2>
+<p>
+Component instantiation means creating instances of component classes. There are two types of component instantation: static instantiation and dynamic instantiation. The created components are called static components and dynamic components, respectively.
+</p>
+
+<h3>Dynamic Component Instantiation</h3>
+<p>
+Dynamic component instantiation means creating component instances in PHP code. It is the same as the commonly referred object creation in PHP. A component can be dynamically created using one of the following two methods in PHP,
+<pre class="source">
+$component = new ComponentClassName;
+$component = Prado::createComponent('ComponentType');
+</pre>
+where <code>ComponentType</code> refers to a class name or a dot-connected type name (e.g. <code>System.Web.UI.TControl</code>). The second approach is introduced to compensate for the lack of namespace support in PHP.
+</p>
+
+<h3>Static Component Instantiation</h3>
+<p>
+Static component instantiation is about creating components via <a href="?page=Configurations.Overview">configurations</a>. The actual creation work is done by the PRADO framework. For example, in an <a href="?page=Configurations.AppConfig">application configuration</a>, one can configure a module to be loaded when the application runs. The module is thus a static component created by the framework. Static component instantiation is more commonly used in <a href="?page=Configurations.Templates1">templates</a>. Every component tag in a template specifies a component that will be automatically created by the framework when the template is loaded. For example, in a page template, the following tag will lead to the creation of a <code>TButton</code> component on the page,
+<pre class="source">
+&lt;com:TButton Text="Register" /&gt;
+</pre>
+</p>
+
 </com:TContent>

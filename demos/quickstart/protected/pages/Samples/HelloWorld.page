@@ -1,7 +1,7 @@
 <com:TContent ID="body" >
 <h1>Sample: Hello World</h1>
 <p>
-"Hello World" is the simplest <i>interactive</i> PRADO application that you can build. It displays to end-users a page with a submit button whose caption is <i>Click Me</i>. When the user clicks on the button, the button changes the caption to <i>Hello World</i>.
+"Hello World" perhaps is the simplest <i>interactive</i> PRADO application that you can build. It displays to end-users a page with a submit button whose caption is <i>Click Me</i>. When the user clicks on the button, the button changes the caption to <i>Hello World</i>.
 </p>
 <p>
 There are many approaches that can achieve the above goal. One can submit the page to the server, examine the POST variable, and generate a new page with the button caption updated. Or one can simply use JavaScript to update the button caption upon its <i>onclick</i> event.

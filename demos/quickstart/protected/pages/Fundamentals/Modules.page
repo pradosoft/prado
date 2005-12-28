@@ -5,10 +5,10 @@
 A module is an instance of a class implementing the <code>IModule</code> interface. A module is commonly designed to provide specific functionality that may be plugged into a PRADO application and shared by all components in the application.
 </p>
 <p>
-PRADO uses configurations to specify whether to load a module, load what kind of modules, and how to initialize the loaded modules. Developers may replace the core modules with their own implementations via application configuration, or they may write new modules to handle other tasks. For example, a module may be developed to provide common database logic for one or several pages. For more details, please see the <a href="?page=Configurations.Overview">configurations</a>.
+PRADO uses configurations to specify whether to load a module, load what kind of modules, and how to initialize the loaded modules. Developers may replace the core modules with their own implementations via application configuration, or they may write new modules to provide additional functionalities. For example, a module may be developed to provide common database logic for one or several pages. For more details, please see the <a href="?page=Configurations.Overview">configurations</a>.
 </p>
 <p>
-There are three core modules that are loaded by default whenever an application runs. They are <a href="#request">request module</a>, <a href="#response">response module</a>, and <a href="#error">error handler module</a>. In addition, <a href="#session">session module</a> is loaded when it is used in the application. PRADO provides default implementation for all these modules.
+There are three core modules that are loaded by default whenever an application runs. They are <a href="#request">request module</a>, <a href="#response">response module</a>, and <a href="#error">error handler module</a>. In addition, <a href="#session">session module</a> is loaded when it is used in the application. PRADO provides default implementation for all these modules. <a href="#custom">Custom modules</a> may be configured or developed to override or supplement these core modules.
 </p>
 
 <a name="request" />
@@ -34,4 +34,17 @@ Session module encapsulates the functionalities related with user session handli
 <p>
 Error handler module is used to capture and process all error conditions in an application. PRADO uses <code>TErrorHandler</code> as error handler module. It captures all PHP warnings, notices and exceptions, and displays in an appropriate form to end-users. The error handler module can be accessed via the <code>ErrorHandler</code> property of the application instance.
 </p>
+
+<a name="custom" />
+<h2>Custom Modules</h2>
+<p>
+PRADO is released with a few more modules besides the core ones. They include caching modules (<code>TSqliteCache</code> and <code>TMemCache</code>), user management module (<code>TUserManager</code>), authentication and authorization module (<code>TAuthManager</code>), etc.
+</p>
+<p>
+When <code>TPageService</code> is requested, it also loads modules specific for page service, including asset manager (<code>TAssetManager</code>), template manager (<code>TTemplateManager</code>), theme/skin manager (<code>TThemeManager</code>), and page state persister (<code>TPageStatePersister</code>).
+</p>
+<p>
+Custom modules and core modules are all configurable via <a href="?page=Configurations.Overview">configurations</a>.
+</p>
+
 </com:TContent>
