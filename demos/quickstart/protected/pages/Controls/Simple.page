@@ -6,9 +6,5 @@
 <p>
 <tt>TLabel</tt> displays a piece of text on a Web page. The text to be displayed is set via its <tt>Text</tt> property. If <tt>Text</tt> is empty, content enclosed within the <tt>TLabel</tt> component tag will be displayed. <tt>TLabel</tt> may also be used a form label associated with some control on the form. <tt>Text</tt> is not HTML-encoded when being rendered. Make sure it does not contain dangerous characters that you want to avoid.
 </p>
-<div class="runbar">
-<a href="#">Run Sample</a>
-<a href="#">View Source</a>
-</div>
 
 </com:TContent>

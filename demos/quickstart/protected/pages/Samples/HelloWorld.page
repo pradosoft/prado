@@ -16,11 +16,10 @@ The code that a developer needs to write is merely the following event handler f
 <pre class="source">
 public function buttonClicked($sender,$param)
 {
-	$sender->Text="Hello World";
+	$sender-&gt;Text="Hello World";
 }
 </pre>
-<div class="runbar">
-<a href="?page=Samples.HelloWorld.Home" target="_blank">Run Sample</a>
-<a href="?page=ViewSource&amp;path=/Samples/HelloWorld/Home.php" target="_blank">View Source</a>
-</div>
+
+<com:RunBar PagePath="Samples.HelloWorld.Home" />
+
 </com:TContent>

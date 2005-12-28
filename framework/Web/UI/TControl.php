@@ -54,7 +54,7 @@
  * should be rendered or not.
  *
  * Each control on a page will undergo a series of lifecycles, including
- * control construction, OnInit, OnLoad, OnPreRender, Render, and OnUnload.
+ * control construction, Init, Load, PreRender, Render, and OnUnload.
  * They work together with page lifecycles to process a page request.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

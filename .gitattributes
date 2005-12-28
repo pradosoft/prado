@@ -16,6 +16,8 @@ demos/quickstart/protected/.htaccess -text
 demos/quickstart/protected/application.xml -text
 demos/quickstart/protected/controls/Layout.php -text
 demos/quickstart/protected/controls/Layout.tpl -text
+demos/quickstart/protected/controls/RunBar.php -text
+demos/quickstart/protected/controls/RunBar.tpl -text
 demos/quickstart/protected/controls/TopicList.php -text
 demos/quickstart/protected/controls/TopicList.tpl -text
 demos/quickstart/protected/pages/Configurations/AppConfig.page -text
