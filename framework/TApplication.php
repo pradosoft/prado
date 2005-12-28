@@ -231,6 +231,10 @@ class TApplication extends TComponent
 	 */
 	private $_cache=null;
 	/**
+	 * @var IStatePersister application state persister
+	 */
+	private $_statePersister=null;
+	/**
 	 * @var IUser user instance, could be null
 	 */
 	private $_user=null;
@@ -371,6 +375,8 @@ class TApplication extends TComponent
 	 */
 	protected function loadGlobals()
 	{
+		$this->_globals=$this->getApplicationStatePersister()->load();
+		/*
 		if(($cache=$this->getCache())!==null && ($value=$cache->get('prado:globals'))!==false)
 			$this->_globals=unserialize($value);
 		else
@@ -378,6 +384,7 @@ class TApplication extends TComponent
 			if(($content=@file_get_contents($this->getRuntimePath().'/'.self::GLOBAL_FILE))!==false)
 				$this->_globals=unserialize($content);
 		}
+		*/
 	}
 
 	/**
@@ -388,6 +395,8 @@ class TApplication extends TComponent
 	{
 		if(!$this->_stateChanged)
 			return;
+		$this->getApplicationStatePersister()->save($this->_globals);
+		/*
 		$content=serialize($this->_globals);
 		$saveFile=true;
 		if(($cache=$this->getCache())!==null)
@@ -405,6 +414,7 @@ class TApplication extends TComponent
 			else
 				file_put_contents($fileName,$content);
 		}
+		*/
 	}
 
 	/**
@@ -623,6 +633,27 @@ class TApplication extends TComponent
 	public function setErrorHandler(TErrorHandler $handler)
 	{
 		$this->_errorHandler=$handler;
+	}
+
+	/**
+	 * @return IStatePersister application state persister
+	 */
+	public function getApplicationStatePersister()
+	{
+		if(!$this->_statePersister)
+		{
+			$this->_statePersister=new TApplicationStatePersister;
+			$this->_statePersister->init($this,null);
+		}
+		return $this->_statePersister;
+	}
+
+	/**
+	 * @param IStatePersister  application state persister
+	 */
+	public function setApplicationStatePersister(IStatePersister $persister)
+	{
+		$this->_statePersister=$persister;
 	}
 
 	/**
@@ -1106,4 +1137,90 @@ class TApplicationConfiguration extends TComponent
 	}
 }
 
+/**
+ * TApplicationStatePersister class.
+ * TApplicationStatePersister provides a file-based persistent storage
+ * for application state. Application state, when serialized, is stored
+ * in a file named 'global.cache' under the 'runtime' directory of the application.
+ * Cache will be exploited if it is enabled.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System
+ * @since 3.0
+ */
+class TApplicationStatePersister extends TModule implements IStatePersister
+{
+	/**
+	 * Name of the value stored in cache
+	 */
+	const CACHE_NAME='prado:appstate';
+	/**
+	 * @var TApplication application instance
+	 */
+	private $_application;
+
+	/**
+	 * Initializes module.
+	 * @param TApplication application instance
+	 * @param TXmlElement module configuration (may be null)
+	 */
+	public function init($application,$config)
+	{
+		parent::init($application,$config);
+		$this->_application=$application;
+		$application->setApplicationStatePersister($this);
+	}
+
+	/**
+	 * @return string the file path storing the application state
+	 */
+	protected function getStateFilePath()
+	{
+		return $this->_application->getRuntimePath().'/global.cache';
+	}
+
+	/**
+	 * Loads application state from persistent storage.
+	 * @return mixed application state
+	 */
+	public function load()
+	{
+		if(($cache=$this->_application->getCache())!==null && ($value=$cache->get(self::CACHE_NAME))!==false)
+			return unserialize($value);
+		else
+		{
+			if(($content=@file_get_contents($this->getStateFilePath()))!==false)
+				return unserialize($content);
+			else
+				return null;
+		}
+	}
+
+	/**
+	 * Saves application state in persistent storage.
+	 * @param mixed application state
+	 */
+	public function save($state)
+	{
+		$content=serialize($state);
+		$saveFile=true;
+		if(($cache=$this->_application->getCache())!==null)
+		{
+			if($cache->get(self::CACHE_NAME)===$content)
+				$saveFile=false;
+			else
+				$cache->set(self::CACHE_NAME,$content);
+		}
+		if($saveFile)
+		{
+			$fileName=$this->getStateFilePath();
+			if(version_compare(phpversion(),'5.1.0','>='))
+				file_put_contents($fileName,$content,LOCK_EX);
+			else
+				file_put_contents($fileName,$content);
+		}
+	}
+
+}
 ?>

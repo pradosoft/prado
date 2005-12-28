@@ -136,6 +136,10 @@ h3 {
 	padding:10px;
 }
 
+code {
+	font-family: "Courier New", Courier, mono;
+}
+
 tt {
 	font-family: "Courier New", Courier, mono;
 	border-bottom: 1px dotted silver;

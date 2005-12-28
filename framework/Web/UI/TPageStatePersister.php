@@ -1,6 +1,6 @@
 <?php
 
-class TPageStatePersister extends TModule implements IPageStatePersister
+class TPageStatePersister extends TModule implements IStatePersister
 {
 	private $_application;
 	private $_privateKey=null;

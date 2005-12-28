@@ -495,7 +495,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return IPageStatePersister page state persister
+	 * @return IStatePersister page state persister
 	 */
 	protected function getPageStatePersister()
 	{

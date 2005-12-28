@@ -139,7 +139,7 @@ class TPageService extends TService
 	 */
 	private $_templateManager=null;
 	/**
-	 * @var IPageStatePersister page state persister
+	 * @var IStatePersister page state persister
 	 */
 	private $_pageStatePersister=null;
 
@@ -349,7 +349,7 @@ class TPageService extends TService
 	}
 
 	/**
-	 * @return IPageStatePersister page state persister
+	 * @return IStatePersister page state persister
 	 */
 	public function getPageStatePersister()
 	{
@@ -362,9 +362,9 @@ class TPageService extends TService
 	}
 
 	/**
-	 * @param IPageStatePersister page state persister
+	 * @param IStatePersister page state persister
 	 */
-	public function setPageStatePersister(IPageStatePersister $value)
+	public function setPageStatePersister(IStatePersister $value)
 	{
 		$this->_pageStatePersister=$value;
 	}

@@ -287,16 +287,17 @@ interface IUser
 }
 
 /**
- * IPageStatePersister class.
+ * IStatePersister class.
  *
- * This interface must be implemented by all page state persister classes.
+ * This interface must be implemented by all state persister classes (such as
+ * {@link TPageStatePersister}, {@link TApplicationStatePersister}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System
  * @since 3.0
  */
-interface IPageStatePersister
+interface IStatePersister
 {
 	/**
 	 * Loads state from a persistent storage.
