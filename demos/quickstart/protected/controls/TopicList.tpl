@@ -16,6 +16,8 @@
 <a href="?page=Fundamentals.Modules">Modules</a><br/>
 <a href="?page=Fundamentals.Services">Services</a><br/>
 <a href="?page=Fundamentals.Applications">Applications</a><br/>
+<a href="?page=Fundamentals.HelloWorld">Sample: Hello World</a><br/>
+<a href="?page=Fundamentals.Hangman">Sample: Hangman Game</a><br/>
 </div>
 
 <div class="topic">
@@ -26,12 +28,6 @@
 <a href="?page=Configurations.Templates3">Templates: Part III</a><br/>
 <a href="?page=Configurations.AppConfig">Application Configurations</a><br/>
 <a href="?page=Configurations.PageConfig">Page Configurations</a><br/>
-</div>
-
-<div class="topic">
-<span>Samples</span><br/>
-<a href="?page=Samples.HelloWorld">Hello World</a><br/>
-<a href="?page=Samples.Hangman">Hangman Game</a><br/>
 </div>
 
 <div class="topic">

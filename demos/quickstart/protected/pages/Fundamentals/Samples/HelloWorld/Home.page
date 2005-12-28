@@ -1,0 +1,6 @@
+<%@ Title="Hello World" %>
+<com:TContent ID="body">
+
+<com:TButton Text="Click Me" Click="buttonClicked" />
+
+</com:TContent>
