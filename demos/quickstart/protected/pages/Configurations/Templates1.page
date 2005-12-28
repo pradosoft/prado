@@ -1,7 +1,7 @@
 <com:TContent ID="body" >
 <h1>Templates: Part I</h1>
 <p>
-Templates are used to specify the presentational layout of controls. A template can contain static text, components, or controls that contribute to the ultimate presentation of the associated control. By default, an instance of <tt>TTemplateControl</tt> or its subclass may automatically load a template from a file whose name is the same as the control class name. For page templates, the file name suffix must be <tt>.page</tt>; for other regular template controls, the suffix is <tt>.tpl</tt>.
+Templates are used to specify the presentational layout of controls. A template can contain static text, components, or controls that contribute to the ultimate presentation of the associated control. By default, an instance of <tt>TTemplateControl</tt> or its subclass may automatically load and instantiate a template from a file whose name is the same as the control class name. For page templates, the file name suffix must be <tt>.page</tt>; for other regular template controls, the suffix is <tt>.tpl</tt>.
 </p>
 <p>The template format is like HTML, with a few PRADO-specifc tags, including <a href="#ct">component tags</a>, <a href="#tct">template control tags</a>, <a href="#cot">comment tags</a>, <a href="?page=Configurations.Templates2#dct">dynamic content tags</a>, and <a href="?page=Configurations.Templates3#dpt">dynamic property tags</a>. .
 </p>
