@@ -4,7 +4,7 @@
   <paths>
     <alias id="Pages" path="." />
   </paths>
-  <pages MasterClass="Pages.Layout" Theme="Simple">
+  <pages MasterClass="Layout" Theme="Simple">
     <page id="ViewSource" MasterClass="" />
   </pages>
 </configuration>

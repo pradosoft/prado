@@ -13,7 +13,7 @@
 /**
  * TLabel class
  *
- * TLabel represents a label control that displays text on a Web pagge.
+ * TLabel displays a piece of text on a Web page.
  * Use {@link setText Text} property to set the text to be displayed.
  * TLabel will render the contents enclosed within its component tag
  * if {@link setText Text} is empty.
@@ -22,7 +22,7 @@
  * The associated control must be locatable within the label's naming container.
  *
  * Note, {@link setText Text} will NOT be encoded for rendering.
- * Make usre it does not contain dangerous characters that you want to avoid.
+ * Make sure it does not contain dangerous characters that you want to avoid.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $

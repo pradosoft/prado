@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <application id="QuickStart" Mode="Debug">
+  <paths>
+    <alias id="Controls" path="controls" />
+    <using namespace="Controls.*" />
+  </paths>
   <services>
     <service id="page" class="TPageService" DefaultPage="GettingStarted.Introduction" />
   </services>

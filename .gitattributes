@@ -14,6 +14,10 @@ demos/personal/themes/BlueTheme/labels.skin -text
 demos/quickstart/index.php -text
 demos/quickstart/protected/.htaccess -text
 demos/quickstart/protected/application.xml -text
+demos/quickstart/protected/controls/Layout.php -text
+demos/quickstart/protected/controls/Layout.tpl -text
+demos/quickstart/protected/controls/TopicList.php -text
+demos/quickstart/protected/controls/TopicList.tpl -text
 demos/quickstart/protected/pages/Configurations/AppConfig.page -text
 demos/quickstart/protected/pages/Configurations/Overview.page -text
 demos/quickstart/protected/pages/Configurations/PageConfig.page -text
@@ -22,6 +26,7 @@ demos/quickstart/protected/pages/Configurations/Templates2.page -text
 demos/quickstart/protected/pages/Configurations/Templates3.page -text
 demos/quickstart/protected/pages/Construction.page -text
 demos/quickstart/protected/pages/Controls/Overview.page -text
+demos/quickstart/protected/pages/Controls/Simple.page -text
 demos/quickstart/protected/pages/Controls/Simple1.page -text
 demos/quickstart/protected/pages/Fundamentals/Applications.page -text
 demos/quickstart/protected/pages/Fundamentals/Architecture.page -text
