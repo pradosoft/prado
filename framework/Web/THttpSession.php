@@ -81,16 +81,16 @@ class THttpSession extends TModule
 	 * Initializes the module.
 	 * This method is required by IModule.
 	 * If AutoStart is true, the session will be started.
-	 * @param TApplication prado application instance
+	 * @param TXmlElement module configuration
 	 */
-	public function init($application,$config)
+	public function init($config=null)
 	{
-		parent::init($application,$config);
+		parent::init($config);
 
 		if($this->_autoStart)
 			session_start();
 		$this->_initialized=true;
-		$application->setSession($this);
+		$this->getApplication()->setSession($this);
 	}
 
 	/**

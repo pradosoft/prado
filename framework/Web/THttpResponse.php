@@ -75,17 +75,16 @@ class THttpResponse extends TModule implements ITextWriter
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
 	 * It starts output buffer if it is enabled.
-	 * @param TApplication application
 	 * @param TXmlElement module configuration
 	 */
-	public function init($application,$config)
+	public function init($config=null)
 	{
-		parent::init($application,$config);
+		parent::init($config);
 
 		if($this->_bufferOutput)
 			ob_start();
 		$this->_initialized=true;
-		$application->setResponse($this);
+		$this->getApplication()->setResponse($this);
 	}
 
 	/**

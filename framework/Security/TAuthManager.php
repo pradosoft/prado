@@ -45,10 +45,6 @@ class TAuthManager extends TModule
 	 */
 	private $_initialized=false;
 	/**
-	 * @var TApplication application instance
-	 */
-	private $_application;
-	/**
 	 * @var TUserManager user manager instance
 	 */
 	private $_userManager=null;
@@ -64,16 +60,16 @@ class TAuthManager extends TModule
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
-	 * @param TApplication Prado application, can be null
 	 * @param TXmlElement configuration for this module, can be null
 	 * @throws TConfigurationException if user manager does not exist or is not TUserManager
 	 */
-	public function init($application,$config)
+	public function init($config=null)
 	{
-		parent::init($application,$config);
+		parent::init($config);
 
 		if($this->_userManager===null)
 			throw new TConfigurationException('authmanager_usermanager_required');
+		$application=$this->getApplication();
 		if(is_string($this->_userManager))
 		{
 			if(($users=$application->getModule($this->_userManager))===null)
@@ -82,7 +78,6 @@ class TAuthManager extends TModule
 				throw new TConfigurationException('authmanager_usermanager_invalid',$this->_userManager);
 			$this->_userManager=$users;
 		}
-		$this->_application=$application;
 		$application->attachEventHandler('Authentication',array($this,'doAuthentication'));
 		$application->attachEventHandler('EndRequest',array($this,'leave'));
 		$application->attachEventHandler('Authorization',array($this,'doAuthorization'));
@@ -140,7 +135,7 @@ class TAuthManager extends TModule
 	{
 		$this->onAuthenticate($param);
 
-		$service=$this->_application->getService();
+		$service=$this->getService();
 		if(($service instanceof TPageService) && $service->getRequestedPagePath()===$this->getLoginPage())
 			$this->_skipAuthorization=true;
 	}
@@ -169,14 +164,15 @@ class TAuthManager extends TModule
 	 */
 	public function leave($sender,$param)
 	{
-		if($this->_application->getResponse()->getStatusCode()===401)
+		$application=$this->getApplication();
+		if($application->getResponse()->getStatusCode()===401)
 		{
-			$service=$this->_application->getService();
+			$service=$application->getService();
 			if($service instanceof TPageService)
 			{
-				$returnUrl=$this->_application->getRequest()->getRequestUri();
+				$returnUrl=$application->getRequest()->getRequestUri();
 				$url=$service->constructUrl($this->getLoginPage(),array(self::RETURN_URL_VAR=>$returnUrl));
-				$this->_application->getResponse()->redirect($url);
+				$application->getResponse()->redirect($url);
 			}
 		}
 	}
@@ -191,17 +187,18 @@ class TAuthManager extends TModule
 	 */
 	public function onAuthenticate($param)
 	{
+		$application=$this->getApplication();
 		if($this->hasEventHandler('Authenticate'))
-			$this->raiseEvent('Authenticate',$this,$this->_application);
-		if($this->_application->getUser()!==null)
+			$this->raiseEvent('Authenticate',$this,$application);
+		if($application->getUser()!==null)
 			return;
 
-		if(($session=$this->_application->getSession())===null)
+		if(($session=$application->getSession())===null)
 			throw new TConfigurationException('authmanager_session_required');
 		$session->open();
 		$sessionInfo=$session->getItems()->itemAt($this->generateUserSessionKey());
 		$user=$this->_userManager->getUser(null)->loadFromString($sessionInfo);
-		$this->_application->setUser($user);
+		$application->setUser($user);
 	}
 
 	/**
@@ -213,12 +210,13 @@ class TAuthManager extends TModule
 	 */
 	public function onAuthorize($param)
 	{
+		$application=$this->getApplication();
 		if($this->hasEventHandler('Authorize'))
-			$this->raiseEvent('Authorize',$this,$this->_application);
-		if(!$this->_application->getAuthorizationRules()->isUserAllowed($this->_application->getUser(),$this->_application->getRequest()->getRequestType()))
+			$this->raiseEvent('Authorize',$this,$application);
+		if(!$application->getAuthorizationRules()->isUserAllowed($application->getUser(),$application->getRequest()->getRequestType()))
 		{
-			$this->_application->getResponse()->setStatusCode(401);
-			$this->_application->completeRequest();
+			$application->getResponse()->setStatusCode(401);
+			$application->completeRequest();
 		}
 	}
 
@@ -227,7 +225,7 @@ class TAuthManager extends TModule
 	 */
 	protected function generateUserSessionKey()
 	{
-		return md5($this->_application->getUniqueID().'prado:user');
+		return md5($this->getApplication()->getUniqueID().'prado:user');
 	}
 
 	/**
@@ -239,7 +237,7 @@ class TAuthManager extends TModule
 	{
 		if(!$user->getIsGuest())
 		{
-			if(($session=$this->_application->getSession())===null)
+			if(($session=$this->getSession())===null)
 				throw new TConfigurationException('authmanager_session_required');
 			else
 				$session->getItems()->add($this->generateUserSessionKey(),$user->saveToString());
@@ -260,7 +258,7 @@ class TAuthManager extends TModule
 		{
 			$user=$this->_userManager->getUser($username);
 			$this->updateSessionUser($user);
-			$this->_application->setUser($user);
+			$this->getApplication()->setUser($user);
 			return true;
 		}
 		else
@@ -274,11 +272,11 @@ class TAuthManager extends TModule
 	 */
 	public function logout()
 	{
-		if(($session=$this->_application->getSession())===null)
+		if(($session=$this->getSession())===null)
 			throw new TConfigurationException('authmanager_session_required');
 		else
 		{
-			$this->_userManager->switchToGuest($this->_application->getUser());
+			$this->_userManager->switchToGuest($this->getUser());
 			$session->destroy();
 		}
 	}

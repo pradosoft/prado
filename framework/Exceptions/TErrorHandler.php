@@ -65,10 +65,6 @@ class TErrorHandler extends TModule
 	const SOURCE_LINES=12;
 
 	/**
-	 * @var TApplication application instance
-	 */
-	private $_application;
-	/**
 	 * @var string error template directory
 	 */
 	private $_templatePath=null;
@@ -76,15 +72,13 @@ class TErrorHandler extends TModule
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
-	 * @param TApplication application
 	 * @param TXmlElement module configuration
 	 */
-	public function init($application,$config)
+	public function init($config=null)
 	{
-		parent::init($application,$config);
+		parent::init($config);
 
-		$this->_application=$application;
-		$application->setErrorHandler($this);
+		$this->getApplication()->setErrorHandler($this);
 	}
 
 	/**
@@ -132,13 +126,13 @@ class TErrorHandler extends TModule
 		else
 		{
 			$handling=true;
-			if(($response=Prado::getApplication()->getResponse())!==null)
+			if(($response=$this->getResponse())!==null)
 				$response->clear();
 			if(!headers_sent())
 				header('Content-Type: text/html; charset=UTF-8');
 			if($param instanceof THttpException)
 				$this->handleExternalError($param->getStatusCode(),$param);
-			else if(Prado::getApplication()->getMode()===TApplication::STATE_DEBUG)
+			else if($this->getApplication()->getMode()===TApplication::STATE_DEBUG)
 				$this->displayException($param);
 			else
 				$this->handleExternalError(500,$param);
@@ -192,7 +186,7 @@ class TErrorHandler extends TModule
 	 */
 	protected function handleRecursiveError($exception)
 	{
-		if(Prado::getApplication()->getMode()===TApplication::STATE_DEBUG)
+		if($this->getApplication()->getMode()===TApplication::STATE_DEBUG)
 		{
 			echo "<html><head><title>Recursive Error</title></head>\n";
 			echo "<body><h1>Recursive Error</h1>\n";

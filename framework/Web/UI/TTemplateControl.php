@@ -101,7 +101,7 @@ class TTemplateControl extends TControl implements INamingContainer
 	 */
 	protected function loadTemplate()
 	{
-		$template=Prado::getApplication()->getService()->getTemplateManager()->getTemplateByClassName(get_class($this));
+		$template=$this->getService()->getTemplateManager()->getTemplateByClassName(get_class($this));
 		self::$_template[get_class($this)]=$template;
 		return $template;
 	}

@@ -71,14 +71,13 @@ class TAssetManager extends TModule
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
-	 * @param TApplication application
 	 * @param TXmlElement module configuration
 	 */
-	public function init($application,$config)
+	public function init($config=null)
 	{
-		parent::init($application,$config);
+		parent::init($config);
 
-		$this->_application=$application;
+		$application=$this->getApplication();
 		if($this->_basePath===null)
 			$this->_basePath=dirname($application->getRequest()->getPhysicalApplicationPath()).'/'.self::DEFAULT_BASEPATH;
 		if(!is_writable($this->_basePath) || !is_dir($this->_basePath))
@@ -152,7 +151,7 @@ class TAssetManager extends TModule
 		{
 			$dir=$this->hash(dirname($fullpath));
 			$file=$this->_basePath.'/'.$dir.'/'.basename($fullpath);
-			if(!is_file($file) || $checkTimestamp || $this->_application->getMode()!==TApplication::STATE_PERFORMANCE)
+			if(!is_file($file) || $checkTimestamp || $this->getApplication()->getMode()!==TApplication::STATE_PERFORMANCE)
 			{
 				if(!is_dir($this->_basePath.'/'.$dir))
 					@mkdir($this->_basePath.'/'.$dir);
@@ -165,7 +164,7 @@ class TAssetManager extends TModule
 		else
 		{
 			$dir=$this->hash($fullpath);
-			if(!is_dir($this->_basePath.'/'.$dir) || $checkTimestamp || $this->_application->getMode()!==TApplication::STATE_PERFORMANCE)
+			if(!is_dir($this->_basePath.'/'.$dir) || $checkTimestamp || $this->getApplication()->getMode()!==TApplication::STATE_PERFORMANCE)
 				$this->copyDirectory($fullpath,$this->_basePath.'/'.$dir);
 			$this->_published[$path]=$this->_baseUrl.'/'.$dir;
 			return $this->_published[$path];

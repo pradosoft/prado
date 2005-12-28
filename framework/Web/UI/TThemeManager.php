@@ -54,23 +54,17 @@ class TThemeManager extends TModule
 	 * @var string the base URL for all themes
 	 */
 	private $_baseUrl=null;
-	/**
-	 * @var TApplication application
-	 */
-	private $_application;
 
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
-	 * @param TApplication application
 	 * @param TXmlElement module configuration
 	 */
-	public function init($application,$config)
+	public function init($config=null)
 	{
-		parent::init($application,$config);
-		$this->_application=$application;
+		parent::init($config);
 		$this->_initialized=true;
-		$application->getService()->setThemeManager($this);
+		$this->getService()->setThemeManager($this);
 	}
 
 	/**
@@ -81,7 +75,7 @@ class TThemeManager extends TModule
 	{
 		$themePath=$this->getBasePath().'/'.$name;
 		$themeUrl=$this->getBaseUrl().'/'.$name;
-		return new TTheme($this->_application,$themePath,$themeUrl);
+		return new TTheme($themePath,$themeUrl);
 
 	}
 
@@ -93,7 +87,7 @@ class TThemeManager extends TModule
 	{
 		if($this->_basePath===null)
 		{
-			$this->_basePath=dirname($this->_application->getRequest()->getPhysicalApplicationPath()).'/'.self::DEFAULT_BASEPATH;
+			$this->_basePath=dirname($this->getRequest()->getPhysicalApplicationPath()).'/'.self::DEFAULT_BASEPATH;
 			if(($basePath=realpath($this->_basePath))===false || !is_dir($basePath))
 				throw new TConfigurationException('thememanager_basepath_invalid',$this->_basePath);
 			$this->_basePath=$basePath;
@@ -126,11 +120,11 @@ class TThemeManager extends TModule
 	{
 		if($this->_baseUrl===null)
 		{
-			$appPath=dirname($this->_application->getRequest()->getPhysicalApplicationPath());
+			$appPath=dirname($this->getRequest()->getPhysicalApplicationPath());
 			$basePath=$this->getBasePath();
 			if(strpos($basePath,$appPath)===false)
 				throw new TConfigurationException('thememanager_baseurl_required');
-			$appUrl=dirname($this->_application->getRequest()->getApplicationPath());
+			$appUrl=dirname($this->getRequest()->getApplicationPath());
 			$this->_baseUrl=$appUrl.strtr(substr($basePath,strlen($appPath)),'\\','/');
 		}
 		return $this->_baseUrl;
@@ -208,23 +202,22 @@ class TTheme extends TComponent
 
 	/**
 	 * Constructor.
-	 * @param TApplication application instance
 	 * @param string theme path
 	 * @param string theme URL
 	 * @throws TConfigurationException if theme path does not exist or any parsing error of the skin files
 	 */
-	public function __construct($application,$themePath,$themeUrl)
+	public function __construct($themePath,$themeUrl)
 	{
 		$this->_themeUrl=$themeUrl;
 		$this->_name=basename($themePath);
-		if(($cache=$application->getCache())!==null)
+		if(($cache=$this->getApplication()->getCache())!==null)
 		{
 			$array=$cache->get(self::THEME_CACHE_PREFIX.$themePath);
 			if(is_array($array))
 			{
 				list($skins,$cssFiles,$jsFiles,$timestamp)=$array;
 				$cacheValid=true;
-				if($application->getMode()!==TApplication::STATE_PERFORMANCE)
+				if($this->getApplication()->getMode()!==TApplication::STATE_PERFORMANCE)
 				{
 					if(($dir=opendir($themePath))===false)
 						throw new TIOException('theme_path_inexistent',$themePath);

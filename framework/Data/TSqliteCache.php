@@ -47,7 +47,7 @@
  * <code>
  * $cache=new TSqliteCache;  // TSqliteCache may also be loaded as a Prado application module
  * $cache->setDbFile($dbFilePath);
- * $cache->init(null);
+ * $cache->init();
  * $cache->add('object',$object);
  * $object2=$cache->get('object');
  * </code>
@@ -109,19 +109,18 @@ class TSqliteCache extends TModule implements ICache
 	 * property is set, and creates a SQLiteDatabase instance for it.
 	 * The database or the cache table does not exist, they will be created.
 	 * Expired values are also deleted.
-	 * @param TApplication Prado application, can be null
 	 * @param TXmlElement configuration for this module, can be null
 	 * @throws TConfigurationException if sqlite extension is not installed,
 	 *         DbFile is set invalid, or any error happens during creating database or cache table.
 	 */
-	public function init($application,$config)
+	public function init($config=null)
 	{
-		parent::init($application,$config);
+		parent::init($config);
 
 		if(!function_exists('sqlite_open'))
 			throw new TConfigurationException('sqlitecache_extension_required');
 		if($this->_file===null)
-			$this->_file=$application->getRuntimePath().'/sqlite.cache';
+			$this->_file=$this->getApplication()->getRuntimePath().'/sqlite.cache';
 		$error='';
 		if(($this->_db=new SQLiteDatabase($this->_file,0666,$error))===false)
 			throw new TConfigurationException('sqlitecache_connection_failed',$error);
@@ -137,7 +136,7 @@ class TSqliteCache extends TModule implements ICache
 			throw new TConfigurationException('sqlitecache_table_creation_failed',sqlite_error_string(sqlite_last_error()));
 		$this->_db->query('DELETE FROM '.self::CACHE_TABLE.' WHERE expire<>0 AND expire<'.time());
 		$this->_initialized=true;
-		$application->setCache($this);
+		$this->getApplication()->setCache($this);
 	}
 
 	/**

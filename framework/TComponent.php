@@ -426,6 +426,54 @@ class TComponent
 			throw new TInvalidOperationException('component_statements_invalid',get_class($this),$statements,$e->getMessage());
 		}
 	}
+
+	/**
+	 * @return TApplication current application instance
+	 */
+	public function getApplication()
+	{
+		return Prado::getApplication();
+	}
+
+	/**
+	 * @return IService the current service
+	 */
+	public function getService()
+	{
+		return Prado::getApplication()->getService();
+	}
+
+	/**
+	 * @return THttpRequest the current user request
+	 */
+	public function getRequest()
+	{
+		return Prado::getApplication()->getRequest();
+	}
+
+	/**
+	 * @return THttpResponse the response
+	 */
+	public function getResponse()
+	{
+		return Prado::getApplication()->getResponse();
+	}
+
+	/**
+	 * @return THttpSession user session
+	 */
+	public function getSession()
+	{
+		return Prado::getApplication()->getSession();
+	}
+
+	/**
+	 * @return IUser user
+	 */
+	public function getUser()
+	{
+		return Prado::getApplication()->getUser();
+	}
 }
 
 /**

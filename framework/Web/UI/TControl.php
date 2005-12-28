@@ -251,54 +251,6 @@ class TControl extends TComponent
 	}
 
 	/**
-	 * @return TApplication the application object that the current page is using
-	 */
-	public function getApplication()
-	{
-		return Prado::getApplication();
-	}
-
-	/**
-	 * @return TPageService the page service
-	 */
-	public function getService()
-	{
-		return Prado::getApplication()->getService();
-	}
-
-	/**
-	 * @return THttpRequest the current user request
-	 */
-	public function getRequest()
-	{
-		return Prado::getApplication()->getRequest();
-	}
-
-	/**
-	 * @return THttpResponse the response
-	 */
-	public function getResponse()
-	{
-		return Prado::getApplication()->getResponse();
-	}
-
-	/**
-	 * @return THttpSession user session
-	 */
-	public function getSession()
-	{
-		return Prado::getApplication()->getSession();
-	}
-
-	/**
-	 * @return IUser user
-	 */
-	public function getUser()
-	{
-		return Prado::getApplication()->getUser();
-	}
-
-	/**
 	 * Publishes a private asset and gets its URL.
 	 * This method will publish a private asset (file or directory)
 	 * and gets the URL to the asset. Note, if the asset refers to

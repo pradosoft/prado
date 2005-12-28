@@ -123,10 +123,6 @@ class TPageService extends TService
 	 */
 	private $_initialized=false;
 	/**
-	 * @var TApplication application
-	 */
-	private $_application;
-	/**
 	 * @var TAssetManager asset manager
 	 */
 	private $_assetManager=null;
@@ -146,14 +142,15 @@ class TPageService extends TService
 	/**
 	 * Initializes the service.
 	 * This method is required by IService interface and is invoked by application.
-	 * @param TApplication application
 	 * @param TXmlElement service configuration
 	 */
-	public function init($application,$config)
+	public function init($config=null)
 	{
-		$application->setPageService($this);
+		parent::init($config);
 
-		$this->_application=$application;
+		$application=$this->getApplication();
+
+		$application->setPageService($this);
 
 		if($this->_basePath===null)
 		{
@@ -259,14 +256,12 @@ class TPageService extends TService
 			$application->setModule($id,$module);
 			foreach($moduleConfig[1] as $name=>$value)
 				$module->setSubProperty($name,$value);
-			$module->init($this->_application,$moduleConfig[2]);
+			$module->init($moduleConfig[2]);
 		}
 
 		$application->getAuthorizationRules()->mergeWith($pageConfig->getRules());
 
 		$this->_initialized=true;
-
-		parent::init($application,$config);
 	}
 
 	/**
@@ -293,7 +288,7 @@ class TPageService extends TService
 		if(!$this->_templateManager)
 		{
 			$this->_templateManager=new TTemplateManager;
-			$this->_templateManager->init($this->_application,null);
+			$this->_templateManager->init();
 		}
 		return $this->_templateManager;
 	}
@@ -314,7 +309,7 @@ class TPageService extends TService
 		if(!$this->_assetManager)
 		{
 			$this->_assetManager=new TAssetManager;
-			$this->_assetManager->init($this->_application,null);
+			$this->_assetManager->init();
 		}
 		return $this->_assetManager;
 	}
@@ -335,7 +330,7 @@ class TPageService extends TService
 		if(!$this->_themeManager)
 		{
 			$this->_themeManager=new TThemeManager;
-			$this->_themeManager->init($this->_application,null);
+			$this->_themeManager->init();
 		}
 		return $this->_themeManager;
 	}
@@ -356,7 +351,7 @@ class TPageService extends TService
 		if(!$this->_pageStatePersister)
 		{
 			$this->_pageStatePersister=new TPageStatePersister;
-			$this->_pageStatePersister->init($this->_application,null);
+			$this->_pageStatePersister->init();
 		}
 		return $this->_pageStatePersister;
 	}
@@ -452,7 +447,7 @@ class TPageService extends TService
 		else
 			throw new THttpException(404,'pageservice_page_unknown',$this->_pagePath);
 
-		$writer=$this->_application->getResponse()->createHtmlWriter();
+		$writer=$this->getResponse()->createHtmlWriter();
 		$this->_page->run($writer);
 		$writer->flush();
 	}
@@ -466,7 +461,7 @@ class TPageService extends TService
 	 */
 	public function constructUrl($pagePath,$getParams=null,$encodeAmpersand=false)
 	{
-		return $this->_application->getRequest()->constructUrl($this->_id,$pagePath,$getParams,$encodeAmpersand);
+		return $this->getRequest()->constructUrl($this->_id,$pagePath,$getParams,$encodeAmpersand);
 	}
 }
 

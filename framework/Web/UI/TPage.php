@@ -29,14 +29,6 @@ class TPage extends TTemplateControl
 		'__PREVPAGE','__CALLBACKID','__CALLBACKPARAM'
 	);
 	/**
-	 * @var TApplication application instance
-	 */
-	private $_application;
-	/**
-	 * @var TPageService page service instance
-	 */
-	private $_pageService;
-	/**
 	 * @var TForm form instance
 	 */
 	private $_form=null;
@@ -125,8 +117,6 @@ class TPage extends TTemplateControl
 	 */
 	public function __construct($initProperties=null)
 	{
-		$this->_application=Prado::getApplication();
-		$this->_pageService=$this->_application->getService();
 		$this->setPage($this);
 		if(is_array($initProperties))
 		{
@@ -190,7 +180,7 @@ class TPage extends TTemplateControl
 			return parent::loadTemplate();
 		else
 		{
-			$template=$this->_pageService->getTemplateManager()->getTemplateByFileName($this->_templateFile);
+			$template=$this->getService()->getTemplateManager()->getTemplateByFileName($this->_templateFile);
 			$this->setTemplate($template);
 			return $template;
 		}
@@ -315,7 +305,7 @@ class TPage extends TTemplateControl
 	public function getTheme()
 	{
 		if(is_string($this->_theme))
-			$this->_theme=$this->_pageService->getThemeManager()->getTheme($this->_theme);
+			$this->_theme=$this->getService()->getThemeManager()->getTheme($this->_theme);
 		return $this->_theme;
 	}
 
@@ -336,7 +326,7 @@ class TPage extends TTemplateControl
 	public function getStyleSheetTheme()
 	{
 		if(is_string($this->_styleSheet))
-			$this->_styleSheet=$this->_pageService->getThemeManager()->getTheme($this->_styleSheet);
+			$this->_styleSheet=$this->getService()->getThemeManager()->getTheme($this->_styleSheet);
 		return $this->_styleSheet;
 	}
 
@@ -481,7 +471,7 @@ class TPage extends TTemplateControl
 	 */
 	private function determinePostBackMode()
 	{
-		$postData=$this->_application->getRequest()->getItems();
+		$postData=$this->getApplication()->getRequest()->getItems();
 		if($postData->contains(self::FIELD_PAGESTATE) || $postData->contains(self::FIELD_POSTBACK_TARGET))
 			$this->_postData=$postData;
 	}
@@ -499,7 +489,7 @@ class TPage extends TTemplateControl
 	 */
 	protected function getPageStatePersister()
 	{
-		return $this->_pageService->getPageStatePersister();
+		return $this->getService()->getPageStatePersister();
 	}
 
 	/**

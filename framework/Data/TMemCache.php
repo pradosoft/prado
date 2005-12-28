@@ -44,7 +44,7 @@
  * Some usage examples of TMemCache are as follows,
  * <code>
  * $cache=new TMemCache;  // TMemCache may also be loaded as a Prado application module
- * $cache->init(null);
+ * $cache->init();
  * $cache->add('object',$object);
  * $object2=$cache->get('object');
  * </code>
@@ -105,19 +105,18 @@ class TMemCache extends TModule implements ICache
 	 * @param TXmlElement configuration for this module, can be null
 	 * @throws TConfigurationException if memcache extension is not installed or memcache sever connection fails
 	 */
-	public function init($application,$config)
+	public function init($config=null)
 	{
-		parent::init($application,$config);
+		parent::init($config);
 
 		if(!extension_loaded('memcache'))
 			throw new TConfigurationException('memcache_extension_required');
 		$this->_cache=new Memcache;
 		if($this->_cache->connect($this->_host,$this->_port)===false)
 			throw new TConfigurationException('memcache_connection_failed',$this->_host,$this->_port);
-		if($application instanceof TApplication)
-			$this->_prefix=$application->getUniqueID();
+		$this->_prefix=$this->getApplication()->getUniqueID();
 		$this->_initialized=true;
-		$application->setCache($this);
+		$this->getApplication()->setCache($this);
 	}
 
 	/**

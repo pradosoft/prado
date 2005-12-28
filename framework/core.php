@@ -56,10 +56,9 @@ interface IModule
 {
 	/**
 	 * Initializes the module.
-	 * @param TApplication the application object
 	 * @param TXmlElement the configuration for the module
 	 */
-	public function init($application,$configuration);
+	public function init($configuration=null);
 	/**
 	 * @return string ID of the module
 	 */
@@ -84,10 +83,9 @@ interface IService
 {
 	/**
 	 * Initializes the service.
-	 * @param TApplication the application object
 	 * @param TXmlElement the configuration for the service
 	 */
-	public function init($application,$configuration);
+	public function init($configuration=null);
 	/**
 	 * @return string ID of the service
 	 */
@@ -322,7 +320,7 @@ interface IStatePersister
  * @package System
  * @since 3.0
  */
-class TModule extends TComponent implements IModule
+abstract class TModule extends TComponent implements IModule
 {
 	/**
 	 * @var string module id
@@ -332,10 +330,9 @@ class TModule extends TComponent implements IModule
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
-	 * @param TApplication application
 	 * @param TXmlElement module configuration
 	 */
-	public function init($application,$config)
+	public function init($config=null)
 	{
 	}
 
@@ -377,10 +374,9 @@ abstract class TService extends TComponent implements IService
 	/**
 	 * Initializes the service and attaches {@link run} to the RunService event of application.
 	 * This method is required by IService and is invoked by application.
-	 * @param TApplication application
 	 * @param TXmlElement module configuration
 	 */
-	public function init($application,$config)
+	public function init($config=null)
 	{
 	}
 

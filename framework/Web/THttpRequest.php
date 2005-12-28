@@ -70,12 +70,11 @@ class THttpRequest extends TModule
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
-	 * @param TApplication application
 	 * @param TXmlElement module configuration
 	 */
-	public function init($application,$config)
+	public function init($config=null)
 	{
-		parent::init($application,$config);
+		parent::init($config);
 		// Info about server variables:
 		// PHP_SELF contains real URI (w/ path info, w/o query string)
 		// SCRIPT_NAME is the real URI for the requested script (w/o path info and query string)
@@ -109,7 +108,7 @@ class THttpRequest extends TModule
 		$this->_items=new TMap(array_merge($_POST,$_GET));
 
 		$this->_initialized=true;
-		$application->setRequest($this);
+		$this->getApplication()->setRequest($this);
 	}
 
 	/**

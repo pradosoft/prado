@@ -13,7 +13,7 @@ class TForm extends TControl
 		$attributes=$this->getAttributes();
 //		$writer->addAttribute('name',$this->getName());
 		$writer->addAttribute('method',$this->getMethod());
-		$writer->addAttribute('action',$this->getApplication()->getRequest()->getRequestURI());
+		$writer->addAttribute('action',$this->getRequest()->getRequestURI());
 		if(($enctype=$this->getEnctype())!=='')
 			$writer->addAttribute('enctype',$enctype);
 		$attributes->remove('name');

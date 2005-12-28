@@ -536,7 +536,7 @@ class TApplication extends TComponent
 		if(!$this->_pageService)
 		{
 			$this->_pageService=new TPageService;
-			$this->_pageService->init($this,null);
+			$this->_pageService->init();
 		}
 		return $this->_pageService;
 	}
@@ -559,7 +559,7 @@ class TApplication extends TComponent
 		if(!$this->_request)
 		{
 			$this->_request=new THttpRequest;
-			$this->_request->init($this,null);
+			$this->_request->init();
 		}
 		return $this->_request;
 	}
@@ -580,7 +580,7 @@ class TApplication extends TComponent
 		if(!$this->_response)
 		{
 			$this->_response=new THttpResponse;
-			$this->_response->init($this,null);
+			$this->_response->init();
 		}
 		return $this->_response;
 	}
@@ -601,7 +601,7 @@ class TApplication extends TComponent
 		if(!$this->_session)
 		{
 			$this->_session=new THttpSession;
-			$this->_session->init($this,null);
+			$this->_session->init();
 		}
 		return $this->_session;
 	}
@@ -622,7 +622,7 @@ class TApplication extends TComponent
 		if(!$this->_errorHandler)
 		{
 			$this->_errorHandler=new TErrorHandler;
-			$this->_errorHandler->init($this,null);
+			$this->_errorHandler->init();
 		}
 		return $this->_errorHandler;
 	}
@@ -643,7 +643,7 @@ class TApplication extends TComponent
 		if(!$this->_statePersister)
 		{
 			$this->_statePersister=new TApplicationStatePersister;
-			$this->_statePersister->init($this,null);
+			$this->_statePersister->init();
 		}
 		return $this->_statePersister;
 	}
@@ -771,7 +771,7 @@ class TApplication extends TComponent
 			$this->_modules[$id]=$module;
 			foreach($moduleConfig[1] as $name=>$value)
 				$module->setSubProperty($name,$value);
-			$module->init($this,$moduleConfig[2]);
+			$module->init($moduleConfig[2]);
 		}
 
 		// load service
@@ -792,7 +792,7 @@ class TApplication extends TComponent
 			$this->_service=$service;
 			foreach($serviceConfig[1] as $name=>$value)
 				$service->setSubProperty($name,$value);
-			$service->init($this,$serviceConfig[2]);
+			$service->init($serviceConfig[2]);
 		}
 		else
 			$this->_service=$this->getPageService();
@@ -1118,11 +1118,6 @@ class TApplicationConfiguration extends TComponent
 	/**
 	 * @return array list of service configurations
 	 */
-	public function getService($id)
-	{
-		return isset($this->_services[$id])?$this->_services[$id]:null;
-	}
-
 	public function getServices()
 	{
 		return $this->_services;
@@ -1155,21 +1150,15 @@ class TApplicationStatePersister extends TModule implements IStatePersister
 	 * Name of the value stored in cache
 	 */
 	const CACHE_NAME='prado:appstate';
-	/**
-	 * @var TApplication application instance
-	 */
-	private $_application;
 
 	/**
 	 * Initializes module.
-	 * @param TApplication application instance
 	 * @param TXmlElement module configuration (may be null)
 	 */
-	public function init($application,$config)
+	public function init($config=null)
 	{
-		parent::init($application,$config);
-		$this->_application=$application;
-		$application->setApplicationStatePersister($this);
+		parent::init($config);
+		$this->getApplication()->setApplicationStatePersister($this);
 	}
 
 	/**
@@ -1177,7 +1166,7 @@ class TApplicationStatePersister extends TModule implements IStatePersister
 	 */
 	protected function getStateFilePath()
 	{
-		return $this->_application->getRuntimePath().'/global.cache';
+		return $this->getApplication()->getRuntimePath().'/global.cache';
 	}
 
 	/**
@@ -1186,7 +1175,7 @@ class TApplicationStatePersister extends TModule implements IStatePersister
 	 */
 	public function load()
 	{
-		if(($cache=$this->_application->getCache())!==null && ($value=$cache->get(self::CACHE_NAME))!==false)
+		if(($cache=$this->getApplication()->getCache())!==null && ($value=$cache->get(self::CACHE_NAME))!==false)
 			return unserialize($value);
 		else
 		{
@@ -1205,7 +1194,7 @@ class TApplicationStatePersister extends TModule implements IStatePersister
 	{
 		$content=serialize($state);
 		$saveFile=true;
-		if(($cache=$this->_application->getCache())!==null)
+		if(($cache=$this->getApplication()->getCache())!==null)
 		{
 			if($cache->get(self::CACHE_NAME)===$content)
 				$saveFile=false;

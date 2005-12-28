@@ -37,24 +37,18 @@ class TTemplateManager extends TModule
 	 * Prefix of the cache variable name for storing parsed templates
 	 */
 	const TEMPLATE_CACHE_PREFIX='prado:template:';
-	/**
-	 * @var TApplication application instance
-	 */
-	private $_application;
 
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
 	 * It starts output buffer if it is enabled.
-	 * @param TApplication application
 	 * @param TXmlElement module configuration
 	 */
-	public function init($application,$config)
+	public function init($config=null)
 	{
-		parent::init($application,$config);
+		parent::init($config);
 
-		$this->_application=$application;
-		$application->getService()->setTemplateManager($this);
+		$this->getService()->setTemplateManager($this);
 	}
 
 	/**
@@ -76,7 +70,7 @@ class TTemplateManager extends TModule
 	{
 		if(($fileName=realpath($fileName))!==false && is_file($fileName))
 		{
-			if(($cache=$this->_application->getCache())===null)
+			if(($cache=$this->getApplication()->getCache())===null)
 				return new TTemplate(file_get_contents($fileName),dirname($fileName),$fileName);
 			else
 			{
@@ -351,7 +345,7 @@ class TTemplate extends TComponent implements ITemplate
 						$component->$setter($url);
 						break;
 					case self::CONFIG_PARAMETER:		// application parameter
-						$component->$setter(Prado::getApplication()->getParameters()->itemAt($v));
+						$component->$setter($this->getApplication()->getParameters()->itemAt($v));
 						break;
 					default:	// an error if reaching here
 						break;
@@ -388,7 +382,7 @@ class TTemplate extends TComponent implements ITemplate
 					$component->setSubProperty($name,$url);
 					break;
 				case self::CONFIG_PARAMETER:		// application parameter
-					$component->setSubProperty($name,Prado::getApplication()->getParameters()->itemAt($v));
+					$component->setSubProperty($name,$this->getApplication()->getParameters()->itemAt($v));
 					break;
 				default:	// an error if reaching here
 					break;
@@ -419,7 +413,7 @@ class TTemplate extends TComponent implements ITemplate
 					$value=$this->_assetManager->publishFilePath($this->_contextPath.'/'.ltrim($value[1],'/'));
 					break;
 				case self::CONFIG_PARAMETER:
-					$value=Prado::getApplication()->getParameters()->itemAt($value[1]);
+					$value=$this->getApplication()->getParameters()->itemAt($value[1]);
 					break;
 				default:
 					break;

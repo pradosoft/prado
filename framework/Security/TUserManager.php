@@ -225,12 +225,11 @@ class TUserManager extends TModule
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
 	 * It loads user/role information from the module configuration.
-	 * @param TApplication application
 	 * @param TXmlElement module configuration
 	 */
-	public function init($application,$config)
+	public function init($config=null)
 	{
-		parent::init($application,$config);
+		parent::init($config);
 
 		if($this->_userFile!==null)
 		{

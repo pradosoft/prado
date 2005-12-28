@@ -2,20 +2,17 @@
 
 class TPageStatePersister extends TModule implements IStatePersister
 {
-	private $_application;
 	private $_privateKey=null;
 
 	/**
 	 * Initializes the service.
 	 * This method is required by IModule interface.
-	 * @param TApplication application
 	 * @param TXmlElement module configuration
 	 */
-	public function init($application, $config)
+	public function init($config=null)
 	{
-		parent::init($application,$config);
-		$this->_application=$application;
-		$application->getService()->setPageStatePersister($this);
+		parent::init($config);
+		$this->getService()->setPageStatePersister($this);
 	}
 
 	public function save($state)
@@ -26,12 +23,12 @@ class TPageStatePersister extends TModule implements IStatePersister
 			$data=gzcompress($hmac.$data);
 		else
 			$data=$hmac.$data;
-		$this->_application->getService()->getRequestedPage()->getClientScript()->registerHiddenField(TPage::FIELD_PAGESTATE,base64_encode($data));
+		$this->getService()->getRequestedPage()->getClientScript()->registerHiddenField(TPage::FIELD_PAGESTATE,base64_encode($data));
 	}
 
 	public function load()
 	{
-		$str=base64_decode($this->_application->getRequest()->getItems()->itemAt(TPage::FIELD_PAGESTATE));
+		$str=base64_decode($this->getApplication()->getRequest()->getItems()->itemAt(TPage::FIELD_PAGESTATE));
 		if($str==='')
 			return null;
 		if(extension_loaded('zlib'))
@@ -60,10 +57,10 @@ class TPageStatePersister extends TModule implements IStatePersister
 	{
 		if(empty($this->_privateKey))
 		{
-			if(($this->_privateKey=$this->_application->getGlobalState('prado:pagestatepersister:privatekey'))===null)
+			if(($this->_privateKey=$this->getApplication()->getGlobalState('prado:pagestatepersister:privatekey'))===null)
 			{
 				$this->_privateKey=$this->generatePrivateKey();
-				$this->_application->setGlobalState('prado:pagestatepersister:privatekey',$this->_privateKey,null);
+				$this->getApplication()->setGlobalState('prado:pagestatepersister:privatekey',$this->_privateKey,null);
 			}
 		}
 		return $this->_privateKey;
