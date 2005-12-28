@@ -17,6 +17,7 @@ where the method <tt>run()</tt> starts the application to handle user requests.
 <h2>Directory Organization</h2>
 <p>
 A minimal PRADO application contains two files: an entry file and a page template file. They must be organized as follows,
+</p>
 <img src="<%~directory.gif%>" />
 <ul>
 <li><tt>wwwroot</tt> - Web document root or sub-directory.</li>
@@ -27,7 +28,7 @@ A minimal PRADO application contains two files: an entry file and a page templat
 <li><tt>pages</tt> - base path storing all PRADO pages. See <a href="?page=Fundamentals.Services">services</a> section.</li>
 <li><tt>Home.page</tt> - default page returned when users do not explicitly specify the page requested. This is a page template file. The file name without suffix is the page name. The page class is <tt>TPage</tt>. If there is also a class file <tt>Home.php</tt>, the page class becomes <tt>Home</tt>.</li>
 </ul>
-</p>
+
 <p>
 A product PRADO application usually needs more files. It may include an application configuration file named <tt>application.xml</tt> under the application base path <tt>protected</tt>. The pages may be organized in directories, some of which may contain page configuration files named <tt>config.xml</tt>. Fore more details, please see <a href="?page=Configurations.Overview">configurations</a> section.
 </p>
