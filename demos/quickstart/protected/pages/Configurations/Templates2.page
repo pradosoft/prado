@@ -11,51 +11,51 @@ Dynamic content tags are introduced as shortcuts to some commonly used <a href="
 <h3>Expression Tags</h3>
 <p>
 An expression tag represents a PHP expression that is evaluated when the template control is being rendered. The expression evaluation result is inserted at the place where the tag resides in the template. Its format is as follows,
-<pre class="source">
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;%= PhpExpression %&gt;
-</pre>
+</com:TTextHighlighter>
 Inernally, an expression tag is represented by a <tt>TExpression</tt> control. Therefore, in the expression <tt>$this</tt> refers to the <tt>TExpression</tt> control. For example, the following expression tag will display the current page title at the place,
-<pre class="source">
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;%= $this-&gt;Page-&gt;Title %&gt;
-</pre>
+</com:TTextHighlighter>
 </p>
 
 <a name="st" />
 <h3>Statement Tags</h3>
 <p>
 Statement tags are similar to expression tags, except that statement tags contain PHP statements rather than expressions. The output of the PHP statements (using for example <tt>echo</tt> or <tt>print</tt> in PHP) are displayed at the place where the statement tag resides in the template. Inernally, a statement tag is represented by a <tt>TStatements</tt> control. Therefore, in the statements <tt>$this</tt> refers to the <tt>TStatements</tt> control. The format of statement tags is as follows,
-<pre class="source">
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;%%
 PHP Statements
 %&gt;
-</pre>
+</com:TTextHighlighter>
 </p>
 <p>
 The following example displays the current time in Dutch at the place,
-<pre class="source">
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;%%
 setlocale(LC_ALL, 'nl_NL');
 echo strftime("%A %e %B %Y",time());
 %&gt;
-</pre>
+</com:TTextHighlighter>
 </p>
 
 <a name="dt" />
 <h3>Databind Tags</h3>
 <p>
 Databind tags are similar to expression tags, except that the expressions are evaluated only when a <tt>dataBind()</tt> call is invoked on the controls representing the databind tags. Internally, a <tt>TLiteral</tt> control is used to represent a databind tag and <tt>$this</tt> in the expression would refer to the control. The format of databind tags is as follows,
-<pre class="source">
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;%# PhpExpression %&gt;
-</pre>
+</com:TTextHighlighter>
 </p>
 
 <a name="pt" />
 <h3>Parameter Tags</h3>
 <p>
 Parameter tags are used to insert application parameters at the place where they appear in the template. The format of parameter tags is as follows,
-<pre class="source">
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;%$ ParameterName %&gt;
-</pre>
+</com:TTextHighlighter>
 Note, application parameters are usually defined in application configurations or page directory configurations. The parameters are evaluated when the template is instantiated.
 </p>
 
@@ -66,9 +66,9 @@ Asset tags are used to publish private files and display the corresponding the U
 </p>
 <p>
 The format of asset tags is as follows,
-<pre class="source">
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;%~ LocalFileName %&gt;
-</pre>
+</com:TTextHighlighter>
 where <tt>LocalFileName</tt> refers to a file path that is relative to the directory containing the current template file. The file path can be a single file or a directory. If the latter, the content in the whole directory will be made accessible by end-users.
 </p>
 <p>

@@ -13,35 +13,35 @@ A component tag specifies a component as part of the body content of the templat
 </p>
 <p>
 The format of a component tag is as follows,
-<pre class="source">
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:ComponentType PropertyName="PropertyValue" ... EventName="EventHandler" ...&gt;
 body content
 &lt;/com:ComponentType&gt;
-</pre>
+</com:TTextHighlighter>
 <tt>ComponentType</tt> can be either the class name or the dotted type name (e.g. <tt>System.Web.UI.TControl</tt>) of the component. <tt>PropertyName</tt> and <tt>EventName</tt> are both case-insensitive. <tt>PropertyName</tt> can be a property or subproperty name (e.g. <tt>Font.Name</tt>). Note, <tt>PropertyValue</tt> will be HTML-decoded when assigned to the corresponding property. Content enclosed between the opening and closing component tag are normally treated the body of the component.
 </p>
 <p>
 It is required that component tags nest properly with each other and an opening component tag be paired with a closing tag, similar to that in XML. The following shows a component tag specifying the <tt>Text</tt> property and <tt>Click</tt> event of a button control,
-<pre class="source">
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TButton Text="Register" Click="registerUser" />
-</pre>
+</com:TTextHighlighter>
 </p>
 <p>
 To deal conveniently with properties taking take big trunk of initial data, the following property initialization tag is introduced,
-<pre class="source">
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;prop:PropertyName&gt;
 PropertyValue
 &lt;/prop:PropertyName&gt;
-</pre>
+</com:TTextHighlighter>
 It is equivalent to <tt>...PropertyName="PropertyValue"...</tt> in a component tag. Property initialization tags must be directly enclosed between the corresponding opening and closing component tag.
 </p>
 
 <a name="tct" />
 <h2>Template Control Tags</h2>
 A template control tag is used to configure the initial property values of the control owning the template. Its format is as follows,
-<pre class="source">
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;%@ PropertyName="PropertyValue" ... %&gt;
-</pre>
+</com:TTextHighlighter>
 Like in component tags, <tt>PropertyName</tt> is case-insensitive and can be a property or subproperty name.
 </p>
 <p>
@@ -55,7 +55,7 @@ Template control tag is optional in a template. Each template can contain at mos
 <h2>Comment Tags</h2>
 <p>
 Comment tags are used to put comments in the template or the ultimate rendering result. There are two types of comment tags. One is like that in HTML and will be displayed to the end-users. The other only appear in a template and will be stripped out when the template is instantiated and displayed to the end-users. The format of these two comment tags is as follows,
-<pre class="source">
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;!--
 Comments VISIBLE to end-users
 --&gt;
@@ -63,7 +63,7 @@ Comments VISIBLE to end-users
 &lt;!
 Comments INVISIBLE to end-users
 !&gt;
-</pre>
+</com:TTextHighlighter>
 </p>
 
 </com:TContent>

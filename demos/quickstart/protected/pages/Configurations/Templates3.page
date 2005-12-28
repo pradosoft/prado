@@ -5,11 +5,11 @@
 <h2>Dynamic Property Tags</h2>
 <p>
 Dynamic property tags are very similar to dynamic content tags, except that they are applied to component properties. The purpose of dynamic property tags is to allow more versatile component property configuration. Note, you are not required to use dynamic property tags because what can be done using dynamic property tags can also be done in PHP code. However, using dynamic property tags bring you much more convenience at accomplishing the same tasks. The basic usage of dynamic property tags is as follows,
-<pre class="source">
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:ComponentType PropertyName=DynamicPropertyTag ...&gt;
 body content
 &lt;/com:ComponentType&gt;
-</pre>
+</com:TTextHighlighter>
 where you may enclose <tt>DynamicPropertyTag</tt> within single or double quotes for better readability.
 </p>
 <p>
@@ -20,13 +20,13 @@ We now introduce the available types of dynamic property tags that may be used i
 <h3>Expression Tags</h3>
 <p>
 An expression tag represents a PHP expression that is evaluated when the template is being instantiated. The expression evaluation result is assigned to the corresponding component property. The format of expression tags is as follows,
-<pre class="source">
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;%= PhpExpression %&gt;
-</pre>
+</com:TTextHighlighter>
 In the expression, <tt>$this</tt> refers to the component specified by the component tag. The following example specifies a <tt>TLabel</tt> control whose <tt>Text</tt> property is initialized as the current page title when the <tt>TLabel</tt> control is being constructed,
-<pre class="source">
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TLabel Text=&lt;%= $this-&gt;Page-&gt;Title %&gt; /&gt;
-</pre>
+</com:TTextHighlighter>
 </p>
 <p>
 Note, unlike dynamic content tags, the expressions tags for component properties are evaluated when the components are being constructed, while for the dynamic content tags, the expressions are evaluated when the controls are being rendered.
@@ -39,18 +39,18 @@ Databind tags are similar to expression tags, except that the expressions are ev
 </p>
 <p>
 The format of databind tags is as follows,
-<pre class="source">
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;%# PhpExpression %&gt;
-</pre>
+</com:TTextHighlighter>
 </p>
 
 <a name="pt" />
 <h3>Parameter Tags</h3>
 <p>
 Parameter tags are used to assign application parameter values to the corresponding component properties. The format of parameter tags is as follows,
-<pre class="source">
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;%$ ParameterName %&gt;
-</pre>
+</com:TTextHighlighter>
 Note, application parameters are usually defined in application configurations or page directory configurations. The parameters are evaluated when the template is instantiated.
 </p>
 
@@ -61,9 +61,9 @@ Asset tags are used to publish private files and assign the corresponding the UR
 </p>
 <p>
 The format of asset tags is as follows,
-<pre class="source">
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;%~ LocalFileName %&gt;
-</pre>
+</com:TTextHighlighter>
 where <tt>LocalFileName</tt> refers to a file path that is relative to the directory containing the current template file. The file path can be a single file or a directory. If the latter, the content in the whole directory will be made accessible by end-users.
 </p>
 <p>

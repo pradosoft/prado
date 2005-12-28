@@ -7,7 +7,7 @@ A component is an instance of <tt>TComponent</tt> or its child class. The base c
 <h2>Component Properties</h2>
 <p>
 A component property can be viewed as a public variable describing a specific aspect of the component, such as the background color, the font size, etc. A property is defined by the existence of a getter and/or a setter method in the component class. For example, in <tt>TControl</tt>, we define its <tt>ID</tt> property using the following getter and setter methods,
-<pre class="source">
+<com:TTextHighlighter Language="php" CssClass="source">
 class TControl extends TComponent {
     public function getID() {
         ...
@@ -16,7 +16,7 @@ class TControl extends TComponent {
         ...
     }
 }
-</pre>
+</com:TTextHighlighter>
 </p>
 <p>
 To get or set the <tt>ID</tt> property, do as follows, just like working with a variable,
@@ -58,20 +58,20 @@ Component events are special properties that take method names as their values. 
 </p>
 <p>
 A component event is defined by the existence of an <tt>on</tt>-method. For example, in <tt>TButton</tt>, we have
-<pre class="source">
+<com:TTextHighlighter Language="php" CssClass="source">
 class TButton extends TWebControl {
     public function onClick($param) {
         ...
     }
 }
-</pre>
+</com:TTextHighlighter>
 This defines an event named <tt>Click</tt>, and a handler can be attached to the event using one of the following ways,
-<pre class="source">
+<com:TTextHighlighter Language="php" CssClass="source">
 $button-&gt;Click=$callback;
 $button-&gt;Click-&gt;add($callback);
 $button-&gt;Click[]=$callback;
 $button-&gt;attachEventHandler('Click',$callback);
-</pre>
+</com:TTextHighlighter>
 where <tt>$callback</tt> refers to a valid PHP callback (e.g. a function name, a class method <tt>array($object,'method')</tt>, etc.)
 </p>
 
