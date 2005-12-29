@@ -8,10 +8,26 @@
 </p>
 <com:RunBar PagePath="Controls.Samples.Label" />
 
+<h2>THyperLink</h2>
+
+<h2>TImage</h2>
+
+<h2>TPanel</h2>
+
 <h2>TTextBox</h2>
 <p>
 <tt>TTextBox</tt> displays a text box on a Web page. The content in the text box is determined by the <tt>Text</tt> property. You can create a <tt>SingleLine</tt>, a <tt>MultiLine</tt>, or a <tt>Password</tt> text box by setting the <tt>TextMode</tt> property. The <tt>Rows</tt> and <tt>Columns</tt> properties specify their dimensions. If <tt>AutoPostBack</tt> is true, changing the content in the text box and then moving the focus out of it will cause postback action.
 </p>
 <com:RunBar PagePath="Controls.Samples.TextBox" />
+
+<h2>TButton</h2>
+
+<h2>TLinkButton</h2>
+
+<h2>TImageButton</h2>
+
+<h2>TCheckBox</h2>
+
+<h2>TRadioButton</h2>
 
 </com:TContent>

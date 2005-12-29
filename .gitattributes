@@ -44,7 +44,6 @@ demos/quickstart/protected/pages/Controls/Samples/TextBox.page -text
 demos/quickstart/protected/pages/Controls/Samples/TextBox.php -text
 demos/quickstart/protected/pages/Controls/Samples/config.xml -text
 demos/quickstart/protected/pages/Controls/Simple.page -text
-demos/quickstart/protected/pages/Controls/Simple1.page -text
 demos/quickstart/protected/pages/Fundamentals/Applications.page -text
 demos/quickstart/protected/pages/Fundamentals/Architecture.page -text
 demos/quickstart/protected/pages/Fundamentals/Components.page -text
