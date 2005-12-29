@@ -83,10 +83,8 @@ class THttpSession extends TModule
 	 * If AutoStart is true, the session will be started.
 	 * @param TXmlElement module configuration
 	 */
-	public function init($config=null)
+	public function init($config)
 	{
-		parent::init($config);
-
 		if($this->_autoStart)
 			session_start();
 		$this->_initialized=true;

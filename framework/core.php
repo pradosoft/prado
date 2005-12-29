@@ -58,7 +58,7 @@ interface IModule
 	 * Initializes the module.
 	 * @param TXmlElement the configuration for the module
 	 */
-	public function init($configuration=null);
+	public function init($config);
 	/**
 	 * @return string ID of the module
 	 */
@@ -85,7 +85,7 @@ interface IService
 	 * Initializes the service.
 	 * @param TXmlElement the configuration for the service
 	 */
-	public function init($configuration=null);
+	public function init($config);
 	/**
 	 * @return string ID of the service
 	 */
@@ -332,7 +332,7 @@ abstract class TModule extends TComponent implements IModule
 	 * This method is required by IModule and is invoked by application.
 	 * @param TXmlElement module configuration
 	 */
-	public function init($config=null)
+	public function init($config)
 	{
 	}
 
@@ -376,7 +376,7 @@ abstract class TService extends TComponent implements IService
 	 * This method is required by IService and is invoked by application.
 	 * @param TXmlElement module configuration
 	 */
-	public function init($config=null)
+	public function init($config)
 	{
 	}
 

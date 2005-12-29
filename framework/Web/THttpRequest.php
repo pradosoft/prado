@@ -72,9 +72,8 @@ class THttpRequest extends TModule
 	 * This method is required by IModule and is invoked by application.
 	 * @param TXmlElement module configuration
 	 */
-	public function init($config=null)
+	public function init($config)
 	{
-		parent::init($config);
 		// Info about server variables:
 		// PHP_SELF contains real URI (w/ path info, w/o query string)
 		// SCRIPT_NAME is the real URI for the requested script (w/o path info and query string)

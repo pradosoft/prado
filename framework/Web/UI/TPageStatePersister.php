@@ -9,9 +9,8 @@ class TPageStatePersister extends TModule implements IStatePersister
 	 * This method is required by IModule interface.
 	 * @param TXmlElement module configuration
 	 */
-	public function init($config=null)
+	public function init($config)
 	{
-		parent::init($config);
 		$this->getService()->setPageStatePersister($this);
 	}
 

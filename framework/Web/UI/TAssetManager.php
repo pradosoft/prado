@@ -73,10 +73,8 @@ class TAssetManager extends TModule
 	 * This method is required by IModule and is invoked by application.
 	 * @param TXmlElement module configuration
 	 */
-	public function init($config=null)
+	public function init($config)
 	{
-		parent::init($config);
-
 		$application=$this->getApplication();
 		if($this->_basePath===null)
 			$this->_basePath=dirname($application->getRequest()->getPhysicalApplicationPath()).'/'.self::DEFAULT_BASEPATH;

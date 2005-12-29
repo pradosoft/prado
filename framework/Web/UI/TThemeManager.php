@@ -60,9 +60,8 @@ class TThemeManager extends TModule
 	 * This method is required by IModule and is invoked by application.
 	 * @param TXmlElement module configuration
 	 */
-	public function init($config=null)
+	public function init($config)
 	{
-		parent::init($config);
 		$this->_initialized=true;
 		$this->getService()->setThemeManager($this);
 	}

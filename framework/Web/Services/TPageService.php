@@ -144,10 +144,8 @@ class TPageService extends TService
 	 * This method is required by IService interface and is invoked by application.
 	 * @param TXmlElement service configuration
 	 */
-	public function init($config=null)
+	public function init($config)
 	{
-		parent::init($config);
-
 		$application=$this->getApplication();
 
 		$application->setPageService($this);
@@ -288,7 +286,7 @@ class TPageService extends TService
 		if(!$this->_templateManager)
 		{
 			$this->_templateManager=new TTemplateManager;
-			$this->_templateManager->init();
+			$this->_templateManager->init(null);
 		}
 		return $this->_templateManager;
 	}
@@ -309,7 +307,7 @@ class TPageService extends TService
 		if(!$this->_assetManager)
 		{
 			$this->_assetManager=new TAssetManager;
-			$this->_assetManager->init();
+			$this->_assetManager->init(null);
 		}
 		return $this->_assetManager;
 	}
@@ -330,7 +328,7 @@ class TPageService extends TService
 		if(!$this->_themeManager)
 		{
 			$this->_themeManager=new TThemeManager;
-			$this->_themeManager->init();
+			$this->_themeManager->init(null);
 		}
 		return $this->_themeManager;
 	}
@@ -351,7 +349,7 @@ class TPageService extends TService
 		if(!$this->_pageStatePersister)
 		{
 			$this->_pageStatePersister=new TPageStatePersister;
-			$this->_pageStatePersister->init();
+			$this->_pageStatePersister->init(null);
 		}
 		return $this->_pageStatePersister;
 	}

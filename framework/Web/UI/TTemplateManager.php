@@ -44,10 +44,8 @@ class TTemplateManager extends TModule
 	 * It starts output buffer if it is enabled.
 	 * @param TXmlElement module configuration
 	 */
-	public function init($config=null)
+	public function init($config)
 	{
-		parent::init($config);
-
 		$this->getService()->setTemplateManager($this);
 	}
 

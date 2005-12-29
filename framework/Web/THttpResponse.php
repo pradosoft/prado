@@ -77,10 +77,8 @@ class THttpResponse extends TModule implements ITextWriter
 	 * It starts output buffer if it is enabled.
 	 * @param TXmlElement module configuration
 	 */
-	public function init($config=null)
+	public function init($config)
 	{
-		parent::init($config);
-
 		if($this->_bufferOutput)
 			ob_start();
 		$this->_initialized=true;

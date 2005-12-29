@@ -47,7 +47,7 @@
  * <code>
  * $cache=new TSqliteCache;  // TSqliteCache may also be loaded as a Prado application module
  * $cache->setDbFile($dbFilePath);
- * $cache->init();
+ * $cache->init(null);
  * $cache->add('object',$object);
  * $object2=$cache->get('object');
  * </code>
@@ -113,10 +113,8 @@ class TSqliteCache extends TModule implements ICache
 	 * @throws TConfigurationException if sqlite extension is not installed,
 	 *         DbFile is set invalid, or any error happens during creating database or cache table.
 	 */
-	public function init($config=null)
+	public function init($config)
 	{
-		parent::init($config);
-
 		if(!function_exists('sqlite_open'))
 			throw new TConfigurationException('sqlitecache_extension_required');
 		if($this->_file===null)

@@ -536,7 +536,7 @@ class TApplication extends TComponent
 		if(!$this->_pageService)
 		{
 			$this->_pageService=new TPageService;
-			$this->_pageService->init();
+			$this->_pageService->init(null);
 		}
 		return $this->_pageService;
 	}
@@ -559,7 +559,7 @@ class TApplication extends TComponent
 		if(!$this->_request)
 		{
 			$this->_request=new THttpRequest;
-			$this->_request->init();
+			$this->_request->init(null);
 		}
 		return $this->_request;
 	}
@@ -580,7 +580,7 @@ class TApplication extends TComponent
 		if(!$this->_response)
 		{
 			$this->_response=new THttpResponse;
-			$this->_response->init();
+			$this->_response->init(null);
 		}
 		return $this->_response;
 	}
@@ -601,7 +601,7 @@ class TApplication extends TComponent
 		if(!$this->_session)
 		{
 			$this->_session=new THttpSession;
-			$this->_session->init();
+			$this->_session->init(null);
 		}
 		return $this->_session;
 	}
@@ -622,7 +622,7 @@ class TApplication extends TComponent
 		if(!$this->_errorHandler)
 		{
 			$this->_errorHandler=new TErrorHandler;
-			$this->_errorHandler->init();
+			$this->_errorHandler->init(null);
 		}
 		return $this->_errorHandler;
 	}
@@ -643,7 +643,7 @@ class TApplication extends TComponent
 		if(!$this->_statePersister)
 		{
 			$this->_statePersister=new TApplicationStatePersister;
-			$this->_statePersister->init();
+			$this->_statePersister->init(null);
 		}
 		return $this->_statePersister;
 	}
@@ -1155,9 +1155,8 @@ class TApplicationStatePersister extends TModule implements IStatePersister
 	 * Initializes module.
 	 * @param TXmlElement module configuration (may be null)
 	 */
-	public function init($config=null)
+	public function init($config)
 	{
-		parent::init($config);
 		$this->getApplication()->setApplicationStatePersister($this);
 	}
 

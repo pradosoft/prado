@@ -227,10 +227,8 @@ class TUserManager extends TModule
 	 * It loads user/role information from the module configuration.
 	 * @param TXmlElement module configuration
 	 */
-	public function init($config=null)
+	public function init($config)
 	{
-		parent::init($config);
-
 		if($this->_userFile!==null)
 		{
 			if(is_file($this->_userFile))

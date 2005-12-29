@@ -63,10 +63,8 @@ class TAuthManager extends TModule
 	 * @param TXmlElement configuration for this module, can be null
 	 * @throws TConfigurationException if user manager does not exist or is not TUserManager
 	 */
-	public function init($config=null)
+	public function init($config)
 	{
-		parent::init($config);
-
 		if($this->_userManager===null)
 			throw new TConfigurationException('authmanager_usermanager_required');
 		$application=$this->getApplication();
