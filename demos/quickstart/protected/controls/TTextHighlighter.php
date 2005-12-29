@@ -43,20 +43,17 @@ class TTextHighlighter extends TWebControl
 		return $this->getViewState('LineNumbers', false);
 	}
 
-	public function getEnableEntities()
-	{
-		return $this->getViewState('Entities', false);
-	}
-
-	public function setEnableEntities($value)
-	{
-		$this->setViewState('Entities', TPropertyValue::ensureBoolean($value), false);
-	}
-
 	protected function onPreRender($writer)
 	{
 		parent::onPreRender($writer);
 		$this->registerTextHighlightStyleSheet();
+	}
+
+	public function addParsedObject($object)
+	{
+		if(is_string($object))
+			$object=html_entity_decode($object);
+		parent::addParsedObject($object);
 	}
 
 	protected function renderContents($writer)
@@ -86,8 +83,6 @@ class TTextHighlighter extends TWebControl
 	 */
 	protected function highlightText($text)
 	{
-		if(!$this->getEnableEntities())
-			$text = html_entity_decode($text);
 		$geshi = new GeSHi(trim($text), $this->getLanguage());
 		if($this->getEnableLineNumbers())
 			$geshi->enable_line_numbers(GESHI_NORMAL_LINE_NUMBERS);
