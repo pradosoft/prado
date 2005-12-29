@@ -9,27 +9,27 @@ When a user requests a page stored under <tt>&lt;BasePath&gt;/dir1/dir2</tt>, th
 </p>
 <p>
 The format of a page configuration file is as follows,
-<pre class="source">
-&lt;configuration&gt;
-  &lt;paths&gt;
-    &lt;alias id="AliasID" path="AliasPath" /&gt;
-    &lt;using namespace="Namespace" /&gt;
-  &lt;/paths&gt;
-  &lt;modules&gt;
-    &lt;module id="ModuleID" class="ModuleClass"  PropertyName="PropertyValue" ... /&gt;
-  &lt;/modules&gt;
-  &lt;authorization&gt;
-    &lt;allow pages="PageID1,PageID2" users="User1,User2" roles="Role1,Role2" verb="get" /&gt;
-    &lt;deny pages="PageID1,PageID2" users="User1,User2" roles="Role1,Role2" verb="post" /&gt;
-  &lt;/authorization&gt;
-  &lt;pages PropertyName="PropertyValue" ...&gt;
-    &lt;page id="PageID" PropertyName="PropertyValue" ... /&gt;
-  &lt;/pages&gt;
-  &lt;parameters&gt;
-    &lt;parameter id="ParameterID" class="ParameterClass" PropertyName="PropertyValue" ... /&gt;
-  &lt;/parameters&gt;
-&lt;/configuration&gt;
-</pre>
+<com:TTextHighlighter Language="xml" CssClass="source">
+<configuration>
+  <paths>
+    <alias id="AliasID" path="AliasPath" />
+    <using namespace="Namespace" />
+  </paths>
+  <modules>
+    <module id="ModuleID" class="ModuleClass"  PropertyName="PropertyValue" ... />
+  </modules>
+  <authorization>
+    <allow pages="PageID1,PageID2" users="User1,User2" roles="Role1,Role2" verb="get" />
+    <deny pages="PageID1,PageID2" users="User1,User2" roles="Role1,Role2" verb="post" />
+  </authorization>
+  <pages PropertyName="PropertyValue" ...>
+    <page id="PageID" PropertyName="PropertyValue" ... />
+  </pages>
+  <parameters>
+    <parameter id="ParameterID" class="ParameterClass" PropertyName="PropertyValue" ... />
+  </parameters>
+</configuration>
+</com:TTextHighlighter>
 The <tt>&lt;paths&gt;</tt>, <tt>&lt;modules&gt;</tt> and <tt>&lt;parameters&gt;</tt> are similar to those in an application configuration. The <tt>&lt;authorization&gt;</tt> specifies the authorization rules that apply to the current page directory and all its subdirectories. It will be explained in more detail in future sections. The <tt>&lt;pages&gt;</tt> element specifies the initial values for the properties of pages. Each <tt>&lt;page&gt;</tt> element specifies the initial property values for a particular page identified by the <tt>id</code attribute. Initial property values given in the <tt>&lt;pages&gt;</tt> element apply to all pages in the current directory and all its subdirectories.
 </p>
 

@@ -60,6 +60,7 @@ class ViewSource extends TPage
 		}
 
 		$this->SourceView->Text=highlight_string(file_get_contents($this->_fullPath),true);
+		//$this->SourceView->Text=file_get_contents($this->_fullPath);
 	}
 }
 

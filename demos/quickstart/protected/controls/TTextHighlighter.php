@@ -23,12 +23,12 @@ class TTextHighlighter extends TWebControl
 
 	public function getLanguage()
 	{
-		return $this->getViewState('Language', '');
+		return $this->getViewState('Language', 'php');
 	}
 
 	public function setLanguage($value)
 	{
-		$this->setViewState('Language', $value, '');
+		$this->setViewState('Language', $value, 'php');
 	}
 
 	public function setEnableLineNumbers($value)

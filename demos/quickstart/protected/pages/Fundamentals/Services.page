@@ -6,9 +6,9 @@ A service is an instance of a class implementing the <tt>IService</tt> interface
 </p>
 <p>
 A service is uniquely identified by its <tt>ID</tt> property. By default when <tt>THttpRequest</tt> is used as the <a href="?page=Fundamentals.Modules#request">request module</a>, GET variable names are used to identify which service a user is requesting. If a GET variable name is equal to some service <tt>ID</tt>, the request is considered for that service, and the value of the GET variable is passed as the service parameter. For page service, the name of the GET variable must be <tt>page</tt>. For example, the following URL requests for the <tt>Fundamentals.Services</tt> page,
-<pre class="source">
+<div class="source">
 http://hostname/index.php?page=Fundamentals.Services
-</pre>
+</div>
 </p>
 <p>
 Developers may implement additional services for their applications. To make a service available, configure it in <a href="?page=Configurations.AppConfig">application configurations</a>.
@@ -23,11 +23,11 @@ Pages may be organized into subdirectories under the <tt>BasePath</tt>. In each 
 </p>
 <p>
 Service parameter for the page service refers to the page being requested. A parameter like <tt>Fundamentals.Services</tt> refers to the <tt>Services</tt> page under the <tt>&lt;BasePath&gt;/Fundamentals</tt> directory. If such a parameter is absent in a request, a default page named <tt>Home</tt> is assumed. Using <tt>THttpRequest</tt> as the request module (default), the following URLs will request for <tt>Home</tt>, <tt>About</tt> and <tt>Register</tt> pages, respectively,
-<pre class="source">
-http://hostname/index.php
-http://hostname/index.php?page=About
+<div class="source">
+http://hostname/index.php<br/>
+http://hostname/index.php?page=About<br/>
 http://hostname/index.php?page=Users.Register
-</pre>
+</div>
 where the first example takes advantage of the fact that the page service is the default service and <tt>Home</tt> is the default page.
 </p>
 

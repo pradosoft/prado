@@ -86,13 +86,19 @@ h3 {
 }
 
 .source {
-	padding: 0 1em;
-	border-style:solid;
+	padding: 0.5em;
+	border-style:dotted;
 	border-width:1px;
 	border-color:#cccccc;
 	background-color:#ffffee;
 	font-family: "Courier New", Courier, mono;
+	margin-top: 0.2em;
 	margin-bottom: 0.5em;
+}
+
+.source pre {
+	font-family: "Courier New", Courier, mono;
+	margin: 0;
 }
 
 .runbar a:link, .runbar a:visited {

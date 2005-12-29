@@ -7,7 +7,7 @@ A component is an instance of <tt>TComponent</tt> or its child class. The base c
 <h2>Component Properties</h2>
 <p>
 A component property can be viewed as a public variable describing a specific aspect of the component, such as the background color, the font size, etc. A property is defined by the existence of a getter and/or a setter method in the component class. For example, in <tt>TControl</tt>, we define its <tt>ID</tt> property using the following getter and setter methods,
-<com:TTextHighlighter Language="php" CssClass="source">
+<com:TTextHighlighter CssClass="source">
 class TControl extends TComponent {
     public function getID() {
         ...
@@ -20,15 +20,15 @@ class TControl extends TComponent {
 </p>
 <p>
 To get or set the <tt>ID</tt> property, do as follows, just like working with a variable,
-<pre class="source">
-$id = $component-&gt;ID;
-$component-&gt;ID = $id;
-</pre>
+<com:TTextHighlighter CssClass="source">
+$id = $component->ID;
+$component->ID = $id;
+</com:TTextHighlighter>
 This is equivalent to the following,
-<pre class="source">
-$id = $component-&gt;getID();
-$component-&gt;setID( $id );
-</pre>
+<com:TTextHighlighter CssClass="source">
+$id = $component->getID();
+$component->setID( $id );
+</com:TTextHighlighter>
 </p>
 <p>
 A property is read-only if it has a getter method but no setter method. Since PHP method names are case-insensitive, property names are also case-insensitive. A component class inherits all its ancestor classes' properties.
@@ -40,15 +40,16 @@ A subproperty is a property of some object-typed property. For example, <tt>TWeb
 </p>
 <p>
 To get or set the <tt>Name</tt> subproperty, use the following method,
-<pre class="source">
+<com:TTextHighlighter CssClass="source">
 $name = $component-&gt;getSubProperty('Font.Name');
-$component-&gt;setSubProperty('Font.Name', $name);
-</pre>
+$component->setSubProperty('Font.Name', $name);
+</com:TTextHighlighter>
 This is equivalent to the following,
-<pre class="source">
-$name = $component-&gt;getFont()-&gt;getName();
+<com:TTextHighlighter CssClass="source">
+$name = $component->getFont()->getName();
 $component-&gt;getFont()-&gt;setName( $name );
-</pre>
+</com:TTextHighlighter>
+
 
 </p>
 
@@ -58,19 +59,19 @@ Component events are special properties that take method names as their values. 
 </p>
 <p>
 A component event is defined by the existence of an <tt>on</tt>-method. For example, in <tt>TButton</tt>, we have
-<com:TTextHighlighter Language="php" CssClass="source">
+<com:TTextHighlighter CssClass="source">
 class TButton extends TWebControl {
-    public function onClick($param) {
+    public function onClick( $param ) {
         ...
     }
 }
 </com:TTextHighlighter>
 This defines an event named <tt>Click</tt>, and a handler can be attached to the event using one of the following ways,
-<com:TTextHighlighter Language="php" CssClass="source">
-$button-&gt;Click=$callback;
-$button-&gt;Click-&gt;add($callback);
-$button-&gt;Click[]=$callback;
-$button-&gt;attachEventHandler('Click',$callback);
+<com:TTextHighlighter CssClass="source">
+$button->Click = $callback;
+$button->Click->add( $callback );
+$button->Click[] = $callback;
+$button->attachEventHandler( 'Click' , $callback );
 </com:TTextHighlighter>
 where <tt>$callback</tt> refers to a valid PHP callback (e.g. a function name, a class method <tt>array($object,'method')</tt>, etc.)
 </p>
@@ -81,20 +82,20 @@ A namespace refers to a logical grouping of some class names so that they can be
 </p>
 <p>
 A namespace in PRADO is considered as a directory containing one or several class files. A class may be specified without ambiguity using such a namespace followed by the class name. Each namespace in PRADO is specified in the following format,
-<pre class="source">
+<div class="source">
 PathAlias.Dir1.Dir2
-</pre>
+</div>
 where <tt>PathAlias</tt> is an alias of some directory, while <tt>Dir1</tt> and <tt>Dir2</tt> are subdirectories under that directory. A class named <tt>MyClass</tt> defined under <tt>Dir2</tt> may now be fully qualified as <tt>PathAlias.Dir1.Dir2.MyClass</tt>.
 </p>
 <p>
 To use a namespace in code, do as follows,
-<pre class="source">
+<com:TTextHighlighter CssClass="source">
 Prado::using('PathAlias.Dir1.Dir2.*');
-</pre>
+</com:TTextHighlighter>
 which appends the directory referred to by <tt>PathAlias.Dir1.Dir2</tt> into PHP include path so that classes defined under that directory may be instantiated without the namespace prefix. You may also include an individual class definition by
-<pre class="source">
+<com:TTextHighlighter CssClass="source">
 Prado::using('PathAlias.Dir1.Dir2.MyClass');
-</pre>
+</com:TTextHighlighter>
 which will include the class file if <tt>MyClass</tt> is not defined.
 </p>
 <p>
@@ -109,19 +110,19 @@ Component instantiation means creating instances of component classes. There are
 <h3>Dynamic Component Instantiation</h3>
 <p>
 Dynamic component instantiation means creating component instances in PHP code. It is the same as the commonly referred object creation in PHP. A component can be dynamically created using one of the following two methods in PHP,
-<pre class="source">
+<com:TTextHighlighter CssClass="source">
 $component = new ComponentClassName;
 $component = Prado::createComponent('ComponentType');
-</pre>
+</com:TTextHighlighter>
 where <tt>ComponentType</tt> refers to a class name or a type name in namespace format (e.g. <tt>System.Web.UI.TControl</tt>). The second approach is introduced to compensate for the lack of namespace support in PHP.
 </p>
 
 <h3>Static Component Instantiation</h3>
 <p>
 Static component instantiation is about creating components via <a href="?page=Configurations.Overview">configurations</a>. The actual creation work is done by the PRADO framework. For example, in an <a href="?page=Configurations.AppConfig">application configuration</a>, one can configure a module to be loaded when the application runs. The module is thus a static component created by the framework. Static component instantiation is more commonly used in <a href="?page=Configurations.Templates1">templates</a>. Every component tag in a template specifies a component that will be automatically created by the framework when the template is loaded. For example, in a page template, the following tag will lead to the creation of a <tt>TButton</tt> component on the page,
-<pre class="source">
+<com:TTextHighlighter CssClass="source">
 &lt;com:TButton Text="Register" /&gt;
-</pre>
+</com:TTextHighlighter>
 </p>
 
 </com:TContent>

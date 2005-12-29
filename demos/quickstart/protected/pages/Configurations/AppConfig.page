@@ -6,32 +6,32 @@ Application configurations are used to specify the global behavior of an applica
 </p>
 <p>
 Configuration for an application is stored in an XML file named <tt>application.xml</tt>, which should be located under the application base path. Its format is shown in the following,
-<pre class="source">
-&lt;application PropertyName="PropertyValue" ...&gt;
-  &lt;paths&gt;
-    &lt;alias id="AliasID" path="AliasPath" /&gt;
-    &lt;using namespace="Namespace" /&gt;
-  &lt;/paths&gt;
-  &lt;modules&gt;
-    &lt;module id="ModuleID" class="ModuleClass"  PropertyName="PropertyValue" ... /&gt;
-  &lt;/modules&gt;
-  &lt;services&gt;
-    &lt;service id="ServiceID" class="ServiceClass" PropertyName="PropertyValue" ... /&gt;
-  &lt;/services&gt;
-  &lt;parameters&gt;
-    &lt;parameter id="ParameterID" class="ParameterClass" PropertyName="PropertyValue" ... /&gt;
-  &lt;/parameters&gt;
-&lt;/application&gt;
-</pre>
+<com:TTextHighlighter Language="xml" CssClass="source">
+<application PropertyName="PropertyValue" ...>
+  <paths>
+    <alias id="AliasID" path="AliasPath" />
+    <using namespace="Namespace" />
+  </paths>
+  <modules>
+    <module id="ModuleID" class="ModuleClass"  PropertyName="PropertyValue" ... />
+  </modules>
+  <services>
+    <service id="ServiceID" class="ServiceClass" PropertyName="PropertyValue" ... />
+  </services>
+  <parameters>
+    <parameter id="ParameterID" class="ParameterClass" PropertyName="PropertyValue" ... />
+  </parameters>
+</application>
+</com:TTextHighlighter>
 <ul>
 <li>The outermost element <tt>&lt;application&gt;</tt> corresponds to the <tt>TApplication</tt> instance. The <tt>PropertyName="PropertyValue"</tt> pairs specify the initial values for the properties of <tt>TApplication</tt>.</li>
 <li>The <tt>&lt;paths&gt;</tt> element contains the definition of path aliases and the PHP inclusion paths for the application. Each path alias is specified via an <tt>&lt;alias&gt;</tt> whose <tt>path</tt> attribute takes an absolute path or a path relative to the directory containing the application configuration file. The <tt>&lt;using&gt;</tt> element specifies a particular path (in terms of namespace) to be appended to the PHP include paths when the application runs. PRADO defines two default aliases: <tt>System</tt> and <tt>Application</tt>. The former refers to the PRADO framework root directory, and the latter refers to the directory containing the application configuration file.</li>
 <li>The <tt>&lt;modules&gt;</tt> element contains the configurations for a list of modules. Each module is specified by a <tt>&lt;module&gt;</tt> element. Each module is uniquely identified by the <tt>id</tt> attribute and is of type <tt>class</tt>. The <tt>PropertyName="PropertyValue"</tt> pairs specify the initial values for the properties of the module.</li>
 <li>The <tt>&lt;services&gt;</tt> element is similar to the <tt>&lt;modules&gt;</tt> element. It mainly specifies the services provided by the application.</li>
 <li>The <tt>&lt;parameters&gt;</tt> element contains a list of application-level parameters that are accessible from anywhere in the application. You may specify component-typed parameters like specifying modules, or you may specify string-typed parameters which take a simpler format as follows,
-<pre class="source">
-&lt;parameter id="ParameterID"&gt;ParameterValue&lt;/parameter&gt;
-</pre>
+<com:TTextHighlighter Language="xml" CssClass="source">
+<parameter id="ParameterID">ParameterValue</parameter>
+</com:TTextHighlighter>
 </li>
 </ul>
 By default without explicit configuration, a PRADO application when running will load a few core modules, such as <tt>THttpRequest</tt>, <tt>THttpResponse</tt>, etc. It will also provide the <tt>TPageService</tt> as a default service. Configuration and usage of these modules and services are covered in individual sections of this tutorial. Note, if your application takes default settings for these modules and service, you do not need to provide an application configuration. However, if these modules or services are not sufficient, or you want to change their behavior by configuring their property values, you will need an application configuration.
