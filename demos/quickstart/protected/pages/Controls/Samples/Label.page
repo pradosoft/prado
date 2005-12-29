@@ -1,3 +1,30 @@
 <com:TContent ID="body">
-test
+
+<h1>TLabel Samples</h1>
+
+<div class="samplepanel">
+<com:TLabel
+	Text="This is a label with customized color and font."
+	ForeColor="yellow"
+	BackColor="blue"
+	Font.Name="Arial"
+	Font.Size="12pt"
+/>
+</div>
+
+<div class="samplepanel">
+<com:TLabel
+	Text="This is a form label associated with the TTextBox control below."
+	AssociatedControlID="test"
+/>
+<br/>
+<com:TTextBox ID="test" />
+</div>
+
+<div class="samplepanel">
+<com:TLabel>
+This is a label with empty Text property and <b>nonempty body</b>.
+</com:TLabel>
+</div>
+
 </com:TContent>

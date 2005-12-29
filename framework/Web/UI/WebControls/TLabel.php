@@ -18,7 +18,7 @@
  * TLabel will render the contents enclosed within its component tag
  * if {@link setText Text} is empty.
  * To use TLabel as a form label, associate it with a control by setting the
- * {@link setAssociateControlID AssociateControlID} property.
+ * {@link setAssociatedControlID AssociatedControlID} property.
  * The associated control must be locatable within the label's naming container.
  *
  * Note, {@link setText Text} will NOT be encoded for rendering.

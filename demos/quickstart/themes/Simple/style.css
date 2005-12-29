@@ -146,12 +146,18 @@ tt {
 	border-bottom: 1px dotted silver;
 }
 
-.samplebar {
+.sampleheader {
 	background:#00487D;
 	color:white;
 	padding:3px;
 }
 
-.samplebar a {
+.sampleheader a {
 	color:white;
+}
+
+.samplepanel {
+	margin: 10px;
+	border: 1px solid silver;
+	padding: 10px;
 }

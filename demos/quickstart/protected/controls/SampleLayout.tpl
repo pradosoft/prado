@@ -8,20 +8,20 @@
 <body>
 <com:TForm>
 
-<div class="samplebar">
+<div class="sampleheader">
+
 <div style="float:left">
 <a href="?">PRADO QuickStart Tutorial</a> Sample
 </div>
+
 <div style="text-align:right">
 Copyright &copy; 2005 <a href="http://www.pradosoft.com">PradoSoft</a>
 </div>
-</div>
-</div>
-<div style="margin:15px;">
-<div>
-<com:TContentPlaceHolder ID="body" />
+
 </div>
 
+<div style="margin:15px;">
+<com:TContentPlaceHolder ID="body" />
 </div>
 
 </com:TForm>
