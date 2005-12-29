@@ -2,6 +2,8 @@
 
 require_once(dirname(__FILE__).'/Highlighter/geshi.php');
 
+Prado::using('System.IO.TTextWriter');
+
 /**
  * ${classname}
  *
@@ -51,18 +53,17 @@ class TTextHighlighter extends TWebControl
 		$this->setViewState('Entities', TPropertyValue::ensureBoolean($value), false);
 	}
 
-	/**
-	 * Parse the body string using GeSHi to highlight the contents.
-	 */
-	public function addParsedObject($object)
+	protected function onPreRender($writer)
 	{
-		if(is_string($object))
-		{
-			$this->registerTextHighlightStyleSheet();
-			$this->getControls()->add($this->getTextHighlight($object));
-		}
-		else
-			$this->getControls()->add($object);
+		parent::onPreRender($writer);
+		$this->registerTextHighlightStyleSheet();
+	}
+
+	protected function renderContents($writer)
+	{
+		$textWriter=new TTextWriter;
+		parent::renderContents(new THtmlWriter($textWriter));
+		$writer->write($this->highlightText($textWriter->flush()));
 	}
 
 	/**
@@ -83,7 +84,7 @@ class TTextHighlighter extends TWebControl
 	 * @param string text to highlight.
 	 * @return string highlighted text.
 	 */
-	protected function getTextHighlight($text)
+	protected function highlightText($text)
 	{
 		if(!$this->getEnableEntities())
 			$text = html_entity_decode($text);

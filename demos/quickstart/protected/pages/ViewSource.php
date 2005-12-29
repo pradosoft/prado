@@ -24,9 +24,10 @@ class ViewSource extends TPage
 		parent::onLoad($param);
 		$path=$this->Request->Items['path'];
 		$fullPath=realpath($this->Service->BasePath.'/'.$path);
+		$fileExt=$this->getFileExtension($fullPath);
 		if($fullPath!==false && is_file($fullPath) && strpos($fullPath,$this->Service->BasePath)!==false)
 		{
- 			if($this->isFileTypeAllowed($this->getFileExtension($fullPath)))
+ 			if($this->isFileTypeAllowed($fileExt))
  			{
 				$this->_fullPath=strtr($fullPath,'\\','/');
 				$this->_path=strtr(substr($fullPath,strlen($this->Service->BasePath)),'\\','/');
@@ -59,8 +60,24 @@ class ViewSource extends TPage
 			$this->SourceList->Text=$str;
 		}
 
-		$this->SourceView->Text=highlight_string(file_get_contents($this->_fullPath),true);
-		//$this->SourceView->Text=file_get_contents($this->_fullPath);
+		switch($fileExt)
+		{
+			case 'page' :
+			case 'tpl' :
+				$this->Highlighter->Language='prado';
+				break;
+			case 'php' :
+				$this->Highlighter->Language='php';
+				break;
+			case 'xml' :
+				$this->Highlighter->Language='xml';
+				break;
+			default :
+				$this->Highlighter->Language='html';
+				break;
+		}
+
+		$this->SourceView->Text=file_get_contents($this->_fullPath);
 	}
 }
 

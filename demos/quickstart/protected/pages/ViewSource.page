@@ -10,7 +10,7 @@
 <com:TLiteral ID="SourceList" />
 </div>
 <div id="sourceView">
-<com:TTextHighlighter Language="prado" CssClass="source">
+<com:TTextHighlighter ID="Highlighter" CssClass="source">
 <com:TLiteral ID="SourceView" />
 </com:TTextHighlighter>
 </div>
