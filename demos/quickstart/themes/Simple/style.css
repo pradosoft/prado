@@ -163,9 +163,10 @@ tt {
 }
 
 .samplepanel {
-	margin: 10px;
+	margin: 0px;
 	border: 1px solid silver;
 	padding: 10px;
+	margin-bottom:10px;
 }
 
 .sampletitle {

@@ -1149,6 +1149,42 @@ class TControl extends TComponent
 	}
 
 	/**
+	 * Broadcasts an event.
+	 * The event will be sent to all controls on the current page hierarchy.
+	 * If this control is not on a page, the event will be sent to all its
+	 * child controls recursively.
+	 * Controls implementing {@link IBroadcastEventReceiver} will get a chance
+	 * to respond to the event.
+	 * @param TControl sender of the event
+	 * @param TBroadcastEventParameter event parameter
+	 */
+	protected function broadcastEvent($sender,TBroadCastEventParameter $param)
+	{
+		$origin=(($page=$this->getPage())===null)?$this:$page;
+		$origin->broadcastEventInternal($sender,$param);
+	}
+
+	/**
+	 * Recursively broadcasts an event.
+	 * This method should only be used by framework developers.
+	 * @param TControl sender of the event
+	 * @param TBroadcastEventParameter event parameter
+	 */
+	final protected function broadcastEventInternal($sender,$param)
+	{
+		if($this instanceof IBroadcastEventReceiver)
+			$this->broadcastEventReceived($sender,$param);
+		if($this->getHasControls())
+		{
+			foreach($this->_rf[self::RF_CONTROLS] as $control)
+			{
+				if($control instanceof TControl)
+					$control->broadcastEventInternal($sender,$param);
+			}
+		}
+	}
+
+	/**
 	 * Renders the control.
 	 * Only when the control is visible will the control be rendered.
 	 * @param THtmlWriter the writer used for the rendering purpose
@@ -1587,9 +1623,95 @@ interface IValidatable
 }
 
 /**
+ * IBroadcastEventReceiver interface
+ *
+ * If a control wants to check broadcast event, it must implement this interface.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI
+ * @since 3.0
+ */
+interface IBroadcastEventReceiver
+{
+	/**
+	 * Handles broadcast event.
+	 * This method is invoked automatically when an event is broadcasted.
+	 * Within this method, you may check the event name given in
+	 * the event parameter to determine  whether you should respond to
+	 * this event.
+	 * @param TControl sender of the event
+	 * @param TBroadCastEventParameter event parameter
+	 */
+	public function broadcastEventReceived($sender,$param);
+}
+
+/**
+ * TBroadcastEventParameter class
+ *
+ * TBroadcastEventParameter encapsulates the parameter data for
+ * events that are broadcasted. The name of of the event is specified via
+ * {@link setName Name} property while the event parameter is via
+ * {@link setParameter Parameter} property.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI
+ * @since 3.0
+ */
+class TBroadcastEventParameter extends TEventParameter
+{
+	private $_name;
+	private $_param;
+
+	/**
+	 * Constructor.
+	 * @param string name of the broadcast event
+	 * @param mixed parameter of the broadcast event
+	 */
+	public function __construct($name='',$parameter=null)
+	{
+		$this->_name=$name;
+		$this->_param=$parameter;
+	}
+
+	/**
+	 * @return string name of the broadcast event
+	 */
+	public function getName()
+	{
+		return $this->_name;
+	}
+
+	/**
+	 * @param string name of the broadcast event
+	 */
+	public function setName($value)
+	{
+		$this->_name=$value;
+	}
+
+	/**
+	 * @return mixed parameter of the broadcast event
+	 */
+	public function getParameter()
+	{
+		return $this->_param;
+	}
+
+	/**
+	 * @param mixed parameter of the broadcast event
+	 */
+	public function setParameter($value)
+	{
+		$this->_param=$value;
+	}
+}
+
+/**
  * TCommandEventParameter class
  *
- * TCommandEventParameter encapsulates the parameter data for <b>OnCommand</b>
+ * TCommandEventParameter encapsulates the parameter data for <b>Command</b>
  * event of button controls. You can access the name of the command via
  * <b>Name</b> property, and the parameter carried with the command via
  * <b>Parameter</b> property.
