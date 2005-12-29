@@ -120,7 +120,7 @@ where <tt>ComponentType</tt> refers to a class name or a type name in namespace 
 <h3>Static Component Instantiation</h3>
 <p>
 Static component instantiation is about creating components via <a href="?page=Configurations.Overview">configurations</a>. The actual creation work is done by the PRADO framework. For example, in an <a href="?page=Configurations.AppConfig">application configuration</a>, one can configure a module to be loaded when the application runs. The module is thus a static component created by the framework. Static component instantiation is more commonly used in <a href="?page=Configurations.Templates1">templates</a>. Every component tag in a template specifies a component that will be automatically created by the framework when the template is loaded. For example, in a page template, the following tag will lead to the creation of a <tt>TButton</tt> component on the page,
-<com:TTextHighlighter CssClass="source">
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TButton Text="Register" /&gt;
 </com:TTextHighlighter>
 </p>

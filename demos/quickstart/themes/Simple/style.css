@@ -167,3 +167,10 @@ tt {
 	border: 1px solid silver;
 	padding: 10px;
 }
+
+.sampletitle {
+	width: 100%;
+	border-bottom:1px solid silver;
+	font-weight:bold;
+	margin-bottom:5px;
+}

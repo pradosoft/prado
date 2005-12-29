@@ -100,26 +100,33 @@ $language_data = array (
 		),
 	'REGEXPS' => array(
 		0 => array(
-			GESHI_SEARCH => '((&lt;)(com:)([a-z0-9\\\.]+)(\s*))',
-			GESHI_REPLACE => '\\2<a class="api" href="link_to_api?\\4">\\3\\4</a>\\5',
+			GESHI_SEARCH => '&lt;(com:[a-z0-9\\\.]+)',
+			GESHI_REPLACE => '\\1',
 			GESHI_MODIFIERS => 'i',
-			GESHI_BEFORE => '',
+			GESHI_BEFORE => '&lt;',
 			GESHI_AFTER => ''
 			),
 		1 => array(
-			GESHI_SEARCH => '(&lt;/com:[a-z0-9\-]+\s*&gt;)',
+			GESHI_SEARCH => '&lt;/(com:[a-z0-9\-]+)',
 			GESHI_REPLACE => '\\1',
 			GESHI_MODIFIERS => 'i',
-			GESHI_BEFORE => '',
+			GESHI_BEFORE => '&lt;/',
 			GESHI_AFTER => ''
 			),
 		2 => array(
-			GESHI_SEARCH => '(&lt;/?prop:?([a-z0-9_]+)&gt;)',
+			GESHI_SEARCH => '(&lt;/?)(prop:[a-z0-9_]+&gt;)',
+			GESHI_REPLACE => '\\2',
+			GESHI_MODIFIERS => 'i',
+			GESHI_BEFORE => '\\1',
+			GESHI_AFTER => ''
+			),
+		3 => array(
+			GESHI_SEARCH => '((/)?&gt;)',
 			GESHI_REPLACE => '\\1',
 			GESHI_MODIFIERS => 'i',
 			GESHI_BEFORE => '',
 			GESHI_AFTER => ''
-			),
+			)
 		),
 	'STRICT_MODE_APPLIES' => GESHI_ALWAYS,
 	'SCRIPT_DELIMITERS' => array(

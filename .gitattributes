@@ -40,6 +40,8 @@ demos/quickstart/protected/pages/Configurations/Templates3.page -text
 demos/quickstart/protected/pages/Construction.page -text
 demos/quickstart/protected/pages/Controls/Overview.page -text
 demos/quickstart/protected/pages/Controls/Samples/Label.page -text
+demos/quickstart/protected/pages/Controls/Samples/TextBox.page -text
+demos/quickstart/protected/pages/Controls/Samples/TextBox.php -text
 demos/quickstart/protected/pages/Controls/Samples/config.xml -text
 demos/quickstart/protected/pages/Controls/Simple.page -text
 demos/quickstart/protected/pages/Controls/Simple1.page -text

@@ -43,6 +43,14 @@
 class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 {
 	/**
+	 * Default number of rows (for MultiLine text box)
+	 */
+	const DEFAULT_ROWS=4;
+	/**
+	 * Default number of columns (for MultiLine text box)
+	 */
+	const DEFAULT_COLUMNS=20;
+	/**
 	 * @var array list of auto complete types
 	 */
 	private static $_autoCompleteTypes=array('BusinessCity','BusinessCountryRegion','BusinessFax','BusinessPhone','BusinessState','BusinessStreetAddress','BusinessUrl','BusinessZipCode','Cellular','Company','Department','Disabled','DisplayName','Email','FirstName','Gender','HomeCity','HomeCountryRegion','HomeFax','Homepage','HomePhone','HomeState','HomeStreetAddress','HomeZipCode','JobTitle','LastName','MiddleName','None','Notes','Office','Pager','Search');
@@ -69,9 +77,9 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 		if(($textMode=$this->getTextMode())==='MultiLine')
 		{
 			if(($rows=$this->getRows())<=0)
-				$rows=2;
+				$rows=self::DEFAULT_ROWS;
 			if(($cols=$this->getColumns())<=0)
-				$cols=20;
+				$cols=self::DEFAULT_COLUMNS;
 			$writer->addAttribute('rows',"$rows");
 			$writer->addAttribute('cols',"$cols");
 			if(!$this->getWrap())
@@ -119,6 +127,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 			$writer->addAttribute('disabled','disabled');
 		if($this->getAutoPostBack() && $page->getClientSupportsJavaScript())
 		{
+			$writer->addAttribute('id',$this->getClientID());
 			$options = $this->getAutoPostBackOptions();
 			$scripts = $this->getPage()->getClientScript();
 			$postback = $scripts->getPostBackEventReference($this,'',$options,false);
@@ -337,16 +346,16 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	 */
 	public function getRows()
 	{
-		return $this->getViewState('Rows',0);
+		return $this->getViewState('Rows',self::DEFAULT_ROWS);
 	}
 
 	/**
 	 * Sets the number of rows displayed in a multiline text box.
-	 * @param integer the number of rows,  set it 0 to clear the setting
+	 * @param integer the number of rows
 	 */
 	public function setRows($value)
 	{
-		$this->setViewState('Rows',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('Rows',TPropertyValue::ensureInteger($value),self::DEFAULT_ROWS);
 	}
 
 	/**

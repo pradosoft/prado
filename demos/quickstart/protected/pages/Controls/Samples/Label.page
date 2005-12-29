@@ -3,28 +3,43 @@
 <h1>TLabel Samples</h1>
 
 <div class="samplepanel">
+
 <com:TLabel
 	Text="This is a label with customized color and font."
 	ForeColor="yellow"
 	BackColor="blue"
 	Font.Name="Arial"
-	Font.Size="12pt"
+	Font.Size="14pt"
 />
+
 </div>
 
 <div class="samplepanel">
+
 <com:TLabel
 	Text="This is a form label associated with the TTextBox control below."
 	AssociatedControlID="test"
 />
-<br/>
-<com:TTextBox ID="test" />
+
+<br/><com:TTextBox ID="test" />
+
 </div>
 
 <div class="samplepanel">
-<com:TLabel>
+
+<com:TLabel ForeColor="blue" Style="color:red;">
 This is a label with empty Text property and <b>nonempty body</b>.
 </com:TLabel>
+
+</div>
+
+<div class="samplepanel">
+
+<com:TLabel
+	Text="This is a disabled label."
+	Enabled="false"
+/>
+
 </div>
 
 </com:TContent>

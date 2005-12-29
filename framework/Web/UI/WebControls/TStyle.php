@@ -296,7 +296,7 @@ class TStyle extends TComponent
 			{
 				$arr=explode(':',$style);
 				if(isset($arr[1]) && trim($arr[0])!=='')
-					$writer->addStyleAttribute(trim($arr[0]),trim($arry[1]));
+					$writer->addStyleAttribute(trim($arr[0]),trim($arr[1]));
 			}
 		}
 		foreach($this->_data as $name=>$value)

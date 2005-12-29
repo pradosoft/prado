@@ -1,0 +1,81 @@
+<com:TContent ID="body">
+
+<h1>TTextBox Samples</h1>
+
+<div class="samplepanel">
+<div class="sampletitle">SingleLine and Password Text Boxes</div>
+
+Text box with default settings:
+<com:TTextBox />
+<br/>
+
+Password text box:
+<com:TTextBox TextMode="Password" />
+<br/>
+
+Text box with customized color, font, columns, maximum length:
+<com:TTextBox
+	Text="text"
+	ForeColor="yellow"
+	BackColor="blue"
+	Font.Size="14pt"
+	Columns="4"
+	MaxLength="6"
+/>
+<br/>
+
+Disabled text box:
+<com:TTextBox Text="disabled" Enabled="false" />
+<br/>
+
+Read-only text box:
+<com:TTextBox Text="read only" ReadOnly="true" />
+<br/>
+
+Auto postback text box:
+<com:TTextBox Text="change me" AutoPostBack="true" TextChanged="textChanged" />
+<br/>
+
+Text box's behavior upon postback:
+<com:TTextBox ID="TextBox1" Text="text" />
+<com:TButton Text="Submit" Click="submitText" />
+
+</div>
+
+<div class="samplepanel">
+<div class="sampletitle">MultiLine Text Boxes</div>
+
+Text box with default settings:<br/>
+<com:TTextBox TextMode="MultiLine" />
+<br/>
+
+Text box with customized dimensions, font and content:<br/>
+<com:TTextBox TextMode="MultiLine" Rows="6" Columns="60" Font.Italic="true">
+<prop:Text>
+This is a multiline text box.
+In HTML, it is displayed as a textarea.
+</prop:Text>
+</com:TTextBox>
+<br/>
+
+Disabled text box:<br/>
+<com:TTextBox
+	TextMode="MultiLine"
+	Text="disabled"
+	Enabled="false" />
+<br/>
+
+Read-only text box with text-wrapping disabled:<br/>
+<com:TTextBox
+	TextMode="MultiLine"
+	Text="This is a read-only text box with text-wrapping disabled."
+	ReadOnly="true"
+	Wrap="false"/>
+<br/>
+
+Auto postback text box:<br/>
+<com:TTextBox TextMode="MultiLine" Text="change me" AutoPostBack="true" TextChanged="textChanged" />
+<br/>
+</div>
+
+</com:TContent>
