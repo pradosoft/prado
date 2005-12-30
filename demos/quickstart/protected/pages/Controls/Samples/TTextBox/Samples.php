@@ -1,6 +1,6 @@
 <?php
 
-class TextBox extends TPage
+class Samples extends TPage
 {
 	public function textChanged($sender,$param)
 	{
