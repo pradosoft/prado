@@ -24,6 +24,11 @@ Text box with customized color, font, columns, maximum length:
 />
 <br/>
 
+Text box with vCard support:<br/>
+First Name: <com:TTextBox AutoCompleteType="FirstName" />
+Last Name: <com:TTextBox AutoCompleteType="LastName" />
+<br/>
+
 Disabled text box:
 <com:TTextBox Text="disabled" Enabled="false" />
 <br/>
@@ -33,7 +38,10 @@ Read-only text box:
 <br/>
 
 Auto postback text box:
-<com:TTextBox Text="change me" AutoPostBack="true" TextChanged="textChanged" />
+<com:TTextBox
+	Text="change me"
+	AutoPostBack="true"
+	TextChanged="textChanged" />
 <br/>
 
 Text box's behavior upon postback:
@@ -74,7 +82,11 @@ Read-only text box with text-wrapping disabled:<br/>
 <br/>
 
 Auto postback text box:<br/>
-<com:TTextBox TextMode="MultiLine" Text="change me" AutoPostBack="true" TextChanged="textChanged" />
+<com:TTextBox
+	TextMode="MultiLine"
+	Text="change me"
+	AutoPostBack="true"
+	TextChanged="textChanged" />
 <br/>
 </div>
 
