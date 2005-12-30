@@ -6,7 +6,7 @@
 <p>
 <tt>TLabel</tt> displays a piece of text on a Web page. The text to be displayed is set via its <tt>Text</tt> property. If <tt>Text</tt> is empty, content enclosed within the <tt>TLabel</tt> component tag will be displayed. <tt>TLabel</tt> may also be used as a form label associated with some control on the form. Since <tt>Text</tt> is not HTML-encoded when being rendered, make sure it does not contain dangerous characters that you want to avoid.
 </p>
-<com:RunBar PagePath="Controls.Samples.TLabel.Samples" />
+<com:RunBar PagePath="Controls.Samples.TLabel.Home" />
 
 <h2>THyperLink</h2>
 
@@ -18,7 +18,7 @@
 <p>
 <tt>TTextBox</tt> displays a text box on a Web page. The content in the text box is determined by the <tt>Text</tt> property. You can create a <tt>SingleLine</tt>, a <tt>MultiLine</tt>, or a <tt>Password</tt> text box by setting the <tt>TextMode</tt> property. The <tt>Rows</tt> and <tt>Columns</tt> properties specify their dimensions. If <tt>AutoPostBack</tt> is true, changing the content in the text box and then moving the focus out of it will cause postback action.
 </p>
-<com:RunBar PagePath="Controls.Samples.TTextBox.Samples" />
+<com:RunBar PagePath="Controls.Samples.TTextBox.Home" />
 
 <h2>TButton</h2>
 
