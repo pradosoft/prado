@@ -24,6 +24,7 @@ abstract class TListControl extends TDataBoundControl
 			$writer->addAttribute('multiple','multiple');
 		if($this->getAutoPostBack() && $page->getClientSupportsJavaScript())
 		{
+			$writer->addAttribute('id',$this->getClientID());
 			$options = $this->getAutoPostBackOptions();
 			$scripts = $this->getPage()->getClientScript();
 			$postback = $scripts->getPostBackEventReference($this,'',$options,false);
@@ -386,9 +387,6 @@ abstract class TListControl extends TDataBoundControl
 		}
 	}
 }
-
-
-
 
 class TListItemCollection extends TList
 {

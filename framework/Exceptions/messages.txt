@@ -130,6 +130,7 @@ theme_databind_forbidden				= Databind cannot be used in theme '%s' for control 
 theme_property_readonly					= Skin is being applied to a read-only control property '%s.%s'.
 theme_property_undefined				= Skin is being applied to an inexistent control property '%s.%s'.
 
+control_object_reregistered				= Duplicated object ID '%s' found.
 control_id_invalid						= %s.ID '%s' is invalid. Only alphanumeric and underline characters are allowed. The first character must be an alphabetic or underline character.
 control_skinid_unchangeable				= %s.SkinID cannot be modified after a skin has been applied to the control or the child controls have been created.
 control_enabletheming_unchangeable		= %s.EnableTheming cannot be modified after the child controls have been created.

@@ -828,6 +828,8 @@ class TControl extends TComponent
 	 */
 	public function registerObject($name,$object)
 	{
+		if(isset($this->_rf[self::RF_NAMED_OBJECTS][$name]))
+			throw new TInvalidOperationException('control_object_reregistered',$name);
 		$this->_rf[self::RF_NAMED_OBJECTS][$name]=$object;
 	}
 
