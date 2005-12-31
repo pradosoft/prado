@@ -2,31 +2,66 @@
 
 <h1>TListBox Samples</h1>
 
-<div class="samplepanel">
-<div class="sampletitle"><tt>Single</tt> Selection List Box</div>
-List box with default settings:<br/>
-<com:TListBox />
-<br/>
+<h2>List Boxes in Single Selection Mode</h2>
 
-List box with initial items:<br/>
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+List box with default settings:
+</td>
+<td class="sampleaction">
+<com:TListBox />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+List box with initial items:
+</td>
+<td class="sampleaction">
 <com:TListBox>
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
   <com:TListItem Value="value 3" Text="item 3" />
   <com:TListItem Value="value 4" Text="item 4" />
 </com:TListBox>
-<br/>
+</td>
+</tr>
 
-List box with customized row number, color and font:<br/>
+<tr>
+<td class="samplenote">
+List box with customized row number, color and font:
+</td>
+<td class="sampleaction">
 <com:TListBox Rows="3" ForeColor="blue" Font.Size="14pt">
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
   <com:TListItem Value="value 3" Text="item 3" />
   <com:TListItem Value="value 4" Text="item 4" />
 </com:TListBox>
-<br/>
+</td>
+</tr>
 
-Auto postback list box:<br/>
+<tr>
+<td class="samplenote">
+Disabled list box:
+</td>
+<td class="sampleaction">
+<com:TListBox Enabled="false">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TListBox>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Auto postback list box:
+</td>
+<td class="sampleaction">
 <com:TListBox AutoPostBack="true" SelectedIndexChanged="selectionChanged">
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
@@ -34,9 +69,14 @@ Auto postback list box:<br/>
   <com:TListItem Value="value 4" Text="item 4" />
 </com:TListBox>
 <com:TLabel ID="SelectionResult" ForeColor="red" />
-<br/>
+</td>
+</tr>
 
-List box's behavior upon postback:<br/>
+<tr>
+<td class="samplenote">
+List box's behavior upon postback:
+</td>
+<td class="sampleaction">
 <com:TListBox ID="ListBox1">
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
@@ -45,39 +85,61 @@ List box's behavior upon postback:<br/>
 </com:TListBox>
 <com:TButton Text="Submit" Click="buttonClicked"/>
 <com:TLabel ID="SelectionResult2" ForeColor="red" />
-<br/>
-</div>
+</td>
+</tr>
 
-<div class="samplepanel">
-<div class="sampletitle"><tt>Multiple</tt> Selection List Box</div>
-<i>Use Shift + Left Click to change selection</i>
+</table>
+
+
+<h2>List Boxes in Multiple Selection Mode</h2>
+<i>Use Shift + Mouse Click to change selection</i>
 <br/>
-List box with default settings:<br/>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+List box with default settings:
+</td>
+<td class="sampleaction">
 <com:TListBox SelectionMode="Multiple" />
-<br/>
+</td>
+</tr>
 
-List box with initial items:<br/>
+<tr>
+<td class="samplenote">
+List box with initial items:
+</td>
+<td class="sampleaction">
 <com:TListBox SelectionMode="Multiple">
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
   <com:TListItem Value="value 3" Text="item 3" />
   <com:TListItem Value="value 4" Text="item 4" Selected="true" />
 </com:TListBox>
-<br/>
+</td>
+</tr>
 
-Auto postback list box:<br/>
-<br/>
+<tr>
+<td class="samplenote">
+Auto postback list box:
+</td>
+<td class="sampleaction">
 <com:TListBox AutoPostBack="true" SelectionMode="Multiple" SelectedIndexChanged="multiSelectionChanged">
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
   <com:TListItem Value="value 3" Text="item 3" />
   <com:TListItem Value="value 4" Text="item 4" Selected="true" />
 </com:TListBox>
-<br/>
 <com:TLabel ID="MultiSelectionResult" ForeColor="red" />
-<br/>
+</td>
+</tr>
 
-List box's behavior upon postback:<br/>
+<tr>
+<td class="samplenote">
+List box's behavior upon postback:
+</td>
+<td class="sampleaction">
 <com:TListBox ID="ListBox2" SelectionMode="Multiple">
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
@@ -87,6 +149,9 @@ List box's behavior upon postback:<br/>
 <com:TButton Text="Submit" Click="buttonClicked2" />
 <br/>
 <com:TLabel ID="MultiSelectionResult2" ForeColor="red" />
+</td>
+</tr>
 
-</div>
+</table>
+
 </com:TContent>

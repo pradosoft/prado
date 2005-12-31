@@ -2,18 +2,19 @@
 
 <h1>TTextBox Samples</h1>
 
-<div class="samplepanel">
-<div class="sampletitle">SingleLine and Password Text Boxes</div>
+<h2>SingeLine Text Boxes</h2>
 
+<table class="sampletable">
+
+<tr><td class="samplenote">
 Text box with default settings:
+</td><td class="sampleaction">
 <com:TTextBox />
-<br/>
+</td></tr>
 
-Password text box:
-<com:TTextBox TextMode="Password" />
-<br/>
-
+<tr><td class="samplenote">
 Text box with customized color, font, columns, maximum length:
+</td><td class="sampleaction">
 <com:TTextBox
 	Text="text"
 	ForeColor="yellow"
@@ -22,72 +23,100 @@ Text box with customized color, font, columns, maximum length:
 	Columns="4"
 	MaxLength="6"
 />
-<br/>
+</td></tr>
 
-Text box with vCard support:<br/>
+<tr><td class="samplenote">
+Text box with vCard support:
+</td><td class="sampleaction">
 First Name: <com:TTextBox AutoCompleteType="FirstName" />
 Last Name: <com:TTextBox AutoCompleteType="LastName" />
-<br/>
+</td></tr>
 
+<tr><td class="samplenote">
 Disabled text box:
+</td><td class="sampleaction">
 <com:TTextBox Text="disabled" Enabled="false" />
-<br/>
+</td></tr>
 
+<tr><td class="samplenote">
 Read-only text box:
+</td><td class="sampleaction">
 <com:TTextBox Text="read only" ReadOnly="true" />
-<br/>
+</td></tr>
 
+<tr><td class="samplenote">
 Auto postback text box:
+</td><td class="sampleaction">
 <com:TTextBox
 	Text="change me"
 	AutoPostBack="true"
 	TextChanged="textChanged" />
-<br/>
+</td></tr>
 
+<tr><td class="samplenote">
 Text box's behavior upon postback:
+</td><td class="sampleaction">
 <com:TTextBox ID="TextBox1" Text="text" />
 <com:TButton Text="Submit" Click="submitText" />
+</td></tr>
 
-</div>
+</table>
 
-<div class="samplepanel">
-<div class="sampletitle">MultiLine Text Boxes</div>
+<h2>Password Text Boxes</h2>
 
-Text box with default settings:<br/>
+Password: <com:TTextBox TextMode="Password" />
+
+
+<h2>MultiLine Text Boxes</h2>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Text box with default settings:
+</td><td class="sampleaction">
 <com:TTextBox TextMode="MultiLine" />
-<br/>
+</td></tr>
 
-Text box with customized dimensions, font and content:<br/>
+<tr><td class="samplenote">
+Text box with customized dimensions, font and content:
+</td><td class="sampleaction">
 <com:TTextBox TextMode="MultiLine" Rows="6" Columns="60" Font.Italic="true">
-<prop:Text>
+  <prop:Text>
 This is a multiline text box.
 In HTML, it is displayed as a textarea.
-</prop:Text>
+  </prop:Text>
 </com:TTextBox>
-<br/>
+</td></tr>
 
-Disabled text box:<br/>
+<tr><td class="samplenote">
+Disabled text box:
+</td><td class="sampleaction">
 <com:TTextBox
 	TextMode="MultiLine"
 	Text="disabled"
 	Enabled="false" />
-<br/>
+</td></tr>
 
-Read-only text box with text-wrapping disabled:<br/>
+<tr><td class="samplenote">
+Read-only text box with text-wrapping disabled:
+</td><td class="sampleaction">
 <com:TTextBox
 	TextMode="MultiLine"
 	Text="This is a read-only text box with text-wrapping disabled."
 	ReadOnly="true"
 	Wrap="false"/>
-<br/>
+</td></tr>
 
-Auto postback text box:<br/>
+<tr><td class="samplenote">
+Auto postback text box:
+</td><td class="sampleaction">
 <com:TTextBox
 	TextMode="MultiLine"
 	Text="change me"
 	AutoPostBack="true"
 	TextChanged="textChanged" />
-<br/>
-</div>
+</td></tr>
+
+</table>
 
 </com:TContent>

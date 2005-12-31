@@ -175,3 +175,24 @@ tt {
 	font-weight:bold;
 	margin-bottom:5px;
 }
+
+.sampletable {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.sampletable td {
+	border: 1px solid silver;
+	padding: 5px;
+	vertical-align: top;
+}
+
+td.samplenote {
+	width: 300px;
+	text-align: right;
+	background: #BFE4FF;
+}
+
+td.sampleaction {
+	background: #ffffee;
+}
