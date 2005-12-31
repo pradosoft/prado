@@ -346,13 +346,257 @@ class TStyle extends TComponent
 	}
 }
 
-
+/**
+ * TTableStyle class.
+ * TTableStyle represents the CSS style specific for HTML table.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 class TTableStyle extends TStyle
 {
+	/**
+	 * @var string the URL of the background image for the table
+	 */
+	private $_backImageUrl='';
+	/**
+	 * @var string horizontal alignment of the contents within the table
+	 */
+	private $_horizontalAlign='NotSet';
+	/**
+	 * @var integer cellpadding of the table
+	 */
+	private $_cellPadding=-1;
+	/**
+	 * @var integer cellspacing of the table
+	 */
+	private $_cellSpacing=-1;
+	/**
+	 * @var string grid line setting of the table
+	 */
+	private $_gridLines='None';
+
+
+	/**
+	 * Adds attributes related to CSS styles to renderer.
+	 * This method overrides the parent implementation.
+	 * @param THtmlWriter the writer used for the rendering purpose
+	 */
+	public function addAttributesToRender($writer)
+	{
+		if(($url=trim($this->_backImageUrl))!=='')
+			$this->setStyleField('background-image','url('.$url.')');
+
+		if($this->_horizontalAlign!=='NotSet')
+			$this->setStyleField('text-align',strtolower($this->_horizontalAlign));
+
+		if($this->_cellPadding>=0)
+			$writer->addAttribute('cellpadding',"$this->_cellPadding");
+
+		if($this->_cellSpacing>=0)
+		{
+			$writer->addAttribute('cellspacing',"$this->_cellPadding");
+			if($this->_cellSpacing===0)
+				$this->setStyleField('border-collapse','collapse');
+		}
+
+		switch($this->_gridLines)
+		{
+			case 'Horizontal' : $writer->addAttribute('rules','rows'); break;
+			case 'Vertical' : $writer->addAttribute('rules','cols'); break;
+			case 'Both' : $writer->addAttribute('rules','all'); break;
+		}
+
+		parent::addAttributesToRender($writer);
+	}
+
+	/**
+	 * @return string the URL of the background image for the table
+	 */
+	public function getBackImageUrl()
+	{
+		return $this->_backImageUrl;
+	}
+
+	/**
+	 * Sets the URL of the background image for the table
+	 * @param string the URL
+	 */
+	public function setBackImageUrl($value)
+	{
+		$this->_backImageUrl=$value;
+	}
+
+	/**
+	 * @return string the horizontal alignment of the contents within the table, defaults to 'NotSet'.
+	 */
+	public function getHorizontalAlign()
+	{
+		return $this->_horizontalAlign;
+	}
+
+	/**
+	 * Sets the horizontal alignment of the contents within the table.
+     * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
+	 * @param string the horizontal alignment
+	 */
+	public function setHorizontalAlign($value)
+	{
+		$this->_horizontalAlign=TPropertyValue::ensureEnum($value,array('NotSet','Left','Right','Center','Justify'));
+	}
+
+	/**
+	 * @return integer cellpadding of the table. Defaults to -1, meaning not set.
+	 */
+	public function getCellPadding()
+	{
+		return $this->_cellPadding;
+	}
+
+	/**
+	 * @param integer cellpadding of the table. A value equal to -1 clears up the setting.
+	 * @throws TInvalidDataValueException if the value is less than -1.
+	 */
+	public function setCellPadding($value)
+	{
+		if(($this->_cellPadding=TPropertyValue::ensureInteger($value))<-1)
+			throw new TInvalidDataValueException('tablestyle_cellpadding_invalid');
+	}
+
+	/**
+	 * @return integer cellspacing of the table. Defaults to -1, meaning not set.
+	 */
+	public function getCellSpacing()
+	{
+		return $this->_cellSpacing;
+	}
+
+	/**
+	 * @param integer cellspacing of the table. A value equal to -1 clears up the setting.
+	 * @throws TInvalidDataValueException if the value is less than -1.
+	 */
+	public function setCellSpacing($value)
+	{
+		if(($this->_cellSpacing=TPropertyValue::ensureInteger($value))<-1)
+			throw new TInvalidDataValueException('tablestyle_cellspacing_invalid');
+	}
+
+	/**
+	 * @return string the grid line setting of the table. Defaults to 'None'.
+	 */
+	public function getGridLines()
+	{
+		return $this->_gridLines;
+	}
+
+	/**
+	 * Sets the grid line style of the table.
+     * Valid values include 'None', 'Horizontal', 'Vertical', 'Both'.
+	 * @param string the grid line setting of the table
+	 */
+	public function setGridLines($value)
+	{
+		$this->_gridLines=TPropertyValue::ensureEnum($value,array('None', 'Horizontal', 'Vertical', 'Both'));
+	}
 }
 
+/**
+ * TTableItemStyle class.
+ * TTableItemStyle represents the CSS style specific for HTML table item.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 class TTableItemStyle extends TStyle
 {
+	/**
+	 * @var string horizontal alignment of the contents within the table item
+	 */
+	private $_horizontalAlign='NotSet';
+	/**
+	 * @var string vertical alignment of the contents within the table item
+	 */
+	private $_verticalAlign='NotSet';
+	/**
+	 * @var boolean whether the content wraps within the table item
+	 */
+	private $_wrap=true;
+
+	/**
+	 * Adds attributes related to CSS styles to renderer.
+	 * This method overrides the parent implementation.
+	 * @param THtmlWriter the writer used for the rendering purpose
+	 */
+	public function addAttributesToRender($writer)
+	{
+		if(!$this->_wrap)
+			$this->setStyleField('nowrap','nowrap');
+
+		if($this->_horizontalAlign!=='NotSet')
+			$writer->addAttribute('align',strtolower($this->_horizontalAlign));
+
+		if($this->_verticalAlign!=='NotSet')
+			$writer->addAttribute('valign',strtolower($this->_verticalAlign));
+
+		parent::addAttributesToRender($writer);
+	}
+
+	/**
+	 * @return string the horizontal alignment of the contents within the table item, defaults to 'NotSet'.
+	 */
+	public function getHorizontalAlign()
+	{
+		return $this->_horizontalAlign;
+	}
+
+	/**
+	 * Sets the horizontal alignment of the contents within the table item.
+     * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
+	 * @param string the horizontal alignment
+	 */
+	public function setHorizontalAlign($value)
+	{
+		$this->_horizontalAlign=TPropertyValue::ensureEnum($value,array('NotSet','Left','Right','Center','Justify'));
+	}
+
+	/**
+	 * @return string the vertical alignment of the contents within the table item, defaults to 'NotSet'.
+	 */
+	public function getVerticalAlign()
+	{
+		return $this->_verticalAlign;
+	}
+
+	/**
+	 * Sets the vertical alignment of the contents within the table item.
+     * Valid values include 'NotSet','Top','Bottom','Middel'
+	 * @param string the horizontal alignment
+	 */
+	public function setVerticalAlign($value)
+	{
+		$this->_verticalAlign=TPropertyValue::ensureEnum($value,array('NotSet','Top','Bottom','Middel'));
+	}
+
+	/**
+	 * @return boolean whether the content wraps within the table item. Defaults to true.
+	 */
+	public function getWrap()
+	{
+		return $this->_wrap;
+	}
+
+	/**
+	 * Sets the value indicating whether the content wraps within the table item.
+	 * @param boolean whether the content wraps within the panel.
+	 */
+	public function setWrap($value)
+	{
+		$this->_wrap=TPropertyValue::ensureBoolean($value);
+	}
 }
 
 
