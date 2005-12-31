@@ -46,6 +46,7 @@ demos/quickstart/protected/pages/Controls/Samples/TLabel/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TListBox/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TListBox/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TPanel/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TPanel/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TPanel/hello_world.gif -text
 demos/quickstart/protected/pages/Controls/Samples/TTextBox/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TTextBox/Home.php -text
