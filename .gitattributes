@@ -40,6 +40,8 @@ demos/quickstart/protected/pages/Configurations/Templates3.page -text
 demos/quickstart/protected/pages/Construction.page -text
 demos/quickstart/protected/pages/Controls/List.page -text
 demos/quickstart/protected/pages/Controls/Overview.page -text
+demos/quickstart/protected/pages/Controls/Samples/TDropDownList/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TDropDownList/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TLabel/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TListBox/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TListBox/Home.php -text

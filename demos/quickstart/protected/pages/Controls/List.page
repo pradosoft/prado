@@ -1,14 +1,21 @@
 <com:TContent ID="body" >
 
 <h1>List Controls</h1>
+<p>
+List controls covered in this section are all inherit directly or indirectly from <tt>TDataBoundControl</tt>. Therefore, you can do various databinding operations with them. More details about databinding will be given in later sections.
+</p>
 
 <h2>TListBox</h2>
 <p>
-<tt>TListBox</tt> displays a list box that allows single or multiple selection. Set the property <tt>SelectionMode</tt> as <tt>Single</tt> to make a single selection list box, and <tt>Multiple</tt> a multiple selection list box. The items in the list box are represented by the <tt>Items</tt> property. The number of rows displayed in the box is specified via the <tt>Rows</tt> property value. Some other important properties that <tt>TListBox</tt> inherits from <tt>TListControl</tt> include: <tt>Items</tt>, <tt>SelectedIndex</tt>, <tt>SelectedIndices</tt>, <tt>SelectedItem</tt>, <tt>SelectedValue</tt>, <tt>AutoPostBack</tt> and <tt>CausesValidation</tt>. Note, since <tt>TDataBoundControl</tt> is an ancestor class of <tt>TListBox</tt>, you can do various databinding operations with a list box control. More details are covered in sections about databinding.
+<tt>TListBox</tt> displays a list box that allows single or multiple selection. Set the property <tt>SelectionMode</tt> as <tt>Single</tt> to make a single selection list box, and <tt>Multiple</tt> a multiple selection list box. The items in the list box are represented by the <tt>Items</tt> property. The number of rows displayed in the box is specified via the <tt>Rows</tt> property value. Some other important properties that <tt>TListBox</tt> inherits from <tt>TListControl</tt> include: <tt>Items</tt>, <tt>SelectedIndex</tt>, <tt>SelectedIndices</tt>, <tt>SelectedItem</tt>, <tt>SelectedValue</tt>, <tt>AutoPostBack</tt> and <tt>CausesValidation</tt>.
 </p>
 <com:RunBar PagePath="Controls.Samples.TListBox.Home" />
 
 <h2>TDropDownList</h2>
+<p>
+<tt>TDropDownList</tt> displays a dropdown list box that allows users to select a single option from a few prespecified ones. The items in the list box are represented by the <tt>Items</tt> property. The selected item can be retrieved via <tt>SelectedItem</tt> property. If <tt>AutoPostBack</tt> is true, selection change will cause page postback.
+</p>
+<com:RunBar PagePath="Controls.Samples.TDropDownList.Home" />
 
 <h2>TCheckBoxList</h2>
 

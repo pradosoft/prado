@@ -1,0 +1,91 @@
+<com:TContent ID="body">
+
+<h1>TDropDownList Samples</h1>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Dropdown list with default settings:
+</td>
+<td class="sampleaction">
+<com:TDropDownList />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Dropdown list with initial items:
+</td>
+<td class="sampleaction">
+<com:TDropDownList>
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TDropDownList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+List box with customized row number, color and font:
+</td>
+<td class="sampleaction">
+<com:TDropDownList Rows="3" ForeColor="blue" Font.Size="14pt">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TDropDownList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Disabled Dropdown list:
+</td>
+<td class="sampleaction">
+<com:TDropDownList Enabled="false">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TDropDownList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Auto postback Dropdown list:
+</td>
+<td class="sampleaction">
+<com:TDropDownList AutoPostBack="true" SelectedIndexChanged="selectionChanged">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TDropDownList>
+<com:TLabel ID="SelectionResult" ForeColor="red" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Dropdown list's behavior upon postback:
+</td>
+<td class="sampleaction">
+<com:TDropDownList ID="ListBox1">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TDropDownList>
+<com:TButton Text="Submit" Click="buttonClicked"/>
+<com:TLabel ID="SelectionResult2" ForeColor="red" />
+</td>
+</tr>
+
+</table>
+
+</com:TContent>
