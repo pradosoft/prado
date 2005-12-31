@@ -10,31 +10,20 @@ class TDropDownList extends TListControl implements IPostBackDataHandler
 
 	public function loadPostData($key,$values)
 	{
-		//TODO: Need to doublecheck!!@!
 		if(!$this->getEnabled(true))
 			return false;
-		$selections=isset($values[$key])?$values[$key]:null;
 		$this->ensureDataBound();
-		if($selections!==null)
+		$selection=isset($values[$key])?$values[$key]:null;
+		if($selection!==null)
 		{
-			$items=$this->getItems();
-			$selection=is_array($selections)?$selections[0]:$selections;
-			$index=$items->findIndexByValue($selection,false);
+			$index=$this->getItems()->findIndexByValue($selection,false);
 			if($this->getSelectedIndex()!==$index)
 			{
 				$this->setSelectedIndex($index);
 				return true;
 			}
-			else
-				return false;
 		}
-		else if($this->getSelectedIndex()!==-1)
-		{
-			$this->clearSelection();
-			return true;
-		}
-		else
-			return false;
+		return false;
 	}
 
 	public function raisePostDataChangedEvent()

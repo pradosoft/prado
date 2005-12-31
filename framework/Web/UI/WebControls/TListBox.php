@@ -24,8 +24,8 @@ class TListBox extends TListControl implements IPostBackDataHandler
 	{
 		if(!$this->getEnabled(true))
 			return false;
-		$selections=isset($values[$key])?$values[$key]:null;
 		$this->ensureDataBound();
+		$selections=isset($values[$key])?$values[$key]:null;
 		if($selections!==null)
 		{
 			$items=$this->getItems();

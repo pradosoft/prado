@@ -43,7 +43,7 @@ List box with customized row number, color and font:
 
 <tr>
 <td class="samplenote">
-Disabled Dropdown list:
+Disabled dropdown list:
 </td>
 <td class="sampleaction">
 <com:TDropDownList Enabled="false">
@@ -57,7 +57,7 @@ Disabled Dropdown list:
 
 <tr>
 <td class="samplenote">
-Auto postback Dropdown list:
+Auto postback dropdown list:
 </td>
 <td class="sampleaction">
 <com:TDropDownList AutoPostBack="true" SelectedIndexChanged="selectionChanged">
