@@ -50,6 +50,15 @@ class TPanel extends TWebControl
 	}
 
 	/**
+	 * Creates a style object to be used by the control.
+	 * This method overrides the parent impementation by creating a TPanelStyle object.
+	 */
+	protected function createStyle()
+	{
+		return new TPanelStyle;
+	}
+
+	/**
 	 * Adds attributes to renderer.
 	 * @param THtmlWriter the renderer
 	 * @throws TInvalidDataValueException if default button is not right.
@@ -57,21 +66,6 @@ class TPanel extends TWebControl
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		if(($url=trim($this->getBackImageUrl()))!=='')
-			$writer->addStyleAttribute('background-image','url('.$url.')');
-		switch($this->getScrollBars())
-		{
-			case 'Horizontal': $writer->addStyleAttribute('overflow-x','scroll'); break;
-			case 'Vertical': $writer->addStyleAttribute('overflow-y','scroll'); break;
-			case 'Both': $writer->addStyleAttribute('overflow','scroll'); break;
-			case 'Auto': $writer->addStyleAttribute('overflow','auto'); break;
-		}
-		if(($align=$this->getHorizontalAlign())!=='')
-			$writer->addStyleAttribute('text-align',$align);
-		if(!$this->getWrap())
-			$writer->addStyleAttribute('white-space','nowrap');
-		if(($dir=$this->getDirection())!=='')  // ltr or rtl
-			$writer->addStyleAttribute('direction',$dir);
 		if(($butt=$this->getDefaultButton())!=='')
 		{
 			if(($button=$this->findControl($butt))===null)
@@ -85,11 +79,11 @@ class TPanel extends TWebControl
 	}
 
 	/**
-	 * @return boolean whether the content wraps within the panel.
+	 * @return boolean whether the content wraps within the panel. Defaults to true.
 	 */
 	public function getWrap()
 	{
-		return $this->getViewState('Wrap',true);
+		return $this->getStyle()->getWrap();
 	}
 
 	/**
@@ -98,25 +92,25 @@ class TPanel extends TWebControl
 	 */
 	public function setWrap($value)
 	{
-		$this->setViewState('Wrap',TPropertyValue::ensureBoolean($value),true);
+		$this->getStyle()->setWrap($value);
 	}
 
 	/**
-	 * @return string the horizontal alignment of the contents within the panel, defaults to empty string (meaning not set).
+	 * @return string the horizontal alignment of the contents within the panel, defaults to 'NotSet'.
 	 */
 	public function getHorizontalAlign()
 	{
-		return $this->getViewState('HorizontalAlign','');
+		return $this->getStyle()->getHorizontalAlign();
 	}
 
 	/**
 	 * Sets the horizontal alignment of the contents within the panel.
-     * Valid values include 'justify', 'left', 'center', 'right' or empty string.
+     * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
 	 * @param string the horizontal alignment
 	 */
 	public function setHorizontalAlign($value)
 	{
-		$this->setViewState('HorizontalAlign',$value,'');
+		$this->getStyle()->setHorizontalAlign($value);
 	}
 
 	/**
@@ -124,7 +118,7 @@ class TPanel extends TWebControl
 	 */
 	public function getBackImageUrl()
 	{
-		return $this->getViewState('BackImageUrl','');
+		return $this->getStyle()->getBackImageUrl();
 	}
 
 	/**
@@ -133,26 +127,24 @@ class TPanel extends TWebControl
 	 */
 	public function setBackImageUrl($value)
 	{
-		$this->setViewState('BackImageUrl',$value,'');
+		$this->getStyle()->setBackImageUrl($value);
 	}
 
 	/**
-	 * @return string alignment of the content in the panel.
-	 * Valid values include 'ltr' (left to right) and 'rtl' (right to left).
-	 * Defaults to empty.
+	 * @return string alignment of the content in the panel. Defaults to 'NotSet'.
 	 */
 	public function getDirection()
 	{
-		return $this->getViewState('Direction','');
+		return $this->getStyle()->getDirection();
 	}
 
 	/**
 	 * @param string alignment of the content in the panel.
-	 * Valid values include 'ltr' (left to right) and 'rtl' (right to left).
+	 * Valid values include 'NotSet', 'LeftToRight', 'RightToLeft'.
 	 */
 	public function setDirection($value)
 	{
-		$this->setViewState('Direction',$value,'');
+		$this->getStyle()->setDirection($value);
 	}
 
 	/**
@@ -196,7 +188,7 @@ class TPanel extends TWebControl
 	 */
 	public function getScrollBars()
 	{
-		return $this->getViewState('ScrollBars','None');
+		return $this->getStyle()->getScrollBars();
 	}
 
 	/**
@@ -205,7 +197,7 @@ class TPanel extends TWebControl
 	 */
 	public function setScrollBars($value)
 	{
-		$this->setViewState('ScrollBars',TPropertyValue::ensureEnum($value,array('None','Auto','Both','Horizontal','Vertical')),'None');
+		$this->getStyle()->setScrollBars($value);
 	}
 
 	/**
@@ -236,4 +228,154 @@ class TPanel extends TWebControl
 	}
 }
 
+/**
+ * TPanelStyle class.
+ * TPanelStyle represents the CSS style specific for panel HTML tag.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
+class TPanelStyle extends TStyle
+{
+	/**
+	 * @var string the URL of the background image for the panel component
+	 */
+	private $_backImageUrl='';
+	/**
+	 * @var string alignment of the content in the panel.
+	 */
+	private $_direction='NotSet';
+	/**
+	 * @var string horizontal alignment of the contents within the panel
+	 */
+	private $_horizontalAlign='NotSet';
+	/**
+	 * @var string visibility and position of scroll bars
+	 */
+	private $_scrollBars='None';
+	/**
+	 * @var boolean whether the content wraps within the panel
+	 */
+	private $_wrap=true;
+
+	/**
+	 * Adds attributes related to CSS styles to renderer.
+	 * This method overrides the parent implementation.
+	 * @param THtmlWriter the writer used for the rendering purpose
+	 */
+	public function addAttributesToRender($writer)
+	{
+		if(($url=trim($this->_backImageUrl))!=='')
+			$this->setStyleField('background-image','url('.$url.')');
+
+		switch($this->_scrollBars)
+		{
+			case 'Horizontal': $this->setStyleField('overflow-x','scroll'); break;
+			case 'Vertical': $this->setStyleField('overflow-y','scroll'); break;
+			case 'Both': $this->setStyleField('overflow','scroll'); break;
+			case 'Auto': $this->setStyleField('overflow','auto'); break;
+		}
+
+		if($this->_horizontalAlign!=='NotSet')
+			$this->setStyleField('text-align',strtolower($this->_horizontalAlign));
+
+		if(!$this->_wrap)
+			$this->setStyleField('white-space','nowrap');
+
+		if($this->_direction==='LeftToRight')
+			$this->setStyleField('direction','ltr');
+		else if($this->_direction==='RightToLeft')
+			$this->setStyleField('direction','rtl');
+
+		parent::addAttributesToRender($writer);
+	}
+
+	/**
+	 * @return string the URL of the background image for the panel component.
+	 */
+	public function getBackImageUrl()
+	{
+		return $this->_backImageUrl;
+	}
+
+	/**
+	 * Sets the URL of the background image for the panel component.
+	 * @param string the URL
+	 */
+	public function setBackImageUrl($value)
+	{
+		$this->_backImageUrl=$value;
+	}
+
+	/**
+	 * @return string alignment of the content in the panel. Defaults to 'NotSet'.
+	 */
+	public function getDirection()
+	{
+		return $this->_direction;
+	}
+
+	/**
+	 * @param string alignment of the content in the panel.
+	 * Valid values include 'NotSet', 'LeftToRight', 'RightToLeft'.
+	 */
+	public function setDirection($value)
+	{
+		$this->_direction=TPropertyValue::ensureEnum($value,array('NotSet','LeftToRight','RightToLeft'));
+	}
+
+	/**
+	 * @return boolean whether the content wraps within the panel. Defaults to true.
+	 */
+	public function getWrap()
+	{
+		return $this->_wrap;
+	}
+
+	/**
+	 * Sets the value indicating whether the content wraps within the panel.
+	 * @param boolean whether the content wraps within the panel.
+	 */
+	public function setWrap($value)
+	{
+		$this->_wrap=TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @return string the horizontal alignment of the contents within the panel, defaults to 'NotSet'.
+	 */
+	public function getHorizontalAlign()
+	{
+		return $this->_horizontalAlign;
+	}
+
+	/**
+	 * Sets the horizontal alignment of the contents within the panel.
+     * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
+	 * @param string the horizontal alignment
+	 */
+	public function setHorizontalAlign($value)
+	{
+		$this->_horizontalAlign=TPropertyValue::ensureEnum($value,array('NotSet','Left','Right','Center','Justify'));
+	}
+
+	/**
+	 * @return string the visibility and position of scroll bars in a panel control, defaults to None.
+	 */
+	public function getScrollBars()
+	{
+		return $this->_scrollBars;
+	}
+
+	/**
+	 * @param string the visibility and position of scroll bars in a panel control.
+	 * Valid values include None, Auto, Both, Horizontal and Vertical.
+	 */
+	public function setScrollBars($value)
+	{
+		$this->_scrollBars=TPropertyValue::ensureEnum($value,array('None','Auto','Both','Horizontal','Vertical'));
+	}
+}
 ?>

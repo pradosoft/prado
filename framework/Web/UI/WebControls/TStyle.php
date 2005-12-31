@@ -30,7 +30,7 @@ class TStyle extends TComponent
 	/**
 	 * @var array storage of CSS fields
 	 */
-	private $_data=array();
+	private $_fields=array();
 	/**
 	 * @var TFont font object
 	 */
@@ -42,14 +42,14 @@ class TStyle extends TComponent
 	/**
 	 * @var string CSS style string (those not represented by specific fields of TStyle)
 	 */
-	private $_style='';
+	private $_customStyle='';
 
 	/**
 	 * @return string the background color of the control
 	 */
 	public function getBackColor()
 	{
-		return isset($this->_data['background-color'])?$this->_data['background-color']:'';
+		return isset($this->_fields['background-color'])?$this->_fields['background-color']:'';
 	}
 
 	/**
@@ -58,9 +58,9 @@ class TStyle extends TComponent
 	public function setBackColor($value)
 	{
 		if($value==='')
-			unset($this->_data['background-color']);
+			unset($this->_fields['background-color']);
 		else
-			$this->_data['background-color']=$value;
+			$this->_fields['background-color']=$value;
 	}
 
 	/**
@@ -68,7 +68,7 @@ class TStyle extends TComponent
 	 */
 	public function getBorderColor()
 	{
-		return isset($this->_data['border-color'])?$this->_data['border-color']:'';
+		return isset($this->_fields['border-color'])?$this->_fields['border-color']:'';
 	}
 
 	/**
@@ -77,9 +77,9 @@ class TStyle extends TComponent
 	public function setBorderColor($value)
 	{
 		if($value==='')
-			unset($this->_data['border-color']);
+			unset($this->_fields['border-color']);
 		else
-			$this->_data['border-color']=$value;
+			$this->_fields['border-color']=$value;
 	}
 
 	/**
@@ -87,7 +87,7 @@ class TStyle extends TComponent
 	 */
 	public function getBorderStyle()
 	{
-		return isset($this->_data['border-style'])?$this->_data['border-style']:'';
+		return isset($this->_fields['border-style'])?$this->_fields['border-style']:'';
 	}
 
 	/**
@@ -97,9 +97,9 @@ class TStyle extends TComponent
 	public function setBorderStyle($value)
 	{
 		if($value==='')
-			unset($this->_data['border-style']);
+			unset($this->_fields['border-style']);
 		else
-			$this->_data['border-style']=$value;
+			$this->_fields['border-style']=$value;
 	}
 
 	/**
@@ -107,7 +107,7 @@ class TStyle extends TComponent
 	 */
 	public function getBorderWidth()
 	{
-		return isset($this->_data['border-width'])?$this->_data['border-width']:'';
+		return isset($this->_fields['border-width'])?$this->_fields['border-width']:'';
 	}
 
 	/**
@@ -116,9 +116,9 @@ class TStyle extends TComponent
 	public function setBorderWidth($value)
 	{
 		if($value==='')
-			unset($this->_data['border-width']);
+			unset($this->_fields['border-width']);
 		else
-			$this->_data['border-width']=$value;
+			$this->_fields['border-width']=$value;
 	}
 
 	/**
@@ -152,7 +152,7 @@ class TStyle extends TComponent
 	 */
 	public function getForeColor()
 	{
-		return isset($this->_data['color'])?$this->_data['color']:'';
+		return isset($this->_fields['color'])?$this->_fields['color']:'';
 	}
 
 	/**
@@ -161,9 +161,9 @@ class TStyle extends TComponent
 	public function setForeColor($value)
 	{
 		if($value==='')
-			unset($this->_data['color']);
+			unset($this->_fields['color']);
 		else
-			$this->_data['color']=$value;
+			$this->_fields['color']=$value;
 	}
 
 	/**
@@ -171,7 +171,7 @@ class TStyle extends TComponent
 	 */
 	public function getHeight()
 	{
-		return isset($this->_data['height'])?$this->_data['height']:'';
+		return isset($this->_fields['height'])?$this->_fields['height']:'';
 	}
 
 	/**
@@ -180,25 +180,63 @@ class TStyle extends TComponent
 	public function setHeight($value)
 	{
 		if($value==='')
-			unset($this->_data['height']);
+			unset($this->_fields['height']);
 		else
-			$this->_data['height']=$value;
+			$this->_fields['height']=$value;
 	}
 
 	/**
 	 * @return string the custom style of the control
 	 */
-	public function getStyle()
+	public function getCustomStyle()
 	{
-		return $this->_style;
+		return $this->_customStyle;
 	}
 
 	/**
+	 * Sets custom style fields from a string.
+	 * Custom style fields will be overwritten by style fields explicitly defined.
 	 * @param string the custom style of the control
 	 */
-	public function setStyle($value)
+	public function setCustomStyle($value)
 	{
-		$this->_style=$value;
+		$this->_customStyle=$value;
+	}
+
+	/**
+	 * @return string a single style field value set via {@link setStyleField}. Defaults to empty string.
+	 */
+	public function getStyleField($name)
+	{
+		return isset($this->_fields[$name])?$this->_fields[$name]:'';
+	}
+
+	/**
+	 * Sets a single style field value.
+	 * Style fields set by this method will overwrite those set by {@link setCustomStyle}.
+	 * @param string style field name
+	 * @param string style field value
+	 */
+	public function setStyleField($name,$value)
+	{
+		$this->_fields[$name]=$value;
+	}
+
+	/**
+	 * Clears a single style field value;
+	 * @param string style field name
+	 */
+	public function clearStyleField($name)
+	{
+		unset($this->_fields[$name]);
+	}
+
+	/**
+	 * @return boolean whether a style field has been defined by {@link setStyleField}
+	 */
+	public function hasStyleField($name)
+	{
+		return isset($this->_fields[$name]);
 	}
 
 	/**
@@ -206,7 +244,7 @@ class TStyle extends TComponent
 	 */
 	public function getWidth()
 	{
-		return isset($this->_data['width'])?$this->_data['width']:'';
+		return isset($this->_fields['width'])?$this->_fields['width']:'';
 	}
 
 	/**
@@ -215,9 +253,9 @@ class TStyle extends TComponent
 	public function setWidth($value)
 	{
 		if($value==='')
-			unset($this->_data['width']);
+			unset($this->_fields['width']);
 		else
-			$this->_data['width']=$value;
+			$this->_fields['width']=$value;
 	}
 
 	/**
@@ -225,7 +263,7 @@ class TStyle extends TComponent
 	 */
 	public function getIsEmpty()
 	{
-		return empty($this->_data) && $this->_class==='' && $this->_style==='' && (!$this->_font || $this->_font->getIsEmpty());
+		return empty($this->_fields) && $this->_class==='' && $this->_customStyle==='' && (!$this->_font || $this->_font->getIsEmpty());
 	}
 
 	/**
@@ -233,10 +271,10 @@ class TStyle extends TComponent
 	 */
 	public function reset()
 	{
-		$this->_data=array();
+		$this->_fields=array();
 		$this->_font=null;
 		$this->_class='';
-		$this->_style='';
+		$this->_customStyle='';
 	}
 
 	/**
@@ -249,12 +287,12 @@ class TStyle extends TComponent
 	{
 		if($style===null)
 			return;
-		foreach($style->_data as $name=>$value)
-			$this->_data[$name]=$value;
+		foreach($style->_fields as $name=>$value)
+			$this->_fields[$name]=$value;
 		if($style->_class!=='')
 			$this->_class=$style->_class;
-		if($style->_style!=='')
-			$this->_style=$style->_style;
+		if($style->_customStyle!=='')
+			$this->_customStyle=$style->_customStyle;
 		if($style->_font!==null)
 			$this->getFont()->mergeWith($style->_font);
 	}
@@ -277,7 +315,7 @@ class TStyle extends TComponent
 	public function toString()
 	{
 		$str='';
-		foreach($this->_data as $name=>$value)
+		foreach($this->_fields as $name=>$value)
 			$str.=' '.$name.':'.$value.';';
 		if($this->_font)
 			$str.=$this->_font->toString();
@@ -290,16 +328,16 @@ class TStyle extends TComponent
 	 */
 	public function addAttributesToRender($writer)
 	{
-		if($this->_style!=='')
+		if($this->_customStyle!=='')
 		{
-			foreach(explode(';',$this->_style) as $style)
+			foreach(explode(';',$this->_customStyle) as $style)
 			{
 				$arr=explode(':',$style);
 				if(isset($arr[1]) && trim($arr[0])!=='')
 					$writer->addStyleAttribute(trim($arr[0]),trim($arr[1]));
 			}
 		}
-		foreach($this->_data as $name=>$value)
+		foreach($this->_fields as $name=>$value)
 			$writer->addStyleAttribute($name,$value);
 		if($this->_font!==null)
 			$this->_font->addAttributesToRender($writer);
@@ -307,5 +345,15 @@ class TStyle extends TComponent
 			$writer->addAttribute('class',$this->_class);
 	}
 }
+
+
+class TTableStyle extends TStyle
+{
+}
+
+class TTableItemStyle extends TStyle
+{
+}
+
 
 ?>

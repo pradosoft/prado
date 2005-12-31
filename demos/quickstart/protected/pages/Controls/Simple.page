@@ -13,6 +13,10 @@
 <h2>TImage</h2>
 
 <h2>TPanel</h2>
+<p>
+<tt>TPanel</tt>
+</p>
+<com:RunBar PagePath="Controls.Samples.TPanel.Home" />
 
 <h2>TTextBox</h2>
 <p>

@@ -211,6 +211,15 @@ class TWebControl extends TControl
 	}
 
 	/**
+	 * Creates a style object to be used by the control.
+	 * This method may be overriden by controls to provide customized style.
+	 */
+	protected function createStyle()
+	{
+		return new TStyle;
+	}
+
+	/**
 	 * @return TStyle the object representing the css style of the control
 	 */
 	public function getStyle()
@@ -219,7 +228,7 @@ class TWebControl extends TControl
 			return $style;
 		else
 		{
-			$style=new TStyle;
+			$style=$this->createStyle();
 			$this->setViewState('Style',$style,null);
 			return $style;
 		}
@@ -234,7 +243,7 @@ class TWebControl extends TControl
 	public function setStyle($value)
 	{
 		if(is_string($value))
-			$this->getStyle()->setStyle($value);
+			$this->getStyle()->setCustomStyle($value);
 		else
 			throw new TInvalidDataValueException('webcontrol_style_invalid',get_class($this));
 	}
