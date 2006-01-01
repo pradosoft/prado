@@ -601,18 +601,27 @@ class TPropertyValue
 
 	/**
 	 * Converts a value to enum type.
-	 * Note, enumeration values are case-sensitive strings.
+	 * This method mainly performs sanity check of a value to make sure
+	 * it is a valid enumeration value. Each enumeration value is a string
+	 * which is case-sensistive.
 	 * @param mixed the value to be converted.
-	 * @param array array of strings representing the enum type.
-	 * @return string
+	 * @param mixed array of valid enumeration values. If this is not an array,
+	 * the method considers its parameters are of variable length, and the second
+	 * till the last parameters are enumeration values.
+	 * @return string the valid enumeration value
 	 * @throws TInvalidDataValueException if the original value is not in the string array.
 	 */
-	public static function ensureEnum($value,$enum)
+	public static function ensureEnum($value,$enums)
 	{
-		if(in_array($value,$enum))
+		if(!is_array($enums))
+		{
+			$enums=func_get_args();
+			array_shift($enums);
+		}
+		if(in_array($value,$enums,true))
 			return $value;
 		else
-			throw new TInvalidDataValueException('propertyvalue_enumvalue_invalid',$value,implode(' | ',$enum));
+			throw new TInvalidDataValueException('propertyvalue_enumvalue_invalid',$value,implode(' | ',$enums));
 	}
 }
 
