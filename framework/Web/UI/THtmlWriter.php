@@ -177,6 +177,11 @@ class THtmlWriter extends TComponent implements ITextWriter
 		$this->_writer->write($str.self::CHAR_NEWLINE);
 	}
 
+	public function writeBreak()
+	{
+		$this->_writer->write('<br/>');
+	}
+
 	public function writeAttribute($name,$value,$encode=false)
 	{
 		$this->_writer->write(' '.$name.='"'.($encode?THttpUtility::htmlEncode($value):$value).'"');

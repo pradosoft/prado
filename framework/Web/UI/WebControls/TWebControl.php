@@ -40,6 +40,23 @@ Prado::using('System.Web.UI.WebControls.TStyle');
 class TWebControl extends TControl
 {
 	/**
+	 * Copies basic control attributes from another control.
+	 * Properties including AccessKey, ToolTip, TabIndex, Enabled
+	 * and Attributes are copied.
+	 * @param TWebControl source control
+	 */
+	public function copyBaseAttributes(TWebControl $control)
+	{
+		$this->setAccessKey($control->getAccessKey());
+		$this->setToolTip($control->getToolTip());
+		$this->setTabIndex($control->getTabIndex());
+		if(!$control->getEnabled())
+			$this->setEnabled(false);
+		if($control->getHasAttributes())
+			$this->getAttributes()->copyFrom($control->getAttributes());
+	}
+
+	/**
 	 * @return string the access key of the control
 	 */
 	public function getAccessKey()
