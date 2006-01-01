@@ -67,7 +67,7 @@ class TControl extends TComponent
 	/**
 	 * format of control ID
 	 */
-	const ID_FORMAT='/^[a-zA-Z_]\\w*$/';
+	const ID_FORMAT='/^\\w*$/';
 	/**
 	 * separator char between IDs in a UniqueID
 	 */

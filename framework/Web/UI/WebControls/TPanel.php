@@ -204,7 +204,7 @@ class TPanel extends TWebControl
 	 * Renders the openning tag for the control (including attributes)
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
-	protected function renderBeginTag($writer)
+	public function renderBeginTag($writer)
 	{
 		parent::renderBeginTag($writer);
 		if(($text=$this->getGroupingText())!=='')
@@ -220,7 +220,7 @@ class TPanel extends TWebControl
 	 * Renders the closing tag for the control
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
-	protected function renderEndTag($writer)
+	public function renderEndTag($writer)
 	{
 		if($this->getGroupingText()!=='')
 			$writer->renderEndTag();

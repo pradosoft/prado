@@ -92,7 +92,7 @@ class TRepeatInfo extends TComponent
 		else
 			$this->renderHorizontalContents($writer,$user);
 
-		$control->renderEndTag();
+		$control->renderEndTag($writer);
 	}
 
 	protected function renderHorizontalContents($writer,$user)
@@ -251,7 +251,6 @@ class TRepeatInfo extends TComponent
 			for($row=0;$row<$rows;++$row)
 			{
 				$index=$row;
-				$writer->renderBeginTag('tr');
 				for($col=0;$col<$columns;++$col)
 				{
 					if($renderedItems>=$itemCount)
@@ -273,8 +272,6 @@ class TRepeatInfo extends TComponent
 							$writer->writeBreak();
 						$user->renderItem($writer,$this,'Separator',$index);
 					}
-					else if($columns>1)
-						$writer->write('<td></td>');
 				}
 				if($row<$rows-1 || $user->getHasFooter())
 					$writer->writeBreak();
@@ -297,13 +294,13 @@ class TRepeatInfo extends TComponent
 			if(($style=$user->getItemStyle('Header',-1))!==null)
 				$style->addAttributesToRender($writer);
 			$writer->renderBeginTag('th');
-			$user->renderItem($writer,$this,'Header',-1)
+			$user->renderItem($writer,$this,'Header',-1);
 			$writer->renderEndTag();
 			$writer->renderEndTag();
 		}
 		else
 		{
-			$user->renderItem($writer,$this,'Header',-1)
+			$user->renderItem($writer,$this,'Header',-1);
 			if($needBreak)
 				$writer->writeBreak();
 		}
@@ -316,16 +313,15 @@ class TRepeatInfo extends TComponent
 			$writer->renderBeginTag('tr');
 			if($columns>1)
 				$writer->addAttribute('colspan',"$columns");
-			$writer->addAttribute('scope','col');
-			if(($style=$user->getItemStyle('Header',-1))!==null)
+			if(($style=$user->getItemStyle('Footer',-1))!==null)
 				$style->addAttributesToRender($writer);
 			$writer->renderBeginTag('td');
-			$user->renderItem($writer,$this,'Header',-1)
+			$user->renderItem($writer,$this,'Footer',-1);
 			$writer->renderEndTag();
 			$writer->renderEndTag();
 		}
 		else
-			$user->renderItem($writer,$this,'Header',-1)
+			$user->renderItem($writer,$this,'Footer',-1);
 	}
 }
 

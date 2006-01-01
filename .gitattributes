@@ -40,6 +40,8 @@ demos/quickstart/protected/pages/Configurations/Templates3.page -text
 demos/quickstart/protected/pages/Construction.page -text
 demos/quickstart/protected/pages/Controls/List.page -text
 demos/quickstart/protected/pages/Controls/Overview.page -text
+demos/quickstart/protected/pages/Controls/Samples/TCheckBoxList/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TCheckBoxList/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TDropDownList/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TDropDownList/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TLabel/Home.page -text
@@ -209,6 +211,7 @@ framework/Web/UI/TThemeManager.php -text
 framework/Web/UI/WebControls/TBaseValidator.php -text
 framework/Web/UI/WebControls/TButton.php -text
 framework/Web/UI/WebControls/TCheckBox.php -text
+framework/Web/UI/WebControls/TCheckBoxList.php -text
 framework/Web/UI/WebControls/TContent.php -text
 framework/Web/UI/WebControls/TContentPlaceHolder.php -text
 framework/Web/UI/WebControls/TDataBoundControl.php -text

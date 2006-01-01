@@ -379,7 +379,7 @@ class TWebControl extends TControl
 	 * Renders the openning tag for the control (including attributes)
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
-	protected function renderBeginTag($writer)
+	public function renderBeginTag($writer)
 	{
 		$this->addAttributesToRender($writer);
 		$writer->renderBeginTag($this->getTagName());
@@ -400,7 +400,7 @@ class TWebControl extends TControl
 	 * Renders the closing tag for the control
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
-	protected function renderEndTag($writer)
+	public function renderEndTag($writer)
 	{
 		$writer->renderEndTag();
 	}
