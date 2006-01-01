@@ -128,7 +128,7 @@ class TRadioButton extends TCheckBox
 	 */
 	private function getValueAttribute()
 	{
-		if(($value=$this->getAttribute('value'))==='')
+		if(($value=$this->getAttribute('value'))===null)
 		{
 			$value=$this->getID();
 			return empty($value)?$this->getUniqueID():$value;

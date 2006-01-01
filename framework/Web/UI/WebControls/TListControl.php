@@ -213,6 +213,11 @@ abstract class TListControl extends TDataBoundControl
 		$this->setViewState('DataValueField',$value,'');
 	}
 
+	public function getHasItems()
+	{
+		return ($this->_items && $this->_items->getCount()>0);
+	}
+
 	public function getItems()
 	{
 		if(!$this->_items)
@@ -376,12 +381,18 @@ abstract class TListControl extends TDataBoundControl
 			{
 				if($item->getEnabled())
 				{
-					$str='<option';
 					if($item->getSelected())
-						$str.=' selected="selected"';
-					$str.=' value="'.THttpUtility::htmlEncode($item->getValue()).'"';
-					$str.='>'.THttpUtility::htmlEncode($item->getText()).'</option>';
-					$writer->writeLine($str);
+						$writer->addAttribute('selected','selected');
+					$writer->addAttribute('value',$item->getValue());
+					if($item->getHasAttributes())
+					{
+						foreach($item->getAttributes() as $name=>$value)
+							$writer->addAttribute($name,$value);
+					}
+					$writer->renderBeginTag('option');
+					$writer->write(THttpUtility::htmlEncode($item->getText()));
+					$writer->renderEndTag();
+					$writer->writeLine();
 				}
 			}
 		}
@@ -532,6 +543,50 @@ class TListItem extends TComponent
 	public function setValue($value)
 	{
 		$this->_value=TPropertyValue::ensureString($value);
+	}
+
+	public function getAttributes()
+	{
+		if(!$this->_attributes)
+			$this->_attributes=new TMap;
+		return $this->_attributes;
+	}
+
+	public function getHasAttributes()
+	{
+		return $this->_attributes!==null;
+	}
+
+	public function hasAttribute($name)
+	{
+		return $this->_attributes?$this->_attributes->contains($name):false;
+	}
+
+	/**
+	 * @return string attribute value, '' if attribute does not exist
+	 */
+	public function getAttribute($name)
+	{
+		return $this->_attributes?$this->_attributes->itemAt($name):null;
+	}
+
+	/**
+	 * @param string attribute name
+	 * @param string value of the attribute
+	 */
+	public function setAttribute($name,$value)
+	{
+		$this->getAttributes()->add($name,$value);
+	}
+
+	/**
+	 * Removes the named attribute.
+	 * @param string the name of the attribute to be removed.
+	 * @return string attribute value removed, empty string if attribute does not exist.
+	 */
+	public function removeAttribute($name)
+	{
+		return $this->_attributes?$this->_attributes->remove($name):null;
 	}
 }
 

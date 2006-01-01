@@ -2,12 +2,12 @@
 
 interface IRepeatInfoUser
 {
-	public function getItemStyle($itemType,$index);
-	public function renderItem($writer,$repeatInfo,$itemType,$index);
 	public function getHasFooter();
 	public function getHasHeader();
 	public function getHasSeparators();
 	public function getRepeatedItemCount();
+	public function getItemStyle($itemType,$index);
+	public function renderItem($writer,$repeatInfo,$itemType,$index);
 }
 
 class TRepeatInfo extends TComponent

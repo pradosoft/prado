@@ -506,14 +506,14 @@ class TControl extends TComponent
 	}
 
 	/**
-	 * @return string attribute value, '' if attribute does not exist
+	 * @return string attribute value, null if attribute does not exist
 	 */
 	public function getAttribute($name)
 	{
 		if($attributes=$this->getViewState('Attributes',null))
 			return $attributes->itemAt($name);
 		else
-			return '';
+			return null;
 	}
 
 	/**
@@ -528,14 +528,14 @@ class TControl extends TComponent
 	/**
 	 * Removes the named attribute.
 	 * @param string the name of the attribute to be removed.
-	 * @return string attribute value removed, empty string if attribute does not exist.
+	 * @return string attribute value removed, null if attribute does not exist.
 	 */
 	public function removeAttribute($name)
 	{
 		if($attributes=$this->getViewState('Attributes',null))
 			return $attributes->remove($name);
 		else
-			return '';
+			return null;
 	}
 
 	/**

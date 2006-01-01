@@ -130,7 +130,7 @@ class TListBox extends TListControl implements IPostBackDataHandler
 	 * Sets the selection mode of the component (Single, Multiple)
 	 * @param string the selection mode
 	 */
-	function setSelectionMode($value)
+	public function setSelectionMode($value)
 	{
 		$this->setViewState('SelectionMode',TPropertyValue::ensureEnum($value,array('Single','Multiple')),'Single');
 	}

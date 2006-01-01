@@ -352,9 +352,9 @@ class TWebControl extends TControl
 			$writer->addAttribute('title',$toolTip);
 		if($style=$this->getViewState('Style',null))
 			$style->addAttributesToRender($writer);
-		if($attributes=$this->getViewState('Attributes',null))
+		if($this->getHasAttributes())
 		{
-			foreach($attributes as $name=>$value)
+			foreach($this->getAttributes() as $name=>$value)
 				$writer->addAttribute($name,$value);
 		}
 	}
