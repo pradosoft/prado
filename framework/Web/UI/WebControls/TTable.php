@@ -163,6 +163,7 @@ class TTable extends TWebControl
 	{
 		if($this->_rows)
 		{
+			$writer->writeLine();
 			foreach($this->_rows as $row)
 			{
 				$row->renderControl($writer);
@@ -191,23 +192,6 @@ class TTableRow extends TWebControl
 	protected function createStyle()
 	{
 		return new TTableItemStyle;
-	}
-
-	protected function addAttributesToRender($writer)
-	{
-		parent::addAttributesToRender($writer);
-		$border=0;
-		if($this->getHasStyle())
-		{
-			if($this->getGridLines()!=='None')
-			{
-				if(($border=$this->getBorderWidth())==='')
-					$border=1;
-				else
-					$border=(int)$border;
-			}
-		}
-		$writer->addAttribute('border',"$border");
 	}
 
 	public function getCells()
@@ -247,6 +231,7 @@ class TTableRow extends TWebControl
 	{
 		if($this->_cells)
 		{
+			$writer->writeLine();
 			foreach($this->_cells as $cell)
 			{
 				$cell->renderControl($writer);
@@ -371,7 +356,7 @@ class TTableCell extends TWebControl
 		parent::addAttributesToRender($writer);
 		if(($colspan=$this->getColumnSpan())>0)
 			$writer->addAttribute('colspan',"$colspan");
-		if(($rowspan=$this->getColumnSpan())>0)
+		if(($rowspan=$this->getRowSpan())>0)
 			$writer->addAttribute('rowspan',"$rowspan");
 	}
 
@@ -444,6 +429,116 @@ class TTableHeaderCell extends TTableCell
 	public function setCategoryText($value)
 	{
 		$this->setViewState('CategoryText',$value,'');
+	}
+}
+
+
+class TTableRowCollection extends TList
+{
+	/**
+	 * the table that owns this collection.
+	 * @var TTable
+	 */
+	private $_o;
+
+	/**
+	 * Constructor.
+	 * @param TTable the table that owns this collection.
+	 */
+	public function __construct(TTable $owner)
+	{
+		parent::__construct();
+		$this->_o=$owner;
+	}
+
+	/**
+	 * @return TTable the table that owns this collection.
+	 */
+	protected function getOwner()
+	{
+		return $this->_o;
+	}
+
+	/**
+	 * Overrides the parent implementation with customized processing of the newly added item.
+	 * @param mixed the newly added item
+	 */
+	protected function addedItem($item)
+	{
+		$this->_o->addedControl($item);
+	}
+
+	/**
+	 * Overrides the parent implementation with customized processing of the removed item.
+	 * @param mixed the removed item
+	 */
+	protected function removedItem($item)
+	{
+		$this->_o->removedControl($item);
+	}
+
+	/**
+	 * Only string or instance of TControl can be added into collection.
+	 * @param mixed the item to be added
+	 */
+	protected function canAddItem($item)
+	{
+		return ($item instanceof TTableRow);
+	}
+}
+
+
+class TTableCellCollection extends TList
+{
+	/**
+	 * the table row that owns this collection.
+	 * @var TTableRow
+	 */
+	private $_o;
+
+	/**
+	 * Constructor.
+	 * @param TTableRow the table row that owns this collection.
+	 */
+	public function __construct(TTableRow $owner)
+	{
+		parent::__construct();
+		$this->_o=$owner;
+	}
+
+	/**
+	 * @return TTableRow the table row that owns this collection.
+	 */
+	protected function getOwner()
+	{
+		return $this->_o;
+	}
+
+	/**
+	 * Overrides the parent implementation with customized processing of the newly added item.
+	 * @param mixed the newly added item
+	 */
+	protected function addedItem($item)
+	{
+		$this->_o->addedControl($item);
+	}
+
+	/**
+	 * Overrides the parent implementation with customized processing of the removed item.
+	 * @param mixed the removed item
+	 */
+	protected function removedItem($item)
+	{
+		$this->_o->removedControl($item);
+	}
+
+	/**
+	 * Only string or instance of TControl can be added into collection.
+	 * @param mixed the item to be added
+	 */
+	protected function canAddItem($item)
+	{
+		return ($item instanceof TTableCell);
 	}
 }
 ?>

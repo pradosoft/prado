@@ -397,7 +397,7 @@ class TTableStyle extends TStyle
 
 		if($this->_cellSpacing>=0)
 		{
-			$writer->addAttribute('cellspacing',"$this->_cellPadding");
+			$writer->addAttribute('cellspacing',"$this->_cellSpacing");
 			if($this->_cellSpacing===0)
 				$this->setStyleField('border-collapse','collapse');
 		}
