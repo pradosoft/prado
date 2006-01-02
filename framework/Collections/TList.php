@@ -25,6 +25,7 @@
  * unset($list[$index]); // remove the item at $index
  * if(isset($list[$index])) // if the list has an item at $index
  * foreach($list as $index=>$item) // traverse each item in the list
+ * $list->add("item1")->add("item2"); // adding multiple items
  * </code>
  * Note, count($list) will always return 1. You should use {@link getCount()}
  * to determine the number of items in the list.
@@ -102,6 +103,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 * Appends an item at the end of the list.
 	 * @param mixed new item
 	 * @throws TInvalidOperationException If the item is not allowed to be added
+	 * @return TList this
 	 */
 	public function add($item)
 	{
@@ -112,6 +114,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 		}
 		else
 			throw new TInvalidOperationException('list_addition_disallowed');
+		return $this;
 	}
 
 	/**
@@ -122,6 +125,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 * @param mixed new item
 	 * @throws TInvalidDataValueException If the index specified exceeds the bound
 	 * @throws TInvalidOperationException If the item is not allowed to be added
+	 * @return TList this
 	 */
 	public function insert($index,$item)
 	{
@@ -140,7 +144,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 		}
 		else
 			throw new TInvalidOperationException('list_addition_disallowed');
-
+		return $this;
 	}
 
 	/**
@@ -150,13 +154,14 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 * @param mixed the item to be removed.
 	 * @throws TInvalidOperationException If the item cannot be removed
 	 * @throws TInvalidDataValueException If the item does not exist
+	 * @return mixed the removed item
 	 */
 	public function remove($item)
 	{
 		if(($index=$this->indexOf($item))>=0)
 		{
 			if($this->canRemoveItem($item))
-				$this->removeAt($index);
+				return $this->removeAt($index);
 			else
 				throw new TInvalidOperationException('list_item_unremovable');
 		}
@@ -195,6 +200,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 
 	/**
 	 * Removes all items in the list.
+	 * @return TList this
 	 */
 	public function clear()
 	{
@@ -236,6 +242,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 * Note, existing data in the list will be cleared first.
 	 * @param mixed the data to be copied from, must be an array or object implementing Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor a Traversable.
+	 * @return TList this
 	 */
 	public function copyFrom($data)
 	{
@@ -248,6 +255,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 		}
 		else
 			throw new TInvalidDataTypeException('list_data_not_iterable');
+		return $this;
 	}
 
 	/**
@@ -255,6 +263,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 * New data will be appended to the end of the existing data.
 	 * @param mixed the data to be merged with, must be an array or object implementing Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
+	 * @return TList this
 	 */
 	public function mergeWith($data)
 	{
@@ -265,6 +274,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 		}
 		else
 			throw new TInvalidDataTypeException('list_data_not_iterable');
+		return $this;
 	}
 
 	/**

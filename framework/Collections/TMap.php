@@ -24,6 +24,7 @@
  * unset($map[$key]); // remove the value with the specified key
  * if(isset($map[$key])) // if the map contains the key
  * foreach($map as $key=>$value) // traverse the items in the map
+ * $map->add("key1", "item1")->add("key2", "item2"); //multiple adds
  * </code>
  * Note, count($map) will always return 1. You should use {@link getCount()}
  * to determine the number of items in the map.
@@ -101,6 +102,7 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 	 * @param mixed key
 	 * @param mixed value
 	 * @throws TInvalidOperationException if the item cannot be added
+	 * @return TMap this
 	 */
 	public function add($key,$value)
 	{
@@ -113,6 +115,7 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 		}
 		else
 			throw new TInvalidOperationException('map_addition_disallowed');
+		return $this;
 	}
 
 	/**
@@ -141,11 +144,13 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 
 	/**
 	 * Removes all items in the map.
+	 * @return TMap this
 	 */
 	public function clear()
 	{
 		foreach(array_keys($this->_d) as $key)
 			$this->remove($key);
+		return $this;
 	}
 
 	/**
@@ -170,6 +175,7 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 	 * Note, existing data in the map will be cleared first.
 	 * @param mixed the data to be copied from, must be an array or object implementing Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
+	 * @return TMap this
 	 */
 	public function copyFrom($data)
 	{
@@ -182,6 +188,7 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 		}
 		else
 			throw new TInvalidDataTypeException('map_data_not_iterable');
+		return $this;
 	}
 
 	/**
@@ -189,6 +196,7 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 	 * Existing data in the map will be kept and overwritten if the keys are the same.
 	 * @param mixed the data to be merged with, must be an array or object implementing Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
+	 * @return TMap this
 	 */
 	public function mergeWith($data)
 	{
@@ -199,6 +207,7 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 		}
 		else
 			throw new TInvalidDataTypeException('map_data_not_iterable');
+		return $this;
 	}
 
 	/**
