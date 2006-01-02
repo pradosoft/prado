@@ -21,6 +21,7 @@ List controls covered in this section are all inherit directly or indirectly fro
 <com:RunBar PagePath="Controls.Samples.TCheckBoxList.Home" />
 
 <h2>TRadioButtonList</h2>
+<com:RunBar PagePath="Controls.Samples.TRadioButtonList.Home" />
 
 <h2>TBulletList</h2>
 

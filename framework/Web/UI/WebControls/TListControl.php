@@ -254,7 +254,7 @@ abstract class TListControl extends TDataBoundControl
 		}
 	}
 
-	protected function getSelectedIndices()
+	public function getSelectedIndices()
 	{
 		$selections=array();
 		if($this->_items)
@@ -267,7 +267,7 @@ abstract class TListControl extends TDataBoundControl
 		return $selections;
 	}
 
-	protected function setSelectedIndices($indices)
+	public function setSelectedIndices($indices)
 	{
 		if($this->_items)
 		{

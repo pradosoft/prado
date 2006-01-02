@@ -6,6 +6,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 {
 	private $_repeatedControl;
 	private $_isEnabled;
+	private $_changedEventRaised=false;
 
 	public function __construct()
 	{
@@ -154,14 +155,6 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 		$this->getStyle()->setCellPadding($value);
 	}
 
-	public function loadPostData($key,$values)
-	{
-	}
-
-	public function raisePostDataChangedEvent()
-	{
-	}
-
 	public function getHasHeader()
 	{
 		return false;
@@ -200,8 +193,48 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 		$this->_repeatedControl->setID("$index");
 		$this->_repeatedControl->setText($item->getText());
 		$this->_repeatedControl->setChecked($item->getSelected());
+		$this->_repeatedControl->setAttribute('value',$item->getValue());
 		$this->_repeatedControl->setEnabled($this->_isEnabled && $item->getEnabled());
 		$this->_repeatedControl->renderControl($writer);
+	}
+
+	public function loadPostData($key,$values)
+	{
+		if($this->getEnabled(true))
+		{
+			$index=(int)substr($key,strlen($this->getUniqueID())+1);
+			$this->ensureDataBound();
+			if($index>=0 && $index<$this->getRepeatedItemCount())
+			{
+				$item=$this->getItems()->itemAt($index);
+				if($item->getEnabled())
+				{
+					$checked=isset($values[$key]);
+					if($item->getSelected()!=$checked)
+					{
+						$item->setSelected($checked);
+						if(!$this->_changedEventRaised)
+						{
+							$this->_changedEventRaised=true;
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	public function raisePostDataChangedEvent()
+	{
+		$page=$this->getPage();
+		if($this->getAutoPostBack() && !$page->getPostBackEventTarget())
+		{
+			$page->setPostBackEventTarget($this);
+			if($this->getCausesValidation())
+				$page->validate($this->getValidationGroup());
+		}
+		$this->onSelectedIndexChanged(null);
 	}
 
 	protected function onPreRender($param)

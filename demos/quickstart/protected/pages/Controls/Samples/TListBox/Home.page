@@ -122,21 +122,6 @@ List box with initial items:
 
 <tr>
 <td class="samplenote">
-Auto postback list box:
-</td>
-<td class="sampleaction">
-<com:TListBox AutoPostBack="true" SelectionMode="Multiple" SelectedIndexChanged="multiSelectionChanged">
-  <com:TListItem Value="value 1" Text="item 1" />
-  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
-  <com:TListItem Value="value 3" Text="item 3" />
-  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
-</com:TListBox>
-<com:TLabel ID="MultiSelectionResult" ForeColor="red" />
-</td>
-</tr>
-
-<tr>
-<td class="samplenote">
 List box's behavior upon postback:
 </td>
 <td class="sampleaction">
@@ -149,6 +134,21 @@ List box's behavior upon postback:
 <com:TButton Text="Submit" Click="buttonClicked2" />
 <br/>
 <com:TLabel ID="MultiSelectionResult2" ForeColor="red" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Auto postback list box:
+</td>
+<td class="sampleaction">
+<com:TListBox AutoPostBack="true" SelectionMode="Multiple" SelectedIndexChanged="multiSelectionChanged">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
+</com:TListBox>
+<com:TLabel ID="MultiSelectionResult" ForeColor="red" />
 </td>
 </tr>
 

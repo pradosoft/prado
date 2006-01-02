@@ -259,14 +259,6 @@ class TStyle extends TComponent
 	}
 
 	/**
-	 * @param boolean if the style contains nothing
-	 */
-	public function getIsEmpty()
-	{
-		return empty($this->_fields) && $this->_class==='' && $this->_customStyle==='' && (!$this->_font || $this->_font->getIsEmpty());
-	}
-
-	/**
 	 * Resets the style to the original empty state.
 	 */
 	public function reset()
@@ -278,48 +270,19 @@ class TStyle extends TComponent
 	}
 
 	/**
-	 * Merges the current style with another one.
-	 * If the two styles have the same style field, the new one
-	 * will overwrite the current one.
-	 * @param TStyle the new style
-	 */
-	public function mergeWith($style)
-	{
-		if($style===null)
-			return;
-		foreach($style->_fields as $name=>$value)
-			$this->_fields[$name]=$value;
-		if($style->_class!=='')
-			$this->_class=$style->_class;
-		if($style->_customStyle!=='')
-			$this->_customStyle=$style->_customStyle;
-		if($style->_font!==null)
-			$this->getFont()->mergeWith($style->_font);
-	}
-
-	/**
 	 * Copies from a style.
 	 * Existing style will be reset first.
 	 * @param TStyle the new style
 	 */
 	public function copyFrom($style)
 	{
-		$this->reset();
-		$this->mergeWith($style);
-	}
-
-	/**
-	 * Converts the style into a string representation suitable for rendering.
-	 * @return string the string representation of the style
-	 */
-	public function toString()
-	{
-		$str='';
-		foreach($this->_fields as $name=>$value)
-			$str.=' '.$name.':'.$value.';';
-		if($this->_font)
-			$str.=$this->_font->toString();
-		return $str;
+		$this->_fields=$style->_fields;
+		$this->_class=$style->_class;
+		$this->_customStyle=$style->_customStyle;
+		if($style->_font!==null)
+			$this->getFont()->copyFrom($style->_font);
+		else
+			$this->_font=null;
 	}
 
 	/**
@@ -378,6 +341,35 @@ class TTableStyle extends TStyle
 	 */
 	private $_gridLines='None';
 
+	/**
+	 * Sets the style attributes to default values.
+	 * This method overrides the parent implementation by
+	 * resetting additional TTableStyle specific attributes.
+	 */
+	public function reset()
+	{
+		$this->_backImageUrl='';
+		$this->_horizontalAlign='NotSet';
+		$this->_cellPadding=-1;
+		$this->_cellSpacing=-1;
+		$this->_gridLines='None';
+	}
+
+	/**
+	 * Copies the style content from an existing style
+	 * This method overrides the parent implementation by
+	 * adding additional TTableStyle specific attributes.
+	 * @param TStyle source style
+	 */
+	public function copyFrom($style)
+	{
+		parent::copyFrom($style);
+		$this->_backImageUrl=$style->_backImageUrl;
+		$this->_horizontalAlign=$style->_horizontalAlign;
+		$this->_cellPadding=$style->_cellPadding;
+		$this->_cellSpacing=$style->_cellSpacing;
+		$this->_gridLines=$style->_gridLines;
+	}
 
 	/**
 	 * Adds attributes related to CSS styles to renderer.
@@ -387,10 +379,10 @@ class TTableStyle extends TStyle
 	public function addAttributesToRender($writer)
 	{
 		if(($url=trim($this->_backImageUrl))!=='')
-			$this->setStyleField('background-image','url('.$url.')');
+			$writer->addStyleAttribute('background-image','url('.$url.')');
 
 		if($this->_horizontalAlign!=='NotSet')
-			$this->setStyleField('text-align',strtolower($this->_horizontalAlign));
+			$writer->addStyleAttribute('text-align',strtolower($this->_horizontalAlign));
 
 		if($this->_cellPadding>=0)
 			$writer->addAttribute('cellpadding',"$this->_cellPadding");
@@ -399,7 +391,7 @@ class TTableStyle extends TStyle
 		{
 			$writer->addAttribute('cellspacing',"$this->_cellSpacing");
 			if($this->_cellSpacing===0)
-				$this->setStyleField('border-collapse','collapse');
+				$writer->addStyleAttribute('border-collapse','collapse');
 		}
 
 		switch($this->_gridLines)
@@ -527,6 +519,32 @@ class TTableItemStyle extends TStyle
 	private $_wrap=true;
 
 	/**
+	 * Sets the style attributes to default values.
+	 * This method overrides the parent implementation by
+	 * resetting additional TTableItemStyle specific attributes.
+	 */
+	public function reset()
+	{
+		$this->_verticalAlign='NotSet';
+		$this->_horizontalAlign='NotSet';
+		$this->_wrap=true;
+	}
+
+	/**
+	 * Copies the style content from an existing style
+	 * This method overrides the parent implementation by
+	 * adding additional TTableItemStyle specific attributes.
+	 * @param TStyle source style
+	 */
+	public function copyFrom($style)
+	{
+		parent::copyFrom($style);
+		$this->_verticalAlign=$style->_verticalAlign;
+		$this->_horizontalAlign=$style->_horizontalAlign;
+		$this->_wrap=$style->_wrap;
+	}
+
+	/**
 	 * Adds attributes related to CSS styles to renderer.
 	 * This method overrides the parent implementation.
 	 * @param THtmlWriter the writer used for the rendering purpose
@@ -534,7 +552,7 @@ class TTableItemStyle extends TStyle
 	public function addAttributesToRender($writer)
 	{
 		if(!$this->_wrap)
-			$this->setStyleField('nowrap','nowrap');
+			$writer->addStyleAttribute('nowrap','nowrap');
 
 		if($this->_horizontalAlign!=='NotSet')
 			$writer->addAttribute('align',strtolower($this->_horizontalAlign));

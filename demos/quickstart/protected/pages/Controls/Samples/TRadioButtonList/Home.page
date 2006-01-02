@@ -1,29 +1,29 @@
 <com:TContent ID="body">
 
-<h1>TCheckBoxList Samples</h1>
+<h1>TRadioButtonList Samples</h1>
 
 <table class="sampletable">
 
 <tr>
 <td class="samplenote">
-Check box list with default settings:
+Radio button list with default settings:
 </td>
 <td class="sampleaction">
-<com:TCheckBoxList>
+<com:TRadioButtonList>
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
   <com:TListItem Value="value 3" Text="item 3" />
-  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
-</com:TCheckBoxList>
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TRadioButtonList>
 </td>
 </tr>
 
 <tr>
 <td class="samplenote">
-Check box list with customized cellpadding, cellspacing, color and text alignment:
+Radio button list with customized cellpadding, cellspacing, color and text alignment:
 </td>
 <td class="sampleaction">
-<com:TCheckBoxList
+<com:TRadioButtonList
 	CellPadding="5"
 	CellSpacing="1"
 	BackColor="silver"
@@ -31,81 +31,81 @@ Check box list with customized cellpadding, cellspacing, color and text alignmen
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
   <com:TListItem Value="value 3" Text="item 3" />
-  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
-</com:TCheckBoxList>
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TRadioButtonList>
 </td>
 </tr>
 
 <tr>
 <td class="samplenote">
-Check box list with vertical (default) repeat direction:
+Radio button list with vertical (default) repeat direction:
 </td>
 <td class="sampleaction">
-<com:TCheckBoxList RepeatColumns="3">
+<com:TRadioButtonList RepeatColumns="3">
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
   <com:TListItem Value="value 3" Text="item 3" />
-  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
-</com:TCheckBoxList>
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TRadioButtonList>
 </td>
 </tr>
 
 <tr>
 <td class="samplenote">
-Check box list with horizontal repeat direction:
+Radio button list with horizontal repeat direction:
 </td>
 <td class="sampleaction">
-<com:TCheckBoxList RepeatDirection="Horizontal"	RepeatColumns="3">
+<com:TRadioButtonList RepeatDirection="Horizontal"	RepeatColumns="3">
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
   <com:TListItem Value="value 3" Text="item 3" />
-  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
-</com:TCheckBoxList>
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TRadioButtonList>
 </td>
 </tr>
 
 <tr>
 <td class="samplenote">
-Check box list with flow layout and vertical (default) repeat direction:
+Radio button list with flow layout and vertical (default) repeat direction:
 </td>
 <td class="sampleaction">
-<com:TCheckBoxList RepeatLayout="Flow" RepeatColumns="3">
+<com:TRadioButtonList RepeatLayout="Flow" RepeatColumns="3">
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
   <com:TListItem Value="value 3" Text="item 3" />
-  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
-</com:TCheckBoxList>
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TRadioButtonList>
 </td>
 </tr>
 
 <tr>
 <td class="samplenote">
-Check box list with flow layout and horizontal repeat direction:
+Radio button list with flow layout and horizontal repeat direction:
 </td>
 <td class="sampleaction">
-<com:TCheckBoxList
+<com:TRadioButtonList
 	RepeatLayout="Flow"
 	RepeatDirection="Horizontal"
 	RepeatColumns="3">
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
   <com:TListItem Value="value 3" Text="item 3" />
-  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
-</com:TCheckBoxList>
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TRadioButtonList>
 </td>
 </tr>
 
 <tr>
 <td class="samplenote">
-Check box list's behavior upon postback:
+Radio button list's behavior upon postback:
 </td>
 <td class="sampleaction">
-<com:TCheckBoxList ID="CheckBoxList">
+<com:TRadioButtonList ID="RadioButtonList">
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
   <com:TListItem Value="value 3" Text="item 3" />
-  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
-</com:TCheckBoxList>
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TRadioButtonList>
 <com:TButton Text="Submit" Click="buttonClicked" />
 <br/>
 <com:TLabel ID="SelectionResult" ForeColor="red" />
@@ -114,15 +114,15 @@ Check box list's behavior upon postback:
 
 <tr>
 <td class="samplenote">
-Auto postback check box list:
+Auto postback radio button list:
 </td>
 <td class="sampleaction">
-<com:TCheckBoxList AutoPostBack="true" SelectedIndexChanged="selectionChanged">
+<com:TRadioButtonList AutoPostBack="true" SelectedIndexChanged="selectionChanged">
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
   <com:TListItem Value="value 3" Text="item 3" />
-  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
-</com:TCheckBoxList>
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TRadioButtonList>
 <com:TLabel ID="SelectionResult2" ForeColor="red" />
 </td>
 </tr>

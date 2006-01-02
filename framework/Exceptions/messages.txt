@@ -147,3 +147,6 @@ hiddenfield_theming_unsupported			= THiddenField does not support theming.
 hiddenfield_skinid_unsupported			= THiddenField does not support control skin.
 
 panel_defaultbutton_invalid				= TPanel.DefaultButton '%s' does not refer to an existing button control.
+
+tablestyle_cellpadding_invalid			= TTableStyle.CellPadding must take an integer equal to or greater than -1.
+tablestyle_cellspacing_invalid			= TTableStyle.CellSpacing must take an integer equal to or greater than -1.

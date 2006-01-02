@@ -271,6 +271,7 @@ class TRepeatInfo extends TComponent
 					}
 					if($index>=$itemCount)
 						continue;
+					$renderedItems++;
 					$user->renderItem($writer,$this,'Item',$index);
 					$writer->writeLine();
 					if(!$hasSeparators)
