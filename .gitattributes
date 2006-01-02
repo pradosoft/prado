@@ -235,9 +235,11 @@ framework/Web/UI/WebControls/TLiteral.php -text
 framework/Web/UI/WebControls/TPanel.php -text
 framework/Web/UI/WebControls/TPlaceHolder.php -text
 framework/Web/UI/WebControls/TRadioButton.php -text
+framework/Web/UI/WebControls/TRadioButtonList.php -text
 framework/Web/UI/WebControls/TRepeatInfo.php -text
 framework/Web/UI/WebControls/TStatements.php -text
 framework/Web/UI/WebControls/TStyle.php -text
+framework/Web/UI/WebControls/TTable.php -text
 framework/Web/UI/WebControls/TTextBox.php -text
 framework/Web/UI/WebControls/TWebControl.php -text
 framework/core.php -text

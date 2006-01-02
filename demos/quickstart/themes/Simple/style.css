@@ -181,18 +181,18 @@ tt {
 	border-collapse: collapse;
 }
 
-.sampletable td {
+td.samplenote {
+	width: 300px;
+	text-align: right;
+	background: #BFE4FF;
 	border: 1px solid silver;
 	padding: 5px;
 	vertical-align: top;
 }
 
-td.samplenote {
-	width: 300px;
-	text-align: right;
-	background: #BFE4FF;
-}
-
 td.sampleaction {
 	background: #ffffee;
+	border: 1px solid silver;
+	padding: 5px;
+	vertical-align: top;
 }

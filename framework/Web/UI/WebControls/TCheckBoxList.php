@@ -2,7 +2,7 @@
 
 Prado::using('System.Web.UI.WebControls.TRepeatInfo');
 
-class TCheckBoxList extends TListControl implements IRepeatInfoUser
+class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingContainer, IPostBackDataHandler
 {
 	private $_repeatedControl;
 	private $_isEnabled;
@@ -10,10 +10,15 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser
 	public function __construct()
 	{
 		parent::__construct();
-		$this->_repeatedControl=new TCheckBox;
+		$this->_repeatedControl=$this->createRepeatedControl();
 		$this->_repeatedControl->setEnableViewState(false);
 		$this->_repeatedControl->setID('0');
 		$this->getControls()->add($this->_repeatedControl);
+	}
+
+	protected function createRepeatedControl()
+	{
+		return new TCheckBox;
 	}
 
 	public function findControl($id)

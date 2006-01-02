@@ -86,6 +86,7 @@ class TRepeatInfo extends TComponent
 		if($user->getHasStyle())
 			$control->getStyle()->copyFrom($user->getStyle());
 		$control->renderBeginTag($writer);
+		$writer->writeLine();
 
 		if($this->_repeatDirection==='Vertical')
 			$this->renderVerticalContents($writer,$user);
@@ -120,6 +121,7 @@ class TRepeatInfo extends TComponent
 				$writer->renderBeginTag('td');
 				$user->renderItem($writer,$this,'Item',$i);
 				$writer->renderEndTag();
+				$writer->writeLine();
 				if($hasSeparators && $i!=$itemCount-1)
 				{
 					if(($style=$user->getItemStyle('Separator',$i))!==null)
@@ -127,6 +129,7 @@ class TRepeatInfo extends TComponent
 					$writer->renderBeginTag('td');
 					$user->renderItem($writer,$this,'Separator',$i);
 					$writer->renderEndTag();
+					$writer->writeLine();
 				}
 				$column++;
 				if($i==$itemCount-1)
@@ -135,11 +138,12 @@ class TRepeatInfo extends TComponent
 					if($hasSeparators)
 						$restColumns=$restColumns?$restColumns+$restColumns+1:1;
 					for($j=0;$j<$restColumns;++$j)
-						$writer->write('<td></td>');
+						$writer->write("<td></td>\n");
 				}
 				if($column==$columns || $i==$itemCount-1)
 				{
 					$writer->renderEndTag();
+					$writer->writeLine();
 					$column=0;
 				}
 			}
@@ -159,6 +163,7 @@ class TRepeatInfo extends TComponent
 						$writer->writeBreak();
 					$column=0;
 				}
+				$writer->writeLine();
 			}
 		}
 
@@ -216,6 +221,7 @@ class TRepeatInfo extends TComponent
 					$writer->renderBeginTag('td');
 					$user->renderItem($writer,$this,'Item',$index);
 					$writer->renderEndTag();
+					$writer->writeLine();
 					if(!$hasSeparators)
 						continue;
 					if($renderedItems<$itemCount-1)
@@ -230,9 +236,10 @@ class TRepeatInfo extends TComponent
 						$writer->renderBeginTag('td');
 						$user->renderItem($writer,$this,'Separator',$index);
 						$writer->renderEndTag();
+						$writer->writeLine();
 					}
 					else if($columns>1)
-						$writer->write('<td></td>');
+						$writer->write("<td></td>\n");
 				}
 				if($row==$rows-1)
 				{
@@ -240,9 +247,10 @@ class TRepeatInfo extends TComponent
 					if($hasSeparators)
 						$restColumns+=$restColumns;
 					for($col=0;$col<$restColumns;++$col)
-						$writer->write('<td></td>');
+						$writer->write("<td></td>\n");
 				}
 				$writer->renderEndTag();
+				$writer->writeLine();
 			}
 		}
 		else
@@ -264,6 +272,7 @@ class TRepeatInfo extends TComponent
 					if($index>=$itemCount)
 						continue;
 					$user->renderItem($writer,$this,'Item',$index);
+					$writer->writeLine();
 					if(!$hasSeparators)
 						continue;
 					if($renderedItems<$itemCount-1)
@@ -272,6 +281,7 @@ class TRepeatInfo extends TComponent
 							$writer->writeBreak();
 						$user->renderItem($writer,$this,'Separator',$index);
 					}
+					$writer->writeLine();
 				}
 				if($row<$rows-1 || $user->getHasFooter())
 					$writer->writeBreak();
@@ -304,6 +314,7 @@ class TRepeatInfo extends TComponent
 			if($needBreak)
 				$writer->writeBreak();
 		}
+		$writer->writeLine();
 	}
 
 	protected function renderFooter($writer,$user,$tableLayout,$columns)
@@ -322,6 +333,7 @@ class TRepeatInfo extends TComponent
 		}
 		else
 			$user->renderItem($writer,$this,'Footer',-1);
+		$writer->writeLine();
 	}
 }
 

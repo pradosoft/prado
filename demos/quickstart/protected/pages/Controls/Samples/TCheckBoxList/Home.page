@@ -9,12 +9,26 @@
 Check box list with initial items:
 </td>
 <td class="sampleaction">
-<com:TCheckBoxList RepeatLayout="Flow" RepeatDirection="Horizontal" RepeatColumns="2">
+<com:TCheckBoxList AutoPostBack="true" BorderWidth="1px" BorderStyle="solid" BorderColor="black" GridLines="Both" RepeatLayout="Table" RepeatDirection="Horizontal" RepeatColumns="2">
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
   <com:TListItem Value="value 3" Text="item 3" />
   <com:TListItem Value="value 4" Text="item 4" Selected="true" />
 </com:TCheckBoxList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Check box list with initial items:
+</td>
+<td class="sampleaction">
+<com:TRadioButtonList AutoPostBack="true" BorderWidth="1px" BorderStyle="solid" BorderColor="black" GridLines="Both" RepeatLayout="Table" RepeatDirection="Horizontal" RepeatColumns="2">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
+</com:TRadioButtonList>
 </td>
 </tr>
 
