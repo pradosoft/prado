@@ -29,7 +29,7 @@ Bulleted list with customized color, font, bullet style:
 	BackColor="silver"
 	Font.Size="12pt">
   <com:TListItem Value="value 1" Text="item 1" />
-  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 2" Text="item 2" />
   <com:TListItem Value="value 3" Text="item 3" />
   <com:TListItem Value="value 4" Text="item 4" />
 </com:TBulletedList>
@@ -43,7 +43,7 @@ Bulleted list with image bullets:
 <td class="sampleaction">
 <com:TBulletedList BulletStyle="CustomImage" BulletImageUrl=<%~bullet.gif%> >
   <com:TListItem Value="value 1" Text="item 1" />
-  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 2" Text="item 2" />
   <com:TListItem Value="value 3" Text="item 3" />
   <com:TListItem Value="value 4" Text="item 4" />
 </com:TBulletedList>

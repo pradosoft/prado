@@ -256,6 +256,7 @@ framework/Web/UI/WebControls/TTextBox.php -text
 framework/Web/UI/WebControls/TWebControl.php -text
 framework/core.php -text
 framework/prado.php -text
+/index.html -text
 requirements/index.php -text
 requirements/messages-zh.txt -text
 requirements/messages.txt -text
@@ -462,6 +463,7 @@ tests/UnitTests/simpletest/url.php -text
 tests/UnitTests/simpletest/user_agent.php -text
 tests/UnitTests/simpletest/web_tester.php -text
 tests/UnitTests/simpletest/xml.php -text
+tools/.htaccess -text
 tools/jsbuilder/build.php -text
 tools/jsbuilder/custom_rhino.jar -text
 tools/phpbuilder/build.php -text
