@@ -42,6 +42,7 @@ demos/quickstart/protected/pages/Controls/List.page -text
 demos/quickstart/protected/pages/Controls/Overview.page -text
 demos/quickstart/protected/pages/Controls/Samples/TBulletedList/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TBulletedList/Home.php -text
+demos/quickstart/protected/pages/Controls/Samples/TBulletedList/bullet.gif -text
 demos/quickstart/protected/pages/Controls/Samples/TCheckBoxList/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TCheckBoxList/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TDropDownList/Home.page -text

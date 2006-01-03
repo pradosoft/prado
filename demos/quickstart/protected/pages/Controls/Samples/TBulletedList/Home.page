@@ -38,6 +38,20 @@ Bulleted list with customized color, font, bullet style:
 
 <tr>
 <td class="samplenote">
+Bulleted list with image bullets:
+</td>
+<td class="sampleaction">
+<com:TBulletedList BulletStyle="CustomImage" BulletImageUrl=<%~bullet.gif%> >
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TBulletedList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
 Bulleted list of hyperlinks:
 </td>
 <td class="sampleaction">
