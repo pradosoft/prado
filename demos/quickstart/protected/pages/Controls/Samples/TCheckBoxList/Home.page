@@ -104,7 +104,8 @@ Check box list's behavior upon postback:
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
   <com:TListItem Value="value 3" Text="item 3" />
-  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
+  <com:TListItem Value="value 4" Text="item 4" Enabled="false" />
+  <com:TListItem Value="value 5" Text="item 5" Selected="true" />
 </com:TCheckBoxList>
 <com:TButton Text="Submit" Click="buttonClicked" />
 <br/>
@@ -121,7 +122,8 @@ Auto postback check box list:
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
   <com:TListItem Value="value 3" Text="item 3" />
-  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
+  <com:TListItem Value="value 4" Text="item 4" Enabled="false" />
+  <com:TListItem Value="value 5" Text="item 5" Selected="true" />
 </com:TCheckBoxList>
 <com:TLabel ID="SelectionResult2" ForeColor="red" />
 </td>

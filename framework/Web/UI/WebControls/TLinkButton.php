@@ -86,7 +86,7 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 		{
 			$url = $this->getPostBackUrl();
 			//create unique no-op url references
-			$nop = "javascript:;//{$this->ClientID}";
+			$nop = "javascript:;//".$this->getClientID();
 			$writer->addAttribute('href', $url ? $url : $nop);
 
 			$scripts = $this->getPage()->getClientScript();
