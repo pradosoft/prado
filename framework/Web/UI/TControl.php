@@ -809,6 +809,27 @@ class TControl extends TComponent
 	}
 
 	/**
+	 * Finds all child and grand-child controls that are of the specified type.
+	 * @param string the class name
+	 * @return array list of controls found
+	 */
+	public function findControlsByType($type)
+	{
+		$controls=array();
+		if($this->getHasControls())
+		{
+			foreach($this->_rf[self::RF_CONTROLS] as $control)
+			{
+				if($control instanceof $type)
+					$controls[]=$control;
+				if(($control instanceof TControl) && $control->getHasControls())
+					$controls=array_merge($controls,$control->findControlsByType($type));
+			}
+		}
+		return $controls;
+	}
+
+	/**
 	 * Resets the control as a naming container.
 	 * Only framework developers should use this method.
 	 */
