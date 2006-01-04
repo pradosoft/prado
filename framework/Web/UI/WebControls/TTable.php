@@ -1,25 +1,106 @@
 <?php
+/**
+ * TTable class file
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ */
 
+/**
+ * TTable class
+ *
+ * TTable displays an HTML table on a Web page.
+ *
+ * A table may have {@link setCaption Caption}, whose alignment is specified
+ * via {@link setCaptionAlign CaptionAlign}. The table cellpadding and cellspacing
+ * are specified via {@link setCellPadding CellPadding} and {@link setCellSpacing CellSpacing}
+ * properties, respectively. The {@link setGridLines GridLines} specifies how
+ * the table should display its borders. The horizontal alignment of the table
+ * content can be specified via {@link setHorizontalAlign HorizontalAlign},
+ * and {@link setBackImageUrl BackImageUrl} can assign a background image to the table.
+ *
+ * A TTable maintains a list of {@link TTableRow} controls in its
+ * {@link getRows Rows} property. Each {@link TTableRow} represents
+ * an HTML table row.
+ *
+ * To populate the table {@link getRows Rows}, you may either use control template
+ * or dynamically create {@link TTableRow} in code.
+ * In template, do as follows to create the table rows and cells,
+ * <code>
+ *   &lt;com:TTable&gt;
+ *     &lt;com:TTableRow&gt;
+ *       &lt;com:TTableCell Text="content" /&gt;
+ *       &lt;com:TTableCell Text="content" /&gt;
+ *     &lt;/com:TTableRow&gt;
+ *     &lt;com:TTableRow&gt;
+ *       &lt;com:TTableCell Text="content" /&gt;
+ *       &lt;com:TTableCell Text="content" /&gt;
+ *     &lt;/com:TTableRow&gt;
+ *   &lt;com:TTable&gt;
+ * </code>
+ * The above can also be accomplished in code as follows,
+ * <code>
+ *   $table=new TTable;
+ *   $row=new TTableRow;
+ *   $cell=new TTableCell; $cell->Text="content"; $row->Cells->add($cell);
+ *   $cell=new TTableCell; $cell->Text="content"; $row->Cells->add($cell);
+ *   $table->Rows->add($row);
+ *   $row=new TTableRow;
+ *   $cell=new TTableCell; $cell->Text="content"; $row->Cells->add($cell);
+ *   $cell=new TTableCell; $cell->Text="content"; $row->Cells->add($cell);
+ *   $table->Rows->add($row);
+ * </code>
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 class TTable extends TWebControl
 {
+	/**
+	 * @var TTableRowCollection row collection
+	 */
 	private $_rows=null;
 
+	/**
+	 * @return string tag name for the table
+	 */
 	protected function getTagName()
 	{
 		return 'table';
 	}
 
+	/**
+	 * Adds object parsed from template to the control.
+	 * This method adds only {@link TTableRow} objects into the {@link getRows Rows} collection.
+	 * All other objects are ignored.
+	 * @param mixed object parsed from template
+	 */
 	public function addParsedObject($object)
 	{
 		if($object instanceof TTableRow)
 			$this->getRows()->add($object);
 	}
 
+	/**
+	 * Creates a style object for the control.
+	 * This method creates a {@link TTableStyle} to be used by the table.
+	 * @return TStyle control style to be used
+	 */
 	protected function createStyle()
 	{
 		return new TTableStyle;
 	}
 
+	/**
+	 * Adds attributes to renderer.
+	 * @param THtmlWriter the renderer
+	 */
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
@@ -38,37 +119,50 @@ class TTable extends TWebControl
 	}
 
 	/**
-	 * @return array list of TTableRow components
+	 * @return TTableRowCollection list of {@link TTableRow} controls
 	 */
 	public function getRows()
 	{
 		if(!$this->_rows)
-			$this->_rows=new TTableRowCollection($this);
+			$this->_rows=new TTableRowCollection();
 		return $this->_rows;
 	}
 
+	/**
+	 * @return string table caption
+	 */
 	public function getCaption()
 	{
 		return $this->getViewState('Caption','');
 	}
 
+	/**
+	 * @param string table caption
+	 */
 	public function setCaption($value)
 	{
 		$this->setViewState('Caption',$value,'');
 	}
 
+	/**
+	 * @return string table caption alignment. Defaults to 'NotSet'.
+	 */
 	public function getCaptionAlign()
 	{
-		return $this->getViewState('CaptionAlign','');
+		return $this->getViewState('CaptionAlign','NotSet');
 	}
 
+	/**
+	 * @param string table caption alignment. Valid values include
+	 * 'NotSet','Top','Bottom','Left','Right'.
+	 */
 	public function setCaptionAlign($value)
 	{
 		$this->setViewState('CaptionAlign',TPropertyValue::ensureEnum($value,'NotSet','Top','Bottom','Left','Right'),'NotSet');
 	}
 
 	/**
-	 * @return integer the cellspacing for the table keeping the checkbox list. Defaults to -1, meaning not set.
+	 * @return integer the cellspacing for the table. Defaults to -1, meaning not set.
 	 */
 	public function getCellSpacing()
 	{
@@ -79,8 +173,7 @@ class TTable extends TWebControl
 	}
 
 	/**
-	 * Sets the cellspacing for the table keeping the checkbox list.
-	 * @param integer the cellspacing for the table keeping the checkbox list.
+	 * @param integer the cellspacing for the table. Defaults to -1, meaning not set.
 	 */
 	public function setCellSpacing($value)
 	{
@@ -88,7 +181,7 @@ class TTable extends TWebControl
 	}
 
 	/**
-	 * @return integer the cellpadding for the table keeping the checkbox list. Defaults to -1, meaning not set.
+	 * @return integer the cellpadding for the table. Defaults to -1, meaning not set.
 	 */
 	public function getCellPadding()
 	{
@@ -99,14 +192,16 @@ class TTable extends TWebControl
 	}
 
 	/**
-	 * Sets the cellpadding for the table keeping the checkbox list.
-	 * @param integer the cellpadding for the table keeping the checkbox list.
+	 * @param integer the cellpadding for the table. Defaults to -1, meaning not set.
 	 */
 	public function setCellPadding($value)
 	{
 		$this->getStyle()->setCellPadding($value);
 	}
 
+	/**
+	 * @return string the horizontal alignment of the table content. Defaults to 'NotSet'.
+	 */
 	public function getHorizontalAlign()
 	{
 		if($this->getHasStyle())
@@ -115,11 +210,18 @@ class TTable extends TWebControl
 			return 'NotSet';
 	}
 
+	/**
+	 * @param string the horizontal alignment of the table content.
+	 * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'.
+	 */
 	public function setHorizontalAlign($value)
 	{
 		$this->getStyle()->setHorizontalAlign($value);
 	}
 
+	/**
+	 * @return string the grid line setting of the table. Defaults to 'None'.
+	 */
 	public function getGridLines()
 	{
 		if($this->getHasStyle())
@@ -128,24 +230,40 @@ class TTable extends TWebControl
 			return 'None';
 	}
 
+	/**
+	 * Sets the grid line style of the table.
+     * Valid values include 'None', 'Horizontal', 'Vertical', 'Both'.
+	 * @param string the grid line setting of the table
+	 */
 	public function setGridLines($value)
 	{
 		$this->getStyle()->setGridLines($value);
 	}
 
+	/**
+	 * @return string the URL of the background image for the table
+	 */
 	public function getBackImageUrl()
 	{
 		if($this->getHasStyle())
 			return $this->getStyle()->getBackImageUrl();
 		else
-			return 'None';
+			return '';
 	}
 
+	/**
+	 * Sets the URL of the background image for the table
+	 * @param string the URL
+	 */
 	public function setBackImageUrl($value)
 	{
 		$this->getStyle()->setBackImageUrl($value);
 	}
 
+	/**
+	 * Renders the openning tag for the table control which will render table caption if present.
+	 * @param THtmlWriter the writer used for the rendering purpose
+	 */
 	public function renderBeginTag($writer)
 	{
 		parent::renderBeginTag($writer);
@@ -159,6 +277,10 @@ class TTable extends TWebControl
 		}
 	}
 
+	/**
+	 * Renders body contents of the table.
+	 * @param THtmlWriter the writer used for the rendering purpose.
+	 */
 	protected function renderContents($writer)
 	{
 		if($this->_rows)
@@ -174,33 +296,69 @@ class TTable extends TWebControl
 }
 
 
+/**
+ * TTableRow class.
+ *
+ * TTableRow displays a table row. The table cells in the row can be accessed
+ * via {@link getCells Cells}. The horizontal and vertical alignments of the row
+ * are specified via {@link setHorizontalAlign HorizontalAlign} and
+ * {@link setVerticalAlign VerticalAlign} properties, respectively.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 class TTableRow extends TWebControl
 {
+	/**
+	 * @var TTableCellCollection cell collection
+	 */
 	private $_cells=null;
 
+	/**
+	 * @return string tag name for the table
+	 */
 	protected function getTagName()
 	{
 		return 'tr';
 	}
 
+	/**
+	 * Adds object parsed from template to the control.
+	 * This method adds only {@link TTableCell} objects into the {@link getCells Cells} collection.
+	 * All other objects are ignored.
+	 * @param mixed object parsed from template
+	 */
 	public function addParsedObject($object)
 	{
 		if($object instanceof TTableCell)
 			$this->getCells()->add($object);
 	}
 
+	/**
+	 * Creates a style object for the control.
+	 * This method creates a {@link TTableItemStyle} to be used by the table row.
+	 * @return TStyle control style to be used
+	 */
 	protected function createStyle()
 	{
 		return new TTableItemStyle;
 	}
 
+	/**
+	 * @return TTableCellCollection list of {@link TTableCell} controls
+	 */
 	public function getCells()
 	{
 		if(!$this->_cells)
-			$this->_cells=new TTableCellCollection($this);
+			$this->_cells=new TTableCellCollection();
 		return $this->_cells;
 	}
 
+	/**
+	 * @return string the horizontal alignment of the contents within the table item, defaults to 'NotSet'.
+	 */
 	public function getHorizontalAlign()
 	{
 		if($this->getHasStyle())
@@ -209,11 +367,19 @@ class TTableRow extends TWebControl
 			return 'NotSet';
 	}
 
+	/**
+	 * Sets the horizontal alignment of the contents within the table item.
+     * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
+	 * @param string the horizontal alignment
+	 */
 	public function setHorizontalAlign($value)
 	{
 		$this->getStyle()->setHorizontalAlign($value);
 	}
 
+	/**
+	 * @return string the vertical alignment of the contents within the table item, defaults to 'NotSet'.
+	 */
 	public function getVerticalAlign()
 	{
 		if($this->getHasStyle())
@@ -222,11 +388,20 @@ class TTableRow extends TWebControl
 			return 'NotSet';
 	}
 
+	/**
+	 * Sets the vertical alignment of the contents within the table item.
+     * Valid values include 'NotSet','Top','Bottom','Middel'
+	 * @param string the horizontal alignment
+	 */
 	public function setVerticalAlign($value)
 	{
 		$this->getStyle()->setVerticalAlign($value);
 	}
 
+	/**
+	 * Renders body contents of the table row
+	 * @param THtmlWriter writer for the rendering purpose
+	 */
 	protected function renderContents($writer)
 	{
 		if($this->_cells)
@@ -242,18 +417,51 @@ class TTableRow extends TWebControl
 }
 
 
+/**
+ * TTableCell class.
+ *
+ * TTableCell displays a table cell on a Web page. Content of the table cell
+ * is specified by the {@link setText Text} property. If {@link setText Text}
+ * is empty, the body contents enclosed by the table cell component tag are rendered.
+ * Note, {@link setText Text} is not HTML-encoded when displayed. So make sure
+ * it does not contain dangerous characters.
+ *
+ * The horizontal and vertical alignments of the contents in the cell
+ * are specified via {@link setHorizontalAlign HorizontalAlign} and
+ * {@link setVerticalAlign VerticalAlign} properties, respectively.
+ *
+ * The colspan and rowspan of the cell are specified via {@link setColumnSpan ColumnSpan}
+ * and {@link setRowSpan RowSpan} properties. And the {@link setWrap Wrap} property
+ * indicates whether the contents in the cell should be wrapped.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 class TTableCell extends TWebControl
 {
+	/**
+	 * @return string tag name for the table cell
+	 */
 	protected function getTagName()
 	{
 		return 'td';
 	}
 
+	/**
+	 * Creates a style object for the control.
+	 * This method creates a {@link TTableItemStyle} to be used by the table cell.
+	 * @return TStyle control style to be used
+	 */
 	protected function createStyle()
 	{
 		return new TTableItemStyle;
 	}
 
+	/**
+	 * @return string the horizontal alignment of the contents within the table item, defaults to 'NotSet'.
+	 */
 	public function getHorizontalAlign()
 	{
 		if($this->getHasStyle())
@@ -262,11 +470,19 @@ class TTableCell extends TWebControl
 			return 'NotSet';
 	}
 
+	/**
+	 * Sets the horizontal alignment of the contents within the table item.
+     * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
+	 * @param string the horizontal alignment
+	 */
 	public function setHorizontalAlign($value)
 	{
 		$this->getStyle()->setHorizontalAlign($value);
 	}
 
+	/**
+	 * @return string the vertical alignment of the contents within the table item, defaults to 'NotSet'.
+	 */
 	public function getVerticalAlign()
 	{
 		if($this->getHasStyle())
@@ -275,6 +491,11 @@ class TTableCell extends TWebControl
 			return 'NotSet';
 	}
 
+	/**
+	 * Sets the vertical alignment of the contents within the table item.
+     * Valid values include 'NotSet','Top','Bottom','Middel'
+	 * @param string the horizontal alignment
+	 */
 	public function setVerticalAlign($value)
 	{
 		$this->getStyle()->setVerticalAlign($value);
@@ -315,7 +536,7 @@ class TTableCell extends TWebControl
 	}
 
 	/**
-	 * @return boolean whether the text content wraps within a table cell.
+	 * @return boolean whether the text content wraps within a table cell. Defaults to true.
 	 */
 	public function getWrap()
 	{
@@ -344,6 +565,7 @@ class TTableCell extends TWebControl
 
 	/**
 	 * Sets the text content of the table cell.
+	 * If the text content is empty, body content (child controls) of the cell will be rendered.
 	 * @param string the text content
 	 */
 	public function setText($value)
@@ -351,6 +573,10 @@ class TTableCell extends TWebControl
 		$this->setViewState('Text',$value,'');
 	}
 
+	/**
+	 * Adds attributes to renderer.
+	 * @param THtmlWriter the renderer
+	 */
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
@@ -360,6 +586,10 @@ class TTableCell extends TWebControl
 			$writer->addAttribute('rowspan',"$rowspan");
 	}
 
+	/**
+	 * Renders body contents of the table cell.
+	 * @param THtmlWriter the writer used for the rendering purpose.
+	 */
 	protected function renderContents($writer)
 	{
 		if(($text=$this->getText())==='')
@@ -367,29 +597,32 @@ class TTableCell extends TWebControl
 		else
 			$writer->write($text);
 	}
-
-	/**
-	 * Renders the body content of this cell.
-	 * @return string the rendering result
-	 */
-	protected function renderBody()
-	{
-		$text=$this->getText();
-		if($text!=='')
-			return $text;
-		else
-			return parent::renderBody();
-	}
 }
 
-
+/**
+ * TTableHeaderCell class.
+ *
+ * TTableHeaderCell displays a table header cell on a Web page.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 class TTableHeaderCell extends TTableCell
 {
+	/**
+	 * @return string tag name for the table header cell
+	 */
 	protected function getTagName()
 	{
 		return 'th';
 	}
 
+	/**
+	 * Adds attributes to renderer.
+	 * @param THtmlWriter the renderer
+	 */
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
@@ -401,31 +634,50 @@ class TTableHeaderCell extends TTableCell
 			$writer->addAttribute('axis',$text);
 	}
 
+	/**
+	 * @return string the scope of the cells that the header cell applies to. Defaults to 'NotSet'.
+	 */
 	public function getScope()
 	{
 		return $this->getViewState('Scope','NotSet');
 	}
 
+	/**
+	 * @param string the scope of the cells that the header cell applies to.
+	 * Valid values include 'NotSet','Row','Column'.
+	 */
 	public function setScope($value)
 	{
 		$this->setViewState('Scope',TPropertyValue::ensureEnum($value,'NotSet','Row','Column'),'NotSet');
 	}
 
+	/**
+	 * @return string  the abbr attribute of the HTML th element
+	 */
 	public function getAbbreviatedText()
 	{
 		return $this->getViewState('AbbreviatedText','');
 	}
 
+	/**
+	 * @param string  the abbr attribute of the HTML th element
+	 */
 	public function setAbbreviatedText($value)
 	{
 		$this->setViewState('AbbreviatedText',$value,'');
 	}
 
+	/**
+	 * @return string the axis attribute of the HTML th element
+	 */
 	public function getCategoryText()
 	{
 		return $this->getViewState('CategoryText','');
 	}
 
+	/**
+	 * @param string the axis attribute of the HTML th element
+	 */
 	public function setCategoryText($value)
 	{
 		$this->setViewState('CategoryText',$value,'');
@@ -433,50 +685,18 @@ class TTableHeaderCell extends TTableCell
 }
 
 
+/**
+ * TTableRowCollection class.
+ *
+ * TTableRowCollection is used to maintain a list of rows belong to a table.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 class TTableRowCollection extends TList
 {
-	/**
-	 * the table that owns this collection.
-	 * @var TTable
-	 */
-	private $_o;
-
-	/**
-	 * Constructor.
-	 * @param TTable the table that owns this collection.
-	 */
-	public function __construct(TTable $owner)
-	{
-		parent::__construct();
-		$this->_o=$owner;
-	}
-
-	/**
-	 * @return TTable the table that owns this collection.
-	 */
-	protected function getOwner()
-	{
-		return $this->_o;
-	}
-
-	/**
-	 * Overrides the parent implementation with customized processing of the newly added item.
-	 * @param mixed the newly added item
-	 */
-	protected function addedItem($item)
-	{
-		$this->_o->addedControl($item);
-	}
-
-	/**
-	 * Overrides the parent implementation with customized processing of the removed item.
-	 * @param mixed the removed item
-	 */
-	protected function removedItem($item)
-	{
-		$this->_o->removedControl($item);
-	}
-
 	/**
 	 * Only string or instance of TControl can be added into collection.
 	 * @param mixed the item to be added
@@ -488,52 +708,20 @@ class TTableRowCollection extends TList
 }
 
 
+/**
+ * TTableCellCollection class.
+ *
+ * TTableCellCollection is used to maintain a list of cells belong to a table row.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 class TTableCellCollection extends TList
 {
 	/**
-	 * the table row that owns this collection.
-	 * @var TTableRow
-	 */
-	private $_o;
-
-	/**
-	 * Constructor.
-	 * @param TTableRow the table row that owns this collection.
-	 */
-	public function __construct(TTableRow $owner)
-	{
-		parent::__construct();
-		$this->_o=$owner;
-	}
-
-	/**
-	 * @return TTableRow the table row that owns this collection.
-	 */
-	protected function getOwner()
-	{
-		return $this->_o;
-	}
-
-	/**
-	 * Overrides the parent implementation with customized processing of the newly added item.
-	 * @param mixed the newly added item
-	 */
-	protected function addedItem($item)
-	{
-		$this->_o->addedControl($item);
-	}
-
-	/**
-	 * Overrides the parent implementation with customized processing of the removed item.
-	 * @param mixed the removed item
-	 */
-	protected function removedItem($item)
-	{
-		$this->_o->removedControl($item);
-	}
-
-	/**
-	 * Only string or instance of TControl can be added into collection.
+	 * Only string or instance of TTableCell can be added into collection.
 	 * @param mixed the item to be added
 	 */
 	protected function canAddItem($item)
