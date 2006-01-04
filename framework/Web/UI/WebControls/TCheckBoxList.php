@@ -1,7 +1,44 @@
 <?php
+/**
+ * TCheckBoxList class file
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ */
 
+/**
+ * Includes TRepeatInfo class
+ */
 Prado::using('System.Web.UI.WebControls.TRepeatInfo');
 
+/**
+ * TCheckBoxList class
+ *
+ * TCheckBoxList displays a list of checkboxes on a Web page.
+ *
+ * The layout of the checkbox list is specified via {@link setRepeatLayout RepeatLayout},
+ * which can be either 'Table' (default) or 'Flow'.
+ * A table layout uses HTML table cells to organize the checkboxes while
+ * a flow layout uses line breaks to organize the checkboxes.
+ * When the layout is using 'Table', {@link setCellPadding CellPadding} and
+ * {@link setCellSpacing CellSpacing} can be used to adjust the cellpadding and
+ * cellpadding of the table.
+ *
+ * The number of columns used to display the checkboxes is specified via
+ * {@link setRepeatColumns RepeatColumns} property, while the {@link setRepeatDirection RepeatDirection}
+ * governs the order of the items being rendered.
+ *
+ * The alignment of the text besides each checkbox can be specified via {@link setTextAlign TextAlign}.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingContainer, IPostBackDataHandler
 {
 	private $_repeatedControl;
@@ -17,26 +54,48 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 		$this->getControls()->add($this->_repeatedControl);
 	}
 
+	/**
+	 * Creates a control used for repetition (used as a template).
+	 * @return TControl the control to be repeated
+	 */
 	protected function createRepeatedControl()
 	{
 		return new TCheckBox;
 	}
 
+	/**
+	 * Finds a control by ID.
+	 * This method overrides the parent implementation so that it always returns
+	 * the checkbox list itself (because the checkbox list does not have child controls.)
+	 * @param string control ID
+	 * @return TControl control being found
+	 */
 	public function findControl($id)
 	{
 		return $this;
 	}
 
+	/**
+	 * @return boolean whether this control supports multiple selection. Always true for checkbox list.
+	 */
 	protected function getIsMultiSelect()
 	{
 		return true;
 	}
 
+	/**
+	 * Creates a style object for the control.
+	 * This method creates a {@link TTableStyle} to be used by checkbox list.
+	 * @return TStyle control style to be used
+	 */
 	protected function createStyle()
 	{
 		return new TTableStyle;
 	}
 
+	/**
+	 * @return TRepeatInfo repeat information (primarily used by control developers)
+	 */
 	protected function getRepeatInfo()
 	{
 		if(($repeatInfo=$this->getViewState('RepeatInfo',null))===null)
@@ -155,34 +214,56 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 		$this->getStyle()->setCellPadding($value);
 	}
 
+	/**
+	 * Returns a value indicating whether this control contains header item.
+	 * This method is required by {@link IRepeatInfoUser} interface.
+	 * @return boolean always false.
+	 */
 	public function getHasHeader()
 	{
 		return false;
 	}
 
+	/**
+	 * Returns a value indicating whether this control contains footer item.
+	 * This method is required by {@link IRepeatInfoUser} interface.
+	 * @return boolean always false.
+	 */
 	public function getHasFooter()
 	{
 		return false;
 	}
 
+	/**
+	 * Returns a value indicating whether this control contains separator items.
+	 * This method is required by {@link IRepeatInfoUser} interface.
+	 * @return boolean always false.
+	 */
 	public function getHasSeparators()
 	{
 		return false;
 	}
 
+	/**
+	 * Returns a style used for rendering items.
+	 * This method is required by {@link IRepeatInfoUser} interface.
+	 * @param string item type
+	 * @param integer index of the item being rendered
+	 * @return null
+	 */
 	public function getItemStyle($itemType,$index)
 	{
 		return null;
 	}
 
-	public function getRepeatedItemCount()
-	{
-		if($this->getHasItems())
-			return $this->getItems()->getCount();
-		else
-			return 0;
-	}
-
+	/**
+	 * Renders an item in the list.
+	 * This method is required by {@link IRepeatInfoUser} interface.
+	 * @param THtmlWriter writer for rendering purpose
+	 * @param TRepeatInfo repeat information
+	 * @param string item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
+	 * @param integer zero-based index of the item in the item list
+	 */
 	public function renderItem($writer,$repeatInfo,$itemType,$index)
 	{
 		$item=$this->getItems()->itemAt($index);
@@ -198,13 +279,20 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 		$this->_repeatedControl->renderControl($writer);
 	}
 
+	/**
+	 * Loads user input data.
+	 * This method is primarly used by framework developers.
+	 * @param string the key that can be used to retrieve data from the input data collection
+	 * @param array the input data collection
+	 * @return boolean whether the data of the control has been changed
+	 */
 	public function loadPostData($key,$values)
 	{
 		if($this->getEnabled(true))
 		{
 			$index=(int)substr($key,strlen($this->getUniqueID())+1);
 			$this->ensureDataBound();
-			if($index>=0 && $index<$this->getRepeatedItemCount())
+			if($index>=0 && $index<$this->getItemCount())
 			{
 				$item=$this->getItems()->itemAt($index);
 				if($item->getEnabled())
@@ -225,6 +313,13 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 		return false;
 	}
 
+	/**
+	 * Raises postdata changed event.
+	 * This method is required by {@link IPostBackDataHandler} interface.
+	 * It is invoked by the framework when {@link getSelectedIndices SelectedIndices} property
+	 * is changed on postback.
+	 * This method is primarly used by framework developers.
+	 */
 	public function raisePostDataChangedEvent()
 	{
 		$page=$this->getPage();
@@ -237,6 +332,11 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 		$this->onSelectedIndexChanged(null);
 	}
 
+	/**
+	 * Registers for post data on postback.
+	 * This method overrides the parent implementation.
+	 * @param mixed event parameter
+	 */
 	protected function onPreRender($param)
 	{
 		parent::onPreRender($param);
@@ -244,7 +344,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 		$this->_repeatedControl->setCausesValidation($this->getCausesValidation());
 		$this->_repeatedControl->setValidationGroup($this->getValidationGroup());
 		$page=$this->getPage();
-		$n=$this->getRepeatedItemCount();
+		$n=$this->getItemCount();
 		for($i=0;$i<$n;++$i)
 		{
 			$this->_repeatedControl->setID("$i");
@@ -252,9 +352,14 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 		}
 	}
 
+	/**
+	 * Renders the checkbox list control.
+	 * This method overrides the parent implementation.
+	 * @param THtmlWriter writer for rendering purpose.
+	 */
 	protected function render($writer)
 	{
-		if($this->getRepeatedItemCount()>0)
+		if($this->getItemCount()>0)
 		{
 			$this->_isEnabled=$this->getEnabled(true);
 			$repeatInfo=$this->getRepeatInfo();

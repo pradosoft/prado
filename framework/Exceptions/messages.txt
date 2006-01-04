@@ -150,3 +150,8 @@ panel_defaultbutton_invalid				= TPanel.DefaultButton '%s' does not refer to an 
 
 tablestyle_cellpadding_invalid			= TTableStyle.CellPadding must take an integer equal to or greater than -1.
 tablestyle_cellspacing_invalid			= TTableStyle.CellSpacing must take an integer equal to or greater than -1.
+
+pagestatepersister_pagestate_corrupted	= Page state is corrupted.
+pagestatepersister_privatekey_invalid	= TPageStatePersister.PrivateKey must take a string no shorter than 8 characters.
+
+listitemcollection_item_invalid			= TListItemCollection can only take strings or TListItem objects.

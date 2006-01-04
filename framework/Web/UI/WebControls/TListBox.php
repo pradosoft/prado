@@ -1,7 +1,36 @@
 <?php
+/**
+ * TListBox class file
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ */
 
+/**
+ * TListBox class
+ *
+ * TListBox displays a list box on a Web page that allows single or multiple selection.
+ * The list box allows multiple selections if {@link setSelectionMode SelectionMode}
+ * is 'Multiple'. It takes single selection only if 'Single'.
+ * The property {@link setRows Rows} specifies how many rows of options are visible
+ * at a time. See {@link TListControl} for inherited properties.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 class TListBox extends TListControl implements IPostBackDataHandler
 {
+	/**
+	 * Adds attribute name-value pairs to renderer.
+	 * This method overrides the parent implementation with additional list box specific attributes.
+	 * @param THtmlWriter the writer used for the rendering purpose
+	 */
 	protected function addAttributesToRender($writer)
 	{
 		$rows=$this->getRows();
@@ -13,6 +42,11 @@ class TListBox extends TListControl implements IPostBackDataHandler
 		parent::addAttributesToRender($writer);
 	}
 
+	/**
+	 * Registers the list control to load post data on postback.
+	 * This method overrides the parent implementation.
+	 * @param mixed event parameter
+	 */
 	protected function onPreRender($param)
 	{
 		parent::onPreRender($param);
@@ -20,6 +54,13 @@ class TListBox extends TListControl implements IPostBackDataHandler
 			$this->getPage()->registerRequiresPostData($this);
 	}
 
+	/**
+	 * Loads user input data.
+	 * This method is primarly used by framework developers.
+	 * @param string the key that can be used to retrieve data from the input data collection
+	 * @param array the input data collection
+	 * @return boolean whether the data of the component has been changed
+	 */
 	public function loadPostData($key,$values)
 	{
 		if(!$this->getEnabled(true))
@@ -76,6 +117,13 @@ class TListBox extends TListControl implements IPostBackDataHandler
 			return false;
 	}
 
+	/**
+	 * Raises postdata changed event.
+	 * This method is required by {@link IPostBackDataHandler} interface.
+	 * It is invoked by the framework when {@link getSelectedIndices SelectedIndices} property
+	 * is changed on postback.
+	 * This method is primarly used by framework developers.
+	 */
 	public function raisePostDataChangedEvent()
 	{
 		$page=$this->getPage();
@@ -88,18 +136,16 @@ class TListBox extends TListControl implements IPostBackDataHandler
 		$this->onSelectedIndexChanged(null);
 	}
 
+	/**
+	 * @return boolean whether this control allows multiple selection
+	 */
 	protected function getIsMultiSelect()
 	{
 		return $this->getSelectionMode()==='Multiple';
 	}
 
-	public function getSelectedIndices()
-	{
-		return parent::getSelectedIndices();
-	}
-
 	/**
-	 * @return integer the number of rows to be displayed in the component
+	 * @return integer the number of rows to be displayed in the list control
 	 */
 	public function getRows()
 	{
@@ -107,8 +153,7 @@ class TListBox extends TListControl implements IPostBackDataHandler
 	}
 
 	/**
-	 * Sets the number of rows to be displayed in the component
-	 * @param integer the number of rows
+	 * @param integer the number of rows to be displayed in the list control
 	 */
 	public function setRows($value)
 	{
@@ -119,7 +164,7 @@ class TListBox extends TListControl implements IPostBackDataHandler
 	}
 
 	/**
-	 * @return string the selection mode (Single, Multiple )
+	 * @return string the selection mode (Single, Multiple). Defaults to 'Single'.
 	 */
 	public function getSelectionMode()
 	{
@@ -127,7 +172,7 @@ class TListBox extends TListControl implements IPostBackDataHandler
 	}
 
 	/**
-	 * Sets the selection mode of the component (Single, Multiple)
+	 * Sets the selection mode of the list control (Single, Multiple)
 	 * @param string the selection mode
 	 */
 	public function setSelectionMode($value)

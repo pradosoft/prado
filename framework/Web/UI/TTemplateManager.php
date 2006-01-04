@@ -15,9 +15,13 @@
  *
  * TTemplateManager manages the loading and parsing of control templates.
  *
- * Given a class name, TTemplateManager tries to locate the corresponding template
- * file under the directory containing the class file. The name of the template file
- * is the class name with the extension '.tpl'.
+ * There are two ways of loading a template, either by the associated template
+ * control class name, or the template file name.
+ * The former is via calling {@link getTemplateByClassName}, which tries to
+ * locate the corresponding template file under the directory containing
+ * the class file. The name of the template file is the class name with
+ * the extension '.tpl'. To load a template from a template file path,
+ * call {@link getTemplateByFileName}.
  *
  * By default, TTemplateManager is registered with {@link TPageService} as the
  * template manager module that can be accessed via {@link TPageService::getTemplateManager()}.
@@ -115,7 +119,7 @@ class TTemplateManager extends TModule
  * A TTemplate object represents a parsed PRADO template. To instantiate the template
  * for a particular control, call {@link instantiateIn($control)}, which
  * will create and intialize all components specified in the template and
- * set their parent as the control.
+ * set their parent as $control.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -129,8 +133,8 @@ class TTemplate extends TComponent implements ITemplate
 	 *	'<!--.*?-->'  - HTML comments
 	 *	'<\/?com:([\w\.]+)((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?"|\s*[\w\.]+=<%.*?%>)*)\s*\/?>' - component tags
 	 *	'<\/?prop:([\w\.]+)\s*>'  - property tags
-	 *	'<%@\s*(\w+)((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?")*)\s*%>'  - directives
-	 *	'<%=?(.*?)%> | <%#(.*?)%>'  - expressions
+	 *	'<%@\s*((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?")*)\s*%>'  - directives
+	 *	'<%[%#~\\$=](.*?)%>'  - expressions
 	 */
 	const REGEX_RULES='/<!.*?!>|<!--.*?-->|<\/?com:([\w\.]+)((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?"|\s*[\w\.]+=<%.*?%>)*)\s*\/?>|<\/?prop:([\w\.]+)\s*>|<%@\s*((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?")*)\s*%>|<%[%#~\\$=](.*?)%>/msS';
 

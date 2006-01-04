@@ -1,4 +1,23 @@
 <?php
+/**
+ * TBulletedList class file
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ */
+
+/**
+ * TBulletedList class
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 
 abstract class TDataBoundControl extends TWebControl
 {
@@ -280,11 +299,24 @@ abstract class TDataBoundControl extends TWebControl
 	 */
 	protected function validateDataSource($value)
 	{
-		if(is_array($value))
+		if(is_string($value))
+		{
+			$list=new TList;
+			foreach(TPropertyValue::ensureArray($value) as $key=>$value)
+			{
+				if(is_array($value))
+					$list->add($value);
+				else
+					$list->add(array($value,is_string($key)?$key:$value));
+			}
+			return $list;
+		}
+		else if(is_array($value))
 			$value=new TList($value);
-		else if($value!==null && !($value instanceof Traversable))
+		else if(($value instanceof Traversable) || $value===null)
+			return $value;
+		else
 			throw new TInvalidDataTypeException('databoundcontrol_datasource_invalid');
-		return $value;
 	}
 
 	public function getDataMember()

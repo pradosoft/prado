@@ -1,11 +1,30 @@
 <?php
+/**
+ * TBulletedList class file
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ */
+
+/**
+ * TBulletedList class
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 
 interface IRepeatInfoUser
 {
 	public function getHasFooter();
 	public function getHasHeader();
 	public function getHasSeparators();
-	public function getRepeatedItemCount();
+	public function getItemCount();
 	public function getItemStyle($itemType,$index);
 	public function renderItem($writer,$repeatInfo,$itemType,$index);
 }
@@ -100,7 +119,7 @@ class TRepeatInfo extends TComponent
 	{
 		$tableLayout=($this->_repeatLayout==='Table');
 		$hasSeparators=$user->getHasSeparators();
-		$itemCount=$user->getRepeatedItemCount();
+		$itemCount=$user->getItemCount();
 		$columns=$this->_repeatColumns===0?$itemCount:$this->_repeatColumns;
 		$totalColumns=$hasSeparators?$columns+$columns:$columns;
 		$needBreak=$columns<$itemCount;
@@ -175,7 +194,7 @@ class TRepeatInfo extends TComponent
 	{
 		$tableLayout=($this->_repeatLayout==='Table');
 		$hasSeparators=$user->getHasSeparators();
-		$itemCount=$user->getRepeatedItemCount();
+		$itemCount=$user->getItemCount();
 		if($this->_repeatColumns<=1)
 		{
 			$rows=$itemCount;

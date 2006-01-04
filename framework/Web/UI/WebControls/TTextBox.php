@@ -283,8 +283,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	}
 
 	/**
-	 * Sets the value indicating whether postback event trigger by this text box will cause input validation.
-	 * @param boolean whether postback event trigger by this button will cause input validation.
+	 * @param boolean whether postback event trigger by this text box will cause input validation.
 	 */
 	public function setCausesValidation($value)
 	{

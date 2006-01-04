@@ -1,11 +1,83 @@
 <?php
+/**
+ * TListControl and TListItem class file
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ */
 
+/**
+ * TListControl class
+ *
+ * TListControl is a base class for list controls, such as {@link TListBox},
+ * {@link TDropDownList}, {@link TCheckBoxList}, etc.
+ * It manages the items and their status in a list control.
+ * It also implements how the items can be populated from template and
+ * data source.
+ *
+ * The property {@link getItems} returns a list of the items in the control.
+ * To specify or determine which item is selected, use the
+ * {@link getSelectedIndex SelectedIndex} property that indicates the zero-based
+ * index of the selected item in the item list. You may also use
+ * {@link getSelectedItem SelectedItem} and {@link getSelectedValue SelectedValue}
+ * to get the selected item and its value. For multiple selection lists
+ * (such as {@link TCheckBoxList} and {@link TListBox}), property
+ * {@link getSelectedIndices SelectedIndices} is useful.
+ *
+ * TListControl implements {@link setAutoPostBack AutoPostBack} which allows
+ * a list control to postback the page if the selections of the list items are changed.
+ * The {@link setCausesValidation CausesValidation} and {@link setValidationGroup ValidationGroup}
+ * properties may be used to specify that validation be performed when auto postback occurs.
+ *
+ * There are three ways to populate the items in a list control: from template,
+ * using {@link setDataSource DataSource} and using {@link setDataSourceID DataSourceID}.
+ * The latter two are covered in {@link TDataBoundControl}. To specify items via
+ * template, using the following template syntax:
+ * <code>
+ * &lt;com:TListControl&gt;
+ *   &lt;com:TListItem Value="xxx" Text="yyy" &gt;
+ *   &lt;com:TListItem Value="xxx" Text="yyy" Selected="true" &gt;
+ *   &lt;com:TListItem Value="xxx" Text="yyy" &gt;
+ * &lt;/com:TListControl&gt;
+ * </code>
+ *
+ * When {@link setDataSource DataSource} or {@link setDataSourceID DataSourceID}
+ * is used to populate list items, the {@link setDataTextField DataTextField} and
+ * {@link setDataValueField DataValueField} properties are used to specify which
+ * columns of the data will be used to populate the text and value of the items.
+ * For example, if a data source is as follows,
+ * <code>
+ * $dataSource=array(
+ *    array('name'=>'John', 'age'=>31),
+ *    array('name'=>'Cary', 'age'=>28),
+ *    array('name'=>'Rose', 'age'=>35),
+ * );
+ * </code>
+ * setting {@link setDataTextField DataTextField} and {@link setDataValueField DataValueField}
+ * to 'name' and 'age' will make the first item's text be 'John', value be 31,
+ * the second item's text be 'Cary', value be 28, and so on.
+ * The {@link setDataTextFormatString DataTextFormatString} property may be further
+ * used to format how the item should be displayed. The formatting function is
+ * the sprintf() PHP function.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 abstract class TListControl extends TDataBoundControl
 {
+	/**
+	 * @var TListItemCollection item list
+	 */
 	private $_items=null;
 
 	/**
-	 * @return string tag name of the textbox
+	 * @return string tag name of the list control
 	 */
 	protected function getTagName()
 	{
@@ -35,6 +107,9 @@ abstract class TListControl extends TDataBoundControl
 		parent::addAttributesToRender($writer);
 	}
 
+	/**
+	 * @return TPostBackOptions postback options for JS postback code
+	 */
 	protected function getAutoPostBackOptions()
 	{
 		$option=new TPostBackOptions();
@@ -49,28 +124,28 @@ abstract class TListControl extends TDataBoundControl
 		return $option;
 	}
 
+	/**
+	 * Adds object parsed from template to the control.
+	 * This method adds only {@link TListItem} objects into the {@link getItems Items} collection.
+	 * All other objects are ignored.
+	 * @param mixed object parsed from template
+	 */
 	public function addParsedObject($object)
 	{
 		if($object instanceof TListItem)
 			$this->getItems()->add($object);
 	}
 
-	protected function validateDataSource($value)
-	{
-		if(is_string($value))
-		{
-			$list=new TList;
-			foreach(TPropertyValue::ensureArray($value) as $key=>$value)
-				$list->add(array($value,is_string($key)?$key:$value));
-			return $list;
-		}
-		else
-			return parent::validateDataSource($value);
-		return $value;
-	}
-
+	/**
+	 * Performs databinding to populate list items from data source.
+	 * This method is invoked by dataBind().
+	 * You may override this function to provide your own way of data population.
+	 * @param Traversable the data
+	 */
 	protected function performDataBinding($data)
 	{
+		if(!$this->getAppendDataBoundItems())
+			$items->clear();
 		if($data instanceof Traversable)
 		{
 			$textField=$this->getDataTextField();
@@ -81,8 +156,6 @@ abstract class TListControl extends TDataBoundControl
 				$valueField=1;
 			$textFormat=$this->getDataTextFormatString();
 			$items=$this->getItems();
-			if(!$this->getAppendDataBoundItems())
-				$items->clear();
 			foreach($data as $object)
 			{
 				$item=new TListItem;
@@ -98,6 +171,11 @@ abstract class TListControl extends TDataBoundControl
 		}
 	}
 
+	/**
+	 * Saves items into viewstate.
+	 * This method is invoked right before control state is to be saved.
+	 * @param mixed event parameter
+	 */
 	protected function onSaveState($param)
 	{
 		if($this->_items)
@@ -106,22 +184,36 @@ abstract class TListControl extends TDataBoundControl
 			$this->clearViewState('Items');
 	}
 
+	/**
+	 * Loads items into from viewstate.
+	 * This method is invoked right after control state is loaded.
+	 * @param mixed event parameter
+	 */
 	protected function onLoadState($param)
 	{
 		$this->_items=new TListItemCollection;
 		$this->_items->loadState($this->getViewState('Items',null));
 	}
 
+	/**
+	 * @return boolean whether this is a multiselect control. Defaults to false.
+	 */
 	protected function getIsMultiSelect()
 	{
 		return false;
 	}
 
+	/**
+	 * @return boolean whether performing databind should append items or clear the existing ones. Defaults to false.
+	 */
 	public function getAppendDataBoundItems()
 	{
 		return $this->getViewState('AppendDataBoundItems',false);
 	}
 
+	/**
+	 * @param boolean whether performing databind should append items or clear the existing ones.
+	 */
 	public function setAppendDataBoundItems($value)
 	{
 		$this->setViewState('AppendDataBoundItems',TPropertyValue::ensureBoolean($value),false);
@@ -129,8 +221,8 @@ abstract class TListControl extends TDataBoundControl
 
 	/**
 	 * @return boolean a value indicating whether an automatic postback to the server
-     * will occur whenever the user modifies the text in the TTextBox control and
-     * then tabs out of the component. Defaults to false.
+     * will occur whenever the user makes change to the list control and then tabs out of it.
+     * Defaults to false.
 	 */
 	public function getAutoPostBack()
 	{
@@ -140,7 +232,7 @@ abstract class TListControl extends TDataBoundControl
 	/**
 	 * Sets the value indicating if postback automatically.
 	 * An automatic postback to the server will occur whenever the user
-	 * modifies the text in the TTextBox control and then tabs out of the component.
+	 * makes change to the list control and then tabs out of it.
 	 * @param boolean the value indicating if postback automatically
 	 */
 	public function setAutoPostBack($value)
@@ -149,7 +241,7 @@ abstract class TListControl extends TDataBoundControl
 	}
 
 	/**
-	 * @return boolean whether postback event trigger by this text box will cause input validation, default is true.
+	 * @return boolean whether postback event trigger by this list control will cause input validation, default is true.
 	 */
 	public function getCausesValidation()
 	{
@@ -157,8 +249,7 @@ abstract class TListControl extends TDataBoundControl
 	}
 
 	/**
-	 * Sets the value indicating whether postback event trigger by this text box will cause input validation.
-	 * @param boolean whether postback event trigger by this button will cause input validation.
+	 * @param boolean whether postback event trigger by this list control will cause input validation.
 	 */
 	public function setCausesValidation($value)
 	{
@@ -190,6 +281,9 @@ abstract class TListControl extends TDataBoundControl
 	}
 
 	/**
+	 * Sets data text format string.
+	 * The format string is used in sprintf() to format the Text property value
+	 * of each item in the list control.
 	 * @param string the formatting string used to control how data bound to the list control is displayed.
 	 */
 	public function setDataTextFormatString($value)
@@ -213,11 +307,25 @@ abstract class TListControl extends TDataBoundControl
 		$this->setViewState('DataValueField',$value,'');
 	}
 
+	/**
+	 * @return integer the number of items in the list control
+	 */
+	public function getItemCount()
+	{
+		return $this->_items?$this->_items->getCount():0;
+	}
+
+	/**
+	 * @return boolean whether the list control contains any items.
+	 */
 	public function getHasItems()
 	{
 		return ($this->_items && $this->_items->getCount()>0);
 	}
 
+	/**
+	 * @return TListItemCollection the item collection
+	 */
 	public function getItems()
 	{
 		if(!$this->_items)
@@ -226,7 +334,7 @@ abstract class TListControl extends TDataBoundControl
 	}
 
 	/**
-	 * @return integer the index of the item being selected, -1 if no selection
+	 * @return integer the index (zero-based) of the item being selected, -1 if no item is selected.
 	 */
 	public function getSelectedIndex()
 	{
@@ -241,7 +349,7 @@ abstract class TListControl extends TDataBoundControl
 	}
 
 	/**
-	 * @param integer the index of the item to be selected
+	 * @param integer the index (zero-based) of the item to be selected
 	 */
 	public function setSelectedIndex($index)
 	{
@@ -254,6 +362,9 @@ abstract class TListControl extends TDataBoundControl
 		}
 	}
 
+	/**
+	 * @return array list of index of items that are selected
+	 */
 	public function getSelectedIndices()
 	{
 		$selections=array();
@@ -267,6 +378,9 @@ abstract class TListControl extends TDataBoundControl
 		return $selections;
 	}
 
+	/**
+	 * @param array list of index of items to be selected
+	 */
 	public function setSelectedIndices($indices)
 	{
 		if($this->_items)
@@ -282,7 +396,7 @@ abstract class TListControl extends TDataBoundControl
 	}
 
 	/**
-	 * @return TListItem|null the selected item with the lowest cardinal index, null if no selection.
+	 * @return TListItem|null the selected item with the lowest cardinal index, null if no item is selected.
 	 */
 	public function getSelectedItem()
 	{
@@ -303,6 +417,8 @@ abstract class TListControl extends TDataBoundControl
 
 	/**
 	 * Sets selection by item value.
+	 * Existing selections will be cleared if the item value is found in the item collection.
+	 * Note, if the value is null, existing selections will also be cleared.
 	 * @param string the value of the item to be selected.
 	 */
 	public function setSelectedValue($value)
@@ -319,6 +435,9 @@ abstract class TListControl extends TDataBoundControl
     	}
     }
 
+    /**
+     * Clears all existing selections.
+     */
     public function clearSelection()
     {
 	    if($this->_items)
@@ -329,24 +448,7 @@ abstract class TListControl extends TDataBoundControl
     }
 
 	/**
-	 * @return string the text content of the TTextBox control.
-	 */
-	public function getText()
-	{
-		return $this->getSelectedValue();
-	}
-
-	/**
-	 * Sets the text content of the TTextBox control.
-	 * @param string the text content
-	 */
-	public function setText($value)
-	{
-		$this->setSelectedValue($value);
-	}
-
-	/**
-	 * @return string the group of validators which the text box causes validation upon postback
+	 * @return string the group of validators which the list control causes validation upon postback
 	 */
 	public function getValidationGroup()
 	{
@@ -354,24 +456,29 @@ abstract class TListControl extends TDataBoundControl
 	}
 
 	/**
-	 * @param string the group of validators which the text box causes validation upon postback
+	 * @param string the group of validators which the list control causes validation upon postback
 	 */
 	public function setValidationGroup($value)
 	{
 		$this->setViewState('ValidationGroup',$value,'');
 	}
 
+	/**
+	 * Raises SelectedIndexChanged event when selection is changed.
+	 * This method is invoked when the list control has its selection changed
+	 * by end-users.
+	 * @param TEventParameter event parameter
+	 */
 	public function onSelectedIndexChanged($param)
 	{
 		$this->raiseEvent('SelectedIndexChanged',$this,$param);
 	}
 
-	// ????
-	public function onTextChanged($param)
-	{
-		$this->raiseEvent('TextChanged',$this,$param);
-	}
-
+	/**
+	 * Renders body content of the list control.
+	 * This method renders items contained in the list control as the body content.
+	 * @param THtmlWriter writer
+	 */
 	protected function renderContents($writer)
 	{
 		if($this->_items)
@@ -399,10 +506,23 @@ abstract class TListControl extends TDataBoundControl
 	}
 }
 
+/**
+ * TListItemCollection class.
+ *
+ * TListItemCollection maintains a list of {@link TListItem} for {@link TListControl}.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 class TListItemCollection extends TList
 {
-	private $_items=null;
-
+	/**
+	 * Appends an item to the collection.
+	 * @param TListItem the item to be appended.
+	 * @throws TInvalidDataTypeException if the item being appended is neither a string nor a TListItem
+	 */
 	public function add($item)
 	{
 		if(is_string($item))
@@ -413,6 +533,13 @@ class TListItemCollection extends TList
 			throw new TInvalidDataTypeException('listitemcollection_item_invalid');
 	}
 
+	/**
+	 * Inserts an item into the collection.
+	 * @param integer the location where the item will be inserted.
+	 * The current item at the place and the following ones will be moved backward.
+	 * @param TListItem the item to be inserted.
+	 * @throws TInvalidDataTypeException if the item being inserted is neither a string nor TListItem
+	 */
 	public function insert($index,$item)
 	{
 		if(is_string($item))
@@ -423,6 +550,12 @@ class TListItemCollection extends TList
 			throw new TInvalidDataTypeException('listitemcollection_item_invalid');
 	}
 
+	/**
+	 * Finds the lowest cardinal index of the item whose value is the one being looked for.
+	 * @param string the value to be looked for
+	 * @param boolean whether to look for disabled items also
+	 * @return integer the index of the item found, -1 if not found.
+	 */
 	public function findIndexByValue($value,$includeDisabled=true)
 	{
 		$value=TPropertyValue::ensureString($value);
@@ -436,6 +569,12 @@ class TListItemCollection extends TList
 		return -1;
 	}
 
+	/**
+	 * Finds the lowest cardinal index of the item whose text is the one being looked for.
+	 * @param string the text to be looked for
+	 * @param boolean whether to look for disabled items also
+	 * @return integer the index of the item found, -1 if not found.
+	 */
 	public function findIndexByText($text,$includeDisabled=true)
 	{
 		$text=TPropertyValue::ensureString($text);
@@ -449,6 +588,12 @@ class TListItemCollection extends TList
 		return -1;
 	}
 
+	/**
+	 * Finds the item whose value is the one being looked for.
+	 * @param string the value to be looked for
+	 * @param boolean whether to look for disabled items also
+	 * @return TListItem the item found, null if not found.
+	 */
 	public function findItemByValue($value,$includeDisabled=true)
 	{
 		if(($index=$this->findIndexByValue($value,$includeDisabled))>=0)
@@ -457,6 +602,12 @@ class TListItemCollection extends TList
 			return null;
 	}
 
+	/**
+	 * Finds the item whose text is the one being looked for.
+	 * @param string the text to be looked for
+	 * @param boolean whether to look for disabled items also
+	 * @return TListItem the item found, null if not found.
+	 */
 	public function findItemByText($text,$includeDisabled=true)
 	{
 		if(($index=$this->findIndexByText($text,$includeDisabled))>=0)
@@ -465,6 +616,11 @@ class TListItemCollection extends TList
 			return null;
 	}
 
+	/**
+	 * Loads state into every item in the collection.
+	 * This method should only be used by framework and control developers.
+	 * @param array|null state to be loaded.
+	 */
 	public function loadState($state)
 	{
 		$this->clear();
@@ -475,6 +631,11 @@ class TListItemCollection extends TList
 		}
 	}
 
+	/**
+	 * Saves state of items.
+	 * This method should only be used by framework and control developers.
+	 * @return array|null the saved state
+	 */
 	public function saveState()
 	{
 		if($this->getCount()>0)
@@ -489,14 +650,51 @@ class TListItemCollection extends TList
 	}
 }
 
+/**
+ * TListItem class.
+ *
+ * TListItem represents an item in a list control. Each item has a {@link setText Text}
+ * property and a {@link setValue Value} property. If either one of them is not set,
+ * it will take the value of the other property.
+ * An item can be {@link setSelected Selected} or {@link setEnabled Enabled},
+ * and it can have additional {@link getAttributes Attributes} which may be rendered
+ * if the list control supports so.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 class TListItem extends TComponent
 {
+	/**
+	 * @var TMap list of custom attributes
+	 */
 	private $_attributes=null;
+	/**
+	 * @var string text of the item
+	 */
 	private $_text;
+	/**
+	 * @var string value of the item
+	 */
 	private $_value;
+	/**
+	 * @var boolean whether the item is enabled
+	 */
 	private $_enabled;
+	/**
+	 * @var boolean whether the item is selected
+	 */
 	private $_selected;
 
+	/**
+	 * Constructor.
+	 * @param string text of the item
+	 * @param string value of the item
+	 * @param boolean whether the item is enabled
+	 * @param boolean whether the item is selected
+	 */
 	public function __construct($text='',$value='',$enabled=true,$selected=false)
 	{
 		$this->setText($text);
@@ -505,46 +703,73 @@ class TListItem extends TComponent
 		$this->setSelected($selected);
 	}
 
+	/**
+	 * @return boolean whether the item is enabled
+	 */
 	public function getEnabled()
 	{
 		return $this->_enabled;
 	}
 
+	/**
+	 * @param boolean whether the item is enabled
+	 */
 	public function setEnabled($value)
 	{
 		$this->_enabled=TPropertyValue::ensureBoolean($value);
 	}
 
+	/**
+	 * @return boolean whether the item is selected
+	 */
 	public function getSelected()
 	{
 		return $this->_selected;
 	}
 
+	/**
+	 * @param boolean whether the item is selected
+	 */
 	public function setSelected($value)
 	{
 		$this->_selected=TPropertyValue::ensureBoolean($value);
 	}
 
+	/**
+	 * @return string text of the item
+	 */
 	public function getText()
 	{
 		return $this->_text===''?$this->_value:$this->_text;
 	}
 
+	/**
+	 * @param string text of the item
+	 */
 	public function setText($value)
 	{
 		$this->_text=TPropertyValue::ensureString($value);
 	}
 
+	/**
+	 * @return string value of the item
+	 */
 	public function getValue()
 	{
 		return $this->_value===''?$this->_text:$this->_value;
 	}
 
+	/**
+	 * @param string value of the item
+	 */
 	public function setValue($value)
 	{
 		$this->_value=TPropertyValue::ensureString($value);
 	}
 
+	/**
+	 * @return TMap custom attributes
+	 */
 	public function getAttributes()
 	{
 		if(!$this->_attributes)
@@ -552,18 +777,25 @@ class TListItem extends TComponent
 		return $this->_attributes;
 	}
 
+	/**
+	 * @return boolean whether the item has any custom attribute
+	 */
 	public function getHasAttributes()
 	{
-		return $this->_attributes!==null;
+		return $this->_attributes && $this->_attributes->getCount()>0;
 	}
 
+	/**
+	 * @param string name of the attribute
+	 * @return boolean whether the named attribute exists
+	 */
 	public function hasAttribute($name)
 	{
 		return $this->_attributes?$this->_attributes->contains($name):false;
 	}
 
 	/**
-	 * @return string attribute value, '' if attribute does not exist
+	 * @return string the named attribute value, null if attribute does not exist
 	 */
 	public function getAttribute($name)
 	{
