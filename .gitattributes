@@ -31,6 +31,7 @@ demos/quickstart/protected/controls/SampleLayout.tpl -text
 demos/quickstart/protected/controls/TTextHighlighter.php -text
 demos/quickstart/protected/controls/TopicList.php -text
 demos/quickstart/protected/controls/TopicList.tpl -text
+demos/quickstart/protected/logs/logger.xml -text
 demos/quickstart/protected/pages/Configurations/AppConfig.page -text
 demos/quickstart/protected/pages/Configurations/Overview.page -text
 demos/quickstart/protected/pages/Configurations/PageConfig.page -text

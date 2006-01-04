@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <application id="QuickStart" Mode="Debug">
+  <modules>
+	  <module id="logger" class="System.Log.TEventLog" config="protected/logs/logger.xml" >
+<!-- Logging config can be here or in an external file specified by config=".." above -->
+<!--
+		<logger destination="file" directory="./protected/logs/" filename="prado.log">
+			<filter severity="INFO | NOTICE | WARNING | ERROR | FATAL" />
+			<filter severity="DEBUG" disabled="true" />
+		</logger>
+-->
+	</module>
+  </modules>
   <paths>
     <alias id="Controls" path="controls" />
     <using namespace="Controls.*" />
