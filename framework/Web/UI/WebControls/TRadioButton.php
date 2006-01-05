@@ -14,7 +14,11 @@
  * Using TCheckBox parent class
  */
 Prado::using('System.Web.UI.WebControls.TCheckBox');
-// using TRadioButtonList ??
+/**
+ * Using TRadioButtonList class
+ */
+Prado::using('System.Web.UI.WebControls.TRadioButtonList');
+
 /**
  * TRadioButton class
  *

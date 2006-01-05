@@ -11,9 +11,17 @@
  */
 
 /**
+ * Includes TListControl class
+ */
+Prado::using('System.Web.UI.WebControls.TListControl');
+/**
  * Includes TRepeatInfo class
  */
 Prado::using('System.Web.UI.WebControls.TRepeatInfo');
+/**
+ * Includes TCheckBox class
+ */
+Prado::using('System.Web.UI.WebControls.TCheckBox');
 
 /**
  * TCheckBoxList class

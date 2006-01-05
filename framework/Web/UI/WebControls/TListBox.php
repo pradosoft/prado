@@ -11,6 +11,11 @@
  */
 
 /**
+ * Includes TListControl class
+ */
+Prado::using('System.Web.UI.WebControls.TListControl');
+
+/**
  * TListBox class
  *
  * TListBox displays a list box on a Web page that allows single or multiple selection.

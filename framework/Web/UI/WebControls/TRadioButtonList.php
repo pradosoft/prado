@@ -11,6 +11,15 @@
  */
 
 /**
+ * Includes TRadioButton class
+ */
+Prado::using('System.Web.UI.WebControls.TRadioButton');
+/**
+ * Includes TCheckBoxList class
+ */
+Prado::using('System.Web.UI.WebControls.TCheckBoxList');
+
+/**
  * TRadioButtonList class
  *
  * TRadioButtonList displays a list of radiobuttons on a Web page.
@@ -69,6 +78,14 @@ class TRadioButtonList extends TCheckBoxList
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * @throws TNotSupportedException if this method is invoked
+	 */
+	public function setSelectedIndices($indices)
+	{
+		throw new TNotSupportedException('radiobuttonlist_selectedindices_unsupported');
 	}
 }
 

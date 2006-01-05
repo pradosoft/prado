@@ -155,3 +155,12 @@ pagestatepersister_pagestate_corrupted	= Page state is corrupted.
 pagestatepersister_privatekey_invalid	= TPageStatePersister.PrivateKey must take a string no shorter than 8 characters.
 
 listitemcollection_item_invalid			= TListItemCollection can only take strings or TListItem objects.
+
+dropdownlist_selectedindices_unsupported= TDropDownList.SelectedIndices is read-only.
+
+bulletedlist_autopostback_unsupported	= TBulletedList.AutoPostBack is read-only.
+bulletedlist_selectedindex_unsupported	= TBulletedList.SelectedIndex is read-only.
+bulletedlist_selectedindices_unsupported= TBulletedList.SelectedIndices is read-only.
+bulletedlist_selectedvalue_unsupported	= TBulletedList.SelectedValue is read-only.
+
+radiobuttonlist_selectedindices_unsupported	= TRadioButtonList.SelectedIndices is read-only.

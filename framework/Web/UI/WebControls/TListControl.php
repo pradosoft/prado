@@ -11,6 +11,11 @@
  */
 
 /**
+ * Includes TDataBoundControl class
+ */
+Prado::using('System.Web.UI.WebControls.TDataBoundControl');
+
+/**
  * TListControl class
  *
  * TListControl is a base class for list controls, such as {@link TListBox},

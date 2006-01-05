@@ -11,6 +11,11 @@
  */
 
 /**
+ * Includes TListControl class
+ */
+Prado::using('System.Web.UI.WebControls.TListControl');
+
+/**
  * TDropDownList class
  *
  * TDropDownList displays a dropdown list on a Web page.
@@ -92,6 +97,14 @@ class TDropDownList extends TListControl implements IPostBackDataHandler
 		}
 		else
 			return $index;
+	}
+
+	/**
+	 * @throws TNotSupportedException if this method is invoked
+	 */
+	public function setSelectedIndices($indices)
+	{
+		throw new TNotSupportedException('dropdownlist_selectedindices_unsupported');
 	}
 }
 ?>

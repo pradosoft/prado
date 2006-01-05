@@ -11,6 +11,11 @@
  */
 
 /**
+ * Includes TListControl class
+ */
+Prado::using('System.Web.UI.WebControls.TListControl');
+
+/**
  * TBulletedList class
  *
  * TBulletedList displays items in a bullet format.
@@ -321,6 +326,38 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 		}
 		else
 			return null;
+	}
+
+	/**
+	 * @throws TNotSupportedException if this method is invoked
+	 */
+	public function setAutoPostBack($value)
+	{
+		throw new TNotSupportedException('bulletedlist_autopostback_unsupported');
+	}
+
+	/**
+	 * @throws TNotSupportedException if this method is invoked
+	 */
+	public function setSelectedIndex($index)
+	{
+		throw new TNotSupportedException('bulletedlist_selectedindex_unsupported');
+	}
+
+	/**
+	 * @throws TNotSupportedException if this method is invoked
+	 */
+	public function setSelectedIndices($indices)
+	{
+		throw new TNotSupportedException('bulletedlist_selectedindices_unsupported');
+	}
+
+	/**
+	 * @throws TNotSupportedException if this method is invoked
+	 */
+	public function setSelectedValue($value)
+	{
+		throw new TNotSupportedException('bulletedlist_selectedvalue_unsupported');
 	}
 }
 

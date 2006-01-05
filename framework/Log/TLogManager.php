@@ -3,7 +3,7 @@
 abstract class TLogManager extends TModule
 {
 	protected $defaultSeverity = 'INFO | DEBUG | NOTICE | WARNING | ERROR | FATAL';
-	
+
 	protected $config;
 
 	public function init($xml)
@@ -42,7 +42,7 @@ abstract class TLogManager extends TModule
 				$log->$map($logFilter, $logWriter);
 			}
 
-			if($filters->Length < 1)
+			if($filters->getCount() < 1)
 			{
 				$logFilter = new ezcLogFilter();
 				$logFilter->severity = $this->getFilterSeverity();
@@ -55,9 +55,9 @@ abstract class TLogManager extends TModule
 	{
 		switch($xml->getAttribute('destination'))
 		{
-			case 'file' : 
+			case 'file' :
 				return TEzcLoggerUnixFileWriterFactory::create($xml);
-			default : 
+			default :
 				throw new TException('invalid_log_destination');
 		}
 	}
@@ -69,7 +69,7 @@ abstract class TLogManager extends TModule
 		$serverities = explode("|", $string);
 		$mask = 0;
 		foreach($serverities as $Severity)
-			$mask = $mask | $this->getSeverity($Severity);			
+			$mask = $mask | $this->getSeverity($Severity);
 		return $mask;
 	}
 
@@ -107,7 +107,7 @@ class TEzcLoggerUnixFileWriterFactory
 		TEzcLoggerLoader::using('ezcLogWriter');
 		TEzcLoggerLoader::using('ezcLogWriterFile');
 		TEzcLoggerLoader::using('ezcLogWriterUnixFile');
-		
+
 		$path = $xml->getAttribute('directory');
 		$dir = Prado::getPathOfNamespace($path);
 		$file = $xml->getAttribute('filename');
