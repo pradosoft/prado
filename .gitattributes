@@ -143,6 +143,7 @@ framework/Log/EventLog/structs/log_filter.php -text
 framework/Log/EventLog/writers/writer_database.php -text
 framework/Log/EventLog/writers/writer_file.php -text
 framework/Log/EventLog/writers/writer_unix_file.php -text
+framework/Log/ILog.php -text
 framework/Log/TEventLog.php -text
 framework/Log/TLogManager.php -text
 framework/Security/TAuthManager.php -text
