@@ -10,8 +10,8 @@ interface ILog
 	public function fatal($msg, $source='Prado', $category='core');
 }
 
-require_once(dirname(__FILE__).'/EventLog/log.php');
-
+require_once(PRADO_DIR.'/Log/EventLog/log.php');
+require_once(PRADO_DIR.'/Log/EventLog/exceptions/writer_exception.php');
 /**
  * ${classname}
  *
