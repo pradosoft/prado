@@ -1,6 +1,6 @@
 <?php
 /**
- * TBulletedList class file
+ * IDataSource, TDataSourceControl, TReadOnlyDataSource class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
@@ -11,14 +11,13 @@
  */
 
 /**
- * TBulletedList class
+ * IDataSource class
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-
 interface IDataSource
 {
 	public function getView($viewName);
@@ -26,6 +25,14 @@ interface IDataSource
 	public function onDataSourceChanged($param);
 }
 
+/**
+ * TDataSourceControl class
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 abstract class TDataSourceControl extends TControl implements IDataSource
 {
 	public function getView($viewName);
@@ -76,6 +83,14 @@ abstract class TDataSourceControl extends TControl implements IDataSource
 	}
 }
 
+/**
+ * TDataSourceControl class
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 class TReadOnlyDataSource extends TDataSourceControl
 {
 	private $_dataSource;

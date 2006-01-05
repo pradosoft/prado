@@ -1,6 +1,6 @@
 <?php
 /**
- * TBulletedList class file
+ * TDataBoundControl class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
@@ -11,14 +11,19 @@
  */
 
 /**
- * TBulletedList class
+ * TDataBoundControl class.
+ *
+ * TDataBoundControl is the based class for controls that need to populate
+ * data from data sources. It provides basic properties and methods that allow
+ * the derived controls to associate with data sources and retrieve data from them.
+ *
+ * TBC...
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-
 abstract class TDataBoundControl extends TWebControl
 {
 	private $_initialized=false;

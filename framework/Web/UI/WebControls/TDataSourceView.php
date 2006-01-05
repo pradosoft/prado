@@ -1,6 +1,6 @@
 <?php
 /**
- * TBulletedList class file
+ * TDataSourceSelectParameters, TDataSourceView, TReadOnlyDataSourceView class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
@@ -11,14 +11,13 @@
  */
 
 /**
- * TBulletedList class
+ * TDataSourceSelectParameters class
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-
 class TDataSourceSelectParameters extends TComponent
 {
 	private $_retrieveTotalRowCount=false;
@@ -73,6 +72,14 @@ class TDataSourceSelectParameters extends TComponent
 	}
 }
 
+/**
+ * TDataSourceView class
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 abstract class TDataSourceView extends TComponent
 {
 	private $_owner;
@@ -168,6 +175,14 @@ abstract class TDataSourceView extends TComponent
 	}
 }
 
+/**
+ * TReadOnlyDataSourceView class
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 class TReadOnlyDataSourceView extends TDataSourceView
 {
 	private $_dataSource=null;
