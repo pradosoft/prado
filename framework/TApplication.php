@@ -378,15 +378,6 @@ class TApplication extends TComponent
 	protected function loadGlobals()
 	{
 		$this->_globals=$this->getApplicationStatePersister()->load();
-		/*
-		if(($cache=$this->getCache())!==null && ($value=$cache->get('prado:globals'))!==false)
-			$this->_globals=unserialize($value);
-		else
-		{
-			if(($content=@file_get_contents($this->getRuntimePath().'/'.self::GLOBAL_FILE))!==false)
-				$this->_globals=unserialize($content);
-		}
-		*/
 	}
 
 	/**
@@ -398,25 +389,6 @@ class TApplication extends TComponent
 		if(!$this->_stateChanged)
 			return;
 		$this->getApplicationStatePersister()->save($this->_globals);
-		/*
-		$content=serialize($this->_globals);
-		$saveFile=true;
-		if(($cache=$this->getCache())!==null)
-		{
-			if($cache->get('prado:globals')===$content)
-				$saveFile=false;
-			else
-				$cache->set('prado:globals',$content);
-		}
-		if($saveFile)
-		{
-			$fileName=$this->getRuntimePath().'/'.self::GLOBAL_FILE;
-			if(version_compare(phpversion(),'5.1.0','>='))
-				file_put_contents($fileName,$content,LOCK_EX);
-			else
-				file_put_contents($fileName,$content);
-		}
-		*/
 	}
 
 	/**

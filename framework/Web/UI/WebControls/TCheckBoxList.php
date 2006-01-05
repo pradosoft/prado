@@ -247,7 +247,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	/**
 	 * Returns a style used for rendering items.
 	 * This method is required by {@link IRepeatInfoUser} interface.
-	 * @param string item type
+	 * @param string item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
 	 * @param integer index of the item being rendered
 	 * @return null
 	 */

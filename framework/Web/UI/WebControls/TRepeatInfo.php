@@ -1,6 +1,6 @@
 <?php
 /**
- * TBulletedList class file
+ * IRepeatInfoUser, TRepeatInfo class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
@@ -11,82 +11,174 @@
  */
 
 /**
- * TBulletedList class
+ * IRepeatInfoUser interface.
+ * This interface must be implemented by classes who want to use {@link TRepeatInfo}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-
 interface IRepeatInfoUser
 {
+	/**
+	 * @return boolean whether the repeat user contains footer
+	 */
 	public function getHasFooter();
+	/**
+	 * @return boolean whether the repeat user contains header
+	 */
 	public function getHasHeader();
+	/**
+	 * @return boolean whether the repeat user contains separators
+	 */
 	public function getHasSeparators();
+	/**
+	 * @return integer number of items to be rendered (excluding header, footer and separators)
+	 */
 	public function getItemCount();
+	/**
+	 * @param string item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
+	 * @param integer zero-based index of the current rendering item.
+	 * @return TStyle CSS style used for rendering items (including header, footer and separators)
+	 */
 	public function getItemStyle($itemType,$index);
+	/**
+	 * Renders an item.
+	 * @param THtmlWriter writer for the rendering purpose
+	 * @param TRepeatInfo repeat information
+	 * @param string item type
+	 * @param integer zero-based index of the item being rendered
+	 */
 	public function renderItem($writer,$repeatInfo,$itemType,$index);
 }
 
+/**
+ * TRepeatInfo class.
+ * TRepeatInfo represents repeat information for controls like {@link TCheckBoxList}.
+ * The layout of the repeated items is specified via {@link setRepeatLayout RepeatLayout},
+ * which can be either 'Table' (default) or 'Flow'.
+ * A table layout uses HTML table cells to organize the items while
+ * a flow layout uses line breaks to organize the items.
+ * The number of columns used to display the items is specified via
+ * {@link setRepeatColumns RepeatColumns} property, while the {@link setRepeatDirection RepeatDirection}
+ * governs the order of the items being rendered.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 class TRepeatInfo extends TComponent
 {
+	/**
+	 * @var string caption of the table used to organize the repeated items
+	 */
 	private $_caption='';
+	/**
+	 * @var string alignment of the caption of the table used to organize the repeated items
+	 */
 	private $_captionAlign='NotSet';
+	/**
+	 * @var integer number of columns that the items should be arranged in
+	 */
 	private $_repeatColumns=0;
+	/**
+	 * @var string direction of the repetition
+	 */
 	private $_repeatDirection='Vertical';
+	/**
+	 * @var string layout of the repeated items
+	 */
 	private $_repeatLayout='Table';
 
+	/**
+	 * @return string caption of the table layout
+	 */
 	public function getCaption()
 	{
 		return $this->_caption;
 	}
 
+	/**
+	 * @param string caption of the table layout
+	 */
 	public function setCaption($value)
 	{
 		$this->_caption=$value;
 	}
 
+	/**
+	 * @return string alignment of the caption of the table layout. Defaults to 'NotSet'.
+	 */
 	public function getCaptionAlign()
 	{
 		return $this->_captionAlign;
 	}
 
+	/**
+	 * @return string alignment of the caption of the table layout.
+	 * Valid values include 'NotSet','Top','Bottom','Left','Right'.
+	 */
 	public function setCaptionAlign($value)
 	{
 		$this->_captionAlign=TPropertyValue::ensureEnum($value,array('NotSet','Top','Bottom','Left','Right'));
 	}
 
+	/**
+	 * @return integer the number of columns that the repeated items should be displayed in. Defaults to 0, meaning not set.
+	 */
 	public function getRepeatColumns()
 	{
 		return $this->_repeatColumns;
 	}
 
+	/**
+	 * @param integer the number of columns that the repeated items should be displayed in.
+	 */
 	public function setRepeatColumns($value)
 	{
 		$this->_repeatColumns=TPropertyValue::ensureInteger($value);
 	}
 
+	/**
+	 * @return string the direction of traversing the repeated items, defaults to 'Vertical'
+	 */
 	public function getRepeatDirection()
 	{
 		return $this->_repeatDirection;
 	}
 
+	/**
+	 * Sets the direction of traversing the repeated items (Vertical, Horizontal)
+	 * @param string the direction of traversing the repeated items
+	 */
 	public function setRepeatDirection($value)
 	{
 		$this->_repeatDirection=TPropertyValue::ensureEnum($value,array('Horizontal','Vertical'));
 	}
 
+	/**
+	 * @return string how the repeated items should be displayed, using table or using line breaks. Defaults to 'Table'.
+	 */
 	public function getRepeatLayout()
 	{
 		return $this->_repeatLayout;
 	}
 
+	/**
+	 * @param string how the repeated items should be displayed, using table or using line breaks. Defaults to 'Table'.
+	 */
 	public function setRepeatLayout($value)
 	{
 		$this->_repeatLayout=TPropertyValue::ensureEnum($value,array('Table','Flow'));
 	}
 
+	/**
+	 * Renders the repeated items.
+	 * @param THtmlWriter writer for the rendering purpose
+	 * @param IRepeatInfoUser repeat information user
+	 */
 	public function renderRepeater($writer, IRepeatInfoUser $user)
 	{
 		if($this->_repeatLayout==='Table')
@@ -115,6 +207,11 @@ class TRepeatInfo extends TComponent
 		$control->renderEndTag($writer);
 	}
 
+	/**
+	 * Renders contents in horizontal repeat direction.
+	 * @param THtmlWriter writer for the rendering purpose
+	 * @param IRepeatInfoUser repeat information user
+	 */
 	protected function renderHorizontalContents($writer,$user)
 	{
 		$tableLayout=($this->_repeatLayout==='Table');
@@ -190,6 +287,11 @@ class TRepeatInfo extends TComponent
 			$this->renderFooter($writer,$user,$tableLayout,$totalColumns,$needBreak);
 	}
 
+	/**
+	 * Renders contents in veritcal repeat direction.
+	 * @param THtmlWriter writer for the rendering purpose
+	 * @param IRepeatInfoUser repeat information user
+	 */
 	protected function renderVerticalContents($writer,$user)
 	{
 		$tableLayout=($this->_repeatLayout==='Table');
@@ -313,6 +415,14 @@ class TRepeatInfo extends TComponent
 
 	}
 
+	/**
+	 * Renders header.
+	 * @param THtmlWriter writer for the rendering purpose
+	 * @param IRepeatInfoUser repeat information user
+	 * @param boolean whether to render using table layout
+	 * @param integer number of columns to be rendered
+	 * @param boolean if a line break is needed at the end
+	 */
 	protected function renderHeader($writer,$user,$tableLayout,$columns,$needBreak)
 	{
 		if($tableLayout)
@@ -337,6 +447,13 @@ class TRepeatInfo extends TComponent
 		$writer->writeLine();
 	}
 
+	/**
+	 * Renders footer.
+	 * @param THtmlWriter writer for the rendering purpose
+	 * @param IRepeatInfoUser repeat information user
+	 * @param boolean whether to render using table layout
+	 * @param integer number of columns to be rendered
+	 */
 	protected function renderFooter($writer,$user,$tableLayout,$columns)
 	{
 		if($tableLayout)
