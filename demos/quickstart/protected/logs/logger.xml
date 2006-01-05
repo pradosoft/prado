@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<config>
- <loggers>
-	<logger destination="file" directory="./protected/logs/" filename="prado.log">
-		<filter severity="INFO | NOTICE | WARNING | ERROR | FATAL" />
-		<filter severity="DEBUG" disabled="true" />
-	</logger>
- </loggers>
-</config>

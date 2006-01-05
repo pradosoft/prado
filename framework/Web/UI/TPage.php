@@ -133,38 +133,59 @@ class TPage extends TTemplateControl
 	 */
 	public function run($writer)
 	{
+		Prado::coreLog("Running page life cycles");
 		$this->determinePostBackMode();
-
+		
+		Prado::coreLog("Page onPreInit()");
 		$this->onPreInit(null);
+		Prado::coreLog("Page initRecursive()");
 		$this->initRecursive();
+		Prado::coreLog("Page onInitComplete()");
 		$this->onInitComplete(null);
 
 		if($this->getIsPostBack())
 		{
 			$this->_restPostData=new TMap;
+			Prado::coreLog("Page loadPageState()");
 			$this->loadPageState();
+			Prado::coreLog("Page processPostData()");
 			$this->processPostData($this->_postData,true);
+			Prado::coreLog("Page onPreLoad()");
 			$this->onPreLoad(null);
+			Prado::coreLog("Page loadRecursive()");
 			$this->loadRecursive();
+			Prado::coreLog("Page processPostData()");
 			$this->processPostData($this->_restPostData,false);
+			Prado::coreLog("Page raiseChangedEvents()");
 			$this->raiseChangedEvents();
+			Prado::coreLog("Page raisePostBackEvent()");
 			$this->raisePostBackEvent();
+			Prado::coreLog("Page onLoadComplete()");
 			$this->onLoadComplete(null);
 		}
 		else
 		{
+			Prado::coreLog("Page onPreLoad()");
 			$this->onPreLoad(null);
+			Prado::coreLog("Page loadRecursive()");
 			$this->loadRecursive();
+			Prado::coreLog("Page onLoadComplete()");
 			$this->onLoadComplete(null);
 		}
 
+		Prado::coreLog("Page preRenderRecursive()");
 		$this->preRenderRecursive();
+		Prado::coreLog("Page onPreRenderComplete()");
 		$this->onPreRenderComplete(null);
 
+		Prado::coreLog("Page savePageState()");
 		$this->savePageState();
+		Prado::coreLog("Page onSaveStateComplete()");
 		$this->onSaveStateComplete(null);
 
+		Prado::coreLog("Page renderControl()");
 		$this->renderControl($writer);
+		Prado::coreLog("Page unloadRecursive()");
 		$this->unloadRecursive();
 	}
 
@@ -263,6 +284,7 @@ class TPage extends TTemplateControl
 		$this->_validated=true;
 		if($this->_validators && $this->_validators->getCount())
 		{
+			Prado::coreLog("Page validate");
 			if($validationGroup==='')
 			{
 				foreach($this->_validators as $validator)

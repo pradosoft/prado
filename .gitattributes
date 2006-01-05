@@ -31,7 +31,6 @@ demos/quickstart/protected/controls/SampleLayout.tpl -text
 demos/quickstart/protected/controls/TTextHighlighter.php -text
 demos/quickstart/protected/controls/TopicList.php -text
 demos/quickstart/protected/controls/TopicList.tpl -text
-demos/quickstart/protected/logs/logger.xml -text
 demos/quickstart/protected/pages/Configurations/AppConfig.page -text
 demos/quickstart/protected/pages/Configurations/Overview.page -text
 demos/quickstart/protected/pages/Configurations/PageConfig.page -text
@@ -145,8 +144,7 @@ framework/Log/EventLog/writers/writer_database.php -text
 framework/Log/EventLog/writers/writer_file.php -text
 framework/Log/EventLog/writers/writer_unix_file.php -text
 framework/Log/TEventLog.php -text
-framework/Log/TEzcLogger.php -text
-framework/Log/TLog.php -text
+framework/Log/TLogManager.php -text
 framework/Security/TAuthManager.php -text
 framework/Security/TAuthorizationRule.php -text
 framework/Security/TMembershipManager.php -text

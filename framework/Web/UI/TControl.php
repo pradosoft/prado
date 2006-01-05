@@ -683,8 +683,11 @@ class TControl extends TComponent
 	 */
 	public function dataBind()
 	{
+		Prado::coreLog("Data bind properties");
 		$this->dataBindProperties();
+		Prado::coreLog("onDataBinding()");
 		$this->onDataBinding(null);
+		Prado::coreLog("dataBindChildren()");
 		$this->dataBindChildren();
 	}
 

@@ -42,14 +42,58 @@ foreach($lines as $line)
 		continue;
 	echo 'adding '.FRAMEWORK_DIR.'/'.$line."\n";
 	$input=file_get_contents(FRAMEWORK_DIR.'/'.$line);
-	$input=strtr($input,"\r",'');
-	$input=preg_replace('/\/\*.*?\*\//s','',$input);
-	$input=preg_replace('/^Prado::using\([^\*]*?\);/m','',$input);
-	$input=preg_replace('/^(require|require_once)\s*\(.*?;/m','',$input);
-	$input=preg_replace('/^(include|include_once)\s*\(.*?;/m','',$input);
+	$input = strip_comments($input);
+	$input=strtr($input,"\r",' ');
+	$input=preg_replace("/\s*(\n+\s*){2,}\s*/m","\n",$input);
+	$input=preg_replace('/^Prado::using\([^\*]*?\);/mu','',$input);
+	$input=preg_replace('/^(require|require_once)\s*\(.*?;/mu','',$input);
+	$input=preg_replace('/^(include|include_once)\s*\(.*?;/mu','',$input);
+
+	//remove internal logging
+	$input=preg_replace('/^\s*Prado::coreLog.*\s*;\s*$/mu','',$input);
+
 	$output.=$input;
 }
 
 file_put_contents(FRAMEWORK_DIR.'/'.OUTPUT_FILE,$output);
+
+function strip_comments($source)
+{
+  $tokens = token_get_all($source);
+  /* T_ML_COMMENT does not exist in PHP 5.
+   * The following three lines define it in order to
+   * preserve backwards compatibility.
+   *
+   * The next two lines define the PHP 5-only T_DOC_COMMENT,
+   * which we will mask as T_ML_COMMENT for PHP 4.
+   */
+  if (!defined('T_ML_COMMENT')) {
+    @define('T_ML_COMMENT', T_COMMENT);
+  } else {
+    @define('T_DOC_COMMENT', T_ML_COMMENT);
+  }
+  $output = '';
+  foreach ($tokens as $token) {
+    if (is_string($token)) {
+      // simple 1-character token
+      $output .= $token;
+    } else {
+      // token array
+      list($id, $text) = $token;
+      switch ($id) { 
+        case T_COMMENT: 
+        case T_ML_COMMENT: // we've defined this
+        case T_DOC_COMMENT: // and this
+          // no action on comments
+          break;
+        default:
+          // anything else -> output "as is"
+          $output .= $text;
+          break;
+      }
+    }
+  }
+  return $output;
+}
 
 ?>

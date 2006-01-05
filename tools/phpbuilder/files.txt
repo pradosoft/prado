@@ -16,7 +16,7 @@ Web/Services/TPageService.php
 Web/UI/TTemplateManager.php
 Web/UI/TThemeManager.php
 Web/UI/TAssetManager.php
-Web/UI/THiddenFieldPageStatePersister.php
+Web/UI/TPageStatePersister.php
 Web/UI/TControl.php
 Web/UI/TTemplateControl.php
 Web/UI/TForm.php

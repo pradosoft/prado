@@ -232,6 +232,7 @@ class THttpResponse extends TModule implements ITextWriter
 	{
 		if($this->_bufferOutput)
 			ob_flush();
+		Prado::coreLog("Flushing output");
 	}
 
 	/**
@@ -241,6 +242,7 @@ class THttpResponse extends TModule implements ITextWriter
 	{
 		if($this->_bufferOutput)
 			ob_clean();
+		Prado::coreLog("Clearing output");
 	}
 
 	/**

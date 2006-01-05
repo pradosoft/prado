@@ -85,6 +85,14 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	}
 
 	/**
+	 * @return integer the number of items in the list
+	 */
+	public function getLength()
+	{
+		return $this->getCount();
+	}
+
+	/**
 	 * Returns the item at the specified offset.
 	 * This method is exactly the same as {@link offsetGet}.
 	 * @param integer the index of the item

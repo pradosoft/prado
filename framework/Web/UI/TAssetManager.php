@@ -141,6 +141,7 @@ class TAssetManager extends TModule
 	 */
 	public function publishFilePath($path,$checkTimestamp=false)
 	{
+		Prado::coreLog("Publishing file $path");
 		if(isset($this->_published[$path]))
 			return $this->_published[$path];
 		else if(($fullpath=realpath($path))===false)

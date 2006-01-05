@@ -373,6 +373,7 @@ class THttpRequest extends TModule
 				break;
 			}
 		}
+		Prado::coreLog("Resolving request {$this->_serviceID}={$this->_serviceParam}");
 	}
 
 	/**

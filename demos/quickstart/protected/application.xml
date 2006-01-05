@@ -2,18 +2,13 @@
 
 <application id="QuickStart" Mode="Debug">
   <modules>
-	  <module id="logger" class="System.Log.TEventLog" config="protected/logs/logger.xml" >
-<!-- Logging config can be here or in an external file specified by config=".." above -->
-<!--
-		<logger destination="file" directory="./protected/logs/" filename="prado.log">
-			<filter severity="INFO | NOTICE | WARNING | ERROR | FATAL" />
-			<filter severity="DEBUG" disabled="true" />
-		</logger>
--->
-	</module>
+	  <module id="logger" class="System.Log.TEventLog">
+		<logger destination="file" directory="QuickStart.logs" filename="prado.log" />
+	  </module>
   </modules>
   <paths>
     <alias id="Controls" path="controls" />
+	<alias id="QuickStart" path="." />
     <using namespace="Controls.*" />
   </paths>
   <services>

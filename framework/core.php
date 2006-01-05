@@ -42,6 +42,8 @@ require_once(PRADO_DIR.'/Data/TXmlDocument.php');
  */
 require_once(PRADO_DIR.'/Web/THttpUtility.php');
 
+require_once(PRADO_DIR.'/Log/ILog.php');
+
 /**
  * IModule interface.
  *
@@ -769,6 +771,16 @@ class PradoBase
 				$language=$lang[0];
 		}
 		return $language;
+	}
+
+	public static function coreLog($msg=null)
+	{
+		static $logger;
+		if(is_null($logger))
+			$logger = new TInternalLogger();
+		if(!empty($msg))
+			$logger->info($msg);
+		return $logger;
 	}
 }
 

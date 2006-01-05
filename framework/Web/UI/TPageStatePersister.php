@@ -52,6 +52,7 @@ class TPageStatePersister extends TModule implements IStatePersister
 	 */
 	public function save($state)
 	{
+		Prado::coreLog("Saving state");
 		$data=Prado::serialize($state);
 		$hmac=$this->computeHMAC($data,$this->getPrivateKey());
 		if(extension_loaded('zlib'))
@@ -68,6 +69,7 @@ class TPageStatePersister extends TModule implements IStatePersister
 	 */
 	public function load()
 	{
+		Prado::coreLog("Loading state");
 		$str=base64_decode($this->getApplication()->getRequest()->getItems()->itemAt(TPage::FIELD_PAGESTATE));
 		if($str==='')
 			return null;

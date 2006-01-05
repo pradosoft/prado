@@ -1,6 +1,6 @@
 <?php
 
-abstract class TEzcLogger extends TModule
+abstract class TLogManager extends TModule
 {
 	protected $defaultSeverity = 'INFO | DEBUG | NOTICE | WARNING | ERROR | FATAL';
 	
@@ -27,12 +27,12 @@ abstract class TEzcLogger extends TModule
 		TEzcLoggerLoader::using('ezcLogMap');
 		TEzcLoggerLoader::using('ezcLogContext');
 		TEzcLoggerLoader::using('ezcLogFilter');
-		$loggers = $xml->getElementsByTagName('logger');
+
 		$log = ezcLog::getInstance();
-		foreach($loggers as $logger)
+		foreach($xml->getElementsByTagName('logger') as $logger)
 		{
-			$filters = $logger->getElementsByTagName('filter');
 			$logWriter = $this->getLogWriter($logger);
+			$filters = $logger->getElementsByTagName('filter');
 			foreach($filters as $filter)
 			{
 				$logFilter = new ezcLogFilter();
@@ -40,6 +40,13 @@ abstract class TEzcLogger extends TModule
 				$logFilter->severity = $this->getFilterSeverity($Severity);
 				$map = $filter->getAttribute('disabled') ? 'unmap' : 'map';
 				$log->$map($logFilter, $logWriter);
+			}
+
+			if($filters->Length < 1)
+			{
+				$logFilter = new ezcLogFilter();
+				$logFilter->severity = $this->getFilterSeverity();
+				$log->map($logFilter, $logWriter);
 			}
 		}
 	}
@@ -55,10 +62,10 @@ abstract class TEzcLogger extends TModule
 		}
 	}
 
-	protected function getFilterSeverity($string)
+	protected function getFilterSeverity($string='')
 	{
 		if(empty($string))
-			$string = $this->defaultServerity;
+			$string = $this->defaultSeverity;
 		$serverities = explode("|", $string);
 		$mask = 0;
 		foreach($serverities as $Severity)
@@ -101,7 +108,8 @@ class TEzcLoggerUnixFileWriterFactory
 		TEzcLoggerLoader::using('ezcLogWriterFile');
 		TEzcLoggerLoader::using('ezcLogWriterUnixFile');
 		
-		$dir = $xml->getAttribute('directory');
+		$path = $xml->getAttribute('directory');
+		$dir = Prado::getPathOfNamespace($path);
 		$file = $xml->getAttribute('filename');
 		if(empty($file)) $file = 'prado.log';
 		return new ezcLogWriterUnixFile($dir, $file);

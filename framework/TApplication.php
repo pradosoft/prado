@@ -35,6 +35,7 @@ require_once(PRADO_DIR.'/Security/TAuthorizationRule.php');
  */
 require_once(PRADO_DIR.'/Web/Services/TPageService.php');
 
+
 /**
  * TApplication class.
  *
@@ -301,6 +302,7 @@ class TApplication extends TComponent
 				if($this->_mode===self::STATE_OFF)
 					throw new THttpException(503,'application_service_unavailable');
 				$method='on'.self::$_steps[$this->_step];
+				Prado::coreLog("Executing $method");
 				$this->$method($this);
 				if($this->_requestCompleted && $this->_step<$n-1)
 					$this->_step=$n-1;
@@ -709,6 +711,7 @@ class TApplication extends TComponent
 	 */
 	protected function initApplication()
 	{
+		Prado::coreLog("Initializing application");
 		Prado::setPathOfAlias('Application',$this->_basePath);
 
 		if($this->_configFile===null)
@@ -730,7 +733,7 @@ class TApplication extends TComponent
 					fclose($fp);
 				}
 				else
-					syslog(LOG_WARNING,'Prado application config cache file "'.$this->_cacheFile.'" cannot be created.');
+					syslog(LOG_WARNING, 'Prado application config cache file "'.$this->_cacheFile.'" cannot be created.');
 			}
 		}
 		else
@@ -767,6 +770,7 @@ class TApplication extends TComponent
 		$this->_modules=array();
 		foreach($config->getModules() as $id=>$moduleConfig)
 		{
+			Prado::coreLog("Creating module $id");
 			$module=Prado::createComponent($moduleConfig[0]);
 			$this->_modules[$id]=$module;
 			foreach($moduleConfig[1] as $name=>$value)
