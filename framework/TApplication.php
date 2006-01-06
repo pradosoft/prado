@@ -239,6 +239,12 @@ class TApplication extends TComponent
 	 * @var IUser user instance, could be null
 	 */
 	private $_user=null;
+
+	/**
+	 * @var TGlobalization module, could be null
+	 */
+	private $_globalization=null;
+
 	/**
 	 * @var TAuthorizationRuleCollection collection of authorization rules
 	 */
@@ -660,6 +666,16 @@ class TApplication extends TComponent
 	public function setUser(IUser $user)
 	{
 		$this->_user=$user;
+	}
+
+	public function getGlobalization()
+	{
+		return $this->_globalization;
+	}
+
+	public function setGlobalization(TGlobalization $handler)
+	{
+		$this->_globalization = $handler;
 	}
 
 	/**

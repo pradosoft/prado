@@ -70,7 +70,7 @@ class TTemplateManager extends TModule
 	 */
 	public function getTemplateByFileName($fileName)
 	{
-		if(($fileName=realpath($fileName))!==false && is_file($fileName))
+		if(!is_null($fileName=$this->getLocalizedTemplate($fileName)))
 		{
 			if(($cache=$this->getApplication()->getCache())===null)
 				return new TTemplate(file_get_contents($fileName),dirname($fileName),$fileName);
@@ -90,6 +90,22 @@ class TTemplateManager extends TModule
 		}
 		else
 			return null;
+	}
+
+	/**
+	 * Finds a localized template file.
+	 * @param string template file.
+	 * @return string|null a localized template file if found, null otherwise.
+	 */
+	protected function getLocalizedTemplate($filename)
+	{
+		$app = $this->getApplication()->getGlobalization();
+		if(is_null($app)) return $filename;
+		foreach($app->getLocalizedResource($filename) as $file)
+		{
+			if(($file=realpath($file))!==false && is_file($file))
+				return $file;
+		}
 	}
 }
 
