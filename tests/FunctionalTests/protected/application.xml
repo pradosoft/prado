@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<application id="FunctionTests" Mode="Debug">
+	<paths>
+		<alias id="Tests" path="." />
+		<using namespace="System.I18N.*" />
+	</paths>
+	
+	<modules>
+		<module id="globalization" class="TGlobalization" Culture="zh-CN">
+
+			<!-- The translation type and source -->
+			<translation 
+				type="XLIFF" 
+				source="Tests.messages" 
+				autosave="true"
+				cache="true"
+				/>
+			<!-- <translation type="gettext" source="I18N/messages" autosave="true" /> -->
+			<!-- <translation type="SQLite" source="sqlite:///I18N/messages/sqlite_messages.db" autosave="true" /> -->
+			<!-- <translation type="MySQL" source="mysql://root@localhost/i18n_example" autosave="true" /> -->
+		</module>
+	</modules>
+</application>

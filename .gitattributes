@@ -281,6 +281,14 @@ requirements/template.html -text
 tests/FunctionalTests/README.txt -text
 tests/FunctionalTests/config.php -text
 tests/FunctionalTests/index.php -text
+tests/FunctionalTests/protected/application.xml -text
+tests/FunctionalTests/protected/pages/Home.page -text
+tests/FunctionalTests/protected/pages/Home.zh_CN.page -text
+tests/FunctionalTests/protected/pages/I18N/BasicI18N.page -text
+tests/FunctionalTests/protected/pages/I18N/BasicI18N.php -text
+tests/FunctionalTests/protected/runtime/config.cache -text
+tests/FunctionalTests/protected/runtime/global.cache -text
+tests/FunctionalTests/protected/tests/HomePageTest.php -text
 tests/FunctionalTests/selenium/SeleneseRunner.html -text
 tests/FunctionalTests/selenium/SeleniumLog.html -text
 tests/FunctionalTests/selenium/TestRunner-splash.html -text

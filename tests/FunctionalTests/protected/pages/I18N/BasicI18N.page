@@ -1,0 +1,60 @@
+<!doctype html public 
+	"-//W3C//DTD XHTML 1.0 Strict//EN" 
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+	
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
+	<title>Basic I18N Test</title>
+	<style type="text/css">
+	/*<![CDATA[*/
+	body
+	{
+		font-family: Georgia, "Times New Roman", Times, serif;
+	}
+	.w3c
+	{
+		margin-top: 2em;
+		display: block;
+	}
+	/*]]>*/
+	</style>
+</head>
+
+<body>
+<h1>Basic I18N Test</h1>
+<com:TTranslate>
+	Hello {name}
+		<com:TTranslateParameter Key="name">
+			<com:TLabel>
+				<com:TTranslate>Name</com:TTranslate>
+			</com:TLabel>
+		</com:TTranslateParameter>
+</com:TTranslate>
+
+<div>
+<com:TNumberFormat Value="10000" Type="currency"/>
+</div>
+<div><com:TDateFormat /></div>
+
+<div>
+<com:TChoiceFormat Value="0">
+	[0] None |[1] One thing. |[2,Inf) Many things.
+</com:TChoiceFormat><br />
+
+<com:TChoiceFormat Value="1">
+	[0] None |[1] One thing. |[2,Inf) Many things.
+</com:TChoiceFormat><br />
+
+<com:TChoiceFormat Value="5">
+	[0] None |[1] One thing. |[2,Inf) Many things.
+</com:TChoiceFormat>
+</div>
+
+<div class="w3c">
+<a href="http://validator.w3.org/check?uri=referer">
+		Validate XHTML 1.0
+</a>
+</div>
+</body>
+</html>
