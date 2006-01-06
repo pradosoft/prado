@@ -179,14 +179,14 @@ class TNumberFormat extends TI18NControl
 		$app = $this->Application->getGlobalization();
 		//initialized the default class wide formatter
 		if(is_null(self::$formatter))
-			self::$formatter = new NumberFormat($app->Culture);
+			self::$formatter = new NumberFormat($app->getCulture());
 	
 		$pattern = strlen($this->getPattern()) > 0 
 						? $this->getPattern() : $this->getType();
 		
 		$culture = $this->getCulture();
 		//return the specific cultural formatted number
-		if(!empty($culture) && $app->Culture != $culture)
+		if(!empty($culture) && $app->getCulture() != $culture)
 		{
 			$formatter = new NumberFormat($culture);
 			return $formatter->format($this->getValue(),$pattern,

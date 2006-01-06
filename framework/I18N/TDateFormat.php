@@ -174,12 +174,12 @@ class TDateFormat extends TI18NControl
 		
 		//initialized the default class wide formatter
 		if(is_null(self::$formatter))
-			self::$formatter = new DateFormat($app->Culture);
+			self::$formatter = new DateFormat($app->getCulture());
 	
 		$culture = $this->getCulture();
 
 		//return the specific cultural formatted date time
-		if(strlen($culture) && $app->Culture !== $culture)
+		if(strlen($culture) && $app->getCulture() !== $culture)
 		{
 			$formatter = new DateFormat($culture);
 			return $formatter->format($this->getValue(), 

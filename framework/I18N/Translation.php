@@ -56,12 +56,12 @@ class Translation extends TComponent
 											$config['source'],
 											$config['filename']);
 											
-			$source->setCulture($app->Culture);
+			$source->setCulture($app->getCulture());
 			
 			if($config['cache'])
 				$source->setCache(new MessageCache($config['cache']));
 			
-			self::$formatter = new MessageFormat($source, $app->Charset);
+			self::$formatter = new MessageFormat($source, $app->getCharset());
 
 			//save the message on end request
 			Prado::getApplication()->attachEventHandler(
@@ -92,7 +92,7 @@ class Translation extends TComponent
 			$config = $app->getTranslationConfiguration();
 			if(isset($config['autosave']))
 			{								
-				$formatter->getSource()->setCulture($app->Culture);
+				$formatter->getSource()->setCulture($app->getCulture());
 				$formatter->getSource()->save($config['catalogue']);
 			}
 			$onceonly = false;
@@ -129,7 +129,7 @@ function localize($text, $parameters=array(), $catalogue=null, $charset=null)
 		$catalogue = $config['catalogue'];
 		
 	//globalization charset
-	$appCharset = is_null($app) ? '' : $app->Charset; 
+	$appCharset = is_null($app) ? '' : $app->getCharset(); 
 		
 	//default charset
 	$defaultCharset = (is_null($app)) ? 'UTF-8' : $app->getDefaultCharset();

@@ -54,19 +54,19 @@ class TGlobalization extends TModule
 	 * The current charset.
 	 * @var string 
 	 */	
-	public $Charset='UTF-8';
+	protected $_charset='UTF-8';
 
 	/**
 	 * The current culture.
 	 * @var string 
 	 */
-	public $Culture='en';
+	protected $_culture='en';
 
 	/**
 	 * The content type for the http header
 	 * @var string
 	 */
-	public $ContentType='text/html';
+	protected $_contentType='text/html';
 
 	/**
 	 * Initialize the Culture and Charset for this application.
@@ -76,15 +76,44 @@ class TGlobalization extends TModule
 	 * @param TXmlElement application configuration
 	 */
 	public function init($xml)
-	{
-		$this->Culture = str_replace('-','_',$this->Culture);
-		$this->_defaultContentType = $this->ContentType;
-		$this->_defaultCharset = $this->Charset;
-		$this->_defaultCulture = $this->Culture;
+	{		
+		$this->_defaultContentType = $this->getContentType();
+		$this->_defaultCharset = $this->getCharset();
+		$this->_defaultCulture = $this->getCulture();
 
 		$config = $xml->getElementByTagName('translation')->getAttributes();
 		$this->setTranslationConfiguration($config);
 		$this->getApplication()->setGlobalization($this);
+	}
+
+	public function getCulture()
+	{
+		return $this->_culture;
+	}
+
+	public function setCulture($culture)
+	{
+		$this->_culture = str_replace('-','_',$culture);
+	}
+
+	public function getCharset()
+	{
+		return $this->_charset;
+	}
+
+	public function setCharset($charset)
+	{
+		$this->_charset = $charset;
+	}
+
+	public function setContentType($type)
+	{
+		$this->_contentType = $type;
+	}
+
+	public function getContentType()
+	{
+		return $this->_contentType;
 	}
 
 	/**
@@ -153,7 +182,7 @@ class TGlobalization extends TModule
 	 */
 	public function getCultureVariants($culture=null)
 	{
-		if(is_null($culture)) $culture = $this->Culture;
+		if(is_null($culture)) $culture = $this->getCulture();
 		$variants = explode('_', $culture);
 		$result = array();
 		for(; count($variants) > 0; array_pop($variants))

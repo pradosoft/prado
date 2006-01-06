@@ -7,7 +7,7 @@
 	</paths>
 	
 	<modules>
-		<module id="globalization" class="TGlobalization" Culture="zh-CN">
+		<module id="globalization" class="TGlobalization" Culture="zh_CN">
 
 			<!-- The translation type and source -->
 			<translation 
