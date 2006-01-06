@@ -60,7 +60,7 @@ class TTemplateManager extends TModule
 	public function getTemplateByClassName($className)
 	{
 		$class=new ReflectionClass($className);
-		$tplFile=dirname($class->getFileName()).'/'.$className.self::TEMPLATE_FILE_EXT;
+		$tplFile=dirname($class->getFileName()).'/'.$className.self::TEMPLATE_FILE_EXT;		
 		return $this->getTemplateByFileName($tplFile);
 	}
 
@@ -72,6 +72,7 @@ class TTemplateManager extends TModule
 	{
 		if(!is_null($fileName=$this->getLocalizedTemplate($fileName)))
 		{
+			Prado::coreLog("Loading template $fileName");
 			if(($cache=$this->getApplication()->getCache())===null)
 				return new TTemplate(file_get_contents($fileName),dirname($fileName),$fileName);
 			else
@@ -106,6 +107,7 @@ class TTemplateManager extends TModule
 			if(($file=realpath($file))!==false && is_file($file))
 				return $file;
 		}
+
 	}
 }
 

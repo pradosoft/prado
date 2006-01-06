@@ -12,6 +12,8 @@ interface ILog
 
 require_once(PRADO_DIR.'/Log/EventLog/log.php');
 require_once(PRADO_DIR.'/Log/EventLog/exceptions/writer_exception.php');
+require_once(PRADO_DIR.'/Log/EventLog/exceptions/file_exception.php');
+
 /**
  * ${classname}
  *

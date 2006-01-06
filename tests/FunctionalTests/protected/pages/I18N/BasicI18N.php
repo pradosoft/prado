@@ -24,10 +24,21 @@ class BasicI18N extends TPage
  */
 class BasicI18NTestCase extends SeleniumTestCase
 {
-	function testI18N()
+	function setup()
 	{
 		$page = Prado::getApplication()->getTestPage(__FILE__);
 		$this->open($page);
+	}
+
+	function testI18N()
+	{
+		$this->verifyTitle("Basic I18N Test", "");
+		$this->verifyTextPresent("Hello", "");
+		$this->verifyTextPresent("US$10,000.00", "");
+		$this->verifyTextPresent("2006年1月15日 上午12时00分00秒", "");
+		$this->verifyTextPresent("None", "");
+		$this->verifyTextPresent("One thing.", "");
+		$this->verifyTextPresent("Many things.", "");
 	}
 }
 

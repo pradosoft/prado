@@ -110,6 +110,10 @@ class TEzcLoggerUnixFileWriterFactory
 
 		$path = $xml->getAttribute('directory');
 		$dir = Prado::getPathOfNamespace($path);
+		if(!is_dir($dir))
+			throw new TException("missing_logging_directory $dir");
+		if(!is_writable($dir))
+			throw new TException("unable_to_writer_to $dir");
 		$file = $xml->getAttribute('filename');
 		if(empty($file)) $file = 'prado.log';
 		return new ezcLogWriterUnixFile($dir, $file);

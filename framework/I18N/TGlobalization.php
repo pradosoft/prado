@@ -12,7 +12,7 @@
 
 
 /**
- * TGlobalization contains settings for Culture, Charset, ContentType
+ * TGlobalization contains settings for Culture, Charset
  * and TranslationConfiguration.
  *
  * TGlobalization can be subclassed to change how the Culture, Charset
@@ -39,12 +39,6 @@ class TGlobalization extends TModule
 	private $_defaultCulture = 'en';
 
 	/**
-	 * Default content type is 'text/html'
-	 * @var ${type}
-	 */
-	private $_defaultContentType = 'text/html';
-
-	/**
 	 * Translation source parameters.
 	 * @var TMap
 	 */
@@ -63,12 +57,6 @@ class TGlobalization extends TModule
 	protected $_culture='en';
 
 	/**
-	 * The content type for the http header
-	 * @var string
-	 */
-	protected $_contentType='text/html';
-
-	/**
 	 * Initialize the Culture and Charset for this application.
 	 * You should override this method if you want a different way of
 	 * setting the Culture and/or Charset for your application.
@@ -77,7 +65,6 @@ class TGlobalization extends TModule
 	 */
 	public function init($xml)
 	{		
-		$this->_defaultContentType = $this->getContentType();
 		$this->_defaultCharset = $this->getCharset();
 		$this->_defaultCulture = $this->getCulture();
 
@@ -86,34 +73,36 @@ class TGlobalization extends TModule
 		$this->getApplication()->setGlobalization($this);
 	}
 
+	/**
+	 * @return string current application culture
+	 */
 	public function getCulture()
 	{
 		return $this->_culture;
 	}
 
+	/**
+	 * @param string culture, e.g. <tt>en_US</tt> for American English 
+	 */
 	public function setCulture($culture)
 	{
 		$this->_culture = str_replace('-','_',$culture);
 	}
 
+	/**
+	 * @return string localization charset
+	 */
 	public function getCharset()
 	{
 		return $this->_charset;
 	}
 
+	/**
+	 * @param string localization charset, e.g. <tt>UTF-8</tt>
+	 */
 	public function setCharset($charset)
 	{
 		$this->_charset = $charset;
-	}
-
-	public function setContentType($type)
-	{
-		$this->_contentType = $type;
-	}
-
-	public function getContentType()
-	{
-		return $this->_contentType;
 	}
 
 	/**
@@ -164,14 +153,6 @@ class TGlobalization extends TModule
 	public function getDefaultCulture()
 	{
 		return $this->_defaultCulture;
-	}
-
-	/**
-	 * @return string default content-type set in application.xml
-	 */
-	public function getDefaultContentType()
-	{
-		return $this->_defaultContentType;
 	}
 
 	/**

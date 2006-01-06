@@ -459,11 +459,6 @@ class SeleniumTestCase extends UnitTestCase
 		parent::__construct();
 	}
 
-	public function initPage($file)
-	{
-		$this->Page = prado::getApplication()->getTestPage($file);
-	}
-
 	function __call($func, $args)
 	{
 		if(count($args) == 0)

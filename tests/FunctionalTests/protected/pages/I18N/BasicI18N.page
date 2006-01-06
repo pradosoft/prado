@@ -1,3 +1,4 @@
+<%@ Application.Globalization.Culture="zh_CN" %>
 <!DOCTYPE HTML PUBLIC 
 	"-//W3C//DTD XHTML 1.0 Strict//EN" 
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -35,7 +36,7 @@
 <div>
 <com:TNumberFormat Value="10000" Type="currency"/>
 </div>
-<div><com:TDateFormat /></div>
+<div><com:TDateFormat Value="2006-01-15"/></div>
 
 <div>
 <com:TChoiceFormat Value="0">

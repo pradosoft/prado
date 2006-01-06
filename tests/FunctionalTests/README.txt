@@ -48,11 +48,11 @@ class testMyButtonExample extends SeleniumTestCase
 {
 	function setup()
 	{
-		//initializes $this->Page to be MyButtonExample instance
-		$this->initPage(__FILE__);
+		//get the test page url
+		$page = Prado::getApplication()->getTestPage(__FILE__);
 		
 		//open MyButtonExample page
-		$this->open($this->Page->Request->TestUrl);				
+		$this->open($page);				
 	}
 
 	function testButtonClick()

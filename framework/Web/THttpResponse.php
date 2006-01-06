@@ -32,6 +32,9 @@
  * where {@link getCacheExpire CacheExpire}, {@link getCacheControl CacheControl}
  * and {@link getBufferOutput BufferOutput} are configurable properties of THttpResponse.
  *
+ * When sending headers the Charset set in {@link TGlobalization::getCharset()} 
+ * is use when Charset is null or empty in THttpResponse.
+ * 
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web
@@ -59,6 +62,15 @@ class THttpResponse extends TModule implements ITextWriter
 	 * @var string HTML writer type
 	 */
 	private $_htmlWriterType='System.Web.UI.THtmlWriter';
+	/**
+	 * @var string content type
+	 */
+	private $_contentType='text/html';
+
+	/**
+	 * @var string character set, e.g. UTF-8
+	 */
+	private $_charset;
 
 	/**
 	 * Destructor.
@@ -116,6 +128,38 @@ class THttpResponse extends TModule implements ITextWriter
 	public function setCacheControl($value)
 	{
 		session_cache_limiter(TPropertyValue::ensureEnum($value,array('none','nocache','private','private_no_expire','public')));
+	}
+
+	/**
+	 * @string content type, default is text/html
+	 */
+	public function setContentType($type)
+	{
+		$this->_contentType = $type;
+	}
+
+	/**
+	 * @return string current content type
+	 */
+	public function getContentType()
+	{
+		return $this->_contentType;
+	}
+	
+	/**
+	 * @return string output charset.
+	 */
+	public function getCharset()
+	{
+		return $this->_charset;
+	}
+
+	/**
+	 * @param string output charset.
+	 */
+	public function setCharset($charset)
+	{
+		$this->_charset = $charset;
 	}
 
 	/**
@@ -226,13 +270,28 @@ class THttpResponse extends TModule implements ITextWriter
 	}
 
 	/**
-	 * Outputs the buffered content.
+	 * Outputs the buffered content, sends content-type and charset header.
 	 */
 	public function flush()
 	{
+		$header = $this->getContentTypeHeader();
+		$this->appendHeader($header);
 		if($this->_bufferOutput)
 			ob_flush();
-		Prado::coreLog("Flushing output");
+		Prado::coreLog("Flushing output $header");
+	}
+
+	/**
+	 * @return string content type and charset header
+	 */
+	protected function getContentTypeHeader()
+	{
+		$app = $this->getApplication()->getGlobalization();		
+		$charset = $this->getCharset();
+		if(empty($charset))
+			$charset = !is_null($app) ? $app->getCharset() : 'UTF-8';
+		$type = $this->getContentType();
+		return "Content-Type: $type; charset=$charset";
 	}
 
 	/**
@@ -252,6 +311,11 @@ class THttpResponse extends TModule implements ITextWriter
 	public function appendHeader($value)
 	{
 		header($value);
+	}
+
+	public function sendContentTypeHeader($type=null)
+	{
+
 	}
 
 	/**

@@ -1,7 +1,7 @@
 <?php
 
 require('config.php');
-
+header("Content-Type: text/html; charset=UTF-8");
 class BrowserTestConfig extends PradoTestConfig
 {
 	//functional test groups
@@ -17,7 +17,8 @@ class BrowserTestConfig extends PradoTestConfig
 		$groups[] = realpath($base);
 		$dirs = new DirectoryIterator($base);
 		foreach($dirs as $dir)
-			if(!$dir->isDot() && $dir->isDir())
+			if(!$dir->isDot() && $dir->isDir() 
+				&& !preg_match("/\.svn/", $dir->getPathName()))
 				$this->get_directories($dir->getPathName(), $groups);
 	}
 }

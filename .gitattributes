@@ -409,6 +409,12 @@ framework/I18N/core/data/zh_TW.dat -text
 framework/I18N/core/util.php -text
 framework/I18N/schema/mysql.sql -text
 framework/I18N/schema/sqlite.sql -text
+framework/IO/SafeHtml/HTMLSax3.php -text
+framework/IO/SafeHtml/HTMLSax3/Decorators.php -text
+framework/IO/SafeHtml/HTMLSax3/States.php -text
+framework/IO/SafeHtml/license.txt -text
+framework/IO/SafeHtml/readme.txt -text
+framework/IO/TSafeHtml.php -text
 framework/IO/TTextWriter.php -text
 framework/Log/EventLog/context.php -text
 framework/Log/EventLog/exceptions/file_exception.php -text
