@@ -148,7 +148,7 @@ function parse_resultCell(resultCell,rowNum,form)
 
 	form.createHiddenField("tests["+rowNum+"][testcase]",testname);
 
-	var trace = window.testSuiteFrame.prado_trace[testname];
+	//var trace = window.testSuiteFrame.prado_trace[testname];
 
 	for(var i = 1; i<table.rows.length; i++)
 	{
@@ -161,7 +161,7 @@ function parse_resultCell(resultCell,rowNum,form)
 		form.createHiddenField(id+"[command]", "|"+action+"|"+target+"|"+param+"|");
 		form.createHiddenField(id+"[result]", result);
 		form.createHiddenField(id+"[msg]", msg);
-		form.createHiddenField(id+"[trace]", trace[i-1]);
+		//form.createHiddenField(id+"[trace]", trace[i-1]);
 	}
 }
 

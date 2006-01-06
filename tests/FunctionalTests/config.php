@@ -10,6 +10,7 @@ require_once($SIMPLE_TEST.'/simpletest/web_tester.php');
 require_once($SIMPLE_TEST.'/simpletest/mock_objects.php');
 require_once($SIMPLE_TEST.'/simpletest/reporter.php');
 require(dirname(__FILE__).'/selenium/php/selenium.php');
+require_once(PradoTestConfig::framework().'/prado.php');
 
 /** test configurations , OVERRIDE to suite your enviornment !!! **/
 class PradoTestConfig
@@ -23,7 +24,7 @@ class PradoTestConfig
 	//test directory base
 	public function tests_directory()
 	{
-		return dirname(__FILE__).'/framework/';
+		return dirname(__FILE__).'/protected/';
 	}
 
 	//prado frame work directory
@@ -39,18 +40,16 @@ class PradoTestConfig
 	}
 
 	//run the prado application
-	public function runApplication($appUrl='tests.php', $file=null, $class='PradoApplicationTester')
+	public function runApplication($appUrl='tests.php', $class='PradoApplicationTester')
 	{
-		if(is_null($file))
-			$file = $this->tests_directory().'/application.xml';
-		$app = new $class($file, $this, $appUrl);
+		$app = new $class($this, $appUrl);
 		$app->run();
 	}
 
 	//file patterns to accept for test
 	public function acceptPattern()
 	{
-		return '/test(\w+)\.php/';
+		return '/\w+\.php/';
 	}
 
 	public function rejectPattern()
@@ -66,61 +65,33 @@ class PradoTestConfig
 
 //set up the PradoApplication Testing stub.
 
-require_once(PradoTestConfig::framework().'/prado.php');
-require_once(PradoTestConfig::framework().'/TApplication.php');
-
 class PradoApplicationTester extends TApplication
 {
+	protected $appUrl;
 	protected $testConfig;
 
-
-	public function __construct($spec, $config, $appUrl)
+	public function __construct($config, $appUrl)
 	{
+		$this->appUrl = $appUrl;
 		$this->testConfig = $config;
-		parent::__construct($spec);
-		$request = new FunctionTestRequest();
-		$request->init($this, null);
-		$request->setAppUrl($appUrl);
-		$this->setRequest($request);
-		$response = new FunctionTestResponse();
-		$response->init($this, null);
-		$this->setResponse($response);
+		parent::__construct();
 	}
 
 	public function run()
 	{
-		$this->initApplication($this->getConfigurationFile(),null);
-	}
-
-	public function getServiceConfig()
-	{
-		$config=new TApplicationConfiguration;
-		$config->loadFromFile($this->getConfigurationFile());
-		return $config->getService($this->getTestServiceID());
-	}
-
-	public function getTestServiceID()
-	{
-		if(($serviceID=$this->getRequest()->getServiceID())===null)
-			$serviceID=self::DEFAULT_SERVICE;
-		return $serviceID;
+		$this->initApplication();
 	}
 
 	public function getTestPage($file)
 	{
 		$parameter = $this->getTestServiceParameter($file);
-		$this->getRequest()->setServiceParameter($parameter);
-		$service = $this->getService();
-		$config = $this->getServiceConfig();
-		$service->init($this, $config[2]);
-		$service->run();
-		return $service->getRequestedPage();
+		return $this->appUrl.'?page='.$parameter;
 	}
 
 	protected function getTestServiceParameter($file)
 	{
 		$file = realpath($file);
-		$base = realpath($this->testConfig->tests_directory());
+		$base = realpath($this->testConfig->tests_directory().'/pages/');
 		$search = array($base, '.php');
 		$replace = array('', '');
 		$pagePath = str_replace($search, $replace, $file);
@@ -128,41 +99,6 @@ class PradoApplicationTester extends TApplication
 		if(in_array($pagePath[0], $separator))
 			$pagePath = substr($pagePath, 1);
 		return str_replace($separator, array('.','.'), $pagePath);
-	}
-}
-
-class FunctionTestRequest extends THttpRequest
-{
-	protected $appUrl;
-
-	public function setServiceParameter($parameter)
-	{
-		parent::setServiceParameter($parameter);
-	}
-
-	public function setAppUrl($url)
-	{
-		$this->appUrl = $url;
-	}
-
-	public function getApplicationPath()
-	{
-		return $this->appUrl;
-	}
-
-	public function getTestUrl()
-	{
-		$serviceParam = $this->getServiceParameter();
-		$serviceID= prado::getApplication()->getTestServiceID();
-		return $this->constructUrl($serviceID, $serviceParam);
-	}
-}
-
-class FunctionTestResponse extends THttpResponse
-{
-	public function write($str)
-	{
-
 	}
 }
 

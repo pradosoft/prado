@@ -45,9 +45,9 @@ class SeleniumTestResult
 			$case->commands = $test['commands'];
 			for($i = 0; $i < count($case->commands); $i++)
 			{
-				$trace = $case->commands[$i]['trace'];
-				$trace = html_entity_decode($trace);
-				$case->commands[$i]['trace'] = @unserialize($trace);
+				//$trace = $case->commands[$i]['trace'];
+				//$trace = html_entity_decode($trace);
+				//$case->commands[$i]['trace'] = @unserialize($trace);
 				if($case->commands[$i]['result'] == 'failed')
 				{
 					$case->result = 'failed';
@@ -126,33 +126,27 @@ EOD;
 		foreach($test->suites as $suite)
 		{
 			foreach($suite->failures as $error)
-				$contents .= $this->getErrorMsg($error, $count++);
+				$contents .= $this->getErrorMsg($suite, $error, $count++);
 		}
 
 		return $contents;
 	}
 
 
-	protected function getErrorMsg($info, $count)
+	protected function getErrorMsg($suite, $info, $count)
 	{
-		$args = array();
-		foreach($info['trace']['args'] as $arg)
-			$args[] = "'{$arg}'";
-		$args = implode(",", $args);
 		$parity = $count%2==0 ? 'even' : 'odd';
+		$command = explode("|",$info['command']);
 $msg = <<<EOD
 	<div class="error_msg {$parity}">
 		<strong>#{$count}.</strong>
 		&quot;<span class="msg">{$info['msg']}</span>&quot; in
 		<span class="function">
-			{$info['trace']['class']}::{$info['trace']['function']}({$args})
-		</span>
-		near
-		<span class="file">
-			{$info['trace']['file']}:({$info['trace']['line']})
+			{$suite->name}::{$command[1]}('{$command[2]}');
 		</span>
 	</div>
 EOD;
+
 		return $msg;
 	}
 

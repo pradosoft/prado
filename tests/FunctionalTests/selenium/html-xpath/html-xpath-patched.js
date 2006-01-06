@@ -602,7 +602,7 @@ if (isIe)
 			{
 				var attribute = node.attributes[i];
 				var attributeValue = attribute.nodeValue;
-				if (attributeValue && attribute.specified)
+				if (attributeValue && (attribute.specified || attribute.nodeName == 'value'))
 				{
 					var domAttribute = dom.createAttribute(attribute.nodeName);
 					domAttribute.value = attributeValue;

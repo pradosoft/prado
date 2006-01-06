@@ -142,9 +142,9 @@ class SeleniumTestTrace
 	{
 		$group = array_pop($trace);
 		$info = $trace[3];
-		$test = $group['args'][0]->getTestStack();
+		$test = $group['args'][0]->getTestList();
 		$i = count($test);
-		$name = $test[1].'::'.$test[$i-1];
+		$name = $test[$i-2].'::'.$test[$i-1];
 		$suite = $test[0];
 		unset($info['object']);
 		for($i = 0; $i < count($info['args']); $i++)
@@ -155,14 +155,6 @@ class SeleniumTestTrace
 		$file = str_replace($this->root, '', $info['file']);
 		$info['file'] = substr($file, 1);
  		return array($info, $name, $suite);
-	}
-}
-
-class SeleniumReporter extends SimpleReporter
-{
-	function getTestStack()
-	{
-		return $this->_test_stack;
 	}
 }
 
@@ -250,8 +242,7 @@ class SeleniumTestSuiteWriter
 		$contents = <<<EOD
 <html>
 <head>
-<meta content="text/html; charset=ISO-8859-1"
-http-equiv="content-type">
+<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 <title>Test Suite</title>
 
 </head>
@@ -287,19 +278,18 @@ EOD;
 		foreach($this->suites as $name => $suite)
 		{
 			$name = $name;
-			$contents .= "prado_trace['{$name}'] = new Array();\n";
+			$contents .= "prado_trace['{$name}'] = [";
+			$cases = array();
 			foreach($suite as $testcase)
-			{
-				$trace = addslashes(htmlspecialchars(serialize($testcase['trace'])));
-				$contents .= "prado_trace['{$name}'].push('{$trace}')\n";
-			}
+				$cases[] = "'".addslashes(htmlspecialchars(serialize($testcase['trace'])))."'";
+			$contents .= implode(",\n", $cases)."];\n\n";
 		}
 		return $contents;
 	}
 
 	protected function renderFooter()
 	{
-		$trace = $this->getJsTraceInfo();
+		$trace = '';//$this->getJsTraceInfo();
 		$contents = <<<EOD
      </tbody>
     </table>
@@ -333,7 +323,7 @@ class SeleniumTestCaseWriter
 <html>
 <head>
 <title>{$this->case}</title>
-  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type">
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1" id=TABLE1>
@@ -351,6 +341,8 @@ EOD;
 		foreach($this->tests as $test)
 		{
 			$t = explode('|', $test['test']);
+			if($t[1] == "open")
+				$t[2] = "<a href=\"{$t[2]}\" target=\"_blank\">{$t[2]}</a>";
 			echo "<tr>\n";
 			echo "<td>{$t[1]}</td>\n";
 			echo "<td>{$t[2]}</td>\n";
@@ -464,6 +456,7 @@ class SeleniumTestCase extends UnitTestCase
 		$server = SimpleSeleniumProxyServer::getInstance();
 		if(!is_null($server))
 			$this->selenium = $server->proxy();
+		parent::__construct();
 	}
 
 	public function initPage($file)

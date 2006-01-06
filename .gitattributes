@@ -280,15 +280,6 @@ requirements/template-zh.html -text
 requirements/template.html -text
 tests/FunctionalTests/README.txt -text
 tests/FunctionalTests/config.php -text
-tests/FunctionalTests/framework/Demos/testControls.php -text
-tests/FunctionalTests/framework/Demos/testHangMan.php -text
-tests/FunctionalTests/framework/IndexPage.tpl -text
-tests/FunctionalTests/framework/Web/UI/config.xml -text
-tests/FunctionalTests/framework/Web/UI/testTButton.php -text
-tests/FunctionalTests/framework/Web/UI/testTButton.tpl -text
-tests/FunctionalTests/framework/Web/config.xml -text
-tests/FunctionalTests/framework/application.xml -text
-tests/FunctionalTests/framework/config.xml -text
 tests/FunctionalTests/index.php -text
 tests/FunctionalTests/selenium/SeleneseRunner.html -text
 tests/FunctionalTests/selenium/SeleniumLog.html -text
