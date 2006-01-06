@@ -21,7 +21,8 @@ class TestFolder
 				if(!empty($folder->subFolders) || !empty($folder->testFiles))
 					$this->subFolders[]=$folder;
 			}
-			else if(is_file($fullpath) && strncmp($entry,'ut',2)===0)
+			else if(is_file($fullpath) && (strncmp($entry,'ut',2)===0 
+						|| preg_match('/test.*\.php/', strtolower($entry))))
 			{
 				$this->testFiles[$entry]="$rootUri/index.php?target=".strtr(substr($fullpath,strlen($rootPath)+1),"\\",'/');
 			}
@@ -46,7 +47,7 @@ function addTests($test,$path,$recursive)
 	$dir=opendir($path);
 	while(($entry=readdir($dir))!==false)
 	{
-		if(is_file($path.'/'.$entry) && strncmp($entry,'ut',2)===0)
+		if(is_file($path.'/'.$entry) && (strncmp($entry,'ut',2)===0||preg_match('/test.*\.php/', strtolower($entry))))
 			$test->addTestFile($path.'/'.$entry);
 		else if($entry!=='.' && $entry!=='..' && $entry!=='.svn' && is_dir($path.'/'.$entry) && $recursive)
 			addTests($test,$path.'/'.$entry,$recursive);

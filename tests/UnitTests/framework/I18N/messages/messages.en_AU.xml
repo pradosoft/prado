@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<xliff version="1.0">
+<!-- @author $Author: weizhuo $ -->
+<!-- @version $Id: messages.en_AU.xml.bak,v 1.1 2005/01/09 22:15:32 weizhuo Exp $ -->
+ <file source-language="EN" target-language="EN-AU" datatype="plaintext" original="articles.php" date="2002-01-25T21:06:01Z" product-name="Articles">
+  <body>
+   <trans-unit id="1">
+    <source>Hello</source>
+    <target>G'day Mate!</target>
+   </trans-unit>
+   <trans-unit id="2">
+    <source>Welcome</source>
+    <target>Welcome Mate!</target>
+   </trans-unit>
+   </body>
+ </file>
+</xliff>
