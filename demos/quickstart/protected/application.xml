@@ -2,9 +2,9 @@
 
 <application id="QuickStart" Mode="Debug">
   <modules>
-	  <module id="logger" class="System.Log.TEventLog">
-		<logger destination="file" directory="QuickStart.logs" filename="prado.log" />
-	  </module>
+    <module id="log" class="System.Log.TLogRouter">
+      <route class="TFileLogRoute" />
+    </module>
   </modules>
   <paths>
     <alias id="Controls" path="controls" />
