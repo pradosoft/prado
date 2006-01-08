@@ -99,6 +99,12 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		$this->setForeColor('red');
 	}
 
+	protected function onInit($param)
+	{
+		parent::onInit($param);
+		$this->getPage()->getValidators()->add($this);
+	}
+
 	/**
 	 * Adds attributes to renderer.
 	 * @param THtmlWriter the renderer
@@ -133,8 +139,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	{
 		$scripts = $this->getPage()->getClientScript();
 		$scriptKey = "prado:".get_class($this);
-		if($this->getEnableClientScript()
-			&& !$script->isEndScriptRegistered($scriptKey))
+		if($this->getEnableClientScript() && !$scripts->isEndScriptRegistered($scriptKey))
 		{
 			$scripts->registerPradoScript('validator');
 			$js = "Prado.Validation.AddForm('{$this->Page->Form->ClientID}');";
@@ -254,7 +259,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function getFocusOnError()
 	{
-		return $this->getViewState('FocusOnError',true);
+		return $this->getViewState('FocusOnError',false);
 	}
 
 	/**
@@ -318,6 +323,28 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		$this->_isValid=TPropertyValue::ensureBoolean($value);
 	}
 
+	protected function getValidationTarget()
+	{
+		if(($id=$this->getControlToValidate())!=='')
+			return $this->findControl($id);
+		else
+			return null;
+	}
+
+	protected function getValidationValue($control)
+	{
+		if($control instanceof IValidatable)
+		{
+			$value=$control->getValidationValue();
+			if($value instanceof TListItem)
+				return $value->getValue();
+			else
+				return TPropertyValue::ensureString($value);
+		}
+		else
+			throw new TInvalidDataTypeException('basevalidator_validatable_required');
+	}
+
 	/**
 	 * Validates the specified control.
 	 * Do not override this method. Override {@link evaluateIsValid} instead.
@@ -326,22 +353,9 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	public function validate()
 	{
 		$this->setIsValid(true);
-		if($this->getVisible(true) && $this->getEnabled())
-		{
+		$control=$this->getValidationTarget();
+		if($control && $this->getVisible(true) && $this->getEnabled())
 			$valid=$this->evaluateIsValid();
-			$this->setValid($valid);
-		}
-		if($this->isVisible() && $this->isEnabled() && strlen($this->getControlToValidate()))
-		{
-			$valid=$this->evaluateIsValid();
-			$this->setValid($valid);
-			return $valid;
-		}
-		else
-		{
-			$this->setValid(true);
-			return true;
-		}
 	}
 
 	/**

@@ -431,6 +431,7 @@ framework/Log/EventLog/writers/writer_unix_file.php -text
 framework/Log/ILog.php -text
 framework/Log/TEventLog.php -text
 framework/Log/TLogManager.php -text
+framework/Log/TLogRouter.php -text
 framework/Security/TAuthManager.php -text
 framework/Security/TAuthorizationRule.php -text
 framework/Security/TMembershipManager.php -text

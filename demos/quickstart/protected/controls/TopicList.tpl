@@ -35,7 +35,7 @@
 <a href="?page=Controls.Overview">Overview</a><br/>
 <a href="?page=Controls.Simple">Simple HTML Controls</a><br/>
 <a href="?page=Controls.List">List Controls</a><br/>
-<a href="?page=Construction">Validation Controls</a><br/>
+<a href="?page=Controls.Validation">Validation Controls</a><br/>
 <a href="?page=Construction">TRepeater</a><br/>
 <a href="?page=Construction">TDataList</a><br/>
 <a href="?page=Construction">TDataGrid</a><br/>
