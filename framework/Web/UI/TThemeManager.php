@@ -313,7 +313,7 @@ class TTheme extends TComponent
 		{
 			foreach($this->_skins[$type][$id] as $name=>$value)
 			{
-				Prado::coreLog("Applying skin $name to $type");
+				Prado::trace("Applying skin $name to $type",'System.Web.UI.TThemeManager');
 				if(is_array($value))
 				{
 					if($value[0]===TTemplate::CONFIG_EXPRESSION)

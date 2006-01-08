@@ -32,9 +32,9 @@
  * where {@link getCacheExpire CacheExpire}, {@link getCacheControl CacheControl}
  * and {@link getBufferOutput BufferOutput} are configurable properties of THttpResponse.
  *
- * When sending headers the Charset set in {@link TGlobalization::getCharset()} 
+ * When sending headers the Charset set in {@link TGlobalization::getCharset()}
  * is use when Charset is null or empty in THttpResponse.
- * 
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web
@@ -145,7 +145,7 @@ class THttpResponse extends TModule implements ITextWriter
 	{
 		return $this->_contentType;
 	}
-	
+
 	/**
 	 * @return string output charset.
 	 */
@@ -278,7 +278,7 @@ class THttpResponse extends TModule implements ITextWriter
 		$this->appendHeader($header);
 		if($this->_bufferOutput)
 			ob_flush();
-		Prado::coreLog("Flushing output $header");
+		Prado::trace("Flushing output $header",'System.Web.THttpResponse');
 	}
 
 	/**
@@ -286,7 +286,7 @@ class THttpResponse extends TModule implements ITextWriter
 	 */
 	protected function getContentTypeHeader()
 	{
-		$app = $this->getApplication()->getGlobalization();		
+		$app = $this->getApplication()->getGlobalization();
 		$charset = $this->getCharset();
 		if(empty($charset))
 			$charset = !is_null($app) ? $app->getCharset() : 'UTF-8';
@@ -301,7 +301,7 @@ class THttpResponse extends TModule implements ITextWriter
 	{
 		if($this->_bufferOutput)
 			ob_clean();
-		Prado::coreLog("Clearing output");
+		Prado::trace("Clearing output",'System.Web.THttpResponse');
 	}
 
 	/**

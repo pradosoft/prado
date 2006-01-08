@@ -363,6 +363,7 @@ class THttpRequest extends TModule
 	 */
 	protected function resolveRequest()
 	{
+		Prado::trace("Resolving request from ".$_SERVER['REMOTE_ADDR'],'System.Web.THttpRequest');
 		$this->_requestResolved=true;
 		foreach($this->_services as $id)
 		{
@@ -373,7 +374,6 @@ class THttpRequest extends TModule
 				break;
 			}
 		}
-		Prado::coreLog("Resolving request {$this->_serviceID}={$this->_serviceParam}");
 	}
 
 	/**

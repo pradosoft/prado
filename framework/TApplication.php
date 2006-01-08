@@ -308,7 +308,7 @@ class TApplication extends TComponent
 				if($this->_mode===self::STATE_OFF)
 					throw new THttpException(503,'application_service_unavailable');
 				$method='on'.self::$_steps[$this->_step];
-				Prado::coreLog("Executing $method");
+				Prado::trace("Executing $method",'System.TApplication');
 				$this->$method($this);
 				if($this->_requestCompleted && $this->_step<$n-1)
 					$this->_step=$n-1;
@@ -699,7 +699,8 @@ class TApplication extends TComponent
 	 */
 	protected function initApplication()
 	{
-		Prado::coreLog("Initializing application");
+		Prado::trace('Initializing application','System.TApplication');
+
 		Prado::setPathOfAlias('Application',$this->_basePath);
 
 		if($this->_configFile===null)
@@ -758,7 +759,8 @@ class TApplication extends TComponent
 		$this->_modules=array();
 		foreach($config->getModules() as $id=>$moduleConfig)
 		{
-			Prado::coreLog("Creating module $id");
+			Prado::trace("Loading module $id ({$moduleConfig[0]})",'System.TApplication');
+
 			$module=Prado::createComponent($moduleConfig[0]);
 			$this->_modules[$id]=$module;
 			foreach($moduleConfig[1] as $name=>$value)

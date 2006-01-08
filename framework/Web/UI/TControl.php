@@ -683,11 +683,11 @@ class TControl extends TComponent
 	 */
 	public function dataBind()
 	{
-		Prado::coreLog("Data bind properties");
+		Prado::trace("Data bind properties",'System.Web.UI.TControl');
 		$this->dataBindProperties();
-		Prado::coreLog("onDataBinding()");
+		Prado::trace("onDataBinding()",'System.Web.UI.TControl');
 		$this->onDataBinding(null);
-		Prado::coreLog("dataBindChildren()");
+		Prado::trace("dataBindChildren()",'System.Web.UI.TControl');
 		$this->dataBindChildren();
 	}
 

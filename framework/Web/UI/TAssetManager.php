@@ -141,7 +141,6 @@ class TAssetManager extends TModule
 	 */
 	public function publishFilePath($path,$checkTimestamp=false)
 	{
-		Prado::coreLog("Publishing file $path");
 		if(isset($this->_published[$path]))
 			return $this->_published[$path];
 		else if(($fullpath=realpath($path))===false)
@@ -155,7 +154,10 @@ class TAssetManager extends TModule
 				if(!is_dir($this->_basePath.'/'.$dir))
 					@mkdir($this->_basePath.'/'.$dir);
 				if(!is_file($file) || @filemtime($file)<@filemtime($fullpath))
+				{
+					Prado::trace("Publishing file $fullpath",'System.Web.UI.TAssetManager');
 					@copy($fullpath,$file);
+				}
 			}
 			$this->_published[$path]=$this->_baseUrl.'/'.$dir.'/'.basename($fullpath);
 			return $this->_published[$path];
@@ -164,7 +166,10 @@ class TAssetManager extends TModule
 		{
 			$dir=$this->hash($fullpath);
 			if(!is_dir($this->_basePath.'/'.$dir) || $checkTimestamp || $this->getApplication()->getMode()!==TApplication::STATE_PERFORMANCE)
+			{
+				Prado::trace("Publishing directory $fullpath",'System.Web.UI.TAssetManager');
 				$this->copyDirectory($fullpath,$this->_basePath.'/'.$dir);
+			}
 			$this->_published[$path]=$this->_baseUrl.'/'.$dir;
 			return $this->_published[$path];
 		}

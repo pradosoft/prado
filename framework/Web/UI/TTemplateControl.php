@@ -101,9 +101,9 @@ class TTemplateControl extends TControl implements INamingContainer
 	 */
 	protected function loadTemplate()
 	{
-		Prado::coreLog("Loading template ".get_class($this));
+		Prado::trace("Loading template ".get_class($this),'System.Web.UI.TTemplateControl');
 		$template=$this->getService()->getTemplateManager()->getTemplateByClassName(get_class($this));
-		self::$_template[get_class($this)]=$template;		
+		self::$_template[get_class($this)]=$template;
 		return $template;
 	}
 

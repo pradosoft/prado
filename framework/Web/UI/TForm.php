@@ -53,7 +53,6 @@ class TForm extends TControl
 	 */
 	protected function render($writer)
 	{
-		Prado::coreLog("Rendering form ".$this->getName());
 		$this->addAttributesToRender($writer);
 		$writer->renderBeginTag('form');
 		$page=$this->getPage();

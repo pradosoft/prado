@@ -1,9 +1,5 @@
 <?php
-/*
-<module id="log" class="System.Log.LogRouter">
-	<route class="TFileLogRoute" LogPath="xxx.yyy.zzz" MaxLogFiles="5" MaxFileSize="1024" Categories="System.Web" Levels="Error" />
-</module>
-*/
+
 class TLogRouter extends TModule
 {
 	const CONFIG_FILE_EXT='.xml';
@@ -23,7 +19,7 @@ class TLogRouter extends TModule
 			else
 				throw new TConfigurationException('logrouter_configfile_invalid',$this->_configFile);
 		}
-		$this->loadConfig($xml);
+		$this->loadConfig($config);
 		$this->getApplication()->attachEventHandler('EndRequest',array($this,'collectLogs'));
 	}
 
@@ -65,7 +61,17 @@ class TLogRouter extends TModule
 
 abstract class TLogRoute extends TComponent
 {
-	private static $_levelMap=array(
+	private static $_levelNames=array(
+		TLogger::ERROR=>'Error',
+		TLogger::DEBUG=>'Debug',
+		TLogger::INFO=>'Info',
+		TLogger::NOTICE=>'Notice',
+		TLogger::WARNING=>'Warning',
+		TLogger::ERROR=>'Error',
+		TLogger::ALERT=>'Alert',
+		TLogger::FATAL=>'Fatal'
+	);
+	private static $_levelValues=array(
 		'error'=>TLogger::ERROR,
 		'debug'=>TLogger::DEBUG,
 		'info'=>TLogger::INFO,
@@ -94,10 +100,9 @@ abstract class TLogRoute extends TComponent
 		foreach(explode(',',$levels) as $level)
 		{
 			$level=trim($level);
-			if(isset(self::$_levelMap[$level]))
-				$this->_levels|=self::$_levelMap[$level];
+			if(isset(self::$_levelValues[$level]))
+				$this->_levels|=self::$_levelValues[$level];
 		}
-		$this->_levels=$levels;
 	}
 
 	public function getCategories()
@@ -115,36 +120,36 @@ abstract class TLogRoute extends TComponent
 		}
 	}
 
+	protected function getLevelName($level)
+	{
+		return isset(self::$_levelNames[$level])?self::$_levelNames[$level]:'Unknown';
+	}
+
+	protected function formatLogMessage($message,$level,$category,$time)
+	{
+		return @date('M d H:i:s',$time).' ['.$this->getLevelName($level).'] ['.$category.'] '.$message."\n";
+	}
+
 	public function collectLogs()
 	{
 		$logs=Prado::getLogger()->getLogs($this->getLevels(),$this->getCategories());
 		$this->processLogs($logs);
 	}
 
-	protected function processLogs($logs);
+	abstract protected function processLogs($logs);
 }
 
 class TFileLogRoute extends TLogRoute
 {
 	private $_maxFileSize=1024; // in KB
-	private $_maxLogFiles=5;
+	private $_maxLogFiles=2;
 	private $_logPath=null;
-	private $_fileName='prado.log';
-	private $_levelMap=array(
-		TLogger::ERROR=>'Error',
-		TLogger::DEBUG=>'Debug',
-		TLogger::INFO=>'Info',
-		TLogger::NOTICE=>'Notice',
-		TLogger::WARNING=>'Warning',
-		TLogger::ERROR=>'Error',
-		TLogger::ALERT=>'Alert',
-		TLogger::FATAL=>'Fatal'
-	);
+	private $_logFile='prado.log';
 
-	public function init()
+	public function init($config)
 	{
 		if($this->_logPath===null)
-			throw new TConfigurationException('filelogroute_logfile_required');
+			$this->_logPath=$this->getApplication()->getRuntimePath();
 	}
 
 	public function getLogPath()
@@ -158,14 +163,14 @@ class TFileLogRoute extends TLogRoute
 			throw new TConfigurationException('filelogroute_logpath_invalid',$value);
 	}
 
-	public function getFileName()
+	public function getLogFile()
 	{
-		return $this->_fileName;
+		return $this->_logFile;
 	}
 
-	public function setFileName($value)
+	public function setLogFile($value)
 	{
-		$this->_fileName=$value;
+		$this->_logFile=$value;
 	}
 
 	public function getMaxFileSize()
@@ -194,30 +199,16 @@ class TFileLogRoute extends TLogRoute
 
 	protected function processLogs($logs)
 	{
-		$str='';
-		foreach($logs as $log)
-			$str.=$this->formatLogMessage($log[0],$log[1],$log[2],$log[3]);
-		$logFile=$this->_logPath.'/'.$this->_fileName;
+		$logFile=$this->_logPath.'/'.$this->_logFile;
 		if(@filesize($logFile)>$this->_maxFileSize*1024)
 			$this->rotateFiles();
-		$fw=fopen($logFile,'a');
-		fwrite($fw,$str);
-		fclose($fw);
+		foreach($logs as $log)
+			error_log($this->formatLogMessage($log[0],$log[1],$log[2],$log[3]),3,$logFile);
 	}
 
-	protected function formatLogMessage($message,$level,$category,$time)
+	protected function rotateFiles()
 	{
-		return @date('M d H:i:s',$time).' ['.$this->getLevelName($level).'] ['.$category.'] '.$message."\n";
-	}
-
-	protected function getLevelName($level)
-	{
-		return isset(self::$_levelMap[$level])?self::$_levelMap[$level]:'Unknown';
-	}
-
-	private function rotateFiles()
-	{
-		$file=$this->_logPath.'/'.$this->_fileName;
+		$file=$this->_logPath.'/'.$this->_logFile;
 		for($i=$this->_maxLogFiles;$i>0;--$i)
 		{
 			$rotateFile=$file.'.'.$i;
@@ -234,5 +225,62 @@ class TFileLogRoute extends TLogRoute
 	}
 }
 
+class TEmailLogRoute extends TLogRoute
+{
+	const EMAIL_PATTERN='/^([0-9a-zA-Z]+[-._+&])*[0-9a-zA-Z]+@([-0-9a-zA-Z]+[.])+[a-zA-Z]{2,6}$/';
+	const DEFAULT_SUBJECT='Prado Application Log';
+	private $_emails=array();
+	private $_subject='';
+	private $_from='';
+
+	protected function processLogs($logs)
+	{
+		$message='';
+		$headers=($this->_from==='') ? '' : "From:{$this->_from}\r\n";
+		$subject=$this->_subject===''?self::DEFAULT_SUBJECT:$this->_subject;
+		foreach($logs as $log)
+			$message.=$this->formatLogMessage($log[0],$log[1],$log[2],$log[3]);
+		$message=wordwrap($message,70);
+		foreach($this->_emails as $email)
+			mail($email,$subject,$message,$headers);
+
+	}
+
+	public function getEmails()
+	{
+		return $this->_emails;
+	}
+
+	public function setEmails($emails)
+	{
+		$this->_emails=array();
+		foreach(explode(',',$emails) as $email)
+		{
+			$email=trim($email);
+			if(preg_match(self::EMAIL_PATTERN,$email))
+				$this->_emails[]=$email;
+		}
+	}
+
+	public function getSubject()
+	{
+		return $this->_subject;
+	}
+
+	public function setSubject($value)
+	{
+		$this->_subject=$value;
+	}
+
+	public function getFrom()
+	{
+		return $this->_from;
+	}
+
+	public function setFrom($value)
+	{
+		$this->_from=$value;
+	}
+}
 
 ?>

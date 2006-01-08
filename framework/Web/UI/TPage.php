@@ -117,9 +117,11 @@ class TPage extends TTemplateControl
 	 */
 	public function __construct($initProperties=null)
 	{
+		Prado::trace('Constructing page','System.Web.UI.TPage');
 		$this->setPage($this);
 		if(is_array($initProperties))
 		{
+			Prado::trace('Initializing page properties specified in configurations','System.Web.UI.TPage');
 			foreach($initProperties as $name=>$value)
 				$this->setSubProperty($name,$value);
 		}
@@ -133,59 +135,59 @@ class TPage extends TTemplateControl
 	 */
 	public function run($writer)
 	{
-		Prado::coreLog("Running page life cycles");
+		Prado::trace("Running page life cycles",'System.Web.UI.TPage');
 		$this->determinePostBackMode();
-		
-		Prado::coreLog("Page onPreInit()");
+
+		Prado::trace("Page onPreInit()",'System.Web.UI.TPage');
 		$this->onPreInit(null);
-		Prado::coreLog("Page initRecursive()");
+		Prado::trace("Page initRecursive()",'System.Web.UI.TPage');
 		$this->initRecursive();
-		Prado::coreLog("Page onInitComplete()");
+		Prado::trace("Page onInitComplete()",'System.Web.UI.TPage');
 		$this->onInitComplete(null);
 
 		if($this->getIsPostBack())
 		{
 			$this->_restPostData=new TMap;
-			Prado::coreLog("Page loadPageState()");
+			Prado::trace("Page loadPageState()",'System.Web.UI.TPage');
 			$this->loadPageState();
-			Prado::coreLog("Page processPostData()");
+			Prado::trace("Page processPostData()",'System.Web.UI.TPage');
 			$this->processPostData($this->_postData,true);
-			Prado::coreLog("Page onPreLoad()");
+			Prado::trace("Page onPreLoad()",'System.Web.UI.TPage');
 			$this->onPreLoad(null);
-			Prado::coreLog("Page loadRecursive()");
+			Prado::trace("Page loadRecursive()",'System.Web.UI.TPage');
 			$this->loadRecursive();
-			Prado::coreLog("Page processPostData()");
+			Prado::trace("Page processPostData()",'System.Web.UI.TPage');
 			$this->processPostData($this->_restPostData,false);
-			Prado::coreLog("Page raiseChangedEvents()");
+			Prado::trace("Page raiseChangedEvents()",'System.Web.UI.TPage');
 			$this->raiseChangedEvents();
-			Prado::coreLog("Page raisePostBackEvent()");
+			Prado::trace("Page raisePostBackEvent()",'System.Web.UI.TPage');
 			$this->raisePostBackEvent();
-			Prado::coreLog("Page onLoadComplete()");
+			Prado::trace("Page onLoadComplete()",'System.Web.UI.TPage');
 			$this->onLoadComplete(null);
 		}
 		else
 		{
-			Prado::coreLog("Page onPreLoad()");
+			Prado::trace("Page onPreLoad()",'System.Web.UI.TPage');
 			$this->onPreLoad(null);
-			Prado::coreLog("Page loadRecursive()");
+			Prado::trace("Page loadRecursive()",'System.Web.UI.TPage');
 			$this->loadRecursive();
-			Prado::coreLog("Page onLoadComplete()");
+			Prado::trace("Page onLoadComplete()",'System.Web.UI.TPage');
 			$this->onLoadComplete(null);
 		}
 
-		Prado::coreLog("Page preRenderRecursive()");
+		Prado::trace("Page preRenderRecursive()",'System.Web.UI.TPage');
 		$this->preRenderRecursive();
-		Prado::coreLog("Page onPreRenderComplete()");
+		Prado::trace("Page onPreRenderComplete()",'System.Web.UI.TPage');
 		$this->onPreRenderComplete(null);
 
-		Prado::coreLog("Page savePageState()");
+		Prado::trace("Page savePageState()",'System.Web.UI.TPage');
 		$this->savePageState();
-		Prado::coreLog("Page onSaveStateComplete()");
+		Prado::trace("Page onSaveStateComplete()",'System.Web.UI.TPage');
 		$this->onSaveStateComplete(null);
 
-		Prado::coreLog("Page renderControl()");
+		Prado::trace("Page renderControl()",'System.Web.UI.TPage');
 		$this->renderControl($writer);
-		Prado::coreLog("Page unloadRecursive()");
+		Prado::trace("Page unloadRecursive()",'System.Web.UI.TPage');
 		$this->unloadRecursive();
 	}
 
@@ -284,7 +286,7 @@ class TPage extends TTemplateControl
 		$this->_validated=true;
 		if($this->_validators && $this->_validators->getCount())
 		{
-			Prado::coreLog("Page validate");
+			Prado::trace("Page validate",'System.Web.UI.TPage');
 			if($validationGroup==='')
 			{
 				foreach($this->_validators as $validator)

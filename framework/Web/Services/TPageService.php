@@ -146,7 +146,7 @@ class TPageService extends TService
 	 */
 	public function init($config)
 	{
-		Prado::coreLog("Initializing TPageService");
+		Prado::trace("Initializing TPageService",'System.Web.Services.TPageService');
 		$application=$this->getApplication();
 
 		$application->setPageService($this);
@@ -251,7 +251,7 @@ class TPageService extends TService
 		// load modules specified in page directory config
 		foreach($pageConfig->getModules() as $id=>$moduleConfig)
 		{
-			Prado::coreLog("Loading module $id");
+			Prado::trace("Loading module $id ({$moduleConfig[0]})",'System.Web.Services.TPageService');
 			$module=Prado::createComponent($moduleConfig[0]);
 			$application->setModule($id,$module);
 			foreach($moduleConfig[1] as $name=>$value)
@@ -427,7 +427,7 @@ class TPageService extends TService
 	 */
 	public function run()
 	{
-		Prado::coreLog("Running page service");
+		Prado::trace("Running page service",'System.Web.Services.TPageService');
 		$page=null;
 		$path=$this->_basePath.'/'.strtr($this->_pagePath,'.','/');
 		if(is_file($path.self::PAGE_FILE_EXT))
@@ -614,7 +614,7 @@ class TPageConfiguration extends TComponent
 	 */
 	private function loadFromFile($fname,$page)
 	{
-		Prado::coreLog("Loading $page with file $fname");
+		Prado::trace("Loading $page with file $fname",'System.Web.Services.TPageService');
 		if(empty($fname) || !is_file($fname))
 			return;
 		$dom=new TXmlDocument;

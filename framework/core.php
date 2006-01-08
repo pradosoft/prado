@@ -45,8 +45,10 @@ require_once(PRADO_DIR.'/Web/THttpUtility.php');
  * Includes TCache definition
  */
 require_once(PRADO_DIR.'/Data/TCache.php');
-
-require_once(PRADO_DIR.'/Log/ILog.php');
+/**
+ * Includes TLogger definition
+ */
+require_once(PRADO_DIR.'/Log/TLogger.php');
 
 /**
  * IModule interface.
@@ -713,14 +715,18 @@ class PradoBase
 		return $language;
 	}
 
-	public static function coreLog($msg=null)
+	public static function trace($msg,$category='Uncategorized')
 	{
-		static $logger;
-		if(is_null($logger))
-			$logger = new TInternalLogger();
-		if(!empty($msg))
-			$logger->info($msg);
-		return $logger;
+		if(!self::$_application || self::$_application->getMode()==='Debug')
+		{
+			$trace=debug_backtrace();
+			if(isset($trace[0]['file']) && isset($trace[0]['line']))
+				$msg.=" (line {$trace[0]['line']}, {$trace[0]['file']})";
+			$level=TLogger::DEBUG;
+		}
+		else
+			$level=TLogger::INFO;
+		self::log($msg,$level,$category);
 	}
 
 	public static function log($msg,$level=TLogger::INFO,$category='Uncategorized')
@@ -735,60 +741,6 @@ class PradoBase
 		if(self::$_logger===null)
 			self::$_logger=new TLogger;
 		return self::$_logger;
-	}
-}
-
-class TLogger extends TComponent
-{
-	const DEBUG=0x01;
-	const INFO=0x02;
-	const NOTICE=0x04;
-	const WARNING=0x08;
-	const ERROR=0x10;
-	const ALERT=0x20;
-	const FATAL=0x40;
-	private $_logs=array();
-	private $_levels;
-	private $_categories;
-
-	public function log($message,$level,$category='Uncategorized')
-	{
-		$this->_logs[]=array($message,$level,$category,microtime());
-	}
-
-	public function getLogs($levels=null,$categories=null)
-	{
-		$this->_levels=$levels;
-		$this->_categories=$categories;
-		if(empty($levels) && empty($categories))
-			return $this->_logs;
-		else if(empty($levels))
-			return array_values(array_filter(array_filter($this->_logs,array($this,'filterByCategories'))));
-		else if(empty($categories))
-			return array_values(array_filter(array_filter($this->_logs,array($this,'filterByLevels'))));
-		else
-		{
-			$ret=array_values(array_filter(array_filter($this->_logs,array($this,'filterByLevels'))));
-			return array_values(array_filter(array_filter($ret,array($this,'filterByCategories'))));
-		}
-	}
-
-	private function filterByCategories($value)
-	{
-		foreach($this->_categories as $category)
-		{
-			if(strpos($value[2],$category)===0)
-				return $value;
-		}
-		return false;
-	}
-
-	private function filterByLevels($value)
-	{
-		if($level & $this->_levels)
-			return $value;
-		else
-			return false;
 	}
 }
 
