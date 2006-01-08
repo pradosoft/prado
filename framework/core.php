@@ -723,7 +723,7 @@ class PradoBase
 		return $logger;
 	}
 
-	public static function log($msg,$level,$category='Uncategorized')
+	public static function log($msg,$level=TLogger::INFO,$category='Uncategorized')
 	{
 		if(self::$_logger===null)
 			self::$_logger=new TLogger;
