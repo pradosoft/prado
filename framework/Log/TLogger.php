@@ -1,7 +1,32 @@
 <?php
+/**
+ * TLogger class file
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Log
+ */
 
+/**
+ * TLogger class.
+ *
+ * TLogger records log messages in memory and implements the methods to
+ * retrieve the messages with filter conditions, including log levels and
+ * log categories.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Log
+ * @since 3.0
+ */
 class TLogger extends TComponent
 {
+	/**
+	 * Log levels.
+	 */
 	const DEBUG=0x01;
 	const INFO=0x02;
 	const NOTICE=0x04;
@@ -9,15 +34,55 @@ class TLogger extends TComponent
 	const ERROR=0x10;
 	const ALERT=0x20;
 	const FATAL=0x40;
+	/**
+	 * @var array log messages
+	 */
 	private $_logs=array();
+	/**
+	 * @var integer log levels (bits) to be filtered
+	 */
 	private $_levels;
+	/**
+	 * @var array list of categories to be filtered
+	 */
 	private $_categories;
 
+	/**
+	 * Logs a message.
+	 * Messages logged by this method may be retrieved via {@link getLogs}.
+	 * @param string message to be logged
+	 * @param integer level of the message. Valid values include
+	 * TLogger::DEBUG, TLogger::INFO, TLogger::NOTICE, TLogger::WARNING,
+	 * TLogger::ERROR, TLogger::ALERT, TLogger::FATAL.
+	 * @param string category of the message
+	 */
 	public function log($message,$level,$category='Uncategorized')
 	{
 		$this->_logs[]=array($message,$level,$category,time());
 	}
 
+	/**
+	 * Retrieves log messages.
+	 * Messages may be filtered by log levels and/or categories.
+	 * A level filter is specified by an integer, whose bits indicate the levels interested.
+	 * For example, (TLogger::INFO | TLogger::WARNING) specifies INFO and WARNING levels.
+	 * A category filter is specified by concatenating interested category names
+	 * with commas. A message whose category name starts with any filtering category
+	 * will be returned. For example, a category filter 'System.Web, System.IO'
+	 * will return messages under categories such as 'System.Web', 'System.IO',
+	 * 'System.Web.UI', 'System.Web.UI.WebControls', etc.
+	 * Level filter and category filter are combinational, i.e., only messages
+	 * satisfying both filter conditions will they be returned.
+	 * @param integer level filter
+	 * @param string category filter
+	 * @param array list of messages. Each array elements represents one message
+	 * with the following structure:
+	 * array(
+	 *   [0] => message
+	 *   [1] => level
+	 *   [2] => category
+	 *   [3] => timestamp);
+	 */
 	public function getLogs($levels=null,$categories=null)
 	{
 		$this->_levels=$levels;
@@ -35,6 +100,10 @@ class TLogger extends TComponent
 		}
 	}
 
+	/**
+	 * Filter function used by {@link getLogs}
+	 * @param array element to be filtered
+	 */
 	private function filterByCategories($value)
 	{
 		foreach($this->_categories as $category)
@@ -45,6 +114,10 @@ class TLogger extends TComponent
 		return false;
 	}
 
+	/**
+	 * Filter function used by {@link getLogs}
+	 * @param array element to be filtered
+	 */
 	private function filterByLevels($value)
 	{
 		if($value[1] & $this->_levels)

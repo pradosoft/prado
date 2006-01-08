@@ -164,3 +164,13 @@ bulletedlist_selectedindices_unsupported= TBulletedList.SelectedIndices is read-
 bulletedlist_selectedvalue_unsupported	= TBulletedList.SelectedValue is read-only.
 
 radiobuttonlist_selectedindices_unsupported	= TRadioButtonList.SelectedIndices is read-only.
+
+logrouter_configfile_invalid			= TLogRouter.ConfigFile '%s' does not exist.
+logrouter_routeclass_required			= Class attribute is required in <route> configuration.
+logrouter_routetype_required			= Log route must be an instance of TLogRoute or its derived class.
+
+filelogroute_logpath_invalid			= TFileLogRoute.LogPath '%s' must be a directory in namespace format and must be writable by the Web server process.
+filelogroute_maxfilesize_invalid		= TFileLogRoute.MaxFileSize must be greater than 0.
+filelogroute_maxlogfiles_invalid		= TFileLogRoute.MaxLogFiles must be greater than 0.
+
+emaillogroute_sentfrom_required			= TEmailLogRoute.SentFrom cannot be empty.

@@ -715,8 +715,21 @@ class PradoBase
 		return $language;
 	}
 
+	/**
+	 * Writes a log message.
+	 * This method wraps {@link log()} by checking the application mode.
+	 * When the application is in Debug mode, debug backtrace information is appended
+	 * to the message and the message is logged at DEBUG level.
+	 * When the application is in Performance mode, this method does nothing.
+	 * Otherwise, the message is logged at INFO level.
+	 * @param string message to be logged
+	 * @param string category of the message
+	 * @see log, getLogger
+	 */
 	public static function trace($msg,$category='Uncategorized')
 	{
+		if(self::$_application && self::$_application->getMode()==='Performance')
+			return;
 		if(!self::$_application || self::$_application->getMode()==='Debug')
 		{
 			$trace=debug_backtrace();
@@ -729,6 +742,17 @@ class PradoBase
 		self::log($msg,$level,$category);
 	}
 
+	/**
+	 * Logs a message.
+	 * Messages logged by this method may be retrieved via {@link TLogger::getLogs}
+	 * and may be recorded in different media, such as file, email, database, using
+	 * {@link TLogRouter}.
+	 * @param string message to be logged
+	 * @param integer level of the message. Valid values include
+	 * TLogger::DEBUG, TLogger::INFO, TLogger::NOTICE, TLogger::WARNING,
+	 * TLogger::ERROR, TLogger::ALERT, TLogger::FATAL.
+	 * @param string category of the message
+	 */
 	public static function log($msg,$level=TLogger::INFO,$category='Uncategorized')
 	{
 		if(self::$_logger===null)
@@ -736,6 +760,9 @@ class PradoBase
 		self::$_logger->log($msg,$level,$category);
 	}
 
+	/**
+	 * @return TLogger message logger
+	 */
 	public static function getLogger()
 	{
 		if(self::$_logger===null)
