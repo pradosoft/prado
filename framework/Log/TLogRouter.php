@@ -586,8 +586,7 @@ class TBrowserLogRoute extends TLogRoute
 		$response->write($this->renderHeader());
 		foreach($logs as $log)
 		{
-			$total += $log[3] - $first;
-			$timing['total'] = $total;
+			$timing['total'] = $log[3] - $first;
 			$timing['delta'] = $log[3]-$prev;
 			$timing['even'] = !($even = !$even);
 			$prev=$log[3];
@@ -598,7 +597,7 @@ class TBrowserLogRoute extends TLogRoute
 
 	protected function renderHeader()
 	{
-		$category = is_array($this->getCategories()) ? 
+		$category = is_array($this->getCategories()) ?
 						implode(', ',$this->getCategories()) : '';
 		$string = <<<EOD
 <table cellspacing="0" cellpadding="0" border="0" width="100%">
@@ -608,7 +607,7 @@ class TBrowserLogRoute extends TLogRoute
 		</th>
 	</tr><tr style="background-color: #ccc;">
 		<th>Category</th><th>Message</th><th>From First(s)</th><th>From Last(s)</th>
-	</tr>	
+	</tr>
 EOD;
 		return $string;
 	}
