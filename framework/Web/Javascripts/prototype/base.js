@@ -26,10 +26,10 @@ Object.inspect = function(object) {
   }
 }
 
-Function.prototype.bind = function(object) {
-  var __method = this;
+Function.prototype.bind = function() {
+  var __method = this, args = $A(arguments), object = args.shift();
   return function() {
-    return __method.apply(object, arguments);
+    return __method.apply(object, args.concat($A(arguments)));
   }
 }
 

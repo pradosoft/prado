@@ -13,7 +13,7 @@ Prado.doPostBack = function(formID, eventTarget, eventParameter, performValidati
     if (performValidation)
 	{
 		//canSubmit = Prado.Validation.validate(validationGroup);
-		canSubmit = Prado.Validation.OnSubmit();
+		canSubmit = Prado.Validation.OnSubmit(theForm);
 	}
 	if (canSubmit)
 	{

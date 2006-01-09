@@ -3,6 +3,22 @@ Object.extend(String.prototype, {
     return this.replace(/<\/?[^>]+>/gi, '');
   },
 
+  stripScripts: function() {
+    return this.replace(new RegExp(Prototype.ScriptFragment, 'img'), '');
+  },
+  
+  extractScripts: function() {
+    var matchAll = new RegExp(Prototype.ScriptFragment, 'img');
+    var matchOne = new RegExp(Prototype.ScriptFragment, 'im');
+    return (this.match(matchAll) || []).map(function(scriptTag) {
+      return (scriptTag.match(matchOne) || ['', ''])[1];
+    });
+  },
+  
+  evalScripts: function() {
+    return this.extractScripts().map(eval);
+  },
+
   escapeHTML: function() {
     var div = document.createElement('div');
     var text = document.createTextNode(this);

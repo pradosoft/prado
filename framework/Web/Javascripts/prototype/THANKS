@@ -1,0 +1,21 @@
+Special thanks are in order for Mikael and Daniel Brockman, whose patterns
+heavily influenced the design and implementation of this library.
+* Daniel Brockman -- http://www.deepwood.net/
+* Mikael Brockman -- http://www.phubuh.org/
+---
+* Scott Barron -- http://scott.elitists.net/
+* Hemant Bhanoo
+* Jamis Buck -- http://jamis.jamisbuck.org/
+* Lucas Carlson -- http://www.rufy.com/
+* Jon Casey
+* Patrick Corcoran
+* Alper Cugun
+* Darren James -- http://www.openrico.org/
+* Marcel Molina Jr. -- http://vernix.org/marcel/
+* Alex Russell
+* Chriztian Steinmeier
+* Dan Webb
+* Gary Wright
+
+and anyone else who has sent patches or bug reports. If your name isn't on this
+list, please forgive my oversight and send me an email (sam at conio.net).

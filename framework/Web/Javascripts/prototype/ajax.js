@@ -31,8 +31,7 @@ Ajax.Responders = {
       if (responder[callback] && typeof responder[callback] == 'function') {
         try {
           responder[callback].apply(responder, [request, transport, json]);
-        } catch (e) {
-        }
+        } catch (e) {}
       }
     });
   }
@@ -108,8 +107,7 @@ Ajax.Request.prototype = Object.extend(new Ajax.Base(), {
       this.transport.send(this.options.method == 'post' ? body : null);
 
     } catch (e) {
-      (this.options.onException || Prototype.emptyFunction)(this, e);
-      Ajax.Responders.dispatch('onException', this, e);
+      this.dispatchException(e);
     }
   },
 
@@ -143,12 +141,23 @@ Ajax.Request.prototype = Object.extend(new Ajax.Base(), {
       this.respondToReadyState(this.transport.readyState);
   },
   
+  header: function(name) {
+    try {
+      return this.transport.getResponseHeader(name);
+    } catch (e) {}
+  },
+  
   evalJSON: function() {
     try {
-      var json = this.transport.getResponseHeader('X-JSON'), object;
-      object = eval(json);
-      return object;
+      return eval(this.header('X-JSON'));
+    } catch (e) {}
+  },
+  
+  evalResponse: function() {
+    try {
+      return eval(this.transport.responseText);
     } catch (e) {
+      this.dispatchException(e);
     }
   },
 
@@ -156,22 +165,38 @@ Ajax.Request.prototype = Object.extend(new Ajax.Base(), {
     var event = Ajax.Request.Events[readyState];
     var transport = this.transport, json = this.evalJSON();
 
-    if (event == 'Complete')
-      (this.options['on' + this.transport.status]
-       || this.options['on' + (this.responseIsSuccess() ? 'Success' : 'Failure')]
-       || Prototype.emptyFunction)(transport, json);
-
-    (this.options['on' + event] || Prototype.emptyFunction)(transport, json);
-    Ajax.Responders.dispatch('on' + event, this, transport, json);
-
+    if (event == 'Complete') {
+      try {
+        (this.options['on' + this.transport.status]
+         || this.options['on' + (this.responseIsSuccess() ? 'Success' : 'Failure')]
+         || Prototype.emptyFunction)(transport, json);
+      } catch (e) {
+        this.dispatchException(e);
+      }
+      
+      if ((this.header('Content-type') || '').match(/^text\/javascript/i))
+        this.evalResponse();
+    }
+    
+    try {
+      (this.options['on' + event] || Prototype.emptyFunction)(transport, json);
+      Ajax.Responders.dispatch('on' + event, this, transport, json);
+    } catch (e) {
+      this.dispatchException(e);
+    }
+    
     /* Avoid memory leak in MSIE: clean up the oncomplete event handler */
     if (event == 'Complete')
       this.transport.onreadystatechange = Prototype.emptyFunction;
+  },
+  
+  dispatchException: function(exception) {
+    (this.options.onException || Prototype.emptyFunction)(this, exception);
+    Ajax.Responders.dispatch('onException', this, exception);
   }
 });
 
 Ajax.Updater = Class.create();
-Ajax.Updater.ScriptFragment = '(?:<script.*?>)((\n|.)*?)(?:<\/script>)';
 
 Object.extend(Object.extend(Ajax.Updater.prototype, Ajax.Request.prototype), {
   initialize: function(container, url, options) {
@@ -196,30 +221,22 @@ Object.extend(Object.extend(Ajax.Updater.prototype, Ajax.Request.prototype), {
   updateContent: function() {
     var receiver = this.responseIsSuccess() ?
       this.containers.success : this.containers.failure;
-
-    var match    = new RegExp(Ajax.Updater.ScriptFragment, 'img');
-    var response = this.transport.responseText.replace(match, '');
-    var scripts  = this.transport.responseText.match(match);
+    var response = this.transport.responseText;
+    
+    if (!this.options.evalScripts)
+      response = response.stripScripts();
 
     if (receiver) {
       if (this.options.insertion) {
         new this.options.insertion(receiver, response);
       } else {
-        receiver.innerHTML = response;
+        Element.update(receiver, response);
       }
     }
 
     if (this.responseIsSuccess()) {
       if (this.onComplete)
         setTimeout(this.onComplete.bind(this), 10);
-    }
-
-    if (this.options.evalScripts && scripts) {
-      match = new RegExp(Ajax.Updater.ScriptFragment, 'im');
-      setTimeout((function() {
-        for (var i = 0; i < scripts.length; i++)
-          eval(scripts[i].match(match)[1]);
-      }).bind(this), 10);
     }
   }
 });

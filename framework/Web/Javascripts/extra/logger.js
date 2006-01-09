@@ -427,51 +427,109 @@ LogConsole.prototype = {
  		else {
     		this.commandIndex = 0
     }
-	}
+	}  
 }         
 
 // Load the Console when the window loads
-Event.observe(window, "load", function() {logConsole = new LogConsole()}) 
+var logConsole;
+Event.OnLoad(function() { logConsole = new LogConsole()}); 
+
+
+
 
 // -------------------------
 // Helper Functions And Junk
 // -------------------------
-function inspect(element, hideProperties, showMethods) {
-	var properties = []
-	var methods = [] 
-	
-
-	for(var internal in element) {
-		if(internal == '______array') continue;
-		try {
-			if (element[internal] instanceof Function) {
-				if (showMethods) 
-					methods.push(internal + ":\t" + element[internal] )
-			}
-			else if(element[internal] instanceof Object)
-			{
-				methods.push(internal + ":\t" + inspect(element[internal], hideProperties, showMethods));
-			}
-			else {
-				if (!hideProperties) 
-					properties.push(internal + ":\t" + element[internal] )
-			}
-		}
-		catch (e) {
-			Logger.error("Excetion thrown while inspecting object.", e)
-		}
+function inspect(o) 
+{
+	var objtype = typeof(o);
+	if (objtype == "undefined") {
+		return "undefined";
+	} else if (objtype == "number" || objtype == "boolean") {
+		return o + "";
+	} else if (o === null) {
+		return "null";
 	}
 
-	properties.sort()
-	methods.sort()
+	 try {
+            var ostring = (o + "");
+        } catch (e) {
+            return "[" + typeof(o) + "]";
+        }
 
-	var internals = properties.concat(methods)
-	var output = ""
-	for (var i = 0; i < internals.length; i++) {
-		output += (internals[i] + "\n")
+	if (typeof(o) == "function") 
+	{
+            o = ostring.replace(/^\s+/, "");
+            var idx = o.indexOf("{");
+            if (idx != -1) {
+                o = o.substr(0, idx) + "{...}";
+            }
+			return o;
+       }
+  
+	var reprString = function (o) 
+	{ 
+		return ('"' + o.replace(/(["\\])/g, '\\$1') + '"'
+			).replace(/[\f]/g, "\\f"
+			).replace(/[\b]/g, "\\b"
+			).replace(/[\n]/g, "\\n"
+			).replace(/[\t]/g, "\\t"
+			).replace(/[\r]/g, "\\r");
+	};
+
+	if (objtype == "string") {
+		return reprString(o);
 	}
-		
-	return output
+	// recurse
+	var me = arguments.callee;
+	// short-circuit for objects that support "json" serialization
+	// if they return "self" then just pass-through...
+	var newObj;
+	if (typeof(o.__json__) == "function") {
+		newObj = o.__json__();
+		if (o !== newObj) {
+			return me(newObj);
+		}
+	}
+	if (typeof(o.json) == "function") {
+		newObj = o.json();
+		if (o !== newObj) {
+			return me(newObj);
+		}
+	}
+	// array
+	if (objtype != "function" && typeof(o.length) == "number") {
+		var res = [];
+		for (var i = 0; i < o.length; i++) {
+			var val = me(o[i]);
+			if (typeof(val) != "string") {
+				val = "undefined";
+			}
+			res.push(val);
+		}
+		return "[" + res.join(", ") + "]";
+	}
+   
+	// generic object code path
+	res = [];
+	for (var k in o) {
+		var useKey;
+		if (typeof(k) == "number") {
+			useKey = '"' + k + '"';
+		} else if (typeof(k) == "string") {
+			useKey = reprString(k);
+		} else {
+			// skip non-string or number keys
+			continue;
+		}
+		val = me(o[k]);
+		if (typeof(val) != "string") {
+			// skip non-serializable values
+			continue;
+		}
+		res.push(useKey + ":" + val);
+	}
+	return "{" + res.join(", ") + "}";
 }   
 
 Array.prototype.contains = function(object) {
@@ -511,8 +569,10 @@ Prado.Inspector =
 	hidden : new Array(),	
 	opera : window.opera,
 	displaying : '',
+	nameList : new Array(),
 
 	format : function(str) {
+		if(typeof(str) != "string") return str;
 		str=str.replace(/</g,"&lt;");
 		str=str.replace(/>/g,"&gt;");
 		return str;
@@ -525,20 +585,22 @@ Prado.Inspector =
 		this.displaying = name ? name : win.toString();
 		for(js in win) {			
 			try {
-				if(win[js] && js.toString().indexOf("Inspector")==-1 && win[js].toString().indexOf("[native code]")==-1) {
+				if(win[js] && js.toString().indexOf("Inspector")==-1 && (win[js]+"").indexOf("[native code]")==-1) {
+					
 					t=typeof(win[js]);
 					if(!this.objs[t.toString()]) {						
-						this.types[this.types.length]=t;;
-						this.objs[t]=new Array();
+						this.types[this.types.length]=t;
+						this.objs[t]={};
+						this.nameList[t] = new Array();
 					}
-					index=this.objs[t].length
-					this.objs[t][index]=new Array();
-					this.objs[t][index][0]=js;
-					this.objs[t][index][1]=this.format(win[js].toString());					
+					this.nameList[t].push(js);
+					this.objs[t][js] = this.format(win[js]+"");					
 				}
 			} catch(err) { }
 		}
-		
+
+		for(i=0;i<this.types.length;i++) 
+			this.nameList[this.types[i]].sort();
 	},
 
 	show : function(objID) {
@@ -574,19 +636,23 @@ Prado.Inspector =
 		mHTML +="<ul class=\"topLevel\">";
 		this.types.sort();
 		var so_objIndex=0;
-		for(i=0;i<this.types.length;i++) {
-			mHTML+="<li style=\"cursor:pointer;\" onclick=\"Prado.Inspector.show('ul"+i+"');Prado.Inspector.changeSpan('sp" + i + "')\"><span id=\"sp" + i + "\">[+]</span><b>" + this.types[i] + "</b> (" + this.objs[this.types[i]].length + ")</li><ul style=\"display:none;\" id=\"ul"+i+"\">";
+		for(i=0;i<this.types.length;i++) 
+		{
+			mHTML+="<li style=\"cursor:pointer;\" onclick=\"Prado.Inspector.show('ul"+i+"');Prado.Inspector.changeSpan('sp" + i + "')\"><span id=\"sp" + i + "\">[+]</span><b>" + this.types[i] + "</b> (" + this.nameList[this.types[i]].length + ")</li><ul style=\"display:none;\" id=\"ul"+i+"\">";
 			this.hidden["ul"+i]=0;
-			for(e=0;e<this.objs[this.types[i]].length;e++) {
+			for(e=0;e<this.nameList[this.types[i]].length;e++) 
+			{
+				var prop = this.nameList[this.types[i]][e];
+				var value = this.objs[this.types[i]][prop]
 				var more = "";
-				if(this.objs[this.types[i]][e][1].indexOf("[object ") >= 0 && /^[a-zA-Z_]/.test(this.objs[this.types[i]][e][0][0]))
+				if(value.indexOf("[object ") >= 0 && /^[a-zA-Z_]/.test(prop))
 				{
 					if(this.displaying.indexOf("[object ") < 0)
-						more = " <a href=\"javascript:var_dump('"+this.displaying+"."+this.objs[this.types[i]][e][0]+"')\"><b>more</b></a>";
+						more = " <a href=\"javascript:var_dump('"+this.displaying+"."+prop+"')\"><b>more</b></a>";
 					else if(this.displaying.indexOf("[object Window]") >= 0)
-						more = " <a href=\"javascript:var_dump('"+this.objs[this.types[i]][e][0]+"')\"><b>more</b></a>";	
+						more = " <a href=\"javascript:var_dump('"+prop+"')\"><b>more</b></a>";	
 				}
-				mHTML+="<li style=\"cursor:pointer;\" onclick=\"Prado.Inspector.show('mul" + so_objIndex + "');Prado.Inspector.changeSpan('sk" + so_objIndex + "')\"><span id=\"sk" + so_objIndex + "\">[+]</span>" + this.objs[this.types[i]][e][0] + "</li><ul id=\"mul" + so_objIndex + "\" style=\"display:none;\"><li style=\"list-style-type:none;\"><pre>" + this.objs[this.types[i]][e][1] + more + "</pre></li></ul>";
+				mHTML+="<li style=\"cursor:pointer;\" onclick=\"Prado.Inspector.show('mul" + so_objIndex + "');Prado.Inspector.changeSpan('sk" + so_objIndex + "')\"><span id=\"sk" + so_objIndex + "\">[+]</span>" + prop + "</li><ul id=\"mul" + so_objIndex + "\" style=\"display:none;\"><li style=\"list-style-type:none;\"><pre>" + value + more + "</pre></li></ul>";
 				this.hidden["mul"+so_objIndex]=0;
 				so_objIndex++;
 			}
@@ -653,7 +719,11 @@ Prado.Inspector =
 			"#so_mContainer .credits a { font:9px verdana; font-weight:bold; color:#004465; text-decoration:none; background-color:transparent; }"
 }
 
+//similar function to var_dump in PHP, brings up the javascript object tree UI.
 function var_dump(obj)
 {
 	Prado.Inspector.inspect(obj);
 }
+
+//similar function to print_r for PHP
+var print_r = inspect;

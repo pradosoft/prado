@@ -45,9 +45,7 @@ var Behaviour = {
 	},
 	
 	start : function(){
-		Behaviour.addLoadEvent(function(){
-			Behaviour.apply();
-		});
+		Event.OnLoad(Behaviour.apply);
 	},
 	
 	apply : function(){
@@ -62,19 +60,6 @@ var Behaviour = {
 				for (i=0;element=list[i];i++){
 					sheet[selector](element);
 				}
-			}
-		}
-	},
-	
-	addLoadEvent : function(func){
-		var oldonload = window.onload;
-		
-		if (typeof window.onload != 'function') {
-			window.onload = func;
-		} else {
-			window.onload = function() {
-				oldonload();
-				func();
 			}
 		}
 	}

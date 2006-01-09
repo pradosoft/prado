@@ -1,5 +1,3 @@
-/* openrico.org rico.js */
- 
 /**
   *
   *  Copyright 2005 Sabre Airline Solutions
@@ -15,21 +13,29 @@
   *  and limitations under the License.
   **/
 
-// rico.js --------------------
 
+//-------------------- rico.js
 var Rico = {
-  Version: '1.1-beta'
+  Version: '1.1rc1',
+  prototypeVersion: parseFloat(Prototype.Version.split(".")[0] + "." + Prototype.Version.split(".")[1])
 }
 
+/*
+if((typeof Prototype=='undefined') || Rico.prototypeVersion < 1.3)
+      throw("Rico requires the Prototype JavaScript framework >= 1.3");
+*/
 Rico.ArrayExtensions = new Array();
 
 if (Object.prototype.extend) {
-   // in prototype.js...
    Rico.ArrayExtensions[ Rico.ArrayExtensions.length ] = Object.prototype.extend;
+}else{
+  Object.prototype.extend = function(object) {
+    return Object.extend.apply(this, [this, object]);
+  }
+  Rico.ArrayExtensions[ Rico.ArrayExtensions.length ] = Object.prototype.extend;
 }
 
 if (Array.prototype.push) {
-   // in prototype.js...
    Rico.ArrayExtensions[ Rico.ArrayExtensions.length ] = Array.prototype.push;
 }
 
@@ -122,11 +128,9 @@ document.getElementsByTagAndClassName = function(tagName, className) {
 
   return elements;
 }
- 
- 
-// ricoAccordion.js --------------------
- 
 
+
+//-------------------- ricoAccordion.js
 Rico.Accordion = Class.create();
 
 Rico.Accordion.prototype = {
@@ -137,19 +141,40 @@ Rico.Accordion.prototype = {
       this.accordionTabs        = new Array();
       this.setOptions(options);
       this._attachBehaviors();
+      if(!container) return;
 
       this.container.style.borderBottom = '1px solid ' + this.options.borderColor;
+      // validate onloadShowTab
+       if (this.options.onLoadShowTab >= this.accordionTabs.length)
+        this.options.onLoadShowTab = 0;
 
       // set the initial visual state...
-      for ( var i=1 ; i < this.accordionTabs.length ; i++ )
+      for ( var i=0 ; i < this.accordionTabs.length ; i++ )
       {
+        if (i != this.options.onLoadShowTab){
          this.accordionTabs[i].collapse();
          this.accordionTabs[i].content.style.display = 'none';
+        }
       }
-      this.lastExpandedTab = this.accordionTabs[0];
+      this.lastExpandedTab = this.accordionTabs[this.options.onLoadShowTab];
+      if (this.options.panelHeight == 'auto'){
+          var tabToCheck = (this.options.onloadShowTab === 0)? 1 : 0;
+          var titleBarSize = parseInt(RicoUtil.getElementsComputedStyle(this.accordionTabs[tabToCheck].titleBar, 'height'));
+          if (isNaN(titleBarSize))
+            titleBarSize = this.accordionTabs[tabToCheck].titleBar.offsetHeight;
+
+          var totalTitleBarSize = this.accordionTabs.length * titleBarSize;
+          var parentHeight = parseInt(RicoUtil.getElementsComputedStyle(this.container.parentNode, 'height'));
+          if (isNaN(parentHeight))
+            parentHeight = this.container.parentNode.offsetHeight;
+
+          this.options.panelHeight = parentHeight - totalTitleBarSize-2;
+      }
+
       this.lastExpandedTab.content.style.height = this.options.panelHeight + "px";
       this.lastExpandedTab.showExpanded();
       this.lastExpandedTab.titleBar.style.fontWeight = this.options.expandedFontWeight;
+
    },
 
    setOptions: function(options) {
@@ -166,8 +191,10 @@ Rico.Accordion.prototype = {
          borderColor         : '#1f669b',
          panelHeight         : 200,
          onHideTab           : null,
-         onShowTab           : null
-      }.extend(options || {});
+         onShowTab           : null,
+         onLoadShowTab       : 0
+      }
+      Object.extend(this.options, options || {});
    },
 
    showTabByIndex: function( anIndex, animate ) {
@@ -182,7 +209,7 @@ Rico.Accordion.prototype = {
       if ( this.options.onHideTab )
          this.options.onHideTab(this.lastExpandedTab);
 
-      this.lastExpandedTab.showCollapsed(); 
+      this.lastExpandedTab.showCollapsed();
       var accordion = this;
       var lastExpandedTab = this.lastExpandedTab;
 
@@ -305,11 +332,10 @@ Rico.Accordion.Tab.prototype = {
    }
 
 };
- 
- 
-// ricoAjaxEngine.js --------------------
- 
 
+
+//-------------------- ricoAjaxEngine.js
+/*
 Rico.AjaxEngine = Class.create();
 
 Rico.AjaxEngine.prototype = {
@@ -318,10 +344,11 @@ Rico.AjaxEngine.prototype = {
       this.ajaxElements = new Array();
       this.ajaxObjects  = new Array();
       this.requestURLS  = new Array();
+      this.options = {};
    },
 
    registerAjaxElement: function( anId, anElement ) {
-      if ( arguments.length == 1 )
+      if ( !anElement )
          anElement = $(anId);
       this.ajaxElements[anId] = anElement;
    },
@@ -334,44 +361,34 @@ Rico.AjaxEngine.prototype = {
       this.requestURLS[requestLogicalName] = requestURL;
    },
 
-   sendRequest: function(requestName) {
-      var requestURL = this.requestURLS[requestName];
-      if ( requestURL == null )
-         return;
-
-      var queryString = "";
-      if ( arguments.length > 1 )
-         queryString = this._createQueryString(arguments, 1);
-
-      new Ajax.Request(requestURL, this._requestOptions(queryString));
+   sendRequest: function(requestName, options) {
+      // Allow for backwards Compatibility
+      if ( arguments.length >= 2 )
+       if (typeof arguments[1] == 'string')
+         options = {parameters: this._createQueryString(arguments, 1)};
+      this.sendRequestWithData(requestName, null, options);
    },
 
-   sendRequestWithData: function(requestName, xmlDocument) {
+   sendRequestWithData: function(requestName, xmlDocument, options) {
       var requestURL = this.requestURLS[requestName];
       if ( requestURL == null )
          return;
 
-      var queryString = "";
-      if ( arguments.length > 2 )
-         queryString = this._createQueryString(arguments, 2);
+      // Allow for backwards Compatibility
+      if ( arguments.length >= 3 )
+        if (typeof arguments[2] == 'string')
+          options.parameters = this._createQueryString(arguments, 2);
 
-      new Ajax.Request(requestURL + "?" + queryString, this._requestOptions(null,xmlDocument));
+      new Ajax.Request(requestURL, this._requestOptions(options,xmlDocument));
    },
 
    sendRequestAndUpdate: function(requestName,container,options) {
-      var requestURL = this.requestURLS[requestName];
-      if ( requestURL == null )
-         return;
+      // Allow for backwards Compatibility
+      if ( arguments.length >= 3 )
+        if (typeof arguments[2] == 'string')
+          options.parameters = this._createQueryString(arguments, 2);
 
-      var queryString = "";
-      if ( arguments.length > 3 )
-         queryString = this._createQueryString(arguments, 3);
-
-      var updaterOptions = this._requestOptions(queryString);
-      updaterOptions.onComplete = null;
-      updaterOptions.extend(options);
-
-      new Ajax.Updater(container, requestURL, updaterOptions);
+      this.sendRequestWithDataAndUpdate(requestName, null, container, options);
    },
 
    sendRequestWithDataAndUpdate: function(requestName,xmlDocument,container,options) {
@@ -379,39 +396,54 @@ Rico.AjaxEngine.prototype = {
       if ( requestURL == null )
          return;
 
-      var queryString = "";
-      if ( arguments.length > 4 )
-         queryString = this._createQueryString(arguments, 4);
+      // Allow for backwards Compatibility
+      if ( arguments.length >= 4 )
+        if (typeof arguments[3] == 'string')
+          options.parameters = this._createQueryString(arguments, 3);
 
+      var updaterOptions = this._requestOptions(options,xmlDocument);
+      // Turn off onComplete
+      //updaterOptions.onComplete = null;
 
-      var updaterOptions = this._requestOptions(queryString,xmlDocument);
-      updaterOptions.onComplete = null;
-      updaterOptions.extend(options);
-
-      new Ajax.Updater(container, requestURL + "?" + queryString, updaterOptions);
+      new Ajax.Updater(container, requestURL, updaterOptions);
    },
 
    // Private -- not part of intended engine API --------------------------------------------------------------------
 
-   _requestOptions: function(queryString,xmlDoc) {
-      var self = this;
-
+   _requestOptions: function(options,xmlDoc) {
       var requestHeaders = ['X-Rico-Version', Rico.Version ];
-      var sendMethod = "post";
-      if ( arguments[1] )
-         requestHeaders.push( 'Content-type', 'text/xml' );
+      var sendMethod = 'post';
+      if ( xmlDoc == null )
+        if (Rico.prototypeVersion < 1.4)
+        requestHeaders.push( 'Content-type', 'text/xml' );
       else
-         sendMethod = "get";
+          sendMethod = 'get';
+      (!options) ? options = {} : '';
 
-      return { requestHeaders: requestHeaders,
-               parameters:     queryString,
-               postBody:       arguments[1] ? xmlDoc : null,
-               method:         sendMethod,
-               onComplete:     self._onRequestComplete.bind(self) };
+      // Check and keep any user onComplete functions
+      if (options.onComplete)
+           options.onRicoComplete = options.onComplete;
+      // Fix onComplete
+      if (options.overrideOnComplete)
+        options.onComplete = options.overrideOnComplete;
+      else
+        options.onComplete = this._onRequestComplete.bind(this);
+
+     // Set the default options and extend with any user options
+     this.options = {
+                     requestHeaders: requestHeaders,
+                     parameters:     options.parameters,
+                     postBody:       xmlDoc,
+                     method:         sendMethod,
+                     onComplete:     options.onComplete
+                    };
+     // Set any user options:
+     Object.extend(this.options, options);
+     return this.options;
    },
 
    _createQueryString: function( theArgs, offset ) {
-      var queryString = "";
+      var queryString = ""
       for ( var i = offset ; i < theArgs.length ; i++ ) {
           if ( i != offset )
             queryString += "&";
@@ -428,13 +460,13 @@ Rico.AjaxEngine.prototype = {
              queryString += argName + "=" + escape(argValue);
           }
       }
-
       return queryString;
    },
 
    _onRequestComplete : function(request) {
-
-      //!!TODO: error handling infrastructure?? 
+      if(!request)
+          return;
+      // User can set an onFailure option - which will be called by prototype
       if (request.status != 200)
         return;
 
@@ -442,6 +474,11 @@ Rico.AjaxEngine.prototype = {
       if (response == null || response.length != 1)
          return;
       this._processAjaxResponse( response[0].childNodes );
+
+      // Check if user has set a onComplete function
+      var onRicoComplete = this.options.onRicoComplete;
+      if (onRicoComplete != null)
+          onRicoComplete();
    },
 
    _processAjaxResponse: function( xmlResponseElements ) {
@@ -469,34 +506,15 @@ Rico.AjaxEngine.prototype = {
    },
 
    _processAjaxElementUpdate: function( ajaxElement, responseElement ) {
-      if ( responseElement.xml != undefined )
-         this._processAjaxElementUpdateIE( ajaxElement, responseElement );
-      else
-         this._processAjaxElementUpdateMozilla( ajaxElement, responseElement );
-   },
-
-   _processAjaxElementUpdateIE: function( ajaxElement, responseElement ) {
-      var newHTML = "";
-      for ( var i = 0 ; i < responseElement.childNodes.length ; i++ )
-         newHTML += responseElement.childNodes[i].xml;
-
-      ajaxElement.innerHTML = newHTML;
-   },
-
-   _processAjaxElementUpdateMozilla: function( ajaxElement, responseElement ) {
-      var xmlSerializer = new XMLSerializer();
-      var newHTML = "";
-      for ( var i = 0 ; i < responseElement.childNodes.length ; i++ )
-         newHTML += xmlSerializer.serializeToString(responseElement.childNodes[i]);
-
-      ajaxElement.innerHTML = newHTML;
+      ajaxElement.innerHTML = RicoUtil.getContentAsString(responseElement);
    }
+
 }
 
-var ajaxEngine = new Rico.AjaxEngine(); 
- 
-// ricoColor.js --------------------
- 
+var ajaxEngine = new Rico.AjaxEngine();
+*/
+
+//-------------------- ricoColor.js
 Rico.Color = Class.create();
 
 Rico.Color.prototype = {
@@ -725,11 +743,10 @@ Rico.Color.RGBtoHSB = function(r, g, b) {
    }
 
    return { h : hue, s : saturation, b : brightness };
-} 
- 
-// ricoCorner.js --------------------
- 
+}
 
+
+//-------------------- ricoCorner.js
 Rico.Corner = {
 
    round: function(e, options) {
@@ -817,7 +834,6 @@ Rico.Corner = {
 
       this._setMargin(slice, n, position);
       this._setBorder(slice, n, position);
-
       return slice;
    },
 
@@ -829,7 +845,8 @@ Rico.Corner = {
          blend   : true,
          border  : false,
          compact : false
-      }.extend(options || {});
+      }
+      Object.extend(this.options, options || {});
 
       this.options.numSlices = this.options.compact ? 2 : 4;
       if ( this._isTransparent() )
@@ -894,7 +911,6 @@ Rico.Corner = {
    _setBorder: function(el,n,corners) {
       var borderSize = this._borderSize(n);
       var whichSide = corners == "top" ? this._whichSideTop() : this._whichSideBottom();
-
       if ( whichSide == "left" ) {
          el.style.borderLeftWidth = borderSize + "px"; el.style.borderRightWidth = "0px";
       }
@@ -904,6 +920,8 @@ Rico.Corner = {
       else {
          el.style.borderLeftWidth = borderSize + "px"; el.style.borderRightWidth = borderSize + "px";
       }
+      if (this.options.border != false)
+        el.style.borderLeftWidth = borderSize + "px"; el.style.borderRightWidth = borderSize + "px";
    },
 
    _marginSize: function(n) {
@@ -951,10 +969,11 @@ Rico.Corner = {
    _isTopRounded: function() { return this._hasString(this.options.corners, "all", "top", "tl", "tr"); },
    _isBottomRounded: function() { return this._hasString(this.options.corners, "all", "bottom", "bl", "br"); },
    _hasSingleTextChild: function(el) { return el.childNodes.length == 1 && el.childNodes[0].nodeType == 3; }
-} 
- 
-// ricoDragAndDrop.js --------------------
- 
+}
+
+
+//-------------------- ricoDragAndDrop.js
+/*
 Rico.DragAndDrop = Class.create();
 
 Rico.DragAndDrop.prototype = {
@@ -967,6 +986,9 @@ Rico.DragAndDrop.prototype = {
       this.lastSelectedDraggable    = null;
       this.currentDragObjectVisible = false;
       this.interestedInMotionEvents = false;
+      this._mouseDown = this._mouseDownHandler.bindAsEventListener(this);
+      this._mouseMove = this._mouseMoveHandler.bindAsEventListener(this);
+      this._mouseUp = this._mouseUpHandler.bindAsEventListener(this);
    },
 
    registerDropZone: function(aDropZone) {
@@ -1006,8 +1028,8 @@ Rico.DragAndDrop.prototype = {
 
    setStartDragFromElement: function( e, mouseDownElement ) {
       this.origPos = RicoUtil.toDocumentPosition(mouseDownElement);
-      this.startx = e.screenX - this.origPos.x;
-      this.starty = e.screenY - this.origPos.y;
+      this.startx = e.screenX - this.origPos.x
+      this.starty = e.screenY - this.origPos.y
       //this.startComponentX = e.layerX ? e.layerX : e.offsetX;
       //this.startComponentY = e.layerY ? e.layerY : e.offsetY;
       //this.adjustedForDraggableSize = false;
@@ -1042,8 +1064,17 @@ Rico.DragAndDrop.prototype = {
       if ( (nsEvent && e.which != 1) || (!nsEvent && e.button != 1))
          return;
 
-      var eventTarget     = e.target ? e.target : e.srcElement;
-      var draggableObject = eventTarget.draggable;
+      var eventTarget      = e.target ? e.target : e.srcElement;
+      var draggableObject  = eventTarget.draggable;
+
+      var candidate = eventTarget;
+      while (draggableObject == null && candidate.parentNode) {
+         candidate = candidate.parentNode;
+         draggableObject = candidate.draggable;
+      }
+
+      if ( draggableObject == null )
+         return;
 
       this.updateSelection( draggableObject, e.ctrlKey );
 
@@ -1059,7 +1090,7 @@ Rico.DragAndDrop.prototype = {
    _mouseMoveHandler: function(e) {
       var nsEvent = e.which != undefined;
       if ( !this.interestedInMotionEvents ) {
-         this._terminateEvent(e);
+         //this._terminateEvent(e);
          return;
       }
 
@@ -1119,10 +1150,10 @@ Rico.DragAndDrop.prototype = {
       this.adjustedForDraggableSize = true;
    },
    **/
-
+/*
    _updateDraggableLocation: function(e) {
       var dragObjectStyle = this.dragElement.style;
-      dragObjectStyle.left = (e.screenX - this.startx) + "px";
+      dragObjectStyle.left = (e.screenX - this.startx) + "px"
       dragObjectStyle.top  = (e.screenY - this.starty) + "px";
    },
 
@@ -1174,6 +1205,13 @@ Rico.DragAndDrop.prototype = {
                               20,
                               { complete : this._doCancelDragProcessing.bind(this) } );
       }
+
+     Event.stopObserving(document.body, "mousemove", this._mouseMove);
+     Event.stopObserving(document.body, "mouseup",  this._mouseUp);
+   },
+
+   _retTrue: function () {
+      return true;
    },
 
    _completeDropOperation: function(e) {
@@ -1193,11 +1231,10 @@ Rico.DragAndDrop.prototype = {
    _doCancelDragProcessing: function() {
       this._cancelDrag();
 
-      if ( this.dragElement != this.currentDragObjects[0].getMouseDownHTMLElement() ) {
-         if ( this.dragElement.parentNode != null ) {
-            this.dragElement.parentNode.removeChild(this.dragElement);
-         }
-      }
+        if ( this.dragElement != this.currentDragObjects[0].getMouseDownHTMLElement() && this.dragElement)
+           if ( this.dragElement.parentNode != null )
+              this.dragElement.parentNode.removeChild(this.dragElement);
+
 
       this._deactivateRegisteredDropZones();
       this.dragElement = null;
@@ -1243,10 +1280,11 @@ Rico.DragAndDrop.prototype = {
 
    _addMouseDownHandler: function( aDraggable )
    {
-      var htmlElement = aDraggable.getMouseDownHTMLElement();
-      if ( htmlElement != null ) {
+       htmlElement  = aDraggable.getMouseDownHTMLElement();
+      if ( htmlElement  != null ) {
          htmlElement.draggable = aDraggable;
-         this._addMouseDownEvent( htmlElement );
+         Event.observe(htmlElement , "mousedown", this._onmousedown.bindAsEventListener(this));
+         Event.observe(htmlElement, "mousedown", this._mouseDown);
       }
    },
 
@@ -1268,16 +1306,9 @@ Rico.DragAndDrop.prototype = {
       this.activatedDropZones = false;
    },
 
-   _addMouseDownEvent: function( htmlElement ) {
-      if ( typeof document.implementation != "undefined" &&
-         document.implementation.hasFeature("HTML",   "1.0") &&
-         document.implementation.hasFeature("Events", "2.0") &&
-         document.implementation.hasFeature("CSS",    "2.0") ) {
-         htmlElement.addEventListener("mousedown", this._mouseDownHandler.bindAsEventListener(this), false);
-      }
-      else {
-         htmlElement.attachEvent( "onmousedown", this._mouseDownHandler.bindAsEventListener(this) );
-      }
+   _onmousedown: function () {
+     Event.observe(document.body, "mousemove", this._mouseMove);
+     Event.observe(document.body, "mouseup",  this._mouseUp);
    },
 
    _terminateEvent: function(e) {
@@ -1289,31 +1320,11 @@ Rico.DragAndDrop.prototype = {
       if ( e.preventDefault != undefined )
          e.preventDefault();
       else
-	   {
          e.returnValue = false;
-	   }
-   },
-
-   initializeEventHandlers: function() {
-      if ( typeof document.implementation != "undefined" &&
-         document.implementation.hasFeature("HTML",   "1.0") &&
-         document.implementation.hasFeature("Events", "2.0") &&
-         document.implementation.hasFeature("CSS",    "2.0") ) {
-         document.addEventListener("mouseup",   this._mouseUpHandler.bindAsEventListener(this),  false);
-         document.addEventListener("mousemove", this._mouseMoveHandler.bindAsEventListener(this), false);
-      }
-      else {
-         document.attachEvent( "onmouseup",   this._mouseUpHandler.bindAsEventListener(this) );
-         document.attachEvent( "onmousemove", this._mouseMoveHandler.bindAsEventListener(this) );
-      }
    }
-};
 
-var dndMgr = new Rico.DragAndDrop();
-dndMgr.initializeEventHandlers(); 
- 
-// ricoDraggable.js --------------------
- 
+}
+
 Rico.Draggable = Class.create();
 
 Rico.Draggable.prototype = {
@@ -1328,7 +1339,7 @@ Rico.Draggable.prototype = {
     *   Returns the HTML element that should have a mouse down event
     *   added to it in order to initiate a drag operation
     *
-    **/
+    **//*
    getMouseDownHTMLElement: function() {
       return this.htmlElement;
    },
@@ -1389,10 +1400,8 @@ Rico.Draggable.prototype = {
       return this.type + ":" + this.htmlElement + ":";
    }
 
-} 
- 
-// ricoDropzone.js --------------------
- 
+}
+
 Rico.Dropzone = Class.create();
 
 Rico.Dropzone.prototype = {
@@ -1502,10 +1511,214 @@ Rico.Dropzone.prototype = {
          htmlElement.appendChild(theGUI);
       }
    }
-} 
- 
-// ricoEffects.js --------------------
- 
+}
+
+var dndMgr = new Rico.DragAndDrop();
+
+
+
+//-------------------- ricoDraggable.js
+Rico.Draggable = Class.create();
+
+Rico.Draggable.prototype = {
+
+   initialize: function( type, htmlElement ) {
+      this.type          = type;
+      this.htmlElement   = $(htmlElement);
+      this.selected      = false;
+   },
+
+   /**
+    *   Returns the HTML element that should have a mouse down event
+    *   added to it in order to initiate a drag operation
+    *
+    **//*
+   getMouseDownHTMLElement: function() {
+      return this.htmlElement;
+   },
+
+   select: function() {
+      this.selected = true;
+
+      if ( this.showingSelected )
+         return;
+
+      var htmlElement = this.getMouseDownHTMLElement();
+
+      var color = Rico.Color.createColorFromBackground(htmlElement);
+      color.isBright() ? color.darken(0.033) : color.brighten(0.033);
+
+      this.saveBackground = RicoUtil.getElementsComputedStyle(htmlElement, "backgroundColor", "background-color");
+      htmlElement.style.backgroundColor = color.asHex();
+      this.showingSelected = true;
+   },
+
+   deselect: function() {
+      this.selected = false;
+      if ( !this.showingSelected )
+         return;
+
+      var htmlElement = this.getMouseDownHTMLElement();
+
+      htmlElement.style.backgroundColor = this.saveBackground;
+      this.showingSelected = false;
+   },
+
+   isSelected: function() {
+      return this.selected;
+   },
+
+   startDrag: function() {
+   },
+
+   cancelDrag: function() {
+   },
+
+   endDrag: function() {
+   },
+
+   getSingleObjectDragGUI: function() {
+      return this.htmlElement;
+   },
+
+   getMultiObjectDragGUI: function( draggables ) {
+      return this.htmlElement;
+   },
+
+   getDroppedGUI: function() {
+      return this.htmlElement;
+   },
+
+   toString: function() {
+      return this.type + ":" + this.htmlElement + ":";
+   }
+
+}
+
+
+//-------------------- ricoDropzone.js
+Rico.Dropzone = Class.create();
+
+Rico.Dropzone.prototype = {
+
+   initialize: function( htmlElement ) {
+      this.htmlElement  = $(htmlElement);
+      this.absoluteRect = null;
+   },
+
+   getHTMLElement: function() {
+      return this.htmlElement;
+   },
+
+   clearPositionCache: function() {
+      this.absoluteRect = null;
+   },
+
+   getAbsoluteRect: function() {
+      if ( this.absoluteRect == null ) {
+         var htmlElement = this.getHTMLElement();
+         var pos = RicoUtil.toViewportPosition(htmlElement);
+
+         this.absoluteRect = {
+            top:    pos.y,
+            left:   pos.x,
+            bottom: pos.y + htmlElement.offsetHeight,
+            right:  pos.x + htmlElement.offsetWidth
+         };
+      }
+      return this.absoluteRect;
+   },
+
+   activate: function() {
+      var htmlElement = this.getHTMLElement();
+      if (htmlElement == null  || this.showingActive)
+         return;
+
+      this.showingActive = true;
+      this.saveBackgroundColor = htmlElement.style.backgroundColor;
+
+      var fallbackColor = "#ffea84";
+      var currentColor = Rico.Color.createColorFromBackground(htmlElement);
+      if ( currentColor == null )
+         htmlElement.style.backgroundColor = fallbackColor;
+      else {
+         currentColor.isBright() ? currentColor.darken(0.2) : currentColor.brighten(0.2);
+         htmlElement.style.backgroundColor = currentColor.asHex();
+      }
+   },
+
+   deactivate: function() {
+      var htmlElement = this.getHTMLElement();
+      if (htmlElement == null || !this.showingActive)
+         return;
+
+      htmlElement.style.backgroundColor = this.saveBackgroundColor;
+      this.showingActive = false;
+      this.saveBackgroundColor = null;
+   },
+
+   showHover: function() {
+      var htmlElement = this.getHTMLElement();
+      if ( htmlElement == null || this.showingHover )
+         return;
+
+      this.saveBorderWidth = htmlElement.style.borderWidth;
+      this.saveBorderStyle = htmlElement.style.borderStyle;
+      this.saveBorderColor = htmlElement.style.borderColor;
+
+      this.showingHover = true;
+      htmlElement.style.borderWidth = "1px";
+      htmlElement.style.borderStyle = "solid";
+      //htmlElement.style.borderColor = "#ff9900";
+      htmlElement.style.borderColor = "#ffff00";
+   },
+
+   hideHover: function() {
+      var htmlElement = this.getHTMLElement();
+      if ( htmlElement == null || !this.showingHover )
+         return;
+
+      htmlElement.style.borderWidth = this.saveBorderWidth;
+      htmlElement.style.borderStyle = this.saveBorderStyle;
+      htmlElement.style.borderColor = this.saveBorderColor;
+      this.showingHover = false;
+   },
+
+   canAccept: function(draggableObjects) {
+      return true;
+   },
+
+   accept: function(draggableObjects) {
+      var htmlElement = this.getHTMLElement();
+      if ( htmlElement == null )
+         return;
+
+      n = draggableObjects.length;
+      for ( var i = 0 ; i < n ; i++ )
+      {
+         var theGUI = draggableObjects[i].getDroppedGUI();
+         if ( RicoUtil.getElementsComputedStyle( theGUI, "position" ) == "absolute" )
+         {
+            theGUI.style.position = "static";
+            theGUI.style.top = "";
+            theGUI.style.top = "";
+         }
+         htmlElement.appendChild(theGUI);
+      }
+   }
+}
+*/
+
+
+//-------------------- ricoEffect.js
+
+/**
+  *  Use the Effect namespace for effects.  If using scriptaculous effects
+  *  this will already be defined, otherwise we'll just create an empty
+  *  object for it...
+ **/
+if ( window.Effect == undefined )
+   Effect = {};
 
 Effect.SizeAndPosition = Class.create();
 Effect.SizeAndPosition.prototype = {
@@ -1665,18 +1878,9 @@ Effect.FadeTo.prototype = {
 
    getElementOpacity: function() {
       if ( this.element.ricoOpacity == undefined ) {
-         var opacity;
-         if ( this.element.currentStyle ) {
-            opacity = this.element.currentStyle.opacity;
-         }
-         else if ( document.defaultView.getComputedStyle != undefined ) {
-            var computedStyle = document.defaultView.getComputedStyle;
-            opacity = computedStyle(this.element, null).getPropertyValue('opacity');
-         }
-
+         var opacity = RicoUtil.getElementsComputedStyle(this.element, 'opacity');
          this.element.ricoOpacity = opacity != undefined ? opacity : 1.0;
       }
-
       return parseFloat(this.element.ricoOpacity);
    }
 }
@@ -1738,30 +1942,263 @@ Effect.AccordionSize.prototype = {
    }
 
 };
- 
- 
-// ricoLiveGrid.js --------------------
- 
 
+
+//-------------------- ricoEffects.js
+
+/**
+  *  Use the Effect namespace for effects.  If using scriptaculous effects
+  *  this will already be defined, otherwise we'll just create an empty
+  *  object for it...
+ **/
+if ( window.Effect == undefined )
+   Effect = {};
+
+Effect.SizeAndPosition = Class.create();
+Effect.SizeAndPosition.prototype = {
+
+   initialize: function(element, x, y, w, h, duration, steps, options) {
+      this.element = $(element);
+      this.x = x;
+      this.y = y;
+      this.w = w;
+      this.h = h;
+      this.duration = duration;
+      this.steps    = steps;
+      this.options  = arguments[7] || {};
+
+      this.sizeAndPosition();
+   },
+
+   sizeAndPosition: function() {
+      if (this.isFinished()) {
+         if(this.options.complete) this.options.complete(this);
+         return;
+      }
+
+      if (this.timer)
+         clearTimeout(this.timer);
+
+      var stepDuration = Math.round(this.duration/this.steps) ;
+
+      // Get original values: x,y = top left corner;  w,h = width height
+      var currentX = this.element.offsetLeft;
+      var currentY = this.element.offsetTop;
+      var currentW = this.element.offsetWidth;
+      var currentH = this.element.offsetHeight;
+
+      // If values not set, or zero, we do not modify them, and take original as final as well
+      this.x = (this.x) ? this.x : currentX;
+      this.y = (this.y) ? this.y : currentY;
+      this.w = (this.w) ? this.w : currentW;
+      this.h = (this.h) ? this.h : currentH;
+
+      // how much do we need to modify our values for each step?
+      var difX = this.steps >  0 ? (this.x - currentX)/this.steps : 0;
+      var difY = this.steps >  0 ? (this.y - currentY)/this.steps : 0;
+      var difW = this.steps >  0 ? (this.w - currentW)/this.steps : 0;
+      var difH = this.steps >  0 ? (this.h - currentH)/this.steps : 0;
+
+      this.moveBy(difX, difY);
+      this.resizeBy(difW, difH);
+
+      this.duration -= stepDuration;
+      this.steps--;
+
+      this.timer = setTimeout(this.sizeAndPosition.bind(this), stepDuration);
+   },
+
+   isFinished: function() {
+      return this.steps <= 0;
+   },
+
+   moveBy: function( difX, difY ) {
+      var currentLeft = this.element.offsetLeft;
+      var currentTop  = this.element.offsetTop;
+      var intDifX     = parseInt(difX);
+      var intDifY     = parseInt(difY);
+
+      var style = this.element.style;
+      if ( intDifX != 0 )
+         style.left = (currentLeft + intDifX) + "px";
+      if ( intDifY != 0 )
+         style.top  = (currentTop + intDifY) + "px";
+   },
+
+   resizeBy: function( difW, difH ) {
+      var currentWidth  = this.element.offsetWidth;
+      var currentHeight = this.element.offsetHeight;
+      var intDifW       = parseInt(difW);
+      var intDifH       = parseInt(difH);
+
+      var style = this.element.style;
+      if ( intDifW != 0 )
+         style.width   = (currentWidth  + intDifW) + "px";
+      if ( intDifH != 0 )
+         style.height  = (currentHeight + intDifH) + "px";
+   }
+}
+
+Effect.Size = Class.create();
+Effect.Size.prototype = {
+
+   initialize: function(element, w, h, duration, steps, options) {
+      new Effect.SizeAndPosition(element, null, null, w, h, duration, steps, options);
+  }
+}
+
+Effect.Position = Class.create();
+Effect.Position.prototype = {
+
+   initialize: function(element, x, y, duration, steps, options) {
+      new Effect.SizeAndPosition(element, x, y, null, null, duration, steps, options);
+  }
+}
+
+Effect.Round = Class.create();
+Effect.Round.prototype = {
+
+   initialize: function(tagName, className, options) {
+      var elements = document.getElementsByTagAndClassName(tagName,className);
+      for ( var i = 0 ; i < elements.length ; i++ )
+         Rico.Corner.round( elements[i], options );
+   }
+};
+
+Effect.FadeTo = Class.create();
+Effect.FadeTo.prototype = {
+
+   initialize: function( element, opacity, duration, steps, options) {
+      this.element  = $(element);
+      this.opacity  = opacity;
+      this.duration = duration;
+      this.steps    = steps;
+      this.options  = arguments[4] || {};
+      this.fadeTo();
+   },
+
+   fadeTo: function() {
+      if (this.isFinished()) {
+         if(this.options.complete) this.options.complete(this);
+         return;
+      }
+
+      if (this.timer)
+         clearTimeout(this.timer);
+
+      var stepDuration = Math.round(this.duration/this.steps) ;
+      var currentOpacity = this.getElementOpacity();
+      var delta = this.steps > 0 ? (this.opacity - currentOpacity)/this.steps : 0;
+
+      this.changeOpacityBy(delta);
+      this.duration -= stepDuration;
+      this.steps--;
+
+      this.timer = setTimeout(this.fadeTo.bind(this), stepDuration);
+   },
+
+   changeOpacityBy: function(v) {
+      var currentOpacity = this.getElementOpacity();
+      var newOpacity = Math.max(0, Math.min(currentOpacity+v, 1));
+      this.element.ricoOpacity = newOpacity;
+
+      this.element.style.filter = "alpha(opacity:"+Math.round(newOpacity*100)+")";
+      this.element.style.opacity = newOpacity; /*//*/;
+   },
+
+   isFinished: function() {
+      return this.steps <= 0;
+   },
+
+   getElementOpacity: function() {
+      if ( this.element.ricoOpacity == undefined ) {
+         var opacity = RicoUtil.getElementsComputedStyle(this.element, 'opacity');
+         this.element.ricoOpacity = opacity != undefined ? opacity : 1.0;
+      }
+      return parseFloat(this.element.ricoOpacity);
+   }
+}
+
+Effect.AccordionSize = Class.create();
+
+Effect.AccordionSize.prototype = {
+
+   initialize: function(e1, e2, start, end, duration, steps, options) {
+      this.e1       = $(e1);
+      this.e2       = $(e2);
+      this.start    = start;
+      this.end      = end;
+      this.duration = duration;
+      this.steps    = steps;
+      this.options  = arguments[6] || {};
+
+      this.accordionSize();
+   },
+
+   accordionSize: function() {
+
+      if (this.isFinished()) {
+         // just in case there are round errors or such...
+         this.e1.style.height = this.start + "px";
+         this.e2.style.height = this.end + "px";
+
+         if(this.options.complete)
+            this.options.complete(this);
+         return;
+      }
+
+      if (this.timer)
+         clearTimeout(this.timer);
+
+      var stepDuration = Math.round(this.duration/this.steps) ;
+
+      var diff = this.steps > 0 ? (parseInt(this.e1.offsetHeight) - this.start)/this.steps : 0;
+      this.resizeBy(diff);
+
+      this.duration -= stepDuration;
+      this.steps--;
+
+      this.timer = setTimeout(this.accordionSize.bind(this), stepDuration);
+   },
+
+   isFinished: function() {
+      return this.steps <= 0;
+   },
+
+   resizeBy: function(diff) {
+      var h1Height = this.e1.offsetHeight;
+      var h2Height = this.e2.offsetHeight;
+      var intDiff = parseInt(diff);
+      if ( diff != 0 ) {
+         this.e1.style.height = (h1Height - intDiff) + "px";
+         this.e2.style.height = (h2Height + intDiff) + "px";
+      }
+   }
+
+};
+
+
+//-------------------- ricoLiveGrid.js
 // Rico.LiveGridMetaData -----------------------------------------------------
 
 Rico.LiveGridMetaData = Class.create();
 
 Rico.LiveGridMetaData.prototype = {
 
-   initialize: function( pageSize, totalRows, options ) {
+   initialize: function( pageSize, totalRows, columnCount, options ) {
       this.pageSize  = pageSize;
       this.totalRows = totalRows;
       this.setOptions(options);
-      this.scrollArrowHeight = 16;
+      this.ArrowHeight = 16;
+      this.columnCount = columnCount;
    },
 
    setOptions: function(options) {
       this.options = {
          largeBufferSize    : 7.0,   // 7 pages
-         smallBufferSize    : 1.0,   // 1 page
          nearLimitFactor    : 0.2    // 20% of buffer
-      }.extend(options || {});
+      };
+      Object.extend(this.options, options || {});
    },
 
    getPageSize: function() {
@@ -1780,17 +2217,9 @@ Rico.LiveGridMetaData.prototype = {
       return parseInt(this.options.largeBufferSize * this.pageSize);
    },
 
-   getSmallBufferSize: function() {
-      return parseInt(this.options.smallBufferSize * this.pageSize);
-   },
-
    getLimitTolerance: function() {
       return parseInt(this.getLargeBufferSize() * this.options.nearLimitFactor);
-   },
-
-	getBufferSize: function(isFull) {
-		return isFull ? this.getLargeBufferSize() : this.getSmallBufferSize();
-	}
+   }
 };
 
 // Rico.LiveGridScroller -----------------------------------------------------
@@ -1799,14 +2228,15 @@ Rico.LiveGridScroller = Class.create();
 
 Rico.LiveGridScroller.prototype = {
 
-   initialize: function(liveGrid) {
+   initialize: function(liveGrid, viewPort) {
       this.isIE = navigator.userAgent.toLowerCase().indexOf("msie") >= 0;
       this.liveGrid = liveGrid;
       this.metaData = liveGrid.metaData;
       this.createScrollBar();
       this.scrollTimeout = null;
-      //this.sizeIEHeaderHack();
       this.lastScrollPos = 0;
+      this.viewPort = viewPort;
+      this.rows = new Array();
    },
 
    isUnPlugged: function() {
@@ -1830,13 +2260,11 @@ Rico.LiveGridScroller.prototype = {
    },
 
    createScrollBar: function() {
-      var table = this.liveGrid.table;
-      var visibleHeight = table.offsetHeight;
-
+      var visibleHeight = this.liveGrid.viewPort.visibleHeight();
       // create the outer div...
       this.scrollerDiv  = document.createElement("div");
       var scrollerStyle = this.scrollerDiv.style;
-      scrollerStyle.borderRight = "1px solid #ababab"; // hard coded color!!!
+      scrollerStyle.borderRight = this.liveGrid.options.scrollerBorderRight;
       scrollerStyle.position    = "relative";
       scrollerStyle.left        = this.isIE ? "-6px" : "-3px";
       scrollerStyle.width       = "19px";
@@ -1846,47 +2274,70 @@ Rico.LiveGridScroller.prototype = {
       // create the inner div...
       this.heightDiv = document.createElement("div");
       this.heightDiv.style.width  = "1px";
+
       this.heightDiv.style.height = parseInt(visibleHeight *
                         this.metaData.getTotalRows()/this.metaData.getPageSize()) + "px" ;
-      this.lineHeight =  visibleHeight/this.metaData.getPageSize();
-
       this.scrollerDiv.appendChild(this.heightDiv);
       this.scrollerDiv.onscroll = this.handleScroll.bindAsEventListener(this);
-      table.parentNode.insertBefore( this.scrollerDiv, table.nextSibling );
-   },
+
+     var table = this.liveGrid.table;
+     table.parentNode.parentNode.insertBefore( this.scrollerDiv, table.parentNode.nextSibling );
+  	  var eventName = this.isIE ? "mousewheel" : "DOMMouseScroll";
+	  Event.observe(table, eventName,
+	                function(evt) {
+	                   if (evt.wheelDelta>=0 || evt.detail < 0) //wheel-up
+	                      this.scrollerDiv.scrollTop -= (2*this.viewPort.rowHeight);
+	                   else
+	                      this.scrollerDiv.scrollTop += (2*this.viewPort.rowHeight);
+	                   this.handleScroll(false);
+	                }.bindAsEventListener(this),
+	                false);
+     },
 
    updateSize: function() {
       var table = this.liveGrid.table;
-      var visibleHeight = table.offsetHeight;
+      var visibleHeight = this.viewPort.visibleHeight();
       this.heightDiv.style.height = parseInt(visibleHeight *
                                   this.metaData.getTotalRows()/this.metaData.getPageSize()) + "px";
    },
 
-   adjustScrollTop: function() {
-   	this.unplug();
-   	var rem = this.scrollerDiv.scrollTop % this.lineHeight;
-   	if (rem != 0) {
-         if (this.lastScrollPos < this.scrollerDiv.scrollTop)
-            this.scrollerDiv.scrollTop = this.scrollerDiv.scrollTop + this.lineHeight -rem;
-         else
-            this.scrollerDiv.scrollTop = this.scrollerDiv.scrollTop - rem;
-      }
-      this.lastScrollPos = this.scrollerDiv.scrollTop;
-   	this.plugin();
+   rowToPixel: function(rowOffset) {
+      return (rowOffset / this.metaData.getTotalRows()) * this.heightDiv.offsetHeight
+   },
+
+   moveScroll: function(rowOffset) {
+      this.scrollerDiv.scrollTop = this.rowToPixel(rowOffset);
+      if ( this.metaData.options.onscroll )
+         this.metaData.options.onscroll( this.liveGrid, rowOffset );
    },
 
    handleScroll: function() {
-      if ( this.scrollTimeout )
+     if ( this.scrollTimeout )
          clearTimeout( this.scrollTimeout );
 
-	   //this.adjustScrollTop();
-	   var contentOffset = parseInt(this.scrollerDiv.scrollTop *
-                                   this.metaData.getTotalRows() / this.heightDiv.offsetHeight);
-      this.liveGrid.requestContentRefresh(contentOffset);
-      if ( this.metaData.options.onscroll )
-         this.metaData.options.onscroll( contentOffset, this.metaData );
+    var scrollDiff = this.lastScrollPos-this.scrollerDiv.scrollTop;
+    if (scrollDiff != 0.00) {
+       var r = this.scrollerDiv.scrollTop % this.viewPort.rowHeight;
+       if (r != 0) {
+          this.unplug();
+          if ( scrollDiff < 0 ) {
+             this.scrollerDiv.scrollTop += (this.viewPort.rowHeight-r);
+          } else {
+             this.scrollerDiv.scrollTop -= r;
+          }
+          this.plugin();
+       }
+    }
+    var contentOffset = parseInt(this.scrollerDiv.scrollTop / this.viewPort.rowHeight);
+    this.liveGrid.requestContentRefresh(contentOffset);
+    this.viewPort.scrollTo(this.scrollerDiv.scrollTop);
 
-      this.scrollTimeout = setTimeout( this.scrollIdle.bind(this), 1200 );
+    if ( this.metaData.options.onscroll )
+       this.metaData.options.onscroll( this.liveGrid, contentOffset );
+
+    this.scrollTimeout = setTimeout(this.scrollIdle.bind(this), 1200 );
+    this.lastScrollPos = this.scrollerDiv.scrollTop;
+
    },
 
    scrollIdle: function() {
@@ -1901,60 +2352,105 @@ Rico.LiveGridBuffer = Class.create();
 
 Rico.LiveGridBuffer.prototype = {
 
-   initialize: function(metaData) {
+   initialize: function(metaData, viewPort) {
       this.startPos = 0;
       this.size     = 0;
       this.metaData = metaData;
       this.rows     = new Array();
       this.updateInProgress = false;
+      this.viewPort = viewPort;
+      this.maxBufferSize = metaData.getLargeBufferSize() * 2;
+      this.maxFetchSize = metaData.getLargeBufferSize();
+      this.lastOffset = 0;
    },
 
-   update: function(ajaxResponse,start) {
+   getBlankRow: function() {
+      if (!this.blankRow ) {
+         this.blankRow = new Array();
+         for ( var i=0; i < this.metaData.columnCount ; i++ )
+            this.blankRow[i] = "&nbsp;";
+     }
+     return this.blankRow;
+   },
 
-      this.startPos = start;
-      this.rows = new Array();
-
+   loadRows: function(ajaxResponse) {
       var rowsElement = ajaxResponse.getElementsByTagName('rows')[0];
-      this.updateUI = rowsElement.getAttribute("update_ui") == "true";
+      this.updateUI = rowsElement.getAttribute("update_ui") == "true"
+      var newRows = new Array()
       var trs = rowsElement.getElementsByTagName("tr");
       for ( var i=0 ; i < trs.length; i++ ) {
-         var row = this.rows[i] = new Array();
+         var row = newRows[i] = new Array();
          var cells = trs[i].getElementsByTagName("td");
          for ( var j=0; j < cells.length ; j++ ) {
             var cell = cells[j];
             var convertSpaces = cell.getAttribute("convert_spaces") == "true";
-            var cellContent = cell.text != undefined ? cell.text : cell.textContent;
+            var cellContent = RicoUtil.getContentAsString(cell);
             row[j] = convertSpaces ? this.convertSpaces(cellContent) : cellContent;
+            if (!row[j])
+               row[j] = '&nbsp;';
          }
       }
-      this.size = trs.length;
+      return newRows;
    },
 
-	isFullP: function() {
-	   return this.metaData.pageSize != this.size;
-	},
-
-	isClose: function(start) {
-		return (start < this.startPos + this.size + (this.size/2)) &&
-             (start + this.size + (this.size/2) > this.startPos)
-	},
-
-   isInRange: function(start, count) {
-      return (start < this.startPos + this.size) && (start + count > this.startPos)
+   update: function(ajaxResponse, start) {
+     var newRows = this.loadRows(ajaxResponse);
+      if (this.rows.length == 0) { // initial load
+         this.rows = newRows;
+         this.size = this.rows.length;
+         this.startPos = start;
+         return;
+      }
+      if (start > this.startPos) { //appending
+         if (this.startPos + this.rows.length < start) {
+            this.rows =  newRows;
+            this.startPos = start;//
+         } else {
+              this.rows = this.rows.concat( newRows.slice(0, newRows.length));
+            if (this.rows.length > this.maxBufferSize) {
+               var fullSize = this.rows.length;
+               this.rows = this.rows.slice(this.rows.length - this.maxBufferSize, this.rows.length)
+               this.startPos = this.startPos +  (fullSize - this.rows.length);
+            }
+         }
+      } else { //prepending
+         if (start + newRows.length < this.startPos) {
+            this.rows =  newRows;
+         } else {
+            this.rows = newRows.slice(0, this.startPos).concat(this.rows);
+            if (this.rows.length > this.maxBufferSize)
+               this.rows = this.rows.slice(0, this.maxBufferSize)
+         }
+         this.startPos =  start;
+      }
+      this.size = this.rows.length;
    },
 
-   isFullyInRange: function(position) {
-      return (position >= this.startPos) && (position+this.metaData.getPageSize()) <= (this.startPos + this.size)
+   clear: function() {
+      this.rows = new Array();
+      this.startPos = 0;
+      this.size = 0;
+   },
+
+   isOverlapping: function(start, size) {
+      return ((start < this.endPos()) && (this.startPos < start + size)) || (this.endPos() == 0)
+   },
+
+   isInRange: function(position) {
+      return (position >= this.startPos) && (position + this.metaData.getPageSize() <= this.endPos());
+             //&& this.size()  != 0;
    },
 
    isNearingTopLimit: function(position) {
       return position - this.startPos < this.metaData.getLimitTolerance();
    },
 
+   endPos: function() {
+      return this.startPos + this.rows.length;
+   },
+
    isNearingBottomLimit: function(position) {
-      var myEnd     = position + this.metaData.getPageSize();
-      var bufferEnd = this.startPos + this.size;
-      return bufferEnd - myEnd < this.metaData.getLimitTolerance();
+      return this.endPos() - (position + this.metaData.getPageSize()) < this.metaData.getLimitTolerance();
    },
 
    isAtTop: function() {
@@ -1962,7 +2458,7 @@ Rico.LiveGridBuffer.prototype = {
    },
 
    isAtBottom: function() {
-      return this.startPos + this.size == this.metaData.getTotalRows();
+      return this.endPos() == this.metaData.getTotalRows();
    },
 
    isNearingLimit: function(position) {
@@ -1970,15 +2466,49 @@ Rico.LiveGridBuffer.prototype = {
              ( !this.isAtBottom() && this.isNearingBottomLimit(position) )
    },
 
+   getFetchSize: function(offset) {
+      var adjustedOffset = this.getFetchOffset(offset);
+      var adjustedSize = 0;
+      if (adjustedOffset >= this.startPos) { //apending
+         var endFetchOffset = this.maxFetchSize  + adjustedOffset;
+         if (endFetchOffset > this.metaData.totalRows)
+            endFetchOffset = this.metaData.totalRows;
+         adjustedSize = endFetchOffset - adjustedOffset;
+			if(adjustedOffset == 0 && adjustedSize < this.maxFetchSize){
+			   adjustedSize = this.maxFetchSize;
+			}
+      } else {//prepending
+         var adjustedSize = this.startPos - adjustedOffset;
+         if (adjustedSize > this.maxFetchSize)
+            adjustedSize = this.maxFetchSize;
+      }
+      return adjustedSize;
+   },
+
+   getFetchOffset: function(offset) {
+      var adjustedOffset = offset;
+      if (offset > this.startPos)  //apending
+         adjustedOffset = (offset > this.endPos()) ? offset :  this.endPos();
+      else { //prepending
+         if (offset + this.maxFetchSize >= this.startPos) {
+            var adjustedOffset = this.startPos - this.maxFetchSize;
+            if (adjustedOffset < 0)
+               adjustedOffset = 0;
+         }
+      }
+      this.lastOffset = adjustedOffset;
+      return adjustedOffset;
+   },
+
    getRows: function(start, count) {
-      var begPos = start - this.startPos;
-      var endPos = begPos + count;
+      var begPos = start - this.startPos
+      var endPos = begPos + count
 
       // er? need more data...
       if ( endPos > this.size )
-         endPos = this.size;
+         endPos = this.size
 
-      var results = new Array();
+      var results = new Array()
       var index = 0;
       for ( var i=begPos ; i < endPos; i++ ) {
          results[index++] = this.rows[i]
@@ -1992,10 +2522,111 @@ Rico.LiveGridBuffer.prototype = {
 
 };
 
+
+//Rico.GridViewPort --------------------------------------------------
+Rico.GridViewPort = Class.create();
+
+Rico.GridViewPort.prototype = {
+
+   initialize: function(table, rowHeight, visibleRows, buffer, liveGrid) {
+      this.lastDisplayedStartPos = 0;
+      this.div = table.parentNode;
+      this.table = table
+      this.rowHeight = rowHeight;
+      this.div.style.height = this.rowHeight * visibleRows;
+      this.div.style.overflow = "hidden";
+      this.buffer = buffer;
+      this.liveGrid = liveGrid;
+      this.visibleRows = visibleRows + 1;
+      this.lastPixelOffset = 0;
+      this.startPos = 0;
+   },
+
+   populateRow: function(htmlRow, row) {
+      for (var j=0; j < row.length; j++) {
+         htmlRow.cells[j].innerHTML = row[j]
+      }
+   },
+
+   bufferChanged: function() {
+      this.refreshContents( parseInt(this.lastPixelOffset / this.rowHeight));
+   },
+
+   clearRows: function() {
+      if (!this.isBlank) {
+         this.liveGrid.table.className = this.liveGrid.options.loadingClass;
+         for (var i=0; i < this.visibleRows; i++)
+            this.populateRow(this.table.rows[i], this.buffer.getBlankRow());
+         this.isBlank = true;
+      }
+   },
+
+   clearContents: function() {
+      this.clearRows();
+      this.scrollTo(0);
+      this.startPos = 0;
+      this.lastStartPos = -1;
+   },
+
+   refreshContents: function(startPos) {
+      if (startPos == this.lastRowPos && !this.isPartialBlank && !this.isBlank) {
+         return;
+      }
+      if ((startPos + this.visibleRows < this.buffer.startPos)
+          || (this.buffer.startPos + this.buffer.size < startPos)
+          || (this.buffer.size == 0)) {
+         this.clearRows();
+         return;
+      }
+      this.isBlank = false;
+      var viewPrecedesBuffer = this.buffer.startPos > startPos
+      var contentStartPos = viewPrecedesBuffer ? this.buffer.startPos: startPos;
+      var contentEndPos = (this.buffer.startPos + this.buffer.size < startPos + this.visibleRows)
+                                 ? this.buffer.startPos + this.buffer.size
+                                 : startPos + this.visibleRows;
+      var rowSize = contentEndPos - contentStartPos;
+      var rows = this.buffer.getRows(contentStartPos, rowSize );
+      var blankSize = this.visibleRows - rowSize;
+      var blankOffset = viewPrecedesBuffer ? 0: rowSize;
+      var contentOffset = viewPrecedesBuffer ? blankSize: 0;
+
+      for (var i=0; i < rows.length; i++) {//initialize what we have
+        this.populateRow(this.table.rows[i + contentOffset], rows[i]);
+      }
+      for (var i=0; i < blankSize; i++) {// blank out the rest
+        this.populateRow(this.table.rows[i + blankOffset], this.buffer.getBlankRow());
+      }
+      this.isPartialBlank = blankSize > 0;
+      this.lastRowPos = startPos;
+
+       this.liveGrid.table.className = this.liveGrid.options.tableClass;
+       // Check if user has set a onRefreshComplete function
+       var onRefreshComplete = this.liveGrid.options.onRefreshComplete;
+       if (onRefreshComplete != null)
+           onRefreshComplete();
+   },
+
+   scrollTo: function(pixelOffset) {
+      if (this.lastPixelOffset == pixelOffset)
+         return;
+
+      this.refreshContents(parseInt(pixelOffset / this.rowHeight))
+      this.div.scrollTop = pixelOffset % this.rowHeight
+
+      this.lastPixelOffset = pixelOffset;
+   },
+
+   visibleHeight: function() {
+      return parseInt(RicoUtil.getElementsComputedStyle(this.div, 'height'));
+   }
+
+};
+
+
 Rico.LiveGridRequest = Class.create();
 Rico.LiveGridRequest.prototype = {
    initialize: function( requestOffset, options ) {
-		this.requestOffset = requestOffset;
+      this.requestOffset = requestOffset;
    }
 };
 
@@ -2005,36 +2636,103 @@ Rico.LiveGrid = Class.create();
 
 Rico.LiveGrid.prototype = {
 
-   initialize: function( tableId, visibleRows, totalRows, url, options ) {
+   initialize: function( tableId, visibleRows, totalRows, url, options, ajaxOptions ) {
 
-      if ( options == null )
-         options = {};
+     this.options = {
+                tableClass:           $(tableId).className,
+                loadingClass:         $(tableId).className,
+                scrollerBorderRight: '1px solid #ababab',
+                bufferTimeout:        20000,
+                sortAscendImg:        'images/sort_asc.gif',
+                sortDescendImg:       'images/sort_desc.gif',
+                sortImageWidth:       9,
+                sortImageHeight:      5,
+                ajaxSortURLParms:     [],
+                onRefreshComplete:    null,
+                requestParameters:    null,
+                inlineStyles:         true
+                };
+      Object.extend(this.options, options || {});
+
+      this.ajaxOptions = {parameters: null};
+      Object.extend(this.ajaxOptions, ajaxOptions || {});
 
       this.tableId     = tableId;
       this.table       = $(tableId);
-      this.metaData    = new Rico.LiveGridMetaData(visibleRows, totalRows, options);
-      this.buffer      = new Rico.LiveGridBuffer(this.metaData);
-      this.scroller    = new Rico.LiveGridScroller(this);
 
-      this.lastDisplayedStartPos = 0;
-      this.timeoutHander         = null;
-      this.additionalParms       = options.requestParameters || [];
+      this.addLiveGridHtml();
+
+      var columnCount  = this.table.rows[0].cells.length;
+      this.metaData    = new Rico.LiveGridMetaData(visibleRows, totalRows, columnCount, options);
+      this.buffer      = new Rico.LiveGridBuffer(this.metaData);
+
+      var rowCount = this.table.rows.length;
+      this.viewPort =  new Rico.GridViewPort(this.table,
+                                            this.table.offsetHeight/rowCount,
+                                            visibleRows,
+                                            this.buffer, this);
+      this.scroller    = new Rico.LiveGridScroller(this,this.viewPort);
+      this.options.sortHandler = this.sortHandler.bind(this);
+
+      if ( $(tableId + '_header') )
+         this.sort = new Rico.LiveGridSort(tableId + '_header', this.options)
 
       this.processingRequest = null;
       this.unprocessedRequest = null;
 
       this.initAjax(url);
-      if ( options.prefetchBuffer )
-         this.fetchBuffer(0, true);
+      if ( this.options.prefetchBuffer || this.options.prefetchOffset > 0) {
+         var offset = 0;
+         if (this.options.offset ) {
+            offset = this.options.offset;
+            this.scroller.moveScroll(offset);
+            this.viewPort.scrollTo(this.scroller.rowToPixel(offset));
+         }
+         if (this.options.sortCol) {
+             this.sortCol = options.sortCol;
+             this.sortDir = options.sortDir;
+         }
+         this.requestContentRefresh(offset);
+      }
    },
 
-   setRequestParams: function() {
-      this.additionalParms = [];
-      for ( var i=0 ; i < arguments.length ; i++ )
-         this.additionalParms[i] = arguments[i];
+   addLiveGridHtml: function() {
+     // Check to see if need to create a header table.
+     if (this.table.getElementsByTagName("thead").length > 0){
+       // Create Table this.tableId+'_header'
+       var tableHeader = this.table.cloneNode(true);
+       tableHeader.setAttribute('id', this.tableId+'_header');
+       tableHeader.setAttribute('class', this.table.className+'_header');
+
+       // Clean up and insert
+       for( var i = 0; i < tableHeader.tBodies.length; i++ )
+       tableHeader.removeChild(tableHeader.tBodies[i]);
+       this.table.deleteTHead();
+       this.table.parentNode.insertBefore(tableHeader,this.table);
+     }
+
+    new Insertion.Before(this.table, "<div id='"+this.tableId+"_container'></div>");
+    this.table.previousSibling.appendChild(this.table);
+    new Insertion.Before(this.table,"<div id='"+this.tableId+"_viewport' style='float:left;'></div>");
+    this.table.previousSibling.appendChild(this.table);
+   },
+
+   resetContents: function() {
+      this.scroller.moveScroll(0);
+      this.buffer.clear();
+      this.viewPort.clearContents();
+   },
+
+   sortHandler: function(column) {
+      this.sortCol = column.name;
+      this.sortDir = column.currentSort;
+
+      this.resetContents();
+      this.requestContentRefresh(0)
    },
 
    setTotalRows: function( newTotalRows ) {
+      this.resetContents();
       this.metaData.setTotalRows(newTotalRows);
       this.scroller.updateSize();
    },
@@ -2047,95 +2745,399 @@ Rico.LiveGrid.prototype = {
    invokeAjax: function() {
    },
 
-   largeBufferWindowStart: function(offset) {
-      val = offset - ( (.5 * this.metaData.getLargeBufferSize()) - (.5 * this.metaData.getPageSize()) );
-      return Math.max(parseInt(val), 0);
-   },
-
    handleTimedOut: function() {
       //server did not respond in 4 seconds... assume that there could have been
       //an error or something, and allow requests to be processed again...
       this.processingRequest = null;
+      this.processQueuedRequest();
    },
 
-   fetchBuffer: function(offset, fullBufferp) {
+   fetchBuffer: function(offset) {
+      if ( this.buffer.isInRange(offset) &&
+         !this.buffer.isNearingLimit(offset)) {
+         return;
+         }
       if (this.processingRequest) {
-      	  this.unprocessedRequest = new Rico.LiveGridRequest(offset);
-           return;
+          this.unprocessedRequest = new Rico.LiveGridRequest(offset);
+         return;
       }
-
-      var fetchSize = this.metaData.getBufferSize(fullBufferp);
-      bufferStartPos = Math.max(0,fullBufferp ? this.largeBufferWindowStart(offset) : offset);
-
+      var bufferStartPos = this.buffer.getFetchOffset(offset);
       this.processingRequest = new Rico.LiveGridRequest(offset);
       this.processingRequest.bufferOffset = bufferStartPos;
+      var fetchSize = this.buffer.getFetchSize(offset);
+      var partialLoaded = false;
 
-      var callParms = [];
-      callParms.push(this.tableId + '_request');
-      callParms.push('id='        + this.tableId);
-      callParms.push('page_size=' + fetchSize);
-      callParms.push('offset='    + bufferStartPos);
+      var queryString
+      if (this.options.requestParameters)
+         queryString = this._createQueryString(this.options.requestParameters, 0);
 
-      for( var i=0 ; i < this.additionalParms.length ; i++ )
-         callParms.push(this.additionalParms[i]);
+        queryString = (queryString == null) ? '' : queryString+'&';
+        queryString  = queryString+'id='+this.tableId+'&page_size='+fetchSize+'&offset='+bufferStartPos;
+        if (this.sortCol)
+            queryString = queryString+'&sort_col='+escape(this.sortCol)+'&sort_dir='+this.sortDir;
 
-      ajaxEngine.sendRequest.apply( ajaxEngine, callParms );
-      this.timeoutHandler = setTimeout( this.handleTimedOut.bind(this), 4000 );
+        this.ajaxOptions.parameters = queryString;
+
+       ajaxEngine.sendRequest( this.tableId + '_request', this.ajaxOptions );
+
+       this.timeoutHandler = setTimeout( this.handleTimedOut.bind(this), this.options.bufferTimeout);
+
+   },
+
+   setRequestParams: function() {
+      this.options.requestParameters = [];
+      for ( var i=0 ; i < arguments.length ; i++ )
+         this.options.requestParameters[i] = arguments[i];
    },
 
    requestContentRefresh: function(contentOffset) {
-      if ( this.buffer && this.buffer.isFullyInRange(contentOffset) ) {
-         this.updateContent(contentOffset);
-         if (this.buffer.isNearingLimit(contentOffset))
-            this.fetchBuffer(contentOffset, true);
-      }
-      else if (this.buffer && this.buffer.isClose(contentOffset))
-         this.fetchBuffer(contentOffset, true);
-      else
-	      this.fetchBuffer(contentOffset, false);
+      this.fetchBuffer(contentOffset);
    },
 
    ajaxUpdate: function(ajaxResponse) {
       try {
          clearTimeout( this.timeoutHandler );
-         this.buffer = new Rico.LiveGridBuffer(this.metaData);
          this.buffer.update(ajaxResponse,this.processingRequest.bufferOffset);
-         if (this.unprocessedRequest == null) {
-            offset = this.processingRequest.requestOffset;
-            this.updateContent (offset);
-         }
-         this.processingRequest = null;
-         if (this.unprocessedRequest != null) {
-            this.requestContentRefresh(this.unprocessedRequest.requestOffset);
-            this.unprocessedRequest = null
-         }
+         this.viewPort.bufferChanged();
       }
-      catch(err) {
-      }
+      catch(err) {}
+      finally {this.processingRequest = null; }
+      this.processQueuedRequest();
    },
 
-   updateContent: function( offset ) {
-      this.replaceCellContents(this.buffer, offset);
+   _createQueryString: function( theArgs, offset ) {
+      var queryString = ""
+      if (!theArgs)
+          return queryString;
+
+      for ( var i = offset ; i < theArgs.length ; i++ ) {
+          if ( i != offset )
+            queryString += "&";
+
+          var anArg = theArgs[i];
+
+          if ( anArg.name != undefined && anArg.value != undefined ) {
+            queryString += anArg.name +  "=" + escape(anArg.value);
+          }
+          else {
+             var ePos  = anArg.indexOf('=');
+             var argName  = anArg.substring( 0, ePos );
+             var argValue = anArg.substring( ePos + 1 );
+             queryString += argName + "=" + escape(argValue);
+          }
+      }
+      return queryString;
    },
 
-   replaceCellContents: function(buffer, startPos) {
-      if (startPos == this.lastDisplayedStartPos){
-         return;
-      }
-
-      this.lastDisplayedStartPos = startPos;
-      var rows = buffer.getRows(startPos, this.metaData.getPageSize());
-      for (var i=0; i < rows.length; i++) {
-         var row = rows[i];
-         for (var j=0; j < row.length; j++) {
-            this.table.rows[i].cells[j].innerHTML = rows[i][j]
-         }
+   processQueuedRequest: function() {
+      if (this.unprocessedRequest != null) {
+         this.requestContentRefresh(this.unprocessedRequest.requestOffset);
+         this.unprocessedRequest = null
       }
    }
-}; 
- 
-// ricoUtil.js --------------------
- 
+};
+
+
+//-------------------- ricoLiveGridSort.js
+Rico.LiveGridSort = Class.create();
+
+Rico.LiveGridSort.prototype = {
+
+   initialize: function(headerTableId, options) {
+      this.headerTableId = headerTableId;
+      this.headerTable   = $(headerTableId);
+      this.options = options;
+      this.setOptions();
+      this.applySortBehavior();
+
+      if ( this.options.sortCol ) {
+         this.setSortUI( this.options.sortCol, this.options.sortDir );
+      }
+   },
+
+   setSortUI: function( columnName, sortDirection ) {
+      var cols = this.options.columns;
+      for ( var i = 0 ; i < cols.length ; i++ ) {
+         if ( cols[i].name == columnName ) {
+            this.setColumnSort(i, sortDirection);
+            break;
+         }
+      }
+   },
+
+   setOptions: function() {
+      // preload the images...
+      new Image().src = this.options.sortAscendImg;
+      new Image().src = this.options.sortDescendImg;
+
+      this.sort = this.options.sortHandler;
+      if ( !this.options.columns )
+         this.options.columns = this.introspectForColumnInfo();
+      else {
+         // allow client to pass { columns: [ ["a", true], ["b", false] ] }
+         // and convert to an array of Rico.TableColumn objs...
+         this.options.columns = this.convertToTableColumns(this.options.columns);
+      }
+   },
+
+   applySortBehavior: function() {
+      var headerRow   = this.headerTable.rows[0];
+      var headerCells = headerRow.cells;
+      for ( var i = 0 ; i < headerCells.length ; i++ ) {
+         this.addSortBehaviorToColumn( i, headerCells[i] );
+      }
+   },
+
+   addSortBehaviorToColumn: function( n, cell ) {
+      if ( this.options.columns[n].isSortable() ) {
+         cell.id            = this.headerTableId + '_' + n;
+         cell.style.cursor  = 'pointer';
+         cell.onclick       = this.headerCellClicked.bindAsEventListener(this);
+         cell.innerHTML     = cell.innerHTML + '<span id="' + this.headerTableId + '_img_' + n + '">'
+                           + '&nbsp;&nbsp;&nbsp;</span>';
+      }
+   },
+
+   // event handler....
+   headerCellClicked: function(evt) {
+      var eventTarget = evt.target ? evt.target : evt.srcElement;
+      var cellId = eventTarget.id;
+      var columnNumber = parseInt(cellId.substring( cellId.lastIndexOf('_') + 1 ));
+      var sortedColumnIndex = this.getSortedColumnIndex();
+      if ( sortedColumnIndex != -1 ) {
+         if ( sortedColumnIndex != columnNumber ) {
+            this.removeColumnSort(sortedColumnIndex);
+            this.setColumnSort(columnNumber, Rico.TableColumn.SORT_ASC);
+         }
+         else
+            this.toggleColumnSort(sortedColumnIndex);
+      }
+      else
+         this.setColumnSort(columnNumber, Rico.TableColumn.SORT_ASC);
+
+      if (this.options.sortHandler) {
+         this.options.sortHandler(this.options.columns[columnNumber]);
+      }
+   },
+
+   removeColumnSort: function(n) {
+      this.options.columns[n].setUnsorted();
+      this.setSortImage(n);
+   },
+
+   setColumnSort: function(n, direction) {
+      this.options.columns[n].setSorted(direction);
+      this.setSortImage(n);
+   },
+
+   toggleColumnSort: function(n) {
+      this.options.columns[n].toggleSort();
+      this.setSortImage(n);
+   },
+
+   setSortImage: function(n) {
+      var sortDirection = this.options.columns[n].getSortDirection();
+
+      var sortImageSpan = $( this.headerTableId + '_img_' + n );
+      if ( sortDirection == Rico.TableColumn.UNSORTED )
+         sortImageSpan.innerHTML = '&nbsp;&nbsp;';
+      else if ( sortDirection == Rico.TableColumn.SORT_ASC )
+         sortImageSpan.innerHTML = '&nbsp;&nbsp;<img width="'  + this.options.sortImageWidth    + '" ' +
+                                                     'height="'+ this.options.sortImageHeight   + '" ' +
+                                                     'src="'   + this.options.sortAscendImg + '"/>';
+      else if ( sortDirection == Rico.TableColumn.SORT_DESC )
+         sortImageSpan.innerHTML = '&nbsp;&nbsp;<img width="'  + this.options.sortImageWidth    + '" ' +
+                                                     'height="'+ this.options.sortImageHeight   + '" ' +
+                                                     'src="'   + this.options.sortDescendImg + '"/>';
+   },
+
+   getSortedColumnIndex: function() {
+      var cols = this.options.columns;
+      for ( var i = 0 ; i < cols.length ; i++ ) {
+         if ( cols[i].isSorted() )
+            return i;
+      }
+
+      return -1;
+   },
+
+   introspectForColumnInfo: function() {
+      var columns = new Array();
+      var headerRow   = this.headerTable.rows[0];
+      var headerCells = headerRow.cells;
+      for ( var i = 0 ; i < headerCells.length ; i++ )
+         columns.push( new Rico.TableColumn( this.deriveColumnNameFromCell(headerCells[i],i), true ) );
+      return columns;
+   },
+
+   convertToTableColumns: function(cols) {
+      var columns = new Array();
+      for ( var i = 0 ; i < cols.length ; i++ )
+         columns.push( new Rico.TableColumn( cols[i][0], cols[i][1] ) );
+      return columns;
+   },
+
+   deriveColumnNameFromCell: function(cell,columnNumber) {
+      var cellContent = cell.innerText != undefined ? cell.innerText : cell.textContent;
+      return cellContent ? cellContent.toLowerCase().split(' ').join('_') : "col_" + columnNumber;
+   }
+};
+
+Rico.TableColumn = Class.create();
+
+Rico.TableColumn.UNSORTED  = 0;
+Rico.TableColumn.SORT_ASC  = "ASC";
+Rico.TableColumn.SORT_DESC = "DESC";
+
+Rico.TableColumn.prototype = {
+   initialize: function(name, sortable) {
+      this.name        = name;
+      this.sortable    = sortable;
+      this.currentSort = Rico.TableColumn.UNSORTED;
+   },
+
+   isSortable: function() {
+      return this.sortable;
+   },
+
+   isSorted: function() {
+      return this.currentSort != Rico.TableColumn.UNSORTED;
+   },
+
+   getSortDirection: function() {
+      return this.currentSort;
+   },
+
+   toggleSort: function() {
+      if ( this.currentSort == Rico.TableColumn.UNSORTED || this.currentSort == Rico.TableColumn.SORT_DESC )
+         this.currentSort = Rico.TableColumn.SORT_ASC;
+      else if ( this.currentSort == Rico.TableColumn.SORT_ASC )
+         this.currentSort = Rico.TableColumn.SORT_DESC;
+   },
+
+   setUnsorted: function(direction) {
+      this.setSorted(Rico.TableColumn.UNSORTED);
+   },
+
+   setSorted: function(direction) {
+      // direction must by one of Rico.TableColumn.UNSORTED, .SORT_ASC, or .SORT_DESC...
+      this.currentSort = direction;
+   }
+
+};
+
+
+//-------------------- ricoUtil.js
+Rico.ArrayExtensions = new Array();
+
+if (Object.prototype.extend) {
+   // in prototype.js...
+   Rico.ArrayExtensions[ Rico.ArrayExtensions.length ] = Object.prototype.extend;
+}else{
+  Object.prototype.extend = function(object) {
+    return Object.extend.apply(this, [this, object]);
+  }
+  Rico.ArrayExtensions[ Rico.ArrayExtensions.length ] = Object.prototype.extend;
+}
+
+if (Array.prototype.push) {
+   // in prototype.js...
+   Rico.ArrayExtensions[ Rico.ArrayExtensions.length ] = Array.prototype.push;
+}
+
+if (!Array.prototype.remove) {
+   Array.prototype.remove = function(dx) {
+      if( isNaN(dx) || dx > this.length )
+         return false;
+      for( var i=0,n=0; i<this.length; i++ )
+         if( i != dx )
+            this[n++]=this[i];
+      this.length-=1;
+   };
+  Rico.ArrayExtensions[ Rico.ArrayExtensions.length ] = Array.prototype.remove;
+}
+
+if (!Array.prototype.removeItem) {
+   Array.prototype.removeItem = function(item) {
+      for ( var i = 0 ; i < this.length ; i++ )
+         if ( this[i] == item ) {
+            this.remove(i);
+            break;
+         }
+   };
+  Rico.ArrayExtensions[ Rico.ArrayExtensions.length ] = Array.prototype.removeItem;
+}
+
+if (!Array.prototype.indices) {
+   Array.prototype.indices = function() {
+      var indexArray = new Array();
+      for ( index in this ) {
+         var ignoreThis = false;
+         for ( var i = 0 ; i < Rico.ArrayExtensions.length ; i++ ) {
+            if ( this[index] == Rico.ArrayExtensions[i] ) {
+               ignoreThis = true;
+               break;
+            }
+         }
+         if ( !ignoreThis )
+            indexArray[ indexArray.length ] = index;
+      }
+      return indexArray;
+   }
+  Rico.ArrayExtensions[ Rico.ArrayExtensions.length ] = Array.prototype.indices;
+}
+
+  Rico.ArrayExtensions[ Rico.ArrayExtensions.length ] = Array.prototype.unique;
+  Rico.ArrayExtensions[ Rico.ArrayExtensions.length ] = Array.prototype.inArray;
+
+
+// Create the loadXML method and xml getter for Mozilla
+if ( window.DOMParser &&
+	  window.XMLSerializer &&
+	  window.Node && Node.prototype && Node.prototype.__defineGetter__ ) {
+
+   if (!Document.prototype.loadXML) {
+      Document.prototype.loadXML = function (s) {
+         var doc2 = (new DOMParser()).parseFromString(s, "text/xml");
+         while (this.hasChildNodes())
+            this.removeChild(this.lastChild);
+
+         for (var i = 0; i < doc2.childNodes.length; i++) {
+            this.appendChild(this.importNode(doc2.childNodes[i], true));
+         }
+      };
+	}
+
+	Document.prototype.__defineGetter__( "xml",
+	   function () {
+		   return (new XMLSerializer()).serializeToString(this);
+	   }
+	 );
+}
+
+document.getElementsByTagAndClassName = function(tagName, className) {
+  if ( tagName == null )
+     tagName = '*';
+
+  var children = document.getElementsByTagName(tagName) || document.all;
+  var elements = new Array();
+
+  if ( className == null )
+    return children;
+
+  for (var i = 0; i < children.length; i++) {
+    var child = children[i];
+    var classNames = child.className.split(' ');
+    for (var j = 0; j < classNames.length; j++) {
+      if (classNames[j] == className) {
+        elements.push(child);
+        break;
+      }
+    }
+  }
+
+  return elements;
+}
 
 var RicoUtil = {
 
@@ -2176,6 +3178,41 @@ var RicoUtil = {
 
       return null;
    },
+
+   getContentAsString: function( parentNode ) {
+      return parentNode.xml != undefined ?
+         this._getContentAsStringIE(parentNode) :
+         this._getContentAsStringMozilla(parentNode);
+   },
+
+  _getContentAsStringIE: function(parentNode) {
+     var contentStr = "";
+     for ( var i = 0 ; i < parentNode.childNodes.length ; i++ ) {
+         var n = parentNode.childNodes[i];
+         if (n.nodeType == 4) {
+             contentStr += n.nodeValue;
+         }
+         else {
+           contentStr += n.xml;
+       }
+     }
+     return contentStr;
+  },
+
+  _getContentAsStringMozilla: function(parentNode) {
+     var xmlSerializer = new XMLSerializer();
+     var contentStr = "";
+     for ( var i = 0 ; i < parentNode.childNodes.length ; i++ ) {
+          var n = parentNode.childNodes[i];
+          if (n.nodeType == 4) { // CDATA node
+              contentStr += n.nodeValue;
+          }
+          else {
+            contentStr += xmlSerializer.serializeToString(n);
+        }
+     }
+     return contentStr;
+  },
 
    toViewportPosition: function(element) {
       return this._toAbsolute(element,true);

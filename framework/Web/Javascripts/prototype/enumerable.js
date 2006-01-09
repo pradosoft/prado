@@ -20,8 +20,8 @@ var Enumerable = {
   all: function(iterator) {
     var result = true;
     this.each(function(value, index) {
-      if (!(result &= (iterator || Prototype.K)(value, index))) 
-        throw $break;
+      result = result && !!(iterator || Prototype.K)(value, index);
+      if (!result) throw $break;
     });
     return result;
   },
@@ -29,7 +29,7 @@ var Enumerable = {
   any: function(iterator) {
     var result = true;
     this.each(function(value, index) {
-      if (result &= (iterator || Prototype.K)(value, index)) 
+      if (result = !!(iterator || Prototype.K)(value, index)) 
         throw $break;
     });
     return result;

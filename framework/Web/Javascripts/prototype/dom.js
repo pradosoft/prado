@@ -1,7 +1,7 @@
 document.getElementsByClassName = function(className, parentElement) {
   var children = ($(parentElement) || document.body).getElementsByTagName('*');
   return $A(children).inject([], function(elements, child) {
-    if (Element.hasClassName(child, className))
+    if (child.className.match(new RegExp("(^|\\s)" + className + "(\\s|$)")))
       elements.push(child);
     return elements;
   });
@@ -43,6 +43,11 @@ Object.extend(Element, {
     element = $(element);
     element.parentNode.removeChild(element);
   },
+
+  update: function(element, html) {
+    $(element).innerHTML = html.stripScripts();
+    setTimeout(function() {html.evalScripts()}, 10);
+  },
   
   getHeight: function(element) {
     element = $(element);
@@ -70,12 +75,11 @@ Object.extend(Element, {
   
   // removes whitespace-only text node children
   cleanWhitespace: function(element) {
-	if(undef(element) || isNull(element)) return;
     element = $(element);
     for (var i = 0; i < element.childNodes.length; i++) {
       var node = element.childNodes[i];
       if (node.nodeType == 3 && !/\S/.test(node.nodeValue)) 
-       node.parentNode.removeChild(node);
+        Element.remove(node);
     }
   },
   
@@ -106,6 +110,12 @@ Object.extend(Element, {
       if (Element.getStyle(element, 'position') == 'static') value = 'auto';
 
     return value == 'auto' ? null : value;
+  },
+  
+  setStyle: function(element, style) {
+    element = $(element);
+    for (name in style) 
+      element.style[name.camelize()] = style[name];
   },
   
   getDimensions: function(element) {
@@ -152,7 +162,7 @@ Object.extend(Element, {
         element.style.top =
         element.style.left =
         element.style.bottom =
-        element.style.right = '';	  
+        element.style.right = '';   
     }
   },
 
@@ -184,7 +194,7 @@ Abstract.Insertion = function(adjacency) {
 Abstract.Insertion.prototype = {
   initialize: function(element, content) {
     this.element = $(element);
-    this.content = content;
+    this.content = content.stripScripts();
     
     if (this.adjacency && this.element.insertAdjacentHTML) {
       try {
@@ -201,6 +211,8 @@ Abstract.Insertion.prototype = {
       if (this.initializeRange) this.initializeRange();
       this.insertContent([this.range.createContextualFragment(this.content)]);
     }
+
+    setTimeout(function() {content.evalScripts()}, 10);   
   },
   
   contentFromAnonymousTable: function() {
@@ -233,7 +245,7 @@ Insertion.Top.prototype = Object.extend(new Abstract.Insertion('afterBegin'), {
   },
   
   insertContent: function(fragments) {
-    fragments.reverse().each((function(fragment) {
+    fragments.reverse(false).each((function(fragment) {
       this.element.insertBefore(fragment, this.element.firstChild);
     }).bind(this));
   }
@@ -294,7 +306,7 @@ Element.ClassNames.prototype = {
     if (!this.include(classNameToRemove)) return;
     this.set(this.select(function(className) {
       return className != classNameToRemove;
-    }));
+    }).join(' '));
   },
   
   toString: function() {

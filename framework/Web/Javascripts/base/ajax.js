@@ -53,17 +53,20 @@ Prado.AJAX.Request.prototype = Object.extend(Ajax.Request.prototype,
 	respondToReadyState: function(readyState) {
     var event = Ajax.Request.Events[readyState];
     var transport = this.transport, json = this.evalJSON();
+
+	
 	if(event == 'Complete' && transport.status)
     	Ajax.Responders.dispatch('on' + transport.status, this, transport, json);
     	
-    if (event == 'Complete')
+   (this.options['on' + event] || Prototype.emptyFunction)(transport, json);
+    Ajax.Responders.dispatch('on' + event, this, transport, json);
+
+	if (event == 'Complete')
       (this.options['on' + this.transport.status]
        || this.options['on' + (this.responseIsSuccess() ? 'Success' : 'Failure')]
        || Prototype.emptyFunction)(transport, json);
 
-    (this.options['on' + event] || Prototype.emptyFunction)(transport, json);
-    Ajax.Responders.dispatch('on' + event, this, transport, json);
-
+ 
     /* Avoid memory leak in MSIE: clean up the oncomplete event handler */
     if (event == 'Complete')
       this.transport.onreadystatechange = Prototype.emptyFunction;
@@ -208,11 +211,9 @@ Prado.AJAX.RemoteObject.prototype =
 	__onSuccess : function(transport, json)
 	{
 		if(this.__handlers[this.__callback])
-			this.__handlers[this.__callback](json, transport.responseText);
+			this.__handlers[this.__callback](json, transport.responseText);		
 	}
 };
-
-
 
 /**
  * Respond to Prado AJAX request exceptions.
@@ -235,7 +236,7 @@ Prado.AJAX.Exception =
 		{
 			var msg = 'HTTP '+transport.status+" with response : \n";
 			msg += transport.responseText + "\n";
-			msg += "Data : \n"+e;
+			msg += "Data : \n"+inspect(e);
 			Logger.warn(msg);
 		}
 	},
@@ -285,12 +286,14 @@ Prado.AJAX.Callback.prototype = Object.extend(new Prado.AJAX.RemoteObject(),
 	
 	/**
 	 * Create and request a new Prado callback service.
-	 * @param string the callback ID, must be of the form, <t>ClassName.ComponentID.MethodName</t>
+	 * @param string|element the callback ID, must be of the form, <t>ClassName.ComponentID.MethodName</t>
 	 * @param list options with list key onCallbackReturn, and more.
 	 *
 	 */
 	initialize : function(ID, options)
 	{
+		if(!isString(ID) && typeof(ID.id) != "undefined")
+			ID = ID.id;
 		if(!isString(ID)) 
 			throw new Error('A Control ID must be specified');
 		this.baseInitialize(this, options);
@@ -307,7 +310,25 @@ Prado.AJAX.Callback.prototype = Object.extend(new Prado.AJAX.RemoteObject(),
 		var IDs = Prado.AJAX.Callback.IDs;
 		this.__service.post.data['__data'] = {};
 		for(var i = 0; i<IDs.length; i++)
-			this.__service.post.data['__data'][IDs[i]] = $F(IDs[i]);
+		{
+			var id = IDs[i];
+			if(id.indexOf("[]") > -1)
+				this.__service.post.data['__data'][id] = 
+					this.collectArrayPostData(id);
+			else if(isObject($(id)))
+				this.__service.post.data['__data'][id] = $F(id);
+		}
+	},
+
+	collectArrayPostData : function(name)
+	{
+		var elements = document.getElementsByName(name);
+		var data = [];
+		$A(elements).each(function(el)
+		{ 
+			if($F(el)) data.push($F(el)); 
+		});
+		return data;
 	},
 	
 	/**
@@ -318,17 +339,133 @@ Prado.AJAX.Callback.prototype = Object.extend(new Prado.AJAX.RemoteObject(),
 	requestCallback : function()
 	{
 		this.collectPostData();
-		return this.__call(Prado.AJAX.Callback.Server, 'handleCallback', this.options.params);
+		if(Prado.AJAX.Validate(this.options))
+			return this.__call(Prado.AJAX.Callback.Server, 'handleCallback', this.options.params);
 	},
-	
+
 	/**
 	 * On callback request return, call the onSuccess function.
 	 */
 	handleCallback : function(result, output)
 	{
-		this.options.onSuccess(result, output);
+		if(typeof(result) != "undefined" && !isNull(result))
+		{
+			this.options.onSuccess(result['data'], output);
+			if(result['actions'])
+				result.actions.each(Prado.AJAX.Callback.Action.__run);
+		}
 	}
 });
+
+/**
+ * Prase and evaluate Callback clien-side actions.
+ */
+Prado.AJAX.Callback.Action =
+{
+	__run : function(command)
+	{
+		for(var name in command)
+		{
+			//first parameter must be a valid element or begins with '@'
+			if(command[name][0] && ($(command[name][0]) || command[name][0].indexOf("[]") > -1))
+			{
+				name.toFunction().apply(this,command[name]);
+			}
+		}
+	}
+};
+
+
+/**
+ * Returns false if validation required and validates to false, 
+ * returns true otherwise.
+ * @return boolean true if validation passes.
+ */
+Prado.AJAX.Validate = function(options)
+{
+	if(options.CausesValidation)
+	{
+		if(options.ValidatorGroup)
+			return Prado.AJAX.ValidateGroup1(options.ValidatorGroup);
+		else if(options.ValidationGroup)
+			return Prado.AJAX.ValidateGroup2(options.ValidationGroup);
+		else
+			return Prado.AJAX.ValidateOthers(options.ValidationForm);
+	}
+	else
+		return true;
+};
+
+/**
+ * Validate Validator Groups.
+ * @param string ValidatorGroup
+ * @return boolean true if valid, false otherwise
+ */
+Prado.AJAX.ValidateGroup1 = function(groupId)
+{
+	var groups = Prado.Validation.groups;
+	var group = null;
+	for(var i = 0; i < groups.length; i++)
+	{
+		if(groups[i].id == groupId)
+		{
+			group = groups[i];
+			Prado.Validation.groups[i].active = true;
+			Prado.Validation.CurrentTargetGroup = null;
+			Prado.Validation.IsGroupValidation = true;
+		}
+		else
+		{
+			Prado.Validation.groups[i].active = false;
+		}
+	}
+	if(group)
+	{
+		return Prado.Validation.IsValid(group.target.form);
+	}
+	return true;
+};
+
+/**
+ * Validate ValidationGroup
+ * @param string ValidationGroup
+ * @return boolean true if valid, false otherwise.
+ */
+Prado.AJAX.ValidateGroup2 = function(groupId)
+{
+	var groups = Prado.Validation.TargetGroups;
+	for(var id in groups)
+	{
+		if(groups[id] == groupId)
+		{
+			var target = $(id);
+			Prado.Validation.ActiveTarget = target;
+			Prado.Validation.CurrentTargetGroup = groupId;
+			Prado.Validation.IsGroupValidation = false;
+			return Prado.Validation.IsValid(target.form);
+		}
+	}
+	return true;
+};
+
+/**
+ * Validate the page
+ * @return boolean true if valid, false otherwise.
+ */
+Prado.AJAX.ValidateOthers = function(formId)
+{
+	if(Prado.Validation)
+	{
+		var form = $(formId);
+		form = form || document.forms[0];
+		Prado.Validation.ActiveTarget = form;
+		Prado.Validation.CurrentTargetGroup = null;
+		Prado.Validation.IsGroupValidation = false;
+		return Prado.Validation.IsValid(form);
+	}
+	return true;
+};
+	
 
 //Available callback service
 Prado.AJAX.Callback.Server = '';
@@ -342,14 +479,17 @@ Prado.AJAX.Callback.IDs = [];
  * @param string callback ID
  * @param array parameters to pass to the callback service
  */
-Prado.Callback = function(ID, params, onSuccess)
+Prado.Callback = function(ID, params, onSuccess, options)
 {
-	var options =  
+	var callback =  
 	{
 		'params' : [params] || [],
-		'onSuccess' : onSuccess || Prototype.emptyFunction
+		'onSuccess' : onSuccess || Prototype.emptyFunction, 
+		'CausesValidation' : true
 	};
+
+	Object.extend(callback, options || {});
 	
-	new Prado.AJAX.Callback(ID, options);
+	new Prado.AJAX.Callback(ID, callback);
 	return false;
 }

@@ -27,13 +27,10 @@ Prado.Validation.TEmailAddressValidator = Prado.Validation.TRegularExpressionVal
 
 Prado.Validation.TCustomValidator = function()
 {
-	var trim = Prado.Validation.Util.trim;
-	var value = isNull(this.control) ? '' : trim(Form.Element.getValue(this.control));
-    var valid = true;
+	var value = isNull(this.control) ? null : $F(this.control);
     var func = this.attr.clientvalidationfunction;
-    if (isString(func) && func != "")
-		eval("valid = (" + func + "(this, value) != false);");
-    return valid;
+	eval("var validate = "+func);
+    return validate && isFunction(validate) ? validate(this, value) : true;
 }
 
 Prado.Validation.TRangeValidator = function()

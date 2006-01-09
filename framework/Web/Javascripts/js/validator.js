@@ -330,6 +330,7 @@ _63[i].show(_62);
 }
 };
 Prado.Validation.OnSubmit=function(ev){
+Logger.info("submit");
 if(typeof tinyMCE!="undefined"){
 tinyMCE.triggerSave();
 }

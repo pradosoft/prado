@@ -32,6 +32,31 @@ Object.extend(String.prototype, {
 
 	trimRight : function() { 
 		return this.replace(/\s+$/,'');
+	},
+
+	/**
+	 * Convert period separated function names into a function reference.
+	 * e.g. "Prado.AJAX.Callback.Action.setValue".toFunction() will return
+	 * the actual function Prado.AJAX.Callback.Action.setValue()
+	 * @return Function the corresponding function represented by the string.
+	 */
+	toFunction : function()
+	{
+		var commands = this.split(/\./);
+		var command = window;
+		commands.each(function(action)
+		{ 
+			if(command[new String(action)]) 
+				command=command[new String(action)]; 
+		});
+		if(isFunction(command))
+			return command;
+		else
+		{
+			if(typeof Logger != "undefined")
+				Logger.error("Missing function", this);
+			return Prototype.emptyFunction;
+		}
 	}
 
 });

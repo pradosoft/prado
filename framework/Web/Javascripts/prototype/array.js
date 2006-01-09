@@ -1,4 +1,5 @@
 var $A = Array.from = function(iterable) {
+  if (!iterable) return [];
   if (iterable.toArray) {
     return iterable.toArray();
   } else {
@@ -11,10 +12,17 @@ var $A = Array.from = function(iterable) {
 
 Object.extend(Array.prototype, Enumerable);
 
+Array.prototype._reverse = Array.prototype.reverse;
+
 Object.extend(Array.prototype, {
   _each: function(iterator) {
     for (var i = 0; i < this.length; i++)
       iterator(this[i]);
+  },
+  
+  clear: function() {
+    this.length = 0;
+    return this;
   },
   
   first: function() {
@@ -48,16 +56,21 @@ Object.extend(Array.prototype, {
   indexOf: function(object) {
     for (var i = 0; i < this.length; i++)
       if (this[i] == object) return i;
-    return false;
+    return -1;
   },
   
-  reverse: function() {
-    var result = [];
-    for (var i = this.length; i > 0; i--)
-      result.push(this[i-1]);
+  reverse: function(inline) {
+    return (inline !== false ? this : this.toArray())._reverse();
+  },
+  
+  shift: function() {
+    var result = this[0];
+    for (var i = 0; i < this.length - 1; i++)
+      this[i] = this[i + 1];
+    this.length--;
     return result;
   },
-  
+
   inspect: function() {
     return '[' + this.map(Object.inspect).join(', ') + ']';
   }

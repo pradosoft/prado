@@ -140,8 +140,9 @@ Prado.ActivePanel.Request.prototype =
 	{
 		if(this.options.update)
 		{
-			var element = $(this.options.update)
-			if(element) element.innerHTML = output;
+			if (!this.options.evalScripts)
+				output = output.stripScripts();
+			Element.update(this.options.update, output);
 		}
 	}
 }
@@ -160,7 +161,7 @@ Prado.DropContainer.prototype = Object.extend(new Prado.ActivePanel.Request(),
 		{
 			onDrop : this.onDrop.bind(this),
 			evalScripts : true,
-			onSuccess : options.onSuccess || this.update.bind(this)
+			onSuccess : options.onSuccess || this.onSuccess.bind(this)
 		});
 		Droppables.add(element, this.options);
 	},
@@ -168,12 +169,26 @@ Prado.DropContainer.prototype = Object.extend(new Prado.ActivePanel.Request(),
 	onDrop : function(draggable, droppable)
 	{
 		this.callback(draggable.id)
-	},
-
-	update : function(result, output)
-	{
-		this.onSuccess(result, output);
-		if (this.options.evalScripts)
-			Prado.AJAX.EvalScript(output);
 	}
 });
+
+Prado.ActiveImageButton = Class.create();
+Prado.ActiveImageButton.prototype = 
+{
+	initialize : function(element, options)
+	{
+		this.element = $(element);
+		this.options = options;
+		Event.observe(this.element, "click", this.click.bind(this));
+	},
+
+	click : function(e)
+	{
+		var el = $('{$this->ClientID}');
+		var imagePos = Position.cumulativeOffset(this.element);
+		var clickedPos = [e.clientX, e.clientY];
+		var param = (clickedPos[0]-imagePos[0]+1)+","+(clickedPos[1]-imagePos[1]+1);
+		Prado.Callback(this.element, param, null, this.options);
+		Event.stop(e);
+	}
+}

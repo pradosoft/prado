@@ -1,6 +1,6 @@
-var Range = Class.create();
-Object.extend(Range.prototype, Enumerable);
-Object.extend(Range.prototype, {
+ObjectRange = Class.create();
+Object.extend(ObjectRange.prototype, Enumerable);
+Object.extend(ObjectRange.prototype, {
   initialize: function(start, end, exclusive) {
     this.start = start;
     this.end = end;
@@ -25,5 +25,5 @@ Object.extend(Range.prototype, {
 });
 
 var $R = function(start, end, exclusive) {
-  return new Range(start, end, exclusive);
+  return new ObjectRange(start, end, exclusive);
 }

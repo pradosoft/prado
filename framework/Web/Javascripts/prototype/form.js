@@ -19,8 +19,10 @@ var Field = {
   },
    
   activate: function(element) {
-    $(element).focus();
-    $(element).select();
+    element = $(element);
+    element.focus();
+    if (element.select)
+      element.select();
   }
 }
 
@@ -41,7 +43,7 @@ var Form = {
   },
   
   getElements: function(form) {
-    var form = $(form);
+    form = $(form);
     var elements = new Array();
 
     for (tagName in Form.Element.Serializers) {
@@ -53,7 +55,7 @@ var Form = {
   },
   
   getInputs: function(form, typeName, name) {
-    var form = $(form);
+    form = $(form);
     var inputs = form.getElementsByTagName('input');
     
     if (!typeName && !name)
@@ -88,16 +90,15 @@ var Form = {
     }
   },
 
+  findFirstElement: function(form) {
+    return Form.getElements(form).find(function(element) {
+      return element.type != 'hidden' && !element.disabled &&
+        ['input', 'select', 'textarea'].include(element.tagName.toLowerCase());
+    });
+  },
+
   focusFirstElement: function(form) {
-    var form = $(form);
-    var elements = Form.getElements(form);
-    for (var i = 0; i < elements.length; i++) {
-      var element = elements[i];
-      if (element.type != 'hidden' && !element.disabled) {
-        Field.activate(element);
-        break;
-      }
-    }
+    Field.activate(Form.findFirstElement(form));
   },
 
   reset: function(form) {
@@ -107,21 +108,29 @@ var Form = {
 
 Form.Element = {
   serialize: function(element) {
-    var element = $(element);
+    element = $(element);
+    var method = element.tagName.toLowerCase();
+    var parameter = Form.Element.Serializers[method](element);
+    
+    if (parameter) {
+      var key = encodeURIComponent(parameter[0]);
+      if (key.length == 0) return;
+      
+      if (parameter[1].constructor != Array)
+        parameter[1] = [parameter[1]];
+      
+      return parameter[1].map(function(value) {
+        return key + '=' + encodeURIComponent(value);
+      }).join('&');
+    }
+  },
+  
+  getValue: function(element) {
+    element = $(element);
     var method = element.tagName.toLowerCase();
     var parameter = Form.Element.Serializers[method](element);
     
     if (parameter)
-      return encodeURIComponent(parameter[0]) + '=' + 
-        encodeURIComponent(parameter[1]);                   
-  },
-  
-  getValue: function(element) {
-    var element = $(element);
-    var method = element.tagName.toLowerCase();
-    var parameter = Form.Element.Serializers[method](element);
-    
-    if (parameter) 
       return parameter[1];
   }
 }
@@ -259,24 +268,14 @@ Abstract.EventObserver.prototype = {
       switch (element.type.toLowerCase()) {
         case 'checkbox':  
         case 'radio':
-          element.target = this;
-          element.prev_onclick = element.onclick || Prototype.emptyFunction;
-          element.onclick = function() {
-            this.prev_onclick(); 
-            this.target.onElementEvent();
-          }
+          Event.observe(element, 'click', this.onElementEvent.bind(this));
           break;
         case 'password':
         case 'text':
         case 'textarea':
         case 'select-one':
         case 'select-multiple':
-          element.target = this;
-          element.prev_onchange = element.onchange || Prototype.emptyFunction;
-          element.onchange = function() {
-            this.prev_onchange(); 
-            this.target.onElementEvent();
-          }
+          Event.observe(element, 'change', this.onElementEvent.bind(this));
           break;
       }
     }    

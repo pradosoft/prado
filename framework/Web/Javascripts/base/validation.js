@@ -193,7 +193,7 @@ Prado.Validation.groups = [];
 /**
  * Second type of grouping.
  */
-Prado.Validation.TargetGroups = [];
+Prado.Validation.TargetGroups = {};
 
 
 /**
