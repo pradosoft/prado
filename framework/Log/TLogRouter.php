@@ -153,7 +153,6 @@ abstract class TLogRoute extends TComponent
 	 * @var array lookup table for level names
 	 */
 	private static $_levelNames=array(
-		TLogger::ERROR=>'Error',
 		TLogger::DEBUG=>'Debug',
 		TLogger::INFO=>'Info',
 		TLogger::NOTICE=>'Notice',
@@ -166,7 +165,6 @@ abstract class TLogRoute extends TComponent
 	 * @var array lookup table for level values
 	 */
 	private static $_levelValues=array(
-		'error'=>TLogger::ERROR,
 		'debug'=>TLogger::DEBUG,
 		'info'=>TLogger::INFO,
 		'notice'=>TLogger::NOTICE,
