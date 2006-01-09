@@ -150,10 +150,12 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		if($this->getEnableClientScript() && !$scripts->isEndScriptRegistered($scriptKey))
 		{
 			$scripts->registerPradoScript('validator');
-			$js = "Prado.Validation.AddForm('{$this->Page->Form->ClientID}');";
+			$formID=$this->getPage()->getForm()->getClientID();
+			$js = "Prado.Validation.AddForm('$formID');";
 			$scripts->registerEndScript($scriptKey, $js);
-			$this->renderClientScriptValidator();
 		}
+		if($this->getEnableClientScript())
+			$this->renderClientScriptValidator();
 		parent::onPreRender($param);
 	}
 
@@ -278,7 +280,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function setFocusOnError($value)
 	{
-		$this->setViewState('FocusOnError',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('FocusOnError',TPropertyValue::ensureBoolean($value),false);
 	}
 
 	/**
@@ -288,8 +290,9 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function getFocusElementID()
 	{
-		// TODO: identify the ControlToValidate
-		return $this->getViewState('FocusElementID', '');
+		if(($id=$this->getViewState('FocusElementID',''))==='')
+			$id=$this->getValidationTarget()->getClientID();
+		return $id;
 	}
 
 	/**

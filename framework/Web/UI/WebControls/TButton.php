@@ -75,13 +75,15 @@ class TButton extends TWebControl implements IPostBackEventHandler
 			$writer->addAttribute('name',$uniqueID);
 		$writer->addAttribute('value',$this->getText());
 		if($this->getEnabled(true))
-		{			
+		{
 			$scripts = $this->getPage()->getClientScript();
 			if($scripts->isEndScriptRegistered("TBaseValidator"))
 			{
 				$group = $this->getValidationGroup();
 				$group = strlen($group) ? ",'".$group."'" : '';
-				$script = "Prado.Validation.AddTarget('{$uniqueID}'{$group});";
+				$clientID=$this->getClientID();
+				//$script = "Prado.Validation.AddTarget('{$uniqueID}'{$group});";
+				$script = "Prado.Validation.AddTarget('{$clientID}'{$group});";
 				$scripts->registerEndScript("{$uniqueID}:target", $script);
 			}
 		}
