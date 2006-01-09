@@ -12,7 +12,8 @@ Prado.doPostBack = function(formID, eventTarget, eventParameter, performValidati
 	var canSubmit = true;
     if (performValidation)
 	{
-		canSubmit = Prado.Validation.validate(validationGroup);
+		//canSubmit = Prado.Validation.validate(validationGroup);
+		canSubmit = Prado.Validation.OnSubmit();
 	}
 	if (canSubmit)
 	{

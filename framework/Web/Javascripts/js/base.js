@@ -871,13 +871,6 @@ return false;
 }
 return true;
 };
-Prado.LinkButton=Class.create();
-Prado.LinkButton.prototype={initialize:function(_7,_8){
-Event.observe(_7,"click",function(e){
-Prado.doPostback(_7,_8,"");
-Event.stop(e);
-});
-}};
 
 Prado.doPostBack=function(_1,_2,_3,_4,_5,_6,_7,_8){
 if(typeof (_4)=="undefined"){
@@ -890,7 +883,7 @@ var _8=true;
 var _9=document.getElementById?document.getElementById(_1):document.forms[_1];
 var _10=true;
 if(_4){
-_10=Prado.Validation.validate(_5);
+_10=Prado.Validation.OnSubmit();
 }
 if(_10){
 if(_6!=null&&(_6.length>0)){

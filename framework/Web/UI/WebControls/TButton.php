@@ -83,6 +83,8 @@ class TButton extends TWebControl implements IPostBackEventHandler
 		}
 		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');
+
+		$writer->addAttribute('id',$this->getClientID());
 		parent::addAttributesToRender($writer);
 	}
 

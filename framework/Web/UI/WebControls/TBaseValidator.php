@@ -111,6 +111,14 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	protected function addAttributesToRender($writer)
 	{
+		$display=$this->getDisplay();
+		$visible=$this->getEnabled(true) && !$this->getIsValid();
+		if($display==='None' || (!$visible && $display==='Dynamic'))
+			$writer->addStyleAttribute('display','none');
+		else if(!$visible)
+			$writer->addStyleAttribute('visibility','hidden');
+		$writer->addAttribute('id',$this->getClientID());
+		parent::addAttributesToRender($writer);
 	}
 
 	/**
@@ -125,7 +133,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		$options['FocusOnError'] = $this->getFocusOnError();
 		$options['FocusElementID'] = $this->getFocusElementID();
 		$options['ValidationGroup'] = $this->getValidationGroup();
-		$options['ControlToValidate'] = $this->getControlToValidate();
+		$options['ControlToValidate'] = $this->getValidationTarget()->getClientID();
 		return $options;
 	}
 
@@ -144,6 +152,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			$scripts->registerPradoScript('validator');
 			$js = "Prado.Validation.AddForm('{$this->Page->Form->ClientID}');";
 			$scripts->registerEndScript($scriptKey, $js);
+			$this->renderClientScriptValidator();
 		}
 		parent::onPreRender($param);
 	}
@@ -335,10 +344,10 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	{
 		if($control instanceof IValidatable)
 		{
-			$value=$control->getValidationValue();
-			if($value instanceof TListItem)
-				return $value->getValue();
-			else
+			$value=$control->getValidationPropertyValue();
+			//if($value instanceof TListItem)
+			//	return $value->getValue();
+			//else
 				return TPropertyValue::ensureString($value);
 		}
 		else
