@@ -83,7 +83,7 @@ return (isObject(_27)&&y==_27.getFullYear()&&m==_27.getMonth()&&d==_27.getDate()
 return null;
 };
 Prado.Validation.Util.trim=function(_28){
-if(undef(_28)){
+if(!isString(_28)){
 return "";
 }
 return _28.replace(/^\s+|\s+$/g,"");
@@ -101,7 +101,7 @@ Prado.Validation.validators=[];
 Prado.Validation.forms=[];
 Prado.Validation.summaries=[];
 Prado.Validation.groups=[];
-Prado.Validation.TargetGroups=[];
+Prado.Validation.TargetGroups={};
 Prado.Validation.CurrentTargetGroup=null;
 Prado.Validation.HasTargetGroup=false;
 Prado.Validation.ActiveTarget=null;
@@ -330,7 +330,6 @@ _63[i].show(_62);
 }
 };
 Prado.Validation.OnSubmit=function(ev){
-Logger.info("submit");
 if(typeof tinyMCE!="undefined"){
 tinyMCE.triggerSave();
 }
@@ -355,14 +354,14 @@ if(_1=="file"){
 return true;
 }else{
 var _2=Prado.Validation.Util.trim;
-var a=_2(Form.Element.getValue(this.control));
+var a=_2($F(this.control));
 var b=_2(this.attr.initialvalue);
 return (a!=b);
 }
 };
 Prado.Validation.TRegularExpressionValidator=function(){
 var _5=Prado.Validation.Util.trim;
-var _6=_5(Form.Element.getValue(this.control));
+var _6=_5($F(this.control));
 if(_6==""){
 return true;
 }
@@ -372,77 +371,73 @@ return (_8!=null&&_6==_8[0]);
 };
 Prado.Validation.TEmailAddressValidator=Prado.Validation.TRegularExpressionValidator;
 Prado.Validation.TCustomValidator=function(){
-var _9=Prado.Validation.Util.trim;
-var _10=isNull(this.control)?"":_9(Form.Element.getValue(this.control));
-var _11=true;
-var _12=this.attr.clientvalidationfunction;
-if(isString(_12)&&_12!=""){
-eval("valid = ("+_12+"(this, value) != false);");
-}
-return _11;
+var _9=isNull(this.control)?null:$F(this.control);
+var _10=this.attr.clientvalidationfunction;
+eval("var validate = "+_10);
+return validate&&isFunction(validate)?validate(this,_9):true;
 };
 Prado.Validation.TRangeValidator=function(){
-var _13=Prado.Validation.Util.trim;
-var _14=_13(Form.Element.getValue(this.control));
+var _11=Prado.Validation.Util.trim;
+var _12=_11($F(this.control));
+if(_12==""){
+return true;
+}
+var _13=this.attr.minimumvalue;
+var _14=this.attr.maximumvalue;
+if(undef(_13)&&undef(_14)){
+return true;
+}
+if(_13==""){
+_13=0;
+}
 if(_14==""){
-return true;
+_14=0;
 }
-var _15=this.attr.minimumvalue;
-var _16=this.attr.maximumvalue;
-if(undef(_15)&&undef(_16)){
-return true;
+var _15=this.attr.type;
+if(undef(_15)){
+return (parseFloat(_12)>=parseFloat(_13))&&(parseFloat(_12)<=parseFloat(_14));
 }
-if(_15==""){
-_15=0;
-}
-if(_16==""){
-_16=0;
-}
-var _17=this.attr.type;
-if(undef(_17)){
-return (parseFloat(_14)>=parseFloat(_15))&&(parseFloat(_14)<=parseFloat(_16));
-}
-var min=this.convert(_17,_15);
-var max=this.convert(_17,_16);
-_14=this.convert(_17,_14);
-return _14>=min&&_14<=max;
+var min=this.convert(_15,_13);
+var max=this.convert(_15,_14);
+_12=this.convert(_15,_12);
+return _12>=min&&_12<=max;
 };
 Prado.Validation.TCompareValidator=function(){
-var _20=Prado.Validation.Util.trim;
-var _21=_20(Form.Element.getValue(this.control));
-if(_21.length==0){
+var _18=Prado.Validation.Util.trim;
+var _19=_18($F(this.control));
+if(_19.length==0){
 return true;
 }
-var _22;
-var _23=$(this.attr.controlhookup);
-if(_23){
-_22=_20(Form.Element.getValue(_23));
+var _20;
+var _21=$(this.attr.controlhookup);
+if(_21){
+_20=_18($F(_21));
 }else{
-_22=isString(this.attr.valuetocompare)?this.attr.valuetocompare:"";
+_20=isString(this.attr.valuetocompare)?this.attr.valuetocompare:"";
 }
-var _24=Prado.Validation.TCompareValidator.compare;
-var _25=_24.bind(this)(_21,_22);
-if(_23){
-var _26=this.attr.controlcssclass;
-if(isString(_26)&&_26.length>0){
-Element.condClassName(_23,_26,!_25);
+var _22=Prado.Validation.TCompareValidator.compare;
+var _23=_22.bind(this)(_19,_20);
+if(_21){
+var _24=this.attr.controlcssclass;
+if(isString(_24)&&_24.length>0){
+Element.condClassName(_21,_24,!_23);
 }
 if(undef(this.observingComparee)){
-Event.observe(_23,"change",this.validate.bind(this));
+Event.observe(_21,"change",this.validate.bind(this));
 this.observingComparee=true;
 }
 }
-return _25;
+return _23;
 };
-Prado.Validation.TCompareValidator.compare=function(_27,_28){
+Prado.Validation.TCompareValidator.compare=function(_25,_26){
 var op1,op2;
-if((op1=this.convert(this.attr.type,_27))==null){
+if((op1=this.convert(this.attr.type,_25))==null){
 return false;
 }
 if(this.attr.operator=="DataTypeCheck"){
 return true;
 }
-if((op2=this.convert(this.attr.type,_28))==null){
+if((op2=this.convert(this.attr.type,_26))==null){
 return true;
 }
 switch(this.attr.operator){
@@ -463,75 +458,75 @@ return (op1==op2);
 Prado.Validation.TRequiredListValidator=function(){
 var min=undef(this.attr.min)?Number.NEGATIVE_INFINITY:parseInt(this.attr.min);
 var max=undef(this.attr.max)?Number.POSITIVE_INFINITY:parseInt(this.attr.max);
-var _30=document.getElementsByName(this.attr.selector);
-if(_30.length<=0){
-_30=document.getElementsBySelector(this.attr.selector);
+var _28=document.getElementsByName(this.attr.selector);
+if(_28.length<=0){
+_28=document.getElementsBySelector(this.attr.selector);
 }
-if(_30.length<=0){
+if(_28.length<=0){
 return true;
 }
-var _31=new Array();
+var _29=new Array();
 if(isString(this.attr.required)&&this.attr.required.length>0){
-_31=this.attr.required.split(/,\s* /);
+_29=this.attr.required.split(/,\s* /);
 }
-var _32=true;
-var _33=Prado.Validation.TRequiredListValidator;
-switch(_30[0].type){
+var _30=true;
+var _31=Prado.Validation.TRequiredListValidator;
+switch(_28[0].type){
 case "radio":
 case "checkbox":
-_32=_33.IsValidRadioList(_30,min,max,_31);
+_30=_31.IsValidRadioList(_28,min,max,_29);
 break;
 case "select-multiple":
-_32=_33.IsValidSelectMultipleList(_30,min,max,_31);
+_30=_31.IsValidSelectMultipleList(_28,min,max,_29);
 break;
 }
-var _34=this.attr.elementcssclass;
-if(isString(_34)&&_34.length>0){
-map(_30,function(_35){
-condClass(_35,_34,!_32);
+var _32=this.attr.elementcssclass;
+if(isString(_32)&&_32.length>0){
+map(_28,function(_33){
+condClass(_33,_32,!_30);
 });
 }
 if(undef(this.observingRequiredList)){
-Event.observe(_30,"change",this.validate.bind(this));
+Event.observe(_28,"change",this.validate.bind(this));
 this.observingRequiredList=true;
 }
-return _32;
+return _30;
 };
-Prado.Validation.TRequiredListValidator.IsValidRadioList=function(_36,min,max,_37){
-var _38=0;
-var _39=new Array();
-for(var i=0;i<_36.length;i++){
-if(_36[i].checked){
-_38++;
-_39.push(_36[i].value);
+Prado.Validation.TRequiredListValidator.IsValidRadioList=function(_34,min,max,_35){
+var _36=0;
+var _37=new Array();
+for(var i=0;i<_34.length;i++){
+if(_34[i].checked){
+_36++;
+_37.push(_34[i].value);
 }
 }
-return Prado.Validation.TRequiredListValidator.IsValidList(_38,_39,min,max,_37);
+return Prado.Validation.TRequiredListValidator.IsValidList(_36,_37,min,max,_35);
 };
-Prado.Validation.TRequiredListValidator.IsValidSelectMultipleList=function(_41,min,max,_42){
-var _43=0;
-var _44=new Array();
-for(var i=0;i<_41.length;i++){
-var _45=_41[i];
-for(var j=0;j<_45.options.length;j++){
-if(_45.options[j].selected){
-_43++;
-_44.push(_45.options[j].value);
+Prado.Validation.TRequiredListValidator.IsValidSelectMultipleList=function(_39,min,max,_40){
+var _41=0;
+var _42=new Array();
+for(var i=0;i<_39.length;i++){
+var _43=_39[i];
+for(var j=0;j<_43.options.length;j++){
+if(_43.options[j].selected){
+_41++;
+_42.push(_43.options[j].value);
 }
 }
 }
-return Prado.Validation.TRequiredListValidator.IsValidList(_43,_44,min,max,_42);
+return Prado.Validation.TRequiredListValidator.IsValidList(_41,_42,min,max,_40);
 };
-Prado.Validation.TRequiredListValidator.IsValidList=function(_47,_48,min,max,_49){
-var _50=true;
-if(_49.length>0){
-if(_48.length<_49.length){
+Prado.Validation.TRequiredListValidator.IsValidList=function(_45,_46,min,max,_47){
+var _48=true;
+if(_47.length>0){
+if(_46.length<_47.length){
 return false;
 }
-for(var k=0;k<_49.length;k++){
-_50=_50&&_48.contains(_49[k]);
+for(var k=0;k<_47.length;k++){
+_48=_48&&_46.contains(_47[k]);
 }
 }
-return _50&&_47>=min&&_47<=max;
+return _48&&_45>=min&&_45<=max;
 };
 

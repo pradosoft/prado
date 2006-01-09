@@ -11,8 +11,8 @@
 			<translation  type="XLIFF" source="Tests.messages" 
 					autosave="true" cache="true" />
 		</module>
-		<module id="logger" class="System.Log.TEventLog">
-			<logger destination="file" directory="Tests.logs" />
+		<module id="logger" class="System.Log.TLogRouter">
+			<route class="TFileLogRoute" />
 		</module>
 	</modules>
 </application>

@@ -6,7 +6,7 @@ Prado.Validation.TRequiredFieldValidator=function(){
     }
     else{
         var trim=Prado.Validation.Util.trim;
-        var a=trim(Form.Element.getValue(this.control));
+        var a=trim($F(this.control));
         var b=trim(this.attr.initialvalue);
         return(a!=b);
     }
@@ -16,7 +16,7 @@ Prado.Validation.TRequiredFieldValidator=function(){
 Prado.Validation.TRegularExpressionValidator = function()
 {
 	var trim = Prado.Validation.Util.trim;
-	var value = trim(Form.Element.getValue(this.control));
+	var value = trim($F(this.control));
     if (value == "") return true;
     var rx = new RegExp(this.attr.validationexpression);
     var matches = rx.exec(value);
@@ -36,7 +36,7 @@ Prado.Validation.TCustomValidator = function()
 Prado.Validation.TRangeValidator = function()
 {
 	var trim = Prado.Validation.Util.trim;
-	var value = trim(Form.Element.getValue(this.control));
+	var value = trim($F(this.control));
     if (value == "") return true;
 
     var minval = this.attr.minimumvalue;
@@ -63,7 +63,7 @@ Prado.Validation.TRangeValidator = function()
 Prado.Validation.TCompareValidator = function()
 {
 	var trim = Prado.Validation.Util.trim;
-    var value = trim(Form.Element.getValue(this.control));
+    var value = trim($F(this.control));
     if (value.length == 0) return true;
 
     var compareTo;
@@ -71,7 +71,7 @@ Prado.Validation.TCompareValidator = function()
     var comparee = $(this.attr.controlhookup);;
 
 	if(comparee)
-		compareTo = trim(Form.Element.getValue(comparee));
+		compareTo = trim($F(comparee));
 	else
 	{
 		compareTo = isString(this.attr.valuetocompare) ? this.attr.valuetocompare : "";

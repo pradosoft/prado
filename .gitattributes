@@ -545,8 +545,8 @@ tests/FunctionalTests/protected/pages/Home.page -text
 tests/FunctionalTests/protected/pages/Home.zh_CN.page -text
 tests/FunctionalTests/protected/pages/I18N/BasicI18N.page -text
 tests/FunctionalTests/protected/pages/I18N/BasicI18N.php -text
-tests/FunctionalTests/protected/runtime/config.cache -text
-tests/FunctionalTests/protected/runtime/global.cache -text
+tests/FunctionalTests/protected/pages/Validation/RequiredFieldValidator.page -text
+tests/FunctionalTests/protected/pages/Validation/RequiredFieldValidator.php -text
 tests/FunctionalTests/protected/tests/HomePageTest.php -text
 tests/FunctionalTests/selenium/SeleneseRunner.html -text
 tests/FunctionalTests/selenium/SeleniumLog.html -text

@@ -152,7 +152,7 @@ Prado.Validation.Util.toDate = function(value, format)
  */
 Prado.Validation.Util.trim = function(value)
 {
-	if(undef(value)) return "";
+	if(!isString(value)) return "";
 	return value.replace(/^\s+|\s+$/g, "");
 }
 
@@ -367,6 +367,8 @@ Prado.Validation.prototype =
 	 */
 	update : function()
 	{
+		Logger.info("isvalid ? " + this.isValid);
+
 		if(this.attr.display == "Dynamic")
 			this.isValid ? Element.hide(this.message) : Element.show(this.message);
 		
