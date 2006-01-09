@@ -13,7 +13,7 @@
 		</module>
 		<module id="logger" class="System.Log.TLogRouter">
 			<route class="TFileLogRoute" />
-			<route class="TBrowserLogRoute" />
+			<route class="TBrowserLogRoute" Categories="System.Web.UI.TPage,Uncategorized" />
 		</module>
 	</modules>
 </application>

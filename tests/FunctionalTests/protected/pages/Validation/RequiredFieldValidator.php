@@ -2,7 +2,10 @@
 
 class RequiredFieldValidator extends TPage
 {
-
+	function onLoad($param)
+	{
+		Prado::log("Hello", TLogger::WARNING);
+	}
 }
 
 class RequiredFieldTestCase extends SeleniumTestCase

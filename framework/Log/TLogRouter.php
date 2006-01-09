@@ -152,7 +152,7 @@ abstract class TLogRoute extends TComponent
 	/**
 	 * @var array lookup table for level names
 	 */
-	private static $_levelNames=array(
+	protected static $_levelNames=array(
 		TLogger::DEBUG=>'Debug',
 		TLogger::INFO=>'Info',
 		TLogger::NOTICE=>'Notice',
@@ -163,7 +163,7 @@ abstract class TLogRoute extends TComponent
 	/**
 	 * @var array lookup table for level values
 	 */
-	private static $_levelValues=array(
+	protected static $_levelValues=array(
 		'debug'=>TLogger::DEBUG,
 		'info'=>TLogger::INFO,
 		'notice'=>TLogger::NOTICE,
@@ -566,27 +566,34 @@ class TEmailLogRoute extends TLogRoute
 	}
 }
 
+/**
+ * TBrowserLogRoute class.
+ *
+ * TBrowserLogRoute prints selected log messages in the response.
+ *
+ * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $  $Date: $
+ * @package System.Log
+ * @since 3.0
+ */
 class TBrowserLogRoute extends TLogRoute
 {
 	public function processLogs($logs)
 	{
-		$first = $logs[0][3];
-		$prev = $first;
-		$total = 0;
-		$delta = 0;
-		$even = true;
-		echo $this->renderHeader();
+		if(empty($logs) || $this->getApplication()->getMode()==='Performance') return;
+		$first = $logs[0][3]; $prev = $first; $total = 0; $delta = 0; $even = true;
+		$response = $this->getApplication()->getResponse();
+		$response->write($this->renderHeader());
 		foreach($logs as $log)
 		{
 			$total += $log[3] - $first;
 			$timing['total'] = $total;
 			$timing['delta'] = $log[3]-$prev;
-			$timing['even'] = $even;
+			$timing['even'] = !($even = !$even);
 			$prev=$log[3];
-			$even = !$even;
-			echo $this->renderMessage($log,$timing);
+			$response->write($this->renderMessage($log,$timing));
 		}
-		echo $this->renderFooter();
+		$response->write($this->renderFooter());
 	}
 
 	protected function renderHeader()
@@ -608,20 +615,42 @@ EOD;
 
 	protected function renderMessage($log, $info)
 	{
-		$color = $info['even'] ? "#fff" : "#eee";
+		$bgcolor = $info['even'] ? "#fff" : "#eee";
 		$total = sprintf('%0.6f', $info['total']);
 		$delta = sprintf('%0.6f', $info['delta']);
+		$color = $this->getColorLevel($log[1]);
+		$msg = preg_replace('/\(line[^\)]+\)$/','',$log[0]); //remove line number info
 		$string = <<<EOD
-	<tr style="background-color: {$color};">
-		<td>{$log[2]}</td><td>{$log[0]}</td><td>{$total}</td><td>{$delta}</td>
+	<tr style="background-color: {$bgcolor}; color: {$color}">
+		<td>{$log[2]}</td><td>{$msg}</td><td>{$total}</td><td>{$delta}</td>
 	</tr>
 EOD;
 		return $string;
 	}
 
+	protected function getColorLevel($level)
+	{
+		switch($level)
+		{
+			case TLogger::DEBUG: return 'green';
+			case TLogger::INFO: return 'black';
+			case TLogger::NOTICE: return 'blue';
+			case TLogger::WARNING: return '#f63';
+			case TLogger::ALERT: return '#c00';
+			case TLogger::FATAL: return 'red';
+		}
+	}
+
 	protected function renderFooter()
 	{
-		return "</table>";
+		$string = "<tr><td colspan=\"10\" style=\"text-align:center; border-top: 1px solid #ccc; padding:0.2em;\">";
+		foreach(self::$_levelValues as $name => $level)
+		{
+			$string .= "<span style=\"color:".$this->getColorLevel($level);
+			$string .= ";margin: 0.5em;\">".strtoupper($name)."</span>";
+		}
+		$string .= "</td></tr></table>";
+		return $string;
 	}
 }
 ?>
