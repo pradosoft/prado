@@ -157,7 +157,6 @@ abstract class TLogRoute extends TComponent
 		TLogger::INFO=>'Info',
 		TLogger::NOTICE=>'Notice',
 		TLogger::WARNING=>'Warning',
-		TLogger::ERROR=>'Error',
 		TLogger::ALERT=>'Alert',
 		TLogger::FATAL=>'Fatal'
 	);
@@ -169,7 +168,6 @@ abstract class TLogRoute extends TComponent
 		'info'=>TLogger::INFO,
 		'notice'=>TLogger::NOTICE,
 		'warning'=>TLogger::WARNING,
-		'error'=>TLogger::ERROR,
 		'alert'=>TLogger::ALERT,
 		'fatal'=>TLogger::FATAL
 	);
@@ -568,4 +566,62 @@ class TEmailLogRoute extends TLogRoute
 	}
 }
 
+class TBrowserLogRoute extends TLogRoute
+{
+	public function processLogs($logs)
+	{
+		$first = $logs[0][3];
+		$prev = $first;
+		$total = 0;
+		$delta = 0;
+		$even = true;
+		echo $this->renderHeader();
+		foreach($logs as $log)
+		{
+			$total += $log[3] - $first;
+			$timing['total'] = $total;
+			$timing['delta'] = $log[3]-$prev;
+			$timing['even'] = $even;
+			$prev=$log[3];
+			$even = !$even;
+			echo $this->renderMessage($log,$timing);
+		}
+		echo $this->renderFooter();
+	}
+
+	protected function renderHeader()
+	{
+		$category = is_array($this->getCategories()) ? 
+						implode(', ',$this->getCategories()) : '';
+		$string = <<<EOD
+<table cellspacing="0" cellpadding="0" border="0" width="100%">
+	<tr>
+		<th style="background-color: black; color:white;" colspan="10">
+			<h3>Trace Information: $category</h3>
+		</th>
+	</tr><tr style="background-color: #ccc;">
+		<th>Category</th><th>Message</th><th>From First(s)</th><th>From Last(s)</th>
+	</tr>	
+EOD;
+		return $string;
+	}
+
+	protected function renderMessage($log, $info)
+	{
+		$color = $info['even'] ? "#fff" : "#eee";
+		$total = sprintf('%0.6f', $info['total']);
+		$delta = sprintf('%0.6f', $info['delta']);
+		$string = <<<EOD
+	<tr style="background-color: {$color};">
+		<td>{$log[2]}</td><td>{$log[0]}</td><td>{$total}</td><td>{$delta}</td>
+	</tr>
+EOD;
+		return $string;
+	}
+
+	protected function renderFooter()
+	{
+		return "</table>";
+	}
+}
 ?>

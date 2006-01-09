@@ -58,7 +58,7 @@ class TLogger extends TComponent
 	 */
 	public function log($message,$level,$category='Uncategorized')
 	{
-		$this->_logs[]=array($message,$level,$category,time());
+		$this->_logs[]=array($message,$level,$category,microtime(true));
 	}
 
 	/**
