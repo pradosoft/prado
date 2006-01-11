@@ -999,7 +999,6 @@ class TControl extends TComponent
 	 */
 	protected function initRecursive($namingContainer=null)
 	{
-		$this->ensureChildControls();
 		if($this->getHasControls())
 		{
 			if($this instanceof INamingContainer)
@@ -1056,6 +1055,7 @@ class TControl extends TComponent
 	{
 		if($this->getVisible(false))
 		{
+			$this->ensureChildControls();
 			$this->onPreRender(null);
 			if($this->getHasControls())
 			{
@@ -1739,8 +1739,8 @@ class TBroadcastEventParameter extends TEventParameter
  *
  * TCommandEventParameter encapsulates the parameter data for <b>Command</b>
  * event of button controls. You can access the name of the command via
- * <b>Name</b> property, and the parameter carried with the command via
- * <b>Parameter</b> property.
+ * {@link getCommandName CommandName} property, and the parameter carried
+ * with the command via {@link getCommandParameter CommandParameter} property.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -1766,33 +1766,17 @@ class TCommandEventParameter extends TEventParameter
 	/**
 	 * @return string name of the command
 	 */
-	public function getName()
+	public function getCommandName()
 	{
 		return $this->_name;
 	}
 
 	/**
-	 * @param string name of the command
-	 */
-	public function setName($value)
-	{
-		$this->_name=$value;
-	}
-
-	/**
 	 * @return string parameter of the command
 	 */
-	public function getParameter()
+	public function getCommandParameter()
 	{
 		return $this->_param;
-	}
-
-	/**
-	 * @param string parameter of the command
-	 */
-	public function setParameter($value)
-	{
-		$this->_param=$value;
 	}
 }
 

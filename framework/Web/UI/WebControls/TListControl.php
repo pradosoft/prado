@@ -149,6 +149,7 @@ abstract class TListControl extends TDataBoundControl
 	 */
 	protected function performDataBinding($data)
 	{
+		$items=$this->getItems();
 		if(!$this->getAppendDataBoundItems())
 			$items->clear();
 		if($data instanceof Traversable)
@@ -160,7 +161,6 @@ abstract class TListControl extends TDataBoundControl
 			if($valueField==='')
 				$valueField=1;
 			$textFormat=$this->getDataTextFormatString();
-			$items=$this->getItems();
 			foreach($data as $object)
 			{
 				$item=new TListItem;

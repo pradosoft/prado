@@ -283,7 +283,8 @@ abstract class TLogRoute extends TComponent
 	public function collectLogs(TLogger $logger)
 	{
 		$logs=$logger->getLogs($this->getLevels(),$this->getCategories());
-		$this->processLogs($logs);
+		if(!empty($logs))
+			$this->processLogs($logs);
 	}
 
 	/**

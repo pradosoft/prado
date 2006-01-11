@@ -105,6 +105,12 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		$this->getPage()->getValidators()->add($this);
 	}
 
+	protected function onUnload($param)
+	{
+		$this->getPage()->getValidators()->remove($this);
+		parent::onUnload($param);
+	}
+
 	/**
 	 * Adds attributes to renderer.
 	 * @param THtmlWriter the renderer

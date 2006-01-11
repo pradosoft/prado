@@ -201,6 +201,14 @@ class TTemplate extends TComponent implements ITemplate
 	}
 
 	/**
+	 * @return string context directory path
+	 */
+	public function getContextPath()
+	{
+		return $this->_contextPath;
+	}
+
+	/**
 	 * @return array name-value pairs declared in the directive
 	 */
 	public function getDirective()
