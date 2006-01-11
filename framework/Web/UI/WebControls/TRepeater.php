@@ -227,8 +227,8 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 					self::$_templates[$key]=$template;
 				}
 			}
+			$template->instantiateIn($item,$this->getPage());
 			$this->getControls()->add($item);
-			$template->instantiateIn($item);
 		}
 	}
 

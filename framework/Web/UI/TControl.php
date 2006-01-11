@@ -958,8 +958,11 @@ class TControl extends TComponent
 			$control->initRecursive($namingContainer);
 			if($this->_stage>=self::CS_STATE_LOADED)
 			{
-				if(isset($this->_rf[self::RF_CHILD_STATE]))
-					$state=$this->_rf[self::RF_CHILD_STATE]->remove($control->_id);
+				if(isset($this->_rf[self::RF_CHILD_STATE][$control->_id]))
+				{
+					$state=$this->_rf[self::RF_CHILD_STATE][$control->_id];
+					unset($this->_rf[self::RF_CHILD_STATE][$control->_id]);
+				}
 				else
 					$state=null;
 				$control->loadStateRecursive($state,!($this->_flags & self::IS_DISABLE_VIEWSTATE));

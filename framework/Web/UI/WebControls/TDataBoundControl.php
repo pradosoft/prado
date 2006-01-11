@@ -195,10 +195,11 @@ abstract class TDataBoundControl extends TWebControl
 		// what about property bindings? should they be after data is ready?
 		$this->setRequiresDataBinding(false);
 		$this->dataBindProperties();
-		$view=$this->getDataSourceView();
-		$data=$view->select($this->getSelectParameters());
+		if(($view=$this->getDataSourceView())!==null)
+			$data=$view->select($this->getSelectParameters());
 		$this->onDataBinding(null);
-		$this->performDataBinding($data);
+		if($view!==null)
+			$this->performDataBinding($data);
 		$this->setIsDataBound(true);
 		$this->onDataBound(null);
 	}
@@ -214,13 +215,17 @@ abstract class TDataBoundControl extends TWebControl
 		if(!$this->_currentViewValid)
 		{
 			if($this->_currentView && $this->_currentViewIsFromDataSourceID)
-				$handlers=$this->_currentView->detachEventHandler('DataSourceViewChanged',array($this,'dataSourceViewChanged'));
-			$dataSource=$this->determineDataSource();
-			if(($view=$dataSource->getView($this->getDataMember()))===null)
-				throw new TInvalidDataValueException('databoundcontrol_datamember_invalid',$this->getDataMember());
-			if($this->_currentViewIsFromDataSourceID=$this->getUsingDataSourceID())
-				$view->attachEventHandler('DataSourceViewChanged',array($this,'dataSourceViewChanged'));
-			$this->_currentView=$view;
+				$this->_currentView->detachEventHandler('DataSourceViewChanged',array($this,'dataSourceViewChanged'));
+			if(($dataSource=$this->determineDataSource())!==null)
+			{
+				if(($view=$dataSource->getView($this->getDataMember()))===null)
+					throw new TInvalidDataValueException('databoundcontrol_datamember_invalid',$this->getDataMember());
+				if($this->_currentViewIsFromDataSourceID=$this->getUsingDataSourceID())
+					$view->attachEventHandler('DataSourceViewChanged',array($this,'dataSourceViewChanged'));
+				$this->_currentView=$view;
+			}
+			else
+				$this->_currentView=null;
 			$this->_currentViewValid=true;
 		}
 		return $this->_currentView;
@@ -230,8 +235,7 @@ abstract class TDataBoundControl extends TWebControl
 	{
 		if(!$this->_currentDataSourceValid)
 		{
-			$dsid=$this->getDataSourceID();
-			if($dsid!=='')
+			if(($dsid=$this->getDataSourceID())!=='')
 			{
 				if(($dataSource=$this->getNamingContainer()->findControl($dsid))===null)
 					throw new TInvalidDataValueException('databoundcontrol_datasourceid_inexistent',$dsid);
@@ -240,10 +244,10 @@ abstract class TDataBoundControl extends TWebControl
 				else
 					$this->_currentDataSource=$dataSource;
 			}
+			else if(($dataSource=$this->getDataSource())!==null)
+				$this->_currentDataSource=new TReadOnlyDataSource($dataSource,$this->getDataMember());
 			else
-			{
-				$this->_currentDataSource=new TReadOnlyDataSource($this->getDataSource(),$this->getDataMember());
-			}
+				$this->_currentDataSource=null;
 			$this->_currentDataSourceValid=true;
 		}
 		return $this->_currentDataSource;

@@ -1,0 +1,75 @@
+<%@ MasterClass="Application.pages.Layout" Theme="Simple" %>
+<com:TContent ID="body" >
+
+<com:TPanel GroupingText="Class Information">
+class <com:TTextBox ID="ClassName" CssClass="slTextBox"/>
+extends <com:TTextBox ID="ParentClass" CssClass="slTextBox"/>
+implements <com:TTextBox ID="Interfaces" CssClass="slTextBox"/>
+<br/>
+Author Name: <com:TTextBox ID="AuthorName" CssClass="slTextBox"/>
+Author Email: <com:TTextBox ID="AuthorEmail" CssClass="slTextBox"/>
+<br/>
+Comments: <com:TTextBox ID="Comments" TextMode="MultiLine"/>
+</com:TPanel>
+
+<com:TPanel GroupingText="Property Definitions">
+<table>
+<tr>
+  <th>Accessibility</th>
+  <th>Name</th>
+  <th>Type</th>
+  <th>Default Value</th>
+  <th>Storage Mode</th>
+  <th>Comments</th>
+  <th>Actions</th>
+</tr>
+<com:TRepeater ID="Repeater">
+<prop:ItemTemplate>
+<tr>
+  <td>
+  <com:TCheckBox ID="IsProtected" Text="protected" Checked=<%# $this->Parent->DataItem->IsProtected %> />
+  <com:TCheckBox ID="ReadOnly" Text="read-only" Checked=<%# $this->Parent->DataItem->ReadOnly %> />
+  </td>
+  <td>
+  <com:TTextBox ID="PropertyName" Text=<%# $this->Parent->DataItem->Name %> CssClass="slTextBox"/>
+  </td>
+  <td>
+  <com:TDropDownList ID="PropertyType" SelectedValue=<%# $this->Parent->DataItem->Type %> >
+    <com:TListItem Text="string" />
+    <com:TListItem Text="integer" />
+    <com:TListItem Text="boolean" />
+    <com:TListItem Text="enumerable" />
+    <com:TListItem Text="mixed" />
+  </com:TDropDownList>
+  </td>
+  <td>
+  <com:TTextBox ID="DefaultValue" Text=<%# $this->Parent->DataItem->DefaultValue %> CssClass="slTextBox"/>
+  </td>
+  <td>
+  <com:TDropDownList ID="Storage" SelectedValue=<%# $this->Parent->DataItem->Storage %> >
+    <com:TListItem Text="ViewState" />
+    <com:TListItem Text="ControlState" />
+    <com:TListItem Text="Memory" />
+  </com:TDropDownList>
+  </td>
+  <td>
+  <com:TTextBox ID="Comments" Text=<%# $this->Parent->DataItem->Comments %> CssClass="slTextBox"/>
+  </td>
+  <td>
+  <com:TButton Text="Add" />
+  <com:TButton Text="Remove" />
+  </td>
+</tr>
+</prop:ItemTemplate>
+</com:TRepeater>
+</table>
+</com:TPanel>
+<com:TPanel GroupingText="Event Definitions">
+Event Definitions:
+</com:TPanel>
+<com:TButton Text="Generate Code" Click="generateCode" />
+<pre>
+<com:TLiteral ID="SourceCode" />
+</pre>
+
+</com:TContent>
