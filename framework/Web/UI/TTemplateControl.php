@@ -72,7 +72,7 @@ class TTemplateControl extends TControl implements INamingContainer
 	 * @param boolean whether to attempt loading template if it is not loaded yet
 	 * @return ITemplate|null the parsed template, null if none
 	 */
-	protected function getTemplate($load=false)
+	public function getTemplate($load=false)
 	{
 		if($this->_localTemplate===null)
 		{
@@ -90,7 +90,7 @@ class TTemplateControl extends TControl implements INamingContainer
 	 * This method should only be used by framework and control developers.
 	 * @param ITemplate the parsed template
 	 */
-	protected function setTemplate($value)
+	public function setTemplate($value)
 	{
 		$this->_localTemplate=$value;
 	}

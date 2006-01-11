@@ -10,6 +10,9 @@
  * @package System.Web.UI.WebControls
  */
 
+Prado::using('System.Web.UI.WebControls.TDataSourceControl');
+Prado::using('System.Web.UI.WebControls.TDataSourceView');
+
 /**
  * TDataBoundControl class.
  *
@@ -35,6 +38,8 @@ abstract class TDataBoundControl extends TWebControl
 	private $_currentDataSource=null;
 	private $_currentViewValid=false;
 	private $_currentDataSourceValid=false;
+	private $_currentViewIsFromDataSourceID=false;
+	private $_parameters=null;
 
 	/**
 	 * @return Traversable data source object, defaults to null.
@@ -317,7 +322,7 @@ abstract class TDataBoundControl extends TWebControl
 			return $list;
 		}
 		else if(is_array($value))
-			$value=new TList($value);
+			return new TList($value);
 		else if(($value instanceof Traversable) || $value===null)
 			return $value;
 		else

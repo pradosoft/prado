@@ -96,7 +96,7 @@ abstract class TDataSourceView extends TComponent
 	 * @param ???
 	 * @return Traversable
 	 */
-	public function select($parameters);
+	abstract public function select($parameters);
 
 	/**
 	 * Inserts a DB record.

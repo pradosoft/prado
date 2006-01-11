@@ -607,7 +607,8 @@ class TTemplate extends TComponent implements ITemplate
 					if($matchStart>$textStart && $container>=0)
 					{
 						$value=substr($input,$textStart,$matchStart-$textStart);
-						$tpl[$container][2][$prop]=$this->parseAttribute($value);
+						//$tpl[$container][2][$prop]=$this->parseAttribute($value);
+						$tpl[$container][2][$prop]=$value;
 						$textStart=$matchEnd+1;
 					}
 					$expectPropEnd=false;

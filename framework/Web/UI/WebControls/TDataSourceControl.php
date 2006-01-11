@@ -35,14 +35,17 @@ interface IDataSource
  */
 abstract class TDataSourceControl extends TControl implements IDataSource
 {
-	public function getView($viewName);
+	public function getView($viewName)
+	{
+		return null;
+	}
 
 	public function getViewNames()
 	{
 		return array();
 	}
 
-	protected function onDataSourceChanged($param)
+	public function onDataSourceChanged($param)
 	{
 		$this->raiseEvent('DataSourceChanged',$this,$param);
 	}
@@ -72,7 +75,7 @@ abstract class TDataSourceControl extends TControl implements IDataSource
 		throw new TNotSupportedException('datasourcecontrol_skinid_unsupported');
 	}
 
-	public function getVisible()
+	public function getVisible($checkParents=true)
 	{
 		return false;
 	}
