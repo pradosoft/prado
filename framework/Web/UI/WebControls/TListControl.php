@@ -441,6 +441,22 @@ abstract class TListControl extends TDataBoundControl
     }
 
     /**
+     * @return string selected value
+     */
+    public function getText()
+    {
+	    return $this->getSelectedValue();
+    }
+
+    /**
+     * @param string value to be selected
+     */
+    public function setText($value)
+    {
+	    $this->setSelectedValue($value);
+    }
+
+    /**
      * Clears all existing selections.
      */
     public function clearSelection()
@@ -477,6 +493,17 @@ abstract class TListControl extends TDataBoundControl
 	public function onSelectedIndexChanged($param)
 	{
 		$this->raiseEvent('SelectedIndexChanged',$this,$param);
+	}
+
+	/**
+	 * Raises TextChanged event when selection is changed.
+	 * This method is invoked when the list control has its selection changed
+	 * by end-users.
+	 * @param TEventParameter event parameter
+	 */
+	public function onTextChanged($param)
+	{
+		$this->raiseEvent('TextChanged',$this,$param);
 	}
 
 	/**

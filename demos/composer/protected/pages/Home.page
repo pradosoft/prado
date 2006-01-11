@@ -5,11 +5,6 @@
 class <com:TTextBox ID="ClassName" CssClass="slTextBox"/>
 extends <com:TTextBox ID="ParentClass" CssClass="slTextBox"/>
 implements <com:TTextBox ID="Interfaces" CssClass="slTextBox"/>
-<br/>
-Author Name: <com:TTextBox ID="AuthorName" CssClass="slTextBox"/>
-Author Email: <com:TTextBox ID="AuthorEmail" CssClass="slTextBox"/>
-<br/>
-Comments: <com:TTextBox ID="Comments" TextMode="MultiLine"/>
 </com:TPanel>
 
 <com:TPanel GroupingText="Property Definitions">
@@ -23,7 +18,7 @@ Comments: <com:TTextBox ID="Comments" TextMode="MultiLine"/>
   <th>Comments</th>
   <th>Actions</th>
 </tr>
-<com:TRepeater ID="Repeater">
+<com:TRepeater ID="PropertyList">
 <prop:ItemTemplate>
 <tr>
   <td>
@@ -39,6 +34,7 @@ Comments: <com:TTextBox ID="Comments" TextMode="MultiLine"/>
     <com:TListItem Text="integer" />
     <com:TListItem Text="boolean" />
     <com:TListItem Text="enumerable" />
+    <com:TListItem Text="float" />
     <com:TListItem Text="mixed" />
   </com:TDropDownList>
   </td>
@@ -67,6 +63,15 @@ Comments: <com:TTextBox ID="Comments" TextMode="MultiLine"/>
 <com:TPanel GroupingText="Event Definitions">
 Event Definitions:
 </com:TPanel>
+<br/>
+Comments
+(
+Author Name: <com:TTextBox ID="AuthorName" CssClass="slTextBox"/>
+Author Email: <com:TTextBox ID="AuthorEmail" CssClass="slTextBox"/>
+)
+<br/>
+<com:TTextBox ID="Comments" TextMode="MultiLine" Columns="80" Rows="6" />
+<br/>
 <com:TButton Text="Generate Code" Click="generateCode" />
 <pre>
 <com:TLiteral ID="SourceCode" />
