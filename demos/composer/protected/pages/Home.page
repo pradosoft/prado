@@ -122,8 +122,8 @@ Author Email
 
 <hr/>
 <com:TButton Text="Generate Code" Click="generateCode" />
-<pre>
+<com:TTextHighlighter>
 <com:TLiteral ID="SourceCode" />
-</pre>
+</com:TTextHighlighter>
 
 </com:TContent>

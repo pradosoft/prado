@@ -78,7 +78,7 @@ class Home extends TPage
 		$this->refresh();
 		$writer=Prado::createComponent('System.IO.TTextWriter');
 		$this->ClassDefinition->render($writer);
-		$this->SourceCode->Text=highlight_string($writer->flush(),true);
+		$this->SourceCode->Text=$writer->flush();
 	}
 }
 
