@@ -92,6 +92,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * @var boolean
 	 */
 	private $_isValid=true;
+	private $_registered=false;
 
 	public function __construct()
 	{
@@ -103,11 +104,14 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	{
 		parent::onInit($param);
 		$this->getPage()->getValidators()->add($this);
+		$this->_registered=true;
 	}
 
 	protected function onUnload($param)
 	{
-		$this->getPage()->getValidators()->remove($this);
+		if($this->_registered && ($page=$this->getPage())!==null)
+			$page->getValidators()->remove($this);
+		$this->_registered=false;
 		parent::onUnload($param);
 	}
 
