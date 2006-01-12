@@ -262,7 +262,7 @@ class TControl extends TComponent
 	{
 		$class=new ReflectionClass(get_class($this));
 		$assetPath=dirname($class->getFileName()).'/'.$assetPath;
-		return $this->getService()->getAssetManager()->publishFilePath($assetPath);
+		return $this->getService()->getAsset($assetPath);
 	}
 
 	/**

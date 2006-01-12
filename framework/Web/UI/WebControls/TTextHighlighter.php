@@ -13,7 +13,7 @@
 /**
  * Using GeSHi and TTextWriter classes
  */
-Prado::using('System.Web.UI.WebControls.Highlighter.geshi');
+Prado::using('System.3rdParty.geshi.geshi');
 Prado::using('System.IO.TTextWriter');
 
 /**
@@ -52,11 +52,13 @@ class TTextHighlighter extends TWebControl
 
 	/**
 	 * @param string language whose syntax is to be used for highlighting.
-	 * Valid values include 'php','prado','css','html','javascript','xml'.
+	 * Valid values are those file names (without suffix) that are contained
+	 * in '3rdParty/geshi/geshi' (e.g. 'php','prado','css','html','javascript',
+	 * 'xml'.)
 	 */
 	public function setLanguage($value)
 	{
-		$this->setViewState('Language', TPropertyValue::ensureEnum($value,'php','prado','css','html','javascript','xml'), 'php');
+		$this->setViewState('Language', $value, 'php');
 	}
 
 	/**
@@ -120,7 +122,8 @@ class TTextHighlighter extends TWebControl
 		$cssKey='prado:TTextHighlighter';
 		if(!$cs->isStyleSheetFileRegistered($cssKey))
 		{
-			$styleSheet = $this->getAsset('Highlighter/code_highlight.css');
+			$cssFile=Prado::getPathOfNamespace('System.3rdParty.geshi.highlight','.css');
+			$styleSheet = $this->getService()->getAsset($cssFile);
 			$cs->registerStyleSheetFile($cssKey, $styleSheet);
 		}
 	}
