@@ -40,6 +40,7 @@ abstract class TDataBoundControl extends TWebControl
 	private $_currentDataSourceValid=false;
 	private $_currentViewIsFromDataSourceID=false;
 	private $_parameters=null;
+	private $_isDataBound=false;
 
 	/**
 	 * @return Traversable data source object, defaults to null.
@@ -131,7 +132,7 @@ abstract class TDataBoundControl extends TWebControl
 	 */
 	protected function getIsDataBound()
 	{
-		return $this->getViewState('IsDataBound',false);
+		return $this->_isDataBound;
 	}
 
 	/**
@@ -139,7 +140,7 @@ abstract class TDataBoundControl extends TWebControl
 	 */
 	protected function setIsDataBound($value)
 	{
-		$this->setViewState('IsDataBound',TPropertyValue::ensureBoolean($value),false);
+		$this->_isDataBound=$value;
 	}
 
 	/**

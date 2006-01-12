@@ -20,24 +20,29 @@ class Home extends TPage
 			$properties[]=new PropertyDefinition;
 			$properties[]=new PropertyDefinition;
 			$properties[]=new PropertyDefinition;
-			$this->PropertyList->setDataSource($properties);
+			$this->PropertyList->DataSource=$properties;
 			$this->dataBind();
 		}
 	}
 
-	/*
-	public function onLoad($param)
+	protected function refresh()
 	{
-		parent::onLoad($param);
-		if(!$this->IsPostBack)
-		{
-			$this->PropertyList->setDataSource($this->getInitialProperties());
-			$this->PropertyList->dataBind();
-		}
-		else
-			$this->PropertyList->ensureChildControls();
+		$this->PropertyList->DataSource=$this->ClassDefinition->Properties;
+		$this->dataBind();
 	}
-	*/
+
+	public function itemAction($sender,$param)
+	{
+		if($param->CommandName==='remove')
+		{
+			$this->ClassDefinition->Properties->removeAt($param->CommandParameter);
+		}
+		else if($param->CommandName==='add')
+		{
+			$this->ClassDefinition->Properties->insert($param->CommandParameter+1,new PropertyDefinition);
+		}
+		$this->refresh();
+	}
 
 	public function onLoad($param)
 	{
@@ -45,32 +50,32 @@ class Home extends TPage
 		//if($this->IsPostBack && $this->IsValid)
 		if($this->IsPostBack)
 		{
-			$this->PropertyList->ensureChildControls();
+			$def=$this->ClassDefinition;
+			$def->reset();
+			$def->ClassName=$this->ClassName->Text;
+			$def->ParentClass=$this->ParentClass->Text;
+			$def->Interfaces=$this->Interfaces->Text;
+			$def->Comments=$this->Comments->Text;
+			$def->Author=$this->AuthorName->Text;
+			$def->Email=$this->AuthorEmail->Text;
+			foreach($this->PropertyList->Items as $item)
+			{
+				$property=new PropertyDefinition;
+				$property->Name=$item->PropertyName->Text;
+				$property->Type=$item->PropertyType->Text;
+				$property->DefaultValue=$item->DefaultValue->Text;
+				$property->ReadOnly=$item->ReadOnly->Checked;
+				$property->IsProtected=$item->IsProtected->Checked;
+				$property->Comments=$item->Comments->Text;
+				$property->Storage=$item->Storage->Text;
+				$def->Properties[]=$property;
+			}
 		}
 	}
 
 	public function generateCode($sender,$param)
 	{
-		$def=$this->ClassDefinition;
-		$def->reset();
-		$def->ClassName=$this->ClassName->Text;
-		$def->ParentClass=$this->ParentClass->Text;
-		$def->Interfaces=$this->Interfaces->Text;
-		$def->Comments=$this->Comments->Text;
-		$def->Author=$this->AuthorName->Text;
-		$def->Email=$this->AuthorEmail->Text;
-		foreach($this->PropertyList->Items as $item)
-		{
-			$property=new PropertyDefinition;
-			$property->Name=$item->PropertyName->Text;
-			$property->Type=$item->PropertyType->Text;
-			$property->DefaultValue=$item->DefaultValue->Text;
-			$property->ReadOnly=$item->ReadOnly->Checked;
-			$property->IsProtected=$item->IsProtected->Checked;
-			$property->Comments=$item->Comments->Text;
-			$property->Storage=$item->Storage->Text;
-			$def->Properties[]=$property;
-		}
+		$this->refresh();
 		$writer=Prado::createComponent('System.IO.TTextWriter');
 		$this->ClassDefinition->render($writer);
 		$this->SourceCode->Text=highlight_string($writer->flush(),true);

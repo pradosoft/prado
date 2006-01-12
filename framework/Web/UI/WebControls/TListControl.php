@@ -80,7 +80,10 @@ abstract class TListControl extends TDataBoundControl
 	 * @var TListItemCollection item list
 	 */
 	private $_items=null;
-
+	/**
+	 * @var boolean whether items are restored from viewstate
+	 */
+	private $_loadedFromState=false;
 	/**
 	 * @return string tag name of the list control
 	 */
@@ -137,7 +140,8 @@ abstract class TListControl extends TDataBoundControl
 	 */
 	public function addParsedObject($object)
 	{
-		if($object instanceof TListItem)
+		// Do not add items from template if items are loaded from viewstate
+		if(!$this->_loadedFromState && ($object instanceof TListItem))
 			$this->getItems()->add($object);
 	}
 
@@ -190,14 +194,19 @@ abstract class TListControl extends TDataBoundControl
 	}
 
 	/**
-	 * Loads items into from viewstate.
+	 * Loads items from viewstate.
 	 * This method is invoked right after control state is loaded.
 	 * @param mixed event parameter
 	 */
 	protected function onLoadState($param)
 	{
-		$this->_items=new TListItemCollection;
-		$this->_items->loadState($this->getViewState('Items',null));
+		$this->_loadedFromState=true;
+		if(!$this->getIsDataBound())
+		{
+			$this->_items=new TListItemCollection;
+			$this->_items->loadState($this->getViewState('Items',null));
+		}
+		$this->clearViewState('Items');
 	}
 
 	/**

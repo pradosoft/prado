@@ -231,10 +231,9 @@ class TTemplate extends TComponent implements ITemplate
 	 * @param TControl the parent control
 	 * @throws TTemplateRuntimeException if an error is encountered during the instantiation.
 	 */
-	public function instantiateIn($tplControl,$page=null)
+	public function instantiateIn($tplControl)
 	{
-		if($page===null)
-			$page=$tplControl->getPage();
+		$page=$tplControl->getPage();
 		$this->_assetManager=$page->getService()->getAssetManager();
 		$controls=array();
 		foreach($this->_tpl as $key=>$object)

@@ -56,6 +56,10 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	private $_footer=null;
 	private static $_templates=array();
 
+	public function addParsedObject($object)
+	{
+	}
+
 	/**
 	 * @return string the template string for the item
 	 */
@@ -227,8 +231,8 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 					self::$_templates[$key]=$template;
 				}
 			}
-			$template->instantiateIn($item,$this->getPage());
 			$this->getControls()->add($item);
+			$template->instantiateIn($item);
 		}
 	}
 
@@ -250,14 +254,14 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 		return $item;
 	}
 
-	protected function createChildControls()
+	protected function restoreItemsFromViewState()
 	{
 		$this->getControls()->clear();
 		$items=$this->getItems();
 		$items->clear();
 		$this->_header=null;
 		$this->_footer=null;
-		if(($itemCount=$this->getViewState('ItemCount',null))!==null)
+		if(($itemCount=$this->getViewState('ItemCount',0))>0)
 		{
 			if($this->_headerTemplate!=='')
 				$this->_header=$this->createItemInternal(-1,'Header',false,null);
@@ -273,6 +277,31 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 				$this->_footer=$this->createItemInternal(-1,'Footer',false,null);
 		}
 		$this->clearChildState();
+	}
+
+	/**
+	 * Saves items into viewstate.
+	 * This method is invoked right before control state is to be saved.
+	 * @param mixed event parameter
+	 */
+	protected function onSaveState($param)
+	{
+		if($this->_items)
+			$this->setViewState('ItemCount',$this->_items->getCount(),0);
+		else
+			$this->clearViewState('ItemCount');
+	}
+
+	/**
+	 * Loads items into from viewstate.
+	 * This method is invoked right after control state is loaded.
+	 * @param mixed event parameter
+	 */
+	protected function onLoadState($param)
+	{
+		if(!$this->getIsDataBound())
+			$this->restoreItemsFromViewState();
+		$this->clearViewState('ItemCount');
 	}
 
 	/**
@@ -307,7 +336,6 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 		}
 		else
 			$this->setViewState('ItemCount',$itemIndex,-1);
-		$this->setChildControlsCreated(true);
 	}
 
 	/**

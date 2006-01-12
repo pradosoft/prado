@@ -1285,11 +1285,11 @@ class TControl extends TComponent
 	 */
 	final protected function loadStateRecursive(&$state,$needViewState=true)
 	{
-		// A null state means the stateful properties all take default values.
-		// So if the state is enabled, we have to assign the null value.
-		$needViewState=($needViewState && !($this->_flags & self::IS_DISABLE_VIEWSTATE));
-		if(is_array($state))
+		if($state!==null)
 		{
+			// A null state means the stateful properties all take default values.
+			// So if the state is enabled, we have to assign the null value.
+			$needViewState=($needViewState && !($this->_flags & self::IS_DISABLE_VIEWSTATE));
 			if(isset($state[1]))
 			{
 				$this->_rf[self::RF_CONTROLSTATE]=&$state[1];
@@ -1324,24 +1324,11 @@ class TControl extends TComponent
 			}
 			if(!empty($state))
 				$this->_rf[self::RF_CHILD_STATE]=&$state;
+			$this->_stage=self::CS_STATE_LOADED;
+			$this->onLoadState(null);
 		}
-		else
-		{
-			unset($this->_rf[self::RF_CONTROLSTATE]);
-			if($needViewState)
-				$this->_viewState=array();
-			if($this->getHasControls())
-			{
-				foreach($this->_rf[self::RF_CONTROLS] as $control)
-				{
-					$s=null;
-					if($control instanceof TControl)
-						$control->loadStateRecursive($s,$needViewState);
-				}
-			}
-		}
-		$this->onLoadState(null);
-		$this->_stage=self::CS_STATE_LOADED;
+		else  // no state to load and thus no need onLoadState()
+			$this->_stage=self::CS_STATE_LOADED;
 	}
 
 	/**
@@ -1361,14 +1348,13 @@ class TControl extends TComponent
 				if($control instanceof TControl)
 				{
 					$cs=&$control->saveStateRecursive($needViewState);
-					if(!empty($cs))
-						$state[$control->_id]=&$cs;
+					$state[$control->_id]=&$cs;
 				}
 			}
 		}
-		if($needViewState && !empty($this->_viewState))
+		if($needViewState)
 			$state[0]=&$this->_viewState;
-		if(isset($this->_rf[self::RF_CONTROLSTATE]) && !empty($this->_rf[self::RF_CONTROLSTATE]))
+		if(isset($this->_rf[self::RF_CONTROLSTATE]))
 			$state[1]=&$this->_rf[self::RF_CONTROLSTATE];
 		return $state;
 	}

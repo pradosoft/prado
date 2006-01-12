@@ -2,29 +2,31 @@
 <com:TContent ID="body" >
 
 <com:TPanel GroupingText="Class Information">
-class <com:TTextBox ID="ClassName" CssClass="slTextBox"/>
-extends <com:TTextBox ID="ParentClass" CssClass="slTextBox"/>
+class
+<com:TTextBox ID="ClassName"
+	Text=<%#$this->Page->ClassDefinition->ClassName%>
+	CssClass="slTextBox"/>
+extends
+<com:TTextBox ID="ParentClass"
+	Text=<%#$this->Page->ClassDefinition->ParentClass%>
+	CssClass="slTextBox"/>
 implements <com:TTextBox ID="Interfaces" CssClass="slTextBox"/>
 </com:TPanel>
 
 <com:TPanel GroupingText="Property Definitions">
 <table>
 <tr>
-  <th>Accessibility</th>
   <th>Name</th>
   <th>Type</th>
   <th>Default Value</th>
   <th>Storage Mode</th>
+  <th>Accessibility</th>
   <th>Comments</th>
   <th>Actions</th>
 </tr>
-<com:TRepeater ID="PropertyList">
+<com:TRepeater ID="PropertyList" ItemCommand="itemAction">
 <prop:ItemTemplate>
 <tr>
-  <td>
-  <com:TCheckBox ID="IsProtected" Text="protected" Checked=<%# $this->Parent->DataItem->IsProtected %> />
-  <com:TCheckBox ID="ReadOnly" Text="read-only" Checked=<%# $this->Parent->DataItem->ReadOnly %> />
-  </td>
   <td>
   <com:TTextBox ID="PropertyName" Text=<%# $this->Parent->DataItem->Name %> CssClass="slTextBox"/>
   </td>
@@ -49,11 +51,21 @@ implements <com:TTextBox ID="Interfaces" CssClass="slTextBox"/>
   </com:TDropDownList>
   </td>
   <td>
+  <com:TCheckBox ID="IsProtected" Text="protected" Checked=<%# $this->Parent->DataItem->IsProtected %> />
+  <com:TCheckBox ID="ReadOnly" Text="read-only" Checked=<%# $this->Parent->DataItem->ReadOnly %> />
+  </td>
+  <td>
   <com:TTextBox ID="Comments" Text=<%# $this->Parent->DataItem->Comments %> CssClass="slTextBox"/>
   </td>
   <td>
-  <com:TButton Text="Add" />
-  <com:TButton Text="Remove" />
+  <com:TButton ID="AddButton"
+  		Text="Add"
+  		CommandName="add"
+  		CommandParameter=<%# $this->Parent->ItemIndex %> />
+  <com:TButton ID="RemoveButton"
+  		Text="Remove"
+  		CommandName="remove"
+  		CommandParameter=<%# $this->Parent->ItemIndex %> />
   </td>
 </tr>
 </prop:ItemTemplate>
@@ -65,12 +77,17 @@ Event Definitions:
 </com:TPanel>
 <br/>
 Comments
-(
-Author Name: <com:TTextBox ID="AuthorName" CssClass="slTextBox"/>
-Author Email: <com:TTextBox ID="AuthorEmail" CssClass="slTextBox"/>
-)
 <br/>
 <com:TTextBox ID="Comments" TextMode="MultiLine" Columns="80" Rows="6" />
+<br/>
+Author Name
+<com:TTextBox ID="AuthorName"
+	Text=<%#$this->Page->ClassDefinition->Author%>
+	CssClass="slTextBox"/>
+Author Email
+<com:TTextBox ID="AuthorEmail"
+	Text=<%#$this->Page->ClassDefinition->Email%>
+	CssClass="slTextBox"/>
 <br/>
 <com:TButton Text="Generate Code" Click="generateCode" />
 <pre>
