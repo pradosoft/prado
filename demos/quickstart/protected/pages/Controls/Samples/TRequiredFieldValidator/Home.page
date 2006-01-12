@@ -1,0 +1,54 @@
+<com:TContent ID="body">
+
+<h1>TRequiredFieldValidator Samples</h1>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Required field validator with default settings:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox1" />
+<com:TRequiredFieldValidator
+	ValidationGroup="Group1"
+	ControlToValidate="TextBox1"
+	Text="Field required." />
+<com:TButton Text="Submit" ValidationGroup="Group1" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Required field validator with client-side validation disabled:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox2" />
+<com:TRequiredFieldValidator
+	ValidationGroup="Group2"
+	EnableClientScript="false"
+	ControlToValidate="TextBox2"
+	Text="Field required." />
+<com:TButton Text="Submit" ValidationGroup="Group2" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Required field validator with default settings:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox3" />
+<com:TRequiredFieldValidator
+	ValidationGroup="Group3"
+	ControlToValidate="TextBox3"
+	FocusOnError="true"
+	Text="Field required." />
+<com:TButton Text="Submit" ValidationGroup="Group3" />
+</td>
+</tr>
+
+
+</table>
+
+</com:TContent>

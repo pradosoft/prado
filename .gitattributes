@@ -52,6 +52,8 @@ demos/quickstart/protected/pages/Controls/Samples/TPanel/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TPanel/hello_world.gif -text
 demos/quickstart/protected/pages/Controls/Samples/TRadioButtonList/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TRadioButtonList/Home.php -text
+demos/quickstart/protected/pages/Controls/Samples/TRequiredFieldValidator/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TRequiredFieldValidator/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TTable/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TTable/backimage.gif -text
 demos/quickstart/protected/pages/Controls/Samples/TTextBox/Home.page -text
