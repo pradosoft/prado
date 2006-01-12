@@ -15,7 +15,7 @@
 </div>
 
 <div style="text-align:right">
-Copyright &copy; 2005 <a href="http://www.pradosoft.com">PradoSoft</a>
+Copyright &copy; 2005-2006 <a href="http://www.pradosoft.com">PradoSoft</a>
 </div>
 
 </div>
