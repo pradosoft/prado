@@ -990,6 +990,7 @@ class TControl extends TComponent
 		$control->_page=null;
 		$control->_namingContainer=null;
 		$control->_tplControl=null;
+		$control->_stage=self::CS_CONSTRUCTED;
 		if(!($control->_flags & self::IS_ID_SET))
 			$control->_id='';
 		$control->clearCachedUniqueID(true);
