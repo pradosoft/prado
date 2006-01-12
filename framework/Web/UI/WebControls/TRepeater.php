@@ -254,31 +254,6 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 		return $item;
 	}
 
-	protected function restoreItemsFromViewState()
-	{
-		$this->getControls()->clear();
-		$items=$this->getItems();
-		$items->clear();
-		$this->_header=null;
-		$this->_footer=null;
-		if(($itemCount=$this->getViewState('ItemCount',0))>0)
-		{
-			if($this->_headerTemplate!=='')
-				$this->_header=$this->createItemInternal(-1,'Header',false,null);
-			$hasSeparator=$this->_separatorTemplate!=='';
-			for($i=0;$i<$itemCount;++$i)
-			{
-				if($hasSeparator && $i>0)
-					$this->createItemInternal($i-1,'Separator',false,null);
-				$itemType=$i%2==0?'Item':'AlternatingItem';
-				$items->add($this->createItemInternal($i,$itemType,false,null));
-			}
-			if($this->_footerTemplate!=='')
-				$this->_footer=$this->createItemInternal(-1,'Footer',false,null);
-		}
-		$this->clearChildState();
-	}
-
 	/**
 	 * Saves items into viewstate.
 	 * This method is invoked right before control state is to be saved.
@@ -302,6 +277,35 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 		if(!$this->getIsDataBound())
 			$this->restoreItemsFromViewState();
 		$this->clearViewState('ItemCount');
+	}
+
+	protected function restoreItemsFromViewState()
+	{
+		$this->getControls()->clear();
+		$items=$this->getItems();
+		$items->clear();
+		$this->_header=null;
+		$this->_footer=null;
+		if(($itemCount=$this->getViewState('ItemCount',0))>0)
+		{
+			if($this->_headerTemplate!=='')
+				$this->_header=$this->createItemInternal(-1,'Header',false,null);
+			$hasSeparator=$this->_separatorTemplate!=='';
+			for($i=0;$i<$itemCount;++$i)
+			{
+				if($hasSeparator && $i>0)
+					$this->createItemInternal($i-1,'Separator',false,null);
+				$itemType=$i%2==0?'Item':'AlternatingItem';
+				$items->add($this->createItemInternal($i,$itemType,false,null));
+			}
+			if($this->_footerTemplate!=='')
+				$this->_footer=$this->createItemInternal(-1,'Footer',false,null);
+		}
+		else if($this->_emptyTemplate!=='')
+		{
+			$this->_empty=$this->createItemInternal(-1,'Empty',false,null);
+		}
+		$this->clearChildState();
 	}
 
 	/**
@@ -335,7 +339,11 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 			$this->setViewState('ItemCount',$itemIndex,0);
 		}
 		else
+		{
+			if($this->_emptyTemplate!=='')
+				$this->_empty=$this->createItemInternal(-1,'Empty',false,null);
 			$this->setViewState('ItemCount',$itemIndex,-1);
+		}
 	}
 
 	/**

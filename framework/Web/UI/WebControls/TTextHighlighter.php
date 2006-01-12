@@ -1,7 +1,6 @@
 <?php
 
-require_once(dirname(__FILE__).'/Highlighter/geshi.php');
-
+Prado::using('System.Web.UI.WebControls.Highlighter.geshi');
 Prado::using('System.IO.TTextWriter');
 
 /**
@@ -33,14 +32,14 @@ class TTextHighlighter extends TWebControl
 		$this->setViewState('Language', $value, 'php');
 	}
 
-	public function setEnableLineNumbers($value)
+	public function setShowLineNumbers($value)
 	{
-		$this->setViewState('LineNumbers', TPropertyValue::ensureBoolean($value), false);
+		$this->setViewState('ShowLineNumbers', TPropertyValue::ensureBoolean($value), false);
 	}
 
-	public function getEnableLineNumbers()
+	public function getShowLineNumbers()
 	{
-		return $this->getViewState('LineNumbers', false);
+		return $this->getViewState('ShowLineNumbers', false);
 	}
 
 	protected function onPreRender($writer)
@@ -84,7 +83,7 @@ class TTextHighlighter extends TWebControl
 	protected function highlightText($text)
 	{
 		$geshi = new GeSHi(trim($text), $this->getLanguage());
-		if($this->getEnableLineNumbers())
+		if($this->getShowLineNumbers())
 			$geshi->enable_line_numbers(GESHI_NORMAL_LINE_NUMBERS);
 		$geshi->enable_classes();
 		return $geshi->parse_code();
