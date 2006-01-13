@@ -439,13 +439,16 @@ framework/TComponent.php -text
 framework/TODO.txt -text
 framework/Web/Javascripts/base/ajax.js -text
 framework/Web/Javascripts/base/controls.js -text
+framework/Web/Javascripts/base/date.js -text
 framework/Web/Javascripts/base/datepicker.js -text
 framework/Web/Javascripts/base/effects.js -text
 framework/Web/Javascripts/base/focus.js -text
 framework/Web/Javascripts/base/json.js -text
 framework/Web/Javascripts/base/postback.js -text
 framework/Web/Javascripts/base/prado.js -text
+framework/Web/Javascripts/base/rico.js -text
 framework/Web/Javascripts/base/scroll.js -text
+framework/Web/Javascripts/base/util.js -text
 framework/Web/Javascripts/base/validation.js -text
 framework/Web/Javascripts/base/validators.js -text
 framework/Web/Javascripts/effects/CHANGELOG -text

@@ -74,7 +74,9 @@ $libraries = array(
 		'prototype/position.js',
 		'extra/getElementsBySelector.js',
 		'extra/behaviour.js',
-		'effects/util.js'
+		'effects/util.js',
+		'base/date.js',
+		'base/util.js'
 	),
 	//effects
 	'effects.js' => array(

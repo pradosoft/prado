@@ -152,7 +152,7 @@ Prado.Validation.Util.toDate = function(value, format)
  */
 Prado.Validation.Util.trim = function(value)
 {
-	if(!isString(value)) return "";
+	if(undef(value)) return "";
 	return value.replace(/^\s+|\s+$/g, "");
 }
 
@@ -367,8 +367,6 @@ Prado.Validation.prototype =
 	 */
 	update : function()
 	{
-		Logger.info("isvalid ? " + this.isValid);
-
 		if(this.attr.display == "Dynamic")
 			this.isValid ? Element.hide(this.message) : Element.show(this.message);
 		
@@ -380,6 +378,9 @@ Prado.Validation.prototype =
 		if(this.control && isString(className) && className.length>0)
 			Element.condClassName(this.control, className, !this.isValid);
 		Prado.Validation.ShowSummary();
+
+		if(this.attr.focusonerror)
+			Prado.Element.focus(this.attr.focuselementid);
 	},
 
 	/**
@@ -670,6 +671,79 @@ Prado.Validation.OnLoad = function()
 {
 	Event.observe(Prado.Validation.forms,"submit", Prado.Validation.OnSubmit);
 }
+
+
+/**
+ * Validate Validator Groups.
+ * @param string ValidatorGroup
+ * @return boolean true if valid, false otherwise
+ */
+Prado.Validation.ValidateValidatorGroup = function(groupId)
+{
+	var groups = Prado.Validation.groups;
+	var group = null;
+	for(var i = 0; i < groups.length; i++)
+	{
+		if(groups[i].id == groupId)
+		{
+			group = groups[i];
+			Prado.Validation.groups[i].active = true;
+			Prado.Validation.CurrentTargetGroup = null;
+			Prado.Validation.IsGroupValidation = true;
+		}
+		else
+		{
+			Prado.Validation.groups[i].active = false;
+		}
+	}
+	if(group)
+	{
+		return Prado.Validation.IsValid(group.target.form);
+	}
+	return true;
+};
+
+/**
+ * Validate ValidationGroup
+ * @param string ValidationGroup
+ * @return boolean true if valid, false otherwise.
+ */
+Prado.Validation.ValidateValidationGroup= function(groupId)
+{
+	var groups = Prado.Validation.TargetGroups;
+	for(var id in groups)
+	{
+		if(groups[id] == groupId)
+		{
+			var target = $(id);
+			Prado.Validation.ActiveTarget = target;
+			Prado.Validation.CurrentTargetGroup = groupId;
+			Prado.Validation.IsGroupValidation = false;
+			return Prado.Validation.IsValid(target.form);
+		}
+	}
+	return true;
+};
+
+/**
+ * Validate the page
+ * @return boolean true if valid, false otherwise.
+ */
+Prado.Validation.ValidateNonGroup= function(formId)
+{
+	if(Prado.Validation)
+	{
+		var form = $(formId);
+		form = form || document.forms[0];
+		Prado.Validation.ActiveTarget = form;
+		Prado.Validation.CurrentTargetGroup = null;
+		Prado.Validation.IsGroupValidation = false;
+		return Prado.Validation.IsValid(form);
+	}
+	return true;
+};
+	
+
 
 /**
  * Register Prado.Validation.Onload() for window.onload event.

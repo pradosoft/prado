@@ -386,86 +386,16 @@ Prado.AJAX.Validate = function(options)
 	if(options.CausesValidation)
 	{
 		if(options.ValidatorGroup)
-			return Prado.AJAX.ValidateGroup1(options.ValidatorGroup);
+			return Prado.Validation.ValidateValidatorGroup(options.ValidatorGroup);
 		else if(options.ValidationGroup)
-			return Prado.AJAX.ValidateGroup2(options.ValidationGroup);
+			return Prado.Validation.ValidateValidationGroup(options.ValidationGroup);
 		else
-			return Prado.AJAX.ValidateOthers(options.ValidationForm);
+			return Prado.Validation.ValidateNonGroup(options.ValidationForm);
 	}
 	else
 		return true;
 };
 
-/**
- * Validate Validator Groups.
- * @param string ValidatorGroup
- * @return boolean true if valid, false otherwise
- */
-Prado.AJAX.ValidateGroup1 = function(groupId)
-{
-	var groups = Prado.Validation.groups;
-	var group = null;
-	for(var i = 0; i < groups.length; i++)
-	{
-		if(groups[i].id == groupId)
-		{
-			group = groups[i];
-			Prado.Validation.groups[i].active = true;
-			Prado.Validation.CurrentTargetGroup = null;
-			Prado.Validation.IsGroupValidation = true;
-		}
-		else
-		{
-			Prado.Validation.groups[i].active = false;
-		}
-	}
-	if(group)
-	{
-		return Prado.Validation.IsValid(group.target.form);
-	}
-	return true;
-};
-
-/**
- * Validate ValidationGroup
- * @param string ValidationGroup
- * @return boolean true if valid, false otherwise.
- */
-Prado.AJAX.ValidateGroup2 = function(groupId)
-{
-	var groups = Prado.Validation.TargetGroups;
-	for(var id in groups)
-	{
-		if(groups[id] == groupId)
-		{
-			var target = $(id);
-			Prado.Validation.ActiveTarget = target;
-			Prado.Validation.CurrentTargetGroup = groupId;
-			Prado.Validation.IsGroupValidation = false;
-			return Prado.Validation.IsValid(target.form);
-		}
-	}
-	return true;
-};
-
-/**
- * Validate the page
- * @return boolean true if valid, false otherwise.
- */
-Prado.AJAX.ValidateOthers = function(formId)
-{
-	if(Prado.Validation)
-	{
-		var form = $(formId);
-		form = form || document.forms[0];
-		Prado.Validation.ActiveTarget = form;
-		Prado.Validation.CurrentTargetGroup = null;
-		Prado.Validation.IsGroupValidation = false;
-		return Prado.Validation.IsValid(form);
-	}
-	return true;
-};
-	
 
 //Available callback service
 Prado.AJAX.Callback.Server = '';

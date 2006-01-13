@@ -1,7 +1,13 @@
 <com:TForm>
 <h1>Basic TRequiredFieldValidator Test1</h1>
 	<com:TTextBox ID="text1" />
-	<com:TRequiredFieldValidator ID="validator1" ControlToValidate="text1" ErrorMessage="*" />
+	<com:TRequiredFieldValidator 
+		ID="validator1" 
+		FocusOnError="true" 
+		FocusElementID="text2"
+		ControlToValidate="text1" 
+		ErrorMessage="*" />
 	<com:TButton ID="button1" Text="Click" />
+	<com:TTextBox ID="text2" />
 	<com:TJavascriptLogger />
 </com:TForm>

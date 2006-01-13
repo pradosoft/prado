@@ -69,6 +69,17 @@ Prado.Element =
 			for(var i = 0; i<options.length; i++)
 				el.options[el.options.length] = new Option(options[i][0],options[i][1]);
 		}
+	},
+/**
+ * A delayed focus on a particular element
+ * @param {element} element to apply focus()
+ */
+	focus : function(element)
+	{
+		var obj = $(element);
+		if(isObject(obj) && isdef(obj.focus))
+			setTimeout(function(){ obj.focus(); }, 100);
+		return false;
 	}
 }
 

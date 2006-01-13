@@ -83,7 +83,7 @@ return (isObject(_27)&&y==_27.getFullYear()&&m==_27.getMonth()&&d==_27.getDate()
 return null;
 };
 Prado.Validation.Util.trim=function(_28){
-if(!isString(_28)){
+if(undef(_28)){
 return "";
 }
 return _28.replace(/^\s+|\s+$/g,"");
@@ -185,6 +185,9 @@ if(this.control&&isString(_43)&&_43.length>0){
 Element.condClassName(this.control,_43,!this.isValid);
 }
 Prado.Validation.ShowSummary();
+if(this.attr.focusonerror){
+Prado.Element.focus(this.attr.focuselementid);
+}
 },setValid:function(_44){
 this.isValid=_44;
 this.update();
@@ -346,6 +349,48 @@ return _64;
 Prado.Validation.OnLoad=function(){
 Event.observe(Prado.Validation.forms,"submit",Prado.Validation.OnSubmit);
 };
+Prado.Validation.ValidateValidatorGroup=function(_65){
+var _66=Prado.Validation.groups;
+var _67=null;
+for(var i=0;i<_66.length;i++){
+if(_66[i].id==_65){
+_67=_66[i];
+Prado.Validation.groups[i].active=true;
+Prado.Validation.CurrentTargetGroup=null;
+Prado.Validation.IsGroupValidation=true;
+}else{
+Prado.Validation.groups[i].active=false;
+}
+}
+if(_67){
+return Prado.Validation.IsValid(_67.target.form);
+}
+return true;
+};
+Prado.Validation.ValidateValidationGroup=function(_68){
+var _69=Prado.Validation.TargetGroups;
+for(var id in _69){
+if(_69[id]==_68){
+var _70=$(id);
+Prado.Validation.ActiveTarget=_70;
+Prado.Validation.CurrentTargetGroup=_68;
+Prado.Validation.IsGroupValidation=false;
+return Prado.Validation.IsValid(_70.form);
+}
+}
+return true;
+};
+Prado.Validation.ValidateNonGroup=function(_71){
+if(Prado.Validation){
+var _72=$(_71);
+_72=_72||document.forms[0];
+Prado.Validation.ActiveTarget=_72;
+Prado.Validation.CurrentTargetGroup=null;
+Prado.Validation.IsGroupValidation=false;
+return Prado.Validation.IsValid(_72);
+}
+return true;
+};
 Event.OnLoad(Prado.Validation.OnLoad);
 
 Prado.Validation.TRequiredFieldValidator=function(){
@@ -353,15 +398,15 @@ var _1=this.control.getAttribute("type");
 if(_1=="file"){
 return true;
 }else{
-var _2=Prado.Validation.Util.trim;
-var a=_2($F(this.control));
+var _2=Prado.Util.trim;
+var a=_2(Form.Element.getValue(this.control));
 var b=_2(this.attr.initialvalue);
 return (a!=b);
 }
 };
 Prado.Validation.TRegularExpressionValidator=function(){
-var _5=Prado.Validation.Util.trim;
-var _6=_5($F(this.control));
+var _5=Prado.Util.trim;
+var _6=_5(Form.Element.getValue(this.control));
 if(_6==""){
 return true;
 }
@@ -377,8 +422,8 @@ eval("var validate = "+_10);
 return validate&&isFunction(validate)?validate(this,_9):true;
 };
 Prado.Validation.TRangeValidator=function(){
-var _11=Prado.Validation.Util.trim;
-var _12=_11($F(this.control));
+var _11=Prado.Util.trim;
+var _12=_11(Form.Element.getValue(this.control));
 if(_12==""){
 return true;
 }
@@ -403,15 +448,15 @@ _12=this.convert(_15,_12);
 return _12>=min&&_12<=max;
 };
 Prado.Validation.TCompareValidator=function(){
-var _18=Prado.Validation.Util.trim;
-var _19=_18($F(this.control));
+var _18=Prado.Util.trim;
+var _19=_18(Form.Element.getValue(this.control));
 if(_19.length==0){
 return true;
 }
 var _20;
 var _21=$(this.attr.controlhookup);
 if(_21){
-_20=_18($F(_21));
+_20=_18(Form.Element.getValue(_21));
 }else{
 _20=isString(this.attr.valuetocompare)?this.attr.valuetocompare:"";
 }
