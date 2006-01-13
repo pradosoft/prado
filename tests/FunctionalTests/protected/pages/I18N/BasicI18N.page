@@ -1,28 +1,5 @@
-<%@ Application.Globalization.Culture="zh_CN" %>
-<!DOCTYPE HTML PUBLIC 
-	"-//W3C//DTD XHTML 1.0 Strict//EN" 
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-	
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-	<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
-	<title>Basic I18N Test</title>
-	<style type="text/css">
-	/*<![CDATA[*/
-	body
-	{
-		font-family: Georgia, "Times New Roman", Times, serif;
-	}
-	.w3c
-	{
-		margin-top: 2em;
-		display: block;
-	}
-	/*]]>*/
-	</style>
-</head>
-
-<body>
+<%@ Title="Basic I18N Test" %>
+<com:TContent ID="Content">
 <h1>Basic I18N Test</h1>
 <com:TTranslate>
 	Hello {name}
@@ -51,11 +28,4 @@
 	[0] None |[1] One thing. |[2,Inf) Many things.
 </com:TChoiceFormat>
 </div>
-
-<div class="w3c">
-<a href="http://validator.w3.org/check?uri=referer">
-		Validate XHTML 1.0
-</a>
-</div>
-</body>
-</html>
+</com:TContent>

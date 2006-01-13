@@ -2,9 +2,10 @@
 
 class RequiredFieldValidator extends TPage
 {
-	function onLoad($param)
+	protected function onLoad($param)
 	{
-		Prado::log("Hello", TLogger::WARNING);
+		if(!$this->IsPostBack)
+			$this->dataBind();
 	}
 }
 
