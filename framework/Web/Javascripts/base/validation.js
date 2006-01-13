@@ -349,13 +349,9 @@ Prado.Validation.prototype =
 	validate : function()
 	{		
 		if(this.visible && this.enabled && this.evaluateIsValid)
-		{
 			this.isValid = this.evaluateIsValid();
-		}
 		else
-		{
 			this.isValid = true;
-		}
 		
 		this.observe(); //watch for changes to the control values
 		this.update(); //update the validation messages
@@ -379,7 +375,11 @@ Prado.Validation.prototype =
 			Element.condClassName(this.control, className, !this.isValid);
 		Prado.Validation.ShowSummary();
 
-		if(this.attr.focusonerror)
+		var focus = this.attr.focusonerror;
+		var hasGroup = Prado.Validation.HasTargetGroup;
+		var inGroup = this.group == Prado.Validation.CurrentTargetGroup;
+
+		if(focus && (!hasGroup || (hasGroup && inGroup)))
 			Prado.Element.focus(this.attr.focuselementid);
 	},
 
@@ -394,14 +394,14 @@ Prado.Validation.prototype =
 	},
 
 	/**
-	 * Observe changes to the control values, add "onblur" event to the control once.
+	 * Observe changes to the control values, add "onchange" event to the control once.
 	 */
 	observe : function()
 	{
 		if(undef(this.observing))
 		{
 			if(this.control && this.control.form)
-				Event.observe(this.control, "blur", this.validate.bind(this));
+				Event.observe(this.control, "change", this.validate.bind(this));
 			this.observing = true;
 		}
 	},
