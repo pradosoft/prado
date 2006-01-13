@@ -10,32 +10,32 @@
  * @package System.Web.UI.WebControls
  */
 
+/**
+ * Using TDataBoundControl cass
+ */
 Prado::using('System.Web.UI.WebControls.TDataBoundControl');
 
 /**
  * TRepeater class
  *
  * TRepeater displays its content defined in templates repeatedly based on
- * the <b>DataSource</b> property. The <b>DataSource</b> property only accepts
- * objects that implement Iterator or IteratorAggregate interface. For convenience,
- * it also accepts an array.
+ * the given data specified by the {@link setDataSource DataSource} or
+ * {@link setDataSourceID DataSourceID} property. The templates can contain
+ * static text, controls and special tags.
  *
- * The <b>HeaderTemplate</b> property specifies the content template
- * that will be displayed at the beginning, while <b>FooterTemplate</b> at the last.
- * If present, these two templates will only be rendered when <b>DataSource</b> is set (not null).
- * If the <b>DataSource</b> contains item data, then for each item,
- * the content defined by <b>ItemTemplate</b> will be generated and displayed once.
- * If <b>AlternatingItemTemplate</b> is not empty, then the corresponding content will
- * be displayed alternatively with that in <b>ItemTemplate</b>. The content in
- * <b>SeparatorTemplate</b>, if not empty, will be displayed between two items.
- * These templates can contain static text, controls and special tags.
+ * The {@link setHeaderTemplate HeaderTemplate} property specifies the content
+ * template that will be displayed at the beginning, while
+ * {@link setFooterTemplate FooterTemplate} at the end.
+ * If present, these two templates will only be rendered when the repeater is
+ * given non-empty data. In this case, for each data item the content defined
+ * by {@link setItemTemplate ItemTemplate} will be generated and displayed once.
+ * If {@link setAlternatingItemTemplate AlternatingItemTemplate} is not empty,
+ * then the corresponding content will be displayed alternatively with that
+ * in {@link setItemTemplate ItemTemplate}. The content in
+ * {@link setSeparatorTemplate SeparatorTemplate}, if not empty, will be
+ * displayed between items.
  *
- * Note, the templates are only parsed and instantiated upon <b>OnDataBinding</b>
- * event which is raised by calling <b>TControl::dataBind()</b> method. You may
- * call this method during <b>OnInit</b> or <b>OnLoad</b> life cycles.
- *
- * You can retrive the repeated contents by <b>Items</b>.
- * The number of repeated items is given by <b>ItemCount</b>.
+ * You can retrive the repeated contents by the {@link getItems Items} property.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -44,18 +44,52 @@ Prado::using('System.Web.UI.WebControls.TDataBoundControl');
  */
 class TRepeater extends TDataBoundControl implements INamingContainer
 {
+	/**
+	 * Number of seconds that a cached template will expire after
+	 */
 	const CACHE_EXPIRY=18000;
+	/**
+	 * @var string template for each item
+	 */
 	private $_itemTemplate='';
+	/**
+	 * @var string template for each alternating item
+	 */
 	private $_alternatingItemTemplate='';
+	/**
+	 * @var string template for header
+	 */
 	private $_headerTemplate='';
+	/**
+	 * @var string template for footer
+	 */
 	private $_footerTemplate='';
+	/**
+	 * @var string template for separator
+	 */
 	private $_separatorTemplate='';
-	private $_emptyTemplate='';
+	/**
+	 * @var TRepeaterItemCollection list of repeater items
+	 */
 	private $_items=null;
+	/**
+	 * @var TRepeaterItem header item
+	 */
 	private $_header=null;
+	/**
+	 * @var TRepeaterItem footer item
+	 */
 	private $_footer=null;
+	/**
+	 * @var array in-memory cache of parsed templates
+	 */
 	private static $_templates=array();
 
+	/**
+	 * No body content should be added to repeater.
+	 * This method is invoked when body content is parsed and added to this control.
+	 * @param mixed body content to be added
+	 */
 	public function addParsedObject($object)
 	{
 	}
@@ -77,22 +111,6 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 		$this->_itemTemplate=$value;
 	}
 
-	/**
-	 * @return string the template string when there are no items
-	 */
-	public function getEmptyTemplate()
-	{
-		return $this->_emptyTemplate;
-	}
-
-	/**
-	 * Sets the template string when there are no items
-	 * @param string the empty template
-	 */
-	public function setEmptyTemplate($value)
-	{
-		$this->_emptyTemplate=$value;
-	}
 	/**
 	 * @return string the alternative template string for the item
 	 */
@@ -120,7 +138,6 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 
 	/**
 	 * Sets the header template.
-	 * The template will be parsed immediately.
 	 * @param string the header template
 	 */
 	public function setHeaderTemplate($value)
@@ -138,7 +155,6 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 
 	/**
 	 * Sets the footer template.
-	 * The template will be parsed immediately.
 	 * @param string the footer template
 	 */
 	public function setFooterTemplate($value)
@@ -180,20 +196,62 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	}
 
 	/**
-	 * @return array list of TRepeaterItem control
+	 * @return TRepeaterItemCollection list of {@link TRepeaterItem} controls
 	 */
 	public function getItems()
 	{
 		if(!$this->_items)
-			$this->_items=new TList;
+			$this->_items=new TRepeaterItemCollection;
 		return $this->_items;
 	}
 
+	/**
+	 * Creates a repeater item instance based on the item type and index.
+	 * @param integer zero-based item index
+	 * @param string item type, may be 'Header', 'Footer', 'Item', 'Separator', 'AlternatingItem', 'SelectedItem', 'EditItem'.
+	 * @return TRepeaterItem created repeater item
+	 */
 	protected function createItem($itemIndex,$itemType)
 	{
 		return new TRepeaterItem($itemIndex,$itemType);
 	}
 
+	/**
+	 * Creates a repeater item and does databinding if needed.
+	 * This method invokes {@link createItem} to create a new repeater item.
+	 * @param integer zero-based item index.
+	 * @param string item type, may be 'Header', 'Footer', 'Item', 'Separator', 'AlternatingItem', 'SelectedItem', 'EditItem'.
+	 * @param boolean whether to do databinding for the item
+	 * @param mixed data to be associated with the item
+	 */
+	private function createItemInternal($itemIndex,$itemType,$dataBind,$dataItem)
+	{
+		$item=$this->createItem($itemIndex,$itemType);
+		$this->initializeItem($item);
+		$param=new TRepeaterItemEventParameter($item);
+		if($dataBind)
+		{
+			$item->setDataItem($dataItem);
+			$this->onItemCreated($param);
+			$this->getControls()->add($item);
+			$item->dataBind();
+			$this->onItemDataBound($param);
+			$item->setDataItem(null);
+		}
+		else
+		{
+			$this->onItemCreated($param);
+			$this->getControls()->add($item);
+		}
+		return $item;
+	}
+
+	/**
+	 * Initializes a repeater item.
+	 * The item is added as a child of the repeater and the corresponding
+	 * template is instantiated within the item.
+	 * @param TRepeaterItem item to be initialized
+	 */
 	protected function initializeItem($item)
 	{
 		$tplContent='';
@@ -231,31 +289,23 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 					self::$_templates[$key]=$template;
 				}
 			}
-			$this->getControls()->add($item);
 			$template->instantiateIn($item);
 		}
 	}
 
-	private function createItemInternal($itemIndex,$itemType,$dataBind,$dataItem)
+	/**
+	 * Renders the repeater.
+	 * This method overrides the parent implementation by rendering the body
+	 * content as the whole presentation of the repeater. Outer tag is not rendered.
+	 * @param THtmlWriter writer
+	 */
+	protected function render($writer)
 	{
-		$item=$this->createItem($itemIndex,$itemType);
-		$this->initializeItem($item);
-		$param=new TRepeaterItemEventParameter($item);
-		if($dataBind)
-		{
-			$item->setDataItem($dataItem);
-			$this->onItemCreated($param);
-			$item->dataBind();
-			$this->onItemDataBound($param);
-			$item->setDataItem(null);
-		}
-		else
-			$this->onItemCreated($param);
-		return $item;
+		$this->renderContents($writer);
 	}
 
 	/**
-	 * Saves items into viewstate.
+	 * Saves item count in viewstate.
 	 * This method is invoked right before control state is to be saved.
 	 * @param mixed event parameter
 	 */
@@ -268,7 +318,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	}
 
 	/**
-	 * Loads items into from viewstate.
+	 * Loads item count information from viewstate.
 	 * This method is invoked right after control state is loaded.
 	 * @param mixed event parameter
 	 */
@@ -279,6 +329,9 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 		$this->clearViewState('ItemCount');
 	}
 
+	/**
+	 * Creates repeater items based on viewstate information.
+	 */
 	protected function restoreItemsFromViewState()
 	{
 		$this->getControls()->clear();
@@ -301,15 +354,11 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 			if($this->_footerTemplate!=='')
 				$this->_footer=$this->createItemInternal(-1,'Footer',false,null);
 		}
-		else if($this->_emptyTemplate!=='')
-		{
-			$this->_empty=$this->createItemInternal(-1,'Empty',false,null);
-		}
 		$this->clearChildState();
 	}
 
 	/**
-	 * Performs databinding to populate list items from data source.
+	 * Performs databinding to populate repeater items from data source.
 	 * This method is invoked by dataBind().
 	 * You may override this function to provide your own way of data population.
 	 * @param Traversable the data
@@ -323,38 +372,31 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 		$itemIndex=0;
 		if($data!==null)
 		{
-			if($this->_headerTemplate!=='')
-				$this->_header=$this->createItemInternal(-1,'Header',true,null);
 			$hasSeparator=$this->_separatorTemplate!=='';
 			foreach($data as $dataItem)
 			{
+				if($itemIndex===0 && $this->_headerTemplate!=='')
+					$this->_header=$this->createItemInternal(-1,'Header',true,null);
 				if($hasSeparator && $itemIndex>0)
 					$this->createItemInternal($itemIndex-1,'Separator',true,null);
 				$itemType=$itemIndex%2==0?'Item':'AlternatingItem';
 				$items->add($this->createItemInternal($itemIndex,$itemType,true,$dataItem));
 				$itemIndex++;
 			}
-			if($this->_footerTemplate!=='')
+			if($itemIndex>0 && $this->_footerTemplate!=='')
 				$this->_footer=$this->createItemInternal(-1,'Footer',true,null);
-			$this->setViewState('ItemCount',$itemIndex,0);
 		}
-		else
-		{
-			if($this->_emptyTemplate!=='')
-				$this->_empty=$this->createItemInternal(-1,'Empty',false,null);
-			$this->setViewState('ItemCount',$itemIndex,-1);
-		}
+		$this->setViewState('ItemCount',$itemIndex,0);
 	}
 
 	/**
-	 * Raises <b>OnItemCreated</b> event.
-	 * This method is invoked after a repeater item is created.
-	 * You may override this method to provide customized event handling.
-	 * Be sure to call parent's implementation so that
-	 * event handlers have chance to respond to the event.
-	 * The TRepeaterItem control responsible for the event
-	 * can be determined from the event parameter's <b>item</b>
-	 * field.
+	 * Raises <b>ItemCreated</b> event.
+	 * This method is invoked after a repeater item is created and instantiated with
+	 * template, but before added to the page hierarchy.
+	 * The {@link TRepeaterItem} control responsible for the event
+	 * If you override this method, be sure to call parent's implementation
+	 * so that event handlers have chance to respond to the event.
+	 * can be determined from the event parameter.
 	 * @param TRepeaterItemEventParameter event parameter
 	 */
 	protected function onItemCreated($param)
@@ -363,10 +405,24 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	}
 
 	/**
-	 * Handles <b>OnBubbleEvent</b>.
+	 * Raises <b>ItemDataBound</b> event.
+	 * This method is invoked right after an item is data bound.
+	 * The {@link TRepeaterItem} control responsible for the event
+	 * If you override this method, be sure to call parent's implementation
+	 * so that event handlers have chance to respond to the event.
+	 * can be determined from the event parameter.
+	 * @param TRepeaterItemEventParameter event parameter
+	 */
+	protected function onItemDataBound($param)
+	{
+		$this->raiseEvent('ItemDataBound',$this,$param);
+	}
+
+	/**
+	 * Handles <b>BubbleEvent</b>.
 	 * This method overrides parent's implementation to handle
-	 * <b>OnItemCommand</b> event that is bubbled from
-	 * TRepeaterItem child controls.
+	 * {@link onItemCommand ItemCommand} event which is bubbled from
+	 * {@link TRepeaterItem} child controls.
 	 * This method should only be used by control developers.
 	 * @param TControl the sender of the event
 	 * @param TEventParameter event parameter
@@ -384,39 +440,36 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	}
 
 	/**
-	 * Raises <b>OnItemCommand</b> event.
+	 * Raises <b>ItemCommand</b> event.
 	 * This method is invoked after a button control in
-	 * a template raises <b>OnCommand</b> event.
+	 * a template raises <b>Command</b> event.
+	 * The {@link TRepeaterItem} control responsible for the event
+	 * can be determined from the event parameter.
+	 * The event parameter also contains the information about
+	 * the initial sender of the <b>Command</b> event, command name
+	 * and command parameter.
 	 * You may override this method to provide customized event handling.
 	 * Be sure to call parent's implementation so that
 	 * event handlers have chance to respond to the event.
-	 * The TRepeaterItem control responsible for the event
-	 * can be determined from the event parameter's <b>item</b>
-	 * field. The initial sender of the <b>OnCommand</b> event
-	 * is in <b>source</b> field. The command name and parameter
-	 * are in <b>name</b> and <b>parameter</b> fields, respectively.
 	 * @param TRepeaterCommandEventParameter event parameter
 	 */
 	protected function onItemCommand($param)
 	{
 		$this->raiseEvent('ItemCommand',$this,$param);
 	}
-
-	protected function onItemDataBound($param)
-	{
-		$this->raiseEvent('ItemDataBound',$this,$param);
-	}
 }
 
 /**
  * TRepeaterItemEventParameter class
  *
- * TRepeaterItemEventParameter encapsulates the parameter data for <b>OnItemCreated</b>
- * event of TRepeater controls.
+ * TRepeaterItemEventParameter encapsulates the parameter data for
+ * {@link TRepeater::onItemCreated ItemCreated} event of {@link TRepeater} controls.
+ * The {@link getItem Item} property indicates the repeater item related with the event.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version v1.0, last update on 2004/08/13 21:44:52
+ * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
+ * @since 3.0
  */
 class TRepeaterItemEventParameter extends TEventParameter
 {
@@ -424,13 +477,20 @@ class TRepeaterItemEventParameter extends TEventParameter
 	 * The TRepeaterItem control responsible for the event.
 	 * @var TRepeaterItem
 	 */
-	public $_item=null;
+	private $_item=null;
 
+	/**
+	 * Constructor.
+	 * @param TRepeaterItem repeater item related with the corresponding event
+	 */
 	public function __construct(TRepeaterItem $item)
 	{
 		$this->_item=$item;
 	}
 
+	/**
+	 * @return TRepeaterItem repeater item related with the corresponding event
+	 */
 	public function getItem()
 	{
 		return $this->_item;
@@ -440,26 +500,35 @@ class TRepeaterItemEventParameter extends TEventParameter
 /**
  * TRepeaterCommandEventParameter class
  *
- * TRepeaterCommandEventParameter encapsulates the parameter data for <b>OnItemCommand</b>
- * event of TRepeater controls.
+ * TRepeaterCommandEventParameter encapsulates the parameter data for
+ * {@link TRepeater::onItemCommand ItemCommand} event of {@link TRepeater} controls.
+ *
+ * The {@link getItem Item} property indicates the repeater item related with the event.
+ * The {@link getCommandSource CommandSource} refers to the control that originally
+ * raises the Command event.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version v1.0, last update on 2004/08/13 21:44:52
+ * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
+ * @since 3.0
  */
 class TRepeaterCommandEventParameter extends TCommandEventParameter
 {
 	/**
-	 * The TRepeaterItem control responsible for the event.
-	 * @var TRepeaterItem
+	 * @var TRepeaterItem the TRepeaterItem control responsible for the event.
 	 */
-	public $_item=null;
+	private $_item=null;
 	/**
-	 * The control originally raises the <b>Command</b> event.
-	 * @var TControl
+	 * @var TControl the control originally raises the <b>Command</b> event.
 	 */
-	public $_source=null;
+	private $_source=null;
 
+	/**
+	 * Constructor.
+	 * @param TRepeaterItem repeater item responsible for the event
+	 * @param TControl original event sender
+	 * @param TCommandEventParameter original event parameter
+	 */
 	public function __construct($item,$source,TCommandEventParameter $param)
 	{
 		$this->_item=$item;
@@ -467,17 +536,37 @@ class TRepeaterCommandEventParameter extends TCommandEventParameter
 		parent::__construct($param->getCommandName(),$param->getCommandParameter());
 	}
 
+	/**
+	 * @return TRepeaterItem the TRepeaterItem control responsible for the event.
+	 */
 	public function getItem()
 	{
 		return $this->_item;
 	}
 
+	/**
+	 * @return TControl the control originally raises the <b>Command</b> event.
+	 */
 	public function getCommandSource()
 	{
 		return $this->_source;
 	}
 }
 
+/**
+ * TRepeaterItem class
+ *
+ * A TRepeaterItem control represents an item in the {@link TRepeater} control,
+ * such as heading section, footer section, or a data item.
+ * The index and data value of the item can be accessed via {@link getItemIndex ItemIndex}>
+ * and {@link getDataItem DataItem} properties, respectively. The type of the item
+ * is given by {@link getItemType ItemType} property.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 class TRepeaterItem extends TControl implements INamingContainer
 {
 	/**
@@ -495,38 +584,53 @@ class TRepeaterItem extends TControl implements INamingContainer
 	 */
 	private $_dataItem=null;
 
+	/**
+	 * Constructor.
+	 * @param integer zero-based index of the item in the item collection of repeater
+	 * @param string item type, can be 'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager'.
+	 */
 	public function __construct($itemIndex,$itemType)
 	{
 		$this->_itemIndex=$itemIndex;
 		$this->_itemType=TPropertyValue::ensureEnum($itemType,'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager');
 	}
 
+	/**
+	 * @return string item type, can be 'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager'
+	 */
 	public function getItemType()
 	{
 		return $this->_itemType;
 	}
 
+	/**
+	 * @return integer zero-based index of the item in the item collection of repeater
+	 */
 	public function getItemIndex()
 	{
 		return $this->_itemIndex;
 	}
 
+	/**
+	 * @return mixed data associated with the item
+	 */
 	public function getDataItem()
 	{
 		return $this->_dataItem;
 	}
 
+	/**
+	 * @param mixed data to be associated with the item
+	 */
 	public function setDataItem($value)
 	{
 		$this->_dataItem=$value;
 	}
 
 	/**
-	 * Handles <b>OnBubbleEvent</b>.
-	 * This method overrides parent's implementation to bubble
-	 * <b>OnItemCommand</b> event if an <b>OnCommand</b>
-	 * event is bubbled from a child control.
-	 * This method should only be used by control developers.
+	 * Handles <b>BubbleEvent</b>.
+	 * This method overrides parent's implementation by wrapping event parameter
+	 * for <b>Command</b> event with item information.
 	 * @param TControl the sender of the event
 	 * @param TEventParameter event parameter
 	 * @return boolean whether the event bubbling should stop here.
@@ -540,6 +644,31 @@ class TRepeaterItem extends TControl implements INamingContainer
 		}
 		else
 			return false;
+	}
+}
+
+/**
+ * TRepeaterItemCollection class.
+ *
+ * TRepeaterItemCollection represents a collection of repeater items.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
+class TRepeaterItemCollection extends TList
+{
+	/**
+	 * Returns true only when the item to be added is a {@link TRepeaterItem}.
+	 * This method is invoked before adding an item to the list.
+	 * If it returns true, the item will be added to the list, otherwise not.
+	 * @param mixed item to be added
+	 * @return boolean whether the item can be added to the list
+	 */
+	protected function canAddItem($item)
+	{
+		return ($item instanceof TRepeaterItem);
 	}
 }
 

@@ -14,6 +14,9 @@ implements <com:TTextBox ID="Interfaces" CssClass="slTextBox"/>
 </com:TPanel>
 
 <com:TPanel GroupingText="Property Definitions">
+<com:TRepeater ID="PropertyList" ItemCommand="itemAction">
+
+<prop:HeaderTemplate>
 <table>
 <tr>
   <th>Name</th>
@@ -24,7 +27,12 @@ implements <com:TTextBox ID="Interfaces" CssClass="slTextBox"/>
   <th>Comments</th>
   <th>Actions</th>
 </tr>
-<com:TRepeater ID="PropertyList" ItemCommand="itemAction">
+</prop:HeaderTemplate>
+
+<prop:FooterTemplate>
+</table>
+</prop:FooterTemplate>
+
 <prop:ItemTemplate>
 <tr>
   <td>
@@ -58,29 +66,49 @@ implements <com:TTextBox ID="Interfaces" CssClass="slTextBox"/>
   <com:TTextBox ID="Comments" Text=<%# $this->Parent->DataItem->Comments %> CssClass="slTextBox"/>
   </td>
   <td>
-  <com:TButton ID="AddButton"
-  		Text="Add"
-  		CommandName="add"
-  		CommandParameter=<%# $this->Parent->ItemIndex %> />
-  <com:TButton ID="RemoveButton"
+  <com:TButton
   		Text="Remove"
   		CommandName="remove"
-  		CommandParameter=<%# $this->Parent->ItemIndex %> />
+  		CommandParameter=<%# $this->Parent->ItemIndex %>
+  		/>
+  <com:TButton
+  		Text="Up"
+  		CommandName="up"
+  		CommandParameter=<%# $this->Parent->ItemIndex %>
+  		Enabled=<%# $this->Parent->ItemIndex > 0%>
+  		/>
+  <com:TButton
+  		Text="Down"
+  		CommandName="down"
+  		CommandParameter=<%# $this->Parent->ItemIndex %>
+  		Enabled=<%# $this->Parent->ItemIndex < $this->Page->ClassDefinition->Properties->Count-1 %>
+  		/>
   </td>
 </tr>
 </prop:ItemTemplate>
+
 </com:TRepeater>
-</table>
+
+<com:TButton Text="New Property" Click="addProperty" />
+
 </com:TPanel>
 
 <com:TPanel GroupingText="Event Definitions">
+<com:TRepeater ID="EventList" ItemCommand="itemAction">
+
+<prop:HeaderTemplate>
 <table>
 <tr>
   <th>Name</th>
   <th>Comments</th>
   <th>Actions</th>
 </tr>
-<com:TRepeater ID="EventList" ItemCommand="itemAction">
+</prop:HeaderTemplate>
+
+<prop:FooterTemplate>
+</table>
+</prop:FooterTemplate>
+
 <prop:ItemTemplate>
 <tr>
   <td>
@@ -101,8 +129,11 @@ implements <com:TTextBox ID="Interfaces" CssClass="slTextBox"/>
   </td>
 </tr>
 </prop:ItemTemplate>
+
 </com:TRepeater>
-</table>
+
+<com:TButton Text="New Event" Click="addEvent" />
+
 </com:TPanel>
 
 <br/>

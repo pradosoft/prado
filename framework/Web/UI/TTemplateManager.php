@@ -233,8 +233,9 @@ class TTemplate extends TComponent implements ITemplate
 	 */
 	public function instantiateIn($tplControl)
 	{
-		$page=$tplControl->getPage();
-		$this->_assetManager=$page->getService()->getAssetManager();
+		if(($page=$tplControl->getPage())===null)
+			$page=$this->getService()->getRequestedPage();
+		$this->_assetManager=$this->getService()->getAssetManager();
 		$controls=array();
 		foreach($this->_tpl as $key=>$object)
 		{

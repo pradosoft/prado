@@ -28,6 +28,7 @@ class Home extends TPage
 	protected function refresh()
 	{
 		$this->PropertyList->DataSource=$this->ClassDefinition->Properties;
+		$this->EventList->DataSource=$this->ClassDefinition->Events;
 		$this->dataBind();
 	}
 
@@ -37,10 +38,26 @@ class Home extends TPage
 		{
 			$this->ClassDefinition->Properties->removeAt($param->CommandParameter);
 		}
-		else if($param->CommandName==='add')
+		else if($param->CommandName==='up')
 		{
-			$this->ClassDefinition->Properties->insert($param->CommandParameter+1,new PropertyDefinition);
+			//$this->ClassDefinition->Properties->insert($param->CommandParameter+1,new PropertyDefinition);
 		}
+		else if($param->CommandName==='down')
+		{
+			//$this->ClassDefinition->Properties->insert($param->CommandParameter+1,new PropertyDefinition);
+		}
+		$this->refresh();
+	}
+
+	public function addProperty($sender,$param)
+	{
+		$this->ClassDefinition->Properties->add(new PropertyDefinition);
+		$this->refresh();
+	}
+
+	public function addEvent($sender,$param)
+	{
+		$this->ClassDefinition->Events->add(new EventDefinition);
 		$this->refresh();
 	}
 
@@ -69,6 +86,13 @@ class Home extends TPage
 				$property->Comments=$item->Comments->Text;
 				$property->Storage=$item->Storage->Text;
 				$def->Properties[]=$property;
+			}
+			foreach($this->EventList->Items as $item)
+			{
+				$event=new EventDefinition;
+				$event->Name=$item->EventName->Text;
+				$event->Comments=$item->Comments->Text;
+				$def->Events[]=$event;
 			}
 		}
 	}
