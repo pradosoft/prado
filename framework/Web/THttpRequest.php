@@ -288,6 +288,14 @@ class THttpRequest extends TModule
 	}
 
 	/**
+	 * @return TMap list of input variables, include GET, POST
+	 */	
+	public function getParameters()
+	{
+		return $this->_items;
+	}
+
+	/**
 	 * @return THttpCookieCollection list of cookies to be sent
 	 */
 	public function getCookies()

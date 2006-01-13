@@ -19,7 +19,7 @@
 /**
  * This package requires HTMLSax3 package
  */
-Prado::using('System.IO..SafeHtml.HTMLSax3');
+Prado::using('System.3rdParty.SafeHtml.HTMLSax3');
 
  
 /**
@@ -55,7 +55,7 @@ Prado::using('System.IO..SafeHtml.HTMLSax3');
  * @version    Release: @package_version@
  * @link       http://pear.php.net/package/SafeHTML
  */
-class TSafeHtml
+class TSafeHtmlParser
 {
     /**
      * Storage for resulting HTML output
