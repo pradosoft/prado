@@ -156,27 +156,24 @@ abstract class TListControl extends TDataBoundControl
 		$items=$this->getItems();
 		if(!$this->getAppendDataBoundItems())
 			$items->clear();
-		if($data instanceof Traversable)
+		$textField=$this->getDataTextField();
+		if($textField==='')
+			$textField=0;
+		$valueField=$this->getDataValueField();
+		if($valueField==='')
+			$valueField=1;
+		$textFormat=$this->getDataTextFormatString();
+		foreach($data as $object)
 		{
-			$textField=$this->getDataTextField();
-			if($textField==='')
-				$textField=0;
-			$valueField=$this->getDataValueField();
-			if($valueField==='')
-				$valueField=1;
-			$textFormat=$this->getDataTextFormatString();
-			foreach($data as $object)
-			{
-				$item=new TListItem;
-				if(isset($object[$textField]))
-					$text=$object[$textField];
-				else
-					$text=TPropertyValue::ensureString($object);
-				$item->setText($textFormat===''?$text:sprintf($textFormat,$text));
-				if(isset($object[$valueField]))
-					$item->setValue($object[$valueField]);
-				$items->add($item);
-			}
+			$item=new TListItem;
+			if(isset($object[$textField]))
+				$text=$object[$textField];
+			else
+				$text=TPropertyValue::ensureString($object);
+			$item->setText($textFormat===''?$text:sprintf($textFormat,$text));
+			if(isset($object[$valueField]))
+				$item->setValue($object[$valueField]);
+			$items->add($item);
 		}
 	}
 

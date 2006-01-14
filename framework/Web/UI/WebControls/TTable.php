@@ -90,7 +90,7 @@ class TTable extends TWebControl
 	/**
 	 * Creates a style object for the control.
 	 * This method creates a {@link TTableStyle} to be used by the table.
-	 * @return TStyle control style to be used
+	 * @return TTableStyle control style to be used
 	 */
 	protected function createStyle()
 	{

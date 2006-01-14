@@ -10,8 +10,6 @@
  * @package System.Web.UI.WebControls
  */
 
-Prado::using('System.3rdParty.SafeHtml.TSafeHtmlParser');
-
 /**
  * TTextBox class
  *
@@ -56,8 +54,14 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	 * @var array list of auto complete types
 	 */
 	private static $_autoCompleteTypes=array('BusinessCity','BusinessCountryRegion','BusinessFax','BusinessPhone','BusinessState','BusinessStreetAddress','BusinessUrl','BusinessZipCode','Cellular','Company','Department','Disabled','DisplayName','Email','FirstName','Gender','HomeCity','HomeCountryRegion','HomeFax','Homepage','HomePhone','HomeState','HomeStreetAddress','HomeZipCode','JobTitle','LastName','MiddleName','None','Notes','Office','Pager','Search');
-
-	protected $_safeContent;
+	/**
+	 * @var mixed safe text parser
+	 */
+	private static $_safeTextParser=null;
+	/**
+	 * @var string safe textbox content with javascript stripped off
+	 */
+	private $_safeText;
 
 	/**
 	 * @return string tag name of the textbox
@@ -94,7 +98,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 			if($textMode==='SingleLine')
 			{
 				$writer->addAttribute('type','text');
-				if(($text=$this->getRawText())!=='')
+				if(($text=$this->getText())!=='')
 					$writer->addAttribute('value',$text);
 				if(($act=$this->getAutoCompleteType())!=='None')
 				{
@@ -173,7 +177,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	public function loadPostData($key,$values)
 	{
 		$value=$values[$key];
-		if(!$this->getReadOnly() && $this->getRawText()!==$value)
+		if(!$this->getReadOnly() && $this->getText()!==$value)
 		{
 			$this->setText($value);
 			return true;
@@ -230,7 +234,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	protected function renderContents($writer)
 	{
 		if($this->getTextMode()==='MultiLine')
-			$writer->write(THttpUtility::htmlEncode($this->getRawText()));
+			$writer->write(THttpUtility::htmlEncode($this->getText()));
 	}
 
 	/**
@@ -362,25 +366,11 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	}
 
 	/**
-	 * @return string the unmodified text content of the TTextBox control.
-	 */
-	public function getRawText()
-	{
-		return $this->getViewState('Text','');
-	}
-
-	/**
-	 * @return string safe text content.
+	 * @return string the text content of the TTextBox control.
 	 */
 	public function getText()
 	{
-		$text = $this->getRawText();
-		if(is_null($this->_safeContent))
-		{
-			$renderer = new TSafeHtmlParser();
-			$this->_safeContent = $renderer->parse($text);
-		}
-		return $this->_safeContent;
+		return $this->getViewState('Text','');
 	}
 
 	/**
@@ -390,7 +380,27 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	public function setText($value)
 	{
 		$this->setViewState('Text',$value,'');
-		$this->_safeContent = null;
+		$this->_safeText = null;
+	}
+
+	/**
+	 * @return string safe text content with javascript stripped off
+	 */
+	public function getSafeText()
+	{
+		if($this->_safeText===null)
+			$this->_safeText=$this->getSafeTextParser()->parse($this->getText());
+		return $this->_safeText;
+	}
+
+	/**
+	 * @return mixed safe text parser
+	 */
+	protected function getSafeTextParser()
+	{
+		if(!self::$_safeTextParser)
+			self::$_safeTextParser=Prado::createComponent('System.3rdParty.SafeHtml.TSafeHtmlParser');
+		return self::$_safeTextParser;
 	}
 
 	/**

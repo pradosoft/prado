@@ -192,15 +192,14 @@ abstract class TDataBoundControl extends TWebControl
 	 */
 	public function dataBind()
 	{
-		// TODO: databinding should only be raised after data is ready
-		// what about property bindings? should they be after data is ready?
 		$this->setRequiresDataBinding(false);
 		$this->dataBindProperties();
-		if(($view=$this->getDataSourceView())!==null)
-			$data=$view->select($this->getSelectParameters());
 		$this->onDataBinding(null);
-		if($view!==null)
+		$data=$this->getData();
+		if($data instanceof Traversable)
 			$this->performDataBinding($data);
+		else if($data!==null)
+			throw new TInvalidDataTypeException('databoundcontrol_data_nontraversable');
 		$this->setIsDataBound(true);
 		$this->onDataBound(null);
 	}
@@ -209,6 +208,14 @@ abstract class TDataBoundControl extends TWebControl
 	{
 		if(!$this->_ignoreDataSourceViewChanged)
 			$this->setRequiresDataBinding(true);
+	}
+
+	protected function getData()
+	{
+		if(($view=$this->getDataSourceView())!==null)
+			return $view->select($this->getSelectParameters());
+		else
+			return null;
 	}
 
 	protected function getDataSourceView()

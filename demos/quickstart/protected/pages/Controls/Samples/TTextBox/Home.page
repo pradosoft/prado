@@ -60,6 +60,18 @@ Text box's behavior upon postback:
 <com:TButton Text="Submit" Click="submitText" />
 </td></tr>
 
+<tr><td class="samplenote">
+Safety feature (cross-site scripting prevention):
+</td><td class="sampleaction">
+<com:TTextBox
+	ID="TextBox2"
+	AutoPostBack="true"
+	Text="<a href=javascript:xxx>test</a>"
+	Width="200px"/>
+<b>SafeText:</b>
+<com:TLabel BackColor="silver" ID="Output" Text=<%#$this->Page->TextBox2->SafeText%> />
+</td></tr>
+
 </table>
 
 <h2>Password Text Boxes</h2>

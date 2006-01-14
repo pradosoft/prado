@@ -478,7 +478,10 @@ class TApplication extends TComponent
 	 */
 	public function setModule($id,IModule $module)
 	{
-		$this->_modules[$id]=$module;
+		if(isset($this->_modules[$id]))
+			throw new TConfigurationException('application_moduleid_duplicated',$id);
+		else
+			$this->_modules[$id]=$module;
 	}
 
 	/**
@@ -762,7 +765,7 @@ class TApplication extends TComponent
 			Prado::trace("Loading module $id ({$moduleConfig[0]})",'System.TApplication');
 
 			$module=Prado::createComponent($moduleConfig[0]);
-			$this->_modules[$id]=$module;
+			$this->setModule($id,$module);
 			foreach($moduleConfig[1] as $name=>$value)
 				$module->setSubProperty($name,$value);
 			$module->init($moduleConfig[2]);

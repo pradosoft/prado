@@ -2,6 +2,12 @@
 
 class Home extends TPage
 {
+	protected function onLoad($param)
+	{
+		parent::onLoad($param);
+		$this->Output->dataBind();
+	}
+
 	public function textChanged($sender,$param)
 	{
 		$sender->Text="text changed";
