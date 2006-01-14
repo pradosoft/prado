@@ -42,7 +42,7 @@ interface IRepeatInfoUser
 	 * @param integer zero-based index of the current rendering item.
 	 * @return TStyle CSS style used for rendering items (including header, footer and separators)
 	 */
-	public function getItemStyle($itemType,$index);
+	public function generateItemStyle($itemType,$index);
 	/**
 	 * Renders an item.
 	 * @param THtmlWriter writer for the rendering purpose
@@ -72,14 +72,6 @@ interface IRepeatInfoUser
 class TRepeatInfo extends TComponent
 {
 	/**
-	 * @var string caption of the table used to organize the repeated items
-	 */
-	private $_caption='';
-	/**
-	 * @var string alignment of the caption of the table used to organize the repeated items
-	 */
-	private $_captionAlign='NotSet';
-	/**
 	 * @var integer number of columns that the items should be arranged in
 	 */
 	private $_repeatColumns=0;
@@ -91,39 +83,6 @@ class TRepeatInfo extends TComponent
 	 * @var string layout of the repeated items
 	 */
 	private $_repeatLayout='Table';
-
-	/**
-	 * @return string caption of the table layout
-	 */
-	public function getCaption()
-	{
-		return $this->_caption;
-	}
-
-	/**
-	 * @param string caption of the table layout
-	 */
-	public function setCaption($value)
-	{
-		$this->_caption=$value;
-	}
-
-	/**
-	 * @return string alignment of the caption of the table layout. Defaults to 'NotSet'.
-	 */
-	public function getCaptionAlign()
-	{
-		return $this->_captionAlign;
-	}
-
-	/**
-	 * @return string alignment of the caption of the table layout.
-	 * Valid values include 'NotSet','Top','Bottom','Left','Right'.
-	 */
-	public function setCaptionAlign($value)
-	{
-		$this->_captionAlign=TPropertyValue::ensureEnum($value,array('NotSet','Top','Bottom','Left','Right'));
-	}
 
 	/**
 	 * @return integer the number of columns that the repeated items should be displayed in. Defaults to 0, meaning not set.
@@ -138,7 +97,9 @@ class TRepeatInfo extends TComponent
 	 */
 	public function setRepeatColumns($value)
 	{
-		$this->_repeatColumns=TPropertyValue::ensureInteger($value);
+		if(($value=TPropertyValue::ensureInteger($value))<0)
+			throw new TInvalidDataValueException('repeatinfo_repeatcolumns_invalid');
+		$this->_repeatColumns=$value;
 	}
 
 	/**
@@ -232,7 +193,7 @@ class TRepeatInfo extends TComponent
 			{
 				if($column==0)
 					$writer->renderBeginTag('tr');
-				if(($style=$user->getItemStyle('Item',$i))!==null)
+				if(($style=$user->generateItemStyle('Item',$i))!==null)
 					$style->addAttributesToRender($writer);
 				$writer->renderBeginTag('td');
 				$user->renderItem($writer,$this,'Item',$i);
@@ -240,7 +201,7 @@ class TRepeatInfo extends TComponent
 				$writer->writeLine();
 				if($hasSeparators && $i!=$itemCount-1)
 				{
-					if(($style=$user->getItemStyle('Separator',$i))!==null)
+					if(($style=$user->generateItemStyle('Separator',$i))!==null)
 						$style->addAttributesToRender($writer);
 					$writer->renderBeginTag('td');
 					$user->renderItem($writer,$this,'Separator',$i);
@@ -337,7 +298,7 @@ class TRepeatInfo extends TComponent
 					if($index>=$itemCount)
 						continue;
 					$renderedItems++;
-					if(($style=$user->getItemStyle('Item',$index))!==null)
+					if(($style=$user->generateItemStyle('Item',$index))!==null)
 						$style->addAttributesToRender($writer);
 					$writer->renderBeginTag('td');
 					$user->renderItem($writer,$this,'Item',$index);
@@ -352,7 +313,7 @@ class TRepeatInfo extends TComponent
 							$writer->renderEndTag();
 							$writer->renderBeginTag('tr');
 						}
-						if(($style=$user->getItemStyle('Separator',$index))!==null)
+						if(($style=$user->generateItemStyle('Separator',$index))!==null)
 							$style->addAttributesToRender($writer);
 						$writer->renderBeginTag('td');
 						$user->renderItem($writer,$this,'Separator',$index);
@@ -431,7 +392,7 @@ class TRepeatInfo extends TComponent
 			if($columns>1)
 				$writer->addAttribute('colspan',"$columns");
 			$writer->addAttribute('scope','col');
-			if(($style=$user->getItemStyle('Header',-1))!==null)
+			if(($style=$user->generateItemStyle('Header',-1))!==null)
 				$style->addAttributesToRender($writer);
 			$writer->renderBeginTag('th');
 			$user->renderItem($writer,$this,'Header',-1);
@@ -461,7 +422,7 @@ class TRepeatInfo extends TComponent
 			$writer->renderBeginTag('tr');
 			if($columns>1)
 				$writer->addAttribute('colspan',"$columns");
-			if(($style=$user->getItemStyle('Footer',-1))!==null)
+			if(($style=$user->generateItemStyle('Footer',-1))!==null)
 				$style->addAttributesToRender($writer);
 			$writer->renderBeginTag('td');
 			$user->renderItem($writer,$this,'Footer',-1);

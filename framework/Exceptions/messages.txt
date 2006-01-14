@@ -175,3 +175,5 @@ filelogroute_maxfilesize_invalid		= TFileLogRoute.MaxFileSize must be greater th
 filelogroute_maxlogfiles_invalid		= TFileLogRoute.MaxLogFiles must be greater than 0.
 
 emaillogroute_sentfrom_required			= TEmailLogRoute.SentFrom cannot be empty.
+
+repeatinfo_repeatcolumns_invalid		= TRepeatInfo.RepeatColumns must be no less than 0.

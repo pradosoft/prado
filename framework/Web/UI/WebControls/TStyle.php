@@ -617,5 +617,4 @@ class TTableItemStyle extends TStyle
 	}
 }
 
-
 ?>

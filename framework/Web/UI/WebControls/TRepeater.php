@@ -49,6 +49,10 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 */
 	const CACHE_EXPIRY=18000;
 	/**
+	 * @var array in-memory cache of parsed templates
+	 */
+	private static $_templates=array();
+	/**
 	 * @var string template for each item
 	 */
 	private $_itemTemplate='';
@@ -80,10 +84,6 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 * @var TRepeaterItem footer item
 	 */
 	private $_footer=null;
-	/**
-	 * @var array in-memory cache of parsed templates
-	 */
-	private static $_templates=array();
 
 	/**
 	 * No body content should be added to repeater.
@@ -268,29 +268,32 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 				break;
 		}
 		if($tplContent!=='')
+			$this->createTemplate($tplContent)->instantiateIn($item);
+	}
+
+	protected function createTemplate($str)
+	{
+		$key=md5($str);
+		$contextPath=$this->getTemplateControl()->getTemplate()->getContextPath();
+		if(($cache=$this->getApplication()->getCache())!==null)
 		{
-			$key=md5($tplContent);
-			$contextPath=$this->getTemplateControl()->getTemplate()->getContextPath();
-			if(($cache=$this->getApplication()->getCache())!==null)
+			if(($template=$cache->get($key))===null)
 			{
-				if(($template=$cache->get($key))===null)
-				{
-					$template=new TTemplate($tplContent,$contextPath);
-					$cache->set($key,$template,self::CACHE_EXPIRY);
-				}
+				$template=new TTemplate($str,$contextPath);
+				$cache->set($key,$template,self::CACHE_EXPIRY);
 			}
+		}
+		else
+		{
+			if(isset(self::$_templates[$key]))
+				$template=self::$_templates[$key];
 			else
 			{
-				if(isset(self::$_templates[$key]))
-					$template=self::$_templates[$key];
-				else
-				{
-					$template=new TTemplate($tplContent,$contextPath);
-					self::$_templates[$key]=$template;
-				}
+				$template=new TTemplate($str,$contextPath);
+				self::$_templates[$key]=$template;
 			}
-			$template->instantiateIn($item);
 		}
+		return $template;
 	}
 
 	/**
@@ -387,35 +390,6 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	}
 
 	/**
-	 * Raises <b>ItemCreated</b> event.
-	 * This method is invoked after a repeater item is created and instantiated with
-	 * template, but before added to the page hierarchy.
-	 * The {@link TRepeaterItem} control responsible for the event
-	 * If you override this method, be sure to call parent's implementation
-	 * so that event handlers have chance to respond to the event.
-	 * can be determined from the event parameter.
-	 * @param TRepeaterItemEventParameter event parameter
-	 */
-	protected function onItemCreated($param)
-	{
-		$this->raiseEvent('ItemCreated',$this,$param);
-	}
-
-	/**
-	 * Raises <b>ItemDataBound</b> event.
-	 * This method is invoked right after an item is data bound.
-	 * The {@link TRepeaterItem} control responsible for the event
-	 * If you override this method, be sure to call parent's implementation
-	 * so that event handlers have chance to respond to the event.
-	 * can be determined from the event parameter.
-	 * @param TRepeaterItemEventParameter event parameter
-	 */
-	protected function onItemDataBound($param)
-	{
-		$this->raiseEvent('ItemDataBound',$this,$param);
-	}
-
-	/**
 	 * Handles <b>BubbleEvent</b>.
 	 * This method overrides parent's implementation to handle
 	 * {@link onItemCommand ItemCommand} event which is bubbled from
@@ -434,6 +408,35 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 		}
 		else
 			return false;
+	}
+
+	/**
+	 * Raises <b>ItemCreated</b> event.
+	 * This method is invoked after a repeater item is created and instantiated with
+	 * template, but before added to the page hierarchy.
+	 * The {@link TRepeaterItem} control responsible for the event
+	 * can be determined from the event parameter.
+	 * If you override this method, be sure to call parent's implementation
+	 * so that event handlers have chance to respond to the event.
+	 * @param TRepeaterItemEventParameter event parameter
+	 */
+	protected function onItemCreated($param)
+	{
+		$this->raiseEvent('ItemCreated',$this,$param);
+	}
+
+	/**
+	 * Raises <b>ItemDataBound</b> event.
+	 * This method is invoked right after an item is data bound.
+	 * The {@link TRepeaterItem} control responsible for the event
+	 * can be determined from the event parameter.
+	 * If you override this method, be sure to call parent's implementation
+	 * so that event handlers have chance to respond to the event.
+	 * @param TRepeaterItemEventParameter event parameter
+	 */
+	protected function onItemDataBound($param)
+	{
+		$this->raiseEvent('ItemDataBound',$this,$param);
 	}
 
 	/**

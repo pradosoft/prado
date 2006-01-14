@@ -102,19 +102,6 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	}
 
 	/**
-	 * @return TRepeatInfo repeat information (primarily used by control developers)
-	 */
-	protected function getRepeatInfo()
-	{
-		if(($repeatInfo=$this->getViewState('RepeatInfo',null))===null)
-		{
-			$repeatInfo=new TRepeatInfo;
-			$this->setViewState('RepeatInfo',$repeatInfo,null);
-		}
-		return $repeatInfo;
-	}
-
-	/**
 	 * @return string the alignment of the text caption, defaults to 'Right'.
 	 */
 	public function getTextAlign()
@@ -131,6 +118,20 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 		$this->setViewState('TextAlign',TPropertyValue::ensureEnum($value,array('Left','Right')),'Right');
 	}
 
+
+	/**
+	 * @return TRepeatInfo repeat information (primarily used by control developers)
+	 */
+	protected function getRepeatInfo()
+	{
+		if(($repeatInfo=$this->getViewState('RepeatInfo',null))===null)
+		{
+			$repeatInfo=new TRepeatInfo;
+			$this->setViewState('RepeatInfo',$repeatInfo,null);
+		}
+		return $repeatInfo;
+	}
+
 	/**
 	 * @return integer the number of columns that the list should be displayed with. Defaults to 0 meaning not set.
 	 */
@@ -140,7 +141,6 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	}
 
 	/**
-	 * Sets the number of columns that the list should be displayed with.
 	 * @param integer the number of columns that the list should be displayed with.
 	 */
 	public function setRepeatColumns($value)
@@ -157,8 +157,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	}
 
 	/**
-	 * Sets the direction of traversing the list (Vertical, Horizontal)
-	 * @param string the direction of traversing the list
+	 * @param string the direction (Vertical, Horizontal) of traversing the list
 	 */
 	public function setRepeatDirection($value)
 	{
@@ -174,7 +173,6 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	}
 
 	/**
-	 * Sets how the list should be displayed, using table or using line breaks (Table, Flow)
 	 * @param string how the list should be displayed, using table or using line breaks (Table, Flow)
 	 */
 	public function setRepeatLayout($value)
@@ -259,7 +257,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	 * @param integer index of the item being rendered
 	 * @return null
 	 */
-	public function getItemStyle($itemType,$index)
+	public function generateItemStyle($itemType,$index)
 	{
 		return null;
 	}
