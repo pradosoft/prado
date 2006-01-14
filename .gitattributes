@@ -35,6 +35,7 @@ demos/quickstart/protected/pages/Configurations/Templates1.page -text
 demos/quickstart/protected/pages/Configurations/Templates2.page -text
 demos/quickstart/protected/pages/Configurations/Templates3.page -text
 demos/quickstart/protected/pages/Construction.page -text
+demos/quickstart/protected/pages/Controls/DataList.page -text
 demos/quickstart/protected/pages/Controls/List.page -text
 demos/quickstart/protected/pages/Controls/Overview.page -text
 demos/quickstart/protected/pages/Controls/Samples/TBulletedList/Home.page -text
@@ -42,6 +43,8 @@ demos/quickstart/protected/pages/Controls/Samples/TBulletedList/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TBulletedList/bullet.gif -text
 demos/quickstart/protected/pages/Controls/Samples/TCheckBoxList/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TCheckBoxList/Home.php -text
+demos/quickstart/protected/pages/Controls/Samples/TDataList/Sample1.page -text
+demos/quickstart/protected/pages/Controls/Samples/TDataList/Sample1.php -text
 demos/quickstart/protected/pages/Controls/Samples/TDropDownList/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TDropDownList/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TLabel/Home.page -text

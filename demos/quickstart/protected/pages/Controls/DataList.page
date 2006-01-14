@@ -1,0 +1,9 @@
+<com:TContent ID="body" >
+
+<h1>TDataList</h1>
+<p>
+TBC
+</p>
+<com:RunBar PagePath="Controls.Samples.TDataList.Sample1" />
+
+</com:TContent>

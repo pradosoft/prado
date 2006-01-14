@@ -72,6 +72,14 @@ interface IRepeatInfoUser
 class TRepeatInfo extends TComponent
 {
 	/**
+	 * @var string caption of the table used to organize the repeated items
+	 */
+	private $_caption='';
+	/**
+	 * @var string alignment of the caption of the table used to organize the repeated items
+	 */
+	private $_captionAlign='NotSet';
+	/**
 	 * @var integer number of columns that the items should be arranged in
 	 */
 	private $_repeatColumns=0;
@@ -83,6 +91,39 @@ class TRepeatInfo extends TComponent
 	 * @var string layout of the repeated items
 	 */
 	private $_repeatLayout='Table';
+
+	/**
+	 * @return string caption of the table layout
+	 */
+	public function getCaption()
+	{
+		return $this->_caption;
+	}
+
+	/**
+	 * @param string caption of the table layout
+	 */
+	public function setCaption($value)
+	{
+		$this->_caption=$value;
+	}
+
+	/**
+	 * @return string alignment of the caption of the table layout. Defaults to 'NotSet'.
+	 */
+	public function getCaptionAlign()
+	{
+		return $this->_captionAlign;
+	}
+
+	/**
+	 * @return string alignment of the caption of the table layout.
+	 * Valid values include 'NotSet','Top','Bottom','Left','Right'.
+	 */
+	public function setCaptionAlign($value)
+	{
+		$this->_captionAlign=TPropertyValue::ensureEnum($value,array('NotSet','Top','Bottom','Left','Right'));
+	}
 
 	/**
 	 * @return integer the number of columns that the repeated items should be displayed in. Defaults to 0, meaning not set.

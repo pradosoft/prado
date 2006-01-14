@@ -1,0 +1,21 @@
+<com:TContent ID="body">
+
+<h1>TDataList Sample 1</h1>
+
+<com:TDataList
+	ID="DataList"
+	RepeatColumns="2"
+	ItemStyle.BackColor="blue"
+	ItemStyle.Font.Italic="true"
+	ItemStyle.ForeColor="white"
+	SelectedItemStyle.BackColor="white"
+	SelectedItemStyle.ForeColor="blue"
+	CellPadding="4">
+
+<prop:ItemTemplate>
+<%#$this->Parent->DataItem['name']%>
+</prop:ItemTemplate>
+
+</com:TDataList>
+
+</com:TContent>

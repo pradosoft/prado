@@ -228,7 +228,7 @@ class TFont extends TComponent
 			$this->setUnderline($font->getUnderline());
 		if($font->_flags & self::IS_SET_SIZE)
 			$this->setSize($font->getSize());
-		if($font->_flags & self::IS_SET_NAMES)
+		if($font->_flags & self::IS_SET_NAME)
 			$this->setName($font->getName());
 	}
 

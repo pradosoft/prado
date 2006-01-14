@@ -14,48 +14,68 @@
  * Includes TBaseDataList class
  */
 Prado::using('System.Web.UI.WebControls.TBaseDataList');
-
+/**
+ * Includes TRepeatInfo class
+ */
+Prado::using('System.Web.UI.WebControls.TRepeatInfo');
 
 /**
  * TDataList class
  *
  * TDataList represents a data bound and updatable list control.
  *
- * It can be used to display and maintain a list of data items (rows, records).
- * There are three kinds of layout determined by the <b>RepeatLayout</b>
- * property. The <b>Table</b> layout displays a table and each table cell
- * contains a data item. The <b>Flow</b> layout uses the span tag to organize
- * the presentation of data items. The <b>Raw</b> layout displays all templated
- * content without any additional decorations (therefore, you can use arbitrary
- * complex UI layout). In case when the layout is Table or Flow,
- * the number of table/flow columns is determined by the <b>RepeatColumns</b>
- * property, and the data items are enumerated according to the <b>RepeatDirection</b> property.
+ * The {@link setHeaderTemplate HeaderTemplate} property specifies the content
+ * template that will be displayed at the beginning, while
+ * {@link setFooterTemplate FooterTemplate} at the end.
+ * If present, these two templates will only be rendered when the data list is
+ * given non-empty data. In this case, for each data item the content defined
+ * by {@link setItemTemplate ItemTemplate} will be generated and displayed once.
+ * If {@link setAlternatingItemTemplate AlternatingItemTemplate} is not empty,
+ * then the corresponding content will be displayed alternatively with that
+ * in {@link setItemTemplate ItemTemplate}. The content in
+ * {@link setSeparatorTemplate SeparatorTemplate}, if not empty, will be
+ * displayed between items. All these templates are associated with styles that
+ * may be applied to the corresponding generated items. For example,
+ * {@link getAlternatingItemStyle AlternatingItemStyle} will be applied to
+ * every alternating item in the data list.
  *
- * To use TDataList, sets its <b>DataSource</b> property and invokes dataBind()
- * afterwards. The data will be populated into the TDataList and saved as data items.
- * A data item can be at one of three states: normal, selected and edit.
- * The state determines which template is used to display the item.
- * In particular, data items are displayed using the following templates,
- * <b>ItemTemplate</b>, <b>AlternatingItemTemplate</b>,
- * <b>SelectedItemTemplate</b>, <b>EditItemTemplate</b>. In addition, the
- * <b>HeaderTemplate</b>, <b>FooterTemplate</b>, and <b>SeparatorTemplate</b>
- * can be used to decorate the overall presentation.
+ * To change the status of a particular item, set {@link setSelectedItemIndex SelectedItemIndex}
+ * or {@link setEditItemIndex EditItemIndex}. The former will change the indicated
+ * item to selected mode, which will cause the item to use {@link setSelectedItemTemplate SelectedItemTemplate}
+ * for presentation. The latter will change the indicated item to edit mode.
+ * Note, if an item is in edit mode, then selecting this item will have no effect.
  *
- * To change the state of a data item, set either the <b>EditItemIndex</b> property
- * or the <b>SelectedItemIndex</b> property.
+ * The layout of the data items in the list is specified via
+ * {@link setRepeatLayout RepeatLayout}, which can be either 'Table' (default) or 'Flow'.
+ * A table layout uses HTML table cells to organize the data items while
+ * a flow layout uses line breaks to organize the data items.
+ * When the layout is using 'Table', {@link setCellPadding CellPadding} and
+ * {@link setCellSpacing CellSpacing} can be used to adjust the cellpadding and
+ * cellpadding of the table, and {@link setCaption Caption} and {@link setCaptionAlign CaptionAlign}
+ * can be used to add a table caption with the specified alignment.
  *
- * When an item template contains a button control that raises an <b>OnCommand</b>
- * event, the event will be bubbled up to the data list control.
- * If the event's command name is recognizable by the data list control,
- * a corresponding item event will be raised. The following item events will be
- * raised upon a specific command:
- * - OnEditCommand, edit
- * - OnCancelCommand, cancel
- * - OnSelectCommand, select
- * - OnDeleteCommand, delete
- * - OnUpdateCommand, update
- * The data list will always raise an <b>OnItemCommand</b>
- * upon its receiving a bubbled <b>OnCommand</b> event.
+ * The number of columns used to display the data items is specified via
+ * {@link setRepeatColumns RepeatColumns} property, while the {@link setRepeatDirection RepeatDirection}
+ * governs the order of the items being rendered.
+ *
+ * You can retrive the repeated contents by the {@link getItems Items} property.
+ * The header and footer items can be accessed by {@link getHeader Header}
+ * and {@link getFooter Footer} properties, respectively.
+ *
+ * When TDataList creates an item, it will raise an {@link onItemCreated ItemCreated}
+ * so that you may customize the newly created item.
+ * When databinding is performed by TDataList, for each item once it has finished
+ * databinding, an {@link onItemDataBound ItemDataBound} event will be raised.
+ *
+ * When an item is selected by an end-user, a {@link onSelectedIndexChanged SelectedIndexChanged}
+ * event will be raised. Note, the selected index may not be actually changed.
+ * The event mainly informs the server side that the end-user has made a selection.
+ *
+ * TDataList raises an {@link onItemCommand ItemCommand} whenever a button control
+ * within some TDataList item raises a <b>Command</b> event. If the command name
+ * is one of the followings: 'edit', 'update', 'select', 'delete', 'cancel' (case-insensitive),
+ * another event will also be raised. For example, if the command name is 'select',
+ * then the new event is {@link onSelectCommand SelectCommand}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -86,6 +106,14 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	private $_headerTemplate='';
 	private $_footerTemplate='';
 	private $_separatorTemplate='';
+	/**
+	 * @var TDatListItem header item
+	 */
+	private $_header=null;
+	/**
+	 * @var TDatListItem footer item
+	 */
+	private $_footer=null;
 
 	/**
 	 * @return TDataListItemCollection item list
@@ -251,6 +279,14 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
+	 * @return TDataListItem the header item
+	 */
+	public function getHeader()
+	{
+		return $this->_header;
+	}
+
+	/**
 	 * @return string the footer template string
 	 */
 	public function getFooterTemplate()
@@ -277,6 +313,14 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 			$this->setViewState('FooterStyle',$style,null);
 		}
 		return $style;
+	}
+
+	/**
+	 * @return TDataListItem the footer item
+	 */
+	public function getFooter()
+	{
+		return $this->_footer;
 	}
 
 	/**
@@ -448,6 +492,39 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 			$this->setViewState('RepeatInfo',$repeatInfo,null);
 		}
 		return $repeatInfo;
+	}
+
+	/**
+	 * @return string caption of the table layout
+	 */
+	public function getCaption()
+	{
+		return $this->getRepeatInfo()->getCaption();
+	}
+
+	/**
+	 * @param string caption of the table layout
+	 */
+	public function setCaption($value)
+	{
+		$this->getRepeatInfo()->setCaption($value);
+	}
+
+	/**
+	 * @return string alignment of the caption of the table layout. Defaults to 'NotSet'.
+	 */
+	public function getCaptionAlign()
+	{
+		return $this->getRepeatInfo()->getCaptionAlign();
+	}
+
+	/**
+	 * @return string alignment of the caption of the table layout.
+	 * Valid values include 'NotSet','Top','Bottom','Left','Right'.
+	 */
+	public function setCaptionAlign($value)
+	{
+		$this->getRepeatInfo()->setCaptionAlign($value);
 	}
 
 	/**
@@ -651,7 +728,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 */
 	public function getHasHeader()
 	{
-		return ($this->getShowHeader() && $this->_headerTemplate!=='')
+		return ($this->getShowHeader() && $this->_headerTemplate!=='');
 	}
 
 	/**
@@ -661,7 +738,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 */
 	public function getHasFooter()
 	{
-		return ($this->getShowFooter() && $this->_footerTemplate!=='')
+		return ($this->getShowFooter() && $this->_footerTemplate!=='');
 	}
 
 	/**
@@ -689,6 +766,28 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 			return null;
 	}
 
+	/**
+	 * Renders an item in the list.
+	 * This method is required by {@link IRepeatInfoUser} interface.
+	 * @param THtmlWriter writer for rendering purpose
+	 * @param TRepeatInfo repeat information
+	 * @param string item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
+	 * @param integer zero-based index of the item in the item list
+	 */
+	public function renderItem($writer,$repeatInfo,$itemType,$index)
+	{
+		$item=$this->getItem($itemType,$index);
+		if($repeatInfo->getRepeatLayout()==='Table')
+			$item->renderContents($writer);
+		else
+			$item->renderControl($writer);
+	}
+
+	/**
+	 * @param string item type
+	 * @param integer item index
+	 * @return TDataListItem data list item with the specified item type and index
+	 */
 	private function getItem($itemType,$index)
 	{
 		switch($itemType)
@@ -706,59 +805,126 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 					$i++;
 				return $this->getControls->itemAt($i);
 		}
-		return null
+		return null;
+	}
+
+	/**
+	 * Creates a data list item and does databinding if needed.
+	 * This method invokes {@link createItem} to create a new data list item.
+	 * @param integer zero-based item index.
+	 * @param string item type, may be 'Header', 'Footer', 'Item', 'Separator', 'AlternatingItem', 'SelectedItem', 'EditItem'.
+	 * @param boolean whether to do databinding for the item
+	 * @param mixed data to be associated with the item
+	 * @return TDataListItem the created item
+	 */
+	private function createItemInternal($itemIndex,$itemType,$dataBind,$dataItem)
+	{
+		$item=$this->createItem($itemIndex,$itemType);
+		$this->initializeItem($item);
+		$param=new TDataListItemEventParameter($item);
+		if($dataBind)
+		{
+			$item->setDataItem($dataItem);
+			$this->onItemCreated($param);
+			$this->getControls()->add($item);
+			$item->dataBind();
+			$this->onItemDataBound($param);
+			$item->setDataItem(null);
+		}
+		else
+		{
+			$this->onItemCreated($param);
+			$this->getControls()->add($item);
+		}
+		return $item;
+	}
+
+	/**
+	 * Creates a DataList item instance based on the item type and index.
+	 * @param integer zero-based item index
+	 * @param string item type, may be 'Header', 'Footer', 'Item', 'Separator', 'AlternatingItem', 'SelectedItem', 'EditItem'.
+	 * @return TDataListItem created data list item
+	 */
+	protected function createItem($itemIndex,$itemType)
+	{
+		return new TDataListItem($itemIndex,$itemType);
 	}
 
 	/**
 	 * Initializes a data list item.
 	 * The item is added as a child of the data list and the corresponding
 	 * template is instantiated within the item.
-	 * @param TRepeaterItem item to be initialized
+	 * @param TDataListItem item to be initialized
 	 */
 	protected function initializeItem($item)
 	{
 		$tplContent='';
+		$style=null;
 		switch($item->getItemType())
 		{
-			case 'Header': $tplContent=$this->_headerTemplate; break;
-			case 'Footer': $tplContent=$this->_footerTemplate; break;
-			case 'Item': $tplContent=$this->_itemTemplate; break;
-			case 'AlternatingItem':
-				if($this->_alternatingItemTemplate!=='')
-					$tplContent=$this->_alternatingItemTemplate;
-				else
-					$tplContent=$this->_itemTemplate;
+			case 'Header':
+				$tplContent=$this->_headerTemplate;
+				$style=$this->getViewState('HeaderStyle',null);
 				break;
-			case 'Separator': $tplContent=$this->_separatorTemplate; break;
+			case 'Footer':
+				$tplContent=$this->_footerTemplate;
+				$style=$this->getViewState('FooterStyle',null);
+				break;
+			case 'Item':
+				$tplContent=$this->_itemTemplate;
+				$style=$this->getViewState('ItemStyle',null);
+				break;
+			case 'AlternatingItem':
+				if(($tplContent=$this->_alternatingItemTemplate)==='')
+					$tplContent=$this->_itemTemplate;
+				if(($style=$this->getViewState('AlternatingItemStyle',null))===null)
+					$style=$this->getViewState('ItemStyle',null);
+				break;
+			case 'Separator':
+				$tplContent=$this->_separatorTemplate;
+				$style=$this->getViewState('SeparatorStyle',null);
+				break;
 			case 'SelectedItem':
-				if($this->_selectedItemTemplate==='')
+				if(($tplContent=$this->_selectedItemTemplate)==='')
 				{
-					if($item->getItemIndex()%2 && $this->_alternatingItemTemplate!=='')
-						$tplContent=$this->_alternatingItemTemplate;
-					else
+					if(!($item->getItemIndex()%2) || ($tplContent=$this->_alternatingItemTemplate)==='')
 						$tplContent=$this->_itemTemplate;
 				}
-				else
-					$tplContent=$this->_selectedItemTemplate;
+				if(($style=$this->getViewState('SelectedItemStyle',null))===null)
+				{
+					if(!($item->getItemIndex()%2) || ($style=$this->getViewState('AlternatingItemStyle',null))===null)
+						$style=$this->getViewState('ItemStyle',null);
+				}
 				break;
 			case 'EditItem':
-				if($this->_editItemTemplate==='')
+				if(($tplContent=$this->_editItemTemplate)==='')
 				{
-					if($item->getItemIndex()===$this->getSelectedIndex() && $this->_selectedItemTemplate!=='')
-						$tplContent=$this->_selectedItemTemplate;
-					else if($item->getItemIndex()%2 && $this->_alternatingItemTemplate!=='')
-						$tplContent=$this->_alternatingItemTemplate;
-					else
-						$tplContent=$this->_itemTemplate;
+					if($item->getItemIndex()!==$this->getSelectedItemIndex() || ($tplContent=$this->_selectedItemTemplate)==='')
+						if(!($item->getItemIndex()%2) || ($tplContent=$this->_alternatingItemTemplate)==='')
+							$tplContent=$this->_itemTemplate;
 				}
-				else
-					$tplContent=$this->_editItemTemplate;
-			default: break;
+				if(($style=$this->getViewState('EditItemStyle',null))===null)
+				{
+					if($item->getItemIndex()!==$this->getSelectedItemIndex() || ($style=$this->getViewState('SelectedItemStyle',null))===null)
+						if(!($item->getItemIndex()%2) || ($style=$this->getViewState('AlternatingItemStyle',null))===null)
+							$style=$this->getViewState('ItemStyle',null);
+				}
+				break;
+			default:
+				break;
 		}
 		if($tplContent!=='')
 			$this->createTemplate($tplContent)->instantiateIn($item);
+		if($style!==null)
+			$item->getStyle()->copyFrom($style);
 	}
 
+	/**
+	 * Parses item template.
+	 * This method uses caching technique to accelerate template parsing.
+	 * @param string template string
+	 * @return ITemplate parsed template object
+	 */
 	protected function createTemplate($str)
 	{
 		$key=md5($str);
@@ -785,51 +951,133 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * Renders an item in the list.
-	 * This method is required by {@link IRepeatInfoUser} interface.
-	 * @param THtmlWriter writer for rendering purpose
-	 * @param TRepeatInfo repeat information
-	 * @param string item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
-	 * @param integer zero-based index of the item in the item list
+	 * Saves item count in viewstate.
+	 * This method is invoked right before control state is to be saved.
+	 * @param mixed event parameter
 	 */
-	public function renderItem($writer,$repeatInfo,$itemType,$index)
+	protected function onSaveState($param)
 	{
-		$item=$this->getItems()->itemAt($index);
-		if($item->getHasAttributes())
-			$this->_repeatedControl->getAttributes()->copyFrom($item->getAttributes());
-		else if($this->_repeatedControl->getHasAttributes())
-			$this->_repeatedControl->getAttributes()->clear();
-		$this->_repeatedControl->setID("$index");
-		$this->_repeatedControl->setText($item->getText());
-		$this->_repeatedControl->setChecked($item->getSelected());
-		$this->_repeatedControl->setAttribute('value',$item->getValue());
-		$this->_repeatedControl->setEnabled($this->_isEnabled && $item->getEnabled());
-		$this->_repeatedControl->renderControl($writer);
+		if($this->_items)
+			$this->setViewState('ItemCount',$this->_items->getCount(),0);
+		else
+			$this->clearViewState('ItemCount');
 	}
 
-	// how to save item state??? c.f. TRepeater
+	/**
+	 * Loads item count information from viewstate.
+	 * This method is invoked right after control state is loaded.
+	 * @param mixed event parameter
+	 */
+	protected function onLoadState($param)
+	{
+		if(!$this->getIsDataBound())
+			$this->restoreItemsFromViewState();
+		$this->clearViewState('ItemCount');
+	}
 
 	/**
-	 * Renders the checkbox list control.
+	 * Clears up all items in the data list.
+	 */
+	public function reset()
+	{
+		$this->getControls()->clear();
+		$this->getItems()->clear();
+		$this->_header=null;
+		$this->_footer=null;
+	}
+
+	/**
+	 * Creates data list items based on viewstate information.
+	 */
+	protected function restoreItemsFromViewState()
+	{
+		$this->reset();
+		if(($itemCount=$this->getViewState('ItemCount',0))>0)
+		{
+			$items=$this->getItems();
+			$selectedIndex=$this->getSelectedItemIndex();
+			$editIndex=$this->getEditItemIndex();
+			if($this->_headerTemplate!=='')
+				$this->_header=$this->createItemInternal(-1,'Header',false,null);
+			$hasSeparator=$this->_separatorTemplate!=='';
+			for($i=0;$i<$itemCount;++$i)
+			{
+				if($hasSeparator && $i>0)
+					$this->createItemInternal($i-1,'Separator',false,null);
+				if($i===$editIndex)
+					$itemType='EditItem';
+				else if($i===$selectedIndex)
+					$itemType='SelectedItem';
+				else
+					$itemType=$i%2?'AlternatingItem':'Item';
+				$items->add($this->createItemInternal($i,$itemType,false,null));
+			}
+			if($this->_footerTemplate!=='')
+				$this->_footer=$this->createItemInternal(-1,'Footer',false,null);
+		}
+		$this->clearChildState();
+	}
+
+	/**
+	 * Performs databinding to populate data list items from data source.
+	 * This method is invoked by dataBind().
+	 * You may override this function to provide your own way of data population.
+	 * @param Traversable the data
+	 */
+	protected function performDataBinding($data)
+	{
+		$this->reset();
+		$keys=$this->getDataKeys();
+		$keys->clear();
+		$keyField=$this->getDataKeyField();
+		$itemIndex=0;
+		$items=$this->getItems();
+		$hasSeparator=$this->_separatorTemplate!=='';
+		$selectedIndex=$this->getSelectedItemIndex();
+		$editIndex=$this->getEditItemIndex();
+		foreach($data as $dataItem)
+		{
+			if($keyField!=='')
+			{
+				if(is_array($dataItem) || ($dataItem instanceof TMap))
+					$keys->add($dataItem[$keyField]);
+				else if(($dataItem instanceof TComponent) && $dataItem->canGetProperty($keyField))
+				{
+					$getter='get'.$keyField;
+					$keys->add($dataItem->$getter());
+				}
+				else
+					throw new TInvalidDataValueException('datalist_keyfield_invalid',$keyField);
+			}
+			if($itemIndex===0 && $this->_headerTemplate!=='')
+				$this->_header=$this->createItemInternal(-1,'Header',true,null);
+			if($hasSeparator && $itemIndex>0)
+				$this->createItemInternal($itemIndex-1,'Separator',true,null);
+			if($itemIndex===$editIndex)
+				$itemType='EditItem';
+			else if($itemIndex===$selectedIndex)
+				$itemType='SelectedItem';
+			else
+				$itemType=$itemIndex%2?'AlternatingItem':'Item';
+			$items->add($this->createItemInternal($itemIndex,$itemType,true,$dataItem));
+			$itemIndex++;
+		}
+		if($itemIndex>0 && $this->_footerTemplate!=='')
+			$this->_footer=$this->createItemInternal(-1,'Footer',true,null);
+		$this->setViewState('ItemCount',$itemIndex,0);
+	}
+
+	/**
+	 * Renders the data list control.
 	 * This method overrides the parent implementation.
 	 * @param THtmlWriter writer for rendering purpose.
 	 */
 	protected function render($writer)
 	{
-		if($this->getItemCount()>0)
+		if($this->getHasControls())
 		{
-			$this->_isEnabled=$this->getEnabled(true);
 			$repeatInfo=$this->getRepeatInfo();
-			$accessKey=$this->getAccessKey();
-			$tabIndex=$this->getTabIndex();
-			$this->_repeatedControl->setTextAlign($this->getTextAlign());
-			$this->_repeatedControl->setAccessKey($accessKey);
-			$this->_repeatedControl->setTabIndex($tabIndex);
-			$this->setAccessKey('');
-			$this->setTabIndex(0);
 			$repeatInfo->renderRepeater($writer,$this);
-			$this->setAccessKey($accessKey);
-			$this->setTabIndex($tabIndex);
 		}
 	}
 }
@@ -838,12 +1086,14 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 /**
  * TDataListItemEventParameter class
  *
- * TDataListItemEventParameter encapsulates the parameter data for <b>OnItemCreated</b>
- * event of TDataList controls.
+ * TDataListItemEventParameter encapsulates the parameter data for
+ * {@link TDataList::onItemCreated ItemCreated} event of {@link TDataList} controls.
+ * The {@link getItem Item} property indicates the DataList item related with the event.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version v1.0, last update on 2004/08/13 21:44:52
+ * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
+ * @since 3.0
  */
 class TDataListItemEventParameter extends TEventParameter
 {
@@ -851,202 +1101,178 @@ class TDataListItemEventParameter extends TEventParameter
 	 * The TDataListItem control responsible for the event.
 	 * @var TDataListItem
 	 */
-	public $item=null;
+	private $_item=null;
+
+	/**
+	 * Constructor.
+	 * @param TDataListItem DataList item related with the corresponding event
+	 */
+	public function __construct(TDataListItem $item)
+	{
+		$this->_item=$item;
+	}
+
+	/**
+	 * @return TDataListItem DataList item related with the corresponding event
+	 */
+	public function getItem()
+	{
+		return $this->_item;
+	}
 }
 
 /**
  * TDataListCommandEventParameter class
  *
- * TDataListCommandEventParameter encapsulates the parameter data for <b>OnItemCommand</b>
- * event of TDataList controls.
+ * TDataListCommandEventParameter encapsulates the parameter data for
+ * {@link TDataList::onItemCommand ItemCommand} event of {@link TDataList} controls.
+ *
+ * The {@link getItem Item} property indicates the DataList item related with the event.
+ * The {@link getCommandSource CommandSource} refers to the control that originally
+ * raises the Command event.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version v1.0, last update on 2004/08/13 21:44:52
+ * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
+ * @since 3.0
  */
 class TDataListCommandEventParameter extends TCommandEventParameter
 {
 	/**
-	 * The TDataListItem control responsible for the event.
-	 * @var TDataListItem
+	 * @var TDataListItem the TDataListItem control responsible for the event.
 	 */
-	public $item=null;
+	private $_item=null;
 	/**
-	 * The control originally raises the <b>OnCommand</b> event.
-	 * @var TControl
+	 * @var TControl the control originally raises the <b>Command</b> event.
 	 */
-	public $source=null;
+	private $_source=null;
+
+	/**
+	 * Constructor.
+	 * @param TDataListItem DataList item responsible for the event
+	 * @param TControl original event sender
+	 * @param TCommandEventParameter original event parameter
+	 */
+	public function __construct($item,$source,TCommandEventParameter $param)
+	{
+		$this->_item=$item;
+		$this->_source=$source;
+		parent::__construct($param->getCommandName(),$param->getCommandParameter());
+	}
+
+	/**
+	 * @return TDataListItem the TDataListItem control responsible for the event.
+	 */
+	public function getItem()
+	{
+		return $this->_item;
+	}
+
+	/**
+	 * @return TControl the control originally raises the <b>Command</b> event.
+	 */
+	public function getCommandSource()
+	{
+		return $this->_source;
+	}
 }
-
-
-class TDataListItemCollection extends TCollection
-{
-	protected $list=null;
-
-	public function __construct($list)
-	{
-		parent::__construct();
-		$this->list=$list;
-	}
-
-	protected function onAddItem($item)
-	{
-		if($item instanceof TDataListItem)
-		{
-			$this->list->addBody($item);
-			return true;
-		}
-		else
-			return false;
-	}
-
-	protected function onRemoveItem($item)
-	{
-		$this->list->getBodies()->remove($item);
-	}
-}
-
 
 /**
- * TDataGridItem class
+ * TDataListItem class
  *
- * A TDataGridItem control represents an item in the TDataGrid control, such
- * as heading section, footer section, data item, or pager section. The
- * item type can be determined by <b>Type</b> property.
- * The data items are stored in the <b>Items</b> property of TDataGrid control.
- * The index and data value of the item can be accessed via <b>Index</b>
- * and <b>Data</b> properties, respectively.
- *
- * Since TDataGridItem inherits from TTableRow, you can also access
- * the <b>Cells</b> property to get the table cells in the item.
- *
- * Namespace: System.Web.UI.WebControls
- *
- * Properties
- * - <b>ItemIndex</b>, mixed
- *   <br>Gets or sets the index of the data item in the Items collection of datagrid.
- * - <b>Data</b>, mixed
- *   <br>Gets or sets the value of the data item.
- * - <b>Type</b>, mixed
- *   <br>Gets or sets the type of the item (Header, Footer, Item, AlternatingItem, EditItem, SelectedItem, Separator)
+ * A TDataListItem control represents an item in the {@link TDataList} control,
+ * such as heading section, footer section, or a data item.
+ * The index and data value of the item can be accessed via {@link getItemIndex ItemIndex}>
+ * and {@link getDataItem DataItem} properties, respectively. The type of the item
+ * is given by {@link getItemType ItemType} property.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version v1.0, last update on 2004/08/13 21:44:52
+ * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
+ * @since 3.0
  */
-class TDataGridItem extends TTableRow
+class TDataListItem extends TWebControl implements INamingContainer
 {
 	/**
-	 * Header
+	 * index of the data item in the Items collection of DataList
 	 */
-	const TYPE_HEADER='Header';
+	private $_itemIndex='';
 	/**
-	 * Footer
+	 * type of the TDataListItem
+	 * @var string
 	 */
-	const TYPE_FOOTER='Footer';
-	/**
-	 * Data item
-	 */
-	const TYPE_ITEM='Item';
-	/**
-	 * Alternating data item
-	 */
-	const TYPE_ALTERNATING_ITEM='AlternatingItem';
-	/**
-	 * Selected item
-	 */
-	const TYPE_SELECTED_ITEM='SelectedItem';
-	/**
-	 * Edit item
-	 */
-	const TYPE_EDIT_ITEM='EditItem';
-	/**
-	 * Pager
-	 */
-	const TYPE_PAGER='Pager';
-	/**
-	 * index of the data item
-	 * @var mixed
-	 */
-	private $index='';
+	private $_itemType='';
 	/**
 	 * value of the data item
 	 * @var mixed
 	 */
-	private $data=null;
-	/**
-	 * type of the TDataGridItem
-	 * @var string
-	 */
-	private $type='';
+	private $_dataItem=null;
 
 	/**
 	 * Constructor.
-	 * Initializes the type to 'Item'.
+	 * @param integer zero-based index of the item in the item collection of DataList
+	 * @param string item type, can be 'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager'.
 	 */
-	public function __construct()
+	public function __construct($itemIndex,$itemType)
 	{
-		$this->type=self::TYPE_ITEM;
-		parent::__construct();
+		$this->_itemIndex=$itemIndex;
+		$this->setItemType($itemType);
 	}
 
 	/**
-	 * @return mixed the index of the data item
+	 * Creates a style object for the control.
+	 * This method creates a {@link TTableStyle} to be used by checkbox list.
+	 * @return TStyle control style to be used
+	 */
+	protected function createStyle()
+	{
+		return new TTableItemStyle;
+	}
+
+	/**
+	 * @return string item type, can be 'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager'
+	 */
+	public function getItemType()
+	{
+		return $this->_itemType;
+	}
+
+	/**
+	 * @param mixed data to be associated with the item
+	 */
+	public function setItemType($value)
+	{
+		$this->_itemType=TPropertyValue::ensureEnum($value,'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager');
+	}
+
+	/**
+	 * @return integer zero-based index of the item in the item collection of DataList
 	 */
 	public function getItemIndex()
 	{
-		return $this->index;
+		return $this->_itemIndex;
 	}
 
 	/**
-	 * Sets the index of the data item
-	 * @param mixed the data item index
+	 * @return mixed data associated with the item
 	 */
-	public function setItemIndex($value)
+	public function getDataItem()
 	{
-		$this->index=$value;
+		return $this->_dataItem;
 	}
 
 	/**
-	 * @return mixed the value of the data item
+	 * @param mixed data to be associated with the item
 	 */
-	public function getData()
+	public function setDataItem($value)
 	{
-		return $this->data;
+		$this->_dataItem=$value;
 	}
 
 	/**
-	 * Sets the value of the data item
-	 * @param mixed the value of the data item
-	 */
-	public function setData($value)
-	{
-		$this->data=$value;
-	}
-
-	/**
-	 * @return string the item type
-	 */
-	public function getType()
-	{
-		return $this->type;
-	}
-
-	/**
-	 * Sets the item type
-	 * @param string the item type
-	 */
-	public function setType($value)
-	{
-		$this->type=$value;
-	}
-
-	/**
-	 * Handles <b>OnBubbleEvent</b>.
-	 * This method overrides parent's implementation to bubble
-	 * <b>OnItemCommand</b> event if an <b>OnCommand</b>
-	 * event is bubbled from a child control.
-	 * This method should only be used by control developers.
+	 * Handles <b>BubbleEvent</b>.
+	 * This method overrides parent's implementation by wrapping event parameter
+	 * for <b>Command</b> event with item information.
 	 * @param TControl the sender of the event
 	 * @param TEventParameter event parameter
 	 * @return boolean whether the event bubbling should stop here.
@@ -1055,36 +1281,37 @@ class TDataGridItem extends TTableRow
 	{
 		if($param instanceof TCommandEventParameter)
 		{
-			$ce=new TDataGridCommandEventParameter;
-			$ce->name=$param->name;
-			$ce->parameter=$param->parameter;
-			$ce->source=$sender;
-			$ce->item=$this;
-			$this->raiseBubbleEvent($this,$ce);
+			$this->raiseBubbleEvent($this,new TDataListCommandEventParameter($this,$sender,$param));
 			return true;
 		}
 		else
 			return false;
 	}
+}
 
+
+/**
+ * TDataListItemCollection class.
+ *
+ * TDataListItemCollection represents a collection of data list items.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
+class TDataListItemCollection extends TList
+{
 	/**
-	 * Renders the body content of this table.
-	 * @return string the rendering result
+	 * Returns true only when the item to be added is a {@link TDataListItem}.
+	 * This method is invoked before adding an item to the list.
+	 * If it returns true, the item will be added to the list, otherwise not.
+	 * @param mixed item to be added
+	 * @return boolean whether the item can be added to the list
 	 */
-	protected function renderBody()
+	protected function canAddItem($item)
 	{
-		$content="\n";
-		$cols=$this->getParent()->getColumns();
-		$n=$cols->length();
-		foreach($this->getCells() as $index=>$cell)
-		{
-			if($cell->isVisible())
-			{
-				if(!isset($cols[$index]) || $cols[$index]->isVisible() || $this->getType()===self::TYPE_PAGER)
-					$content.=$cell->render()."\n";
-			}
-		}
-		return $content;
+		return ($item instanceof TDataListItem);
 	}
 }
 

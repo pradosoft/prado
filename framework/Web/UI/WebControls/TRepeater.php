@@ -36,6 +36,18 @@ Prado::using('System.Web.UI.WebControls.TDataBoundControl');
  * displayed between items.
  *
  * You can retrive the repeated contents by the {@link getItems Items} property.
+ * The header and footer items can be accessed by {@link getHeader Header}
+ * and {@link getFooter Footer} properties, respectively.
+ *
+ * When TRepeater creates an item, it will raise an {@link onItemCreated ItemCreated}
+ * so that you may customize the newly created item.
+ * When databinding is performed by TRepeater, for each item once it has finished
+ * databinding, an {@link onItemDataBound ItemDataBound} event will be raised.
+ *
+ * TRepeater raises an {@link onItemCommand ItemCommand} whenever a button control
+ * within some repeater item raises a <b>Command</b> event. Therefore,
+ * you can handle all sorts of <b>Command</b> event in a central place by
+ * writing an event handler for {@link onItemCommand ItemCommand}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -223,6 +235,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 * @param string item type, may be 'Header', 'Footer', 'Item', 'Separator', 'AlternatingItem', 'SelectedItem', 'EditItem'.
 	 * @param boolean whether to do databinding for the item
 	 * @param mixed data to be associated with the item
+	 * @return TRepeaterItem the created item
 	 */
 	private function createItemInternal($itemIndex,$itemType,$dataBind,$dataItem)
 	{
@@ -271,6 +284,12 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 			$this->createTemplate($tplContent)->instantiateIn($item);
 	}
 
+	/**
+	 * Parses item template.
+	 * This method uses caching technique to accelerate template parsing.
+	 * @param string template string
+	 * @return ITemplate parsed template object
+	 */
 	protected function createTemplate($str)
 	{
 		$key=md5($str);
@@ -333,20 +352,28 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	}
 
 	/**
+	 * Clears up all items in the repeater.
+	 */
+	public function reset()
+	{
+		$this->getControls()->clear();
+		$this->getItems()->clear();
+		$this->_header=null;
+		$this->_footer=null;
+	}
+
+	/**
 	 * Creates repeater items based on viewstate information.
 	 */
 	protected function restoreItemsFromViewState()
 	{
-		$this->getControls()->clear();
-		$items=$this->getItems();
-		$items->clear();
-		$this->_header=null;
-		$this->_footer=null;
+		$this->reset();
 		if(($itemCount=$this->getViewState('ItemCount',0))>0)
 		{
+			$items=$this->getItems();
+			$hasSeparator=$this->_separatorTemplate!=='';
 			if($this->_headerTemplate!=='')
 				$this->_header=$this->createItemInternal(-1,'Header',false,null);
-			$hasSeparator=$this->_separatorTemplate!=='';
 			for($i=0;$i<$itemCount;++$i)
 			{
 				if($hasSeparator && $i>0)
@@ -368,11 +395,9 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 */
 	protected function performDataBinding($data)
 	{
-		$this->getControls()->clear();
-		$this->clearChildState();
-		$items=$this->getItems();
-		$items->clear();
+		$this->reset();
 		$itemIndex=0;
+		$items=$this->getItems();
 		$hasSeparator=$this->_separatorTemplate!=='';
 		foreach($data as $dataItem)
 		{
