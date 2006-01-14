@@ -32,7 +32,7 @@ class Home extends TPage
 		$this->dataBind();
 	}
 
-	public function itemAction($sender,$param)
+	public function propertyAction($sender,$param)
 	{
 		if($param->CommandName==='remove')
 		{
@@ -40,11 +40,36 @@ class Home extends TPage
 		}
 		else if($param->CommandName==='up')
 		{
-			//$this->ClassDefinition->Properties->insert($param->CommandParameter+1,new PropertyDefinition);
+			$property=$this->ClassDefinition->Properties->itemAt($param->CommandParameter);
+			$this->ClassDefinition->Properties->removeAt($param->CommandParameter);
+			$this->ClassDefinition->Properties->insert($param->CommandParameter-1,$property);
 		}
 		else if($param->CommandName==='down')
 		{
-			//$this->ClassDefinition->Properties->insert($param->CommandParameter+1,new PropertyDefinition);
+			$property=$this->ClassDefinition->Properties->itemAt($param->CommandParameter);
+			$this->ClassDefinition->Properties->removeAt($param->CommandParameter);
+			$this->ClassDefinition->Properties->insert($param->CommandParameter+1,$property);
+		}
+		$this->refresh();
+	}
+
+	public function eventAction($sender,$param)
+	{
+		if($param->CommandName==='remove')
+		{
+			$this->ClassDefinition->Events->removeAt($param->CommandParameter);
+		}
+		else if($param->CommandName==='up')
+		{
+			$property=$this->ClassDefinition->Events->itemAt($param->CommandParameter);
+			$this->ClassDefinition->Events->removeAt($param->CommandParameter);
+			$this->ClassDefinition->Events->insert($param->CommandParameter-1,$property);
+		}
+		else if($param->CommandName==='down')
+		{
+			$property=$this->ClassDefinition->Events->itemAt($param->CommandParameter);
+			$this->ClassDefinition->Events->removeAt($param->CommandParameter);
+			$this->ClassDefinition->Events->insert($param->CommandParameter+1,$property);
 		}
 		$this->refresh();
 	}
@@ -142,8 +167,7 @@ class ClassDefinition extends TComponent
 		if($this->Comments!=='')
 		{
 			$str.=" *\n";
-			foreach(explode("\n",$this->Comments) as $line)
-				$str.=' * '.$line."\n";
+			$str.=implode("\n * ",explode("\n",wordwrap($this->Comments)));
 			$str.=" *\n\n";
 		}
 		if($this->Author!=='')
@@ -220,36 +244,52 @@ class ClassDefinition extends TComponent
 		return "$value";
 	}
 
+	private function getValueConversionString($type)
+	{
+		switch($type)
+		{
+			case 'integer': return 'TPropertyValue::ensureInteger($value)';
+			case 'float': return 'TPropertyValue::ensureFloat($value)';
+			case 'boolean': return 'TPropertyValue::ensureBoolean($value)';
+			case 'enumerable': return 'TPropertyValue::ensureEnum($value)';
+			case 'mixed': return '$value';
+			case 'string': return 'TPropertyValue::ensureString($value)';
+		}
+	}
+
 	protected function renderProperties($writer)
 	{
 		foreach($this->Properties as $property)
 		{
-			$comments=$property->Comments;
+			$name=$property->Name;
+			if($name==='')
+				continue;
+			$comments=implode("\n\t * ",explode("\n",wordwrap($property->Comments)));
 			$access=$property->IsProtected?'protected':'public';
 			$setter='set'.$property->Name.'($value)';
 			$getter='get'.$property->Name.'()';
 			$value=$this->getValueAsString($property->DefaultValue,$property->Type);
 			if($property->Storage==='ViewState')
 			{
-				$readStatement="return \$this->getViewState('{$property->Name}',$value);";
-				$writeStatement="\$this->setViewState('{$property->Name}',\$value,$value);";
+				$readStatement="return \$this->getViewState('$name',$value);";
+				$writeStatement="\$this->setViewState('$name',".$this->getValueConversionString($property->Type).",$value);";
 			}
 			else if($property->Storage==='ControlState')
 			{
-				$readStatement="return \$this->getControlState('{$property->Name}',$value);";
-				$writeStatement="\$this->setControlState('{$property->Name}',\$value,$value);";
+				$readStatement="return \$this->getControlState('$name',$value);";
+				$writeStatement="\$this->setControlState('$name',".$this->getValueConversionString($property->Type).",$value);";
 			}
 			else
 			{
-				$name=$this->getVariableName($property->Name);
-				$readStatement="return \$this->$name;";
-				$writeStatement="\$this->$name=$value;";
+				$varname=$this->getVariableName($property->Name);
+				$readStatement="return \$this->$varname;";
+				$writeStatement="\$this->$varname=".$this->getValueConversionString($property->Type).";";
 			}
-			$writer->write("\t/**\n\t * @return {$property->Type} {$property->Comments} Defaults to $value.\n\t */\n");
+			$writer->write("\n\t/**\n\t * @return {$property->Type} $comments Defaults to $value.\n\t */\n");
 			$writer->write("\t$access function $getter\n\t{\n\t\t$readStatement\n\t}\n");
 			if(!$property->ReadOnly)
 			{
-				$writer->write("\t/**\n\t * @param {$property->Type} {$property->Comments}\n\t */\n");
+				$writer->write("\n\t/**\n\t * @param {$property->Type} $comments\n\t */\n");
 				$writer->write("\t$access function $setter\n\t{\n\t\t$writeStatement\n\t}\n");
 			}
 		}
@@ -257,6 +297,15 @@ class ClassDefinition extends TComponent
 
 	protected function renderEvents($writer)
 	{
+		foreach($this->Events as $event)
+		{
+			$name=$event->Name;
+			if($name==='')
+				continue;
+			$comments=implode("\n\t * ",explode("\n",wordwrap($event->Comments)));
+			$writer->write("\n\t/**\n\t * Raises <b>$name</b> event.\n\t * $comments\n\t * @param TEventParameter event parameter\n\t */\n");
+			$writer->write("\tpublic function on$name(\$param)\n\t{\n\t\t\$this->raiseEvent('$name',\$this,\$param);\n\t}\n");
+		}
 	}
 
 	public function getClassName()
@@ -310,7 +359,7 @@ class ClassDefinition extends TComponent
 
 	public function setComments($value)
 	{
-		$this->_comments=wordwrap($value);
+		$this->_comments=$value;
 	}
 
 	public function getAuthor()
@@ -356,7 +405,7 @@ class EventDefinition extends TComponent
 
 	public function setComments($value)
 	{
-		$this->_comments=wordwrap($value);
+		$this->_comments=$value;
 	}
 }
 
@@ -437,7 +486,7 @@ class PropertyDefinition extends TComponent
 
 	public function setComments($value)
 	{
-		$this->_comments=wordwrap($value);
+		$this->_comments=$value;
 	}
 }
 
