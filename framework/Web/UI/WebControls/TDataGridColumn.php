@@ -226,6 +226,21 @@ abstract class TDataGridColumn extends TComponent
 	{
 	}
 
+	protected function getDataFieldValue($data,$field)
+	{
+		if(is_array($data))
+			return $data[$field];
+		else if($data instanceof TMap)
+			return $data->itemAt($field);
+		else if(($data instanceof TComponent) && $data->canGetProperty($field))
+		{
+			$getter='get'.$field;
+			return $data->$getter();
+		}
+		else
+			throw new TInvalidDataValueException('datagridcolumn_data_invalid');
+	}
+
 	/**
 	 * Initializes the specified cell to its initial values.
 	 * The default implementation sets the content of header and footer cells.
