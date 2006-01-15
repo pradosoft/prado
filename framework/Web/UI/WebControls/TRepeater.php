@@ -293,26 +293,24 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	protected function createTemplate($str)
 	{
 		$key=md5($str);
-		$contextPath=$this->getTemplateControl()->getTemplate()->getContextPath();
-		if(($cache=$this->getApplication()->getCache())!==null)
-		{
-			if(($template=$cache->get($key))===null)
-			{
-				$template=new TTemplate($str,$contextPath);
-				$cache->set($key,$template,self::CACHE_EXPIRY);
-			}
-		}
+		if(isset(self::$_templates[$key]))
+			return self::$_templates[$key];
 		else
 		{
-			if(isset(self::$_templates[$key]))
-				$template=self::$_templates[$key];
-			else
+			$contextPath=$this->getTemplateControl()->getTemplate()->getContextPath();
+			if(($cache=$this->getApplication()->getCache())!==null)
 			{
-				$template=new TTemplate($str,$contextPath);
-				self::$_templates[$key]=$template;
+				if(($template=$cache->get($key))===null)
+				{
+					$template=new TTemplate($str,$contextPath);
+					$cache->set($key,$template,self::CACHE_EXPIRY);
+				}
 			}
+			else
+				$template=new TTemplate($str,$contextPath);
+			self::$_templates[$key]=$template;
+			return $template;
 		}
-		return $template;
 	}
 
 	/**
