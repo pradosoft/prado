@@ -96,96 +96,10 @@
  *
  * An <b>OnItemCreated</b> event will be raised right after each item is created in the datagrid.
  *
- * Namespace: System.Web.UI.WebControls
- *
- * Properties
- * - <b>Items</b>, TDataGridItemCollection, read-only
- *   <br>Gets the list of TDataGridItem controls that correspond to each data item.
- * - <b>Columns</b>, TCollection, read-only
- *   <br>Gets the list of TDataGridColumn controls that are manually specified or created.
- * - <b>AutoGenerateColumns</b>, boolean, default=true, kept in viewstate
- *   <br>Gets or sets the value indicating whether columns should be generated automatically based on the data in datasource.
- * - <b>AllowSorting</b>, boolean, default=false, kept in viewstate
- *   <br>Gets or sets the value indicating whether sorting should be enabled.
- * - <b>AllowPaging</b>, boolean, default=false, kept in viewstate
- *   <br>Gets or sets the value indicating whether paging should be enabled.
- * - <b>AllowCustomPaging</b>, boolean, default=false, kept in viewstate
- *   <br>Gets or sets the value indicating whether custom paging should be enabled.
- * - <b>CurrentPageIndex</b>, integer, default=0, stored in viewstate
- *   <br>Gets or sets the index for the page to be displayed
- * - <b>PageSize</b>, integer, default=10, stored in viewstate
- *   <br>Gets or sets the number of data items to be displayed in each page.
- * - <b>PageCount</b>, integer, read-only
- *   <br>Gets the number of pages to be displayed.
- * - <b>VirtualItemCount</b>, integer, default=0, stored in viewstate
- *   <br>Gets or sets the number of data items available for paging purpose when custom paging is enabled.
- * - <b>PagerButtonCount</b>, integer, default=10, stored in viewstate
- *   <br>Gets or sets the number of buttons to be displayed in pager for navigating among pages.
- * - <b>PagerDisplay</b>, string (None,Top,Bottom,TopAndBottom), default=Bottom, stored in viewstate
- *   <br>Gets or sets where the pager should be displayed.
- * - <b>EditItemIndex</b>, integer, default=-1, stored in viewstate
- *   <br>Gets or sets the index for edit item.
- * - <b>EditItem</b>, TDataGridItem, read-only
- *   <br>Gets the edit item, null if none
- * - <b>EditItemStyle</b>, string, stored in viewstate
- *   <br>Gets or sets the css style for the edit item
- * - <b>EditItemCssClass</b>, string, stored in viewstate
- *   <br>Gets or sets the css classs for the edit item
- * - <b>SelectedItemIndex</b>, integer, default=-1, stored in viewstate
- *   <br>Gets or sets the index for selected item.
- * - <b>SelectedItem</b>, TDataGridItem, read-only
- *   <br>Gets the selected item, null if none
- * - <b>SelectedItemStyle</b>, string, stored in viewstate
- *   <br>Gets or sets the css style for the selected item
- * - <b>SelectedItemCssClass</b>, string, stored in viewstate
- *   <br>Gets or sets the css class for the selected item
- * - <b>ItemStyle</b>, string, stored in viewstate
- *   <br>Gets or sets the css style for each item
- * - <b>ItemCssClass</b>, string, stored in viewstate
- *   <br>Gets or sets the css class for each item
- * - <b>AlternatingItemStyle</b>, string, stored in viewstate
- *   <br>Gets or sets the css style for each alternating item
- * - <b>AlternatingItemCssClass</b>, string, stored in viewstate
- *   <br>Gets or sets the css class for each alternating item
- * - <b>HeaderStyle</b>, string, stored in viewstate
- *   <br>Gets or sets the css style for the header
- * - <b>HeaderCssClass</b>, string, stored in viewstate
- *   <br>Gets or sets the css class for the header
- * - <b>FooterStyle</b>, string, stored in viewstate
- *   <br>Gets or sets the css style for the footer
- * - <b>FooterCssClass</b>, string, stored in viewstate
- *   <br>Gets or sets the css class for the footer
- * - <b>PagerStyle</b>, string, stored in viewstate
- *   <br>Gets or sets the css style for the pager
- * - <b>PagerCssClass</b>, string, stored in viewstate
- *   <br>Gets or sets the css class for the pager
- * - <b>ShowHeader</b>, boolean, default=true, stored in viewstate
- *   <br>Gets or sets the value whether to show header
- * - <b>ShowFooter</b>, boolean, default=true, stored in viewstate
- *   <br>Gets or sets the value whether to show footer
- * - <b>Header</b>, TDataGridItem
- *   <br>Gets the header of the data grid.
- * - <b>Footer</b>, TDataGridItem
- *   <br>Gets the footer of the data grid.
- * - <b>Pager</b>, TDataGridItem
- *   <br>Gets the pager of the data grid.
- * - <b>BackImageUrl</b>, string, kept in viewstate
- *   <br>Gets or sets the URL of the background image to display behind the datagrid.
- *
- * Events
- * - <b>OnEditCommand</b>, raised when a button control raises an <b>OnCommand</b> event with 'edit' command.
- * - <b>OnSelectCommand</b>, raised when a button control raises an <b>OnCommand</b> event with 'select' command.
- * - <b>OnUpdateCommand</b>, raised when a button control raises an <b>OnCommand</b> event with 'update' command.
- * - <b>OnCancelCommand</b>, raised when a button control raises an <b>OnCommand</b> event with 'cancel' command.
- * - <b>OnDeleteCommand</b>, raised when a button control raises an <b>OnCommand</b> event with 'delete' command.
- * - <b>OnPageCommand</b>, raised when a button control raises an <b>OnCommand</b> event with 'page' command.
- * - <b>OnSortCommand</b>, raised when a button control raises an <b>OnCommand</b> event with 'sort' command.
- * - <b>OnItemCommand</b>, raised when a button control raises an <b>OnCommand</b> event.
- * - <b>OnItemCreatedCommand</b>, raised right after an item is created.
- *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: 1.25 $ $Date: 2005/12/17 06:11:28 $
+ * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
+ * @since 3.0
  */
 class TDataGrid extends TBaseDataList
 {
@@ -1152,6 +1066,136 @@ class TDataGridColumnCollection extends TList
 
 class TDataGridPagerStyle extends TTableItemStyle
 {
+	private $_mode=null;
+	private $_nextText=null;
+	private $_prevText=null;
+	private $_buttonCount=null;
+	private $_position=null;
+	private $_visible=null;
+
+	public function getMode()
+	{
+		return $this->_mode===null?'NextPrev':$this->_mode;
+	}
+
+	public function setMode($value)
+	{
+		$this->_mode=TPropertyValue::ensureEnum($value,'NextPrev','NumericPages');
+	}
+
+	public function getNextPageText()
+	{
+		return $this->_nextText===null?'>':$this->_nextText;
+	}
+
+	public function setNextPageText($value)
+	{
+		$this->_nextText=$value;
+	}
+
+	public function getPrevPageText()
+	{
+		return $this->_prevText===null?'<':$this->_prevText;
+	}
+
+	public function setPrevPageText($value)
+	{
+		$this->_prevText=$value;
+	}
+
+	public function getPageButtonCount()
+	{
+		return $this->_buttonCount===null?10:$this->_buttonCount;
+	}
+
+	public function setPageButtonCount($value)
+	{
+		if(($value=TPropertyValue::ensureInteger($value))<1)
+			throw new TInvalidDataValueException('datagridpagerstyle_pagebuttoncount_invalid');
+		$this->_buttonCount=$value;
+	}
+
+	public function getPosition()
+	{
+		return $this->_position===null?'Bottom':$this->_position;
+	}
+
+	public function setPosition($value)
+	{
+		$this->_position=TPropertyValue::ensureEnum($value,'Bottom','Top','TopAndBottom');
+	}
+
+	public function getVisible()
+	{
+		return $this->_visible===null?true:$this->_visible;
+	}
+
+	public function setVisible($value)
+	{
+		$this->_visible=TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * Resets the style to the original empty state.
+	 */
+	public function reset()
+	{
+		parent::reset();
+		$this->_visible=null;
+		$this->_position=null;
+		$this->_buttonCount=null;
+		$this->_prevText=null;
+		$this->_nextText=null;
+		$this->_mode=null;
+	}
+
+	/**
+	 * Copies the style content from an existing style
+	 * This method overrides the parent implementation by
+	 * adding additional TDataGridPagerStyle specific attributes.
+	 * @param TStyle source style
+	 */
+	public function copyFrom($style)
+	{
+		parent::copyFrom($style);
+		if($style instanceof TDataGridPagerStyle)
+		{
+			$this->_visible=$style->_visible;
+			$this->_position=$style->_position;
+			$this->_buttonCount=$style->_buttonCount;
+			$this->_prevText=$style->_prevText;
+			$this->_nextText=$style->_nextText;
+			$this->_mode=$style->_mode;
+		}
+	}
+
+	/**
+	 * Merges with a style.
+	 * If a style field is not set in the current style but set in the new style
+	 * it will take the value from the new style.
+	 * This method overrides the parent implementation by
+	 * merging with additional TDataGridPagerStyle specific attributes.
+	 * @param TStyle the new style
+	 */
+	public function mergeWith($style)
+	{
+		parent::mergeWith($style);
+		if($style instanceof TDataGridPagerStyle)
+		{
+			if($style->_visible!==null && $this->_visible===null)
+				$this->_visible=$style->_visible;
+			if($style->_position!==null && $this->_position===null)
+				$this->_position=$style->_position;
+			if($style->_buttonCount!==null && $this->_buttonCount===null)
+				$this->_buttonCount=$style->_buttonCount;
+			if($style->_prevText!==null && $this->_prevText===null)
+				$this->_prevText=$style->_prevText;
+			if($style->_nextText!==null && $this->_nextText===null)
+				$this->_nextText=$style->_nextText;
+			if($style->_mode!==null && $this->_mode===null)
+				$this->_mode=$style->_mode;
+		}
+	}
 }
 
 ?>

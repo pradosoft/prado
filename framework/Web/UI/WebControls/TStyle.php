@@ -260,6 +260,7 @@ class TStyle extends TComponent
 	 */
 	public function reset()
 	{
+		parent::reset();
 		$this->_fields=array();
 		$this->_font=null;
 		$this->_class=null;
@@ -578,6 +579,7 @@ class TTableItemStyle extends TStyle
 	 */
 	public function reset()
 	{
+		parent::reset();
 		$this->_verticalAlign=null;
 		$this->_horizontalAlign=null;
 		$this->_wrap=null;
