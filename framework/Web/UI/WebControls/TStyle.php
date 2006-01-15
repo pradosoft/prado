@@ -38,11 +38,11 @@ class TStyle extends TComponent
 	/**
 	 * @var string CSS class name
 	 */
-	private $_class='';
+	private $_class=null;
 	/**
 	 * @var string CSS style string (those not represented by specific fields of TStyle)
 	 */
-	private $_customStyle='';
+	private $_customStyle=null;
 
 	/**
 	 * @return string the background color of the control
@@ -57,7 +57,7 @@ class TStyle extends TComponent
 	 */
 	public function setBackColor($value)
 	{
-		if($value==='')
+		if(trim($value)==='')
 			unset($this->_fields['background-color']);
 		else
 			$this->_fields['background-color']=$value;
@@ -76,7 +76,7 @@ class TStyle extends TComponent
 	 */
 	public function setBorderColor($value)
 	{
-		if($value==='')
+		if(trim($value)==='')
 			unset($this->_fields['border-color']);
 		else
 			$this->_fields['border-color']=$value;
@@ -96,7 +96,7 @@ class TStyle extends TComponent
 	 */
 	public function setBorderStyle($value)
 	{
-		if($value==='')
+		if(trim($value)==='')
 			unset($this->_fields['border-style']);
 		else
 			$this->_fields['border-style']=$value;
@@ -115,7 +115,7 @@ class TStyle extends TComponent
 	 */
 	public function setBorderWidth($value)
 	{
-		if($value==='')
+		if(trim($value)==='')
 			unset($this->_fields['border-width']);
 		else
 			$this->_fields['border-width']=$value;
@@ -126,7 +126,7 @@ class TStyle extends TComponent
 	 */
 	public function getCssClass()
 	{
-		return $this->_class;
+		return $this->_class===null?'':$this->_class;
 	}
 
 	/**
@@ -134,7 +134,7 @@ class TStyle extends TComponent
 	 */
 	public function setCssClass($value)
 	{
-		$this->_class=$value;
+		$this->_class=trim($value)===''?null:$value;
 	}
 
 	/**
@@ -160,7 +160,7 @@ class TStyle extends TComponent
 	 */
 	public function setForeColor($value)
 	{
-		if($value==='')
+		if(trim($value)==='')
 			unset($this->_fields['color']);
 		else
 			$this->_fields['color']=$value;
@@ -179,7 +179,7 @@ class TStyle extends TComponent
 	 */
 	public function setHeight($value)
 	{
-		if($value==='')
+		if(trim($value)==='')
 			unset($this->_fields['height']);
 		else
 			$this->_fields['height']=$value;
@@ -190,7 +190,7 @@ class TStyle extends TComponent
 	 */
 	public function getCustomStyle()
 	{
-		return $this->_customStyle;
+		return $this->_customStyle===null?'':$this->_customStyle;
 	}
 
 	/**
@@ -200,7 +200,7 @@ class TStyle extends TComponent
 	 */
 	public function setCustomStyle($value)
 	{
-		$this->_customStyle=$value;
+		$this->_customStyle=trim($value)===''?null:$value;
 	}
 
 	/**
@@ -252,10 +252,7 @@ class TStyle extends TComponent
 	 */
 	public function setWidth($value)
 	{
-		if($value==='')
-			unset($this->_fields['width']);
-		else
-			$this->_fields['width']=$value;
+		$this->_fields['width']=$value;
 	}
 
 	/**
@@ -265,8 +262,8 @@ class TStyle extends TComponent
 	{
 		$this->_fields=array();
 		$this->_font=null;
-		$this->_class='';
-		$this->_customStyle='';
+		$this->_class=null;
+		$this->_customStyle=null;
 	}
 
 	/**
@@ -276,13 +273,33 @@ class TStyle extends TComponent
 	 */
 	public function copyFrom($style)
 	{
-		$this->_fields=$style->_fields;
-		$this->_class=$style->_class;
-		$this->_customStyle=$style->_customStyle;
-		if($style->_font!==null)
-			$this->getFont()->copyFrom($style->_font);
-		else
-			$this->_font=null;
+		if($style!==null)
+		{
+			$this->reset();
+			$this->_fields=$style->_fields;
+			$this->_class=$style->_class;
+			$this->_customStyle=$style->_customStyle;
+			if($style->_font!==null)
+				$this->getFont()->copyFrom($style->_font);
+		}
+	}
+
+	/**
+	 * Merges with a style.
+	 * If a style field is not set in the current style but set in the new style
+	 * it will take the value from the new style.
+	 * @param TStyle the new style
+	 */
+	public function mergeWith($style)
+	{
+		if($style!==null)
+		{
+			$this->_fields=array_merge($style->_fields,$this->_fields);
+			if($this->_class===null)
+				$this->_class=$style->_class;
+			if($this->_font===null && $style->_font!==null)
+				$this->getFont()->mergeWith($style->_font);
+		}
 	}
 
 	/**
@@ -323,23 +340,23 @@ class TTableStyle extends TStyle
 	/**
 	 * @var string the URL of the background image for the table
 	 */
-	private $_backImageUrl='';
+	private $_backImageUrl=null;
 	/**
 	 * @var string horizontal alignment of the contents within the table
 	 */
-	private $_horizontalAlign='NotSet';
+	private $_horizontalAlign=null;
 	/**
 	 * @var integer cellpadding of the table
 	 */
-	private $_cellPadding=-1;
+	private $_cellPadding=null;
 	/**
 	 * @var integer cellspacing of the table
 	 */
-	private $_cellSpacing=-1;
+	private $_cellSpacing=null;
 	/**
 	 * @var string grid line setting of the table
 	 */
-	private $_gridLines='None';
+	private $_gridLines=null;
 
 	/**
 	 * Sets the style attributes to default values.
@@ -348,11 +365,11 @@ class TTableStyle extends TStyle
 	 */
 	public function reset()
 	{
-		$this->_backImageUrl='';
-		$this->_horizontalAlign='NotSet';
-		$this->_cellPadding=-1;
-		$this->_cellSpacing=-1;
-		$this->_gridLines='None';
+		$this->_backImageUrl=null;
+		$this->_horizontalAlign=null;
+		$this->_cellPadding=null;
+		$this->_cellSpacing=null;
+		$this->_gridLines=null;
 	}
 
 	/**
@@ -364,12 +381,42 @@ class TTableStyle extends TStyle
 	public function copyFrom($style)
 	{
 		parent::copyFrom($style);
-		$this->_backImageUrl=$style->_backImageUrl;
-		$this->_horizontalAlign=$style->_horizontalAlign;
-		$this->_cellPadding=$style->_cellPadding;
-		$this->_cellSpacing=$style->_cellSpacing;
-		$this->_gridLines=$style->_gridLines;
+		if($style instanceof TTableStyle)
+		{
+			$this->_backImageUrl=$style->_backImageUrl;
+			$this->_horizontalAlign=$style->_horizontalAlign;
+			$this->_cellPadding=$style->_cellPadding;
+			$this->_cellSpacing=$style->_cellSpacing;
+			$this->_gridLines=$style->_gridLines;
+		}
 	}
+
+	/**
+	 * Merges with a style.
+	 * If a style field is not set in the current style but set in the new style
+	 * it will take the value from the new style.
+	 * This method overrides the parent implementation by
+	 * merging with additional TTableStyle specific attributes.
+	 * @param TStyle the new style
+	 */
+	public function mergeWith($style)
+	{
+		parent::mergeWith($style);
+		if($style instanceof TTableStyle)
+		{
+			if($style->_backImageUrl!==null && $this->_backImageUrl===null)
+				$this->_backImageUrl=$style->_backImageUrl;
+			if($style->_horizontalAlign!==null && $this->_horizontalAlign===null)
+				$this->_horizontalAlign=$style->_horizontalAlign;
+			if($style->_cellPadding!==null && $this->_cellPadding===null)
+				$this->_cellPadding=$style->_cellPadding;
+			if($style->_cellSpacing!==null && $this->_cellSpacing===null)
+				$this->_cellSpacing=$style->_cellSpacing;
+			if($style->_gridLines!==null && $this->_gridLines===null)
+				$this->_gridLines=$style->_gridLines;
+		}
+	}
+
 
 	/**
 	 * Adds attributes related to CSS styles to renderer.
@@ -378,23 +425,23 @@ class TTableStyle extends TStyle
 	 */
 	public function addAttributesToRender($writer)
 	{
-		if(($url=trim($this->_backImageUrl))!=='')
+		if(($url=trim($this->getBackImageUrl()))!=='')
 			$writer->addStyleAttribute('background-image','url('.$url.')');
 
-		if($this->_horizontalAlign!=='NotSet')
-			$writer->addStyleAttribute('text-align',strtolower($this->_horizontalAlign));
+		if(($horizontalAlign=$this->getHorizontalAlign())!=='NotSet')
+			$writer->addStyleAttribute('text-align',strtolower($horizontalAlign));
 
-		if($this->_cellPadding>=0)
-			$writer->addAttribute('cellpadding',"$this->_cellPadding");
+		if(($cellPadding=$this->getCellPadding())>=0)
+			$writer->addAttribute('cellpadding',"$cellPadding");
 
-		if($this->_cellSpacing>=0)
+		if(($cellSpacing=$this->getCellSpacing())>=0)
 		{
-			$writer->addAttribute('cellspacing',"$this->_cellSpacing");
-			if($this->_cellSpacing===0)
+			$writer->addAttribute('cellspacing',"$cellSpacing");
+			if($this->getCellSpacing()===0)
 				$writer->addStyleAttribute('border-collapse','collapse');
 		}
 
-		switch($this->_gridLines)
+		switch($this->getGridLines())
 		{
 			case 'Horizontal' : $writer->addAttribute('rules','rows'); break;
 			case 'Vertical' : $writer->addAttribute('rules','cols'); break;
@@ -409,7 +456,7 @@ class TTableStyle extends TStyle
 	 */
 	public function getBackImageUrl()
 	{
-		return $this->_backImageUrl;
+		return $this->_backImageUrl===null?'':$this->_backImageUrl;
 	}
 
 	/**
@@ -418,7 +465,7 @@ class TTableStyle extends TStyle
 	 */
 	public function setBackImageUrl($value)
 	{
-		$this->_backImageUrl=$value;
+		$this->_backImageUrl=trim($value)===''?null:$value;
 	}
 
 	/**
@@ -426,7 +473,7 @@ class TTableStyle extends TStyle
 	 */
 	public function getHorizontalAlign()
 	{
-		return $this->_horizontalAlign;
+		return $this->_horizontalAlign===null?'NotSet':$this->_horizontalAlign;
 	}
 
 	/**
@@ -437,6 +484,8 @@ class TTableStyle extends TStyle
 	public function setHorizontalAlign($value)
 	{
 		$this->_horizontalAlign=TPropertyValue::ensureEnum($value,array('NotSet','Left','Right','Center','Justify'));
+		if($this->_horizontalAlign==='NotSet')
+			$this->_horizontalAlign=null;
 	}
 
 	/**
@@ -444,7 +493,7 @@ class TTableStyle extends TStyle
 	 */
 	public function getCellPadding()
 	{
-		return $this->_cellPadding;
+		return $this->_cellPadding===null?-1:$this->_cellPadding;
 	}
 
 	/**
@@ -455,6 +504,8 @@ class TTableStyle extends TStyle
 	{
 		if(($this->_cellPadding=TPropertyValue::ensureInteger($value))<-1)
 			throw new TInvalidDataValueException('tablestyle_cellpadding_invalid');
+		if($this->_cellPadding===-1)
+			$this->_cellPadding=null;
 	}
 
 	/**
@@ -462,7 +513,7 @@ class TTableStyle extends TStyle
 	 */
 	public function getCellSpacing()
 	{
-		return $this->_cellSpacing;
+		return $this->_cellSpacing===null?-1:$this->_cellSpacing;
 	}
 
 	/**
@@ -473,6 +524,8 @@ class TTableStyle extends TStyle
 	{
 		if(($this->_cellSpacing=TPropertyValue::ensureInteger($value))<-1)
 			throw new TInvalidDataValueException('tablestyle_cellspacing_invalid');
+		if($this->_cellSpacing===-1)
+			$this->_cellSpacing=null;
 	}
 
 	/**
@@ -480,7 +533,7 @@ class TTableStyle extends TStyle
 	 */
 	public function getGridLines()
 	{
-		return $this->_gridLines;
+		return $this->_gridLines===null?'None':$this->_gridLines;
 	}
 
 	/**
@@ -508,15 +561,15 @@ class TTableItemStyle extends TStyle
 	/**
 	 * @var string horizontal alignment of the contents within the table item
 	 */
-	private $_horizontalAlign='NotSet';
+	private $_horizontalAlign=null;
 	/**
 	 * @var string vertical alignment of the contents within the table item
 	 */
-	private $_verticalAlign='NotSet';
+	private $_verticalAlign=null;
 	/**
 	 * @var boolean whether the content wraps within the table item
 	 */
-	private $_wrap=true;
+	private $_wrap=null;
 
 	/**
 	 * Sets the style attributes to default values.
@@ -525,9 +578,9 @@ class TTableItemStyle extends TStyle
 	 */
 	public function reset()
 	{
-		$this->_verticalAlign='NotSet';
-		$this->_horizontalAlign='NotSet';
-		$this->_wrap=true;
+		$this->_verticalAlign=null;
+		$this->_horizontalAlign=null;
+		$this->_wrap=null;
 	}
 
 	/**
@@ -545,20 +598,42 @@ class TTableItemStyle extends TStyle
 	}
 
 	/**
+	 * Merges with a style.
+	 * If a style field is not set in the current style but set in the new style
+	 * it will take the value from the new style.
+	 * This method overrides the parent implementation by
+	 * merging with additional TTableItemStyle specific attributes.
+	 * @param TStyle the new style
+	 */
+	public function mergeWith($style)
+	{
+		parent::mergeWith($style);
+		if($style instanceof TTableItemStyle)
+		{
+			if($style->_verticalAlign!==null && $this->_verticalAlign===null)
+				$this->_verticalAlign=$style->_verticalAlign;
+			if($style->_horizontalAlign!==null && $this->_horizontalAlign===null)
+				$this->_horizontalAlign=$style->_horizontalAlign;
+			if($style->_wrap!==null && $this->_wrap===null)
+				$this->_wrap=$style->_wrap;
+		}
+	}
+
+	/**
 	 * Adds attributes related to CSS styles to renderer.
 	 * This method overrides the parent implementation.
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
 	public function addAttributesToRender($writer)
 	{
-		if(!$this->_wrap)
+		if(!$this->getWrap())
 			$writer->addStyleAttribute('nowrap','nowrap');
 
-		if($this->_horizontalAlign!=='NotSet')
-			$writer->addAttribute('align',strtolower($this->_horizontalAlign));
+		if(($horizontalAlign=$this->getHorizontalAlign())!=='NotSet')
+			$writer->addAttribute('align',strtolower($horizontalAlign));
 
-		if($this->_verticalAlign!=='NotSet')
-			$writer->addAttribute('valign',strtolower($this->_verticalAlign));
+		if(($verticalAlign=$this->getVerticalAlign())!=='NotSet')
+			$writer->addAttribute('valign',strtolower($verticalAlign));
 
 		parent::addAttributesToRender($writer);
 	}
@@ -568,7 +643,7 @@ class TTableItemStyle extends TStyle
 	 */
 	public function getHorizontalAlign()
 	{
-		return $this->_horizontalAlign;
+		return $this->_horizontalAlign===null?'NotSet':$this->_horizontalAlign;
 	}
 
 	/**
@@ -579,6 +654,8 @@ class TTableItemStyle extends TStyle
 	public function setHorizontalAlign($value)
 	{
 		$this->_horizontalAlign=TPropertyValue::ensureEnum($value,array('NotSet','Left','Right','Center','Justify'));
+		if($this->_horizontalAlign==='NotSet')
+			$this->_horizontalAlign=null;
 	}
 
 	/**
@@ -586,7 +663,7 @@ class TTableItemStyle extends TStyle
 	 */
 	public function getVerticalAlign()
 	{
-		return $this->_verticalAlign;
+		return $this->_verticalAlign===null?'NotSet':$this->_verticalAlign;
 	}
 
 	/**
@@ -597,6 +674,8 @@ class TTableItemStyle extends TStyle
 	public function setVerticalAlign($value)
 	{
 		$this->_verticalAlign=TPropertyValue::ensureEnum($value,array('NotSet','Top','Bottom','Middel'));
+		if($this->_verticalAlign==='NotSet')
+			$this->_verticalAlign=null;
 	}
 
 	/**
@@ -604,7 +683,7 @@ class TTableItemStyle extends TStyle
 	 */
 	public function getWrap()
 	{
-		return $this->_wrap;
+		return $this->_wrap===null?true:$this->_wrap;
 	}
 
 	/**
