@@ -219,13 +219,13 @@ class TFont extends TComponent
 			return;
 		if(($font->_flags & self::IS_SET_BOLD) && !($this->_flags & self::IS_SET_BOLD))
 			$this->setBold($font->getBold());
-		if(($font->_flags & self::IS_SET_ITALIC) && !($font->_flags & self::IS_SET_ITALIC))
+		if(($font->_flags & self::IS_SET_ITALIC) && !($this->_flags & self::IS_SET_ITALIC))
 			$this->setItalic($font->getItalic());
-		if(($font->_flags & self::IS_SET_OVERLINE) && !($font->_flags & self::IS_SET_OVERLINE))
+		if(($font->_flags & self::IS_SET_OVERLINE) && !($this->_flags & self::IS_SET_OVERLINE))
 			$this->setOverline($font->getOverline());
-		if(($font->_flags & self::IS_SET_STRIKEOUT) && !($font->_flags & self::IS_SET_STRIKEOUT))
+		if(($font->_flags & self::IS_SET_STRIKEOUT) && !($this->_flags & self::IS_SET_STRIKEOUT))
 			$this->setStrikeout($font->getStrikeout());
-		if(($font->_flags & self::IS_SET_UNDERLINE) && !($font->_flags & self::IS_SET_UNDERLINE))
+		if(($font->_flags & self::IS_SET_UNDERLINE) && !($this->_flags & self::IS_SET_UNDERLINE))
 			$this->setUnderline($font->getUnderline());
 		if(($font->_flags & self::IS_SET_SIZE) && !($this->_flags & self::IS_SET_SIZE))
 			$this->setSize($font->getSize());

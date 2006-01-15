@@ -39,6 +39,15 @@ Prado::using('System.Web.UI.WebControls.TRepeatInfo');
  * {@link getAlternatingItemStyle AlternatingItemStyle} will be applied to
  * every alternating item in the data list.
  *
+ * Item styles are applied in a hierarchical way. Style in higher hierarchy
+ * will inherit from styles in lower hierarchy.
+ * Starting from the lowest hierarchy, the item styles include
+ * item's own style, {@link getItemStyle ItemStyle}, {@link getAlternatingItemStyle AlternatingItemStyle},
+ * {@link getSelectedItemStyle SelectedItemStyle}, and {@link getEditItemStyle EditItemStyle}.
+ * Therefore, if background color is set as red in {@link getItemStyle ItemStyle},
+ * {@link getEditItemStyle EditItemStyle} will also have red background color
+ * unless it is set to a different value explicitly.
+ *
  * To change the status of a particular item, set {@link setSelectedItemIndex SelectedItemIndex}
  * or {@link setEditItemIndex EditItemIndex}. The former will change the indicated
  * item to selected mode, which will cause the item to use {@link setSelectedItemTemplate SelectedItemTemplate}
@@ -851,6 +860,83 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
+	 * Applies styles to items, header, footer and separators.
+	 * Item styles are applied in a hierarchical way. Style in higher hierarchy
+	 * will inherit from styles in lower hierarchy.
+	 * Starting from the lowest hierarchy, the item styles include
+	 * item's own style, {@link getItemStyle ItemStyle}, {@link getAlternatingItemStyle AlternatingItemStyle},
+	 * {@link getSelectedItemStyle SelectedItemStyle}, and {@link getEditItemStyle EditItemStyle}.
+	 * Therefore, if background color is set as red in {@link getItemStyle ItemStyle},
+	 * {@link getEditItemStyle EditItemStyle} will also have red background color
+	 * unless it is set to a different value explicitly.
+	 */
+	protected function applyItemStyles()
+	{
+		$headerStyle=$this->getViewState('HeaderStyle',null);
+		$footerStyle=$this->getViewState('FooterStyle',null);
+		$separatorStyle=$this->getViewState('SeparatorStyle',null);
+		$itemStyle=$this->getViewState('ItemStyle',null);
+		$alternatingItemStyle=$this->getViewState('AlternatingItemStyle',null);
+		if($itemStyle!==null)
+		{
+			if($alternatingItemStyle===null)
+				$alternatingItemStyle=new TTableItemStyle;
+			$alternatingItemStyle->mergeWith($itemStyle);
+		}
+		$selectedItemStyle=$this->getViewState('SelectedItemStyle',null);
+		if($alternatingItemStyle!==null)
+		{
+			if($selectedItemStyle===null)
+				$selectedItemStyle=new TTableItemStyle;
+			$selectedItemStyle->mergeWith($alternatingItemStyle);
+		}
+		$editItemStyle=$this->getViewState('EditItemStyle',null);
+		if($selectedItemStyle!==null)
+		{
+			if($editItemStyle===null)
+				$editItemStyle=new TTableItemStyle;
+			$editItemStyle->mergeWith($selectedItemStyle);
+		}
+
+		foreach($this->getControls() as $control)
+		{
+			switch($control->getItemType())
+			{
+				case 'Header':
+					if($headerStyle)
+						$control->getStyle()->mergeWith($headerStyle);
+					break;
+				case 'Footer':
+					if($footerStyle)
+						$control->getStyle()->mergeWith($footerStyle);
+					break;
+				case 'Separator':
+					if($separatorStyle)
+						$control->getStyle()->mergeWith($separatorStyle);
+					break;
+				case 'Item':
+					if($itemStyle)
+						$control->getStyle()->mergeWith($itemStyle);
+					break;
+				case 'AlternatingItem':
+					if($alternatingItemStyle)
+						$control->getStyle()->mergeWith($alternatingItemStyle);
+					break;
+				case 'SelectedItem':
+					if($selectedItemStyle)
+						$control->getStyle()->mergeWith($selectedItemStyle);
+					break;
+				case 'EditItem':
+					if($editItemStyle)
+						$control->getStyle()->mergeWith($editItemStyle);
+					break;
+				default:
+					break;
+			}
+		}
+	}
+
+	/**
 	 * Initializes a data list item.
 	 * The item is added as a child of the data list and the corresponding
 	 * template is instantiated within the item.
@@ -859,41 +945,29 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	protected function initializeItem($item)
 	{
 		$tplContent='';
-		$style=null;
 		switch($item->getItemType())
 		{
 			case 'Header':
 				$tplContent=$this->_headerTemplate;
-				$style=$this->getViewState('HeaderStyle',null);
 				break;
 			case 'Footer':
 				$tplContent=$this->_footerTemplate;
-				$style=$this->getViewState('FooterStyle',null);
 				break;
 			case 'Item':
 				$tplContent=$this->_itemTemplate;
-				$style=$this->getViewState('ItemStyle',null);
 				break;
 			case 'AlternatingItem':
 				if(($tplContent=$this->_alternatingItemTemplate)==='')
 					$tplContent=$this->_itemTemplate;
-				if(($style=$this->getViewState('AlternatingItemStyle',null))===null)
-					$style=$this->getViewState('ItemStyle',null);
 				break;
 			case 'Separator':
 				$tplContent=$this->_separatorTemplate;
-				$style=$this->getViewState('SeparatorStyle',null);
 				break;
 			case 'SelectedItem':
 				if(($tplContent=$this->_selectedItemTemplate)==='')
 				{
 					if(!($item->getItemIndex()%2) || ($tplContent=$this->_alternatingItemTemplate)==='')
 						$tplContent=$this->_itemTemplate;
-				}
-				if(($style=$this->getViewState('SelectedItemStyle',null))===null)
-				{
-					if(!($item->getItemIndex()%2) || ($style=$this->getViewState('AlternatingItemStyle',null))===null)
-						$style=$this->getViewState('ItemStyle',null);
 				}
 				break;
 			case 'EditItem':
@@ -903,20 +977,12 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 						if(!($item->getItemIndex()%2) || ($tplContent=$this->_alternatingItemTemplate)==='')
 							$tplContent=$this->_itemTemplate;
 				}
-				if(($style=$this->getViewState('EditItemStyle',null))===null)
-				{
-					if($item->getItemIndex()!==$this->getSelectedItemIndex() || ($style=$this->getViewState('SelectedItemStyle',null))===null)
-						if(!($item->getItemIndex()%2) || ($style=$this->getViewState('AlternatingItemStyle',null))===null)
-							$style=$this->getViewState('ItemStyle',null);
-				}
 				break;
 			default:
 				break;
 		}
 		if($tplContent!=='')
 			$this->createTemplate($tplContent)->instantiateIn($item);
-		if($style!==null)
-			$item->getStyle()->copyFrom($style);
 	}
 
 	/**
@@ -928,26 +994,24 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	protected function createTemplate($str)
 	{
 		$key=md5($str);
-		$contextPath=$this->getTemplateControl()->getTemplate()->getContextPath();
-		if(($cache=$this->getApplication()->getCache())!==null)
-		{
-			if(($template=$cache->get($key))===null)
-			{
-				$template=new TTemplate($str,$contextPath);
-				$cache->set($key,$template,self::CACHE_EXPIRY);
-			}
-		}
+		if(isset(self::$_templates[$key]))
+			return self::$_templates[$key];
 		else
 		{
-			if(isset(self::$_templates[$key]))
-				$template=self::$_templates[$key];
-			else
+			$contextPath=$this->getTemplateControl()->getTemplate()->getContextPath();
+			if(($cache=$this->getApplication()->getCache())!==null)
 			{
-				$template=new TTemplate($str,$contextPath);
-				self::$_templates[$key]=$template;
+				if(($template=$cache->get($key))===null)
+				{
+					$template=new TTemplate($str,$contextPath);
+					$cache->set($key,$template,self::CACHE_EXPIRY);
+				}
 			}
+			else
+				$template=new TTemplate($str,$contextPath);
+			self::$_templates[$key]=$template;
+			return $template;
 		}
-		return $template;
 	}
 
 	/**
@@ -1076,6 +1140,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	{
 		if($this->getHasControls())
 		{
+			$this->applyItemStyles();
 			$repeatInfo=$this->getRepeatInfo();
 			$repeatInfo->renderRepeater($writer,$this);
 		}
