@@ -101,16 +101,6 @@ class TLabel extends TWebControl
 	{
 		$this->setViewState('AssociatedControlID',$value,'');
 	}
-
-	public function setFor($value)
-	{
-		$this->setAssociatedControlID($value);
-	}
-
-	public function getFor()
-	{
-		return $this->getAssociatedControlID();
-	}
 }
 
 ?>

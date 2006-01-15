@@ -1,5 +1,6 @@
 * text=auto !eol
 demos/composer/index.php -text
+demos/composer/protected/pages/ClassDefinition.php -text
 demos/composer/protected/pages/Home.page -text
 demos/composer/protected/pages/Home.php -text
 demos/composer/protected/pages/Layout.php -text

@@ -89,7 +89,7 @@ implements <com:TTextBox ID="Interfaces" CssClass="slTextBox"/>
 
 </com:TRepeater>
 
-<com:TButton Text="New Property" Click="addProperty" />
+<com:TButton Text="New Property" Command="propertyAction" CommandName="add" />
 
 </com:TPanel>
 
@@ -141,7 +141,7 @@ implements <com:TTextBox ID="Interfaces" CssClass="slTextBox"/>
 
 </com:TRepeater>
 
-<com:TButton Text="New Event" Click="addEvent" />
+<com:TButton Text="New Event" Command="eventAction" CommandName="add" />
 
 </com:TPanel>
 
