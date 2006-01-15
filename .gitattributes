@@ -520,6 +520,7 @@ framework/Web/UI/WebControls/TCheckBoxList.php -text
 framework/Web/UI/WebControls/TContent.php -text
 framework/Web/UI/WebControls/TContentPlaceHolder.php -text
 framework/Web/UI/WebControls/TDataBoundControl.php -text
+framework/Web/UI/WebControls/TDataGrid.php -text
 framework/Web/UI/WebControls/TDataList.php -text
 framework/Web/UI/WebControls/TDataSourceControl.php -text
 framework/Web/UI/WebControls/TDataSourceView.php -text
