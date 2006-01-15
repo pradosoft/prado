@@ -83,8 +83,8 @@ Prado::using('System.Web.UI.WebControls.TRepeatInfo');
  * TDataList raises an {@link onItemCommand ItemCommand} whenever a button control
  * within some TDataList item raises a <b>Command</b> event. If the command name
  * is one of the followings: 'edit', 'update', 'select', 'delete', 'cancel' (case-insensitive),
- * another event will also be raised. For example, if the command name is 'select',
- * then the new event is {@link onSelectCommand SelectCommand}.
+ * another event will also be raised. For example, if the command name is 'edit',
+ * then the new event is {@link onEditCommand SelectCommand}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -673,17 +673,6 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	protected function onItemCommand($param)
 	{
 		$this->raiseEvent('ItemCommand',$this,$param);
-	}
-
-	/**
-	 * Raises <b>SelectCommand</b> event.
-	 * This method is invoked when a child control of the data list
-	 * raises an <b>Command</b> event and the command name is 'select' (case-insensitive).
-	 * @param TDataListCommandEventParameter event parameter
-	 */
-	protected function onSelectCommand($param)
-	{
-		$this->raiseEvent('SelectCommand',$this,$param);
 	}
 
 	/**

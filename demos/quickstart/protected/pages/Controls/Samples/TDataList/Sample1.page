@@ -5,16 +5,21 @@
 <com:TDataList
 	ID="DataList"
 	RepeatColumns="2"
+	RepeatDirection="Horizontal"
 	ItemStyle.BackColor="blue"
 	ItemStyle.Font.Italic="true"
 	ItemStyle.ForeColor="white"
-	SelectedItemStyle.BackColor="white"
-	SelectedItemStyle.ForeColor="blue"
+	AlternatingItemStyle.BackColor="green"
+	SelectedItemStyle.BackColor="red"
 	CellPadding="4">
 
 <prop:ItemTemplate>
 <%#$this->Parent->DataItem['name']%>
 </prop:ItemTemplate>
+
+<prop:AlternatingItemTemplate>
+<%#$this->Parent->DataItem['name']%>
+</prop:AlternatingItemTemplate>
 
 </com:TDataList>
 

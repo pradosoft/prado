@@ -17,7 +17,7 @@ class Sample1 extends TPage
 	{
 		parent::onLoad($param);
 		$this->DataList->DataSource=$this->getDataSource();
-		$this->DataList->SelectedItemIndex=1;
+		$this->DataList->SelectedItemIndex=2;
 		$this->DataList->dataBind();
 	}
 }
