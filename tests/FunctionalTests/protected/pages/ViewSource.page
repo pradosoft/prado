@@ -6,13 +6,18 @@
 </com:THead>
 
 <body>
+<com:TForm>
 <div id="sourceList">
 <com:TLiteral ID="SourceList" />
+<com:TCheckBox ID="showLineNumbers" AutoPostBack="true" />
+<com:TLabel For="showLineNumbers">Show Line Numbers</com:TLabel>
 </div>
 <div id="sourceView">
-<com:TTextHighlighter ID="Highlighter" ShowLineNumbers="true" CssClass="source">
+<com:TTextHighlighter ID="Highlighter" CssClass="source"
+	ShowLineNumbers="<%# $this->Page->showLineNumbers->Checked %>" >
 <com:TLiteral ID="SourceView" />
 </com:TTextHighlighter>
+</com:TForm>
 </div>
 </body>
 </html>

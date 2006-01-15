@@ -27,7 +27,7 @@
 <a href="http://validator.w3.org/check?uri=referer">
 		Validate XHTML 1.0
 </a>
-<a href="?page=ViewSource&amp;source=<%= $this->Request->ServiceParameter %>"
+<a href="?page=ViewSource&amp;path=<%= str_replace('.','/', $this->Request->ServiceParameter) %>.page"
 	style="margin: 0 1em;"
 	onclick="window.open(this.href); return false;" 
 	onkeypress="window.open(this.href); return false;">View Source</a>

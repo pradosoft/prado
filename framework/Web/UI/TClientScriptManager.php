@@ -163,7 +163,7 @@ class TClientScriptManager extends TComponent
 		return $javascriptPrefix?'javascript:'.$postback:$postback;
 	}
 
-	public function registerPradoScript($script)
+	/*public function registerPradoScript($script)
 	{
 		foreach(TPradoClientScript::getScripts($script) as $scriptFile)
 		{
@@ -181,7 +181,66 @@ class TClientScriptManager extends TComponent
 			}
 		}
 		//return $url;
+	}*/
+
+	/**
+	 * Register Prado client scripts. 
+	 */
+	public function registerPradoScript($script)
+	{
+		static $scripts = array();
+		$scripts = array_unique(array_merge($scripts, 
+						TPradoClientScript::getScripts($script)));
+
+		$this->publishClientScriptAssets($scripts);
+
+		//create the client script url
+		$url = $this->publishClientScriptCompressorAsset();
+		$url .= '?js='.implode(',', $scripts);
+		if(Prado::getApplication()->getMode() == TApplication::STATE_DEBUG)
+			$url .= '&nocache';
+		$this->registerScriptFile('prado:gzipscripts', $url);
 	}
+
+	/**
+	 * Publish each individual javascript file.
+	 */
+	private function publishClientScriptAssets($scripts)
+	{
+		foreach($scripts as $lib)
+		{
+			if(!isset($this->_publishedScriptFiles[$lib]))
+			{
+				$base = Prado::getFrameworkPath();
+				$clientScripts = self::SCRIPT_DIR;
+				$assetManager = $this->_page->getService()->getAssetManager();
+				$file = "{$base}/{$clientScripts}/{$lib}.js";
+				$assetManager->publishFilePath($file);
+				$this->_publishedScriptFiles[$lib] = true;
+			}
+		}
+	}
+
+	/**
+	 * @return string URL of the compressor asset script.
+	 */
+	private function publishClientScriptCompressorAsset()
+	{
+		$scriptFile = 'clientscripts.php';
+		if(isset($this->_publishedScriptFiles[$scriptFile]))
+			return $this->_publishedScriptFiles[$scriptFile];
+		else
+		{
+			$base = Prado::getFrameworkPath();
+			$clientScripts = self::SCRIPT_DIR;
+			$assetManager = $this->_page->getService()->getAssetManager();
+			$file = "{$base}/{$clientScripts}/{$scriptFile}";
+			$url= $assetManager->publishFilePath($file);
+			$this->_publishedScriptFiles[$scriptFile] = $url;
+			return $url;
+		}
+	}
+
 
 	protected function registerPostBackScript()
 	{
