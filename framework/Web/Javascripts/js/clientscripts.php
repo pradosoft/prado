@@ -6,14 +6,13 @@
  *  - Add local file cache for the GZip:ed version.
  */
 
-if(isset($_GET['nocache']))
+if(is_int(strpos($_SERVER['REQUEST_URI'], '__nocache')))
 	$expiresOffset = -10000; //no cache
 else
 	$expiresOffset = 3600 * 24 * 10;		// 10 days util client cache expires
 
-// Get data to load
-$library = array( 'base', 'dom', 'effects', 'controls', 'logger',
-	'ajax', 'rico', 'validator', 'datepicker');
+//allowed libraries
+$library = array('prado', 'effects', 'ajax', 'validator', 'logger', 'datepicker', 'rico');
 
 $param = isset($_GET['js']) ? $_GET['js'] : '';
 

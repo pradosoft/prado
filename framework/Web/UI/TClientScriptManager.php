@@ -198,7 +198,7 @@ class TClientScriptManager extends TComponent
 		$url = $this->publishClientScriptCompressorAsset();
 		$url .= '?js='.implode(',', $scripts);
 		if(Prado::getApplication()->getMode() == TApplication::STATE_DEBUG)
-			$url .= '&nocache';
+			$url .= '&__nocache';
 		$this->registerScriptFile('prado:gzipscripts', $url);
 	}
 
@@ -276,7 +276,7 @@ class TClientScriptManager extends TComponent
 
 	public function registerDefaultButtonScript($button)
 	{
-		$this->registerPradoScript('base');
+		$this->registerPradoScript('prado');
 		return 'return Prado.Button.fireButton(event,\''.$button->getClientID().'\')';
 	}
 
@@ -510,7 +510,7 @@ class TClientScriptManager extends TComponent
 	public function registerClientEvent($control, $event, $code)
 	{
 		if(empty($code)) return;
-		$this->registerPradoScript("dom");
+		$this->registerPradoScript("prado");
 		$script= "Event.observe('{$control->ClientID}', '{$event}', function(e){ {$code} });";
 		$key = "prado:{$control->ClientID}:{$event}";
 		$this->registerEndScript($key, $script);
@@ -678,13 +678,13 @@ class TPradoClientScript
 	 * @var array
 	 */
 	protected static $dependencies = array(
-		'base' => array('base'),
-		'dom' => array('base', 'dom'),
-		'effects' => array('base', 'dom', 'effects'),
-		'controls' => array('base', 'dom', 'effects', 'controls'),
-		'validator' => array('base', 'dom', 'validator'),
-		'logger' => array('base', 'dom', 'logger'),
-		'ajax' => array('base', 'dom', 'ajax')
+		'prado' => array('prado'),
+		'effects' => array('prado', 'effects'),
+		'ajax' => array('prado', 'effects', 'ajax'),
+		'validator' => array('prado', 'validator'),
+		'logger' => array('prado', 'logger'),
+		'datepicker' => array('prado', 'datepicker'),
+		'rico' => array('prado', 'effects', 'ajax', 'rico')
 		);
 
 	/**

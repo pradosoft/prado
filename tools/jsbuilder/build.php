@@ -44,28 +44,21 @@ if(!is_writable(TARGET_DIR))
  * list of js library files to be compressed and built
  */
 $libraries = array(
-	//base javascript functions
-	'base.js' => array(
+	'prado.js' => array(
+
+		//base javascript functions
 		'prototype/prototype.js',
-		'prototype/compat.js',
 		'prototype/base.js',
-		'extended/base.js',
 		'extended/util.js',
+		'extended/base.js',
 		'prototype/string.js',
 		'extended/string.js',
 		'prototype/enumerable.js',
 		'prototype/array.js',
-		'extended/array.js',
 		'prototype/hash.js',
 		'prototype/range.js',
-		'extended/functional.js',
-		'base/prado.js',
-		'base/postback.js',
-		'base/focus.js',
-		'base/scroll.js'
-	),
-	//dom functions
-	'dom.js' => array(
+
+		//dom functions
 		'prototype/dom.js',
 		'extended/dom.js',
 		'prototype/form.js',
@@ -75,45 +68,50 @@ $libraries = array(
 		'extra/getElementsBySelector.js',
 		'extra/behaviour.js',
 		'effects/util.js',
-		'base/date.js',
-		'base/util.js'
+		'extended/date.js',
+	
+		//prado core
+		'prado/prado.js',
+		'prado/form.js',
+		'prado/element.js',
+		'prado/controls.js'
 	),
+
 	//effects
 	'effects.js' => array(
-		'effects/effects.js'
+		'effects/effects.js',
+		'prado/effects.js'
 	),
-	//controls
-	'controls.js' => array(
+	//active controls
+	'ajax.js' => array(
+		'prototype/ajax.js',
+		'prado/ajax.js',
+		'extra/json.js',
 		'effects/controls.js',
 		'effects/dragdrop.js',
-		'base/controls.js'
+		'effects/slider.js',
+		'prado/activecontrols.js'
 	),
 	//logging
 	'logger.js' => array(
 		'extra/logger.js',
 	),
-	//ajax
-	'ajax.js' => array(
-		'prototype/ajax.js',
-		'base/ajax.js',
-		'base/json.js'
-	),
+
 	//rico
 	'rico.js' => array(
-		'effects/rico.js'
+		'rico/rico.js',
+		'rico/extension.js'
 	),
-	//javascript templating
-	'template.js' => array(
-		'extra/tp_template.js'
-	),
+
 	//validator
 	'validator.js' => array(
-		'base/validation.js',
-		'base/validators.js'
+		'prado/validation.js',
+		'prado/validators.js'
 	),
+
 	//date picker
 	'datepicker.js' => array(
-		'base/datepicker.js'
+		'prado/datepicker.js'
 	)
 );
 
