@@ -22,3 +22,13 @@ function $(n,d) {
 		for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=DOM.find(n,d.layers[i].document);
 		if(!x && d.getElementById) x=d.getElementById(n); return x;
 }
+
+/**
+ * Similar to bindAsEventLister, but takes additional arguments.
+ */
+Function.prototype.bindEvent = function() {
+  var __method = this, args = $A(arguments), object = args.shift();
+  return function(event) {
+    return __method.call(object, [event || window.event].concat(args));
+  }
+}

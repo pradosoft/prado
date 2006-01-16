@@ -20,5 +20,26 @@ Object.extend(Event, {
       name = 'keydown';
     
     this._observeAndCache(element, name, observer, useCapture);
-  }
+  },
+   keyCode : function(e)
+	{
+	   return e.keyCode != null ? e.keyCode : e.charCode
+	},
+
+	fireEvent : function(el,type)
+	{
+		if(document.createEvent)
+        {
+            var evt = document.createEvent('HTMLEvents');
+            evt.initEvent(type, true, true);
+            el.dispatchEvent(evt);
+        }
+        else if(el.fireEvent)
+        {
+            el.fireEvent('on'+type);
+            el[type]();
+        }
+        else
+            el[type]();
+	}
 });
