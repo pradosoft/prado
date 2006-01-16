@@ -74,8 +74,9 @@ class TPanel extends TWebControl
 			{
 				$scripts = $this->getPage()->getClientScript();
 				$js = $scripts->registerDefaultButtonScript($this,$button);
-				$scripts->registerEndScript($this->ClientID.'defaultButton', $js);
-				$writer->addAttribute('id',$this->getClientID());
+				$clientID=$this->getClientID();
+				$scripts->registerEndScript($clientID.'defaultButton', $js);
+				$writer->addAttribute('id',$clientID);
 			}
 		}
 	}

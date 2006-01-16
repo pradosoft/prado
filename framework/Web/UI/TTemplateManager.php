@@ -152,9 +152,9 @@ class TTemplate extends TComponent implements ITemplate
 	 *	'<\/?com:([\w\.]+)((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?"|\s*[\w\.]+=<%.*?%>)*)\s*\/?>' - component tags
 	 *	'<\/?prop:([\w\.]+)\s*>'  - property tags
 	 *	'<%@\s*((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?")*)\s*%>'  - directives
-	 *	'<%[%#~\\$=](.*?)%>'  - expressions
+	 *	'<%[%#~\\$=\\[](.*?)%>'  - expressions
 	 */
-	const REGEX_RULES='/<!.*?!>|<!--.*?-->|<\/?com:([\w\.]+)((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?"|\s*[\w\.]+=<%.*?%>)*)\s*\/?>|<\/?prop:([\w\.]+)\s*>|<%@\s*((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?")*)\s*%>|<%[%#~\\$=](.*?)%>/msS';
+	const REGEX_RULES='/<!.*?!>|<!--.*?-->|<\/?com:([\w\.]+)((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?"|\s*[\w\.]+=<%.*?%>)*)\s*\/?>|<\/?prop:([\w\.]+)\s*>|<%@\s*((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?")*)\s*%>|<%[%#~\\$=\\[](.*?)%>/msS';
 
 	/**
 	 * Different configurations of component property/event/attribute
@@ -163,6 +163,7 @@ class TTemplate extends TComponent implements ITemplate
 	const CONFIG_EXPRESSION=1;
 	const CONFIG_ASSET=2;
 	const CONFIG_PARAMETER=3;
+	const CONFIG_LOCALIZATION=4;
 
 	/**
 	 * @var array list of component tags and strings
@@ -376,6 +377,9 @@ class TTemplate extends TComponent implements ITemplate
 					case self::CONFIG_PARAMETER:		// application parameter
 						$component->$setter($this->getApplication()->getParameters()->itemAt($v));
 						break;
+					case self::CONFIG_LOCALIZATION:
+						$component->$setter(localize($v));
+						break;
 					default:	// an error if reaching here
 						break;
 				}
@@ -413,6 +417,9 @@ class TTemplate extends TComponent implements ITemplate
 				case self::CONFIG_PARAMETER:		// application parameter
 					$component->setSubProperty($name,$this->getApplication()->getParameters()->itemAt($v));
 					break;
+				case self::CONFIG_LOCALIZATION:
+					$component->setSubProperty($name,localize($v));
+					break;
 				default:	// an error if reaching here
 					break;
 			}
@@ -443,6 +450,9 @@ class TTemplate extends TComponent implements ITemplate
 					break;
 				case self::CONFIG_PARAMETER:
 					$value=$this->getApplication()->getParameters()->itemAt($value[1]);
+					break;
+				case self::CONFIG_LOCALIZATION:
+					$value=localize($value[1]);
 					break;
 				default:
 					break;
@@ -682,10 +692,15 @@ class TTemplate extends TComponent implements ITemplate
 		return $attributes;
 	}
 
+	/**
+	 * Parses a single attribute.
+	 * @param string the string to be parsed.
+	 * @return array attribute initialization
+	 */
 	protected function parseAttribute($value)
 	{
 		$matches=array();
-		if(!preg_match('/^\s*(<%#.*?%>|<%=.*?%>|<%~.*?%>|<%\\$.*?%>)\s*$/msS',$value,$matches))
+		if(!preg_match('/^(<%#.*?%>|<%=.*?%>|<%~.*?%>|<%\\$.*?%>|<%\\[.*?\\]%>)$/msS',$value,$matches))
 			return $value;
 		$value=$matches[1];
 		if($value[2]==='#') // databind
@@ -694,6 +709,8 @@ class TTemplate extends TComponent implements ITemplate
 			return array(self::CONFIG_EXPRESSION,substr($value,3,strlen($value)-5));
 		else if($value[2]==='~') // a URL
 			return array(self::CONFIG_ASSET,trim(substr($value,3,strlen($value)-5)));
+		else if($value[2]==='[')
+			return array(self::CONFIG_LOCALIZATION,trim(substr($value,3,strlen($value)-6)));
 		else if($value[2]==='$')
 			return array(self::CONFIG_PARAMETER,trim(substr($value,3,strlen($value)-5)));
 	}
