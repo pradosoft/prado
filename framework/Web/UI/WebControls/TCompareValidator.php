@@ -235,6 +235,7 @@ class TCompareValidator extends TBaseValidator
 					$value2=0;
 				return array($value1, $value2);
 			case 'Date':
+				throw new TNotSupportedException('Date comparison for TCompareValidator is currently not supported. It will be supported in future.');
 				$dateFormat = $this->getDateFormat();
 				if (strlen($dateFormat))
 					return array(pradoParseDate($value1, $dateFormat), pradoParseDate($value2, $dateFormat));

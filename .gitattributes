@@ -44,6 +44,8 @@ demos/quickstart/protected/pages/Controls/Samples/TBulletedList/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TBulletedList/bullet.gif -text
 demos/quickstart/protected/pages/Controls/Samples/TCheckBoxList/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TCheckBoxList/Home.php -text
+demos/quickstart/protected/pages/Controls/Samples/TCompareValidator/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TCompareValidator/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TCustomValidator/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TCustomValidator/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TDataList/Sample1.page -text
@@ -68,6 +70,8 @@ demos/quickstart/protected/pages/Controls/Samples/TTable/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TTable/backimage.gif -text
 demos/quickstart/protected/pages/Controls/Samples/TTextBox/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TTextBox/Home.php -text
+demos/quickstart/protected/pages/Controls/Samples/TValidationSummary/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TValidationSummary/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/config.xml -text
 demos/quickstart/protected/pages/Controls/Simple.page -text
 demos/quickstart/protected/pages/Controls/Validation.page -text
@@ -538,6 +542,7 @@ framework/Web/UI/WebControls/TDataSourceControl.php -text
 framework/Web/UI/WebControls/TDataSourceView.php -text
 framework/Web/UI/WebControls/TDropDownList.php -text
 framework/Web/UI/WebControls/TEditCommandColumn.php -text
+framework/Web/UI/WebControls/TEmailAddressValidator.php -text
 framework/Web/UI/WebControls/TExpression.php -text
 framework/Web/UI/WebControls/TFileUpload.php -text
 framework/Web/UI/WebControls/TFont.php -text

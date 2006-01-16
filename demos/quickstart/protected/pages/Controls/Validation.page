@@ -32,4 +32,9 @@
 </p>
 <com:RunBar PagePath="Controls.Samples.TCustomValidator.Home" />
 
+<h2>TValidationSummary</h2>
+<p>
+</p>
+<com:RunBar PagePath="Controls.Samples.TValidationSummary.Home" />
+
 </com:TContent>

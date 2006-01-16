@@ -2,17 +2,11 @@
 /**
  * TValidationSummary class file
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the BSD License.
- *
- * Copyright(c) 2004 by Qiang Xue. All rights reserved.
- *
- * To contact the author write to {@link mailto:qiang.xue@gmail.com Qiang Xue}
- * The latest version of PRADO can be obtained from:
- * {@link http://prado.sourceforge.net/}
- *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: 1.20 $  $Date: 2005/11/21 07:39:41 $
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
  */
 
@@ -44,8 +38,9 @@
  *   <br>Gets or sets the validation group ID.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version v1.0, last update on 2004/08/13 21:44:52
+ * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
+ * @since 3.0
  */
 class TValidationSummary extends TWebControl
 {
@@ -62,15 +57,6 @@ class TValidationSummary extends TWebControl
 		return self::$currentGroup;
 	}
 
-	/**
-	 * Overrides parent implementation to disable body addition.
-	 * @param mixed the object to be added
-	 * @return boolean
-	 */
-	public function allowBody($object)
-	{
-		return false;
-	}
 
 	/**
 	 * @return string the header text displayed at the top of the summary
@@ -90,7 +76,7 @@ class TValidationSummary extends TWebControl
 	}
 
 	/**
-	 * @return string the display mode (BulletList, List, SingleParagraph) of the validation summary.
+	 * @return string the display mode (BulletList, List, SingleParagraph) of the validation summary. Defaults to BulletList.
 	 */
 	public function getDisplayMode()
 	{
@@ -103,95 +89,80 @@ class TValidationSummary extends TWebControl
 	 */
 	public function setDisplayMode($value)
 	{
-		if($value!='List' && $value!='SingleParagraph')
-			$value='BulletList';
-		$this->setViewState('DisplayMode',$value,'BulletList');
+		$this->setViewState('DisplayMode',TPropertyValue::ensureEnum($value,'List','SingleParagraph','BulletList'),'BulletList');
 	}
 
 	/**
-	 * @return boolean whether the TValidationSummary component updates itself using client-side script.
+	 * @return boolean whether the TValidationSummary component updates itself using client-side script. Defaults to true.
 	 */
-	public function isClientScriptEnabled()
+	public function getEnableClientScript()
 	{
 		return $this->getViewState('EnableClientScript',true);
 	}
 
 	/**
-	 * Sets the value whether the TValidationSummary component updates itself using client-side script.
 	 * @param boolean whether the TValidationSummary component updates itself using client-side script.
 	 */
-	public function enableClientScript($value)
+	public function setEnableClientScript($value)
 	{
-		$this->setViewState('EnableClientScript',$value,true);
+		$this->setViewState('EnableClientScript',TPropertyValue::ensureBoolean($value),true);
 	}
 
 	/**
-	 * @return boolean whether the validation summary is displayed in a message box.
+	 * @return boolean whether the validation summary is displayed in a message box. Defaults to false.
 	 */
-	public function isShowMessageBox()
+	public function getShowMessageBox()
 	{
 		return $this->getViewState('ShowMessageBox',false);
 	}
 
 	/**
-	 * Sets the value whether the validation summary is displayed in a message box.
 	 * @param boolean whether the validation summary is displayed in a message box.
 	 */
 	public function setShowMessageBox($value)
 	{
-		$this->setViewState('ShowMessageBox',$value,false);
+		$this->setViewState('ShowMessageBox',TPropertyValue::ensureBoolean($value),false);
 	}
 
 	/**
-	 * @return boolean whether the validation summary is displayed inline.
+	 * @return boolean whether the validation summary is displayed inline. Defaults to true.
 	 */
-	public function isShowSummary()
+	public function getShowSummary()
 	{
 		return $this->getViewState('ShowSummary',true);
 	}
 
 	/**
-	 * Sets the value whether the validation summary is displayed inline.
 	 * @param boolean whether the validation summary is displayed inline.
 	 */
 	public function setShowSummary($value)
 	{
-		$this->setViewState('ShowSummary',$value,true);
+		$this->setViewState('ShowSummary',TPropertyValue::ensureBoolean($value),true);
 	}
 
 	/**
-	 * @return boolean whether the validation summary should be anchored.
+	 * @return boolean whether the validation summary should be anchored. Defaults to false.
 	 */
-	public function isShowAnchor()
+	public function getShowAnchor()
 	{
 		return $this->getViewState('ShowAnchor',false);
 	}
 
 	/**
-	 * Sets the value whether the validation summary should be anchored.
 	 * @param boolean whether the validation summary should be anchored.
 	 */
 	public function setShowAnchor($value)
 	{
-		$this->setViewState('ShowAnchor',$value,false);
+		$this->setViewState('ShowAnchor',TPropertyValue::ensureBoolean($value),false);
 	}
 
 	/**
-	 * Gets the valiation group.
-	 * @param string validation group ID.
+	 * Gets the auto-update for this summary.
+	 * @return boolean automatic client-side summary updates. Defaults to true.
 	 */
-	public function getGroup()
+	public function getAutoUpdate()
 	{
-		return $this->getViewState('Group', '');
-	}
-
-	/**
-	 * Sets the validation group.
-	 * @param string ID of the validation group.
-	 */
-	public function setGroup($value)
-	{
-		$this->setViewState('Group', $value, '');
+		return $this->getViewState('AutoUpdate', true);
 	}
 
 	/**
@@ -200,16 +171,7 @@ class TValidationSummary extends TWebControl
 	 */
 	public function setAutoUpdate($value)
 	{
-		$this->setViewState('AutoUpdate', $value, true);
-	}
-
-	/**
-	 * Gets the auto-update for this summary.
-	 * @return boolean automatic client-side summary updates.
-	 */
-	public function isAutoUpdate()
-	{
-		return $this->getViewState('AutoUpdate', true);
+		$this->setViewState('AutoUpdate', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -255,36 +217,32 @@ class TValidationSummary extends TWebControl
 	 * Render the javascript for validation summary.
 	 * @param array list of options for validation summary.
 	 */
-	protected function renderJsSummary($options)
+	protected function renderJsSummary()
 	{
-		if(!$this->isEnabled() || !$this->isClientScriptEnabled())
+		if(!$this->getEnabled(true) || !$this->getEnableClientScript())
 			return;
-		$option = TJavascript::toList($options);
-		$script = "new Prado.Validation.Summary({$option});";
-		$this->Page->registerEndScript($this->ClientID, $script);
+		$options = TJavascript::toList($this->getClientScriptOptions());
+		$script = "new Prado.Validation.Summary({$options});";
+		$this->getPage()->getClientScript()->registerEndScript($this->getClientID(), $script);
 	}
 
 	/**
 	 * Get a list of options for the client-side javascript validation summary.
 	 * @return array list of options for the summary
 	 */
-	protected function getJsOptions()
+	protected function getClientScriptOptions()
 	{
 		$options['id'] = $this->ClientID;
 		$options['form'] = $this->Page->Form->ClientID;
-		if($this->isShowMessageBox())
+		if($this->getShowMessageBox())
 			$options['showmessagebox']='True';
-		if(!$this->isShowSummary())
+		if(!$this->getShowSummary())
 			$options['showsummary']='False';
 
 		$options['headertext']=$this->getHeaderText();
 		$options['displaymode']=$this->getDisplayMode();
 
-		$group = $this->getGroup();
-		if(!empty($group))
-			$options['group'] = $this->getParent()->findObject($group)->ClientID;
-
-		$options['refresh'] = $this->isAutoUpdate();
+		$options['refresh'] = $this->getAutoUpdate();
 		$options['validationgroup'] =  $this->getValidationGroup();
 		return $options;
 	}
@@ -293,18 +251,15 @@ class TValidationSummary extends TWebControl
 	 * Get the list of validation error messages.
 	 * @return array list of validator error messages.
 	 */
-	protected function getMessages()
+	protected function getErrorMessages()
 	{
-		$validators=$this->getValidators();
+		$validators=$this->getPage()->getValidators($this->getValidationGroup());
 		$messages = array();
-		foreach(array_keys($validators) as $i)
+		foreach($validators as $validator)
 		{
-			if(!$validators[$i]->isValid())
-			{
-				$msg = $validators[$i]->getErrorMessage();
-				if(strlen($msg))
-					$messages[] = $validators[$i]->getAnchoredMessage($msg);
-			}
+			if(!$validator->getIsValid() && ($msg=$validator->getErrorMessage())!=='')
+				//$messages[] = $validator->getAnchoredMessage($msg);
+				$messages[] = $msg;
 		}
 		return $messages;
 	}
@@ -313,45 +268,25 @@ class TValidationSummary extends TWebControl
 	 * Overrides parent implementation by rendering TValidationSummary-specific presentation.
 	 * @return string the rendering result
 	 */
-	public function render()
+	protected function renderContents($writer)
 	{
-
-		$this->renderJsSummary($this->getJsOptions());
-
-		$content = "";
-		if($this->isRenderSummary())
+		$this->renderJsSummary();
+		if($this->getShowSummary())
 		{
-		    $this->setStyle('display:block');
-			$messages = $this->getMessages();
-			$headerText = $this->getHeaderText();
+//		    $this->setStyle('display:block');
 			switch($this->getDisplayMode())
 			{
 				case 'List':
-					$content = $this->renderList($messages, $headerText);
+					$content = $this->renderList($writer);
 					break;
 				case 'SingleParagraph':
-					$content = $this->renderSingleParagraph($messages, $headerText);
+					$content = $this->renderSingleParagraph($writer);
 					break;
 				case 'BulletList':
 				default:
-					$content = $this->renderBulletList($messages, $headerText);
+					$content = $this->renderBulletList($writer);
 			}
 		}
-		return "<div {$this->renderAttributes()}>{$content}</div>";
-	}
-
-	protected function isRenderSummary()
-	{
-		$group = $this->getGroup();
-		$active = TValidatorGroup::isGroupValidation() ? false : true;
-		if(!empty($group))
-			$active = $this->getParent()->findObject($group)->isActive();
-		$render = $this->isEnabled() && $active;
-		$render = $render && !$this->Page->isValid() && $this->isShowSummary();
-		$current = self::getCurrentGroup();
-		if(!is_null($current))
-			$render = $render && $this->getValidationGroup() == $current;
-		return $render;
 	}
 
 	/**
@@ -360,14 +295,16 @@ class TValidationSummary extends TWebControl
 	 * @param string the header text
 	 * @return string summary list
 	 */
-	protected function renderList($messages, $header)
+	protected function renderList($writer)
 	{
+		$header=$this->getHeaderText();
+		$messages=$this->getErrorMessages();
 		$content = '';
 		if(strlen($header))
 			$content.= $header."<br/>\n";
 		foreach($messages as $message)
 			$content.="$message<br/>\n";
-		return $content;
+		$writer->write($content);
 	}
 
 	/**
@@ -376,12 +313,14 @@ class TValidationSummary extends TWebControl
 	 * @param string the header text
 	 * @return string summary paragraph
 	 */
-	protected function renderSingleParagraph($messages, $header)
+	protected function renderSingleParagraph($writer)
 	{
+		$header=$this->getHeaderText();
+		$messages=$this->getErrorMessages();
 		$content = $header;
 		foreach($messages as $message)
 			$content.= ' '.$message;
-		return $content;
+		$writer->write($content);
 	}
 
 	/**
@@ -390,15 +329,17 @@ class TValidationSummary extends TWebControl
 	 * @param string the header text
 	 * @return string summary bullet list
 	 */
-	protected function renderBulletList($messages, $header)
+	protected function renderBulletList($writer)
 	{
+		$header=$this->getHeaderText();
+		$messages=$this->getErrorMessages();
 		$content = $header;
 		$show = count($messages) > 0;
 		if($show) $content .= "<ul>\n";
 		foreach($messages as $message)
 			$content.= '<li>'.$message."</li>\n";
 		if($show) $content .= "</ul>\n";
-		return $content;
+		$writer->write($content);
 	}
 }
 
