@@ -322,7 +322,7 @@ class TStyle extends TComponent
 			$writer->addStyleAttribute($name,$value);
 		if($this->_font!==null)
 			$this->_font->addAttributesToRender($writer);
-		if($this->_class!=='')
+		if($this->_class!==null)
 			$writer->addAttribute('class',$this->_class);
 	}
 }
