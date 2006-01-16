@@ -32,3 +32,4 @@ Function.prototype.bindEvent = function() {
     return __method.call(object, [event || window.event].concat(args));
   }
 }
+
