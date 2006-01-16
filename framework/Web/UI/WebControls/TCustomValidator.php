@@ -2,24 +2,18 @@
 /**
  * TCustomValidator class file
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the BSD License.
- *
- * Copyright(c) 2004 by Qiang Xue. All rights reserved.
- *
- * To contact the author write to {@link mailto:qiang.xue@gmail.com Qiang Xue}
- * The latest version of PRADO can be obtained from:
- * {@link http://prado.sourceforge.net/}
- *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: 1.7 $  $Date: 2005/06/13 07:04:28 $
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
  */
 
 /**
- * TValidator class file
+ * Using TBaseValidator class
  */
-require_once(dirname(__FILE__).'/TValidator.php');
+Prado::using('System.Web.UI.WebControls.TBaseValidator');
 
 /**
  * TCustomValidator class
@@ -51,22 +45,12 @@ require_once(dirname(__FILE__).'/TValidator.php');
  * Use the <b>ClientValidationFunction</b> property to specify the name of
  * the client-side validation script function associated with the TCustomValidator.
  *
- * Namespace: System.Web.UI.WebControls
- *
- * Properties
- * - <b>ClientValidationFunction</b>, string, kept in viewstate
- *   <br>Gets or sets the name of the custom client-side script function used for validation.
- *
- * Events
- * - <b>OnServerValidate</b> Occurs when validation is performed on the server.
- *   <br>Event delegates must set the event parameter TServerValidateEventParameter.isValid
- *   to false if they find the value is invalid.
- *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version v1.0, last update on 2004/08/13 21:44:52
+ * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
+ * @since 3.0
  */
-class TCustomValidator extends TValidator
+class TCustomValidator extends TBaseValidator
 {
 	/**
 	 * @return string the name of the custom client-side script function used for validation.
@@ -92,15 +76,16 @@ class TCustomValidator extends TValidator
 	 */
 	public function evaluateIsValid()
 	{
-		$idPath=$this->getControlToValidate();
-		if(strlen($idPath))
+		if(($id=$this->getControlToValidate())!=='')
 		{
-			$control=$this->getTargetControl($idPath);
-			$value=$control->getValidationPropertyValue($idPath);
+			if(($control=$this->findControl($id))!==null)
+				$value=$this->getValidationValue($control);
+			else
+				throw new TInvalidDataValueException('customvalidator_controltovalidate_invalid');
 			return $this->onServerValidate($value);
 		}
 		else
-			return true;
+			throw new TInvalidDataValueException('customvalidator_controltovalidate_required');
 	}
 
 	/**
@@ -114,22 +99,20 @@ class TCustomValidator extends TValidator
 	 */
 	public function onServerValidate($value)
 	{
-		$param=new TServerValidateEventParameter;
-		$param->value=$value;
-		$param->isValid=true;
-		$this->raiseEvent('OnServerValidate',$this,$param);
-		return $param->isValid;
+		$param=new TServerValidateEventParameter($value,true);
+		$this->raiseEvent('ServerValidate',$this,$param);
+		return $param->getIsValid();
 	}
 
+
 	/**
-	 * Get a list of options for the client-side javascript validator
-	 * @return array list of options for the validator 
+	 * Returns an array of javascript validator options.
+	 * @return array javascript validator options.
 	 */
-	protected function getJsOptions()
+	protected function getClientScriptOptions()
 	{
-		$options = parent::getJsOptions();
-		$clientJs = $this->getClientValidationFunction();
-		if(strlen($clientJs))
+		$options=parent::getClientScriptOptions();
+		if(($clientJs=$this->getClientValidationFunction())!=='')
 			$options['clientvalidationfunction']=$clientJs;
 		return $options;
 	}
@@ -139,11 +122,12 @@ class TCustomValidator extends TValidator
  * TServerValidateEventParameter class
  *
  * TServerValidateEventParameter encapsulates the parameter data for
- * <b>OnServerValidate</b> event of TCustomValidator components.
+ * <b>ServerValidate</b> event of TCustomValidator components.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version v1.0, last update on 2004/08/13 21:44:52
+ * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
+ * @since 3.0
  */
 class TServerValidateEventParameter extends TEventParameter
 {
@@ -151,11 +135,32 @@ class TServerValidateEventParameter extends TEventParameter
 	 * the value to be validated
 	 * @var string
 	 */
-	public $value='';
+	private $_value='';
 	/**
 	 * whether the value is valid
 	 * @var boolean
 	 */
-	public $isValid=true;
+	private $_isValid=true;
+
+	public function __construct($value,$isValid)
+	{
+		$this->_value=$value;
+		$this->setIsValid($isValid);
+	}
+
+	public function getValue()
+	{
+		return $this->_value;
+	}
+
+	public function getIsValid()
+	{
+		return $this->_isValid;
+	}
+
+	public function setIsValid($value)
+	{
+		$this->_isValid=TPropertyValue::ensureBoolean($value);
+	}
 }
 ?>
