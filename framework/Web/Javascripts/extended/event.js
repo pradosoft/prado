@@ -16,7 +16,7 @@ Object.extend(Event, {
     
     if (name == 'keypress' &&
         ((navigator.appVersion.indexOf('AppleWebKit') > 0) 
-        || element.attachEvent))
+        || (element && element.attachEvent)))
       name = 'keydown';
     
     this._observeAndCache(element, name, observer, useCapture);

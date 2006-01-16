@@ -249,7 +249,7 @@ class TClientScriptManager extends TComponent
 			$this->_postBackScriptRegistered=true;
 			$this->registerHiddenField(TPage::FIELD_POSTBACK_TARGET,'');
 			$this->registerHiddenField(TPage::FIELD_POSTBACK_PARAMETER,'');
-			$this->registerPradoScript('base');
+			$this->registerPradoScript('prado');
 		}
 	}
 
@@ -258,7 +258,7 @@ class TClientScriptManager extends TComponent
 		if(!$this->_focusScriptRegistered)
 		{
 			$this->_focusScriptRegistered=true;
-			$this->registerPradoScript('base');
+			$this->registerPradoScript('prado');
 			$this->registerEndScript('prado:focus','Prado.Focus.setFocus("'.THttpUtility::quoteJavaScriptString($target).'");');
 		}
 	}
@@ -274,10 +274,12 @@ class TClientScriptManager extends TComponent
 		}
 	}
 
-	public function registerDefaultButtonScript($button)
+	public function registerDefaultButtonScript($source, $target)
 	{
 		$this->registerPradoScript('prado');
-		return 'return Prado.Button.fireButton(event,\''.$button->getClientID().'\')';
+		$button = $target->getClientID();
+		$panel = $source->getClientID();
+		return "Event.observe('{$panel}', 'keypress', Prado.Button.fireButton.bindEvent($('{$panel}'), '$button'));";
 	}
 
 	public function registerValidationScript()
