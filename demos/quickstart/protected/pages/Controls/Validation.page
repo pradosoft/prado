@@ -7,4 +7,29 @@
 </p>
 <com:RunBar PagePath="Controls.Samples.TRequiredFieldValidator.Home" />
 
+<h2>TRegularExpressionValidator</h2>
+<p>
+</p>
+<com:RunBar PagePath="Controls.Samples.TRegularExpressionValidator.Home" />
+
+<h2>TEmailAddressValidator</h2>
+<p>
+</p>
+<com:RunBar PagePath="Controls.Samples.TEmailAddressValidator.Home" />
+
+<h2>TEmailAddressValidator</h2>
+<p>
+</p>
+<com:RunBar PagePath="Controls.Samples.TEmailAddressValidator.Home" />
+
+<h2>TCompareValidator</h2>
+<p>
+</p>
+<com:RunBar PagePath="Controls.Samples.TCompareValidator.Home" />
+
+<h2>TCustomValidator</h2>
+<p>
+</p>
+<com:RunBar PagePath="Controls.Samples.TCustomValidator.Home" />
+
 </com:TContent>

@@ -771,4 +771,7 @@ class PradoBase
 	}
 }
 
+class TDate extends TComponent
+{
+}
 ?>

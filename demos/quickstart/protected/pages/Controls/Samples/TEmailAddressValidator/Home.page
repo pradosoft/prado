@@ -1,49 +1,49 @@
 <com:TContent ID="body">
 
-<h1>TRequiredFieldValidator Samples</h1>
+<h1>TEmailAddressValidator Samples</h1>
 
 <table class="sampletable">
 
 <tr>
 <td class="samplenote">
-Required field validator with default settings:
+Email address validator with default settings:
 </td>
 <td class="sampleaction">
 <com:TTextBox ID="TextBox1" />
-<com:TRequiredFieldValidator
+<com:TEmailAddressValidator
 	ValidationGroup="Group1"
 	ControlToValidate="TextBox1"
-	Text="Field required." />
+	Text="Invalid email address." />
 <com:TButton Text="Submit" ValidationGroup="Group1" />
 </td>
 </tr>
 
 <tr>
 <td class="samplenote">
-Required field validator with client-side validation disabled:
+Email address validator with client-side validation disabled:
 </td>
 <td class="sampleaction">
 <com:TTextBox ID="TextBox2" />
-<com:TRequiredFieldValidator
+<com:TEmailAddressValidator
 	ValidationGroup="Group2"
 	EnableClientScript="false"
 	ControlToValidate="TextBox2"
-	Text="Field required." />
+	Text="Invalid email address." />
 <com:TButton Text="Submit" ValidationGroup="Group2" />
 </td>
 </tr>
 
 <tr>
 <td class="samplenote">
-Required field validator with focus-on-error enabled and dynamic display:
+Email address validator with focus-on-error enabled and dynamic display:
 </td>
 <td class="sampleaction">
 <com:TTextBox ID="TextBox3" />
-<com:TRequiredFieldValidator
+<com:TEmailAddressValidator
 	ValidationGroup="Group3"
 	ControlToValidate="TextBox3"
-	FocusOnError="true"
-	Text="Field required." />
+	Display="Dynamic"
+	Text="Invalid email address." />
 <com:TButton Text="Submit" ValidationGroup="Group3" />
 </td>
 </tr>
