@@ -608,8 +608,7 @@ class TTemplate extends TComponent implements ITemplate
 					if($matchStart>$textStart && $container>=0)
 					{
 						$value=substr($input,$textStart,$matchStart-$textStart);
-						//$tpl[$container][2][$prop]=$this->parseAttribute($value);
-						$tpl[$container][2][$prop]=$value;
+						$tpl[$container][2][$prop]=$this->parseAttribute($value);
 						$textStart=$matchEnd+1;
 					}
 					$expectPropEnd=false;
@@ -685,9 +684,11 @@ class TTemplate extends TComponent implements ITemplate
 
 	protected function parseAttribute($value)
 	{
-		if(!preg_match('/(<%#.*?%>|<%=.*?%>|<%~.*?%>|<%\\$.*?%>)/msS',$value))
+		$matches=array();
+		if(!preg_match('/^\s*(<%#.*?%>|<%=.*?%>|<%~.*?%>|<%\\$.*?%>)\s*$/msS',$value,$matches))
 			return $value;
-		else if($value[2]==='#') // databind
+		$value=$matches[1];
+		if($value[2]==='#') // databind
 			return array(self::CONFIG_DATABIND,substr($value,3,strlen($value)-5));
 		else if($value[2]==='=') // a dynamic initialization
 			return array(self::CONFIG_EXPRESSION,substr($value,3,strlen($value)-5));

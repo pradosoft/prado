@@ -33,7 +33,7 @@ To deal conveniently with properties taking take big trunk of initial data, the 
 PropertyValue
 &lt;/prop:PropertyName&gt;
 </com:TTextHighlighter>
-It is equivalent to <tt>...PropertyName="PropertyValue"...</tt> in a component tag except that the latter may accept <a href="?page=Configurations.Templates3">dynamic property tags</a>. Property initialization tags must be directly enclosed between the corresponding opening and closing component tag.
+It is equivalent to <tt>...PropertyName="PropertyValue"...</tt> in every aspect. Property initialization tags must be directly enclosed between the corresponding opening and closing component tag.
 </p>
 
 <a name="tct" />

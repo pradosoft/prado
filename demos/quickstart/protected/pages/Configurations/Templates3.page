@@ -35,7 +35,7 @@ Note, unlike dynamic content tags, the expressions tags for component properties
 <a name="dt" />
 <h3>Databind Tags</h3>
 <p>
-Databind tags are similar to expression tags, except that the expressions are evaluated only when a <tt>dataBind()</tt> call is invoked on the controls represented by the component tags. In the expression, <tt>$this</tt> refers to the control itself. Databind tags do not apply to all components. They can only be used for controls.
+Databind tags are similar to expression tags, except that they can only be used with control properties and the expressions are evaluated only when a <tt>dataBind()</tt> call is invoked on the controls represented by the component tags. In the expression, <tt>$this</tt> refers to the control itself. Databind tags do not apply to all components. They can only be used for controls.
 </p>
 <p>
 The format of databind tags is as follows,
