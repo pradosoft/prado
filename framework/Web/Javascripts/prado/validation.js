@@ -150,10 +150,10 @@ Prado.Validation.Util.toDate = function(value, format)
  * @param {string} string to be trimmed.
  * @type {string} trimmed string.
  */
-Prado.Validation.Util.trim = function(value)
+Prado.Validation.trim = function(value)
 {
-	if(undef(value)) return "";
-	return value.replace(/^\s+|\s+$/g, "");
+	if(isString(value)) return value.trim();
+	return "";
 }
 
 /**
