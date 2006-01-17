@@ -133,6 +133,7 @@ framework/3rdParty/geshi/highlight.css -text
 framework/3rdParty/readme.html -text
 framework/Collections/TList.php -text
 framework/Collections/TMap.php -text
+framework/Collections/TPagedDataSource.php -text
 framework/Data/TCache.php -text
 framework/Data/TMemCache.php -text
 framework/Data/TSqliteCache.php -text
