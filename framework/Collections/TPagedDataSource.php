@@ -42,8 +42,10 @@ class TPagedDataSource extends TComponent implements IteratorAggregate
 	{
 		if(!($value instanceof TMap) && !($value instanceof TList))
 		{
-			if(is_array($value) || ($value instanceof Traversable))
+			if(is_array($value))
 				$value=new TMap($value);
+			else if($value instanceof Traversable)
+				$value=new TList($value);
 			else if($value!==null)
 				throw new TInvalidDataTypeException('pageddatasource_datasource_invalid');
 		}

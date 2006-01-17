@@ -180,7 +180,7 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 			foreach($data as $key=>$value)
 				$this->add($key,$value);
 		}
-		else
+		else if($data!==null)
 			throw new TInvalidDataTypeException('map_data_not_iterable');
 	}
 
@@ -197,7 +197,7 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 			foreach($data as $key=>$value)
 				$this->add($key,$value);
 		}
-		else
+		else if($data!==null)
 			throw new TInvalidDataTypeException('map_data_not_iterable');
 	}
 

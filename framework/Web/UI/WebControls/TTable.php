@@ -124,7 +124,7 @@ class TTable extends TWebControl
 	public function getRows()
 	{
 		if(!$this->_rows)
-			$this->_rows=new TTableRowCollection();
+			$this->_rows=new TTableRowCollection($this);
 		return $this->_rows;
 	}
 
@@ -352,7 +352,7 @@ class TTableRow extends TWebControl
 	public function getCells()
 	{
 		if(!$this->_cells)
-			$this->_cells=new TTableCellCollection();
+			$this->_cells=new TTableCellCollection($this);
 		return $this->_cells;
 	}
 
@@ -698,12 +698,46 @@ class TTableHeaderCell extends TTableCell
 class TTableRowCollection extends TList
 {
 	/**
+	 * @var mixed row collection owner
+	 */
+	private $_owner=null;
+
+	/**
+	 * Constructor.
+	 * @param mixed row collection owner
+	 */
+	public function __construct($owner=null)
+	{
+		$this->_owner=$owner;
+	}
+
+	/**
 	 * Only string or instance of TControl can be added into collection.
 	 * @param mixed the item to be added
 	 */
 	protected function canAddItem($item)
 	{
 		return ($item instanceof TTableRow);
+	}
+
+	/**
+	 * Overrides the parent implementation with customized processing of the newly added item.
+	 * @param mixed the newly added item
+	 */
+	protected function addedItem($item)
+	{
+		if($this->_owner)
+			$this->_owner->getControls()->add($item);
+	}
+
+	/**
+	 * Overrides the parent implementation with customized processing of the removed item.
+	 * @param mixed the removed item
+	 */
+	protected function removedItem($item)
+	{
+		if($this->_owner)
+			$this->_owner->getControls()->remove($item);
 	}
 }
 
@@ -721,12 +755,46 @@ class TTableRowCollection extends TList
 class TTableCellCollection extends TList
 {
 	/**
+	 * @var mixed cell collection owner
+	 */
+	private $_owner=null;
+
+	/**
+	 * Constructor.
+	 * @param mixed cell collection owner
+	 */
+	public function __construct($owner=null)
+	{
+		$this->_owner=$owner;
+	}
+
+	/**
 	 * Only string or instance of TTableCell can be added into collection.
 	 * @param mixed the item to be added
 	 */
 	protected function canAddItem($item)
 	{
 		return ($item instanceof TTableCell);
+	}
+
+	/**
+	 * Overrides the parent implementation with customized processing of the newly added item.
+	 * @param mixed the newly added item
+	 */
+	protected function addedItem($item)
+	{
+		if($this->_owner)
+			$this->_owner->getControls()->add($item);
+	}
+
+	/**
+	 * Overrides the parent implementation with customized processing of the removed item.
+	 * @param mixed the removed item
+	 */
+	protected function removedItem($item)
+	{
+		if($this->_owner)
+			$this->_owner->getControls()->remove($item);
 	}
 }
 ?>

@@ -43,11 +43,6 @@ Prado::using('System.Web.UI.WebControls.TDataBoundControl');
 abstract class TBaseDataList extends TDataBoundControl
 {
 	/**
-	 * @var TList list of key values
-	 */
-	private $_dataKeys=null;
-
-	/**
 	 * No body content should be added to data list control.
 	 * This method is invoked when body content is parsed and added to this control.
 	 * @param mixed body content to be added
@@ -200,9 +195,38 @@ abstract class TBaseDataList extends TDataBoundControl
 	 */
 	public function getDataKeys()
 	{
-		if(!$this->_dataKeys)
-			$this->_dataKeys=new TList;
-		return $this->_dataKeys;
+		if(($dataKeys=$this->getViewState('DataKeys',null))===null)
+		{
+			$dataKeys=new TList;
+			$this->setViewState('DataKeys',$dataKeys,null);
+		}
+		return $dataKeys;
+	}
+
+	/**
+	 * Returns the value of the data at the specified field.
+	 * If data is an array, TMap or TList, the value will be returned at the index
+	 * of the specified field. If the data is a component with a property named
+	 * as the field name, the property value will be returned.
+	 * Otherwise, an exception will be raised.
+	 * @param mixed data item
+	 * @param mixed field name
+	 * @return mixed data value at the specified field
+	 * @throws TInvalidDataValueException if the data is invalid
+	 */
+	protected function getDataFieldValue($data,$field)
+	{
+		if(is_array($data))
+			return $data[$field];
+		else if(($data instanceof TMap) || ($data instanceof TList))
+			return $data->itemAt($field);
+		else if(($data instanceof TComponent) && $data->canGetProperty($field))
+		{
+			$getter='get'.$field;
+			return $data->$getter();
+		}
+		else
+			throw new TInvalidDataValueException('basedatalist_datafield_invalid');
 	}
 
 	/**

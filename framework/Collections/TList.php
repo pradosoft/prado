@@ -246,7 +246,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 			foreach($data as $item)
 				$this->add($item);
 		}
-		else
+		else if($data!==null)
 			throw new TInvalidDataTypeException('list_data_not_iterable');
 	}
 
@@ -263,7 +263,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 			foreach($data as $item)
 				$this->add($item);
 		}
-		else
+		else if($data!==null)
 			throw new TInvalidDataTypeException('list_data_not_iterable');
 	}
 

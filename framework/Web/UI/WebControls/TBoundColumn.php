@@ -107,11 +107,14 @@ class TBoundColumn extends TDataGridColumn
 					$cell->getControls()->add($textBox);
 					$control=$textBox;
 				}
+				if(($dataField=$this->getDataField())!=='')
+					$control->attachEventHandler('DataBinding',array($this,'dataBindColumn'));
+				break;
 			case 'Item':
 			case 'AlternatingItem':
 			case 'SelectedItem':
 				if(($dataField=$this->getDataField())!=='')
-					$control->attachEventHandler('DataBinding',array($this,'dataBindColumn'));
+					$cell->attachEventHandler('DataBinding',array($this,'dataBindColumn'));
 				break;
 		}
 	}
@@ -120,8 +123,9 @@ class TBoundColumn extends TDataGridColumn
 	{
 		$item=$sender->getNamingContainer();
 		$data=$item->getDataItem();
+		$formatString=$this->getDataFormatString();
 		if(($field=$this->getDataField())!=='')
-			$value=$this->formatDataValue($this->getDataFieldValue($data,$field));
+			$value=$this->formatDataValue($formatString,$this->getDataFieldValue($data,$field));
 		else
 			$value=$this->formatDataValue($data);
 		if(($sender instanceof TTableCell) || ($sender instanceof TTextBox))

@@ -415,6 +415,22 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
+	 * @return mixed the key value of the currently selected item
+	 * @throws TInvalidOperationException if {@link getDataKeyField DataKeyField} is empty.
+	 */
+	public function getSelectedDataKey()
+	{
+		if($this->getDataKeyField()==='')
+			throw new TInvalidOperationException('datalist_datakeyfield_required');
+		$index=$this->getSelectedIndex();
+		$dataKeys=$this->getDataKeys();
+		if($index>=0 && $index<$dataKeys->getCount())
+			return $dataKeys->itemAt($index);
+		else
+			return null;
+	}
+
+	/**
 	 * @return integer the zero-based index of the edit item in {@link getItems Items}.
 	 * A value -1 means no item is in edit mode.
 	 */
@@ -1091,17 +1107,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 		foreach($data as $dataItem)
 		{
 			if($keyField!=='')
-			{
-				if(is_array($dataItem) || ($dataItem instanceof TMap))
-					$keys->add($dataItem[$keyField]);
-				else if(($dataItem instanceof TComponent) && $dataItem->canGetProperty($keyField))
-				{
-					$getter='get'.$keyField;
-					$keys->add($dataItem->$getter());
-				}
-				else
-					throw new TInvalidDataValueException('datalist_keyfield_invalid',$keyField);
-			}
+				$keys->add($this->getDataFieldValue($dataItem,$keyField));
 			if($itemIndex===0 && $this->_headerTemplate!=='')
 				$this->_header=$this->createItemInternal(-1,'Header',true,null);
 			if($hasSeparator && $itemIndex>0)

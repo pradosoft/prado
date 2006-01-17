@@ -953,7 +953,7 @@ class TControl extends TComponent
 				$namingContainer->clearNameTable();
 		}
 
-		if($this->_stage>=self::CS_INITIALIZED)
+		if($this->_stage>=self::CS_CHILD_INITIALIZED)
 		{
 			$control->initRecursive($namingContainer);
 			if($this->_stage>=self::CS_STATE_LOADED)

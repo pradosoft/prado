@@ -206,12 +206,12 @@ abstract class TDataGridColumn extends TComponent
 		return $this->_viewState;
 	}
 
-	protected function getOwner()
+	public function getOwner()
 	{
 		return $this->_owner;
 	}
 
-	protected function setOwner(TDataGrid $value)
+	public function setOwner(TDataGrid $value)
 	{
 		$this->_owner=$value;
 	}

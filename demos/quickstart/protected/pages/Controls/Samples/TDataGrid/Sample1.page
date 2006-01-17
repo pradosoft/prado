@@ -1,0 +1,14 @@
+<com:TContent ID="body">
+
+<h1>TDataGrid Sample 1</h1>
+
+<com:TDataGrid
+	ID="DataGrid"
+	ItemStyle.BackColor="blue"
+	ItemStyle.Font.Italic="true"
+	ItemStyle.ForeColor="white"
+	AlternatingItemStyle.BackColor="green"
+	SelectedItemStyle.BackColor="red">
+</com:TDataGrid>
+
+</com:TContent>
