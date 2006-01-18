@@ -35,6 +35,14 @@
  * also be processed, which can be further restricted within
  * a {@link setValidationGroup ValidationGroup}.
  *
+ * WARNING: Be careful if you want to display the text collected via TTextBox.
+ * Malicious cross-site script may be injected in. You may use {@link getSafeText SafeText}
+ * to prevent this problem.
+ *
+ * NOTE: If you set {@link setWrap Wrap} to false or use {@link setAutoCompleteType AutoCompleteType},
+ * the generated HTML output for the textbox will not be XHTML-compatible.
+ * Currently, no alternatives are available.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
@@ -135,7 +143,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 			$writer->addAttribute('disabled','disabled');
 		if($this->getAutoPostBack() && $page->getClientSupportsJavaScript())
 		{
-			$writer->addAttribute('id',$this->getClientID());			
+			$writer->addAttribute('id',$this->getClientID());
 			$this->getPage()->getClientScript()->registerPostBackControl($this);
 			/*$options = $this->getAutoPostBackOptions();
 			$scripts = $this->getPage()->getClientScript();
