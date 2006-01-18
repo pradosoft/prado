@@ -17,7 +17,7 @@
 
 </div>
 <div class="samplemenu">
-    <div class"copyright">
+    <div class="copyright">
         Copyright &copy; 2005-2006 <a href="http://www.pradosoft.com">PradoSoft</a>
     </div>
 </div>
