@@ -1,4 +1,7 @@
 * text=auto !eol
+/COPYRIGHT -text
+/HISTORY -text
+/UPGRADE -text
 demos/composer/index.php -text
 demos/composer/index2.php -text
 demos/composer/protected/pages/ClassDefinition.php -text
