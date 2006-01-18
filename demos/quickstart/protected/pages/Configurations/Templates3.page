@@ -1,7 +1,7 @@
 <com:TContent ID="body" >
 <h1>Templates: Part III</h1>
 
-<a name="dpt" />
+<a name="dpt"></a>
 <h2>Dynamic Property Tags</h2>
 <p>
 Dynamic property tags are very similar to dynamic content tags, except that they are applied to component properties. The purpose of dynamic property tags is to allow more versatile component property configuration. Note, you are not required to use dynamic property tags because what can be done using dynamic property tags can also be done in PHP code. However, using dynamic property tags bring you much more convenience at accomplishing the same tasks. The basic usage of dynamic property tags is as follows,
@@ -16,7 +16,7 @@ where you may enclose <tt>DynamicPropertyTag</tt> within single or double quotes
 Like dynamic content tags, we have <a href="#et">expression tags</a>, <a href="#dt">databind tags</a>, <a href="#pt">parameter tags</a>, <a href="#at">asset tags</a> and <a href="#lot">localization tags</a>. (Note, there is no statement tag here.)
 </p>
 
-<a name="et" />
+<a name="et"></a>
 <h3>Expression Tags</h3>
 <p>
 An expression tag represents a PHP expression that is evaluated when the template is being instantiated. The expression evaluation result is assigned to the corresponding component property. The format of expression tags is as follows,
@@ -32,7 +32,7 @@ In the expression, <tt>$this</tt> refers to the component specified by the compo
 Note, unlike dynamic content tags, the expressions tags for component properties are evaluated when the components are being constructed, while for the dynamic content tags, the expressions are evaluated when the controls are being rendered.
 </p>
 
-<a name="dt" />
+<a name="dt"></a>
 <h3>Databind Tags</h3>
 <p>
 Databind tags are similar to expression tags, except that they can only be used with control properties and the expressions are evaluated only when a <tt>dataBind()</tt> call is invoked on the controls represented by the component tags. In the expression, <tt>$this</tt> refers to the control itself. Databind tags do not apply to all components. They can only be used for controls.
@@ -44,7 +44,7 @@ The format of databind tags is as follows,
 </com:TTextHighlighter>
 </p>
 
-<a name="pt" />
+<a name="pt"></a>
 <h3>Parameter Tags</h3>
 <p>
 Parameter tags are used to assign application parameter values to the corresponding component properties. The format of parameter tags is as follows,
@@ -54,7 +54,7 @@ Parameter tags are used to assign application parameter values to the correspond
 Note, application parameters are usually defined in application configurations or page directory configurations. The parameters are evaluated when the template is instantiated.
 </p>
 
-<a name="at" />
+<a name="at"></a>
 <h3>Asset Tags</h3>
 <p>
 Asset tags are used to publish private files and assign the corresponding the URLs to the component properties. For example, if you have an image file that is not Web-accessible and you want to make it visible to end-users, you can use asset tags to publish this file and show the URL to end-users so that they can fetch the published image.

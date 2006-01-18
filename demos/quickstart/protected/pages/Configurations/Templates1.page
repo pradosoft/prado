@@ -6,7 +6,7 @@ Templates are used to specify the presentational layout of controls. A template 
 <p>The template format is like HTML, with a few PRADO-specifc tags, including <a href="#ct">component tags</a>, <a href="#tct">template control tags</a>, <a href="#cot">comment tags</a>, <a href="?page=Configurations.Templates2#dct">dynamic content tags</a>, and <a href="?page=Configurations.Templates3#dpt">dynamic property tags</a>. .
 </p>
 
-<a name="ct" />
+<a name="ct"></a>
 <h2>Component Tags</h2>
 <p>
 A component tag specifies a component as part of the body content of the template control. If the component is a control, it usually will become a child or grand child of the template control, and its rendering result will be inserted at the place where it is appearing in the template.
@@ -36,7 +36,7 @@ PropertyValue
 It is equivalent to <tt>...PropertyName="PropertyValue"...</tt> in every aspect. Property initialization tags must be directly enclosed between the corresponding opening and closing component tag.
 </p>
 
-<a name="tct" />
+<a name="tct"></a>
 <h2>Template Control Tags</h2>
 A template control tag is used to configure the initial property values of the control owning the template. Its format is as follows,
 <com:TTextHighlighter Language="prado" CssClass="source">
@@ -51,7 +51,7 @@ Initial values specified via the template control tag are assigned to the corres
 Template control tag is optional in a template. Each template can contain at most one template control tag. You can place the template control tag anywhere in the template. It is recommended that you place it at the beginning of the template for better visibility.
 </p>
 
-<a name="cot" />
+<a name="cot"></a>
 <h2>Comment Tags</h2>
 <p>
 Comment tags are used to put comments in the template or the ultimate rendering result. There are two types of comment tags. One is like that in HTML and will be displayed to the end-users. The other only appear in a template and will be stripped out when the template is instantiated and displayed to the end-users. The format of these two comment tags is as follows,
