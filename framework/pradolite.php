@@ -5322,7 +5322,8 @@ interface INamingContainer
 }
 interface IPostBackEventHandler 
 {
-public function raisePostBackEvent($param); 
+public function raisePostBackEvent($param);
+public function getPostBackOptions(); 
 }
 interface IPostBackDataHandler 
 {
@@ -5633,101 +5634,49 @@ public function setTrackFocus($value)
 		$this->_trackFocus=$value;
 	}
 }
+Prado::using('System.Web.Javascripts.*');
 class TClientScriptManager extends TComponent
 {
 	const SCRIPT_DIR='Web/Javascripts/js';
-	const POSTBACK_FUNC='Prado.doPostBack';
-	private $_page;
+private $_page;
 	private $_hiddenFields=array();
 	private $_beginScripts=array();
 	private $_endScripts=array();
 	private $_scriptFiles=array();
-	private $_headScriptFiles=array();
-	private $_headScripts=array();
-	private $_styleSheetFiles=array();
+private $_styleSheetFiles=array();
 	private $_styleSheets=array();
-	private $_onSubmitStatements=array();
-	private $_arrayDeclares=array();
-	private $_expandoAttributes=array();
-	private $_postBackScriptRegistered=false;
-	private $_focusScriptRegistered=false;
-	private $_scrollScriptRegistered=false;
-	private $_publishedScriptFiles=array();
+private $_client;
+private $_publishedScriptFiles=array();
 public function __construct(TPage $owner)
 	{
 		$this->_page=$owner;
+		$this->_client = new TClientScript($this);
 	}
-public function getPostBackEventReference($control,$parameter='',$options=null,$javascriptPrefix=true)
+public function registerPostBackControl($control,$namespace='Prado.WebUI')
 	{
-		if(!$options || (!$options->getPerformValidation() && !$options->getTrackFocus() && $options->getClientSubmit() && $options->getActionUrl()==''))
-		{
-			$this->registerPostBackScript();
-			if(($form=$this->_page->getForm())!==null)
-				$formID=$form->getClientID();
-			else
-				throw new TConfigurationException('clientscriptmanager_form_required');
-			$postback=self::POSTBACK_FUNC.'(\''.$formID.'\',\''.$control->getUniqueID().'\',\''.THttpUtility::quoteJavaScriptString($parameter).'\')';
-			if($options && $options->getAutoPostBack())
-				$postback='setTimeout(\''.THttpUtility::quoteJavaScriptString($postback).'\',0)';
-			return $javascriptPrefix?'javascript:'.$postback:$postback;
-		}
-		$opt='';
-		$flag=false;
-		if($options->getPerformValidation())
-		{
-			$flag=true;
-			$this->registerValidationScript();
-			$opt.=',true,';
-		}
-		else
-			$opt.=',false,';
-		if($options->getValidationGroup()!=='')
-		{
-			$flag=true;
-			$opt.='"'.$options->getValidationGroup().'",';
-		}
-		else
-			$opt.='\'\',';
-		if($options->getActionUrl()!=='')
-		{
-			$flag=true;
-			$this->_page->setCrossPagePostBack(true);
-			$opt.='"'.$options->getActionUrl().'",';
-		}
-		else
-			$opt.='null,';
-		if($options->getTrackFocus())
-		{
-			$flag=true;
-			$this->registerFocusScript();
-			$opt.='true,';
-		}
-		else
-			$opt.='false,';
-		if($options->getClientSubmit())
-		{
-			$flag=true;
-			$opt.='true';
-		}
-		else
-			$opt.='false';
-		if(!$flag)
-			return '';
-		$this->registerPostBackScript();
-		if(($form=$this->_page->getForm())!==null)
-			$formID=$form->getClientID();
-		else
-			throw new TConfigurationException('clientscriptmanager_form_required');
-		$postback=self::POSTBACK_FUNC.'(\''.$formID.'\',\''.$control->getUniqueID().'\',\''.THttpUtility::quoteJavaScriptString($parameter).'\''.$opt.')';
-		if($options && $options->getAutoPostBack())
-			$postback='setTimeout(\''.THttpUtility::quoteJavaScriptString($postback).'\',0)';
-		return $javascriptPrefix?'javascript:'.$postback:$postback;
+		$options = $this->getPostBackOptions($control);
+		$type = get_class($control);
+		$code = "new {$namespace}.{$type}($options);";
+		$this->registerEndScript(sprintf('%08X', crc32($code)), $code);
+$this->registerHiddenField(TPage::FIELD_POSTBACK_TARGET,'');
+		$this->registerHiddenField(TPage::FIELD_POSTBACK_PARAMETER,'');
+		$this->registerClientScript('prado');
 	}
-public function registerPradoScript($script)
+protected function getPostBackOptions($control)
+	{
+		$postback = $control->getPostBackOptions();
+		if(!isset($postback['ID'])) 
+			$postback['ID'] = $control->getClientID();
+		if(!isset($postback['FormID']))
+			$postback['FormID'] = $this->_page->getForm()->getClientID();
+		$options = new TJavascriptSerializer($postback);
+		return $options->toJavascript();
+	}
+public function registerClientScript($script)
 	{
 		static $scripts = array();
 		$scripts = array_unique(array_merge($scripts, 
-						TPradoClientScript::getScripts($script)));
+						TClientScript::getScripts($script)));
 $this->publishClientScriptAssets($scripts);
 $url = $this->publishClientScriptCompressorAsset();
 		$url .= '?js='.implode(',', $scripts);
@@ -5735,7 +5684,7 @@ $url = $this->publishClientScriptCompressorAsset();
 			$url .= '&__nocache';
 		$this->registerScriptFile('prado:gzipscripts', $url);
 	}
-private function publishClientScriptAssets($scripts)
+protected function publishClientScriptAssets($scripts)
 	{
 		foreach($scripts as $lib)
 		{
@@ -5750,7 +5699,7 @@ private function publishClientScriptAssets($scripts)
 			}
 		}
 	}
-private function publishClientScriptCompressorAsset()
+protected function publishClientScriptCompressorAsset()
 	{
 		$scriptFile = 'clientscripts.php';
 		if(isset($this->_publishedScriptFiles[$scriptFile]))
@@ -5765,44 +5714,6 @@ private function publishClientScriptCompressorAsset()
 			$this->_publishedScriptFiles[$scriptFile] = $url;
 			return $url;
 		}
-	}
-protected function registerPostBackScript()
-	{
-		if(!$this->_postBackScriptRegistered)
-		{
-			$this->_postBackScriptRegistered=true;
-			$this->registerHiddenField(TPage::FIELD_POSTBACK_TARGET,'');
-			$this->registerHiddenField(TPage::FIELD_POSTBACK_PARAMETER,'');
-			$this->registerPradoScript('prado');
-		}
-	}
-public function registerFocusScript($target)
-	{
-		if(!$this->_focusScriptRegistered)
-		{
-			$this->_focusScriptRegistered=true;
-			$this->registerPradoScript('prado');
-			$this->registerEndScript('prado:focus','Prado.Focus.setFocus("'.THttpUtility::quoteJavaScriptString($target).'");');
-		}
-	}
-public function registerScrollScript($x,$y)
-	{
-		if(!$this->_scrollScriptRegistered)
-		{
-			$this->_scrollScriptRegistered=true;
-			$this->registerHiddenField(TPage::FIELD_SCROLL_X,$x);
-			$this->registerHiddenField(TPage::FIELD_SCROLL_Y,$y);
-					}
-	}
-public function registerDefaultButtonScript($source, $target)
-	{
-		$this->registerPradoScript('prado');
-		$button = $target->getClientID();
-		$panel = $source->getClientID();
-		return "Event.observe('{$panel}', 'keypress', Prado.Button.fireButton.bindEvent($('{$panel}'), '$button'));";
-	}
-public function registerValidationScript()
-	{
 	}
 public function isHiddenFieldRegistered($key)
 	{
@@ -5824,14 +5735,6 @@ public function isEndScriptRegistered($key)
 	{
 		return isset($this->_endScripts[$key]);
 	}
-public function isHeadScriptFileRegistered($key)
-	{
-		return isset($this->_headScriptFiles[$key]);
-	}
-public function isHeadScriptRegistered($key)
-	{
-		return isset($this->_headScripts[$key]);
-	}
 public function isStyleSheetFileRegistered($key)
 	{
 		return isset($this->_styleSheetFiles[$key]);
@@ -5839,14 +5742,6 @@ public function isStyleSheetFileRegistered($key)
 public function isStyleSheetRegistered($key)
 	{
 		return isset($this->_styleSheets[$key]);
-	}
-public function isOnSubmitStatementRegistered($key)
-	{
-		return isset($this->_onSubmitStatements[$key]);
-	}
-public function registerArrayDeclaration($name,$value)
-	{
-		$this->_arrayDeclares[$name][]=$value;
 	}
 public function registerScriptFile($key,$url)
 	{
@@ -5857,10 +5752,6 @@ public function registerHiddenField($name,$value)
 				if(!isset($this->_hiddenFields[$name]) || $this->_hiddenFields[$name]!==null)
 			$this->_hiddenFields[$name]=$value;
 	}
-public function registerOnSubmitStatement($key,$script)
-	{
-		$this->_onSubmitStatements[$key]=$script;
-	}
 public function registerBeginScript($key,$script)
 	{
 		$this->_beginScripts[$key]=$script;
@@ -5868,14 +5759,6 @@ public function registerBeginScript($key,$script)
 public function registerEndScript($key,$script)
 	{
 		$this->_endScripts[$key]=$script;
-	}
-public function registerHeadScriptFile($key,$url)
-	{
-		$this->_headScriptFiles[$key]=$url;
-	}
-public function registerHeadScript($key,$script)
-	{
-		$this->_headScripts[$key]=$script;
 	}
 public function registerStyleSheetFile($key,$url)
 	{
@@ -5885,21 +5768,6 @@ public function registerStyleSheet($key,$css)
 	{
 		$this->_styleSheets[$key]=$css;
 	}
-public function registerExpandoAttribute($controlID,$name,$value)
-	{
-		$this->_expandoAttributes[$controlID][$name]=$value;
-	}
-public function renderArrayDeclarations($writer)
-	{
-		if(count($this->_arrayDeclares))
-		{
-			$str="<script type=\"text/javascript\">\n//<![CDATA[\n";
-			foreach($this->_arrayDeclares as $name=>$array)
-				$str.="var $name=new Array(".implode(',',$array).");\n";
-			$str.="\n//]]>\n</script>\n";
-			$writer->write($str);
-		}
-	}
 public function renderScriptFiles($writer)
 	{
 		$str='';
@@ -5907,9 +5775,6 @@ public function renderScriptFiles($writer)
 			$str.="<script type=\"text/javascript\" src=\"".THttpUtility::htmlEncode($include)."\"></script>\n";
 		$writer->write($str);
 	}
-public function renderOnSubmitStatements($writer)
-	{
-			}
 public function renderBeginScripts($writer)
 	{
 		if(count($this->_beginScripts))
@@ -5935,38 +5800,6 @@ public function renderHiddenFields($writer)
 		if($str!=='')
 			$writer->write("<div>\n".$str."</div>\n");
 	}
-public function renderExpandoAttributes($writer)
-	{
-		if(count($this->_expandoAttributes))
-		{
-			$str="<script type=\"text/javascript\">\n//<![CDATA[\n";
-			foreach($this->_expandoAttributes as $controlID=>$attrs)
-			{
-				$str.="var $controlID = document.all ? document.all[\"$controlID\"] : document.getElementById(\"$controlID\");\n";
-				foreach($attrs as $name=>$value)
-				{
-					if($value===null)
-						$str.="{$key}[\"$name\"]=null;\n";
-					else
-						$str.="{$key}[\"$name\"]=\"$value\";\n";
-				}
-			}
-			$str.="\n//]]>\n</script>\n";
-			$writer->write($str);
-		}
-	}
-public function renderHeadScriptFiles($writer)
-	{
-		$str='';
-		foreach($this->_headScriptFiles as $url)
-			$str.="<script type=\"text/javascript\" src=\"".THttpUtility::htmlEncode($url)."\"></script>\n";
-		$writer->write($str);
-	}
-public function renderHeadScripts($writer)
-	{
-		if(count($this->_headScripts))
-			$writer->write("<script type=\"text/javascript\">\n//<![CDATA[\n".implode("\n",$this->_headScripts)."\n//]]>\n</script>\n");
-	}
 public function renderStyleSheetFiles($writer)
 	{
 		$str='';
@@ -5984,117 +5817,6 @@ public function renderStyleSheets($writer)
 public function getHasHiddenFields()
 	{
 		return count($this->_hiddenFields)>0;
-	}
-public function getHasSubmitStatements()
-	{
-		return count($this->_onSubmitStatements)>0;
-	}
-public function registerClientEvent($control, $event, $code)
-	{
-		if(empty($code)) return;
-		$this->registerPradoScript("prado");
-		$script= "Event.observe('{$control->ClientID}', '{$event}', function(e){ {$code} });";
-		$key = "prado:{$control->ClientID}:{$event}";
-		$this->registerEndScript($key, $script);
-	}
-}
-class TJavascript
-{
-public static function toArray($array,$append=null,$strict=false)
-	{
-		$results = array();
-		$converter = new TJavascript();
-		foreach($array as $v)
-		{
-			if($strict || (!$strict && $v !== '' && $v !== array()))
-			{
-				$type = 'to_'.gettype($v);
-				if($type == 'to_array')
-					$results[] = $converter->toArray($v, $append, $strict);
-				else
-					$results[] = $converter->{$type}($v);
-			}
-		}
-		$extra = '';
-		if(strlen($append) > 0)
-			$extra .= count($results) > 0 ? ','.$append : $append;
-		return '['.implode(',', $results).$extra.']';
-	}
-public static function toList($array,$append=null, $strict=false)
-	{
-		$results = array();
-		$converter = new TJavascript();
-		foreach($array as $k => $v)
-		{
-			if($strict || (!$strict && $v !== '' && $v !== array()))
-			{
-				$type = 'to_'.gettype($v);
-				if($type == 'to_array')
-					$results[] = "'{$k}':".$converter->toList($v, $append, $strict);
-				else
-					$results[] = "'{$k}':".$converter->{$type}($v);
-			}
-		}
-		$extra = '';
-		if(strlen($append) > 0)
-			$extra .= count($results) > 0 ? ','.$append : $append;
-return '{'.implode(',', $results).$extra.'}';
-	}
-public function to_boolean($v)
-	{
-		return $v ? 'true' : 'false';
-	}
-public function to_integer($v)
-	{
-		return "{$v}";
-	}
-public function to_double($v)
-	{
-		return "{$v}";
-	}
-public function to_string($v)
-	{
-		if(strlen($v)>1)
-		{
-			$first = $v{0}; $last = $v{strlen($v)-1};
-			if($first == '[' && $last == ']' ||
-				($first == '{' && $last == '}'))
-				return $v;
-		}
-		return "'".addslashes($v)."'";
-	}
-public function to_array($v)
-	{
-		return TJavascript::toArray($v);
-	}
-public function to_null($v)
-	{
-		return 'null';
-	}
-}
-class TPradoClientScript
-{
-protected static $dependencies = array(
-		'prado' => array('prado'),
-		'effects' => array('prado', 'effects'),
-		'ajax' => array('prado', 'effects', 'ajax'),
-		'validator' => array('prado', 'validator'),
-		'logger' => array('prado', 'logger'),
-		'datepicker' => array('prado', 'datepicker'),
-		'rico' => array('prado', 'effects', 'ajax', 'rico')
-		);
-public static function getScripts($scripts)
-	{
-		$files = array();
-		if(!is_array($scripts)) $scripts = array($scripts);
-		foreach($scripts as $script)
-		{
-			if(isset(self::$dependencies[$script]))
-				$files = array_merge($files, self::$dependencies[$script]);
-			$files[] = $script;
-		}
-		$files = array_unique($files);
-		return $files;
 	}
 }
 ?><?php
@@ -6519,9 +6241,7 @@ public function endFormRender($writer)
 				$cs->registerScrollScript($x,$y); 
 			} 
 			$cs->renderHiddenFields($writer); 
-			$cs->renderArrayDeclarations($writer); 
-			$cs->renderExpandoAttributes($writer); 
-			$cs->renderScriptFiles($writer); 
+									$cs->renderScriptFiles($writer); 
 			$cs->renderEndScripts($writer); 
 		} 
 		else 
@@ -7602,34 +7322,26 @@ protected function addAttributesToRender($writer)
 		$writer->addAttribute('value',$this->getText()); 
 		if($this->getEnabled(true)) 
 		{ 
-			$scripts = $this->getPage()->getClientScript(); 
-			if($scripts->isEndScriptRegistered("TBaseValidator")) 
-			{ 
-				$group = $this->getValidationGroup(); 
-				$group = strlen($group) ? ",'".$group."'" : ''; 
-				$clientID=$this->getClientID(); 
-								$script = "Prado.Validation.AddTarget('{$clientID}'{$group});"; 
-				$scripts->registerEndScript("{$uniqueID}:target", $script); 
-			} 
+			if($this->canCauseValidation()) 
+				$this->getPage()->getClientScript()->registerPostBackControl($this); 
 		} 
 		else if($this->getEnabled()) 			$writer->addAttribute('disabled','disabled');
 $writer->addAttribute('id',$this->getClientID()); 
 		parent::addAttributesToRender($writer); 
 	}
-protected function getPostBackOptions() 
+protected function canCauseValidation() 
 	{ 
-		$option=new TPostBackOptions(); 
 		$group = $this->getValidationGroup(); 
 		$hasValidators = $this->getPage()->getValidators($group)->getCount()>0; 
-		if($this->getCausesValidation() && $hasValidators) 
-		{ 
-			$option->setPerformValidation(true); 
-			$option->setValidationGroup($group); 
-		} 
-		if($this->getPostBackUrl()!=='') 
-			$option->setActionUrl($this->getPostBackUrl()); 
-		$option->setClientSubmit(!$this->getUseSubmitBehavior());
-return $option; 
+		return $this->getCausesValidation() && $hasValidators; 
+	}
+public function getPostBackOptions() 
+	{ 
+		$options['CausesValidation'] = $this->getCausesValidation(); 
+		$options['ValidationGroup'] = $this->getValidationGroup();		 
+		$options['PostBackUrl'] = $this->getPostBackUrl(); 
+		$options['ClientSubmit'] = !$this->getUseSubmitBehavior();
+return $options; 
 	}
 protected function renderContents($writer) 
 	{ 
@@ -7897,12 +7609,7 @@ protected function renderInputTag($writer,$clientID,$onclick)
 			$writer->addAttribute('disabled','disabled');
 $page=$this->getPage(); 
 		if($this->getAutoPostBack() && $page->getClientSupportsJavaScript()) 
-		{ 
-			$options = $this->getAutoPostBackOptions(); 
-			$scripts = $page->getClientScript(); 
-			$postback = $scripts->getPostBackEventReference($this,'',$options,false); 
-			$scripts->registerClientEvent($this, "click", $postback); 
-		}
+			$page->getClientScript()->registerPostBackControl($this);
 if(($accesskey=$this->getAccessKey())!=='') 
 			$writer->addAttribute('accesskey',$accesskey); 
 		if(($tabindex=$this->getTabIndex())>0) 
@@ -7912,17 +7619,12 @@ if(($accesskey=$this->getAccessKey())!=='')
 		$writer->renderBeginTag('input'); 
 		$writer->renderEndTag(); 
 	}
-protected function getAutoPostBackOptions() 
+public function getPostBackOptions() 
 	{ 
-		$option=new TPostBackOptions(); 
-		$group = $this->getValidationGroup(); 
-		$hasValidators = $this->getPage()->getValidators($group)->getCount()>0; 
-		if($this->getCausesValidation() && $hasValidators) 
-		{ 
-			$option->setPerformValidation(true); 
-			$option->setValidationGroup($group); 
-		} 
-		$option->setAutoPostBack(true); 
+		$options['ValidationGroup'] = $this->getValidationGroup(); 
+		$options['CausesValidation'] = $this->getCausesValidation(); 
+		$options['EventTarget'] = $this->getUniqueID(); 
+		return $options; 
 	}
 }
 ?><?php
@@ -8002,12 +7704,7 @@ protected function renderInputTag($writer,$clientID,$onclick)
 			$writer->addAttribute('disabled','disabled');
 $page=$this->getPage(); 
 		if($this->getAutoPostBack() && $page->getClientSupportsJavaScript()) 
-		{ 
-			$options = $this->getAutoPostBackOptions(); 
-			$scripts = $page->getClientScript(); 
-			$postback = $scripts->getPostBackEventReference($this,'',$options,false); 
-			$scripts->registerClientEvent($this, "click", $postback); 
-		}
+			$page->getClientScript()->registerPostBackControl($this);
 if(($accesskey=$this->getAccessKey())!=='') 
 			$writer->addAttribute('accesskey',$accesskey); 
 		if(($tabindex=$this->getTabIndex())>0) 
@@ -8088,31 +7785,19 @@ protected function addAttributesToRender($writer)
 		if(!$this->getEnabled(true) && $this->getEnabled())  			$writer->addAttribute('disabled','disabled'); 
 		if($this->getAutoPostBack() && $page->getClientSupportsJavaScript()) 
 		{ 
-			$writer->addAttribute('id',$this->getClientID()); 
-			$options = $this->getAutoPostBackOptions(); 
-			$scripts = $this->getPage()->getClientScript(); 
-			$postback = $scripts->getPostBackEventReference($this,'',$options,false); 
-			$scripts->registerClientEvent($this, "change", $postback);
-if($this->getTextMode() !== 'MultiLine') 
-			{ 
-				$code = "if(Prado.TextBox.handleReturnKey(e)==false) Event.stop(e);"; 
-				$scripts->registerClientEvent($this, "keypress", $code); 
-			} 
-		} 
+			$writer->addAttribute('id',$this->getClientID());			 
+			$this->getPage()->getClientScript()->registerPostBackControl($this);
+} 
 		parent::addAttributesToRender($writer); 
 	}
-protected function getAutoPostBackOptions() 
+public function getPostBackOptions() 
 	{ 
-		$option=new TPostBackOptions(); 
-		$group = $this->getValidationGroup(); 
-		$hasValidators = $this->getPage()->getValidators($group)->getCount()>0; 
-		if($this->getCausesValidation() && $hasValidators) 
-		{ 
-			$option->setPerformValidation(true); 
-			$option->setValidationGroup($group); 
-		} 
-		$option->setAutoPostBack(true); 
-	}
+		$options['EventTarget'] = $this->getUniqueID(); 
+		$options['CausesValidation'] = $this->getCausesValidation(); 
+		$options['ValidationGroup'] = $this->getValidationGroup(); 
+		$options['TextMode'] = $this->getTextMode(); 
+		return $options;
+}
 public function loadPostData($key,$values) 
 	{ 
 		$value=$values[$key]; 
@@ -8270,13 +7955,8 @@ protected function addAttributesToRender($writer)
 			if(($button=$this->findControl($butt))===null) 
 				throw new TInvalidDataValueException('panel_defaultbutton_invalid',$butt); 
 			else 
-			{ 
-				$scripts = $this->getPage()->getClientScript(); 
-				$js = $scripts->registerDefaultButtonScript($this,$button); 
-				$clientID=$this->getClientID(); 
-				$scripts->registerEndScript($clientID.'defaultButton', $js); 
-				$writer->addAttribute('id',$clientID); 
-			} 
+			{
+} 
 		} 
 	}
 public function getWrap() 
@@ -8621,9 +8301,8 @@ public function render($writer)
 		$cs=$page->getClientScript(); 
 		$cs->renderStyleSheetFiles($writer); 
 		$cs->renderStyleSheets($writer); 
-		$cs->renderHeadScriptFiles($writer); 
-		$cs->renderHeadScripts($writer); 
-		parent::render($writer); 
+		$cs->renderScriptFiles($writer); 
+				parent::render($writer); 
 		$writer->write("</head>\n"); 
 	} 
 }
@@ -9831,6 +9510,7 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 {
 private $_isEnabled;
 private $_postBackOptions;
+private $_currentRenderItemIndex;
 public function raisePostBackEvent($param) 
 	{ 
 		if($this->getCausesValidation()) 
@@ -9965,34 +9645,12 @@ protected function renderBulletText($writer,$item,$index)
 		switch($this->getDisplayMode()) 
 		{ 
 			case 'Text': 
-				if($item->getEnabled()) 
-					$writer->write(THttpUtility::htmlEncode($item->getText())); 
-				else 
-				{ 
-					$writer->addAttribute('disabled','disabled'); 
-					$writer->renderBeginTag('span'); 
-					$writer->write(THttpUtility::htmlEncode($item->getText())); 
-					$writer->renderEndTag(); 
-				} 
-				return; 
+				return $this->renderTextItem($writer, $item, $index); 
 			case 'HyperLink': 
-				if(!$this->_isEnabled || !$item->getEnabled()) 
-					$writer->addAttribute('disabled','disabled'); 
-				else 
-				{ 
-					$writer->addAttribute('href',$item->getValue()); 
-					if(($target=$this->getTarget())!=='') 
-						$writer->addAttribute('target',$target); 
-				} 
+				$this->renderHyperLinkItem($writer, $item, $index); 
 				break; 
 			case 'LinkButton': 
-				if(!$this->_isEnabled || !$item->getEnabled()) 
-					$writer->addAttribute('disabled','disabled'); 
-				else 
-				{ 
-					$postback=$this->getPage()->getClientScript()->getPostBackEventReference($this,"$index",$this->_postBackOptions); 
-					$writer->addAttribute('href',$postback); 
-				} 
+				$this->renderLinkButtonItem($writer, $item, $index); 
 		} 
 		if(($accesskey=$this->getAccessKey())!=='') 
 			$writer->addAttribute('accesskey',$accesskey); 
@@ -10000,19 +9658,55 @@ protected function renderBulletText($writer,$item,$index)
 		$writer->write(THttpUtility::htmlEncode($item->getText())); 
 		$writer->renderEndTag(); 
 	}
-protected function getPostBackOptions() 
+protected function renderTextItem($writer, $item, $index) 
 	{ 
-		$option=new TPostBackOptions(); 
+		if($item->getEnabled()) 
+			$writer->write(THttpUtility::htmlEncode($item->getText())); 
+		else 
+		{ 
+			$writer->addAttribute('disabled','disabled'); 
+			$writer->renderBeginTag('span'); 
+			$writer->write(THttpUtility::htmlEncode($item->getText())); 
+			$writer->renderEndTag(); 
+		} 
+	}
+protected function renderHyperLinkItem($writer, $item, $index) 
+	{ 
+		if(!$this->_isEnabled || !$item->getEnabled()) 
+			$writer->addAttribute('disabled','disabled'); 
+		else 
+		{ 
+			$writer->addAttribute('href',$item->getValue()); 
+			if(($target=$this->getTarget())!=='') 
+				$writer->addAttribute('target',$target); 
+		} 
+	}
+protected function renderLinkButtonItem($writer, $item, $index) 
+	{ 
+		if(!$this->_isEnabled || !$item->getEnabled()) 
+			$writer->addAttribute('disabled','disabled'); 
+		else 
+		{ 
+			$this->_currentRenderItemIndex = $index; 
+			$this->getPage()->getClientScript()->registerPostbackControl($this); 
+			$writer->addAttribute('id', $this->getClientID().$index); 
+			$writer->addAttribute('href', "javascript:;//".$this->getClientID().$index); 
+		} 
+	}
+public function getPostBackOptions() 
+	{ 
+		$options['ValidationGroup'] = $this->getValidationGroup(); 
+		$options['CausesValidation'] = $this->getCausesValidation(); 
+		$options['EventTarget'] = $this->getUniqueID(); 
+		$options['EventParameter'] = $this->_currentRenderItemIndex; 
+		$options['ID'] = $this->getClientID().$this->_currentRenderItemIndex; 
+		return $options; 
+	}
+protected function canCauseValidation() 
+	{ 
 		$group = $this->getValidationGroup(); 
 		$hasValidators = $this->getPage()->getValidators($group)->getCount()>0; 
-		if($this->getCausesValidation() && $hasValidators) 
-		{ 
-			$options->setPerformValidation(true); 
-			$options->setValidationGroup($this->getValidationGroup()); 
-			return $options; 
-		} 
-		else 
-			return null; 
+		return $this->getCausesValidation() && $hasValidators; 
 	}
 public function setAutoPostBack($value) 
 	{ 
@@ -10062,27 +9756,18 @@ protected function addAttributesToRender($writer)
 		if($this->getAutoPostBack() && $page->getClientSupportsJavaScript()) 
 		{ 
 			$writer->addAttribute('id',$this->getClientID()); 
-			$options = $this->getAutoPostBackOptions(); 
-			$scripts = $this->getPage()->getClientScript(); 
-			$postback = $scripts->getPostBackEventReference($this,'',$options,false); 
-			$scripts->registerClientEvent($this, "change", $postback); 
-		} 
+			$this->getPage()->getClientScript()->registerPostBackControl($this);
+} 
 		if($this->getEnabled(true) && !$this->getEnabled()) 
 			$writer->addAttribute('disabled','disabled'); 
 		parent::addAttributesToRender($writer); 
 	}
-protected function getAutoPostBackOptions() 
-	{ 
-		$option=new TPostBackOptions(); 
-		$group = $this->getValidationGroup(); 
-		$hasValidators = $this->getPage()->getValidators($group)->getCount()>0; 
-		if($this->getCausesValidation() && $hasValidators) 
-		{ 
-			$option->setPerformValidation(true); 
-			$option->setValidationGroup($group); 
-		} 
-		$option->setAutoPostBack(true); 
-		return $option; 
+public function getPostBackOptions() 
+	{
+$options['CausesValidation'] = $this->getCausesValidation(); 
+		$options['ValidationGroup'] = $this->getValidationGroup(); 
+		$options['EventTarget'] = $this->getUniqueID(); 
+		return $options; 
 	}
 public function addParsedObject($object) 
 	{ 
@@ -10651,7 +10336,7 @@ protected function getTagName()
 	}
 protected function renderContents($writer) 
 	{ 
-		$this->Page->ClientScript->registerPradoScript('logger'); 
+		$this->Page->ClientScript->registerClientScript('logger'); 
 		$info = '(<a href="http://gleepglop.com/javascripts/logger/" target="_blank">more info</a>).'; 
 		$usage = 'Press ALT-D (Or CTRL-D on OS X) to toggle the javascript log console'; 
 		$writer->write("{$usage} {$info}"); 
@@ -10675,33 +10360,18 @@ if($this->getEnabled(true))
 		{ 
 			$url = $this->getPostBackUrl(); 
 						$nop = "javascript:;//".$this->getClientID(); 
-			$writer->addAttribute('href', $url ? $url : $nop);
-$scripts = $this->getPage()->getClientScript(); 
-			$options = $this->getPostBackOptions(); 
-			$postback = $scripts->getPostBackEventReference($this, '', $options, false); 
-			$code = "{$postback}; Event.stop(e);"; 
-			$scripts->registerClientEvent($this, "click", $code); 
+			$writer->addAttribute('href', $url ? $url : $nop); 
+			$this->getPage()->getClientScript()->registerPostBackControl($this); 
 		} 
 		else if($this->getEnabled()) 			$writer->addAttribute('disabled','disabled'); 
 	}
-protected function getPostBackOptions() 
+public function getPostBackOptions() 
 	{ 
-		$flag=false;
-$option=new TPostBackOptions(); 
-		$group = $this->getValidationGroup(); 
-		$hasValidators = $this->getPage()->getValidators($group)->getCount()>0; 
-		if($this->getCausesValidation() && $hasValidators) 
-		{ 
-			$flag=true; 
-			$options->setPerformValidation(true); 
-			$options->setValidationGroup($this->getValidationGroup()); 
-		} 
-		if($this->getPostBackUrl()!=='') 
-		{ 
-			$flag=true; 
-			$options->setActionUrl($this->getPostBackUrl()); 
-		} 
-		return $flag?$options:null; 
+		$options['EventTarget'] = $this->getUniqueID(); 
+		$options['CausesValidation'] = $this->getCausesValidation(); 
+		$options['ValidationGroup'] = $this->getValidationGroup();		 
+		$options['PostBackUrl'] = $this->getPostBackUrl();
+return $options; 
 	}
 protected function renderContents($writer) 
 	{ 
@@ -10826,7 +10496,7 @@ protected function onPreRender($param)
 		$scriptKey = "TBaseValidator";
 		if($this->getEnableClientScript() && !$scripts->isEndScriptRegistered($scriptKey))
 		{
-			$scripts->registerPradoScript('validator');
+			$scripts->registerClientScript('validator');
 			$formID=$this->getPage()->getForm()->getClientID();
 			$js = "Prado.Validation.AddForm('$formID');";
 			$scripts->registerEndScript($scriptKey, $js);
@@ -10842,7 +10512,8 @@ protected function renderClientScriptValidator()
 			$class = get_class($this);
 			$scriptKey = "prado:".$this->getClientID();
 			$scripts = $this->getPage()->getClientScript();
-			$options = TJavascript::toList($this->getClientScriptOptions());
+			$serializer = new TJavascriptSerializer($this->getClientScriptOptions());
+			$options = $serializer->toJavascript();
 			$js = "new Prado.Validation(Prado.Validation.{$class}, {$options});";
 			$scripts->registerEndScript($scriptKey, $js);
 		}
@@ -11340,11 +11011,17 @@ foreach($group->getMembers() as $member)
 		} 
 		return $validators; 
 	}
+protected function addAttributesToRender($writer) 
+	{ 
+		$writer->addAttribute('id',$this->getClientID()); 
+		parent::addAttributesToRender($writer); 
+	}
 protected function renderJsSummary() 
 	{ 
 		if(!$this->getEnabled(true) || !$this->getEnableClientScript()) 
 			return; 
-		$options = TJavascript::toList($this->getClientScriptOptions()); 
+		$serializer = new TJavascriptSerializer($this->getClientScriptOptions()); 
+		$options = $serializer->toJavascript(); 
 		$script = "new Prado.Validation.Summary({$options});"; 
 		$this->getPage()->getClientScript()->registerEndScript($this->getClientID(), $script); 
 	}
