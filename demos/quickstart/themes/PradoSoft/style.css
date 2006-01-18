@@ -34,12 +34,28 @@ a
 	font-weight:bold;
 	text-align: right;
 	color: #666;
-	height:70px;
+	height:100px;
 	background-image: url('pradologo.gif');
 	background-repeat: no-repeat;
-	padding-right: 150px;
-	padding-top: 30px;
 }
+
+#header div.title
+{
+   display: none;
+}
+
+#header div.image
+{
+    display: block;
+    float: right;
+    width: 757px;
+    height: 100px;
+    background-image: url('mantis.jpg');
+    background-repeat: no-repeat;
+    background-position: top right;
+}
+
+
 
 #menu {
 	padding:10px;
@@ -200,11 +216,25 @@ tt {
 	font-weight:bold;
 	text-align: right;
 	color: #666;
-	height:70px;
+	height:100px;
 	background-image: url('pradologo.gif');
 	background-repeat: no-repeat;
-	padding-right: 150px;
-	padding-top: 30px;
+}
+
+.sampleheader div.title
+{
+   display: none;
+}
+
+.sampleheader div.image
+{
+    display: block;
+    float: right;
+    width: 900px;
+    height: 100px;
+    background-image: url('mantissample.jpg');
+    background-repeat: no-repeat;
+    background-position: top right;
 }
 
 .samplemenu

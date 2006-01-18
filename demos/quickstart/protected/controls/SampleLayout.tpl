@@ -13,6 +13,7 @@
 <div class="title">
 <a href="?">PRADO QuickStart Tutorial</a> Sample
 </div>
+<div class="image"></div>
 
 </div>
 <div class="samplemenu">

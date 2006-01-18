@@ -8,7 +8,8 @@
 <body>
 <com:TForm>
 <div id="header">
-Prado QuickStart Tutorial
+<div class="title">Prado QuickStart Tutorial</div>
+<div class="image"></div>
 </div>
 
 <div id="menu">
