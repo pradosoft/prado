@@ -116,6 +116,10 @@ demos/quickstart/protected/pages/GettingStarted/Introduction.page -text
 demos/quickstart/protected/pages/ViewSource.page -text
 demos/quickstart/protected/pages/ViewSource.php -text
 demos/quickstart/protected/pages/config.xml -text
+demos/quickstart/themes/PradoSoft/arrowdown.gif -text
+demos/quickstart/themes/PradoSoft/mantisbg.jpg -text
+demos/quickstart/themes/PradoSoft/pradologo.gif -text
+demos/quickstart/themes/PradoSoft/style.css -text
 demos/quickstart/themes/Simple/style.css -text
 docs/application.xml -text
 docs/conceptual-structure.vsd -text

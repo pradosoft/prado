@@ -4,7 +4,7 @@
   <paths>
     <alias id="Pages" path="." />
   </paths>
-  <pages MasterClass="Layout" Theme="Simple">
+  <pages MasterClass="Layout" Theme="PradoSoft">
     <page id="ViewSource" MasterClass="" />
   </pages>
 </configuration>

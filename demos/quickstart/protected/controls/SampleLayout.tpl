@@ -10,14 +10,15 @@
 
 <div class="sampleheader">
 
-<div style="float:left">
+<div class="title">
 <a href="?">PRADO QuickStart Tutorial</a> Sample
 </div>
 
-<div style="text-align:right">
-Copyright &copy; 2005-2006 <a href="http://www.pradosoft.com">PradoSoft</a>
 </div>
-
+<div class="samplemenu">
+    <div class"copyright">
+        Copyright &copy; 2005-2006 <a href="http://www.pradosoft.com">PradoSoft</a>
+    </div>
 </div>
 
 <div style="margin:15px;">
