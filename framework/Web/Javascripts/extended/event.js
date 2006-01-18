@@ -16,7 +16,7 @@ Object.extend(Event, {
     
     if (name == 'keypress' &&
         ((navigator.appVersion.indexOf('AppleWebKit') > 0) 
-        || (element && element.attachEvent)))
+        || element.attachEvent))
       name = 'keydown';
     
     this._observeAndCache(element, name, observer, useCapture);
@@ -26,20 +26,20 @@ Object.extend(Event, {
 	   return e.keyCode != null ? e.keyCode : e.charCode
 	},
 
-	fireEvent : function(el,type)
+	fireEvent : function(element,type)
 	{
 		if(document.createEvent)
         {
-            var evt = document.createEvent('HTMLEvents');
-            evt.initEvent(type, true, true);
-            el.dispatchEvent(evt);
+            var event = document.createEvent('HTMLEvents');
+            event.initEvent(type, true, true);
+            element.dispatchEvent(event);
         }
-        else if(el.fireEvent)
+        else if(element.fireEvent)
         {
-            el.fireEvent('on'+type);
-            el[type]();
+            element.fireEvent('on'+type);
+            element[type]();
         }
         else
-            el[type]();
+            element[type]();
 	}
 });

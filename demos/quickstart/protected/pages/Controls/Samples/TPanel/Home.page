@@ -57,6 +57,7 @@ Panel with a default button (hit 'enter' key to see what happened):
 <com:TPanel BackColor="#CCFFCC" DefaultButton="Button2" Width="400px">
 This is panel content with a <com:TLabel Text="label" Font.Italic="true" />
 and two buttons: <br/>
+<com:TCheckBox />
 <com:TButton ID="Button1" Text="button1" Click="buttonClicked" />
 <com:TButton ID="Button2" Text="button2" Click="buttonClicked" />
 <com:TLabel ID="Result" ForeColor="red" />
@@ -65,7 +66,6 @@ When you change focus to the panel and hit 'enter' key, <tt>button2</tt>
 will be clicked because it is set as the default button of the panel.
 </com:TPanel>
 </td></tr>
-
 </table>
-
+<com:TJavascriptLogger />
 </com:TContent>

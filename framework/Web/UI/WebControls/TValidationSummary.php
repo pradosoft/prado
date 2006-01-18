@@ -213,6 +213,12 @@ class TValidationSummary extends TWebControl
 		return $validators;
 	}
 
+	protected function addAttributesToRender($writer)
+	{
+		$writer->addAttribute('id',$this->getClientID());
+		parent::addAttributesToRender($writer);
+	}
+
 	/**
 	 * Render the javascript for validation summary.
 	 * @param array list of options for validation summary.
@@ -221,7 +227,8 @@ class TValidationSummary extends TWebControl
 	{
 		if(!$this->getEnabled(true) || !$this->getEnableClientScript())
 			return;
-		$options = TJavascript::toList($this->getClientScriptOptions());
+		$serializer = new TJavascriptSerializer($this->getClientScriptOptions());
+		$options = $serializer->toJavascript();
 		$script = "new Prado.Validation.Summary({$options});";
 		$this->getPage()->getClientScript()->registerEndScript($this->getClientID(), $script);
 	}

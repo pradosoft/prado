@@ -98,6 +98,38 @@ Prado.Focus.isVisible = function(element)
     return true;
 }
 
+Prado.PostBack = function(event,options)
+{
+	var form = $(options['FormID']);
+	var canSubmit = true;
+	if(options['CausesValidation'] && Prado.Validation)
+	{
+		if(Prado.Validation.IsValid(form) == false)
+			return;
+	}
+	
+	if(options['PostBackUrl'] && options['PostBackUrl'].length > 0)
+		form.action = options['PostBackUrl'];
+		
+	if(options['TrackFocus'])
+	{
+		var lastFocus = $('PRADO_LASTFOCUS');
+		if(lastFocus)
+		{
+			var active = document.activeElement; //where did this come from
+			if(active)
+				lastFocus.value = active.id;
+			else
+				lastFocus.value = options['EventTarget'];
+		}
+	}
+	
+	$('PRADO_POSTBACK_TARGET').value = options['EventTarget'];
+	$('PRADO_POSTBACK_PARAMETER').value = options['EventParameter'];	
+	Event.fireEvent(form,"submit");
+}
+
+/*
 
 Prado.doPostBack = function(formID, eventTarget, eventParameter, performValidation, validationGroup, actionUrl, trackFocus, clientSubmit)
 {
@@ -114,11 +146,11 @@ Prado.doPostBack = function(formID, eventTarget, eventParameter, performValidati
     if (performValidation)
 	{
 		//canSubmit = Prado.Validation.validate(validationGroup);
-	/*	Prado.Validation.ActiveTarget = theForm;
+	*	Prado.Validation.ActiveTarget = theForm;
 		Prado.Validation.CurrentTargetGroup = null;
 		Prado.Validation.IsGroupValidation = false;
 		canSubmit = Prado.Validation.IsValid(theForm);
-		Logger.debug(canSubmit);*/
+		Logger.debug(canSubmit);*
 		canSubmit = Prado.Validation.IsValid(theForm);
 	}
 	if (canSubmit)
@@ -165,3 +197,4 @@ Prado.doPostBack = function(formID, eventTarget, eventParameter, performValidati
 		theForm.submit();
 	}
 }
+*/

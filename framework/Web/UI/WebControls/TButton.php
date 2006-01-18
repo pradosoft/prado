@@ -76,16 +76,8 @@ class TButton extends TWebControl implements IPostBackEventHandler
 		$writer->addAttribute('value',$this->getText());
 		if($this->getEnabled(true))
 		{
-			$scripts = $this->getPage()->getClientScript();
-			if($scripts->isEndScriptRegistered("TBaseValidator"))
-			{
-				$group = $this->getValidationGroup();
-				$group = strlen($group) ? ",'".$group."'" : '';
-				$clientID=$this->getClientID();
-				//$script = "Prado.Validation.AddTarget('{$uniqueID}'{$group});";
-				$script = "Prado.Validation.AddTarget('{$clientID}'{$group});";
-				$scripts->registerEndScript("{$uniqueID}:target", $script);
-			}
+			if($this->canCauseValidation())
+				$this->getPage()->getClientScript()->registerPostBackControl($this);
 		}
 		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');
@@ -94,26 +86,26 @@ class TButton extends TWebControl implements IPostBackEventHandler
 		parent::addAttributesToRender($writer);
 	}
 
+	protected function canCauseValidation()
+	{
+		$group = $this->getValidationGroup();
+		$hasValidators = $this->getPage()->getValidators($group)->getCount()>0;
+		return $this->getCausesValidation() && $hasValidators;
+	}
+
 	/**
 	 * Returns postback specifications for the button.
 	 * This method is used by framework and control developers.
-	 * @return TPostBackOptions parameters about how the button defines its postback behavior.
+	 * @return array parameters about how the button defines its postback behavior.
 	 */
-	protected function getPostBackOptions()
+	public function getPostBackOptions()
 	{
-		$option=new TPostBackOptions();
-		$group = $this->getValidationGroup();
-		$hasValidators = $this->getPage()->getValidators($group)->getCount()>0;
-		if($this->getCausesValidation() && $hasValidators)
-		{
-			$option->setPerformValidation(true);
-			$option->setValidationGroup($group);
-		}
-		if($this->getPostBackUrl()!=='')
-			$option->setActionUrl($this->getPostBackUrl());
-		$option->setClientSubmit(!$this->getUseSubmitBehavior());
-
-		return $option;
+		$options['CausesValidation'] = $this->getCausesValidation();
+		$options['ValidationGroup'] = $this->getValidationGroup();		
+		$options['PostBackUrl'] = $this->getPostBackUrl();
+		$options['ClientSubmit'] = !$this->getUseSubmitBehavior();
+		
+		return $options;
 	}
 
 	/**

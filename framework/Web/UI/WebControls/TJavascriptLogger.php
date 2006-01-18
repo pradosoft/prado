@@ -54,7 +54,7 @@ class TJavascriptLogger extends TWebControl
 	 */
 	protected function renderContents($writer)
 	{
-		$this->Page->ClientScript->registerPradoScript('logger');
+		$this->Page->ClientScript->registerClientScript('logger');
 		$info = '(<a href="http://gleepglop.com/javascripts/logger/" target="_blank">more info</a>).';
 		$usage = 'Press ALT-D (Or CTRL-D on OS X) to toggle the javascript log console';
 		$writer->write("{$usage} {$info}");

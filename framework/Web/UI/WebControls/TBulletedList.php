@@ -48,6 +48,8 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 	 */
 	private $_postBackOptions;
 
+	private $_currentRenderItemIndex;
+
 	/**
 	 * Raises the postback event.
 	 * This method is required by {@link IPostBackEventHandler} interface.
@@ -274,34 +276,12 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 		switch($this->getDisplayMode())
 		{
 			case 'Text':
-				if($item->getEnabled())
-					$writer->write(THttpUtility::htmlEncode($item->getText()));
-				else
-				{
-					$writer->addAttribute('disabled','disabled');
-					$writer->renderBeginTag('span');
-					$writer->write(THttpUtility::htmlEncode($item->getText()));
-					$writer->renderEndTag();
-				}
-				return;
+				return $this->renderTextItem($writer, $item, $index);
 			case 'HyperLink':
-				if(!$this->_isEnabled || !$item->getEnabled())
-					$writer->addAttribute('disabled','disabled');
-				else
-				{
-					$writer->addAttribute('href',$item->getValue());
-					if(($target=$this->getTarget())!=='')
-						$writer->addAttribute('target',$target);
-				}
+				$this->renderHyperLinkItem($writer, $item, $index);
 				break;
 			case 'LinkButton':
-				if(!$this->_isEnabled || !$item->getEnabled())
-					$writer->addAttribute('disabled','disabled');
-				else
-				{
-					$postback=$this->getPage()->getClientScript()->getPostBackEventReference($this,"$index",$this->_postBackOptions);
-					$writer->addAttribute('href',$postback);
-				}
+				$this->renderLinkButtonItem($writer, $item, $index);
 		}
 		if(($accesskey=$this->getAccessKey())!=='')
 			$writer->addAttribute('accesskey',$accesskey);
@@ -310,22 +290,62 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 		$writer->renderEndTag();
 	}
 
+	protected function renderTextItem($writer, $item, $index)
+	{
+		if($item->getEnabled())
+			$writer->write(THttpUtility::htmlEncode($item->getText()));
+		else
+		{
+			$writer->addAttribute('disabled','disabled');
+			$writer->renderBeginTag('span');
+			$writer->write(THttpUtility::htmlEncode($item->getText()));
+			$writer->renderEndTag();
+		}
+	}
+
+	protected function renderHyperLinkItem($writer, $item, $index)
+	{
+		if(!$this->_isEnabled || !$item->getEnabled())
+			$writer->addAttribute('disabled','disabled');
+		else
+		{
+			$writer->addAttribute('href',$item->getValue());
+			if(($target=$this->getTarget())!=='')
+				$writer->addAttribute('target',$target);
+		}
+	}
+
+	protected function renderLinkButtonItem($writer, $item, $index)
+	{
+		if(!$this->_isEnabled || !$item->getEnabled())
+			$writer->addAttribute('disabled','disabled');
+		else
+		{
+			$this->_currentRenderItemIndex = $index;
+			$this->getPage()->getClientScript()->registerPostbackControl($this);
+			$writer->addAttribute('id', $this->getClientID().$index);
+			$writer->addAttribute('href', "javascript:;//".$this->getClientID().$index);
+		}
+	}
+
 	/**
 	 * @return TPostBackOptions postback options used for linkbuttons.
 	 */
-	protected function getPostBackOptions()
+	public function getPostBackOptions()
 	{
-		$option=new TPostBackOptions();
+		$options['ValidationGroup'] = $this->getValidationGroup();
+		$options['CausesValidation'] = $this->getCausesValidation();
+		$options['EventTarget'] = $this->getUniqueID();
+		$options['EventParameter'] = $this->_currentRenderItemIndex;
+		$options['ID'] = $this->getClientID().$this->_currentRenderItemIndex;
+		return $options;
+	}
+
+	protected function canCauseValidation()
+	{
 		$group = $this->getValidationGroup();
 		$hasValidators = $this->getPage()->getValidators($group)->getCount()>0;
-		if($this->getCausesValidation() && $hasValidators)
-		{
-			$options->setPerformValidation(true);
-			$options->setValidationGroup($this->getValidationGroup());
-			return $options;
-		}
-		else
-			return null;
+		return $this->getCausesValidation() && $hasValidators;
 	}
 
 	/**

@@ -193,7 +193,7 @@ return x;
 Function.prototype.bindEvent=function(){
 var _6=this,args=$A(arguments),object=args.shift();
 return function(_7){
-return _6.call(object,[_7||window.event].concat(args));
+return _6.apply(object,[_7||window.event].concat(args));
 };
 };
 
@@ -1145,17 +1145,17 @@ _9="keydown";
 this._observeAndCache(_8,_9,_10,_11);
 },keyCode:function(e){
 return e.keyCode!=null?e.keyCode:e.charCode;
-},fireEvent:function(el,_14){
+},fireEvent:function(_13,_14){
 if(document.createEvent){
-var evt=document.createEvent("HTMLEvents");
-evt.initEvent(_14,true,true);
-el.dispatchEvent(evt);
+var _15=document.createEvent("HTMLEvents");
+_15.initEvent(_14,true,true);
+_13.dispatchEvent(_15);
 }else{
-if(el.fireEvent){
-el.fireEvent("on"+_14);
-el[_14]();
+if(_13.fireEvent){
+_13.fireEvent("on"+_14);
+_13[_14]();
 }else{
-el[_14]();
+_13[_14]();
 }
 }
 }});
@@ -2177,51 +2177,31 @@ return true;
 }
 return true;
 };
-Prado.doPostBack=function(_13,_14,_15,_16,_17,_18,_19,_20){
-if(typeof (_16)=="undefined"){
-var _16=false;
-var _17="";
-var _18=null;
-var _19=false;
-var _20=true;
+Prado.PostBack=function(_13,_14){
+var _15=$(_14["FormID"]);
+var _16=true;
+if(_14["CausesValidation"]&&Prado.Validation){
+if(Prado.Validation.IsValid(_15)==false){
+return;
 }
-var _21=document.getElementById?document.getElementById(_13):document.forms[_13];
-var _22=true;
-if(_16){
-_22=Prado.Validation.IsValid(_21);
 }
-if(_22){
-if(_18!=null&&(_18.length>0)){
-_21.action=_18;
+if(_14["PostBackUrl"]&&_14["PostBackUrl"].length>0){
+_15.action=_14["PostBackUrl"];
 }
-if(_19){
-var _23=_21.elements["PRADO_LASTFOCUS"];
-if((typeof (_23)!="undefined")&&(_23!=null)){
-var _24=document.activeElement;
-if(typeof (_24)=="undefined"){
-_23.value=_14;
+if(_14["TrackFocus"]){
+var _17=$("PRADO_LASTFOCUS");
+if(_17){
+var _18=document.activeElement;
+if(_18){
+_17.value=_18.id;
 }else{
-if((_24!=null)&&(typeof (_24.id)!="undefined")){
-if(_24.id.length>0){
-_23.value=_24.id;
-}else{
-if(typeof (_24.name)!="undefined"){
-_23.value=_24.name;
+_17.value=_14["EventTarget"];
 }
 }
 }
-}
-}
-}
-if(!_20){
-_22=false;
-}
-}
-if(_22&&(!_21.onsubmit||_21.onsubmit())){
-_21.PRADO_POSTBACK_TARGET.value=_14;
-_21.PRADO_POSTBACK_PARAMETER.value=_15;
-_21.submit();
-}
+$("PRADO_POSTBACK_TARGET").value=_14["EventTarget"];
+$("PRADO_POSTBACK_PARAMETER").value=_14["EventParameter"];
+Event.fireEvent(_15,"submit");
 };
 
 Prado.Element={setValue:function(_1,_2){
@@ -2351,31 +2331,52 @@ _41=new Element.ClassNames(_41);
 _41.set(_42);
 }}});
 
-Prado.Button=Class.create();
-Object.extend(Prado.Button,{buttonFired:false,fireButton:function(e,_2){
-var _3=!this.buttonFired&&Event.keyCode(e)==Event.KEY_RETURN;
-var _4=Event.element(e).targName.toLowerCase()=="textarea";
-if(_3&&!_4){
-var _5=$(_2);
-if(_5){
-Prado.Button.buttonFired=true;
-Event.fireEvent(_5,"click");
-Event.stop(e);
-return false;
+Prado.WebUI=Class.create();
+Prado.WebUI.PostBackControl=Class.create();
+Object.extend(Prado.WebUI.PostBackControl.prototype,{initialize:function(_1){
+this.element=$(_1["ID"]);
+if(_1["CausesValidation"]&&Prado.Validation){
+Prado.Validation.AddTarget(_1["ID"],_1["ValidationGroup"]);
 }
+if(this.onInit){
+this.onInit(_1);
 }
-return true;
 }});
-Prado.TextBox=Class.create();
-Object.extend(Prado.TextBox,{handleReturnKey:function(e){
+Prado.WebUI.createPostBackComponent=function(_2){
+var _3=Class.create();
+Object.extend(_3.prototype,Prado.WebUI.PostBackControl.prototype);
+if(_2){
+Object.extend(_3.prototype,_2);
+}
+return _3;
+};
+Prado.WebUI.TButton=Prado.WebUI.createPostBackComponent();
+Prado.WebUI.ClickableComponent=Prado.WebUI.createPostBackComponent({onInit:function(_4){
+Event.observe(this.element,"click",Prado.PostBack.bindEvent(this,_4));
+}});
+Prado.WebUI.TLinkButton=Prado.WebUI.ClickableComponent;
+Prado.WebUI.TCheckBox=Prado.WebUI.ClickableComponent;
+Prado.WebUI.TRadioButton=Prado.WebUI.ClickableComponent;
+Prado.WebUI.TBulletedList=Prado.WebUI.ClickableComponent;
+Prado.WebUI.TTextBox=Prado.WebUI.createPostBackComponent({onInit:function(_5){
+if(_5["TextMode"]!="MultiLine"){
+Event.observe(this.element,"keypress",this.handleReturnKey.bind(this));
+}
+Event.observe(this.element,"change",Prado.PostBack.bindEvent(this,_5));
+},handleReturnKey:function(e){
 if(Event.keyCode(e)==Event.KEY_RETURN){
-var _6=Event.element(e);
-if(_6){
-Event.fireEvent(_6,"change");
+var _7=Event.element(e);
+if(_7){
+Event.fireEvent(_7,"change");
 Event.stop(e);
 return false;
 }
 }
 return true;
 }});
+Prado.WebUI.TListControl=Prado.WebUI.createPostBackComponent({onInit:function(_8){
+Event.observe(this.element.id,"change",Prado.PostBack.bindEvent(this,_8));
+}});
+Prado.WebUI.TListBox=Prado.WebUI.TListControl;
+Prado.WebUI.TDropDownList=Prado.WebUI.TListControl;
 

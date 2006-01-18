@@ -349,12 +349,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 
 		$page=$this->getPage();
 		if($this->getAutoPostBack() && $page->getClientSupportsJavaScript())
-		{
-			$options = $this->getAutoPostBackOptions();
-			$scripts = $page->getClientScript();
-			$postback = $scripts->getPostBackEventReference($this,'',$options,false);
-			$scripts->registerClientEvent($this, "click", $postback);
-		}
+			$page->getClientScript()->registerPostBackControl($this);
 
 		if(($accesskey=$this->getAccessKey())!=='')
 			$writer->addAttribute('accesskey',$accesskey);
@@ -370,17 +365,12 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	 * Sets the post back options for this textbox.
 	 * @return TPostBackOptions
 	 */
-	protected function getAutoPostBackOptions()
+	public function getPostBackOptions()
 	{
-		$option=new TPostBackOptions();
-		$group = $this->getValidationGroup();
-		$hasValidators = $this->getPage()->getValidators($group)->getCount()>0;
-		if($this->getCausesValidation() && $hasValidators)
-		{
-			$option->setPerformValidation(true);
-			$option->setValidationGroup($group);
-		}
-		$option->setAutoPostBack(true);
+		$options['ValidationGroup'] = $this->getValidationGroup();
+		$options['CausesValidation'] = $this->getCausesValidation();
+		$options['EventTarget'] = $this->getUniqueID();
+		return $options;
 	}
 
 }

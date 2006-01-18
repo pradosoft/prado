@@ -737,8 +737,8 @@ class TPage extends TTemplateControl
 				$cs->registerScrollScript($x,$y);
 			}
 			$cs->renderHiddenFields($writer);
-			$cs->renderArrayDeclarations($writer);
-			$cs->renderExpandoAttributes($writer);
+			//$cs->renderArrayDeclarations($writer);
+			//$cs->renderExpandoAttributes($writer);
 			$cs->renderScriptFiles($writer);
 			$cs->renderEndScripts($writer);
 		}

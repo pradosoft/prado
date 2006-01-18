@@ -1549,6 +1549,13 @@ interface IPostBackEventHandler
 	 * @param string the parameter associated with the postback event
 	 */
 	public function raisePostBackEvent($param);
+	
+	/**
+	 * Return an array of postback options.
+	 * The array of options are serialized to passed to corresponding javascript component code.
+	 * @return array options for javascript postback control
+	 */ 
+	public function getPostBackOptions();
 }
 
 

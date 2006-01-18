@@ -88,12 +88,7 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 			//create unique no-op url references
 			$nop = "javascript:;//".$this->getClientID();
 			$writer->addAttribute('href', $url ? $url : $nop);
-
-			$scripts = $this->getPage()->getClientScript();
-			$options = $this->getPostBackOptions();
-			$postback = $scripts->getPostBackEventReference($this, '', $options, false);
-			$code = "{$postback}; Event.stop(e);";
-			$scripts->registerClientEvent($this, "click", $code);
+			$this->getPage()->getClientScript()->registerPostBackControl($this);
 		}
 		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');
@@ -104,25 +99,14 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 	 * This method is used by framework and control developers.
 	 * @return TPostBackOptions parameters about how the button defines its postback behavior.
 	 */
-	protected function getPostBackOptions()
+	public function getPostBackOptions()
 	{
-		$flag=false;
-
-		$option=new TPostBackOptions();
-		$group = $this->getValidationGroup();
-		$hasValidators = $this->getPage()->getValidators($group)->getCount()>0;
-		if($this->getCausesValidation() && $hasValidators)
-		{
-			$flag=true;
-			$options->setPerformValidation(true);
-			$options->setValidationGroup($this->getValidationGroup());
-		}
-		if($this->getPostBackUrl()!=='')
-		{
-			$flag=true;
-			$options->setActionUrl($this->getPostBackUrl());
-		}
-		return $flag?$options:null;
+		$options['EventTarget'] = $this->getUniqueID();
+		$options['CausesValidation'] = $this->getCausesValidation();
+		$options['ValidationGroup'] = $this->getValidationGroup();		
+		$options['PostBackUrl'] = $this->getPostBackUrl();
+		
+		return $options;
 	}
 
 	/**

@@ -135,17 +135,18 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 			$writer->addAttribute('disabled','disabled');
 		if($this->getAutoPostBack() && $page->getClientSupportsJavaScript())
 		{
-			$writer->addAttribute('id',$this->getClientID());
-			$options = $this->getAutoPostBackOptions();
+			$writer->addAttribute('id',$this->getClientID());			
+			$this->getPage()->getClientScript()->registerPostBackControl($this);
+			/*$options = $this->getAutoPostBackOptions();
 			$scripts = $this->getPage()->getClientScript();
 			$postback = $scripts->getPostBackEventReference($this,'',$options,false);
 			$scripts->registerClientEvent($this, "change", $postback);
-
+			*
 			if($this->getTextMode() !== 'MultiLine')
 			{
 				$code = "if(Prado.TextBox.handleReturnKey(e)==false) Event.stop(e);";
 				$scripts->registerClientEvent($this, "keypress", $code);
-			}
+			}*/
 		}
 		parent::addAttributesToRender($writer);
 	}
@@ -154,8 +155,14 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	 * Sets the post back options for this textbox.
 	 * @return TPostBackOptions
 	 */
-	protected function getAutoPostBackOptions()
+	public function getPostBackOptions()
 	{
+		$options['EventTarget'] = $this->getUniqueID();
+		$options['CausesValidation'] = $this->getCausesValidation();
+		$options['ValidationGroup'] = $this->getValidationGroup();
+		$options['TextMode'] = $this->getTextMode();
+		return $options;
+		/*
 		$option=new TPostBackOptions();
 		$group = $this->getValidationGroup();
 		$hasValidators = $this->getPage()->getValidators($group)->getCount()>0;
@@ -164,7 +171,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 			$option->setPerformValidation(true);
 			$option->setValidationGroup($group);
 		}
-		$option->setAutoPostBack(true);
+		$option->setAutoPostBack(true);*/
 	}
 
 	/**

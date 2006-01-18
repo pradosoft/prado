@@ -459,7 +459,9 @@ framework/Security/TUserManager.php -text
 framework/TApplication.php -text
 framework/TComponent.php -text
 framework/TODO.txt -text
-framework/Web/Javascripts/build.bat -text
+framework/Web/Javascripts/TClientScript.php -text
+framework/Web/Javascripts/TJSON.php -text
+framework/Web/Javascripts/TJavascriptSerializer.php -text
 framework/Web/Javascripts/effects/CHANGELOG -text
 framework/Web/Javascripts/effects/MIT-LICENSE -text
 framework/Web/Javascripts/effects/README -text
@@ -574,6 +576,7 @@ framework/Web/UI/WebControls/TRegularExpressionValidator.php -text
 framework/Web/UI/WebControls/TRepeatInfo.php -text
 framework/Web/UI/WebControls/TRepeater.php -text
 framework/Web/UI/WebControls/TRequiredFieldValidator.php -text
+framework/Web/UI/WebControls/TSafeHtml.php -text
 framework/Web/UI/WebControls/TStatements.php -text
 framework/Web/UI/WebControls/TStyle.php -text
 framework/Web/UI/WebControls/TTable.php -text
@@ -735,6 +738,7 @@ tests/UnitTests/framework/TestSystem/protected/application.xml -text
 tests/UnitTests/framework/TestSystem/protected/data/test.db -text
 tests/UnitTests/framework/TestSystem/protected/pages/config.xml -text
 tests/UnitTests/framework/Web/UI/utControl.php -text
+tests/UnitTests/framework/Web/UI/utJavascriptSerializer.php -text
 tests/UnitTests/framework/Web/utHttpRequest.php -text
 tests/UnitTests/framework/common.php -text
 tests/UnitTests/framework/index.php -text
