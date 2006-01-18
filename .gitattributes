@@ -445,7 +445,6 @@ framework/I18N/core/data/zh_TW.dat -text
 framework/I18N/core/util.php -text
 framework/I18N/schema/mysql.sql -text
 framework/I18N/schema/sqlite.sql -text
-framework/IO/TTextWriter.php -text
 framework/Log/TLogRouter.php -text
 framework/Log/TLogger.php -text
 framework/Security/TAuthManager.php -text
