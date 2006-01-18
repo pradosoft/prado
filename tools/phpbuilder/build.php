@@ -38,7 +38,7 @@ $lines=file(SCRIPT_FILES);
 foreach($lines as $line)
 {
 	$line=trim($line);
-	if($line==='')
+	if($line==='' || $line[0]==='#')
 		continue;
 	echo 'adding '.FRAMEWORK_DIR.'/'.$line."\n";
 	$input=file_get_contents(FRAMEWORK_DIR.'/'.$line);
@@ -50,7 +50,7 @@ foreach($lines as $line)
 	$input=preg_replace('/^(include|include_once)\s*\(.*?;/mu','',$input);
 
 	//remove internal logging
-	$input=preg_replace('/^\s*Prado::coreLog.*\s*;\s*$/mu','',$input);
+	$input=preg_replace('/^\s*Prado::trace.*\s*;\s*$/mu','',$input);
 
 	$output.=$input;
 }
@@ -80,8 +80,8 @@ function strip_comments($source)
     } else {
       // token array
       list($id, $text) = $token;
-      switch ($id) { 
-        case T_COMMENT: 
+      switch ($id) {
+        case T_COMMENT:
         case T_ML_COMMENT: // we've defined this
         case T_DOC_COMMENT: // and this
           // no action on comments

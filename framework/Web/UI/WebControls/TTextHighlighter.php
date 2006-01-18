@@ -14,7 +14,6 @@
  * Using GeSHi and TTextWriter classes
  */
 Prado::using('System.3rdParty.geshi.geshi');
-Prado::using('System.IO.TTextWriter');
 
 /**
  * TTextHighlighter class.
