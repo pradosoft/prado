@@ -75,7 +75,7 @@ where <tt>LocalFileName</tt> refers to a file path that is relative to the direc
 BE VERY CAUTIOUS when you are using asset tags as it may expose to end-users files that you probably do not want them to see.
 </p>
 
-<a name="lot" />
+<a name="lot"></a>
 <h3>Localization Tags</h3>
 <p>
 Localization tags represent localized texts. They are in the following format,
