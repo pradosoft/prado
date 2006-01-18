@@ -13,7 +13,7 @@ body content
 where you may enclose <tt>DynamicPropertyTag</tt> within single or double quotes for better readability.
 </p>
 <p>
-We now introduce the available types of dynamic property tags that may be used in the above. Like dynamic content tags, we have <a href="#et">expression tags</a>, <a href="#dt">databind tags</a>, <a href="#pt">parameter tags</a> and <a href="#at">asset tags</a>. (Note, there is no statement tag here.)
+Like dynamic content tags, we have <a href="#et">expression tags</a>, <a href="#dt">databind tags</a>, <a href="#pt">parameter tags</a>, <a href="#at">asset tags</a> and <a href="#lot">localization tags</a>. (Note, there is no statement tag here.)
 </p>
 
 <a name="et" />
@@ -69,5 +69,14 @@ where <tt>LocalFileName</tt> refers to a file path that is relative to the direc
 <p>
 BE VERY CAUTIOUS when you are using asset tags as it may expose to end-users files that you probably do not want them to see.
 </p>
+
+<a name="lot" />
+<h3>Localization Tags</h3>
+<p>
+Localization tags represent localized texts. They are in the following format,
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;%[string]&gt;
+</com:TTextHighlighter>
+where <tt>string</tt> will be translated to different languages according to the end-user's language preference.
 
 </com:TContent>

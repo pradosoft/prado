@@ -4,7 +4,7 @@
 <a name="dct" />
 <h2>Dynamic Content Tags</h2>
 <p>
-Dynamic content tags are introduced as shortcuts to some commonly used <a href="?page=Configurations.Templates1#ct">component tags</a>. These tags are mainly used to render contents resulted from evaluating some PHP expressions or statements. They include <a href="#et">expression tags</a>, <a href="#st">statement tags</a>, <a href="#dt">databind tags</a>, <a href="#pt">parameter tags</a> and <a href="#at">asset tags</a>.
+Dynamic content tags are introduced as shortcuts to some commonly used <a href="?page=Configurations.Templates1#ct">component tags</a>. These tags are mainly used to render contents resulted from evaluating some PHP expressions or statements. They include <a href="#et">expression tags</a>, <a href="#st">statement tags</a>, <a href="#dt">databind tags</a>, <a href="#pt">parameter tags</a>, <a href="#at">asset tags</a> and <a href="#lot">localization tags</a>.
 </p>
 
 <a name="et" />
@@ -74,5 +74,14 @@ where <tt>LocalFileName</tt> refers to a file path that is relative to the direc
 <p>
 BE VERY CAUTIOUS when you are using asset tags as it may expose to end-users files that you probably do not want them to see.
 </p>
+
+<a name="lot" />
+<h3>Localization Tags</h3>
+<p>
+Localization tags represent localized texts. They are in the following format,
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;%[string]%&gt;
+</com:TTextHighlighter>
+where <tt>string</tt> will be translated to different languages according to the end-user's language preference.
 
 </com:TContent>

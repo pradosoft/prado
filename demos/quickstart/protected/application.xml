@@ -7,9 +7,7 @@
     </module>
   </modules>
   <paths>
-    <alias id="Controls" path="controls" />
-	<alias id="QuickStart" path="." />
-    <using namespace="Controls.*" />
+    <using namespace="Application.controls.*" />
   </paths>
   <services>
     <service id="page" class="TPageService" DefaultPage="GettingStarted.Introduction" />
