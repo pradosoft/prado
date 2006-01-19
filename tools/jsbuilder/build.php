@@ -22,10 +22,12 @@
  * @package Tools
  */
 
-/**
- * The compression command line
- */
+//compress using a script, has more options but lesss robut
+//define('COMPRESS_COMMAND','java -jar '.dirname(__FILE__).'/custom_rhino.jar packer.js %s > %s');
+
+//compress using build-in engine, very robust.
 define('COMPRESS_COMMAND','java -jar '.dirname(__FILE__).'/custom_rhino.jar -c %s > %s');
+
 /**
  * The root directory for storing all source js files
  */

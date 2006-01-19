@@ -2202,6 +2202,9 @@ _17.value=_14["EventTarget"];
 $("PRADO_POSTBACK_TARGET").value=_14["EventTarget"];
 $("PRADO_POSTBACK_PARAMETER").value=_14["EventParameter"];
 Event.fireEvent(_15,"submit");
+if(_14["StopEvent"]){
+Event.stop(_13);
+}
 };
 
 Prado.Element={setValue:function(_1,_2){

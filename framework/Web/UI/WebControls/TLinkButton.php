@@ -86,7 +86,7 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 		{
 			$url = $this->getPostBackUrl();
 			//create unique no-op url references
-			$nop = "javascript:;//".$this->getClientID();
+			$nop = "#".$this->getClientID();
 			$writer->addAttribute('href', $url ? $url : $nop);
 			$this->getPage()->getClientScript()->registerPostBackControl($this);
 		}
@@ -105,6 +105,7 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 		$options['CausesValidation'] = $this->getCausesValidation();
 		$options['ValidationGroup'] = $this->getValidationGroup();		
 		$options['PostBackUrl'] = $this->getPostBackUrl();
+		$options['StopEvent'] = true;
 		
 		return $options;
 	}
