@@ -150,11 +150,11 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	protected function onPreRender($param)
 	{
 		$scripts = $this->getPage()->getClientScript();
-		$scriptKey = "TBaseValidator";
+		$formID=$this->getPage()->getForm()->getClientID();
+		$scriptKey = "TBaseValidator:$formID";
 		if($this->getEnableClientScript() && !$scripts->isEndScriptRegistered($scriptKey))
 		{
-			$scripts->registerClientScript('validator');
-			$formID=$this->getPage()->getForm()->getClientID();
+			$scripts->registerClientScript('validator');			
 			$js = "Prado.Validation.AddForm('$formID');";
 			$scripts->registerEndScript($scriptKey, $js);
 		}
@@ -168,7 +168,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	protected function registerClientScriptValidator()
 	{
-		if($this->getEnabled(true) && $this->getEnableClientScript())
+		if($this->getEnabled(true))
 		{
 			$class = get_class($this);
 			$scriptKey = "prado:".$this->getClientID();
