@@ -142,7 +142,9 @@ List box's behavior upon postback:
 Auto postback list box:
 </td>
 <td class="sampleaction">
-<com:TListBox AutoPostBack="true" SelectionMode="Multiple" SelectedIndexChanged="multiSelectionChanged">
+<com:TListBox AutoPostBack="true"
+	SelectionMode="Multiple"
+	SelectedIndexChanged="multiSelectionChanged">
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
   <com:TListItem Value="value 3" Text="item 3" />
@@ -154,4 +156,52 @@ Auto postback list box:
 
 </table>
 
+<h2>List Boxes with DataBinding</h2>
+<i>Use Shift + Mouse Click to change selection</i>
+<br/>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Databind to an integer-indexed array:
+</td>
+<td class="sampleaction">
+<com:TListBox ID="DBListBox1"
+	AutoPostBack="true"
+	SelectionMode="Multiple"
+	SelectedIndexChanged="DBListBox1Changed" />
+<com:TLabel ID="DBListBox1Result" ForeColor="red" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Databind to an associative array:
+</td>
+<td class="sampleaction">
+<com:TListBox ID="DBListBox2"
+	AutoPostBack="true"
+	SelectionMode="Multiple"
+	SelectedIndexChanged="DBListBox2Changed" />
+<com:TLabel ID="DBListBox2Result" ForeColor="red" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Databind with DataTextField and DataValueField specified:
+</td>
+<td class="sampleaction">
+<com:TListBox ID="DBListBox3"
+	AutoPostBack="true"
+	SelectionMode="Multiple"
+	DataTextField="name"
+	DataValueField="id"
+	SelectedIndexChanged="DBListBox3Changed" />
+<com:TLabel ID="DBListBox3Result" ForeColor="red" />
+</td>
+</tr>
+
+</table>
 </com:TContent>

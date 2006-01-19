@@ -334,7 +334,7 @@ abstract class TDataBoundControl extends TWebControl
 			return $list;
 		}
 		else if(is_array($value))
-			return new TList($value);
+			return new TMap($value);
 		else if(($value instanceof Traversable) || $value===null)
 			return $value;
 		else

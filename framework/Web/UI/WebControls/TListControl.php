@@ -43,11 +43,11 @@ Prado::using('System.Web.UI.WebControls.TDataBoundControl');
  * The latter two are covered in {@link TDataBoundControl}. To specify items via
  * template, using the following template syntax:
  * <code>
- * &lt;com:TListControl&gt;
- *   &lt;com:TListItem Value="xxx" Text="yyy" &gt;
- *   &lt;com:TListItem Value="xxx" Text="yyy" Selected="true" &gt;
- *   &lt;com:TListItem Value="xxx" Text="yyy" &gt;
- * &lt;/com:TListControl&gt;
+ * <com:TListControl>
+ *   <com:TListItem Value="xxx" Text="yyy" >
+ *   <com:TListItem Value="xxx" Text="yyy" Selected="true" >
+ *   <com:TListItem Value="xxx" Text="yyy" >
+ * </com:TListControl>
  * </code>
  *
  * When {@link setDataSource DataSource} or {@link setDataSourceID DataSourceID}
@@ -167,16 +167,18 @@ abstract class TListControl extends TDataBoundControl
 		if($valueField==='')
 			$valueField=1;
 		$textFormat=$this->getDataTextFormatString();
-		foreach($data as $object)
+		foreach($data as $key=>$object)
 		{
 			$item=new TListItem;
-			if(isset($object[$textField]))
+			if(!is_string($object) && isset($object[$textField]))
 				$text=$object[$textField];
 			else
 				$text=TPropertyValue::ensureString($object);
 			$item->setText($textFormat===''?$text:sprintf($textFormat,$text));
-			if(isset($object[$valueField]))
+			if(!is_string($object) && isset($object[$valueField]))
 				$item->setValue($object[$valueField]);
+			else if(!is_integer($key))
+				$item->setValue($key);
 			$items->add($item);
 		}
 	}

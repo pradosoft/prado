@@ -2,50 +2,77 @@
 
 class Home extends TPage
 {
+	public function onLoad($param)
+	{
+		parent::onLoad($param);
+		if(!$this->IsPostBack)
+		{
+			$data=array('item 1','item 2','item 3','item 4');
+			$this->DBListBox1->DataSource=$data;
+			$this->DBListBox1->dataBind();
+
+			$data=array('key 1'=>'item 1','key 2'=>'item 2',
+						'key 3'=>'item 3','key 4'=>'item 4');
+			$this->DBListBox2->DataSource=$data;
+			$this->DBListBox2->dataBind();
+
+			$data=array(
+				array('id'=>'001','name'=>'John','age'=>31),
+				array('id'=>'002','name'=>'Mary','age'=>30),
+				array('id'=>'003','name'=>'Cary','age'=>20));
+			$this->DBListBox3->DataSource=$data;
+			$this->DBListBox3->dataBind();
+		}
+	}
+
+	public function DBListBox1Changed($sender,$param)
+	{
+		$this->collectSelectionResult($sender,$this->DBListBox1Result);
+	}
+
+	public function DBListBox2Changed($sender,$param)
+	{
+		$this->collectSelectionResult($sender,$this->DBListBox2Result);
+	}
+
+	public function DBListBox3Changed($sender,$param)
+	{
+		$this->collectSelectionResult($sender,$this->DBListBox3Result);
+	}
+
+	protected function collectSelectionResult($input,$output)
+	{
+		$indices=$input->SelectedIndices;
+		$result='';
+		foreach($indices as $index)
+		{
+			$item=$input->Items[$index];
+			$result.="(Index: $index, Value: $item->Value, Text: $item->Text)\n";
+		}
+		if($result==='')
+			$output->Text='Your selection is empty.';
+		else
+			$output->Text='Your selection is: '.$result;
+	}
+
 	public function selectionChanged($sender,$param)
 	{
-		$index=$sender->SelectedIndex;
-		$value=$sender->SelectedValue;
-		$text=$sender->SelectedItem->Text;
-		$this->SelectionResult->Text="Your selection is (Index: $index, Value: $value, Text: $text).";
+		$this->collectSelectionResult($sender,$this->SelectionResult);
 	}
 
 	public function buttonClicked($sender,$param)
 	{
-		$index=$this->ListBox1->SelectedIndex;
-		$value=$this->ListBox1->SelectedValue;
-		$text=$this->ListBox1->SelectedItem->Text;
-		$this->SelectionResult2->Text="Your selection is (Index: $index, Value: $value, Text: $text).";
+		$this->collectSelectionResult($this->ListBox1,$this->SelectionResult2);
 	}
 
 	public function multiSelectionChanged($sender,$param)
 	{
-		$indices=$sender->SelectedIndices;
-		$result='';
-		foreach($indices as $index)
-		{
-			$item=$sender->Items[$index];
-			$result.="(Index: $index, Value: $item->Value, Text: $item->Text)\n";
-		}
-		if($result==='')
-			$this->MultiSelectionResult->Text='Your selection is empty.';
-		else
-			$this->MultiSelectionResult->Text='Your selection is: '.$result;
+		$this->collectSelectionResult($sender,$this->MultiSelectionResult);
 	}
 
 	public function buttonClicked2($sender,$param)
 	{
-		$indices=$this->ListBox2->SelectedIndices;
-		$result='';
-		foreach($indices as $index)
-		{
-			$item=$this->ListBox2->Items[$index];
-			$result.="(Index: $index, Value: $item->Value, Text: $item->Text)\n";
-		}
-		if($result==='')
-			$this->MultiSelectionResult2->Text='Your selection is empty.';
-		else
-			$this->MultiSelectionResult2->Text='Your selection is: '.$result;
+		$this->collectSelectionResult($this->ListBox2,$this->MultiSelectionResult2);
 	}
 }
 
