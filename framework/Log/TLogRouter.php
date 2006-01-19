@@ -68,6 +68,7 @@ class TLogRouter extends TModule
 				throw new TConfigurationException('logrouter_configfile_invalid',$this->_configFile);
 		}
 		$this->loadConfig($config);
+		//$this->getApplication()->attachEventHandler('Error',array($this,'collectLogs'));
 		$this->getApplication()->attachEventHandler('EndRequest',array($this,'collectLogs'));
 	}
 
@@ -317,7 +318,7 @@ class TFileLogRoute extends TLogRoute
 	/**
 	 * @var integer maximum log file size
 	 */
-	private $_maxFileSize=1024; // in KB
+	private $_maxFileSize=512; // in KB
 	/**
 	 * @var integer number of log files used for rotation
 	 */

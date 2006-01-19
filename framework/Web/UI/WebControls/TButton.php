@@ -101,10 +101,10 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	public function getPostBackOptions()
 	{
 		$options['CausesValidation'] = $this->getCausesValidation();
-		$options['ValidationGroup'] = $this->getValidationGroup();		
+		$options['ValidationGroup'] = $this->getValidationGroup();
 		$options['PostBackUrl'] = $this->getPostBackUrl();
 		$options['ClientSubmit'] = !$this->getUseSubmitBehavior();
-		
+
 		return $options;
 	}
 

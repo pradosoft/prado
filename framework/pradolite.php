@@ -5496,18 +5496,10 @@ protected function addAttributesToRender($writer)
 		$writer->addAttribute('action',$this->getRequest()->getRequestURI()); 
 		if(($enctype=$this->getEnctype())!=='') 
 			$writer->addAttribute('enctype',$enctype); 
-		$attributes->remove('name'); 
-		$attributes->remove('method'); 
 		$attributes->remove('action');
 $page=$this->getPage();
 if($this->getDefaultButton()!=='') 
-		{			$control=$this->findControl($this->getDefaultButton()); 
-			if(!$control) 
-				$control=$page->findControl($this->getDefaultButton()); 
-			if($control instanceof IButtonControl) 
-				$page->getClientScript()->registerDefaultButtonScript($control,$writer,false); 
-			else 
-				throw new Exception('Only IButtonControl can be default button.'); 
+		{		 
 		} 
 		$writer->addAttribute('id',$this->getClientID()); 
 		foreach($attributes as $name=>$value) 
@@ -5554,14 +5546,6 @@ public function getEnctype()
 public function setEnctype($value) 
 	{ 
 		$this->setViewState('Enctype',$value,''); 
-	}
-public function getSubmitDisabledControls() 
-	{ 
-		return $this->getViewState('SubmitDisabledControls',false); 
-	}
-public function setSubmitDisabledControls($value) 
-	{ 
-		$this->setViewState('SubmitDisabledControls',TPropertyValue::ensureBoolean($value),false); 
 	}
 public function getName() 
 	{ 
@@ -7785,7 +7769,7 @@ protected function addAttributesToRender($writer)
 		if(!$this->getEnabled(true) && $this->getEnabled())  			$writer->addAttribute('disabled','disabled'); 
 		if($this->getAutoPostBack() && $page->getClientSupportsJavaScript()) 
 		{ 
-			$writer->addAttribute('id',$this->getClientID());			 
+			$writer->addAttribute('id',$this->getClientID()); 
 			$this->getPage()->getClientScript()->registerPostBackControl($this);
 } 
 		parent::addAttributesToRender($writer); 
@@ -10359,7 +10343,7 @@ parent::addAttributesToRender($writer);
 if($this->getEnabled(true)) 
 		{ 
 			$url = $this->getPostBackUrl(); 
-						$nop = "javascript:;//".$this->getClientID(); 
+						$nop = "#".$this->getClientID(); 
 			$writer->addAttribute('href', $url ? $url : $nop); 
 			$this->getPage()->getClientScript()->registerPostBackControl($this); 
 		} 
@@ -10370,7 +10354,8 @@ public function getPostBackOptions()
 		$options['EventTarget'] = $this->getUniqueID(); 
 		$options['CausesValidation'] = $this->getCausesValidation(); 
 		$options['ValidationGroup'] = $this->getValidationGroup();		 
-		$options['PostBackUrl'] = $this->getPostBackUrl();
+		$options['PostBackUrl'] = $this->getPostBackUrl(); 
+		$options['StopEvent'] = true;
 return $options; 
 	}
 protected function renderContents($writer) 
@@ -10449,7 +10434,7 @@ public function onCommand($param)
 abstract class TBaseValidator extends TLabel implements IValidator
 {
 private $_isValid=true;
-	private $_registered=false;
+private $_registered=false;
 public function __construct()
 	{
 		parent::__construct();
@@ -10493,21 +10478,20 @@ protected function getClientScriptOptions()
 protected function onPreRender($param)
 	{
 		$scripts = $this->getPage()->getClientScript();
-		$scriptKey = "TBaseValidator";
+		$formID=$this->getPage()->getForm()->getClientID();
+		$scriptKey = "TBaseValidator:$formID";
 		if($this->getEnableClientScript() && !$scripts->isEndScriptRegistered($scriptKey))
 		{
-			$scripts->registerClientScript('validator');
-			$formID=$this->getPage()->getForm()->getClientID();
-			$js = "Prado.Validation.AddForm('$formID');";
-			$scripts->registerEndScript($scriptKey, $js);
+			$scripts->registerClientScript('validator');			
+			$scripts->registerEndScript($scriptKey, "Prado.Validation.AddForm('$formID');");
 		}
 		if($this->getEnableClientScript())
-			$this->renderClientScriptValidator();
+			$this->registerClientScriptValidator();
 		parent::onPreRender($param);
 	}
-protected function renderClientScriptValidator()
+protected function registerClientScriptValidator()
 	{
-		if($this->getEnabled(true) && $this->getEnableClientScript())
+		if($this->getEnabled(true))
 		{
 			$class = get_class($this);
 			$scriptKey = "prado:".$this->getClientID();
@@ -10547,12 +10531,12 @@ public function setEnableClientScript($value)
 	}
 public function getErrorMessage()
 	{
-		return $this->getText();
-			}
+		return $this->getViewState('ErrorMessage','');
+	}
 public function setErrorMessage($value)
 	{
-		$this->setText($value);
-			}
+		$this->setViewState('ErrorMessage',$value,'');
+	}
 public function getControlToValidate()
 	{
 		return $this->getViewState('ControlToValidate','');
@@ -10597,10 +10581,10 @@ public function setIsValid($value)
 	}
 protected function getValidationTarget()
 	{
-		if(($id=$this->getControlToValidate())!=='')
-			return $this->findControl($id);
+		if(($id=$this->getControlToValidate())!=='' && ($control=$this->findControl($id))!==null)
+			return $control;
 		else
-			return null;
+			throw new TConfigurationException('basevalidator_controltovalidate_invalid');
 	}
 protected function getValidationValue($control)
 	{
@@ -10621,12 +10605,21 @@ public function validate()
 		return $this->getIsValid();
 	}
 abstract protected function evaluateIsValid();
+protected function renderContents($writer)
+	{
+		if(($text=$this->getText())!=='')
+			$writer->write($text);
+		else if(($text=$this->getErrorMessage())!=='')
+			$writer->write($text);
+		else
+			parent::renderContents($writer);
+	}
 }
 ?><?php
 
 class TRequiredFieldValidator extends TBaseValidator 
-{ 
-	public function getInitialValue() 
+{
+public function getInitialValue() 
 	{ 
 		$this->getViewState('InitialValue',''); 
 	}
@@ -10636,13 +10629,8 @@ public function setInitialValue($value)
 	}
 protected function evaluateIsValid() 
 	{ 
-		if(($control=$this->getValidationTarget())!==null) 
-		{ 
-			$value=$this->getValidationValue($control); 
-			return trim($value)!==trim($this->getInitialValue()); 
-		} 
-		else 
-			throw new TInvalidDataValueException('requiredfieldvalidator_controltovalidate_invalid'); 
+		$value=$this->getValidationValue($this->getValidationTarget()); 
+		return trim($value)!==trim($this->getInitialValue()); 
 	}
 protected function getClientScriptOptions() 
 	{ 
@@ -10697,9 +10685,7 @@ public function getDateFormat()
 	}
 public function evaluateIsValid() 
 	{ 
-		if(($control=$this->getValidationTarget())===null) 
-			throw new TInvalidDataValueException('comparevalidator_controltovalidate_invalid'); 
-		if(($value=$this->getValidationValue($control))==='') 
+		if(($value=$this->getValidationValue($this->getValidationTarget()))==='') 
 			return true;
 if($this->getOperator()==='DataTypeCheck') 
 			return $this->evaluateDataTypeCheck($value);
@@ -10811,17 +10797,12 @@ public function setRegularExpression($value)
 	}
 public function evaluateIsValid() 
 	{ 
-		if(($control=$this->getValidationTarget())!==null) 
-		{ 
-			if(($value=$this->getValidationValue($control))==='') 
-				return true; 
-			if(($expression=$this->getRegularExpression())!=='') 
-				return preg_match("/^$expression\$/",$value); 
-			else 
-				return true; 
-		} 
+		if(($value=$this->getValidationValue($this->getValidationTarget()))==='') 
+			return true; 
+		if(($expression=$this->getRegularExpression())!=='') 
+			return preg_match("/^$expression\$/",$value); 
 		else 
-			throw new TInvalidDataValueException('regularexpressionvalidator_controltovalidate_invalid'); 
+			return true; 
 	}
 protected function getClientScriptOptions() 
 	{ 
@@ -10833,8 +10814,8 @@ protected function getClientScriptOptions()
 ?><?php
 
 class TEmailAddressValidator extends TRegularExpressionValidator 
-{ 
-	const EMAIL_REGEXP="\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
+{
+const EMAIL_REGEXP="\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
 public function getRegularExpression() 
 	{ 
 		$regex=parent::getRegularExpression(); 
@@ -10873,16 +10854,8 @@ public function setClientValidationFunction($value)
 	}
 public function evaluateIsValid() 
 	{ 
-		if(($id=$this->getControlToValidate())!=='') 
-		{ 
-			if(($control=$this->findControl($id))!==null) 
-				$value=$this->getValidationValue($control); 
-			else 
-				throw new TInvalidDataValueException('customvalidator_controltovalidate_invalid'); 
-			return $this->onServerValidate($value); 
-		} 
-		else 
-			throw new TInvalidDataValueException('customvalidator_controltovalidate_required'); 
+		$value=$this->getValidationValue($this->getValidationTarget()); 
+		return $this->onServerValidate($value); 
 	}
 public function onServerValidate($value) 
 	{ 
@@ -10923,15 +10896,6 @@ public function setIsValid($value)
 ?><?php
 class TValidationSummary extends TWebControl 
 {
-protected static $currentGroup;
-public static function setCurrentGroup($group) 
-	{ 
-		self::$currentGroup = $group; 
-	}
-public static function getCurrentGroup() 
-	{ 
-		return self::$currentGroup; 
-	}
 public function getHeaderText() 
 	{ 
 		return $this->getViewState('HeaderText',''); 
@@ -10995,21 +10959,6 @@ public function getValidationGroup()
 public function setValidationGroup($value) 
 	{ 
 		$this->setViewState('ValidationGroup',$value,''); 
-	}
-protected function getValidators() 
-	{ 
-		$groupID = $this->getGroup(); 
-		if(empty($groupID)) return $this->getPage()->getValidators();
-$parent = $this->getParent(); 
-		$group = $parent->findObject($groupID);
-$validators = array();
-foreach($group->getMembers() as $member) 
-		{ 
-			$control = $parent->findObject($member); 
-			if(!is_null($control)) 
-				$validators[] = $control; 
-		} 
-		return $validators; 
 	}
 protected function addAttributesToRender($writer) 
 	{ 
@@ -11094,11 +11043,13 @@ protected function renderBulletList($writer)
 		$header=$this->getHeaderText(); 
 		$messages=$this->getErrorMessages(); 
 		$content = $header; 
-		$show = count($messages) > 0; 
-		if($show) $content .= "<ul>\n"; 
-		foreach($messages as $message) 
-			$content.= '<li>'.$message."</li>\n"; 
-		if($show) $content .= "</ul>\n"; 
+		if(count($messages)>0) 
+		{ 
+			$content .= "<ul>\n"; 
+			foreach($messages as $message) 
+				$content.= '<li>'.$message."</li>\n"; 
+			$content .= "</ul>\n"; 
+		} 
 		$writer->write($content); 
 	} 
 }
@@ -12765,6 +12716,54 @@ public function valid()
 	} 
 }
 ?><?php
+class TDummyDataSource extends TComponent implements IteratorAggregate 
+{ 
+	private $_count;
+public function __construct($count) 
+	{ 
+		$this->_count=$count; 
+	}
+public function getCount() 
+	{ 
+		return $this->_count; 
+	}
+public function getIterator() 
+	{ 
+		return new TDummyDataSourceIterator($this->_count); 
+	} 
+}
+class TDummyDataSourceIterator implements Iterator 
+{ 
+	private $_index; 
+	private $_count;
+public function __construct($count) 
+	{ 
+		$this->_count=$count; 
+		$this->_index=0; 
+	}
+public function rewind() 
+	{ 
+		$this->_index=0; 
+	}
+public function key() 
+	{ 
+		return $this->_index; 
+	}
+public function current() 
+	{ 
+		return null; 
+	}
+public function next() 
+	{ 
+		$this->_index++; 
+	}
+public function valid() 
+	{ 
+		return $this->_index<$this->_count; 
+	} 
+}
+?><?php
+ 
  
  
 
@@ -13136,11 +13135,30 @@ protected function onSaveState($param)
 			$this->setViewState('ItemCount',$this->_items->getCount(),0); 
 		else 
 			$this->clearViewState('ItemCount'); 
+		if($this->_autoColumns) 
+		{ 
+			$state=array(); 
+			foreach($this->_autoColumns as $column) 
+				$state[]=$column->saveState(); 
+			$this->setViewState('ColumnState',$state,array()); 
+		} 
+		else 
+			$this->clearViewState('ColumnState'); 
 	}
 protected function onLoadState($param) 
 	{ 
 		if(!$this->getIsDataBound()) 
-			$this->restoreItemsFromViewState(); 
+		{ 
+			$state=$this->getViewState('ColumnState',array()); 
+			$columns=$this->getAutoColumns(); 
+			foreach($state as $st) 
+			{ 
+				$column=new TBoundColumn; 
+				$column->loadState($st); 
+				$columns->add($column); 
+			} 
+			$this->restoreGridFromViewState(); 
+		} 
 		$this->clearViewState('ItemCount'); 
 	}
 private function createPagedDataSource() 
@@ -13163,16 +13181,26 @@ public function reset()
 protected function restoreGridFromViewState() 
 	{ 
 		$this->reset(); 
+		if(($itemCount=$this->getViewState('ItemCount',0))<=0) 
+			return; 
 		$this->_pagedDataSource=$ds=$this->createPagedDataSource(); 
-						if($columns->getCount()>0) 
+		if($ds->getAllowCustomPaging()) 
+			$ds->setDataSource(new TDummyDataSource($itemCount)); 
+		else 
+			$ds->setDataSource(new TDummyDataSource($this->getViewState('DataSourceCount',0));
+$columns=new TList($this->getColumns()); 
+		$columns->mergeWith($this->_autoColumns);
+if($columns->getCount()>0) 
 		{ 
 			foreach($columns as $column) 
 				$column->initialize(); 
-			$allowPaging=$ds->getAllowPaging(); 
 			if($allowPaging) 
-													$selectedIndex=$this->getSelectedItemIndex(); 
+				$this->createPager(-1,-1,$columnCount,$ds); 
+			$this->createItemInternal(-1,-1,'Header',false,null,$columns); 
+			$selectedIndex=$this->getSelectedItemIndex(); 
 			$editIndex=$this->getEditItemIndex(); 
 			$index=0; 
+			$dsIndex=$ds->getAllowPaging()?$ds->getFirstIndexInPage():0; 
 			foreach($ds as $data) 
 			{ 
 				if($index===$editIndex) 
@@ -13183,9 +13211,14 @@ protected function restoreGridFromViewState()
 					$itemType='AlternatingItem'; 
 				else 
 					$itemType='Item'; 
-								$index++; 
+				$items->add($this->createItemInternal($index,$dsIndex,$itemType,false,null,$columns)); 
+				$index++; 
+				$dsIndex++; 
 			} 
-								} 
+			$this->createItemInternal(-1,-1,'Footer',false,null,$columns); 
+			if($allowPaging) 
+				$this->createPager(-1,-1,$columnCount,$ds); 
+		} 
 		$this->_pagedDataSource=null; 
 	}
 protected function performDataBinding($data) 
@@ -13199,8 +13232,10 @@ protected function performDataBinding($data)
 		$allowPaging=$ds->getAllowPaging(); 
 		if($allowPaging && $ds->getCurrentPageIndex()>=$ds->getPageCount()) 
 			throw new TInvalidDataValueException('datagrid_currentpageindex_invalid'); 
-		$columns=$this->getAllColumns($ds); 
-		$items=$this->getItems();
+				$columns=new TList($this->getColumns()); 
+		$autoColumns=$this->createAutoColumns($ds); 
+		$columns->mergeWith($autoColumns);
+$items=$this->getItems();
 if(($columnCount=$columns->getCount())>0) 
 		{ 
 			foreach($columns as $column) 
@@ -13411,15 +13446,9 @@ if($pageCount>$endPageIndex)
 			$controls->add($button); 
 		} 
 	}
-protected function getAllColumns($dataSource) 
-	{ 
-		$list=new TList($this->getColumns()); 
-		$list->mergeWith($this->createAutoColumns($dataSource)); 
-		return $list; 
-	}
 protected function createAutoColumns($dataSource) 
 	{ 
-		if(!$dataSource || $dataSource->getCount()<=0) 
+		if(!$dataSource) 
 			return null; 
 		$autoColumns=$this->getAutoColumns(); 
 		$autoColumns->clear(); 
@@ -13448,6 +13477,100 @@ protected function createAutoColumns($dataSource)
 			break; 
 		} 
 		return $autoColumns; 
+	}
+protected function applyItemStyles() 
+	{ 
+		$headerStyle=$this->getViewState('HeaderStyle',null); 
+		$footerStyle=$this->getViewState('FooterStyle',null); 
+		$pagerStyle=$this->getViewState('PagerStyle',null); 
+		$separatorStyle=$this->getViewState('SeparatorStyle',null); 
+		$itemStyle=$this->getViewState('ItemStyle',null); 
+		$alternatingItemStyle=$this->getViewState('AlternatingItemStyle',null); 
+		if($itemStyle!==null) 
+		{ 
+			if($alternatingItemStyle===null) 
+				$alternatingItemStyle=new TTableItemStyle; 
+			$alternatingItemStyle->mergeWith($itemStyle); 
+		} 
+		$selectedItemStyle=$this->getViewState('SelectedItemStyle',null); 
+		if($alternatingItemStyle!==null) 
+		{ 
+			if($selectedItemStyle===null) 
+				$selectedItemStyle=new TTableItemStyle; 
+			$selectedItemStyle->mergeWith($alternatingItemStyle); 
+		} 
+		$editItemStyle=$this->getViewState('EditItemStyle',null); 
+		if($selectedItemStyle!==null) 
+		{ 
+			if($editItemStyle===null) 
+				$editItemStyle=new TTableItemStyle; 
+			$editItemStyle->mergeWith($selectedItemStyle); 
+		}
+foreach($this->getControls() as $index=>$control) 
+		{ 
+			switch($control->getItemType()) 
+			{ 
+				case 'Header': 
+					if($headerStyle) 
+						$control->getStyle()->mergeWith($headerStyle); 
+					if(!$this->getShowHeader()) 
+						$control->setVisible(false); 
+					break; 
+				case 'Footer': 
+					if($footerStyle) 
+						$control->getStyle()->mergeWith($footerStyle); 
+					if(!$this->getShowFooter()) 
+						$control->setVisible(false); 
+					break; 
+				case 'Separator': 
+					if($separatorStyle) 
+						$control->getStyle()->mergeWith($separatorStyle); 
+					break; 
+				case 'Item': 
+					if($itemStyle) 
+						$control->getStyle()->mergeWith($itemStyle); 
+					break; 
+				case 'AlternatingItem': 
+					if($alternatingItemStyle) 
+						$control->getStyle()->mergeWith($alternatingItemStyle); 
+					break; 
+				case 'SelectedItem': 
+					if($selectedItemStyle) 
+						$control->getStyle()->mergeWith($selectedItemStyle); 
+					break; 
+				case 'EditItem': 
+					if($editItemStyle) 
+						$control->getStyle()->mergeWith($editItemStyle); 
+					break; 
+				case 'Pager': 
+					if($pagerStyle) 
+					{ 
+						$control->getStyle()->mergeWith($pagerStyle); 
+						$mode=$pagerStyle->getMode(); 
+						if($index===0) 
+						{ 
+							if($mode==='Bottom') 
+								$control->setVisible(false); 
+						} 
+						else 
+						{ 
+							if($mode==='Top') 
+								$control->setVisible(false); 
+						} 
+					} 
+					break; 
+				default: 
+					break; 
+			} 
+		} 
+	}
+protected function renderContents($writer) 
+	{ 
+		if($this->getHasControls()) 
+		{ 
+			$this->applyItemStyles(); 
+			parent::renderContents($writer); 
+		} 
 	} 
 }
 class TDataGridItemEventParameter extends TEventParameter 

@@ -7,6 +7,10 @@
     <module id="cache" class="System.Data.TSqliteCache" />
     -->
     <module id="session" class="THttpSession" />
+    <module id="log" class="System.Log.TLogRouter">
+      <route class="TBrowserLogRoute" Categories="System.Web.UI.TPage" />
+      <route class="TFileLogRoute" Categories="System.Web.UI.TPage" />
+    </module>
   </modules>
   <services>
     <!-- page service -->
@@ -18,7 +22,7 @@
           <user name="demo" password="demo" />
         </module>
         <!-- auth manager module -->
-        <module id="auth" class="System.Security.TAuthManager" UserManager="users" LoginPage="Login" />
+        <module id="auth" class="System.Security.TAuthManager" UserManager="users" LoginPage="UserLogin" />
       </modules>
     </service>
   </services>
