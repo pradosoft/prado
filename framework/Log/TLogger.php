@@ -108,7 +108,7 @@ class TLogger extends TComponent
 	{
 		foreach($this->_categories as $category)
 		{
-			if(strpos($value[2],$category)===0)
+			if($value[2]===$category || strpos($value[2],$category.'.')===0)
 				return $value;
 		}
 		return false;
