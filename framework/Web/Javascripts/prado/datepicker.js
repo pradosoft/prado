@@ -97,7 +97,7 @@ Prado.Calendar.prototype =
 		this.minimalDaysInFirstWeek	= 4;
 		this.currentDate = new Date();
 		this.selectedDate = null;
-		this.className = "Prado_Calendar";
+		this.className = "TDatePicker";
 		
 		//which element to trigger to show the calendar
 		this.trigger = this.attr.trigger ? $(this.attr.trigger) : this.control;
@@ -109,6 +109,7 @@ Prado.Calendar.prototype =
 		
 		//create it
 		this.create();	
+		//alert("ok");
 		this.hookEvents();	
 	},
 	
@@ -311,7 +312,6 @@ Prado.Calendar.prototype =
 		Event.observe(this._nextMonth, "click", this.nextMonth.bind(this));
 		Event.observe(this._todayButton, "click", this.selectToday.bind(this));
 		Event.observe(this._clearButton, "click", this.clearSelection.bind(this));
-		
 		Event.observe(this._monthSelect, "change", this.monthSelect.bind(this));
 		Event.observe(this._yearSelect, "change", this.yearSelect.bind(this));
 
@@ -438,9 +438,9 @@ Prado.Calendar.prototype =
 		if (e == null) e = document.parentWindow.event;
 		var n = - e.wheelDelta / 120;
 		var d = new Date(this.currentDate);
-		var m = this.getMonth() + n;
+		var m = d.getMonth() + n;
 		this.setMonth(m);
-		this.setCurrentDate(d);
+		//this.setCurrentDate(d);
 			
 		return false;
 	},
@@ -452,7 +452,7 @@ Prado.Calendar.prototype =
 	
 	formatDate : function()
 	{
-		return Prado.Calendar.Util.FormatDate(this.selectedDate, this.format);
+		return this.selectedDate.SimpleFormat(this.format);
 	},
 
 	setCurrentDate : function(date) 
@@ -530,7 +530,7 @@ Prado.Calendar.prototype =
 			this._calDiv.style.top = pos[1] + "px";
 			this._calDiv.style.left = pos[0] + "px";
 			Event.observe(document.body, "click", this.hideOnClick.bind(this));
-			var date = Prado.Calendar.Util.ParseDate(Form.Element.getValue(this.control), this.format);
+			var date = Date.SimpleParse(Form.Element.getValue(this.control), this.format);
 			if(!isNull(date))
 			{
 				this.selectedDate = date;
@@ -574,10 +574,10 @@ Prado.Calendar.prototype =
 
 		// Calculate the number of days in the month for the selected date
 		var date = this.currentDate;
-		var today = Util.ISODate(new Date());
+		var today = (new Date()).toISODate();
 		
-		var selected = isNull(this.selectedDate) ? "" : Util.ISODate(this.selectedDate);
-		var current = Util.ISODate(date);
+		var selected = isNull(this.selectedDate) ? "" : this.selectedDate.toISODate();
+		var current = date.toISODate();
 		var d1 = new Date(date.getFullYear(), date.getMonth(), 1);
 		var d2 = new Date(date.getFullYear(), date.getMonth()+1, 1);
 		var monthLength = Math.round((d2 - d1) / (24 * 60 * 60 * 1000));
@@ -601,13 +601,13 @@ Prado.Calendar.prototype =
 			slot.value = i;
 			slot.data.data = i;
 			slotNode.className = "date";
-			if (Util.ISODate(d1) == today) {
+			if (d1.toISODate() == today) {
 				slotNode.className += " today";
 			}
-			if (Util.ISODate(d1) == current) {
+			if (d1.toISODate() == current) {
 				slotNode.className += " current";
 			}
-			if (Util.ISODate(d1) == selected) {
+			if (d1.toISODate() == selected) {
 				slotNode.className += " selected";
 			}
 			d1 = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate()+1);

@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+   
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+   <title>Prado Date Picker</title>
+   <script type="text/javascript" src="../js/prado.js"></script>
+   <script type="text/javascript" src="datepicker.js"></script>
+
+	<style>
+		.TDatePicker
+		{
+			border: 1px solid red;
+			position: absolute;
+			background-color: #ffe;
+			text-align: center;
+		}
+
+		.TDatePicker .hover 
+		{
+			background-color: #66FFFF;
+		}
+		.TDatePicker .today
+		{
+			font-weight: bold;
+		}
+		.TDatePicker .current
+		{
+			border: 1px solid blue;
+		}
+		.TDatePicker .empty
+		{
+			background-color: #ffe !important;
+		}
+		.TDatePicker .calendarHeader
+		{
+			
+		}
+		.TDatePicker .grid
+		{
+			
+		}
+		/*
+			.calendarHeader
+			.prevMonthButton
+			.labelContainer
+			.nextMonthButton
+			.calendarBody
+			.grid
+			.weekDayHead
+			.calendarDate
+			.calendarFooter
+			.footerTable
+			.todayButton
+			.clearButton
+			.date
+			.today
+			.current
+			.selected
+			.empty
+		*/
+	</style>
+</head>
+
+<body>
+<form ID=Form1>
+   <input type="text" name="textfield1" id="textfield1" />
+   <input type="button" name="button1" id="button1" value="..." />
+   <br />
+   <input type="text" /> <br />
+   <textarea></textarea>
+</form>
+
+
+as<br/>
+dv<br/>
+as<br/>
+d<br/>
+as<br/>
+d<br/>
+asd<br/>
+a<br/>
+sd<br/>
+dv<br/>
+as<br/>
+d<br/>
+as<br/>
+d<br/>
+asd<br/>
+a<br/>
+sd<br/>
+dv<br/>
+as<br/>
+d<br/>
+as<br/>
+d<br/>
+asd<br/>
+a<br/>
+sd<br/>
+<form>
+   <input type="text" name="textfield2" id="text1" />
+</form>
+d<br/>
+as<br/>
+d<br/>
+asd<br/>
+a<br/>
+sd<br/>
+dv<br/>
+as<br/>
+d<br/>
+as<br/>
+d<br/>
+asd<br/>
+a<br/>
+sd<br/>
+
+<script type="text/javascript">
+     
+		var options = { "trigger" : "button1", "format" : "dd-MM-yyyy" };
+		var datepicker1 = new Prado.Calendar("textfield1", options);
+		var datepicker2 = new Prado.Calendar("textfield2");
+
+   </script>
+</body>
+</html>
