@@ -5,10 +5,10 @@ Object.extend(Date.prototype,
 	{
 		var bits = new Array();
 		bits['d'] = this.getDate();
-		bits['dd'] = Prado.Util.pad(this.getDate(),2);
+		bits['dd'] = String(this.getDate()).zerofill(2);
 		
 		bits['M'] = this.getMonth()+1;
-		bits['MM'] = Prado.Util.pad(this.getMonth()+1,2);
+		bits['MM'] = String(this.getMonth()+1).zerofill(2);
     
 		var yearStr = "" + this.getFullYear();
 		yearStr = (yearStr.length == 2) ? '19' + yearStr: yearStr;
@@ -29,8 +29,8 @@ Object.extend(Date.prototype,
 	toISODate : function()
 	{
 		var y = this.getFullYear();
-		var m = Prado.Util.pad(this.getMonth() + 1);
-		var d = Prado.Util.pad(this.getDate());
+		var m = String(this.getMonth() + 1).zerofill(2);
+		var d = String(this.getDate()).zerofill(2);
 		return String(y) + String(m) + String(d);
 	}
 });

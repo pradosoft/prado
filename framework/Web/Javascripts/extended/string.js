@@ -16,10 +16,7 @@ Object.extend(String.prototype, {
 	},
 
 	zerofill : function(len) { 
-		var s = this;
-		var ix = /^[+-]/.test(s) ? 1 : 0;
-		while (s.length<len) s = s.insert(ix, '0');
-		return s;
+		return this.padLeft(len,'0');
 	},
 
 	trim : function() { 
