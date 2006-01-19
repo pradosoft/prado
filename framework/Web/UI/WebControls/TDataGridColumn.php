@@ -196,12 +196,12 @@ abstract class TDataGridColumn extends TComponent
 			$this->_viewState[$key]=$value;
 	}
 
-	protected function loadState($state)
+	public function loadState($state)
 	{
 		$this->_viewState=$state;
 	}
 
-	protected function saveState()
+	public function saveState()
 	{
 		return $this->_viewState;
 	}

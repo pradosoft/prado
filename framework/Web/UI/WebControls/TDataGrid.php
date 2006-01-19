@@ -790,7 +790,7 @@ class TDataGrid extends TBaseDataList
 		if($ds->getAllowCustomPaging())
 			$ds->setDataSource(new TDummyDataSource($itemCount));
 		else
-			$ds->setDataSource(new TDummyDataSource($this->getViewState('DataSourceCount',0));
+			$ds->setDataSource(new TDummyDataSource($this->getViewState('DataSourceCount',0)));
 
 		$columns=new TList($this->getColumns());
 		$columns->mergeWith($this->_autoColumns);

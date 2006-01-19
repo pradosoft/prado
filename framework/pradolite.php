@@ -7166,7 +7166,7 @@ protected function addAttributesToRender($writer)
 		else if($this->getEnabled()) 			$writer->addAttribute('disabled','disabled'); 
 		parent::addAttributesToRender($writer); 
 	}
-protected function getPostBackOptions() 
+public function getPostBackOptions() 
 	{ 
 		$options=new TPostBackOptions(); 
 		if($this->getCausesValidation() && $this->getPage()->getValidators($this->getValidationGroup())->getCount()>0) 
@@ -7322,7 +7322,7 @@ protected function canCauseValidation()
 public function getPostBackOptions() 
 	{ 
 		$options['CausesValidation'] = $this->getCausesValidation(); 
-		$options['ValidationGroup'] = $this->getValidationGroup();		 
+		$options['ValidationGroup'] = $this->getValidationGroup(); 
 		$options['PostBackUrl'] = $this->getPostBackUrl(); 
 		$options['ClientSubmit'] = !$this->getUseSubmitBehavior();
 return $options; 
@@ -9233,7 +9233,7 @@ protected function validateDataSource($value)
 			return $list; 
 		} 
 		else if(is_array($value)) 
-			return new TList($value); 
+			return new TMap($value); 
 		else if(($value instanceof Traversable) || $value===null) 
 			return $value; 
 		else 
@@ -9770,16 +9770,18 @@ protected function performDataBinding($data)
 		if($valueField==='') 
 			$valueField=1; 
 		$textFormat=$this->getDataTextFormatString(); 
-		foreach($data as $object) 
+		foreach($data as $key=>$object) 
 		{ 
 			$item=new TListItem; 
-			if(isset($object[$textField])) 
+			if(!is_string($object) && isset($object[$textField])) 
 				$text=$object[$textField]; 
 			else 
 				$text=TPropertyValue::ensureString($object); 
 			$item->setText($textFormat===''?$text:sprintf($textFormat,$text)); 
-			if(isset($object[$valueField])) 
+			if(!is_string($object) && isset($object[$valueField])) 
 				$item->setValue($object[$valueField]); 
+			else if(!is_integer($key)) 
+				$item->setValue($key); 
 			$items->add($item); 
 		} 
 	}
@@ -13187,7 +13189,7 @@ protected function restoreGridFromViewState()
 		if($ds->getAllowCustomPaging()) 
 			$ds->setDataSource(new TDummyDataSource($itemCount)); 
 		else 
-			$ds->setDataSource(new TDummyDataSource($this->getViewState('DataSourceCount',0));
+			$ds->setDataSource(new TDummyDataSource($this->getViewState('DataSourceCount',0)));
 $columns=new TList($this->getColumns()); 
 		$columns->mergeWith($this->_autoColumns);
 if($columns->getCount()>0) 
@@ -13890,11 +13892,11 @@ protected function setViewState($key,$value,$defaultValue=null)
 		else 
 			$this->_viewState[$key]=$value; 
 	}
-protected function loadState($state) 
+public function loadState($state) 
 	{ 
 		$this->_viewState=$state; 
 	}
-protected function saveState() 
+public function saveState() 
 	{ 
 		return $this->_viewState; 
 	}

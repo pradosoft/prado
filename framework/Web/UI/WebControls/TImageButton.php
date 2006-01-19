@@ -106,7 +106,7 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	 * This method is used by framework and control developers.
 	 * @return TPostBackOptions parameters about how the button defines its postback behavior.
 	 */
-	protected function getPostBackOptions()
+	public function getPostBackOptions()
 	{
 		$options=new TPostBackOptions();
 		if($this->getCausesValidation() && $this->getPage()->getValidators($this->getValidationGroup())->getCount()>0)
