@@ -18,31 +18,32 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
 /**
  * TCompareValidator class
  *
- * TCompareValidator compares the value entered by the user into an input component with the value
- * entered into another input component or a constant value. To specify the input component to
- * validate, set the <b>ControlToValidate</b> property to the ID of the input component.
+ * TCompareValidator compares the value entered by the user into an input
+ * control with the value entered into another input control or a constant value.
+ * To compare the associated input control with another input control,
+ * set the {@link setControlToCompare ControlToCompare} property to the ID path
+ * of the control to compare with. To compare the associated input control with
+ * a constant value, specify the constant value to compare with by setting the
+ * {@link setValueToCompare ValueToCompare} property.
  *
- * To compare the associated input component with another input component,
- * set the <b>ControlToCompare</b> property to the ID of the component to compare with.
- *
- * To compare the associated input component with a constant value,
- * specify the constant value to compare with by setting the <b>ValueToCompare</b> property.
- *
- * The <b>ValueType</b> property is used to specify the data type of both comparison values.
- * Both values are automatically converted to this data type before the comparison operation
- * is performed. The following value types are supported:
+ * The {@link setValueType ValueType} property is used to specify the data type
+ * of both comparison values. Both values are automatically converted to this data
+ * type before the comparison operation is performed. The following value types are supported:
  * - <b>Integer</b> A 32-bit signed integer data type.
  * - <b>Double</b> A double-precision floating point number data type.
  * - <b>Currency</b> A decimal data type that can contain currency symbols.
  * - <b>Date</b> A date data type. The format follows the GNU date syntax.
  * - <b>String</b> A string data type.
  *
- * Use the <b>Operator</b> property to specify the type of comparison to perform,
- * such as Equal, NotEqual, GreaterThan, GreaterThanEqual, LessThan, LessThanEqual, DataTypeCheck.
- * If you set the <b>Operator</b> property to DataTypeCheck, the TCompareValidator component
- * will ignore the <b>ControlToCompare</b> and <b>ValueToCompare</b> properties and simply
- * indicates whether the value entered into the input component can be converted to the data type
- * specified by the <b>ValueType</b> property.
+ * Use the {@link setOperator Operator} property to specify the type of comparison
+ * to perform. Valid operators include Equal, NotEqual, GreaterThan, GreaterThanEqual,
+ * LessThan, LessThanEqual, and DataTypeCheck.
+ *
+ * Note, if you set {@link setOperator Operator} to DataTypeCheck, the validator
+ * will ignore the {@link setControlToCompare ControlToCompare} and
+ * {@link setValueToCompare ValueToCompare} properties and simply
+ * indicates whether the value entered into the input control can be converted
+ * to the data type specified by the {@link setValueType ValueType} property.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -145,9 +146,7 @@ class TCompareValidator extends TBaseValidator
 	 */
 	public function evaluateIsValid()
 	{
-		if(($control=$this->getValidationTarget())===null)
-			throw new TInvalidDataValueException('comparevalidator_controltovalidate_invalid');
-		if(($value=$this->getValidationValue($control))==='')
+		if(($value=$this->getValidationValue($this->getValidationTarget()))==='')
 			return true;
 
 		if($this->getOperator()==='DataTypeCheck')
@@ -245,6 +244,10 @@ class TCompareValidator extends TBaseValidator
 		return array($value1, $value2);
 	}
 
+	/**
+	 * Returns an array of javascript validator options.
+	 * @return array javascript validator options.
+	 */
 	protected function getClientScriptOptions()
 	{
 		$options = parent::getClientScriptOptions();

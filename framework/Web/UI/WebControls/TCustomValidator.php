@@ -22,11 +22,12 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  * server-side or client-side or both) on an input component.
  *
  * To create a server-side validation function, provide a handler for
- * the <b>OnServerValidate</b> event that performs the validation.
- * The data string of the input component to validate can be accessed
- * by the <b>value</b> property of the event parameter which is of type
- * <b>TServerValidateEventParameter</b>. The result of the validation
- * should be stored in the <b>isValid</b> property of the event parameter.
+ * the {@link onServerValidate ServerValidate} event that performs the validation.
+ * The data string of the input control to validate can be accessed
+ * by {@link TServerValidateEventParameter::getValue Value} of the event parameter.
+ * The result of the validation should be stored in the
+ * {@link TServerValidateEventParameter::getIsValid IsValid} property of the event
+ * parameter.
  *
  * To create a client-side validation function, add the client-side
  * validation javascript function to the page template.
@@ -42,8 +43,9 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  * }
  * --></script>
  * </code>
- * Use the <b>ClientValidationFunction</b> property to specify the name of
- * the client-side validation script function associated with the TCustomValidator.
+ * Use the {@link setClientValidationFunction ClientValidationFunction} property
+ * to specify the name of the client-side validation script function associated
+ * with the TCustomValidator.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -76,24 +78,16 @@ class TCustomValidator extends TBaseValidator
 	 */
 	public function evaluateIsValid()
 	{
-		if(($id=$this->getControlToValidate())!=='')
-		{
-			if(($control=$this->findControl($id))!==null)
-				$value=$this->getValidationValue($control);
-			else
-				throw new TInvalidDataValueException('customvalidator_controltovalidate_invalid');
-			return $this->onServerValidate($value);
-		}
-		else
-			throw new TInvalidDataValueException('customvalidator_controltovalidate_required');
+		$value=$this->getValidationValue($this->getValidationTarget());
+		return $this->onServerValidate($value);
 	}
 
 	/**
 	 * This method is invoked when the server side validation happens.
-	 * It will raise the <b>OnServerValidate</b> event.
+	 * It will raise the <b>ServerValidate</b> event.
 	 * The method also allows derived classes to handle the event without attaching a delegate.
 	 * <b>Note</b> The derived classes should call parent implementation
-	 * to ensure the <b>OnServerValidate</b> event is raised.
+	 * to ensure the <b>ServerValidate</b> event is raised.
 	 * @param string the value to be validated
 	 * @return boolean whether the value is valid
 	 */
@@ -142,22 +136,36 @@ class TServerValidateEventParameter extends TEventParameter
 	 */
 	private $_isValid=true;
 
+	/**
+	 * Constructor.
+	 * @param string property value to be validated
+	 * @param boolean whether the value is valid
+	 */
 	public function __construct($value,$isValid)
 	{
 		$this->_value=$value;
 		$this->setIsValid($isValid);
 	}
 
+	/**
+	 * @return string value to be validated
+	 */
 	public function getValue()
 	{
 		return $this->_value;
 	}
 
+	/**
+	 * @return boolean whether the value is valid
+	 */
 	public function getIsValid()
 	{
 		return $this->_isValid;
 	}
 
+	/**
+	 * @param boolean whether the value is valid
+	 */
 	public function setIsValid($value)
 	{
 		$this->_isValid=TPropertyValue::ensureBoolean($value);

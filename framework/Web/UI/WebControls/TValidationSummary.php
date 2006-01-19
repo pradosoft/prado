@@ -13,29 +13,21 @@
 /**
  * TValidationSummary class
  *
- * TValidationSummary displays a summary of all validation errors inline on a Web page,
- * in a message box, or both. The summary can be displayed as a list, as a bulleted list,
- * or as a single paragraph based on the <b>DisplayMode</b> property.
+ * TValidationSummary displays a summary of validation errors inline on a Web page,
+ * in a message box, or both. By default, a validation summary will collect
+ * {@link TBaseValidator::getErrorMessage ErrorMessage} of all failed validators
+ * on the page. If {@link getValidationGroup ValidationGroup} is not
+ * empty, only those validators who belong to the group will show their error messages
+ * in the summary.
+ *
+ * The summary can be displayed as a list, as a bulleted list, or as a single
+ * paragraph based on the {@link setDisplayMode DisplayMode} property.
+ * The messages shown can be prefixed with {@link setHeaderText HeaderText}.
+ *
  * The summary can be displayed on the Web page and in a message box by setting
- * the <b>ShowSummary</b> and <b>ShowMessageBox</b> properties, respectively.
- *
- * Namespace: System.Web.UI.WebControls
- *
- * Properties
- * - <b>DisplayMode</b>, string, default=BulletList, kept in viewstate
- *   <br>Gets or sets the display mode (BulletList, List, SingleParagraph) of the validation summary.
- * - <b>HeaderText</b>, string, kept in viewstate
- *   <br>Gets or sets the header text displayed at the top of the summary.
- * - <b>EnableClientScript</b>, boolean, default=true, kept in viewstate
- *   <br>Gets or sets a value indicating whether the TValidationSummary component
- *   updates itself using client-side script.
- * - <b>ShowMessageBox</b>, boolean, default=false, kept in viewstate
- *   <br>Gets or sets a value indicating whether the validation summary is displayed in a message box.
- *   If <b>EnableClientScript</b> is <b>false</b>, this property has no effect.
- * - <b>ShowSummary</b>, boolean, default=true, kept in viewstate
- *   <br>Gets or sets a value indicating whether the validation summary is displayed inline.
- * - <b>Group</b>, string, kept in viewstate
- *   <br>Gets or sets the validation group ID.
+ * the {@link setShowSummary ShowSummary} and {@link setShowMessageBox ShowMessageBox}
+ * properties, respectively. Note, the latter is only effective when
+ * {@link setEnableClientScript EnableClientScript} is true.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -44,20 +36,6 @@
  */
 class TValidationSummary extends TWebControl
 {
-
-	protected static $currentGroup;
-
-	public static function setCurrentGroup($group)
-	{
-		self::$currentGroup = $group;
-	}
-
-	public static function getCurrentGroup()
-	{
-		return self::$currentGroup;
-	}
-
-
 	/**
 	 * @return string the header text displayed at the top of the summary
 	 */
@@ -190,29 +168,6 @@ class TValidationSummary extends TWebControl
 		$this->setViewState('ValidationGroup',$value,'');
 	}
 
-	/**
-	 * Get a list of validators considering the validation groups.
-	 * @return array list of validators.
-	 */
-	protected function getValidators()
-	{
-		$groupID = $this->getGroup();
-		if(empty($groupID)) return $this->getPage()->getValidators();
-
-		$parent = $this->getParent();
-		$group = $parent->findObject($groupID);
-
-		$validators = array();
-
-		foreach($group->getMembers() as $member)
-		{
-			$control = $parent->findObject($member);
-			if(!is_null($control))
-				$validators[] = $control;
-		}
-		return $validators;
-	}
-
 	protected function addAttributesToRender($writer)
 	{
 		$writer->addAttribute('id',$this->getClientID());
@@ -341,11 +296,13 @@ class TValidationSummary extends TWebControl
 		$header=$this->getHeaderText();
 		$messages=$this->getErrorMessages();
 		$content = $header;
-		$show = count($messages) > 0;
-		if($show) $content .= "<ul>\n";
-		foreach($messages as $message)
-			$content.= '<li>'.$message."</li>\n";
-		if($show) $content .= "</ul>\n";
+		if(count($messages)>0)
+		{
+			$content .= "<ul>\n";
+			foreach($messages as $message)
+				$content.= '<li>'.$message."</li>\n";
+			$content .= "</ul>\n";
+		}
 		$writer->write($content);
 	}
 }

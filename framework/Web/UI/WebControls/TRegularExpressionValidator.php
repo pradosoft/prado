@@ -21,7 +21,7 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  * TRegularExpressionValidator validates whether the value of an associated
  * input component matches the pattern specified by a regular expression.
  *
- * You can specify the regular expression by setting the <b>RegularExpression</b>
+ * You can specify the regular expression by setting the {@link setRegularExpression RegularExpression}
  * property. Some commonly used regular expressions include:
  * <pre>
  * French Phone Number: (0( \d|\d ))?\d\d \d\d(\d \d| \d\d )\d\d
@@ -40,6 +40,9 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  * U.S. Social Security Number: \d{3}-\d{2}-\d{4}
  * </pre>
  *
+ * Note, the validation succeeds if the associated input control contains empty input.
+ * Use a {@link TRequiredFieldValidator} to ensure the input is not empty.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
@@ -56,8 +59,7 @@ class TRegularExpressionValidator extends TBaseValidator
 	}
 
 	/**
-	 * Sets the regular expression that determines the pattern used to validate a field.
-	 * @param string the regular expression
+	 * @param string the regular expression that determines the pattern used to validate a field.
 	 */
 	public function setRegularExpression($value)
 	{
@@ -73,19 +75,18 @@ class TRegularExpressionValidator extends TBaseValidator
 	 */
 	public function evaluateIsValid()
 	{
-		if(($control=$this->getValidationTarget())!==null)
-		{
-			if(($value=$this->getValidationValue($control))==='')
-				return true;
-			if(($expression=$this->getRegularExpression())!=='')
-				return preg_match("/^$expression\$/",$value);
-			else
-				return true;
-		}
+		if(($value=$this->getValidationValue($this->getValidationTarget()))==='')
+			return true;
+		if(($expression=$this->getRegularExpression())!=='')
+			return preg_match("/^$expression\$/",$value);
 		else
-			throw new TInvalidDataValueException('regularexpressionvalidator_controltovalidate_invalid');
+			return true;
 	}
 
+	/**
+	 * Returns an array of javascript validator options.
+	 * @return array javascript validator options.
+	 */
 	protected function getClientScriptOptions()
 	{
 		$options = parent::getClientScriptOptions();

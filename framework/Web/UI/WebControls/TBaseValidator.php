@@ -15,70 +15,50 @@
  *
  * TBaseValidator serves as the base class for validator controls.
  *
- * Validation is performed when a button control, such a TButton, a TLinkButton
- * or a TImageButton is clicked and the <b>CausesValidation</b> of these controls is true.
- * You can also manually perform validation by using the validate() method of the TPage class.
+ * Validation is performed when a postback control, such as a TButton, a TLinkButton
+ * or a TTextBox (under AutoPostBack mode) is submitting the page and
+ * its <b>CausesValidation</b> property is true.
+ * You can also manually perform validation by calling {@link TPage::validate()}.
+ * The input control to be validated is specified by {@link setControlToValidate ControlToValidate}.
  *
- * Validator controls always validate the associated input control on the server.
- * TValidation controls also have complete client-side implementation that allow
- * DHTML supported browsers to perform validation on the client via Javascript.
+ * Validator controls always validate the associated input control on the serve side.
+ * In addition, if {@link getEnableClientScript EnableClientScript} is true,
+ * validation will also be performed on the client-side using javascript.
  * Client-side validation will validate user input before it is sent to the server.
  * The form data will not be submitted if any error is detected. This avoids
- *  the round-trip of information necessary for server-side validation.
+ * the round-trip of information necessary for server-side validation.
  *
- * You can use multiple validator controls to validate an individual input control,
- * each responsible for validating different criteria. For example, on a user registration
- * form, you may want to make sure the user enters a value in the username text box,
- * and the input must consist of only word characters. You can use a TRequiredFieldValidator
- * to ensure the input of username and a TRegularExpressionValidator to ensure the proper
- * input.
+ * You can use multiple validator controls to validate a single input control,
+ * each responsible for validating against a different criteria.
+ * For example, on a user registration form, you may want to make sure the user
+ * enters a value in the username text box, and the input must consist of only word
+ * characters. You can use a {@link TRequiredFieldValidator} to ensure the input
+ * of username and a {@link TRegularExpressionValidator} to ensure the proper input.
  *
- * If an input control fails validation, the text specified by the <b>ErrorMessage</b>
- * property is displayed in the validation control. If the <b>Text</b> property is set
- * it will be displayed instead, however. If both <b>ErrorMessage</b> and <b>Text</b>
- * are empty, the body content of the validator will be displayed.
+ * If an input control fails validation, the text specified by the {@link setErrorMessage ErrorMessage}
+ * property is displayed in the validation control. However, if the {@link setText Text}
+ * property is set, it will be displayed instead. If both {@link setErrorMessage ErrorMessage}
+ * and {@link setText Text} are empty, the body content of the validator will
+ * be displayed. Error display is controlled by {@link setDisplay Display} property.
  *
- * You can also place a <b>TValidationSummary</b> control on the page to display error messages
- * from the validators together. In this case, only the <b>ErrorMessage</b> property of the
- * validators will be displayed in the TValidationSummary control.
+ * You can also place a {@link TValidationSummary} control on a page to display error messages
+ * from the validators together. In this case, only the {@link setErrorMessage ErrorMessage}
+ * property of the validators will be displayed in the {@link TValidationSummary} control.
  *
- * Note, the <b>IsValid</b> property of the current TPage instance will be automatically
- * updated by the validation process which occurs after <b>OnLoad</b> of TPage and
- * before the postback events. Therefore, if you use the <b>IsValid</b>
- * property in the <b>OnLoad</b> event of TPage, you must first explicitly call
- * the validate() method of TPage. As an alternative, you can place your code
- * in the postback event handler, such as <b>OnClick</b> or <b>OnCommand</b>,
- * instead of <b>OnLoad</b> event.
+ * Validators can be partitioned into validation groups by setting their
+ * {@link setValidationGroup ValidationGroup} property. If the control causing the
+ * validation also sets its ValidationGroup property, only those validators having
+ * the same ValidationGroup value will do input validation.
  *
- * Note, to use validators derived from this control, you have to
- * copy the file "<framework>/js/prado_validator.js" to the "js" directory
- * which should be under the directory containing the entry script file.
+ * Note, the {@link TPage::getIsValid IsValid} property of the current {@link TPage}
+ * instance will be automatically updated by the validation process which occurs
+ * after {@link TPage::onLoad onLoad} of {@link TPage} and before the postback events.
+ * Therefore, if you use the {@link TPage::getIsValid()} property in
+ * the {@link TPage::onLoad()} method, you must first explicitly call
+ * the {@link TPage::validate()} method.
  *
- * <b>Notes to Inheritors</b>  When you inherit from the TBaseValidator class,
- * you must override the method {@link evaluateIsValid}.
- *
- * Namespace: System.Web.UI.WebControls
- *
- * Properties
- * - <b>EnableClientScript</b>, boolean, default=true, kept in viewstate
- *   <br>Gets or sets a value indicating whether client-side validation is enabled.
- * - <b>Display</b>, string, default=Static, kept in viewstate
- *   <br>Gets or sets the display behavior (None, Static, Dynamic) of the error message in a validation control.
- * - <b>ControlToValidate</b>, string, kept in viewstate
- *   <br>Gets or sets the input control to validate. This property must be set to
- *   the ID path of an input control. The ID path is the dot-connected IDs of
- *   the controls reaching from the validator's parent control to the target control.
- *   For example, if HomePage is the parent of Validator and SideBar controls, and
- *   SideBar is the parent of UserName control, then the ID path for UserName
- *   would be "SideBar.UserName" if UserName is to be validated by Validator.
- * - <b>Text</b>, string, kept in viewstate
- *   <br>Gets or sets the text of TBaseValidator control.
- * - <b>ErrorMessage</b>, string, kept in viewstate
- *   <br>Gets or sets the text for the error message.
- * - <b>EncodeText</b>, boolean, default=true, kept in viewstate
- *   <br>Gets or sets the value indicating whether Text and ErrorMessage should be HTML-encoded when rendering.
- * - <b>IsValid</b>, boolean, default=true
- *   <br>Gets or sets a value that indicates whether the associated input control passes validation.
+ * <b>Notes to Inheritors</b>  When you inherit from TBaseValidator, you must
+ * override the method {@link evaluateIsValid}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -88,18 +68,28 @@
 abstract class TBaseValidator extends TLabel implements IValidator
 {
 	/**
-	 * whether the validation succeeds
-	 * @var boolean
+	 * @var boolean whether the validation succeeds
 	 */
 	private $_isValid=true;
+	/**
+	 * @var boolean whether the validator has been registered with the page
+	 */
 	private $_registered=false;
 
+	/**
+	 * Constructor.
+	 * This method sets the foreground color to red.
+	 */
 	public function __construct()
 	{
 		parent::__construct();
 		$this->setForeColor('red');
 	}
 
+	/**
+	 * Registers the validator with page.
+	 * @param mixed event parameter
+	 */
 	protected function onInit($param)
 	{
 		parent::onInit($param);
@@ -107,6 +97,10 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		$this->_registered=true;
 	}
 
+	/**
+	 * Unregisters the validator from page.
+	 * @param mixed event parameter
+	 */
 	protected function onUnload($param)
 	{
 		if($this->_registered && ($page=$this->getPage())!==null)
@@ -165,14 +159,14 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			$scripts->registerEndScript($scriptKey, $js);
 		}
 		if($this->getEnableClientScript())
-			$this->renderClientScriptValidator();
+			$this->registerClientScriptValidator();
 		parent::onPreRender($param);
 	}
 
 	/**
-	 * Renders the individual validator client-side javascript code.
+	 * Registers the individual validator client-side javascript code.
 	 */
-	protected function renderClientScriptValidator()
+	protected function registerClientScriptValidator()
 	{
 		if($this->getEnabled(true) && $this->getEnableClientScript())
 		{
@@ -234,7 +228,6 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * Sets the value indicating whether client-side validation is enabled.
 	 * @param boolean whether client-side validation is enabled.
 	 */
 	public function setEnableClientScript($value)
@@ -247,8 +240,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function getErrorMessage()
 	{
-		return $this->getText();
-		//return $this->getViewState('ErrorMessage','');
+		return $this->getViewState('ErrorMessage','');
 	}
 
 	/**
@@ -257,8 +249,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function setErrorMessage($value)
 	{
-		$this->setText($value);
-		//$this->setViewState('ErrorMessage',$value,'');
+		$this->setViewState('ErrorMessage',$value,'');
 	}
 
 	/**
@@ -270,7 +261,9 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * Sets the ID path of the input control to validate
+	 * Sets the ID path of the input control to validate.
+	 * The ID path is the dot-connected IDs of the controls reaching from
+	 * the validator's naming container to the target control.
 	 * @param string the ID path
 	 */
 	public function setControlToValidate($value)
@@ -279,7 +272,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @return boolean whether to set focus at the validating place if the validation fails. Defaults to true.
+	 * @return boolean whether to set focus at the validating place if the validation fails. Defaults to false.
 	 */
 	public function getFocusOnError()
 	{
@@ -348,14 +341,24 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		$this->_isValid=TPropertyValue::ensureBoolean($value);
 	}
 
+	/**
+	 * @return TControl control to be validated. Null if no control is found.
+	 * @throw TConfigurationException if {@link getControlToValidate ControlToValidate} is empty or does not point to a valid control
+	 */
 	protected function getValidationTarget()
 	{
-		if(($id=$this->getControlToValidate())!=='')
-			return $this->findControl($id);
+		if(($id=$this->getControlToValidate())!=='' && ($control=$this->findControl($id))!==null)
+			return $control;
 		else
-			return null;
+			throw new TConfigurationException('basevalidator_controltovalidate_invalid');
 	}
 
+	/**
+	 * Retrieves the property value of the control being validated.
+	 * @param TControl control being validated
+	 * @return string property value to be validated
+	 * @throws TInvalidDataTypeException if the control to be validated does not implement {@link IValidatable}.
+	 */
 	protected function getValidationValue($control)
 	{
 		if($control instanceof IValidatable)
@@ -390,5 +393,19 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * @return boolean whether the validation succeeds
 	 */
 	abstract protected function evaluateIsValid();
+
+	/**
+	 * Renders the validator control.
+	 * @param THtmlWriter writer for the rendering purpose
+	 */
+	protected function renderContents($writer)
+	{
+		if(($text=$this->getText())!=='')
+			$writer->write($text);
+		else if(($text=$this->getErrorMessage())!=='')
+			$writer->write($text);
+		else
+			parent::renderContents($writer);
+	}
 }
 ?>
