@@ -145,6 +145,7 @@ framework/3rdParty/geshi/geshi/prado.php -text
 framework/3rdParty/geshi/geshi/xml.php -text
 framework/3rdParty/geshi/highlight.css -text
 framework/3rdParty/readme.html -text
+framework/Collections/TDummyDataSource.php -text
 framework/Collections/TList.php -text
 framework/Collections/TMap.php -text
 framework/Collections/TPagedDataSource.php -text

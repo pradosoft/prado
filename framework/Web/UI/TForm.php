@@ -11,13 +11,10 @@ class TForm extends TControl
 	protected function addAttributesToRender($writer)
 	{
 		$attributes=$this->getAttributes();
-//		$writer->addAttribute('name',$this->getName());
 		$writer->addAttribute('method',$this->getMethod());
 		$writer->addAttribute('action',$this->getRequest()->getRequestURI());
 		if(($enctype=$this->getEnctype())!=='')
 			$writer->addAttribute('enctype',$enctype);
-		$attributes->remove('name');
-		$attributes->remove('method');
 		$attributes->remove('action');
 
 		$page=$this->getPage();
@@ -35,6 +32,7 @@ class TForm extends TControl
 		}*/
 		if($this->getDefaultButton()!=='')
 		{//todo
+		/*
 			$control=$this->findControl($this->getDefaultButton());
 			if(!$control)
 				$control=$page->findControl($this->getDefaultButton());
@@ -42,6 +40,7 @@ class TForm extends TControl
 				$page->getClientScript()->registerDefaultButtonScript($control,$writer,false);
 			else
 				throw new Exception('Only IButtonControl can be default button.');
+				*/
 		}
 		$writer->addAttribute('id',$this->getClientID());
 		foreach($attributes as $name=>$value)
@@ -101,7 +100,7 @@ class TForm extends TControl
 	{
 		$this->setViewState('Enctype',$value,'');
 	}
-
+/*
 	public function getSubmitDisabledControls()
 	{
 		return $this->getViewState('SubmitDisabledControls',false);
@@ -111,7 +110,7 @@ class TForm extends TControl
 	{
 		$this->setViewState('SubmitDisabledControls',TPropertyValue::ensureBoolean($value),false);
 	}
-
+*/
 	public function getName()
 	{
 		return $this->getUniqueID();

@@ -45,7 +45,7 @@
     <li><a href="?page=Controls.Validation">Validation Controls</a></li>
     <li><a href="?page=Controls.Repeater">TRepeater</a></li>
     <li><a href="?page=Controls.DataList">TDataList</a></li>
-    <li><a href="?page=Construction">TDataGrid</a></li>
+    <li><a href="?page=Controls.DataGrid">TDataGrid</a></li>
     <li><a href="?page=Construction">Active Controls</a></li>
     <li><a href="?page=Construction">Authoring New Controls</a></li>
 </ul>

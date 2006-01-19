@@ -78,6 +78,7 @@ Web/UI/WebControls/TRepeater.php
 Web/UI/WebControls/TBaseDataList.php
 Web/UI/WebControls/TDataList.php
 Collections/TPagedDataSource.php
+Collections/TDummyDataSource.php
 Web/UI/WebControls/TDataGrid.php
 Web/UI/WebControls/TDataGridColumn.php
 Web/UI/WebControls/TBoundColumn.php

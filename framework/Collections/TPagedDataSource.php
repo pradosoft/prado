@@ -1,5 +1,33 @@
 <?php
+/**
+ * TPagedDataSource, TPagedListIterator, TPagedMapIterator classes
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Collections
+ */
 
+/**
+ * TPagedDataSource class
+ *
+ * TPagedDataSource implements an integer-indexed collection class with paging functionality.
+ *
+ * Data items in TPagedDataSource can be traversed using <b>foreach</b>
+ * PHP statement like the following,
+ * <code>
+ * foreach($pagedDataSource as $dataItem)
+ * </code>
+ * The data are fetched from {@link setDataSource DataSource}. Only the items
+ * within the specified page will be returned and traversed.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Collections
+ * @since 3.0
+ */
 class TPagedDataSource extends TComponent implements IteratorAggregate
 {
 	/**
@@ -214,6 +242,9 @@ class TPagedDataSource extends TComponent implements IteratorAggregate
 			return $this->_dataSource->getCount();
 	}
 
+	/**
+	 * @return Iterator iterator
+	 */
 	public function getIterator()
 	{
 		if($this->_dataSource instanceof TList)
@@ -228,12 +259,12 @@ class TPagedDataSource extends TComponent implements IteratorAggregate
 
 
 /**
- * TListIterator class
+ * TPagedListIterator class
  *
- * TListIterator implements Iterator interface.
+ * TPagedListIterator implements Iterator interface.
  *
- * TListIterator is used by TList. It allows TList to return a new iterator
- * for traversing the items in the list.
+ * TPagedListIterator is used by {@link TPagedDataSource}. It allows TPagedDataSource
+ * to return a new iterator for traversing the items in a {@link TList} object.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -249,7 +280,9 @@ class TPagedListIterator implements Iterator
 
 	/**
 	 * Constructor.
-	 * @param array the data to be iterated through
+	 * @param TList the data to be iterated through
+	 * @param integer start index
+	 * @param integer number of items to be iterated through
 	 */
 	public function __construct(TList $list,$startIndex,$count)
 	{
@@ -311,6 +344,19 @@ class TPagedListIterator implements Iterator
 	}
 }
 
+/**
+ * TPagedMapIterator class
+ *
+ * TPagedMapIterator implements Iterator interface.
+ *
+ * TPagedMapIterator is used by {@link TPagedDataSource}. It allows TPagedDataSource
+ * to return a new iterator for traversing the items in a {@link TMap} object.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Collections
+ * @since 3.0
+ */
 class TPagedMapIterator implements Iterator
 {
 	private $_map;

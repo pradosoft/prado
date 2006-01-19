@@ -12,6 +12,7 @@
 
 Prado::using('System.Web.UI.WebControls.TBaseDataList');
 Prado::using('System.Collections.TPagedDataSource');
+Prado::using('System.Collections.TDummyDataSource');
 Prado::using('System.Web.UI.WebControls.TTable');
 
 /**
@@ -725,6 +726,15 @@ class TDataGrid extends TBaseDataList
 			$this->setViewState('ItemCount',$this->_items->getCount(),0);
 		else
 			$this->clearViewState('ItemCount');
+		if($this->_autoColumns)
+		{
+			$state=array();
+			foreach($this->_autoColumns as $column)
+				$state[]=$column->saveState();
+			$this->setViewState('ColumnState',$state,array());
+		}
+		else
+			$this->clearViewState('ColumnState');
 	}
 
 	/**
@@ -735,7 +745,17 @@ class TDataGrid extends TBaseDataList
 	protected function onLoadState($param)
 	{
 		if(!$this->getIsDataBound())
-			$this->restoreItemsFromViewState();
+		{
+			$state=$this->getViewState('ColumnState',array());
+			$columns=$this->getAutoColumns();
+			foreach($state as $st)
+			{
+				$column=new TBoundColumn;
+				$column->loadState($st);
+				$columns->add($column);
+			}
+			$this->restoreGridFromViewState();
+		}
 		$this->clearViewState('ItemCount');
 	}
 
@@ -764,21 +784,28 @@ class TDataGrid extends TBaseDataList
 	protected function restoreGridFromViewState()
 	{
 		$this->reset();
+		if(($itemCount=$this->getViewState('ItemCount',0))<=0)
+			return;
 		$this->_pagedDataSource=$ds=$this->createPagedDataSource();
-		// set dummy data source
-		// create columns from viewstate
+		if($ds->getAllowCustomPaging())
+			$ds->setDataSource(new TDummyDataSource($itemCount));
+		else
+			$ds->setDataSource(new TDummyDataSource($this->getViewState('DataSourceCount',0));
+
+		$columns=new TList($this->getColumns());
+		$columns->mergeWith($this->_autoColumns);
+
 		if($columns->getCount()>0)
 		{
 			foreach($columns as $column)
 				$column->initialize();
-			$allowPaging=$ds->getAllowPaging();
 			if($allowPaging)
-				// create pager
-			// create header
-			// may need to use the first row of data to build items here
+				$this->createPager(-1,-1,$columnCount,$ds);
+			$this->createItemInternal(-1,-1,'Header',false,null,$columns);
 			$selectedIndex=$this->getSelectedItemIndex();
 			$editIndex=$this->getEditItemIndex();
 			$index=0;
+			$dsIndex=$ds->getAllowPaging()?$ds->getFirstIndexInPage():0;
 			foreach($ds as $data)
 			{
 				if($index===$editIndex)
@@ -789,11 +816,13 @@ class TDataGrid extends TBaseDataList
 					$itemType='AlternatingItem';
 				else
 					$itemType='Item';
-				// create item
+				$items->add($this->createItemInternal($index,$dsIndex,$itemType,false,null,$columns));
 				$index++;
+				$dsIndex++;
 			}
-			// create footer
-			// create pager
+			$this->createItemInternal(-1,-1,'Footer',false,null,$columns);
+			if($allowPaging)
+				$this->createPager(-1,-1,$columnCount,$ds);
 		}
 		$this->_pagedDataSource=null;
 	}
@@ -815,7 +844,11 @@ class TDataGrid extends TBaseDataList
 		$allowPaging=$ds->getAllowPaging();
 		if($allowPaging && $ds->getCurrentPageIndex()>=$ds->getPageCount())
 			throw new TInvalidDataValueException('datagrid_currentpageindex_invalid');
-		$columns=$this->getAllColumns($ds);
+		// get all columns
+		$columns=new TList($this->getColumns());
+		$autoColumns=$this->createAutoColumns($ds);
+		$columns->mergeWith($autoColumns);
+
 		$items=$this->getItems();
 
 		if(($columnCount=$columns->getCount())>0)
@@ -1046,16 +1079,9 @@ class TDataGrid extends TBaseDataList
 		}
 	}
 
-	protected function getAllColumns($dataSource)
-	{
-		$list=new TList($this->getColumns());
-		$list->mergeWith($this->createAutoColumns($dataSource));
-		return $list;
-	}
-
 	protected function createAutoColumns($dataSource)
 	{
-		if(!$dataSource || $dataSource->getCount()<=0)
+		if(!$dataSource)
 			return null;
 		$autoColumns=$this->getAutoColumns();
 		$autoColumns->clear();
@@ -1084,6 +1110,114 @@ class TDataGrid extends TBaseDataList
 			break;
 		}
 		return $autoColumns;
+	}
+
+	/**
+	 * Applies styles to items, header, footer and separators.
+	 * Item styles are applied in a hierarchical way. Style in higher hierarchy
+	 * will inherit from styles in lower hierarchy.
+	 * Starting from the lowest hierarchy, the item styles include
+	 * item's own style, {@link getItemStyle ItemStyle}, {@link getAlternatingItemStyle AlternatingItemStyle},
+	 * {@link getSelectedItemStyle SelectedItemStyle}, and {@link getEditItemStyle EditItemStyle}.
+	 * Therefore, if background color is set as red in {@link getItemStyle ItemStyle},
+	 * {@link getEditItemStyle EditItemStyle} will also have red background color
+	 * unless it is set to a different value explicitly.
+	 */
+	protected function applyItemStyles()
+	{
+		$headerStyle=$this->getViewState('HeaderStyle',null);
+		$footerStyle=$this->getViewState('FooterStyle',null);
+		$pagerStyle=$this->getViewState('PagerStyle',null);
+		$separatorStyle=$this->getViewState('SeparatorStyle',null);
+		$itemStyle=$this->getViewState('ItemStyle',null);
+		$alternatingItemStyle=$this->getViewState('AlternatingItemStyle',null);
+		if($itemStyle!==null)
+		{
+			if($alternatingItemStyle===null)
+				$alternatingItemStyle=new TTableItemStyle;
+			$alternatingItemStyle->mergeWith($itemStyle);
+		}
+		$selectedItemStyle=$this->getViewState('SelectedItemStyle',null);
+		if($alternatingItemStyle!==null)
+		{
+			if($selectedItemStyle===null)
+				$selectedItemStyle=new TTableItemStyle;
+			$selectedItemStyle->mergeWith($alternatingItemStyle);
+		}
+		$editItemStyle=$this->getViewState('EditItemStyle',null);
+		if($selectedItemStyle!==null)
+		{
+			if($editItemStyle===null)
+				$editItemStyle=new TTableItemStyle;
+			$editItemStyle->mergeWith($selectedItemStyle);
+		}
+
+		foreach($this->getControls() as $index=>$control)
+		{
+			switch($control->getItemType())
+			{
+				case 'Header':
+					if($headerStyle)
+						$control->getStyle()->mergeWith($headerStyle);
+					if(!$this->getShowHeader())
+						$control->setVisible(false);
+					break;
+				case 'Footer':
+					if($footerStyle)
+						$control->getStyle()->mergeWith($footerStyle);
+					if(!$this->getShowFooter())
+						$control->setVisible(false);
+					break;
+				case 'Separator':
+					if($separatorStyle)
+						$control->getStyle()->mergeWith($separatorStyle);
+					break;
+				case 'Item':
+					if($itemStyle)
+						$control->getStyle()->mergeWith($itemStyle);
+					break;
+				case 'AlternatingItem':
+					if($alternatingItemStyle)
+						$control->getStyle()->mergeWith($alternatingItemStyle);
+					break;
+				case 'SelectedItem':
+					if($selectedItemStyle)
+						$control->getStyle()->mergeWith($selectedItemStyle);
+					break;
+				case 'EditItem':
+					if($editItemStyle)
+						$control->getStyle()->mergeWith($editItemStyle);
+					break;
+				case 'Pager':
+					if($pagerStyle)
+					{
+						$control->getStyle()->mergeWith($pagerStyle);
+						$mode=$pagerStyle->getMode();
+						if($index===0)
+						{
+							if($mode==='Bottom')
+								$control->setVisible(false);
+						}
+						else
+						{
+							if($mode==='Top')
+								$control->setVisible(false);
+						}
+					}
+					break;
+				default:
+					break;
+			}
+		}
+	}
+
+	protected function renderContents($writer)
+	{
+		if($this->getHasControls())
+		{
+			$this->applyItemStyles();
+			parent::renderContents($writer);
+		}
 	}
 }
 
