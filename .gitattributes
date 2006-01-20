@@ -559,6 +559,7 @@ framework/Web/UI/WebControls/TDataGridColumn.php -text
 framework/Web/UI/WebControls/TDataList.php -text
 framework/Web/UI/WebControls/TDataSourceControl.php -text
 framework/Web/UI/WebControls/TDataSourceView.php -text
+framework/Web/UI/WebControls/TDatePicker.php -text
 framework/Web/UI/WebControls/TDropDownList.php -text
 framework/Web/UI/WebControls/TEditCommandColumn.php -text
 framework/Web/UI/WebControls/TEmailAddressValidator.php -text

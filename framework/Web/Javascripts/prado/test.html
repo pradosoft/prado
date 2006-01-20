@@ -4,61 +4,8 @@
 <head>
    <title>Prado Date Picker</title>
    <script type="text/javascript" src="../js/prado.js"></script>
+   <script type="text/javascript" src="../js/logger.js"></script>
    <script type="text/javascript" src="datepicker.js"></script>
-
-	<style>
-		.TDatePicker
-		{
-			border: 1px solid red;
-			position: absolute;
-			background-color: #ffe;
-			text-align: center;
-		}
-
-		.TDatePicker .hover 
-		{
-			background-color: #66FFFF;
-		}
-		.TDatePicker .today
-		{
-			font-weight: bold;
-		}
-		.TDatePicker .current
-		{
-			border: 1px solid blue;
-		}
-		.TDatePicker .empty
-		{
-			background-color: #ffe !important;
-		}
-		.TDatePicker .calendarHeader
-		{
-			
-		}
-		.TDatePicker .grid
-		{
-			
-		}
-		/*
-			.calendarHeader
-			.prevMonthButton
-			.labelContainer
-			.nextMonthButton
-			.calendarBody
-			.grid
-			.weekDayHead
-			.calendarDate
-			.calendarFooter
-			.footerTable
-			.todayButton
-			.clearButton
-			.date
-			.today
-			.current
-			.selected
-			.empty
-		*/
-	</style>
 </head>
 
 <body>
@@ -67,7 +14,11 @@
    <input type="button" name="button1" id="button1" value="..." />
    <br />
    <input type="text" /> <br />
-   <textarea></textarea>
+   <select><option value="1">One</option></select>
+
+   <input type="button" id="b1" value="button 1" />
+   <input type="button" id="start" value="start" />
+   <input type="button" id="stop" value="stop" />
 </form>
 
 
@@ -116,10 +67,39 @@ sd<br/>
 
 <script type="text/javascript">
      
-		var options = { "trigger" : "button1", "format" : "dd-MM-yyyy" };
-		var datepicker1 = new Prado.Calendar("textfield1", options);
-		var datepicker2 = new Prado.Calendar("textfield2");
+		var options = { "Trigger" : "button1", "Format" : "dd-MM-yyyy" };
+		var datepicker1 = new Prado.WebUI.TDatePicker("textfield1", options);
+		var datepicker2 = new Prado.WebUI.TDatePicker("textfield2", {'Format':'MM-dd-yy', 'UpToYear' : 2050});
+		var test2 = { clicks : 0 };
+		var test1 = Class.create();
+		test1.prototype = 
+		{
+			clicks : 0,
+			
+			initialize : function()
+			{
+				Event.observe("start", "click", this.start.bindEvent(this));
+				Event.observe("stop", "click", this.stop.bindEvent(this));
+			},
 
+			start : function()
+			{
+				this.button1ClickEvent = this.clicked.bindEvent(this);
+				Event.observe("b1", "click", this.button1ClickEvent);
+			},
+
+			stop : function()
+			{
+				Event.stopObserving("b1", "click", this.button1ClickEvent);
+			},
+
+			clicked : function()
+			{
+				Logger.warn("clicked " + (this.clicks++));
+			}
+		}
+
+		new test1();
    </script>
 </body>
 </html>

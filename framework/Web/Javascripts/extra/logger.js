@@ -676,7 +676,7 @@ Prado.Inspector =
 			this.d.body.removeChild(this.d.getElementById("so_mContainer"));
 			this.d.body.removeChild(this.d.getElementById("so_mStyle"));
 			if(typeof Event != "undefined")
-				Event.stopObserving(this.d, "keydown", this.handleKeyEvent.bind(this));
+				Event.stopObserving(this.d, "keydown", this.dKeyDownEvent);
 			this.types = new Array();
 			this.objs = new Array();
 			this.hidden = new Array();
@@ -695,8 +695,9 @@ Prado.Inspector =
 		sObj.id="so_mStyle";
 		sObj.type="text/css";
 		sObj.innerHTML = this.style;
+		this.dKeyDownEvent = this.handleKeyEvent.bind(this);
 		if(typeof Event != "undefined")
-			Event.observe(this.d, "keydown", this.handleKeyEvent.bind(this));
+			Event.observe(this.d, "keydown", this.dKeyDownEvent);
 
 		this.parseJS(obj);
 		this.buildTree();

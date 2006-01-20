@@ -29,7 +29,6 @@ function $(n,d) {
 Function.prototype.bindEvent = function() {
   var __method = this, args = $A(arguments), object = args.shift();
   return function(event) {
-    return __method.apply(object, [event || window.event].concat(args));
+    return __method.call(object, event || window.event, args);
   }
 }
-

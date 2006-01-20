@@ -1,91 +1,20 @@
-Prado.Calendar = Class.create();
-
-Prado.Calendar.Util = Class.create();
-
-Object.extend(Prado.Calendar.Util,
-{	
-	IsLeapYear : function (year) 
-	{
-		return ((year%4 == 0) && ((year%100 != 0) || (year%400 == 0)));
-	},
-	
-	yearLength : function(year) 
-	{
-		if (this.isLeapYear(year))
-			return 366;
-		else
-			return 365;
-	},
-	
-	dayOfYear : function(date) 
-	{
-		var a = this.isLeapYear(date.getFullYear()) ? 
-					Calendar.LEAP_NUM_DAYS : Calendar.NUM_DAYS;	
-		return a[date.getMonth()] + date.getDate();
-	},
-	
-	browser : function()
-	{
-		var info = { Version : "1.0" };
-		var is_major = parseInt( navigator.appVersion );
-		info.nver = is_major;
-		info.ver = navigator.appVersion;
-		info.agent = navigator.userAgent;
-		info.dom = document.getElementById ? 1 : 0;
-		info.opera = window.opera ? 1 : 0;
-		info.ie5 = ( info.ver.indexOf( "MSIE 5" ) > -1 && info.dom && !info.opera ) ? 1 : 0;
-		info.ie6 = ( info.ver.indexOf( "MSIE 6" ) > -1 && info.dom && !info.opera ) ? 1 : 0;
-		info.ie4 = ( document.all && !info.dom && !info.opera ) ? 1 : 0;
-		info.ie = info.ie4 || info.ie5 || info.ie6;
-		info.mac = info.agent.indexOf( "Mac" ) > -1;
-		info.ns6 = ( info.dom && parseInt( info.ver ) >= 5 ) ? 1 : 0;
-		info.ie3 = ( info.ver.indexOf( "MSIE" ) && ( is_major < 4 ) );
-		info.hotjava = ( info.agent.toLowerCase().indexOf( 'hotjava' ) != -1 ) ? 1 : 0;
-		info.ns4 = ( document.layers && !info.dom && !info.hotjava ) ? 1 : 0;
-		info.bw = ( info.ie6 || info.ie5 || info.ie4 || info.ns4 || info.ns6 || info.opera );
-		info.ver3 = ( info.hotjava || info.ie3 );
-		info.opera7 = ( ( info.agent.toLowerCase().indexOf( 'opera 7' ) > -1 ) || ( info.agent.toLowerCase().indexOf( 'opera/7' ) > -1 ) );
-		info.operaOld = info.opera && !info.opera7;
-		return info;
-	},
-	
-	ImportCss : function(doc, css_file) 
-	{
-		if (this.browser().ie)
-			var styleSheet = doc.createStyleSheet(css_file);
-		else 
-		{
-			var elm = doc.createElement("link");
-
-			elm.rel = "stylesheet";
-			elm.href = css_file;
-
-			if (headArr = doc.getElementsByTagName("head"))
-				headArr[0].appendChild(elm);
-		}
-	}
-});
-
-Object.extend(Prado.Calendar,
+Prado.WebUI.TDatePicker = Class.create();
+Prado.WebUI.TDatePicker.prototype = 
 {
-	// Accumulated days per month, for normal and for leap years.
-	// Used in week number calculations.	
-	NUM_DAYS : [0,31,59,90,120,151,181,212,243,273,304,334],
-	LEAP_NUM_DAYS : [0,31,60,91,121,152,182,213,244,274,305,335]
-});
-
-Prado.Calendar.prototype = 
-{
-	monthNames : [	"January",		"February",		"March",	"April",
+	MonthNames : [	"January",		"February",		"March",	"April",
 		"May",			"June",			"July",		"August",
 		"September",	"October",		"November",	"December"
 	],
 
-	shortWeekDayNames : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+	ShortWeekDayNames : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
 
-	format : "yyyy-MM-dd",
+	Format : "yyyy-MM-dd",
+
+	FirstDayOfWeek : 1, // 0 for sunday
 	
-	css : "calendar_system.css",
+	ClassName : "TDatePicker",
+
+	FromYear : 2000, UpToYear: 2015,
 	
 	initialize : function(control, attr)
 	{
@@ -93,26 +22,28 @@ Prado.Calendar.prototype =
 		this.control = $(control);	
 		this.dateSlot = new Array(42);
 		this.weekSlot = new Array(6);
-		this.firstDayOfWeek = 1;
 		this.minimalDaysInFirstWeek	= 4;
-		this.currentDate = new Date();
-		this.selectedDate = null;
-		this.className = "TDatePicker";
+		this.selectedDate = this.newDate();
 		
 		//which element to trigger to show the calendar
-		this.trigger = this.attr.trigger ? $(this.attr.trigger) : this.control;
-		Event.observe(this.trigger, "click", this.show.bind(this));
+		if(this.attr.Trigger)
+		{
+			this.trigger = $(this.attr.Trigger) ;
+			var triggerEvent = this.attr.TriggerEvent || "click";
+		}
+		else
+		{
+			this.trigger  = this.control;
+			var triggerEvent = this.attr.TriggerEvent || "focus";
+		}
 		
-		Prado.Calendar.Util.ImportCss(document, this.css);
-		
-		if(this.attr.format) this.format = this.attr.format;
-		
-		//create it
+		Event.observe(this.trigger, triggerEvent, this.show.bindEvent(this));
+			
+		Object.extend(this,attr);
+
 		this.create();	
-		//alert("ok");
-		this.hookEvents();	
 	},
-	
+
 	create : function()
 	{
 		var div;
@@ -123,7 +54,7 @@ Prado.Calendar.prototype =
 	
 		// Create the top-level div element
 		this._calDiv = document.createElement("div");
-		this._calDiv.className = this.className;
+		this._calDiv.className = this.ClassName;
 		this._calDiv.style.display = "none";		
 		
 		// header div
@@ -143,10 +74,10 @@ Prado.Calendar.prototype =
 		
 		// Previous Month Button
 		td = document.createElement("td");
-		td.className = "prevMonthButton";
-		this._previousMonth = document.createElement("button");
-		this._previousMonth.appendChild(document.createTextNode("<<"));
-		td.appendChild(this._previousMonth);
+		var previousMonth = document.createElement("button");
+		previousMonth.className = "prevMonthButton";
+		previousMonth.appendChild(document.createTextNode("<<"));
+		td.appendChild(previousMonth);
 		tr.appendChild(td);
 		
 		
@@ -155,14 +86,14 @@ Prado.Calendar.prototype =
 		// Create the month drop down 
 		//
 		td = document.createElement("td");
-		td.className = "labelContainer";
 		tr.appendChild(td);
 		this._monthSelect = document.createElement("select");
-	    for (var i = 0 ; i < this.monthNames.length ; i++) {
+		this._monthSelect.className = "months";
+	    for (var i = 0 ; i < this.MonthNames.length ; i++) {
 	        var opt = document.createElement("option");
-	        opt.innerHTML = this.monthNames[i];
+	        opt.innerHTML = this.MonthNames[i];
 	        opt.value = i;
-	        if (i == this.currentDate.getMonth()) {
+	        if (i == this.selectedDate.getMonth()) {
 	            opt.selected = true;
 	        }
 	        this._monthSelect.appendChild(opt);
@@ -177,11 +108,11 @@ Prado.Calendar.prototype =
 		td.className = "labelContainer";
 		tr.appendChild(td);
 		this._yearSelect = document.createElement("select");
-		for(var i=1920; i < 2050; ++i) {
+		for(var i=this.FromYear; i <= this.UpToYear; ++i) {
 			var opt = document.createElement("option");
 			opt.innerHTML = i;
 			opt.value = i;
-			if (i == this.currentDate.getFullYear()) {
+			if (i == this.selectedDate.getFullYear()) {
 				opt.selected = false;
 			}
 			this._yearSelect.appendChild(opt);
@@ -191,16 +122,16 @@ Prado.Calendar.prototype =
 		
 		td = document.createElement("td");
 		td.className = "nextMonthButton";
-		this._nextMonth = document.createElement("button");
-		this._nextMonth.appendChild(document.createTextNode(">>"));
-		td.appendChild(this._nextMonth);
+		var nextMonth = document.createElement("button");
+		nextMonth.appendChild(document.createTextNode(">>"));
+		td.appendChild(nextMonth);
 		tr.appendChild(td);
 		
 		// Calendar body
 		div = document.createElement("div");
 		div.className = "calendarBody";
 		this._calDiv.appendChild(div);
-		this._table = div;
+		var calendarBody = div;
 		
 		// Create the inside of calendar body	
 		
@@ -217,7 +148,7 @@ Prado.Calendar.prototype =
 		
 		for(i=0; i < 7; ++i) {
 			td = document.createElement("th");
-			text = document.createTextNode(this.shortWeekDayNames[(i+this.firstDayOfWeek)%7]);
+			text = document.createTextNode(this.ShortWeekDayNames[(i+this.FirstDayOfWeek)%7]);
 			td.appendChild(text);
 			td.className = "weekDayHead";
 			tr.appendChild(td);
@@ -244,8 +175,8 @@ Prado.Calendar.prototype =
 				tmp.data = text;
 				this.dateSlot[(week*7)+day] = tmp;
 				
-				Event.observe(td, "mouseover", this.hover.bind(this));
-				Event.observe(td, "mouseout", this.hover.bind(this));
+				Event.observe(td, "mouseover", this.hover.bindEvent(this));
+				Event.observe(td, "mouseout", this.hover.bindEvent(this));
 				
 			}
 		}
@@ -254,135 +185,143 @@ Prado.Calendar.prototype =
 		div = document.createElement("div");
 		div.className = "calendarFooter";
 		this._calDiv.appendChild(div);
-		
-		table = document.createElement("table");
-		//table.style.width="100%";
-		table.className = "footerTable";
-		//table.cellSpacing = 0;
-		div.appendChild(table);
-		
-		tbody = document.createElement("tbody");
-		table.appendChild(tbody);
-		
-		tr = document.createElement("tr");
-		tbody.appendChild(tr);
 
-		//
-		// The TODAY button	
-		//
-		td = document.createElement("td");
-		td.className = "todayButton";
-		this._todayButton = document.createElement("button");
-		var today = new Date();
-		var buttonText = today.getDate() + " " + this.monthNames[today.getMonth()] + ", " + today.getFullYear();
-		this._todayButton.appendChild(document.createTextNode(buttonText));
-		td.appendChild(this._todayButton);
-		tr.appendChild(td);
+		var todayButton = document.createElement("button");
+		todayButton.className = "todayButton";
+		var today = this.newDate();
+		var buttonText = today.getDate() + " " + this.MonthNames[today.getMonth()] + ", " + today.getFullYear();
+		todayButton.appendChild(document.createTextNode(buttonText));
+		div.appendChild(todayButton);
 		
-		//
-		// The CLEAR button
-		//
-		td = document.createElement("td");
-		td.className = "clearButton";
-		this._clearButton = document.createElement("button");
-		var today = new Date();
+		var clearButton = document.createElement("button");
+		clearButton.className = "clearButton";
 		buttonText = "Clear";
-		this._clearButton.appendChild(document.createTextNode(buttonText));
-		td.appendChild(this._clearButton);
-		tr.appendChild(td);
+		clearButton.appendChild(document.createTextNode(buttonText));
+		div.appendChild(clearButton);
 		
+/*		if(Prado.Browser().ie)
+		{
+			this.iePopUp = document.createElement('iframe');
+			this.iePopUp.src = "";
+			this.iePopUp.style.position = "absolute"
+			this.iePopUp.scrolling="no"
+			this.iePopUp.frameBorder="0"
+			document.body.appendChild(this.iePopUp);
+		}*/
+
 		document.body.appendChild(this._calDiv);
 		
 		this.update();
 		this.updateHeader();
 		
-		return this._calDiv;
-	},
-	
-	hookEvents : function()
-	{
+		this.ieHack(true);
+
 		// IE55+ extension		
-		this._previousMonth.hideFocus = true;
-		this._nextMonth.hideFocus = true;
-		this._todayButton.hideFocus = true;
+		previousMonth.hideFocus = true;
+		nextMonth.hideFocus = true;
+		todayButton.hideFocus = true;
 		// end IE55+ extension
 		
 		// hook up events
-		Event.observe(this._previousMonth, "click", this.prevMonth.bind(this));
-		Event.observe(this._nextMonth, "click", this.nextMonth.bind(this));
-		Event.observe(this._todayButton, "click", this.selectToday.bind(this));
-		Event.observe(this._clearButton, "click", this.clearSelection.bind(this));
-		Event.observe(this._monthSelect, "change", this.monthSelect.bind(this));
-		Event.observe(this._yearSelect, "change", this.yearSelect.bind(this));
+		Event.observe(previousMonth, "click", this.prevMonth.bindEvent(this));
+		Event.observe(nextMonth, "click", this.nextMonth.bindEvent(this));
+		Event.observe(todayButton, "click", this.selectToday.bindEvent(this));
+		Event.observe(clearButton, "click", this.clearSelection.bindEvent(this));
+		Event.observe(this._monthSelect, "change", this.monthSelect.bindEvent(this));
+		Event.observe(this._yearSelect, "change", this.yearSelect.bindEvent(this));
 
 		// ie6 extension
-		Event.observe(this._calDiv, "mousewheel", this.mouseWheelChange.bind(this));		
+		Event.observe(this._calDiv, "mousewheel", this.mouseWheelChange.bindEvent(this));		
 		
-		Event.observe(this._table, "click", this.selectDate.bind(this));
-		
-		Event.observe(this._calDiv,"keydown", this.keyPressed.bind(this)); 
-		
-		/*
-		this._calDiv.onkeydown = function (e) {
-			if (e == null) e = document.parentWindow.event;
-			var kc = e.keyCode != null ? e.keyCode : e.charCode;
-
-			if(kc == 13) {
-				var d = new Date(dp._currentDate).valueOf();
-				dp.setSelectedDate(d);
-
-				if (!dp._alwaysVisible && dp._hideOnSelect) {
-					dp.hide();
-				}
-				return false;
-			}
+		Event.observe(calendarBody, "click", this.selectDate.bindEvent(this));
 				
-			
-			if (kc < 37 || kc > 40) return true;
-			
-			var d = new Date(dp._currentDate).valueOf();
-			if (kc == 37) // left
-				d -= 24 * 60 * 60 * 1000;
-			else if (kc == 39) // right
-				d += 24 * 60 * 60 * 1000;
-			else if (kc == 38) // up
-				d -= 7 * 24 * 60 * 60 * 1000;
-			else if (kc == 40) // down
-				d += 7 * 24 * 60 * 60 * 1000;
-
-			dp.setCurrentDate(new Date(d));
-			return false;
-		}*/
-		
-		
 	},
 	
+	ieHack : function(cleanup) 
+	{
+		// IE hack
+		if(this.iePopUp) 
+		{
+			this.iePopUp.style.display = "block";
+			this.iePopUp.style.top = (this._calDiv.offsetTop -1 ) + "px";
+			this.iePopUp.style.left = (this._calDiv.offsetLeft -1)+ "px";
+			this.iePopUp.style.width = Math.abs(this._calDiv.offsetWidth -2)+ "px";
+			this.iePopUp.style.height = (this._calDiv.offsetHeight + 1)+ "px";
+			if(cleanup) this.iePopUp.style.display = "none";
+		}
+	},
+
 	keyPressed : function(ev)
 	{
+		if(!this.showing) return;
 		if (!ev) ev = document.parentWindow.event;
 		var kc = ev.keyCode != null ? ev.keyCode : ev.charCode;
 		
-		if(kc = Event.KEY_RETURN)
+		if(kc == Event.KEY_RETURN)
 		{
 			//var d = new Date(this.currentDate);
-			this.setSelectedDate(this.currentDate);
+			//this.setSelectedDate(this.currentDate);
+			Event.stop(ev);
 			this.hide();
-			return false;
 		}
 		
-		if(kc < 37 || kc > 40) return true;
 		
-		var d = new Date(this.currentDate).valueOf();
+		var getDaysPerMonth = function (nMonth, nYear) 
+		{
+			nMonth = (nMonth + 12) % 12;
+	        var days= [31,28,31,30,31,30,31,31,30,31,30,31];
+			var res = days[nMonth];
+			if (nMonth == 1) //feburary, leap years has 29
+                res += nYear % 4 == 0 && !(nYear % 400 == 0) ? 1 : 0;
+	        return res;
+		}
+
+		if(kc < 37 || kc > 40) return true;
+
+		var current = this.selectedDate;
+		var d = current.valueOf();
 		if(kc == Event.KEY_LEFT)
-			d -= 86400000; //-1 day
+		{
+			if(ev.ctrlKey || ev.shiftKey) // -1 month
+			{
+                current.setDate( Math.min(current.getDate(), getDaysPerMonth(current.getMonth() - 1,current.getFullYear())) ); // no need to catch dec -> jan for the year
+                d = current.setMonth( current.getMonth() - 1 );
+			}
+			else
+				d -= 86400000; //-1 day
+		}
 		else if (kc == Event.KEY_RIGHT)
-			d += 86400000; //+1 day
+		{
+			if(ev.ctrlKey || ev.shiftKey) // +1 month
+			{
+				current.setDate( Math.min(current.getDate(), getDaysPerMonth(current.getMonth() + 1,current.getFullYear())) ); // no need to catch dec -> jan for the year
+				d = current.setMonth( current.getMonth() + 1 );
+			}
+			else
+				d += 86400000; //+1 day
+		}
 		else if (kc == Event.KEY_UP)
-			d -= 604800000; // -7 days
-		else if (kc == Event.KEY_DOWN)
-			d += 604800000; // +7 days
-		this.setCurrentDate(new Date(d));
-		return false;		
+		{
+			if(ev.ctrlKey || ev.shiftKey) //-1 year
+			{
+				current.setDate( Math.min(current.getDate(), getDaysPerMonth(current.getMonth(),current.getFullYear() - 1)) ); // no need to catch dec -> jan for the year
+				d = current.setFullYear( current.getFullYear() - 1 );
+			}
+			else
+				d -= 604800000; // -7 days
+		}
+		else if (kc == Event.KEY_DOWN) 
+		{
+			if(ev.ctrlKey || ev.shiftKey) // +1 year
+			{
+				current.setDate( Math.min(current.getDate(), getDaysPerMonth(current.getMonth(),current.getFullYear() + 1)) ); // no need to catch dec -> jan for the year
+				d = current.setFullYear( current.getFullYear() + 1 );
+			}
+			else 
+				d += 7 * 24 * 61 * 60 * 1000; // +7 days
+		}
+		this.setSelectedDate(d);
+		Event.stop(ev);	
 	},
 	
 	selectDate : function(ev)
@@ -398,7 +337,7 @@ Prado.Calendar.prototype =
 		if (el == null || el.tagName == null || el.tagName.toLowerCase() != "td")
 			return;
 			
-		var d = new Date(this.currentDate);
+		var d = this.newDate(this.selectedDate);
 		var n = Number(el.firstChild.data);
 		if (isNaN(n) || n <= 0 || n == null)
 			return;
@@ -410,15 +349,13 @@ Prado.Calendar.prototype =
 	
 	selectToday : function()
 	{
-		this.setSelectedDate(new Date());
+		this.setSelectedDate(this.newDate());
 		this.hide();
 	},
 	
 	clearSelection : function()
 	{
-		this.selectedDate = null;
-		if (isFunction(this.onchange))
-			this.onchange();
+		this.setSelectedDate(this.newDate());
 		this.hide();
 	},
 	
@@ -437,10 +374,9 @@ Prado.Calendar.prototype =
 	{
 		if (e == null) e = document.parentWindow.event;
 		var n = - e.wheelDelta / 120;
-		var d = new Date(this.currentDate);
+		var d = this.newDate(this.selectedDate);
 		var m = d.getMonth() + n;
 		this.setMonth(m);
-		//this.setCurrentDate(d);
 			
 		return false;
 	},
@@ -452,36 +388,26 @@ Prado.Calendar.prototype =
 	
 	formatDate : function()
 	{
-		return this.selectedDate.SimpleFormat(this.format);
+		return this.selectedDate ? this.selectedDate.SimpleFormat(this.Format) : '';
 	},
 
-	setCurrentDate : function(date) 
+	newDate : function(date)
+	{
+		if(!date)
+			date = new Date();
+		if(isString(date)  || isNumber(date))
+			date = new Date(date);
+		return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0,0,0);
+	},
+
+	setSelectedDate : function(date) 
 	{
 		if (date == null)
 			return;
-
-		// if string or number create a Date object
-		if (isString(date)  || isNumber(date))
-			date = new Date(date);
+		this.selectedDate = this.newDate(date);
 	
-		// do not update if not really changed
-		if (this.currentDate.getDate() != date.getDate() ||
-			this.currentDate.getMonth() != date.getMonth() || 
-			this.currentDate.getFullYear() != date.getFullYear()) 
-		{
-		
-			this.currentDate = new Date(date);
-	
-			this.updateHeader();
-			this.update();
-		}
-	
-	},
-	
-	setSelectedDate : function(date) 
-	{
-		this.selectedDate = new Date(date);
-		this.setCurrentDate(this.selectedDate);
+		this.updateHeader();
+		this.update();
 		if (isFunction(this.onchange))
 			this.onchange();
 	},
@@ -493,31 +419,31 @@ Prado.Calendar.prototype =
 
 	getSelectedDate : function () 
 	{
-		return isNull(this.selectedDate) ? null : new Date(this.selectedDate);
+		return isNull(this.selectedDate) ? null : this.newDate(this.selectedDate);
 	},
 	
 	setYear : function(year) 
 	{
-		var d = new Date(this.currentDate);
+		var d = this.newDate(this.selectedDate);
 		d.setFullYear(year);
-		this.setCurrentDate(d);
+		this.setSelectedDate(d);
 	},
 
 	setMonth : function (month) 
 	{
-		var d = new Date(this.currentDate);
+		var d = this.newDate(this.selectedDate);
 		d.setMonth(month);
-		this.setCurrentDate(d);
+		this.setSelectedDate(d);
 	},
 
 	nextMonth : function () 
 	{
-		this.setMonth(this.currentDate.getMonth()+1);
+		this.setMonth(this.selectedDate.getMonth()+1);
 	},
 
 	prevMonth : function () 
 	{
-		this.setMonth(this.currentDate.getMonth()-1);
+		this.setMonth(this.selectedDate.getMonth()-1);
 	},
 	
 	show : function() 
@@ -527,15 +453,20 @@ Prado.Calendar.prototype =
 			var pos = Position.cumulativeOffset(this.control);
 			pos[1] += this.control.offsetHeight;
 			this._calDiv.style.display = "block";
-			this._calDiv.style.top = pos[1] + "px";
+			this._calDiv.style.top = (pos[1]-1) + "px";
 			this._calDiv.style.left = pos[0] + "px";
-			Event.observe(document.body, "click", this.hideOnClick.bind(this));
-			var date = Date.SimpleParse(Form.Element.getValue(this.control), this.format);
+			
+			this.ieHack(false);
+			this.documentClickEvent = this.hideOnClick.bindEvent(this);
+			this.documentKeyDownEvent = this.keyPressed.bindEvent(this);
+			Event.observe(document.body, "click", this.documentClickEvent);
+			var date = Date.SimpleParse(Form.Element.getValue(this.control), this.Format);
 			if(!isNull(date))
 			{
 				this.selectedDate = date;
-				this.setCurrentDate(date);
+				this.setSelectedDate(date);
 			}
+			Event.observe(document,"keydown", this.documentKeyDownEvent); 
 			this.showing = true;
 		}
 	},
@@ -548,7 +479,7 @@ Prado.Calendar.prototype =
 		var within = false;
 		do
 		{
-			within = within || el.className == this.className;
+			within = within || el.className == this.ClassName;
 			within = within || el == this.trigger;
 			within = within || el == this.control;
 			if(within) break;
@@ -563,27 +494,27 @@ Prado.Calendar.prototype =
 		if(this.showing)
 		{
 			this._calDiv.style.display = "none";
+			if(this.iePopUp)
+				this.iePopUp.style.display = "none";
 			this.showing = false;	
-			Event.stopObserving(document.body, "click", this.hideOnClick.bind(this));	
+			Event.stopObserving(document.body, "click", this.documentClickEvent);	
+			Event.stopObserving(document,"keydown", this.documentKeyDownEvent); 
 		}	
 	},
 	
 	update : function() 
 	{
-		var Util = Prado.Calendar.Util;
-
 		// Calculate the number of days in the month for the selected date
-		var date = this.currentDate;
-		var today = (new Date()).toISODate();
+		var date = this.selectedDate;
+		var today = (this.newDate()).toISODate();
 		
-		var selected = isNull(this.selectedDate) ? "" : this.selectedDate.toISODate();
-		var current = date.toISODate();
+		var selected = date.toISODate();
 		var d1 = new Date(date.getFullYear(), date.getMonth(), 1);
 		var d2 = new Date(date.getFullYear(), date.getMonth()+1, 1);
 		var monthLength = Math.round((d2 - d1) / (24 * 60 * 60 * 1000));
 		
 		// Find out the weekDay index for the first of this month
-		var firstIndex = (d1.getDay() - this.firstDayOfWeek) % 7 ;
+		var firstIndex = (d1.getDay() - this.FirstDayOfWeek) % 7 ;
 	    if (firstIndex < 0)
 	    	firstIndex += 7;
 		
@@ -601,13 +532,12 @@ Prado.Calendar.prototype =
 			slot.value = i;
 			slot.data.data = i;
 			slotNode.className = "date";
+			//slotNode.style.color = "";
 			if (d1.toISODate() == today) {
 				slotNode.className += " today";
 			}
-			if (d1.toISODate() == current) {
-				slotNode.className += " current";
-			}
 			if (d1.toISODate() == selected) {
+			//	slotNode.style.color = "blue";
 				slotNode.className += " selected";
 			}
 			d1 = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate()+1);
@@ -633,7 +563,7 @@ Prado.Calendar.prototype =
 	updateHeader : function () {
 
 		var options = this._monthSelect.options;
-		var m = this.currentDate.getMonth();
+		var m = this.selectedDate.getMonth();
 		for(var i=0; i < options.length; ++i) {
 			options[i].selected = false;
 			if (options[i].value == m) {
@@ -642,7 +572,7 @@ Prado.Calendar.prototype =
 		}
 		
 		options = this._yearSelect.options;
-		var year = this.currentDate.getFullYear();
+		var year = this.selectedDate.getFullYear();
 		for(var i=0; i < options.length; ++i) {
 			options[i].selected = false;
 			if (options[i].value == year) {

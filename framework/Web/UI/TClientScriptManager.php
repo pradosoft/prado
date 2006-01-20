@@ -113,6 +113,7 @@ class TClientScriptManager extends TComponent
 	{
 		$options = $this->getPostBackOptions($control);
 		$type = get_class($control);
+		$namespace = empty($namespace) ? "window" : $namespace;
 		$code = "new {$namespace}.{$type}($options);";
 		$this->registerEndScript(sprintf('%08X', crc32($code)), $code);
 		

@@ -155,7 +155,7 @@ function isElement(o,_5){
 return o&&isObject(o)&&((!_5&&(o==window||o==document))||o.nodeType==1);
 }
 function isList(o){
-return o&&isObject(o)&&(isArray(o)||o.item);
+return o&&isObject(o)&&isArray(o);
 }
 
 function isElement(o,_2){
@@ -193,7 +193,7 @@ return x;
 Function.prototype.bindEvent=function(){
 var _6=this,args=$A(arguments),object=args.shift();
 return function(_7){
-return _6.apply(object,[_7||window.event].concat(args));
+return _6.call(object,_7||window.event,args);
 };
 };
 
@@ -258,12 +258,7 @@ return this.pad("left",_6,_7);
 },padRight:function(_8,_9){
 return this.pad("right",_8,_9);
 },zerofill:function(len){
-var s=this;
-var ix=/^[+-]/.test(s)?1:0;
-while(s.length<len){
-s=s.insert(ix,"0");
-}
-return s;
+return this.padLeft(len,"0");
 },trim:function(){
 return this.replace(/^\s+|\s+$/g,"");
 },trimLeft:function(){
@@ -271,15 +266,15 @@ return this.replace(/^\s+/,"");
 },trimRight:function(){
 return this.replace(/\s+$/,"");
 },toFunction:function(){
-var _12=this.split(/\./);
-var _13=window;
-_12.each(function(_14){
-if(_13[new String(_14)]){
-_13=_13[new String(_14)];
+var _11=this.split(/\./);
+var _12=window;
+_11.each(function(_13){
+if(_12[new String(_13)]){
+_12=_12[new String(_13)];
 }
 });
-if(isFunction(_13)){
-return _13;
+if(isFunction(_12)){
+return _12;
 }else{
 if(typeof Logger!="undefined"){
 Logger.error("Missing function",this);
@@ -293,28 +288,28 @@ return null;
 }
 var num=parseInt(this,10);
 return (isNaN(num)?null:num);
-},toDouble:function(_17){
-_17=_17||".";
-var exp=new RegExp("^\\s*([-\\+])?(\\d+)?(\\"+_17+"(\\d+))?\\s*$");
+},toDouble:function(_16){
+_16=_16||".";
+var exp=new RegExp("^\\s*([-\\+])?(\\d+)?(\\"+_16+"(\\d+))?\\s*$");
 var m=this.match(exp);
 if(m==null){
 return null;
 }
-var _19=m[1]+(m[2].length>0?m[2]:"0")+"."+m[4];
-var num=parseFloat(_19);
+var _18=m[1]+(m[2].length>0?m[2]:"0")+"."+m[4];
+var num=parseFloat(_18);
 return (isNaN(num)?null:num);
-},toCurrency:function(_20,_21,_22){
-_20=_20||",";
-_22=_22||".";
-_21=typeof (_21)=="undefined"?2:_21;
-var exp=new RegExp("^\\s*([-\\+])?(((\\d+)\\"+_20+")*)(\\d+)"+((_21>0)?"(\\"+_22+"(\\d{1,"+_21+"}))?":"")+"\\s*$");
+},toCurrency:function(_19,_20,_21){
+_19=_19||",";
+_21=_21||".";
+_20=typeof (_20)=="undefined"?2:_20;
+var exp=new RegExp("^\\s*([-\\+])?(((\\d+)\\"+_19+")*)(\\d+)"+((_20>0)?"(\\"+_21+"(\\d{1,"+_20+"}))?":"")+"\\s*$");
 var m=this.match(exp);
 if(m==null){
 return null;
 }
-var _23=m[2]+m[5];
-var _24=m[1]+_23.replace(new RegExp("(\\"+_20+")","g"),"")+((_21>0)?"."+m[7]:"");
-var num=parseFloat(_24);
+var _22=m[2]+m[5];
+var _23=m[1]+_22.replace(new RegExp("(\\"+_19+")","g"),"")+((_20>0)?"."+m[7]:"");
+var num=parseFloat(_23);
 return (isNaN(num)?null:num);
 }});
 
@@ -1969,9 +1964,9 @@ return _89;
 Object.extend(Date.prototype,{SimpleFormat:function(_1){
 var _2=new Array();
 _2["d"]=this.getDate();
-_2["dd"]=Prado.Util.pad(this.getDate(),2);
+_2["dd"]=String(this.getDate()).zerofill(2);
 _2["M"]=this.getMonth()+1;
-_2["MM"]=Prado.Util.pad(this.getMonth()+1,2);
+_2["MM"]=String(this.getMonth()+1).zerofill(2);
 var _3=""+this.getFullYear();
 _3=(_3.length==2)?"19"+_3:_3;
 _2["yyyy"]=_3;
@@ -1984,8 +1979,8 @@ _4=_4.replace(_6,_2[_5]);
 return _4;
 },toISODate:function(){
 var y=this.getFullYear();
-var m=Prado.Util.pad(this.getMonth()+1);
-var d=Prado.Util.pad(this.getDate());
+var m=String(this.getMonth()+1).zerofill(2);
+var d=String(this.getDate()).zerofill(2);
 return String(y)+String(m)+String(d);
 }});
 Object.extend(Date,{SimpleParse:function(_10,_11){
@@ -2106,7 +2101,40 @@ var _31=new Date(_28,_29-1,_30,0,0,0);
 return _31;
 }});
 
-var Prado={Version:"3.0a"};
+var Prado={Version:"3.0a",Browser:function(){
+var _1={Version:"1.0"};
+var _2=parseInt(navigator.appVersion);
+_1.nver=_2;
+_1.ver=navigator.appVersion;
+_1.agent=navigator.userAgent;
+_1.dom=document.getElementById?1:0;
+_1.opera=window.opera?1:0;
+_1.ie5=(_1.ver.indexOf("MSIE 5")>-1&&_1.dom&&!_1.opera)?1:0;
+_1.ie6=(_1.ver.indexOf("MSIE 6")>-1&&_1.dom&&!_1.opera)?1:0;
+_1.ie4=(document.all&&!_1.dom&&!_1.opera)?1:0;
+_1.ie=_1.ie4||_1.ie5||_1.ie6;
+_1.mac=_1.agent.indexOf("Mac")>-1;
+_1.ns6=(_1.dom&&parseInt(_1.ver)>=5)?1:0;
+_1.ie3=(_1.ver.indexOf("MSIE")&&(_2<4));
+_1.hotjava=(_1.agent.toLowerCase().indexOf("hotjava")!=-1)?1:0;
+_1.ns4=(document.layers&&!_1.dom&&!_1.hotjava)?1:0;
+_1.bw=(_1.ie6||_1.ie5||_1.ie4||_1.ns4||_1.ns6||_1.opera);
+_1.ver3=(_1.hotjava||_1.ie3);
+_1.opera7=((_1.agent.toLowerCase().indexOf("opera 7")>-1)||(_1.agent.toLowerCase().indexOf("opera/7")>-1));
+_1.operaOld=_1.opera&&!_1.opera7;
+return _1;
+},ImportCss:function(_3,_4){
+if(Prado.Browser().ie){
+var _5=_3.createStyleSheet(_4);
+}else{
+var _6=_3.createElement("link");
+_6.rel="stylesheet";
+_6.href=_4;
+if(headArr=_3.getElementsByTagName("head")){
+headArr[0].appendChild(_6);
+}
+}
+}};
 
 Prado.Focus=Class.create();
 Prado.Focus.setFocus=function(id){

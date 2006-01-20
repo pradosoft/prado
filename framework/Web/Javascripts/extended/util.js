@@ -86,6 +86,6 @@ function isElement(o, strict) {
 /** 
  * true if o is an Array or a NodeList, (NodeList in Opera returns a type of function)
  */
-function isList(o) { return o && isObject(o) && (isArray(o) || (o.item && o.tagName.toLowerCase() != "select")) }
+function isList(o) { return o && isObject(o) && isArray(o) }
 
 
