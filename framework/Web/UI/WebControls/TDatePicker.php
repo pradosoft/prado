@@ -235,7 +235,7 @@ class TDatePicker extends TTextBox
 			$serializer = new TJavascriptSerializer($this->getDatePickerOptions());
 			$options = $serializer->toJavascript();
 			$id = $this->getClientID();
-			$code = "new Prado.WebUI.TDatePicker('$id', $options);";
+			$code = "Event.OnLoad(function(){ new Prado.WebUI.TDatePicker('$id', $options); });";
 			$scripts->registerEndScript("prado:$id", $code);
 		}
 	}

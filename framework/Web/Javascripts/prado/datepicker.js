@@ -199,7 +199,7 @@ Prado.WebUI.TDatePicker.prototype =
 		clearButton.appendChild(document.createTextNode(buttonText));
 		div.appendChild(clearButton);
 		
-/*		if(Prado.Browser().ie)
+		if(Prado.Browser().ie)
 		{
 			this.iePopUp = document.createElement('iframe');
 			this.iePopUp.src = "";
@@ -207,7 +207,7 @@ Prado.WebUI.TDatePicker.prototype =
 			this.iePopUp.scrolling="no"
 			this.iePopUp.frameBorder="0"
 			document.body.appendChild(this.iePopUp);
-		}*/
+		}
 
 		document.body.appendChild(this._calDiv);
 		

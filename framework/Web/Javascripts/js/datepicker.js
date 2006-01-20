@@ -128,6 +128,14 @@ _20.className="clearButton";
 _19="Clear";
 _20.appendChild(document.createTextNode(_19));
 _4.appendChild(_20);
+if(Prado.Browser().ie){
+this.iePopUp=document.createElement("iframe");
+this.iePopUp.src="";
+this.iePopUp.style.position="absolute";
+this.iePopUp.scrolling="no";
+this.iePopUp.frameBorder="0";
+document.body.appendChild(this.iePopUp);
+}
 document.body.appendChild(this._calDiv);
 this.update();
 this.updateHeader();
