@@ -471,7 +471,6 @@ framework/Security/TMembershipManager.php -text
 framework/Security/TUserManager.php -text
 framework/TApplication.php -text
 framework/TComponent.php -text
-framework/TODO.txt -text
 framework/Web/Javascripts/TClientScript.php -text
 framework/Web/Javascripts/TJSON.php -text
 framework/Web/Javascripts/TJavascriptSerializer.php -text

@@ -73,7 +73,7 @@ class TThemeManager extends TModule
 	public function getTheme($name)
 	{
 		$themePath=$this->getBasePath().'/'.$name;
-		$themeUrl=$this->getBaseUrl().'/'.$name;
+		$themeUrl=rtrim($this->getBaseUrl(),'/').'/'.$name;
 		return new TTheme($themePath,$themeUrl);
 
 	}
