@@ -1,0 +1,7 @@
+<com:TContent ID="Content">
+<com:TForm>
+	<com:TDatePicker Mode="Button" />
+	<p>aaaa<br />aaaa<br />aaaa<br />aaaa<br />aaaa<br /></p>
+	<com:TDatePicker />
+</com:TForm>
+</com:TContent>
