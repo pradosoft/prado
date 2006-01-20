@@ -386,7 +386,15 @@ class PradoBase
 	 */
 	public static function getVersion()
 	{
-		return '3.0a';
+		return '3.0b';
+	}
+
+	/**
+	 * @return string a string that can be displayed on your Web page showing powered-by-PRADO information
+	 */
+	public static function poweredByPrado()
+	{
+		return '<a title="Powered by PRADO" href="http://www.pradosoft.com/"><img src="http://www.pradosoft.com/images/powered.gif" style="border-width:0px;" alt="Powered by PRADO" /></a>';
 	}
 
 	/**
