@@ -1,5 +1,48 @@
 <com:TContent ID="Content">
 <com:TForm>
-	<com:TDatePicker />
+	<com:TDatePicker Mode="Button"/>
+  <br />
+   <select style="width: 200px; height: 50px"><option value="1">One</option></select>
+
+
+as<br/>
+dv<br/>
+as<br/>
+d<br/>
+as<br/>
+d<br/>
+asd<br/>
+a<br/>
+sd<br/>
+dv<br/>
+as<br/>
+d<br/>
+as<br/>
+d<br/>
+asd<br/>
+a<br/>
+sd<br/>
+dv<br/>
+as<br/>
+d<br/>
+as<br/>
+d<br/>
+asd<br/>
+a<br/>
+sd<br/><com:TDatePicker />
+d<br/>
+as<br/>
+d<br/>
+asd<br/>
+a<br/>
+sd<br/>
+dv<br/>
+as<br/>
+d<br/>
+as<br/>
+d<br/>
+asd<br/>
+a<br/>
+sd<br/>
 </com:TForm>
 </com:TContent>
