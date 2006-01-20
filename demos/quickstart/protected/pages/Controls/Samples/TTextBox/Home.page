@@ -45,19 +45,37 @@ Read-only text box:
 </td></tr>
 
 <tr><td class="samplenote">
-Auto postback text box:
+Auto postback text box not causing validation:
 </td><td class="sampleaction">
 <com:TTextBox
 	Text="change me"
 	AutoPostBack="true"
+	CausesValidation="false"
 	TextChanged="textChanged" />
+</td></tr>
+
+<tr><td class="samplenote">
+Auto postback text box causing validation:
+</td><td class="sampleaction">
+<com:TTextBox ID="TextBox3"
+	AutoPostBack="true"
+	ValidationGroup="Group1"
+	Text="change me" />
+<com:TRequiredFieldValidator
+	ControlToValidate="TextBox3"
+	ErrorMessage="You must enter 'test'."
+	InitialValue="test"
+	ValidationGroup="Group1" />
 </td></tr>
 
 <tr><td class="samplenote">
 Text box's behavior upon postback:
 </td><td class="sampleaction">
 <com:TTextBox ID="TextBox1" Text="text" />
-<com:TButton Text="Submit" Click="submitText" />
+<com:TButton
+	Text="Submit"
+	CausesValidation="false"
+	Click="submitText" />
 </td></tr>
 
 <tr><td class="samplenote">
@@ -69,7 +87,9 @@ Safety feature (cross-site scripting prevention):
 	Text="<a href=javascript:xxx>test</a>"
 	Width="200px"/>
 <b>SafeText:</b>
-<com:TLabel BackColor="silver" ID="Output" Text=<%#$this->Page->TextBox2->SafeText%> />
+<com:TLabel ID="Output"
+	BackColor="silver"
+	Text=<%#$this->Page->TextBox2->SafeText%> />
 </td></tr>
 
 </table>
@@ -120,13 +140,29 @@ Read-only text box with text-wrapping disabled:
 </td></tr>
 
 <tr><td class="samplenote">
-Auto postback text box:
+Auto postback text box not causing validation:
 </td><td class="sampleaction">
 <com:TTextBox
 	TextMode="MultiLine"
 	Text="change me"
 	AutoPostBack="true"
+	CausesValidation="false"
 	TextChanged="textChanged" />
+</td></tr>
+
+<tr><td class="samplenote">
+Auto postback text box causing validation:
+</td><td class="sampleaction">
+<com:TTextBox ID="MultiTextBox3"
+	TextMode="MultiLine"
+	AutoPostBack="true"
+	ValidationGroup="Group2"
+	Text="change me" />
+<com:TRequiredFieldValidator
+	ControlToValidate="MultiTextBox3"
+	ErrorMessage="You must enter 'test'."
+	InitialValue="test"
+	ValidationGroup="Group2" />
 </td></tr>
 
 </table>
