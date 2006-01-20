@@ -14,7 +14,8 @@
  * TDummyDataSource class
  *
  * TDummyDataSource implements a dummy data collection with a specified number
- * of dummy data items. You can traverse it using <b>foreach</b>
+ * of dummy data items. The number of virtual items can be set via
+ * {@link setCount Count} property. You can traverse it using <b>foreach</b>
  * PHP statement like the following,
  * <code>
  * foreach($dummyDataSource as $dataItem)
@@ -29,11 +30,18 @@ class TDummyDataSource extends TComponent implements IteratorAggregate
 {
 	private $_count;
 
+	/**
+	 * Constructor.
+	 * @param integer number of (virtual) items in the data source.
+	 */
 	public function __construct($count)
 	{
 		$this->_count=$count;
 	}
 
+	/**
+	 * @return integer number of (virtual) items in the data source.
+	 */
 	public function getCount()
 	{
 		return $this->_count;
@@ -69,9 +77,7 @@ class TDummyDataSourceIterator implements Iterator
 
 	/**
 	 * Constructor.
-	 * @param TList the data to be iterated through
-	 * @param integer start index
-	 * @param integer number of items to be iterated through
+	 * @param integer number of (virtual) items in the data source.
 	 */
 	public function __construct($count)
 	{
