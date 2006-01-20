@@ -475,6 +475,9 @@ framework/TODO.txt -text
 framework/Web/Javascripts/TClientScript.php -text
 framework/Web/Javascripts/TJSON.php -text
 framework/Web/Javascripts/TJavascriptSerializer.php -text
+framework/Web/Javascripts/datepicker/calendar.png -text
+framework/Web/Javascripts/datepicker/datepicker.js -text
+framework/Web/Javascripts/datepicker/default.css -text
 framework/Web/Javascripts/effects/CHANGELOG -text
 framework/Web/Javascripts/effects/MIT-LICENSE -text
 framework/Web/Javascripts/effects/README -text
@@ -505,13 +508,10 @@ framework/Web/Javascripts/js/validator.js -text
 framework/Web/Javascripts/prado/activecontrols.js -text
 framework/Web/Javascripts/prado/ajax.js -text
 framework/Web/Javascripts/prado/controls.js -text
-framework/Web/Javascripts/prado/datepicker.js -text
-framework/Web/Javascripts/prado/datepicker_default.css -text
 framework/Web/Javascripts/prado/effects.js -text
 framework/Web/Javascripts/prado/element.js -text
 framework/Web/Javascripts/prado/form.js -text
 framework/Web/Javascripts/prado/prado.js -text
-framework/Web/Javascripts/prado/test.html -text
 framework/Web/Javascripts/prado/validation.js -text
 framework/Web/Javascripts/prado/validators.js -text
 framework/Web/Javascripts/prototype/AUTHORS -text

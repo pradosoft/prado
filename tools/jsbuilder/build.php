@@ -113,7 +113,7 @@ $libraries = array(
 
 	//date picker
 	'datepicker.js' => array(
-		'prado/datepicker.js'
+		'datepicker/datepicker.js'
 	)
 );
 

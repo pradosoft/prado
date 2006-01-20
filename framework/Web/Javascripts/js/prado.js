@@ -1961,144 +1961,151 @@ _89.push(_88[i]);
 return _89;
 }};
 
-Object.extend(Date.prototype,{SimpleFormat:function(_1){
-var _2=new Array();
-_2["d"]=this.getDate();
-_2["dd"]=String(this.getDate()).zerofill(2);
-_2["M"]=this.getMonth()+1;
-_2["MM"]=String(this.getMonth()+1).zerofill(2);
-var _3=""+this.getFullYear();
-_3=(_3.length==2)?"19"+_3:_3;
-_2["yyyy"]=_3;
-_2["yy"]=_2["yyyy"].toString().substr(2,2);
-var _4=new String(_1);
-for(var _5 in _2){
-var _6=new RegExp("\\b"+_5+"\\b","g");
-_4=_4.replace(_6,_2[_5]);
+Object.extend(Date.prototype,{SimpleFormat:function(_1,_2){
+_2=_2||{};
+var _3=new Array();
+_3["d"]=this.getDate();
+_3["dd"]=String(this.getDate()).zerofill(2);
+_3["M"]=this.getMonth()+1;
+_3["MM"]=String(this.getMonth()+1).zerofill(2);
+if(_2.AbbreviatedMonthNames){
+_3["MMM"]=_2.AbbreviatedMonthNames[this.getMonth()];
 }
-return _4;
+if(_2.MonthNames){
+_3["MMMM"]=_2.MonthNames[this.getMonth()];
+}
+var _4=""+this.getFullYear();
+_4=(_4.length==2)?"19"+_4:_4;
+_3["yyyy"]=_4;
+_3["yy"]=_3["yyyy"].toString().substr(2,2);
+var _5=new String(_1);
+for(var _6 in _3){
+var _7=new RegExp("\\b"+_6+"\\b","g");
+_5=_5.replace(_7,_3[_6]);
+}
+return _5;
 },toISODate:function(){
 var y=this.getFullYear();
 var m=String(this.getMonth()+1).zerofill(2);
 var d=String(this.getDate()).zerofill(2);
 return String(y)+String(m)+String(d);
 }});
-Object.extend(Date,{SimpleParse:function(_10,_11){
-val=String(_10);
-_11=String(_11);
+Object.extend(Date,{SimpleParse:function(_11,_12){
+val=String(_11);
+_12=String(_12);
 if(val.length<=0){
 return null;
 }
-if(_11.length<=0){
-return new Date(_10);
+if(_12.length<=0){
+return new Date(_11);
 }
-var _12=function(val){
-var _14="1234567890";
+var _13=function(val){
+var _15="1234567890";
 for(var i=0;i<val.length;i++){
-if(_14.indexOf(val.charAt(i))==-1){
+if(_15.indexOf(val.charAt(i))==-1){
 return false;
 }
 }
 return true;
 };
-var _16=function(str,i,_18,_19){
-for(var x=_19;x>=_18;x--){
-var _21=str.substring(i,i+x);
-if(_21.length<_18){
+var _17=function(str,i,_19,_20){
+for(var x=_20;x>=_19;x--){
+var _22=str.substring(i,i+x);
+if(_22.length<_19){
 return null;
 }
-if(_12(_21)){
-return _21;
+if(_13(_22)){
+return _22;
 }
 }
 return null;
 };
-var _22=0;
 var _23=0;
+var _24=0;
 var c="";
-var _25="";
 var _26="";
+var _27="";
 var x,y;
 var now=new Date();
-var _28=now.getFullYear();
-var _29=now.getMonth()+1;
-var _30=1;
-while(_23<_11.length){
-c=_11.charAt(_23);
-_25="";
-while((_11.charAt(_23)==c)&&(_23<_11.length)){
-_25+=_11.charAt(_23++);
+var _29=now.getFullYear();
+var _30=now.getMonth()+1;
+var _31=1;
+while(_24<_12.length){
+c=_12.charAt(_24);
+_26="";
+while((_12.charAt(_24)==c)&&(_24<_12.length)){
+_26+=_12.charAt(_24++);
 }
-if(_25=="yyyy"||_25=="yy"||_25=="y"){
-if(_25=="yyyy"){
+if(_26=="yyyy"||_26=="yy"||_26=="y"){
+if(_26=="yyyy"){
 x=4;
 y=4;
 }
-if(_25=="yy"){
+if(_26=="yy"){
 x=2;
 y=2;
 }
-if(_25=="y"){
+if(_26=="y"){
 x=2;
 y=4;
 }
-_28=_16(val,_22,x,y);
-if(_28==null){
+_29=_17(val,_23,x,y);
+if(_29==null){
 return null;
 }
-_22+=_28.length;
-if(_28.length==2){
-if(_28>70){
-_28=1900+(_28-0);
+_23+=_29.length;
+if(_29.length==2){
+if(_29>70){
+_29=1900+(_29-0);
 }else{
-_28=2000+(_28-0);
+_29=2000+(_29-0);
 }
-}
-}else{
-if(_25=="MM"||_25=="M"){
-_29=_16(val,_22,_25.length,2);
-if(_29==null||(_29<1)||(_29>12)){
-return null;
-}
-_22+=_29.length;
-}else{
-if(_25=="dd"||_25=="d"){
-_30=_16(val,_22,_25.length,2);
-if(_30==null||(_30<1)||(_30>31)){
-return null;
-}
-_22+=_30.length;
-}else{
-if(val.substring(_22,_22+_25.length)!=_25){
-return null;
-}else{
-_22+=_25.length;
-}
-}
-}
-}
-}
-if(_22!=val.length){
-return null;
-}
-if(_29==2){
-if(((_28%4==0)&&(_28%100!=0))||(_28%400==0)){
-if(_30>29){
-return null;
 }
 }else{
-if(_30>28){
+if(_26=="MM"||_26=="M"){
+_30=_17(val,_23,_26.length,2);
+if(_30==null||(_30<1)||(_30>12)){
+return null;
+}
+_23+=_30.length;
+}else{
+if(_26=="dd"||_26=="d"){
+_31=_17(val,_23,_26.length,2);
+if(_31==null||(_31<1)||(_31>31)){
+return null;
+}
+_23+=_31.length;
+}else{
+if(val.substring(_23,_23+_26.length)!=_26){
+return null;
+}else{
+_23+=_26.length;
+}
+}
+}
+}
+}
+if(_23!=val.length){
+return null;
+}
+if(_30==2){
+if(((_29%4==0)&&(_29%100!=0))||(_29%400==0)){
+if(_31>29){
+return null;
+}
+}else{
+if(_31>28){
 return null;
 }
 }
 }
-if((_29==4)||(_29==6)||(_29==9)||(_29==11)){
-if(_30>30){
+if((_30==4)||(_30==6)||(_30==9)||(_30==11)){
+if(_31>30){
 return null;
 }
 }
-var _31=new Date(_28,_29-1,_30,0,0,0);
-return _31;
+var _32=new Date(_29,_30-1,_31,0,0,0);
+return _32;
 }});
 
 var Prado={Version:"3.0a",Browser:function(){

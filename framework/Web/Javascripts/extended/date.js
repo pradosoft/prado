@@ -1,20 +1,24 @@
 
 Object.extend(Date.prototype,
 {	
-	SimpleFormat: function(format)
+	SimpleFormat: function(format, data)
 	{
+		data = data || {};
 		var bits = new Array();
 		bits['d'] = this.getDate();
 		bits['dd'] = String(this.getDate()).zerofill(2);
 		
 		bits['M'] = this.getMonth()+1;
 		bits['MM'] = String(this.getMonth()+1).zerofill(2);
-    
+		if(data.AbbreviatedMonthNames)
+			bits['MMM'] = data.AbbreviatedMonthNames[this.getMonth()];
+		if(data.MonthNames)
+			bits['MMMM'] = data.MonthNames[this.getMonth()];
 		var yearStr = "" + this.getFullYear();
 		yearStr = (yearStr.length == 2) ? '19' + yearStr: yearStr;
 		bits['yyyy'] = yearStr;
 		bits['yy'] = bits['yyyy'].toString().substr(2,2);
-
+		
 		// do some funky regexs to replace the format string
 		// with the real values
 		var frm = new String(format);

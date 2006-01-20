@@ -1,12 +1,29 @@
 .TDatePicker
 {
 	border: 1px solid #919EA9;
-	position: absolute;
 	background-color: White;
 	text-align: center;
 	font-size: 11px;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	cursor: default;
+}
+
+.TDatePickerButton
+{
+	width: 30px;
+}
+
+.TDatePickerImageButton
+{
+	padding: 2px;
+	border: 1px solid #919EA9;
+	vertical-align: top;
+	margin-left: 1px;
+}
+
+.TDatePickerImageButton:hover
+{
+	border-color: #ddd;
 }
 
 .TDatePicker select

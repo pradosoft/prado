@@ -56,6 +56,7 @@ Prado.WebUI.TDatePicker.prototype =
 		this._calDiv = document.createElement("div");
 		this._calDiv.className = this.ClassName;
 		this._calDiv.style.display = "none";		
+		this._calDiv.style.position = "absolute"
 		
 		// header div
 		div = document.createElement("div");
@@ -137,7 +138,6 @@ Prado.WebUI.TDatePicker.prototype =
 		
 		var text;
 		table = document.createElement("table");
-		//table.style.width="100%";
 		table.className = "grid";
 	
 	    div.appendChild(table);
@@ -189,16 +189,17 @@ Prado.WebUI.TDatePicker.prototype =
 		var todayButton = document.createElement("button");
 		todayButton.className = "todayButton";
 		var today = this.newDate();
-		var buttonText = today.getDate() + " " + this.MonthNames[today.getMonth()] + ", " + today.getFullYear();
+		var buttonText = today.SimpleFormat(this.Format);
 		todayButton.appendChild(document.createTextNode(buttonText));
 		div.appendChild(todayButton);
 		
-		var clearButton = document.createElement("button");
+		/*var clearButton = document.createElement("button");
 		clearButton.className = "clearButton";
 		buttonText = "Clear";
 		clearButton.appendChild(document.createTextNode(buttonText));
 		div.appendChild(clearButton);
-		
+		*/
+
 		if(Prado.Browser().ie)
 		{
 			this.iePopUp = document.createElement('iframe');
@@ -226,7 +227,7 @@ Prado.WebUI.TDatePicker.prototype =
 		Event.observe(previousMonth, "click", this.prevMonth.bindEvent(this));
 		Event.observe(nextMonth, "click", this.nextMonth.bindEvent(this));
 		Event.observe(todayButton, "click", this.selectToday.bindEvent(this));
-		Event.observe(clearButton, "click", this.clearSelection.bindEvent(this));
+		//Event.observe(clearButton, "click", this.clearSelection.bindEvent(this));
 		Event.observe(this._monthSelect, "change", this.monthSelect.bindEvent(this));
 		Event.observe(this._yearSelect, "change", this.yearSelect.bindEvent(this));
 
@@ -259,10 +260,13 @@ Prado.WebUI.TDatePicker.prototype =
 		
 		if(kc == Event.KEY_RETURN)
 		{
-			//var d = new Date(this.currentDate);
-			//this.setSelectedDate(this.currentDate);
+			this.setSelectedDate(this.selectedDate);
 			Event.stop(ev);
 			this.hide();
+		}
+		if(kc == Event.KEY_ESC)
+		{
+			Event.stop(ev); this.hide();
 		}
 		
 		
@@ -349,8 +353,10 @@ Prado.WebUI.TDatePicker.prototype =
 	
 	selectToday : function()
 	{
+		if(this.selectedDate.toISODate() == this.newDate().toISODate())
+			this.hide();
+
 		this.setSelectedDate(this.newDate());
-		this.hide();
 	},
 	
 	clearSelection : function()

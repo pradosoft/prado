@@ -64,11 +64,11 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @param string calendar UI mode, "Basic", "Button" or "Image"
+	 * @param string calendar UI mode, "Basic", "Button" or "ImageButton"
 	 */
 	public function setMode($value)
 	{
-	   $this->setViewState('Mode', TPropertyValue::ensureEnum($value, 'Basic', 'Button', 'Image'), 'Basic');
+	   $this->setViewState('Mode', TPropertyValue::ensureEnum($value, 'Basic', 'Button', 'ImageButton'), 'Basic');
 	}
 
 	/**
@@ -81,7 +81,7 @@ class TDatePicker extends TTextBox
 	/**
 	 * @param string the image url for "Image" UI mode.
 	 */
-	public function setImageUrl($value)
+	public function setButtonImageUrl($value)
 	{
 	   $this->setViewState('ImageUrl', $value, '');
 	}
@@ -89,7 +89,7 @@ class TDatePicker extends TTextBox
 	/**
 	 * @return string the image url for "Image" UI mode.
 	 */
-	public function getImageUrl()
+	public function getButtonImageUrl()
 	{
 	   return $this->getViewState('ImageUrl', '');
 	}
@@ -99,7 +99,7 @@ class TDatePicker extends TTextBox
 	 */
 	public function setCalendarStyle($value)
 	{
-	   $this->setViewState('CalendarStyle', $value, 'datepicker_default');
+	   $this->setViewState('CalendarStyle', $value, 'default');
 	}
 
 	/**
@@ -107,7 +107,7 @@ class TDatePicker extends TTextBox
 	 */
 	public function getCalendarStyle()
 	{
-	   return $this->getViewState('CalendarStyle', 'datepicker_default');
+	   return $this->getViewState('CalendarStyle', 'default');
 	}	
 
 	/**
@@ -127,38 +127,52 @@ class TDatePicker extends TTextBox
 		return $this->getViewState('FirstDayOfWeek', 1);
 	}
 
+	/**
+	 * @return string text for the date picker button. Default is "...".
+	 */
 	public function getButtonText()
 	{
 		return $this->getViewState('ButtonText', '...');
 	}
 
+	/**
+	 * @param string text for the date picker button
+	 */
 	public function setButtonText($value)
 	{
 		$this->setViewState('ButtonText', $value, '...');
 	}
 
 	/**
-	 * Sets the date picker starting year
-	 * @param integer starting year
+	 * @param integer date picker starting year, default is 2000.
 	 */
 	public function setFromYear($value)
 	{
-		$this->setViewState('FromYear', TPropertyValue::ensureInteger($value), 2000);
+		$this->setViewState('FromYear', TPropertyValue::ensureInteger($value), intval(@date('Y'))-5);
 	}
 
+	/**
+	 * @return integer date picker starting year, default is -5 years
+	 */
 	public function getFromYear()
 	{
-		return $this->getViewState('FromYear', 2000);
+		return $this->getViewState('FromYear', intval(@date('Y'))-5);
 	}
 
+	/**
+	 * @param integer date picker ending year, default +10 years
+	 */
 	public function setUpToYear($value)
 	{
-		$this-setViewState('UpToYear', TPropertyValue::ensureInteger($value), 2015);
+		$this-setViewState('UpToYear', TPropertyValue::ensureInteger($value), intval(@date('Y'))+10);
 	}
 
+	/**
+	 * @return integer date picker ending year, default +10 years
+	 */
 	public function getUpToYear()
 	{
-		return $this->getViewState('UpToYear', 2015);
+		return $this->getViewState('UpToYear', intval(@date('Y'))+10);
 	}
 
 	protected function getDatePickerOptions()
@@ -170,7 +184,25 @@ class TDatePicker extends TTextBox
 		$options['UpToYear'] = $this->getUpToYear();
 		if($this->getMode()!=='Basic')
 			$options['Trigger'] = $this->getDatePickerButtonID();
+	
+		$options = array_merge($options, $this->getCulturalOptions());
+		return $options;
+	}
+
+	protected function getCulturalOptions()
+	{
+		$app = $this->getApplication()->getGlobalization();
+		$culture = $this->getCulture() == '' ? $app->getCulture() : $this->getCulture();
+		if($culture == 'en') return array();
 		
+		//expensive operations
+		Prado::using('System.I18N.core.DateTimeFormatInfo');
+		$info = Prado::createComponent('System.I18N.core.CultureInfo', $culture);
+		$date = $info->getDateTimeFormat();
+		$serializer = new TJavascriptSerializer($date->getMonthNames());
+		$options['MonthNames'] = $serializer->toList();
+		$serializer = new TJavascriptSerializer($date->getAbbreviatedDayNames());
+		$options['ShortWeekDayNames'] = $serializer->toList();
 		return $options;
 	}
 
@@ -192,7 +224,7 @@ class TDatePicker extends TTextBox
 		switch ($this->getMode())
 		{
 			case 'Button': $this->renderButtonDatePicker($writer); break;
-			case 'Image' : $this->renderImageDatePicker($writer); break;
+			case 'ImageButton' : $this->renderImageButtonDatePicker($writer); break;
 		
 		}
 	}
@@ -206,22 +238,38 @@ class TDatePicker extends TTextBox
 	{
 		$writer->addAttribute('id', $this->getDatePickerButtonID());		
 		$writer->addAttribute('type', 'button');
+		$writer->addAttribute('class', $this->getCssClass().' TDatePickerButton');
 		$writer->addAttribute('value',$this->getButtonText());
 		$writer->renderBeginTag("input");
 	}
 
+	protected function renderImageButtonDatePicker($writer)
+	{
+		$url = $this->getButtonImageUrl();
+		$url = empty($url) ? $this->publishDefaultButtonImage() : $url;
+		$writer->addAttribute('id', $this->getDatePickerButtonID());
+		$writer->addAttribute('src', $url);
+		$writer->addAttribute('class', $this->getCssClass().' TDatePickerImageButton');
+		$writer->renderBeginTag('img');
+	}
+
+	protected function publishDefaultButtonImage()
+	{
+		$cs = $this->getPage()->getClientScript();
+		$image = 'System.Web.Javascripts.datepicker.calendar';
+		$file =  Prado::getPathOfNamespace($image, '.png');
+		return $this->getService()->getAsset($file);
+	}
 
 	protected function publishCalendarStyle()
 	{
 		$cs = $this->getPage()->getClientScript();
-		
-		$style = $this->getCalendarStyle();
-		$default = 'System.Web.Javascripts.prado.'.$style;
-		$stylesheet = preg_match('/\.|\//', $style) ? $style : $default;
-		
-		$cssFile=Prado::getPathOfNamespace($stylesheet,'.css');
-		if(!$cs->isStyleSheetFileRegistered($stylesheet))
-			$cs->registerStyleSheetFile($stylesheet, $this->getService()->getAsset($cssFile));
+		$style = 'System.Web.Javascripts.datepicker.'.$this->getCalendarStyle();		
+		$cssFile=Prado::getPathOfNamespace($style,'.css');
+		$url = $this->getService()->getAsset($cssFile);
+		if(!$cs->isStyleSheetFileRegistered($style))
+			$cs->registerStyleSheetFile($style, $url);
+		return $url;
 	}
 
 	protected function addAttributesToRender($writer)

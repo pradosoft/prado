@@ -3,8 +3,6 @@
 	<com:TDatePicker Mode="Button"/>
   <br />
    <select style="width: 200px; height: 50px"><option value="1">One</option></select>
-
-
 as<br/>
 dv<br/>
 as<br/>
@@ -13,6 +11,7 @@ as<br/>
 d<br/>
 asd<br/>
 a<br/>
+	<com:TDatePicker Mode="ImageButton" Culture="zh_CN" DateFormat="日期：yyyy年M月d日"/>
 sd<br/>
 dv<br/>
 as<br/>

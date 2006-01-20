@@ -25,6 +25,7 @@ var td;
 this._calDiv=document.createElement("div");
 this._calDiv.className=this.ClassName;
 this._calDiv.style.display="none";
+this._calDiv.style.position="absolute";
 _4=document.createElement("div");
 _4.className="calendarHeader";
 this._calDiv.appendChild(_4);
@@ -120,14 +121,9 @@ this._calDiv.appendChild(_4);
 var _17=document.createElement("button");
 _17.className="todayButton";
 var _18=this.newDate();
-var _19=_18.getDate()+" "+this.MonthNames[_18.getMonth()]+", "+_18.getFullYear();
+var _19=_18.SimpleFormat(this.Format);
 _17.appendChild(document.createTextNode(_19));
 _4.appendChild(_17);
-var _20=document.createElement("button");
-_20.className="clearButton";
-_19="Clear";
-_20.appendChild(document.createTextNode(_19));
-_4.appendChild(_20);
 if(Prado.Browser().ie){
 this.iePopUp=document.createElement("iframe");
 this.iePopUp.src="";
@@ -146,19 +142,18 @@ _17.hideFocus=true;
 Event.observe(_9,"click",this.prevMonth.bindEvent(this));
 Event.observe(_12,"click",this.nextMonth.bindEvent(this));
 Event.observe(_17,"click",this.selectToday.bindEvent(this));
-Event.observe(_20,"click",this.clearSelection.bindEvent(this));
 Event.observe(this._monthSelect,"change",this.monthSelect.bindEvent(this));
 Event.observe(this._yearSelect,"change",this.yearSelect.bindEvent(this));
 Event.observe(this._calDiv,"mousewheel",this.mouseWheelChange.bindEvent(this));
 Event.observe(_13,"click",this.selectDate.bindEvent(this));
-},ieHack:function(_21){
+},ieHack:function(_20){
 if(this.iePopUp){
 this.iePopUp.style.display="block";
 this.iePopUp.style.top=(this._calDiv.offsetTop-1)+"px";
 this.iePopUp.style.left=(this._calDiv.offsetLeft-1)+"px";
 this.iePopUp.style.width=Math.abs(this._calDiv.offsetWidth-2)+"px";
 this.iePopUp.style.height=(this._calDiv.offsetHeight+1)+"px";
-if(_21){
+if(_20){
 this.iePopUp.style.display="none";
 }
 }
@@ -171,51 +166,56 @@ ev=document.parentWindow.event;
 }
 var kc=ev.keyCode!=null?ev.keyCode:ev.charCode;
 if(kc==Event.KEY_RETURN){
+this.setSelectedDate(this.selectedDate);
 Event.stop(ev);
 this.hide();
 }
-var _24=function(_25,_26){
-_25=(_25+12)%12;
-var _27=[31,28,31,30,31,30,31,31,30,31,30,31];
-var res=_27[_25];
-if(_25==1){
-res+=_26%4==0&&!(_26%400==0)?1:0;
+if(kc==Event.KEY_ESC){
+Event.stop(ev);
+this.hide();
+}
+var _23=function(_24,_25){
+_24=(_24+12)%12;
+var _26=[31,28,31,30,31,30,31,31,30,31,30,31];
+var res=_26[_24];
+if(_24==1){
+res+=_25%4==0&&!(_25%400==0)?1:0;
 }
 return res;
 };
 if(kc<37||kc>40){
 return true;
 }
-var _29=this.selectedDate;
-var d=_29.valueOf();
+var _28=this.selectedDate;
+var d=_28.valueOf();
 if(kc==Event.KEY_LEFT){
 if(ev.ctrlKey||ev.shiftKey){
-_29.setDate(Math.min(_29.getDate(),_24(_29.getMonth()-1,_29.getFullYear())));
-d=_29.setMonth(_29.getMonth()-1);
+_28.setDate(Math.min(_28.getDate(),_23(_28.getMonth()-1,_28.getFullYear())));
+d=_28.setMonth(_28.getMonth()-1);
 }else{
 d-=86400000;
 }
 }else{
 if(kc==Event.KEY_RIGHT){
 if(ev.ctrlKey||ev.shiftKey){
-_29.setDate(Math.min(_29.getDate(),_24(_29.getMonth()+1,_29.getFullYear())));
-d=_29.setMonth(_29.getMonth()+1);
+_28.setDate(Math.min(_28.getDate(),_23(_28.getMonth()+1,_28.getFullYear())));
+d=_28.setMonth(_28.getMonth()+1);
 }else{
 d+=86400000;
 }
 }else{
 if(kc==Event.KEY_UP){
 if(ev.ctrlKey||ev.shiftKey){
-_29.setDate(Math.min(_29.getDate(),_24(_29.getMonth(),_29.getFullYear()-1)));
-d=_29.setFullYear(_29.getFullYear()-1);
+_28.setDate(Math.min(_28.getDate(),_23(_28.getMonth(),_28.getFullYear()-1)));
+d=_28.setFullYear(_28.getFullYear()-1);
 }else{
 d-=604800000;
 }
 }else{
 if(kc==Event.KEY_DOWN){
 if(ev.ctrlKey||ev.shiftKey){
-_29.setDate(Math.min(_29.getDate(),_24(_29.getMonth(),_29.getFullYear()+1)));
-d=_29.setFullYear(_29.getFullYear()+1);
+_28.setDate(Math.min(_28.getDate(),_23(_28.getMonth(),_28.getFullYear()+1)));
+d=_28.setFullYear(_28.getFullYear()+1);
 }else{
 d+=7*24*61*60*1000;
 }
@@ -245,8 +245,10 @@ d.setDate(n);
 this.setSelectedDate(d);
 this.hide();
 },selectToday:function(){
-this.setSelectedDate(this.newDate());
+if(this.selectedDate.toISODate()==this.newDate().toISODate()){
 this.hide();
+}
+this.setSelectedDate(this.newDate());
 },clearSelection:function(){
 this.setSelectedDate(this.newDate());
 this.hide();
@@ -267,19 +269,19 @@ return false;
 this.control.value=this.formatDate();
 },formatDate:function(){
 return this.selectedDate?this.selectedDate.SimpleFormat(this.Format):"";
-},newDate:function(_35){
-if(!_35){
-_35=new Date();
+},newDate:function(_34){
+if(!_34){
+_34=new Date();
 }
-if(isString(_35)||isNumber(_35)){
-_35=new Date(_35);
+if(isString(_34)||isNumber(_34)){
+_34=new Date(_34);
 }
-return new Date(_35.getFullYear(),_35.getMonth(),_35.getDate(),0,0,0);
-},setSelectedDate:function(_36){
-if(_36==null){
+return new Date(_34.getFullYear(),_34.getMonth(),_34.getDate(),0,0,0);
+},setSelectedDate:function(_35){
+if(_35==null){
 return;
 }
-this.selectedDate=this.newDate(_36);
+this.selectedDate=this.newDate(_35);
 this.updateHeader();
 this.update();
 if(isFunction(this.onchange)){
@@ -289,13 +291,13 @@ this.onchange();
 return this._calDiv;
 },getSelectedDate:function(){
 return isNull(this.selectedDate)?null:this.newDate(this.selectedDate);
-},setYear:function(_37){
+},setYear:function(_36){
 var d=this.newDate(this.selectedDate);
-d.setFullYear(_37);
+d.setFullYear(_36);
 this.setSelectedDate(d);
-},setMonth:function(_38){
+},setMonth:function(_37){
 var d=this.newDate(this.selectedDate);
-d.setMonth(_38);
+d.setMonth(_37);
 this.setSelectedDate(d);
 },nextMonth:function(){
 this.setMonth(this.selectedDate.getMonth()+1);
@@ -312,10 +314,10 @@ this.ieHack(false);
 this.documentClickEvent=this.hideOnClick.bindEvent(this);
 this.documentKeyDownEvent=this.keyPressed.bindEvent(this);
 Event.observe(document.body,"click",this.documentClickEvent);
-var _40=Date.SimpleParse(Form.Element.getValue(this.control),this.Format);
-if(!isNull(_40)){
-this.selectedDate=_40;
-this.setSelectedDate(_40);
+var _39=Date.SimpleParse(Form.Element.getValue(this.control),this.Format);
+if(!isNull(_39)){
+this.selectedDate=_39;
+this.setSelectedDate(_39);
 }
 Event.observe(document,"keydown",this.documentKeyDownEvent);
 this.showing=true;
@@ -325,17 +327,17 @@ if(!this.showing){
 return;
 }
 var el=Event.element(ev);
-var _41=false;
+var _40=false;
 do{
-_41=_41||el.className==this.ClassName;
-_41=_41||el==this.trigger;
-_41=_41||el==this.control;
-if(_41){
+_40=_40||el.className==this.ClassName;
+_40=_40||el==this.trigger;
+_40=_40||el==this.control;
+if(_40){
 break;
 }
 el=el.parentNode;
 }while(el);
-if(!_41){
+if(!_40){
 this.hide();
 }
 },hide:function(){
@@ -349,61 +351,61 @@ Event.stopObserving(document.body,"click",this.documentClickEvent);
 Event.stopObserving(document,"keydown",this.documentKeyDownEvent);
 }
 },update:function(){
-var _42=this.selectedDate;
-var _43=(this.newDate()).toISODate();
-var _44=_42.toISODate();
-var d1=new Date(_42.getFullYear(),_42.getMonth(),1);
-var d2=new Date(_42.getFullYear(),_42.getMonth()+1,1);
-var _47=Math.round((d2-d1)/(24*60*60*1000));
-var _48=(d1.getDay()-this.FirstDayOfWeek)%7;
-if(_48<0){
-_48+=7;
+var _41=this.selectedDate;
+var _42=(this.newDate()).toISODate();
+var _43=_41.toISODate();
+var d1=new Date(_41.getFullYear(),_41.getMonth(),1);
+var d2=new Date(_41.getFullYear(),_41.getMonth()+1,1);
+var _46=Math.round((d2-d1)/(24*60*60*1000));
+var _47=(d1.getDay()-this.FirstDayOfWeek)%7;
+if(_47<0){
+_47+=7;
 }
-var _49=0;
-while(_49<_48){
-this.dateSlot[_49].value=-1;
-this.dateSlot[_49].data.data=String.fromCharCode(160);
-this.dateSlot[_49].data.parentNode.className="empty";
-_49++;
+var _48=0;
+while(_48<_47){
+this.dateSlot[_48].value=-1;
+this.dateSlot[_48].data.data=String.fromCharCode(160);
+this.dateSlot[_48].data.parentNode.className="empty";
+_48++;
 }
-for(i=1;i<=_47;i++,_49++){
-var _50=this.dateSlot[_49];
-var _51=_50.data.parentNode;
-_50.value=i;
-_50.data.data=i;
-_51.className="date";
+for(i=1;i<=_46;i++,_48++){
+var _49=this.dateSlot[_48];
+var _50=_49.data.parentNode;
+_49.value=i;
+_49.data.data=i;
+_50.className="date";
+if(d1.toISODate()==_42){
+_50.className+=" today";
+}
 if(d1.toISODate()==_43){
-_51.className+=" today";
-}
-if(d1.toISODate()==_44){
-_51.className+=" selected";
+_50.className+=" selected";
 }
 d1=new Date(d1.getFullYear(),d1.getMonth(),d1.getDate()+1);
 }
-var _52=_49;
-while(_49<42){
-this.dateSlot[_49].value=-1;
-this.dateSlot[_49].data.data=String.fromCharCode(160);
-this.dateSlot[_49].data.parentNode.className="empty";
-++_49;
+var _51=_48;
+while(_48<42){
+this.dateSlot[_48].value=-1;
+this.dateSlot[_48].data.data=String.fromCharCode(160);
+this.dateSlot[_48].data.parentNode.className="empty";
+++_48;
 }
 },hover:function(ev){
 Element.condClassName(Event.element(ev),"hover",ev.type=="mouseover");
 },updateHeader:function(){
-var _53=this._monthSelect.options;
+var _52=this._monthSelect.options;
 var m=this.selectedDate.getMonth();
-for(var i=0;i<_53.length;++i){
-_53[i].selected=false;
-if(_53[i].value==m){
-_53[i].selected=true;
+for(var i=0;i<_52.length;++i){
+_52[i].selected=false;
+if(_52[i].value==m){
+_52[i].selected=true;
 }
 }
-_53=this._yearSelect.options;
-var _54=this.selectedDate.getFullYear();
-for(var i=0;i<_53.length;++i){
-_53[i].selected=false;
-if(_53[i].value==_54){
-_53[i].selected=true;
+_52=this._yearSelect.options;
+var _53=this.selectedDate.getFullYear();
+for(var i=0;i<_52.length;++i){
+_52[i].selected=false;
+if(_52[i].value==_53){
+_52[i].selected=true;
 }
 }
 }};
