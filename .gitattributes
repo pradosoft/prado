@@ -501,6 +501,7 @@ framework/Web/Javascripts/prado/activecontrols.js -text
 framework/Web/Javascripts/prado/ajax.js -text
 framework/Web/Javascripts/prado/controls.js -text
 framework/Web/Javascripts/prado/datepicker.js -text
+framework/Web/Javascripts/prado/datepicker_default.css -text
 framework/Web/Javascripts/prado/effects.js -text
 framework/Web/Javascripts/prado/element.js -text
 framework/Web/Javascripts/prado/form.js -text
