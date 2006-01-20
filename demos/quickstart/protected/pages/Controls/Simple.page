@@ -9,8 +9,16 @@
 <com:RunBar PagePath="Controls.Samples.TLabel.Home" />
 
 <h2>THyperLink</h2>
+<p>
+<tt>THyperLink</tt> displays a hyperlink on a page. The hyperlink URL is specified via the <tt>NavigateUrl</tt> property, and link text is via the <tt>Text</tt> property. The link target is specified via the <tt>Target</tt> property. It is also possible to display an image by setting the <tt>ImageUrl</tt> property. In this case, <tt>Text</tt> is displayed as the alternate text of the image. If both <tt>ImageUrl</tt> and <tt>Text</tt> are empty, the content enclosed within the control tag will be rendered.
+</p>
+<com:RunBar PagePath="Controls.Samples.THyperLink.Home" />
 
 <h2>TImage</h2>
+<p>
+<tt>TImage</tt> displays an image on a page. The image is specified via the <tt>ImageUrl</tt> property which takes a relative or absolute URL to the image file. The alignment of the image displayed is set by the <tt>ImageAlign</tt> property. To set alternate text or long description of the image, use <tt>AlternateText</tt> or <tt>DescriptionUrl</tt>, respectively.
+</p>
+<com:RunBar PagePath="Controls.Samples.TImage.Home" />
 
 <h2>TPanel</h2>
 <p>

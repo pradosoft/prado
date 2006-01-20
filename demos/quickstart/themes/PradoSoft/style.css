@@ -163,7 +163,7 @@ a
 .runbar a:link, .runbar a:visited {
 	background-color:#E2E2E2;
 	font-size: 12px;
-	font-weight: none;
+	font-weight: normal;
 	padding: 3px;
 	padding-left: 6px;
 	padding-right: 6px;
@@ -177,7 +177,7 @@ a
 .runbar a:link.active, .runbar a:visited.active, .runbar a:hover {
 	background-color:#E2E2E2;
 	font-size: 12px;
-	font-weight: none;
+	font-weight: normal;
 	padding: 3px;
 	padding-left: 6px;
 	padding-right: 6px;

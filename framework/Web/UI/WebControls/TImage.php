@@ -17,7 +17,7 @@
  * {@link setImageUrl ImageUrl} property which takes a relative or absolute
  * URL to the image file. The alignment of the image displayed is set by
  * the {@link setImageAlign ImageAlign} property. To set alternative texts
- * or long description of the image, use {@link setAlternativeText AlternativeText}
+ * or long description of the image, use {@link setAlternateText AlternateText}
  * or {@link setDescriptionUrl DescriptionUrl} property, respectively.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

@@ -63,6 +63,11 @@ demos/quickstart/protected/pages/Controls/Samples/TDropDownList/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TDropDownList/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TEmailAddressValidator/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TEmailAddressValidator/Home.php -text
+demos/quickstart/protected/pages/Controls/Samples/THyperLink/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/THyperLink/hello_world.gif -text
+demos/quickstart/protected/pages/Controls/Samples/TImage/HelloWorld.html -text
+demos/quickstart/protected/pages/Controls/Samples/TImage/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TImage/hello_world.gif -text
 demos/quickstart/protected/pages/Controls/Samples/TLabel/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TListBox/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TListBox/Home.php -text

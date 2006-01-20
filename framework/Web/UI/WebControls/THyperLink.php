@@ -72,7 +72,7 @@ class THyperLink extends TWebControl
 		}
 		else
 		{
-			$image=new TImage;
+			$image=Prado::createComponent('System.Web.UI.WebControls.TImage');
 			$image->setImageUrl($imageUrl);
 			if(($toolTip=$this->getToolTip())!=='')
 				$image->setToolTip($toolTip);
