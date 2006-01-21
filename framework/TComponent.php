@@ -169,7 +169,7 @@ class TComponent
 	 * @param string the property name
 	 * @return boolean whether the property is defined
 	 */
-	final public function hasProperty($name)
+	public function hasProperty($name)
 	{
 		return method_exists($this,'get'.$name) || method_exists($this,'set'.$name);
 	}
@@ -181,7 +181,7 @@ class TComponent
 	 * @param string the property name
 	 * @return boolean whether the property can be read
 	 */
-	final public function canGetProperty($name)
+	public function canGetProperty($name)
 	{
 		return method_exists($this,'get'.$name);
 	}
@@ -193,7 +193,7 @@ class TComponent
 	 * @param string the property name
 	 * @return boolean whether the property can be written
 	 */
-	final public function canSetProperty($name)
+	public function canSetProperty($name)
 	{
 		return method_exists($this,'set'.$name);
 	}

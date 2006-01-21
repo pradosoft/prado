@@ -11,6 +11,11 @@
  */
 
 /**
+ * Includes TAttributeCollection class
+ */
+Prado::using('System.Collections.TAttributeCollection');
+
+/**
  * TControl class
  *
  * TControl is the base class for all components on a page hierarchy.
@@ -488,7 +493,7 @@ class TControl extends TComponent
 			return $attributes;
 		else
 		{
-			$attributes=new TMap;
+			$attributes=new TAttributeCollection;
 			$this->setViewState('Attributes',$attributes,null);
 			return $attributes;
 		}
@@ -1549,12 +1554,12 @@ interface IPostBackEventHandler
 	 * @param string the parameter associated with the postback event
 	 */
 	public function raisePostBackEvent($param);
-	
+
 	/**
 	 * Return an array of postback options.
 	 * The array of options are serialized to passed to corresponding javascript component code.
 	 * @return array options for javascript postback control
-	 */ 
+	 */
 	public function getPostBackOptions();
 }
 
