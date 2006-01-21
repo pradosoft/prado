@@ -2411,6 +2411,7 @@ Prado.WebUI.ClickableComponent=Prado.WebUI.createPostBackComponent({onInit:funct
 Event.observe(this.element,"click",Prado.PostBack.bindEvent(this,_4));
 }});
 Prado.WebUI.TLinkButton=Prado.WebUI.ClickableComponent;
+Prado.WebUI.TImageButton=Prado.WebUI.ClickableComponent;
 Prado.WebUI.TCheckBox=Prado.WebUI.ClickableComponent;
 Prado.WebUI.TRadioButton=Prado.WebUI.ClickableComponent;
 Prado.WebUI.TBulletedList=Prado.WebUI.ClickableComponent;

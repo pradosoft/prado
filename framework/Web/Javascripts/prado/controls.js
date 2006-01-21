@@ -2,18 +2,18 @@ Prado.WebUI = Class.create();
 
 //base postback-able controls
 Prado.WebUI.PostBackControl = Class.create();
-Object.extend(Prado.WebUI.PostBackControl.prototype, 
+Object.extend(Prado.WebUI.PostBackControl.prototype,
 {
 	initialize : function(options)
 	{
 		this.element = $(options['ID']);
 		if(options['CausesValidation'] && Prado.Validation)
-			Prado.Validation.AddTarget(options['ID'], options['ValidationGroup']);		
-		
+			Prado.Validation.AddTarget(options['ID'], options['ValidationGroup']);
+
 		//TODO: what do the following options do?
 		//options['PostBackUrl']
 		//options['ClientSubmit']
-		
+
 		if(this.onInit)
 			this.onInit(options);
 	}
@@ -39,6 +39,7 @@ Prado.WebUI.ClickableComponent = Prado.WebUI.createPostBackComponent(
 });
 
 Prado.WebUI.TLinkButton = Prado.WebUI.ClickableComponent;
+Prado.WebUI.TImageButton = Prado.WebUI.ClickableComponent;
 Prado.WebUI.TCheckBox = Prado.WebUI.ClickableComponent;
 Prado.WebUI.TRadioButton = Prado.WebUI.ClickableComponent;
 Prado.WebUI.TBulletedList = Prado.WebUI.ClickableComponent;
