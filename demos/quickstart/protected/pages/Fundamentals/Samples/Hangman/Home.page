@@ -6,9 +6,11 @@
 <com:TPanel ID="IntroPanel">
 <p>This is the game of Hangman. You must guess a word, a letter at a time.
 If you make too many mistakes, you lose the game!</p>
-<com:TRadioButton ID="EasyLevel" GroupName="level" Text="Easy game; you are allowed 10 misses." /><br/>
-<com:TRadioButton ID="MediumLevel" GroupName="level" Text="Medium game; you are allowed 5 misses." /><br/>
-<com:TRadioButton ID="HardLevel" GroupName="level" Text="Hard game; you are only allowed 3 misses." /><br/>
+<com:TRadioButtonList ID="LevelSelection">
+  <com:TListItem Value="10" Text="Easy game; you are allowed 10 misses."/>
+  <com:TListItem Value="5" Text="Medium game; you are allowed 5 misses."/>
+  <com:TListItem Value="3" Text="Hard game; you are allowed 3 misses."/>
+</com:TRadioButtonList>
 <com:TButton Text="Play!" Click="selectLevel" />
 <com:TLabel ID="LevelError" Text="You must choose a difficulty level!" ForeColor="red" Visible="false" />
 </com:TPanel>

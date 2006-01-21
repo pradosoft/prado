@@ -2,24 +2,15 @@
 
 class Home extends TPage
 {
-	const EASY_LEVEL=10;
-	const MEDIUM_LEVEL=5;
-	const HARD_LEVEL=3;
-
 	public function selectLevel($sender,$param)
 	{
-		if($this->EasyLevel->Checked)
-			$this->Level=self::EASY_LEVEL;
-		else if($this->MediumLevel->Checked)
-			$this->Level=self::MEDIUM_LEVEL;
-		else if($this->HardLevel->Checked)
-			$this->Level=self::HARD_LEVEL;
-		else
+		if(($selection=$this->LevelSelection->SelectedValue)==='')
 		{
 			$this->LevelError->Visible=true;
 			return;
 		}
-
+		else
+			$this->Level=TPropertyValue::ensureInteger($selection);
 		$this->Word=$this->generateWord();
 		$this->GuessWord=str_repeat('_',strlen($this->Word));
 		$this->Misses=0;
