@@ -2,12 +2,32 @@
 
 <h1>List Controls</h1>
 <p>
-List controls covered in this section are all inherit directly or indirectly from <tt>TDataBoundControl</tt>. Therefore, you can do various databinding operations with them. More details about databinding will be given in later sections.
+List controls covered in this section all inherit directly or indirectly from <tt>TListControl</tt>. Therefore, they share the same set of commonly used properties, including,
+<ul>
+<li><tt>Items</tt> - list of items in the control. The items are of type <tt>TListItem</tt>. The item list can be populated via databinding or specified in templates like the following:
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TListBox&gt;
+  &lt;com:TListItem Text="text 1" Value="value 1" /&gt;
+  &lt;com:TListItem Text="text 2" Value="value 2" Selected="true" /&gt;
+  &lt;com:TListItem Text="text 3" Value="value 3" /&gt;
+&lt;/com:TListBox&gt;
+</com:TTextHighlighter>
+</li>
+<li><tt>SelectedIndex</tt> - the zero-based index of the first selected item in the item list.</li>
+<li><tt>SelectedIndices</tt> - the indices of all selected items.</li>
+<li><tt>SelectedItem</tt> - the first selected item in the item list.</li>
+<li><tt>SelectedValue</tt> - the value of the first selected item in the item list.</li>
+<li><tt>AutoPostBack</tt> - whether changing the selection of the control should trigger postback.</li>
+<li><tt>CausesValidation</tt> - whether validation should be performed when postback is triggered by the list control.</li>
+</ul>
+</p>
+<p>
+Since <tt>TListControl</tt> inherits from <tt>TDataBoundControl</tt>, these list controls also share a common operation known as <tt>databinding</tt>. The data to be bound can be specified via either <tt>DataSource</tt> or <tt>DataSourceID</tt>. More details about databinding are covered in later chapters of this tutorial.
 </p>
 
 <h2>TListBox</h2>
 <p>
-<tt>TListBox</tt> displays a list box that allows single or multiple selection. Set the property <tt>SelectionMode</tt> as <tt>Single</tt> to make a single selection list box, and <tt>Multiple</tt> a multiple selection list box. The items in the list box are represented by the <tt>Items</tt> property. The number of rows displayed in the box is specified via the <tt>Rows</tt> property value. Some other important properties that <tt>TListBox</tt> inherits from <tt>TListControl</tt> include: <tt>Items</tt>, <tt>SelectedIndex</tt>, <tt>SelectedIndices</tt>, <tt>SelectedItem</tt>, <tt>SelectedValue</tt>, <tt>AutoPostBack</tt> and <tt>CausesValidation</tt>.
+<tt>TListBox</tt> displays a list box that allows single or multiple selection. Set the property <tt>SelectionMode</tt> as <tt>Single</tt> to make a single selection list box, and <tt>Multiple</tt> a multiple selection list box. The items in the list box are represented by the <tt>Items</tt> property. The number of rows displayed in the box is specified via the <tt>Rows</tt> property value.
 </p>
 <com:RunBar PagePath="Controls.Samples.TListBox.Home" />
 

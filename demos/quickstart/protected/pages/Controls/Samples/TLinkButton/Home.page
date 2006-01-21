@@ -1,15 +1,14 @@
 <com:TContent ID="body">
 
-<h1>TButton Samples</h1>
+<h1>TLinkButton Samples</h1>
 
 <table class="sampletable">
 
 <tr><td class="samplenote">
-Button with customized color, font and width:
+Link button with customized color and font:
 </td><td class="sampleaction">
-<com:TButton
-	Text="text"
-	Width="200px"
+<com:TLinkButton
+	Text="link button"
 	ForeColor="silver"
 	BackColor="black"
 	Font.Size="14pt"
@@ -17,15 +16,23 @@ Button with customized color, font and width:
 </td></tr>
 
 <tr><td class="samplenote">
-A click button:
+Link button with only body content:
 </td><td class="sampleaction">
-<com:TButton Text="click me" Click="buttonClicked" />
+<com:TLinkButton>
+body content
+</com:TLinkButton>
 </td></tr>
 
 <tr><td class="samplenote">
-A command button:
+A click link button:
 </td><td class="sampleaction">
-<com:TButton
+<com:TLinkButton Text="click me" Click="buttonClicked" />
+</td></tr>
+
+<tr><td class="samplenote">
+A command link button:
+</td><td class="sampleaction">
+<com:TLinkButton
 	Text="click me"
 	Command="buttonClicked"
 	CommandName="test"
@@ -43,7 +50,7 @@ A button causing validation:
 	ErrorMessage="input required in the textbox"
 	ValidationGroup="Group"
 	/>
-<com:TButton Text="submit" ValidationGroup="Group" />
+<com:TLinkButton Text="submit" ValidationGroup="Group" />
 </td></tr>
 
 </table>

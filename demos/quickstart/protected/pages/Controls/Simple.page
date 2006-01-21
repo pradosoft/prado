@@ -49,7 +49,7 @@ Clicking on button can trigger form validation, if <tt>CausesValidation</tt>is t
 
 <h2>TLinkButton</h2>
 <p>
-<tt>TLinkButton</tt> is similar to <tt>TButton</tt> in every aspect except that <tt>TLinkButton</tt> is displayed as a hyperlink. The link text is determined by its <tt>Text</tt> property. If the <tt>Text</tt> property is empty, then the body content of the button is displayed (therefore, you can enclose a &lt;img;&gt; tag within the button body and get an image button.
+<tt>TLinkButton</tt> is similar to <tt>TButton</tt> in every aspect except that <tt>TLinkButton</tt> is displayed as a hyperlink. The link text is determined by its <tt>Text</tt> property. If the <tt>Text</tt> property is empty, then the body content of the button is displayed (therefore, you can enclose a &lt;img&gt; tag within the button body and get an image button.
 </p>
 <com:RunBar PagePath="Controls.Samples.TLinkButton.Home" />
 
