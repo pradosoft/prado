@@ -14,6 +14,10 @@
  * Includes TDataBoundControl class
  */
 Prado::using('System.Web.UI.WebControls.TDataBoundControl');
+/**
+ * Includes TAttributeCollection class
+ */
+Prado::using('System.Collections.TAttributeCollection');
 
 /**
  * TListControl class
@@ -812,12 +816,12 @@ class TListItem extends TComponent
 	}
 
 	/**
-	 * @return TMap custom attributes
+	 * @return TAttributeCollection custom attributes
 	 */
 	public function getAttributes()
 	{
 		if(!$this->_attributes)
-			$this->_attributes=new TMap;
+			$this->_attributes=new TAttributeCollection;
 		return $this->_attributes;
 	}
 
