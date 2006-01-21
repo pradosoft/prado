@@ -72,13 +72,8 @@ class TPanel extends TWebControl
 				throw new TInvalidDataValueException('panel_defaultbutton_invalid',$butt);
 			else
 			{
-				//TODO
-				/*$scripts = $this->getPage()->getClientScript();
-				$js = $scripts->registerDefaultButtonScript($this,$button);
-				$clientID=$this->getClientID();
-				$scripts->registerEndScript($clientID.'defaultButton', $js);
-				$writer->addAttribute('id',$clientID);
-				$writer->addAttribute('onkeypress', "return false;");*/
+				$writer->addAttribute('id',$this->getClientID());
+				$this->getPage()->getClientScript()->registerDefaultButton($this, $button);
 			}
 		}
 	}

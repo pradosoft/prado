@@ -193,7 +193,7 @@ return x;
 Function.prototype.bindEvent=function(){
 var _6=this,args=$A(arguments),object=args.shift();
 return function(_7){
-return _6.call(object,_7||window.event,args);
+return _6.apply(object,[_7||window.event].concat(args));
 };
 };
 
@@ -1140,17 +1140,35 @@ _9="keydown";
 this._observeAndCache(_8,_9,_10,_11);
 },keyCode:function(e){
 return e.keyCode!=null?e.keyCode:e.charCode;
-},fireEvent:function(_13,_14){
+},isHTMLEvent:function(_13){
+var _14=["abort","blur","change","error","focus","load","reset","resize","scroll","select","submit","unload"];
+return _14.include(_13);
+},isMouseEvent:function(_15){
+var _16=["click","mousedown","mousemove","mouseout","mouseover","mouseup"];
+return _16.include(_15);
+},fireEvent:function(_17,_18){
 if(document.createEvent){
-var _15=document.createEvent("HTMLEvents");
-_15.initEvent(_14,true,true);
-_13.dispatchEvent(_15);
+if(Event.isHTMLEvent(_18)){
+var _19=document.createEvent("HTMLEvents");
+_19.initEvent(_18,true,true);
 }else{
-if(_13.fireEvent){
-_13.fireEvent("on"+_14);
-_13[_14]();
+if(Event.isMouseEvent(_18)){
+var _19=document.createEvent("MouseEvents");
+_19.initMouseEvent(_18,true,true,document.defaultView,1,0,0,0,0,false,false,false,false,0,null);
 }else{
-_13[_14]();
+if(Logger){
+Logger.error("undefined event",_18);
+}
+return;
+}
+}
+_17.dispatchEvent(_19);
+}else{
+if(_17.fireEvent){
+_17.fireEvent("on"+_18);
+_17[_18]();
+}else{
+_17[_18]();
 }
 }
 }});
@@ -2372,7 +2390,7 @@ _41.set(_42);
 Prado.WebUI=Class.create();
 Prado.WebUI.PostBackControl=Class.create();
 Object.extend(Prado.WebUI.PostBackControl.prototype,{initialize:function(_1){
-this.element=$(_1["ID"]);
+this.control=$(_1["ID"]);
 if(_1["CausesValidation"]&&Prado.Validation){
 Prado.Validation.AddTarget(_1["ID"],_1["ValidationGroup"]);
 }
@@ -2390,7 +2408,7 @@ return _3;
 };
 Prado.WebUI.TButton=Prado.WebUI.createPostBackComponent();
 Prado.WebUI.ClickableComponent=Prado.WebUI.createPostBackComponent({onInit:function(_4){
-Event.observe(this.element,"click",Prado.PostBack.bindEvent(this,_4));
+Event.observe(this.control,"click",Prado.PostBack.bindEvent(this,_4));
 }});
 Prado.WebUI.TLinkButton=Prado.WebUI.ClickableComponent;
 Prado.WebUI.TCheckBox=Prado.WebUI.ClickableComponent;
@@ -2407,14 +2425,29 @@ var _7=Event.element(e);
 if(_7){
 Event.fireEvent(_7,"change");
 Event.stop(e);
-return false;
 }
 }
-return true;
 }});
 Prado.WebUI.TListControl=Prado.WebUI.createPostBackComponent({onInit:function(_8){
 Event.observe(this.element.id,"change",Prado.PostBack.bindEvent(this,_8));
 }});
 Prado.WebUI.TListBox=Prado.WebUI.TListControl;
 Prado.WebUI.TDropDownList=Prado.WebUI.TListControl;
+Prado.WebUI.DefaultButton=Class.create();
+Object.extend(Prado.WebUI.DefaultButton.prototype,{initialize:function(_9){
+this.options=_9;
+this._event=this.triggerEvent.bindEvent(this);
+Event.observe(_9["Panel"],"keydown",this._event);
+},triggerEvent:function(ev,_11){
+var _12=Event.keyCode(ev)==Event.KEY_RETURN;
+var _13=Event.element(ev).tagName.toLowerCase()=="textarea";
+if(_12&&!_13){
+var _14=$(this.options["Target"]);
+if(_14){
+this.triggered=true;
+Event.fireEvent(_14,this.options["Event"]);
+Event.stop(ev);
+}
+}
+}});
 

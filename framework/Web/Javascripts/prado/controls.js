@@ -6,7 +6,7 @@ Object.extend(Prado.WebUI.PostBackControl.prototype,
 {
 	initialize : function(options)
 	{
-		this.element = $(options['ID']);
+		this.control = $(options['ID']);
 		if(options['CausesValidation'] && Prado.Validation)
 			Prado.Validation.AddTarget(options['ID'], options['ValidationGroup']);		
 		
@@ -34,7 +34,7 @@ Prado.WebUI.ClickableComponent = Prado.WebUI.createPostBackComponent(
 {
 	onInit : function(options)
 	{
-		Event.observe(this.element, "click", Prado.PostBack.bindEvent(this,options));
+		Event.observe(this.control, "click", Prado.PostBack.bindEvent(this,options));
 	}
 });
 
@@ -61,10 +61,8 @@ Prado.WebUI.TTextBox = Prado.WebUI.createPostBackComponent(
 			{
 				Event.fireEvent(target, "change");
 				Event.stop(e);
-				return false;
 			}
 		}
-		return true;
 	}
 });
 
@@ -79,53 +77,29 @@ Prado.WebUI.TListControl = Prado.WebUI.createPostBackComponent(
 Prado.WebUI.TListBox = Prado.WebUI.TListControl;
 Prado.WebUI.TDropDownList = Prado.WebUI.TListControl;
 
-
-//Prado.Button = Class.create();
-
-/**
- * Usage: Event.observe("panelID", "keypress", Prado.fireButton.bindEvent($("panelID"), "targetButtonID"));
- */
-/*Object.extend(Prado.Button,
+Prado.WebUI.DefaultButton = Class.create();
+Object.extend(Prado.WebUI.DefaultButton.prototype,
 {
-	buttonFired : false,
-	fireButton : function(e, target)
+	initialize : function(options)
 	{
-		var eventFired = !this.buttonFired && Event.keyCode(e) == Event.KEY_RETURN;
-		var isTextArea = Event.element(e).tagName.toLowerCase() == "textarea";
-		if (eventFired && !isTextArea)
-        {
-			var defaultButton = $(target);
-			if (defaultButton)
-			{
-				Prado.Button.buttonFired = true;
-				Event.fireEvent(defaultButton,"click");
-				Event.stop(e);
-				return false;
-			}
-        }
-        return true;
-	}
-});
+		this.options = options;
+		this._event = this.triggerEvent.bindEvent(this);
+		Event.observe(options['Panel'], 'keydown', this._event);
+	},
 
-Prado.TextBox = Class.create();
-*/
-/**
- * Usage: Event.observe("textboxID", "keypress", Prado.fireButton.bindEvent($("textboxID")));
- */
-/*Object.extend(Prado.TextBox,
-{
-	handleReturnKey : function(e)
+	triggerEvent : function(ev, target)
 	{
-        if(Event.keyCode(e) == Event.KEY_RETURN)
-        {
-			var target = Event.element(e);
-			if(target)
+		var enterPressed = Event.keyCode(ev) == Event.KEY_RETURN;
+		var isTextArea = Event.element(ev).tagName.toLowerCase() == "textarea";
+		if(enterPressed && !isTextArea)
+		{
+			var defaultButton = $(this.options['Target']);
+			if(defaultButton)
 			{
-				Event.fireEvent(target, "change");
-				Event.stop(e);
-				return false;
+				this.triggered = true;
+				Event.fireEvent(defaultButton, this.options['Event']);
+				Event.stop(ev);
 			}
 		}
-		return true;
 	}
-});*/
+});

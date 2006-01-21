@@ -1,13 +1,58 @@
 <?php
+/**
+ * TDatePicker class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ */
 
 /**
- * ${classname}
  *
- * ${description}
+ * TDatePicker class.
  *
- * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.66 $  $Date: ${DATE} ${TIME} $
- * @package ${package}
+ * TDatePicker displays a text box for date input purpose.
+ * When the text box receives focus, a calendar will pop up and users can
+ * pick up from it a date that will be automatically entered into the text box.
+ * The format of the date string displayed in the text box is determined by
+ * the <b>DateFormat</b> property. Valid formats are the combination of the 
+ * following tokens,
+ *
+ * <code>
+ *  Character Format Pattern (en-US)
+ *  -----------------------------------------
+ *  d          day digit
+ *  dd         padded day digit e.g. 01, 02
+ *  M          month digit
+ *  MM         padded month digit
+ *  MMMM       localized month name, e.g. March, April
+ *  yy         2 digit year
+ *  yyyy       4 digit year
+ *  -----------------------------------------
+ * </code>
+ *
+ * TDatePicker has three <b>Mode</b> to show the date picker popup. 
+ * 
+ *  # <b>Basic</b> -- Only shows a text input, focusing on the input shows the 
+ *                    date picker.
+ *  # <b>Button</b> -- Shows a button next to the text input, clicking on the
+ *                     button shows the date, button text can be by the 
+ *                     <b>ButtonText</b> property
+ *  # <b>ImageButton</b> -- Shows an image next to the text input, clicking on 
+ *                          the image shows the date picker, image source can be
+ *                          change through the <b>ImageUrl</b> property.
+ *
+ * The <b>CssClass</b> property can be used to override the css class name
+ * for the date picker panel. <b>CalendarStyle</b> property sets the packages
+ * styles available. E.g. <b>default</b>.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
  */
 class TDatePicker extends TTextBox
 {
@@ -175,6 +220,10 @@ class TDatePicker extends TTextBox
 		return $this->getViewState('UpToYear', intval(@date('Y'))+10);
 	}
 
+	/**
+	 * Get javascript date picker options.
+	 * @return array date picker client-side options
+	 */
 	protected function getDatePickerOptions()
 	{
 		$options['Format'] = $this->getDateFormat();
@@ -189,6 +238,10 @@ class TDatePicker extends TTextBox
 		return $options;
 	}
 
+	/**
+	 * Get javascript localization options, e.g. month and weekday names.
+	 * @return array localization options.
+	 */
 	protected function getCulturalOptions()
 	{
 		$app = $this->getApplication()->getGlobalization();
@@ -206,6 +259,9 @@ class TDatePicker extends TTextBox
 		return $options;
 	}
 
+	/**
+	 * Publish the date picker Css asset files.
+	 */
 	protected function OnPreRender($param)
 	{
 		parent::onPreRender($param);
@@ -214,8 +270,8 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Renders body content.
-	 * This method overrides parent implementation by replacing
-	 * the body content with syntax highlighted result.
+	 * This method overrides parent implementation by adding
+	 * additional date picker button if Mode is "Button" or "ImageButton".
 	 * @param THtmlWriter writer
 	 */
 	protected function render($writer)
@@ -229,11 +285,19 @@ class TDatePicker extends TTextBox
 		}
 	}
 
+	/**
+	 * Gets the ID for the date picker trigger button.
+	 * @return string unique button ID
+	 */
 	protected function getDatePickerButtonID()
 	{
 		return $this->getClientID().'button';
 	}
 
+	/**
+	 * Adds an additional button such that when clicked it shows the date picker.
+	 * @return THtmlWriter writer
+	 */
 	protected function renderButtonDatePicker($writer)
 	{
 		$writer->addAttribute('id', $this->getDatePickerButtonID());		
@@ -243,7 +307,11 @@ class TDatePicker extends TTextBox
 		$writer->renderBeginTag("input");
 	}
 
-	protected function renderImageButtonDatePicker($writer)
+	/**
+	 * Adds an additional image button such that when clicked it shows the date picker.
+	 * @return THtmlWriter writer
+	 */
+	 protected function renderImageButtonDatePicker($writer)
 	{
 		$url = $this->getButtonImageUrl();
 		$url = empty($url) ? $this->publishDefaultButtonImage() : $url;
@@ -253,6 +321,10 @@ class TDatePicker extends TTextBox
 		$writer->renderBeginTag('img');
 	}
 
+	/**
+	 * Publish the default button image asset file.
+	 * @return string image file url.
+	 */
 	protected function publishDefaultButtonImage()
 	{
 		$cs = $this->getPage()->getClientScript();
@@ -261,6 +333,10 @@ class TDatePicker extends TTextBox
 		return $this->getService()->getAsset($file);
 	}
 
+	/**
+	 * Publish the calendar style Css asset file.
+	 * @return string Css file url.
+	 */
 	protected function publishCalendarStyle()
 	{
 		$cs = $this->getPage()->getClientScript();
@@ -272,6 +348,12 @@ class TDatePicker extends TTextBox
 		return $url;
 	}
 
+	/**
+	 * Registers the javascript code to initialize the date picker.
+	 * Must use "Event.OnLoad" to initialize the date picker when the 
+	 * full page is loaded, otherwise IE will throw an error.
+	 * @param THtmlWriter writer
+	 */
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);

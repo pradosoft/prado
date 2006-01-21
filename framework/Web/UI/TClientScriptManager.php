@@ -1,6 +1,6 @@
 <?php
 
-class TPostBackOptions extends TComponent
+/*class TPostBackOptions extends TComponent
 {
 	public $_actionUrl='';
 	public $_autoPostBack=false;
@@ -69,7 +69,7 @@ class TPostBackOptions extends TComponent
 		$this->_trackFocus=$value;
 	}
 }
-
+*/
 Prado::using('System.Web.Javascripts.*');
 
 class TClientScriptManager extends TComponent
@@ -131,6 +131,33 @@ class TClientScriptManager extends TComponent
 			$postback['FormID'] = $this->_page->getForm()->getClientID();
 		$options = new TJavascriptSerializer($postback);
 		return $options->toJavascript();
+	}
+
+	/**
+	 * Register a default button to panel. When the $panel is in focus and 
+	 * the 'enter' key is pressed, the $button will be clicked.
+	 * @param TControl panel to register the default button action
+	 * @param TControl button to trigger a postback
+	 */
+	public function registerDefaultButton($panel, $button)
+	{
+		$serializer = new TJavascriptSerializer(
+							$this->getDefaultButtonOptions($panel, $button));
+		$options = $serializer->toJavascript();
+		$code = "new Prado.WebUI.DefaultButton($options);";
+		$scripts = $this->_page->getClientScript();
+		$scripts->registerEndScript("prado:".$panel->getClientID(), $code);
+	}
+
+	/**
+	 * @return array default button options.
+	 */
+	protected function getDefaultButtonOptions($panel, $button)
+	{
+		$options['Panel'] = $panel->getClientID();
+		$options['Target'] = $button->getClientID();
+		$options['Event'] = 'click';
+		return $options;
 	}
 
 

@@ -86,6 +86,9 @@ class TButton extends TWebControl implements IPostBackEventHandler
 		parent::addAttributesToRender($writer);
 	}
 
+	/**
+	 * @return boolean true if validators are active and can cause validation.
+	 */
 	protected function canCauseValidation()
 	{
 		$group = $this->getValidationGroup();
