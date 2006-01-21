@@ -485,7 +485,7 @@ class TControl extends TComponent
 	 * Returns the list of custom attributes.
 	 * Custom attributes are name-value pairs that may be rendered
 	 * as HTML tags' attributes.
-	 * @return TMap the list of custom attributes
+	 * @return TAttributeCollection the list of custom attributes
 	 */
 	public function getAttributes()
 	{
