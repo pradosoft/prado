@@ -158,9 +158,6 @@ function isList(o){
 return o&&isObject(o)&&isArray(o);
 }
 
-function isElement(o,_2){
-return o&&isObject(o)&&((!_2&&(o==window||o==document))||o.nodeType==1);
-}
 function $(n,d){
 if(isElement(n)){
 return n;
@@ -191,9 +188,9 @@ x=d.getElementById(n);
 return x;
 }
 Function.prototype.bindEvent=function(){
-var _6=this,args=$A(arguments),object=args.shift();
-return function(_7){
-return _6.apply(object,[_7||window.event].concat(args));
+var _4=this,args=$A(arguments),object=args.shift();
+return function(_5){
+return _4.apply(object,[_5||window.event].concat(args));
 };
 };
 

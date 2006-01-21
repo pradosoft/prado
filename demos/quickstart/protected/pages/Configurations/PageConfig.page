@@ -30,7 +30,7 @@ The format of a page configuration file is as follows,
   </parameters>
 </configuration>
 </com:TTextHighlighter>
-The <tt>&lt;paths&gt;</tt>, <tt>&lt;modules&gt;</tt> and <tt>&lt;parameters&gt;</tt> are similar to those in an application configuration. The <tt>&lt;authorization&gt;</tt> specifies the authorization rules that apply to the current page directory and all its subdirectories. It will be explained in more detail in future sections. The <tt>&lt;pages&gt;</tt> element specifies the initial values for the properties of pages. Each <tt>&lt;page&gt;</tt> element specifies the initial property values for a particular page identified by the <tt>id</code attribute. Initial property values given in the <tt>&lt;pages&gt;</tt> element apply to all pages in the current directory and all its subdirectories.
+The <tt>&lt;paths&gt;</tt>, <tt>&lt;modules&gt;</tt> and <tt>&lt;parameters&gt;</tt> are similar to those in an application configuration. The <tt>&lt;authorization&gt;</tt> specifies the authorization rules that apply to the current page directory and all its subdirectories. It will be explained in more detail in future sections. The <tt>&lt;pages&gt;</tt> element specifies the initial values for the properties of pages. Each <tt>&lt;page&gt;</tt> element specifies the initial property values for a particular page identified by the <tt>id</tt> attribute. Initial property values given in the <tt>&lt;pages&gt;</tt> element apply to all pages in the current directory and all its subdirectories.
 </p>
 
 </com:TContent>

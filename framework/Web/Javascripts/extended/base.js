@@ -1,13 +1,5 @@
 
 /** 
- * true if o is an Element Node or document or window. The last two because it's used for onload events
-    if you specify strict as true, return false for document or window
- */
-function isElement(o, strict) {
-    return o && isObject(o) && ((!strict && (o==window || o==document)) || o.nodeType == 1)
-}
-
-/** 
  * get element
  @ @param element or element id string
  @ returns element

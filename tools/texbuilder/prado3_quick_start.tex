@@ -1,0 +1,83 @@
+\documentclass{book}
+\usepackage[pdftex]{graphicx}
+\usepackage[pdftex]{hyperref}
+
+\usepackage{fancyhdr}
+
+%---------- fonts Type 1 -----------------
+%\usepackage{times}
+%\usepackage[T1]{fontenc}
+%\usepackage{textcomp}
+
+%------------------------Page set-up-----------------------------------------
+
+\renewcommand{\baselinestretch}{1.25}
+\setlength{\hoffset}{-1in}
+\setlength{\oddsidemargin}{3.5cm}
+\setlength{\evensidemargin}{3.5cm}
+\setlength{\topmargin}{0cm}
+\setlength{\footskip}{2cm}
+\setlength{\headheight}{14pt}
+\setlength{\marginparwidth}{0cm}
+\setlength{\marginparsep}{0cm}
+\setlength{\marginparpush}{0cm}
+\setlength{\textwidth}{15cm}
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{0.75\baselineskip}
+
+%------------------------------------------------------------------------------
+
+
+%---- change link style ----
+\hypersetup{colorlinks, linkcolor=blue, pdfstartview={FitH}}
+
+
+% Pages and Fancyheadings stuff
+%-----------------------------------------------------------------------
+\cfoot{\thepage}
+\fancyhead[LE,RO]{}
+\fancyhead[LO]{\nouppercase{\scshape\rightmark}}
+\fancyhead[RE]{\nouppercase{\scshape\leftmark}}
+%-----------------------------------------------------------------------
+
+%----------------- TITLE --------------
+
+\title{\Huge \bfseries Prado Quick Start}
+\author{Qiang Xue \\[7mm] \today}
+\date{ Compiled by Wei Zhuo}
+
+
+%-------------- BEGIN DOCUMENT ------------------
+
+
+\begin{document}
+
+\maketitle 
+
+\pagestyle{plain}
+\addcontentsline{toc}{chapter}{Contents}
+\pagenumbering{roman}
+\tableofcontents
+
+\newpage
+
+\chapter*{Preface}
+\addcontentsline{toc}{chapter}{Preface} 
+Prado quick start doc
+
+\newpage
+
+\pagestyle{fancyplain}
+\pagenumbering{arabic}
+
+\include{ch1}
+\include{ch2}
+\include{ch3}
+\include{ch4}
+\include{ch5}
+\include{ch6}
+\include{ch7}
+\include{ch8}
+
+
+\end{document}
