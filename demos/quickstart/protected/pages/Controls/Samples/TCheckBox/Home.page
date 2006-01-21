@@ -1,0 +1,47 @@
+<com:TContent ID="body">
+
+<h1>TCheckBox Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+A checkbox with customized color and font:
+</td><td class="sampleaction">
+<com:TCheckBox
+	Text="checkbox"
+	ForeColor="silver"
+	BackColor="black"
+	Font.Size="14pt"
+/>
+</td></tr>
+
+<tr><td class="samplenote">
+checkbox with only body content:
+</td><td class="sampleaction">
+<com:TCheckBox>
+body content
+</com:TCheckBox>
+</td></tr>
+
+<tr><td class="samplenote">
+A click checkbox:
+</td><td class="sampleaction">
+<com:TCheckBox Text="click me" OnCheckedChanged="buttonClicked" />
+</td></tr>
+
+<tr><td class="samplenote">
+A button causing validation:
+</td><td class="sampleaction">
+<com:TTextBox ID="TextBox" />
+<com:TRequiredFieldValidator
+	ControlToValidate="TextBox"
+	Display="Dynamic"
+	ErrorMessage="input required in the textbox"
+	ValidationGroup="Group"
+	/>
+<com:TCheckBox Text="submit" ValidationGroup="Group" />
+</td></tr>
+
+</table>
+
+</com:TContent>
