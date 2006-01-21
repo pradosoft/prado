@@ -48,11 +48,30 @@ Clicking on button can trigger form validation, if <tt>CausesValidation</tt>is t
 <com:RunBar PagePath="Controls.Samples.TButton.Home" />
 
 <h2>TLinkButton</h2>
+<p>
+<tt>TLinkButton</tt> is similar to <tt>TButton</tt> in every aspect except that <tt>TLinkButton</tt> is displayed as a hyperlink. The link text is determined by its <tt>Text</tt> property. If the <tt>Text</tt> property is empty, then the body content of the button is displayed (therefore, you can enclose a &lt;img;&gt; tag within the button body and get an image button.
+</p>
+<com:RunBar PagePath="Controls.Samples.TLinkButton.Home" />
 
 <h2>TImageButton</h2>
+<p>
+<tt>TImageButton</tt> is also similar to <tt>TButton</tt>, except that <tt>TImageButton</tt> displays the button as an image. The image is specified via <tt>ImageUrl</tt>, and the alternate text is specified by <tt>Text</tt>. In addition, it is possible to obtain the coordinate of the point where the image is clicked. The coordinate information is contained in the event parameter of the <tt>Click</tt> event (not <tt>Command</tt>).
+</p>
+<com:RunBar PagePath="Controls.Samples.TImageButton.Home" />
 
 <h2>TCheckBox</h2>
+<p>
+<tt>TCheckBox</tt> displays a check box on a Web page. A caption can be specified via <tt>Text</tt> and displayed beside the check box. It can appear either on the right or left of the check box, which is determined by <tt>TextAlign</tt>. You may further specify attributes applied to the text by using <tt>LabelAttributes</tt>.
+</p>
+<p>
+To determine whether the check box is checked, test the <tt>Checked</tt> property. A <tt>CheckedChanged</tt> event is raised if the state of <tt>Checked</tt> is changed between posts to the server. If <tt>AutoPostBack</tt> is true, changing the check box state will cause postback action. And if <tt>CausesValidation</tt> is also true, upon postback validation will be performed for validators within the specified <tt>ValidationGroup</tt>.
+</p>
+<com:RunBar PagePath="Controls.Samples.TCheckBox.Home" />
 
 <h2>TRadioButton</h2>
+<p>
+<tt>TRadioButton</tt> is similar to <tt>TCheckBox</tt> in every aspect, except that <tt>TRadioButton</tt> displays a radio button on a Web page. The radio button can belong to a specific group specified by <tt>GroupName</tt> such that only one radio button within that group can be selected at most.
+</p>
+<com:RunBar PagePath="Controls.Samples.TRadioButton.Home" />
 
 </com:TContent>

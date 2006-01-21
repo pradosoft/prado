@@ -43,8 +43,6 @@
  * And the validation may be restricted within a certain group of validator
  * controls by setting {@link setValidationGroup ValidationGroup} property.
  * If validation is successful, the data will be post back to the same page.
- * You can change the postback target by setting the {@link setPostBackUrl PostBackUrl}
- * property.
  *
  * TLinkButton will display the {@link setText Text} property value
  * as the hyperlink text. If {@link setText Text} is empty, the body content
@@ -84,10 +82,9 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 
 		if($this->getEnabled(true))
 		{
-			$url = $this->getPostBackUrl();
 			//create unique no-op url references
 			$nop = "#".$this->getClientID();
-			$writer->addAttribute('href', $url ? $url : $nop);
+			$writer->addAttribute('href', $nop);
 			$this->getPage()->getClientScript()->registerPostBackControl($this);
 		}
 		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
@@ -103,10 +100,9 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 	{
 		$options['EventTarget'] = $this->getUniqueID();
 		$options['CausesValidation'] = $this->getCausesValidation();
-		$options['ValidationGroup'] = $this->getValidationGroup();		
-		$options['PostBackUrl'] = $this->getPostBackUrl();
+		$options['ValidationGroup'] = $this->getValidationGroup();
 		$options['StopEvent'] = true;
-		
+
 		return $options;
 	}
 
@@ -173,22 +169,6 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 	public function setCommandParameter($value)
 	{
 		$this->setViewState('CommandParameter',$value,'');
-	}
-
-	/**
-	 * @return string the URL of the page to post to when the button is clicked, default is empty meaning post to the current page itself
-	 */
-	public function getPostBackUrl()
-	{
-		return $this->getViewState('PostBackUrl','');
-	}
-
-	/**
-	 * @param string the URL of the page to post to from the current page when the button is clicked, empty if post to the current page itself
-	 */
-	public function setPostBackUrl($value)
-	{
-		$this->setViewState('PostBackUrl',$value,'');
 	}
 
 	/**

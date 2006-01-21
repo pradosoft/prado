@@ -48,8 +48,6 @@ Prado::using('System.Web.UI.WebControls.TImage');
  * And the validation may be restricted within a certain group of validator
  * controls by setting {@link setValidationGroup ValidationGroup} property.
  * If validation is successful, the data will be post back to the same page.
- * You can change the postback target by setting the {@link setPostBackUrl PostBackUrl}
- * property.
  *
  * TImageButton displays the {@link setText Text} property as the hint text to the displayed image.
  *
