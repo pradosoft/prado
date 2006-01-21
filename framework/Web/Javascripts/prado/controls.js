@@ -6,7 +6,7 @@ Object.extend(Prado.WebUI.PostBackControl.prototype,
 {
 	initialize : function(options)
 	{
-		this.control = $(options['ID']);
+		this.element = $(options['ID']);
 		if(options['CausesValidation'] && Prado.Validation)
 			Prado.Validation.AddTarget(options['ID'], options['ValidationGroup']);		
 		
@@ -34,7 +34,7 @@ Prado.WebUI.ClickableComponent = Prado.WebUI.createPostBackComponent(
 {
 	onInit : function(options)
 	{
-		Event.observe(this.control, "click", Prado.PostBack.bindEvent(this,options));
+		Event.observe(this.element, "click", Prado.PostBack.bindEvent(this,options));
 	}
 });
 
@@ -48,7 +48,7 @@ Prado.WebUI.TTextBox = Prado.WebUI.createPostBackComponent(
 	onInit : function(options)
 	{
 		if(options['TextMode'] != 'MultiLine')
-			Event.observe(this.element, "keypress", this.handleReturnKey.bind(this));
+			Event.observe(this.element, "down", this.handleReturnKey.bind(this));
 		Event.observe(this.element, "change", Prado.PostBack.bindEvent(this,options));
 	},
 
@@ -70,7 +70,7 @@ Prado.WebUI.TListControl = Prado.WebUI.createPostBackComponent(
 {
 	onInit : function(options)
 	{
-		Event.observe(this.element.id, "change", Prado.PostBack.bindEvent(this,options));
+		Event.observe(this.element, "change", Prado.PostBack.bindEvent(this,options));
 	}
 });
 

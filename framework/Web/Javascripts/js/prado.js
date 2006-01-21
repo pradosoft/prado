@@ -2390,7 +2390,7 @@ _41.set(_42);
 Prado.WebUI=Class.create();
 Prado.WebUI.PostBackControl=Class.create();
 Object.extend(Prado.WebUI.PostBackControl.prototype,{initialize:function(_1){
-this.control=$(_1["ID"]);
+this.element=$(_1["ID"]);
 if(_1["CausesValidation"]&&Prado.Validation){
 Prado.Validation.AddTarget(_1["ID"],_1["ValidationGroup"]);
 }
@@ -2408,7 +2408,7 @@ return _3;
 };
 Prado.WebUI.TButton=Prado.WebUI.createPostBackComponent();
 Prado.WebUI.ClickableComponent=Prado.WebUI.createPostBackComponent({onInit:function(_4){
-Event.observe(this.control,"click",Prado.PostBack.bindEvent(this,_4));
+Event.observe(this.element,"click",Prado.PostBack.bindEvent(this,_4));
 }});
 Prado.WebUI.TLinkButton=Prado.WebUI.ClickableComponent;
 Prado.WebUI.TCheckBox=Prado.WebUI.ClickableComponent;
@@ -2416,7 +2416,7 @@ Prado.WebUI.TRadioButton=Prado.WebUI.ClickableComponent;
 Prado.WebUI.TBulletedList=Prado.WebUI.ClickableComponent;
 Prado.WebUI.TTextBox=Prado.WebUI.createPostBackComponent({onInit:function(_5){
 if(_5["TextMode"]!="MultiLine"){
-Event.observe(this.element,"keypress",this.handleReturnKey.bind(this));
+Event.observe(this.element,"down",this.handleReturnKey.bind(this));
 }
 Event.observe(this.element,"change",Prado.PostBack.bindEvent(this,_5));
 },handleReturnKey:function(e){
@@ -2429,7 +2429,7 @@ Event.stop(e);
 }
 }});
 Prado.WebUI.TListControl=Prado.WebUI.createPostBackComponent({onInit:function(_8){
-Event.observe(this.element.id,"change",Prado.PostBack.bindEvent(this,_8));
+Event.observe(this.element,"change",Prado.PostBack.bindEvent(this,_8));
 }});
 Prado.WebUI.TListBox=Prado.WebUI.TListControl;
 Prado.WebUI.TDropDownList=Prado.WebUI.TListControl;
