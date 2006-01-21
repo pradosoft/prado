@@ -3,6 +3,7 @@ prado_component_unknown					= Unable to create unknown component '%s'.
 prado_using_invalid						= '%s' is not a valid namespace to be used. Make sure '.*' is appended if you want to use a namespace referring to a directory.
 prado_alias_redefined					= Alias '%s' cannot be redefined.
 prado_alias_invalid						= Alias '%s' refers to an invalid path '%s'. Only existing directories can be aliased.
+prado_aliasname_invalid					= Alias '%s' contains invalid character '.'.
 
 component_property_undefined			= Component property '%s.%s' is not defined.
 component_property_readonly				= Component property '%s.%s' is read-only.

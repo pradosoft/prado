@@ -469,7 +469,7 @@ class PradoBase
 
 	/**
 	 * Serializes a data.
-	 * Original PHP serialize function has a bug that may not serialize
+	 * The original PHP serialize function has a bug that may not serialize
 	 * properly an object.
 	 * @param mixed data to be serialized
 	 * @return string the serialized data
@@ -482,7 +482,7 @@ class PradoBase
 
 	/**
 	 * Unserializes a data.
-	 * Original PHP unserialize function has a bug that may not unserialize
+	 * The original PHP unserialize function has a bug that may not unserialize
 	 * properly an object.
 	 * @param string data to be unserialized
 	 * @return mixed unserialized data, null if unserialize failed
@@ -508,26 +508,9 @@ class PradoBase
 	 */
 	public static function createComponent($type)
 	{
-		if(!class_exists($type,false))
-		{
-			if(($pos=strrpos($type,'.'))===false)
-			{
-				include_once($type.self::CLASS_FILE_EXT);
-				if(!class_exists($type,false))
-					throw new TInvalidOperationException('prado_component_unknown',$type);
-			}
-			else
-			{
-				$className=substr($type,$pos+1);
-				if(!class_exists($className,false) && ($path=self::getPathOfNamespace($type))!==null)
-				{
-					include_once($path.self::CLASS_FILE_EXT);
-					if(!class_exists($className,false))
-						throw new TInvalidOperationException('prado_component_unknown',$type);
-				}
-				$type=$className;
-			}
-		}
+		self::using($type);
+		if(($pos=strrpos($type,'.'))!==false)
+			$type=substr($type,$pos+1);
 		if(($n=func_num_args())>1)
 		{
 			$args=func_get_args();
@@ -551,35 +534,41 @@ class PradoBase
 	 */
 	public static function using($namespace)
 	{
-		if(!isset(self::$_usings[$namespace]))
+		if(isset(self::$_usings[$namespace]) || class_exists($namespace,false))
+			return;
+		if(($pos=strrpos($namespace,'.'))===false)  // a class name
 		{
-			if(($path=self::getPathOfNamespace($namespace,self::CLASS_FILE_EXT))===null)
-				throw new TInvalidDataValueException('prado_using_invalid',$namespace);
-			else
+			require_once($namespace.self::CLASS_FILE_EXT);
+			if(!class_exists($namespace,false))
+				throw new TInvalidOperationException('prado_component_unknown',$namespace);
+		}
+		else if(($path=self::getPathOfNamespace($namespace,self::CLASS_FILE_EXT))!==null)
+		{
+			$className=substr($namespace,$pos+1);
+			if($className==='*')  // a directory
 			{
-				if($namespace[strlen($namespace)-1]==='*')  // a directory
+				if(is_dir($path))
 				{
-					if(is_dir($path))
-					{
-						self::$_usings[$namespace]=$path;
-						set_include_path(get_include_path().PATH_SEPARATOR.$path);
-					}
-					else
-						throw new TInvalidDataValueException('prado_using_invalid',$namespace);
+					self::$_usings[$namespace]=$path;
+					set_include_path(get_include_path().PATH_SEPARATOR.$path);
 				}
-				else  // a file
+				else
+					throw new TInvalidDataValueException('prado_using_invalid',$namespace);
+			}
+			else  // a file
+			{
+				if(is_file($path))
 				{
-					if(is_file($path))
-					{
-						self::$_usings[$namespace]=$path;
-						if(!class_exists(substr(strrchr($namespace,'.'),1),false))
-							require_once($path);
-					}
-					else
-						throw new TInvalidDataValueException('prado_using_invalid',$namespace);
+					self::$_usings[$namespace]=$path;
+					if(!class_exists($className,false))
+						require_once($path);
 				}
+				else
+					throw new TInvalidDataValueException('prado_using_invalid',$namespace);
 			}
 		}
+		else
+			throw new TInvalidDataValueException('prado_using_invalid',$namespace);
 	}
 
 	/**
@@ -617,10 +606,7 @@ class PradoBase
 	 */
 	public static function getPathOfAlias($alias)
 	{
-		if(isset(self::$_aliases[$alias]))
-			return self::$_aliases[$alias];
-		else
-			return null;
+		return isset(self::$_aliases[$alias])?self::$_aliases[$alias]:null;
 	}
 
 	/**
@@ -634,7 +620,12 @@ class PradoBase
 		if(isset(self::$_aliases[$alias]))
 			throw new TInvalidOperationException('prado_alias_redefined',$alias);
 		else if(($rp=realpath($path))!==false && is_dir($rp))
-			self::$_aliases[$alias]=$rp;
+		{
+			if(strpos($alias,'.')===false)
+				self::$_aliases[$alias]=$rp;
+			else
+				throw new TInvalidDataValueException('prado_aliasname_invalid',$alias);
+		}
 		else
 			throw new TInvalidDataValueException('prado_alias_invalid',$alias,$path);
 	}
