@@ -16,14 +16,6 @@ A checkbox with customized color and font:
 </td></tr>
 
 <tr><td class="samplenote">
-checkbox with only body content:
-</td><td class="sampleaction">
-<com:TCheckBox>
-body content
-</com:TCheckBox>
-</td></tr>
-
-<tr><td class="samplenote">
 A click checkbox:
 </td><td class="sampleaction">
 <com:TCheckBox Text="click me" OnCheckedChanged="buttonClicked" />
