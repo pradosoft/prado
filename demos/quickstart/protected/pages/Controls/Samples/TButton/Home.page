@@ -46,24 +46,6 @@ A button causing validation:
 <com:TButton Text="submit" ValidationGroup="Group" />
 </td></tr>
 
-<tr><td class="samplenote">
-UseSubmitBehavior
-</td><td class="sampleaction">
-<com:TButton
-	Text="click me"
-	UseSubmitBehavior="false"
-	Click="buttonClicked" />
-</td></tr>
-
-<tr><td class="samplenote">
-PostBackUrl
-</td><td class="sampleaction">
-<com:TButton
-	Text="click me"
-	PostBackUrl="/" />
-</td></tr>
-
-
 </table>
 
 </com:TContent>

@@ -41,8 +41,6 @@
  * And the validation may be restricted within a certain group of validator
  * controls by setting {@link setValidationGroup ValidationGroup} property.
  * If validation is successful, the data will be post back to the same page.
- * You can change the postback target by setting the {@link setPostBackUrl PostBackUrl}
- * property.
  *
  * TButton displays the {@link setText Text} property as the button caption.
  *
@@ -70,7 +68,7 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	{
 		$page=$this->getPage();
 		$page->ensureRenderInForm($this);
-		$writer->addAttribute('type',$this->getUseSubmitBehavior()?'submit':'button');
+		$writer->addAttribute('type','submit');
 		if(($uniqueID=$this->getUniqueID())!=='')
 			$writer->addAttribute('name',$uniqueID);
 		$writer->addAttribute('value',$this->getText());
@@ -87,7 +85,7 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * @return boolean true if validators are active and can cause validation.
+	 * @return boolean whether to perform validation if the button is clicked
 	 */
 	protected function canCauseValidation()
 	{
@@ -105,8 +103,6 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	{
 		$options['CausesValidation'] = $this->getCausesValidation();
 		$options['ValidationGroup'] = $this->getValidationGroup();
-		$options['PostBackUrl'] = $this->getPostBackUrl();
-		$options['ClientSubmit'] = !$this->getUseSubmitBehavior();
 
 		return $options;
 	}
@@ -229,22 +225,6 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * @return boolean whether to use the button as a submit button, default is true.
-	 */
-	public function getUseSubmitBehavior()
-	{
-		return $this->getViewState('UseSubmitBehavior',true);
-	}
-
-	/**
-	 * @param boolean whether to use the button as a submit button
-	 */
-	public function setUseSubmitBehavior($value)
-	{
-		$this->setViewState('UseSubmitBehavior',TPropertyValue::ensureBoolean($value),true);
-	}
-
-	/**
 	 * @return string the group of validators which the button causes validation upon postback
 	 */
 	public function getValidationGroup()
@@ -258,22 +238,6 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	public function setValidationGroup($value)
 	{
 		$this->setViewState('ValidationGroup',$value,'');
-	}
-
-	/**
-	 * @return string the URL of the page to post to when the button is clicked, default is empty meaning post to the current page itself
-	 */
-	public function getPostBackUrl()
-	{
-		return $this->getViewState('PostBackUrl','');
-	}
-
-	/**
-	 * @param string the URL of the page to post to from the current page when the button is clicked, empty if post to the current page itself
-	 */
-	public function setPostBackUrl($value)
-	{
-		$this->setViewState('PostBackUrl',$value,'');
 	}
 }
 
