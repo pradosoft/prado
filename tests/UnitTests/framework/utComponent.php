@@ -30,7 +30,7 @@ class NewComponent extends TComponent
 
 	public function onMyEvent($param)
 	{
-		$this->raiseEvent('MyEvent',$this,$param);
+		$this->raiseEvent('OnMyEvent',$this,$param);
 	}
 
 	public function myEventHandler($sender,$param)
@@ -123,23 +123,23 @@ class utComponent extends UnitTestCase
 
 	public function testHasEvent()
 	{
-		$this->assertTrue($this->component->hasEvent('MyEvent'));
-		$this->assertTrue($this->component->hasEvent('myevent'));
-		$this->assertFalse($this->component->hasEvent('YourEvent'));
+		$this->assertTrue($this->component->hasEvent('OnMyEvent'));
+		$this->assertTrue($this->component->hasEvent('onmyevent'));
+		$this->assertFalse($this->component->hasEvent('onYourEvent'));
 	}
 
 	public function testHasEventHandler()
 	{
-		$this->assertFalse($this->component->hasEventHandler('MyEvent'));
-		$this->component->attachEventHandler('MyEvent','foo');
-		$this->assertTrue($this->component->hasEventHandler('MyEvent'));
+		$this->assertFalse($this->component->hasEventHandler('OnMyEvent'));
+		$this->component->attachEventHandler('OnMyEvent','foo');
+		$this->assertTrue($this->component->hasEventHandler('OnMyEvent'));
 	}
 
 	public function testGetEventHandlers()
 	{
-		$list=$this->component->getEventHandlers('MyEvent');
+		$list=$this->component->getEventHandlers('OnMyEvent');
 		$this->assertTrue(($list instanceof TList) && ($list->getCount()===0));
-		$this->component->attachEventHandler('MyEvent','foo');
+		$this->component->attachEventHandler('OnMyEvent','foo');
 		$this->assertTrue(($list instanceof TList) && ($list->getCount()===1));
 		try
 		{
@@ -154,7 +154,7 @@ class utComponent extends UnitTestCase
 
 	public function testAttachEventHandler()
 	{
-		$this->component->attachEventHandler('MyEvent','foo');
+		$this->component->attachEventHandler('OnMyEvent','foo');
 		$this->assertTrue($this->component->getEventHandlers('MyEvent')->getCount()===1);
 		try
 		{
@@ -179,13 +179,13 @@ class utComponent extends UnitTestCase
 
 	public function testRaiseEvent()
 	{
-		$this->component->attachEventHandler('MyEvent',array($this->component,'myEventHandler'));
+		$this->component->attachEventHandler('OnMyEvent',array($this->component,'myEventHandler'));
 		$this->assertFalse($this->component->isEventHandled());
-		$this->component->raiseEvent('MyEvent',$this,null);
+		$this->component->raiseEvent('OnMyEvent',$this,null);
 		$this->assertTrue($this->component->isEventHandled());
-		$this->component->attachEventHandler('MyEvent',array($this->component,'Object.myEventHandler'));
+		$this->component->attachEventHandler('OnMyEvent',array($this->component,'Object.myEventHandler'));
 		$this->assertFalse($this->component->Object->isEventHandled());
-		$this->component->raiseEvent('MyEvent',$this,null);
+		$this->component->raiseEvent('OnMyEvent',$this,null);
 		$this->assertTrue($this->component->Object->isEventHandled());
 	}
 

@@ -47,7 +47,7 @@ abstract class TDataSourceControl extends TControl implements IDataSource
 
 	public function onDataSourceChanged($param)
 	{
-		$this->raiseEvent('DataSourceChanged',$this,$param);
+		$this->raiseEvent('OnDataSourceChanged',$this,$param);
 	}
 
 	public function focus()

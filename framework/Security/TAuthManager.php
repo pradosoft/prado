@@ -76,9 +76,9 @@ class TAuthManager extends TModule
 				throw new TConfigurationException('authmanager_usermanager_invalid',$this->_userManager);
 			$this->_userManager=$users;
 		}
-		$application->attachEventHandler('Authentication',array($this,'doAuthentication'));
-		$application->attachEventHandler('EndRequest',array($this,'leave'));
-		$application->attachEventHandler('Authorization',array($this,'doAuthorization'));
+		$application->attachEventHandler('OnAuthentication',array($this,'doAuthentication'));
+		$application->attachEventHandler('OnEndRequest',array($this,'leave'));
+		$application->attachEventHandler('OnAuthorization',array($this,'doAuthorization'));
 		$this->_initialized=true;
 	}
 
@@ -177,17 +177,17 @@ class TAuthManager extends TModule
 
 	/**
 	 * Performs the real authentication work.
-	 * An Authenticate event will be raised if there is any handler attached to it.
+	 * An OnAuthenticate event will be raised if there is any handler attached to it.
 	 * If the application already has a non-null user, it will return without further authentication.
 	 * Otherwise, user information will be restored from session data.
-	 * @param mixed parameter to be passed to Authenticate event
+	 * @param mixed parameter to be passed to OnAuthenticate event
 	 * @throws TConfigurationException if session module does not exist.
 	 */
 	public function onAuthenticate($param)
 	{
 		$application=$this->getApplication();
-		if($this->hasEventHandler('Authenticate'))
-			$this->raiseEvent('Authenticate',$this,$application);
+		if($this->hasEventHandler('OnAuthenticate'))
+			$this->raiseEvent('OnAuthenticate',$this,$application);
 		if($application->getUser()!==null)
 			return;
 
@@ -204,13 +204,13 @@ class TAuthManager extends TModule
 	 * Authorization rules obtained from the application will be used to check
 	 * if a user is allowed. If authorization fails, the response status code
 	 * will be set as 401 and the application terminates.
-	 * @param mixed parameter to be passed to Authenticate event
+	 * @param mixed parameter to be passed to OnAuthorize event
 	 */
 	public function onAuthorize($param)
 	{
 		$application=$this->getApplication();
-		if($this->hasEventHandler('Authorize'))
-			$this->raiseEvent('Authorize',$this,$application);
+		if($this->hasEventHandler('OnAuthorize'))
+			$this->raiseEvent('OnAuthorize',$this,$application);
 		if(!$application->getAuthorizationRules()->isUserAllowed($application->getUser(),$application->getRequest()->getRequestType()))
 		{
 			$application->getResponse()->setStatusCode(401);

@@ -29,7 +29,7 @@ Prado::using('System.Web.UI.WebControls.TListControl');
  * is displayed as a hyperlink whose URL is given by the item value, and the
  * {@link setTarget Target} property can be used to specify the target browser window;
  * When the mode is 'LinkButton', each item is displayed as a link button which
- * posts back to the page if a user clicks on that and the event {@link onClick Click}
+ * posts back to the page if a user clicks on that and the event {@link onClick OnClick}
  * will be raised under such a circumstance.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -55,7 +55,7 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 	 * This method is required by {@link IPostBackEventHandler} interface.
 	 * If {@link getCausesValidation CausesValidation} is true, it will
 	 * invoke the page's {@link TPage::validate validate} method first.
-	 * It will raise {@link onClick Click} events.
+	 * It will raise {@link onClick OnClick} events.
 	 * This method is mainly used by framework and control developers.
 	 * @param TEventParameter the event parameter
 	 */
@@ -202,14 +202,14 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * Raises 'Click' event.
+	 * Raises 'OnClick' event.
 	 * This method is invoked when the {@link getDisplayMode DisplayMode} is 'LinkButton'
 	 * and end-users click on one of the buttons.
 	 * @param TBulletedListEventParameter event parameter.
 	 */
 	public function onClick($param)
 	{
-		$this->raiseEvent('Click',$this,$param);
+		$this->raiseEvent('OnClick',$this,$param);
 	}
 
 	/**

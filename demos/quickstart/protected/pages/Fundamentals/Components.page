@@ -58,7 +58,7 @@ $component-&gt;getFont()-&gt;setName( $name );
 Component events are special properties that take method names as their values. Attaching (setting) a method to an event will hook up the method to the places at which the event is raised. Therefore, the behavior of a component can be modified in a way that may not be foreseen during the development of the component.
 </p>
 <p>
-A component event is defined by the existence of an <tt>on</tt>-method. For example, in <tt>TButton</tt>, we have
+A component event is defined by the existence of a method whose name starts with the word <tt>on</tt>. The event name is the method name and is thus case-insensitve. For example, in <tt>TButton</tt>, we have
 <com:TTextHighlighter CssClass="source">
 class TButton extends TWebControl {
     public function onClick( $param ) {
@@ -66,12 +66,12 @@ class TButton extends TWebControl {
     }
 }
 </com:TTextHighlighter>
-This defines an event named <tt>Click</tt>, and a handler can be attached to the event using one of the following ways,
+This defines an event named <tt>OnClick</tt>, and a handler can be attached to the event using one of the following ways,
 <com:TTextHighlighter CssClass="source">
-$button->Click = $callback;
-$button->Click->add( $callback );
-$button->Click[] = $callback;
-$button->attachEventHandler( 'Click' , $callback );
+$button->OnClick = $callback;
+$button->OnClick->add( $callback );
+$button->OnClick[] = $callback;
+$button->attachEventHandler( 'OnClick' , $callback );
 </com:TTextHighlighter>
 where <tt>$callback</tt> refers to a valid PHP callback (e.g. a function name, a class method <tt>array($object,'method')</tt>, etc.)
 </p>

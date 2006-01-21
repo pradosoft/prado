@@ -176,7 +176,7 @@ class THyperLinkColumn extends TDataGridColumn
 			$link->setNavigateUrl($this->getNavigateUrl());
 			$link->setTarget($this->getTarget());
 			if($this->getDataTextField()!=='' || $this->getDataNavigateUrlField()!=='')
-				$link->attachEventHandler('DataBinding',array($this,'dataBindColumn'));
+				$link->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
 			$cell->getControls()->add($link);
 		}
 	}

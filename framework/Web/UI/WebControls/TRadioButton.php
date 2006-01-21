@@ -29,10 +29,10 @@ Prado::using('System.Web.UI.WebControls.TRadioButtonList');
  * property.
  *
  * To determine whether the TRadioButton component is checked, test the {@link getChecked Checked}
- * property. The {@link onCheckedChanged CheckedChanged} event is raised when
+ * property. The {@link onCheckedChanged OnCheckedChanged} event is raised when
  * the {@link getChecked Checked} state of the TRadioButton component changes
  * between posts to the server. You can provide an event handler for
- * the {@link onCheckedChanged CheckedChanged} event to  to programmatically
+ * the {@link onCheckedChanged OnCheckedChanged} event to  to programmatically
  * control the actions performed when the state of the TRadioButton component changes
  * between posts to the server.
  *

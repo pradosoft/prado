@@ -71,20 +71,20 @@ Prado::using('System.Web.UI.WebControls.TRepeatInfo');
  * The header and footer items can be accessed by {@link getHeader Header}
  * and {@link getFooter Footer} properties, respectively.
  *
- * When TDataList creates an item, it will raise an {@link onItemCreated ItemCreated}
+ * When TDataList creates an item, it will raise an {@link onItemCreated OnItemCreated}
  * so that you may customize the newly created item.
  * When databinding is performed by TDataList, for each item once it has finished
- * databinding, an {@link onItemDataBound ItemDataBound} event will be raised.
+ * databinding, an {@link onItemDataBound OnItemDataBound} event will be raised.
  *
- * When an item is selected by an end-user, a {@link onSelectedIndexChanged SelectedIndexChanged}
+ * When an item is selected by an end-user, a {@link onSelectedIndexChanged OnSelectedIndexChanged}
  * event will be raised. Note, the selected index may not be actually changed.
  * The event mainly informs the server side that the end-user has made a selection.
  *
- * TDataList raises an {@link onItemCommand ItemCommand} whenever a button control
+ * TDataList raises an {@link onItemCommand OnItemCommand} whenever a button control
  * within some TDataList item raises a <b>Command</b> event. If the command name
  * is one of the followings: 'edit', 'update', 'select', 'delete', 'cancel' (case-insensitive),
  * another event will also be raised. For example, if the command name is 'edit',
- * then the new event is {@link onEditCommand SelectCommand}.
+ * then the new event is {@link onEditCommand OnSelectCommand}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -603,12 +603,12 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	/**
 	 * Handles <b>BubbleEvent</b>.
 	 * This method overrides parent's implementation to handle
-	 * {@link onItemCommand ItemCommand} event which is bubbled from
+	 * {@link onItemCommand OnItemCommand} event which is bubbled from
 	 * {@link TDataListItem} child controls.
 	 * If the event parameter is {@link TDataListCommandEventParameter} and
 	 * the command name is a recognized one, which includes 'select', 'edit',
 	 * 'delete', 'update', and 'cancel' (case-insensitive), then a
-	 * corresponding command event is also raised (such as {@link onEditCommand EditCommand}).
+	 * corresponding command event is also raised (such as {@link onEditCommand OnEditCommand}).
 	 * This method should only be used by control developers.
 	 * @param TControl the sender of the event
 	 * @param TEventParameter event parameter
@@ -652,7 +652,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 
 
 	/**
-	 * Raises <b>ItemCreated</b> event.
+	 * Raises <b>OnItemCreated</b> event.
 	 * This method is invoked after a data list item is created and instantiated with
 	 * template, but before added to the page hierarchy.
 	 * The {@link TDataListItem} control responsible for the event
@@ -663,11 +663,11 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 */
 	public function onItemCreated($param)
 	{
-		$this->raiseEvent('ItemCreated',$this,$param);
+		$this->raiseEvent('OnItemCreated',$this,$param);
 	}
 
 	/**
-	 * Raises <b>ItemDataBound</b> event.
+	 * Raises <b>OnItemDataBound</b> event.
 	 * This method is invoked right after an item is data bound.
 	 * The {@link TDataListItem} control responsible for the event
 	 * can be determined from the event parameter.
@@ -677,62 +677,62 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 */
 	public function onItemDataBound($param)
 	{
-		$this->raiseEvent('ItemDataBound',$this,$param);
+		$this->raiseEvent('OnItemDataBound',$this,$param);
 	}
 
 	/**
-	 * Raises <b>ItemCommand</b> event.
+	 * Raises <b>OnItemCommand</b> event.
 	 * This method is invoked when a child control of the data list
 	 * raises an <b>Command</b> event.
 	 * @param TDataListCommandEventParameter event parameter
 	 */
 	protected function onItemCommand($param)
 	{
-		$this->raiseEvent('ItemCommand',$this,$param);
+		$this->raiseEvent('OnItemCommand',$this,$param);
 	}
 
 	/**
-	 * Raises <b>EditCommand</b> event.
+	 * Raises <b>OnEditCommand</b> event.
 	 * This method is invoked when a child control of the data list
 	 * raises an <b>Command</b> event and the command name is 'edit' (case-insensitive).
 	 * @param TDataListCommandEventParameter event parameter
 	 */
 	protected function onEditCommand($param)
 	{
-		$this->raiseEvent('EditCommand',$this,$param);
+		$this->raiseEvent('OnEditCommand',$this,$param);
 	}
 
 	/**
-	 * Raises <b>DeleteCommand</b> event.
+	 * Raises <b>OnDeleteCommand</b> event.
 	 * This method is invoked when a child control of the data list
 	 * raises an <b>Command</b> event and the command name is 'delete' (case-insensitive).
 	 * @param TDataListCommandEventParameter event parameter
 	 */
 	protected function onDeleteCommand($param)
 	{
-		$this->raiseEvent('DeleteCommand',$this,$param);
+		$this->raiseEvent('OnDeleteCommand',$this,$param);
 	}
 
 	/**
-	 * Raises <b>UpdateCommand</b> event.
+	 * Raises <b>OnUpdateCommand</b> event.
 	 * This method is invoked when a child control of the data list
 	 * raises an <b>Command</b> event and the command name is 'update' (case-insensitive).
 	 * @param TDataListCommandEventParameter event parameter
 	 */
 	protected function onUpdateCommand($param)
 	{
-		$this->raiseEvent('UpdateCommand',$this,$param);
+		$this->raiseEvent('OnUpdateCommand',$this,$param);
 	}
 
 	/**
-	 * Raises <b>CancelCommand</b> event.
+	 * Raises <b>OnCancelCommand</b> event.
 	 * This method is invoked when a child control of the data list
 	 * raises an <b>Command</b> event and the command name is 'cancel' (case-insensitive).
 	 * @param TDataListCommandEventParameter event parameter
 	 */
 	protected function onCancelCommand($param)
 	{
-		$this->raiseEvent('CancelCommand',$this,$param);
+		$this->raiseEvent('OnCancelCommand',$this,$param);
 	}
 
 	/**

@@ -544,17 +544,6 @@ class TControl extends TComponent
 	}
 
 	/**
-	 * Returns a value indicating whether this control type can take attributes in template.
-	 * This method can be overriden.
-	 * Only framework developers and control developers should use this method.
-	 * @return boolean whether the control allows attributes in template (default=true)
-	 */
-	public function getAllowCustomAttributes()
-	{
-		return true;
-	}
-
-	/**
 	 * @return boolean whether viewstate is enabled
 	 */
 	public function getEnableViewState($checkParents=false)
@@ -1094,62 +1083,62 @@ class TControl extends TComponent
 	}
 
 	/**
-	 * This method is invoked when the control enters 'Init' stage.
-	 * The method raises 'Init' event.
+	 * This method is invoked when the control enters 'OnInit' stage.
+	 * The method raises 'OnInit' event.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
 	protected function onInit($param)
 	{
-		$this->raiseEvent('Init',$this,$param);
+		$this->raiseEvent('OnInit',$this,$param);
 	}
 
 	/**
-	 * This method is invoked when the control enters 'Load' stage.
-	 * The method raises 'Load' event.
+	 * This method is invoked when the control enters 'OnLoad' stage.
+	 * The method raises 'OnLoad' event.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
 	protected function onLoad($param)
 	{
-		$this->raiseEvent('Load',$this,$param);
+		$this->raiseEvent('OnLoad',$this,$param);
 	}
 
 	/**
-	 * Raises 'DataBinding' event.
+	 * Raises 'OnDataBinding' event.
 	 * This method is invoked when {@link dataBind} is invoked.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
 	protected function onDataBinding($param)
 	{
-		$this->raiseEvent('DataBinding',$this,$param);
+		$this->raiseEvent('OnDataBinding',$this,$param);
 	}
 
 
 	/**
-	 * This method is invoked when the control enters 'Unload' stage.
-	 * The method raises 'Unload' event.
+	 * This method is invoked when the control enters 'OnUnload' stage.
+	 * The method raises 'OnUnload' event.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
 	protected function onUnload($param)
 	{
-		$this->raiseEvent('Unload',$this,$param);
+		$this->raiseEvent('OnUnload',$this,$param);
 	}
 
 	/**
-	 * This method is invoked when the control enters 'PreRender' stage.
-	 * The method raises 'PreRender' event.
+	 * This method is invoked when the control enters 'OnPreRender' stage.
+	 * The method raises 'OnPreRender' event.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
 	protected function onPreRender($param)
 	{
-		$this->raiseEvent('PreRender',$this,$param);
+		$this->raiseEvent('OnPreRender',$this,$param);
 	}
 
 	/**
@@ -1270,7 +1259,7 @@ class TControl extends TComponent
 	 */
 	protected function onSaveState($param)
 	{
-		$this->raiseEvent('SaveState',$this,$param);
+		$this->raiseEvent('OnSaveState',$this,$param);
 	}
 
 	/**
@@ -1281,7 +1270,7 @@ class TControl extends TComponent
 	 */
 	protected function onLoadState($param)
 	{
-		$this->raiseEvent('LoadState',$this,$param);
+		$this->raiseEvent('OnLoadState',$this,$param);
 	}
 
 	/**

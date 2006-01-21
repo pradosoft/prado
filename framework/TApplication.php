@@ -377,7 +377,7 @@ class TApplication extends TComponent
 
 	/**
 	 * Loads global values from persistent storage.
-	 * This method is invoked when {@link onLoadState LoadState} event is raised.
+	 * This method is invoked when {@link onLoadState OnLoadState} event is raised.
 	 * After this method, values that are stored in previous requests become
 	 * available to the current request via {@link getGlobalState}.
 	 */
@@ -388,7 +388,7 @@ class TApplication extends TComponent
 
 	/**
 	 * Saves global values into persistent storage.
-	 * This method is invoked when {@link onSaveState SaveState} event is raised.
+	 * This method is invoked when {@link onSaveState OnSaveState} event is raised.
 	 */
 	protected function saveGlobals()
 	{
@@ -796,21 +796,21 @@ class TApplication extends TComponent
 	}
 
 	/**
-	 * Raises Error event.
+	 * Raises OnError event.
 	 * This method is invoked when an exception is raised during the lifecycles
 	 * of the application.
 	 * @param mixed event parameter
 	 */
 	public function onError($param)
 	{
-		if($this->hasEventHandler('Error'))
-			$this->raiseEvent('Error',$this,$param);
+		if($this->hasEventHandler('OnError'))
+			$this->raiseEvent('OnError',$this,$param);
 		else
 			$this->getErrorHandler()->handleError($this,$param);
 	}
 
 	/**
-	 * Raises BeginRequest event.
+	 * Raises OnBeginRequest event.
 	 * At the time when this method is invoked, application modules are loaded
 	 * and initialized, user request is resolved and the corresponding service
 	 * is loaded and initialized. The application is about to start processing
@@ -819,131 +819,131 @@ class TApplication extends TComponent
 	 */
 	public function onBeginRequest($param)
 	{
-		$this->raiseEvent('BeginRequest',$this,$param);
+		$this->raiseEvent('OnBeginRequest',$this,$param);
 	}
 
 	/**
-	 * Raises Authentication event.
+	 * Raises OnAuthentication event.
 	 * This method is invoked when the user request needs to be authenticated.
 	 * @param mixed event parameter
 	 */
 	public function onAuthentication($param)
 	{
-		$this->raiseEvent('Authentication',$this,$param);
+		$this->raiseEvent('OnAuthentication',$this,$param);
 	}
 
 	/**
-	 * Raises PostAuthentication event.
+	 * Raises OnPostAuthentication event.
 	 * This method is invoked right after the user request is authenticated.
 	 * @param mixed event parameter
 	 */
 	public function onPostAuthentication($param)
 	{
-		$this->raiseEvent('PostAuthentication',$this,$param);
+		$this->raiseEvent('OnPostAuthentication',$this,$param);
 	}
 
 	/**
-	 * Raises Authorization event.
+	 * Raises OnAuthorization event.
 	 * This method is invoked when the user request needs to be authorized.
 	 * @param mixed event parameter
 	 */
 	public function onAuthorization($param)
 	{
-		$this->raiseEvent('Authorization',$this,$param);
+		$this->raiseEvent('OnAuthorization',$this,$param);
 	}
 
 	/**
-	 * Raises PostAuthorization event.
+	 * Raises OnPostAuthorization event.
 	 * This method is invoked right after the user request is authorized.
 	 * @param mixed event parameter
 	 */
 	public function onPostAuthorization($param)
 	{
-		$this->raiseEvent('PostAuthorization',$this,$param);
+		$this->raiseEvent('OnPostAuthorization',$this,$param);
 	}
 
 	/**
-	 * Raises LoadState event.
+	 * Raises OnLoadState event.
 	 * This method is invoked when the application needs to load state (probably stored in session).
 	 * @param mixed event parameter
 	 */
 	public function onLoadState($param)
 	{
 		$this->loadGlobals();
-		$this->raiseEvent('LoadState',$this,$param);
+		$this->raiseEvent('OnLoadState',$this,$param);
 	}
 
 	/**
-	 * Raises PostLoadState event.
+	 * Raises OnPostLoadState event.
 	 * This method is invoked right after the application state has been loaded.
 	 * @param mixed event parameter
 	 */
 	public function onPostLoadState($param)
 	{
-		$this->raiseEvent('PostLoadState',$this,$param);
+		$this->raiseEvent('OnPostLoadState',$this,$param);
 	}
 
 	/**
-	 * Raises PreRunService event.
+	 * Raises OnPreRunService event.
 	 * This method is invoked right before the service is to be run.
 	 * @param mixed event parameter
 	 */
 	public function onPreRunService($param)
 	{
-		$this->raiseEvent('PreRunService',$this,$param);
+		$this->raiseEvent('OnPreRunService',$this,$param);
 	}
 
 	/**
-	 * Raises RunService event.
+	 * Raises OnRunService event.
 	 * This method is invoked when the service runs.
 	 * @param mixed event parameter
 	 */
 	public function onRunService($param)
 	{
-		$this->raiseEvent('RunService',$this,$param);
+		$this->raiseEvent('OnRunService',$this,$param);
 		if($this->_service)
 			$this->_service->run();
 	}
 
 	/**
-	 * Raises PostRunService event.
+	 * Raises OnPostRunService event.
 	 * This method is invoked right after the servie is run.
 	 * @param mixed event parameter
 	 */
 	public function onPostRunService($param)
 	{
-		$this->raiseEvent('PostRunService',$this,$param);
+		$this->raiseEvent('OnPostRunService',$this,$param);
 	}
 
 	/**
-	 * Raises SaveState event.
+	 * Raises OnSaveState event.
 	 * This method is invoked when the application needs to save state (probably stored in session).
 	 * @param mixed event parameter
 	 */
 	public function onSaveState($param)
 	{
-		$this->raiseEvent('SaveState',$this,$param);
+		$this->raiseEvent('OnSaveState',$this,$param);
 		$this->saveGlobals();
 	}
 
 	/**
-	 * Raises PostSaveState event.
+	 * Raises OnPostSaveState event.
 	 * This method is invoked right after the application state has been saved.
 	 * @param mixed event parameter
 	 */
 	public function onPostSaveState($param)
 	{
-		$this->raiseEvent('PostSaveState',$this,$param);
+		$this->raiseEvent('OnPostSaveState',$this,$param);
 	}
 
 	/**
-	 * Raises EndRequest event.
+	 * Raises OnEndRequest event.
 	 * This method is invoked when the application completes the processing of the request.
 	 * @param mixed event parameter
 	 */
 	public function onEndRequest($param)
 	{
-		$this->raiseEvent('EndRequest',$this,$param);
+		$this->raiseEvent('OnEndRequest',$this,$param);
 	}
 }
 

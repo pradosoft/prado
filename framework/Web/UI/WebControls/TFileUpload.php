@@ -23,7 +23,7 @@
  * file size information. If the upload is not successful, {@link getErrorCode ErrorCode}
  * contains the error code describing the cause of failure.
  *
- * TFileUpload raises {@link onFileUpload FileUpload} event if a file is uploaded
+ * TFileUpload raises {@link onFileUpload OnFileUpload} event if a file is uploaded
  * (whether it succeeds or not).
  *
  * @author Marcus Nyeholt <tanus@users.sourceforge.net>, Qiang Xue <qiang.xue@gmail.com>
@@ -224,14 +224,14 @@ class TFileUpload extends TWebControl implements IPostBackDataHandler, IValidata
 
 	/**
 	 * This method is invoked when a file is uploaded during a postback.
-	 * The method raises <b>FileUpload</b> event to fire up the event handler.
+	 * The method raises <b>OnFileUpload</b> event to fire up the event handler.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event delegates can be invoked.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
 	protected function onFileUpload($param)
 	{
-		$this->raiseEvent('FileUpload',$this,$param);
+		$this->raiseEvent('OnFileUpload',$this,$param);
 	}
 
 	/**

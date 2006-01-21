@@ -23,7 +23,7 @@ body content
 <p>
 It is required that component tags nest properly with each other and an opening component tag be paired with a closing tag, similar to that in XML. The following shows a component tag specifying the <tt>Text</tt> property and <tt>Click</tt> event of a button control,
 <com:TTextHighlighter Language="prado" CssClass="source">
-&lt;com:TButton Text="Register" Click="registerUser" />
+&lt;com:TButton Text="Register" OnClick="registerUser" />
 </com:TTextHighlighter>
 </p>
 <p>

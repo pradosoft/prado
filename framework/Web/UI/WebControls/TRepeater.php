@@ -39,15 +39,15 @@ Prado::using('System.Web.UI.WebControls.TDataBoundControl');
  * The header and footer items can be accessed by {@link getHeader Header}
  * and {@link getFooter Footer} properties, respectively.
  *
- * When TRepeater creates an item, it will raise an {@link onItemCreated ItemCreated}
+ * When TRepeater creates an item, it will raise an {@link onItemCreated OnItemCreated}
  * so that you may customize the newly created item.
  * When databinding is performed by TRepeater, for each item once it has finished
- * databinding, an {@link onItemDataBound ItemDataBound} event will be raised.
+ * databinding, an {@link onItemDataBound OnItemDataBound} event will be raised.
  *
- * TRepeater raises an {@link onItemCommand ItemCommand} whenever a button control
+ * TRepeater raises an {@link onItemCommand OnItemCommand} whenever a button control
  * within some repeater item raises a <b>Command</b> event. Therefore,
  * you can handle all sorts of <b>Command</b> event in a central place by
- * writing an event handler for {@link onItemCommand ItemCommand}.
+ * writing an event handler for {@link onItemCommand OnItemCommand}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -415,7 +415,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	/**
 	 * Handles <b>BubbleEvent</b>.
 	 * This method overrides parent's implementation to handle
-	 * {@link onItemCommand ItemCommand} event which is bubbled from
+	 * {@link onItemCommand OnItemCommand} event which is bubbled from
 	 * {@link TRepeaterItem} child controls.
 	 * This method should only be used by control developers.
 	 * @param TControl the sender of the event
@@ -434,7 +434,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	}
 
 	/**
-	 * Raises <b>ItemCreated</b> event.
+	 * Raises <b>OnItemCreated</b> event.
 	 * This method is invoked after a repeater item is created and instantiated with
 	 * template, but before added to the page hierarchy.
 	 * The {@link TRepeaterItem} control responsible for the event
@@ -445,11 +445,11 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 */
 	protected function onItemCreated($param)
 	{
-		$this->raiseEvent('ItemCreated',$this,$param);
+		$this->raiseEvent('OnItemCreated',$this,$param);
 	}
 
 	/**
-	 * Raises <b>ItemDataBound</b> event.
+	 * Raises <b>OnItemDataBound</b> event.
 	 * This method is invoked right after an item is data bound.
 	 * The {@link TRepeaterItem} control responsible for the event
 	 * can be determined from the event parameter.
@@ -459,11 +459,11 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 */
 	protected function onItemDataBound($param)
 	{
-		$this->raiseEvent('ItemDataBound',$this,$param);
+		$this->raiseEvent('OnItemDataBound',$this,$param);
 	}
 
 	/**
-	 * Raises <b>ItemCommand</b> event.
+	 * Raises <b>OnItemCommand</b> event.
 	 * This method is invoked after a button control in
 	 * a template raises <b>Command</b> event.
 	 * The {@link TRepeaterItem} control responsible for the event
@@ -478,7 +478,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 */
 	protected function onItemCommand($param)
 	{
-		$this->raiseEvent('ItemCommand',$this,$param);
+		$this->raiseEvent('OnItemCommand',$this,$param);
 	}
 }
 

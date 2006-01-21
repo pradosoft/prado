@@ -229,7 +229,7 @@ abstract class TDataBoundControl extends TWebControl
 				if(($view=$dataSource->getView($this->getDataMember()))===null)
 					throw new TInvalidDataValueException('databoundcontrol_datamember_invalid',$this->getDataMember());
 				if($this->_currentViewIsFromDataSourceID=$this->getUsingDataSourceID())
-					$view->attachEventHandler('DataSourceViewChanged',array($this,'dataSourceViewChanged'));
+					$view->attachEventHandler('OnDataSourceViewChanged',array($this,'dataSourceViewChanged'));
 				$this->_currentView=$view;
 			}
 			else
@@ -264,17 +264,17 @@ abstract class TDataBoundControl extends TWebControl
 	abstract protected function performDataBinding($data);
 
 	/**
-	 * Raises <b>DataBound</b> event.
+	 * Raises <b>OnDataBound</b> event.
 	 * This method should be invoked after a databind is performed.
 	 * It is mainly used by framework and component developers.
 	 */
 	public function onDataBound($param)
 	{
-		$this->raiseEvent('DataBound',$this,$param);
+		$this->raiseEvent('OnDataBound',$this,$param);
 	}
 
 	/**
-	 * Sets page's <b>PreLoad</b> event handler as {@link onPagePreLoad}.
+	 * Sets page's <b>OnPreLoad</b> event handler as {@link onPagePreLoad}.
 	 * If viewstate is disabled and the current request is a postback,
 	 * {@link setRequiresDataBinding RequiresDataBinding} will be set true.
 	 * This method overrides the parent implementation.
@@ -284,7 +284,7 @@ abstract class TDataBoundControl extends TWebControl
 	{
 		parent::onInit($param);
 		$page=$this->getPage();
-		$page->attachEventHandler('PreLoad',array($this,'onPagePreLoad'));
+		$page->attachEventHandler('OnPreLoad',array($this,'onPagePreLoad'));
 	}
 
 	/**

@@ -24,7 +24,7 @@
  * associated with the button. This allows you to create multiple TLinkButton
  * components on a Web page and programmatically determine which one is clicked
  * with what parameter. You can provide an event handler for
- * {@link onCommand Command} event to programmatically control the actions performed
+ * {@link onCommand OnCommand} event to programmatically control the actions performed
  * when the command button is clicked. In the event handler, you can determine
  * the {@link setCommandName CommandName} property value and
  * the {@link setCommandParameter CommandParameter} property value
@@ -35,7 +35,7 @@
  * A <b>submit</b> button does not have a command name associated with the button
  * and clicking on it simply posts the Web page back to the server.
  * By default, a TLinkButton component is a submit button.
- * You can provide an event handler for the {@link onClick Click} event
+ * You can provide an event handler for the {@link onClick OnClick} event
  * to programmatically control the actions performed when the submit button is clicked.
  *
  * Clicking on button can trigger form validation, if
@@ -138,7 +138,7 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * @return string the command name associated with the {@link onCommand Command} event.
+	 * @return string the command name associated with the {@link onCommand OnCommand} event.
 	 */
 	public function getCommandName()
 	{
@@ -146,7 +146,7 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * Sets the command name associated with the {@link onCommand Command} event.
+	 * Sets the command name associated with the {@link onCommand OnCommand} event.
 	 * @param string the text caption to be set
 	 */
 	public function setCommandName($value)
@@ -155,7 +155,7 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * @return string the parameter associated with the {@link onCommand Command} event
+	 * @return string the parameter associated with the {@link onCommand OnCommand} event
 	 */
 	public function getCommandParameter()
 	{
@@ -163,7 +163,7 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * Sets the parameter associated with the {@link onCommand Command} event.
+	 * Sets the parameter associated with the {@link onCommand OnCommand} event.
 	 * @param string the text caption to be set
 	 */
 	public function setCommandParameter($value)
@@ -209,7 +209,7 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 	 * This method is required by {@link IPostBackEventHandler} interface.
 	 * If {@link getCausesValidation CausesValidation} is true, it will
 	 * invoke the page's {@link TPage::validate validate} method first.
-	 * It will raise {@link onClick Click} and {@link onCommand Command} events.
+	 * It will raise {@link onClick OnClick} and {@link onCommand OnCommand} events.
 	 * This method is mainly used by framework and control developers.
 	 * @param TEventParameter the event parameter
 	 */
@@ -223,26 +223,26 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 
 	/**
 	 * This method is invoked when the button is clicked.
-	 * The method raises 'Click' event to fire up the event handlers.
+	 * The method raises 'OnClick' event to fire up the event handlers.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handler can be invoked.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
 	public function onClick($param)
 	{
-		$this->raiseEvent('Click',$this,$param);
+		$this->raiseEvent('OnClick',$this,$param);
 	}
 
 	/**
 	 * This method is invoked when the button is clicked.
-	 * The method raises 'Command' event to fire up the event handlers.
+	 * The method raises 'OnCommand' event to fire up the event handlers.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
 	 * @param TCommandEventParameter event parameter to be passed to the event handlers
 	 */
 	public function onCommand($param)
 	{
-		$this->raiseEvent('Command',$this,$param);
+		$this->raiseEvent('OnCommand',$this,$param);
 		$this->raiseBubbleEvent($this,$param);
 	}
 }

@@ -230,14 +230,14 @@ abstract class TBaseDataList extends TDataBoundControl
 	}
 
 	/**
-	 * Raises SelectedIndexChanged event.
+	 * Raises OnSelectedIndexChanged event.
 	 * This method is invoked when a different item is selected
 	 * in a data listing control between posts to the server.
 	 * @param mixed event parameter
 	 */
 	public function onSelectedIndexChanged($param)
 	{
-		$this->raiseEvent('SelectedIndexChanged',$this,$param);
+		$this->raiseEvent('OnSelectedIndexChanged',$this,$param);
 	}
 }
 

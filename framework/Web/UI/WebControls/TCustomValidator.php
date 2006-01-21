@@ -22,7 +22,7 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  * server-side or client-side or both) on an input component.
  *
  * To create a server-side validation function, provide a handler for
- * the {@link onServerValidate ServerValidate} event that performs the validation.
+ * the {@link onServerValidate OnServerValidate} event that performs the validation.
  * The data string of the input control to validate can be accessed
  * by {@link TServerValidateEventParameter::getValue Value} of the event parameter.
  * The result of the validation should be stored in the
@@ -84,17 +84,17 @@ class TCustomValidator extends TBaseValidator
 
 	/**
 	 * This method is invoked when the server side validation happens.
-	 * It will raise the <b>ServerValidate</b> event.
+	 * It will raise the <b>OnServerValidate</b> event.
 	 * The method also allows derived classes to handle the event without attaching a delegate.
 	 * <b>Note</b> The derived classes should call parent implementation
-	 * to ensure the <b>ServerValidate</b> event is raised.
+	 * to ensure the <b>OnServerValidate</b> event is raised.
 	 * @param string the value to be validated
 	 * @return boolean whether the value is valid
 	 */
 	public function onServerValidate($value)
 	{
 		$param=new TServerValidateEventParameter($value,true);
-		$this->raiseEvent('ServerValidate',$this,$param);
+		$this->raiseEvent('OnServerValidate',$this,$param);
 		return $param->getIsValid();
 	}
 

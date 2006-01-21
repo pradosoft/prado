@@ -19,7 +19,7 @@ Button with customized color, font and width:
 <tr><td class="samplenote">
 A click button:
 </td><td class="sampleaction">
-<com:TButton Text="click me" Click="buttonClicked" />
+<com:TButton Text="click me" OnClick="buttonClicked" />
 </td></tr>
 
 <tr><td class="samplenote">
@@ -27,7 +27,7 @@ A command button:
 </td><td class="sampleaction">
 <com:TButton
 	Text="click me"
-	Command="buttonClicked"
+	OnCommand="buttonClicked"
 	CommandName="test"
 	CommandParameter="value"
 	/>

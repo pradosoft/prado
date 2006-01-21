@@ -35,8 +35,8 @@
  * in the format of concatenated words, with the first letter of each word
  * capitalized (e.g. DisplayMode, ItemStyle).
  *
- * An event is defined by the presence of a method whose name is the event name prefixed with 'on'.
- * The event name is case-insensitive.
+ * An event is defined by the presence of a method whose name starts with 'on'.
+ * The event name is the method name and is thus case-insensitive.
  * An event can be attached with one or several methods (called event handlers).
  * An event can be raised by calling {@link raiseEvent} method, upon which
  * the attached event handlers will be invoked automatically in the order they
@@ -48,15 +48,15 @@
  * and $param refers to a structure that may contain event-specific information.
  * To raise an event (assuming named as 'Click') of a component, use
  * <code>
- * $component->raiseEvent('Click');
+ * $component->raiseEvent('OnClick');
  * </code>
  * To attach an event handler to an event, use one of the following ways,
  * <code>
- * $component->Click=$callback;  // or $component->Click->add($callback);
- * $$component->attachEventHandler('Click',$callback);
+ * $component->OnClick=$callback;  // or $component->OnClick->add($callback);
+ * $$component->attachEventHandler('OnClick',$callback);
  * </code>
- * The first two ways make use of the fact that $component->Click refers to
- * the event handler list {@link TList} for the 'Click' event.
+ * The first two ways make use of the fact that $component->OnClick refers to
+ * the event handler list {@link TList} for the 'OnClick' event.
  * The variable $callback contains the definition of the event handler that can
  * be either a string referring to a global function name, or an array whose
  * first element refers to an object and second element a method name/path that
@@ -115,7 +115,7 @@ class TComponent
 			// getting a property
 			return $this->$getter();
 		}
-		else if(method_exists($this,'on'.$name))
+		else if(strncasecmp($name,'on',2)===0 && method_exists($this,$name))
 		{
 			// getting an event (handler list)
 			$name=strtolower($name);
@@ -148,7 +148,7 @@ class TComponent
 		{
 			$this->$setter($value);
 		}
-		else if(method_exists($this,'on'.$name))
+		else if(strncasecmp($name,'on',2)===0 && method_exists($this,$name))
 		{
 			$this->attachEventHandler($name,$value);
 		}
@@ -244,7 +244,7 @@ class TComponent
 	 */
 	public function hasEvent($name)
 	{
-		return method_exists($this,'on'.$name);
+		return strncasecmp($name,'on',2)===0 && method_exists($this,$name);
 	}
 
 	/**
@@ -263,7 +263,7 @@ class TComponent
 	 */
 	public function getEventHandlers($name)
 	{
-		if(method_exists($this,'on'.$name))
+		if(strncasecmp($name,'on',2)===0 && method_exists($this,$name))
 		{
 			$name=strtolower($name);
 			if(!isset($this->_e[$name]))
@@ -299,13 +299,13 @@ class TComponent
 	 * event handlers. You may also do these operations like
 	 * getting and setting properties, e.g.,
 	 * <code>
-	 * $component->Click[]=array($object,'buttonClicked');
-	 * $component->Click->insert(0,array($object,'buttonClicked'));
+	 * $component->OnClick[]=array($object,'buttonClicked');
+	 * $component->OnClick->insert(0,array($object,'buttonClicked'));
 	 * </code>
 	 * which are equivalent to the following
 	 * <code>
-	 * $component->getEventHandlers('Click')->add(array($object,'buttonClicked'));
-	 * $component->getEventHandlers('Click')->insert(0,array($object,'buttonClicked'));
+	 * $component->getEventHandlers('OnClick')->add(array($object,'buttonClicked'));
+	 * $component->getEventHandlers('OnClick')->insert(0,array($object,'buttonClicked'));
 	 * </code>
 	 *
 	 * @param string the event name

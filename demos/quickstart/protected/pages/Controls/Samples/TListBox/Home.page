@@ -62,7 +62,9 @@ Disabled list box:
 Auto postback list box:
 </td>
 <td class="sampleaction">
-<com:TListBox AutoPostBack="true" SelectedIndexChanged="selectionChanged">
+<com:TListBox
+	AutoPostBack="true"
+	OnSelectedIndexChanged="selectionChanged">
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
   <com:TListItem Value="value 3" Text="item 3" />
@@ -83,7 +85,7 @@ List box's behavior upon postback:
   <com:TListItem Value="value 3" Text="item 3" />
   <com:TListItem Value="value 4" Text="item 4" />
 </com:TListBox>
-<com:TButton Text="Submit" Click="buttonClicked"/>
+<com:TButton Text="Submit" OnClick="buttonClicked"/>
 <com:TLabel ID="SelectionResult2" ForeColor="red" />
 </td>
 </tr>
@@ -131,7 +133,7 @@ List box's behavior upon postback:
   <com:TListItem Value="value 3" Text="item 3" />
   <com:TListItem Value="value 4" Text="item 4" Selected="true" />
 </com:TListBox>
-<com:TButton Text="Submit" Click="buttonClicked2" />
+<com:TButton Text="Submit" OnClick="buttonClicked2" />
 <br/>
 <com:TLabel ID="MultiSelectionResult2" ForeColor="red" />
 </td>
@@ -144,7 +146,7 @@ Auto postback list box:
 <td class="sampleaction">
 <com:TListBox AutoPostBack="true"
 	SelectionMode="Multiple"
-	SelectedIndexChanged="multiSelectionChanged">
+	OnSelectedIndexChanged="multiSelectionChanged">
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
   <com:TListItem Value="value 3" Text="item 3" />
@@ -170,7 +172,7 @@ Databind to an integer-indexed array:
 <com:TListBox ID="DBListBox1"
 	AutoPostBack="true"
 	SelectionMode="Multiple"
-	SelectedIndexChanged="DBListBox1Changed" />
+	OnSelectedIndexChanged="DBListBox1Changed" />
 <com:TLabel ID="DBListBox1Result" ForeColor="red" />
 </td>
 </tr>
@@ -183,7 +185,7 @@ Databind to an associative array:
 <com:TListBox ID="DBListBox2"
 	AutoPostBack="true"
 	SelectionMode="Multiple"
-	SelectedIndexChanged="DBListBox2Changed" />
+	OnSelectedIndexChanged="DBListBox2Changed" />
 <com:TLabel ID="DBListBox2Result" ForeColor="red" />
 </td>
 </tr>
@@ -198,7 +200,7 @@ Databind with DataTextField and DataValueField specified:
 	SelectionMode="Multiple"
 	DataTextField="name"
 	DataValueField="id"
-	SelectedIndexChanged="DBListBox3Changed" />
+	OnSelectedIndexChanged="DBListBox3Changed" />
 <com:TLabel ID="DBListBox3Result" ForeColor="red" />
 </td>
 </tr>

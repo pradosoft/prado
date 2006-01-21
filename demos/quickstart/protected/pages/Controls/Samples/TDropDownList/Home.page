@@ -32,7 +32,7 @@ Dropdown list with initial items:
 List box with customized row number, color and font:
 </td>
 <td class="sampleaction">
-<com:TDropDownList Rows="3" ForeColor="blue" Font.Size="14pt">
+<com:TDropDownList ForeColor="blue" Font.Size="14pt">
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
   <com:TListItem Value="value 3" Text="item 3" />
@@ -60,7 +60,9 @@ Disabled dropdown list:
 Auto postback dropdown list:
 </td>
 <td class="sampleaction">
-<com:TDropDownList AutoPostBack="true" SelectedIndexChanged="selectionChanged">
+<com:TDropDownList
+	AutoPostBack="true"
+	OnSelectedIndexChanged="selectionChanged">
   <com:TListItem Value="value 1" Text="item 1" />
   <com:TListItem Value="value 2" Text="item 2" Selected="true" />
   <com:TListItem Value="value 3" Text="item 3" />
@@ -81,7 +83,7 @@ Dropdown list's behavior upon postback:
   <com:TListItem Value="value 3" Text="item 3" />
   <com:TListItem Value="value 4" Text="item 4" />
 </com:TDropDownList>
-<com:TButton Text="Submit" Click="buttonClicked"/>
+<com:TButton Text="Submit" OnClick="buttonClicked"/>
 <com:TLabel ID="SelectionResult2" ForeColor="red" />
 </td>
 </tr>

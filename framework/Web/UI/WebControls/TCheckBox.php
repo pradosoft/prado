@@ -20,10 +20,10 @@
  * property.
  *
  * To determine whether the TCheckBox component is checked, test the {@link getChecked Checked}
- * property. The {@link onCheckedChanged CheckedChanged} event is raised when
+ * property. The {@link onCheckedChanged OnCheckedChanged} event is raised when
  * the {@link getChecked Checked} state of the TCheckBox component changes
  * between posts to the server. You can provide an event handler for
- * the {@link onCheckedChanged CheckedChanged} event to  to programmatically
+ * the {@link onCheckedChanged OnCheckedChanged} event to  to programmatically
  * control the actions performed when the state of the TCheckBox component changes
  * between posts to the server.
  *
@@ -71,7 +71,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 
 	/**
 	 * Raises postdata changed event.
-	 * This method raises {@link onCheckedChanged CheckedChanged} event.
+	 * This method raises {@link onCheckedChanged OnCheckedChanged} event.
 	 * This method is primarly used by framework developers.
 	 */
 	public function raisePostDataChangedEvent()
@@ -87,14 +87,14 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	}
 
 	/**
-	 * Raises <b>CheckedChanged</b> event when {@link getChecked Checked} changes value during postback.
+	 * Raises <b>OnCheckedChanged</b> event when {@link getChecked Checked} changes value during postback.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event delegates can be invoked.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
 	protected function onCheckedChanged($param)
 	{
-		$this->raiseEvent('CheckedChanged',$this,$param);
+		$this->raiseEvent('OnCheckedChanged',$this,$param);
 	}
 
 	/**

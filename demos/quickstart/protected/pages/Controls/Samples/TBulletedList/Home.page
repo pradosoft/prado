@@ -67,7 +67,7 @@ Bulleted list of hyperlinks:
 Bulleted list of link buttons (click on them to see the result):
 </td>
 <td class="sampleaction">
-<com:TBulletedList DisplayMode="LinkButton" Click="buttonClicked">
+<com:TBulletedList DisplayMode="LinkButton" OnClick="buttonClicked">
   <com:TListItem Value="http://www.google.com/" Text="google" />
   <com:TListItem Value="http://www.yahoo.com/" Text="yahoo" />
   <com:TListItem Value="http://www.amazon.com/" Text="amazon" />

@@ -89,12 +89,12 @@ implements <com:TTextBox ID="Interfaces" CssClass="slTextBox"/>
 
 </com:TRepeater>
 
-<com:TButton Text="New Property" Command="propertyAction" CommandName="add" />
+<com:TButton Text="New Property" OnCommand="propertyAction" CommandName="add" />
 
 </com:TPanel>
 
 <com:TPanel GroupingText="Event Definitions">
-<com:TRepeater ID="EventList" ItemCommand="eventAction">
+<com:TRepeater ID="EventList" OnItemCommand="eventAction">
 
 <prop:HeaderTemplate>
 <table>
@@ -141,7 +141,7 @@ implements <com:TTextBox ID="Interfaces" CssClass="slTextBox"/>
 
 </com:TRepeater>
 
-<com:TButton Text="New Event" Command="eventAction" CommandName="add" />
+<com:TButton Text="New Event" OnCommand="eventAction" CommandName="add" />
 
 </com:TPanel>
 
@@ -161,7 +161,7 @@ Author Email
 <br/>
 
 <hr/>
-<com:TButton Text="Generate Code" Click="generateCode" />
+<com:TButton Text="Generate Code" OnClick="generateCode" />
 <com:TTextHighlighter>
 <com:TLiteral ID="SourceCode" />
 </com:TTextHighlighter>

@@ -186,7 +186,7 @@ class TButtonColumn extends TDataGridColumn
 			$button->setCausesValidation($this->getCausesValidation());
 			$button->setValidationGroup($this->getValidationGroup());
 			if($this->getDataTextField()!=='')
-				$button->attachEventHandler('DataBinding',array($this,'dataBindColumn'));
+				$button->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
 			$cell->getControls()->add($button);
 		}
 	}

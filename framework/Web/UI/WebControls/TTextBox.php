@@ -212,15 +212,16 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	}
 
 	/**
+	 * Raises <b>OnTextChanged</b> event.
 	 * This method is invoked when the value of the {@link getText Text}
-	 * property changes on postback. The method raises <b>TextChanged</b> event.
+	 * property changes on postback.
 	 * If you override this method, be sure to call the parent implementation to ensure
 	 * the invocation of the attached event handlers.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
 	protected function onTextChanged($param)
 	{
-		$this->raiseEvent('TextChanged',$this,$param);
+		$this->raiseEvent('OnTextChanged',$this,$param);
 	}
 
 	/**

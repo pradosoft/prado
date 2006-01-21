@@ -389,69 +389,69 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * Raises PreInit event.
-	 * This method is invoked right before {@link onInit Init} stage.
+	 * Raises OnPreInit event.
+	 * This method is invoked right before {@link onInit OnInit} stage.
 	 * You may override this method to provide additional initialization that
-	 * should be done before {@link onInit Init} (e.g. setting {@link setTheme Theme} or
+	 * should be done before {@link onInit OnInit} (e.g. setting {@link setTheme Theme} or
 	 * {@link setStyleSheetTheme StyleSheetTheme}).
 	 * Remember to call the parent implementation to ensure PreInit event is raised.
 	 * @param mixed event parameter
 	 */
 	protected function onPreInit($param)
 	{
-		$this->raiseEvent('PreInit',$this,$param);
+		$this->raiseEvent('OnPreInit',$this,$param);
 	}
 
 	/**
-	 * Raises InitComplete event.
-	 * This method is invoked right after {@link onInit Init} stage and before {@link onLoad Load} stage.
+	 * Raises OnInitComplete event.
+	 * This method is invoked right after {@link onInit OnInit} stage and before {@link onLoad OnLoad} stage.
 	 * You may override this method to provide additional initialization that
-	 * should be done after {@link onInit Init}.
+	 * should be done after {@link onInit OnInit}.
 	 * Remember to call the parent implementation to ensure InitComplete event is raised.
 	 * @param mixed event parameter
 	 */
 	protected function onInitComplete($param)
 	{
-		$this->raiseEvent('InitComplete',$this,$param);
+		$this->raiseEvent('OnInitComplete',$this,$param);
 	}
 
 	/**
-	 * Raises PreLoad event.
-	 * This method is invoked right before {@link onLoad Load} stage.
+	 * Raises OnPreLoad event.
+	 * This method is invoked right before {@link onLoad OnLoad} stage.
 	 * You may override this method to provide additional page loading logic that
-	 * should be done before {@link onLoad Load}.
+	 * should be done before {@link onLoad OnLoad}.
 	 * Remember to call the parent implementation to ensure PreLoad event is raised.
 	 * @param mixed event parameter
 	 */
 	protected function onPreLoad($param)
 	{
-		$this->raiseEvent('PreLoad',$this,$param);
+		$this->raiseEvent('OnPreLoad',$this,$param);
 	}
 
 	/**
-	 * Raises LoadComplete event.
-	 * This method is invoked right after {@link onLoad Load} stage.
+	 * Raises OnLoadComplete event.
+	 * This method is invoked right after {@link onLoad OnLoad} stage.
 	 * You may override this method to provide additional page loading logic that
-	 * should be done after {@link onLoad Load}.
+	 * should be done after {@link onLoad OnLoad}.
 	 * Remember to call the parent implementation to ensure LoadComplete event is raised.
 	 * @param mixed event parameter
 	 */
 	protected function onLoadComplete($param)
 	{
-		$this->raiseEvent('LoadComplete',$this,$param);
+		$this->raiseEvent('OnLoadComplete',$this,$param);
 	}
 
 	/**
-	 * Raises PreRenderComplete event.
-	 * This method is invoked right after {@link onPreRender PreRender} stage.
+	 * Raises OnPreRenderComplete event.
+	 * This method is invoked right after {@link onPreRender OnPreRender} stage.
 	 * You may override this method to provide additional preparation for page rendering
-	 * that should be done after {@link onPreRender PreRender}.
+	 * that should be done after {@link onPreRender OnPreRender}.
 	 * Remember to call the parent implementation to ensure PreRenderComplete event is raised.
 	 * @param mixed event parameter
 	 */
 	protected function onPreRenderComplete($param)
 	{
-		$this->raiseEvent('PreRenderComplete',$this,$param);
+		$this->raiseEvent('OnPreRenderComplete',$this,$param);
 		$cs=$this->getClientScript();
 		if($this->_theme)
 		{
@@ -470,15 +470,15 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * Raises SaveStateComplete event.
-	 * This method is invoked right after {@link onSaveState SaveState} stage.
+	 * Raises OnSaveStateComplete event.
+	 * This method is invoked right after {@link onSaveState OnSaveState} stage.
 	 * You may override this method to provide additional logic after page state is saved.
 	 * Remember to call the parent implementation to ensure SaveStateComplete event is raised.
 	 * @param mixed event parameter
 	 */
 	protected function onSaveStateComplete($param)
 	{
-		$this->raiseEvent('SaveStateComplete',$this,$param);
+		$this->raiseEvent('OnSaveStateComplete',$this,$param);
 	}
 
 	/**
@@ -620,7 +620,7 @@ class TPage extends TTemplateControl
 	/**
 	 * Processes post data.
 	 * @param TMap post data to be processed
-	 * @param boolean whether this method is invoked before {@link onLoad Load}.
+	 * @param boolean whether this method is invoked before {@link onLoad OnLoad}.
 	 */
 	protected function processPostData($postData,$beforeLoad)
 	{
@@ -661,7 +661,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * Raises PostDataChangedEvent for controls whose data have been changed due to the postback.
+	 * Raises OnPostDataChangedEvent for controls whose data have been changed due to the postback.
 	 */
 	private function raiseChangedEvents()
 	{
@@ -670,7 +670,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * Raises PostBack event.
+	 * Raises OnPostBack event.
 	 */
 	private function raisePostBackEvent()
 	{

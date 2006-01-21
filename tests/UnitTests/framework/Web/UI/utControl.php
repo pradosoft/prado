@@ -349,7 +349,7 @@ class utControl extends UnitTestCase
 		$this->button1->getEventHandlers('OnClick')->clear();
 		try
 		{
-			$this->button1->attachEventHandler('Click','clicked');
+			$this->button1->attachEventHandler('OnClick','clicked');
 			$this->fail('no exception raised when undefined event is raised');
 		}
 		catch(TInvalidOperationException $e)

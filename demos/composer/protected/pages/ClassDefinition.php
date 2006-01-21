@@ -173,7 +173,7 @@ class ClassDefinition extends TComponent
 				continue;
 			$comments=implode("\n\t * ",explode("\n",wordwrap($event->Comments)));
 			$writer->write("\n\t/**\n\t * Raises <b>$name</b> event.\n\t * $comments\n\t * @param TEventParameter event parameter\n\t */\n");
-			$writer->write("\tpublic function on$name(\$param)\n\t{\n\t\t\$this->raiseEvent('$name',\$this,\$param);\n\t}\n");
+			$writer->write("\tpublic function $name(\$param)\n\t{\n\t\t\$this->raiseEvent('$name',\$this,\$param);\n\t}\n");
 		}
 	}
 

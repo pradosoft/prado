@@ -497,25 +497,25 @@ abstract class TListControl extends TDataBoundControl
 	}
 
 	/**
-	 * Raises SelectedIndexChanged event when selection is changed.
+	 * Raises OnSelectedIndexChanged event when selection is changed.
 	 * This method is invoked when the list control has its selection changed
 	 * by end-users.
 	 * @param TEventParameter event parameter
 	 */
 	public function onSelectedIndexChanged($param)
 	{
-		$this->raiseEvent('SelectedIndexChanged',$this,$param);
+		$this->raiseEvent('OnSelectedIndexChanged',$this,$param);
 	}
 
 	/**
-	 * Raises TextChanged event when selection is changed.
+	 * Raises OnTextChanged event when selection is changed.
 	 * This method is invoked when the list control has its selection changed
 	 * by end-users.
 	 * @param TEventParameter event parameter
 	 */
 	public function onTextChanged($param)
 	{
-		$this->raiseEvent('TextChanged',$this,$param);
+		$this->raiseEvent('OnTextChanged',$this,$param);
 	}
 
 	/**

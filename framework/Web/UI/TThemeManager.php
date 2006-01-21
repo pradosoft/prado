@@ -333,8 +333,6 @@ class TTheme extends TComponent
 						else
 							throw new TConfigurationException('theme_property_readonly',$type,$name);
 					}
-					else if($control->getAllowCustomAttributes())
-						$control->getAttributes()->add($name,$value);
 					else
 						throw new TConfigurationException('theme_property_undefined',$type,$name);
 				}

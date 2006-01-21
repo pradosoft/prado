@@ -26,7 +26,7 @@ body content
 <tr><td class="samplenote">
 A click link button:
 </td><td class="sampleaction">
-<com:TLinkButton Text="click me" Click="buttonClicked" />
+<com:TLinkButton Text="click me" OnClick="buttonClicked" />
 </td></tr>
 
 <tr><td class="samplenote">
@@ -34,7 +34,7 @@ A command link button:
 </td><td class="sampleaction">
 <com:TLinkButton
 	Text="click me"
-	Command="buttonClicked"
+	OnCommand="buttonClicked"
 	CommandName="test"
 	CommandParameter="value"
 	/>

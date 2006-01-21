@@ -25,7 +25,7 @@
 <com:TLinkButton
 	Text="LOGOUT"
 	Visible=<%= !$this->User->IsGuest %>
-	Click="logout"
+	OnClick="logout"
 	/>
 </div>
 </div>

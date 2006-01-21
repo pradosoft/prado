@@ -15,7 +15,7 @@
 <div id="menu">
 <a href="?">Home</a> |
 <a href="http://www.pradosoft.com">PradoSoft.com</a> |
-<com:TLinkButton Text="Hide TOC" Click="toggleTopicPanel" />
+<com:TLinkButton Text="Hide TOC" OnClick="toggleTopicPanel" />
 </div>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">

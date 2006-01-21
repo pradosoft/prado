@@ -554,12 +554,12 @@ class TDataGrid extends TBaseDataList
 	/**
 	 * Handles <b>BubbleEvent</b>.
 	 * This method overrides parent's implementation to handle
-	 * {@link onItemCommand ItemCommand} event which is bubbled from
+	 * {@link onItemCommand OnItemCommand} event which is bubbled from
 	 * {@link TDataGridItem} child controls.
 	 * If the event parameter is {@link TDataGridCommandEventParameter} and
 	 * the command name is a recognized one, which includes 'select', 'edit',
 	 * 'delete', 'update', and 'cancel' (case-insensitive), then a
-	 * corresponding command event is also raised (such as {@link onEditCommand EditCommand}).
+	 * corresponding command event is also raised (such as {@link onEditCommand OnEditCommand}).
 	 * This method should only be used by control developers.
 	 * @param TControl the sender of the event
 	 * @param TEventParameter event parameter
@@ -619,100 +619,100 @@ class TDataGrid extends TBaseDataList
 	}
 
 	/**
-	 * Raises <b>CancelCommand</b> event.
+	 * Raises <b>OnCancelCommand</b> event.
 	 * This method is invoked when a button control raises<b>Command</b> event
 	 * with<b>cancel</b> command name.
 	 * @param TDataGridCommandEventParameter event parameter
 	 */
 	public function onCancelCommand($param)
 	{
-		$this->raiseEvent('CancelCommand',$this,$param);
+		$this->raiseEvent('OnCancelCommand',$this,$param);
 	}
 
 	/**
-	 * Raises <b>DeleteCommand</b> event.
+	 * Raises <b>OnDeleteCommand</b> event.
 	 * This method is invoked when a button control raises <b>Command</b> event
 	 * with <b>delete</b> command name.
 	 * @param TDataGridCommandEventParameter event parameter
 	 */
 	public function onDeleteCommand($param)
 	{
-		$this->raiseEvent('DeleteCommand',$this,$param);
+		$this->raiseEvent('OnDeleteCommand',$this,$param);
 	}
 
 	/**
-	 * Raises <b>EditCommand</b> event.
+	 * Raises <b>OnEditCommand</b> event.
 	 * This method is invoked when a button control raises <b>Command</b> event
 	 * with <b>edit</b> command name.
 	 * @param TDataGridCommandEventParameter event parameter
 	 */
 	public function onEditCommand($param)
 	{
-		$this->raiseEvent('EditCommand',$this,$param);
+		$this->raiseEvent('OnEditCommand',$this,$param);
 	}
 
 	/**
-	 * Raises <b>ItemCommand</b> event.
+	 * Raises <b>OnItemCommand</b> event.
 	 * This method is invoked when a button control raises <b>Command</b> event.
 	 * @param TDataGridItemCommandEventParameter event parameter
 	 */
 	public function onItemCommand($param)
 	{
-		$this->raiseEvent('ItemCommand',$this,$param);
+		$this->raiseEvent('OnItemCommand',$this,$param);
 	}
 
 	/**
-	 * Raises <b>SortCommand</b> event.
+	 * Raises <b>OnSortCommand</b> event.
 	 * This method is invoked when a button control raises <b>Command</b> event
 	 * with <b>sort</b> command name.
 	 * @param TDataGridSortCommandEventParameter event parameter
 	 */
 	public function onSortCommand($param)
 	{
-		$this->raiseEvent('SortCommand',$this,$param);
+		$this->raiseEvent('OnSortCommand',$this,$param);
 	}
 
 	/**
-	 * Raises <b>UpdateCommand</b> event.
+	 * Raises <b>OnUpdateCommand</b> event.
 	 * This method is invoked when a button control raises <b>Command</b> event
 	 * with <b>update</b> command name.
 	 * @param TDataGridCommandEventParameter event parameter
 	 */
 	public function onUpdateCommand($param)
 	{
-		$this->raiseEvent('UpdateCommand',$this,$param);
+		$this->raiseEvent('OnUpdateCommand',$this,$param);
 	}
 
 	/**
-	 * Raises <b>ItemCreated</b> event.
+	 * Raises <b>OnItemCreated</b> event.
 	 * This method is invoked right after a datagrid item is created and before
 	 * added to page hierarchy.
 	 * @param TDataGridItemEventParameter event parameter
 	 */
 	public function onItemCreated($param)
 	{
-		$this->raiseEvent('ItemCreated',$this,$param);
+		$this->raiseEvent('OnItemCreated',$this,$param);
 	}
 
 	/**
-	 * Raises <b>ItemDataBound</b> event.
+	 * Raises <b>OnItemDataBound</b> event.
 	 * This method is invoked for each datagrid item after it performs
 	 * databinding.
 	 * @param TDataGridItemEventParameter event parameter
 	 */
 	public function onItemDataBound($param)
 	{
-		$this->raiseEvent('ItemDataBound',$this,$param);
+		$this->raiseEvent('OnItemDataBound',$this,$param);
 	}
 
 	/**
-	 * Raises <b>PageIndexChanged</b> event.
+	 * Raises <b>OnPageIndexChanged</b> event.
 	 * This method is invoked when current page is changed.
 	 * @param TDataGridPageChangedEventParameter event parameter
 	 */
 	public function onPageIndexChanged($param)
 	{
-		$this->raiseEvent('PageIndexChanged',$this,$param);
+		$this->raiseEvent('OnPageIndexChanged',$this,$param);
 	}
 
 	/**

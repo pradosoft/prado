@@ -15,7 +15,7 @@
  *
  * THiddenField displays a hidden input field on a Web page.
  * The value of the input field can be accessed via {@link getValue Value} property.
- * If upon postback the value is changed, a {@link onValueChanged ValueChanged}
+ * If upon postback the value is changed, a {@link onValueChanged OnValueChanged}
  * event will be raised.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -94,14 +94,14 @@ class THiddenField extends TControl implements IPostBackDataHandler
 
 	/**
 	 * This method is invoked when the value of the {@link getValue Value} property changes between posts to the server.
-	 * The method raises 'ValueChanged' event to fire up the event delegates.
+	 * The method raises 'OnValueChanged' event to fire up the event delegates.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the attached event handlers can be invoked.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
 	public function onValueChanged($param)
 	{
-		$this->raiseEvent('ValueChanged',$this,$param);
+		$this->raiseEvent('OnValueChanged',$this,$param);
 	}
 
 	/**

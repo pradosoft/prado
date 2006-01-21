@@ -108,13 +108,13 @@ class TBoundColumn extends TDataGridColumn
 					$control=$textBox;
 				}
 				if(($dataField=$this->getDataField())!=='')
-					$control->attachEventHandler('DataBinding',array($this,'dataBindColumn'));
+					$control->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
 				break;
 			case 'Item':
 			case 'AlternatingItem':
 			case 'SelectedItem':
 				if(($dataField=$this->getDataField())!=='')
-					$cell->attachEventHandler('DataBinding',array($this,'dataBindColumn'));
+					$cell->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
 				break;
 		}
 	}

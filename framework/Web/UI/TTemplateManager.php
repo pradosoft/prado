@@ -301,8 +301,6 @@ class TTemplate extends TComponent implements ITemplate
 		{
 			if($control->hasProperty($name))
 				$this->configureProperty($control,$name,$value);
-			else if($control->getAllowCustomAttributes())
-				$this->configureAttribute($control,$name,$value);
 			else
 				throw new TTemplateRuntimeException('template_property_undefined',get_class($control),$name);
 		}
