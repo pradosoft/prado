@@ -155,7 +155,7 @@ class utComponent extends UnitTestCase
 	public function testAttachEventHandler()
 	{
 		$this->component->attachEventHandler('OnMyEvent','foo');
-		$this->assertTrue($this->component->getEventHandlers('MyEvent')->getCount()===1);
+		$this->assertTrue($this->component->getEventHandlers('OnMyEvent')->getCount()===1);
 		try
 		{
 			$this->component->attachEventHandler('YourEvent','foo');
