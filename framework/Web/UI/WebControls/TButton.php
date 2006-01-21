@@ -75,12 +75,14 @@ class TButton extends TWebControl implements IPostBackEventHandler
 		if($this->getEnabled(true))
 		{
 			if($this->canCauseValidation())
+			{
+				$writer->addAttribute('id',$this->getClientID());
 				$this->getPage()->getClientScript()->registerPostBackControl($this);
+			}
 		}
 		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');
 
-		$writer->addAttribute('id',$this->getClientID());
 		parent::addAttributesToRender($writer);
 	}
 
@@ -89,9 +91,13 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	 */
 	protected function canCauseValidation()
 	{
-		$group = $this->getValidationGroup();
-		$hasValidators = $this->getPage()->getValidators($group)->getCount()>0;
-		return $this->getCausesValidation() && $hasValidators;
+		if($this->getCausesValidation())
+		{
+			$group=$this->getValidationGroup();
+			return $this->getPage()->getValidators($group)->getCount()>0;
+		}
+		else
+			return false;
 	}
 
 	/**

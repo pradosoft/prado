@@ -89,10 +89,11 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 			$writer->addAttribute('name',$uniqueID);
 		if($this->getEnabled(true))
 		{
-			$scripts = $this->getPage()->getClientScript();
-			$options = $this->getPostBackOptions();
-			$postback = $scripts->getPostBackEventReference($this, '', $options, false);
-			$scripts->registerClientEvent($this, "click", $postback);
+			if($this->canCauseValidation())
+			{
+				$writer->addAttribute('id',$this->getClientID());
+				$this->getPage()->getClientScript()->registerPostBackControl($this);
+			}
 		}
 		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');
@@ -100,21 +101,29 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	}
 
 	/**
+	 * @return boolean whether to perform validation if the button is clicked
+	 */
+	protected function canCauseValidation()
+	{
+		if($this->getCausesValidation())
+		{
+			$group=$this->getValidationGroup();
+			return $this->getPage()->getValidators($group)->getCount()>0;
+		}
+		else
+			return false;
+	}
+
+	/**
 	 * Returns postback specifications for the button.
 	 * This method is used by framework and control developers.
-	 * @return TPostBackOptions parameters about how the button defines its postback behavior.
+	 * @return array parameters about how the button defines its postback behavior.
 	 */
 	public function getPostBackOptions()
 	{
-		$options=new TPostBackOptions();
-		if($this->getCausesValidation() && $this->getPage()->getValidators($this->getValidationGroup())->getCount()>0)
-		{
-			$options->setPerformValidation(true);
-			$options->setValidationGroup($this->getValidationGroup());
-		}
-		if($this->getPostBackUrl()!=='')
-			$options->setActionUrl($this->getPostBackUrl());
-		$options->setClientSubmit(false);
+		$options['CausesValidation'] = $this->getCausesValidation();
+		$options['ValidationGroup'] = $this->getValidationGroup();
+
 		return $options;
 	}
 
@@ -254,22 +263,6 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	}
 
 	/**
-	 * @return string the URL of the page to post to when the button is clicked, default is empty meaning post to the current page itself
-	 */
-	public function getPostBackUrl()
-	{
-		return $this->getViewState('PostBackUrl','');
-	}
-
-	/**
-	 * @param string the URL of the page to post to from the current page when the button is clicked, empty if post to the current page itself
-	 */
-	public function setPostBackUrl($value)
-	{
-		$this->setViewState('PostBackUrl',$value,'');
-	}
-
-	/**
 	 * @return string caption of the button
 	 */
 	public function getText()
@@ -296,6 +289,15 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	{
 		parent::onPreRender($param);
 		$this->getPage()->registerRequiresPostData($this);
+	}
+
+	/**
+	 * Renders the body content enclosed between the control tag.
+	 * This overrides the parent implementation with nothing to be rendered.
+	 * @param THtmlWriter the writer used for the rendering purpose
+	 */
+	protected function renderContents($writer)
+	{
 	}
 }
 
