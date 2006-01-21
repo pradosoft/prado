@@ -109,7 +109,7 @@ class Home extends TPage
 
 	public function generateCode($sender,$param)
 	{
-		$writer=Prado::createComponent('System.IO.TTextWriter');
+		$writer=Prado::createComponent('TTextWriter');
 		$this->ClassDefinition->render($writer);
 		$this->SourceCode->Text=$writer->flush();
 	}

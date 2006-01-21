@@ -2,9 +2,14 @@
 
 <application id="QuickStart" Mode="Debug">
   <modules>
+    <!-- uncomment the following to enable caching
+    <module id="cache" class="System.Data.TSqliteCache" />
+    -->
+    <!-- uncomment the following to enable logging to file
     <module id="log" class="System.Log.TLogRouter">
       <route class="TFileLogRoute" />
     </module>
+    -->
   </modules>
   <paths>
     <using namespace="Application.controls.*" />

@@ -93,18 +93,18 @@ pageserviceconf_moduletype_required		= <module id="%s"> must have a "class" attr
 pageserviceconf_parameter_invalid		= <parameter> element must have an "id" attribute in page directory configuration file '%s'.
 pageserviceconf_page_invalid			= <page> element must have an "id" attribute in page directory configuration file '%s'.
 
-template_templatefile_invalid			= Template file '%s' cannot open.
 template_closingtag_unexpected			= %s: Unexpected closing tag '%s' is found.
 template_closingtag_expected			= %s: Closing tag '%s' is expected.
 template_directive_nonunique			= %s: Directive '<%@ ... %>' must appear at most once in a template.
 template_comments_forbidden				= %s: Template comments are not allowed within property tags.
-template_component_unknown				= Component '%s' configured in template is not defined.
-template_event_invalid					= Event '%s.%s' configured in template is not defined.
-template_property_readonly				= Property '%s.%s' configured in template is read only.
-template_attribute_unbindable			= Attribute '%s.%s' configured in template cannot be bound to an expression.
-template_property_undefined				= Property '%s.%s' configured in template is not defined.
-template_property_unbindable			= Property '%s.%s' configured in template cannot be bound to an expression. Only properties of controls can be bound.
-template_component_required				= '%s' is not a component. Only components can be configured in template.
+template_matching_unexpected			= %s: Unexpected matching.
+template_componenttag_invalid			= %s: Component tag <com:%s> has error (%s)
+template_property_unknown				= Unknown property '%s'.
+template_event_unknown					= Unknown event '%s'.
+template_property_readonly				= Property '%s' is read-only.
+template_event_forbidden				= Event handler cannot be attached to the event '%s' of a non-control component in template.
+template_databind_forbidden				= Non-control component property '%s' cannot receive a databind expression.
+template_component_required				= '%s' is not a component. Only components can appear in templates.
 
 xmldocument_file_read_failed			= TXmlDocument is unable to read file '%s'.
 xmldocument_file_write_failed			= TXmlDocument is unable to write file '%s'.

@@ -2,6 +2,7 @@ TComponent.php
 Exceptions/TException.php
 Collections/TList.php
 Collections/TMap.php
+Collections/TAttributeCollection.php
 Data/TXmlDocument.php
 Web/THttpUtility.php
 Data/TCache.php

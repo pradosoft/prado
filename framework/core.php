@@ -528,7 +528,7 @@ class PradoBase
 	 * Uses a namespace.
 	 * A namespace ending with an asterisk '*' refers to a directory, otherwise it represents a PHP file.
 	 * If the namespace corresponds to a directory, the directory will be appended
-	 * to the include path. If the namespace corresponds to a file, it will be included (require_once).
+	 * to the include path. If the namespace corresponds to a file, it will be included (include_once).
 	 * @param string namespace to be used
 	 * @throws TInvalidDataValueException if the namespace is invalid
 	 */
@@ -538,7 +538,7 @@ class PradoBase
 			return;
 		if(($pos=strrpos($namespace,'.'))===false)  // a class name
 		{
-			require_once($namespace.self::CLASS_FILE_EXT);
+			include_once($namespace.self::CLASS_FILE_EXT);
 			if(!class_exists($namespace,false))
 				throw new TInvalidOperationException('prado_component_unknown',$namespace);
 		}
@@ -561,7 +561,7 @@ class PradoBase
 				{
 					self::$_usings[$namespace]=$path;
 					if(!class_exists($className,false))
-						require_once($path);
+						include_once($path);
 				}
 				else
 					throw new TInvalidDataValueException('prado_using_invalid',$namespace);

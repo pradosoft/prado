@@ -15,7 +15,7 @@ public function __get($name)
 		{ 
 						return $this->$getter(); 
 		} 
-		else if(method_exists($this,'on'.$name)) 
+		else if(strncasecmp($name,'on',2)===0 && method_exists($this,$name)) 
 		{ 
 						$name=strtolower($name); 
 			if(!isset($this->_e[$name])) 
@@ -34,7 +34,7 @@ public function __set($name,$value)
 		{ 
 			$this->$setter($value); 
 		} 
-		else if(method_exists($this,'on'.$name)) 
+		else if(strncasecmp($name,'on',2)===0 && method_exists($this,$name)) 
 		{ 
 			$this->attachEventHandler($name,$value); 
 		} 
@@ -47,15 +47,15 @@ public function __set($name,$value)
 			throw new TInvalidOperationException('component_property_undefined',get_class($this),$name); 
 		} 
 	}
-final public function hasProperty($name) 
+public function hasProperty($name) 
 	{ 
 		return method_exists($this,'get'.$name) || method_exists($this,'set'.$name); 
 	}
-final public function canGetProperty($name) 
+public function canGetProperty($name) 
 	{ 
 		return method_exists($this,'get'.$name); 
 	}
-final public function canSetProperty($name) 
+public function canSetProperty($name) 
 	{ 
 		return method_exists($this,'set'.$name); 
 	}
@@ -80,7 +80,7 @@ public function setSubProperty($path,$value)
 	}
 public function hasEvent($name) 
 	{ 
-		return method_exists($this,'on'.$name); 
+		return strncasecmp($name,'on',2)===0 && method_exists($this,$name); 
 	}
 public function hasEventHandler($name) 
 	{ 
@@ -89,7 +89,7 @@ public function hasEventHandler($name)
 	}
 public function getEventHandlers($name) 
 	{ 
-		if(method_exists($this,'on'.$name)) 
+		if(strncasecmp($name,'on',2)===0 && method_exists($this,$name)) 
 		{ 
 			$name=strtolower($name); 
 			if(!isset($this->_e[$name])) 
@@ -737,6 +737,34 @@ public function valid()
 	} 
 } 
 ?><?php
+
+class TAttributeCollection extends TMap 
+{
+public function __get($name) 
+	{ 
+		$name=strtolower($name); 
+		return $this->contains($name)?$this->itemAt($name):parent::__get($name); 
+	}
+public function __set($name,$value) 
+	{ 
+		$this->add(strtolower($name),$value); 
+	}
+public function hasProperty($name) 
+	{ 
+		$name=strtolower($name); 
+		return $this->contains($name) || parent::hasProperty($name); 
+	}
+public function canGetProperty($name) 
+	{ 
+		$name=strtolower($name); 
+		return $this->contains($name) || parent::canGetProperty($name); 
+	}
+public function canSetProperty($name) 
+	{ 
+		return true; 
+	} 
+}
+?><?php
 class TXmlElement extends TComponent
 {
 private $_parent=null;
@@ -1055,7 +1083,7 @@ private function filterByCategories($value)
 	{ 
 		foreach($this->_categories as $category) 
 		{ 
-			if(strpos($value[2],$category)===0) 
+			if($value[2]===$category || strpos($value[2],$category.'.')===0) 
 				return $value; 
 		} 
 		return false; 
@@ -1163,7 +1191,11 @@ private static $_application=null;
 private static $_logger=null;
 public static function getVersion() 
 	{ 
-		return '3.0a'; 
+		return '3.0b'; 
+	}
+public static function poweredByPrado() 
+	{ 
+		return '<a title="Powered by PRADO" href="http://www.pradosoft.com/"><img src="http://www.pradosoft.com/images/powered.gif" style="border-width:0px;" alt="Powered by PRADO" /></a>'; 
 	}
 public static function phpErrorHandler($errno,$errstr,$errfile,$errline) 
 	{ 
@@ -1208,26 +1240,9 @@ public static function unserialize($str)
 	}
 public static function createComponent($type) 
 	{ 
-		if(!class_exists($type,false)) 
-		{ 
-			if(($pos=strrpos($type,'.'))===false) 
-			{ 
-				include_once($type.self::CLASS_FILE_EXT); 
-				if(!class_exists($type,false)) 
-					throw new TInvalidOperationException('prado_component_unknown',$type); 
-			} 
-			else 
-			{ 
-				$className=substr($type,$pos+1); 
-				if(!class_exists($className,false) && ($path=self::getPathOfNamespace($type))!==null) 
-				{ 
-					include_once($path.self::CLASS_FILE_EXT); 
-					if(!class_exists($className,false)) 
-						throw new TInvalidOperationException('prado_component_unknown',$type); 
-				} 
-				$type=$className; 
-			} 
-		} 
+		self::using($type); 
+		if(($pos=strrpos($type,'.'))!==false) 
+			$type=substr($type,$pos+1); 
 		if(($n=func_num_args())>1) 
 		{ 
 			$args=func_get_args(); 
@@ -1242,33 +1257,38 @@ public static function createComponent($type)
 	}
 public static function using($namespace) 
 	{ 
-		if(!isset(self::$_usings[$namespace])) 
+		if(isset(self::$_usings[$namespace]) || class_exists($namespace,false)) 
+			return; 
+		if(($pos=strrpos($namespace,'.'))===false)  		{ 
+			include_once($namespace.self::CLASS_FILE_EXT); 
+			if(!class_exists($namespace,false)) 
+				throw new TInvalidOperationException('prado_component_unknown',$namespace); 
+		} 
+		else if(($path=self::getPathOfNamespace($namespace,self::CLASS_FILE_EXT))!==null) 
 		{ 
-			if(($path=self::getPathOfNamespace($namespace,self::CLASS_FILE_EXT))===null) 
-				throw new TInvalidDataValueException('prado_using_invalid',$namespace); 
-			else 
-			{ 
-				if($namespace[strlen($namespace)-1]==='*')  				{ 
-					if(is_dir($path)) 
-					{ 
-						self::$_usings[$namespace]=$path; 
-						set_include_path(get_include_path().PATH_SEPARATOR.$path); 
-					} 
-					else 
-						throw new TInvalidDataValueException('prado_using_invalid',$namespace); 
+			$className=substr($namespace,$pos+1); 
+			if($className==='*')  			{ 
+				if(is_dir($path)) 
+				{ 
+					self::$_usings[$namespace]=$path; 
+					set_include_path(get_include_path().PATH_SEPARATOR.$path); 
 				} 
-				else  				{ 
-					if(is_file($path)) 
-					{ 
-						self::$_usings[$namespace]=$path; 
-						if(!class_exists(substr(strrchr($namespace,'.'),1),false)) 
-							require_once($path); 
-					} 
-					else 
-						throw new TInvalidDataValueException('prado_using_invalid',$namespace); 
+				else 
+					throw new TInvalidDataValueException('prado_using_invalid',$namespace); 
+			} 
+			else  			{ 
+				if(is_file($path)) 
+				{ 
+					self::$_usings[$namespace]=$path; 
+					if(!class_exists($className,false)) 
+						include_once($path); 
 				} 
+				else 
+					throw new TInvalidDataValueException('prado_using_invalid',$namespace); 
 			} 
 		} 
+		else 
+			throw new TInvalidDataValueException('prado_using_invalid',$namespace); 
 	}
 public static function getPathOfNamespace($namespace,$ext='') 
 	{ 
@@ -1288,17 +1308,19 @@ public static function getPathOfNamespace($namespace,$ext='')
 	}
 public static function getPathOfAlias($alias) 
 	{ 
-		if(isset(self::$_aliases[$alias])) 
-			return self::$_aliases[$alias]; 
-		else 
-			return null; 
+		return isset(self::$_aliases[$alias])?self::$_aliases[$alias]:null; 
 	}
 public static function setPathOfAlias($alias,$path) 
 	{ 
 		if(isset(self::$_aliases[$alias])) 
 			throw new TInvalidOperationException('prado_alias_redefined',$alias); 
 		else if(($rp=realpath($path))!==false && is_dir($rp)) 
-			self::$_aliases[$alias]=$rp; 
+		{ 
+			if(strpos($alias,'.')===false) 
+				self::$_aliases[$alias]=$rp; 
+			else 
+				throw new TInvalidDataValueException('prado_aliasname_invalid',$alias); 
+		} 
 		else 
 			throw new TInvalidDataValueException('prado_alias_invalid',$alias,$path); 
 	}
@@ -1806,66 +1828,66 @@ if(($serviceID=$request->getServiceID())===null)
 	}
 public function onError($param)
 	{
-		if($this->hasEventHandler('Error'))
-			$this->raiseEvent('Error',$this,$param);
+		if($this->hasEventHandler('OnError'))
+			$this->raiseEvent('OnError',$this,$param);
 		else
 			$this->getErrorHandler()->handleError($this,$param);
 	}
 public function onBeginRequest($param)
 	{
-		$this->raiseEvent('BeginRequest',$this,$param);
+		$this->raiseEvent('OnBeginRequest',$this,$param);
 	}
 public function onAuthentication($param)
 	{
-		$this->raiseEvent('Authentication',$this,$param);
+		$this->raiseEvent('OnAuthentication',$this,$param);
 	}
 public function onPostAuthentication($param)
 	{
-		$this->raiseEvent('PostAuthentication',$this,$param);
+		$this->raiseEvent('OnPostAuthentication',$this,$param);
 	}
 public function onAuthorization($param)
 	{
-		$this->raiseEvent('Authorization',$this,$param);
+		$this->raiseEvent('OnAuthorization',$this,$param);
 	}
 public function onPostAuthorization($param)
 	{
-		$this->raiseEvent('PostAuthorization',$this,$param);
+		$this->raiseEvent('OnPostAuthorization',$this,$param);
 	}
 public function onLoadState($param)
 	{
 		$this->loadGlobals();
-		$this->raiseEvent('LoadState',$this,$param);
+		$this->raiseEvent('OnLoadState',$this,$param);
 	}
 public function onPostLoadState($param)
 	{
-		$this->raiseEvent('PostLoadState',$this,$param);
+		$this->raiseEvent('OnPostLoadState',$this,$param);
 	}
 public function onPreRunService($param)
 	{
-		$this->raiseEvent('PreRunService',$this,$param);
+		$this->raiseEvent('OnPreRunService',$this,$param);
 	}
 public function onRunService($param)
 	{
-		$this->raiseEvent('RunService',$this,$param);
+		$this->raiseEvent('OnRunService',$this,$param);
 		if($this->_service)
 			$this->_service->run();
 	}
 public function onPostRunService($param)
 	{
-		$this->raiseEvent('PostRunService',$this,$param);
+		$this->raiseEvent('OnPostRunService',$this,$param);
 	}
 public function onSaveState($param)
 	{
-		$this->raiseEvent('SaveState',$this,$param);
+		$this->raiseEvent('OnSaveState',$this,$param);
 		$this->saveGlobals();
 	}
 public function onPostSaveState($param)
 	{
-		$this->raiseEvent('PostSaveState',$this,$param);
+		$this->raiseEvent('OnPostSaveState',$this,$param);
 	}
 public function onEndRequest($param)
 	{
-		$this->raiseEvent('EndRequest',$this,$param);
+		$this->raiseEvent('OnEndRequest',$this,$param);
 	}
 }
 class TApplicationConfiguration extends TComponent
@@ -3812,8 +3834,6 @@ public function instantiateIn($tplControl)
 					$parent=isset($controls[$object[0]])?$controls[$object[0]]:$tplControl; 
 					$parent->addParsedObject($component); 
 				} 
-				else 
-					throw new TTemplateRuntimeException('template_component_required',$object[1]); 
 			} 
 			else				{ 
 				if(isset($controls[$object[0]])) 
@@ -3825,34 +3845,17 @@ public function instantiateIn($tplControl)
 	}
 protected function configureControl($control,$name,$value) 
 	{ 
-		if(is_string($value) && $control->hasEvent($name))					$this->configureEvent($control,$name,$value); 
-		else if(strpos($name,'.')===false)			{ 
-			if($control->hasProperty($name)) 
-				$this->configureProperty($control,$name,$value); 
-			else if($control->getAllowCustomAttributes()) 
-				$this->configureAttribute($control,$name,$value); 
-			else 
-				throw new TTemplateRuntimeException('template_property_undefined',get_class($control),$name); 
-		} 
-		else			{ 
-			$this->configureSubProperty($control,$name,$value); 
-		} 
+		if(is_string($value) && strncasecmp($name,'on',2)===0)					$this->configureEvent($control,$name,$value); 
+		else if(strpos($name,'.')===false)				$this->configureProperty($control,$name,$value); 
+		else				$this->configureSubProperty($control,$name,$value); 
 	}
 protected function configureComponent($component,$name,$value) 
 	{ 
-		if(strpos($name,'.')===false)			{ 
-			if($component->hasProperty($name)) 
-				$this->configureProperty($component,$name,$value); 
-			else 
-				throw new TTemplateRuntimeException('template_property_undefined',get_class($component),$name); 
-		} 
-		else			{ 
-			$this->configureSubProperty($component,$name,$value); 
-		} 
+		if(strpos($name,'.')===false)				$this->configureProperty($component,$name,$value); 
+		else				$this->configureSubProperty($component,$name,$value); 
 	}
 protected function configureEvent($component,$name,$value) 
 	{ 
-		$value=THttpUtility::htmlDecode($value); 
 		if(strpos($value,'.')===false) 
 			$component->attachEventHandler($name,array($component,'TemplateControl.'.$value)); 
 		else 
@@ -3860,86 +3863,54 @@ protected function configureEvent($component,$name,$value)
 	}
 protected function configureProperty($component,$name,$value) 
 	{ 
-		if($component->canSetProperty($name)) 
-		{ 
-			$setter='set'.$name; 
-			if(is_array($value)) 
-			{ 
-				$v=THttpUtility::htmlDecode($value[1]); 
-				switch($value[0]) 
-				{ 
-					case self::CONFIG_DATABIND: 
-						$component->bindProperty($name,$v); 
-						break; 
-					case self::CONFIG_EXPRESSION: 
-						$component->$setter($component->evaluateExpression($v)); 
-						break; 
-					case self::CONFIG_ASSET:								$url=$this->_assetManager->publishFilePath($this->_contextPath.'/'.$v); 
-						$component->$setter($url); 
-						break; 
-					case self::CONFIG_PARAMETER:								$component->$setter($this->getApplication()->getParameters()->itemAt($v)); 
-						break; 
-					case self::CONFIG_LOCALIZATION: 
-						$component->$setter(localize($v)); 
-						break; 
-					default:							break; 
-				} 
-			} 
-			else 
-				$component->$setter(THttpUtility::htmlDecode($value)); 
-		} 
-		else 
-			throw new TTemplateRuntimeException('template_property_readonly',get_class($component),$name); 
-	}
-protected function configureSubProperty($component,$name,$value) 
-	{ 
+		$setter='set'.$name; 
 		if(is_array($value)) 
 		{ 
-			$v=THttpUtility::htmlDecode($value[1]); 
 			switch($value[0]) 
 			{ 
-				case self::CONFIG_DATABIND:							$component->bindProperty($name,$v); 
+				case self::CONFIG_DATABIND: 
+					$component->bindProperty($name,$value[1]); 
 					break; 
-				case self::CONFIG_EXPRESSION:							$component->setSubProperty($name,$component->evaluateExpression($v)); 
+				case self::CONFIG_EXPRESSION: 
+					$component->$setter($component->evaluateExpression($value[1])); 
 					break; 
-				case self::CONFIG_ASSET:							$url=$this->_assetManager->publishFilePath($this->_contextPath.'/'.$v); 
-					$component->setSubProperty($name,$url); 
+				case self::CONFIG_ASSET:							$url=$this->_assetManager->publishFilePath($this->_contextPath.'/'.$value[1]); 
+					$component->$setter($url); 
 					break; 
-				case self::CONFIG_PARAMETER:							$component->setSubProperty($name,$this->getApplication()->getParameters()->itemAt($v)); 
+				case self::CONFIG_PARAMETER:							$component->$setter($this->getApplication()->getParameters()->itemAt($value[1])); 
 					break; 
 				case self::CONFIG_LOCALIZATION: 
-					$component->setSubProperty($name,localize($v)); 
+					$component->$setter(localize($value[1])); 
 					break; 
 				default:						break; 
 			} 
 		} 
 		else 
-			$component->setSubProperty($name,THttpUtility::htmlDecode($value)); 
+			$component->$setter($value); 
 	}
-protected function configureAttribute($control,$name,$value) 
+protected function configureSubProperty($component,$name,$value) 
 	{ 
 		if(is_array($value)) 
 		{ 
 			switch($value[0]) 
 			{ 
-				case self::CONFIG_DATABIND:							throw new TTemplateRuntimeException('template_attribute_unbindable',get_class($control),$name); 
-				case self::CONFIG_EXPRESSION: 
-					$value=$control->evaluateExpression($value[1]); 
+				case self::CONFIG_DATABIND:							$component->bindProperty($name,$value[1]); 
 					break; 
-				case self::CONFIG_ASSET: 
-					$value=$this->_assetManager->publishFilePath($this->_contextPath.'/'.ltrim($value[1],'/')); 
+				case self::CONFIG_EXPRESSION:							$component->setSubProperty($name,$component->evaluateExpression($value[1])); 
 					break; 
-				case self::CONFIG_PARAMETER: 
-					$value=$this->getApplication()->getParameters()->itemAt($value[1]); 
+				case self::CONFIG_ASSET:							$url=$this->_assetManager->publishFilePath($this->_contextPath.'/'.$value[1]); 
+					$component->setSubProperty($name,$url); 
+					break; 
+				case self::CONFIG_PARAMETER:							$component->setSubProperty($name,$this->getApplication()->getParameters()->itemAt($value[1])); 
 					break; 
 				case self::CONFIG_LOCALIZATION: 
-					$value=localize($value[1]); 
+					$component->setSubProperty($name,localize($value[1])); 
 					break; 
-				default: 
-					break; 
+				default:						break; 
 			} 
 		} 
-		$control->getAttributes()->add($name,$value); 
+		else 
+			$component->setSubProperty($name,$value); 
 	}
 protected function parse($input) 
 	{ 
@@ -3964,6 +3935,18 @@ protected function parse($input)
 				$textStart=$matchEnd+1; 
 				$type=$match[1][0]; 
 				$attributes=$this->parseAttributes($match[2][0]); 
+				try 
+				{ 
+					$this->validateAttributes($type,$attributes); 
+				} 
+				catch(Exception $e) 
+				{ 
+					$line=count(explode("\n",substr($input,0,$matchEnd+1))); 
+					if($this->_tplFile===null) 
+						throw new TTemplateParsingException('template_componenttag_invalid',"Line $line",$type,$e->getMessage()); 
+					else 
+						throw new TTemplateParsingException('template_componenttag_invalid',"{$this->_tplFile} (Line $line)",$type,$e->getMessage()); 
+				} 
 				$tpl[$c++]=array($container,$type,$attributes); 
 				if($str[strlen($str)-2]!=='/')  				{ 
 					array_push($stack,$type); 
@@ -4022,8 +4005,8 @@ $name=array_pop($stack);
 				if($matchStart>$textStart) 
 					$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart)); 
 				$textStart=$matchEnd+1; 
-				if($str[2]==='=')						$tpl[$c++]=array($container,'TExpression',array('Expression'=>$match[5][0])); 
-				else if($str[2]==='%')  					$tpl[$c++]=array($container,'TStatements',array('Statements'=>$match[5][0])); 
+				if($str[2]==='=')						$tpl[$c++]=array($container,'TExpression',array('Expression'=>THttpUtility::htmlDecode($match[5][0]))); 
+				else if($str[2]==='%')  					$tpl[$c++]=array($container,'TStatements',array('Statements'=>THttpUtility::htmlDecode($match[5][0]))); 
 				else 
 					$tpl[$c++]=array($container,'TLiteral',array('Text'=>$this->parseAttribute($str))); 
 			} 
@@ -4066,7 +4049,21 @@ $name=array_pop($stack);
 					if($matchStart>$textStart && $container>=0) 
 					{ 
 						$value=substr($input,$textStart,$matchStart-$textStart); 
-						$tpl[$container][2][$prop]=$this->parseAttribute($value); 
+						$value=$this->parseAttribute($value); 
+						$type=$tpl[$container][1]; 
+						try 
+						{ 
+							$this->validateAttributes($type,array($prop=>$value)); 
+						} 
+						catch(Exception $e) 
+						{ 
+							$line=count(explode("\n",substr($input,0,$matchEnd+1))); 
+							if($this->_tplFile===null) 
+								throw new TTemplateParsingException('template_componenttag_invalid',"Line $line",$type,$e->getMessage()); 
+							else 
+								throw new TTemplateParsingException('template_componenttag_invalid',"{$this->_tplFile} (Line $line)",$type,$e->getMessage()); 
+						} 
+						$tpl[$container][2][$prop]=$value; 
 						$textStart=$matchEnd+1; 
 					} 
 					$expectPropEnd=false; 
@@ -4135,8 +4132,8 @@ protected function parseAttribute($value)
 	{ 
 		$matches=array(); 
 		if(!preg_match('/^(<%#.*?%>|<%=.*?%>|<%~.*?%>|<%\\$.*?%>|<%\\[.*?\\]%>)$/msS',$value,$matches)) 
-			return $value; 
-		$value=$matches[1]; 
+			return THttpUtility::htmlDecode($value); 
+		$value=THttpUtility::htmlDecode($matches[1]); 
 		if($value[2]==='#') 			return array(self::CONFIG_DATABIND,substr($value,3,strlen($value)-5)); 
 		else if($value[2]==='=') 			return array(self::CONFIG_EXPRESSION,substr($value,3,strlen($value)-5)); 
 		else if($value[2]==='~') 			return array(self::CONFIG_ASSET,trim(substr($value,3,strlen($value)-5))); 
@@ -4144,6 +4141,69 @@ protected function parseAttribute($value)
 			return array(self::CONFIG_LOCALIZATION,trim(substr($value,3,strlen($value)-6))); 
 		else if($value[2]==='$') 
 			return array(self::CONFIG_PARAMETER,trim(substr($value,3,strlen($value)-5))); 
+	}
+protected function validateAttributes($type,$attributes) 
+	{ 
+		Prado::using($type); 
+		if(($pos=strrpos($type,'.'))!==false) 
+			$className=substr($type,$pos+1); 
+		else 
+			$className=$type; 
+		if(is_subclass_of($className,'TControl') || $className==='TControl') 
+		{ 
+			foreach($attributes as $name=>$att) 
+			{ 
+				if(($pos=strpos($name,'.'))!==false) 
+				{ 
+										$subname=substr($name,0,$pos); 
+					if(!is_callable(array($className,'get'.$subname))) 
+						throw new TTemplateParsingException('template_property_unknown',$subname); 
+				} 
+				else if(strncasecmp($name,'on',2)===0) 
+				{ 
+										if(!is_callable(array($className,$name))) 
+						throw new TTemplateParsingException('template_event_unknown',$name); 
+				} 
+				else 
+				{ 
+										if(!is_callable(array($className,'set'.$name))) 
+					{ 
+						if(is_callable(array($className,'get'.$name))) 
+							throw new TTemplateParsingException('template_property_readonly',$name); 
+						else 
+							throw new TTemplateParsingException('template_property_unknown',$name); 
+					} 
+				} 
+			} 
+		} 
+		else if(is_subclass_of($className,'TComponent') || $className==='TComponent') 
+		{ 
+			foreach($attributes as $name=>$att) 
+			{ 
+				if($att[0]===self::CONFIG_DATABIND) 
+					throw new TTemplateParsingException('template_databind_forbidden',$name); 
+				if(($pos=strpos($name,'.'))!==false) 
+				{ 
+										$subname=substr($name,0,$pos); 
+					if(!is_callable(array($className,'get'.$subname))) 
+						throw new TTemplateParsingException('template_property_unknown',$subname); 
+				} 
+				else if(strncasecmp($name,'on',2)===0) 
+					throw new TTemplateParsingException('template_event_forbidden',$name); 
+				else 
+				{ 
+					if(!is_callable(array($className,'set'.$name))) 
+					{ 
+						if(is_callable(array($className,'get'.$name))) 
+							throw new TTemplateParsingException('template_property_readonly',$name); 
+						else 
+							throw new TTemplateParsingException('template_property_unknown',$name); 
+					} 
+				} 
+			} 
+		} 
+		else 
+			throw new TTemplateParsingException('template_component_required',$type); 
 	} 
 }
 ?><?php
@@ -4161,7 +4221,7 @@ public function init($config)
 public function getTheme($name) 
 	{ 
 		$themePath=$this->getBasePath().'/'.$name; 
-		$themeUrl=$this->getBaseUrl().'/'.$name; 
+		$themeUrl=rtrim($this->getBaseUrl(),'/').'/'.$name; 
 		return new TTheme($themePath,$themeUrl);
 }
 public function getBasePath() 
@@ -4327,8 +4387,6 @@ public function applySkin($control)
 						else 
 							throw new TConfigurationException('theme_property_readonly',$type,$name); 
 					} 
-					else if($control->getAllowCustomAttributes()) 
-						$control->getAttributes()->add($name,$value); 
 					else 
 						throw new TConfigurationException('theme_property_undefined',$type,$name); 
 				} 
@@ -4526,6 +4584,7 @@ private function computeHMAC($data,$key)
 	} 
 }
 ?><?php
+
 class TControl extends TComponent 
 {
 const ID_FORMAT='/^\\w*$/';
@@ -4733,7 +4792,7 @@ public function getAttributes()
 			return $attributes; 
 		else 
 		{ 
-			$attributes=new TMap; 
+			$attributes=new TAttributeCollection; 
 			$this->setViewState('Attributes',$attributes,null); 
 			return $attributes; 
 		} 
@@ -4762,10 +4821,6 @@ public function removeAttribute($name)
 			return $attributes->remove($name); 
 		else 
 			return null; 
-	}
-public function getAllowCustomAttributes() 
-	{ 
-		return true; 
 	}
 public function getEnableViewState($checkParents=false) 
 	{ 
@@ -5087,23 +5142,23 @@ protected function unloadRecursive()
 	}
 protected function onInit($param) 
 	{ 
-		$this->raiseEvent('Init',$this,$param); 
+		$this->raiseEvent('OnInit',$this,$param); 
 	}
 protected function onLoad($param) 
 	{ 
-		$this->raiseEvent('Load',$this,$param); 
+		$this->raiseEvent('OnLoad',$this,$param); 
 	}
 protected function onDataBinding($param) 
 	{ 
-		$this->raiseEvent('DataBinding',$this,$param); 
+		$this->raiseEvent('OnDataBinding',$this,$param); 
 	}
 protected function onUnload($param) 
 	{ 
-		$this->raiseEvent('Unload',$this,$param); 
+		$this->raiseEvent('OnUnload',$this,$param); 
 	}
 protected function onPreRender($param) 
 	{ 
-		$this->raiseEvent('PreRender',$this,$param); 
+		$this->raiseEvent('OnPreRender',$this,$param); 
 	}
 protected function raiseBubbleEvent($sender,$param) 
 	{ 
@@ -5160,11 +5215,11 @@ protected function renderChildren($writer)
 	}
 protected function onSaveState($param) 
 	{ 
-		$this->raiseEvent('SaveState',$this,$param); 
+		$this->raiseEvent('OnSaveState',$this,$param); 
 	}
 protected function onLoadState($param) 
 	{ 
-		$this->raiseEvent('LoadState',$this,$param); 
+		$this->raiseEvent('OnLoadState',$this,$param); 
 	}
 final protected function loadStateRecursive(&$state,$needViewState=true) 
 	{ 
@@ -5561,63 +5616,6 @@ public function setTarget($value)
 	} 
 }
 ?><?php
-class TPostBackOptions extends TComponent
-{
-	public $_actionUrl='';
-	public $_autoPostBack=false;
-	public $_clientSubmit=true;
-	public $_performValidation=false;
-	public $_validationGroup='';
-	public $_trackFocus=false;
-public function getActionUrl()
-	{
-		return $this->_actionUrl;
-	}
-public function setActionUrl($value)
-	{
-		$this->_actionUrl=THttpUtility::quoteJavaScriptString($value);
-	}
-public function getAutoPostBack()
-	{
-		return $this->_autoPostBack;
-	}
-public function setAutoPostBack($value)
-	{
-		$this->_autoPostBack=$value;
-	}
-public function getClientSubmit()
-	{
-		return $this->_clientSubmit;
-	}
-public function setClientSubmit($value)
-	{
-		$this->_clientSubmit=$value;
-	}
-public function getPerformValidation()
-	{
-		return $this->_performValidation;
-	}
-public function setPerformValidation($value)
-	{
-		$this->_performValidation=$value;
-	}
-public function getValidationGroup()
-	{
-		return $this->_validationGroup;
-	}
-public function setValidationGroup($value)
-	{
-		$this->_validationGroup=$value;
-	}
-public function getTrackFocus()
-	{
-		return $this->_trackFocus;
-	}
-public function setTrackFocus($value)
-	{
-		$this->_trackFocus=$value;
-	}
-}
 Prado::using('System.Web.Javascripts.*');
 class TClientScriptManager extends TComponent
 {
@@ -5640,6 +5638,7 @@ public function registerPostBackControl($control,$namespace='Prado.WebUI')
 	{
 		$options = $this->getPostBackOptions($control);
 		$type = get_class($control);
+		$namespace = empty($namespace) ? "window" : $namespace;
 		$code = "new {$namespace}.{$type}($options);";
 		$this->registerEndScript(sprintf('%08X', crc32($code)), $code);
 $this->registerHiddenField(TPage::FIELD_POSTBACK_TARGET,'');
@@ -5655,6 +5654,22 @@ protected function getPostBackOptions($control)
 			$postback['FormID'] = $this->_page->getForm()->getClientID();
 		$options = new TJavascriptSerializer($postback);
 		return $options->toJavascript();
+	}
+public function registerDefaultButton($panel, $button)
+	{
+		$serializer = new TJavascriptSerializer(
+							$this->getDefaultButtonOptions($panel, $button));
+		$options = $serializer->toJavascript();
+		$code = "new Prado.WebUI.DefaultButton($options);";
+		$scripts = $this->_page->getClientScript();
+		$scripts->registerEndScript("prado:".$panel->getClientID(), $code);
+	}
+protected function getDefaultButtonOptions($panel, $button)
+	{
+		$options['Panel'] = $panel->getClientID();
+		$options['Target'] = $button->getClientID();
+		$options['Event'] = 'click';
+		return $options;
 	}
 public function registerClientScript($script)
 	{
@@ -5967,17 +5982,9 @@ public function validate($validationGroup='')
 		if($this->_validators && $this->_validators->getCount()) 
 		{ 
 
-			if($validationGroup==='') 
-			{ 
-				foreach($this->_validators as $validator) 
+			foreach($this->_validators as $validator) 
+				if($validator->getValidationGroup()===$validationGroup) 
 					$validator->validate(); 
-			} 
-			else 
-			{ 
-				foreach($this->_validators as $validator) 
-					if($validator->getValidationGroup()===$validationGroup) 
-						$validator->validate(); 
-			} 
 		} 
 	}
 public function getIsValid() 
@@ -6033,23 +6040,23 @@ public function getClientScript()
 	}
 protected function onPreInit($param) 
 	{ 
-		$this->raiseEvent('PreInit',$this,$param); 
+		$this->raiseEvent('OnPreInit',$this,$param); 
 	}
 protected function onInitComplete($param) 
 	{ 
-		$this->raiseEvent('InitComplete',$this,$param); 
+		$this->raiseEvent('OnInitComplete',$this,$param); 
 	}
 protected function onPreLoad($param) 
 	{ 
-		$this->raiseEvent('PreLoad',$this,$param); 
+		$this->raiseEvent('OnPreLoad',$this,$param); 
 	}
 protected function onLoadComplete($param) 
 	{ 
-		$this->raiseEvent('LoadComplete',$this,$param); 
+		$this->raiseEvent('OnLoadComplete',$this,$param); 
 	}
 protected function onPreRenderComplete($param) 
 	{ 
-		$this->raiseEvent('PreRenderComplete',$this,$param); 
+		$this->raiseEvent('OnPreRenderComplete',$this,$param); 
 		$cs=$this->getClientScript(); 
 		if($this->_theme) 
 		{ 
@@ -6068,7 +6075,7 @@ protected function onPreRenderComplete($param)
 	}
 protected function onSaveStateComplete($param) 
 	{ 
-		$this->raiseEvent('SaveStateComplete',$this,$param); 
+		$this->raiseEvent('OnSaveStateComplete',$this,$param); 
 	}
 private function determinePostBackMode() 
 	{ 
@@ -7195,11 +7202,11 @@ public function raisePostDataChangedEvent()
 			}
 public function onClick($param) 
 	{ 
-		$this->raiseEvent('Click',$this,$param); 
+		$this->raiseEvent('OnClick',$this,$param); 
 	}
 public function onCommand($param) 
 	{ 
-		$this->raiseEvent('Command',$this,$param); 
+		$this->raiseEvent('OnCommand',$this,$param); 
 		$this->raiseBubbleEvent($this,$param); 
 	}
 public function raisePostBackEvent($param) 
@@ -7300,7 +7307,7 @@ protected function addAttributesToRender($writer)
 	{ 
 		$page=$this->getPage(); 
 		$page->ensureRenderInForm($this); 
-		$writer->addAttribute('type',$this->getUseSubmitBehavior()?'submit':'button'); 
+		$writer->addAttribute('type','submit'); 
 		if(($uniqueID=$this->getUniqueID())!=='') 
 			$writer->addAttribute('name',$uniqueID); 
 		$writer->addAttribute('value',$this->getText()); 
@@ -7322,9 +7329,7 @@ protected function canCauseValidation()
 public function getPostBackOptions() 
 	{ 
 		$options['CausesValidation'] = $this->getCausesValidation(); 
-		$options['ValidationGroup'] = $this->getValidationGroup(); 
-		$options['PostBackUrl'] = $this->getPostBackUrl(); 
-		$options['ClientSubmit'] = !$this->getUseSubmitBehavior();
+		$options['ValidationGroup'] = $this->getValidationGroup();
 return $options; 
 	}
 protected function renderContents($writer) 
@@ -7332,11 +7337,11 @@ protected function renderContents($writer)
 	}
 public function onClick($param) 
 	{ 
-		$this->raiseEvent('Click',$this,$param); 
+		$this->raiseEvent('OnClick',$this,$param); 
 	}
 public function onCommand($param) 
 	{ 
-		$this->raiseEvent('Command',$this,$param); 
+		$this->raiseEvent('OnCommand',$this,$param); 
 		$this->raiseBubbleEvent($this,$param); 
 	}
 public function raisePostBackEvent($param) 
@@ -7378,14 +7383,6 @@ public function setCommandParameter($value)
 	{ 
 		$this->setViewState('CommandParameter',$value,''); 
 	}
-public function getUseSubmitBehavior() 
-	{ 
-		return $this->getViewState('UseSubmitBehavior',true); 
-	}
-public function setUseSubmitBehavior($value) 
-	{ 
-		$this->setViewState('UseSubmitBehavior',TPropertyValue::ensureBoolean($value),true); 
-	}
 public function getValidationGroup() 
 	{ 
 		return $this->getViewState('ValidationGroup',''); 
@@ -7393,14 +7390,6 @@ public function getValidationGroup()
 public function setValidationGroup($value) 
 	{ 
 		$this->setViewState('ValidationGroup',$value,''); 
-	}
-public function getPostBackUrl() 
-	{ 
-		return $this->getViewState('PostBackUrl',''); 
-	}
-public function setPostBackUrl($value) 
-	{ 
-		$this->setViewState('PostBackUrl',$value,''); 
 	} 
 }
 ?><?php
@@ -7434,7 +7423,7 @@ public function raisePostDataChangedEvent()
 	}
 protected function onCheckedChanged($param) 
 	{ 
-		$this->raiseEvent('CheckedChanged',$this,$param); 
+		$this->raiseEvent('OnCheckedChanged',$this,$param); 
 	}
 protected function onPreRender($param) 
 	{ 
@@ -7799,17 +7788,12 @@ public function getValidationPropertyValue()
 	}
 protected function onTextChanged($param) 
 	{ 
-		$this->raiseEvent('TextChanged',$this,$param); 
+		$this->raiseEvent('OnTextChanged',$this,$param); 
 	}
 public function raisePostDataChangedEvent() 
 	{ 
-		$page=$this->getPage(); 
-		if($this->getAutoPostBack() && !$page->getPostBackEventTarget()) 
-		{ 
-			$page->setPostBackEventTarget($this); 
-			if($this->getCausesValidation()) 
-				$page->validate($this->getValidationGroup()); 
-		} 
+		if($this->getAutoPostBack() && $this->getCausesValidation()) 
+			$this->getPage()->validate($this->getValidationGroup()); 
 		$this->onTextChanged(null); 
 	}
 protected function renderContents($writer) 
@@ -7939,8 +7923,10 @@ protected function addAttributesToRender($writer)
 			if(($button=$this->findControl($butt))===null) 
 				throw new TInvalidDataValueException('panel_defaultbutton_invalid',$butt); 
 			else 
-			{
-} 
+			{ 
+				$writer->addAttribute('id',$this->getClientID()); 
+				$this->getPage()->getClientScript()->registerDefaultButton($this, $button); 
+			} 
 		} 
 	}
 public function getWrap() 
@@ -8239,7 +8225,7 @@ public function raisePostDataChangedEvent()
 	}
 protected function onFileUpload($param) 
 	{ 
-		$this->raiseEvent('FileUpload',$this,$param); 
+		$this->raiseEvent('OnFileUpload',$this,$param); 
 	}
 public function getValidationPropertyValue() 
 	{ 
@@ -8394,7 +8380,7 @@ public function raisePostDataChangedEvent()
 	}
 public function onValueChanged($param) 
 	{ 
-		$this->raiseEvent('ValueChanged',$this,$param); 
+		$this->raiseEvent('OnValueChanged',$this,$param); 
 	}
 public function getValue() 
 	{ 
@@ -8446,7 +8432,7 @@ protected function renderContents($writer)
 		} 
 		else 
 		{ 
-			$image=new TImage; 
+			$image=Prado::createComponent('System.Web.UI.WebControls.TImage'); 
 			$image->setImageUrl($imageUrl); 
 			if(($toolTip=$this->getToolTip())!=='') 
 				$image->setToolTip($toolTip); 
@@ -8867,7 +8853,7 @@ public function getViewNames()
 	}
 public function onDataSourceChanged($param) 
 	{ 
-		$this->raiseEvent('DataSourceChanged',$this,$param); 
+		$this->raiseEvent('OnDataSourceChanged',$this,$param); 
 	}
 public function focus() 
 	{ 
@@ -9019,7 +9005,7 @@ public function getDataSource()
 	}
 protected function onDataSourceViewChanged($param) 
 	{ 
-		$this->raiseEvent('DataSourceViewChanged',$this,$param); 
+		$this->raiseEvent('OnDataSourceViewChanged',$this,$param); 
 	} 
 }
 class TReadOnlyDataSourceView extends TDataSourceView 
@@ -9164,7 +9150,7 @@ protected function getDataSourceView()
 				if(($view=$dataSource->getView($this->getDataMember()))===null) 
 					throw new TInvalidDataValueException('databoundcontrol_datamember_invalid',$this->getDataMember()); 
 				if($this->_currentViewIsFromDataSourceID=$this->getUsingDataSourceID()) 
-					$view->attachEventHandler('DataSourceViewChanged',array($this,'dataSourceViewChanged')); 
+					$view->attachEventHandler('OnDataSourceViewChanged',array($this,'dataSourceViewChanged')); 
 				$this->_currentView=$view; 
 			} 
 			else 
@@ -9197,13 +9183,13 @@ protected function determineDataSource()
 abstract protected function performDataBinding($data);
 public function onDataBound($param) 
 	{ 
-		$this->raiseEvent('DataBound',$this,$param); 
+		$this->raiseEvent('OnDataBound',$this,$param); 
 	}
 protected function onInit($param) 
 	{ 
 		parent::onInit($param); 
 		$page=$this->getPage(); 
-		$page->attachEventHandler('PreLoad',array($this,'onPagePreLoad')); 
+		$page->attachEventHandler('OnPreLoad',array($this,'onPagePreLoad')); 
 	}
 protected function onPagePreLoad($sender,$param) 
 	{ 
@@ -9591,7 +9577,7 @@ public function setFirstBulletNumber($value)
 	}
 public function onClick($param) 
 	{ 
-		$this->raiseEvent('Click',$this,$param); 
+		$this->raiseEvent('OnClick',$this,$param); 
 	}
 public function getTarget() 
 	{ 
@@ -9722,6 +9708,7 @@ public function getIndex()
 	} 
 } 
 ?><?php
+
 
 abstract class TListControl extends TDataBoundControl 
 {
@@ -9965,11 +9952,11 @@ public function setValidationGroup($value)
 	}
 public function onSelectedIndexChanged($param) 
 	{ 
-		$this->raiseEvent('SelectedIndexChanged',$this,$param); 
+		$this->raiseEvent('OnSelectedIndexChanged',$this,$param); 
 	}
 public function onTextChanged($param) 
 	{ 
-		$this->raiseEvent('TextChanged',$this,$param); 
+		$this->raiseEvent('OnTextChanged',$this,$param); 
 	}
 protected function renderContents($writer) 
 	{ 
@@ -10126,7 +10113,7 @@ public function setValue($value)
 public function getAttributes() 
 	{ 
 		if(!$this->_attributes) 
-			$this->_attributes=new TMap; 
+			$this->_attributes=new TAttributeCollection; 
 		return $this->_attributes; 
 	}
 public function getHasAttributes() 
@@ -10344,9 +10331,8 @@ $writer->addAttribute('id',$this->getClientID());
 parent::addAttributesToRender($writer);
 if($this->getEnabled(true)) 
 		{ 
-			$url = $this->getPostBackUrl(); 
 						$nop = "#".$this->getClientID(); 
-			$writer->addAttribute('href', $url ? $url : $nop); 
+			$writer->addAttribute('href', $nop); 
 			$this->getPage()->getClientScript()->registerPostBackControl($this); 
 		} 
 		else if($this->getEnabled()) 			$writer->addAttribute('disabled','disabled'); 
@@ -10355,8 +10341,7 @@ public function getPostBackOptions()
 	{ 
 		$options['EventTarget'] = $this->getUniqueID(); 
 		$options['CausesValidation'] = $this->getCausesValidation(); 
-		$options['ValidationGroup'] = $this->getValidationGroup();		 
-		$options['PostBackUrl'] = $this->getPostBackUrl(); 
+		$options['ValidationGroup'] = $this->getValidationGroup(); 
 		$options['StopEvent'] = true;
 return $options; 
 	}
@@ -10391,14 +10376,6 @@ public function setCommandParameter($value)
 	{ 
 		$this->setViewState('CommandParameter',$value,''); 
 	}
-public function getPostBackUrl() 
-	{ 
-		return $this->getViewState('PostBackUrl',''); 
-	}
-public function setPostBackUrl($value) 
-	{ 
-		$this->setViewState('PostBackUrl',$value,''); 
-	}
 public function getCausesValidation() 
 	{ 
 		return $this->getViewState('CausesValidation',true); 
@@ -10424,11 +10401,11 @@ public function raisePostBackEvent($param)
 	}
 public function onClick($param) 
 	{ 
-		$this->raiseEvent('Click',$this,$param); 
+		$this->raiseEvent('OnClick',$this,$param); 
 	}
 public function onCommand($param) 
 	{ 
-		$this->raiseEvent('Command',$this,$param); 
+		$this->raiseEvent('OnCommand',$this,$param); 
 		$this->raiseBubbleEvent($this,$param); 
 	} 
 }
@@ -10623,7 +10600,7 @@ class TRequiredFieldValidator extends TBaseValidator
 {
 public function getInitialValue() 
 	{ 
-		$this->getViewState('InitialValue',''); 
+		return $this->getViewState('InitialValue',''); 
 	}
 public function setInitialValue($value) 
 	{ 
@@ -10862,7 +10839,7 @@ public function evaluateIsValid()
 public function onServerValidate($value) 
 	{ 
 		$param=new TServerValidateEventParameter($value,true); 
-		$this->raiseEvent('ServerValidate',$this,$param); 
+		$this->raiseEvent('OnServerValidate',$this,$param); 
 		return $param->getIsValid(); 
 	}
 protected function getClientScriptOptions() 
@@ -11582,15 +11559,15 @@ protected function onBubbleEvent($sender,$param)
 	}
 protected function onItemCreated($param) 
 	{ 
-		$this->raiseEvent('ItemCreated',$this,$param); 
+		$this->raiseEvent('OnItemCreated',$this,$param); 
 	}
 protected function onItemDataBound($param) 
 	{ 
-		$this->raiseEvent('ItemDataBound',$this,$param); 
+		$this->raiseEvent('OnItemDataBound',$this,$param); 
 	}
 protected function onItemCommand($param) 
 	{ 
-		$this->raiseEvent('ItemCommand',$this,$param); 
+		$this->raiseEvent('OnItemCommand',$this,$param); 
 	} 
 }
 class TRepeaterItemEventParameter extends TEventParameter 
@@ -11772,7 +11749,7 @@ protected function getDataFieldValue($data,$field)
 	}
 public function onSelectedIndexChanged($param) 
 	{ 
-		$this->raiseEvent('SelectedIndexChanged',$this,$param); 
+		$this->raiseEvent('OnSelectedIndexChanged',$this,$param); 
 	} 
 }
 ?><?php
@@ -12106,31 +12083,31 @@ protected function onBubbleEvent($sender,$param)
 	}
 public function onItemCreated($param) 
 	{ 
-		$this->raiseEvent('ItemCreated',$this,$param); 
+		$this->raiseEvent('OnItemCreated',$this,$param); 
 	}
 public function onItemDataBound($param) 
 	{ 
-		$this->raiseEvent('ItemDataBound',$this,$param); 
+		$this->raiseEvent('OnItemDataBound',$this,$param); 
 	}
 protected function onItemCommand($param) 
 	{ 
-		$this->raiseEvent('ItemCommand',$this,$param); 
+		$this->raiseEvent('OnItemCommand',$this,$param); 
 	}
 protected function onEditCommand($param) 
 	{ 
-		$this->raiseEvent('EditCommand',$this,$param); 
+		$this->raiseEvent('OnEditCommand',$this,$param); 
 	}
 protected function onDeleteCommand($param) 
 	{ 
-		$this->raiseEvent('DeleteCommand',$this,$param); 
+		$this->raiseEvent('OnDeleteCommand',$this,$param); 
 	}
 protected function onUpdateCommand($param) 
 	{ 
-		$this->raiseEvent('UpdateCommand',$this,$param); 
+		$this->raiseEvent('OnUpdateCommand',$this,$param); 
 	}
 protected function onCancelCommand($param) 
 	{ 
-		$this->raiseEvent('CancelCommand',$this,$param); 
+		$this->raiseEvent('OnCancelCommand',$this,$param); 
 	}
 public function getHasHeader() 
 	{ 
@@ -13097,39 +13074,39 @@ protected function onBubbleEvent($sender,$param)
 	}
 public function onCancelCommand($param) 
 	{ 
-		$this->raiseEvent('CancelCommand',$this,$param); 
+		$this->raiseEvent('OnCancelCommand',$this,$param); 
 	}
 public function onDeleteCommand($param) 
 	{ 
-		$this->raiseEvent('DeleteCommand',$this,$param); 
+		$this->raiseEvent('OnDeleteCommand',$this,$param); 
 	}
 public function onEditCommand($param) 
 	{ 
-		$this->raiseEvent('EditCommand',$this,$param); 
+		$this->raiseEvent('OnEditCommand',$this,$param); 
 	}
 public function onItemCommand($param) 
 	{ 
-		$this->raiseEvent('ItemCommand',$this,$param); 
+		$this->raiseEvent('OnItemCommand',$this,$param); 
 	}
 public function onSortCommand($param) 
 	{ 
-		$this->raiseEvent('SortCommand',$this,$param); 
+		$this->raiseEvent('OnSortCommand',$this,$param); 
 	}
 public function onUpdateCommand($param) 
 	{ 
-		$this->raiseEvent('UpdateCommand',$this,$param); 
+		$this->raiseEvent('OnUpdateCommand',$this,$param); 
 	}
 public function onItemCreated($param) 
 	{ 
-		$this->raiseEvent('ItemCreated',$this,$param); 
+		$this->raiseEvent('OnItemCreated',$this,$param); 
 	}
 public function onItemDataBound($param) 
 	{ 
-		$this->raiseEvent('ItemDataBound',$this,$param); 
+		$this->raiseEvent('OnItemDataBound',$this,$param); 
 	}
 public function onPageIndexChanged($param) 
 	{ 
-		$this->raiseEvent('PageIndexChanged',$this,$param); 
+		$this->raiseEvent('OnPageIndexChanged',$this,$param); 
 	}
 protected function onSaveState($param) 
 	{ 
@@ -14029,13 +14006,13 @@ public function initializeCell($cell,$columnIndex,$itemType)
 					$control=$textBox; 
 				} 
 				if(($dataField=$this->getDataField())!=='') 
-					$control->attachEventHandler('DataBinding',array($this,'dataBindColumn')); 
+					$control->attachEventHandler('OnDataBinding',array($this,'dataBindColumn')); 
 				break; 
 			case 'Item': 
 			case 'AlternatingItem': 
 			case 'SelectedItem': 
 				if(($dataField=$this->getDataField())!=='') 
-					$cell->attachEventHandler('DataBinding',array($this,'dataBindColumn')); 
+					$cell->attachEventHandler('OnDataBinding',array($this,'dataBindColumn')); 
 				break; 
 		} 
 	}
@@ -14137,7 +14114,7 @@ public function initializeCell($cell,$columnIndex,$itemType)
 			$button->setCausesValidation($this->getCausesValidation()); 
 			$button->setValidationGroup($this->getValidationGroup()); 
 			if($this->getDataTextField()!=='') 
-				$button->attachEventHandler('DataBinding',array($this,'dataBindColumn')); 
+				$button->attachEventHandler('OnDataBinding',array($this,'dataBindColumn')); 
 			$cell->getControls()->add($button); 
 		} 
 	}
@@ -14315,7 +14292,7 @@ public function initializeCell($cell,$columnIndex,$itemType)
 			$link->setNavigateUrl($this->getNavigateUrl()); 
 			$link->setTarget($this->getTarget()); 
 			if($this->getDataTextField()!=='' || $this->getDataNavigateUrlField()!=='') 
-				$link->attachEventHandler('DataBinding',array($this,'dataBindColumn')); 
+				$link->attachEventHandler('OnDataBinding',array($this,'dataBindColumn')); 
 			$cell->getControls()->add($link); 
 		} 
 	}

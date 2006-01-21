@@ -230,7 +230,6 @@ class TTemplate extends TComponent implements ITemplate
 	 * Content in the template will be instantiated as components and text strings
 	 * and passed to the specified parent control.
 	 * @param TControl the parent control
-	 * @throws TTemplateRuntimeException if an error is encountered during the instantiation.
 	 */
 	public function instantiateIn($tplControl)
 	{
@@ -274,8 +273,6 @@ class TTemplate extends TComponent implements ITemplate
 					$parent=isset($controls[$object[0]])?$controls[$object[0]]:$tplControl;
 					$parent->addParsedObject($component);
 				}
-				else
-					throw new TTemplateRuntimeException('template_component_required',$object[1]);
 			}
 			else	// string
 			{
@@ -295,19 +292,12 @@ class TTemplate extends TComponent implements ITemplate
 	 */
 	protected function configureControl($control,$name,$value)
 	{
-		if(is_string($value) && $control->hasEvent($name))		// is an event
+		if(is_string($value) && strncasecmp($name,'on',2)===0)		// is an event
 			$this->configureEvent($control,$name,$value);
 		else if(strpos($name,'.')===false)	// is a simple property or custom attribute
-		{
-			if($control->hasProperty($name))
-				$this->configureProperty($control,$name,$value);
-			else
-				throw new TTemplateRuntimeException('template_property_undefined',get_class($control),$name);
-		}
+			$this->configureProperty($control,$name,$value);
 		else	// is a subproperty
-		{
 			$this->configureSubProperty($control,$name,$value);
-		}
 	}
 
 	/**
@@ -319,16 +309,9 @@ class TTemplate extends TComponent implements ITemplate
 	protected function configureComponent($component,$name,$value)
 	{
 		if(strpos($name,'.')===false)	// is a simple property or custom attribute
-		{
-			if($component->hasProperty($name))
-				$this->configureProperty($component,$name,$value);
-			else
-				throw new TTemplateRuntimeException('template_property_undefined',get_class($component),$name);
-		}
+			$this->configureProperty($component,$name,$value);
 		else	// is a subproperty
-		{
 			$this->configureSubProperty($component,$name,$value);
-		}
 	}
 
 	/**
@@ -339,7 +322,6 @@ class TTemplate extends TComponent implements ITemplate
 	 */
 	protected function configureEvent($component,$name,$value)
 	{
-		$value=THttpUtility::htmlDecode($value);
 		if(strpos($value,'.')===false)
 			$component->attachEventHandler($name,array($component,'TemplateControl.'.$value));
 		else
@@ -354,39 +336,33 @@ class TTemplate extends TComponent implements ITemplate
 	 */
 	protected function configureProperty($component,$name,$value)
 	{
-		if($component->canSetProperty($name))
+		$setter='set'.$name;
+		if(is_array($value))
 		{
-			$setter='set'.$name;
-			if(is_array($value))
+			switch($value[0])
 			{
-				$v=THttpUtility::htmlDecode($value[1]);
-				switch($value[0])
-				{
-					case self::CONFIG_DATABIND:
-						$component->bindProperty($name,$v);
-						break;
-					case self::CONFIG_EXPRESSION:
-						$component->$setter($component->evaluateExpression($v));
-						break;
-					case self::CONFIG_ASSET:		// asset URL
-						$url=$this->_assetManager->publishFilePath($this->_contextPath.'/'.$v);
-						$component->$setter($url);
-						break;
-					case self::CONFIG_PARAMETER:		// application parameter
-						$component->$setter($this->getApplication()->getParameters()->itemAt($v));
-						break;
-					case self::CONFIG_LOCALIZATION:
-						$component->$setter(localize($v));
-						break;
-					default:	// an error if reaching here
-						break;
-				}
+				case self::CONFIG_DATABIND:
+					$component->bindProperty($name,$value[1]);
+					break;
+				case self::CONFIG_EXPRESSION:
+					$component->$setter($component->evaluateExpression($value[1]));
+					break;
+				case self::CONFIG_ASSET:		// asset URL
+					$url=$this->_assetManager->publishFilePath($this->_contextPath.'/'.$value[1]);
+					$component->$setter($url);
+					break;
+				case self::CONFIG_PARAMETER:		// application parameter
+					$component->$setter($this->getApplication()->getParameters()->itemAt($value[1]));
+					break;
+				case self::CONFIG_LOCALIZATION:
+					$component->$setter(localize($value[1]));
+					break;
+				default:	// an error if reaching here
+					break;
 			}
-			else
-				$component->$setter(THttpUtility::htmlDecode($value));
 		}
 		else
-			throw new TTemplateRuntimeException('template_property_readonly',get_class($component),$name);
+			$component->$setter($value);
 	}
 
 	/**
@@ -399,64 +375,30 @@ class TTemplate extends TComponent implements ITemplate
 	{
 		if(is_array($value))
 		{
-			$v=THttpUtility::htmlDecode($value[1]);
 			switch($value[0])
 			{
 				case self::CONFIG_DATABIND:		// databinding
-					$component->bindProperty($name,$v);
+					$component->bindProperty($name,$value[1]);
 					break;
 				case self::CONFIG_EXPRESSION:		// expression
-					$component->setSubProperty($name,$component->evaluateExpression($v));
+					$component->setSubProperty($name,$component->evaluateExpression($value[1]));
 					break;
 				case self::CONFIG_ASSET:		// asset URL
-					$url=$this->_assetManager->publishFilePath($this->_contextPath.'/'.$v);
+					$url=$this->_assetManager->publishFilePath($this->_contextPath.'/'.$value[1]);
 					$component->setSubProperty($name,$url);
 					break;
 				case self::CONFIG_PARAMETER:		// application parameter
-					$component->setSubProperty($name,$this->getApplication()->getParameters()->itemAt($v));
+					$component->setSubProperty($name,$this->getApplication()->getParameters()->itemAt($value[1]));
 					break;
 				case self::CONFIG_LOCALIZATION:
-					$component->setSubProperty($name,localize($v));
+					$component->setSubProperty($name,localize($value[1]));
 					break;
 				default:	// an error if reaching here
 					break;
 			}
 		}
 		else
-			$component->setSubProperty($name,THttpUtility::htmlDecode($value));
-	}
-
-	/**
-	 * Configures a custom attribute for a control.
-	 * @param TControl control to be configured
-	 * @param string attribute name
-	 * @param mixed attribute initial value
-	 */
-	protected function configureAttribute($control,$name,$value)
-	{
-		if(is_array($value))
-		{
-			switch($value[0])
-			{
-				case self::CONFIG_DATABIND:		// databinding
-					throw new TTemplateRuntimeException('template_attribute_unbindable',get_class($control),$name);
-				case self::CONFIG_EXPRESSION:
-					$value=$control->evaluateExpression($value[1]);
-					break;
-				case self::CONFIG_ASSET:
-					$value=$this->_assetManager->publishFilePath($this->_contextPath.'/'.ltrim($value[1],'/'));
-					break;
-				case self::CONFIG_PARAMETER:
-					$value=$this->getApplication()->getParameters()->itemAt($value[1]);
-					break;
-				case self::CONFIG_LOCALIZATION:
-					$value=localize($value[1]);
-					break;
-				default:
-					break;
-			}
-		}
-		$control->getAttributes()->add($name,$value);
+			$component->setSubProperty($name,$value);
 	}
 
 	/**
@@ -504,6 +446,18 @@ class TTemplate extends TComponent implements ITemplate
 				$textStart=$matchEnd+1;
 				$type=$match[1][0];
 				$attributes=$this->parseAttributes($match[2][0]);
+				try
+				{
+					$this->validateAttributes($type,$attributes);
+				}
+				catch(Exception $e)
+				{
+					$line=count(explode("\n",substr($input,0,$matchEnd+1)));
+					if($this->_tplFile===null)
+						throw new TTemplateParsingException('template_componenttag_invalid',"Line $line",$type,$e->getMessage());
+					else
+						throw new TTemplateParsingException('template_componenttag_invalid',"{$this->_tplFile} (Line $line)",$type,$e->getMessage());
+				}
 				$tpl[$c++]=array($container,$type,$attributes);
 				if($str[strlen($str)-2]!=='/')  // open tag
 				{
@@ -569,9 +523,9 @@ class TTemplate extends TComponent implements ITemplate
 					$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
 				$textStart=$matchEnd+1;
 				if($str[2]==='=')	// expression
-					$tpl[$c++]=array($container,'TExpression',array('Expression'=>$match[5][0]));
+					$tpl[$c++]=array($container,'TExpression',array('Expression'=>THttpUtility::htmlDecode($match[5][0])));
 				else if($str[2]==='%')  // statements
-					$tpl[$c++]=array($container,'TStatements',array('Statements'=>$match[5][0]));
+					$tpl[$c++]=array($container,'TStatements',array('Statements'=>THttpUtility::htmlDecode($match[5][0])));
 				else
 					$tpl[$c++]=array($container,'TLiteral',array('Text'=>$this->parseAttribute($str)));
 			}
@@ -616,7 +570,21 @@ class TTemplate extends TComponent implements ITemplate
 					if($matchStart>$textStart && $container>=0)
 					{
 						$value=substr($input,$textStart,$matchStart-$textStart);
-						$tpl[$container][2][$prop]=$this->parseAttribute($value);
+						$value=$this->parseAttribute($value);
+						$type=$tpl[$container][1];
+						try
+						{
+							$this->validateAttributes($type,array($prop=>$value));
+						}
+						catch(Exception $e)
+						{
+							$line=count(explode("\n",substr($input,0,$matchEnd+1)));
+							if($this->_tplFile===null)
+								throw new TTemplateParsingException('template_componenttag_invalid',"Line $line",$type,$e->getMessage());
+							else
+								throw new TTemplateParsingException('template_componenttag_invalid',"{$this->_tplFile} (Line $line)",$type,$e->getMessage());
+						}
+						$tpl[$container][2][$prop]=$value;
 						$textStart=$matchEnd+1;
 					}
 					$expectPropEnd=false;
@@ -699,8 +667,8 @@ class TTemplate extends TComponent implements ITemplate
 	{
 		$matches=array();
 		if(!preg_match('/^(<%#.*?%>|<%=.*?%>|<%~.*?%>|<%\\$.*?%>|<%\\[.*?\\]%>)$/msS',$value,$matches))
-			return $value;
-		$value=$matches[1];
+			return THttpUtility::htmlDecode($value);
+		$value=THttpUtility::htmlDecode($matches[1]);
 		if($value[2]==='#') // databind
 			return array(self::CONFIG_DATABIND,substr($value,3,strlen($value)-5));
 		else if($value[2]==='=') // a dynamic initialization
@@ -711,6 +679,74 @@ class TTemplate extends TComponent implements ITemplate
 			return array(self::CONFIG_LOCALIZATION,trim(substr($value,3,strlen($value)-6)));
 		else if($value[2]==='$')
 			return array(self::CONFIG_PARAMETER,trim(substr($value,3,strlen($value)-5)));
+	}
+
+	protected function validateAttributes($type,$attributes)
+	{
+		Prado::using($type);
+		if(($pos=strrpos($type,'.'))!==false)
+			$className=substr($type,$pos+1);
+		else
+			$className=$type;
+		if(is_subclass_of($className,'TControl') || $className==='TControl')
+		{
+			foreach($attributes as $name=>$att)
+			{
+				if(($pos=strpos($name,'.'))!==false)
+				{
+					// a subproperty, so the first segment must be readable
+					$subname=substr($name,0,$pos);
+					if(!is_callable(array($className,'get'.$subname)))
+						throw new TTemplateParsingException('template_property_unknown',$subname);
+				}
+				else if(strncasecmp($name,'on',2)===0)
+				{
+					// an event
+					if(!is_callable(array($className,$name)))
+						throw new TTemplateParsingException('template_event_unknown',$name);
+				}
+				else
+				{
+					// a simple property
+					if(!is_callable(array($className,'set'.$name)))
+					{
+						if(is_callable(array($className,'get'.$name)))
+							throw new TTemplateParsingException('template_property_readonly',$name);
+						else
+							throw new TTemplateParsingException('template_property_unknown',$name);
+					}
+				}
+			}
+		}
+		else if(is_subclass_of($className,'TComponent') || $className==='TComponent')
+		{
+			foreach($attributes as $name=>$att)
+			{
+				if($att[0]===self::CONFIG_DATABIND)
+					throw new TTemplateParsingException('template_databind_forbidden',$name);
+				if(($pos=strpos($name,'.'))!==false)
+				{
+					// a subproperty, so the first segment must be readable
+					$subname=substr($name,0,$pos);
+					if(!is_callable(array($className,'get'.$subname)))
+						throw new TTemplateParsingException('template_property_unknown',$subname);
+				}
+				else if(strncasecmp($name,'on',2)===0)
+					throw new TTemplateParsingException('template_event_forbidden',$name);
+				else
+				{
+					if(!is_callable(array($className,'set'.$name)))
+					{
+						if(is_callable(array($className,'get'.$name)))
+							throw new TTemplateParsingException('template_property_readonly',$name);
+						else
+							throw new TTemplateParsingException('template_property_unknown',$name);
+					}
+				}
+			}
+		}
+		else
+			throw new TTemplateParsingException('template_component_required',$type);
 	}
 }
 
