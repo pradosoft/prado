@@ -12,7 +12,7 @@ Password: <com:TTextBox ID="Password" TextMode="Password" /><br/>
 	ControlToValidate="Password"
 	Text="Login failed."
 	Display="Dynamic"
-	ServerValidate="login"
+	OnServerValidate="login"
 	/>
 <com:TLabel ID="Error" />
 </com:TContent>
