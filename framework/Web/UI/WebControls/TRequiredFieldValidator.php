@@ -36,7 +36,7 @@ class TRequiredFieldValidator extends TBaseValidator
 	 */
 	public function getInitialValue()
 	{
-		$this->getViewState('InitialValue','');
+		return $this->getViewState('InitialValue','');
 	}
 
 	/**

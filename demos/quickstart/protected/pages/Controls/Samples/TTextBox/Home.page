@@ -58,12 +58,13 @@ Auto postback text box not causing validation:
 Auto postback text box causing validation:
 </td><td class="sampleaction">
 <com:TTextBox ID="TextBox3"
+	Width="300px"
 	AutoPostBack="true"
 	ValidationGroup="Group1"
-	Text="change me" />
+	Text="change me to 'test' and see" />
 <com:TRequiredFieldValidator
 	ControlToValidate="TextBox3"
-	ErrorMessage="You must enter 'test'."
+	ErrorMessage="You must enter a value not equal to 'test'."
 	InitialValue="test"
 	ValidationGroup="Group1" />
 </td></tr>
@@ -157,10 +158,10 @@ Auto postback text box causing validation:
 	TextMode="MultiLine"
 	AutoPostBack="true"
 	ValidationGroup="Group2"
-	Text="change me" />
+	Text="change me to 'test' and see" />
 <com:TRequiredFieldValidator
 	ControlToValidate="MultiTextBox3"
-	ErrorMessage="You must enter 'test'."
+	ErrorMessage="You must enter a value not equal to 'test'."
 	InitialValue="test"
 	ValidationGroup="Group2" />
 </td></tr>

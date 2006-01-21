@@ -39,6 +39,13 @@
 <com:RunBar PagePath="Controls.Samples.TTextBox.Home" />
 
 <h2>TButton</h2>
+<p>
+<tt>TButton</tt> creates a click button on a Web page. The button's caption is specified by <tt>Text</tt> property. A button is used to submit data to a page. <tt>TButton</tt> raises two server-side events, <tt>Click</tt> and <tt>Command</tt>, when it is clicked on the client-side. The difference between <tt>Click</tt> and <tt>Command</tt> events is that the latter event is bubbled up to the button's ancestor controls. A <tt>Command</tt> event handler can use <tt>CommandName</tt> and <tt>CommandParameter</tt> associated with the event to perform specific actions.
+</p>
+<p>
+Clicking on button can trigger form validation, if <tt>CausesValidation</tt>is true. And the validation may be restricted within a certain group of validator controls according to <tt>ValidationGroup</tt>.
+</p>
+<com:RunBar PagePath="Controls.Samples.TButton.Home" />
 
 <h2>TLinkButton</h2>
 
