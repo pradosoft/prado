@@ -18,13 +18,13 @@ class CheckBoxTestCase extends SeleniumTestCase
 
 	function testValidator()
 	{
-		$this->assertTextPresent("Basic TRequiredFieldValidator Test1");
+		$this->verifyTitle("An AutoPostBack CheckBox");
+
+		//test checkbox 2 should fire the validator
 		$this->assertNotVisible("validator1");
-		$this->click("button1");
+		$this->click("checkbox2");
+		$this->pasue(100);
 		$this->assertVisible("validator1");
-		$this->type("text1", "test");
-		$this->clickAndWait("button1");
-		$this->assertNotVisible("validator1");
 	}
 }
 
