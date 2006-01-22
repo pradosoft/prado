@@ -29,9 +29,9 @@ class CheckBoxTestCase extends SeleniumTestCase
 		//write some text, and see what it 
 		$this->type('ctl0_Content_TextBox', "hello");
 		$this->pause(100);
-		$this->assertNotVisibe("ctl0_Content_validator1");
+		$this->assertNotVisible("ctl0_Content_validator1");
 		$this->clickAndWait("ctl0_Content_checkbox2"); //submit
-		$this->assertNotVisibe("ctl0_Content_validator1");
+		$this->assertNotVisible("ctl0_Content_validator1");
 
 	}
 }
