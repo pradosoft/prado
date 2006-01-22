@@ -24,7 +24,7 @@
 	ID="checkbox3"
 	/>
 <br/>
-Input: <com:TTextBox ID="TextBox" ID="textbox1"/>
+Input: <com:TTextBox ID="TextBox"/>
 <com:TRequiredFieldValidator
 	ControlToValidate="TextBox"
 	Display="Dynamic"
