@@ -16,15 +16,12 @@ class HangmanTestCase extends SeleniumTestCase
 		$this->verifyTextPresent("maximum of 3", "");
 		$this->clickAndWait("link=B", "");
 		$this->clickAndWait("link=F", "");
-		$this->clickAndWait("link=G", "");
-		$this->clickAndWait("link=H", "");
+		$this->clickAndWait("link=Give up?", "");
 		$this->verifyTextPresent("You Lose", "");
 		$this->clickAndWait("link=Start Again", "");
 		$this->clickAndWait("//input[@type='submit' and @value='Play!']", "");
 		$this->verifyTextPresent("Please make a guess", "");
 		$this->verifyTextPresent("maximum of 3", "");
-		$this->clickAndWait("link=F", "");
-		$this->clickAndWait("link=G", "");
 		$this->clickAndWait("link=Give up?", "");
 		$this->verifyTextPresent("You Lose", "");
 		$this->clickAndWait("link=Start Again", "");
