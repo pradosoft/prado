@@ -8,7 +8,12 @@ class BrowserTestConfig extends PradoTestConfig
 	public function unit_test_groups()
 	{
 		$groups = array();
-		$this->get_directories($this->tests_directory(),$groups);
+
+		$this->get_directories(dirname(__FILE__).'/quickstart_tests', $groups);
+
+		//for tests in the protected dirs
+		//$this->get_directories($this->tests_directory(),$groups);
+		
 		return $groups;
 	}
 
