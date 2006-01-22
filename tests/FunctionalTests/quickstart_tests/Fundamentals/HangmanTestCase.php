@@ -4,7 +4,7 @@ class HangmanTestCase extends SeleniumTestCase
 {
 	function test ()
 	{
-		$this->open("/prado3/demos/quickstart/?page=Fundamentals.Samples.Hangman.Home", "");
+		$this->open("../../demos/quickstart/index.php?page=Fundamentals.Samples.Hangman.Home", "");
 		$this->verifyTitle("Hangman Game", "");
 		$this->verifyTextPresent("Medium game; you are allowed 5 misses.", "");
 		$this->clickAndWait("//input[@type='submit' and @value='Play!']", "");
