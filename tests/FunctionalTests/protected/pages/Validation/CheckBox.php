@@ -21,10 +21,10 @@ class CheckBoxTestCase extends SeleniumTestCase
 		$this->verifyTitle("An AutoPostBack CheckBox");
 
 		//test checkbox 2 should fire the validator
-		$this->assertNotVisible("validator1");
-		$this->click("checkbox2");
+		$this->assertNotVisible("ctl0_Content_validator1");
+		$this->click("ctl0_Content_checkbox2");
 		$this->pasue(100);
-		$this->assertVisible("validator1");
+		$this->assertVisible("ctl0_Content_validator1");
 	}
 }
 
