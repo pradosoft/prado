@@ -5,24 +5,40 @@
 <table class="sampletable">
 
 <tr><td class="samplenote">
-A checkbox with customized color and font:
+A checkbox with customized text alignment, color and font:
 </td><td class="sampleaction">
 <com:TCheckBox
 	Text="checkbox"
+	TextAlign="Left"
 	ForeColor="silver"
-	BackColor="black"
+	BackColor="green"
 	Font.Size="14pt"
 />
 </td></tr>
 
 <tr><td class="samplenote">
-A click checkbox:
+A checkbox with label and input attributes:
 </td><td class="sampleaction">
-<com:TCheckBox Text="click me" OnCheckedChanged="buttonClicked" />
+<com:TCheckBox
+	Text="click me"
+	InputAttributes.onclick="alert('this is checkbox');"
+	LabelAttributes.style="color:red"
+/>
 </td></tr>
 
 <tr><td class="samplenote">
-A button causing validation:
+An auto postback checkbox:
+</td><td class="sampleaction">
+<com:TCheckBox
+	AutoPostBack="true"
+	ValidationGroup="t"
+	Text="click me"
+	OnCheckedChanged="checkboxClicked"
+	/>
+</td></tr>
+
+<tr><td class="samplenote">
+A checkbox causing validation on a textbox:
 </td><td class="sampleaction">
 <com:TTextBox ID="TextBox" />
 <com:TRequiredFieldValidator
