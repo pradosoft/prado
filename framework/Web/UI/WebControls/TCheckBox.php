@@ -168,7 +168,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	 */
 	public function setChecked($value)
 	{
-		$this->setViewState('Checked',$value,false);
+		$this->setViewState('Checked',TPropertyValue::ensureBoolean($value),false);
 	}
 
 	/**
@@ -185,7 +185,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	 */
 	public function setAutoPostBack($value)
 	{
-		$this->setViewState('AutoPostBack',$value,false);
+		$this->setViewState('AutoPostBack',TPropertyValue::ensureBoolean($value),false);
 	}
 
 	/**
@@ -247,12 +247,10 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 			$writer->addAttribute('title',$tooltip);
 			$needSpan=true;
 		}
-		$onclick=null;
 		if($this->getHasAttributes())
 		{
 			$attributes=$this->getAttributes();
 			$value=$attributes->remove('value');
-			$onclick=$attributes->remove('onclick');
 			if($attributes->getCount())
 			{
 				$writer->addAttributes($attributes);
@@ -269,16 +267,16 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 			if($this->getTextAlign()==='Left')
 			{
 				$this->renderLabel($writer,$clientID,$text);
-				$this->renderInputTag($writer,$clientID,$onclick);
+				$this->renderInputTag($writer,$clientID);
 			}
 			else
 			{
-				$this->renderInputTag($writer,$clientID,$onclick);
+				$this->renderInputTag($writer,$clientID);
 				$this->renderLabel($writer,$clientID,$text);
 			}
 		}
 		else
-			$this->renderInputTag($writer,$clientID,$onclick);
+			$this->renderInputTag($writer,$clientID);
 		if($needSpan)
 			$writer->renderEndTag();
 	}
@@ -292,7 +290,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 			return $attributes;
 		else
 		{
-			$attributes=new TMap;
+			$attributes=new TAttributeCollection;
 			$this->setViewState('LabelAttributes',$attributes,null);
 			return $attributes;
 		}
@@ -307,10 +305,24 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 			return $attributes;
 		else
 		{
-			$attributes=new TMap;
+			$attributes=new TAttributeCollection;
 			$this->setViewState('InputAttributes',$attributes,null);
 			return $attributes;
 		}
+	}
+
+	/**
+	 * @return string the value attribute to be rendered
+	 */
+	protected function getValueAttribute()
+	{
+		if(($value=$this->getAttribute('value'))===null)
+		{
+			$value=$this->getID();
+			return $value===''?$this->getUniqueID():$value;
+		}
+		else
+			return $value;
 	}
 
 	/**
@@ -333,13 +345,13 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	 * Renders a checkbox input element.
 	 * @param THtmlWriter the writer for the rendering purpose
 	 * @param string checkbox id
-	 * @param string onclick attribute value for the checkbox
 	 */
-	protected function renderInputTag($writer,$clientID,$onclick)
+	protected function renderInputTag($writer,$clientID)
 	{
 		if($clientID!=='')
 			$writer->addAttribute('id',$clientID);
 		$writer->addAttribute('type','checkbox');
+		$writer->addAttribute('value',$this->getValueAttribute());
 		if(($uniqueID=$this->getUniqueID())!=='')
 			$writer->addAttribute('name',$uniqueID);
 		if($this->getChecked())
@@ -362,8 +374,8 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	}
 
 	/**
-	 * Sets the post back options for this textbox.
-	 * @return TPostBackOptions
+	 * Sets the post back options for this checkbox.
+	 * @return array
 	 */
 	public function getPostBackOptions()
 	{

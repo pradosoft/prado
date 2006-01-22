@@ -185,7 +185,7 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 	 */
 	public function setCausesValidation($value)
 	{
-		$this->setViewState('CausesValidation',$value,true);
+		$this->setViewState('CausesValidation',TPropertyValue::ensureBoolean($value),true);
 	}
 
 	/**

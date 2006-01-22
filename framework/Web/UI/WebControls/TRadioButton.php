@@ -128,20 +128,6 @@ class TRadioButton extends TCheckBox
 	}
 
 	/**
-	 * @return string the value attribute to be rendered
-	 */
-	private function getValueAttribute()
-	{
-		if(($value=$this->getAttribute('value'))===null)
-		{
-			$value=$this->getID();
-			return $value===''?$this->getUniqueID():$value;
-		}
-		else
-			return $value;
-	}
-
-	/**
 	 * Renders a radiobutton input element.
 	 * @param THtmlWriter the writer for the rendering purpose
 	 * @param string checkbox id
