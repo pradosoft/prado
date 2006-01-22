@@ -641,6 +641,7 @@ tests/FunctionalTests/protected/pages/ViewSource.page -text
 tests/FunctionalTests/protected/pages/ViewSource.php -text
 tests/FunctionalTests/protected/pages/config.xml -text
 tests/FunctionalTests/protected/tests/HomePageTest.php -text
+tests/FunctionalTests/quickstart_tests/Controls/LabelTestCase.php -text
 tests/FunctionalTests/quickstart_tests/Fundamentals/HangmanTestCase.php -text
 tests/FunctionalTests/quickstart_tests/Fundamentals/HelloWorldTestCase.php -text
 tests/FunctionalTests/selenium/SeleneseRunner.html -text
