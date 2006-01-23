@@ -257,13 +257,13 @@ class TPage extends TTemplateControl
 	 * Returns a list of registered validators.
 	 * If validation group is specified, only the validators in that group will be returned.
 	 * @param string validation group
-	 * @return TList registered validators
+	 * @return TList registered validators in the requested group. If the group is null, all validators will be returned.
 	 */
-	public function getValidators($validationGroup='')
+	public function getValidators($validationGroup=null)
 	{
 		if(!$this->_validators)
 			$this->_validators=new TList;
-		if($validationGroup==='')
+		if($validationGroup===null)
 			return $this->_validators;
 		else
 		{

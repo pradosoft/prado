@@ -13,7 +13,7 @@ class ImageButtonTestCase extends SeleniumTestCase
 		$this->verifyTextPresent("You clicked at ","");
 
 		// a command button
-		$this->clickAndWait("id=ctl0_body_ctl1", "");
+		$this->clickAndWait("ctl0\$body\$ctl1", "");
 		$this->verifyTextPresent("Command name: test, Command parameter: value","");
 
 		// a button causing validation
