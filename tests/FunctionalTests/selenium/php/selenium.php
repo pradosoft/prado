@@ -116,7 +116,8 @@ class SeleneseInterpreter
 		if($ID instanceof TControl)
 			$ID = $ID->ClientID;
 		$value = isset($args[1]) ? $args[1] : "";
-		$command = "|{$func}|{$ID}|{$value}|";
+		//$command = "|{$func}|{$ID}|{$value}|";
+		$command = array($func, $ID, $value);
 		$trace = debug_backtrace();
 		return $this->addCommand($command, $trace);
 	}
@@ -340,7 +341,8 @@ EOD;
 		echo $this->renderHeader();
 		foreach($this->tests as $test)
 		{
-			$t = explode('|', $test['test']);
+			$t = $test;
+			//$t = explode('|', $test['test']);
 			if($t[1] == "open")
 				$t[2] = "<a href=\"{$t[2]}\" target=\"_blank\">{$t[2]}</a>";
 			echo "<tr>\n";
