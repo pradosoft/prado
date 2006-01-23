@@ -341,14 +341,13 @@ EOD;
 		echo $this->renderHeader();
 		foreach($this->tests as $test)
 		{
-			$t = $test;
-			//$t = explode('|', $test['test']);
-			if($t[1] == "open")
-				$t[2] = "<a href=\"{$t[2]}\" target=\"_blank\">{$t[2]}</a>";
+			$t = $test['test'];
+			if($t[0] == "open")
+				$t[1] = "<a href=\"{$t[1]}\" target=\"_blank\">{$t[1]}</a>";
 			echo "<tr>\n";
+			echo "<td>{$t[0]}</td>\n";
 			echo "<td>{$t[1]}</td>\n";
 			echo "<td>{$t[2]}</td>\n";
-			echo "<td>{$t[3]}</td>\n";
 			echo "</tr>\n";
 		}
 		echo $this->renderFooter();
