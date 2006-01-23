@@ -4,7 +4,7 @@ class PanelTestCase extends SeleniumTestCase
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/?page=Controls.Samples.TPanel.Home", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TPanel.Home", "");
 		$this->verifyTextPresent("This is panel content with", "");
 		$this->verifyElementPresent("//span[text()='label']");
 		$this->verifyTextPresent("grouping text", "");

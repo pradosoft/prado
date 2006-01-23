@@ -75,7 +75,6 @@ Text box's behavior upon postback:
 <com:TTextBox ID="TextBox1" Text="text" />
 <com:TButton
 	Text="Submit"
-	CausesValidation="false"
 	OnClick="submitText" />
 </td></tr>
 
@@ -158,11 +157,11 @@ Auto postback text box causing validation:
 	TextMode="MultiLine"
 	AutoPostBack="true"
 	ValidationGroup="Group2"
-	Text="change me to 'test' and see" />
+	Text="change me to 'demo' and see" />
 <com:TRequiredFieldValidator
 	ControlToValidate="MultiTextBox3"
-	ErrorMessage="You must enter a value not equal to 'test'."
-	InitialValue="test"
+	ErrorMessage="You must enter a value not equal to 'demo'."
+	InitialValue="demo"
 	ValidationGroup="Group2" />
 </td></tr>
 
