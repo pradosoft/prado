@@ -270,7 +270,7 @@ class TTable extends TWebControl
 		if(($caption=$this->getCaption())!=='')
 		{
 			if(($align=$this->getCaptionAlign())!=='NotSet')
-				$writer->addAttribute('align',$align);
+				$writer->addAttribute('align',strtolower($align));
 			$writer->renderBeginTag('caption');
 			$writer->write($caption);
 			$writer->renderEndTag();
