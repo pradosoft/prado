@@ -5,9 +5,7 @@ class TextBoxTestCase extends SeleniumTestCase
 	function test ()
 	{
 		$this->open("../../demos/quickstart/?page=Controls.Samples.TTextBox.Home", "");
-		// a read-only multiline textbox
-		$this->verifyAttribute("ctl0\$body\$ctl13@readonly","regexp:/(true|readonly)/");
-return;
+
 		$this->verifyTitle("PRADO QuickStart Sample", "");
 
 		// a normal textbox
@@ -25,10 +23,10 @@ return;
 		$this->type("ctl0\$body\$ctl3", "last");
 
 		// a disabled textbox
-		$this->verifyAttribute("ctl0\$body\$ctl4@disabled","disabled");
+		$this->verifyAttribute("ctl0\$body\$ctl4@disabled","regexp:true|disabled");
 
 		// a read-only textbox
-		$this->verifyAttribute("ctl0\$body\$ctl5@readonly","readonly");
+		$this->verifyAttribute("ctl0\$body\$ctl5@readonly","regexp:true|readonly");
 
 		// auto postback textbox, CausesValidation=false
 		$this->verifyValue("ctl0\$body\$ctl6", "change me");
@@ -56,28 +54,39 @@ return;
 		// password
 		$this->verifyAttribute("ctl0\$body\$ctl9@type","password");
 
-		$this->type("ctl0\$body\$TextBox3", "tests");
-		$this->clickAndWait("//input[@type='submit' and @value='Submit']", "");
-		$this->clickAndWait("//input[@type='submit' and @value='Submit']", "");
-		$this->type("ctl0\$body\$ctl9", "test");
-		$this->type("ctl0\$body\$ctl10", "test
-test
-test");
+		// ------------------multiline textbox----------------------
+
+		// regular textbox
+		$this->type("ctl0\$body\$ctl10", "This is a\nmultiline\ntextbox.");
 		$this->type("ctl0\$body\$ctl11", "This is a multiline text box.
 In HTML, it is displayed as a textarea.
-test  ");
-		$this->typeAndWait("ctl0\$body\$ctl14", "change med");
-		$this->type("ctl0\$body\$MultiTextBox3", "test");
-		$this->verifyTextPresent("You must enter a value not equal to 'test'.", "");
-		$this->typeAndWait("ctl0\$body\$MultiTextBox3", "testd");
-
+End of message
+");
 
 		// a disabled multiline textbox
-		$this->verifyAttribute("ctl0\$body\$ctl12@disabled","disabled");
+		$this->verifyAttribute("ctl0\$body\$ctl12@disabled","regexp:true|disabled");
 
-		//$this->verifyElementPresent("//ctl0\$body\$ctl13[@readonly]");
+		// a read-only multiline textbox
+		$this->verifyAttribute("ctl0\$body\$ctl13@readonly","regexp:true|readonly");
 		$this->verifyAttribute("ctl0\$body\$ctl13@wrap","off");
 
+		// auto postback textbox
+		$this->verifyValue("ctl0\$body\$ctl14", "change me");
+		$this->typeAndWait("ctl0\$body\$ctl14", "change mes");
+		$this->verifyValue("ctl0\$body\$ctl14", "text changed");
+		$this->verifyValue("ctl0\$body\$ctl10", "This is a\nmultiline\ntextbox.");
+		$this->verifyValue("ctl0\$body\$ctl11", "This is a multiline text box.
+In HTML, it is displayed as a textarea.
+End of message
+");
+
+		// textbox associated with a validator
+		$this->verifyNotVisible('ctl0_body_ctl15');
+		$this->type("ctl0\$body\$MultiTextBox3", "demo");
+		$this->pause(1000);
+		$this->verifyVisible('ctl0_body_ctl15');
+		$this->typeAndWait("ctl0\$body\$MultiTextBox3", "non demo");
+		$this->verifyNotVisible('ctl0_body_ctl15');
 	}
 }
 
