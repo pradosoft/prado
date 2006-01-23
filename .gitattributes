@@ -643,8 +643,10 @@ tests/FunctionalTests/protected/pages/config.xml -text
 tests/FunctionalTests/protected/tests/HomePageTest.php -text
 tests/FunctionalTests/quickstart_tests/Controls/ButtonTestCase.php -text
 tests/FunctionalTests/quickstart_tests/Controls/HyperLinkTestCase.php -text
+tests/FunctionalTests/quickstart_tests/Controls/ImageButtonTestCase.php -text
 tests/FunctionalTests/quickstart_tests/Controls/ImageTestCase.php -text
 tests/FunctionalTests/quickstart_tests/Controls/LabelTestCase.php -text
+tests/FunctionalTests/quickstart_tests/Controls/LinkButtonTestCase.php -text
 tests/FunctionalTests/quickstart_tests/Controls/PanelTestCase.php -text
 tests/FunctionalTests/quickstart_tests/Controls/TableTestCase.php -text
 tests/FunctionalTests/quickstart_tests/Controls/TextBoxTestCase.php -text
