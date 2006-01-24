@@ -5,7 +5,7 @@ class ImageTestCase extends SeleniumTestCase
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TImage.Home", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TImage.Home&functionaltest=true", "");
 		$this->verifyTitle("PRADO QuickStart Sample", "");
 		$this->verifyElementPresent("//img[contains(@src,'/hello_world.gif') and @alt='']");
 		$this->verifyElementPresent("//img[contains(@src,'/hello_world.gif') and @alt='Hello World!']");

@@ -4,7 +4,7 @@ class ButtonTestCase extends SeleniumTestCase
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TButton.Home", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TButton.Home&functionaltest=true", "");
 
 		$this->verifyTitle("PRADO QuickStart Sample", "");
 

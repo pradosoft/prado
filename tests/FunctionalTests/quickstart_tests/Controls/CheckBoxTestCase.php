@@ -4,7 +4,7 @@ class CheckBoxTestCase extends SeleniumTestCase
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TCheckBox.Home", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TCheckBox.Home&functionaltest=true", "");
 
 		$this->verifyTitle("PRADO QuickStart Sample", "");
 

@@ -4,7 +4,7 @@ class LinkButtonTestCase extends SeleniumTestCase
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TLinkButton.Home", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TLinkButton.Home&functionaltest=true", "");
 
 		$this->verifyTitle("PRADO QuickStart Sample", "");
 
