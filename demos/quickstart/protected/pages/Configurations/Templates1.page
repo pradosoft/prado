@@ -21,10 +21,14 @@ body content
 <tt>ComponentType</tt> can be either the class name or the dotted type name (e.g. <tt>System.Web.UI.TControl</tt>) of the component. <tt>PropertyName</tt> and <tt>EventName</tt> are both case-insensitive. <tt>PropertyName</tt> can be a property or subproperty name (e.g. <tt>Font.Name</tt>). Note, <tt>PropertyValue</tt> will be HTML-decoded when assigned to the corresponding property. Content enclosed between the opening and closing component tag are normally treated the body of the component.
 </p>
 <p>
-It is required that component tags nest properly with each other and an opening component tag be paired with a closing tag, similar to that in XML. The following shows a component tag specifying the <tt>Text</tt> property and <tt>Click</tt> event of a button control,
+It is required that component tags nest properly with each other and an opening component tag be paired with a closing tag, similar to that in XML.
+</p>
+<p>
+The following template shows a component tag specifying the <tt>Text</tt> property and <tt>OnClick</tt> event of a button control,
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TButton Text="Register" OnClick="registerUser" />
 </com:TTextHighlighter>
+Keep it in mind that property names and event names are all case-insensitive, while component type names are case-sensitive. Event names always begin with <tt>On</tt>.
 </p>
 <p>
 To deal conveniently with properties taking take big trunk of initial data, the following property initialization tag is introduced,
@@ -34,6 +38,15 @@ PropertyValue
 &lt;/prop:PropertyName&gt;
 </com:TTextHighlighter>
 It is equivalent to <tt>...PropertyName="PropertyValue"...</tt> in every aspect. Property initialization tags must be directly enclosed between the corresponding opening and closing component tag.
+</p>
+
+<h3>Component IDs</h3>
+<p>
+When specified in templates, component <tt>ID</tt> property has special meaning in addition to its normal property definition. A component tag specified with an ID value in template will register the corresponding component to the template owner control. The component can thus be directly accessed from the template control with its ID value. For example, in <tt>Home</tt> page's template, the following component tag
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TTextBox ID="TextBox" Text="First Name" />
+</com:TTextHighlighter>
+makes it possible to get the textbox object in code using <tt>$page->TextBox</tt>.
 </p>
 
 <a name="tct"></a>
