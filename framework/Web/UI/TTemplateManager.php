@@ -735,7 +735,8 @@ class TTemplate extends TComponent implements ITemplate
 					throw new TTemplateParsingException('template_event_forbidden',$name);
 				else
 				{
-					if(!is_callable(array($className,'set'.$name)))
+					// id is still alowed for TComponent, even if id property doesn't exist
+					if(strcasecmp($name,'id')!==0 && !is_callable(array($className,'set'.$name)))
 					{
 						if(is_callable(array($className,'get'.$name)))
 							throw new TTemplateParsingException('template_property_readonly',$name);

@@ -154,7 +154,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		$scriptKey = "TBaseValidator:$formID";
 		if($this->getEnableClientScript() && !$scripts->isEndScriptRegistered($scriptKey))
 		{
-			$scripts->registerClientScript('validator');			
+			$scripts->registerClientScript('validator');
 			$scripts->registerEndScript($scriptKey, "Prado.Validation.AddForm('$formID');");
 		}
 		if($this->getEnableClientScript())
@@ -361,13 +361,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	protected function getValidationValue($control)
 	{
 		if($control instanceof IValidatable)
-		{
-			$value=$control->getValidationPropertyValue();
-			//if($value instanceof TListItem)
-			//	return $value->getValue();
-			//else
-				return TPropertyValue::ensureString($value);
-		}
+			return $control->getValidationPropertyValue();
 		else
 			throw new TInvalidDataTypeException('basevalidator_validatable_required');
 	}

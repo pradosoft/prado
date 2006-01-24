@@ -31,7 +31,6 @@ An auto postback checkbox:
 </td><td class="sampleaction">
 <com:TCheckBox
 	AutoPostBack="true"
-	ValidationGroup="t"
 	Text="click me"
 	OnCheckedChanged="checkboxClicked"
 	/>
@@ -47,7 +46,46 @@ A checkbox causing validation on a textbox:
 	ErrorMessage="input required in the textbox"
 	ValidationGroup="Group"
 	/>
-<com:TCheckBox Text="submit" ValidationGroup="Group" />
+<com:TCheckBox
+	Text="submit"
+	AutoPostBack="true"
+	ValidationGroup="Group"
+	/>
+</td></tr>
+
+<tr><td class="samplenote">
+A checkbox validated by a required field validator:
+</td><td class="sampleaction">
+<com:TCheckBox
+	ID="CheckBox"
+	Text="Consent"
+	ValidationGroup="Group2"
+	/>
+<com:TButton Text="Submit" ValidationGroup="Group2" />
+<com:TRequiredFieldValidator
+	ControlToValidate="CheckBox"
+	Display="Dynamic"
+	ErrorMessage="You must consent."
+	ValidationGroup="Group2"
+	/>
+</td></tr>
+
+<tr><td class="samplenote">
+A checkbox validated by a required field validator using AutoPostBack:
+</td><td class="sampleaction">
+<com:TCheckBox
+	ID="CheckBox2"
+	Text="Agree"
+	Checked="true"
+	AutoPostBack="true"
+	ValidationGroup="Group3"
+	/>
+<com:TRequiredFieldValidator
+	ControlToValidate="CheckBox2"
+	Display="Dynamic"
+	ErrorMessage="You must agree."
+	ValidationGroup="Group3"
+	/>
 </td></tr>
 
 </table>

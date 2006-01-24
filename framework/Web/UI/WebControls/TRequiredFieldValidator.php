@@ -58,7 +58,7 @@ class TRequiredFieldValidator extends TBaseValidator
 	protected function evaluateIsValid()
 	{
 		$value=$this->getValidationValue($this->getValidationTarget());
-		return trim($value)!==trim($this->getInitialValue());
+		return trim($value)!==trim($this->getInitialValue()) || (is_bool($value) && $value);
 	}
 
 	/**

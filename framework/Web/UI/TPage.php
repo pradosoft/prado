@@ -288,8 +288,10 @@ class TPage extends TTemplateControl
 		{
 			Prado::trace("Page validate",'System.Web.UI.TPage');
 			foreach($this->_validators as $validator)
+			{
 				if($validator->getValidationGroup()===$validationGroup)
 					$validator->validate();
+			}
 		}
 	}
 
