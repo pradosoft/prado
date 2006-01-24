@@ -21,7 +21,7 @@ A checkbox with label and input attributes:
 </td><td class="sampleaction">
 <com:TCheckBox
 	Text="click me"
-	InputAttributes.onclick="alert('this is checkbox');"
+	InputAttributes.value="value"
 	LabelAttributes.style="color:red"
 />
 </td></tr>
