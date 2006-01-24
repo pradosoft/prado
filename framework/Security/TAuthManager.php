@@ -194,7 +194,7 @@ class TAuthManager extends TModule
 		if(($session=$application->getSession())===null)
 			throw new TConfigurationException('authmanager_session_required');
 		$session->open();
-		$sessionInfo=$session->getItems()->itemAt($this->generateUserSessionKey());
+		$sessionInfo=$session->itemAt($this->generateUserSessionKey());
 		$user=$this->_userManager->getUser(null)->loadFromString($sessionInfo);
 		$application->setUser($user);
 	}
@@ -238,7 +238,7 @@ class TAuthManager extends TModule
 			if(($session=$this->getSession())===null)
 				throw new TConfigurationException('authmanager_session_required');
 			else
-				$session->getItems()->add($this->generateUserSessionKey(),$user->saveToString());
+				$session->add($this->generateUserSessionKey(),$user->saveToString());
 		}
 	}
 

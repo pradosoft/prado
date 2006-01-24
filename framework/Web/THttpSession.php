@@ -18,13 +18,14 @@
  * to destroy the session, call {@destroy}. If AutoStart is true, then the session
  * will be started once the session module is loaded and initialized.
  *
- * To access data stored in session, use the Items property. For example,
+ * To access data stored in session, use THttpSession like an associative array. For example,
  * <code>
  *   $session=new THttpSession;
  *   $session->open();
- *   foreach($session->Items as $key=>$value)
- *       ; // read data in session
- *   $session->Items['key']=$data; // store new data into session
+ *   $value1=$session['name1'];  // get session variable 'name1'
+ *   $value2=$session['name2'];  // get session variable 'name2'
+ *   foreach($session as $name=>$value) // traverse all session variables
+ *   $session['name3']=$value3;  // set session variable 'name3'
  * </code>
  *
  * The following configurations are available for session:
@@ -54,12 +55,8 @@
  * @package System.Web
  * @since 3.0
  */
-class THttpSession extends TModule
+class THttpSession extends TComponent implements IteratorAggregate,ArrayAccess,IModule
 {
-	/**
-	 * @var THttpSessionCollection list of session variables
-	 */
-	private $_items;
 	/**
 	 * @var boolean whether this module has been initialized
 	 */
@@ -76,6 +73,26 @@ class THttpSession extends TModule
 	 * @var THttpCookie cookie to be used to store session ID and other data
 	 */
 	private $_cookie=null;
+	/**
+	 * @var string module id
+	 */
+	private $_id;
+
+	/**
+	 * @return string id of this module
+	 */
+	public function getID()
+	{
+		return $this->_id;
+	}
+
+	/**
+	 * @param string id of this module
+	 */
+	public function setID($value)
+	{
+		$this->_id=$value;
+	}
 
 	/**
 	 * Initializes the module.
@@ -127,16 +144,6 @@ class THttpSession extends TModule
 			session_destroy();
 			$this->_started=false;
 		}
-	}
-
-	/**
-	 * @return THttpSessionCollection list of session variables
-	 */
-	public function getItems()
-	{
-		if($this->_items===null)
-			$this->_items=new THttpSessionCollection($_SESSION);
-		return $this->_items;
 	}
 
 	/**
@@ -467,53 +474,223 @@ class THttpSession extends TModule
 	{
 		return true;
 	}
+
+	//------ The following methods enable THttpSession to be TMap-like -----
+
+	/**
+	 * Returns an iterator for traversing the session variables.
+	 * This method is required by the interface IteratorAggregate.
+	 * @return TSessionIterator an iterator for traversing the session variables.
+	 */
+	public function getIterator()
+	{
+		return new TSessionIterator;
+	}
+
+	/**
+	 * @return integer the number of session variables
+	 */
+	public function getCount()
+	{
+		return count($_SESSION);
+	}
+
+	/**
+	 * @return array the list of session variable names
+	 */
+	public function getKeys()
+	{
+		return array_keys($_SESSION);
+	}
+
+	/**
+	 * Returns the session variable value with the session variable name.
+	 * This method is exactly the same as {@link offsetGet}.
+	 * @param mixed the session variable name
+	 * @return mixed the session variable value, null if no such variable exists
+	 */
+	public function itemAt($key)
+	{
+		return isset($_SESSION[$key]) ? $_SESSION[$key] : null;
+	}
+
+	/**
+	 * Adds a session variable.
+	 * Note, if the specified name already exists, the old value will be removed first.
+	 * @param mixed session variable name
+	 * @param mixed session variable value
+	 */
+	public function add($key,$value)
+	{
+		$_SESSION[$key]=$value;
+	}
+
+	/**
+	 * Removes a session variable.
+	 * @param mixed the name of the session variable to be removed
+	 * @return mixed the removed value, null if no such session variable.
+	 */
+	public function remove($key)
+	{
+		if(isset($_SESSION[$key]))
+		{
+			$value=$_SESSION[$key];
+			unset($_SESSION[$key]);
+			return $value;
+		}
+		else
+			return null;
+	}
+
+	/**
+	 * Removes all session variables
+	 */
+	public function clear()
+	{
+		foreach(array_keys($_SESSION) as $key)
+			unset($_SESSION[$key]);
+	}
+
+	/**
+	 * @param mixed session variable name
+	 * @return boolean whether there is the named session variable
+	 */
+	public function contains($key)
+	{
+		return isset($_SESSION[$key]);
+	}
+
+	/**
+	 * @return array the list of all session variables in array
+	 */
+	public function toArray()
+	{
+		return $_SESSION;
+	}
+
+	/**
+	 * This method is required by the interface ArrayAccess.
+	 * @param mixed the offset to check on
+	 * @return boolean
+	 */
+	public function offsetExists($offset)
+	{
+		return isset($_SESSION[$offset]);
+	}
+
+	/**
+	 * This method is required by the interface ArrayAccess.
+	 * @param integer the offset to retrieve element.
+	 * @return mixed the element at the offset, null if no element is found at the offset
+	 */
+	public function offsetGet($offset)
+	{
+		return isset($_SESSION[$offset]) ? $_SESSION[$offset] : null;
+	}
+
+	/**
+	 * This method is required by the interface ArrayAccess.
+	 * @param integer the offset to set element
+	 * @param mixed the element value
+	 */
+	public function offsetSet($offset,$item)
+	{
+		$_SESSION[$offset]=$item;
+	}
+
+	/**
+	 * This method is required by the interface ArrayAccess.
+	 * @param mixed the offset to unset element
+	 */
+	public function offsetUnset($offset)
+	{
+		unset($_SESSION[$offset]);
+	}
 }
 
 /**
- * THttpSessionCollection class.
+ * TSessionIterator class
  *
- * THttpSessionCollection implements a collection class to store session data items.
+ * TSessionIterator implements Iterator interface.
+ *
+ * TSessionIterator is used by THttpSession. It allows THttpSession to return a new iterator
+ * for traversing the session variables.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
- * @package System.Web
+ * @package System.Web.UI
  * @since 3.0
  */
-class THttpSessionCollection extends TMap
+class TSessionIterator implements Iterator
 {
 	/**
-	 * @var boolean whether the initial session data has been loaded into the collection
+	 * @var array list of keys in the map
 	 */
-	private $_initialized=false;
+	private $_keys;
+	/**
+	 * @var mixed current key
+	 */
+	private $_key;
 
 	/**
 	 * Constructor.
-	 * Initializes the list with an array or an iterable object.
-	 * @param array|Iterator the intial data.
+	 * @param array the data to be iterated through
 	 */
-	public function __construct($data=null)
+	public function __construct()
 	{
-		parent::__construct($data);
-		$this->_initialized=true;
+		$this->_keys=array_keys($_SESSION);
 	}
 
 	/**
-	 * Adds the item into session.
-	 * This method will be invoked whenever an item is added to the collection.
+	 * Rewinds internal array pointer.
+	 * This method is required by the interface Iterator.
 	 */
-	protected function addedItem($key,$value)
+	public function rewind()
 	{
-		if($this->_initialized)
-			$_SESSION[$key]=$value;
+		$this->_key=reset($this->_keys);
 	}
 
 	/**
-	 * Removes the item from session.
-	 * This method will be invoked whenever an item is removed from the collection.
+	 * Returns the key of the current array element.
+	 * This method is required by the interface Iterator.
+	 * @return mixed the key of the current array element
 	 */
-	protected function removedItem($key,$value)
+	public function key()
 	{
-		unset($_SESSION[$key]);
+		return $this->_key;
+	}
+
+	/**
+	 * Returns the current array element.
+	 * This method is required by the interface Iterator.
+	 * @return mixed the current array element
+	 */
+	public function current()
+	{
+		return isset($_SESSION[$this->_key])?$_SESSION[$this->_key]:null;
+	}
+
+	/**
+	 * Moves the internal pointer to the next array element.
+	 * This method is required by the interface Iterator.
+	 */
+	public function next()
+	{
+		do
+		{
+			$this->_key=next($this->_keys);
+		}
+		while(!isset($_SESSION[$this->_key]) && $this->_key!==false);
+	}
+
+	/**
+	 * Returns whether there is an element at current position.
+	 * This method is required by the interface Iterator.
+	 * @return boolean
+	 */
+	public function valid()
+	{
+		return $this->_key!==false;
 	}
 }
 ?>

@@ -16,7 +16,27 @@
  * THttpRequest provides storage and access scheme for user request sent via HTTP.
  * It also encapsulates a uniform way to parse and construct URLs.
  *
- * To retrieve user POST and GET variables, use {@link getItems()} method.
+ * User post data can be retrieved from THttpRequest by using it like an associative array.
+ * For example, to test if a user supplies a variable named 'param1', you can use,
+ * <code>
+ *   if(isset($request['param1'])) ...
+ *   // equivalent to:
+ *   // if($request->contains('param1')) ...
+ * </code>
+ * To get the value of 'param1', use,
+ * <code>
+ *   $value=$request['param1'];
+ *   // equivalent to:
+ *   //   $value=$request->itemAt('param1');
+ * </code>
+ * To traverse the user post data, use
+ * <code>
+ *   foreach($request as $name=>$value) ...
+ * </code>
+ * Note, POST and GET variables are merged together in THttpRequest.
+ * If a variable name appears in both POST and GET data, then POST data
+ * takes precedence.
+ *
  * To construct a URL that can be recognized by Prado, use {@link constructUrl()}.
  * THttpRequest also provides the cookies sent by the user, user information such
  * as his browser capabilities, accepted languages, etc.
@@ -29,7 +49,7 @@
  * @package System.Web
  * @since 3.0
  */
-class THttpRequest extends TModule
+class THttpRequest extends TMap implements IModule
 {
 	/**
 	 * GET variable name to store service information
@@ -59,13 +79,29 @@ class THttpRequest extends TModule
 	 * @var string path info of URL
 	 */
 	private $_pathInfo;
-	/**
-	 * @var TMap list of input variables (including GET and POST)
-	 */
-	private $_items;
 
 	private $_services;
 	private $_requestResolved=false;
+	/**
+	 * @var string module id
+	 */
+	private $_id;
+
+	/**
+	 * @return string id of this module
+	 */
+	public function getID()
+	{
+		return $this->_id;
+	}
+
+	/**
+	 * @param string id of this module
+	 */
+	public function setID($value)
+	{
+		$this->_id=$value;
+	}
 
 	/**
 	 * Initializes the module.
@@ -104,7 +140,7 @@ class THttpRequest extends TModule
 				$_COOKIE=$this->stripSlashes($_COOKIE);
 		}
 
-		$this->_items=new TMap(array_merge($_POST,$_GET));
+		$this->copyfrom(array_merge($_GET,$_POST));
 
 		$this->_initialized=true;
 		$this->getApplication()->setRequest($this);
@@ -277,22 +313,6 @@ class THttpRequest extends TModule
 	public function getUserLanguages()
 	{
 		return Prado::getUserLanguages();
-	}
-
-	/**
-	 * @return TMap list of input variables, include GET, POST
-	 */
-	public function getItems()
-	{
-		return $this->_items;
-	}
-
-	/**
-	 * @return TMap list of input variables, include GET, POST
-	 */	
-	public function getParameters()
-	{
-		return $this->_items;
 	}
 
 	/**

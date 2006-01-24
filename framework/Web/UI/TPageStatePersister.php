@@ -70,7 +70,7 @@ class TPageStatePersister extends TModule implements IStatePersister
 	public function load()
 	{
 		Prado::trace("Loading state",'System.Web.UI.TPageStatePersister');
-		$str=base64_decode($this->getApplication()->getRequest()->getItems()->itemAt(TPage::FIELD_PAGESTATE));
+		$str=base64_decode($this->getRequest()->itemAt(TPage::FIELD_PAGESTATE));
 		if($str==='')
 			return null;
 		if(extension_loaded('zlib'))

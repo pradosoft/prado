@@ -13,7 +13,7 @@ class UserLogin extends TPage
 	{
 		parent::onLoadComplete($param);
 		if($this->IsPostBack && $this->IsValid)
-			$this->Response->redirect($this->Request->Items['ReturnUrl']);
+			$this->Response->redirect($this->Request['ReturnUrl']);
 	}
 }
 

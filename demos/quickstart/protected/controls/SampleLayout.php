@@ -5,7 +5,7 @@ class SampleLayout extends TTemplateControl
 
 	public function __construct()
 	{
-		if($this->Request->Items->contains('functionaltest'))
+		if(isset($this->Request['functionaltest']))
 			$this->Service->RequestedPage->EnableTheming=false;
 		parent::__construct();
 	}

@@ -489,7 +489,7 @@ class TPage extends TTemplateControl
 	 */
 	private function determinePostBackMode()
 	{
-		$postData=$this->getApplication()->getRequest()->getItems();
+		$postData=$this->getRequest();
 		if($postData->contains(self::FIELD_PAGESTATE) || $postData->contains(self::FIELD_POSTBACK_TARGET))
 			$this->_postData=$postData;
 	}
