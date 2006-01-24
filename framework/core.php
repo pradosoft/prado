@@ -147,7 +147,7 @@ interface ITheme
 	 * Applies this theme to the specified control.
 	 * @param TControl the control to be applied with this theme
 	 */
-	public function apply($control);
+	public function applySkin($control);
 }
 
 /**

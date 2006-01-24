@@ -164,7 +164,7 @@ class TThemeManager extends TModule
  * @package System.Web.UI
  * @since 3.0
  */
-class TTheme extends TComponent
+class TTheme extends TComponent implements ITheme
 {
 	/**
 	 * prefix for cache variable name used to store parsed themes
