@@ -31,6 +31,7 @@
  */
 $requirements = array(
 	array(true,'version_compare(PHP_VERSION,"5.0.4",">=")','PHP version check','PHP 5.0.4 or higher required'),
+	array(true,'class_exists("DOMDocument",false)','DOM extension check','DOM extension required'),
 	array(false,'extension_loaded("zlib")','Zlib check','Zlib extension optional'),
 	array(false,'extension_loaded("sqlite")','SQLite check','SQLite extension optional'),
 	array(false,'extension_loaded("memcache")','Memcache check','Memcache extension optional'),

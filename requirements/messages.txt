@@ -9,3 +9,4 @@ Memcache check						= Memcache check
 Memcache extension optional			= Memcache extension is optional. If it is absent, you will not be able to use TMemCache.
 Zlib check							= Zlib check
 Zlib extension optional				= Zlib extension is optional. If it is absent, page state will not be compressed and your page size may increase.
+DOM extension required				= DOM extension is required by PRADO. It is used in TXmlDocument to parse all sorts of XML-based configurations.
