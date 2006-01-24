@@ -311,13 +311,14 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	 */
 	protected function getValueAttribute()
 	{
-		if(($value=$this->getAttribute('value'))===null)
+		$attributes=$this->getViewState('InputAttributes',null);
+		if($attributes && $attributes->contains('value'))
 		{
-			$value=$this->getID();
+			$value=$attributes->itemAt('value');
 			return $value===''?$this->getUniqueID():$value;
 		}
 		else
-			return $value;
+			return $this->getUniqueID();
 	}
 
 	/**
