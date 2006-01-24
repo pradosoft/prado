@@ -16,7 +16,7 @@
 
 <div class="samplepanel">
 
-<com:TLabel
+<com:TLabel ID="Label1"
 	Text="This is a form label associated with the TTextBox control below."
 	AssociatedControlID="test"
 />
@@ -38,6 +38,7 @@ This is a label with empty Text property and <b>nonempty body</b>.
 <com:TLabel
 	Text="This is a disabled label."
 	Enabled="false"
+	ID="Label2"
 />
 
 </div>
