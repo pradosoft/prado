@@ -173,3 +173,20 @@ function get_color_status(element)
 	if(color == doneColor) return "done";
 	return "";
 }
+
+
+
+
+Selenium.prototype.assertHTMLPresent = function(expectedValue) {
+    var actualValue = this.page().currentDocument.body.innerHTML;
+   if(actualValue.indexOf(expectedValue) >= 0)
+	   return;
+   Assert.fail("Unable to find '"+(expectedValue.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "\""))+"' in document.body");
+};
+
+Selenium.prototype.assertHTMLNotPresent = function(expectedValue) {
+    var actualValue = this.page().currentDocument.body.innerHTML;
+   if(actualValue.indexOf(expectedValue) < 0)
+	   return;
+   Assert.fail("'"+(expectedValue.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "\""))+"' was found in document.body");
+};

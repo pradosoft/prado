@@ -116,6 +116,8 @@ class SeleneseInterpreter
 		if($ID instanceof TControl)
 			$ID = $ID->ClientID;
 		$value = isset($args[1]) ? $args[1] : "";
+		if(strpos(strtolower($func),'htmlpresent') || strpos(strtolower($func),'htmlnotpresent'))
+			$ID = htmlspecialchars($ID);
 		//$command = "|{$func}|{$ID}|{$value}|";
 		$command = array($func, $ID, $value);
 		$trace = debug_backtrace();
