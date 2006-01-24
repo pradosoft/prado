@@ -11,8 +11,11 @@ class LabelTestCase extends SeleniumTestCase
 		$this->verifyTextPresent("This is a form label associated with the TTextBox control below", "");
 		$this->verifyTextPresent("This is a label with empty Text property and nonempty body", "");
 		$this->verifyTextPresent("This is a disabled label", "");
-		$this->verifyElementPresent("//span[@disabled='disabled']");
-		$this->verifyElementPresent("//label[@for=\"ctl0_body_test\"]");
+
+		$this->verifyAttribute("ctl0_body_Label2@disabled","regexp:true|disabled");
+
+		//$this->verifyAttribute("ctl0_body_Label1@for","ctl0_body_test");
+
 		$this->type("ctl0\$body\$test", "test");
 	}
 }
