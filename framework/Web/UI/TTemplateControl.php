@@ -65,7 +65,6 @@ class TTemplateControl extends TControl implements INamingContainer
 		{
 			foreach($tpl->getDirective() as $name=>$value)
 				$this->setSubProperty($name,$value);
-			$this->ensureChildControls();
 		}
 	}
 

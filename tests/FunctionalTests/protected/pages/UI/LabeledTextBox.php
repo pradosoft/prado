@@ -15,7 +15,8 @@ class LabeledTextBox extends TTemplateControl
 	 */
 	public function getTextBox()
 	{
-		return $this->textbox;
+		$this->ensureChildControls();
+		return $this->getRegisteredObject('textbox');
 	}
 
 	/**
@@ -23,7 +24,8 @@ class LabeledTextBox extends TTemplateControl
 	 */
 	public function getLabel()
 	{
-		return $this->label;
+		$this->ensureChildControls();
+		return $this->getRegisteredObject('label');
 	}
 }
 

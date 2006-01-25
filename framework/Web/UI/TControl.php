@@ -871,6 +871,18 @@ class TControl extends TComponent
 	}
 
 	/**
+	 * Returns the named registered object.
+	 * A component with explicit ID on a template will be registered to
+	 * the template owner. This method allows you to obtain this component
+	 * with the ID.
+	 * @return mixed the named registered object. Null if object is not found.
+	 */
+	public function getRegisteredObject($name)
+	{
+		return isset($this->_rf[self::RF_NAMED_OBJECTS][$name])?$this->_rf[self::RF_NAMED_OBJECTS][$name]:null;
+	}
+
+	/**
 	 * This method is invoked after the control is instantiated by a template.
 	 * When this method is invoked, the control should have a valid TemplateControl
 	 * and has its properties initialized according to template configurations.
