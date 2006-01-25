@@ -1,0 +1,6 @@
+<com:TContent ID="Content">
+<com:TForm>
+	<com:LabeledTextBox Label.Text="username:"/>
+	<com:LabeledTextBox Label.Text="password:"/>
+</com:TForm>
+</com:TContent>
