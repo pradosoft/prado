@@ -1,7 +1,6 @@
 <?php
 
 Prado::using('System.3rdParty.SafeHtml.TSafeHtmlParser');
-Prado::using('System.IO.TTextWriter');
 
 /**
  * ${classname}
