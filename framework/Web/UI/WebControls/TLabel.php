@@ -18,7 +18,7 @@
  * TLabel will render the contents enclosed within its component tag
  * if {@link setText Text} is empty.
  * To use TLabel as a form label, associate it with a control by setting the
- * {@link setAssociatedControlID AssociatedControlID} property.
+ * {@link setForControl ForControl} property.
  * The associated control must be locatable within the label's naming container.
  *
  * Note, {@link setText Text} will NOT be encoded for rendering.
@@ -36,7 +36,7 @@ class TLabel extends TWebControl
 	 */
 	protected function getTagName()
 	{
-		return ($this->getAssociatedControlID()==='')?'span':'label';
+		return ($this->getForControl()==='')?'span':'label';
 	}
 
 	/**
@@ -46,7 +46,7 @@ class TLabel extends TWebControl
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		if(($aid=$this->getAssociatedControlID())!=='')
+		if(($aid=$this->getForControl())!=='')
 		{
 			if($control=$this->findControl($aid))
 				$writer->addAttribute('for',$control->getClientID());
@@ -87,9 +87,9 @@ class TLabel extends TWebControl
 	/**
 	 * @return string the associated control ID
 	 */
-	public function getAssociatedControlID()
+	public function getForControl()
 	{
-		return $this->getViewState('AssociatedControlID','');
+		return $this->getViewState('ForControl','');
 	}
 
 	/**
@@ -97,9 +97,9 @@ class TLabel extends TWebControl
 	 * The control must be locatable via {@link TControl::findControl} using the ID.
 	 * @param string the associated control ID
 	 */
-	public function setAssociatedControlID($value)
+	public function setForControl($value)
 	{
-		$this->setViewState('AssociatedControlID',$value,'');
+		$this->setViewState('ForControl',$value,'');
 	}
 }
 

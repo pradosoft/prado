@@ -10,11 +10,17 @@
  */
 class LabeledTextBox extends TTemplateControl
 {
+	/**
+	 * @return TTextBox textbox instance
+	 */
 	public function getTextBox()
 	{
 		return $this->textbox;
 	}
 
+	/**
+	 * @return TLabel textbox label
+	 */
 	public function getLabel()
 	{
 		return $this->label;

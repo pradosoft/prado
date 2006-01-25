@@ -180,13 +180,13 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * This method overrides the parent implementation to forbid setting AssociatedControlID.
+	 * This method overrides the parent implementation to forbid setting ForControl.
 	 * @param string the associated control ID
 	 * @throws TNotSupportedException whenever this method is called
 	 */
-	public function setAssociatedControlID($value)
+	public function setForControl($value)
 	{
-		throw new TNotSupportedException('basevalidator_associatedcontrolid_unsupported',get_class($this));
+		throw new TNotSupportedException('basevalidator_forcontrol_unsupported',get_class($this));
 	}
 
 	/**

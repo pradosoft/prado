@@ -1,2 +1,2 @@
-<com:TLabel ID="label" AssociatedControlID="textbox" Text="label:"/>
+<com:TLabel ID="label" ForControl="textbox" Text="label:"/>
 <com:TTextBox ID="textbox" />
