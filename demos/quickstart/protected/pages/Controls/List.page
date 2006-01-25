@@ -33,17 +33,39 @@ Since <tt>TListControl</tt> inherits from <tt>TDataBoundControl</tt>, these list
 
 <h2>TDropDownList</h2>
 <p>
-<tt>TDropDownList</tt> displays a dropdown list box that allows users to select a single option from a few prespecified ones. The items in the list box are represented by the <tt>Items</tt> property. The selected item can be retrieved via <tt>SelectedItem</tt> property. If <tt>AutoPostBack</tt> is true, selection change will cause page postback.
+<tt>TDropDownList</tt> displays a dropdown list box that allows users to select a single option from a few prespecified ones.
 </p>
 <com:RunBar PagePath="Controls.Samples.TDropDownList.Home" />
 
 <h2>TCheckBoxList</h2>
+<p>
+<tt>TCheckBoxList</tt> displays a list of checkboxes on a Web page. The alignment of the text besides each checkbox can be specified <tt>TextAlign</tt>. The layout of the checkboxes can be controlled by the following properties:
+<ul>
+  <li><tt>RepeatLayout</tt> - can be either <tt>Table</tt> or <tt>Flow</tt>. A <tt>Table</tt> uses HTML table cells to organize the checkboxes, while a <tt>Flow</tt> uses HTML span tags and breaks for the organization. With <tt>Table</tt> layout, you can set <tt>CellPadding</tt> and <tt>CellSpacing</tt>.</li>
+  <li><tt>RepeatColumns</tt> - how many columns the checkboxes should be displayed in.</li>
+  <li><tt>RepeatDirection</tt> - how to traverse the checkboxes, in a horizontal way or a vertical way (because the checkboxes are displayed in a matrix-like layout).</li>
+</ul>
+</p>
 <com:RunBar PagePath="Controls.Samples.TCheckBoxList.Home" />
 
 <h2>TRadioButtonList</h2>
+<p>
+<tt>TRadioButtonList</tt> is similar to <tt>TCheckBoxList</tt> in every aspect except that each <tt>TRadioButtonList</tt> displays a group of radiobuttons. Only one of the radiobuttions can be selected (<tt>TCheckBoxList</tt> allows multiple selections.)
+</p>
 <com:RunBar PagePath="Controls.Samples.TRadioButtonList.Home" />
 
 <h2>TBulletList</h2>
+<p>
+<tt>TBulletedList</tt> displays items in a bullet format on a Web page. The style of the bullets can be specified by <tt>BulletStyle</tt>. When the style is <tt>CustomImage</tt>, the bullets are displayed as images, which is specified by <tt>BulletImageUrl</tt>.
+</p>
+<p>
+<tt>TBulletedList</tt> displays the item texts in three different modes,
+<ul>
+  <li><tt>Text</tt> - the item texts are displayed as static texts;</li>
+  <li><tt>HyperLink</tt> - each item is displayed as a hyperlink whose URL is given by the item value, and <tt>Target</tt> property can be used to specify the target browser window;</li>
+  <li><tt>LinkButton</tt> - each item is displayed as a link button which posts back to the page if a user clicks on that, and the event <tt>OnClick</tt> will be raised under such a circumstance.</li>
+</ul>
+</p>
 <com:RunBar PagePath="Controls.Samples.TBulletedList.Home" />
 
 </com:TContent>

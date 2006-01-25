@@ -22,7 +22,7 @@ class ViewSource extends TPage
 	public function onLoad($param)
 	{
 		parent::onLoad($param);
-		$path=$this->Request->Items['path'];
+		$path=$this->Request['path'];
 		$fullPath=realpath($this->Service->BasePath.'/'.$path);
 		$fileExt=$this->getFileExtension($fullPath);
 		if($fullPath!==false && is_file($fullPath) && strpos($fullPath,$this->Service->BasePath)!==false)
