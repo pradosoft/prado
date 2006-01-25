@@ -9,7 +9,7 @@ class CheckBox extends TPage
 	}
 }
 
-class CheckBoxTestCase extends SeleniumTestCase
+class CheckBoxTestCase2 extends SeleniumTestCase
 {
 	function setup()
 	{

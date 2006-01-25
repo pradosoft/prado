@@ -19,12 +19,12 @@ class RequiredFieldTestCase extends SeleniumTestCase
 	function testValidator()
 	{
 		$this->assertTextPresent("Basic TRequiredFieldValidator Test1");
-		$this->assertNotVisible("validator1");
-		$this->click("button1");
-		$this->assertVisible("validator1");
-		$this->type("text1", "test");
-		$this->clickAndWait("button1");
-		$this->assertNotVisible("validator1");
+		$this->assertNotVisible("ctl0_Content_validator1");
+		$this->click("ctl0_Content_button1");
+		$this->assertVisible("ctl0_Content_validator1");
+		$this->type("ctl0_Content_text1", "test");
+		$this->clickAndWait("ctl0_Content_button1");
+		$this->assertNotVisible("ctl0_Content_validator1");
 	}
 }
 

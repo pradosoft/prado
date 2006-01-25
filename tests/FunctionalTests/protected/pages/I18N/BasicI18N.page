@@ -13,7 +13,7 @@
 <div>
 <com:TNumberFormat Value="10000" Type="currency"/>
 </div>
-<div><com:TDateFormat Value="2006-01-15"/></div>
+<div><com:TDateFormat Value="2006-01-15" Culture="zh_CN"/></div>
 
 <div>
 <com:TChoiceFormat Value="0">
