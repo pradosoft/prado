@@ -681,16 +681,21 @@ class PradoBase
 		static $languages=null;
 		if($languages===null)
 		{
-			$languages=array();
-			foreach(explode(',',$_SERVER['HTTP_ACCEPT_LANGUAGE']) as $language)
-			{
-				$array=split(';q=',trim($language));
-				$languages[trim($array[0])]=isset($array[1])?(float)$array[1]:1.0;
-			}
-			arsort($languages);
-			$languages=array_keys($languages);
-			if(empty($languages))
+			if(!isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
 				$languages[0]='en';
+			else
+			{
+				$languages=array();
+				foreach(explode(',',$_SERVER['HTTP_ACCEPT_LANGUAGE']) as $language)
+				{
+					$array=split(';q=',trim($language));
+					$languages[trim($array[0])]=isset($array[1])?(float)$array[1]:1.0;
+				}
+				arsort($languages);
+				$languages=array_keys($languages);
+				if(empty($languages))
+					$languages[0]='en';
+			}
 		}
 		return $languages;
 	}
