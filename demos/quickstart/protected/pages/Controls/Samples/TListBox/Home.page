@@ -94,7 +94,7 @@ List box's behavior upon postback:
 
 
 <h2>List Boxes in Multiple Selection Mode</h2>
-<i>Use Shift + Mouse Click to change selection</i>
+<i>Use Ctrl + Mouse Click to change selection</i>
 <br/>
 
 <table class="sampletable">
@@ -159,7 +159,7 @@ Auto postback list box:
 </table>
 
 <h2>List Boxes with DataBinding</h2>
-<i>Use Shift + Mouse Click to change selection</i>
+<i>Use Ctrl + Mouse Click to change selection</i>
 <br/>
 
 <table class="sampletable">
@@ -206,4 +206,55 @@ Databind with DataTextField and DataValueField specified:
 </tr>
 
 </table>
+
+
+<h2>List Boxes with Validation</h2>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+List box is being validated:
+</td>
+<td class="sampleaction">
+<com:TListBox ID="VListBox1">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TListBox>
+<com:TRequiredFieldValidator
+	ControlToValidate="VListBox1"
+	ErrorMessage="You must make a selection"
+	Display="Dynamic"
+	ValidationGroup="Group1"
+	/>
+<com:TButton Text="Submit" ValidationGroup="Group1" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+List box causing validation:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox" />
+<com:TRequiredFieldValidator
+	ControlToValidate="TextBox"
+	ErrorMessage="You must enter a value"
+	Display="Dynamic"
+	ValidationGroup="Group2"
+	/>
+<com:TListBox
+	ID="VListBox2"
+	AutoPostBack="true"
+	ValidationGroup="Group2">
+  <com:TListItem Text="Agree" />
+  <com:TListItem Text="Disagree" />
+</com:TListBox>
+</td>
+</tr>
+
+</table>
+
 </com:TContent>

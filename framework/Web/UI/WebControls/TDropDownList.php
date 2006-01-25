@@ -72,13 +72,8 @@ class TDropDownList extends TListControl implements IPostBackDataHandler
 	 */
 	public function raisePostDataChangedEvent()
 	{
-		$page=$this->getPage();
-		if($this->getAutoPostBack() && !$page->getPostBackEventTarget())
-		{
-			$page->setPostBackEventTarget($this);
-			if($this->getCausesValidation())
-				$page->validate($this->getValidationGroup());
-		}
+		if($this->getAutoPostBack() && $this->getCausesValidation())
+			$this->getPage()->validate($this->getValidationGroup());
 		$this->onSelectedIndexChanged(null);
 	}
 

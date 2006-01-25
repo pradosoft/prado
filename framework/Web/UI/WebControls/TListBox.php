@@ -29,7 +29,7 @@ Prado::using('System.Web.UI.WebControls.TListControl');
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TListBox extends TListControl implements IPostBackDataHandler
+class TListBox extends TListControl implements IPostBackDataHandler, IValidatable
 {
 	/**
 	 * Adds attribute name-value pairs to renderer.
@@ -131,13 +131,8 @@ class TListBox extends TListControl implements IPostBackDataHandler
 	 */
 	public function raisePostDataChangedEvent()
 	{
-		$page=$this->getPage();
-		if($this->getAutoPostBack() && !$page->getPostBackEventTarget())
-		{
-			$page->setPostBackEventTarget($this);
-			if($this->getCausesValidation())
-				$page->validate($this->getValidationGroup());
-		}
+		if($this->getAutoPostBack() && $this->getCausesValidation())
+			$this->getPage()->validate($this->getValidationGroup());
 		$this->onSelectedIndexChanged(null);
 	}
 
@@ -183,6 +178,16 @@ class TListBox extends TListControl implements IPostBackDataHandler
 	public function setSelectionMode($value)
 	{
 		$this->setViewState('SelectionMode',TPropertyValue::ensureEnum($value,array('Single','Multiple')),'Single');
+	}
+
+	/**
+	 * Returns the value to be validated.
+	 * This methid is required by IValidatable interface.
+	 * @return mixed the value of the property to be validated.
+	 */
+	public function getValidationPropertyValue()
+	{
+		return $this->getSelectedValue();
 	}
 }
 ?>
