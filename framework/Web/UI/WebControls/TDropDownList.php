@@ -26,7 +26,7 @@ Prado::using('System.Web.UI.WebControls.TListControl');
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TDropDownList extends TListControl implements IPostBackDataHandler
+class TDropDownList extends TListControl implements IPostBackDataHandler, IValidatable
 {
 	/**
 	 * Adds attributes to renderer.
@@ -100,6 +100,16 @@ class TDropDownList extends TListControl implements IPostBackDataHandler
 	public function setSelectedIndices($indices)
 	{
 		throw new TNotSupportedException('dropdownlist_selectedindices_unsupported');
+	}
+
+	/**
+	 * Returns the value to be validated.
+	 * This methid is required by IValidatable interface.
+	 * @return mixed the value of the property to be validated.
+	 */
+	public function getValidationPropertyValue()
+	{
+		return $this->getSelectedValue();
 	}
 }
 ?>

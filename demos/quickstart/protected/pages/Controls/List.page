@@ -27,7 +27,7 @@ Since <tt>TListControl</tt> inherits from <tt>TDataBoundControl</tt>, these list
 
 <h2>TListBox</h2>
 <p>
-<tt>TListBox</tt> displays a list box that allows single or multiple selection. Set the property <tt>SelectionMode</tt> as <tt>Single</tt> to make a single selection list box, and <tt>Multiple</tt> a multiple selection list box. The items in the list box are represented by the <tt>Items</tt> property. The number of rows displayed in the box is specified via the <tt>Rows</tt> property value.
+<tt>TListBox</tt> displays a list box that allows single or multiple selection. Set the property <tt>SelectionMode</tt> as <tt>Single</tt> to make a single selection list box, and <tt>Multiple</tt> a multiple selection list box. The number of rows displayed in the box is specified via the <tt>Rows</tt> property value.
 </p>
 <com:RunBar PagePath="Controls.Samples.TListBox.Home" />
 
