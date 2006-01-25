@@ -747,15 +747,15 @@ class TApplication extends TComponent
 		$this->_parameters=new TMap;
 		foreach($config->getParameters() as $id=>$parameter)
 		{
-			if(is_string($parameter))
-				$this->_parameters->add($id,$parameter);
-			else
+			if(is_array($parameter))
 			{
 				$component=Prado::createComponent($parameter[0]);
 				foreach($parameter[1] as $name=>$value)
 					$component->setSubProperty($name,$value);
 				$this->_parameters->add($id,$component);
 			}
+			else
+				$this->_parameters->add($id,$parameter);
 		}
 
 		// load and init modules specified in app config
@@ -1073,7 +1073,12 @@ class TApplicationConfiguration extends TComponent
 				if(($id=$properties->remove('id'))===null)
 					throw new TConfigurationException('appconfig_parameterid_required');
 				if(($type=$properties->remove('class'))===null)
-					$this->_parameters[$id]=$node->getValue();
+				{
+					if(($value=$properties->remove('value'))===null)
+						$this->_parameters[$id]=$node;
+					else
+						$this->_parameters[$id]=$value;
+				}
 				else
 					$this->_parameters[$id]=array($type,$properties->toArray());
 			}
