@@ -59,7 +59,6 @@
 
 .TDatePicker td.empty
 {
-	background-color: #ffe;
 	border: 1px solid white;
 	cursor: default;
 	height: 23px;
