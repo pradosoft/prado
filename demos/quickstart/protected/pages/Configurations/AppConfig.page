@@ -23,6 +23,7 @@ Configuration for an application is stored in an XML file named <tt>application.
   </parameters>
 </application>
 </com:TTextHighlighter>
+</p>
 <ul>
 <li>The outermost element <tt>&lt;application&gt;</tt> corresponds to the <tt>TApplication</tt> instance. The <tt>PropertyName="PropertyValue"</tt> pairs specify the initial values for the properties of <tt>TApplication</tt>.</li>
 <li>The <tt>&lt;paths&gt;</tt> element contains the definition of path aliases and the PHP inclusion paths for the application. Each path alias is specified via an <tt>&lt;alias&gt;</tt> whose <tt>path</tt> attribute takes an absolute path or a path relative to the directory containing the application configuration file. The <tt>&lt;using&gt;</tt> element specifies a particular path (in terms of namespace) to be appended to the PHP include paths when the application runs. PRADO defines two default aliases: <tt>System</tt> and <tt>Application</tt>. The former refers to the PRADO framework root directory, and the latter refers to the directory containing the application configuration file.</li>
@@ -34,6 +35,7 @@ Configuration for an application is stored in an XML file named <tt>application.
 </com:TTextHighlighter>
 </li>
 </ul>
+<p>
 By default without explicit configuration, a PRADO application when running will load a few core modules, such as <tt>THttpRequest</tt>, <tt>THttpResponse</tt>, etc. It will also provide the <tt>TPageService</tt> as a default service. Configuration and usage of these modules and services are covered in individual sections of this tutorial. Note, if your application takes default settings for these modules and service, you do not need to provide an application configuration. However, if these modules or services are not sufficient, or you want to change their behavior by configuring their property values, you will need an application configuration.
 </p>
 

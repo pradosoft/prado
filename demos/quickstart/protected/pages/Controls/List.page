@@ -26,13 +26,13 @@ List controls covered in this section all inherit directly or indirectly from <t
 Since <tt>TListControl</tt> inherits from <tt>TDataBoundControl</tt>, these list controls also share a common operation known as <tt>databinding</tt>. The <tt>Items</tt> can be populated from preexisting data specified by <tt>DataSource</tt> or <tt>DataSourceID</tt>. A function call to <tt>dataBind()</tt> will cause the data population. For list controls, data can be specified in three kinds of format:
 </p>
 <ul>
-  <li>integer-indexed array : each array element value will be used as the value and text for a list item. For example
+  <li>integer-indexed array, <tt>TList</tt> or traversable : each array element value will be used as the value and text for a list item. For example
 <com:TTextHighlighter CssClass="source">
 $listbox->DataSource=array('item 1','item 2','item 3');
 $listbox->dataBind();
 </com:TTextHighlighter>
   </li>
-  <li>associative array : array keys will be used as list item values, and array values will be used as list item texts. For example
+  <li>associative array, <tt>TMap</tt> or traversable : array keys will be used as list item values, and array values will be used as list item texts. For example
 <com:TTextHighlighter CssClass="source">
 $listbox->DataSource=array(
 	'key 1'=>'item 1',

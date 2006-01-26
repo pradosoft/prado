@@ -36,12 +36,12 @@ A product PRADO application usually needs more files. It may include an applicat
 <h2>Application Deployment</h2>
 <p>
 Deploying a PRADO application mainly involves copying directories. For example, to deploy the above minimal application to another server, follow the following steps,
+</p>
 <ol>
 <li>Copy the content under <tt>wwwroot</tt> to a Web-accessible directory on the new server.</li>
 <li>Modify the entry script file <tt>index.php</tt> so that it includes correctly the <tt>prado.php</tt> file.</li>
 <li>Remove all content under <tt>assets</tt> and <tt>runtime</tt> directories and make sure both directories are writable by the Web server process.</li>
 </ol>
-</p>
 
 <h2>Application Lifecycles</h2>
 <p>
