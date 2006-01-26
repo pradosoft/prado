@@ -32,7 +32,7 @@ class Home extends TPage
 		foreach($indices as $index)
 		{
 			$item=$input->Items[$index];
-			$result.="(Index: $index, Value: $item->Value, Text: $item->Text)\n";
+			$result.="(Index: $index, Value: $item->Value, Text: $item->Text)";
 		}
 		if($result==='')
 			$output->Text='Your selection is empty.';

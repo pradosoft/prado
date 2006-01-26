@@ -92,8 +92,6 @@ Dropdown list's behavior upon postback:
 
 
 <h2>DropDown Lists with DataBinding</h2>
-<i>Use Ctrl + Mouse Click to change selection</i>
-<br/>
 
 <table class="sampletable">
 

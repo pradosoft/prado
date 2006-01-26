@@ -73,6 +73,7 @@ class ListBoxTestCase extends SeleniumTestCase
 		// List box causing validation
 		$this->verifyNotVisible('ctl0_body_ctl12');
 		$this->select("ctl0\$body\$VListBox2", "label=Agree");
+		$this->pause(1000);
 		$this->verifyVisible('ctl0_body_ctl12');
 		$this->type("ctl0\$body\$TextBox", "test");
 		$this->selectAndWait("ctl0\$body\$VListBox2", "label=Disagree");
