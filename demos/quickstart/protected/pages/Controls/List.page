@@ -51,6 +51,7 @@ $listbox->DataSource=array(
 	array('id'=>'003','name'=>'Cary','age'=>20));
 $listbox->dataBind();
 </com:TTextHighlighter>
+</li>
 </ul>
 
 <h2>TListBox</h2>
