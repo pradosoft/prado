@@ -24,8 +24,8 @@ Pages may be organized into subdirectories under the <tt>BasePath</tt>. In each 
 <p>
 Service parameter for the page service refers to the page being requested. A parameter like <tt>Fundamentals.Services</tt> refers to the <tt>Services</tt> page under the <tt>&lt;BasePath&gt;/Fundamentals</tt> directory. If such a parameter is absent in a request, a default page named <tt>Home</tt> is assumed. Using <tt>THttpRequest</tt> as the request module (default), the following URLs will request for <tt>Home</tt>, <tt>About</tt> and <tt>Register</tt> pages, respectively,
 <com:TTextHighlighter Language="none" CssClass="source">
-http://hostname/index.php<br/>
-http://hostname/index.php?page=About<br/>
+http://hostname/index.php
+http://hostname/index.php?page=About
 http://hostname/index.php?page=Users.Register
 </com:TTextHighlighter>
 where the first example takes advantage of the fact that the page service is the default service and <tt>Home</tt> is the default page.

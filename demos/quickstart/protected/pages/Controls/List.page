@@ -3,6 +3,7 @@
 <h1>List Controls</h1>
 <p>
 List controls covered in this section all inherit directly or indirectly from <tt>TListControl</tt>. Therefore, they share the same set of commonly used properties, including,
+</p>
 <ul>
 <li><tt>Items</tt> - list of items in the control. The items are of type <tt>TListItem</tt>. The item list can be populated via databinding or specified in templates like the following:
 <com:TTextHighlighter Language="prado" CssClass="source">
@@ -20,10 +21,37 @@ List controls covered in this section all inherit directly or indirectly from <t
 <li><tt>AutoPostBack</tt> - whether changing the selection of the control should trigger postback.</li>
 <li><tt>CausesValidation</tt> - whether validation should be performed when postback is triggered by the list control.</li>
 </ul>
-</p>
+
 <p>
-Since <tt>TListControl</tt> inherits from <tt>TDataBoundControl</tt>, these list controls also share a common operation known as <tt>databinding</tt>. The data to be bound can be specified via either <tt>DataSource</tt> or <tt>DataSourceID</tt>. More details about databinding are covered in later chapters of this tutorial.
+Since <tt>TListControl</tt> inherits from <tt>TDataBoundControl</tt>, these list controls also share a common operation known as <tt>databinding</tt>. The <tt>Items</tt> can be populated from preexisting data specified by <tt>DataSource</tt> or <tt>DataSourceID</tt>. A function call to <tt>dataBind()</tt> will cause the data population. For list controls, data can be specified in three kinds of format:
 </p>
+<ul>
+  <li>integer-indexed array : each array element value will be used as the value and text for a list item. For example
+<com:TTextHighlighter CssClass="source">
+$listbox->DataSource=array('item 1','item 2','item 3');
+$listbox->dataBind();
+</com:TTextHighlighter>
+  </li>
+  <li>associative array : array keys will be used as list item values, and array values will be used as list item texts. For example
+<com:TTextHighlighter CssClass="source">
+$listbox->DataSource=array(
+	'key 1'=>'item 1',
+	'key 2'=>'item 2',
+	'key 3'=>'item 3');
+$listbox->dataBind();
+</com:TTextHighlighter>
+</li>
+  <li>tabular (two-dimensional) data : each row of data populates a single list item. The list item value is specified by the data member indexed with <tt>DataValueField</tt>, and the list item text by <tt>DataTextField</tt>. For example,
+<com:TTextHighlighter CssClass="source">
+$listbox->DataTextField='name';
+$listbox->DataValueField='id';
+$listbox->DataSource=array(
+	array('id'=>'001','name'=>'John','age'=>31),
+	array('id'=>'002','name'=>'Mary','age'=>30),
+	array('id'=>'003','name'=>'Cary','age'=>20));
+$listbox->dataBind();
+</com:TTextHighlighter>
+</ul>
 
 <h2>TListBox</h2>
 <p>
@@ -40,12 +68,13 @@ Since <tt>TListControl</tt> inherits from <tt>TDataBoundControl</tt>, these list
 <h2>TCheckBoxList</h2>
 <p>
 <tt>TCheckBoxList</tt> displays a list of checkboxes on a Web page. The alignment of the text besides each checkbox can be specified <tt>TextAlign</tt>. The layout of the checkboxes can be controlled by the following properties:
+</p>
 <ul>
   <li><tt>RepeatLayout</tt> - can be either <tt>Table</tt> or <tt>Flow</tt>. A <tt>Table</tt> uses HTML table cells to organize the checkboxes, while a <tt>Flow</tt> uses HTML span tags and breaks for the organization. With <tt>Table</tt> layout, you can set <tt>CellPadding</tt> and <tt>CellSpacing</tt>.</li>
   <li><tt>RepeatColumns</tt> - how many columns the checkboxes should be displayed in.</li>
   <li><tt>RepeatDirection</tt> - how to traverse the checkboxes, in a horizontal way or a vertical way (because the checkboxes are displayed in a matrix-like layout).</li>
 </ul>
-</p>
+
 <com:RunBar PagePath="Controls.Samples.TCheckBoxList.Home" />
 
 <h2>TRadioButtonList</h2>
@@ -60,12 +89,13 @@ Since <tt>TListControl</tt> inherits from <tt>TDataBoundControl</tt>, these list
 </p>
 <p>
 <tt>TBulletedList</tt> displays the item texts in three different modes,
+</p>
 <ul>
   <li><tt>Text</tt> - the item texts are displayed as static texts;</li>
   <li><tt>HyperLink</tt> - each item is displayed as a hyperlink whose URL is given by the item value, and <tt>Target</tt> property can be used to specify the target browser window;</li>
   <li><tt>LinkButton</tt> - each item is displayed as a link button which posts back to the page if a user clicks on that, and the event <tt>OnClick</tt> will be raised under such a circumstance.</li>
 </ul>
-</p>
+
 <com:RunBar PagePath="Controls.Samples.TBulletedList.Home" />
 
 </com:TContent>
