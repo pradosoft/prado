@@ -647,6 +647,7 @@ tests/FunctionalTests/protected/pages/ViewSource.php -text
 tests/FunctionalTests/protected/pages/config.xml -text
 tests/FunctionalTests/quickstart_tests/Controls/ButtonTestCase.php -text
 tests/FunctionalTests/quickstart_tests/Controls/CheckBoxTestCase.php -text
+tests/FunctionalTests/quickstart_tests/Controls/DropDownListTestCase.php -text
 tests/FunctionalTests/quickstart_tests/Controls/HyperLinkTestCase.php -text
 tests/FunctionalTests/quickstart_tests/Controls/ImageButtonTestCase.php -text
 tests/FunctionalTests/quickstart_tests/Controls/ImageTestCase.php -text
