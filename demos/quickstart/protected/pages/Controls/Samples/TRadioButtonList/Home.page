@@ -133,4 +133,76 @@ Auto postback radio button list:
 
 </table>
 
+
+
+<h2>Checkbox Lists with DataBinding</h2>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Databind to an integer-indexed array:
+</td>
+<td class="sampleaction">
+<com:TRadioButtonList ID="DBRadioButtonList1"
+	AutoPostBack="true"
+	OnSelectedIndexChanged="DBRadioButtonList1Changed" />
+<com:TLabel ID="DBRadioButtonList1Result" ForeColor="red" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Databind to an associative array:
+</td>
+<td class="sampleaction">
+<com:TRadioButtonList ID="DBRadioButtonList2"
+	AutoPostBack="true"
+	OnSelectedIndexChanged="DBRadioButtonList2Changed" />
+<com:TLabel ID="DBRadioButtonList2Result" ForeColor="red" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Databind with DataTextField and DataValueField specified:
+</td>
+<td class="sampleaction">
+<com:TRadioButtonList ID="DBRadioButtonList3"
+	AutoPostBack="true"
+	DataTextField="name"
+	DataValueField="id"
+	OnSelectedIndexChanged="DBRadioButtonList3Changed" />
+<com:TLabel ID="DBRadioButtonList3Result" ForeColor="red" />
+</td>
+</tr>
+
+</table>
+
+
+<h2>RadioButton List with Validation</h2>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+RadioButton list causing validation:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox" />
+<com:TRequiredFieldValidator
+	ControlToValidate="TextBox"
+	ErrorMessage="You must enter a value"
+	Display="Dynamic"
+	ValidationGroup="Group2"
+	/>
+<com:TRadioButtonList AutoPostBack="true" ValidationGroup="Group2">
+  <com:TListItem Text="Agree" />
+  <com:TListItem Text="Disagree" />
+</com:TRadioButtonList>
+</td>
+</tr>
+
+</table>
+
 </com:TContent>
