@@ -2,6 +2,7 @@
 /COPYRIGHT -text
 /HISTORY -text
 /UPGRADE -text
+/build.xml -text
 demos/composer/index.php -text
 demos/composer/index2.php -text
 demos/composer/protected/pages/ClassDefinition.php -text
@@ -144,6 +145,11 @@ demos/quickstart/themes/Simple/style.css -text
 docs/application.xml -text
 docs/conceptual-structure.vsd -text
 docs/request-sequence.vsd -text
+etc/style/coverage-frames.xsl -text
+etc/style/log.xsl -text
+etc/style/phpunit2-frames.xsl -text
+etc/style/phpunit2-noframes.xsl -text
+etc/style/str.replace.function.xsl -text
 framework/.htaccess -text
 framework/3rdParty/SafeHtml/HTMLSax3.php -text
 framework/3rdParty/SafeHtml/HTMLSax3/Decorators.php -text
@@ -892,6 +898,9 @@ tests/UnitTests/simpletest/url.php -text
 tests/UnitTests/simpletest/user_agent.php -text
 tests/UnitTests/simpletest/web_tester.php -text
 tests/UnitTests/simpletest/xml.php -text
+tests/unit/Collections/TListTest.php -text
+tests/unit/TComponentTest.php -text
+tests/unit/phpunit2.php -text
 tools/.htaccess -text
 tools/jsbuilder/build.php -text
 tools/jsbuilder/custom_rhino.jar -text

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PRADO 3.0 build file - Copyright (C) 2006 PradoSoft
+
+  Requirements
+  ============
+  Phing > 2.1.1 (currently cvs HEAD needed)
+  xdebug >= 2.0.0beta4
+  PhpDocumentor >= 1.3.0RC5
+
+-->
+<project name="prado" basedir="." default="usage">
+
+  <property name="version" value="3.0"/>
+  <property name="pkgname" value="${phing.project.name}-${version}"/>
+  <property name="src.dir" value="framework"/>
+  <property name="doc.dir" value="docs/api"/>
+  <property name="build.base.dir" value="build"/>
+  <property name="build.src.dir" value="${build.base.dir}/${pkgname}"/>
+  <property name="tests.dir" value="tests/unit"/>
+  <property name="reports.dir" value="reports"/>
+  <property name="reports.unit.dir" value="${reports.dir}/unit"/>
+  <property name="reports.codecoverage.dir" value="${reports.dir}/codecoverage"/>
+  <property name="reports.style.dir" value="etc/style"/>
+  <property name="reports.geshi.dir" value="framework/3rdParty/geshi"/>
+
+  <fileset dir="${src.dir}" id="source">
+    <exclude name="**/.svn"/>
+    <include name="**/*.php"/>
+  </fileset>
+
+  <target name="usage">
+    <echo message="usage: phing &lt;target&gt;"/>
+    <echo message=""/>
+    <echo message="Available targets are:"/>
+    <echo message=""/>
+    <echo message="dist      --> Build a distribution"/>
+    <echo message="doc       --> Generate API documentation"/>
+    <echo message="test      --> Run unit tests with reports"/>
+    <echo message="clean     --> Clean up the mess"/>
+  </target>
+
+  <target name="doc">
+    <echo>Generating API documentation</echo>
+    <delete dir="${doc.dir}"/>
+    <phpdoc title="PRADO ${version} documentation" destdir="${doc.dir}" sourcepath="${src.dir}" output="HTML:Smarty:PHP"/>
+  </target>
+
+  <target name="test">
+    <echo>Preparing directory structure</echo>
+    <delete dir="${reports.unit.dir}"/>
+    <delete dir="${reports.codecoverage.dir}"/>
+    <mkdir dir="${reports.unit.dir}"/>
+    <mkdir dir="${reports.codecoverage.dir}"/>
+    
+    <echo>Preparing Code Coverage Database</echo>
+    <coverage-setup database="${reports.codecoverage.dir}/coverage.db">
+      <fileset dir="${src.dir}">
+        <include name="**/*.php"/>
+	<exclude name="Web/Javascripts/js/clientscripts.php"/>
+	<exclude name="Data/TCache.php"/>
+	<exclude name="I18N/core/Gettext/MO.php"/>
+	<exclude name="I18N/core/Gettext/PO.php"/>
+	<exclude name="I18N/core/util.php"/>
+	<exclude name="I18N/TGlobalization.php"/>
+	<exclude name="I18N/TGlobalizationAutoDetect.php"/>
+	<exclude name="Security/TUserManager.php"/>
+	<exclude name="Security/TMembershipManager.php"/>
+	<exclude name="core.php"/>
+	<exclude name="3rdParty/**/*.php"/>
+	<exclude name="pradolite.php"/>
+	<exclude name="prado.php"/>
+      </fileset>
+    </coverage-setup>
+
+    <echo>Running Unit Tests</echo>
+    <phpunit2 codecoverage="true" haltonfailure="true" haltonerror="true" printsummary="true">
+      <batchtest>
+        <fileset dir="${tests.dir}">
+	  <include name="**/*Test.php"/>
+        </fileset>
+      </batchtest>
+      <formatter type="xml" todir="${reports.dir}" outfile="logfile.xml"/>
+    </phpunit2>
+
+    <echo>Creating Unit Test Report</echo>
+    <phpunit2report infile="${reports.dir}/logfile.xml" format="frames" styledir="${reports.style.dir}" todir="${reports.unit.dir}"/>
+
+    <echo>Creating Code Coverage Report</echo>
+    <coverage-report outfile="${reports.dir}/coverage.xml" geshipath="${reports.geshi.dir}" geshilanguagespath="${reports.geshi.dir}/geshi">
+      <report todir="${reports.codecoverage.dir}" styledir="${reports.style.dir}"/>
+    </coverage-report>
+  </target>
+
+  <target name="dist">
+    <echo>TBD</echo>
+  </target>
+
+
+  <target name="clean">
+    <echo>Cleaning up the mess</echo>
+    <delete dir="${build.dir}"/>
+    <delete dir="${doc.dir}"/>
+    <delete dir="${reports.unit.dir}"/>
+    <delete dir="${reports.codecoverage.dir}"/>
+  </target>
+
+</project>
