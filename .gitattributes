@@ -906,6 +906,8 @@ tests/UnitTests/simpletest/user_agent.php -text
 tests/UnitTests/simpletest/web_tester.php -text
 tests/UnitTests/simpletest/xml.php -text
 tests/unit/Collections/TListTest.php -text
+tests/unit/Collections/TMapTest.php -text
+tests/unit/I18N/TNumberFormatTest.php -text
 tests/unit/TComponentTest.php -text
 tests/unit/phpunit2.php -text
 tools/.htaccess -text
