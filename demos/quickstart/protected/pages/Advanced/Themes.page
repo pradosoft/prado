@@ -29,15 +29,29 @@ This will apply the 'Blue' skin to the button. Note, the initial property values
 To use the javascript files and CSS files contained in a theme, a <tt>THead</tt> control must be placed on the page template. This is because the theme will register those files with the page and <tt>THead</tt> is the right place to load those files.
 </p>
 
+<h2>Theme Storage</h2>
+<p>
+All themes by default must be placed under the <tt>[AppEntryPath]/themes</tt> directory, where <tt>AppEntryPath</tt> refers to the directory containing the application entry script. If you want to use a different directory, configure the <tt>BasePath</tt> and <tt>BaseUrl</tt> properties of the <tt>System.Web.UI.TThemeManager</tt> module in application configuration,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source">
+&lt;service id="page" class="TPageService"&gt;
+    &lt;modules&gt;
+        &lt;module id="theme"
+                class="System.Web.UI.TThemeManager"
+                BasePath="mythemes"
+                BaseUrl="mythemes" /&gt;
+    &lt;/modules&gt;
+&lt;/service&gt;
+</com:TTextHighlighter>
+
 <h2>Creating Themes</h2>
 <p>
-Creating a theme involves creating the theme directory and writing skin files (and possibly javascript and CSS files). All themes by default must be placed under the <tt>[WebAppEntryPath]/themes</tt> directory, where <tt>WebAppEntryPath</tt> refers to the directory containing the application entry script. If you want to use a different directory, configure the <tt>BasePath</tt> and <tt>BaseUrl</tt> properties of the <tt>System.Web.UI.TThemeManager</tt> module.
-</p>
-<p>
-The format of skin files are the same as that of control template files. Since skin files do not define parent-child presentational relationship among controls, you cannot place a component tag within another. And any static texts between component tags are discarded. To define the aforementioned 'Blue' skin for <tt>TButton</tt>, write the following in a skin file,
+Creating a theme involves creating the theme directory and writing skin files (and possibly javascript and CSS files). The name of skin files must be terminated with <tt>.skin</tt>. The format of skin files are the same as that of control template files. Since skin files do not define parent-child presentational relationship among controls, you cannot place a component tag within another. And any static texts between component tags are discarded. To define the aforementioned 'Blue' skin for <tt>TButton</tt>, write the following in a skin file,
 </p>
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TButton SkinID="Blue" BackColor="blue" /&gt;
 </com:TTextHighlighter>
-
+<p>
+As aforementioned, you can put several skins within a single skin file, or split them into several files. A commonly used strategy is that each skin file only contains skins for one type of controls. For example, <tt>Button.skin</tt> would contain skins only for the <tt>TButton</tt> control type.
+</p>
 </com:TContent>

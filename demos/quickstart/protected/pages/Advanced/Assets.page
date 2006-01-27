@@ -10,9 +10,6 @@ Because directories containing component class files are normally inaccessible b
 
 <h2>Asset Publishing</h2>
 <p>
-Asset publishing is managed by the <tt>System.Web.UI.TAssetManager</tt> module. By default, all published asset files are stored under the <tt>[AppEntryPath]/assets</tt> directory, where <tt>AppEntryPath</tt> refers to the directory containing the application entry script. Make sure the <tt>assets</tt> directory is writable by the Web server process. You may change this directory to another by setting the <tt>BasePath</tt> and <tt>BaseUrl</tt> properties of the <tt>System.Web.UI.TAssetManager</tt> module.
-</p>
-<p>
 PRADO provides several methods for publishing assets or directories containing assets:
 </p>
 <ul>
@@ -23,6 +20,21 @@ PRADO provides several methods for publishing assets or directories containing a
 <p>
 BE AWARE: Be very careful with assets publishing, because it gives Web users access to files that were previously inaccessible to them. Make sure that you do not publish files that do not want Web users to see.
 </p>
+
+<h2>Customization</h2>
+<p>
+Asset publishing is managed by the <tt>System.Web.UI.TAssetManager</tt> module. By default, all published asset files are stored under the <tt>[AppEntryPath]/assets</tt> directory, where <tt>AppEntryPath</tt> refers to the directory containing the application entry script. Make sure the <tt>assets</tt> directory is writable by the Web server process. You may change this directory to another by configuring the <tt>BasePath</tt> and <tt>BaseUrl</tt> properties of the <tt>System.Web.UI.TAssetManager</tt> module in application configuration,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source">
+&lt;service id="page" class="TPageService"&gt;
+    &lt;modules&gt;
+        &lt;module id="asset"
+                class="System.Web.UI.TAssetManager"
+                BasePath="images"
+                BaseUrl="images" /&gt;
+    &lt;/modules&gt;
+&lt;/service&gt;
+</com:TTextHighlighter>
 
 <h2>Performance</h2>
 <p>
