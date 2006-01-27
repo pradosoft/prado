@@ -15,16 +15,19 @@
  *
  * TException is the base class for all PRADO exceptions.
  * TException
+ *     TApplicationException
  *     TSystemException
  *         TInvalidDataValueException
  *         TInvalidDataTypeException
+ *         TInvalidDataFormatException
  *         TInvalidOperationException
  *         TConfigurationException
+ *         TPhpErrorException
+ *         TSecurityException
  *         TIOException
  *         TDBException
  *         THttpException
  *		   TNotSupportedException
- *     TApplicationException
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -119,15 +122,7 @@ class TNotSupportedException extends TSystemException
 {
 }
 
-class TTemplateParsingException extends TSystemException
-{
-}
-
-class TTemplateRuntimeException extends TSystemException
-{
-}
-
-class TPhpErrorException extends TException
+class TPhpErrorException extends TSystemException
 {
 	public function __construct($errno,$errstr,$errfile,$errline)
 	{
@@ -151,7 +146,7 @@ class TPhpErrorException extends TException
 }
 
 
-class THttpException extends TException
+class THttpException extends TSystemException
 {
 	private $_statusCode;
 

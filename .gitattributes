@@ -37,12 +37,15 @@ demos/quickstart/protected/controls/SampleLayout.tpl -text
 demos/quickstart/protected/controls/TopicList.php -text
 demos/quickstart/protected/controls/TopicList.tpl -text
 demos/quickstart/protected/pages/Advanced/Assets.page -text
+demos/quickstart/protected/pages/Advanced/Error.page -text
 demos/quickstart/protected/pages/Advanced/I18N.page -text
 demos/quickstart/protected/pages/Advanced/Logging.page -text
 demos/quickstart/protected/pages/Advanced/MasterContent.page -text
 demos/quickstart/protected/pages/Advanced/Performance.page -text
 demos/quickstart/protected/pages/Advanced/State.page -text
 demos/quickstart/protected/pages/Advanced/Themes.page -text
+demos/quickstart/protected/pages/Advanced/exception.gif -text
+demos/quickstart/protected/pages/Advanced/exception2.gif -text
 demos/quickstart/protected/pages/Advanced/logrouter.gif -text
 demos/quickstart/protected/pages/Advanced/logrouter.vsd -text
 demos/quickstart/protected/pages/Advanced/mastercontent.gif -text

@@ -420,7 +420,7 @@ class TTemplate extends TComponent implements ITemplate
 	 * If an object has no container, its container index is -1.
 	 *
 	 * @param string the template string
-	 * @throws TTemplateParsingException if a parsing error is encountered
+	 * @throws TConfigurationException if a parsing error is encountered
 	 */
 	protected function parse($input)
 	{
@@ -454,9 +454,9 @@ class TTemplate extends TComponent implements ITemplate
 				{
 					$line=count(explode("\n",substr($input,0,$matchEnd+1)));
 					if($this->_tplFile===null)
-						throw new TTemplateParsingException('template_componenttag_invalid',"Line $line",$type,$e->getMessage());
+						throw new TConfigurationException('template_componenttag_invalid',"Line $line",$type,$e->getMessage());
 					else
-						throw new TTemplateParsingException('template_componenttag_invalid',"{$this->_tplFile} (Line $line)",$type,$e->getMessage());
+						throw new TConfigurationException('template_componenttag_invalid',"{$this->_tplFile} (Line $line)",$type,$e->getMessage());
 				}
 				$tpl[$c++]=array($container,$type,$attributes);
 				if($str[strlen($str)-2]!=='/')  // open tag
@@ -478,9 +478,9 @@ class TTemplate extends TComponent implements ITemplate
 				{
 					$line=count(explode("\n",substr($input,0,$matchEnd+1)));
 					if($this->_tplFile===null)
-						throw new TTemplateParsingException('template_closingtag_unexpected',"Line $line","</com:$type>");
+						throw new TConfigurationException('template_closingtag_unexpected',"Line $line","</com:$type>");
 					else
-						throw new TTemplateParsingException('template_closingtag_unexpected',"{$this->_tplFile} (Line $line)","</com:$type>");
+						throw new TConfigurationException('template_closingtag_unexpected',"{$this->_tplFile} (Line $line)","</com:$type>");
 				}
 
 				$name=array_pop($stack);
@@ -492,9 +492,9 @@ class TTemplate extends TComponent implements ITemplate
 						$tag='</com:'.$name.'>';
 					$line=count(explode("\n",substr($input,0,$matchEnd+1)));
 					if($this->_tplFile===null)
-						throw new TTemplateParsingException('template_closingtag_expected',"Line $line",$tag);
+						throw new TConfigurationException('template_closingtag_expected',"Line $line",$tag);
 					else
-						throw new TTemplateParsingException('template_closingtag_expected',"{$this->_tplFile} (Line $line)",$tag);
+						throw new TConfigurationException('template_closingtag_expected',"{$this->_tplFile} (Line $line)",$tag);
 				}
 				$container=$tpl[$container][0];
 			}
@@ -509,9 +509,9 @@ class TTemplate extends TComponent implements ITemplate
 				{
 					$line=count(explode("\n",substr($input,0,$matchEnd+1)));
 					if($this->_tplFile===null)
-						throw new TTemplateParsingException('template_directive_nonunique',"Line $line");
+						throw new TConfigurationException('template_directive_nonunique',"Line $line");
 					else
-						throw new TTemplateParsingException('template_directive_nonunique',"{$this->_tplFile} (Line $line)");
+						throw new TConfigurationException('template_directive_nonunique',"{$this->_tplFile} (Line $line)");
 				}
 				$this->_directive=$this->parseAttributes($match[4][0]);
 			}
@@ -548,9 +548,9 @@ class TTemplate extends TComponent implements ITemplate
 				{
 					$line=count(explode("\n",substr($input,0,$matchEnd+1)));
 					if($this->_tplFile===null)
-						throw new TTemplateParsingException('template_closingtag_unexpected',"Line $line","</prop:$prop>");
+						throw new TConfigurationException('template_closingtag_unexpected',"Line $line","</prop:$prop>");
 					else
-						throw new TTemplateParsingException('template_closingtag_unexpected',"{$this->_tplFile} (Line $line)","</prop:$prop>");
+						throw new TConfigurationException('template_closingtag_unexpected',"{$this->_tplFile} (Line $line)","</prop:$prop>");
 				}
 				$name=array_pop($stack);
 				if($name!=='@'.$prop)
@@ -561,9 +561,9 @@ class TTemplate extends TComponent implements ITemplate
 						$tag='</com:'.$name.'>';
 					$line=count(explode("\n",substr($input,0,$matchEnd+1)));
 					if($this->_tplFile===null)
-						throw new TTemplateParsingException('template_closingtag_expected',"Line $line",$tag);
+						throw new TConfigurationException('template_closingtag_expected',"Line $line",$tag);
 					else
-						throw new TTemplateParsingException('template_closingtag_expected',"{$this->_tplFile} (Line $line)",$tag);
+						throw new TConfigurationException('template_closingtag_expected',"{$this->_tplFile} (Line $line)",$tag);
 				}
 				if(($last=count($stack))<1 || $stack[$last-1][0]!=='@')
 				{
@@ -580,9 +580,9 @@ class TTemplate extends TComponent implements ITemplate
 						{
 							$line=count(explode("\n",substr($input,0,$matchEnd+1)));
 							if($this->_tplFile===null)
-								throw new TTemplateParsingException('template_componenttag_invalid',"Line $line",$type,$e->getMessage());
+								throw new TConfigurationException('template_componenttag_invalid',"Line $line",$type,$e->getMessage());
 							else
-								throw new TTemplateParsingException('template_componenttag_invalid',"{$this->_tplFile} (Line $line)",$type,$e->getMessage());
+								throw new TConfigurationException('template_componenttag_invalid',"{$this->_tplFile} (Line $line)",$type,$e->getMessage());
 						}
 						$tpl[$container][2][$prop]=$value;
 						$textStart=$matchEnd+1;
@@ -600,9 +600,9 @@ class TTemplate extends TComponent implements ITemplate
 				{
 					$line=count(explode("\n",substr($input,0,$matchEnd+1)));
 					if($this->_tplFile===null)
-						throw new TTemplateParsingException('template_comments_forbidden',"Line $line");
+						throw new TConfigurationException('template_comments_forbidden',"Line $line");
 					else
-						throw new TTemplateParsingException('template_comments_forbidden',"{$this->_tplFile} (Line $line)");
+						throw new TConfigurationException('template_comments_forbidden',"{$this->_tplFile} (Line $line)");
 				}
 				if($matchStart>$textStart)
 					$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
@@ -612,9 +612,9 @@ class TTemplate extends TComponent implements ITemplate
 			{
 				$line=count(explode("\n",substr($input,0,$matchEnd+1)));
 				if($this->_tplFile===null)
-					throw new TTemplateParsingException('template_matching_unexpected',"Line $line",$match);
+					throw new TConfigurationException('template_matching_unexpected',"Line $line",$match);
 				else
-					throw new TTemplateParsingException('template_matching_unexpected',"{$this->_tplFile} (Line $line)",$match);
+					throw new TConfigurationException('template_matching_unexpected',"{$this->_tplFile} (Line $line)",$match);
 			}
 		}
 		if(!empty($stack))
@@ -626,9 +626,9 @@ class TTemplate extends TComponent implements ITemplate
 				$tag='</com:'.$name.'>';
 			$line=count(explode("\n",substr($input,0,$matchEnd+1)));
 			if($this->_tplFile===null)
-				throw new TTemplateParsingException('template_closingtag_expected',"Line $line",$tag);
+				throw new TConfigurationException('template_closingtag_expected',"Line $line",$tag);
 			else
-				throw new TTemplateParsingException('template_closingtag_expected',"{$this->_tplFile} (Line $line)",$tag);
+				throw new TConfigurationException('template_closingtag_expected',"{$this->_tplFile} (Line $line)",$tag);
 		}
 		if($textStart<strlen($input))
 			$tpl[$c++]=array($container,substr($input,$textStart));
@@ -697,13 +697,13 @@ class TTemplate extends TComponent implements ITemplate
 					// a subproperty, so the first segment must be readable
 					$subname=substr($name,0,$pos);
 					if(!is_callable(array($className,'get'.$subname)))
-						throw new TTemplateParsingException('template_property_unknown',$subname);
+						throw new TConfigurationException('template_property_unknown',$subname);
 				}
 				else if(strncasecmp($name,'on',2)===0)
 				{
 					// an event
 					if(!is_callable(array($className,$name)))
-						throw new TTemplateParsingException('template_event_unknown',$name);
+						throw new TConfigurationException('template_event_unknown',$name);
 				}
 				else
 				{
@@ -711,9 +711,9 @@ class TTemplate extends TComponent implements ITemplate
 					if(!is_callable(array($className,'set'.$name)))
 					{
 						if(is_callable(array($className,'get'.$name)))
-							throw new TTemplateParsingException('template_property_readonly',$name);
+							throw new TConfigurationException('template_property_readonly',$name);
 						else
-							throw new TTemplateParsingException('template_property_unknown',$name);
+							throw new TConfigurationException('template_property_unknown',$name);
 					}
 				}
 			}
@@ -723,31 +723,31 @@ class TTemplate extends TComponent implements ITemplate
 			foreach($attributes as $name=>$att)
 			{
 				if($att[0]===self::CONFIG_DATABIND)
-					throw new TTemplateParsingException('template_databind_forbidden',$name);
+					throw new TConfigurationException('template_databind_forbidden',$name);
 				if(($pos=strpos($name,'.'))!==false)
 				{
 					// a subproperty, so the first segment must be readable
 					$subname=substr($name,0,$pos);
 					if(!is_callable(array($className,'get'.$subname)))
-						throw new TTemplateParsingException('template_property_unknown',$subname);
+						throw new TConfigurationException('template_property_unknown',$subname);
 				}
 				else if(strncasecmp($name,'on',2)===0)
-					throw new TTemplateParsingException('template_event_forbidden',$name);
+					throw new TConfigurationException('template_event_forbidden',$name);
 				else
 				{
 					// id is still alowed for TComponent, even if id property doesn't exist
 					if(strcasecmp($name,'id')!==0 && !is_callable(array($className,'set'.$name)))
 					{
 						if(is_callable(array($className,'get'.$name)))
-							throw new TTemplateParsingException('template_property_readonly',$name);
+							throw new TConfigurationException('template_property_readonly',$name);
 						else
-							throw new TTemplateParsingException('template_property_unknown',$name);
+							throw new TConfigurationException('template_property_unknown',$name);
 					}
 				}
 			}
 		}
 		else
-			throw new TTemplateParsingException('template_component_required',$type);
+			throw new TConfigurationException('template_component_required',$type);
 	}
 }
 
