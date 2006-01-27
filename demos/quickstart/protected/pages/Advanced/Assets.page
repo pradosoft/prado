@@ -35,6 +35,7 @@ ADVISORY: Do not overuse asset publishing. The asset concept is mainly used to h
 <h2>A Toggle Button Example</h2>
 <p>
 We now use the toggle button example to explain the usage of assets. The control uses two image files <tt>up.gif</tt> and <tt>down.gif</tt>, which are stored under the directory containing the control class file. When the button is in <tt>Up</tt> state, we would like to show the <tt>up.gif</tt> image. This can be done as follows,
+</p>
 <com:TTextHighlighter CssClass="source">
 class ToggleButton extends TWebControl {
     ...
@@ -49,6 +50,7 @@ class ToggleButton extends TWebControl {
     ...
 }
 </com:TTextHighlighter>
+<p>
 In the above, the call <tt>$this->getAsset('up.gif')</tt> will publish the <tt>up.gif</tt> image file and return a URL for the published image file. The URL is then rendered as the <tt>src</tt> attribute of the HTML image tag.
 </p>
 <p>

@@ -8,6 +8,7 @@ Pages in a Web application often share common portions. For example, all pages o
 Master and content only apply to template controls (controls extending <tt>TTemplateControl</tt> or its child classes). A template control can have at most one master control and one or several contents (each represented by a <tt>TContent</tt> control). Contents will be inserted into the master control at places reserved by <tt>TContentPlaceHolder</tt> controls. And the presentation of the template control is that of the master control with <tt>TContentPlaceHolder</tt> replaced by <tt>TContent</tt>.
 <p>
 For example, assume a template control has the following template:
+</p>
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;%@ MasterClass="MasterControl" %&gt;
 &lt;com:TContent ID="A" &gt;
@@ -20,7 +21,9 @@ content B
 content B
 &lt;/com:TContent &gt;
 </com:TTextHighlighter>
+<p>
 which uses <tt>MasterControl</tt> as its master control. The master control has the following template,
+</p>
 <com:TTextHighlighter Language="prado" CssClass="source">
 other stuff
 &lt;com:TContentPlaceHolder ID="A" /&gt;
@@ -30,6 +33,7 @@ other stuff
 &lt;com:TContentPlaceHolder ID="C" /&gt;
 other stuff
 </com:TTextHighlighter>
+<p>
 Then, the contents are inserted into the master control according to the following diagram, while the resulting parent-child relationship can be shown in the next diagram. Note, the template control discards everything in the template other than the contents, while the master control keeps everything and replaces the content placeholders with the contents according to ID matching.
 </p>
 <img src=<%~ mastercontent.gif %> alt="Master and Content" />
