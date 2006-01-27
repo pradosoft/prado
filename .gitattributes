@@ -43,6 +43,8 @@ demos/quickstart/protected/pages/Advanced/MasterContent.page -text
 demos/quickstart/protected/pages/Advanced/Performance.page -text
 demos/quickstart/protected/pages/Advanced/State.page -text
 demos/quickstart/protected/pages/Advanced/Themes.page -text
+demos/quickstart/protected/pages/Advanced/logrouter.gif -text
+demos/quickstart/protected/pages/Advanced/logrouter.vsd -text
 demos/quickstart/protected/pages/Advanced/mastercontent.gif -text
 demos/quickstart/protected/pages/Advanced/mastercontent.vsd -text
 demos/quickstart/protected/pages/Advanced/pcrelation.gif -text
