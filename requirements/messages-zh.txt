@@ -3,6 +3,7 @@ passed with warnings = 您的服务器配置符合PRADO的最低要求。请关�
 failed = 对不起，您的服务器配置不符合PRADO的要求。
 PHP version check = PHP版本检查
 PHP 5.0.4 or higher required = PRADO需要PHP 5.0.4或更高版本。
+PHP 5.1.0 or higher preferred = PRADO推荐使用PHP 5.1.0或更高版本。它将避免由于递归调用__get/__call引起的错误。
 SQLite check = SQLite模块检查
 SQLite extension optional = SQLite模块是可选的。如果它不存在，您将无法使用TSQLiteCache。
 Memcache check = Memcache模块检查

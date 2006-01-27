@@ -3,6 +3,7 @@ passed with warnings				= Your server configuration satisfies minimum requiremen
 failed								= Sorry, your server configuration does not satisfy the requirements by PRADO.
 PHP version check					= PHP version check
 PHP 5.0.4 or higher required		= PHP version 5.0.4 or higher is required by PRADO.
+PHP 5.1.0 or higher preferred		= PHP version 5.1.0 or higher is preferred by PRADO. It eliminates the error caused by recursive __get/__set calls.
 SQLite check						= SQLite check
 SQLite extension optional			= SQLite extension is optional. If it is absent, you will not be able to use TSqliteCache.
 Memcache check						= Memcache check
