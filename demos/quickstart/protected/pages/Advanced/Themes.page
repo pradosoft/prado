@@ -2,5 +2,42 @@
 
 <h1>Themes and Skins</h1>
 
+<h2>Introduction</h2>
+<p>
+Themes in Prado provide a way for developers to provide a consistent look-and-feel across an entire web application. A theme contains a list of initial values for properties of various control types. When applying a theme to a page, all controls on that page will receive the corresponding initial property values from the theme. This allows themes to interact with the rich property sets of the various PRADO controls, meaning that themes can be used to specify a large range of presentational properties that other theming methods (e.g. CSS) cannot. For example, themes could be used to specify the default page size of all data grids across an application by specifying a default value for the <tt>PageSize</tt> property of the <tt>TDataGrid</tt> control.
+</p>
+
+<h2>Understanding Themes</h2>
+<p>
+A theme is a directory consists of skin files, javascript files and CSS files. Any javascript or CSS files contained in a theme will be registered with the page that the theme is applied to. A skin is a set of initial property values for a particular control type. A control type may have one or several skins, each identified by a unqiue <tt>SkinID</tt>. When applying a theme to a page, a skin is applied to a control if the control type and the <tt>SkinID</tt> value both match to those of the skin. Note, if a skin has an empty <tt>SkinID</tt> value, it will apply to all controls of the particular type whose <tt>SkinID</tt> is not set or empty. A skin file consists of one or several skins, for one or several control types. A theme is the union of skins defined in all skin files.
+</p>
+
+<h2>Using Themes</h2>
+<p>
+To use a theme, you need to set the <tt>Theme</tt> property of the page with the theme name, which is the theme directory name. You may set it in either <a href="?page=Configurations.PageConfig">page configurations</a> or in the constructor or <tt>onPreInit()</tt> method of the page. You cannot set the property after <tt>onPreInit()</tt> because by that time, child controls of the page are already created (skins must be applied to controls right after they are created.)
+</p>
+<p>
+To use a particular skin in the theme for a control, set <tt>SkinID</tt> property of the control in template like following,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TButton SkinID="Blue" ... /&gt;
+</com:TTextHighlighter>
+<p>
+This will apply the 'Blue' skin to the button. Note, the initial property values specified by the 'Blue' skin will overwrite any existing property values of the button. Use stylesheet theme if you do not want them to be overwritten. To use stylesheet theme, set the <tt>StyleSheetTheme</tt> property of the page instead of <tt>Theme</tt> (you can have both <tt>StyleSheetTheme</tt> and <tt>Theme</tt>).
+</p>
+<p>
+To use the javascript files and CSS files contained in a theme, a <tt>THead</tt> control must be placed on the page template. This is because the theme will register those files with the page and <tt>THead</tt> is the right place to load those files.
+</p>
+
+<h2>Creating Themes</h2>
+<p>
+Creating a theme involves creating the theme directory and writing skin files (and possibly javascript and CSS files). All themes by default must be placed under the <tt>[WebAppEntryPath]/themes</tt> directory, where <tt>WebAppEntryPath</tt> refers to the directory containing the application entry script. If you want to use a different directory, configure the <tt>BasePath</tt> and <tt>BaseUrl</tt> properties of the <tt>System.Web.UI.TThemeManager</tt> module.
+</p>
+<p>
+The format of skin files are the same as that of control template files. Since skin files do not define parent-child presentational relationship among controls, you cannot place a component tag within another. And any static texts between component tags are discarded. To define the aforementioned 'Blue' skin for <tt>TButton</tt>, write the following in a skin file,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TButton SkinID="Blue" BackColor="blue" /&gt;
+</com:TTextHighlighter>
 
 </com:TContent>
