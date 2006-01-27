@@ -61,16 +61,6 @@
 </div>
 
 <div class="topic">
-<div>Avanced Features</div>
-<ul>
-    <li><a href="?page=Construction">Overview</a></li>
-    <li><a href="?page=Construction">Assets</a></li>
-    <li><a href="?page=Construction">Themes and Skins</a></li>
-    <li><a href="?page=Construction">Internationalization</a></li>
-</ul>
-</div>
-
-<div class="topic">
 <div>Security</div>
 <ul>
     <li><a href="?page=Construction">Overview</a></li>
@@ -81,10 +71,13 @@
 </div>
 
 <div class="topic">
-<div>Performance</div>
+<div>Avanced Topics</div>
 <ul>
-    <li><a href="?page=Construction">Caching</a></li>
-    <li><a href="?page=Construction">Performance Tuning</a></li>
+    <li><a href="?page=Advanced.Assets">Assets</a></li>
+    <li><a href="?page=Advanced.MasterContent">Master and Content</a></li>
+    <li><a href="?page=Advanced.Themes">Themes and Skins</a></li>
+    <li><a href="?page=Advanced.I18N">Internationalization</a></li>
+    <li><a href="?page=Advanced.Performance">Performance Tuning</a></li>
 </ul>
 </div>
 
