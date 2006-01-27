@@ -60,6 +60,7 @@ To switch application mode, configure it in application configuration:
 <h2>Reduce Page Size</h2>
 <p>
 By default, PRADO stores page state in hidden fields of the HTML output. The page state could be very large in size if complex controls, such as <tt>TDataGrid</tt>, is used. To reduce the size of the network transmitted page size, two strategies can be used.
+</p>
 <p>
 First, you may disable viewstate by setting <tt>EnableViewState</tt> to false for the page or some controls on the page if they do not need user interactions. Viewstate is mainly used to keep track of page state when a user interacts with that page.
 </p>

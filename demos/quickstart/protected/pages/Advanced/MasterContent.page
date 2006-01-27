@@ -6,6 +6,7 @@ Pages in a Web application often share common portions. For example, all pages o
 </p>
 <p>
 Master and content only apply to template controls (controls extending <tt>TTemplateControl</tt> or its child classes). A template control can have at most one master control and one or several contents (each represented by a <tt>TContent</tt> control). Contents will be inserted into the master control at places reserved by <tt>TContentPlaceHolder</tt> controls. And the presentation of the template control is that of the master control with <tt>TContentPlaceHolder</tt> replaced by <tt>TContent</tt>.
+</p>
 <p>
 For example, assume a template control has the following template:
 </p>
