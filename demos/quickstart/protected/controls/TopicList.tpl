@@ -47,7 +47,7 @@
     <li><a href="?page=Controls.DataList">TDataList</a></li>
     <li><a href="?page=Controls.DataGrid">TDataGrid</a></li>
     <li><a href="?page=Construction">Active Controls</a></li>
-    <li><a href="?page=Construction">Authoring New Controls</a></li>
+    <li><a href="?page=Construction">Creating New Controls</a></li>
 </ul>
 </div>
 

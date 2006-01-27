@@ -38,6 +38,7 @@ demos/quickstart/protected/controls/TopicList.php -text
 demos/quickstart/protected/controls/TopicList.tpl -text
 demos/quickstart/protected/pages/Advanced/Assets.page -text
 demos/quickstart/protected/pages/Advanced/I18N.page -text
+demos/quickstart/protected/pages/Advanced/Logging.page -text
 demos/quickstart/protected/pages/Advanced/MasterContent.page -text
 demos/quickstart/protected/pages/Advanced/Performance.page -text
 demos/quickstart/protected/pages/Advanced/State.page -text
