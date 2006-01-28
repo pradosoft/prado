@@ -1,4 +1,4 @@
-<%@ Title="Basic I18N Test" %>
+<%@ Title="Basic I18N Test" Culture="zh_CN" %>
 <com:TContent ID="Content">
 <h1>Basic I18N Test</h1>
 <com:TTranslate>

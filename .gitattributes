@@ -927,5 +927,5 @@ tools/jsbuilder/packer.js -text
 tools/phpbuilder/build.php -text
 tools/phpbuilder/files.txt -text
 tools/texbuilder/build.php -text
-tools/texbuilder/prado3_quick_start.pdf -text svneol=unset#unset
+tools/texbuilder/prado3_quick_start.pdf -text
 tools/texbuilder/prado3_quick_start.tex -text

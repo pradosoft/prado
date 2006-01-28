@@ -35,6 +35,16 @@ $pages['Controls'] = array(
 	'Controls/DataList.page',
 	'Controls/DataGrid.page');
 
+$pages['Advanced Topics'] = array(
+	'Advanced/Assets.page',
+	'Advanced/MasterContent.page',
+	'Advanced/Themes.page',
+	'Advanced/State.page',
+	'Advanced/Logging.page',
+	'Advanced/I18N.page',
+	'Advanced/Error.page',
+	'Advanced/Performance.page');
+
 
 //-------------- END CONFIG ------------------
 
@@ -47,7 +57,9 @@ function escape_verbatim($matches)
 function include_image($matches)
 {
 	global $current_path;
-	$image = dirname($current_path).'/'.$matches[1];
+
+	$image = dirname($current_path).'/'.trim($matches[1]);
+
 	$file = realpath($image);
 	$info = getimagesize($file);
 	switch($info[2])
@@ -128,10 +140,8 @@ function parse_html($page,$html)
 	$html = preg_replace('/<\/?com:TContent[^>]*>/', '', $html);
 	$html = preg_replace('/<\/?p>/m', '', $html);
 
-	//headings
-	$html = preg_replace('/<h1[^>]*>([^<]+)<\/h1>/', '\section{$1}', $html);
-	$html = preg_replace('/<h2[^>]*>([^<]+)<\/h2>/', '\subsection{$1}', $html);
-	$html = preg_replace('/<h3[^>]*>([^<]+)<\/h3>/', '\subsubsection{$1}', $html);
+	//escape { and }
+	$html = preg_replace('/([^\s]+){([^}]*)}([^\s]+)/', '$1\\\{$2\\\}$3', $html);
 
 	//codes
 	$html = str_replace('$', '\$', $html);
@@ -140,18 +150,16 @@ function parse_html($page,$html)
 	$html = preg_replace_callback('/(`1`)([^`]*)(`2`)/m', 'escape_verbatim', $html);
 	$html = preg_replace_callback('/(<div class="source">)([^<]*)(<\/div>)/', 'escape_verbatim', $html);
 			
-
-	$html = preg_replace_callback('/<img\s+src="<%~([^"]*)%>"[^\\/]*\/>/', 'include_image', $html);
+	$html = preg_replace_callback('/<img\s+src="?<%~([^"]*)%>"?[^\\/]*\/>/', 'include_image', $html);
 
 	//runbar
 	$html = preg_replace('/<com:RunBar\s+PagePath="([^"]*)"\s+\/>/', 
 			'Try, \texttt{http://../quickstart/index.php?page=$1}', $html);
 
-
 	//text modifiers
-	$html = preg_replace('/<b>([^>]*)<\/b>/', '\textbf{$1}', $html);
-	$html = preg_replace('/<i>([^>]*)<\/i>/', '\emph{$1}', $html);
-	$html = preg_replace('/<tt>([^>]*)<\/tt>/', '\texttt{$1}', $html);
+	$html = preg_replace('/<b>([^<]*)<\/b>/', '\textbf{$1}', $html);
+	$html = preg_replace('/<i>([^<]*)<\/i>/', '\emph{$1}', $html);
+	$html = preg_replace('/<tt>([^<]*)<\/tt>/', '\texttt{$1}', $html);
 
 	//links
 	$html = preg_replace_callback('/<a[^>]+href="([^"]*)"[^>]*>([^<]*)<\/a>/',
@@ -166,6 +174,13 @@ function parse_html($page,$html)
 	$html = preg_replace('/<\/ul>/', '\end{enumerate}', $html);
 	$html = preg_replace('/<li>/', '\item ', $html);
 	$html = preg_replace('/<\/li>/', '', $html);
+
+	//headings
+	$html = preg_replace('/<h1>([^<]+)<\/h1>/', '\section{$1}', $html);
+	$html = preg_replace('/<h2>([^<]+)<\/h2>/', '\subsection{$1}', $html);
+	$html = preg_replace('/<h3>([^<]+)<\/h3>/', '\subsubsection{$1}', $html);
+
+
 
 	$html = html_entity_decode($html);
 

@@ -28,8 +28,8 @@
  * <code>
  * <com:TTranslate>
  *   {greeting} {name}!
- *   <com:TTranslateParameter Key="name">World</com:TParam>
- *   <com:TTranslateParameter Key="greeting">Hello</com:TParam>
+ *   <com:TTranslateParameter Key="name">World</com:TTranslateParameter>
+ *   <com:TTranslateParameter Key="greeting">Hello</com:TTranslateParameter>
  * </com:TTranslate>
  * </code>
  *

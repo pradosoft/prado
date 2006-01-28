@@ -30,13 +30,13 @@ function getAllChildren(e) {
      matching the CSS selector. Selectors can contain element names, 
      class names and ids and can be nested. For example:
      
-     <pre><tt>elements = document.getElementsBySelect('div#main p a.external')</tt></pre>
+     <pre><tt>elements = $CSS('div#main p a.external')</tt></pre>
      
      Will return an array of all 'a' elements with 'external' in their 
      class attribute that are contained inside 'p' elements that are 
      contained inside the 'div' element which has id="main"
  */
-document.getElementsBySelector = function(selector) {
+$CSS = function(selector) {
   // Attempt to fail gracefully in lesser browsers
   if (!document.getElementsByTagName) {
     return new Array();
