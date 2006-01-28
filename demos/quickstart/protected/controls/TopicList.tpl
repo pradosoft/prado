@@ -72,6 +72,7 @@
 <div class="topic">
 <div>Avanced Topics</div>
 <ul>
+    <li><a href="?page=Advanced.Scripts">Client-side Scripting</a></li>
     <li><a href="?page=Advanced.Assets">Assets</a></li>
     <li><a href="?page=Advanced.MasterContent">Master and Content</a></li>
     <li><a href="?page=Advanced.Themes">Themes and Skins</a></li>
