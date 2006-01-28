@@ -148,6 +148,7 @@ demos/quickstart/protected/pages/Fundamentals/objectdiagram.vsd -text
 demos/quickstart/protected/pages/GettingStarted/AboutPrado.page -text
 demos/quickstart/protected/pages/GettingStarted/Installation.page -text
 demos/quickstart/protected/pages/GettingStarted/Introduction.page -text
+demos/quickstart/protected/pages/Security/Auth.page -text
 demos/quickstart/protected/pages/ViewSource.page -text
 demos/quickstart/protected/pages/ViewSource.php -text
 demos/quickstart/protected/pages/config.xml -text
