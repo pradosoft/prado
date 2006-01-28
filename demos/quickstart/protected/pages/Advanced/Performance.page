@@ -57,7 +57,7 @@ To switch application mode, configure it in application configuration:
 &lt;/application &gt;
 </com:TTextHighlighter>
 
-<h2>Reduce Page Size</h2>
+<h2>Reducing Page Size</h2>
 <p>
 By default, PRADO stores page state in hidden fields of the HTML output. The page state could be very large in size if complex controls, such as <tt>TDataGrid</tt>, is used. To reduce the size of the network transmitted page size, two strategies can be used.
 </p>

@@ -4,7 +4,7 @@
 <p>
 PRADO provides a highly flexible and extensible logging functionality. Messages logged can be classified according to log levels and message categories. Using level and category filters, the messages can be further routed to different destinations, such as files, emails, browser windows, etc. The following diagram shows the basic architecture of PRADO logging mechanism,
 </p>
-<img src=<%~ logrouter.gif %> alt="Log router" />
+<img src="<%~ logrouter.gif %>" alt="Log router" />
 
 <h2>Using Logging Functions</h2>
 <p>
