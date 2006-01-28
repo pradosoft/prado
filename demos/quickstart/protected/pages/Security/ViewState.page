@@ -1,0 +1,31 @@
+<com:TContent ID="body" >
+
+<h1>Viewstate Protection</h1>
+<p>
+Viewstate lies at the heart of PRADO. Viewstate represents data that can be used to restore pages to the state that is last seen by end users before making the current request. By default, PRADO uses hidden fields to store viewstate information.
+</p>
+<p>
+It is extremely important to ensure that viewstate is not tampered by end users. Without protection, malicious users may inject harmful code into viewstate and unwanted instructions may be performed when page state is being restored on server side.
+</p>
+<p>
+To prevent viewstate from being tampered, PRADO enforces viewstate HMAC (Keyed-Hashing for Message Authentication) check before restoring  viewstate. Such a check can detect if the viewstate has been tampered or not by end users. Should the viewstate modifies, PRADO simply stops restoring the viewstate and returns an error message.
+</p>
+<p>
+HMAC check requires a private key that should be secret to end users. Developers can either manually specify a key or let PRADO automatically generate a key. Manually specified key is useful when the application runs on a server farm. To do so, configure <tt>TPageStatePersister</tt> in application configuration,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source">
+&lt;service id="page" class="TPageService"&gt;
+    &lt;modules&gt;
+        &lt;module id="state"
+            class="TPageStatePersister"
+            PrivateKey="my private key" /&gt;
+    &lt;/modules&gt;
+&lt;/service&gt;
+</com:TTextHighlighter>
+<p>
+HMAC check does not prevent end users from reading the viewstate content. An added security measure is to encrypt the viewstate information so that end users cannot decipher it. Work on supporting viewstate encryption is ongoing.
+</p>
+<p>
+Another strategy to protect viewstate is to store it on server side rather than using hidden fields. The relevant work is also ongoing.
+</p>
+</com:TContent>

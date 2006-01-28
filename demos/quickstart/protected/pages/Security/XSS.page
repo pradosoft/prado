@@ -1,0 +1,13 @@
+<com:TContent ID="body" >
+
+<h1>Cross Site Scripting Prevention</h1>
+<p>
+Cross site scripting (also known as XSS) occurs when a web application gathers malicious data from a user. Often attackers will inject JavaScript, VBScript, ActiveX, HTML, or Flash into a vulnerable application to fool other application users and gather data from them. For example, a poorly design forum system may display user input in forum posts without any checking. An attacker can then inject a piece of malicious JavaScript code into a post so that when other users read this post, the JavaScript runs unexpectedly on their computers.
+</p>
+<p>
+One of the most important measures to prevent XSS attacks is to check user input before displaying them. One can do HTML-encoding with the user input to achieve this goal. However, in some situations, HTML-encoding may not be preferrable because it disables all HTML tags.
+</p>
+<p>
+PRADO incorporates the work of <a href="http://pixel-apes.com/safehtml/">SafeHTML</a> and provides developers with a useful component called <tt>TSafeHtml</tt>. By enclosing content within a <tt>TSafeHtml</tt> component tag, the enclosed content are ensured to be safe to end users. In addition, the commonly used <tt>TTextBox</tt> has a <tt>SafeText</tt> property which contains user input that are ensured to be safe if displayed directly to end users.
+</p>
+</com:TContent>
