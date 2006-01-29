@@ -68,7 +68,7 @@ class TLogRouter extends TModule
 				throw new TConfigurationException('logrouter_configfile_invalid',$this->_configFile);
 		}
 		$this->loadConfig($config);
-		//$this->getApplication()->attachEventHandler('OnError',array($this,'collectLogs'));
+		$this->getApplication()->attachEventHandler('OnError',array($this,'collectLogs'));
 		$this->getApplication()->attachEventHandler('OnEndRequest',array($this,'collectLogs'));
 	}
 
@@ -158,6 +158,7 @@ abstract class TLogRoute extends TComponent
 		TLogger::INFO=>'Info',
 		TLogger::NOTICE=>'Notice',
 		TLogger::WARNING=>'Warning',
+		TLogger::ERROR=>'Error',
 		TLogger::ALERT=>'Alert',
 		TLogger::FATAL=>'Fatal'
 	);
@@ -169,6 +170,7 @@ abstract class TLogRoute extends TComponent
 		'info'=>TLogger::INFO,
 		'notice'=>TLogger::NOTICE,
 		'warning'=>TLogger::WARNING,
+		'error'=>TLogger::ERROR,
 		'alert'=>TLogger::ALERT,
 		'fatal'=>TLogger::FATAL
 	);
@@ -200,7 +202,7 @@ abstract class TLogRoute extends TComponent
 	/**
 	 * @param integer|string integer log level filter (in bits). If the value is
 	 * a string, it is assumed to be comma-separated level names. Valid level names
-	 * include 'Error', 'Debug', 'Info', 'Notice', 'Warning', 'Error', 'Alert' and 'Fatal'.
+	 * include 'Debug', 'Info', 'Notice', 'Warning', 'Error', 'Alert' and 'Fatal'.
 	 */
 	public function setLevels($levels)
 	{
@@ -604,10 +606,11 @@ class TBrowserLogRoute extends TLogRoute
 		$string = <<<EOD
 <table cellspacing="0" cellpadding="0" border="0" width="100%">
 	<tr>
-		<th style="background-color: black; color:white;" colspan="10">
+		<th style="background-color: black; color:white;" colspan="11">
 			<h3>Trace Information: $category</h3>
 		</th>
 	</tr><tr style="background-color: #ccc;">
+	    <th>&nbsp;</th>
 		<th>Category</th><th>Message</th><th>From First(s)</th><th>From Last(s)</th>
 	</tr>
 EOD;
@@ -622,8 +625,8 @@ EOD;
 		$color = $this->getColorLevel($log[1]);
 		$msg = preg_replace('/\(line[^\)]+\)$/','',$log[0]); //remove line number info
 		$string = <<<EOD
-	<tr style="background-color: {$bgcolor}; color: {$color}">
-		<td>{$log[2]}</td><td>{$msg}</td><td>{$total}</td><td>{$delta}</td>
+	<tr style="background-color: {$bgcolor};">
+		<td style="background-color: $color;">&nbsp;</td><td>{$log[2]}</td><td>{$msg}</td><td>{$total}</td><td>{$delta}</td>
 	</tr>
 EOD;
 		return $string;
@@ -635,16 +638,17 @@ EOD;
 		{
 			case TLogger::DEBUG: return 'green';
 			case TLogger::INFO: return 'black';
-			case TLogger::NOTICE: return 'blue';
-			case TLogger::WARNING: return '#f63';
-			case TLogger::ALERT: return '#c00';
+			case TLogger::NOTICE: return '#3333FF';
+			case TLogger::WARNING: return '#33FFFF';
+			case TLogger::ERROR: return '#ff9933';
+			case TLogger::ALERT: return '#ff00ff';
 			case TLogger::FATAL: return 'red';
 		}
 	}
 
 	protected function renderFooter()
 	{
-		$string = "<tr><td colspan=\"10\" style=\"text-align:center; border-top: 1px solid #ccc; padding:0.2em;\">";
+		$string = "<tr><td colspan=\"11\" style=\"text-align:center; border-top: 1px solid #ccc; padding:0.2em;\">";
 		foreach(self::$_levelValues as $name => $level)
 		{
 			$string .= "<span style=\"color:".$this->getColorLevel($level);

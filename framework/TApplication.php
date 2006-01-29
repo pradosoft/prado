@@ -803,10 +803,9 @@ class TApplication extends TComponent
 	 */
 	public function onError($param)
 	{
-		if($this->hasEventHandler('OnError'))
-			$this->raiseEvent('OnError',$this,$param);
-		else
-			$this->getErrorHandler()->handleError($this,$param);
+		Prado::log($param->getMessage(),TLogger::ERROR,'System.TApplication');
+		$this->getErrorHandler()->handleError($this,$param);
+		$this->raiseEvent('OnError',$this,$param);
 	}
 
 	/**

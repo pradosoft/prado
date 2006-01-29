@@ -8,8 +8,8 @@
     -->
     <module id="session" class="THttpSession" />
     <module id="log" class="System.Log.TLogRouter">
-      <route class="TBrowserLogRoute" Categories="System.Web.UI.TPage" />
-      <route class="TFileLogRoute" Categories="System.Web.UI.TPage" />
+      <route class="TBrowserLogRoute" Categories="System.TApplication,System.Web.UI.TPage" />
+      <route class="TFileLogRoute" Categories="System" Levels="Notice,Warning,Error,Alert,Fatal" />
     </module>
   </modules>
   <services>
