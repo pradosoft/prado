@@ -33,6 +33,7 @@ $requirements = array(
 	array(true,'version_compare(PHP_VERSION,"5.0.4",">=")','PHP version check','PHP 5.0.4 or higher required'),
 	array(false,'version_compare(PHP_VERSION,"5.1.0",">=")','PHP version check','PHP 5.1.0 or higher preferred'),
 	array(true,'class_exists("DOMDocument",false)','DOM extension check','DOM extension required'),
+	array(false,'function_exists("iconv")','ICONV function check','ICONV extension is required by some Internationalization components.'),
 	array(false,'extension_loaded("zlib")','Zlib check','Zlib extension optional'),
 	array(false,'extension_loaded("sqlite")','SQLite check','SQLite extension optional'),
 	array(false,'extension_loaded("memcache")','Memcache check','Memcache extension optional'),
@@ -79,7 +80,7 @@ $tokens = array(
 	'%%Conclusion%%' => $conclusion,
 	'%%Details%%' => $results,
 	'%%Version%%' => $_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.getPradoVersion(),
-	'%%Time%%' => strftime('%Y-%m-%d %H:%m',time()),
+	'%%Time%%' => @strftime('%Y-%m-%d %H:%m',time()),
 );
 
 $lang=getPreferredLanguage();
