@@ -1,5 +1,5 @@
 prado_application_singleton_required	= Prado.Application must only be set once.
-prado_component_unknown					= Unable to create unknown component '%s'.
+prado_component_unknown					= Unknown component type '%s'.
 prado_using_invalid						= '%s' is not a valid namespace to be used. Make sure '.*' is appended if you want to use a namespace referring to a directory.
 prado_alias_redefined					= Alias '%s' cannot be redefined.
 prado_alias_invalid						= Alias '%s' refers to an invalid path '%s'. Only existing directories can be aliased.
@@ -93,18 +93,19 @@ pageserviceconf_moduletype_required		= <module id="%s"> must have a "class" attr
 pageserviceconf_parameter_invalid		= <parameter> element must have an "id" attribute in page directory configuration file '%s'.
 pageserviceconf_page_invalid			= <page> element must have an "id" attribute in page directory configuration file '%s'.
 
-template_closingtag_unexpected			= %s: Unexpected closing tag '%s' is found.
-template_closingtag_expected			= %s: Closing tag '%s' is expected.
-template_directive_nonunique			= %s: Directive '<%@ ... %>' must appear at most once in a template.
-template_comments_forbidden				= %s: Template comments are not allowed within property tags.
-template_matching_unexpected			= %s: Unexpected matching.
-template_componenttag_invalid			= %s: Component tag <com:%s> has error (%s)
-template_property_unknown				= Unknown property '%s'.
-template_event_unknown					= Unknown event '%s'.
-template_property_readonly				= Property '%s' is read-only.
-template_event_forbidden				= Event handler cannot be attached to the event '%s' of a non-control component in template.
-template_databind_forbidden				= Non-control component property '%s' cannot receive a databind expression.
-template_component_required				= '%s' is not a component. Only components can appear in templates.
+template_closingtag_unexpected			= Unexpected closing tag '%s' is found.
+template_closingtag_expected			= Closing tag '%s' is expected.
+template_directive_nonunique			= Directive '<%%@ ... %%>' must appear at most once in a template.
+template_comments_forbidden				= Template comments are not allowed within property tags.
+template_matching_unexpected			= Unexpected matching.
+template_property_unknown				= %s has no property called '%s'.
+template_event_unknown					= %s has no event called '%s'.
+template_property_readonly				= %s has a read-only property '%s'.
+template_event_forbidden				= %s is a non-control component. No handler can be attached to its event '%s' in a template.
+template_databind_forbidden				= %s is a non-control component. No databinding expression can be set to its property '%s'.
+template_component_required				= '%s' is not a component. Only components can appear in a template.
+template_format_invalid					= Error in %s (line %d) : %s
+template_format_invalid2				= Error at line %d of the following template: %s %s
 
 xmldocument_file_read_failed			= TXmlDocument is unable to read file '%s'.
 xmldocument_file_write_failed			= TXmlDocument is unable to write file '%s'.

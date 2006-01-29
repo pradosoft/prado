@@ -538,9 +538,17 @@ class PradoBase
 			return;
 		if(($pos=strrpos($namespace,'.'))===false)  // a class name
 		{
-			include_once($namespace.self::CLASS_FILE_EXT);
-			if(!class_exists($namespace,false))
-				throw new TInvalidOperationException('prado_component_unknown',$namespace);
+			try
+			{
+				include_once($namespace.self::CLASS_FILE_EXT);
+			}
+			catch(Exception $e)
+			{
+				if(!class_exists($namespace,false))
+					throw new TInvalidOperationException('prado_component_unknown',$namespace);
+				else
+					throw $e;
+			}
 		}
 		else if(($path=self::getPathOfNamespace($namespace,self::CLASS_FILE_EXT))!==null)
 		{
@@ -561,7 +569,19 @@ class PradoBase
 				{
 					self::$_usings[$namespace]=$path;
 					if(!class_exists($className,false))
-						include_once($path);
+					{
+						try
+						{
+							include_once($path);
+						}
+						catch(Exception $e)
+						{
+							if(!class_exists($className,false))
+								throw new TInvalidOperationException('prado_component_unknown',$className);
+							else
+								throw $e;
+						}
+					}
 				}
 				else
 					throw new TInvalidDataValueException('prado_using_invalid',$namespace);

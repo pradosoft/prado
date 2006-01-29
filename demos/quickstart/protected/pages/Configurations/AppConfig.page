@@ -31,8 +31,9 @@ Configuration for an application is stored in an XML file named <tt>application.
 <li>The <tt>&lt;services&gt;</tt> element is similar to the <tt>&lt;modules&gt;</tt> element. It mainly specifies the services provided by the application.</li>
 <li>The <tt>&lt;parameters&gt;</tt> element contains a list of application-level parameters that are accessible from anywhere in the application. You may specify component-typed parameters like specifying modules, or you may specify string-typed parameters which take a simpler format as follows,
 <com:TTextHighlighter Language="xml" CssClass="source">
-<parameter id="ParameterID">ParameterValue</parameter>
+<parameter id="ParameterID" value="ParameterValue" />
 </com:TTextHighlighter>
+Note, if the <tt>value</tt> attribute is not specified, the whole parameter XML node (of type <tt>TXmlElement</tt>) will be returned as the parameter value.
 </li>
 </ul>
 <p>

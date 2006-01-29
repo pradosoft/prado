@@ -430,208 +430,156 @@ class TTemplate extends TComponent implements ITemplate
 		$textStart=0;
         $stack=array();
 		$container=-1;
+		$matchEnd=0;
 		$c=0;
-		for($i=0;$i<$n;++$i)
+		try
 		{
-			$match=&$matches[$i];
-			$str=$match[0][0];
-			$matchStart=$match[0][1];
-			$matchEnd=$matchStart+strlen($str)-1;
-			if(strpos($str,'<com:')===0)	// opening component tag
+			for($i=0;$i<$n;++$i)
 			{
-				if($expectPropEnd)
-					continue;
-				if($matchStart>$textStart)
-					$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
-				$textStart=$matchEnd+1;
-				$type=$match[1][0];
-				$attributes=$this->parseAttributes($match[2][0]);
-				try
+				$match=&$matches[$i];
+				$str=$match[0][0];
+				$matchStart=$match[0][1];
+				$matchEnd=$matchStart+strlen($str)-1;
+				if(strpos($str,'<com:')===0)	// opening component tag
 				{
-					$this->validateAttributes($type,$attributes);
-				}
-				catch(Exception $e)
-				{
-					$line=count(explode("\n",substr($input,0,$matchEnd+1)));
-					if($this->_tplFile===null)
-						throw new TConfigurationException('template_componenttag_invalid',"Line $line",$type,$e->getMessage());
-					else
-						throw new TConfigurationException('template_componenttag_invalid',"{$this->_tplFile} (Line $line)",$type,$e->getMessage());
-				}
-				$tpl[$c++]=array($container,$type,$attributes);
-				if($str[strlen($str)-2]!=='/')  // open tag
-				{
-					array_push($stack,$type);
-					$container=$c-1;
-				}
-			}
-			else if(strpos($str,'</com:')===0)	// closing component tag
-			{
-				if($expectPropEnd)
-					continue;
-				if($matchStart>$textStart)
-					$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
-				$textStart=$matchEnd+1;
-				$type=$match[1][0];
-
-				if(empty($stack))
-				{
-					$line=count(explode("\n",substr($input,0,$matchEnd+1)));
-					if($this->_tplFile===null)
-						throw new TConfigurationException('template_closingtag_unexpected',"Line $line","</com:$type>");
-					else
-						throw new TConfigurationException('template_closingtag_unexpected',"{$this->_tplFile} (Line $line)","</com:$type>");
-				}
-
-				$name=array_pop($stack);
-				if($name!==$type)
-				{
-					if($name[0]==='@')
-						$tag='</prop:'.substr($name,1).'>';
-					else
-						$tag='</com:'.$name.'>';
-					$line=count(explode("\n",substr($input,0,$matchEnd+1)));
-					if($this->_tplFile===null)
-						throw new TConfigurationException('template_closingtag_expected',"Line $line",$tag);
-					else
-						throw new TConfigurationException('template_closingtag_expected',"{$this->_tplFile} (Line $line)",$tag);
-				}
-				$container=$tpl[$container][0];
-			}
-			else if(strpos($str,'<%@')===0)	// directive
-			{
-				if($expectPropEnd)
-					continue;
-				if($matchStart>$textStart)
-					$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
-				$textStart=$matchEnd+1;
-				if(isset($tpl[0]))
-				{
-					$line=count(explode("\n",substr($input,0,$matchEnd+1)));
-					if($this->_tplFile===null)
-						throw new TConfigurationException('template_directive_nonunique',"Line $line");
-					else
-						throw new TConfigurationException('template_directive_nonunique',"{$this->_tplFile} (Line $line)");
-				}
-				$this->_directive=$this->parseAttributes($match[4][0]);
-			}
-			else if(strpos($str,'<%')===0)	// expression
-			{
-				if($expectPropEnd)
-					continue;
-				if($matchStart>$textStart)
-					$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
-				$textStart=$matchEnd+1;
-				if($str[2]==='=')	// expression
-					$tpl[$c++]=array($container,'TExpression',array('Expression'=>THttpUtility::htmlDecode($match[5][0])));
-				else if($str[2]==='%')  // statements
-					$tpl[$c++]=array($container,'TStatements',array('Statements'=>THttpUtility::htmlDecode($match[5][0])));
-				else
-					$tpl[$c++]=array($container,'TLiteral',array('Text'=>$this->parseAttribute($str)));
-			}
-			else if(strpos($str,'<prop:')===0)	// opening property
-			{
-				$prop=strtolower($match[3][0]);
-				array_push($stack,'@'.$prop);
-				if(!$expectPropEnd)
-				{
+					if($expectPropEnd)
+						continue;
 					if($matchStart>$textStart)
 						$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
 					$textStart=$matchEnd+1;
-					$expectPropEnd=true;
-				}
-			}
-			else if(strpos($str,'</prop:')===0)	// closing property
-			{
-				$prop=strtolower($match[3][0]);
-				if(empty($stack))
-				{
-					$line=count(explode("\n",substr($input,0,$matchEnd+1)));
-					if($this->_tplFile===null)
-						throw new TConfigurationException('template_closingtag_unexpected',"Line $line","</prop:$prop>");
-					else
-						throw new TConfigurationException('template_closingtag_unexpected',"{$this->_tplFile} (Line $line)","</prop:$prop>");
-				}
-				$name=array_pop($stack);
-				if($name!=='@'.$prop)
-				{
-					if($name[0]==='@')
-						$tag='</prop:'.substr($name,1).'>';
-					else
-						$tag='</com:'.$name.'>';
-					$line=count(explode("\n",substr($input,0,$matchEnd+1)));
-					if($this->_tplFile===null)
-						throw new TConfigurationException('template_closingtag_expected',"Line $line",$tag);
-					else
-						throw new TConfigurationException('template_closingtag_expected',"{$this->_tplFile} (Line $line)",$tag);
-				}
-				if(($last=count($stack))<1 || $stack[$last-1][0]!=='@')
-				{
-					if($matchStart>$textStart && $container>=0)
+					$type=$match[1][0];
+					$attributes=$this->parseAttributes($match[2][0]);
+					$this->validateAttributes($type,$attributes);
+					$tpl[$c++]=array($container,$type,$attributes);
+					if($str[strlen($str)-2]!=='/')  // open tag
 					{
-						$value=substr($input,$textStart,$matchStart-$textStart);
-						$value=$this->parseAttribute($value);
-						$type=$tpl[$container][1];
-						try
-						{
-							$this->validateAttributes($type,array($prop=>$value));
-						}
-						catch(Exception $e)
-						{
-							$line=count(explode("\n",substr($input,0,$matchEnd+1)));
-							if($this->_tplFile===null)
-								throw new TConfigurationException('template_componenttag_invalid',"Line $line",$type,$e->getMessage());
-							else
-								throw new TConfigurationException('template_componenttag_invalid',"{$this->_tplFile} (Line $line)",$type,$e->getMessage());
-						}
-						$tpl[$container][2][$prop]=$value;
-						$textStart=$matchEnd+1;
+						array_push($stack,$type);
+						$container=$c-1;
 					}
-					$expectPropEnd=false;
 				}
-			}
-			else if(strpos($str,'<!--')===0)	// HTML comments
-			{
-				$state=0;
-			}
-			else if(strpos($str,'<!')===0)		// template comments
-			{
-				if($expectPropEnd)
+				else if(strpos($str,'</com:')===0)	// closing component tag
 				{
-					$line=count(explode("\n",substr($input,0,$matchEnd+1)));
-					if($this->_tplFile===null)
-						throw new TConfigurationException('template_comments_forbidden',"Line $line");
-					else
-						throw new TConfigurationException('template_comments_forbidden',"{$this->_tplFile} (Line $line)");
+					if($expectPropEnd)
+						continue;
+					if($matchStart>$textStart)
+						$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
+					$textStart=$matchEnd+1;
+					$type=$match[1][0];
+
+					if(empty($stack))
+						throw new TConfigurationException('template_closingtag_unexpected',"</com:$type>");
+
+					$name=array_pop($stack);
+					if($name!==$type)
+					{
+						$tag=$name[0]==='@' ? '</prop:'.substr($name,1).'>' : "</com:$name>";
+						throw new TConfigurationException('template_closingtag_expected',$tag);
+					}
+					$container=$tpl[$container][0];
 				}
-				if($matchStart>$textStart)
-					$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
-				$textStart=$matchEnd+1;
-			}
-			else
-			{
-				$line=count(explode("\n",substr($input,0,$matchEnd+1)));
-				if($this->_tplFile===null)
-					throw new TConfigurationException('template_matching_unexpected',"Line $line",$match);
+				else if(strpos($str,'<%@')===0)	// directive
+				{
+					if($expectPropEnd)
+						continue;
+					if($matchStart>$textStart)
+						$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
+					$textStart=$matchEnd+1;
+					if(isset($tpl[0]))
+						throw new TConfigurationException('template_directive_nonunique');
+					$this->_directive=$this->parseAttributes($match[4][0]);
+				}
+				else if(strpos($str,'<%')===0)	// expression
+				{
+					if($expectPropEnd)
+						continue;
+					if($matchStart>$textStart)
+						$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
+					$textStart=$matchEnd+1;
+					if($str[2]==='=')	// expression
+						$tpl[$c++]=array($container,'TExpression',array('Expression'=>THttpUtility::htmlDecode($match[5][0])));
+					else if($str[2]==='%')  // statements
+						$tpl[$c++]=array($container,'TStatements',array('Statements'=>THttpUtility::htmlDecode($match[5][0])));
+					else
+						$tpl[$c++]=array($container,'TLiteral',array('Text'=>$this->parseAttribute($str)));
+				}
+				else if(strpos($str,'<prop:')===0)	// opening property
+				{
+					$prop=strtolower($match[3][0]);
+					array_push($stack,'@'.$prop);
+					if(!$expectPropEnd)
+					{
+						if($matchStart>$textStart)
+							$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
+						$textStart=$matchEnd+1;
+						$expectPropEnd=true;
+					}
+				}
+				else if(strpos($str,'</prop:')===0)	// closing property
+				{
+					$prop=strtolower($match[3][0]);
+					if(empty($stack))
+					{
+						$line=count(explode("\n",substr($input,0,$matchEnd+1)));
+						if($this->_tplFile===null)
+							throw new TConfigurationException('template_closingtag_unexpected',"Line $line","</prop:$prop>");
+						else
+							throw new TConfigurationException('template_closingtag_unexpected',"{$this->_tplFile} (Line $line)","</prop:$prop>");
+					}
+					$name=array_pop($stack);
+					if($name!=='@'.$prop)
+					{
+						$tag=$name[0]==='@' ? '</prop:'.substr($name,1).'>' : "</com:$name>";
+						throw new TConfigurationException('template_closingtag_expected',$tag);
+					}
+					if(($last=count($stack))<1 || $stack[$last-1][0]!=='@')
+					{
+						if($matchStart>$textStart && $container>=0)
+						{
+							$value=substr($input,$textStart,$matchStart-$textStart);
+							$value=$this->parseAttribute($value);
+							$type=$tpl[$container][1];
+							$this->validateAttributes($type,array($prop=>$value));
+							$tpl[$container][2][$prop]=$value;
+							$textStart=$matchEnd+1;
+						}
+						$expectPropEnd=false;
+					}
+				}
+				else if(strpos($str,'<!--')===0)	// HTML comments
+				{
+					$state=0;
+				}
+				else if(strpos($str,'<!')===0)		// template comments
+				{
+					if($expectPropEnd)
+						throw new TConfigurationException('template_comments_forbidden');
+					if($matchStart>$textStart)
+						$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
+					$textStart=$matchEnd+1;
+				}
 				else
-					throw new TConfigurationException('template_matching_unexpected',"{$this->_tplFile} (Line $line)",$match);
+					throw new TConfigurationException('template_matching_unexpected',$match);
 			}
+			if(!empty($stack))
+			{
+				$name=array_pop($stack);
+				$tag=$name[0]==='@' ? '</prop:'.substr($name,1).'>' : "</com:$name>";
+				throw new TConfigurationException('template_closingtag_expected',$tag);
+			}
+			if($textStart<strlen($input))
+				$tpl[$c++]=array($container,substr($input,$textStart));
 		}
-		if(!empty($stack))
+		catch(Exception $e)
 		{
-			$name=array_pop($stack);
-			if($name[0]==='@')
-				$tag='</prop:'.substr($name,1).'>';
+			if($matchEnd===0)
+				$line=1;
 			else
-				$tag='</com:'.$name.'>';
-			$line=count(explode("\n",substr($input,0,$matchEnd+1)));
-			if($this->_tplFile===null)
-				throw new TConfigurationException('template_closingtag_expected',"Line $line",$tag);
+				$line=count(explode("\n",substr($input,0,$matchEnd+1)));
+			if(empty($this->_tplFile))
+				throw new TConfigurationException('template_format_invalid2',$line,$e->getMessage(),$input);
 			else
-				throw new TConfigurationException('template_closingtag_expected',"{$this->_tplFile} (Line $line)",$tag);
+				throw new TConfigurationException('template_format_invalid',$this->_tplFile,$line,$e->getMessage());
 		}
-		if($textStart<strlen($input))
-			$tpl[$c++]=array($container,substr($input,$textStart));
 		return $tpl;
 	}
 
@@ -697,13 +645,13 @@ class TTemplate extends TComponent implements ITemplate
 					// a subproperty, so the first segment must be readable
 					$subname=substr($name,0,$pos);
 					if(!is_callable(array($className,'get'.$subname)))
-						throw new TConfigurationException('template_property_unknown',$subname);
+						throw new TConfigurationException('template_property_unknown',$type,$subname);
 				}
 				else if(strncasecmp($name,'on',2)===0)
 				{
 					// an event
 					if(!is_callable(array($className,$name)))
-						throw new TConfigurationException('template_event_unknown',$name);
+						throw new TConfigurationException('template_event_unknown',$type,$name);
 				}
 				else
 				{
@@ -711,9 +659,9 @@ class TTemplate extends TComponent implements ITemplate
 					if(!is_callable(array($className,'set'.$name)))
 					{
 						if(is_callable(array($className,'get'.$name)))
-							throw new TConfigurationException('template_property_readonly',$name);
+							throw new TConfigurationException('template_property_readonly',$type,$name);
 						else
-							throw new TConfigurationException('template_property_unknown',$name);
+							throw new TConfigurationException('template_property_unknown',$type,$name);
 					}
 				}
 			}
@@ -723,25 +671,25 @@ class TTemplate extends TComponent implements ITemplate
 			foreach($attributes as $name=>$att)
 			{
 				if($att[0]===self::CONFIG_DATABIND)
-					throw new TConfigurationException('template_databind_forbidden',$name);
+					throw new TConfigurationException('template_databind_forbidden',$type,$name);
 				if(($pos=strpos($name,'.'))!==false)
 				{
 					// a subproperty, so the first segment must be readable
 					$subname=substr($name,0,$pos);
 					if(!is_callable(array($className,'get'.$subname)))
-						throw new TConfigurationException('template_property_unknown',$subname);
+						throw new TConfigurationException('template_property_unknown',$type,$subname);
 				}
 				else if(strncasecmp($name,'on',2)===0)
-					throw new TConfigurationException('template_event_forbidden',$name);
+					throw new TConfigurationException('template_event_forbidden',$type,$name);
 				else
 				{
 					// id is still alowed for TComponent, even if id property doesn't exist
 					if(strcasecmp($name,'id')!==0 && !is_callable(array($className,'set'.$name)))
 					{
 						if(is_callable(array($className,'get'.$name)))
-							throw new TConfigurationException('template_property_readonly',$name);
+							throw new TConfigurationException('template_property_readonly',$type,$name);
 						else
-							throw new TConfigurationException('template_property_unknown',$name);
+							throw new TConfigurationException('template_property_unknown',$type,$name);
 					}
 				}
 			}
