@@ -31,21 +31,16 @@ Prado::using('System.Web.UI.WebControls.TDataGridColumn');
 class TTemplateColumn extends TDataGridColumn
 {
 	/**
-	 * Number of seconds that a cached template will expire after
-	 */
-	const CACHE_EXPIRY=18000;
-	/**
 	 * Various item templates
 	 * @var string
 	 */
-	private $_itemTemplate='';
-	private $_editItemTemplate='';
-	private $_headerTemplate='';
-	private $_footerTemplate='';
-	private static $_templates=array();
+	private $_itemTemplate=null;
+	private $_editItemTemplate=null;
+	private $_headerTemplate=null;
+	private $_footerTemplate=null;
 
 	/**
-	 * @return string the edit item template string
+	 * @return ITemplate the edit item template
 	 */
 	public function getEditItemTemplate()
 	{
@@ -53,16 +48,19 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * Sets the edit item template string
-	 * @param string the edit item template
+	 * @param ITemplate the edit item template
+	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setEditItemTemplate($value)
 	{
-		$this->_editItemTemplate=$value;
+		if($value instanceof ITemplate || $value===null)
+			$this->_editItemTemplate=$value;
+		else
+			throw new TInvalidDataTypeException('templatecolumn_template_required','EditItemTemplate');
 	}
 
 	/**
-	 * @return string the template string for the item
+	 * @return ITemplate the item template
 	 */
 	public function getItemTemplate()
 	{
@@ -70,16 +68,19 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * Sets the template string for the item
-	 * @param string the item template
+	 * @param ITemplate the item template
+	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setItemTemplate($value)
 	{
-		$this->_itemTemplate=$value;
+		if($value instanceof ITemplate || $value===null)
+			$this->_itemTemplate=$value;
+		else
+			throw new TInvalidDataTypeException('templatecolumn_template_required','ItemTemplate');
 	}
 
 	/**
-	 * @return string the header template string
+	 * @return ITemplate the header template
 	 */
 	public function getHeaderTemplate()
 	{
@@ -87,17 +88,19 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * Sets the header template.
-	 * The template will be parsed immediately.
-	 * @param string the header template
+	 * @param ITemplate the header template
+	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setHeaderTemplate($value)
 	{
-		$this->_headerTemplate=$value;
+		if($value instanceof ITemplate || $value===null)
+			$this->_headerTemplate=$value;
+		else
+			throw new TInvalidDataTypeException('templatecolumn_template_required','HeaderTemplate');
 	}
 
 	/**
-	 * @return string the footer template string
+	 * @return ITemplate the footer template
 	 */
 	public function getFooterTemplate()
 	{
@@ -105,13 +108,15 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * Sets the footer template.
-	 * The template will be parsed immediately.
-	 * @param string the footer template
+	 * @param ITemplate the footer template
+	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setFooterTemplate($value)
 	{
-		$this->_footerTemplate=$value;
+		if($value instanceof ITemplate || $value===null)
+			$this->_footerTemplate=$value;
+		else
+			throw new TInvalidDataTypeException('templatecolumn_template_required','FooterTemplate');
 	}
 
 	/**
@@ -126,58 +131,29 @@ class TTemplateColumn extends TDataGridColumn
 	public function initializeCell($cell,$columnIndex,$itemType)
 	{
 		parent::initializeCell($cell,$columnIndex,$itemType);
-		$tplContent='';
+		$template=null;
 		switch($itemType)
 		{
 			case 'Header':
-				$tplContent=$this->_headerTemplate;
+				$template=$this->_headerTemplate;
 				break;
 			case 'Footer':
-				$tplContent=$this->_footerTemplate;
+				$template=$this->_footerTemplate;
 				break;
 			case 'Item':
 			case 'AlternatingItem':
 			case 'SelectedItem':
-				$tplContent=$this->_itemTemplate;
+				$template=$this->_itemTemplate;
 				break;
 			case 'EditItem':
-				$tplContent=$this->_editItemTemplate===''?$this->_itemTemplate:$this->_editItemTemplate;
+				$template=$this->_editItemTemplate===null?$this->_itemTemplate:$this->_editItemTemplate;
 				break;
 		}
-		if($tplContent!=='')
+		if($template!==null)
 		{
 			$cell->setText('');
 			$cell->getControls()->clear();
-			$this->createTemplate($tplContent)->instantiateIn($cell);
-		}
-	}
-
-	/**
-	 * Parses item template.
-	 * This method uses caching technique to accelerate template parsing.
-	 * @param string template string
-	 * @return ITemplate parsed template object
-	 */
-	protected function createTemplate($str)
-	{
-		$key=md5($str);
-		if(isset(self::$_templates[$key]))
-			return self::$_templates[$key];
-		else
-		{
-			$contextPath=$this->getOwner()->getTemplateControl()->getTemplate()->getContextPath();
-			if(($cache=$this->getApplication()->getCache())!==null)
-			{
-				if(($template=$cache->get($key))===null)
-				{
-					$template=new TTemplate($str,$contextPath);
-					$cache->set($key,$template,self::CACHE_EXPIRY);
-				}
-			}
-			else
-				$template=new TTemplate($str,$contextPath);
-			self::$_templates[$key]=$template;
-			return $template;
+			$template->instantiateIn($cell);
 		}
 	}
 }

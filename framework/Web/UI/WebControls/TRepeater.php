@@ -57,33 +57,25 @@ Prado::using('System.Web.UI.WebControls.TDataBoundControl');
 class TRepeater extends TDataBoundControl implements INamingContainer
 {
 	/**
-	 * Number of seconds that a cached template will expire after
+	 * @var ITemplate template for repeater items
 	 */
-	const CACHE_EXPIRY=18000;
+	private $_itemTemplate=null;
 	/**
-	 * @var array in-memory cache of parsed templates
+	 * @var ITemplate template for each alternating item
 	 */
-	private static $_templates=array();
+	private $_alternatingItemTemplate=null;
 	/**
-	 * @var string template for each item
+	 * @var ITemplate template for header
 	 */
-	private $_itemTemplate='';
+	private $_headerTemplate=null;
 	/**
-	 * @var string template for each alternating item
+	 * @var ITemplate template for footer
 	 */
-	private $_alternatingItemTemplate='';
+	private $_footerTemplate=null;
 	/**
-	 * @var string template for header
+	 * @var ITemplate template for separator
 	 */
-	private $_headerTemplate='';
-	/**
-	 * @var string template for footer
-	 */
-	private $_footerTemplate='';
-	/**
-	 * @var string template for separator
-	 */
-	private $_separatorTemplate='';
+	private $_separatorTemplate=null;
 	/**
 	 * @var TRepeaterItemCollection list of repeater items
 	 */
@@ -107,7 +99,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	}
 
 	/**
-	 * @return string the template string for the item
+	 * @return ITemplate the template for repeater items
 	 */
 	public function getItemTemplate()
 	{
@@ -115,16 +107,19 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	}
 
 	/**
-	 * Sets the template string for the item
-	 * @param string the item template
+	 * @param ITemplate the template for repeater items
+	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setItemTemplate($value)
 	{
-		$this->_itemTemplate=$value;
+		if($value instanceof ITemplate || $value===null)
+			$this->_itemTemplate=$value;
+		else
+			throw new TInvalidDataTypeException('repeater_template_required','ItemTemplate');
 	}
 
 	/**
-	 * @return string the alternative template string for the item
+	 * @return ITemplate the alternative template string for the item
 	 */
 	public function getAlternatingItemTemplate()
 	{
@@ -132,16 +127,19 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	}
 
 	/**
-	 * Sets the alternative template string for the item
-	 * @param string the alternative item template
+	 * @param ITemplate the alternative item template
+	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setAlternatingItemTemplate($value)
 	{
-		$this->_alternatingItemTemplate=$value;
+		if($value instanceof ITemplate || $value===null)
+			$this->_alternatingItemTemplate=$value;
+		else
+			throw new TInvalidDataTypeException('repeater_template_required','AlternatingItemTemplate');
 	}
 
 	/**
-	 * @return string the header template string
+	 * @return ITemplate the header template
 	 */
 	public function getHeaderTemplate()
 	{
@@ -149,16 +147,19 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	}
 
 	/**
-	 * Sets the header template.
-	 * @param string the header template
+	 * @param ITemplate the header template
+	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setHeaderTemplate($value)
 	{
-		$this->_headerTemplate=$value;
+		if($value instanceof ITemplate || $value===null)
+			$this->_headerTemplate=$value;
+		else
+			throw new TInvalidDataTypeException('repeater_template_required','HeaderTemplate');
 	}
 
 	/**
-	 * @return string the footer template string
+	 * @return ITemplate the footer template
 	 */
 	public function getFooterTemplate()
 	{
@@ -166,16 +167,19 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	}
 
 	/**
-	 * Sets the footer template.
-	 * @param string the footer template
+	 * @param ITemplate the footer template
+	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setFooterTemplate($value)
 	{
-		$this->_footerTemplate=$value;
+		if($value instanceof ITemplate || $value===null)
+			$this->_footerTemplate=$value;
+		else
+			throw new TInvalidDataTypeException('repeater_template_required','FooterTemplate');
 	}
 
 	/**
-	 * @return string the separator template string
+	 * @return ITemplate the separator template
 	 */
 	public function getSeparatorTemplate()
 	{
@@ -183,12 +187,15 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	}
 
 	/**
-	 * Sets the separator template string
-	 * @param string the separator template
+	 * @param ITemplate the separator template
+	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setSeparatorTemplate($value)
 	{
-		$this->_separatorTemplate=$value;
+		if($value instanceof ITemplate || $value===null)
+			$this->_separatorTemplate=$value;
+		else
+			throw new TInvalidDataTypeException('repeater_template_required','SeparatorTemplate');
 	}
 
 	/**
@@ -267,50 +274,21 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 */
 	protected function initializeItem($item)
 	{
-		$tplContent='';
+		$template=null;
 		switch($item->getItemType())
 		{
-			case 'Header': $tplContent=$this->_headerTemplate; break;
-			case 'Footer': $tplContent=$this->_footerTemplate; break;
-			case 'Item': $tplContent=$this->_itemTemplate; break;
-			case 'Separator': $tplContent=$this->_separatorTemplate; break;
-			case 'AlternatingItem': $tplContent=$this->_alternatingItemTemplate==='' ? $this->_itemTemplate : $this->_alternatingItemTemplate; break;
+			case 'Header': $template=$this->_headerTemplate; break;
+			case 'Footer': $template=$this->_footerTemplate; break;
+			case 'Item': $template=$this->_itemTemplate; break;
+			case 'Separator': $template=$this->_separatorTemplate; break;
+			case 'AlternatingItem': $template=$this->_alternatingItemTemplate===null ? $this->_itemTemplate : $this->_alternatingItemTemplate; break;
 			case 'SelectedItem':
 			case 'EditItem':
 			default:
 				break;
 		}
-		if($tplContent!=='')
-			$this->createTemplate($tplContent)->instantiateIn($item);
-	}
-
-	/**
-	 * Parses item template.
-	 * This method uses caching technique to accelerate template parsing.
-	 * @param string template string
-	 * @return ITemplate parsed template object
-	 */
-	protected function createTemplate($str)
-	{
-		$key=md5($str);
-		if(isset(self::$_templates[$key]))
-			return self::$_templates[$key];
-		else
-		{
-			$contextPath=$this->getTemplateControl()->getTemplate()->getContextPath();
-			if(($cache=$this->getApplication()->getCache())!==null)
-			{
-				if(($template=$cache->get($key))===null)
-				{
-					$template=new TTemplate($str,$contextPath);
-					$cache->set($key,$template,self::CACHE_EXPIRY);
-				}
-			}
-			else
-				$template=new TTemplate($str,$contextPath);
-			self::$_templates[$key]=$template;
-			return $template;
-		}
+		if($template!==null)
+			$template->instantiateIn($item);
 	}
 
 	/**
@@ -369,8 +347,8 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 		if(($itemCount=$this->getViewState('ItemCount',0))>0)
 		{
 			$items=$this->getItems();
-			$hasSeparator=$this->_separatorTemplate!=='';
-			if($this->_headerTemplate!=='')
+			$hasSeparator=$this->_separatorTemplate!==null;
+			if($this->_headerTemplate!==null)
 				$this->_header=$this->createItemInternal(-1,'Header',false,null);
 			for($i=0;$i<$itemCount;++$i)
 			{
@@ -379,7 +357,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 				$itemType=$i%2==0?'Item':'AlternatingItem';
 				$items->add($this->createItemInternal($i,$itemType,false,null));
 			}
-			if($this->_footerTemplate!=='')
+			if($this->_footerTemplate!==null)
 				$this->_footer=$this->createItemInternal(-1,'Footer',false,null);
 		}
 		$this->clearChildState();
@@ -396,10 +374,10 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 		$this->reset();
 		$itemIndex=0;
 		$items=$this->getItems();
-		$hasSeparator=$this->_separatorTemplate!=='';
+		$hasSeparator=$this->_separatorTemplate!==null;
 		foreach($data as $dataItem)
 		{
-			if($itemIndex===0 && $this->_headerTemplate!=='')
+			if($itemIndex===0 && $this->_headerTemplate!==null)
 				$this->_header=$this->createItemInternal(-1,'Header',true,null);
 			if($hasSeparator && $itemIndex>0)
 				$this->createItemInternal($itemIndex-1,'Separator',true,null);
@@ -407,7 +385,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 			$items->add($this->createItemInternal($itemIndex,$itemType,true,$dataItem));
 			$itemIndex++;
 		}
-		if($itemIndex>0 && $this->_footerTemplate!=='')
+		if($itemIndex>0 && $this->_footerTemplate!==null)
 			$this->_footer=$this->createItemInternal(-1,'Footer',true,null);
 		$this->setViewState('ItemCount',$itemIndex,0);
 	}

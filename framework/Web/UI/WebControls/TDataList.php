@@ -94,27 +94,19 @@ Prado::using('System.Web.UI.WebControls.TRepeatInfo');
 class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUser
 {
 	/**
-	 * Number of seconds that a cached template will expire after
-	 */
-	const CACHE_EXPIRY=18000;
-	/**
-	 * @var array in-memory cache of parsed templates
-	 */
-	private static $_templates=array();
-	/**
 	 * @var TDataListItemCollection item list
 	 */
 	private $_items=null;
 	/**
-	 * @var string Various item templates
+	 * @var Itemplate various item templates
 	 */
-	private $_itemTemplate='';
-	private $_alternatingItemTemplate='';
-	private $_selectedItemTemplate='';
-	private $_editItemTemplate='';
-	private $_headerTemplate='';
-	private $_footerTemplate='';
-	private $_separatorTemplate='';
+	private $_itemTemplate=null;
+	private $_alternatingItemTemplate=null;
+	private $_selectedItemTemplate=null;
+	private $_editItemTemplate=null;
+	private $_headerTemplate=null;
+	private $_footerTemplate=null;
+	private $_separatorTemplate=null;
 	/**
 	 * @var TDatListItem header item
 	 */
@@ -143,7 +135,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * @return string the template for item
+	 * @return ITemplate the template for item
 	 */
 	public function getItemTemplate()
 	{
@@ -151,11 +143,15 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * @param string the template for item
+	 * @param ITemplate the template for item
+	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setItemTemplate($value)
 	{
-		$this->_itemTemplate=$value;
+		if($value instanceof ITemplate || $value===null)
+			$this->_itemTemplate=$value;
+		else
+			throw new TInvalidDataTypeException('datalist_template_required','ItemTemplate');
 	}
 
 	/**
@@ -172,7 +168,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * @return string the template for each alternating item
+	 * @return ITemplate the template for each alternating item
 	 */
 	public function getAlternatingItemTemplate()
 	{
@@ -180,11 +176,15 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * @param string the template for each alternating item
+	 * @param ITemplate the template for each alternating item
+	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setAlternatingItemTemplate($value)
 	{
-		$this->_alternatingItemTemplate=$value;
+		if($value instanceof ITemplate || $value===null)
+			$this->_alternatingItemTemplate=$value;
+		else
+			throw new TInvalidDataTypeException('datalist_template_required','AlternatingItemType');
 	}
 
 	/**
@@ -201,7 +201,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * @return TTableItemStyle the selected item template string
+	 * @return ITemplate the selected item template
 	 */
 	public function getSelectedItemTemplate()
 	{
@@ -209,11 +209,15 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * @param string the selected item template
+	 * @param ITemplate the selected item template
+	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setSelectedItemTemplate($value)
 	{
-		$this->_selectedItemTemplate=$value;
+		if($value instanceof ITemplate || $value===null)
+			$this->_selectedItemTemplate=$value;
+		else
+			throw new TInvalidDataTypeException('datalist_template_required','SelectedItemTemplate');
 	}
 
 	/**
@@ -230,7 +234,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * @return string the edit item template string
+	 * @return ITemplate the edit item template
 	 */
 	public function getEditItemTemplate()
 	{
@@ -238,11 +242,15 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * @param string the edit item template
+	 * @param ITemplate the edit item template
+	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setEditItemTemplate($value)
 	{
-		$this->_editItemTemplate=$value;
+		if($value instanceof ITemplate || $value===null)
+			$this->_editItemTemplate=$value;
+		else
+			throw new TInvalidDataTypeException('datalist_template_required','EditItemTemplate');
 	}
 
 	/**
@@ -259,7 +267,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * @return string the header template string
+	 * @return ITemplate the header template
 	 */
 	public function getHeaderTemplate()
 	{
@@ -267,11 +275,15 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * @param string the header template
+	 * @param ITemplate the header template
+	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setHeaderTemplate($value)
 	{
-		$this->_headerTemplate=$value;
+		if($value instanceof ITemplate || $value===null)
+			$this->_headerTemplate=$value;
+		else
+			throw new TInvalidDataTypeException('datalist_template_required','HeaderTemplate');
 	}
 
 	/**
@@ -296,7 +308,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * @return string the footer template string
+	 * @return ITemplate the footer template
 	 */
 	public function getFooterTemplate()
 	{
@@ -304,11 +316,15 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * @param string the footer template
+	 * @param ITemplate the footer template
+	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setFooterTemplate($value)
 	{
-		$this->_footerTemplate=$value;
+		if($value instanceof ITemplate || $value===null)
+			$this->_footerTemplate=$value;
+		else
+			throw new TInvalidDataTypeException('datalist_template_required','FooterTemplate');
 	}
 
 	/**
@@ -333,7 +349,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * @return TTableItemStyle the separator template string
+	 * @return ITemplate the separator template
 	 */
 	public function getSeparatorTemplate()
 	{
@@ -341,11 +357,15 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * @param string the separator template
+	 * @param ITemplate the separator template
+	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setSeparatorTemplate($value)
 	{
-		$this->_separatorTemplate=$value;
+		if($value instanceof ITemplate || $value===null)
+			$this->_separatorTemplate=$value;
+		else
+			throw new TInvalidDataTypeException('datalist_template_required','SeparatorTemplate');
 	}
 
 	/**
@@ -742,7 +762,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 */
 	public function getHasHeader()
 	{
-		return ($this->getShowHeader() && $this->_headerTemplate!=='');
+		return ($this->getShowHeader() && $this->_headerTemplate!==null);
 	}
 
 	/**
@@ -752,7 +772,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 */
 	public function getHasFooter()
 	{
-		return ($this->getShowFooter() && $this->_footerTemplate!=='');
+		return ($this->getShowFooter() && $this->_footerTemplate!==null);
 	}
 
 	/**
@@ -762,7 +782,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 */
 	public function getHasSeparators()
 	{
-		return $this->_separatorTemplate!=='';
+		return $this->_separatorTemplate!==null;
 	}
 
 	/**
@@ -815,9 +835,9 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 				return $this->getItems()->itemAt($index);
 			case 'Separator':
 				$i=$index+$index+1;
-				if($this->_headerTemplate!=='')
+				if($this->_headerTemplate!==null)
 					$i++;
-				return $this->getControls->itemAt($i);
+				return $this->getControls()->itemAt($i);
 		}
 		return null;
 	}
@@ -949,74 +969,45 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 */
 	protected function initializeItem($item)
 	{
-		$tplContent='';
+		$template=null;
 		switch($item->getItemType())
 		{
 			case 'Header':
-				$tplContent=$this->_headerTemplate;
+				$template=$this->_headerTemplate;
 				break;
 			case 'Footer':
-				$tplContent=$this->_footerTemplate;
+				$template=$this->_footerTemplate;
 				break;
 			case 'Item':
-				$tplContent=$this->_itemTemplate;
+				$template=$this->_itemTemplate;
 				break;
 			case 'AlternatingItem':
-				if(($tplContent=$this->_alternatingItemTemplate)==='')
-					$tplContent=$this->_itemTemplate;
+				if(($template=$this->_alternatingItemTemplate)===null)
+					$template=$this->_itemTemplate;
 				break;
 			case 'Separator':
-				$tplContent=$this->_separatorTemplate;
+				$template=$this->_separatorTemplate;
 				break;
 			case 'SelectedItem':
-				if(($tplContent=$this->_selectedItemTemplate)==='')
+				if(($template=$this->_selectedItemTemplate)===null)
 				{
-					if(!($item->getItemIndex()%2) || ($tplContent=$this->_alternatingItemTemplate)==='')
-						$tplContent=$this->_itemTemplate;
+					if(!($item->getItemIndex()%2) || ($template=$this->_alternatingItemTemplate)===null)
+						$template=$this->_itemTemplate;
 				}
 				break;
 			case 'EditItem':
-				if(($tplContent=$this->_editItemTemplate)==='')
+				if(($template=$this->_editItemTemplate)===null)
 				{
-					if($item->getItemIndex()!==$this->getSelectedItemIndex() || ($tplContent=$this->_selectedItemTemplate)==='')
-						if(!($item->getItemIndex()%2) || ($tplContent=$this->_alternatingItemTemplate)==='')
-							$tplContent=$this->_itemTemplate;
+					if($item->getItemIndex()!==$this->getSelectedItemIndex() || ($template=$this->_selectedItemTemplate)===null)
+						if(!($item->getItemIndex()%2) || ($template=$this->_alternatingItemTemplate)===null)
+							$template=$this->_itemTemplate;
 				}
 				break;
 			default:
 				break;
 		}
-		if($tplContent!=='')
-			$this->createTemplate($tplContent)->instantiateIn($item);
-	}
-
-	/**
-	 * Parses item template.
-	 * This method uses caching technique to accelerate template parsing.
-	 * @param string template string
-	 * @return ITemplate parsed template object
-	 */
-	protected function createTemplate($str)
-	{
-		$key=md5($str);
-		if(isset(self::$_templates[$key]))
-			return self::$_templates[$key];
-		else
-		{
-			$contextPath=$this->getTemplateControl()->getTemplate()->getContextPath();
-			if(($cache=$this->getApplication()->getCache())!==null)
-			{
-				if(($template=$cache->get($key))===null)
-				{
-					$template=new TTemplate($str,$contextPath);
-					$cache->set($key,$template,self::CACHE_EXPIRY);
-				}
-			}
-			else
-				$template=new TTemplate($str,$contextPath);
-			self::$_templates[$key]=$template;
-			return $template;
-		}
+		if($template!==null)
+			$template->instantiateIn($item);
 	}
 
 	/**
@@ -1066,9 +1057,9 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 			$items=$this->getItems();
 			$selectedIndex=$this->getSelectedItemIndex();
 			$editIndex=$this->getEditItemIndex();
-			if($this->_headerTemplate!=='')
+			if($this->_headerTemplate!==null)
 				$this->_header=$this->createItemInternal(-1,'Header',false,null);
-			$hasSeparator=$this->_separatorTemplate!=='';
+			$hasSeparator=$this->_separatorTemplate!==null;
 			for($i=0;$i<$itemCount;++$i)
 			{
 				if($hasSeparator && $i>0)
@@ -1081,7 +1072,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 					$itemType=$i%2?'AlternatingItem':'Item';
 				$items->add($this->createItemInternal($i,$itemType,false,null));
 			}
-			if($this->_footerTemplate!=='')
+			if($this->_footerTemplate!==null)
 				$this->_footer=$this->createItemInternal(-1,'Footer',false,null);
 		}
 		$this->clearChildState();
@@ -1101,14 +1092,14 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 		$keyField=$this->getDataKeyField();
 		$itemIndex=0;
 		$items=$this->getItems();
-		$hasSeparator=$this->_separatorTemplate!=='';
+		$hasSeparator=$this->_separatorTemplate!==null;
 		$selectedIndex=$this->getSelectedItemIndex();
 		$editIndex=$this->getEditItemIndex();
 		foreach($data as $dataItem)
 		{
 			if($keyField!=='')
 				$keys->add($this->getDataFieldValue($dataItem,$keyField));
-			if($itemIndex===0 && $this->_headerTemplate!=='')
+			if($itemIndex===0 && $this->_headerTemplate!==null)
 				$this->_header=$this->createItemInternal(-1,'Header',true,null);
 			if($hasSeparator && $itemIndex>0)
 				$this->createItemInternal($itemIndex-1,'Separator',true,null);
@@ -1121,7 +1112,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 			$items->add($this->createItemInternal($itemIndex,$itemType,true,$dataItem));
 			$itemIndex++;
 		}
-		if($itemIndex>0 && $this->_footerTemplate!=='')
+		if($itemIndex>0 && $this->_footerTemplate!==null)
 			$this->_footer=$this->createItemInternal(-1,'Footer',true,null);
 		$this->setViewState('ItemCount',$itemIndex,0);
 	}

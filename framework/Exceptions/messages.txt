@@ -186,3 +186,7 @@ basevalidator_controltovalidate_invalid = TBaseValidator.ControlToValidate is em
 basevalidator_validatable_required		= TBaseValidator.ControlToValidate must point to a control implementing IValidatable interface.
 
 comparevalidator_controltocompare_invalid = TCompareValidator.ControlToCompare contains an invalid control ID path.
+
+repeater_template_required				= TRepeater.%s requires a template instance implementing ITemplate interface.
+datalist_template_required				= TDataList.%s requires a template instance implementing ITemplate interface.
+templatecolumn_template_required		= TTemplateColumn.%s requires a template instance implementing ITemplate interface.
