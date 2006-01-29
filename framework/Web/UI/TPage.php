@@ -121,21 +121,6 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * If initial property values are given, they will be set to the page.
-	 * @param array initial property values for the page.
-	 */
-	public function initializeProperties($initProperties=null)
-	{
-		Prado::trace('Constructing page','System.Web.UI.TPage');
-		if(is_array($initProperties))
-		{
-			Prado::trace('Initializing page properties specified in configurations','System.Web.UI.TPage');
-			foreach($initProperties as $name=>$value)
-				$this->setSubProperty($name,$value);
-		}
-	}
-
-	/**
 	 * Runs through the page lifecycles.
 	 * This method runs through the page lifecycles.
 	 * @param THtmlTextWriter the HTML writer

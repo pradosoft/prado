@@ -106,6 +106,7 @@ template_databind_forbidden				= %s is a non-control component. No databinding e
 template_component_required				= '%s' is not a component. Only components can appear in a template.
 template_format_invalid					= Error in %s (line %d) : %s
 template_format_invalid2				= Error at line %d of the following template: %s %s
+template_eventhandler_invalid			= An invalid event handler is attached to %s's event '%s'.
 
 xmldocument_file_read_failed			= TXmlDocument is unable to read file '%s'.
 xmldocument_file_write_failed			= TXmlDocument is unable to write file '%s'.

@@ -442,10 +442,15 @@ class TPageService extends TService
 			}
 			else
 				$className='TPage';
-			//allow the page constructor to change application settings before template is loaded
+
 			$this->_page=new $className();
-			$this->_properties['Template']=$this->getTemplateManager()->getTemplateByFileName($path.self::PAGE_FILE_EXT);
-			$this->_page->initializeProperties($this->_properties);
+
+			// initialize page properties with those set in configurations
+			foreach($this->_properties as $name=>$value)
+				$this->_page->setSubProperty($name,$value);
+
+			// set page template
+			$this->_page->setTemplate($this->getTemplateManager()->getTemplateByFileName($path.self::PAGE_FILE_EXT));
 		}
 		else
 			throw new THttpException(404,'pageservice_page_unknown',$this->_pagePath);
