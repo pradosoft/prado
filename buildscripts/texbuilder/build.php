@@ -1,5 +1,5 @@
 <?php
-//page root location 
+//page root location
 $base = realpath(dirname(__FILE__).'/../../demos/quickstart/protected/pages/');
 
 //list page into chapters
@@ -35,6 +35,11 @@ $pages['Controls'] = array(
 	'Controls/DataList.page',
 	'Controls/DataGrid.page');
 
+$pages['Security'] = array(
+	'Security/Auth.page',
+	'Security/ViewState.page',
+	'Security/XSS.page');
+
 $pages['Advanced Topics'] = array(
 	'Advanced/Assets.page',
 	'Advanced/MasterContent.page',
@@ -64,8 +69,8 @@ function include_image($matches)
 	$info = getimagesize($file);
 	switch($info[2])
 	{
-		case 1: 
-			$im = imagecreatefromgif($file); 
+		case 1:
+			$im = imagecreatefromgif($file);
 			break;
 		case 2: $im = imagecreatefromjpeg($file); break;
 		case 3: $im = imagecreatefrompng($file); break;
@@ -149,12 +154,12 @@ function parse_html($page,$html)
 	$html = preg_replace('/<\/com:TTextHighlighter>/', '`2`', $html);
 	$html = preg_replace_callback('/(`1`)([^`]*)(`2`)/m', 'escape_verbatim', $html);
 	$html = preg_replace_callback('/(<div class="source">)([^<]*)(<\/div>)/', 'escape_verbatim', $html);
-			
+
 	$html = preg_replace_callback('/<img\s+src="?<%~([^"]*)%>"?[^\\/]*\/>/', 'include_image', $html);
 
 	//runbar
-	$html = preg_replace('/<com:RunBar\s+PagePath="([^"]*)"\s+\/>/', 
-			'Try, \texttt{http://../quickstart/index.php?page=$1}', $html);
+	$html = preg_replace('/<com:RunBar\s+PagePath="([^"]*)"\s+\/>/',
+			'Try, \texttt{http://www.pradosoft.com/prado3/demos/quickstart/index.php?page=$1}', $html);
 
 	//text modifiers
 	$html = preg_replace('/<b>([^<]*)<\/b>/', '\textbf{$1}', $html);
