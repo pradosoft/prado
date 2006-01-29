@@ -28,7 +28,10 @@ The following template shows a component tag specifying the <tt>Text</tt> proper
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TButton Text="Register" OnClick="registerUser" />
 </com:TTextHighlighter>
-Keep it in mind that property names and event names are all case-insensitive, while component type names are case-sensitive. Event names always begin with <tt>On</tt>.
+Note, property names and event names are all case-insensitive, while component type names are case-sensitive. Event names always begin with <tt>On</tt>.
+</p>
+<p>
+Also note, initial values for properties whose name ends with <tt>Template</tt> are specially processed. In particular, the initial values are parsed as <tt>TTemplate</tt> objects. The <tt>ItemTemplate</tt> property of the <tt>TRepeater</tt> control is such an example.
 </p>
 <p>
 To deal conveniently with properties taking take big trunk of initial data, the following property initialization tag is introduced,
