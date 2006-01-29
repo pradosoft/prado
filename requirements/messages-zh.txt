@@ -11,3 +11,4 @@ Memcache extension optional = Memcache模块是可选的。如果它不存在，
 Zlib check = Zlib模块检查
 Zlib extension optional	= Zlib模块是可选的。如果它不存在，页面的状态信息将无法压缩，由此可能导致您的页面传送数据量增大。
 DOM extension required = DOM模块是必须的。如果它不存在，基于XML的各种配置文件将无法解析。
+ICONV extension optional = ICONV模块是可选的。如果它不存在，某些国际化控件将无法正常工作。
