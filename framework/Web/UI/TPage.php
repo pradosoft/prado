@@ -111,11 +111,13 @@ class TPage extends TTemplateControl
 	private $_previousPagePath='';
 
 	/**
-	 * Constructor, overrides parent implementation. Parent constructor called in initializeProperties.
+	 * Constructor.
+	 * Sets the page object to itself.
 	 */
 	public function __construct()
 	{
-	
+		parent::__construct();
+		$this->setPage($this);
 	}
 
 	/**
@@ -125,15 +127,12 @@ class TPage extends TTemplateControl
 	public function initializeProperties($initProperties=null)
 	{
 		Prado::trace('Constructing page','System.Web.UI.TPage');
-		$this->setPage($this);
 		if(is_array($initProperties))
 		{
 			Prado::trace('Initializing page properties specified in configurations','System.Web.UI.TPage');
 			foreach($initProperties as $name=>$value)
 				$this->setSubProperty($name,$value);
 		}
-		//ask template control to initialize
-		parent::__construct();
 	}
 
 	/**

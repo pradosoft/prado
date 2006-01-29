@@ -55,30 +55,17 @@ class TTemplateControl extends TControl implements INamingContainer
 	private $_placeholders=array();
 
 	/**
-	 * Constructor.
-	 * Loads template for the control class if not loaded.
-	 * Applies template directive if any.
-	 */
-	public function __construct()
-	{
-		if(($tpl=$this->getTemplate(true))!==null)
-		{
-			foreach($tpl->getDirective() as $name=>$value)
-				$this->setSubProperty($name,$value);
-		}
-	}
-
-	/**
-	 * @param boolean whether to attempt loading template if it is not loaded yet
+	 * Returns the template object associated with this control object.
 	 * @return ITemplate|null the parsed template, null if none
 	 */
-	public function getTemplate($load=false)
+	public function getTemplate()
 	{
 		if($this->_localTemplate===null)
 		{
 			$class=get_class($this);
-			$tpl=isset(self::$_template[$class])?self::$_template[$class]:null;
-			return ($tpl===null && $load)?$this->loadTemplate():$tpl;
+			if(!isset(self::$_template[$class]))
+				self::$_template[$class]=$this->loadTemplate();
+			return self::$_template[$class];
 		}
 		else
 			return $this->_localTemplate;
@@ -96,7 +83,7 @@ class TTemplateControl extends TControl implements INamingContainer
 	}
 
 	/**
-	 * Loads and parses the control template
+	 * Loads the template associated with this control class.
 	 * @return ITemplate the parsed template structure
 	 */
 	protected function loadTemplate()
@@ -114,8 +101,12 @@ class TTemplateControl extends TControl implements INamingContainer
 	 */
 	protected function createChildControls()
 	{
-		if($tpl=$this->getTemplate())
+		if($tpl=$this->getTemplate(true))
+		{
+			foreach($tpl->getDirective() as $name=>$value)
+				$this->setSubProperty($name,$value);
 			$tpl->instantiateIn($this);
+		}
 	}
 
 	/**
