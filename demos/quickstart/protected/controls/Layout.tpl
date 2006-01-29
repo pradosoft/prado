@@ -15,6 +15,7 @@
 <div id="menu">
 <a href="?">Home</a> |
 <a href="http://www.pradosoft.com">PradoSoft.com</a> |
+<a href="prado3_quick_start.pdf">Download in PDF</a> |
 <com:TLinkButton Text="Hide TOC" OnClick="toggleTopicPanel" />
 </div>
 

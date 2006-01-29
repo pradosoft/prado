@@ -231,7 +231,7 @@ foreach($pages as $chapter => $sections)
 
 if($count > 1)
 {
-	echo "** Use Latex and pdfText to compile the main tex file. **\n";
+	echo "** Use pdftex to compile prado3_quick_start.tex to obtain PDF version of quickstart tutorial. **\n";
 }
 
 
