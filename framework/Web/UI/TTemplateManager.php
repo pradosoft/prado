@@ -355,7 +355,8 @@ class TTemplate extends TComponent implements ITemplate
 					$component->$setter($this->getApplication()->getParameters()->itemAt($value[1]));
 					break;
 				case self::CONFIG_LOCALIZATION:
-					$component->$setter(localize($value[1]));
+					Prado::using('System.I18N.Translation');
+					$component->$setter(localize(trim($value[1])));
 					break;
 				default:	// an error if reaching here
 					break;
