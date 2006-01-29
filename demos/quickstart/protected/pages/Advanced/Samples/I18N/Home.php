@@ -1,24 +1,25 @@
 <?php
 
-class Home extends TPage 
+class Home extends TPage
 {
 	/**
 	 * Change the globalization culture using value from request "lang" parameter.
 	 */
-	public function __construct()
+	protected function onPreInit($param)
 	{
+		parent::onPreInit($param);
 		$lang = $this->Request['lang'];
 		if(CultureInfo::validCulture($lang)) //only valid lang is permitted
 			$this->Application->Globalization->Culture = $lang;
-		parent::__construct();
 	}
-	
+
 	/**
 	 * Initialize the page with some arbituary data.
 	 * @param TEventParameter event parameter.
-	 */	
-	function onLoad($param) 
+	 */
+	protected function onLoad($param)
 	{
+		parent::onLoad($param);
 		$time1 = $this->Time1;
 		$time1->Value = time();
 
@@ -30,13 +31,13 @@ class Home extends TPage
 
 	/**
 	 * Get the localized current culture name.
-	 * @return string localized curreny culture name. 
+	 * @return string localized curreny culture name.
 	 */
-	function getCurrentCulture() 
+	public function getCurrentCulture()
 	{
-		$culture = $this->Application->getGlobalization()->Culture;
+		$culture = $this->getApplication()->getGlobalization()->getCulture();
 		$cultureInfo = new CultureInfo($culture);
-		return $cultureInfo->NativeName;
+		return $cultureInfo->getNativeName();
 	}
 }
 
