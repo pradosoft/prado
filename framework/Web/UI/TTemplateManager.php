@@ -520,7 +520,7 @@ class TTemplate extends TComponent implements ITemplate
 					else if($str[2]==='%')  // statements
 						$tpl[$c++]=array($container,'TStatements',array('Statements'=>THttpUtility::htmlDecode($match[5][0])));
 					else
-						$tpl[$c++]=array($container,'TLiteral',array('Text'=>$this->parseAttribute($str,$matchStart)));
+						$tpl[$c++]=array($container,'TLiteral',array('Text'=>$this->parseAttribute($str)));
 				}
 				else if(strpos($str,'<prop:')===0)	// opening property
 				{
@@ -550,7 +550,10 @@ class TTemplate extends TComponent implements ITemplate
 						if($matchStart>$textStart && $container>=0)
 						{
 							$value=substr($input,$textStart,$matchStart-$textStart);
-							$value=$this->parseAttribute($value,$textStart);
+							if(strrpos($prop,'template')===strlen($prop)-8)
+								$value=$this->parseTemplateProperty($value,$textStart);
+							else
+								$value=$this->parseAttribute($value);
 							$type=$tpl[$container][1];
 							$this->validateAttributes($type,array($prop=>$value));
 							$tpl[$container][2][$prop]=$value;
@@ -616,12 +619,28 @@ class TTemplate extends TComponent implements ITemplate
 			$match=&$matches[$i];
 			$name=strtolower($match[1][0]);
 			$value=$match[2][0];
-			if($value[0]==='\'' || $value[0]==='"')
-				$attributes[$name]=$this->parseAttribute(substr($value,1,strlen($value)-2),$match[2][1]+1);
+			if(strrpos($name,'template')===strlen($name)-8)
+			{
+				if($value[0]==='\'' || $value[0]==='"')
+					$attributes[$name]=$this->parseTemplateProperty(substr($value,1,strlen($value)-2),$match[2][1]+1);
+				else
+					$attributes[$name]=$this->parseTemplateProperty($value,$match[2][1]);
+			}
 			else
-				$attributes[$name]=$this->parseAttribute($value,$match[2][1]);
+			{
+				if($value[0]==='\'' || $value[0]==='"')
+					$attributes[$name]=$this->parseAttribute(substr($value,1,strlen($value)-2));
+				else
+					$attributes[$name]=$this->parseAttribute($value);
+			}
 		}
 		return $attributes;
+	}
+
+	protected function parseTemplateProperty($content,$offset)
+	{
+		$line=$this->_startingLine+count(explode("\n",substr($this->_content,0,$offset)))-1;
+		return array(self::CONFIG_TEMPLATE,new TTemplate($content,$this->_contextPath,$this->_tplFile,$line));
 	}
 
 	/**
@@ -629,20 +648,12 @@ class TTemplate extends TComponent implements ITemplate
 	 * @param string the string to be parsed.
 	 * @return array attribute initialization
 	 */
-	protected function parseAttribute($value,$offset)
+	protected function parseAttribute($value)
 	{
 		$matches=array();
-		if(!preg_match('/\\s*(<%!.*?%>|<%#.*?%>|<%=.*?%>|<%~.*?%>|<%\\$.*?%>|<%\\[.*?\\]%>)\\s*/msS',$value,$matches) || $matches[0]!==$value)
+		if(!preg_match('/\\s*(<%#.*?%>|<%=.*?%>|<%~.*?%>|<%\\$.*?%>|<%\\[.*?\\]%>)\\s*/msS',$value,$matches) || $matches[0]!==$value)
 			return THttpUtility::htmlDecode($value);
-		$match=$matches[1];
-		if($match[2]==='!')
-		{
-			$offset+=strpos($value,$match);
-			$line=$this->_startingLine+count(explode("\n",substr($this->_content,0,$offset)))-1;
-			$content=substr($match,3,strlen($match)-5);
-			return array(self::CONFIG_TEMPLATE,new TTemplate($content,$this->_contextPath,$this->_tplFile,$line));
-		}
-		$value=THttpUtility::htmlDecode($match);
+		$value=THttpUtility::htmlDecode($matches[1]);
 		if($value[2]==='#') // databind
 			return array(self::CONFIG_DATABIND,substr($value,3,strlen($value)-5));
 		else if($value[2]==='=') // a dynamic initialization
