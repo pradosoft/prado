@@ -702,6 +702,7 @@ tests/FunctionalTests/protected/pages/Validation/RequiredFieldValidator.php -tex
 tests/FunctionalTests/protected/pages/ViewSource.page -text
 tests/FunctionalTests/protected/pages/ViewSource.php -text
 tests/FunctionalTests/protected/pages/config.xml -text
+tests/FunctionalTests/quickstart_tests/Advanced/I18N.php -text
 tests/FunctionalTests/quickstart_tests/Controls/ButtonTestCase.php -text
 tests/FunctionalTests/quickstart_tests/Controls/CheckBoxListTestCase.php -text
 tests/FunctionalTests/quickstart_tests/Controls/CheckBoxTestCase.php -text
