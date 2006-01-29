@@ -226,6 +226,7 @@ framework/Collections/TList.php -text
 framework/Collections/TMap.php -text
 framework/Collections/TPagedDataSource.php -text
 framework/Data/TCache.php -text
+framework/Data/TDateTimeSimpleFormatter.php -text
 framework/Data/TMemCache.php -text
 framework/Data/TSqliteCache.php -text
 framework/Data/TXmlDocument.php -text
@@ -799,6 +800,7 @@ tests/UnitTests/framework/Collections/utList.php -text
 tests/UnitTests/framework/Collections/utMap.php -text
 tests/UnitTests/framework/Data/CacheTestCase.php -text
 tests/UnitTests/framework/Data/test.db -text
+tests/UnitTests/framework/Data/utDateTimeSimpleFormatter.php -text
 tests/UnitTests/framework/Data/utMemCache.php -text
 tests/UnitTests/framework/Data/utSqliteCache.php -text
 tests/UnitTests/framework/Data/utXmlDocument.php -text
