@@ -159,7 +159,7 @@ function parse_html($page,$html)
 
 	//runbar
 	$html = preg_replace('/<com:RunBar\s+PagePath="([^"]*)"\s+\/>/',
-			'Try, \texttt{http://www.pradosoft.com/prado3/demos/quickstart/index.php?page=$1}', $html);
+			'Try, \href{http://www.pradosoft.com/prado3/demos/quickstart/index.php?page=$1}{$1}', $html);
 
 	//text modifiers
 	$html = preg_replace('/<b>([^<]*)<\/b>/', '\textbf{$1}', $html);
