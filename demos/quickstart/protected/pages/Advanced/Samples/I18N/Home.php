@@ -5,9 +5,9 @@ class Home extends TPage
 	/**
 	 * Change the globalization culture using value from request "lang" parameter.
 	 */
-	protected function onPreInit($param)
+	public function __construct()
 	{
-		parent::onPreInit($param);
+		parent::__construct();
 		$lang = $this->Request['lang'];
 		if(CultureInfo::validCulture($lang)) //only valid lang is permitted
 			$this->Application->Globalization->Culture = $lang;
@@ -35,7 +35,7 @@ class Home extends TPage
 	 */
 	public function getCurrentCulture()
 	{
-		$culture = $this->getApplication()->getGlobalization()->getCulture();
+		$culture = $this->Application->Globalization->Culture;
 		$cultureInfo = new CultureInfo($culture);
 		return $cultureInfo->getNativeName();
 	}
