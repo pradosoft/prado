@@ -59,6 +59,12 @@ function escape_verbatim($matches)
 	return "\begin{verbatim}".str_replace('\$', '$', $matches[2])."\end{verbatim}\n";
 }
 
+function escape_verb($matches)
+{
+	$text = str_replace(array('\{', '\}'), array('{','}'), $matches[1]);
+	return '\verb<'.$text.'<';
+}
+
 function include_image($matches)
 {
 	global $current_path;
@@ -155,6 +161,9 @@ function parse_html($page,$html)
 	$html = preg_replace_callback('/(`1`)([^`]*)(`2`)/m', 'escape_verbatim', $html);
 	$html = preg_replace_callback('/(<div class="source">)([^<]*)(<\/div>)/', 'escape_verbatim', $html);
 
+	//<code>
+	$html = preg_replace_callback('/<code>([^<]*)<\/code>/', 'escape_verb', $html);
+
 	$html = preg_replace_callback('/<img\s+src="?<%~([^"]*)%>"?[^\\/]*\/>/', 'include_image', $html);
 
 	//runbar
@@ -172,11 +181,17 @@ function parse_html($page,$html)
 	//anchor
 	$html = preg_replace_callback('/<a[^>]+name="([^"]*)"[^>]*><\/a>/', 'anchor', $html);
 
+	//description <dl>
+	$html = preg_replace('/<dt>([^<]*)<\/dt>/', '\item[$1]', $html);
+	$html = preg_replace('/<\/?dd>/', '', $html);
+	$html = preg_replace('/<dl>/', '\begin{description}', $html);
+	$html = preg_replace('/<\/dl>/', '\end{description}', $html);
+
 	//item lists
-	$html = preg_replace('/<ol>/', '\begin{itemize}', $html);
-	$html = preg_replace('/<\/ol>/', '\end{itemize}', $html);
-	$html = preg_replace('/<ul>/', '\begin{enumerate}', $html);
-	$html = preg_replace('/<\/ul>/', '\end{enumerate}', $html);
+	$html = preg_replace('/<ul>/', '\begin{itemize}', $html);
+	$html = preg_replace('/<\/ul>/', '\end{itemize}', $html);
+	$html = preg_replace('/<ol>/', '\begin{enumerate}', $html);
+	$html = preg_replace('/<\/ol>/', '\end{enumerate}', $html);
 	$html = preg_replace('/<li>/', '\item ', $html);
 	$html = preg_replace('/<\/li>/', '', $html);
 

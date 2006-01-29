@@ -59,6 +59,7 @@ class TTranslateParameter extends TControl
 	 * @var boolean 
 	 */
 	protected $trim = true;
+
 	
 	/**
 	 * Get the parameter substitution key.
@@ -98,11 +99,24 @@ class TTranslateParameter extends TControl
 		return $this->trim;
 	}	
 
+	public function getValue()
+	{
+		return $this->getViewState('Value', '');
+	}
+
+	public function setValue($value)
+	{
+		$this->setViewState('Value', $value, '');
+	}
+
 	/**
 	 * @return string parameter contents.
 	 */
 	public function getParameter()
 	{
+		$value = $this->getValue();
+		if(strlen($value) > 0)
+			return $value;
 		$textWriter = new TTextWriter;
 		$this->renderControl(new THtmlWriter($textWriter));
 		return $this->getTrim() ? 

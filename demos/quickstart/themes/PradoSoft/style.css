@@ -10,12 +10,24 @@ body {
 	background-position: top right;
 }
 
+h1, h2, h3, h4
+{
+	color: #333;
+}
+
+h1, h2
+{
+	padding-bottom: 3px;
+	border-bottom: 1px solid #ccc;
+}
+
 h1 {
 	font-size:13pt;
 }
 
 h2 {
 	font-size:12pt;
+	margin-top: 2.5em;
 }
 
 h3 {
@@ -85,7 +97,8 @@ a
 
 #content {
 	background:#fff;
-	padding:10px;
+	padding: 1em 3em 5em 3em;
+	line-height: 135%;
 }
 
 #footer {
@@ -158,6 +171,11 @@ a
 .source pre {
 	font-family: "Courier New", Courier, mono;
 	margin: 0;
+}
+
+.runbar
+{
+	margin: 2em 0 3em 0;
 }
 
 .runbar a:link, .runbar a:visited {
@@ -298,3 +316,22 @@ td.sampleaction {
 	padding: 5px;
 	vertical-align: top;
 }
+
+
+dl
+{
+	margin: 0 2em;
+}
+
+dt
+{
+	font-weight: bold;
+	margin-bottom: 0.15em;
+}
+
+dd
+{
+	margin-left: 2em;
+	margin-bottom: 0.75em;
+}
+

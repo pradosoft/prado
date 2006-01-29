@@ -140,6 +140,22 @@ class TGlobalization extends TModule
 	}
 
 	/**
+	 * @return string current translation catalogue.
+	 */
+	public function getTranslationCatalogue()
+	{
+		return $this->_translation['catalogue'];
+	}
+
+	/**
+	 * @param string update the translation catalogue.
+	 */
+	public function setTranslationCatalogue($value)
+	{
+		return $this->_translation['catalogue'] = $value;
+	}
+	
+	/**
 	 * @return string default charset set in application.xml
 	 */
 	public function getDefaultCharset()
