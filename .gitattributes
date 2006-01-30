@@ -213,6 +213,10 @@ framework/3rdParty/SafeHtml/HTMLSax3/States.php -text
 framework/3rdParty/SafeHtml/TSafeHtmlParser.php -text
 framework/3rdParty/SafeHtml/license.txt -text
 framework/3rdParty/SafeHtml/readme.txt -text
+framework/3rdParty/TinyMCE/license.txt -text
+framework/3rdParty/TinyMCE/readme.txt -text
+framework/3rdParty/TinyMCE/tiny_mce.md5 -text
+framework/3rdParty/TinyMCE/tiny_mce.tar -text
 framework/3rdParty/geshi/docs/COPYING -text
 framework/3rdParty/geshi/docs/README -text
 framework/3rdParty/geshi/docs/THANKS -text
@@ -621,6 +625,7 @@ framework/Web/UI/TForm.php -text
 framework/Web/UI/THtmlWriter.php -text
 framework/Web/UI/TPage.php -text
 framework/Web/UI/TPageStatePersister.php -text
+framework/Web/UI/TTarAssetManager.php -text
 framework/Web/UI/TTemplateControl.php -text
 framework/Web/UI/TTemplateManager.php -text
 framework/Web/UI/TThemeManager.php -text
@@ -651,6 +656,7 @@ framework/Web/UI/WebControls/TFileUpload.php -text
 framework/Web/UI/WebControls/TFont.php -text
 framework/Web/UI/WebControls/THead.php -text
 framework/Web/UI/WebControls/THiddenField.php -text
+framework/Web/UI/WebControls/THtmlArea.php -text
 framework/Web/UI/WebControls/THyperLink.php -text
 framework/Web/UI/WebControls/THyperLinkColumn.php -text
 framework/Web/UI/WebControls/TImage.php -text
@@ -677,6 +683,7 @@ framework/Web/UI/WebControls/TTemplateColumn.php -text
 framework/Web/UI/WebControls/TTextBox.php -text
 framework/Web/UI/WebControls/TTextHighlighter.php -text
 framework/Web/UI/WebControls/TValidationSummary.php -text
+framework/Web/UI/WebControls/TValueTypeValidator.php -text
 framework/Web/UI/WebControls/TWebControl.php -text
 framework/Web/UI/WebControls/TWizard.php -text
 framework/Web/UI/WebControls/TWizardStep.php -text

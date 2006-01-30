@@ -131,6 +131,23 @@ class TAssetManager extends TModule
 			$this->_baseUrl=$value;
 	}
 
+	public function getPublishedUrl($path)
+	{
+		if(($fullpath=realpath($path))!==false)
+		{
+			$dir=$this->hash(dirname($fullpath));
+			$file=$this->_basePath.'/'.$dir.'/'.basename($fullpath);
+			if(is_file($file) || is_dir($file))
+				return $this->_baseUrl.'/'.$dir.'/'.basename($fullpath);
+		}
+		return null;
+	}
+
+	public function isPublished($path)
+	{
+		return $this->getPublishedUrl($path) !== null;
+	}
+
 	/**
 	 * Publishes a file or a directory (recursively).
 	 * This method will copy the content in a directory (recursively) to
@@ -181,7 +198,7 @@ class TAssetManager extends TModule
 	 * @param string string to be hashed.
 	 * @return string hashed string.
 	 */
-	private function hash($dir)
+	protected function hash($dir)
 	{
 		return sprintf('%x',crc32($dir));
 	}

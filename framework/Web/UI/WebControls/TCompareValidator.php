@@ -104,7 +104,7 @@ class TCompareValidator extends TBaseValidator
 	}
 
 	/**
-	 * @return string the comparison operation to perform (Equal, NotEqual, GreaterThan, GreaterThanEqual, LessThan, LessThanEqual, DataTypeCheck). Defaults to Equal.
+	 * @return string the comparison operation to perform (Equal, NotEqual, GreaterThan, GreaterThanEqual, LessThan, LessThanEqual). Defaults to Equal.
 	 */
 	public function getOperator()
 	{
@@ -112,12 +112,12 @@ class TCompareValidator extends TBaseValidator
 	}
 
 	/**
-	 * Sets the comparison operation to perform (Equal, NotEqual, GreaterThan, GreaterThanEqual, LessThan, LessThanEqual, DataTypeCheck)
+	 * Sets the comparison operation to perform (Equal, NotEqual, GreaterThan, GreaterThanEqual, LessThan, LessThanEqual)
 	 * @param string the comparison operation
 	 */
 	public function setOperator($value)
 	{
-		$this->setViewState('Operator',TPropertyValue::ensureEnum($value,'Equal','NotEqual','GreaterThan','GreaterThanEqual','LessThan','LessThanEqual','DataTypeCheck'),'Equal');
+		$this->setViewState('Operator',TPropertyValue::ensureEnum($value,'Equal','NotEqual','GreaterThan','GreaterThanEqual','LessThan','LessThanEqual'),'Equal');
 	}
 
 	/**
@@ -149,9 +149,6 @@ class TCompareValidator extends TBaseValidator
 		if(($value=$this->getValidationValue($this->getValidationTarget()))==='')
 			return true;
 
-		if($this->getOperator()==='DataTypeCheck')
-			return $this->evaluateDataTypeCheck($value);
-
 		if(($controlToCompare=$this->getControlToCompare())!=='')
 		{
 			if(($control2=$this->findControl($controlToCompare))===null)
@@ -180,32 +177,6 @@ class TCompareValidator extends TBaseValidator
 		}
 
 		return false;
-	}
-
-	/**
-	 * Determine if the given value is of a particular type using RegExp.
-	 * @param string value to check
-	 * @return boolean true if value fits the type expression.
-	 */
-	protected function evaluateDataTypeCheck($value)
-	{
-		switch($this->getValueType())
-		{
-			case 'Integer':
-				return preg_match('/^[-+]?[0-9]+$/',trim($value));
-			case 'Float':
-			case 'Double':
-				return preg_match('/^[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?$/',trim($value));
-			case 'Currency':
-				return preg_match('/[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?$/',trim($value));
-			case 'Date':
-				$dateFormat = $this->getDateFormat();
-				if(strlen($dateFormat))
-					return pradoParseDate($value, $dateFormat) !== null;
-				else
-					return strtotime($value) > 0;
-		}
-		return true;
 	}
 
 	/**
