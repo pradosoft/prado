@@ -230,6 +230,7 @@ framework/Collections/TDummyDataSource.php -text
 framework/Collections/TList.php -text
 framework/Collections/TMap.php -text
 framework/Collections/TPagedDataSource.php -text
+framework/Data/TAPCCache.php -text
 framework/Data/TCache.php -text
 framework/Data/TDateTimeSimpleFormatter.php -text
 framework/Data/TMemCache.php -text
