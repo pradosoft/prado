@@ -2,7 +2,8 @@
 
 <h1>TRepeater Sample 2</h1>
 
-<com:TRepeater ID="Repeater" OnItemDataBound="dataBindRepeater2">
+<com:TRepeater ID="Repeater"
+	OnItemDataBound="dataBindRepeater2">
 
 <prop:HeaderTemplate>
 <table cellspacing="1" style="border-collapse: collapse;border:1px solid silver">

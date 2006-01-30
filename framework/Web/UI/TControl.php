@@ -1320,12 +1320,14 @@ class TControl extends TComponent
 					{
 						if(isset($state[$control->_id]))
 						{
-							$s=&$state[$control->_id];
+							$control->loadStateRecursive($state[$control->_id],$needViewState);
 							unset($state[$control->_id]);
 						}
 						else
-							$s=null;
-						$control->loadStateRecursive($s,$needViewState);
+						{
+							$s=array();
+							$control->loadStateRecursive($s,$needViewState);
+						}
 					}
 				}
 			}
@@ -1339,9 +1341,9 @@ class TControl extends TComponent
 	}
 
 	/**
-	 * Saves the all control state (viewstate and controlstate) as a collection.
+	 * Saves all control state (viewstate and controlstate) as a collection.
 	 * @param boolean whether the viewstate should be saved
-	 * @return TMap the collection of the control state (including its children's state).
+	 * @return array the collection of the control state (including its children's state).
 	 */
 	final protected function &saveStateRecursive($needViewState=true)
 	{
@@ -1355,11 +1357,12 @@ class TControl extends TComponent
 				if($control instanceof TControl)
 				{
 					$cs=&$control->saveStateRecursive($needViewState);
-					$state[$control->_id]=&$cs;
+					if(!empty($cs))
+						$state[$control->_id]=&$cs;
 				}
 			}
 		}
-		if($needViewState)
+		if($needViewState && !empty($this->_viewState))
 			$state[0]=&$this->_viewState;
 		if(isset($this->_rf[self::RF_CONTROLSTATE]))
 			$state[1]=&$this->_rf[self::RF_CONTROLSTATE];
