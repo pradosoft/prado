@@ -169,11 +169,86 @@
       <fileset refid="src"/>
       <fileset refid="docs"/>
 
-      <option name="notes">Release notes</option>
+      <option name="notes">Features and Changes in v3.0a
+
+Things not availabe in v3.0a yet:
+- Active controls
+- TWizard
+- THtmlArea
+- TDatePicker
+- TDataGrid and TDataList need more tests
+- TAdodb and AdoDB no longer included in release
+
+Component and Control Definition
+
+- component spec file discarded, replaced with
+getter and setter for property definitions
+- subproperty support (e.g. Font.Size="20pt")
+- enhanced event binding syntax besides the
+existing one (e.g. $control->Click=$callback;
+or $control->Click[0]=$callback;)
+- relationship change between controls, now
+with parent-child (presentational) and
+naming container-containee relationships.
+- enhanced control id management and rendering
+(the rendered IDs are much shorter now)
+- Master/content support to template controls.
+- Support for assets (publishing of private files and directories)
+- Enhanced collection classes
+- All controls are completely rewritten with new
+features and new controls.
+
+Template Syntax Enhancement
+
+- new special tags to facilitate template writing
+(more details are covered in quickstart demo)
+- component can now be specified in a namespace
+format (e.g. <com:System.Web.UI.WebControls.TButton .... />
+- Enhanced template parsing error report (now with
+line number and error reason.
+
+Pages
+
+- Pages are organized in folders. Each folder can
+have a specific configuration file applied to pages
+in that folder and below (this replaces the previous
+v2 module concept).
+- Support for "classless" pages.
+- Enhanced page lifecycles (close to asp.net 2.0 page lifecycles)
+- Enhanced theme/skin support (now support css, js and image files)
+- Output is now XHTML-compliant
+- Enhanced JavaScript support
+
+Application
+
+- Introduces a module-based architecture. Modules accomplish
+all application functionality. Users can plug in their
+own modules.
+- Integrated support to pluggable services.
+- Generic cache support with TMemCache and TSqliteCache provided
+- Generic logging support with TLogRouter and different
+TLogRoute implementation.
+- Customizable error handling with support for internationalization.
+- Complete request, response, session, cookie classes
+- Application-level persistent state support
+- A new flexible auth framework provided
+- Parameters can be components now</option>
 
       <!-- Set the simple options -->
       <option name="summary">PRADO is a component-based and event-driven framework for rapid Web programming in PHP 5.</option>
-      <option name="description">test</option>
+      <option name="description">PRADO reconceptualizes Web application development in terms of components, events and properties instead of procedures, URLs and query parameters.
+
+A PRADO component is a combination of a specification file (in XML), an HTML template and a PHP class. PRADO components are combined together to form larger components or complete PRADO pages.
+
+Developing PRADO Web applications mainly involves instantiating prebuilt and application-specific component types, configuring them by setting their properties, responding to their events by writing handler functions, and composing them into application tasks. Event-driven programming
+
+PRADO provides the following benefits for Web application developers:
+
+* reusability - Codes following the PRADO component protocol are highly reusable. Everything in PRADO is a reusable component.
+* ease of use - Creating and using components are extremely easy. Usually they simply involve configuring component properties.
+* robustness - PRADO frees developers from writing boring, buggy code. They code in terms of objects, methods and properties, instead of URLs and query parameters. The latest PHP5 exception mechanism is exploited that enables line-precise error reporting.
+* performance - PRADO uses a cache technique to ensure the performance of applications based on it. The performance is in fact comparable to those based on commonly used template engines.
+* team integration - PRADO enables separation of content and presentation. Components, typically pages, have their content (logic) and presentation stored in different files.</option>
       <option name="version" value="${version}"/>
       <option name="extends" value="prado"/>
       <option name="state" value="${state}"/>
@@ -192,6 +267,48 @@
           <element key="name" value="Xiang Wei Zhuo"/>
 	  <element key="email" value="weizhuo@gmail.com"/>
 	  <element key="role" value="lead"/>
+	</element>
+        <element>
+          <element key="handle" value="marcus"/>
+          <element key="name" value="Marcus Nyeholt"/>
+	  <element key="email" value="nyeholt@optushome.com.au"/>
+	  <element key="role" value="contributor"/>
+	</element>
+        <element>
+          <element key="handle" value="jrags"/>
+          <element key="name" value="Jason Ragsdale"/>
+	  <element key="email" value="jrags@jasrags.net"/>
+	  <element key="role" value="contributor"/>
+	</element>
+        <element>
+          <element key="handle" value="alex"/>
+          <element key="name" value="Alex Flint"/>
+	  <element key="email" value="alex@linium.net"/>
+	  <element key="role" value="contributor"/>
+	</element>
+        <element>
+          <element key="handle" value="johnteag"/>
+          <element key="name" value="John Teague"/>
+	  <element key="email" value="johnteag@gmail.com"/>
+	  <element key="role" value="contributor"/>
+	</element>
+        <element>
+          <element key="handle" value="brian"/>
+          <element key="name" value="Brian Luft"/>
+	  <element key="email" value="luftyluft@gmail.com"/>
+	  <element key="role" value="contributor"/>
+	</element>
+        <element>
+          <element key="handle" value="gusto"/>
+          <element key="name" value="Carl G. Mathisen"/>
+	  <element key="email" value="carl@decart.no"/>
+	  <element key="role" value="contributor"/>
+	</element>
+        <element>
+          <element key="handle" value="knut"/>
+          <element key="name" value="Knut Urdalen"/>
+	  <element key="email" value="knut.urdalen@telio.no"/>
+	  <element key="role" value="helper"/>
 	</element>
       </mapping>
 
