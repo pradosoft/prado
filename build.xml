@@ -203,7 +203,7 @@ Template Syntax Enhancement
 - new special tags to facilitate template writing
 (more details are covered in quickstart demo)
 - component can now be specified in a namespace
-format (e.g. <com:System.Web.UI.WebControls.TButton .... />
+format (e.g. &lt;com:System.Web.UI.WebControls.TButton .... /&gt;
 - Enhanced template parsing error report (now with
 line number and error reason.
 
