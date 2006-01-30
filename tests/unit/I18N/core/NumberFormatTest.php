@@ -1,13 +1,13 @@
 <?php
-require_once dirname(__FILE__).'/../phpunit2.php';
+require_once dirname(__FILE__).'/../../phpunit2.php';
 
 //NOTE: This page require UTF-8 aware editors
 Prado::using('System.I18N.core.NumberFormat');
 
 /**
- * @package System.I18N
+ * @package System.I18N.core
  */
-class TNumberFormatTest extends PHPUnit2_Framework_TestCase {
+class NumberFormatTest extends PHPUnit2_Framework_TestCase {
   function testDefaultFormats() {
     $formatter = new NumberFormat();
     $number = '123456789.125156';
@@ -91,13 +91,21 @@ class TNumberFormatTest extends PHPUnit2_Framework_TestCase {
     $this->assertNotEquals($wanted, $formatter->format($number, $pattern));
   }
   
-  function testNegativeValue() {
+  function testFormatWithANegativeValue() {
     $formatter = new NumberFormat();
     $number = "-1.2";
     
     $wanted = "-1.2";
     $this->assertEquals($wanted, $formatter->format($number));
   }
+
+  public function testFormatWithAScientificPattern() {
+    $formatter = new NumberFormat();
+    $number = "10";
+    $expected = "10E";
+    $this->assertEquals('10E', $formatter->format($number, 'e'));
+  }
+
 }
 
 ?>

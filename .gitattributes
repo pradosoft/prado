@@ -7,6 +7,11 @@ buildscripts/.htaccess -text
 buildscripts/jsbuilder/build.php -text
 buildscripts/jsbuilder/custom_rhino.jar -text
 buildscripts/jsbuilder/packer.js -text
+buildscripts/phing/style/coverage-frames.xsl -text
+buildscripts/phing/style/log.xsl -text
+buildscripts/phing/style/phpunit2-frames.xsl -text
+buildscripts/phing/style/phpunit2-noframes.xsl -text
+buildscripts/phing/style/str.replace.function.xsl -text
 buildscripts/phpbuilder/build.php -text
 buildscripts/phpbuilder/files.txt -text
 buildscripts/texbuilder/build.php -text
@@ -201,11 +206,6 @@ demos/quickstart/themes/Simple/style.css -text
 docs/application.xml -text
 docs/conceptual-structure.vsd -text
 docs/request-sequence.vsd -text
-etc/style/coverage-frames.xsl -text
-etc/style/log.xsl -text
-etc/style/phpunit2-frames.xsl -text
-etc/style/phpunit2-noframes.xsl -text
-etc/style/str.replace.function.xsl -text
 framework/.htaccess -text
 framework/3rdParty/SafeHtml/HTMLSax3.php -text
 framework/3rdParty/SafeHtml/HTMLSax3/Decorators.php -text
@@ -964,6 +964,8 @@ tests/UnitTests/simpletest/web_tester.php -text
 tests/UnitTests/simpletest/xml.php -text
 tests/unit/Collections/TListTest.php -text
 tests/unit/Collections/TMapTest.php -text
-tests/unit/I18N/TNumberFormatTest.php -text
+tests/unit/I18N/core/CultureInfoTest.php -text
+tests/unit/I18N/core/NumberFormatInfoTest.php -text
+tests/unit/I18N/core/NumberFormatTest.php -text
 tests/unit/TComponentTest.php -text
 tests/unit/phpunit2.php -text

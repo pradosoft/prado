@@ -7,26 +7,54 @@
   Phing > 2.1.1 (currently cvs HEAD needed)
   xdebug >= 2.0.0beta4
   PhpDocumentor >= 1.3.0RC5
-
+  PEAR >= 1.4.4
+  PEAR_PackageFileManager >= 1.6.0a4
 -->
 <project name="prado" basedir="." default="usage">
 
-  <property name="version" value="3.0"/>
+  <property name="version" value="3.0.0"/>
+  <property name="state" value="stable"/>
   <property name="pkgname" value="${phing.project.name}-${version}"/>
+  <property name="pkgname.pear" value="${pkgname}-pear"/>
   <property name="src.dir" value="framework"/>
-  <property name="doc.dir" value="docs/api"/>
+  <property name="doc.dir" value="docs"/>
+  <property name="doc.api.dir" value="${doc.dir}/api"/>
   <property name="build.base.dir" value="build"/>
   <property name="build.src.dir" value="${build.base.dir}/${pkgname}"/>
+  <property name="build.pear.dir" value="${build.base.dir}/${pkgname.pear}"/>
+  <property name="dist.base.dir" value="dist"/>
+  <property name="dist.zipfile" value="${dist.base.dir}/${pkgname}.zip"/>
+  <property name="dist.tarfile" value="${dist.base.dir}/${pkgname}.tar.gz"/>
+  <property name="dist.pearfile" value="${dist.base.dir}/${pkgname.pear}.tgz"/>
   <property name="tests.dir" value="tests/unit"/>
   <property name="reports.dir" value="reports"/>
   <property name="reports.unit.dir" value="${reports.dir}/unit"/>
   <property name="reports.codecoverage.dir" value="${reports.dir}/codecoverage"/>
-  <property name="reports.style.dir" value="etc/style"/>
-  <property name="reports.geshi.dir" value="framework/3rdParty/geshi"/>
+  <property name="reports.style.dir" value="buildscripts/phing/style"/>
+  <property name="reports.geshi.dir" value="${src.dir}/3rdParty/geshi"/>
 
-  <fileset dir="${src.dir}" id="source">
-    <exclude name="**/.svn"/>
-    <include name="**/*.php"/>
+  <fileset dir="." id="src">
+    <exclude name="${src.dir}/**/.svn"/>
+    <include name="${src.dir}/**/*.php"/>
+  </fileset>
+
+  <fileset dir="." id="misc">
+    <include name="COPYRIGHT"/>
+    <include name="HISTORY"/>
+    <include name="UPGRADE"/>
+    <include name="index.html"/>
+    <exclude name="requirements/.svn"/>
+    <include name="requirements/*"/>
+  </fileset>
+
+  <fileset dir="." id="docs">
+    <exclude name="${doc.dir}/**/.svn"/>
+    <include name="${doc.dir}/**/*"/>
+  </fileset>
+
+  <fileset dir="." id="demos">
+    <exclude name="demos/**/.svn"/>
+    <include name="demos/**/*"/>
   </fileset>
 
   <target name="usage">
@@ -40,10 +68,26 @@
     <echo message="clean     --> Clean up the mess"/>
   </target>
 
-  <target name="doc">
-    <echo>Generating API documentation</echo>
-    <delete dir="${doc.dir}"/>
-    <phpdoc title="PRADO ${version} documentation" destdir="${doc.dir}" sourcepath="${src.dir}" output="HTML:Smarty:PHP"/>
+  <target name="versioncheck" unless="version">
+    <echo message="====================================================="/>
+    <echo message="Version not specified. You must enter a version. In"/>
+    <echo message="the future you can add this to build.properties or"/>
+    <echo message="enter it on the command line: "/>
+    <echo message=" "/>
+    <echo message="-Dversion=3.0"/>
+    <echo message="====================================================="/>	
+    <input propertyname="version" promptChar=":">PRADO version for package</input>
+
+    <property name="pkgname" value="${phing.project.name}-${version}" override="true"/>
+    <property name="build.src.dir" value="${build.base.dir}/${pkgname}" override="true"/>
+    <property name="dist.zipfile" value="${build.base.dir}/${pkgname}.zip" override="true"/>
+    <property name="dist.tarfile" value="${build.base.dir}/${pkgname}.tar.gz" override="true"/>
+    <property name="dist.pearfile" value="${build.base.dir}/${pkgname}-pear.tgz" override="true"/>
+  </target>
+
+  <target name="doc" description="Generating API documentation">
+    <delete dir="${doc.api.dir}"/>
+    <phpdoc title="PRADO ${version} API Documentation" destdir="${doc.api.dir}" sourcepath="${src.dir}" output="HTML:Smarty:PHP"/>
   </target>
 
   <target name="test">
@@ -92,17 +136,99 @@
     </coverage-report>
   </target>
 
-  <target name="dist">
-    <echo>TBD</echo>
+  <target name="build" depends="versioncheck,doc" description="Creating the main PRADO build">
+    <echo>Cleaning up after last build</echo>
+    <delete dir="${build.base.dir}"/>
+    <echo>Creating directory layout...</echo>
+    <copy todir="${build.src.dir}">
+      <fileset refid="src"/>
+      <fileset refid="docs"/>
+      <fileset refid="misc"/>
+      <fileset refid="demos"/>
+    </copy>
   </target>
 
+  <target name="dist" depends="build" description="Creating the main PRADO distributions">
+    <delete dir="${dist.base.dir}"/>
+    <mkdir dir="${dist.base.dir}"/>
+    <tar compression="gzip" destFile="${dist.tarfile}" basedir="${build.base.dir}" />
+    <zip destfile="${dist.zipfile}" basedir="${build.base.dir}"/>
+  </target>
+
+  <target name="build-pear" depends="versioncheck">
+    <echo>Creating directory layout...</echo>
+    <delete dir="${build.base.dir}"/>
+    <copy todir="${build.pear.dir}">
+      <fileset refid="src"/>
+    </copy>
+  </target>
+
+  <target name="dist-pear" depends="build-pear">
+    <echo>Creating PEAR package.xml...</echo>
+    <pearpkg name="${phing.project.name}" dir="${build.pear.dir}" destFile="${build.pear.dir}/package.xml">
+      <fileset refid="src"/>
+      <fileset refid="docs"/>
+
+      <option name="notes">Release notes</option>
+
+      <!-- Set the simple options -->
+      <option name="summary">PRADO is a component-based and event-driven framework for rapid Web programming in PHP 5.</option>
+      <option name="description">test</option>
+      <option name="version" value="${version}"/>
+      <option name="extends" value="prado"/>
+      <option name="state" value="${state}"/>
+      <option name="license" value="BSD"/>
+
+      <!-- Set the complex options -->
+      <mapping name="maintainers">
+        <element>
+          <element key="handle" value="xue"/>
+          <element key="name" value="Qiang Xue"/>
+	  <element key="email" value="qiang.xue@gmail.com"/>
+	  <element key="role" value="lead"/>
+	</element>
+        <element>
+          <element key="handle" value="wei"/>
+          <element key="name" value="Xiang Wei Zhuo"/>
+	  <element key="email" value="weizhuo@gmail.com"/>
+	  <element key="role" value="lead"/>
+	</element>
+      </mapping>
+
+      <mapping name="deps">
+        <element>
+	  <element key="type" value="php"/>
+	  <element key="version" value="5.0.3"/>
+	  <element key="rel" value="ge"/>
+	</element>
+      </mapping>
+      
+      <mapping name="dir_roles">
+        <element key="docs" value="doc"/>
+      </mapping>
+
+      <mapping name="exceptions">
+        <element key="HISTORY" value="doc"/>
+      </mapping>
+    </pearpkg>
+
+    <echo>Validating package.xml</echo>
+    <exec command="pear package-validate package.xml" dir="${build.base.dir}" passthru="true"/>
+    
+    <!--<echo>Converting package.xml from v1 to v2</echo>
+    <exec command="pear convert" dir="${build.base.dir}" passthru="true"/>-->
+    
+    <echo>Creating tar.gz package...</echo>
+    <mkdir dir="${dist.base.dir}"/>
+    <tar compression="gzip" destFile="${dist.pearfile}" basedir="${build.base.dir}"/>
+  </target>
 
   <target name="clean">
     <echo>Cleaning up the mess</echo>
-    <delete dir="${build.dir}"/>
-    <delete dir="${doc.dir}"/>
-    <delete dir="${reports.unit.dir}"/>
-    <delete dir="${reports.codecoverage.dir}"/>
+    <delete dir="${build.base.dir}"/>
+    <delete dir="${dist.base.dir}"/>
+    <delete dir="${doc.api.dir}"/>
+    <delete dir="${reports.dir}"/>
   </target>
 
 </project>
