@@ -1,0 +1,47 @@
+<com:TContent ID="body">
+
+<h1>TRepeater Sample 1</h1>
+
+<com:TRepeater ID="Repeater" >
+
+<prop:HeaderTemplate>
+<table cellpadding="2">
+<tr style="color:white;background-color:black">
+  <th>ID</th>
+  <th>Name</th>
+  <th>Quantity</th>
+  <th>Price</th>
+  <th>Imported</th>
+</tr>
+</prop:HeaderTemplate>
+
+<prop:ItemTemplate>
+<tr style="background-color:green">
+<td><%#$this->Parent->DataItem['id']%></td>
+<td><%#$this->Parent->DataItem['name']%></td>
+<td><%#$this->Parent->DataItem['quantity']%></td>
+<td><%#$this->Parent->DataItem['price']%></td>
+<td><%#$this->Parent->DataItem['imported']?'Yes':'No'%></td>
+</tr>
+</prop:ItemTemplate>
+
+<prop:AlternatingItemTemplate>
+<tr style="background-color:silver">
+<td><%#$this->Parent->DataItem['id']%></td>
+<td><%#$this->Parent->DataItem['name']%></td>
+<td><%#$this->Parent->DataItem['quantity']%></td>
+<td><%#$this->Parent->DataItem['price']%></td>
+<td><%#$this->Parent->DataItem['imported']?'Yes':'No'%></td>
+</tr>
+</prop:AlternatingItemTemplate>
+
+<prop:FooterTemplate>
+<tr style="color:white;background-color:black;text-align:center;">
+<td colspan="5">Computer Parts Inventory</td>
+</tr>
+</table>
+</prop:FooterTemplate>
+
+</com:TRepeater>
+
+</com:TContent>

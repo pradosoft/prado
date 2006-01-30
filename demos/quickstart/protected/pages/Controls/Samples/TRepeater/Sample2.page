@@ -1,0 +1,55 @@
+<com:TContent ID="body">
+
+<h1>TRepeater Sample 2</h1>
+
+<com:TRepeater ID="Repeater" OnItemDataBound="dataBindRepeater2">
+
+<prop:HeaderTemplate>
+<table cellspacing="1" style="border-collapse: collapse;border:1px solid silver">
+<tr style="color:white;background-color:black">
+<th colspan="2">Regional Personnel</th>
+</tr>
+</prop:HeaderTemplate>
+
+<prop:ItemTemplate>
+<tr>
+<td style="background-color:silver"><%#$this->Parent->DataItem %></td>
+<td>
+	<com:TRepeater ID="Repeater2">
+
+	<prop:HeaderTemplate>
+	<table cellspacing="1" style="border-collapse: collapse;border:1px solid silver">
+	</prop:HeaderTemplate>
+
+	<prop:ItemTemplate>
+	<tr style="background-color:#E6FFE6;">
+	  <td style="width:70px"><%#$this->Parent->DataItem['name'] %></td>
+	  <td style="width:20px"><%#$this->Parent->DataItem['age'] %></td>
+	  <td style="width:150px"><%#$this->Parent->DataItem['position'] %></td>
+	</tr>
+	</prop:ItemTemplate>
+
+	<prop:AlternatingItemTemplate>
+	<tr style="background-color:#F0F0F0;">
+	  <td style="width:70px"><%#$this->Parent->DataItem['name'] %></td>
+	  <td style="width:20px"><%#$this->Parent->DataItem['age'] %></td>
+	  <td style="width:150px"><%#$this->Parent->DataItem['position'] %></td>
+	</tr>
+	</prop:AlternatingItemTemplate>
+
+	<prop:FooterTemplate>
+	</table>
+	</prop:FooterTemplate>
+
+	</com:TRepeater>
+</td>
+</tr>
+</prop:ItemTemplate>
+
+<prop:FooterTemplate>
+</table>
+</prop:FooterTemplate>
+
+</com:TRepeater>
+
+</com:TContent>

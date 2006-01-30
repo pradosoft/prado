@@ -95,6 +95,7 @@ demos/quickstart/protected/pages/Controls/DataGrid.page -text
 demos/quickstart/protected/pages/Controls/DataList.page -text
 demos/quickstart/protected/pages/Controls/List.page -text
 demos/quickstart/protected/pages/Controls/Overview.page -text
+demos/quickstart/protected/pages/Controls/Repeater.page -text
 demos/quickstart/protected/pages/Controls/Samples/TBulletedList/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TBulletedList/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TBulletedList/bullet.gif -text
@@ -138,6 +139,10 @@ demos/quickstart/protected/pages/Controls/Samples/TRadioButtonList/Home.page -te
 demos/quickstart/protected/pages/Controls/Samples/TRadioButtonList/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TRegularExpressionValidator/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TRegularExpressionValidator/Home.php -text
+demos/quickstart/protected/pages/Controls/Samples/TRepeater/Sample1.page -text
+demos/quickstart/protected/pages/Controls/Samples/TRepeater/Sample1.php -text
+demos/quickstart/protected/pages/Controls/Samples/TRepeater/Sample2.page -text
+demos/quickstart/protected/pages/Controls/Samples/TRepeater/Sample2.php -text
 demos/quickstart/protected/pages/Controls/Samples/TRequiredFieldValidator/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TRequiredFieldValidator/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TTable/Home.page -text
