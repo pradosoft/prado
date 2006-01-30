@@ -234,6 +234,7 @@ framework/Data/TCache.php -text
 framework/Data/TDateTimeSimpleFormatter.php -text
 framework/Data/TMemCache.php -text
 framework/Data/TSqliteCache.php -text
+framework/Data/TTarFileExtractor.php -text
 framework/Data/TXmlDocument.php -text
 framework/Exceptions/TErrorHandler.php -text
 framework/Exceptions/TException.php -text
