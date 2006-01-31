@@ -10,7 +10,7 @@ class Home extends TPage
 		parent::__construct();
 		$lang = $this->Request['lang'];
 		if(CultureInfo::validCulture($lang)) //only valid lang is permitted
-			$this->Application->Globalization->Culture = $lang;
+			$this->getApplication()->getGlobalization()->setCulture($lang);
 	}
 
 	/**
