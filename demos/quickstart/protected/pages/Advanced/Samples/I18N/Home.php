@@ -17,7 +17,7 @@ class Home extends TPage
 	 * Initialize the page with some arbituary data.
 	 * @param TEventParameter event parameter.
 	 */
-	protected function onLoad($param)
+	public function onLoad($param)
 	{
 		parent::onLoad($param);
 		$time1 = $this->Time1;

@@ -12,7 +12,7 @@ class RunBar extends TTemplateControl
 		$this->setViewState('PagePath',$value,'');
 	}
 
-	protected function onPreRender($param)
+	public function onPreRender($param)
 	{
 		$pagePath=$this->getPagePath();
 		$this->RunButton->NavigateUrl="?page=$pagePath";
