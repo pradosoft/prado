@@ -5,7 +5,7 @@
 Page configurations are mainly used by <tt>TPageService</tt> to modify or append the application configuration. As the name indicates, a page configuration is associated with a directory storing some page files. It is stored as an XML file named <tt>config.xml</tt>.
 </p>
 <p>
-When a user requests a page stored under <tt>&lt;BasePath&gt;/dir1/dir2</tt>, the <tt>TPageService</tt> will try to parse and load <tt>config.xml</tt> files under <tt>&lt;BasePath&gt;/dir1</tt> and <tt>&lt;BasePath&gt;/dir1/dir2</tt>. Paths, modules, and parameters specified in these configuration files will be appended or merged into the existing application configuration.
+When a user requests a page stored under <tt>&lt;BasePath&gt;/dir1/dir2</tt>, the <tt>TPageService</tt> will try to parse and load <tt>config.xml</tt> files under <tt>&lt;BasePath&gt;</tt>, <tt>&lt;BasePath&gt;/dir1</tt> and <tt>&lt;BasePath&gt;/dir1/dir2</tt>. Paths, modules, and parameters specified in these configuration files will be appended or merged into the existing application configuration. Here <tt>&lt;BasePath&gt;</tt> is as defined in <a href="?page=Fundamentals.Services">page service</a>.
 </p>
 <p>
 The format of a page configuration file is as follows,

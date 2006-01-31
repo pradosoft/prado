@@ -752,9 +752,9 @@ class PradoBase
 	 */
 	public static function trace($msg,$category='Uncategorized')
 	{
-		if(self::$_application && self::$_application->getMode()==='Performance')
+		if(self::$_application && self::$_application->getMode()===TApplication::STATE_PERFORMANCE)
 			return;
-		if(!self::$_application || self::$_application->getMode()==='Debug')
+		if(!self::$_application || self::$_application->getMode()===TApplication::STATE_DEBUG)
 		{
 			$trace=debug_backtrace();
 			if(isset($trace[0]['file']) && isset($trace[0]['line']))
