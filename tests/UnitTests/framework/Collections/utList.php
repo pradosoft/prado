@@ -7,54 +7,6 @@ class ListItem
 	public $data='data';
 }
 
-class NewList extends TList
-{
-	private $_canAddItem=true;
-	private $_canRemoveItem=true;
-	private $_itemAdded=false;
-	private $_itemRemoved=false;
-
-	protected function addedItem($item)
-	{
-		$this->_itemAdded=true;
-	}
-
-	protected function removedItem($item)
-	{
-		$this->_itemRemoved=true;
-	}
-
-	protected function canAddItem($item)
-	{
-		return $this->_canAddItem;
-	}
-
-	protected function canRemoveItem($item)
-	{
-		return $this->_canRemoveItem;
-	}
-
-	public function setCanAddItem($value)
-	{
-		$this->_canAddItem=$value;
-	}
-
-	public function setCanRemoveItem($value)
-	{
-		$this->_canRemoveItem=$value;
-	}
-
-	public function isItemAdded()
-	{
-		return $this->_itemAdded;
-	}
-
-	public function isItemRemoved()
-	{
-		return $this->_itemRemoved;
-	}
-}
-
 class utList extends UnitTestCase
 {
 	protected $list;
@@ -101,16 +53,16 @@ class utList extends UnitTestCase
 	}
 
 
-	public function testInsert()
+	public function testInsertAt()
 	{
-		$this->list->insert(0,$this->item3);
+		$this->list->insertAt(0,$this->item3);
 		$this->assertEqual(3,$this->list->getCount());
 		$this->assertEqual(2,$this->list->indexOf($this->item2));
 		$this->assertEqual(0,$this->list->indexOf($this->item3));
 		$this->assertEqual(1,$this->list->indexOf($this->item1));
 		try
 		{
-			$this->list->insert(4,$this->item3);
+			$this->list->insertAt(4,$this->item3);
 			$this->fail('exception not raised when adding item at an out-of-range index');
 		}
 		catch(TInvalidDataValueException $e)
@@ -278,43 +230,6 @@ class utList extends UnitTestCase
 		$this->assertEqual(1,count($this->list));
 		$this->assertTrue(isset($this->list[1]));
 		$this->assertFalse(isset($this->list[2]));
-	}
-
-	public function testDerivedClasses()
-	{
-		$newList=new NewList;
-		$this->assertFalse($newList->isItemAdded());
-		$newList->add($this->item1);
-		$this->assertTrue($newList->isItemAdded());
-		$newList->add($this->item2);
-
-		$newList->setCanAddItem(false);
-		try
-		{
-			$newList->add($this->item3);
-			$this->fail('no exception raised when adding an item that is disallowed');
-		}
-		catch(TInvalidOperationException $e)
-		{
-			$this->assertEqual(2,$newList->getCount());
-			$this->pass();
-		}
-
-		$this->assertFalse($newList->isItemRemoved());
-		$newList->remove($this->item1);
-		$this->assertTrue($newList->isItemRemoved());
-
-		$newList->setCanRemoveItem(false);
-		try
-		{
-			$newList->remove($this->item2);
-			$this->fail('no exception raised when removing an item that is disallowed');
-		}
-		catch(TInvalidOperationException $e)
-		{
-			$this->assertEqual(1,$newList->getCount());
-			$this->pass();
-		}
 	}
 }
 

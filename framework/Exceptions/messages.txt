@@ -15,8 +15,6 @@ component_statements_invalid			= Component '%s' is evaluating invalid PHP statem
 propertyvalue_enumvalue_invalid			= Value '%s' is a not valid enumeration value (%s).
 
 list_index_invalid						= Index '%d' is out of range.
-list_addition_disallowed				= The new item cannot be added to the list.
-list_item_unremovable					= The item cannot be removed from the list.
 list_item_inexistent					= The item cannot be found in the list.
 list_data_not_iterable					= Data must be either an array or an object implementing Traversable interface.
 
@@ -111,8 +109,12 @@ template_eventhandler_invalid			= An invalid event handler is attached to %s's e
 xmldocument_file_read_failed			= TXmlDocument is unable to read file '%s'.
 xmldocument_file_write_failed			= TXmlDocument is unable to write file '%s'.
 
+xmlelementlist_xmlelement_required		= TXmlElementList can only accept TXmlElement objects.
+
 authorizationrule_action_invalid		= TAuthorizationRule.Action can only take 'allow' or 'deny' as the value.
 authorizationrule_verb_invalid			= TAuthorizationRule.Verb can only take 'get' or 'post' as the value.
+
+authorizationrulecollection_authorizationrule_required = TAuthorizationRuleCollection can only accept TAuthorizationRule objects.
 
 usermanager_userfile_invalid			= TUserManager.UserFile '%s' is not a valid file.
 usermanager_userfile_unchangeable		= TUserManager.UserFile cannot be modified. The user module has been initialized already.
@@ -140,6 +142,8 @@ control_skinid_unchangeable				= %s.SkinID cannot be modified after a skin has b
 control_enabletheming_unchangeable		= %s.EnableTheming cannot be modified after the child controls have been created.
 control_stylesheet_applied				= StyleSheet skin has already been applied to %s.
 control_id_nonunique					= %s.ID '%s' is not unique among all controls under the same naming container.
+
+controllist_control_required			= TControlList can only accept strings or TControl objects.
 
 webcontrol_accesskey_invalid			= %s.AccessKey '%s' is invalid. It must be a single character only.
 webcontrol_style_invalid				= %s.Style must take string value only.
@@ -190,3 +194,15 @@ comparevalidator_controltocompare_invalid = TCompareValidator.ControlToCompare c
 repeater_template_required				= TRepeater.%s requires a template instance implementing ITemplate interface.
 datalist_template_required				= TDataList.%s requires a template instance implementing ITemplate interface.
 templatecolumn_template_required		= TTemplateColumn.%s requires a template instance implementing ITemplate interface.
+
+repeateritemcollection_repeateritem_required = TRepeaterItemCollection can only accept TRepeaterItem objects.
+
+datagriditemcollection_datagriditem_required = TDataGridItemCollection can only accept TDataGridItem objects.
+
+datagridcolumncollection_datagridcolumn_required = TDataGridColumnCollection can only accept TDataGridColumn objects.
+
+datalistitemcollection_datalistitem_required = TDataListItemCollection can only accept TDataListItem objects.
+
+tablerowcollection_tablerow_required	= TTableRowCollection can only accept TTableRow objects.
+
+tablecellcollection_tablerow_required	= TTableCellCollection can only accept TTableCell objects.

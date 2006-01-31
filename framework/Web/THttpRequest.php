@@ -140,7 +140,7 @@ class THttpRequest extends TMap implements IModule
 				$_COOKIE=$this->stripSlashes($_COOKIE);
 		}
 
-		$this->copyfrom(array_merge($_GET,$_POST));
+		$this->copyFrom(array_merge($_GET,$_POST));
 
 		$this->_initialized=true;
 		$this->getApplication()->setRequest($this);
@@ -487,32 +487,38 @@ class THttpCookieCollection extends TList
 	}
 
 	/**
-	 * Adds the cookie if owner of this collection is of THttpResponse.
-	 * This method will be invoked whenever an item is added to the collection.
+	 * Inserts an item at the specified position.
+	 * This overrides the parent implementation by performing additional
+	 * operations for each newly added THttpCookie object.
+	 * @param integer the speicified position.
+	 * @param mixed new item
+	 * @throws TInvalidDataTypeException if the item to be inserted is not a THttpCookie object.
 	 */
-	protected function addedItem($item)
+	public function insertAt($index,$item)
 	{
-		if($this->_o instanceof THttpResponse)
-			$this->_o->addCookie($item);
+		if($item instanceof THttpCookie)
+		{
+			parent::insertAt($index,$item);
+			if($this->_o instanceof THttpResponse)
+				$this->_o->addCookie($item);
+		}
+		else
+			throw new TInvalidDataTypeException('authorizationrulecollection_authorizationrule_required');
 	}
 
 	/**
-	 * Removes the cookie if owner of this collection is of THttpResponse.
-	 * This method will be invoked whenever an item is removed from the collection.
+	 * Removes an item at the specified position.
+	 * This overrides the parent implementation by performing additional
+	 * cleanup work when removing a TCookie object.
+	 * @param integer the index of the item to be removed.
+	 * @return mixed the removed item.
 	 */
-	protected function removedItem($item)
+	public function removeAt($index)
 	{
+		$item=parent::removeAt($index);
 		if($this->_o instanceof THttpResponse)
 			$this->_o->removeCookie($item);
-	}
-
-	/**
-	 * Restricts acceptable item of this collection to THttpCookie.
-	 * This method will be invoked whenever an item is to be added into the collection.
-	 */
-	protected function canAddItem($item)
-	{
-		return ($item instanceof THttpCookie);
+		return $item;
 	}
 }
 

@@ -1553,15 +1553,18 @@ class TDataGridItem extends TTableRow implements INamingContainer
 class TDataGridItemCollection extends TList
 {
 	/**
-	 * Returns true only when the item to be added is a {@link TDataGridItem}.
-	 * This method is invoked before adding an item to the list.
-	 * If it returns true, the item will be added to the list, otherwise not.
-	 * @param mixed item to be added
-	 * @return boolean whether the item can be added to the list
+	 * Inserts an item at the specified position.
+	 * This overrides the parent implementation by inserting only TDataGridItem.
+	 * @param integer the speicified position.
+	 * @param mixed new item
+	 * @throws TInvalidDataTypeException if the item to be inserted is not a TDataGridItem.
 	 */
-	protected function canAddItem($item)
+	public function insertAt($index,$item)
 	{
-		return ($item instanceof TDataGridItem);
+		if($item instanceof TDataGridItem)
+			parent::insertAt($index,$item);
+		else
+			throw new TInvalidDataTypeException('datagriditemcollection_datagriditem_required');
 	}
 }
 
@@ -1578,15 +1581,18 @@ class TDataGridItemCollection extends TList
 class TDataGridColumnCollection extends TList
 {
 	/**
-	 * Returns true only when the item to be added is a {@link TDataGridItem}.
-	 * This method is invoked before adding an item to the list.
-	 * If it returns true, the item will be added to the list, otherwise not.
-	 * @param mixed item to be added
-	 * @return boolean whether the item can be added to the list
+	 * Inserts an item at the specified position.
+	 * This overrides the parent implementation by inserting only TDataGridColumn.
+	 * @param integer the speicified position.
+	 * @param mixed new item
+	 * @throws TInvalidDataTypeException if the item to be inserted is not a TDataGridColumn.
 	 */
-	protected function canAddItem($item)
+	public function insertAt($index,$item)
 	{
-		return ($item instanceof TDataGridColumn);
+		if($item instanceof TDataGridColumn)
+			parent::insertAt($index,$item);
+		else
+			throw new TInvalidDataTypeException('datagridcolumncollection_datagridcolumn_required');
 	}
 }
 

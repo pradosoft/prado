@@ -29,10 +29,8 @@
  * Note, count($list) will always return 1. You should use {@link getCount()}
  * to determine the number of items in the list.
  *
- * To extend TList by doing additional operations with each added or removed item,
- * you can override {@link addedItem} and {@link removedItem}.
- * You can also override {@link canAddItem} and {@link canRemoveItem} to
- * control whether to add or remove a particular item.
+ * To extend TList by doing additional operations with each addition or removal
+ * operations, override {@link insertAt()}, and {@link removeAt()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -101,17 +99,10 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	/**
 	 * Appends an item at the end of the list.
 	 * @param mixed new item
-	 * @throws TInvalidOperationException If the item is not allowed to be added
 	 */
 	public function add($item)
 	{
-		if($this->canAddItem($item))
-		{
-			$this->_d[$this->_c++]=$item;
-			$this->addedItem($item);
-		}
-		else
-			throw new TInvalidOperationException('list_addition_disallowed');
+		$this->insertAt($this->_c,$item);
 	}
 
 	/**
@@ -121,26 +112,18 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 * @param integer the speicified position.
 	 * @param mixed new item
 	 * @throws TInvalidDataValueException If the index specified exceeds the bound
-	 * @throws TInvalidOperationException If the item is not allowed to be added
 	 */
-	public function insert($index,$item)
+	public function insertAt($index,$item)
 	{
-		if($this->canAddItem($item))
+		if($index===$this->_c)
+			$this->_d[$this->_c++]=$item;
+		else if($index>=0 && $index<$this->_c)
 		{
-			if($index===$this->_c)
-				$this->add($item);
-			else if($index>=0 && $index<$this->_c)
-			{
-				array_splice($this->_d,$index,0,array($item));
-				$this->_c++;
-				$this->addedItem($item);
-			}
-			else
-				throw new TInvalidDataValueException('list_index_invalid',$index);
+			array_splice($this->_d,$index,0,array($item));
+			$this->_c++;
 		}
 		else
-			throw new TInvalidOperationException('list_addition_disallowed');
-
+			throw new TInvalidDataValueException('list_index_invalid',$index);
 	}
 
 	/**
@@ -148,18 +131,12 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 * The list will first search for the item.
 	 * The first item found will be removed from the list.
 	 * @param mixed the item to be removed.
-	 * @throws TInvalidOperationException If the item cannot be removed
 	 * @throws TInvalidDataValueException If the item does not exist
 	 */
 	public function remove($item)
 	{
 		if(($index=$this->indexOf($item))>=0)
-		{
-			if($this->canRemoveItem($item))
-				$this->removeAt($index);
-			else
-				throw new TInvalidOperationException('list_item_unremovable');
-		}
+			$this->removeAt($index);
 		else
 			throw new TInvalidDataValueException('list_item_inexistent');
 	}
@@ -169,25 +146,18 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 * @param integer the index of the item to be removed.
 	 * @return mixed the removed item.
 	 * @throws TOutOfRangeException If the index specified exceeds the bound
-	 * @throws TInvalidOperationException If the item cannot be removed
 	 */
 	public function removeAt($index)
 	{
 		if(isset($this->_d[$index]))
 		{
 			$item=$this->_d[$index];
-			if($this->canRemoveItem($item))
-			{
-				if($index===$this->_c-1)
-					unset($this->_d[$index]);
-				else
-					array_splice($this->_d,$index,1);
-				$this->_c--;
-				$this->removedItem($item);
-				return $item;
-			}
+			if($index===$this->_c-1)
+				unset($this->_d[$index]);
 			else
-				throw new TInvalidOperationException('list_item_unremovable');
+				array_splice($this->_d,$index,1);
+			$this->_c--;
+			return $item;
 		}
 		else
 			throw new TInvalidDataValueException('list_index_invalid',$index);
@@ -303,11 +273,11 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	public function offsetSet($offset,$item)
 	{
 		if($offset===null || $offset===$this->_c)
-			$this->add($item);
+			$this->insertAt($this->_c,$item);
 		else
 		{
 			$this->removeAt($offset);
-			$this->insert($offset,$item);
+			$this->insertAt($offset,$item);
 		}
 	}
 
@@ -320,48 +290,6 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	public function offsetUnset($offset)
 	{
 		$this->removeAt($offset);
-	}
-
-	/**
-	 * This method is invoked after an item is successfully added to the list.
-	 * You can override this method to provide customized processing of the addition.
-	 * @param mixed the newly added item
-	 */
-	protected function addedItem($item)
-	{
-	}
-
-	/**
-	 * This method is invoked after an item is successfully removed from the list.
-	 * You can override this method to provide customized processing of the removal.
-	 * @param mixed the removed item
-	 */
-	protected function removedItem($item)
-	{
-	}
-
-	/**
-	 * This method is invoked before adding an item to the list.
-	 * If it returns true, the item will be added to the list, otherwise not.
-	 * You can override this method to decide whether a specific can be added.
-	 * @param mixed item to be added
-	 * @return boolean whether the item can be added to the list
-	 */
-	protected function canAddItem($item)
-	{
-		return true;
-	}
-
-	/**
-	 * This method is invoked before removing an item from the list.
-	 * If it returns true, the item will be removed from the list, otherwise not.
-	 * You can override this method to decide whether a specific can be removed.
-	 * @param mixed item to be removed
-	 * @return boolean whether the item can be removed to the list
-	 */
-	protected function canRemoveItem($item)
-	{
-		return true;
 	}
 }
 

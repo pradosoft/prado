@@ -7,54 +7,6 @@ class MapItem
 	public $data='data';
 }
 
-class NewMap extends TMap
-{
-	private $_canAddItem=true;
-	private $_canRemoveItem=true;
-	private $_itemAdded=false;
-	private $_itemRemoved=false;
-
-	protected function addedItem($key,$value)
-	{
-		$this->_itemAdded=true;
-	}
-
-	protected function removedItem($key,$value)
-	{
-		$this->_itemRemoved=true;
-	}
-
-	protected function canAddItem($key,$value)
-	{
-		return $this->_canAddItem;
-	}
-
-	protected function canRemoveItem($key,$value)
-	{
-		return $this->_canRemoveItem;
-	}
-
-	public function setCanAddItem($value)
-	{
-		$this->_canAddItem=$value;
-	}
-
-	public function setCanRemoveItem($value)
-	{
-		$this->_canRemoveItem=$value;
-	}
-
-	public function isItemAdded()
-	{
-		return $this->_itemAdded;
-	}
-
-	public function isItemRemoved()
-	{
-		return $this->_itemRemoved;
-	}
-}
-
 class utMap extends UnitTestCase
 {
 	protected $map;
@@ -202,43 +154,6 @@ class utMap extends UnitTestCase
 		$this->assertEqual(1,count($this->map));
 		$this->assertTrue(isset($this->map['key1']));
 		$this->assertFalse(isset($this->map['unknown key']));
-	}
-
-	public function testDerivedClasses()
-	{
-		$newMap=new NewMap;
-		$this->assertFalse($newMap->isItemAdded());
-		$newMap->add('key','value');
-		$this->assertTrue($newMap->isItemAdded());
-		$newMap->add('key2','value2');
-
-		$newMap->setCanAddItem(false);
-		try
-		{
-			$newMap->add('new key','new value');
-			$this->fail('no exception raised when adding an item that is disallowed');
-		}
-		catch(TInvalidOperationException $e)
-		{
-			$this->assertEqual(2,$newMap->getCount());
-			$this->pass();
-		}
-
-		$this->assertFalse($newMap->isItemRemoved());
-		$newMap->remove('key');
-		$this->assertTrue($newMap->isItemRemoved());
-
-		$newMap->setCanRemoveItem(false);
-		try
-		{
-			$newMap->remove('key2');
-			$this->fail('no exception raised when removing an item that is disallowed');
-		}
-		catch(TInvalidOperationException $e)
-		{
-			$this->assertEqual(1,$newMap->getCount());
-			$this->pass();
-		}
 	}
 }
 

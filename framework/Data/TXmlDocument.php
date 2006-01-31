@@ -416,36 +416,41 @@ class TXmlElementList extends TList
 		return $this->_o;
 	}
 
+
 	/**
-	 * Overrides the parent implementation with customized processing of the newly added item.
-	 * @param mixed the newly added item
+	 * Inserts an item at the specified position.
+	 * This overrides the parent implementation by performing additional
+	 * operations for each newly added TXmlElement object.
+	 * @param integer the speicified position.
+	 * @param mixed new item
+	 * @throws TInvalidDataTypeException if the item to be inserted is not a TXmlElement object.
 	 */
-	protected function addedItem($item)
+	public function insertAt($index,$item)
 	{
-		if($item->getParent()!==null)
-			$item->getParent()->getElements()->remove($item);
-		$item->setParent($this->_o);
+		if($item instanceof TXmlElement)
+		{
+			parent::insertAt($index,$item);
+			if($item->getParent()!==null)
+				$item->getParent()->getElements()->remove($item);
+			$item->setParent($this->_o);
+		}
+		else
+			throw new TInvalidDataTypeException('xmlelementlist_xmlelement_required');
 	}
 
 	/**
-	 * Overrides the parent implementation with customized processing of the removed item.
-	 * @param mixed the removed item
+	 * Removes an item at the specified position.
+	 * This overrides the parent implementation by performing additional
+	 * cleanup work when removing a TXmlElement object.
+	 * @param integer the index of the item to be removed.
+	 * @return mixed the removed item.
 	 */
-	protected function removedItem($item)
+	public function removeAt($index)
 	{
-		$item->setParent(null);
-	}
-
-	/**
-	 * This method is invoked before adding an item to the map.
-	 * If it returns true, the item will be added to the map, otherwise not.
-	 * You can override this method to decide whether a specific can be added.
-	 * @param mixed item to be added
-	 * @return boolean whether the item can be added to the map
-	 */
-	protected function canAddItem($item)
-	{
-		return ($item instanceof TXmlElement);
+		$item=parent::removeAt($index);
+		if($item instanceof TXmlElement)
+			$item->setParent(null);
+		return $item;
 	}
 }
 

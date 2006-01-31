@@ -567,33 +567,18 @@ abstract class TListControl extends TDataBoundControl
 class TListItemCollection extends TList
 {
 	/**
-	 * Appends an item to the collection.
-	 * @param TListItem the item to be appended.
-	 * @throws TInvalidDataTypeException if the item being appended is neither a string nor a TListItem
-	 */
-	public function add($item)
-	{
-		if(is_string($item))
-			parent::add(new TListItem($item));
-		else if($item instanceof TListItem)
-			parent::add($item);
-		else
-			throw new TInvalidDataTypeException('listitemcollection_item_invalid');
-	}
-
-	/**
 	 * Inserts an item into the collection.
 	 * @param integer the location where the item will be inserted.
 	 * The current item at the place and the following ones will be moved backward.
 	 * @param TListItem the item to be inserted.
 	 * @throws TInvalidDataTypeException if the item being inserted is neither a string nor TListItem
 	 */
-	public function insert($index,$item)
+	public function insertAt($index,$item)
 	{
 		if(is_string($item))
-			parent::insert($index,new TListItem($item));
+			parent::insertAt($index,new TListItem($item));
 		else if($item instanceof TListItem)
-			parent::insert($index,$item);
+			parent::insertAt($index,$item);
 		else
 			throw new TInvalidDataTypeException('listitemcollection_item_invalid');
 	}

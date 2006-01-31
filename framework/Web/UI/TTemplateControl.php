@@ -165,7 +165,7 @@ class TTemplateControl extends TControl implements INamingContainer
 		if(isset($this->_placeholders[$id]))
 		{
 			list($parent,$loc)=$this->_placeholders[$id];
-			$parent->getControls()->insert($loc,$content);
+			$parent->getControls()->insertAt($loc,$content);
 		}
 	}
 

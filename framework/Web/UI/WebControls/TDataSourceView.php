@@ -103,7 +103,7 @@ abstract class TDataSourceView extends TComponent
 	 * @param array|TMap
 	 * @return integer affected rows
 	 */
-	public function insert($values)
+	public function insertAt($values)
 	{
 		throw new TNotSupportedException('datasourceview_insert_unsupported');
 	}

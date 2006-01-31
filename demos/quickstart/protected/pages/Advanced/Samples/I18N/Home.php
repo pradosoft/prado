@@ -35,7 +35,7 @@ class Home extends TPage
 	 */
 	public function getCurrentCulture()
 	{
-		$culture = $this->Application->Globalization->Culture;
+		$culture = $this->getApplication()->getGlobalization()->getCulture();
 		$cultureInfo = new CultureInfo($culture);
 		return $cultureInfo->getNativeName();
 	}

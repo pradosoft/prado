@@ -54,7 +54,6 @@ class TAttributeCollection extends TMap
 	 */
 	public function __get($name)
 	{
-		$name=strtolower($name);
 		return $this->contains($name)?$this->itemAt($name):parent::__get($name);
 	}
 
@@ -68,7 +67,52 @@ class TAttributeCollection extends TMap
 	 */
 	public function __set($name,$value)
 	{
-		$this->add(strtolower($name),$value);
+		$this->add($name,$value);
+	}
+
+	/**
+	 * Returns the item with the specified key.
+	 * This overrides the parent implementation by converting the key to lower case first.
+	 * @param mixed the key
+	 * @return mixed the element at the offset, null if no element is found at the offset
+	 */
+	public function itemAt($key)
+	{
+		return parent::itemAt(strtolower($key));
+	}
+
+
+	/**
+	 * Adds an item into the map.
+	 * This overrides the parent implementation by converting the key to lower case first.
+	 * @param mixed key
+	 * @param mixed value
+	 */
+	public function add($key,$value)
+	{
+		parent::add(strtolower($key),$value);
+	}
+
+	/**
+	 * Removes an item from the map by its key.
+	 * This overrides the parent implementation by converting the key to lower case first.
+	 * @param mixed the key of the item to be removed
+	 * @return mixed the removed value, null if no such key exists.
+	 */
+	public function remove($key)
+	{
+		return parent::remove(strtolower($key));
+	}
+
+	/**
+	 * Returns whether the specified is in the map.
+	 * This overrides the parent implementation by converting the key to lower case first.
+	 * @param mixed the key
+	 * @return boolean whether the map contains an item with the specified key
+	 */
+	public function contains($key)
+	{
+		return parent::contains(strtolower($key));
 	}
 
 	/**
@@ -80,7 +124,6 @@ class TAttributeCollection extends TMap
 	 */
 	public function hasProperty($name)
 	{
-		$name=strtolower($name);
 		return $this->contains($name) || parent::hasProperty($name);
 	}
 
@@ -93,7 +136,6 @@ class TAttributeCollection extends TMap
 	 */
 	public function canGetProperty($name)
 	{
-		$name=strtolower($name);
 		return $this->contains($name) || parent::canGetProperty($name);
 	}
 

@@ -712,32 +712,38 @@ class TTableRowCollection extends TList
 	}
 
 	/**
-	 * Only string or instance of TControl can be added into collection.
-	 * @param mixed the item to be added
+	 * Inserts an item at the specified position.
+	 * This overrides the parent implementation by performing additional
+	 * operations for each newly added table row.
+	 * @param integer the speicified position.
+	 * @param mixed new item
+	 * @throws TInvalidDataTypeException if the item to be inserted is not a TTableRow object.
 	 */
-	protected function canAddItem($item)
+	public function insertAt($index,$item)
 	{
-		return ($item instanceof TTableRow);
+		if($item instanceof TTableRow)
+		{
+			parent::insertAt($index,$item);
+			if($this->_owner)
+				$this->_owner->getControls()->insertAt($index,$item);
+		}
+		else
+			throw new TInvalidDataTypeException('tablerowcollection_tablerow_required');
 	}
 
 	/**
-	 * Overrides the parent implementation with customized processing of the newly added item.
-	 * @param mixed the newly added item
+	 * Removes an item at the specified position.
+	 * This overrides the parent implementation by performing additional
+	 * cleanup work when removing a table row.
+	 * @param integer the index of the item to be removed.
+	 * @return mixed the removed item.
 	 */
-	protected function addedItem($item)
+	public function removeAt($index)
 	{
-		if($this->_owner)
-			$this->_owner->getControls()->add($item);
-	}
-
-	/**
-	 * Overrides the parent implementation with customized processing of the removed item.
-	 * @param mixed the removed item
-	 */
-	protected function removedItem($item)
-	{
-		if($this->_owner)
+		$item=parent::removeAt($index);
+		if($item instanceof TTableRow)
 			$this->_owner->getControls()->remove($item);
+		return $item;
 	}
 }
 
@@ -768,33 +774,40 @@ class TTableCellCollection extends TList
 		$this->_owner=$owner;
 	}
 
+
 	/**
-	 * Only string or instance of TTableCell can be added into collection.
-	 * @param mixed the item to be added
+	 * Inserts an item at the specified position.
+	 * This overrides the parent implementation by performing additional
+	 * operations for each newly added table cell.
+	 * @param integer the speicified position.
+	 * @param mixed new item
+	 * @throws TInvalidDataTypeException if the item to be inserted is not a TTableCell object.
 	 */
-	protected function canAddItem($item)
+	public function insertAt($index,$item)
 	{
-		return ($item instanceof TTableCell);
+		if($item instanceof TTableCell)
+		{
+			parent::insertAt($index,$item);
+			if($this->_owner)
+				$this->_owner->getControls()->insertAt($index,$item);
+		}
+		else
+			throw new TInvalidDataTypeException('tablecellcollection_tablecell_required');
 	}
 
 	/**
-	 * Overrides the parent implementation with customized processing of the newly added item.
-	 * @param mixed the newly added item
+	 * Removes an item at the specified position.
+	 * This overrides the parent implementation by performing additional
+	 * cleanup work when removing a table cell.
+	 * @param integer the index of the item to be removed.
+	 * @return mixed the removed item.
 	 */
-	protected function addedItem($item)
+	public function removeAt($index)
 	{
-		if($this->_owner)
-			$this->_owner->getControls()->add($item);
-	}
-
-	/**
-	 * Overrides the parent implementation with customized processing of the removed item.
-	 * @param mixed the removed item
-	 */
-	protected function removedItem($item)
-	{
-		if($this->_owner)
+		$item=parent::removeAt($index);
+		if($item instanceof TTableCell)
 			$this->_owner->getControls()->remove($item);
+		return $item;
 	}
 }
 ?>

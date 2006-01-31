@@ -200,13 +200,19 @@ class TAuthorizationRuleCollection extends TList
 	}
 
 	/**
-	 * Ensures that only instance of TAuthorizationRule is added to the collection.
-	 * @param mixed item to be added to the collection
-	 * @return boolean whether the item can be added to the collection
+	 * Inserts an item at the specified position.
+	 * This overrides the parent implementation by performing additional
+	 * operations for each newly added TAuthorizationRule object.
+	 * @param integer the speicified position.
+	 * @param mixed new item
+	 * @throws TInvalidDataTypeException if the item to be inserted is not a TAuthorizationRule object.
 	 */
-	protected function canAddItem($item)
+	public function insertAt($index,$item)
 	{
-		return ($item instanceof TAuthorizationRule);
+		if($item instanceof TAuthorizationRule)
+			parent::insertAt($index,$item);
+		else
+			throw new TInvalidDataTypeException('authorizationrulecollection_authorizationrule_required');
 	}
 }
 

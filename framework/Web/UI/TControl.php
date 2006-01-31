@@ -1487,32 +1487,39 @@ class TControlList extends TList
 	}
 
 	/**
-	 * Overrides the parent implementation with customized processing of the newly added item.
-	 * @param mixed the newly added item
+	 * Inserts an item at the specified position.
+	 * This overrides the parent implementation by performing additional
+	 * operations for each newly added child control.
+	 * @param integer the speicified position.
+	 * @param mixed new item
+	 * @throws TInvalidDataTypeException if the item to be inserted is neither a string nor a TControl.
 	 */
-	protected function addedItem($item)
+	public function insertAt($index,$item)
 	{
-		if($item instanceof TControl)
+		if(is_string($item))
+			parent::insertAt($index,$item);
+		else if($item instanceof TControl)
+		{
+			parent::insertAt($index,$item);
 			$this->_o->addedControl($item);
+		}
+		else
+			throw new TInvalidDataTypeException('controllist_control_required');
 	}
 
 	/**
-	 * Overrides the parent implementation with customized processing of the removed item.
-	 * @param mixed the removed item
+	 * Removes an item at the specified position.
+	 * This overrides the parent implementation by performing additional
+	 * cleanup work when removing a child control.
+	 * @param integer the index of the item to be removed.
+	 * @return mixed the removed item.
 	 */
-	protected function removedItem($item)
+	public function removeAt($index)
 	{
+		$item=parent::removeAt($index);
 		if($item instanceof TControl)
 			$this->_o->removedControl($item);
-	}
-
-	/**
-	 * Only string or instance of TControl can be added into collection.
-	 * @param mixed the item to be added
-	 */
-	protected function canAddItem($item)
-	{
-		return is_string($item) || ($item instanceof TControl);
+		return $item;
 	}
 
 	/**

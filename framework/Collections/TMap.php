@@ -100,19 +100,12 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 	 * Note, if the specified key already exists, the old value will be removed first.
 	 * @param mixed key
 	 * @param mixed value
-	 * @throws TInvalidOperationException if the item cannot be added
 	 */
 	public function add($key,$value)
 	{
-		if($this->canAddItem($key,$value))
-		{
-			if(isset($this->_d[$key]))
-				$this->remove($key);
-			$this->_d[$key]=$value;
-			$this->addedItem($key,$value);
-		}
-		else
-			throw new TInvalidOperationException('map_addition_disallowed');
+		if(isset($this->_d[$key]))
+			$this->remove($key);
+		$this->_d[$key]=$value;
 	}
 
 	/**
@@ -126,14 +119,8 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 		if(isset($this->_d[$key]))
 		{
 			$value=$this->_d[$key];
-			if($this->canRemoveItem($key,$value))
-			{
-				unset($this->_d[$key]);
-				$this->removedItem($key,$value);
-				return $value;
-			}
-			else
-				throw new TInvalidOperationException('map_item_unremovable');
+			unset($this->_d[$key]);
+			return $value;
 		}
 		else
 			return null;
@@ -220,7 +207,7 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 	 */
 	public function offsetGet($offset)
 	{
-		return isset($this->_d[$offset]) ? $this->_d[$offset] : null;
+		return $this->itemAt($offset);
 	}
 
 	/**
@@ -242,52 +229,6 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 	public function offsetUnset($offset)
 	{
 		$this->remove($offset);
-	}
-
-	/**
-	 * This method is invoked after an item is successfully added to the map.
-	 * You can override this method provide customized processing of the addition.
-	 * @param string key to the item
-	 * @param mixed the newly added item
-	 */
-	protected function addedItem($key,$item)
-	{
-	}
-
-	/**
-	 * This method is invoked after an item is successfully removed from the map.
-	 * You can override this method provide customized processing of the removal.
-	 * @param string key to the item
-	 * @param mixed the removed item
-	 */
-	protected function removedItem($key,$item)
-	{
-	}
-
-	/**
-	 * This method is invoked before adding an item to the map.
-	 * If it returns true, the item will be added to the map, otherwise not.
-	 * You can override this method to decide whether a specific can be added.
-	 * @param string key to the item
-	 * @param mixed item to be added
-	 * @return boolean whether the item can be added to the map
-	 */
-	protected function canAddItem($key,$item)
-	{
-		return true;
-	}
-
-	/**
-	 * This method is invoked before removing an item from the map.
-	 * If it returns true, the item will be removed from the map, otherwise not.
-	 * You can override this method to decide whether a specific can be removed.
-	 * @param string key to the item
-	 * @param mixed item to be removed
-	 * @return boolean whether the item can be removed to the map
-	 */
-	protected function canRemoveItem($key,$item)
-	{
-		return true;
 	}
 }
 

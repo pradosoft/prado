@@ -5,61 +5,13 @@ class MapItem {
   public $data='data';
 }
 
-class NewMap extends TMap
-{
-	private $_canAddItem=true;
-	private $_canRemoveItem=true;
-	private $_itemAdded=false;
-	private $_itemRemoved=false;
-
-	protected function addedItem($key,$value)
-	{
-		$this->_itemAdded=true;
-	}
-
-	protected function removedItem($key,$value)
-	{
-		$this->_itemRemoved=true;
-	}
-
-	protected function canAddItem($key,$value)
-	{
-		return $this->_canAddItem;
-	}
-
-	protected function canRemoveItem($key,$value)
-	{
-		return $this->_canRemoveItem;
-	}
-
-	public function setCanAddItem($value)
-	{
-		$this->_canAddItem=$value;
-	}
-
-	public function setCanRemoveItem($value)
-	{
-		$this->_canRemoveItem=$value;
-	}
-
-	public function isItemAdded()
-	{
-		return $this->_itemAdded;
-	}
-
-	public function isItemRemoved()
-	{
-		return $this->_itemRemoved;
-	}
-}
-
 /**
  * @package System.Collections
  */
 class TMapTest extends PHPUnit2_Framework_TestCase {
   protected $map;
   protected $item1,$item2,$item3;
-  
+
   public function setUp() {
     $this->map=new TMap;
     $this->item1=new MapItem;
@@ -75,7 +27,7 @@ class TMapTest extends PHPUnit2_Framework_TestCase {
     $this->item2=null;
     $this->item3=null;
   }
-  
+
   public function testConstruct() {
     $a=array(1,2,'key3'=>3);
     $map=new TMap($a);
@@ -87,7 +39,7 @@ class TMapTest extends PHPUnit2_Framework_TestCase {
   public function testGetCount() {
     $this->assertEquals(2,$this->map->getCount());
   }
-  
+
   public function testGetKeys() {
     $keys=$this->map->getKeys();
     $this->assertTrue(count($keys)===2 && $keys[0]==='key1' && $keys[1]==='key2');
@@ -131,7 +83,7 @@ class TMapTest extends PHPUnit2_Framework_TestCase {
 		}
 		catch(TInvalidDataTypeException $e)
 		{
-			
+
 		}
 	}
 
@@ -147,7 +99,7 @@ class TMapTest extends PHPUnit2_Framework_TestCase {
 		}
 		catch(TInvalidDataTypeException $e)
 		{
-			
+
 		}
 	}
 
@@ -169,7 +121,7 @@ class TMapTest extends PHPUnit2_Framework_TestCase {
 		try
 		{
 			unset($this->map['unknown key']);
-			
+
 		}
 		catch(Exception $e)
 		{
@@ -197,42 +149,6 @@ class TMapTest extends PHPUnit2_Framework_TestCase {
 		$this->assertEquals(1,count($this->map));
 		$this->assertTrue(isset($this->map['key1']));
 		$this->assertFalse(isset($this->map['unknown key']));
-	}
-
-	public function testDerivedClasses()
-	{
-		$newMap=new NewMap;
-		$this->assertFalse($newMap->isItemAdded());
-		$newMap->add('key','value');
-		$this->assertTrue($newMap->isItemAdded());
-		$newMap->add('key2','value2');
-
-		$newMap->setCanAddItem(false);
-		try
-		{
-			$newMap->add('new key','new value');
-			$this->fail('no exception raised when adding an item that is disallowed');
-		}
-		catch(TInvalidOperationException $e)
-		{
-			$this->assertEquals(2,$newMap->getCount());
-			
-		}
-
-		$this->assertFalse($newMap->isItemRemoved());
-		$newMap->remove('key');
-		$this->assertTrue($newMap->isItemRemoved());
-
-		$newMap->setCanRemoveItem(false);
-		try
-		{
-			$newMap->remove('key2');
-			$this->fail('no exception raised when removing an item that is disallowed');
-		}
-		catch(TInvalidOperationException $e)
-		{
-			$this->assertEquals(1,$newMap->getCount());
-		}
 	}
 }
 

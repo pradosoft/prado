@@ -661,15 +661,18 @@ class TRepeaterItem extends TControl implements INamingContainer
 class TRepeaterItemCollection extends TList
 {
 	/**
-	 * Returns true only when the item to be added is a {@link TRepeaterItem}.
-	 * This method is invoked before adding an item to the list.
-	 * If it returns true, the item will be added to the list, otherwise not.
-	 * @param mixed item to be added
-	 * @return boolean whether the item can be added to the list
+	 * Inserts an item at the specified position.
+	 * This overrides the parent implementation by inserting only TRepeaterItem.
+	 * @param integer the speicified position.
+	 * @param mixed new item
+	 * @throws TInvalidDataTypeException if the item to be inserted is not a TRepeaterItem.
 	 */
-	protected function canAddItem($item)
+	public function insertAt($index,$item)
 	{
-		return ($item instanceof TRepeaterItem);
+		if($item instanceof TRepeaterItem)
+			parent::insertAt($index,$item);
+		else
+			throw new TInvalidDataTypeException('repeateritemcollection_repeateritem_required');
 	}
 }
 
