@@ -34,11 +34,6 @@
  * TAPCCache may be configured in application configuration file as follows
  * <module id="cache" type="System.Data.TAPCCache" Prefix="apc_cache_prefix_key_"/>
  *
- ***********************************************************************************************************
- * NOTE: not backward compatible with Prado ICache, you cannot specify a timestamp for expire.
- * It could be implemented, but what the point to check for a cache wich is meant to be as quick as possible
- ***********************************************************************************************************
- *
  * @author Alban Hanry <compte_messagerie@hotmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Data
