@@ -81,7 +81,7 @@ class TTextHighlighter extends TWebControl
 	 * This method overrides parent implementation.
 	 * @param THtmlWriter writer
 	 */
-	protected function onPreRender($writer)
+	public function onPreRender($writer)
 	{
 		parent::onPreRender($writer);
 		$this->registerHighlightStyleSheet();

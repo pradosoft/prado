@@ -1101,7 +1101,7 @@ class TControl extends TComponent
 	 * so that the event handlers can be invoked.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
-	protected function onInit($param)
+	public function onInit($param)
 	{
 		$this->raiseEvent('OnInit',$this,$param);
 	}
@@ -1113,7 +1113,7 @@ class TControl extends TComponent
 	 * so that the event handlers can be invoked.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
-	protected function onLoad($param)
+	public function onLoad($param)
 	{
 		$this->raiseEvent('OnLoad',$this,$param);
 	}
@@ -1123,7 +1123,7 @@ class TControl extends TComponent
 	 * This method is invoked when {@link dataBind} is invoked.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
-	protected function onDataBinding($param)
+	public function onDataBinding($param)
 	{
 		$this->raiseEvent('OnDataBinding',$this,$param);
 	}
@@ -1136,7 +1136,7 @@ class TControl extends TComponent
 	 * so that the event handlers can be invoked.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
-	protected function onUnload($param)
+	public function onUnload($param)
 	{
 		$this->raiseEvent('OnUnload',$this,$param);
 	}
@@ -1148,7 +1148,7 @@ class TControl extends TComponent
 	 * so that the event handlers can be invoked.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
-	protected function onPreRender($param)
+	public function onPreRender($param)
 	{
 		$this->raiseEvent('OnPreRender',$this,$param);
 	}
@@ -1179,7 +1179,7 @@ class TControl extends TComponent
 	 * @return boolean true if the event bubbling is handled and no more bubbling.
 	 * @see raiseBubbleEvent
 	 */
-	protected function onBubbleEvent($sender,$param)
+	public function onBubbleEvent($sender,$param)
 	{
 		return false;
 	}
@@ -1269,7 +1269,7 @@ class TControl extends TComponent
 	 * Parent implementation must be invoked.
 	 * @param TEventParameter event parameter
 	 */
-	protected function onSaveState($param)
+	public function onSaveState($param)
 	{
 		$this->raiseEvent('OnSaveState',$this,$param);
 	}
@@ -1280,7 +1280,7 @@ class TControl extends TComponent
 	 * Parent implementation must be invoked.
 	 * @param TEventParameter
 	 */
-	protected function onLoadState($param)
+	public function onLoadState($param)
 	{
 		$this->raiseEvent('OnLoadState',$this,$param);
 	}

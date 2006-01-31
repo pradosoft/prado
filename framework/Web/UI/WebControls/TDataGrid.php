@@ -565,7 +565,7 @@ class TDataGrid extends TBaseDataList
 	 * @param TEventParameter event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
-	protected function onBubbleEvent($sender,$param)
+	public function onBubbleEvent($sender,$param)
 	{
 		if($param instanceof TDataGridCommandEventParameter)
 		{
@@ -720,7 +720,7 @@ class TDataGrid extends TBaseDataList
 	 * This method is invoked right before control state is to be saved.
 	 * @param mixed event parameter
 	 */
-	protected function onSaveState($param)
+	public function onSaveState($param)
 	{
 		if($this->_items)
 			$this->setViewState('ItemCount',$this->_items->getCount(),0);
@@ -742,7 +742,7 @@ class TDataGrid extends TBaseDataList
 	 * This method is invoked right after control state is loaded.
 	 * @param mixed event parameter
 	 */
-	protected function onLoadState($param)
+	public function onLoadState($param)
 	{
 		if(!$this->getIsDataBound())
 		{
@@ -1527,7 +1527,7 @@ class TDataGridItem extends TTableRow implements INamingContainer
 	 * @param TEventParameter event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
-	protected function onBubbleEvent($sender,$param)
+	public function onBubbleEvent($sender,$param)
 	{
 		if($param instanceof TCommandEventParameter)
 		{

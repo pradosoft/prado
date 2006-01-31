@@ -48,7 +48,7 @@ class THead extends TControl
 	 * so that the event handlers can be invoked.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
-	protected function onInit($param)
+	public function onInit($param)
 	{
 		parent::onInit($param);
 		$this->getPage()->setHead($this);

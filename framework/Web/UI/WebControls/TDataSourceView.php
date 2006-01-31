@@ -169,7 +169,7 @@ abstract class TDataSourceView extends TComponent
 		return $this->_owner;
 	}
 
-	protected function onDataSourceViewChanged($param)
+	public function onDataSourceViewChanged($param)
 	{
 		$this->raiseEvent('OnDataSourceViewChanged',$this,$param);
 	}

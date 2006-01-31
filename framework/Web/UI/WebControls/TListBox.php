@@ -52,7 +52,7 @@ class TListBox extends TListControl implements IPostBackDataHandler, IValidatabl
 	 * This method overrides the parent implementation.
 	 * @param mixed event parameter
 	 */
-	protected function onPreRender($param)
+	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
 		if($this->getEnabled(true))

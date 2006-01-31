@@ -219,7 +219,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	 * the invocation of the attached event handlers.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
-	protected function onTextChanged($param)
+	public function onTextChanged($param)
 	{
 		$this->raiseEvent('OnTextChanged',$this,$param);
 	}

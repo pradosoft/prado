@@ -2,7 +2,7 @@
 
 class RequiredFieldValidator extends TPage
 {
-	protected function onLoad($param)
+	public function onLoad($param)
 	{
 		if(!$this->IsPostBack)
 			$this->dataBind();

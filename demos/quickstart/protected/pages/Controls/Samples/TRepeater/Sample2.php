@@ -32,7 +32,7 @@ class Sample2 extends TPage
 		return $data[$region];
 	}
 
-	protected function onLoad($param)
+	public function onLoad($param)
 	{
 		parent::onLoad($param);
 		if(!$this->IsPostBack)

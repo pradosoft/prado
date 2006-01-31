@@ -90,7 +90,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * Registers the validator with page.
 	 * @param mixed event parameter
 	 */
-	protected function onInit($param)
+	public function onInit($param)
 	{
 		parent::onInit($param);
 		$this->getPage()->getValidators()->add($this);
@@ -101,7 +101,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * Unregisters the validator from page.
 	 * @param mixed event parameter
 	 */
-	protected function onUnload($param)
+	public function onUnload($param)
 	{
 		if($this->_registered && ($page=$this->getPage())!==null)
 			$page->getValidators()->remove($this);
@@ -147,7 +147,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * so that the event handlers can be invoked.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
-	protected function onPreRender($param)
+	public function onPreRender($param)
 	{
 		$scripts = $this->getPage()->getClientScript();
 		$formID=$this->getPage()->getForm()->getClientID();

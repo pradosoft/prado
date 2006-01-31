@@ -216,7 +216,7 @@ abstract class TDataGridColumn extends TComponent
 		$this->_owner=$value;
 	}
 
-	protected function onColumnChanged()
+	public function onColumnChanged()
 	{
 		if($this->_owner)
 			$this->_owner->onColumnsChanged();

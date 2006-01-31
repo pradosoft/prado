@@ -84,7 +84,7 @@ class TFileUpload extends TWebControl implements IPostBackDataHandler, IValidata
 	 * This method overrides the parent implementation and is invoked before render.
 	 * @param mixed event parameter
 	 */
-	protected function onPreRender($param)
+	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
 		if(($form=$this->getPage()->getForm())!==null)
@@ -229,7 +229,7 @@ class TFileUpload extends TWebControl implements IPostBackDataHandler, IValidata
 	 * so that the event delegates can be invoked.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
-	protected function onFileUpload($param)
+	public function onFileUpload($param)
 	{
 		$this->raiseEvent('OnFileUpload',$this,$param);
 	}

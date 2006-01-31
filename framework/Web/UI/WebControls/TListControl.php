@@ -192,7 +192,7 @@ abstract class TListControl extends TDataBoundControl
 	 * This method is invoked right before control state is to be saved.
 	 * @param mixed event parameter
 	 */
-	protected function onSaveState($param)
+	public function onSaveState($param)
 	{
 		if($this->_items)
 			$this->setViewState('Items',$this->_items->saveState(),null);
@@ -205,7 +205,7 @@ abstract class TListControl extends TDataBoundControl
 	 * This method is invoked right after control state is loaded.
 	 * @param mixed event parameter
 	 */
-	protected function onLoadState($param)
+	public function onLoadState($param)
 	{
 		$this->_loadedFromState=true;
 		if(!$this->getIsDataBound())

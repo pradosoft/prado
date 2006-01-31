@@ -87,7 +87,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	 * so that the event delegates can be invoked.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
-	protected function onCheckedChanged($param)
+	public function onCheckedChanged($param)
 	{
 		$this->raiseEvent('OnCheckedChanged',$this,$param);
 	}
@@ -100,7 +100,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	 * This method overrides the parent implementation and is invoked before render.
 	 * @param mixed event parameter
 	 */
-	protected function onPreRender($param)
+	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
 		if($this->getEnabled(true))

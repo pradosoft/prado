@@ -634,7 +634,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 * @param TEventParameter event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
-	protected function onBubbleEvent($sender,$param)
+	public function onBubbleEvent($sender,$param)
 	{
 		if($param instanceof TDataListCommandEventParameter)
 		{
@@ -706,7 +706,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 * raises an <b>Command</b> event.
 	 * @param TDataListCommandEventParameter event parameter
 	 */
-	protected function onItemCommand($param)
+	public function onItemCommand($param)
 	{
 		$this->raiseEvent('OnItemCommand',$this,$param);
 	}
@@ -717,7 +717,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 * raises an <b>Command</b> event and the command name is 'edit' (case-insensitive).
 	 * @param TDataListCommandEventParameter event parameter
 	 */
-	protected function onEditCommand($param)
+	public function onEditCommand($param)
 	{
 		$this->raiseEvent('OnEditCommand',$this,$param);
 	}
@@ -728,7 +728,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 * raises an <b>Command</b> event and the command name is 'delete' (case-insensitive).
 	 * @param TDataListCommandEventParameter event parameter
 	 */
-	protected function onDeleteCommand($param)
+	public function onDeleteCommand($param)
 	{
 		$this->raiseEvent('OnDeleteCommand',$this,$param);
 	}
@@ -739,7 +739,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 * raises an <b>Command</b> event and the command name is 'update' (case-insensitive).
 	 * @param TDataListCommandEventParameter event parameter
 	 */
-	protected function onUpdateCommand($param)
+	public function onUpdateCommand($param)
 	{
 		$this->raiseEvent('OnUpdateCommand',$this,$param);
 	}
@@ -750,7 +750,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 * raises an <b>Command</b> event and the command name is 'cancel' (case-insensitive).
 	 * @param TDataListCommandEventParameter event parameter
 	 */
-	protected function onCancelCommand($param)
+	public function onCancelCommand($param)
 	{
 		$this->raiseEvent('OnCancelCommand',$this,$param);
 	}
@@ -1015,7 +1015,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 * This method is invoked right before control state is to be saved.
 	 * @param mixed event parameter
 	 */
-	protected function onSaveState($param)
+	public function onSaveState($param)
 	{
 		if($this->_items)
 			$this->setViewState('ItemCount',$this->_items->getCount(),0);
@@ -1028,7 +1028,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 * This method is invoked right after control state is loaded.
 	 * @param mixed event parameter
 	 */
-	protected function onLoadState($param)
+	public function onLoadState($param)
 	{
 		if(!$this->getIsDataBound())
 			$this->restoreItemsFromViewState();
@@ -1328,7 +1328,7 @@ class TDataListItem extends TWebControl implements INamingContainer
 	 * @param TEventParameter event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
-	protected function onBubbleEvent($sender,$param)
+	public function onBubbleEvent($sender,$param)
 	{
 		if($param instanceof TCommandEventParameter)
 		{

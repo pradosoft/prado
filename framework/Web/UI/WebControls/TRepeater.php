@@ -307,7 +307,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 * This method is invoked right before control state is to be saved.
 	 * @param mixed event parameter
 	 */
-	protected function onSaveState($param)
+	public function onSaveState($param)
 	{
 		if($this->_items)
 			$this->setViewState('ItemCount',$this->_items->getCount(),0);
@@ -320,7 +320,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 * This method is invoked right after control state is loaded.
 	 * @param mixed event parameter
 	 */
-	protected function onLoadState($param)
+	public function onLoadState($param)
 	{
 		if(!$this->getIsDataBound())
 			$this->restoreItemsFromViewState();
@@ -400,7 +400,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 * @param TEventParameter event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
-	protected function onBubbleEvent($sender,$param)
+	public function onBubbleEvent($sender,$param)
 	{
 		if($param instanceof TRepeaterCommandEventParameter)
 		{
@@ -421,7 +421,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 * so that event handlers have chance to respond to the event.
 	 * @param TRepeaterItemEventParameter event parameter
 	 */
-	protected function onItemCreated($param)
+	public function onItemCreated($param)
 	{
 		$this->raiseEvent('OnItemCreated',$this,$param);
 	}
@@ -435,7 +435,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 * so that event handlers have chance to respond to the event.
 	 * @param TRepeaterItemEventParameter event parameter
 	 */
-	protected function onItemDataBound($param)
+	public function onItemDataBound($param)
 	{
 		$this->raiseEvent('OnItemDataBound',$this,$param);
 	}
@@ -454,7 +454,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 * event handlers have chance to respond to the event.
 	 * @param TRepeaterCommandEventParameter event parameter
 	 */
-	protected function onItemCommand($param)
+	public function onItemCommand($param)
 	{
 		$this->raiseEvent('OnItemCommand',$this,$param);
 	}
@@ -636,7 +636,7 @@ class TRepeaterItem extends TControl implements INamingContainer
 	 * @param TEventParameter event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
-	protected function onBubbleEvent($sender,$param)
+	public function onBubbleEvent($sender,$param)
 	{
 		if($param instanceof TCommandEventParameter)
 		{

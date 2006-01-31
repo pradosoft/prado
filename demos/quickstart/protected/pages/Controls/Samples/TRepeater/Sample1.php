@@ -27,7 +27,7 @@ class Sample1 extends TPage
 		);
 	}
 
-	protected function onLoad($param)
+	public function onLoad($param)
 	{
 		parent::onLoad($param);
 		if(!$this->IsPostBack)

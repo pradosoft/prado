@@ -2,7 +2,7 @@
 
 class Home extends TPage
 {
-	protected function onLoad($param)
+	public function onLoad($param)
 	{
 		parent::onLoad($param);
 		$this->Output->dataBind();

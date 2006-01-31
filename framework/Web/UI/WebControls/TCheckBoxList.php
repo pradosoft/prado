@@ -338,7 +338,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	 * This method overrides the parent implementation.
 	 * @param mixed event parameter
 	 */
-	protected function onPreRender($param)
+	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
 		$this->_repeatedControl->setAutoPostBack($this->getAutoPostBack());

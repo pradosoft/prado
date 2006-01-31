@@ -2,7 +2,7 @@
 
 class CheckBox extends TPage
 {
-	protected function onLoad($param)
+	public function onLoad($param)
 	{
 		if(!$this->IsPostBack)
 			$this->dataBind();
@@ -26,7 +26,7 @@ class CheckBoxTestCase2 extends SeleniumTestCase
 		$this->pause(100);
 		$this->assertVisible("ctl0_Content_validator1");
 
-		//write some text, and see what it 
+		//write some text, and see what it
 		$this->type('ctl0_Content_TextBox', "hello");
 		$this->pause(100);
 		$this->assertNotVisible("ctl0_Content_validator1");

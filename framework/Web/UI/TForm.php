@@ -2,7 +2,7 @@
 
 class TForm extends TControl
 {
-	protected function onInit($param)
+	public function onInit($param)
 	{
 		parent::onInit($param);
 		$this->getPage()->setForm($this);

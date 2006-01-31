@@ -391,7 +391,7 @@ class TPage extends TTemplateControl
 	 * Remember to call the parent implementation to ensure PreInit event is raised.
 	 * @param mixed event parameter
 	 */
-	protected function onPreInit($param)
+	public function onPreInit($param)
 	{
 		$this->raiseEvent('OnPreInit',$this,$param);
 	}
@@ -404,7 +404,7 @@ class TPage extends TTemplateControl
 	 * Remember to call the parent implementation to ensure InitComplete event is raised.
 	 * @param mixed event parameter
 	 */
-	protected function onInitComplete($param)
+	public function onInitComplete($param)
 	{
 		$this->raiseEvent('OnInitComplete',$this,$param);
 	}
@@ -417,7 +417,7 @@ class TPage extends TTemplateControl
 	 * Remember to call the parent implementation to ensure PreLoad event is raised.
 	 * @param mixed event parameter
 	 */
-	protected function onPreLoad($param)
+	public function onPreLoad($param)
 	{
 		$this->raiseEvent('OnPreLoad',$this,$param);
 	}
@@ -430,7 +430,7 @@ class TPage extends TTemplateControl
 	 * Remember to call the parent implementation to ensure LoadComplete event is raised.
 	 * @param mixed event parameter
 	 */
-	protected function onLoadComplete($param)
+	public function onLoadComplete($param)
 	{
 		$this->raiseEvent('OnLoadComplete',$this,$param);
 	}
@@ -443,7 +443,7 @@ class TPage extends TTemplateControl
 	 * Remember to call the parent implementation to ensure PreRenderComplete event is raised.
 	 * @param mixed event parameter
 	 */
-	protected function onPreRenderComplete($param)
+	public function onPreRenderComplete($param)
 	{
 		$this->raiseEvent('OnPreRenderComplete',$this,$param);
 		$cs=$this->getClientScript();
@@ -470,7 +470,7 @@ class TPage extends TTemplateControl
 	 * Remember to call the parent implementation to ensure SaveStateComplete event is raised.
 	 * @param mixed event parameter
 	 */
-	protected function onSaveStateComplete($param)
+	public function onSaveStateComplete($param)
 	{
 		$this->raiseEvent('OnSaveStateComplete',$this,$param);
 	}
@@ -508,7 +508,7 @@ class TPage extends TTemplateControl
 	 * Parent implementation must be invoked.
 	 * @param TEventParameter event parameter
 	 */
-	protected function onSaveState($param)
+	public function onSaveState($param)
 	{
 		parent::onSaveState($param);
 		$this->setViewState('ControlsRequiringPostBack',$this->_controlsRegisteredForPostData,array());
@@ -520,7 +520,7 @@ class TPage extends TTemplateControl
 	 * Parent implementation must be invoked.
 	 * @param TEventParameter
 	 */
-	protected function onLoadState($param)
+	public function onLoadState($param)
 	{
 		$this->_controlsRequiringPostData=$this->getViewState('ControlsRequiringPostBack',array());
 		parent::onLoadState($param);

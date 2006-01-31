@@ -18,7 +18,7 @@
  * When the text box receives focus, a calendar will pop up and users can
  * pick up from it a date that will be automatically entered into the text box.
  * The format of the date string displayed in the text box is determined by
- * the <b>DateFormat</b> property. Valid formats are the combination of the 
+ * the <b>DateFormat</b> property. Valid formats are the combination of the
  * following tokens,
  *
  * <code>
@@ -34,14 +34,14 @@
  *  -----------------------------------------
  * </code>
  *
- * TDatePicker has three <b>Mode</b> to show the date picker popup. 
- * 
- *  # <b>Basic</b> -- Only shows a text input, focusing on the input shows the 
+ * TDatePicker has three <b>Mode</b> to show the date picker popup.
+ *
+ *  # <b>Basic</b> -- Only shows a text input, focusing on the input shows the
  *                    date picker.
  *  # <b>Button</b> -- Shows a button next to the text input, clicking on the
- *                     button shows the date, button text can be by the 
+ *                     button shows the date, button text can be by the
  *                     <b>ButtonText</b> property
- *  # <b>ImageButton</b> -- Shows an image next to the text input, clicking on 
+ *  # <b>ImageButton</b> -- Shows an image next to the text input, clicking on
  *                          the image shows the date picker, image source can be
  *                          change through the <b>ImageUrl</b> property.
  *
@@ -89,7 +89,7 @@ class TDatePicker extends TTextBox
 	{
 		$this->setViewState('ShowCalendar',TPropertyValue::ensureBoolean($value),true);
 	}
-	
+
 	/**
 	 * Gets the current culture.
 	 * @return string current culture, e.g. en_AU.
@@ -140,7 +140,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @param string set the calendar style 
+	 * @param string set the calendar style
 	 */
 	public function setCalendarStyle($value)
 	{
@@ -153,7 +153,7 @@ class TDatePicker extends TTextBox
 	public function getCalendarStyle()
 	{
 	   return $this->getViewState('CalendarStyle', 'default');
-	}	
+	}
 
 	/**
 	 * Set the first day of week, with 0 as Sunday, 1 as Monday, etc.
@@ -233,7 +233,7 @@ class TDatePicker extends TTextBox
 		$options['UpToYear'] = $this->getUpToYear();
 		if($this->getMode()!=='Basic')
 			$options['Trigger'] = $this->getDatePickerButtonID();
-	
+
 		$options = array_merge($options, $this->getCulturalOptions());
 		return $options;
 	}
@@ -247,7 +247,7 @@ class TDatePicker extends TTextBox
 		$app = $this->getApplication()->getGlobalization();
 		$culture = $this->getCulture() == '' ? $app->getCulture() : $this->getCulture();
 		if($culture == 'en') return array();
-		
+
 		//expensive operations
 		Prado::using('System.I18N.core.DateTimeFormatInfo');
 		$info = Prado::createComponent('System.I18N.core.CultureInfo', $culture);
@@ -262,7 +262,7 @@ class TDatePicker extends TTextBox
 	/**
 	 * Publish the date picker Css asset files.
 	 */
-	protected function OnPreRender($param)
+	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
 		$this->publishCalendarStyle();
@@ -281,7 +281,7 @@ class TDatePicker extends TTextBox
 		{
 			case 'Button': $this->renderButtonDatePicker($writer); break;
 			case 'ImageButton' : $this->renderImageButtonDatePicker($writer); break;
-		
+
 		}
 	}
 
@@ -300,7 +300,7 @@ class TDatePicker extends TTextBox
 	 */
 	protected function renderButtonDatePicker($writer)
 	{
-		$writer->addAttribute('id', $this->getDatePickerButtonID());		
+		$writer->addAttribute('id', $this->getDatePickerButtonID());
 		$writer->addAttribute('type', 'button');
 		$writer->addAttribute('class', $this->getCssClass().' TDatePickerButton');
 		$writer->addAttribute('value',$this->getButtonText());
@@ -340,7 +340,7 @@ class TDatePicker extends TTextBox
 	protected function publishCalendarStyle()
 	{
 		$cs = $this->getPage()->getClientScript();
-		$style = 'System.Web.Javascripts.datepicker.'.$this->getCalendarStyle();		
+		$style = 'System.Web.Javascripts.datepicker.'.$this->getCalendarStyle();
 		$cssFile=Prado::getPathOfNamespace($style,'.css');
 		$url = $this->getService()->getAsset($cssFile);
 		if(!$cs->isStyleSheetFileRegistered($style))
@@ -350,7 +350,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Registers the javascript code to initialize the date picker.
-	 * Must use "Event.OnLoad" to initialize the date picker when the 
+	 * Must use "Event.OnLoad" to initialize the date picker when the
 	 * full page is loaded, otherwise IE will throw an error.
 	 * @param THtmlWriter writer
 	 */

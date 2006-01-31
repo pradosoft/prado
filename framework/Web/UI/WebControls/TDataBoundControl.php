@@ -98,7 +98,7 @@ abstract class TDataBoundControl extends TWebControl
 	 * Sets {@link setRequiresDataBinding RequiresDataBinding} as true if the control is initialized.
 	 * This method is invoked when either {@link setDataSource} or {@link setDataSourceID} is changed.
 	 */
-	protected function onDataSourceChanged()
+	public function onDataSourceChanged()
 	{
 		$this->_currentViewValid=false;
 		$this->_currentDataSourceValid=false;
@@ -280,7 +280,7 @@ abstract class TDataBoundControl extends TWebControl
 	 * This method overrides the parent implementation.
 	 * @param TEventParameter event parameter
 	 */
-	protected function onInit($param)
+	public function onInit($param)
 	{
 		parent::onInit($param);
 		$page=$this->getPage();
@@ -293,7 +293,7 @@ abstract class TDataBoundControl extends TWebControl
 	 * @param mixed event sender
 	 * @param TEventParameter event parameter
 	 */
-	protected function onPagePreLoad($sender,$param)
+	public function onPagePreLoad($sender,$param)
 	{
 		$this->_initialized=true;
 		$isPostBack=$this->getPage()->getIsPostBack();
@@ -306,7 +306,7 @@ abstract class TDataBoundControl extends TWebControl
 	 * This method overrides the parent implementation.
 	 * @param TEventParameter event parameter
 	 */
-	protected function onPreRender($param)
+	public function onPreRender($param)
 	{
 		$this->_prerendered=true;
 		$this->ensureDataBound();

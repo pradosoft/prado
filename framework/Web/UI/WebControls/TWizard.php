@@ -1,11 +1,11 @@
 <?php
 /**
  * TWizard component.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the BSD License.
  *
- * Copyright(c) 2004 by Xiang Wei Zhuo. 
+ * Copyright(c) 2004 by Xiang Wei Zhuo.
  *
  * To contact the author write to {@link mailto:qiang.xue@gmail.com Qiang Xue}
  * The latest version of PRADO can be obtained from:
@@ -18,14 +18,14 @@
 
 /**
  * TWizard splits a large form and present the user with a series
- * of smaller form to complete. The TWizard is analogous to the 
+ * of smaller form to complete. The TWizard is analogous to the
  * installation wizard commonly used to install software in Windows.
  *
  * TWizard centralizes the required events to manipulate the flow of
  * the form. It also renders the appropriate step along with the navigation
  * elements. The wizard allows the steps to be presented linearly or otherwise
- * in a nonlinear fashion. That is, the forms can be filled sequentially or 
- * if permitted allowed the user to choose which ever step he/she wishes. 
+ * in a nonlinear fashion. That is, the forms can be filled sequentially or
+ * if permitted allowed the user to choose which ever step he/she wishes.
  * In addition, the steps can be programmed to be skipped or repeated.
  *
  * A simple example of 3 steps.
@@ -62,10 +62,10 @@
  *	- <b>next</b>, TWizard fires <b>OnNextCommand</b> event.
  *	- <b>previous</b>, TWizard fires <b>OnPreviousCommand</b> event.
  *	- <b>finish</b>, TWizard fires <b>OnFinishCommand</b> event.
- *	- <b>cancel</b>, TWizard fires <b>OnCancelCommand</b> event. 
- *	- <b>jumpto</b>, TWizard fires <b>OnJumpToCommand</b> event. 
+ *	- <b>cancel</b>, TWizard fires <b>OnCancelCommand</b> event.
+ *	- <b>jumpto</b>, TWizard fires <b>OnJumpToCommand</b> event.
  *                   <b>jumpto</b> requires a parameter, the destination step.
- * 
+ *
  * E.g. anywhere within the TWizard, a button like the following
  *  <code><com:TButton CommandName="jumpto" CommandParameter="2" /></code>
  * when click will bubble to TWizard and in turn fires the OnJumpToCommand
@@ -74,7 +74,7 @@
  * Namespace: System.Web.UI.WebControls
  *
  * Properties
- * - <b>ActiveStep</b>, TWizardStep, 
+ * - <b>ActiveStep</b>, TWizardStep,
  *   <br>Gets the current active step.
  * - <b>ActiveStepIndex</b>, integer,
  *   <br>Gets or sets the active step specified by a zero-starting index.
@@ -88,15 +88,15 @@
  *   <br>Gets or sets the string for the "Previous" button.
  * - <b>CancelButtonText</b>, string
  *   <br>Gets or sets the string for the "Cancel" button.
- * 
+ *
  * Events
  * - <b>OnStepChanged</b> Occurs when the step is changed.
  * - <b>OnCancelCommand</b> Occurs when the "Cancel" button is pressed.
  * - <b>OnFinishCommand</b> Occurs when the "Finish" button is pressed.
  * - <b>OnNextCommand</b> Occurs when the "Next" button is pressed.
  * - <b>OnPreviousCommand</b> Occurs when the "Previous" button is pressed.
- * - <b>OnJumpToCommand</b> Occurs when the "JumpTo" button is pressed. 
- * 
+ * - <b>OnJumpToCommand</b> Occurs when the "JumpTo" button is pressed.
+ *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version v1.0, last update on Sat Dec 11 15:25:11 EST 2004
  * @package System.Web.UI.WebControls
@@ -105,43 +105,43 @@ class TWizard extends TPanel
 {
 	/**
 	 * The command name for the OnNextCommand.
-	 * @var string 
+	 * @var string
 	 */
 	const CMD_NEXT = 'next';
 
 	/**
 	 * The command name for the OnPreviousCommand.
-	 * @var string 
+	 * @var string
 	 */
 	const CMD_PREVIOUS = 'previous';
 
 	/**
 	 * The command name for the OnFinishCommand.
-	 * @var string 
+	 * @var string
 	 */
 	const CMD_FINISH = 'finish';
-	
+
 	/**
 	 * The command name for the OnCancelCommand.
-	 * @var string 
+	 * @var string
 	 */
 	const CMD_CANCEL = 'cancel';
 
 	/**
 	 * The command name for the OnJumpToCommand.
-	 * @var string 
+	 * @var string
 	 */
 	const CMD_JUMP = 'jumpto';
 
 	/**
 	 * A list of steps.
-	 * @var array 
+	 * @var array
 	 */
 	protected $steps=array();
-	
+
 	/**
 	 * A list of navigation templates, including built-in defaults.
-	 * @var array 
+	 * @var array
 	 */
 	protected $navigation = array();
 
@@ -162,7 +162,7 @@ class TWizard extends TPanel
 
 	/**
 	 * Get the Finish button text.
-	 * @return string button text. 
+	 * @return string button text.
 	 */
 	public function getFinishStepButtonText()
 	{
@@ -174,14 +174,14 @@ class TWizard extends TPanel
 	 * @param string button text
 	 */
 	public function setNextStepButtonText($value)
-	{		
+	{
 		$this->setViewState('NextStepButtonText', $value, 'Next >');
-		
+
 	}
 
 	/**
 	 * Get the Next button text.
-	 * @return string button text. 
+	 * @return string button text.
 	 */
 	public function getNextStepButtonText()
 	{
@@ -191,7 +191,7 @@ class TWizard extends TPanel
 	/**
 	 * Set the Previous button text.
 	 * @param string button text
-	 */	
+	 */
 	public function setPreviousStepButtonText($value)
 	{
 		$this->setViewState('PreviousStepButtonText',$value, '< Back');
@@ -199,8 +199,8 @@ class TWizard extends TPanel
 
 	/**
 	 * Get the Previous button text.
-	 * @return string button text. 
-	 */	
+	 * @return string button text.
+	 */
 	public function getPreviousStepButtonText()
 	{
 		return $this->getViewState('PreviousStepButtonText', '< Back');
@@ -217,8 +217,8 @@ class TWizard extends TPanel
 
 	/**
 	 * Get the Cancel button text.
-	 * @return string button text. 
-	 */	
+	 * @return string button text.
+	 */
 	public function getCancelButtonText()
 	{
 		return $this->getViewState('CancelButtonText', 'Cancel');
@@ -235,7 +235,7 @@ class TWizard extends TPanel
 
 	/**
 	 * Determine if the side bar's visibility.
-	 * @return boolean true if visible, false otherwise. 
+	 * @return boolean true if visible, false otherwise.
 	 */
 	public function isSideBarVisible()
 	{
@@ -244,7 +244,7 @@ class TWizard extends TPanel
 
 	/**
 	 * Get the current step. null if the ActiveStepIndex is not valid.
-	 * @return TWizardStep 
+	 * @return TWizardStep
 	 */
 	public function getActiveStep()
 	{
@@ -252,7 +252,7 @@ class TWizard extends TPanel
 		if(isset($this->steps[$index]))
 			return $this->steps[$index];
 	}
-	
+
 	/**
 	 * Set the active step index. This determines which step to show.
 	 * @param int the current step to show.
@@ -264,7 +264,7 @@ class TWizard extends TPanel
 
 	/**
 	 * Get the current step index.
-	 * @return int current step index. 
+	 * @return int current step index.
 	 */
 	public function getActiveStepIndex()
 	{
@@ -272,9 +272,9 @@ class TWizard extends TPanel
 	}
 
 	/**
-	 * Override the parent implementation. 
+	 * Override the parent implementation.
 	 * It adds any components that are instance of TWizardStep or TWizardTemplate
-	 * as a child and body of the TWizard. Other components are handled by the parent. 
+	 * as a child and body of the TWizard. Other components are handled by the parent.
 	 * By adding components as child of TWizard, these component's parent
 	 * is the TWizard.
 	 * @param object a component object.
@@ -305,21 +305,21 @@ class TWizard extends TPanel
 	 * if required.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
-	protected function onLoad($param)
+	public function onLoad($param)
 	{
 		parent::onLoad($param);
-		
+
 		$this->addNavigationButtons();
 
 		if($this->isSideBarVisible())
-			$this->addNavigationSideBar();				
+			$this->addNavigationSideBar();
 	}
 
 	/**
 	 * Determins which wizard step to show and appropriate navigation elements.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
-	protected function onPreRender($param)
+	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
 
@@ -329,7 +329,7 @@ class TWizard extends TPanel
 		//show the current step
 		for($i = 0; $i < $totalSteps; $i++)
 			$this->steps[$i]->setVisible($i == $index);
-		
+
 		//determine which link is active
 		for($i = 0; $i < count($this->sidebarLinks); $i++)
 			$this->sidebarLinks[$i]->CssClass= ($i == $index)?'active':'';
@@ -342,13 +342,13 @@ class TWizard extends TPanel
 		}
 
 		$final = $this->steps[$index]->Type == TWizardStep::TYPE_FINAL;
-		
+
 		//if it is not the final step
-		if(!$final && $this->isSideBarVisible())		
+		if(!$final && $this->isSideBarVisible())
 			$this->showNavigation(TWizardTemplate::ID_SIDEBAR);
-		
+
 		$finishStep = $index == $totalSteps-1;
-		$finishStep = $finishStep || (isset($this->steps[$index+1]) && 
+		$finishStep = $finishStep || (isset($this->steps[$index+1]) &&
 					$this->steps[$index+1]->Type == TWizardStep::TYPE_FINAL);
 
 		//now show the appropriate navigation elements.
@@ -371,7 +371,7 @@ class TWizard extends TPanel
 		foreach($this->navigation[$index] as $nav)
 		{
 			$nav->setVisible(true);
-			$nav->dataBind(); 
+			$nav->dataBind();
 		}
 	}
 
@@ -381,17 +381,17 @@ class TWizard extends TPanel
 	 * particular navigation type is not customized.
 	 */
 	private function addNavigationButtons()
-	{		
-		//create the 3 navigation components		
+	{
+		//create the 3 navigation components
 		$start = $this->createComponent('TPanel',TWizardTemplate::ID_START);
 		$start->CssClass = 'navigation';
-		
+
 		$step = $this->createComponent('TPanel',TWizardTemplate::ID_STEP);
 		$step->CssClass = 'navigation';
 
 		$finish = $this->createComponent('TPanel',TWizardTemplate::ID_FINISH);
 		$finish->CssClass = 'navigation';
-					
+
 		$previousButton = $this->createComponent('TButton');
 		$previousButton->setText($this->getPreviousStepButtonText());
 		$previousButton->setCommandName(self::CMD_PREVIOUS);
@@ -400,7 +400,7 @@ class TWizard extends TPanel
 		$finishButton = $this->createComponent('TButton');
 		$finishButton->setText($this->getFinishStepButtonText());
 		$finishButton->setCommandName(self::CMD_FINISH);
-			
+
 		$nextButton = $this->createComponent('TButton');
 		$nextButton->setText($this->getNextStepButtonText());
 		$nextButton->setCommandName(self::CMD_NEXT);
@@ -414,18 +414,18 @@ class TWizard extends TPanel
 		$cancelButton->setCommandName(self::CMD_CANCEL);
 		$cancelButton->CssClass='Cancel';
 		$cancelButton->setCausesValidation(false);
-	
+
 		if(!isset($this->navigation[TWizardTemplate::ID_START]))
 		{
 			$start->addBody($nextButton);
-			$start->addBody($cancelButton);		
+			$start->addBody($cancelButton);
 			$this->addBody($start);
 			$this->navigation[TWizardTemplate::ID_START][] = $start;
 		}
 
 		if(!isset($this->navigation[TWizardTemplate::ID_STEP]))
 		{
-	
+
 			$step->addBody($hiddenButton);
 			$step->addBody($previousButton);
 			$step->addBody($nextButton);
@@ -433,7 +433,7 @@ class TWizard extends TPanel
 			$this->addBody($step);
 			$this->navigation[TWizardTemplate::ID_STEP][] = $step;
 		}
-		
+
 		if(!isset($this->navigation[TWizardTemplate::ID_FINISH]))
 		{
 			$finish->addBody($previousButton);
@@ -460,7 +460,7 @@ class TWizard extends TPanel
 
 		$sidebar = $this->createComponent('TPanel',TWizardTemplate::ID_SIDEBAR);
 		$sidebar->CssClass = 'sidebar';
-		
+
 		if($total > 0) $sidebar->addBody("<ul>\n");
 		for($i = 0; $i < $total; $i++)
 		{
@@ -476,7 +476,7 @@ class TWizard extends TPanel
 			$sidebar->addBody("</li>\n");
 		}
 		if($total > 0) $sidebar->addBody("</ul>\n");
-		
+
 		$this->addBody($sidebar);
 		$this->navigation[TWizardTemplate::ID_SIDEBAR][] = $sidebar;
 	}
@@ -489,16 +489,16 @@ class TWizard extends TPanel
 	 * is set to true.
 	 * @param TComponent sender of the event
 	 * @param TEventParameter event parameters
-	 */	
-	protected function onBubbleEvent($sender,$param)
+	 */
+	public function onBubbleEvent($sender,$param)
 	{
 		//if false on validation, do nothing.
-		if (!$this->Page->isValid()) return; 
+		if (!$this->Page->isValid()) return;
 
 		$event = new TWizardCommandEventParameter();
 		$event->currentStepIndex = $this->getActiveStepIndex();
 		$event->nextStepIndex = $event->currentStepIndex;
-	
+
 		switch($param->name)
 		{
 			case self::CMD_NEXT:
@@ -521,7 +521,7 @@ class TWizard extends TPanel
 				break;
 			case self::CMD_FINISH:
 				if(isset($this->steps[$event->nextStepIndex+1]))
-					$event->nextStepIndex++;					
+					$event->nextStepIndex++;
 				$this->raiseEvent('OnFinishCommand',$this,$event);
 				if(!$event->cancel)
 				{
@@ -547,8 +547,8 @@ class TWizard extends TPanel
 }
 
 /**
- * TWizard command event parameter. 
- * 
+ * TWizard command event parameter.
+ *
  * This is passed as the parameter to all event orginating from TWizard.
  * If the event was a particular OnXXXXCommand, the variable $cancel
  * determine if the step will be changed. e.g in handling the "next" command
