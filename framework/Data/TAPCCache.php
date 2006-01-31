@@ -34,10 +34,11 @@
  * TAPCCache may be configured in application configuration file as follows
  * <module id="cache" type="System.Data.TAPCCache" Prefix="apc_cache_prefix_key_"/>
  *
- **************
+ ***********************************************************************************************************
  * NOTE: not backward compatible with Prado ICache, you cannot specify a timestamp for expire.
  * It could be implemented, but what the point to check for a cache wich is meant to be as quick as possible
- ***************
+ ***********************************************************************************************************
+ *
  * @author Alban Hanry <compte_messagerie@hotmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Data
@@ -45,6 +46,9 @@
  */
 class TAPCCache extends TModule implements ICache
 {
+   
+    const SERIALIZED = "_serialized";
+   
    /**
     * @var boolean if the module is initialized
     */
@@ -64,15 +68,17 @@ class TAPCCache extends TModule implements ICache
    public function init($config)
    {
       $application=$this->getApplication();
-      if($application->getMode()!==TApplication::STATE_PERFORMANCE)
+      if(!$application || $application->getMode()!==TApplication::STATE_PERFORMANCE)
       {
          if(!extension_loaded('apc'))
             throw new TConfigurationException('apccache_extension_required');
       }
-      if(!$this->_prefix)
-         $this->_prefix=$this->getApplication()->getUniqueID();
+      if($application) {
+      	if(!$this->_prefix)
+         $this->_prefix=$application->getUniqueID();
+         $application->setCache($this);
+      }
       $this->_initialized=true;
-      $application->setCache($this);
    }
 
    /**
@@ -101,7 +107,10 @@ class TAPCCache extends TModule implements ICache
     */
    public function get($key)
    {
-      return apc_fetch($this->_prefix.$key);
+      $ret=apc_fetch($this->_prefix.$key);
+      if((boolean)apc_fetch($this->_prefix.$key.self::SERIALIZED))
+        $ret=unserialize($ret);
+      return $ret;
    }
 
    /**
@@ -115,9 +124,13 @@ class TAPCCache extends TModule implements ICache
     *        0 means never expire,
     * @return boolean true if the value is successfully stored into cache, false otherwise
     */
-   public function set($key,$value,$expire=0)
+   public function set($key,$value,$expiry=0)
    {
-      return apc_store($this->_prefix.$key,$value,$expire);
+       if(!is_string($value)) {
+           $value=serialize($value);
+           apc_store($this->_prefix.$key.self::SERIALIZED,1,$expiry);
+       }
+      return apc_store($this->_prefix.$key,$value,$expiry);
    }
 
    /**
@@ -132,7 +145,8 @@ class TAPCCache extends TModule implements ICache
    public function add($key,$value,$expiry=0)
    {
       if(!apc_fetch($this->_prefix.$key))
-         apc_store($this->_prefix.$key,$value,$expire);
+         return $this->set($key,$value,$expiry);
+      else return false;
    }
 
    /**
@@ -146,7 +160,9 @@ class TAPCCache extends TModule implements ICache
     */
    public function replace($key,$value,$expiry=0)
    {
-      return apc_store($this->_prefix.$key,$value,$expire);
+      if(apc_fetch($this->_prefix.$key))
+      	return $this->set($key,$value,$expiry);
+      else return false;
    }
 
    /**
@@ -156,6 +172,7 @@ class TAPCCache extends TModule implements ICache
     */
    public function delete($key)
    {
+      apc_delete($this->_prefix.$key.self::SERIALIZED);
       return apc_delete($this->_prefix.$key);
    }
 
@@ -166,6 +183,7 @@ class TAPCCache extends TModule implements ICache
    {
       return apc_clear_cache('user');
    }
+
 }
 
-?>
+?> 
