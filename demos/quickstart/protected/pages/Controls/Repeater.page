@@ -33,7 +33,7 @@ Normally, you only need to do this when the page containing the repeater is init
 </p>
 <com:RunBar PagePath="Controls.Samples.TRepeater.Sample1" />
 <p>
-TRepeater can be used in more complex situations. As an example, we show how to use nested repeaters, i.e., repeater in repeater. This is commonly seen in master-detail data presentation. To use a repeater within another repeater, for an item for the outer repeater is created, we need to set the detail data source for the inner repeater. This can be achieved by responding to the <tt>OnItemDataBound</tt> event of the outer repeater which is raised right after an outer repeater item completes databinding (therefore, the data is available).
+TRepeater can be used in more complex situations. As an example, we show in the following how to use nested repeaters, i.e., repeater in repeater. This is commonly seen in presenting master-detail data. To use a repeater within another repeater, for an item for the outer repeater is created, we need to set the detail data source for the inner repeater. This can be achieved by responding to the <tt>OnItemDataBound</tt> event of the outer repeater. An <tt>OnItemDataBound</tt> event is raised each time an outer repeater item completes databinding. In the following example, we exploit another event of repeater called <tt>OnItemCreated</tt>, which is raised each time a repeater item (and its content) is newly created. We respond to this event by setting different background colors for repeater items to achieve alternating item background display. This saves us from writing an <tt>AlternatingItemTemplate</tt> for the repeaters.
 </p>
 <com:RunBar PagePath="Controls.Samples.TRepeater.Sample2" />
 <p>
