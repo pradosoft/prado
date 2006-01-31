@@ -814,6 +814,7 @@ tests/UnitTests/framework/Collections/utList.php -text
 tests/UnitTests/framework/Collections/utMap.php -text
 tests/UnitTests/framework/Data/CacheTestCase.php -text
 tests/UnitTests/framework/Data/test.db -text
+tests/UnitTests/framework/Data/utAPCCache.php -text
 tests/UnitTests/framework/Data/utDateTimeSimpleFormatter.php -text
 tests/UnitTests/framework/Data/utMemCache.php -text
 tests/UnitTests/framework/Data/utSqliteCache.php -text
