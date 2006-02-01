@@ -716,6 +716,7 @@ tests/FunctionalTests/protected/pages/UI/LabeledTextBox.php -text
 tests/FunctionalTests/protected/pages/UI/LabeledTextBox.tpl -text
 tests/FunctionalTests/protected/pages/UI/TestTPanelDefaultButton.page -text
 tests/FunctionalTests/protected/pages/UI/TestTPanelDefaultButton.php -text
+tests/FunctionalTests/protected/pages/UI/testHtmlArea.page -text
 tests/FunctionalTests/protected/pages/UI/testLabeledTextBox.page -text
 tests/FunctionalTests/protected/pages/Validation/CheckBox.page -text
 tests/FunctionalTests/protected/pages/Validation/CheckBox.php -text

@@ -1,0 +1,12 @@
+<%@ Application.Globalization.Charset="GB2312" %>
+<com:TContent ID="Content">
+<com:TForm>
+
+	<com:THtmlArea>
+		<prop:Options>
+			plugins : "contextmenu,paste", 
+			language: "zh_CN"
+		</prop:Options>
+	</com:THtmlArea>
+</com:TForm>
+</com:TContent>
