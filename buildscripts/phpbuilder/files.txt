@@ -1,15 +1,21 @@
 TComponent.php
 Exceptions/TException.php
+
 Collections/TList.php
 Collections/TMap.php
 Collections/TAttributeCollection.php
+Collections/TPagedDataSource.php
+Collections/TDummyDataSource.php
+
 Data/TXmlDocument.php
 Web/THttpUtility.php
 Data/TCache.php
 Log/TLogger.php
+
 core.php
 prado.php
 TApplication.php
+
 Exceptions/TErrorHandler.php
 Web/THttpRequest.php
 Web/THttpResponse.php
@@ -48,6 +54,9 @@ Web/UI/WebControls/TFileUpload.php
 Web/UI/WebControls/THead.php
 Web/UI/WebControls/THiddenField.php
 Web/UI/WebControls/THyperLink.php
+Web/UI/WebControls/TTableCell.php
+Web/UI/WebControls/TTableHeaderCell.php
+Web/UI/WebControls/TTableRow.php
 Web/UI/WebControls/TTable.php
 
 Web/UI/WebControls/TDataSourceControl.php
@@ -78,8 +87,6 @@ Web/UI/WebControls/TRepeater.php
 
 Web/UI/WebControls/TBaseDataList.php
 Web/UI/WebControls/TDataList.php
-Collections/TPagedDataSource.php
-Collections/TDummyDataSource.php
 Web/UI/WebControls/TDataGrid.php
 Web/UI/WebControls/TDataGridColumn.php
 Web/UI/WebControls/TBoundColumn.php

@@ -2,7 +2,7 @@
 
 <h1>TRepeater</h1>
 <p>
-TRepeater displays its content defined in templates repeatedly based on the given data specified by the <tt>DataSource</tt> or <tt>DataSourceID</tt> property. The repeated contents can be retrieved from the <tt>Items</tt> property. Each item is created by instantiating a template and each is a child control of the repeater. TRepeater provides the <tt>OnItemCommand</tt> event that serves as a central place to process all <tt>OnCommand</tt> events raised by child controls of the repeater items. And an <tt>OnItemCreated</tt> event is raised each time when a new item is created based on a template.
+TRepeater displays its content defined in templates repeatedly based on the given data specified by the <tt>DataSource</tt> or <tt>DataSourceID</tt> property. The repeated contents can be retrieved from the <tt>Items</tt> property. Each item is created by instantiating a template and each is a child control of the repeater.
 </p>
 <p>
 Like normal control templates, the repeater templates can contain static text, controls and special tags, which after instantiation, become child contents of the corresponding item. TRepeater defiens five templates for different purposes,
@@ -30,6 +30,17 @@ class MyPage extends TPage {
 </com:TTextHighlighter>
 <p>
 Normally, you only need to do this when the page containing the repeater is initially requested. In postbacks, TRepeater is smart enough to remember the previous state, i.e., contents populated with datasource information.The following sample displays tabular data using TRepeater.
+</p>
+<p>
+TRepeater provides several events to facilitate manipulation of its items,
+</p>
+<ul>
+  <li><tt>OnItemCreated</tt> - raised each time an item is newly created. When the event is raised, data and child controls are both available for the new item.</li>
+  <li><tt>OnItemDataBound</tt> - raised each time an item just completes databinding. When the event is raised, data and child controls are both available for the item, and the item has finished databindings of itself and all its child controls.</li>
+  <li><tt>OnItemCommand</tt> - raised when a child control of some item (such as a <tt>TButton</tt>) raises an <tt>OnCommand</tt> event.</li>
+</ul>
+<p>
+The following example shows how to use TRepeater to display tabular data.
 </p>
 <com:RunBar PagePath="Controls.Samples.TRepeater.Sample1" />
 <p>

@@ -2,8 +2,56 @@
 
 <h1>TDataList</h1>
 <p>
-TBC
+TDataList is used to display or modify a list of data items specified by its <tt>DataSource</tt> or <tt>DataSourceID</tt> property. Each data item is displayed by a data list item which is a child control of the data list. The <tt>Items</tt> property contains the list of all data list items.
+</p>
+<p>
+TDataList displays its items in either a <tt>Table</tt> or <tt>Flow</tt> layout, which is specified by the <tt>RepeatLayout</tt> property. A table layout uses HTML table cells to organize the items while a flow layout uses line breaks to organize the items. When the layout is <tt>Table</tt>, the table's cellpadding and cellspacing can be adjusted by <tt>CellPadding</tt> and <tt>CellSpacing</tt> properties, respectively. And <tt>Caption</tt> and <tt>CaptionAlign</tt> can be used to add a table caption with the specified alignment. The number of columns used to display the data list items is specified via <tt>RepeatColumns</tt> property, while the <tt>RepeatDirection</tt> governs the order of the items being rendered.
+</p>
+<p>
+Each data list item is created according to one of the seven kinds of templates that developers may specified for a TDataList,
+</p>
+<ul>
+  <li><tt>HeaderTemplate</tt> - the template used for displaying content at the beginning of a data list;</li>
+  <li><tt>FooterTemplate</tt> - the template used for displaying content at the end of a data list;</li>
+  <li><tt>ItemTemplate</tt> - the template used for displaying every data list item. If <tt>AlternatingItemTemplate</tt> is also defined, <tt>ItemTemplate</tt> will be used for displaying item 1, 3, 5, etc.</li>
+  <li><tt>AlternatingItemTemplate</tt> - the template used for displaying every alternating data list item (i.e., item 2, 4, 6, etc.)</li>
+  <li><tt>SeparatorTemplate</tt> - the template used for displaying content between items.</li>
+  <li><tt>EditItemTemplate</tt> - the template used for displaying items in edit mode.</li>
+  <li><tt>SelectedItemTemplate</tt> - the template used for displaying items in selected mode.</li>
+</ul>
+<p>
+Each of the above templates is associated with a style property that is applied to the items using the template. For example, <tt>ItemTemplate</tt> is associated with a property named <tt>AlternatingItemStyle</tt>. Through this property, one can set CSS style fields or CSS classes for the data list items.
+</p>
+<p>
+Item styles are applied in a hierarchical way. Style in higher hierarchy will inherit from styles in lower hierarchy. Starting from the lowest hierarchy, the item styles include item's own style, <tt>ItemStyle</tt>, <tt>AlternatingItemStyle</tt>, <tt>SelectedItemStyle</tt>, and <tt>EditItemStyle</tt>. Therefore, if background color is set as red in <tt>ItemStyle</tt>, <tt>EditItemStyle</tt> will also have red background color, unless it is explicitly set to a different value.
+</p>
+<p>
+A data list item can be in normal mode, edit mode or selected mode. Different templates will apply to items of different modes. To change an item's mode, modify <tt>EditItemIndex</tt> or <tt>SelectedItemIndex</tt>. Note, if an item is in edit mode, then selecting this item will have no effect.
+</p>
+<p>
+TDataList provides several events to facilitate manipulation of its items,
+</p>
+<ul>
+  <li><tt>OnItemCreated</tt> - raised each time an item is newly created. When the event is raised, data and child controls are both available for the new item.</li>
+  <li><tt>OnItemDataBound</tt> - raised each time an item just completes databinding. When the event is raised, data and child controls are both available for the item, and the item has finished databindings of itself and all its child controls.</li>
+  <li><tt>OnItemCommand</tt> - raised when a child control of some item (such as a <tt>TButton</tt>) raises an <tt>OnCommand</tt> event.</li>
+  <li>command events - raised when a child control's <tt>OnCommand</tt> event has a specific command name,
+    <ul>
+      <li><tt>OnSelectedIndexChanged</tt> - if the command name is <tt>select</tt>.</li>
+      <li><tt>OnEditCommand</tt> - if the command name is <tt>edit</tt>.</li>
+      <li><tt>OnDeleteCommand</tt> - if the command name is <tt>delete</tt>.</li>
+      <li><tt>OnUpdateCommand</tt> - if the command name is <tt>update</tt>.</li>
+      <li><tt>OnCancelCommand</tt> - if the command name is <tt>cancel</tt>.</li>
+    </ul>
+  </li>
+</ul>
+<p>
+The following example shows how to use TDataList to display tabular data, with different layout and styles.
 </p>
 <com:RunBar PagePath="Controls.Samples.TDataList.Sample1" />
+<p>
+An important use of TDataList is for maintaining tabular data, including browsing, editting, deleting data items. This is enabled by the command events and various item templates of TDataList. The following example displays a computer product information. Users can add new products, modify or delete existing ones.
+</p>
+<com:RunBar PagePath="Controls.Samples.TDataList.Sample2" />
 
 </com:TContent>

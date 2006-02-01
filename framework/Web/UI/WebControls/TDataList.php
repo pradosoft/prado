@@ -34,8 +34,13 @@ Prado::using('System.Web.UI.WebControls.TRepeatInfo');
  * then the corresponding content will be displayed alternatively with that
  * in {@link setItemTemplate ItemTemplate}. The content in
  * {@link setSeparatorTemplate SeparatorTemplate}, if not empty, will be
- * displayed between items. All these templates are associated with styles that
- * may be applied to the corresponding generated items. For example,
+ * displayed between items. Besides the above templates, there are two additional
+ * templates, {@link setEditItemTemplate EditItemTemplate} and
+ * {@link setSelectedItemTemplate SelectedItemTemplate}, which are used to display
+ * items that are in edit and selected mode, respectively.
+ *
+ * All these templates are associated with styles that may be applied to
+ * the corresponding generated items. For example,
  * {@link getAlternatingItemStyle AlternatingItemStyle} will be applied to
  * every alternating item in the data list.
  *
@@ -81,10 +86,10 @@ Prado::using('System.Web.UI.WebControls.TRepeatInfo');
  * The event mainly informs the server side that the end-user has made a selection.
  *
  * TDataList raises an {@link onItemCommand OnItemCommand} whenever a button control
- * within some TDataList item raises a <b>Command</b> event. If the command name
+ * within some TDataList item raises a <b>OnCommand</b> event. If the command name
  * is one of the followings: 'edit', 'update', 'select', 'delete', 'cancel' (case-insensitive),
  * another event will also be raised. For example, if the command name is 'edit',
- * then the new event is {@link onEditCommand OnSelectCommand}.
+ * then the new event is {@link onEditCommand OnEditCommand}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
