@@ -94,3 +94,20 @@
 .javascript .nu0 {color: #CC0000;}
 .javascript .me1 {color: #006600;}
 .javascript .re0 {color: #0066FF;}
+
+.source .copycode
+{
+	text-align: right;
+	float: right;
+}
+
+.source .copycode a
+{
+	cursor: pointer;
+	color: blue;
+}
+
+.source .copycode_hover a
+{
+	color: red;
+}

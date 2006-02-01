@@ -85,6 +85,7 @@ class TTextHighlighter extends TWebControl
 	{
 		parent::onPreRender($writer);
 		$this->registerHighlightStyleSheet();
+		$this->getPage()->getClientScript()->registerClientScript('prado');
 	}
 
 	/**
@@ -138,7 +139,16 @@ class TTextHighlighter extends TWebControl
 		if($this->getShowLineNumbers())
 			$geshi->enable_line_numbers(GESHI_NORMAL_LINE_NUMBERS);
 		$geshi->enable_classes();
+		$geshi->set_header_content($this->getHeaderTemplate());
+		
 		return $geshi->parse_code();
+	}
+
+	function getHeaderTemplate()
+	{
+		$id = $this->getClientID();
+		$cs = $this->getPage()->getClientScript();
+		return $cs->renderJavascriptBlock("new Prado.WebUI.TTextHighlighter('{$id}');");
 	}
 }
 ?>

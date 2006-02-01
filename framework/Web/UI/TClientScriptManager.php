@@ -463,6 +463,11 @@ class TClientScriptManager extends TComponent
 	}
 */
 
+	public function renderJavascriptBlock($code)
+	{
+		return "<script type=\"text/javascript\">\n/*<![CDATA[*/\n{$code}\n/*]]>*/\n</script>";
+	}
+	
 	public function renderStyleSheetFiles($writer)
 	{
 		$str='';

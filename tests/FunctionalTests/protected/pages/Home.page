@@ -1,3 +1,6 @@
 <com:TContent ID="Content">
+<com:TForm>
 <h1>Prado Functional Tests</h1>
+<com:TJavascriptLogger />
+</com:TForm>
 </com:TContent>
