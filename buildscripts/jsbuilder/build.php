@@ -67,9 +67,14 @@ $libraries = array(
 		'prototype/event.js',
 		'extended/event.js',
 		'prototype/position.js',
-		'extra/getElementsBySelector.js',
-		'extra/behaviour.js',
-		'effects/util.js',
+
+		//build dom elements with DIV, A, UL, etc functions
+		'effects/builder.js',
+		'extended/builder.js',
+
+//		'extra/getElementsBySelector.js',
+//		'extra/behaviour.js',
+
 		'extended/date.js',
 	
 		//prado core
@@ -81,8 +86,7 @@ $libraries = array(
 
 	//effects
 	'effects.js' => array(
-		'effects/effects.js',
-		'prado/effects.js'
+		'effects/effects.js'
 	),
 	//active controls
 	'ajax.js' => array(
