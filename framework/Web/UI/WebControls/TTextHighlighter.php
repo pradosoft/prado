@@ -155,7 +155,7 @@ class TTextHighlighter extends TWebControl
 		if($this->getShowLineNumbers())
 			$geshi->enable_line_numbers(GESHI_NORMAL_LINE_NUMBERS);
 		$geshi->enable_classes();
-		if(this->getEnableCopyCode())
+		if($this->getEnableCopyCode())
 			$geshi->set_header_content($this->getHeaderTemplate());
 		
 		return $geshi->parse_code();
