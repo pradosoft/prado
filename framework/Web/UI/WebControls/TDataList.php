@@ -447,7 +447,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	{
 		if($this->getDataKeyField()==='')
 			throw new TInvalidOperationException('datalist_datakeyfield_required');
-		$index=$this->getSelectedIndex();
+		$index=$this->getSelectedItemIndex();
 		$dataKeys=$this->getDataKeys();
 		if($index>=0 && $index<$dataKeys->getCount())
 			return $dataKeys->itemAt($index);

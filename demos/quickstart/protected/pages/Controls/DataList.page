@@ -50,7 +50,7 @@ The following example shows how to use TDataList to display tabular data, with d
 </p>
 <com:RunBar PagePath="Controls.Samples.TDataList.Sample1" />
 <p>
-An important use of TDataList is for maintaining tabular data, including browsing, editting, deleting data items. This is enabled by the command events and various item templates of TDataList. The following example displays a computer product information. Users can add new products, modify or delete existing ones.
+A common use of TDataList is for maintaining tabular data, including browsing, editting, deleting data items. This is enabled by the command events and various item templates of TDataList. The following example displays a computer product information. Users can add new products, modify or delete existing ones. In order to locate the data item for updating or deleting, <tt>DataKeys</tt> property is used.
 </p>
 <com:RunBar PagePath="Controls.Samples.TDataList.Sample2" />
 

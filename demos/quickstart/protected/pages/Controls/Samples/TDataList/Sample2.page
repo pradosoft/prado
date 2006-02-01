@@ -1,74 +1,79 @@
 <com:TContent ID="body">
 
 <h1>TDataList Sample 2</h1>
-<p>This demo shows a simple application of TDataList control.</p>
-<p>TDataList allows you to show a list of data items (rows), edit, select and delete them.</p>
+<p>This demo shows a simple application of TDataList control in maintaining a list of computer products. The application allows you to browse a list of inventory computer products, edit, select and delete them.
+</p>
+<p>
+Be aware, for simplicity, this application does not do any input validation. In real applications, make sure user inputs are valid before saving them into databases.
+</p>
 
-<com:TDataList ID="DataList"
-			CellPadding="2"
-			CellSpacing="3"
-			GridLines="Both"
-			RepeatColumns="1"
-			RepeatLayout="Table"
-			RepeatDirection="Vertical"
-			OnEditCommand="editItem"
-			OnCancelCommand="cancelItem"
-			OnUpdateCommand="updateItem"
-			OnDeleteCommand="deleteItem"
-			OnSelectedIndexChanged="selectItem"
-			HeaderStyle.BackColor="#AAAADD"
-			ItemStyle.BackColor="#EEEEEE"
-			SeparatorStyle.BackColor="#FAFAFA"
-			FooterStyle.BackColor="#BBBBBB"
-			EditItemStyle.BackColor="lightgreen"
-			SelectedItemStyle.BackColor="lightyellow">
+<com:TDataList
+     ID="DataList"
+     DataKeyField="id"
+     OnEditCommand="editItem"
+     OnCancelCommand="cancelItem"
+     OnUpdateCommand="updateItem"
+     OnDeleteCommand="deleteItem"
+     OnSelectedIndexChanged="selectItem"
+     HeaderStyle.BackColor="#AAAADD"
+     ItemStyle.BackColor="#EEEEEE"
+     AlternatingItemStyle.BackColor="#F5F5F5"
+     EditItemStyle.BackColor="lightgreen"
+     SelectedItemStyle.BackColor="lightyellow">
+
 <prop:HeaderTemplate>
 <div style="font-weight:bold; text-align:center;">Computer Parts</div>
 </prop:HeaderTemplate>
 
 <prop:ItemTemplate>
 <table border="0" width="100%">
-<tr><td>
-<com:TLinkButton
-     Text=<%#$this->Parent->DataItem['id']%>
-     CommandName="select"
-     />
-<%#$this->Parent->DataItem['name']%>
-</td>
-<td align="right">
-<com:TLinkButton
-     Text="Edit"
-     CommandName="edit"
-     />
-<com:TLinkButton
-     Text="Delete"
-     CommandName="delete"
-     Attributes.onclick="if(!confirm('Are you sure?')) return false;"
-     />
-</td></tr>
+<tr>
+  <td>
+  <com:TLinkButton
+       Text=<%#$this->Parent->DataItem['id']%>
+       CommandName="select"
+       />
+  <%#$this->Parent->DataItem['name']%>
+  </td>
+  <td align="right">
+  <com:TLinkButton
+       Text="Edit"
+       CommandName="edit"
+       />
+  <com:TLinkButton
+       Text="Delete"
+       CommandName="delete"
+       Attributes.onclick="if(!confirm('Are you sure?')) return false;"
+       />
+  </td>
+</tr>
 </table>
 </prop:ItemTemplate>
 
 <prop:SelectedItemTemplate>
 <table border="1" width="100%">
-<tr><th>ID</th><th>Name</th><th>Quantity</th><th>Price</th></tr>
 <tr>
-<td align="right"><%#$this->Parent->DataItem['id'] %></td>
-<td align="right"><%#$this->Parent->DataItem['name'] %></td>
-<td align="right"><%#$this->Parent->DataItem['quantity'] %></td>
-<td align="right">$<%#$this->Parent->DataItem['price'] %></td>
+  <th>ID</th><th>Name</th><th>Quantity</th><th>Price</th>
 </tr>
-<tr><td colspan="4" align="right">
-<com:TLinkButton
-     Text="Edit"
-     CommandName="edit"
-     />
-<com:TLinkButton
-     Text="Delete"
-     CommandName="delete"
-     Attributes.onclick="if(!confirm('Are you sure?')) return false;"
-     />
-</td></tr>
+<tr>
+  <td align="right"><%#$this->Parent->DataItem['id'] %></td>
+  <td align="right"><%#$this->Parent->DataItem['name'] %></td>
+  <td align="right"><%#$this->Parent->DataItem['quantity'] %></td>
+  <td align="right">$<%#$this->Parent->DataItem['price'] %></td>
+</tr>
+<tr>
+  <td colspan="4" align="right">
+  <com:TLinkButton
+       Text="Edit"
+       CommandName="edit"
+       />
+  <com:TLinkButton
+       Text="Delete"
+       CommandName="delete"
+       Attributes.onclick="if(!confirm('Are you sure?')) return false;"
+       />
+  </td>
+</tr>
 </table>
 </prop:SelectedItemTemplate>
 
@@ -76,7 +81,7 @@
 <table border="0" width="100%">
 <tr>
   <td align="right">ID</td>
-  <td><%#$this->Parent->DataItem['id']%></td>
+  <td><b><%#$this->Parent->DataItem['id']%></b></td>
 </tr>
 <tr>
   <td align="right">Name</td>
@@ -99,6 +104,14 @@
   <td><com:TTextBox
            ID="ProductPrice"
            Text=<%#$this->Parent->DataItem['price'] %>
+           />
+  </td>
+</tr>
+<tr>
+  <td align="right">Imported</td>
+  <td><com:TCheckBox
+           ID="ProductImported"
+           Checked=<%#$this->Parent->DataItem['imported'] %>
            />
   </td>
 </tr>
