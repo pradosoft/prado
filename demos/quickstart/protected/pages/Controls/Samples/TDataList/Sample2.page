@@ -15,7 +15,6 @@ Be aware, for simplicity, this application does not do any input validation. In 
      OnUpdateCommand="updateItem"
      OnDeleteCommand="deleteItem"
      OnSelectedIndexChanged="selectItem"
-     HeaderStyle.BackColor="#AAAADD"
      ItemStyle.BackColor="#EEEEEE"
      AlternatingItemStyle.BackColor="#F5F5F5"
      EditItemStyle.BackColor="lightgreen"
