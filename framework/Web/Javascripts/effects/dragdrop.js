@@ -76,8 +76,7 @@ var Droppables = {
            drop.onHover(element, drop.element, Position.overlap(drop.overlap, drop.element));
         if(drop.greedy) { 
           Droppables.activate(drop);
-		  //why throw an exception?
-          //throw $break;
+          throw $break;
         }
       }
     });
@@ -147,6 +146,7 @@ var Draggables = {
     if(!this.activeDraggable) return;
     this._lastPointer = null;
     this.activeDraggable.endDrag(event);
+    this.activeDraggable = null;
   },
   
   keyPress: function(event) {
@@ -185,7 +185,6 @@ var Draggables = {
 var Draggable = Class.create();
 Draggable.prototype = {
   initialize: function(element) {
-	this.element = $(element);
     var options = Object.extend({
       handle: false,
       starteffect: function(element) { 
@@ -193,7 +192,7 @@ Draggable.prototype = {
       },
       reverteffect: function(element, top_offset, left_offset) {
         var dur = Math.sqrt(Math.abs(top_offset^2)+Math.abs(left_offset^2))*0.02;
-        element._revert = new Effect.MoveBy(element, -top_offset, -left_offset, {duration:dur});
+        element._revert = new Effect.Move(element, { x: -left_offset, y: -top_offset, duration: dur});
       },
       endeffect: function(element) { 
         new Effect.Opacity(element, {duration:0.2, from:0.7, to:1.0}); 
@@ -202,6 +201,8 @@ Draggable.prototype = {
       revert: false,
       snap: false   // false, or xy or [x,y] or function(x,y){ return [x,y] }
     }, arguments[1] || {});
+
+    this.element = $(element);
     
     if(options.handle && (typeof options.handle == 'string'))
       this.handle = Element.childrenWithClassName(this.element, options.handle)[0];  
@@ -227,8 +228,8 @@ Draggable.prototype = {
   
   currentDelta: function() {
     return([
-      parseInt(this.element.style.left || '0'),
-      parseInt(this.element.style.top || '0')]);
+      parseInt(Element.getStyle(this.element,'left') || '0'),
+      parseInt(Element.getStyle(this.element,'top') || '0')]);
   },
   
   initDrag: function(event) {

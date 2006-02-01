@@ -20,20 +20,15 @@ _1=this.toLowerCase();
 }
 return (_1.length==7?_1:(arguments[0]||this));
 };
-Element.collectTextNodesIgnoreClass=function(_4,_5){
-var _6=$(_4).childNodes;
-var _7="";
-var _8=new RegExp("^([^ ]+ )*"+_5+"( [^ ]+)*$","i");
-for(var i=0;i<_6.length;i++){
-if(_6[i].nodeType==3){
-_7+=_6[i].nodeValue;
-}else{
-if((!_6[i].className.match(_8))&&_6[i].hasChildNodes()){
-_7+=Element.collectTextNodesIgnoreClass(_6[i],_5);
-}
-}
-}
-return _7;
+Element.collectTextNodes=function(_4){
+return $A($(_4).childNodes).collect(function(_5){
+return (_5.nodeType==3?_5.nodeValue:(_5.hasChildNodes()?Element.collectTextNodes(_5):""));
+}).flatten().join("");
+};
+Element.collectTextNodesIgnoreClass=function(_6,_7){
+return $A($(_6).childNodes).collect(function(_8){
+return (_8.nodeType==3?_8.nodeValue:((_8.hasChildNodes()&&!Element.hasClassName(_8,_7))?Element.collectTextNodes(_8):""));
+}).flatten().join("");
 };
 Element.setStyle=function(_9,_10){
 _9=$(_9);
@@ -116,6 +111,11 @@ var _31=_30.delay;
 $A(_29).each(function(_27,_32){
 new _28(_27,Object.extend(_30,{delay:_32*_30.speed+_31}));
 });
+},PAIRS:{"slide":["SlideDown","SlideUp"],"blind":["BlindDown","BlindUp"],"appear":["Appear","Fade"]},toggle:function(_33,_34){
+_33=$(_33);
+_34=(_34||"appear").toLowerCase();
+var _35=Object.extend({queue:{position:"end",scope:(_33.id||"global")}},arguments[2]||{});
+Effect[Element.visible(_33)?Effect.PAIRS[_34][1]:Effect.PAIRS[_34][0]](_33,_35);
 }};
 var Effect2=Effect;
 Effect.Transitions={};
@@ -143,59 +143,72 @@ return 0;
 Effect.Transitions.full=function(pos){
 return 1;
 };
-Effect.Queue={effects:[],_each:function(_34){
-this.effects._each(_34);
-},interval:null,add:function(_35){
-var _36=new Date().getTime();
-switch(_35.options.queue){
+Effect.ScopedQueue=Class.create();
+Object.extend(Object.extend(Effect.ScopedQueue.prototype,Enumerable),{initialize:function(){
+this.effects=[];
+this.interval=null;
+},_each:function(_37){
+this.effects._each(_37);
+},add:function(_38){
+var _39=new Date().getTime();
+var _40=(typeof _38.options.queue=="string")?_38.options.queue:_38.options.queue.position;
+switch(_40){
 case "front":
 this.effects.findAll(function(e){
 return e.state=="idle";
 }).each(function(e){
-e.startOn+=_35.finishOn;
-e.finishOn+=_35.finishOn;
+e.startOn+=_38.finishOn;
+e.finishOn+=_38.finishOn;
 });
 break;
 case "end":
-_36=this.effects.pluck("finishOn").max()||_36;
+_39=this.effects.pluck("finishOn").max()||_39;
 break;
 }
-_35.startOn+=_36;
-_35.finishOn+=_36;
-this.effects.push(_35);
+_38.startOn+=_39;
+_38.finishOn+=_39;
+this.effects.push(_38);
 if(!this.interval){
 this.interval=setInterval(this.loop.bind(this),40);
 }
-},remove:function(_38){
+},remove:function(_42){
 this.effects=this.effects.reject(function(e){
-return e==_38;
+return e==_42;
 });
 if(this.effects.length==0){
 clearInterval(this.interval);
 this.interval=null;
 }
 },loop:function(){
-var _39=new Date().getTime();
-this.effects.invoke("loop",_39);
+var _43=new Date().getTime();
+this.effects.invoke("loop",_43);
+}});
+Effect.Queues={instances:$H(),get:function(_44){
+if(typeof _44!="string"){
+return _44;
+}
+if(!this.instances[_44]){
+this.instances[_44]=new Effect.ScopedQueue();
+}
+return this.instances[_44];
 }};
-Object.extend(Effect.Queue,Enumerable);
+Effect.Queue=Effect.Queues.get("global");
+Effect.DefaultOptions={transition:Effect.Transitions.sinoidal,duration:1,fps:25,sync:false,from:0,to:1,delay:0,queue:"parallel"};
 Effect.Base=function(){
 };
-Effect.Base.prototype={position:null,setOptions:function(_40){
-this.options=Object.extend({transition:Effect.Transitions.sinoidal,duration:1,fps:25,sync:false,from:0,to:1,delay:0,queue:"parallel"},_40||{});
-},start:function(_41){
-this.setOptions(_41||{});
+Effect.Base.prototype={position:null,start:function(_45){
+this.options=Object.extend(Object.extend({},Effect.DefaultOptions),_45||{});
 this.currentFrame=0;
 this.state="idle";
 this.startOn=this.options.delay*1000;
 this.finishOn=this.startOn+(this.options.duration*1000);
 this.event("beforeStart");
 if(!this.options.sync){
-Effect.Queue.add(this);
+Effect.Queues.get(typeof this.options.queue=="string"?"global":this.options.queue.scope).add(this);
 }
-},loop:function(_42){
-if(_42>=this.startOn){
-if(_42>=this.finishOn){
+},loop:function(_46){
+if(_46>=this.startOn){
+if(_46>=this.finishOn){
 this.render(1);
 this.cancel();
 this.event("beforeFinish");
@@ -205,11 +218,11 @@ this.finish();
 this.event("afterFinish");
 return;
 }
-var pos=(_42-this.startOn)/(this.finishOn-this.startOn);
-var _43=Math.round(pos*this.options.fps*this.options.duration);
-if(_43>this.currentFrame){
+var pos=(_46-this.startOn)/(this.finishOn-this.startOn);
+var _47=Math.round(pos*this.options.fps*this.options.duration);
+if(_47>this.currentFrame){
 this.render(pos);
-this.currentFrame=_43;
+this.currentFrame=_47;
 }
 }
 },render:function(pos){
@@ -236,65 +249,71 @@ this.event("afterUpdate");
 }
 },cancel:function(){
 if(!this.options.sync){
-Effect.Queue.remove(this);
+Effect.Queues.get(typeof this.options.queue=="string"?"global":this.options.queue.scope).remove(this);
 }
 this.state="finished";
-},event:function(_44){
-if(this.options[_44+"Internal"]){
-this.options[_44+"Internal"](this);
+},event:function(_48){
+if(this.options[_48+"Internal"]){
+this.options[_48+"Internal"](this);
 }
-if(this.options[_44]){
-this.options[_44](this);
+if(this.options[_48]){
+this.options[_48](this);
 }
 },inspect:function(){
 return "#<Effect:"+$H(this).inspect()+",options:"+$H(this.options).inspect()+">";
 }};
 Effect.Parallel=Class.create();
-Object.extend(Object.extend(Effect.Parallel.prototype,Effect.Base.prototype),{initialize:function(_45){
-this.effects=_45||[];
+Object.extend(Object.extend(Effect.Parallel.prototype,Effect.Base.prototype),{initialize:function(_49){
+this.effects=_49||[];
 this.start(arguments[1]);
-},update:function(_46){
-this.effects.invoke("render",_46);
-},finish:function(_47){
-this.effects.each(function(_48){
-_48.render(1);
-_48.cancel();
-_48.event("beforeFinish");
-if(_48.finish){
-_48.finish(_47);
+},update:function(_50){
+this.effects.invoke("render",_50);
+},finish:function(_51){
+this.effects.each(function(_52){
+_52.render(1);
+_52.cancel();
+_52.event("beforeFinish");
+if(_52.finish){
+_52.finish(_51);
 }
-_48.event("afterFinish");
+_52.event("afterFinish");
 });
 }});
 Effect.Opacity=Class.create();
-Object.extend(Object.extend(Effect.Opacity.prototype,Effect.Base.prototype),{initialize:function(_49){
-this.element=$(_49);
+Object.extend(Object.extend(Effect.Opacity.prototype,Effect.Base.prototype),{initialize:function(_53){
+this.element=$(_53);
 if(/MSIE/.test(navigator.userAgent)&&(!this.element.hasLayout)){
 Element.setStyle(this.element,{zoom:1});
 }
-var _50=Object.extend({from:Element.getOpacity(this.element)||0,to:1},arguments[1]||{});
-this.start(_50);
-},update:function(_51){
-Element.setOpacity(this.element,_51);
+var _54=Object.extend({from:Element.getOpacity(this.element)||0,to:1},arguments[1]||{});
+this.start(_54);
+},update:function(_55){
+Element.setOpacity(this.element,_55);
 }});
-Effect.MoveBy=Class.create();
-Object.extend(Object.extend(Effect.MoveBy.prototype,Effect.Base.prototype),{initialize:function(_52,_53,_54){
-this.element=$(_52);
-this.toTop=_53;
-this.toLeft=_54;
-this.start(arguments[3]);
+Effect.Move=Class.create();
+Object.extend(Object.extend(Effect.Move.prototype,Effect.Base.prototype),{initialize:function(_56){
+this.element=$(_56);
+var _57=Object.extend({x:0,y:0,mode:"relative"},arguments[1]||{});
+this.start(_57);
 },setup:function(){
 Element.makePositioned(this.element);
-this.originalTop=parseFloat(Element.getStyle(this.element,"top")||"0");
 this.originalLeft=parseFloat(Element.getStyle(this.element,"left")||"0");
-},update:function(_55){
-Element.setStyle(this.element,{top:this.toTop*_55+this.originalTop+"px",left:this.toLeft*_55+this.originalLeft+"px"});
+this.originalTop=parseFloat(Element.getStyle(this.element,"top")||"0");
+if(this.options.mode=="absolute"){
+this.options.x=this.options.x-this.originalLeft;
+this.options.y=this.options.y-this.originalTop;
+}
+},update:function(_58){
+Element.setStyle(this.element,{left:this.options.x*_58+this.originalLeft+"px",top:this.options.y*_58+this.originalTop+"px"});
 }});
+Effect.MoveBy=function(_59,_60,_61){
+return new Effect.Move(_59,Object.extend({x:_61,y:_60},arguments[3]||{}));
+};
 Effect.Scale=Class.create();
-Object.extend(Object.extend(Effect.Scale.prototype,Effect.Base.prototype),{initialize:function(_56,_57){
-this.element=$(_56);
-var _58=Object.extend({scaleX:true,scaleY:true,scaleContent:true,scaleFromCenter:false,scaleMode:"box",scaleFrom:100,scaleTo:_57},arguments[2]||{});
-this.start(_58);
+Object.extend(Object.extend(Effect.Scale.prototype,Effect.Base.prototype),{initialize:function(_62,_63){
+this.element=$(_62);
+var _64=Object.extend({scaleX:true,scaleY:true,scaleContent:true,scaleFromCenter:false,scaleMode:"box",scaleFrom:100,scaleTo:_63},arguments[2]||{});
+this.start(_64);
 },setup:function(){
 this.restoreAfterFinish=this.options.restoreAfterFinish||false;
 this.elementPositioning=Element.getStyle(this.element,"position");
@@ -304,11 +323,11 @@ this.originalStyle[k]=this.element.style[k];
 }.bind(this));
 this.originalTop=this.element.offsetTop;
 this.originalLeft=this.element.offsetLeft;
-var _60=Element.getStyle(this.element,"font-size")||"100%";
-["em","px","%"].each(function(_61){
-if(_60.indexOf(_61)>0){
-this.fontSize=parseFloat(_60);
-this.fontSizeType=_61;
+var _66=Element.getStyle(this.element,"font-size")||"100%";
+["em","px","%"].each(function(_67){
+if(_66.indexOf(_67)>0){
+this.fontSize=parseFloat(_66);
+this.fontSizeType=_67;
 }
 }.bind(this));
 this.factor=(this.options.scaleTo-this.options.scaleFrom)/100;
@@ -322,50 +341,50 @@ this.dims=[this.element.scrollHeight,this.element.scrollWidth];
 if(!this.dims){
 this.dims=[this.options.scaleMode.originalHeight,this.options.scaleMode.originalWidth];
 }
-},update:function(_62){
-var _63=(this.options.scaleFrom/100)+(this.factor*_62);
+},update:function(_68){
+var _69=(this.options.scaleFrom/100)+(this.factor*_68);
 if(this.options.scaleContent&&this.fontSize){
-Element.setStyle(this.element,{fontSize:this.fontSize*_63+this.fontSizeType});
+Element.setStyle(this.element,{fontSize:this.fontSize*_69+this.fontSizeType});
 }
-this.setDimensions(this.dims[0]*_63,this.dims[1]*_63);
-},finish:function(_64){
+this.setDimensions(this.dims[0]*_69,this.dims[1]*_69);
+},finish:function(_70){
 if(this.restoreAfterFinish){
 Element.setStyle(this.element,this.originalStyle);
 }
-},setDimensions:function(_65,_66){
+},setDimensions:function(_71,_72){
 var d={};
 if(this.options.scaleX){
-d.width=_66+"px";
+d.width=_72+"px";
 }
 if(this.options.scaleY){
-d.height=_65+"px";
+d.height=_71+"px";
 }
 if(this.options.scaleFromCenter){
-var _68=(_65-this.dims[0])/2;
-var _69=(_66-this.dims[1])/2;
+var _74=(_71-this.dims[0])/2;
+var _75=(_72-this.dims[1])/2;
 if(this.elementPositioning=="absolute"){
 if(this.options.scaleY){
-d.top=this.originalTop-_68+"px";
+d.top=this.originalTop-_74+"px";
 }
 if(this.options.scaleX){
-d.left=this.originalLeft-_69+"px";
+d.left=this.originalLeft-_75+"px";
 }
 }else{
 if(this.options.scaleY){
-d.top=-_68+"px";
+d.top=-_74+"px";
 }
 if(this.options.scaleX){
-d.left=-_69+"px";
+d.left=-_75+"px";
 }
 }
 }
 Element.setStyle(this.element,d);
 }});
 Effect.Highlight=Class.create();
-Object.extend(Object.extend(Effect.Highlight.prototype,Effect.Base.prototype),{initialize:function(_70){
-this.element=$(_70);
-var _71=Object.extend({startcolor:"#ffff99"},arguments[1]||{});
-this.start(_71);
+Object.extend(Object.extend(Effect.Highlight.prototype,Effect.Base.prototype),{initialize:function(_76){
+this.element=$(_76);
+var _77=Object.extend({startcolor:"#ffff99"},arguments[1]||{});
+this.start(_77);
 },setup:function(){
 if(Element.getStyle(this.element,"display")=="none"){
 this.cancel();
@@ -385,336 +404,326 @@ return parseInt(this.options.startcolor.slice(i*2+1,i*2+3),16);
 this._delta=$R(0,2).map(function(i){
 return parseInt(this.options.endcolor.slice(i*2+1,i*2+3),16)-this._base[i];
 }.bind(this));
-},update:function(_72){
+},update:function(_78){
 Element.setStyle(this.element,{backgroundColor:$R(0,2).inject("#",function(m,v,i){
-return m+(Math.round(this._base[i]+(this._delta[i]*_72)).toColorPart());
+return m+(Math.round(this._base[i]+(this._delta[i]*_78)).toColorPart());
 }.bind(this))});
 },finish:function(){
 Element.setStyle(this.element,Object.extend(this.oldStyle,{backgroundColor:this.options.restorecolor}));
 }});
 Effect.ScrollTo=Class.create();
-Object.extend(Object.extend(Effect.ScrollTo.prototype,Effect.Base.prototype),{initialize:function(_75){
-this.element=$(_75);
+Object.extend(Object.extend(Effect.ScrollTo.prototype,Effect.Base.prototype),{initialize:function(_81){
+this.element=$(_81);
 this.start(arguments[1]||{});
 },setup:function(){
 Position.prepare();
-var _76=Position.cumulativeOffset(this.element);
+var _82=Position.cumulativeOffset(this.element);
 if(this.options.offset){
-_76[1]+=this.options.offset;
+_82[1]+=this.options.offset;
 }
 var max=window.innerHeight?window.height-window.innerHeight:document.body.scrollHeight-(document.documentElement.clientHeight?document.documentElement.clientHeight:document.body.clientHeight);
 this.scrollStart=Position.deltaY;
-this.delta=(_76[1]>max?max:_76[1])-this.scrollStart;
-},update:function(_78){
+this.delta=(_82[1]>max?max:_82[1])-this.scrollStart;
+},update:function(_84){
 Position.prepare();
-window.scrollTo(Position.deltaX,this.scrollStart+(_78*this.delta));
+window.scrollTo(Position.deltaX,this.scrollStart+(_84*this.delta));
 }});
-Effect.Fade=function(_79){
-var _80=Element.getInlineOpacity(_79);
-var _81=Object.extend({from:Element.getOpacity(_79)||1,to:0,afterFinishInternal:function(_82){
+Effect.Fade=function(_85){
+var _86=Element.getInlineOpacity(_85);
+var _87=Object.extend({from:Element.getOpacity(_85)||1,to:0,afterFinishInternal:function(_88){
 with(Element){
-if(_82.options.to!=0){
+if(_88.options.to!=0){
 return;
 }
-hide(_82.element);
-setStyle(_82.element,{opacity:_80});
+hide(_88.element);
+setStyle(_88.element,{opacity:_86});
 }
 }},arguments[1]||{});
-return new Effect.Opacity(_79,_81);
+return new Effect.Opacity(_85,_87);
 };
-Effect.Appear=function(_83){
-var _84=Object.extend({from:(Element.getStyle(_83,"display")=="none"?0:Element.getOpacity(_83)||0),to:1,beforeSetup:function(_85){
+Effect.Appear=function(_89){
+var _90=Object.extend({from:(Element.getStyle(_89,"display")=="none"?0:Element.getOpacity(_89)||0),to:1,beforeSetup:function(_91){
 with(Element){
-setOpacity(_85.element,_85.options.from);
-show(_85.element);
+setOpacity(_91.element,_91.options.from);
+show(_91.element);
 }
 }},arguments[1]||{});
-return new Effect.Opacity(_83,_84);
+return new Effect.Opacity(_89,_90);
 };
-Effect.Puff=function(_86){
-_86=$(_86);
-var _87={opacity:Element.getInlineOpacity(_86),position:Element.getStyle(_86,"position")};
-return new Effect.Parallel([new Effect.Scale(_86,200,{sync:true,scaleFromCenter:true,scaleContent:true,restoreAfterFinish:true}),new Effect.Opacity(_86,{sync:true,to:0})],Object.extend({duration:1,beforeSetupInternal:function(_88){
-with(Element){
-setStyle(_88.effects[0].element,{position:"absolute"});
-}
-},afterFinishInternal:function(_89){
-with(Element){
-hide(_89.effects[0].element);
-setStyle(_89.effects[0].element,_87);
-}
-}},arguments[1]||{}));
-};
-Effect.BlindUp=function(_90){
-_90=$(_90);
-Element.makeClipping(_90);
-return new Effect.Scale(_90,0,Object.extend({scaleContent:false,scaleX:false,restoreAfterFinish:true,afterFinishInternal:function(_91){
-with(Element){
-[hide,undoClipping].call(_91.element);
-}
-}},arguments[1]||{}));
-};
-Effect.BlindDown=function(_92){
+Effect.Puff=function(_92){
 _92=$(_92);
-var _93=Element.getStyle(_92,"height");
-var _94=Element.getDimensions(_92);
-return new Effect.Scale(_92,100,Object.extend({scaleContent:false,scaleX:false,scaleFrom:0,scaleMode:{originalHeight:_94.height,originalWidth:_94.width},restoreAfterFinish:true,afterSetup:function(_95){
+var _93={opacity:Element.getInlineOpacity(_92),position:Element.getStyle(_92,"position")};
+return new Effect.Parallel([new Effect.Scale(_92,200,{sync:true,scaleFromCenter:true,scaleContent:true,restoreAfterFinish:true}),new Effect.Opacity(_92,{sync:true,to:0})],Object.extend({duration:1,beforeSetupInternal:function(_94){
 with(Element){
-makeClipping(_95.element);
-setStyle(_95.element,{height:"0px"});
-show(_95.element);
+setStyle(_94.effects[0].element,{position:"absolute"});
 }
-},afterFinishInternal:function(_96){
+},afterFinishInternal:function(_95){
 with(Element){
-undoClipping(_96.element);
-setStyle(_96.element,{height:_93});
+hide(_95.effects[0].element);
+setStyle(_95.effects[0].element,_93);
 }
 }},arguments[1]||{}));
 };
-Effect.SwitchOff=function(_97){
-_97=$(_97);
-var _98=Element.getInlineOpacity(_97);
-return new Effect.Appear(_97,{duration:0.4,from:0,transition:Effect.Transitions.flicker,afterFinishInternal:function(_99){
-new Effect.Scale(_99.element,1,{duration:0.3,scaleFromCenter:true,scaleX:false,scaleContent:false,restoreAfterFinish:true,beforeSetup:function(_99){
+Effect.BlindUp=function(_96){
+_96=$(_96);
+Element.makeClipping(_96);
+return new Effect.Scale(_96,0,Object.extend({scaleContent:false,scaleX:false,restoreAfterFinish:true,afterFinishInternal:function(_97){
 with(Element){
-[makePositioned,makeClipping].call(_99.element);
-}
-},afterFinishInternal:function(_100){
-with(Element){
-[hide,undoClipping,undoPositioned].call(_100.element);
-setStyle(_100.element,{opacity:_98});
-}
-}});
-}});
-};
-Effect.DropOut=function(_101){
-_101=$(_101);
-var _102={top:Element.getStyle(_101,"top"),left:Element.getStyle(_101,"left"),opacity:Element.getInlineOpacity(_101)};
-return new Effect.Parallel([new Effect.MoveBy(_101,100,0,{sync:true}),new Effect.Opacity(_101,{sync:true,to:0})],Object.extend({duration:0.5,beforeSetup:function(_103){
-with(Element){
-makePositioned(_103.effects[0].element);
-}
-},afterFinishInternal:function(_104){
-with(Element){
-[hide,undoPositioned].call(_104.effects[0].element);
-setStyle(_104.effects[0].element,_102);
+[hide,undoClipping].call(_97.element);
 }
 }},arguments[1]||{}));
 };
-Effect.Shake=function(_105){
-_105=$(_105);
-var _106={top:Element.getStyle(_105,"top"),left:Element.getStyle(_105,"left")};
-return new Effect.MoveBy(_105,0,20,{duration:0.05,afterFinishInternal:function(_107){
-new Effect.MoveBy(_107.element,0,-40,{duration:0.1,afterFinishInternal:function(_107){
-new Effect.MoveBy(_107.element,0,40,{duration:0.1,afterFinishInternal:function(_107){
-new Effect.MoveBy(_107.element,0,-40,{duration:0.1,afterFinishInternal:function(_107){
-new Effect.MoveBy(_107.element,0,40,{duration:0.1,afterFinishInternal:function(_107){
-new Effect.MoveBy(_107.element,0,-20,{duration:0.05,afterFinishInternal:function(_107){
+Effect.BlindDown=function(_98){
+_98=$(_98);
+var _99=Element.getStyle(_98,"height");
+var _100=Element.getDimensions(_98);
+return new Effect.Scale(_98,100,Object.extend({scaleContent:false,scaleX:false,scaleFrom:0,scaleMode:{originalHeight:_100.height,originalWidth:_100.width},restoreAfterFinish:true,afterSetup:function(_101){
 with(Element){
-undoPositioned(_107.element);
-setStyle(_107.element,_106);
+makeClipping(_101.element);
+setStyle(_101.element,{height:"0px"});
+show(_101.element);
 }
-}});
-}});
-}});
-}});
+},afterFinishInternal:function(_102){
+with(Element){
+undoClipping(_102.element);
+setStyle(_102.element,{height:_99});
+}
+}},arguments[1]||{}));
+};
+Effect.SwitchOff=function(_103){
+_103=$(_103);
+var _104=Element.getInlineOpacity(_103);
+return new Effect.Appear(_103,{duration:0.4,from:0,transition:Effect.Transitions.flicker,afterFinishInternal:function(_105){
+new Effect.Scale(_105.element,1,{duration:0.3,scaleFromCenter:true,scaleX:false,scaleContent:false,restoreAfterFinish:true,beforeSetup:function(_105){
+with(Element){
+[makePositioned,makeClipping].call(_105.element);
+}
+},afterFinishInternal:function(_106){
+with(Element){
+[hide,undoClipping,undoPositioned].call(_106.element);
+setStyle(_106.element,{opacity:_104});
+}
 }});
 }});
 };
-Effect.SlideDown=function(_108){
-_108=$(_108);
-Element.cleanWhitespace(_108);
-var _109=Element.getStyle(_108.firstChild,"bottom");
-var _110=Element.getDimensions(_108);
-return new Effect.Scale(_108,100,Object.extend({scaleContent:false,scaleX:false,scaleFrom:0,scaleMode:{originalHeight:_110.height,originalWidth:_110.width},restoreAfterFinish:true,afterSetup:function(_111){
+Effect.DropOut=function(_107){
+_107=$(_107);
+var _108={top:Element.getStyle(_107,"top"),left:Element.getStyle(_107,"left"),opacity:Element.getInlineOpacity(_107)};
+return new Effect.Parallel([new Effect.Move(_107,{x:0,y:100,sync:true}),new Effect.Opacity(_107,{sync:true,to:0})],Object.extend({duration:0.5,beforeSetup:function(_109){
 with(Element){
-makePositioned(_111.element);
-makePositioned(_111.element.firstChild);
-if(window.opera){
-setStyle(_111.element,{top:""});
+makePositioned(_109.effects[0].element);
 }
-makeClipping(_111.element);
-setStyle(_111.element,{height:"0px"});
-show(_108);
-}
-},afterUpdateInternal:function(_112){
+},afterFinishInternal:function(_110){
 with(Element){
-setStyle(_112.element.firstChild,{bottom:(_112.dims[0]-_112.element.clientHeight)+"px"});
+[hide,undoPositioned].call(_110.effects[0].element);
+setStyle(_110.effects[0].element,_108);
 }
-},afterFinishInternal:function(_113){
+}},arguments[1]||{}));
+};
+Effect.Shake=function(_111){
+_111=$(_111);
+var _112={top:Element.getStyle(_111,"top"),left:Element.getStyle(_111,"left")};
+return new Effect.Move(_111,{x:20,y:0,duration:0.05,afterFinishInternal:function(_113){
+new Effect.Move(_113.element,{x:-40,y:0,duration:0.1,afterFinishInternal:function(_113){
+new Effect.Move(_113.element,{x:40,y:0,duration:0.1,afterFinishInternal:function(_113){
+new Effect.Move(_113.element,{x:-40,y:0,duration:0.1,afterFinishInternal:function(_113){
+new Effect.Move(_113.element,{x:40,y:0,duration:0.1,afterFinishInternal:function(_113){
+new Effect.Move(_113.element,{x:-20,y:0,duration:0.05,afterFinishInternal:function(_113){
 with(Element){
-undoClipping(_113.element);
-undoPositioned(_113.element.firstChild);
 undoPositioned(_113.element);
-setStyle(_113.element.firstChild,{bottom:_109});
+setStyle(_113.element,_112);
 }
-}},arguments[1]||{}));
+}});
+}});
+}});
+}});
+}});
+}});
 };
-Effect.SlideUp=function(_114){
+Effect.SlideDown=function(_114){
 _114=$(_114);
 Element.cleanWhitespace(_114);
 var _115=Element.getStyle(_114.firstChild,"bottom");
-return new Effect.Scale(_114,0,Object.extend({scaleContent:false,scaleX:false,scaleMode:"box",scaleFrom:100,restoreAfterFinish:true,beforeStartInternal:function(_116){
+var _116=Element.getDimensions(_114);
+return new Effect.Scale(_114,100,Object.extend({scaleContent:false,scaleX:false,scaleFrom:0,scaleMode:{originalHeight:_116.height,originalWidth:_116.width},restoreAfterFinish:true,afterSetup:function(_117){
 with(Element){
-makePositioned(_116.element);
-makePositioned(_116.element.firstChild);
+makePositioned(_117.element);
+makePositioned(_117.element.firstChild);
 if(window.opera){
-setStyle(_116.element,{top:""});
+setStyle(_117.element,{top:""});
 }
-makeClipping(_116.element);
+makeClipping(_117.element);
+setStyle(_117.element,{height:"0px"});
 show(_114);
 }
-},afterUpdateInternal:function(_117){
+},afterUpdateInternal:function(_118){
 with(Element){
-setStyle(_117.element.firstChild,{bottom:(_117.dims[0]-_117.element.clientHeight)+"px"});
+setStyle(_118.element.firstChild,{bottom:(_118.dims[0]-_118.element.clientHeight)+"px"});
 }
-},afterFinishInternal:function(_118){
+},afterFinishInternal:function(_119){
 with(Element){
-[hide,undoClipping].call(_118.element);
-undoPositioned(_118.element.firstChild);
-undoPositioned(_118.element);
-setStyle(_118.element.firstChild,{bottom:_115});
+undoClipping(_119.element);
+undoPositioned(_119.element.firstChild);
+undoPositioned(_119.element);
+setStyle(_119.element.firstChild,{bottom:_115});
 }
 }},arguments[1]||{}));
 };
-Effect.Squish=function(_119){
-return new Effect.Scale(_119,window.opera?1:0,{restoreAfterFinish:true,beforeSetup:function(_120){
+Effect.SlideUp=function(_120){
+_120=$(_120);
+Element.cleanWhitespace(_120);
+var _121=Element.getStyle(_120.firstChild,"bottom");
+return new Effect.Scale(_120,0,Object.extend({scaleContent:false,scaleX:false,scaleMode:"box",scaleFrom:100,restoreAfterFinish:true,beforeStartInternal:function(_122){
 with(Element){
-makeClipping(_120.element);
+makePositioned(_122.element);
+makePositioned(_122.element.firstChild);
+if(window.opera){
+setStyle(_122.element,{top:""});
 }
-},afterFinishInternal:function(_121){
+makeClipping(_122.element);
+show(_120);
+}
+},afterUpdateInternal:function(_123){
 with(Element){
-hide(_121.element);
-undoClipping(_121.element);
+setStyle(_123.element.firstChild,{bottom:(_123.dims[0]-_123.element.clientHeight)+"px"});
+}
+},afterFinishInternal:function(_124){
+with(Element){
+[hide,undoClipping].call(_124.element);
+undoPositioned(_124.element.firstChild);
+undoPositioned(_124.element);
+setStyle(_124.element.firstChild,{bottom:_121});
+}
+}},arguments[1]||{}));
+};
+Effect.Squish=function(_125){
+return new Effect.Scale(_125,window.opera?1:0,{restoreAfterFinish:true,beforeSetup:function(_126){
+with(Element){
+makeClipping(_126.element);
+}
+},afterFinishInternal:function(_127){
+with(Element){
+hide(_127.element);
+undoClipping(_127.element);
 }
 }});
 };
-Effect.Grow=function(_122){
-_122=$(_122);
-var _123=Object.extend({direction:"center",moveTransistion:Effect.Transitions.sinoidal,scaleTransition:Effect.Transitions.sinoidal,opacityTransition:Effect.Transitions.full},arguments[1]||{});
-var _124={top:_122.style.top,left:_122.style.left,height:_122.style.height,width:_122.style.width,opacity:Element.getInlineOpacity(_122)};
-var dims=Element.getDimensions(_122);
-var _126,initialMoveY;
-var _127,moveY;
-switch(_123.direction){
+Effect.Grow=function(_128){
+_128=$(_128);
+var _129=Object.extend({direction:"center",moveTransistion:Effect.Transitions.sinoidal,scaleTransition:Effect.Transitions.sinoidal,opacityTransition:Effect.Transitions.full},arguments[1]||{});
+var _130={top:_128.style.top,left:_128.style.left,height:_128.style.height,width:_128.style.width,opacity:Element.getInlineOpacity(_128)};
+var dims=Element.getDimensions(_128);
+var _132,initialMoveY;
+var _133,moveY;
+switch(_129.direction){
 case "top-left":
-_126=initialMoveY=_127=moveY=0;
+_132=initialMoveY=_133=moveY=0;
 break;
 case "top-right":
-_126=dims.width;
+_132=dims.width;
 initialMoveY=moveY=0;
-_127=-dims.width;
+_133=-dims.width;
 break;
 case "bottom-left":
-_126=_127=0;
+_132=_133=0;
 initialMoveY=dims.height;
 moveY=-dims.height;
 break;
 case "bottom-right":
-_126=dims.width;
+_132=dims.width;
 initialMoveY=dims.height;
-_127=-dims.width;
+_133=-dims.width;
 moveY=-dims.height;
 break;
 case "center":
-_126=dims.width/2;
+_132=dims.width/2;
 initialMoveY=dims.height/2;
-_127=-dims.width/2;
+_133=-dims.width/2;
 moveY=-dims.height/2;
 break;
 }
-return new Effect.MoveBy(_122,initialMoveY,_126,{duration:0.01,beforeSetup:function(_128){
+return new Effect.Move(_128,{x:_132,y:initialMoveY,duration:0.01,beforeSetup:function(_134){
 with(Element){
-hide(_128.element);
-makeClipping(_128.element);
-makePositioned(_128.element);
+hide(_134.element);
+makeClipping(_134.element);
+makePositioned(_134.element);
 }
-},afterFinishInternal:function(_129){
-new Effect.Parallel([new Effect.Opacity(_129.element,{sync:true,to:1,from:0,transition:_123.opacityTransition}),new Effect.MoveBy(_129.element,moveY,_127,{sync:true,transition:_123.moveTransition}),new Effect.Scale(_129.element,100,{scaleMode:{originalHeight:dims.height,originalWidth:dims.width},sync:true,scaleFrom:window.opera?1:0,transition:_123.scaleTransition,restoreAfterFinish:true})],Object.extend({beforeSetup:function(_129){
+},afterFinishInternal:function(_135){
+new Effect.Parallel([new Effect.Opacity(_135.element,{sync:true,to:1,from:0,transition:_129.opacityTransition}),new Effect.Move(_135.element,{x:_133,y:moveY,sync:true,transition:_129.moveTransition}),new Effect.Scale(_135.element,100,{scaleMode:{originalHeight:dims.height,originalWidth:dims.width},sync:true,scaleFrom:window.opera?1:0,transition:_129.scaleTransition,restoreAfterFinish:true})],Object.extend({beforeSetup:function(_135){
 with(Element){
-setStyle(_129.effects[0].element,{height:"0px"});
-show(_129.effects[0].element);
-}
-},afterFinishInternal:function(_130){
-with(Element){
-[undoClipping,undoPositioned].call(_130.effects[0].element);
-setStyle(_130.effects[0].element,_124);
-}
-}},_123));
-}});
-};
-Effect.Shrink=function(_131){
-_131=$(_131);
-var _132=Object.extend({direction:"center",moveTransistion:Effect.Transitions.sinoidal,scaleTransition:Effect.Transitions.sinoidal,opacityTransition:Effect.Transitions.none},arguments[1]||{});
-var _133={top:_131.style.top,left:_131.style.left,height:_131.style.height,width:_131.style.width,opacity:Element.getInlineOpacity(_131)};
-var dims=Element.getDimensions(_131);
-var _134,moveY;
-switch(_132.direction){
-case "top-left":
-_134=moveY=0;
-break;
-case "top-right":
-_134=dims.width;
-moveY=0;
-break;
-case "bottom-left":
-_134=0;
-moveY=dims.height;
-break;
-case "bottom-right":
-_134=dims.width;
-moveY=dims.height;
-break;
-case "center":
-_134=dims.width/2;
-moveY=dims.height/2;
-break;
-}
-return new Effect.Parallel([new Effect.Opacity(_131,{sync:true,to:0,from:1,transition:_132.opacityTransition}),new Effect.Scale(_131,window.opera?1:0,{sync:true,transition:_132.scaleTransition,restoreAfterFinish:true}),new Effect.MoveBy(_131,moveY,_134,{sync:true,transition:_132.moveTransition})],Object.extend({beforeStartInternal:function(_135){
-with(Element){
-[makePositioned,makeClipping].call(_135.effects[0].element);
+setStyle(_135.effects[0].element,{height:"0px"});
+show(_135.effects[0].element);
 }
 },afterFinishInternal:function(_136){
 with(Element){
-[hide,undoClipping,undoPositioned].call(_136.effects[0].element);
-setStyle(_136.effects[0].element,_133);
+[undoClipping,undoPositioned].call(_136.effects[0].element);
+setStyle(_136.effects[0].element,_130);
 }
-}},_132));
+}},_129));
+}});
 };
-Effect.Pulsate=function(_137){
+Effect.Shrink=function(_137){
 _137=$(_137);
-var _138=arguments[1]||{};
-var _139=Element.getInlineOpacity(_137);
-var _140=_138.transition||Effect.Transitions.sinoidal;
-var _141=function(pos){
-return _140(1-Effect.Transitions.pulse(pos));
-};
-_141.bind(_140);
-return new Effect.Opacity(_137,Object.extend(Object.extend({duration:3,from:0,afterFinishInternal:function(_142){
-Element.setStyle(_142.element,{opacity:_139});
-}},_138),{transition:_141}));
-};
-Effect.Fold=function(_143){
-_143=$(_143);
-var _144={top:_143.style.top,left:_143.style.left,width:_143.style.width,height:_143.style.height};
-Element.makeClipping(_143);
-return new Effect.Scale(_143,5,Object.extend({scaleContent:false,scaleX:false,afterFinishInternal:function(_145){
-new Effect.Scale(_143,1,{scaleContent:false,scaleY:false,afterFinishInternal:function(_145){
+var _138=Object.extend({direction:"center",moveTransistion:Effect.Transitions.sinoidal,scaleTransition:Effect.Transitions.sinoidal,opacityTransition:Effect.Transitions.none},arguments[1]||{});
+var _139={top:_137.style.top,left:_137.style.left,height:_137.style.height,width:_137.style.width,opacity:Element.getInlineOpacity(_137)};
+var dims=Element.getDimensions(_137);
+var _140,moveY;
+switch(_138.direction){
+case "top-left":
+_140=moveY=0;
+break;
+case "top-right":
+_140=dims.width;
+moveY=0;
+break;
+case "bottom-left":
+_140=0;
+moveY=dims.height;
+break;
+case "bottom-right":
+_140=dims.width;
+moveY=dims.height;
+break;
+case "center":
+_140=dims.width/2;
+moveY=dims.height/2;
+break;
+}
+return new Effect.Parallel([new Effect.Opacity(_137,{sync:true,to:0,from:1,transition:_138.opacityTransition}),new Effect.Scale(_137,window.opera?1:0,{sync:true,transition:_138.scaleTransition,restoreAfterFinish:true}),new Effect.Move(_137,{x:_140,y:moveY,sync:true,transition:_138.moveTransition})],Object.extend({beforeStartInternal:function(_141){
 with(Element){
-[hide,undoClipping].call(_145.element);
-setStyle(_145.element,_144);
+[makePositioned,makeClipping].call(_141.effects[0].element);
+}
+},afterFinishInternal:function(_142){
+with(Element){
+[hide,undoClipping,undoPositioned].call(_142.effects[0].element);
+setStyle(_142.effects[0].element,_139);
+}
+}},_138));
+};
+Effect.Pulsate=function(_143){
+_143=$(_143);
+var _144=arguments[1]||{};
+var _145=Element.getInlineOpacity(_143);
+var _146=_144.transition||Effect.Transitions.sinoidal;
+var _147=function(pos){
+return _146(1-Effect.Transitions.pulse(pos));
+};
+_147.bind(_146);
+return new Effect.Opacity(_143,Object.extend(Object.extend({duration:3,from:0,afterFinishInternal:function(_148){
+Element.setStyle(_148.element,{opacity:_145});
+}},_144),{transition:_147}));
+};
+Effect.Fold=function(_149){
+_149=$(_149);
+var _150={top:_149.style.top,left:_149.style.left,width:_149.style.width,height:_149.style.height};
+Element.makeClipping(_149);
+return new Effect.Scale(_149,5,Object.extend({scaleContent:false,scaleX:false,afterFinishInternal:function(_151){
+new Effect.Scale(_149,1,{scaleContent:false,scaleY:false,afterFinishInternal:function(_151){
+with(Element){
+[hide,undoClipping].call(_151.element);
+setStyle(_151.element,_150);
 }
 }});
 }},arguments[1]||{}));
 };
-
-Prado.Effect={Highlight:function(_1,_2){
-new Effect.Highlight(_1,{"duration":_2});
-},Scale:function(_3,_4){
-new Effect.Scale(_3,_4);
-},MoveBy:function(_5,_6,_7){
-new Effect.MoveBy(_5,_6,_7);
-},ScrollTo:function(_8,_9){
-new Effect.ScrollTo(_8,{"duration":_9});
-}};
 

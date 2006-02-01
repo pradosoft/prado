@@ -569,8 +569,8 @@ framework/Web/Javascripts/effects/controls.js -text
 framework/Web/Javascripts/effects/dragdrop.js -text
 framework/Web/Javascripts/effects/effects.js -text
 framework/Web/Javascripts/effects/slider.js -text
-framework/Web/Javascripts/effects/util.js -text
 framework/Web/Javascripts/extended/base.js -text
+framework/Web/Javascripts/extended/builder.js -text
 framework/Web/Javascripts/extended/date.js -text
 framework/Web/Javascripts/extended/dom.js -text
 framework/Web/Javascripts/extended/event.js -text
@@ -591,7 +591,6 @@ framework/Web/Javascripts/js/validator.js -text
 framework/Web/Javascripts/prado/activecontrols.js -text
 framework/Web/Javascripts/prado/ajax.js -text
 framework/Web/Javascripts/prado/controls.js -text
-framework/Web/Javascripts/prado/effects.js -text
 framework/Web/Javascripts/prado/element.js -text
 framework/Web/Javascripts/prado/form.js -text
 framework/Web/Javascripts/prado/prado.js -text

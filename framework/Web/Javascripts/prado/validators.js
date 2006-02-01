@@ -132,9 +132,6 @@ Prado.Validation.TRequiredListValidator = function()
 	var elements = document.getElementsByName(this.attr.selector);
 
 	if(elements.length <= 0)
-		elements = document.getElementsBySelector(this.attr.selector);
-
-	if(elements.length <= 0)
 		return true;
 	
 	var required = new Array();

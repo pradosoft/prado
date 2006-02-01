@@ -504,9 +504,6 @@ var min=undef(this.attr.min)?Number.NEGATIVE_INFINITY:parseInt(this.attr.min);
 var max=undef(this.attr.max)?Number.POSITIVE_INFINITY:parseInt(this.attr.max);
 var _24=document.getElementsByName(this.attr.selector);
 if(_24.length<=0){
-_24=document.getElementsBySelector(this.attr.selector);
-}
-if(_24.length<=0){
 return true;
 }
 var _25=new Array();
