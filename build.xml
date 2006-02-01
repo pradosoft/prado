@@ -348,4 +348,23 @@ PRADO provides the following benefits for Web application developers:
     <delete dir="${reports.dir}"/>
   </target>
 
+  <target name="pradolite">
+    <echo>Compiling PRADO Lite</echo>
+    <delete file="${build.base.dir}/pradolite.php"/>
+    <append destFile="${build.base.dir}/pradolite.php">
+      <filterchain>
+	<stripphpcomments />
+	<replaceregexp>
+	  <regexp pattern="Prado::using\(.*\);" replace=""/>
+	  <regexp pattern="(require|require_once)\s*\(.*?;" replace=""/>
+	  <regexp pattern="(include|include_once)\s*\(.*?;" replace=""/>
+	  <regexp pattern="Prado::trace\(.*\);" replace=""/>
+	</replaceregexp>
+      </filterchain>
+      <filelist dir="${src.dir}" listfile="buildscripts/phpbuilder/files.txt"/>
+    </append>
+    <exec command="php -l pradolite.php" dir="${build.base.dir}" passthru="true" checkreturn="true"/>
+    <exec command="php -e pradolite.php" dir="${build.base.dir}" passthru="true" checkreturn="true"/>
+  </target>
+
 </project>
