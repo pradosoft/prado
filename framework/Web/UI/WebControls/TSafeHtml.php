@@ -1,7 +1,5 @@
 <?php
 
-Prado::using('System.3rdParty.SafeHtml.TSafeHtmlParser');
-
 /**
  * ${classname}
  *
@@ -33,7 +31,7 @@ class TSafeHtml extends TControl
 	 */
 	protected function parseSafeHtml($text)
 	{
-		$renderer = new TSafeHtmlParser();
+		$renderer = Prado::createComponent('System.3rdParty.SafeHtml.TSafeHtmlParser');
 		return $renderer->parse($content);
 	}
 }

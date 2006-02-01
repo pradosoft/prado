@@ -3,11 +3,12 @@
 <h1>TRepeater Sample 2</h1>
 
 <com:TRepeater ID="Repeater"
+	EnableViewState="false"
     OnItemDataBound="dataBindRepeater2"
     OnItemCreated="repeaterItemCreated">
 
 <prop:HeaderTemplate>
-<table cellspacing="1" style="border-collapse:collapse;border:1px solid silver">
+<table cellspacing="1" style="border:1px solid silver">
 </prop:HeaderTemplate>
 
 <prop:ItemTemplate>
@@ -16,10 +17,13 @@
   <%#$this->NamingContainer->DataItem %>
 </com:TTableCell>
 <td>
-    <com:TRepeater ID="Repeater2" OnItemCreated="Page.repeater2ItemCreated">
+    <com:TRepeater
+         ID="Repeater2"
+         EnableViewState="false"
+         OnItemCreated="Page.repeater2ItemCreated">
 
     <prop:HeaderTemplate>
-    <table cellspacing="1" style="border-collapse: collapse;">
+    <table cellspacing="1">
     </prop:HeaderTemplate>
 
     <prop:ItemTemplate>

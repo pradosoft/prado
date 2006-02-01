@@ -148,6 +148,8 @@ demos/quickstart/protected/pages/Controls/Samples/TRepeater/Sample1.page -text
 demos/quickstart/protected/pages/Controls/Samples/TRepeater/Sample1.php -text
 demos/quickstart/protected/pages/Controls/Samples/TRepeater/Sample2.page -text
 demos/quickstart/protected/pages/Controls/Samples/TRepeater/Sample2.php -text
+demos/quickstart/protected/pages/Controls/Samples/TRepeater/Sample3.page -text
+demos/quickstart/protected/pages/Controls/Samples/TRepeater/Sample3.php -text
 demos/quickstart/protected/pages/Controls/Samples/TRequiredFieldValidator/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TRequiredFieldValidator/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TTable/Home.page -text
