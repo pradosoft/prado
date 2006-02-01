@@ -129,6 +129,22 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
+	 * @return boolean true will show "Copy Code" link
+	 */
+	public function getEnableCopyCode()
+	{
+		return $this->getViewState('CopyCode', true);
+	}
+
+	/**
+	 * @param boolean true to show the "Copy Code" link.
+	 */
+	public function setEnableCopyCode($value)
+	{
+		$this->setViewState('CopyCode', TPropertyValue::ensureBoolean($value), true);
+	}
+	
+	/**
 	 * Returns the highlighted text.
 	 * @param string text to highlight.
 	 * @return string highlighted text.
@@ -139,12 +155,16 @@ class TTextHighlighter extends TWebControl
 		if($this->getShowLineNumbers())
 			$geshi->enable_line_numbers(GESHI_NORMAL_LINE_NUMBERS);
 		$geshi->enable_classes();
-		$geshi->set_header_content($this->getHeaderTemplate());
+		if(this->getEnableCopyCode())
+			$geshi->set_header_content($this->getHeaderTemplate());
 		
 		return $geshi->parse_code();
 	}
 
-	function getHeaderTemplate()
+	/**
+	 * @return string header template with "Copy code" link.
+	 */
+	protected function getHeaderTemplate()
 	{
 		$id = $this->getClientID();
 		$cs = $this->getPage()->getClientScript();
