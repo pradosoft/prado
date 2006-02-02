@@ -58,7 +58,7 @@ TDataGrid provides several events to facilitate manipulation of its items,
 
 <h2>Using TDataGrid</h2>
 
-<h3>Automatically Generated Columns</h2>
+<h3>Automatically Generated Columns</h3>
 <p>
 TDataGrid by default will create a list of columns based on the structure of the bound data. TDataGrid will read the first row of the data, extract the field names of the row, and construct a column for each field. Each column is of type <tt>TBoundColumn</tt>.
 </p>
@@ -76,7 +76,7 @@ public function onLoad($param) {
 </com:TTextHighlighter>
 <com:RunBar PagePath="Controls.Samples.TDataGrid.Sample1" />
 
-<h3>Manually Specified Columns</h2>
+<h3>Manually Specified Columns</h3>
 <p>
 Using automatically generated columns gives a quick way of browsing tabular data. In real applications, however, automatically generated columns are often not enough because developers have no way configuring their properties. Manually specified columns are thus more desirable.
 </p>
