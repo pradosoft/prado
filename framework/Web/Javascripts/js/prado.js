@@ -1862,49 +1862,58 @@ _426=_427;
 }
 }
 if(_426){
-Prado.PostBack(_423,_424);
+this.onPostBack(_423,_424);
 }
 if(isBoolean(_427)&&!_427){
 Event.stop(_423);
 }
+},onPostBack:function(_428,_429){
+Prado.PostBack(_428,_429);
 }});
 Prado.WebUI.TLinkButton=Prado.WebUI.ClickableComponent;
 Prado.WebUI.TImageButton=Prado.WebUI.ClickableComponent;
 Prado.WebUI.TCheckBox=Prado.WebUI.ClickableComponent;
-Prado.WebUI.TRadioButton=Prado.WebUI.ClickableComponent;
 Prado.WebUI.TBulletedList=Prado.WebUI.ClickableComponent;
-Prado.WebUI.TTextBox=Prado.WebUI.createPostBackComponent({onInit:function(_428){
-if(_428["TextMode"]!="MultiLine"){
+Prado.WebUI.TRadioButton=Prado.WebUI.ClickableComponent;
+Prado.WebUI.TRadioButton.prototype.onRadioButtonInitialize=Prado.WebUI.TRadioButton.prototype.initialize;
+Object.extend(Prado.WebUI.TRadioButton.prototype,{initialize:function(_430){
+this.element=$(_430["ID"]);
+if(!this.element.checked){
+this.onRadioButtonInitialize(_430);
+}
+}});
+Prado.WebUI.TTextBox=Prado.WebUI.createPostBackComponent({onInit:function(_431){
+if(_431["TextMode"]!="MultiLine"){
 Event.observe(this.element,"keydown",this.handleReturnKey.bind(this));
 }
-Event.observe(this.element,"change",Prado.PostBack.bindEvent(this,_428));
+Event.observe(this.element,"change",Prado.PostBack.bindEvent(this,_431));
 },handleReturnKey:function(e){
 if(Event.keyCode(e)==Event.KEY_RETURN){
-var _429=Event.element(e);
-if(_429){
-Event.fireEvent(_429,"change");
+var _432=Event.element(e);
+if(_432){
+Event.fireEvent(_432,"change");
 Event.stop(e);
 }
 }
 }});
-Prado.WebUI.TListControl=Prado.WebUI.createPostBackComponent({onInit:function(_430){
-Event.observe(this.element,"change",Prado.PostBack.bindEvent(this,_430));
+Prado.WebUI.TListControl=Prado.WebUI.createPostBackComponent({onInit:function(_433){
+Event.observe(this.element,"change",Prado.PostBack.bindEvent(this,_433));
 }});
 Prado.WebUI.TListBox=Prado.WebUI.TListControl;
 Prado.WebUI.TDropDownList=Prado.WebUI.TListControl;
 Prado.WebUI.DefaultButton=Class.create();
-Object.extend(Prado.WebUI.DefaultButton.prototype,{initialize:function(_431){
-this.options=_431;
+Object.extend(Prado.WebUI.DefaultButton.prototype,{initialize:function(_434){
+this.options=_434;
 this._event=this.triggerEvent.bindEvent(this);
-Event.observe(_431["Panel"],"keydown",this._event);
-},triggerEvent:function(ev,_433){
-var _434=Event.keyCode(ev)==Event.KEY_RETURN;
-var _435=Event.element(ev).tagName.toLowerCase()=="textarea";
-if(_434&&!_435){
-var _436=$(this.options["Target"]);
-if(_436){
+Event.observe(_434["Panel"],"keydown",this._event);
+},triggerEvent:function(ev,_436){
+var _437=Event.keyCode(ev)==Event.KEY_RETURN;
+var _438=Event.element(ev).tagName.toLowerCase()=="textarea";
+if(_437&&!_438){
+var _439=$(this.options["Target"]);
+if(_439){
 this.triggered=true;
-Event.fireEvent(_436,this.options["Event"]);
+Event.fireEvent(_439,this.options["Event"]);
 Event.stop(ev);
 }
 }
@@ -1914,15 +1923,15 @@ Prado.WebUI.TTextHighlighter.prototype={initialize:function(id){
 if(!window.clipboardData){
 return;
 }
-var _437={href:"javascript:;//copy code to clipboard",onclick:"Prado.WebUI.TTextHighlighter.copy(this)",onmouseover:"Prado.WebUI.TTextHighlighter.hover(this)",onmouseout:"Prado.WebUI.TTextHighlighter.out(this)"};
-var div=DIV({className:"copycode"},A(_437,"Copy Code"));
+var _440={href:"javascript:;//copy code to clipboard",onclick:"Prado.WebUI.TTextHighlighter.copy(this)",onmouseover:"Prado.WebUI.TTextHighlighter.hover(this)",onmouseout:"Prado.WebUI.TTextHighlighter.out(this)"};
+var div=DIV({className:"copycode"},A(_440,"Copy Code"));
 document.write(DIV(null,div).innerHTML);
 }};
 Object.extend(Prado.WebUI.TTextHighlighter,{copy:function(obj){
-var _438=obj.parentNode.parentNode.parentNode;
+var _441=obj.parentNode.parentNode.parentNode;
 var text="";
-for(var i=0;i<_438.childNodes.length;i++){
-var node=_438.childNodes[i];
+for(var i=0;i<_441.childNodes.length;i++){
+var node=_441.childNodes[i];
 if(node.innerText){
 text+=node.innerText=="Copy Code"?"":node.innerText;
 }else{

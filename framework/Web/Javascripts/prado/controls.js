@@ -56,17 +56,37 @@ Prado.WebUI.ClickableComponent = Prado.WebUI.createPostBackComponent(
 				doPostBack = onclicked;
 		}
 		if(doPostBack)
-			Prado.PostBack(event,options);
+			this.onPostBack(event,options);
 		if(isBoolean(onclicked) && !onclicked)
 			Event.stop(event);
+	},
+
+	onPostBack : function(event, options)
+	{
+		Prado.PostBack(event,options);
 	}
 });
 
 Prado.WebUI.TLinkButton = Prado.WebUI.ClickableComponent;
 Prado.WebUI.TImageButton = Prado.WebUI.ClickableComponent;
 Prado.WebUI.TCheckBox = Prado.WebUI.ClickableComponent;
-Prado.WebUI.TRadioButton = Prado.WebUI.ClickableComponent;
 Prado.WebUI.TBulletedList = Prado.WebUI.ClickableComponent;
+
+/**
+ * Radio button, only initialize if not already checked.
+ */
+Prado.WebUI.TRadioButton = Prado.WebUI.ClickableComponent;
+Prado.WebUI.TRadioButton.prototype.onRadioButtonInitialize = Prado.WebUI.TRadioButton.prototype.initialize;
+Object.extend(Prado.WebUI.TRadioButton.prototype,
+{
+	initialize : function(options)
+	{
+		this.element = $(options['ID']);
+		if(!this.element.checked)
+			this.onRadioButtonInitialize(options);
+	}
+});
+
 
 Prado.WebUI.TTextBox = Prado.WebUI.createPostBackComponent(
 {
