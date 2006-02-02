@@ -1,0 +1,19 @@
+<com:TContent ID="body" >
+
+<h1>TDataGrid : Part II</h1>
+
+<h2>Paging and Sorting</h2>
+
+<h2>Updating and Deleting</h2>
+
+<h2>Custom Paging</h2>
+
+<h2>Extending TDataGrid</h2>
+
+<com:RunBar PagePath="Controls.Samples.TDataGrid.Sample1" />
+<p>
+A common use of TDataGrid is for maintaining tabular data, including browsing, editting, deleting data items. This is enabled by the command events and various item templates of TDataGrid. The following example displays a computer product information. Users can add new products, modify or delete existing ones. In order to locate the data item for updating or deleting, <tt>DataKeys</tt> property is used.
+</p>
+<com:RunBar PagePath="Controls.Samples.TDataGrid.Sample2" />
+
+</com:TContent>

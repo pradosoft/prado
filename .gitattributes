@@ -97,6 +97,8 @@ demos/quickstart/protected/pages/Configurations/Templates2.page -text
 demos/quickstart/protected/pages/Configurations/Templates3.page -text
 demos/quickstart/protected/pages/Construction.page -text
 demos/quickstart/protected/pages/Controls/DataGrid.page -text
+demos/quickstart/protected/pages/Controls/DataGrid1.page -text
+demos/quickstart/protected/pages/Controls/DataGrid2.page -text
 demos/quickstart/protected/pages/Controls/DataList.page -text
 demos/quickstart/protected/pages/Controls/List.page -text
 demos/quickstart/protected/pages/Controls/Overview.page -text

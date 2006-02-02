@@ -1,0 +1,99 @@
+<com:TContent ID="body" >
+
+<h1>TDataGrid : Part I</h1>
+
+<p>
+TDatagrid is an important control in building complex Web applications. It displays data in a tabular format with rows (also called items) and columns. A row is composed by cells, while columns govern how cells should be displayed according to their association with the columns. Data specified via <tt>DataSource</tt> or <tt>DataSourceID</tt> are bound to the rows and feed contents to cells.
+</p>
+<p>
+TDataGrid is highly interactive. Users can sort the data along specified columns, navigate through different pages of the data, and perform actions, such as editting and deleting, on rows of the data.
+</p>
+<p>
+Rows of TDataGrid can be accessed via its <tt>Items</tt> property. A row (item) can be in one of several modes: browsing, editting and selecting, which affects how cells in the row are displayed. To change an item's mode, modify <tt>EditItemIndex</tt> or <tt>SelectedItemIndex</tt>. Note, if an item is in edit mode, then selecting this item will have no effect.
+</p>
+
+<h2>Columns</h2>
+<p>
+Columns of a data grid determine how the associated cells are displayed. For example, cells associated with a <tt>TBoundColumn</tt> are displayed differently according to their modes. A cell is displayed as a static text if the cell is in browsing mode, a text box if it is in editting mode, and so on.
+</p>
+<p>
+PRADO provides five types of columns:
+</p>
+<ul>
+  <li><tt>TBoundColumn</tt> associates cells with a specific field of data and displays the cells according to their modes.</li>
+  <li><tt>THyperLinkColumn</tt> displays in the cells a hyperlink whose caption and URL can be either statically specified or bound to some fields of data.</li>
+  <li><tt>TEditCommandColumn</tt> displays in the cells edit/update/cancel command buttons according to the state of the item that a cell resides in.</li>
+  <li><tt>TButtonColumn</tt> displays in the cells a command button.
+  <li><tt>TTemplateColumn</tt> displays the cells according to different templates defined for it.</li>
+</ul>
+
+<h2>Item Styles</h2>
+<p>
+TDataGrid defines different styles applied to its items. For example, <tt>AlternatingItemStyle</tt> is applied to alternating items (item 2, 4, 6, etc.) Through these properties, one can set CSS style fields or CSS classes for the items.
+</p>
+<p>
+Item styles are applied in a hierarchical way. Styles in higher hierarchy will inherit from styles in lower hierarchy. Starting from the lowest hierarchy, the item styles include item's own style, <tt>ItemStyle</tt>, <tt>AlternatingItemStyle</tt>, <tt>SelectedItemStyle</tt>, and <tt>EditItemStyle</tt>. Therefore, if background color is set as red in <tt>ItemStyle</tt>, <tt>EditItemStyle</tt> will also have red background color, unless it is explicitly set to a different value.
+</p>
+
+<h2>Events</h2>
+<p>
+TDataGrid provides several events to facilitate manipulation of its items,
+</p>
+<ul>
+  <li><tt>OnItemCreated</tt> - raised each time an item is newly created. When the event is raised, data and child controls are both available for the new item.</li>
+  <li><tt>OnItemDataBound</tt> - raised each time an item just completes databinding. When the event is raised, data and child controls are both available for the item, and the item has finished databindings of itself and all its child controls.</li>
+  <li><tt>OnItemCommand</tt> - raised when a child control of some item (such as a <tt>TButton</tt>) raises an <tt>OnCommand</tt> event.</li>
+  <li>command events - raised when a child control's <tt>OnCommand</tt> event has a specific command name,
+    <ul>
+      <li><tt>OnSelectedIndexChanged</tt> - if the command name is <tt>select</tt>.</li>
+      <li><tt>OnEditCommand</tt> - if the command name is <tt>edit</tt>.</li>
+      <li><tt>OnDeleteCommand</tt> - if the command name is <tt>delete</tt>.</li>
+      <li><tt>OnUpdateCommand</tt> - if the command name is <tt>update</tt>.</li>
+      <li><tt>OnCancelCommand</tt> - if the command name is <tt>cancel</tt>.</li>
+      <li><tt>OnSortCommand</tt> - if the command name is <tt>sort</tt>.</li>
+      <li><tt>OnPageIndexChanged</tt> - if the command name is <tt>page</tt>.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2>Using TDataGrid</h2>
+
+<h3>Automatically Generated Columns</h2>
+<p>
+TDataGrid by default will create a list of columns based on the structure of the bound data. TDataGrid will read the first row of the data, extract the field names of the row, and construct a column for each field. Each column is of type <tt>TBoundColumn</tt>.
+</p>
+<p>
+The following example displays a list of computer product information using a TDataGrid. Columns are automatically generated. To populate datagrid items with the data, <tt>dataBind()</tt> is invoked for the datagrid in the <tt>onLoad</tt> method of the page,
+</p>
+<com:TTextHighlighter Language="php" CssClass="source">
+public function onLoad($param) {
+    parent::onLoad($param);
+    if(!$this->IsPostBack) {
+        $this->DataGrid->DataSource=$this->Data;
+        $this->DataGrid->dataBind();
+    }
+}
+</com:TTextHighlighter>
+<com:RunBar PagePath="Controls.Samples.TDataGrid.Sample1" />
+
+<h3>Manually Specified Columns</h2>
+<p>
+Using automatically generated columns gives a quick way of browsing tabular data. In real applications, however, automatically generated columns are often not enough because developers have no way configuring their properties. Manually specified columns are thus more desirable.
+</p>
+<p>
+To manually specify columns, set <tt>AutoGenerateColumns</tt> to false, and specify the columns in a template like the following,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TDataGrid ...&gt;
+  &lt;com:TBoundColumn DataField="name" .../&gt;
+  &lt;com:TBoundColumn DataField="price" .../&gt;
+  &lt;com:TEditCommandColumn ...&gt;
+  ...
+&lt;/com:TDataGrid&gt;
+</com:TTextHighlighter>
+<p>
+Note, if <tt>AutoGenerateColumns</tt> is true and there are manually specified columns, the automatically generated columns will be displayed first. Also note, the datagrid's <tt>Columns</tt> property only contains manually specified columns.
+</p>
+<com:RunBar PagePath="Controls.Samples.TDataGrid.Sample2" />
+
+</com:TContent>

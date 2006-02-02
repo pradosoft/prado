@@ -72,7 +72,7 @@ Prado::using('System.Web.UI.WebControls.TTable');
  * on top and/or bottom of the table. How the pager will be displayed is determined by <b>PagerDisplay</b>
  * and <b>PagerButtonCount</b> properties. The former decides the position of the pager and latter
  * specifies how many buttons are to be used for paging purpose. Clicking on a pager button will raise
- * an <b>OnPageCommand</b> event. You can respond to this event, specify the page to be displayed by
+ * an <b>onPageIndexChanged</b> event. You can respond to this event, specify the page to be displayed by
  * setting <b>CurrentPageIndex</b> property, and then invoke databind on the datagrid.
  *
  * TDataGrid supports two kinds of paging. The first one is based on the number of data items in
@@ -94,7 +94,7 @@ Prado::using('System.Web.UI.WebControls.TTable');
  * - OnSelectCommand, select
  * - OnDeleteCommand, delete
  * - OnUpdateCommand, update
- * - OnPageCommand, page
+ * - onPageIndexChanged, page
  * - OnSortCommand, sort
  * The data list will always raise an <b>OnItemCommand</b>
  * upon its receiving a bubbled <b>OnCommand</b> event.

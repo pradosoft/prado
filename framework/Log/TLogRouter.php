@@ -604,14 +604,14 @@ class TBrowserLogRoute extends TLogRoute
 		$category = is_array($this->getCategories()) ?
 						implode(', ',$this->getCategories()) : '';
 		$string = <<<EOD
-<table cellspacing="0" cellpadding="0" border="0" width="100%">
+<table cellspacing="0" cellpadding="2" border="0" width="100%">
 	<tr>
 		<th style="background-color: black; color:white;" colspan="11">
-			<h3>Trace Information: $category</h3>
+			Application Log
 		</th>
 	</tr><tr style="background-color: #ccc;">
 	    <th>&nbsp;</th>
-		<th>Category</th><th>Message</th><th>From First(s)</th><th>From Last(s)</th>
+		<th>Category</th><th>Message</th><th>Time Spent (s)</th><th>Cumulated Time Spent (s)</th>
 	</tr>
 EOD;
 		return $string;
@@ -626,7 +626,11 @@ EOD;
 		$msg = preg_replace('/\(line[^\)]+\)$/','',$log[0]); //remove line number info
 		$string = <<<EOD
 	<tr style="background-color: {$bgcolor};">
-		<td style="background-color: $color;">&nbsp;</td><td>{$log[2]}</td><td>{$msg}</td><td>{$total}</td><td>{$delta}</td>
+		<td style="border:1px solid silver;background-color: $color;">&nbsp;</td>
+		<td>{$log[2]}</td>
+		<td>{$msg}</td>
+		<td style="text-align:center">{$delta}</td>
+		<td style="text-align:center">{$total}</td>
 	</tr>
 EOD;
 		return $string;
@@ -651,7 +655,7 @@ EOD;
 		$string = "<tr><td colspan=\"11\" style=\"text-align:center; border-top: 1px solid #ccc; padding:0.2em;\">";
 		foreach(self::$_levelValues as $name => $level)
 		{
-			$string .= "<span style=\"color:".$this->getColorLevel($level);
+			$string .= "<span style=\"color:white;background-color:".$this->getColorLevel($level);
 			$string .= ";margin: 0.5em;\">".strtoupper($name)."</span>";
 		}
 		$string .= "</td></tr></table>";
