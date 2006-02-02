@@ -1,13 +1,22 @@
 <?php
+/**
+ * TSafeHtml class file
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ */
 
 /**
- * ${classname}
+ * TSafeHtml class
  *
- * ${description}
- *
- * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.66 $  $Date: ${DATE} ${TIME} $
- * @package ${package}
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
  */
 class TSafeHtml extends TControl
 {

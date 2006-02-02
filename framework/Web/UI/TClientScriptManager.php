@@ -1,4 +1,14 @@
 <?php
+/**
+ * TClientScriptManager class file
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI
+ */
 
 /*class TPostBackOptions extends TComponent
 {
@@ -72,6 +82,14 @@
 */
 Prado::using('System.Web.Javascripts.*');
 
+/**
+ * TClientScriptManager class
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI
+ * @since 3.0
+ */
 class TClientScriptManager extends TComponent
 {
 	const SCRIPT_DIR='Web/Javascripts/js';

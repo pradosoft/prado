@@ -1,4 +1,15 @@
 <?php
+/**
+ * TTarFileExtractor class file
+ *
+ * @author Vincent Blavet <vincent@phpconcept.net>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Data
+ */
+
 /* vim: set ts=4 sw=4: */
 // +----------------------------------------------------------------------+
 // | PHP Version 4                                                        |
@@ -18,7 +29,14 @@
 //
 // $Id: Tar.php,v 1.29 2005/03/17 21:02:31 vblavet Exp $
 
-
+/**
+ * TTarFileExtractor class
+ *
+ * @author Vincent Blavet <vincent@phpconcept.net>
+ * @version $Revision: $  $Date: $
+ * @package System.Data
+ * @since 3.0
+ */
 class TTarFileExtractor
 {
     /**

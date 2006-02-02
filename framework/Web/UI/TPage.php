@@ -1,4 +1,14 @@
 <?php
+/**
+ * TPage class file
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI
+ */
 
 //Prado::using('System.Web.UI.*');
 Prado::using('System.Web.UI.WebControls.*');
@@ -8,6 +18,15 @@ Prado::using('System.Web.UI.TForm');
 Prado::using('System.Web.UI.TClientScriptManager');
 
 //Prado::using('System.Web
+
+/**
+ * TPage class
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI
+ * @since 3.0
+ */
 class TPage extends TTemplateControl
 {
 	const FIELD_POSTBACK_TARGET='PRADO_POSTBACK_TARGET';

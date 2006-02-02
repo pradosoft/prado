@@ -1,5 +1,23 @@
 <?php
+/**
+ * TForm class file
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI
+ */
 
+/**
+ * TForm class
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI
+ * @since 3.0
+ */
 class TForm extends TControl
 {
 	public function onInit($param)
