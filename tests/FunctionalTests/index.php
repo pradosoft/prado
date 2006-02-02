@@ -9,10 +9,11 @@ class BrowserTestConfig extends PradoTestConfig
 	{
 		$groups = array();
 
+		//tests for quickstart samples
 		$this->get_directories(dirname(__FILE__).'/quickstart_tests', $groups);
 
-		//for tests in the protected dirs
-		//$this->get_directories($this->tests_directory(),$groups);
+		//tests to verify tickets
+		$this->get_directories($this->tests_directory(),$groups);
 		
 		return $groups;
 	}

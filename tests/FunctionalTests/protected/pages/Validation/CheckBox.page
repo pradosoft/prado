@@ -1,6 +1,5 @@
 <%@ Title="An AutoPostBack CheckBox" %>
 <com:TContent ID="Content">
-<com:TForm>
 
 <h1>An AutoPostBack CheckBox</h1>
 
@@ -33,7 +32,4 @@ Input: <com:TTextBox ID="TextBox"/>
 	ID="validator1"
 	/>
 <br/>
-<com:TJavascriptLogger />
-
-</com:TForm>
 </com:TContent>

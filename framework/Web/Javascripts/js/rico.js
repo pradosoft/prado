@@ -1793,62 +1793,61 @@ return 0;
 }
 }
 }};
-
 Prado.RicoLiveGrid=Class.create();
-Prado.RicoLiveGrid.prototype=Object.extend(Rico.LiveGrid.prototype,{initialize:function(_1,_2){
-this.options={tableClass:$(_1).className||"",loadingClass:$(_1).className||"",scrollerBorderRight:"1px solid #ababab",bufferTimeout:20000,sortAscendImg:"images/sort_asc.gif",sortDescendImg:"images/sort_desc.gif",sortImageWidth:9,sortImageHeight:5,ajaxSortURLParms:[],onRefreshComplete:null,requestParameters:null,inlineStyles:true,visibleRows:10,totalRows:0,initialOffset:0};
-Object.extend(this.options,_2||{});
-this.tableId=_1;
-this.table=$(_1);
+Prado.RicoLiveGrid.prototype=Object.extend(Rico.LiveGrid.prototype,{initialize:function(_391,_392){
+this.options={tableClass:$(_391).className||"",loadingClass:$(_391).className||"",scrollerBorderRight:"1px solid #ababab",bufferTimeout:20000,sortAscendImg:"images/sort_asc.gif",sortDescendImg:"images/sort_desc.gif",sortImageWidth:9,sortImageHeight:5,ajaxSortURLParms:[],onRefreshComplete:null,requestParameters:null,inlineStyles:true,visibleRows:10,totalRows:0,initialOffset:0};
+Object.extend(this.options,_392||{});
+this.tableId=_391;
+this.table=$(_391);
 this.addLiveGridHtml();
-var _3=this.table.rows[0].cells.length;
-this.metaData=new Rico.LiveGridMetaData(this.options.visibleRows,this.options.totalRows,_3,_2);
+var _393=this.table.rows[0].cells.length;
+this.metaData=new Rico.LiveGridMetaData(this.options.visibleRows,this.options.totalRows,_393,_392);
 this.buffer=new Rico.LiveGridBuffer(this.metaData);
-var _4=this.table.rows.length;
-this.viewPort=new Rico.GridViewPort(this.table,this.table.offsetHeight/_4,this.options.visibleRows,this.buffer,this);
+var _394=this.table.rows.length;
+this.viewPort=new Rico.GridViewPort(this.table,this.table.offsetHeight/_394,this.options.visibleRows,this.buffer,this);
 this.scroller=new Rico.LiveGridScroller(this,this.viewPort);
 this.options.sortHandler=this.sortHandler.bind(this);
-if($(_1+"_header")){
-this.sort=new Rico.LiveGridSort(_1+"_header",this.options);
+if($(_391+"_header")){
+this.sort=new Rico.LiveGridSort(_391+"_header",this.options);
 }
 this.processingRequest=null;
 this.unprocessedRequest=null;
 if(this.options.initialOffset>=0){
-var _5=this.options.initialOffset;
-this.scroller.moveScroll(_5);
-this.viewPort.scrollTo(this.scroller.rowToPixel(_5));
+var _395=this.options.initialOffset;
+this.scroller.moveScroll(_395);
+this.viewPort.scrollTo(this.scroller.rowToPixel(_395));
 if(this.options.sortCol){
-this.sortCol=_2.sortCol;
-this.sortDir=_2.sortDir;
+this.sortCol=_392.sortCol;
+this.sortDir=_392.sortDir;
 }
-var _6=this;
+var grid=this;
 setTimeout(function(){
-_6.requestContentRefresh(_5);
+grid.requestContentRefresh(_395);
 },100);
 }
-},fetchBuffer:function(_7){
-if(this.buffer.isInRange(_7)&&!this.buffer.isNearingLimit(_7)){
+},fetchBuffer:function(_397){
+if(this.buffer.isInRange(_397)&&!this.buffer.isNearingLimit(_397)){
 return;
 }
 if(this.processingRequest){
-this.unprocessedRequest=new Rico.LiveGridRequest(_7);
+this.unprocessedRequest=new Rico.LiveGridRequest(_397);
 return;
 }
-var _8=this.buffer.getFetchOffset(_7);
-this.processingRequest=new Rico.LiveGridRequest(_7);
-this.processingRequest.bufferOffset=_8;
-var _9=this.buffer.getFetchSize(_7);
-var _10=false;
-var _11={"page_size":_9,"offset":_8};
+var _398=this.buffer.getFetchOffset(_397);
+this.processingRequest=new Rico.LiveGridRequest(_397);
+this.processingRequest.bufferOffset=_398;
+var _399=this.buffer.getFetchSize(_397);
+var _400=false;
+var _401={"page_size":_399,"offset":_398};
 if(this.sortCol){
-Object.extend(_11,{"sort_col":this.sortCol,"sort_dir":this.sortDir});
+Object.extend(_401,{"sort_col":this.sortCol,"sort_dir":this.sortDir});
 }
-Prado.Callback(this.tableId,_11,this.ajaxUpdate.bind(this),this.options);
+Prado.Callback(this.tableId,_401,this.ajaxUpdate.bind(this),this.options);
 this.timeoutHandler=setTimeout(this.handleTimedOut.bind(this),this.options.bufferTimeout);
-},ajaxUpdate:function(_12,_13){
+},ajaxUpdate:function(_402,_403){
 try{
 clearTimeout(this.timeoutHandler);
-this.buffer.update(_12,this.processingRequest.bufferOffset);
+this.buffer.update(_402,this.processingRequest.bufferOffset);
 this.viewPort.bufferChanged();
 }
 catch(err){
@@ -1858,42 +1857,42 @@ this.processingRequest=null;
 }
 this.processQueuedRequest();
 }});
-Object.extend(Rico.LiveGridBuffer.prototype,{update:function(_14,_15){
+Object.extend(Rico.LiveGridBuffer.prototype,{update:function(_404,_405){
 if(this.rows.length==0){
-this.rows=_14;
+this.rows=_404;
 this.size=this.rows.length;
-this.startPos=_15;
+this.startPos=_405;
 return;
 }
-if(_15>this.startPos){
-if(this.startPos+this.rows.length<_15){
-this.rows=_14;
-this.startPos=_15;
+if(_405>this.startPos){
+if(this.startPos+this.rows.length<_405){
+this.rows=_404;
+this.startPos=_405;
 }else{
-this.rows=this.rows.concat(_14.slice(0,_14.length));
+this.rows=this.rows.concat(_404.slice(0,_404.length));
 if(this.rows.length>this.maxBufferSize){
-var _16=this.rows.length;
+var _406=this.rows.length;
 this.rows=this.rows.slice(this.rows.length-this.maxBufferSize,this.rows.length);
-this.startPos=this.startPos+(_16-this.rows.length);
+this.startPos=this.startPos+(_406-this.rows.length);
 }
 }
 }else{
-if(_15+_14.length<this.startPos){
-this.rows=_14;
+if(_405+_404.length<this.startPos){
+this.rows=_404;
 }else{
-this.rows=_14.slice(0,this.startPos).concat(this.rows);
+this.rows=_404.slice(0,this.startPos).concat(this.rows);
 if(this.rows.length>this.maxBufferSize){
 this.rows=this.rows.slice(0,this.maxBufferSize);
 }
 }
-this.startPos=_15;
+this.startPos=_405;
 }
 this.size=this.rows.length;
 }});
-Object.extend(Rico.GridViewPort.prototype,{populateRow:function(_17,row){
-if(isdef(_17)){
+Object.extend(Rico.GridViewPort.prototype,{populateRow:function(_407,row){
+if(isdef(_407)){
 for(var j=0;j<row.length;j++){
-_17.cells[j].innerHTML=row[j];
+_407.cells[j].innerHTML=row[j];
 }
 }
 }});

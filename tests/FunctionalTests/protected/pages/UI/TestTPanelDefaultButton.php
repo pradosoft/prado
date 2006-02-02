@@ -26,8 +26,19 @@ class DefaultButtonTest extends SeleniumTestCase
 
 	function testClick()
 	{
-		$this->clickAndWait("ctl0_Content_Button2");
-		$this->assertTextPresent("You have clicked on 'button2'.");
+		$this->verifyTitle("Test DefaultButton On Panel", "");
+		$this->assertTextNotPresent("You have clicked on", "");
+		$this->clickAndWait("link=button 3", "");
+		$this->verifyTextPresent("You have clicked on 'button 3'.", "");
+		$this->clickAndWait("//input[@type='submit' and @value='button1']", "");
+		$this->verifyTextPresent("You have clicked on 'button1'. ", "");
+		$this->clickAndWait("//input[@type='submit' and @value='button2']", "");
+		$this->verifyTextPresent("You have clicked on 'button2'. ", "");
+		$this->clickAndWait("link=button 3", "");
+		$this->verifyTextPresent("You have clicked on 'button 3'. ", "");
+		$this->click("ctl0_Content_check1", "");
+		$this->clickAndWait("//input[@type='submit' and @value='button2']", "");
+		$this->verifyTextPresent("You have clicked on 'button2'. ", "");
 	}
 }
 ?>

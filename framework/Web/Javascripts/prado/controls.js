@@ -32,9 +32,33 @@ Prado.WebUI.TButton = Prado.WebUI.createPostBackComponent();
 
 Prado.WebUI.ClickableComponent = Prado.WebUI.createPostBackComponent(
 {
+	_elementOnClick : null, //capture the element's onclick function
+
 	onInit : function(options)
 	{
-		Event.observe(this.element, "click", Prado.PostBack.bindEvent(this,options));
+		if(isFunction(this.element.onclick))
+		{
+			this._elementOnClick = this.element.onclick;
+			this.element.onclick = null;
+		}
+		Event.observe(this.element, "click", this.onClick.bindEvent(this,options));
+	},
+
+	onClick : function(event, options)
+	{
+		var src = Event.element(event);
+		var doPostBack = true;
+		var onclicked = null;
+		if(this._elementOnClick)
+		{
+			var onclicked = this._elementOnClick(event);
+			if(isBoolean(onclicked))
+				doPostBack = onclicked;
+		}
+		if(doPostBack)
+			Prado.PostBack(event,options);
+		if(isBoolean(onclicked) && !onclicked)
+			Event.stop(event);
 	}
 });
 
@@ -49,7 +73,7 @@ Prado.WebUI.TTextBox = Prado.WebUI.createPostBackComponent(
 	onInit : function(options)
 	{
 		if(options['TextMode'] != 'MultiLine')
-			Event.observe(this.element, "down", this.handleReturnKey.bind(this));
+			Event.observe(this.element, "keydown", this.handleReturnKey.bind(this));
 		Event.observe(this.element, "change", Prado.PostBack.bindEvent(this,options));
 	},
 

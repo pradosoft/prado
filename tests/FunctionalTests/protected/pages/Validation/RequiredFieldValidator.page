@@ -1,6 +1,5 @@
 <%@ Title="Basic TRequiredFieldValidator" %>
 <com:TContent ID="Content">
-<com:TForm>
 <h1>Basic TRequiredFieldValidator Test1</h1>
 	<com:TTextBox ID="text1" />
 	<com:TRequiredFieldValidator 
@@ -11,6 +10,4 @@
 		ErrorMessage="*" />
 	<com:TButton ID="button1" Text="Click" />
 	<com:TTextBox ID="text2" />
-	<com:TJavascriptLogger />
-</com:TForm>
 </com:TContent>

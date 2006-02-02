@@ -1,0 +1,11 @@
+<%@ Title="InitialValue Validation Test" %>
+<com:TContent ID="Content">
+<h1>InitialValue Validation Test</h1>
+<com:TTextBox ID="text1" />
+<com:TRequiredFieldValidator ID="validator1"
+	ControlToValidate="text1"
+	InitialValue="test"
+	ErrorMessage="Text must not equal to 'test'" />
+
+<com:TButton ID="submit" Text="Submit!" />
+</com:TContent>

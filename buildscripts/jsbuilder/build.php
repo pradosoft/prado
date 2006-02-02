@@ -143,14 +143,15 @@ foreach($libraries as $libFile => $sourceFiles)
 		$sourceFile=SOURCE_DIR.'/'.$sourceFile;
 		if(!is_file($sourceFile))
 			echo "Source file not found: $sourceFile\n";
-		$tempFile=$sourceFile.'.tmp';
-		$command=sprintf(COMPRESS_COMMAND,$sourceFile,$tempFile);
-		echo "...adding $sourceFile\n".
-		system($command);
-		$contents.=file_get_contents($tempFile);
-		@unlink($tempFile);
+		
+		echo "...adding $sourceFile\n";
+		$contents.=file_get_contents($sourceFile)."\n\n";		
 	}
-	file_put_contents($libFile,$contents);
+	$tempFile=$libFile.'.tmp';
+	file_put_contents($tempFile,$contents);
+	$command=sprintf(COMPRESS_COMMAND,$tempFile,$libFile);
+	system($command);
+	@unlink($tempFile);
 }
 
 ?>

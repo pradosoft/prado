@@ -720,10 +720,14 @@ tests/FunctionalTests/protected/pages/UI/TestTPanelDefaultButton.page -text
 tests/FunctionalTests/protected/pages/UI/TestTPanelDefaultButton.php -text
 tests/FunctionalTests/protected/pages/UI/testHtmlArea.page -text
 tests/FunctionalTests/protected/pages/UI/testLabeledTextBox.page -text
+tests/FunctionalTests/protected/pages/UI/testOnClickAttribute.page -text
+tests/FunctionalTests/protected/pages/UI/testOnClickAttribute.php -text
 tests/FunctionalTests/protected/pages/Validation/CheckBox.page -text
 tests/FunctionalTests/protected/pages/Validation/CheckBox.php -text
 tests/FunctionalTests/protected/pages/Validation/RequiredFieldValidator.page -text
 tests/FunctionalTests/protected/pages/Validation/RequiredFieldValidator.php -text
+tests/FunctionalTests/protected/pages/Validation/testInitialValueRequired.page -text
+tests/FunctionalTests/protected/pages/Validation/testInitialValueRequired.php -text
 tests/FunctionalTests/protected/pages/ViewSource.page -text
 tests/FunctionalTests/protected/pages/ViewSource.php -text
 tests/FunctionalTests/protected/pages/config.xml -text

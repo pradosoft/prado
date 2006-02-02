@@ -20,9 +20,10 @@
 	</style>
 </com:THead>
 <body>
-
+<com:TForm>
 <com:TContentPlaceHolder ID="Content" />
-
+<com:TJavascriptLogger />
+</com:TForm>
 <div class="w3c">
 <a href="http://validator.w3.org/check?uri=referer">
 		Validate XHTML 1.0
