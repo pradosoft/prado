@@ -1674,6 +1674,11 @@ Prado.PostBack=function(_378,_379){
 var form=$(_379["FormID"]);
 var _380=true;
 if(_379["CausesValidation"]&&Prado.Validation){
+if(_379["ValidationGroup"]){
+Prado.Validation.SetActiveGroup(Event.element(_378),_379["ValidationGroup"]);
+}else{
+Prado.Validation.SetActiveGroup(null,null);
+}
 if(Prado.Validation.IsValid(form)==false){
 return;
 }
@@ -1874,7 +1879,7 @@ Prado.WebUI.TLinkButton=Prado.WebUI.ClickableComponent;
 Prado.WebUI.TImageButton=Prado.WebUI.ClickableComponent;
 Prado.WebUI.TCheckBox=Prado.WebUI.ClickableComponent;
 Prado.WebUI.TBulletedList=Prado.WebUI.ClickableComponent;
-Prado.WebUI.TRadioButton=Prado.WebUI.ClickableComponent;
+Prado.WebUI.TRadioButton=Prado.WebUI.createPostBackComponent(Prado.WebUI.ClickableComponent.prototype);
 Prado.WebUI.TRadioButton.prototype.onRadioButtonInitialize=Prado.WebUI.TRadioButton.prototype.initialize;
 Object.extend(Prado.WebUI.TRadioButton.prototype,{initialize:function(_430){
 this.element=$(_430["ID"]);

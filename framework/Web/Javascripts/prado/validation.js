@@ -243,6 +243,12 @@ Prado.Validation.AddTarget = function(id, group)
 	}
 }
 
+Prado.Validation.SetActiveGroup = function(target, group)
+{
+	Prado.Validation.ActiveTarget = target;
+	Prado.Validation.CurrentTargetGroup = group;
+}
+
 /**
  * Associate a list of validators to a particular control element.
  * This essentially allows a set of validators to be grouped to a particular button.

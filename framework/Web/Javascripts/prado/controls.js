@@ -8,8 +8,9 @@ Object.extend(Prado.WebUI.PostBackControl.prototype,
 	{
 		this.element = $(options['ID']);
 		if(options['CausesValidation'] && Prado.Validation)
+		{
 			Prado.Validation.AddTarget(options['ID'], options['ValidationGroup']);
-
+		}
 		//TODO: what do the following options do?
 		//options['PostBackUrl']
 		//options['ClientSubmit']
@@ -75,7 +76,7 @@ Prado.WebUI.TBulletedList = Prado.WebUI.ClickableComponent;
 /**
  * Radio button, only initialize if not already checked.
  */
-Prado.WebUI.TRadioButton = Prado.WebUI.ClickableComponent;
+Prado.WebUI.TRadioButton = Prado.WebUI.createPostBackComponent(Prado.WebUI.ClickableComponent.prototype);
 Prado.WebUI.TRadioButton.prototype.onRadioButtonInitialize = Prado.WebUI.TRadioButton.prototype.initialize;
 Object.extend(Prado.WebUI.TRadioButton.prototype,
 {

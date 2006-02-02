@@ -1,0 +1,17 @@
+<com:TContent ID="Content">
+<h2 class="defect">TCheckBoxList demo js error on IE</h2>
+
+<com:TTextBox ID="TextBox" />
+<com:TRequiredFieldValidator
+	ControlToValidate="TextBox"
+	ErrorMessage="You must enter a value"
+	Display="Dynamic"
+	ValidationGroup="Group2"
+	/>
+<com:TCheckBoxList AutoPostBack="true" ValidationGroup="Group2">
+  <com:TListItem Text="Agree" />
+  <com:TListItem Text="Disagree" />
+</com:TCheckBoxList>
+
+
+</com:TContent>

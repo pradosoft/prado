@@ -462,6 +462,12 @@ class SeleniumTestCase extends UnitTestCase
 		parent::__construct();
 	}
 
+	function getPage($class)
+	{
+		$info = new ReflectionClass($class);
+		return Prado::getApplication()->getTestPage($info->getFileName());
+	}
+
 	function __call($func, $args)
 	{
 		if(count($args) == 0)

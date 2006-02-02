@@ -356,7 +356,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 			$writer->addAttribute('disabled','disabled');
 
 		$page=$this->getPage();
-		if($this->getAutoPostBack() && $page->getClientSupportsJavaScript())
+		if($this->getEnabled(true) && $this->getAutoPostBack() && $page->getClientSupportsJavaScript())
 			$page->getClientScript()->registerPostBackControl($this);
 
 		if(($accesskey=$this->getAccessKey())!=='')

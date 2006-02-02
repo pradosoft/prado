@@ -106,14 +106,10 @@ abstract class TListControl extends TDataBoundControl
 		$page->ensureRenderInForm($this);
 		if($this->getIsMultiSelect())
 			$writer->addAttribute('multiple','multiple');
-		if($this->getAutoPostBack() && $page->getClientSupportsJavaScript())
+		if($this->getEnabled(true) && $this->getAutoPostBack() && $page->getClientSupportsJavaScript())
 		{
 			$writer->addAttribute('id',$this->getClientID());
 			$this->getPage()->getClientScript()->registerPostBackControl($this);
-			/*$options = $this->getAutoPostBackOptions();
-			$scripts = $this->getPage()->getClientScript();
-			$postback = $scripts->getPostBackEventReference($this,'',$options,false);
-			$scripts->registerClientEvent($this, "change", $postback);*/
 		}
 		if($this->getEnabled(true) && !$this->getEnabled())
 			$writer->addAttribute('disabled','disabled');
@@ -125,15 +121,6 @@ abstract class TListControl extends TDataBoundControl
 	 */
 	public function getPostBackOptions()
 	{
-/*		$option=new TPostBackOptions();
-		$group = $this->getValidationGroup();
-		$hasValidators = $this->getPage()->getValidators($group)->getCount()>0;
-		if($this->getCausesValidation() && $hasValidators)
-		{
-			$option->setPerformValidation(true);
-			$option->setValidationGroup($group);
-		}
-		$option->setAutoPostBack(true);*/
 		$options['CausesValidation'] = $this->getCausesValidation();
 		$options['ValidationGroup'] = $this->getValidationGroup();
 		$options['EventTarget'] = $this->getUniqueID();

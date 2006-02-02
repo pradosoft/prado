@@ -719,6 +719,8 @@ tests/FunctionalTests/protected/pages/TicketTestPage.php -text
 tests/FunctionalTests/protected/pages/TicketTestPage.tpl -text
 tests/FunctionalTests/protected/pages/Tickets/Ticket_21.page -text
 tests/FunctionalTests/protected/pages/Tickets/Ticket_21.php -text
+tests/FunctionalTests/protected/pages/Tickets/Ticket_27.page -text
+tests/FunctionalTests/protected/pages/Tickets/Ticket_27.php -text
 tests/FunctionalTests/protected/pages/Tickets/config.xml -text
 tests/FunctionalTests/protected/pages/UI/DatePicker.page -text
 tests/FunctionalTests/protected/pages/UI/LabeledTextBox.php -text
