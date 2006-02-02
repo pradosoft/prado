@@ -305,10 +305,10 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	/**
 	 * Saves item count in viewstate.
 	 * This method is invoked right before control state is to be saved.
-	 * @param mixed event parameter
 	 */
-	public function onSaveState($param)
+	public function saveState()
 	{
+		parent::saveState();
 		if($this->_items)
 			$this->setViewState('ItemCount',$this->_items->getCount(),0);
 		else
@@ -318,10 +318,10 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	/**
 	 * Loads item count information from viewstate.
 	 * This method is invoked right after control state is loaded.
-	 * @param mixed event parameter
 	 */
-	public function onLoadState($param)
+	public function loadState()
 	{
+		parent::loadState();
 		if(!$this->getIsDataBound())
 			$this->restoreItemsFromViewState();
 		$this->clearViewState('ItemCount');

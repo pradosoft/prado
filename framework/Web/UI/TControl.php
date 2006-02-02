@@ -1267,22 +1267,18 @@ class TControl extends TComponent
 	 * This method is invoked when control state is to be saved.
 	 * You can override this method to do last step state saving.
 	 * Parent implementation must be invoked.
-	 * @param TEventParameter event parameter
 	 */
-	public function onSaveState($param)
+	public function saveState()
 	{
-		$this->raiseEvent('OnSaveState',$this,$param);
 	}
 
 	/**
 	 * This method is invoked right after the control has loaded its state.
 	 * You can override this method to initialize data from the control state.
 	 * Parent implementation must be invoked.
-	 * @param TEventParameter
 	 */
-	public function onLoadState($param)
+	public function loadState()
 	{
-		$this->raiseEvent('OnLoadState',$this,$param);
 	}
 
 	/**
@@ -1334,10 +1330,10 @@ class TControl extends TComponent
 			if(!empty($state))
 				$this->_rf[self::RF_CHILD_STATE]=&$state;
 			$this->_stage=self::CS_STATE_LOADED;
-			$this->onLoadState(null);
 		}
-		else  // no state to load and thus no need onLoadState()
+		else
 			$this->_stage=self::CS_STATE_LOADED;
+		$this->loadState();
 	}
 
 	/**
@@ -1347,7 +1343,7 @@ class TControl extends TComponent
 	 */
 	final protected function &saveStateRecursive($needViewState=true)
 	{
-		$this->onSaveState(null);
+		$this->saveState();
 		$needViewState=($needViewState && !($this->_flags & self::IS_DISABLE_VIEWSTATE));
 		$state=array();
 		if($this->getHasControls())

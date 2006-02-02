@@ -92,7 +92,7 @@ To manually specify columns, set <tt>AutoGenerateColumns</tt> to false, and spec
 &lt;/com:TDataGrid&gt;
 </com:TTextHighlighter>
 <p>
-Note, if <tt>AutoGenerateColumns</tt> is true and there are manually specified columns, the automatically generated columns will be displayed first. Also note, the datagrid's <tt>Columns</tt> property only contains manually specified columns.
+Note, if <tt>AutoGenerateColumns</tt> is true and there are manually specified columns, the automatically generated columns will be appended to the manually specified columns. Also note, the datagrid's <tt>Columns</tt> property only contains manually specified columns.
 </p>
 <com:RunBar PagePath="Controls.Samples.TDataGrid.Sample2" />
 

@@ -1,10 +1,11 @@
 <com:TContent ID="body">
 
 <h1>TDataGrid Sample 1</h1>
-<h2>Automatically Generated Columns</h2>
+<h2>Using Automatically Generated Columns</h2>
 
 <com:TDataGrid
 	ID="DataGrid"
+	EnableViewState="false"
 	HeaderStyle.BackColor="silver"
 	ItemStyle.BackColor="lightblue"
 	ItemStyle.Font.Italic="true"

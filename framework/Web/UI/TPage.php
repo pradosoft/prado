@@ -525,11 +525,10 @@ class TPage extends TTemplateControl
 	 * This method is invoked when control state is to be saved.
 	 * You can override this method to do last step state saving.
 	 * Parent implementation must be invoked.
-	 * @param TEventParameter event parameter
 	 */
-	public function onSaveState($param)
+	public function saveState()
 	{
-		parent::onSaveState($param);
+		parent::saveState();
 		$this->setViewState('ControlsRequiringPostBack',$this->_controlsRegisteredForPostData,array());
 	}
 
@@ -537,12 +536,11 @@ class TPage extends TTemplateControl
 	 * This method is invoked right after the control has loaded its state.
 	 * You can override this method to initialize data from the control state.
 	 * Parent implementation must be invoked.
-	 * @param TEventParameter
 	 */
-	public function onLoadState($param)
+	public function loadState()
 	{
+		parent::loadState();
 		$this->_controlsRequiringPostData=$this->getViewState('ControlsRequiringPostBack',array());
-		parent::onLoadState($param);
 	}
 
 	/**
