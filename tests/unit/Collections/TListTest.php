@@ -49,14 +49,14 @@ class TListTest extends PHPUnit2_Framework_TestCase {
     $this->assertEquals(3,$this->list->indexOf($this->item3));
   }
 
-  public function testInsert() {
-    $this->list->insert(0,$this->item3);
+  public function testInsertAt() {
+    $this->list->insertAt(0,$this->item3);
     $this->assertEquals(3,$this->list->getCount());
     $this->assertEquals(2,$this->list->indexOf($this->item2));
     $this->assertEquals(0,$this->list->indexOf($this->item3));
     $this->assertEquals(1,$this->list->indexOf($this->item1));
     try {
-      $this->list->insert(4,$this->item3);
+      $this->list->insertAt(4,$this->item3);
       $this->fail('exception not raised when adding item at an out-of-range index');
     } catch(TInvalidDataValueException $e) {
 
