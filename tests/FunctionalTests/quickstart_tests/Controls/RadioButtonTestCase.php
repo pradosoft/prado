@@ -18,7 +18,7 @@ class RadioButtonTestCase extends SeleniumTestCase
 		$this->verifyTextNotPresent("I'm clicked");
 		$this->clickAndWait("//input[@name='ctl0\$body\$ctl2' and @value='ctl0\$body\$ctl2']", "");
 		$this->verifyTextPresent("I'm clicked");
-		$this->clickAndWait("//input[@name='ctl0\$body\$ctl2' and @value='ctl0\$body\$ctl2']", "");
+		$this->click("//input[@name='ctl0\$body\$ctl2' and @value='ctl0\$body\$ctl2']", "");
 		$this->verifyTextPresent("I'm clicked");
 
 		// a radiobutton causing validation on a textbox
