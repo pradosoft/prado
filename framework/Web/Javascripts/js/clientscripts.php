@@ -28,7 +28,8 @@ else
 
 // Check for gzip header or northon internet securities
 if ((in_array('gzip', $encodings) || isset($_SERVER['---------------'])) 
-		&& function_exists('ob_gzhandler') && !ini_get('zlib.output_compression'))
+		&& function_exists('ob_gzhandler') && !ini_get('zlib.output_compression') 
+		&& ini_get('output_handler') != 'ob_gzhandler')
 	ob_start("ob_gzhandler");
 
 // Output rest of headers
