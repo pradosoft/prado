@@ -993,7 +993,10 @@ tests/UnitTests/simpletest/xml.php -text
 tests/unit/Collections/TListTest.php -text
 tests/unit/Collections/TMapTest.php -text
 tests/unit/I18N/core/CultureInfoTest.php -text
+tests/unit/I18N/core/DateFormatTest.php -text
+tests/unit/I18N/core/DateTimeFormatInfoTest.php -text
 tests/unit/I18N/core/NumberFormatInfoTest.php -text
 tests/unit/I18N/core/NumberFormatTest.php -text
 tests/unit/TComponentTest.php -text
+tests/unit/Web/UI/WebControls/TLabelTest.php -text
 tests/unit/phpunit2.php -text
