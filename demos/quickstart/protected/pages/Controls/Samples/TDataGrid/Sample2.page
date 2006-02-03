@@ -1,0 +1,25 @@
+<com:TContent ID="body">
+
+<h1>TDataGrid Sample 2</h1>
+<h2>Using Manually Specified Columns</h2>
+
+<com:TDataGrid
+	ID="DataGrid"
+	AutoGenerateColumns="false"
+	EnableViewState="false"
+	HeaderStyle.BackColor="silver"
+	ItemStyle.BackColor="lightblue"
+	ItemStyle.Font.Italic="true"
+	AlternatingItemStyle.BackColor="lightgreen">
+
+	<com:TBoundColumn
+		ItemStyle.BackColor="silver"
+		HeaderText="Name"
+		DataField="name"
+		/>
+	<com:TCheckBoxColumn
+		HeaderText="Imported"
+		DataField="imported" />
+</com:TDataGrid>
+
+</com:TContent>

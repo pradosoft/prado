@@ -902,63 +902,74 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 */
 	protected function applyItemStyles()
 	{
+		$itemStyle=$this->getViewState('ItemStyle',null);
+
+		$alternatingItemStyle=new TTableItemStyle($itemStyle);
+		if(($style=$this->getViewState('AlternatingItemStyle',null))!==null)
+			$alternatingItemStyle->mergeWith($style);
+
+		$selectedItemStyle=$this->getViewState('SelectedItemStyle',null);
+
+		$editItemStyle=new TTableItemStyle($selectedItemStyle);
+		if(($style=$this->getViewState('EditItemStyle',null))!==null)
+			$editItemStyle->copyFrom($style);
+
 		$headerStyle=$this->getViewState('HeaderStyle',null);
 		$footerStyle=$this->getViewState('FooterStyle',null);
+		$pagerStyle=$this->getViewState('PagerStyle',null);
 		$separatorStyle=$this->getViewState('SeparatorStyle',null);
-		$itemStyle=$this->getViewState('ItemStyle',null);
-		$alternatingItemStyle=$this->getViewState('AlternatingItemStyle',null);
-		if($itemStyle!==null)
-		{
-			if($alternatingItemStyle===null)
-				$alternatingItemStyle=new TTableItemStyle;
-			$alternatingItemStyle->mergeWith($itemStyle);
-		}
-		$selectedItemStyle=$this->getViewState('SelectedItemStyle',null);
-		if($alternatingItemStyle!==null)
-		{
-			if($selectedItemStyle===null)
-				$selectedItemStyle=new TTableItemStyle;
-			$selectedItemStyle->mergeWith($alternatingItemStyle);
-		}
-		$editItemStyle=$this->getViewState('EditItemStyle',null);
-		if($selectedItemStyle!==null)
-		{
-			if($editItemStyle===null)
-				$editItemStyle=new TTableItemStyle;
-			$editItemStyle->mergeWith($selectedItemStyle);
-		}
 
-		foreach($this->getControls() as $control)
+		foreach($this->getControls() as $index=>$item)
 		{
-			switch($control->getItemType())
+			switch($item->getItemType())
 			{
 				case 'Header':
 					if($headerStyle)
-						$control->getStyle()->mergeWith($headerStyle);
+						$item->getStyle()->mergeWith($headerStyle);
 					break;
 				case 'Footer':
 					if($footerStyle)
-						$control->getStyle()->mergeWith($footerStyle);
+						$item->getStyle()->mergeWith($footerStyle);
 					break;
 				case 'Separator':
 					if($separatorStyle)
-						$control->getStyle()->mergeWith($separatorStyle);
+						$item->getStyle()->mergeWith($separatorStyle);
 					break;
 				case 'Item':
 					if($itemStyle)
-						$control->getStyle()->mergeWith($itemStyle);
+						$item->getStyle()->mergeWith($itemStyle);
 					break;
 				case 'AlternatingItem':
 					if($alternatingItemStyle)
-						$control->getStyle()->mergeWith($alternatingItemStyle);
+						$item->getStyle()->mergeWith($alternatingItemStyle);
 					break;
 				case 'SelectedItem':
+					if($index % 2==1)
+					{
+						if($itemStyle)
+							$item->getStyle()->mergeWith($itemStyle);
+					}
+					else
+					{
+						if($alternatingItemStyle)
+							$item->getStyle()->mergeWith($alternatingItemStyle);
+					}
 					if($selectedItemStyle)
-						$control->getStyle()->mergeWith($selectedItemStyle);
+						$item->getStyle()->mergeWith($selectedItemStyle);
 					break;
 				case 'EditItem':
+					if($index % 2==1)
+					{
+						if($itemStyle)
+							$item->getStyle()->mergeWith($itemStyle);
+					}
+					else
+					{
+						if($alternatingItemStyle)
+							$item->getStyle()->mergeWith($alternatingItemStyle);
+					}
 					if($editItemStyle)
-						$control->getStyle()->mergeWith($editItemStyle);
+						$item->getStyle()->mergeWith($editItemStyle);
 					break;
 				default:
 					break;

@@ -209,27 +209,27 @@ class TFont extends TComponent
 
 	/**
 	 * Merges the font with a new one.
-	 * If a style field is not set in the current style but set in the new style
-	 * it will take the value from the new style.
+	 * If a font field is set in the new font, the current font field
+	 * will be overwritten.
 	 * @param TFont the new font
 	 */
 	public function mergeWith($font)
 	{
 		if($font===null || $font->_flags===0)
 			return;
-		if(($font->_flags & self::IS_SET_BOLD) && !($this->_flags & self::IS_SET_BOLD))
+		if($font->_flags & self::IS_SET_BOLD)
 			$this->setBold($font->getBold());
-		if(($font->_flags & self::IS_SET_ITALIC) && !($this->_flags & self::IS_SET_ITALIC))
+		if($font->_flags & self::IS_SET_ITALIC)
 			$this->setItalic($font->getItalic());
-		if(($font->_flags & self::IS_SET_OVERLINE) && !($this->_flags & self::IS_SET_OVERLINE))
+		if($font->_flags & self::IS_SET_OVERLINE)
 			$this->setOverline($font->getOverline());
-		if(($font->_flags & self::IS_SET_STRIKEOUT) && !($this->_flags & self::IS_SET_STRIKEOUT))
+		if($font->_flags & self::IS_SET_STRIKEOUT)
 			$this->setStrikeout($font->getStrikeout());
-		if(($font->_flags & self::IS_SET_UNDERLINE) && !($this->_flags & self::IS_SET_UNDERLINE))
+		if($font->_flags & self::IS_SET_UNDERLINE)
 			$this->setUnderline($font->getUnderline());
-		if(($font->_flags & self::IS_SET_SIZE) && !($this->_flags & self::IS_SET_SIZE))
+		if($font->_flags & self::IS_SET_SIZE)
 			$this->setSize($font->getSize());
-		if(($font->_flags & self::IS_SET_NAME) && !($this->_flags & self::IS_SET_NAME))
+		if($font->_flags & self::IS_SET_NAME)
 			$this->setName($font->getName());
 	}
 

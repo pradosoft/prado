@@ -442,11 +442,11 @@ class TDataGrid extends TBaseDataList
 	}
 
 	/**
-	 * @return boolean whether datagrid columns should be automatically generated Defaults to false.
+	 * @return boolean whether datagrid columns should be automatically generated. Defaults to true.
 	 */
 	public function getAutoGenerateColumns()
 	{
-		return $this->getViewState('AutoGenerateColumns',false);
+		return $this->getViewState('AutoGenerateColumns',true);
 	}
 
 	/**
@@ -454,7 +454,7 @@ class TDataGrid extends TBaseDataList
 	 */
 	public function setAutoGenerateColumns($value)
 	{
-		$this->setViewState('AutoGenerateColumns',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('AutoGenerateColumns',TPropertyValue::ensureBoolean($value),true);
 	}
 
 	/**
@@ -1157,33 +1157,22 @@ class TDataGrid extends TBaseDataList
 	 */
 	protected function applyItemStyles()
 	{
+		$itemStyle=$this->getViewState('ItemStyle',null);
+
+		$alternatingItemStyle=new TTableItemStyle($itemStyle);
+		if(($style=$this->getViewState('AlternatingItemStyle',null))!==null)
+			$alternatingItemStyle->mergeWith($style);
+
+		$selectedItemStyle=$this->getViewState('SelectedItemStyle',null);
+
+		$editItemStyle=new TTableItemStyle($selectedItemStyle);
+		if(($style=$this->getViewState('EditItemStyle',null))!==null)
+			$editItemStyle->copyFrom($style);
+
 		$headerStyle=$this->getViewState('HeaderStyle',null);
 		$footerStyle=$this->getViewState('FooterStyle',null);
 		$pagerStyle=$this->getViewState('PagerStyle',null);
 		$separatorStyle=$this->getViewState('SeparatorStyle',null);
-		$itemStyle=$this->getViewState('ItemStyle',null);
-		$alternatingItemStyle=$this->getViewState('AlternatingItemStyle',null);
-		if($itemStyle!==null)
-		{
-			if($alternatingItemStyle===null)
-				$alternatingItemStyle=$itemStyle;
-			else
-				$alternatingItemStyle->mergeWith($itemStyle);
-		}
-		$selectedItemStyle=$this->getViewState('SelectedItemStyle',null);
-		if($alternatingItemStyle!==null)
-		{
-			if($selectedItemStyle===null)
-				$selectedItemStyle=new TTableItemStyle;
-			$selectedItemStyle->mergeWith($alternatingItemStyle);
-		}
-		$editItemStyle=$this->getViewState('EditItemStyle',null);
-		if($selectedItemStyle!==null)
-		{
-			if($editItemStyle===null)
-				$editItemStyle=new TTableItemStyle;
-			$editItemStyle->mergeWith($selectedItemStyle);
-		}
 
 		foreach($this->getControls() as $index=>$item)
 		{
@@ -1215,10 +1204,30 @@ class TDataGrid extends TBaseDataList
 						$item->getStyle()->mergeWith($alternatingItemStyle);
 					break;
 				case 'SelectedItem':
+					if($index % 2==1)
+					{
+						if($itemStyle)
+							$item->getStyle()->mergeWith($itemStyle);
+					}
+					else
+					{
+						if($alternatingItemStyle)
+							$item->getStyle()->mergeWith($alternatingItemStyle);
+					}
 					if($selectedItemStyle)
 						$item->getStyle()->mergeWith($selectedItemStyle);
 					break;
 				case 'EditItem':
+					if($index % 2==1)
+					{
+						if($itemStyle)
+							$item->getStyle()->mergeWith($itemStyle);
+					}
+					else
+					{
+						if($alternatingItemStyle)
+							$item->getStyle()->mergeWith($alternatingItemStyle);
+					}
 					if($editItemStyle)
 						$item->getStyle()->mergeWith($editItemStyle);
 					break;
@@ -1761,8 +1770,8 @@ class TDataGridPagerStyle extends TTableItemStyle
 
 	/**
 	 * Merges with a style.
-	 * If a style field is not set in the current style but set in the new style
-	 * it will take the value from the new style.
+	 * If a style field is set in the new style, the current style field
+	 * will be overwritten.
 	 * This method overrides the parent implementation by
 	 * merging with additional TDataGridPagerStyle specific attributes.
 	 * @param TStyle the new style
@@ -1772,17 +1781,17 @@ class TDataGridPagerStyle extends TTableItemStyle
 		parent::mergeWith($style);
 		if($style instanceof TDataGridPagerStyle)
 		{
-			if($style->_visible!==null && $this->_visible===null)
+			if($style->_visible!==null)
 				$this->_visible=$style->_visible;
-			if($style->_position!==null && $this->_position===null)
+			if($style->_position!==null)
 				$this->_position=$style->_position;
-			if($style->_buttonCount!==null && $this->_buttonCount===null)
+			if($style->_buttonCount!==null)
 				$this->_buttonCount=$style->_buttonCount;
-			if($style->_prevText!==null && $this->_prevText===null)
+			if($style->_prevText!==null)
 				$this->_prevText=$style->_prevText;
-			if($style->_nextText!==null && $this->_nextText===null)
+			if($style->_nextText!==null)
 				$this->_nextText=$style->_nextText;
-			if($style->_mode!==null && $this->_mode===null)
+			if($style->_mode!==null)
 				$this->_mode=$style->_mode;
 		}
 	}

@@ -118,6 +118,8 @@ demos/quickstart/protected/pages/Controls/Samples/TCustomValidator/Home.page -te
 demos/quickstart/protected/pages/Controls/Samples/TCustomValidator/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TDataGrid/Sample1.page -text
 demos/quickstart/protected/pages/Controls/Samples/TDataGrid/Sample1.php -text
+demos/quickstart/protected/pages/Controls/Samples/TDataGrid/Sample2.page -text
+demos/quickstart/protected/pages/Controls/Samples/TDataGrid/Sample2.php -text
 demos/quickstart/protected/pages/Controls/Samples/TDataList/Sample1.page -text
 demos/quickstart/protected/pages/Controls/Samples/TDataList/Sample1.php -text
 demos/quickstart/protected/pages/Controls/Samples/TDataList/Sample2.page -text
