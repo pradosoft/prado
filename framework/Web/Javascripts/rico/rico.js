@@ -515,7 +515,7 @@ var ajaxEngine = new Rico.AjaxEngine();
 */
 
 //-------------------- ricoColor.js
-Rico.Color = Class.create();
+/*Rico.Color = Class.create();
 
 Rico.Color.prototype = {
 
@@ -619,7 +619,7 @@ Rico.Color.createFromHex = function(hexCode) {
 /**
  * Factory method for creating a color from the background of
  * an HTML element.
- */
+ *
 Rico.Color.createColorFromBackground = function(elem) {
 
    var actualColor = RicoUtil.getElementsComputedStyle($(elem), "backgroundColor", "background-color");
@@ -744,7 +744,7 @@ Rico.Color.RGBtoHSB = function(r, g, b) {
 
    return { h : hue, s : saturation, b : brightness };
 }
-
+*/
 
 //-------------------- ricoCorner.js
 Rico.Corner = {

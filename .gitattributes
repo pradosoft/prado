@@ -616,6 +616,7 @@ framework/Web/Javascripts/prototype/position.js -text
 framework/Web/Javascripts/prototype/prototype.js -text
 framework/Web/Javascripts/prototype/range.js -text
 framework/Web/Javascripts/prototype/string.js -text
+framework/Web/Javascripts/rico/colors.js -text
 framework/Web/Javascripts/rico/extension.js -text
 framework/Web/Javascripts/rico/rico.js -text
 framework/Web/Services/TPageService.php -text
