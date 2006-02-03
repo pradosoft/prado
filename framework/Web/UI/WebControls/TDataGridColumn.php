@@ -79,11 +79,12 @@ abstract class TDataGridColumn extends TComponent
 	}
 
 	/**
+	 * @param boolean whether to create a style if previously not existing
 	 * @return TTableItemStyle the style for header
 	 */
-	public function getHeaderStyle()
+	public function getHeaderStyle($createStyle=true)
 	{
-		if(($style=$this->getViewState('HeaderStyle',null))===null)
+		if(($style=$this->getViewState('HeaderStyle',null))===null && $createStyle)
 		{
 			$style=new TTableItemStyle;
 			$this->setViewState('HeaderStyle',$style,null);
@@ -109,11 +110,12 @@ abstract class TDataGridColumn extends TComponent
 	}
 
 	/**
+	 * @param boolean whether to create a style if previously not existing
 	 * @return TTableItemStyle the style for footer
 	 */
-	public function getFooterStyle()
+	public function getFooterStyle($createStyle=true)
 	{
-		if(($style=$this->getViewState('FooterStyle',null))===null)
+		if(($style=$this->getViewState('FooterStyle',null))===null && $createStyle)
 		{
 			$style=new TTableItemStyle;
 			$this->setViewState('FooterStyle',$style,null);
@@ -122,11 +124,12 @@ abstract class TDataGridColumn extends TComponent
 	}
 
 	/**
+	 * @param boolean whether to create a style if previously not existing
 	 * @return TTableItemStyle the style for item
 	 */
-	public function getItemStyle()
+	public function getItemStyle($createStyle=true)
 	{
-		if(($style=$this->getViewState('ItemStyle',null))===null)
+		if(($style=$this->getViewState('ItemStyle',null))===null && $createStyle)
 		{
 			$style=new TTableItemStyle;
 			$this->setViewState('ItemStyle',$style,null);

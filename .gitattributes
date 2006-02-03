@@ -642,6 +642,7 @@ framework/Web/UI/WebControls/TBulletedList.php -text
 framework/Web/UI/WebControls/TButton.php -text
 framework/Web/UI/WebControls/TButtonColumn.php -text
 framework/Web/UI/WebControls/TCheckBox.php -text
+framework/Web/UI/WebControls/TCheckBoxColumn.php -text
 framework/Web/UI/WebControls/TCheckBoxList.php -text
 framework/Web/UI/WebControls/TCompareValidator.php -text
 framework/Web/UI/WebControls/TContent.php -text

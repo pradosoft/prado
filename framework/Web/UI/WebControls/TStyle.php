@@ -45,6 +45,15 @@ class TStyle extends TComponent
 	private $_customStyle=null;
 
 	/**
+	 * Constructor.
+	 * @param TStyle style to copy from
+	 */
+	public function __construct($style=null)
+	{
+		$this->copyFrom($style);
+	}
+
+	/**
 	 * @return string the background color of the control
 	 */
 	public function getBackColor()
@@ -260,7 +269,6 @@ class TStyle extends TComponent
 	 */
 	public function reset()
 	{
-		parent::reset();
 		$this->_fields=array();
 		$this->_font=null;
 		$this->_class=null;
@@ -274,9 +282,9 @@ class TStyle extends TComponent
 	 */
 	public function copyFrom($style)
 	{
-		if($style!==null)
+		$this->reset();
+		if($style instanceof TStyle)
 		{
-			$this->reset();
 			$this->_fields=$style->_fields;
 			$this->_class=$style->_class;
 			$this->_customStyle=$style->_customStyle;
@@ -295,9 +303,12 @@ class TStyle extends TComponent
 	{
 		if($style!==null)
 		{
+			//$this->_fields=array_merge($this->_fields,$style->_fields);
 			$this->_fields=array_merge($style->_fields,$this->_fields);
 			if($this->_class===null)
 				$this->_class=$style->_class;
+			if($this->_customStyle===null)
+				$this->_customStyle=$style->_customStyle;
 			if($this->_font===null && $style->_font!==null)
 				$this->getFont()->mergeWith($style->_font);
 		}
@@ -309,7 +320,7 @@ class TStyle extends TComponent
 	 */
 	public function addAttributesToRender($writer)
 	{
-		if($this->_customStyle!=='')
+		if($this->_customStyle!==null)
 		{
 			foreach(explode(';',$this->_customStyle) as $style)
 			{
@@ -594,9 +605,12 @@ class TTableItemStyle extends TStyle
 	public function copyFrom($style)
 	{
 		parent::copyFrom($style);
-		$this->_verticalAlign=$style->_verticalAlign;
-		$this->_horizontalAlign=$style->_horizontalAlign;
-		$this->_wrap=$style->_wrap;
+		if($style instanceof TTableItemStyle)
+		{
+			$this->_verticalAlign=$style->_verticalAlign;
+			$this->_horizontalAlign=$style->_horizontalAlign;
+			$this->_wrap=$style->_wrap;
+		}
 	}
 
 	/**

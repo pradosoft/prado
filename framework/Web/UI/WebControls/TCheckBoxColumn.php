@@ -1,6 +1,6 @@
 <?php
 /**
- * TBoundColumn class file
+ * TCheckBoxColumn class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
@@ -16,13 +16,13 @@
 Prado::using('System.Web.UI.WebControls.TDataGridColumn');
 
 /**
- * TBoundColumn class
+ * TCheckBoxColumn class
  *
- * TBoundColumn represents a column that is bound to a field in a data source.
+ * TCheckBoxColumn represents a column that is bound to a field in a data source.
  * The cells in the column will be displayed using the data indexed by
  * <b>DataField</b>. You can customize the display by setting <b>DataFormatString</b>.
  *
- * If <b>ReadOnly</b> is false, TBoundColumn will display cells in edit mode
+ * If <b>ReadOnly</b> is false, TCheckBoxColumn will display cells in edit mode
  * with textboxes. Otherwise, a static text is displayed.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -30,7 +30,7 @@ Prado::using('System.Web.UI.WebControls.TDataGridColumn');
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TBoundColumn extends TDataGridColumn
+class TCheckBoxColumn extends TDataGridColumn
 {
 	/**
 	 * @return string the field name from the data source to bind to the column
@@ -46,23 +46,6 @@ class TBoundColumn extends TDataGridColumn
 	public function setDataField($value)
 	{
 		$this->setViewState('DataField',$value,'');
-		$this->onColumnChanged();
-	}
-
-	/**
-	 * @return string the formatting string used to control how the bound data will be displayed.
-	 */
-	public function getDataFormatString()
-	{
-		return $this->getViewState('DataFormatString','');
-	}
-
-	/**
-	 * @param string the formatting string used to control how the bound data will be displayed.
-	 */
-	public function setDataFormatString($value)
-	{
-		$this->setViewState('DataFormatString',$value,'');
 		$this->onColumnChanged();
 	}
 
@@ -97,25 +80,16 @@ class TBoundColumn extends TDataGridColumn
 	public function initializeCell($cell,$columnIndex,$itemType)
 	{
 		parent::initializeCell($cell,$columnIndex,$itemType);
-		switch($itemType)
+		if($itemType==='EditItem' || $itemType==='Item'
+				|| $itemType==='AlternatingItem' || $itemType==='SelectedItem')
 		{
-			case 'EditItem':
-				$control=$cell;
-				if(!$this->getReadOnly())
-				{
-					$textBox=Prado::createComponent('System.Web.UI.WebControls.TTextBox');
-					$cell->getControls()->add($textBox);
-					$control=$textBox;
-				}
-				if(($dataField=$this->getDataField())!=='')
-					$control->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
-				break;
-			case 'Item':
-			case 'AlternatingItem':
-			case 'SelectedItem':
-				if(($dataField=$this->getDataField())!=='')
-					$cell->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
-				break;
+			$checkBox=Prado::createComponent('System.Web.UI.WebControls.TCheckBox');
+			if($this->getReadOnly() || $itemType!=='EditItem')
+				$checkBox->setEnabled(false);
+			$cell->setHorizontalAlign('Center');
+			$cell->getControls()->add($checkBox);
+			if(($dataField=$this->getDataField())!=='')
+				$checkBox->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
 		}
 	}
 
@@ -123,25 +97,12 @@ class TBoundColumn extends TDataGridColumn
 	{
 		$item=$sender->getNamingContainer();
 		$data=$item->getDataItem();
-		$formatString=$this->getDataFormatString();
 		if(($field=$this->getDataField())!=='')
-			$value=$this->formatDataValue($formatString,$this->getDataFieldValue($data,$field));
+			$value=TPropertyValue::ensureBoolean($this->getDataFieldValue($data,$field));
 		else
-			$value=$this->formatDataValue($formatString,$data);
-		if(($sender instanceof TTableCell) || ($sender instanceof TTextBox))
-			$sender->setText($value);
-	}
-
-	/**
-	 * Formats the text value according to format string.
-	 * This method is invoked when setting the text to a cell.
-	 * This method can be overriden.
-	 * @param mixed the data associated with the cell
-	 * @return string the formatted result
-	 */
-	protected function formatDataValue($formatString,$value)
-	{
-		return $formatString===''?TPropertyValue::ensureString($value):sprintf($formatString,$value);
+			$value=TPropertyValue::ensureBoolean($data);
+		if($sender instanceof TCheckBox)
+			$sender->setChecked($value);
 	}
 }
 

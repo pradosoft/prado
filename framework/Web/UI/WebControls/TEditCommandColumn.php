@@ -62,7 +62,7 @@ class TEditCommandColumn extends TDataGridColumn
 	 */
 	public function getEditText()
 	{
-		return $this->getViewState('EditText','');
+		return $this->getViewState('EditText','Edit');
 	}
 
 	/**
@@ -70,7 +70,7 @@ class TEditCommandColumn extends TDataGridColumn
 	 */
 	public function setEditText($value)
 	{
-		$this->setViewState('EditText',$value,'');
+		$this->setViewState('EditText',$value,'Edit');
 		$this->onColumnChanged();
 	}
 
@@ -79,7 +79,7 @@ class TEditCommandColumn extends TDataGridColumn
 	 */
 	public function getUpdateText()
 	{
-		return $this->getViewState('UpdateText','');
+		return $this->getViewState('UpdateText','Update');
 	}
 
 	/**
@@ -87,7 +87,7 @@ class TEditCommandColumn extends TDataGridColumn
 	 */
 	public function setUpdateText($value)
 	{
-		$this->setViewState('UpdateText',$value,'');
+		$this->setViewState('UpdateText',$value,'Update');
 		$this->onColumnChanged();
 	}
 
@@ -96,7 +96,7 @@ class TEditCommandColumn extends TDataGridColumn
 	 */
 	public function getCancelText()
 	{
-		return $this->getViewState('CancelText','');
+		return $this->getViewState('CancelText','Cancel');
 	}
 
 	/**
@@ -104,7 +104,7 @@ class TEditCommandColumn extends TDataGridColumn
 	 */
 	public function setCancelText($value)
 	{
-		$this->setViewState('CancelText',$value,'');
+		$this->setViewState('CancelText',$value,'Cancel');
 		$this->onColumnChanged();
 	}
 

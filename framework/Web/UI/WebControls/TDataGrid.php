@@ -722,6 +722,8 @@ class TDataGrid extends TBaseDataList
 	public function saveState()
 	{
 		parent::saveState();
+		if(!$this->getEnableViewState(true))
+			return;
 		if($this->_items)
 			$this->setViewState('ItemCount',$this->_items->getCount(),0);
 		else
@@ -731,10 +733,19 @@ class TDataGrid extends TBaseDataList
 			$state=array();
 			foreach($this->_autoColumns as $column)
 				$state[]=$column->saveState();
-			$this->setViewState('ColumnState',$state,array());
+			$this->setViewState('AutoColumns',$state,array());
 		}
 		else
-			$this->clearViewState('ColumnState');
+			$this->clearViewState('AutoColumns');
+		if($this->_columns)
+		{
+			$state=array();
+			foreach($this->_columns as $column)
+				$state[]=$column->saveState();
+			$this->setViewState('Columns',$state,array());
+		}
+		else
+			$this->clearViewState('Columns');
 	}
 
 	/**
@@ -744,15 +755,32 @@ class TDataGrid extends TBaseDataList
 	public function loadState()
 	{
 		parent::loadState();
+		if(!$this->getEnableViewState(true))
+			return;
 		if(!$this->getIsDataBound())
 		{
-			$state=$this->getViewState('ColumnState',array());
-			$columns=$this->getAutoColumns();
-			foreach($state as $st)
+			$state=$this->getViewState('AutoColumns',array());
+			if(!empty($state))
 			{
-				$column=new TBoundColumn;
-				$column->loadState($st);
-				$columns->add($column);
+				$this->_autoColumns=new TDataGridColumnCollection;
+				foreach($state as $st)
+				{
+					$column=new TBoundColumn;
+					$column->loadState($st);
+					$this->_autoColumns->add($column);
+				}
+			}
+			else
+				$this->_autoColumns=null;
+			$state=$this->getViewState('Columns',array());
+			if($this->_columns)
+			{
+				$i=0;
+				foreach($this->_columns as $column)
+				{
+					$column->loadState($state[$i]);
+					$i++;
+				}
 			}
 			$this->restoreGridFromViewState();
 		}
@@ -787,7 +815,8 @@ class TDataGrid extends TBaseDataList
 		if(($itemCount=$this->getViewState('ItemCount',0))<=0)
 			return;
 		$this->_pagedDataSource=$ds=$this->createPagedDataSource();
-		if($ds->getAllowCustomPaging())
+		$allowPaging=$ds->getAllowPaging();
+		if($allowPaging)
 			$ds->setDataSource(new TDummyDataSource($itemCount));
 		else
 			$ds->setDataSource(new TDummyDataSource($this->getViewState('DataSourceCount',0)));
@@ -846,8 +875,11 @@ class TDataGrid extends TBaseDataList
 			throw new TInvalidDataValueException('datagrid_currentpageindex_invalid');
 		// get all columns
 		$columns=new TList($this->getColumns());
-		$autoColumns=$this->createAutoColumns($ds);
-		$columns->mergeWith($autoColumns);
+		if($this->getAutoGenerateColumns())
+		{
+			$autoColumns=$this->createAutoColumns($ds);
+			$columns->mergeWith($autoColumns);
+		}
 
 		$items=$this->getItems();
 
@@ -888,9 +920,9 @@ class TDataGrid extends TBaseDataList
 		}
 		else
 		{
-			$this->setViewState('ItemCount',$index,0);
-			$this->setViewState('PageCount',0,0);
-			$this->setViewState('DataSourceCount',0,0);
+			$this->clearViewState('ItemCount');
+			$this->clearViewState('PageCount');
+			$this->clearViewState('DataSourceCount');
 		}
 		$this->_pagedDataSource=null;
 	}
@@ -1134,8 +1166,9 @@ class TDataGrid extends TBaseDataList
 		if($itemStyle!==null)
 		{
 			if($alternatingItemStyle===null)
-				$alternatingItemStyle=new TTableItemStyle;
-			$alternatingItemStyle->mergeWith($itemStyle);
+				$alternatingItemStyle=$itemStyle;
+			else
+				$alternatingItemStyle->mergeWith($itemStyle);
 		}
 		$selectedItemStyle=$this->getViewState('SelectedItemStyle',null);
 		if($alternatingItemStyle!==null)
@@ -1152,61 +1185,85 @@ class TDataGrid extends TBaseDataList
 			$editItemStyle->mergeWith($selectedItemStyle);
 		}
 
-		foreach($this->getControls() as $index=>$control)
+		foreach($this->getControls() as $index=>$item)
 		{
-			switch($control->getItemType())
+			$itemType=$item->getItemType();
+			switch($itemType)
 			{
 				case 'Header':
 					if($headerStyle)
-						$control->getStyle()->mergeWith($headerStyle);
+						$item->getStyle()->mergeWith($headerStyle);
 					if(!$this->getShowHeader())
-						$control->setVisible(false);
+						$item->setVisible(false);
 					break;
 				case 'Footer':
 					if($footerStyle)
-						$control->getStyle()->mergeWith($footerStyle);
+						$item->getStyle()->mergeWith($footerStyle);
 					if(!$this->getShowFooter())
-						$control->setVisible(false);
+						$item->setVisible(false);
 					break;
 				case 'Separator':
 					if($separatorStyle)
-						$control->getStyle()->mergeWith($separatorStyle);
+						$item->getStyle()->mergeWith($separatorStyle);
 					break;
 				case 'Item':
 					if($itemStyle)
-						$control->getStyle()->mergeWith($itemStyle);
+						$item->getStyle()->mergeWith($itemStyle);
 					break;
 				case 'AlternatingItem':
 					if($alternatingItemStyle)
-						$control->getStyle()->mergeWith($alternatingItemStyle);
+						$item->getStyle()->mergeWith($alternatingItemStyle);
 					break;
 				case 'SelectedItem':
 					if($selectedItemStyle)
-						$control->getStyle()->mergeWith($selectedItemStyle);
+						$item->getStyle()->mergeWith($selectedItemStyle);
 					break;
 				case 'EditItem':
 					if($editItemStyle)
-						$control->getStyle()->mergeWith($editItemStyle);
+						$item->getStyle()->mergeWith($editItemStyle);
 					break;
 				case 'Pager':
 					if($pagerStyle)
 					{
-						$control->getStyle()->mergeWith($pagerStyle);
+						$item->getStyle()->mergeWith($pagerStyle);
 						$mode=$pagerStyle->getMode();
 						if($index===0)
 						{
 							if($mode==='Bottom')
-								$control->setVisible(false);
+								$item->setVisible(false);
 						}
 						else
 						{
 							if($mode==='Top')
-								$control->setVisible(false);
+								$item->setVisible(false);
 						}
 					}
 					break;
 				default:
 					break;
+			}
+			if($this->_columns && $itemType!=='Pager')
+			{
+				$n=$this->_columns->getCount();
+				$cells=$item->getCells();
+				for($i=0;$i<$n;++$i)
+				{
+					$cell=$cells->itemAt($i);
+					$column=$this->_columns->itemAt($i);
+					if(!$column->getVisible())
+						$cell->setVisible(false);
+					else
+					{
+						if($itemType==='Header')
+							$style=$column->getHeaderStyle(false);
+						else if($itemType==='Footer')
+							$style=$column->getFooterStyle(false);
+						else
+							$style=$column->getItemStyle(false);
+						if($style!==null)
+							$cell->getStyle()->mergeWith($style);
+					}
+				}
 			}
 		}
 	}
