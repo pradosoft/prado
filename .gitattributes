@@ -38,6 +38,11 @@ demos/personal/protected/application.xml -text
 demos/personal/themes/BlueTheme/buttons.skin -text
 demos/personal/themes/BlueTheme/icon_profile.gif -text
 demos/personal/themes/BlueTheme/labels.skin -text
+demos/quickstart/images/star1.gif -text
+demos/quickstart/images/star2.gif -text
+demos/quickstart/images/star3.gif -text
+demos/quickstart/images/star4.gif -text
+demos/quickstart/images/star5.gif -text
 demos/quickstart/index.php -text
 demos/quickstart/index2.php -text
 demos/quickstart/protected/.htaccess -text
@@ -96,7 +101,6 @@ demos/quickstart/protected/pages/Configurations/Templates1.page -text
 demos/quickstart/protected/pages/Configurations/Templates2.page -text
 demos/quickstart/protected/pages/Configurations/Templates3.page -text
 demos/quickstart/protected/pages/Construction.page -text
-demos/quickstart/protected/pages/Controls/DataGrid.page -text
 demos/quickstart/protected/pages/Controls/DataGrid1.page -text
 demos/quickstart/protected/pages/Controls/DataGrid2.page -text
 demos/quickstart/protected/pages/Controls/DataList.page -text

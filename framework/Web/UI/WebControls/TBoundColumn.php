@@ -131,18 +131,6 @@ class TBoundColumn extends TDataGridColumn
 		if(($sender instanceof TTableCell) || ($sender instanceof TTextBox))
 			$sender->setText($value);
 	}
-
-	/**
-	 * Formats the text value according to format string.
-	 * This method is invoked when setting the text to a cell.
-	 * This method can be overriden.
-	 * @param mixed the data associated with the cell
-	 * @return string the formatted result
-	 */
-	protected function formatDataValue($formatString,$value)
-	{
-		return $formatString===''?TPropertyValue::ensureString($value):sprintf($formatString,$value);
-	}
 }
 
 ?>

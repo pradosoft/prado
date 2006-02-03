@@ -21,6 +21,7 @@ PRADO provides five types of columns:
 </p>
 <ul>
   <li><tt>TBoundColumn</tt> associates cells with a specific field of data and displays the cells according to their modes.</li>
+  <li><tt>TCheckBoxColumn</tt> associates cells with a specific field of data and displays in each cell a checkbox whose check state is determined by the data field value.</li>
   <li><tt>THyperLinkColumn</tt> displays in the cells a hyperlink whose caption and URL can be either statically specified or bound to some fields of data.</li>
   <li><tt>TEditCommandColumn</tt> displays in the cells edit/update/cancel command buttons according to the state of the item that a cell resides in.</li>
   <li><tt>TButtonColumn</tt> displays in the cells a command button.
@@ -63,7 +64,7 @@ TDataGrid provides several events to facilitate manipulation of its items,
 TDataGrid by default will create a list of columns based on the structure of the bound data. TDataGrid will read the first row of the data, extract the field names of the row, and construct a column for each field. Each column is of type <tt>TBoundColumn</tt>.
 </p>
 <p>
-The following example displays a list of computer product information using a TDataGrid. Columns are automatically generated. To populate datagrid items with the data, <tt>dataBind()</tt> is invoked for the datagrid in the <tt>onLoad</tt> method of the page,
+The following example displays a list of computer product information using a TDataGrid. Columns are automatically generated. Pay attention to how item styles are specified and inherited. The data are populated into the datagrid using the follow code, which is common among most datagrid applications,
 </p>
 <com:TTextHighlighter Language="php" CssClass="source">
 public function onLoad($param) {
@@ -78,7 +79,7 @@ public function onLoad($param) {
 
 <h3>Manually Specified Columns</h3>
 <p>
-Using automatically generated columns gives a quick way of browsing tabular data. In real applications, however, automatically generated columns are often not enough because developers have no way configuring their properties. Manually specified columns are thus more desirable.
+Using automatically generated columns gives a quick way of browsing tabular data. In real applications, however, automatically generated columns are often not sufficient because developers have no way customizing their appearance. Manually specified columns are thus more desirable.
 </p>
 <p>
 To manually specify columns, set <tt>AutoGenerateColumns</tt> to false, and specify the columns in a template like the following,
@@ -92,8 +93,19 @@ To manually specify columns, set <tt>AutoGenerateColumns</tt> to false, and spec
 &lt;/com:TDataGrid&gt;
 </com:TTextHighlighter>
 <p>
-Note, if <tt>AutoGenerateColumns</tt> is true and there are manually specified columns, the automatically generated columns will be appended to the manually specified columns. Also note, the datagrid's <tt>Columns</tt> property only contains manually specified columns.
+Note, if <tt>AutoGenerateColumns</tt> is true and there are manually specified columns, the automatically generated columns will be appended to the manually specified columns. Also note, the datagrid's <tt>Columns</tt> property contains only manually specified columns and no automatically generated ones.
 </p>
+<p>
+The following example uses manually specified columns to show a list of book information,
+</p>
+<ul>
+  <li>Book title - displayed a hyperlink pointing to the corresponding amazon.com book page. <tt>THyperLinkColumn</tt> is used.</li>
+  <li>Publisher - displayed as a piece of text using <tt>TBoundColumn</tt>.</li>
+  <li>Price - displayed as a piece of text using <tt>TBoundColumn</tt> with output formatting string and customized styles.</li>
+  <li>In-stock or not - displayed as a checkbox using <tt>TCheckBoxColumn</tt>.</li>
+  <li>Rating - displayed as an image using <tt>TTemplateColumn</tt> which allows maximum freedom in specifiying cell contents.</li>
+</ul>
+<p>Pay attention to how item (row) styles and column styles cooperate together to affect the appearance of the cells in the datagrid.</p>
 <com:RunBar PagePath="Controls.Samples.TDataGrid.Sample2" />
 
 </com:TContent>

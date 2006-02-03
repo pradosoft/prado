@@ -1,9 +1,0 @@
-<com:TContent ID="body" >
-
-<h1>TDataGrid</h1>
-<p>
-TBC
-</p>
-<com:RunBar PagePath="Controls.Samples.TDataGrid.Sample1" />
-
-</com:TContent>

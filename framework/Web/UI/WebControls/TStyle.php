@@ -645,7 +645,7 @@ class TTableItemStyle extends TStyle
 	public function addAttributesToRender($writer)
 	{
 		if(!$this->getWrap())
-			$writer->addStyleAttribute('nowrap','nowrap');
+			$writer->addStyleAttribute('white-space','nowrap');
 
 		if(($horizontalAlign=$this->getHorizontalAlign())!=='NotSet')
 			$writer->addAttribute('align',strtolower($horizontalAlign));

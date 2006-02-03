@@ -155,6 +155,8 @@ class TTemplateColumn extends TDataGridColumn
 			$cell->getControls()->clear();
 			$template->instantiateIn($cell);
 		}
+		else
+			$cell->setText('&nbsp;');
 	}
 }
 

@@ -56,7 +56,7 @@ class TFont extends TComponent
 	private $_size='';
 
 	/**
-	 * @return boolean whether the font is in bold face
+	 * @return boolean whether the font is in bold face. Defaults to false.
 	 */
 	public function getBold()
 	{
@@ -69,14 +69,14 @@ class TFont extends TComponent
 	public function setBold($value)
 	{
 		$this->_flags |= self::IS_SET_BOLD;
-		if($value)
+		if(TPropertyValue::ensureBoolean($value))
 			$this->_flags |= self::IS_BOLD;
 		else
 			$this->_flags &= ~self::IS_BOLD;
 	}
 
 	/**
-	 * @return boolean whether the font is in italic face
+	 * @return boolean whether the font is in italic face. Defaults to false.
 	 */
 	public function getItalic()
 	{
@@ -89,14 +89,14 @@ class TFont extends TComponent
 	public function setItalic($value)
 	{
 		$this->_flags |= self::IS_SET_ITALIC;
-		if($value)
+		if(TPropertyValue::ensureBoolean($value))
 			$this->_flags |= self::IS_ITALIC;
 		else
 			$this->_flags &= ~self::IS_ITALIC;
 	}
 
 	/**
-	 * @return boolean whether the font is overlined
+	 * @return boolean whether the font is overlined. Defaults to false.
 	 */
 	public function getOverline()
 	{
@@ -109,7 +109,7 @@ class TFont extends TComponent
 	public function setOverline($value)
 	{
 		$this->_flags |= self::IS_SET_OVERLINE;
-		if($value)
+		if(TPropertyValue::ensureBoolean($value))
 			$this->_flags |= self::IS_OVERLINE;
 		else
 			$this->_flags &= ~self::IS_OVERLINE;
@@ -133,7 +133,7 @@ class TFont extends TComponent
 	}
 
 	/**
-	 * @return boolean whether the font is strikeout
+	 * @return boolean whether the font is strikeout. Defaults to false.
 	 */
 	public function getStrikeout()
 	{
@@ -146,14 +146,14 @@ class TFont extends TComponent
 	public function setStrikeout($value)
 	{
 		$this->_flags |= self::IS_SET_STRIKEOUT;
-		if($value)
+		if(TPropertyValue::ensureBoolean($value))
 			$this->_flags |= self::IS_STRIKEOUT;
 		else
 			$this->_flags &= ~self::IS_STRIKEOUT;
 	}
 
 	/**
-	 * @return boolean whether the font is underlined
+	 * @return boolean whether the font is underlined. Defaults to false.
 	 */
 	public function getUnderline()
 	{
@@ -166,7 +166,7 @@ class TFont extends TComponent
 	public function setUnderline($value)
 	{
 		$this->_flags |= self::IS_SET_UNDERLINE;
-		if($value)
+		if(TPropertyValue::ensureBoolean($value))
 			$this->_flags |= self::IS_UNDERLINE;
 		else
 			$this->_flags &= ~self::IS_UNDERLINE;
