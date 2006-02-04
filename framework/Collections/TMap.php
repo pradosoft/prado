@@ -97,14 +97,12 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 
 	/**
 	 * Adds an item into the map.
-	 * Note, if the specified key already exists, the old value will be removed first.
+	 * Note, if the specified key already exists, the old value will be overwritten.
 	 * @param mixed key
 	 * @param mixed value
 	 */
 	public function add($key,$value)
 	{
-		if(isset($this->_d[$key]))
-			$this->remove($key);
 		$this->_d[$key]=$value;
 	}
 
@@ -116,7 +114,7 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 	 */
 	public function remove($key)
 	{
-		if(isset($this->_d[$key]))
+		if(isset($this->_d[$key]) || array_key_exists($key,$this->_d))
 		{
 			$value=$this->_d[$key];
 			unset($this->_d[$key]);
@@ -141,7 +139,7 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 	 */
 	public function contains($key)
 	{
-		return isset($this->_d[$key]);
+		return isset($this->_d[$key]) || array_key_exists($key,$this->_d);
 	}
 
 	/**
@@ -305,11 +303,7 @@ class TMapIterator implements Iterator
 	 */
 	public function next()
 	{
-		do
-		{
-			$this->_key=next($this->_keys);
-		}
-		while(!isset($this->_d[$this->_key]) && $this->_key!==false);
+		$this->_key=next($this->_keys);
 	}
 
 	/**

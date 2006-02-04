@@ -90,7 +90,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 */
 	public function itemAt($index)
 	{
-		if(isset($this->_d[$index]))
+		if($index>=0 && $index<$this->_c)
 			return $this->_d[$index];
 		else
 			throw new TInvalidDataValueException('list_index_invalid',$index);
@@ -149,15 +149,17 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 */
 	public function removeAt($index)
 	{
-		if(isset($this->_d[$index]))
+		if($index>=0 && $index<$this->_c)
 		{
-			$item=$this->_d[$index];
-			if($index===$this->_c-1)
-				unset($this->_d[$index]);
-			else
-				array_splice($this->_d,$index,1);
 			$this->_c--;
-			return $item;
+			if($index===$this->_c)
+				return array_pop($this->_d);
+			else
+			{
+				$item=$this->_d[$index];
+				array_splice($this->_d,$index,1);
+				return $item;
+			}
 		}
 		else
 			throw new TInvalidDataValueException('list_index_invalid',$index);
@@ -245,7 +247,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 */
 	public function offsetExists($offset)
 	{
-		return isset($this->_d[$offset]);
+		return ($offset>=0 && $offset<$this->_c);
 	}
 
 	/**
@@ -257,7 +259,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 */
 	public function offsetGet($offset)
 	{
-		if(isset($this->_d[$offset]))
+		if($offset>=0 && $offset<$this->_c)
 			return $this->_d[$offset];
 		else
 			throw new TInvalidDataValueException('list_index_invalid',$offset);
@@ -317,6 +319,10 @@ class TListIterator implements Iterator
 	 * @var integer index of the current item
 	 */
 	private $_i;
+	/**
+	 * @var integer count of the data items
+	 */
+	private $_c;
 
 	/**
 	 * Constructor.
@@ -326,6 +332,7 @@ class TListIterator implements Iterator
 	{
 		$this->_d=&$data;
 		$this->_i=0;
+		$this->_c=count($this->_d);
 	}
 
 	/**
@@ -373,7 +380,7 @@ class TListIterator implements Iterator
 	 */
 	public function valid()
 	{
-		return isset($this->_d[$this->_i]);
+		return $this->_i<$this->_c;
 	}
 }
 

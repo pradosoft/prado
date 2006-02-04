@@ -773,7 +773,7 @@ class TDataGrid extends TBaseDataList
 			else
 				$this->_autoColumns=null;
 			$state=$this->getViewState('Columns',array());
-			if($this->_columns)
+			if($this->_columns && $this->_columns->getCount()===count($state))
 			{
 				$i=0;
 				foreach($this->_columns as $column)
@@ -823,6 +823,8 @@ class TDataGrid extends TBaseDataList
 
 		$columns=new TList($this->getColumns());
 		$columns->mergeWith($this->_autoColumns);
+
+		$items=$this->getItems();
 
 		if($columns->getCount()>0)
 		{
