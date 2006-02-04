@@ -4,9 +4,11 @@
 
 <h2>Interacting with TDataGrid</h2>
 <p>
-Besides the rich data presentation functionalities as demonstrated in previous section, TDataGrid is also highly user interactive. An import usage of TDataGrid is to use it for editting or deleting rows of data. The <tt>TEditCommandColumn</tt> is specically designed for this purpose.
+Besides the rich data presentation functionalities as demonstrated in previous section, TDataGrid is also highly user interactive. An import usage of TDataGrid is editting or deleting rows of data. The <tt>TBoundColumn</tt> can adjust the associated cell presentation according to the mode of datagrid items. When an item is in browsing mode, the cell is displayed with a static text; when the item is in editting mode, a textbox is displayed to collect user inputs. TDataGrid provides <tt>TEditCommandColumn</tt> for switching item modes. In addition, <tt>TButtonColumn</tt> offers developers the flexibility of creating arbitrary buttons for various user interactions.
 </p>
-
+<p>
+The following example shows how to make the previous book information table an interactive one. It allows users to edit and delete book items from the table. Two additional columns are used in the example to allow users interact with the datagrid: <tt>TEditCommandColumn</tt> and <tt>TButtonColumn</tt>.
+</p>
 <com:RunBar PagePath="Controls.Samples.TDataGrid.Sample3" />
 
 <h2>Sorting</h2>

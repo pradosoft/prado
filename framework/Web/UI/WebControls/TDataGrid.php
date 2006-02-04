@@ -106,7 +106,7 @@ Prado::using('System.Web.UI.WebControls.TTable');
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TDataGrid extends TBaseDataList
+class TDataGrid extends TBaseDataList implements INamingContainer
 {
 	private $_columns=null;
 	private $_autoColumns=null;
@@ -820,7 +820,6 @@ class TDataGrid extends TBaseDataList
 			$ds->setDataSource(new TDummyDataSource($itemCount));
 		else
 			$ds->setDataSource(new TDummyDataSource($this->getViewState('DataSourceCount',0)));
-
 		$columns=new TList($this->getColumns());
 		$columns->mergeWith($this->_autoColumns);
 
@@ -879,12 +878,14 @@ class TDataGrid extends TBaseDataList
 			if($allowPaging && $ds->getCurrentPageIndex()>=$ds->getPageCount())
 				throw new TInvalidDataValueException('datagrid_currentpageindex_invalid');
 			// get all columns
-			$columns=new TList($this->getColumns());
 			if($this->getAutoGenerateColumns())
 			{
+				$columns=new TList($this->getColumns());
 				$autoColumns=$this->createAutoColumns($ds);
 				$columns->mergeWith($autoColumns);
 			}
+			else
+				$columns=$this->getColumns();
 
 			$items=$this->getItems();
 

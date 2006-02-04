@@ -1,0 +1,66 @@
+<com:TContent ID="body">
+
+<h1>TDataGrid Sample 3</h1>
+<h2>Interacting with TDataGrid</h2>
+
+<com:TDataGrid
+	Width="800px"
+	CellPadding="2"
+	ID="DataGrid"
+	DataKeyField="ISBN"
+	AutoGenerateColumns="false"
+	HeaderStyle.BackColor="black"
+	HeaderStyle.ForeColor="white"
+	ItemStyle.BackColor="#BFCFFF"
+	ItemStyle.Font.Italic="true"
+	AlternatingItemStyle.BackColor="#E6ECFF"
+	EditItemStyle.BackColor="lightyellow"
+	OnItemCreated="itemCreated"
+	OnEditCommand="editItem"
+	OnUpdateCommand="saveItem"
+	OnCancelCommand="cancelItem"
+	OnDeleteCommand="deleteItem"
+	>
+
+	<com:TBoundColumn
+		HeaderText="Book Title"
+		HeaderStyle.Width="400px"
+		DataField="title"
+		/>
+	<com:TBoundColumn
+		HeaderText="Publisher"
+		HeaderStyle.Width="150px"
+		DataField="publisher"
+		/>
+	<com:TBoundColumn
+		ItemStyle.HorizontalAlign="Right"
+		ItemStyle.Wrap="false"
+		ItemStyle.Font.Italic="false"
+		ItemStyle.ForeColor="green"
+		HeaderText="Price"
+		HeaderStyle.Width="70px"
+		DataField="price"
+		DataFormatString="$%.2f"
+		/>
+	<com:TCheckBoxColumn
+		HeaderText="In-stock"
+		DataField="instock"
+		/>
+	<com:TEditCommandColumn
+		HeaderText="Edit"
+		HeaderStyle.Width="100px"
+		UpdateText="Save"
+		ItemStyle.HorizontalAlign="Center"
+		ItemStyle.Font.Italic="false"
+		/>
+	<com:TButtonColumn
+		HeaderText="Delete"
+		HeaderStyle.Width="50px"
+		ItemStyle.HorizontalAlign="Center"
+		ItemStyle.Font.Italic="false"
+		Text="Delete"
+		CommandName="delete"
+		/>
+</com:TDataGrid>
+
+</com:TContent>
