@@ -374,22 +374,19 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 		$this->reset();
 		$items=$this->getItems();
 		$itemIndex=0;
-		if($data instanceof Traversable)
+		$hasSeparator=$this->_separatorTemplate!==null;
+		foreach($data as $dataItem)
 		{
-			$hasSeparator=$this->_separatorTemplate!==null;
-			foreach($data as $dataItem)
-			{
-				if($itemIndex===0 && $this->_headerTemplate!==null)
-					$this->_header=$this->createItemInternal(-1,'Header',true,null);
-				if($hasSeparator && $itemIndex>0)
-					$this->createItemInternal($itemIndex-1,'Separator',true,null);
-				$itemType=$itemIndex%2==0?'Item':'AlternatingItem';
-				$items->add($this->createItemInternal($itemIndex,$itemType,true,$dataItem));
-				$itemIndex++;
-			}
-			if($itemIndex>0 && $this->_footerTemplate!==null)
-				$this->_footer=$this->createItemInternal(-1,'Footer',true,null);
+			if($itemIndex===0 && $this->_headerTemplate!==null)
+				$this->_header=$this->createItemInternal(-1,'Header',true,null);
+			if($hasSeparator && $itemIndex>0)
+				$this->createItemInternal($itemIndex-1,'Separator',true,null);
+			$itemType=$itemIndex%2==0?'Item':'AlternatingItem';
+			$items->add($this->createItemInternal($itemIndex,$itemType,true,$dataItem));
+			$itemIndex++;
 		}
+		if($itemIndex>0 && $this->_footerTemplate!==null)
+			$this->_footer=$this->createItemInternal(-1,'Footer',true,null);
 		$this->setViewState('ItemCount',$itemIndex,0);
 	}
 

@@ -869,76 +869,66 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		$this->reset();
 		$keys=$this->getDataKeys();
 		$keys->clear();
-		if($data instanceof Traversable)
+		$keyField=$this->getDataKeyField();
+		$this->_pagedDataSource=$ds=$this->createPagedDataSource();
+		$ds->setDataSource($data);
+		$allowPaging=$ds->getAllowPaging();
+		if($allowPaging && $ds->getCurrentPageIndex()>=$ds->getPageCount())
+			throw new TInvalidDataValueException('datagrid_currentpageindex_invalid');
+		// get all columns
+		if($this->getAutoGenerateColumns())
 		{
-			$keyField=$this->getDataKeyField();
-			$this->_pagedDataSource=$ds=$this->createPagedDataSource();
-			$ds->setDataSource($data);
+			$columns=new TList($this->getColumns());
+			$autoColumns=$this->createAutoColumns($ds);
+			$columns->mergeWith($autoColumns);
+		}
+		else
+			$columns=$this->getColumns();
+
+		$items=$this->getItems();
+
+		if(($columnCount=$columns->getCount())>0)
+		{
+			foreach($columns as $column)
+				$column->initialize();
 			$allowPaging=$ds->getAllowPaging();
-			if($allowPaging && $ds->getCurrentPageIndex()>=$ds->getPageCount())
-				throw new TInvalidDataValueException('datagrid_currentpageindex_invalid');
-			// get all columns
-			if($this->getAutoGenerateColumns())
+			if($allowPaging)
+				$this->createPager(-1,-1,$columnCount,$ds);
+			$this->createItemInternal(-1,-1,'Header',true,null,$columns);
+			$selectedIndex=$this->getSelectedItemIndex();
+			$editIndex=$this->getEditItemIndex();
+			$index=0;
+			$dsIndex=$ds->getAllowPaging()?$ds->getFirstIndexInPage():0;
+			foreach($ds as $data)
 			{
-				$columns=new TList($this->getColumns());
-				$autoColumns=$this->createAutoColumns($ds);
-				$columns->mergeWith($autoColumns);
+				if($keyField!=='')
+					$keys->add($this->getDataFieldValue($data,$keyField));
+				if($index===$editIndex)
+					$itemType='EditItem';
+				else if($index===$selectedIndex)
+					$itemType='SelectedItem';
+				else if($index % 2)
+					$itemType='AlternatingItem';
+				else
+					$itemType='Item';
+				$items->add($this->createItemInternal($index,$dsIndex,$itemType,true,$data,$columns));
+				$index++;
+				$dsIndex++;
 			}
-			else
-				$columns=$this->getColumns();
-
-			$items=$this->getItems();
-
-			if(($columnCount=$columns->getCount())>0)
-			{
-				foreach($columns as $column)
-					$column->initialize();
-				$allowPaging=$ds->getAllowPaging();
-				if($allowPaging)
-					$this->createPager(-1,-1,$columnCount,$ds);
-				$this->createItemInternal(-1,-1,'Header',true,null,$columns);
-				$selectedIndex=$this->getSelectedItemIndex();
-				$editIndex=$this->getEditItemIndex();
-				$index=0;
-				$dsIndex=$ds->getAllowPaging()?$ds->getFirstIndexInPage():0;
-				foreach($ds as $data)
-				{
-					if($keyField!=='')
-						$keys->add($this->getDataFieldValue($data,$keyField));
-					if($index===$editIndex)
-						$itemType='EditItem';
-					else if($index===$selectedIndex)
-						$itemType='SelectedItem';
-					else if($index % 2)
-						$itemType='AlternatingItem';
-					else
-						$itemType='Item';
-					$items->add($this->createItemInternal($index,$dsIndex,$itemType,true,$data,$columns));
-					$index++;
-					$dsIndex++;
-				}
-				$this->createItemInternal(-1,-1,'Footer',true,null,$columns);
-				if($allowPaging)
-					$this->createPager(-1,-1,$columnCount,$ds);
-				$this->setViewState('ItemCount',$index,0);
-				$this->setViewState('PageCount',$ds->getPageCount(),0);
-				$this->setViewState('DataSourceCount',$ds->getDataSourceCount(),0);
-			}
-			else
-			{
-				$this->clearViewState('ItemCount');
-				$this->clearViewState('PageCount');
-				$this->clearViewState('DataSourceCount');
-			}
-			$this->_pagedDataSource=null;
+			$this->createItemInternal(-1,-1,'Footer',true,null,$columns);
+			if($allowPaging)
+				$this->createPager(-1,-1,$columnCount,$ds);
+			$this->setViewState('ItemCount',$index,0);
+			$this->setViewState('PageCount',$ds->getPageCount(),0);
+			$this->setViewState('DataSourceCount',$ds->getDataSourceCount(),0);
 		}
 		else
 		{
-			$this->_pagedDataSource=null;
 			$this->clearViewState('ItemCount');
 			$this->clearViewState('PageCount');
 			$this->clearViewState('DataSourceCount');
 		}
+		$this->_pagedDataSource=null;
 	}
 
 	/**

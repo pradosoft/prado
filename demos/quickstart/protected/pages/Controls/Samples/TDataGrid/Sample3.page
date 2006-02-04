@@ -46,6 +46,23 @@
 		HeaderText="In-stock"
 		DataField="instock"
 		/>
+	<com:TTemplateColumn>
+		<prop:HeaderTemplate>Rating</prop:HeaderTemplate>
+		<prop:ItemTemplate>
+		<img src="images/star<%#$this->NamingContainer->DataItem['rating']%>.gif" alt="" />
+		</prop:ItemTemplate>
+		<prop:EditItemTemplate>
+		<com:TDropDownList
+			SelectedValue=<%#$this->NamingContainer->DataItem['rating'] %>
+			ID="Rating">
+			<com:TListItem Value="1" />
+			<com:TListItem Value="2" />
+			<com:TListItem Value="3" />
+			<com:TListItem Value="4" />
+			<com:TListItem Value="5" />
+		</com:TDropDownList>
+		</prop:EditItemTemplate>
+	</com:TTemplateColumn>
 	<com:TEditCommandColumn
 		HeaderText="Edit"
 		HeaderStyle.Width="100px"

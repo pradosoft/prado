@@ -151,8 +151,6 @@ abstract class TListControl extends TDataBoundControl
 		$items=$this->getItems();
 		if(!$this->getAppendDataBoundItems())
 			$items->clear();
-		if(!($data instanceof Traversable))
-			return;
 		$textField=$this->getDataTextField();
 		if($textField==='')
 			$textField=0;

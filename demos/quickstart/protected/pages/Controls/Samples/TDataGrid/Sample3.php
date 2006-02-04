@@ -86,7 +86,7 @@ class Sample3 extends TPage
 		$this->setViewState('Data',$this->_data);
 	}
 
-	protected function updateBook($isbn,$title,$publisher,$price,$instock)
+	protected function updateBook($isbn,$title,$publisher,$price,$instock,$rating)
 	{
 		// In real applications, data should be saved to database using an SQL UPDATE statement
 		if($this->_data===null)
@@ -101,6 +101,7 @@ class Sample3 extends TPage
 			$updateRow['publisher']=$publisher;
 			$updateRow['price']=TPropertyValue::ensureFloat(ltrim($price,'$'));
 			$updateRow['instock']=TPropertyValue::ensureBoolean($instock);
+			$updateRow['rating']=TPropertyValue::ensureInteger($rating);
 			$this->saveData();
 		}
 	}
@@ -143,7 +144,7 @@ class Sample3 extends TPage
 		if($item->ItemType==='Item' || $item->ItemType==='AlternatingItem' || $item->ItemType==='EditItem')
 		{
 			// add an aleart dialog to delete buttons
-			$item->Cells[5]->Controls[0]->Attributes->onclick='if(!confirm(\'Are you sure?\')) return false;';
+			$item->Cells[6]->Controls[0]->Attributes->onclick='if(!confirm(\'Are you sure?\')) return false;';
 		}
 	}
 
@@ -162,7 +163,8 @@ class Sample3 extends TPage
 			$item->Cells[0]->Controls[0]->Text,				// title
 			$item->Cells[1]->Controls[0]->Text,				// publisher
 			$item->Cells[2]->Controls[0]->Text,				// price
-			$item->Cells[3]->Controls[0]->Checked			// instock
+			$item->Cells[3]->Controls[0]->Checked,			// instock
+			$item->Cells[4]->Rating->SelectedValue			// rating
 			);
 		$this->DataGrid->EditItemIndex=-1;
 		$this->DataGrid->DataSource=$this->Data;
