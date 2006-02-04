@@ -69,7 +69,7 @@ The following example allows users to modify the existing tabular data using a <
 </prop:HeaderTemplate>
 
 <prop:ItemTemplate>
-<tr style="<%# 'background-color:' . ($this->Parent->ItemIndex%2 ? 'silver' : 'green') %>">
+<tr style="<%# 'background-color:' . ($this->Parent->ItemIndex%2 ? '#BFCFFF' : '#E6ECFF') %>">
 <td><%#$this->Parent->DataItem['id']%></td>
 <td><%#$this->Parent->DataItem['name']%></td>
 <td><%#$this->Parent->DataItem['category']%></td>

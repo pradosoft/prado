@@ -196,10 +196,7 @@ abstract class TDataBoundControl extends TWebControl
 		$this->dataBindProperties();
 		$this->onDataBinding(null);
 		$data=$this->getData();
-		if($data instanceof Traversable)
-			$this->performDataBinding($data);
-		else if($data!==null)
-			throw new TInvalidDataTypeException('databoundcontrol_data_nontraversable');
+		$this->performDataBinding($data);
 		$this->setIsDataBound(true);
 		$this->onDataBound(null);
 	}

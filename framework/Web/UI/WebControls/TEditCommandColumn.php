@@ -156,12 +156,12 @@ class TEditCommandColumn extends TDataGridColumn
 		parent::initializeCell($cell,$columnIndex,$itemType);
 		$buttonType=$this->getButtonType()=='LinkButton'?'TLinkButton':'TButton';
 		if($itemType==='Item' || $itemType==='AlternatingItem' || $itemType==='SelectedItem')
-			$this->addButtonToCell($cell,'Edit',$this->getUpdateText(),false,'');
+			$this->addButtonToCell($cell,'Edit',$this->getEditText(),false,'');
 		else if($itemType==='EditItem')
 		{
 			$this->addButtonToCell($cell,'Update',$this->getUpdateText(),$this->getCausesValidation(),$this->getValidationGroup());
 			$cell->getControls()->add('&nbsp;');
-			$this->addButtonToCell($cell,'Cancel',$this->getUpdateText(),false,'');
+			$this->addButtonToCell($cell,'Cancel',$this->getCancelText(),false,'');
 		}
 	}
 

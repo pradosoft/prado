@@ -372,21 +372,24 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	protected function performDataBinding($data)
 	{
 		$this->reset();
-		$itemIndex=0;
 		$items=$this->getItems();
-		$hasSeparator=$this->_separatorTemplate!==null;
-		foreach($data as $dataItem)
+		$itemIndex=0;
+		if($data instanceof Traversable)
 		{
-			if($itemIndex===0 && $this->_headerTemplate!==null)
-				$this->_header=$this->createItemInternal(-1,'Header',true,null);
-			if($hasSeparator && $itemIndex>0)
-				$this->createItemInternal($itemIndex-1,'Separator',true,null);
-			$itemType=$itemIndex%2==0?'Item':'AlternatingItem';
-			$items->add($this->createItemInternal($itemIndex,$itemType,true,$dataItem));
-			$itemIndex++;
+			$hasSeparator=$this->_separatorTemplate!==null;
+			foreach($data as $dataItem)
+			{
+				if($itemIndex===0 && $this->_headerTemplate!==null)
+					$this->_header=$this->createItemInternal(-1,'Header',true,null);
+				if($hasSeparator && $itemIndex>0)
+					$this->createItemInternal($itemIndex-1,'Separator',true,null);
+				$itemType=$itemIndex%2==0?'Item':'AlternatingItem';
+				$items->add($this->createItemInternal($itemIndex,$itemType,true,$dataItem));
+				$itemIndex++;
+			}
+			if($itemIndex>0 && $this->_footerTemplate!==null)
+				$this->_footer=$this->createItemInternal(-1,'Footer',true,null);
 		}
-		if($itemIndex>0 && $this->_footerTemplate!==null)
-			$this->_footer=$this->createItemInternal(-1,'Footer',true,null);
 		$this->setViewState('ItemCount',$itemIndex,0);
 	}
 

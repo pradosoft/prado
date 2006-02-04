@@ -1107,29 +1107,32 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 		$keys->clear();
 		$keyField=$this->getDataKeyField();
 		$itemIndex=0;
-		$items=$this->getItems();
-		$hasSeparator=$this->_separatorTemplate!==null;
-		$selectedIndex=$this->getSelectedItemIndex();
-		$editIndex=$this->getEditItemIndex();
-		foreach($data as $dataItem)
+		if($data instanceof Traversable)
 		{
-			if($keyField!=='')
-				$keys->add($this->getDataFieldValue($dataItem,$keyField));
-			if($itemIndex===0 && $this->_headerTemplate!==null)
-				$this->_header=$this->createItemInternal(-1,'Header',true,null);
-			if($hasSeparator && $itemIndex>0)
-				$this->createItemInternal($itemIndex-1,'Separator',true,null);
-			if($itemIndex===$editIndex)
-				$itemType='EditItem';
-			else if($itemIndex===$selectedIndex)
-				$itemType='SelectedItem';
-			else
-				$itemType=$itemIndex%2?'AlternatingItem':'Item';
-			$items->add($this->createItemInternal($itemIndex,$itemType,true,$dataItem));
-			$itemIndex++;
+			$items=$this->getItems();
+			$hasSeparator=$this->_separatorTemplate!==null;
+			$selectedIndex=$this->getSelectedItemIndex();
+			$editIndex=$this->getEditItemIndex();
+			foreach($data as $dataItem)
+			{
+				if($keyField!=='')
+					$keys->add($this->getDataFieldValue($dataItem,$keyField));
+				if($itemIndex===0 && $this->_headerTemplate!==null)
+					$this->_header=$this->createItemInternal(-1,'Header',true,null);
+				if($hasSeparator && $itemIndex>0)
+					$this->createItemInternal($itemIndex-1,'Separator',true,null);
+				if($itemIndex===$editIndex)
+					$itemType='EditItem';
+				else if($itemIndex===$selectedIndex)
+					$itemType='SelectedItem';
+				else
+					$itemType=$itemIndex%2?'AlternatingItem':'Item';
+				$items->add($this->createItemInternal($itemIndex,$itemType,true,$dataItem));
+				$itemIndex++;
+			}
+			if($itemIndex>0 && $this->_footerTemplate!==null)
+				$this->_footer=$this->createItemInternal(-1,'Footer',true,null);
 		}
-		if($itemIndex>0 && $this->_footerTemplate!==null)
-			$this->_footer=$this->createItemInternal(-1,'Footer',true,null);
 		$this->setViewState('ItemCount',$itemIndex,0);
 	}
 
