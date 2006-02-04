@@ -6,10 +6,12 @@
 <com:TDataGrid
 	ID="DataGrid"
 	EnableViewState="false"
-	HeaderStyle.BackColor="silver"
-	ItemStyle.BackColor="lightblue"
+	CellPadding="2"
+	HeaderStyle.BackColor="black"
+	HeaderStyle.ForeColor="white"
+	ItemStyle.BackColor="#BFCFFF"
 	ItemStyle.Font.Italic="true"
-	AlternatingItemStyle.BackColor="lightgreen"
+	AlternatingItemStyle.BackColor="#E6ECFF"
 	/>
 
 </com:TContent>

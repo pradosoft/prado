@@ -1,11 +1,6 @@
 <com:TContent ID="body">
 
 <h1>TDataList Sample 2</h1>
-<p>This demo shows a simple application of TDataList control in maintaining a list of computer products. The application allows you to browse a list of inventory computer products, edit, select and delete them.
-</p>
-<p>
-Be aware, for simplicity, this application does not do any input validation. In real applications, make sure user inputs are valid before saving them into databases.
-</p>
 
 <com:TDataList
      ID="DataList"
@@ -15,8 +10,10 @@ Be aware, for simplicity, this application does not do any input validation. In 
      OnUpdateCommand="updateItem"
      OnDeleteCommand="deleteItem"
      OnSelectedIndexChanged="selectItem"
-     ItemStyle.BackColor="#EEEEEE"
-     AlternatingItemStyle.BackColor="#F5F5F5"
+     HeaderStyle.BackColor="black"
+     HeaderStyle.ForeColor="white"
+     ItemStyle.BackColor="#BFCFFF"
+     AlternatingItemStyle.BackColor="#E6ECFF"
      EditItemStyle.BackColor="lightgreen"
      SelectedItemStyle.BackColor="lightyellow">
 

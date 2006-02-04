@@ -14,10 +14,11 @@ Since the page is mainly for display and does not require user interactions, the
      RepeatColumns="3"
      RepeatDirection="Horizontal"
      ItemStyle.Font.Italic="true"
-     ItemStyle.BackColor="lightgreen"
-     HeaderStyle.BackColor="#AAAADD"
-     FooterStyle.BackColor="#DDAAAA"
-     AlternatingItemStyle.BackColor="lightyellow">
+     ItemStyle.BackColor="#BFCFFF"
+     HeaderStyle.BackColor="black"
+     HeaderStyle.ForeColor="white"
+     FooterStyle.BackColor="gray"
+     AlternatingItemStyle.BackColor="#E6ECFF">
 
 <prop:HeaderTemplate>
 <div style="font-weight:bold; text-align:center;">Computer Parts</div>
@@ -30,7 +31,7 @@ Total <%# $this->Parent->Parent->ItemCount %> products.
 </prop:FooterTemplate>
 
 <prop:ItemTemplate>
-<table border="1" width="100%">
+<table border="0" width="100%">
 <tr>
   <th>ID</th><th>Name</th><th>Quantity</th><th>Price</th>
 </tr>

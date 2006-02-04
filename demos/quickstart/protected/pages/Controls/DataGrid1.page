@@ -99,7 +99,7 @@ Note, if <tt>AutoGenerateColumns</tt> is true and there are manually specified c
 The following example uses manually specified columns to show a list of book information,
 </p>
 <ul>
-  <li>Book title - displayed a hyperlink pointing to the corresponding amazon.com book page. <tt>THyperLinkColumn</tt> is used.</li>
+  <li>Book title - displayed as a hyperlink pointing to the corresponding amazon.com book page. <tt>THyperLinkColumn</tt> is used.</li>
   <li>Publisher - displayed as a piece of text using <tt>TBoundColumn</tt>.</li>
   <li>Price - displayed as a piece of text using <tt>TBoundColumn</tt> with output formatting string and customized styles.</li>
   <li>In-stock or not - displayed as a checkbox using <tt>TCheckBoxColumn</tt>.</li>

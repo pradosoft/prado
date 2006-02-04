@@ -5,6 +5,7 @@
 
 <com:TDataGrid
 	Width="700px"
+	CellPadding="2"
 	ID="DataGrid"
 	AutoGenerateColumns="false"
 	EnableViewState="false"
@@ -36,6 +37,7 @@
 		/>
 	<com:TCheckBoxColumn
 		HeaderText="In-stock"
+		HeaderStyle.Wrap="false"
 		DataField="instock"
 		/>
 	<com:TTemplateColumn>

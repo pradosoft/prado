@@ -16,7 +16,7 @@
 </prop:HeaderTemplate>
 
 <prop:ItemTemplate>
-<tr style="background-color:green">
+<tr style="background-color:#BFCFFF">
 <td><%#$this->Parent->DataItem['id']%></td>
 <td><%#$this->Parent->DataItem['name']%></td>
 <td><%#$this->Parent->DataItem['quantity']%></td>
@@ -26,7 +26,7 @@
 </prop:ItemTemplate>
 
 <prop:AlternatingItemTemplate>
-<tr style="background-color:silver">
+<tr style="background-color:#E6ECFF">
 <td><%#$this->Parent->DataItem['id']%></td>
 <td><%#$this->Parent->DataItem['name']%></td>
 <td><%#$this->Parent->DataItem['quantity']%></td>

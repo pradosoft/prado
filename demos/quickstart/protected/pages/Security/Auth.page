@@ -21,7 +21,7 @@ During <tt>Authorization</tt> application lifecycle, which occurs after <tt>Auth
 
 <h2>Using PRADO Auth Framework</h2>
 <p>
-To enable PRADO auth framework, add the <tt>TAuthManager</tt> module and <tt>TUserManager</tt> module to <a href="Configurations.AppConfig">application configuration</a>,
+To enable PRADO auth framework, add the <tt>TAuthManager</tt> module and <tt>TUserManager</tt> module to <a href="?page=Configurations.AppConfig">application configuration</a>,
 </p>
 <com:TTextHighlighter Language="xml" CssClass="source">
 &lt;service id="page" class="TPageService"&gt;
