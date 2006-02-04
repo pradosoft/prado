@@ -43,17 +43,20 @@ foreach($lines as $line)
 	echo 'adding '.FRAMEWORK_DIR.'/'.$line."\n";
 	$input=file_get_contents(FRAMEWORK_DIR.'/'.$line);
 	$input = strip_comments($input);
-	$input=strtr($input,"\r",' ');
+	$input=strtr($input,"\r",'');
 	$input=preg_replace("/\s*(\n+\s*){2,}\s*/m","\n",$input);
 	$input=preg_replace('/^Prado::using\([^\*]*?\);/mu','',$input);
 	$input=preg_replace('/^(require|require_once)\s*\(.*?;/mu','',$input);
 	$input=preg_replace('/^(include|include_once)\s*\(.*?;/mu','',$input);
+	$input=preg_replace('/^\s*/m','',$input);
 
 	//remove internal logging
 	$input=preg_replace('/^\s*Prado::trace.*\s*;\s*$/mu','',$input);
 
 	$output.=$input;
 }
+
+$output=str_replace('?><?php','',$output);
 
 file_put_contents(FRAMEWORK_DIR.'/'.OUTPUT_FILE,$output);
 
