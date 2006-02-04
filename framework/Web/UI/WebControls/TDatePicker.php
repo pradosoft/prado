@@ -148,7 +148,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @return string current calendar styl
+	 * @return string current calendar style
 	 */
 	public function getCalendarStyle()
 	{

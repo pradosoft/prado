@@ -1,0 +1,40 @@
+<com:TContent ID="Content">
+
+<com:TColorPicker Text="#FFCC00" /><br />
+
+
+<p>asda<br /></p>
+<p>asda<br /></p>
+<p>asda<br /></p>
+
+<p>asda<br /></p>
+<p>asda<br /></p>
+
+<com:TColorPicker Mode="Simple" /><br />
+
+
+<p>asda<br /></p>
+<p>asda<br /></p>
+<p>asda<br /></p>
+
+<com:TColorPicker ShowColorPicker="false" /><br />
+
+<p>asda<br /></p>
+
+<com:TColorPicker Mode="Full" /><br />
+
+<p>asda<br /></p>
+<p>asda<br /></p>
+
+<p>asda<br /></p>
+<p>asda<br /></p>
+<p>asda<br /></p>
+<p>asda<br /></p>
+<p>asda<br /></p>
+<p>asda<br /></p>
+<p>asda<br /></p>
+<p>asda<br /></p>
+<p>asda<br /></p>
+
+
+</com:TContent>

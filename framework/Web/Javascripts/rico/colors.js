@@ -1,4 +1,6 @@
 //-------------------- ricoColor.js
+if(typeof(Rico) == "undefined") Rico = {};
+
 Rico.Color = Class.create();
 
 Rico.Color.prototype = {
@@ -94,9 +96,23 @@ Rico.Color.createFromHex = function(hexCode) {
 
    if ( hexCode.indexOf('#') == 0 )
       hexCode = hexCode.substring(1);
-   var red   = hexCode.substring(0,2);
-   var green = hexCode.substring(2,4);
-   var blue  = hexCode.substring(4,6);
+   
+   var red = "ff", green = "ff", blue="ff";
+   if(hexCode.length > 4)
+	{
+	   red   = hexCode.substring(0,2);
+	   green = hexCode.substring(2,4);
+	   blue  = hexCode.substring(4,6);
+	}
+	else if(hexCode.length > 0 & hexCode.length < 4)
+	{
+	  var r = hexCode.substring(0,1);
+	  var g = hexCode.substring(1,2);
+	  var b = hexCode.substring(2);
+	  red = r+r;
+	  green = g+g;
+	  blue = b+b;
+	}
    return new Rico.Color( parseInt(red,16), parseInt(green,16), parseInt(blue,16) );
 }
 
@@ -106,9 +122,8 @@ Rico.Color.createFromHex = function(hexCode) {
  */
 Rico.Color.createColorFromBackground = function(elem) {
 
-   var actualColor = RicoUtil.getElementsComputedStyle($(elem), "backgroundColor", "background-color");
-
-   if ( actualColor == "transparent" && elem.parent )
+   var actualColor = Element.getStyle($(elem), "background-color");
+  if ( actualColor == "transparent" && elem.parent )
       return Rico.Color.createColorFromBackground(elem.parent);
 
    if ( actualColor == null )
@@ -123,10 +138,7 @@ Rico.Color.createColorFromBackground = function(elem) {
 
    }
    else if ( actualColor.indexOf("#") == 0 ) {
-      var redPart   = parseInt(actualColor.substring(1,3), 16);
-      var greenPart = parseInt(actualColor.substring(3,5), 16);
-      var bluePart  = parseInt(actualColor.substring(5), 16);
-      return new Rico.Color( redPart, greenPart, bluePart );
+	  return Rico.Color.createFromHex(actualColor);
    }
    else
       return new Rico.Color(255,255,255);

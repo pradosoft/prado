@@ -11,7 +11,7 @@ Object.extend(Builder,
 				if(args.length==0)
 					return Builder.node(tag,null);
 				if(args.length==1)
-					return Builder.node(tag,args[1]);
+					return Builder.node(tag,args[0]);
 				if(args.length>1)
 					return Builder.node(tag,args.shift(),args);
 

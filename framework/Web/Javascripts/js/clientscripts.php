@@ -12,7 +12,7 @@ else
 	$expiresOffset = 3600 * 24 * 10;		// 10 days util client cache expires
 
 //allowed libraries
-$library = array('prado', 'effects', 'ajax', 'validator', 'logger', 'datepicker', 'rico');
+$library = array('prado', 'effects', 'ajax', 'validator', 'logger', 'datepicker', 'rico', 'colorpicker');
 
 $param = isset($_GET['js']) ? $_GET['js'] : '';
 

@@ -118,6 +118,12 @@ $libraries = array(
 	//date picker
 	'datepicker.js' => array(
 		'datepicker/datepicker.js'
+	),
+
+	//color picker
+	'colorpicker.js' => array(
+		'rico/colors.js',
+		'colorpicker/colorpicker.js'
 	)
 );
 

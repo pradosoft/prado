@@ -36,7 +36,8 @@ class TClientScript
 		'validator' => array('prado', 'validator'),
 		'logger' => array('prado', 'logger'),
 		'datepicker' => array('prado', 'datepicker'),
-		'rico' => array('prado', 'effects', 'ajax', 'rico')
+		'rico' => array('prado', 'effects', 'ajax', 'rico'),
+		'colorpicker' => array('prado', 'colorpicker')
 		);
 
 	public function __construct($manager)

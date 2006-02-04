@@ -568,6 +568,14 @@ framework/TComponent.php -text
 framework/Web/Javascripts/TClientScript.php -text
 framework/Web/Javascripts/TJSON.php -text
 framework/Web/Javascripts/TJavascriptSerializer.php -text
+framework/Web/Javascripts/colorpicker/background.png -text
+framework/Web/Javascripts/colorpicker/button.gif -text
+framework/Web/Javascripts/colorpicker/colorpicker.js -text
+framework/Web/Javascripts/colorpicker/default.css -text
+framework/Web/Javascripts/colorpicker/hue.gif -text
+framework/Web/Javascripts/colorpicker/slider.gif -text
+framework/Web/Javascripts/colorpicker/target_black.gif -text
+framework/Web/Javascripts/colorpicker/target_white.gif -text
 framework/Web/Javascripts/datepicker/calendar.png -text
 framework/Web/Javascripts/datepicker/datepicker.js -text
 framework/Web/Javascripts/datepicker/default.css -text
@@ -592,6 +600,7 @@ framework/Web/Javascripts/extra/json.js -text
 framework/Web/Javascripts/extra/logger.js -text
 framework/Web/Javascripts/js/ajax.js -text
 framework/Web/Javascripts/js/clientscripts.php -text
+framework/Web/Javascripts/js/colorpicker.js -text
 framework/Web/Javascripts/js/datepicker.js -text
 framework/Web/Javascripts/js/effects.js -text
 framework/Web/Javascripts/js/logger.js -text
@@ -650,6 +659,7 @@ framework/Web/UI/WebControls/TButtonColumn.php -text
 framework/Web/UI/WebControls/TCheckBox.php -text
 framework/Web/UI/WebControls/TCheckBoxColumn.php -text
 framework/Web/UI/WebControls/TCheckBoxList.php -text
+framework/Web/UI/WebControls/TColorPicker.php -text
 framework/Web/UI/WebControls/TCompareValidator.php -text
 framework/Web/UI/WebControls/TContent.php -text
 framework/Web/UI/WebControls/TContentPlaceHolder.php -text
@@ -730,6 +740,7 @@ tests/FunctionalTests/protected/pages/Tickets/Ticket_21.php -text
 tests/FunctionalTests/protected/pages/Tickets/Ticket_27.page -text
 tests/FunctionalTests/protected/pages/Tickets/Ticket_27.php -text
 tests/FunctionalTests/protected/pages/Tickets/config.xml -text
+tests/FunctionalTests/protected/pages/UI/ColorPicker.page -text
 tests/FunctionalTests/protected/pages/UI/DatePicker.page -text
 tests/FunctionalTests/protected/pages/UI/LabeledTextBox.php -text
 tests/FunctionalTests/protected/pages/UI/LabeledTextBox.tpl -text
