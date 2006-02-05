@@ -232,11 +232,6 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 			$this->getStyle()->addAttributesToRender($writer);
 			$needSpan=true;
 		}
-		if(!$this->getEnabled(true))
-		{
-			$writer->addAttribute('disabled','disabled');
-			$needSpan=true;
-		}
 		if(($tooltip=$this->getToolTip())!=='')
 		{
 			$writer->addAttribute('title',$tooltip);
