@@ -128,6 +128,8 @@ demos/quickstart/protected/pages/Controls/Samples/TDataGrid/Sample3.page -text
 demos/quickstart/protected/pages/Controls/Samples/TDataGrid/Sample3.php -text
 demos/quickstart/protected/pages/Controls/Samples/TDataGrid/Sample4.page -text
 demos/quickstart/protected/pages/Controls/Samples/TDataGrid/Sample4.php -text
+demos/quickstart/protected/pages/Controls/Samples/TDataGrid/Sample5.page -text
+demos/quickstart/protected/pages/Controls/Samples/TDataGrid/Sample5.php -text
 demos/quickstart/protected/pages/Controls/Samples/TDataList/Sample1.page -text
 demos/quickstart/protected/pages/Controls/Samples/TDataList/Sample1.php -text
 demos/quickstart/protected/pages/Controls/Samples/TDataList/Sample2.page -text

@@ -605,9 +605,9 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			else if(strcasecmp($command,'page')===0)
 			{
 				$p=$param->getCommandParameter();
-				if(strcasecmp($p,'next'))
+				if(strcasecmp($p,'next')===0)
 					$pageIndex=$this->getCurrentPageIndex()+1;
-				else if(strcasecmp($p,'prev'))
+				else if(strcasecmp($p,'prev')===0)
 					$pageIndex=$this->getCurrentPageIndex()-1;
 				else
 					$pageIndex=TPropertyValue::ensureInteger($p)-1;
@@ -812,11 +812,10 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	protected function restoreGridFromViewState()
 	{
 		$this->reset();
-		if(($itemCount=$this->getViewState('ItemCount',0))<=0)
-			return;
+		$itemCount=$this->getViewState('ItemCount',0);
 		$this->_pagedDataSource=$ds=$this->createPagedDataSource();
 		$allowPaging=$ds->getAllowPaging();
-		if($allowPaging)
+		if($allowPaging && $ds->getAllowCustomPaging())
 			$ds->setDataSource(new TDummyDataSource($itemCount));
 		else
 			$ds->setDataSource(new TDummyDataSource($this->getViewState('DataSourceCount',0)));
@@ -826,7 +825,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		$items=$this->getItems();
 		$items->clear();
 
-		if($columns->getCount()>0)
+		if(($columnCount=$columns->getCount())>0)
 		{
 			foreach($columns as $column)
 				$column->initialize();
@@ -1239,15 +1238,14 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 					if($pagerStyle)
 					{
 						$item->getStyle()->mergeWith($pagerStyle);
-						$mode=$pagerStyle->getMode();
 						if($index===0)
 						{
-							if($mode==='Bottom')
+							if($pagerStyle->getPosition()==='Bottom' || !$pagerStyle->getVisible())
 								$item->setVisible(false);
 						}
 						else
 						{
-							if($mode==='Top')
+							if($pagerStyle->getPosition()==='Top' || !$pagerStyle->getVisible())
 								$item->setVisible(false);
 						}
 					}

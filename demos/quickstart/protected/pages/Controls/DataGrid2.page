@@ -21,7 +21,22 @@ The following example turns the datagrid in <a href="?page=Controls.Samples.TDat
 <com:RunBar PagePath="Controls.Samples.TDataGrid.Sample4" />
 
 <h2>Paging</h2>
-
+<p>
+When dealing with large datasets, paging is helpful in reducing the page size and complexity. TDataGrid has an embedding paging feature. By setting <tt>AllowPaging</tt> to true, a pager is displayed automatically at the bottom of the datagrid. The pager can be further customized by setting <tt>PagerStyle</tt>, through which you can set pager visibility, mode, position, etc.
+</p>
+<p>
+When users click on a pager button, TDataGrid raises <tt>OnPageIndexChanged</tt> event. Typically, the event handler is written as follows,
+</p>
+<com:TTextHighlighter CssClass="source">
+public function pageIndexChanged($sender,$param) {
+    $this->DataGrid->CurrentPageIndex=$param->NewPageIndex;
+    $this->DataGrid->DataSource=$this->Data;
+    $this->DataGrid->dataBind();
+}
+</com:TTextHighlighter>
+<p>
+The following example enables the paging functionality of the datagrid shown in <a href="?page=Controls.Samples.TDataGrid.Sample1">Example 1</a>. In this example, you can set various pager styles interactively to see how they affect the pager display.
+</p>
 <com:RunBar PagePath="Controls.Samples.TDataGrid.Sample5" />
 
 <h3>Custom Paging</h3>
