@@ -599,7 +599,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			}
 			else if(strcasecmp($command,'sort')===0)
 			{
-				$this->onSortCommand(new TDataGridSortCommandEventParameter($sender,$param->getCommandParameter()));
+				$this->onSortCommand(new TDataGridSortCommandEventParameter($sender,$param));
 				return true;
 			}
 			else if(strcasecmp($command,'page')===0)
