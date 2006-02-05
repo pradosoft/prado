@@ -49,5 +49,27 @@ To enable custom paging, set both <tt>AllowPaging</tt> and <tt>AllowCustomPaging
 <com:RunBar PagePath="Controls.Samples.TDataGrid.Sample6" />
 
 <h2>Extending TDataGrid</h2>
+<p>
+Besides traditional class inheritance, extensibility of TDataGrid is mainly through developing new datagrid column components. For example, one may want to display an image column. He may use <tt>TTemplateColumn</tt> to accomplish this task. A better solution is to develop an image column component so that the work can be reused easily in other projects.
+</p>
+<p>
+All datagrid column components must inherit from <tt>TDataGridColumn</tt>. The main method that needs to be overridden is <tt>initializeCell()</tt> which creates content for cells in the corresponding column. Since each cell is also in an item (row) and the item can have different types (such as <tt>Header</tt>, <tt>AltneratingItem</tt>, etc.), different content may be created according to the item type. For the image column example, one may want to create a <tt>TImage</tt> control within cells residing in items of <tt>Item</tt> and <tt>AlterantingItem</tt> types.
+</p>
+<com:TTextHighlighter CssClass="source">
+class ImageColumn extends TDataGridColumn {
+    ...
+    public function initializeCell($cell,$columnIndex,$itemType) {
+        parent::initializeCell($cell,$columnIndex,$itemType);
+        if($itemType==='Item' || $itemType==='AlternatingItem') {
+            $image=new TImage;
+            // ... customization of the image
+            $cell->Controls[]=$image;
+        }
+    }
+}
+</com:TTextHighlighter>
+<p>
+In <tt>initializeCell()</tt>, remember to call the parent implementation, as it initializes cells in items of <tt>Header</tt> and <tt>Footer</tt> types.
+</p>
 
 </com:TContent>
