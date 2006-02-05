@@ -1,0 +1,11 @@
+<com:TContent ID="body" >
+<com:LabeledTextBox
+	ID="Input"
+	Label.Text="Username" />
+<com:TButton
+	Text="Submit"
+	OnClick="buttonClicked" />
+<com:TRequiredFieldValidator
+	ControlToValidate="Input.TextBox"
+	ErrorMessage="You must enter a value"/>
+</com:TContent>

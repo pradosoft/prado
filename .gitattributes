@@ -108,6 +108,13 @@ demos/quickstart/protected/pages/Controls/List.page -text
 demos/quickstart/protected/pages/Controls/NewControl.page -text
 demos/quickstart/protected/pages/Controls/Overview.page -text
 demos/quickstart/protected/pages/Controls/Repeater.page -text
+demos/quickstart/protected/pages/Controls/Samples/LabeledTextBox1/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/LabeledTextBox1/Home.php -text
+demos/quickstart/protected/pages/Controls/Samples/LabeledTextBox1/LabeledTextBox.php -text
+demos/quickstart/protected/pages/Controls/Samples/LabeledTextBox1/LabeledTextBox.tpl -text
+demos/quickstart/protected/pages/Controls/Samples/LabeledTextBox2/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/LabeledTextBox2/Home.php -text
+demos/quickstart/protected/pages/Controls/Samples/LabeledTextBox2/LabeledTextBox.php -text
 demos/quickstart/protected/pages/Controls/Samples/TBulletedList/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TBulletedList/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TBulletedList/bullet.gif -text
