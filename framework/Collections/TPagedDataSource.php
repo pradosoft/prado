@@ -152,7 +152,7 @@ class TPagedDataSource extends TComponent implements IteratorAggregate
 	/**
 	 * @return integer user-assigned number of items in data source Defaults to 0.
 	 */
-	public function getVirtualCount()
+	public function getVirtualItemCount()
 	{
 		return $this->_virtualCount;
 	}
@@ -160,12 +160,12 @@ class TPagedDataSource extends TComponent implements IteratorAggregate
 	/**
 	 * @param integer user-assigned number of items in data source
 	 */
-	public function setVirtualCount($value)
+	public function setVirtualItemCount($value)
 	{
 		if(($value=TPropertyValue::ensureInteger($value))>=0)
 			$this->_virtualCount=$value;
 		else
-			throw new TInvalidDataValueException('pageddatasource_virtualcount_invalid');
+			throw new TInvalidDataValueException('pageddatasource_virtualitemcount_invalid');
 	}
 
 	/**

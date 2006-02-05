@@ -1,0 +1,24 @@
+<com:TContent ID="body">
+
+<h1>TDataGrid Sample 6</h1>
+<h2>Custom Paging</h2>
+
+<com:TDataGrid
+	ID="DataGrid"
+	AllowPaging="true"
+	AllowCustomPaging="true"
+	VirtualItemCount="19"
+	PageSize="5"
+	PagerStyle.Mode="Numeric"
+	PagerStyle.HorizontalAlign="Right"
+	Width="500px"
+	CellPadding="2"
+	HeaderStyle.BackColor="black"
+	HeaderStyle.ForeColor="white"
+	ItemStyle.BackColor="#BFCFFF"
+	ItemStyle.Font.Italic="true"
+	AlternatingItemStyle.BackColor="#E6ECFF"
+	OnPageIndexChanged="changePage"
+	/>
+
+</com:TContent>

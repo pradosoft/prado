@@ -22,10 +22,10 @@ The following example turns the datagrid in <a href="?page=Controls.Samples.TDat
 
 <h2>Paging</h2>
 <p>
-When dealing with large datasets, paging is helpful in reducing the page size and complexity. TDataGrid has an embedding paging feature. By setting <tt>AllowPaging</tt> to true, a pager is displayed automatically at the bottom of the datagrid. The pager can be further customized by setting <tt>PagerStyle</tt>, through which you can set pager visibility, mode, position, etc.
+When dealing with large datasets, paging is helpful in reducing the page size and complexity. TDataGrid has an embedded pager that allows users to specify which page of data they want to see. The pager can be customized via <tt>PagerStyle</tt>. For example, <tt>PagerStyle.Visible</tt> determines whether the pager is visible or not; <tt>PagerStyle.Position</tt> indicates where the pager is displayed; and <tt>PagerStyle.Mode</tt> specifies what type of pager is displayed, a numeric one or a next-prev one.
 </p>
 <p>
-When users click on a pager button, TDataGrid raises <tt>OnPageIndexChanged</tt> event. Typically, the event handler is written as follows,
+To enable paging, set <tt>AllowPaging</tt> to true. The number of rows of data displayed in a page is specified by <tt>PageSize</tt>, while the index (zero-based) of the page currently showing to users is by <tt>CurrentPageIndex</tt>. When users click on a pager button, TDataGrid raises <tt>OnPageIndexChanged</tt> event. Typically, the event handler is written as follows,
 </p>
 <com:TTextHighlighter CssClass="source">
 public function pageIndexChanged($sender,$param) {
@@ -40,6 +40,12 @@ The following example enables the paging functionality of the datagrid shown in 
 <com:RunBar PagePath="Controls.Samples.TDataGrid.Sample5" />
 
 <h3>Custom Paging</h3>
+<p>
+The paging functionality shown above requires loading all data into memory, even though only a portion of them is displayed in a page. For large datasets, this is inefficient and may not always be feasible. TDataGrid provides custom paging to solve this problem. Custom paging only requires the portion of the data to be displayed to end users.
+</p>
+<p>
+To enable custom paging, set both <tt>AllowPaging</tt> and <tt>AllowCustomPaging</tt> to true. Notify TDataGrid the total number of data items (rows) available by setting <tt>VirtualItemCount</tt>. And respond to the <tt>OnPageIndexChanged</tt> event. In the event handler, use the <tt>NewPageIndex</tt> property of the event parameter to fetch the new page of data from data source. For MySQL database, this can be done by using <tt>LIMIT</tt> clause in an SQL select statement.
+</p>
 <com:RunBar PagePath="Controls.Samples.TDataGrid.Sample6" />
 
 <h2>Extending TDataGrid</h2>

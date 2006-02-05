@@ -79,7 +79,7 @@ Prado::using('System.Web.UI.WebControls.TTable');
  * datasource. The number of pages <b>PageCount</b> is calculated based the item number and the
  * <b>PageSize</b> property. The datagrid will manage which section of the data source to be displayed
  * based on the <b>CurrentPageIndex</b> property.
- * The second approach calculates the page number based on the <b>VirtualCount</b> property and
+ * The second approach calculates the page number based on the <b>VirtualItemCount</b> property and
  * the <b>PageSize</b> property. The datagrid will always display from the beginning of the datasource
  * upto the number of <b>PageSize> data items. This approach is especially useful when the datasource may
  * contain too many data items to be managed by the datagrid efficiently.
@@ -504,19 +504,19 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	/**
 	 * @return integer virtual number of items in the grid. Defaults to 0, meaning not set.
 	 */
-	public function getVirtualCount()
+	public function getVirtualItemCount()
 	{
-		return $this->getViewState('VirtualCount',0);
+		return $this->getViewState('VirtualItemCount',0);
 	}
 
 	/**
 	 * @param integer virtual number of items in the grid
 	 */
-	public function setVirtualCount($value)
+	public function setVirtualItemCount($value)
 	{
 		if(($value=TPropertyValue::ensureInteger($value))<0)
-			throw new TInvalidDataValueException('datagrid_virtualcount_invalid');
-		$this->setViewState('VirtualCount',$value,0);
+			throw new TInvalidDataValueException('datagrid_virtualitemcount_invalid');
+		$this->setViewState('VirtualItemCount',$value,0);
 	}
 
 	/**
@@ -794,7 +794,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		$ds->setPageSize($this->getPageSize());
 		$ds->setAllowPaging($this->getAllowPaging());
 		$ds->setAllowCustomPaging($this->getAllowCustomPaging());
-		$ds->setVirtualCount($this->getVirtualCount());
+		$ds->setVirtualItemCount($this->getVirtualItemCount());
 		return $ds;
 	}
 
