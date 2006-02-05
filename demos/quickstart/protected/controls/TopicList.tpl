@@ -6,6 +6,7 @@
     <li><a href="?page=GettingStarted.Introduction">Introduction</a></li>
     <li><a href="?page=GettingStarted.AboutPrado">What is PRADO?</a></li>
     <li><a href="?page=GettingStarted.Installation">Installation</a></li>
+    <li><a href="?page=GettingStarted.Upgrading">Upgrading from Earlier Versions</a></li>
 </ul>
 </div>
 
@@ -48,7 +49,7 @@
     <li><a href="?page=Controls.DataGrid1">TDataGrid: Part I</a></li>
     <li><a href="?page=Controls.DataGrid2">TDataGrid: Part II</a></li>
     <li><a href="?page=Construction">Active Controls</a></li>
-    <li><a href="?page=Construction">Creating New Controls</a></li>
+    <li><a href="?page=Controls.NewControl">Writing New Controls</a></li>
 </ul>
 </div>
 

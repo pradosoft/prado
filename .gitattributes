@@ -105,6 +105,7 @@ demos/quickstart/protected/pages/Controls/DataGrid1.page -text
 demos/quickstart/protected/pages/Controls/DataGrid2.page -text
 demos/quickstart/protected/pages/Controls/DataList.page -text
 demos/quickstart/protected/pages/Controls/List.page -text
+demos/quickstart/protected/pages/Controls/NewControl.page -text
 demos/quickstart/protected/pages/Controls/Overview.page -text
 demos/quickstart/protected/pages/Controls/Repeater.page -text
 demos/quickstart/protected/pages/Controls/Samples/TBulletedList/Home.page -text
@@ -210,6 +211,7 @@ demos/quickstart/protected/pages/Fundamentals/objectdiagram.vsd -text
 demos/quickstart/protected/pages/GettingStarted/AboutPrado.page -text
 demos/quickstart/protected/pages/GettingStarted/Installation.page -text
 demos/quickstart/protected/pages/GettingStarted/Introduction.page -text
+demos/quickstart/protected/pages/GettingStarted/Upgrading.page -text
 demos/quickstart/protected/pages/Security/Auth.page -text
 demos/quickstart/protected/pages/Security/ViewState.page -text
 demos/quickstart/protected/pages/Security/XSS.page -text

@@ -18,8 +18,14 @@ public function buttonClicked($sender,$param)
 	$sender->Text = "Hello World";
 }
 </com:TTextHighlighter>
+</p>
+<p>
+The following line in the page template attaches the <tt>buttonClicked()</tt> method to the <tt>OnClick</tt> event of the button,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TButton Text="Click Me" OnClick="buttonClicked" /&gt;
+</com:TTextHighlighter>
 
 <com:RunBar PagePath="Fundamentals.Samples.HelloWorld.Home" />
-</p>
 
 </com:TContent>

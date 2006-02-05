@@ -41,9 +41,9 @@
  */
 class TAPCCache extends TModule implements ICache
 {
-   
+
     const SERIALIZED = "_serialized";
-   
+
    /**
     * @var boolean if the module is initialized
     */
@@ -181,4 +181,4 @@ class TAPCCache extends TModule implements ICache
 
 }
 
-?> 
+?>
