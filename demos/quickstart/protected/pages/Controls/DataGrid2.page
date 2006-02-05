@@ -16,7 +16,7 @@ The following example shows how to make the previous book information table an i
 TDataGrid supports sorting its items according to specific columns. To enable sorting, set <tt>AllowSorting</tt> to true. This will turn column headers into clickable buttons if their <tt>SortExpression</tt> property is not empty. When users click on the header buttons, an <tt>OnSortCommand</tt> event will be raised. Developers can write handlers to respond to the sort command and sort the data according to <tt>SortExpression</tt> which is specified in the corresponding column.
 </p>
 <p>
-The following example turns Example 2 into a sortable datagrid. Users can click on any link button displayed in the header of a column and the data will be sorted in ascending order along that column.
+The following example turns the datagrid in <a href="?page=Controls.Samples.TDataGrid.Sample2">Example 2</a> into a sortable one. Users can click on the link button displayed in the header of any column, and the data will be sorted in ascending order along that column.
 </p>
 <com:RunBar PagePath="Controls.Samples.TDataGrid.Sample4" />
 
