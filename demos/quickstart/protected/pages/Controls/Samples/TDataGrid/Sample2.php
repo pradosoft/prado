@@ -73,6 +73,12 @@ class Sample2 extends TPage
 			$this->DataGrid->dataBind();
 		}
 	}
+
+	public function toggleColumnVisibility($sender,$param)
+	{
+		foreach($this->DataGrid->Columns as $index=>$column)
+			$column->Visible=$sender->Items[$index]->Selected;
+	}
 }
 
 ?>

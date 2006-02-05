@@ -8,7 +8,6 @@
 	CellPadding="2"
 	ID="DataGrid"
 	AutoGenerateColumns="false"
-	EnableViewState="false"
 	HeaderStyle.BackColor="black"
 	HeaderStyle.ForeColor="white"
 	ItemStyle.BackColor="#BFCFFF"
@@ -47,5 +46,19 @@
 		</prop:ItemTemplate>
 	</com:TTemplateColumn>
 </com:TDataGrid>
+
+<com:TPanel GroupingText="Column Visibility" Width="200px">
+
+<com:TCheckBoxList
+     AutoPostBack="true"
+     OnSelectedIndexChanged="toggleColumnVisibility">
+    <com:TListItem Text="Book Title" Selected="true" />
+    <com:TListItem Text="Publisher" Selected="true" />
+    <com:TListItem Text="Price" Selected="true" />
+    <com:TListItem Text="In-stock" Selected="true" />
+    <com:TListItem Text="Rating" Selected="true" />
+</com:TCheckBoxList>
+
+</com:TPanel>
 
 </com:TContent>
