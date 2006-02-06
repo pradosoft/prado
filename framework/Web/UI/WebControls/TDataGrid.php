@@ -1060,7 +1060,8 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		$endPageIndex=$buttonCount;
 		if($pageIndex>$endPageIndex)
 		{
-			$startPageIndex=((int)($pageIndex/$maxButtonCount))*$maxButtonCount+1;
+			//$startPageIndex=((int)($pageIndex/$maxButtonCount))*$maxButtonCount+1;
+			$startPageIndex=$pageIndex;
 			if(($endPageIndex=$startPageIndex+$maxButtonCount-1)>$pageCount)
 				$endPageIndex=$pageCount;
 			if($endPageIndex-$startPageIndex+1<$maxButtonCount)
