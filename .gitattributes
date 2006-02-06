@@ -1034,5 +1034,7 @@ tests/unit/I18N/core/DateTimeFormatInfoTest.php -text
 tests/unit/I18N/core/NumberFormatInfoTest.php -text
 tests/unit/I18N/core/NumberFormatTest.php -text
 tests/unit/TComponentTest.php -text
+tests/unit/Web/UI/WebControls/TDropDownListTest.php -text
 tests/unit/Web/UI/WebControls/TLabelTest.php -text
+tests/unit/Web/UI/WebControls/TRequiredFieldValidatorTest.php -text
 tests/unit/phpunit2.php -text
