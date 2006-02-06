@@ -16,6 +16,10 @@ implements <com:TTextBox ID="Interfaces" CssClass="slTextBox"/>
 <com:TPanel GroupingText="Property Definitions">
 <com:TRepeater ID="PropertyList" OnItemCommand="propertyAction">
 
+<prop:EmptyTemplate>
+No properties defined.<br/>
+</prop:EmptyTemplate>
+
 <prop:HeaderTemplate>
 <table>
 <tr>
@@ -95,6 +99,10 @@ implements <com:TTextBox ID="Interfaces" CssClass="slTextBox"/>
 
 <com:TPanel GroupingText="Event Definitions">
 <com:TRepeater ID="EventList" OnItemCommand="eventAction">
+
+<prop:EmptyTemplate>
+No events defined.<br/>
+</prop:EmptyTemplate>
 
 <prop:HeaderTemplate>
 <table>

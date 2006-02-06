@@ -73,6 +73,10 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 */
 	private $_footerTemplate=null;
 	/**
+	 * @var ITemplate template used for repeater when no data is bound
+	 */
+	private $_emptyTemplate=null;
+	/**
 	 * @var ITemplate template for separator
 	 */
 	private $_separatorTemplate=null;
@@ -179,6 +183,26 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	}
 
 	/**
+	 * @return ITemplate the template applied when no data is bound to the repeater
+	 */
+	public function getEmptyTemplate()
+	{
+		return $this->_emptyTemplate;
+	}
+
+	/**
+	 * @param ITemplate the template applied when no data is bound to the repeater
+	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 */
+	public function setEmptyTemplate($value)
+	{
+		if($value instanceof ITemplate || $value===null)
+			$this->_emptyTemplate=$value;
+		else
+			throw new TInvalidDataTypeException('repeater_template_required','EmptyTemplate');
+	}
+
+	/**
 	 * @return ITemplate the separator template
 	 */
 	public function getSeparatorTemplate()
@@ -227,7 +251,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	/**
 	 * Creates a repeater item instance based on the item type and index.
 	 * @param integer zero-based item index
-	 * @param string item type, may be 'Header', 'Footer', 'Item', 'Separator', 'AlternatingItem', 'SelectedItem', 'EditItem'.
+	 * @param string item type, may be 'Header', 'Footer', 'Empty', 'Item', 'Separator', 'AlternatingItem', 'SelectedItem', 'EditItem'.
 	 * @return TRepeaterItem created repeater item
 	 */
 	protected function createItem($itemIndex,$itemType)
@@ -239,7 +263,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 * Creates a repeater item and does databinding if needed.
 	 * This method invokes {@link createItem} to create a new repeater item.
 	 * @param integer zero-based item index.
-	 * @param string item type, may be 'Header', 'Footer', 'Item', 'Separator', 'AlternatingItem', 'SelectedItem', 'EditItem'.
+	 * @param string item type, may be 'Header', 'Footer', 'Empty', 'Item', 'Separator', 'AlternatingItem', 'SelectedItem', 'EditItem'.
 	 * @param boolean whether to do databinding for the item
 	 * @param mixed data to be associated with the item
 	 * @return TRepeaterItem the created item
@@ -279,6 +303,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 		{
 			case 'Header': $template=$this->_headerTemplate; break;
 			case 'Footer': $template=$this->_footerTemplate; break;
+			case 'Empty': $template=$this->_emptyTemplate; break;
 			case 'Item': $template=$this->_itemTemplate; break;
 			case 'Separator': $template=$this->_separatorTemplate; break;
 			case 'AlternatingItem': $template=$this->_alternatingItemTemplate===null ? $this->_itemTemplate : $this->_alternatingItemTemplate; break;
@@ -360,6 +385,8 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 			if($this->_footerTemplate!==null)
 				$this->_footer=$this->createItemInternal(-1,'Footer',false,null);
 		}
+		else if($this->_emptyTemplate!==null)
+			$this->createItemInternal(-1,'Empty',false,null);
 		$this->clearChildState();
 	}
 
@@ -387,6 +414,8 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 		}
 		if($itemIndex>0 && $this->_footerTemplate!==null)
 			$this->_footer=$this->createItemInternal(-1,'Footer',true,null);
+		if($itemIndex===0 && $this->_emptyTemplate!==null)
+			$this->createItemInternal(-1,'Empty',true,null);
 		$this->setViewState('ItemCount',$itemIndex,0);
 	}
 
@@ -588,16 +617,16 @@ class TRepeaterItem extends TControl implements INamingContainer
 	/**
 	 * Constructor.
 	 * @param integer zero-based index of the item in the item collection of repeater
-	 * @param string item type, can be 'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager'.
+	 * @param string item type, can be 'Header','Footer','Empty','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager'.
 	 */
 	public function __construct($itemIndex,$itemType)
 	{
 		$this->_itemIndex=$itemIndex;
-		$this->_itemType=TPropertyValue::ensureEnum($itemType,'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager');
+		$this->_itemType=TPropertyValue::ensureEnum($itemType,'Header','Footer','Empty','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager');
 	}
 
 	/**
-	 * @return string item type, can be 'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager'
+	 * @return string item type, can be 'Header','Footer','Empty','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager'
 	 */
 	public function getItemType()
 	{
