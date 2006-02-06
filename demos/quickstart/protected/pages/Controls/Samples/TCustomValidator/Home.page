@@ -24,7 +24,7 @@ Custom validator with default settings:
 	ValidationGroup="Group1"
 	ControlToValidate="TextBox1"
 	ClientValidationFunction="myValidationFunction"
-	ServerValidate="serverValidate"
+	OnServerValidate="serverValidate"
 	Text="You must enter 'test'." />
 <com:TButton Text="Submit" ValidationGroup="Group1" />
 </td>
@@ -41,7 +41,7 @@ Custom validator with client-side validation disabled:
 	EnableClientScript="false"
 	ControlToValidate="TextBox2"
 	ClientValidationFunction="myValidationFunction"
-	ServerValidate="serverValidate"
+	OnServerValidate="serverValidate"
 	Text="You must enter 'test'." />
 <com:TButton Text="Submit" ValidationGroup="Group2" />
 </td>
@@ -57,7 +57,7 @@ Custom validator with focus-on-error enabled and dynamic display:
 	ValidationGroup="Group3"
 	ControlToValidate="TextBox3"
 	ClientValidationFunction="myValidationFunction"
-	ServerValidate="serverValidate"
+	OnServerValidate="serverValidate"
 	FocusOnError="true"
 	Text="You must enter 'test'." />
 <com:TButton Text="Submit" ValidationGroup="Group3" />

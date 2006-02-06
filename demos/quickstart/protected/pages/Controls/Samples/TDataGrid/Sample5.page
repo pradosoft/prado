@@ -24,7 +24,7 @@
 
 <com:TCheckBoxList
      AutoPostBack="true"
-	RepeatColumns="2"
+     RepeatColumns="2"
      OnSelectedIndexChanged="changePagerPosition">
 	<com:TListItem Text="Top" />
 	<com:TListItem Text="Bottom"  Selected="true" />

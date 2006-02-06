@@ -113,7 +113,6 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	private $_items=null;
 	private $_header=null;
 	private $_footer=null;
-	private $_pager=null;
 	private $_pagedDataSource=null;
 
 	/**
@@ -286,14 +285,6 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			$this->setViewState('PagerStyle',$style,null);
 		}
 		return $style;
-	}
-
-	/**
-	 * @return TDataGridItem the pager
-	 */
-	public function getPager()
-	{
-		return $this->_pager;
 	}
 
 	/**
@@ -831,7 +822,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 				$column->initialize();
 			if($allowPaging)
 				$this->createPager(-1,-1,$columnCount,$ds);
-			$this->createItemInternal(-1,-1,'Header',false,null,$columns);
+			$this->_header=$this->createItemInternal(-1,-1,'Header',false,null,$columns);
 			$selectedIndex=$this->getSelectedItemIndex();
 			$editIndex=$this->getEditItemIndex();
 			$index=0;
@@ -850,7 +841,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 				$index++;
 				$dsIndex++;
 			}
-			$this->createItemInternal(-1,-1,'Footer',false,null,$columns);
+			$this->_footer=$this->createItemInternal(-1,-1,'Footer',false,null,$columns);
 			if($allowPaging)
 				$this->createPager(-1,-1,$columnCount,$ds);
 		}
@@ -893,7 +884,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			$allowPaging=$ds->getAllowPaging();
 			if($allowPaging)
 				$this->createPager(-1,-1,$columnCount,$ds);
-			$this->createItemInternal(-1,-1,'Header',true,null,$columns);
+			$this->_header=$this->createItemInternal(-1,-1,'Header',true,null,$columns);
 			$selectedIndex=$this->getSelectedItemIndex();
 			$editIndex=$this->getEditItemIndex();
 			$index=0;
@@ -914,7 +905,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 				$index++;
 				$dsIndex++;
 			}
-			$this->createItemInternal(-1,-1,'Footer',true,null,$columns);
+			$this->_footer=$this->createItemInternal(-1,-1,'Footer',true,null,$columns);
 			if($allowPaging)
 				$this->createPager(-1,-1,$columnCount,$ds);
 			$this->setViewState('ItemCount',$index,0);
@@ -1073,7 +1064,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		if($startPageIndex>1)
 		{
 			$button=new TLinkButton;
-			$button->setText('...');
+			$button->setText($style->getPrevPageText());
 			$button->setCommandName('page');
 			$button->setCommandParameter($startPageIndex-1);
 			$button->setCausesValidation(false);
@@ -1106,7 +1097,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		{
 			$controls->add('&nbsp;');
 			$button=new TLinkButton;
-			$button->setText('...');
+			$button->setText($style->getNextPageText());
 			$button->setCommandName('page');
 			$button->setCommandParameter($endPageIndex+1);
 			$button->setCausesValidation(false);
@@ -1176,6 +1167,14 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		$footerStyle=$this->getViewState('FooterStyle',null);
 		$pagerStyle=$this->getViewState('PagerStyle',null);
 		$separatorStyle=$this->getViewState('SeparatorStyle',null);
+
+		$invisibleColumns=0;
+		if($this->_columns)
+		{
+			foreach($this->_columns as $column)
+				if(!$column->getVisible())
+					$invisibleColumns++;
+		}
 
 		foreach($this->getControls() as $index=>$item)
 		{
@@ -1275,6 +1274,11 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 							$cell->getStyle()->mergeWith($style);
 					}
 				}
+			}
+			else if($itemType==='Pager' && $invisibleColumns>0)
+			{
+				$cell=$item->getCells()->itemAt(0);
+				$cell->setColumnSpan($cell->getColumnSpan()-$invisibleColumns);
 			}
 		}
 	}
