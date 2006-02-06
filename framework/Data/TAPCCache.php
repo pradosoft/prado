@@ -178,6 +178,40 @@ class TAPCCache extends TModule implements ICache
    {
       return apc_clear_cache('user');
    }
+   
+   
+   
+   /**
+    * Retrieves a value from cache with a specified key.
+    * Does not check wether to unserialized
+    * @return mixed the value stored in cache, false if the value is not in the cache or expired.
+    */
+   public function getRaw($key)
+   {
+      return apc_fetch($this->_prefix.$key);
+   }
+
+   /**
+    * Stores a value identified by a key into cache.
+    * If the cache already contains such a key, the existing value and
+    * expiration time will be replaced with the new ones.
+    *
+    * will only serialized pure object, not array, if your array contains object, you need to call {@link set} 
+    *
+    * @param string the key identifying the value to be cached
+    * @param mixed the value to be cached
+    * @param integer the expiration time of the value,
+    *        0 means never expire,
+    * @return boolean true if the value is successfully stored into cache, false otherwise
+    */
+   public function setRaw($key,$value,$expiry=0)
+   {
+       if(is_object($value)) {
+           $value=serialize($value);
+           apc_store($this->_prefix.$key.self::SERIALIZED,1,$expiry);
+       }
+      return apc_store($this->_prefix.$key,$value,$expiry);
+   }
 
 }
 
