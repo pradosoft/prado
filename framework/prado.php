@@ -39,7 +39,7 @@ if(!function_exists('__autoload'))
 	function __autoload($className)
 	{
 		include_once($className.Prado::CLASS_FILE_EXT);
-		if(!class_exists($className,false))
+		if(!class_exists($className,false) && !interface_exists($className,false))
 			Prado::fatalError("Class file for '$className' cannot be found.");
 	}
 }
