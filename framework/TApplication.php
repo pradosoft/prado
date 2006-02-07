@@ -140,19 +140,19 @@ class TApplication extends TComponent
 	 * @var array list of events that define application lifecycles
 	 */
 	private static $_steps=array(
-		'BeginRequest',
-		'Authentication',
-		'PostAuthentication',
-		'Authorization',
-		'PostAuthorization',
-		'LoadState',
-		'PostLoadState',
-		'PreRunService',
-		'RunService',
-		'PostRunService',
-		'SaveState',
-		'PostSaveState',
-		'EndRequest'
+		'onBeginRequest',
+		'onAuthentication',
+		'onPostAuthentication',
+		'onAuthorization',
+		'onPostAuthorization',
+		'onLoadState',
+		'onPostLoadState',
+		'onPreRunService',
+		'onRunService',
+		'onPostRunService',
+		'onSaveState',
+		'onPostSaveState',
+		'onEndRequest'
 	);
 
 	/**
@@ -290,6 +290,11 @@ class TApplication extends TComponent
 		$this->_uniqueID=md5($this->_basePath);
 	}
 
+	public function __destruct()
+	{
+		$this->onExitApplication();
+	}
+
 	/**
 	 * Executes the lifecycles of the application.
 	 * This is the main entry function that leads to the running of the whole
@@ -307,9 +312,9 @@ class TApplication extends TComponent
 			{
 				if($this->_mode===self::STATE_OFF)
 					throw new THttpException(503,'application_service_unavailable');
-				$method='on'.self::$_steps[$this->_step];
+				$method=self::$_steps[$this->_step];
 				Prado::trace("Executing $method",'System.TApplication');
-				$this->$method($this);
+				$this->$method();
 				if($this->_requestCompleted && $this->_step<$n-1)
 					$this->_step=$n-1;
 				else
@@ -814,92 +819,83 @@ class TApplication extends TComponent
 	 * and initialized, user request is resolved and the corresponding service
 	 * is loaded and initialized. The application is about to start processing
 	 * the user request.
-	 * @param mixed event parameter
 	 */
-	public function onBeginRequest($param)
+	public function onBeginRequest()
 	{
-		$this->raiseEvent('OnBeginRequest',$this,$param);
+		$this->raiseEvent('OnBeginRequest',$this,null);
 	}
 
 	/**
 	 * Raises OnAuthentication event.
 	 * This method is invoked when the user request needs to be authenticated.
-	 * @param mixed event parameter
 	 */
-	public function onAuthentication($param)
+	public function onAuthentication()
 	{
-		$this->raiseEvent('OnAuthentication',$this,$param);
+		$this->raiseEvent('OnAuthentication',$this,null);
 	}
 
 	/**
 	 * Raises OnPostAuthentication event.
 	 * This method is invoked right after the user request is authenticated.
-	 * @param mixed event parameter
 	 */
-	public function onPostAuthentication($param)
+	public function onPostAuthentication()
 	{
-		$this->raiseEvent('OnPostAuthentication',$this,$param);
+		$this->raiseEvent('OnPostAuthentication',$this,null);
 	}
 
 	/**
 	 * Raises OnAuthorization event.
 	 * This method is invoked when the user request needs to be authorized.
-	 * @param mixed event parameter
 	 */
-	public function onAuthorization($param)
+	public function onAuthorization()
 	{
-		$this->raiseEvent('OnAuthorization',$this,$param);
+		$this->raiseEvent('OnAuthorization',$this,null);
 	}
 
 	/**
 	 * Raises OnPostAuthorization event.
 	 * This method is invoked right after the user request is authorized.
-	 * @param mixed event parameter
 	 */
-	public function onPostAuthorization($param)
+	public function onPostAuthorization()
 	{
-		$this->raiseEvent('OnPostAuthorization',$this,$param);
+		$this->raiseEvent('OnPostAuthorization',$this,null);
 	}
 
 	/**
 	 * Raises OnLoadState event.
 	 * This method is invoked when the application needs to load state (probably stored in session).
-	 * @param mixed event parameter
 	 */
-	public function onLoadState($param)
+	public function onLoadState()
 	{
 		$this->loadGlobals();
-		$this->raiseEvent('OnLoadState',$this,$param);
+		$this->raiseEvent('OnLoadState',$this,null);
 	}
 
 	/**
 	 * Raises OnPostLoadState event.
 	 * This method is invoked right after the application state has been loaded.
-	 * @param mixed event parameter
 	 */
-	public function onPostLoadState($param)
+	public function onPostLoadState()
 	{
-		$this->raiseEvent('OnPostLoadState',$this,$param);
+		$this->raiseEvent('OnPostLoadState',$this,null);
 	}
 
 	/**
 	 * Raises OnPreRunService event.
 	 * This method is invoked right before the service is to be run.
-	 * @param mixed event parameter
 	 */
-	public function onPreRunService($param)
+	public function onPreRunService()
 	{
-		$this->raiseEvent('OnPreRunService',$this,$param);
+		$this->raiseEvent('OnPreRunService',$this,null);
 	}
 
 	/**
 	 * Raises OnRunService event.
 	 * This method is invoked when the service runs.
-	 * @param mixed event parameter
 	 */
-	public function onRunService($param)
+	public function onRunService()
 	{
-		$this->raiseEvent('OnRunService',$this,$param);
+		$this->raiseEvent('OnRunService',$this,null);
 		if($this->_service)
 			$this->_service->run();
 	}
@@ -907,42 +903,47 @@ class TApplication extends TComponent
 	/**
 	 * Raises OnPostRunService event.
 	 * This method is invoked right after the servie is run.
-	 * @param mixed event parameter
 	 */
-	public function onPostRunService($param)
+	public function onPostRunService()
 	{
-		$this->raiseEvent('OnPostRunService',$this,$param);
+		$this->raiseEvent('OnPostRunService',$this,null);
 	}
 
 	/**
 	 * Raises OnSaveState event.
 	 * This method is invoked when the application needs to save state (probably stored in session).
-	 * @param mixed event parameter
 	 */
-	public function onSaveState($param)
+	public function onSaveState()
 	{
-		$this->raiseEvent('OnSaveState',$this,$param);
+		$this->raiseEvent('OnSaveState',$this,null);
 		$this->saveGlobals();
 	}
 
 	/**
 	 * Raises OnPostSaveState event.
 	 * This method is invoked right after the application state has been saved.
-	 * @param mixed event parameter
 	 */
-	public function onPostSaveState($param)
+	public function onPostSaveState()
 	{
-		$this->raiseEvent('OnPostSaveState',$this,$param);
+		$this->raiseEvent('OnPostSaveState',$this,null);
 	}
 
 	/**
 	 * Raises OnEndRequest event.
 	 * This method is invoked when the application completes the processing of the request.
-	 * @param mixed event parameter
 	 */
-	public function onEndRequest($param)
+	public function onEndRequest()
 	{
-		$this->raiseEvent('OnEndRequest',$this,$param);
+		$this->raiseEvent('OnEndRequest',$this,null);
+	}
+
+	/**
+	 * Raises OnExitApplication event.
+	 * This method is invoked when the application instance is being destructed.
+	 */
+	public function onExitApplication()
+	{
+		$this->raiseEvent('OnExitApplication',$this,null);
 	}
 }
 
