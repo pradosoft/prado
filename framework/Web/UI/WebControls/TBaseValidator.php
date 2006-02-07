@@ -138,6 +138,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		$options['focuselementid'] = $this->getFocusElementID();
 		$options['validationgroup'] = $this->getValidationGroup();
 		$options['controltovalidate'] = $this->getValidationTarget()->getClientID();
+		$options['controlcssclass'] = $this->getControlCssClass();
 		return $options;
 	}
 
@@ -149,6 +150,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function onPreRender($param)
 	{
+		parent::onPreRender($param);
 		$scripts = $this->getPage()->getClientScript();
 		$formID=$this->getPage()->getForm()->getClientID();
 		$scriptKey = "TBaseValidator:$formID";
@@ -159,7 +161,27 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		}
 		if($this->getEnableClientScript())
 			$this->registerClientScriptValidator();
-		parent::onPreRender($param);
+		$this->updateControlCssClass();
+	}
+
+	/**
+	 * Update the ControlToValidate component's css class depending
+	 * if the ControlCssClass property is set, and whether this is valid.
+	 * @return boolean true if change, false otherwise.
+	 */
+	protected function updateControlCssClass()
+	{
+		if(($cssClass=$this->getControlCssClass())!=='')
+		{
+			$control=$this->getValidationTarget();
+			if($control instanceof TWebControl)
+			{
+				$class = preg_replace ('/ '.preg_quote($cssClass).'/', '',$control->getCssClass());
+				if(!$this->isValid())
+					$class .= ' '.$cssClass;
+				$control->setCssClass($class);
+			}
+		}
 	}
 
 	/**
@@ -378,6 +400,22 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		if($control && $this->getVisible(true) && $this->getEnabled())
 			$this->setIsValid($this->evaluateIsValid());
 		return $this->getIsValid();
+	}
+
+	/**
+	 * @return string the css class that is applied to the control being validated in case the validation fails
+	 */
+	public function getControlCssClass()
+	{
+		return $this->getViewState('ControlCssClass','');
+	}
+
+	/**
+	 * @param string the css class that is applied to the control being validated in case the validation fails
+	 */
+	public function setControlCssClass($value)
+	{
+		$this->setViewState('ControlCssClass',$value,'');
 	}
 
 	/**
