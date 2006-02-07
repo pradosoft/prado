@@ -45,6 +45,8 @@ class Sample5 extends Sample1
 	public function useNumericPager($sender,$param)
 	{
 		$this->DataGrid->PagerStyle->Mode='Numeric';
+		$this->DataGrid->PagerStyle->NextPageText=$this->NextPageText->Text;
+		$this->DataGrid->PagerStyle->PrevPageText=$this->PrevPageText->Text;
 		$this->DataGrid->PagerStyle->PageButtonCount=$this->PageButtonCount->Text;
 		$this->DataGrid->DataSource=$this->Data;
 		$this->DataGrid->dataBind();
