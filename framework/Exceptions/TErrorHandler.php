@@ -95,7 +95,7 @@ class TErrorHandler extends TModule
 	 */
 	public function setErrorTemplatePath($value)
 	{
-		if(($templatePath=Prado::getPathOfNamespace($this->_templatePath))!==null && is_dir($templatePath))
+		if(($templatePath=Prado::getPathOfNamespace($value))!==null && is_dir($templatePath))
 			$this->_templatePath=$templatePath;
 		else
 			throw new TConfigurationException('errorhandler_errortemplatepath_invalid',$value);
