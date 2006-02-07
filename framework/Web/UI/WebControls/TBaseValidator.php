@@ -177,7 +177,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			if($control instanceof TWebControl)
 			{
 				$class = preg_replace ('/ '.preg_quote($cssClass).'/', '',$control->getCssClass());
-				if(!$this->isValid())
+				if(!$this->getIsValid())
 					$class .= ' '.$cssClass;
 				$control->setCssClass($class);
 			}
