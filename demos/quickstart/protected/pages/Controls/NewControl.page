@@ -92,7 +92,10 @@ In the above, <tt>Label.Text</tt> is a subproperty of <tt>LabeledTextBox</tt>, w
 
 <h2>Extending Existing Controls</h2>
 <p>
-Extending existing controls is the same as conventional class inheritance. It allows developers to customize existing control classes by overriding their methods or providing new functionalities. The difficulty of the task depends on how much an existing class needs to be customized.
+Extending existing controls is the same as conventional class inheritance. It allows developers to customize existing control classes by overriding their properties, methods, events, or creating new ones.
+</p>
+<p>
+The difficulty of the task depends on how much an existing class needs to be customized. For example, a simple task could be to customize <tt>TLabel</tt> control, so that it displays a red label by default. This would merely involves setting the <tt>ForeColor</tt> property to <tt>"red"</tt> in the constructor. A difficult task would be to create controls that provide completely innovative functionalities. Usually, this requires the new controls extend from "low level" control classes, such as <tt>TControl</tt> or <tt>TWebControl</tt>.
 </p>
 <p>
 In this section, we mainly introduce the base control classes <tt>TControl</tt> and <tt>TWebControl</tt>, showing how they can be customized. We also introduce how to write controls with specific functionalities, such as loading post data, raising post data and databinding with data source.
@@ -100,8 +103,13 @@ In this section, we mainly introduce the base control classes <tt>TControl</tt> 
 
 <h3>Extending <tt>TControl</tt></h3>
 <p>
-<tt>TControl</tt> is the base class of all control classes. It implements the following properties and methods that are commonly used in derived control classes,
+<tt>TControl</tt> is the base class of all control classes. Two methods are of the most importance for derived control classes:
 </p>
+<ul>
+  <li><tt>addParsedObject()</tt> - this method is invoked for each component or text string enclosed within the component tag specifying the control in a template. By default, the enclosed components and text strings are added into the <tt>Controls</tt> collection of the control. Derived controls may override this method to do special processing about the enclosed content. For example, <tt>TListControl</tt> only accepts <tt>TListItem</tt> components to be enclosed within its component tag, and these components are added into the <tt>Items</tt> collection of <tt>TListControl</tt>.
+  <li><tt>render()</tt> - this method renders the control. By default, it renders items in the <tt>Controls</tt> collection. Derived controls may override this method to give customized presentation.</li>
+</ul>
+Other important properties and methods include:
 <ul>
   <li><tt>ID</tt> - a string uniquely identifying the control among all controls of the same naming container. An automatic ID will be generated if the ID property is not set explicitly.</li>
   <li><tt>UnqiueID</tt> - a fully qualified ID uniquely identifying the control among all controls on the current page hierarchy. It can be used to locate a control in the page hierarchy by calling <tt>TControl::findControl()</tt> method. User input controls often use it as the value of the name attribute of the HTML input element.</li>
@@ -112,24 +120,34 @@ In this section, we mainly introduce the base control classes <tt>TControl</tt> 
   <li><tt>Controls</tt> - collection of all child controls, including static texts between them. It can be used like an array, as it implements <tt>Traversable</tt> interface. To add a child to the control, simply insert it into the <tt>Controls</tt> collection at appropriate position.</li>
   <li><tt>Attributes</tt> - collection of custom attributes. This is useful for allowing users to specify attributes of the output HTML elements that are not covered by control properties.</li>
   <li><tt>getViewState()</tt> and <tt>setViewState()</tt> - these methods are commonly used for defining properties that are stored in viewstate.</li>
-  <li><tt>addParsedObject()</tt> - this method is invoked for each component or text string enclosed within the component tag specifying the control in a template. By default, the enclosed components and text strings are added into the <tt>Controls</tt> collection of the control.</li>
-  <li><tt>createdOnTemplate()</tt> - this method is invoked when the control is created on a template. By default, it calls the enclosing control's <tt>addParsedObject()</tt> method.</li>
-  <li><tt>createChildControls</tt> - this method is invoked by <tt>ensureChildControls()</tt>.</li>
-  <li><tt>saveState()</tt> and <tt>loadState()</tt> - </li>
-  <li><tt>render()</tt> - this method renders the control. By default, it renders items in the <tt>Controls</tt> collection.</li>
-  <li>Control lifecycles - </li>
+  <li><tt>saveState()</tt> and <tt>loadState()</tt> - these two methods can be overriden to provide last step state saving and loading.</li>
+  <li>Control lifecycles - Life page lifecycles, controls also have lifecycles. Each control undergoes the following lifecycles in order: constructor, <tt>onInit()</tt>, <tt>onLoad()</tt>, <tt>onPreRender()</tt>, <tt>render()</tt>, and <tt>onUnload</tt>. More details can be found in the <a href="?page=Fundamentals.Pages">page</a> section.</li>
 </ul>
 
 <h3>Extending <tt>TWebControl</tt></h3>
 <p>
-getTagName()
-addAttributesToRender
-renderBeginTag
-renderContents
-renderEndTag
+<tt>TWebControl</tt> is mainly used as a base class for controls representing HTML elements. It provides a set of properties that are common among HTML elements. It breaks the <tt>TControl::render()</tt> into the following methods that are more suitable for rendering an HTML element:
+</p>
+<ul>
+  <li><tt>addAttributesToRender()</tt> - adds attributes for the HTML element to be rendered. This method is often overriden by derived classes as they usually have different attributes to be rendered.</li>
+  <li><tt>renderBeginTag()</tt> - renders the openning HTML tag.</li>
+  <li><tt>renderContents()</tt> - renders the content enclosed within the HTML element. By default, it displays the items in the <tt>Controls</tt> collection of the control. Derived classes may override this method to render customized contents.</li>
+  <li><tt>renderEndTag()</tt> - renders the closing HTML tag.</li>
+</ul>
+<p>
+When rendering the openning HTML tag, <tt>TWebControl</tt> calls <tt>getTagName()</tt> to obtain the tag name. Derived classes may override this method to render different tag names.
 </p>
 
-<h3></h3>
+<h3>Creating Controls with Special Functionalities</h3>
+<p>
+If a control wants to respond to client-side events and translate them into server side events (called postback events), such as <tt>TButton</tt>, it has to implement the <tt>IPostBackEventHandler</tt> interface.
+</p>
+<p>
+If a control wants to be able to load post data, such as <tt>TTextBox</tt>, it has to implement the <tt>IPostBackDataHandler</tt> interface.
+</p>
+<p>
+If a control wants to get data from some external data source, it can extend <tt>TDataBoundControl</tt>. <tt>TDataBoundControl</tt> implements the basic properties and methods that are needed for populating data via databinding. In fact, controls like <tt>TListControl</tt>, <tt>TRepeater</tt> are <tt>TDataGrid</tt> are all derived from it.
+</p>
 PostBackHandler
 PostBackEvnetHandler
 DataBoundControl
