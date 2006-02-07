@@ -257,14 +257,18 @@ class TApplication extends TComponent
 	/**
 	 * Constructor.
 	 * Sets application base path and initializes the application singleton.
-	 * Application base path refers to the root directory where application
-	 * data and code not directly accessible by Web users are stored.
-	 * If there is a file named <b>application.xml</b> under the base path,
-	 * it is assumed to be the application configuration file and will be loaded
-	 * and parsed when the application runs. By default, the base path is assumed
-	 * to be the <b>protected</b> directory under the directory containing
-	 * the current running script.
-	 * @param string application base path (absolute or relative to current running script)
+	 * Application base path refers to the root directory storing application
+	 * data and code not directly accessible by Web users.
+	 * By default, the base path is assumed to be the <b>protected</b>
+	 * directory under the directory containing the current running script.
+	 * @param string application base path or configuration file path.
+	 *        If the parameter is a file, it is assumed to be the application
+	 *        configuration file, and the directory containing the file is treated
+	 *        as the application base path.
+	 *        If it is a directory, it is assumed to be the application base path,
+	 *        and within that directory, a file named <b>application.xml</b>
+	 *        will be looked for. If found, the file is considered as the application
+	 *        configuration file.
 	 * @param boolean whether to cache application configuration. Defaults to true.
 	 * @throws TConfigurationException if configuration file cannot be read or the runtime path is invalid.
 	 */
@@ -276,20 +280,43 @@ class TApplication extends TComponent
 		Prado::setApplication($this);
 
 		// determine configuration path and file
-		if(($this->_basePath=realpath($basePath))===false || !is_dir($this->_basePath))
+		if(($this->_basePath=realpath($basePath))===false)
 			throw new TConfigurationException('application_basepath_invalid',$basePath);
-		$configFile=$this->_basePath.'/'.self::CONFIG_FILE;
-		$this->_configFile=is_file($configFile) ? $configFile : null;
+		if(is_file($this->_basePath))
+		{
+			$this->_configFile=$this->_basePath;
+			$this->_basePath=dirname($this->_basepath);
+		}
+		else if(is_file($this->_basePath.'/'.self::CONFIG_FILE))
+			$this->_configFile=$this->_basePath.'/'.self::CONFIG_FILE;
+		else
+			$this->_configFile=null;
+
+		// determine runtime path
 		$this->_runtimePath=$this->_basePath.'/'.self::RUNTIME_PATH;
-		if(!is_dir($this->_runtimePath) || !is_writable($this->_runtimePath))
+		if(is_writable($this->_runtimePath))
+		{
+			if($this->_configFile!==null)
+			{
+				$subdir=basename($this->_configFile);
+				$this->_runtimePath.='/'.$subdir;
+				if(!is_dir($this->_runtimePath))
+					mkdir($this->_runtimePath);
+			}
+		}
+		else
 			throw new TConfigurationException('application_runtimepath_invalid',$this->_runtimePath);
 
 		$this->_cacheFile=$cacheConfig ? $this->_runtimePath.'/'.self::CONFIGCACHE_FILE : null;
 
-		// generates unique ID by hashing the configuration path
-		$this->_uniqueID=md5($this->_basePath);
+		// generates unique ID by hashing the runtime path
+		$this->_uniqueID=md5($this->_runtimePath);
 	}
 
+	/**
+	 * Destructor.
+	 * It invokes {@link onExitApplication} method.
+ 	 */
 	public function __destruct()
 	{
 		$this->onExitApplication();
@@ -419,7 +446,7 @@ class TApplication extends TComponent
 	}
 
 	/**
-	 * @return string an ID that unique identifies this Prado application from the others
+	 * @return string an ID that uniquely identifies this Prado application from the others
 	 */
 	public function getUniqueID()
 	{
@@ -940,6 +967,7 @@ class TApplication extends TComponent
 	/**
 	 * Raises OnExitApplication event.
 	 * This method is invoked when the application instance is being destructed.
+	 * Do not raise exceptions within this method or in the event handler.
 	 */
 	public function onExitApplication()
 	{
