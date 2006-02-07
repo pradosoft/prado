@@ -80,6 +80,7 @@ class THttpRequest extends TMap implements IModule
 	 */
 	private $_pathInfo;
 
+	private $_urlFormat='Get';
 	private $_services;
 	private $_requestResolved=false;
 	/**
@@ -140,7 +141,20 @@ class THttpRequest extends TMap implements IModule
 				$_COOKIE=$this->stripSlashes($_COOKIE);
 		}
 
-		$this->copyFrom(array_merge($_GET,$_POST));
+		if($this->getUrlFormat()==='Path' && ($pathInfo=trim($this->_pathInfo,'/'))!=='')
+		{
+			$paths=explode('/',$pathInfo);
+			$n=count($paths);
+			$getVariables=array();
+			for($i=0;$i<$n;++$i)
+			{
+				if($i+1<$n)
+					$getVariables[$paths[$i]]=$paths[++$i];
+			}
+			$this->copyFrom(array_merge($getVariables,array_merge($_GET,$_POST)));
+		}
+		else
+			$this->copyFrom(array_merge($_GET,$_POST));
 
 		$this->_initialized=true;
 		$this->getApplication()->setRequest($this);
@@ -179,6 +193,27 @@ class THttpRequest extends TMap implements IModule
 			$this->_url=new TUri($url);
 		}
 		return $this->_url;
+	}
+
+	/**
+	 * @return string the format of URLs. Defaults to 'Get'.
+	 */
+	public function getUrlFormat()
+	{
+		return $this->_urlFormat;
+	}
+
+	/**
+	 * Sets the format of URLs constructed and interpretted by the request module.
+	 * A 'Get' URL format is like index.php?name1=value1&name2=value2
+	 * while a 'Path' URL format is like index.php/name1/value1/name2/value.
+	 * Changing the UrlFormat will affect {@link constructUrl} and how GET variables
+	 * are parsed.
+	 * @param string the format of URLs. Valid values include 'Path' and 'Get'.
+	 */
+	public function setUrlFormat($value)
+	{
+		$this->_urlFormat=TPropertyValue::ensureEnum($value,'Path','Get');
 	}
 
 	/**
@@ -366,19 +401,26 @@ class THttpRequest extends TMap implements IModule
 	 */
 	public function constructUrl($serviceID,$serviceParam,$getItems=null,$encodeAmpersand=false)
 	{
-		$url=$this->getApplicationPath();
-		$url.='?'.$serviceID.'=';
-		if(!empty($serviceParam))
-			$url.=$serviceParam;
+		$url=$serviceID.'='.$serviceParam;
 		$amp=$encodeAmpersand?'&amp;':'&';
 		if(is_array($getItems) || $getItems instanceof Traversable)
 		{
 			foreach($getItems as $name=>$value)
 				$url.=$amp.urlencode($name).'='.urlencode($value);
 		}
-		if(defined('SID') && SID != '')
-			$url.=$amp.SID;
-		return $url;
+		if($this->getUrlFormat()==='Path')
+		{
+			$url=strtr($url,array($amp=>'/','?'=>'/','='=>'/'));
+			if(defined('SID') && SID != '')
+				$url.='?'.SID;
+			return $this->getApplicationPath().'/'.$url;
+		}
+		else
+		{
+			if(defined('SID') && SID != '')
+				$url.=$amp.SID;
+			return $this->getApplicationPath().'?'.$url;
+		}
 	}
 
 	/**
@@ -395,10 +437,10 @@ class THttpRequest extends TMap implements IModule
 		$this->_requestResolved=true;
 		foreach($this->_services as $id)
 		{
-			if(isset($_GET[$id]))
+			if($this->contains($id))
 			{
 				$this->setServiceID($id);
-				$this->setServiceParameter($_GET[$id]);
+				$this->setServiceParameter($this->itemAt($id));
 				break;
 			}
 		}

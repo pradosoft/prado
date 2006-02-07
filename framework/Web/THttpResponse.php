@@ -274,24 +274,25 @@ class THttpResponse extends TModule implements ITextWriter
 	 */
 	public function flush()
 	{
-		$header = $this->getContentTypeHeader();
-		$this->appendHeader($header);
+		Prado::trace("Flushing output",'System.Web.THttpResponse');
+		$this->sendContentTypeHeader();
 		if($this->_bufferOutput)
 			ob_flush();
-		Prado::trace("Flushing output $header",'System.Web.THttpResponse');
 	}
 
 	/**
-	 * @return string content type and charset header
+	 * Sends content type header if charset is not empty.
 	 */
-	protected function getContentTypeHeader()
+	protected function sendContentTypeHeader()
 	{
-		$app = $this->getApplication()->getGlobalization();
 		$charset = $this->getCharset();
-		if(empty($charset))
-			$charset = !is_null($app) ? $app->getCharset() : 'UTF-8';
-		$type = $this->getContentType();
-		return "Content-Type: $type; charset=$charset";
+		if(empty($charset) && ($globalization=$this->getApplication()->getGlobalization())!==null)
+			$charset = $globalization->getCharset();
+		if(!empty($charset))
+		{
+			$header='Content-Type: '.$this->getContentType().';charset='.$charset;
+			$this->appendHeader($header);
+		}
 	}
 
 	/**
@@ -310,12 +311,8 @@ class THttpResponse extends TModule implements ITextWriter
 	 */
 	public function appendHeader($value)
 	{
+		Prado::trace("Sending header '$value'",'System.Web.THttpResponse');
 		header($value);
-	}
-
-	public function sendContentTypeHeader($type=null)
-	{
-
 	}
 
 	/**

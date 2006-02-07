@@ -169,10 +169,19 @@ class TAuthManager extends TModule
 			if($service instanceof TPageService)
 			{
 				$returnUrl=$application->getRequest()->getRequestUri();
-				$url=$service->constructUrl($this->getLoginPage(),array(self::RETURN_URL_VAR=>$returnUrl));
+				$application->getSession()->add(self::RETURN_URL_VAR,$returnUrl);
+				$url=$service->constructUrl($this->getLoginPage());
 				$application->getResponse()->redirect($url);
 			}
 		}
+	}
+
+	/**
+	 * @return string URL that the browser should be redirected to when login succeeds.
+	 */
+	public function getReturnUrl()
+	{
+		return $this->getSession()->itemAt(self::RETURN_URL_VAR);
 	}
 
 	/**
