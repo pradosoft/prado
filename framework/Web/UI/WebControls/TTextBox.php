@@ -172,6 +172,8 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	public function loadPostData($key,$values)
 	{
 		$value=$values[$key];
+		if($this->getAutoTrim())
+			$value=trim($value);
 		if(!$this->getReadOnly() && $this->getText()!==$value)
 		{
 			$this->setText($value);
@@ -271,6 +273,23 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	public function setAutoPostBack($value)
 	{
 		$this->setViewState('AutoPostBack',TPropertyValue::ensureBoolean($value),false);
+	}
+
+	/**
+	 * @return boolean a value indicating whether the input text should be trimmed spaces. Defaults to false.
+	 */
+	public function getAutoTrim()
+	{
+		return $this->getViewState('AutoTrim',false);
+	}
+
+	/**
+	 * Sets the value indicating if the input text should be trimmed spaces
+	 * @param boolean the value indicating if the input text should be trimmed spaces
+	 */
+	public function setAutoTrim($value)
+	{
+		$this->setViewState('AutoTrim',TPropertyValue::ensureBoolean($value),false);
 	}
 
 	/**
