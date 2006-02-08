@@ -85,7 +85,8 @@ require_once(PRADO_DIR.'/Web/Services/TPageService.php');
  * - PostRunService : this event happens right after the requested service finishes running
  * - SaveState : this event happens when application needs to save its state
  * - PostSaveState : this event happens right after the application saves its state
- * - EndRequest : this is the last stage an application runs
+ * - EndRequest : this is the last stage a request is being completed
+ * - ExitApplication : this is the last stage before application instance is destructed
  * - [destruct] : destruction of the application instance
  * Modules and services can attach their methods to one or several of the above
  * events and do appropriate processing when the events are raised. By this way,
@@ -314,15 +315,6 @@ class TApplication extends TComponent
 	}
 
 	/**
-	 * Destructor.
-	 * It invokes {@link onExitApplication} method.
- 	 */
-	public function __destruct()
-	{
-		$this->onExitApplication();
-	}
-
-	/**
 	 * Executes the lifecycles of the application.
 	 * This is the main entry function that leads to the running of the whole
 	 * Prado application.
@@ -352,6 +344,7 @@ class TApplication extends TComponent
 		{
 			$this->onError($e);
 		}
+		$this->onExitApplication();
 	}
 
 	/**
