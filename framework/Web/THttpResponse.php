@@ -297,6 +297,18 @@ class THttpResponse extends TModule implements ITextWriter
 	}
 
 	/**
+	 * Returns the content in the output buffer.
+	 * The buffer will NOT be cleared after calling this method.
+	 * Use {@link clear()} is you want to clear the buffer.
+	 * @return string output that is in the buffer.
+	 */
+	public function getContents()
+	{
+		Prado::trace("Retrieving output",'System.Web.THttpResponse');
+		return $this->_bufferOutput?ob_get_contents():'';
+	}
+
+	/**
 	 * Clears any existing buffered content.
 	 */
 	public function clear()

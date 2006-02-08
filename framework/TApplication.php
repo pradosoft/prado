@@ -73,20 +73,21 @@ require_once(PRADO_DIR.'/Web/Services/TPageService.php');
  * TApplication maintains a lifecycle with the following stages:
  * - [construct] : construction of the application instance
  * - [initApplication] : load application configuration and instantiate modules and the requested service
- * - BeginRequest : this event happens right after application initialization
- * - Authentication : this event happens when authentication is needed for the current request
- * - PostAuthentication : this event happens right after the authentication is done for the current request
- * - Authorization : this event happens when authorization is needed for the current request
- * - PostAuthorization : this event happens right after the authorization is done for the current request
- * - LoadState : this event happens when application state needs to be loaded
- * - PostLoadState : this event happens right after the application state is loaded
- * - PreRunService : this event happens right before the requested service is to run
- * - RunService : this event happens when the requested service runs
- * - PostRunService : this event happens right after the requested service finishes running
- * - SaveState : this event happens when application needs to save its state
- * - PostSaveState : this event happens right after the application saves its state
- * - EndRequest : this is the last stage a request is being completed
- * - ExitApplication : this is the last stage before application instance is destructed
+ * - onBeginRequest : this event happens right after application initialization
+ * - onAuthentication : this event happens when authentication is needed for the current request
+ * - onAuthenticationComplete : this event happens right after the authentication is done for the current request
+ * - onAuthorization : this event happens when authorization is needed for the current request
+ * - onAuthorizationComplete : this event happens right after the authorization is done for the current request
+ * - onLoadState : this event happens when application state needs to be loaded
+ * - onLoadStateComplete : this event happens right after the application state is loaded
+ * - onPreRunService : this event happens right before the requested service is to run
+ * - runService : the requested service runs
+ * - onSaveState : this event happens when application needs to save its state
+ * - onSaveStateComplete : this event happens right after the application saves its state
+ * - onPreFlushOutput : this event happens right before the application flushes output to client side.
+ * - flushOutput : the application flushes output to client side.
+ * - onEndRequest : this is the last stage a request is being completed
+ * - onExitApplication : this is the last stage before application instance is destructed
  * - [destruct] : destruction of the application instance
  * Modules and services can attach their methods to one or several of the above
  * events and do appropriate processing when the events are raised. By this way,
@@ -143,16 +144,17 @@ class TApplication extends TComponent
 	private static $_steps=array(
 		'onBeginRequest',
 		'onAuthentication',
-		'onPostAuthentication',
+		'onAuthenticationComplete',
 		'onAuthorization',
-		'onPostAuthorization',
+		'onAuthorizationComplete',
 		'onLoadState',
-		'onPostLoadState',
+		'onLoadStateComplete',
 		'onPreRunService',
-		'onRunService',
-		'onPostRunService',
+		'runService',
 		'onSaveState',
-		'onPostSaveState',
+		'onSaveStateComplete',
+		'onPreFlushOutput',
+		'flushOutput',
 		'onEndRequest'
 	);
 
@@ -855,12 +857,12 @@ class TApplication extends TComponent
 	}
 
 	/**
-	 * Raises OnPostAuthentication event.
+	 * Raises OnAuthenticationComplete event.
 	 * This method is invoked right after the user request is authenticated.
 	 */
-	public function onPostAuthentication()
+	public function onAuthenticationComplete()
 	{
-		$this->raiseEvent('OnPostAuthentication',$this,null);
+		$this->raiseEvent('OnAuthenticationComplete',$this,null);
 	}
 
 	/**
@@ -873,12 +875,12 @@ class TApplication extends TComponent
 	}
 
 	/**
-	 * Raises OnPostAuthorization event.
+	 * Raises OnAuthorizationComplete event.
 	 * This method is invoked right after the user request is authorized.
 	 */
-	public function onPostAuthorization()
+	public function onAuthorizationComplete()
 	{
-		$this->raiseEvent('OnPostAuthorization',$this,null);
+		$this->raiseEvent('OnAuthorizationComplete',$this,null);
 	}
 
 	/**
@@ -892,12 +894,12 @@ class TApplication extends TComponent
 	}
 
 	/**
-	 * Raises OnPostLoadState event.
+	 * Raises OnLoadStateComplete event.
 	 * This method is invoked right after the application state has been loaded.
 	 */
-	public function onPostLoadState()
+	public function onLoadStateComplete()
 	{
-		$this->raiseEvent('OnPostLoadState',$this,null);
+		$this->raiseEvent('OnLoadStateComplete',$this,null);
 	}
 
 	/**
@@ -910,23 +912,12 @@ class TApplication extends TComponent
 	}
 
 	/**
-	 * Raises OnRunService event.
-	 * This method is invoked when the service runs.
+	 * Runs the requested service.
 	 */
-	public function onRunService()
+	public function runService()
 	{
-		$this->raiseEvent('OnRunService',$this,null);
 		if($this->_service)
 			$this->_service->run();
-	}
-
-	/**
-	 * Raises OnPostRunService event.
-	 * This method is invoked right after the servie is run.
-	 */
-	public function onPostRunService()
-	{
-		$this->raiseEvent('OnPostRunService',$this,null);
 	}
 
 	/**
@@ -940,12 +931,29 @@ class TApplication extends TComponent
 	}
 
 	/**
-	 * Raises OnPostSaveState event.
+	 * Raises OnSaveStateComplete event.
 	 * This method is invoked right after the application state has been saved.
 	 */
-	public function onPostSaveState()
+	public function onSaveStateComplete()
 	{
-		$this->raiseEvent('OnPostSaveState',$this,null);
+		$this->raiseEvent('OnSaveStateComplete',$this,null);
+	}
+
+	/**
+	 * Raises OnPreFlushOutput event.
+	 * This method is invoked right before the application flushes output to client.
+	 */
+	public function onPreFlushOutput()
+	{
+		$this->raiseEvent('OnPreFlushOutput',$this,null);
+	}
+
+	/**
+	 * Flushes output to client side.
+	 */
+	public function flushOutput()
+	{
+		$this->getResponse()->flush();
 	}
 
 	/**

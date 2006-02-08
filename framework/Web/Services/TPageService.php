@@ -455,9 +455,7 @@ class TPageService extends TService
 		else
 			throw new THttpException(404,'pageservice_page_unknown',$this->_pagePath);
 
-		$writer=$this->getResponse()->createHtmlWriter();
-		$this->_page->run($writer);
-		$writer->flush();
+		$this->_page->run($this->getResponse()->createHtmlWriter());
 	}
 
 	/**
