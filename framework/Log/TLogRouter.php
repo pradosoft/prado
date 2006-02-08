@@ -68,7 +68,7 @@ class TLogRouter extends TModule
 				throw new TConfigurationException('logrouter_configfile_invalid',$this->_configFile);
 		}
 		$this->loadConfig($config);
-		$this->getApplication()->attachEventHandler('OnExitApplication',array($this,'collectLogs'));
+		$this->getApplication()->attachEventHandler('OnEndRequest',array($this,'collectLogs'));
 	}
 
 	/**

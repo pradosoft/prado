@@ -265,7 +265,8 @@ class THttpResponse extends TModule implements ITextWriter
 	 */
 	public function redirect($url)
 	{
-		$this->getApplication()->onExitApplication();
+		if(!$this->getApplication()->getRequestCompleted())
+			$this->getApplication()->onEndRequest();
 		header('Location:'.$url);
 		exit();
 	}

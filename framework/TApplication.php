@@ -87,7 +87,6 @@ require_once(PRADO_DIR.'/Web/Services/TPageService.php');
  * - onPreFlushOutput : this event happens right before the application flushes output to client side.
  * - flushOutput : the application flushes output to client side.
  * - onEndRequest : this is the last stage a request is being completed
- * - onExitApplication : this is the last stage before application instance is destructed
  * - [destruct] : destruction of the application instance
  * Modules and services can attach their methods to one or several of the above
  * events and do appropriate processing when the events are raised. By this way,
@@ -154,8 +153,7 @@ class TApplication extends TComponent
 		'onSaveState',
 		'onSaveStateComplete',
 		'onPreFlushOutput',
-		'flushOutput',
-		'onEndRequest'
+		'flushOutput'
 	);
 
 	/**
@@ -333,20 +331,19 @@ class TApplication extends TComponent
 			{
 				if($this->_mode===self::STATE_OFF)
 					throw new THttpException(503,'application_service_unavailable');
+				if($this->_requestCompleted)
+					break;
 				$method=self::$_steps[$this->_step];
-				Prado::trace("Executing $method",'System.TApplication');
+				Prado::trace("Executing $method()",'System.TApplication');
 				$this->$method();
-				if($this->_requestCompleted && $this->_step<$n-1)
-					$this->_step=$n-1;
-				else
-					$this->_step++;
+				$this->_step++;
 			}
 		}
 		catch(Exception $e)
 		{
 			$this->onError($e);
 		}
-		$this->onExitApplication();
+		$this->onEndRequest();
 	}
 
 	/**
@@ -357,6 +354,14 @@ class TApplication extends TComponent
 	public function completeRequest()
 	{
 		$this->_requestCompleted=true;
+	}
+
+	/**
+	 * @return boolean whether the current request is processed.
+	 */
+	public function getRequestCompleted()
+	{
+		return $this->_requestCompleted;
 	}
 
 	/**
@@ -831,8 +836,8 @@ class TApplication extends TComponent
 	public function onError($param)
 	{
 		Prado::log($param->getMessage(),TLogger::ERROR,'System.TApplication');
-		$this->getErrorHandler()->handleError($this,$param);
 		$this->raiseEvent('OnError',$this,$param);
+		$this->getErrorHandler()->handleError($this,$param);
 	}
 
 	/**
@@ -963,16 +968,6 @@ class TApplication extends TComponent
 	public function onEndRequest()
 	{
 		$this->raiseEvent('OnEndRequest',$this,null);
-	}
-
-	/**
-	 * Raises OnExitApplication event.
-	 * This method is invoked when the application instance is being destructed.
-	 * Do not raise exceptions within this method or in the event handler.
-	 */
-	public function onExitApplication()
-	{
-		$this->raiseEvent('OnExitApplication',$this,null);
 	}
 }
 
