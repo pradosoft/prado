@@ -236,7 +236,7 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 	 * Renders the control.
 	 * @param THtmlWriter the writer for the rendering purpose.
 	 */
-	protected function render($writer)
+	public function render($writer)
 	{
 		if($this->getHasItems())
 			parent::render($writer);
@@ -246,7 +246,7 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 	 * Renders the body contents.
 	 * @param THtmlWriter the writer for the rendering purpose.
 	 */
-	protected function renderContents($writer)
+	public function renderContents($writer)
 	{
 		$this->_isEnabled=$this->getEnabled(true);
 		$this->_postBackOptions=$this->getPostBackOptions();

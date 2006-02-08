@@ -61,7 +61,7 @@ class THyperLink extends TWebControl
 	 * Renders the body content of the hyperlink.
 	 * @param THtmlWriter the writer for rendering
 	 */
-	protected function renderContents($writer)
+	public function renderContents($writer)
 	{
 		if(($imageUrl=$this->getImageUrl())==='')
 		{

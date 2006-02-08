@@ -112,7 +112,7 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 	 * the body content enclosed in the control tag will be rendered.
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
-	protected function renderContents($writer)
+	public function renderContents($writer)
 	{
 		if(($text=$this->getText())==='')
 			parent::renderContents($writer);

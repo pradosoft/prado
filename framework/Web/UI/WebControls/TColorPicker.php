@@ -42,7 +42,7 @@ class TColorPicker extends TTextBox
 	{
 	   return $this->getViewState('Mode', 'Basic');
 	}
-	
+
 	/**
 	 * @param string set the color picker style
 	 */
@@ -100,7 +100,7 @@ class TColorPicker extends TTextBox
 		$options['ID'] = $this->getClientID();
 		$options['ClassName'] = $this->getCssClass();
 		$options['ShowColorPicker'] = $this->getShowColorPicker();
-		
+
 		if($options['ShowColorPicker'])
 		{
 			$mode = $this->getMode();
@@ -109,7 +109,7 @@ class TColorPicker extends TTextBox
 			else if($mode == 'Simple') $options['Palette'] = 'Tiny';
 
 			$options['OKButtonText'] = $this->getOKButtonText();
-			$options['CancelButtonText'] = $this->getCancelButtonText();			
+			$options['CancelButtonText'] = $this->getCancelButtonText();
 		}
 
 		return $options;
@@ -148,7 +148,7 @@ class TColorPicker extends TTextBox
 		$cs = $this->getPage()->getClientScript();
 		$key = "prado:".get_class($this);
 
-		$images = array('button' => '.gif', 'target_black' => '.gif', 
+		$images = array('button' => '.gif', 'target_black' => '.gif',
 						'target_white' => '.gif', 'background' => '.png',
 						'slider' => '.gif', 'hue' => '.gif');
 
@@ -195,7 +195,7 @@ class TColorPicker extends TTextBox
 	 * additional color picker button.
 	 * @param THtmlWriter writer
 	 */
-	protected function render($writer)
+	public function render($writer)
 	{
 		parent::render($writer);
 

@@ -138,7 +138,7 @@ class TTranslate extends TI18NControl
 	/**
 	 * renders the translated string.
 	 */
-	protected function render($writer)
+	public function render($writer)
 	{
 		$textWriter=new TTextWriter;
 		$htmlWriter=new THtmlWriter($textWriter);

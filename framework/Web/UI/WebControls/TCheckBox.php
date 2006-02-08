@@ -222,7 +222,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	 * and a span element if needed.
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
-	protected function render($writer)
+	public function render($writer)
 	{
 		$this->addAttributesToRender($writer);
 		$this->getPage()->ensureRenderInForm($this);

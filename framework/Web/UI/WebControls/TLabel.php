@@ -60,7 +60,7 @@ class TLabel extends TWebControl
 	 * Renders the body content of the label.
 	 * @param THtmlWriter the renderer
 	 */
-	protected function renderContents($writer)
+	public function renderContents($writer)
 	{
 		if(($text=$this->getText())==='')
 			parent::renderContents($writer);

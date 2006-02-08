@@ -106,7 +106,7 @@ class TTextHighlighter extends TWebControl
 	 * the body content with syntax highlighted result.
 	 * @param THtmlWriter writer
 	 */
-	protected function renderContents($writer)
+	public function renderContents($writer)
 	{
 		$textWriter=new TTextWriter;
 		parent::renderContents(new THtmlWriter($textWriter));
@@ -143,7 +143,7 @@ class TTextHighlighter extends TWebControl
 	{
 		$this->setViewState('CopyCode', TPropertyValue::ensureBoolean($value), true);
 	}
-	
+
 	/**
 	 * Returns the highlighted text.
 	 * @param string text to highlight.
@@ -157,7 +157,7 @@ class TTextHighlighter extends TWebControl
 		$geshi->enable_classes();
 		if($this->getEnableCopyCode())
 			$geshi->set_header_content($this->getHeaderTemplate());
-		
+
 		return $geshi->parse_code();
 	}
 

@@ -274,7 +274,7 @@ class TDatePicker extends TTextBox
 	 * additional date picker button if Mode is "Button" or "ImageButton".
 	 * @param THtmlWriter writer
 	 */
-	protected function render($writer)
+	public function render($writer)
 	{
 		parent::render($writer);
 		switch ($this->getMode())

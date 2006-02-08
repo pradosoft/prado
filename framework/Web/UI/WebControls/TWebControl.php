@@ -368,7 +368,7 @@ class TWebControl extends TControl
 	 * - {@link renderEndTag}
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
-	protected function render($writer)
+	public function render($writer)
 	{
 		$this->renderBeginTag($writer);
 		$this->renderContents($writer);
@@ -391,7 +391,7 @@ class TWebControl extends TControl
 	 * You can override this method to provide customized content rendering.
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
-	protected function renderContents($writer)
+	public function renderContents($writer)
 	{
 		parent::renderChildren($writer);
 	}

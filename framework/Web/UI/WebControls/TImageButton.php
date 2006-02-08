@@ -296,7 +296,7 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	 * This overrides the parent implementation with nothing to be rendered.
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
-	protected function renderContents($writer)
+	public function renderContents($writer)
 	{
 	}
 }

@@ -26,7 +26,7 @@ class TSafeHtml extends TControl
 	 * malicious javascript code from the body content
 	 * @param THtmlWriter writer
 	 */
-	protected function renderContents($writer)
+	public function renderContents($writer)
 	{
 		$textWriter=new TTextWriter;
 		parent::renderContents(new THtmlWriter($textWriter));

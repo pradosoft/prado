@@ -68,7 +68,7 @@ class TForm extends TControl
 	/**
 	 * @internal
 	 */
-	protected function render($writer)
+	public function render($writer)
 	{
 		$this->addAttributesToRender($writer);
 		$writer->renderBeginTag('form');

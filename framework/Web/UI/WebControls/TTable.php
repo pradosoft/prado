@@ -286,7 +286,7 @@ class TTable extends TWebControl
 	 * Renders body contents of the table.
 	 * @param THtmlWriter the writer used for the rendering purpose.
 	 */
-	protected function renderContents($writer)
+	public function renderContents($writer)
 	{
 		if($this->_rows)
 		{

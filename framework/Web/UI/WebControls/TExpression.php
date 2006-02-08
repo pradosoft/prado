@@ -53,7 +53,7 @@ class TExpression extends TControl
 	 * Renders the evaluation result of the expression.
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
-	protected function render($writer)
+	public function render($writer)
 	{
 		if($this->_e!=='')
 			$writer->write($this->evaluateExpression($this->_e));

@@ -358,7 +358,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	 * This method overrides the parent implementation.
 	 * @param THtmlWriter writer for rendering purpose.
 	 */
-	protected function render($writer)
+	public function render($writer)
 	{
 		if($this->getItemCount()>0)
 		{

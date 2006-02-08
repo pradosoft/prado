@@ -121,7 +121,7 @@ class TTableRow extends TWebControl
 	 * Renders body contents of the table row
 	 * @param THtmlWriter writer for the rendering purpose
 	 */
-	protected function renderContents($writer)
+	public function renderContents($writer)
 	{
 		if($this->_cells)
 		{

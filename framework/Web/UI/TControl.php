@@ -620,7 +620,7 @@ class TControl extends TComponent
 	 * @param mixed the default value. If $key is not found in viewstate, $defaultValue will be returned
 	 * @return mixed the viewstate value corresponding to $key
 	 */
-	protected function getViewState($key,$defaultValue=null)
+	public function getViewState($key,$defaultValue=null)
 	{
 		return isset($this->_viewState[$key])?$this->_viewState[$key]:$defaultValue;
 	}
@@ -635,7 +635,7 @@ class TControl extends TComponent
 	 * @param mixed the viewstate value to be set
 	 * @param mixed default value. If $value===$defaultValue, the item will be cleared from the viewstate.
 	 */
-	protected function setViewState($key,$value,$defaultValue=null)
+	public function setViewState($key,$value,$defaultValue=null)
 	{
 		if($value===$defaultValue)
 			unset($this->_viewState[$key]);
@@ -647,7 +647,7 @@ class TControl extends TComponent
 	 * Clears a viewstate value.
 	 * @param string the name of the viewstate value to be cleared
 	 */
-	protected function clearViewState($key)
+	public function clearViewState($key)
 	{
 		unset($this->_viewState[$key]);
 	}
@@ -1225,7 +1225,7 @@ class TControl extends TComponent
 	 * Only when the control is visible will the control be rendered.
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
-	protected function renderControl($writer)
+	public function renderControl($writer)
 	{
 		if($this->getVisible(false))
 			$this->render($writer);
@@ -1238,7 +1238,7 @@ class TControl extends TComponent
 	 * By default, the control simply renders all its child contents.
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
-	protected function render($writer)
+	public function render($writer)
 	{
 		$this->renderChildren($writer);
 	}
@@ -1249,7 +1249,7 @@ class TControl extends TComponent
 	 * and renders them in order.
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
-	protected function renderChildren($writer)
+	public function renderChildren($writer)
 	{
 		if($this->getHasControls())
 		{

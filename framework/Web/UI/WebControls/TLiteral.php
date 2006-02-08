@@ -67,7 +67,7 @@ class TLiteral extends TControl
 	 * Renders the literal control.
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
-	protected function render($writer)
+	public function render($writer)
 	{
 		if(($text=$this->getText())!=='')
 		{

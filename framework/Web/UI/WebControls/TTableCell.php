@@ -183,7 +183,7 @@ class TTableCell extends TWebControl
 	 * Renders body contents of the table cell.
 	 * @param THtmlWriter the writer used for the rendering purpose.
 	 */
-	protected function renderContents($writer)
+	public function renderContents($writer)
 	{
 		if(($text=$this->getText())==='')
 			parent::renderContents($writer);

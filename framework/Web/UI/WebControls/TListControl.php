@@ -514,7 +514,7 @@ abstract class TListControl extends TDataBoundControl
 	 * This method renders items contained in the list control as the body content.
 	 * @param THtmlWriter writer
 	 */
-	protected function renderContents($writer)
+	public function renderContents($writer)
 	{
 		if($this->_items)
 		{

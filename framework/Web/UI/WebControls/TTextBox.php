@@ -224,7 +224,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	 * Renders the body content of the textbox when it is in MultiLine text mode.
 	 * @param THtmlWriter the writer for rendering
 	 */
-	protected function renderContents($writer)
+	public function renderContents($writer)
 	{
 		if($this->getTextMode()==='MultiLine')
 			$writer->write(THttpUtility::htmlEncode($this->getText()));

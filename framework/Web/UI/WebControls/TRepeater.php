@@ -322,7 +322,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 * content as the whole presentation of the repeater. Outer tag is not rendered.
 	 * @param THtmlWriter writer
 	 */
-	protected function render($writer)
+	public function render($writer)
 	{
 		$this->renderContents($writer);
 	}

@@ -230,7 +230,7 @@ class TValidationSummary extends TWebControl
 	 * Overrides parent implementation by rendering TValidationSummary-specific presentation.
 	 * @return string the rendering result
 	 */
-	protected function renderContents($writer)
+	public function renderContents($writer)
 	{
 		$this->renderJsSummary();
 		if($this->getShowSummary())

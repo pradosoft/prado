@@ -1283,7 +1283,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		}
 	}
 
-	protected function renderContents($writer)
+	public function renderContents($writer)
 	{
 		if($this->getHasControls())
 		{

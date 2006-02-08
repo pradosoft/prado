@@ -429,7 +429,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * Renders the validator control.
 	 * @param THtmlWriter writer for the rendering purpose
 	 */
-	protected function renderContents($writer)
+	public function renderContents($writer)
 	{
 		if(($text=$this->getText())!=='')
 			$writer->write($text);

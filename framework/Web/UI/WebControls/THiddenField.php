@@ -48,7 +48,7 @@ class THiddenField extends TControl implements IPostBackDataHandler
 	 * the hidden field input element.
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
-	protected function render($writer)
+	public function render($writer)
 	{
 		$uniqueID=$this->getUniqueID();
 		$this->getPage()->ensureRenderInForm($this);

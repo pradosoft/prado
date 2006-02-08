@@ -1138,7 +1138,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 * This method overrides the parent implementation.
 	 * @param THtmlWriter writer for rendering purpose.
 	 */
-	protected function render($writer)
+	public function render($writer)
 	{
 		if($this->getHasControls())
 		{

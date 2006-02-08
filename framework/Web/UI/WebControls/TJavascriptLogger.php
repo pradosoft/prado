@@ -46,13 +46,13 @@ class TJavascriptLogger extends TWebControl
 	{
 		return 'div';
 	}
-	
+
 	/**
-	 * Register the required javascript libraries and 
+	 * Register the required javascript libraries and
 	 * display some general usage information.
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
-	protected function renderContents($writer)
+	public function renderContents($writer)
 	{
 		$this->Page->ClientScript->registerClientScript('logger');
 		$info = '(<a href="http://gleepglop.com/javascripts/logger/" target="_blank">more info</a>).';

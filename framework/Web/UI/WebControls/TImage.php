@@ -57,7 +57,7 @@ class TImage extends TWebControl
 	 * Nothing to be rendered within image tags.
 	 * @param THtmlWriter the writer for rendering
 	 */
-	protected function renderContents($writer)
+	public function renderContents($writer)
 	{
 	}
 

@@ -54,7 +54,7 @@ class TStatements extends TControl
 	 * Renders the evaluation result of the statements.
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
-	protected function render($writer)
+	public function render($writer)
 	{
 		if($this->_s!=='')
 			$writer->write($this->evaluateStatements($this->_s));
