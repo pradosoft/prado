@@ -4,7 +4,7 @@ class TextBoxTestCase extends SeleniumTestCase
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TTextBox.Home&functionaltest=true", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TTextBox.Home&amp;notheme=true", "");
 
 		$this->verifyTitle("PRADO QuickStart Sample", "");
 

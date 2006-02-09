@@ -35,7 +35,8 @@ $pages['Controls'] = array(
 	'Controls/Repeater.page',
 	'Controls/DataList.page',
 	'Controls/DataGrid1.page',
-	'Controls/DataGrid2.page');
+	'Controls/DataGrid2.page',
+	'Controls/NewControl.page');
 
 $pages['Security'] = array(
 	'Security/Auth.page',

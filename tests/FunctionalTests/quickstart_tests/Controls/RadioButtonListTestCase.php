@@ -5,7 +5,7 @@ class RadioButtonListTestCase extends SeleniumTestCase
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TRadioButtonList.Home&functionaltest=true", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TRadioButtonList.Home&amp;notheme=true", "");
 
 		// RadioButton list with default settings:
 		$this->click("//input[@name='ctl0\$body\$ctl0' and @value='value 3']", "");

@@ -12,12 +12,12 @@
 <div class="image"></div>
 </div>
 
-<div id="menu">
+<com:TPanel ID="MainMenu" CssClass="mainmenu">
 <a href="?">Home</a> |
 <a href="http://www.pradosoft.com">PradoSoft.com</a> |
-<a href="prado3_quick_start.pdf">Download in PDF</a> |
-<com:TLinkButton Text="Hide TOC" OnClick="toggleTopicPanel" />
-</div>
+<a href="prado3_quick_start.pdf">PDF Version</a> |
+<com:THyperLink ID="PrinterLink" Text="Printer-friendly Version" />
+</com:TPanel>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 <tr>

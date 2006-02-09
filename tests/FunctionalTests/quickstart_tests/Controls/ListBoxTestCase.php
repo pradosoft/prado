@@ -5,7 +5,7 @@ class ListBoxTestCase extends SeleniumTestCase
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TListBox.Home&functionaltest=true", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TListBox.Home&amp;notheme=true", "");
 
 		// a default single selection listbox
 		$this->verifyAttribute("ctl0\$body\$ctl0@size","4");

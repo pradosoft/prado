@@ -4,7 +4,7 @@ class RadioButtonTestCase extends SeleniumTestCase
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TRadioButton.Home&functionaltest=true", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TRadioButton.Home&amp;notheme=true", "");
 
 		$this->verifyTitle("PRADO QuickStart Sample", "");
 

@@ -4,7 +4,7 @@ class DropDownListTestCase extends SeleniumTestCase
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TDropDownList.Home&functionaltest=true", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TDropDownList.Home&amp;notheme=true", "");
 
 		$this->verifyTitle("PRADO QuickStart Sample", "");
 

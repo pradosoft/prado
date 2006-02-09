@@ -68,7 +68,7 @@ a
 
 
 
-#menu {
+.mainmenu {
 	padding:10px;
 	padding-right:10px;
 	background:#EDEDED;
@@ -79,12 +79,12 @@ a
 	font-size: 9pt;
 }
 
-#menu a {
+.mainmenu a {
 	color:#737373;
 	text-decoration:none;
 }
 
-#menu a:hover {
+.mainmenu a:hover {
 	color: #FF0000;
 }
 

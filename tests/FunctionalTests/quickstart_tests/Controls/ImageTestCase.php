@@ -5,7 +5,7 @@ class ImageTestCase extends SeleniumTestCase
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TImage.Home&functionaltest=true", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TImage.Home&amp;notheme=true", "");
 
 		$this->verifyTitle("PRADO QuickStart Sample", "");
 

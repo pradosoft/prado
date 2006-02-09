@@ -4,7 +4,7 @@ class HyperLinkTestCase extends SeleniumTestCase
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.THyperLink.Home&functionaltest=true", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.THyperLink.Home&amp;notheme=true", "");
 		$this->verifyTitle("PRADO QuickStart Sample", "");
 		$this->verifyElementPresent("//a[@href=\"http://www.pradosoft.com/\" and @target=\"_blank\"]");
 		$this->verifyTextPresent("Welcome to", "");

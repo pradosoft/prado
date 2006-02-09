@@ -5,7 +5,7 @@ class CheckBoxListTestCase extends SeleniumTestCase
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TCheckBoxList.Home&functionaltest=true", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TCheckBoxList.Home&amp;notheme=true", "");
 
 		// Check box list with default settings:
 		$this->click("//input[@name='ctl0\$body\$ctl0\$0' and @value='value 1']", "");

@@ -2,13 +2,28 @@
 
 class Layout extends TTemplateControl
 {
-	public function toggleTopicPanel($sender,$param)
+	public function __construct()
 	{
-		$this->TopicPanel->Visible=!$this->TopicPanel->Visible;
-		if($this->TopicPanel->Visible)
-			$sender->Text="Hide TOC";
+		if(isset($this->Request['notheme']))
+			$this->Service->RequestedPage->EnableTheming=false;
+		parent::__construct();
+	}
+
+	public function onLoad($param)
+	{
+		parent::onLoad($param);
+		$url=$this->Request->RequestUri;
+		if(strpos($url,'?')===false)
+			$url.='index.php?notheme=true';
 		else
-			$sender->Text="Show TOC";
+			$url.='&notheme=true';
+		$this->PrinterLink->NavigateUrl=$url;
+
+		if(isset($this->Request['notheme']))
+		{
+			$this->MainMenu->Visible=false;
+			$this->TopicPanel->Visible=false;
+		}
 	}
 }
 
