@@ -14,7 +14,7 @@ class Layout extends TTemplateControl
 		parent::onLoad($param);
 		$url=$this->Request->RequestUri;
 		if(strpos($url,'?')===false)
-			$url.='index.php?notheme=true';
+			$url.='?notheme=true';
 		else
 			$url.='&notheme=true';
 		$this->PrinterLink->NavigateUrl=$url;
