@@ -32,6 +32,7 @@
   <property name="reports.codecoverage.dir" value="${reports.dir}/codecoverage"/>
   <property name="reports.style.dir" value="buildscripts/phing/style"/>
   <property name="reports.geshi.dir" value="${src.dir}/3rdParty/geshi"/>
+  <property name="prado.lite" value="pradolite.php"/>
 
   <fileset dir="." id="src">
     <exclude name="${src.dir}/**/.svn"/>
@@ -83,6 +84,14 @@
     <property name="dist.zipfile" value="${build.base.dir}/${pkgname}.zip" override="true"/>
     <property name="dist.tarfile" value="${build.base.dir}/${pkgname}.tar.gz" override="true"/>
     <property name="dist.pearfile" value="${build.base.dir}/${pkgname}-pear.tgz" override="true"/>
+  </target>
+
+  <taskdef name="phplint" classname="buildscripts.phing.tasks.PhpLintTask"/>
+
+  <target name="lint">
+    <phplint>
+      <fileset refid="src"/>
+    </phplint>
   </target>
 
   <target name="doc" description="Generating API documentation">
@@ -146,6 +155,8 @@
       <fileset refid="misc"/>
       <fileset refid="demos"/>
     </copy>
+    <phingcall target="pradolite"/>
+    <move file="${build.base.dir}/${prado.lite}" tofile="${build.src.dir}/framework" overwrite="true"/>
   </target>
 
   <target name="dist" depends="build" description="Creating the main PRADO distributions">
@@ -155,17 +166,18 @@
     <zip destfile="${dist.zipfile}" basedir="${build.base.dir}"/>
   </target>
 
-  <target name="build-pear" depends="versioncheck">
+  <target name="build-pear" depends="versioncheck,doc,pradolite">
     <echo>Creating directory layout...</echo>
     <delete dir="${build.base.dir}"/>
     <copy todir="${build.pear.dir}">
       <fileset refid="src"/>
+      <fileset refid="docs"/>
     </copy>
   </target>
 
   <target name="dist-pear" depends="build-pear">
     <echo>Creating PEAR package.xml...</echo>
-    <pearpkg name="${phing.project.name}" dir="${build.pear.dir}" destFile="${build.pear.dir}/package.xml">
+    <pearpkg name="${phing.project.name}" dir="${build.pear.dir}" destFile="${build.base.dir}/package.xml">
       <fileset refid="src"/>
       <fileset refid="docs"/>
 
@@ -332,9 +344,12 @@ PRADO provides the following benefits for Web application developers:
     <echo>Validating package.xml</echo>
     <exec command="pear package-validate package.xml" dir="${build.base.dir}" passthru="true"/>
     
-    <!--<echo>Converting package.xml from v1 to v2</echo>
-    <exec command="pear convert" dir="${build.base.dir}" passthru="true"/>-->
+    <echo>Converting package.xml from v1 to v2</echo>
+    <exec command="pear convert" dir="${build.base.dir}" passthru="true"/>
     
+    <echo>Validating package2.xml</echo>
+    <exec command="pear package-validate package2.xml" dir="${build.base.dir}" passthru="true"/>
+
     <echo>Creating tar.gz package...</echo>
     <mkdir dir="${dist.base.dir}"/>
     <tar compression="gzip" destFile="${dist.pearfile}" basedir="${build.base.dir}"/>
@@ -350,8 +365,8 @@ PRADO provides the following benefits for Web application developers:
 
   <target name="pradolite">
     <echo>Compiling PRADO Lite</echo>
-    <delete file="${build.base.dir}/pradolite.php"/>
-    <append destFile="${build.base.dir}/pradolite.php">
+    <delete file="${build.base.dir}/${prado.lite}"/>
+    <append destFile="${build.base.dir}/${prado.lite}">
       <filterchain>
 	<stripphpcomments />
 	<replaceregexp>
@@ -363,8 +378,8 @@ PRADO provides the following benefits for Web application developers:
       </filterchain>
       <filelist dir="${src.dir}" listfile="buildscripts/phpbuilder/files.txt"/>
     </append>
-    <exec command="php -l pradolite.php" dir="${build.base.dir}" passthru="true" checkreturn="true"/>
-    <exec command="php -e pradolite.php" dir="${build.base.dir}" passthru="true" checkreturn="true"/>
+    <exec command="php -l ${prado.lite}" dir="${build.base.dir}" passthru="true" checkreturn="true"/>
+    <exec command="php -e ${prado.lite}" dir="${build.base.dir}" passthru="true" checkreturn="true"/>
   </target>
 
 </project>
