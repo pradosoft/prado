@@ -45,17 +45,10 @@
 		HeaderStyle.Wrap="false"
 		DataField="instock"
 		/>
-	<com:TTemplateColumn SortExpression="rating">
-	<prop:HeaderTemplate>
-		<com:TLinkButton
-			Text="Rating"
-			CommandName="Sort"
-			CommandParameter="rating"
-			CausesValidation="false" />
-		</prop:HeaderTemplate>
+	<com:TTemplateColumn HeaderText="Rating" SortExpression="rating">
 		<prop:ItemTemplate>
 		<img src="images/star<%#$this->NamingContainer->DataItem['rating']%>.gif" alt="" />
-	</prop:ItemTemplate>
+		</prop:ItemTemplate>
 	</com:TTemplateColumn>
 </com:TDataGrid>
 

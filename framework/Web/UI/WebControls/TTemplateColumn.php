@@ -155,7 +155,7 @@ class TTemplateColumn extends TDataGridColumn
 			$cell->getControls()->clear();
 			$template->instantiateIn($cell);
 		}
-		else
+		else if($itemType==='Item' || $itemType==='AlternatingItem' || $itemType==='SelectedItem' || $itemType==='EditItem')
 			$cell->setText('&nbsp;');
 	}
 }

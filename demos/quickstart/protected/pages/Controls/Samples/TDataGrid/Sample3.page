@@ -46,8 +46,7 @@
 		HeaderText="In-stock"
 		DataField="instock"
 		/>
-	<com:TTemplateColumn>
-		<prop:HeaderTemplate>Rating</prop:HeaderTemplate>
+	<com:TTemplateColumn HeaderText="Rating">
 		<prop:ItemTemplate>
 		<img src="images/star<%#$this->NamingContainer->DataItem['rating']%>.gif" alt="" />
 		</prop:ItemTemplate>
