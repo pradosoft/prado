@@ -129,6 +129,11 @@ class TPage extends TTemplateControl
 	private $_isCrossPagePostBack=false;
 	private $_previousPagePath='';
 
+	private $_statePersisterClass='System.Web.UI.TPageStatePersister';
+	private $_statePersister=null;
+	private $_enableStateHMAC=true;
+	private $_enableStateEncryption=false;
+
 	/**
 	 * Constructor.
 	 * Sets the page object to itself.
@@ -514,14 +519,6 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return IStatePersister page state persister
-	 */
-	protected function getPageStatePersister()
-	{
-		return $this->getService()->getPageStatePersister();
-	}
-
-	/**
 	 * This method is invoked when control state is to be saved.
 	 * You can override this method to do last step state saving.
 	 * Parent implementation must be invoked.
@@ -548,7 +545,7 @@ class TPage extends TTemplateControl
 	 */
 	protected function loadPageState()
 	{
-		$state=$this->getPageStatePersister()->load();
+		$state=$this->getStatePersister()->load();
 		$this->loadStateRecursive($state,$this->getEnableViewState());
 	}
 
@@ -558,7 +555,7 @@ class TPage extends TTemplateControl
 	protected function savePageState()
 	{
 		$state=&$this->saveStateRecursive($this->getEnableViewState());
-		$this->getPageStatePersister()->save($state);
+		$this->getStatePersister()->save($state);
 	}
 
 	/**
@@ -806,6 +803,70 @@ class TPage extends TTemplateControl
 	{
 		$this->setViewState('Title',$value,'');
 	}
+
+	public function getStatePersisterClass()
+	{
+		return $this->_statePersisterClass;
+	}
+
+	public function setStatePersisterClass($value)
+	{
+		$this->_statePersisterClass=$value;
+	}
+
+	public function getStatePersister()
+	{
+		if($this->_statePersister===null)
+		{
+			$this->_statePersister=Prado::createComponent($this->_statePersisterClass);
+			if(!($this->_statePersister instanceof IPageStatePersister))
+				throw new TInvalidDataTypeException('page_statepersister_invalid');
+			$this->_statePersister->setPage($this);
+		}
+		return $this->_statePersister;
+	}
+
+	public function getEnableStateHMAC()
+	{
+		return $this->_enableStateHMAC;
+	}
+
+	public function setEnableStateHMAC($value)
+	{
+		$this->_enableStateHMAC=TPropertyValue::ensureBoolean($value);
+	}
+
+	public function getEnableStateEncryption()
+	{
+		return $this->_enableStateEncryption;
+	}
+
+	public function setEnableStateEncryption($value)
+	{
+		$this->_enableStateEncryption=TPropertyValue::ensureBoolean($value);
+	}
+}
+
+interface IPageStatePersister
+{
+	/**
+	 * @param TPage the page that this persister works for
+	 */
+	public function getPage();
+	/**
+	 * @param TPage the page that this persister works for
+	 */
+	public function setPage(TPage $page);
+	/**
+	 * Saves state to persistent storage.
+	 * @param string state to be stored
+	 */
+	public function save($state);
+	/**
+	 * Loads page state from persistent storage
+	 * @return string the restored state
+	 */
+	public function load();
 }
 
 ?>

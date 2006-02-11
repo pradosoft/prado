@@ -580,6 +580,7 @@ framework/Log/TLogger.php -text
 framework/Security/TAuthManager.php -text
 framework/Security/TAuthorizationRule.php -text
 framework/Security/TMembershipManager.php -text
+framework/Security/TSecurityManager.php -text
 framework/Security/TUserManager.php -text
 framework/TApplication.php -text
 framework/TComponent.php -text

@@ -17,7 +17,6 @@ Prado::using('System.Web.UI.TPage');
 Prado::using('System.Web.UI.TTemplateManager');
 Prado::using('System.Web.UI.TThemeManager');
 Prado::using('System.Web.UI.TAssetManager');
-Prado::using('System.Web.UI.TPageStatePersister');
 
 /**
  * TPageService class.
@@ -134,10 +133,6 @@ class TPageService extends TService
 	 * @var TTemplateManager template manager
 	 */
 	private $_templateManager=null;
-	/**
-	 * @var IStatePersister page state persister
-	 */
-	private $_pageStatePersister=null;
 
 	/**
 	 * Initializes the service.
@@ -341,27 +336,6 @@ class TPageService extends TService
 	public function setThemeManager(TThemeManager $value)
 	{
 		$this->_themeManager=$value;
-	}
-
-	/**
-	 * @return IStatePersister page state persister
-	 */
-	public function getPageStatePersister()
-	{
-		if(!$this->_pageStatePersister)
-		{
-			$this->_pageStatePersister=new TPageStatePersister;
-			$this->_pageStatePersister->init(null);
-		}
-		return $this->_pageStatePersister;
-	}
-
-	/**
-	 * @param IStatePersister page state persister
-	 */
-	public function setPageStatePersister(IStatePersister $value)
-	{
-		$this->_pageStatePersister=$value;
 	}
 
 	/**

@@ -31,6 +31,10 @@ require_once(PRADO_DIR.'/Web/THttpSession.php');
  */
 require_once(PRADO_DIR.'/Security/TAuthorizationRule.php');
 /**
+ * Includes TSecurityManager class
+ */
+require_once(PRADO_DIR.'/Security/TSecurityManager.php');
+/**
  * Includes TPageService class (default service)
  */
 require_once(PRADO_DIR.'/Web/Services/TPageService.php');
@@ -240,12 +244,14 @@ class TApplication extends TComponent
 	 * @var IUser user instance, could be null
 	 */
 	private $_user=null;
-
 	/**
 	 * @var TGlobalization module, could be null
 	 */
 	private $_globalization=null;
-
+	/**
+	 * @var TSecurityManager security manager module
+	 */
+	private $_security=null;
 	/**
 	 * @var TAuthorizationRuleCollection collection of authorization rules
 	 */
@@ -648,6 +654,27 @@ class TApplication extends TComponent
 	public function setErrorHandler(TErrorHandler $handler)
 	{
 		$this->_errorHandler=$handler;
+	}
+
+	/**
+	 * @return TSecurityManager the security manager module
+	 */
+	public function getSecurityManager()
+	{
+		if(!$this->_security)
+		{
+			$this->_security=new TSecurityManager;
+			$this->_security->init(null);
+		}
+		return $this->_security;
+	}
+
+	/**
+	 * @param TSecurityManager the security manager module
+	 */
+	public function setSecurityManager(TSecurityManager $sm)
+	{
+		$this->_security=$sm;
 	}
 
 	/**
