@@ -20,9 +20,10 @@ Prado::using('System.Web.UI.WebControls.TDataGridColumn');
  *
  * TBoundColumn represents a column that is bound to a field in a data source.
  * The cells in the column will be displayed using the data indexed by
- * <b>DataField</b>. You can customize the display by setting <b>DataFormatString</b>.
+ * {@link setDataField DataField}. You can customize the display by
+ * setting {@link setDataFormatString DataFormatString}.
  *
- * If <b>ReadOnly</b> is false, TBoundColumn will display cells in edit mode
+ * If {@link setReadOnly ReadOnly} is false, TBoundColumn will display cells in edit mode
  * with textboxes. Otherwise, a static text is displayed.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -46,7 +47,6 @@ class TBoundColumn extends TDataGridColumn
 	public function setDataField($value)
 	{
 		$this->setViewState('DataField',$value,'');
-		$this->onColumnChanged();
 	}
 
 	/**
@@ -63,7 +63,6 @@ class TBoundColumn extends TDataGridColumn
 	public function setDataFormatString($value)
 	{
 		$this->setViewState('DataFormatString',$value,'');
-		$this->onColumnChanged();
 	}
 
 	/**
@@ -80,7 +79,6 @@ class TBoundColumn extends TDataGridColumn
 	public function setReadOnly($value)
 	{
 		$this->setViewState('ReadOnly',TPropertyValue::ensureBoolean($value),false);
-		$this->onColumnChanged();
 	}
 
 	/**
@@ -119,6 +117,11 @@ class TBoundColumn extends TDataGridColumn
 		}
 	}
 
+	/**
+	 * Databinds a cell in the column.
+	 * This method is invoked when datagrid performs databinding.
+	 * It populates the content of the cell with the relevant data from data source.
+	 */
 	public function dataBindColumn($sender,$param)
 	{
 		$item=$sender->getNamingContainer();

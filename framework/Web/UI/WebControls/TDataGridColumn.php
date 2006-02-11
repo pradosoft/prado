@@ -13,23 +13,28 @@
 /**
  * TDataGridColumn class
  *
- * TDataGridColumn serves as the base class for the different column types of the TDataGrid control.
- * TDataGridColumn defines the properties and methods that are common to all column types.
- * In particular, it initializes header and footer cells according to
- * <b>HeaderText</b>, <b>HeaderStyle</b>, <b>FooterText</b>, and <b>FooterStyle</b>.
- * If <b>HeaderImageUrl</b> is specified, the image will be displayed instead in the header cell.
- * The <b>ItemStyle</b> is applied to non-header and -footer items.
+ * TDataGridColumn serves as the base class for the different column types of
+ * the {@link TDataGrid} control.
+ * TDataGridColumn defines the properties and methods that are common among
+ * all datagrid column types. In particular, it initializes header and footer
+ * cells according to {@link setHeaderText HeaderText} and {@link getHeaderStyle HeaderStyle}
+ * {@link setFooterText FooterText} and {@link getFooterStyle FooterStyle} properties.
+ * If {@link setHeaderImageUrl HeaderImageUrl} is specified, the image
+ * will be displayed instead in the header cell.
+ * The {@link getItemStyle ItemStyle} is applied to cells that belong to
+ * non-header and -footer datagrid items.
  *
- * When the datagrid enables sorting, if the <b>SortExpression</b> is not empty,
- * the header cell will display a button (linkbutton or imagebutton) that will
- * bubble sort command event to the datagrid.
+ * When the datagrid enables sorting, if the {@link setSortExpression SortExpression}
+ * is not empty, the header cell will display a button (linkbutton or imagebutton)
+ * that will bubble the sort command event to the datagrid.
  *
- * The framework provides the following TDataGridColumn descendant classes,
- * - TBoundColumn, associated with a specific field in datasource and displays the corresponding data.
- * - TEditCommandColumn, displaying edit/update/cancel command buttons
- * - TButtonColumn, displaying generic command buttons that may be bound to specific field in datasource.
- * - THyperLinkColumn, displaying a hyperlink that may be boudn to specific field in datasource.
- * - TTemplateColumn, displaying content based on templates.
+ * The following datagrid column types are provided by the framework currently,
+ * - {@link TBoundColumn}, associated with a specific field in datasource and displays the corresponding data.
+ * - {@link TEditCommandColumn}, displaying edit/update/cancel command buttons
+ * - {@link TButtonColumn}, displaying generic command buttons that may be bound to specific field in datasource.
+ * - {@link THyperLinkColumn}, displaying a hyperlink that may be bound to specific field in datasource.
+ * - {@link TCheckBoxColumn}, displaying a checkbox that may be bound to specific field in datasource.
+ * - {@link TTemplateColumn}, displaying content based on templates.
  *
  * To create your own column class, simply override {@link initializeCell()} method,
  * which is the major logic for managing the data and presentation of cells in the column.
@@ -58,7 +63,6 @@ abstract class TDataGridColumn extends TComponent
 	public function setHeaderText($value)
 	{
 		$this->setViewState('HeaderText',$value,'');
-		$this->onColumnChanged();
 	}
 
 	/**
@@ -75,7 +79,6 @@ abstract class TDataGridColumn extends TComponent
 	public function setHeaderImageUrl($value)
 	{
 		$this->setViewState('HeaderImageUrl',$value,'');
-		$this->onColumnChanged();
 	}
 
 	/**
@@ -106,7 +109,6 @@ abstract class TDataGridColumn extends TComponent
 	public function setFooterText($value)
 	{
 		$this->setViewState('FooterText',$value,'');
-		$this->onColumnChanged();
 	}
 
 	/**
@@ -138,20 +140,19 @@ abstract class TDataGridColumn extends TComponent
 	}
 
 	/**
-	 * @param string the name of the field or expression for sorting
-	 */
-	public function setSortExpression($value)
-	{
-		$this->setViewState('SortExpression',$value,'');
-		$this->onColumnChanged();
-	}
-
-	/**
 	 * @return string the name of the field or expression for sorting
 	 */
 	public function getSortExpression()
 	{
 		return $this->getViewState('SortExpression','');
+	}
+
+	/**
+	 * @param string the name of the field or expression for sorting
+	 */
+	public function setSortExpression($value)
+	{
+		$this->setViewState('SortExpression',$value,'');
 	}
 
 	/**
@@ -168,7 +169,6 @@ abstract class TDataGridColumn extends TComponent
 	public function setVisible($value)
 	{
 		$this->setViewState('Visible',TPropertyValue::ensureBoolean($value),true);
-		$this->onColumnChanged();
 	}
 
 	/**
@@ -199,41 +199,66 @@ abstract class TDataGridColumn extends TComponent
 			$this->_viewState[$key]=$value;
 	}
 
+	/**
+	 * Loads persistent state values.
+	 * @param mixed state values
+	 */
 	public function loadState($state)
 	{
 		$this->_viewState=$state;
 	}
 
+	/**
+	 * Saves persistent state values.
+	 * @return mixed values to be saved
+	 */
 	public function saveState()
 	{
 		return $this->_viewState;
 	}
 
+	/**
+	 * @return TDataGrid datagrid that owns this column
+	 */
 	public function getOwner()
 	{
 		return $this->_owner;
 	}
 
+	/**
+	 * @param TDataGrid datagrid object that owns this column
+	 */
 	public function setOwner(TDataGrid $value)
 	{
 		$this->_owner=$value;
 	}
 
-	public function onColumnChanged()
-	{
-		if($this->_owner)
-			$this->_owner->onColumnsChanged();
-	}
-
+	/**
+	 * Initializes the column.
+	 * This method is invoked by {@link TDataGrid} when the column
+	 * is about to be used to initialize datagrid items.
+	 * Derived classes may override this method to do additional initialization.
+	 */
 	public function initialize()
 	{
 	}
 
+	/**
+	 * Fetches the value of the data at the specified field.
+	 * If the data is an array, the field is used as an array key.
+	 * If the data is an of {@link TMap}, {@link TList} or their derived class,
+	 * the field is used as a key value.
+	 * If the data is a component, the field is used as the name of a property.
+	 * @param mixed data containing the field of value
+	 * @param string the data field
+	 * @return mixed data value at the specified field
+	 * @throws TInvalidDataValueException if the data or the field is invalid.
+	 */
 	protected function getDataFieldValue($data,$field)
 	{
 		if(is_array($data))
 			return $data[$field];
-		else if($data instanceof TMap)
+		else if(($data instanceof TMap) || ($data instanceof TList))
 			return $data->itemAt($field);
 		else if(($data instanceof TComponent) && $data->canGetProperty($field))
 		{
@@ -241,7 +266,7 @@ abstract class TDataGridColumn extends TComponent
 			return $data->$getter();
 		}
 		else
-			throw new TInvalidDataValueException('datagridcolumn_data_invalid');
+			throw new TInvalidDataValueException('datagridcolumn_data_invalid',get_class($this),$field);
 	}
 
 	/**
@@ -311,8 +336,10 @@ abstract class TDataGridColumn extends TComponent
 
 	/**
 	 * Formats the text value according to format string.
-	 * This method is invoked when setting the text to a cell.
-	 * This method can be overriden.
+	 * This method invokes the {@link sprintf} to do string formatting.
+	 * If the format string is empty, the original value is converted into
+	 * a string and returned.
+	 * @param string format string
 	 * @param mixed the data associated with the cell
 	 * @return string the formatted result
 	 */

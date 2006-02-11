@@ -195,6 +195,14 @@ repeater_template_required				= TRepeater.%s requires a template instance implem
 datalist_template_required				= TDataList.%s requires a template instance implementing ITemplate interface.
 templatecolumn_template_required		= TTemplateColumn.%s requires a template instance implementing ITemplate interface.
 
+datagrid_currentpageindex_invalid		= TDataGrid.CurrentPageIndex must be no less than 0.
+datagrid_pagesize_invalid				= TDataGrid.PageSize must be greater than 0.
+datagrid_virtualitemcount_invalid		= TDataGrid.VirtualItemCount must be no less than 0.
+
+datagridpagerstyle_pagebuttoncount_invalid = TDataGridPagerStyle.PageButtonCount must be greater than 0.
+
+datagridcolumn_data_invalid				= %s is unable to evaluate the value of data field %s. The data must be an array, TList, TMap, or component that contains the field.
+
 repeateritemcollection_repeateritem_required = TRepeaterItemCollection can only accept TRepeaterItem objects.
 
 datagriditemcollection_datagriditem_required = TDataGridItemCollection can only accept TDataGridItem objects.

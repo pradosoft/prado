@@ -1,6 +1,11 @@
 <?php
 /**
- * TDataGrid class file
+ * TDataGrid related class files.
+ * This file contains the definition of the following classes:
+ * TDataGrid, TDataGridItem, TDataGridItemCollection, TDataGridColumnCollection,
+ * TDataGridPagerStyle, TDataGridItemEventParameter,
+ * TDataGridCommandEventParameter, TDataGridSortCommandEventParameter,
+ * TDataGridPageChangedEventParameter
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
@@ -10,6 +15,9 @@
  * @package System.Web.UI.WebControls
  */
 
+/**
+ * Includes TBaseList, TPagedDataSource, TDummyDataSource and TTable classes
+ */
 Prado::using('System.Web.UI.WebControls.TBaseDataList');
 Prado::using('System.Collections.TPagedDataSource');
 Prado::using('System.Collections.TDummyDataSource');
@@ -20,30 +28,36 @@ Prado::using('System.Web.UI.WebControls.TTable');
  *
  * TDataGrid represents a data bound and updatable grid control.
  *
- * To use TDataGrid, sets its <b>DataSource</b> property and invokes dataBind()
- * afterwards. The data will be populated into the TDataGrid and saved in the <b>Items</b> property.
+ * To populate data into the datagrid, sets its {@link setDataSource DataSource}
+ * to a tabular data source and call {@link dataBind()}.
+ * Each row of data will be represented by an item in the {@link getItems Items}
+ * collection of the datagrid.
  *
- * Each item is associated with a row of data and will be displayed as a row in table.
- * A data item can be at one of three states: normal, selected and edit.
+ * An item can be at one of three states: browsing, selected and edit.
  * The state determines how the item will be displayed. For example, if an item
- * is in edit state, it may be displayed as a table row with input text boxes instead
- * static text as in normal state.
- * To change the state of a data item, set either the <b>EditItemIndex</b> property
- * or the <b>SelectedItemIndex</b> property.
+ * is in edit state, it may be displayed as a table row with input text boxes
+ * if the columns are of type {@link TBoundColumn}; and if in browsing state,
+ * they are displayed as static text.
+ *
+ * To change the state of an item, set {@link setEditItemIndex EditItemIndex}
+ * or {@link setSelectedItemIndex SelectedItemIndex} property.
  *
  * A datagrid is specified with a list of columns. Each column specifies how the corresponding
  * table column will be displayed. For example, the header/footer text of that column,
- * the cells in that column, and so on. The following column types are provided by the framework,
- * - TBoundColumn, associated with a specific field in datasource and displays the corresponding data.
- * - TEditCommandColumn, displaying edit/update/cancel command buttons
- * - TButtonColumn, displaying generic command buttons that may be bound to specific field in datasource.
- * - THyperLinkColumn, displaying a hyperlink that may be boudn to specific field in datasource.
- * - TTemplateColumn, displaying content based on templates.
+ * the cells in that column, and so on. The following column types are currently
+ * provided by the framework,
+ * - {@link TBoundColumn}, associated with a specific field in datasource and displays the corresponding data.
+ * - {@link TEditCommandColumn}, displaying edit/update/cancel command buttons
+ * - {@link TButtonColumn}, displaying generic command buttons that may be bound to specific field in datasource.
+ * - {@link THyperLinkColumn}, displaying a hyperlink that may be bound to specific field in datasource.
+ * - {@link TCheckBoxColumn}, displaying a checkbox that may be bound to specific field in datasource.
+ * - {@link TTemplateColumn}, displaying content based on templates.
  *
  * There are three ways to specify columns for a datagrid.
  * <ul>
- *  <li>Automatically generated based on data source. By setting <b>AutoGenerateColumns</b>
- *  to true, a list of columns will be automatically generated based on the schema of the data source.
+ *  <li>Automatically generated based on data source.
+ *  By setting {@link setAutoGenerateColumns AutoGenerateColumns} to true,
+ *  a list of columns will be automatically generated based on the schema of the data source.
  *  Each column corresponds to a column of the data.</li>
  *  <li>Specified in template. For example,
  *    <code>
@@ -53,53 +67,65 @@ Prado::using('System.Web.UI.WebControls.TTable');
  *     </com:TDataGrid>
  *    </code>
  *  </li>
- *  <li>Manually created in code. Columns can be manipulated via the <b>Columns</b> property of
- *  the datagrid. For example,
- *    <code>
- *    $column=$datagrid->createComponent('TBoundColumn');
- *    $datagrid->Columns->add($column);
- *    </code>
+ *  <li>Manually created in code. Columns can be manipulated via
+ *  the {@link setColumns Columns} property of the datagrid. For example,
+ *  <code>
+ *    $column=new TBoundColumn;
+ *    $datagrid->Columns[]=$column;
+ *  </code>
  *  </li>
  * </ul>
- * Note, automatically generated columns cannot be accessed via <b>Columns</b> property.
+ * Note, automatically generated columns cannot be accessed via
+ * the {@link getColumns Columns} property.
  *
- * TDataGrid supports sorting. If the <b>AllowSorting</b> is set to true, a column
- * whose <b>SortExpression</b> is not empty will have its header text displayed as a link button.
- * Clicking on the link button will raise <b>OnSortCommand</b> event. You can respond to this event,
- * sort the data source according to the event parameter, and then invoke databind on the datagrid.
+ * TDataGrid supports sorting. If the {@link setAllowSorting AllowSorting}
+ * is set to true, a column with nonempty {@link setSortExpression SortExpression}
+ * will have its header text displayed as a clickable link button.
+ * Clicking on the link button will raise {@link onSortCommand OnSortCommand}
+ * event. You can respond to this event, sort the data source according
+ * to the event parameter, and then invoke {@link databind()} on the datagrid
+ * to show to end users the sorted data.
  *
- * TDataGrid supports paging. If the <b>AllowPaging</b> is set to true, a pager will be displayed
- * on top and/or bottom of the table. How the pager will be displayed is determined by <b>PagerDisplay</b>
- * and <b>PagerButtonCount</b> properties. The former decides the position of the pager and latter
- * specifies how many buttons are to be used for paging purpose. Clicking on a pager button will raise
- * an <b>onPageIndexChanged</b> event. You can respond to this event, specify the page to be displayed by
- * setting <b>CurrentPageIndex</b> property, and then invoke databind on the datagrid.
+ * TDataGrid supports paging. If the {@link setAllowPaging AllowPaging}
+ * is set to true, a pager will be displayed on top and/or bottom of the table.
+ * How the pager will be displayed is determined by the {@link getPagerStyle PagerStyle}
+ * property. Clicking on a pager button will raise an {@link onPageIndexChanged OnPageIndexChanged}
+ * event. You can respond to this event, specify the page to be displayed by
+ * setting {@link setCurrentPageIndex CurrentPageIndex}</b> property,
+ * and then invoke {@link databind()} on the datagrid to show to end users
+ * a new page of data.
  *
  * TDataGrid supports two kinds of paging. The first one is based on the number of data items in
- * datasource. The number of pages <b>PageCount</b> is calculated based the item number and the
- * <b>PageSize</b> property. The datagrid will manage which section of the data source to be displayed
- * based on the <b>CurrentPageIndex</b> property.
- * The second approach calculates the page number based on the <b>VirtualItemCount</b> property and
- * the <b>PageSize</b> property. The datagrid will always display from the beginning of the datasource
- * upto the number of <b>PageSize> data items. This approach is especially useful when the datasource may
- * contain too many data items to be managed by the datagrid efficiently.
+ * datasource. The number of pages {@link getPageCount PageCount} is calculated based
+ * the item number and the {@link setPageSize PageSize} property.
+ * The datagrid will manage which section of the data source to be displayed
+ * based on the {@link setCurrentPageIndex CurrentPageIndex} property.
+ * The second approach calculates the page number based on the
+ * {@link setVirtualItemCount VirtualItemCount} property and
+ * the {@link setPageSize PageSize} property. The datagrid will always
+ * display from the beginning of the datasource up to the number of
+ * {@link setPageSize PageSize} data items. This approach is especially
+ * useful when the datasource may contain too many data items to be managed by
+ * the datagrid efficiently.
  *
- * When the datagrid contains a button control that raises an <b>OnCommand</b>
+ * When the datagrid contains a button control that raises an {@link onCommand OnCommand}
  * event, the event will be bubbled up to the datagrid control.
  * If the event's command name is recognizable by the datagrid control,
  * a corresponding item event will be raised. The following item events will be
  * raised upon a specific command:
- * - OnEditCommand, edit
- * - OnCancelCommand, cancel
- * - OnSelectCommand, select
- * - OnDeleteCommand, delete
- * - OnUpdateCommand, update
- * - onPageIndexChanged, page
- * - OnSortCommand, sort
- * The data list will always raise an <b>OnItemCommand</b>
- * upon its receiving a bubbled <b>OnCommand</b> event.
+ * - OnEditCommand, if CommandName=edit
+ * - OnCancelCommand, if CommandName=cancel
+ * - OnSelectCommand, if CommandName=select
+ * - OnDeleteCommand, if CommandName=delete
+ * - OnUpdateCommand, if CommandName=update
+ * - onPageIndexChanged, if CommandName=page
+ * - OnSortCommand, if CommandName=sort
+ * Note, an {@link onItemCommand OnItemCommand} event is raised in addition to
+ * the above specific command events.
  *
- * An <b>OnItemCreated</b> event will be raised right after each item is created in the datagrid.
+ * TDataGrid also raises an {@link onItemCreated OnItemCreated} event for
+ * every newly created datagrid item. You can respond to this event to customize
+ * the content or style of the newly created item.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -108,27 +134,53 @@ Prado::using('System.Web.UI.WebControls.TTable');
  */
 class TDataGrid extends TBaseDataList implements INamingContainer
 {
+	/**
+	 * @var TDataGridColumnCollection manually created column collection
+	 */
 	private $_columns=null;
+	/**
+	 * @var TDataGridColumnCollection automatically created column collection
+	 */
 	private $_autoColumns=null;
+	/**
+	 * @var TDataGridItemCollection datagrid item collection
+	 */
 	private $_items=null;
+	/**
+	 * @var TDataGridItem header item
+	 */
 	private $_header=null;
+	/**
+	 * @var TDataGridItem footer item
+	 */
 	private $_footer=null;
+	/**
+	 * @var TPagedDataSource paged data source object
+	 */
 	private $_pagedDataSource=null;
 
 	/**
-	 * @return string tag name of the datagrid
+	 * @return string tag name (table) of the datagrid
 	 */
 	protected function getTagName()
 	{
 		return 'table';
 	}
 
+	/**
+	 * Adds objects parsed in template to datagrid.
+	 * Only datagrid columns are added into {@link getColumns Columns} collection.
+	 * @param mixed object parsed in template
+	 */
 	public function addParsedObject($object)
 	{
 		if($object instanceof TDataGridColumn)
 			$this->getColumns()->add($object);
 	}
 
+	/**
+	 * @return TDataGridColumnCollection manually specified datagrid columns
+	 */
 	public function getColumns()
 	{
 		if(!$this->_columns)
@@ -136,6 +188,9 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		return $this->_columns;
 	}
 
+	/**
+	 * @return TDataGridColumnCollection automatically specified datagrid columns
+	 */
 	public function getAutoColumns()
 	{
 		if(!$this->_autoColumns)
@@ -143,6 +198,9 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		return $this->_autoColumns;
 	}
 
+	/**
+	 * @return TDataGridItemCollection datagrid item collection
+	 */
 	public function getItems()
 	{
 		if(!$this->_items)
@@ -153,7 +211,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	/**
 	 * Creates a style object for the control.
 	 * This method creates a {@link TTableStyle} to be used by datagrid.
-	 * @return TStyle control style to be used
+	 * @return TTableStyle control style to be used
 	 */
 	protected function createStyle()
 	{
@@ -172,12 +230,24 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
-	 * Sets the URL of the background image for the datagrid
-	 * @param string the URL
+	 * @param string the URL of the background image for the datagrid
 	 */
 	public function setBackImageUrl($value)
 	{
 		$this->getStyle()->setBackImageUrl($value);
+	}
+
+	/**
+	 * @return TTableItemStyle the style for every item
+	 */
+	public function getItemStyle()
+	{
+		if(($style=$this->getViewState('ItemStyle',null))===null)
+		{
+			$style=new TTableItemStyle;
+			$this->setViewState('ItemStyle',$style,null);
+		}
+		return $style;
 	}
 
 	/**
@@ -189,19 +259,6 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		{
 			$style=new TTableItemStyle;
 			$this->setViewState('AlternatingItemStyle',$style,null);
-		}
-		return $style;
-	}
-
-	/**
-	 * @return TTableItemStyle the style for item
-	 */
-	public function getItemStyle()
-	{
-		if(($style=$this->getViewState('ItemStyle',null))===null)
-		{
-			$style=new TTableItemStyle;
-			$this->setViewState('ItemStyle',$style,null);
 		}
 		return $style;
 	}
@@ -246,14 +303,6 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
-	 * @return TDataGridItem the header item
-	 */
-	public function getHeader()
-	{
-		return $this->_header;
-	}
-
-	/**
 	 * @return TTableItemStyle the style for footer
 	 */
 	public function getFooterStyle()
@@ -267,14 +316,6 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
-	 * @return TDataGridItem the footer item
-	 */
-	public function getFooter()
-	{
-		return $this->_footer;
-	}
-
-	/**
 	 * @return TDataGridPagerStyle the style for pager
 	 */
 	public function getPagerStyle()
@@ -285,6 +326,22 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			$this->setViewState('PagerStyle',$style,null);
 		}
 		return $style;
+	}
+
+	/**
+	 * @return TDataGridItem the header item
+	 */
+	public function getHeader()
+	{
+		return $this->_header;
+	}
+
+	/**
+	 * @return TDataGridItem the footer item
+	 */
+	public function getFooter()
+	{
+		return $this->_footer;
 	}
 
 	/**
@@ -385,7 +442,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
-	 * @return boolean whether the custom paging is enabled Defaults to false.
+	 * @return boolean whether the custom paging is enabled. Defaults to false.
 	 */
 	public function getAllowCustomPaging()
 	{
@@ -449,7 +506,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
-	 * @return integer the index of the current page. Defaults to 0.
+	 * @return integer the zero-based index of the current page. Defaults to 0.
 	 */
 	public function getCurrentPageIndex()
 	{
@@ -457,7 +514,8 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
-	 * @param integer the index of the current page
+	 * @param integer the zero-based index of the current page
+	 * @throws TInvalidDataValueException if the value is less than 0
 	 */
 	public function setCurrentPageIndex($value)
 	{
@@ -467,7 +525,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
-	 * @return integer the number of rows displayed within a page. Defaults to 10.
+	 * @return integer the number of rows displayed each page. Defaults to 10.
 	 */
 	public function getPageSize()
 	{
@@ -476,6 +534,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 
 	/**
 	 * @param integer the number of rows displayed within a page
+	 * @throws TInvalidDataValueException if the value is less than 1
 	 */
 	public function setPageSize($value)
 	{
@@ -484,12 +543,15 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		$this->setViewState('PageSize',TPropertyValue::ensureInteger($value),10);
 	}
 
-
+	/**
+	 * @return integer number of pages of items available
+	 */
 	public function getPageCount()
 	{
 		if($this->_pagedDataSource)
 			return $this->_pagedDataSource->getPageCount();
-		return $this->getViewState('PageCount',0);
+		else
+			return $this->getViewState('PageCount',0);
 	}
 
 	/**
@@ -502,6 +564,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 
 	/**
 	 * @param integer virtual number of items in the grid
+	 * @throws TInvalidDataValueException if the value is less than 0
 	 */
 	public function setVirtualItemCount($value)
 	{
@@ -511,7 +574,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
-	 * @return boolean whether the header should be displayed Defaults to true.
+	 * @return boolean whether the header should be displayed. Defaults to true.
 	 */
 	public function getShowHeader()
 	{
@@ -543,7 +606,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
-	 * Handles <b>BubbleEvent</b>.
+	 * Handles <b>OnBubbleEvent</b>.
 	 * This method overrides parent's implementation to handle
 	 * {@link onItemCommand OnItemCommand} event which is bubbled from
 	 * {@link TDataGridItem} child controls.
@@ -611,8 +674,8 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 
 	/**
 	 * Raises <b>OnCancelCommand</b> event.
-	 * This method is invoked when a button control raises<b>Command</b> event
-	 * with<b>cancel</b> command name.
+	 * This method is invoked when a button control raises <b>OnCommand</b> event
+	 * with <b>cancel</b> command name.
 	 * @param TDataGridCommandEventParameter event parameter
 	 */
 	public function onCancelCommand($param)
@@ -622,7 +685,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 
 	/**
 	 * Raises <b>OnDeleteCommand</b> event.
-	 * This method is invoked when a button control raises <b>Command</b> event
+	 * This method is invoked when a button control raises <b>OnCommand</b> event
 	 * with <b>delete</b> command name.
 	 * @param TDataGridCommandEventParameter event parameter
 	 */
@@ -633,7 +696,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 
 	/**
 	 * Raises <b>OnEditCommand</b> event.
-	 * This method is invoked when a button control raises <b>Command</b> event
+	 * This method is invoked when a button control raises <b>OnCommand</b> event
 	 * with <b>edit</b> command name.
 	 * @param TDataGridCommandEventParameter event parameter
 	 */
@@ -644,7 +707,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 
 	/**
 	 * Raises <b>OnItemCommand</b> event.
-	 * This method is invoked when a button control raises <b>Command</b> event.
+	 * This method is invoked when a button control raises <b>OnCommand</b> event.
 	 * @param TDataGridItemCommandEventParameter event parameter
 	 */
 	public function onItemCommand($param)
@@ -654,7 +717,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 
 	/**
 	 * Raises <b>OnSortCommand</b> event.
-	 * This method is invoked when a button control raises <b>Command</b> event
+	 * This method is invoked when a button control raises <b>OnCommand</b> event
 	 * with <b>sort</b> command name.
 	 * @param TDataGridSortCommandEventParameter event parameter
 	 */
@@ -665,7 +728,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 
 	/**
 	 * Raises <b>OnUpdateCommand</b> event.
-	 * This method is invoked when a button control raises <b>Command</b> event
+	 * This method is invoked when a button control raises <b>OnCommand</b> event
 	 * with <b>update</b> command name.
 	 * @param TDataGridCommandEventParameter event parameter
 	 */
@@ -778,6 +841,9 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		$this->clearViewState('ItemCount');
 	}
 
+	/**
+	 * @return TPagedDataSource creates a paged data source
+	 */
 	private function createPagedDataSource()
 	{
 		$ds=new TPagedDataSource;
@@ -790,7 +856,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
-	 * Clears up all items in the data list.
+	 * Clears up all items in the datagrid.
 	 */
 	public function reset()
 	{
@@ -800,6 +866,9 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		$this->_footer=null;
 	}
 
+	/**
+	 * Restores datagrid content from viewstate.
+	 */
 	protected function restoreGridFromViewState()
 	{
 		$this->reset();
@@ -850,9 +919,9 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 
 	/**
 	 * Performs databinding to populate data list items from data source.
-	 * This method is invoked by dataBind().
+	 * This method is invoked by {@link dataBind()}.
 	 * You may override this function to provide your own way of data population.
-	 * @param Traversable the data
+	 * @param Traversable the bound data
 	 */
 	protected function performDataBinding($data)
 	{
@@ -954,6 +1023,11 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		return $item;
 	}
 
+	/**
+	 * Initializes a datagrid item and cells inside it
+	 * @param TDataGrid datagrid item to be initialized
+	 * @param TDataGridColumnCollection datagrid columns to be used to initialize the cells in the item
+	 */
 	protected function initializeItem($item,$columns)
 	{
 		$cells=$item->getCells();
@@ -980,6 +1054,12 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		return $item;
 	}
 
+	/**
+	 * Initializes the pager.
+	 * @param TDataGridItem the pager to be initialized
+	 * @param integer columnspan for the pager
+	 * @param TPagedDataSource data source bound to the datagrid
+	 */
 	protected function initializePager($pager,$columnSpan,$pagedDataSource)
 	{
 		$cell=new TTableCell;
@@ -989,6 +1069,11 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		$pager->getCells()->add($cell);
 	}
 
+	/**
+	 * Builds the pager content based on pager style.
+	 * @param TTableCell table cell for the pager
+	 * @param TPagedDataSource data source bound to the datagrid
+	 */
 	protected function buildPager($cell,$dataSource)
 	{
 		switch($this->getPagerStyle()->getMode())
@@ -1002,6 +1087,11 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		}
 	}
 
+	/**
+	 * Builds a next-prev pager
+	 * @param TTableCell table cell for the pager
+	 * @param TPagedDataSource data source bound to the datagrid
+	 */
 	protected function buildNextPrevPager($cell,$dataSource)
 	{
 		$style=$this->getPagerStyle();
@@ -1039,6 +1129,11 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		}
 	}
 
+	/**
+	 * Builds a numeric pager
+	 * @param TTableCell table cell for the pager
+	 * @param TPagedDataSource data source bound to the datagrid
+	 */
 	protected function buildNumericPager($cell,$dataSource)
 	{
 		$style=$this->getPagerStyle();
@@ -1105,6 +1200,11 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		}
 	}
 
+	/**
+	 * Automatically generates datagrid columns based on datasource schema
+	 * @param TPagedDataSource data source bound to the datagrid
+	 * @return TDataGridColumnCollection
+	 */
 	protected function createAutoColumns($dataSource)
 	{
 		if(!$dataSource)
@@ -1283,6 +1383,10 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		}
 	}
 
+	/**
+	 * Renders the content in the datagrid.
+	 * @param THtmlWriter writer for the rendering purpose
+	 */
 	public function renderContents($writer)
 	{
 		if($this->getHasControls())
@@ -1668,7 +1772,16 @@ class TDataGridColumnCollection extends TList
 	}
 }
 
-
+/**
+ * TDataGridPagerStyle class.
+ *
+ * TDataGridPagerStyle specifies the styles available for a datagrid pager.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
 class TDataGridPagerStyle extends TTableItemStyle
 {
 	private $_mode=null;
@@ -1678,41 +1791,66 @@ class TDataGridPagerStyle extends TTableItemStyle
 	private $_position=null;
 	private $_visible=null;
 
+	/**
+	 * @return string pager mode. Defaults to 'NextPrev'.
+	 */
 	public function getMode()
 	{
 		return $this->_mode===null?'NextPrev':$this->_mode;
 	}
 
+	/**
+	 * @param string pager mode. Valid values include 'NextPrev' and 'Numeric'.
+	 */
 	public function setMode($value)
 	{
 		$this->_mode=TPropertyValue::ensureEnum($value,'NextPrev','Numeric');
 	}
 
+	/**
+	 * @return string text for the next page button. Defaults to '>'.
+	 */
 	public function getNextPageText()
 	{
 		return $this->_nextText===null?'>':$this->_nextText;
 	}
 
+	/**
+	 * @param string text for the next page button.
+	 */
 	public function setNextPageText($value)
 	{
 		$this->_nextText=$value;
 	}
 
+	/**
+	 * @return string text for the previous page button. Defaults to '<'.
+	 */
 	public function getPrevPageText()
 	{
 		return $this->_prevText===null?'<':$this->_prevText;
 	}
 
+	/**
+	 * @param string text for the next page button.
+	 */
 	public function setPrevPageText($value)
 	{
 		$this->_prevText=$value;
 	}
 
+	/**
+	 * @return integer maximum number of pager buttons to be displayed. Defaults to 10.
+	 */
 	public function getPageButtonCount()
 	{
 		return $this->_buttonCount===null?10:$this->_buttonCount;
 	}
 
+	/**
+	 * @param integer maximum number of pager buttons to be displayed
+	 * @throws TInvalidDataValueException if the value is less than 1.
+	 */
 	public function setPageButtonCount($value)
 	{
 		if(($value=TPropertyValue::ensureInteger($value))<1)
@@ -1720,21 +1858,33 @@ class TDataGridPagerStyle extends TTableItemStyle
 		$this->_buttonCount=$value;
 	}
 
+	/**
+	 * @return string where the pager is to be displayed. Defaults to 'Bottom'.
+	 */
 	public function getPosition()
 	{
 		return $this->_position===null?'Bottom':$this->_position;
 	}
 
+	/**
+	 * @param string where the pager is to be displayed. Valid values include 'Bottom', 'Top', 'TopAndBottom'
+	 */
 	public function setPosition($value)
 	{
 		$this->_position=TPropertyValue::ensureEnum($value,'Bottom','Top','TopAndBottom');
 	}
 
+	/**
+	 * @return boolean whether the pager is visible. Defaults to true.
+	 */
 	public function getVisible()
 	{
 		return $this->_visible===null?true:$this->_visible;
 	}
 
+	/**
+	 * @param boolean whether the pager is visible.
+	 */
 	public function setVisible($value)
 	{
 		$this->_visible=TPropertyValue::ensureBoolean($value);

@@ -21,20 +21,20 @@ Prado::using('System.Web.UI.WebControls.TDataGridColumn');
  * TButtonColumn contains a user-defined command button, such as Add or Remove,
  * that corresponds with each row in the column.
  *
- * The caption of the buttons in the column is determined by <b>Text</b>
- * and <b>DataTextField</b> properties. If both are present, the latter takes
- * precedence. The <b>DataTextField</b> refers to the name of the field in datasource
- * whose value will be used as the button caption. If <b>DataTextFormatString</b>
- * is not empty, the value will be formatted before rendering.
+ * The caption of the buttons in the column is determined by {@link setText Text}
+ * and {@link setDataTextField DataTextField} properties. If both are present,
+ * the latter takes precedence. The {@link setDataTextField DataTextField} property
+ * refers to the name of the field in datasource whose value will be used as the button caption.
+ * If {@link setDataTextFormatString DataTextFormatString} is not empty,
+ * the value will be formatted before rendering.
  *
  * The buttons in the column can be set to display as hyperlinks or push buttons
- * by setting the <b>ButtonType</b> property.
- * The <b>CommandName</b> will assign its value to all button's <b>CommandName</b>
- * property. The datagrid will capture the command event where you can write event handlers
- * based on different command names.
- *
- * Note, the command buttons created in the column will not cause validation.
- * To enable validation, please use TTemplateColumn instead.
+ * by setting the {@link setButtonType ButtonType} property.
+ * The {@link setCommandName CommandName} will assign its value to
+ * all button's <b>CommandName</b> property. The datagrid will capture
+ * the command event where you can write event handlers based on different command names.
+ * The buttons' <b>CausesValidation</b> and <b>ValidationGroup</b> property values
+ * are determined by the column's corresponding properties.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -58,7 +58,6 @@ class TButtonColumn extends TDataGridColumn
 	public function setText($value)
 	{
 		$this->setViewState('Text',$value,'');
-		$this->onColumnChanged();
 	}
 
 	/**
@@ -75,7 +74,6 @@ class TButtonColumn extends TDataGridColumn
 	public function setDataTextField($value)
 	{
 		$this->setViewState('DataTextField',$value,'');
-		$this->onColumnChanged();
 	}
 
 	/**
@@ -92,7 +90,6 @@ class TButtonColumn extends TDataGridColumn
 	public function setDataTextFormatString($value)
 	{
 		$this->setViewState('DataTextFormatString',$value,'');
-		$this->onColumnChanged();
 	}
 
 	/**
@@ -109,11 +106,10 @@ class TButtonColumn extends TDataGridColumn
 	public function setButtonType($value)
 	{
 		$this->setViewState('ButtonType',TPropertyValue::ensureEnum($value,'LinkButton','PushButton'),'LinkButton');
-		$this->onColumnChanged();
 	}
 
 	/**
-	 * @return string the command name associated with the <b>Command</b> event.
+	 * @return string the command name associated with the <b>OnCommand</b> event.
 	 */
 	public function getCommandName()
 	{
@@ -127,7 +123,6 @@ class TButtonColumn extends TDataGridColumn
 	public function setCommandName($value)
 	{
 		$this->setViewState('CommandName',$value,'');
-		$this->onColumnChanged();
 	}
 
 	/**
@@ -144,7 +139,6 @@ class TButtonColumn extends TDataGridColumn
 	public function setCausesValidation($value)
 	{
 		$this->setViewState('CausesValidation',TPropertyValue::ensureBoolean($value),true);
-		$this->onColumnChanged();
 	}
 
 	/**
@@ -161,7 +155,6 @@ class TButtonColumn extends TDataGridColumn
 	public function setValidationGroup($value)
 	{
 		$this->setViewState('ValidationGroup',$value,'');
-		$this->onColumnChanged();
 	}
 
 	/**
@@ -191,6 +184,11 @@ class TButtonColumn extends TDataGridColumn
 		}
 	}
 
+	/**
+	 * Databinds a cell in the column.
+	 * This method is invoked when datagrid performs databinding.
+	 * It populates the content of the cell with the relevant data from data source.
+	 */
 	public function dataBindColumn($sender,$param)
 	{
 		if(($field=$this->getDataTextField())!=='')

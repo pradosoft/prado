@@ -22,16 +22,21 @@ Prado::using('System.Web.UI.WebControls.TDataGridColumn');
  *
  * TEditCommandColumn will create an edit button if a cell is not in edit mode.
  * Otherwise an update button and a cancel button will be created within the cell.
- * The button captions are specified using <b>EditText</b>, <b>UpdateText</b>
- * and <b>CancelText</b>.
+ * The button captions are specified using {@link setEditText EditText},
+ * {@link setUpdateText UpdateText}, and {@link setCancelText CancelText}.
  *
  * The buttons in the column can be set to display as hyperlinks or push buttons
- * by setting the <b>ButtonType</b> property.
+ * by setting the {@link setButtonType ButtonType} property.
  *
- * When an edit button is clicked, the datagrid will generate an <b>OnEditCommand</b>
- * event. When an update/cancel button is clicked, the datagrid will generate an
- * <b>OnUpdateCommand</b> or an <b>OnCancelCommand</b>. You can write these event handlers
- * to change the state of specific datagrid item.
+ * When an edit button is clicked, the datagrid will generate an
+ * {@link onEditCommand OnEditCommand} event. When an update/cancel button
+ * is clicked, the datagrid will generate an
+ * {@link onUpdateCommand OnUpdateCommand} or an {@link onCancelCommand OnCancelCommand}
+ * You can write these event handlers to change the state of specific datagrid item.
+ *
+ * The {@link setCausesValidation CausesValidation} and {@link setValidationGroup ValidationGroup}
+ * properties affect the corresponding properties of the edit and update buttons.
+ * The cancel button does not cause validation by default.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -54,11 +59,10 @@ class TEditCommandColumn extends TDataGridColumn
 	public function setButtonType($value)
 	{
 		$this->setViewState('ButtonType',TPropertyValue::ensureEnum($value,'LinkButton','PushButton'),'LinkButton');
-		$this->onColumnChanged();
 	}
 
 	/**
-	 * @return string the caption of the edit button
+	 * @return string the caption of the edit button. Defaults to 'Edit'.
 	 */
 	public function getEditText()
 	{
@@ -71,11 +75,10 @@ class TEditCommandColumn extends TDataGridColumn
 	public function setEditText($value)
 	{
 		$this->setViewState('EditText',$value,'Edit');
-		$this->onColumnChanged();
 	}
 
 	/**
-	 * @return string the caption of the update button
+	 * @return string the caption of the update button. Defaults to 'Update'.
 	 */
 	public function getUpdateText()
 	{
@@ -88,11 +91,10 @@ class TEditCommandColumn extends TDataGridColumn
 	public function setUpdateText($value)
 	{
 		$this->setViewState('UpdateText',$value,'Update');
-		$this->onColumnChanged();
 	}
 
 	/**
-	 * @return string the caption of the cancel button
+	 * @return string the caption of the cancel button. Defaults to 'Cancel'.
 	 */
 	public function getCancelText()
 	{
@@ -105,11 +107,10 @@ class TEditCommandColumn extends TDataGridColumn
 	public function setCancelText($value)
 	{
 		$this->setViewState('CancelText',$value,'Cancel');
-		$this->onColumnChanged();
 	}
 
 	/**
-	 * @return boolean whether postback event trigger by this button will cause input validation, default is true
+	 * @return boolean whether postback event trigger by edit or update button will cause input validation, default is true
 	 */
 	public function getCausesValidation()
 	{
@@ -117,16 +118,15 @@ class TEditCommandColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param boolean whether postback event trigger by this button will cause input validation
+	 * @param boolean whether postback event trigger by edit or update button will cause input validation
 	 */
 	public function setCausesValidation($value)
 	{
 		$this->setViewState('CausesValidation',TPropertyValue::ensureBoolean($value),true);
-		$this->onColumnChanged();
 	}
 
 	/**
-	 * @return string the group of validators which the button causes validation upon postback
+	 * @return string the group of validators which the edit or update button causes validation upon postback
 	 */
 	public function getValidationGroup()
 	{
@@ -134,12 +134,11 @@ class TEditCommandColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the group of validators which the button causes validation upon postback
+	 * @param string the group of validators which the edit or update button causes validation upon postback
 	 */
 	public function setValidationGroup($value)
 	{
 		$this->setViewState('ValidationGroup',$value,'');
-		$this->onColumnChanged();
 	}
 
 	/**
@@ -165,7 +164,15 @@ class TEditCommandColumn extends TDataGridColumn
 		}
 	}
 
-	private function addButtonToCell($cell,$commandName,$text,$causesValidation,$validationGroup)
+	/**
+	 * Creates a button and adds it to the cell.
+	 * @param TTableCell the cell that the button is created within
+	 * @param string command name associated with the button
+	 * @param string button caption
+	 * @param boolean whether the button should cause validation
+	 * @param string the validation group that the button belongs to
+	 */
+	protected function addButtonToCell($cell,$commandName,$text,$causesValidation,$validationGroup)
 	{
 		if($this->getButtonType()==='LinkButton')
 			$button=Prado::createComponent('System.Web.UI.WebControls.TLinkButton');

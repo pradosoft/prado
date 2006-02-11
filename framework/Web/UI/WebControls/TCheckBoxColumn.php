@@ -18,12 +18,11 @@ Prado::using('System.Web.UI.WebControls.TDataGridColumn');
 /**
  * TCheckBoxColumn class
  *
- * TCheckBoxColumn represents a column that is bound to a field in a data source.
- * The cells in the column will be displayed using the data indexed by
- * <b>DataField</b>. You can customize the display by setting <b>DataFormatString</b>.
- *
- * If <b>ReadOnly</b> is false, TCheckBoxColumn will display cells in edit mode
- * with textboxes. Otherwise, a static text is displayed.
+ * TCheckBoxColumn represents a checkbox column that is bound to a field in a data source.
+ * The checked state of the checkboxes are determiend by the bound data at
+ * {@link setDataField DataField}. If {@link setReadOnly ReadOnly} is false,
+ * TCheckBoxColumn will display an enabled checkbox provided the cells are
+ * in edit mode. Otherwise, the checkboxes will be disabled to prevent from editting.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -46,7 +45,6 @@ class TCheckBoxColumn extends TDataGridColumn
 	public function setDataField($value)
 	{
 		$this->setViewState('DataField',$value,'');
-		$this->onColumnChanged();
 	}
 
 	/**
@@ -63,16 +61,14 @@ class TCheckBoxColumn extends TDataGridColumn
 	public function setReadOnly($value)
 	{
 		$this->setViewState('ReadOnly',TPropertyValue::ensureBoolean($value),false);
-		$this->onColumnChanged();
 	}
 
 	/**
 	 * Initializes the specified cell to its initial values.
 	 * This method overrides the parent implementation.
-	 * It creates a textbox for item in edit mode and the column is not read-only.
-	 * Otherwise it displays a static text.
-	 * The caption of the button and the static text are retrieved
-	 * from the datasource.
+	 * It creates a checkbox inside the cell.
+	 * If the column is read-only or if the item is not in edit mode,
+	 * the checkbox will be set disabled.
 	 * @param TTableCell the cell to be initialized.
 	 * @param integer the index to the Columns property that the cell resides in.
 	 * @param string the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
@@ -80,8 +76,7 @@ class TCheckBoxColumn extends TDataGridColumn
 	public function initializeCell($cell,$columnIndex,$itemType)
 	{
 		parent::initializeCell($cell,$columnIndex,$itemType);
-		if($itemType==='EditItem' || $itemType==='Item'
-				|| $itemType==='AlternatingItem' || $itemType==='SelectedItem')
+		if($itemType==='EditItem' || $itemType==='Item' || $itemType==='AlternatingItem' || $itemType==='SelectedItem')
 		{
 			$checkBox=Prado::createComponent('System.Web.UI.WebControls.TCheckBox');
 			if($this->getReadOnly() || $itemType!=='EditItem')
@@ -93,6 +88,11 @@ class TCheckBoxColumn extends TDataGridColumn
 		}
 	}
 
+	/**
+	 * Databinds a cell in the column.
+	 * This method is invoked when datagrid performs databinding.
+	 * It populates the content of the cell with the relevant data from data source.
+	 */
 	public function dataBindColumn($sender,$param)
 	{
 		$item=$sender->getNamingContainer();

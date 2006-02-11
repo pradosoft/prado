@@ -19,9 +19,13 @@ Prado::using('System.Web.UI.WebControls.TDataGridColumn');
  * TTemplateColumn class
  *
  * TTemplateColumn customizes the layout of controls in the column with templates.
- * In particular, you can specify <b>ItemTemplate</b>, <b>EditItemTemplate</b>
- * <b>HeaderTemplate</b> and <b>FooterTemplate</b> to customize specific
+ * In particular, you can specify {@link setItemTemplate ItemTemplate},
+ * {@link setEditItemTemplate EditItemTemplate}, {@link setHeaderTemplate HeaderTemplate}
+ * and {@link setFooterTemplate FooterTemplate} to customize specific
  * type of cells in the column.
+ *
+ * Note, if {@link setHeaderTemplate HeaderTemplate} is not set, the column
+ * header will be displayed with {@link setHeaderText HeaderText}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -88,7 +92,7 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param ITemplate the header template
+	 * @param ITemplate the header template.
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setHeaderTemplate($value)

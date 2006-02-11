@@ -19,15 +19,18 @@ Prado::using('System.Web.UI.WebControls.TDataGridColumn');
  * THyperLinkColumn class
  *
  * THyperLinkColumn contains a hyperlink for each item in the column.
- * You can set the text and the url of the hyperlink by <b>Text</b> and <b>NavigateUrl</b>
- * properties, respectively. You can also bind the text and url to specific
- * data field in datasource by setting <b>DataTextField</b> and <b>DataNavigateUrlField</b>.
- * Both can be formatted before rendering according to the <b>DataTextFormatString</b>
- * and <b>DataNavigateUrlFormatString</b> properties, respectively.
- * If both <b>Text</b> and <b>DataTextField</b> are present, the latter takes precedence.
- * The same rule applies to <b>NavigateUrl</b> and <b>DataNavigateUrlField</b> properties.
- *
- * Namespace: System.Web.UI.WebControls
+ * You can set the text and the url of the hyperlink by {@link setText Text}
+ * and {@link setNavigateUrl NavigateUrl} properties, respectively.
+ * You can also bind the text and url to specific data field in datasource
+ * by setting {@link setDataTextField DataTextField} and
+ * {@link setDataNavigateUrlField DataNavigateUrlField}.
+ * Both can be formatted before rendering according to the
+ * {@link setDataTextFormatString DataTextFormatString} and
+ * and {@link setDataNavigateUrlFormatString DataNavigateUrlFormatString}
+ * properties, respectively. If both {@link setText Text} and {@link setDataTextField DataTextField}
+ * are present, the latter takes precedence.
+ * The same rule applies to {@link setNavigateUrl NavigateUrl} and
+ * {@link setDataNavigateUrlField DataNavigateUrlField} properties.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -51,7 +54,6 @@ class THyperLinkColumn extends TDataGridColumn
 	public function setText($value)
 	{
 		$this->setViewState('Text',$value,'');
-		$this->onColumnChanged();
 	}
 
 	/**
@@ -68,7 +70,6 @@ class THyperLinkColumn extends TDataGridColumn
 	public function setDataTextField($value)
 	{
 		$this->setViewState('DataTextField',$value,'');
-		$this->onColumnChanged();
 	}
 
 	/**
@@ -85,7 +86,6 @@ class THyperLinkColumn extends TDataGridColumn
 	public function setDataTextFormatString($value)
 	{
 		$this->setViewState('DataTextFormatString',$value,'');
-		$this->onColumnChanged();
 	}
 
 	/**
@@ -103,7 +103,6 @@ class THyperLinkColumn extends TDataGridColumn
 	public function setNavigateUrl($value)
 	{
 		$this->setViewState('NavigateUrl',$value,'');
-		$this->onColumnChanged();
 	}
 
 	/**
@@ -120,7 +119,6 @@ class THyperLinkColumn extends TDataGridColumn
 	public function setDataNavigateUrlField($value)
 	{
 		$this->setViewState('DataNavigateUrlField',$value,'');
-		$this->onColumnChanged();
 	}
 
 	/**
@@ -137,7 +135,6 @@ class THyperLinkColumn extends TDataGridColumn
 	public function setDataNavigateUrlFormatString($value)
 	{
 		$this->setViewState('DataNavigateUrlFormatString',$value,'');
-		$this->onColumnChanged();
 	}
 
 	/**
@@ -155,7 +152,6 @@ class THyperLinkColumn extends TDataGridColumn
 	public function setTarget($value)
 	{
 		$this->setViewState('Target',$value,'');
-		$this->onColumnChanged();
 	}
 
 	/**
@@ -181,6 +177,11 @@ class THyperLinkColumn extends TDataGridColumn
 		}
 	}
 
+	/**
+	 * Databinds a cell in the column.
+	 * This method is invoked when datagrid performs databinding.
+	 * It populates the content of the cell with the relevant data from data source.
+	 */
 	public function dataBindColumn($sender,$param)
 	{
 		$item=$sender->getNamingContainer();
