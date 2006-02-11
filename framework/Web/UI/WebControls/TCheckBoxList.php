@@ -272,17 +272,18 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	 */
 	public function renderItem($writer,$repeatInfo,$itemType,$index)
 	{
+		$repeatedControl=$this->_repeatedControl;
 		$item=$this->getItems()->itemAt($index);
 		if($item->getHasAttributes())
-			$this->_repeatedControl->getAttributes()->copyFrom($item->getAttributes());
-		else if($this->_repeatedControl->getHasAttributes())
-			$this->_repeatedControl->getAttributes()->clear();
-		$this->_repeatedControl->setID("$index");
-		$this->_repeatedControl->setText($item->getText());
-		$this->_repeatedControl->setChecked($item->getSelected());
-		$this->_repeatedControl->setAttribute('value',$item->getValue());
-		$this->_repeatedControl->setEnabled($this->_isEnabled && $item->getEnabled());
-		$this->_repeatedControl->renderControl($writer);
+			$repeatedControl->getAttributes()->copyFrom($item->getAttributes());
+		else if($repeatedControl->getHasAttributes())
+			$repeatedControl->getAttributes()->clear();
+		$repeatedControl->setID("$index");
+		$repeatedControl->setText($item->getText());
+		$repeatedControl->setChecked($item->getSelected());
+		$repeatedControl->setAttribute('value',$item->getValue());
+		$repeatedControl->setEnabled($this->_isEnabled && $item->getEnabled());
+		$repeatedControl->renderControl($writer);
 	}
 
 	/**

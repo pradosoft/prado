@@ -224,7 +224,6 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	 */
 	public function render($writer)
 	{
-		$this->addAttributesToRender($writer);
 		$this->getPage()->ensureRenderInForm($this);
 		$needSpan=false;
 		if($this->getHasStyle())
