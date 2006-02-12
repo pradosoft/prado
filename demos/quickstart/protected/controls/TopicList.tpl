@@ -68,6 +68,7 @@
     <li><a href="?page=Security.Auth">Authentication and Authorization</a></li>
     <li><a href="?page=Security.ViewState">ViewState Protection</a></li>
     <li><a href="?page=Security.XSS">Cross Site Scripting Prevention</a></li>
+    <li><a href="?page=Security.Cookie">Cookie Attack Prevention</a></li>
 </ul>
 </div>
 
