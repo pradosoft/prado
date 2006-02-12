@@ -41,7 +41,8 @@ $pages['Controls'] = array(
 $pages['Security'] = array(
 	'Security/Auth.page',
 	'Security/ViewState.page',
-	'Security/XSS.page');
+	'Security/XSS.page',
+	'Security/Cookie.page');
 
 $pages['Advanced Topics'] = array(
 	'Advanced/Assets.page',

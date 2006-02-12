@@ -11,5 +11,24 @@ There are several countermeasures to prevent cookies from being attacked.
   <li>An application can use SSL to create a secure communication channel and only pass the authentication cookie over an HTTPS connection. Attackers are thus unable to decipher the contents in the transferred cookies.</li>
   <li>Expire sessions appropriately, including all cookies and session tokens, to reduce the likelihood of being attacked.</li>
   <li>Prevent <a href="?page=Security.XSS">cross-site scripting (XSS)</a> which causes arbitrary code to run in a user's browser and expose his cookies.</li>
-  <li>Validate cookie data and detect if they are altered. By default, Prado validates the cookie data to ensure they are not altered.</li>
+  <li>Validate cookie data and detect if they are altered.</li>
 </ul>
+<p>
+Prado implements a cookie validation scheme. It associates cookie data with the target remote host address and user agent. HMAC check is performed to ensure that cookie data is not altered and is sent from the expected source.
+</p>
+<p>
+Cookie validation is enabled by default. To obtain validated cookie data, retrieve them from the <tt>Cookies</tt> collection of <tt>THttpRequest</tt> by using the following PHP statements,
+</p>
+<com:TTextHighlighter CssClass="source">
+foreach($this->Request->Cookies as $cookie)
+    // $cookie is of type THttpCookie
+</com:TTextHighlighter>
+<p>
+To send cookie data encoded with validation information, create new <tt>THttpCookie</tt> objects and add them to the <tt>Cookies</tt> collection of <tt>THttpResponse</tt>,
+</p>
+<com:TTextHighlighter CssClass="source">
+$cookie=new THttpCookie($name,$value);
+$this->Response->Cookies[]=$cookie;
+</com:TTextHighlighter>
+
+</com:TContent>
