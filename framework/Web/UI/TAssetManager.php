@@ -67,6 +67,10 @@ class TAssetManager extends TModule
 	 * @var array published assets
 	 */
 	private $_published=array();
+	/**
+	 * @var boolean whether the module is initialized
+	 */
+	private $_initialized=false;
 
 	/**
 	 * Initializes the module.
@@ -83,6 +87,7 @@ class TAssetManager extends TModule
 		if($this->_baseUrl===null)
 			$this->_baseUrl=rtrim(dirname($application->getRequest()->getApplicationPath()),'/').'/'.self::DEFAULT_BASEPATH;
 		$application->getService()->setAssetManager($this);
+		$this->_initialized=true;
 	}
 
 	/**
