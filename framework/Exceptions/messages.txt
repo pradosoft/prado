@@ -145,6 +145,8 @@ control_id_nonunique					= %s.ID '%s' is not unique among all controls under the
 
 controllist_control_required			= TControlList can only accept strings or TControl objects.
 
+emptycontrollist_addition_disallowed	= Child controls are not allowed.
+
 webcontrol_accesskey_invalid			= %s.AccessKey '%s' is invalid. It must be a single character only.
 webcontrol_style_invalid				= %s.Style must take string value only.
 

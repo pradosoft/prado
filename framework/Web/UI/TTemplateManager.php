@@ -252,6 +252,9 @@ class TTemplate extends TComponent implements ITemplate
 		$controls=array();
 		foreach($this->_tpl as $key=>$object)
 		{
+			$parent=isset($controls[$object[0]])?$controls[$object[0]]:$tplControl;
+			if(!$parent->getAllowChildControls())
+				continue;
 			if(isset($object[2]))	// component
 			{
 				$component=Prado::createComponent($object[1]);
@@ -270,7 +273,6 @@ class TTemplate extends TComponent implements ITemplate
 					// apply attributes
 					foreach($object[2] as $name=>$value)
 						$this->configureControl($component,$name,$value);
-					$parent=isset($controls[$object[0]])?$controls[$object[0]]:$tplControl;
 					$component->createdOnTemplate($parent);
 				}
 				else if($component instanceof TComponent)
@@ -283,17 +285,11 @@ class TTemplate extends TComponent implements ITemplate
 					}
 					foreach($object[2] as $name=>$value)
 						$this->configureComponent($component,$name,$value);
-					$parent=isset($controls[$object[0]])?$controls[$object[0]]:$tplControl;
 					$parent->addParsedObject($component);
 				}
 			}
 			else	// string
-			{
-				if(isset($controls[$object[0]]))
-					$controls[$object[0]]->addParsedObject($object[1]);
-				else
-					$tplControl->addParsedObject($object[1]);
-			}
+				$parent->addParsedObject($object[1]);
 		}
 	}
 

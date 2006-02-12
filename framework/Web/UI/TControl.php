@@ -407,8 +407,18 @@ class TControl extends TComponent
 	public function getControls()
 	{
 		if(!isset($this->_rf[self::RF_CONTROLS]))
-			$this->_rf[self::RF_CONTROLS]=new TControlList($this);
+			$this->_rf[self::RF_CONTROLS]=$this->createControlCollection();
 		return $this->_rf[self::RF_CONTROLS];
+	}
+
+	/**
+	 * Creates a control collection object that is to be used to hold child controls
+	 * @return TControlList control collection
+	 * @see getControls
+	 */
+	protected function createControlCollection()
+	{
+		return $this->getAllowChildControls()?new TControlList($this):new TEmptyControlList($this);
 	}
 
 	/**
@@ -880,6 +890,14 @@ class TControl extends TComponent
 	public function getRegisteredObject($name)
 	{
 		return isset($this->_rf[self::RF_NAMED_OBJECTS][$name])?$this->_rf[self::RF_NAMED_OBJECTS][$name]:null;
+	}
+
+	/**
+	 * @return boolean whether body contents are allowed for this control. Defaults to true.
+	 */
+	public function getAllowChildControls()
+	{
+		return true;
 	}
 
 	/**
@@ -1526,6 +1544,56 @@ class TControlList extends TList
 		parent::clear();
 		if($this->_o instanceof INamingContainer)
 			$this->_o->clearNamingContainer();
+	}
+}
+
+/**
+ * TEmptyControlList class
+ *
+ * TEmptyControlList implements an empty control list that prohibits adding
+ * controls to it. This is useful for controls that do not allow child controls.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI
+ * @since 3.0
+ */
+class TEmptyControlList extends TList
+{
+	/**
+	 * the control that owns this collection.
+	 * @var TControl
+	 */
+	private $_o;
+
+	/**
+	 * Constructor.
+	 * @param TControl the control that owns this collection.
+	 */
+	public function __construct(TControl $owner)
+	{
+		parent::__construct();
+		$this->_o=$owner;
+	}
+
+	/**
+	 * @return TControl the control that owns this collection.
+	 */
+	protected function getOwner()
+	{
+		return $this->_o;
+	}
+
+	/**
+	 * Inserts an item at the specified position.
+	 * Calling this method will always throw an exception.
+	 * @param integer the speicified position.
+	 * @param mixed new item
+	 * @throws TInvalidDataTypeException if the item to be inserted is neither a string nor a TControl.
+	 */
+	public function insertAt($index,$item)
+	{
+		throw new TNotSupportedException('emptycontrollist_addition_disallowed');
 	}
 }
 
