@@ -1,0 +1,15 @@
+<com:TContent ID="body" >
+
+<h1>Cookie Attack Prevention</h1>
+<p>
+Protecting cookies from being attacked is of extreme important, as session IDs are commonly stored in cookies. If one gets hold of a session ID, he essentially owns all relevant session information.
+</p>
+<p>
+There are several countermeasures to prevent cookies from being attacked.
+</p>
+<ul>
+  <li>An application can use SSL to create a secure communication channel and only pass the authentication cookie over an HTTPS connection. Attackers are thus unable to decipher the contents in the transferred cookies.</li>
+  <li>Expire sessions appropriately, including all cookies and session tokens, to reduce the likelihood of being attacked.</li>
+  <li>Prevent <a href="?page=Security.XSS">cross-site scripting (XSS)</a> which causes arbitrary code to run in a user's browser and expose his cookies.</li>
+  <li>Validate cookie data and detect if they are altered. By default, Prado validates the cookie data to ensure they are not altered.</li>
+</ul>
