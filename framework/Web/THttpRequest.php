@@ -83,7 +83,7 @@ class THttpRequest extends TMap implements IModule
 	private $_urlFormat='Get';
 	private $_services;
 	private $_requestResolved=false;
-
+	private $_enableCookieValidation=true;
 	/**
 	 * @var string request URL
 	 */
@@ -357,6 +357,22 @@ class THttpRequest extends TMap implements IModule
 	}
 
 	/**
+	 * @return boolean whether cookies should be validated. Defaults to true.
+	 */
+	public function getEnableCookieValidation()
+	{
+		return $this->_enableCookieValidation;
+	}
+
+	/**
+	 * @param boolean whether cookies should be validated.
+	 */
+	public function setEnableCookieValidation($value)
+	{
+		$this->_enableCookieValidation=TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
 	 * @return THttpCookieCollection list of cookies to be sent
 	 */
 	public function getCookies()
@@ -364,8 +380,25 @@ class THttpRequest extends TMap implements IModule
 		if($this->_cookies===null)
 		{
 			$this->_cookies=new THttpCookieCollection;
-			foreach($_COOKIE as $key=>$value)
-				$this->_cookies->add(new THttpCookie($key,$value));
+			if($this->getEnableCookieValidation())
+			{
+				$sig=$this->getUserHostAddress().$this->getUserAgent();
+				$sm=$this->getApplication()->getSecurityManager();
+				foreach($_COOKIE as $key=>$value)
+				{
+					if(($value=$sm->validateData($value))!==false)
+					{
+						$v=unserialize($value);
+						if(isset($v[0]) && isset($v[1]) && $v[0]===$sig)
+							$this->_cookies->add(new THttpCookie($key,$v[1]));
+					}
+				}
+			}
+			else
+			{
+				foreach($_COOKIE as $key=>$value)
+					$this->_cookies->add(new THttpCookie($key,$value));
+			}
 		}
 		return $this->_cookies;
 	}

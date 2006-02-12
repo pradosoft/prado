@@ -66,7 +66,6 @@ class THttpResponse extends TModule implements ITextWriter
 	 * @var string content type
 	 */
 	private $_contentType='text/html';
-
 	/**
 	 * @var string character set, e.g. UTF-8
 	 */
@@ -350,7 +349,16 @@ class THttpResponse extends TModule implements ITextWriter
 	 */
 	public function addCookie($cookie)
 	{
-		setcookie($cookie->getName(),$cookie->getValue(),$cookie->getExpire(),$cookie->getPath(),$cookie->getDomain(),$cookie->getSecure());
+		$request=$this->getRequest();
+		if($request->getEnableCookieValidation())
+		{
+			$sig=$request->getUserHostAddress().$request->getUserAgent();
+			$data=serialize(array($sig,$cookie->getValue()));
+			$value=$this->getApplication()->getSecurityManager()->hashData($data);
+			setcookie($cookie->getName(),$value,$cookie->getExpire(),$cookie->getPath(),$cookie->getDomain(),$cookie->getSecure());
+		}
+		else
+			setcookie($cookie->getName(),$cookie->getValue(),$cookie->getExpire(),$cookie->getPath(),$cookie->getDomain(),$cookie->getSecure());
 	}
 
 	/**

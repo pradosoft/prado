@@ -16,7 +16,7 @@
  * TPageStatePersister implements a page state persistent method based on
  * form hidden fields.
  *
- * Depending on the {@link TPage::getEnableStateHMAC() EnableStateHMAC}
+ * Depending on the {@link TPage::getEnableStateValidation() EnableStateValidation}
  * and {@link TPage::getEnableStateEncryption() EnableStateEncryption},
  * TPageStatePersister may do HMAC validation and encryption to prevent
  * the state data from being tampered or viewed.
@@ -55,7 +55,7 @@ class TPageStatePersister extends TComponent implements IPageStatePersister
 	public function save($state)
 	{
 		Prado::trace("Saving state",'System.Web.UI.TPageStatePersister');
-		if($this->_page->getEnableStateHMAC())
+		if($this->_page->getEnableStateValidation())
 			$data=$this->getApplication()->getSecurityManager()->hashData(Prado::serialize($state));
 		else
 			$data=Prado::serialize($state);
@@ -85,9 +85,9 @@ class TPageStatePersister extends TComponent implements IPageStatePersister
 		{
 			if($this->_page->getEnableStateEncryption())
 				$data=$this->getApplication()->getSecurityManager()->decrypt($data);
-			if($this->_page->getEnableStateHMAC())
+			if($this->_page->getEnableStateValidation())
 			{
-				if(($data=$this->getApplication()->getSecurityManager()->validateData($data))!==null)
+				if(($data=$this->getApplication()->getSecurityManager()->validateData($data))!==false)
 					return Prado::unserialize($data);
 			}
 			else

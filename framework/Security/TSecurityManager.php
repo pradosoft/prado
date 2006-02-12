@@ -204,7 +204,7 @@ class TSecurityManager extends TModule
 	 * Validates if data is tampered.
 	 * @param string data to be validated. The data must be previously
 	 * generated using {@link hashData()}.
-	 * @return string the real data with HMAC stripped off. Null if the data
+	 * @return string the real data with HMAC stripped off. False if the data
 	 * is tampered.
 	 */
 	public function validateData($data)
@@ -214,10 +214,10 @@ class TSecurityManager extends TModule
 		{
 			$hmac=substr($data,0,$len);
 			$data2=substr($data,$len);
-			return $hmac===$this->computeHMAC($data2)?$data2:null;
+			return $hmac===$this->computeHMAC($data2)?$data2:false;
 		}
 		else
-			return null;
+			return false;
 	}
 
 	/**

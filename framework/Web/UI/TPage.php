@@ -131,7 +131,7 @@ class TPage extends TTemplateControl
 
 	private $_statePersisterClass='System.Web.UI.TPageStatePersister';
 	private $_statePersister=null;
-	private $_enableStateHMAC=true;
+	private $_enableStateValidation=true;
 	private $_enableStateEncryption=false;
 
 	/**
@@ -826,14 +826,14 @@ class TPage extends TTemplateControl
 		return $this->_statePersister;
 	}
 
-	public function getEnableStateHMAC()
+	public function getEnableStateValidation()
 	{
-		return $this->_enableStateHMAC;
+		return $this->_enableStateValidation;
 	}
 
-	public function setEnableStateHMAC($value)
+	public function setEnableStateValidation($value)
 	{
-		$this->_enableStateHMAC=TPropertyValue::ensureBoolean($value);
+		$this->_enableStateValidation=TPropertyValue::ensureBoolean($value);
 	}
 
 	public function getEnableStateEncryption()
