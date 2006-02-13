@@ -24,10 +24,10 @@ class RadioButtonTestCase extends SeleniumTestCase
 		// a radiobutton causing validation on a textbox
 		$this->verifyNotVisible('ctl0_body_ctl3');
 		$this->click("//input[@name='ctl0\$body\$ctl4' and @value='ctl0\$body\$ctl4']", "");
-		$this->pause(1000);
+//		$this->pause(1000);
 		$this->verifyVisible('ctl0_body_ctl3');
 		$this->click("//input[@name='ctl0\$body\$ctl4' and @value='ctl0\$body\$ctl4']", "");
-		$this->pause(1000);
+//		$this->pause(1000);
 		$this->verifyVisible('ctl0_body_ctl3');
 		$this->type("ctl0\$body\$TextBox", "test");
 		$this->clickAndWait("//input[@name='ctl0\$body\$ctl4' and @value='ctl0\$body\$ctl4']", "");
@@ -36,7 +36,7 @@ class RadioButtonTestCase extends SeleniumTestCase
 		// a radiobutton validated by a required field validator
 		$this->verifyNotVisible('ctl0_body_ctl6');
 		$this->click("//input[@type='submit' and @value='Submit']", "");
-		$this->pause(1000);
+//		$this->pause(1000);
 		$this->verifyVisible('ctl0_body_ctl6');
 		$this->click("//input[@name='ctl0\$body\$RadioButton' and @value='ctl0\$body\$RadioButton']", "");
 		$this->clickAndWait("//input[@type='submit' and @value='Submit']", "");

@@ -23,7 +23,7 @@ class LinkButtonTestCase extends SeleniumTestCase
 		// a button causing validation
 		$this->verifyNotVisible('ctl0_body_ctl4');
 		$this->click("link=submit", "");
-		$this->pause(1000);
+//		$this->pause(1000);
 		$this->verifyVisible('ctl0_body_ctl4');
 		$this->type("ctl0\$body\$TextBox", "test");
 		$this->clickAndWait("link=submit", "");

@@ -254,10 +254,7 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 		foreach($this->getItems() as $index=>$item)
 		{
 			if($item->getHasAttributes())
-			{
-				foreach($item->getAttributes() as $name=>$value)
-					$writer->addAttribute($name,$value);
-			}
+				$writer->addAttributes($item->getAttributes());
 			$writer->renderBeginTag('li');
 			$this->renderBulletText($writer,$item,$index);
 			$writer->renderEndTag();
@@ -338,6 +335,7 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 		$options['EventTarget'] = $this->getUniqueID();
 		$options['EventParameter'] = $this->_currentRenderItemIndex;
 		$options['ID'] = $this->getClientID().$this->_currentRenderItemIndex;
+		$options['StopEvent'] = true;
 		return $options;
 	}
 

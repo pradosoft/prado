@@ -19,7 +19,7 @@ class ImageButtonTestCase extends SeleniumTestCase
 		// a button causing validation
 		$this->verifyNotVisible('ctl0_body_ctl2');
 		$this->click("id=ctl0_body_ctl3", "");
-		$this->pause(1000);
+//		$this->pause(1000);
 		$this->verifyVisible('ctl0_body_ctl2');
 		$this->type("ctl0\$body\$TextBox", "test");
 		$this->clickAndWait("id=ctl0_body_ctl3", "");

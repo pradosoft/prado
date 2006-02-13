@@ -795,6 +795,9 @@ tests/FunctionalTests/quickstart/Controls/ListBoxTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/PanelTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/RadioButtonListTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/RadioButtonTestCase.php -text
+tests/FunctionalTests/quickstart/Controls/Repeater1TestCase.php -text
+tests/FunctionalTests/quickstart/Controls/Repeater2TestCase.php -text
+tests/FunctionalTests/quickstart/Controls/Repeater3TestCase.php -text
 tests/FunctionalTests/quickstart/Controls/TableTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/TextBoxTestCase.php -text
 tests/FunctionalTests/quickstart/Fundamentals/HangmanTestCase.php -text

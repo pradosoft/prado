@@ -24,10 +24,10 @@ class CheckBoxTestCase extends SeleniumTestCase
 		// a checkbox causing validation on a textbox
 		$this->verifyNotVisible('ctl0_body_ctl3');
 		$this->click("//input[@name='ctl0\$body\$ctl4' and @value='ctl0\$body\$ctl4']", "");
-		$this->pause(1000);
+//		$this->pause(1000);
 		$this->verifyVisible('ctl0_body_ctl3');
 		$this->click("//input[@name='ctl0\$body\$ctl4' and @value='ctl0\$body\$ctl4']", "");
-		$this->pause(1000);
+//		$this->pause(1000);
 		$this->verifyVisible('ctl0_body_ctl3');
 		$this->type("ctl0\$body\$TextBox", "test");
 		$this->clickAndWait("//input[@name='ctl0\$body\$ctl4' and @value='ctl0\$body\$ctl4']", "");
@@ -36,7 +36,7 @@ class CheckBoxTestCase extends SeleniumTestCase
 		// a checkbox validated by a required field validator
 		$this->verifyNotVisible('ctl0_body_ctl6');
 		$this->click("//input[@type='submit' and @value='Submit']", "");
-		$this->pause(1000);
+//		$this->pause(1000);
 		$this->verifyVisible('ctl0_body_ctl6');
 		$this->click("//input[@name='ctl0\$body\$CheckBox' and @value='ctl0\$body\$CheckBox']", "");
 		$this->clickAndWait("//input[@type='submit' and @value='Submit']", "");
@@ -45,7 +45,7 @@ class CheckBoxTestCase extends SeleniumTestCase
 		// a checkbox validated by a required field validator using AutoPostBack
 		$this->verifyNotVisible('ctl0_body_ctl7');
 		$this->click("//input[@name='ctl0\$body\$CheckBox2' and @value='ctl0\$body\$CheckBox2']", "");
-		$this->pause(1000);
+//		$this->pause(1000);
 		$this->verifyVisible('ctl0_body_ctl7');
 		$this->clickAndWait("//input[@name='ctl0\$body\$CheckBox2' and @value='ctl0\$body\$CheckBox2']", "");
 		$this->verifyNotVisible('ctl0_body_ctl7');

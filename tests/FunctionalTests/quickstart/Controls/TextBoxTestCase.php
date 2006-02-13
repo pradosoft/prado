@@ -36,7 +36,7 @@ class TextBoxTestCase extends SeleniumTestCase
 		// auto postback textbox, CausesValidation=true
 		$this->verifyNotVisible('ctl0_body_ctl7');
 		$this->type("ctl0\$body\$TextBox3", "test");
-		$this->pause(1000);
+//		$this->pause(1000);
 		$this->verifyVisible('ctl0_body_ctl7');
 		$this->typeAndWait("ctl0\$body\$TextBox3", "non test");
 		$this->verifyNotVisible('ctl0_body_ctl7');
@@ -83,7 +83,7 @@ End of message
 		// textbox associated with a validator
 		$this->verifyNotVisible('ctl0_body_ctl15');
 		$this->type("ctl0\$body\$MultiTextBox3", "demo");
-		$this->pause(1000);
+//		$this->pause(1000);
 		$this->verifyVisible('ctl0_body_ctl15');
 		$this->typeAndWait("ctl0\$body\$MultiTextBox3", "non demo");
 		$this->verifyNotVisible('ctl0_body_ctl15');
