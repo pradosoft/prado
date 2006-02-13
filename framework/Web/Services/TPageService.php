@@ -457,6 +457,7 @@ class TPageService extends TService
 
 			$this->_page=new $className();
 
+			$this->_page->setPagePath($this->getRequestedPagePath());
 			// initialize page properties with those set in configurations
 			foreach($this->_properties as $name=>$value)
 				$this->_page->setSubProperty($name,$value);

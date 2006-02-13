@@ -119,6 +119,7 @@ class TPage extends TTemplateControl
 	 * @var TControl|string the control or the ID of the element on the page to be focused when the page is sent back to user
 	 */
 	private $_focus=null;
+	private $_pagePath='';
 	/**
 	 * @var boolean whether or not to maintain page scroll position
 	 */
@@ -844,6 +845,16 @@ class TPage extends TTemplateControl
 	public function setEnableStateEncryption($value)
 	{
 		$this->_enableStateEncryption=TPropertyValue::ensureBoolean($value);
+	}
+
+	public function getPagePath()
+	{
+		return $this->_pagePath;
+	}
+
+	public function setPagePath($value)
+	{
+		$this->_pagePath=$value;
 	}
 }
 
