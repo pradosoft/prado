@@ -1,0 +1,10 @@
+<com:TContent ID="Content">
+<h2 class="defect">TRadioButton always postback if AutoPostBack=true</h2>
+
+<com:TRadioButton ID="button1" 
+	AutoPostBack="true" 
+	OnCheckedChanged="doClick" />
+<com:TLabel ForControl="button1" Text="radio button 1" /> <br>
+
+<com:TLabel ID="label1" />
+</com:TContent>

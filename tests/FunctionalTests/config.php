@@ -90,15 +90,12 @@ class PradoApplicationTester extends TApplication
 
 	protected function getTestServiceParameter($file)
 	{
-		$file = realpath($file);
-		$base = realpath($this->testConfig->tests_directory().'/pages/');
+		$file = strtr(realpath($file),'\\','/');
+		$base = strtr(realpath($this->testConfig->tests_directory().'/pages/'),'\\','/');
 		$search = array($base, '.php');
 		$replace = array('', '');
 		$pagePath = str_replace($search, $replace, $file);
-		$separator = array("/", "\\");
-		if(in_array($pagePath[0], $separator))
-			$pagePath = substr($pagePath, 1);
-		return str_replace($separator, array('.','.'), $pagePath);
+		return strtr(trim($pagePath,'/'),'/','.');
 	}
 }
 

@@ -1,42 +1,12 @@
-<?php
-
-require('config.php');
-header("Content-Type: text/html; charset=UTF-8");
-class BrowserTestConfig extends PradoTestConfig
-{
-	//functional test groups
-	public function unit_test_groups()
-	{
-		$groups = array();
-
-		//tests for quickstart samples
-		$this->get_directories(dirname(__FILE__).'/quickstart_tests', $groups);
-
-		//tests to verify tickets
-		$this->get_directories($this->tests_directory(),$groups);
-		
-		return $groups;
-	}
-
-	protected function get_directories($base,&$groups)
-	{
-		$groups[] = realpath($base);
-		$dirs = new DirectoryIterator($base);
-		foreach($dirs as $dir)
-			if(!$dir->isDot() && $dir->isDir() 
-				&& !preg_match("/\.svn/", $dir->getPathName()))
-				$this->get_directories($dir->getPathName(), $groups);
-	}
-}
-
-
-$root = dirname(__FILE__);
-$server = SimpleSeleniumProxyServer::getInstance($root);
-
-$tester = new PradoSimpleTester(new BrowserTestConfig());
-$browser_tests = $tester->getTests();
-$browser_tests->run(new SimpleReporter());
-
-$server->handleRequest();
-
-?>
+<html>
+<head>
+<title>
+Prado Functional Test Suites
+</title>
+</head>
+<body>
+<a href="quickstart.php">Tests of QuickStart Tutorial Demo</a>
+<br/>
+<a href="tickets.php">Tests of Trac Tickets</a>
+</body>
+</html>
