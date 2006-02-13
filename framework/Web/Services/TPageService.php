@@ -108,7 +108,7 @@ class TPageService extends TService
 	/**
 	 * @var string requested page (path)
 	 */
-	private $_pagePath;
+	private $_pagePath=null;
 	/**
 	 * @var TPage the requested page
 	 */
@@ -142,35 +142,99 @@ class TPageService extends TService
 	public function init($config)
 	{
 		Prado::trace("Initializing TPageService",'System.Web.Services.TPageService');
+
+		$this->getApplication()->setPageService($this);
+
+		$pageConfig=$this->loadPageConfig($this->getRequestedPagePath(),$config);
+
+		$this->initPageContext($pageConfig);
+
+		$this->_initialized=true;
+	}
+
+	/**
+	 * Initializes page context.
+	 * Page context includes path alias settings, namespace usages,
+	 * parameter initialization, module loadings, page initial properties
+	 * and authorization rules.
+	 * @param TPageConfiguration
+	 */
+	protected function initPageContext($pageConfig)
+	{
 		$application=$this->getApplication();
 
-		$application->setPageService($this);
+		// set path aliases and using namespaces
+		foreach($pageConfig->getAliases() as $alias=>$path)
+			Prado::setPathOfAlias($alias,$path);
+		foreach($pageConfig->getUsings() as $using)
+			Prado::using($using);
 
-		if($this->_basePath===null)
+		// initial page properties (to be set when page runs)
+		$this->_properties=$pageConfig->getProperties();
+
+		// load parameters
+		$parameters=$application->getParameters();
+		foreach($pageConfig->getParameters() as $id=>$parameter)
 		{
-			$basePath=$application->getBasePath().'/'.self::DEFAULT_BASEPATH;
-			if(($this->_basePath=realpath($basePath))===false || !is_dir($this->_basePath))
-				throw new TConfigurationException('pageservice_basepath_invalid',$basePath);
+			if(is_string($parameter))
+				$parameters->add($id,$parameter);
+			else
+			{
+				$component=Prado::createComponent($parameter[0]);
+				foreach($parameter[1] as $name=>$value)
+					$component->setSubProperty($name,$value);
+				$parameters->add($id,$component);
+			}
 		}
 
-		$this->_pagePath=$application->getRequest()->getServiceParameter();
-		if(empty($this->_pagePath))
-			$this->_pagePath=$this->_defaultPage;
-		if(empty($this->_pagePath))
-			throw new THttpException(404,'pageservice_page_required');
+		// load modules specified in page directory config
+		foreach($pageConfig->getModules() as $id=>$moduleConfig)
+		{
+			Prado::trace("Loading module $id ({$moduleConfig[0]})",'System.Web.Services.TPageService');
+			$module=Prado::createComponent($moduleConfig[0]);
+			if(is_string($id))
+				$application->setModule($id,$module);
+			foreach($moduleConfig[1] as $name=>$value)
+				$module->setSubProperty($name,$value);
+			$module->init($moduleConfig[2]);
+		}
 
+		$application->getAuthorizationRules()->mergeWith($pageConfig->getRules());
+	}
+
+	/**
+	 * Determines the requested page path.
+	 * @return string page path requested
+	 */
+	protected function determineRequestedPagePath()
+	{
+		$pagePath=$this->getRequest()->getServiceParameter();
+		if(empty($pagePath))
+			$pagePath=$this->getDefaultPage();
+		return $pagePath;
+	}
+
+	/**
+	 * Collects configuration for a page.
+	 * @param string page path in the format of Path.To.Page
+	 * @param TXmlElement additional configuration
+	 * @return TPageConfiguration
+	 */
+	protected function loadPageConfig($pagePath,$config=null)
+	{
+		$application=$this->getApplication();
 		if(($cache=$application->getCache())===null)
 		{
 			$pageConfig=new TPageConfiguration;
 			if($config!==null)
 				$pageConfig->loadXmlElement($config,$application->getBasePath(),null);
-			$pageConfig->loadConfigurationFiles($this->_pagePath,$this->_basePath);
+			$pageConfig->loadConfigurationFiles($pagePath,$this->getBasePath());
 		}
 		else
 		{
 			$configCached=true;
 			$currentTimestamp=array();
-			$arr=$cache->get(self::CONFIG_CACHE_PREFIX.$this->_pagePath);
+			$arr=$cache->get(self::CONFIG_CACHE_PREFIX.$pagePath);
 			if(is_array($arr))
 			{
 				list($pageConfig,$timestamps)=$arr;
@@ -197,9 +261,9 @@ class TPageService extends TService
 			else
 			{
 				$configCached=false;
-				$paths=explode('.',$this->_pagePath);
+				$paths=explode('.',$pagePath);
 				array_pop($paths);
-				$configPath=$this->_basePath;
+				$configPath=$this->getBasePath();
 				foreach($paths as $path)
 				{
 					$configFile=$configPath.'/'.self::CONFIG_FILE;
@@ -214,49 +278,11 @@ class TPageService extends TService
 				$pageConfig=new TPageConfiguration;
 				if($config!==null)
 					$pageConfig->loadXmlElement($config,$application->getBasePath(),null);
-				$pageConfig->loadConfigurationFiles($this->_pagePath,$this->_basePath);
-				$cache->set(self::CONFIG_CACHE_PREFIX.$this->_pagePath,array($pageConfig,$currentTimestamp));
+				$pageConfig->loadConfigurationFiles($pagePath,$this->getBasePath());
+				$cache->set(self::CONFIG_CACHE_PREFIX.$pagePath,array($pageConfig,$currentTimestamp));
 			}
 		}
-
-
-		// set path aliases and using namespaces
-		foreach($pageConfig->getAliases() as $alias=>$path)
-			Prado::setPathOfAlias($alias,$path);
-		foreach($pageConfig->getUsings() as $using)
-			Prado::using($using);
-
-		$this->_properties=$pageConfig->getProperties();
-
-		// load parameters
-		$parameters=$application->getParameters();
-		foreach($pageConfig->getParameters() as $id=>$parameter)
-		{
-			if(is_string($parameter))
-				$parameters->add($id,$parameter);
-			else
-			{
-				$component=Prado::createComponent($parameter[0]);
-				foreach($parameter[1] as $name=>$value)
-					$component->setSubProperty($name,$value);
-				$parameters->add($id,$component);
-			}
-		}
-
-		// load modules specified in page directory config
-		foreach($pageConfig->getModules() as $id=>$moduleConfig)
-		{
-			Prado::trace("Loading module $id ({$moduleConfig[0]})",'System.Web.Services.TPageService');
-			$module=Prado::createComponent($moduleConfig[0]);
-			$application->setModule($id,$module);
-			foreach($moduleConfig[1] as $name=>$value)
-				$module->setSubProperty($name,$value);
-			$module->init($moduleConfig[2]);
-		}
-
-		$application->getAuthorizationRules()->mergeWith($pageConfig->getRules());
-
-		$this->_initialized=true;
+		return $pageConfig;
 	}
 
 	/**
@@ -343,6 +369,12 @@ class TPageService extends TService
 	 */
 	public function getRequestedPagePath()
 	{
+		if($this->_pagePath===null)
+		{
+			$this->_pagePath=$this->determineRequestedPagePath();
+			if(empty($this->_pagePath))
+				throw new THttpException(404,'pageservice_page_required');
+		}
 		return $this->_pagePath;
 	}
 
@@ -355,7 +387,7 @@ class TPageService extends TService
 	}
 
 	/**
-	 * @return string default page path to be served if no explicit page is request
+	 * @return string default page path to be served if no explicit page is request. Defaults to 'Home'.
 	 */
 	public function getDefaultPage()
 	{
@@ -375,10 +407,16 @@ class TPageService extends TService
 	}
 
 	/**
-	 * @return string root directory (in namespace form) storing pages
+	 * @return string root directory (in namespace form) storing pages. Defaults to 'pages' directory under application base path.
 	 */
 	public function getBasePath()
 	{
+		if($this->_basePath===null)
+		{
+			$basePath=$this->getApplication()->getBasePath().'/'.self::DEFAULT_BASEPATH;
+			if(($this->_basePath=realpath($basePath))===false || !is_dir($this->_basePath))
+				throw new TConfigurationException('pageservice_basepath_invalid',$basePath);
+		}
 		return $this->_basePath;
 	}
 
@@ -403,7 +441,7 @@ class TPageService extends TService
 	{
 		Prado::trace("Running page service",'System.Web.Services.TPageService');
 		$page=null;
-		$path=$this->_basePath.'/'.strtr($this->_pagePath,'.','/');
+		$path=$this->getBasePath().'/'.strtr($this->getRequestedPagePath(),'.','/');
 		if(is_file($path.self::PAGE_FILE_EXT))
 		{
 			if(is_file($path.Prado::CLASS_FILE_EXT))
@@ -427,7 +465,7 @@ class TPageService extends TService
 			$this->_page->setTemplate($this->getTemplateManager()->getTemplateByFileName($path.self::PAGE_FILE_EXT));
 		}
 		else
-			throw new THttpException(404,'pageservice_page_unknown',$this->_pagePath);
+			throw new THttpException(404,'pageservice_page_unknown',$this->getRequestedPagePath());
 
 		$this->_page->run($this->getResponse()->createHtmlWriter());
 	}
@@ -694,7 +732,12 @@ class TPageConfiguration extends TComponent
 				if(($id=$properties->remove('id'))===null)
 					throw new TConfigurationException('pageserviceconf_parameter_invalid',$configPath);
 				if(($type=$properties->remove('class'))===null)
-					$this->_parameters[$id]=$node->getValue();
+				{
+					if(($value=$properties->remove('value'))===null)
+						$this->_parameters[$id]=$node;
+					else
+						$this->_parameters[$id]=$value;
+				}
 				else
 					$this->_parameters[$id]=array($type,$properties->toArray());
 			}
