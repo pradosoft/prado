@@ -352,9 +352,7 @@ class THttpResponse extends TModule implements ITextWriter
 		$request=$this->getRequest();
 		if($request->getEnableCookieValidation())
 		{
-			$sig=$request->getUserHostAddress().$request->getUserAgent();
-			$data=serialize(array($sig,$cookie->getValue()));
-			$value=$this->getApplication()->getSecurityManager()->hashData($data);
+			$value=$this->getApplication()->getSecurityManager()->hashData($cookie->getValue());
 			setcookie($cookie->getName(),$value,$cookie->getExpire(),$cookie->getPath(),$cookie->getDomain(),$cookie->getSecure());
 		}
 		else
