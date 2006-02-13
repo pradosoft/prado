@@ -781,6 +781,7 @@ tests/FunctionalTests/protected/pages/ViewSource.php -text
 tests/FunctionalTests/protected/pages/config.xml -text
 tests/FunctionalTests/quickstart.php -text
 tests/FunctionalTests/quickstart/Advanced/I18N.php -text
+tests/FunctionalTests/quickstart/Controls/BulletedListTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/ButtonTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/CheckBoxListTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/CheckBoxTestCase.php -text
