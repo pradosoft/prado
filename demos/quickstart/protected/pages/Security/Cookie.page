@@ -14,10 +14,18 @@ There are several countermeasures to prevent cookies from being attacked.
   <li>Validate cookie data and detect if they are altered.</li>
 </ul>
 <p>
-Prado implements a cookie validation scheme. It associates cookie data with the target remote host address and user agent. HMAC check is performed to ensure that cookie data is not altered and is sent from the expected source.
+Prado implements a cookie validation scheme that prevents cookies from being modified. In particular, it does HMAC check for the cookie values if cookie validation is enable.
 </p>
 <p>
-Cookie validation is enabled by default. To obtain validated cookie data, retrieve them from the <tt>Cookies</tt> collection of <tt>THttpRequest</tt> by using the following PHP statements,
+Cookie validation is disabled by default. To enable it, configure the <tt>THttpRequest</tt> module as follows,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source">
+<modules>
+  <module id="request" class="THttpRequest" EnableCookieValidation="true" />
+</modules>
+</com:TTextHighlighter>
+<p>
+To make use of cookie validation scheme provided by Prado, you also need to retrieve cookies through the <tt>Cookies</tt> collection of <tt>THttpRequest</tt> by using the following PHP statements,
 </p>
 <com:TTextHighlighter CssClass="source">
 foreach($this->Request->Cookies as $cookie)
