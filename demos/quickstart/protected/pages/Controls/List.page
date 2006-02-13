@@ -84,7 +84,7 @@ $listbox->dataBind();
 </p>
 <com:RunBar PagePath="Controls.Samples.TRadioButtonList.Home" />
 
-<h2>TBulletList</h2>
+<h2>TBulletedList</h2>
 <p>
 <tt>TBulletedList</tt> displays items in a bullet format on a Web page. The style of the bullets can be specified by <tt>BulletStyle</tt>. When the style is <tt>CustomImage</tt>, the bullets are displayed as images, which is specified by <tt>BulletImageUrl</tt>.
 </p>
