@@ -824,7 +824,8 @@ class TApplication extends TComponent
 			Prado::trace("Loading module $id ({$moduleConfig[0]})",'System.TApplication');
 
 			$module=Prado::createComponent($moduleConfig[0]);
-			$this->setModule($id,$module);
+			if(is_string($id))
+				$this->setModule($id,$module);
 			foreach($moduleConfig[1] as $name=>$value)
 				$module->setSubProperty($name,$value);
 			$module->init($moduleConfig[2]);
@@ -1087,14 +1088,15 @@ class TApplicationConfiguration extends TComponent
 			foreach($modulesNode->getElementsByTagName('module') as $node)
 			{
 				$properties=$node->getAttributes();
-				if(($id=$properties->itemAt('id'))===null)
-					throw new TConfigurationException('appconfig_moduleid_required');
-				if(($type=$properties->remove('class'))===null && isset($this->_modules[$id]) && $this->_modules[$id][2]===null)
-					$type=$this->_modules[$id][0];
+				$id=$properties->itemAt('id');
+				$type=$properties->remove('class');
 				if($type===null)
 					throw new TConfigurationException('appconfig_moduletype_required',$id);
 				$node->setParent(null);
-				$this->_modules[$id]=array($type,$properties->toArray(),$node);
+				if($id===null)
+					$this->_modules[]=array($type,$properties->toArray(),$node);
+				else
+					$this->_modules[$id]=array($type,$properties->toArray(),$node);
 			}
 		}
 
@@ -1106,9 +1108,7 @@ class TApplicationConfiguration extends TComponent
 				$properties=$node->getAttributes();
 				if(($id=$properties->itemAt('id'))===null)
 					throw new TConfigurationException('appconfig_serviceid_required');
-				if(($type=$properties->remove('class'))===null && isset($this->_services[$id]) && $this->_services[$id][2]===null)
-					$type=$this->_services[$id][0];
-				if($type===null)
+				if(($type=$properties->remove('class'))===null)
 					throw new TConfigurationException('appconfig_servicetype_required',$id);
 				$node->setParent(null);
 				$this->_services[$id]=array($type,$properties->toArray(),$node);

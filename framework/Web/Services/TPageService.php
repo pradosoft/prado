@@ -696,30 +696,14 @@ class TPageConfiguration extends TComponent
 			{
 				$properties=$node->getAttributes();
 				$type=$properties->remove('class');
-				if(($id=$properties->itemAt('id'))===null)
-					throw new TConfigurationException('pageserviceconf_module_invalid',$configPath);
-				if(isset($this->_modules[$id]))
-				{
-					if($type===null || $type===$this->_modules[$id][0])
-					{
-						$this->_modules[$id][1]=array_merge($this->_modules[$id][1],$properties->toArray());
-						$elements=$this->_modules[$id][2]->getElements();
-						foreach($node->getElements() as $element)
-							$elements->add($element);
-					}
-					else
-					{
-						$node->setParent(null);
-						$this->_modules[$id]=array($type,$properties->toArray(),$node);
-					}
-				}
-				else if($type===null)
+				$id=$properties->itemAt('id');
+				if($type===null)
 					throw new TConfigurationException('pageserviceconf_moduletype_required',$id,$configPath);
+				$node->setParent(null);
+				if($id===null)
+					$this->_modules[]=array($type,$properties->toArray(),$node);
 				else
-				{
-					$node->setParent(null);
 					$this->_modules[$id]=array($type,$properties->toArray(),$node);
-				}
 			}
 		}
 
