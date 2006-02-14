@@ -47,6 +47,7 @@ class DataList2TestCase extends SeleniumTestCase
 		$this->verifyConfirmation("Are you sure?");
 		$this->chooseCancelOnNextConfirmation();
 		$this->click("id=ctl0_body_DataList_ctl5_ctl3", "");
+		$this->verifyConfirmation("Are you sure?");
 		$this->verifyTextPresent("Motherboard ", "");
 		$this->verifyTextPresent("CPU ", "");
 		$this->verifyTextNotPresent("Harddrive","");

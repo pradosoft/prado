@@ -44,6 +44,7 @@ class DataGrid3TestCase extends SeleniumTestCase
 		$this->verifyTextPresent("Extreme Programming Explained : Embrace Change",'');
 		$this->chooseCancelOnNextConfirmation();
 		$this->click("id=ctl0_body_DataGrid_ctl5_ctl10", "");
+		$this->verifyConfirmation("Are you sure?");
 		$this->verifyTextPresent("Extreme Programming Explained : Embrace Change",'');
 	}
 }
