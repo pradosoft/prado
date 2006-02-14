@@ -104,8 +104,8 @@ class Sample2 extends TPage
 		$this->updateProduct(
 			$this->DataList->DataKeys[$item->ItemIndex],
 			$item->ProductName->Text,
-			$item->ProductPrice->Text,
 			$item->ProductQuantity->Text,
+			$item->ProductPrice->Text,
 			$item->ProductImported->Checked);
 		$this->DataList->EditItemIndex=-1;
 		$this->DataList->DataSource=$this->Data;
