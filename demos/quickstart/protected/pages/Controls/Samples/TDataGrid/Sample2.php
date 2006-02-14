@@ -54,7 +54,7 @@ class Sample2 extends TPage
 				'rating'=>4,
 			),
 			array(
-				'ISBN'=>'0321278658 ',
+				'ISBN'=>'0321278658',
 				'title'=>'Extreme Programming Explained : Embrace Change',
 				'publisher'=>'Addison-Wesley Professional',
 				'price'=>34.99,
