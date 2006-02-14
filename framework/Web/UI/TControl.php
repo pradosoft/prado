@@ -1239,6 +1239,41 @@ class TControl extends TComponent
 	}
 
 	/**
+	 * Traverse the whole control hierarchy rooted at this control.
+	 * Callback function may be invoked for each control being visited.
+	 * A pre-callback is invoked before traversing child controls;
+	 * A post-callback is invoked after traversing child controls.
+	 * Callback functions can be global functions or class methods.
+	 * They must be of the following signature:
+	 * <code>
+	 * function callback_func($control,$param) {...}
+	 * </code>
+	 * where $control refers to the control being visited and $param
+	 * is the parameter that is passed originally when calling this traverse function.
+	 *
+	 * @param mixed parameter to be passed to callbacks for each control
+	 * @param callback callback invoked before traversing child controls. If null, it is ignored.
+	 * @param callback callback invoked after traversing child controls. If null, it is ignored.
+	 */
+	protected function traverseChildControls($param,$preCallback=null,$postCallback=null)
+	{
+		if($preCallback!==null)
+			call_user_func($preCallback,$this,$param);
+		if($this->getHasControls())
+		{
+			foreach($this->_rf[self::RF_CONTROLS] as $control)
+			{
+				if($control instanceof TControl)
+				{
+					$control->traverseChildControls($param,$preCallback,$postCallback);
+				}
+			}
+		}
+		if($postCallback!==null)
+			call_user_func($postCallback,$this,$param);
+	}
+
+	/**
 	 * Renders the control.
 	 * Only when the control is visible will the control be rendered.
 	 * @param THtmlWriter the writer used for the rendering purpose
