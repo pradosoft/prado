@@ -123,7 +123,7 @@ class TThemeManager extends TModule
 			$basePath=$this->getBasePath();
 			if(strpos($basePath,$appPath)===false)
 				throw new TConfigurationException('thememanager_baseurl_required');
-			$appUrl=rtrim(dirname($this->getRequest()->getApplicationPath()),'/');
+			$appUrl=rtrim(dirname($this->getRequest()->getApplicationPath()),'/\\');
 			$this->_baseUrl=$appUrl.strtr(substr($basePath,strlen($appPath)),'\\','/');
 		}
 		return $this->_baseUrl;
