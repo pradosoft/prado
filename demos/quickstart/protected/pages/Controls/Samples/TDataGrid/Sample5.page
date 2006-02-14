@@ -50,6 +50,11 @@ Page Button Count:
 <com:TButton Text="Submit" OnClick="useNumericPager" />
 </com:TPanel>
 
+<com:TPanel GroupingText="Page Size" Width="300px">
+<com:TTextBox ID="PageSize" Text="5" /><br/>
+<com:TButton Text="Submit" OnClick="changePageSize" />
+</com:TPanel>
+
 </com:TPanel>
 
 </com:TContent>

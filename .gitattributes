@@ -788,6 +788,8 @@ tests/FunctionalTests/quickstart/Controls/CheckBoxTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/DataGrid1TestCase.php -text
 tests/FunctionalTests/quickstart/Controls/DataGrid2TestCase.php -text
 tests/FunctionalTests/quickstart/Controls/DataGrid3TestCase.php -text
+tests/FunctionalTests/quickstart/Controls/DataGrid4TestCase.php -text
+tests/FunctionalTests/quickstart/Controls/DataGrid6TestCase.php -text
 tests/FunctionalTests/quickstart/Controls/DataList1TestCase.php -text
 tests/FunctionalTests/quickstart/Controls/DataList2TestCase.php -text
 tests/FunctionalTests/quickstart/Controls/DropDownListTestCase.php -text

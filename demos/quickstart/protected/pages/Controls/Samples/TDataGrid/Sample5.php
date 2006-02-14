@@ -60,6 +60,14 @@ class Sample5 extends Sample1
 		$this->DataGrid->DataSource=$this->Data;
 		$this->DataGrid->dataBind();
 	}
+
+	public function changePageSize($sender,$param)
+	{
+		$this->DataGrid->PageSize=TPropertyValue::ensureInteger($this->PageSize->Text);
+		$this->DataGrid->CurrentPageIndex=0;
+		$this->DataGrid->DataSource=$this->Data;
+		$this->DataGrid->dataBind();
+	}
 }
 
 ?>
