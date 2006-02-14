@@ -267,6 +267,7 @@ framework/Collections/TMap.php -text
 framework/Collections/TPagedDataSource.php -text
 framework/Data/TAPCCache.php -text
 framework/Data/TCache.php -text
+framework/Data/TDataFieldAccessor.php -text
 framework/Data/TDateTimeSimpleFormatter.php -text
 framework/Data/TMemCache.php -text
 framework/Data/TSqliteCache.php -text

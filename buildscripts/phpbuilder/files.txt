@@ -10,6 +10,7 @@ Collections/TAttributeCollection.php
 Data/TXmlDocument.php
 Web/THttpUtility.php
 Data/TCache.php
+Data/TDataFieldAccessor.php
 Log/TLogger.php
 
 core.php

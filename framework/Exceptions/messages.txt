@@ -203,7 +203,8 @@ datagrid_virtualitemcount_invalid		= TDataGrid.VirtualItemCount must be no less 
 
 datagridpagerstyle_pagebuttoncount_invalid = TDataGridPagerStyle.PageButtonCount must be greater than 0.
 
-datagridcolumn_data_invalid				= %s is unable to evaluate the value of data field %s. The data must be an array, TList, TMap, or component that contains the field.
+datafieldaccessor_data_invalid			= TDataFieldAccessor is trying to evaluate a field value of an invalid data. Make sure the data is an array, TMap, TList, or object that contains the specified field '%s'.
+datafieldaccessor_datafield_invalid		= TDataFieldAccessor is trying to evaluate data value of an unknown field '%s'.
 
 repeateritemcollection_repeateritem_required = TRepeaterItemCollection can only accept TRepeaterItem objects.
 

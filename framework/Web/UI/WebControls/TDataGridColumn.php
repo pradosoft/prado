@@ -256,18 +256,9 @@ abstract class TDataGridColumn extends TComponent
 	 */
 	protected function getDataFieldValue($data,$field)
 	{
-		if(is_array($data))
-			return $data[$field];
-		else if(($data instanceof TMap) || ($data instanceof TList))
-			return $data->itemAt($field);
-		else if(($data instanceof TComponent) && $data->canGetProperty($field))
-		{
-			$getter='get'.$field;
-			return $data->$getter();
-		}
-		else
-			throw new TInvalidDataValueException('datagridcolumn_data_invalid',get_class($this),$field);
+		return TDataFieldAccessor::getDataFieldValue($data,$field);
 	}
+
 
 	/**
 	 * Initializes the specified cell to its initial values.

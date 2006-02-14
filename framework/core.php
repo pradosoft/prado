@@ -46,6 +46,10 @@ require_once(PRADO_DIR.'/Web/THttpUtility.php');
  */
 require_once(PRADO_DIR.'/Data/TCache.php');
 /**
+ * Includes TDataFieldAccessor definition
+ */
+require_once(PRADO_DIR.'/Data/TDataFieldAccessor.php');
+/**
  * Includes TLogger definition
  */
 require_once(PRADO_DIR.'/Log/TLogger.php');
