@@ -81,7 +81,10 @@ $libraries = array(
 		'prado/prado.js',
 		'prado/form.js',
 		'prado/element.js',
-		'prado/controls.js'
+
+		//controls
+		'prado/controls.js',
+		'ratings/ratings.js'
 	),
 
 	//effects

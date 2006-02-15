@@ -652,6 +652,9 @@ framework/Web/Javascripts/prototype/position.js -text
 framework/Web/Javascripts/prototype/prototype.js -text
 framework/Web/Javascripts/prototype/range.js -text
 framework/Web/Javascripts/prototype/string.js -text
+framework/Web/Javascripts/ratings/10star_white.gif -text
+framework/Web/Javascripts/ratings/default.css -text
+framework/Web/Javascripts/ratings/ratings.js -text
 framework/Web/Javascripts/rico/colors.js -text
 framework/Web/Javascripts/rico/extension.js -text
 framework/Web/Javascripts/rico/rico.js -text
@@ -716,6 +719,7 @@ framework/Web/UI/WebControls/TPanel.php -text
 framework/Web/UI/WebControls/TPlaceHolder.php -text
 framework/Web/UI/WebControls/TRadioButton.php -text
 framework/Web/UI/WebControls/TRadioButtonList.php -text
+framework/Web/UI/WebControls/TRatingList.php -text
 framework/Web/UI/WebControls/TRegularExpressionValidator.php -text
 framework/Web/UI/WebControls/TRepeatInfo.php -text
 framework/Web/UI/WebControls/TRepeater.php -text
@@ -767,6 +771,7 @@ tests/FunctionalTests/protected/pages/UI/ColorPicker.page -text
 tests/FunctionalTests/protected/pages/UI/DatePicker.page -text
 tests/FunctionalTests/protected/pages/UI/LabeledTextBox.php -text
 tests/FunctionalTests/protected/pages/UI/LabeledTextBox.tpl -text
+tests/FunctionalTests/protected/pages/UI/RatingList.page -text
 tests/FunctionalTests/protected/pages/UI/TestTPanelDefaultButton.page -text
 tests/FunctionalTests/protected/pages/UI/TestTPanelDefaultButton.php -text
 tests/FunctionalTests/protected/pages/UI/testHtmlArea.page -text

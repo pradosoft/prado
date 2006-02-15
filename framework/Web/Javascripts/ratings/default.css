@@ -1,0 +1,21 @@
+.TRatingList_default tr
+{
+	display: none;
+}
+
+.TRatingList_default
+{
+	width: 120px;
+	height: 20px;
+	background-image: url(10star_white.gif);
+	background-position: -0px -4px;
+	background-repeat: no-repeat;
+	margin: 4px;
+	cursor: pointer;
+}
+
+.TRatingList_default caption
+{
+	padding-left: 4px;
+	text-align: left;
+}

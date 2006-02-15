@@ -152,7 +152,6 @@ class TColorPicker extends TTextBox
 						'target_white' => '.gif', 'background' => '.png',
 						'slider' => '.gif', 'hue' => '.gif');
 
-		$cs = $this->getPage()->getClientScript();
 		$list = array();
 
 		foreach($images as $filename => $ext)

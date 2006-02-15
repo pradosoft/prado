@@ -135,6 +135,14 @@ class TDateTimeSimpleFormatter
 			throw new TInvalidDataValueException('invalid_date', $value);
 		return getdate($date);
 	}
+	
+	/**
+	 * @return boolean true if the given value matches with the date pattern.
+	 */
+	public function isValidDate($value)
+	{
+		return !is_null($this->parse($value, false));
+	}
 
 	/**
 	 * Parse the string according to the pattern.
@@ -142,7 +150,7 @@ class TDateTimeSimpleFormatter
 	 * @return int date time stamp
 	 * @throws TInvalidDataValueException if date string is malformed.
 	 */
-	public function parse($value)
+	public function parse($value,$defaulToCurrentTime=true)
 	{
 		if(!is_string($value))
 			throw new TInvalidDataValueException('date_to_parse_must_be_string', $value);
@@ -158,9 +166,18 @@ class TDateTimeSimpleFormatter
 		$x=null; $y=null;
 	
 		$date = $this->getDate(time());
-		$year = "{$date['year']}";
-		$month = $date['mon'];
-		$day = $date['mday'];
+		if($defaulToCurrentTime)
+		{
+			$year = "{$date['year']}";
+			$month = $date['mon'];
+			$day = $date['mday'];
+		}
+		else
+		{
+			$year = null;
+			$month = null;
+			$day = null;
+		}
 
 		while ($i_format < $pattern_length)
 		{
@@ -221,8 +238,11 @@ class TDateTimeSimpleFormatter
 		}
 		if ($i_val != $this->length($value)) 
 			throw new TInvalidDataValueException("Pattern '{$this->pattern}' mismatch", $value);
-		
-		return mktime(0, 0, 0, $month, $day, $year);
+
+		if(!$defaultToCurrentTime && (is_null($month) || is_null($day) || is_null($year)))
+			return null;
+		else	
+			return mktime(0, 0, 0, $month, $day, $year);
 	}
 
 	/**

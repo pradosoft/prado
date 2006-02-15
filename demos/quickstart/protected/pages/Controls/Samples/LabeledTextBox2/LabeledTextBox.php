@@ -13,6 +13,7 @@ class LabeledTextBox extends TControl implements INamingContainer
 		$this->getControls()->add('&nbsp;');
 		$this->_textbox=new TTextBox;
 		$this->_textbox->setID('TextBox');
+		$this->_label->setForControl('TextBox');
 		$this->getControls()->add($this->_textbox);
 	}
 

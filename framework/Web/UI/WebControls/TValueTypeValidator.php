@@ -64,7 +64,10 @@ class TValueTypeValidator
 			case 'Date':
 				$dateFormat = $this->getDateFormat();
 				if(strlen($dateFormat))
-					return pradoParseDate($value, $dateFormat) !== null;
+				{
+					$formatter = Prado::createComponent('System.Data.TDateTimeSimpleFormatter',$dateFormat);
+					return $formatter->isValidDate($value);
+				}
 				else
 					return strtotime($value) > 0;
 		}

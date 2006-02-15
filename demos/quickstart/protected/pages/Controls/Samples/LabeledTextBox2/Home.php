@@ -1,6 +1,6 @@
 <?php
 
-Prado::using('Application.pages.Controls.Samples.LabeledTextBox1.LabeledTextBox');
+Prado::using('Application.pages.Controls.Samples.LabeledTextBox2.LabeledTextBox');
 
 class Home extends TPage
 {

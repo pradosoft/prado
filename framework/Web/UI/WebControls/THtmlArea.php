@@ -37,7 +37,7 @@
  * <com:THtmlArea>
  *      <prop:Options>
  *           plugins : "contextmenu,paste"
- *           language : "zh_CN"
+ *           language : "zh_cn"
  *      </prop:Options>
  * </com:THtmlArea>
  * </code>
@@ -73,6 +73,45 @@
  */
 class THtmlArea extends TTextBox
 {
+	protected $langs = array(
+		'da' => array('da'), 
+		'fa' => array('fa'), 
+		'hu' => array('hu'),
+		'nb' => array('nb'),
+		'pt_br' => array('pt_BR'),
+		'sk' => array('sk'), 
+		'zh_tw_utf8' => array('zh_TW', 'zh_HK'),
+		'ar' => array('ar'),
+		'de' => array('de'),
+		'fi' => array('fi'),
+		'is' => array('is'), 
+		'nl' => array('nl'), 
+		'sv' => array('sv'),
+		'ca' => array('ca'), 
+		'el' => array('el'), 
+		'fr' => array('fr'), 
+		'it' => array('it'), 
+		'nn' => array('nn'), //what is nn?
+//		'ru' => array('ru'), 
+		'th' => array('th'),
+		'cs' => array('cs'), 
+		'en' => array('en'), 
+		'fr_ca' => array('fr_CA'), 
+		'ja' => array('ja'),
+		'pl' => array('pl'), 
+//		'ru_KOI8-R' => array('ru'), /// what is this?
+		'zh_cn' => array('zh_CN'),
+		'cy' => array('cy'), //what is this?
+		'es' => array('es'), 
+		'he' => array('he'), 
+		'ko' => array('ko'),
+		'pt' => array('pt'), 
+		'ru_UTF-8' => array('ru'),
+		'tr' => array('tr'),
+		'si' => array('si'),
+//		'zh_tw' => array('zh_TW'),
+		);
+	
 	/**
 	 * Overrides the parent implementation.
 	 * TextMode for THtmlArea control is always 'MultiLine'
@@ -294,13 +333,27 @@ class THtmlArea extends TTextBox
 	 */
 	protected function getLanguageSuffix($culture)
 	{		
-		if(empty($culture))
+		$app = $this->getApplication()->getGlobalization();			
+		if(empty($culture) && !is_null($app))
+				$culture = $app->getCulture();
+		$variants = array();
+		if(!is_null($app))
+			$variants = $app->getCultureVariants($culture);
+
+		//default the variant to "en"
+		if(count($variants) == 0)
+			$variants[] = empty($culture) ? 'en' : strtolower($culture);
+
+		foreach($this->langs as $js => $langs)
 		{
-			$app = $this->getApplication()->getGlobalization();			
-			if(!is_null($app))
-				$culture = $app->Culture;
+			foreach($variants as $variant)
+			{
+				if(in_array($variant, $langs))
+					return $js;
+			}
 		}
-		return empty($culture) ? 'en' : strtolower($culture);
+		
+		return 'en';
 	}
 }
 

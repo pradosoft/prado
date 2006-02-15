@@ -1,4 +1,9 @@
 <?php
+$pdflatexExec = "C:/Wei/miktex/texmf/MiKTeX/bin/pdflatex.exe";
+$pdfTex = "$pdflatexExec -interaction=nonstopmode -max-print-line=120 %s";
+
+$mainTexFile = dirname(__FILE__).'/prado3_quick_start.tex';
+
 //page root location
 $base = realpath(dirname(__FILE__).'/../../demos/quickstart/protected/pages/');
 
@@ -225,6 +230,7 @@ function get_section_label($section)
 
 //--------------- BEGIN PROCESSING -------------------
 
+// ---------------- Create the Tex files ---------
 $count = 1;
 $current_path = '';
 echo "Compiling .page files to Latex files\n\n";
@@ -248,9 +254,28 @@ foreach($pages as $chapter => $sections)
 	echo "\n";
 }
 
-if($count > 1)
+
+if($argc <= 1 && $count > 1)
 {
 	echo "** Use pdftex to compile prado3_quick_start.tex to obtain PDF version of quickstart tutorial. **\n";
+	exit;
+}
+if($argv[1] == 'pdf')
+{
+	if(is_file($pdflatexExec))
+	{
+		//build pdfTex
+		$command=sprintf($pdfTex,$mainTexFile);
+		system($command); 
+		system($command); //run it twice
+
+		echo "\n\n** PDF file prado3_quick_start.pdf created **\n\n";
+
+	}
+	else
+	{
+		echo " Unable to find pdfLatex executable $pdflatexExec";
+	}
 }
 
 
