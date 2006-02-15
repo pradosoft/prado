@@ -151,6 +151,10 @@ emptycontrollist_addition_disallowed	= Child controls are not allowed.
 webcontrol_accesskey_invalid			= %s.AccessKey '%s' is invalid. It must be a single character only.
 webcontrol_style_invalid				= %s.Style must take string value only.
 
+listcontrol_selection_invalid			= %s has an invalid selection that is set before performing databinding.
+listcontrol_selectedindex_invalid		= %s.SelectedIndex has an invalid value %d.
+listcontrol_selectedvalue_invalid		= %s.SelectedValue has an invalid value '%s'.
+
 label_associatedcontrol_invalid			= TLabel.AssociatedControl '%s' cannot be found.
 
 hiddenfield_focus_unsupported			= THiddenField does not support setting input focus.

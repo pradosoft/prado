@@ -404,7 +404,7 @@ abstract class TListControl extends TDataBoundControl
 			if($index>=0 && $index<$this->_items->getCount())
 				$this->_items->itemAt($index)->setSelected(true);
 			else if($index!==-1)
-				throw new TInvalidDataValueException('listcontrol_selectedindex_invalid',$index);
+				throw new TInvalidDataValueException('listcontrol_selectedindex_invalid',get_class($this),$index);
 		}
 		$this->_cachedSelectedIndex=$index;
 	}
@@ -480,7 +480,7 @@ abstract class TListControl extends TDataBoundControl
 		    	$item->setSelected(true);
 	    	}
 	    	else
-	    		throw new TInvalidDataValueException('listcontrol_selectedvalue_invalid',$value);
+	    		throw new TInvalidDataValueException('listcontrol_selectedvalue_invalid',get_class($this),$value);
     	}
     	$this->_cachedSelectedValue=$value;
     }
@@ -609,7 +609,7 @@ class TListItemCollection extends TList
 		else if($item instanceof TListItem)
 			parent::insertAt($index,$item);
 		else
-			throw new TInvalidDataTypeException('listitemcollection_item_invalid');
+			throw new TInvalidDataTypeException('listitemcollection_item_invalid',get_class($this));
 	}
 
 	/**
