@@ -87,7 +87,14 @@ abstract class TListControl extends TDataBoundControl
 	/**
 	 * @var boolean whether items are restored from viewstate
 	 */
-	private $_loadedFromState=false;
+	private $_stateLoaded=false;
+	/**
+	 * @var mixed the following selection variables are used
+	 * to keep selections when Items are not available
+	 */
+	private $_cachedSelectedIndex=-1;
+	private $_cachedSelectedValue=null;
+
 	/**
 	 * @return string tag name of the list control
 	 */
@@ -136,8 +143,16 @@ abstract class TListControl extends TDataBoundControl
 	public function addParsedObject($object)
 	{
 		// Do not add items from template if items are loaded from viewstate
-		if(!$this->_loadedFromState && ($object instanceof TListItem))
-			$this->getItems()->add($object);
+		if(!$this->_stateLoaded && ($object instanceof TListItem))
+		{
+			$index=$this->getItems()->add($object);
+			if(($this->_cachedSelectedValue!==null && $this->_cachedSelectedValue===$object->getValue()) || ($this->_cachedSelectedIndex===$index))
+			{
+				$object->setSelected(true);
+				$this->_cachedSelectedValue=null;
+				$this->_cachedSelectedIndex=-1;
+			}
+		}
 	}
 
 	/**
@@ -176,6 +191,22 @@ abstract class TListControl extends TDataBoundControl
 			$item->setText($textFormat===''?$text:sprintf($textFormat,$text));
 			$items->add($item);
 		}
+		// SelectedValue or SelectedIndex may be set before databinding
+		// so we make them be effective now
+		if($this->_cachedSelectedValue!==null)
+		{
+			$index=$items->findIndexByValue($value);
+			if($index===-1 || ($this->_cachedSelectedIndex!==-1 && $this->_cachedSelectedIndex!==$index))
+				throw new TInvalidDataValueException('listcontrol_selection_invalid');
+			$this->setSelectedIndex($index);
+			$this->_cachedSelectedValue=null;
+			$this->_cachedSelectedIndex=-1;
+		}
+		else if($this->_cachedSelectedIndex!==-1)
+		{
+			$this->setSelectedIndex($this->_cachedSelectedIndex);
+			$this->_cachedSelectedIndex=-1;
+		}
 	}
 
 	/**
@@ -198,7 +229,7 @@ abstract class TListControl extends TDataBoundControl
 	public function loadState()
 	{
 		parent::loadState();
-		$this->_loadedFromState=true;
+		$this->_stateLoaded=true;
 		if(!$this->getIsDataBound())
 		{
 			$this->_items=new TListItemCollection;
@@ -365,13 +396,17 @@ abstract class TListControl extends TDataBoundControl
 	 */
 	public function setSelectedIndex($index)
 	{
-		$index=TPropertyValue::ensureInteger($index);
+		if(($index=TPropertyValue::ensureInteger($index))<0)
+			$index=-1;
 		if($this->_items)
 		{
 			$this->clearSelection();
 			if($index>=0 && $index<$this->_items->getCount())
 				$this->_items->itemAt($index)->setSelected(true);
+			else if($index!==-1)
+				throw new TInvalidDataValueException('listcontrol_selectedindex_invalid',$index);
 		}
+		$this->_cachedSelectedIndex=$index;
 	}
 
 	/**
@@ -444,7 +479,10 @@ abstract class TListControl extends TDataBoundControl
 		    	$this->clearSelection();
 		    	$item->setSelected(true);
 	    	}
+	    	else
+	    		throw new TInvalidDataValueException('listcontrol_selectedvalue_invalid',$value);
     	}
+    	$this->_cachedSelectedValue=$value;
     }
 
     /**

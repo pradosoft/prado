@@ -99,10 +99,12 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	/**
 	 * Appends an item at the end of the list.
 	 * @param mixed new item
+	 * @return integer the zero-based index at which the item is added
 	 */
 	public function add($item)
 	{
 		$this->insertAt($this->_c,$item);
+		return $this->_c;
 	}
 
 	/**
