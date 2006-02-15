@@ -73,7 +73,6 @@ class TRatingList extends TRadioButtonList
 		$options['field'] = $this->getUniqueID();
 		$options['total'] = $this->getItems()->getCount();
 		$options['pos'] = $this->getSelectedIndex();
-		var_dump($this->getSelectedIndex());
 		return $options;
 	}
 

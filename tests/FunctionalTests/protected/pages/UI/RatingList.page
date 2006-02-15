@@ -9,5 +9,14 @@
 		<com:TListItem Text="Execellent" />
 	</com:TRatingList>
 
+<h2>TRatingList </h2>
+	<com:TRatingList>
+		<com:TListItem Text="Poor" />
+		<com:TListItem Text="Fair" />
+		<com:TListItem Text="Average"  Selected="true"/>
+		<com:TListItem Text="Good" />
+		<com:TListItem Text="Execellent" />
+		<com:TListItem Text="Super" />
+	</com:TRatingList>
 
 </com:TContent>
