@@ -9,14 +9,5 @@
 		<com:TListItem Text="Execellent" />
 	</com:TRatingList>
 
-<h2>TRatingList with SelectedIndex="2"</h2>
-	<com:TRatingList SelectedIndex="2">
-		<com:TListItem Text="Poor" />
-		<com:TListItem Text="Fair" />
-		<com:TListItem Text="Average" />
-		<com:TListItem Text="Good" />
-		<com:TListItem Text="Execellent" />
-		<com:TListItem Text="Super" />
-	</com:TRatingList>
 
 </com:TContent>
