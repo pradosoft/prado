@@ -663,6 +663,7 @@ framework/Web/THttpUtility.php -text
 framework/Web/UI/TAssetManager.php -text
 framework/Web/UI/TClientScriptManager.php -text
 framework/Web/UI/TControl.php -text
+framework/Web/UI/TControlAdapter.php -text
 framework/Web/UI/TForm.php -text
 framework/Web/UI/THtmlWriter.php -text
 framework/Web/UI/TPage.php -text
@@ -732,6 +733,7 @@ framework/Web/UI/WebControls/TTextHighlighter.php -text
 framework/Web/UI/WebControls/TValidationSummary.php -text
 framework/Web/UI/WebControls/TValueTypeValidator.php -text
 framework/Web/UI/WebControls/TWebControl.php -text
+framework/Web/UI/WebControls/TWebControlAdapter.php -text
 framework/Web/UI/WebControls/TWizard.php -text
 framework/Web/UI/WebControls/TWizardStep.php -text
 framework/Web/UI/WebControls/TWizardTemplate.php -text

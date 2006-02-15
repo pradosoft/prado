@@ -11,9 +11,10 @@
  */
 
 /**
- * Includes TAttributeCollection class
+ * Includes TAttributeCollection and TControlAdapter class
  */
 Prado::using('System.Collections.TAttributeCollection');
+Prado::using('System.Web.UI.TControlAdapter');
 
 /**
  * TControl class
@@ -120,6 +121,7 @@ class TControl extends TComponent
 	const RF_EVENTS=6;				// event handlers
 	const RF_CONTROLSTATE=7;		// controlstate
 	const RF_NAMED_OBJECTS=8;		// controls declared with ID on template
+	const RF_ADAPTER=9;				// adapter
 
 	/**
 	 * @var string control ID
@@ -162,7 +164,6 @@ class TControl extends TComponent
 	 */
 	private $_rf=array();
 
-
 	/**
 	 * Returns a property value by name or a control by ID.
 	 * This overrides the parent implementation by allowing accessing
@@ -185,6 +186,30 @@ class TControl extends TComponent
 			return $this->_rf[self::RF_NAMED_OBJECTS][$name];
 		else
 			return parent::__get($name);
+	}
+
+	/**
+	 * @return boolean whether there is an adapter for this control
+	 */
+	public function getHasAdapter()
+	{
+		return isset($this->_rf[self::RF_ADAPTER]);
+	}
+
+	/**
+	 * @return TControlAdapter control adapter. Null if not exists.
+	 */
+	public function getAdapter()
+	{
+		return isset($this->_rf[self::RF_ADAPTER])?$this->_rf[self::RF_ADAPTER]:null;
+	}
+
+	/**
+	 * @param TControlAdapter control adapter
+	 */
+	public function setAdapter(TControlAdapter $adapter)
+	{
+		$this->_rf[self::RF_ADAPTER]=$adapter;
 	}
 
 	/**
@@ -773,7 +798,10 @@ class TControl extends TComponent
 			try
 			{
 				$this->_flags |= self::IS_CREATING_CHILD;
-				$this->createChildControls();
+				if(isset($this->_rf[self::RF_ADAPTER]))
+					$this->_rf[self::RF_ADAPTER]->createChildControls();
+				else
+					$this->createChildControls();
 				$this->_flags &= ~self::IS_CREATING_CHILD;
 				$this->_flags |= self::IS_CHILD_CREATED;
 			}
@@ -1068,7 +1096,10 @@ class TControl extends TComponent
 				$page->applyControlSkin($this);
 				$this->_flags |= self::IS_SKIN_APPLIED;
 			}
-			$this->onInit(null);
+			if(isset($this->_rf[self::RF_ADAPTER]))
+				$this->_rf[self::RF_ADAPTER]->onInit(null);
+			else
+				$this->onInit(null);
 			$this->_stage=self::CS_INITIALIZED;
 		}
 	}
@@ -1080,7 +1111,12 @@ class TControl extends TComponent
 	protected function loadRecursive()
 	{
 		if($this->_stage<self::CS_LOADED)
-			$this->onLoad(null);
+		{
+			if(isset($this->_rf[self::RF_ADAPTER]))
+				$this->_rf[self::RF_ADAPTER]->onLoad(null);
+			else
+				$this->onLoad(null);
+		}
 		if($this->getHasControls())
 		{
 			foreach($this->_rf[self::RF_CONTROLS] as $control)
@@ -1100,7 +1136,10 @@ class TControl extends TComponent
 		if($this->getVisible(false))
 		{
 			$this->ensureChildControls();
-			$this->onPreRender(null);
+			if(isset($this->_rf[self::RF_ADAPTER]))
+				$this->_rf[self::RF_ADAPTER]->onPreRender(null);
+			else
+				$this->onPreRender(null);
 			if($this->getHasControls())
 			{
 				foreach($this->_rf[self::RF_CONTROLS] as $control)
@@ -1125,7 +1164,10 @@ class TControl extends TComponent
 				if($control instanceof TControl)
 					$control->unloadRecursive();
 		}
-		$this->onUnload(null);
+		if(isset($this->_rf[self::RF_ADAPTER]))
+			$this->_rf[self::RF_ADAPTER]->onUnload(null);
+		else
+			$this->onUnload(null);
 	}
 
 	/**
@@ -1297,7 +1339,12 @@ class TControl extends TComponent
 	public function renderControl($writer)
 	{
 		if($this->getVisible(false))
-			$this->render($writer);
+		{
+			if(isset($this->_rf[self::RF_ADAPTER]))
+				$this->_rf[self::RF_ADAPTER]->render($writer);
+			else
+				$this->render($writer);
+		}
 	}
 
 	/**
@@ -1402,7 +1449,10 @@ class TControl extends TComponent
 		}
 		else
 			$this->_stage=self::CS_STATE_LOADED;
-		$this->loadState();
+		if(isset($this->_rf[self::RF_ADAPTER]))
+			$this->_rf[self::RF_ADAPTER]->loadState(null);
+		else
+			$this->loadState();
 	}
 
 	/**
@@ -1412,7 +1462,10 @@ class TControl extends TComponent
 	 */
 	final protected function &saveStateRecursive($needViewState=true)
 	{
-		$this->saveState();
+		if(isset($this->_rf[self::RF_ADAPTER]))
+			$this->_rf[self::RF_ADAPTER]->saveState(null);
+		else
+			$this->saveState();
 		$needViewState=($needViewState && !($this->_flags & self::IS_DISABLE_VIEWSTATE));
 		$state=array();
 		if($this->getHasControls())

@@ -28,6 +28,7 @@ Web/UI/THtmlWriter.php
 Web/UI/TTemplateManager.php
 Web/UI/TThemeManager.php
 Web/UI/TAssetManager.php
+Web/UI/TControlAdapter.php
 Web/UI/TControl.php
 Web/UI/TTemplateControl.php
 Web/UI/TForm.php
@@ -36,6 +37,7 @@ Web/UI/TPage.php
 Web/UI/TPageStatePersister.php
 Web/UI/WebControls/TFont.php
 Web/UI/WebControls/TStyle.php
+Web/UI/WebControls/TWebControlAdapter.php
 Web/UI/WebControls/TWebControl.php
 # Web/UI/WebControls/TPlaceHolder.php
 # Web/UI/WebControls/TLiteral.php
