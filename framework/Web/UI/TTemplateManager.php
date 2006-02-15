@@ -568,6 +568,8 @@ class TTemplate extends TComponent implements ITemplate
 								$value=$this->parseAttribute($value);
 							$type=$tpl[$container][1];
 							$this->validateAttributes($type,array($prop=>$value));
+							if(isset($tpl[$container][2][$prop]))
+								throw new TConfigurationException('template_property_duplicated',$prop);
 							$tpl[$container][2][$prop]=$value;
 							$textStart=$matchEnd+1;
 						}
@@ -630,6 +632,8 @@ class TTemplate extends TComponent implements ITemplate
 		{
 			$match=&$matches[$i];
 			$name=strtolower($match[1][0]);
+			if(isset($attributes[$name]))
+				throw new TConfigurationException('template_property_duplicated',$name);
 			$value=$match[2][0];
 			if(strrpos($name,'template')===strlen($name)-8)
 			{
