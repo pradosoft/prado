@@ -83,6 +83,30 @@ class TTemplateControl extends TControl implements INamingContainer
 	}
 
 	/**
+	 * @return boolean whether this control is a source template control.
+	 * A source template control loads its template from external storage,
+	 * such as file, db, rather than from within another template.
+	 */
+	public function getIsSourceTemplateControl()
+	{
+		if(($template=$this->getTemplate())!==null)
+			return $template->getIsSourceTemplate();
+		else
+			return false;
+	}
+
+	/**
+	 * @return string the directory containing the template. Empty if no template available.
+	 */
+	public function getTemplateDirectory()
+	{
+		if(($template=$this->getTemplate())!==null)
+			return $template->getContextPath();
+		else
+			return '';
+	}
+
+	/**
 	 * Loads the template associated with this control class.
 	 * @return ITemplate the parsed template structure
 	 */

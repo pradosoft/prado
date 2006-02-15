@@ -256,6 +256,22 @@ class TControl extends TComponent
 	}
 
 	/**
+	 * @return TTemplateControl the control whose template is loaded from
+	 * some external storage, such as file, db, and whose template ultimately
+	 * contains this control.
+	 */
+	public function getSourceTemplateControl()
+	{
+		$control=$this;
+		while(($control instanceof TControl) && ($control=$control->getTemplateControl())!==null)
+		{
+			if(($control instanceof TTemplateControl) && $control->getIsSourceTemplateControl())
+				return $control;
+		}
+		return $this->getPage();
+	}
+
+	/**
 	 * Publishes a private asset and gets its URL.
 	 * This method will publish a private asset (file or directory)
 	 * and gets the URL to the asset. Note, if the asset refers to

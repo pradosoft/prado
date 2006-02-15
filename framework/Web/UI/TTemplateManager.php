@@ -194,6 +194,10 @@ class TTemplate extends TComponent implements ITemplate
 	 * @var string template content to be parsed
 	 */
 	private $_content;
+	/**
+	 * @var boolean whether this template is a source template
+	 */
+	private $_sourceTemplate=true;
 
 
 	/**
@@ -203,15 +207,27 @@ class TTemplate extends TComponent implements ITemplate
 	 * @param string the template context directory
 	 * @param string the template file, null if no file
 	 * @param integer the line number that parsing starts from (internal use)
+	 * @param boolean whether this template is a source template, i.e., this template is loaded from
+	 * some external storage rather than from within another template.
 	 */
-	public function __construct($template,$contextPath,$tplFile=null,$startingLine=0)
+	public function __construct($template,$contextPath,$tplFile=null,$startingLine=0,$sourceTemplate=true)
 	{
+		$this->_sourceTemplate=$sourceTemplate;
 		$this->_contextPath=$contextPath;
 		$this->_tplFile=$tplFile;
 		$this->_startingLine=$startingLine;
 		$this->_content=$template;
 		$this->parse($template);
 		$this->_content=null; // reset to save memory
+	}
+
+	/**
+	 * @return boolean whether this template is a source template, i.e., this template is loaded from
+	 * some external storage rather than from within another template.
+	 */
+	public function getIsSourceTemplate()
+	{
+		return $this->_sourceTemplate;
 	}
 
 	/**
@@ -636,7 +652,7 @@ class TTemplate extends TComponent implements ITemplate
 	protected function parseTemplateProperty($content,$offset)
 	{
 		$line=$this->_startingLine+count(explode("\n",substr($this->_content,0,$offset)))-1;
-		return array(self::CONFIG_TEMPLATE,new TTemplate($content,$this->_contextPath,$this->_tplFile,$line));
+		return array(self::CONFIG_TEMPLATE,new TTemplate($content,$this->_contextPath,$this->_tplFile,$line,false));
 	}
 
 	/**
