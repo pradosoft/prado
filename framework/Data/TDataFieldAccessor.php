@@ -52,10 +52,8 @@ class TDataFieldAccessor
 	{
 		if(Prado::getApplication()->getMode()===TApplication::STATE_PERFORMANCE)
 		{
-			if(is_array($data))
+			if(is_array($data) || ($data instanceof ArrayAccess))
 				return $data[$field];
-			else if(($data instanceof TMap) || ($data instanceof TList))
-				return $data->itemAt($field);
 			else if(is_object($data))
 			{
 				if(strpos($field,'.')===false)  // simple field
@@ -73,17 +71,10 @@ class TDataFieldAccessor
 		}
 		else
 		{
-			if(is_array($data))
+			if(is_array($data) || ($data instanceof ArrayAccess))
 			{
 				if(isset($data[$field]))
 					return $data[$field];
-				else
-					throw new TInvalidDataValueException('datafieldaccessor_datafield_invalid',$field);
-			}
-			else if(($data instanceof TMap) || ($data instanceof TList))
-			{
-				if($data->contains($field))
-					return $data->itemAt($field);
 				else
 					throw new TInvalidDataValueException('datafieldaccessor_datafield_invalid',$field);
 			}

@@ -161,15 +161,19 @@ abstract class TListControl extends TDataBoundControl
 		foreach($data as $key=>$object)
 		{
 			$item=new TListItem;
-			if(!is_string($object) && isset($object[$textField]))
-				$text=$object[$textField];
+			if(is_array($object) || is_object($object))
+			{
+				$text=TDataFieldAccessor::getDataFieldValue($object,$textField);
+				$value=TDataFieldAccessor::getDataFieldValue($object,$valueField);
+				$item->setValue($value);
+			}
 			else
-				$text=TPropertyValue::ensureString($object);
+			{
+				$text=$object;
+				if(is_string($key))
+					$item->setValue($key);
+			}
 			$item->setText($textFormat===''?$text:sprintf($textFormat,$text));
-			if(!is_string($object) && isset($object[$valueField]))
-				$item->setValue($object[$valueField]);
-			else if(!is_integer($key))
-				$item->setValue($key);
 			$items->add($item);
 		}
 	}

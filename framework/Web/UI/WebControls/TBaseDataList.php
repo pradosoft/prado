@@ -216,17 +216,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	 */
 	protected function getDataFieldValue($data,$field)
 	{
-		if(is_array($data))
-			return $data[$field];
-		else if(($data instanceof TMap) || ($data instanceof TList))
-			return $data->itemAt($field);
-		else if(($data instanceof TComponent) && $data->canGetProperty($field))
-		{
-			$getter='get'.$field;
-			return $data->$getter();
-		}
-		else
-			throw new TInvalidDataValueException('basedatalist_datafield_invalid');
+		return TDataFieldAccessor::getDataFieldValue($data,$field);
 	}
 
 	/**
