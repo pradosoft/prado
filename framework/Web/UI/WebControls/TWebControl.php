@@ -14,7 +14,7 @@
  * Includes TStyle and TWebAdapter definition
  */
 Prado::using('System.Web.UI.WebControls.TStyle');
-Prado::using('System.Web.UI.WebControls.TWebAdapter');
+Prado::using('System.Web.UI.WebControls.TWebControlAdapter');
 
 /**
  * TWebControl class
