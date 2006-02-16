@@ -10,76 +10,6 @@
  * @package System.Web.UI
  */
 
-/*class TPostBackOptions extends TComponent
-{
-	public $_actionUrl='';
-	public $_autoPostBack=false;
-	public $_clientSubmit=true;
-	public $_performValidation=false;
-	public $_validationGroup='';
-	public $_trackFocus=false;
-
-	public function getActionUrl()
-	{
-		return $this->_actionUrl;
-	}
-
-	public function setActionUrl($value)
-	{
-		$this->_actionUrl=THttpUtility::quoteJavaScriptString($value);
-	}
-
-	public function getAutoPostBack()
-	{
-		return $this->_autoPostBack;
-	}
-
-	public function setAutoPostBack($value)
-	{
-		$this->_autoPostBack=$value;
-	}
-
-	public function getClientSubmit()
-	{
-		return $this->_clientSubmit;
-	}
-
-	public function setClientSubmit($value)
-	{
-		$this->_clientSubmit=$value;
-	}
-
-	public function getPerformValidation()
-	{
-		return $this->_performValidation;
-	}
-
-	public function setPerformValidation($value)
-	{
-		$this->_performValidation=$value;
-	}
-
-	public function getValidationGroup()
-	{
-		return $this->_validationGroup;
-	}
-
-	public function setValidationGroup($value)
-	{
-		$this->_validationGroup=$value;
-	}
-
-	public function getTrackFocus()
-	{
-		return $this->_trackFocus;
-	}
-
-	public function setTrackFocus($value)
-	{
-		$this->_trackFocus=$value;
-	}
-}
-*/
 Prado::using('System.Web.Javascripts.*');
 
 /**
@@ -94,21 +24,21 @@ class TClientScriptManager extends TComponent
 {
 	const SCRIPT_DIR='Web/Javascripts/js';
 	//const POSTBACK_FUNC='Prado.doPostBack';
-	
+
 	private $_page;
 	private $_hiddenFields=array();
 	private $_beginScripts=array();
 	private $_endScripts=array();
 	private $_scriptFiles=array();
-	
+
 	//private $_headScriptFiles=array();
 	//private $_headScripts=array();
-	
+
 	private $_styleSheetFiles=array();
 	private $_styleSheets=array();
-	
+
 	private $_client;
-	
+
 	/*private $_onSubmitStatements=array();
 	private $_arrayDeclares=array();
 	private $_expandoAttributes=array();
@@ -116,17 +46,17 @@ class TClientScriptManager extends TComponent
 	private $_focusScriptRegistered=false;
 	private $_scrollScriptRegistered=false;
 	*/
-	
+
 	private $_publishedScriptFiles=array();
 
-	
+
 	public function __construct(TPage $owner)
 	{
 		$this->_page=$owner;
 		$this->_client = new TClientScript($this);
 	}
-	
-	
+
+
 	public function registerPostBackControl($control,$namespace='Prado.WebUI')
 	{
 		$options = $this->getPostBackOptions($control);
@@ -134,7 +64,7 @@ class TClientScriptManager extends TComponent
 		$namespace = empty($namespace) ? "window" : $namespace;
 		$code = "new {$namespace}.{$type}($options);";
 		$this->registerEndScript(sprintf('%08X', crc32($code)), $code);
-		
+
 		$this->registerHiddenField(TPage::FIELD_POSTBACK_TARGET,'');
 		$this->registerHiddenField(TPage::FIELD_POSTBACK_PARAMETER,'');
 		$this->registerClientScript('prado');
@@ -143,7 +73,7 @@ class TClientScriptManager extends TComponent
 	protected function getPostBackOptions($control)
 	{
 		$postback = $control->getPostBackOptions();
-		if(!isset($postback['ID'])) 
+		if(!isset($postback['ID']))
 			$postback['ID'] = $control->getClientID();
 		if(!isset($postback['FormID']))
 			$postback['FormID'] = $this->_page->getForm()->getClientID();
@@ -152,7 +82,7 @@ class TClientScriptManager extends TComponent
 	}
 
 	/**
-	 * Register a default button to panel. When the $panel is in focus and 
+	 * Register a default button to panel. When the $panel is in focus and
 	 * the 'enter' key is pressed, the $button will be clicked.
 	 * @param TControl panel to register the default button action
 	 * @param TControl button to trigger a postback
@@ -180,12 +110,12 @@ class TClientScriptManager extends TComponent
 
 
 	/**
-	 * Register client scripts. 
+	 * Register client scripts.
 	 */
 	public function registerClientScript($script)
 	{
 		static $scripts = array();
-		$scripts = array_unique(array_merge($scripts, 
+		$scripts = array_unique(array_merge($scripts,
 						TClientScript::getScripts($script)));
 
 		$this->publishClientScriptAssets($scripts);
@@ -209,9 +139,8 @@ class TClientScriptManager extends TComponent
 			{
 				$base = Prado::getFrameworkPath();
 				$clientScripts = self::SCRIPT_DIR;
-				$assetManager = $this->_page->getService()->getAssetManager();
 				$file = "{$base}/{$clientScripts}/{$lib}.js";
-				$assetManager->publishFilePath($file);
+				$this->publishFilePath($file);
 				$this->_publishedScriptFiles[$lib] = true;
 			}
 		}
@@ -229,9 +158,8 @@ class TClientScriptManager extends TComponent
 		{
 			$base = Prado::getFrameworkPath();
 			$clientScripts = self::SCRIPT_DIR;
-			$assetManager = $this->_page->getService()->getAssetManager();
 			$file = "{$base}/{$clientScripts}/{$scriptFile}";
-			$url= $assetManager->publishFilePath($file);
+			$url= $this->publishFilePath($file);
 			$this->_publishedScriptFiles[$scriptFile] = $url;
 			return $url;
 		}
@@ -485,7 +413,7 @@ class TClientScriptManager extends TComponent
 	{
 		return "<script type=\"text/javascript\">\n/*<![CDATA[*/\n{$code}\n/*]]>*/\n</script>";
 	}
-	
+
 	public function renderStyleSheetFiles($writer)
 	{
 		$str='';
@@ -534,5 +462,205 @@ class TClientScriptManager extends TComponent
 	public function getCallbackEventReference()
 	*/
 }
+
+/**
+ * PradoClientScript class.
+ *
+ * Resolves Prado client script dependencies. e.g. TPradoClientScript::getScripts("dom");
+ *
+ * - <b>base</b> basic javascript utilities, e.g. $()
+ * - <b>dom</b> DOM and Form functions, e.g. $F(inputID) to retrive form input values.
+ * - <b>effects</b> Effects such as fade, shake, move
+ * - <b>controls</b> Prado client-side components, e.g. Slider, AJAX components
+ * - <b>validator</b> Prado client-side validators.
+ * - <b>ajax</b> Prado AJAX library including Prototype's AJAX and JSON.
+ *
+ * Dependencies for each library are automatically resolved.
+ *
+ * Namespace: System.Web.UI
+ *
+ * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
+ * @version $Revision: 1.1 $  $Date: 2005/11/06 23:02:33 $
+ * @package System.Web.UI
+ */
+class TPradoClientScript
+{
+	/**
+	 * Client-side javascript library dependencies
+	 * @var array
+	 */
+	protected static $_dependencies = array(
+		'prado' => array('prado'),
+		'effects' => array('prado', 'effects'),
+		'ajax' => array('prado', 'effects', 'ajax'),
+		'validator' => array('prado', 'validator'),
+		'logger' => array('prado', 'logger'),
+		'datepicker' => array('prado', 'datepicker'),
+		'rico' => array('prado', 'effects', 'ajax', 'rico'),
+		'colorpicker' => array('prado', 'colorpicker')
+		);
+
+	/**
+	 * Resolve dependencies for the given library name(s).
+	 * @param string|array name(s) of the library to be loaded.
+	 * @return array list of library file names (w/o extension) for the specified library name(s).
+	 */
+	public function getScripts($scripts)
+	{
+		$files = array();
+		if(!is_array($scripts)) $scripts = array($scripts);
+		foreach($scripts as $script)
+		{
+			if(isset(self::$_dependencies[$script]))
+				$files = array_merge($files, self::$_dependencies[$script]);
+			$files[] = $script;
+		}
+		$files = array_unique($files);
+		return $files;
+	}
+
+
+	/**
+	 * TODO: clean up
+	 *
+	public function getPostBackEventReference($control,$parameter='',$options=null,$javascriptPrefix=true)
+	{
+		if(!$options || (!$options->getPerformValidation() && !$options->getTrackFocus() && $options->getClientSubmit() && $options->getActionUrl()==''))
+		{
+			$this->registerPostBackScript();
+			if(($form=$this->_page->getForm())!==null)
+				$formID=$form->getClientID();
+			else
+				throw new TConfigurationException('clientscriptmanager_form_required');
+			$postback=self::POSTBACK_FUNC.'(\''.$formID.'\',\''.$control->getUniqueID().'\',\''.THttpUtility::quoteJavaScriptString($parameter).'\')';
+			if($options && $options->getAutoPostBack())
+				$postback='setTimeout(\''.THttpUtility::quoteJavaScriptString($postback).'\',0)';
+			return $javascriptPrefix?'javascript:'.$postback:$postback;
+		}
+		$opt='';
+		$flag=false;
+		if($options->getPerformValidation())
+		{
+			$flag=true;
+			$this->registerValidationScript();
+			$opt.=',true,';
+		}
+		else
+			$opt.=',false,';
+		if($options->getValidationGroup()!=='')
+		{
+			$flag=true;
+			$opt.='"'.$options->getValidationGroup().'",';
+		}
+		else
+			$opt.='\'\',';
+		if($options->getActionUrl()!=='')
+		{
+			$flag=true;
+			$this->_page->setCrossPagePostBack(true);
+			$opt.='"'.$options->getActionUrl().'",';
+		}
+		else
+			$opt.='null,';
+		if($options->getTrackFocus())
+		{
+			$flag=true;
+			$this->registerFocusScript();
+			$opt.='true,';
+		}
+		else
+			$opt.='false,';
+		if($options->getClientSubmit())
+		{
+			$flag=true;
+			$opt.='true';
+		}
+		else
+			$opt.='false';
+		if(!$flag)
+			return '';
+		$this->registerPostBackScript();
+		if(($form=$this->_page->getForm())!==null)
+			$formID=$form->getClientID();
+		else
+			throw new TConfigurationException('clientscriptmanager_form_required');
+		$postback=self::POSTBACK_FUNC.'(\''.$formID.'\',\''.$control->getUniqueID().'\',\''.THttpUtility::quoteJavaScriptString($parameter).'\''.$opt.')';
+		if($options && $options->getAutoPostBack())
+			$postback='setTimeout(\''.THttpUtility::quoteJavaScriptString($postback).'\',0)';
+		return $javascriptPrefix?'javascript:'.$postback:$postback;
+	}*/
+
+}
+
+/*class TPostBackOptions extends TComponent
+{
+	public $_actionUrl='';
+	public $_autoPostBack=false;
+	public $_clientSubmit=true;
+	public $_performValidation=false;
+	public $_validationGroup='';
+	public $_trackFocus=false;
+
+	public function getActionUrl()
+	{
+		return $this->_actionUrl;
+	}
+
+	public function setActionUrl($value)
+	{
+		$this->_actionUrl=THttpUtility::quoteJavaScriptString($value);
+	}
+
+	public function getAutoPostBack()
+	{
+		return $this->_autoPostBack;
+	}
+
+	public function setAutoPostBack($value)
+	{
+		$this->_autoPostBack=$value;
+	}
+
+	public function getClientSubmit()
+	{
+		return $this->_clientSubmit;
+	}
+
+	public function setClientSubmit($value)
+	{
+		$this->_clientSubmit=$value;
+	}
+
+	public function getPerformValidation()
+	{
+		return $this->_performValidation;
+	}
+
+	public function setPerformValidation($value)
+	{
+		$this->_performValidation=$value;
+	}
+
+	public function getValidationGroup()
+	{
+		return $this->_validationGroup;
+	}
+
+	public function setValidationGroup($value)
+	{
+		$this->_validationGroup=$value;
+	}
+
+	public function getTrackFocus()
+	{
+		return $this->_trackFocus;
+	}
+
+	public function setTrackFocus($value)
+	{
+		$this->_trackFocus=$value;
+	}
+}
+*/
 
 ?>

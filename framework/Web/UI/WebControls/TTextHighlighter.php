@@ -123,7 +123,7 @@ class TTextHighlighter extends TWebControl
 		if(!$cs->isStyleSheetFileRegistered($cssKey))
 		{
 			$cssFile=Prado::getPathOfNamespace('System.3rdParty.geshi.highlight','.css');
-			$styleSheet = $this->getService()->getAsset($cssFile);
+			$styleSheet = $this->publishFilePath($cssFile);
 			$cs->registerStyleSheetFile($cssKey, $styleSheet);
 		}
 	}

@@ -80,22 +80,22 @@ class TRatingList extends TRadioButtonList
 	{
 		$cs = $this->getPage()->getClientScript();
 		$style = $this->getRatingStyle()->getStyleSheet();
-		$url = $this->getService()->getAsset($style);
+		$url = $this->publishFilePath($style);
 		if(!$cs->isStyleSheetFileRegistered($style))
-			$cs->registerStyleSheetFile($style, $url);	
+			$cs->registerStyleSheetFile($style, $url);
 		return $url;
 	}
-	
+
 	protected function publishRatingListAssets()
 	{
 		$cs = $this->getPage()->getClientScript();
 		$assets = $this->getRatingStyle()->getAssets();
 		$list = array();
 		foreach($assets as $file)
-			$list[] = $this->getService()->getAsset($file);
+			$list[] = $this->publishFilePath($file);
 		return $list;
 	}
-	
+
 	/**
 	 * @param THtmlWriter writer
 	 */
@@ -146,7 +146,7 @@ abstract class TRatingListStyle
 }
 
 class TRatingListDefaultStyle extends TRatingListStyle
-{	
+{
 	public function __construct()
 	{
 		parent::__construct();

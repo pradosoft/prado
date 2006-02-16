@@ -16,7 +16,6 @@
 Prado::using('System.Web.UI.TPage');
 Prado::using('System.Web.UI.TTemplateManager');
 Prado::using('System.Web.UI.TThemeManager');
-Prado::using('System.Web.UI.TAssetManager');
 
 /**
  * TPageService class.
@@ -47,10 +46,9 @@ Prado::using('System.Web.UI.TAssetManager');
  * Configuration of a module in a subdirectory will overwrite its parent
  * directory's configuration, if both configurations refer to the same module.
  *
- * By default, TPageService will automatically load three modules:
+ * By default, TPageService will automatically load two modules:
  * - {@link TTemplateManager} : manages page and control templates
  * - {@link TThemeManager} : manages themes used in a Prado application
- * - {@link TAssetManager} : manages assets used in a Prado application.
  *
  * In page directory configurations, static authorization rules can also be specified,
  * which governs who and which roles can access particular pages.
@@ -121,10 +119,6 @@ class TPageService extends TService
 	 * @var boolean whether service is initialized
 	 */
 	private $_initialized=false;
-	/**
-	 * @var TAssetManager asset manager
-	 */
-	private $_assetManager=null;
 	/**
 	 * @var TThemeManager theme manager
 	 */
@@ -323,27 +317,6 @@ class TPageService extends TService
 	}
 
 	/**
-	 * @return TAssetManager asset manager
-	 */
-	public function getAssetManager()
-	{
-		if(!$this->_assetManager)
-		{
-			$this->_assetManager=new TAssetManager;
-			$this->_assetManager->init(null);
-		}
-		return $this->_assetManager;
-	}
-
-	/**
-	 * @param TAssetManager asset manager
-	 */
-	public function setAssetManager(TAssetManager $value)
-	{
-		$this->_assetManager=$value;
-	}
-
-	/**
 	 * @return TThemeManager theme manager
 	 */
 	public function getThemeManager()
@@ -481,19 +454,6 @@ class TPageService extends TService
 	public function constructUrl($pagePath,$getParams=null,$encodeAmpersand=false)
 	{
 		return $this->getRequest()->constructUrl($this->_id,$pagePath,$getParams,$encodeAmpersand);
-	}
-
-	/**
-	 * Publishes a private asset and returns its URL.
-	 * This method will publish a private asset (file or directory)
-	 * and returns the URL to the asset. Note, if the asset refers to
-	 * a directory, all contents under that directory will be published.
-	 * @param string path of the asset that is either absolute or relative to the directory containing the current running script.
-	 * @return string URL to the asset path.
-	 */
-	public function getAsset($path)
-	{
-		return $this->getAssetManager()->publishFilePath($path);
 	}
 }
 

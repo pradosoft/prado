@@ -297,21 +297,6 @@ class TControl extends TComponent
 	}
 
 	/**
-	 * Publishes a private asset and gets its URL.
-	 * This method will publish a private asset (file or directory)
-	 * and gets the URL to the asset. Note, if the asset refers to
-	 * a directory, all contents under that directory will be published.
-	 * @param string path of the asset that is relative to the directory containing the control class file.
-	 * @return string URL to the asset path.
-	 */
-	public function getAsset($assetPath)
-	{
-		$class=new ReflectionClass(get_class($this));
-		$assetPath=dirname($class->getFileName()).'/'.$assetPath;
-		return $this->getService()->getAsset($assetPath);
-	}
-
-	/**
 	 * Returns the id of the control.
 	 * Control ID can be either manually set or automatically generated.
 	 * If $hideAutoID is true, automatically generated ID will be returned as an empty string.

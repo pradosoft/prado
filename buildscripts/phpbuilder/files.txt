@@ -21,13 +21,13 @@ Exceptions/TErrorHandler.php
 Web/THttpRequest.php
 Web/THttpResponse.php
 Web/THttpSession.php
+Web/TAssetManager.php
 Security/TAuthorizationRule.php
 Security/TSecurityManager.php
 Web/Services/TPageService.php
 Web/UI/THtmlWriter.php
 Web/UI/TTemplateManager.php
 Web/UI/TThemeManager.php
-Web/UI/TAssetManager.php
 Web/UI/TControlAdapter.php
 Web/UI/TControl.php
 Web/UI/TTemplateControl.php

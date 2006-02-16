@@ -38,6 +38,10 @@ require_once(PRADO_DIR.'/Security/TSecurityManager.php');
  * Includes TPageService class (default service)
  */
 require_once(PRADO_DIR.'/Web/Services/TPageService.php');
+/**
+ * Includes TAssetManager class
+ */
+require_once(PRADO_DIR.'/Web/TAssetManager.php');
 
 
 /**
@@ -252,6 +256,10 @@ class TApplication extends TComponent
 	 * @var TSecurityManager security manager module
 	 */
 	private $_security=null;
+	/**
+	 * @var TAssetManager asset manager module
+	 */
+	private $_assetManager=null;
 	/**
 	 * @var TAuthorizationRuleCollection collection of authorization rules
 	 */
@@ -675,6 +683,27 @@ class TApplication extends TComponent
 	public function setSecurityManager(TSecurityManager $sm)
 	{
 		$this->_security=$sm;
+	}
+
+	/**
+	 * @return TAssetManager asset manager
+	 */
+	public function getAssetManager()
+	{
+		if(!$this->_assetManager)
+		{
+			$this->_assetManager=new TAssetManager;
+			$this->_assetManager->init(null);
+		}
+		return $this->_assetManager;
+	}
+
+	/**
+	 * @param TAssetManager asset manager
+	 */
+	public function setAssetManager(TAssetManager $value)
+	{
+		$this->_assetManager=$value;
 	}
 
 	/**

@@ -330,7 +330,7 @@ class TDatePicker extends TTextBox
 		$cs = $this->getPage()->getClientScript();
 		$image = 'System.Web.Javascripts.datepicker.calendar';
 		$file =  Prado::getPathOfNamespace($image, '.png');
-		return $this->getService()->getAsset($file);
+		return $this->publishFilePath($file);
 	}
 
 	/**
@@ -342,7 +342,7 @@ class TDatePicker extends TTextBox
 		$cs = $this->getPage()->getClientScript();
 		$style = 'System.Web.Javascripts.datepicker.'.$this->getCalendarStyle();
 		$cssFile=Prado::getPathOfNamespace($style,'.css');
-		$url = $this->getService()->getAsset($cssFile);
+		$url = $this->publishFilePath($cssFile);
 		if(!$cs->isStyleSheetFileRegistered($style))
 			$cs->registerStyleSheetFile($style, $url);
 		return $url;

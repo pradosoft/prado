@@ -1,6 +1,4 @@
 <?php
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
-
 /**
 * Converts to and from JSON format.
 *
@@ -47,8 +45,8 @@
 * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 * DAMAGE.
 *
-* @category   
-* @package     System.Web.Services.AJAX
+* @category
+* @package     System.Web.Javascripts
 * @author      Michal Migurski <mike-json@teczno.com>
 * @author      Matt Knapp <mdknapp[at]gmail[dot]com>
 * @author      Brett Stimmerman <brettstimmerman[at]gmail[dot]com>
@@ -60,7 +58,7 @@
 /**
 * Converts to and from JSON format.
 *
-* @package    System.Web.Services.AJAX
+* @package    System.Web.Javascripts
 * @author     Michal Migurski <mike-json@teczno.com>
 * @author     Matt Knapp <mdknapp[at]gmail[dot]com>
 * @author     Brett Stimmerman <brettstimmerman[at]gmail[dot]com>
@@ -76,9 +74,9 @@ class TJSON
 
 	/**
 	* Marker constant for JSON::decode(), used to flag stack state
-	*/	
+	*/
 	const JSON_IN_STR = 2;
-	
+
 	/**
 	* Marker constant for JSON::decode(), used to flag stack state
 	*/
@@ -91,17 +89,17 @@ class TJSON
 
 	/**
 	* Marker constant for JSON::decode(), used to flag stack state
-	*/	
+	*/
 	const JSON_IN_CMT = 16;
 
 	/**
 	* Behavior switch for JSON::decode()
 	*/
 	const JSON_LOOSE_TYPE = 10;
-	
+
 	/**
 	* Behavior switch for JSON::decode()
-	*/	
+	*/
 	const JSON_STRICT_TYPE = 11;
 
    /**
@@ -137,17 +135,17 @@ class TJSON
         switch (gettype($var)) {
             case 'boolean':
                 return $var ? 'true' : 'false';
-            
+
             case 'NULL':
                 return 'null';
-            
+
             case 'integer':
                 return (int) $var;
-                
+
             case 'double':
             case 'float':
                 return (float) $var;
-                
+
             case 'string':
                 // STRINGS ARE EXPECTED TO BE IN ASCII OR UTF-8 FORMAT
                 $ascii = '';
@@ -158,9 +156,9 @@ class TJSON
                 * escaping with a slash or encoding to UTF-8 where necessary
                 */
                 for ($c = 0; $c < $strlen_var; ++$c) {
-                    
+
                     $ord_var_c = ord($var{$c});
-                    
+
                     switch (true) {
                         case $ord_var_c == 0x08:
                             $ascii .= '\b';
@@ -184,12 +182,12 @@ class TJSON
                             // double quote, slash, slosh
                             $ascii .= '\\'.$var{$c};
                             break;
-                            
+
                         case (($ord_var_c >= 0x20) && ($ord_var_c <= 0x7F)):
                             // characters U-00000000 - U-0000007F (same as ASCII)
                             $ascii .= $var{$c};
                             break;
-                        
+
                         case (($ord_var_c & 0xE0) == 0xC0):
                             // characters U-00000080 - U-000007FF, mask 110XXXXX
                             // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
@@ -198,7 +196,7 @@ class TJSON
                             $utf16 =  $this->utf8_to_utf16be($char);
                             $ascii .= sprintf('\u%04s', bin2hex($utf16));
                             break;
-    
+
                         case (($ord_var_c & 0xF0) == 0xE0):
                             // characters U-00000800 - U-0000FFFF, mask 1110XXXX
                             // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
@@ -209,7 +207,7 @@ class TJSON
                             $utf16 = $this->utf8_to_utf16be($char);
                             $ascii .= sprintf('\u%04s', bin2hex($utf16));
                             break;
-    
+
                         case (($ord_var_c & 0xF8) == 0xF0):
                             // characters U-00010000 - U-001FFFFF, mask 11110XXX
                             // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
@@ -221,7 +219,7 @@ class TJSON
                             $utf16 = $this->utf8_to_utf16be($char);
                             $ascii .= sprintf('\u%04s', bin2hex($utf16));
                             break;
-    
+
                         case (($ord_var_c & 0xFC) == 0xF8):
                             // characters U-00200000 - U-03FFFFFF, mask 111110XX
                             // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
@@ -234,7 +232,7 @@ class TJSON
                             $utf16 = $this->utf8_to_utf16be($char);
                             $ascii .= sprintf('\u%04s', bin2hex($utf16));
                             break;
-    
+
                         case (($ord_var_c & 0xFE) == 0xFC):
                             // characters U-04000000 - U-7FFFFFFF, mask 1111110X
                             // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
@@ -250,9 +248,9 @@ class TJSON
                             break;
                     }
                 }
-                
+
                 return '"'.$ascii.'"';
-                
+
             case 'array':
                /*
                 * As per JSON spec if any array key is not an integer
@@ -271,8 +269,8 @@ class TJSON
                 * parameter is only accessible using ECMAScript's
                 * bracket notation.
                 */
-                
-                // treat as a JSON object  
+
+                // treat as a JSON object
                 if (is_array($var) && count($var) && (array_keys($var) !== range(0, sizeof($var) - 1))) {
                     return '{' .
                            join(',', array_map(array($this, 'name_value'),
@@ -283,7 +281,7 @@ class TJSON
 
                 // treat it like a regular array
                 return '[' . join(',', array_map(array($this, 'encode'), $var)) . ']';
-                
+
             case 'object':
                 $vars = get_object_vars($var);
                 return '{' .
@@ -296,7 +294,7 @@ class TJSON
                 return '';
         }
     }
-    
+
    /**
     * encodes an arbitrary variable into JSON format, alias for encode()
     * @see JSON::encode()
@@ -313,7 +311,7 @@ class TJSON
     {
         return $this->encode($var);
     }
-    
+
    /** function name_value
     * array-walking function for use in generating JSON-formatted name-value pairs
     *
@@ -326,7 +324,7 @@ class TJSON
     protected function name_value($name, $value)
     {
         return $this->encode(strval($name)) . ':' . $this->encode($value);
-    }        
+    }
 
    /**
     * reduce a string by removing leading and trailing comments and whitespace
@@ -339,18 +337,18 @@ class TJSON
     protected function reduce_string($str)
     {
         $str = preg_replace(array(
-        
+
                 // eliminate single line comments in '// ...' form
                 '#^\s*//(.+)$#m',
-    
+
                 // eliminate multi-line comments in '/* ... */' form, at start of string
                 '#^\s*/\*(.+)\*/#Us',
-    
+
                 // eliminate multi-line comments in '/* ... */' form, at end of string
                 '#/\*(.+)\*/\s*$#Us'
-    
+
             ), '', $str);
-        
+
         // eliminate extraneous space
         return trim($str);
     }
@@ -370,17 +368,17 @@ class TJSON
     public function decode($str)
     {
         $str = $this->reduce_string($str);
-    
+
         switch (strtolower($str)) {
             case 'true':
                 return true;
 
             case 'false':
                 return false;
-            
+
             case 'null':
                 return null;
-            
+
             default:
                 if (is_numeric($str)) {
                     // Lookie-loo, it's a number
@@ -393,19 +391,19 @@ class TJSON
                     return ((float)$str == (integer)$str)
                         ? (integer)$str
                         : (float)$str;
-                    
+
                 } elseif (preg_match('/^("|\').+(\1)$/s', $str, $m) && $m[1] == $m[2]) {
                     // STRINGS RETURNED IN UTF-8 FORMAT
                     $delim = substr($str, 0, 1);
                     $chrs = substr($str, 1, -1);
                     $utf8 = '';
                     $strlen_chrs = strlen($chrs);
-                    
+
                     for ($c = 0; $c < $strlen_chrs; ++$c) {
-                    
+
                         $substr_chrs_c_2 = substr($chrs, $c, 2);
                         $ord_chrs_c = ord($chrs{$c});
-                        
+
                         switch (true) {
                             case $substr_chrs_c_2 == '\b':
                                 $utf8 .= chr(0x08);
@@ -437,7 +435,7 @@ class TJSON
                                     $utf8 .= $chrs{++$c};
                                 }
                                 break;
-                                
+
                             case preg_match('/\\\u[0-9A-F]{4}/i', substr($chrs, $c, 6)):
                                 // single, escaped unicode character
                                 $utf16 = chr(hexdec(substr($chrs, ($c+2), 2)))
@@ -445,39 +443,39 @@ class TJSON
                                 $utf8 .= $this->utf16be_to_utf8($utf16);
                                 $c+=5;
                                 break;
-        
+
                             case ($ord_chrs_c >= 0x20) && ($ord_chrs_c <= 0x7F):
                                 $utf8 .= $chrs{$c};
                                 break;
-        
+
                             case ($ord_chrs_c & 0xE0) == 0xC0:
                                 // characters U-00000080 - U-000007FF, mask 110XXXXX
                                 //see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
                                 $utf8 .= substr($chrs, $c, 2);
                                 ++$c;
                                 break;
-    
+
                             case ($ord_chrs_c & 0xF0) == 0xE0:
                                 // characters U-00000800 - U-0000FFFF, mask 1110XXXX
                                 // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
                                 $utf8 .= substr($chrs, $c, 3);
                                 $c += 2;
                                 break;
-    
+
                             case ($ord_chrs_c & 0xF8) == 0xF0:
                                 // characters U-00010000 - U-001FFFFF, mask 11110XXX
                                 // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
                                 $utf8 .= substr($chrs, $c, 4);
                                 $c += 3;
                                 break;
-    
+
                             case ($ord_chrs_c & 0xFC) == 0xF8:
                                 // characters U-00200000 - U-03FFFFFF, mask 111110XX
                                 // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
                                 $utf8 .= substr($chrs, $c, 5);
                                 $c += 4;
                                 break;
-    
+
                             case ($ord_chrs_c & 0xFE) == 0xFC:
                                 // characters U-04000000 - U-7FFFFFFF, mask 1111110X
                                 // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
@@ -488,9 +486,9 @@ class TJSON
                         }
 
                     }
-                    
+
                     return $utf8;
-                
+
                 } elseif (preg_match('/^\[.*\]$/s', $str) || preg_match('/^\{.*\}$/s', $str)) {
                     // array, or object notation
 
@@ -506,14 +504,14 @@ class TJSON
                             $obj = new stdClass();
                         }
                     }
-                    
+
                     array_push($stk, array('what'  => self::JSON_SLICE,
                                            'where' => 0,
                                            'delim' => false));
 
                     $chrs = substr($str, 1, -1);
                     $chrs = $this->reduce_string($chrs);
-                    
+
                     if ($chrs == '') {
                         if (reset($stk) == self::JSON_IN_ARR) {
                             return $arr;
@@ -525,14 +523,14 @@ class TJSON
                     }
 
                     //print("\nparsing {$chrs}\n");
-                    
+
                     $strlen_chrs = strlen($chrs);
-                    
+
                     for ($c = 0; $c <= $strlen_chrs; ++$c) {
-                    
+
                         $top = end($stk);
                         $substr_chrs_c_2 = substr($chrs, $c, 2);
-                    
+
                         if (($c == $strlen_chrs) || (($chrs{$c} == ',') && ($top['what'] == self::JSON_SLICE))) {
                             // found a comma that is not inside a string, array, etc.,
                             // OR we've reached the end of the character list
@@ -619,16 +617,16 @@ class TJSON
                             // found a comment end, and we're in one now
                             array_pop($stk);
                             $c++;
-                            
+
                             for ($i = $top['where']; $i <= $c; ++$i)
                                 $chrs = substr_replace($chrs, ' ', $i, 1);
-                            
+
                             //print("Found end of comment at {$c}: ".substr($chrs, $top['where'], (1 + $c - $top['where']))."\n");
 
                         }
-                    
+
                     }
-                    
+
                     if (reset($stk) == self::JSON_IN_ARR) {
                         return $arr;
 
@@ -636,11 +634,11 @@ class TJSON
                         return $obj;
 
                     }
-                
+
                 }
         }
     }
-    
+
    /**
     * decodes a JSON string into appropriate variable; alias for decode()
     * @see JSON::decode()
@@ -657,7 +655,7 @@ class TJSON
     {
         return $this->decode($var);
     }
-    
+
 
 	/**
 	* This function returns any UTF-8 encoded text as a list of
@@ -667,23 +665,23 @@ class TJSON
 	* @link   http://www.randomchaos.com/document.php?source=php_and_unicode
 	* @see    unicode_to_utf8()
 	*/
-	protected function utf8_to_unicode( &$str ) 
+	protected function utf8_to_unicode( &$str )
 	{
-		$unicode = array();  
+		$unicode = array();
 		$values = array();
 		$lookingFor = 1;
 
-		for ($i = 0; $i < strlen( $str ); $i++ ) 
+		for ($i = 0; $i < strlen( $str ); $i++ )
 		{
 			$thisValue = ord( $str[ $i ] );
-			if ( $thisValue < 128 ) 
+			if ( $thisValue < 128 )
 				$unicode[] = $thisValue;
-			else 
+			else
 			{
-				if ( count( $values ) == 0 ) 
+				if ( count( $values ) == 0 )
 					$lookingFor = ( $thisValue < 224 ) ? 2 : 3;
 				$values[] = $thisValue;
-				if ( count( $values ) == $lookingFor ) 
+				if ( count( $values ) == $lookingFor )
 				{
 					$number = ( $lookingFor == 3 ) ?
 						( ( $values[0] % 16 ) * 4096 ) + ( ( $values[1] % 64 ) * 64 ) + ( $values[2] % 64 ):
@@ -704,21 +702,21 @@ class TJSON
 	* @link   http://www.randomchaos.com/document.php?source=php_and_unicode
 	* @see    utf8_to_unicode()
 	*/
-	protected function unicode_to_utf8( &$str ) 
+	protected function unicode_to_utf8( &$str )
 	{
 		$utf8 = '';
-		foreach( $str as $unicode ) 
+		foreach( $str as $unicode )
 		{
-			if ( $unicode < 128 ) 
+			if ( $unicode < 128 )
 			{
 				$utf8.= chr( $unicode );
-			} 
-			elseif ( $unicode < 2048 ) 
+			}
+			elseif ( $unicode < 2048 )
 			{
 				$utf8.= chr( 192 +  ( ( $unicode - ( $unicode % 64 ) ) / 64 ) );
 				$utf8.= chr( 128 + ( $unicode % 64 ) );
-			} 
-			else 
+			}
+			else
 			{
 				$utf8.= chr( 224 + ( ( $unicode - ( $unicode % 4096 ) ) / 4096 ) );
 				$utf8.= chr( 128 + ( ( ( $unicode % 4096 ) - ( $unicode % 64 ) ) / 64 ) );
@@ -733,7 +731,7 @@ class TJSON
 	*
 	* Maybe really UCS-2 without mb_string due to utf8_to_unicode limits
 	*/
-	protected function utf8_to_utf16be(&$str, $bom = false) 
+	protected function utf8_to_utf16be(&$str, $bom = false)
 	{
 		$out = $bom ? "\xFE\xFF" : '';
 		if(function_exists('mb_convert_encoding'))
@@ -750,12 +748,12 @@ class TJSON
 	 *
 	 * Maybe really UCS-2 without mb_string due to utf8_to_unicode limits
 	 */
-	protected function utf16be_to_utf8(&$str) 
+	protected function utf16be_to_utf8(&$str)
 	{
 		$uni = unpack('n*',$str);
 		return unicode_to_utf8($uni);
 	}
 
 }
-    
+
 ?>

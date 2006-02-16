@@ -183,10 +183,6 @@ class TTemplate extends TComponent implements ITemplate
 	 */
 	private $_tplFile=null;
 	/**
-	 * @var TAssetManager asset manager
-	 */
-	private $_assetManager;
-	/**
 	 * @var integer the line number that parsing starts from (internal use)
 	 */
 	private $_startingLine=0;
@@ -264,7 +260,6 @@ class TTemplate extends TComponent implements ITemplate
 	{
 		if(($page=$tplControl->getPage())===null)
 			$page=$this->getService()->getRequestedPage();
-		$this->_assetManager=$this->getService()->getAssetManager();
 		$controls=array();
 		foreach($this->_tpl as $key=>$object)
 		{
@@ -376,7 +371,7 @@ class TTemplate extends TComponent implements ITemplate
 					$component->$setter($value[1]);
 					break;
 				case self::CONFIG_ASSET:		// asset URL
-					$url=$this->_assetManager->publishFilePath($this->_contextPath.'/'.$value[1]);
+					$url=$this->publishFilePath($this->_contextPath.'/'.$value[1]);
 					$component->$setter($url);
 					break;
 				case self::CONFIG_PARAMETER:		// application parameter
@@ -416,7 +411,7 @@ class TTemplate extends TComponent implements ITemplate
 					$component->setSubProperty($name,$value[1]);
 					break;
 				case self::CONFIG_ASSET:		// asset URL
-					$url=$this->_assetManager->publishFilePath($this->_contextPath.'/'.$value[1]);
+					$url=$this->publishFilePath($this->_contextPath.'/'.$value[1]);
 					$component->setSubProperty($name,$url);
 					break;
 				case self::CONFIG_PARAMETER:		// application parameter
