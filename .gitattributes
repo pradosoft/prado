@@ -659,6 +659,7 @@ framework/Web/Javascripts/rico/colors.js -text
 framework/Web/Javascripts/rico/extension.js -text
 framework/Web/Javascripts/rico/rico.js -text
 framework/Web/Services/TPageService.php -text
+framework/Web/TAssetManager.php -text
 framework/Web/THttpRequest.php -text
 framework/Web/THttpResponse.php -text
 framework/Web/THttpSession.php -text
