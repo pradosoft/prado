@@ -49,7 +49,7 @@
  * @package System.Web
  * @since 3.0
  */
-class THttpRequest extends TMap implements IModule
+class THttpRequest extends TApplicationComponent implements IteratorAggregate,ArrayAccess,IModule
 {
 	/**
 	 * GET variable name to store service information
@@ -93,6 +93,11 @@ class THttpRequest extends TMap implements IModule
 	 * @var string module id
 	 */
 	private $_id;
+
+	/**
+	 * @var array contains all request variables
+	 */
+	private $_items=array();
 
 	/**
 	 * @return string id of this module
@@ -157,10 +162,10 @@ class THttpRequest extends TMap implements IModule
 				if($i+1<$n)
 					$getVariables[$paths[$i]]=$paths[++$i];
 			}
-			$this->copyFrom(array_merge($getVariables,array_merge($_GET,$_POST)));
+			$this->_items=array_merge($getVariables,array_merge($_GET,$_POST));
 		}
 		else
-			$this->copyFrom(array_merge($_GET,$_POST));
+			$this->_items=array_merge($_GET,$_POST);
 
 		$this->_initialized=true;
 		$this->getApplication()->setRequest($this);
@@ -534,20 +539,141 @@ class THttpRequest extends TMap implements IModule
 		$this->_serviceParam=$value;
 	}
 
+	//------ The following methods enable THttpRequest to be TMap-like -----
+
 	/**
-	 * @return THttpResponse response module
+	 * Returns an iterator for traversing the items in the list.
+	 * This method is required by the interface IteratorAggregate.
+	 * @return Iterator an iterator for traversing the items in the list.
 	 */
-	public function getResponse()
+	public function getIterator()
 	{
-		return Prado::getApplication()->getResponse();
+		return new TMapIterator($this->_items);
 	}
 
 	/**
-	 * @return TApplication application instance
+	 * @return integer the number of items in the request
 	 */
-	public function getApplication()
+	public function getCount()
 	{
-		return Prado::getApplication();
+		return count($this->_items);
+	}
+
+	/**
+	 * @return array the key list
+	 */
+	public function getKeys()
+	{
+		return array_keys($this->_items);
+	}
+
+	/**
+	 * Returns the item with the specified key.
+	 * This method is exactly the same as {@link offsetGet}.
+	 * @param mixed the key
+	 * @return mixed the element at the offset, null if no element is found at the offset
+	 */
+	public function itemAt($key)
+	{
+		return isset($this->_items[$key]) ? $this->_items[$key] : null;
+	}
+
+	/**
+	 * Adds an item into the request.
+	 * Note, if the specified key already exists, the old value will be overwritten.
+	 * @param mixed key
+	 * @param mixed value
+	 */
+	public function add($key,$value)
+	{
+		$this->_items[$key]=$value;
+	}
+
+	/**
+	 * Removes an item from the request by its key.
+	 * @param mixed the key of the item to be removed
+	 * @return mixed the removed value, null if no such key exists.
+	 * @throws TInvalidOperationException if the item cannot be removed
+	 */
+	public function remove($key)
+	{
+		if(isset($this->_items[$key]) || array_key_exists($key,$this->_items))
+		{
+			$value=$this->_items[$key];
+			unset($this->_items[$key]);
+			return $value;
+		}
+		else
+			return null;
+	}
+
+	/**
+	 * Removes all items in the request.
+	 */
+	public function clear()
+	{
+		foreach(array_keys($this->_items) as $key)
+			$this->remove($key);
+	}
+
+	/**
+	 * @param mixed the key
+	 * @return boolean whether the request contains an item with the specified key
+	 */
+	public function contains($key)
+	{
+		return isset($this->_items[$key]) || array_key_exists($key,$this->_items);
+	}
+
+	/**
+	 * @return array the list of items in array
+	 */
+	public function toArray()
+	{
+		return $this->_items;
+	}
+
+	/**
+	 * Returns whether there is an element at the specified offset.
+	 * This method is required by the interface ArrayAccess.
+	 * @param mixed the offset to check on
+	 * @return boolean
+	 */
+	public function offsetExists($offset)
+	{
+		return $this->contains($offset);
+	}
+
+	/**
+	 * Returns the element at the specified offset.
+	 * This method is required by the interface ArrayAccess.
+	 * @param integer the offset to retrieve element.
+	 * @return mixed the element at the offset, null if no element is found at the offset
+	 */
+	public function offsetGet($offset)
+	{
+		return $this->itemAt($offset);
+	}
+
+	/**
+	 * Sets the element at the specified offset.
+	 * This method is required by the interface ArrayAccess.
+	 * @param integer the offset to set element
+	 * @param mixed the element value
+	 */
+	public function offsetSet($offset,$item)
+	{
+		$this->add($offset,$item);
+	}
+
+	/**
+	 * Unsets the element at the specified offset.
+	 * This method is required by the interface ArrayAccess.
+	 * @param mixed the offset to unset element
+	 */
+	public function offsetUnset($offset)
+	{
+		$this->remove($offset);
 	}
 }
 
@@ -574,6 +700,7 @@ class THttpCookieCollection extends TList
 	 */
 	public function __construct($owner=null)
 	{
+		parent::__construct();
 		$this->_o=$owner;
 	}
 
@@ -658,6 +785,7 @@ class THttpCookie extends TComponent
 	 */
 	public function __construct($name,$value)
 	{
+		parent::__construct();
 		$this->_name=$name;
 		$this->_value=$value;
 	}
@@ -839,6 +967,7 @@ class TUri extends TComponent
 	 */
 	public function __construct($uri)
 	{
+		parent::__construct();
 		if(($ret=@parse_url($uri))!==false)
 		{
 			// decoding???

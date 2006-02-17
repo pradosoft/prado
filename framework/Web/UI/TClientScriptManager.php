@@ -140,7 +140,7 @@ class TClientScriptManager extends TComponent
 				$base = Prado::getFrameworkPath();
 				$clientScripts = self::SCRIPT_DIR;
 				$file = "{$base}/{$clientScripts}/{$lib}.js";
-				Prado::getApplication()->getAssetManager()->publishFilePath($file);
+				$this->publishFilePath($file);
 				$this->_publishedScriptFiles[$lib] = true;
 			}
 		}
@@ -159,7 +159,7 @@ class TClientScriptManager extends TComponent
 			$base = Prado::getFrameworkPath();
 			$clientScripts = self::SCRIPT_DIR;
 			$file = "{$base}/{$clientScripts}/{$scriptFile}";
-			$url= Prado::getApplication()->getAssetManager()->publishFilePath($file);
+			$url= $this->publishFilePath($file);
 			$this->_publishedScriptFiles[$scriptFile] = $url;
 			return $url;
 		}

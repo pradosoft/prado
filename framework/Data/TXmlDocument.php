@@ -55,6 +55,7 @@ class TXmlElement extends TComponent
 	 */
 	public function __construct($tagName)
 	{
+		parent::__construct();
 		$this->setTagName($tagName);
 	}
 
@@ -403,6 +404,7 @@ class TXmlElementList extends TList
 	 */
 	public function __construct(TXmlElement $owner)
 	{
+		parent::__construct();
 		$this->_o=$owner;
 	}
 

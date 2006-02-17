@@ -133,7 +133,7 @@ class TAuthManager extends TModule
 	{
 		$this->onAuthenticate($param);
 
-		$service=$this->getApplication()->getService();
+		$service=$this->getService();
 		if(($service instanceof TPageService) && $service->getRequestedPagePath()===$this->getLoginPage())
 			$this->_skipAuthorization=true;
 	}
@@ -181,7 +181,7 @@ class TAuthManager extends TModule
 	 */
 	public function getReturnUrl()
 	{
-		return $this->getApplication()->getSession()->itemAt(self::RETURN_URL_VAR);
+		return $this->getSession()->itemAt(self::RETURN_URL_VAR);
 	}
 
 	/**
@@ -244,7 +244,7 @@ class TAuthManager extends TModule
 	{
 		if(!$user->getIsGuest())
 		{
-			if(($session=$this->getApplication()->getSession())===null)
+			if(($session=$this->getSession())===null)
 				throw new TConfigurationException('authmanager_session_required');
 			else
 				$session->add($this->generateUserSessionKey(),$user->saveToString());
@@ -279,7 +279,7 @@ class TAuthManager extends TModule
 	 */
 	public function logout()
 	{
-		if(($session=$this->getApplication()->getSession())===null)
+		if(($session=$this->getSession())===null)
 			throw new TConfigurationException('authmanager_session_required');
 		else
 		{

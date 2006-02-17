@@ -55,13 +55,12 @@ class TPageStatePersister extends TComponent implements IPageStatePersister
 	public function save($state)
 	{
 		Prado::trace("Saving state",'System.Web.UI.TPageStatePersister');
-		$sm=Prado::getApplication()->getSecurityManager();
 		if($this->_page->getEnableStateValidation())
-			$data=$sm->hashData(Prado::serialize($state));
+			$data=$this->getApplication()->getSecurityManager()->hashData(Prado::serialize($state));
 		else
 			$data=Prado::serialize($state);
 		if($this->_page->getEnableStateEncryption())
-			$data=$sm->encrypt($data);
+			$data=$this->getApplication()->getSecurityManager()->encrypt($data);
 		if(extension_loaded('zlib'))
 			$data=gzcompress($data);
 		$this->_page->getClientScript()->registerHiddenField(TPage::FIELD_PAGESTATE,base64_encode($data));
@@ -75,9 +74,7 @@ class TPageStatePersister extends TComponent implements IPageStatePersister
 	public function load()
 	{
 		Prado::trace("Loading state",'System.Web.UI.TPageStatePersister');
-		$application=Prado::getApplication();
-		$sm=$application->getSecurityManager();
-		$str=base64_decode($application->getRequest()->itemAt(TPage::FIELD_PAGESTATE));
+		$str=base64_decode($this->getRequest()->itemAt(TPage::FIELD_PAGESTATE));
 		if($str==='')
 			return null;
 		if(extension_loaded('zlib'))
@@ -87,10 +84,10 @@ class TPageStatePersister extends TComponent implements IPageStatePersister
 		if($data!==false)
 		{
 			if($this->_page->getEnableStateEncryption())
-				$data=$sm->decrypt($data);
+				$data=$this->getApplication()->getSecurityManager()->decrypt($data);
 			if($this->_page->getEnableStateValidation())
 			{
-				if(($data=$sm->validateData($data))!==false)
+				if(($data=$this->getApplication()->getSecurityManager()->validateData($data))!==false)
 					return Prado::unserialize($data);
 			}
 			else

@@ -202,7 +202,7 @@ class TPageService extends TService
 	 */
 	protected function determineRequestedPagePath()
 	{
-		$pagePath=$this->getApplication()->getRequest()->getServiceParameter();
+		$pagePath=$this->getRequest()->getServiceParameter();
 		if(empty($pagePath))
 			$pagePath=$this->getDefaultPage();
 		return $pagePath;
@@ -441,7 +441,7 @@ class TPageService extends TService
 		else
 			throw new THttpException(404,'pageservice_page_unknown',$this->getRequestedPagePath());
 
-		$this->_page->run($this->getApplication()->getResponse()->createHtmlWriter());
+		$this->_page->run($this->getResponse()->createHtmlWriter());
 	}
 
 	/**
@@ -453,7 +453,7 @@ class TPageService extends TService
 	 */
 	public function constructUrl($pagePath,$getParams=null,$encodeAmpersand=false)
 	{
-		return $this->getApplication()->getRequest()->constructUrl($this->_id,$pagePath,$getParams,$encodeAmpersand);
+		return $this->getRequest()->constructUrl($this->_id,$pagePath,$getParams,$encodeAmpersand);
 	}
 }
 

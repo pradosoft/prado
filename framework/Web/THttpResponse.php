@@ -79,6 +79,7 @@ class THttpResponse extends TModule implements ITextWriter
 	{
 		if($this->_bufferOutput)
 			@ob_end_flush();
+		parent::__destruct();
 	}
 
 	/**
@@ -394,14 +395,6 @@ class THttpResponse extends TModule implements ITextWriter
 		if($type===null)
 			$type=$this->_htmlWriterType;
 		return Prado::createComponent($type,$this);
-	}
-
-	/**
-	 * @return THttpRequest request module
-	 */
-	public function getRequest()
-	{
-		return $this->getApplication()->getRequest();
 	}
 }
 

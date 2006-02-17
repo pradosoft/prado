@@ -52,6 +52,7 @@ class TUser extends TComponent implements IUser
 	 */
 	public function __construct($manager=null)
 	{
+		parent::__construct();
 		$this->_manager=$manager;
 	}
 

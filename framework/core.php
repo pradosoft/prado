@@ -22,6 +22,10 @@ define('PRADO_DIR',dirname(__FILE__));
  */
 require_once(PRADO_DIR.'/TComponent.php');
 /**
+ * Includes TApplicationComponent definition
+ */
+require_once(PRADO_DIR.'/TApplicationComponent.php');
+/**
  * Includes exception definitions
  */
 require_once(PRADO_DIR.'/Exceptions/TException.php');
@@ -264,7 +268,7 @@ interface IStatePersister
  * @package System
  * @since 3.0
  */
-abstract class TModule extends TComponent implements IModule
+abstract class TModule extends TApplicationComponent implements IModule
 {
 	/**
 	 * @var string module id
@@ -295,14 +299,6 @@ abstract class TModule extends TComponent implements IModule
 	{
 		$this->_id=$value;
 	}
-
-	/**
-	 * @return TApplication current application instance
-	 */
-	public function getApplication()
-	{
-		return Prado::getApplication();
-	}
 }
 
 /**
@@ -316,7 +312,7 @@ abstract class TModule extends TComponent implements IModule
  * @package System
  * @since 3.0
  */
-abstract class TService extends TComponent implements IService
+abstract class TService extends TApplicationComponent implements IService
 {
 	/**
 	 * @var string service id
@@ -353,14 +349,6 @@ abstract class TService extends TComponent implements IService
 	 */
 	public function run()
 	{
-	}
-
-	/**
-	 * @return TApplication current application instance
-	 */
-	public function getApplication()
-	{
-		return Prado::getApplication();
 	}
 }
 

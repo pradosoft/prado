@@ -53,6 +53,7 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 	 */
 	public function __construct($data=null)
 	{
+		parent::__construct();
 		if($data!==null)
 			$this->copyFrom($data);
 	}

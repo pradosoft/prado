@@ -55,7 +55,7 @@
  * @package System.Web
  * @since 3.0
  */
-class THttpSession extends TComponent implements IteratorAggregate,ArrayAccess,IModule
+class THttpSession extends TApplicationComponent implements IteratorAggregate,ArrayAccess,IModule
 {
 	/**
 	 * @var boolean whether this module has been initialized
@@ -605,14 +605,6 @@ class THttpSession extends TComponent implements IteratorAggregate,ArrayAccess,I
 	public function offsetUnset($offset)
 	{
 		unset($_SESSION[$offset]);
-	}
-
-	/**
-	 * @return TApplication application instance
-	 */
-	public function getApplication()
-	{
-		return Prado::getApplication();
 	}
 }
 

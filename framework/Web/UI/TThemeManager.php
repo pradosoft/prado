@@ -63,7 +63,7 @@ class TThemeManager extends TModule
 	public function init($config)
 	{
 		$this->_initialized=true;
-		$this->getApplication()->getPageService()->setThemeManager($this);
+		$this->getService()->setThemeManager($this);
 	}
 
 	/**
@@ -86,7 +86,7 @@ class TThemeManager extends TModule
 	{
 		if($this->_basePath===null)
 		{
-			$this->_basePath=dirname($this->getApplication()->getRequest()->getPhysicalApplicationPath()).'/'.self::DEFAULT_BASEPATH;
+			$this->_basePath=dirname($this->getRequest()->getPhysicalApplicationPath()).'/'.self::DEFAULT_BASEPATH;
 			if(($basePath=realpath($this->_basePath))===false || !is_dir($basePath))
 				throw new TConfigurationException('thememanager_basepath_invalid',$this->_basePath);
 			$this->_basePath=$basePath;
@@ -119,11 +119,11 @@ class TThemeManager extends TModule
 	{
 		if($this->_baseUrl===null)
 		{
-			$appPath=dirname($this->getApplication()->getRequest()->getPhysicalApplicationPath());
+			$appPath=dirname($this->getRequest()->getPhysicalApplicationPath());
 			$basePath=$this->getBasePath();
 			if(strpos($basePath,$appPath)===false)
 				throw new TConfigurationException('thememanager_baseurl_required');
-			$appUrl=rtrim(dirname($this->getApplication()->getRequest()->getApplicationPath()),'/\\');
+			$appUrl=rtrim(dirname($this->getRequest()->getApplicationPath()),'/\\');
 			$this->_baseUrl=$appUrl.strtr(substr($basePath,strlen($appPath)),'\\','/');
 		}
 		return $this->_baseUrl;
@@ -209,14 +209,14 @@ class TTheme extends TComponent implements ITheme
 	{
 		$this->_themeUrl=$themeUrl;
 		$this->_name=basename($themePath);
-		if(($cache=Prado::getApplication()->getCache())!==null)
+		if(($cache=$this->getApplication()->getCache())!==null)
 		{
 			$array=$cache->get(self::THEME_CACHE_PREFIX.$themePath);
 			if(is_array($array))
 			{
 				list($skins,$cssFiles,$jsFiles,$timestamp)=$array;
 				$cacheValid=true;
-				if(Prado::getApplication()->getMode()!==TApplication::STATE_PERFORMANCE)
+				if($this->getApplication()->getMode()!==TApplication::STATE_PERFORMANCE)
 				{
 					if(($dir=opendir($themePath))===false)
 						throw new TIOException('theme_path_inexistent',$themePath);

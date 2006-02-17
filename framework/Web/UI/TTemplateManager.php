@@ -50,7 +50,7 @@ class TTemplateManager extends TModule
 	 */
 	public function init($config)
 	{
-		$this->getApplication()->getPageService()->setTemplateManager($this);
+		$this->getService()->setTemplateManager($this);
 	}
 
 	/**
@@ -259,7 +259,7 @@ class TTemplate extends TComponent implements ITemplate
 	public function instantiateIn($tplControl)
 	{
 		if(($page=$tplControl->getPage())===null)
-			$page=Prado::getApplication()->getPageService()->getRequestedPage();
+			$page=$this->getService()->getRequestedPage();
 		$controls=array();
 		foreach($this->_tpl as $key=>$object)
 		{
@@ -371,11 +371,11 @@ class TTemplate extends TComponent implements ITemplate
 					$component->$setter($value[1]);
 					break;
 				case self::CONFIG_ASSET:		// asset URL
-					$url=Prado::getApplication()->getAssetManager()->publishFilePath($this->_contextPath.'/'.$value[1]);
+					$url=$this->publishFilePath($this->_contextPath.'/'.$value[1]);
 					$component->$setter($url);
 					break;
 				case self::CONFIG_PARAMETER:		// application parameter
-					$component->$setter(Prado::getApplication()->getParameters()->itemAt($value[1]));
+					$component->$setter($this->getApplication()->getParameters()->itemAt($value[1]));
 					break;
 				case self::CONFIG_LOCALIZATION:
 					Prado::using('System.I18N.Translation');
@@ -411,11 +411,11 @@ class TTemplate extends TComponent implements ITemplate
 					$component->setSubProperty($name,$value[1]);
 					break;
 				case self::CONFIG_ASSET:		// asset URL
-					$url=Prado::getApplication()->getAssetManager()->publishFilePath($this->_contextPath.'/'.$value[1]);
+					$url=$this->publishFilePath($this->_contextPath.'/'.$value[1]);
 					$component->setSubProperty($name,$url);
 					break;
 				case self::CONFIG_PARAMETER:		// application parameter
-					$component->setSubProperty($name,Prado::getApplication()->getParameters()->itemAt($value[1]));
+					$component->setSubProperty($name,$this->getApplication()->getParameters()->itemAt($value[1]));
 					break;
 				case self::CONFIG_LOCALIZATION:
 					$component->setSubProperty($name,localize($value[1]));

@@ -79,6 +79,20 @@ class TComponent
 	private $_e=array();
 
 	/**
+	 * Constructor.
+	 */
+	public function __construct()
+	{
+	}
+
+	/**
+	 * Destructor.
+	 */
+	public function __destruct()
+	{
+	}
+
+	/**
 	 * Returns a property value or an event handler list by property or event name.
 	 * Do not call this method. This is a PHP magic method that we override
 	 * to allow using the following syntax to read a property:
@@ -411,6 +425,79 @@ class TComponent
 		{
 			throw new TInvalidOperationException('component_statements_invalid',get_class($this),$statements,$e->getMessage());
 		}
+	}
+
+	/**
+	 * @return TApplication current application instance
+	 */
+	public function getApplication()
+	{
+		return Prado::getApplication();
+	}
+
+	/**
+	 * @return IService the current service
+	 */
+	public function getService()
+	{
+		return Prado::getApplication()->getService();
+	}
+
+	/**
+	 * @return THttpRequest the current user request
+	 */
+	public function getRequest()
+	{
+		return Prado::getApplication()->getRequest();
+	}
+
+	/**
+	 * @return THttpResponse the response
+	 */
+	public function getResponse()
+	{
+		return Prado::getApplication()->getResponse();
+	}
+
+	/**
+	 * @return THttpSession user session
+	 */
+	public function getSession()
+	{
+		return Prado::getApplication()->getSession();
+	}
+
+	/**
+	 * @return IUser user
+	 */
+	public function getUser()
+	{
+		return Prado::getApplication()->getUser();
+	}
+
+	/**
+	 * Publishes a private asset and gets its URL.
+	 * This method will publish a private asset (file or directory)
+	 * and gets the URL to the asset. Note, if the asset refers to
+	 * a directory, all contents under that directory will be published.
+	 * @param string path of the asset that is relative to the directory containing the control class file.
+	 * @return string URL to the asset path.
+	 */
+	public function publishAsset($assetPath)
+	{
+		$class=new ReflectionClass(get_class($this));
+		$fullPath=dirname($class->getFileName()).'/'.$assetPath;
+		return $this->publishFilePath($fullPath);
+	}
+
+	/**
+	 * Publishes a file or directory and returns its URL.
+	 * @param string absolute path of the file or directory to be published
+	 * @return string URL to the published file or directory
+	 */
+	public function publishFilePath($fullPath)
+	{
+		return $this->getApplication()->getAssetManager()->publishFilePath($fullPath);
 	}
 }
 
