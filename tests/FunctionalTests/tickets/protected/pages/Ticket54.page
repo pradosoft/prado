@@ -1,0 +1,4 @@
+<%@ MasterClass="Application.pages.Ticket54Master" %>
+<com:TContent ID="A">A</com:TContent>
+<com:TContent ID="B">B</com:TContent>
+<com:TContent ID="C">C</com:TContent>
