@@ -147,7 +147,7 @@ class TLogRouter extends TModule
  * @package System.Log
  * @since 3.0
  */
-abstract class TLogRoute extends TComponent
+abstract class TLogRoute extends TApplicationComponent
 {
 	/**
 	 * @var array lookup table for level names
