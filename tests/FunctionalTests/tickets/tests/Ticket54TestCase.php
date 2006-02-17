@@ -5,7 +5,7 @@ class Ticket54TestCase extends SeleniumTestCase
 	function test()
 	{
 		$this->open('tickets/index.php?page=Ticket54');
-		$this->verifyTextPresent("|A||B||C|", "");
+		$this->verifyTextPresent("|A|a|B|b|C|", "");
 	}
 }
 

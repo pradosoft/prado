@@ -147,6 +147,14 @@ control_enabletheming_unchangeable		= %s.EnableTheming cannot be modified after 
 control_stylesheet_applied				= StyleSheet skin has already been applied to %s.
 control_id_nonunique					= %s.ID '%s' is not unique among all controls under the same naming container.
 
+templatecontrol_mastercontrol_invalid	= Master control must be of type TTemplateControl or a child class.
+templatecontrol_contentid_duplicated	= TContent ID '%s' is duplicated.
+templatecontrol_placeholderid_duplicated= TContentPlaceHolder ID '%s' is duplicated.
+
+contentplaceholder_id_required			= TContentPlaceHolder must have an ID.
+
+content_id_required						= TContent must have an ID.
+
 controllist_control_required			= TControlList can only accept strings or TControl objects.
 
 emptycontrollist_addition_disallowed	= Child controls are not allowed.

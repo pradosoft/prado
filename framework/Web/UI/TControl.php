@@ -1053,6 +1053,8 @@ class TControl extends TApplicationComponent
 		$control->_stage=self::CS_CONSTRUCTED;
 		if(!($control->_flags & self::IS_ID_SET))
 			$control->_id='';
+		else
+			unset($this->_rf[self::RF_NAMED_OBJECTS][$control->_id]);
 		$control->clearCachedUniqueID(true);
 	}
 

@@ -135,11 +135,29 @@ class TTemplateControl extends TControl implements INamingContainer
 
 	/**
 	 * Registers a content control.
+	 * @param string ID of the content
 	 * @param TContent
 	 */
-	public function registerContent(TContent $object)
+	public function registerContent($id,TContent $object)
 	{
-		$this->_contents[$object->getID()]=$object;
+		if(isset($this->_contents[$id]))
+			throw new TConfigurationException('templatecontrol_contentid_duplicated',$id);
+		else
+			$this->_contents[$id]=$object;
+	}
+
+	/**
+	 * Registers a content placeholder to this template control.
+	 * This method should only be used by framework and control developers.
+	 * @param string placeholder ID
+	 * @param TContentPlaceHolder placeholder control
+	 */
+	public function registerContentPlaceHolder($id,TContentPlaceHolder $object)
+	{
+		if(isset($this->_contents[$id]))
+			throw new TConfigurationException('templatecontrol_placeholderid_duplicated',$id);
+		else
+			$this->_placeholders[$id]=$object;
 	}
 
 	/**
@@ -167,18 +185,6 @@ class TTemplateControl extends TControl implements INamingContainer
 	}
 
 	/**
-	 * Registers a content placeholder to this template control.
-	 * This method should only be used by framework and control developers.
-	 * @param string ID of the placeholder
-	 * @param TControl control that directly enloses the placeholder
-	 * @param integer the index in the control list of the parent control that the placeholder is at
-	 */
-	public function registerContentPlaceHolder($id,$parent,$loc)
-	{
-		$this->_placeholders[$id]=array($parent,$loc);
-	}
-
-	/**
 	 * Injects all content controls (and their children) to the corresponding content placeholders.
 	 * This method should only be used by framework and control developers.
 	 * @param string ID of the content control
@@ -188,8 +194,12 @@ class TTemplateControl extends TControl implements INamingContainer
 	{
 		if(isset($this->_placeholders[$id]))
 		{
-			list($parent,$loc)=$this->_placeholders[$id];
-			$parent->getControls()->insertAt($loc,$content);
+			$placeholder=$this->_placeholders[$id];
+			$controls=$placeholder->getParent()->getControls();
+			$loc=$controls->remove($placeholder);
+			$controls->insertAt($loc,$content);
+			//list($parent,$loc)=$this->_placeholders[$id];
+			//$parent->getControls()->insertAt($loc,$content);
 		}
 	}
 
@@ -208,7 +218,7 @@ class TTemplateControl extends TControl implements INamingContainer
 		{
 			$master=Prado::createComponent($this->_masterClass);
 			if(!($master instanceof TTemplateControl))
-				throw new TInvalidDataValueException('tplcontrol_required',get_class($master));
+				throw new TInvalidDataValueException('templatecontrol_mastercontrol_invalid');
 			$this->_master=$master;
 			$this->getControls()->clear();
 			$this->getControls()->add($master);

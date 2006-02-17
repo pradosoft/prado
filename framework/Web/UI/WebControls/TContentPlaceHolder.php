@@ -41,9 +41,8 @@ class TContentPlaceHolder extends TControl
 	{
 		if(($id=$this->getID())==='')
 			throw new TConfigurationException('contentplaceholder_id_required');
-		$loc=$parent->getHasControls()?$parent->getControls()->getCount():0;
-		$this->getTemplateControl()->registerContentPlaceHolder($id,$parent,$loc);
-		$parent->unregisterObject($id);
+		$this->getTemplateControl()->registerContentPlaceHolder($id,$this);
+		$parent->getControls()->add($this);
 	}
 }
 

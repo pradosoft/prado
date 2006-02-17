@@ -1,1 +1,1 @@
-|<com:TContentPlaceholder ID="A" />||<com:TContentPlaceholder ID="B" />||<com:TContentPlaceholder ID="C" />|
+|<com:TContentPlaceholder ID="A" />|a|<com:TContentPlaceholder ID="B" />|b|<com:TContentPlaceholder ID="C" />|

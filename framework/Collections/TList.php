@@ -132,12 +132,16 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 * The list will first search for the item.
 	 * The first item found will be removed from the list.
 	 * @param mixed the item to be removed.
+	 * @return integer the index at which the item is being removed
 	 * @throws TInvalidDataValueException If the item does not exist
 	 */
 	public function remove($item)
 	{
 		if(($index=$this->indexOf($item))>=0)
+		{
 			$this->removeAt($index);
+			return $index;
+		}
 		else
 			throw new TInvalidDataValueException('list_item_inexistent');
 	}
