@@ -1901,19 +1901,24 @@ Event.stop(e);
 }
 }
 }});
+Prado.WebUI.TListControl=Prado.WebUI.createPostBackComponent({onInit:function(_433){
+Event.observe(this.element,"change",Prado.PostBack.bindEvent(this,_433));
+}});
+Prado.WebUI.TListBox=Prado.WebUI.TListControl;
+Prado.WebUI.TDropDownList=Prado.WebUI.TListControl;
 Prado.WebUI.DefaultButton=Class.create();
-Object.extend(Prado.WebUI.DefaultButton.prototype,{initialize:function(_433){
-this.options=_433;
+Object.extend(Prado.WebUI.DefaultButton.prototype,{initialize:function(_434){
+this.options=_434;
 this._event=this.triggerEvent.bindEvent(this);
-Event.observe(_433["Panel"],"keydown",this._event);
-},triggerEvent:function(ev,_435){
-var _436=Event.keyCode(ev)==Event.KEY_RETURN;
-var _437=Event.element(ev).tagName.toLowerCase()=="textarea";
-if(_436&&!_437){
-var _438=$(this.options["Target"]);
-if(_438){
+Event.observe(_434["Panel"],"keydown",this._event);
+},triggerEvent:function(ev,_436){
+var _437=Event.keyCode(ev)==Event.KEY_RETURN;
+var _438=Event.element(ev).tagName.toLowerCase()=="textarea";
+if(_437&&!_438){
+var _439=$(this.options["Target"]);
+if(_439){
 this.triggered=true;
-Event.fireEvent(_438,this.options["Event"]);
+Event.fireEvent(_439,this.options["Event"]);
 Event.stop(ev);
 }
 }
@@ -1923,15 +1928,15 @@ Prado.WebUI.TTextHighlighter.prototype={initialize:function(id){
 if(!window.clipboardData){
 return;
 }
-var _439={href:"javascript:;//copy code to clipboard",onclick:"Prado.WebUI.TTextHighlighter.copy(this)",onmouseover:"Prado.WebUI.TTextHighlighter.hover(this)",onmouseout:"Prado.WebUI.TTextHighlighter.out(this)"};
-var div=DIV({className:"copycode"},A(_439,"Copy Code"));
+var _440={href:"javascript:;//copy code to clipboard",onclick:"Prado.WebUI.TTextHighlighter.copy(this)",onmouseover:"Prado.WebUI.TTextHighlighter.hover(this)",onmouseout:"Prado.WebUI.TTextHighlighter.out(this)"};
+var div=DIV({className:"copycode"},A(_440,"Copy Code"));
 document.write(DIV(null,div).innerHTML);
 }};
 Object.extend(Prado.WebUI.TTextHighlighter,{copy:function(obj){
-var _440=obj.parentNode.parentNode.parentNode;
+var _441=obj.parentNode.parentNode.parentNode;
 var text="";
-for(var i=0;i<_440.childNodes.length;i++){
-var node=_440.childNodes[i];
+for(var i=0;i<_441.childNodes.length;i++){
+var node=_441.childNodes[i];
 if(node.innerText){
 text+=node.innerText=="Copy Code"?"":node.innerText;
 }else{
@@ -1947,18 +1952,18 @@ obj.parentNode.className="copycode copycode_hover";
 obj.parentNode.className="copycode";
 }});
 Prado.WebUI.TRatingList=Class.create();
-Prado.WebUI.TRatingList.prototype={selectedIndex:-1,initialize:function(_441){
-this.options=_441;
-this.element=$(_441["ID"]);
-Element.addClassName(this.element,_441.cssClass);
-var _442=_441.total*_441.dx;
-this.element.style.width=_442+"px";
+Prado.WebUI.TRatingList.prototype={selectedIndex:-1,initialize:function(_442){
+this.options=_442;
+this.element=$(_442["ID"]);
+Element.addClassName(this.element,_442.cssClass);
+var _443=_442.total*_442.dx;
+this.element.style.width=_443+"px";
 Event.observe(this.element,"mouseover",this.hover.bindEvent(this));
 Event.observe(this.element,"mouseout",this.recover.bindEvent(this));
 Event.observe(this.element,"click",this.click.bindEvent(this));
 this._onMouseMoveEvent=this.mousemoved.bindEvent(this);
-this.selectedIndex=_441.pos;
-this.radios=document.getElementsByName(_441.field);
+this.selectedIndex=_442.pos;
+this.radios=document.getElementsByName(_442.field);
 this.caption=CAPTION();
 this.element.appendChild(this.caption);
 this.showPosition(this.selectedIndex,false);
@@ -1969,13 +1974,13 @@ Event.stopObserving(this.element,"mousemove",this._onMouseMoveEvent);
 this.showPosition(this.selectedIndex,false);
 },mousemoved:function(e){
 this.updatePosition(e,true);
-},updatePosition:function(e,_443){
+},updatePosition:function(e,_444){
 var obj=Event.element(e);
-var _444=Position.cumulativeOffset(obj);
-var _445=Event.pointerX(e)-_444[0];
-var pos=parseInt(_445/this.options.dx);
-if(!_443||this.options.pos!=pos){
-this.showPosition(pos,_443);
+var _445=Position.cumulativeOffset(obj);
+var _446=Event.pointerX(e)-_445[0];
+var pos=parseInt(_446/this.options.dx);
+if(!_444||this.options.pos!=pos){
+this.showPosition(pos,_444);
 }
 },click:function(ev){
 this.updatePosition(ev,false);
@@ -1986,12 +1991,12 @@ this.radios[i].checked=(i==this.selectedIndex);
 if(isFunction(this.options.onChange)){
 this.options.onChange(this,this.selectedIndex);
 }
-},showPosition:function(pos,_446){
+},showPosition:function(pos,_447){
 if(pos>=this.options.total){
 return;
 }
 var dy=this.options.dy*(pos+1)+this.options.iy;
-var dx=_446?this.options.hx+this.options.ix:this.options.ix;
+var dx=_447?this.options.hx+this.options.ix:this.options.ix;
 this.element.style.backgroundPosition="-"+dx+"px -"+dy+"px";
 this.options.pos=pos;
 this.caption.innerHTML=pos>=0?this.radios[this.options.pos].value:this.options.caption;

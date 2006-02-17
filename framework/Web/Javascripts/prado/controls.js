@@ -112,6 +112,16 @@ Prado.WebUI.TTextBox = Prado.WebUI.createPostBackComponent(
 	}
 });
 
+Prado.WebUI.TListControl = Prado.WebUI.createPostBackComponent(
+{
+	onInit : function(options)
+	{
+		Event.observe(this.element, "change", Prado.PostBack.bindEvent(this,options));
+	}
+});
+
+Prado.WebUI.TListBox = Prado.WebUI.TListControl;
+Prado.WebUI.TDropDownList = Prado.WebUI.TListControl;
 
 Prado.WebUI.DefaultButton = Class.create();
 Object.extend(Prado.WebUI.DefaultButton.prototype,
