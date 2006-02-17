@@ -60,6 +60,9 @@ httpsession_maxlifetime_unchangeable	= THttpSession.Timeout cannot be modified a
 assetmanager_basepath_invalid			= TAssetManager.BasePath '%s' is invalid. Make sure it is in namespace form and points to a directory writable by the Web server process.
 assetmanager_basepath_unchangeable		= TAssetManager.BasePath cannot be modified after the module is initialized.
 assetmanager_baseurl_unchangeable		= TAssetManager.BaseUrl cannot be modified after the module is initialized.
+assetmanager_filepath_invalid			= TAssetManager is publishing an invalid file '%s'.
+assetmanager_tarchecksum_invalid		= TAssetManager is publishing a tar file with invalid checksum '%s'.
+assetmanager_tarfile_invalid			= TAssetManager is publishing an invalid tar file '%s'.
 
 sqlitecache_extension_required			= TSqliteCache requires SQLite PHP extension.
 sqlitecache_dbfile_required				= TSqliteCache.DbFile is required.
