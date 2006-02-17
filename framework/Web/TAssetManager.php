@@ -138,49 +138,6 @@ class TAssetManager extends TModule
 	}
 
 	/**
-	 * @param string file path
-	 * @return string the URL to the published file path. Null if the file is not published.
-	 */
-	public function getPublishedUrl($path)
-	{
-		if(($fullpath=realpath($path))!==false)
-		{
-			$dir=$this->hash(dirname($fullpath));
-			$file=$this->_basePath.'/'.$dir.'/'.basename($fullpath);
-			if(is_file($file) || is_dir($file))
-				return $this->_baseUrl.'/'.$dir.'/'.basename($fullpath);
-		}
-		return null;
-	}
-
-	/**
-	 * @param string file path
-	 * @return boolean whether the specified file path is published or not
-	 */
-	public function isFilePathPublished($path,$checkTimestamp=false)
-	{
-		if(!isset($this->_published[$path]))
-		{
-			if(($fullpath=realpath($path))===false)
-				return false;
-			$dir=$this->hash(dirname($fullpath));
-			$file=$this->_basePath.'/'.$dir.'/'.basename($fullpath);
-			if($checkTimestamp || $this->getApplication()->getMode()!==TApplication::STATE_PERFORMANCE)
-			{
-				if(is_file($fullpath))
-					return @filemtime($fullpath)<=@filemtime($file);
-				else
-				{
-				}
-			}
-			else
-				return is_file($file) || is_dir($file);
-		}
-		else
-			return true;
-	}
-
-	/**
 	 * Publishes a file or a directory (recursively).
 	 * This method will copy the content in a directory (recursively) to
 	 * a web accessible directory and returns the URL for the directory.
