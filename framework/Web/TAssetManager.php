@@ -137,6 +137,10 @@ class TAssetManager extends TModule
 			$this->_baseUrl=rtrim($value,'/');
 	}
 
+	/**
+	 * @param string file path
+	 * @return string the URL to the published file path. Null if the file is not published.
+	 */
 	public function getPublishedUrl($path)
 	{
 		if(($fullpath=realpath($path))!==false)
@@ -149,41 +153,60 @@ class TAssetManager extends TModule
 		return null;
 	}
 
-	public function isPublished($path)
+	/**
+	 * @param string file path
+	 * @return boolean whether the specified file path is published or not
+	 */
+	public function isFilePathPublished($path,$checkTimestamp=false)
 	{
-		return $this->getPublishedUrl($path) !== null;
+		if(!isset($this->_published[$path]))
+		{
+			if(($fullpath=realpath($path))===false)
+				return false;
+			$dir=$this->hash(dirname($fullpath));
+			$file=$this->_basePath.'/'.$dir.'/'.basename($fullpath);
+			if($checkTimestamp || $this->getApplication()->getMode()!==TApplication::STATE_PERFORMANCE)
+			{
+				if(is_file($fullpath))
+					return @filemtime($fullpath)<=@filemtime($file);
+				else
+				{
+				}
+			}
+			else
+				return is_file($file) || is_dir($file);
+		}
+		else
+			return true;
 	}
 
 	/**
 	 * Publishes a file or a directory (recursively).
 	 * This method will copy the content in a directory (recursively) to
 	 * a web accessible directory and returns the URL for the directory.
+	 * If the application is not in performance mode, the file modification
+	 * time will be used to make sure the published file is latest or not.
+	 * If not, a file copy will be performed.
 	 * @param string the path to be published
-	 * @param boolean whether to use file modify time to ensure every published file is latest
+	 * @param boolean If true, file modification time will be checked even if the application
+	 * is in performance mode.
 	 * @return string an absolute URL to the published directory
+	 * @throw TInvalidDataValueException if the file path to be published is invalid
 	 */
 	public function publishFilePath($path,$checkTimestamp=false)
 	{
 		if(isset($this->_published[$path]))
 			return $this->_published[$path];
 		else if(($fullpath=realpath($path))===false)
-			return '';
+			throw new TInvalidDataValueException('assetmanager_filepath_invalid',$path);
 		else if(is_file($fullpath))
 		{
 			$dir=$this->hash(dirname($fullpath));
-			$file=$this->_basePath.'/'.$dir.'/'.basename($fullpath);
-			if(!is_file($file) || $checkTimestamp || $this->getApplication()->getMode()!==TApplication::STATE_PERFORMANCE)
-			{
-				if(!is_dir($this->_basePath.'/'.$dir))
-					@mkdir($this->_basePath.'/'.$dir);
-				if(!is_file($file) || @filemtime($file)<@filemtime($fullpath))
-				{
-					Prado::trace("Publishing file $fullpath",'System.Web.UI.TAssetManager');
-					@copy($fullpath,$file);
-				}
-			}
-			$this->_published[$path]=$this->_baseUrl.'/'.$dir.'/'.basename($fullpath);
-			return $this->_published[$path];
+			$fileName=basename($fullpath);
+			$dst=$this->_basePath.'/'.$dir;
+			if(!is_file($dst.'/'.$fileName) || $checkTimestamp || $this->getApplication()->getMode()!==TApplication::STATE_PERFORMANCE)
+				$this->copyFile($fullpath,$dst);
+			return $this->_published[$path]=$this->_baseUrl.'/'.$dir.'/'.$fileName;
 		}
 		else
 		{
@@ -193,8 +216,7 @@ class TAssetManager extends TModule
 				Prado::trace("Publishing directory $fullpath",'System.Web.UI.TAssetManager');
 				$this->copyDirectory($fullpath,$this->_basePath.'/'.$dir);
 			}
-			$this->_published[$path]=$this->_baseUrl.'/'.$dir;
-			return $this->_published[$path];
+			return $this->_published[$path]=$this->_baseUrl.'/'.$dir;
 		}
 	}
 
@@ -207,6 +229,25 @@ class TAssetManager extends TModule
 	protected function hash($dir)
 	{
 		return sprintf('%x',crc32($dir));
+	}
+
+	/**
+	 * Copies a file to a directory.
+	 * Copying is done only when the destination file does not exist
+	 * or has an older file modification time.
+	 * @param string source file path
+	 * @param string destination directory (if not exists, it will be created)
+	 */
+	protected function copyFile($src,$dst)
+	{
+		if(!is_dir($dst))
+			@mkdir($dst);
+		$dstFile=$dst.'/'.basename($src);
+		if(@filemtime($dstFile)<@filemtime($src))
+		{
+			Prado::trace("Publishing file $src to $dstFile",'System.Web.TAssetManager');
+			@copy($src,$dstFile);
+		}
 	}
 
 	/**
@@ -235,6 +276,59 @@ class TAssetManager extends TModule
 		}
 		closedir($folder);
 	}
+
+	/**
+	 * Publish a tar file by extracting its contents to the assets directory.
+	 * Each tar file must be accomplished with its own MD5 check sum file.
+	 * The MD5 file is published when the tar contents are successfully
+	 * extracted to the assets directory. The presence of the MD5 file
+	 * as published asset assumes that the tar file has already been extracted.
+	 * @param string tar filename
+	 * @param string MD5 checksum for the corresponding tar file.
+	 * @return string URL path to the directory where the tar file was extracted.
+	 */
+	public function publishTarFile($tarfile, $md5sum, $checkTimestamp=false)
+	{
+		if(isset($this->_published[$md5sum]))
+			return $this->_published[$md5sum];
+		else if(($fullpath=realpath($md5sum))===false)
+			throw new TInvalidDataValueException('assetmanager_tarchecksum_invalid',$md5sum);
+		else
+		{
+			$dir=$this->hash(dirname($fullpath));
+			$fileName=basename($fullpath);
+			$dst=$this->_basePath.'/'.$dir;
+			if(!is_file($dst.'/'.$fileName) || $checkTimestamp || $this->getApplication()->getMode()!==TApplication::STATE_PERFORMANCE)
+			{
+				if(@filemtime($dst.'/'.$fileName)<@filemtime($fullpath))
+				{
+					$this->copyFile($fullpath,$dst);
+					$this->deployTarFile($tarfile,$dst);
+				}
+			}
+			return $this->_published[$md5sum]=$this->_baseUrl.'/'.$dir;
+		}
+	}
+
+	/**
+	 * Extracts the tar file to the destination directory.
+	 * N.B Tar file must not be compressed.
+	 * @param string tar file
+	 * @param string path where the contents of tar file are to be extracted
+	 * @return boolean true if extract successful, false otherwise.
+	 */
+	protected function deployTarFile($path,$destination)
+	{
+		if(($fullpath=realpath($path))===false)
+			throw new TIOException('assetmanager_tarfile_invalid',$path);
+		else
+		{
+			Prado::using('System.Data.TTarFileExtractor');
+			$tar = new TTarFileExtractor($fullpath);
+			return $tar->extract($destination);
+		}
+	}
+
 }
 
 ?>

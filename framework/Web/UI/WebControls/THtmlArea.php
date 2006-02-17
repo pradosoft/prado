@@ -17,19 +17,19 @@
  * TinyMCE project {@link http://tinymce.moxiecode.com/}.
  *
  * THtmlArea displays a WYSIWYG text area on the Web page for user input
- * in the HTML format. The text displayed in the THtmlArea component is 
+ * in the HTML format. The text displayed in the THtmlArea component is
  * specified or determined by using the <b>Text</b> property.
  *
  * To enable the visual editting on the client side, set the property
  * <b>EnableVisualEdit</b> to true (which is default value).
- * To set the size of the editor when the visual editting is enabled, 
+ * To set the size of the editor when the visual editting is enabled,
  * set the <b>Width</b> and <b>Height</b> properties instead of
  * <b>Columns</b> and <b>Rows</b> because the latter has no meaning
  * under the situation.
  *
  * The default editor gives only the basic tool bar. To change or add
  * additional tool bars, use the Options property add to additional
- * editor options with each options on a new line. 
+ * editor options with each options on a new line.
  * See http://tinymce.moxiecode.com/tinymce/docs/index.html
  * for a list of options. The options can be change/added as shown in the
  * following example.
@@ -43,11 +43,11 @@
  * </code>
  *
  * Compatibility
- * The client-side visual editting capability is supported by 
- * Internet Explorer 5.0+ for Windows and Gecko-based browser. 
+ * The client-side visual editting capability is supported by
+ * Internet Explorer 5.0+ for Windows and Gecko-based browser.
  * If the browser does not support the visual editting,
  * a traditional textarea will be displayed.
- * 
+ *
  * Browser support
  *
  * <code>
@@ -65,7 +65,7 @@
  *    * (1) - Partialy working
  * ----------------------------------------------------
  * </code>
- * 
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
@@ -74,44 +74,44 @@
 class THtmlArea extends TTextBox
 {
 	protected $langs = array(
-		'da' => array('da'), 
-		'fa' => array('fa'), 
+		'da' => array('da'),
+		'fa' => array('fa'),
 		'hu' => array('hu'),
 		'nb' => array('nb'),
 		'pt_br' => array('pt_BR'),
-		'sk' => array('sk'), 
+		'sk' => array('sk'),
 		'zh_tw_utf8' => array('zh_TW', 'zh_HK'),
 		'ar' => array('ar'),
 		'de' => array('de'),
 		'fi' => array('fi'),
-		'is' => array('is'), 
-		'nl' => array('nl'), 
+		'is' => array('is'),
+		'nl' => array('nl'),
 		'sv' => array('sv'),
-		'ca' => array('ca'), 
-		'el' => array('el'), 
-		'fr' => array('fr'), 
-		'it' => array('it'), 
+		'ca' => array('ca'),
+		'el' => array('el'),
+		'fr' => array('fr'),
+		'it' => array('it'),
 		'nn' => array('nn'), //what is nn?
-//		'ru' => array('ru'), 
+//		'ru' => array('ru'),
 		'th' => array('th'),
-		'cs' => array('cs'), 
-		'en' => array('en'), 
-		'fr_ca' => array('fr_CA'), 
+		'cs' => array('cs'),
+		'en' => array('en'),
+		'fr_ca' => array('fr_CA'),
 		'ja' => array('ja'),
-		'pl' => array('pl'), 
+		'pl' => array('pl'),
 //		'ru_KOI8-R' => array('ru'), /// what is this?
 		'zh_cn' => array('zh_CN'),
 		'cy' => array('cy'), //what is this?
-		'es' => array('es'), 
-		'he' => array('he'), 
+		'es' => array('es'),
+		'he' => array('he'),
 		'ko' => array('ko'),
-		'pt' => array('pt'), 
+		'pt' => array('pt'),
 		'ru_UTF-8' => array('ru'),
 		'tr' => array('tr'),
 		'si' => array('si'),
 //		'zh_tw' => array('zh_TW'),
 		);
-	
+
 	/**
 	 * Overrides the parent implementation.
 	 * TextMode for THtmlArea control is always 'MultiLine'
@@ -235,7 +235,7 @@ class THtmlArea extends TTextBox
 
 	/**
 	 * Adds attribute name-value pairs to renderer.
-	 * This method overrides the parent implementation by registering 
+	 * This method overrides the parent implementation by registering
 	 * additional javacript code.
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
@@ -248,7 +248,7 @@ class THtmlArea extends TTextBox
 				$this->getStyle()->setWidth($width);
 			if(($height=$this->getHeight()) != '')
 				$this->getStyle()->setHeight($height);
-			
+
 			$this->registerEditorClientScript($writer);
 		}
 		parent::addAttributesToRender($writer);
@@ -277,22 +277,20 @@ class THtmlArea extends TTextBox
 	}
 
 	/**
-	 * Gets the editor script base URL by publishing the tarred source via TTarAssetManager. 
+	 * Gets the editor script base URL by publishing the tarred source via TTarAssetManager.
 	 * @return string URL base path to the published editor script
 	 */
 	protected function getScriptDeploymentPath()
 	{
-		$manager = Prado::createComponent('System.Web.UI.TTarAssetManager');
-		$manager->init(null);
 		$tarfile = Prado::getPathOfNamespace('System.3rdParty.TinyMCE.tiny_mce', '.tar');
 		$md5sum = Prado::getPathOfNamespace('System.3rdParty.TinyMCE.tiny_mce', '.md5');
-		return $manager->publishTarFile($tarfile, $md5sum);
+		return $this->getApplication()->getAssetManager()->publishTarFile($tarfile, $md5sum);
 	}
 
 	/**
 	 * Default editor options gives basic tool bar only.
 	 * @return array editor initialization options.
-	 */ 
+	 */
 	protected function getEditorOptions()
 	{
 		$options['mode'] = 'exact';
@@ -332,8 +330,8 @@ class THtmlArea extends TTextBox
 	 * @return string localized editor interface language extension.
 	 */
 	protected function getLanguageSuffix($culture)
-	{		
-		$app = $this->getApplication()->getGlobalization();			
+	{
+		$app = $this->getApplication()->getGlobalization();
 		if(empty($culture) && !is_null($app))
 				$culture = $app->getCulture();
 		$variants = array();
@@ -352,7 +350,7 @@ class THtmlArea extends TTextBox
 					return $js;
 			}
 		}
-		
+
 		return 'en';
 	}
 }

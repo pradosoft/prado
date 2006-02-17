@@ -85,7 +85,7 @@ class TTextHighlighter extends TWebControl
 	{
 		parent::onPreRender($writer);
 		$this->registerHighlightStyleSheet();
-		$this->getPage()->getClientScript()->registerClientScript('prado');
+		//$this->getPage()->getClientScript()->registerClientScript('prado');
 	}
 
 	/**
