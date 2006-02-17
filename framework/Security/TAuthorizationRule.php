@@ -63,7 +63,6 @@ class TAuthorizationRule extends TComponent
 	 */
 	public function __construct($action,$users,$roles,$verb='')
 	{
-		parent::__construct();
 		$action=strtolower(trim($action));
 		if($action==='allow' || $action==='deny')
 			$this->_action=$action;

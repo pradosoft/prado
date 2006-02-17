@@ -533,6 +533,22 @@ class THttpRequest extends TMap implements IModule
 	{
 		$this->_serviceParam=$value;
 	}
+
+	/**
+	 * @return THttpResponse response module
+	 */
+	public function getResponse()
+	{
+		return Prado::getApplication()->getResponse();
+	}
+
+	/**
+	 * @return TApplication application instance
+	 */
+	public function getApplication()
+	{
+		return Prado::getApplication();
+	}
 }
 
 /**
@@ -558,7 +574,6 @@ class THttpCookieCollection extends TList
 	 */
 	public function __construct($owner=null)
 	{
-		parent::__construct();
 		$this->_o=$owner;
 	}
 
@@ -643,7 +658,6 @@ class THttpCookie extends TComponent
 	 */
 	public function __construct($name,$value)
 	{
-		parent::__construct();
 		$this->_name=$name;
 		$this->_value=$value;
 	}
@@ -825,7 +839,6 @@ class TUri extends TComponent
 	 */
 	public function __construct($uri)
 	{
-		parent::__construct();
 		if(($ret=@parse_url($uri))!==false)
 		{
 			// decoding???

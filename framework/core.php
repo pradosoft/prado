@@ -295,6 +295,14 @@ abstract class TModule extends TComponent implements IModule
 	{
 		$this->_id=$value;
 	}
+
+	/**
+	 * @return TApplication current application instance
+	 */
+	public function getApplication()
+	{
+		return Prado::getApplication();
+	}
 }
 
 /**
@@ -345,6 +353,14 @@ abstract class TService extends TComponent implements IService
 	 */
 	public function run()
 	{
+	}
+
+	/**
+	 * @return TApplication current application instance
+	 */
+	public function getApplication()
+	{
+		return Prado::getApplication();
 	}
 }
 

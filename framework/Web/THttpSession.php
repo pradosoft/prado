@@ -606,6 +606,14 @@ class THttpSession extends TComponent implements IteratorAggregate,ArrayAccess,I
 	{
 		unset($_SESSION[$offset]);
 	}
+
+	/**
+	 * @return TApplication application instance
+	 */
+	public function getApplication()
+	{
+		return Prado::getApplication();
+	}
 }
 
 /**
