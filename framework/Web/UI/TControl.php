@@ -165,6 +165,13 @@ class TControl extends TApplicationComponent
 	private $_rf=array();
 
 	/**
+	 * Constructor.
+	 */
+	public function __construct()
+	{
+	}
+
+	/**
 	 * Returns a property value by name or a control by ID.
 	 * This overrides the parent implementation by allowing accessing
 	 * a control via its ID using the following syntax,
@@ -1577,7 +1584,6 @@ class TControlList extends TList
 	 */
 	public function __construct(TControl $owner)
 	{
-		parent::__construct();
 		$this->_o=$owner;
 	}
 
@@ -1661,7 +1667,6 @@ class TEmptyControlList extends TList
 	 */
 	public function __construct(TControl $owner)
 	{
-		parent::__construct();
 		$this->_o=$owner;
 	}
 

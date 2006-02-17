@@ -1,4 +1,5 @@
 TComponent.php
+TApplicationComponent.php
 Exceptions/TException.php
 
 Collections/TList.php

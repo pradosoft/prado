@@ -53,6 +53,10 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	private $_isEnabled;
 	private $_changedEventRaised=false;
 
+	/**
+	 * Constructor.
+	 * Remember to call parent implementation if you override this method
+	 */
 	public function __construct()
 	{
 		parent::__construct();

@@ -79,20 +79,6 @@ class TComponent
 	private $_e=array();
 
 	/**
-	 * Constructor.
-	 */
-	public function __construct()
-	{
-	}
-
-	/**
-	 * Destructor.
-	 */
-	public function __destruct()
-	{
-	}
-
-	/**
 	 * Returns a property value or an event handler list by property or event name.
 	 * Do not call this method. This is a PHP magic method that we override
 	 * to allow using the following syntax to read a property:

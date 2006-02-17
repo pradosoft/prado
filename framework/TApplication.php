@@ -289,8 +289,6 @@ class TApplication extends TComponent
 	 */
 	public function __construct($basePath='protected',$cacheConfig=true)
 	{
-		parent::__construct();
-
 		// register application as a singleton
 		Prado::setApplication($this);
 
