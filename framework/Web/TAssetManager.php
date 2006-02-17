@@ -82,11 +82,11 @@ class TAssetManager extends TModule
 	{
 		$application=$this->getApplication();
 		if($this->_basePath===null)
-			$this->_basePath=dirname($application->getRequest()->getPhysicalApplicationPath()).'/'.self::DEFAULT_BASEPATH;
+			$this->_basePath=dirname($application->getRequest()->getApplicationFilePath()).'/'.self::DEFAULT_BASEPATH;
 		if(!is_writable($this->_basePath) || !is_dir($this->_basePath))
 			throw new TConfigurationException('assetmanager_basepath_invalid',$this->_basePath);
 		if($this->_baseUrl===null)
-			$this->_baseUrl=rtrim(dirname($application->getRequest()->getApplicationPath()),'/\\').'/'.self::DEFAULT_BASEPATH;
+			$this->_baseUrl=rtrim(dirname($application->getRequest()->getApplicationUrl()),'/\\').'/'.self::DEFAULT_BASEPATH;
 		$application->setAssetManager($this);
 		$this->_initialized=true;
 	}

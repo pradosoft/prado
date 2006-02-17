@@ -270,7 +270,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	/**
 	 * @return string entry script URL (w/o host part)
 	 */
-	public function getApplicationPath()
+	public function getApplicationUrl()
 	{
 		return $_SERVER['SCRIPT_NAME'];
 	}
@@ -278,7 +278,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	/**
 	 * @return string application entry script file path (processed w/ realpath())
 	 */
-	public function getPhysicalApplicationPath()
+	public function getApplicationFilePath()
 	{
 		return realpath($_SERVER['SCRIPT_FILENAME']);
 	}
@@ -452,13 +452,13 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 			$url=strtr($url,array($amp=>'/','?'=>'/','='=>'/'));
 			if(defined('SID') && SID != '')
 				$url.='?'.SID;
-			return $this->getApplicationPath().'/'.$url;
+			return $this->getApplicationUrl().'/'.$url;
 		}
 		else
 		{
 			if(defined('SID') && SID != '')
 				$url.=$amp.SID;
-			return $this->getApplicationPath().'?'.$url;
+			return $this->getApplicationUrl().'?'.$url;
 		}
 	}
 

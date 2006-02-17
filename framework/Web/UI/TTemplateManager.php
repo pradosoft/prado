@@ -144,7 +144,7 @@ class TTemplateManager extends TModule
  * @package System.Web.UI
  * @since 3.0
  */
-class TTemplate extends TComponent implements ITemplate
+class TTemplate extends TApplicationComponent implements ITemplate
 {
 	/**
 	 *  '<!.*?!>' - template comments

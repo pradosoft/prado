@@ -86,7 +86,7 @@ class TThemeManager extends TModule
 	{
 		if($this->_basePath===null)
 		{
-			$this->_basePath=dirname($this->getRequest()->getPhysicalApplicationPath()).'/'.self::DEFAULT_BASEPATH;
+			$this->_basePath=dirname($this->getRequest()->getApplicationFilePath()).'/'.self::DEFAULT_BASEPATH;
 			if(($basePath=realpath($this->_basePath))===false || !is_dir($basePath))
 				throw new TConfigurationException('thememanager_basepath_invalid',$this->_basePath);
 			$this->_basePath=$basePath;
@@ -119,11 +119,11 @@ class TThemeManager extends TModule
 	{
 		if($this->_baseUrl===null)
 		{
-			$appPath=dirname($this->getRequest()->getPhysicalApplicationPath());
+			$appPath=dirname($this->getRequest()->getApplicationFilePath());
 			$basePath=$this->getBasePath();
 			if(strpos($basePath,$appPath)===false)
 				throw new TConfigurationException('thememanager_baseurl_required');
-			$appUrl=rtrim(dirname($this->getRequest()->getApplicationPath()),'/\\');
+			$appUrl=rtrim(dirname($this->getRequest()->getApplicationUrl()),'/\\');
 			$this->_baseUrl=$appUrl.strtr(substr($basePath,strlen($appPath)),'\\','/');
 		}
 		return $this->_baseUrl;
@@ -164,7 +164,7 @@ class TThemeManager extends TModule
  * @package System.Web.UI
  * @since 3.0
  */
-class TTheme extends TComponent implements ITheme
+class TTheme extends TApplicationComponent implements ITheme
 {
 	/**
 	 * prefix for cache variable name used to store parsed themes
