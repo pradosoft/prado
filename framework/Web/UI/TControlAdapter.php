@@ -21,7 +21,7 @@
  * @package System.Web.UI
  * @since 3.0
  */
-class TControlAdapter extends TComponent
+class TControlAdapter extends TApplicationComponent
 {
 	/**
 	 * @var TControl the control to which the adapter is attached

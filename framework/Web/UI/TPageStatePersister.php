@@ -28,7 +28,7 @@
  * @package System.Web.UI
  * @since 3.0
  */
-class TPageStatePersister extends TComponent implements IPageStatePersister
+class TPageStatePersister extends TApplicationComponent implements IPageStatePersister
 {
 	private $_page;
 

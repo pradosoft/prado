@@ -20,7 +20,7 @@ Prado::using('System.Web.Javascripts.*');
  * @package System.Web.UI
  * @since 3.0
  */
-class TClientScriptManager extends TComponent
+class TClientScriptManager extends TApplicationComponent
 {
 	const SCRIPT_DIR='Web/Javascripts/js';
 	//const POSTBACK_FUNC='Prado.doPostBack';
@@ -123,7 +123,7 @@ class TClientScriptManager extends TComponent
 		//create the client script url
 		$url = $this->publishClientScriptCompressorAsset();
 		$url .= '?js='.implode(',', $scripts);
-		if(Prado::getApplication()->getMode() == TApplication::STATE_DEBUG)
+		if($this->getApplication()->getMode() == TApplication::STATE_DEBUG)
 			$url .= '&__nocache';
 		$this->registerScriptFile('prado:gzipscripts', $url);
 	}

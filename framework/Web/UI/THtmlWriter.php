@@ -16,13 +16,13 @@
 // implment encoding (for text and url)
 /**
  * THtmlWriter class
- * 
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI
  * @since 3.0
  */
-class THtmlWriter extends TComponent implements ITextWriter
+class THtmlWriter extends TApplicationComponent implements ITextWriter
 {
 	const TAG_INLINE=0;
 	const TAG_NONCLOSING=1;
