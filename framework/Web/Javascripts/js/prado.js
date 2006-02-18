@@ -1680,6 +1680,9 @@ Prado.Validation.SetActiveGroup(Event.element(_378),_379["ValidationGroup"]);
 Prado.Validation.SetActiveGroup(null,null);
 }
 if(Prado.Validation.IsValid(form)==false){
+if(_379["StopEvent"]){
+Event.stop(_378);
+}
 return;
 }
 }

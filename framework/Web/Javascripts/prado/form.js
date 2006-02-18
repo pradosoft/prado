@@ -109,12 +109,15 @@ Prado.PostBack = function(event,options)
 		else
 			Prado.Validation.SetActiveGroup(null,null);
 		if(Prado.Validation.IsValid(form) == false)
+		{
+			if(options['StopEvent']) Event.stop(event);
 			return;
+		}
 	}
-	
+
 	if(options['PostBackUrl'] && options['PostBackUrl'].length > 0)
 		form.action = options['PostBackUrl'];
-		
+
 	if(options['TrackFocus'])
 	{
 		var lastFocus = $('PRADO_LASTFOCUS');
@@ -127,9 +130,9 @@ Prado.PostBack = function(event,options)
 				lastFocus.value = options['EventTarget'];
 		}
 	}
-	
+
 	$('PRADO_POSTBACK_TARGET').value = options['EventTarget'];
-	$('PRADO_POSTBACK_PARAMETER').value = options['EventParameter'];	
+	$('PRADO_POSTBACK_PARAMETER').value = options['EventParameter'];
 	Event.fireEvent(form,"submit");
 	if(options['StopEvent']) Event.stop(event);
 }
