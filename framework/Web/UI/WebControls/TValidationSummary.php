@@ -37,6 +37,25 @@
 class TValidationSummary extends TWebControl
 {
 	/**
+	 * @return string the display behavior (None, Static, Dynamic) of the error message in a validation summary component.
+	 */
+	public function getDisplay()
+	{
+		return $this->getViewState('Display','Static');
+	}
+
+	/**
+	 * Sets the display behavior (None, Static, Dynamic) of the error message in a validation summary component.
+	 * @param string the display behavior (None, Static, Dynamic)
+	 */
+	public function setDisplay($value)
+	{
+		if($value!='None' && $value!='Dynamic')
+			$value='Static';
+		$this->setViewState('Display',$value,'Static');
+	}
+
+	/**
 	 * @return string the header text displayed at the top of the summary
 	 */
 	public function getHeaderText()
@@ -170,6 +189,15 @@ class TValidationSummary extends TWebControl
 
 	protected function addAttributesToRender($writer)
 	{
+		$display=$this->getDisplay();
+		$visible=$this->getEnabled(true) && count($this->getErrorMessages()) > 0;
+		if(!$visible)
+		{
+			if($display==='None' || $display==='Dynamic')
+				$writer->addStyleAttribute('display','none');
+			else
+				$writer->addStyleAttribute('visibility','hidden');		
+		}
 		$writer->addAttribute('id',$this->getClientID());
 		parent::addAttributesToRender($writer);
 	}
@@ -205,6 +233,7 @@ class TValidationSummary extends TWebControl
 
 		$options['refresh'] = $this->getAutoUpdate();
 		$options['validationgroup'] =  $this->getValidationGroup();
+		$options['display'] = $this->getDisplay();
 		return $options;
 	}
 

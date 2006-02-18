@@ -485,7 +485,12 @@ Prado.Validation.Summary.prototype =
 		if(messages.length <= 0 || !this.visible || !this.enabled) 
 		{
 			if(refresh)
-				Element.hide(this.div); 
+			{
+				if(this.attr.display == "None" || this.attr.display == "Dynamic")
+					Element.hide(this.div); 
+				else
+					this.div.style.visibility="hidden";
+			}
 			return;
 		}
 
@@ -494,8 +499,13 @@ Prado.Validation.Summary.prototype =
 			if(Prado.Validation.CurrentTargetGroup != this.group)
 			{
 				if(refresh)
-					Element.hide(this.div); 
-					return;
+				{
+					if(this.attr.display == "None" || this.attr.display == "Dynamic")
+						Element.hide(this.div); 
+					else
+						this.div.style.visibility="hidden";
+				}
+				return;
 			}
 		}
 		
@@ -503,6 +513,7 @@ Prado.Validation.Summary.prototype =
 		{
 			//Element.show(this.div);
 			this.div.style.display = "block";
+			this.div.style.visibility = "visible";
 			while(this.div.childNodes.length > 0)
 				this.div.removeChild(this.div.lastChild);
 			new Insertion.Bottom(this.div, this.formatSummary(messages));

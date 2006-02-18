@@ -16,31 +16,30 @@ Prado.WebUI.TDatePicker.prototype =
 
 	FromYear : 2000, UpToYear: 2015,
 	
-	initialize : function(control, attr)
+	initialize : function(options)
 	{
-		this.attr = attr || [];
-		this.control = $(control);	
+		this.options = options || [];
+		this.control = $(options.ID);	
 		this.dateSlot = new Array(42);
 		this.weekSlot = new Array(6);
 		this.minimalDaysInFirstWeek	= 4;
 		this.selectedDate = this.newDate();
 		
 		//which element to trigger to show the calendar
-		if(this.attr.Trigger)
+		if(this.options.Trigger)
 		{
-			this.trigger = $(this.attr.Trigger) ;
-			var triggerEvent = this.attr.TriggerEvent || "click";
+			this.trigger = $(this.options.Trigger) ;
+			var triggerEvent = this.options.TriggerEvent || "click";
 		}
 		else
 		{
 			this.trigger  = this.control;
-			var triggerEvent = this.attr.TriggerEvent || "focus";
+			var triggerEvent = this.options.TriggerEvent || "focus";
 		}
 		
+		Object.extend(this,options);
+		
 		Event.observe(this.trigger, triggerEvent, this.show.bindEvent(this));
-			
-		Object.extend(this,attr);
-
 		this.create();	
 	},
 
@@ -389,7 +388,20 @@ Prado.WebUI.TDatePicker.prototype =
 
 	onchange : function() 
 	{
-		this.control.value = this.formatDate();
+		if(this.options.InputMode == "TextBox")
+			this.control.value = this.formatDate();
+		else
+		{
+			var day = $(this.options.ID+"_day");
+			var month = $(this.options.ID+"_month");
+			var years = $(this.options.ID+"_year").options;
+			var date = this.selectedDate;
+			day.selectedIndex = date.getDate()-1;
+			month.selectedIndex = date.getMonth();
+			var currentYear = date.getFullYear();
+			for(var i = 0; i < years.length; i++)
+				years[i].selected = years[i].value.toInteger() == currentYear;
+		}
 	},
 	
 	formatDate : function()
@@ -457,7 +469,12 @@ Prado.WebUI.TDatePicker.prototype =
 		if(!this.showing)
 		{
 			var pos = Position.cumulativeOffset(this.control);
-			pos[1] += this.control.offsetHeight;
+			
+			if(this.options.InputMode == "TextBox")
+				pos[1] += this.control.offsetHeight;
+			else
+				pos[1] += $(this.options.ID+"_day").offsetHeight-1;
+
 			this._calDiv.style.display = "block";
 			this._calDiv.style.top = (pos[1]-1) + "px";
 			this._calDiv.style.left = pos[0] + "px";
@@ -466,7 +483,7 @@ Prado.WebUI.TDatePicker.prototype =
 			this.documentClickEvent = this.hideOnClick.bindEvent(this);
 			this.documentKeyDownEvent = this.keyPressed.bindEvent(this);
 			Event.observe(document.body, "click", this.documentClickEvent);
-			var date = Date.SimpleParse(Form.Element.getValue(this.control), this.Format);
+			var date = this.getDateFromInput();
 			if(!isNull(date))
 			{
 				this.selectedDate = date;
@@ -474,6 +491,20 @@ Prado.WebUI.TDatePicker.prototype =
 			}
 			Event.observe(document,"keydown", this.documentKeyDownEvent); 
 			this.showing = true;
+		}
+	},
+
+	getDateFromInput : function()
+	{
+		if(this.options.InputMode == "TextBox")
+			return Date.SimpleParse($F(this.control), this.Format);
+		else
+		{
+			var day = $F(this.options.ID+"_day");
+			var month = $F(this.options.ID+"_month");
+			var year = $F(this.options.ID+"_year");
+			var newdate=new Date(year,month,day, 0, 0, 0);
+			return newdate;
 		}
 	},
 	

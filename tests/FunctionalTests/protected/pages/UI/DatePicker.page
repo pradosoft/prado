@@ -6,6 +6,9 @@ as<br/>
 dv<br/>
 as<br/>
 d<br/>
+<com:TDatePicker ID="Picker1" InputMode="DropDownList"/>
+<com:TButton Text="Update" />
+<%= $this->Page->Picker1->Text %>
 as<br/>
 d<br/>
 asd<br/>

@@ -175,9 +175,21 @@ class THtmlWriter extends TApplicationComponent implements ITextWriter
 		$this->_attributes[$name]=isset(self::$_attrEncode[$name])?THttpUtility::htmlEncode($value):$value;
 	}
 
+	public function removeAttribute($name)
+	{
+		if(isset($this->_attributes[$name]))
+			unset($this->_attributes[$name]);
+	}
+	
 	public function addStyleAttribute($name,$value)
 	{
 		$this->_styles[$name]=isset(self::$_styleEncode[$name])?THttpUtility::htmlEncode($value):$value;
+	}
+
+	public function removeStyleAttribute($name)
+	{
+		if(isset($this->_styles[$name]))
+			unset($this->_styles[$name]);
 	}
 
 	public function flush()

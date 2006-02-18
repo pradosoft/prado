@@ -320,7 +320,7 @@ this.inputs=_65;
 var _67=Prado.WebUI.TColorPicker.UIImages;
 this.inputs["currentColor"]=SPAN({className:"currentColor"});
 this.inputs["oldColor"]=SPAN({className:"oldColor"});
-var _68=TABLE({className:"inputs"},TBODY(null,TR(null,TD({className:"currentcolor",colSpan:2},this.inputs["currentColor"],this.inputs["oldColor"])),TR(null,TD(null,"H:"),TD(null,this.inputs["H"],"\xc2\xb0")),TR(null,TD(null,"S:"),TD(null,this.inputs["S"],"%")),TR(null,TD(null,"V:"),TD(null,this.inputs["V"],"%")),TR(null,TD({className:"gap"},"R:"),TD({className:"gap"},this.inputs["R"])),TR(null,TD(null,"G:"),TD(null,this.inputs["G"])),TR(null,TD(null,"B:"),TD(null,this.inputs["B"])),TR(null,TD({className:"gap"},"#"),TD({className:"gap"},this.inputs["HEX"]))));
+var _68=TABLE({className:"inputs"},TBODY(null,TR(null,TD({className:"currentcolor",colSpan:2},this.inputs["currentColor"],this.inputs["oldColor"])),TR(null,TD(null,"H:"),TD(null,this.inputs["H"],'°')),TR(null,TD(null,"S:"),TD(null,this.inputs["S"],"%")),TR(null,TD(null,"V:"),TD(null,this.inputs["V"],"%")),TR(null,TD({className:"gap"},"R:"),TD({className:"gap"},this.inputs["R"])),TR(null,TD(null,"G:"),TD(null,this.inputs["G"])),TR(null,TD(null,"B:"),TD(null,this.inputs["B"])),TR(null,TD({className:"gap"},"#"),TD({className:"gap"},this.inputs["HEX"]))));
 var _69={selector:SPAN({className:"selector"}),background:SPAN({className:"colorpanel"}),slider:SPAN({className:"slider"}),hue:SPAN({className:"strip"})};
 if(Prado.Browser().ie){
 var _70="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader";
@@ -350,9 +350,7 @@ this._onMouseMove=this.onMouseMove.bind(this);
 Event.observe(this.inputs.background,"mousedown",this._onColorMouseDown);
 Event.observe(this.inputs.hue,"mousedown",this._onHueMouseDown);
 Event.observe(document.body,"mouseup",this._onMouseUp);
-if(!Prado.Browser().ie){
 Event.observe(document.body,"mousemove",this._onMouseMove);
-}
 Event.observe(this.buttons.Cancel,"click",this.hide.bindEvent(this,this.options["Mode"]));
 Event.observe(this.buttons.OK,"click",this.onOKClicked.bind(this));
 },onColorMouseDown:function(ev){

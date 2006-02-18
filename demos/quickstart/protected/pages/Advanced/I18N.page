@@ -134,6 +134,9 @@ $message = localize("There are {num_users} users online.", array('num_users'=>$n
 <p>Where the second parameter in <tt>localize</tt> takes an associative array with the key as the substitution to find in the text and replaced it with the associated value.
 The <tt>localize</tt> function does not solve the problem of localizing languages that have plural forms, the solution is to use <a href="#choice-format">TChoiceFormat</a>.</p>
 
+<p>The following sample demonstrates the basics of localization in Prado.</p>
+<com:RunBar PagePath="Advanced.Samples.I18N.Home" />
+
 <h1>I18N Components</h1>
 <a name="ttranslate"></a>
 <h2>TTranslate</h2>
@@ -224,5 +227,6 @@ is "One Apple". If the <tt>Value</tt> was "2", then it will show "Two Apples".</
 
 <p>Any non-empty combinations of the delimiters of square and round brackets are acceptable.
 The string chosen for display depends on the <tt>Value</tt> property. The <tt>Value</tt> is evaluated for each set until the <tt>Value</tt> is found to belong to a particular set.</p>
+
 
 </com:TContent>

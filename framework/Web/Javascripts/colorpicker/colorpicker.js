@@ -338,8 +338,8 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 		Event.observe(document.body, "mouseup", this._onMouseUp);
 
 		//Because of using the CSS filter, IE can't do colour change quickly
-		if(!Prado.Browser().ie)
-			Event.observe(document.body, "mousemove", this._onMouseMove);			
+		//if(!Prado.Browser().ie)
+		Event.observe(document.body, "mousemove", this._onMouseMove);			
 
 		Event.observe(this.buttons.Cancel, "click", this.hide.bindEvent(this,this.options['Mode']));
 		Event.observe(this.buttons.OK, "click", this.onOKClicked.bind(this));

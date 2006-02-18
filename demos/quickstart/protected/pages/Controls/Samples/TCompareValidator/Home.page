@@ -1,6 +1,8 @@
 <com:TContent ID="body">
 
 <h1>TCompareValidator Samples</h1>
+<p><strong>Note:</strong>TCompareValidator will start
+to validate only if both inputs are not empty.</p>
 
 <table class="sampletable">
 
@@ -9,8 +11,8 @@
 Compare validator with default settings:
 </td>
 <td class="sampleaction">
-<com:TTextBox ID="TextBox1" />
-<com:TTextBox ID="TextBox11" />
+<com:TTextBox ID="TextBox1" Text="a1" />
+<com:TTextBox ID="TextBox11" Text="a2"/>
 <com:TCompareValidator
 	ValidationGroup="Group1"
 	ControlToValidate="TextBox1"
@@ -25,8 +27,8 @@ Compare validator with default settings:
 Compare validator with client-side validation disabled:
 </td>
 <td class="sampleaction">
-<com:TTextBox ID="TextBox2" />
-<com:TTextBox ID="TextBox22" />
+<com:TTextBox ID="TextBox2" Text="b1"/>
+<com:TTextBox ID="TextBox22" Text="b2" />
 <com:TCompareValidator
 	ValidationGroup="Group2"
 	EnableClientScript="false"

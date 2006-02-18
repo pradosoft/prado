@@ -1,10 +1,10 @@
 /** 
- * Test if it is an object and has no constructors.
+ * @return {Boolean} true if is an object and has no constructors.
  */
 function isAlien(a)     { return isObject(a) && typeof a.constructor != 'function' }
 
 /** 
- * isArray?
+ * @return {Boolean} 
  */
 function isArray(a)     { return isObject(a) && a.constructor == Array }
 

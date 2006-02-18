@@ -208,7 +208,7 @@ class TCompareValidator extends TBaseValidator
 				$dateFormat = $this->getDateFormat();
 				if (strlen($dateFormat))
 				{
-					$formatter = Prado::createComponent('System.Data.TDateTimeSimpleFormatter', $dateFormat);
+					$formatter = Prado::createComponent('System.Data.TSimpleDateFormatter', $dateFormat);
 					return array($formatter->parse($value1), $formatter->parse($value2));
 				}
 				else

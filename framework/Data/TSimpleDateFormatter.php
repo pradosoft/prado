@@ -1,6 +1,6 @@
 <?php
 /**
- * TDateTimeSimpleFormatter class file
+ * TSimpleDateFormatter class file
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
@@ -11,7 +11,7 @@
  */
 
 /**
- * TDateTimeSimpleFormatter class.
+ * TSimpleDateFormatter class.
  *
  * Formats and parses dates using the SimpleDateFormat pattern.
  * This pattern is compatible with the I18N and java's SimpleDateFormatter.
@@ -29,13 +29,13 @@
  *
  * Usage example, to format a date
  * <code>
- * $formatter = new TDateTimeSimpleFormatter("dd/MM/yyy");
+ * $formatter = new TSimpleDateFormatter("dd/MM/yyy");
  * echo $formatter->format(time()); 
  * </code>
  *
  * To parse the date string into a date timestamp.
  * <code>
- * $formatter = new TDateTimeSimpleFormatter("d-M-yyy");
+ * $formatter = new TSimpleDateFormatter("d-M-yyy");
  * echo $formatter->parse("24-6-2005");
  * </code>
  *
@@ -44,7 +44,7 @@
  * @package System.Data
  * @since 3.0
  */
-class TDateTimeSimpleFormatter
+class TSimpleDateFormatter
 {
 	/**
 	 * Formatting pattern.
@@ -129,11 +129,11 @@ class TDateTimeSimpleFormatter
 	private function getDate($value)
 	{
 		if(is_int($value))
-			return getdate($value);
+			return @getdate($value);
 		$date = @strtotime($value);
 		if($date < 0)
 			throw new TInvalidDataValueException('invalid_date', $value);
-		return getdate($date);
+		return @getdate($date);
 	}
 	
 	/**
@@ -150,11 +150,17 @@ class TDateTimeSimpleFormatter
 	 * @return int date time stamp
 	 * @throws TInvalidDataValueException if date string is malformed.
 	 */
-	public function parse($value,$defaulToCurrentTime=true)
+	public function parse($value,$defaultToCurrentTime=true)
 	{
 		if(!is_string($value))
 			throw new TInvalidDataValueException('date_to_parse_must_be_string', $value);
+
 		if(empty($this->pattern)) return time();
+
+		$date = $this->getDate(time());
+		
+		if($this->length(trim($value)) < 1)
+			return $defaultToCurrentTime ? $date : null;
 
 		$pattern = $this->pattern;
 
@@ -165,8 +171,8 @@ class TDateTimeSimpleFormatter
 		$token='';
 		$x=null; $y=null;
 	
-		$date = $this->getDate(time());
-		if($defaulToCurrentTime)
+
+		if($defaultToCurrentTime)
 		{
 			$year = "{$date['year']}";
 			$month = $date['mon'];
@@ -242,7 +248,7 @@ class TDateTimeSimpleFormatter
 		if(!$defaultToCurrentTime && (is_null($month) || is_null($day) || is_null($year)))
 			return null;
 		else	
-			return mktime(0, 0, 0, $month, $day, $year);
+			return $this->getDate(@mktime(0, 0, 0, $month, $day, $year));
 	}
 
 	/**

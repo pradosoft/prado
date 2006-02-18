@@ -49,6 +49,11 @@
  * for the date picker panel. <b>CalendarStyle</b> property sets the packages
  * styles available. E.g. <b>default</b>.
  *
+ * The <b>InputMode</b> property can be set to "TextBox" or "DropDownList" with
+ * default as "TextBox".
+ * In <tt>DropDownList</tt> mode, in addition to the popup date picker, three 
+ * drop down list (day, month and year) are presented to select the date . 
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
@@ -106,6 +111,16 @@ class TDatePicker extends TTextBox
 	public function setCulture($value)
 	{
 		$this->setViewState('Culture', $value, '');
+	}
+
+	public function setInputMode($value)
+	{
+		$this->setViewState('InputMode', TPropertyValue::ensureEnum($value, 'TextBox', 'DropDownList'), 'TextBox');
+	}
+
+	public function getInputMode()
+	{
+		return $this->getViewState('InputMode', 'TextBox');
 	}
 
 	/**
@@ -221,41 +236,24 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * Get javascript date picker options.
-	 * @return array date picker client-side options
+	 * @return integer current selected date from the date picker as timestamp.
 	 */
-	protected function getDatePickerOptions()
+	public function getDate()
 	{
-		$options['Format'] = $this->getDateFormat();
-		$options['FirstDayOfWeek'] = $this->getFirstDayOfWeek();
-		if(($cssClass=$this->getCssClass())!=='')
-			$options['ClassName'] = $cssClass;
-		$options['FromYear'] = $this->getFromYear();
-		$options['UpToYear'] = $this->getUpToYear();
-		if($this->getMode()!=='Basic')
-			$options['Trigger'] = $this->getDatePickerButtonID();
-
-		$options = array_merge($options, $this->getCulturalOptions());
-		return $options;
+		$date = $this->getDateFromText();
+		return $date[0];
 	}
 
 	/**
-	 * Get javascript localization options, e.g. month and weekday names.
-	 * @return array localization options.
+	 * Sets the date for the date picker using timestamp.
+	 * @param integer time stamp for the date picker
 	 */
-	protected function getCulturalOptions()
+	public function setDate($value)
 	{
-		$app = $this->getApplication()->getGlobalization();
-		$culture = $this->getCulture() == '' ? $app->getCulture() : $this->getCulture();
-		if($culture == 'en') return array();
-
-		//expensive operations
-		Prado::using('System.I18N.core.DateTimeFormatInfo');
-		$info = Prado::createComponent('System.I18N.core.CultureInfo', $culture);
-		$date = $info->getDateTimeFormat();
-		$options['MonthNames'] = TJavaScript::encode($date->getMonthNames(),false);
-		$options['ShortWeekDayNames'] = TJavaScript::encode($date->getAbbreviatedDayNames(),false);
-		return $options;
+		$date = TPropertyValue::ensureInteger($value);
+		$formatter = Prado::createComponent('System.Data.TSimpleDateFormatter', 
+						$this->getDateFormat());
+		$this->setText($formatter->format($date));
 	}
 
 	/**
@@ -275,13 +273,229 @@ class TDatePicker extends TTextBox
 	 */
 	public function render($writer)
 	{
-		parent::render($writer);
-		switch ($this->getMode())
+		if($this->getInputMode() == 'TextBox')
+			parent::render($writer);
+		else
+			$this->renderDropDownListCalendar($writer);
+	
+		if($this->getShowCalendar())
 		{
-			case 'Button': $this->renderButtonDatePicker($writer); break;
-			case 'ImageButton' : $this->renderImageButtonDatePicker($writer); break;
-
+			switch ($this->getMode())
+			{
+				case 'Button': $this->renderButtonDatePicker($writer); break;
+				case 'ImageButton' : $this->renderImageButtonDatePicker($writer); break;
+			}
 		}
+	}
+
+	/**
+	 * Loads user input data. Override parent implementation, when InputMode
+	 * is DropDownList call getDateFromPostData to get date data.
+	 * This method is primarly used by framework developers.
+	 * @param string the key that can be used to retrieve data from the input data collection
+	 * @param array the input data collection
+	 * @return boolean whether the data of the component has been changed
+	 */	public function loadPostData($key,$values)
+	{
+		if($this->getInputMode() == "TextBox")
+			return parent::loadPostData($key, $values);
+		$value = $this->getDateFromPostData($key, $values);
+		if(!$this->getReadOnly() && $this->getText()!==$value)
+		{
+			$this->setText($value);
+			return true;
+		}
+		else
+			return false;
+	}
+	
+	/**
+	 * Loads date from drop down list data.
+	 * @param string the key that can be used to retrieve data from the input data collection
+	 * @param array the input data collection
+	 * @return array the date selected
+	 */
+	protected function getDateFromPostData($key, $values)
+	{
+		$day = $values[$key.'$day'];
+		$month = $values[$key.'$month'];
+		$year = $values[$key.'$year'];
+		$date = @mktime(0, 0, 0, $month+1, $day, $year);
+		$formatter = Prado::createComponent('System.Data.TSimpleDateFormatter', 
+						$this->getDateFormat());
+		return $formatter->format($date);
+	}
+
+	/**
+	 * Get javascript date picker options.
+	 * @return array date picker client-side options
+	 */
+	protected function getDatePickerOptions()
+	{
+		$options['ID'] = $this->getClientID();
+		$options['InputMode'] = $this->getInputMode();
+		$options['Format'] = $this->getDateFormat();
+		$options['FirstDayOfWeek'] = $this->getFirstDayOfWeek();
+		if(($cssClass=$this->getCssClass())!=='')
+			$options['ClassName'] = $cssClass;
+		$options['FromYear'] = $this->getFromYear();
+		$options['UpToYear'] = $this->getUpToYear();
+		if($this->getMode()!=='Basic')
+			$options['Trigger'] = $this->getDatePickerButtonID();
+
+		$options = array_merge($options, $this->getCulturalOptions());
+		return $options;
+	}
+
+	/**
+	 * Get javascript localization options, e.g. month and weekday names.
+	 * @return array localization options.
+	 */
+	protected function getCulturalOptions()
+	{
+		if($this->getCurrentCulture() == 'en')
+			return array();
+
+		$date = $this->getLocalizedCalendarInfo();
+		$options['MonthNames'] = TJavaScript::encode($date->getMonthNames(),false);
+		$options['ShortWeekDayNames'] = TJavaScript::encode($date->getAbbreviatedDayNames(),false);
+
+		return $options;
+	}
+
+	/**
+	 * @return string the current culture, falls back to application if culture is not set.
+	 */
+	protected function getCurrentCulture()
+	{
+		$app = $this->getApplication()->getGlobalization();
+		return $this->getCulture() == '' ? $app->getCulture() : $this->getCulture();
+	}
+
+	/**
+	 * @return DateTimeFormatInfo date time format information for the current culture.
+	 */
+	protected function getLocalizedCalendarInfo()
+	{
+		//expensive operations
+		$culture = $this->getCurrentCulture();
+		Prado::using('System.I18N.core.DateTimeFormatInfo');
+		$info = Prado::createComponent('System.I18N.core.CultureInfo', $culture);
+		return $info->getDateTimeFormat();
+	}
+	
+	/**
+	 * Renders the drop down list date picker.
+	 */
+	protected function renderDropDownListCalendar($writer)
+	{
+		if($this->getMode() == 'Basic')
+			$this->setMode('ImageButton');
+		parent::addAttributesToRender($writer);
+		$writer->removeAttribute('name');
+		$writer->removeAttribute('type');
+		$writer->addAttribute('id', $this->getClientID());
+		
+		if(strlen($class = $this->getCssClass()) > 0)
+			$writer->addAttribute('class', $class);
+		$writer->renderBeginTag('span');
+
+		$date = $this->getDateFromText();
+
+		//renders the 3 drop down lists
+		$this->renderCalendarDayOptions($writer,$date['mday']);
+		$this->renderCalendarMonthOptions($writer,$date['mon']-1);
+		$this->renderCalendarYearOptions($writer,$date['year']);
+
+		//render a hidden input field
+		$writer->addAttribute('name', $this->getUniqueID());
+		$writer->addAttribute('type', 'hidden');
+		$writer->addAttribute('value', $this->getText());
+		$writer->renderBeginTag('input');
+	
+		$this->registerCalendarClientScript();
+		$writer->renderEndTag();
+	}
+	
+	/**
+	 * Gets the date from the text input using TSimpleDateFormatter
+	 * @return array current selected date
+	 */
+	protected function getDateFromText()
+	{
+		$formatter = Prado::createComponent('System.Data.TSimpleDateFormatter', 
+						$this->getDateFormat());
+		return $formatter->parse($this->getText());
+	}
+
+	/**
+	 * Renders a drop down lists.
+	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param array list of selection options
+	 * @param mixed selected key.
+	 */
+	private function renderDropDownListOptions($writer,$options,$selected=null)
+	{
+		foreach($options as $k => $v)
+		{
+			$writer->addAttribute('value', $k);
+			if($k == $selected)
+				$writer->addAttribute('selected', 'selected');
+			$writer->renderBeginTag('option');
+			$writer->write($v);
+			$writer->renderEndTag();
+		}
+	}
+
+	/**
+	 * Renders the day drop down list options.
+	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param mixed selected day.
+	 */
+	protected function renderCalendarDayOptions($writer, $selected=null)
+	{
+		$days = array(); for($i=1;$i<=31;$i++) $days[$i] = $i;		
+		$writer->addAttribute('id', $this->getClientID().'_day');
+		$writer->addAttribute('name', $this->getUniqueID().'$day');
+		$writer->addAttribute('class', 'datepicker_day_options');
+		$writer->renderBeginTag('select');
+		$this->renderDropDownListOptions($writer, $days, $selected);
+		$writer->renderEndTag();
+	}
+
+	/**
+	 * Renders the month drop down list options.
+	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param mixed selected month.
+	 */
+	protected function renderCalendarMonthOptions($writer, $selected=null)
+	{
+		$info = $this->getLocalizedCalendarInfo();
+		$writer->addAttribute('id', $this->getClientID().'_month');
+		$writer->addAttribute('name', $this->getUniqueID().'$month');
+		$writer->addAttribute('class', 'datepicker_month_options');
+		$writer->renderBeginTag('select');
+		$this->renderDropDownListOptions($writer, 
+					$info->getMonthNames(), $selected);
+		$writer->renderEndTag();
+	}
+
+	/**
+	 * Renders the year drop down list options.
+	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param mixed selected year.
+	 */
+	protected function renderCalendarYearOptions($writer, $selected=null)
+	{
+		$years = array();
+		for($i = $this->getFromYear(); $i <= $this->getUpToYear(); $i++)
+			$years[$i] = $i;
+		$writer->addAttribute('id', $this->getClientID().'_year');
+		$writer->addAttribute('name', $this->getUniqueID().'$year');
+		$writer->renderBeginTag('select');
+		$writer->addAttribute('class', 'datepicker_year_options');
+		$this->renderDropDownListOptions($writer, $years, $selected);
+		$writer->renderEndTag();	
 	}
 
 	/**
@@ -354,23 +568,31 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * Registers the javascript code to initialize the date picker.
-	 * Must use "Event.OnLoad" to initialize the date picker when the
-	 * full page is loaded, otherwise IE will throw an error.
+	 * Add the client id to the input textbox, and register the client scripts.
 	 * @param THtmlWriter writer
 	 */
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id',$this->getClientID());
+		$this->registerCalendarClientScript();
+	}
+
+	
+	/**
+	 * Registers the javascript code to initialize the date picker.
+	 * Must use "Event.OnLoad" to initialize the date picker when the
+	 * full page is loaded, otherwise IE will throw an error.
+	 */
+	protected function registerCalendarClientScript()
+	{
 		if($this->getShowCalendar())
 		{
 			$scripts = $this->getPage()->getClientScript();
 			$scripts->registerPradoScript("datepicker");
 			$options = TJavaScript::encode($this->getDatePickerOptions());
-			$id = $this->getClientID();
-			$code = "Event.OnLoad(function(){ new Prado.WebUI.TDatePicker('$id', $options); });";
-			$scripts->registerEndScript("prado:$id", $code);
+			$code = "Event.OnLoad(function(){ new Prado.WebUI.TDatePicker($options); });";
+			$scripts->registerEndScript("prado:".$this->getClientID(), $code);
 		}
 	}
 }

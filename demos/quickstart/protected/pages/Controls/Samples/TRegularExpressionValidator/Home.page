@@ -1,7 +1,8 @@
 <com:TContent ID="body">
 
 <h1>TRegularExpressionValidator Samples</h1>
-
+<p><strong>Note:</strong>TRegularExpressionValidator will start
+to validate only if the input is not empty.</p>
 <table class="sampletable">
 
 <tr>
@@ -9,12 +10,12 @@
 Regular expression validator with default settings:
 </td>
 <td class="sampleaction">
-<com:TTextBox ID="TextBox1" />
+<com:TTextBox ID="TextBox1" Text="a"/>
 <com:TRegularExpressionValidator
 	ValidationGroup="Group1"
 	ControlToValidate="TextBox1"
-	RegularExpression="\w+"
-	Text="Only word characters are allowed." />
+	RegularExpression="\d+"
+	Text="Only digits are allowed." />
 <com:TButton Text="Submit" ValidationGroup="Group1" />
 </td>
 </tr>
@@ -24,13 +25,13 @@ Regular expression validator with default settings:
 Regular expression validator with client-side validation disabled:
 </td>
 <td class="sampleaction">
-<com:TTextBox ID="TextBox2" />
+<com:TTextBox ID="TextBox2" Text="b"/>
 <com:TRegularExpressionValidator
 	ValidationGroup="Group2"
 	EnableClientScript="false"
 	ControlToValidate="TextBox2"
-	RegularExpression="\w+"
-	Text="Only word characters are allowed." />
+	RegularExpression="\d+"
+	Text="Only digits are allowed." />
 <com:TButton Text="Submit" ValidationGroup="Group2" />
 </td>
 </tr>
@@ -40,13 +41,13 @@ Regular expression validator with client-side validation disabled:
 Regular expression validator with focus-on-error enabled and dynamic display:
 </td>
 <td class="sampleaction">
-<com:TTextBox ID="TextBox3" />
+<com:TTextBox ID="TextBox3" Text="c"/>
 <com:TRegularExpressionValidator
 	ValidationGroup="Group3"
 	ControlToValidate="TextBox3"
 	Display="Dynamic"
-	RegularExpression="\w+"
-	Text="Only word characters are allowed." />
+	RegularExpression="\d+"
+	Text="Only digits are allowed." />
 <com:TButton Text="Submit" ValidationGroup="Group3" />
 </td>
 </tr>

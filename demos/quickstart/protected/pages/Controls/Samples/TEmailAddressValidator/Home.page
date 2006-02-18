@@ -1,6 +1,8 @@
 <com:TContent ID="body">
 
 <h1>TEmailAddressValidator Samples</h1>
+<p><strong>Note:</strong>TEmailAddressValidator will start
+to validate only if the input is not empty.</p>
 
 <table class="sampletable">
 
@@ -9,7 +11,7 @@
 Email address validator with default settings:
 </td>
 <td class="sampleaction">
-<com:TTextBox ID="TextBox1" />
+<com:TTextBox ID="TextBox1" Text="a"/>
 <com:TEmailAddressValidator
 	ValidationGroup="Group1"
 	ControlToValidate="TextBox1"
@@ -23,7 +25,7 @@ Email address validator with default settings:
 Email address validator with client-side validation disabled:
 </td>
 <td class="sampleaction">
-<com:TTextBox ID="TextBox2" />
+<com:TTextBox ID="TextBox2" Text="b"/>
 <com:TEmailAddressValidator
 	ValidationGroup="Group2"
 	EnableClientScript="false"
@@ -38,7 +40,7 @@ Email address validator with client-side validation disabled:
 Email address validator with focus-on-error enabled and dynamic display:
 </td>
 <td class="sampleaction">
-<com:TTextBox ID="TextBox3" />
+<com:TTextBox ID="TextBox3" Text="c"/>
 <com:TEmailAddressValidator
 	ValidationGroup="Group3"
 	ControlToValidate="TextBox3"

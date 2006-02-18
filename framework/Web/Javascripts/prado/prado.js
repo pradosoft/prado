@@ -1,7 +1,17 @@
+
 var Prado = 
 { 
 	Version: '3.0a',
 	
+	/**
+	 * Returns browser information. Example
+	 * <code>
+	 * var browser = Prado.Browser();
+	 * alert(browser.ie); //should ouput true if IE, false otherwise
+	 * </code>
+	 * @param ${parameter}
+	 * @return ${return}
+	 */
 	Browser : function()
 	{
 		var info = { Version : "1.0" };

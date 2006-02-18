@@ -1,4 +1,8 @@
-
+/**
+ * Validates that a given field has some input, 
+ * @param ${parameter}
+ * @return ${return}
+ */
 Prado.Validation.TRequiredFieldValidator=function(){
     var inputType = this.control.getAttribute("type");
     if(inputType == 'file'){
