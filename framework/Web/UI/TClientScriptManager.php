@@ -10,10 +10,10 @@
  * @package System.Web.UI
  */
 
-Prado::using('System.Web.Javascripts.*');
-
 /**
- * TClientScriptManager class
+ * TClientScriptManager class.
+ *
+ * TClientScriptManager manages javascript and CSS stylesheets for a page.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -39,20 +39,41 @@ class TClientScriptManager extends TApplicationComponent
 	 * @var array registered hidden fields, indexed by hidden field names
 	 */
 	private $_hiddenFields=array();
+	/**
+	 * @var array javascript blocks to be rendered at the beginning of the form
+	 */
 	private $_beginScripts=array();
+	/**
+	 * @var array javascript blocks to be rendered at the end of the form
+	 */
 	private $_endScripts=array();
+	/**
+	 * @var array javascript files to be rendered in the form
+	 */
 	private $_scriptFiles=array();
-	private $_onSubmitStatements=array();
-	private $_arrayDeclares=array();
-	private $_expandoAttributes=array();
-
+	/**
+	 * @var array javascript files to be renderd in page head section
+	 */
 	private $_headScriptFiles=array();
+	/**
+	 * @var array javascript blocks to be renderd in page head section
+	 */
 	private $_headScripts=array();
-
+	/**
+	 * @var array CSS files
+	 */
 	private $_styleSheetFiles=array();
+	/**
+	 * @var array CSS declarations
+	 */
 	private $_styleSheets=array();
-
+	/**
+	 * @var array registered PRADO script libraries
+	 */
 	private $_registeredPradoScripts=array();
+	/**
+	 * @var array registered PRADO script files
+	 */
 	private $_registeredPradoFiles=array();
 
 	/**
@@ -81,10 +102,18 @@ class TClientScriptManager extends TApplicationComponent
 
 	/**
 	 * Registers Prado scripts by library name.
-	 * The script files will be published.
-	 * @param string script library name. Valid names include
-	 * 'prado', 'effects', 'ajax', 'validator', 'logger',
-	 * 'datepicker', 'rico', 'colorpicker'.
+	 * Each library may include one or several script files.
+	 * Currently, the following libraries are available:
+	 * - prado : basic prado js framework
+	 * - effects :
+	 * - ajax : ajax related js
+	 * - validator : validator js
+	 * - logger : js logger
+	 * - datepicker : datepicker js
+	 * - rico :
+	 * - colorpicker : colorpicker js
+	 * The script files registered will be published.
+	 * @param string script library name.
 	 */
 	public function registerPradoScript($name)
 	{
@@ -155,15 +184,248 @@ class TClientScriptManager extends TApplicationComponent
 		return $options;
 	}
 
-/*	protected function registerPostBackScript()
+	/**
+	 * Registers a CSS file to be rendered in the page head
+	 * @param string a unique key identifying the file
+	 * @param string URL to the CSS file
+	 */
+	public function registerStyleSheetFile($key,$url)
 	{
-		if(!$this->_postBackScriptRegistered)
+		$this->_styleSheetFiles[$key]=$url;
+	}
+
+	/**
+	 * Registers a CSS block to be rendered in the page head
+	 * @param string a unique key identifying the CSS block
+	 * @param string CSS block
+	 */
+	public function registerStyleSheet($key,$css)
+	{
+		$this->_styleSheets[$key]=$css;
+	}
+
+	/**
+	 * Registers a javascript file in the page head
+	 * @param string a unique key identifying the file
+	 * @param string URL to the javascript file
+	 */
+	public function registerHeadScriptFile($key,$url)
+	{
+		$this->_headScriptFiles[$key]=$url;
+	}
+
+	/**
+	 * Registers a javascript block in the page head.
+	 * @param string a unique key identifying the script block
+	 * @param string javascript block
+	 */
+	public function registerHeadScript($key,$script)
+	{
+		$this->_headScripts[$key]=$script;
+	}
+
+	/**
+	 * Registers a javascript file to be rendered within the form
+	 * @param string a unique key identifying the file
+	 * @param string URL to the javascript file to be rendered
+	 */
+	public function registerScriptFile($key,$url)
+	{
+		$this->_scriptFiles[$key]=$url;
+	}
+
+	/**
+	 * Registers a javascript script block at the beginning of the form
+	 * @param string a unique key identifying the script block
+	 * @param string javascript block
+	 */
+	public function registerBeginScript($key,$script)
+	{
+		$this->_beginScripts[$key]=$script;
+	}
+
+	/**
+	 * Registers a javascript script block at the end of the form
+	 * @param string a unique key identifying the script block
+	 * @param string javascript block
+	 */
+	public function registerEndScript($key,$script)
+	{
+		$this->_endScripts[$key]=$script;
+	}
+
+	/**
+	 * Registers a hidden field to be rendered in the form.
+	 * @param string a unique key identifying the hidden field
+	 * @param string hidden field value
+	 */
+	public function registerHiddenField($name,$value)
+	{
+		// if the named hidden field exists and has a value null, it means the hidden field is rendered already
+		if(!isset($this->_hiddenFields[$name]) || $this->_hiddenFields[$name]!==null)
+			$this->_hiddenFields[$name]=$value;
+	}
+
+	/**
+	 * @param string a unique key
+	 * @return boolean whether there is a CSS file registered with the specified key
+	 */
+	public function isStyleSheetFileRegistered($key)
+	{
+		return isset($this->_styleSheetFiles[$key]);
+	}
+
+	/**
+	 * @param string a unique key
+	 * @return boolean whether there is a CSS block registered with the specified key
+	 */
+	public function isStyleSheetRegistered($key)
+	{
+		return isset($this->_styleSheets[$key]);
+	}
+
+	/**
+	 * @param string a unique key
+	 * @return boolean whether there is a head javascript file registered with the specified key
+	 */
+	public function isHeadScriptFileRegistered($key)
+	{
+		return isset($this->_headScriptFiles[$key]);
+	}
+
+	/**
+	 * @param string a unique key
+	 * @return boolean whether there is a head javascript block registered with the specified key
+	 */
+	public function isHeadScriptRegistered($key)
+	{
+		return isset($this->_headScripts[$key]);
+	}
+
+	/**
+	 * @param string a unique key
+	 * @return boolean whether there is a javascript file registered with the specified key
+	 */
+	public function isScriptFileRegistered($key)
+	{
+		return isset($this->_scriptFiles[$key]);
+	}
+
+	/**
+	 * @param string a unique key
+	 * @return boolean whether there is a beginning javascript block registered with the specified key
+	 */
+	public function isBeginScriptRegistered($key)
+	{
+		return isset($this->_beginScripts[$key]);
+	}
+
+	/**
+	 * @param string a unique key
+	 * @return boolean whether there is an ending javascript block registered with the specified key
+	 */
+	public function isEndScriptRegistered($key)
+	{
+		return isset($this->_endScripts[$key]);
+	}
+
+	/**
+	 * @param string a unique key
+	 * @return boolean whether there is a hidden field registered with the specified key
+	 */
+	public function isHiddenFieldRegistered($key)
+	{
+		return isset($this->_hiddenFields[$key]);
+	}
+
+	/**
+	 * @param THtmlWriter writer for the rendering purpose
+	 */
+	public function renderStyleSheetFiles($writer)
+	{
+		$str='';
+		foreach($this->_styleSheetFiles as $url)
+			$str.="<link rel=\"stylesheet\" type=\"text/css\" href=\"".THttpUtility::htmlEncode($url)."\" />\n";
+		$writer->write($str);
+	}
+
+	/**
+	 * @param THtmlWriter writer for the rendering purpose
+	 */
+	public function renderStyleSheets($writer)
+	{
+		if(count($this->_styleSheets))
+			$writer->write("<style type=\"text/css\">\n/*<![CDATA[*/\n".implode("\n",$this->_styleSheets)."\n/*]]>*/\n</style>\n");
+	}
+
+	/**
+	 * @param THtmlWriter writer for the rendering purpose
+	 */
+	public function renderHeadScriptFiles($writer)
+	{
+		$writer->write(TJavaScript::renderScriptFiles($this->_headScriptFiles));
+	}
+
+	/**
+	 * @param THtmlWriter writer for the rendering purpose
+	 */
+	public function renderHeadScripts($writer)
+	{
+		$writer->write(TJavaScript::renderScriptBlocks($this->_headScripts));
+	}
+
+	/**
+	 * @param THtmlWriter writer for the rendering purpose
+	 */
+	public function renderScriptFiles($writer)
+	{
+		$writer->write(TJavaScript::renderScriptFiles($this->_scriptFiles));
+	}
+
+	/**
+	 * @param THtmlWriter writer for the rendering purpose
+	 */
+	public function renderBeginScripts($writer)
+	{
+		$writer->write(TJavaScript::renderScriptBlocks($this->_beginScripts));
+	}
+
+	/**
+	 * @param THtmlWriter writer for the rendering purpose
+	 */
+	public function renderEndScripts($writer)
+	{
+		$writer->write(TJavaScript::renderScriptBlocks($this->_endScripts));
+	}
+
+	/**
+	 * @param THtmlWriter writer for the rendering purpose
+	 */
+	public function renderHiddenFields($writer)
+	{
+		$str='';
+		foreach($this->_hiddenFields as $name=>$value)
 		{
-			$this->_postBackScriptRegistered=true;
-			$this->registerHiddenField(TPage::FIELD_POSTBACK_TARGET,'');
-			$this->registerHiddenField(TPage::FIELD_POSTBACK_PARAMETER,'');
-			$this->registerPradoScript('prado');
+			if($value!==null)
+			{
+				$value=THttpUtility::htmlEncode($value);
+				$str.="<input type=\"hidden\" name=\"$name\" id=\"$name\" value=\"$value\" />\n";
+				// set hidden field value to null to indicate this field is rendered
+				// Note, hidden field rendering is invoked twice (at the beginning and ending of TForm)
+				$this->_hiddenFields[$name]=null;
+			}
 		}
+		if($str!=='')
+			$writer->write("<div>\n".$str."</div>\n");
+	}
+
+/*	public function registerClientEvent($control, $event, $code)
+	{
+		if(empty($code)) return;
+		$this->registerPradoScript("prado");
+		$script= "Event.observe('{$control->ClientID}', '{$event}', function(e){ {$code} });";
+		$key = "prado:{$control->ClientID}:{$event}";
+		$this->registerEndScript($key, $script);
 	}
 
 	public function registerFocusScript($target)
@@ -186,459 +448,7 @@ class TClientScriptManager extends TApplicationComponent
 			// TBD, need scroll.js
 		}
 	}
-
-	public function registerDefaultButtonScript($source, $target)
-	{
-		$this->registerPradoScript('prado');
-		$button = $target->getClientID();
-		$panel = $source->getClientID();
-		return "Event.observe('{$panel}', 'keyup', Prado.Button.fireButton.bindEvent($('{$panel}'), '$button'));";
-	}
-
-	public function registerValidationScript()
-	{
-	}*/
-
-	public function isHiddenFieldRegistered($key)
-	{
-		return isset($this->_hiddenFields[$key]);
-	}
-
-	public function isScriptRegistered($key)
-	{
-		return isset($this->_scripts[$key]);
-	}
-
-	public function isScriptFileRegistered($key)
-	{
-		return isset($this->_scriptFiles[$key]);
-	}
-
-	public function isBeginScriptRegistered($key)
-	{
-		return isset($this->_beginScripts[$key]);
-	}
-
-	public function isEndScriptRegistered($key)
-	{
-		return isset($this->_endScripts[$key]);
-	}
-
-/*	public function isHeadScriptFileRegistered($key)
-	{
-		return isset($this->_headScriptFiles[$key]);
-	}
-
-	public function isHeadScriptRegistered($key)
-	{
-		return isset($this->_headScripts[$key]);
-	}
-*/
-
-	public function isStyleSheetFileRegistered($key)
-	{
-		return isset($this->_styleSheetFiles[$key]);
-	}
-
-	public function isStyleSheetRegistered($key)
-	{
-		return isset($this->_styleSheets[$key]);
-	}
-
-/*	public function isOnSubmitStatementRegistered($key)
-	{
-		return isset($this->_onSubmitStatements[$key]);
-	}
-
-	public function registerArrayDeclaration($name,$value)
-	{
-		$this->_arrayDeclares[$name][]=$value;
-	}
-*/
-	public function registerScriptFile($key,$url)
-	{
-		$this->_scriptFiles[$key]=$url;
-	}
-
-	public function registerHiddenField($name,$value)
-	{
-		// if the named hidden field exists and has a value null, it means the hidden field is rendered already
-		if(!isset($this->_hiddenFields[$name]) || $this->_hiddenFields[$name]!==null)
-			$this->_hiddenFields[$name]=$value;
-	}
-
-/*	public function registerOnSubmitStatement($key,$script)
-	{
-		$this->_onSubmitStatements[$key]=$script;
-	}
-*/
-	public function registerBeginScript($key,$script)
-	{
-		$this->_beginScripts[$key]=$script;
-	}
-
-	public function registerEndScript($key,$script)
-	{
-		$this->_endScripts[$key]=$script;
-	}
-
-/*	public function registerHeadScriptFile($key,$url)
-	{
-		$this->_headScriptFiles[$key]=$url;
-	}
-
-	public function registerHeadScript($key,$script)
-	{
-		$this->_headScripts[$key]=$script;
-	}
-*/
-	public function registerStyleSheetFile($key,$url)
-	{
-		$this->_styleSheetFiles[$key]=$url;
-	}
-
-	public function registerStyleSheet($key,$css)
-	{
-		$this->_styleSheets[$key]=$css;
-	}
-
-/*	public function registerExpandoAttribute($controlID,$name,$value)
-	{
-		$this->_expandoAttributes[$controlID][$name]=$value;
-	}
-
-	public function renderArrayDeclarations($writer)
-	{
-		if(count($this->_arrayDeclares))
-		{
-			$str="<script type=\"text/javascript\">\n//<![CDATA[\n";
-			foreach($this->_arrayDeclares as $name=>$array)
-				$str.="var $name=new Array(".implode(',',$array).");\n";
-			$str.="\n//]]>\n</script>\n";
-			$writer->write($str);
-		}
-	}
-*/
-	public function renderScriptFiles($writer)
-	{
-		$str='';
-		foreach($this->_scriptFiles as $include)
-			$str.="<script type=\"text/javascript\" src=\"".THttpUtility::htmlEncode($include)."\"></script>\n";
-		$writer->write($str);
-	}
-
-/*	public function renderOnSubmitStatements($writer)
-	{
-		// ???
-	}
-*/
-	public function renderBeginScripts($writer)
-	{
-		if(count($this->_beginScripts))
-			$writer->write("<script type=\"text/javascript\">\n//<![CDATA[\n".implode("\n",$this->_beginScripts)."\n//]]>\n</script>\n");
-	}
-
-	public function renderEndScripts($writer)
-	{
-		if(count($this->_endScripts))
-			$writer->write("<script type=\"text/javascript\">\n//<![CDATA[\n".implode("\n",$this->_endScripts)."\n//]]>\n</script>\n");
-	}
-
-	public function renderHiddenFields($writer)
-	{
-		$str='';
-		foreach($this->_hiddenFields as $name=>$value)
-		{
-			if($value!==null)
-			{
-				$value=THttpUtility::htmlEncode($value);
-				$str.="<input type=\"hidden\" name=\"$name\" id=\"$name\" value=\"$value\" />\n";
-				// set hidden field value to null to indicate this field is rendered
-				// Note, hidden field rendering is invoked twice (at the beginning and ending of TForm)
-				$this->_hiddenFields[$name]=null;
-			}
-		}
-		if($str!=='')
-			$writer->write("<div>\n".$str."</div>\n");
-	}
-
-/*	public function renderExpandoAttributes($writer)
-	{
-		if(count($this->_expandoAttributes))
-		{
-			$str="<script type=\"text/javascript\">\n//<![CDATA[\n";
-			foreach($this->_expandoAttributes as $controlID=>$attrs)
-			{
-				$str.="var $controlID = document.all ? document.all[\"$controlID\"] : document.getElementById(\"$controlID\");\n";
-				foreach($attrs as $name=>$value)
-				{
-					if($value===null)
-						$str.="{$key}[\"$name\"]=null;\n";
-					else
-						$str.="{$key}[\"$name\"]=\"$value\";\n";
-				}
-			}
-			$str.="\n//]]>\n</script>\n";
-			$writer->write($str);
-		}
-	}
-*/
-
-/*	public function renderHeadScriptFiles($writer)
-	{
-		$str='';
-		foreach($this->_headScriptFiles as $url)
-			$str.="<script type=\"text/javascript\" src=\"".THttpUtility::htmlEncode($url)."\"></script>\n";
-		$writer->write($str);
-	}
-
-	public function renderHeadScripts($writer)
-	{
-		if(count($this->_headScripts))
-			$writer->write("<script type=\"text/javascript\">\n//<![CDATA[\n".implode("\n",$this->_headScripts)."\n//]]>\n</script>\n");
-	}
-*/
-
-	public function renderJavascriptBlock($code)
-	{
-		return "<script type=\"text/javascript\">\n/*<![CDATA[*/\n{$code}\n/*]]>*/\n</script>";
-	}
-
-	public function renderStyleSheetFiles($writer)
-	{
-		$str='';
-		foreach($this->_styleSheetFiles as $url)
-		{
-			$str.="<link rel=\"stylesheet\" type=\"text/css\" href=\"".THttpUtility::htmlEncode($url)."\" />\n";
-		}
-		$writer->write($str);
-	}
-
-	public function renderStyleSheets($writer)
-	{
-		if(count($this->_styleSheets))
-			$writer->write("<style type=\"text/css\">\n".implode("\n",$this->_styleSheets)."\n</style>\n");
-	}
-
-	public function getHasHiddenFields()
-	{
-		return count($this->_hiddenFields)>0;
-	}
-
-/*	public function getHasSubmitStatements()
-	{
-		return count($this->_onSubmitStatements)>0;
-	}
-*/
-/*	public function registerClientEvent($control, $event, $code)
-	{
-		if(empty($code)) return;
-		$this->registerPradoScript("prado");
-		$script= "Event.observe('{$control->ClientID}', '{$event}', function(e){ {$code} });";
-		$key = "prado:{$control->ClientID}:{$event}";
-		$this->registerEndScript($key, $script);
-	}
 */
 }
-
-/**
- * PradoClientScript class.
- *
- * Resolves Prado client script dependencies. e.g. TPradoClientScript::getScripts("dom");
- *
- * - <b>base</b> basic javascript utilities, e.g. $()
- * - <b>dom</b> DOM and Form functions, e.g. $F(inputID) to retrive form input values.
- * - <b>effects</b> Effects such as fade, shake, move
- * - <b>controls</b> Prado client-side components, e.g. Slider, AJAX components
- * - <b>validator</b> Prado client-side validators.
- * - <b>ajax</b> Prado AJAX library including Prototype's AJAX and JSON.
- *
- * Dependencies for each library are automatically resolved.
- *
- * Namespace: System.Web.UI
- *
- * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.1 $  $Date: 2005/11/06 23:02:33 $
- * @package System.Web.UI
- */
-class TPradoClientScript
-{
-	/**
-	 * Client-side javascript library dependencies
-	 * @var array
-	 */
-	protected static $_dependencies = array(
-		'prado' => array('prado'),
-		'effects' => array('prado', 'effects'),
-		'ajax' => array('prado', 'effects', 'ajax'),
-		'validator' => array('prado', 'validator'),
-		'logger' => array('prado', 'logger'),
-		'datepicker' => array('prado', 'datepicker'),
-		'rico' => array('prado', 'effects', 'ajax', 'rico'),
-		'colorpicker' => array('prado', 'colorpicker')
-		);
-
-	/**
-	 * Resolve dependencies for the given library name(s).
-	 * @param string|array name(s) of the library to be loaded.
-	 * @return array list of library file names (w/o extension) for the specified library name(s).
-	 */
-	public function getScripts($scripts)
-	{
-		$files = array();
-		if(!is_array($scripts)) $scripts = array($scripts);
-		foreach($scripts as $script)
-		{
-			if(isset(self::$_dependencies[$script]))
-				$files = array_merge($files, self::$_dependencies[$script]);
-			$files[] = $script;
-		}
-		$files = array_unique($files);
-		return $files;
-	}
-
-
-	/**
-	 * TODO: clean up
-	 *
-	public function getPostBackEventReference($control,$parameter='',$options=null,$javascriptPrefix=true)
-	{
-		if(!$options || (!$options->getPerformValidation() && !$options->getTrackFocus() && $options->getClientSubmit() && $options->getActionUrl()==''))
-		{
-			$this->registerPostBackScript();
-			if(($form=$this->_page->getForm())!==null)
-				$formID=$form->getClientID();
-			else
-				throw new TConfigurationException('clientscriptmanager_form_required');
-			$postback=self::POSTBACK_FUNC.'(\''.$formID.'\',\''.$control->getUniqueID().'\',\''.THttpUtility::quoteJavaScriptString($parameter).'\')';
-			if($options && $options->getAutoPostBack())
-				$postback='setTimeout(\''.THttpUtility::quoteJavaScriptString($postback).'\',0)';
-			return $javascriptPrefix?'javascript:'.$postback:$postback;
-		}
-		$opt='';
-		$flag=false;
-		if($options->getPerformValidation())
-		{
-			$flag=true;
-			$this->registerValidationScript();
-			$opt.=',true,';
-		}
-		else
-			$opt.=',false,';
-		if($options->getValidationGroup()!=='')
-		{
-			$flag=true;
-			$opt.='"'.$options->getValidationGroup().'",';
-		}
-		else
-			$opt.='\'\',';
-		if($options->getActionUrl()!=='')
-		{
-			$flag=true;
-			$this->_page->setCrossPagePostBack(true);
-			$opt.='"'.$options->getActionUrl().'",';
-		}
-		else
-			$opt.='null,';
-		if($options->getTrackFocus())
-		{
-			$flag=true;
-			$this->registerFocusScript();
-			$opt.='true,';
-		}
-		else
-			$opt.='false,';
-		if($options->getClientSubmit())
-		{
-			$flag=true;
-			$opt.='true';
-		}
-		else
-			$opt.='false';
-		if(!$flag)
-			return '';
-		$this->registerPostBackScript();
-		if(($form=$this->_page->getForm())!==null)
-			$formID=$form->getClientID();
-		else
-			throw new TConfigurationException('clientscriptmanager_form_required');
-		$postback=self::POSTBACK_FUNC.'(\''.$formID.'\',\''.$control->getUniqueID().'\',\''.THttpUtility::quoteJavaScriptString($parameter).'\''.$opt.')';
-		if($options && $options->getAutoPostBack())
-			$postback='setTimeout(\''.THttpUtility::quoteJavaScriptString($postback).'\',0)';
-		return $javascriptPrefix?'javascript:'.$postback:$postback;
-	}*/
-
-}
-
-/*class TPostBackOptions extends TComponent
-{
-	public $_actionUrl='';
-	public $_autoPostBack=false;
-	public $_clientSubmit=true;
-	public $_performValidation=false;
-	public $_validationGroup='';
-	public $_trackFocus=false;
-
-	public function getActionUrl()
-	{
-		return $this->_actionUrl;
-	}
-
-	public function setActionUrl($value)
-	{
-		$this->_actionUrl=THttpUtility::quoteJavaScriptString($value);
-	}
-
-	public function getAutoPostBack()
-	{
-		return $this->_autoPostBack;
-	}
-
-	public function setAutoPostBack($value)
-	{
-		$this->_autoPostBack=$value;
-	}
-
-	public function getClientSubmit()
-	{
-		return $this->_clientSubmit;
-	}
-
-	public function setClientSubmit($value)
-	{
-		$this->_clientSubmit=$value;
-	}
-
-	public function getPerformValidation()
-	{
-		return $this->_performValidation;
-	}
-
-	public function setPerformValidation($value)
-	{
-		$this->_performValidation=$value;
-	}
-
-	public function getValidationGroup()
-	{
-		return $this->_validationGroup;
-	}
-
-	public function setValidationGroup($value)
-	{
-		$this->_validationGroup=$value;
-	}
-
-	public function getTrackFocus()
-	{
-		return $this->_trackFocus;
-	}
-
-	public function setTrackFocus($value)
-	{
-		$this->_trackFocus=$value;
-	}
-}
-*/
 
 ?>

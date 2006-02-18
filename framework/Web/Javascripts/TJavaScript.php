@@ -24,6 +24,54 @@
  */
 class TJavaScript
 {
+	public static function renderScriptFiles($files)
+	{
+		$str='';
+		foreach($files as $file)
+			$str.='<script type="text/javascript" src="'.THttpUtility::htmlEncode($file)."\"></script>\n";
+		return $str;
+	}
+
+	public static function renderScriptFile($file)
+	{
+		return '<script type="text/javascript" src="'.THttpUtility::htmlEncode($file)."\"></script>\n";
+	}
+
+	public static function renderScriptBlocks($scripts)
+	{
+		if(count($scripts))
+			return "<script type=\"text/javascript\">\n/*<![CDATA[*/\n".implode("\n",$scripts)."\n/*]]>*/\n</script>\n";
+		else
+			return '';
+	}
+
+	public static function renderScriptBlock($script)
+	{
+		return "<script type=\"text/javascript\">\n/*<![CDATA[*/\n{$script}\n/*]]>*/\n</script>\n";
+	}
+
+	public static function renderArrayDeclarations($arrays)
+	{
+		if(count($arrays))
+		{
+			$str="<script type=\"text/javascript\">\n/*<![CDATA[*/\n";
+			foreach($arrays as $name=>$array)
+				$str.="var $name=new Array(".implode(',',$array).");\n";
+			$str.="\n/*]]>*/\n</script>\n";
+			return $str;
+		}
+		else
+			return '';
+	}
+
+	public static function renderArrayDeclaration($array)
+	{
+		$str="<script type=\"text/javascript\">\n/*<![CDATA[*/\n";
+		$str.="var $name=new Array(".implode(',',$array).");\n";
+		$str.="\n/*]]>*/\n</script>\n";
+		return $str;
+	}
+
 	public static function quoteJavaScriptString($js,$forUrl=false)
 	{
 		if($forUrl)

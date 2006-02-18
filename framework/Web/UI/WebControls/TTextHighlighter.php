@@ -168,8 +168,7 @@ class TTextHighlighter extends TWebControl
 	protected function getHeaderTemplate()
 	{
 		$id = $this->getClientID();
-		$cs = $this->getPage()->getClientScript();
-		return $cs->renderJavascriptBlock("new Prado.WebUI.TTextHighlighter('{$id}');");
+		return TJavaScript::renderScriptBlock("new Prado.WebUI.TTextHighlighter('{$id}');");
 	}
 }
 ?>
