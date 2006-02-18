@@ -284,6 +284,8 @@ class THtmlArea extends TTextBox
 	{
 		$tarfile = Prado::getPathOfNamespace('System.3rdParty.TinyMCE.tiny_mce', '.tar');
 		$md5sum = Prado::getPathOfNamespace('System.3rdParty.TinyMCE.tiny_mce', '.md5');
+		if($tarfile===null || $md5sum===null)
+			throw new TConfigurationException('htmlarea_tarfile_invalid');
 		return $this->getApplication()->getAssetManager()->publishTarFile($tarfile, $md5sum);
 	}
 

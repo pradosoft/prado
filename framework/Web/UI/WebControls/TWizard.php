@@ -32,13 +32,13 @@
  *<code>
  *  <com:TWizard ID="ContactWizard" >
  *      <com:TWizardStep Title="Step 1: Name">
- *          <com:TFormLabel For="Name">Full name:</com:TFormLabel>
+ *          <com:TLabel ForControl="Name">Full name:</com:TLabel>
  *          <com:TTextBox ID="Name" />
  *      </com:TWizardStep>
  *      <com:TWizardStep Title="Step 2: Contact">
- *          <com:TFormLabel For="Phone">Telephone Number:</com:TFormLabel>
+ *          <com:TLabel ForControl="Phone">Telephone Number:</com:TLabel>
  *          <com:TTextBox ID="Phone" />
- *          <com:TFormLabel For="Email">Email:</com:TFormLabel>
+ *          <com:TLabel ForControl="Email">Email:</com:TLabel>
  *          <com:TTextBox ID="Email" />
  *      </com:TWizardStep>
  *      <com:TWizardStep Title="Step 3: Confirmation">
@@ -101,7 +101,7 @@
  * @version v1.0, last update on Sat Dec 11 15:25:11 EST 2004
  * @package System.Web.UI.WebControls
  */
-class TWizard extends TPanel
+class TWizard extends TPanel implements INamingContainer
 {
 	/**
 	 * The command name for the OnNextCommand.
@@ -137,19 +137,19 @@ class TWizard extends TPanel
 	 * A list of steps.
 	 * @var array
 	 */
-	protected $steps=array();
+	private $_steps=array();
 
 	/**
 	 * A list of navigation templates, including built-in defaults.
 	 * @var array
 	 */
-	protected $navigation = array();
+	private $_navigation = array();
 
 	/**
 	 * A list of links for the side bar.
 	 * @var array
 	 */
-	protected $sidebarLinks = array();
+	private $_sidebarLinks = array();
 
 	/**
 	 * Set the Finish button text.
@@ -230,14 +230,14 @@ class TWizard extends TPanel
 	 */
 	public function setDisplaySideBar($value)
 	{
-		$this->setViewState('DisplaySideBar',$value,true);
+		$this->setViewState('DisplaySideBar',TPropertyValue::ensureBoolean($value),true);
 	}
 
 	/**
 	 * Determine if the side bar's visibility.
 	 * @return boolean true if visible, false otherwise.
 	 */
-	public function isSideBarVisible()
+	public function getDisplaySideBar()
 	{
 		return $this->getViewState('DisplaySideBar',true);
 	}
@@ -249,8 +249,10 @@ class TWizard extends TPanel
 	public function getActiveStep()
 	{
 		$index = $this->getActiveStepIndex();
-		if(isset($this->steps[$index]))
-			return $this->steps[$index];
+		if(isset($this->_steps[$index]))
+			return $this->_steps[$index];
+		else
+			return null;
 	}
 
 	/**
@@ -278,23 +280,20 @@ class TWizard extends TPanel
 	 * By adding components as child of TWizard, these component's parent
 	 * is the TWizard.
 	 * @param object a component object.
-	 * @param object the template owner object
 	 */
 	public function addParsedObject($object,$context)
 	{
 		if($object instanceof TWizardStep)
 		{
 			   $object->setVisible(false);
-			   $this->steps[] = $object;
-			   $this->addChild($object);
-			   $this->addBody($object);
+			   $this->_steps[] = $object;
+			   $this->getControls()->add($object);
 		}
 		else if ($object instanceof TWizardTemplate)
 		{
 			   $object->setVisible(false);
-			   $this->navigation[$object->Type][] = $object;
-			   $this->addChild($object);
-			   $this->addBody($object);
+			   $this->_navigation[$object->getType()][] = $object;
+			   $this->getControls()->add($object);
 		}
 		else
 			parent::addParsedObject($object,$context);
@@ -324,32 +323,32 @@ class TWizard extends TPanel
 		parent::onPreRender($param);
 
 		$index = $this->getActiveStepIndex();
-		$totalSteps = count($this->steps);
+		$totalSteps = count($this->_steps);
 
 		//show the current step
 		for($i = 0; $i < $totalSteps; $i++)
-			$this->steps[$i]->setVisible($i == $index);
+			$this->_steps[$i]->setVisible($i == $index);
 
 		//determine which link is active
-		for($i = 0; $i < count($this->sidebarLinks); $i++)
-			$this->sidebarLinks[$i]->CssClass= ($i == $index)?'active':'';
+		for($i = 0; $i < count($this->_sidebarLinks); $i++)
+			$this->_sidebarLinks[$i]->CssClass= ($i == $index)?'active':'';
 
 		//hide all the navigations first.
-		foreach($this->navigation as $navigation)
+		foreach($this->_navigation as $navigation)
 		{
 			foreach($navigation as $nav)
 				$nav->setVisible(false);
 		}
 
-		$final = $this->steps[$index]->Type == TWizardStep::TYPE_FINAL;
+		$final = $this->_steps[$index]->Type == TWizardStep::TYPE_FINAL;
 
 		//if it is not the final step
 		if(!$final && $this->isSideBarVisible())
 			$this->showNavigation(TWizardTemplate::ID_SIDEBAR);
 
 		$finishStep = $index == $totalSteps-1;
-		$finishStep = $finishStep || (isset($this->steps[$index+1]) &&
-					$this->steps[$index+1]->Type == TWizardStep::TYPE_FINAL);
+		$finishStep = $finishStep || (isset($this->_steps[$index+1]) &&
+					$this->_steps[$index+1]->Type == TWizardStep::TYPE_FINAL);
 
 		//now show the appropriate navigation elements.
 		if($index == 0)
@@ -367,8 +366,8 @@ class TWizard extends TPanel
 	 */
 	private function showNavigation($index)
 	{
-		if(!isset($this->navigation[$index])) return;
-		foreach($this->navigation[$index] as $nav)
+		if(!isset($this->_navigation[$index])) return;
+		foreach($this->_navigation[$index] as $nav)
 		{
 			$nav->setVisible(true);
 			$nav->dataBind();
@@ -415,15 +414,15 @@ class TWizard extends TPanel
 		$cancelButton->CssClass='Cancel';
 		$cancelButton->setCausesValidation(false);
 
-		if(!isset($this->navigation[TWizardTemplate::ID_START]))
+		if(!isset($this->_navigation[TWizardTemplate::ID_START]))
 		{
 			$start->addBody($nextButton);
 			$start->addBody($cancelButton);
 			$this->addBody($start);
-			$this->navigation[TWizardTemplate::ID_START][] = $start;
+			$this->_navigation[TWizardTemplate::ID_START][] = $start;
 		}
 
-		if(!isset($this->navigation[TWizardTemplate::ID_STEP]))
+		if(!isset($this->_navigation[TWizardTemplate::ID_STEP]))
 		{
 
 			$step->addBody($hiddenButton);
@@ -431,16 +430,16 @@ class TWizard extends TPanel
 			$step->addBody($nextButton);
 			$step->addBody($cancelButton);
 			$this->addBody($step);
-			$this->navigation[TWizardTemplate::ID_STEP][] = $step;
+			$this->_navigation[TWizardTemplate::ID_STEP][] = $step;
 		}
 
-		if(!isset($this->navigation[TWizardTemplate::ID_FINISH]))
+		if(!isset($this->_navigation[TWizardTemplate::ID_FINISH]))
 		{
 			$finish->addBody($previousButton);
 			$finish->addBody($finishButton);
 			$finish->addBody($cancelButton);
 			$this->addBody($finish);
-			$this->navigation[TWizardTemplate::ID_FINISH][] = $finish;
+			$this->_navigation[TWizardTemplate::ID_FINISH][] = $finish;
 		}
 
 	}
@@ -452,10 +451,10 @@ class TWizard extends TPanel
 	 */
 	private function addNavigationSideBar()
 	{
-		if(isset($this->navigation[TWizardTemplate::ID_SIDEBAR]))
+		if(isset($this->_navigation[TWizardTemplate::ID_SIDEBAR]))
 			return;
 
-		$total = count($this->steps);
+		$total = count($this->_steps);
 		$current = $this->getActiveStepIndex();
 
 		$sidebar = $this->createComponent('TPanel',TWizardTemplate::ID_SIDEBAR);
@@ -464,21 +463,21 @@ class TWizard extends TPanel
 		if($total > 0) $sidebar->addBody("<ul>\n");
 		for($i = 0; $i < $total; $i++)
 		{
-			if($this->steps[$i]->Type == TWizardStep::TYPE_FINAL)
+			if($this->_steps[$i]->Type == TWizardStep::TYPE_FINAL)
 				continue;
 			$sidebar->addBody("<li>");
 			$link = $this->createComponent('TLinkButton');
 			$link->setCommandName(self::CMD_JUMP);
 			$link->setCommandParameter($i);
-			$link->Text = $this->steps[$i]->Title;
-			$this->sidebarLinks[] = $link;
+			$link->Text = $this->_steps[$i]->Title;
+			$this->_sidebarLinks[] = $link;
 			$sidebar->addBody($link);
 			$sidebar->addBody("</li>\n");
 		}
 		if($total > 0) $sidebar->addBody("</ul>\n");
 
 		$this->addBody($sidebar);
-		$this->navigation[TWizardTemplate::ID_SIDEBAR][] = $sidebar;
+		$this->_navigation[TWizardTemplate::ID_SIDEBAR][] = $sidebar;
 	}
 
 	/**
@@ -520,7 +519,7 @@ class TWizard extends TPanel
 				}
 				break;
 			case self::CMD_FINISH:
-				if(isset($this->steps[$event->nextStepIndex+1]))
+				if(isset($this->_steps[$event->nextStepIndex+1]))
 					$event->nextStepIndex++;
 				$this->raiseEvent('OnFinishCommand',$this,$event);
 				if(!$event->cancel)

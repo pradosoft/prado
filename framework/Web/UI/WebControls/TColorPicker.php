@@ -132,11 +132,15 @@ class TColorPicker extends TTextBox
 	{
 		$cs = $this->getPage()->getClientScript();
 		$style = 'System.Web.Javascripts.colorpicker.'.$this->getColorPickerStyle();
-		$cssFile=Prado::getPathOfNamespace($style,'.css');
-		$url = $this->publishFilePath($cssFile);
-		if(!$cs->isStyleSheetFileRegistered($style))
-			$cs->registerStyleSheetFile($style, $url);
-		return $url;
+		if(($cssFile=Prado::getPathOfNamespace($style,'.css'))!==null)
+		{
+			$url = $this->publishFilePath($cssFile);
+			if(!$cs->isStyleSheetFileRegistered($style))
+				$cs->registerStyleSheetFile($style, $url);
+			return $url;
+		}
+		else
+			throw new TConfigurationException('colorpicker_style_invalid',$style);
 	}
 
 	/**
@@ -157,8 +161,10 @@ class TColorPicker extends TTextBox
 		foreach($images as $filename => $ext)
 		{
 			$image = 'System.Web.Javascripts.colorpicker.'.$filename;
-			$file =  Prado::getPathOfNamespace($image, $ext);
-			$list[$filename.$ext] = $this->publishFilePath($file);
+			if(($file =  Prado::getPathOfNamespace($image, $ext))!==null)
+				$list[$filename.$ext] = $this->publishFilePath($file);
+			else
+				throw new TConfigurationException('colorpicker_image_invalid',$image);
 		}
 		$imgs['button.gif'] = $list['button.gif'];
 		$imgs['background.png'] = $list['background.png'];

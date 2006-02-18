@@ -122,7 +122,8 @@ class TTextHighlighter extends TWebControl
 		$cssKey='prado:TTextHighlighter';
 		if(!$cs->isStyleSheetFileRegistered($cssKey))
 		{
-			$cssFile=Prado::getPathOfNamespace('System.3rdParty.geshi.highlight','.css');
+			if(($cssFile=Prado::getPathOfNamespace('System.3rdParty.geshi.highlight','.css'))===null)
+				throw new TConfigurationException('texthighlighter_stylesheet_invalid');
 			$styleSheet = $this->publishFilePath($cssFile);
 			$cs->registerStyleSheetFile($cssKey, $styleSheet);
 		}

@@ -198,8 +198,6 @@ class TTemplateControl extends TControl implements INamingContainer
 			$controls=$placeholder->getParent()->getControls();
 			$loc=$controls->remove($placeholder);
 			$controls->insertAt($loc,$content);
-			//list($parent,$loc)=$this->_placeholders[$id];
-			//$parent->getControls()->insertAt($loc,$content);
 		}
 	}
 

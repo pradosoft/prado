@@ -329,8 +329,10 @@ class TDatePicker extends TTextBox
 	{
 		$cs = $this->getPage()->getClientScript();
 		$image = 'System.Web.Javascripts.datepicker.calendar';
-		$file =  Prado::getPathOfNamespace($image, '.png');
-		return $this->publishFilePath($file);
+		if(($file =  Prado::getPathOfNamespace($image, '.png'))!==null)
+			return $this->publishFilePath($file);
+		else
+			throw new TConfigurationException('datepicker_defaultbuttonimage_invalid',$image);
 	}
 
 	/**
@@ -341,11 +343,15 @@ class TDatePicker extends TTextBox
 	{
 		$cs = $this->getPage()->getClientScript();
 		$style = 'System.Web.Javascripts.datepicker.'.$this->getCalendarStyle();
-		$cssFile=Prado::getPathOfNamespace($style,'.css');
-		$url = $this->publishFilePath($cssFile);
-		if(!$cs->isStyleSheetFileRegistered($style))
-			$cs->registerStyleSheetFile($style, $url);
-		return $url;
+		if(($cssFile=Prado::getPathOfNamespace($style,'.css'))!==null)
+		{
+			$url = $this->publishFilePath($cssFile);
+			if(!$cs->isStyleSheetFileRegistered($style))
+				$cs->registerStyleSheetFile($style, $url);
+			return $url;
+		}
+		else
+			throw new TConfigurationException('datepicker_calendarstyle_invalid',$style);
 	}
 
 	/**

@@ -28,13 +28,13 @@ class TGlobalization extends TModule
 {
 	/**
 	 * Default character set is 'UTF-8'.
-	 * @var string 
+	 * @var string
 	 */
 	private $_defaultCharset = 'UTF-8';
 
 	/**
 	 * Default culture is 'en'.
-	 * @var string	 
+	 * @var string
 	 */
 	private $_defaultCulture = 'en';
 
@@ -46,13 +46,13 @@ class TGlobalization extends TModule
 
 	/**
 	 * The current charset.
-	 * @var string 
-	 */	
+	 * @var string
+	 */
 	protected $_charset='UTF-8';
 
 	/**
 	 * The current culture.
-	 * @var string 
+	 * @var string
 	 */
 	protected $_culture='en';
 
@@ -64,7 +64,7 @@ class TGlobalization extends TModule
 	 * @param TXmlElement application configuration
 	 */
 	public function init($xml)
-	{		
+	{
 		$this->_defaultCharset = $this->getCharset();
 		$this->_defaultCulture = $this->getCulture();
 
@@ -82,7 +82,7 @@ class TGlobalization extends TModule
 	}
 
 	/**
-	 * @param string culture, e.g. <tt>en_US</tt> for American English 
+	 * @param string culture, e.g. <tt>en_US</tt> for American English
 	 */
 	public function setCulture($culture)
 	{
@@ -131,7 +131,7 @@ class TGlobalization extends TModule
 		if($config['type'] == 'XLIFF' || $config['type'] == 'gettext')
 		{
 			$config['source'] = Prado::getPathOfNamespace($config['source']);
-			if(!is_dir($config['source']))
+			if($config['source']===null || !is_dir($config['source']))
 				throw new TException("invalid source dir '{$config['source']}'");
 		}
 		if($config['cache'])
@@ -154,7 +154,7 @@ class TGlobalization extends TModule
 	{
 		return $this->_translation['catalogue'] = $value;
 	}
-	
+
 	/**
 	 * @return string default charset set in application.xml
 	 */

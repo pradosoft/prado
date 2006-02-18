@@ -158,7 +158,8 @@ class TRatingListDefaultStyle extends TRatingListStyle
 	public function getStyleSheet()
 	{
 		$style = 'System.Web.Javascripts.ratings.default';
-		$cssFile=Prado::getPathOfNamespace($style,'.css');
+		if(($cssFile=Prado::getPathOfNamespace($style,'.css'))===null)
+			throw new TConfigurationException('ratinglist_stylesheet_invalid',$style);
 		return $cssFile;
 	}
 
@@ -166,7 +167,9 @@ class TRatingListDefaultStyle extends TRatingListStyle
 	{
 		$assets = array();
 		$image = 'System.Web.Javascripts.ratings.10star_white';
-		$assets[] =  Prado::getPathOfNamespace($image, '.gif');
+		if(($file=Prado::getPathOfNamespace($image, '.gif'))===null)
+			throw TConfigurationException('ratinglist_asset_invalid',$image);
+		$assets[] =  $file;
 		return $assets;
 	}
 }
