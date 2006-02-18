@@ -589,6 +589,7 @@ framework/TApplicationComponent.php -text
 framework/TComponent.php -text
 framework/Web/Javascripts/TClientScript.php -text
 framework/Web/Javascripts/TJSON.php -text
+framework/Web/Javascripts/TJavaScript.php -text
 framework/Web/Javascripts/TJavascriptSerializer.php -text
 framework/Web/Javascripts/colorpicker/background.png -text
 framework/Web/Javascripts/colorpicker/button.gif -text

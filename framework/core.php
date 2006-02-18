@@ -46,6 +46,10 @@ require_once(PRADO_DIR.'/Data/TXmlDocument.php');
  */
 require_once(PRADO_DIR.'/Web/THttpUtility.php');
 /**
+ * Includes TJavaScript definition
+ */
+require_once(PRADO_DIR.'/Web/Javascripts/TJavaScript.php');
+/**
  * Includes TCache definition
  */
 require_once(PRADO_DIR.'/Data/TCache.php');

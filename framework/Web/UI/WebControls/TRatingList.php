@@ -106,9 +106,8 @@ class TRatingList extends TRadioButtonList
 		$this->publishRatingListAssets();
 		$id = $this->getClientID();
 		$scripts = $this->getPage()->getClientScript();
-		$scripts->registerClientScript('prado');
-		$serializer = new TJavascriptSerializer($this->getRatingClientOptions());
-		$options = $serializer->toJavascript();
+		$scripts->registerPradoScript('prado');
+		$options = TJavaScript::encode($this->getRatingClientOptions());
 		$code = "new Prado.WebUI.TRatingList($options);";
 		$scripts->registerEndScript("prado:$id", $code);
 	}

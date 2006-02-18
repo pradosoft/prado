@@ -168,8 +168,7 @@ class TColorPicker extends TTextBox
 		}
 		$imgs['button.gif'] = $list['button.gif'];
 		$imgs['background.png'] = $list['background.png'];
-		$serializer = new TJavascriptSerializer($imgs);
-		$options = $serializer->toJavascript();
+		$options = TJavaScript::encode($imgs);
 		$code = "Prado.WebUI.TColorPicker.UIImages = {$options};";
 		$cs->registerEndScript($key, $code);
 		return $list;
@@ -186,9 +185,8 @@ class TColorPicker extends TTextBox
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id',$this->getClientID());
 		$scripts = $this->getPage()->getClientScript();
-		$scripts->registerClientScript("colorpicker");
-		$serializer = new TJavascriptSerializer($this->getColorPickerOptions());
-		$options = $serializer->toJavascript();
+		$scripts->registerPradoScript("colorpicker");
+		$options = TJavaScript::encode($this->getColorPickerOptions());
 		$id = $this->getClientID();
 		$code = "Event.OnLoad(function(){ new Prado.WebUI.TColorPicker($options); });";
 		$scripts->registerEndScript("prado:$id", $code);

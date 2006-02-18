@@ -22,40 +22,91 @@ Prado::using('System.Web.Javascripts.*');
  */
 class TClientScriptManager extends TApplicationComponent
 {
-	const SCRIPT_DIR='Web/Javascripts/js';
-	//const POSTBACK_FUNC='Prado.doPostBack';
+	/**
+	 * directory containing Prado javascript files
+	 */
+	const SCRIPT_PATH='Web/Javascripts/js';
+	/**
+	 * the PHP script for loading Prado javascript files
+	 */
+	const SCRIPT_LOADER='clientscripts.php';
 
+	/**
+	 * @var TPage page who owns this manager
+	 */
 	private $_page;
+	/**
+	 * @var array registered hidden fields, indexed by hidden field names
+	 */
 	private $_hiddenFields=array();
 	private $_beginScripts=array();
 	private $_endScripts=array();
 	private $_scriptFiles=array();
+	private $_onSubmitStatements=array();
+	private $_arrayDeclares=array();
+	private $_expandoAttributes=array();
 
-	//private $_headScriptFiles=array();
-	//private $_headScripts=array();
+	private $_headScriptFiles=array();
+	private $_headScripts=array();
 
 	private $_styleSheetFiles=array();
 	private $_styleSheets=array();
 
-	private $_client;
+	private $_registeredPradoScripts=array();
+	private $_registeredPradoFiles=array();
 
-	/*private $_onSubmitStatements=array();
-	private $_arrayDeclares=array();
-	private $_expandoAttributes=array();
-	private $_postBackScriptRegistered=false;
-	private $_focusScriptRegistered=false;
-	private $_scrollScriptRegistered=false;
-	*/
+	/**
+	 * Client-side javascript library dependencies
+	 * @var array
+	 */
+	private static $_pradoScripts=array(
+		'prado'			=> array('prado'),
+		'effects'		=> array('prado', 'effects'),
+		'ajax'			=> array('prado', 'effects', 'ajax'),
+		'validator'		=> array('prado', 'validator'),
+		'logger'		=> array('prado', 'logger'),
+		'datepicker'	=> array('prado', 'datepicker'),
+		'rico'			=> array('prado', 'effects', 'ajax', 'rico'),
+		'colorpicker'	=> array('prado', 'colorpicker')
+		);
 
-	private $_publishedScriptFiles=array();
-
-
+	/**
+	 * Constructor.
+	 * @param TPage page that owns this client script manager
+	 */
 	public function __construct(TPage $owner)
 	{
 		$this->_page=$owner;
-		$this->_client = new TClientScript($this);
 	}
 
+	/**
+	 * Registers Prado scripts by library name.
+	 * The script files will be published.
+	 * @param string script library name. Valid names include
+	 * 'prado', 'effects', 'ajax', 'validator', 'logger',
+	 * 'datepicker', 'rico', 'colorpicker'.
+	 */
+	public function registerPradoScript($name)
+	{
+		if(!isset($this->_registeredPradoScripts[$name]))
+		{
+			$this->_registeredPradoScripts[$name]=true;
+			if(!isset(self::$_pradoScripts[$name]))
+				throw new TInvalidOperationException('csmanager_pradoscript_invalid',$name);
+			$basePath=Prado::getFrameworkPath().'/'.self::SCRIPT_PATH;
+			foreach(self::$_pradoScripts[$name] as $script)
+			{
+				$this->publishFilePath($basePath.'/'.$script.'.js');
+				$this->_registeredPradoFiles[$script]=true;
+			}
+			$scriptLoader=$basePath.'/'.self::SCRIPT_LOADER;
+			$url=$this->publishFilePath($scriptLoader);
+			$url.='?js='.implode(',',array_keys($this->_registeredPradoFiles));
+			if($this->getApplication()->getMode()===TApplication::STATE_DEBUG)
+				$url.='&__nocache';
+			$this->registerScriptFile('prado:pradoscripts',$url);
+		}
+	}
 
 	public function registerPostBackControl($control,$namespace='Prado.WebUI')
 	{
@@ -67,7 +118,7 @@ class TClientScriptManager extends TApplicationComponent
 
 		$this->registerHiddenField(TPage::FIELD_POSTBACK_TARGET,'');
 		$this->registerHiddenField(TPage::FIELD_POSTBACK_PARAMETER,'');
-		$this->registerClientScript('prado');
+		$this->registerPradoScript('prado');
 	}
 
 	protected function getPostBackOptions($control)
@@ -77,8 +128,7 @@ class TClientScriptManager extends TApplicationComponent
 			$postback['ID'] = $control->getClientID();
 		if(!isset($postback['FormID']))
 			$postback['FormID'] = $this->_page->getForm()->getClientID();
-		$options = new TJavascriptSerializer($postback);
-		return $options->toJavascript();
+		return TJavaScript::encode($postback);
 	}
 
 	/**
@@ -89,12 +139,9 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function registerDefaultButton($panel, $button)
 	{
-		$serializer = new TJavascriptSerializer(
-							$this->getDefaultButtonOptions($panel, $button));
-		$options = $serializer->toJavascript();
+		$options = TJavaScript::encode($this->getDefaultButtonOptions($panel, $button));
 		$code = "new Prado.WebUI.DefaultButton($options);";
-		$scripts = $this->_page->getClientScript();
-		$scripts->registerEndScript("prado:".$panel->getClientID(), $code);
+		$this->registerEndScript("prado:".$panel->getClientID(), $code);
 	}
 
 	/**
@@ -106,63 +153,6 @@ class TClientScriptManager extends TApplicationComponent
 		$options['Target'] = $button->getClientID();
 		$options['Event'] = 'click';
 		return $options;
-	}
-
-
-	/**
-	 * Register client scripts.
-	 */
-	public function registerClientScript($script)
-	{
-		static $scripts = array();
-		$scripts = array_unique(array_merge($scripts,
-						TClientScript::getScripts($script)));
-
-		$this->publishClientScriptAssets($scripts);
-
-		//create the client script url
-		$url = $this->publishClientScriptCompressorAsset();
-		$url .= '?js='.implode(',', $scripts);
-		if($this->getApplication()->getMode() == TApplication::STATE_DEBUG)
-			$url .= '&__nocache';
-		$this->registerScriptFile('prado:gzipscripts', $url);
-	}
-
-	/**
-	 * Publish each individual javascript file.
-	 */
-	protected function publishClientScriptAssets($scripts)
-	{
-		foreach($scripts as $lib)
-		{
-			if(!isset($this->_publishedScriptFiles[$lib]))
-			{
-				$base = Prado::getFrameworkPath();
-				$clientScripts = self::SCRIPT_DIR;
-				$file = "{$base}/{$clientScripts}/{$lib}.js";
-				$this->publishFilePath($file);
-				$this->_publishedScriptFiles[$lib] = true;
-			}
-		}
-	}
-
-	/**
-	 * @return string URL of the compressor asset script.
-	 */
-	protected function publishClientScriptCompressorAsset()
-	{
-		$scriptFile = 'clientscripts.php';
-		if(isset($this->_publishedScriptFiles[$scriptFile]))
-			return $this->_publishedScriptFiles[$scriptFile];
-		else
-		{
-			$base = Prado::getFrameworkPath();
-			$clientScripts = self::SCRIPT_DIR;
-			$file = "{$base}/{$clientScripts}/{$scriptFile}";
-			$url= $this->publishFilePath($file);
-			$this->_publishedScriptFiles[$scriptFile] = $url;
-			return $url;
-		}
 	}
 
 /*	protected function registerPostBackScript()
@@ -449,18 +439,6 @@ class TClientScriptManager extends TApplicationComponent
 		$this->registerEndScript($key, $script);
 	}
 */
-
-
-	/*
-	private void EnsureEventValidationFieldLoaded();
-	internal string GetEventValidationFieldValue();
-	public string GetWebResourceUrl(Type type, string resourceName);
-	public void RegisterClientScriptResource(Type type, string resourceName);
-	internal void RegisterDefaultButtonScript(Control button, $writer, bool useAddAttribute);
-	public function SaveEventValidationField();
-	public void ValidateEvent(string uniqueId, string argument);
-	public function getCallbackEventReference()
-	*/
 }
 
 /**

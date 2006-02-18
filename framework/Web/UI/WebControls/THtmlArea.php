@@ -262,8 +262,7 @@ class THtmlArea extends TTextBox
 		$scripts = $this->getPage()->getClientScript();
 		if(!$scripts->isScriptFileRegistered('prado:THtmlArea'))
 			$scripts->registerScriptFile('prado:THtmlArea', $this->getScriptUrl());
-		$serializer = new TJavascriptSerializer($this->getEditorOptions());
-		$options = $serializer->toJavascript(true);
+		$options = TJavaScript::encode($this->getEditorOptions());
 		$script = "if(tinyMCE){ tinyMCE.init($options); }";
 		$scripts->registerEndScript('THtmlArea'.$this->ClientID,$script);
 	}

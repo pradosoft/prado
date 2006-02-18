@@ -182,8 +182,7 @@ class TValidationSummary extends TWebControl
 	{
 		if(!$this->getEnabled(true) || !$this->getEnableClientScript())
 			return;
-		$serializer = new TJavascriptSerializer($this->getClientScriptOptions());
-		$options = $serializer->toJavascript();
+		$options=TJavaScript::encode($this->getClientScriptOptions());
 		$script = "new Prado.Validation.Summary({$options});";
 		$this->getPage()->getClientScript()->registerEndScript($this->getClientID(), $script);
 	}

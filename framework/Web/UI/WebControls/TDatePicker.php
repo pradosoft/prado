@@ -228,7 +228,8 @@ class TDatePicker extends TTextBox
 	{
 		$options['Format'] = $this->getDateFormat();
 		$options['FirstDayOfWeek'] = $this->getFirstDayOfWeek();
-		$options['ClassName'] = $this->getCssClass();
+		if(($cssClass=$this->getCssClass())!=='')
+			$options['ClassName'] = $cssClass;
 		$options['FromYear'] = $this->getFromYear();
 		$options['UpToYear'] = $this->getUpToYear();
 		if($this->getMode()!=='Basic')
@@ -252,10 +253,8 @@ class TDatePicker extends TTextBox
 		Prado::using('System.I18N.core.DateTimeFormatInfo');
 		$info = Prado::createComponent('System.I18N.core.CultureInfo', $culture);
 		$date = $info->getDateTimeFormat();
-		$serializer = new TJavascriptSerializer($date->getMonthNames());
-		$options['MonthNames'] = $serializer->toList();
-		$serializer = new TJavascriptSerializer($date->getAbbreviatedDayNames());
-		$options['ShortWeekDayNames'] = $serializer->toList();
+		$options['MonthNames'] = TJavaScript::encode($date->getMonthNames(),false);
+		$options['ShortWeekDayNames'] = TJavaScript::encode($date->getAbbreviatedDayNames(),false);
 		return $options;
 	}
 
@@ -367,9 +366,8 @@ class TDatePicker extends TTextBox
 		if($this->getShowCalendar())
 		{
 			$scripts = $this->getPage()->getClientScript();
-			$scripts->registerClientScript("datepicker");
-			$serializer = new TJavascriptSerializer($this->getDatePickerOptions());
-			$options = $serializer->toJavascript();
+			$scripts->registerPradoScript("datepicker");
+			$options = TJavaScript::encode($this->getDatePickerOptions());
 			$id = $this->getClientID();
 			$code = "Event.OnLoad(function(){ new Prado.WebUI.TDatePicker('$id', $options); });";
 			$scripts->registerEndScript("prado:$id", $code);
