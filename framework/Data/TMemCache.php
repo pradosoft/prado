@@ -93,7 +93,6 @@ class TMemCache extends TModule implements ICache
 	{
 		if($this->_cache!==null)
 			$this->_cache->close();
-		parent::__destruct();
 	}
 
 	/**

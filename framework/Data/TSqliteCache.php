@@ -100,7 +100,6 @@ class TSqliteCache extends TModule implements ICache
 	public function __destruct()
 	{
 		$this->_db=null;
-		parent::__destruct();
 	}
 
 	/**

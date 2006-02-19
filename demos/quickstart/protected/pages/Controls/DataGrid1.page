@@ -24,7 +24,7 @@ PRADO provides five types of columns:
   <li><tt>TCheckBoxColumn</tt> associates cells with a specific field of data and displays in each cell a checkbox whose check state is determined by the data field value.</li>
   <li><tt>THyperLinkColumn</tt> displays in the cells a hyperlink whose caption and URL can be either statically specified or bound to some fields of data.</li>
   <li><tt>TEditCommandColumn</tt> displays in the cells edit/update/cancel command buttons according to the state of the item that a cell resides in.</li>
-  <li><tt>TButtonColumn</tt> displays in the cells a command button.
+  <li><tt>TButtonColumn</tt> displays in the cells a command button.</li>
   <li><tt>TTemplateColumn</tt> displays the cells according to different templates defined for it.</li>
 </ul>
 
