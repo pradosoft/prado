@@ -1,48 +1,59 @@
 <com:TContent ID="Content">
-	<com:TDatePicker Mode="Button"/>
-  <br />
-   <select style="width: 200px; height: 50px"><option value="1">One</option></select>
-as<br/>
-dv<br/>
-as<br/>
-d<br/>
-<com:TDatePicker ID="Picker1" InputMode="DropDownList"/>
-<com:TButton Text="Update" />
-<%= $this->Page->Picker1->Text %>
-as<br/>
-d<br/>
-asd<br/>
-a<br/>
-	<com:TDatePicker Mode="ImageButton" Culture="zh_CN" DateFormat="日期：yyyy年M月d日"/>
-sd<br/>
-dv<br/>
-as<br/>
-d<br/>
-as<br/>
-d<br/>
-asd<br/>
-a<br/>
-sd<br/>
-dv<br/>
-as<br/>
-d<br/>
-as<br/>
-d<br/>
-asd<br/>
-a<br/>
-sd<br/><com:TDatePicker />
-d<br/>
-as<br/>
-d<br/>
-asd<br/>
-a<br/>
-sd<br/>
-dv<br/>
-as<br/>
-d<br/>
-as<br/>
-d<br/>
-asd<br/>
-a<br/>
-sd<br/>
+
+<h1>TDatePicker Samples</h1>
+
+<table class="sampletable">
+
+<tr>
+	<td class="samplenote">Default TDatePicker</td>
+	<td class="sampleaction">
+		<com:TDatePicker />
+	</td>
+</tr>
+
+<tr>
+	<td class="samplenote">Button Mode</td>
+	<td class="sampleaction">
+		<com:TDatePicker Mode="Button" />
+	</td>
+</tr>
+
+<tr>
+	<td class="samplenote">InputMode="DropDownList", custom DateFormat</td>
+	<td class="sampleaction">
+		<com:TDatePicker DateFormat="yyyy/MMMM" InputMode="DropDownList"/>
+	</td>
+</tr>
+
+<tr>
+	<td class="samplenote">InputMode="DropDownList", custom DateFormat, Culture</td>
+	<td class="sampleaction">
+		<com:TDatePicker DateFormat="MM/yyyy" Culture="fr" InputMode="DropDownList"/>
+	</td>
+</tr>
+
+
+<tr>
+	<td class="samplenote">Custom DateFormat, culture, ImageButton mode</td>
+	<td class="sampleaction">
+		<com:TDatePicker Mode="ImageButton" Culture="zh_CN" DateFormat="日期：yyyy年M月d日"/>
+	</td>
+</tr>
+
+<tr>
+	<td class="samplenote">Custom DateFormat, DropDownList, pre-selected date set in as Text</td>
+	<td class="sampleaction">
+		<com:TDatePicker DateFormat="yyyy/MMMM/dd" Text="2005/05/15" InputMode="DropDownList"/>
+	</td>
+</tr>
+
+<tr>
+	<td class="samplenote">DropDownList, pre-selected date as integer</td>
+	<td class="sampleaction">
+		<com:TDatePicker InputMode="DropDownList" Date=<%= @strtotime("-1 month") %>/>
+	</td>
+</tr>
+	
+</table>
+
 </com:TContent>

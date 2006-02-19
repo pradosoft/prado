@@ -394,13 +394,19 @@ Prado.WebUI.TDatePicker.prototype =
 		{
 			var day = $(this.options.ID+"_day");
 			var month = $(this.options.ID+"_month");
-			var years = $(this.options.ID+"_year").options;
+			var year = $(this.options.ID+"_year");
 			var date = this.selectedDate;
-			day.selectedIndex = date.getDate()-1;
-			month.selectedIndex = date.getMonth();
-			var currentYear = date.getFullYear();
-			for(var i = 0; i < years.length; i++)
-				years[i].selected = years[i].value.toInteger() == currentYear;
+			if(day)
+				day.selectedIndex = date.getDate()-1;
+			if(month)
+				month.selectedIndex = date.getMonth();
+			if(year)
+			{
+				var years = year.options;
+				var currentYear = date.getFullYear();
+				for(var i = 0; i < years.length; i++)
+					years[i].selected = years[i].value.toInteger() == currentYear;
+			}
 		}
 	},
 	
@@ -473,7 +479,10 @@ Prado.WebUI.TDatePicker.prototype =
 			if(this.options.InputMode == "TextBox")
 				pos[1] += this.control.offsetHeight;
 			else
-				pos[1] += $(this.options.ID+"_day").offsetHeight-1;
+			{
+				if($(this.options.ID+"_day"))
+					pos[1] += $(this.options.ID+"_day").offsetHeight-1;
+			}
 
 			this._calDiv.style.display = "block";
 			this._calDiv.style.top = (pos[1]-1) + "px";
@@ -500,9 +509,16 @@ Prado.WebUI.TDatePicker.prototype =
 			return Date.SimpleParse($F(this.control), this.Format);
 		else
 		{
-			var day = $F(this.options.ID+"_day");
-			var month = $F(this.options.ID+"_month");
-			var year = $F(this.options.ID+"_year");
+			var now=new Date();
+			var year=now.getFullYear();
+			var month=now.getMonth();
+			var date=1;
+			if($(this.options.ID+"_day"))
+				day = $F(this.options.ID+"_day");
+			if($(this.options.ID+"_month"))
+				month = $F(this.options.ID+"_month");
+			if($(this.options.ID+"_year"))
+				year = $F(this.options.ID+"_year");
 			var newdate=new Date(year,month,day, 0, 0, 0);
 			return newdate;
 		}

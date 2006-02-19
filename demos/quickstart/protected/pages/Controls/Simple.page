@@ -74,4 +74,11 @@ To determine whether the check box is checked, test the <tt>Checked</tt> propert
 </p>
 <com:RunBar PagePath="Controls.Samples.TRadioButton.Home" />
 
+<h2>TDatePicker</h2>
+<p>
+<tt>TDatePicker</tt> provide different ways to select a date. 
+</p>
+<com:RunBar PagePath="Controls.Samples.TDatePicker.Home" />
+
+
 </com:TContent>

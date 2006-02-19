@@ -274,10 +274,26 @@ class TDatePicker extends TTextBox
 	public function render($writer)
 	{
 		if($this->getInputMode() == 'TextBox')
+		{
 			parent::render($writer);
+			$this->renderDatePickerButtons($writer);
+		}
 		else
+		{
 			$this->renderDropDownListCalendar($writer);
-	
+			if($this->hasDayPattern())
+			{
+				$this->registerCalendarClientScript();
+				$this->renderDatePickerButtons($writer);
+			}
+		}
+	}
+
+	/**
+	 * Renders the date picker popup buttons.
+	 */
+	protected function renderDatePickerButtons($writer)
+	{
 		if($this->getShowCalendar())
 		{
 			switch ($this->getMode())
@@ -317,12 +333,26 @@ class TDatePicker extends TTextBox
 	 */
 	protected function getDateFromPostData($key, $values)
 	{
-		$day = $values[$key.'$day'];
-		$month = $values[$key.'$month'];
-		$year = $values[$key.'$year'];
-		$date = @mktime(0, 0, 0, $month+1, $day, $year);
-		$formatter = Prado::createComponent('System.Data.TSimpleDateFormatter', 
-						$this->getDateFormat());
+		$date = @getdate();
+		
+		if(isset($values[$key.'$day']))
+			$day = intval($values[$key.'$day']);
+		else
+			$day = 1;
+
+		if(isset($values[$key.'$month']))
+			$month = intval($values[$key.'$month']) + 1;
+		else
+			$month = $date['mon'];
+
+		if(isset($values[$key.'$year']))
+			$year = intval($values[$key.'$year']);
+		else
+			$year = $date['year'];
+		$date = @mktime(0, 0, 0, $month, $day, $year);
+		$pattern = $this->getDateFormat();
+		$pattern = str_replace(array('MMMM', 'MMM'), array('MM','MM'), $pattern);
+		$formatter = Prado::createComponent('System.Data.TSimpleDateFormatter', $pattern);
 		return $formatter->format($date);
 	}
 
@@ -369,7 +399,8 @@ class TDatePicker extends TTextBox
 	protected function getCurrentCulture()
 	{
 		$app = $this->getApplication()->getGlobalization();
-		return $this->getCulture() == '' ? $app->getCulture() : $this->getCulture();
+		return $this->getCulture() == '' ? 
+				($app ? $app->getCulture() : 'en') : $this->getCulture();
 	}
 
 	/**
@@ -401,20 +432,42 @@ class TDatePicker extends TTextBox
 		$writer->renderBeginTag('span');
 
 		$date = $this->getDateFromText();
-
-		//renders the 3 drop down lists
-		$this->renderCalendarDayOptions($writer,$date['mday']);
-		$this->renderCalendarMonthOptions($writer,$date['mon']-1);
-		$this->renderCalendarYearOptions($writer,$date['year']);
-
+		$this->renderCalendarSelections($writer, $date);
+	
 		//render a hidden input field
 		$writer->addAttribute('name', $this->getUniqueID());
 		$writer->addAttribute('type', 'hidden');
 		$writer->addAttribute('value', $this->getText());
 		$writer->renderBeginTag('input');
-	
-		$this->registerCalendarClientScript();
+		
 		$writer->renderEndTag();
+	}
+
+	protected function hasDayPattern()
+	{
+		$formatter = Prado::createComponent('System.Data.TSimpleDateFormatter', 
+						$this->getDateFormat());
+		return !is_null($formatter->getDayPattern());		
+	}
+
+	/**
+	 * Renders the calendar drop down list depending on the DateFormat pattern.
+	 * @param THtmlWriter the Html writer to render the drop down lists.
+	 * @param array the current selected date
+	 */
+	protected function renderCalendarSelections($writer, $date)
+	{
+		$formatter = Prado::createComponent('System.Data.TSimpleDateFormatter', 
+						$this->getDateFormat());
+		foreach($formatter->getDayMonthYearOrdering() as $type)
+		{
+			if($type == 'day')
+				$this->renderCalendarDayOptions($writer,$date['mday']);
+			elseif($type == 'month')
+				$this->renderCalendarMonthOptions($writer,$date['mon']-1);
+			elseif($type == 'year')
+				$this->renderCalendarYearOptions($writer,$date['year']);
+		}
 	}
 	
 	/**
@@ -423,8 +476,9 @@ class TDatePicker extends TTextBox
 	 */
 	protected function getDateFromText()
 	{
-		$formatter = Prado::createComponent('System.Data.TSimpleDateFormatter', 
-						$this->getDateFormat());
+		$pattern = $this->getDateFormat();
+		$pattern = str_replace(array('MMMM', 'MMM'), array('MM','MM'), $pattern);
+		$formatter = Prado::createComponent('System.Data.TSimpleDateFormatter',$pattern);
 		return $formatter->parse($this->getText());
 	}
 
@@ -476,8 +530,30 @@ class TDatePicker extends TTextBox
 		$writer->addAttribute('class', 'datepicker_month_options');
 		$writer->renderBeginTag('select');
 		$this->renderDropDownListOptions($writer, 
-					$info->getMonthNames(), $selected);
+					$this->getLocalizedMonthNames($info), $selected);
 		$writer->renderEndTag();
+	}
+
+	/**
+	 * Returns the localized month names that depends on the month format pattern.
+	 * "MMMM" will return the month names, "MM" or "MMM" return abbr. month names
+	 * and "M" return month digits.
+	 * @param DateTimeFormatInfo localized date format information.
+	 * @return array localized month names.
+	 */
+	protected function getLocalizedMonthNames($info)
+	{
+		$formatter = Prado::createComponent('System.Data.TSimpleDateFormatter', 
+						$this->getDateFormat());
+		switch($formatter->getMonthPattern())
+		{
+			case 'MMM':
+			case 'MM': return $info->getAbbreviatedMonthNames();
+			case 'M': 
+				$array = array(); for($i=1;$i<=12;$i++) $array[$i] = $i;
+				return $array;
+			default :	return $info->getMonthNames();
+		}
 	}
 
 	/**

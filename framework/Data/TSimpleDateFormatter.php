@@ -121,6 +121,47 @@ class TSimpleDateFormatter
 		return str_replace(array_keys($bits), $bits, $this->pattern);
 	}
 
+	public function getMonthPattern()
+	{
+		if(is_int(strpos($this->pattern, 'MMMM')))
+			return 'MMMM';
+		if(is_int(strpos($this->pattern, 'MMM')))
+			return 'MMM';
+		if(is_int(strpos($this->pattern, 'MM')))
+			return 'MM';
+		if(is_int(strpos($this->pattern, 'M')))
+			return 'M';
+	}
+
+	public function getDayPattern()
+	{
+		if(is_int(strpos($this->pattern, 'dd')))
+			return 'dd';
+		if(is_int(strpos($this->pattern, 'd')))
+			return 'd';
+	}
+
+	public function getYearPattern()
+	{
+		if(is_int(strpos($this->pattern, 'yyyy')))
+			return 'yyyy';
+		if(is_int(strpos($this->pattern, 'yy')))
+			return 'yy';
+	}
+
+	public function getDayMonthYearOrdering()
+	{
+		$ordering = array();
+		if(is_int($day= strpos($this->pattern, 'd')))
+			$ordering['day'] = $day;
+		if(is_int($month= strpos($this->pattern, 'M')))
+			$ordering['month'] = $month;
+		if(is_int($year= strpos($this->pattern, 'yy')))
+			$ordering['year'] = $year;
+		asort($ordering);
+		return array_keys($ordering);
+	}
+
 	/**
 	 * Gets the time stamp from string or integer.
 	 * @param string|int date to parse

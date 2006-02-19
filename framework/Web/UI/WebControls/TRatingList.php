@@ -12,6 +12,7 @@ Prado::using('System.Web.UI.WebControls.TRadioButtonList');
  */
 class TRatingList extends TRadioButtonList
 {
+	private $_ratingImages = array();
 
 	public function __construct()
 	{
@@ -19,12 +20,30 @@ class TRatingList extends TRadioButtonList
 		$this->getRepeatInfo()->setRepeatDirection('Horizontal');
 	}
 
-	/**
-	 * @param string the direction (Vertical, Horizontal) of traversing the list
-	 */
-	public function setRepeatDirection($value)
+	public function getAllowInput()
 	{
-		throw new TNotSupportedException('ratinglits_repeatdirection_unsupported');
+		return $this->getViewState('AllowInput', true);
+	}
+
+	public function setAllowInput($value)
+	{
+		$this->setViewState('AllowInput', TPropertyValue::ensureBoolean($value), true);
+	}
+
+	public function getRating()
+	{
+		if($this->getAllowInput())
+			return $this->getSelectedIndex();
+		else
+			return $this->getViewState('Rating',0);
+	}
+
+	public function setRating($value)
+	{
+		if($this->getAllowInput())
+			$this->setSelectedIndex($value);
+		else
+			return $this->setViewState('Rating', TPropertyValue::ensureFloat($value),0);
 	}
 
 	/**
@@ -40,19 +59,13 @@ class TRatingList extends TRadioButtonList
 	 */
 	public function getRatingStyle()
 	{
-	   $style = $this->getViewState('RatingStyle', 'default');
-	   return is_string($style) ? $this->createRatingStyle($style) : $style;
-	}
-
-	protected function createRatingStyle($type)
-	{
-		return new TRatingListDefaultStyle;
+	   return $this->getViewState('RatingStyle', 'default');
 	}
 
 	/**
 	 * @return string caption text. Default is "Rate It:".
 	 */
-	public function getCaptionText()
+	public function getCaption()
 	{
 		return $this->getViewState('Caption', 'Rate It:');
 	}
@@ -60,40 +73,60 @@ class TRatingList extends TRadioButtonList
 	/**
 	 * @param string caption text
 	 */
-	public function setCaptionText($value)
+	public function setCaption($value)
 	{
 		$this->setViewState('Caption', $value, 'Rate It:');
 	}
 
+
+	public function setHalfRatingLimit($value)
+	{
+		$this->setViewState('HalfRating', 
+				TPropertyValue::ensureArray($value), array(0.3, 0.7));
+	}
+
+	public function getHalfRatingLimit()
+	{
+		return $this->getViewState('HalfRating', array(0.3, 0.7));
+	}
+
 	public function getRatingClientOptions()
 	{
-		$options = $this->getRatingStyle()->getOptions();
+		$options['cssClass'] = 'TRatingList_'.$this->getRatingStyle();
 		$options['ID'] = $this->getClientID();
-		$options['caption'] = $this->getCaptionText();
+		$options['caption'] = $this->getCaption();
 		$options['field'] = $this->getUniqueID();
-		$options['total'] = $this->getItems()->getCount();
-		$options['pos'] = $this->getSelectedIndex();
+		$options['selectedIndex'] = $this->getSelectedIndex();
 		return $options;
 	}
 
-	protected function publishRatingListStyle()
+	protected function publishRatingListStyle($style)
 	{
 		$cs = $this->getPage()->getClientScript();
-		$style = $this->getRatingStyle()->getStyleSheet();
-		$url = $this->publishFilePath($style);
+		$stylesheet = 'System.Web.Javascripts.ratings.'.$style;
+		if(($cssFile=Prado::getPathOfNamespace($stylesheet,'.css'))===null)
+			throw new TConfigurationException('ratinglist_stylesheet_not_found',$style);
+		$url = $this->publishFilePath($cssFile);
 		if(!$cs->isStyleSheetFileRegistered($style))
 			$cs->registerStyleSheetFile($style, $url);
 		return $url;
 	}
 
-	protected function publishRatingListAssets()
+	protected function publishRatingListImages($style, $fileExt='.gif')
 	{
 		$cs = $this->getPage()->getClientScript();
-		$assets = $this->getRatingStyle()->getAssets();
-		$list = array();
-		foreach($assets as $file)
-			$list[] = $this->publishFilePath($file);
-		return $list;
+		$images['blank'] = "System.Web.Javascripts.ratings.{$style}_blank";
+		$images['hover'] = "System.Web.Javascripts.ratings.{$style}_hover";
+		$images['selected'] = "System.Web.Javascripts.ratings.{$style}_selected";
+		$images['half'] = "System.Web.Javascripts.ratings.{$style}_half";
+		$files = array();
+		foreach($images as $type => $image)
+		{
+			if(($file=Prado::getPathOfNamespace($image, $fileExt))===null)
+				throw TConfigurationException('ratinglist_image_not_found',$image);
+			$files[$type] = $this->publishFilePath($file);
+		}
+		return $files;
 	}
 
 	/**
@@ -102,8 +135,21 @@ class TRatingList extends TRadioButtonList
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		$this->publishRatingListStyle();
-		$this->publishRatingListAssets();
+
+		$this->publishRatingListStyle($this->getRatingStyle());
+		$this->_ratingImages = $this->publishRatingListImages($this->getRatingStyle());
+
+		if($this->getAllowInput())
+			$this->registerRatingListClientScript();
+		else
+		{
+			$this->getRepeatInfo()->setCaption($this->getCaption());
+			$this->setAttribute('title', $this->getRating());
+		}
+	}
+
+	protected function registerRatingListClientScript()
+	{
 		$id = $this->getClientID();
 		$scripts = $this->getPage()->getClientScript();
 		$scripts->registerPradoScript('prado');
@@ -111,65 +157,38 @@ class TRatingList extends TRadioButtonList
 		$code = "new Prado.WebUI.TRatingList($options);";
 		$scripts->registerEndScript("prado:$id", $code);
 	}
-}
 
-abstract class TRatingListStyle
-{
-	private $_options = array();
-
-	public function __construct()
+	public function renderItem($writer,$repeatInfo,$itemType,$index)
 	{
-		$options['pos'] = -1;
-		$options['dx'] = 22;
-		$options['dy'] = 30;
-		$options['ix'] = 4;
-		$options['iy'] = 4;
-		$options['hx'] = 240;
-		$options['total'] = -1;
-		$this->_options = $options;
+		if($this->getAllowInput())
+			parent::renderItem($writer, $repeatInfo, $itemType, $index);
+		else
+			$this->renderRatingListItem($writer, $repeatInfo, $itemType, $index);
 	}
 
-	public function getOptions()
+	protected function renderRatingListItem($writer, $repeatInfo, $itemType, $index)
 	{
-		return $this->_options;
+		$image = new TImage;		
+		$image->setImageUrl($this->_ratingImages[$this->getRatingImageType($index)]);
+		$image->setAlternateText($this->getRating());
+		$image->render($writer);
 	}
 
-	public function setOptions($options)
+	protected function getRatingImageType($index)
 	{
-		$this->_options = $options;
+		$rating = floatval($this->getRating());
+		$int = intval($rating);
+		$limit = $this->getHalfRatingLimit();
+		if($index < $int || ($rating < $index + 1 && $rating > $index +$limit[1]))
+			return 'selected';
+		if($rating >= $index+$limit[0] && $rating <= $index+$limit[1])
+			return 'half';
+		return 'blank';
 	}
 
-	abstract function getStyleSheet();
-
-	abstract function getAssets();
-}
-
-class TRatingListDefaultStyle extends TRatingListStyle
-{
-	public function __construct()
+	public function generateItemStyle($itemType,$index)
 	{
-		parent::__construct();
-		$options = $this->getOptions();
-		$options['cssClass'] = 'TRatingList_default';
-		$this->setOptions($options);
-	}
-
-	public function getStyleSheet()
-	{
-		$style = 'System.Web.Javascripts.ratings.default';
-		if(($cssFile=Prado::getPathOfNamespace($style,'.css'))===null)
-			throw new TConfigurationException('ratinglist_stylesheet_invalid',$style);
-		return $cssFile;
-	}
-
-	public function getAssets()
-	{
-		$assets = array();
-		$image = 'System.Web.Javascripts.ratings.10star_white';
-		if(($file=Prado::getPathOfNamespace($image, '.gif'))===null)
-			throw TConfigurationException('ratinglist_asset_invalid',$image);
-		$assets[] =  $file;
-		return $assets;
+		return new TStyle;
 	}
 }
 

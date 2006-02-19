@@ -8,63 +8,53 @@ Prado.WebUI.TRatingList.prototype =
 		this.options = options;
 		this.element = $(options['ID']);
 		Element.addClassName(this.element,options.cssClass);
-		var width = options.total * options.dx;
-		this.element.style.width = width+"px";
-		Event.observe(this.element, 'mouseover', this.hover.bindEvent(this));
-		Event.observe(this.element, 'mouseout', this.recover.bindEvent(this));
-		Event.observe(this.element, 'click', this.click.bindEvent(this));
-		this._onMouseMoveEvent = this.mousemoved.bindEvent(this);
-		this.selectedIndex = options.pos;
 		this.radios = document.getElementsByName(options.field);
+		for(var i = 0; i<this.radios.length; i++)
+		{
+			Event.observe(this.radios[i].parentNode, "mouseover", this.hover.bindEvent(this,i));
+			Event.observe(this.radios[i].parentNode, "mouseout", this.recover.bindEvent(this,i));
+			Event.observe(this.radios[i].parentNode, "click", this.click.bindEvent(this, i));
+		}		
 		this.caption = CAPTION();
 		this.element.appendChild(this.caption);
-		this.showPosition(this.selectedIndex,false);
+		this.selectedIndex = options.selectedIndex;
+		this.setRating(this.selectedIndex);
 	},
 	
-	hover : function()
+	hover : function(ev,index)
 	{
-		Event.observe(this.element, "mousemove", this._onMouseMoveEvent);	
+		for(var i = 0; i<this.radios.length; i++)
+			this.radios[i].parentNode.className = (i<=index) ? "rating_hover" : "";
+		this.setCaption(index);
 	},
 	
-	recover : function()
+	recover : function(ev,index)
 	{
-		Event.stopObserving(this.element, "mousemove", this._onMouseMoveEvent);
-		this.showPosition(this.selectedIndex,false);
+		for(var i = 0; i<=index; i++)
+			Element.removeClassName(this.radios[i].parentNode, "rating_hover");
+		this.setRating(this.selectedIndex);
 	},
 	
-	mousemoved : function(e)
+	click : function(ev, index)
 	{
-		this.updatePosition(e,true);
-	},
-	
-	updatePosition : function(e, hovering)
-	{
-		var obj = Event.element(e);
-		var elementPos = Position.cumulativeOffset(obj);
-		var clientX = Event.pointerX(e) - elementPos[0];
-		var pos = parseInt(clientX / this.options.dx);
-		if(!hovering || this.options.pos != pos)
-			this.showPosition(pos, hovering)
-	},
-	
-	click : function(ev)
-	{
-		this.updatePosition(ev,false);
-		this.selectedIndex = this.options.pos;
-		for(var i = 0; i < this.radios.length; i++)
-			this.radios[i].checked = (i == this.selectedIndex);
+		for(var i = 0; i<this.radios.length; i++)
+			this.radios[i].checked = (i == index);
+		this.selectedIndex = index;
+		this.setRating(index);
 		if(isFunction(this.options.onChange))
-			this.options.onChange(this, this.selectedIndex);
+			this.options.onChange(this,index);		
 	},
 	
-	showPosition : function(pos, hovering)
+	setRating: function(index)
 	{
-		if(pos >=  this.options.total) return;
-		var dy = this.options.dy * (pos+1) + this.options.iy;
-		var dx = hovering ? this.options.hx + this.options.ix : this.options.ix;
-		this.element.style.backgroundPosition = "-"+dx+"px -"+dy+"px";
-		this.options.pos = pos;
-		this.caption.innerHTML = pos >= 0 ? 
-				this.radios[this.options.pos].value : this.options.caption;
+		for(var i = 0; i<=index; i++)
+			this.radios[i].parentNode.className = "rating_selected";
+		this.setCaption(index);
+	},
+	
+	setCaption : function(index)
+	{
+		this.caption.innerHTML = index > -1 ? 
+			this.radios[index].value : this.options.caption;	
 	}
 }

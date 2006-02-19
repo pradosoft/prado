@@ -1,21 +1,29 @@
-.TRatingList_default tr
+.TRatingList_default
+{
+	border-collapse: collapse;
+}
+.TRatingList_default input, .TRatingList_default label
 {
 	display: none;
 }
-
-.TRatingList_default
+.TRatingList_default td
 {
-	width: 120px;
-	height: 20px;
-	background-image: url(10star_white.gif);
-	background-position: -0px -4px;
+	width: 17px;
+	height: 18px;
+	background-image: url(default_blank.gif);
 	background-repeat: no-repeat;
-	margin: 4px;
 	cursor: pointer;
 }
-
-.TRatingList_default caption
+.TRatingList_default td.rating_selected
 {
-	padding-left: 4px;
-	text-align: left;
+	background-image: url(default_selected.gif);
+}
+
+.TRatingList_default td.rating_hover
+{
+	background-image: url(default_hover.gif);
+}
+.TRatingList_default td.rating_half
+{
+	background-image: url(default_half.gif);
 }
