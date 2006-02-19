@@ -154,7 +154,7 @@ class TAssetManager extends TModule
 	{
 		if(isset($this->_published[$path]))
 			return $this->_published[$path];
-		else if(($fullpath=realpath($path))===false)
+		else if(empty($path) || ($fullpath=realpath($path))===false)
 			throw new TInvalidDataValueException('assetmanager_filepath_invalid',$path);
 		else if(is_file($fullpath))
 		{
