@@ -846,6 +846,7 @@ class TApplication extends TComponent
 
 		// load and init modules specified in app config
 		$this->_modules=array();
+		$modules=array();
 		foreach($config->getModules() as $id=>$moduleConfig)
 		{
 			Prado::trace("Loading module $id ({$moduleConfig[0]})",'System.TApplication');
@@ -855,8 +856,10 @@ class TApplication extends TComponent
 				$this->setModule($id,$module);
 			foreach($moduleConfig[1] as $name=>$value)
 				$module->setSubProperty($name,$value);
-			$module->init($moduleConfig[2]);
+			$modules[]=array($module,$moduleConfig[2]);
 		}
+		foreach($modules as $module)
+			$module[0]->init($module[1]);
 
 		// load service
 		$services=$config->getServices();

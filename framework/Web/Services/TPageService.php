@@ -182,6 +182,7 @@ class TPageService extends TService
 		}
 
 		// load modules specified in page directory config
+		$modules=array();
 		foreach($pageConfig->getModules() as $id=>$moduleConfig)
 		{
 			Prado::trace("Loading module $id ({$moduleConfig[0]})",'System.Web.Services.TPageService');
@@ -190,8 +191,10 @@ class TPageService extends TService
 				$application->setModule($id,$module);
 			foreach($moduleConfig[1] as $name=>$value)
 				$module->setSubProperty($name,$value);
-			$module->init($moduleConfig[2]);
+			$modules[]=array($module,$moduleConfig[2]);
 		}
+		foreach($modules as $module)
+			$module[0]->init($module[1]);
 
 		$application->getAuthorizationRules()->mergeWith($pageConfig->getRules());
 	}
