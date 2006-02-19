@@ -18,8 +18,6 @@ Prado::using('System.Web.UI.TTemplateControl');
 Prado::using('System.Web.UI.TForm');
 Prado::using('System.Web.UI.TClientScriptManager');
 
-//Prado::using('System.Web
-
 /**
  * TPage class
  *
@@ -207,46 +205,6 @@ class TPage extends TTemplateControl
 		$this->renderControl($writer);
 		Prado::trace("Page unloadRecursive()",'System.Web.UI.TPage');
 		$this->unloadRecursive();
-	}
-
-	/**
-	 * Loads and parses the page template.
-	 * This method overrides the parent implementation by allowing loading
-	 * a page template from a specified template file.
-	 * @return ITemplate the parsed template structure
-	 */
-	protected function loadTemplate()
-	{
-		if($this->_templateFile===null)
-			return parent::loadTemplate();
-		else
-		{
-			$template=$this->getService()->getTemplateManager()->getTemplateByFileName($this->_templateFile);
-			$this->setTemplate($template);
-			return $template;
-		}
-	}
-
-	/**
-	 * @return string the user-specified template file, defaults to null.
-	 */
-	public function getTemplateFile()
-	{
-		return $this->_templateFile;
-	}
-
-	/**
-	 * Sets the user-specified template file.
-	 * The template file must be specified in a namespace format.
-	 * @param string the user-specified template file.
-	 * @throws TInvalidDataValueException if the file is not in namespace format.
-	 */
-	public function setTemplateFile($value)
-	{
-		if(($templateFile=Prado::getPathOfNamespace($value,TTemplateManager::TEMPLATE_FILE_EXT))===null || !is_file($templateFile))
-			throw new TInvalidDataValueException('page_templatefile_invalid',$value);
-		else
-			$this->_templateFile=$templateFile;
 	}
 
 	/**

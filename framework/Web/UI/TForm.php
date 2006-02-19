@@ -20,6 +20,10 @@
  */
 class TForm extends TControl
 {
+	/**
+	 * Registers the form with the page.
+	 * @param mixed event parameter
+	 */
 	public function onInit($param)
 	{
 		parent::onInit($param);
@@ -28,41 +32,23 @@ class TForm extends TControl
 
 	protected function addAttributesToRender($writer)
 	{
-		$attributes=$this->getAttributes();
+		$writer->addAttribute('id',$this->getClientID());
 		$writer->addAttribute('method',$this->getMethod());
 		$writer->addAttribute('action',$this->getRequest()->getRequestURI());
 		if(($enctype=$this->getEnctype())!=='')
 			$writer->addAttribute('enctype',$enctype);
-		$attributes->remove('action');
 
-		$page=$this->getPage();
-		/*
-		$onsubmit=$page->getClientOnSubmitEvent();
-		if($onsubmit!=='')
+		$attributes=$this->getAttributes();
+		$attributes->remove('action');
+		$writer->addAttributes($attributes);
+
+		if(($butt=$this->getDefaultButton())!=='')
 		{
-			if(($existing=$attributes->itemAt('onsubmit'))!=='')
-			{
-				$page->getClientScript()->registerOnSubmitStatement('TForm:OnSubmitScript',$existing);
-				$attributes->remove('onsubmit');
-			}
-			if($page->getClientSupportsJavaScript())
-				$writer->addAttribute('onsubmit',$onsubmit);
-		}*/
-		if($this->getDefaultButton()!=='')
-		{//todo
-		/*
-			$control=$this->findControl($this->getDefaultButton());
-			if(!$control)
-				$control=$page->findControl($this->getDefaultButton());
-			if($control instanceof IButtonControl)
-				$page->getClientScript()->registerDefaultButtonScript($control,$writer,false);
+			if(($button=$this->findControl($butt))!==null)
+				$this->getPage()->getClientScript()->registerDefaultButton($this,$button);
 			else
-				throw new Exception('Only IButtonControl can be default button.');
-				*/
+				throw new TInvalidDataValueException('form_defaultbutton_invalid',$butt);
 		}
-		$writer->addAttribute('id',$this->getClientID());
-		foreach($attributes as $name=>$value)
-			$writer->addAttribute($name,$value);
 	}
 
 	/**
@@ -106,7 +92,7 @@ class TForm extends TControl
 
 	public function setMethod($value)
 	{
-		$this->setViewState('Method',$value,'post');
+		$this->setViewState('Method',TPropertyValue::ensureEnum($value,'post','get'),'post');
 	}
 
 	public function getEnctype()
@@ -118,30 +104,10 @@ class TForm extends TControl
 	{
 		$this->setViewState('Enctype',$value,'');
 	}
-/*
-	public function getSubmitDisabledControls()
-	{
-		return $this->getViewState('SubmitDisabledControls',false);
-	}
 
-	public function setSubmitDisabledControls($value)
-	{
-		$this->setViewState('SubmitDisabledControls',TPropertyValue::ensureBoolean($value),false);
-	}
-*/
 	public function getName()
 	{
 		return $this->getUniqueID();
-	}
-
-	public function getTarget()
-	{
-		return $this->getViewState('Target','');
-	}
-
-	public function setTarget($value)
-	{
-		$this->setViewState('Target',$value,'');
 	}
 }
 
