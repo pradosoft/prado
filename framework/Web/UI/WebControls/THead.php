@@ -7,7 +7,7 @@
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Revision: $  $Date: $
- * @package System.Web.UI.WebControls
+ * @package System.Web.UI
  */
 
 /**
@@ -30,7 +30,7 @@
  *
  * @author Marcus Nyeholt <tanus@users.sourceforge.net> and Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
- * @package System.Web.UI.WebControls
+ * @package System.Web.UI
  * @since 3.0
  */
 class THead extends TControl
@@ -113,7 +113,7 @@ class THead extends TControl
 		$cs->renderStyleSheetFiles($writer);
 		$cs->renderStyleSheets($writer);
 		$cs->renderScriptFiles($writer);
-		//$cs->renderHeadScripts($writer);
+		$cs->renderHeadScripts($writer);
 		parent::render($writer);
 		$writer->write("</head>\n");
 	}

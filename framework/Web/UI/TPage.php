@@ -10,7 +10,6 @@
  * @package System.Web.UI
  */
 
-//Prado::using('System.Web.UI.*');
 Prado::using('System.Web.UI.WebControls.*');
 Prado::using('System.Web.UI.TControl');
 Prado::using('System.Web.UI.WebControls.TWebControl');
@@ -28,12 +27,15 @@ Prado::using('System.Web.UI.TClientScriptManager');
  */
 class TPage extends TTemplateControl
 {
+	/**
+	 * system post fields
+	 */
 	const FIELD_POSTBACK_TARGET='PRADO_POSTBACK_TARGET';
 	const FIELD_POSTBACK_PARAMETER='PRADO_POSTBACK_PARAMETER';
 	const FIELD_LASTFOCUS='PRADO_LASTFOCUS';
 	const FIELD_PAGESTATE='PRADO_PAGESTATE';
-	const FIELD_SCROLLX='PRADO_SCROLLX';
-	const FIELD_SCROLLY='PRADO_SCROLLY';
+	const FIELD_CALLBACK_ID='PRADO_CALLBACK_ID';
+	const FIELD_CALLBACK_PARAMETER='PRADO_CALLBACK_PARAMETER';
 	/**
 	 * @var array system post fields
 	 */
@@ -42,9 +44,8 @@ class TPage extends TTemplateControl
 		'PRADO_POSTBACK_PARAMETER'=>true,
 		'PRADO_LASTFOCUS'=>true,
 		'PRADO_PAGESTATE'=>true,
-		'PRADO_SCROLLX'=>true,
-		'PRADO_SCROLLY'=>true,
-		'__PREVPAGE','__CALLBACKID','__CALLBACKPARAM'
+		'PRADO_CALLBACK_ID'=>true,
+		'PRADO_CALLBACK_PARAMETER'=>true
 	);
 	/**
 	 * @var TForm form instance
@@ -54,10 +55,6 @@ class TPage extends TTemplateControl
 	 * @var THead head instance
 	 */
 	private $_head=null;
-	/**
-	 * @var string template file name
-	 */
-	private $_templateFile=null;
 	/**
 	 * @var array list of registered validators
 	 */
@@ -103,11 +100,11 @@ class TPage extends TTemplateControl
 	 */
 	private $_postBackEventTarget=null;
 	/**
-	 * @var mixed postback event parameter
+	 * @var string postback event parameter
 	 */
 	private $_postBackEventParameter=null;
 	/**
-	 * @var boolean whether form has rendered
+	 * @var boolean whether the form has been rendered
 	 */
 	private $_formRendered=false;
 	/**
@@ -118,21 +115,26 @@ class TPage extends TTemplateControl
 	 * @var TControl|string the control or the ID of the element on the page to be focused when the page is sent back to user
 	 */
 	private $_focus=null;
+	/**
+	 * @var string page path to this page
+	 */
 	private $_pagePath='';
 	/**
-	 * @var boolean whether or not to maintain page scroll position
+	 * @var boolean whether page state should be HMAC validated
 	 */
-	private $_maintainScrollPosition=false;
-
-	private $_maxPageStateFieldLength=10;
-	private $_enableViewStateMac=true;
-	private $_isCrossPagePostBack=false;
-	private $_previousPagePath='';
-
-	private $_statePersisterClass='System.Web.UI.TPageStatePersister';
-	private $_statePersister=null;
 	private $_enableStateValidation=true;
+	/**
+	 * @var boolean whether page state should be encrypted
+	 */
 	private $_enableStateEncryption=false;
+	/**
+	 * @var string page state persister class name
+	 */
+	private $_statePersisterClass='System.Web.UI.TPageStatePersister';
+	/**
+	 * @var mixed page state persister
+	 */
+	private $_statePersister=null;
 
 	/**
 	 * Constructor.
@@ -146,7 +148,6 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Runs through the page lifecycles.
-	 * This method runs through the page lifecycles.
 	 * @param THtmlTextWriter the HTML writer
 	 */
 	public function run($writer)
@@ -156,8 +157,10 @@ class TPage extends TTemplateControl
 
 		Prado::trace("Page onPreInit()",'System.Web.UI.TPage');
 		$this->onPreInit(null);
+
 		Prado::trace("Page initRecursive()",'System.Web.UI.TPage');
 		$this->initRecursive();
+
 		Prado::trace("Page onInitComplete()",'System.Web.UI.TPage');
 		$this->onInitComplete(null);
 
@@ -208,6 +211,14 @@ class TPage extends TTemplateControl
 	}
 
 	/**
+	 * @return TForm the form on the page
+	 */
+	public function getForm()
+	{
+		return $this->_form;
+	}
+
+	/**
 	 * Registers a TForm instance to the page.
 	 * Note, a page can contain at most one TForm instance.
 	 * @param TForm the form on the page
@@ -219,14 +230,6 @@ class TPage extends TTemplateControl
 			$this->_form=$form;
 		else
 			throw new TInvalidOperationException('page_form_duplicated');
-	}
-
-	/**
-	 * @return TForm the form on the page
-	 */
-	public function getForm()
-	{
-		return $this->_form;
 	}
 
 	/**
@@ -255,18 +258,26 @@ class TPage extends TTemplateControl
 	 * Performs input validation.
 	 * This method will invoke the registered validators to perform the actual validation.
 	 * If validation group is specified, only the validators in that group will be invoked.
-	 * @param string validation group
+	 * @param string validation group. If null, all validators will perform validation.
 	 */
-	public function validate($validationGroup='')
+	public function validate($validationGroup=null)
 	{
+		Prado::trace("Page validate()",'System.Web.UI.TPage');
 		$this->_validated=true;
 		if($this->_validators && $this->_validators->getCount())
 		{
-			Prado::trace("Page validate",'System.Web.UI.TPage');
-			foreach($this->_validators as $validator)
+			if($validationGroup===null)
 			{
-				if($validator->getValidationGroup()===$validationGroup)
+				foreach($this->_validators as $validator)
 					$validator->validate();
+			}
+			else
+			{
+				foreach($this->_validators as $validator)
+				{
+					if($validator->getValidationGroup()===$validationGroup)
+						$validator->validate();
+				}
 			}
 		}
 	}
@@ -306,7 +317,6 @@ class TPage extends TTemplateControl
 	/**
 	 * Sets the theme to be used for the page.
 	 * @param string|TTheme the theme name or the theme object to be used for the page.
-	 * @throws TInvalidDataTypeException if the parameter is neither a string nor a TTheme object
 	 */
 	public function setTheme($value)
 	{
@@ -327,7 +337,6 @@ class TPage extends TTemplateControl
 	/**
 	 * Sets the stylesheet theme to be used for the page.
 	 * @param string|TTheme the stylesheet theme name or the stylesheet theme object to be used for the page.
-	 * @throws TInvalidDataTypeException if the parameter is neither a string nor a TTheme object
 	 */
 	public function setStyleSheetTheme($value)
 	{
@@ -372,7 +381,7 @@ class TPage extends TTemplateControl
 	 * You may override this method to provide additional initialization that
 	 * should be done before {@link onInit OnInit} (e.g. setting {@link setTheme Theme} or
 	 * {@link setStyleSheetTheme StyleSheetTheme}).
-	 * Remember to call the parent implementation to ensure PreInit event is raised.
+	 * Remember to call the parent implementation to ensure OnPreInit event is raised.
 	 * @param mixed event parameter
 	 */
 	public function onPreInit($param)
@@ -385,7 +394,7 @@ class TPage extends TTemplateControl
 	 * This method is invoked right after {@link onInit OnInit} stage and before {@link onLoad OnLoad} stage.
 	 * You may override this method to provide additional initialization that
 	 * should be done after {@link onInit OnInit}.
-	 * Remember to call the parent implementation to ensure InitComplete event is raised.
+	 * Remember to call the parent implementation to ensure OnInitComplete event is raised.
 	 * @param mixed event parameter
 	 */
 	public function onInitComplete($param)
@@ -398,7 +407,7 @@ class TPage extends TTemplateControl
 	 * This method is invoked right before {@link onLoad OnLoad} stage.
 	 * You may override this method to provide additional page loading logic that
 	 * should be done before {@link onLoad OnLoad}.
-	 * Remember to call the parent implementation to ensure PreLoad event is raised.
+	 * Remember to call the parent implementation to ensure OnPreLoad event is raised.
 	 * @param mixed event parameter
 	 */
 	public function onPreLoad($param)
@@ -411,7 +420,7 @@ class TPage extends TTemplateControl
 	 * This method is invoked right after {@link onLoad OnLoad} stage.
 	 * You may override this method to provide additional page loading logic that
 	 * should be done after {@link onLoad OnLoad}.
-	 * Remember to call the parent implementation to ensure LoadComplete event is raised.
+	 * Remember to call the parent implementation to ensure OnLoadComplete event is raised.
 	 * @param mixed event parameter
 	 */
 	public function onLoadComplete($param)
@@ -424,7 +433,7 @@ class TPage extends TTemplateControl
 	 * This method is invoked right after {@link onPreRender OnPreRender} stage.
 	 * You may override this method to provide additional preparation for page rendering
 	 * that should be done after {@link onPreRender OnPreRender}.
-	 * Remember to call the parent implementation to ensure PreRenderComplete event is raised.
+	 * Remember to call the parent implementation to ensure OnPreRenderComplete event is raised.
 	 * @param mixed event parameter
 	 */
 	public function onPreRenderComplete($param)
@@ -451,7 +460,7 @@ class TPage extends TTemplateControl
 	 * Raises OnSaveStateComplete event.
 	 * This method is invoked right after {@link onSaveState OnSaveState} stage.
 	 * You may override this method to provide additional logic after page state is saved.
-	 * Remember to call the parent implementation to ensure SaveStateComplete event is raised.
+	 * Remember to call the parent implementation to ensure OnSaveStateComplete event is raised.
 	 * @param mixed event parameter
 	 */
 	public function onSaveStateComplete($param)
@@ -529,6 +538,9 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Registers a control for loading post data in the next postback.
+	 * This method needs to be invoked if the control to load post data
+	 * may not have a post variable in some cases. For example, a checkbox,
+	 * if not checked, will not have a post value.
 	 * @param TControl control registered for loading post data
 	 */
 	public function registerRequiresPostData(TControl $control)
@@ -560,29 +572,24 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return mixed postback event parameter
+	 * @return string postback event parameter
 	 */
 	public function getPostBackEventParameter()
 	{
 		if($this->_postBackEventParameter===null)
-			$this->_postBackEventParameter=$this->_postData->itemAt(self::FIELD_POSTBACK_PARAMETER);
+		{
+			if(($this->_postBackEventParameter=$this->_postData->itemAt(self::FIELD_POSTBACK_PARAMETER))===null)
+				$this->_postBackEventParameter='';
+		}
 		return $this->_postBackEventParameter;
 	}
 
 	/**
-	 * @param mixed postback event parameter
+	 * @param string postback event parameter
 	 */
 	public function setPostBackEventParameter($value)
 	{
 		$this->_postBackEventParameter=$value;
-	}
-
-	/**
-	 * Registers a control as the
-	 */
-	public function registerAutoPostBackControl(TControl $control)
-	{
-		$this->_autoPostBackControl=$control;
 	}
 
 	/**
@@ -638,7 +645,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * Raises OnPostBack event.
+	 * Raises PostBack event.
 	 */
 	private function raisePostBackEvent()
 	{
@@ -656,16 +663,16 @@ class TPage extends TTemplateControl
 	public function ensureRenderInForm($control)
 	{
 		if(!$this->_inFormRender)
-			throw new TConfigurationException('page_control_outofform',get_class($control),$control->getID(false));
+			throw new TConfigurationException('page_control_outofform',get_class($control),$control->getUniqueID());
 	}
 
 	/**
-	 * @internal This method is invoked by TForm  at the beginning of its rendering
+	 * @internal This method is invoked by TForm at the beginning of its rendering
 	 */
 	public function beginFormRender($writer)
 	{
 		if($this->_formRendered)
-			throw new TConfigurationException('page_singleform_required');
+			throw new TConfigurationException('page_form_duplicated');
 		$this->_formRendered=true;
 		$this->_inFormRender=true;
 		$cs=$this->getClientScript();
@@ -690,15 +697,7 @@ class TPage extends TTemplateControl
 			}
 			else if($this->_postData && ($lastFocus=$this->_postData->itemAt(self::FIELD_LASTFOCUS))!==null)
 				$cs->registerFocusScript($lastFocus);
-			if($this->_maintainScrollPosition && $this->_postData)
-			{
-				$x=TPropertyValue::ensureInteger($this->_postData->itemAt(self::PRADO_SCROLLX));
-				$y=TPropertyValue::ensureInteger($this->_postData->itemAt(self::PRADO_SCROLLY));
-				$cs->registerScrollScript($x,$y);
-			}
 			$cs->renderHiddenFields($writer);
-			//$cs->renderArrayDeclarations($writer);
-			//$cs->renderExpandoAttributes($writer);
 			$cs->renderScriptFiles($writer);
 			$cs->renderEndScripts($writer);
 		}
@@ -717,36 +716,28 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return boolean (TBD) whether to keep the page scroll position the same as users last see it
+	 * @return boolean whether client supports javascript. Currently, this
+	 * method always returns true. If future, we may add some browser capability
+	 * detection functionality.
 	 */
-	public function getMaintainScrollPosition()
-	{
-		return $this->_maintainScrollPosition;
-	}
-
-	/**
-	 * @param boolean (TBD) whether to keep the page scroll position the same as users last see it
-	 */
-	public function setMaintainScrollPosition($value)
-	{
-		$this->_maintainScrollPosition=TPropertyValue::ensureBoolean($value);
-	}
-
 	public function getClientSupportsJavaScript()
 	{
 		// todo
 		return true;
 	}
 
-	protected function initializeCulture()
-	{
-	}
-
+	/**
+	 * @return THead page head, null if not available
+	 */
 	public function getHead()
 	{
 		return $this->_head;
 	}
 
+	/**
+	 * @param THead page head
+	 * @throws TInvalidOperationException if a head already exists
+	 */
 	public function setHead(THead $value)
 	{
 		if($this->_head)
@@ -754,26 +745,41 @@ class TPage extends TTemplateControl
 		$this->_head=$value;
 	}
 
+	/**
+	 * @return string page title.
+	 */
 	public function getTitle()
 	{
 		return $this->getViewState('Title','');
 	}
 
+	/**
+	 * @param string page title. This will override the title set in {@link getHead Head}.
+	 */
 	public function setTitle($value)
 	{
 		$this->setViewState('Title',$value,'');
 	}
 
+	/**
+	 * @return string class name of the page state persister. Defaults to TPageStatePersister.
+	 */
 	public function getStatePersisterClass()
 	{
 		return $this->_statePersisterClass;
 	}
 
+	/**
+	 * @param string class name of the page state persister.
+	 */
 	public function setStatePersisterClass($value)
 	{
 		$this->_statePersisterClass=$value;
 	}
 
+	/**
+	 * @return IPageStatePersister page state persister
+	 */
 	public function getStatePersister()
 	{
 		if($this->_statePersister===null)
@@ -786,37 +792,66 @@ class TPage extends TTemplateControl
 		return $this->_statePersister;
 	}
 
+	/**
+	 * @return boolean whether page state should be HMAC validated. Defaults to true.
+	 */
 	public function getEnableStateValidation()
 	{
 		return $this->_enableStateValidation;
 	}
 
+	/**
+	 * @param boolean whether page state should be HMAC validated.
+	 */
 	public function setEnableStateValidation($value)
 	{
 		$this->_enableStateValidation=TPropertyValue::ensureBoolean($value);
 	}
 
+	/**
+	 * @return boolean whether page state should be encrypted. Defaults to false.
+	 */
 	public function getEnableStateEncryption()
 	{
 		return $this->_enableStateEncryption;
 	}
 
+	/**
+	 * @param boolean whether page state should be encrypted.
+	 */
 	public function setEnableStateEncryption($value)
 	{
 		$this->_enableStateEncryption=TPropertyValue::ensureBoolean($value);
 	}
 
+	/**
+	 * @return string the requested page path for this page
+	 */
 	public function getPagePath()
 	{
 		return $this->_pagePath;
 	}
 
+	/**
+	 * @param string the requested page path for this page
+	 */
 	public function setPagePath($value)
 	{
 		$this->_pagePath=$value;
 	}
 }
 
+/**
+ * IPageStatePersister interface.
+ *
+ * IPageStatePersister interface is required for all page state persister
+ * classes.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI
+ * @since 3.0
+ */
 interface IPageStatePersister
 {
 	/**
@@ -829,12 +864,12 @@ interface IPageStatePersister
 	public function setPage(TPage $page);
 	/**
 	 * Saves state to persistent storage.
-	 * @param string state to be stored
+	 * @param mixed state to be stored
 	 */
 	public function save($state);
 	/**
 	 * Loads page state from persistent storage
-	 * @return string the restored state
+	 * @return mixed the restored state
 	 */
 	public function load();
 }

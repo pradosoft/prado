@@ -75,7 +75,6 @@ class TClientScriptManager extends TApplicationComponent
 	 * @var array registered PRADO script files
 	 */
 	private $_registeredPradoFiles=array();
-
 	/**
 	 * Client-side javascript library dependencies
 	 * @var array
@@ -420,36 +419,11 @@ class TClientScriptManager extends TApplicationComponent
 			$writer->write("<div>\n".$str."</div>\n");
 	}
 
-/*	public function registerClientEvent($control, $event, $code)
-	{
-		if(empty($code)) return;
-		$this->registerPradoScript("prado");
-		$script= "Event.observe('{$control->ClientID}', '{$event}', function(e){ {$code} });";
-		$key = "prado:{$control->ClientID}:{$event}";
-		$this->registerEndScript($key, $script);
-	}
-
 	public function registerFocusScript($target)
 	{
-		if(!$this->_focusScriptRegistered)
-		{
-			$this->_focusScriptRegistered=true;
-			$this->registerPradoScript('prado');
-			$this->registerEndScript('prado:focus','Prado.Focus.setFocus("'.THttpUtility::quoteJavaScriptString($target).'");');
-		}
+		$this->registerPradoScript('prado');
+		$this->registerEndScript('prado:focus','Prado.Focus.setFocus("'.TJavaScript::quoteString($target).'");');
 	}
-
-	public function registerScrollScript($x,$y)
-	{
-		if(!$this->_scrollScriptRegistered)
-		{
-			$this->_scrollScriptRegistered=true;
-			$this->registerHiddenField(TPage::FIELD_SCROLL_X,$x);
-			$this->registerHiddenField(TPage::FIELD_SCROLL_Y,$y);
-			// TBD, need scroll.js
-		}
-	}
-*/
 }
 
 ?>

@@ -1,26 +1,25 @@
 <?php
-
 /**
- * TJavascript class file. Javascript utilties, converts basic PHP types into
- * appropriate javascript types.
- *
- * Example:
- * <code>
- * $options['onLoading'] = "doit";
- * $options['onComplete'] = "more";
- * $js = new TJavascriptSerializer($options);
- * echo $js->toMap();
- * //expects the following javascript code
- * // {'onLoading':'doit','onComplete':'more'}
- * </code>
- *
- * For higher complexity data structures use TJSON to serialize and unserialize.
- *
- * Namespace: System.Web.UI
+ * TJavaScript class file
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.3 $  $Date: 2005/11/10 23:43:26 $
- * @package System.Web.UI
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Web.Javascripts
+ */
+
+/**
+ * TJavaScript class.
+ *
+ * TJavaScript is a utility class containing commonly used javascript-related
+ * functions.
+ *
+ * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.Javascripts
+ * @since 3.0
  */
 class TJavaScript
 {
@@ -72,7 +71,7 @@ class TJavaScript
 		return $str;
 	}
 
-	public static function quoteJavaScriptString($js,$forUrl=false)
+	public static function quoteString($js,$forUrl=false)
 	{
 		if($forUrl)
 			return strtr($js,array('%'=>'%25',"\t"=>'\t',"\n"=>'\n',"\r"=>'\r','"'=>'\"','\''=>'\\\'','\\'=>'\\\\'));
@@ -80,18 +79,21 @@ class TJavaScript
 			return strtr($js,array("\t"=>'\t',"\n"=>'\n',"\r"=>'\r','"'=>'\"','\''=>'\\\'','\\'=>'\\\\'));
 	}
 
-	public static function trimJavaScriptString($js)
-	{
-		if($js!=='' && $js!==null)
-		{
-			$js=trim($js);
-			if(($pos=strpos($js,'javascript:'))===0)
-				$js=substr($js,11);
-			$js=rtrim($js,';').';';
-		}
-		return $js;
-	}
-
+	/**
+	 * Encodes a PHP variable into javascript representation.
+	 *
+	 * Example:
+	 * <code>
+	 * $options['onLoading'] = "doit";
+	 * $options['onComplete'] = "more";
+	 * $js = new TJavascriptSerializer($options);
+	 * echo $js->toMap();
+	 * //expects the following javascript code
+	 * // {'onLoading':'doit','onComplete':'more'}
+	 * </code>
+	 *
+	 * For higher complexity data structures use TJSON to serialize and unserialize.
+	 */
 	public static function encode($value,$toMap=true)
 	{
 		if(is_string($value))
@@ -103,7 +105,7 @@ class TJavaScript
 				if(($first==='[' && $last===']') || ($first==='{' && $last==='}'))
 					return $value;
 			}
-			return "'".self::quoteJavaScriptString($value)."'";
+			return "'".self::quoteString($value)."'";
 		}
 		else if(is_bool($value))
 			return $value?'true':'false';
@@ -142,13 +144,13 @@ class TJavaScript
 			return '';
 	}
 
-	public static function encodeJSON($value)
+	public static function jsonEncode($value)
 	{
 		Prado::using('System.Web.Javascripts.TJSON');
 		return TJSON::encode($value);
 	}
 
-	public static function decodeJSON($value)
+	public static function jsonDecode($value)
 	{
 		Prado::using('System.Web.Javascripts.TJSON');
 		return TJSON::decode($value);
