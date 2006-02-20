@@ -13,14 +13,22 @@
 /**
  * THead class
  *
- * THead displays a &lt;head&gt; element on a page. It displays the content
- * enclosed in its body. In addition, it displays the page title set by the
- * {@link setTitle Title} property, and the meta tags registered via
- * {@link registerMetaTag}. Stylesheet and JavaScripts registered via
+ * THead displays a head element on a page. It displays the content
+ * enclosed in its body and the page title set by the
+ * {@link setTitle Title} property. In addition, stylesheets and JavaScripts registered via
  * {@link TClientScriptManager::registerStyleSheet}, {@link TClientScriptManager::registerStyleSheetFile}
  * {@link TClientScriptManager::registerHeadJavaScript}, and
  * {@link TClientScriptManager::registerHeadJavaScriptFile} will also be displayed
  * in the head.
+ * THead also manages and displays meta tags through its {@link getMetaTags MetaTags}
+ * property. You can add a meta object to the collection in code dynamically,
+ * or add it in template using the following syntax,
+ * <code>
+ * <com:THead>
+ *   <com:TMetaTag HttpEquiv="Pragma" Content="no-cache" />
+ *   <com:TMetaTag Name="keywords" Content="Prado" />
+ * </com:THead>
+ * </code>
  *
  * Note, {@link TPage} has a property {@link TPage::getHead Head} that refers to
  * the THead control currently on the page. A page can have at most once THead
@@ -36,9 +44,9 @@
 class THead extends TControl
 {
 	/**
-	 * @var array list of meta name tags to be loaded by {@link THead}
+	 * @var TList list of meta name tags to be loaded by {@link THead}
 	 */
-	private $_metaTags=array();
+	private $_metaTags=null;
 
 	/**
 	 * Registers the head control with the current page.
@@ -52,6 +60,21 @@ class THead extends TControl
 	{
 		parent::onInit($param);
 		$this->getPage()->setHead($this);
+	}
+
+	/**
+	 * Processes an object that is created during parsing template.
+	 * This method adds TMetaTag components into the {@link getMetaTags MetaTags}
+	 * collection of the head control.
+	 * @param string|TComponent text string or component parsed and instantiated in template
+	 * @see createdOnTemplate
+	 */
+	public function addParsedObject($object)
+	{
+		if($object instanceof TMetaTag)
+			$this->getMetaTags()->add($object);
+		else
+			parent::addParsedObject($object);
 	}
 
 	/**
@@ -74,24 +97,16 @@ class THead extends TControl
 	}
 
 	/**
-	 * Registers a meta tag to be imported with the page body
-	 * @param string a key that identifies the meta tag to avoid repetitive registration
-	 * @param TMetaTag the meta tag to be registered
-	 * @see isTagRegistered()
+	 * @return TMetaTagCollection meta tag collection
 	 */
-	public function registerMetaTag($key,$metaTag)
+	public function getMetaTags()
 	{
-		$this->_metaTags[$key]=$metaTag;
-	}
-
-	/**
-	 * @param string a key identifying the meta tag.
-	 * @return boolean whether the named meta tag has been registered before
-	 * @see registerMetaTag()
-	 */
-	public function isMetaTagRegistered($key)
-	{
-		return isset($this->_metaTags[$key]);
+		if(($metaTags=$this->getViewState('MetaTags',null))===null)
+		{
+			$metaTags=new TMetaTagCollection;
+			$this->setViewState('MetaTags',$metaTags,null);
+		}
+		return $metaTags;
 	}
 
 	/**
@@ -104,10 +119,13 @@ class THead extends TControl
 		if(($title=$page->getTitle())==='')
 			$title=$this->getTitle();
 		$writer->write("<head>\n<title>".THttpUtility::htmlEncode($title)."</title>\n");
-		foreach($this->_metaTags as $metaTag)
+		if(($metaTags=$this->getMetaTags())!==null)
 		{
-			$metaTag->render($writer);
-			$writer->writeLine();
+			foreach($metaTags as $metaTag)
+			{
+				$metaTag->render($writer);
+				$writer->writeLine();
+			}
 		}
 		$cs=$page->getClientScript();
 		$cs->renderStyleSheetFiles($writer);
@@ -253,6 +271,37 @@ class TMetaTag extends TComponent
 		$writer->addAttribute('content',$this->_name);
 		$writer->renderBeginTag('meta');
 		$writer->renderEndTag();
+	}
+}
+
+
+/**
+ * TMetaTagCollection class
+ *
+ * TMetaTagCollection represents a collection of meta tags
+ * contained in a {@link THead} control.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
+class TMetaTagCollection extends TList
+{
+	/**
+	 * Inserts an item at the specified position.
+	 * This overrides the parent implementation by performing type
+	 * check on the item being added.
+	 * @param integer the speicified position.
+	 * @param mixed new item
+	 * @throws TInvalidDataTypeException if the item to be inserted is not a {@link TMetaTag}
+	 */
+	public function insertAt($index,$item)
+	{
+		if($item instanceof TMetaTag)
+			parent::insertAt($index,$item);
+		else
+			throw new TInvalidDataTypeException('metatagcollection_metatag_invalid');
 	}
 }
 

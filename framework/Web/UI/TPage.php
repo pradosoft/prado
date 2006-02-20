@@ -690,13 +690,11 @@ class TPage extends TTemplateControl
 		{
 			if($this->_focus)
 			{
-				if(is_string($this->_focus))
-					$cs->registerFocusScript($this->_focus);
-				else if(($this->_focus instanceof TControl) && $this->_focus->getVisible(true))
-					$cs->registerFocusScript($this->_focus->getClientID());
+				if(($this->_focus instanceof TControl) && $this->_focus->getVisible(true) || is_string($this->_focus))
+					$cs->registerFocusControl($this->_focus);
 			}
 			else if($this->_postData && ($lastFocus=$this->_postData->itemAt(self::FIELD_LASTFOCUS))!==null)
-				$cs->registerFocusScript($lastFocus);
+				$cs->registerFocusControl($lastFocus);
 			$cs->renderHiddenFields($writer);
 			$cs->renderScriptFiles($writer);
 			$cs->renderEndScripts($writer);

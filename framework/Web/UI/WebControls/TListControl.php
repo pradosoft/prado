@@ -195,7 +195,7 @@ abstract class TListControl extends TDataBoundControl
 		// so we make them be effective now
 		if($this->_cachedSelectedValue!==null)
 		{
-			$index=$items->findIndexByValue($value);
+			$index=$items->findIndexByValue($this->_cachedSelectedValue);
 			if($index===-1 || ($this->_cachedSelectedIndex!==-1 && $this->_cachedSelectedIndex!==$index))
 				throw new TInvalidDataValueException('listcontrol_selection_invalid');
 			$this->setSelectedIndex($index);

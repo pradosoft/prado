@@ -174,6 +174,18 @@ class TClientScriptManager extends TApplicationComponent
 	}
 
 	/**
+	 * Registers the control to receive default focus.
+	 * @param TControl|string the control or the client ID of the HTML element to receive default focus
+	 */
+	public function registerFocusControl($target)
+	{
+		$this->registerPradoScript('prado');
+		if($target instanceof TControl)
+			$target=$target->getClientID();
+		$this->registerEndScript('prado:focus','Prado.Focus.setFocus("'.TJavaScript::quoteString($target).'");');
+	}
+
+	/**
 	 * @return array default button options.
 	 */
 	protected function getDefaultButtonOptions($panel, $button)
@@ -417,12 +429,6 @@ class TClientScriptManager extends TApplicationComponent
 		}
 		if($str!=='')
 			$writer->write("<div>\n".$str."</div>\n");
-	}
-
-	public function registerFocusScript($target)
-	{
-		$this->registerPradoScript('prado');
-		$this->registerEndScript('prado:focus','Prado.Focus.setFocus("'.TJavaScript::quoteString($target).'");');
 	}
 }
 
