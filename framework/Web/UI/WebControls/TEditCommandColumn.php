@@ -153,7 +153,6 @@ class TEditCommandColumn extends TDataGridColumn
 	public function initializeCell($cell,$columnIndex,$itemType)
 	{
 		parent::initializeCell($cell,$columnIndex,$itemType);
-		$buttonType=$this->getButtonType()=='LinkButton'?'TLinkButton':'TButton';
 		if($itemType==='Item' || $itemType==='AlternatingItem' || $itemType==='SelectedItem')
 			$this->addButtonToCell($cell,'Edit',$this->getEditText(),false,'');
 		else if($itemType==='EditItem')
@@ -174,15 +173,24 @@ class TEditCommandColumn extends TDataGridColumn
 	 */
 	protected function addButtonToCell($cell,$commandName,$text,$causesValidation,$validationGroup)
 	{
-		if($this->getButtonType()==='LinkButton')
-			$button=Prado::createComponent('System.Web.UI.WebControls.TLinkButton');
-		else
-			$button=Prado::createComponent('System.Web.UI.WebControls.TButton');
+		$button=$this->createButton();
 		$button->setText($text);
 		$button->setCommandName($commandName);
 		$button->setCausesValidation($causesValidation);
 		$button->setValidationGroup($validationGroup);
 		$cell->getControls()->add($button);
+	}
+
+	/**
+	 * Creates a button by {@link getButtonType ButtonType}.
+	 * @return mixed the newly created button.
+	 */
+	protected function createButton()
+	{
+		if($this->getButtonType()==='LinkButton')
+			return Prado::createComponent('System.Web.UI.WebControls.TLinkButton');
+		else
+			return Prado::createComponent('System.Web.UI.WebControls.TButton');
 	}
 }
 
