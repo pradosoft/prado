@@ -154,43 +154,36 @@ class TEditCommandColumn extends TDataGridColumn
 	{
 		parent::initializeCell($cell,$columnIndex,$itemType);
 		if($itemType==='Item' || $itemType==='AlternatingItem' || $itemType==='SelectedItem')
-			$this->addButtonToCell($cell,'Edit',$this->getEditText(),false,'');
+			$cell->getControls()->add($this->createButton('Edit',$this->getEditText(),false,''));
 		else if($itemType==='EditItem')
 		{
-			$this->addButtonToCell($cell,'Update',$this->getUpdateText(),$this->getCausesValidation(),$this->getValidationGroup());
-			$cell->getControls()->add('&nbsp;');
-			$this->addButtonToCell($cell,'Cancel',$this->getCancelText(),false,'');
+			$controls=$cell->getControls();
+			$controls->add($this->createButton('Update',$this->getUpdateText(),$this->getCausesValidation(),$this->getValidationGroup()));
+			$controls->add('&nbsp;');
+			$controls->add($this->createButton('Cancel',$this->getCancelText(),false,''));
 		}
 	}
 
 	/**
-	 * Creates a button and adds it to the cell.
-	 * @param TTableCell the cell that the button is created within
+	 * Creates a button and initializes its properties.
+	 * The button type is determined by {@link getButtonType ButtonType}.
 	 * @param string command name associated with the button
 	 * @param string button caption
 	 * @param boolean whether the button should cause validation
 	 * @param string the validation group that the button belongs to
+	 * @return mixed the newly created button.
 	 */
-	protected function addButtonToCell($cell,$commandName,$text,$causesValidation,$validationGroup)
+	protected function createButton($commandName,$text,$causesValidation,$validationGroup)
 	{
-		$button=$this->createButton();
+		if($this->getButtonType()==='LinkButton')
+			$button=Prado::createComponent('System.Web.UI.WebControls.TLinkButton');
+		else
+			$button=Prado::createComponent('System.Web.UI.WebControls.TButton');
 		$button->setText($text);
 		$button->setCommandName($commandName);
 		$button->setCausesValidation($causesValidation);
 		$button->setValidationGroup($validationGroup);
-		$cell->getControls()->add($button);
-	}
-
-	/**
-	 * Creates a button by {@link getButtonType ButtonType}.
-	 * @return mixed the newly created button.
-	 */
-	protected function createButton()
-	{
-		if($this->getButtonType()==='LinkButton')
-			return Prado::createComponent('System.Web.UI.WebControls.TLinkButton');
-		else
-			return Prado::createComponent('System.Web.UI.WebControls.TButton');
+		return $button;
 	}
 }
 
