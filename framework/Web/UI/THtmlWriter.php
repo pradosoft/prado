@@ -10,12 +10,26 @@
  * @package System.Web.UI
  */
 
-// todo: test if an attribute is a url
-// keep nonclosing tag only
-// add more utility methods (e.g. render....)
-// implment encoding (for text and url)
 /**
  * THtmlWriter class
+ *
+ * THtmlWriter is a writer that renders valid XHTML outputs.
+ * It provides functions to render tags, their attributes and stylesheet fields.
+ * Attribute and stylesheet values will be automatically HTML-encoded if
+ * they require so. For example, the 'value' attribute in an input tag
+ * will be encoded.
+ *
+ * A common usage of THtmlWriter is as the following sequence:
+ * <code>
+ *  $writer->addAttribute($name1,$value1);
+ *  $writer->addAttribute($name2,$value2);
+ *  $writer->renderBeginTag($tagName);
+ *  // ... render contents enclosed within the tag here
+ *  $writer->renderEndTag();
+ * </code>
+ * Make sure each invocation of {@link renderBeginTag} is accompanied with
+ * a {@link renderEndTag} and they are properly nested, like nesting
+ * tags in HTML and XHTML.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -24,110 +38,28 @@
  */
 class THtmlWriter extends TApplicationComponent implements ITextWriter
 {
-	const TAG_INLINE=0;
-	const TAG_NONCLOSING=1;
-	const TAG_OTHER=2;
-	const CHAR_NEWLINE="\n";
-	const CHAR_TAB="\t";
-	private static $_tagTypes=array(
-		'*'=>2,
-		'a'=>0,
-		'acronym'=>0,
-		'address'=>2,
-		'area'=>1,
-		'b'=>0,
-		'base'=>1,
-		'basefont'=>1,
-		'bdo'=>0,
-		'bgsound'=>1,
-		'big'=>0,
-		'blockquote'=>2,
-		'body'=>2,
-		'br'=>2,
-		'button'=>0,
-		'caption'=>2,
-		'center'=>2,
-		'cite'=>0,
-		'code'=>0,
-		'col'=>1,
-		'colgroup'=>2,
-		'del'=>0,
-		'dd'=>0,
-		'dfn'=>0,
-		'dir'=>2,
-		'div'=>2,
-		'dl'=>2,
-		'dt'=>0,
-		'em'=>0,
-		'embed'=>1,
-		'fieldset'=>2,
-		'font'=>0,
-		'form'=>2,
-		'frame'=>1,
-		'frameset'=>2,
-		'h1'=>2,
-		'h2'=>2,
-		'h3'=>2,
-		'h4'=>2,
-		'h5'=>2,
-		'h6'=>2,
-		'head'=>2,
-		'hr'=>1,
-		'html'=>2,
-		'i'=>0,
-		'iframe'=>2,
-		'img'=>1,
-		'input'=>1,
-		'ins'=>0,
-		'isindex'=>1,
-		'kbd'=>0,
-		'label'=>0,
-		'legend'=>2,
-		'li'=>0,
-		'link'=>1,
-		'map'=>2,
-		'marquee'=>2,
-		'menu'=>2,
-		'meta'=>1,
-		'nobr'=>0,
-		'noframes'=>2,
-		'noscript'=>2,
-		'object'=>2,
-		'ol'=>2,
-		'option'=>2,
-		'p'=>0,
-		'param'=>2,
-		'pre'=>2,
-		'ruby'=>2,
-		'rt'=>2,
-		'q'=>0,
-		's'=>0,
-		'samp'=>0,
-		'script'=>2,
-		'select'=>2,
-		'small'=>2,
-		'span'=>0,
-		'strike'=>0,
-		'strong'=>0,
-		'style'=>2,
-		'sub'=>0,
-		'sup'=>0,
-		'table'=>2,
-		'tbody'=>2,
-		'td'=>0,
-		'textarea'=>0,
-		'tfoot'=>2,
-		'th'=>0,
-		'thead'=>2,
-		'title'=>2,
-		'tr'=>2,
-		'tt'=>0,
-		'u'=>0,
-		'ul'=>2,
-		'var'=>0,
-		'wbr'=>1,
-		'xml'=>2
+	/**
+	 * @var array list of tags are do not need a closing tag
+	 */
+	private static $_simpleTags=array(
+		'area'=>true,
+		'base'=>true,
+		'basefont'=>true,
+		'bgsound'=>true,
+		'col'=>true,
+		'embed'=>true,
+		'frame'=>true,
+		'hr'=>true,
+		'img'=>true,
+		'input'=>true,
+		'isindex'=>true,
+		'link'=>true,
+		'meta'=>true,
+		'wbr'=>true,
 	);
+	/**
+	 * @var array list of attributes that need HTML encoding
+	 */
 	private static $_attrEncode=array(
 		'abbr'=>true,
 		'accesskey'=>true,
@@ -145,81 +77,138 @@ class THtmlWriter extends TApplicationComponent implements ITextWriter
 		'title'=>true,
 		'value'=>true
 	);
+	/**
+	 * @var array list of stylesheet attributes that need HTML encoding
+	 */
 	private static $_styleEncode=array(
 		'background-image'=>true,
 		'list-style-image'=>true
 	);
+	/**
+	 * @var array list of attributes to be rendered for a tag
+	 */
 	private $_attributes=array();
+	/**
+	 * @var array list of openning tags
+	 */
 	private $_openTags=array();
-	private $_writer=null;
+	/**
+	 * @var array list of style attributes
+	 */
 	private $_styles=array();
+	/**
+	 * @var ITextWriter writer
+	 */
+	private $_writer=null;
 
+	/**
+	 * Constructor.
+	 * @param ITextWriter a writer that THtmlWriter will pass its rendering result to
+	 */
 	public function __construct($writer)
 	{
 		$this->_writer=$writer;
 	}
 
-	public function isValidFormAttribute($name)
-	{
-		return true;
-	}
-
+	/**
+	 * Adds a list of attributes to be rendered.
+	 * @param array list of attributes to be rendered
+	 */
 	public function addAttributes($attrs)
 	{
 		foreach($attrs as $name=>$value)
 			$this->_attributes[$name]=isset(self::$_attrEncode[$name])?THttpUtility::htmlEncode($value):$value;
 	}
 
+	/**
+	 * Adds an attribute to be rendered.
+	 * @param string name of the attribute
+	 * @param string value of the attribute
+	 */
 	public function addAttribute($name,$value)
 	{
 		$this->_attributes[$name]=isset(self::$_attrEncode[$name])?THttpUtility::htmlEncode($value):$value;
 	}
 
+	/**
+	 * Removes the named attribute from rendering
+	 * @param string name of the attribute to be removed
+	 */
 	public function removeAttribute($name)
 	{
-		if(isset($this->_attributes[$name]))
-			unset($this->_attributes[$name]);
+		unset($this->_attributes[$name]);
 	}
-	
+
+	/**
+	 * Adds a list of stylesheet attributes to be rendered.
+	 * @param array list of stylesheet attributes to be rendered
+	 */
+	public function addStyleAttributes($attrs)
+	{
+		foreach($attrs as $name=>$value)
+			$this->_styles[$name]=isset(self::$_styleEncode[$name])?THttpUtility::htmlEncode($value):$value;
+	}
+
+	/**
+	 * Adds a stylesheet attribute to be rendered
+	 * @param string stylesheet attribute name
+	 * @param string stylesheet attribute value
+	 */
 	public function addStyleAttribute($name,$value)
 	{
 		$this->_styles[$name]=isset(self::$_styleEncode[$name])?THttpUtility::htmlEncode($value):$value;
 	}
 
+	/**
+	 * Removes the named stylesheet attribute from rendering
+	 * @param string name of the stylesheet attribute to be removed
+	 */
 	public function removeStyleAttribute($name)
 	{
-		if(isset($this->_styles[$name]))
-			unset($this->_styles[$name]);
+		unset($this->_styles[$name]);
 	}
 
+	/**
+	 * Flushes the rendering result.
+	 * This will invoke the underlying writer's flush method.
+	 */
 	public function flush()
 	{
 		$this->_writer->flush();
 	}
 
+	/**
+	 * Renders a string.
+	 * @param string string to be rendered
+	 */
 	public function write($str)
 	{
 		$this->_writer->write($str);
 	}
 
+	/**
+	 * Renders a string and appends a newline to it.
+	 * @param string string to be rendered
+	 */
 	public function writeLine($str='')
 	{
-		$this->_writer->write($str.self::CHAR_NEWLINE);
+		$this->_writer->write($str."\n");
 	}
 
+	/**
+	 * Renders an HTML break.
+	 */
 	public function writeBreak()
 	{
 		$this->_writer->write('<br/>');
 	}
 
-	public function writeAttribute($name,$value,$encode=false)
-	{
-		$this->_writer->write(' '.$name.='"'.($encode?THttpUtility::htmlEncode($value):$value).'"');
-	}
-
+	/**
+	 * Renders the openning tag.
+	 * @param string tag name
+	 */
 	public function renderBeginTag($tagName)
 	{
-		$tagType=isset(self::$_tagTypes[$tagName])?self::$_tagTypes[$tagName]:self::TAG_OTHER;
 		$str='<'.$tagName;
 		foreach($this->_attributes as $name=>$value)
 			$str.=' '.$name.'="'.$value.'"';
@@ -230,7 +219,7 @@ class THtmlWriter extends TApplicationComponent implements ITextWriter
 				$str.=$name.':'.$value.';';
 			$str.='"';
 		}
-		if($tagType===self::TAG_NONCLOSING)
+		if(isset(self::$_simpleTags[$tagName]))
 		{
 			$str.=' />';
 			array_push($this->_openTags,'');
@@ -245,6 +234,9 @@ class THtmlWriter extends TApplicationComponent implements ITextWriter
 		$this->_styles=array();
 	}
 
+	/**
+	 * Renders the closing tag.
+	 */
 	public function renderEndTag()
 	{
 		if(!empty($this->_openTags) && ($tagName=array_pop($this->_openTags))!=='')

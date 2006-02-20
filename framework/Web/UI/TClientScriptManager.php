@@ -136,6 +136,11 @@ class TClientScriptManager extends TApplicationComponent
 		}
 	}
 
+	/**
+	 * Registers postback javascript for a control.
+	 * @param TControl control to be registered with postback js
+	 * @param string js namespace for the control
+	 */
 	public function registerPostBackControl($control,$namespace='Prado.WebUI')
 	{
 		$options = $this->getPostBackOptions($control);
@@ -149,6 +154,10 @@ class TClientScriptManager extends TApplicationComponent
 		$this->registerPradoScript('prado');
 	}
 
+	/**
+	 * @param TControl postback control
+	 * @return array postback options for the control
+	 */
 	protected function getPostBackOptions($control)
 	{
 		$postback = $control->getPostBackOptions();

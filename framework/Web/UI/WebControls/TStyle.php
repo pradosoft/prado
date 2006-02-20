@@ -329,8 +329,7 @@ class TStyle extends TComponent
 					$writer->addStyleAttribute(trim($arr[0]),trim($arr[1]));
 			}
 		}
-		foreach($this->_fields as $name=>$value)
-			$writer->addStyleAttribute($name,$value);
+		$writer->addStyleAttributes($this->_fields);
 		if($this->_font!==null)
 			$this->_font->addAttributesToRender($writer);
 		if($this->_class!==null)

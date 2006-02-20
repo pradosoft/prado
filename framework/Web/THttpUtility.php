@@ -22,11 +22,23 @@ class THttpUtility
 {
 	private static $_entityTable=null;
 
+	/**
+	 * HTML-encodes a string.
+	 * It is equivalent to {@link htmlspeicalchars} PHP function.
+	 * @param string string to be encoded
+	 * @return string encoded string
+	 */
 	public static function htmlEncode($s)
 	{
 		return htmlspecialchars($s);
 	}
 
+	/**
+	 * HTML-decodes a string.
+	 * It is the inverse of {@link htmlEncode}.
+	 * @param string string to be decoded
+	 * @return string decoded string
+	 */
 	public static function htmlDecode($s)
 	{
 		if(!self::$_entityTable)

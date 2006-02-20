@@ -13,7 +13,7 @@
 /**
  * TJavaScript class.
  *
- * TJavaScript is a utility class containing commonly used javascript-related
+ * TJavaScript is a utility class containing commonly-used javascript-related
  * functions.
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
@@ -23,6 +23,11 @@
  */
 class TJavaScript
 {
+	/**
+	 * Renders a list of javascript files
+	 * @param array URLs to the javascript files
+	 * @return string rendering result
+	 */
 	public static function renderScriptFiles($files)
 	{
 		$str='';
@@ -31,11 +36,21 @@ class TJavaScript
 		return $str;
 	}
 
+	/**
+	 * Renders a javascript file
+	 * @param string URL to the javascript file
+	 * @return string rendering result
+	 */
 	public static function renderScriptFile($file)
 	{
 		return '<script type="text/javascript" src="'.THttpUtility::htmlEncode($file)."\"></script>\n";
 	}
 
+	/**
+	 * Renders a list of javascript blocks
+	 * @param array javascript blocks
+	 * @return string rendering result
+	 */
 	public static function renderScriptBlocks($scripts)
 	{
 		if(count($scripts))
@@ -44,33 +59,24 @@ class TJavaScript
 			return '';
 	}
 
+	/**
+	 * Renders javascript block
+	 * @param string javascript block
+	 * @return string rendering result
+	 */
 	public static function renderScriptBlock($script)
 	{
 		return "<script type=\"text/javascript\">\n/*<![CDATA[*/\n{$script}\n/*]]>*/\n</script>\n";
 	}
 
-	public static function renderArrayDeclarations($arrays)
-	{
-		if(count($arrays))
-		{
-			$str="<script type=\"text/javascript\">\n/*<![CDATA[*/\n";
-			foreach($arrays as $name=>$array)
-				$str.="var $name=new Array(".implode(',',$array).");\n";
-			$str.="\n/*]]>*/\n</script>\n";
-			return $str;
-		}
-		else
-			return '';
-	}
-
-	public static function renderArrayDeclaration($array)
-	{
-		$str="<script type=\"text/javascript\">\n/*<![CDATA[*/\n";
-		$str.="var $name=new Array(".implode(',',$array).");\n";
-		$str.="\n/*]]>*/\n</script>\n";
-		return $str;
-	}
-
+	/**
+	 * Quotes a javascript string.
+	 * After processing, the string can be safely enclosed within a pair of
+	 * quotation marks and serve as a javascript string.
+	 * @param string string to be quoted
+	 * @param boolean whether this string is used as a URL
+	 * @return string the quoted string
+	 */
 	public static function quoteString($js,$forUrl=false)
 	{
 		if($forUrl)
@@ -86,13 +92,17 @@ class TJavaScript
 	 * <code>
 	 * $options['onLoading'] = "doit";
 	 * $options['onComplete'] = "more";
-	 * $js = new TJavascriptSerializer($options);
-	 * echo $js->toMap();
+	 * echo TJavaScript::encode($options);
 	 * //expects the following javascript code
 	 * // {'onLoading':'doit','onComplete':'more'}
 	 * </code>
 	 *
-	 * For higher complexity data structures use TJSON to serialize and unserialize.
+	 * For higher complexity data structures use {@link jsonEncode} and {@link jsonDecode}
+	 * to serialize and unserialize.
+	 *
+	 * @param mixed PHP variable to be encoded
+	 * @param boolean whether the output is a map or a list.
+	 * @return string the encoded string
 	 */
 	public static function encode($value,$toMap=true)
 	{
@@ -144,12 +154,24 @@ class TJavaScript
 			return '';
 	}
 
+	/**
+	 * Encodes a PHP variable into javascript string.
+	 * This method invokes {@TJSON} utility class to perform the encoding.
+	 * @param mixed variable to be encoded
+	 * @return string encoded string
+	 */
 	public static function jsonEncode($value)
 	{
 		Prado::using('System.Web.Javascripts.TJSON');
 		return TJSON::encode($value);
 	}
 
+	/**
+	 * Decodes a javascript string into PHP variable.
+	 * This method invokes {@TJSON} utility class to perform the decoding.
+	 * @param string string to be decoded
+	 * @return mixed decoded variable
+	 */
 	public static function jsonDecode($value)
 	{
 		Prado::using('System.Web.Javascripts.TJSON');

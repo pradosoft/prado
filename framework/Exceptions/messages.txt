@@ -151,6 +151,15 @@ templatecontrol_mastercontrol_invalid	= Master control must be of type TTemplate
 templatecontrol_contentid_duplicated	= TContent ID '%s' is duplicated.
 templatecontrol_placeholderid_duplicated= TContentPlaceHolder ID '%s' is duplicated.
 
+page_form_duplicated					= A page can contain at most one TForm. Use regular HTML form tags for the rest forms.
+page_isvalid_unknown					= TPage.IsValid has not been evaluated yet.
+page_postbackcontrol_invalid			= Unable to determine postback control '%s'.
+page_control_outofform					= Control '%s' must be enclosed within TForm.
+page_head_duplicated					= A page can contain at most one THead.
+page_statepersister_invalid				= Page state persister must implement IPageStatePersister interface.
+
+csmanager_pradoscript_invalid			= Unknown Prado script library name '%s'.
+
 contentplaceholder_id_required			= TContentPlaceHolder must have an ID.
 
 content_id_required						= TContent must have an ID.
