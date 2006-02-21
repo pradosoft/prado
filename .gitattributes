@@ -584,6 +584,10 @@ framework/Security/TAuthorizationRule.php -text
 framework/Security/TMembershipManager.php -text
 framework/Security/TSecurityManager.php -text
 framework/Security/TUserManager.php -text
+framework/Specs/ApplicationConfiguration.dtd -text
+framework/Specs/ApplicationConfiguration.xsd -text
+framework/Specs/PageConfiguration.dtd -text
+framework/Specs/PageConfiguration.xsd -text
 framework/TApplication.php -text
 framework/TApplicationComponent.php -text
 framework/TComponent.php -text

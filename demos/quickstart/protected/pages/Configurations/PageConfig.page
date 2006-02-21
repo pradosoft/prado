@@ -9,6 +9,7 @@ When a user requests a page stored under <tt>&lt;BasePath&gt;/dir1/dir2</tt>, th
 </p>
 <p>
 The format of a page configuration file is as follows,
+</p>
 <com:TTextHighlighter Language="xml" CssClass="source">
 <configuration>
   <paths>
@@ -30,7 +31,11 @@ The format of a page configuration file is as follows,
   </parameters>
 </configuration>
 </com:TTextHighlighter>
+<p>
 The <tt>&lt;paths&gt;</tt>, <tt>&lt;modules&gt;</tt> and <tt>&lt;parameters&gt;</tt> are similar to those in an application configuration. The <tt>&lt;authorization&gt;</tt> specifies the authorization rules that apply to the current page directory and all its subdirectories. It will be explained in more detail in future sections. The <tt>&lt;pages&gt;</tt> element specifies the initial values for the properties of pages. Each <tt>&lt;page&gt;</tt> element specifies the initial property values for a particular page identified by the <tt>id</tt> attribute. Initial property values given in the <tt>&lt;pages&gt;</tt> element apply to all pages in the current directory and all its subdirectories.
+</p>
+<p>
+Complete specification of page configurations can be found in the <a href="<%~../../../../../framework/Specs/PageConfiguration.dtd%>">DTD</a> and <a href="<%~../../../../../framework/Specs/PageConfiguration.xsd%>">XSD</a> files.
 </p>
 
 </com:TContent>

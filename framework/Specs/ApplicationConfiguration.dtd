@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This is the XML Schema Definition for the application.xml file used in Prado/3 framework. -->
+<!-- @package prado.config -->
+<!-- @author Robert Kummer <r.kummer@ipunkt.biz> -->
+<!-- @since Prado/3.0b rev688 -->
+<!-- @version 1.0/2006-02-21 -->
+<!ELEMENT application (paths, modules, services, parameters)>
+<!ATTLIST application
+	id CDATA #REQUIRED
+	Mode (Off | Debug | Normal | Performance) #REQUIRED
+>
+<!ELEMENT paths (alias? | using?)+>
+<!ELEMENT modules (module+)>
+<!ELEMENT services (service+)>
+<!ELEMENT parameters (parameter+)>
+<!ELEMENT module (#PCDATA)>
+<!ATTLIST module
+	id CDATA #REQUIRED
+	class CDATA #REQUIRED
+>
+<!ELEMENT parameter (#PCDATA)>
+<!ATTLIST parameter
+	id CDATA #REQUIRED
+	class CDATA #IMPLIED
+	value CDATA #IMPLIED
+>
+<!ELEMENT alias EMPTY>
+<!ATTLIST alias
+	id CDATA #REQUIRED
+	path CDATA #REQUIRED
+>
+<!ELEMENT using EMPTY>
+<!ATTLIST using
+	namespace CDATA #REQUIRED
+>
+<!ELEMENT service (#PCDATA)>
+<!ATTLIST service
+	id CDATA #REQUIRED
+	class CDATA #REQUIRED
+>

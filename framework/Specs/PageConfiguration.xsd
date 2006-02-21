@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- This is the XML Schema Definition for the application.xml file used in Prado/3 framework. -->
+<!-- @package prado.config -->
+<!-- @author Robert Kummer <r.kummer@ipunkt.biz> -->
+<!-- @since Prado/3.0b rev688 -->
+<!-- @version 1.0/2006-02-21 -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xs:complexType name="aliasType">
+		<xs:attribute name="id" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string"/>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="path" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string"/>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:element name="application">
+		<xs:annotation>
+			<xs:documentation>configuration content for the whole application in prado3 framework</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="paths" type="pathsType"/>
+				<xs:element name="modules" type="modulesType"/>
+				<xs:element name="services" type="servicesType"/>
+				<xs:element name="parameters" type="parametersType"/>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string" use="required"/>
+			<xs:attribute name="Mode" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Off"/>
+						<xs:enumeration value="Debug"/>
+						<xs:enumeration value="Normal"/>
+						<xs:enumeration value="Performance"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:anyAttribute namespace="##local" processContents="lax"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="moduleType">
+		<xs:attribute name="id" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string"/>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="class" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string"/>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:anyAttribute namespace="##local" processContents="lax"/>
+	</xs:complexType>
+	<xs:complexType name="modulesType">
+		<xs:sequence>
+			<xs:element name="module" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="moduleType">
+							<xs:sequence minOccurs="0" maxOccurs="unbounded">
+								<xs:any namespace="##local" processContents="lax"/>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="parameterType">
+		<xs:attribute name="id" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string"/>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="class" use="optional">
+			<xs:simpleType>
+				<xs:restriction base="xs:string"/>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="value" type="xs:string" use="optional"/>
+		<xs:anyAttribute namespace="##local" processContents="lax"/>
+	</xs:complexType>
+	<xs:complexType name="parametersType">
+		<xs:sequence>
+			<xs:element name="parameter" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="parameterType">
+							<xs:sequence minOccurs="0" maxOccurs="unbounded">
+								<xs:any namespace="##local" processContents="lax"/>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="pathsType">
+		<xs:choice maxOccurs="unbounded">
+			<xs:element name="alias" type="aliasType" minOccurs="0"/>
+			<xs:element name="using" type="usingType" minOccurs="0"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="serviceType">
+		<xs:attribute name="id" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string"/>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="class" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string"/>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:anyAttribute namespace="##local" processContents="lax"/>
+	</xs:complexType>
+	<xs:complexType name="servicesType">
+		<xs:sequence>
+			<xs:element name="service" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="serviceType">
+							<xs:sequence minOccurs="0" maxOccurs="unbounded">
+								<xs:any namespace="##local" processContents="lax"/>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="usingType">
+		<xs:attribute name="namespace" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string"/>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+</xs:schema>

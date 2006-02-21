@@ -37,6 +37,9 @@ Note, if the <tt>value</tt> attribute is not specified, the whole parameter XML 
 </li>
 </ul>
 <p>
+Complete specification of application configurations can be found in the <a href="<%~../../../../../framework/Specs/ApplicationConfiguration.dtd%>">DTD</a> and <a href="<%~../../../../../framework/Specs/ApplicationConfiguration.xsd%>">XSD</a> files.
+</p>
+<p>
 By default without explicit configuration, a PRADO application when running will load a few core modules, such as <tt>THttpRequest</tt>, <tt>THttpResponse</tt>, etc. It will also provide the <tt>TPageService</tt> as a default service. Configuration and usage of these modules and services are covered in individual sections of this tutorial. Note, if your application takes default settings for these modules and service, you do not need to provide an application configuration. However, if these modules or services are not sufficient, or you want to change their behavior by configuring their property values, you will need an application configuration.
 </p>
 

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- This is the XML Schema Definition for the config.xml file(s) used in Prado/3 framework. -->
+<!-- @package prado.config -->
+<!-- @author Robert Kummer <r.kummer@ipunkt.biz> -->
+<!-- @since Prado/3.0b rev688 -->
+<!-- @version 1.0/2006-02-21 -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xs:complexType name="aliasType">
+		<xs:attribute name="id" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string"/>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="path" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string"/>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="allowType">
+		<xs:attribute name="pages" use="optional">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(([a-zA-Z0-9_\-]*),?)+"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="users" use="optional">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(([a-zA-Z0-9_\-|\*|\?]*),?)+"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="roles" use="optional">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(([a-zA-Z0-9_\-]*),?)+"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="verb" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="get"/>
+					<xs:enumeration value="post"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="authorizationType">
+		<xs:sequence>
+			<xs:element name="allow" type="allowType"/>
+			<xs:element name="deny" type="denyType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="configuration">
+		<xs:annotation>
+			<xs:documentation>configuration content for page sections in prado3 framework</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="paths" type="pathsType" minOccurs="0"/>
+				<xs:element name="modules" type="modulesType" minOccurs="0"/>
+				<xs:element name="authorization" type="authorizationType" minOccurs="0"/>
+				<xs:element name="pages" type="pagesType" minOccurs="0"/>
+				<xs:element name="parameters" type="parametersType" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="denyType">
+		<xs:attribute name="pages" use="optional">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(([a-zA-Z0-9_\-]*),?)+"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="users" use="optional">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(([a-zA-Z0-9_\-|\*|\?]*),?)+"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="roles" use="optional">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(([a-zA-Z0-9_\-]*),?)+"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="verb" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="post"/>
+					<xs:enumeration value="get"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="moduleType">
+		<xs:attribute name="id" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="ModuleID"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="class" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="ModuleClass"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:anyAttribute namespace="##local" processContents="lax"/>
+	</xs:complexType>
+	<xs:complexType name="modulesType">
+		<xs:sequence>
+			<xs:element name="module" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="moduleType">
+							<xs:sequence minOccurs="0" maxOccurs="unbounded">
+								<xs:any namespace="##local" processContents="lax"/>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="pageType">
+		<xs:attribute name="id" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="PageID"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:anyAttribute namespace="##local" processContents="lax"/>
+	</xs:complexType>
+	<xs:complexType name="pagesType">
+		<xs:sequence>
+			<xs:element name="page" type="pageType" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="MasterClass" type="xs:string" use="optional"/>
+		<xs:attribute name="Theme" type="xs:string" use="optional"/>
+		<xs:anyAttribute namespace="##local" processContents="lax"/>
+	</xs:complexType>
+	<xs:complexType name="parameterType">
+		<xs:attribute name="id" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="ParameterID"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="class" use="optional">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="ParameterClass"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="value" type="xs:string" use="optional"/>
+		<xs:anyAttribute namespace="##local" processContents="lax"/>
+	</xs:complexType>
+	<xs:complexType name="parametersType">
+		<xs:sequence>
+			<xs:element name="parameter" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="parameterType">
+							<xs:sequence minOccurs="0" maxOccurs="unbounded">
+								<xs:any namespace="##local" processContents="lax"/>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="pathsType">
+		<xs:choice maxOccurs="unbounded">
+			<xs:element name="alias" type="aliasType" minOccurs="0"/>
+			<xs:element name="using" type="usingType" minOccurs="0"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="usingType">
+		<xs:attribute name="namespace" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Namespace"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+</xs:schema>
