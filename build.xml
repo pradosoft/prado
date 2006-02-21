@@ -4,35 +4,36 @@
 
   Requirements
   ============
-  Phing > 2.1.1 (currently cvs HEAD needed)
+  Phing >= 2.2.0RC1
   xdebug >= 2.0.0beta4
   PhpDocumentor >= 1.3.0RC5
   PEAR >= 1.4.4
-  PEAR_PackageFileManager >= 1.6.0a4
 -->
-<project name="prado" basedir="." default="usage">
+<project name="prado" basedir="." default="dist">
 
   <property name="version" value="3.0.0"/>
-  <property name="state" value="stable"/>
+  <property name="state" value="beta"/>
   <property name="pkgname" value="${phing.project.name}-${version}"/>
   <property name="pkgname.pear" value="${pkgname}-pear"/>
   <property name="src.dir" value="framework"/>
   <property name="doc.dir" value="docs"/>
-  <property name="doc.api.dir" value="${doc.dir}/api"/>
   <property name="build.base.dir" value="build"/>
-  <property name="build.src.dir" value="${build.base.dir}/${pkgname}"/>
-  <property name="build.pear.dir" value="${build.base.dir}/${pkgname.pear}"/>
+  <property name="build.src.dir" value="${build.base.dir}/standard/${pkgname}"/>
+  <property name="build.pear.dir" value="${build.base.dir}/pear/${pkgname.pear}"/>
+  <property name="doc.build.dir" value="${build.base.dir}/docs/manual"/>
   <property name="dist.base.dir" value="dist"/>
   <property name="dist.zipfile" value="${dist.base.dir}/${pkgname}.zip"/>
   <property name="dist.tarfile" value="${dist.base.dir}/${pkgname}.tar.gz"/>
   <property name="dist.pearfile" value="${dist.base.dir}/${pkgname.pear}.tgz"/>
   <property name="tests.dir" value="tests/unit"/>
-  <property name="reports.dir" value="reports"/>
+  <property name="reports.dir" value="${build.base.dir}/reports"/>
   <property name="reports.unit.dir" value="${reports.dir}/unit"/>
   <property name="reports.codecoverage.dir" value="${reports.dir}/codecoverage"/>
   <property name="reports.style.dir" value="buildscripts/phing/style"/>
   <property name="reports.geshi.dir" value="${src.dir}/3rdParty/geshi"/>
   <property name="prado.lite" value="pradolite.php"/>
+
+  <taskdef name="phplint" classname="PhpLintTask" classpath="buildscripts/phing/tasks"/>
 
   <fileset dir="." id="src">
     <exclude name="${src.dir}/**/.svn"/>
@@ -58,17 +59,6 @@
     <include name="demos/**/*"/>
   </fileset>
 
-  <target name="usage">
-    <echo message="usage: phing &lt;target&gt;"/>
-    <echo message=""/>
-    <echo message="Available targets are:"/>
-    <echo message=""/>
-    <echo message="dist      --> Build a distribution"/>
-    <echo message="doc       --> Generate API documentation"/>
-    <echo message="test      --> Run unit tests with reports"/>
-    <echo message="clean     --> Clean up the mess"/>
-  </target>
-
   <target name="versioncheck" unless="version">
     <echo message="====================================================="/>
     <echo message="Version not specified. You must enter a version. In"/>
@@ -86,20 +76,27 @@
     <property name="dist.pearfile" value="${build.base.dir}/${pkgname}-pear.tgz" override="true"/>
   </target>
 
-  <taskdef name="phplint" classname="buildscripts.phing.tasks.PhpLintTask"/>
-
-  <target name="lint">
+  <target name="lint" description="Check syntax of PHP source files">
     <phplint>
       <fileset refid="src"/>
     </phplint>
   </target>
 
-  <target name="doc" description="Generating API documentation">
-    <delete dir="${doc.api.dir}"/>
-    <phpdoc title="PRADO ${version} API Documentation" destdir="${doc.api.dir}" sourcepath="${src.dir}" output="HTML:Smarty:PHP"/>
+  <target name="prepare" description="Prepare directory layout for build">
+    <phingcall target="clean"/>
+    <mkdir dir="${build.base.dir}"/>
+    <mkdir dir="${dist.base.dir}"/>
+    <mkdir dir="${reports.unit.dir}"/>
+    <mkdir dir="${reports.codecoverage.dir}"/>
+    <mkdir dir="${doc.build.dir}"/>
   </target>
 
-  <target name="test">
+  <target name="doc" description="Generate API documentation">
+    <delete dir="${doc.build.dir}"/>
+    <phpdoc title="PRADO ${version} API Documentation" destdir="${doc.build.dir}" sourcepath="${src.dir}" output="HTML:Smarty:PHP"/>
+  </target>
+
+  <target name="test" description="Run unit tests">
     <echo>Preparing directory structure</echo>
     <delete dir="${reports.unit.dir}"/>
     <delete dir="${reports.codecoverage.dir}"/>
@@ -145,222 +142,33 @@
     </coverage-report>
   </target>
 
-  <target name="build" depends="versioncheck,doc" description="Creating the main PRADO build">
-    <echo>Cleaning up after last build</echo>
-    <delete dir="${build.base.dir}"/>
-    <echo>Creating directory layout...</echo>
+  
+  <target name="build-standard-package">
+    <echo>Building standard package...</echo>
     <copy todir="${build.src.dir}">
       <fileset refid="src"/>
       <fileset refid="docs"/>
       <fileset refid="misc"/>
       <fileset refid="demos"/>
-    </copy>
-    <phingcall target="pradolite"/>
-    <move file="${build.base.dir}/${prado.lite}" tofile="${build.src.dir}/framework" overwrite="true"/>
-  </target>
-
-  <target name="dist" depends="build" description="Creating the main PRADO distributions">
-    <delete dir="${dist.base.dir}"/>
-    <mkdir dir="${dist.base.dir}"/>
-    <tar compression="gzip" destFile="${dist.tarfile}" basedir="${build.base.dir}" />
-    <zip destfile="${dist.zipfile}" basedir="${build.base.dir}"/>
-  </target>
-
-  <target name="build-pear" depends="versioncheck,doc,pradolite">
-    <echo>Creating directory layout...</echo>
-    <delete dir="${build.base.dir}"/>
-    <copy todir="${build.pear.dir}">
-      <fileset refid="src"/>
-      <fileset refid="docs"/>
+      <fileset dir="${build.base.dir}">
+        <include name="docs/manual/**/*"/>
+	<include name="${prado.lite}"/>
+      </fileset>
     </copy>
   </target>
+  
+  <target name="build" depends="versioncheck,prepare,lint,test,doc,pradolite,build-standard-package" description="Creating the main PRADO build">
+  </target>
 
-  <target name="dist-pear" depends="build-pear">
-    <echo>Creating PEAR package.xml...</echo>
-    <pearpkg name="${phing.project.name}" dir="${build.pear.dir}" destFile="${build.base.dir}/package.xml">
-      <fileset refid="src"/>
-      <fileset refid="docs"/>
-
-      <option name="notes">Features and Changes in v3.0a
-
-Things not availabe in v3.0a yet:
-- Active controls
-- TWizard
-- THtmlArea
-- TDatePicker
-- TDataGrid and TDataList need more tests
-- TAdodb and AdoDB no longer included in release
-
-Component and Control Definition
-
-- component spec file discarded, replaced with
-getter and setter for property definitions
-- subproperty support (e.g. Font.Size="20pt")
-- enhanced event binding syntax besides the
-existing one (e.g. $control->Click=$callback;
-or $control->Click[0]=$callback;)
-- relationship change between controls, now
-with parent-child (presentational) and
-naming container-containee relationships.
-- enhanced control id management and rendering
-(the rendered IDs are much shorter now)
-- Master/content support to template controls.
-- Support for assets (publishing of private files and directories)
-- Enhanced collection classes
-- All controls are completely rewritten with new
-features and new controls.
-
-Template Syntax Enhancement
-
-- new special tags to facilitate template writing
-(more details are covered in quickstart demo)
-- component can now be specified in a namespace
-format (e.g. &lt;com:System.Web.UI.WebControls.TButton .... /&gt;
-- Enhanced template parsing error report (now with
-line number and error reason.
-
-Pages
-
-- Pages are organized in folders. Each folder can
-have a specific configuration file applied to pages
-in that folder and below (this replaces the previous
-v2 module concept).
-- Support for "classless" pages.
-- Enhanced page lifecycles (close to asp.net 2.0 page lifecycles)
-- Enhanced theme/skin support (now support css, js and image files)
-- Output is now XHTML-compliant
-- Enhanced JavaScript support
-
-Application
-
-- Introduces a module-based architecture. Modules accomplish
-all application functionality. Users can plug in their
-own modules.
-- Integrated support to pluggable services.
-- Generic cache support with TMemCache and TSqliteCache provided
-- Generic logging support with TLogRouter and different
-TLogRoute implementation.
-- Customizable error handling with support for internationalization.
-- Complete request, response, session, cookie classes
-- Application-level persistent state support
-- A new flexible auth framework provided
-- Parameters can be components now</option>
-
-      <!-- Set the simple options -->
-      <option name="summary">PRADO is a component-based and event-driven framework for rapid Web programming in PHP 5.</option>
-      <option name="description">PRADO reconceptualizes Web application development in terms of components, events and properties instead of procedures, URLs and query parameters.
-
-A PRADO component is a combination of a specification file (in XML), an HTML template and a PHP class. PRADO components are combined together to form larger components or complete PRADO pages.
-
-Developing PRADO Web applications mainly involves instantiating prebuilt and application-specific component types, configuring them by setting their properties, responding to their events by writing handler functions, and composing them into application tasks. Event-driven programming
-
-PRADO provides the following benefits for Web application developers:
-
-* reusability - Codes following the PRADO component protocol are highly reusable. Everything in PRADO is a reusable component.
-* ease of use - Creating and using components are extremely easy. Usually they simply involve configuring component properties.
-* robustness - PRADO frees developers from writing boring, buggy code. They code in terms of objects, methods and properties, instead of URLs and query parameters. The latest PHP5 exception mechanism is exploited that enables line-precise error reporting.
-* performance - PRADO uses a cache technique to ensure the performance of applications based on it. The performance is in fact comparable to those based on commonly used template engines.
-* team integration - PRADO enables separation of content and presentation. Components, typically pages, have their content (logic) and presentation stored in different files.</option>
-      <option name="version" value="${version}"/>
-      <option name="extends" value="prado"/>
-      <option name="state" value="${state}"/>
-      <option name="license" value="BSD"/>
-
-      <!-- Set the complex options -->
-      <mapping name="maintainers">
-        <element>
-          <element key="handle" value="xue"/>
-          <element key="name" value="Qiang Xue"/>
-	  <element key="email" value="qiang.xue@gmail.com"/>
-	  <element key="role" value="lead"/>
-	</element>
-        <element>
-          <element key="handle" value="wei"/>
-          <element key="name" value="Xiang Wei Zhuo"/>
-	  <element key="email" value="weizhuo@gmail.com"/>
-	  <element key="role" value="lead"/>
-	</element>
-        <element>
-          <element key="handle" value="marcus"/>
-          <element key="name" value="Marcus Nyeholt"/>
-	  <element key="email" value="nyeholt@optushome.com.au"/>
-	  <element key="role" value="contributor"/>
-	</element>
-        <element>
-          <element key="handle" value="jrags"/>
-          <element key="name" value="Jason Ragsdale"/>
-	  <element key="email" value="jrags@jasrags.net"/>
-	  <element key="role" value="contributor"/>
-	</element>
-        <element>
-          <element key="handle" value="alex"/>
-          <element key="name" value="Alex Flint"/>
-	  <element key="email" value="alex@linium.net"/>
-	  <element key="role" value="contributor"/>
-	</element>
-        <element>
-          <element key="handle" value="johnteag"/>
-          <element key="name" value="John Teague"/>
-	  <element key="email" value="johnteag@gmail.com"/>
-	  <element key="role" value="contributor"/>
-	</element>
-        <element>
-          <element key="handle" value="brian"/>
-          <element key="name" value="Brian Luft"/>
-	  <element key="email" value="luftyluft@gmail.com"/>
-	  <element key="role" value="contributor"/>
-	</element>
-        <element>
-          <element key="handle" value="gusto"/>
-          <element key="name" value="Carl G. Mathisen"/>
-	  <element key="email" value="carl@decart.no"/>
-	  <element key="role" value="contributor"/>
-	</element>
-        <element>
-          <element key="handle" value="knut"/>
-          <element key="name" value="Knut Urdalen"/>
-	  <element key="email" value="knut.urdalen@telio.no"/>
-	  <element key="role" value="helper"/>
-	</element>
-      </mapping>
-
-      <mapping name="deps">
-        <element>
-	  <element key="type" value="php"/>
-	  <element key="version" value="5.0.3"/>
-	  <element key="rel" value="ge"/>
-	</element>
-      </mapping>
-      
-      <mapping name="dir_roles">
-        <element key="docs" value="doc"/>
-      </mapping>
-
-      <mapping name="exceptions">
-        <element key="HISTORY" value="doc"/>
-      </mapping>
-    </pearpkg>
-
-    <echo>Validating package.xml</echo>
-    <exec command="pear package-validate package.xml" dir="${build.base.dir}" passthru="true"/>
-    
-    <echo>Converting package.xml from v1 to v2</echo>
-    <exec command="pear convert" dir="${build.base.dir}" passthru="true"/>
-    
-    <echo>Validating package2.xml</echo>
-    <exec command="pear package-validate package2.xml" dir="${build.base.dir}" passthru="true"/>
-
-    <echo>Creating tar.gz package...</echo>
-    <mkdir dir="${dist.base.dir}"/>
-    <tar compression="gzip" destFile="${dist.pearfile}" basedir="${build.base.dir}"/>
+  <target name="dist" depends="build" description="Create PRADO distributions">
+    <tar compression="gzip" destFile="${dist.tarfile}" basedir="${build.base.dir}/standard"/>
+    <zip destfile="${dist.zipfile}" basedir="${build.base.dir}/standard"/>
   </target>
 
   <target name="clean">
     <echo>Cleaning up the mess</echo>
     <delete dir="${build.base.dir}"/>
     <delete dir="${dist.base.dir}"/>
-    <delete dir="${doc.api.dir}"/>
-    <delete dir="${reports.dir}"/>
   </target>
 
   <target name="pradolite">
