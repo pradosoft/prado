@@ -76,6 +76,10 @@ memcache_connection_failed				= TMemCache failed to connect to memcache server %
 memcache_host_unchangeable				= TMemCache.Host cannot be modified after the module is initialized.
 memcache_port_unchangeable				= TMemCache.Port cannot be modified after the module is initialized.
 
+apccache_extension_required				= TAPCCache requires APC PHP extension.
+apccache_add_unsupported				= TAPCCache.add() is not supported.
+apccache_replace_unsupported			= TAPCCache.replace() is not supported.
+
 errorhandler_errortemplatepath_invalid	= TErrorHandler.ErrorTemplatePath '%s' is invalid. Make sure it is in namespace form and points to a valid directory containing error template files.
 
 pageservice_page_unknown				= Page '%s' Not Found

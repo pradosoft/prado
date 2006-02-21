@@ -18,7 +18,10 @@
  * By definition, cache does not ensure the existence of a value
  * even if it never expires. Cache is not meant to be an persistent storage.
  *
- * To use this module, the APC PHP extension must be loaded.
+ * To use this module, the APC PHP extension must be loaded and set in the php.ini file the following:
+ * <code>
+ * apc.cache_by_default=0
+ * </code>
  *
  * Some usage examples of TAPCCache are as follows,
  * <code>
@@ -32,7 +35,7 @@
  * cache module. It can be accessed via {@link TApplication::getCache()}.
  *
  * TAPCCache may be configured in application configuration file as follows
- * <module id="cache" type="System.Data.TAPCCache" Prefix="apc_cache_prefix_key_"/>
+ * <module id="cache" class="System.Data.TAPCCache" />
  *
  * @author Alban Hanry <compte_messagerie@hotmail.com>
  * @version $Revision: $  $Date: $
@@ -41,9 +44,6 @@
  */
 class TAPCCache extends TModule implements ICache
 {
-
-    const SERIALIZED = "_serialized";
-
    /**
     * @var boolean if the module is initialized
     */
@@ -62,38 +62,12 @@ class TAPCCache extends TModule implements ICache
     */
    public function init($config)
    {
-      $application=$this->getApplication();
-      if(!$application || $application->getMode()!==TApplication::STATE_PERFORMANCE)
-      {
-         if(!extension_loaded('apc'))
-            throw new TConfigurationException('apccache_extension_required');
-      }
-      if($application) {
-      	if(!$this->_prefix)
-         $this->_prefix=$application->getUniqueID();
-         $application->setCache($this);
-      }
-      $this->_initialized=true;
-   }
-
-   /**
-    * @return string prefix used to cache key
-    */
-   public function getPrefix()
-   {
-      return $this->_prefix;
-   }
-
-   /**
-    * @param string prefix to be used for cache key
-    * @throws TInvalidOperationException if the module is already initialized
-    */
-   public function setPrefix($value)
-   {
-      if($this->_initialized)
-         throw new TInvalidOperationException('apccache_prefix_unchangeable');
-      else
-         $this->_prefix=$value;
+		if(!extension_loaded('apc'))
+			throw new TConfigurationException('apccache_extension_required');
+		$application=$this->getApplication();
+		$this->_prefix=$application->getUniqueID();
+		$application->setCache($this);
+		$this->_initialized=true;
    }
 
    /**
@@ -102,7 +76,10 @@ class TAPCCache extends TModule implements ICache
     */
    public function get($key)
    {
-      return apc_fetch($this->_prefix.$key);
+		if(($value=apc_fetch($this->_prefix.$key))!==false)
+			return Prado::unserialize($value);
+		else
+			return $value;
    }
 
    /**
@@ -118,41 +95,38 @@ class TAPCCache extends TModule implements ICache
     */
    public function set($key,$value,$expiry=0)
    {
-      if(is_array($value))
-       	$value=new ArrayObject($value);
-      return apc_store($this->_prefix.$key,$value,$expiry);
+		return apc_store($this->_prefix.$key,Prado::serialize($value),$expiry);
    }
 
    /**
     * Stores a value identified by a key into cache if the cache does not contain this key.
-    * Nothing will be done if the cache already contains the key.
+    * APC does not support this mode. So calling this method will raise an exception.
     * @param string the key identifying the value to be cached
     * @param mixed the value to be cached
     * @param integer the expiration time of the value,
     *        0 means never expire,
     * @return boolean true if the value is successfully stored into cache, false otherwise
+    * @throw new TNotSupportedException if this method is invoked
     */
    public function add($key,$value,$expiry=0)
    {
-      if(!apc_fetch($this->_prefix.$key))
-         return $this->set($key,$value,$expiry);
-      else return false;
+	   throw new TNotSupportedException('apccache_add_unsupported');
    }
 
    /**
     * Stores a value identified by a key into cache only if the cache contains this key.
     * The existing value and expiration time will be overwritten with the new ones.
+    * APC does not support this mode. So calling this method will raise an exception.
     * @param string the key identifying the value to be cached
     * @param mixed the value to be cached
     * @param integer the expiration time of the value,
     *        0 means never expire,
     * @return boolean true if the value is successfully stored into cache, false otherwise
+    * @throw new TNotSupportedException if this method is invoked
     */
    public function replace($key,$value,$expiry=0)
    {
-      if(apc_fetch($this->_prefix.$key))
-      	return $this->set($key,$value,$expiry);
-      else return false;
+	   throw new TNotSupportedException('apccache_replace_unsupported');
    }
 
    /**

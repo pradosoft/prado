@@ -37,6 +37,7 @@ $requirements = array(
 	array(false,'extension_loaded("zlib")','Zlib check','Zlib extension optional'),
 	array(false,'extension_loaded("sqlite")','SQLite check','SQLite extension optional'),
 	array(false,'extension_loaded("memcache")','Memcache check','Memcache extension optional'),
+	array(false,'extension_loaded("apc")','APC cache check','APC extension optional'),
 	array(false,'extension_loaded("mcrypt")','Mcrypt check','Mcrypt extension optional'),
 );
 

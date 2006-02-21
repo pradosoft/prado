@@ -111,9 +111,10 @@ class TMemCache extends TModule implements ICache
 		$this->_cache=new Memcache;
 		if($this->_cache->connect($this->_host,$this->_port)===false)
 			throw new TConfigurationException('memcache_connection_failed',$this->_host,$this->_port);
-		$this->_prefix=$this->getApplication()->getUniqueID();
+		$application=$this->getApplication();
+		$this->_prefix=$application->getUniqueID();
+		$application->setCache($this);
 		$this->_initialized=true;
-		$this->getApplication()->setCache($this);
 	}
 
 	/**
