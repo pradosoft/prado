@@ -32,7 +32,7 @@ class TJavaScript
 	{
 		$str='';
 		foreach($files as $file)
-			$str.='<script type="text/javascript" src="'.THttpUtility::htmlEncode($file)."\"></script>\n";
+			$str.= $this->renderScriptFile($file);
 		return $str;
 	}
 
@@ -125,7 +125,8 @@ class TJavaScript
 			if($toMap)
 			{
 				foreach($value as $k=>$v)
-					$results[]="'{$k}':".self::encode($v,$toMap);
+					if(is_string($v) && strlen($v) > 0)
+						$results[]="'{$k}':".self::encode($v,$toMap);
 				return '{'.implode(',',$results).'}';
 			}
 			else
