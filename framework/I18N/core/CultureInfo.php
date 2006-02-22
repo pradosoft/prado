@@ -254,7 +254,7 @@ class CultureInfo
 			if(is_file($filename) == false)
 				throw new Exception('Data file for "'.$file.'" was not found.');
 
-			if(!isset($this->dataFiles[$filename]))
+			if(in_array($filename, $this->dataFiles) === false)
 			{
 				array_unshift($this->dataFiles, $file);
 				
