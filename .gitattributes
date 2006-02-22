@@ -733,6 +733,7 @@ framework/Web/UI/WebControls/TPanel.php -text
 framework/Web/UI/WebControls/TPlaceHolder.php -text
 framework/Web/UI/WebControls/TRadioButton.php -text
 framework/Web/UI/WebControls/TRadioButtonList.php -text
+framework/Web/UI/WebControls/TRangeValidator.php -text
 framework/Web/UI/WebControls/TRatingList.php -text
 framework/Web/UI/WebControls/TRegularExpressionValidator.php -text
 framework/Web/UI/WebControls/TRepeatInfo.php -text
