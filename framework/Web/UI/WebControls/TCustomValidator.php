@@ -116,7 +116,7 @@ class TCustomValidator extends TBaseValidator
  * TServerValidateEventParameter class
  *
  * TServerValidateEventParameter encapsulates the parameter data for
- * <b>ServerValidate</b> event of TCustomValidator components.
+ * <b>OnServerValidate</b> event of TCustomValidator components.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $

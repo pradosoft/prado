@@ -713,6 +713,7 @@ framework/Web/UI/WebControls/TDataGridColumn.php -text
 framework/Web/UI/WebControls/TDataList.php -text
 framework/Web/UI/WebControls/TDataSourceControl.php -text
 framework/Web/UI/WebControls/TDataSourceView.php -text
+framework/Web/UI/WebControls/TDataTypeValidator.php -text
 framework/Web/UI/WebControls/TDatePicker.php -text
 framework/Web/UI/WebControls/TDropDownList.php -text
 framework/Web/UI/WebControls/TEditCommandColumn.php -text
@@ -754,7 +755,6 @@ framework/Web/UI/WebControls/TTemplateColumn.php -text
 framework/Web/UI/WebControls/TTextBox.php -text
 framework/Web/UI/WebControls/TTextHighlighter.php -text
 framework/Web/UI/WebControls/TValidationSummary.php -text
-framework/Web/UI/WebControls/TValueTypeValidator.php -text
 framework/Web/UI/WebControls/TWebControl.php -text
 framework/Web/UI/WebControls/TWebControlAdapter.php -text
 framework/Web/UI/WebControls/TWizard.php -text

@@ -30,7 +30,7 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  * of both comparison values. Both values are automatically converted to this data
  * type before the comparison operation is performed. The following value types are supported:
  * - <b>Integer</b> A 32-bit signed integer data type.
- * - <b>Double</b> A double-precision floating point number data type.
+ * - <b>Float</b> A double-precision floating point number data type.
  * - <b>Currency</b> A decimal data type that can contain currency symbols.
  * - <b>Date</b> A date data type. The format follows the GNU date syntax.
  * - <b>String</b> A string data type.
@@ -61,12 +61,12 @@ class TCompareValidator extends TBaseValidator
 	}
 
 	/**
-	 * Sets the data type (Integer, Double, Currency, Date, String) that the values being compared are converted to before the comparison is made.
+	 * Sets the data type (Integer, Float, Currency, Date, String) that the values being compared are converted to before the comparison is made.
 	 * @param string the data type
 	 */
 	public function setValueType($value)
 	{
-		$this->setViewState('ValueType',TPropertyValue::ensureEnum($value,'Integer','Double','Date','Currency','String'),'String');
+		$this->setViewState('ValueType',TPropertyValue::ensureEnum($value,'Integer','Float','Date','Currency','String'),'String');
 	}
 
 	/**
@@ -192,7 +192,6 @@ class TCompareValidator extends TBaseValidator
 			case 'Integer':
 				return array(intval($value1), intval($value2));
 			case 'Float':
-			case 'Double':
 				return array(floatval($value1), floatval($value2));
 			case 'Currency':
 				if(preg_match('/[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?/',$value1,$matches))

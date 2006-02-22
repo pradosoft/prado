@@ -129,17 +129,46 @@ Note, if the value being validated is empty, TEmailAddressValidator will not do 
 
 <h2>TRangeValidator</h2>
 <p>
+TRangeValidator tests whether an input value is within a specified range.
 </p>
+<p>
+TRangeValidator uses three key properties to perform its validation. The <tt>MinValue</tt> and <tt>MaxValue</tt> properties specify the minimum and maximum values of the valid range. The <tt>ValueType</tt> property specifies the data type of the value being validated. The value will be first converted into the specified type and then compare with the valid range. The following value types are supported:
+</p>
+<ul>
+<li><tt>String</tt> - A string data type.</li>
+<li><tt>Integer</tt> - A 32-bit signed integer data type.</li>
+<li><tt>Float</tt> - A double-precision floating point number data type.</li>
+<li><tt>Currency</tt> - A decimal data type that can contain currency symbols.</li>
+<li><tt>Date</tt> - A date data type. The date format can be specified by setting <tt>DateFormat</tt> property, which must be recognizable by <tt>TSimpleDateFormatter</tt>. If the property is not set, the GNU date syntax is assumed.</li>
+</ul>
 <com:RunBar PagePath="Controls.Samples.TRangeValidator.Home" />
 
-<h2>TValueTypeValidator</h2>
+<h2>TDataTypeValidator</h2>
 <p>
 </p>
-<com:RunBar PagePath="Controls.Samples.TValueTypeValidator.Home" />
+<com:RunBar PagePath="Controls.Samples.TDataTypeValidator.Home" />
 
 <h2>TCustomValidator</h2>
 <p>
+TCustomValidator performs user-defined validation (either server-side or client-side or both) on an input control.
 </p>
+<p>
+To create a server-side validation function, provide a handler for the <tt>OnServerValidate</tt> event that performs the validation. The data string of the input control to validate can be accessed by the event parameter's <tt>Value</tt> property. The result of the validation should be stored in the <tt>IsValid</tt> property of the parameter.
+</p>
+<p>
+To create a client-side validation function, add the client-side validation javascript function to the page template and assign its name to the <tt>ClientValidationFunction</tt> property. The function should have the following signature:
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source">
+<script type="text/javascript">
+function ValidationFunctionName(sender, parameter)
+{
+    // if(parameter == ...)
+    //    return true;
+    // else
+    //    return false;
+}
+</script>
+</com:TTextHighlighter>
 <com:RunBar PagePath="Controls.Samples.TCustomValidator.Home" />
 
 

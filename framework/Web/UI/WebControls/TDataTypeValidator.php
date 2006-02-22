@@ -1,6 +1,6 @@
 <?php
 /**
- * TValueTypeValidator class.
+ * TDataTypeValidator class.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
@@ -16,14 +16,14 @@
 Prado::using('System.Web.UI.WebControls.TBaseValidator');
 
 /**
- * TValueTypeValidator class
+ * TDataTypeValidator class
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TValueTypeValidator extends TBaseValidator
+class TDataTypeValidator extends TBaseValidator
 {
 	/**
 	 * @return string the data type that the values being compared are converted to before the comparison is made. Defaults to String.
@@ -72,7 +72,6 @@ class TValueTypeValidator extends TBaseValidator
 			case 'Integer':
 				return preg_match('/^[-+]?[0-9]+$/',trim($value));
 			case 'Float':
-			case 'Double':
 				return preg_match('/^[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?$/',trim($value));
 			case 'Currency':
 				return preg_match('/[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?$/',trim($value));
