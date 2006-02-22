@@ -32,7 +32,7 @@ class TJavaScript
 	{
 		$str='';
 		foreach($files as $file)
-			$str.= $this->renderScriptFile($file);
+			$str.= self::renderScriptFile($file);
 		return $str;
 	}
 
