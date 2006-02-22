@@ -29,7 +29,6 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  * German Phone Number: ((\(0\d\d\) |(\(0\d{3}\) )?\d )?\d\d \d\d \d\d|\(0\d{4}\) \d \d\d-\d\d?)
  * German Postal Code: (D-)?\d{5}
  * Email Address: \w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*
- * Internal URL: http://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?
  * Japanese Phone Number: (0\d{1,4}-|\(0\d{1,4}\) ?)?\d{1,4}-\d{4}
  * Japanese Postal Code: \d{3}(-(\d{4}|\d{2}))?
  * P.R.C. Phone Number: (\(\d{3}\)|\d{3}-)?\d{8}

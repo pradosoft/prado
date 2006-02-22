@@ -19,8 +19,9 @@ Prado::using('System.Web.UI.WebControls.TRegularExpressionValidator');
  * TEmailAddressValidator class
  *
  * TEmailAddressValidator validates whether the value of an associated
- * input component is a valid email address. It will check MX record
- * if checkdnsrr() is available in the installed PHP.
+ * input component is a valid email address. If {@link getCheckMXRecord CheckMXRecord}
+ * is true, it will check MX record for the email adress, provided
+ * checkdnsrr() is available in the installed PHP.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -50,7 +51,7 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 	public function evaluateIsValid()
 	{
 		$valid=parent::evaluateIsValid();
-		if($valid && function_exists('checkdnsrr'))
+		if($valid && $this->getCheckMXRecord() && function_exists('checkdnsrr'))
 		{
 			if(($value=$this->getValidationValue($this->getValidationTarget()))!=='')
 			{
@@ -64,6 +65,23 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 			}
 		}
 		return $valid;
+	}
+
+	/**
+	 * @return boolean whether to check MX record for the email address being validated. Defaults to true.
+	 */
+	public function getCheckMXRecord()
+	{
+		return $this->getViewState('CheckMXRecord',true);
+	}
+
+	/**
+	 * @param boolean whether to check MX record for the email address being validated.
+	 * Note, if {@link checkdnsrr} is not available, this check will not be performed.
+	 */
+	public function setCheckMXRecord($value)
+	{
+		$this->setViewState('CheckMXRecord',TPropertyValue::ensureBoolean($value),true);
 	}
 }
 

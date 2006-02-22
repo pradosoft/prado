@@ -1,7 +1,7 @@
 <com:TContent ID="body">
 
 <h1>TEmailAddressValidator Samples</h1>
-<p><strong>Note:</strong>TEmailAddressValidator will start
+<p><strong>Note:</strong> TEmailAddressValidator will start
 to validate only if the input is not empty.</p>
 
 <table class="sampletable">
@@ -44,6 +44,7 @@ Email address validator with focus-on-error enabled and dynamic display:
 <com:TEmailAddressValidator
 	ValidationGroup="Group3"
 	ControlToValidate="TextBox3"
+	FocusOnError="true"
 	Display="Dynamic"
 	Text="Invalid email address." />
 <com:TButton Text="Submit" ValidationGroup="Group3" />

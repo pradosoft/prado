@@ -370,7 +370,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		if(($id=$this->getControlToValidate())!=='' && ($control=$this->findControl($id))!==null)
 			return $control;
 		else
-			throw new TConfigurationException('basevalidator_controltovalidate_invalid');
+			throw new TConfigurationException('basevalidator_controltovalidate_invalid',get_class($this));
 	}
 
 	/**
@@ -384,7 +384,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		if($control instanceof IValidatable)
 			return $control->getValidationPropertyValue();
 		else
-			throw new TInvalidDataTypeException('basevalidator_validatable_required');
+			throw new TInvalidDataTypeException('basevalidator_validatable_required',get_class($this));
 	}
 
 	/**
