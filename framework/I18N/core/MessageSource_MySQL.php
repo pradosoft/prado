@@ -225,9 +225,9 @@ class MessageSource_MySQL extends MessageSource
 
 		$variant = null;
 				
-		for($i = 0; $i < count($variants); $i++)
-		{						
-			if(strlen($variants[$i])>0)
+		for($i = 0, $k = count($variants); $i < $k; ++$i)
+		{	
+			if(isset($variants[$i]{0}))
 			{
 				$variant .= ($variant)?'_'.$variants[$i]:$variants[$i];
 				$catalogues[] = $catalogue.'.'.$variant;

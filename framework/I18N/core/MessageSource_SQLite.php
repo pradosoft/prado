@@ -148,9 +148,9 @@ class MessageSource_SQLite extends MessageSource
 
 		$variant = null;
 				
-		for($i = 0; $i < count($variants); $i++)
+		for($i = 0, $k = count($variants); $i < $k; ++$i)
 		{						
-			if(strlen($variants[$i])>0)
+			if(isset($variants[$i]{0}))
 			{
 				$variant .= ($variant)?'_'.$variants[$i]:$variants[$i];
 				$catalogues[] = $catalogue.'.'.$variant;

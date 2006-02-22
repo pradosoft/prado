@@ -136,9 +136,9 @@ class MessageSource_gettext extends MessageSource
 
 		$variant = null;
 				
-		for($i = 0; $i < count($variants); $i++)
+		for($i = 0, $k = count($variants); $i < $k; ++$i)
 		{						
-			if(strlen($variants[$i])>0)
+			if(isset($variants[$i]{0}))
 			{
 				$variant .= ($variant)?'_'.$variants[$i]:$variants[$i];
 				$catalogues[] = $catalogue.$this->dataSeparator.
@@ -165,9 +165,9 @@ class MessageSource_gettext extends MessageSource
 		
 		$variant = null;
 
-		for($i = 0; $i < count($variants); $i++)
+		for($i = 0, $k = count($variants); $i < $k; ++$i)
 		{
-			if(strlen($variants[$i])>0)
+			if(isset($variants[$i]{0}))
 			{
 				$variant .= ($variant)?'_'.$variants[$i]:$variants[$i];
 				$catalogues[] = $variant.'/'.$catalogue.$this->dataExt;

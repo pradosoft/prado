@@ -81,7 +81,7 @@ class HTTPNegotiator
 				}
 				else
 				{
-					for($i = 0; $i<count($codes); $i++)
+					for($i = 0, $k = count($codes); $i<$k; ++$i)
 					{
 						if($i == 0)
 							$lang = strtolower($codes[0]);

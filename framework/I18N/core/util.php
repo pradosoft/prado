@@ -48,7 +48,7 @@
             $dsn = substr($dsn, $pos + 3);
         } else {
             $str = $dsn;
-            $dsn = NULL;
+            $dsn = null;
         }
 
         // Get phptype and dbsyntax

@@ -226,7 +226,7 @@ class TCache_Lite
     * @param array $options options
     * @access public
     */
-    function TCache_Lite($options = array(NULL))
+    function TCache_Lite($options = array(null))
     {
         $availableOptions = array(	'automaticSerialization', 
         							'fileNameProtection', 
@@ -310,7 +310,7 @@ class TCache_Lite
     * @return boolean true if no problem
     * @access public
     */
-    function save($data, $id = NULL, $group = 'default')
+    function save($data, $id = null, $group = 'default')
     {
         if ($this->_caching) {
             if ($this->_automaticSerialization) {

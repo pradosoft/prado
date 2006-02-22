@@ -131,9 +131,9 @@ class TTarFileExtractor
 		throw new Exception($p_message);
     }
  
-    private function _isArchive($p_filename=NULL)
+    private function _isArchive($p_filename=null)
     {
-        if ($p_filename == NULL) {
+        if ($p_filename == null) {
             $p_filename = $this->_tarname;
         }
         clearstatcache();
@@ -343,16 +343,16 @@ class TTarFileExtractor
 
     switch ($p_mode) {
       case "complete" :
-        $v_extract_all = TRUE;
-        $v_listing = FALSE;
+        $v_extract_all = true;
+        $v_listing = false;
       break;
       case "partial" :
-          $v_extract_all = FALSE;
-          $v_listing = FALSE;
+          $v_extract_all = false;
+          $v_listing = false;
       break;
       case "list" :
-          $v_extract_all = FALSE;
-          $v_listing = TRUE;
+          $v_extract_all = false;
+          $v_listing = true;
       break;
       default :
         $this->_error('Invalid extract mode ('.$p_mode.')');
@@ -363,7 +363,7 @@ class TTarFileExtractor
 
     while (strlen($v_binary_data = $this->_readBlock()) != 0)
     {
-      $v_extract_file = FALSE;
+      $v_extract_file = false;
       $v_extraction_stopped = 0;
 
       if (!$this->_readHeader($v_binary_data, $v_header))
@@ -390,19 +390,19 @@ class TTarFileExtractor
             if ((strlen($v_header['filename']) > strlen($p_file_list[$i]))
 			    && (substr($v_header['filename'], 0, strlen($p_file_list[$i]))
 				    == $p_file_list[$i])) {
-              $v_extract_file = TRUE;
+              $v_extract_file = true;
               break;
             }
           }
 
           // ----- It is a file, so compare the file names
           elseif ($p_file_list[$i] == $v_header['filename']) {
-            $v_extract_file = TRUE;
+            $v_extract_file = true;
             break;
           }
         }
       } else {
-        $v_extract_file = TRUE;
+        $v_extract_file = true;
       }
 
       // ----- Look if this file need to be extracted
@@ -533,7 +533,7 @@ class TTarFileExtractor
      *
      * @param string $p_dir directory to check
      *
-     * @return bool TRUE if the directory exists or was created
+     * @return bool true if the directory exists or was created
      */
     protected function _dirCheck($p_dir)
     {

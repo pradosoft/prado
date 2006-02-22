@@ -241,7 +241,7 @@ class CultureInfo
 		
 		$files = array($current_part);
 
-		for($i = 1; $i < count($file_parts); $i++)
+		for($i = 1, $k = count($file_parts); $i < $k; ++$i)
 		{
 			$current_part .= '_'.$file_parts[$i];
 			$files[] = $current_part;
@@ -254,7 +254,7 @@ class CultureInfo
 			if(is_file($filename) == false)
 				throw new Exception('Data file for "'.$file.'" was not found.');
 
-			if(in_array($filename, $this->dataFiles) == false)
+			if(!isset($this->dataFiles[$filename]))
 			{
 				array_unshift($this->dataFiles, $file);
 				
@@ -336,13 +336,13 @@ class CultureInfo
 
 		$array = $info;
 
-		for($i = 0; $i < count($index); $i++)
+		for($i = 0, $k = count($index); $i < $k; ++$i)
 		{
-			$k = $index[$i];
-			if($i < count($index)-1 && isset($array[$k]))
-				$array = $array[$k];
-			else if ($i == count($index)-1 && isset($array[$k]))
-				return $array[$k];
+			$value = $index[$i];
+			if($i < $k-1 && isset($array[$value]))
+				$array = $array[$value];
+			else if ($i == $k-1 && isset($array[$value]))
+				return $array[$value];
 		}
 	}
 	
@@ -558,7 +558,7 @@ class CultureInfo
 	 */
 	private function simplify($array)
 	{
-		for($i = 0; $i<count($array); $i++)
+		for($i = 0, $k = count($array); $i<$k; ++$i)
 		{
 			$key = key($array);
 			if(is_array($array[$key])

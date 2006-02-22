@@ -330,7 +330,7 @@ class TWizard extends TPanel implements INamingContainer
 			$this->_steps[$i]->setVisible($i == $index);
 
 		//determine which link is active
-		for($i = 0; $i < count($this->_sidebarLinks); $i++)
+		for($i = 0, $k = count($this->_sidebarLinks); $i < $k; $i++)
 			$this->_sidebarLinks[$i]->CssClass= ($i == $index)?'active':'';
 
 		//hide all the navigations first.

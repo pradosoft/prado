@@ -122,7 +122,7 @@ class DateFormat
 
 		$tokens = $this->getTokens($pattern);
 		
-		for($i = 0; $i<count($tokens); $i++)
+		for($i = 0, $k = count($tokens); $i<$k; ++$i)
 		{
 			$pattern = $tokens[$i];
 			if($pattern{0} == "'" 
