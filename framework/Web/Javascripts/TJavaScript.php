@@ -125,14 +125,15 @@ class TJavaScript
 			if($toMap)
 			{
 				foreach($value as $k=>$v)
-					if(is_string($v) && strlen($v) > 0)
+					if($v!=='')
 						$results[]="'{$k}':".self::encode($v,$toMap);
 				return '{'.implode(',',$results).'}';
 			}
 			else
 			{
 				foreach($value as $k=>$v)
-					$results[]=self::encode($v,$toMap);
+					if($v!=='')
+						$results[]=self::encode($v,$toMap);
 				return '['.implode(',',$results).']';
 			}
 		}
