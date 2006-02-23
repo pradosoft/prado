@@ -72,9 +72,19 @@ class TException extends Exception
 		return $this->_errorCode;
 	}
 
+	public function setErrorCode($code)
+	{
+		$this->_errorCode=$code;
+	}
+
 	public function getErrorMessage()
 	{
 		return $this->getMessage();
+	}
+
+	protected function setErrorMessage($message)
+	{
+		$this->message=$message;
 	}
 }
 
@@ -152,10 +162,13 @@ class THttpException extends TSystemException
 
 	public function __construct($statusCode,$errorMessage)
 	{
+		$this->_statusCode=$statusCode;
+		$this->setErrorCode($errorMessage);
 		$args=func_get_args();
 		array_shift($args);
-		call_user_func_array(array('TException', '__construct'), $args);
-		$this->_statusCode=TPropertyValue::ensureInteger($statusCode);
+		$args[0]=$this->translateErrorMessage($errorMessage);
+		$str=call_user_func_array('sprintf',$args);
+		$this->setErrorMessage($str);
 	}
 
 	public function getStatusCode()
