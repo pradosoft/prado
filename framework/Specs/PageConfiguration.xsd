@@ -22,14 +22,14 @@
 			<xs:documentation>configuration content for the whole application in prado3 framework</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="paths" type="pathsType"/>
-				<xs:element name="modules" type="modulesType"/>
-				<xs:element name="services" type="servicesType"/>
-				<xs:element name="parameters" type="parametersType"/>
-			</xs:sequence>
+			<xs:all>
+				<xs:element name="paths" type="pathsType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="modules" type="modulesType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="services" type="servicesType" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="parameters" type="parametersType" minOccurs="0" maxOccurs="1"/>
+			</xs:all>
 			<xs:attribute name="id" type="xs:string" use="required"/>
-			<xs:attribute name="Mode" use="required">
+			<xs:attribute name="mode" use="required">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
 						<xs:enumeration value="Off"/>

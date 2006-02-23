@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<application mode="Debug">
+<application id="personal" mode="Debug">
   <!-- modules configured and loaded for all services -->
   <modules>
     <!-- Remove this comment mark to enable caching
