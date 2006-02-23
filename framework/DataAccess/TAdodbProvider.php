@@ -30,7 +30,7 @@ class TAdodbProvider extends TDatabaseProvider
 	private $_cachedir='';
 	private $_fetchMode = 'associative';
 
-	private $_hasImported=false;
+	private static $_hasImported=false;
 
 	private $_adodbLibrary='';
 
@@ -62,16 +62,16 @@ class TAdodbProvider extends TDatabaseProvider
 
 	public function setAdodbLibrary($path)
 	{
-		$this->_adodbLibrary = $path;
+		$this->_adodbLibrary = Prado::getPathOfNamespace($path);
 	}
 
 	public function importAdodbLibrary()
 	{
-		if(!$this->_hasImported || !class_exists('ADONewConnection'))
+		if(!self::$_hasImported)
 		{
 			require($this->getAdodbLibrary().'/adodb-exceptions.inc.php');
 			require($this->getAdodbLibrary().'/adodb.inc.php');
-			$this->_hasImported = true;
+			self::$_hasImported = true;
 		}
 	}
 
@@ -250,6 +250,7 @@ class TAdodbConnection extends TDbConnection
 		if($this->getIsClosed())
 		{
 			$provider = $this->getProvider();
+			$provider->importAdodbLibrary();
 			if(strlen($provider->getConnectionString()) < 1)
 			{
 				if(strlen($provider->getDriver()) < 1)

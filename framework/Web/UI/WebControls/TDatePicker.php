@@ -224,7 +224,7 @@ class TDatePicker extends TTextBox
 	 */
 	public function setUpToYear($value)
 	{
-		$this-setViewState('UpToYear', TPropertyValue::ensureInteger($value), intval(@date('Y'))+10);
+		$this->setViewState('UpToYear', TPropertyValue::ensureInteger($value), intval(@date('Y'))+10);
 	}
 
 	/**
