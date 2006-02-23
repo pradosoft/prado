@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<application id="QuickStart" Mode="Debug">
-  <modules>
+<application id="QuickStart" mode="Debug">
+  <!--<modules>-->
     <!-- uncomment the following to enable caching
     <module id="cache" class="System.Data.TSqliteCache" />
     -->
@@ -10,7 +10,7 @@
       <route class="TFileLogRoute" />
     </module>
     -->
-  </modules>
+  <!--</modules>-->
   <paths>
     <using namespace="Application.controls.*" />
   </paths>

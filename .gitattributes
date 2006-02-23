@@ -14,6 +14,7 @@ buildscripts/phing/style/phpunit2-frames.xsl -text
 buildscripts/phing/style/phpunit2-noframes.xsl -text
 buildscripts/phing/style/str.replace.function.xsl -text
 buildscripts/phing/tasks/PhpLintTask.php -text
+buildscripts/phing/tasks/XmlLintTask.php -text
 buildscripts/phpbuilder/build.php -text
 buildscripts/phpbuilder/files.txt -text
 buildscripts/texbuilder/build.php -text

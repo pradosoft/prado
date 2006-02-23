@@ -32,8 +32,11 @@
   <property name="reports.style.dir" value="buildscripts/phing/style"/>
   <property name="reports.geshi.dir" value="${src.dir}/3rdParty/geshi"/>
   <property name="prado.lite" value="pradolite.php"/>
+  <property name="application.xsd" value="${src.dir}/Specs/application.xsd"/>
+  <property name="config.xsd" value="${src.dir}/Specs/config.xsd"/>
 
   <taskdef name="phplint" classname="PhpLintTask" classpath="buildscripts/phing/tasks"/>
+  <taskdef name="xmllint" classname="XmlLintTask" classpath="buildscripts/phing/tasks"/>
 
   <fileset dir="." id="src">
     <exclude name="${src.dir}/**/.svn"/>
@@ -79,6 +82,29 @@
   <target name="lint" description="Check syntax of PHP source files">
     <phplint>
       <fileset refid="src"/>
+    </phplint>
+  </target>
+
+  <target name="lint-demos" description="Check syntax of demo files and configuration files">
+    <echo>Validate application configuration</echo>
+    <xmllint schema="${application.xsd}">
+      <fileset dir="demos">
+        <exclude name="**/.svn"/>
+        <include name="**/application.xml"/>
+      </fileset>
+    </xmllint>
+    <echo>Validate page configuration</echo>
+    <xmllint schema="${config.xsd}">
+      <fileset dir="demos">
+        <exclude name="**/.svn"/>
+        <include name="**/config.xml"/>
+      </fileset>
+    </xmllint>
+    <phplint>
+      <fileset dir="demos">
+        <exclude name="**/.svn"/>
+        <include name="**/*.php"/>
+      </fileset>
     </phplint>
   </target>
 
@@ -157,7 +183,7 @@
     </copy>
   </target>
   
-  <target name="build" depends="versioncheck,prepare,lint,test,doc,pradolite,build-standard-package" description="Creating the main PRADO build">
+  <target name="build" depends="versioncheck,prepare,lint,lint-demos,test,doc,pradolite,build-standard-package" description="Creating the main PRADO build">
   </target>
 
   <target name="dist" depends="build" description="Create PRADO distributions">

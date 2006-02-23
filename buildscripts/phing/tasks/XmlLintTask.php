@@ -2,14 +2,15 @@
 require_once 'phing/Task.php';
 
 /**
- * A PHP lint task. Checking syntax of one or more PHP source file.
+ * A XML lint task. Checking syntax of one or more XML source file against an XML Schema using the DOM extension.
  *
  * @author   Knut Urdalen <knut.urdalen@telio.no>
  * @package  phing.tasks.ext
  */
-class PhpLintTask extends Task {
+class XmlLintTask extends Task {
 
   protected $file;  // the source file (from xml attribute)
+  protected $schema; // the schema file (from xml attribute)
   protected $filesets = array(); // all fileset objects assigned to this task
 
   /**
@@ -18,6 +19,10 @@ class PhpLintTask extends Task {
    */
   public function setFile(PhingFile $file) {
     $this->file = $file;
+  }
+
+  public function setSchema(PhingFile $schema) {
+    $this->schema = $schema;
   }
   
   /**
@@ -34,10 +39,18 @@ class PhpLintTask extends Task {
    * Execute lint check against PhingFile or a FileSet
    */
   public function main() {
+    if(!isset($this->schema)) {
+      throw new BuildException("Missing attribute 'schema'");
+    }
+    $schema = $this->schema->getPath();
+    if(!file_exists($schema)) {
+      throw new BuildException("File not found: ".$schema);
+    }
     if(!isset($this->file) and count($this->filesets) == 0) {
       throw new BuildException("Missing either a nested fileset or attribute 'file' set");
     }
 
+    set_error_handler(array($this, 'errorHandler'));
     if($this->file instanceof PhingFile) {
       $this->lint($this->file->getPath());
     } else { // process filesets
@@ -51,24 +64,24 @@ class PhpLintTask extends Task {
 	}
       }
     }
+    restore_error_handler();
   }
 
   /**
-   * Performs the actual syntax check
+   * Performs validation
    *
    * @param string $file
    * @return void
    */
   protected function lint($file) {
-    $command = 'php -l ';
     if(file_exists($file)) {
       if(is_readable($file)) {
-	$message = array();
-	exec($command.$file, $message);
-	if(!preg_match('/^No syntax errors detected/', $message[0])) {
-	  $this->log($message[1], PROJECT_MSG_ERR);
+	$dom = new DOMDocument();
+	$dom->load($file);
+	if($dom->schemaValidate($this->schema->getPath())) {
+	  $this->log($file.' validated', PROJECT_MSG_INFO);
 	} else {
-	  $this->log($file.': No syntax errors detected', PROJECT_MSG_INFO);
+	  $this->log($file.' fails to validate (See messages above)', PROJECT_MSG_ERR);
 	}
       } else {
 	throw new BuildException('Permission denied: '.$file);
@@ -77,6 +90,13 @@ class PhpLintTask extends Task {
       throw new BuildException('File not found: '.$file);
     }
   }
+
+  public function errorHandler($level, $message, $file, $line, $context) {
+    $matches = array();
+    preg_match('/^.*\(\): (.*)$/', $message, $matches);
+    $this->log($matches[1], PROJECT_MSG_ERR);
+  }
+
 }
 
 ?>
