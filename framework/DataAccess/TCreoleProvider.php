@@ -61,7 +61,7 @@ class TCreoleConnection extends TDbConnection
 		return $this->_connection->prepareStatement($statement);
 	}
 
-	public function execute($sql, 
+	//public function execute($sql, 
 
 	/**
 	 * Opens a database connection with settings provided in the ConnectionString.
