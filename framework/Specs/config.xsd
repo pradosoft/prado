@@ -39,7 +39,7 @@
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
-		<xs:attribute name="verb" use="required">
+		<xs:attribute name="verb" use="optional">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
 					<xs:enumeration value="get"/>
@@ -49,10 +49,10 @@
 		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="authorizationType">
-		<xs:sequence>
-			<xs:element name="allow" type="allowType"/>
-			<xs:element name="deny" type="denyType"/>
-		</xs:sequence>
+		<xs:all>
+			<xs:element name="allow" type="allowType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="deny" type="denyType" minOccurs="0" maxOccurs="1"/>
+		</xs:all>
 	</xs:complexType>
 	<xs:element name="configuration">
 		<xs:annotation>
@@ -90,7 +90,7 @@
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
-		<xs:attribute name="verb" use="required">
+		<xs:attribute name="verb" use="optional">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
 					<xs:enumeration value="post"/>
@@ -102,16 +102,12 @@
 	<xs:complexType name="moduleType">
 		<xs:attribute name="id" use="required">
 			<xs:simpleType>
-				<xs:restriction base="xs:string">
-					<xs:enumeration value="ModuleID"/>
-				</xs:restriction>
+				<xs:restriction base="xs:string"/>
 			</xs:simpleType>
 		</xs:attribute>
 		<xs:attribute name="class" use="required">
 			<xs:simpleType>
-				<xs:restriction base="xs:string">
-					<xs:enumeration value="ModuleClass"/>
-				</xs:restriction>
+				<xs:restriction base="xs:string"/>
 			</xs:simpleType>
 		</xs:attribute>
 		<xs:anyAttribute namespace="##local" processContents="lax"/>
@@ -134,16 +130,14 @@
 	<xs:complexType name="pageType">
 		<xs:attribute name="id" use="required">
 			<xs:simpleType>
-				<xs:restriction base="xs:string">
-					<xs:enumeration value="PageID"/>
-				</xs:restriction>
+				<xs:restriction base="xs:string"/>
 			</xs:simpleType>
 		</xs:attribute>
 		<xs:anyAttribute namespace="##local" processContents="lax"/>
 	</xs:complexType>
 	<xs:complexType name="pagesType">
 		<xs:sequence>
-			<xs:element name="page" type="pageType" maxOccurs="unbounded"/>
+			<xs:element name="page" type="pageType" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name="MasterClass" type="xs:string" use="optional"/>
 		<xs:attribute name="Theme" type="xs:string" use="optional"/>
@@ -191,9 +185,7 @@
 	<xs:complexType name="usingType">
 		<xs:attribute name="namespace" use="required">
 			<xs:simpleType>
-				<xs:restriction base="xs:string">
-					<xs:enumeration value="Namespace"/>
-				</xs:restriction>
+				<xs:restriction base="xs:string"/>
 			</xs:simpleType>
 		</xs:attribute>
 	</xs:complexType>

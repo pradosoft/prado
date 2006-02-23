@@ -19,7 +19,7 @@
 	</xs:complexType>
 	<xs:element name="application">
 		<xs:annotation>
-			<xs:documentation>configuration content for the whole application in prado3 framework</xs:documentation>
+			<xs:documentation>Application configuration for PRADO 3</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:all>
@@ -28,17 +28,6 @@
 				<xs:element name="services" type="servicesType" minOccurs="0" maxOccurs="1"/>
 				<xs:element name="parameters" type="parametersType" minOccurs="0" maxOccurs="1"/>
 			</xs:all>
-			<xs:attribute name="id" type="xs:string" use="required"/>
-			<xs:attribute name="Mode" use="required">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="Off"/>
-						<xs:enumeration value="Debug"/>
-						<xs:enumeration value="Normal"/>
-						<xs:enumeration value="Performance"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
 			<xs:anyAttribute namespace="##local" processContents="lax"/>
 		</xs:complexType>
 	</xs:element>
