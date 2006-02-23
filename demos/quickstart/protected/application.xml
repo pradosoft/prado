@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<application id="QuickStart" mode="Debug">
+<application id="QuickStart" Mode="Debug">
   <!--<modules>-->
     <!-- uncomment the following to enable caching
     <module id="cache" class="System.Data.TSqliteCache" />
