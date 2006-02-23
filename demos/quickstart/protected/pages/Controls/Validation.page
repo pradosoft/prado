@@ -2,137 +2,74 @@
 
 <h1>Validation Controls</h1>
 
-<p>Validation is performed when a postback control, such as a <tt>TButton</tt>, a <tt>TLinkButton</tt> or a <tt>TTextBox</tt> (under AutoPostBack mode) is submitting the page and its <tt><b>CausesValidation</b></tt> property is true.</p>
+<p>
+Validation controls, called validators, perform validation on user-entered data values when they are post back to the server. The validation is triggered by a postback control, such as a <tt>TButton</tt>, a <tt>TLinkButton</tt> or a <tt>TTextBox</tt> (under <tt>AutoPostBack</tt> mode) whose <tt>CausesValidation</tt> property is true.
+</p>
 
-<p>Validator controls always validate the associated input control on the serve side.
-In addition, if <tt>EnableClientScript</tt> is true, validation will also be performed on the client-side using javascript. Client-side validation will validate user input before it is sent to the server. The form data will not be submitted if any error is detected. This avoids the round-trip of information necessary for server-side validation. </p>
+<p>
+Validation is always performed on server side. If <tt>EnableClientScript</tt> is true and the client browser supports JavaScript, validators may also perform client-side validation. Client-side validation will validate user input before it is sent to the server. The form data will not be submitted if any error is detected. This avoids the round-trip of information necessary for server-side validation.
+</p>
 
-<p>Every validator component has the following properties, defined in the <tt>TBaseValidator</tt> class.
-
-<dl>
-	<dt>ControlToValidate</dt>
-	<dd>The <tt>ID</tt> of the component for this validator. This property must be set to the <tt>ID</tt> path of an input component. The <tt>ID</tt> path is the dot-connected IDs of the components reaching from the validator's parent component to the target component. </dd>
-
-	<dt>ErrorMessage</dt>
-	<dd>The text for the error message when the input component failed to validate.</dd>
-
-	<dt>ValidationGroup</dt>
-	<dd>If the control causing the validation also sets its ValidationGroup property, only those validators having the same ValidationGroup value will do input validation.
-	</dd>
-
-	<dt>Display</dt>
-	<dd>The display behavior of the error message in a validation component. The allowed values are: <tt>None</tt>, <tt>Static</tt> and <tt>Dynamic</tt>. The default is <tt>Static</tt>.
-	<ul>
-		<li><tt>None</tt> -- the validator component and the error message will not be displayed. </li>
-		<li><tt>Dynamic</tt> -- CSS for the error is constructed in such a way that space for the error message on the page is NOT reserved. When the user hits the "submit" button, applicable error messages will show up shifting the layout of your page around (usually down). </li>
-		<li><tt>Static</tt> -- CSS for the error is constructed in such a way that space for the error message on the page is always reserved. When the user hits the "submit" button, applicable error messages will just show up, not altering the layout of your page. </li>
-	</ul>
-	</dd>
-
-	<dt>EnableClientScript</dt>
-	<dd>Indicating whether client-side validation is enabled. Default is true.</dd>
-</dl>
-
+<p>
+Validators share a common set of properties, which are defined in the base class <tt>TBaseValidator</tt> class and listed as follows,
+</p>
+<ul>
+<li><tt>ControlToValidate</tt> specifies the input control to be validated. This property must be set to the ID path of an input control. An ID path is the dot-connected IDs of the controls reaching from the validator's naming container to the target control.</li>
+<li><tt>ErrorMessage</tt> specifies the error message to be displayed in case the corresponding validator fails.</li>
+<li><tt>Text</tt> is similar to <tt>ErrorMessage</tt>. If they are both present, <tt>Text</tt> takes precedence. This property is useful when used together with <tt>TValidationSummary</tt>.</li>
+<li><tt>ValidationGroup</tt> specifies which group the validator is in. The validator will perform validation only if the current postback is triggered by a control which is in the same group.</li>
+<li><tt>EnableClientScript</tt> specifies whether client-side validation should be performed. By default, it is enabled.</li>
+<li><tt>Display</tt> specifies how error messages are displayed. It takes one of the following three values:
+    <ul>
+    <li><tt>None</tt> - the error message will not be displayed even if the validator fails.</li>
+    <li><tt>Static</tt> - the space for displaying the error message is reserved. Therefore, showing up the error message will not change your existing page layout.</li>
+    <li><tt>Dynamic</tt> - the space for displaying the error message is NOT reserved. Therefore, showing up the error message will shift the layout of your page around (usually down).</li>
+    </ul>
+</li>
+</ul>
 
 <h2>TRequiredFieldValidator</h2>
 <p>
-This is the simplest validator, ensuring that the input field has some sort of value. To ensure that all of our input fields are required, add a <tt>TRequiredFieldValidator</tt> component for each of the input fields. The <tt>TRequiredFieldValidator</tt> also has the following property.
+TRequiredFieldValidator ensures that the user enters some data in the specified input field. By default, TRequiredFieldValidator will check if the user input is empty or not. The validation fails if the input is empty. By setting <tt>InitialValue</tt>, the validator can check if the user input is different from <tt>InitialValue</tt>. If not, the validation fails.
 </p>
-<dl>
-	<dt>InitialValue</dt>
-	<dd>The associated input component fails validation if its value does not change from the <tt>InitialValue</tt> upon losing focus. </dd>
-</dl>
-
 <com:RunBar PagePath="Controls.Samples.TRequiredFieldValidator.Home" />
 
 <h2>TRegularExpressionValidator</h2>
-<p>The TRegularExpressionValidator has the following property in addition to the parent <tt>TBaseValidator</tt> properties.
-</p>
-<dl>
-	<dt>RegularExpression</dt>
-	<dd>The regular expression that determines the pattern used to validate a field. Some commonly used regular expressions include:
-	<ul>
-		<li>At least 6 characters: <code>[\w]{6,}</code></li>
-		<li>Japanese Phone Number: <code>(0\d{1,4}-|\(0\d{1,4}\) ?)?\d{1,4}-\d{4}</code></li>
-		<li>Japanese Postal Code: <code>\d{3}(-(\d{4}|\d{2}))?</code></li>
-		<li>P.R.C. Phone Number: <code>(\(\d{3}\)|\d{3}-)?\d{8} </code></li>
-		<li>P.R.C. Postal Code: <code>\d{6}</code></li>
-		<li>P.R.C. Social Security Number: <code>\d{18}|\d{15}</code></li>
-		<li>U.S. Phone Number: <code>((\(\d{3}\) ?)|(\d{3}-))?\d{3}-\d{4}</code></li>
-		<li>U.S. ZIP Code: <code>\d{5}(-\d{4})?</code></li>
-		<li>U.S. Social Security Number: <code>\d{3}-\d{2}-\d{4}</code></li>
-	</ul>
-	More regular expression patterns can be found on the Internet, e.g.
-	<a href="http://regexlib.com/">http://regexlib.com/</a>.
-	</dd>
-</dl>
 <p>
-Note, if the value being validated is empty, TRegularExpressionValidator will not do validation. Use a TRequiredFieldValidator to ensure the value is not empty.
+TRegularExpressionValidator verifies the user input against a regular pattern. The validation fails if the input does not match the pattern. The regular expression can be specified by the <tt>RegularExpression</tt> property. Some commonly used regular expressions include:
 </p>
-
+<ul>
+<li>At least 6 characters: <code>[\w]{6,}</code></li>
+<li>Japanese Phone Number: <code>(0\d{1,4}-|\(0\d{1,4}\) ?)?\d{1,4}-\d{4}</code></li>
+<li>Japanese Postal Code: <code>\d{3}(-(\d{4}|\d{2}))?</code></li>
+<li>P.R.C. Phone Number: <code>(\(\d{3}\)|\d{3}-)?\d{8} </code></li>
+<li>P.R.C. Postal Code: <code>\d{6}</code></li>
+<li>P.R.C. Social Security Number: <code>\d{18}|\d{15}</code></li>
+<li>U.S. Phone Number: <code>((\(\d{3}\) ?)|(\d{3}-))?\d{3}-\d{4}</code></li>
+<li>U.S. ZIP Code: <code>\d{5}(-\d{4})?</code></li>
+<li>U.S. Social Security Number: <code>\d{3}-\d{2}-\d{4}</code></li>
+</ul>
+<p>
+More regular expression patterns can be found on the Internet, e.g.
+<a href="http://regexlib.com/">http://regexlib.com/</a>.
+</p>
+<p>
+Note, TRegularExpressionValidator only checks for nonempty user input. Use a TRequiredFieldValidator to ensure the user input is not empty.
+</p>
 <com:RunBar PagePath="Controls.Samples.TRegularExpressionValidator.Home" />
 
 <h2>TEmailAddressValidator</h2>
-<p><tt>TEmailAddressValidator</tt> validates whether the value of an associated input component is a valid email address. If <tt>CheckMXRecord</tt> is true, besides checking the format of the input value, the validator will also check MX record for the email address, provided <tt>checkdnsrr()</tt> is available in the installed PHP.
+<p>
+TEmailAddressValidator verifies that the user input is a valid email address. The validator uses a regular expression to check if the input is in a valid email address format. If <tt>CheckMXRecord</tt> is true, the validator will also check whether the MX record indicated by the email address is valid, provided <tt>checkdnsrr()</tt> is available in the installed PHP.
 </p>
 <p>
-Note, if the value being validated is empty, TEmailAddressValidator will not do validation. Use a TRequiredFieldValidator to ensure the value is not empty.
+Note, if the input being validated is empty, TEmailAddressValidator will not do validation. Use a TRequiredFieldValidator to ensure the value is not empty.
 </p>
 <com:RunBar PagePath="Controls.Samples.TEmailAddressValidator.Home" />
 
 <h2>TCompareValidator</h2>
-<p>The validator <tt>TCompareValidator</tt> is used to compare two input fields, the comparison can be made in many ways. The following are the properties of the <tt>TCompareValidator</tt> in addition to the parent <tt>TBaseValidator</tt>.
-</p>
-<dl>
-	<dt>ControlToCompare</dt>
-	<dd>The input component to compare with the input control being validated. </dd>
-
-	<dt>ValueToCompare</dt>
-	<dd>A constant value to compare with the value entered by the user into the input component being validated. </dd>
-
-	<dt>ValueType</dt>
-	<dd>The data type (<tt>Integer</tt>, <tt>Double</tt>, <tt>Currency</tt>, <tt>Date</tt>, <tt>String</tt>) that the values being compared are converted to before the comparison is made. </dd>
-
-	<dt>Operator</dt>
-	<dd>The comparison operation to perform (<tt>Equal</tt>, <tt>NotEqual</tt>, <tt>GreaterThan</tt>, <tt>GreaterThanEqual</tt>, <tt>LessThan</tt>, <tt>LessThanEqual</tt>, <tt>DataTypeCheck</tt>). </dd>
-
-	<dt>DateFormat</dt>
-	<dd>The date format to use during comparision.</dd>
-</dl>
-
-<p>To specify the input component to validate, set the <tt>ControlToValidate</tt> property to the <tt>ID</tt> of the input component. To compare the associated input component with another input component, set the <tt>ControlToCompare</tt> property to the <tt>ID</tt> of the component to compare with. </p>
-
-<p>To compare the associated input component with a constant value, specify the constant value to compare with by setting the <tt>ValueToCompare</tt> property. </p>
-
-<p>The <tt>ValueType</tt> property is used to specify the data type of both comparison values. Both values are automatically converted to this data type before the comparison operation is performed. The following value types are supported. </p>
-<dl>
-	<dt>Integer</dt>
-	<dd>A 32-bit signed integer data type. </dd>
-
-	<dt>Float</dt>
-	<dd>A double-precision floating point number data type. </dd>
-
-	<dt>Currency</dt>
-	<dd>A decimal data type that can contain currency symbols. </dd>
-
-	<dt>Date</dt>
-	<dd>A date data type, the date format depends on the <tt>DateFormat</tt> property.</dd>
-
-	<dt>String</dt>
-	<dd>A string data type.</dd>
-</dl>
-
-<p>Use the <tt>Operator</tt> property to specify the type of comparison to perform. If you set the <tt>Operator</tt> property to <tt>DataTypeCheck</tt>, the <tt>TCompareValidator</tt> component will ignore the <tt>ControlToCompare</tt> and <tt>ValueToCompare</tt> properties and simply indicates whether the value entered into the input component can be converted to the data type specified by the <tt>ValueType</tt> property. </p>
-
-<p>Note that if the input control is empty, no validation functions are called and validation succeeds. Use a <tt>RequiredFieldValidator</tt> control to require the user to enter data into the input control. </p>
-<com:RunBar PagePath="Controls.Samples.TCompareValidator.Home" />
-
-<h2>TRangeValidator</h2>
 <p>
-TRangeValidator tests whether an input value is within a specified range.
-</p>
-<p>
-TRangeValidator uses three key properties to perform its validation. The <tt>MinValue</tt> and <tt>MaxValue</tt> properties specify the minimum and maximum values of the valid range. The <tt>ValueType</tt> property specifies the data type of the value being validated. The value will be first converted into the specified type and then compare with the valid range. The following value types are supported:
+TCompareValidator compares the user input with a constant value specified by <tt>ValueToCompare</tt>, or another user input specified by <tt>ControlToCompare</tt>. The <tt>Operator</tt> property specifies how to compare the values, which includes <tt>Equal</tt>, <tt>NotEqual</tt>, <tt>GreaterThan</tt>, <tt>GreaterThanEqual</tt>, <tt>LessThan</tt> and <tt>LessThanEqual</tt>. Before comparison, the values being compared will be converted to the type specified by <tt>DataType</tt> listed as follows,
 </p>
 <ul>
 <li><tt>String</tt> - A string data type.</li>
@@ -141,12 +78,22 @@ TRangeValidator uses three key properties to perform its validation. The <tt>Min
 <li><tt>Currency</tt> - A decimal data type that can contain currency symbols.</li>
 <li><tt>Date</tt> - A date data type. The date format can be specified by setting <tt>DateFormat</tt> property, which must be recognizable by <tt>TSimpleDateFormatter</tt>. If the property is not set, the GNU date syntax is assumed.</li>
 </ul>
-<com:RunBar PagePath="Controls.Samples.TRangeValidator.Home" />
+<p>
+Note, if the input being validated is empty, TEmailAddressValidator will not do validation. Use a TRequiredFieldValidator to ensure the value is not empty.
+</p>
+<com:RunBar PagePath="Controls.Samples.TCompareValidator.Home" />
 
 <h2>TDataTypeValidator</h2>
 <p>
+TDataTypeValidator verifies if the input data is of specific type indicated by <tt>DataType</tt>. The data types that can be checked against are the same as those in TCompareValidator.
 </p>
 <com:RunBar PagePath="Controls.Samples.TDataTypeValidator.Home" />
+
+<h2>TRangeValidator</h2>
+<p>
+TRangeValidator verifies whether an input value is within a specified range. TRangeValidator uses three key properties to perform its validation. The <tt>MinValue</tt> and <tt>MaxValue</tt> properties specify the minimum and maximum values of the valid range. The <tt>DataType</tt> property specifies the data type of the value being validated. The value will be first converted into the specified type and then compare with the valid range. The data types that can be checked against are the same as those in TCompareValidator.
+</p>
+<com:RunBar PagePath="Controls.Samples.TRangeValidator.Home" />
 
 <h2>TCustomValidator</h2>
 <p>
@@ -174,6 +121,13 @@ function ValidationFunctionName(sender, parameter)
 
 <h2>TValidationSummary</h2>
 <p>
+TValidationSummary displays a summary of validation errors inline on a Web page, in a message box, or both.
+</p>
+<p>
+By default, a validation summary will collect <tt>ErrorMessage</tt> of all failed validators on the page. If <tt>ValidationGroup</tt> is not empty, only those validators who belong to the group will show their error messages in the summary.
+</p>
+<p>
+The summary can be displayed as a list, a bulleted list, or a single paragraph based on the <tt>DisplayMode</tt> property. The messages shown can be prefixed with <tt>HeaderText</tt>. The summary can be displayed on the Web page or in a JavaScript message box, by setting the <tt>ShowSummary</tt> and <tt>ShowMessageBox</tt> properties, respectively. Note, the latter is only effective when <tt>EnableClientScript</tt> is true.
 </p>
 <com:RunBar PagePath="Controls.Samples.TValidationSummary.Home" />
 

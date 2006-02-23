@@ -18,6 +18,18 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
 /**
  * TDataTypeValidator class
  *
+ * TDataTypeValidator verifies if the input data is of the type specified
+ * by {@link setDataType DataType}.
+ * The following data types are supported:
+ * - <b>Integer</b> A 32-bit signed integer data type.
+ * - <b>Float</b> A double-precision floating point number data type.
+ * - <b>Currency</b> A decimal data type that can contain currency symbols.
+ * - <b>Date</b> A date data type.
+ * - <b>String</b> A string data type.
+ * For <b>Date</b> type, the property {@link setDateFormat DateFormat}
+ * will be used to determine how to parse the date string. If it is not
+ * provided, the string will be assumed to be in GNU datetime format.
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
@@ -28,18 +40,18 @@ class TDataTypeValidator extends TBaseValidator
 	/**
 	 * @return string the data type that the values being compared are converted to before the comparison is made. Defaults to String.
 	 */
-	public function getValueType()
+	public function getDataType()
 	{
-		return $this->getViewState('ValueType','String');
+		return $this->getViewState('DataType','String');
 	}
 
 	/**
-	 * Sets the data type (Integer, Double, Currency, Date, String) that the values being compared are converted to before the comparison is made.
+	 * Sets the data type (Integer, Float, Currency, Date, String) that the values being compared are converted to before the comparison is made.
 	 * @param string the data type
 	 */
-	public function setValueType($value)
+	public function setDataType($value)
 	{
-		$this->setViewState('ValueType',TPropertyValue::ensureEnum($value,'Integer','Double','Date','Currency','String'),'String');
+		$this->setViewState('DataType',TPropertyValue::ensureEnum($value,'Integer','Float','Date','Currency','String'),'String');
 	}
 
 	/**
@@ -67,7 +79,7 @@ class TDataTypeValidator extends TBaseValidator
 	 */
 	protected function evaluateDataTypeCheck($value)
 	{
-		switch($this->getValueType())
+		switch($this->getDataType())
 		{
 			case 'Integer':
 				return preg_match('/^[-+]?[0-9]+$/',trim($value));

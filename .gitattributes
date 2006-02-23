@@ -146,6 +146,8 @@ demos/quickstart/protected/pages/Controls/Samples/TDataList/Sample1.page -text
 demos/quickstart/protected/pages/Controls/Samples/TDataList/Sample1.php -text
 demos/quickstart/protected/pages/Controls/Samples/TDataList/Sample2.page -text
 demos/quickstart/protected/pages/Controls/Samples/TDataList/Sample2.php -text
+demos/quickstart/protected/pages/Controls/Samples/TDataTypeValidator/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TDataTypeValidator/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TDropDownList/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TDropDownList/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TEmailAddressValidator/Home.page -text

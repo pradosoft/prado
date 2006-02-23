@@ -23,7 +23,7 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  * TRangeValidator uses three key properties to perform its validation.
  * The {@link setMinValue MinValue} and {@link setMaxValue MaxValue}
  * properties specify the minimum and maximum values of the valid range.
- * The {@link setValueType ValueType} property is used to specify the
+ * The {@link setDataType DataType} property is used to specify the
  * data type of the value and the minimum and maximum range values.
  * These values are converted to this data type before the validation
  * operation is performed. The following value types are supported:
@@ -81,9 +81,9 @@ class TRangeValidator extends TBaseValidator
 	 * @return string the data type that the values being compared are
 	 * converted to before the comparison is made. Defaults to String.
 	 */
-	public function getValueType()
+	public function getDataType()
 	{
-		return $this->getViewState('ValueType','String');
+		return $this->getViewState('DataType','String');
 	}
 
 	/**
@@ -91,9 +91,9 @@ class TRangeValidator extends TBaseValidator
 	 * being compared are converted to before the comparison is made.
 	 * @param string the data type
 	 */
-	public function setValueType($value)
+	public function setDataType($value)
 	{
-		$this->setViewState('ValueType',TPropertyValue::ensureEnum($value,'Integer','Float','Date','Currency','String'),'String');
+		$this->setViewState('DataType',TPropertyValue::ensureEnum($value,'Integer','Float','Date','Currency','String'),'String');
 	}
 
 	/**
@@ -125,7 +125,7 @@ class TRangeValidator extends TBaseValidator
 		if($value==='')
 			return true;
 
-		switch($this->getValueType())
+		switch($this->getDataType())
 		{
 			case 'Integer':
 				return $this->isValidInteger($value);
@@ -273,7 +273,7 @@ class TRangeValidator extends TBaseValidator
 		$options=parent::getClientScriptOptions();
 		$options['minimumvalue']=$this->getMinValue();
 		$options['maximumvalue']=$this->getMaxValue();
-		$options['type']=$this->getValueType();
+		$options['type']=$this->getDataType();
 		if(($dateFormat=$this->getDateFormat())!=='')
 			$options['dateformat']=$dateFormat;
 		return $options;

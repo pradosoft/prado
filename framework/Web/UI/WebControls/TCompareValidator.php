@@ -26,7 +26,7 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  * a constant value, specify the constant value to compare with by setting the
  * {@link setValueToCompare ValueToCompare} property.
  *
- * The {@link setValueType ValueType} property is used to specify the data type
+ * The {@link setDataType DataType} property is used to specify the data type
  * of both comparison values. Both values are automatically converted to this data
  * type before the comparison operation is performed. The following value types are supported:
  * - <b>Integer</b> A 32-bit signed integer data type.
@@ -37,13 +37,7 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  *
  * Use the {@link setOperator Operator} property to specify the type of comparison
  * to perform. Valid operators include Equal, NotEqual, GreaterThan, GreaterThanEqual,
- * LessThan, LessThanEqual, and DataTypeCheck.
- *
- * Note, if you set {@link setOperator Operator} to DataTypeCheck, the validator
- * will ignore the {@link setControlToCompare ControlToCompare} and
- * {@link setValueToCompare ValueToCompare} properties and simply
- * indicates whether the value entered into the input control can be converted
- * to the data type specified by the {@link setValueType ValueType} property.
+ * LessThan and LessThanEqual.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -55,18 +49,18 @@ class TCompareValidator extends TBaseValidator
 	/**
 	 * @return string the data type that the values being compared are converted to before the comparison is made. Defaults to String.
 	 */
-	public function getValueType()
+	public function getDataType()
 	{
-		return $this->getViewState('ValueType','String');
+		return $this->getViewState('DataType','String');
 	}
 
 	/**
 	 * Sets the data type (Integer, Float, Currency, Date, String) that the values being compared are converted to before the comparison is made.
 	 * @param string the data type
 	 */
-	public function setValueType($value)
+	public function setDataType($value)
 	{
-		$this->setViewState('ValueType',TPropertyValue::ensureEnum($value,'Integer','Float','Date','Currency','String'),'String');
+		$this->setViewState('DataType',TPropertyValue::ensureEnum($value,'Integer','Float','Date','Currency','String'),'String');
 	}
 
 	/**
@@ -187,7 +181,7 @@ class TCompareValidator extends TBaseValidator
 	 */
 	protected function getComparisonValues($value1, $value2)
 	{
-		switch($this->getValueType())
+		switch($this->getDataType())
 		{
 			case 'Integer':
 				return array(intval($value1), intval($value2));
@@ -232,7 +226,7 @@ class TCompareValidator extends TBaseValidator
 			$options['valuetocompare']=$value;
 		if(($operator=$this->getOperator())!=='Equal')
 			$options['operator']=$operator;
-		$options['type']=$this->getValueType();
+		$options['type']=$this->getDataType();
 		if(($dateFormat=$this->getDateFormat())!=='')
 			$options['dateformat']=$dateFormat;
 		return $options;
