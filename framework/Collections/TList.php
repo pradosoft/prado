@@ -49,17 +49,39 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 * @var integer
 	 */
 	private $_c=0;
+	/**
+	 * @var boolean whether this list is read-only
+	 */
+	private $_r=false;
 
 	/**
 	 * Constructor.
 	 * Initializes the list with an array or an iterable object.
 	 * @param array|Iterator the intial data. Default is null, meaning no initialization.
+	 * @param boolean whether the list is read-only
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
-	public function __construct($data=null)
+	public function __construct($data=null,$readOnly=false)
 	{
 		if($data!==null)
 			$this->copyFrom($data);
+		$this->setReadOnly($readOnly);
+	}
+
+	/**
+	 * @return boolean whether this list is read-only or not. Defaults to false.
+	 */
+	public function getReadOnly()
+	{
+		return $this->_r;
+	}
+
+	/**
+	 * @param boolean whether this list is read-only or not
+	 */
+	protected function setReadOnly($value)
+	{
+		$this->_r=TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -113,18 +135,24 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 * @param integer the speicified position.
 	 * @param mixed new item
 	 * @throws TInvalidDataValueException If the index specified exceeds the bound
+	 * @throws TInvalidOperationException if the list is read-only
 	 */
 	public function insertAt($index,$item)
 	{
-		if($index===$this->_c)
-			$this->_d[$this->_c++]=$item;
-		else if($index>=0 && $index<$this->_c)
+		if(!$this->_r)
 		{
-			array_splice($this->_d,$index,0,array($item));
-			$this->_c++;
+			if($index===$this->_c)
+				$this->_d[$this->_c++]=$item;
+			else if($index>=0 && $index<$this->_c)
+			{
+				array_splice($this->_d,$index,0,array($item));
+				$this->_c++;
+			}
+			else
+				throw new TInvalidDataValueException('list_index_invalid',$index);
 		}
 		else
-			throw new TInvalidDataValueException('list_index_invalid',$index);
+			throw new TInvalidOperation('list_readonly');
 	}
 
 	/**
@@ -150,24 +178,30 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 * Removes an item at the specified position.
 	 * @param integer the index of the item to be removed.
 	 * @return mixed the removed item.
-	 * @throws TOutOfRangeException If the index specified exceeds the bound
+	 * @throws TInvalidDataValueException If the index specified exceeds the bound
+	 * @throws TInvalidOperationException if the list is read-only
 	 */
 	public function removeAt($index)
 	{
-		if($index>=0 && $index<$this->_c)
+		if(!$this->_r)
 		{
-			$this->_c--;
-			if($index===$this->_c)
-				return array_pop($this->_d);
-			else
+			if($index>=0 && $index<$this->_c)
 			{
-				$item=$this->_d[$index];
-				array_splice($this->_d,$index,1);
-				return $item;
+				$this->_c--;
+				if($index===$this->_c)
+					return array_pop($this->_d);
+				else
+				{
+					$item=$this->_d[$index];
+					array_splice($this->_d,$index,1);
+					return $item;
+				}
 			}
+			else
+				throw new TInvalidDataValueException('list_index_invalid',$index);
 		}
 		else
-			throw new TInvalidDataValueException('list_index_invalid',$index);
+			throw new TInvalidOperation('list_readonly');
 	}
 
 	/**
@@ -275,7 +309,6 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 * This method is required by the interface ArrayAccess.
 	 * @param integer the offset to set item
 	 * @param mixed the item value
-	 * @throws TOutOfRangeException If the index specified exceeds the bound
 	 */
 	public function offsetSet($offset,$item)
 	{
@@ -292,7 +325,6 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 * Unsets the item at the specified offset.
 	 * This method is required by the interface ArrayAccess.
 	 * @param integer the offset to unset item
-	 * @throws TOutOfRangeException If the index specified exceeds the bound
 	 */
 	public function offsetUnset($offset)
 	{

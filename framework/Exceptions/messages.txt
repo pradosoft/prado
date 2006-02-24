@@ -17,10 +17,12 @@ propertyvalue_enumvalue_invalid			= Value '%s' is a not valid enumeration value 
 list_index_invalid						= Index '%d' is out of range.
 list_item_inexistent					= The item cannot be found in the list.
 list_data_not_iterable					= Data must be either an array or an object implementing Traversable interface.
+list_readonly							= %s is read-only.
 
 map_addition_disallowed					= The new item cannot be added to the map.
 map_item_unremovable					= The item cannot be removed from the map.
 map_data_not_iterable					= Data must be either an array or an object implementing Traversable interface.
+map_readonly							= %s is read-only.
 
 application_basepath_invalid			= Application base path '%s' does not exist or is not a directory.
 application_runtimepath_invalid			= Application runtime path '%s' does not exist or is not writable by Web server process.

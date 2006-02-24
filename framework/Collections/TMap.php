@@ -44,17 +44,39 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 	 * @var array internal data storage
 	 */
 	private $_d=array();
+	/**
+	 * @var boolean whether this list is read-only
+	 */
+	private $_r=false;
 
 	/**
 	 * Constructor.
 	 * Initializes the list with an array or an iterable object.
 	 * @param array|Iterator the intial data. Default is null, meaning no initialization.
+	 * @param boolean whether the list is read-only
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
-	public function __construct($data=null)
+	public function __construct($data=null,$readOnly=false)
 	{
 		if($data!==null)
 			$this->copyFrom($data);
+		$this->setReadOnly($readOnly);
+	}
+
+	/**
+	 * @return boolean whether this map is read-only or not. Defaults to false.
+	 */
+	public function getReadOnly()
+	{
+		return $this->_r;
+	}
+
+	/**
+	 * @param boolean whether this list is read-only or not
+	 */
+	protected function setReadOnly($value)
+	{
+		$this->_r=TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -99,28 +121,37 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 	 * Note, if the specified key already exists, the old value will be overwritten.
 	 * @param mixed key
 	 * @param mixed value
+	 * @throws TInvalidOperationException if the map is read-only
 	 */
 	public function add($key,$value)
 	{
-		$this->_d[$key]=$value;
+		if(!$this->_r)
+			$this->_d[$key]=$value;
+		else
+			throw new TInvalidOperation('map_readonly');
 	}
 
 	/**
 	 * Removes an item from the map by its key.
 	 * @param mixed the key of the item to be removed
 	 * @return mixed the removed value, null if no such key exists.
-	 * @throws TInvalidOperationException if the item cannot be removed
+	 * @throws TInvalidOperationException if the map is read-only
 	 */
 	public function remove($key)
 	{
-		if(isset($this->_d[$key]) || array_key_exists($key,$this->_d))
+		if(!$this->_r)
 		{
-			$value=$this->_d[$key];
-			unset($this->_d[$key]);
-			return $value;
+			if(isset($this->_d[$key]) || array_key_exists($key,$this->_d))
+			{
+				$value=$this->_d[$key];
+				unset($this->_d[$key]);
+				return $value;
+			}
+			else
+				return null;
 		}
 		else
-			return null;
+			throw new TInvalidOperation('map_readonly');
 	}
 
 	/**
