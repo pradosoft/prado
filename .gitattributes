@@ -269,6 +269,7 @@ framework/Collections/TDummyDataSource.php -text
 framework/Collections/TList.php -text
 framework/Collections/TMap.php -text
 framework/Collections/TPagedDataSource.php -text
+framework/Collections/TPagedList.php -text
 framework/Data/TAPCCache.php -text
 framework/Data/TCache.php -text
 framework/Data/TDataFieldAccessor.php -text
