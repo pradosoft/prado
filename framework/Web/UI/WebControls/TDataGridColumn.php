@@ -44,7 +44,7 @@
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-abstract class TDataGridColumn extends TComponent
+abstract class TDataGridColumn extends TApplicationComponent
 {
 	private $_owner=null;
 	private $_viewState=array();
