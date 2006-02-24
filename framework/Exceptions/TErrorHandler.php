@@ -135,7 +135,6 @@ class TErrorHandler extends TModule
 			else
 				$this->handleExternalError(500,$param);
 		}
-//		exit(1);
 	}
 
 	/**
