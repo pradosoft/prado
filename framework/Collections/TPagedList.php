@@ -11,11 +11,6 @@
  */
 
 /**
- * Includes TPagedListIterator class
- */
-Prado::using('System.Collections.TPagedDataSource');
-
-/**
  * TPagedList class
  *
  * TPagedList implements a list with paging functionality.
@@ -175,9 +170,9 @@ class TPagedList extends TList
 			return $pageIndex;
 		if($this->_customPaging)
 		{
-			if($pageIndex>=0 && ($this->_virtualCount<0 || $pageIndex<$this->getPageCount())
+			if($pageIndex>=0 && ($this->_virtualCount<0 || $pageIndex<$this->getPageCount()))
 			{
-				$param=new TPagedListFetchDataEventParameter($this->_pageSize*$pageIndex,$this->_pageSize);
+				$param=new TPagedListFetchDataEventParameter($pageIndex,$this->_pageSize*$pageIndex,$this->_pageSize);
 				$this->onFetchData($param);
 				if(($data=$param->getData())!==null)
 				{
@@ -186,7 +181,7 @@ class TPagedList extends TList
 					$this->setReadOnly(true);
 					$oldPage=$this->_currentPageIndex;
 					$this->_currentPageIndex=$pageIndex;
-					$this->onPageIndexChangedEvent(new TPagedListPageChangedEventParameter($oldPage));
+					$this->onPageIndexChanged(new TPagedListPageChangedEventParameter($oldPage));
 					return $pageIndex;
 				}
 				else
@@ -200,7 +195,7 @@ class TPagedList extends TList
 			if($pageIndex>=0 && $pageIndex<$this->getPageCount())
 			{
 				$this->_currentPageIndex=$pageIndex;
-				$this->onPageIndexChangedEvent(null);
+				$this->onPageIndexChanged(null);
 				return $pageIndex;
 			}
 			else
@@ -257,7 +252,7 @@ class TPagedList extends TList
 				return -1;
 		}
 		else
-			return (int)(($this->getCount()+$this->_pageSize-1)/$this->_pageSize);
+			return (int)((parent::getCount()+$this->_pageSize-1)/$this->_pageSize);
 	}
 
 	/**
@@ -300,7 +295,10 @@ class TPagedList extends TList
 		if($this->_customPaging)
 			return parent::getIterator();
 		else
-			return new TPagedListIterator($this,$this->_pageSize*$this->_currentPageIndex,$this->getCount());
+		{
+			$data=$this->toArray();
+			return new TListIterator($data);
+		}
 	}
 
 	/**
@@ -364,48 +362,110 @@ class TPagedList extends TList
 	}
 }
 
+/**
+ * TPagedListPageChangedEventParameter class.
+ * TPagedListPageChangedEventParameter is used as the parameter for
+ * {@link TPagedList::onPageChanged OnPageChanged} event.
+ * To obtain the page index before it was changed, use {@link getOldPageIndex OldPageIndex}.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Collections
+ * @since 3.0
+ */
 class TPagedListPageChangedEventParameter extends TEventParameter
 {
 	private $_oldPage;
 
+	/**
+	 * Constructor.
+	 * @param integer old page index
+	 */
 	public function __construct($oldPage)
 	{
 		$this->_oldPage=$oldPage;
 	}
 
-	public function getOldPage()
+	/**
+	 * @return integer the index of the page before the list changed to the new page
+	 */
+	public function getOldPageIndex()
 	{
 		return $this->_oldPage;
 	}
 }
 
+/**
+ * TPagedListFetchDataEventParameter class.
+ *
+ * TPagedListFetchDataEventParameter is used as the parameter for
+ * {@link TPagedList::onFetchData OnFetchData} event.
+ * To obtain the new page index, use {@link getNewPageIndex NewPageIndex}.
+ * The {@link getOffset Offset} property refers to the index
+ * of the first item in the new page, while {@link getLimit Limit}
+ * specifies how many items are requested for the page.
+ * Newly fetched data should be saved in {@link setData Data} property.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Collections
+ * @since 3.0
+ */
 class TPagedListFetchDataEventParameter extends TEventParameter
 {
+	private $_pageIndex;
 	private $_offset;
 	private $_limit;
 	private $_data=null;
 
-	public function __construct($offset,$limit)
+	/**
+	 * Constructor.
+	 * @param integer new page index
+	 * @param integer offset of the first item in the new page
+	 * @param integer number of items in the new page desired
+	 */
+	public function __construct($pageIndex,$offset,$limit)
 	{
+		$this->_pageIndex=$pageIndex;
 		$this->_offset=$offset;
 		$this->_limit=$limit;
 	}
 
+	/**
+	 * @return integer the zero-based index of the new page
+	 */
+	public function getNewPageIndex()
+	{
+		return $this->_pageIndex;
+	}
+
+	/**
+	 * @return integer offset of the first item in the new page
+	 */
 	public function getOffset()
 	{
 		return $this->_offset;
 	}
 
+	/**
+	 * @return integer number of items in the new page
+	 */
 	public function getLimit()
 	{
 		return $this->_limit;
 	}
 
+	/**
+	 * @return mixed new page data
+	 */
 	public function getData()
 	{
 		return $this->_data;
 	}
 
+	/**
+	 * @param mixed new page data
+	 */
 	public function setData($value)
 	{
 		$this->_data=$value;
