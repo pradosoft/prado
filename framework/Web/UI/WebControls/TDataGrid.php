@@ -184,7 +184,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	public function getColumns()
 	{
 		if(!$this->_columns)
-			$this->_columns=new TDataGridColumnCollection;
+			$this->_columns=new TDataGridColumnCollection($this);
 		return $this->_columns;
 	}
 
@@ -194,7 +194,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	public function getAutoColumns()
 	{
 		if(!$this->_autoColumns)
-			$this->_autoColumns=new TDataGridColumnCollection;
+			$this->_autoColumns=new TDataGridColumnCollection($this);
 		return $this->_autoColumns;
 	}
 
@@ -816,7 +816,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			$state=$this->getViewState('AutoColumns',array());
 			if(!empty($state))
 			{
-				$this->_autoColumns=new TDataGridColumnCollection;
+				$this->_autoColumns=new TDataGridColumnCollection($this);
 				foreach($state as $st)
 				{
 					$column=new TBoundColumn;
@@ -1221,7 +1221,6 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 					$column->setHeaderText($key);
 					$column->setDataField($key);
 					$column->setSortExpression($key);
-					$column->setOwner($this);
 					$autoColumns->add($column);
 				}
 				else
@@ -1229,7 +1228,6 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 					$column->setHeaderText('Item');
 					$column->setDataField($key);
 					$column->setSortExpression('Item');
-					$column->setOwner($this);
 					$autoColumns->add($column);
 				}
 			}
@@ -1757,6 +1755,29 @@ class TDataGridItemCollection extends TList
 class TDataGridColumnCollection extends TList
 {
 	/**
+	 * the control that owns this collection.
+	 * @var TControl
+	 */
+	private $_o;
+
+	/**
+	 * Constructor.
+	 * @param TDataGrid the control that owns this collection.
+	 */
+	public function __construct(TDataGrid $owner)
+	{
+		$this->_o=$owner;
+	}
+
+	/**
+	 * @return TDataGrid the control that owns this collection.
+	 */
+	protected function getOwner()
+	{
+		return $this->_o;
+	}
+
+	/**
 	 * Inserts an item at the specified position.
 	 * This overrides the parent implementation by inserting only TDataGridColumn.
 	 * @param integer the speicified position.
@@ -1766,7 +1787,10 @@ class TDataGridColumnCollection extends TList
 	public function insertAt($index,$item)
 	{
 		if($item instanceof TDataGridColumn)
+		{
+			$item->setOwner($this->_o);
 			parent::insertAt($index,$item);
+		}
 		else
 			throw new TInvalidDataTypeException('datagridcolumncollection_datagridcolumn_required');
 	}
