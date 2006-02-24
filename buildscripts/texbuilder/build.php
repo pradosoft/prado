@@ -177,7 +177,7 @@ function parse_html($page,$html)
 
 	//runbar
 	$html = preg_replace('/<com:RunBar\s+PagePath="([^"]*)"\s+\/>/',
-			'Try, \href{http://www.pradosoft.com/prado3/demos/quickstart/index.php?page=$1}{$1}', $html);
+			'Try, \href{http://www.pradosoft.com/demos/quickstart/index.php?page=$1}{$1}', $html);
 
 	//text modifiers
 	$html = preg_replace('/<b>([^<]*)<\/b>/', '\textbf{$1}', $html);
@@ -257,7 +257,7 @@ foreach($pages as $chapter => $sections)
 
 if($argc <= 1 && $count > 1)
 {
-	echo "** Use pdftex to compile prado3_quick_start.tex to obtain PDF version of quickstart tutorial. **\n";
+	echo "** Use pdflatex to compile prado3_quick_start.tex to obtain PDF version of quickstart tutorial. **\n";
 	exit;
 }
 if($argv[1] == 'pdf')
@@ -266,7 +266,7 @@ if($argv[1] == 'pdf')
 	{
 		//build pdfTex
 		$command=sprintf($pdfTex,$mainTexFile);
-		system($command); 
+		system($command);
 		system($command); //run it twice
 
 		echo "\n\n** PDF file prado3_quick_start.pdf created **\n\n";
