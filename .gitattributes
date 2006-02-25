@@ -173,6 +173,8 @@ demos/quickstart/protected/pages/Controls/Samples/TRadioButton/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TRadioButton/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TRadioButtonList/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TRadioButtonList/Home.php -text
+demos/quickstart/protected/pages/Controls/Samples/TRangeValidator/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TRangeValidator/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TRegularExpressionValidator/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TRegularExpressionValidator/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TRepeater/Sample1.page -text
