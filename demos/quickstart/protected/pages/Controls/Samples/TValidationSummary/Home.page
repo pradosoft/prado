@@ -7,33 +7,33 @@
 	<legend>Create New Account</legend>
 
 <div class="username">
-	Username: 
+	Username:
 	<com:TTextBox ID="Username" />
 	<com:TRequiredFieldValidator
 		ID="UsernameVal"
 		ControlToValidate="Username"
-		Display="None"
 		ValidationGroup="Group1"
-		ErrorMessage="a username is required." />		
+		Text="*"
+		ErrorMessage="a username is required." />
 </div>
 <div class="password">
 	Password
 	<com:TTextBox ID="Password" TextMode="Password" />
+	<com:TRequiredFieldValidator
+		ID="PasswordVal"
+		ControlToValidate="Password"
+		ValidationGroup="Group1"
+		Text="*"
+		ErrorMessage="a password is required." />
 </div>
-<com:TRequiredFieldValidator
-	ID="PasswordVal"
-	ControlToValidate="Password"
-	Display="None"
-	ValidationGroup="Group1"
-	ErrorMessage="a password is required." />	
-	
+
 <div class="create">
 	<com:TButton ID="Create" ValidationGroup="Group1" Text="Create New Account"/>
 </div>
 
 
 <div class="registrationSummary">
-	<com:TValidationSummary 
+	<com:TValidationSummary
 		ValidationGroup="Group1"
 		Display="None"
 		HeaderText="Unable to create new account because" />
@@ -48,7 +48,7 @@
 <div class="username">
 	Login Name:
 	<com:TTextBox ID="UserID" />
-		
+
 	<com:TRequiredFieldValidator
 		ID="UserVal1"
 		ControlToValidate="UserID"
@@ -71,7 +71,7 @@
 <com:TButton ID="login" ValidationGroup="Group2" CssClass="button" Text="Sign In" />
 
 <div class="validation">
-	<com:TValidationSummary 
+	<com:TValidationSummary
 		ValidationGroup="Group2"
 		AutoUpdate="false"
 		Display="None"

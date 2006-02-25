@@ -37,6 +37,16 @@
 class TValidationSummary extends TWebControl
 {
 	/**
+	 * Constructor.
+	 * This method sets the foreground color to red.
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+		$this->setForeColor('red');
+	}
+
+	/**
 	 * @return string the display behavior (None, Static, Dynamic) of the error message in a validation summary component.
 	 */
 	public function getDisplay()
@@ -50,9 +60,7 @@ class TValidationSummary extends TWebControl
 	 */
 	public function setDisplay($value)
 	{
-		if($value!='None' && $value!='Dynamic')
-			$value='Static';
-		$this->setViewState('Display',$value,'Static');
+		$this->setViewState('Display',TPropertyValue::ensureEnum($value,'None','Dynamic','Static'),'Static');
 	}
 
 	/**
@@ -196,7 +204,7 @@ class TValidationSummary extends TWebControl
 			if($display==='None' || $display==='Dynamic')
 				$writer->addStyleAttribute('display','none');
 			else
-				$writer->addStyleAttribute('visibility','hidden');		
+				$writer->addStyleAttribute('visibility','hidden');
 		}
 		$writer->addAttribute('id',$this->getClientID());
 		parent::addAttributesToRender($writer);
