@@ -135,6 +135,7 @@
         <include name="**/*.php"/>
 	<exclude name="Web/Javascripts/js/clientscripts.php"/>
 	<exclude name="Data/TCache.php"/>
+	<exclude name="DataAccess/**/*.php"/>
 	<exclude name="I18N/core/Gettext/MO.php"/>
 	<exclude name="I18N/core/Gettext/PO.php"/>
 	<exclude name="I18N/core/util.php"/>
@@ -217,5 +218,4 @@
     <phplint file="${build.base.dir}/${prado.lite}"/>
     <exec command="php -e ${prado.lite}" dir="${build.base.dir}" passthru="true" checkreturn="true"/>
   </target>
-
 </project>
