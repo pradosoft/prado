@@ -282,7 +282,7 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function registerHiddenField($name,$value)
 	{
-		// if the named hidden field exists and has a value null, it means the hidden field is rendered already
+               // if the named hidden field exists and has a value null, it means the hidden field is rendered already
 		if(!isset($this->_hiddenFields[$name]) || $this->_hiddenFields[$name]!==null)
 			$this->_hiddenFields[$name]=$value;
 	}
