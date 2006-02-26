@@ -130,7 +130,7 @@ class THead extends TControl
 		$cs=$page->getClientScript();
 		$cs->renderStyleSheetFiles($writer);
 		$cs->renderStyleSheets($writer);
-		$cs->renderScriptFiles($writer);
+		$cs->renderHeadScriptFiles($writer);
 		$cs->renderHeadScripts($writer);
 		parent::render($writer);
 		$writer->write("</head>\n");
