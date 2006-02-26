@@ -925,10 +925,13 @@ tests/FunctionalTests/tickets/protected/pages/Ticket27.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket54.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket54Master.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket54Master.tpl -text
+tests/FunctionalTests/tickets/protected/pages/Ticket72.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket72.php -text
 tests/FunctionalTests/tickets/protected/pages/config.xml -text
 tests/FunctionalTests/tickets/tests/Ticket21TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket27TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket54TestCase.php -text
+tests/FunctionalTests/tickets/tests/Ticket72TestCase.php -text
 tests/UnitTests/TODO.txt -text
 tests/UnitTests/framework/Collections/utList.php -text
 tests/UnitTests/framework/Collections/utMap.php -text

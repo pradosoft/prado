@@ -1,0 +1,7 @@
+<com:TContent ID="Content">
+<com:TTextBox ID="K1" />
+<com:TTextBox ID="K2" />
+<com:TButton Text="Send" onClick="ButtonClick" />
+
+<com:TLabel ID="ResultLabel" />
+</com:TContent>
