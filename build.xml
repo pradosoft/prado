@@ -32,8 +32,8 @@
   <property name="reports.style.dir" value="buildscripts/phing/style"/>
   <property name="reports.geshi.dir" value="${src.dir}/3rdParty/geshi"/>
   <property name="prado.lite" value="pradolite.php"/>
-  <property name="application.xsd" value="${src.dir}/Specs/application.xsd"/>
-  <property name="config.xsd" value="${src.dir}/Specs/config.xsd"/>
+  <property name="application.xsd" value="${doc.dir}/specs/application.xsd"/>
+  <property name="config.xsd" value="${doc.dir}/specs/config.xsd"/>
 
   <taskdef name="phplint" classname="PhpLintTask" classpath="buildscripts/phing/tasks"/>
   <taskdef name="xmllint" classname="XmlLintTask" classpath="buildscripts/phing/tasks"/>
