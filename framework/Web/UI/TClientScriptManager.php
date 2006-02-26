@@ -124,8 +124,11 @@ class TClientScriptManager extends TApplicationComponent
 			$basePath=Prado::getFrameworkPath().'/'.self::SCRIPT_PATH;
 			foreach(self::$_pradoScripts[$name] as $script)
 			{
-				$this->publishFilePath($basePath.'/'.$script.'.js');
-				$this->_registeredPradoFiles[$script]=false;
+				if(!isset($this->_registeredPradoFiles[$script]))
+				{
+					$this->publishFilePath($basePath.'/'.$script.'.js');
+					$this->_registeredPradoFiles[$script]=false;
+				}
 			}
 		}
 	}
