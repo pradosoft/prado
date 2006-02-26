@@ -125,14 +125,30 @@ class TClientScriptManager extends TApplicationComponent
 			foreach(self::$_pradoScripts[$name] as $script)
 			{
 				$this->publishFilePath($basePath.'/'.$script.'.js');
-				$this->_registeredPradoFiles[$script]=true;
+				$this->_registeredPradoFiles[$script]=false;
 			}
+		}
+	}
+
+	protected function renderPradoScripts($writer)
+	{
+		$files='';
+		foreach($this->_registeredPradoFiles as $file=>$rendered)
+		{
+			if(!$rendered)
+			{
+				$files.=','.$file;
+				$this->_registeredPradoFiles[$file]=true;
+			}
+		}
+		if($files!=='')
+		{
+			$basePath=Prado::getFrameworkPath().'/'.self::SCRIPT_PATH;
 			$scriptLoader=$basePath.'/'.self::SCRIPT_LOADER;
-			$url=$this->publishFilePath($scriptLoader);
-			$url.='?js='.implode(',',array_keys($this->_registeredPradoFiles));
+			$url=$this->publishFilePath($scriptLoader).'?js='.trim($files,',');
 			if($this->getApplication()->getMode()===TApplication::STATE_DEBUG)
 				$url.='&__nocache';
-			$this->registerScriptFile('prado:pradoscripts',$url);
+			$writer->write(TJavaScript::renderScriptFile($url));
 		}
 	}
 
@@ -252,7 +268,8 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function registerScriptFile($key,$url)
 	{
-		$this->_scriptFiles[$key]=$url;
+		if(!isset($this->_scriptFiles[$key]))
+			$this->_scriptFiles[$key]=$url;
 	}
 
 	/**
@@ -282,8 +299,7 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function registerHiddenField($name,$value)
 	{
-               // if the named hidden field exists and has a value null, it means the hidden field is rendered already
-		if(!isset($this->_hiddenFields[$name]) || $this->_hiddenFields[$name]!==null)
+		if(!isset($this->_hiddenFields[$name]))
 			$this->_hiddenFields[$name]=$value;
 	}
 
@@ -400,7 +416,18 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function renderScriptFiles($writer)
 	{
-		$writer->write(TJavaScript::renderScriptFiles($this->_scriptFiles));
+		$this->renderPradoScripts($writer);
+		$files=array();
+		foreach($this->_scriptFiles as $key=>$file)
+		{
+			if($file!==true)
+			{
+				$files[]=$file;
+				$this->_scriptFiles[$key]=true;
+			}
+		}
+		if(!empty($files))
+			$writer->write(TJavaScript::renderScriptFiles($files));
 	}
 
 	/**
@@ -427,13 +454,13 @@ class TClientScriptManager extends TApplicationComponent
 		$str='';
 		foreach($this->_hiddenFields as $name=>$value)
 		{
-			if($value!==null)
+			if($value!==true)
 			{
 				$value=THttpUtility::htmlEncode($value);
 				$str.="<input type=\"hidden\" name=\"$name\" id=\"$name\" value=\"$value\" />\n";
-				// set hidden field value to null to indicate this field is rendered
+				// set hidden field value to true to indicate this field is rendered
 				// Note, hidden field rendering is invoked twice (at the beginning and ending of TForm)
-				$this->_hiddenFields[$name]=null;
+				$this->_hiddenFields[$name]=true;
 			}
 		}
 		if($str!=='')

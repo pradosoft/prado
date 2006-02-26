@@ -677,6 +677,7 @@ class TPage extends TTemplateControl
 		$this->_inFormRender=true;
 		$cs=$this->getClientScript();
 		$cs->renderHiddenFields($writer);
+		$cs->renderScriptFiles($writer);
 		$cs->renderBeginScripts($writer);
 	}
 

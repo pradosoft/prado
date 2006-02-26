@@ -101,7 +101,7 @@
  * @version v1.0, last update on Sat Dec 11 15:25:11 EST 2004
  * @package System.Web.UI.WebControls
  */
-class TWizard extends TPanel implements INamingContainer
+class TWizard extends TWebControl implements INamingContainer
 {
 	/**
 	 * The command name for the OnNextCommand.
@@ -261,7 +261,7 @@ class TWizard extends TPanel implements INamingContainer
 	 */
 	public function setActiveStepIndex($index)
 	{
-		$this->setViewState('ActiveStepIndex',$index,0);
+		$this->setViewState('ActiveStepIndex',TPropertyValue::ensureInteger($index),0);
 	}
 
 	/**
@@ -281,7 +281,7 @@ class TWizard extends TPanel implements INamingContainer
 	 * is the TWizard.
 	 * @param object a component object.
 	 */
-	public function addParsedObject($object,$context)
+	public function addParsedObject($object)
 	{
 		if($object instanceof TWizardStep)
 		{
