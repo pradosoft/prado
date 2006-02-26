@@ -904,15 +904,25 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	{
 		$itemStyle=$this->getViewState('ItemStyle',null);
 
-		$alternatingItemStyle=new TTableItemStyle($itemStyle);
-		if(($style=$this->getViewState('AlternatingItemStyle',null))!==null)
-			$alternatingItemStyle->mergeWith($style);
+		$alternatingItemStyle=$this->getViewState('AlternatingItemStyle',null);
+		if($itemStyle!==null)
+		{
+			if($alternatingItemStyle===null)
+				$alternatingItemStyle=$itemStyle;
+			else
+				$alternatingItemStyle->mergeWith($itemStyle);
+		}
 
 		$selectedItemStyle=$this->getViewState('SelectedItemStyle',null);
 
-		$editItemStyle=new TTableItemStyle($selectedItemStyle);
-		if(($style=$this->getViewState('EditItemStyle',null))!==null)
-			$editItemStyle->copyFrom($style);
+		$editItemStyle=$this->getViewState('EditItemStyle',null);
+		if($selectedItemStyle!==null)
+		{
+			if($editItemStyle===null)
+				$editItemStyle=$selectedItemStyle;
+			else
+				$editItemStyle->mergeWith($selectedItemStyle);
+		}
 
 		$headerStyle=$this->getViewState('HeaderStyle',null);
 		$footerStyle=$this->getViewState('FooterStyle',null);
@@ -944,20 +954,8 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 						$item->getStyle()->mergeWith($alternatingItemStyle);
 					break;
 				case 'SelectedItem':
-					if($index % 2==1)
-					{
-						if($itemStyle)
-							$item->getStyle()->mergeWith($itemStyle);
-					}
-					else
-					{
-						if($alternatingItemStyle)
-							$item->getStyle()->mergeWith($alternatingItemStyle);
-					}
 					if($selectedItemStyle)
 						$item->getStyle()->mergeWith($selectedItemStyle);
-					break;
-				case 'EditItem':
 					if($index % 2==1)
 					{
 						if($itemStyle)
@@ -968,8 +966,20 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 						if($alternatingItemStyle)
 							$item->getStyle()->mergeWith($alternatingItemStyle);
 					}
+					break;
+				case 'EditItem':
 					if($editItemStyle)
 						$item->getStyle()->mergeWith($editItemStyle);
+					if($index % 2==1)
+					{
+						if($itemStyle)
+							$item->getStyle()->mergeWith($itemStyle);
+					}
+					else
+					{
+						if($alternatingItemStyle)
+							$item->getStyle()->mergeWith($alternatingItemStyle);
+					}
 					break;
 				default:
 					break;

@@ -144,7 +144,7 @@ class TStyle extends TComponent
 	 */
 	public function setCssClass($value)
 	{
-		$this->_class=trim($value)===''?null:$value;
+		$this->_class=$value;
 	}
 
 	/**
@@ -210,7 +210,7 @@ class TStyle extends TComponent
 	 */
 	public function setCustomStyle($value)
 	{
-		$this->_customStyle=trim($value)===''?null:$value;
+		$this->_customStyle=$value;
 	}
 
 	/**
@@ -277,37 +277,39 @@ class TStyle extends TComponent
 	}
 
 	/**
-	 * Copies from a style.
-	 * Existing style will be reset first.
+	 * Copies the fields in a new style to this style.
+	 * If a style field is set in the new style, the corresponding field
+	 * in this style will be overwritten.
 	 * @param TStyle the new style
 	 */
 	public function copyFrom($style)
 	{
-		$this->reset();
 		if($style instanceof TStyle)
 		{
-			$this->_fields=$style->_fields;
-			$this->_class=$style->_class;
-			$this->_customStyle=$style->_customStyle;
+			$this->_fields=array_merge($this->_fields,$style->_fields);
+			if($style->_class!==null)
+				$this->_class=$style->_class;
+			if($style->_customStyle!==null)
+				$this->_customStyle=$style->_customStyle;
 			if($style->_font!==null)
 				$this->getFont()->copyFrom($style->_font);
 		}
 	}
 
 	/**
-	 * Merges with a style.
-	 * If a style field is set in the new style, the current style field
-	 * will be overwritten.
+	 * Merges the style with a new one.
+	 * If a style field is not set in this style, it will be overwritten by
+	 * the new one.
 	 * @param TStyle the new style
 	 */
 	public function mergeWith($style)
 	{
-		if($style!==null)
+		if($style instanceof TStyle)
 		{
-			$this->_fields=array_merge($this->_fields,$style->_fields);
-			if($style->_class!==null)
+			$this->_fields=array_merge($style->_fields,$this->_fields);
+			if($this->_class===null)
 				$this->_class=$style->_class;
-			if($style->_customStyle!==null)
+			if($this->_customStyle===null)
 				$this->_customStyle=$style->_customStyle;
 			if($style->_font!==null)
 				$this->getFont()->mergeWith($style->_font);
@@ -384,36 +386,14 @@ class TTableStyle extends TStyle
 	}
 
 	/**
-	 * Copies the style content from an existing style
-	 * This method overrides the parent implementation by
-	 * adding additional TTableStyle specific attributes.
-	 * @param TStyle source style
+	 * Copies the fields in a new style to this style.
+	 * If a style field is set in the new style, the corresponding field
+	 * in this style will be overwritten.
+	 * @param TStyle the new style
 	 */
 	public function copyFrom($style)
 	{
 		parent::copyFrom($style);
-		if($style instanceof TTableStyle)
-		{
-			$this->_backImageUrl=$style->_backImageUrl;
-			$this->_horizontalAlign=$style->_horizontalAlign;
-			$this->_cellPadding=$style->_cellPadding;
-			$this->_cellSpacing=$style->_cellSpacing;
-			$this->_gridLines=$style->_gridLines;
-		}
-	}
-
-	/**
-	 * Merges with a style.
-	 * Merges with a style.
-	 * If a style field is set in the new style, the current style field
-	 * will be overwritten.
-	 * This method overrides the parent implementation by
-	 * merging with additional TTableStyle specific attributes.
-	 * @param TStyle the new style
-	 */
-	public function mergeWith($style)
-	{
-		parent::mergeWith($style);
 		if($style instanceof TTableStyle)
 		{
 			if($style->_backImageUrl!==null)
@@ -425,6 +405,30 @@ class TTableStyle extends TStyle
 			if($style->_cellSpacing!==null)
 				$this->_cellSpacing=$style->_cellSpacing;
 			if($style->_gridLines!==null)
+				$this->_gridLines=$style->_gridLines;
+		}
+	}
+
+	/**
+	 * Merges the style with a new one.
+	 * If a style field is not set in this style, it will be overwritten by
+	 * the new one.
+	 * @param TStyle the new style
+	 */
+	public function mergeWith($style)
+	{
+		parent::mergeWith($style);
+		if($style instanceof TTableStyle)
+		{
+			if($this->_backImageUrl===null && $style->_backImageUrl!==null)
+				$this->_backImageUrl=$style->_backImageUrl;
+			if($this->_horizontalAlign===null && $style->_horizontalAlign!==null)
+				$this->_horizontalAlign=$style->_horizontalAlign;
+			if($this->_cellPadding===null && $style->_cellPadding!==null)
+				$this->_cellPadding=$style->_cellPadding;
+			if($this->_cellSpacing===null && $style->_cellSpacing!==null)
+				$this->_cellSpacing=$style->_cellSpacing;
+			if($this->_gridLines===null && $style->_gridLines!==null)
 				$this->_gridLines=$style->_gridLines;
 		}
 	}
@@ -477,7 +481,7 @@ class TTableStyle extends TStyle
 	 */
 	public function setBackImageUrl($value)
 	{
-		$this->_backImageUrl=trim($value)===''?null:$value;
+		$this->_backImageUrl=$value;
 	}
 
 	/**
@@ -496,8 +500,6 @@ class TTableStyle extends TStyle
 	public function setHorizontalAlign($value)
 	{
 		$this->_horizontalAlign=TPropertyValue::ensureEnum($value,array('NotSet','Left','Right','Center','Justify'));
-		if($this->_horizontalAlign==='NotSet')
-			$this->_horizontalAlign=null;
 	}
 
 	/**
@@ -516,8 +518,6 @@ class TTableStyle extends TStyle
 	{
 		if(($this->_cellPadding=TPropertyValue::ensureInteger($value))<-1)
 			throw new TInvalidDataValueException('tablestyle_cellpadding_invalid');
-		if($this->_cellPadding===-1)
-			$this->_cellPadding=null;
 	}
 
 	/**
@@ -536,8 +536,6 @@ class TTableStyle extends TStyle
 	{
 		if(($this->_cellSpacing=TPropertyValue::ensureInteger($value))<-1)
 			throw new TInvalidDataValueException('tablestyle_cellspacing_invalid');
-		if($this->_cellSpacing===-1)
-			$this->_cellSpacing=null;
 	}
 
 	/**
@@ -597,29 +595,29 @@ class TTableItemStyle extends TStyle
 	}
 
 	/**
-	 * Copies the style content from an existing style
-	 * This method overrides the parent implementation by
-	 * adding additional TTableItemStyle specific attributes.
-	 * @param TStyle source style
+	 * Copies the fields in a new style to this style.
+	 * If a style field is set in the new style, the corresponding field
+	 * in this style will be overwritten.
+	 * @param TStyle the new style
 	 */
 	public function copyFrom($style)
 	{
 		parent::copyFrom($style);
 		if($style instanceof TTableItemStyle)
 		{
-			$this->_verticalAlign=$style->_verticalAlign;
-			$this->_horizontalAlign=$style->_horizontalAlign;
-			$this->_wrap=$style->_wrap;
+			if($this->_verticalAlign===null && $style->_verticalAlign!==null)
+				$this->_verticalAlign=$style->_verticalAlign;
+			if($this->_horizontalAlign===null && $style->_horizontalAlign!==null)
+				$this->_horizontalAlign=$style->_horizontalAlign;
+			if($this->_wrap===null && $style->_wrap!==null)
+				$this->_wrap=$style->_wrap;
 		}
 	}
 
 	/**
-	 * Merges with a style.
-	 * Merges with a style.
-	 * If a style field is set in the new style, the current style field
-	 * will be overwritten.
-	 * This method overrides the parent implementation by
-	 * merging with additional TTableItemStyle specific attributes.
+	 * Merges the style with a new one.
+	 * If a style field is not set in this style, it will be overwritten by
+	 * the new one.
 	 * @param TStyle the new style
 	 */
 	public function mergeWith($style)
@@ -671,8 +669,6 @@ class TTableItemStyle extends TStyle
 	public function setHorizontalAlign($value)
 	{
 		$this->_horizontalAlign=TPropertyValue::ensureEnum($value,array('NotSet','Left','Right','Center','Justify'));
-		if($this->_horizontalAlign==='NotSet')
-			$this->_horizontalAlign=null;
 	}
 
 	/**
@@ -691,8 +687,6 @@ class TTableItemStyle extends TStyle
 	public function setVerticalAlign($value)
 	{
 		$this->_verticalAlign=TPropertyValue::ensureEnum($value,array('NotSet','Top','Bottom','Middel'));
-		if($this->_verticalAlign==='NotSet')
-			$this->_verticalAlign=null;
 	}
 
 	/**

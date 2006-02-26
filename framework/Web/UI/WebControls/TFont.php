@@ -209,11 +209,37 @@ class TFont extends TComponent
 
 	/**
 	 * Merges the font with a new one.
-	 * If a font field is set in the new font, the current font field
-	 * will be overwritten.
+	 * If a font field is not set in the font, it will be overwritten with
+	 * the new one.
 	 * @param TFont the new font
 	 */
 	public function mergeWith($font)
+	{
+		if($font===null || $font->_flags===0)
+			return;
+		if(!($this->_flags & self::IS_SET_BOLD) && ($font->_flags & self::IS_SET_BOLD))
+			$this->setBold($font->getBold());
+		if(!($this->_flags & self::IS_SET_ITALIC) && ($font->_flags & self::IS_SET_ITALIC))
+			$this->setItalic($font->getItalic());
+		if(!($this->_flags & self::IS_SET_OVERLINE) && ($font->_flags & self::IS_SET_OVERLINE))
+			$this->setOverline($font->getOverline());
+		if(!($this->_flags & self::IS_SET_STRIKEOUT) && ($font->_flags & self::IS_SET_STRIKEOUT))
+			$this->setStrikeout($font->getStrikeout());
+		if(!($this->_flags & self::IS_SET_UNDERLINE) && ($font->_flags & self::IS_SET_UNDERLINE))
+			$this->setUnderline($font->getUnderline());
+		if(!($this->_flags & self::IS_SET_SIZE) && ($font->_flags & self::IS_SET_SIZE))
+			$this->setSize($font->getSize());
+		if(!($this->_flags & self::IS_SET_NAME) && ($font->_flags & self::IS_SET_NAME))
+			$this->setName($font->getName());
+	}
+
+	/**
+	 * Copies the fields in a new font to this font.
+	 * If a font field is set in the new font, the corresponding field
+	 * in this font will be overwritten.
+	 * @param TFont the new font
+	 */
+	public function copyFrom($font)
 	{
 		if($font===null || $font->_flags===0)
 			return;
@@ -231,18 +257,6 @@ class TFont extends TComponent
 			$this->setSize($font->getSize());
 		if($font->_flags & self::IS_SET_NAME)
 			$this->setName($font->getName());
-	}
-
-	/**
-	 * Copies the font from a new one.
-	 * The existing font will be cleared up first.
-	 * @param TFont the new font.
-	 */
-	public function copyFrom($font)
-	{
-		$this->_flags=$font->_flags;
-		$this->_name=$font->_name;
-		$this->_size=$font->_size;
 	}
 
 	/**

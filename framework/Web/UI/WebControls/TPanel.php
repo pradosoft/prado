@@ -242,23 +242,23 @@ class TPanelStyle extends TStyle
 	/**
 	 * @var string the URL of the background image for the panel component
 	 */
-	private $_backImageUrl='';
+	private $_backImageUrl=null;
 	/**
 	 * @var string alignment of the content in the panel.
 	 */
-	private $_direction='NotSet';
+	private $_direction=null;
 	/**
 	 * @var string horizontal alignment of the contents within the panel
 	 */
-	private $_horizontalAlign='NotSet';
+	private $_horizontalAlign=null;
 	/**
 	 * @var string visibility and position of scroll bars
 	 */
-	private $_scrollBars='None';
+	private $_scrollBars=null;
 	/**
 	 * @var boolean whether the content wraps within the panel
 	 */
-	private $_wrap=true;
+	private $_wrap=null;
 
 	/**
 	 * Adds attributes related to CSS styles to renderer.
@@ -297,7 +297,7 @@ class TPanelStyle extends TStyle
 	 */
 	public function getBackImageUrl()
 	{
-		return $this->_backImageUrl;
+		return $this->_backImageUrl===null?'':$this->_backImageUrl;
 	}
 
 	/**
@@ -314,7 +314,7 @@ class TPanelStyle extends TStyle
 	 */
 	public function getDirection()
 	{
-		return $this->_direction;
+		return $this->_direction===null?'NotSet':$this->_direction;
 	}
 
 	/**
@@ -331,7 +331,7 @@ class TPanelStyle extends TStyle
 	 */
 	public function getWrap()
 	{
-		return $this->_wrap;
+		return $this->_wrap===null?true:$this->_wrap;
 	}
 
 	/**
@@ -348,7 +348,7 @@ class TPanelStyle extends TStyle
 	 */
 	public function getHorizontalAlign()
 	{
-		return $this->_horizontalAlign;
+		return $this->_horizontalAlign===null?'NotSet':$this->_horizontalAlign;
 	}
 
 	/**
@@ -366,7 +366,7 @@ class TPanelStyle extends TStyle
 	 */
 	public function getScrollBars()
 	{
-		return $this->_scrollBars;
+		return $this->_scrollBars===null?'None':$this->_scrollBars;
 	}
 
 	/**
@@ -376,6 +376,69 @@ class TPanelStyle extends TStyle
 	public function setScrollBars($value)
 	{
 		$this->_scrollBars=TPropertyValue::ensureEnum($value,array('None','Auto','Both','Horizontal','Vertical'));
+	}
+
+	/**
+	 * Sets the style attributes to default values.
+	 * This method overrides the parent implementation by
+	 * resetting additional TTableStyle specific attributes.
+	 */
+	public function reset()
+	{
+		parent::reset();
+		$this->_backImageUrl=null;
+		$this->_direction=null;
+		$this->_horizontalAlign=null;
+		$this->_scrollBars=null;
+		$this->_wrap=null;
+	}
+
+	/**
+	 * Copies the fields in a new style to this style.
+	 * If a style field is set in the new style, the corresponding field
+	 * in this style will be overwritten.
+	 * @param TStyle the new style
+	 */
+	public function copyFrom($style)
+	{
+		parent::copyFrom($style);
+		if($style instanceof TPanelStyle)
+		{
+			if($style->_backImageUrl!==null)
+				$this->_backImageUrl=$style->_backImageUrl;
+			if($style->_direction!==null)
+				$this->_direction=$style->_direction;
+			if($style->_horizontalAlign!==null)
+				$this->_horizontalAlign=$style->_horizontalAlign;
+			if($style->_scrollBars!==null)
+				$this->_scrollBars=$style->_scrollBars;
+			if($style->_wrap!==null)
+				$this->_wrap=$style->_wrap;
+		}
+	}
+
+	/**
+	 * Merges the style with a new one.
+	 * If a style field is not set in this style, it will be overwritten by
+	 * the new one.
+	 * @param TStyle the new style
+	 */
+	public function mergeWith($style)
+	{
+		parent::mergeWith($style);
+		if($style instanceof TTableStyle)
+		{
+			if($this->_backImageUrl===null && $style->_backImageUrl!==null)
+				$this->_backImageUrl=$style->_backImageUrl;
+			if($this->_direction===null && $style->_direction!==null)
+				$this->_direction=$style->_direction;
+			if($this->_horizontalAlign===null && $style->_horizontalAlign!==null)
+				$this->_horizontalAlign=$style->_horizontalAlign;
+			if($this->_scrollBars===null && $style->_scrollBars!==null)
+				$this->_scrollBars=$style->_scrollBars;
+			if($this->_wrap===null && $style->_wrap!==null)
+				$this->_wrap=$style->_wrap;
+		}
 	}
 }
 ?>
