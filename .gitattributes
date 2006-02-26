@@ -243,6 +243,10 @@ demos/quickstart/themes/Simple/style.css -text
 docs/application.xml -text
 docs/conceptual-structure.vsd -text
 docs/request-sequence.vsd -text
+docs/specs/application.dtd -text
+docs/specs/application.xsd -text
+docs/specs/config.dtd -text
+docs/specs/config.xsd -text
 framework/.htaccess -text
 framework/3rdParty/SafeHtml/HTMLSax3.php -text
 framework/3rdParty/SafeHtml/HTMLSax3/Decorators.php -text
@@ -595,10 +599,6 @@ framework/Security/TAuthorizationRule.php -text
 framework/Security/TMembershipManager.php -text
 framework/Security/TSecurityManager.php -text
 framework/Security/TUserManager.php -text
-framework/Specs/application.dtd -text
-framework/Specs/application.xsd -text
-framework/Specs/config.dtd -text
-framework/Specs/config.xsd -text
 framework/TApplication.php -text
 framework/TApplicationComponent.php -text
 framework/TComponent.php -text
