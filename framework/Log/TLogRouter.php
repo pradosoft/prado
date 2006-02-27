@@ -623,6 +623,7 @@ EOD;
 		$delta = sprintf('%0.6f', $info['delta']);
 		$color = $this->getColorLevel($log[1]);
 		$msg = preg_replace('/\(line[^\)]+\)$/','',$log[0]); //remove line number info
+		$msg = THttpUtility::htmlEncode($msg);
 		$string = <<<EOD
 	<tr style="background-color: {$bgcolor};">
 		<td style="border:1px solid silver;background-color: $color;">&nbsp;</td>
