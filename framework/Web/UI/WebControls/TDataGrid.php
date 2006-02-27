@@ -1088,6 +1088,27 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
+	 * Creates a pager button.
+	 * @param string button type, LinkButton or PushButton
+	 * @param boolean whether the button should be enabled
+	 * @return mixed the button instance
+	 */
+	protected function createPagerButton($buttonType,$enabled)
+	{
+		if($buttonType==='LinkButton')
+		{
+			return $enabled?new TLinkButton:new TLabel;
+		}
+		else
+		{
+			$button=new TButton;
+			if(!$enabled)
+				$button->setEnabled(false);
+			return $button;
+		}
+	}
+
+	/**
 	 * Builds a next-prev pager
 	 * @param TTableCell table cell for the pager
 	 * @param TPagedDataSource data source bound to the datagrid
@@ -1095,16 +1116,17 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	protected function buildNextPrevPager($cell,$dataSource)
 	{
 		$style=$this->getPagerStyle();
+		$buttonType=$style->getButtonType();
 		$controls=$cell->getControls();
 		if($dataSource->getIsFirstPage())
 		{
-			$label=new TLabel;
+			$label=$this->createPagerButton($buttonType,false);
 			$label->setText($style->getPrevPageText());
 			$controls->add($label);
 		}
 		else
 		{
-			$button=new TLinkButton;
+			$button=$this->createPagerButton($buttonType,true);
 			$button->setText($style->getPrevPageText());
 			$button->setCommandName('page');
 			$button->setCommandParameter('prev');
@@ -1114,13 +1136,13 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		$controls->add('&nbsp;');
 		if($dataSource->getIsLastPage())
 		{
-			$label=new TLabel;
+			$label=$this->createPagerButton($buttonType,false);
 			$label->setText($style->getNextPageText());
 			$controls->add($label);
 		}
 		else
 		{
-			$button=new TLinkButton;
+			$button=$this->createPagerButton($buttonType,true);
 			$button->setText($style->getNextPageText());
 			$button->setCommandName('page');
 			$button->setCommandParameter('next');
@@ -1137,6 +1159,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	protected function buildNumericPager($cell,$dataSource)
 	{
 		$style=$this->getPagerStyle();
+		$buttonType=$style->getButtonType();
 		$controls=$cell->getControls();
 		$pageCount=$dataSource->getPageCount();
 		$pageIndex=$dataSource->getCurrentPageIndex()+1;
@@ -1158,7 +1181,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 
 		if($startPageIndex>1)
 		{
-			$button=new TLinkButton;
+			$button=$this->createPagerButton($buttonType,true);
 			$button->setText($style->getPrevPageText());
 			$button->setCommandName('page');
 			$button->setCommandParameter($startPageIndex-1);
@@ -1171,13 +1194,13 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		{
 			if($i===$pageIndex)
 			{
-				$label=new TLabel;
+				$label=$this->createPagerButton($buttonType,false);
 				$label->setText("$i");
 				$controls->add($label);
 			}
 			else
 			{
-				$button=new TLinkButton;
+				$button=$this->createPagerButton($buttonType,true);
 				$button->setText("$i");
 				$button->setCommandName('page');
 				$button->setCommandParameter($i);
@@ -1191,7 +1214,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		if($pageCount>$endPageIndex)
 		{
 			$controls->add('&nbsp;');
-			$button=new TLinkButton;
+			$button=$this->createPagerButton($buttonType,true);
 			$button->setText($style->getNextPageText());
 			$button->setCommandName('page');
 			$button->setCommandParameter($endPageIndex+1);
@@ -1824,6 +1847,7 @@ class TDataGridPagerStyle extends TTableItemStyle
 	private $_buttonCount=null;
 	private $_position=null;
 	private $_visible=null;
+	private $_buttonType=null;
 
 	/**
 	 * @return string pager mode. Defaults to 'NextPrev'.
@@ -1839,6 +1863,22 @@ class TDataGridPagerStyle extends TTableItemStyle
 	public function setMode($value)
 	{
 		$this->_mode=TPropertyValue::ensureEnum($value,'NextPrev','Numeric');
+	}
+
+	/**
+	 * @return string the type of command button. Defaults to LinkButton.
+	 */
+	public function getButtonType()
+	{
+		return $this->_buttonType===null?'LinkButton':$this->_buttonType;
+	}
+
+	/**
+	 * @param string the type of command button, LinkButton or PushButton
+	 */
+	public function setButtonType($value)
+	{
+		$this->_buttonType=TPropertyValue::ensureEnum($value,'LinkButton','PushButton');
 	}
 
 	/**
@@ -1936,39 +1976,18 @@ class TDataGridPagerStyle extends TTableItemStyle
 		$this->_prevText=null;
 		$this->_nextText=null;
 		$this->_mode=null;
+		$this->_buttonType=null;
 	}
 
 	/**
-	 * Copies the style content from an existing style
-	 * This method overrides the parent implementation by
-	 * adding additional TDataGridPagerStyle specific attributes.
-	 * @param TStyle source style
+	 * Copies the fields in a new style to this style.
+	 * If a style field is set in the new style, the corresponding field
+	 * in this style will be overwritten.
+	 * @param TStyle the new style
 	 */
 	public function copyFrom($style)
 	{
 		parent::copyFrom($style);
-		if($style instanceof TDataGridPagerStyle)
-		{
-			$this->_visible=$style->_visible;
-			$this->_position=$style->_position;
-			$this->_buttonCount=$style->_buttonCount;
-			$this->_prevText=$style->_prevText;
-			$this->_nextText=$style->_nextText;
-			$this->_mode=$style->_mode;
-		}
-	}
-
-	/**
-	 * Merges with a style.
-	 * If a style field is set in the new style, the current style field
-	 * will be overwritten.
-	 * This method overrides the parent implementation by
-	 * merging with additional TDataGridPagerStyle specific attributes.
-	 * @param TStyle the new style
-	 */
-	public function mergeWith($style)
-	{
-		parent::mergeWith($style);
 		if($style instanceof TDataGridPagerStyle)
 		{
 			if($style->_visible!==null)
@@ -1983,6 +2002,36 @@ class TDataGridPagerStyle extends TTableItemStyle
 				$this->_nextText=$style->_nextText;
 			if($style->_mode!==null)
 				$this->_mode=$style->_mode;
+			if($style->_buttonType!==null)
+				$this->_buttonType=$style->_buttonType;
+		}
+	}
+
+	/**
+	 * Merges the style with a new one.
+	 * If a style field is not set in this style, it will be overwritten by
+	 * the new one.
+	 * @param TStyle the new style
+	 */
+	public function mergeWith($style)
+	{
+		parent::mergeWith($style);
+		if($style instanceof TDataGridPagerStyle)
+		{
+			if($this->_visible===null)
+				$this->_visible=$style->_visible;
+			if($this->_position===null)
+				$this->_position=$style->_position;
+			if($this->_buttonCount===null)
+				$this->_buttonCount=$style->_buttonCount;
+			if($this->_prevText===null)
+				$this->_prevText=$style->_prevText;
+			if($this->_nextText===null)
+				$this->_nextText=$style->_nextText;
+			if($this->_mode===null)
+				$this->_mode=$style->_mode;
+			if($this->_buttonType===null)
+				$this->_buttonType=$style->_buttonType;
 		}
 	}
 }

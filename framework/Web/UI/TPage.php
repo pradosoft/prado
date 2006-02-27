@@ -34,8 +34,9 @@ class TPage extends TTemplateControl
 	const FIELD_POSTBACK_PARAMETER='PRADO_POSTBACK_PARAMETER';
 	const FIELD_LASTFOCUS='PRADO_LASTFOCUS';
 	const FIELD_PAGESTATE='PRADO_PAGESTATE';
-	const FIELD_CALLBACK_ID='PRADO_CALLBACK_ID';
+	const FIELD_CALLBACK_TARGET='PRADO_CALLBACK_TARGET';
 	const FIELD_CALLBACK_PARAMETER='PRADO_CALLBACK_PARAMETER';
+	const FIELD_CALLBACK_ID='PRADO_CALLBACK_ID';
 	/**
 	 * @var array system post fields
 	 */
@@ -44,8 +45,9 @@ class TPage extends TTemplateControl
 		'PRADO_POSTBACK_PARAMETER'=>true,
 		'PRADO_LASTFOCUS'=>true,
 		'PRADO_PAGESTATE'=>true,
-		'PRADO_CALLBACK_ID'=>true,
-		'PRADO_CALLBACK_PARAMETER'=>true
+		'PRADO_CALLBACK_TARGET'=>true,
+		'PRADO_CALLBACK_PARAMETER'=>true,
+		'PRADO_CALLBACK_ID'=>true
 	);
 	/**
 	 * @var TForm form instance
@@ -155,6 +157,19 @@ class TPage extends TTemplateControl
 		Prado::trace("Running page life cycles",'System.Web.UI.TPage');
 		$this->determinePostBackMode();
 
+		if($this->getIsPostBack())
+		{
+			if($this->getIsCallback())
+				$this->processCallbackRequest($writer);
+			else
+				$this->processPostBackRequest($writer);
+		}
+		else
+			$this->processNormalRequest($writer);
+	}
+
+	protected function processNormalRequest($writer)
+	{
 		Prado::trace("Page onPreInit()",'System.Web.UI.TPage');
 		$this->onPreInit(null);
 
@@ -164,35 +179,12 @@ class TPage extends TTemplateControl
 		Prado::trace("Page onInitComplete()",'System.Web.UI.TPage');
 		$this->onInitComplete(null);
 
-		if($this->getIsPostBack())
-		{
-			$this->_restPostData=new TMap;
-			Prado::trace("Page loadPageState()",'System.Web.UI.TPage');
-			$this->loadPageState();
-			Prado::trace("Page processPostData()",'System.Web.UI.TPage');
-			$this->processPostData($this->_postData,true);
-			Prado::trace("Page onPreLoad()",'System.Web.UI.TPage');
-			$this->onPreLoad(null);
-			Prado::trace("Page loadRecursive()",'System.Web.UI.TPage');
-			$this->loadRecursive();
-			Prado::trace("Page processPostData()",'System.Web.UI.TPage');
-			$this->processPostData($this->_restPostData,false);
-			Prado::trace("Page raiseChangedEvents()",'System.Web.UI.TPage');
-			$this->raiseChangedEvents();
-			Prado::trace("Page raisePostBackEvent()",'System.Web.UI.TPage');
-			$this->raisePostBackEvent();
-			Prado::trace("Page onLoadComplete()",'System.Web.UI.TPage');
-			$this->onLoadComplete(null);
-		}
-		else
-		{
-			Prado::trace("Page onPreLoad()",'System.Web.UI.TPage');
-			$this->onPreLoad(null);
-			Prado::trace("Page loadRecursive()",'System.Web.UI.TPage');
-			$this->loadRecursive();
-			Prado::trace("Page onLoadComplete()",'System.Web.UI.TPage');
-			$this->onLoadComplete(null);
-		}
+		Prado::trace("Page onPreLoad()",'System.Web.UI.TPage');
+		$this->onPreLoad(null);
+		Prado::trace("Page loadRecursive()",'System.Web.UI.TPage');
+		$this->loadRecursive();
+		Prado::trace("Page onLoadComplete()",'System.Web.UI.TPage');
+		$this->onLoadComplete(null);
 
 		Prado::trace("Page preRenderRecursive()",'System.Web.UI.TPage');
 		$this->preRenderRecursive();
@@ -208,6 +200,55 @@ class TPage extends TTemplateControl
 		$this->renderControl($writer);
 		Prado::trace("Page unloadRecursive()",'System.Web.UI.TPage');
 		$this->unloadRecursive();
+	}
+
+	protected function processPostBackRequest($writer)
+	{
+		Prado::trace("Page onPreInit()",'System.Web.UI.TPage');
+		$this->onPreInit(null);
+
+		Prado::trace("Page initRecursive()",'System.Web.UI.TPage');
+		$this->initRecursive();
+
+		Prado::trace("Page onInitComplete()",'System.Web.UI.TPage');
+		$this->onInitComplete(null);
+
+		$this->_restPostData=new TMap;
+		Prado::trace("Page loadPageState()",'System.Web.UI.TPage');
+		$this->loadPageState();
+		Prado::trace("Page processPostData()",'System.Web.UI.TPage');
+		$this->processPostData($this->_postData,true);
+		Prado::trace("Page onPreLoad()",'System.Web.UI.TPage');
+		$this->onPreLoad(null);
+		Prado::trace("Page loadRecursive()",'System.Web.UI.TPage');
+		$this->loadRecursive();
+		Prado::trace("Page processPostData()",'System.Web.UI.TPage');
+		$this->processPostData($this->_restPostData,false);
+		Prado::trace("Page raiseChangedEvents()",'System.Web.UI.TPage');
+		$this->raiseChangedEvents();
+		Prado::trace("Page raisePostBackEvent()",'System.Web.UI.TPage');
+		$this->raisePostBackEvent();
+		Prado::trace("Page onLoadComplete()",'System.Web.UI.TPage');
+		$this->onLoadComplete(null);
+
+		Prado::trace("Page preRenderRecursive()",'System.Web.UI.TPage');
+		$this->preRenderRecursive();
+		Prado::trace("Page onPreRenderComplete()",'System.Web.UI.TPage');
+		$this->onPreRenderComplete(null);
+
+		Prado::trace("Page savePageState()",'System.Web.UI.TPage');
+		$this->savePageState();
+		Prado::trace("Page onSaveStateComplete()",'System.Web.UI.TPage');
+		$this->onSaveStateComplete(null);
+
+		Prado::trace("Page renderControl()",'System.Web.UI.TPage');
+		$this->renderControl($writer);
+		Prado::trace("Page unloadRecursive()",'System.Web.UI.TPage');
+		$this->unloadRecursive();
+	}
+
+	protected function processCallbackRequest($writer)
+	{
 	}
 
 	/**
@@ -485,6 +526,15 @@ class TPage extends TTemplateControl
 	public function getIsPostBack()
 	{
 		return $this->_postData!==null;
+	}
+
+	/**
+	 * TBD
+	 * @return boolean whether this is a callback request
+	 */
+	public function getIsCallback()
+	{
+		return false;
 	}
 
 	/**
