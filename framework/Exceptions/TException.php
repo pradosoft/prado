@@ -38,13 +38,24 @@ class TException extends Exception
 {
 	private $_errorCode='';
 
+	/**
+	 * Constructor.
+	 * @param string error message. This can be a string that is listed
+	 * in the message file. If so, the message in the preferred language
+	 * will be used as the error message. Any rest parameters will be used
+	 * to replace placeholders ({0}, {1}, {2}, etc.) in the message.
+	 */
 	public function __construct($errorMessage)
 	{
 		$this->_errorCode=$errorMessage;
+		$errorMessage=$this->translateErrorMessage($errorMessage);
 		$args=func_get_args();
-		$args[0]=$this->translateErrorMessage($errorMessage);
-		$str=call_user_func_array('sprintf',$args);
-		parent::__construct($str);
+		array_shift($args);
+		$n=count($args);
+		$tokens=array();
+		for($i=0;$i<$n;++$i)
+			$tokens['{'.$i.'}']=TPropertyValue::ensureString($args[$i]);
+		parent::__construct(strtr($errorMessage,$tokens));
 	}
 
 	protected function translateErrorMessage($key)
@@ -164,11 +175,15 @@ class THttpException extends TSystemException
 	{
 		$this->_statusCode=$statusCode;
 		$this->setErrorCode($errorMessage);
+		$errorMessage=$this->translateErrorMessage($errorMessage);
 		$args=func_get_args();
 		array_shift($args);
-		$args[0]=$this->translateErrorMessage($errorMessage);
-		$str=call_user_func_array('sprintf',$args);
-		$this->setErrorMessage($str);
+		array_shift($args);
+		$n=count($args);
+		$tokens=array();
+		for($i=0;$i<$n;++$i)
+			$tokens['{'.$i.'}']=TPropertyValue::ensureString($args[$i]);
+		parent::__construct(strtr($errorMessage,$tokens));
 	}
 
 	public function getStatusCode()
