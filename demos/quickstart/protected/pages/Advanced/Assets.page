@@ -14,7 +14,7 @@ PRADO provides several methods for publishing assets or directories containing a
 </p>
 <ul>
 <li>In a template file, you can use <a href="?page=Configurations.Templates2#at">asset tags</a> to publish assets and obtain their URLs. Note, the assets must be relative to the directory containing the template file.</li>
-<li>In PHP code, you can call <tt>TControl::getAsset($relativePath)</tt> to publish an asset and get its URL. The asset file or directory must be relative to the directory containing the control class file.</li>
+<li>In PHP code, you can call <tt>$object->publishAsset($assetPath)</tt> to publish an asset and obtain its URL. Here, <tt>$object</tt> refers to an instance of <tt>TApplicationComponent</tt> or derived class, and <tt>$assetPath</tt> is a file or directory relative to the directory containing the class file.</li>
 <li>If you want to publish an arbitrary asset, you need to call <tt>TAssetManager::publishFilePath($path)</tt>.</li>
 </ul>
 <p>
@@ -23,22 +23,20 @@ BE AWARE: Be very careful with assets publishing, because it gives Web users acc
 
 <h2>Customization</h2>
 <p>
-Asset publishing is managed by the <tt>System.Web.UI.TAssetManager</tt> module. By default, all published asset files are stored under the <tt>[AppEntryPath]/assets</tt> directory, where <tt>AppEntryPath</tt> refers to the directory containing the application entry script. Make sure the <tt>assets</tt> directory is writable by the Web server process. You may change this directory to another by configuring the <tt>BasePath</tt> and <tt>BaseUrl</tt> properties of the <tt>System.Web.UI.TAssetManager</tt> module in application configuration,
+Asset publishing is managed by the <tt>System.Web.TAssetManager</tt> module. By default, all published asset files are stored under the <tt>[AppEntryPath]/assets</tt> directory, where <tt>AppEntryPath</tt> refers to the directory containing the application entry script. Make sure the <tt>assets</tt> directory is writable by the Web server process. You may change this directory to another by configuring the <tt>BasePath</tt> and <tt>BaseUrl</tt> properties of the <tt>TAssetManager</tt> module in application configuration,
 </p>
 <com:TTextHighlighter Language="xml" CssClass="source">
-&lt;service id="page" class="TPageService"&gt;
-    &lt;modules&gt;
-        &lt;module id="asset"
-                class="System.Web.UI.TAssetManager"
-                BasePath="images"
-                BaseUrl="images" /&gt;
-    &lt;/modules&gt;
-&lt;/service&gt;
+&lt;modules&gt;
+    &lt;module id="asset"
+            class="System.Web.UI.TAssetManager"
+            BasePath="images"
+            BaseUrl="images" /&gt;
+&lt;/modules&gt;
 </com:TTextHighlighter>
 
 <h2>Performance</h2>
 <p>
-PRADO uses caching techniques to ensure the efficiency of asset publishing. Publishing an asset essentially requires file copy operation, which is expensive. To save unnecessary file copy operations, <tt>System.Web.UI.TAssetManager</tt> only publishes an asset when it has a newer file modification time than the published file. When an application runs under the <tt>Performance</tt> mode, such timestamp checkings are also omitted.
+PRADO uses caching techniques to ensure the efficiency of asset publishing. Publishing an asset essentially requires file copy operation, which is expensive. To save unnecessary file copy operations, <tt>System.Web.TAssetManager</tt> only publishes an asset when it has a newer file modification time than the published file. When an application runs under the <tt>Performance</tt> mode, such timestamp checkings are also omitted.
 </p>
 <p>
 ADVISORY: Do not overuse asset publishing. The asset concept is mainly used to help better reuse and redistribute component classes. Normally, you should not use asset publishing for resources that are not bound to any components in an application. For example, you should not use asset publishing for images that are mainly used as design elements (e.g. logos, background images, etc.) Let Web server to directly serve these images will help improve the performance of your application.
