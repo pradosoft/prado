@@ -38,20 +38,14 @@ if(!function_exists('__autoload'))
 {
 	function __autoload($className)
 	{
-		include_once($className.Prado::CLASS_FILE_EXT);
-		if(!class_exists($className,false) && !interface_exists($className,false))
-			Prado::fatalError("Class file for '$className' cannot be found.");
+		Prado::autoload($className);
 	}
 }
 
 /**
- * Sets error handler to be Prado::phpErrorHandler
+ * Initializes error and exception handlers
  */
-set_error_handler(array('Prado','phpErrorHandler'),error_reporting());
-/**
- * Sets exception handler to be Prado::exceptionHandler
- */
-set_exception_handler(array('Prado','exceptionHandler'));
+Prado::initErrorHandlers();
 
 /**
  * Includes TApplication class file

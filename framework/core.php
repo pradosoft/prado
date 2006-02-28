@@ -402,6 +402,35 @@ class PradoBase
 	}
 
 	/**
+	 * Initializes error handlers.
+	 * This method set error and exception handlers to be functions
+	 * defined in this class.
+	 */
+	public static function initErrorHandlers()
+	{
+		/**
+		 * Sets error handler to be Prado::phpErrorHandler
+		 */
+		set_error_handler(array('PradoBase','phpErrorHandler'),error_reporting());
+		/**
+		 * Sets exception handler to be Prado::exceptionHandler
+		 */
+		set_exception_handler(array('PradoBase','exceptionHandler'));
+	}
+
+	/**
+	 * Class autoload loader.
+	 * This method is provided to be invoked within an __auload() magic method.
+	 * @param string class name
+	 */
+	public static function autoload($className)
+	{
+		include_once($className.self::CLASS_FILE_EXT);
+		if(!class_exists($className,false) && !interface_exists($className,false))
+			self::fatalError("Class file for '$className' cannot be found.");
+	}
+
+	/**
 	 * @return string a string that can be displayed on your Web page showing powered-by-PRADO information
 	 */
 	public static function poweredByPrado()
