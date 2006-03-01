@@ -714,6 +714,13 @@ class TTemplate extends TApplicationComponent implements ITemplate
 						else
 							throw new TConfigurationException('template_property_unknown',$type,$name);
 					}
+					else if(!is_string($att))
+					{
+						if(strcasecmp($name,'id')===0)
+							throw new TConfigurationException('template_controlid_invalid',$type);
+						else if(strcasecmp($name,'skinid')===0)
+							throw new TConfigurationException('template_controlskinid_invalid',$type);
+					}
 				}
 			}
 		}

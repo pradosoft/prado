@@ -128,7 +128,12 @@ class TTemplateControl extends TControl implements INamingContainer
 		if($tpl=$this->getTemplate(true))
 		{
 			foreach($tpl->getDirective() as $name=>$value)
-				$this->setSubProperty($name,$value);
+			{
+				if(is_string($value))
+					$this->setSubProperty($name,$value);
+				else
+					throw new TConfigurationException('templatecontrol_directive_invalid',get_class($this),$name);
+			}
 			$tpl->instantiateIn($this);
 		}
 	}
