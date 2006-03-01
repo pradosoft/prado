@@ -269,32 +269,42 @@ class TTemplate extends TApplicationComponent implements ITemplate
 			if(isset($object[2]))	// component
 			{
 				$component=Prado::createComponent($object[1]);
+				$properties=&$object[2];
 				if($component instanceof TControl)
 				{
 					$controls[$key]=$component;
 					$component->setTemplateControl($tplControl);
-					if(isset($object[2]['id']))
-						$tplControl->registerObject($object[2]['id'],$component);
-					if(isset($object[2]['skinid']))
+					if(isset($properties['id']))
 					{
-						$component->setSkinID($object[2]['skinid']);
-						unset($object[2]['skinid']);
+						if(is_array($properties['id']))
+							$properties['id']=$component->evaluateExpression($properties['id'][1]);
+						$tplControl->registerObject($properties['id'],$component);
+					}
+					if(isset($properties['skinid']))
+					{
+						if(is_array($properties['skinid']))
+							$component->setSkinID($component->evaluateExpression($properties['skinid'][1]));
+						else
+							$component->setSkinID($properties['skinid']);
+						unset($properties['skinid']);
 					}
 					$component->applyStyleSheetSkin($page);
 					// apply attributes
-					foreach($object[2] as $name=>$value)
+					foreach($properties as $name=>$value)
 						$this->configureControl($component,$name,$value);
 					$component->createdOnTemplate($parent);
 				}
 				else if($component instanceof TComponent)
 				{
-					if(isset($object[2]['id']))
+					if(isset($properties['id']))
 					{
-						$tplControl->registerObject($object[2]['id'],$component);
+						if(is_array($properties['id']))
+							$properties['id']=$component->evaluateExpression($properties['id'][1]);
+						$tplControl->registerObject($properties['id'],$component);
 						if(!$component->hasProperty('id'))
-							unset($object[2]['id']);
+							unset($properties['id']);
 					}
-					foreach($object[2] as $name=>$value)
+					foreach($properties as $name=>$value)
 						$this->configureComponent($component,$name,$value);
 					$parent->addParsedObject($component);
 				}
@@ -714,7 +724,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 						else
 							throw new TConfigurationException('template_property_unknown',$type,$name);
 					}
-					else if(!is_string($att))
+					else if(is_array($att) && $att[0]!==self::CONFIG_EXPRESSION)
 					{
 						if(strcasecmp($name,'id')===0)
 							throw new TConfigurationException('template_controlid_invalid',$type);
