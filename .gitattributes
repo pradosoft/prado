@@ -732,6 +732,7 @@ framework/Web/UI/WebControls/THiddenField.php -text
 framework/Web/UI/WebControls/THtmlArea.php -text
 framework/Web/UI/WebControls/THyperLink.php -text
 framework/Web/UI/WebControls/THyperLinkColumn.php -text
+framework/Web/UI/WebControls/TIframe.php -text
 framework/Web/UI/WebControls/TImage.php -text
 framework/Web/UI/WebControls/TImageButton.php -text
 framework/Web/UI/WebControls/TJavascriptLogger.php -text
