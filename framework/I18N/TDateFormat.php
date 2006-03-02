@@ -23,6 +23,11 @@
 Prado::using('System.I18N.core.DateFormat');
 
 /**
+ * Get the parent control class.
+ */
+Prado::using('System.I18N.TI18NControl');
+
+/**
  * To format dates and/or time according to the current locale use
  * <code>
  * <com:TDateFormat Pattern="dd:MMM:yyyy" Value="01/01/2001" />

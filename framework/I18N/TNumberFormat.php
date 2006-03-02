@@ -16,11 +16,15 @@
  * @package System.I18N
  */
 
- /**
+/**
  * Get the NumberFormat class.
  */
 Prado::using('System.I18N.core.NumberFormat');
 
+/**
+ * Get the parent control class.
+ */
+Prado::using('System.I18N.TI18NControl');
 
 /**
   * To format numbers in locale sensitive manner use

@@ -18,6 +18,11 @@
  */
 
 /**
+ * Get the parent control class.
+ */
+Prado::using('System.I18N.TI18NControl');
+
+/**
  * TTranslate class.
  *
  * This component performs message/string translation. The translation
