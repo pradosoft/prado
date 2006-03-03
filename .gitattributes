@@ -17,6 +17,7 @@ buildscripts/phing/tasks/PhpLintTask.php -text
 buildscripts/phing/tasks/XmlLintTask.php -text
 buildscripts/phpbuilder/build.php -text
 buildscripts/phpbuilder/files.txt -text
+buildscripts/setup.php -text
 buildscripts/texbuilder/build.php -text
 buildscripts/texbuilder/prado3_quick_start.pdf -text
 buildscripts/texbuilder/prado3_quick_start.tex -text
