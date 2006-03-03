@@ -267,10 +267,10 @@ class TPanelStyle extends TStyle
 	 */
 	public function addAttributesToRender($writer)
 	{
-		if(($url=trim($this->_backImageUrl))!=='')
+		if(($url=trim($this->getBackImageUrl()))!=='')
 			$this->setStyleField('background-image','url('.$url.')');
 
-		switch($this->_scrollBars)
+		switch($this->getScrollBars())
 		{
 			case 'Horizontal': $this->setStyleField('overflow-x','scroll'); break;
 			case 'Vertical': $this->setStyleField('overflow-y','scroll'); break;
@@ -278,16 +278,19 @@ class TPanelStyle extends TStyle
 			case 'Auto': $this->setStyleField('overflow','auto'); break;
 		}
 
-		if($this->_horizontalAlign!=='NotSet')
-			$this->setStyleField('text-align',strtolower($this->_horizontalAlign));
+		if(($align=$this->getHorizontalAlign())!=='NotSet')
+			$this->setStyleField('text-align',strtolower($align));
 
-		if(!$this->_wrap)
+		if(!$this->getWrap())
 			$this->setStyleField('white-space','nowrap');
 
-		if($this->_direction==='LeftToRight')
-			$this->setStyleField('direction','ltr');
-		else if($this->_direction==='RightToLeft')
-			$this->setStyleField('direction','rtl');
+		if(($direction=$this->getDirection())!=='NotSet')
+		{
+			if($direction==='LeftToRight')
+				$this->setStyleField('direction','ltr');
+			else
+				$this->setStyleField('direction','rtl');
+		}
 
 		parent::addAttributesToRender($writer);
 	}
