@@ -1,6 +1,6 @@
 <?php
 /**
- * TControl, TControlList, TEventParameter and INamingContainer class file
+ * TControl, TControlCollection, TEventParameter and INamingContainer class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
@@ -304,6 +304,30 @@ class TControl extends TApplicationComponent
 	}
 
 	/**
+	 * Gets the lifecycle step the control is currently at.
+	 * This method should only be used by control developers.
+	 * @return integer the lifecycle step the control is currently at.
+	 * The value can be CS_CONSTRUCTED, CS_CHILD_INITIALIZED, CS_INITIALIZED,
+	 * CS_STATE_LOADED, CS_LOADED, CS_PRERENDERED.
+	 */
+	protected function getControlStage()
+	{
+		return $this->_stage;
+	}
+
+	/**
+	 * Sets the lifecycle step the control is currently at.
+	 * This method should only be used by control developers.
+	 * @param integer the lifecycle step the control is currently at.
+	 * Valid values include CS_CONSTRUCTED, CS_CHILD_INITIALIZED, CS_INITIALIZED,
+	 * CS_STATE_LOADED, CS_LOADED, CS_PRERENDERED.
+	 */
+	protected function setControlStage($value)
+	{
+		$this->_stage=$value;
+	}
+
+	/**
 	 * Returns the id of the control.
 	 * Control ID can be either manually set or automatically generated.
 	 * If $hideAutoID is true, automatically generated ID will be returned as an empty string.
@@ -435,7 +459,7 @@ class TControl extends TApplicationComponent
 	}
 
 	/**
-	 * @return TControlList the child control collection
+	 * @return TControlCollection the child control collection
 	 */
 	public function getControls()
 	{
@@ -446,12 +470,12 @@ class TControl extends TApplicationComponent
 
 	/**
 	 * Creates a control collection object that is to be used to hold child controls
-	 * @return TControlList control collection
+	 * @return TControlCollection control collection
 	 * @see getControls
 	 */
 	protected function createControlCollection()
 	{
-		return $this->getAllowChildControls()?new TControlList($this):new TEmptyControlList($this);
+		return $this->getAllowChildControls()?new TControlCollection($this):new TEmptyControlCollection($this);
 	}
 
 	/**
@@ -1537,7 +1561,7 @@ class TControl extends TApplicationComponent
 	/**
 	 * Updates the list of the controls whose IDs are managed by the specified naming container.
 	 * @param TControl the naming container
-	 * @param TControlList list of controls
+	 * @param TControlCollection list of controls
 	 * @throws TInvalidDataValueException if a control's ID is not unique within its naming container.
 	 */
 	private function fillNameTable($container,$controls)
@@ -1562,9 +1586,9 @@ class TControl extends TApplicationComponent
 
 
 /**
- * TControlList class
+ * TControlCollection class
  *
- * TControlList implements a collection that enables
+ * TControlCollection implements a collection that enables
  * controls to maintain a list of their child controls.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -1572,7 +1596,7 @@ class TControl extends TApplicationComponent
  * @package System.Web.UI
  * @since 3.0
  */
-class TControlList extends TList
+class TControlCollection extends TList
 {
 	/**
 	 * the control that owns this collection.
@@ -1583,10 +1607,12 @@ class TControlList extends TList
 	/**
 	 * Constructor.
 	 * @param TControl the control that owns this collection.
+	 * @param boolean whether the list is read-only
 	 */
-	public function __construct(TControl $owner)
+	public function __construct(TControl $owner,$readOnly=false)
 	{
 		$this->_o=$owner;
+		parent::__construct(null,$readOnly);
 	}
 
 	/**
@@ -1615,7 +1641,7 @@ class TControlList extends TList
 			$this->_o->addedControl($item);
 		}
 		else
-			throw new TInvalidDataTypeException('controllist_control_required');
+			throw new TInvalidDataTypeException('controlcollection_control_required');
 	}
 
 	/**
@@ -1645,9 +1671,9 @@ class TControlList extends TList
 }
 
 /**
- * TEmptyControlList class
+ * TEmptyControlCollection class
  *
- * TEmptyControlList implements an empty control list that prohibits adding
+ * TEmptyControlCollection implements an empty control list that prohibits adding
  * controls to it. This is useful for controls that do not allow child controls.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -1655,41 +1681,15 @@ class TControlList extends TList
  * @package System.Web.UI
  * @since 3.0
  */
-class TEmptyControlList extends TList
+class TEmptyControlCollection extends TControlCollection
 {
-	/**
-	 * the control that owns this collection.
-	 * @var TControl
-	 */
-	private $_o;
-
 	/**
 	 * Constructor.
 	 * @param TControl the control that owns this collection.
 	 */
 	public function __construct(TControl $owner)
 	{
-		$this->_o=$owner;
-	}
-
-	/**
-	 * @return TControl the control that owns this collection.
-	 */
-	protected function getOwner()
-	{
-		return $this->_o;
-	}
-
-	/**
-	 * Inserts an item at the specified position.
-	 * Calling this method will always throw an exception.
-	 * @param integer the speicified position.
-	 * @param mixed new item
-	 * @throws TInvalidDataTypeException if the item to be inserted is neither a string nor a TControl.
-	 */
-	public function insertAt($index,$item)
-	{
-		throw new TNotSupportedException('emptycontrollist_addition_disallowed');
+		parent::__construct($owner,true);
 	}
 }
 
