@@ -1,47 +1,38 @@
 <?php
 /**
- * Class TIframe.
- * 
- * Prado V3 Porting Author Information
+ * TIframe class file.
+ *
  * @author Jason Ragsdale <jrags@jasrags.net>
- * @version $Revision: 1.0$  $Date: 3/1/2006$
+ * @author Harry Pottash <hpottash@gmail.com>
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
  */
-
 
 /**
  * TIframe class
  *
- * TIframe displays displays a Iframe to another Web page.
- *
- * The TIframe component creates an Iframe in your page which will display
- * whatever is specified in the <b>FrameUrl</b> property
- *
- *
- * Properties
- * - <b>FrameUrl</b>, string, kept in viewstate
- *   <br>Gets or sets the URL for the JIframe component.
- * - <b>Scrolling</b>, booliean, default=true, kept in viewstate
- *   <br>Gets or sets the flag determining if scroll bars should be displaed on the nav window
- * - <b>LongDesc</b>, string, kept in viewstate
- *   <br>Gets or sets the long description of the iframe
- * - <b>FrameBorder</b>, booliean, default=true, kept in viewstate
- *   <br>Gets or sets the flag determining if iframe will have a border
- * - <b>MarginHeight</b>, string, default=true, kept in viewstate
- *   <br>Gets or sets the margin height within the iframe
- * - <b>MarginWidth</b>, string, default=true, kept in viewstate
- *   <br>Gets or sets the margin width within the iframe
+ * TIframe displays an inline frame (iframe) on a Web page.
+ * The location of the frame content is specified by {@link setFrameUrl FrameUrl}.
+ * The frame's alignment is specified by {@link setAlign Align}.
+ * The {@link setMarginWidth MarginWidth} and {@link setMarginHeight MarginHeight}
+ * properties define the number of pixels to use as the left/right margins and
+ * top/bottom margins, respectively, within the inline frame.
+ * The {@link setScrollBars ScrollBars} property specifies whether scrollbars are
+ * provided for the inline frame. And {@link setDescriptionUrl DescriptionUrl}
+ * gives the URI of a long description of the frame's contents.
  *
  * Original Prado v2 IFrame Author Information
+ * @author Jason Ragsdale <jrags@jasrags.net>
  * @author Harry Pottash <hpottash@gmail.com>
- * @version v1.0, last update on 2005/05/21
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
  */
 class TIframe extends TWebControl
 {
-
 	/**
 	 * @return string tag name of the iframe.
 	 */
@@ -51,99 +42,125 @@ class TIframe extends TWebControl
 	}
 
 	/**
-	 * @return string  Defaults to ''.
+	 * @return string alignment of the iframe. Defaults to 'NotSet'.
+	 */
+	public function getAlign()
+	{
+		return $this->getViewState('Align','NotSet');
+	}
+
+	/**
+	 * @param string alignment of the iframe. Valid values include
+	 * 'NotSet', 'Left', 'Right', 'Top', 'Middle', 'Bottom'.
+	 */
+	public function setAlign($value)
+	{
+		$this->setViewState('Align',TPropertyValue::ensureEnum($value,'NotSet','Left','Right','Top','Middle','Bottom'),'NotSet');
+	}
+
+	/**
+	 * @return string the URL to long description
+	 */
+	public function getDescriptionUrl()
+	{
+		return $this->getViewState('DescriptionUrl','');
+	}
+
+	/**
+	 * @param string the URL to the long description of the image.
+	 */
+	public function setDescriptionUrl($value)
+	{
+		$this->setViewState('DescriptionUrl',$value,'');
+	}
+
+	/**
+	 * @return boolean whether there should be a visual separator between the frames. Defaults to true.
+	 */
+	public function getShowBorder()
+	{
+		return $this->getViewState('ShowBorder',true);
+	}
+
+	/**
+	 * @param boolean whether there should be a visual separator between the frames.
+	 */
+	public function setShowBorder($value)
+	{
+		$this->setViewState('ShowBorder',TPropertyValue::ensureBoolean($value),true);
+	}
+
+	/**
+	 * @return string URL that this iframe will load content from. Defaults to ''.
 	 */
 	public function getFrameUrl()
 	{
 		return $this->getViewState('FrameUrl','');
 	}
- 
+
 	/**
-	 * @param string 
+	 * @param string URL that this iframe will load content from.
 	 */
 	public function setFrameUrl($value)
 	{
-		$this->setViewState('FrameUrl',TPropertyValue::ensureString($value),'');
+		$this->setViewState('FrameUrl',$value,'');
 	}
- 
+
 	/**
-	 * @return boolean  Defaults to true.
+	 * @return string the visibility and position of scroll bars in an iframe. Defaults to 'Auto'.
 	 */
-	public function getScrolling()
+	public function getScrollBars()
 	{
-		return $this->getViewState('Scrolling',true);
+		return $this->getViewState('ScrollBars','Auto');
 	}
- 
+
 	/**
-	 * @param boolean 
+	 * @param string the visibility and position of scroll bars in an iframe.
+	 * Valid values include None, Auto, Both.
 	 */
-	public function setScrolling($value)
+	public function setScrollBars($value)
 	{
-		$this->setViewState('Scrolling',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('ScrollBars',TPropertyValue::ensureEnum($value,array('None','Auto','Both')),'Auto');
 	}
- 
+
 	/**
-	 * @return string  Defaults to ''.
-	 */
-	public function getLongDesc()
-	{
-		return $this->getViewState('LongDesc','');
-	}
- 
-	/**
-	 * @param string 
-	 */
-	public function setLongDesc($value)
-	{
-		$this->setViewState('LongDesc',TPropertyValue::ensureString($value),'');
-	}
- 
-	/**
-	 * @return boolean  Defaults to true.
-	 */
-	public function getFrameBorder()
-	{
-		return $this->getViewState('FrameBorder',true);
-	}
- 
-	/**
-	 * @param boolean 
-	 */
-	public function setFrameBorder($value)
-	{
-		$this->setViewState('FrameBorder',TPropertyValue::ensureBoolean($value),true);
-	}
- 
-	/**
-	 * @return string  Defaults to ''.
+	 * @return integer the amount of space, in pixels, that should be left between
+	 * the frame's contents and the left and right margins. Defaults to -1, meaning not set.
 	 */
 	public function getMarginWidth()
 	{
-		return $this->getViewState('MarginWidth','');
+		return $this->getViewState('MarginWidth',-1);
 	}
- 
+
 	/**
-	 * @param string 
+	 * @param integer the amount of space, in pixels, that should be left between
+	 * the frame's contents and the left and right margins.
 	 */
 	public function setMarginWidth($value)
 	{
-		$this->setViewState('MarginWidth',TPropertyValue::ensureString($value),'');
+		if(($value=TPropertyValue::ensureInteger($value))<0)
+			$value=-1;
+		$this->setViewState('MarginWidth',$value,-1);
 	}
- 
+
 	/**
-	 * @return string  Defaults to ''.
+	 * @return integer the amount of space, in pixels, that should be left between
+	 * the frame's contents and the top and bottom margins. Defaults to -1, meaning not set.
 	 */
 	public function getMarginHeight()
 	{
-		return $this->getViewState('MarginHeight','');
+		return $this->getViewState('MarginHeight',-1);
 	}
- 
+
 	/**
-	 * @param string 
+	 * @param integer the amount of space, in pixels, that should be left between
+	 * the frame's contents and the top and bottom margins.
 	 */
 	public function setMarginHeight($value)
 	{
-		$this->setViewState('MarginHeight',TPropertyValue::ensureString($value),'');
+		if(($value=TPropertyValue::ensureInteger($value))<0)
+			$value=-1;
+		$this->setViewState('MarginHeight',$value,-1);
 	}
 
 	/**
@@ -152,34 +169,34 @@ class TIframe extends TWebControl
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
-	{	
-		if(($uniqueID=$this->getUniqueID())!=='')
-			$writer->addAttribute('name',$uniqueID);
-		
-		$writer->addAttribute('src',$this->getFrameUrl());
+	{
+		if(($id=$this->getID())!=='')
+			$writer->addAttribute('name',$this->getUniqueID());
 
-		if(!$this->getEnabled())
-			$writer->addAttribute('disabled','disabled');
-		
-		if($this->getScrolling())
-			$writer->addAttribute('scrolling','auto');
-		else 
+		if(($src=$this->getFrameUrl())!=='')
+			$writer->addAttribute('src',$src);
+
+		if(($align=strtolower($this->getAlign()))!=='notset')
+			$writer->addAttribute('align',$align);
+
+		$scrollBars=$this->getScrollBars();
+		if($scrollBars==='None')
+			$writer->addAttribute('scrolling','yes');
+		else if($scrollBars==='Both')
 			$writer->addAttribute('scrolling','no');
-		
-		if ($this->getFrameBorder())
-			$writer->addAttribute('frameborder','1');
-		else 
-			$writer->addAttribute('frameborder','0');
-			
-		if(($longdesc=$this->getLongDesc())!=='')
-			$writer->addAttribute('LongDesc',$longdesc);
 
-		if(($marginheight=$this->getMarginHeight())!=='')
+		if (!$this->getShowBorder())
+			$writer->addAttribute('frameborder','0');
+
+		if(($longdesc=$this->getDescriptionUrl())!=='')
+			$writer->addAttribute('longdesc',$longdesc);
+
+		if(($marginheight=$this->getMarginHeight())!==-1)
 			$writer->addAttribute('marginheight',$marginheight);
-		
-		if(($marginwidth=$this->getMarginWidth())!=='')
+
+		if(($marginwidth=$this->getMarginWidth())!==-1)
 			$writer->addAttribute('marginwidth',$marginwidth);
-			
+
 		parent::addAttributesToRender($writer);
 	}
 }
