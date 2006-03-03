@@ -1,6 +1,6 @@
 <?php
 /**
- * TIframe class file.
+ * TInlineFrame class file.
  *
  * @author Jason Ragsdale <jrags@jasrags.net>
  * @author Harry Pottash <hpottash@gmail.com>
@@ -12,9 +12,9 @@
  */
 
 /**
- * TIframe class
+ * TInlineFrame class
  *
- * TIframe displays an inline frame (iframe) on a Web page.
+ * TInlineFrame displays an inline frame (iframe) on a Web page.
  * The location of the frame content is specified by {@link setFrameUrl FrameUrl}.
  * The frame's alignment is specified by {@link setAlign Align}.
  * The {@link setMarginWidth MarginWidth} and {@link setMarginHeight MarginHeight}
@@ -31,7 +31,7 @@
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TIframe extends TWebControl
+class TInlineFrame extends TWebControl
 {
 	/**
 	 * @return string tag name of the iframe.
