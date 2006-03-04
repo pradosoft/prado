@@ -737,6 +737,19 @@ class THttpCookieCollection extends TList
 			$this->_o->removeCookie($item);
 		return $item;
 	}
+
+	/**
+	 * Finds the cookie with the specified name.
+	 * @param string the name of the cookie to be looked for
+	 * @return THttpCookie the cookie, null if not found
+	 */
+	public function findCookieByName($name)
+	{
+		foreach($this as $cookie)
+			if($cookie->getName()===$name)
+				return $cookie;
+		return null;
+	}
 }
 
 /**
