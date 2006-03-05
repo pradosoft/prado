@@ -24,7 +24,7 @@
  * contained in current active view. A command event with name 'NextView'
  * will cause TMultiView to make the next available view active.
  * Other command names recognized by TMultiView include
- * - PrevView : switch to previous view
+ * - PreviousView : switch to previous view
  * - SwitchViewID : switch to a view by its ID path
  * - SwitchViewIndex : switch to a view by its index in the {@link getViews Views} collection.
  *
@@ -36,9 +36,10 @@
 class TMultiView extends TControl
 {
 	const CMD_NEXTVIEW='NextView';
-	const CMD_PREVIOUSVIEW='PrevView';
+	const CMD_PREVIOUSVIEW='PreviousView';
 	const CMD_SWITCHVIEWID='SwitchViewID';
 	const CMD_SWITCHVIEWINDEX='SwitchViewIndex';
+	private $_cachedActiveViewIndex=-1;
 
 	/**
 	 * Processes an object that is created during parsing template.
@@ -86,7 +87,7 @@ class TMultiView extends TControl
 			$index=-1;
 		$views=$this->getViews();
 		$count=$views->getCount();
-		if($view->getCount()===0 && $this->getControlStage()<TControl::CS_CHILD_INITIALIZED)
+		if($count===0 && $this->getControlStage()<TControl::CS_CHILD_INITIALIZED)
 			$this->_cachedActiveViewIndex=$index;
 		else if($index<$count)
 		{
@@ -293,7 +294,7 @@ class TView extends TControl
 	 */
 	public function onActivate($param)
 	{
-		$this->raiseEvent('Activate',$this,$param);
+		$this->raiseEvent('OnActivate',$this,$param);
 	}
 
 	/**
@@ -319,20 +320,21 @@ class TView extends TControl
 	public function setActive($value)
 	{
 		$value=TPropertyValue::ensureBoolean($value);
-		$this->_active=$value
+		$this->_active=$value;
 		parent::setVisible($value);
 	}
 
 	/**
+	 * @param boolean whether the parents should also be checked if visible
 	 * @return boolean whether this view is visible.
 	 * The view is visible if it is active and its parent is visible.
 	 */
-	public function getVisible()
+	public function getVisible($checkParents=true)
 	{
 		if(($parent=$this->getParent())===null)
 			return $this->getActive();
 		else if($this->getActive())
-			return $parent->getVisible();
+			return $parent->getVisible($checkParents);
 		else
 			return false;
 	}

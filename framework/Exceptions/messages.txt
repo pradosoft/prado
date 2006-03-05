@@ -249,3 +249,12 @@ datalistitemcollection_datalistitem_required = TDataListItemCollection can only 
 tablerowcollection_tablerow_required	= TTableRowCollection can only accept TTableRow objects.
 
 tablecellcollection_tablerow_required	= TTableCellCollection can only accept TTableCell objects.
+
+multiview_view_required					= TMultiView can only accept TView as child.
+multiview_activeviewindex_invalid		= TMultiView.ActiveViewIndex has an invalid index '{0}'.
+multiview_view_inexistent				= TMultiView cannot find the specified view.
+multiview_viewid_invalid				= TMultiView cannot find the view '{0}' to switch to.
+
+viewcollection_view_required			= TViewCollection can only accept TView as its element.
+
+view_visible_readonly					= TView.Visible is read-only. Use TView.Active to toggle its visibility.
