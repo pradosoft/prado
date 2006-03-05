@@ -173,9 +173,7 @@ contentplaceholder_id_required			= TContentPlaceHolder must have an ID.
 
 content_id_required						= TContent must have an ID.
 
-controllist_control_required			= TControlList can only accept strings or TControl objects.
-
-emptycontrollist_addition_disallowed	= Child controls are not allowed.
+controlcollection_control_required		= TControlList can only accept strings or TControl objects.
 
 webcontrol_accesskey_invalid			= {0}.AccessKey '{1}' is invalid. It must be a single character only.
 webcontrol_style_invalid				= {0}.Style must take string value only.

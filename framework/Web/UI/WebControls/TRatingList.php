@@ -1,9 +1,24 @@
 <?php
+/**
+ * TRatingList class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ */
 
+/**
+ * Includes TRadioButtonList class
+ */
 Prado::using('System.Web.UI.WebControls.TRadioButtonList');
 
 /**
- * TRatingList
+ * TRatingList class.
+ *
+ * This class is EXPERIMENTAL.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $Date: $
@@ -81,7 +96,7 @@ class TRatingList extends TRadioButtonList
 
 	public function setHalfRatingLimit($value)
 	{
-		$this->setViewState('HalfRating', 
+		$this->setViewState('HalfRating',
 				TPropertyValue::ensureArray($value), array(0.3, 0.7));
 	}
 
@@ -168,7 +183,7 @@ class TRatingList extends TRadioButtonList
 
 	protected function renderRatingListItem($writer, $repeatInfo, $itemType, $index)
 	{
-		$image = new TImage;		
+		$image = new TImage;
 		$image->setImageUrl($this->_ratingImages[$this->getRatingImageType($index)]);
 		$image->setAlternateText($this->getRating());
 		$image->render($writer);
