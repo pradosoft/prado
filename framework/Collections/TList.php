@@ -298,10 +298,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	 */
 	public function offsetGet($offset)
 	{
-		if($offset>=0 && $offset<$this->_c)
-			return $this->_d[$offset];
-		else
-			throw new TInvalidDataValueException('list_index_invalid',$offset);
+		return $this->itemAt($offset);
 	}
 
 	/**

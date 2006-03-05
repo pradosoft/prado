@@ -681,6 +681,12 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
  * THttpCookieCollection class.
  *
  * THttpCookieCollection implements a collection class to store cookies.
+ * Besides using all functionalities from {@link TList}, you can also
+ * retrieve a cookie by its name using either {@link findCookieByName} or
+ * simply:
+ * <code>
+ *   $cookie=$collection[$cookieName];
+ * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -736,6 +742,18 @@ class THttpCookieCollection extends TList
 		if($this->_o instanceof THttpResponse)
 			$this->_o->removeCookie($item);
 		return $item;
+	}
+
+	/**
+	 * @param integer|string index of the cookie in the collection or the cookie's name
+	 * @return THttpCookie the cookie found
+	 */
+	public function itemAt($index)
+	{
+		if(is_integer($index))
+			return parent::itemAt($index);
+		else
+			return $this->findCookieByName($index);
 	}
 
 	/**
