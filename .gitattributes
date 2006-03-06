@@ -1,6 +1,5 @@
 * text=auto !eol
 /COPYRIGHT -text
-/CREDITS -text
 /HISTORY -text
 /UPGRADE -text
 /build.xml -text
@@ -772,11 +771,8 @@ framework/Web/UI/WebControls/TValidationSummary.php -text
 framework/Web/UI/WebControls/TWebControl.php -text
 framework/Web/UI/WebControls/TWebControlAdapter.php -text
 framework/Web/UI/WebControls/TWizard.php -text
-framework/Web/UI/WebControls/TWizardStep.php -text
-framework/Web/UI/WebControls/TWizardTemplate.php -text
 framework/core.php -text
 framework/prado.php -text
-framework/pradolite.php -text
 /index.html -text
 requirements/index.php -text
 requirements/messages-zh.txt -text

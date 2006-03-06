@@ -1,4 +1,11 @@
 
-       PRADO v3.0a January 18, 2006
+                 PRADO v3.0b March 6, 2006
+                 =========================
 
-Backward compatibility is not maintained for v2.x and v1.x.
+Upgrading from v3.0a
+--------------------
+A major change is the event names, which must be prefixed with 'On'.
+
+Upgrading from v2.x and v1.x
+----------------------------
+PRADO v3.x is not backward compatible with v2.x and v1.x.
