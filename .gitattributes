@@ -28,6 +28,12 @@ demos/composer/protected/pages/Home.page -text
 demos/composer/protected/pages/Home.php -text
 demos/composer/protected/pages/Layout.php -text
 demos/composer/protected/pages/Layout.tpl -text
+demos/composer/themes/PradoSoft/comments.gif -text
+demos/composer/themes/PradoSoft/eventdef.gif -text
+demos/composer/themes/PradoSoft/pradobg.gif -text
+demos/composer/themes/PradoSoft/pradoheader.gif -text
+demos/composer/themes/PradoSoft/propertydef.gif -text
+demos/composer/themes/PradoSoft/style.css -text
 demos/composer/themes/Simple/style.css -text
 demos/personal/index.php -text
 demos/personal/protected/Pages/Home.page -text

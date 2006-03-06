@@ -8,7 +8,7 @@
 <body>
 <com:TForm>
 <div id="header">
-Prado Composer (Component Writer)
+    <h1>Prado Composer (Component Writer)</h1>
 </div>
 
 <div id="content" width="100%">
