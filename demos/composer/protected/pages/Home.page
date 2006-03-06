@@ -1,7 +1,7 @@
-<%@ MasterClass="Application.pages.Layout" Theme="Simple" %>
+<%@ MasterClass="Application.pages.Layout" Theme="PradoSoft" %>
 <com:TContent ID="body" >
 
-<com:TPanel GroupingText="Class Information">
+<com:TPanel CssClass="classinfo" GroupingText="Class Information">
 class
 <com:TTextBox ID="ClassName"
 	Text=<%#$this->Page->ClassDefinition->ClassName%>
@@ -13,7 +13,7 @@ extends
 implements <com:TTextBox ID="Interfaces" CssClass="slTextBox"/>
 </com:TPanel>
 
-<com:TPanel GroupingText="Property Definitions">
+<com:TPanel CssClass="propertydef" GroupingText="Property Definitions">
 <com:TRepeater ID="PropertyList" OnItemCommand="propertyAction">
 
 <prop:EmptyTemplate>
@@ -74,34 +74,37 @@ No properties defined.<br/>
   		Text="Remove"
   		CommandName="remove"
   		CommandParameter=<%# $this->Parent->ItemIndex %>
+  		CssClass="button"
   		/>
   <com:TButton
   		Text="Up"
   		CommandName="up"
   		CommandParameter=<%# $this->Parent->ItemIndex %>
   		Enabled=<%# $this->Parent->ItemIndex > 0%>
+  		CssClass="button"
   		/>
   <com:TButton
   		Text="Down"
   		CommandName="down"
   		CommandParameter=<%# $this->Parent->ItemIndex %>
   		Enabled=<%# $this->Parent->ItemIndex < $this->Page->ClassDefinition->Properties->Count-1 %>
+  		CssClass="button"
   		/>
   </td>
 </tr>
 </prop:ItemTemplate>
 
 </com:TRepeater>
-
-<com:TButton Text="New Property" OnCommand="propertyAction" CommandName="add" />
-
+<p>
+<com:TButton Text="New Property" OnCommand="propertyAction" CommandName="add" CssClass="button" />
+</p>
 </com:TPanel>
 
-<com:TPanel GroupingText="Event Definitions">
+<com:TPanel CssClass="eventdef" GroupingText="Event Definitions">
 <com:TRepeater ID="EventList" OnItemCommand="eventAction">
 
 <prop:EmptyTemplate>
-No events defined.<br/>
+<p>No events defined</p>
 </prop:EmptyTemplate>
 
 <prop:HeaderTemplate>
@@ -130,32 +133,33 @@ No events defined.<br/>
   		Text="Remove"
   		CommandName="remove"
   		CommandParameter=<%# $this->Parent->ItemIndex %>
+  		CssClass="button"
   		/>
   <com:TButton
   		Text="Up"
   		CommandName="up"
   		CommandParameter=<%# $this->Parent->ItemIndex %>
   		Enabled=<%# $this->Parent->ItemIndex > 0%>
+  		CssClass="button"
   		/>
   <com:TButton
   		Text="Down"
   		CommandName="down"
   		CommandParameter=<%# $this->Parent->ItemIndex %>
   		Enabled=<%# $this->Parent->ItemIndex < $this->Page->ClassDefinition->Events->Count-1 %>
+  		CssClass="button"
   		/>
   </td>
 </tr>
 </prop:ItemTemplate>
 
 </com:TRepeater>
-
-<com:TButton Text="New Event" OnCommand="eventAction" CommandName="add" />
-
+<p>
+<com:TButton Text="New Event" OnCommand="eventAction" CommandName="add" CssClass="button" />
+</p>
 </com:TPanel>
 
-<br/>
-Comments
-<br/>
+<com:TPanel CssClass="comments" GroupingText="Comments">
 <com:TTextBox ID="Comments" TextMode="MultiLine" Columns="80" Rows="6" />
 <br/>
 Author Name
@@ -166,12 +170,15 @@ Author Email
 <com:TTextBox ID="AuthorEmail"
 	Text=<%#$this->Page->ClassDefinition->Email%>
 	CssClass="slTextBox"/>
-<br/>
+    <p>
+    <com:TButton Text="Generate Code" OnClick="generateCode" CssClass="button" />
+    </p>
+</com:TPanel>
 
-<hr/>
-<com:TButton Text="Generate Code" OnClick="generateCode" />
-<com:TTextHighlighter>
-<com:TLiteral ID="SourceCode" />
-</com:TTextHighlighter>
+<com:TPanel CssClass="generator">
+    <com:TTextHighlighter>
+        <com:TLiteral ID="SourceCode" />
+    </com:TTextHighlighter>
+</com:TPanel>
 
 </com:TContent>
