@@ -1,3 +1,18 @@
+Version 3.0b March 6, 2006
+=============================
+- CHG: event names must prefix with 'On' (Qiang)
+- ENH: template parser reports exact error location (Qiang)
+- CHG: values of properties whose name ends with 'Template' are
+  parsed directly by template parser (Qiang)
+- NEW: TInlineFrame (Jason)
+- NEW: TAPCCache (Alban)
+- NEW: TColorPicker, TDatePicker, TRatingList, TAdodbProvider,
+  TCreoleProvider (Wei)
+- NEW: TMultiView, TView, TControlAdapter, TWebControlAdapter,
+  TPagedList, TAttributeCollection (Qiang)
+- ENH: cookie HMAC check (Qiang)
+- BUG: fixed many
+
 Version 3.0a January 18, 2006
 =============================
-
+Starting, main work functioning, may contain many bugs (Qiang)

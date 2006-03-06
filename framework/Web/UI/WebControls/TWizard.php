@@ -1,241 +1,150 @@
 <?php
-/**
- * TWizard component.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the BSD License.
- *
- * Copyright(c) 2004 by Xiang Wei Zhuo.
- *
- * To contact the author write to {@link mailto:qiang.xue@gmail.com Qiang Xue}
- * The latest version of PRADO can be obtained from:
- * {@link http://prado.sourceforge.net/}
- *
- * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.8 $  $Date: 2005/12/17 06:11:28 $
- * @package System.Web.UI.WebControls
- */
+
+Prado::using('System.Web.UI.WebControls.TMultiView');
 
 /**
- * TWizard splits a large form and present the user with a series
- * of smaller form to complete. The TWizard is analogous to the
- * installation wizard commonly used to install software in Windows.
+ * Class TWizard.
+ * TWizard splits a large form and present the user with a series of smaller
+ * form to complete. TWizard is analogous to the installation wizard commonly
+ * used to install software in Windows.
  *
- * TWizard centralizes the required events to manipulate the flow of
- * the form. It also renders the appropriate step along with the navigation
- * elements. The wizard allows the steps to be presented linearly or otherwise
- * in a nonlinear fashion. That is, the forms can be filled sequentially or
- * if permitted allowed the user to choose which ever step he/she wishes.
- * In addition, the steps can be programmed to be skipped or repeated.
- *
- * A simple example of 3 steps.
- *<code>
- *  <com:TWizard ID="ContactWizard" >
- *      <com:TWizardStep Title="Step 1: Name">
- *          <com:TLabel ForControl="Name">Full name:</com:TLabel>
- *          <com:TTextBox ID="Name" />
- *      </com:TWizardStep>
- *      <com:TWizardStep Title="Step 2: Contact">
- *          <com:TLabel ForControl="Phone">Telephone Number:</com:TLabel>
- *          <com:TTextBox ID="Phone" />
- *          <com:TLabel ForControl="Email">Email:</com:TLabel>
- *          <com:TTextBox ID="Email" />
- *      </com:TWizardStep>
- *      <com:TWizardStep Title="Step 3: Confirmation">
- *          <table><tr><th>Name:</th>
- *              <td><%= $this->Page->ContactWizard->Name->Text %></td>
- *          </tr><tr><th>Phone:</th>
- *              <td><%= $this->Page->ContactWizard->Phone->Text %></td>
- *          </tr><tr><th>Email:</th>
- *              <td><%= $this->Page->ContactWizard->Email->Text %></td>
- *          </tr></table>
- *      </com:TWizardStep>
- *  </com:TWizard>
- *</code>
- *
- * TWizard also intercepts the following bubbled events. E.g TButton
- * has CommandName and CommandParameter properties that bubbles as
- * "OnBubbleEvent". The following are the supported bubble event names
- * and how TWizard handles them.
- *
- *	Bubble Events
- *	- <b>next</b>, TWizard fires <b>OnNextCommand</b> event.
- *	- <b>previous</b>, TWizard fires <b>OnPreviousCommand</b> event.
- *	- <b>finish</b>, TWizard fires <b>OnFinishCommand</b> event.
- *	- <b>cancel</b>, TWizard fires <b>OnCancelCommand</b> event.
- *	- <b>jumpto</b>, TWizard fires <b>OnJumpToCommand</b> event.
- *                   <b>jumpto</b> requires a parameter, the destination step.
- *
- * E.g. anywhere within the TWizard, a button like the following
- *  <code><com:TButton CommandName="jumpto" CommandParameter="2" /></code>
- * when click will bubble to TWizard and in turn fires the OnJumpToCommand
- * with parameter value of "2".
- *
- * Namespace: System.Web.UI.WebControls
- *
- * Properties
- * - <b>ActiveStep</b>, TWizardStep,
- *   <br>Gets the current active step.
- * - <b>ActiveStepIndex</b>, integer,
- *   <br>Gets or sets the active step specified by a zero-starting index.
- * - <b>DisplaySideBar</b>, boolean
- *	 <br>isSideBarVisible or setDisplaySideBar, show or hides the side bar.
- * - <b>FinishStepButtonText</b>, string
- *   <br>Gets or sets the string for the "Finish" button.
- * - <b>NextStepButtonText</b>, string
- *   <br>Gets or sets the string for the "Next" button.
- * - <b>PreviousStepButtonText</b>, string
- *   <br>Gets or sets the string for the "Previous" button.
- * - <b>CancelButtonText</b>, string
- *   <br>Gets or sets the string for the "Cancel" button.
- *
- * Events
- * - <b>OnStepChanged</b> Occurs when the step is changed.
- * - <b>OnCancelCommand</b> Occurs when the "Cancel" button is pressed.
- * - <b>OnFinishCommand</b> Occurs when the "Finish" button is pressed.
- * - <b>OnNextCommand</b> Occurs when the "Next" button is pressed.
- * - <b>OnPreviousCommand</b> Occurs when the "Previous" button is pressed.
- * - <b>OnJumpToCommand</b> Occurs when the "JumpTo" button is pressed.
- *
- * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version v1.0, last update on Sat Dec 11 15:25:11 EST 2004
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
+ * @since 3.0
  */
 class TWizard extends TWebControl implements INamingContainer
 {
 	/**
-	 * The command name for the OnNextCommand.
-	 * @var string
+	 * @var mixed navigation template for the start step.
 	 */
-	const CMD_NEXT = 'next';
+	private $_startNavigationTemplate=null;
+	/**
+	 * @var mixed navigation template for internal steps.
+	 */
+	private $_stepNavigationTemplate=null;
+	/**
+	 * @var mixed navigation template for the finish step.
+	 */
+	private $_finishNavigationTemplate=null;
+	/**
+	 * @var mixed template for wizard header.
+	 */
+	private $_headerTemplate=null;
+	/**
+	 * @var mixed template for the side bar.
+	 */
+	private $_sideBarTemplate=null;
 
 	/**
-	 * The command name for the OnPreviousCommand.
-	 * @var string
+	 * @return string tag name for the wizard
 	 */
-	const CMD_PREVIOUS = 'previous';
-
-	/**
-	 * The command name for the OnFinishCommand.
-	 * @var string
-	 */
-	const CMD_FINISH = 'finish';
-
-	/**
-	 * The command name for the OnCancelCommand.
-	 * @var string
-	 */
-	const CMD_CANCEL = 'cancel';
-
-	/**
-	 * The command name for the OnJumpToCommand.
-	 * @var string
-	 */
-	const CMD_JUMP = 'jumpto';
-
-	/**
-	 * A list of steps.
-	 * @var array
-	 */
-	private $_steps=array();
-
-	/**
-	 * A list of navigation templates, including built-in defaults.
-	 * @var array
-	 */
-	private $_navigation = array();
-
-	/**
-	 * A list of links for the side bar.
-	 * @var array
-	 */
-	private $_sidebarLinks = array();
-
-	/**
-	 * Set the Finish button text.
-	 * @param string button text
-	 */
-	public function setFinishStepButtonText($value)
+	protected function getTagName()
 	{
-		$this->setViewState('FinishStepButtonText', $value, 'Finish');
+		return 'table';
+	}
+
+	// SideBarDataList, MultiView, History
+	/**
+	 * Creates a style object for the wizard.
+	 * This method creates a {@link TTableStyle} to be used by the wizard.
+	 * @return TTableStyle control style to be used
+	 */
+	protected function createStyle()
+	{
+		return new TTableStyle;
 	}
 
 	/**
-	 * Get the Finish button text.
-	 * @return string button text.
+	 * @return integer the cellspacing for the table used by wizard. Defaults to -1, meaning not set.
 	 */
-	public function getFinishStepButtonText()
+	public function getCellSpacing()
 	{
-		return $this->getViewState('FinishStepButtonText', 'Finish');
+		if($this->getHasStyle())
+			return $this->getStyle()->getCellSpacing();
+		else
+			return -1;
 	}
 
 	/**
-	 * Set the Next button text.
-	 * @param string button text
+	 * @param integer the cellspacing for the table used by wizard. Defaults to -1, meaning not set.
 	 */
-	public function setNextStepButtonText($value)
+	public function setCellSpacing($value)
 	{
-		$this->setViewState('NextStepButtonText', $value, 'Next >');
+		$this->getStyle()->setCellSpacing($value);
+	}
+
+	/**
+	 * @return integer the cellpadding for the table used by wizard. Defaults to -1, meaning not set.
+	 */
+	public function getCellPadding()
+	{
+		if($this->getHasStyle())
+			return $this->getStyle()->getCellPadding();
+		else
+			return -1;
+	}
+
+	/**
+	 * @param integer the cellpadding for the table used by wizard. Defaults to -1, meaning not set.
+	 */
+	public function setCellPadding($value)
+	{
+		$this->getStyle()->setCellPadding($value);
+	}
+
+	/**
+	 * @return TWizardStepBase the currently active wizard step
+	 */
+	public function getActiveStep()
+	{
 
 	}
 
 	/**
-	 * Get the Next button text.
-	 * @return string button text.
+	 * @return integer the zero-based index of the active wizard step
 	 */
-	public function getNextStepButtonText()
+	public function getActiveStepIndex()
 	{
-		return $this->getViewState('NextStepButtonText', 'Next >');
 	}
 
 	/**
-	 * Set the Previous button text.
-	 * @param string button text
+	 * @param integer the zero-based index of the wizard step to be activated
 	 */
-	public function setPreviousStepButtonText($value)
+	public function setActiveStepIndex($value)
 	{
-		$this->setViewState('PreviousStepButtonText',$value, '< Back');
+	}
+
+	public function getWizardSteps()
+	{
+	}
+
+	public function getTemplatedSteps()
+	{
+	}
+
+	public function getNavigationTableCell()
+	{
 	}
 
 	/**
-	 * Get the Previous button text.
-	 * @return string button text.
+	 * @return boolean whether to display a cancel in each wizard step. Defaults to false.
 	 */
-	public function getPreviousStepButtonText()
+	public function getDisplayCancelButton()
 	{
-		return $this->getViewState('PreviousStepButtonText', '< Back');
+		return $this->getViewState('DisplayCancelButton',false);
 	}
 
 	/**
-	 * Set the Cancel button text.
-	 * @param string button text
+	 * @param boolean whether to display a cancel in each wizard step.
 	 */
-	public function setCancelButtonText($value)
+	public function setDisplayCancelButton($value)
 	{
-		$this->setViewState('CancelButtonText', $value, 'Cancel');
+		$this->setViewState('DisplayCancelButton',TPropertyValue::ensureBoolean($value),false);
 	}
 
 	/**
-	 * Get the Cancel button text.
-	 * @return string button text.
-	 */
-	public function getCancelButtonText()
-	{
-		return $this->getViewState('CancelButtonText', 'Cancel');
-	}
-
-	/**
-	 * Show or hide the side bar.
-	 * @param boolean true to show the side bar, false hides it.
-	 */
-	public function setDisplaySideBar($value)
-	{
-		$this->setViewState('DisplaySideBar',TPropertyValue::ensureBoolean($value),true);
-	}
-
-	/**
-	 * Determine if the side bar's visibility.
-	 * @return boolean true if visible, false otherwise.
+	 * @return boolean whether to display a side bar that contains links to wizard steps. Defaults to true.
 	 */
 	public function getDisplaySideBar()
 	{
@@ -243,327 +152,636 @@ class TWizard extends TWebControl implements INamingContainer
 	}
 
 	/**
-	 * Get the current step. null if the ActiveStepIndex is not valid.
-	 * @return TWizardStep
+	 * @param boolean whether to display a side bar that contains links to wizard steps.
 	 */
-	public function getActiveStep()
+	public function setDisplaySideBar($value)
 	{
-		$index = $this->getActiveStepIndex();
-		if(isset($this->_steps[$index]))
-			return $this->_steps[$index];
-		else
-			return null;
+		$this->setViewState('DisplaySideBar',TPropertyValue::ensureBoolean($value),true);
 	}
 
 	/**
-	 * Set the active step index. This determines which step to show.
-	 * @param int the current step to show.
+	 * @return ITemplate navigation template for the start step. Defaults to null.
 	 */
-	public function setActiveStepIndex($index)
+	public function getStartNavigationTemplate()
 	{
-		$this->setViewState('ActiveStepIndex',TPropertyValue::ensureInteger($index),0);
+		return $this->_startNavigationTemplate;
 	}
 
 	/**
-	 * Get the current step index.
-	 * @return int current step index.
+	 * @param ITemplate navigation template for the start step.
 	 */
-	public function getActiveStepIndex()
+	public function setStartNavigationTemplate($value)
 	{
-		return $this->getViewState('ActiveStepIndex', 0);
+		$this->_startNavigationTemplate=$value;
 	}
 
 	/**
-	 * Override the parent implementation.
-	 * It adds any components that are instance of TWizardStep or TWizardTemplate
-	 * as a child and body of the TWizard. Other components are handled by the parent.
-	 * By adding components as child of TWizard, these component's parent
-	 * is the TWizard.
-	 * @param object a component object.
+	 * @return ITemplate navigation template for internal steps. Defaults to null.
 	 */
-	public function addParsedObject($object)
+	public function getStepNavigationTemplate()
 	{
-		if($object instanceof TWizardStep)
-		{
-			   $object->setVisible(false);
-			   $this->_steps[] = $object;
-			   $this->getControls()->add($object);
-		}
-		else if ($object instanceof TWizardTemplate)
-		{
-			   $object->setVisible(false);
-			   $this->_navigation[$object->getType()][] = $object;
-			   $this->getControls()->add($object);
-		}
-		else
-			parent::addParsedObject($object,$context);
+		return $this->_stepNavigationTemplate;
 	}
 
 	/**
-	 * Initalize and add the default navigation templates. Add the side bar
-	 * if required.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param ITemplate navigation template for internal steps.
 	 */
-	public function onLoad($param)
+	public function setStepNavigationTemplate($value)
 	{
-		parent::onLoad($param);
-
-		$this->addNavigationButtons();
-
-		if($this->isSideBarVisible())
-			$this->addNavigationSideBar();
+		$this->_stepNavigationTemplate=$value;
 	}
 
 	/**
-	 * Determins which wizard step to show and appropriate navigation elements.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @return ITemplate navigation template for the finish step. Defaults to null.
 	 */
-	public function onPreRender($param)
+	public function getFinishNavigationTemplate()
 	{
-		parent::onPreRender($param);
-
-		$index = $this->getActiveStepIndex();
-		$totalSteps = count($this->_steps);
-
-		//show the current step
-		for($i = 0; $i < $totalSteps; $i++)
-			$this->_steps[$i]->setVisible($i == $index);
-
-		//determine which link is active
-		for($i = 0, $k = count($this->_sidebarLinks); $i < $k; $i++)
-			$this->_sidebarLinks[$i]->CssClass= ($i == $index)?'active':'';
-
-		//hide all the navigations first.
-		foreach($this->_navigation as $navigation)
-		{
-			foreach($navigation as $nav)
-				$nav->setVisible(false);
-		}
-
-		$final = $this->_steps[$index]->Type == TWizardStep::TYPE_FINAL;
-
-		//if it is not the final step
-		if(!$final && $this->isSideBarVisible())
-			$this->showNavigation(TWizardTemplate::ID_SIDEBAR);
-
-		$finishStep = $index == $totalSteps-1;
-		$finishStep = $finishStep || (isset($this->_steps[$index+1]) &&
-					$this->_steps[$index+1]->Type == TWizardStep::TYPE_FINAL);
-
-		//now show the appropriate navigation elements.
-		if($index == 0)
-			$this->showNavigation(TWizardTemplate::ID_START);
-		else if($final) ; //skip it
-		else if($finishStep)
-			$this->showNavigation(TWizardTemplate::ID_FINISH);
-		else
-			$this->showNavigation(TWizardTemplate::ID_STEP);
+		return $this->_finishNavigationTemplate;
 	}
 
 	/**
-	 * Show of the navigation elements for a particular type.
-	 * @param string navigation type.
+	 * @param ITemplate navigation template for the finish step.
 	 */
-	private function showNavigation($index)
+	public function setFinishNavigationTemplate($value)
 	{
-		if(!isset($this->_navigation[$index])) return;
-		foreach($this->_navigation[$index] as $nav)
-		{
-			$nav->setVisible(true);
-			$nav->dataBind();
-		}
+		$this->_finishNavigationTemplate=$value;
 	}
 
 	/**
-	 * Construct the default navigation elements for the wizard.
-	 * The default navigations are only added if the template for that
-	 * particular navigation type is not customized.
+	 * @return ITemplate template for wizard header. Defaults to null.
 	 */
-	private function addNavigationButtons()
+	public function getHeaderTemplate()
 	{
-		//create the 3 navigation components
-		$start = $this->createComponent('TPanel',TWizardTemplate::ID_START);
-		$start->CssClass = 'navigation';
-
-		$step = $this->createComponent('TPanel',TWizardTemplate::ID_STEP);
-		$step->CssClass = 'navigation';
-
-		$finish = $this->createComponent('TPanel',TWizardTemplate::ID_FINISH);
-		$finish->CssClass = 'navigation';
-
-		$previousButton = $this->createComponent('TButton');
-		$previousButton->setText($this->getPreviousStepButtonText());
-		$previousButton->setCommandName(self::CMD_PREVIOUS);
-		$previousButton->setCausesValidation(false);
-
-		$finishButton = $this->createComponent('TButton');
-		$finishButton->setText($this->getFinishStepButtonText());
-		$finishButton->setCommandName(self::CMD_FINISH);
-
-		$nextButton = $this->createComponent('TButton');
-		$nextButton->setText($this->getNextStepButtonText());
-		$nextButton->setCommandName(self::CMD_NEXT);
-
-		$hiddenButton = $this->createComponent('TButton');
-		$hiddenButton->setCommandName(self::CMD_NEXT);
-		$hiddenButton->setStyle(array('display'=>'none'));
-
-		$cancelButton = $this->createComponent('TButton');
-		$cancelButton->setText($this->getCancelButtonText());
-		$cancelButton->setCommandName(self::CMD_CANCEL);
-		$cancelButton->CssClass='Cancel';
-		$cancelButton->setCausesValidation(false);
-
-		if(!isset($this->_navigation[TWizardTemplate::ID_START]))
-		{
-			$start->addBody($nextButton);
-			$start->addBody($cancelButton);
-			$this->addBody($start);
-			$this->_navigation[TWizardTemplate::ID_START][] = $start;
-		}
-
-		if(!isset($this->_navigation[TWizardTemplate::ID_STEP]))
-		{
-
-			$step->addBody($hiddenButton);
-			$step->addBody($previousButton);
-			$step->addBody($nextButton);
-			$step->addBody($cancelButton);
-			$this->addBody($step);
-			$this->_navigation[TWizardTemplate::ID_STEP][] = $step;
-		}
-
-		if(!isset($this->_navigation[TWizardTemplate::ID_FINISH]))
-		{
-			$finish->addBody($previousButton);
-			$finish->addBody($finishButton);
-			$finish->addBody($cancelButton);
-			$this->addBody($finish);
-			$this->_navigation[TWizardTemplate::ID_FINISH][] = $finish;
-		}
-
+		return $this->_headerTemplate;
 	}
 
 	/**
-	 * Add the navigation side bar, a list of links to each step.
-	 * The default navigation is added only if the templates for
-	 * side bar are not present in the TWizard.
+	 * @param ITemplate template for wizard header.
 	 */
-	private function addNavigationSideBar()
+	public function setHeaderTemplate($value)
 	{
-		if(isset($this->_navigation[TWizardTemplate::ID_SIDEBAR]))
-			return;
-
-		$total = count($this->_steps);
-		$current = $this->getActiveStepIndex();
-
-		$sidebar = $this->createComponent('TPanel',TWizardTemplate::ID_SIDEBAR);
-		$sidebar->CssClass = 'sidebar';
-
-		if($total > 0) $sidebar->addBody("<ul>\n");
-		for($i = 0; $i < $total; $i++)
-		{
-			if($this->_steps[$i]->Type == TWizardStep::TYPE_FINAL)
-				continue;
-			$sidebar->addBody("<li>");
-			$link = $this->createComponent('TLinkButton');
-			$link->setCommandName(self::CMD_JUMP);
-			$link->setCommandParameter($i);
-			$link->Text = $this->_steps[$i]->Title;
-			$this->_sidebarLinks[] = $link;
-			$sidebar->addBody($link);
-			$sidebar->addBody("</li>\n");
-		}
-		if($total > 0) $sidebar->addBody("</ul>\n");
-
-		$this->addBody($sidebar);
-		$this->_navigation[TWizardTemplate::ID_SIDEBAR][] = $sidebar;
+		$this->_headerTemplate=$value;
 	}
 
 	/**
-	 * This method responds to a bubbled event. It will capture the event
-	 * and fire the appropriate events, e.g. OnNextCommand if the parameter
-	 * event name is "next". After the command event, a step changed event
-	 * (OnStepChanged) is fire unless the event parameter variable $cancel
-	 * is set to true.
-	 * @param TComponent sender of the event
-	 * @param TEventParameter event parameters
+	 * @return ITemplate template for the side bar. Defaults to null.
 	 */
-	public function onBubbleEvent($sender,$param)
+	public function getSideBarTemplate()
 	{
-		//if false on validation, do nothing.
-		if (!$this->Page->isValid()) return;
+		return $this->_sideBarTemplate;
+	}
 
-		$event = new TWizardCommandEventParameter();
-		$event->currentStepIndex = $this->getActiveStepIndex();
-		$event->nextStepIndex = $event->currentStepIndex;
+	/**
+	 * @param ITemplate template for the side bar.
+	 */
+	public function setSideBarTemplate($value)
+	{
+		$this->_sideBarTemplate=$value;
+	}
 
-		switch($param->name)
+	/**
+	 * @return string header text. Defaults to ''.
+	 */
+	public function getHeaderText()
+	{
+		return $this->getViewState('HeaderText','');
+	}
+
+	/**
+	 * @param string header text.
+	 */
+	public function setHeaderText($value)
+	{
+		$this->setViewState('HeaderText',TPropertyValue::ensureString($value),'');
+	}
+
+	/**
+	 * @return string the URL that the browser will be redirected to if the cancel button in the
+	 * wizard is clicked. Defaults to ''.
+	 */
+	public function getCancelDestinationUrl()
+	{
+		return $this->getViewState('CancelDestinationUrl','');
+	}
+
+	/**
+	 * @param string the URL that the browser will be redirected to if the cancel button in the
+	 * wizard is clicked.
+	 */
+	public function setCancelDestinationUrl($value)
+	{
+		$this->setViewState('CancelDestinationUrl',TPropertyValue::ensureString($value),'');
+	}
+
+	/**
+	 * @return string the URL that the browser will be redirected to if the wizard finishes.
+	 * Defaults to ''.
+	 */
+	public function getFinishDestinationUrl()
+	{
+		return $this->getViewState('FinishDestinationUrl','');
+	}
+
+	/**
+	 * @param string the URL that the browser will be redirected to if the wizard finishes.
+	 */
+	public function setFinishDestinationUrl($value)
+	{
+		$this->setViewState('FinishDestinationUrl',TPropertyValue::ensureString($value),'');
+	}
+
+	/**
+	 * @return TWizardNavigationButtonStyle the style for the next button in the start wizard step.
+	 */
+	public function getStartNextButtonStyle()
+	{
+		if(($style=$this->getViewState('StartNextButtonStyle',null))===null)
 		{
-			case self::CMD_NEXT:
-				$event->nextStepIndex++;
-				$this->raiseEvent('OnNextCommand',$this,$event);
-				if(!$event->cancel)
-				{
-					$this->setActiveStepIndex($event->nextStepIndex);
-					$this->raiseEvent('OnStepChanged',$this,$event);
-				}
-				break;
-			case self::CMD_PREVIOUS:
-				$event->nextStepIndex--;
-				$this->raiseEvent('OnPreviousCommand',$this,$event);
-				if(!$event->cancel)
-				{
-					$this->setActiveStepIndex($event->nextStepIndex);
-					$this->raiseEvent('OnStepChanged',$this,$event);
-				}
-				break;
-			case self::CMD_FINISH:
-				if(isset($this->_steps[$event->nextStepIndex+1]))
-					$event->nextStepIndex++;
-				$this->raiseEvent('OnFinishCommand',$this,$event);
-				if(!$event->cancel)
-				{
-					$this->setActiveStepIndex($event->nextStepIndex);
-					$this->raiseEvent('OnStepChanged',$this,$event);
-				}
-				break;
-			case self::CMD_CANCEL:
-				$event->cancel = true;
-				$this->raiseEvent('OnCancelCommand',$this,$event);
-				break;
-			case self::CMD_JUMP:
-				$event->nextStepIndex = $param->parameter;
-				$this->raiseEvent('OnJumpToCommand',$this,$event);
-				if(!$event->cancel)
-				{
-					$this->setActiveStepIndex($event->nextStepIndex);
-					$this->raiseEvent('OnStepChanged',$this,$event);
-				}
-				break;
+			$style=new TWizardNavigationButtonStyle;
+			$style->setText('Next');
+			$this->setViewState('StartNextButtonStyle',$style,null);
 		}
+		return $style;
+	}
+
+	/**
+	 * @return TWizardNavigationButtonStyle the style for the next button in each internal wizard step.
+	 */
+	public function getStepNextButtonStyle()
+	{
+		if(($style=$this->getViewState('StepNextButtonStyle',null))===null)
+		{
+			$style=new TWizardNavigationButtonStyle;
+			$style->setText('Next >');
+			$this->setViewState('StepNextButtonStyle',$style,null);
+		}
+		return $style;
+	}
+
+	/**
+	 * @return TWizardNavigationButtonStyle the style for the previous button in the start wizard step.
+	 */
+	public function getStepPreviousButtonStyle()
+	{
+		if(($style=$this->getViewState('StepPreviousButtonStyle',null))===null)
+		{
+			$style=new TWizardNavigationButtonStyle;
+			$style->setText('< Previous');
+			$this->setViewState('StepPreviousButtonStyle',$style,null);
+		}
+		return $style;
+	}
+
+	/**
+	 * @return TWizardNavigationButtonStyle the style for the complete button in the finish wizard step.
+	 */
+	public function getFinishCompleteButtonStyle()
+	{
+		if(($style=$this->getViewState('FinishCompleteButtonStyle',null))===null)
+		{
+			$style=new TWizardNavigationButtonStyle;
+			$style->setText('Complete');
+			$this->setViewState('FinishCompleteButtonStyle',$style,null);
+		}
+		return $style;
+	}
+
+	/**
+	 * @return TWizardNavigationButtonStyle the style for the previous button in the start wizard step.
+	 */
+	public function getFinishPreviousButtonStyle()
+	{
+		if(($style=$this->getViewState('FinishPreviousButtonStyle',null))===null)
+		{
+			$style=new TWizardNavigationButtonStyle;
+			$style->setText('Previous');
+			$this->setViewState('FinishPreviousButtonStyle',$style,null);
+		}
+		return $style;
+	}
+
+	/**
+	 * @return TTableItemStyle the style for the side bar.
+	 */
+	public function getSideBarStyle()
+	{
+		if(($style=$this->getViewState('SideBarStyle',null))===null)
+		{
+			$style=new TTableItemStyle;
+			$this->setViewState('SideBarStyle',$style,null);
+		}
+		return $style;
+	}
+
+	/**
+	 * @return TTableItemStyle the style for the header.
+	 */
+	public function getHeaderStyle()
+	{
+		if(($style=$this->getViewState('HeaderStyle',null))===null)
+		{
+			$style=new TTableItemStyle;
+			$this->setViewState('HeaderStyle',$style,null);
+		}
+		return $style;
+	}
+
+	/**
+	 * @return TTableItemStyle the style for each internal wizard step.
+	 */
+	public function getStepStyle()
+	{
+		if(($style=$this->getViewState('StepStyle',null))===null)
+		{
+			$style=new TTableItemStyle;
+			$this->setViewState('StepStyle',$style,null);
+		}
+		return $style;
+	}
+
+	/**
+	 * @return TStyle the style for the cancel button
+	 */
+	public function getCancelButtonStyle()
+	{
+		if(($style=$this->getViewState('CancelButtonStyle',null))===null)
+		{
+			$style=new TStyle;
+			$this->setViewState('CancelButtonStyle',$style,null);
+		}
+		return $style;
+	}
+
+	/**
+	 * Raises <b>OnActiveStepChanged</b> event.
+	 * This event is raised when the current visible step is changed in the
+	 * wizard.
+	 * @param TEventParameter event parameter
+	 */
+	public function onActiveStepChanged($param)
+	{
+		$this->raiseEvent('OnActiveStepChanged',$this,$param);
+	}
+
+	/**
+	 * Raises <b>OnCancelButtonClick</b> event.
+	 * This event is raised when a cancel navigation button is clicked in the
+	 * current active step.
+	 * @param TEventParameter event parameter
+	 */
+	public function onCancelButtonClick($param)
+	{
+		$this->raiseEvent('OnCancelButtonClick',$this,$param);
+	}
+
+	/**
+	 * Raises <b>OnFinishButtonClick</b> event.
+	 * This event is raised when a finish navigation button is clicked in the
+	 * current active step.
+	 * @param TEventParameter event parameter
+	 */
+	public function onFinishButtonClick($param)
+	{
+		$this->raiseEvent('OnFinishButtonClick',$this,$param);
+	}
+
+	/**
+	 * Raises <b>OnNextButtonClick</b> event.
+	 * This event is raised when a next navigation button is clicked in the
+	 * current active step.
+	 * @param TEventParameter event parameter
+	 */
+	public function onNextButtonClick($param)
+	{
+		$this->raiseEvent('OnNextButtonClick',$this,$param);
+	}
+
+	/**
+	 * Raises <b>OnPreviousButtonClick</b> event.
+	 * This event is raised when a previous navigation button is clicked in the
+	 * current active step.
+	 * @param TEventParameter event parameter
+	 */
+	public function onPreviousButtonClick($param)
+	{
+		$this->raiseEvent('OnPreviousButtonClick',$this,$param);
+	}
+
+	/**
+	 * Raises <b>OnSideBarButtonClick</b> event.
+	 * This event is raised when a link button in the side bar is clicked.
+	 * @param TEventParameter event parameter
+	 */
+	public function onSideBarButtonClick($param)
+	{
+		$this->raiseEvent('OnSideBarButtonClick',$this,$param);
+	}
+
+	public function addedWizardStep($step)
+	{
+		if(($owner=$step->getOwner())!==null)
+			$owner->getWizardSteps()->remove($step);
+		$step->setOwner($this);
+		$this->getMultiView()->getViews()->add($step);
+		if($step instanceof TTemplateWizardStep)
+		{
+			// $this->_templatedSteps[]=$step;
+			//$this->getTemplateWizardSteps()->add($step);
+			// register it ???
+		}
+		$this->onWizardStepsChanged();
+	}
+
+	public function removedWizardStep($step)
+	{
+		$this->getMultiView()->getViews()->remove($step);
+		$step->setOwner(null);
+		if($step instanceof TTemplateWizardStep)
+		{
+			// $this->_templatedSteps....
+			//$this->getTemplateWizardSteps()->remove($step);
+		}
+		$this->onWizardStepsChanged();
 	}
 }
 
 /**
- * TWizard command event parameter.
+ * TWizardNavigationButtonStyle class.
+ * TWizardNavigationButtonStyle defines the style applied to a wizard navigation button.
+ * The button type can be specified via {@link setButtonType ButtonType}, which
+ * can be 'Button', 'Image' or 'Link'.
+ * If the button is an image button, {@link setImageUrl ImageUrl} will be
+ * used to load the image for the button.
+ * Otherwise, {@link setText Text} will be displayed as the button caption.
  *
- * This is passed as the parameter to all event orginating from TWizard.
- * If the event was a particular OnXXXXCommand, the variable $cancel
- * determine if the step will be changed. e.g in handling the "next" command
- * setting the parameter, $param->cancel = true will not result in a step change.
- *
- * The parameter also contains the current step index, and the next step index.
- *
- * @author Xiang Wei Zhuo <weizhuo[at]gmail.com>
- * @version v1.0, last update on Sat Jan 22 13:59:56 EST 2005
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
+ * @since 3.0
  */
-class TWizardCommandEventParameter extends TEventParameter
+class TWizardNavigationButtonStyle extends TStyle
 {
-	public $currentStepIndex = null;
-	public $nextStepIndex = null;
-	public $cancel = false;
+	private $_imageUrl=null;
+	private $_text=null;
+	private $_buttonType=null;
+
+	/**
+	 * Sets the style attributes to default values.
+	 * This method overrides the parent implementation by
+	 * resetting additional TWizardButtonStyle specific attributes.
+	 */
+	public function reset()
+	{
+		parent::reset();
+		$this->_imageUrl=null;
+		$this->_text=null;
+		$this->_buttonType=null;
+	}
+
+	/**
+	 * Copies the fields in a new style to this style.
+	 * If a style field is set in the new style, the corresponding field
+	 * in this style will be overwritten.
+	 * @param TStyle the new style
+	 */
+	public function copyFrom($style)
+	{
+		parent::copyFrom($style);
+		if($style instanceof TWizardButtonStyle)
+		{
+			if($this->_imageUrl===null && $style->_imageUrl!==null)
+				$this->_imageUrl=$style->_imageUrl;
+			if($this->_text===null && $style->_text!==null)
+				$this->_text=$style->_text;
+			if($this->_buttonType===null && $style->_buttonType!==null)
+				$this->_buttonType=$style->_buttonType;
+		}
+	}
+
+	/**
+	 * Merges the style with a new one.
+	 * If a style field is not set in this style, it will be overwritten by
+	 * the new one.
+	 * @param TStyle the new style
+	 */
+	public function mergeWith($style)
+	{
+		parent::mergeWith($style);
+		if($style instanceof TWizardButtonStyle)
+		{
+			if($style->_imageUrl!==null)
+				$this->_imageUrl=$style->_imageUrl;
+			if($style->_text!==null)
+				$this->_text=$style->_text;
+			if($style->_buttonType!==null)
+				$this->_buttonType=$style->_buttonType;
+		}
+	}
+
+	public function getImageUrl()
+	{
+		return $this->_imageUrl===null?'':$this->_imageUrl;
+	}
+
+	public function setImageUrl($value)
+	{
+		$this->_imageUrl=$value;
+	}
+
+	public function getText()
+	{
+		return $this->_text===null?'':$this->_text;
+	}
+
+	public function setText($value)
+	{
+		$this->_text=$value;
+	}
+
+	public function getButtonType()
+	{
+		return $this->_buttonType===null?'Button':$this->_buttonType;
+	}
+
+	public function setButtonType($value)
+	{
+		$this->_buttonType=TPropertyValue::ensureEnum($value,'Button','Image','Link');
+	}
+}
+
+abstract class TWizardStepBase extends TView
+{
+	private $_owner;
+
+	public function loadState()
+	{
+		if($this->_owner && ($this->getTitle()!=='' || $this->getStepType()!==''))
+			$this->_owner->onWizardStepsChanged();
+	}
+
+	public function getOwner()
+	{
+		return $this->_owner;
+	}
+
+	public function setOwner($owner)
+	{
+		$this->_owner=$owner;
+	}
+
+	public function getWizard()
+	{
+		return $this->_owner;
+	}
+
+	public function getTitle()
+	{
+		return $this->getViewState('Title','');
+	}
+
+	public function setTitle($value)
+	{
+		$this->setViewState('Title',$value,'');
+		if($this->_owner)
+			$this->_owner->onWizardStepsChanged();
+	}
+
+	public function getName()
+	{
+		if(($title=$this->getTitle())==='')
+			return $this->getID();
+		else
+			return $title;
+	}
+
+	public function getAllowReturn()
+	{
+		return $this->getViewState('AllowReturn',true);
+	}
+
+	public function setAllowReturn($value)
+	{
+		$this->setViewState('AllowReturn',TPropertyValue::ensureBoolean($value),true);
+	}
+
+	public function getStepType()
+	{
+		return $this->getViewState('StepType','Auto');
+	}
+
+	public function setStepType($type)
+	{
+		$type=TPropertyValue::ensureEnum($type,'Auto','Complete','Finish','Start','Step');
+		if($type!==$this->getStepType())
+		{
+			$this->setViewState('StepType',$type,'Auto');
+			if($this->_owner)
+				$this->_owner->onWizardStepsChanged();
+		}
+	}
+}
+
+class TWizardStep extends TWizardStepBase
+{
+}
+
+class TTemplateWizardStep extends TWizardStepBase
+{
+	/**
+	 * @var ITemplate the template for displaying the content of a wizard step.
+	 */
+	private $_contentTemplate=null;
+	/**
+	 * @var ITemplate the template for displaying the navigation UI of a wizard step.
+	 */
+	private $_navigationTemplate=null;
+
+	/**
+	 * @return ITemplate the template for displaying the content of a wizard step. Defaults to null.
+	 */
+	public function getContentTemplate()
+	{
+		return $this->_contentTemplate;
+	}
+
+	/**
+	 * @param ITemplate the template for displaying the content of a wizard step.
+	 */
+	public function setContentTemplate($value)
+	{
+		$this->_contentTemplate=$value;
+	}
+
+	/**
+	 * @return ITemplate the template for displaying the navigation UI of a wizard step. Defaults to null.
+	 */
+	public function getNavigationTemplate()
+	{
+		return $this->_navigationTemplate;
+	}
+
+	/**
+	 * @param ITemplate the template for displaying the navigation UI of a wizard step.
+	 */
+	public function setNavigationTemplate($value)
+	{
+		$this->_navigationTemplate=$value;
+	}
+}
+
+class TCompleteWizardStep extends TTemplateWizardStep
+{
+	public function getStepType()
+	{
+		return 'Complete';
+	}
+
+	public function setStepType($value)
+	{
+		throw new TInvalidOperationException('completewizardstep_steptype_readonly');
+	}
+}
+
+class TWizardStepCollection extends TList
+{
+	/**
+	 * Constructor.
+	 * @param TWizard wizard that owns this collection
+	 */
+	public function __construct(TWizard $wizard)
+	{
+		$this->_wizard=$wizard;
+	}
+
+	/**
+	 * Inserts an item at the specified position.
+	 * This method overrides the parent implementation by checking if
+	 * the item being added is a {@link TWizardStepBase}.
+	 * @param integer the speicified position.
+	 * @param mixed new item
+	 */
+	public function insertAt($index,$item)
+	{
+		if($item instanceof TWizardStepBase)
+		{
+			parent::insertAt($index,$item);
+			$this->_wizard->addedWizardStep($item);
+		}
+		else
+			throw new TInvalidDataTypeException('wizardstepcollection_wizardstepbase_required');
+	}
+
+	/**
+	 * Removes an item at the specified position.
+	 * @param integer the index of the item to be removed.
+	 * @return mixed the removed item.
+	 */
+	public function removeAt($index)
+	{
+		$step=parent::removeAt($index);
+		$this->_wizard->removedWizardStep($step);
+		return $step;
+	}
 }
 
 ?>

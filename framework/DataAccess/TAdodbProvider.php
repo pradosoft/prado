@@ -1,11 +1,10 @@
 <?php
 
 Prado::using('System.DataAccess.TDatabaseProvider');
-Prado::using('System.DataAccess.TDatabaseException');
 
 /**
  * Adbodb data access module.
- * 
+ *
  * Usage:
  * <code>
  * $provider = new TAdodbProvider;
@@ -100,7 +99,7 @@ class TAdodbProvider extends TDatabaseProvider
 	public function setFetchMode($value)
 	{
 		$value = strtolower($value);
-		if($value===self::FETCH_ASSOCIATIVE || $value===self::FETCH_NUMERIC 
+		if($value===self::FETCH_ASSOCIATIVE || $value===self::FETCH_NUMERIC
 				|| $value===self::FETCH_BOTH)
 			$this->_fetchMode=$value;
 		else
@@ -163,24 +162,24 @@ class TAdodbConnection extends TDbConnection
 		return call_user_func_array(array($this->_connection,$method),$params);
 	}
 
-	/** 
-	 * Cleanup work before serializing. 
-	 * This is a PHP defined magic method. 
-	 * @return array the names of instance-variables to serialize. 
-	 */ 
-	public function __sleep() 
-	{ 
-		$this->close(); 
-		return array_keys(get_object_vars($this)); 
-	} 
+	/**
+	 * Cleanup work before serializing.
+	 * This is a PHP defined magic method.
+	 * @return array the names of instance-variables to serialize.
+	 */
+	public function __sleep()
+	{
+		$this->close();
+		return array_keys(get_object_vars($this));
+	}
 
-	/** 
-	 * This method will be automatically called when unserialization happens. 
-	 * This is a PHP defined magic method. 
-	 */ 
-	public function __wakeup() 
-	{ 
-	} 
+	/**
+	 * This method will be automatically called when unserialization happens.
+	 * This is a PHP defined magic method.
+	 */
+	public function __wakeup()
+	{
+	}
 
 
 	public function getIsClosed()
@@ -265,7 +264,7 @@ class TAdodbConnection extends TDbConnection
 			$this->initCacheDir();
 		}
 		return $this->_connection->IsConnected();
-	}	
+	}
 
 	/**
 	 * Complete the database connection.
@@ -285,7 +284,7 @@ class TAdodbConnection extends TDbConnection
 			$this->_connection->Connect($provider->getHost(),
 				$provider->getUsername(),$provider->getPassword(),
 					$provider->getDatabase());
-		}	
+		}
 	}
 
 	/**
@@ -329,7 +328,7 @@ class TAdodbConnection extends TDbConnection
 
 	/**
 	 * @param string quote a string to be sent to the database.
-	 * @param boolean if true it ensure that the variable is not quoted twice, 
+	 * @param boolean if true it ensure that the variable is not quoted twice,
 	 * once by quote and once by the magic_quotes_gpc.
 	 * @return string database specified quoted string
 	 */

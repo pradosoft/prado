@@ -131,7 +131,11 @@ class TIOException extends TSystemException
 {
 }
 
-class TDBException extends TSystemException
+class TDbException extends TSystemException
+{
+}
+
+class TDbConnectionException extends TDbException
 {
 }
 

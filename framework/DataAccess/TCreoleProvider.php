@@ -1,7 +1,6 @@
 <?php
 
 Prado::using('System.DataAccess.TDatabaseProvider');
-Prado::using('System.DataAccess.TDatabaseException');
 
 Prado::using('System.DataAccess.creole.*');
 
@@ -61,7 +60,7 @@ class TCreoleConnection extends TDbConnection
 		return $this->_connection->prepareStatement($statement);
 	}
 
-	//public function execute($sql, 
+	//public function execute($sql,
 
 	/**
 	 * Opens a database connection with settings provided in the ConnectionString.
@@ -75,7 +74,7 @@ class TCreoleConnection extends TDbConnection
 				throw new TDbConnectionException('db_driver_required');
 			$class = 'System.DataAccess.creole.creole.Creole';
 			$creole = Prado::createComponent($class);
-			$this->_connection = $creole->getConnection($connectionString);				
+			$this->_connection = $creole->getConnection($connectionString);
 		}
 		return $this->_connection;
 	}

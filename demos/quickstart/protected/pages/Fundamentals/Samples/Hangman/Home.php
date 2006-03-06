@@ -6,7 +6,7 @@ class Home extends TPage
 		if (!$this->IsPostBack)
 			$this->GameMultiView->ActiveView=$this->IntroView;
 	}
-	
+
 	public function selectLevel($sender,$param)
 	{
 		if(($selection=$this->LevelSelection->SelectedValue)==='')
@@ -15,7 +15,7 @@ class Home extends TPage
 			return;
 		}
 		else
-		$this->Level=TPropertyValue::ensureInteger($selection);
+			$this->Level=TPropertyValue::ensureInteger($selection);
 		$this->Word=$this->generateWord();
 		$this->GuessWord=str_repeat('_',strlen($this->Word));
 		$this->Misses=0;

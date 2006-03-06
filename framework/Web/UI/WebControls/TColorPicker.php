@@ -1,4 +1,14 @@
 <?php
+/**
+ * TColorPicker class file
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ */
 
 /**
  * TColorPicker class.
@@ -210,7 +220,7 @@ class TColorPicker extends TTextBox
 
 		$writer->addAttribute('id', $this->getClientID().'_button');
 		$writer->addAttribute('src', $images['button.gif']);
-		if($color != '')
+		if($color !== '')
 			$writer->addAttribute('style', "background-color:{$color};");
 		$writer->addAttribute('width', '20');
 		$writer->addAttribute('height', '20');

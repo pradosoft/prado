@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database access module. 
+ * Database access module.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $Date: $
@@ -143,37 +143,7 @@ abstract class TDatabaseProvider extends TModule
 }
 
 /**
- * Performs the connection to the database using a TDatabaseProvider, 
- * executes SQL statements.
- *
- * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  $Date: $
- * @package System.DataAccess
- * @since 3.0
- */
-abstract class TDbConnection extends TComponent implements IDbConnection
-{
-	private $_provider;
-
-	public function __construct($provider)
-	{
-		if($provider instanceof TDatabaseProvider)
-			$this->setProvider($provider);
-	}
-	
-	public function setProvider($provider)
-	{
-		$this->_provider = $provider;
-	}
-
-	public function getProvider()
-	{
-		return $this->_provider;
-	}
-}
-
-/**
- * A connection (session) with a specific database. SQL statements are executed 
+ * A connection (session) with a specific database. SQL statements are executed
  * and results are returned within the context of a connection.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
@@ -199,13 +169,13 @@ interface IDbConnection
 	public function open();
 
 	/**
-	 * @return string creates a prepared statement for sending parameterized 
+	 * @return string creates a prepared statement for sending parameterized
 	 * SQL statements to the database.
 	 */
 	public function prepare($statement);
 
 	/**
-	 * Executes the SQL statement which may be any kind of SQL statement, 
+	 * Executes the SQL statement which may be any kind of SQL statement,
 	 * including prepared statements.
 	 * @param string sql query statement
 	 * @param array subsititution parameters
@@ -234,25 +204,55 @@ interface IDbConnection
 	public function getHasTransactionFailed();
 
 	/**
-	 * Makes all changes made since the previous commit/rollback permanent and 
+	 * Makes all changes made since the previous commit/rollback permanent and
 	 * releases any database locks.
 	 */
 	public function commit();
 
 	/**
-	 * Undoes all changes made in the current transaction and releases any 
+	 * Undoes all changes made in the current transaction and releases any
 	 * database locks
 	 */
 	public function rollback();
 
 	/**
 	 * @param string quote a string to be sent to the database.
-	 * @param boolean if true it ensure that the variable is not quoted twice, 
+	 * @param boolean if true it ensure that the variable is not quoted twice,
 	 * once by quote and once by the magic_quotes_gpc.
 	 * @return string database specified quoted string
 	 */
 	public function quote($string, $magic_quotes=false);
 
+}
+
+/**
+ * Performs the connection to the database using a TDatabaseProvider,
+ * executes SQL statements.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $  $Date: $
+ * @package System.DataAccess
+ * @since 3.0
+ */
+abstract class TDbConnection extends TComponent implements IDbConnection
+{
+	private $_provider;
+
+	public function __construct($provider)
+	{
+		if($provider instanceof TDatabaseProvider)
+			$this->setProvider($provider);
+	}
+
+	public function setProvider($provider)
+	{
+		$this->_provider = $provider;
+	}
+
+	public function getProvider()
+	{
+		return $this->_provider;
+	}
 }
 
 ?>
