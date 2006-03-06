@@ -3,7 +3,9 @@
 
 <h1>Hangman Game</h1>
 
-<com:TPanel ID="IntroPanel">
+<com:TMultiView ID="GameMultiView">
+
+<com:TView ID="IntroView">
 <p>This is the game of Hangman. You must guess a word, a letter at a time.
 If you make too many mistakes, you lose the game!</p>
 <com:TRadioButtonList ID="LevelSelection">
@@ -13,9 +15,9 @@ If you make too many mistakes, you lose the game!</p>
 </com:TRadioButtonList>
 <com:TButton Text="Play!" OnClick="selectLevel" />
 <com:TLabel ID="LevelError" Text="You must choose a difficulty level!" ForeColor="red" Visible="false" />
-</com:TPanel>
+</com:TView>
 
-<com:TPanel ID="GuessPanel" Visible="false">
+<com:TView ID="GuessView">
 <h2>Please make a guess</h2>
 <h3 style="letter-spacing: 4px;"><%= $this->Page->GuessWord %></h3>
 <p>You have made <%=$this->Page->Misses %> bad guesses
@@ -49,18 +51,20 @@ out of a maximum of <%= $this->Page->Level %>.</p>
 <com:TLinkButton ID="GuessZ" Text="Z" OnClick="guessWord" />
 </p>
 <p><com:TLinkButton Text="Give up?" OnClick="giveUp" /></p>
-</com:TPanel>
+</com:TView>
 
-<com:TPanel ID="WinPanel" Visible="false">
+<com:TView ID="WinView">
 <h2>You Win!</h2>
 <p>The word was: <%= $this->Page->Word %>.</p>
 <p><com:TLinkButton Text="Start Again" OnClick="startAgain" /></p>
-</com:TPanel>
+</com:TView>
 
-<com:TPanel ID="LosePanel" Visible="false">
+<com:TView ID="LoseView">
 <h2>You Lose!</h2>
 <p>The word was: <%= $this->Page->Word %>.</p>
 <p><com:TLinkButton Text="Start Again" OnClick="startAgain" /></p>
-</com:TPanel>
+</com:TView>
+
+</com:TMultiView>
 
 </com:TContent>

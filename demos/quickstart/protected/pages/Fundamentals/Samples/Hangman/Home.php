@@ -1,7 +1,12 @@
 <?php
-
 class Home extends TPage
 {
+	public function onLoad($param)
+	{
+		if (!$this->IsPostBack)
+			$this->GameMultiView->ActiveView=$this->IntroView;
+	}
+	
 	public function selectLevel($sender,$param)
 	{
 		if(($selection=$this->LevelSelection->SelectedValue)==='')
@@ -10,11 +15,11 @@ class Home extends TPage
 			return;
 		}
 		else
-			$this->Level=TPropertyValue::ensureInteger($selection);
+		$this->Level=TPropertyValue::ensureInteger($selection);
 		$this->Word=$this->generateWord();
 		$this->GuessWord=str_repeat('_',strlen($this->Word));
 		$this->Misses=0;
-		$this->showPanel('GuessPanel');
+		$this->GameMultiView->ActiveView=$this->GuessView;
 	}
 
 	public function guessWord($sender,$param)
@@ -35,7 +40,7 @@ class Home extends TPage
 		{
 			$this->GuessWord=$guessWord;
 			if($guessWord===$word)
-				$this->showPanel('WinPanel');
+				$this->GameMultiView->ActiveView=$this->WinView;
 		}
 		else
 		{
@@ -47,12 +52,12 @@ class Home extends TPage
 
 	public function giveUp($sender,$param)
 	{
-		$this->showPanel('LosePanel');
+		$this->GameMultiView->ActiveView=$this->LoseView;
 	}
 
 	public function startAgain($sender,$param)
 	{
-		$this->showPanel('IntroPanel');
+		$this->GameMultiView->ActiveView=$this->IntroView;
 		$this->LevelError->Visible=false;
 		for($letter=65;$letter<=90;++$letter)
 		{
@@ -71,15 +76,6 @@ class Home extends TPage
 			$word=$words[$i];
 		} while(strlen($word)<5 || !preg_match('/^[a-z]*$/i',$word));
 		return strtoupper($word);
-	}
-
-	protected function showPanel($panelID)
-	{
-		$this->IntroPanel->Visible=false;
-		$this->GuessPanel->Visible=false;
-		$this->WinPanel->Visible=false;
-		$this->LosePanel->Visible=false;
-		$this->$panelID->Visible=true;
 	}
 
 	public function setLevel($value)
@@ -122,5 +118,4 @@ class Home extends TPage
 		return $this->getViewState('Misses',0);
 	}
 }
-
 ?>
