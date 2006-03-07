@@ -34,15 +34,32 @@
   <property name="prado.lite" value="pradolite.php"/>
   <property name="application.xsd" value="${doc.dir}/specs/application.xsd"/>
   <property name="config.xsd" value="${doc.dir}/specs/config.xsd"/>
+  <property name="codecoverage" value="false"/>
 
   <taskdef name="phplint" classname="PhpLintTask" classpath="buildscripts/phing/tasks"/>
   <taskdef name="xmllint" classname="XmlLintTask" classpath="buildscripts/phing/tasks"/>
 
+  <!--
+      PHP Source Files in framework
+  -->
   <fileset dir="." id="src">
     <exclude name="${src.dir}/**/.svn"/>
     <include name="${src.dir}/**/*.php"/>
   </fileset>
 
+  <!--
+      Various resource files in framework
+  -->
+  <fileset dir="." id="res">
+    <exclude name="${src.dir}/**/.svn"/>
+    <include name="${src.dir}/**/*.html"/>
+    <include name="${src.dir}/**/*.css"/>
+    <include name="${src.dir}/**/*.txt"/>
+  </fileset>
+
+  <!--
+      Surrounding files
+  -->
   <fileset dir="." id="misc">
     <include name="COPYRIGHT"/>
     <include name="HISTORY"/>
@@ -52,11 +69,17 @@
     <include name="requirements/*"/>
   </fileset>
 
+  <!--
+      Documentation
+  -->
   <fileset dir="." id="docs">
     <exclude name="${doc.dir}/**/.svn"/>
     <include name="${doc.dir}/**/*"/>
   </fileset>
 
+  <!--
+      Demos
+  -->
   <fileset dir="." id="demos">
     <exclude name="demos/**/.svn"/>
     <include name="demos/**/*"/>
@@ -127,31 +150,36 @@
     <delete dir="${reports.unit.dir}"/>
     <delete dir="${reports.codecoverage.dir}"/>
     <mkdir dir="${reports.unit.dir}"/>
-    <mkdir dir="${reports.codecoverage.dir}"/>
-    
-    <echo>Preparing Code Coverage Database</echo>
-    <coverage-setup database="${reports.codecoverage.dir}/coverage.db">
-      <fileset dir="${src.dir}">
-        <include name="**/*.php"/>
-	<exclude name="Web/Javascripts/js/clientscripts.php"/>
-	<exclude name="Data/TCache.php"/>
-	<exclude name="DataAccess/**/*.php"/>
-	<exclude name="I18N/core/Gettext/MO.php"/>
-	<exclude name="I18N/core/Gettext/PO.php"/>
-	<exclude name="I18N/core/util.php"/>
-	<exclude name="I18N/TGlobalization.php"/>
-	<exclude name="I18N/TGlobalizationAutoDetect.php"/>
-	<exclude name="Security/TUserManager.php"/>
-	<exclude name="Security/TMembershipManager.php"/>
-	<exclude name="core.php"/>
-	<exclude name="3rdParty/**/*.php"/>
-	<exclude name="pradolite.php"/>
-	<exclude name="prado.php"/>
-      </fileset>
-    </coverage-setup>
+
+    <if>
+      <equals arg1="${codecoverage}" arg2="true"/>
+      <then>
+	<mkdir dir="${reports.codecoverage.dir}"/>
+	<echo>Preparing Code Coverage Database</echo>
+	<coverage-setup database="${reports.codecoverage.dir}/coverage.db">
+	  <fileset dir="${src.dir}">
+	    <include name="**/*.php"/>
+	    <exclude name="Web/Javascripts/js/clientscripts.php"/>
+	    <exclude name="Data/TCache.php"/>
+	    <exclude name="DataAccess/**/*.php"/>
+	    <exclude name="I18N/core/Gettext/MO.php"/>
+	    <exclude name="I18N/core/Gettext/PO.php"/>
+	    <exclude name="I18N/core/util.php"/>
+	    <exclude name="I18N/TGlobalization.php"/>
+	    <exclude name="I18N/TGlobalizationAutoDetect.php"/>
+	    <exclude name="Security/TUserManager.php"/>
+	    <exclude name="Security/TMembershipManager.php"/>
+	    <exclude name="core.php"/>
+	    <exclude name="3rdParty/**/*.php"/>
+	    <exclude name="pradolite.php"/>
+	    <exclude name="prado.php"/>
+	  </fileset>
+	</coverage-setup>
+      </then>
+    </if>
 
     <echo>Running Unit Tests</echo>
-    <phpunit2 codecoverage="true" haltonfailure="true" haltonerror="true" printsummary="true">
+    <phpunit2 codecoverage="${codecoverage}" haltonfailure="true" haltonerror="true" printsummary="true">
       <batchtest>
         <fileset dir="${tests.dir}">
 	  <include name="**/*Test.php"/>
@@ -163,10 +191,15 @@
     <echo>Creating Unit Test Report</echo>
     <phpunit2report infile="${reports.dir}/logfile.xml" format="frames" styledir="${reports.style.dir}" todir="${reports.unit.dir}"/>
 
-    <echo>Creating Code Coverage Report</echo>
-    <coverage-report outfile="${reports.dir}/coverage.xml" geshipath="${reports.geshi.dir}" geshilanguagespath="${reports.geshi.dir}/geshi">
-      <report todir="${reports.codecoverage.dir}" styledir="${reports.style.dir}"/>
-    </coverage-report>
+    <if>
+      <equals arg1="${codecoverage}" arg2="true"/>
+      <then>
+	<echo>Creating Code Coverage Report</echo>
+	<coverage-report outfile="${reports.dir}/coverage.xml" geshipath="${reports.geshi.dir}" geshilanguagespath="${reports.geshi.dir}/geshi">
+	  <report todir="${reports.codecoverage.dir}" styledir="${reports.style.dir}"/>
+	</coverage-report>
+      </then>
+    </if>
   </target>
 
   
@@ -174,6 +207,7 @@
     <echo>Building standard package...</echo>
     <copy todir="${build.src.dir}">
       <fileset refid="src"/>
+      <fileset refid="res"/>
       <fileset refid="docs"/>
       <fileset refid="misc"/>
       <fileset refid="demos"/>
@@ -209,7 +243,6 @@
 	  <regexp pattern="(require|require_once)\s*\(.*?;" replace=""/>
 	  <regexp pattern="(include|include_once)\s*\(.*?;" replace=""/>
 	  <regexp pattern="Prado::trace\(.*\);" replace=""/>
-	  <regexp pattern="\r" replace=""/>
 	</replaceregexp>
 	<tabtospaces tablength="0"/>
       </filterchain>
