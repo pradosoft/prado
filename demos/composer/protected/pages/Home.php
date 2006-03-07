@@ -37,13 +37,13 @@ class Home extends TPage
 		{
 			$property=$this->ClassDefinition->Properties->itemAt($param->CommandParameter);
 			$this->ClassDefinition->Properties->removeAt($param->CommandParameter);
-			$this->ClassDefinition->Properties->insert($param->CommandParameter-1,$property);
+			$this->ClassDefinition->Properties->insertAt($param->CommandParameter-1,$property);
 		}
 		else if($param->CommandName==='down')
 		{
 			$property=$this->ClassDefinition->Properties->itemAt($param->CommandParameter);
 			$this->ClassDefinition->Properties->removeAt($param->CommandParameter);
-			$this->ClassDefinition->Properties->insert($param->CommandParameter+1,$property);
+			$this->ClassDefinition->Properties->insertAt($param->CommandParameter+1,$property);
 		}
 		$this->PropertyList->DataSource=$this->ClassDefinition->Properties;
 		$this->PropertyList->dataBind();
@@ -59,13 +59,13 @@ class Home extends TPage
 		{
 			$property=$this->ClassDefinition->Events->itemAt($param->CommandParameter);
 			$this->ClassDefinition->Events->removeAt($param->CommandParameter);
-			$this->ClassDefinition->Events->insert($param->CommandParameter-1,$property);
+			$this->ClassDefinition->Events->insertAt($param->CommandParameter-1,$property);
 		}
 		else if($param->CommandName==='down')
 		{
 			$property=$this->ClassDefinition->Events->itemAt($param->CommandParameter);
 			$this->ClassDefinition->Events->removeAt($param->CommandParameter);
-			$this->ClassDefinition->Events->insert($param->CommandParameter+1,$property);
+			$this->ClassDefinition->Events->insertAt($param->CommandParameter+1,$property);
 		}
 		$this->EventList->DataSource=$this->ClassDefinition->Events;
 		$this->EventList->dataBind();
