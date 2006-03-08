@@ -35,9 +35,11 @@
   <property name="application.xsd" value="${doc.dir}/specs/application.xsd"/>
   <property name="config.xsd" value="${doc.dir}/specs/config.xsd"/>
   <property name="codecoverage" value="false"/>
+  <property name="zca" value="/usr/local/Zend/ZendStudioClient-5.1.0/bin/ZendCodeAnalyzer"/>
 
   <taskdef name="phplint" classname="PhpLintTask" classpath="buildscripts/phing/tasks"/>
   <taskdef name="xmllint" classname="XmlLintTask" classpath="buildscripts/phing/tasks"/>
+  <taskdef name="analyze" classname="ZendCodeAnalyzerTask" classpath="buildscripts/phing/tasks"/>
 
   <!--
       PHP Source Files in framework
@@ -251,4 +253,11 @@
     <phplint file="${build.base.dir}/${prado.lite}"/>
     <exec command="php -e ${prado.lite}" dir="${build.base.dir}" passthru="true" checkreturn="true"/>
   </target>
+  
+  <target name="analyze" description="Analyze PHP source files with Zend Code Analyzer">
+    <analyze analyzerPath="${zca}" disable="var-ref-notmodified,var-use-before-def,var-arg-unused">
+      <fileset refid="src"/>
+    </analyze>
+  </target>
+  
 </project>
