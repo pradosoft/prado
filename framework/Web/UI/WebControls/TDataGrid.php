@@ -627,7 +627,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			$command=$param->getCommandName();
 			if(strcasecmp($command,'select')===0)
 			{
-				$this->setSelectedIndex($param->getItem()->getItemIndex());
+				$this->setSelectedItemIndex($param->getItem()->getItemIndex());
 				$this->onSelectedIndexChanged(null);
 				return true;
 			}

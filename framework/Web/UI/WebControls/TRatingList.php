@@ -129,7 +129,6 @@ class TRatingList extends TRadioButtonList
 
 	protected function publishRatingListImages($style, $fileExt='.gif')
 	{
-		$cs = $this->getPage()->getClientScript();
 		$images['blank'] = "System.Web.Javascripts.ratings.{$style}_blank";
 		$images['hover'] = "System.Web.Javascripts.ratings.{$style}_hover";
 		$images['selected'] = "System.Web.Javascripts.ratings.{$style}_selected";
