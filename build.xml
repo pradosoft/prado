@@ -255,7 +255,7 @@
   </target>
   
   <target name="analyze" description="Analyze PHP source files with Zend Code Analyzer">
-    <analyze analyzerPath="${zca}" disable="var-ref-notmodified,var-use-before-def,var-arg-unused">
+    <analyze analyzerPath="${zca}" disable="var-ref-notmodified,var-use-before-def,var-arg-unused,if-if-else">
       <fileset refid="src"/>
     </analyze>
   </target>
