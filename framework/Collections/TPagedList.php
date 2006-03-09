@@ -68,7 +68,7 @@ class TPagedList extends TList
 	/**
 	 * @var integer current page index
 	 */
-	private $_currentPageIndex=0;
+	private $_currentPageIndex=-1;
 	/**
 	 * @var integer user-assigned number of items in data source
 	 */
@@ -310,7 +310,10 @@ class TPagedList extends TList
 	 */
 	public function itemAt($index)
 	{
-		return parent::itemAt($this->_pageSize*$this->_currentPageIndex+$index);
+		if($this->_customPaging)
+			return parent::itemAt($index);
+		else
+			return parent::itemAt($this->_pageSize*$this->_currentPageIndex+$index);
 	}
 
 	/**

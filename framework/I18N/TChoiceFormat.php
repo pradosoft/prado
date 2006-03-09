@@ -20,6 +20,7 @@
  * Get the ChoiceFormat class.
  */
 Prado::using('System.I18N.core.ChoiceFormat');
+Prado::using('System.I18N.TTranslate');
 
 /**
  * TChoiceFormat class.
