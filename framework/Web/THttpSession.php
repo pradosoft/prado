@@ -193,7 +193,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 		else if(ctype_alnum($value))
 			session_name($value);
 		else
-			throw new TInvalidDataValueException('httpsession_sessionname_invalid',$name);
+			throw new TInvalidDataValueException('httpsession_sessionname_invalid',$value);
 	}
 
 	/**

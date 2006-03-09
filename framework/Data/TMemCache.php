@@ -201,7 +201,7 @@ class TMemCache extends TModule implements ICache
 	 */
 	public function add($key,$value,$expiry=0)
 	{
-		return $this->_cache->add($this->generateUniqueKey($key),$value,0,$expire);
+		return $this->_cache->add($this->generateUniqueKey($key),$value,0,$expiry);
 	}
 
 	/**
@@ -217,7 +217,7 @@ class TMemCache extends TModule implements ICache
 	 */
 	public function replace($key,$value,$expiry=0)
 	{
-		return $this->_cache->replace($this->generateUniqueKey($key),$value,0,$expire);
+		return $this->_cache->replace($this->generateUniqueKey($key),$value,0,$expiry);
 	}
 
 	/**

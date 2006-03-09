@@ -584,13 +584,15 @@ class TBrowserLogRoute extends TLogRoute
 	public function processLogs($logs)
 	{
 		if(empty($logs) || $this->getApplication()->getMode()==='Performance') return;
-		$first = $logs[0][3]; $prev = $first; $total = 0; $delta = 0; $even = true;
+		$first = $logs[0][3];
+		$prev = $first;
+		$even = true;
 		$response = $this->getApplication()->getResponse();
 		$response->write($this->renderHeader());
 		foreach($logs as $log)
 		{
 			$timing['total'] = $log[3] - $first;
-			$timing['delta'] = $log[3]-$prev;
+			$timing['delta'] = $log[3] - $prev;
 			$timing['even'] = !($even = !$even);
 			$prev=$log[3];
 			$response->write($this->renderMessage($log,$timing));
@@ -600,8 +602,6 @@ class TBrowserLogRoute extends TLogRoute
 
 	protected function renderHeader()
 	{
-		$category = is_array($this->getCategories()) ?
-						implode(', ',$this->getCategories()) : '';
 		$string = <<<EOD
 <table cellspacing="0" cellpadding="2" border="0" width="100%">
 	<tr>
@@ -648,6 +648,7 @@ EOD;
 			case TLogger::ALERT: return '#ff00ff';
 			case TLogger::FATAL: return 'red';
 		}
+		return '';
 	}
 
 	protected function renderFooter()

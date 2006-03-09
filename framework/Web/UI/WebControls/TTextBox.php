@@ -120,9 +120,9 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 						$writer->addAttribute('vcard_name','BusinessCountry');
 					else
 					{
-						if(($pos=strpos($act,'Business'))===0)
+						if(strpos($act,'Business')===0)
 							$act='Business'.'.'.substr($act,8);
-						else if(($pos=strpos($act,'Home'))===0)
+						else if(strpos($act,'Home')===0)
 							$act='Home'.'.'.substr($act,4);
 						$writer->addAttribute('vcard_name','vCard.'.$act);
 					}

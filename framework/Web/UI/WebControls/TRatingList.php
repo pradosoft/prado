@@ -58,7 +58,7 @@ class TRatingList extends TRadioButtonList
 		if($this->getAllowInput())
 			$this->setSelectedIndex($value);
 		else
-			return $this->setViewState('Rating', TPropertyValue::ensureFloat($value),0);
+			$this->setViewState('Rating', TPropertyValue::ensureFloat($value),0);
 	}
 
 	/**

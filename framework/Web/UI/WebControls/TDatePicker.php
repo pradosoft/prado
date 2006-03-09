@@ -622,7 +622,6 @@ class TDatePicker extends TTextBox
 	 */
 	protected function publishDefaultButtonImage()
 	{
-		$cs = $this->getPage()->getClientScript();
 		$image = 'System.Web.Javascripts.datepicker.calendar';
 		if(($file =  Prado::getPathOfNamespace($image, '.png'))!==null)
 			return $this->publishFilePath($file);

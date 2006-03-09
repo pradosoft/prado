@@ -170,7 +170,7 @@ class TInlineFrame extends TWebControl
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		if(($id=$this->getID())!=='')
+		if($this->getID()!=='')
 			$writer->addAttribute('name',$this->getUniqueID());
 
 		if(($src=$this->getFrameUrl())!=='')

@@ -273,12 +273,14 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 		switch($this->getDisplayMode())
 		{
 			case 'Text':
-				return $this->renderTextItem($writer, $item, $index);
+				$this->renderTextItem($writer, $item, $index);
+				break;
 			case 'HyperLink':
 				$this->renderHyperLinkItem($writer, $item, $index);
 				break;
 			case 'LinkButton':
 				$this->renderLinkButtonItem($writer, $item, $index);
+				break;
 		}
 		if(($accesskey=$this->getAccessKey())!=='')
 			$writer->addAttribute('accesskey',$accesskey);

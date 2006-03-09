@@ -583,7 +583,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 				}
 				else if(strpos($str,'<!--')===0)	// HTML comments
 				{
-					$state=0;
+					// do nothing
 				}
 				else if(strpos($str,'<!')===0)		// template comments
 				{
@@ -685,6 +685,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 			return array(self::CONFIG_LOCALIZATION,trim(substr($value,3,strlen($value)-6)));
 		else if($value[2]==='$')
 			return array(self::CONFIG_PARAMETER,trim(substr($value,3,strlen($value)-5)));
+		return '';
 	}
 
 	protected function validateAttributes($type,$attributes)

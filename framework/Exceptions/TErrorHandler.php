@@ -192,7 +192,7 @@ class TErrorHandler extends TModule
 		}
 		else
 		{
-			error_log("Error happened while processing an existing error:\n".$param->__toString());
+			error_log("Error happened while processing an existing error:\n".$exception->__toString());
 			header('HTTP/1.0 500 Internal Error');
 		}
 	}

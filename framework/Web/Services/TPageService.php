@@ -417,7 +417,6 @@ class TPageService extends TService
 	public function run()
 	{
 		Prado::trace("Running page service",'System.Web.Services.TPageService');
-		$page=null;
 		$path=$this->getBasePath().'/'.strtr($this->getRequestedPagePath(),'.','/');
 		if(is_file($path.self::PAGE_FILE_EXT))
 		{

@@ -275,14 +275,14 @@ class TValidationSummary extends TWebControl
 			switch($this->getDisplayMode())
 			{
 				case 'List':
-					$content = $this->renderList($writer);
+					$this->renderList($writer);
 					break;
 				case 'SingleParagraph':
-					$content = $this->renderSingleParagraph($writer);
+					$this->renderSingleParagraph($writer);
 					break;
 				case 'BulletList':
-				default:
-					$content = $this->renderBulletList($writer);
+					$this->renderBulletList($writer);
+					break;
 			}
 		}
 	}

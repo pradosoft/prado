@@ -83,7 +83,7 @@ class TCheckBoxColumn extends TDataGridColumn
 				$checkBox->setEnabled(false);
 			$cell->setHorizontalAlign('Center');
 			$cell->getControls()->add($checkBox);
-			if(($dataField=$this->getDataField())!=='')
+			if($this->getDataField()!=='')
 				$checkBox->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
 		}
 	}

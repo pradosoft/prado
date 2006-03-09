@@ -41,7 +41,7 @@ class TSafeHtml extends TControl
 	protected function parseSafeHtml($text)
 	{
 		$renderer = Prado::createComponent('System.3rdParty.SafeHtml.TSafeHtmlParser');
-		return $renderer->parse($content);
+		return $renderer->parse($text);
 	}
 }
 

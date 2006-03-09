@@ -111,7 +111,7 @@ class TBoundColumn extends TDataGridColumn
 			case 'Item':
 			case 'AlternatingItem':
 			case 'SelectedItem':
-				if(($dataField=$this->getDataField())!=='')
+				if($this->getDataField()!=='')
 					$cell->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
 				break;
 		}

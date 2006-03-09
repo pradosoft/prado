@@ -926,7 +926,6 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 
 		$headerStyle=$this->getViewState('HeaderStyle',null);
 		$footerStyle=$this->getViewState('FooterStyle',null);
-		$pagerStyle=$this->getViewState('PagerStyle',null);
 		$separatorStyle=$this->getViewState('SeparatorStyle',null);
 
 		foreach($this->getControls() as $index=>$item)

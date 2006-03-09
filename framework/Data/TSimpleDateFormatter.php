@@ -30,7 +30,7 @@
  * Usage example, to format a date
  * <code>
  * $formatter = new TSimpleDateFormatter("dd/MM/yyy");
- * echo $formatter->format(time()); 
+ * echo $formatter->format(time());
  * </code>
  *
  * To parse the date string into a date timestamp.
@@ -117,7 +117,7 @@ class TSimpleDateFormatter
 
 		$bits['dd'] = str_pad("{$date['mday']}", 2, '0', STR_PAD_LEFT);
 		$bits['d'] = $date['mday'];
-		
+
 		return str_replace(array_keys($bits), $bits, $this->pattern);
 	}
 
@@ -131,6 +131,7 @@ class TSimpleDateFormatter
 			return 'MM';
 		if(is_int(strpos($this->pattern, 'M')))
 			return 'M';
+		return false;
 	}
 
 	public function getDayPattern()
@@ -139,6 +140,7 @@ class TSimpleDateFormatter
 			return 'dd';
 		if(is_int(strpos($this->pattern, 'd')))
 			return 'd';
+		return false;
 	}
 
 	public function getYearPattern()
@@ -147,6 +149,7 @@ class TSimpleDateFormatter
 			return 'yyyy';
 		if(is_int(strpos($this->pattern, 'yy')))
 			return 'yy';
+		return false;
 	}
 
 	public function getDayMonthYearOrdering()
@@ -176,7 +179,7 @@ class TSimpleDateFormatter
 			throw new TInvalidDataValueException('invalid_date', $value);
 		return @getdate($date);
 	}
-	
+
 	/**
 	 * @return boolean true if the given value matches with the date pattern.
 	 */
@@ -199,7 +202,7 @@ class TSimpleDateFormatter
 		if(empty($this->pattern)) return time();
 
 		$date = $this->getDate(time());
-		
+
 		if($this->length(trim($value)) < 1)
 			return $defaultToCurrentTime ? $date : null;
 
@@ -211,7 +214,7 @@ class TSimpleDateFormatter
 		$c = '';
 		$token='';
 		$x=null; $y=null;
-	
+
 
 		if($defaultToCurrentTime)
 		{
@@ -230,19 +233,19 @@ class TSimpleDateFormatter
 		{
 			$c = $this->charAt($pattern,$i_format);
 			$token='';
-			while ($this->charEqual($pattern, $i_format, $c) 
+			while ($this->charEqual($pattern, $i_format, $c)
 						&& ($i_format < $pattern_length))
 			{
 				$token .= $this->charAt($pattern, $i_format++);
 			}
-	
-			if ($token=='yyyy' || $token=='yy' || $token=='y') 
+
+			if ($token=='yyyy' || $token=='yy' || $token=='y')
 			{
 				if ($token=='yyyy') { $x=4;$y=4; }
 				if ($token=='yy')   { $x=2;$y=2; }
 				if ($token=='y')    { $x=2;$y=4; }
 				$year = $this->getInteger($value,$i_val,$x,$y);
-				if(is_null($year)) 
+				if(is_null($year))
 					throw new TInvalidDataValueException('Invalid year', $value);
 				$i_val += strlen($year);
 				if(strlen($year) == 2)
@@ -257,7 +260,7 @@ class TSimpleDateFormatter
 			}
 			elseif($token=='MM' || $token=='M')
 			{
-				$month=$this->getInteger($value,$i_val, 
+				$month=$this->getInteger($value,$i_val,
 									$this->length($token),2);
 				$iMonth = intval($month);
 				if(is_null($month) || $iMonth < 1 || $iMonth > 12 )
@@ -265,7 +268,7 @@ class TSimpleDateFormatter
 				$i_val += strlen($month);
 				$month = $iMonth;
 			}
-			elseif ($token=='dd' || $token=='d') 
+			elseif ($token=='dd' || $token=='d')
 			{
 				$day = $this->getInteger($value,$i_val,
 									$this->length($token), 2);
@@ -275,20 +278,20 @@ class TSimpleDateFormatter
 				$i_val += strlen($day);
 				$day = $iDay;
 			}
-			else 
+			else
 			{
 				if($this->substring($value, $i_val, $this->length($token)) != $token)
 					throw new TInvalidDataValueException("Subpattern '{$this->pattern}' mismatch", $value);
-				else 
+				else
 					$i_val += $this->length($token);
 			}
 		}
-		if ($i_val != $this->length($value)) 
+		if ($i_val != $this->length($value))
 			throw new TInvalidDataValueException("Pattern '{$this->pattern}' mismatch", $value);
 
 		if(!$defaultToCurrentTime && (is_null($month) || is_null($day) || is_null($year)))
 			return null;
-		else	
+		else
 			return $this->getDate(@mktime(0, 0, 0, $month, $day, $year));
 	}
 
@@ -333,15 +336,15 @@ class TSimpleDateFormatter
 	 * @param int maximum integer length
 	 * @return string integer portition of the string, null otherwise
 	 */
-	private function getInteger($str,$i,$minlength,$maxlength) 
+	private function getInteger($str,$i,$minlength,$maxlength)
 	{
 		//match for digits backwards
-		for ($x = $maxlength; $x >= $minlength; $x--) 
+		for ($x = $maxlength; $x >= $minlength; $x--)
 		{
 			$token= $this->substring($str, $i,$x);
-			if ($this->length($token) < $minlength) 
+			if ($this->length($token) < $minlength)
 				return null;
-			if (preg_match('/^\d+$/', $token)) 
+			if (preg_match('/^\d+$/', $token))
 				return $token;
 		}
 		return null;

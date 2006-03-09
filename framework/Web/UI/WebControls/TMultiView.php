@@ -109,7 +109,7 @@ class TMultiView extends TControl
 		$index=$this->getActiveViewIndex();
 		$views=$this->getViews();
 		if($index>=$views->getCount())
-			throw new TInvalidDataValueException('multiview_activeviewindex_invalid',$value);
+			throw new TInvalidDataValueException('multiview_activeviewindex_invalid',$index);
 		if($index<0)
 			return null;
 		$view=$views->itemAt($index);
