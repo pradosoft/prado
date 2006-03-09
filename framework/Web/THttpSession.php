@@ -103,7 +103,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 	public function init($config)
 	{
 		if($this->_autoStart)
-			session_start();
+			$this->open();
 		$this->_initialized=true;
 		$this->getApplication()->setSession($this);
 	}

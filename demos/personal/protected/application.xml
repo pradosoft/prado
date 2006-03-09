@@ -9,7 +9,9 @@
     <!-- Remove this comment mark to enable PATH url format
     <module id="request" class="THttpRequest" UrlFormat="Path" />
     -->
+    <!--
     <module id="session" class="THttpSession" />
+    -->
     <module id="log" class="System.Log.TLogRouter">
       <route class="TBrowserLogRoute" Categories="System" />
       <route class="TFileLogRoute" Categories="System" Levels="Notice,Warning,Error,Alert,Fatal" />
