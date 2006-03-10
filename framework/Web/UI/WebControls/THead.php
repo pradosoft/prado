@@ -268,10 +268,10 @@ class TMetaTag extends TComponent
 		if($this->_name!=='')
 			$writer->addAttribute('name',$this->_name);
 		if($this->_httpEquiv!=='')
-			$writer->addAttribute('http-equiv',$this->_name);
+			$writer->addAttribute('http-equiv',$this->_httpEquiv);
 		if($this->_scheme!=='')
-			$writer->addAttribute('scheme',$this->_name);
-		$writer->addAttribute('content',$this->_name);
+			$writer->addAttribute('scheme',$this->_scheme);
+		$writer->addAttribute('content',$this->_content);
 		$writer->renderBeginTag('meta');
 		$writer->renderEndTag();
 	}
