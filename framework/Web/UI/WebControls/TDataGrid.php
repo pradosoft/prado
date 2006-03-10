@@ -708,7 +708,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	/**
 	 * Raises <b>OnItemCommand</b> event.
 	 * This method is invoked when a button control raises <b>OnCommand</b> event.
-	 * @param TDataGridItemCommandEventParameter event parameter
+	 * @param TDataGridCommandEventParameter event parameter
 	 */
 	public function onItemCommand($param)
 	{

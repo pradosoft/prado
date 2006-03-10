@@ -191,7 +191,7 @@ interface IDbConnection
 	/**
 	 * Finish and cleanup transactions.
 	 */
-	public function completeTranaction();
+	public function completeTransaction();
 
 	/**
 	 * Fail the current transaction.
