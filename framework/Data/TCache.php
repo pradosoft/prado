@@ -27,7 +27,7 @@ interface ICache
 	 * @param integer the expiration time of the value,
 	 *        0 means never expire,
 	 *        a number less or equal than 60*60*24*30 means the number of seconds that the value will remain valid.
-	 *        a number greater than 60 means a UNIX timestamp after which the value will expire.
+	 *        a number greater than 60*60*24*30 means a UNIX timestamp after which the value will expire.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
 	public function set($id,$value,$expire=0);
@@ -39,7 +39,7 @@ interface ICache
 	 * @param integer the expiration time of the value,
 	 *        0 means never expire,
 	 *        a number less or equal than 60*60*24*30 means the number of seconds that the value will remain valid.
-	 *        a number greater than 60 means a UNIX timestamp after which the value will expire.
+	 *        a number greater than 60*60*24*30 means a UNIX timestamp after which the value will expire.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
 	public function add($id,$value,$expire=0);
@@ -51,7 +51,7 @@ interface ICache
 	 * @param integer the expiration time of the value,
 	 *        0 means never expire,
 	 *        a number less or equal than 60*60*24*30 means the number of seconds that the value will remain valid.
-	 *        a number greater than 60 means a UNIX timestamp after which the value will expire.
+	 *        a number greater than 60*60*24*30 means a UNIX timestamp after which the value will expire.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
 	public function replace($id,$value,$expire=0);
