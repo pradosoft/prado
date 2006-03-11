@@ -225,8 +225,8 @@ class TColorPicker extends TTextBox
 		$writer->addAttribute('width', '20');
 		$writer->addAttribute('height', '20');
 		$writer->renderBeginTag('img');
-		$writer->renderEndTag('img');
-		$writer->renderEndTag('span');
+		$writer->renderEndTag();
+		$writer->renderEndTag();
 	}
 
 }

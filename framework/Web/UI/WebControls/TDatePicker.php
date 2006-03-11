@@ -447,6 +447,7 @@ class TDatePicker extends TTextBox
 		$writer->renderBeginTag('input');
 
 		$writer->renderEndTag();
+		$writer->renderEndTag();
 	}
 
 	protected function hasDayPattern()
@@ -600,6 +601,7 @@ class TDatePicker extends TTextBox
 		$writer->addAttribute('class', $this->getCssClass().' TDatePickerButton');
 		$writer->addAttribute('value',$this->getButtonText());
 		$writer->renderBeginTag("input");
+		$writer->renderEndTag();
 	}
 
 	/**
@@ -614,6 +616,7 @@ class TDatePicker extends TTextBox
 		$writer->addAttribute('src', $url);
 		$writer->addAttribute('class', $this->getCssClass().' TDatePickerImageButton');
 		$writer->renderBeginTag('img');
+		$writer->renderEndTag();
 	}
 
 	/**
