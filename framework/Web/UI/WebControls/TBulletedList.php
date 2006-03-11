@@ -282,11 +282,6 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 				$this->renderLinkButtonItem($writer, $item, $index);
 				break;
 		}
-		if(($accesskey=$this->getAccessKey())!=='')
-			$writer->addAttribute('accesskey',$accesskey);
-		$writer->renderBeginTag('a');
-		$writer->write(THttpUtility::htmlEncode($item->getText()));
-		$writer->renderEndTag();
 	}
 
 	protected function renderTextItem($writer, $item, $index)
@@ -312,6 +307,11 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 			if(($target=$this->getTarget())!=='')
 				$writer->addAttribute('target',$target);
 		}
+		if(($accesskey=$this->getAccessKey())!=='')
+			$writer->addAttribute('accesskey',$accesskey);
+		$writer->renderBeginTag('a');
+		$writer->write(THttpUtility::htmlEncode($item->getText()));
+		$writer->renderEndTag();
 	}
 
 	protected function renderLinkButtonItem($writer, $item, $index)
@@ -325,6 +325,11 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 			$writer->addAttribute('id', $this->getClientID().$index);
 			$writer->addAttribute('href', "javascript:;//".$this->getClientID().$index);
 		}
+		if(($accesskey=$this->getAccessKey())!=='')
+			$writer->addAttribute('accesskey',$accesskey);
+		$writer->renderBeginTag('a');
+		$writer->write(THttpUtility::htmlEncode($item->getText()));
+		$writer->renderEndTag();
 	}
 
 	/**
