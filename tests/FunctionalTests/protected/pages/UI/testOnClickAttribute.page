@@ -1,7 +1,0 @@
-<%@ Title="Test Attributes.OnClick" %>
-<com:TContent ID="Content">
-<h1>Test Attributes.OnClick</h1>	
-	<com:TLinkButton OnClick="doClick"  Text="Click me"
-		Attributes.OnClick="if(!confirm('Are you sure?')) return false;" />
-	<com:TLabel ID="clickState" />
-</com:TContent>

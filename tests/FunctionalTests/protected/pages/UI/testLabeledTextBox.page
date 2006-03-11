@@ -1,4 +1,0 @@
-<com:TContent ID="Content">
-	<com:LabeledTextBox Label.Text="username:"/>
-	<com:LabeledTextBox Label.Text="password:"/>
-</com:TContent>
