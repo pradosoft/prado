@@ -762,11 +762,6 @@ class TApplication extends TComponent
 	 */
 	public function getGlobalization()
 	{
-		if($this->_globalization===null)
-		{
-			$this->_globalization=Prado::createComponent('System.I18N.TGlobalization');
-			$this->_globalization->init(null);
-		}
 		return $this->_globalization;
 	}
 
