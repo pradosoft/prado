@@ -10,7 +10,7 @@ require_once($SIMPLE_TEST.'/simpletest/web_tester.php');
 require_once($SIMPLE_TEST.'/simpletest/mock_objects.php');
 require_once($SIMPLE_TEST.'/simpletest/reporter.php');
 require(dirname(__FILE__).'/selenium/php/selenium.php');
-require_once(PradoTestConfig::framework().'/prado.php');
+//require_once(PradoTestConfig::framework().'/prado.php');
 
 /** test configurations , OVERRIDE to suite your enviornment !!! **/
 class PradoTestConfig
@@ -65,7 +65,7 @@ class PradoTestConfig
 
 //set up the PradoApplication Testing stub.
 
-class PradoApplicationTester extends TApplication
+class PradoApplicationTester
 {
 	protected $appUrl;
 	protected $testConfig;
@@ -74,12 +74,10 @@ class PradoApplicationTester extends TApplication
 	{
 		$this->appUrl = $appUrl;
 		$this->testConfig = $config;
-		parent::__construct();
 	}
 
 	public function run()
 	{
-		$this->initApplication();
 	}
 
 	public function getTestPage($file)
@@ -129,7 +127,7 @@ class PradoSimpleTester
 
 		while (false !== ($entry = $dir->read()))
 		{
-			$file = realpath($path.'/'.$entry);
+			$file = strtr(realpath($path.'/'.$entry),'\\','/');
 			$matchFile = $this->tester->getTestCase();
 			if(is_file($file) && $this->filePatternMatch($file))
 			{

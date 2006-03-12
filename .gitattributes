@@ -781,6 +781,7 @@ requirements/messages-zh.txt -text
 requirements/messages.txt -text
 requirements/template-zh.html -text
 requirements/template.html -text
+tests/FunctionalTests/PradoTester.php -text
 tests/FunctionalTests/README.txt -text
 tests/FunctionalTests/config.php -text
 tests/FunctionalTests/features.php -text
@@ -901,7 +902,6 @@ tests/FunctionalTests/selenium/selenium.css -text
 tests/FunctionalTests/selenium/user-extensions.js.sample -text
 tests/FunctionalTests/selenium/xmlextras.js -text
 tests/FunctionalTests/selenium/xpath.js -text
-tests/FunctionalTests/tests.php -text
 tests/FunctionalTests/tickets.php -text
 tests/FunctionalTests/tickets/index.php -text
 tests/FunctionalTests/tickets/protected/pages/Layout.php -text

@@ -267,6 +267,7 @@ EOD;
 		foreach($this->suites as $name => $suite)
 		{
 			$file = $suite[0]['trace']['file'];
+			$file = strtr($file,'\\','/');
 			$url = $this->runner->getDriver()."?case={$name}&file={$file}";
 			echo "<tr>\n";
             echo "<td><a href=\"{$url}\">{$name}</a></td>\n";
