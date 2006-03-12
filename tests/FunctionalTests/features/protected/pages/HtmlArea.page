@@ -3,7 +3,7 @@
 
 	<com:THtmlArea>
 		<prop:Options>
-			plugins : "contextmenu,paste", 
+			plugins : "contextmenu,paste",
 			language: "zh_CN"
 		</prop:Options>
 	</com:THtmlArea>

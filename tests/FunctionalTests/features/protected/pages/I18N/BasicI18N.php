@@ -21,7 +21,7 @@ class BasicI18N extends TPage
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
  * @version $Revision: 1.66 $  $Date: ${DATE} ${TIME} $
  * @package ${package}
- */
+ *//*
 class BasicI18NTestCase extends SeleniumTestCase
 {
 	function setup()
@@ -41,5 +41,5 @@ class BasicI18NTestCase extends SeleniumTestCase
 		$this->verifyTextPresent("Many things.", "");
 	}
 }
-
+*/
 ?>
