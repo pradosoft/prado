@@ -35,7 +35,7 @@ class TAdodbProvider extends TDatabaseProvider
 
 	public function getConnection()
 	{
-		if(is_null($this->_connection))
+		if(is_null($this->_connection) || is_null($this->_connection->getProvider()))
 		{
 			$this->importAdodbLibrary();
 			$this->_connection = new TAdodbConnection($this);
@@ -148,6 +148,27 @@ class TAdodbConnection extends TDbConnection
 	}
 
 	/**
+	 * Cleanup work before serializing.
+	 * This is a PHP defined magic method.
+	 * @return array the names of instance-variables to serialize.
+	 */
+	public function __sleep()
+	{
+		//close any open connections before serializing.
+		$this->close();
+		$this->_connection = null;
+		return array_keys(get_object_vars($this));
+	}
+
+	/**
+	 * This method will be automatically called when unserialization happens.
+	 * This is a PHP defined magic method.
+	 */
+	public function __wakeup()
+	{
+	}
+
+	/**
 	 * PHP magic function.
 	 * This method will pass all method calls to ADOConnection class
 	 * provided in the ADODB library.
@@ -161,26 +182,6 @@ class TAdodbConnection extends TDbConnection
 			$this->open();
 		return call_user_func_array(array($this->_connection,$method),$params);
 	}
-
-	/**
-	 * Cleanup work before serializing.
-	 * This is a PHP defined magic method.
-	 * @return array the names of instance-variables to serialize.
-	 */
-	public function __sleep()
-	{
-		$this->close();
-		return array_keys(get_object_vars($this));
-	}
-
-	/**
-	 * This method will be automatically called when unserialization happens.
-	 * This is a PHP defined magic method.
-	 */
-	public function __wakeup()
-	{
-	}
-
 
 	public function getIsClosed()
 	{

@@ -85,6 +85,8 @@ class TDataFieldAccessor
 					$getter='get'.$field;
 					if(is_callable(array($data,$getter)))
 						return call_user_func(array($data,$getter));
+					else if(in_array($field, array_keys(get_object_vars($data))))
+						return $data->{$field};
 				}
 				else // field in the format of xxx.yyy.zzz
 				{

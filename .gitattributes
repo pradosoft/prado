@@ -294,6 +294,7 @@ framework/Data/TXmlDocument.php -text
 framework/DataAccess/TAdodbProvider.php -text
 framework/DataAccess/TCreoleProvider.php -text
 framework/DataAccess/TDatabaseProvider.php -text
+framework/DataAccess/TSQLMap.php -text
 framework/Exceptions/TErrorHandler.php -text
 framework/Exceptions/TException.php -text
 framework/Exceptions/messages.txt -text
