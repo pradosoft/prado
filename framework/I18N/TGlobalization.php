@@ -68,9 +68,12 @@ class TGlobalization extends TModule
 		$this->_defaultCharset = $this->getCharset();
 		$this->_defaultCulture = $this->getCulture();
 
-		$translation = $xml->getElementByTagName('translation');
-		if($translation)
-			$this->setTranslationConfiguration($translation->getAttributes());
+		if($xml!==null)
+		{
+			$translation = $xml->getElementByTagName('translation');
+			if($translation)
+				$this->setTranslationConfiguration($translation->getAttributes());
+		}
 		$this->getApplication()->setGlobalization($this);
 	}
 
