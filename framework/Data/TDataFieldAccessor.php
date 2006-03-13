@@ -57,7 +57,12 @@ class TDataFieldAccessor
 			else if(is_object($data))
 			{
 				if(strpos($field,'.')===false)  // simple field
-					return call_user_func(array($data,'get'.$field));
+				{
+					if(property_exists($data,$field))
+						return $data->{$field};
+					else
+						return call_user_func(array($data,'get'.$field));
+				}
 				else // field in the format of xxx.yyy.zzz
 				{
 					$object=$data;
@@ -82,11 +87,12 @@ class TDataFieldAccessor
 			{
 				if(strpos($field,'.')===false)  // simple field
 				{
-					$getter='get'.$field;
-					if(is_callable(array($data,$getter)))
-						return call_user_func(array($data,$getter));
-					else if(in_array($field, array_keys(get_object_vars($data))))
+					if(property_exists($data,$field))
 						return $data->{$field};
+					else if(is_callable(array($data,'get'.$field)))
+						return call_user_func(array($data,'get'.$field));
+					else
+						throw new TInvalidDataValueException('datafieldaccessor_datafield_invalid',$field);
 				}
 				else // field in the format of xxx.yyy.zzz
 				{

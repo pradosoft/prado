@@ -704,13 +704,13 @@ class TTemplate extends TApplicationComponent implements ITemplate
 				{
 					// a subproperty, so the first segment must be readable
 					$subname=substr($name,0,$pos);
-					if(!$class->containsMethod('get'.$subname))
+					if(!$class->hasMethod('get'.$subname))
 						throw new TConfigurationException('template_property_unknown',$type,$subname);
 				}
 				else if(strncasecmp($name,'on',2)===0)
 				{
 					// an event
-					if(!$class->containsMethod($name))
+					if(!$class->hasMethod($name))
 						throw new TConfigurationException('template_event_unknown',$type,$name);
 					else if(!is_string($att))
 						throw new TConfigurationException('template_eventhandler_invalid',$type,$name);
@@ -718,9 +718,9 @@ class TTemplate extends TApplicationComponent implements ITemplate
 				else
 				{
 					// a simple property
-					if(!$class->containsMethod('set'.$name))
+					if(!$class->hasMethod('set'.$name))
 					{
-						if($class->containsMethod('get'.$name))
+						if($class->hasMethod('get'.$name))
 							throw new TConfigurationException('template_property_readonly',$type,$name);
 						else
 							throw new TConfigurationException('template_property_unknown',$type,$name);
@@ -745,7 +745,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 				{
 					// a subproperty, so the first segment must be readable
 					$subname=substr($name,0,$pos);
-					if(!$class->containsMethod('get'.$subname))
+					if(!$class->hasMethod('get'.$subname))
 						throw new TConfigurationException('template_property_unknown',$type,$subname);
 				}
 				else if(strncasecmp($name,'on',2)===0)
@@ -753,9 +753,9 @@ class TTemplate extends TApplicationComponent implements ITemplate
 				else
 				{
 					// id is still alowed for TComponent, even if id property doesn't exist
-					if(strcasecmp($name,'id')!==0 && !$class->containsMethod('set'.$name))
+					if(strcasecmp($name,'id')!==0 && !$class->hasMethod('set'.$name))
 					{
-						if($class->containsMethod('get'.$name))
+						if($class->hasMethod('get'.$name))
 							throw new TConfigurationException('template_property_readonly',$type,$name);
 						else
 							throw new TConfigurationException('template_property_unknown',$type,$name);
@@ -765,35 +765,6 @@ class TTemplate extends TApplicationComponent implements ITemplate
 		}
 		else
 			throw new TConfigurationException('template_component_required',$type);
-	}
-}
-
-/**
- * TReflectionClass class.
- * This class is written to cope with the incompatibility between 5.1+ and earlier versions.
- * It mainly provides a way to detect if a method exists for a given class name.
- *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
- * @package System.Web.UI
- * @since 3.0
- */
-class TReflectionClass extends ReflectionClass
-{
-	/**
-	 * @param string method name
-	 * @return boolean whether the method exists
-	 */
-	public function containsMethod($method)
-	{
-		try
-		{
-			return $this->getMethod($method)!==null;
-		}
-		catch(Exception $e)
-		{
-			return false;
-		}
 	}
 }
 

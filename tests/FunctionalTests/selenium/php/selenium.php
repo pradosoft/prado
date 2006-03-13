@@ -113,8 +113,8 @@ class SeleneseInterpreter
 	{
 		if($func{0} == '_') return;
 		$ID = isset($args[0]) ? $args[0] : "";
-		if($ID instanceof TControl)
-			$ID = $ID->ClientID;
+		//if($ID instanceof TControl)
+		//	$ID = $ID->ClientID;
 		$value = isset($args[1]) ? $args[1] : "";
 		if(strpos(strtolower($func),'htmlpresent') || strpos(strtolower($func),'htmlnotpresent'))
 			$ID = htmlspecialchars($ID);
@@ -150,11 +150,12 @@ class SeleniumTestTrace
 		$name = $test[$i-2].'::'.$test[$i-1];
 		$suite = $test[0];
 		unset($info['object']);
+		/*
 		for($i = 0; $i < count($info['args']); $i++)
 		{
 			if($info['args'][$i] instanceof TControl)
 				$info['args'][$i] = $info['args'][$i]->ClientID;
-		}
+		}*/
 		$file = str_replace($this->root, '', $info['file']);
 		$info['file'] = substr($file, 1);
  		return array($info, $name, $suite);

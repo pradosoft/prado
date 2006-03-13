@@ -16,6 +16,10 @@ Prado::using('System.Web.UI.WebControls.TMultiView');
 class TWizard extends TWebControl implements INamingContainer
 {
 	/**
+	 * @var TMultiView multiview that contains the wizard steps
+	 */
+	private $_multiView=null;
+	/**
 	 * @var mixed navigation template for the start step.
 	 */
 	private $_startNavigationTemplate=null;
@@ -35,25 +39,26 @@ class TWizard extends TWebControl implements INamingContainer
 	 * @var mixed template for the side bar.
 	 */
 	private $_sideBarTemplate=null;
+	/**
+	 * @var TWizardStepCollection
+	 */
+	private $_wizardSteps=null;
 
 	/**
 	 * @return string tag name for the wizard
 	 */
 	protected function getTagName()
 	{
-		return 'table';
+		return 'div';
 	}
 
-	// SideBarDataList, MultiView, History
-	/**
-	 * Creates a style object for the wizard.
-	 * This method creates a {@link TTableStyle} to be used by the wizard.
-	 * @return TTableStyle control style to be used
-	 */
-	protected function createStyle()
+	public function addParsedObject($object)
 	{
-		return new TTableStyle;
+		if(is_object($object))
+			$this->getWizardSteps()->add($object);
 	}
+
+	// SideBarDataList, History
 
 	/**
 	 * @return integer the cellspacing for the table used by wizard. Defaults to -1, meaning not set.
@@ -117,6 +122,9 @@ class TWizard extends TWebControl implements INamingContainer
 
 	public function getWizardSteps()
 	{
+		if($this->_wizardSteps===null)
+			$this->_wizardSteps=new TWizardStepCollection($this);
+		return $this->_wizardSteps;
 	}
 
 	public function getTemplatedSteps()
@@ -477,6 +485,18 @@ class TWizard extends TWebControl implements INamingContainer
 		$this->raiseEvent('OnSideBarButtonClick',$this,$param);
 	}
 
+	protected function getMultiView()
+	{
+		if($this->_multiView===null)
+		{
+			$this->_multiView=new TMultiView;
+			$this->_multiView->setID('WizardMultiView');
+			// add handler to OnActiveViewChanged
+			// ignore bubble events
+		}
+		return $this->_multiView;
+	}
+
 	public function addedWizardStep($step)
 	{
 		if(($owner=$step->getOwner())!==null)
@@ -489,7 +509,7 @@ class TWizard extends TWebControl implements INamingContainer
 			//$this->getTemplateWizardSteps()->add($step);
 			// register it ???
 		}
-		$this->onWizardStepsChanged();
+		//$this->wizardStepsChanged();
 	}
 
 	public function removedWizardStep($step)
@@ -501,7 +521,42 @@ class TWizard extends TWebControl implements INamingContainer
 			// $this->_templatedSteps....
 			//$this->getTemplateWizardSteps()->remove($step);
 		}
-		$this->onWizardStepsChanged();
+		$this->wizardStepsChanged();
+	}
+
+	protected function createChildControls()
+	{
+		// side bar
+		if($this->getDisplaySideBar())
+		{
+			// render side bar here
+		}
+
+		// header
+		$header=new TPanel;
+		$header->setID('Header');
+		if(($template=$this->getHeaderTemplate())!==null)
+			$template->instantiateIn($header);
+		else
+			$header->getControls()->add($this->getHeaderText());
+
+		// steps
+		$content=new TPanel;
+		$content->setID('Content');
+		$content->getControls()->add($this->getMultiView());
+		$this->getMultiView()->setActiveViewIndex(0);
+		$this->getControls()->add($content);
+		// navigation
+		/*
+		$navigation=new TPanel;
+		$navigation->setID('Navigation');
+		$startNavigation=$this->createStartNavigation();
+		$stepNavigation=$this->createStepNavigation();
+		$finishNavigation=$this->createFinishNavigation();
+		$navigation->getControls()->add($startNavigation);
+		$navigation->getControls()->add($stepNavigation);
+		$navigation->getControls()->add($finishNavigation);
+		*/
 	}
 }
 
@@ -744,6 +799,11 @@ class TCompleteWizardStep extends TTemplateWizardStep
 
 class TWizardStepCollection extends TList
 {
+	/**
+	 * @var TWizard
+	 */
+	private $_wizard;
+
 	/**
 	 * Constructor.
 	 * @param TWizard wizard that owns this collection

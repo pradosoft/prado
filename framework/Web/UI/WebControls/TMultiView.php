@@ -139,7 +139,7 @@ class TMultiView extends TControl
 	{
 		if($view->getActive())
 			return;
-		$triggerEvent=$this->getControlStage()>=TControl::CS_STATE_LOADED || !$this->getPage()->getIsPostBack();
+		$triggerEvent=$this->getControlStage()>=TControl::CS_STATE_LOADED || !$this->getPage() || !$this->getPage()->getIsPostBack();
 		foreach($this->getViews() as $v)
 		{
 			if($v===$view)
