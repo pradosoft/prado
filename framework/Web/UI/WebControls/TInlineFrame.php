@@ -181,9 +181,9 @@ class TInlineFrame extends TWebControl
 
 		$scrollBars=$this->getScrollBars();
 		if($scrollBars==='None')
-			$writer->addAttribute('scrolling','yes');
-		else if($scrollBars==='Both')
 			$writer->addAttribute('scrolling','no');
+		else if($scrollBars==='Both')
+			$writer->addAttribute('scrolling','yes');
 
 		if (!$this->getShowBorder())
 			$writer->addAttribute('frameborder','0');
