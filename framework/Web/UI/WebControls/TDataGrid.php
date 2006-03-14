@@ -134,6 +134,16 @@ Prado::using('System.Web.UI.WebControls.TTable');
  */
 class TDataGrid extends TBaseDataList implements INamingContainer
 {
+	const CMD_SELECT='Select';
+	const CMD_EDIT='Edit';
+	const CMD_UPDATE='Update';
+	const CMD_DELETE='Delete';
+	const CMD_CANCEL='Cancel';
+	const CMD_SORT='Sort';
+	const CMD_PAGE='Page';
+	const CMD_PAGE_NEXT='Next';
+	const CMD_PAGE_PREV='Prev';
+
 	/**
 	 * @var TDataGridColumnCollection manually created column collection
 	 */
@@ -625,43 +635,43 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		{
 			$this->onItemCommand($param);
 			$command=$param->getCommandName();
-			if(strcasecmp($command,'select')===0)
+			if(strcasecmp($command,self::CMD_SELECT)===0)
 			{
 				$this->setSelectedItemIndex($param->getItem()->getItemIndex());
 				$this->onSelectedIndexChanged(null);
 				return true;
 			}
-			else if(strcasecmp($command,'edit')===0)
+			else if(strcasecmp($command,self::CMD_EDIT)===0)
 			{
 				$this->onEditCommand($param);
 				return true;
 			}
-			else if(strcasecmp($command,'delete')===0)
+			else if(strcasecmp($command,self::CMD_DELETE)===0)
 			{
 				$this->onDeleteCommand($param);
 				return true;
 			}
-			else if(strcasecmp($command,'update')===0)
+			else if(strcasecmp($command,self::CMD_UPDATE)===0)
 			{
 				$this->onUpdateCommand($param);
 				return true;
 			}
-			else if(strcasecmp($command,'cancel')===0)
+			else if(strcasecmp($command,self::CMD_CANCEL)===0)
 			{
 				$this->onCancelCommand($param);
 				return true;
 			}
-			else if(strcasecmp($command,'sort')===0)
+			else if(strcasecmp($command,self::CMD_SORT)===0)
 			{
 				$this->onSortCommand(new TDataGridSortCommandEventParameter($sender,$param));
 				return true;
 			}
-			else if(strcasecmp($command,'page')===0)
+			else if(strcasecmp($command,self::CMD_PAGE)===0)
 			{
 				$p=$param->getCommandParameter();
-				if(strcasecmp($p,'next')===0)
+				if(strcasecmp($p,self::CMD_PAGE_NEXT)===0)
 					$pageIndex=$this->getCurrentPageIndex()+1;
-				else if(strcasecmp($p,'prev')===0)
+				else if(strcasecmp($p,self::CMD_PAGE_PREV)===0)
 					$pageIndex=$this->getCurrentPageIndex()-1;
 				else
 					$pageIndex=TPropertyValue::ensureInteger($p)-1;
