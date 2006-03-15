@@ -100,7 +100,7 @@ class TStack extends TComponent implements IteratorAggregate
 	 */
 	public function contains($item)
 	{
-		return array_search($item,$this->_d,true))!==false;
+		return array_search($item,$this->_d,true)!==false;
 	}
 
 	/**
