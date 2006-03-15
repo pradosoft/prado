@@ -38,6 +38,10 @@ require_once(PRADO_DIR.'/Collections/TList.php');
  */
 require_once(PRADO_DIR.'/Collections/TMap.php');
 /**
+ * Includes TStack definition
+ */
+require_once(PRADO_DIR.'/Collections/TStack.php');
+/**
  * Includes TXmlDocument, TXmlElement definition
  */
 require_once(PRADO_DIR.'/Data/TXmlDocument.php');

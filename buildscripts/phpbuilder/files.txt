@@ -4,6 +4,7 @@ Exceptions/TException.php
 
 Collections/TList.php
 Collections/TMap.php
+Collections/TStack.php
 Collections/TAttributeCollection.php
 # Collections/TPagedDataSource.php
 # Collections/TDummyDataSource.php

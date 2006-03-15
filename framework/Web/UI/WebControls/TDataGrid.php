@@ -142,7 +142,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	const CMD_SORT='Sort';
 	const CMD_PAGE='Page';
 	const CMD_PAGE_NEXT='Next';
-	const CMD_PAGE_PREV='Prev';
+	const CMD_PAGE_PREV='Previous';
 
 	/**
 	 * @var TDataGridColumnCollection manually created column collection
@@ -1138,8 +1138,8 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		{
 			$button=$this->createPagerButton($buttonType,true);
 			$button->setText($style->getPrevPageText());
-			$button->setCommandName('page');
-			$button->setCommandParameter('prev');
+			$button->setCommandName(self::CMD_PAGE);
+			$button->setCommandParameter(self::CMD_PAGE_PREV);
 			$button->setCausesValidation(false);
 			$controls->add($button);
 		}
@@ -1154,8 +1154,8 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		{
 			$button=$this->createPagerButton($buttonType,true);
 			$button->setText($style->getNextPageText());
-			$button->setCommandName('page');
-			$button->setCommandParameter('next');
+			$button->setCommandName(self::CMD_PAGE);
+			$button->setCommandParameter(self::CMD_PAGE_NEXT);
 			$button->setCausesValidation(false);
 			$controls->add($button);
 		}
@@ -1193,7 +1193,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		{
 			$button=$this->createPagerButton($buttonType,true);
 			$button->setText($style->getPrevPageText());
-			$button->setCommandName('page');
+			$button->setCommandName(self::CMD_PAGE);
 			$button->setCommandParameter($startPageIndex-1);
 			$button->setCausesValidation(false);
 			$controls->add($button);
@@ -1212,7 +1212,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			{
 				$button=$this->createPagerButton($buttonType,true);
 				$button->setText("$i");
-				$button->setCommandName('page');
+				$button->setCommandName(self::CMD_PAGE);
 				$button->setCommandParameter($i);
 				$button->setCausesValidation(false);
 				$controls->add($button);
@@ -1226,7 +1226,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			$controls->add('&nbsp;');
 			$button=$this->createPagerButton($buttonType,true);
 			$button->setText($style->getNextPageText());
-			$button->setCommandName('page');
+			$button->setCommandName(self::CMD_PAGE);
 			$button->setCommandParameter($endPageIndex+1);
 			$button->setCausesValidation(false);
 			$controls->add($button);
