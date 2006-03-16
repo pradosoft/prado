@@ -803,6 +803,9 @@ class TPage extends TTemplateControl
 	}
 
 	/**
+	 * Sets the page title.
+	 * Note, a {@link THead} control needs to place on the page
+	 * in order that this title be rendered.
 	 * @param string page title. This will override the title set in {@link getHead Head}.
 	 */
 	public function setTitle($value)

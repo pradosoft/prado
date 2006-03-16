@@ -307,7 +307,7 @@ class TComponent
 	 * Detaches an existing event handler.
 	 * This method is the opposite of {@link attachEventHandler}.
 	 * @param string event name
-	 * @param string callback the event handler to be removed
+	 * @param callback the event handler to be removed
 	 * @return boolean if the removal is successful
 	 */
 	public function detachEventHandler($name,$handler)
