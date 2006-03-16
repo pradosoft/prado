@@ -897,6 +897,33 @@ class TControl extends TApplicationComponent
 	}
 
 	/**
+	 * Finds all child and grand-child controls with the specified ID.
+	 * Note, this method is different from {@link findControl} in that
+	 * it searches through all controls that have this control as the ancestor
+	 * while {@link findcontrol} only searches through controls that have this
+	 * control as the direct naming container.
+	 * @param string the ID being looked for
+	 * @return array list of controls found
+	 */
+	public function findControlsByID($id)
+	{
+		$controls=array();
+		if($this->getHasControls())
+		{
+			foreach($this->_rf[self::RF_CONTROLS] as $control)
+			{
+				if($control instanceof TControl)
+				{
+					if($control->_id===$id)
+						$controls[]=$control;
+					$controls=array_merge($controls,$control->findControlsByID($id));
+				}
+			}
+		}
+		return $controls;
+	}
+
+	/**
 	 * Resets the control as a naming container.
 	 * Only framework developers should use this method.
 	 */
