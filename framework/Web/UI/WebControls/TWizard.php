@@ -1,6 +1,19 @@
 <?php
 
 Prado::using('System.Web.UI.WebControls.TMultiView');
+Prado::using('System.Web.UI.WebControls.TPanel');
+
+/**
+
+containment relationship
+
+wizard <div>
+    sidebar <div>
+    header <div>
+    step <div>
+    <div>
+      navigation
+*/
 
 /**
  * Class TWizard.
@@ -15,6 +28,12 @@ Prado::using('System.Web.UI.WebControls.TMultiView');
  */
 class TWizard extends TWebControl implements INamingContainer
 {
+	const CMD_PREVIOUS='PreviousStep';
+	const CMD_NEXT='NextStep';
+	const CMD_CANCEL='Cancel';
+	const CMD_COMPLETE='Complete';
+	const CMD_MOVETO='MoveTo';
+
 	/**
 	 * @var TMultiView multiview that contains the wizard steps
 	 */
@@ -44,6 +63,11 @@ class TWizard extends TWebControl implements INamingContainer
 	 */
 	private $_wizardSteps=null;
 
+	private $_header;
+	private $_startNavigation;
+	private $_stepNavigation;
+	private $_finishNavigation;
+	private $_activeStepIndexSet=false;
 	/**
 	 * @return string tag name for the wizard
 	 */
@@ -61,49 +85,11 @@ class TWizard extends TWebControl implements INamingContainer
 	// SideBarDataList, History
 
 	/**
-	 * @return integer the cellspacing for the table used by wizard. Defaults to -1, meaning not set.
-	 */
-	public function getCellSpacing()
-	{
-		if($this->getHasStyle())
-			return $this->getStyle()->getCellSpacing();
-		else
-			return -1;
-	}
-
-	/**
-	 * @param integer the cellspacing for the table used by wizard. Defaults to -1, meaning not set.
-	 */
-	public function setCellSpacing($value)
-	{
-		$this->getStyle()->setCellSpacing($value);
-	}
-
-	/**
-	 * @return integer the cellpadding for the table used by wizard. Defaults to -1, meaning not set.
-	 */
-	public function getCellPadding()
-	{
-		if($this->getHasStyle())
-			return $this->getStyle()->getCellPadding();
-		else
-			return -1;
-	}
-
-	/**
-	 * @param integer the cellpadding for the table used by wizard. Defaults to -1, meaning not set.
-	 */
-	public function setCellPadding($value)
-	{
-		$this->getStyle()->setCellPadding($value);
-	}
-
-	/**
-	 * @return TWizardStepBase the currently active wizard step
+	 * @return TWizardStep the currently active wizard step
 	 */
 	public function getActiveStep()
 	{
-
+		return $this->getMultiView()->getActiveView();
 	}
 
 	/**
@@ -111,6 +97,7 @@ class TWizard extends TWebControl implements INamingContainer
 	 */
 	public function getActiveStepIndex()
 	{
+		return $this->getMultiView()->getActiveViewIndex();
 	}
 
 	/**
@@ -118,6 +105,14 @@ class TWizard extends TWebControl implements INamingContainer
 	 */
 	public function setActiveStepIndex($value)
 	{
+		$value=TPropertyValue::ensureInteger($value);
+		$multiView=$this->getMultiView();
+		if($multiView->getActiveViewIndex()!==$value)
+		{
+			$multiView->setActiveViewIndex($value);
+			$this->_activeStepIndexSet=true;
+			// update sidebar list
+		}
 	}
 
 	public function getWizardSteps()
@@ -125,14 +120,6 @@ class TWizard extends TWebControl implements INamingContainer
 		if($this->_wizardSteps===null)
 			$this->_wizardSteps=new TWizardStepCollection($this);
 		return $this->_wizardSteps;
-	}
-
-	public function getTemplatedSteps()
-	{
-	}
-
-	public function getNavigationTableCell()
-	{
 	}
 
 	/**
@@ -298,6 +285,16 @@ class TWizard extends TWebControl implements INamingContainer
 		$this->setViewState('FinishDestinationUrl',TPropertyValue::ensureString($value),'');
 	}
 
+	public function getNavigationButtonStyle()
+	{
+		if(($style=$this->getViewState('NavigationButtonStyle',null))===null)
+		{
+			$style=new TWizardNavigationButtonStyle;
+			$this->setViewState('NavigationButtonStyle',$style,null);
+		}
+		return $style;
+	}
+
 	/**
 	 * @return TWizardNavigationButtonStyle the style for the next button in the start wizard step.
 	 */
@@ -306,7 +303,7 @@ class TWizard extends TWebControl implements INamingContainer
 		if(($style=$this->getViewState('StartNextButtonStyle',null))===null)
 		{
 			$style=new TWizardNavigationButtonStyle;
-			$style->setText('Next');
+			$style->setButtonText('Next >');
 			$this->setViewState('StartNextButtonStyle',$style,null);
 		}
 		return $style;
@@ -320,7 +317,7 @@ class TWizard extends TWebControl implements INamingContainer
 		if(($style=$this->getViewState('StepNextButtonStyle',null))===null)
 		{
 			$style=new TWizardNavigationButtonStyle;
-			$style->setText('Next >');
+			$style->setButtonText('Next >');
 			$this->setViewState('StepNextButtonStyle',$style,null);
 		}
 		return $style;
@@ -334,7 +331,7 @@ class TWizard extends TWebControl implements INamingContainer
 		if(($style=$this->getViewState('StepPreviousButtonStyle',null))===null)
 		{
 			$style=new TWizardNavigationButtonStyle;
-			$style->setText('< Previous');
+			$style->setButtonText('< Previous');
 			$this->setViewState('StepPreviousButtonStyle',$style,null);
 		}
 		return $style;
@@ -348,7 +345,7 @@ class TWizard extends TWebControl implements INamingContainer
 		if(($style=$this->getViewState('FinishCompleteButtonStyle',null))===null)
 		{
 			$style=new TWizardNavigationButtonStyle;
-			$style->setText('Complete');
+			$style->setButtonText('Complete');
 			$this->setViewState('FinishCompleteButtonStyle',$style,null);
 		}
 		return $style;
@@ -362,63 +359,77 @@ class TWizard extends TWebControl implements INamingContainer
 		if(($style=$this->getViewState('FinishPreviousButtonStyle',null))===null)
 		{
 			$style=new TWizardNavigationButtonStyle;
-			$style->setText('Previous');
+			$style->setButtonText('< Previous');
 			$this->setViewState('FinishPreviousButtonStyle',$style,null);
 		}
 		return $style;
 	}
 
 	/**
-	 * @return TTableItemStyle the style for the side bar.
+	 * @return TWizardNavigationButtonStyle the style for the cancel button
 	 */
-	public function getSideBarStyle()
+	public function getCancelButtonStyle()
 	{
-		if(($style=$this->getViewState('SideBarStyle',null))===null)
+		if(($style=$this->getViewState('CancelButtonStyle',null))===null)
 		{
-			$style=new TTableItemStyle;
-			$this->setViewState('SideBarStyle',$style,null);
+			$style=new TWizardNavigationButtonStyle;
+			$style->setButtonText('Cancel');
+			$this->setViewState('CancelButtonStyle',$style,null);
 		}
 		return $style;
 	}
 
 	/**
-	 * @return TTableItemStyle the style for the header.
+	 * @return TPanelStyle the style for the side bar.
+	 */
+	public function getSideBarStyle()
+	{
+		if(($style=$this->getViewState('SideBarStyle',null))===null)
+		{
+			$style=new TPanelStyle;
+			$this->setViewState('SideBarStyle',$style,null);
+		}
+		return $style;
+	}
+
+	// getSideBarButtonStyle
+
+	/**
+	 * @return TPanelStyle the style for the header.
 	 */
 	public function getHeaderStyle()
 	{
 		if(($style=$this->getViewState('HeaderStyle',null))===null)
 		{
-			$style=new TTableItemStyle;
+			$style=new TPanelStyle;
 			$this->setViewState('HeaderStyle',$style,null);
 		}
 		return $style;
 	}
 
 	/**
-	 * @return TTableItemStyle the style for each internal wizard step.
+	 * @return TPanelStyle the style for each internal wizard step.
 	 */
 	public function getStepStyle()
 	{
 		if(($style=$this->getViewState('StepStyle',null))===null)
 		{
-			$style=new TTableItemStyle;
+			$style=new TPanelStyle;
 			$this->setViewState('StepStyle',$style,null);
 		}
 		return $style;
 	}
 
-	/**
-	 * @return TStyle the style for the cancel button
-	 */
-	public function getCancelButtonStyle()
+	public function getNavigationStyle()
 	{
-		if(($style=$this->getViewState('CancelButtonStyle',null))===null)
+		if(($style=$this->getViewState('NavigationStyle',null))===null)
 		{
-			$style=new TStyle;
-			$this->setViewState('CancelButtonStyle',$style,null);
+			$style=new TPanelStyle;
+			$this->setViewState('NavigationStyle',$style,null);
 		}
 		return $style;
 	}
+
 
 	/**
 	 * Raises <b>OnActiveStepChanged</b> event.
@@ -524,8 +535,180 @@ class TWizard extends TWebControl implements INamingContainer
 		$this->wizardStepsChanged();
 	}
 
+	public function onInit($param)
+	{
+		parent::onInit($param);
+		if($this->getActiveStepIndex()<0 && $this->getWizardSteps()->getCount()>0)
+			$this->setActiveStepIndex(0);
+		$this->ensureChildControls();
+	}
+
+	public function saveState()
+	{
+		$index=$this->getActiveStepIndex();
+		$history=$this->getHistory();
+		if(!$history->getCount() || $history->peek()!==$index)
+			$history->push($index);
+	}
+
+	public function render($writer)
+	{
+		$this->applyControlProperties();
+		parent::render($writer);
+	}
+
+	protected function applyControlProperties()
+	{
+		$this->applyHeaderProperties();
+		$this->applyNavigationProperties();
+	}
+
+	protected function applyHeaderProperties()
+	{
+		$headerTemplate=$this->getHeaderTemplate();
+		if($headerTemplate===null && $this->getHeaderText()==='')
+			$this->_header->setVisible(false);
+		else
+		{
+			if(($style=$this->getViewState('HeaderStyle',null))!==null)
+				$this->_header->getStyle()->mergeWith($style);
+			if($headerTemplate===null)
+			{
+				$this->_header->getControls()->clear();
+				$this->_header->getControls()->add($this->getHeaderText());
+			}
+		}
+	}
+
+	protected function applyNavigationProperties()
+	{
+		$wizardSteps=$this->getWizardSteps();
+		$activeStep=$this->getActiveStep();
+		$activeStepIndex=$this->getActiveStepIndex();
+
+		if(!$this->_startNavigation || !$this->_stepNavigation || !$this->_finishNavigation || $activeStepIndex<0 || $activeStepIndex>=$wizardSteps->getCount())
+			return;
+
+		if(($navigationStyle=$this->getViewState('NavigationStyle',null))!==null)
+		{
+			$this->_startNavigation->getStyle()->mergeWith($navigationStyle);
+			$this->_stepNavigation->getStyle()->mergeWith($navigationStyle);
+			$this->_finishNavigation->getStyle()->mergeWith($navigationStyle);
+		}
+		$activeStepType=$this->getStepType($activeStep);
+
+		$this->_startNavigation->setVisible($activeStepType==='Start');
+		$this->_stepNavigation->setVisible($activeStepType==='Step');
+		$this->_finishNavigation->setVisible($activeStepType==='Finish');
+
+		$displayCancelButton=$this->getDisplayCancelButton();
+		$cancelButtonStyle=$this->getCancelButtonStyle();
+		$buttonStyle=$this->getViewState('NavigationButtonStyle',null);
+		if($buttonStyle!==null)
+			$cancelButtonStyle->mergeWith($buttonStyle);
+
+		if($this->getStartNavigationTemplate()===null)
+		{
+			$cancelButton=$this->_startNavigation->getCancelButton();
+			$cancelButton->setVisible($displayCancelButton);
+			$cancelButtonStyle->apply($cancelButton);
+
+			$button=$this->_startNavigation->getNextButton();
+			$button->setVisible(true);
+			$style=$this->getStartNextButtonStyle();
+			if($buttonStyle!==null)
+				$style->mergeWith($buttonStyle);
+			$style->apply($button);
+		}
+
+		if($this->getFinishNavigationTemplate()===null)
+		{
+			$cancelButton=$this->_finishNavigation->getCancelButton();
+			$cancelButton->setVisible($displayCancelButton);
+			$cancelButtonStyle->apply($cancelButton);
+
+			// todo: whether prev should be displayed
+			$button=$this->_finishNavigation->getPreviousButton();
+			$button->setVisible(true);
+			$style=$this->getFinishPreviousButtonStyle();
+			if($buttonStyle!==null)
+				$style->mergeWith($buttonStyle);
+			$style->apply($button);
+
+			$button=$this->_finishNavigation->getCompleteButton();
+			$button->setVisible(true);
+			$style=$this->getFinishCompleteButtonStyle();
+			if($buttonStyle!==null)
+				$style->mergeWith($buttonStyle);
+			$style->apply($button);
+		}
+
+		if($this->getStepNavigationTemplate()===null)
+		{
+			$cancelButton=$this->_stepNavigation->getCancelButton();
+			$cancelButton->setVisible($displayCancelButton);
+			$cancelButtonStyle->apply($cancelButton);
+
+			// todo: whether prev should be displayed
+			$button=$this->_stepNavigation->getPreviousButton();
+			$button->setVisible(true);
+			$style=$this->getStepPreviousButtonStyle();
+			if($buttonStyle!==null)
+				$style->mergeWith($buttonStyle);
+			$style->apply($button);
+
+			$button=$this->_stepNavigation->getNextButton();
+			$button->setVisible(true);
+			$style=$this->getStepNextButtonStyle();
+			if($buttonStyle!==null)
+				$style->mergeWith($buttonStyle);
+			$style->apply($button);
+		}
+	}
+
+	protected function getHistory()
+	{
+		if(($history=$this->getControlState('History',null))===null)
+		{
+			$history=new TStack;
+			$this->setControlState('History',$history);
+		}
+		return $history;
+	}
+
+	protected function getStepType($wizardStep)
+	{
+		if(($type=$wizardStep->getStepType())==='Auto')
+		{
+			$steps=$this->getWizardSteps();
+			if(($index=$steps->indexOf($wizardStep))>=0)
+			{
+				$stepCount=$steps->getCount();
+				if($stepCount===1 || ($index<$stepCount-1 && $steps->itemAt($index+1)->getStepType()==='Complete'))
+					return 'Finish';
+				else if($index===0)
+					return 'Start';
+				else if($index===$stepCount-1)
+					return 'Finish';
+				else
+					return 'Step';
+			}
+			else
+				return $type;
+		}
+		else
+			return $type;
+	}
+
 	protected function createChildControls()
 	{
+		// reset wizard in case this was invoked previously
+		$this->getControls()->clear();
+		$this->_header=null;
+		$this->_startNavigation=null;
+		$this->_stepNavigation=null;
+		$this->_finishNavigation=null;
+
 		// side bar
 		if($this->getDisplaySideBar())
 		{
@@ -533,30 +716,246 @@ class TWizard extends TWebControl implements INamingContainer
 		}
 
 		// header
-		$header=new TPanel;
-		$header->setID('Header');
+		$this->_header=new TPanel;
 		if(($template=$this->getHeaderTemplate())!==null)
-			$template->instantiateIn($header);
+			$template->instantiateIn($this->_header);
 		else
-			$header->getControls()->add($this->getHeaderText());
+			$this->_header->getControls()->add($this->getHeaderText());
+		$this->getControls()->add($this->_header);
 
 		// steps
 		$content=new TPanel;
-		$content->setID('Content');
+		$content->setID('WizardStep');
 		$content->getControls()->add($this->getMultiView());
 		$this->getMultiView()->setActiveViewIndex(0);
 		$this->getControls()->add($content);
-		// navigation
-		/*
-		$navigation=new TPanel;
-		$navigation->setID('Navigation');
-		$startNavigation=$this->createStartNavigation();
-		$stepNavigation=$this->createStepNavigation();
-		$finishNavigation=$this->createFinishNavigation();
-		$navigation->getControls()->add($startNavigation);
-		$navigation->getControls()->add($stepNavigation);
-		$navigation->getControls()->add($finishNavigation);
-		*/
+
+		$this->createStartNavigation();
+		$this->createStepNavigation();
+		$this->createFinishNavigation();
+
+		$this->clearChildState();
+	}
+
+	protected function createStartNavigation()
+	{
+		if(($template=$this->getStartNavigationTemplate())!==null)
+		{
+			$this->_startNavigation=new TPanel;
+			$template->instantiateIn($this->_startNavigation);
+		}
+		else
+			$this->_startNavigation=$this->createDefaultStartNavigation();
+		$this->getControls()->add($this->_startNavigation);
+	}
+
+	protected function createStepNavigation()
+	{
+		if(($template=$this->getStepNavigationTemplate())!==null)
+		{
+			$this->_stepNavigation=new TPanel;
+			$template->instantiateIn($this->_stepNavigation);
+		}
+		else
+			$this->_stepNavigation=$this->createDefaultStepNavigation();
+		$this->getControls()->add($this->_stepNavigation);
+	}
+
+	protected function createFinishNavigation()
+	{
+		if(($template=$this->getFinishNavigationTemplate())!==null)
+		{
+			$this->_finishNavigation=new TPanel;
+			$template->instantiateIn($this->_finishNavigation);
+		}
+		else
+			$this->_finishNavigation=$this->createDefaultFinishNavigation();
+		$this->getControls()->add($this->_finishNavigation);
+	}
+
+	protected function createDefaultStartNavigation()
+	{
+		$nextButton=$this->createNavigationButton($this->getStartNextButtonStyle(),true,self::CMD_NEXT);
+		$cancelButton=$this->createNavigationButton($this->getCancelButtonStyle(),false,self::CMD_CANCEL);
+		$navigation=new TWizardNavigationPanel(null,$nextButton,$cancelButton,null);
+		$controls=$navigation->getControls();
+		$controls->add($nextButton);
+		$controls->add('&nbsp;');
+		$controls->add($cancelButton);
+		return $navigation;
+	}
+
+	protected function createDefaultStepNavigation()
+	{
+		$previousButton=$this->createNavigationButton($this->getStepPreviousButtonStyle(),false,self::CMD_PREVIOUS);
+		$nextButton=$this->createNavigationButton($this->getStepNextButtonStyle(),true,self::CMD_NEXT);
+		$cancelButton=$this->createNavigationButton($this->getCancelButtonStyle(),false,self::CMD_CANCEL);
+		$navigation=new TWizardNavigationPanel($previousButton,$nextButton,$cancelButton,null);
+		$controls=$navigation->getControls();
+		$controls->add($previousButton);
+		$controls->add('&nbsp;');
+		$controls->add($nextButton);
+		$controls->add('&nbsp;');
+		$controls->add($cancelButton);
+		return $navigation;
+	}
+
+	protected function createDefaultFinishNavigation()
+	{
+		$previousButton=$this->createNavigationButton($this->getFinishPreviousButtonStyle(),false,self::CMD_PREVIOUS);
+		$completeButton=$this->createNavigationButton($this->getFinishCompleteButtonStyle(),true,self::CMD_COMPLETE);
+		$cancelButton=$this->createNavigationButton($this->getCancelButtonStyle(),false,self::CMD_CANCEL);
+		$navigation=new TWizardNavigationPanel($previousButton,null,$cancelButton,$completeButton);
+		$controls=$navigation->getControls();
+		$controls->add($previousButton);
+		$controls->add('&nbsp;');
+		$controls->add($completeButton);
+		$controls->add('&nbsp;');
+		$controls->add($cancelButton);
+		return $navigation;
+	}
+
+	protected function createNavigationButton($buttonStyle,$causesValidation,$commandName)
+	{
+		switch($buttonStyle->getButtonType())
+		{
+			case 'Button':
+				$button=Prado::createComponent('System.Web.UI.WebControls.TButton');
+				break;
+			case 'Link'  :
+				$button=Prado::createComponent('System.Web.UI.WebControls.TLinkButton');
+				break;
+			case 'Image' :
+				$button=Prado::createComponent('System.Web.UI.WebControls.TImageButton');
+				$button->setImageUrl($style->getImageUrl());
+				break;
+			default:
+				throw new TInvalidDataValueException('wizard_buttontype_unknown',$style->getButtonType());
+		}
+		$button->setText($buttonStyle->getButtonText());
+		$button->setCausesValidation($causesValidation);
+		$button->setCommandName($commandName);
+		return $button;
+	}
+
+	public function onWizardStepsChanged()
+	{
+		if($this->_sideBarDataList!==null)
+		{
+			$this->_sideBarDataList->setDataSource($this->getWizardSteps());
+			$this->_sideBarDataList->setSelectedIndex($this->getActiveStepIndex());
+			$this->_sideBarDataList->dataBind();
+		}
+	}
+
+	protected function getPreviousStepIndex($popStack)
+	{
+		$history=$this->getHistory();
+		if($history->getCount()>=0)
+		{
+			$activeStepIndex=$this->getActiveStepIndex();
+			$previousStepIndex=-1;
+			if($popStack)
+			{
+				$previousStepIndex=$history->pop();
+				if($activeStepIndex===$previousStepIndex && $history->getCount()>0)
+					$previousStepIndex=$history->pop();
+			}
+			else
+			{
+				$previousStepIndex=$history->peek();
+				if($activeStepIndex===$previousStepIndex && $history->getCount()>1)
+				{
+					$saveIndex=$history->pop();
+					$previousStepIndex=$history->peek();
+					$history->push($saveIndex);
+				}
+			}
+			return $activeStepIndex===$previousStepIndex ? -1 : $previousStepIndex;
+		}
+		else
+			return -1;
+	}
+
+	protected function allowNavigationToStep($index)
+	{
+		if($this->getHistory()->contains($index))
+			return $this->getWizardSteps()->itemAt($index)->getAllowReturn();
+		else
+			return true;
+	}
+
+	public function onBubbleEvent($sender,$param)
+	{
+		if($param instanceof TCommandEventParameter)
+		{
+			$command=$param->getCommandName();
+			if(strcasecmp($command,self::CMD_CANCEL)===0)
+			{
+				$this->onCancelButtonClick($param);
+				return true;
+			}
+
+			$type=$this->getStepType($this->getActiveStep());
+			$index=$this->getActiveStepIndex();
+			$navParam=new TWizardNavigationEventParameter($index);
+
+			$handled=false;
+			$movePrev=false;
+			$this->_activeStepIndexSet=false;
+
+			if(strcasecmp($command,self::CMD_NEXT)===0)
+			{
+				if($type!=='Start' && $type!=='Step')
+					throw new TInvalidDataValueException('wizard_command_invalid',self::CMD_NEXT);
+				if($index<$this->getWizardSteps()->getCount()-1)
+					$navParam->setNextStepIndex($index+1);
+				$this->onNextButtonClick($navParam);
+				$handled=true;
+			}
+			else if(strcasecmp($command,self::CMD_PREVIOUS)===0)
+			{
+				if($type!=='Finish' && $type!=='Step')
+					throw new TInvalidDataValueException('wizard_command_invalid',self::CMD_PREVIOUS);
+				$movePrev=true;
+				if(($prevIndex=$this->getPreviousStepIndex(false))>=0)
+					$navParam->setNextStepIndex($prevIndex);
+				$this->onPreviousButtonClick($navParam);
+				$handled=true;
+			}
+			else if(strcasecmp($command,self::CMD_COMPLETE)===0)
+			{
+				if($type!=='Finish')
+					throw new TInvalidDataValueException('wizard_command_invalid',self::CMD_COMPLETE);
+				if($index<$this->getWizardSteps()->getCount()-1)
+					$navParam->setNextStepIndex($index+1);
+				$this->onFinishButtonClick($navParam);
+				$handled=true;
+			}
+			else if(strcasecmp($command,self::CMD_MOVETO)===0)
+			{
+				$navParam->setNextStepIndex(TPropertyValue::ensureInteger($param->getCommandParameter()));
+				$handled=true;
+			}
+
+			if($handled)
+			{
+				if(!$navParam->getCancelNavigation())
+				{
+					$nextStepIndex=$navParam->getNextStepIndex();
+					if(!$this->_activeStepIndexSet && $this->allowNavigationToStep($nextStepIndex))
+					{
+						if($movePrev)
+							$this->getPreviousStepIndex(true);  // pop out the previous move from history
+						$this->setActiveStepIndex($nextStepIndex);
+					}
+				}
+				else
+					$this->setActiveStepIndex($index);
+				return true;
+			}
+		}
+		return false;
 	}
 }
 
@@ -567,7 +966,7 @@ class TWizard extends TWebControl implements INamingContainer
  * can be 'Button', 'Image' or 'Link'.
  * If the button is an image button, {@link setImageUrl ImageUrl} will be
  * used to load the image for the button.
- * Otherwise, {@link setText Text} will be displayed as the button caption.
+ * Otherwise, {@link setButtonText ButtonText} will be displayed as the button caption.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -577,7 +976,7 @@ class TWizard extends TWebControl implements INamingContainer
 class TWizardNavigationButtonStyle extends TStyle
 {
 	private $_imageUrl=null;
-	private $_text=null;
+	private $_buttonText=null;
 	private $_buttonType=null;
 
 	/**
@@ -589,7 +988,7 @@ class TWizardNavigationButtonStyle extends TStyle
 	{
 		parent::reset();
 		$this->_imageUrl=null;
-		$this->_text=null;
+		$this->_buttonText=null;
 		$this->_buttonType=null;
 	}
 
@@ -606,8 +1005,8 @@ class TWizardNavigationButtonStyle extends TStyle
 		{
 			if($this->_imageUrl===null && $style->_imageUrl!==null)
 				$this->_imageUrl=$style->_imageUrl;
-			if($this->_text===null && $style->_text!==null)
-				$this->_text=$style->_text;
+			if($this->_buttonText===null && $style->_buttonText!==null)
+				$this->_buttonText=$style->_buttonText;
 			if($this->_buttonType===null && $style->_buttonType!==null)
 				$this->_buttonType=$style->_buttonType;
 		}
@@ -626,8 +1025,8 @@ class TWizardNavigationButtonStyle extends TStyle
 		{
 			if($style->_imageUrl!==null)
 				$this->_imageUrl=$style->_imageUrl;
-			if($style->_text!==null)
-				$this->_text=$style->_text;
+			if($style->_buttonText!==null)
+				$this->_buttonText=$style->_buttonText;
 			if($style->_buttonType!==null)
 				$this->_buttonType=$style->_buttonType;
 		}
@@ -643,14 +1042,14 @@ class TWizardNavigationButtonStyle extends TStyle
 		$this->_imageUrl=$value;
 	}
 
-	public function getText()
+	public function getButtonText()
 	{
-		return $this->_text===null?'':$this->_text;
+		return $this->_buttonText===null?'':$this->_buttonText;
 	}
 
-	public function setText($value)
+	public function setButtonText($value)
 	{
-		$this->_text=$value;
+		$this->_buttonText=$value;
 	}
 
 	public function getButtonType()
@@ -662,18 +1061,34 @@ class TWizardNavigationButtonStyle extends TStyle
 	{
 		$this->_buttonType=TPropertyValue::ensureEnum($value,'Button','Image','Link');
 	}
+
+	public function apply($button)
+	{
+		if($button instanceof TImageButton)
+		{
+			if($button->getImageUrl()==='')
+				$button->setImageUrl($this->getImageUrl());
+		}
+		if($button->getText()==='')
+			$button->setText($this->getButtonText());
+		$button->getStyle()->mergeWith($this);
+	}
 }
 
-abstract class TWizardStepBase extends TView
+class TWizardStep extends TView
 {
 	private $_owner;
-
+	/**
+	 * @var ITemplate the template for displaying the navigation UI of a wizard step.
+	 */
+	private $_navigationTemplate=null;
+/*
 	public function loadState()
 	{
 		if($this->_owner && ($this->getTitle()!=='' || $this->getStepType()!==''))
 			$this->_owner->onWizardStepsChanged();
 	}
-
+*/
 	public function getOwner()
 	{
 		return $this->_owner;
@@ -734,38 +1149,6 @@ abstract class TWizardStepBase extends TView
 				$this->_owner->onWizardStepsChanged();
 		}
 	}
-}
-
-class TWizardStep extends TWizardStepBase
-{
-}
-
-class TTemplateWizardStep extends TWizardStepBase
-{
-	/**
-	 * @var ITemplate the template for displaying the content of a wizard step.
-	 */
-	private $_contentTemplate=null;
-	/**
-	 * @var ITemplate the template for displaying the navigation UI of a wizard step.
-	 */
-	private $_navigationTemplate=null;
-
-	/**
-	 * @return ITemplate the template for displaying the content of a wizard step. Defaults to null.
-	 */
-	public function getContentTemplate()
-	{
-		return $this->_contentTemplate;
-	}
-
-	/**
-	 * @param ITemplate the template for displaying the content of a wizard step.
-	 */
-	public function setContentTemplate($value)
-	{
-		$this->_contentTemplate=$value;
-	}
 
 	/**
 	 * @return ITemplate the template for displaying the navigation UI of a wizard step. Defaults to null.
@@ -784,7 +1167,7 @@ class TTemplateWizardStep extends TWizardStepBase
 	}
 }
 
-class TCompleteWizardStep extends TTemplateWizardStep
+class TCompleteWizardStep extends TWizardStep
 {
 	public function getStepType()
 	{
@@ -816,13 +1199,13 @@ class TWizardStepCollection extends TList
 	/**
 	 * Inserts an item at the specified position.
 	 * This method overrides the parent implementation by checking if
-	 * the item being added is a {@link TWizardStepBase}.
+	 * the item being added is a {@link TWizardStep}.
 	 * @param integer the speicified position.
 	 * @param mixed new item
 	 */
 	public function insertAt($index,$item)
 	{
-		if($item instanceof TWizardStepBase)
+		if($item instanceof TWizardStep)
 		{
 			parent::insertAt($index,$item);
 			$this->_wizard->addedWizardStep($item);
@@ -841,6 +1224,80 @@ class TWizardStepCollection extends TList
 		$step=parent::removeAt($index);
 		$this->_wizard->removedWizardStep($step);
 		return $step;
+	}
+}
+
+class TWizardNavigationPanel extends TPanel
+{
+	private $_previousButton=null;
+	private $_nextButton=null;
+	private $_cancelButton=null;
+	private $_completeButton=null;
+
+	public function __construct($previousButton,$nextButton,$cancelButton,$completeButton)
+	{
+		$this->_previousButton=$previousButton;
+		$this->_nextButton=$nextButton;
+		$this->_cancelButton=$cancelButton;
+		$this->_completeButton=$completeButton;
+	}
+
+	public function getPreviousButton()
+	{
+		return $this->_previousButton;
+	}
+
+	public function getNextButton()
+	{
+		return $this->_nextButton;
+	}
+
+	public function getCancelButton()
+	{
+		return $this->_cancelButton;
+	}
+
+	public function getCompleteButton()
+	{
+		return $this->_completeButton;
+	}
+}
+
+class TWizardNavigationEventParameter extends TEventParameter
+{
+	private $_cancel=false;
+	private $_currentStep;
+	private $_nextStep;
+
+	public function __construct($currentStep)
+	{
+		$this->_currentStep=$currentStep;
+		$this->_nextStep=$currentStep;
+	}
+
+	public function getCurrentStepIndex()
+	{
+		return $this->_currentStep;
+	}
+
+	public function getNextStepIndex()
+	{
+		return $this->_nextStep;
+	}
+
+	public function setNextStepIndex($index)
+	{
+		$this->_nextStep=TPropertyValue::ensureInteger($index);
+	}
+
+	public function getCancelNavigation()
+	{
+		return $this->_cancel;
+	}
+
+	public function setCancelNavigation($value)
+	{
+		$this->_cancel=TPropertyValue::ensureBoolean($value);
 	}
 }
 

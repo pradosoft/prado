@@ -347,7 +347,7 @@ class TPageService extends TService
 	{
 		if($this->_pagePath===null)
 		{
-			$this->_pagePath=$this->determineRequestedPagePath();
+			$this->_pagePath=strtr($this->determineRequestedPagePath(),'/\\','..');
 			if(empty($this->_pagePath))
 				throw new THttpException(404,'pageservice_page_required');
 		}
