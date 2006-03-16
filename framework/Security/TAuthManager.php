@@ -26,8 +26,8 @@ Prado::using('System.Security.TUserManager');
  * To login or logout a user, call {@link login} or {@link logout}, respectively.
  *
  * To load TAuthManager, configure it in application configuration as follows,
- * <module id="auth" type="System.Security.TAuthManager" UserManager="users" LoginPage="login" />
- * <module id="users" type="System.Security.TUserManager" />
+ * <module id="auth" class="System.Security.TAuthManager" UserManager="users" LoginPage="login" />
+ * <module id="users" class="System.Security.TUserManager" />
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $

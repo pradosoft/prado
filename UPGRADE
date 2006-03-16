@@ -1,10 +1,20 @@
 
-                 PRADO v3.0b March 6, 2006
-                 =========================
+         Upgrading Instructions for PRADO Framework v3.0RC1
+         ==================================================
+
+The following upgrading instructions are cumulative. That is,
+if you want to upgrade from version A to version C and there is
+version B between A and C, then you need to following instructions
+for both A and B.
+
+
+Upgrading from v3.0b
+--------------------
+THttpSession.Storage is changed to UseCustomStorage
 
 Upgrading from v3.0a
 --------------------
-A major change is the event names, which must be prefixed with 'On'.
+All event names must start with 'On'.
 
 Upgrading from v2.x and v1.x
 ----------------------------

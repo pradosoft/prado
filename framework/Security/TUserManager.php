@@ -168,7 +168,7 @@ class TUser extends TComponent implements IUser
  *
  * TUserManager manages a static list of users {@link TUser}.
  * The user information is specified via module configuration using the following XML syntax,
- * <module id="users" type="System.Security.TUserManager" PasswordMode="Clear">
+ * <module id="users" class="System.Security.TUserManager" PasswordMode="Clear">
  *   <user name="Joe" password="demo" />
  *   <user name="John" password="demo" />
  *   <role name="Administrator" users="John" />

@@ -26,7 +26,7 @@
  *
  * TThemeManager may be configured within page service tag in application
  * configuration file as follows,
- * <module id="themes" type="System.Web.UI.TThemeManager"
+ * <module id="themes" class="System.Web.UI.TThemeManager"
  *         BasePath="Application.themes" BaseUrl="/themes" />
  * where {@link getCacheExpire CacheExpire}, {@link getCacheControl CacheControl}
  * and {@link getBufferOutput BufferOutput} are configurable properties of THttpResponse.

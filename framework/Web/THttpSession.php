@@ -29,23 +29,27 @@
  * </code>
  *
  * The following configurations are available for session:
- * AutoStart, Cookie, CacheLimiter, SavePath, Storage, GCProbability, CookieUsage, Timeout.
+ * {@link setAutoStart AutoStart}, {@link setCookie Cookie},
+ * {@link setCacheLimiter, {@link setSavePath SavePath},
+ * {@link setUseCustomStorage UseCustomStorage}, {@link setGCProbability GCProbability},
+ * {@link setCookieUsage CookieUsage}, {@link setTimeout Timeout}.
  * See the corresponding setter and getter documentation for more information.
  * Note, these properties must be set before the session is started.
  *
  * THttpSession can be inherited with customized session storage method.
  * Override {@link _open}, {@link _close}, {@link _read}, {@link _write}, {@link _destroy} and {@link _gc}
- * and set Storage as 'Custom' to store session using methods other than files and shared memory.
+ * and set {@link setUseCustomStorage UseCustomStorage} to true.
+ * Then, the session data will be stored using the above methods.
  *
  * By default, THttpSession is registered with {@link TApplication} as the
  * request module. It can be accessed via {@link TApplication::getSession()}.
  *
  * THttpSession may be configured in application configuration file as follows,
- * <module id="session" type="THttpSession" SessionName="SSID" SavePath="/tmp"
- *         CookieMode="Allow" Storage="File" AutoStart="true" GCProbability="1"
+ * <module id="session" class="THttpSession" SessionName="SSID" SavePath="/tmp"
+ *         CookieMode="Allow" UseCustomStorage="false" AutoStart="true" GCProbability="1"
  *         UseTransparentSessionID="true" TimeOut="3600" />
  * where {@link getSessionName SessionName}, {@link getSavePath SavePath},
- * {@link getCookieMode CookieMode}, {@link getStorage Storage},
+ * {@link getCookieMode CookieMode}, {@link getUseCustomStorage UseCustomStorage},
  * {@link getAutoStart AutoStart}, {@link getGCProbability GCProbability},
  * {@link getUseTransparentSessionID UseTransparentSessionID} and
  * {@link getTimeOut TimeOut} are configurable properties of THttpSession.
@@ -77,6 +81,20 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 	 * @var string module id
 	 */
 	private $_id;
+	/**
+	 * @var boolean
+	 */
+	private $_customStorage=false;
+
+	/**
+	 * Destructor.
+	 * Closes session.
+	 */
+	public function __destruct()
+	{
+		if($this->_started)
+			$this->close();
+	}
 
 	/**
 	 * @return string id of this module
@@ -115,6 +133,8 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 	{
 		if(!$this->_started)
 		{
+			if($this->_customStorage)
+				session_set_save_handler(array($this,'_open'),array($this,'_close'),array($this,'_read'),array($this,'_write'),array($this,'_destroy'),array($this,'_gc'));
 			if($this->_cookie!==null)
 				session_set_cookie_params($this->_cookie->getExpire(),$this->_cookie->getPath(),$this->_cookie->getDomain(),$this->_cookie->getSecure());
 			session_start();
@@ -219,53 +239,22 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 	}
 
 	/**
-	 * @return string (File|SharedMemory|Custom) storage medium of session, defaults to 'File'.
-	 * @see setStorage
+	 * @return boolean whether to use user-specified handlers to store session data. Defaults to false.
 	 */
-	public function getStorage()
+	public function getUseCustomStorage()
 	{
-		switch(session_module_name())
-		{
-			case 'files': return 'File';
-			case 'mm': return 'SharedMemory';
-			case 'user': return 'Custom';
-			default: return 'Unknown';
-		}
+		return $this->_customStorage;
 	}
 
 	/**
-	 * Sets the storage medium of session data.
-	 * By default, the session data is stored in files (File).
-	 * You may change to use shared memory (SharedMemory) for better performance
-	 * if shared memory is available on the server.
-	 * Or you may choose to use your own storage (Custom). If you do so,
-	 * make sure you override {@link _open}, {@link _close}, {@link _read},
-	 * {@link _write}, {@link _destroy}, and {@link _gc}.
-	 * @param string (File|SharedMemory|Custom) storage medium of session.
-	 * @throws TInvalidOperationException if session is started already
+	 * @param boolean whether to use user-specified handlers to store session data.
+	 * If true, make sure the methods {@link _open}, {@link _close}, {@link _read},
+	 * {@link _write}, {@link _destroy}, and {@link _gc} are overridden in child
+	 * class, because they will be used as the callback handlers.
 	 */
-	public function setStorage($value)
+	public function setUseCustomStorage($value)
 	{
-		if($this->_started)
-			throw new TInvalidOperationException('httpsession_storage_unchangeable');
-		else
-		{
-			$value=TPropertyValue::ensureEnum($value,array('File','SharedMemory','Custom'));
-			if($value==='Custom')
-				session_set_save_handler(array($this,'_open'),array($this,'_close'),array($this,'_read'),array($this,'_write'),array($this,'_destroy'),array($this,'_gc'));
-			switch($value)
-			{
-				case 'Custom':
-					session_module_name('user');
-					break;
-				case 'SharedMemory':
-					session_module_name('mm');
-					break;
-				default:
-					session_module_name('files');
-					break;
-			}
-		}
+		$this->_customStorage=TPropertyValue::ensureBoolean($value);
 	}
 
 	/**

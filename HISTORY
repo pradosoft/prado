@@ -1,18 +1,31 @@
+Version 3.0RC1 April 1, 2006
+============================
+BUG: Ticket#88 - Unclosed HTML tag rendered in TDatePicker
+     and TColorPicker (Qiang)
+BUG: Ticket#85 - Undefined TDataGrid::setSelectedIndex (Qiang)
+BUG: Ticket#87 - Typo in IDbConnection (Qiang)
+BUG: SF#1446846 - Typo in THead (Qiang)
+BUG: SF#1432624 - Incorrect documentation about caching expiry (Qiang)
+BUG: THttpSession fails when user storage module is used (Qiang)
+ENH: TDataFieldAccessor can access public class variables (Qiang)
+NEW: TSQLMap module (Wei)
+NEW: TStack class (Qiang)
+
 Version 3.0b March 6, 2006
-=============================
-- BUG: fixed many
-- CHG: event names must be prefixed with 'On' (Qiang)
-- CHG: values of properties whose name ends with 'Template' are
-  parsed directly by template parser (Qiang)
-- ENH: template parser reports exact error location (Qiang)
-- ENH: cookie HMAC check (Qiang)
-- NEW: TInlineFrame (Jason)
-- NEW: TAPCCache (Alban)
-- NEW: TColorPicker, TDatePicker, TRatingList, TAdodbProvider,
-  TCreoleProvider (Wei)
-- NEW: TMultiView, TView, TControlAdapter, TWebControlAdapter,
-  TPagedList, TAttributeCollection (Qiang)
+==========================
+BUG: fixed many
+CHG: event names must be prefixed with 'On' (Qiang)
+CHG: values of properties whose name ends with 'Template' are
+     parsed directly by template parser (Qiang)
+ENH: template parser reports exact error location (Qiang)
+ENH: cookie HMAC check (Qiang)
+NEW: TInlineFrame (Jason)
+NEW: TAPCCache (Alban)
+NEW: TColorPicker, TDatePicker, TRatingList, TAdodbProvider,
+     TCreoleProvider (Wei)
+NEW: TMultiView, TView, TControlAdapter, TWebControlAdapter,
+     TPagedList, TAttributeCollection (Qiang)
 
 Version 3.0a January 18, 2006
 =============================
-Starting, main feaures are ready (Qiang)
+Starting, main feaures ready (Qiang)
