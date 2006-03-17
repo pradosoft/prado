@@ -144,17 +144,18 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 		if($this->getEnabled(true) && $this->getAutoPostBack() && $page->getClientSupportsJavaScript())
 		{
 			$writer->addAttribute('id',$this->getClientID());
-			$this->getPage()->getClientScript()->registerPostBackControl($this);
+			$this->getPage()->getClientScript()->registerPostBackControl('Prado.WebUI.TTextBox',$this->getPostBackOptions());
 	}
 		parent::addAttributesToRender($writer);
 	}
 
 	/**
-	 * Sets the post back options for this textbox.
-	 * @return TPostBackOptions
+	 * Gets the post back options for this textbox.
+	 * @return array
 	 */
-	public function getPostBackOptions()
+	protected function getPostBackOptions()
 	{
+		$options['ID'] = $this->getClientID();
 		$options['EventTarget'] = $this->getUniqueID();
 		$options['CausesValidation'] = $this->getCausesValidation();
 		$options['ValidationGroup'] = $this->getValidationGroup();

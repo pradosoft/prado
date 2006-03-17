@@ -116,7 +116,7 @@ abstract class TListControl extends TDataBoundControl
 		if($this->getEnabled(true) && $this->getAutoPostBack() && $page->getClientSupportsJavaScript())
 		{
 			$writer->addAttribute('id',$this->getClientID());
-			$this->getPage()->getClientScript()->registerPostBackControl($this);
+			$this->getPage()->getClientScript()->registerPostBackControl('Prado.WebUI.'.get_class($this),$this->getPostBackOptions());
 		}
 		if($this->getEnabled(true) && !$this->getEnabled())
 			$writer->addAttribute('disabled','disabled');
@@ -124,10 +124,11 @@ abstract class TListControl extends TDataBoundControl
 	}
 
 	/**
-	 * @return TPostBackOptions postback options for JS postback code
+	 * @return array postback options for JS postback code
 	 */
-	public function getPostBackOptions()
+	protected function getPostBackOptions()
 	{
+		$options['ID'] = $this->getClientID();
 		$options['CausesValidation'] = $this->getCausesValidation();
 		$options['ValidationGroup'] = $this->getValidationGroup();
 		$options['EventTarget'] = $this->getUniqueID();

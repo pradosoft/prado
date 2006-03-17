@@ -157,34 +157,21 @@ class TClientScriptManager extends TApplicationComponent
 
 	/**
 	 * Registers postback javascript for a control.
-	 * @param TControl control to be registered with postback js
-	 * @param string js namespace for the control
+	 * @param string javascript class responsible for the control being registered for postback
+	 * @param array postback options
 	 */
-	public function registerPostBackControl($control,$namespace='Prado.WebUI')
+	public function registerPostBackControl($jsClass,$options)
 	{
-		$options = $this->getPostBackOptions($control);
-		$type = get_class($control);
-		$namespace = empty($namespace) ? "window" : $namespace;
-		$code = "new {$namespace}.{$type}($options);";
+		if(!isset($options['FormID']))
+			$options['FormID']=$this->_page->getForm()->getClientID();
+		$optionString=TJavaScript::encode($options);
+		$code="new $jsClass($optionString);";
 		$this->registerEndScript(sprintf('%08X', crc32($code)), $code);
 
 		$this->registerHiddenField(TPage::FIELD_POSTBACK_TARGET,'');
 		$this->registerHiddenField(TPage::FIELD_POSTBACK_PARAMETER,'');
-		$this->registerPradoScript('prado');
-	}
 
-	/**
-	 * @param TControl postback control
-	 * @return array postback options for the control
-	 */
-	protected function getPostBackOptions($control)
-	{
-		$postback = $control->getPostBackOptions();
-		if(!isset($postback['ID']))
-			$postback['ID'] = $control->getClientID();
-		if(!isset($postback['FormID']))
-			$postback['FormID'] = $this->_page->getForm()->getClientID();
-		return TJavaScript::encode($postback);
+		$this->registerPradoScript('prado');
 	}
 
 	/**

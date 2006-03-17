@@ -85,7 +85,7 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 			//create unique no-op url references
 			$nop = "#".$this->getClientID();
 			$writer->addAttribute('href', $nop);
-			$this->getPage()->getClientScript()->registerPostBackControl($this);
+			$this->getPage()->getClientScript()->registerPostBackControl('Prado.WebUI.TLinkButton',$this->getPostBackOptions());
 		}
 		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');
@@ -94,10 +94,11 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler
 	/**
 	 * Returns postback specifications for the button.
 	 * This method is used by framework and control developers.
-	 * @return TPostBackOptions parameters about how the button defines its postback behavior.
+	 * @return array parameters about how the button defines its postback behavior.
 	 */
-	public function getPostBackOptions()
+	protected function getPostBackOptions()
 	{
+		$options['ID'] = $this->getClientID();
 		$options['EventTarget'] = $this->getUniqueID();
 		$options['CausesValidation'] = $this->getCausesValidation();
 		$options['ValidationGroup'] = $this->getValidationGroup();

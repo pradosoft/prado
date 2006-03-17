@@ -146,7 +146,7 @@ class TRadioButton extends TCheckBox
 
 		$page=$this->getPage();
 		if($this->getEnabled(true) && $this->getAutoPostBack() && $page->getClientSupportsJavaScript())
-			$page->getClientScript()->registerPostBackControl($this);
+			$page->getClientScript()->registerPostBackControl('Prado.WebUI.TRadioButton',$this->getPostBackOptions());
 
 		if(($accesskey=$this->getAccessKey())!=='')
 			$writer->addAttribute('accesskey',$accesskey);

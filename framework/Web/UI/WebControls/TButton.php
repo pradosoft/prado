@@ -77,7 +77,7 @@ class TButton extends TWebControl implements IPostBackEventHandler
 			if($this->canCauseValidation())
 			{
 				$writer->addAttribute('id',$this->getClientID());
-				$this->getPage()->getClientScript()->registerPostBackControl($this);
+				$this->getPage()->getClientScript()->registerPostBackControl('Prado.WebUI.TButton',$this->getPostBackOptions());
 			}
 		}
 		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
@@ -105,10 +105,11 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	 * This method is used by framework and control developers.
 	 * @return array parameters about how the button defines its postback behavior.
 	 */
-	public function getPostBackOptions()
+	protected function getPostBackOptions()
 	{
-		$options['CausesValidation'] = $this->getCausesValidation();
-		$options['ValidationGroup'] = $this->getValidationGroup();
+		$options['ID']=$this->getClientID();
+		$options['CausesValidation']=$this->getCausesValidation();
+		$options['ValidationGroup']=$this->getValidationGroup();
 
 		return $options;
 	}

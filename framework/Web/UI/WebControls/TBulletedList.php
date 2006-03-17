@@ -321,7 +321,7 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 		else
 		{
 			$this->_currentRenderItemIndex = $index;
-			$this->getPage()->getClientScript()->registerPostbackControl($this);
+			$this->getPage()->getClientScript()->registerPostBackControl('Prado.WebUI.TBulletedList',$this->getPostBackOptions());
 			$writer->addAttribute('id', $this->getClientID().$index);
 			$writer->addAttribute('href', "javascript:;//".$this->getClientID().$index);
 		}
@@ -333,9 +333,9 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * @return TPostBackOptions postback options used for linkbuttons.
+	 * @return array postback options used for linkbuttons.
 	 */
-	public function getPostBackOptions()
+	protected function getPostBackOptions()
 	{
 		$options['ValidationGroup'] = $this->getValidationGroup();
 		$options['CausesValidation'] = $this->getCausesValidation();

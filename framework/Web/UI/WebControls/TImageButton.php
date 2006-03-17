@@ -92,7 +92,7 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 			if($this->canCauseValidation())
 			{
 				$writer->addAttribute('id',$this->getClientID());
-				$this->getPage()->getClientScript()->registerPostBackControl($this);
+				$this->getPage()->getClientScript()->registerPostBackControl('Prado.WebUI.TImageButton',$this->getPostBackOptions());
 			}
 		}
 		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
@@ -119,8 +119,9 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	 * This method is used by framework and control developers.
 	 * @return array parameters about how the button defines its postback behavior.
 	 */
-	public function getPostBackOptions()
+	protected function getPostBackOptions()
 	{
+		$options['ID'] = $this->getClientID();
 		$options['CausesValidation'] = $this->getCausesValidation();
 		$options['ValidationGroup'] = $this->getValidationGroup();
 

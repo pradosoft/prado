@@ -351,7 +351,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 
 		$page=$this->getPage();
 		if($this->getEnabled(true) && $this->getAutoPostBack() && $page->getClientSupportsJavaScript())
-			$page->getClientScript()->registerPostBackControl($this);
+			$page->getClientScript()->registerPostBackControl('Prado.WebUI.TCheckBox',$this->getPostBackOptions());
 
 		if(($accesskey=$this->getAccessKey())!=='')
 			$writer->addAttribute('accesskey',$accesskey);
@@ -364,11 +364,12 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	}
 
 	/**
-	 * Sets the post back options for this checkbox.
+	 * Gets the post back options for this checkbox.
 	 * @return array
 	 */
-	public function getPostBackOptions()
+	protected function getPostBackOptions()
 	{
+		$options['ID'] = $this->getClientID();
 		$options['ValidationGroup'] = $this->getValidationGroup();
 		$options['CausesValidation'] = $this->getCausesValidation();
 		$options['EventTarget'] = $this->getUniqueID();
