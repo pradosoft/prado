@@ -275,7 +275,7 @@ abstract class TDataGridColumn extends TApplicationComponent
 	{
 		switch($itemType)
 		{
-			case 'Header':
+			case TDataGrid::IT_HEADER:
 				$sortExpression=$this->getSortExpression();
 				$allowSorting=$sortExpression!=='' && (!$this->_owner || $this->_owner->getAllowSorting());
 				if($allowSorting)
@@ -317,7 +317,7 @@ abstract class TDataGridColumn extends TApplicationComponent
 					}
 				}
 				break;
-			case 'Footer':
+			case TDataGrid::IT_FOOTER:
 				if(($text=$this->getFooterText())==='')
 					$text='&nbsp;';
 				$cell->setText($text);

@@ -402,7 +402,7 @@ class PradoBase
 	 */
 	public static function getVersion()
 	{
-		return '3.0b';
+		return '3.0RC1';
 	}
 
 	/**

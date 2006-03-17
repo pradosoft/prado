@@ -14,6 +14,10 @@
  * TDataGridColumn class file
  */
 Prado::using('System.Web.UI.WebControls.TDataGridColumn');
+/**
+ * TCheckBox class file
+ */
+Prado::using('System.Web.UI.WebControls.TCheckBox');
 
 /**
  * TCheckBoxColumn class
@@ -76,10 +80,10 @@ class TCheckBoxColumn extends TDataGridColumn
 	public function initializeCell($cell,$columnIndex,$itemType)
 	{
 		parent::initializeCell($cell,$columnIndex,$itemType);
-		if($itemType==='EditItem' || $itemType==='Item' || $itemType==='AlternatingItem' || $itemType==='SelectedItem')
+		if($itemType===TDataGrid::IT_ITEM || $itemType===TDataGrid::IT_ALTERNATINGITEM || $itemType===TDataGrid::IT_SELECTEDITEM || $itemType===TDataGrid::IT_EDITITEM)
 		{
-			$checkBox=Prado::createComponent('System.Web.UI.WebControls.TCheckBox');
-			if($this->getReadOnly() || $itemType!=='EditItem')
+			$checkBox=new TCheckBox;
+			if($this->getReadOnly() || $itemType!==TDataGrid::IT_EDITITEM)
 				$checkBox->setEnabled(false);
 			$cell->setHorizontalAlign('Center');
 			$cell->getControls()->add($checkBox);

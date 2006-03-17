@@ -168,7 +168,7 @@ class TButtonColumn extends TDataGridColumn
 	public function initializeCell($cell,$columnIndex,$itemType)
 	{
 		parent::initializeCell($cell,$columnIndex,$itemType);
-		if($itemType==='Item' || $itemType==='AlternatingItem' || $itemType==='SelectedItem' || $itemType==='EditItem')
+		if($itemType===TDataGrid::IT_ITEM || $itemType===TDataGrid::IT_ALTERNATINGITEM || $itemType===TDataGrid::IT_SELECTEDITEM || $itemType===TDataGrid::IT_EDITITEM)
 		{
 			if($this->getButtonType()==='LinkButton')
 				$button=Prado::createComponent('System.Web.UI.WebControls.TLinkButton');

@@ -57,6 +57,16 @@ Prado::using('System.Web.UI.WebControls.TDataBoundControl');
 class TRepeater extends TDataBoundControl implements INamingContainer
 {
 	/**
+	 * Repeater item types
+	 */
+	const IT_HEADER='Header';
+	const IT_FOOTER='Footer';
+	const IT_EMPTY='Empty';
+	const IT_ITEM='Item';
+	const IT_SEPARATOR='Separator';
+	const IT_ALTERNATINGITEM='AlternatingItem';
+
+	/**
 	 * @var ITemplate template for repeater items
 	 */
 	private $_itemTemplate=null;
@@ -251,7 +261,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	/**
 	 * Creates a repeater item instance based on the item type and index.
 	 * @param integer zero-based item index
-	 * @param string item type, may be 'Header', 'Footer', 'Empty', 'Item', 'Separator', 'AlternatingItem', 'SelectedItem', 'EditItem'.
+	 * @param string item type, may be 'Header', 'Footer', 'Empty', 'Item', 'Separator', 'AlternatingItem'.
 	 * @return TRepeaterItem created repeater item
 	 */
 	protected function createItem($itemIndex,$itemType)
@@ -263,7 +273,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 * Creates a repeater item and does databinding if needed.
 	 * This method invokes {@link createItem} to create a new repeater item.
 	 * @param integer zero-based item index.
-	 * @param string item type, may be 'Header', 'Footer', 'Empty', 'Item', 'Separator', 'AlternatingItem', 'SelectedItem', 'EditItem'.
+	 * @param string item type, may be 'Header', 'Footer', 'Empty', 'Item', 'Separator', 'AlternatingItem'.
 	 * @param boolean whether to do databinding for the item
 	 * @param mixed data to be associated with the item
 	 * @return TRepeaterItem the created item
@@ -301,16 +311,12 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 		$template=null;
 		switch($item->getItemType())
 		{
-			case 'Header': $template=$this->_headerTemplate; break;
-			case 'Footer': $template=$this->_footerTemplate; break;
-			case 'Empty': $template=$this->_emptyTemplate; break;
-			case 'Item': $template=$this->_itemTemplate; break;
-			case 'Separator': $template=$this->_separatorTemplate; break;
-			case 'AlternatingItem': $template=$this->_alternatingItemTemplate===null ? $this->_itemTemplate : $this->_alternatingItemTemplate; break;
-			case 'SelectedItem':
-			case 'EditItem':
-			default:
-				break;
+			case self::IT_HEADER: $template=$this->_headerTemplate; break;
+			case self::IT_FOOTER: $template=$this->_footerTemplate; break;
+			case self::IT_EMPTY : $template=$this->_emptyTemplate; break;
+			case self::IT_ITEM  : $template=$this->_itemTemplate; break;
+			case self::IT_SEPARATOR : $template=$this->_separatorTemplate; break;
+			case self::IT_ALTERNATINGITEM : $template=$this->_alternatingItemTemplate===null ? $this->_itemTemplate : $this->_alternatingItemTemplate; break;
 		}
 		if($template!==null)
 			$template->instantiateIn($item);
@@ -374,19 +380,19 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 			$items=$this->getItems();
 			$hasSeparator=$this->_separatorTemplate!==null;
 			if($this->_headerTemplate!==null)
-				$this->_header=$this->createItemInternal(-1,'Header',false,null);
+				$this->_header=$this->createItemInternal(-1,self::IT_HEADER,false,null);
 			for($i=0;$i<$itemCount;++$i)
 			{
 				if($hasSeparator && $i>0)
-					$this->createItemInternal($i-1,'Separator',false,null);
-				$itemType=$i%2==0?'Item':'AlternatingItem';
+					$this->createItemInternal($i-1,self::IT_SEPARATOR,false,null);
+				$itemType=$i%2==0?self::IT_ITEM:self::IT_ALTERNATINGITEM;
 				$items->add($this->createItemInternal($i,$itemType,false,null));
 			}
 			if($this->_footerTemplate!==null)
-				$this->_footer=$this->createItemInternal(-1,'Footer',false,null);
+				$this->_footer=$this->createItemInternal(-1,self::IT_FOOTER,false,null);
 		}
 		else if($this->_emptyTemplate!==null)
-			$this->createItemInternal(-1,'Empty',false,null);
+			$this->createItemInternal(-1,self::IT_EMPTY,false,null);
 		$this->clearChildState();
 	}
 
@@ -405,17 +411,17 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 		foreach($data as $dataItem)
 		{
 			if($itemIndex===0 && $this->_headerTemplate!==null)
-				$this->_header=$this->createItemInternal(-1,'Header',true,null);
+				$this->_header=$this->createItemInternal(-1,self::IT_HEADER,true,null);
 			if($hasSeparator && $itemIndex>0)
-				$this->createItemInternal($itemIndex-1,'Separator',true,null);
-			$itemType=$itemIndex%2==0?'Item':'AlternatingItem';
+				$this->createItemInternal($itemIndex-1,self::IT_SEPARATOR,true,null);
+			$itemType=$itemIndex%2==0?self::IT_ITEM:self::IT_ALTERNATINGITEM;
 			$items->add($this->createItemInternal($itemIndex,$itemType,true,$dataItem));
 			$itemIndex++;
 		}
 		if($itemIndex>0 && $this->_footerTemplate!==null)
-			$this->_footer=$this->createItemInternal(-1,'Footer',true,null);
+			$this->_footer=$this->createItemInternal(-1,self::IT_FOOTER,true,null);
 		if($itemIndex===0 && $this->_emptyTemplate!==null)
-			$this->createItemInternal(-1,'Empty',true,null);
+			$this->createItemInternal(-1,self::IT_EMPTY,true,null);
 		$this->setViewState('ItemCount',$itemIndex,0);
 	}
 
@@ -622,7 +628,7 @@ class TRepeaterItem extends TControl implements INamingContainer
 	public function __construct($itemIndex,$itemType)
 	{
 		$this->_itemIndex=$itemIndex;
-		$this->_itemType=TPropertyValue::ensureEnum($itemType,'Header','Footer','Empty','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager');
+		$this->_itemType=$itemType;
 	}
 
 	/**

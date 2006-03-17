@@ -2,18 +2,10 @@
 
 Prado::using('System.Web.UI.WebControls.TMultiView');
 Prado::using('System.Web.UI.WebControls.TPanel');
-
-/**
-
-containment relationship
-
-wizard <div>
-    sidebar <div>
-    header <div>
-    step <div>
-    <div>
-      navigation
-*/
+Prado::using('System.Web.UI.WebControls.TButton');
+Prado::using('System.Web.UI.WebControls.TLinkButton');
+Prado::using('System.Web.UI.WebControls.TImageButton');
+Prado::using('System.Web.UI.WebControls.TDataList');
 
 /**
  * Class TWizard.
@@ -64,10 +56,14 @@ class TWizard extends TWebControl implements INamingContainer
 	private $_wizardSteps=null;
 
 	private $_header;
+	private $_stepContent;
+	private $_sideBar;
 	private $_startNavigation;
 	private $_stepNavigation;
 	private $_finishNavigation;
 	private $_activeStepIndexSet=false;
+	private $_sideBarDataList;
+
 	/**
 	 * @return string tag name for the wizard
 	 */
@@ -82,7 +78,7 @@ class TWizard extends TWebControl implements INamingContainer
 			$this->getWizardSteps()->add($object);
 	}
 
-	// SideBarDataList, History
+	// SideBarDataLis
 
 	/**
 	 * @return TWizardStep the currently active wizard step
@@ -111,7 +107,11 @@ class TWizard extends TWebControl implements INamingContainer
 		{
 			$multiView->setActiveViewIndex($value);
 			$this->_activeStepIndexSet=true;
-			// update sidebar list
+			if($this->_sideBarDataList!==null && $this->getSideBarTemplate()!==null)
+			{
+				$this->_sideBarDataList->setSelectedIndex($this->getActiveStepIndex());
+				$this->_sideBarDataList->dataBind();
+			}
 		}
 	}
 
@@ -289,7 +289,7 @@ class TWizard extends TWebControl implements INamingContainer
 	{
 		if(($style=$this->getViewState('NavigationButtonStyle',null))===null)
 		{
-			$style=new TWizardNavigationButtonStyle;
+			$style=new TStyle;
 			$this->setViewState('NavigationButtonStyle',$style,null);
 		}
 		return $style;
@@ -560,24 +560,47 @@ class TWizard extends TWebControl implements INamingContainer
 	protected function applyControlProperties()
 	{
 		$this->applyHeaderProperties();
+		$this->applySideBarProperties();
+		$this->applyStepContentProperties();
 		$this->applyNavigationProperties();
 	}
 
 	protected function applyHeaderProperties()
 	{
-		$headerTemplate=$this->getHeaderTemplate();
-		if($headerTemplate===null && $this->getHeaderText()==='')
-			$this->_header->setVisible(false);
-		else
+		if(($style=$this->getViewState('HeaderStyle',null))!==null)
+			$this->_header->getStyle()->mergeWith($style);
+		if($this->getHeaderTemplate()===null)
 		{
-			if(($style=$this->getViewState('HeaderStyle',null))!==null)
-				$this->_header->getStyle()->mergeWith($style);
-			if($headerTemplate===null)
+			$this->_header->getControls()->clear();
+			$this->_header->getControls()->add($this->getHeaderText());
+		}
+	}
+
+	protected function applySideBarProperties()
+	{
+		if($this->_sideBarDataList!==null && $this->getDisplaySideBar())
+		{
+			$this->_sideBarDataList->setDataSource($this->getWizardSteps());
+			$this->_sideBarDataList->setSelectedItemIndex($this->getActiveStepIndex());
+			$this->_sideBarDataList->dataBind();
+			if($this->getSideBarTemplate()!==null)
 			{
-				$this->_header->getControls()->clear();
-				$this->_header->getControls()->add($this->getHeaderText());
+				$style=$this->getSideBarButtonStyle();
+				foreach($this->_sideBarDataList->getItems() as $item)
+				{
+					if(($button=$item->findControl('SideBarButton'))!==null)
+						$button->getStyle()->mergeWith($style);
+				}
 			}
 		}
+		if(($style=$this->getViewState('SideBarStyle',null))!==null)
+			$this->_sideBar->getStyle()->mergeWith($style);
+	}
+
+	protected function applyStepContentProperties()
+	{
+		if(($style=$this->getViewState('StepStyle',null))!==null)
+			$this->_stepContent->getStyle()->mergeWith($style);
 	}
 
 	protected function applyNavigationProperties()
@@ -700,77 +723,180 @@ class TWizard extends TWebControl implements INamingContainer
 			return $type;
 	}
 
-	protected function createChildControls()
+	protected function reset()
 	{
-		// reset wizard in case this was invoked previously
 		$this->getControls()->clear();
 		$this->_header=null;
+		$this->_stepContent=null;
+		$this->_sideBar=null;
+		$this->_sideBarDataList=null;
 		$this->_startNavigation=null;
 		$this->_stepNavigation=null;
 		$this->_finishNavigation=null;
 
-		// side bar
-		if($this->getDisplaySideBar())
-		{
-			// render side bar here
-		}
+	}
 
-		// header
+	protected function createChildControls()
+	{
+		$this->reset();
+		$this->createSideBar();
+		$this->createHeader();
+		$this->createStepContents();
+		$this->createNavigation();
+//		$this->clearChildState();
+	}
+
+	protected function createHeader()
+	{
 		$this->_header=new TPanel;
 		if(($template=$this->getHeaderTemplate())!==null)
 			$template->instantiateIn($this->_header);
 		else
 			$this->_header->getControls()->add($this->getHeaderText());
 		$this->getControls()->add($this->_header);
+	}
 
-		// steps
-		$content=new TPanel;
-		$content->setID('WizardStep');
-		$content->getControls()->add($this->getMultiView());
+	protected function createSideBar()
+	{
+		if($this->getDisplaySideBar())
+		{
+			if(($template=$this->getSideBarTemplate())!==null)
+			{
+				$this->_sideBar=new TPanel;
+				$template->instantiateIn($this->_sideBar);
+			}
+			else
+				$this->_sideBar=$this->createDefaultSideBar();
+
+			$this->getControls()->add($this->_sideBar);
+
+			if(($this->_sideBarDataList=$this->_sideBar->findControl('SideBarList'))!==null)
+			{
+				$this->_sideBarDataList->attachEventHandler('OnItemCommand',array($this,'dataListItemCommand'));
+				$this->_sideBarDataList->attachEventHandler('OnItemDataBound',array($this,'dataListItemDataBound'));
+				$this->_sideBarDataList->setDataSource($this->getWizardSteps());
+				$this->_sideBarDataList->setSelectedItemIndex($this->getActiveStepIndex());
+				$this->_sideBarDataList->dataBind();
+			}
+		}
+		else
+		{
+			$this->_sideBar=new TPanel;
+			$this->getControls()->add($this->_sideBar);
+		}
+	}
+
+	protected function createDefaultSideBar()
+	{
+		$sideBar=new TPanel;
+		$dataList=new TDataList;
+		$dataList->setID('SideBarList');
+		$dataList->getSelectedItemStyle()->getFont()->setBold(true);
+		$dataList->setItemTemplate(new TWizardSideBarListItemTemplate);
+		$sideBar->getControls()->add($dataList);
+		return $sideBar;
+	}
+
+	public function dataListItemCommand($sender,$param)
+	{
+		$item=$param->getItem();
+		if($param->getCommandName()===self::CMD_MOVETO)
+		{
+			$stepIndex=$this->getActiveStepIndex();
+			$newStepIndex=TPropertyValue::ensureInteger($param->getCommandParameter());
+			$navParam=new TWizardNavigationEventParameter($stepIndex);
+			$navParam->setNextStepIndex($newStepIndex);
+			if($sender!==null && ($page=$this->getPage())!==null && !$page->getIsValid())
+				$navParam->setCancelNavigation(true);
+			$this->_activeStepIndexSet=false;
+			$this->onSideBarButtonClick($navParam);
+			if(!$navParam->getCancelNavigation())
+			{
+				if(!$this->_activeStepIndexSet && $this->allowNavigationToStep($newStepIndex))
+					$this->setActiveStepIndex($newStepIndex);
+			}
+			else
+				$this->setActiveStepIndex($stepIndex);
+		}
+	}
+
+	public function dataListItemDataBound($sender,$param)
+	{
+		$item=$param->getItem();
+		$itemType=$item->getItemType();
+		if($itemType==='Item' || $itemType==='AlternatingItem' || $itemType==='SelectedItem' || $itemType==='EditItem')
+		{
+			if(($button=$item->findControl('SideBarButton'))!==null)
+			{
+				$step=$item->getDataItem();
+				if(($this->getStepType($step)==='Complete'))
+					$button->setEnabled(false);
+				if(($title=$step->getTitle())!=='')
+					$button->setText($title);
+				else
+					$button->setText($step->getID(false));
+				$index=$this->getWizardSteps()->indexOf($step);
+				$button->setCommandName(self::CMD_MOVETO);
+				$button->setCommandParameter("$index");
+				//if($button->getCausesValidation())
+				//	$button->attachEventHandler('OnCommand',array($this,'onCommand'));
+			}
+		}
+	}
+
+	protected function createStepContents()
+	{
+		$this->_stepContent=new TPanel;
+		$this->_stepContent->getControls()->add($this->getMultiView());
 		$this->getMultiView()->setActiveViewIndex(0);
-		$this->getControls()->add($content);
+		$this->getControls()->add($this->_stepContent);
+	}
 
-		$this->createStartNavigation();
-		$this->createStepNavigation();
-		$this->createFinishNavigation();
-
-		$this->clearChildState();
+	protected function createNavigation()
+	{
+		$controls=$this->getControls();
+		$this->_startNavigation=$this->createStartNavigation();
+		$controls->add($this->_startNavigation);
+		$this->_stepNavigation=$this->createStepNavigation();
+		$controls->add($this->_stepNavigation);
+		$this->_finishNavigation=$this->createFinishNavigation();
+		$controls->add($this->_finishNavigation);
 	}
 
 	protected function createStartNavigation()
 	{
 		if(($template=$this->getStartNavigationTemplate())!==null)
 		{
-			$this->_startNavigation=new TPanel;
-			$template->instantiateIn($this->_startNavigation);
+			$navigation=new TPanel;
+			$template->instantiateIn($navigation);
 		}
 		else
-			$this->_startNavigation=$this->createDefaultStartNavigation();
-		$this->getControls()->add($this->_startNavigation);
+			$navigation=$this->createDefaultStartNavigation();
+		return $navigation;
 	}
 
 	protected function createStepNavigation()
 	{
 		if(($template=$this->getStepNavigationTemplate())!==null)
 		{
-			$this->_stepNavigation=new TPanel;
-			$template->instantiateIn($this->_stepNavigation);
+			$navigation=new TPanel;
+			$template->instantiateIn($navigation);
 		}
 		else
-			$this->_stepNavigation=$this->createDefaultStepNavigation();
-		$this->getControls()->add($this->_stepNavigation);
+			$navigation=$this->createDefaultStepNavigation();
+		return $navigation;
 	}
 
 	protected function createFinishNavigation()
 	{
 		if(($template=$this->getFinishNavigationTemplate())!==null)
 		{
-			$this->_finishNavigation=new TPanel;
-			$template->instantiateIn($this->_finishNavigation);
+			$navigation=new TPanel;
+			$template->instantiateIn($navigation);
 		}
 		else
-			$this->_finishNavigation=$this->createDefaultFinishNavigation();
-		$this->getControls()->add($this->_finishNavigation);
+			$navigation=$this->createDefaultFinishNavigation();
+		return $navigation;
 	}
 
 	protected function createDefaultStartNavigation()
@@ -820,13 +946,13 @@ class TWizard extends TWebControl implements INamingContainer
 		switch($buttonStyle->getButtonType())
 		{
 			case 'Button':
-				$button=Prado::createComponent('System.Web.UI.WebControls.TButton');
+				$button=new TButton;
 				break;
 			case 'Link'  :
-				$button=Prado::createComponent('System.Web.UI.WebControls.TLinkButton');
+				$button=new TLinkButton;
 				break;
 			case 'Image' :
-				$button=Prado::createComponent('System.Web.UI.WebControls.TImageButton');
+				$button=new TImageButton;
 				$button->setImageUrl($style->getImageUrl());
 				break;
 			default:
@@ -1298,6 +1424,16 @@ class TWizardNavigationEventParameter extends TEventParameter
 	public function setCancelNavigation($value)
 	{
 		$this->_cancel=TPropertyValue::ensureBoolean($value);
+	}
+}
+
+class TWizardSideBarListItemTemplate extends TComponent implements ITemplate
+{
+	public function instantiateIn($parent)
+	{
+		$button=new TLinkButton;
+		$button->setID('SideBarButton');
+		$parent->getControls()->add($button);
 	}
 }
 

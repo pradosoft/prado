@@ -134,6 +134,21 @@ Prado::using('System.Web.UI.WebControls.TTable');
  */
 class TDataGrid extends TBaseDataList implements INamingContainer
 {
+	/**
+	 * datagrid item types
+	 */
+	const IT_HEADER='Header';
+	const IT_FOOTER='Footer';
+	const IT_ITEM='Item';
+	const IT_SEPARATOR='Separator';
+	const IT_ALTERNATINGITEM='AlternatingItem';
+	const IT_EDITITEM='EditItem';
+	const IT_SELECTEDITEM='SelectedItem';
+	const IT_PAGER='Pager';
+
+	/**
+	 * Command name that TDataGrid understands.
+	 */
 	const CMD_SELECT='Select';
 	const CMD_EDIT='Edit';
 	const CMD_UPDATE='Update';
@@ -395,14 +410,14 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			if($current>=0 && $current<$itemCount)
 			{
 				$item=$items->itemAt($current);
-				if($item->getItemType()!=='EditItem')
-					$item->setItemType($current%2?'AlternatingItem':'Item');
+				if($item->getItemType()!==self::IT_EDITITEM)
+					$item->setItemType($current%2?self::IT_ALTERNATINGITEM:self::IT_ITEM);
 			}
 			if($value>=0 && $value<$itemCount)
 			{
 				$item=$items->itemAt($value);
-				if($item->getItemType()!=='EditItem')
-					$item->setItemType('SelectedItem');
+				if($item->getItemType()!==self::IT_EDITITEM)
+					$item->setItemType(self::IT_SELECTEDITEM);
 			}
 		}
 	}
@@ -445,9 +460,9 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			$items=$this->getItems();
 			$itemCount=$items->getCount();
 			if($current>=0 && $current<$itemCount)
-				$items->itemAt($current)->setItemType($current%2?'AlternatingItem':'Item');
+				$items->itemAt($current)->setItemType($current%2?self::IT_ALTERNATINGITEM:self::IT_ITEM);
 			if($value>=0 && $value<$itemCount)
-				$items->itemAt($value)->setItemType('EditItem');
+				$items->itemAt($value)->setItemType(self::IT_EDITITEM);
 		}
 	}
 
@@ -901,7 +916,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 				$column->initialize();
 			if($allowPaging)
 				$this->createPager(-1,-1,$columnCount,$ds);
-			$this->_header=$this->createItemInternal(-1,-1,'Header',false,null,$columns);
+			$this->_header=$this->createItemInternal(-1,-1,self::IT_HEADER,false,null,$columns);
 			$selectedIndex=$this->getSelectedItemIndex();
 			$editIndex=$this->getEditItemIndex();
 			$index=0;
@@ -909,18 +924,18 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			foreach($ds as $data)
 			{
 				if($index===$editIndex)
-					$itemType='EditItem';
+					$itemType=self::IT_EDITITEM;
 				else if($index===$selectedIndex)
-					$itemType='SelectedItem';
+					$itemType=self::IT_SELECTEDITEM;
 				else if($index % 2)
-					$itemType='AlternatingItem';
+					$itemType=self::IT_ALTERNATINGITEM;
 				else
-					$itemType='Item';
+					$itemType=self::IT_ITEM;
 				$items->add($this->createItemInternal($index,$dsIndex,$itemType,false,null,$columns));
 				$index++;
 				$dsIndex++;
 			}
-			$this->_footer=$this->createItemInternal(-1,-1,'Footer',false,null,$columns);
+			$this->_footer=$this->createItemInternal(-1,-1,self::IT_FOOTER,false,null,$columns);
 			if($allowPaging)
 				$this->createPager(-1,-1,$columnCount,$ds);
 		}
@@ -963,7 +978,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			$allowPaging=$ds->getAllowPaging();
 			if($allowPaging)
 				$this->createPager(-1,-1,$columnCount,$ds);
-			$this->_header=$this->createItemInternal(-1,-1,'Header',true,null,$columns);
+			$this->_header=$this->createItemInternal(-1,-1,self::IT_HEADER,true,null,$columns);
 			$selectedIndex=$this->getSelectedItemIndex();
 			$editIndex=$this->getEditItemIndex();
 			$index=0;
@@ -973,18 +988,18 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 				if($keyField!=='')
 					$keys->add($this->getDataFieldValue($data,$keyField));
 				if($index===$editIndex)
-					$itemType='EditItem';
+					$itemType=self::IT_EDITITEM;
 				else if($index===$selectedIndex)
-					$itemType='SelectedItem';
+					$itemType=self::IT_SELECTEDITEM;
 				else if($index % 2)
-					$itemType='AlternatingItem';
+					$itemType=self::IT_ALTERNATINGITEM;
 				else
-					$itemType='Item';
+					$itemType=self::IT_ITEM;
 				$items->add($this->createItemInternal($index,$dsIndex,$itemType,true,$data,$columns));
 				$index++;
 				$dsIndex++;
 			}
-			$this->_footer=$this->createItemInternal(-1,-1,'Footer',true,null,$columns);
+			$this->_footer=$this->createItemInternal(-1,-1,self::IT_FOOTER,true,null,$columns);
 			if($allowPaging)
 				$this->createPager(-1,-1,$columnCount,$ds);
 			$this->setViewState('ItemCount',$index,0);
@@ -1003,7 +1018,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	/**
 	 * Creates a datagrid item instance based on the item type and index.
 	 * @param integer zero-based item index
-	 * @param string item type, may be 'Header', 'Footer', 'Item', 'Separator', 'AlternatingItem', 'SelectedItem', 'EditItem'.
+	 * @param string item type, may be self::IT_HEADER, self::IT_FOOTER, self::IT_ITEM, self::IT_SEPARATOR, self::IT_ALTERNATINGITEM, self::IT_SELECTEDITEM, self::IT_EDITITEM.
 	 * @return TDataGridItem created data list item
 	 */
 	protected function createItem($itemIndex,$dataSourceIndex,$itemType)
@@ -1045,7 +1060,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		$index=0;
 		foreach($columns as $column)
 		{
-			if($itemType==='Header')
+			if($itemType===self::IT_HEADER)
 				$cell=new TTableHeaderCell;
 			else
 				$cell=new TTableCell;
@@ -1057,7 +1072,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 
 	private function createPager($itemIndex,$dataSourceIndex,$columnSpan,$pagedDataSource)
 	{
-		$item=$this->createItem($itemIndex,$dataSourceIndex,'Pager');
+		$item=$this->createItem($itemIndex,$dataSourceIndex,self::IT_PAGER);
 		$this->initializePager($item,$columnSpan,$pagedDataSource);
 		$this->onItemCreated(new TDataGridItemEventParameter($item));
 		$this->getControls()->add($item);
@@ -1258,9 +1273,9 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 				}
 				else
 				{
-					$column->setHeaderText('Item');
+					$column->setHeaderText(self::IT_ITEM);
 					$column->setDataField($key);
-					$column->setSortExpression('Item');
+					$column->setSortExpression(self::IT_ITEM);
 					$autoColumns->add($column);
 				}
 			}
@@ -1322,31 +1337,31 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			$itemType=$item->getItemType();
 			switch($itemType)
 			{
-				case 'Header':
+				case self::IT_HEADER:
 					if($headerStyle)
 						$item->getStyle()->mergeWith($headerStyle);
 					if(!$this->getShowHeader())
 						$item->setVisible(false);
 					break;
-				case 'Footer':
+				case self::IT_FOOTER:
 					if($footerStyle)
 						$item->getStyle()->mergeWith($footerStyle);
 					if(!$this->getShowFooter())
 						$item->setVisible(false);
 					break;
-				case 'Separator':
+				case self::IT_SEPARATOR:
 					if($separatorStyle)
 						$item->getStyle()->mergeWith($separatorStyle);
 					break;
-				case 'Item':
+				case self::IT_ITEM:
 					if($itemStyle)
 						$item->getStyle()->mergeWith($itemStyle);
 					break;
-				case 'AlternatingItem':
+				case self::IT_ALTERNATINGITEM:
 					if($alternatingItemStyle)
 						$item->getStyle()->mergeWith($alternatingItemStyle);
 					break;
-				case 'SelectedItem':
+				case self::IT_SELECTEDITEM:
 					if($selectedItemStyle)
 						$item->getStyle()->mergeWith($selectedItemStyle);
 					if($index % 2==1)
@@ -1360,7 +1375,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 							$item->getStyle()->mergeWith($alternatingItemStyle);
 					}
 					break;
-				case 'EditItem':
+				case self::IT_EDITITEM:
 					if($editItemStyle)
 						$item->getStyle()->mergeWith($editItemStyle);
 					if($index % 2==1)
@@ -1374,7 +1389,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 							$item->getStyle()->mergeWith($alternatingItemStyle);
 					}
 					break;
-				case 'Pager':
+				case self::IT_PAGER:
 					if($pagerStyle)
 					{
 						$item->getStyle()->mergeWith($pagerStyle);
@@ -1393,7 +1408,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 				default:
 					break;
 			}
-			if($this->_columns && $itemType!=='Pager')
+			if($this->_columns && $itemType!==self::IT_PAGER)
 			{
 				$n=$this->_columns->getCount();
 				$cells=$item->getCells();
@@ -1405,9 +1420,9 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 						$cell->setVisible(false);
 					else
 					{
-						if($itemType==='Header')
+						if($itemType===self::IT_HEADER)
 							$style=$column->getHeaderStyle(false);
-						else if($itemType==='Footer')
+						else if($itemType===self::IT_FOOTER)
 							$style=$column->getFooterStyle(false);
 						else
 							$style=$column->getItemStyle(false);
@@ -1416,7 +1431,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 					}
 				}
 			}
-			else if($itemType==='Pager' && $invisibleColumns>0)
+			else if($itemType===self::IT_PAGER && $invisibleColumns>0)
 			{
 				$cell=$item->getCells()->itemAt(0);
 				$cell->setColumnSpan($cell->getColumnSpan()-$invisibleColumns);
@@ -1689,7 +1704,7 @@ class TDataGridItem extends TTableRow implements INamingContainer
 	}
 
 	/**
-	 * @return string item type, can be 'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager'
+	 * @return string item type.
 	 */
 	public function getItemType()
 	{
@@ -1697,11 +1712,11 @@ class TDataGridItem extends TTableRow implements INamingContainer
 	}
 
 	/**
-	 * @param mixed data to be associated with the item
+	 * @param string item type, can be 'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager'
 	 */
 	public function setItemType($value)
 	{
-		$this->_itemType=TPropertyValue::ensureEnum($value,'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager');
+		$this->_itemType=$value;
 	}
 
 	/**

@@ -138,18 +138,18 @@ class TTemplateColumn extends TDataGridColumn
 		$template=null;
 		switch($itemType)
 		{
-			case 'Header':
+			case TDataGrid::IT_HEADER:
 				$template=$this->_headerTemplate;
 				break;
-			case 'Footer':
+			case TDataGrid::IT_FOOTER:
 				$template=$this->_footerTemplate;
 				break;
-			case 'Item':
-			case 'AlternatingItem':
-			case 'SelectedItem':
+			case TDataGrid::IT_ITEM:
+			case TDataGrid::IT_ALTERNATINGITEM:
+			case TDataGrid::IT_SELECTEDITEM:
 				$template=$this->_itemTemplate;
 				break;
-			case 'EditItem':
+			case TDataGrid::IT_EDITITEM:
 				$template=$this->_editItemTemplate===null?$this->_itemTemplate:$this->_editItemTemplate;
 				break;
 		}
@@ -159,7 +159,7 @@ class TTemplateColumn extends TDataGridColumn
 			$cell->getControls()->clear();
 			$template->instantiateIn($cell);
 		}
-		else if($itemType==='Item' || $itemType==='AlternatingItem' || $itemType==='SelectedItem' || $itemType==='EditItem')
+		else if($itemType===TDataGrid::IT_ITEM || $itemType===TDataGrid::IT_ALTERNATINGITEM || $itemType===TDataGrid::IT_SELECTEDITEM || $itemType===TDataGrid::IT_EDITITEM)
 			$cell->setText('&nbsp;');
 	}
 }

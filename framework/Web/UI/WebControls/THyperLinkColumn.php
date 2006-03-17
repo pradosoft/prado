@@ -14,6 +14,10 @@
  * TDataGridColumn class file
  */
 Prado::using('System.Web.UI.WebControls.TDataGridColumn');
+/**
+ * THyperLink class file
+ */
+Prado::using('System.Web.UI.WebControls.THyperLink');
 
 /**
  * THyperLinkColumn class
@@ -165,9 +169,9 @@ class THyperLinkColumn extends TDataGridColumn
 	public function initializeCell($cell,$columnIndex,$itemType)
 	{
 		parent::initializeCell($cell,$columnIndex,$itemType);
-		if($itemType==='Item' || $itemType==='AlternatingItem' || $itemType==='SelectedItem' || $itemType==='EditItem')
+		if($itemType===TDataGrid::IT_ITEM || $itemType===TDataGrid::IT_ALTERNATINGITEM || $itemType===TDataGrid::IT_SELECTEDITEM || $itemType===TDataGrid::IT_EDITITEM)
 		{
-			$link=Prado::createComponent('System.Web.UI.WebControls.THyperLink');
+			$link=new THyperLink;
 			$link->setText($this->getText());
 			$link->setNavigateUrl($this->getNavigateUrl());
 			$link->setTarget($this->getTarget());

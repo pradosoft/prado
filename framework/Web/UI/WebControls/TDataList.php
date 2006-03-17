@@ -99,6 +99,15 @@ Prado::using('System.Web.UI.WebControls.TRepeatInfo');
 class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUser
 {
 	/**
+	 * Command name that TDataList understands.
+	 */
+	const CMD_SELECT='Select';
+	const CMD_EDIT='Edit';
+	const CMD_UPDATE='Update';
+	const CMD_DELETE='Delete';
+	const CMD_CANCEL='Cancel';
+
+	/**
 	 * @var TDataListItemCollection item list
 	 */
 	private $_items=null;
@@ -645,28 +654,28 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 		{
 			$this->onItemCommand($param);
 			$command=$param->getCommandName();
-			if(strcasecmp($command,'select')===0)
+			if(strcasecmp($command,self::CMD_SELECT)===0)
 			{
 				$this->setSelectedItemIndex($param->getItem()->getItemIndex());
 				$this->onSelectedIndexChanged(null);
 				return true;
 			}
-			else if(strcasecmp($command,'edit')===0)
+			else if(strcasecmp($command,self::CMD_EDIT)===0)
 			{
 				$this->onEditCommand($param);
 				return true;
 			}
-			else if(strcasecmp($command,'delete')===0)
+			else if(strcasecmp($command,self::CMD_DELETE)===0)
 			{
 				$this->onDeleteCommand($param);
 				return true;
 			}
-			else if(strcasecmp($command,'update')===0)
+			else if(strcasecmp($command,self::CMD_UPDATE)===0)
 			{
 				$this->onUpdateCommand($param);
 				return true;
 			}
-			else if(strcasecmp($command,'cancel')===0)
+			else if(strcasecmp($command,self::CMD_CANCEL)===0)
 			{
 				$this->onCancelCommand($param);
 				return true;

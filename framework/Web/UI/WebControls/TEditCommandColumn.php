@@ -153,9 +153,9 @@ class TEditCommandColumn extends TDataGridColumn
 	public function initializeCell($cell,$columnIndex,$itemType)
 	{
 		parent::initializeCell($cell,$columnIndex,$itemType);
-		if($itemType==='Item' || $itemType==='AlternatingItem' || $itemType==='SelectedItem')
+		if($itemType===TDataGrid::IT_ITEM || $itemType===TDataGrid::IT_ALTERNATINGITEM || $itemType===TDataGrid::IT_SELECTEDITEM)
 			$cell->getControls()->add($this->createButton('Edit',$this->getEditText(),false,''));
-		else if($itemType==='EditItem')
+		else if($itemType===TDataGrid::IT_EDITITEM)
 		{
 			$controls=$cell->getControls();
 			$controls->add($this->createButton('Update',$this->getUpdateText(),$this->getCausesValidation(),$this->getValidationGroup()));
