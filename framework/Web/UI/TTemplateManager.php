@@ -739,7 +739,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 		{
 			foreach($attributes as $name=>$att)
 			{
-				if($att[0]===self::CONFIG_DATABIND)
+				if(is_array($att) && $att[0]===self::CONFIG_DATABIND)
 					throw new TConfigurationException('template_databind_forbidden',$type,$name);
 				if(($pos=strpos($name,'.'))!==false)
 				{
