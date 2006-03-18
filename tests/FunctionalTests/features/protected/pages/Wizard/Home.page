@@ -1,0 +1,27 @@
+<com:TContent ID="Content">
+
+<com:TWizard
+	HeaderText="Wizard Test"
+	Width="300px"
+	NavigationStyle.BackColor="silver"
+	NavigationButtonStyle.BackColor="green"
+	FinishCompleteButtonStyle.BackColor="red"
+	>
+  <com:TWizardStep Title="Step 1">
+    step 1
+    <com:TTextBox Text="step 1" ID="TextBox1" />
+    <com:TRequiredFieldValidator ControlToValidate="TextBox1" Text="required 1" />
+  </com:TWizardStep>
+  <com:TWizardStep Title="Step 2">
+    step 2
+    <com:TTextBox Text="step 2" ID="TextBox2" />
+    <com:TRequiredFieldValidator ControlToValidate="TextBox2" Text="required 2" />
+  </com:TWizardStep>
+  <com:TWizardStep Title="Step 3">
+    step 3
+    <com:TTextBox Text="step 3" ID="TextBox3" />
+    <com:TRequiredFieldValidator ControlToValidate="TextBox3" Text="required 3" />
+  </com:TWizardStep>
+</com:TWizard>
+
+</com:TContent>
