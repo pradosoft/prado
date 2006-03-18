@@ -1885,6 +1885,7 @@ Prado.WebUI.TLinkButton=Prado.WebUI.ClickableComponent;
 Prado.WebUI.TImageButton=Prado.WebUI.ClickableComponent;
 Prado.WebUI.TCheckBox=Prado.WebUI.ClickableComponent;
 Prado.WebUI.TBulletedList=Prado.WebUI.ClickableComponent;
+Prado.WebUI.TImageMap=Prado.WebUI.ClickableComponent;
 Prado.WebUI.TRadioButton=Prado.WebUI.createPostBackComponent(Prado.WebUI.ClickableComponent.prototype);
 Prado.WebUI.TRadioButton.prototype.onRadioButtonInitialize=Prado.WebUI.TRadioButton.prototype.initialize;
 Object.extend(Prado.WebUI.TRadioButton.prototype,{initialize:function(_431){

@@ -331,14 +331,6 @@ pos[1]+=this.control.offsetHeight;
 }else{
 if($(this.options.ID+"_day")){
 pos[1]+=$(this.options.ID+"_day").offsetHeight-1;
-}else{
-if($(this.options.ID+"_month")){
-pos[1]+=$(this.options.ID+"_month").offsetHeight-1;
-}else{
-if($(this.options.ID+"_year")){
-pos[1]+=$(this.options.ID+"_year").offsetHeight-1;
-}
-}
 }
 }
 this._calDiv.style.display="block";

@@ -10,6 +10,8 @@ BUG: THttpSession fails when user storage module is used (Qiang)
 ENH: TDataFieldAccessor can access public class variables (Qiang)
 NEW: TSQLMap module (Wei)
 NEW: TStack class (Qiang)
+NEW: TImageMap control (Qiang)
+NEW: TWizard control (Qiang)
 
 Version 3.0b March 6, 2006
 ==========================

@@ -72,6 +72,7 @@ Prado.WebUI.TLinkButton = Prado.WebUI.ClickableComponent;
 Prado.WebUI.TImageButton = Prado.WebUI.ClickableComponent;
 Prado.WebUI.TCheckBox = Prado.WebUI.ClickableComponent;
 Prado.WebUI.TBulletedList = Prado.WebUI.ClickableComponent;
+Prado.WebUI.TImageMap = Prado.WebUI.ClickableComponent;
 
 /**
  * Radio button, only initialize if not already checked.
@@ -154,7 +155,7 @@ Prado.WebUI.TTextHighlighter=Class.create();
 Prado.WebUI.TTextHighlighter.prototype={initialize:function(id)
 {
 	if(!window.clipboardData) return;
-	var options = 
+	var options =
 	{
 		href : 'javascript:;//copy code to clipboard',
 		onclick : 'Prado.WebUI.TTextHighlighter.copy(this)',
@@ -166,7 +167,7 @@ Prado.WebUI.TTextHighlighter.prototype={initialize:function(id)
 }};
 
 Object.extend(Prado.WebUI.TTextHighlighter,
-{	
+{
 	copy : function(obj)
 	{
 		var parent = obj.parentNode.parentNode.parentNode;
@@ -182,7 +183,7 @@ Object.extend(Prado.WebUI.TTextHighlighter,
 		if(text.length > 0)
 			window.clipboardData.setData("Text", text);
 	},
-	
+
 	hover : function(obj)
 	{
 		obj.parentNode.className = "copycode copycode_hover";
