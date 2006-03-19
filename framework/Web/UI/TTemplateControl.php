@@ -159,7 +159,7 @@ class TTemplateControl extends TControl implements INamingContainer
 	 */
 	public function registerContentPlaceHolder($id,TContentPlaceHolder $object)
 	{
-		if(isset($this->_contents[$id]))
+		if(isset($this->_placeholders[$id]))
 			throw new TConfigurationException('templatecontrol_placeholderid_duplicated',$id);
 		else
 			$this->_placeholders[$id]=$object;
