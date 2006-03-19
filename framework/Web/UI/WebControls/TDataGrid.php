@@ -22,6 +22,7 @@ Prado::using('System.Web.UI.WebControls.TBaseDataList');
 Prado::using('System.Collections.TPagedDataSource');
 Prado::using('System.Collections.TDummyDataSource');
 Prado::using('System.Web.UI.WebControls.TTable');
+Prado::using('System.Web.UI.WebControls.TPanel');
 
 /**
  * TDataGrid class
@@ -183,6 +184,8 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	 * @var TPagedDataSource paged data source object
 	 */
 	private $_pagedDataSource=null;
+	private $_topPager=null;
+	private $_bottomPager=null;
 
 	/**
 	 * @return string tag name (table) of the datagrid
@@ -367,6 +370,22 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	public function getFooter()
 	{
 		return $this->_footer;
+	}
+
+	/**
+	 * @return TDataGridPager the pager displayed at the top of datagrid. It could be null if paging is disabled.
+	 */
+	public function getTopPager()
+	{
+		return $this->_topPager;
+	}
+
+	/**
+	 * @return TDataGridPager the pager displayed at the bottom of datagrid. It could be null if paging is disabled.
+	 */
+	public function getBottomPager()
+	{
+		return $this->_bottomPager;
 	}
 
 	/**
@@ -774,6 +793,17 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
+	 * Raises <b>OnPagerCreated</b> event.
+	 * This method is invoked right after a datagrid pager is created and before
+	 * added to page hierarchy.
+	 * @param TDataGridPagerEventParameter event parameter
+	 */
+	public function onPagerCreated($param)
+	{
+		$this->raiseEvent('OnPagerCreated',$this,$param);
+	}
+
+	/**
 	 * Raises <b>OnItemDataBound</b> event.
 	 * This method is invoked for each datagrid item after it performs
 	 * databinding.
@@ -889,6 +919,8 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		$this->getItems()->clear();
 		$this->_header=null;
 		$this->_footer=null;
+		$this->_topPager=null;
+		$this->_bottomPager=null;
 	}
 
 	/**
@@ -910,12 +942,12 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		$items=$this->getItems();
 		$items->clear();
 
-		if(($columnCount=$columns->getCount())>0)
+		if($columns->getCount())
 		{
 			foreach($columns as $column)
 				$column->initialize();
 			if($allowPaging)
-				$this->createPager(-1,-1,$columnCount,$ds);
+				$this->_topPager=$this->createPager($ds);
 			$this->_header=$this->createItemInternal(-1,-1,self::IT_HEADER,false,null,$columns);
 			$selectedIndex=$this->getSelectedItemIndex();
 			$editIndex=$this->getEditItemIndex();
@@ -937,7 +969,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			}
 			$this->_footer=$this->createItemInternal(-1,-1,self::IT_FOOTER,false,null,$columns);
 			if($allowPaging)
-				$this->createPager(-1,-1,$columnCount,$ds);
+				$this->_bottomPager=$this->createPager($ds);
 		}
 		$this->_pagedDataSource=null;
 	}
@@ -971,13 +1003,13 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 
 		$items=$this->getItems();
 
-		if(($columnCount=$columns->getCount())>0)
+		if($columns->getCount())
 		{
 			foreach($columns as $column)
 				$column->initialize();
 			$allowPaging=$ds->getAllowPaging();
 			if($allowPaging)
-				$this->createPager(-1,-1,$columnCount,$ds);
+				$this->_topPager=$this->createPager($ds);
 			$this->_header=$this->createItemInternal(-1,-1,self::IT_HEADER,true,null,$columns);
 			$selectedIndex=$this->getSelectedItemIndex();
 			$editIndex=$this->getEditItemIndex();
@@ -1001,7 +1033,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			}
 			$this->_footer=$this->createItemInternal(-1,-1,self::IT_FOOTER,true,null,$columns);
 			if($allowPaging)
-				$this->createPager(-1,-1,$columnCount,$ds);
+				$this->_bottomPager=$this->createPager($ds);
 			$this->setViewState('ItemCount',$index,0);
 			$this->setViewState('PageCount',$ds->getPageCount(),0);
 			$this->setViewState('DataSourceCount',$ds->getDataSourceCount(),0);
@@ -1070,44 +1102,29 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		}
 	}
 
-	private function createPager($itemIndex,$dataSourceIndex,$columnSpan,$pagedDataSource)
+	private function createPager($pagedDataSource)
 	{
-		$item=$this->createItem($itemIndex,$dataSourceIndex,self::IT_PAGER);
-		$this->initializePager($item,$columnSpan,$pagedDataSource);
-		$this->onItemCreated(new TDataGridItemEventParameter($item));
-		$this->getControls()->add($item);
-		return $item;
-	}
-
-	/**
-	 * Initializes the pager.
-	 * @param TDataGridItem the pager to be initialized
-	 * @param integer columnspan for the pager
-	 * @param TPagedDataSource data source bound to the datagrid
-	 */
-	protected function initializePager($pager,$columnSpan,$pagedDataSource)
-	{
-		$cell=new TTableCell;
-		if($columnSpan>1)
-			$cell->setColumnSpan($columnSpan);
-		$this->buildPager($cell,$pagedDataSource);
-		$pager->getCells()->add($cell);
+		$pager=new TDataGridPager($this);
+		$this->buildPager($pager,$pagedDataSource);
+		$this->onPagerCreated(new TDataGridPagerEventParameter($pager));
+		$this->getControls()->add($pager);
+		return $pager;
 	}
 
 	/**
 	 * Builds the pager content based on pager style.
-	 * @param TTableCell table cell for the pager
+	 * @param TDataGridPager the container for the pager
 	 * @param TPagedDataSource data source bound to the datagrid
 	 */
-	protected function buildPager($cell,$dataSource)
+	protected function buildPager($pager,$dataSource)
 	{
 		switch($this->getPagerStyle()->getMode())
 		{
 			case 'NextPrev':
-				$this->buildNextPrevPager($cell,$dataSource);
+				$this->buildNextPrevPager($pager,$dataSource);
 				break;
 			case 'Numeric':
-				$this->buildNumericPager($cell,$dataSource);
+				$this->buildNumericPager($pager,$dataSource);
 				break;
 		}
 	}
@@ -1135,14 +1152,14 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 
 	/**
 	 * Builds a next-prev pager
-	 * @param TTableCell table cell for the pager
+	 * @param TDataGridPager the container for the pager
 	 * @param TPagedDataSource data source bound to the datagrid
 	 */
-	protected function buildNextPrevPager($cell,$dataSource)
+	protected function buildNextPrevPager($pager,$dataSource)
 	{
 		$style=$this->getPagerStyle();
 		$buttonType=$style->getButtonType();
-		$controls=$cell->getControls();
+		$controls=$pager->getControls();
 		if($dataSource->getIsFirstPage())
 		{
 			$label=$this->createPagerButton($buttonType,false);
@@ -1178,14 +1195,14 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 
 	/**
 	 * Builds a numeric pager
-	 * @param TTableCell table cell for the pager
+	 * @param TDataGridPager the container for the pager
 	 * @param TPagedDataSource data source bound to the datagrid
 	 */
-	protected function buildNumericPager($cell,$dataSource)
+	protected function buildNumericPager($pager,$dataSource)
 	{
 		$style=$this->getPagerStyle();
 		$buttonType=$style->getButtonType();
-		$controls=$cell->getControls();
+		$controls=$pager->getControls();
 		$pageCount=$dataSource->getPageCount();
 		$pageIndex=$dataSource->getCurrentPageIndex()+1;
 		$maxButtonCount=$style->getPageButtonCount();
@@ -1324,14 +1341,6 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		$pagerStyle=$this->getViewState('PagerStyle',null);
 		$separatorStyle=$this->getViewState('SeparatorStyle',null);
 
-		$invisibleColumns=0;
-		if($this->_columns)
-		{
-			foreach($this->_columns as $column)
-				if(!$column->getVisible())
-					$invisibleColumns++;
-		}
-
 		foreach($this->getControls() as $index=>$item)
 		{
 			$itemType=$item->getItemType();
@@ -1431,24 +1440,34 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 					}
 				}
 			}
-			else if($itemType===self::IT_PAGER && $invisibleColumns>0)
-			{
-				$cell=$item->getCells()->itemAt(0);
-				$cell->setColumnSpan($cell->getColumnSpan()-$invisibleColumns);
-			}
 		}
 	}
 
 	/**
-	 * Renders the content in the datagrid.
+	 * Renders the datagrid.
 	 * @param THtmlWriter writer for the rendering purpose
 	 */
-	public function renderContents($writer)
+	public function render($writer)
 	{
 		if($this->getHasControls())
 		{
 			$this->applyItemStyles();
-			parent::renderContents($writer);
+			if($this->_topPager)
+			{
+				$this->_topPager->renderControl($writer);
+				$writer->writeLine();
+			}
+			$this->renderBeginTag($writer);
+			$this->_header->renderControl($writer);
+			foreach($this->getItems() as $item)
+				$item->renderControl($writer);
+			$this->_footer->renderControl($writer);
+			$this->renderEndTag($writer);
+			if($this->_bottomPager)
+			{
+				$writer->writeLine();
+				$this->_bottomPager->renderControl($writer);
+			}
 		}
 	}
 }
@@ -1457,7 +1476,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
  * TDataGridItemEventParameter class
  *
  * TDataGridItemEventParameter encapsulates the parameter data for
- * {@link TDataGrid::onItemCreated ItemCreated} event of {@link TDataGrid} controls.
+ * {@link TDataGrid::onItemCreated OnItemCreated} event of {@link TDataGrid} controls.
  * The {@link getItem Item} property indicates the datagrid item related with the event.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -1488,6 +1507,44 @@ class TDataGridItemEventParameter extends TEventParameter
 	public function getItem()
 	{
 		return $this->_item;
+	}
+}
+
+/**
+ * TDataGridPagerEventParameter class
+ *
+ * TDataGridPagerEventParameter encapsulates the parameter data for
+ * {@link TDataGrid::onPagerCreated OnPagerCreated} event of {@link TDataGrid} controls.
+ * The {@link getPager Pager} property indicates the datagrid pager related with the event.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
+class TDataGridPagerEventParameter extends TEventParameter
+{
+	/**
+	 * The TDataGridPager control responsible for the event.
+	 * @var TDataGridPager
+	 */
+	private $_pager=null;
+
+	/**
+	 * Constructor.
+	 * @param TDataGridPager datagrid pager related with the corresponding event
+	 */
+	public function __construct(TDataGridPager $pager)
+	{
+		$this->_pager=$pager;
+	}
+
+	/**
+	 * @return TDataGridPager datagrid pager related with the corresponding event
+	 */
+	public function getPager()
+	{
+		return $this->_pager;
 	}
 }
 
@@ -1754,7 +1811,7 @@ class TDataGridItem extends TTableRow implements INamingContainer
 	/**
 	 * Handles <b>BubbleEvent</b>.
 	 * This method overrides parent's implementation by wrapping event parameter
-	 * for <b>Command</b> event with item information.
+	 * for <b>OnCommand</b> event with item information.
 	 * @param TControl the sender of the event
 	 * @param TEventParameter event parameter
 	 * @return boolean whether the event bubbling should stop here.
@@ -1768,6 +1825,66 @@ class TDataGridItem extends TTableRow implements INamingContainer
 		}
 		else
 			return false;
+	}
+}
+
+
+/**
+ * TDataGridPager class.
+ *
+ * TDataGridPager represents a datagrid pager.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
+class TDataGridPager extends TPanel implements INamingContainer
+{
+	private $_dataGrid;
+
+	/**
+	 * Constructor.
+	 * @param TDataGrid datagrid object
+	 */
+	public function __construct($dataGrid)
+	{
+		$this->_dataGrid=$dataGrid;
+	}
+
+	/**
+	 * Handles <b>BubbleEvent</b>.
+	 * This method overrides parent's implementation by wrapping event parameter
+	 * for <b>OnCommand</b> event with item information.
+	 * @param TControl the sender of the event
+	 * @param TEventParameter event parameter
+	 * @return boolean whether the event bubbling should stop here.
+	 */
+	public function onBubbleEvent($sender,$param)
+	{
+		if($param instanceof TCommandEventParameter)
+		{
+			$this->raiseBubbleEvent($this,new TDataGridCommandEventParameter($this,$sender,$param));
+			return true;
+		}
+		else
+			return false;
+	}
+
+	/**
+	 * @return TDataGrid the datagrid owning this pager
+	 */
+	public function getDataGrid()
+	{
+		return $this->_dataGrid;
+	}
+
+	/**
+	 * @return string item type.
+	 */
+	public function getItemType()
+	{
+		return TDataGrid::IT_PAGER;
 	}
 }
 
@@ -1864,7 +1981,7 @@ class TDataGridColumnCollection extends TList
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TDataGridPagerStyle extends TTableItemStyle
+class TDataGridPagerStyle extends TPanelStyle
 {
 	private $_mode=null;
 	private $_nextText=null;
