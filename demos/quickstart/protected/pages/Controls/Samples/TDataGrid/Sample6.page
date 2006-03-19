@@ -3,6 +3,7 @@
 <h1>TDataGrid Sample 6</h1>
 <h2>Custom Paging</h2>
 
+<div style="width:500px">
 <com:TDataGrid
 	ID="DataGrid"
 	AllowPaging="true"
@@ -11,7 +12,6 @@
 	PageSize="5"
 	PagerStyle.Mode="Numeric"
 	PagerStyle.HorizontalAlign="Right"
-	Width="500px"
 	CellPadding="2"
 	HeaderStyle.BackColor="black"
 	HeaderStyle.ForeColor="white"
@@ -20,5 +20,6 @@
 	AlternatingItemStyle.BackColor="#E6ECFF"
 	OnPageIndexChanged="changePage"
 	/>
+</div>
 
 </com:TContent>

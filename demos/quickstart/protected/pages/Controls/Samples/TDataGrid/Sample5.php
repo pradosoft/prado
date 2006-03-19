@@ -11,14 +11,9 @@ class Sample5 extends Sample1
 		$this->DataGrid->dataBind();
 	}
 
-	public function itemCreated($sender,$param)
+	public function pagerCreated($sender,$param)
 	{
-		$item=$param->Item;
-		if($item->ItemType==='Pager')
-		{
-			// prepend 'Page: ' to the pager
-			$item->Cells[0]->Controls->insertAt(0,'Page: ');
-		}
+		$param->Pager->Controls->insertAt(0,'Page: ');
 	}
 
 	public function changePagerPosition($sender,$param)

@@ -429,7 +429,7 @@ class TPanelStyle extends TStyle
 	public function mergeWith($style)
 	{
 		parent::mergeWith($style);
-		if($style instanceof TTableStyle)
+		if($style instanceof TPanelStyle)
 		{
 			if($this->_backImageUrl===null && $style->_backImageUrl!==null)
 				$this->_backImageUrl=$style->_backImageUrl;

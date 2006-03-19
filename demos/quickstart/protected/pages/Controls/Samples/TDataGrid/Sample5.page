@@ -3,13 +3,14 @@
 <h1>TDataGrid Sample 5</h1>
 <h2>Paging</h2>
 
+<div style="width:500px">
 <com:TDataGrid
 	ID="DataGrid"
 	AllowPaging="true"
 	PageSize="5"
 	PagerStyle.Mode="Numeric"
 	PagerStyle.HorizontalAlign="Right"
-	Width="500px"
+	Width="100%"
 	CellPadding="2"
 	HeaderStyle.BackColor="black"
 	HeaderStyle.ForeColor="white"
@@ -17,8 +18,9 @@
 	ItemStyle.Font.Italic="true"
 	AlternatingItemStyle.BackColor="#E6ECFF"
 	OnPageIndexChanged="changePage"
-	OnItemCreated="itemCreated"
+	OnPagerCreated="pagerCreated"
 	/>
+</div>
 
 <com:TPanel GroupingText="Pager Visibility" Width="300px">
 
