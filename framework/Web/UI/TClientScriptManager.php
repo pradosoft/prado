@@ -285,7 +285,8 @@ class TClientScriptManager extends TApplicationComponent
 	/**
 	 * Registers a hidden field to be rendered in the form.
 	 * @param string a unique key identifying the hidden field
-	 * @param string hidden field value
+	 * @param string|array hidden field value, if the value is an array, every element
+	 * in the array will be rendered as a hidden field value.
 	 */
 	public function registerHiddenField($name,$value)
 	{
@@ -446,8 +447,15 @@ class TClientScriptManager extends TApplicationComponent
 		{
 			if($value!==true)
 			{
-				$value=THttpUtility::htmlEncode($value);
-				$str.="<input type=\"hidden\" name=\"$name\" id=\"$name\" value=\"$value\" />\n";
+				if(is_array($value))
+				{
+					foreach($value as $v)
+						$str.='<input type="hidden" name="'.$name.'[]" id="'.$name.'" value="'.THttpUtility::htmlEncode($value)."\" />\n";
+				}
+				else
+				{
+					$str.='<input type="hidden" name="'.$name.'" id="'.$name.'" value="'.THttpUtility::htmlEncode($value)."\" />\n";
+				}
 				// set hidden field value to true to indicate this field is rendered
 				// Note, hidden field rendering is invoked twice (at the beginning and ending of TForm)
 				$this->_hiddenFields[$name]=true;
