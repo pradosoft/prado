@@ -40,6 +40,7 @@ class TMultiView extends TControl
 	const CMD_SWITCHVIEWID='SwitchViewID';
 	const CMD_SWITCHVIEWINDEX='SwitchViewIndex';
 	private $_cachedActiveViewIndex=-1;
+	private $_ignoreBubbleEvents=false;
 
 	/**
 	 * Processes an object that is created during parsing template.
@@ -167,6 +168,16 @@ class TMultiView extends TControl
 	}
 
 	/**
+	 * Makes the multiview ignore all bubbled events.
+	 * This is method is used internally by framework and control
+	 * developers.
+	 */
+	public function ignoreBubbleEvents()
+	{
+		$this->_ignoreBubbleEvents=true;
+	}
+
+	/**
 	 * Initializes the active view if any.
 	 * This method overrides the parent implementation.
 	 * @param mixed event parameter
@@ -197,7 +208,7 @@ class TMultiView extends TControl
 	 */
 	public function onBubbleEvent($sender,$param)
 	{
-		if($param instanceof TCommandEventParameter)
+		if(!$this->_ignoreBubbleEvents && ($param instanceof TCommandEventParameter))
 		{
 			switch($param->getCommandName())
 			{

@@ -10,7 +10,9 @@ for both A and B.
 
 Upgrading from v3.0b
 --------------------
-THttpSession.Storage is changed to UseCustomStorage
+- THttpSession.Storage is changed to UseCustomStorage
+- Pagers in TDataGrid are now enclosed within panels. The event indicating
+  their creation is changed to OnPagerCreated instead of OnItemCreated.
 
 Upgrading from v3.0a
 --------------------
