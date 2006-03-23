@@ -95,7 +95,7 @@ class TMultiView extends TControl
 			$this->setControlState('ActiveViewIndex',$index,-1);
 			$this->_cachedActiveViewIndex=-1;
 			if($index>=0)
-				$this->activateView($views->itemAt($index));
+				$this->activateView($views->itemAt($index),true);
 		}
 		else
 			throw new TInvalidDataValueException('multiview_activeviewindex_invalid',$index);
@@ -115,7 +115,7 @@ class TMultiView extends TControl
 			return null;
 		$view=$views->itemAt($index);
 		if(!$view->getActive())
-			$this->activateView($view);
+			$this->activateView($view,false);
 		return $view;
 	}
 
@@ -135,20 +135,24 @@ class TMultiView extends TControl
 	 * Activates the specified view.
 	 * If there is any view currently active, it will be deactivated.
 	 * @param TView the view to be activated
+	 * @param boolean whether to trigger OnActiveViewChanged event.
 	 */
-	protected function activateView($view)
+	protected function activateView($view,$triggerViewChangedEvent=true)
 	{
 		if($view->getActive())
 			return;
-		$triggerEvent=$this->getControlStage()>=TControl::CS_STATE_LOADED || !$this->getPage() || !$this->getPage()->getIsPostBack();
+		$triggerEvent=($this->getControlStage()>=TControl::CS_STATE_LOADED || ($this->getPage() && !$this->getPage()->getIsPostBack()));
 		foreach($this->getViews() as $v)
 		{
 			if($v===$view)
 			{
 				$view->setActive(true);
 				if($triggerEvent)
+				{
 					$view->onActivate(null);
-				$this->onActiveViewChanged(null);
+					if($triggerViewChangedEvent)
+						$this->onActiveViewChanged(null);
+				}
 			}
 			else if($v->getActive())
 			{

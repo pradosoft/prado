@@ -20,8 +20,8 @@ Prado::using('System.Web.UI.WebControls.TDataList');
 /**
  * Class TWizard.
  *
- * TWizard splits a large form and present the user with a series of smaller
- * form to complete. TWizard is analogous to the installation wizard commonly
+ * TWizard splits a large form and presents the user with a series of smaller
+ * forms to complete. TWizard is analogous to the installation wizard commonly
  * used to install software in Windows.
  *
  * The smaller forms are called wizard steps ({@link TWizardStep}, which can be accessed via
@@ -698,9 +698,9 @@ class TWizard extends TWebControl implements INamingContainer
 	public function onInit($param)
 	{
 		parent::onInit($param);
+		$this->ensureChildControls();
 		if($this->getActiveStepIndex()<0 && $this->getWizardSteps()->getCount()>0)
 			$this->setActiveStepIndex(0);
-		$this->ensureChildControls();
 	}
 
 	/**
@@ -1091,8 +1091,8 @@ class TWizard extends TWebControl implements INamingContainer
 		$multiView=$this->getMultiView();
 		$this->_stepContent=new TPanel;
 		$this->_stepContent->getControls()->add($multiView);
-		$multiView->setActiveViewIndex(0);
 		$this->getControls()->add($this->_stepContent);
+		$multiView->setActiveViewIndex(0);
 	}
 
 	/**
@@ -1599,16 +1599,6 @@ class TTemplatedWizardStep extends TWizardStep implements INamingContainer
 	 * @var TWizardNavigationContainer
 	 */
 	private $_navigationContainer=null;
-
-	/**
-	 * Forbids any body content.
-	 * This method overrides the parent implementation and is
-	 * invoked when template is being instantiated.
-	 * @param mixed object instantiated in template
-	 */
-	public function addParsedObject($object)
-	{
-	}
 
 	/**
 	 * Creates child controls.
