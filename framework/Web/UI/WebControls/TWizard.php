@@ -579,6 +579,24 @@ class TWizard extends TWebControl implements INamingContainer
 	}
 
 	/**
+	 * @return boolean whether to use default layout to arrange side bar and the rest wizard components. Defaults to true.
+	 */
+	public function getUseDefaultLayout()
+	{
+		return $this->getViewState('UseDefaultLayout',true);
+	}
+
+	/**
+	 * @param boolean whether to use default layout to arrange side bar and the rest wizard components.
+	 * If true, an HTML table will be used which places the side bar in the left cell
+	 * while the rest components in the right cell.
+	 */
+	public function setUseDefaultLayout($value)
+	{
+		$this->setViewState('UseDefaultLayout',TPropertyValue::ensureBoolean($value),true);
+	}
+
+	/**
 	 * Raises <b>OnActiveStepChanged</b> event.
 	 * This event is raised when the current visible step is changed in the
 	 * wizard.
@@ -731,8 +749,32 @@ class TWizard extends TWebControl implements INamingContainer
 	public function render($writer)
 	{
 		$this->ensureChildControls();
-		$this->applyControlProperties();
-		parent::render($writer);
+		if($this->getHasControls())
+		{
+			if($this->getUseDefaultLayout())
+			{
+				$this->applyControlProperties();
+				$this->renderBeginTag($writer);
+				$writer->write("\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" height=\"100%\" width=\"100%\">\n<tr><td valign=\"top\">\n");
+				$this->_sideBar->renderControl($writer);
+				$writer->write("\n</td><td valign=\"top\">\n");
+				$this->_header->renderControl($writer);
+				$this->_stepContent->renderControl($writer);
+				$this->_navigation->renderControl($writer);
+				$writer->write("\n</td></tr></table>\n");
+				$this->renderEndTag($writer);
+			}
+			else
+			{
+				$this->applyControlProperties();
+				$this->renderBeginTag($writer);
+				$this->_sideBar->renderControl($writer);
+				$this->_header->renderControl($writer);
+				$this->_stepContent->renderControl($writer);
+				$this->_navigation->renderControl($writer);
+				$this->renderEndTag($writer);
+			}
+		}
 	}
 
 	/**
