@@ -22,13 +22,13 @@
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 <tr>
+<td valign="top" width="1">
+<com:TopicList ID="TopicPanel" />
+</td>
 <td valign="top">
 <div id="content">
 <com:TContentPlaceHolder ID="body" />
 </div>
-</td>
-<td valign="top" width="1">
-<com:TopicList ID="TopicPanel" />
 </td>
 </tr>
 </table>

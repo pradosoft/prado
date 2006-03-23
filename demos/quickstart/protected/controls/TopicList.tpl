@@ -38,43 +38,35 @@
 </div>
 
 <div class="topic">
-<div>Controls</div>
+<div>Control Reference</div>
 <ul>
     <li><a href="?page=Controls.Overview">Overview</a></li>
-    <li><a href="?page=Controls.Simple">Simple HTML Controls</a></li>
-    <li><a href="?page=Controls.List">List Controls</a></li>
+    <li><a href="?page=Controls.Standard">Standard Controls</a></li>
     <li><a href="?page=Controls.Validation">Validation Controls</a></li>
-    <li><a href="?page=Controls.Repeater">TRepeater</a></li>
-    <li><a href="?page=Controls.DataList">TDataList</a></li>
-    <li><a href="?page=Controls.DataGrid1">TDataGrid: Part I</a></li>
-    <li><a href="?page=Controls.DataGrid2">TDataGrid: Part II</a></li>
+    <li><a href="?page=Controls.List">List Controls</a></li>
+    <li><a href="?page=Controls.Data">Data Controls</a></li>
     <li><a href="?page=Construction">Active Controls</a></li>
     <li><a href="?page=Controls.NewControl">Writing New Controls</a></li>
 </ul>
 </div>
 
 <div class="topic">
-<div>Data Access</div>
+<div>Module Reference</div>
 <ul>
-    <li><a href="?page=Construction">DataBinding</a></li>
-    <li><a href="?page=Construction">Data Bound Controls</a></li>
-    <li><a href="?page=Construction">Data Source Controls</a></li>
 </ul>
 </div>
 
 <div class="topic">
-<div>Security</div>
+<div>Service Reference</div>
 <ul>
-    <li><a href="?page=Security.Auth">Authentication and Authorization</a></li>
-    <li><a href="?page=Security.ViewState">ViewState Protection</a></li>
-    <li><a href="?page=Security.XSS">Cross Site Scripting Prevention</a></li>
-    <li><a href="?page=Security.Cookie">Cookie Attack Prevention</a></li>
 </ul>
 </div>
 
 <div class="topic">
 <div>Avanced Topics</div>
 <ul>
+    <li><a href="?page=Advanced.Auth">Authentication and Authorization</a></li>
+    <li><a href="?page=Advanced.Security">Security</a></li>
     <li><a href="?page=Advanced.Scripts">Client-side Scripting</a></li>
     <li><a href="?page=Advanced.Assets">Assets</a></li>
     <li><a href="?page=Advanced.MasterContent">Master and Content</a></li>

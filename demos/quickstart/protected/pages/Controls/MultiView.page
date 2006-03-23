@@ -1,0 +1,6 @@
+<com:TContent ID="body" >
+
+<h1>TMultiView</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TMultiView" />
+
+</com:TContent>

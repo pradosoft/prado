@@ -1,0 +1,6 @@
+<com:TContent ID="body" >
+
+<h1>TInlineFrame</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TInlineFrame" />
+
+</com:TContent>

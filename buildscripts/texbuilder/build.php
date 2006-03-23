@@ -1,4 +1,7 @@
 <?php
+
+// TBD: subsections in Control Reference
+
 $pdflatexExec = "C:/Wei/miktex/texmf/MiKTeX/bin/pdflatex.exe";
 $pdfTex = "$pdflatexExec -interaction=nonstopmode -max-print-line=120 %s";
 
@@ -32,24 +35,17 @@ $pages['Configurations'] = array(
 	'Configurations/AppConfig.page',
 	'Configurations/PageConfig.page');
 
-$pages['Controls'] = array(
+$pages['Control Reference'] = array(
 	'Controls/Overview.page',
-	'Controls/Simple.page',
+	'Controls/Standard.page',
 	'Controls/List.page',
 	'Controls/Validation.page',
-	'Controls/Repeater.page',
-	'Controls/DataList.page',
-	'Controls/DataGrid1.page',
-	'Controls/DataGrid2.page',
+	'Controls/Data.page',
 	'Controls/NewControl.page');
 
-$pages['Security'] = array(
-	'Security/Auth.page',
-	'Security/ViewState.page',
-	'Security/XSS.page',
-	'Security/Cookie.page');
-
 $pages['Advanced Topics'] = array(
+	'Advanced/Auth.page',
+	'Advanced/Security.page',
 	'Advanced/Assets.page',
 	'Advanced/MasterContent.page',
 	'Advanced/Themes.page',

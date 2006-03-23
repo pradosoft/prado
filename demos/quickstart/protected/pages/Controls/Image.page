@@ -1,0 +1,11 @@
+<com:TContent ID="body" >
+
+<h1>TImage</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TImage" />
+
+<p>
+<tt>TImage</tt> displays an image on a page. The image is specified via the <tt>ImageUrl</tt> property which takes a relative or absolute URL to the image file. The alignment of the image displayed is set by the <tt>ImageAlign</tt> property. To set alternate text or long description of the image, use <tt>AlternateText</tt> or <tt>DescriptionUrl</tt>, respectively.
+</p>
+<com:RunBar PagePath="Controls.Samples.TImage.Home" />
+
+</com:TContent>

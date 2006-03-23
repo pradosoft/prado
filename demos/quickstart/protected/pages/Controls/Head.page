@@ -1,0 +1,10 @@
+<com:TContent ID="body" >
+
+<h1>THead</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.THead" />
+
+<p>
+TBD
+</p>
+
+</com:TContent>

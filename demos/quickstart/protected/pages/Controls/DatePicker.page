@@ -1,0 +1,10 @@
+<com:TContent ID="body" >
+
+<h1>TDatePicker</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TDatePicker" />
+
+<p>
+TBD
+</p>
+
+</com:TContent>
