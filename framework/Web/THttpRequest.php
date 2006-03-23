@@ -436,16 +436,25 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 * @param string service parameter
 	 * @param array GET parameters, null if not needed
 	 * @param boolean whether to encode the ampersand in URL, defaults to false.
+	 * @param boolean whether to encode the GET parameters (their names and values), defaults to true.
 	 * @return string URL
 	 */
-	public function constructUrl($serviceID,$serviceParam,$getItems=null,$encodeAmpersand=false)
+	public function constructUrl($serviceID,$serviceParam,$getItems=null,$encodeAmpersand=false,$encodeGetItems=true)
 	{
 		$url=$serviceID.'='.$serviceParam;
 		$amp=$encodeAmpersand?'&amp;':'&';
 		if(is_array($getItems) || $getItems instanceof Traversable)
 		{
-			foreach($getItems as $name=>$value)
-				$url.=$amp.urlencode($name).'='.urlencode($value);
+			if($encodeGetItems)
+			{
+				foreach($getItems as $name=>$value)
+					$url.=$amp.urlencode($name).'='.urlencode($value);
+			}
+			else
+			{
+				foreach($getItems as $name=>$value)
+					$url.=$amp.$name.'='.$value;
+			}
 		}
 		if($this->getUrlFormat()==='Path')
 		{
