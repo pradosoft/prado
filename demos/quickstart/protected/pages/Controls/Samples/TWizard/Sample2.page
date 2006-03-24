@@ -12,6 +12,8 @@
 		SideBarStyle.Width="100px"
 		SideBarStyle.Height="100px"
 		SideBarStyle.BackColor="#507CD1"
+		SideBarStyle.HorizontalAlign="Center"
+		StepStyle.HorizontalAlign="Center"
 		NavigationStyle.HorizontalAlign="Right"
 		NavigationButtonStyle.BackColor="White"
 		NavigationButtonStyle.BorderColor="#507CD1"

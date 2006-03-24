@@ -78,7 +78,7 @@ class TDataFieldAccessor
 		{
 			if(is_array($data) || ($data instanceof ArrayAccess))
 			{
-				if(isset($data[$field]))
+				if(isset($data[$field]) || $data[$field]===null)
 					return $data[$field];
 				else
 					throw new TInvalidDataValueException('datafieldaccessor_datafield_invalid',$field);

@@ -207,8 +207,21 @@ class TErrorHandler extends TModule
 	 */
 	protected function displayException($exception)
 	{
-		$lines=file($exception->getFile());
+		$fileName=$exception->getFile();
 		$errorLine=$exception->getLine();
+		if($exception instanceof TPhpErrorException)
+		{
+			// if PHP exception, we want to show the 2nd stack level context
+			// because the 1st stack level is of little use (it's in error handler)
+			$trace=$exception->getTrace();
+			if(isset($trace[0]) && isset($trace[0]['file']) && isset($trace[0]['line']))
+			{
+				$fileName=$trace[0]['file'];
+				$errorLine=$trace[0]['line'];
+			}
+		}
+		$lines=file($fileName);
+
 		$beginLine=$errorLine-self::SOURCE_LINES>=0?$errorLine-self::SOURCE_LINES:0;
 		$endLine=$errorLine+self::SOURCE_LINES<=count($lines)?$errorLine+self::SOURCE_LINES:count($lines);
 
@@ -227,7 +240,7 @@ class TErrorHandler extends TModule
 		$tokens=array(
 			'%%ErrorType%%' => get_class($exception),
 			'%%ErrorMessage%%' => htmlspecialchars($exception->getMessage()),
-			'%%SourceFile%%' => htmlspecialchars($exception->getFile()).' ('.$exception->getLine().')',
+			'%%SourceFile%%' => htmlspecialchars($fileName).' ('.$errorLine.')',
 			'%%SourceCode%%' => $source,
 			'%%StackTrace%%' => htmlspecialchars($exception->getTraceAsString()),
 			'%%Version%%' => $_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion(),
