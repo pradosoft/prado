@@ -14,20 +14,18 @@
  * TException class
  *
  * TException is the base class for all PRADO exceptions.
- * TException
- *     TApplicationException
- *     TSystemException
- *         TInvalidDataValueException
- *         TInvalidDataTypeException
- *         TInvalidDataFormatException
- *         TInvalidOperationException
- *         TConfigurationException
- *         TPhpErrorException
- *         TSecurityException
- *         TIOException
- *         TDBException
- *         THttpException
- *		   TNotSupportedException
+ *
+ * TException provides the functionality of translating an error code
+ * into a descriptive error message in a language that is preferred
+ * by user browser. Additional parameters may be passed together with
+ * the error code so that the translated message contains more detailed
+ * information.
+ *
+ * By default, TException looks for a message file by calling
+ * {@link getErrorMessageFile()} method, which uses the "message-xx.txt"
+ * file located under "System.Exceptions" folder, where "xx" is the
+ * code of the user preferred language. If such a file is not found,
+ * "message.txt" will be used instead.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -58,12 +56,14 @@ class TException extends Exception
 		parent::__construct(strtr($errorMessage,$tokens));
 	}
 
+	/**
+	 * Translates an error code into an error message.
+	 * @param string error code that is passed in the exception constructor.
+	 * @return string the translated error message
+	 */
 	protected function translateErrorMessage($key)
 	{
-		$lang=Prado::getPreferredLanguage();
-		$msgFile=Prado::getFrameworkPath().'/Exceptions/messages-'.$lang.'.txt';
-		if(!is_file($msgFile))
-			$msgFile=Prado::getFrameworkPath().'/Exceptions/messages.txt';
+		$msgFile=$this->getErrorMessageFile();
 		if(($entries=@file($msgFile))===false)
 			return $key;
 		else
@@ -78,77 +78,212 @@ class TException extends Exception
 		}
 	}
 
+	/**
+	 * @return string path to the error message file
+	 */
+	protected function getErrorMessageFile()
+	{
+		$lang=Prado::getPreferredLanguage();
+		$msgFile=Prado::getFrameworkPath().'/Exceptions/messages-'.$lang.'.txt';
+		if(!is_file($msgFile))
+			$msgFile=Prado::getFrameworkPath().'/Exceptions/messages.txt';
+		return $msgFile;
+	}
+
+	/**
+	 * @return string error code
+	 */
 	public function getErrorCode()
 	{
 		return $this->_errorCode;
 	}
 
+	/**
+	 * @param string error code
+	 */
 	public function setErrorCode($code)
 	{
 		$this->_errorCode=$code;
 	}
 
+	/**
+	 * @return string error message
+	 */
 	public function getErrorMessage()
 	{
 		return $this->getMessage();
 	}
 
+	/**
+	 * @param string error message
+	 */
 	protected function setErrorMessage($message)
 	{
 		$this->message=$message;
 	}
 }
 
+/**
+ * TSystemException class
+ *
+ * TSystemException is the base class for all framework-level exceptions.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Exceptions
+ * @since 3.0
+ */
 class TSystemException extends TException
 {
 }
 
+/**
+ * TApplicationException class
+ *
+ * TApplicationException is the base class for all user application-level exceptions.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Exceptions
+ * @since 3.0
+ */
 class TApplicationException extends TException
 {
 }
 
+/**
+ * TInvalidOperationException class
+ *
+ * TInvalidOperationException represents an exception caused by invalid operations.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Exceptions
+ * @since 3.0
+ */
 class TInvalidOperationException extends TSystemException
 {
 }
 
+/**
+ * TInvalidDataTypeException class
+ *
+ * TInvalidDataTypeException represents an exception caused by invalid data type.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Exceptions
+ * @since 3.0
+ */
 class TInvalidDataTypeException extends TSystemException
 {
 }
 
+/**
+ * TInvalidDataValueException class
+ *
+ * TInvalidDataValueException represents an exception caused by invalid data value.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Exceptions
+ * @since 3.0
+ */
 class TInvalidDataValueException extends TSystemException
 {
 }
 
-class TInvalidDataFormatException extends TSystemException
-{
-}
-
+/**
+ * TConfigurationException class
+ *
+ * TConfigurationException represents an exception caused by invalid configurations,
+ * such as error in an application configuration file or control template file.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Exceptions
+ * @since 3.0
+ */
 class TConfigurationException extends TSystemException
 {
 }
 
+/**
+ * TIOException class
+ *
+ * TIOException represents an exception related with improper IO operations.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Exceptions
+ * @since 3.0
+ */
 class TIOException extends TSystemException
 {
 }
 
+/**
+ * TDbException class
+ *
+ * TDbException represents an exception related with DB operations.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Exceptions
+ * @since 3.0
+ */
 class TDbException extends TSystemException
 {
 }
 
+/**
+ * TDbConnectionException class
+ *
+ * TDbConnectionException represents an exception caused by DB connection failure.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Exceptions
+ * @since 3.0
+ */
 class TDbConnectionException extends TDbException
 {
 }
 
-class TSecurityException extends TSystemException
-{
-}
-
+/**
+ * TNotSupportedException class
+ *
+ * TNotSupportedException represents an exception caused by using an unsupported PRADO feature.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Exceptions
+ * @since 3.0
+ */
 class TNotSupportedException extends TSystemException
 {
 }
 
+/**
+ * TPhpErrorException class
+ *
+ * TPhpErrorException represents an exception caused by a PHP error.
+ * This exception is mainly thrown within a PHP error handler.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Exceptions
+ * @since 3.0
+ */
 class TPhpErrorException extends TSystemException
 {
+	/**
+	 * Constructor.
+	 * @param integer error number
+	 * @param string error string
+	 * @param string error file
+	 * @param integer error line number
+	 */
 	public function __construct($errno,$errstr,$errfile,$errline)
 	{
 		static $errorTypes=array(
@@ -171,10 +306,30 @@ class TPhpErrorException extends TSystemException
 }
 
 
+/**
+ * THttpException class
+ *
+ * THttpException represents an exception that is caused by invalid operations
+ * of end-users. The {@link getStatusCode StatusCode} gives the type of HTTP error.
+ * It is used by {@link TErrorHandler} to provide different error output to users.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Exceptions
+ * @since 3.0
+ */
 class THttpException extends TSystemException
 {
 	private $_statusCode;
 
+	/**
+	 * Constructor.
+	 * @param integer HTTP status code, such as 404, 500, etc.
+	 * @param string error message. This can be a string that is listed
+	 * in the message file. If so, the message in the preferred language
+	 * will be used as the error message. Any rest parameters will be used
+	 * to replace placeholders ({0}, {1}, {2}, etc.) in the message.
+	 */
 	public function __construct($statusCode,$errorMessage)
 	{
 		$this->_statusCode=$statusCode;
@@ -190,6 +345,9 @@ class THttpException extends TSystemException
 		parent::__construct(strtr($errorMessage,$tokens));
 	}
 
+	/**
+	 * @return integer HTTP status code, such as 404, 500, etc.
+	 */
 	public function getStatusCode()
 	{
 		return $this->_statusCode;
