@@ -621,14 +621,14 @@ class TWizard extends TWebControl implements INamingContainer
 	}
 
 	/**
-	 * Raises <b>OnFinishButtonClick</b> event.
+	 * Raises <b>OnCompleteButtonClick</b> event.
 	 * This event is raised when a finish navigation button is clicked in the
 	 * current active step.
 	 * @param TEventParameter event parameter
 	 */
-	public function onFinishButtonClick($param)
+	public function onCompleteButtonClick($param)
 	{
-		$this->raiseEvent('OnFinishButtonClick',$this,$param);
+		$this->raiseEvent('OnCompleteButtonClick',$this,$param);
 		if(($url=$this->getFinishDestinationUrl())!=='')
 			$this->getResponse()->redirect($url);
 	}
@@ -755,7 +755,7 @@ class TWizard extends TWebControl implements INamingContainer
 			{
 				$this->applyControlProperties();
 				$this->renderBeginTag($writer);
-				$writer->write("\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" height=\"100%\" width=\"100%\">\n<tr><td valign=\"top\">\n");
+				$writer->write("\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" height=\"100%\" width=\"100%\">\n<tr><td width=\"1\" valign=\"top\">\n");
 				$this->_sideBar->renderControl($writer);
 				$writer->write("\n</td><td valign=\"top\">\n");
 				$this->_header->renderControl($writer);
@@ -1320,7 +1320,7 @@ class TWizard extends TWebControl implements INamingContainer
 					throw new TInvalidDataValueException('wizard_command_invalid',self::CMD_COMPLETE);
 				if($index<$this->getWizardSteps()->getCount()-1)
 					$navParam->setNextStepIndex($index+1);
-				$this->onFinishButtonClick($navParam);
+				$this->onCompleteButtonClick($navParam);
 				$handled=true;
 			}
 			else if(strcasecmp($command,self::CMD_MOVETO)===0)

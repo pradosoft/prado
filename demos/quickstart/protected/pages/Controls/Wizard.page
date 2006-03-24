@@ -3,4 +3,67 @@
 <h1>TWizard</h1>
 <com:DocLink ClassPath="System.Web.UI.WebControls.TWizard" />
 
+<h2>Overview</h2>
+<p>
+<tt>TWizard</tt> is analogous to the installation wizard commonly used to install software on Windows. It splits a large form and presents the user with a series of smaller forms, called wizard steps, to complete. The following figure shows how a wizard is composed of when presented to users, where <tt>step content</tt> is the main content of a wizard step for users to complete, <tt>header</tt> refers to header content common to all steps, <tt>navigation</tt> contains buttons that allow users to navigate step by step, and <tt>side bar</tt> contains a list of hyperlinks by which users can reach to any step with one click.
+</p>
+<img src="<%~wizard.gif%>" alt="components of wizard" />
+
+<p>
+Wizard steps are represented by <tt>TWizardStep</tt> and are maintained in <tt>TWizard</tt> through its <tt>WizardSteps</tt> property. At any time, only one step is visible, which is determined by the <tt>ActiveStep</tt> property. The <tt>ActiveStepIndex</tt> property gives the index of the active step in the step collection. Clicking on navigation buttons can activate different wizard steps.
+</p>
+
+<p>
+Wizard steps are typically added to a wizard through template as follows,
+</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TWizard&gt;
+	&lt;com:TWizardStep Title="step 1" StepType="Start"&gt;
+	content in step 1, may contain other controls
+	&lt;/com:TWizardStep&gt;
+
+	&lt;com:TWizardStep Title="step 2" StepType="Step"&gt;
+	content in step 2, may contain other controls
+	&lt;/com:TWizardStep&gt;
+
+	&lt;com:TWizardStep Title="finish step" StepType="Finish"&gt;
+	content in finish step, may contain other controls
+	&lt;/com:TWizardStep&gt;
+&lt;/com:TWizard&gt;
+</com:TTextHighlighter>
+
+<p>
+In the above, <tt>StepType</tt> refers to the type of a wizard step, which can affect how the navigation appearance and behavior of the step. A wizard step can be of one of the following types:
+</p>
+<ul>
+  <li><tt>Start</tt> - the first step in the wizard.</li>
+  <li><tt>Step</tt> - the internal steps in the wizard.</li>
+  <li><tt>Finish</tt> - the last step that allows user interaction.</li>
+  <li><tt>Complete</tt> - the step that shows a summary to user (no interaction is allowed).</li>
+  <li><tt>Auto</tt> - the step type is determined by wizard automatically.</li>
+</ul>
+
+
+<h2>Using TWizard</h2>
+
+<h3>A Single-Step Wizard Sample</h3>
+<p>
+In this sample, we use wizard to collect user's preference of color. In the first step, the user is presented with a dropdown list from which he can choose hist favorite color. In the second step, the complete step, his choice in the previous step is displayed. In real application, at this step the choice may be stored in database in the backend.
+</p>
+<com:RunBar PagePath="Controls.Samples.TWizard.Sample1" />
+
+<h3>Customizing Wizard Styles</h3>
+<p>
+<tt>TWizard</tt> defines a whole set of properties for customization of its various components as shown in the above figure. In particular, the following properties are provided:
+</p>
+<ul>
+  <li>Header - <tt>HeaderText</tt>, <tt>HeaderTemplate</tt>, <tt>HeaderStyle</tt>.</li>
+  <li>Step - <tt>StepStyle</tt>.</li>
+  <li>Navigation - <tt>NavigationStyle</tt>, <tt>StartNavigationTemplate</tt>, <tt>StepNavigationTemplate</tt>, <tt>FinishNavigationTemplate</tt>, <tt>StartNextButtonStyle</tt>, <tt>StepNextButtonStyle</tt>, <tt>StepPreviousButtonStyle</tt>, <tt>FinishPreviousButtonStyle</tt>, <tt>FinishCompleteButtonStyle</tt>, <tt>CancelButtonStyle</tt>.</li>
+  <li>Side bar - <tt>SideBarTemplate</tt>, <tt>SideBarStyle</tt>, <tt>SideBarButtonStyle</tt>, <tt>DisplaySideBar</tt>.</li>
+</ul>
+<com:RunBar PagePath="Controls.Samples.TWizard.Sample2" />
+
+
 </com:TContent>

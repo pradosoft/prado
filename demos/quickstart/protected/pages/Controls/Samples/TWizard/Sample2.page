@@ -1,0 +1,54 @@
+<com:TContent ID="body">
+
+<h2>Wizard with Customized Styles</h2>
+
+<com:TWizard ID="Wizard1"
+		Width="400px"
+		Height="100px"
+        BackColor="#EFF3FB"
+        BorderColor="#B5C7DE"
+        BorderWidth="1px"
+        HeaderText="Please let us know your preference"
+		SideBarStyle.Width="100px"
+		SideBarStyle.Height="100px"
+		SideBarStyle.BackColor="#507CD1"
+		NavigationStyle.HorizontalAlign="Right"
+		NavigationButtonStyle.BackColor="White"
+		NavigationButtonStyle.BorderColor="#507CD1"
+		NavigationButtonStyle.BorderStyle="Solid"
+		NavigationButtonStyle.BorderWidth="1px"
+		NavigationButtonStyle.ForeColor="#284E98"
+		SideBarButtonStyle.ForeColor="White"
+        HeaderStyle.BackColor="#284E98"
+		HeaderStyle.Font.Bold="True"
+		HeaderStyle.ForeColor="White"
+		HeaderStyle.HorizontalAlign="Center"
+		OnCompleteButtonClick="wizardCompleted" >
+
+  <com:TWizardStep Title="Step 1">
+    <p>
+    Your favorite color:
+    <com:TDropDownList ID="DropDownList1">
+      <com:TListItem Value="Red" />
+      <com:TListItem Value="Blue" />
+      <com:TListItem Value="Green" />
+      <com:TListItem Value="Purple" />
+      <com:TListItem Value="Black" />
+      <com:TListItem Value="Yellow" />
+      <com:TListItem Value="Orange" />
+      <com:TListItem Value="Pink" />
+      <com:TListItem Value="Cyan" />
+    </com:TDropDownList>
+    </p>
+  </com:TWizardStep>
+
+  <com:TWizardStep Title="Step 2" StepType="Complete">
+    <h3>Thank you for your answer!</h3>
+    <p>
+    <com:TLabel ID="Result" />
+    </p>
+  </com:TWizardStep>
+
+</com:TWizard>
+
+</com:TContent>
