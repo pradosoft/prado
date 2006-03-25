@@ -10,6 +10,10 @@
 <img src="<%~wizard.gif%>" alt="components of wizard" />
 
 <p>
+By default, <tt>TWizard</tt> embeds the above components in an HTML table so that the side bar is displayed on the left while the rest on the right. If <tt>UseDefaultLayout</tt> is set to false, no HTML table will be used, and developers should use pure CSS techniques to position the wizard components. Note, each component is displayed as a &lt;div&gt; and the wizard itself is also a &lt;div&gt; that encloses its components' &lt;div&gt;.
+</p>
+
+<p>
 Wizard steps are represented by <tt>TWizardStep</tt> and are maintained in <tt>TWizard</tt> through its <tt>WizardSteps</tt> property. At any time, only one step is visible, which is determined by the <tt>ActiveStep</tt> property. The <tt>ActiveStepIndex</tt> property gives the index of the active step in the step collection. Clicking on navigation buttons can activate different wizard steps.
 </p>
 
@@ -85,9 +89,6 @@ Given a set of wizard steps, <tt>TWizard</tt> supports three different ways of n
   <li>Navigation - <tt>StartNavigationTemplate</tt>, <tt>StepNavigationTemplate</tt>, <tt>FinishNavigationTemplate</tt>.</li>
   <li>Side bar - <tt>SideBarTemplate</tt>.</li>
 </ul>
-Note about side bar button IDs, navigation button commands
-headertext vs. headertemplate
-tablelayout vs pure div layout
 <com:RunBar PagePath="Controls.Samples.TWizard.Sample4" />
 
 <h3>Using Templated Wizard Steps</h3>

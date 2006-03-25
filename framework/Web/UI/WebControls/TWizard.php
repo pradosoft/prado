@@ -202,6 +202,7 @@ class TWizard extends TWebControl implements INamingContainer
 
 	/**
 	 * @param TWizardStep step to be activated
+	 * @throws TInvalidOperationException if the step is not in the wizard step collection
 	 */
 	public function setActiveStep($step)
 	{
@@ -1275,6 +1276,7 @@ class TWizard extends TWebControl implements INamingContainer
 	 * wizard-specific events.
 	 * @param mixed sender of the original command event
 	 * @param TEventParameter event parameter
+	 * @throws TInvalidDataValueException if a navigation command is associated with an invalid parameter
 	 */
 	public function onBubbleEvent($sender,$param)
 	{
@@ -1751,6 +1753,7 @@ class TWizardStepCollection extends TList
 	 * the item being added is a {@link TWizardStep}.
 	 * @param integer the speicified position.
 	 * @param mixed new item
+	 * @throws TInvalidDataTypeException if the item being added is not TWizardStep.
 	 */
 	public function insertAt($index,$item)
 	{
@@ -1760,7 +1763,7 @@ class TWizardStepCollection extends TList
 			$this->_wizard->addedWizardStep($item);
 		}
 		else
-			throw new TInvalidDataTypeException('wizardstepcollection_wizardstepbase_required');
+			throw new TInvalidDataTypeException('wizardstepcollection_wizardstep_required');
 	}
 
 	/**
@@ -2032,6 +2035,7 @@ class TWizardNavigationTemplate extends TComponent implements ITemplate
 	 * @param TWizardNavigationButtonStyle button style
 	 * @param boolean whether the button should cause validation
 	 * @param string command name for the button's OnCommand event
+	 * @throws TInvalidDataValueException if the button type is not recognized
 	 */
 	protected function createNavigationButton($buttonStyle,$causesValidation,$commandName)
 	{

@@ -229,6 +229,10 @@ demos/quickstart/protected/pages/Controls/Samples/TWizard/Sample1.page -text
 demos/quickstart/protected/pages/Controls/Samples/TWizard/Sample1.php -text
 demos/quickstart/protected/pages/Controls/Samples/TWizard/Sample2.page -text
 demos/quickstart/protected/pages/Controls/Samples/TWizard/Sample2.php -text
+demos/quickstart/protected/pages/Controls/Samples/TWizard/Sample3.page -text
+demos/quickstart/protected/pages/Controls/Samples/TWizard/Sample3.php -text
+demos/quickstart/protected/pages/Controls/Samples/TWizard/Sample4.page -text
+demos/quickstart/protected/pages/Controls/Samples/TWizard/Sample4.php -text
 demos/quickstart/protected/pages/Controls/Samples/TWizard/Sample5.page -text
 demos/quickstart/protected/pages/Controls/Samples/TWizard/Sample5.php -text
 demos/quickstart/protected/pages/Controls/Samples/config.xml -text

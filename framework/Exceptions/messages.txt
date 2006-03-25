@@ -159,6 +159,7 @@ templatecontrol_mastercontrol_invalid	= Master control must be of type TTemplate
 templatecontrol_contentid_duplicated	= TContent ID '{0}' is duplicated.
 templatecontrol_placeholderid_duplicated= TContentPlaceHolder ID '{0}' is duplicated.
 templatecontrol_directive_invalid		= {0}.{1} can only accept a static text string through a template directive.
+templatecontrol_placeholder_inexistent	= TContent '{0}' does not have a matching TPlaceHolder.
 
 page_form_duplicated					= A page can contain at most one TForm. Use regular HTML form tags for the rest forms.
 page_isvalid_unknown					= TPage.IsValid has not been evaluated yet.
@@ -258,3 +259,10 @@ multiview_viewid_invalid				= TMultiView cannot find the view '{0}' to switch to
 viewcollection_view_required			= TViewCollection can only accept TView as its element.
 
 view_visible_readonly					= TView.Visible is read-only. Use TView.Active to toggle its visibility.
+
+wizard_step_invalid						= The step to be activated cannot be found in wizard step collection.
+wizard_command_invalid					= Invalid wizard navigation command '{0}'.
+
+completewizardstep_steptype_readonly	= TCompleteWizardStep.StepType is read-only.
+
+wizardstepcollection_wizardstep_required = TWizardStepCollection can only accept objects of TWizardStep or its derived classes.
