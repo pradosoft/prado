@@ -204,6 +204,8 @@ class TTemplateControl extends TControl implements INamingContainer
 			$loc=$controls->remove($placeholder);
 			$controls->insertAt($loc,$content);
 		}
+		else
+			throw new TConfigurationException('templatecontrol_placeholder_inexistent',$id);
 	}
 
 	/**
