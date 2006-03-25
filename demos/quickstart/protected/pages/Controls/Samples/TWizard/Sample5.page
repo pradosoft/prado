@@ -1,6 +1,6 @@
 <com:TContent ID="body">
 
-<h2>A Single-Step Wizard</h2>
+<h2>Using Templated Wizard Steps</h2>
 
 <com:TWizard ID="Wizard1"
 		BackColor="#FFFBD6"
@@ -10,7 +10,6 @@
 		OnCompleteButtonClick="wizardCompleted" >
 
   <com:TWizardStep Title="Step 1">
-    <h3>Wizard Step 1</h3>
     <p>
     Your favorite color:
     <com:TDropDownList ID="DropDownList1">
@@ -27,13 +26,26 @@
     </p>
   </com:TWizardStep>
 
-  <com:TWizardStep Title="Step 2" StepType="Complete">
-    <h3>Wizard Step 2</h3>
+  <com:TTemplatedWizardStep ID="Step2" Title="Templated Step">
+    <prop:ContentTemplate>
+      <p>
+      Your favorite Sport:
+      <com:TDropDownList ID="DropDownList2">
+        <com:TListItem Value="Baseball" />
+        <com:TListItem Value="Football" />
+        <com:TListItem Value="Tennis" />
+      </com:TDropDownList>
+      </p>
+    </prop:ContentTemplate>
+  </com:TTemplatedWizardStep>
+
+  <com:TWizardStep Title="Complete" StepType="Complete">
+    <h3>Thank you for your answer!</h3>
     <p>
-    <com:TLabel ID="Result" />
+    <com:TLabel ID="Result1" /><br/><br/>
+    <com:TLabel ID="Result2" />
     </p>
   </com:TWizardStep>
-
 </com:TWizard>
 
 </com:TContent>

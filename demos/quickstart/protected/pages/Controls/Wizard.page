@@ -67,22 +67,33 @@ In this sample, we use wizard to collect user's preference of color. In the firs
 
 <h3>Customizing Wizard Navigation</h3>
 <p>
-Bidirectional,
-Unidirectional,
-Non-linear
+Given a set of wizard steps, <tt>TWizard</tt> supports three different ways of navigation among them:
 </p>
+<ul>
+  <li>Bidirectional - Users can navigate forward and backward along a sequence of wizard steps. User input data is usally collected at the last step. This is also known as commit-at-the-end model. It is the default navigation way that <tt>TWizard</tt> supports.</li>
+  <li>Unidirectional - Users can navigate forward along a sequence of wizard steps. Backward move is not allowed. User input data is usally collected step by step. This is also known as command-as-you-go model. To disallow backward move to a specific step, set its <tt>AllowReturn</tt> property to false.</li>
+  <li>Nonlinear - User input in a step determines which step to go next. To do so, set <tt>ActiveStepIndex</tt> to the step that you want the user to go to. In this case, when a user clicks on the previous button in the navigation panel, the previous step that they visited (not the previous step in the sequential order) will become visible.</li>
+</ul>
+<com:RunBar PagePath="Controls.Samples.TWizard.Sample3" />
 
 <h3>Using Templates in Wizard</h3>
 <p>
+<tt>TWizard</tt> supports more concrete control of its outlook through templating. In particular, it provides the following template properties that allow complete customization of the wizard's header, navigation and side bar.
 </p>
 <ul>
   <li>Header - <tt>HeaderTemplate</tt>.</li>
   <li>Navigation - <tt>StartNavigationTemplate</tt>, <tt>StepNavigationTemplate</tt>, <tt>FinishNavigationTemplate</tt>.</li>
   <li>Side bar - <tt>SideBarTemplate</tt>.</li>
 </ul>
+Note about side bar button IDs, navigation button commands
+headertext vs. headertemplate
+tablelayout vs pure div layout
+<com:RunBar PagePath="Controls.Samples.TWizard.Sample4" />
 
 <h3>Using Templated Wizard Steps</h3>
 <p>
+Wizard steps can also be templated. By using <tt>TTemplatedWizardStep</tt>, one can customize step content and navigation through its <tt>ContentTemplate</tt> and <tt>NavigationTemplate</tt> properties, respectively. This is useful for control developers to build specialized wizards, such as user registration, shopping carts, etc.
 </p>
+<com:RunBar PagePath="Controls.Samples.TWizard.Sample5" />
 
 </com:TContent>
