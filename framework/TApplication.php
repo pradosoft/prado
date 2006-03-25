@@ -314,7 +314,8 @@ class TApplication extends TComponent
 				$subdir=basename($this->_configFile);
 				$this->_runtimePath.='/'.$subdir;
 				if(!is_dir($this->_runtimePath))
-					mkdir($this->_runtimePath);
+					if(@mkdir($this->_runtimePath)===false)
+						throw new TConfigurationException('application_runtimepath_failed',$this->_runtimePath);
 			}
 		}
 		else

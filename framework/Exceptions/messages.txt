@@ -30,6 +30,7 @@ application_service_invalid				= Service '{0}' must implement IService interface
 application_service_unknown				= Requested service '{0}' is not defined.
 application_service_unavailable			= Service Unavailable.
 application_moduleid_duplicated			= Application module ID '{0}' is not unique.
+application_runtimepath_failed			= Unable to create runtime path '{0}'. Make sure the parent directory exists and is writable by the Web process.
 
 appconfig_aliaspath_invalid				= Application configuration <alias id="{0}"> uses an invalid file path "{1}".
 appconfig_alias_invalid					= Application configuration <alias> element must have an "id" attribute and a "path" attribute.
