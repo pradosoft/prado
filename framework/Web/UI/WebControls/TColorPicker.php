@@ -13,6 +13,8 @@
 /**
  * TColorPicker class.
  *
+ * Be aware, this control is EXPERIMENTAL and may have significant change in future versions.
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls

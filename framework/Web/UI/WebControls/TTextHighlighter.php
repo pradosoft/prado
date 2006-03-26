@@ -84,8 +84,7 @@ class TTextHighlighter extends TWebControl
 	public function onPreRender($writer)
 	{
 		parent::onPreRender($writer);
-		$this->registerHighlightStyleSheet();
-		$this->getPage()->getClientScript()->registerPradoScript('prado');
+		$this->registerHighlightScripts();
 	}
 
 	/**
@@ -114,11 +113,12 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * Register CSS style sheet file.
+	 * Register CSS stylesheet file and javascript file.
+	 * @throws TConfigurationException if highlight.css file cannot be found
 	 */
-	protected function registerHighlightStyleSheet()
+	protected function registerHighlightScripts()
 	{
-		$cs = $this->getPage()->getClientScript();
+		$cs=$this->getPage()->getClientScript();
 		$cssKey='prado:TTextHighlighter';
 		if(!$cs->isStyleSheetFileRegistered($cssKey))
 		{
@@ -127,6 +127,7 @@ class TTextHighlighter extends TWebControl
 			$styleSheet = $this->publishFilePath($cssFile);
 			$cs->registerStyleSheetFile($cssKey, $styleSheet);
 		}
+		$cs->registerPradoScript('prado');
 	}
 
 	/**

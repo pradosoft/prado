@@ -267,3 +267,5 @@ wizard_command_invalid					= Invalid wizard navigation command '{0}'.
 completewizardstep_steptype_readonly	= TCompleteWizardStep.StepType is read-only.
 
 wizardstepcollection_wizardstep_required = TWizardStepCollection can only accept objects of TWizardStep or its derived classes.
+
+texthighlighter_stylesheet_invalid		= Unable to find the stylesheet file for TTextHighlighter.

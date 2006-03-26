@@ -3,4 +3,34 @@
 <h1>TTextHighlighter</h1>
 <com:DocLink ClassPath="System.Web.UI.WebControls.TTextHighlighter" />
 
+<p>
+<tt>TTextHighlighter</tt> does syntax highlighting for its body content, including both static text and the rendering results of its child controls. The text being highlighted follows the syntax of the specified <tt>Language</tt>, which can be 'php' (default), 'prado', 'css', 'html', etc. Here, 'prado' stands for the syntax of PRADO control templates.
+</p>
+<p>
+If line numbers are desired in front of each line, set <tt>ShowLineNumbers</tt> to true.
+</p>
+<p>
+To use <tt>TTextHighlighter</tt>, simply enclose the contents to be syntax highlighted within the body of a <tt>TTextHighlighter</tt> control. The following example highlights a piece of PHP code,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TTextHighlighter ShowLineNumbers="true"&gt;
+<?php
+$str = 'one|two|three|four';
+print_r(explode('|', $str, 2)); // will output an array
+?>
+&lt;/com:TTextHighlighter&gt;
+</com:TTextHighlighter>
+
+<p>
+The output will look as follows,
+</p>
+<div style="border:1px solid silver">
+<com:TTextHighlighter ShowLineNumbers="true">
+<?php
+$str = 'one|two|three|four';
+print_r(explode('|', $str, 2)); // will output an array
+?>
+</com:TTextHighlighter>
+</div>
+
 </com:TContent>
