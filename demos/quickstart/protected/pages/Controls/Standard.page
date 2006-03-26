@@ -19,7 +19,7 @@
   <a href="?page=Controls.DatePicker">TDatePicker</a> represents an input field taking date values via a calendar dialog.
   </li>
 
-  <li>*
+  <li>
   <a href="?page=Controls.Expression">TExpression</a> accepts a PHP expression and displays the evaluation result on a Web page.
   </li>
 
@@ -95,7 +95,7 @@
   <a href="?page=Controls.SafeHtml">TSafeHtml</a> displays its body content with assurance that the content contain no harmful code (such as <a href="?page=Security.XSS">XSS</a>).
   </li>
 
-  <li>*
+  <li>
   <a href="?page=Controls.Statements">TStatements</a> accepts a few PHP statements and displays their standard output on the Web page.
   </li>
 
@@ -107,7 +107,7 @@
   <a href="?page=Controls.TextBox">TTextBox</a> represents a text input field on a Web page. It can collect single-line, multi-line or password text input from users.
   </li>
 
-  <li>*
+  <li>
   <a href="?page=Controls.TextHighlighter">TTextHighlighter</a> highlights its body content according to the specified syntax highlighter, such as PHP, XML, PRADO, etc.
   </li>
 

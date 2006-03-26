@@ -4,7 +4,27 @@
 <com:DocLink ClassPath="System.Web.UI.WebControls.TExpression" />
 
 <p>
-TBD
+<tt>TExpression</tt> evaluates a PHP expression and displays the evaluation result. To specify the expression to be evaluated, set the <tt>Expression</tt> property. In a control template, <a href="?page=Configurations.Templates2#et">expression tags</a> are often used instead of the complete <a href="?page=Configurations.Templates1#ct">component tags</a> when the main purpose is to display the evaluation result of some PHP expression. For example, the following two tags are equivalent,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TExpression Expression="date()" /&gt;
+&lt;%= date() %&gt;
+</com:TTextHighlighter>
+
+<p>
+<tt>TExpression</tt> evaluates the expression during the rendering control lifecycle.
+</p>
+
+<p>
+The context of the expression in a <tt>TExpression</tt> control is the control itself. That is, <tt>$this</tt> represents the control object if it is present in the expression. For example, both of the following template tags will display the title of the page containing the <tt>TExpression</tt> control.
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TExpression Expression="$this->Page->Title" /&gt;
+&lt;%= $this->Page->Title %&gt;
+</com:TTextHighlighter>
+
+<p>
+Be aware, since <tt>TExpression</tt> allows execution of arbitrary PHP code, in general you should not use it to evaluate expressions submitted by your application users.
 </p>
 
 </com:TContent>
