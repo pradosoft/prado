@@ -61,7 +61,7 @@ Prado::using('System.Web.UI.WebControls.TDataList');
  *   Default templates will be used if above templates are not set.
  * - side bar: {@link setSideBarTemplate SideBarTemplate}.
  *   A default template will be used if this template is not set.
- *   Its visibility is toggled by {@link setDisplaySideBar DisplaySideBar}.
+ *   Its visibility is toggled by {@link setShowSideBar ShowSideBar}.
  *
  * The style of these wizard layout components can be customized via the following style properties,
  * - header: {@link getHeaderStyle HeaderStyle}.
@@ -251,33 +251,33 @@ class TWizard extends TWebControl implements INamingContainer
 	/**
 	 * @return boolean whether to display a cancel button in each wizard step. Defaults to false.
 	 */
-	public function getDisplayCancelButton()
+	public function getShowCancelButton()
 	{
-		return $this->getViewState('DisplayCancelButton',false);
+		return $this->getViewState('ShowCancelButton',false);
 	}
 
 	/**
 	 * @param boolean whether to display a cancel button in each wizard step.
 	 */
-	public function setDisplayCancelButton($value)
+	public function setShowCancelButton($value)
 	{
-		$this->setViewState('DisplayCancelButton',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('ShowCancelButton',TPropertyValue::ensureBoolean($value),false);
 	}
 
 	/**
 	 * @return boolean whether to display a side bar that contains links to wizard steps. Defaults to true.
 	 */
-	public function getDisplaySideBar()
+	public function getShowSideBar()
 	{
-		return $this->getViewState('DisplaySideBar',true);
+		return $this->getViewState('ShowSideBar',true);
 	}
 
 	/**
 	 * @param boolean whether to display a side bar that contains links to wizard steps.
 	 */
-	public function setDisplaySideBar($value)
+	public function setShowSideBar($value)
 	{
-		$this->setViewState('DisplaySideBar',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('ShowSideBar',TPropertyValue::ensureBoolean($value),true);
 		$this->requiresControlsRecreation();
 	}
 
@@ -808,8 +808,8 @@ class TWizard extends TWebControl implements INamingContainer
 	 */
 	protected function applySideBarProperties()
 	{
-		$this->_sideBar->setVisible($this->getDisplaySideBar());
-		if($this->_sideBarDataList!==null && $this->getDisplaySideBar())
+		$this->_sideBar->setVisible($this->getShowSideBar());
+		if($this->_sideBarDataList!==null && $this->getShowSideBar())
 		{
 			$this->_sideBarDataList->setDataSource($this->getWizardSteps());
 			$this->_sideBarDataList->setSelectedItemIndex($this->getActiveStepIndex());
@@ -876,7 +876,7 @@ class TWizard extends TWebControl implements INamingContainer
 		if(($navigationStyle=$this->getViewState('NavigationStyle',null))!==null)
 			$this->_navigation->getStyle()->mergeWith($navigationStyle);
 
-		$displayCancelButton=$this->getDisplayCancelButton();
+		$displayCancelButton=$this->getShowCancelButton();
 		$cancelButtonStyle=$this->getCancelButtonStyle();
 		$buttonStyle=$this->getViewState('NavigationButtonStyle',null);
 		if($buttonStyle!==null)
@@ -1033,7 +1033,7 @@ class TWizard extends TWebControl implements INamingContainer
 	 */
 	protected function createSideBar()
 	{
-		if($this->getDisplaySideBar())
+		if($this->getShowSideBar())
 		{
 			if(($template=$this->getSideBarTemplate())===null)
 				$template=new TWizardSideBarTemplate;

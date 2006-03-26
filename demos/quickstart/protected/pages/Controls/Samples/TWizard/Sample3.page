@@ -10,7 +10,7 @@ In the following survey, if you are a college student, you will be asked which m
 		BackColor="#FFFBD6"
 		Width="300px"
 		HeaderText="A Mini Survey"
-		DisplaySideBar="false"
+		ShowSideBar="false"
 		HeaderStyle.BackColor="PaleGoldenrod"
 		HeaderStyle.HorizontalAlign="Center"
 		NavigationStyle.HorizontalAlign="Center"

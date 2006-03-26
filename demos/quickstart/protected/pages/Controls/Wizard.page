@@ -5,7 +5,7 @@
 
 <h2>Overview</h2>
 <p>
-<tt>TWizard</tt> is analogous to the installation wizard commonly used to install software on Windows. It splits a large form and presents the user with a series of smaller forms, called wizard steps, to complete. The following figure shows how a wizard is composed of when presented to users, where <tt>step content</tt> is the main content of a wizard step for users to complete, <tt>header</tt> refers to header content common to all steps, <tt>navigation</tt> contains buttons that allow users to navigate step by step, and <tt>side bar</tt> contains a list of hyperlinks by which users can reach to any step with one click. The visibility of the side bar can be toggled by setting <tt>DisplaySideBar</tt>.
+<tt>TWizard</tt> is analogous to the installation wizard commonly used to install software on Windows. It splits a large form and presents the user with a series of smaller forms, called wizard steps, to complete. The following figure shows how a wizard is composed of when presented to users, where <tt>step content</tt> is the main content of a wizard step for users to complete, <tt>header</tt> refers to header content common to all steps, <tt>navigation</tt> contains buttons that allow users to navigate step by step, and <tt>side bar</tt> contains a list of hyperlinks by which users can reach to any step with one click. The visibility of the side bar can be toggled by setting <tt>ShowSideBar</tt>.
 </p>
 <img src="<%~wizard.gif%>" alt="components of wizard" />
 
