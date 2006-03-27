@@ -200,9 +200,12 @@ demos/quickstart/protected/pages/Controls/Samples/TLinkButton/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TLinkButton/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TListBox/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TListBox/Home.php -text
+demos/quickstart/protected/pages/Controls/Samples/TLiteral/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TPanel/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TPanel/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TPanel/hello_world.gif -text
+demos/quickstart/protected/pages/Controls/Samples/TPlaceHolder/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TPlaceHolder/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TRadioButton/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TRadioButton/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TRadioButtonList/Home.page -text

@@ -71,7 +71,7 @@
   <a href="?page=Controls.LinkButton">TLinkButton</a> represents a hyperlink that can perform page postbacks.
   </li>
 
-  <li>*
+  <li>
   <a href="?page=Controls.Literal">TLiteral</a> represents a static text without any HTML tag surrounding it on a Web page.
   </li>
 
@@ -83,7 +83,7 @@
   <a href="?page=Controls.Panel">TPanel</a> represents a container for other controls on a Web page. In HTML, it is displayed as a &lt;div&gt; element.
   </li>
 
-  <li>*
+  <li>
   <a href="?page=Controls.PlaceHolder">TPlaceHolder</a> reserves a place on a control template. It inserts its body content at that place.
   </li>
 

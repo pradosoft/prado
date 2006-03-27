@@ -1,0 +1,13 @@
+<com:TContent ID="body">
+
+<h1>TLiteral Sample</h1>
+
+<p>
+<com:TLiteral Text="This is a piece of unencoded text." />
+</p>
+
+<p>
+<com:TLiteral Text="This is a piece of encoded <a>text</a>." Encode="true"/>
+</p>
+
+</com:TContent>
