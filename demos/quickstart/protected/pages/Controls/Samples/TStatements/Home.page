@@ -1,0 +1,29 @@
+<com:TContent ID="body">
+
+<h1>TStatements Sample</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Using TStatements component tag:
+</td><td class="sampleaction">
+<com:TStatements>
+  <prop:Statements>
+  $uid=$this->UniqueID;
+  echo "UniqueID is '$uid'.";
+  </prop:Statements>
+</com:TStatements>
+</td></tr>
+
+<tr><td class="samplenote">
+Using shortcut statements tag:
+</td><td class="sampleaction">
+<%%
+  $uid=$this->UniqueID;
+  echo "UniqueID is '$uid'.";
+%>
+</td></tr>
+
+</table>
+
+</com:TContent>

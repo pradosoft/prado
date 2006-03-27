@@ -91,7 +91,7 @@
   <a href="?page=Controls.RadioButton">TRadioButton</a> represents a radiobutton on a Web page. It is mainly used in a group from which users make a choice.
   </li>
 
-  <li>*
+  <li>
   <a href="?page=Controls.SafeHtml">TSafeHtml</a> displays its body content with assurance that the content contain no harmful code (such as <a href="?page=Security.XSS">XSS</a>).
   </li>
 

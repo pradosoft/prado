@@ -131,11 +131,11 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @return boolean true will show "Copy Code" link
+	 * @return boolean true will show "Copy Code" link. Defaults to false.
 	 */
 	public function getEnableCopyCode()
 	{
-		return $this->getViewState('CopyCode', true);
+		return $this->getViewState('CopyCode', false);
 	}
 
 	/**
@@ -143,7 +143,7 @@ class TTextHighlighter extends TWebControl
 	 */
 	public function setEnableCopyCode($value)
 	{
-		$this->setViewState('CopyCode', TPropertyValue::ensureBoolean($value), true);
+		$this->setViewState('CopyCode', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**

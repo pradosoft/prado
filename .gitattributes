@@ -186,6 +186,7 @@ demos/quickstart/protected/pages/Controls/Samples/TDropDownList/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TDropDownList/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TEmailAddressValidator/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TEmailAddressValidator/Home.php -text
+demos/quickstart/protected/pages/Controls/Samples/TExpression/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/THyperLink/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/THyperLink/hello_world.gif -text
 demos/quickstart/protected/pages/Controls/Samples/TImage/HelloWorld.html -text
@@ -218,11 +219,14 @@ demos/quickstart/protected/pages/Controls/Samples/TRepeater/Sample3.page -text
 demos/quickstart/protected/pages/Controls/Samples/TRepeater/Sample3.php -text
 demos/quickstart/protected/pages/Controls/Samples/TRequiredFieldValidator/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TRequiredFieldValidator/Home.php -text
+demos/quickstart/protected/pages/Controls/Samples/TSafeHtml/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TStatements/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TTable/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TTable/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TTable/backimage.gif -text
 demos/quickstart/protected/pages/Controls/Samples/TTextBox/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TTextBox/Home.php -text
+demos/quickstart/protected/pages/Controls/Samples/TTextHighlighter/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TValidationSummary/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TValidationSummary/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TWizard/Sample1.page -text

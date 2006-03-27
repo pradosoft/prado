@@ -27,4 +27,6 @@ The context of the expression in a <tt>TExpression</tt> control is the control i
 Be aware, since <tt>TExpression</tt> allows execution of arbitrary PHP code, in general you should not use it to evaluate expressions submitted by your application users.
 </p>
 
+<com:RunBar PagePath="Controls.Samples.TExpression.Home" />
+
 </com:TContent>

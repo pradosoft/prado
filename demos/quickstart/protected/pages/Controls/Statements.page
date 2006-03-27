@@ -38,4 +38,6 @@ The context of the statements in a <tt>TStatements</tt> control is the control i
 Be aware, since <tt>TStatements</tt> allows execution of arbitrary PHP code, in general you should not use it to evaluate PHP code submitted by your application users.
 </p>
 
+<com:RunBar PagePath="Controls.Samples.TStatements.Home" />
+
 </com:TContent>

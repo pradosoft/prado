@@ -21,16 +21,6 @@ print_r(explode('|', $str, 2)); // will output an array
 &lt;/com:TTextHighlighter&gt;
 </com:TTextHighlighter>
 
-<p>
-The output will look as follows,
-</p>
-<div style="border:1px solid silver">
-<com:TTextHighlighter ShowLineNumbers="true">
-<?php
-$str = 'one|two|three|four';
-print_r(explode('|', $str, 2)); // will output an array
-?>
-</com:TTextHighlighter>
-</div>
+<com:RunBar PagePath="Controls.Samples.TTextHighlighter.Home" />
 
 </com:TContent>
