@@ -4,6 +4,7 @@ BUG: Ticket#88 - Unclosed HTML tag in TDatePicker and TColorPicker (Qiang)
 BUG: Ticket#85 - Undefined TDataGrid::setSelectedIndex (Qiang)
 BUG: Ticket#87 - Typo in IDbConnection (Qiang)
 BUG: Ticket#95 - Typo in TTemplateControl::registerContentPlaceHolder (Qiang)
+BUG: Ticket#103 - Typo in TStyle::setVerticalAlign (Qiang)
 BUG: SF#1446846 - Typo in THead (Qiang)
 BUG: SF#1432624 - Incorrect documentation about caching expiry (Qiang)
 BUG: THttpSession fails when user storage module is used (Qiang)
@@ -17,6 +18,7 @@ NEW: TSQLMap module (Wei)
 NEW: TStack class (Qiang)
 NEW: TImageMap control (Qiang)
 NEW: TWizard control (Qiang)
+NEW: Added TVarDumper and PradoBase::varDump() (Qiang)
 
 Version 3.0b March 6, 2006
 ==========================

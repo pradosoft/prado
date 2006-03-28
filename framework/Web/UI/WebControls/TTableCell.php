@@ -86,7 +86,7 @@ class TTableCell extends TWebControl
 
 	/**
 	 * Sets the vertical alignment of the contents within the table item.
-     * Valid values include 'NotSet','Top','Bottom','Middel'
+     * Valid values include 'NotSet','Top','Bottom','Middle'
 	 * @param string the horizontal alignment
 	 */
 	public function setVerticalAlign($value)

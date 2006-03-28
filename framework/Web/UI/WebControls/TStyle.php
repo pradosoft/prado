@@ -681,12 +681,12 @@ class TTableItemStyle extends TStyle
 
 	/**
 	 * Sets the vertical alignment of the contents within the table item.
-     * Valid values include 'NotSet','Top','Bottom','Middel'
+     * Valid values include 'NotSet','Top','Bottom','Middle'
 	 * @param string the horizontal alignment
 	 */
 	public function setVerticalAlign($value)
 	{
-		$this->_verticalAlign=TPropertyValue::ensureEnum($value,array('NotSet','Top','Bottom','Middel'));
+		$this->_verticalAlign=TPropertyValue::ensureEnum($value,array('NotSet','Top','Bottom','Middle'));
 	}
 
 	/**
