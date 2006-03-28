@@ -19,6 +19,7 @@ NEW: TStack class (Qiang)
 NEW: TImageMap control (Qiang)
 NEW: TWizard control (Qiang)
 NEW: Added TVarDumper and PradoBase::varDump() (Qiang)
+NEW: Added TComponentReflection (Qiang)
 
 Version 3.0b March 6, 2006
 ==========================

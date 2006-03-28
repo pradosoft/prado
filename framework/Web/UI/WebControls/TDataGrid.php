@@ -510,19 +510,19 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
-	 * @param boolean whether paging is enabled
-	 */
-	public function setAllowPaging($value)
-	{
-		$this->setViewState('AllowPaging',TPropertyValue::ensureBoolean($value),false);
-	}
-
-	/**
 	 * @return boolean whether sorting is enabled. Defaults to false.
 	 */
 	public function getAllowSorting()
 	{
 		return $this->getViewState('AllowSorting',false);
+	}
+
+	/**
+	 * @param boolean whether paging is enabled
+	 */
+	public function setAllowPaging($value)
+	{
+		$this->setViewState('AllowPaging',TPropertyValue::ensureBoolean($value),false);
 	}
 
 	/**

@@ -576,4 +576,144 @@ class TEventParameter extends TComponent
 {
 }
 
+/**
+ * TComponentReflection class.
+ *
+ * TComponentReflection provides functionalities to inspect the properties and events
+ * defined in a component. It shows the definition of component properties, including
+ * their name, type, writability and defining class. It also shows the definition
+ * of component events, including their name and defining class.
+ *
+ * Note, only public properties and events are displayed.
+ *
+ * The following code displays the properties and events defined in {@link TDataGrid},
+ * <code>
+ *   $reflection=new TComponentReflection('TDataGrid');
+ *   Prado::varDump($reflection->getProperties());
+ *   Prado::varDump($reflection->getEvents());
+ * </code>
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System
+ * @since 3.0
+ */
+class TComponentReflection extends TComponent
+{
+	private $_className;
+	private $_properties=array();
+	private $_events=array();
+
+	/**
+	 * Constructor.
+	 * @param TComponent|string the component instance or the class name
+	 * @throws TInvalidDataTypeException if the object is not a component
+	 */
+	public function __construct($component)
+	{
+		if(is_string($component))
+			$this->_className=$component;
+		else if($component instanceof TComponent)
+			$this->_className=get_class($component);
+		else
+			throw new TInvalidDataTypeException('componentreflection_class_invalid');
+		$this->reflect();
+	}
+
+	private function reflect()
+	{
+		$class=new TReflectionClass($this->_className);
+		$methods=$class->getMethods();
+		$properties=array();
+		$events=array();
+		foreach($methods as $method)
+		{
+			if($method->isPublic() && !$method->isStatic())
+			{
+				$methodName=$method->getName();
+				if($method->getNumberOfRequiredParameters()===0 && strncasecmp($methodName,'get',3)===0 && isset($methodName[3]))
+				{
+					$propertyName=substr($methodName,3);
+					$readOnly=!$class->hasMethod('set'.$propertyName);
+					$methodClass=$method->getDeclaringClass()->getName();
+					$properties[$methodClass][$propertyName]=$method;
+				}
+				else if(strncasecmp($methodName,'on',2)===0 && isset($methodName[2]))
+				{
+					$methodName[0]='O';
+					$methodClass=$method->getDeclaringClass()->getName();
+					$events[$methodClass][$methodName]=$method;
+				}
+			}
+		}
+		foreach($properties as $className=>$props)
+		{
+			ksort($props);
+			foreach($props as $name=>$method)
+			{
+				$this->_properties[]=array(
+					'name'=>$name,
+					'type'=>$this->determinePropertyType($method),
+					'readonly'=>!$class->hasMethod('set'.$name),
+					'class'=>$className,
+				);
+			}
+		}
+		foreach($events as $className=>$evts)
+		{
+			ksort($evts);
+			foreach($evts as $name=>$method)
+			{
+				$this->_events[]=array(
+					'name'=>$name,
+					'class'=>$className,
+				);
+			}
+		}
+	}
+
+	/**
+	 * Determines the property type.
+	 * This method uses the doc comment to determine the property type.
+	 * @param ReflectionMethod
+	 * @return string the property type, '{unknown}' if type cannot be determined from comment
+	 */
+	protected function determinePropertyType($method)
+	{
+		$comment=$method->getDocComment();
+		if(preg_match('/@return\\s+(.*?)\\s+/',$comment,$matches))
+			return $matches[1];
+		else
+			return '{unknown}';
+	}
+
+	/**
+	 * @return string class name of the component
+	 */
+	public function getClassName()
+	{
+		return $this->_className;
+	}
+
+	/**
+	 * @return array list of component properties. Each array element is of the following
+	 * structure: [name]=>property name, [type]=>property type,
+	 * [readonly]=>whether the property is read-only, [class]=>the class where the
+	 * property is inherited from
+	 */
+	public function getProperties()
+	{
+		return $this->_properties;
+	}
+
+	/**
+	 * @return array list of component events. Each array element is of the following
+	 * structure: [name]=>event name,[class]=>the class where the event is inherited from
+	 */
+	public function getEvents()
+	{
+		return $this->_events;
+	}
+}
+
 ?>
