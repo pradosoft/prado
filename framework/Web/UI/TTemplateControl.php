@@ -32,11 +32,11 @@ class TTemplateControl extends TControl implements INamingContainer
 	/**
 	 * @var ITemplate the parsed template structure shared by the same control class
 	 */
-	protected static $_template=array();
+	private static $_template=array();
 	/**
 	 * @var ITemplate the parsed template structure specific for this control instance
 	 */
-	protected $_localTemplate=null;
+	private $_localTemplate=null;
 	/**
 	 * @var TTemplateControl the master control if any
 	 */
