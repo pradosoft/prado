@@ -298,7 +298,7 @@ class TApplication extends TComponent
 		if(is_file($this->_basePath))
 		{
 			$this->_configFile=$this->_basePath;
-			$this->_basePath=dirname($this->_basepath);
+			$this->_basePath=dirname($this->_basePath);
 		}
 		else if(is_file($this->_basePath.'/'.self::CONFIG_FILE))
 			$this->_configFile=$this->_basePath.'/'.self::CONFIG_FILE;
