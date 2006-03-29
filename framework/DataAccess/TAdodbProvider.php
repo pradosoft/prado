@@ -209,7 +209,7 @@ class TAdodbConnection extends TDbConnection
 	/**
 	 * Finish and cleanup transactions.
 	 */
-	public function completeTranaction()
+	public function completeTransaction()
 	{
 		return $this->connection->CompleteTrans();
 	}
