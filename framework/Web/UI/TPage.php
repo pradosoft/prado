@@ -70,6 +70,10 @@ class TPage extends TTemplateControl
 	 */
 	private $_theme=null;
 	/**
+	 * @var string page title set when Head is not in page yet
+	 */
+	private $_title=null;
+	/**
 	 * @var TTheme page stylesheet theme
 	 */
 	private $_styleSheet=null;
@@ -792,6 +796,11 @@ class TPage extends TTemplateControl
 		if($this->_head)
 			throw new TInvalidOperationException('page_head_duplicated');
 		$this->_head=$value;
+		if($this->_title!==null)
+		{
+			$this->_head->setTitle($this->_title);
+			$this->_title=null;
+		}
 	}
 
 	/**
@@ -799,7 +808,10 @@ class TPage extends TTemplateControl
 	 */
 	public function getTitle()
 	{
-		return $this->getViewState('Title','');
+		if($this->_head)
+			return $this->_head->getTitle();
+		else
+			return $this->_title===null ? '' : $this->_title;
 	}
 
 	/**
@@ -810,7 +822,10 @@ class TPage extends TTemplateControl
 	 */
 	public function setTitle($value)
 	{
-		$this->setViewState('Title',$value,'');
+		if($this->_head)
+			$this->_head->setTitle($value);
+		else
+			$this->_title=$value;
 	}
 
 	/**

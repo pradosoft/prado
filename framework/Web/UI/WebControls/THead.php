@@ -116,8 +116,7 @@ class THead extends TControl
 	public function render($writer)
 	{
 		$page=$this->getPage();
-		if(($title=$page->getTitle())==='')
-			$title=$this->getTitle();
+		$title=$this->getTitle();
 		$writer->write("<head>\n<title>".THttpUtility::htmlEncode($title)."</title>\n");
 		if(($metaTags=$this->getMetaTags())!==null)
 		{
