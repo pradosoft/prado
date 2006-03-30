@@ -139,13 +139,14 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 		}
 		if($this->getReadOnly())
 			$writer->addAttribute('readonly','readonly');
-		if(!$this->getEnabled(true) && $this->getEnabled())  // in this case parent will not render 'disabled'
+		$isEnabled=$this->getEnabled(true);
+		if(!$isEnabled && $this->getEnabled())  // in this case parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');
-		if($this->getEnabled(true) && $this->getAutoPostBack() && $page->getClientSupportsJavaScript())
+		if($isEnabled && $this->getAutoPostBack() && $page->getClientSupportsJavaScript())
 		{
 			$writer->addAttribute('id',$this->getClientID());
 			$this->getPage()->getClientScript()->registerPostBackControl('Prado.WebUI.TTextBox',$this->getPostBackOptions());
-	}
+		}
 		parent::addAttributesToRender($writer);
 	}
 

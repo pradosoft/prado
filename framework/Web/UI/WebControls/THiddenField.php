@@ -23,7 +23,7 @@
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class THiddenField extends TControl implements IPostBackDataHandler
+class THiddenField extends TControl implements IPostBackDataHandler, IValidatable
 {
 	/**
 	 * @return string tag name of the hidden field.
@@ -80,6 +80,16 @@ class THiddenField extends TControl implements IPostBackDataHandler
 			$this->setValue($value);
 			return true;
 		}
+	}
+
+	/**
+	 * Returns the value to be validated.
+	 * This methid is required by IValidatable interface.
+	 * @return mixed the value of the property to be validated.
+	 */
+	public function getValidationPropertyValue()
+	{
+		return $this->getValue();
 	}
 
 	/**
