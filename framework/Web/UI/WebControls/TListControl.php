@@ -118,7 +118,7 @@ abstract class TListControl extends TDataBoundControl
 			$writer->addAttribute('id',$this->getClientID());
 			$this->getPage()->getClientScript()->registerPostBackControl('Prado.WebUI.'.get_class($this),$this->getPostBackOptions());
 		}
-		if($this->getEnabled(true) && !$this->getEnabled())
+		if(!$this->getEnabled(true) && $this->getEnabled())
 			$writer->addAttribute('disabled','disabled');
 		parent::addAttributesToRender($writer);
 	}
