@@ -11,36 +11,30 @@
  */
 
 /**
- * Includes TErrorHandler class
+ * Includes core interfaces essential for TApplication class
  */
+require_once(PRADO_DIR.'/interfaces.php');
+
+/**
+ * Includes core classes essential for TApplication class
+ */
+require_once(PRADO_DIR.'/TApplicationComponent.php');
+require_once(PRADO_DIR.'/TModule.php');
+require_once(PRADO_DIR.'/TService.php');
 require_once(PRADO_DIR.'/Exceptions/TErrorHandler.php');
-/**
- * Includes THttpRequest class
- */
-require_once(PRADO_DIR.'/Web/THttpRequest.php');
-/**
- * Includes THttpResponse class
- */
-require_once(PRADO_DIR.'/Web/THttpResponse.php');
-/**
- * Includes THttpSession class
- */
-require_once(PRADO_DIR.'/Web/THttpSession.php');
-/**
- * Includes TAuthorizationRule class
- */
+require_once(PRADO_DIR.'/Caching/TCache.php');
+require_once(PRADO_DIR.'/IO/TTextWriter.php');
+require_once(PRADO_DIR.'/Collections/TList.php');
+require_once(PRADO_DIR.'/Collections/TMap.php');
+require_once(PRADO_DIR.'/Xml/TXmlDocument.php');
 require_once(PRADO_DIR.'/Security/TAuthorizationRule.php');
-/**
- * Includes TSecurityManager class
- */
 require_once(PRADO_DIR.'/Security/TSecurityManager.php');
-/**
- * Includes TPageService class (default service)
- */
+require_once(PRADO_DIR.'/Web/THttpUtility.php');
+require_once(PRADO_DIR.'/Web/Javascripts/TJavaScript.php');
+require_once(PRADO_DIR.'/Web/THttpRequest.php');
+require_once(PRADO_DIR.'/Web/THttpResponse.php');
+require_once(PRADO_DIR.'/Web/THttpSession.php');
 require_once(PRADO_DIR.'/Web/Services/TPageService.php');
-/**
- * Includes TAssetManager class
- */
 require_once(PRADO_DIR.'/Web/TAssetManager.php');
 
 

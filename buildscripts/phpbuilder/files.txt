@@ -9,11 +9,10 @@ Collections/TAttributeCollection.php
 # Collections/TPagedDataSource.php
 # Collections/TDummyDataSource.php
 
-Data/TXmlDocument.php
+Xml/TXmlDocument.php
 Web/THttpUtility.php
 Web/Javascripts/TJavaScript.php
 Data/TCache.php
-Data/TDataFieldAccessor.php
 Log/TLogger.php
 
 core.php

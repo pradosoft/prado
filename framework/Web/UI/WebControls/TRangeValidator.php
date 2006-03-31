@@ -226,7 +226,7 @@ class TRangeValidator extends TBaseValidator
 		$dateFormat = $this->getDateFormat();
 		if($dateFormat!=='')
 		{
-			$formatter=Prado::createComponent('System.Data.TSimpleDateFormatter', $dateFormat);
+			$formatter=Prado::createComponent('System.Util.TSimpleDateFormatter', $dateFormat);
 			$value = $formatter->parse($value, $dateFormat);
 			if($minValue!=='')
 				$valid=$valid && ($value>=$formatter->parse($minValue));

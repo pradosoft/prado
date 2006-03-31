@@ -4,8 +4,10 @@
  *
  * This file is intended to be included in the entry script of Prado applications.
  * It defines Prado class by extending PradoBase, a static class providing globally
- * available functionalities to Prado applications. It also sets PHP error and
- * exception handler functions, and provides a __autoload function which automatically
+ * available functionalities that enable PRADO component model and error handling mechanism.
+ *
+ * By including this file, the PHP error and exception handlers are set as
+ * PRADO handlers, and an __autoload function is provided that automatiically
  * loads a class file if the class is not defined.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -17,9 +19,9 @@
  */
 
 /**
- * Includes the Prado core header file
+ * Includes the PradoBase class file
  */
-require_once(dirname(__FILE__).'/core.php');
+require_once(dirname(__FILE__).'/PradoBase.php');
 
 /**
  * Defines Prado class if not defined.

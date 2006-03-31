@@ -3,11 +3,9 @@
  * TTarFileExtractor class file
  *
  * @author Vincent Blavet <vincent@phpconcept.net>
- * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005 PradoSoft
- * @license http://www.pradosoft.com/license/
+ * @copyright Copyright &copy; 1997-2003 The PHP Group
  * @version $Revision: $  $Date: $
- * @package System.Data
+ * @package System.IO
  */
 
 /* vim: set ts=4 sw=4: */
@@ -34,7 +32,7 @@
  *
  * @author Vincent Blavet <vincent@phpconcept.net>
  * @version $Revision: $  $Date: $
- * @package System.Data
+ * @package System.IO
  * @since 3.0
  */
 class TTarFileExtractor
@@ -130,7 +128,7 @@ class TTarFileExtractor
     {
 		throw new Exception($p_message);
     }
- 
+
     private function _isArchive($p_filename=null)
     {
         if ($p_filename == null) {
@@ -185,7 +183,7 @@ class TTarFileExtractor
     private function _close()
     {
         //if (isset($this->_file)) {
-        if (is_resource($this->_file)) 
+        if (is_resource($this->_file))
 		{
                @fclose($this->_file);
             $this->_file = 0;

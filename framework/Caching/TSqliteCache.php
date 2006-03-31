@@ -7,7 +7,7 @@
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Revision: $  $Date: $
- * @package System.Data
+ * @package System.Caching
  */
 
 /**
@@ -62,7 +62,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
- * @package System.Data
+ * @package System.Caching
  * @since 3.0
  */
 class TSqliteCache extends TModule implements ICache

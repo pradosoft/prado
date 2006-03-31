@@ -1,0 +1,172 @@
+<?php
+/**
+ * Core interfaces essential for TApplication class.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System
+ */
+
+/**
+ * IModule interface.
+ *
+ * This interface must be implemented by application modules.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System
+ * @since 3.0
+ */
+interface IModule
+{
+	/**
+	 * Initializes the module.
+	 * @param TXmlElement the configuration for the module
+	 */
+	public function init($config);
+	/**
+	 * @return string ID of the module
+	 */
+	public function getID();
+	/**
+	 * @param string ID of the module
+	 */
+	public function setID($id);
+}
+
+/**
+ * IService interface.
+ *
+ * This interface must be implemented by services.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System
+ * @since 3.0
+ */
+interface IService
+{
+	/**
+	 * Initializes the service.
+	 * @param TXmlElement the configuration for the service
+	 */
+	public function init($config);
+	/**
+	 * @return string ID of the service
+	 */
+	public function getID();
+	/**
+	 * @param string ID of the service
+	 */
+	public function setID($id);
+	/**
+	 * Runs the service.
+	 */
+	public function run();
+}
+
+/**
+ * ITextWriter interface.
+ *
+ * This interface must be implemented by writers.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System
+ * @since 3.0
+ */
+interface ITextWriter
+{
+	/**
+	 * Writes a string.
+	 * @param string string to be written
+	 */
+	public function write($str);
+	/**
+	 * Flushes the content that has been written.
+	 */
+	public function flush();
+}
+
+
+/**
+ * IUser interface.
+ *
+ * This interface must be implemented by user objects.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System
+ * @since 3.0
+ */
+interface IUser
+{
+	/**
+	 * @return string username
+	 */
+	public function getName();
+	/**
+	 * @param string username
+	 */
+	public function setName($value);
+	/**
+	 * @return boolean if the user is a guest
+	 */
+	public function getIsGuest();
+	/**
+	 * @param boolean if the user is a guest
+	 */
+	public function setIsGuest($value);
+	/**
+	 * @return array list of roles that the user is of
+	 */
+	public function getRoles();
+	/**
+	 * @return array|string list of roles that the user is of. If it is a string, roles are assumed by separated by comma
+	 */
+	public function setRoles($value);
+	/**
+	 * @param string role to be tested
+	 * @return boolean whether the user is of this role
+	 */
+	public function isInRole($role);
+	/**
+	 * @return string user data that is serialized and will be stored in session
+	 */
+	public function saveToString();
+	/**
+	 * @param string user data that is serialized and restored from session
+	 * @return IUser the user object
+	 */
+	public function loadFromString($string);
+}
+
+/**
+ * IStatePersister class.
+ *
+ * This interface must be implemented by all state persister classes (such as
+ * {@link TPageStatePersister}, {@link TApplicationStatePersister}.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System
+ * @since 3.0
+ */
+interface IStatePersister
+{
+	/**
+	 * Loads state from a persistent storage.
+	 * @return mixed the state
+	 */
+	public function load();
+	/**
+	 * Saves state into a persistent storage.
+	 * @param mixed the state to be saved
+	 */
+	public function save($state);
+}
+
+?>

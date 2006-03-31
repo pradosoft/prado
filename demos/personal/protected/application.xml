@@ -12,7 +12,7 @@
     <!--
     <module id="session" class="THttpSession" />
     -->
-    <module id="log" class="System.Log.TLogRouter">
+    <module id="log" class="System.Util.TLogRouter">
       <route class="TBrowserLogRoute" Categories="System" />
       <route class="TFileLogRoute" Categories="System" Levels="Notice,Warning,Error,Alert,Fatal" />
     </module>

@@ -7,7 +7,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
- * @package System.Data
+ * @package System.Caching
  * @since 3.0
  */
 interface ICache

@@ -7,7 +7,7 @@
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Revision: $  $Date: $
- * @package System.Data
+ * @package System.Caching
  */
 
 /**
@@ -39,7 +39,7 @@
  *
  * @author Alban Hanry <compte_messagerie@hotmail.com>
  * @version $Revision: $  $Date: $
- * @package System.Data
+ * @package System.Caching
  * @since 3.0b
  */
 class TAPCCache extends TModule implements ICache

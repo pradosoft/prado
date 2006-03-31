@@ -256,7 +256,7 @@ class TDatePicker extends TTextBox
 	public function setDate($value)
 	{
 		$date = TPropertyValue::ensureInteger($value);
-		$formatter = Prado::createComponent('System.Data.TSimpleDateFormatter',
+		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',
 						$this->getDateFormat());
 		$this->setText($formatter->format($date));
 	}
@@ -358,7 +358,7 @@ class TDatePicker extends TTextBox
 		$date = @mktime(0, 0, 0, $month, $day, $year);
 		$pattern = $this->getDateFormat();
 		$pattern = str_replace(array('MMMM', 'MMM'), array('MM','MM'), $pattern);
-		$formatter = Prado::createComponent('System.Data.TSimpleDateFormatter', $pattern);
+		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter', $pattern);
 		return $formatter->format($date);
 	}
 
@@ -452,7 +452,7 @@ class TDatePicker extends TTextBox
 
 	protected function hasDayPattern()
 	{
-		$formatter = Prado::createComponent('System.Data.TSimpleDateFormatter',
+		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',
 						$this->getDateFormat());
 		return !is_null($formatter->getDayPattern());
 	}
@@ -464,7 +464,7 @@ class TDatePicker extends TTextBox
 	 */
 	protected function renderCalendarSelections($writer, $date)
 	{
-		$formatter = Prado::createComponent('System.Data.TSimpleDateFormatter',
+		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',
 						$this->getDateFormat());
 		foreach($formatter->getDayMonthYearOrdering() as $type)
 		{
@@ -485,7 +485,7 @@ class TDatePicker extends TTextBox
 	{
 		$pattern = $this->getDateFormat();
 		$pattern = str_replace(array('MMMM', 'MMM'), array('MM','MM'), $pattern);
-		$formatter = Prado::createComponent('System.Data.TSimpleDateFormatter',$pattern);
+		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',$pattern);
 		return $formatter->parse($this->getText());
 	}
 
@@ -550,7 +550,7 @@ class TDatePicker extends TTextBox
 	 */
 	protected function getLocalizedMonthNames($info)
 	{
-		$formatter = Prado::createComponent('System.Data.TSimpleDateFormatter',
+		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',
 						$this->getDateFormat());
 		switch($formatter->getMonthPattern())
 		{

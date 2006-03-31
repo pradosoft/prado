@@ -18,6 +18,10 @@ Prado::using('System.Web.UI.WebControls.TDataBoundControl');
  * Includes TAttributeCollection class
  */
 Prado::using('System.Collections.TAttributeCollection');
+/**
+ * Includes TDataFieldAccessor class
+ */
+Prado::using('System.Util.TDataFieldAccessor');
 
 /**
  * TListControl class

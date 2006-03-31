@@ -1866,6 +1866,47 @@ interface IBroadcastEventReceiver
 }
 
 /**
+ * ITheme interface.
+ *
+ * This interface must be implemented by theme.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI
+ * @since 3.0
+ */
+interface ITheme
+{
+	/**
+	 * Applies this theme to the specified control.
+	 * @param TControl the control to be applied with this theme
+	 */
+	public function applySkin($control);
+}
+
+/**
+ * ITemplate interface
+ *
+ * ITemplate specifies the interface for classes encapsulating
+ * parsed template structures.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI
+ * @since 3.0
+ */
+interface ITemplate
+{
+	/**
+	 * Instantiates the template.
+	 * Content in the template will be instantiated as components and text strings
+	 * and passed to the specified parent control.
+	 * @param TControl the parent control
+	 */
+	public function instantiateIn($parent);
+}
+
+/**
  * TBroadcastEventParameter class
  *
  * TBroadcastEventParameter encapsulates the parameter data for

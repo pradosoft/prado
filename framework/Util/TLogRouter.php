@@ -7,7 +7,7 @@
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Revision: $  $Date: $
- * @package System.Log
+ * @package System.Util
  */
 
 /**
@@ -30,7 +30,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
- * @package System.Log
+ * @package System.Util
  * @since 3.0
  */
 class TLogRouter extends TModule
@@ -144,7 +144,7 @@ class TLogRouter extends TModule
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
- * @package System.Log
+ * @package System.Util
  * @since 3.0
  */
 abstract class TLogRoute extends TApplicationComponent
@@ -311,7 +311,7 @@ abstract class TLogRoute extends TApplicationComponent
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
- * @package System.Log
+ * @package System.Util
  * @since 3.0
  */
 class TFileLogRoute extends TLogRoute
@@ -451,7 +451,7 @@ class TFileLogRoute extends TLogRoute
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
- * @package System.Log
+ * @package System.Util
  * @since 3.0
  */
 class TEmailLogRoute extends TLogRoute
@@ -576,7 +576,7 @@ class TEmailLogRoute extends TLogRoute
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $Date: $
- * @package System.Log
+ * @package System.Util
  * @since 3.0
  */
 class TBrowserLogRoute extends TLogRoute

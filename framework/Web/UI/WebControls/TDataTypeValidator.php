@@ -91,7 +91,7 @@ class TDataTypeValidator extends TBaseValidator
 				$dateFormat = $this->getDateFormat();
 				if(strlen($dateFormat))
 				{
-					$formatter = Prado::createComponent('System.Data.TSimpleDateFormatter',$dateFormat);
+					$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',$dateFormat);
 					return $formatter->isValidDate($value);
 				}
 				else

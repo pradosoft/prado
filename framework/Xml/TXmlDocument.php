@@ -7,7 +7,7 @@
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Revision: $  $Date: $
- * @package System.Data
+ * @package System.Xml
  */
 
 /**
@@ -23,7 +23,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
- * @package System
+ * @package System.Xml
  * @since 3.0
  */
 class TXmlElement extends TComponent
@@ -222,7 +222,7 @@ class TXmlElement extends TComponent
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
- * @package System
+ * @package System.Xml
  * @since 3.0
  */
 class TXmlDocument extends TXmlElement
@@ -387,7 +387,7 @@ class TXmlDocument extends TXmlElement
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
- * @package System
+ * @package System.Xml
  * @since 3.0
  */
 class TXmlElementList extends TList

@@ -11,6 +11,11 @@
  */
 
 /**
+ * Includes TDataFieldAccessor class
+ */
+Prado::using('System.Util.TDataFieldAccessor');
+
+/**
  * TDataGridColumn class
  *
  * TDataGridColumn serves as the base class for the different column types of
