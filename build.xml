@@ -145,7 +145,7 @@
   <target name="doc" description="Generate API documentation">
     <delete dir="${doc.build.dir}"/>
     <mkdir dir="${doc.build.dir}"/>
-    <phpdoc title="PRADO ${version} API Documentation" destdir="${doc.build.dir}" sourcepath="${src.dir}" output="HTML:Smarty:PHP"/>
+    <phpdoc title="PRADO ${version}${state} API Documentation" destdir="${doc.build.dir}" sourcepath="${src.dir}" output="HTML:Smarty:PHP"/>
   </target>
 
   <target name="test" description="Run unit tests">
