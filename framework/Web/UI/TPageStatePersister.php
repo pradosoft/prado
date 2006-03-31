@@ -54,7 +54,6 @@ class TPageStatePersister extends TApplicationComponent implements IPageStatePer
 	 */
 	public function save($state)
 	{
-		Prado::trace("Saving state",'System.Web.UI.TPageStatePersister');
 		if($this->_page->getEnableStateValidation())
 			$data=$this->getApplication()->getSecurityManager()->hashData(Prado::serialize($state));
 		else
@@ -73,7 +72,6 @@ class TPageStatePersister extends TApplicationComponent implements IPageStatePer
 	 */
 	public function load()
 	{
-		Prado::trace("Loading state",'System.Web.UI.TPageStatePersister');
 		$str=base64_decode($this->getRequest()->itemAt(TPage::FIELD_PAGESTATE));
 		if($str==='')
 			return null;

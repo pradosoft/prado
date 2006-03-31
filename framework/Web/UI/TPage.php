@@ -568,6 +568,7 @@ class TPage extends TTemplateControl
 	 */
 	protected function loadPageState()
 	{
+		Prado::trace("Loading state",'System.Web.UI.TPage');
 		$state=$this->getStatePersister()->load();
 		$this->loadStateRecursive($state,$this->getEnableViewState());
 	}
@@ -577,6 +578,7 @@ class TPage extends TTemplateControl
 	 */
 	protected function savePageState()
 	{
+		Prado::trace("Saving state",'System.Web.UI.TPage');
 		$state=&$this->saveStateRecursive($this->getEnableViewState());
 		$this->getStatePersister()->save($state);
 	}
