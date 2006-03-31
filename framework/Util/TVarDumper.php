@@ -42,13 +42,20 @@ class TVarDumper
 	 * @param integer maximum depth that the dumper should go into the variable. Defaults to 10.
 	 * @return string the string representation of the variable
 	 */
-	public static function dump($var,$depth=10)
+	public static function dump($var,$depth=10,$highlight=false)
 	{
 		self::$_output='';
 		self::$_objects=array();
 		self::$_depth=$depth;
 		self::dumpInternal($var,0);
-		return self::$_output;
+		if($highlight)
+		{
+			Prado::using('System.3rdParty.geshi.geshi');
+			$geshi = new GeSHi(self::$_output, 'vardump');
+			return $geshi->parse_code();
+		}
+		else
+			return self::$_output;
 	}
 
 	private static function dumpInternal($var,$level)

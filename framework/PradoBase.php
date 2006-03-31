@@ -511,16 +511,19 @@ class PradoBase
 	 * but is more robust when handling complex objects such as PRADO controls.
 	 * @param mixed variable to be dumped
 	 * @param integer maximum depth that the dumper should go into the variable. Defaults to 10.
+	 * @param boolean whether to syntax highlight the output. Defaults to false.
 	 * @return string the string representation of the variable
 	 */
-	public static function varDump($var,$depth=10)
+	public static function varDump($var,$depth=10,$highlight=false)
 	{
 		require_once(PRADO_DIR.'/Util/TVarDumper.php');
-		return TVarDumper::dump($var,$depth);
+		return TVarDumper::dump($var,$depth,$highlight);
 	}
 }
 
-
+/**
+ * The following code is meant to fill the gaps between different PHP versions.
+ */
 if(version_compare(phpversion(),'5.1.0','>='))
 {
 	/**
