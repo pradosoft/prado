@@ -1,0 +1,42 @@
+<com:TContent ID="body">
+
+<h1>TImageMap Sample</h1>
+
+<com:TImageMap
+		ImageUrl=<%~hotspots.gif%>
+		AlternateText="navigate buttons"
+		OnClick="buttonClicked" >
+
+<com:TCircleHotSpot
+	HotspotMode="Navigate"
+	NavigateUrl="http://www.pradosoft.com"
+	AlternateText="Navigate to pradosoft.com"
+	Target="_blank"
+	X="80"
+	Y="80"
+	Radius="55" />
+
+<com:TPolygonHotSpot
+	HotspotMode="Inactive"
+	AlternateText="Inactive area"
+	Coordinates="200,137,255,95,313,137,291,204,219,204"
+	/>
+
+<com:TRectangleHotSpot
+	HotspotMode="PostBack"
+	PostBackValue="Welcome!"
+	CausesValidation="true"
+	ValidationGroup="Group1"
+	AlternateText="Button 2"
+	Top="52"
+	Left="172"
+	Bottom="259"
+	Right="339" />
+
+</com:TImageMap>
+
+<br/>
+
+<com:TLabel ID="Result" />
+
+</com:TContent>

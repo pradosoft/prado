@@ -194,6 +194,10 @@ demos/quickstart/protected/pages/Controls/Samples/TImage/hello_world.gif -text
 demos/quickstart/protected/pages/Controls/Samples/TImageButton/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TImageButton/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TImageButton/hello_world.gif -text
+demos/quickstart/protected/pages/Controls/Samples/TImageMap/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TImageMap/Home.php -text
+demos/quickstart/protected/pages/Controls/Samples/TImageMap/hotspots.gif -text
+demos/quickstart/protected/pages/Controls/Samples/TInlineFrame/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TLabel/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TLinkButton/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TLinkButton/Home.php -text

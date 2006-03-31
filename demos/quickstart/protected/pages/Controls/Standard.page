@@ -51,11 +51,11 @@
   <a href="?page=Controls.ImageButton">TImageButton</a> represents a click button that has an image as the background. It is mainly used to trigger page postback.
   </li>
 
-  <li>*
+  <li>
   <a href="?page=Controls.ImageMap">TImageMap</a> represents an image on a Web page with clickable hotspot regions.
   </li>
 
-  <li>*
+  <li>
   <a href="?page=Controls.InlineFrame">TInlineFrame</a> represents an &lt;iframe&gt; HTML element on a Web page.
   </li>
 
