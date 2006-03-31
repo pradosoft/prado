@@ -237,9 +237,8 @@
   <target name="pradolite">
     <echo>Compiling PRADO Lite</echo>
     <delete file="${src.dir}/${prado.lite}"/>
-    <exec command="php build.php" dir="buildscripts/phpbuilder" passthru="true" checkreturn="true"/>
+    <exec command="php build.php" dir="buildscripts/phpbuilder" passthru="true"/>
     <phplint file="${src.dir}/${prado.lite}"/>
-    <exec command="php -e ${prado.lite}" dir="${src.dir}" passthru="true" checkreturn="true"/>
   </target>
   
   <target name="analyze" description="Analyze PHP source files with Zend Code Analyzer">
