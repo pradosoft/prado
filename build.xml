@@ -236,22 +236,10 @@
 
   <target name="pradolite">
     <echo>Compiling PRADO Lite</echo>
-    <delete file="${build.base.dir}/${prado.lite}"/>
-    <append destFile="${build.base.dir}/${prado.lite}">
-      <filterchain>
-	<stripphpcomments />
-	<replaceregexp>
-	  <regexp pattern="Prado::using\(.*\);" replace=""/>
-	  <regexp pattern="(require|require_once)\s*\(.*?;" replace=""/>
-	  <regexp pattern="(include|include_once)\s*\(.*?;" replace=""/>
-	  <regexp pattern="Prado::trace\(.*\);" replace=""/>
-	</replaceregexp>
-	<tabtospaces tablength="0"/>
-      </filterchain>
-      <filelist dir="${src.dir}" files="TComponent.php,TApplicationComponent.php,Exceptions/TException.php,Collections/TList.php,Collections/TMap.php,Collections/TAttributeCollection.php,Data/TXmlDocument.php,Web/THttpUtility.php,Web/Javascripts/TJavaScript.php,Data/TCache.php,Data/TDataFieldAccessor.php,Log/TLogger.php,core.php,prado.php,TApplication.php,Exceptions/TErrorHandler.php,Web/THttpRequest.php,Web/THttpResponse.php,Web/THttpSession.php,Web/TAssetManager.php,Security/TAuthorizationRule.php,Security/TSecurityManager.php,Web/Services/TPageService.php,Web/UI/THtmlWriter.php,Web/UI/TTemplateManager.php,Web/UI/TThemeManager.php,Web/UI/TControlAdapter.php,Web/UI/TControl.php,Web/UI/TForm.php,Web/UI/TClientScriptManager.php,Web/UI/TTemplateControl.php,Web/UI/TPage.php,Web/UI/TPageStatePersister.php,Web/UI/WebControls/TFont.php,Web/UI/WebControls/TStyle.php,Web/UI/WebControls/TWebControlAdapter.php,Web/UI/WebControls/TWebControl.php,Web/UI/WebControls/TContent.php,Web/UI/WebControls/TContentPlaceHolder.php,Web/UI/WebControls/TExpression.php,Web/UI/WebControls/TStatements.php,Web/UI/WebControls/THead.php"/>
-    </append>
-    <phplint file="${build.base.dir}/${prado.lite}"/>
-    <exec command="php -e ${prado.lite}" dir="${build.base.dir}" passthru="true" checkreturn="true"/>
+    <delete file="${src.dir}/${prado.lite}"/>
+    <exec command="php build.php" dir="buildscripts/phpbuilder" passthru="true" checkreturn="true"/>
+    <phplint file="${src.dir}/${prado.lite}"/>
+    <exec command="php -e ${prado.lite}" dir="${src.dir}" passthru="true" checkreturn="true"/>
   </target>
   
   <target name="analyze" description="Analyze PHP source files with Zend Code Analyzer">
