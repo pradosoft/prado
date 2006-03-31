@@ -144,6 +144,7 @@
 
   <target name="doc" description="Generate API documentation">
     <delete dir="${doc.build.dir}"/>
+    <mkdir dir="${doc.build.dir}"/>
     <phpdoc title="PRADO ${version} API Documentation" destdir="${doc.build.dir}" sourcepath="${src.dir}" output="HTML:Smarty:PHP"/>
   </target>
 
@@ -220,13 +221,14 @@
     </copy>
   </target>
   
-  <target name="build" depends="versioncheck,prepare,lint,lint-demos,test,doc,pradolite,build-standard-package" description="Creating the main PRADO build">
-  </target>
+  <target name="build" depends="versioncheck,prepare,doc,pradolite,build-standard-package" description="Creating the main PRADO build"/>
 
   <target name="dist" depends="build" description="Create PRADO distributions">
     <tar compression="gzip" destFile="${dist.tarfile}" basedir="${build.base.dir}/standard"/>
     <zip destfile="${dist.zipfile}" basedir="${build.base.dir}/standard"/>
   </target>
+
+  <target name="all" depends="lint,lint-demos,test,build,dist" description="Run all targets"/>
 
   <target name="clean">
     <echo>Cleaning up the mess</echo>
