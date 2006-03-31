@@ -12,9 +12,9 @@
 <project name="prado" basedir="." default="dist">
 
   <property name="version" value="3.0.0"/>
-  <property name="state" value="beta"/>
-  <property name="pkgname" value="${phing.project.name}-${version}"/>
-  <property name="pkgname.pear" value="${pkgname}-pear"/>
+  <property name="state" value="RC1"/>
+  <property name="pkgname" value="${phing.project.name}-${version}${state}"/>
+  <property name="pkgname.pear" value="${pkgname}${state}-pear"/>
   <property name="src.dir" value="framework"/>
   <property name="doc.dir" value="docs"/>
   <property name="build.base.dir" value="build"/>
@@ -224,8 +224,12 @@
   <target name="build" depends="versioncheck,prepare,doc,pradolite,build-standard-package" description="Creating the main PRADO build"/>
 
   <target name="dist" depends="build" description="Create PRADO distributions">
-    <tar compression="gzip" destFile="${dist.tarfile}" basedir="${build.base.dir}/standard"/>
-    <zip destfile="${dist.zipfile}" basedir="${build.base.dir}/standard"/>
+    <!--<tar compression="gzip" destFile="${dist.tarfile}" basedir="${build.base.dir}/standard"/>-->
+    <exec command="tar czvf ${pkgname}.tar.gz ${pkgname}" dir="${build.base.dir}/standard"/>
+    <move file="${build.base.dir}/standard/${pkgname}.tar.gz" tofile="${dist.tarfile}"/>
+    <!--<zip destfile="${dist.zipfile}" basedir="${build.base.dir}/standard"/>-->
+    <exec command="zip ${pkgname}.zip -r ${pkgname}/*" dir="${build.base.dir}/standard"/>
+    <move file="${build.base.dir}/standard/${pkgname}.zip" tofile="${dist.zipfile}"/>
   </target>
 
   <target name="all" depends="lint,lint-demos,test,build,dist" description="Run all targets"/>
