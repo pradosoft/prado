@@ -2,7 +2,7 @@
 
 require_once(dirname(__FILE__).'/../common.php');
 require_once(dirname(__FILE__).'/CacheTestCase.php');
-Prado::using('System.Data.TSqliteCache');
+Prado::using('System.Caching.TSqliteCache');
 
 class utSqliteCache extends CacheTestCase
 {

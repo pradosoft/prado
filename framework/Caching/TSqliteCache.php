@@ -56,7 +56,7 @@
  * cache module. It can be accessed via {@link TApplication::getCache()}.
  *
  * TMemCache may be configured in application configuration file as follows
- * <module id="cache" type="System.Data.TSqliteCache" DbFile="Application.Data.site" />
+ * <module id="cache" type="System.Caching.TSqliteCache" DbFile="Application.Data.site" />
  * where {@link getDbFile DbFile} is a property specifying the location of the
  * SQLite DB file (in the namespace format).
  *

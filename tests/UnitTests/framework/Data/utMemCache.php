@@ -2,7 +2,7 @@
 
 require_once(dirname(__FILE__).'/../common.php');
 require_once(dirname(__FILE__).'/CacheTestCase.php');
-Prado::using('System.Data.TMemCache');
+Prado::using('System.Caching.TMemCache');
 
 class utMemCache extends UnitTestCase
 {

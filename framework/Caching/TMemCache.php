@@ -53,7 +53,7 @@
  * cache module. It can be accessed via {@link TApplication::getCache()}.
  *
  * TMemCache may be configured in application configuration file as follows
- * <module id="cache" type="System.Data.TMemCache" Host="localhost" Port=11211 />
+ * <module id="cache" type="System.Caching.TMemCache" Host="localhost" Port=11211 />
  * where {@link getHost Host} and {@link getPort Port} are configurable properties
  * of TMemCache.
  *

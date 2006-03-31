@@ -35,7 +35,7 @@
  * cache module. It can be accessed via {@link TApplication::getCache()}.
  *
  * TAPCCache may be configured in application configuration file as follows
- * <module id="cache" class="System.Data.TAPCCache" />
+ * <module id="cache" class="System.Caching.TAPCCache" />
  *
  * @author Alban Hanry <compte_messagerie@hotmail.com>
  * @version $Revision: $  $Date: $
