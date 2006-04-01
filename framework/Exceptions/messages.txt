@@ -269,3 +269,8 @@ completewizardstep_steptype_readonly	= TCompleteWizardStep.StepType is read-only
 wizardstepcollection_wizardstep_required = TWizardStepCollection can only accept objects of TWizardStep or its derived classes.
 
 texthighlighter_stylesheet_invalid		= Unable to find the stylesheet file for TTextHighlighter.
+
+hotspotcollection_hotspot_required		= THotSpotCollection can only accept instance of THotSpot or its derived classes.
+
+htmlarea_textmode_readonly				= THtmlArea.TextMode is read-only.
+htmlarea_tarfile_invalid				= THtmlArea is unable to locate the TinyMCE tar file.

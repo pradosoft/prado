@@ -28,7 +28,7 @@
  * under the situation.
  *
  * The default editor gives only the basic tool bar. To change or add
- * additional tool bars, use the Options property add to additional
+ * additional tool bars, use the Options property to add additional
  * editor options with each options on a new line.
  * See http://tinymce.moxiecode.com/tinymce/docs/index.html
  * for a list of options. The options can be change/added as shown in the
@@ -113,6 +113,16 @@ class THtmlArea extends TTextBox
 		);
 
 	/**
+	 * Constructor.
+	 * Sets default width and height.
+	 */
+	public function __construct()
+	{
+		$this->setWidth('450px');
+		$this->setHeight('250px');
+	}
+
+	/**
 	 * Overrides the parent implementation.
 	 * TextMode for THtmlArea control is always 'MultiLine'
 	 * @return string the behavior mode of the THtmlArea component.
@@ -129,27 +139,23 @@ class THtmlArea extends TTextBox
 	 */
 	public function setTextMode($value)
 	{
-		throw new TInvalidOperationException("You cannot set 'TextMode' property.");
+		throw new TInvalidOperationException("htmlarea_textmode_readonly");
 	}
 
 	/**
-	 * Overrides the parent implementation. Return always false if EnableVisualEdit
-	 * is false, otherwise normal settings are returned.
-	 * @return boolean false
+	 * @return boolean whether change of the content should cause postback. Return false if EnableVisualEdit is true.
 	 */
 	public function getAutoPostBack()
 	{
-		if(!$this->getEnableVisualEdit())
-			return false;
-		return parent::getAutoPostBack();
+		return $this->getEnableVisualEdit() ? false : parent::getAutoPostBack();
 	}
 
 	/**
-	 * @return boolean whether to show WYSIWYG text editor
+	 * @return boolean whether to show WYSIWYG text editor. Defaults to true.
 	 */
 	public function getEnableVisualEdit()
 	{
-		return $this->getViewState('VisualEditEnabled',true);
+		return $this->getViewState('EnableVisualEdit',true);
 	}
 
 	/**
@@ -158,7 +164,7 @@ class THtmlArea extends TTextBox
 	 */
 	public function setEnableVisualEdit($value)
 	{
-		$this->setViewState('VisualEditEnabled',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('EnableVisualEdit',TPropertyValue::ensureBoolean($value),true);
 	}
 
 	/**
@@ -171,7 +177,7 @@ class THtmlArea extends TTextBox
 	}
 
 	/**
-	 * Sets the culture/language for the date picker.
+	 * Sets the culture/language for the html area
 	 * @param string a culture string, e.g. en_AU.
 	 */
 	public function setCulture($value)
@@ -200,40 +206,6 @@ class THtmlArea extends TTextBox
 	}
 
 	/**
-	 * Overrides parent implement, provide default width of '450px'.
-	 * @param string editor width (CSS)
-	 */
-	public function setWidth($value)
-	{
-		$this->setViewState('Width', $value, '450px');
-	}
-
-	/**
-	 * @param string editor width, default '450px'.
-	 */
-	public function getWidth()
-	{
-		return $this->getViewState('Width', '450px');
-	}
-
-	/**
-	 * @param string editor height, default '200px'.
-	 */
-	public function getHeight()
-	{
-		return $this->getViewState('Height', '200px');
-	}
-
-	/**
-	 * Overrides parent implement, provide default height of '200px'.
-	 * @param string editor height (CSS)
-	 */
-	public function setHeight($value)
-	{
-		$this->setViewState('Height', $value, '200px');
-	}
-
-	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This method overrides the parent implementation by registering
 	 * additional javacript code.
@@ -244,11 +216,6 @@ class THtmlArea extends TTextBox
 		if($this->getEnableVisualEdit())
 		{
 			$writer->addAttribute('id',$this->getClientID());
-			if(($width=$this->getWidth()) != '')
-				$this->getStyle()->setWidth($width);
-			if(($height=$this->getHeight()) != '')
-				$this->getStyle()->setHeight($height);
-
 			$this->registerEditorClientScript($writer);
 		}
 		parent::addAttributesToRender($writer);
@@ -264,7 +231,7 @@ class THtmlArea extends TTextBox
 			$scripts->registerScriptFile('prado:THtmlArea', $this->getScriptUrl());
 		$options = TJavaScript::encode($this->getEditorOptions());
 		$script = "if(tinyMCE){ tinyMCE.init($options); }";
-		$scripts->registerEndScript('THtmlArea'.$this->ClientID,$script);
+		$scripts->registerEndScript('prado:THtmlArea'.$this->ClientID,$script);
 	}
 
 	/**
@@ -298,9 +265,9 @@ class THtmlArea extends TTextBox
 		$options['elements'] = $this->getClientID();
 		$options['language'] = $this->getLanguageSuffix($this->getCulture());
 		$options['theme'] = 'advanced';
-		$options['theme_advanced_buttons1'] = 'bold,italic,underline,strikethrough,separator,justifyleft,justifycenter,justifyright, justifyfull,separator,bullist,numlist,separator,undo,redo,separator,link,unlink,separator,code,help';
-		$options['theme_advanced_buttons2'] = '';
-		$options['theme_advanced_buttons3'] = '';
+		$options['theme_advanced_buttons1'] = 'formatselect,fontselect,fontsizeselect,separator,bold,italic,underline,strikethrough,sub,sup';
+		$options['theme_advanced_buttons2'] = 'justifyleft,justifycenter,justifyright,justifyfull,separator,bullist,numlist,separator,outdent,indent,separator,forecolor,backcolor,separator,hr,link,unlink,image,charmap,separator,removeformat,code,help';
+		$options['theme_advanced_buttons3'] = ' ';
 		$options['theme_advanced_toolbar_location'] = 'top';
 		$options['theme_advanced_toolbar_align'] = 'left';
 		$options['theme_advanced_path_location'] = 'bottom';
