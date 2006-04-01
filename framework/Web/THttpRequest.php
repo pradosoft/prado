@@ -40,6 +40,14 @@
  * To construct a URL that can be recognized by Prado, use {@link constructUrl()}.
  * THttpRequest also provides the cookies sent by the user, user information such
  * as his browser capabilities, accepted languages, etc.
+ * Currently, THttpRequest recognizes the following URL format:
+ * <code>
+ * /index.php?ServiceID=ServiceParameter
+ * </code>
+ * where ServiceID is as defined in the application configuration (e.g.
+ * the default page service's service ID is 'page').
+ * Therefore, your GET variable names should not conflict with the service
+ * IDs that your application supports.
  *
  * By default, THttpRequest is registered with {@link TApplication} as the
  * request module. It can be accessed via {@link TApplication::getRequest()}.
@@ -51,10 +59,6 @@
  */
 class THttpRequest extends TApplicationComponent implements IteratorAggregate,ArrayAccess,IModule
 {
-	/**
-	 * GET variable name to store service information
-	 */
-	const SERVICE_VAR='sp';
 	/**
 	 * @var boolean whether the module is initialized
 	 */
@@ -431,7 +435,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 * Constructs a URL that is recognizable by Prado.
 	 * You may override this method to provide your own way of URL formatting.
 	 * The URL is constructed as the following format:
-	 * /entryscript.php?sp=serviceID.serviceParameter&get1=value1&...
+	 * /entryscript.php?serviceID=serviceParameter&get1=value1&...
 	 * @param string service ID
 	 * @param string service parameter
 	 * @param array GET parameters, null if not needed
