@@ -14,6 +14,7 @@ Upgrading from v3.0b
 - Pagers in TDataGrid are now enclosed within panels. The event indicating
   their creation is changed to OnPagerCreated instead of OnItemCreated.
 - TTextHighlighter.EnableCopyCode defaults to false now.
+- THtmlArea default toolbar and size are modified.
 - TTarFileExtrator is moved to System.IO
   Cache classes are moved to System.Caching
   TXmlDocument is moved to System.Xml

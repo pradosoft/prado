@@ -27,15 +27,15 @@
   <a href="?page=Controls.FileUpload">TFileUpload</a> represents a file upload field. It allows users to upload a file to server.
   </li>
 
-  <li>*
+  <li>
   <a href="?page=Controls.Head">THead</a> represents the &lt;head&gt; element on an HTML Web page. It is required by a PRADO page should it use themes.
   </li>
 
-  <li>*
+  <li>
   <a href="?page=Controls.HiddenField">THiddenField</a> represents a hidden input field on a Web page.
   </li>
 
-  <li>*
+  <li>
   <a href="?page=Controls.HtmlArea">THtmlArea</a> represents a WYSIWYG text input field taking user input that are in HTML format.
   </li>
 
@@ -75,7 +75,7 @@
   <a href="?page=Controls.Literal">TLiteral</a> represents a static text without any HTML tag surrounding it on a Web page.
   </li>
 
-  <li>
+  <li>*
   <a href="?page=Controls.MultiView">TMultiView</a> represents a container for a group of <tt>TView</tt> controls, each of which is container for other controls. At any time, at most one <tt>TView</tt> is visible.
   </li>
 

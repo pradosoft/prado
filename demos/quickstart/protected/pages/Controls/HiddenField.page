@@ -4,7 +4,10 @@
 <com:DocLink ClassPath="System.Web.UI.WebControls.THiddenField" />
 
 <p>
-TBD
+<tt>THiddenField</tt> represents a hidden field on a Web page. The value of the hidden field can be accessed via its <tt>Value</tt> property.
+</p>
+<p>
+<tt>THiddenField</tt> raises an <tt>OnValueChanged</tt> event if its value is changed during postback.
 </p>
 
 </com:TContent>

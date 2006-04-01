@@ -25,9 +25,7 @@
 <com:TRectangleHotSpot
 	HotspotMode="PostBack"
 	PostBackValue="Welcome!"
-	CausesValidation="true"
-	ValidationGroup="Group1"
-	AlternateText="Button 2"
+	AlternateText="Postback button"
 	Top="52"
 	Left="172"
 	Bottom="259"
