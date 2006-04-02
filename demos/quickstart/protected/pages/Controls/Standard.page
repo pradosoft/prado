@@ -23,7 +23,7 @@
   <a href="?page=Controls.Expression">TExpression</a> accepts a PHP expression and displays the evaluation result on a Web page.
   </li>
 
-  <li>*
+  <li>
   <a href="?page=Controls.FileUpload">TFileUpload</a> represents a file upload field. It allows users to upload a file to server.
   </li>
 
@@ -59,7 +59,7 @@
   <a href="?page=Controls.InlineFrame">TInlineFrame</a> represents an &lt;iframe&gt; HTML element on a Web page.
   </li>
 
-  <li>*
+  <li>
   <a href="?page=Controls.JavascriptLogger">TJavascriptLogger</a> represents a logger on a Web page that can log various JavaScript information.
   </li>
 

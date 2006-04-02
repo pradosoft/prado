@@ -18,10 +18,11 @@
  * that will be uploaded to the server. The property {@link getHasFile HasFile}
  * indicates whether the file upload is successful. If successful, the file
  * may be obtained by calling {@link saveAs} to save it at a specified place.
- * You can use {@link getFileName}, {@link getFileType}, {@link getFileSize}
- * to get the original client-side file name, the file mime type, and the
- * file size information. If the upload is not successful, {@link getErrorCode ErrorCode}
- * contains the error code describing the cause of failure.
+ * You can use {@link getFileName FileName}, {@link getFileType FileType},
+ * {@link getFileSize FileSize} to get the original client-side file name,
+ * the file mime type, and the file size information. If the upload is not
+ * successful, {@link getErrorCode ErrorCode} contains the error code
+ * describing the cause of failure.
  *
  * TFileUpload raises {@link onFileUpload OnFileUpload} event if a file is uploaded
  * (whether it succeeds or not).

@@ -190,6 +190,8 @@ demos/quickstart/protected/pages/Controls/Samples/TDropDownList/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TEmailAddressValidator/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TEmailAddressValidator/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TExpression/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TFileUpload/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TFileUpload/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/THtmlArea/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/THtmlArea/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/THyperLink/Home.page -text

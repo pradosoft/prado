@@ -1,0 +1,17 @@
+<com:TContent ID="body">
+
+<h1>TFileUpload Sample</h1>
+
+<p>
+Please choose a file to upload:
+</p>
+
+<com:TFileUpload OnFileUpload="fileUploaded" />
+
+<com:TButton Text="Upload" />
+
+<br/>
+
+<com:TLabel ID="Result" />
+
+</com:TContent>

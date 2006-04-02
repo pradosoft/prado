@@ -3,4 +3,29 @@
 <h1>TJavascriptLogger</h1>
 <com:DocLink ClassPath="System.Web.UI.WebControls.TJavascriptLogger" />
 
+<p>
+<tt>TJavascriptLogger</tt> provides logging for client-side javascript. It is mainly a wrapper of the javascript developed at <a href="http://gleepglop.com/javascripts/logger/">http://gleepglop.com/javascripts/logger/</a>.
+</p>
+
+<p>
+To use <tt>TJavascriptLogger</tt>, simply place the following component tag in a page template.
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TJavascriptLogger /&gt;
+</com:TTextHighlighter>
+
+<p>
+Then, the client-side javascript may contain the following statements. When they are executed, they will appear in the logger window.
+</p>
+<com:TTextHighlighter Language="js" CssClass="source">
+Logger.info('something happend');
+Logger.warn('A warning');
+Logger.error('This is an error');
+Logger.debug('debug information');
+</com:TTextHighlighter>
+
+<p>
+To toggle the visibility of the logger and console on the browser window, press ALT-D (or CTRL-D on OS X).
+</p>
+
 </com:TContent>
