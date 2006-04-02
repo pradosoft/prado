@@ -19,6 +19,8 @@ Prado::using('System.Web.UI.WebControls.TTextBox');
  *
  * TDatePicker class.
  *
+ * Be aware, this control is EXPERIMENTAL and is not stablized yet.
+ *
  * TDatePicker displays a text box for date input purpose.
  * When the text box receives focus, a calendar will pop up and users can
  * pick up from it a date that will be automatically entered into the text box.

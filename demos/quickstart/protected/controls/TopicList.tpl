@@ -40,7 +40,6 @@
 <div class="topic">
 <div>Control Reference</div>
 <ul>
-    <li><a href="?page=Controls.Overview">Overview</a></li>
     <li><a href="?page=Controls.Standard">Standard Controls</a></li>
     <li><a href="?page=Controls.Validation">Validation Controls</a></li>
     <li><a href="?page=Controls.List">List Controls</a></li>

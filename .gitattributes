@@ -141,7 +141,6 @@ demos/quickstart/protected/pages/Controls/List.page -text
 demos/quickstart/protected/pages/Controls/Literal.page -text
 demos/quickstart/protected/pages/Controls/MultiView.page -text
 demos/quickstart/protected/pages/Controls/NewControl.page -text
-demos/quickstart/protected/pages/Controls/Overview.page -text
 demos/quickstart/protected/pages/Controls/Panel.page -text
 demos/quickstart/protected/pages/Controls/PlaceHolder.page -text
 demos/quickstart/protected/pages/Controls/RadioButton.page -text
@@ -256,7 +255,6 @@ demos/quickstart/protected/pages/Controls/Samples/TWizard/Sample4.php -text
 demos/quickstart/protected/pages/Controls/Samples/TWizard/Sample5.page -text
 demos/quickstart/protected/pages/Controls/Samples/TWizard/Sample5.php -text
 demos/quickstart/protected/pages/Controls/Samples/config.xml -text
-demos/quickstart/protected/pages/Controls/Simple.page -text
 demos/quickstart/protected/pages/Controls/Standard.page -text
 demos/quickstart/protected/pages/Controls/Statements.page -text
 demos/quickstart/protected/pages/Controls/Table.page -text

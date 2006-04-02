@@ -1,9 +1,0 @@
-<com:TContent ID="body" >
-<h1>Controls Overview</h1>
-<p>
-Control are components defined in addition with user interface. Control classes constitute a major part of the PRADO framework. Nearly every generic HTML element can find its representation in terms of a PRADO control. Mastering these controls becomes extremely important for developers to compose effectively and efficiently applications using PRADO.
-</p>
-<p>
-TBW: Control ID, Parent, NamingContainer, ViewState, ControlState, TWebControl, DataBound Control, ActiveControls
-</p>
-</com:TContent>

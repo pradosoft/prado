@@ -13,7 +13,7 @@
 /**
  * TColorPicker class.
  *
- * Be aware, this control is EXPERIMENTAL and may have significant change in future versions.
+ * Be aware, this control is EXPERIMENTAL and is not stablized yet.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $Date: $
