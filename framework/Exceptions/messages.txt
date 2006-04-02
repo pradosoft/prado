@@ -274,3 +274,7 @@ hotspotcollection_hotspot_required		= THotSpotCollection can only accept instanc
 
 htmlarea_textmode_readonly				= THtmlArea.TextMode is read-only.
 htmlarea_tarfile_invalid				= THtmlArea is unable to locate the TinyMCE tar file.
+
+parametermodule_parameterfile_unchangeable = TParameterModule.ParameterFile is not changeable because the module is already initialized.
+parametermodule_parameterfile_invalid	= TParameterModule.ParameterFile '{0}' is invalid. Make sure it is in namespace format and the file extension is '.xml'.
+parametermodule_parameterid_required	= Parameter element must have 'id' attribute.

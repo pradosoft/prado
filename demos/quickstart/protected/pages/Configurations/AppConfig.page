@@ -33,7 +33,7 @@ Configuration for an application is stored in an XML file named <tt>application.
 <com:TTextHighlighter Language="xml" CssClass="source">
 <parameter id="ParameterID" value="ParameterValue" />
 </com:TTextHighlighter>
-Note, if the <tt>value</tt> attribute is not specified, the whole parameter XML node (of type <tt>TXmlElement</tt>) will be returned as the parameter value.
+Note, if the <tt>value</tt> attribute is not specified, the whole parameter XML node (of type <tt>TXmlElement</tt>) will be returned as the parameter value. In addition, the <tt>System.Util.TParameterModule</tt> module provides a way to load parameters from an external XML file. See more details in its API documentation.
 </li>
 </ul>
 <p>

@@ -170,15 +170,15 @@ class TPageService extends TService
 		$parameters=$application->getParameters();
 		foreach($pageConfig->getParameters() as $id=>$parameter)
 		{
-			if(is_string($parameter))
-				$parameters->add($id,$parameter);
-			else
+			if(is_array($parameter))
 			{
 				$component=Prado::createComponent($parameter[0]);
 				foreach($parameter[1] as $name=>$value)
 					$component->setSubProperty($name,$value);
 				$parameters->add($id,$component);
 			}
+			else
+				$parameters->add($id,$parameter);
 		}
 
 		// load modules specified in page directory config

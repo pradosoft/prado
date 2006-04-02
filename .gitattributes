@@ -670,6 +670,7 @@ framework/TService.php -text
 framework/Util/TDataFieldAccessor.php -text
 framework/Util/TLogRouter.php -text
 framework/Util/TLogger.php -text
+framework/Util/TParameterModule.php -text
 framework/Util/TSimpleDateFormatter.php -text
 framework/Util/TVarDumper.php -text
 framework/Web/Javascripts/TJSON.php -text

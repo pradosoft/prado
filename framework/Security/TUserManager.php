@@ -168,12 +168,19 @@ class TUser extends TComponent implements IUser
  *
  * TUserManager manages a static list of users {@link TUser}.
  * The user information is specified via module configuration using the following XML syntax,
+ * <code>
  * <module id="users" class="System.Security.TUserManager" PasswordMode="Clear">
  *   <user name="Joe" password="demo" />
  *   <user name="John" password="demo" />
  *   <role name="Administrator" users="John" />
  *   <role name="Writer" users="Joe,John" />
  * </module>
+ * </code>
+ *
+ * In addition, user information can also be loaded from an external file
+ * specified by {@link setUserFile UserFile} property. Note, the property
+ * only accepts a file path in namespace format. The user file format is
+ * similar to the above sample.
  *
  * The user passwords may be specified as clear text, SH1 or MD5 hashed by setting
  * {@link setPasswordMode PasswordMode} as <b>Clear</b>, <b>SH1</b> or <b>MD5</b>.
@@ -228,18 +235,13 @@ class TUserManager extends TModule
 	 */
 	public function init($config)
 	{
+		$this->loadUserData($config);
 		if($this->_userFile!==null)
 		{
-			if(is_file($this->_userFile))
-			{
-				$dom=new TXmlDocument;
-				$dom->loadFromFile($this->_userFile);
-				$this->loadUserData($dom);
-			}
-			else
-				throw new TConfigurationException('usermanager_userfile_invalid',$this->_userFile);
+			$dom=new TXmlDocument;
+			$dom->loadFromFile($this->_userFile);
+			$this->loadUserData($dom);
 		}
-		$this->loadUserData($config);
 		$this->_initialized=true;
 	}
 
@@ -287,7 +289,7 @@ class TUserManager extends TModule
 	{
 		if($this->_initialized)
 			throw new TInvalidOperationException('usermanager_userfile_unchangeable');
-		else if(($this->_userFile=Prado::getPathOfNamespace($value,self::USER_FILE_EXT))===null)
+		else if(($this->_userFile=Prado::getPathOfNamespace($value,self::USER_FILE_EXT))===null || !is_file($this->_userFile))
 			throw new TConfigurationException('usermanager_userfile_invalid',$value);
 	}
 

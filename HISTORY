@@ -25,6 +25,7 @@ NEW: TImageMap control (Qiang)
 NEW: TWizard control (Qiang)
 NEW: TVarDumper and PradoBase::varDump() (Qiang)
 NEW: TComponentReflection (Qiang)
+NEW: TParameterModule (Qiang)
 
 Version 3.0b March 6, 2006
 ==========================
