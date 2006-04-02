@@ -210,6 +210,8 @@ demos/quickstart/protected/pages/Controls/Samples/TLinkButton/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TListBox/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TListBox/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TLiteral/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TMultiView/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TMultiView/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TPanel/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TPanel/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TPanel/hello_world.gif -text
