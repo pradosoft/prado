@@ -28,6 +28,9 @@
  * - SwitchViewID : switch to a view by its ID path
  * - SwitchViewIndex : switch to a view by its index in the {@link getViews Views} collection.
  *
+ * TMultiView raises {@link OnActiveViewChanged OnActiveViewChanged} event
+ * when its active view is changed during a postback.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
@@ -68,7 +71,7 @@ class TMultiView extends TControl
 	}
 
 	/**
-	 * @return integer the zero-based index of the current view in the view collection. -1 if no active view.
+	 * @return integer the zero-based index of the current view in the view collection. -1 if no active view. Default is -1.
 	 */
 	public function getActiveViewIndex()
 	{
@@ -184,7 +187,7 @@ class TMultiView extends TControl
 	/**
 	 * Initializes the active view if any.
 	 * This method overrides the parent implementation.
-	 * @param mixed event parameter
+	 * @param TEventParameter event parameter
 	 */
 	public function onInit($param)
 	{
@@ -196,7 +199,7 @@ class TMultiView extends TControl
 	/**
 	 * Raises <b>OnActiveViewChanged</b> event.
 	 * The event is raised when the currently active view is changed to a new one
-	 * @param mixed event parameter
+	 * @param TEventParameter event parameter
 	 */
 	public function onActiveViewChanged($param)
 	{

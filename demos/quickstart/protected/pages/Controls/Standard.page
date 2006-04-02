@@ -75,7 +75,7 @@
   <a href="?page=Controls.Literal">TLiteral</a> represents a static text without any HTML tag surrounding it on a Web page.
   </li>
 
-  <li>*
+  <li>
   <a href="?page=Controls.MultiView">TMultiView</a> represents a container for a group of <tt>TView</tt> controls, each of which is container for other controls. At any time, at most one <tt>TView</tt> is visible.
   </li>
 
