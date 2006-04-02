@@ -34,6 +34,10 @@ demos/composer/themes/PradoSoft/pradoheader.gif -text
 demos/composer/themes/PradoSoft/propertydef.gif -text
 demos/composer/themes/PradoSoft/style.css -text
 demos/composer/themes/Simple/style.css -text
+demos/helloworld/index.php -text
+demos/helloworld/protected/.htaccess -text
+demos/helloworld/protected/pages/Home.page -text
+demos/helloworld/protected/pages/Home.php -text
 demos/personal/index.php -text
 demos/personal/protected/Pages/Home.page -text
 demos/personal/protected/Pages/Home.php -text
