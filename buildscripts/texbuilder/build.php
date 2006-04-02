@@ -35,12 +35,49 @@ $pages['Configurations'] = array(
 	'Configurations/AppConfig.page',
 	'Configurations/PageConfig.page');
 
-$pages['Control Reference'] = array(
-	'Controls/Overview.page',
-	'Controls/Standard.page',
-	'Controls/List.page',
-	'Controls/Validation.page',
+$pages['Control Reference : Standard Controls'] = array(
+	'Controls/Button.page',
+	'Controls/CheckBox.page',
+	'Controls/ColorPicker.page',
+	'Controls/DatePicker.page',
+	'Controls/Expression.page',
+	'Controls/FileUpload.page',
+	'Controls/Head.page',
+	'Controls/HiddenField.page',
+	'Controls/HtmlArea.page',
+	'Controls/HyperLink.page',
+	'Controls/ImageButton.page',
+	'Controls/ImageMap.page',
+	'Controls/Image.page',
+	'Controls/InlineFrame.page',
+	'Controls/JavascriptLogger.page',
+	'Controls/Label.page',
+	'Controls/LinkButton.page',
+	'Controls/Literal.page',
+	'Controls/MultiView.page',
+	'Controls/Panel.page',
+	'Controls/PlaceHolder.page',
+	'Controls/RadioButton.page',
+	'Controls/SafeHtml.page',
+	'Controls/Statements.page',
+	'Controls/Table.page',
+	'Controls/TextBox.page',
+	'Controls/TextHighlighter.page',
+	'Controls/Wizard.page');
+
+$pages['Control Reference : List Controls'] = array(
+	'Controls/List.page');
+
+$pages['Control Reference : Validation Controls'] = array(
+	'Controls/Validation.page');
+
+$pages['Control Reference : Data Controls'] = array(
 	'Controls/Data.page',
+	'Controls/DataList.page',
+	'Controls/DataGrid.page',
+	'Controls/Repeater.page');
+
+$pages['Write New Controls'] = array(
 	'Controls/NewControl.page');
 
 $pages['Advanced Topics'] = array(
