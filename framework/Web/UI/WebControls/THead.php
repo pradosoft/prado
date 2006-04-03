@@ -97,6 +97,22 @@ class THead extends TControl
 	}
 
 	/**
+	 * @return string base URL of the page. This URL is rendered as the 'href' attribute of <base> tag. Defaults to ''.
+	 */
+	public function getBaseUrl()
+	{
+		return $this->getViewState('BaseUrl','');
+	}
+
+	/**
+	 * @param string base URL of the page. This URL is rendered as the 'href' attribute of <base> tag.
+	 */
+	public function setBaseUrl($url)
+	{
+		$this->setViewState('BaseUrl',$url,'');
+	}
+
+	/**
 	 * @return TMetaTagCollection meta tag collection
 	 */
 	public function getMetaTags()
@@ -118,6 +134,8 @@ class THead extends TControl
 		$page=$this->getPage();
 		$title=$this->getTitle();
 		$writer->write("<head>\n<title>".THttpUtility::htmlEncode($title)."</title>\n");
+		if(($baseUrl=$this->getBaseUrl())!=='')
+			$writer->write('<base href="'.$baseUrl."\" />\n");
 		if(($metaTags=$this->getMetaTags())!==null)
 		{
 			foreach($metaTags as $metaTag)
