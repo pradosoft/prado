@@ -1,19 +1,12 @@
 <?php
-
 /**
  * Translation, static.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the BSD License.
- *
- * Copyright(c) 2004 by Xiang Wei Zhuo.
- *
- * To contact the author write to {@link mailto:qiang.xue@gmail.com Qiang Xue}
- * The latest version of PRADO can be obtained from:
- * {@link http://prado.sourceforge.net/}
- *
- * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.9 $  $Date: 2005/12/17 06:11:28 $
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
  * @package System.I18N
  */
 
@@ -34,8 +27,6 @@ Prado::using('System.I18N.core.MessageFormat');
  */
 class Translation extends TComponent
 {
-
-
 	/**
 	 * The string formatter. This is a class static variable.
 	 * @var MessageFormat

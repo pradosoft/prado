@@ -36,6 +36,7 @@ require_once(PRADO_DIR.'/Web/THttpResponse.php');
 require_once(PRADO_DIR.'/Web/THttpSession.php');
 require_once(PRADO_DIR.'/Web/Services/TPageService.php');
 require_once(PRADO_DIR.'/Web/TAssetManager.php');
+require_once(PRADO_DIR.'/I18N/TGlobalization.php');
 
 
 /**
@@ -760,9 +761,12 @@ class TApplication extends TComponent
 		return $this->_globalization;
 	}
 
-	public function setGlobalization(TGlobalization $handler)
+	/**
+	 * @param TGlobalization globalization module
+	 */
+	public function setGlobalization(TGlobalization $glob)
 	{
-		$this->_globalization = $handler;
+		$this->_globalization=$glob;
 	}
 
 	/**

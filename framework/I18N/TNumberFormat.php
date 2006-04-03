@@ -2,17 +2,11 @@
 /**
  * TNumberFromat component.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the BSD License.
- *
- * Copyright(c) 2004 by Xiang Wei Zhuo.
- *
- * To contact the author write to {@link mailto:qiang.xue@gmail.com Qiang Xue}
- * The latest version of PRADO can be obtained from:
- * {@link http://prado.sourceforge.net/}
- *
- * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.7 $  $Date: 2005/12/15 07:14:49 $
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
  * @package System.I18N
  */
 
@@ -79,7 +73,7 @@ class TNumberFormat extends TI18NControl
 	 * Get the number formatting pattern.
 	 * @return string format pattern.
 	 */
-	function getPattern()
+	public function getPattern()
 	{
 		return $this->getViewState('Pattern','');
 	}
@@ -88,7 +82,7 @@ class TNumberFormat extends TI18NControl
 	 * Set the number format pattern.
 	 * @param string format pattern.
 	 */
-	function setPattern($pattern)
+	public function setPattern($pattern)
 	{
 		$this->setViewState('Pattern',$pattern,'');
 	}
@@ -97,7 +91,7 @@ class TNumberFormat extends TI18NControl
 	 * Get the numberic value for this control.
 	 * @return string number
 	 */
-	function getValue()
+	public function getValue()
 	{
 		return $this->getViewState('Value','');
 	}
@@ -106,7 +100,7 @@ class TNumberFormat extends TI18NControl
 	 * Set the numberic value for this control.
 	 * @param string the number value
 	 */
-	function setValue($value)
+	public function setValue($value)
 	{
 		$this->setViewState('Value',$value,'');
 	}
@@ -115,12 +109,9 @@ class TNumberFormat extends TI18NControl
 	 * Get the formatting type for this control.
 	 * @return string formatting type.
 	 */
-	function getType()
+	public function getType()
 	{
-		$type = $this->getViewState('Type','');
-		if(empty($type))
-			return 'd';
-		return $type;
+		return $this->getViewState('Type','d');
 	}
 
 	/**
@@ -129,7 +120,7 @@ class TNumberFormat extends TI18NControl
 	 * or "scientific"
 	 * @throws TPropertyTypeInvalidException
 	 */
-	function setType($type)
+	public function setType($type)
 	{
 		$type = strtolower($type);
 
@@ -144,22 +135,17 @@ class TNumberFormat extends TI18NControl
 			case 'scientific':
 				$this->setViewState('Type','e',''); break;
 			default:
-				throw new TPropertyTypeInvalidException($this,'Type',$type);
+				throw new TInvalidDataValueException('numberformat_type_invalid',$type);
 		}
 
 	}
 
 	/**
-	 * Get the currency for this control.
-	 * @param parameter
-	 * @return string 3 letter currency code.
+	 * @return string 3 letter currency code. Defaults to 'USD'.
 	 */
-	function getCurrency()
+	public function getCurrency()
 	{
-		$currency = $this->getViewState('Currency','');
-		if(empty($currency))
-			return 'USD';
-		return $currency;
+		return $this->getViewState('Currency','USD');
 	}
 
 	/**
@@ -167,7 +153,7 @@ class TNumberFormat extends TI18NControl
 	 * "USD" represents the US Dollar and "EUR" represents the Euro currency.
 	 * @param string currency code.
 	 */
-	function setCurrency($currency)
+	public function setCurrency($currency)
 	{
 		$this->setViewState('Currency', $currency,'');
 	}

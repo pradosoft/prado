@@ -39,22 +39,23 @@ class TGlobalization extends TModule
 	private $_defaultCulture = 'en';
 
 	/**
-	 * Translation source parameters.
-	 * @var TMap
-	 */
-	private $_translation;
-
-	/**
 	 * The current charset.
 	 * @var string
 	 */
-	protected $_charset='UTF-8';
+	private $_charset=null;
 
 	/**
 	 * The current culture.
 	 * @var string
 	 */
-	protected $_culture='en';
+	private $_culture=null;
+
+	/**
+	 * Translation source parameters.
+	 * @var TMap
+	 */
+	private $_translation;
+
 
 	/**
 	 * Initialize the Culture and Charset for this application.
@@ -65,8 +66,10 @@ class TGlobalization extends TModule
 	 */
 	public function init($xml)
 	{
-		$this->_defaultCharset = $this->getCharset();
-		$this->_defaultCulture = $this->getCulture();
+		if($this->_charset===null)
+			$this->_charset=$this->getDefaultCharset();
+		if($this->_culture===null)
+			$this->_culture=$this->getDefaultCulture();
 
 		if($xml!==null)
 		{
@@ -75,6 +78,38 @@ class TGlobalization extends TModule
 				$this->setTranslationConfiguration($translation->getAttributes());
 		}
 		$this->getApplication()->setGlobalization($this);
+	}
+
+	/**
+	 * @return string default culture
+	 */
+	public function getDefaultCulture()
+	{
+		return $this->_defaultCulture;
+	}
+
+	/**
+	 * @param string default culture, e.g. <tt>en_US</tt> for American English
+	 */
+	public function setDefaultCulture($culture)
+	{
+		$this->_defaultCharset = str_replace('-','_',$culture);
+	}
+
+	/**
+	 * @return string default charset set
+	 */
+	public function getDefaultCharset()
+	{
+		return $this->_defaultCharset;
+	}
+
+	/**
+	 * @param string default localization charset, e.g. <tt>UTF-8</tt>
+	 */
+	public function setDefaultCharset($charset)
+	{
+		$this->_defaultCharset = $charset;
 	}
 
 	/**
@@ -128,7 +163,6 @@ class TGlobalization extends TModule
 	 * </code>
 	 * Throws exception is source is not found.
 	 * @param TMap configuration options
-	 * @return ${return}
 	 */
 	protected function setTranslationConfiguration(TMap $config)
 	{
@@ -156,23 +190,7 @@ class TGlobalization extends TModule
 	 */
 	public function setTranslationCatalogue($value)
 	{
-		return $this->_translation['catalogue'] = $value;
-	}
-
-	/**
-	 * @return string default charset set in application.xml
-	 */
-	public function getDefaultCharset()
-	{
-		return $this->_defaultCharset;
-	}
-
-	/**
-	 * @return string default culture set in application.xml
-	 */
-	public function getDefaultCulture()
-	{
-		return $this->_defaultCulture;
+		$this->_translation['catalogue'] = $value;
 	}
 
 	/**

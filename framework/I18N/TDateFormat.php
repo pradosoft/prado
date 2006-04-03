@@ -1,19 +1,12 @@
 <?php
-
 /**
  * TDateFromat formatting component.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the BSD License.
- *
- * Copyright(c) 2004 by Xiang Wei Zhuo.
- *
- * To contact the author write to {@link mailto:qiang.xue@gmail.com Qiang Xue}
- * The latest version of PRADO can be obtained from:
- * {@link http://prado.sourceforge.net/}
- *
- * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.11 $  $Date: 2005/12/16 04:33:02 $
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
  * @package System.I18N
  */
 
@@ -88,7 +81,7 @@ class TDateFormat extends TI18NControl
 	 * Sets the date time formatting pattern.
 	 * @param string format pattern.
 	 */
-	function setPattern($value)
+	public function setPattern($value)
 	{
 		$this->setViewState('Pattern',$value,'');
 	}
@@ -97,7 +90,7 @@ class TDateFormat extends TI18NControl
 	 * Gets the date time format pattern.
 	 * @return string format pattern.
 	 */
-	function getPattern()
+	public function getPattern()
 	{
 		$string = $this->getViewState('Pattern','');
 
@@ -150,7 +143,7 @@ class TDateFormat extends TI18NControl
 	 * Get the date-time value for this control.
 	 * @return string date time value.
 	 */
-	function getValue()
+	public function getValue()
 	{
 		$value = $this->getViewState('Value','');
 		if(empty($value))
@@ -162,7 +155,7 @@ class TDateFormat extends TI18NControl
 	 * Set the date-time value for this control.
 	 * @param string the date-time value.
 	 */
-	function setValue($value)
+	public function setValue($value)
 	{
 		$this->setViewState('Value',$value,'');
 	}
@@ -175,7 +168,7 @@ class TDateFormat extends TI18NControl
 	 */
 	protected function getFormattedDate()
 	{
-		$app = $this->Application->getGlobalization();
+		$app = $this->getApplication()->getGlobalization();
 
 		//initialized the default class wide formatter
 		if(is_null(self::$formatter))

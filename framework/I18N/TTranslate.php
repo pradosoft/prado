@@ -1,19 +1,12 @@
 <?php
-
 /**
  * TTranslate, I18N translation component.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the BSD License.
- *
- * Copyright(c) 2004 by Xiang Wei Zhuo.
- *
- * To contact the author write to {@link mailto:qiang.xue@gmail.com Qiang Xue}
- * The latest version of PRADO can be obtained from:
- * {@link http://prado.sourceforge.net/}
- *
- * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.11 $  $Date: 2005/10/09 10:24:12 $
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
  * @package System.I18N
  */
 
@@ -72,7 +65,7 @@ class TTranslate extends TI18NControl
 	/**
 	 * @return string the text to be localized/translated.
 	 */
-	function getText()
+	public function getText()
 	{
 		return $this->getViewState('Text','');
 	}
@@ -81,7 +74,7 @@ class TTranslate extends TI18NControl
 	 * Sets the text for localization.
 	 * @param string the text for translation.
 	 */
-	function setText($value)
+	public function setText($value)
 	{
 		$this->setViewState('Text',$value,'');
 	}
@@ -90,7 +83,7 @@ class TTranslate extends TI18NControl
 	 * Set the key for message lookup.
 	 * @param string key
 	 */
-	function setKey($value)
+	public function setKey($value)
 	{
 		$this->setViewState('Key',$value,'');
 	}
@@ -99,7 +92,7 @@ class TTranslate extends TI18NControl
 	 * Get the key for message lookup.
 	 * @return string key
 	 */
-	function getKey()
+	public function getKey()
 	{
 		return $this->getViewState('Key','');
 	}
@@ -108,7 +101,7 @@ class TTranslate extends TI18NControl
 	 * Get the message catalogue.
 	 * @return string catalogue.
 	 */
-	function getCatalogue()
+	public function getCatalogue()
 	{
 		return $this->getViewState('Catalogue','');
 	}
@@ -117,7 +110,7 @@ class TTranslate extends TI18NControl
 	 * Set the message catalogue.
 	 * @param string catalogue.
 	 */
-	function setCatalogue($value)
+	public function setCatalogue($value)
 	{
 		$this->setViewState('Catalogue',$value,'');
 	}
@@ -126,7 +119,7 @@ class TTranslate extends TI18NControl
 	 * Set the option to trim the contents.
 	 * @param boolean trim or not.
 	 */
-	function setTrim($value)
+	public function setTrim($value)
 	{
 		$this->setViewState('Trim',TPropertyValue::ensureBoolean($value),true);
 	}
@@ -135,7 +128,7 @@ class TTranslate extends TI18NControl
 	 * Trim the content or not.
 	 * @return boolean trim or not.
 	 */
-	function getTrim()
+	public function getTrim()
 	{
 		return $this->getViewState('Trim',true);
 	}
