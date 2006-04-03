@@ -134,6 +134,15 @@ class TXmlElement extends TComponent
 	}
 
 	/**
+	 * @param string attribute name
+	 * @param string attribute value
+	 */
+	public function setAttribute($name,$value)
+	{
+		$this->getAttributes()->add($name,$value);
+	}
+
+	/**
 	 * @return TXmlElementList list of child elements
 	 */
 	public function getElements()
