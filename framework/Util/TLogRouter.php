@@ -292,7 +292,13 @@ abstract class TLogRoute extends TApplicationComponent
 	/**
 	 * Processes log messages and sends them to specific destination.
 	 * Derived child classes must implement this method.
-	 * @param array list of messages. Each array element is a (formatted) message string.
+	 * @param array list of messages.  Each array elements represents one message
+	 * with the following structure:
+	 * array(
+	 *   [0] => message
+	 *   [1] => level
+	 *   [2] => category
+	 *   [3] => timestamp);
 	 */
 	abstract protected function processLogs($logs);
 }
