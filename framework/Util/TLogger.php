@@ -81,7 +81,7 @@ class TLogger extends TComponent
 	 *   [0] => message
 	 *   [1] => level
 	 *   [2] => category
-	 *   [3] => timestamp);
+	 *   [3] => timestamp (by microtime(), float number));
 	 */
 	public function getLogs($levels=null,$categories=null)
 	{

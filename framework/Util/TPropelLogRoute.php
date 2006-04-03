@@ -45,7 +45,9 @@
  * 		size="2048" />
  * 	<column
  * 		name="Time"
- * 		type="TIMESTAMP"/>
+ * 		type="FLOAT"
+ *		size="6"
+ *		scale="6" />
  * </table>
  * </code>
  *
