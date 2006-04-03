@@ -70,7 +70,7 @@ Prado::using('System.Web.UI.TThemeManager');
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
- * @package System.Services
+ * @package System.Web.Services
  * @since 3.0
  */
 class TPageService extends TService
@@ -91,10 +91,6 @@ class TPageService extends TService
 	 * Page template file extension
 	 */
 	const PAGE_FILE_EXT='.page';
-	/**
-	 * @var string id of this service (page)
-	 */
-	private $_id='page';
 	/**
 	 * @var string root path of pages
 	 */
@@ -127,6 +123,15 @@ class TPageService extends TService
 	 * @var TTemplateManager template manager
 	 */
 	private $_templateManager=null;
+
+	/**
+	 * Constructor.
+	 * Sets default service ID to 'page'.
+	 */
+	public function __construct()
+	{
+		$this->setID('page');
+	}
 
 	/**
 	 * Initializes the service.
@@ -280,22 +285,6 @@ class TPageService extends TService
 			}
 		}
 		return $pageConfig;
-	}
-
-	/**
-	 * @return string id of this module
-	 */
-	public function getID()
-	{
-		return $this->_id;
-	}
-
-	/**
-	 * @param string id of this module
-	 */
-	public function setID($value)
-	{
-		$this->_id=$value;
 	}
 
 	/**
