@@ -446,7 +446,7 @@ class TPageService extends TService
 	 */
 	public function constructUrl($pagePath,$getParams=null,$encodeAmpersand=false,$encodeGetItems=true)
 	{
-		return $this->getRequest()->constructUrl($this->_id,$pagePath,$getParams,$encodeAmpersand,$encodeGetItems);
+		return $this->getRequest()->constructUrl($this->getID(),$pagePath,$getParams,$encodeAmpersand,$encodeGetItems);
 	}
 }
 
