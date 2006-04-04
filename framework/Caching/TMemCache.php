@@ -24,7 +24,6 @@
  * - {@link get} : retrieve the value with a key (if any) from cache
  * - {@link set} : store the value with a key into cache
  * - {@link add} : store the value only if cache does not have this key
- * - {@link replace} : store the value only if cache has this key
  * - {@link delete} : delete the value with the specified key from cache
  * - {@link flush} : delete all values from cache
  *
@@ -53,7 +52,9 @@
  * cache module. It can be accessed via {@link TApplication::getCache()}.
  *
  * TMemCache may be configured in application configuration file as follows
+ * <code>
  * <module id="cache" type="System.Caching.TMemCache" Host="localhost" Port=11211 />
+ * </code>
  * where {@link getHost Host} and {@link getPort Port} are configurable properties
  * of TMemCache.
  *
@@ -111,10 +112,8 @@ class TMemCache extends TModule implements ICache
 		$this->_cache=new Memcache;
 		if($this->_cache->connect($this->_host,$this->_port)===false)
 			throw new TConfigurationException('memcache_connection_failed',$this->_host,$this->_port);
-		$application=$this->getApplication();
-		$this->_prefix=$application->getUniqueID();
-		$application->setCache($this);
 		$this->_initialized=true;
+		parent::init($config);
 	}
 
 	/**
@@ -159,75 +158,52 @@ class TMemCache extends TModule implements ICache
 
 	/**
 	 * Retrieves a value from cache with a specified key.
-	 * @return mixed the value stored in cache, false if the value is not in the cache or expired.
+	 * This is the implementation of the method declared in the parent class.
+	 * @param string a unique key identifying the cached value
+	 * @return string the value stored in cache, false if the value is not in the cache or expired.
 	 */
-	public function get($key)
+	protected function getValue($key)
 	{
-		return $this->_cache->get($this->generateUniqueKey($key));
+		return $this->_cache->get($key);
 	}
 
 	/**
-	 * Stores a value identified by a key into cache.
-	 * If the cache already contains such a key, the existing value and
-	 * expiration time will be replaced with the new ones.
-	 *
-	 * Note, avoid using this method whenever possible. Database insertion is
-	 * very expensive. Try using {@link add} instead, which will not store the value
-	 * if the key is already in cache.
+	 * Stores a value identified by a key in cache.
+	 * This is the implementation of the method declared in the parent class.
 	 *
 	 * @param string the key identifying the value to be cached
-	 * @param mixed the value to be cached
-	 * @param integer the expiration time of the value,
-	 *        0 means never expire,
-	 *        a number less or equal than 60*60*24*30 means the number of seconds that the value will remain valid.
-	 *        a number greater than 60*60*24*30 means a UNIX timestamp after which the value will expire.
+	 * @param string the value to be cached
+	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
-	public function set($key,$value,$expire=0)
+	protected function setValue($key,$value,$expire)
 	{
-		return $this->_cache->set($this->generateUniqueKey($key),$value,0,$expire);
+		return $this->_cache->set($key,$value,0,$expire);
 	}
 
 	/**
 	 * Stores a value identified by a key into cache if the cache does not contain this key.
-	 * Nothing will be done if the cache already contains the key.
+	 * This is the implementation of the method declared in the parent class.
+	 *
 	 * @param string the key identifying the value to be cached
-	 * @param mixed the value to be cached
-	 * @param integer the expiration time of the value,
-	 *        0 means never expire,
-	 *        a number less or equal than 60*60*24*30 means the number of seconds that the value will remain valid.
-	 *        a number greater than 60*60*24*30 means a UNIX timestamp after which the value will expire.
+	 * @param string the value to be cached
+	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
-	public function add($key,$value,$expiry=0)
+	protected function addValue($key,$value,$expire)
 	{
-		return $this->_cache->add($this->generateUniqueKey($key),$value,0,$expiry);
-	}
-
-	/**
-	 * Stores a value identified by a key into cache only if the cache contains this key.
-	 * The existing value and expiration time will be overwritten with the new ones.
-	 * @param string the key identifying the value to be cached
-	 * @param mixed the value to be cached
-	 * @param integer the expiration time of the value,
-	 *        0 means never expire,
-	 *        a number less or equal than 60*60*24*30 means the number of seconds that the value will remain valid.
-	 *        a number greater than 60*60*24*30 means a UNIX timestamp after which the value will expire.
-	 * @return boolean true if the value is successfully stored into cache, false otherwise
-	 */
-	public function replace($key,$value,$expiry=0)
-	{
-		return $this->_cache->replace($this->generateUniqueKey($key),$value,0,$expiry);
+		return $this->_cache->add($key,$value,0,$expire);
 	}
 
 	/**
 	 * Deletes a value with the specified key from cache
+	 * This is the implementation of the method declared in the parent class.
 	 * @param string the key of the value to be deleted
 	 * @return boolean if no error happens during deletion
 	 */
-	public function delete($key)
+	protected function deleteValue($key)
 	{
-		return $this->_cache->delete($this->generateUniqueKey($key));
+		return $this->_cache->delete($key);
 	}
 
 	/**
@@ -237,19 +213,6 @@ class TMemCache extends TModule implements ICache
 	public function flush()
 	{
 		return $this->_cache->flush();
-	}
-
-	/**
-	 * Generates a unique key based on a given user key.
-	 * This method generates a unique key with the memcache.
-	 * The key is made unique by prefixing with a unique string that is supposed
-	 * to be unique among applications using the same memcache.
-	 * @param string user key
-	 * @param string a unique key
-	 */
-	protected function generateUniqueKey($key)
-	{
-		return md5($this->_prefix.$key);
 	}
 }
 

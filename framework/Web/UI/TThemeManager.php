@@ -209,17 +209,20 @@ class TTheme extends TApplicationComponent implements ITheme
 	{
 		$this->_themeUrl=$themeUrl;
 		$this->_name=basename($themePath);
+		$cacheValid=false;
+		// TODO: the following needs to be cleaned up (Qiang)
 		if(($cache=$this->getApplication()->getCache())!==null)
 		{
 			$array=$cache->get(self::THEME_CACHE_PREFIX.$themePath);
+			//print_r($array);die('here');
 			if(is_array($array))
 			{
 				list($skins,$cssFiles,$jsFiles,$timestamp)=$array;
-				$cacheValid=true;
 				if($this->getApplication()->getMode()!==TApplication::STATE_PERFORMANCE)
 				{
 					if(($dir=opendir($themePath))===false)
 						throw new TIOException('theme_path_inexistent',$themePath);
+					$cacheValid=true;
 					while(($file=readdir($dir))!==false)
 					{
 						if($file==='.' || $file==='..')
@@ -240,14 +243,18 @@ class TTheme extends TApplicationComponent implements ITheme
 				}
 				else
 				{
+					$cacheValid=true;
 					$this->_cssFiles=$cssFiles;
 					$this->_jsFiles=$jsFiles;
 					$this->_skins=$skins;
 				}
 			}
 		}
-		if($this->_skins===null)
+		if(!$cacheValid)
 		{
+			$this->_cssFiles=array();
+			$this->_jsFiles=array();
+			$this->_skins=array();
 			if(($dir=opendir($themePath))===false)
 				throw new TIOException('theme_path_inexistent',$themePath);
 			while(($file=readdir($dir))!==false)
