@@ -7,7 +7,7 @@
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Revision: $  $Date: $
- * @package System.Web
+ * @package System.Caching
  */
 
 /**
@@ -62,7 +62,7 @@ abstract class TCache extends TModule implements ICache
 	 * @return string a unique prefix for the keys of cached values.
 	 * If it is not explicitly set, it will take the value of {@link TApplication::getUniqueID}.
 	 */
-	public function getPrefix()
+	public function getKeyPrefix()
 	{
 		return $this->_prefix;
 	}
@@ -70,7 +70,7 @@ abstract class TCache extends TModule implements ICache
 	/**
 	 * @param string a unique prefix for the keys of cached values
 	 */
-	public function setPrefix($value)
+	public function setKeyPrefix($value)
 	{
 		$this->_prefix=$value;
 	}
