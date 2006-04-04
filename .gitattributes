@@ -346,10 +346,6 @@ framework/Collections/TMap.php -text
 framework/Collections/TPagedDataSource.php -text
 framework/Collections/TPagedList.php -text
 framework/Collections/TStack.php -text
-framework/DataAccess/TAdodbProvider.php -text
-framework/DataAccess/TCreoleProvider.php -text
-framework/DataAccess/TDatabaseProvider.php -text
-framework/DataAccess/TSQLMap.php -text
 framework/Exceptions/TErrorHandler.php -text
 framework/Exceptions/TException.php -text
 framework/Exceptions/messages.txt -text
@@ -659,7 +655,6 @@ framework/IO/TTextWriter.php -text
 framework/PradoBase.php -text
 framework/Security/TAuthManager.php -text
 framework/Security/TAuthorizationRule.php -text
-framework/Security/TMembershipManager.php -text
 framework/Security/TSecurityManager.php -text
 framework/Security/TUserManager.php -text
 framework/TApplication.php -text
