@@ -45,9 +45,10 @@
  * 		size="2048" />
  * 	<column
  * 		name="Time"
- * 		type="FLOAT"
- *		size="6"
- *		scale="6" />
+ * 		required="true"
+ * 		type="DOUBLE"
+ *		size="14"
+ *		scale="4" />
  * </table>
  * </code>
  *
