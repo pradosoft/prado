@@ -29,20 +29,20 @@
 <p>To enable the localization features in Prado, you need to add a few configuration options in your <a href="?page=Configurations.AppConfig">application configuration</a>.
 First you need to include the <tt>System.I18N.*</tt> namespace to your paths.
 </p>
-<com:TTextHighlighter Language="xml" CssClass="source"> 
+<com:TTextHighlighter Language="xml" CssClass="source">
 <paths>
     <using namespace="System.I18N.*" />
 </paths>
-</com:TTextHighlighter> 
+</com:TTextHighlighter>
 
 <p>Then, if you wish to translate some text in your application, you need to add one translation message data source.</p>
-<com:TTextHighlighter Language="xml" CssClass="source"> 
+<com:TTextHighlighter Language="xml" CssClass="source">
 <module id="globalization" class="TGlobalization">
-    <translation type="XLIFF" 
-        source="MyApp.messages" 
+    <translation type="XLIFF"
+        source="MyApp.messages"
         autosave="true" cache="true" />
 </module>
-</com:TTextHighlighter> 
+</com:TTextHighlighter>
 
 <p>Where <tt>source</tt> in <tt>translation</tt> is the dot path to a directory
 where you are going to store your translate message catalogue. The <tt>autosave</tt>
@@ -111,7 +111,7 @@ function clickMe($sender,$param)
 </com:TTextHighlighter>
 
 <p>The hard coded message "Hello, world!" is to be localized using the <tt>localize</tt> function. </p>
-<com:TTextHighlighter CssClass="source"> 
+<com:TTextHighlighter CssClass="source">
 function clickMe($sender,$param)
 {
   $sender->Text=localize("Hello, world!");
@@ -121,16 +121,16 @@ function clickMe($sender,$param)
 <h2>Compound Messages</h2>
 
 <p>Compound messages can contain variable data. For example, in the message "There are 12 users online.", the integer 12 may change depending on some data in your application. This is difficult to translate because the position of the variable data may be difference for different languages. In addition, different languages have their own rules for plurals (if any) and/or quantifiers. The following example can not be easily translated, because the sentence structure is fixed by hard coding the variable data within message.</p>
-<com:TTextHighlighter CssClass="source"> 
+<com:TTextHighlighter CssClass="source">
 $num_users = 12;
 $message = "There are " . $num_users . " users online.";
-</com:TTextHighlighter> 
+</com:TTextHighlighter>
 
 This problem can be solved using the <tt>localize</tt> function with string substitution. For example, the <tt>$message</tt> string above can be constructed as follows.
-<com:TTextHighlighter CssClass="source"> 
+<com:TTextHighlighter CssClass="source">
 $num_users = 12;
 $message = localize("There are {num_users} users online.", array('num_users'=>$num_users));
-</com:TTextHighlighter> 
+</com:TTextHighlighter>
 <p>Where the second parameter in <tt>localize</tt> takes an associative array with the key as the substitution to find in the text and replaced it with the associated value.
 The <tt>localize</tt> function does not solve the problem of localizing languages that have plural forms, the solution is to use <a href="#choice-format">TChoiceFormat</a>.</p>
 
@@ -143,47 +143,47 @@ The <tt>localize</tt> function does not solve the problem of localizing language
 <p>Messages and strings can be localized in PHP or in templates.
 To translate a message or string in the template, use <tt>TTranslate</tt>.</p>
 
-<com:TTextHighlighter Language="prado" CssClass="source"> 
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TTranslate&gt;Hello World&lt;/com:TTranslate&gt;
 &lt;com:TTranslate Text="Goodbye" /&gt;
 </com:TTextHighlighter>
 
 <p><tt>TTranslate</tt> can also perform string substitution. Any attributes of <tt>TTranslate</tt> will be substituted with <tt>{attribute name}</tt> in the translation. E.g.</p>
-<com:TTextHighlighter Language="prado" CssClass="source"> 
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TTranslate time="late"&gt;
 The time is {time}.
 &lt;/com:TTranslate&gt;
 </com:TTextHighlighter>
 
 <p>A short for <tt>TTranslate</tt> is also provided using the following syntax.</p>
-<com:TTextHighlighter Language="prado" CssClass="source"> 
-&lt;%[string]&gt;
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;%[string]%&gt;
 </com:TTextHighlighter>
 <p>where string will be translated to different languages according to the end-user's language preference. This syntax can be used with attribute values as well.</p>
-<com:TTextHighlighter Language="prado" CssClass="source"> 
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TLabel Text="&lt;%[ Hello World! ]%&gt;" /&gt;
 </com:TTextHighlighter>
 
 <h2>TDateFormat</h2>
 <p>Formatting localized date and time is straight forward.</p>
-<com:TTextHighlighter Language="prado" CssClass="source"> 
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TDateFormat Value="12/01/2005" /&gt;
-</com:TTextHighlighter> 
+</com:TTextHighlighter>
 
 <p>There are of 4 localized date patterns and 4 localized time patterns. They can be used in any combination. If using a combined pattern, the first must be the date, followed by a space, and lastly the time pattern. For example, full date pattern with short time pattern.</p>
 
-<com:TTextHighlighter Language="prado" CssClass="source"> 
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TDateFormat Pattern="fulldate shorttime" /&gt;
-</com:TTextHighlighter> 
+</com:TTextHighlighter>
 
 <p>If the <tt>Value</tt> property is not specified, the current date and time is used.</p>
 
 <h2>TNumberFormat</h2>
 <p>PRADO's Internationalization framework provide localized currency formatting and number formatting. Please note that the <tt>TNumberFormat</tt> component provides formatting only, it does not perform current conversion or exchange.</p>
 
-<com:TTextHighlighter Language="prado" CssClass="source"> 
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TNumberFormat Type="currency" Value="100" /&gt;
-</com:TTextHighlighter> 
+</com:TTextHighlighter>
 
 <p><tt>Culture</tt> and <tt>Currency</tt> properties may be specified to format locale specific numbers. </p>
 
@@ -193,13 +193,13 @@ The time is {time}.
 In the following example, the strings "{greeting}" and "{name}" will be replace
 with the values of "Hello" and "World", respectively.The substitution string must be enclose with "{" and "}". The parameters can be further translated by using <tt>TTranslate</tt>.
 
-<com:TTextHighlighter Language="prado" CssClass="source"> 
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TTranslate&gt;
   {greeting} {name}!
   &lt;com:TTranslateParameter Key="name">World&lt;/com:TTranslateParameter&gt;
   &lt;com:TTranslateParameter Key="greeting">Hello&lt;/com:TTranslateParameter&gt;
 &lt;/com:TTranslate&gt;
-</com:TTextHighlighter> 
+</com:TTextHighlighter>
 
 
 <a name="choice-format"></a>
@@ -209,9 +209,9 @@ with the values of "Hello" and "World", respectively.The substitution string mus
 
 <p>The <tt>TChoiceFormat</tt> component performs message/string choice translation. The following example demonstrated a simple 2 choice message translation.</p>
 
-<com:TTextHighlighter Language="prado" CssClass="source"> 
+<com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TChoiceFormat Value="1"/&gt;[1] One Apple. |[2] Two Apples&lt;/com:TChoiceFormat&gt;
-</com:TTextHighlighter> 
+</com:TTextHighlighter>
 
 <p>In the above example, the <tt>Value</tt> "1" (one), thus the translated string
 is "One Apple". If the <tt>Value</tt> was "2", then it will show "Two Apples".</p>
@@ -221,7 +221,7 @@ is "One Apple". If the <tt>Value</tt> was "2", then it will show "Two Apples".</
     <li><tt>[1,2]</tt> -- accepts values between 1 and 2, inclusive.</li>
     <li><tt>(1,2)</tt> -- accepts values between 1 and 2, excluding 1 and 2.</li>
     <li><tt>{1,2,3,4}</tt> -- only values defined in the set are accepted.</li>
-    <li><tt>[-Inf,0)</tt> -- accepts value greater or equal to negative infinity 
+    <li><tt>[-Inf,0)</tt> -- accepts value greater or equal to negative infinity
                         and strictly less than 0</li>
 </ul>
 
