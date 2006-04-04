@@ -1,3 +1,7 @@
+Version 3.1.0 To be released
+============================
+ENH: Format string in TDataGrid columns can now evaluate an expression (Qiang)
+
 Version 3.0RC1 April 5, 2006
 ============================
 BUG: Ticket#85 - Undefined TDataGrid::setSelectedIndex (Qiang)
