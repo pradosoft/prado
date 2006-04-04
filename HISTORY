@@ -1,4 +1,4 @@
-Version 3.0RC1 April 1, 2006
+Version 3.0RC1 April 5, 2006
 ============================
 BUG: Ticket#85 - Undefined TDataGrid::setSelectedIndex (Qiang)
 BUG: Ticket#87 - Typo in IDbConnection (Qiang)

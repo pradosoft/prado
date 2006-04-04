@@ -63,7 +63,7 @@
  * @package System.Caching
  * @since 3.0
  */
-class TMemCache extends TModule implements ICache
+class TMemCache extends TCache
 {
 	/**
 	 * @var boolean if the module is initialized

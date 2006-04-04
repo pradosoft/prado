@@ -214,7 +214,6 @@ class TTheme extends TApplicationComponent implements ITheme
 		if(($cache=$this->getApplication()->getCache())!==null)
 		{
 			$array=$cache->get(self::THEME_CACHE_PREFIX.$themePath);
-			//print_r($array);die('here');
 			if(is_array($array))
 			{
 				list($skins,$cssFiles,$jsFiles,$timestamp)=$array;
