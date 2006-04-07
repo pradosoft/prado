@@ -11,9 +11,10 @@
  */
 
 /**
- * Includes TDataFieldAccessor class
+ * Includes TDataFieldAccessor and TDataValueFormatter classes
  */
 Prado::using('System.Util.TDataFieldAccessor');
+Prado::using('System.Util.TDataValueFormatter');
 
 /**
  * TDataGridColumn class
@@ -332,36 +333,15 @@ abstract class TDataGridColumn extends TApplicationComponent
 
 	/**
 	 * Formats the text value according to a format string.
-	 * If the format string is empty, the original value is converted into
-	 * a string and returned.
-	 * If the format string starts with '#', the string is treated as a PHP expression
-	 * within which the token '$$' is translated with the data value to be formated.
-	 * Otherwise, the format string and the data value are passed
-	 * as the first and second parameters in {@link sprintf}.
+	 * It uses {@link TDataValueFormatter} to do the actual formatting.
 	 * @param string format string
 	 * @param mixed the data associated with the cell
 	 * @return string the formatted result
+	 * @see TDataValueFormatter::format()
 	 */
 	protected function formatDataValue($formatString,$value)
 	{
-		if($formatString==='')
-			return TPropertyValue::ensureString($value);
-		else if($formatString[0]==='#')
-		{
-			$expression=strtr(substr($formatString,1),array('$$'=>'$value'));
-			try
-			{
-				if(eval("\$result=$expression;")===false)
-					throw new Exception('');
-				return $result;
-			}
-			catch(Exception $e)
-			{
-				throw new TInvalidOperationException('datagridcolumn_expression_invalid',get_class($this),$expression,$e->getMessage());
-			}
-		}
-		else
-			return sprintf($formatString,$value);
+		return TDataValueFormatter::format($formatString,$value,$this);
 	}
 }
 

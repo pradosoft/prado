@@ -11,17 +11,13 @@
  */
 
 /**
- * Includes TDataBoundControl class
+ * Includes the supporting classes
  */
 Prado::using('System.Web.UI.WebControls.TDataBoundControl');
-/**
- * Includes TAttributeCollection class
- */
 Prado::using('System.Collections.TAttributeCollection');
-/**
- * Includes TDataFieldAccessor class
- */
 Prado::using('System.Util.TDataFieldAccessor');
+Prado::using('System.Util.TDataValueFormatter');
+
 
 /**
  * TListControl class
@@ -75,7 +71,7 @@ Prado::using('System.Util.TDataFieldAccessor');
  * the second item's text be 'Cary', value be 28, and so on.
  * The {@link setDataTextFormatString DataTextFormatString} property may be further
  * used to format how the item should be displayed. The formatting function is
- * the sprintf() PHP function.
+ * {@link TDataValueFormatter::format()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -192,7 +188,7 @@ abstract class TListControl extends TDataBoundControl
 				$text=$object;
 				$item->setValue("$key");
 			}
-			$item->setText($textFormat===''?$text:sprintf($textFormat,$text));
+			$item->setText(TDataValueFormatter::format($textFormat,$text,$this));
 			$items->add($item);
 		}
 		// SelectedValue or SelectedIndex may be set before databinding
@@ -329,9 +325,10 @@ abstract class TListControl extends TDataBoundControl
 
 	/**
 	 * Sets data text format string.
-	 * The format string is used in sprintf() to format the Text property value
+	 * The format string is used in {@link TDataValueFormatter::format()} to format the Text property value
 	 * of each item in the list control.
 	 * @param string the formatting string used to control how data bound to the list control is displayed.
+	 * @see TDataValueFormatter::format()
 	 */
 	public function setDataTextFormatString($value)
 	{

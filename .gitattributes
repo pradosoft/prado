@@ -668,6 +668,7 @@ framework/TComponent.php -text
 framework/TModule.php -text
 framework/TService.php -text
 framework/Util/TDataFieldAccessor.php -text
+framework/Util/TDataValueFormatter.php -text
 framework/Util/TLogRouter.php -text
 framework/Util/TLogger.php -text
 framework/Util/TParameterModule.php -text
