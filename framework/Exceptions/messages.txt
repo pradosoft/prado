@@ -183,6 +183,7 @@ webcontrol_style_invalid				= {0}.Style must take string value only.
 listcontrol_selection_invalid			= {0} has an invalid selection that is set before performing databinding.
 listcontrol_selectedindex_invalid		= {0}.SelectedIndex has an invalid value {1}.
 listcontrol_selectedvalue_invalid		= {0}.SelectedValue has an invalid value '{1}'.
+listcontrol_expression_invalid			= {0} is evaluating an invalid expression '{1}' : {2}
 
 label_associatedcontrol_invalid			= TLabel.AssociatedControl '{0}' cannot be found.
 
@@ -279,4 +280,4 @@ parametermodule_parameterfile_unchangeable = TParameterModule.ParameterFile is n
 parametermodule_parameterfile_invalid	= TParameterModule.ParameterFile '{0}' is invalid. Make sure it is in namespace format and the file extension is '.xml'.
 parametermodule_parameterid_required	= Parameter element must have 'id' attribute.
 
-datagridcolumn_expression_invalid		= {0} is evaluating an invalid expression "{1}" : {2}
+datagridcolumn_expression_invalid		= {0} is evaluating an invalid expression '{1}' : {2}

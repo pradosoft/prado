@@ -16,7 +16,6 @@
 Prado::using('System.Web.UI.WebControls.TDataBoundControl');
 Prado::using('System.Collections.TAttributeCollection');
 Prado::using('System.Util.TDataFieldAccessor');
-Prado::using('System.Util.TDataValueFormatter');
 
 
 /**
@@ -70,8 +69,8 @@ Prado::using('System.Util.TDataValueFormatter');
  * to 'name' and 'age' will make the first item's text be 'John', value be 31,
  * the second item's text be 'Cary', value be 28, and so on.
  * The {@link setDataTextFormatString DataTextFormatString} property may be further
- * used to format how the item should be displayed. The formatting function is
- * {@link TDataValueFormatter::format()}.
+ * used to format how the item should be displayed. See {@link formatDataValue()}
+ * for an explanation of the format string.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -188,7 +187,7 @@ abstract class TListControl extends TDataBoundControl
 				$text=$object;
 				$item->setValue("$key");
 			}
-			$item->setText(TDataValueFormatter::format($textFormat,$text,$this));
+			$item->setText($this->formatDataValue($textFormat,$text));
 			$items->add($item);
 		}
 		// SelectedValue or SelectedIndex may be set before databinding
@@ -581,6 +580,40 @@ abstract class TListControl extends TDataBoundControl
 				}
 			}
 		}
+	}
+
+	/**
+	 * Formats the text value according to a format string.
+	 * If the format string is empty, the original value is converted into
+	 * a string and returned.
+	 * If the format string starts with '#', the string is treated as a PHP expression
+	 * within which the token '{0}' is translated with the data value to be formated.
+	 * Otherwise, the format string and the data value are passed
+	 * as the first and second parameters in {@link sprintf}.
+	 * @param string format string
+	 * @param mixed the data to be formatted
+	 * @return string the formatted result
+	 */
+	protected function formatDataValue($formatString,$value)
+	{
+		if($formatString==='')
+			return TPropertyValue::ensureString($value);
+		else if($formatString[0]==='#')
+		{
+			$expression=strtr(substr($formatString,1),array('{0}'=>'$value'));
+			try
+			{
+				if(eval("\$result=$expression;")===false)
+					throw new Exception('');
+				return $result;
+			}
+			catch(Exception $e)
+			{
+				throw new TInvalidDataValueException('listcontrol_expression_invalid',get_class($this),$expression,$e->getMessage());
+			}
+		}
+		else
+			return sprintf($formatString,$value);
 	}
 }
 
