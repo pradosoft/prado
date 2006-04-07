@@ -29,8 +29,8 @@ class CheckBoxListTestCase extends SeleniumTestCase
 		$this->verifyTextPresent("Your selection is: (Index: 4, Value: value 5, Text: item 5)", "");
 
 		// Databind to an integer-indexed array
-		$this->clickAndWait("//input[@name='ctl0\$body\$DBCheckBoxList1\$1' and @value='item 2']", "");
-		$this->verifyTextPresent("Your selection is: (Index: 1, Value: item 2, Text: item 2)", "");
+		$this->clickAndWait("//input[@name='ctl0\$body\$DBCheckBoxList1\$1' and @value='1']", "");
+		$this->verifyTextPresent("Your selection is: (Index: 1, Value: 1, Text: item 2)", "");
 
 		// Databind to an associative array:
 		$this->clickAndWait("//input[@name='ctl0\$body\$DBCheckBoxList2\$1' and @value='key 2']", "");

@@ -29,8 +29,8 @@ class RadioButtonListTestCase extends SeleniumTestCase
 		$this->verifyTextPresent("Your selection is: (Index: 4, Value: value 5, Text: item 5)", "");
 
 		// Databind to an integer-indexed array
-		$this->clickAndWait("//input[@name='ctl0\$body\$DBRadioButtonList1' and @value='item 1']", "");
-		$this->verifyTextPresent("Your selection is: (Index: 0, Value: item 1, Text: item 1)", "");
+		$this->clickAndWait("//input[@name='ctl0\$body\$DBRadioButtonList1' and @value='0']", "");
+		$this->verifyTextPresent("Your selection is: (Index: 0, Value: 0, Text: item 1)", "");
 
 		// Databind to an associative array:
 		$this->clickAndWait("//input[@name='ctl0\$body\$DBRadioButtonList2' and @value='key 2']", "");

@@ -190,8 +190,7 @@ abstract class TListControl extends TDataBoundControl
 			else
 			{
 				$text=$object;
-				if(is_string($key))
-					$item->setValue($key);
+				$item->setValue("$key");
 			}
 			$item->setText($textFormat===''?$text:sprintf($textFormat,$text));
 			$items->add($item);
