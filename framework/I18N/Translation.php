@@ -91,45 +91,4 @@ class Translation extends TComponent
 	}
 }
 
-/**
- * Localize a text to the locale/culture specified in the globalization handler.
- * @param string text to be localized.
- * @param array a set of parameters to substitute.
- * @param string a different catalogue to find the localize text.
- * @param string the input AND output charset.
- * @return string localized text.
- * @see TTranslate::formatter()
- * @see TTranslate::init()
- */
-function localize($text, $parameters=array(), $catalogue=null, $charset=null)
-{
-
-	$app = Prado::getApplication()->getGlobalization();
-
-	$params = array();
-	foreach($parameters as $key => $value)
-		$params['{'.$key.'}'] = $value;
-
-	//no translation handler provided
-	if(is_null($config = $app->getTranslationConfiguration()))
-		return strtr($text, $params);
-
-	Translation::init();
-
-	if(empty($catalogue) && isset($config['catalogue']))
-		$catalogue = $config['catalogue'];
-
-	//globalization charset
-	$appCharset = is_null($app) ? '' : $app->getCharset();
-
-	//default charset
-	$defaultCharset = (is_null($app)) ? 'UTF-8' : $app->getDefaultCharset();
-
-	//fall back
-	if(empty($charset)) $charset = $appCharset;
-	if(empty($charset)) $charset = $defaultCharset;
-
-	return Translation::formatter()->format($text,$params,$catalogue,$charset);
-}
-
 ?>
