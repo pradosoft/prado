@@ -19,7 +19,7 @@ class DataList2TestCase extends SeleniumTestCase
 		$this->verifyTextPresent("\$150", "");
 
 		// verify editting an item
-		$this->clickAndWait("id=ctl0_body_DataList_ctl5_ctl4", "");
+		$this->clickAndWait("id=ctl0_body_DataList_ctl5_ctl0", "");
 		$this->type("ctl0\$body\$DataList\$ctl5\$ProductQuantity", "11");
 		$this->type("ctl0\$body\$DataList\$ctl5\$ProductPrice", "140.99");
 		$this->click("//input[@name='ctl0\$body\$DataList\$ctl5\$ProductImported' and @value='ctl0\$body\$DataList\$ctl5\$ProductImported']", "");
@@ -31,7 +31,7 @@ class DataList2TestCase extends SeleniumTestCase
 		$this->verifyTextPresent("11", "");
 
 		// verify editting another item
-		$this->clickAndWait("id=ctl0_body_DataList_ctl3_ctl2", "");
+		$this->clickAndWait("id=ctl0_body_DataList_ctl3_ctl1", "");
 		$this->type("ctl0\$body\$DataList\$ctl3\$ProductName", "Hard Drive");
 		$this->type("ctl0\$body\$DataList\$ctl3\$ProductQuantity", "23");
 		$this->click("//input[@name='ctl0\$body\$DataList\$ctl3\$ProductImported' and @value='ctl0\$body\$DataList\$ctl3\$ProductImported']", "");
@@ -43,10 +43,10 @@ class DataList2TestCase extends SeleniumTestCase
 		$this->verifyTextPresent("Harddrive 	", "");
 
 		// verify item deletion
-		$this->clickAndWait("id=ctl0_body_DataList_ctl3_ctl5", "");
+		$this->clickAndWait("id=ctl0_body_DataList_ctl3_ctl1", "");
 		$this->verifyConfirmation("Are you sure?");
 		$this->chooseCancelOnNextConfirmation();
-		$this->click("id=ctl0_body_DataList_ctl5_ctl3", "");
+		$this->click("id=ctl0_body_DataList_ctl5_ctl2", "");
 		$this->verifyConfirmation("Are you sure?");
 		$this->verifyTextPresent("Motherboard ", "");
 		$this->verifyTextPresent("CPU ", "");

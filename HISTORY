@@ -5,6 +5,8 @@ ENH: Format string in TDataGrid columns can now evaluate an expression (Qiang)
 Version 3.0RC2 April 16, 2006
 =============================
 BUG: Ticket#118 - Variables that may not have been initialized (Qiang)
+CHG: Moved localize() into PradoBase (Qiang)
+ENH: Optimized the representation and evaluation of template expressions (Qiang)
 
 Version 3.0RC1 April 5, 2006
 ============================

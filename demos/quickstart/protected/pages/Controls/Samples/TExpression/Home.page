@@ -10,12 +10,6 @@ Using expression component tag:
 <com:TExpression Expression="$this->Page->Head->Title" />
 </td></tr>
 
-<tr><td class="samplenote">
-Using shortcut expression tag:
-</td><td class="sampleaction">
-<%= $this->Page->PagePath %>
-</td></tr>
-
 </table>
 
 </com:TContent>

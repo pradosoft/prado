@@ -15,15 +15,6 @@ Using TStatements component tag:
 </com:TStatements>
 </td></tr>
 
-<tr><td class="samplenote">
-Using shortcut statements tag:
-</td><td class="sampleaction">
-<%%
-  $uid=$this->UniqueID;
-  echo "UniqueID is '$uid'.";
-%>
-</td></tr>
-
 </table>
 
 </com:TContent>

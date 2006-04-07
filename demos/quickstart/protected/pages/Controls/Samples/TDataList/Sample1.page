@@ -26,7 +26,7 @@ Since the page is mainly for display and does not require user interactions, the
 
 <prop:FooterTemplate>
 <div style="font-weight:bold; text-align:center;">
-Total <%# $this->Parent->Parent->ItemCount %> products.
+Total <%# $this->Parent->ItemCount %> products.
 </div>
 </prop:FooterTemplate>
 
@@ -36,10 +36,10 @@ Total <%# $this->Parent->Parent->ItemCount %> products.
   <th>ID</th><th>Name</th><th>Quantity</th><th>Price</th>
 </tr>
 <tr>
-  <td align="right"><%#$this->Parent->DataItem['id'] %></td>
-  <td align="right"><%#$this->Parent->DataItem['name'] %></td>
-  <td align="right"><%#$this->Parent->DataItem['quantity'] %></td>
-  <td align="right">$<%#$this->Parent->DataItem['price'] %></td>
+  <td align="right"><%#$this->DataItem['id'] %></td>
+  <td align="right"><%#$this->DataItem['name'] %></td>
+  <td align="right"><%#$this->DataItem['quantity'] %></td>
+  <td align="right">$<%#$this->DataItem['price'] %></td>
 </tr>
 </table>
 </prop:ItemTemplate>

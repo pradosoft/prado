@@ -4,34 +4,31 @@
 <com:DocLink ClassPath="System.Web.UI.WebControls.TStatements" />
 
 <p>
-<tt>TStatements</tt> evaluates a sequence of PHP statements and displays the content rendered by the statements. To specify the PHP statements to be evaluated, set the <tt>Statements</tt> property. In a control template, <a href="?page=Configurations.Templates2#st">statement tags</a> are often used instead of the complete <a href="?page=Configurations.Templates1#ct">component tags</a> when the main purpose is to display the result rendered by some PHP statements. For example, the following two tags are equivalent,
+<tt>TStatements</tt> evaluates a sequence of PHP statements and displays the content rendered by the statements. To specify the PHP statements to be evaluated, set the <tt>Statements</tt> property. For example, the following component tag displays the current time on the Web page,
 </p>
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TStatements&gt;
-  &lt;prop:Expression&gt;
+  &lt;prop:Statements&gt;
   setlocale(LC_ALL, 'nl_NL');
   echo strftime("%A %e %B %Y",time());
-  &lt;/prop:Expression&gt;
+  &lt;/prop:Statements&gt;
 &lt;/com:TStatements&gt;
-
-&lt;%%
-  setlocale(LC_ALL, 'nl_NL');
-  echo strftime("%A %e %B %Y",time());
-%&gt;
 </com:TTextHighlighter>
 
 <p>
-<tt>TStatements</tt> evaluates the PHP statements during the rendering control lifecycle. Unlike <tt>TExpression</tt>, <tt>TStatements</tt> only displays the content 'echoed' within the statements.
+Note, <tt>TStatements</tt> evaluates the PHP statements during the rendering control lifecycle. Unlike <tt>TExpression</tt>, <tt>TStatements</tt> only displays the content 'echoed' within the statements.
 </p>
 
 <p>
 The context of the statements in a <tt>TStatements</tt> control is the control itself. That is, <tt>$this</tt> represents the control object if it is present in the statements. For example, the following statement tag will display the title of the page containing the <tt>TStatements</tt> control.
 </p>
 <com:TTextHighlighter Language="prado" CssClass="source">
-&lt;%%
+&lt;com:TStatements&gt;
+  &lt;prop:Statements&gt;
   $page=$this->Page;
   echo $page->Title;
-%&gt;
+  &lt;/prop:Statements&gt;
+&lt;/com:TStatements&gt;
 </com:TTextHighlighter>
 
 <p>

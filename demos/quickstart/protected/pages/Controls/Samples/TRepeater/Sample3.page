@@ -69,12 +69,12 @@ The following example allows users to modify the existing tabular data using a <
 </prop:HeaderTemplate>
 
 <prop:ItemTemplate>
-<tr style="<%# 'background-color:' . ($this->Parent->ItemIndex%2 ? '#BFCFFF' : '#E6ECFF') %>">
-<td><%#$this->Parent->DataItem['id']%></td>
-<td><%#$this->Parent->DataItem['name']%></td>
-<td><%#$this->Parent->DataItem['category']%></td>
-<td><%#$this->Parent->DataItem['price']%></td>
-<td><%#$this->Parent->DataItem['imported']?'Yes':'No'%></td>
+<tr style="<%# 'background-color:' . ($this->ItemIndex%2 ? '#BFCFFF' : '#E6ECFF') %>">
+<td><%#$this->DataItem['id']%></td>
+<td><%#$this->DataItem['name']%></td>
+<td><%#$this->DataItem['category']%></td>
+<td><%#$this->DataItem['price']%></td>
+<td><%#$this->DataItem['imported']?'Yes':'No'%></td>
 </tr>
 </prop:ItemTemplate>
 
