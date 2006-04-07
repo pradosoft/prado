@@ -19,6 +19,9 @@ Upgrading from v3.0.0 RC1
 - !!! The context of template expression/statements/databinding tags
   is changed to the control owning the template. Previously, it was
   the control representing the tag.
+- !!! List controls databound with integer-indexed arrays will have
+  the integers as their list item values. Previously, it used the array
+  values as the list item values.
 
 Upgrading from v3.0.0 beta
 --------------------------

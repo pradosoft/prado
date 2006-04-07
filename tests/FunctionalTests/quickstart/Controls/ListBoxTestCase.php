@@ -52,7 +52,7 @@ class ListBoxTestCase extends SeleniumTestCase
 
 		// Databind to an integer-indexed array
 		$this->selectAndWait("ctl0\$body\$DBListBox1[]", "label=item 3");
-		$this->verifyTextPresent("Your selection is: (Index: 2, Value: item 3, Text: item 3)", "");
+		$this->verifyTextPresent("Your selection is: (Index: 2, Value: 2, Text: item 3)", "");
 
 		// Databind to an associative array
 		$this->selectAndWait("ctl0\$body\$DBListBox2[]", "label=item 2");
