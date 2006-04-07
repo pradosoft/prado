@@ -6,6 +6,7 @@
 <div style="width:500px">
 <com:TDataGrid
 	ID="DataGrid"
+	Width="100%"
 	AllowPaging="true"
 	AllowCustomPaging="true"
 	VirtualItemCount="19"

@@ -42,7 +42,7 @@
 	<com:TTemplateColumn>
 		<prop:HeaderTemplate>Rating</prop:HeaderTemplate>
 		<prop:ItemTemplate>
-		<img src="images/star<%#$this->NamingContainer->DataItem['rating']%>.gif" alt="" />
+		<img src="images/star<%#$this->Parent->DataItem['rating']%>.gif" alt="" />
 		</prop:ItemTemplate>
 	</com:TTemplateColumn>
 </com:TDataGrid>

@@ -126,8 +126,7 @@ class TTemplateManager extends TModule
  * can be a property name, an event name or a regular tag attribute name.
  * - directive: directive specifies the property values for the template owner.
  * It is in the format of &lt;% property name-value pairs %&gt;
- * - expressions: expressions are shorthand of {@link TExpression} and {@link TStatements}
- * controls. They are in the formate of &lt;= PHP expression &gt; and &lt; PHP statements &gt;
+ * - expressions: They are in the formate of &lt;= PHP expression &gt; and &lt;% PHP statements &gt;
  * - comments: There are two kinds of comments, regular HTML comments and special template comments.
  * The former is in the format of &lt;!-- comments --&gt;, which will be treated as text strings.
  * The latter is in the format of &lt;%* comments %&gt;, which will be stripped out.
@@ -310,7 +309,16 @@ class TTemplate extends TApplicationComponent implements ITemplate
 				}
 			}
 			else	// string
-				$parent->addParsedObject($object[1]);
+			{
+				if($object[1] instanceof TCompositeLiteral)
+				{
+					$o=clone $object[1];
+					$o->setContainer($tplControl);
+					$parent->addParsedObject($o);
+				}
+				else
+					$parent->addParsedObject($object[1]);
+			}
 		}
 	}
 
@@ -388,8 +396,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					$component->$setter($this->getApplication()->getParameters()->itemAt($value[1]));
 					break;
 				case self::CONFIG_LOCALIZATION:
-					Prado::using('System.I18N.Translation');
-					$component->$setter(localize(trim($value[1])));
+					$component->$setter(Prado::localize($value[1]));
 					break;
 				default:	// an error if reaching here
 					break;
@@ -532,12 +539,22 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					if($matchStart>$textStart)
 						$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
 					$textStart=$matchEnd+1;
+					$literal=trim(THttpUtility::htmlDecode($match[5][0]));
 					if($str[2]==='=')	// expression
-						$tpl[$c++]=array($container,'TExpression',array('Expression'=>THttpUtility::htmlDecode($match[5][0])));
+						$tpl[$c++]=array($container,array(TCompositeLiteral::TYPE_EXPRESSION,$literal));
 					else if($str[2]==='%')  // statements
-						$tpl[$c++]=array($container,'TStatements',array('Statements'=>THttpUtility::htmlDecode($match[5][0])));
-					else
-						$tpl[$c++]=array($container,'TLiteral',array('Text'=>$this->parseAttribute($str)));
+						$tpl[$c++]=array($container,array(TCompositeLiteral::TYPE_STATEMENTS,$literal));
+					else if($str[2]==='#')
+						$tpl[$c++]=array($container,array(TCompositeLiteral::TYPE_DATABINDING,$literal));
+					else if($str[2]==='$')
+						$tpl[$c++]=array($container,array(TCompositeLiteral::TYPE_EXPRESSION,"\$this->getApplication()->getParameters()->itemAt('$literal')"));
+					else if($str[2]==='~')
+						$tpl[$c++]=array($container,array(TCompositeLiteral::TYPE_EXPRESSION,"\$this->publishFilePath('$this->_contextPath/$literal')"));
+					else if($str[2]==='[')
+					{
+						$literal=trim(substr($literal,0,strlen($literal)-1));
+						$tpl[$c++]=array($container,array(TCompositeLiteral::TYPE_EXPRESSION,"Prado::localize('$literal')"));
+					}
 				}
 				else if(strpos($str,'<prop:')===0)	// opening property
 				{
@@ -618,7 +635,45 @@ class TTemplate extends TApplicationComponent implements ITemplate
 			else
 				throw new TConfigurationException('template_format_invalid',$this->_tplFile,$line,$e->getMessage());
 		}
-		return $tpl;
+
+		// optimization by merging consecutive strings, expressions, statements and bindings
+		$objects=array();
+		$parent=null;
+		$merged=array();
+		foreach($tpl as $id=>$object)
+		{
+			if(isset($object[2]) || $object[0]!==$parent)
+			{
+				if($parent!==null)
+				{
+					if(count($merged[1])===1 && is_string($merged[1][0]))
+						$objects[$id-1]=array($merged[0],$merged[1][0]);
+					else
+						$objects[$id-1]=array($merged[0],new TCompositeLiteral($merged[1]));
+				}
+				if(isset($object[2]))
+				{
+					$parent=null;
+					$objects[$id]=$object;
+				}
+				else
+				{
+					$parent=$object[0];
+					$merged=array($parent,array($object[1]));
+				}
+			}
+			else
+				$merged[1][]=$object[1];
+		}
+		if($parent!==null)
+		{
+			if(count($merged[1])===1 && is_string($merged[1][0]))
+				$objects[$id]=array($merged[0],$merged[1][0]);
+			else
+				$objects[$id]=array($merged[0],new TCompositeLiteral($merged[1]));
+		}
+		$tpl=$objects;
+		return $objects;
 	}
 
 	/**
@@ -765,6 +820,97 @@ class TTemplate extends TApplicationComponent implements ITemplate
 		}
 		else
 			throw new TConfigurationException('template_component_required',$type);
+	}
+}
+
+/**
+ * TCompositeLiteral class
+ *
+ * TCompositeLiteral is used internally by {@link TTemplate} for representing
+ * consecutive static strings, expressions and statements.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI
+ * @since 3.0
+ */
+class TCompositeLiteral extends TComponent implements IRenderable, IBindable
+{
+	const TYPE_EXPRESSION=0;
+	const TYPE_STATEMENTS=1;
+	const TYPE_DATABINDING=2;
+	private $_container=null;
+	private $_items=array();
+	private $_expressions=array();
+	private $_statements=array();
+	private $_bindings=array();
+
+	/**
+	 * Constructor.
+	 * @param array list of items to be represented by TCompositeLiteral
+	 */
+	public function __construct($items)
+	{
+		$this->_items=array();
+		$this->_expressions=array();
+		$this->_statements=array();
+		foreach($items as $id=>$item)
+		{
+			if(is_array($item))
+			{
+				if($item[0]===self::TYPE_EXPRESSION)
+					$this->_expressions[$id]=$item[1];
+				else if($item[0]===self::TYPE_STATEMENTS)
+					$this->_statements[$id]=$item[1];
+				else if($item[0]===self::TYPE_DATABINDING)
+					$this->_bindings[$id]=$item[1];
+				$this->_items[$id]='';
+			}
+			else
+				$this->_items[$id]=$item;
+		}
+	}
+
+	/**
+	 * @return TComponent container of this component. It serves as the evaluation context of expressions and statements.
+	 */
+	public function getContainer()
+	{
+		return $this->_container;
+	}
+
+	/**
+	 * @param TComponent container of this component. It serves as the evaluation context of expressions and statements.
+	 */
+	public function setContainer(TComponent $value)
+	{
+		$this->_container=$value;
+	}
+
+	/**
+	 * Renders the content stored in this component.
+	 * This method is required by {@link IRenderable}
+	 * @param ITextWriter
+	 */
+	public function render($writer)
+	{
+		$context=$this->_container===null?$this:$this->_container;
+		foreach($this->_expressions as $id=>$expression)
+			$this->_items[$id]=$context->evaluateExpression($expression);
+		foreach($this->_statements as $id=>$statement)
+			$this->_items[$id]=$context->evaluateStatements($statement);
+		$writer->write(implode('',$this->_items));
+	}
+
+	/**
+	 * Performs databindings.
+	 * This method is required by {@link IBindable}
+	 */
+	public function dataBind()
+	{
+		$context=$this->_container===null?$this:$this->_container;
+		foreach($this->_bindings as $id=>$binding)
+			$this->_items[$id]=$context->evaluateExpression($binding);
 	}
 }
 

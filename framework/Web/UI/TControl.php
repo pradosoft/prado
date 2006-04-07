@@ -68,7 +68,7 @@ Prado::using('System.Web.UI.TControlAdapter');
  * @package System.Web.UI
  * @since 3.0
  */
-class TControl extends TApplicationComponent
+class TControl extends TApplicationComponent implements IRenderable, IBindable
 {
 	/**
 	 * format of control ID
@@ -772,7 +772,7 @@ class TControl extends TApplicationComponent
 		if(isset($this->_rf[self::RF_CONTROLS]))
 		{
 			foreach($this->_rf[self::RF_CONTROLS] as $control)
-				if($control instanceof TControl)
+				if($control instanceof IBindable)
 					$control->dataBind();
 		}
 	}
@@ -1416,10 +1416,12 @@ class TControl extends TApplicationComponent
 		{
 			foreach($this->_rf[self::RF_CONTROLS] as $control)
 			{
-				if($control instanceof TControl)
-					$control->renderControl($writer);
-				else if(is_string($control))
+				if(is_string($control))
 					$writer->write($control);
+				else if($control instanceof TControl)
+					$control->renderControl($writer);
+				else if($control instanceof IRenderable)
+					$control->render($writer);
 			}
 		}
 	}
@@ -1660,13 +1662,13 @@ class TControlCollection extends TList
 	 */
 	public function insertAt($index,$item)
 	{
-		if(is_string($item))
-			parent::insertAt($index,$item);
-		else if($item instanceof TControl)
+		if($item instanceof TControl)
 		{
 			parent::insertAt($index,$item);
 			$this->_o->addedControl($item);
 		}
+		else if(is_string($item) || ($item instanceof IRenderable))
+			parent::insertAt($index,$item);
 		else
 			throw new TInvalidDataTypeException('controlcollection_control_required');
 	}

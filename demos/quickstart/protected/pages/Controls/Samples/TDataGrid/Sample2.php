@@ -78,6 +78,8 @@ class Sample2 extends TPage
 	{
 		foreach($this->DataGrid->Columns as $index=>$column)
 			$column->Visible=$sender->Items[$index]->Selected;
+		$this->DataGrid->DataSource=$this->Data;
+		$this->DataGrid->dataBind();
 	}
 }
 
