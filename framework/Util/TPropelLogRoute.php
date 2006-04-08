@@ -21,7 +21,7 @@
  * The schema of the Propel object must be as follows (the table name can be
  * changed to the value of {@link getPropelObjectName PropelObjectName}.
  * <code>
- * <table name="PradoLog">
+ * <table name="Pradolog">
  * 	<column
  * 		name="ID"
  * 		required="true"
@@ -59,7 +59,7 @@
  */
 class TPropelLogRoute extends TLogRoute
 {
-	private $_className='PradoLog';
+	private $_className='Pradolog';
 
 	/**
 	 * @return string the name of the Prople object used to save each log message. Defaults to 'PradoLog'.
