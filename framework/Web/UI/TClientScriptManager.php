@@ -116,6 +116,15 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function registerPradoScript($name)
 	{
+		$this->registerPradoScriptInternal($name);
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('registerPradoScript',$params);
+	}
+
+	private function registerPradoScriptInternal($name)
+	{
 		if(!isset($this->_registeredPradoScripts[$name]))
 		{
 			$this->_registeredPradoScripts[$name]=true;
@@ -166,47 +175,59 @@ class TClientScriptManager extends TApplicationComponent
 			$options['FormID']=$this->_page->getForm()->getClientID();
 		$optionString=TJavaScript::encode($options);
 		$code="new $jsClass($optionString);";
-		$this->registerEndScript(sprintf('%08X', crc32($code)), $code);
 
-		$this->registerHiddenField(TPage::FIELD_POSTBACK_TARGET,'');
-		$this->registerHiddenField(TPage::FIELD_POSTBACK_PARAMETER,'');
+		$this->_endScripts[sprintf('%08X', crc32($code))]=$code;
+		$this->_hiddenFields[TPage::FIELD_POSTBACK_TARGET]='';
+		$this->_hiddenFields[TPage::FIELD_POSTBACK_PARAMETER]='';
+		$this->registerPradoScriptInternal('prado');
 
-		$this->registerPradoScript('prado');
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('registerPostBackControl',$params);
 	}
 
 	/**
 	 * Register a default button to panel. When the $panel is in focus and
 	 * the 'enter' key is pressed, the $button will be clicked.
-	 * @param TControl panel to register the default button action
-	 * @param TControl button to trigger a postback
+	 * @param string client ID of the container object
+	 * @param string client ID of the button
 	 */
-	public function registerDefaultButton($panel, $button)
+	public function registerDefaultButton($containerID, $buttonID)
 	{
-		$options = TJavaScript::encode($this->getDefaultButtonOptions($panel, $button));
+		$options = TJavaScript::encode($this->getDefaultButtonOptions($containerID, $buttonID));
 		$code = "new Prado.WebUI.DefaultButton($options);";
-		$this->registerEndScript("prado:".$panel->getClientID(), $code);
-		$this->registerPradoScript('prado');
+
+		$this->_endScripts['prado:'.$containerID]=$code;
+		$this->registerPradoScriptInternal('prado');
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('registerDefaultButton',$params);
 	}
 
 	/**
 	 * Registers the control to receive default focus.
-	 * @param TControl|string the control or the client ID of the HTML element to receive default focus
+	 * @param string the client ID of the control to receive default focus
 	 */
 	public function registerFocusControl($target)
 	{
-		$this->registerPradoScript('prado');
-		if($target instanceof TControl)
-			$target=$target->getClientID();
-		$this->registerEndScript('prado:focus','Prado.Focus.setFocus("'.TJavaScript::quoteString($target).'");');
+		$this->registerPradoScriptInternal('prado');
+		$this->_endScripts['prado:focus']='Prado.Focus.setFocus("'.TJavaScript::quoteString($target).'");';
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('registerFocusControl',$params);
 	}
 
 	/**
+	 * @param string client ID of the container object
+	 * @param string client ID of the button
 	 * @return array default button options.
 	 */
-	protected function getDefaultButtonOptions($panel, $button)
+	protected function getDefaultButtonOptions($containerID, $buttonID)
 	{
-		$options['Panel'] = $panel->getClientID();
-		$options['Target'] = $button->getClientID();
+		$options['Panel'] = $containerID;
+		$options['Target'] = $buttonID;
 		$options['Event'] = 'click';
 		return $options;
 	}
@@ -219,6 +240,10 @@ class TClientScriptManager extends TApplicationComponent
 	public function registerStyleSheetFile($key,$url)
 	{
 		$this->_styleSheetFiles[$key]=$url;
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('registerStyleSheetFile',$params);
 	}
 
 	/**
@@ -229,6 +254,10 @@ class TClientScriptManager extends TApplicationComponent
 	public function registerStyleSheet($key,$css)
 	{
 		$this->_styleSheets[$key]=$css;
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('registerStyleSheet',$params);
 	}
 
 	/**
@@ -239,6 +268,10 @@ class TClientScriptManager extends TApplicationComponent
 	public function registerHeadScriptFile($key,$url)
 	{
 		$this->_headScriptFiles[$key]=$url;
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('registerHeadScriptFile',$params);
 	}
 
 	/**
@@ -249,6 +282,10 @@ class TClientScriptManager extends TApplicationComponent
 	public function registerHeadScript($key,$script)
 	{
 		$this->_headScripts[$key]=$script;
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('registerHeadScript',$params);
 	}
 
 	/**
@@ -258,8 +295,11 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function registerScriptFile($key,$url)
 	{
-		if(!isset($this->_scriptFiles[$key]))
-			$this->_scriptFiles[$key]=$url;
+		$this->_scriptFiles[$key]=$url;
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('registerScriptFile',$params);
 	}
 
 	/**
@@ -270,6 +310,10 @@ class TClientScriptManager extends TApplicationComponent
 	public function registerBeginScript($key,$script)
 	{
 		$this->_beginScripts[$key]=$script;
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('registerBeginScript',$params);
 	}
 
 	/**
@@ -280,6 +324,10 @@ class TClientScriptManager extends TApplicationComponent
 	public function registerEndScript($key,$script)
 	{
 		$this->_endScripts[$key]=$script;
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('registerEndScript',$params);
 	}
 
 	/**
@@ -290,8 +338,11 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function registerHiddenField($name,$value)
 	{
-		if(!isset($this->_hiddenFields[$name]))
-			$this->_hiddenFields[$name]=$value;
+		$this->_hiddenFields[$name]=$value;
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('registerHiddenField',$params);
 	}
 
 	/**

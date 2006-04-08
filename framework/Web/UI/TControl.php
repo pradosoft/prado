@@ -1449,7 +1449,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 * @param TMap the collection of the state
 	 * @param boolean whether the viewstate should be loaded
 	 */
-	final protected function loadStateRecursive(&$state,$needViewState=true)
+	protected function loadStateRecursive(&$state,$needViewState=true)
 	{
 		if($state!==null)
 		{
@@ -1492,12 +1492,10 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 			}
 			if(!empty($state))
 				$this->_rf[self::RF_CHILD_STATE]=&$state;
-			$this->_stage=self::CS_STATE_LOADED;
 		}
-		else
-			$this->_stage=self::CS_STATE_LOADED;
+		$this->_stage=self::CS_STATE_LOADED;
 		if(isset($this->_rf[self::RF_ADAPTER]))
-			$this->_rf[self::RF_ADAPTER]->loadState(null);
+			$this->_rf[self::RF_ADAPTER]->loadState();
 		else
 			$this->loadState();
 	}
@@ -1507,10 +1505,10 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 * @param boolean whether the viewstate should be saved
 	 * @return array the collection of the control state (including its children's state).
 	 */
-	final protected function &saveStateRecursive($needViewState=true)
+	protected function &saveStateRecursive($needViewState=true)
 	{
 		if(isset($this->_rf[self::RF_ADAPTER]))
-			$this->_rf[self::RF_ADAPTER]->saveState(null);
+			$this->_rf[self::RF_ADAPTER]->saveState();
 		else
 			$this->saveState();
 		$needViewState=($needViewState && !($this->_flags & self::IS_DISABLE_VIEWSTATE));

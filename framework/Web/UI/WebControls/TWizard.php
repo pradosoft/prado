@@ -16,7 +16,6 @@ Prado::using('System.Web.UI.WebControls.TButton');
 Prado::using('System.Web.UI.WebControls.TLinkButton');
 Prado::using('System.Web.UI.WebControls.TImageButton');
 Prado::using('System.Web.UI.WebControls.TDataList');
-Prado::using('System.Collections.TStack');
 
 /**
  * Class TWizard.

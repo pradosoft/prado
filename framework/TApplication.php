@@ -26,6 +26,7 @@ require_once(PRADO_DIR.'/Caching/TCache.php');
 require_once(PRADO_DIR.'/IO/TTextWriter.php');
 require_once(PRADO_DIR.'/Collections/TList.php');
 require_once(PRADO_DIR.'/Collections/TMap.php');
+require_once(PRADO_DIR.'/Collections/TStack.php');
 require_once(PRADO_DIR.'/Xml/TXmlDocument.php');
 require_once(PRADO_DIR.'/Security/TAuthorizationRule.php');
 require_once(PRADO_DIR.'/Security/TSecurityManager.php');

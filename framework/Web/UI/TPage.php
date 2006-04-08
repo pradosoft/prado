@@ -141,6 +141,10 @@ class TPage extends TTemplateControl
 	 * @var mixed page state persister
 	 */
 	private $_statePersister=null;
+	/**
+	 * @var TStack stack used to store currently active caching controls
+	 */
+	private $_cachingStack=null;
 
 	/**
 	 * Constructor.
@@ -599,9 +603,13 @@ class TPage extends TTemplateControl
 	 * if not checked, will not have a post value.
 	 * @param TControl control registered for loading post data
 	 */
-	public function registerRequiresPostData(TControl $control)
+	public function registerRequiresPostData($control)
 	{
-		$this->_controlsRegisteredForPostData[$control->getUniqueID()]=true;
+		$id=is_string($control)?$control:$control->getUniqueID();
+		$this->_controlsRegisteredForPostData[$id]=true;
+		$params=func_get_args();
+		foreach($this->getCachingStack() as $item)
+			$item->registerAction('registerRequiresPostData',$id);
 	}
 
 	/**
@@ -747,8 +755,11 @@ class TPage extends TTemplateControl
 		{
 			if($this->_focus)
 			{
-				if(($this->_focus instanceof TControl) && $this->_focus->getVisible(true) || is_string($this->_focus))
-					$cs->registerFocusControl($this->_focus);
+				if(($this->_focus instanceof TControl) && $this->_focus->getVisible(true))
+					$focus=$this->_focus->getClientID();
+				else
+					$focus=$this->_focus;
+				$cs->registerFocusControl($focus);
 			}
 			else if($this->_postData && ($lastFocus=$this->_postData->itemAt(self::FIELD_LASTFOCUS))!==null)
 				$cs->registerFocusControl($lastFocus);
@@ -907,6 +918,13 @@ class TPage extends TTemplateControl
 	public function setPagePath($value)
 	{
 		$this->_pagePath=$value;
+	}
+
+	public function getCachingStack()
+	{
+		if(!$this->_cachingStack)
+			$this->_cachingStack=new TStack;
+		return $this->_cachingStack;
 	}
 }
 
