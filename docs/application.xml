@@ -4,15 +4,15 @@
   <paths>
     <alias id="Demo" path="." />
     <alias id="Pages" path="pages" />
-    
+
   </paths>
-  
+
   <!-- modules configured and loaded for all services -->
   <modules>
-    <module id="cache" type="System.Data.TSqliteCache" DbFile="Demo.cache"/>
+    <module id="cache" type="System.Caching.TSqliteCache" DbFile="Demo.cache"/>
     <module id="session" type="THttpSession" />
   </modules>
-  
+
   <services>
     <!-- page service, BasePath is required -->
     <service id="page" BasePath="Demo.pages" DefaultPage="home">
@@ -36,7 +36,7 @@ application.xml::::
 		<alias id path/>
 		<using namespace/>
 	</paths>
-	
+
 	<modules>
 		<module id type /> other params get stored as an array.
 		<!-- user manager module -->
@@ -46,18 +46,18 @@ application.xml::::
         </module>
         <!-- auth manager module -->
         <module id="auth" type="System.Security.TAuthManager" UserManager="users" LoginPage="login" />
-		
-		
+
+
 	</modules>
-	
+
 	<services>
 		<service id type /> extra params get stored as an array.
 	</services>
-	
+
 	<parameters>
 		<parameter id [type] /> extra params get stored as an array.
 	</parameters>
-</application>	
+</application>
 
 
 config.xml
@@ -74,14 +74,14 @@ config.xml
 
 
 
-	
+
 config.xml:::::
 <configuration>
 	<paths>
 		<alias id path/>
 		<using namespace/>
 	</paths>
-	
+
 	<modules>
 		<module id type /> other params get stored as an array.
 	</modules>
@@ -89,11 +89,11 @@ config.xml:::::
 	<parameters>
 		<parameter id [type] /> extra params get stored as an array.
 	</parameters>
-	
+
 	<authorization>
 		<allow|deny [pages=",delimited"] [users=",delimited *|?|username"] [roles=",delimited"] verb="get|post" />
 	</authorization>
-	
+
 	<pages [MasterClass]>
 		<page id type  [MasterClass] [TemplateFile]/>
 	</pages>
