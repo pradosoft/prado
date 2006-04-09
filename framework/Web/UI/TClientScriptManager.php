@@ -171,8 +171,8 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function registerPostBackControl($jsClass,$options)
 	{
-		if(!isset($options['FormID']))
-			$options['FormID']=$this->_page->getForm()->getClientID();
+		if(!isset($options['FormID']) && ($form=$this->_page->getForm())!==null)
+			$options['FormID']=$form->getClientID();
 		$optionString=TJavaScript::encode($options);
 		$code="new $jsClass($optionString);";
 

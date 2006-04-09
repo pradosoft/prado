@@ -289,11 +289,11 @@ class TTemplate extends TApplicationComponent implements ITemplate
 			if(isset($object[2]))	// component
 			{
 				$component=Prado::createComponent($object[1]);
-				if($component instanceof TOutputCache)
-					$component->setCacheKeyPrefix($this->_hashCode.$key);
 				$properties=&$object[2];
 				if($component instanceof TControl)
 				{
+					if($component instanceof TOutputCache)
+						$component->setCacheKeyPrefix($this->_hashCode.$key);
 					$component->setTemplateControl($tplControl);
 					if(isset($properties['id']))
 					{
@@ -332,17 +332,16 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					$parent->addParsedObject($component);
 				}
 			}
-			else	// string
+			else if(is_string($object[1]))
+				$parent->addParsedObject($object[1]);
+			else if($object[1] instanceof TCompositeLiteral)
 			{
-				if($object[1] instanceof TCompositeLiteral)
-				{
-					$o=clone $object[1];
-					$o->setContainer($tplControl);
-					$parent->addParsedObject($o);
-				}
-				else
-					$parent->addParsedObject($object[1]);
+				$o=clone $object[1];
+				$o->setContainer($tplControl);
+				$parent->addParsedObject($o);
 			}
+			else
+				throw new TConfigurationException('template_content_unexpected',(string)$object[1]);
 		}
 	}
 

@@ -257,10 +257,18 @@ class TOutputCache extends TControl implements INamingContainer
 				$name=trim($name);
 				$params[$name]=$request->itemAt($name);
 			}
-			return self::CACHE_ID_PREFIX.$this->_keyPrefix.$this->getUniqueID().serialize($params);
+			return $this->getBaseCacheKey().serialize($params);
 		}
 		else
-			return self::CACHE_ID_PREFIX.$this->_keyPrefix.$this->getUniqueID();
+			return $this->getBaseCacheKey();
+	}
+
+	/**
+	 * @return string basic cache key without variations
+	 */
+	protected function getBaseCacheKey()
+	{
+		return self::CACHE_ID_PREFIX.$this->_keyPrefix.$this->getPage()->getPagePath().$this->getUniqueID();
 	}
 
 	/**
