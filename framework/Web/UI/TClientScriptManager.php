@@ -120,7 +120,7 @@ class TClientScriptManager extends TApplicationComponent
 
 		$params=func_get_args();
 		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('registerPradoScript',$params);
+			$item->registerAction('Page.ClientScript','registerPradoScript',$params);
 	}
 
 	private function registerPradoScriptInternal($name)
@@ -183,7 +183,7 @@ class TClientScriptManager extends TApplicationComponent
 
 		$params=func_get_args();
 		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('registerPostBackControl',$params);
+			$item->registerAction('Page.ClientScript','registerPostBackControl',$params);
 	}
 
 	/**
@@ -202,7 +202,7 @@ class TClientScriptManager extends TApplicationComponent
 
 		$params=func_get_args();
 		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('registerDefaultButton',$params);
+			$item->registerAction('Page.ClientScript','registerDefaultButton',$params);
 	}
 
 	/**
@@ -216,7 +216,7 @@ class TClientScriptManager extends TApplicationComponent
 
 		$params=func_get_args();
 		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('registerFocusControl',$params);
+			$item->registerAction('Page.ClientScript','registerFocusControl',$params);
 	}
 
 	/**
@@ -243,7 +243,7 @@ class TClientScriptManager extends TApplicationComponent
 
 		$params=func_get_args();
 		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('registerStyleSheetFile',$params);
+			$item->registerAction('Page.ClientScript','registerStyleSheetFile',$params);
 	}
 
 	/**
@@ -257,7 +257,7 @@ class TClientScriptManager extends TApplicationComponent
 
 		$params=func_get_args();
 		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('registerStyleSheet',$params);
+			$item->registerAction('Page.ClientScript','registerStyleSheet',$params);
 	}
 
 	/**
@@ -271,7 +271,7 @@ class TClientScriptManager extends TApplicationComponent
 
 		$params=func_get_args();
 		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('registerHeadScriptFile',$params);
+			$item->registerAction('Page.ClientScript','registerHeadScriptFile',$params);
 	}
 
 	/**
@@ -285,7 +285,7 @@ class TClientScriptManager extends TApplicationComponent
 
 		$params=func_get_args();
 		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('registerHeadScript',$params);
+			$item->registerAction('Page.ClientScript','registerHeadScript',$params);
 	}
 
 	/**
@@ -299,7 +299,7 @@ class TClientScriptManager extends TApplicationComponent
 
 		$params=func_get_args();
 		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('registerScriptFile',$params);
+			$item->registerAction('Page.ClientScript','registerScriptFile',$params);
 	}
 
 	/**
@@ -313,7 +313,7 @@ class TClientScriptManager extends TApplicationComponent
 
 		$params=func_get_args();
 		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('registerBeginScript',$params);
+			$item->registerAction('Page.ClientScript','registerBeginScript',$params);
 	}
 
 	/**
@@ -327,7 +327,7 @@ class TClientScriptManager extends TApplicationComponent
 
 		$params=func_get_args();
 		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('registerEndScript',$params);
+			$item->registerAction('Page.ClientScript','registerEndScript',$params);
 	}
 
 	/**
@@ -342,7 +342,7 @@ class TClientScriptManager extends TApplicationComponent
 
 		$params=func_get_args();
 		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('registerHiddenField',$params);
+			$item->registerAction('Page.ClientScript','registerHiddenField',$params);
 	}
 
 	/**

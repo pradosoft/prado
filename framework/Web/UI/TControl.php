@@ -1446,7 +1446,8 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 
 	/**
 	 * Loads state (viewstate and controlstate) into a control and its children.
-	 * @param TMap the collection of the state
+	 * This method should only be used by framework developers.
+	 * @param array the collection of the state
 	 * @param boolean whether the viewstate should be loaded
 	 */
 	protected function loadStateRecursive(&$state,$needViewState=true)
@@ -1502,6 +1503,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 
 	/**
 	 * Saves all control state (viewstate and controlstate) as a collection.
+	 * This method should only be used by framework developers.
 	 * @param boolean whether the viewstate should be saved
 	 * @return array the collection of the control state (including its children's state).
 	 */
@@ -1717,6 +1719,18 @@ class TEmptyControlCollection extends TControlCollection
 	public function __construct(TControl $owner)
 	{
 		parent::__construct($owner,true);
+	}
+
+	/**
+	 * Inserts an item at the specified position.
+	 * This overrides the parent implementation by ignoring new addition.
+	 * @param integer the speicified position.
+	 * @param mixed new item
+	 */
+	public function insertAt($index,$item)
+	{
+		if(!is_string($item))  // string is possible if property tag is used. we simply ignore it in this case
+			parent::insertAt($index,$item);  // this will generate an exception in parent implementation
 	}
 }
 

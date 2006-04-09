@@ -165,7 +165,7 @@ templatecontrol_placeholder_inexistent	= TContent '{0}' does not have a matching
 page_form_duplicated					= A page can contain at most one TForm. Use regular HTML form tags for the rest forms.
 page_isvalid_unknown					= TPage.IsValid has not been evaluated yet.
 page_postbackcontrol_invalid			= Unable to determine postback control '{0}'.
-page_control_outofform					= Control '{0}' must be enclosed within TForm.
+page_control_outofform					= {0} '{1}' must be enclosed within TForm.
 page_head_duplicated					= A page can contain at most one THead.
 page_statepersister_invalid				= Page state persister must implement IPageStatePersister interface.
 
@@ -281,3 +281,5 @@ parametermodule_parameterfile_invalid	= TParameterModule.ParameterFile '{0}' is 
 parametermodule_parameterid_required	= Parameter element must have 'id' attribute.
 
 datagridcolumn_expression_invalid		= {0} is evaluating an invalid expression '{1}' : {2}
+
+outputcache_duration_invalid			= {0}.Duration must be an integer no less than 0.

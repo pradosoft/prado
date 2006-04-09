@@ -609,7 +609,7 @@ class TPage extends TTemplateControl
 		$this->_controlsRegisteredForPostData[$id]=true;
 		$params=func_get_args();
 		foreach($this->getCachingStack() as $item)
-			$item->registerAction('registerRequiresPostData',$id);
+			$item->registerAction('Page','registerRequiresPostData',$id);
 	}
 
 	/**
@@ -727,7 +727,7 @@ class TPage extends TTemplateControl
 	public function ensureRenderInForm($control)
 	{
 		if(!$this->_inFormRender)
-			throw new TConfigurationException('page_control_outofform',$control->getUniqueID());
+			throw new TConfigurationException('page_control_outofform',get_class($control),$control->getUniqueID());
 	}
 
 	/**
