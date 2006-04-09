@@ -48,10 +48,17 @@
  * or is invalidated, while that by the outer cache not, the outer cached
  * content will be used.
  *
+ * Note, TOutputCache is effective only for non-postback page requests
+ * and when cache module is enabled.
+ *
+ * Do not attempt to address child controls of TOutputCache when the cached
+ * content is to be used. Use {@link getContentCached ContentCached} property
+ * to determine whether the content is cached or not.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
- * @since 3.0
+ * @since 3.1
  */
 class TOutputCache extends TControl implements INamingContainer
 {
@@ -66,6 +73,7 @@ class TOutputCache extends TControl implements INamingContainer
 	private $_state;
 	private $_actions=array();
 	private $_varyByParam='';
+	private $_keyPrefix='';
 
 	/**
 	 * Returns a value indicating whether body contents are allowed for this control.
@@ -184,10 +192,8 @@ class TOutputCache extends TControl implements INamingContainer
 	 */
 	protected function loadStateRecursive(&$state,$needViewState=true)
 	{
-		if($this->_dataCached)
-			parent::loadStateRecursive($this->_state,$needViewState);
-		else
-			parent::loadStateRecursive($state,$needViewState);
+		$st=unserialize($state);
+		parent::loadStateRecursive($st,$needViewState);
 	}
 
 	/**
@@ -202,13 +208,13 @@ class TOutputCache extends TControl implements INamingContainer
 	{
 		if($this->_dataCached)
 			return $this->_state;
-		else if($this->_cacheAvailable)
+		else
 		{
-			$this->_state=parent::saveStateRecursive($needViewState);
+			$st=parent::saveStateRecursive($needViewState);
+			// serialization is needed to avoid undefined classes when loading state
+			$this->_state=serialize($st);
 			return $this->_state;
 		}
-		else
-			return parent::saveStateRecursive($needViewState);
 	}
 
 	/**
@@ -251,10 +257,20 @@ class TOutputCache extends TControl implements INamingContainer
 				$name=trim($name);
 				$params[$name]=$request->itemAt($name);
 			}
-			return self::CACHE_ID_PREFIX.$this->getUniqueID().serialize($params);
+			return self::CACHE_ID_PREFIX.$this->_keyPrefix.$this->getUniqueID().serialize($params);
 		}
 		else
-			return self::CACHE_ID_PREFIX.$this->getUniqueID();
+			return self::CACHE_ID_PREFIX.$this->_keyPrefix.$this->getUniqueID();
+	}
+
+	/**
+	 * Sets the prefix of the cache key.
+	 * This method is used internally by {@link TTemplate}.
+	 * @param string key prefix
+	 */
+	public function setCacheKeyPrefix($value)
+	{
+		$this->_keyPrefix=$value;
 	}
 
 	/**

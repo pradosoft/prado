@@ -309,7 +309,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 				if($item->getEnabled())
 				{
 					$checked=isset($values[$key]);
-					if($item->getSelected()!=$checked)
+					if($item->getSelected()!==$checked)
 					{
 						$item->setSelected($checked);
 						if(!$this->_changedEventRaised)

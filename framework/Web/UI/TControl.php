@@ -130,7 +130,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	/**
 	 * @var string control unique ID
 	 */
-	private $_uid='';
+	private $_uid=null;
 	/**
 	 * @var TControl parent of the control
 	 */
@@ -366,8 +366,9 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 */
 	public function getUniqueID()
 	{
-		if($this->_uid==='')	// need to build the UniqueID
+		if($this->_uid==='' || $this->_uid===null)	// need to build the UniqueID
 		{
+			$this->_uid='';  // set to not-null, so that clearCachedUniqueID() may take action
 			if($namingContainer=$this->getNamingContainer())
 			{
 				if($this->getPage()===$namingContainer)
@@ -1062,6 +1063,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 				$control->generateAutomaticID();
 			else
 				$namingContainer->clearNameTable();
+			$control->clearCachedUniqueID($control instanceof INamingContainer);
 		}
 
 		if($this->_stage>=self::CS_CHILD_INITIALIZED)
@@ -1557,13 +1559,13 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 */
 	private function clearCachedUniqueID($recursive)
 	{
-		$this->_uid='';
-		if($recursive && isset($this->_rf[self::RF_CONTROLS]))
+		if($recursive && $this->_uid!==null && isset($this->_rf[self::RF_CONTROLS]))
 		{
 			foreach($this->_rf[self::RF_CONTROLS] as $control)
 				if($control instanceof TControl)
 					$control->clearCachedUniqueID($recursive);
 		}
+		$this->_uid=null;
 	}
 
 	/**

@@ -11,6 +11,11 @@
  */
 
 /**
+ * Includes TOutputCache class file
+ */
+Prado::using('System.Web.UI.WebControls.TOutputCache');
+
+/**
  * TTemplateManager class
  *
  * TTemplateManager manages the loading and parsing of control templates.
@@ -193,6 +198,10 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	 * @var boolean whether this template is a source template
 	 */
 	private $_sourceTemplate=true;
+	/**
+	 * @var string hash code of the template
+	 */
+	private $_hashCode='';
 
 
 	/**
@@ -212,6 +221,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 		$this->_tplFile=$tplFile;
 		$this->_startingLine=$startingLine;
 		$this->_content=$template;
+		$this->_hashCode=md5($template);
 		$this->parse($template);
 		$this->_content=null; // reset to save memory
 	}
@@ -239,6 +249,14 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	public function getDirective()
 	{
 		return $this->_directive;
+	}
+
+	/**
+	 * @return string hash code that can be used to identify the template
+	 */
+	public function getHashCode()
+	{
+		return $this->_hashCode;
 	}
 
 	/**
@@ -271,6 +289,8 @@ class TTemplate extends TApplicationComponent implements ITemplate
 			if(isset($object[2]))	// component
 			{
 				$component=Prado::createComponent($object[1]);
+				if($component instanceof TOutputCache)
+					$component->setCacheKeyPrefix($this->_hashCode.$key);
 				$properties=&$object[2];
 				if($component instanceof TControl)
 				{
