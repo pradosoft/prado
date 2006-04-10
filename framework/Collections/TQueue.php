@@ -29,7 +29,7 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Collections
- * @since 3.0
+ * @since 3.1
  */
 class TQueue extends TComponent implements IteratorAggregate
 {
@@ -173,7 +173,7 @@ class TQueue extends TComponent implements IteratorAggregate
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Collections
- * @since 3.0
+ * @since 3.1
  */
 class TQueueIterator implements Iterator
 {

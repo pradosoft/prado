@@ -284,3 +284,9 @@ parametermodule_parameterid_required	= Parameter element must have 'id' attribut
 datagridcolumn_expression_invalid		= {0} is evaluating an invalid expression '{1}' : {2}
 
 outputcache_duration_invalid			= {0}.Duration must be an integer no less than 0.
+
+stack_data_not_iterable					= TStack can only fetch data from an array or a traversable object.
+stack_empty								= TStack is empty.
+
+queue_data_not_iterable					= TQueue can only fetch data from an array or a traversable object.
+queue_empty								= TQueue is empty.
