@@ -3,6 +3,7 @@ Version 3.1.0 To be released
 ENH: Format string in classes extending TDataGridColumn can now evaluate an expression (Qiang)
 ENH: Format string in classes extending TListControl can now evaluate an expression (Qiang)
 NEW: TOutputCache (Qiang)
+NEW: TQueue (Qiang)
 
 Version 3.0RC2 April 16, 2006
 =============================
