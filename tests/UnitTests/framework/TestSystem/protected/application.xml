@@ -7,7 +7,7 @@
   </paths>
   <modules>
     <module id="request" />
-    <module id="cache" type="System.Data.TSqliteCache" DbFile="TestSystem/protected/data/test.db" />
+    <module id="cache" type="System.Caching.TSqliteCache" DbFile="TestSystem/protected/data/test.db" />
   </modules>
   <services>
     <service id="page" BasePath="TestSystem/protected/pages" />

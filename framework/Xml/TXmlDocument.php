@@ -386,13 +386,10 @@ class TXmlDocument extends TXmlElement
 
 
 /**
- * TXmlElement class.
+ * TXmlElementList class.
  *
- * TXmlElement represents an XML element node.
- * You can obtain its tagname, attributes, text between the openning and closing
- * tags via the TagName, Attributes, and Value properties, respectively.
- * You can also retrieve its parent and child elements by Parent and Elements
- * properties, respectively.
+ * TXmlElementList represents a collection of {@link TXmlElement}.
+ * You may manipulate the collection with the operations defined in {@link TList}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -422,7 +419,6 @@ class TXmlElementList extends TList
 	{
 		return $this->_o;
 	}
-
 
 	/**
 	 * Inserts an item at the specified position.
