@@ -135,7 +135,7 @@ class TStack extends TComponent implements IteratorAggregate
 
 	/**
 	 * Pushes an item into the stack.
-	 * @return mixed the item to be pushed into the stack
+	 * @param mixed the item to be pushed into the stack
 	 */
 	public function push($item)
 	{
