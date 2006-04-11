@@ -1101,7 +1101,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 		$control->_page=null;
 		$control->_namingContainer=null;
 		$control->_tplControl=null;
-		$control->_stage=self::CS_CONSTRUCTED;
+		//$control->_stage=self::CS_CONSTRUCTED;
 		if(!($control->_flags & self::IS_ID_SET))
 			$control->_id='';
 		else

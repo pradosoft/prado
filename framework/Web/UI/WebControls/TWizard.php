@@ -189,7 +189,7 @@ class TWizard extends TWebControl implements INamingContainer
 	 */
 	public function addParsedObject($object)
 	{
-		if(is_object($object))
+		if($object instanceof TWizardStep)
 			$this->getWizardSteps()->add($object);
 	}
 
