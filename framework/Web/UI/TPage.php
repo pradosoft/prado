@@ -145,6 +145,10 @@ class TPage extends TTemplateControl
 	 * @var TStack stack used to store currently active caching controls
 	 */
 	private $_cachingStack=null;
+	/**
+	 * @var string state string to be stored on the client side
+	 */
+	private $_clientState='';
 
 	/**
 	 * Constructor.
@@ -740,6 +744,7 @@ class TPage extends TTemplateControl
 		$this->_formRendered=true;
 		$this->_inFormRender=true;
 		$cs=$this->getClientScript();
+		$cs->registerHiddenField(self::FIELD_PAGESTATE,$this->getClientState());
 		$cs->renderHiddenFields($writer);
 		$cs->renderScriptFiles($writer);
 		$cs->renderBeginScripts($writer);
@@ -842,6 +847,34 @@ class TPage extends TTemplateControl
 	}
 
 	/**
+	 * Returns the state to be stored on the client side.
+	 * This method should only be used by framework and control developers.
+	 * @return string the state to be stored on the client side
+	 */
+	public function getClientState()
+	{
+		return $this->_clientState;
+	}
+
+	/**
+	 * Sets the state to be stored on the client side.
+	 * This method should only be used by framework and control developers.
+	 * @param string the state to be stored on the client side
+	 */
+	public function setClientState($state)
+	{
+		$this->_clientState=$state;
+	}
+
+	/**
+	 * @return string the state postback from client side
+	 */
+	public function getRequestClientState()
+	{
+		return $this->getRequest()->itemAt(self::FIELD_PAGESTATE);
+	}
+
+	/**
 	 * @return string class name of the page state persister. Defaults to TPageStatePersister.
 	 */
 	public function getStatePersisterClass()
@@ -937,7 +970,7 @@ class TPage extends TTemplateControl
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI
- * @since 3.0
+ * @since 3.1
  */
 interface IPageStatePersister
 {
@@ -959,6 +992,75 @@ interface IPageStatePersister
 	 * @return mixed the restored state
 	 */
 	public function load();
+}
+
+
+/**
+ * TPageStateFormatter class.
+ *
+ * TPageStateFormatter is a utility class to transform the page state
+ * into and from a string that can be properly saved in persistent storage.
+ *
+ * Depending on the {@link TPage::getEnableStateValidation() EnableStateValidation}
+ * and {@link TPage::getEnableStateEncryption() EnableStateEncryption},
+ * TPageStateFormatter may do HMAC validation and encryption to prevent
+ * the state data from being tampered or viewed.
+ * The private keys and hashing/encryption methods are determined by
+ * {@link TApplication::getSecurityManager() SecurityManager}.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI
+ * @since 3.1
+ */
+class TPageStateFormatter
+{
+	/**
+	 * @param TPage
+	 * @param mixed state data
+	 * @return string serialized data
+	 */
+	public static function serialize($page,$data)
+	{
+		$sm=$page->getApplication()->getSecurityManager();
+		if($page->getEnableStateValidation())
+			$str=$sm->hashData(Prado::serialize($data));
+		else
+			$str=Prado::serialize($data);
+		if($page->getEnableStateEncryption())
+			$str=$sm->encrypt($str);
+		if(extension_loaded('zlib'))
+			$str=gzcompress($str);
+		return base64_encode($str);
+	}
+
+	/**
+	 * @param TPage
+	 * @param string serialized data
+	 * @return mixed unserialized state data, null if data is corrupted
+	 */
+	public static function unserialize($page,$data)
+	{
+		$str=base64_decode($data);
+		if($str==='')
+			return null;
+		if(extension_loaded('zlib'))
+			$str=gzuncompress($str);
+		if($str!==false)
+		{
+			$sm=$page->getApplication()->getSecurityManager();
+			if($page->getEnableStateEncryption())
+				$str=$sm->decrypt($str);
+			if($page->getEnableStateValidation())
+			{
+				if(($str=$sm->validateData($str))!==false)
+					return Prado::unserialize($str);
+			}
+			else
+				return $str;
+		}
+		return null;
+	}
 }
 
 ?>
