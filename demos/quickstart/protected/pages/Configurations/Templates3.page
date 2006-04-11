@@ -75,7 +75,7 @@ BE VERY CAUTIOUS when you are using asset tags as it may expose to end-users fil
 <p>
 Localization tags represent localized texts. They are in the following format,
 <com:TTextHighlighter Language="prado" CssClass="source">
-&lt;%[string]&gt;
+&lt;%[string]%&gt;
 </com:TTextHighlighter>
 where <tt>string</tt> will be translated to different languages according to the end-user's language preference.
 
