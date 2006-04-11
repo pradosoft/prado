@@ -627,7 +627,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * @param string how the list should be displayed, using table or using line breaks (Table, Flow)
+	 * @param string how the list should be displayed, using table or using line breaks (Table, Flow, Raw)
 	 */
 	public function setRepeatLayout($value)
 	{
@@ -825,7 +825,8 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	public function renderItem($writer,$repeatInfo,$itemType,$index)
 	{
 		$item=$this->getItem($itemType,$index);
-		if($repeatInfo->getRepeatLayout()==='Table')
+		$layout=$repeatInfo->getRepeatLayout();
+		if($layout==='Table' || $layout==='Raw')
 			$item->renderContents($writer);
 		else
 			$item->renderControl($writer);
