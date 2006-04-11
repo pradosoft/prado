@@ -4,6 +4,7 @@ BUG: Ticket#118 - Variables that may not have been initialized (Qiang)
 CHG: Moved localize() into PradoBase (Qiang)
 CHG: List controls now use array keys as list item values even if
      the array is integer-indexed (Qiang)
+CHG: THttpUtility::htmlEncode and htmlDecode now do not deal with & (Qiang)
 ENH: Optimized the representation and evaluation of template expressions (Qiang)
 
 Version 3.0RC1 April 5, 2006

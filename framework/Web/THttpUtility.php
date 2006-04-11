@@ -20,17 +20,20 @@
  */
 class THttpUtility
 {
-	private static $_entityTable=null;
+	private static $_encodeTable=array('<'=>'&lt;','>'=>'&gt;','"'=>'&quote;');
+	private static $_decodeTable=array('&lt;'=>'<','&gt;'=>'>','&quote;'=>'"');
 
 	/**
 	 * HTML-encodes a string.
-	 * It is equivalent to {@link htmlspeicalchars} PHP function.
+	 * This method translates the following characters to their corresponding
+	 * HTML entities: <, >, "
+	 * Note, unlike {@link htmlspeicalchars}, & is not translated.
 	 * @param string string to be encoded
 	 * @return string encoded string
 	 */
 	public static function htmlEncode($s)
 	{
-		return htmlspecialchars($s);
+		return strtr($s,self::$_encodeTable);
 	}
 
 	/**
@@ -41,14 +44,7 @@ class THttpUtility
 	 */
 	public static function htmlDecode($s)
 	{
-		if(!self::$_entityTable)
-			self::buildEntityTable();
-		return strtr($s,self::$_entityTable);
-	}
-
-	private static function buildEntityTable()
-	{
-		self::$_entityTable=array_flip(get_html_translation_table(HTML_ENTITIES,ENT_QUOTES));
+		return strtr($s,self::$_decodeTable);
 	}
 }
 
