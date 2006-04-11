@@ -266,7 +266,7 @@ class PradoBase
 			$className=substr($namespace,$pos+1);
 			if($className==='*')  // a directory
 			{
-				if(is_dir($path))
+				if((self::$_application && self::$_application->getMode()===TApplication::STATE_PERFORMANCE) || is_dir($path))
 				{
 					self::$_usings[$namespace]=$path;
 					set_include_path(get_include_path().PATH_SEPARATOR.$path);
@@ -276,7 +276,7 @@ class PradoBase
 			}
 			else  // a file
 			{
-				if(is_file($path))
+				if((self::$_application && self::$_application->getMode()===TApplication::STATE_PERFORMANCE) || is_file($path))
 				{
 					self::$_usings[$namespace]=$path;
 					if(!class_exists($className,false))
