@@ -465,7 +465,7 @@ class PradoBase
 	{
 		if(self::$_application && self::$_application->getMode()===TApplication::STATE_PERFORMANCE)
 			return;
-		if(!self::$_application || self::$_application->getMode()===TApplication::STATE_DEBUG)
+		if(self::$_application && self::$_application->getMode()===TApplication::STATE_DEBUG)
 		{
 			$trace=debug_backtrace();
 			if(isset($trace[0]['file']) && isset($trace[0]['line']))
