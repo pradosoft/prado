@@ -198,7 +198,9 @@ tablestyle_cellpadding_invalid			= TTableStyle.CellPadding must take an integer 
 tablestyle_cellspacing_invalid			= TTableStyle.CellSpacing must take an integer equal to or greater than -1.
 
 pagestatepersister_pagestate_corrupted	= Page state is corrupted.
-pagestatepersister_privatekey_invalid	= TPageStatePersister.PrivateKey must take a string no shorter than 8 characters.
+
+sessionpagestatepersister_pagestate_corrupted = Page state is corrupted.
+sessionpagestatepersister_historysize_invalid = TSessionPageStatePersister.History must be an integer greater than 0.
 
 listitemcollection_item_invalid			= TListItemCollection can only take strings or TListItem objects.
 

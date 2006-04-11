@@ -4,6 +4,8 @@ ENH: Format string in classes extending TDataGridColumn can now evaluate an expr
 ENH: Format string in classes extending TListControl can now evaluate an expression (Qiang)
 NEW: TOutputCache (Qiang)
 NEW: TQueue (Qiang)
+NEW: TPageStateFormatter (Qiang)
+NEW: TSessionPageStatePersister (Qiang)
 
 Version 3.0RC2 April 16, 2006
 =============================
