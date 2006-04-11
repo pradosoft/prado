@@ -18,14 +18,14 @@ In the following survey, if you are a college student, you will be asked which m
 		OnCompleteButtonClick="wizard3Completed" >
 
   <com:TWizardStep Title="Background" AllowReturn="false">
-    <b><%= $this->Parent->Title %></b>
+    <b><%= $this->Title %></b>
     <br/><br/>
     <com:TCheckBox ID="StudentCheckBox" Text="I am a college student." />
     <br/><br/>
   </com:TWizardStep>
 
   <com:TWizardStep Title="Major" AllowReturn="false">
-    <b><%= $this->Parent->Title %></b>
+    <b><%= $this->Title %></b>
     <br/><br/>
     My major is
       <com:TDropDownList ID="DropDownList11">
@@ -38,7 +38,7 @@ In the following survey, if you are a college student, you will be asked which m
   </com:TWizardStep>
 
   <com:TWizardStep Title="Hobbies" AllowReturn="false">
-    <b><%= $this->Parent->Title %></b>
+    <b><%= $this->Title %></b>
     <br/><br/>
     My favorite Sport is
       <com:TDropDownList ID="DropDownList22">

@@ -14,7 +14,7 @@
 		<prop:HeaderTemplate>
 		<i>Header Template</i>
 		<br/>
-		<b>Step <%= $this->Parent->Parent->ActiveStepIndex+1 %> of 3</b>
+		<b>Step <%= $this->Parent->ActiveStepIndex+1 %> of 3</b>
 		</prop:HeaderTemplate>
 
 		<prop:SideBarTemplate>
