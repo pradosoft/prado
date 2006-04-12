@@ -1,9 +1,9 @@
 Version 3.0RC2 April 16, 2006
 =============================
 BUG: Ticket#118 - Variables that may not have been initialized (Qiang)
+BUG: Ticket#129 - TRadioButtonList in TWizard step does not postback correctly (Qiang)
 CHG: Moved localize() into PradoBase (Qiang)
-CHG: List controls now use array keys as list item values even if
-     the array is integer-indexed (Qiang)
+CHG: List controls now use array keys as list item values even if the array is integer-indexed (Qiang)
 CHG: THttpUtility::htmlEncode and htmlDecode now do not deal with & (Qiang)
 ENH: Optimized the representation and evaluation of template expressions (Qiang)
 ENH: Added Raw layout to TDataList (Qiang)
@@ -43,16 +43,13 @@ Version 3.0b March 6, 2006
 ==========================
 BUG: fixed many
 CHG: event names must be prefixed with 'On' (Qiang)
-CHG: values of properties whose name ends with 'Template' are
-     parsed directly by template parser (Qiang)
+CHG: values of properties whose name ends with 'Template' are parsed directly by template parser (Qiang)
 ENH: template parser reports exact error location (Qiang)
 ENH: cookie HMAC check (Qiang)
 NEW: TInlineFrame (Jason)
 NEW: TAPCCache (Alban)
-NEW: TColorPicker, TDatePicker, TRatingList, TAdodbProvider,
-     TCreoleProvider (Wei)
-NEW: TMultiView, TView, TControlAdapter, TWebControlAdapter,
-     TPagedList, TAttributeCollection (Qiang)
+NEW: TColorPicker, TDatePicker, TRatingList, TAdodbProvider, TCreoleProvider (Wei)
+NEW: TMultiView, TView, TControlAdapter, TWebControlAdapter, TPagedList, TAttributeCollection (Qiang)
 
 Version 3.0a January 18, 2006
 =============================
