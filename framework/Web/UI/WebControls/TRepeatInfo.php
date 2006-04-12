@@ -57,12 +57,15 @@ interface IRepeatInfoUser
  * TRepeatInfo class.
  * TRepeatInfo represents repeat information for controls like {@link TCheckBoxList}.
  * The layout of the repeated items is specified via {@link setRepeatLayout RepeatLayout},
- * which can be either 'Table' (default) or 'Flow'.
+ * which can be either 'Table' (default), 'Flow' or 'Raw'.
  * A table layout uses HTML table cells to organize the items while
  * a flow layout uses line breaks to organize the items.
  * The number of columns used to display the items is specified via
  * {@link setRepeatColumns RepeatColumns} property, while the {@link setRepeatDirection RepeatDirection}
  * governs the order of the items being rendered.
+ *
+ * Note, the Raw layout does not contain any formatting tags and thus ignores
+ * the column and repeat direction settings.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -169,11 +172,12 @@ class TRepeatInfo extends TComponent
 	}
 
 	/**
-	 * @param string how the repeated items should be displayed, using table or using line breaks. Defaults to 'Table'.
+	 * @param string how the repeated items should be displayed, using table or using line breaks.
+	 * Valid values include 'Table', 'Flow' and 'Raw'.
 	 */
 	public function setRepeatLayout($value)
 	{
-		$this->_repeatLayout=TPropertyValue::ensureEnum($value,array('Table','Flow'));
+		$this->_repeatLayout=TPropertyValue::ensureEnum($value,array('Table','Flow','Raw'));
 	}
 
 	/**
@@ -192,6 +196,11 @@ class TRepeatInfo extends TComponent
 				$control->setCaptionAlign($this->_captionAlign);
 			}
 		}
+		else if($this->_repeatLayout==='Raw')
+		{
+			$this->renderRawContents($writer,$user);
+			return;
+		}
 		else
 			$control=new TWebControl;
 		$control->setID($user->getClientID());
@@ -207,6 +216,29 @@ class TRepeatInfo extends TComponent
 			$this->renderHorizontalContents($writer,$user);
 
 		$control->renderEndTag($writer);
+	}
+
+	/**
+	 * Renders contents in raw format.
+	 * @param THtmlWriter writer for the rendering purpose
+	 * @param IRepeatInfoUser repeat information user
+	 */
+	protected function renderRawContents($writer,$user)
+	{
+		if($user->getHasHeader())
+			$user->renderItem($writer,$this,'Header',-1);
+
+		// render items
+		$hasSeparators=$user->getHasSeparators();
+		$itemCount=$user->getItemCount();
+		for($i=0;$i<$itemCount;++$i)
+		{
+			$user->renderItem($writer,$this,'Item',$i);
+			if($hasSeparators && $i!=$itemCount-1)
+				$user->renderItem($writer,$this,'Separator',$i);
+		}
+		if($user->getHasFooter())
+			$user->renderItem($writer,$this,'Footer',-1);
 	}
 
 	/**
