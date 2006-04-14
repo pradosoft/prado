@@ -1,6 +1,6 @@
 <?php
 /**
- * TSqlMapCache class file contains FIFO and LRU cache implementations.
+ * TSqlMapCache class file contains FIFO, LRU, and GLOBAL cache implementations.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
@@ -20,7 +20,7 @@ interface ISqLMapCache
 
 	public function set($key, $value);
 
-	public function configure($properties);
+	public function configure($model, $properties);
 }
 
 /**
@@ -54,7 +54,7 @@ abstract class TSqlMapCache implements ISqlMapCache
 	 * Configures the Cache Size.
 	 * @param array list of properties
 	 */
-	public function configure($properties)
+	public function configure($model, $properties)
 	{
 		if(isset($properties['size']))
 			$this->_cacheSize = intval($properties['size']);
@@ -161,5 +161,72 @@ class TSqlMapLruCache extends TSqlMapCache
 	}
 }
 
+class TSqlMapApplicationCache implements ISqlMapCache
+{ 
+	private $_cache;
+	private $_expiry=0;
+	private $_property=array();	
+	private $_cacheModelID;
+	
+	public function __sleep()
+	{
+		$this->_cache = null;
+		return array_keys(get_object_vars($this));
+	}
+				
+	public function remove($key)
+	{
+		$this->getCache()->delete($key);
+	}
+
+	public function flush()
+	{
+		$this->getCache()->flush();
+	}
+
+	public function get($key)
+	{
+		$result = $this->getCache()->get($key);
+		return $result === false ? null : $result;			
+	}
+
+	public function set($key, $value)
+	{
+		$this->getCache()->set($key, $value, $this->_expiry);
+	}
+
+	public function configure($model, $properties)
+	{
+		$this->_property = $properties;
+		$this->_cacheModelID = $model->getID();
+	}		
+	
+	protected function getCache()
+	{
+		if(is_null($this->_cache))
+			$this->initialize();
+		return $this->_cache;
+	}
+	
+	protected function initialize()
+	{
+		if(isset($this->_property['expiry']))
+			$this->_expiry = intval($this->_property['expiry']);
+			
+		if(isset($this->_property['cacheModule']))
+		{
+			$id = $this->_property['cacheModule'];
+			$this->_cache = Prado::getApplication()->getModule($id);
+		}	
+		else
+		{
+			$this->_cache = Prado::getApplication()->getCache();
+		}
+			
+		if(!($this->_cache instanceof ICache))
+			throw new TSqlMapConfigurationException(
+				'sqlmap_invalid_prado_cache', $this->_cacheModelID);			
+	}
+}
 
 ?>

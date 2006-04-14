@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sqlMapConfig>
+
+	<properties resource="properties.config"/>
+	
+	<settings>
+		<setting useStatementNamespaces="false"/>
+		<setting cacheModelsEnabled="true"/>
+	</settings>
+	
+	<!-- ==== Database configuration =========	-->
+	<provider class="TAdodbProvider" >
+		<datasource driver="sqlite" database="sqlite/tests.db" />
+	</provider>
+		
+	<typeHandlers>
+		<typeHandler type="bool" dbType="Varchar" callback="OuiNonBool"/>
+	</typeHandlers>
+	
+	<sqlMaps>
+		<sqlMap name="Account" resource="maps/sqlite/Account.xml"/>
+		<sqlMap name="DynamicAccount" resource="maps/sqlite/DynamicAccount.xml"/>
+		<sqlMap name="Order" resource="maps/sqlite/Order.xml"/>
+		<sqlMap name="Category" resource="maps/sqlite/Category.xml"/>
+		<sqlMap name="Complex" resource="maps/sqlite/Complex.xml"/>
+		<sqlMap name="LineItem" resource="maps/sqlite/LineItem.xml"/>
+		<sqlMap name="Enumeration" resource="maps/sqlite/Enumeration.xml"/>
+		<sqlMap name="Other" resource="maps/sqlite/Other.xml"/>
+		<sqlMap name="ResultClass" resource="maps/sqlite/ResultClass.xml"/>
+		<sqlMap name="Document" resource="maps/sqlite/Document.xml"/>
+	</sqlMaps>
+</sqlMapConfig>

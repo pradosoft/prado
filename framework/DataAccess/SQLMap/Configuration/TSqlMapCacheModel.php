@@ -3,11 +3,11 @@
 class TSqlMapCacheModel extends TComponent
 {
 	private $_cache;
-	private $_flushInterval = -1;
+//	private $_flushInterval = -1;
 	private $_hits = 0;
 	private $_requests = 0;
 	private $_id;
-	private $_lastFlush;
+//	private $_lastFlush;
 	private $_implementation;
 	private $_properties = array();
 
@@ -18,15 +18,15 @@ class TSqlMapCacheModel extends TComponent
 	public function getImplementation(){ return $this->_implementation; }
 	public function setImplementation($value){ $this->_implementation = $value; }
 
-	public function getFlushInterval(){ return $this->_flushInterval; }
-	public function setFlushInterval($value){ $this->_flushInterval = $value; }
+//	public function getFlushInterval(){ return $this->_flushInterval; }
+//	public function setFlushInterval($value){ $this->_flushInterval = $value; }
 
 	public function initialize($sqlMap)
 	{
 		$implementation = $this->getImplementationClass(
 				$sqlMap->getTypeHandlerFactory());
 		$this->_cache = new $implementation;
-		$this->_cache->configure($this->_properties);
+		$this->_cache->configure($this, $this->_properties);
 	}
 
 	protected function getImplementationClass($typeFactory)
@@ -35,6 +35,7 @@ class TSqlMapCacheModel extends TComponent
 		{
 			case 'fifo': return 'TSqlMapFifoCache';
 			case 'lru' : return 'TSqlMapLruCache';
+			case 'basic' : return 'TSqlMapApplicationCache';
 		}
 
 		if(class_exists($this->_implementation, false))
@@ -66,7 +67,6 @@ class TSqlMapCacheModel extends TComponent
 
 	public function flush()
 	{
-		var_dump("flush!");
 		$this->_cache->flush();
 	}
 

@@ -59,3 +59,4 @@ sqlmap_unable_to_find_resource			= 'Unable to find SQLMap configuration file '{0
 sqlmap_query_execution_error			= Error in executing SQLMap statement '{0}' : '{1}'.
 sqlmap_undefined_discriminator			= The discriminator is null, but somehow a subMap was reached in ResultMap '{0}' in file '{1}'.
 sqlmap_invalid_delegate					= Invalid callback row delegate '{1}' in mapped statement '{0}'.
+sqlmap_invalid_prado_cache				= Unable to find Prado cache module for SQLMap cache '{0}'.

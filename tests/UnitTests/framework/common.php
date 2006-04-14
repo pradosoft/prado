@@ -10,7 +10,7 @@ require_once(SIMPLETEST_DIR.'/mock_objects.php');
 require_once(SIMPLETEST_DIR.'/reporter.php');
 require_once(SIMPLETEST_DIR.'/HtmlReporterWithCoverage.php');
 
-require_once(FRAMEWORK_DIR.'/core.php');
+require_once(FRAMEWORK_DIR.'/PradoBase.php');
 
 set_include_path(get_include_path().";".FRAMEWORK_DIR);
 

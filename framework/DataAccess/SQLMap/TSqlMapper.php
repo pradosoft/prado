@@ -3,6 +3,7 @@
 Prado::using('System.DataAccess.SQLMap.DataMapper.*');
 Prado::using('System.DataAccess.SQLMap.Configuration.*');
 Prado::using('System.DataAccess.SQLMap.Statements.*');
+Prado::using('System.Collections.*');
 Prado::using('System.DataAccess.SQLMap.DataMapper.TTypeHandlerFactory');
 Prado::using('System.DataAccess.SQLMap.DataMapper.TSqlMapCache');
 Prado::using('System.DataAccess.SQLMap.DataMapper.TDataMapperException');
@@ -39,7 +40,7 @@ class TSqlMapper extends TComponent
 	private $_resultMaps;
 	private $_parameterMaps;
 	private $_typeHandlerFactory;
-	private $_cacheModelsEnabled = false;
+	private $_cacheModelsEnabled = true;
 	private $_cacheMaps;
 
 	/**

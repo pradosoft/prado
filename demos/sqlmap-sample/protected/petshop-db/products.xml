@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <sqlmap>
 
-	<select id="SelectAllProducts">
+	<cacheModel id="product-cache" implementation="basic">
+		<!-- cache data for 60 seconds -->
+		<property name="expiry" value="60" /> 
+	</cacheModel>
+
+	<select id="SelectAllProducts" cacheModel="product-cache" >
 		SELECT * 
 		FROM 
 			product

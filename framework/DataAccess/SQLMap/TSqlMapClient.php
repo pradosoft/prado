@@ -44,7 +44,6 @@ class TSqlMapClient
 		{
 			if(!is_file($this->_cache))
 			{
-				var_dump('saving cache to file', $this->_cache);
 				file_put_contents($this->_cache,serialize($this->_mapper));
 				return true;
 			}
@@ -57,12 +56,10 @@ class TSqlMapClient
 		$this->_cache = $this->getCacheFile($file);
 		if($loadFromCache && $this->_cache !== false && is_file($this->_cache))
 		{
-			var_dump('loading from cache: '.$this->_cache);
 			$this->_mapper = unserialize(file_get_contents($this->_cache));
 		}
 		else
 		{
-//			var_dump('build from *.xml');
 			$builder = new TDomSqlMapBuilder();
 			$this->_mapper = $builder->configure($file);
 		}

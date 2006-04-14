@@ -144,7 +144,7 @@ class TConfigDeserialize
 	{
 		$cacheModel = new TSqlMapCacheModel;
 		$this->loadConfiguration($cacheModel, $node, $file);
-		if(isset($node->flushInterval))
+/*		if(isset($node->flushInterval))
 		{
 			$interval = $node->flushInterval;
 			$span = 0; //span in seconds
@@ -156,7 +156,7 @@ class TConfigDeserialize
 				$span += intval($interval['seconds']);
 			if($span > 0)
 				$cacheModel->setFlushInterval($span);
-		}
+		}*/
 		if(isset($node->property))
 		{
 			foreach($node->property as $property)

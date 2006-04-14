@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<sqlMap namespace="Document" >
+
+	<resultMap id="document" class="Document">
+		<result property="Id"			column="Document_Id" type="integer" />
+		<result property="Title"			column="Document_Title"/>
+		<discriminator column="Document_Type" type="string"/> 
+		<subMap value="Book" resultMapping="book" />
+		<subMap value="Newspaper" resultMapping="newspaper" />
+	</resultMap>
+	
+	<resultMap id="document-custom-handler" class="Document">
+		<result property="Id"			column="Document_Id" type="integer"/>
+		<result property="Title"		column="Document_Title"/>
+		<discriminator column="Document_Type"  typeHandler="CustomInheritance"/> 
+		<subMap value="Book" resultMapping="book" />
+		<subMap value="Newspaper" resultMapping="newspaper" />
+	</resultMap>
+	
+	<resultMap id="book" class="Book" extends="document">
+		<result property="PageNumber"		column="Document_PageNumber"/>
+	</resultMap>
+	
+	<resultMap id="newspaper" class="Newspaper"  extends="document">
+		<result property="City"			column="Document_City"/>
+	</resultMap>
+	
+	<statement id="GetAllDocument"
+		resultMap="document">
+		select 
+			*
+		from Documents 
+		order by Document_Type, Document_Id
+	</statement>
+	
+	<select id="GetTypedCollection"
+		listClass="DocumentCollection"
+		resultMap="document">
+		select 
+			*
+		from Documents 
+		order by Document_Type, Document_Id
+	</select>		
+	
+	<select id="GetAllDocumentWithCustomTypeHandler"
+		resultMap="document-custom-handler">
+		select
+			*
+		from Documents 
+		order by Document_Type, Document_Id
+	</select>
+	
+</sqlMap>

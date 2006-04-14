@@ -152,8 +152,7 @@
     <echo>Preparing directory structure</echo>
     <delete dir="${reports.unit.dir}"/>
     <delete dir="${reports.codecoverage.dir}"/>
-    <mkdir dir="${reports.unit.dir}"/>
-
+ 
     <if>
       <equals arg1="${codecoverage}" arg2="true"/>
       <then>
@@ -192,7 +191,8 @@
     </phpunit2>
 
     <echo>Creating Unit Test Report</echo>
-    <phpunit2report infile="${reports.dir}/logfile.xml" format="frames" styledir="${reports.style.dir}" todir="${reports.unit.dir}"/>
+	 <mkdir dir="${reports.unit.dir}"/>
+     <phpunit2report infile="${reports.dir}/logfile.xml" format="frames" styledir="${reports.style.dir}" todir="${reports.unit.dir}"/>
 
     <if>
       <equals arg1="${codecoverage}" arg2="true"/>

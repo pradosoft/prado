@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sqlMap namespace="Category" >
+	
+	<alias>
+		<typeAlias alias="Category" type="IBatisNet.DataMapper.Test.Domain.Category, IBatisNet.DataMapper.Test"/>
+	</alias>
+	
+	
+		<select id="GetCategory" parameterClass="Integer" resultClass="Category">
+			select
+			Category_ID as Id,
+			Category_Name as Name,
+			Category_Guid as GuidString
+			from Categories  
+			where Category_ID = #value# 
+		</select>
+		
+		<select id="GetCategoryGuid" parameterClass="Integer" resultClass="guid">
+			select
+			Category_Guid as value
+			from Categories  
+			where Category_ID = #value# 
+		</select>
+		
+		<!-- Test for statement as insert -->
+		<!-- Needs to be <insert> vs <statement> for MySql due to selectKey -->
+		<insert id="InsertCategory" parameterClass="Category">
+			<selectKey property="Id" type="post" resultClass="int">
+				select LAST_INSERT_ID() as value
+            </selectKey>			
+  			insert into Categories  
+				(Category_Name, Category_Guid) 
+			values 
+				(#Name#, #GuidString:Varchar#);
+		</insert>
+		
+		<!--  -->
+		<insert id="InsertCategoryViaInsertStatement" parameterClass="Category" >
+			<selectKey property="Id" type="post" resultClass="int">
+				select LAST_INSERT_ID() as value
+            </selectKey>			
+            insert into Categories  
+				(Category_Name, Category_Guid) 
+			values 
+				(#Name#, #GuidString:Varchar#)
+		</insert>
+
+		<!-- Needs to be <insert> vs <statement> for MySql due to selectKey -->		
+		<insert id="InsertCategoryViaParameterMap" parameterMap="InsertParam">
+			<selectKey property="Id" type="post" resultClass="int">
+				select LAST_INSERT_ID() as value
+            </selectKey>
+			insert into Categories  
+				(Category_Name, Category_Guid)
+			values 
+				(?,?);
+		</insert>
+
+		<!-- Needs to be <insert> vs <statement> for MySql due to selectKey -->		
+		<insert id="InsertCategoryNull" parameterMap="insert-null-params">
+			<selectKey property="Id" type="post" resultClass="int">
+				select LAST_INSERT_ID() as value
+            </selectKey>
+			insert into Categories  
+				(Category_Name, Category_Guid)
+			values 
+				(?,?);
+		</insert>
+		
+		<update id="UpdateCategoryViaParameterMap" parameterMap="UpdateParam">
+			update Categories set
+			Category_Name =?,
+			Category_Guid = ?
+			where
+			Category_Id = ?
+		</update>
+
+		<procedure id="InsertCategoryViaStoreProcedure" parameterMap="category-insert-params">
+			ps_InsertCategorie
+		</procedure>
+		
+		<insert id="InsertCategoryGenerate" parameterMap="insert-generate-params">
+			<selectKey property="Id" type="post" resultClass="int">
+				select LAST_INSERT_ID() as value
+            </selectKey>
+            <generate table="Categories" />
+		</insert>
+		
+		<update id="UpdateCategoryGenerate" parameterMap="update-generate-params">
+			<generate table="Categories" by="Category_Id"/>
+		</update>
+		
+		<delete id="DeleteCategoryGenerate" parameterMap="delete-generate-params">
+			<generate table="Categories" by="Category_Id, Category_Name"/>
+		</delete>
+		
+		<select id="SelectByPKCategoryGenerate" resultClass="Category" parameterClass="Category" parameterMap="select-generate-params">
+			<generate table="Categories" by="Category_Id"/> 
+		</select>
+		
+		<select id="SelectAllCategoryGenerate" resultClass="Category" parameterMap="select-generate-params">
+			<generate table="Categories" /> 
+		</select>
+		
+		<statement id="DynamicGuid" 
+			resultClass="Category" 
+			parameterClass="Category">
+			select
+			Category_ID as Id,
+			Category_Name as Name,
+			Category_Guid as Guid
+			from Categories  
+			<dynamic prepend="where">
+				<isNotEqual prepend="and" property="Guid" compareProperty="EmptyGuid">
+					Category_Guid=#GuidString:Varchar#
+				</isNotEqual>
+			</dynamic>
+		</statement>
+		<parameterMap id="category-insert-params">
+			<parameter property="Id" column="Category_Id" dbType="Int32" />
+			<parameter property="Name" column="Category_Name"/>
+			<parameter property="GuidString" column="Category_Guid" dbType="Varchar"/>
+		</parameterMap>
+		
+		<parameterMap id="InsertParam">
+			<parameter property="Name" column="Category_Name"/>
+			<parameter property="GuidString" column="Category_Guid" dbType="Varchar"/>
+		</parameterMap>
+		
+		<parameterMap id="insert-null-params">
+			<parameter property="Name" column="Category_Name"/>
+			<parameter property="GuidString" column="Category_Guid" nullValue="00000000-0000-0000-0000-000000000000" dbType="Varchar"/>
+		</parameterMap>
+		
+		<parameterMap id="UpdateParam" extends="InsertParam">
+			<parameter property="Id" column="Category_Id" />
+		</parameterMap>
+		
+		<!-- Used by generated statement -->
+		
+		<parameterMap id="insert-generate-params">
+			<parameter property="Name" column="Category_Name"/>
+			<parameter property="GuidString" column="Category_Guid" dbType="Varchar"/>
+		</parameterMap>
+		
+		<parameterMap id="update-generate-params" extends="insert-generate-params">
+			<parameter property="Id" column="Category_Id" />
+		</parameterMap>
+		
+		<parameterMap id="delete-generate-params">
+			<parameter property="Id" column="Category_Id" />
+			<parameter property="Name" column="Category_Name"/>
+		</parameterMap>
+		
+		<parameterMap id="select-generate-params">
+			<parameter property="Id" column="Category_Id" />
+			<parameter property="Name" column="Category_Name"/>
+			<parameter property="GuidString" column="Category_Guid" dbType="Varchar"/>
+		</parameterMap>
+		
+	
+</sqlMap>
