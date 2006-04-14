@@ -104,11 +104,18 @@ Prado.PostBack = function(event,options)
 	var canSubmit = true;
 	if(options['CausesValidation'] && Prado.Validation)
 	{
+		var valid = true;
 		if(options['ValidationGroup'])
-			Prado.Validation.SetActiveGroup(Event.element(event), options['ValidationGroup']);
+		{
+			valid = Prado.Validation.ValidateValidationGroup(options['ValidationGroup']);
+			//	Prado.Validation.SetActiveGroup(Event.element(event), options['ValidationGroup']);
+		}
 		else
-			Prado.Validation.SetActiveGroup(null,null);
-		if(Prado.Validation.IsValid(form) == false)
+		{
+			valid = Prado.Validation.ValidateNonGroup(form);
+		}
+
+		if(!valid)
 		{
 			if(options['StopEvent']) Event.stop(event);
 			return;

@@ -301,7 +301,7 @@ Prado.Validation.IsValid = function(form)
 		//when group validation, only validators in the active group are visible.
 		validators[i].visible = Prado.Validation.IsGroupValidation ? validators[i].inActiveGroup() : true;
 
-		if(Prado.Validation.HasTargetGroup)
+		if(Prado.Validation.HasTargetGroup || validators[i].group)
 		{
 			if(validators[i].group != Prado.Validation.CurrentTargetGroup)
 				validators[i].enabled = false;
@@ -739,6 +739,7 @@ Prado.Validation.ValidateValidationGroup= function(groupId)
 			return Prado.Validation.IsValid(target.form);
 		}
 	}
+
 	return true;
 };
 

@@ -144,7 +144,7 @@ var _42=Prado.Validation.validators;
 for(var i=0;i<_42.length;i++){
 _42[i].enabled=!_42[i].control||undef(_42[i].control.form)||_42[i].control.form==_40;
 _42[i].visible=Prado.Validation.IsGroupValidation?_42[i].inActiveGroup():true;
-if(Prado.Validation.HasTargetGroup){
+if(Prado.Validation.HasTargetGroup||_42[i].group){
 if(_42[i].group!=Prado.Validation.CurrentTargetGroup){
 _42[i].enabled=false;
 }
