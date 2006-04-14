@@ -986,6 +986,7 @@ tests/FunctionalTests/tickets/protected/pages/Ticket72.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket93.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket93.php -text
 tests/FunctionalTests/tickets/protected/pages/config.xml -text
+tests/FunctionalTests/tickets/protected/pages/hotspot.jpg -text
 tests/FunctionalTests/tickets/tests/Ticket121TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket21TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket27TestCase.php -text
