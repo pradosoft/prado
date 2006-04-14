@@ -292,7 +292,7 @@ class TSimpleDateFormatter
 		if(!$defaultToCurrentTime && (is_null($month) || is_null($day) || is_null($year)))
 			return null;
 		else
-			return $this->getDate(@mktime(0, 0, 0, $month, $day, $year));
+			return @mktime(0, 0, 0, $month, $day, $year);
 	}
 
 	/**
