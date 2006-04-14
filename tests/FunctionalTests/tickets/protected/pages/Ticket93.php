@@ -7,9 +7,8 @@ class Ticket93 extends TPage
 {
 	public function buttonClicked($sender,$param)
 	{
-		//echo $param->getPostBackValue();
-		print_r($param);
-	}	
+		echo 'postback triggered with value '.$param->PostBackValue;
+	}
 }
 
 ?>

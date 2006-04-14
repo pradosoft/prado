@@ -15,8 +15,9 @@
 
 <com:TRectangleHotSpot
 	hotspotmode="PostBack"
-	PostBackValue="test"
+	PostBackValue="test1"
 	CausesValidation="true"
+	ValidationGroup="Group1"
 	alternatetext="Button 2"
 	top="155"
 	left="175"
@@ -28,6 +29,7 @@
 	PostBackValue="test2"
 	CausesValidation="true"
 	alternatetext="Button 3"
+	ValidationGroup="Group2"
 	top="285"
 	left="175"
 	bottom="365"
@@ -40,14 +42,20 @@
 	ValidationGroup="Group1"
 	EnableClientScript="true"
 	ControlToValidate="TextBox"
-	Text="required" />
+	Text="textbox 1 required" />
 
 <com:TTextBox ID="TextBox2" />
 <com:TRequiredFieldValidator
-	ValidationGroup="Group1"
+	ValidationGroup="Group2"
+	EnableClientScript="false"
+	ControlToValidate="TextBox2"
+	Text="textbox 2 required" />
+
+<com:TRequiredFieldValidator
+	ValidationGroup=""
 	EnableClientScript="true"
 	ControlToValidate="TextBox2"
-	Text="required" />
+	Text="No one is required" />
 </div>
 
 </com:TContent>
