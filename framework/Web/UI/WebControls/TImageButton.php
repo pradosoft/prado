@@ -124,6 +124,7 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 		$options['ID'] = $this->getClientID();
 		$options['CausesValidation'] = $this->getCausesValidation();
 		$options['ValidationGroup'] = $this->getValidationGroup();
+		$options['EventTarget'] = $this->getUniqueID();
 
 		return $options;
 	}

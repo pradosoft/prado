@@ -248,6 +248,16 @@ class TMultiView extends TControl
 	}
 
 	/**
+	 * Loads state into the wizard.
+	 * This method is invoked by the framework when the control state is being saved.
+	 */
+	public function loadState()
+	{
+		// a dummy call to ensure the view is activated
+		$this->getActiveView();
+	}
+
+	/**
 	 * Renders the currently active view.
 	 * @param THtmlWriter the writer for the rendering purpose.
 	 */

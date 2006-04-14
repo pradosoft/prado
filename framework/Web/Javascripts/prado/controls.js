@@ -69,10 +69,56 @@ Prado.WebUI.ClickableComponent = Prado.WebUI.createPostBackComponent(
 });
 
 Prado.WebUI.TLinkButton = Prado.WebUI.ClickableComponent;
-Prado.WebUI.TImageButton = Prado.WebUI.ClickableComponent;
 Prado.WebUI.TCheckBox = Prado.WebUI.ClickableComponent;
 Prado.WebUI.TBulletedList = Prado.WebUI.ClickableComponent;
 Prado.WebUI.TImageMap = Prado.WebUI.ClickableComponent;
+
+/**
+ * TImageButton client-side behaviour. With validation, Firefox needs 
+ * to capture the x,y point of the clicked image in hidden form fields.
+ */
+Prado.WebUI.TImageButton = Class.create();
+Object.extend(Prado.WebUI.TImageButton.prototype,Prado.WebUI.ClickableComponent.prototype);
+Object.extend(Prado.WebUI.TImageButton.prototype,
+{
+	/**
+	 * Only add the hidden inputs once.
+	 */
+	hasXYInput : false,
+	
+	/**
+	 * Override parent onPostBack function, tried to add hidden forms
+	 * inputs to capture x,y clicked point.
+	 */
+	onPostBack : function(event, options)
+	{
+		if(!this.hasXYInput)
+		{
+			this.addXYInput(event,options);
+			this.hasXYInput = true;
+		}
+		Prado.PostBack(event, options);
+	},
+	
+	/**
+	 * Add hidden inputs to capture the x,y point clicked on the image.
+	 * @param event DOM click event.
+	 * @param array image button options.
+	 */
+	addXYInput : function(event,options)
+	{
+		var imagePos = Position.cumulativeOffset(this.element);
+		var clickedPos = [event.clientX, event.clientY];
+		var x = clickedPos[0]-imagePos[0]+1;
+		var y = clickedPos[1]-imagePos[1]+1;
+		var id = options['EventTarget'];
+		var x_input = INPUT({type:'hidden',name:id+'_x',value:x});
+		var y_input = INPUT({type:'hidden',name:id+'_y',value:y});
+		this.element.parentNode.appendChild(x_input);
+		this.element.parentNode.appendChild(y_input);		
+	}
+});
+
 
 /**
  * Radio button, only initialize if not already checked.

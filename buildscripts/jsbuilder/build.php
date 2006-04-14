@@ -137,6 +137,7 @@ $requestedLibs=array();
 for($i=1;$i<$argc;++$i)
 	$requestedLibs[]=$argv[$i].'.js';
 
+$builds = 0;
 /**
  * loop through all target files and build them one by one
  */
@@ -161,6 +162,10 @@ foreach($libraries as $libFile => $sourceFiles)
 	$command=sprintf(COMPRESS_COMMAND,$tempFile,$libFile);
 	system($command);
 	@unlink($tempFile);
+	$builds++;
 }
-
+if($builds > 0)	
+	echo "\nJavascript build complete, {$builds} file(s) compressed.";
+else
+	echo "No files to build.";
 ?>

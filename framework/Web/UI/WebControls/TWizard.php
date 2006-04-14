@@ -735,16 +735,6 @@ class TWizard extends TWebControl implements INamingContainer
 	}
 
 	/**
-	 * Loads state into the wizard.
-	 * This method is invoked by the framework when the control state is being saved.
-	 */
-	public function loadState()
-	{
-		// a dummy call to ensure the step is activated
-		$this->getActiveStep();
-	}
-
-	/**
 	 * Indicates the wizard needs to recreate all child controls.
 	 */
 	protected function requiresControlsRecreation()
