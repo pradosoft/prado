@@ -1,0 +1,96 @@
+\documentclass{article}
+%\usepackage{graphicx}
+
+\usepackage[pdftex]{hyperref}
+\usepackage[pdftex]{graphicx}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+
+\newtheorem{example}{Example}[section]
+
+\renewcommand{\tt}[1]{\texttt{#1}}
+
+%---------- fonts Type 1 -----------------
+\usepackage{times}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+
+%------------------------Page set-up-----------------------------------------
+
+\renewcommand{\baselinestretch}{1.25}
+\setlength{\hoffset}{-1in}
+\setlength{\oddsidemargin}{3.5cm}
+\setlength{\evensidemargin}{3.5cm}
+\setlength{\topmargin}{0cm}
+\setlength{\footskip}{2cm}
+\setlength{\headheight}{14pt}
+\setlength{\marginparwidth}{0cm}
+\setlength{\marginparsep}{0cm}
+\setlength{\marginparpush}{0cm}
+\setlength{\textwidth}{15cm}
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{0.75\baselineskip}
+
+\hypersetup{colorlinks, linkcolor=blue, pdfstartview={FitH}}
+
+%------------------------------------------------------------------------------
+
+\newsavebox{\fmboxb}
+\newenvironment{mybox}[1]
+    {\vspace{-2mm}\begin{center}\begin{lrbox}{\fmboxb}\hspace{2mm}
+        \begin{minipage}{0.85\textwidth} \vspace{2mm}\small \textbf{#1}}
+    {  \vspace{2mm} \end{minipage}
+    \hspace{2mm}\end{lrbox}\fbox{\usebox{\fmboxb}}\end{center}}
+
+%----------------- TITLE --------------
+
+\title{\vspace{-2.5cm} \bfseries SQLMap PHP DataMapper Tutorial
+    \thanks{Copyright 2006. All Rights Reserved.}
+}
+\author{Wei Zhuo}
+\date{\today}
+
+
+%-------------- BEGIN DOCUMENT ------------------
+
+
+\begin{document}
+
+\maketitle
+
+This tutorial takes an ``over-the-shoulder'' Cookbook approach. We'll define a
+simple data access problem and use SQLMap to solve it for us.
+
+
+\section*{Legal Notice}
+
+Copies of this document may be made for your own use and for distribution to
+others, provided that you do not charge any fee for such copies and further
+provided that each copy contains this Copyright Notice, whether distributed in
+print or electronically.
+
+This document is largely based on the iBATIS.NET -- DataMapper Application
+Tutorial.
+
+\subsection*{License Information}
+SQLMap for PHP is free software released under the terms of the following BSD
+license. Copyright 2004-2006, PradoSoft (http://www.pradosoft.com) All rights
+reserved.
+
+\subsection*{Disclaimer}
+SQLMap PHP DataMapper MAKES NO WARRANTIES, EXPRESS OR IMPLIED, AS TO THE
+INFORMATION IN THIS DOCUMENT. The names of actual companies and products
+mentioned herein may be the trademarks of their respective owners.
+
+\subsection*{Remark}
+Original writing by Clinton Begin, Ted Husted and Gilles Bayon.
+
+\include{tut1}
+\include{tut2}
+\include{tut3}
+
+
+\end{document}

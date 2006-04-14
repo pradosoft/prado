@@ -1,0 +1,5 @@
+<ul>
+	<li><a href="index.php?page=crud1">Tutorial 1</a></li>
+	<li><a href="index.php?page=crud2">Tutorial 2</a></li>
+	<li><a href="index.php?page=ProductList">Product List</a></li>
+</ul>	

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap>
+
+	<select id="SelectAll" resultClass="Person">
+		SELECT
+			per_id as ID,
+			per_first_name as FirstName,
+			per_last_name as LastName,
+			per_birth_date as BirthDate,
+			per_weight_kg as WeightInKilograms,
+			per_height_m as HeightInMeters
+		FROM 
+			person
+	</select>
+
+</sqlMap>

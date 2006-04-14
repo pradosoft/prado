@@ -1,0 +1,413 @@
+\chapter{Installation and Setup}\label{section:4.3}
+\section{Introduction}
+This section explains how to install, configure, and use the SQLMap DataMapper
+with your PHP application.
+
+\section{Installing the DataMapper for PHP}
+There are two steps to using SQLMap DataMapper with your application for the
+first time.
+\begin{itemize}
+  \item Setup the distribution
+  \item Add XML documents
+\end{itemize}
+
+\subsection{Setup the Distribution}
+
+The official site for SQLMap DataMapper for PHP is http://... . The DataMapper
+is availabe as a source distribution in the form of a ZIP archive. To download
+the distributions, follow the link to the Downloads area on the web site, and
+select the the source distribution for the SQLMap PHP DataMapper release. You
+can extract the distribution using a utility like WinZip or the extractor
+built into newer versions of Windows.
+
+Under the distribution's source folder are eight folders that make up the
+SQLMap PHP DataMapper distribution, as shown in Table 4.1.
+
+\begin{table}[!hpt]
+\caption{Folders found in the SQLMap PHP DataMapper source distribution}
+\label{table:4.1}
+ \centering
+\begin{tabular}{|l|l|}
+\hline
+ \textbf{Folder name} & \textbf{Description} \\
+ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Add XML file items}
+After unpacking the source distribution, you will need to add two types of XML
+files to your Web application, or library project (and Test project if you
+have one). These files are:
+
+\begin{description}
+  \item[SqlMap.xml] --
+  A Data Map file that contains your SQL queries. Your project will contain one
+  or more of these files with names such as Account.xml or Product.xml.
+
+  \item[SqlMap.config] --
+    The DataMapper configuration file that is used to specify the locations of your
+    SqlMap.xml files. It is also used to define other DataMapper
+   configuration options such as caching. You will need to include one SqlMap.config
+   file for each data source that your project has.
+\end{description}
+
+As expected, the \tt{SqlMap.config} file must be placed where the DataMapper
+can find them at runtime.
+
+\section{Configuring the DataMapper for PHP}
+The SQLMap PHP DataMapper is configured using a central XML descriptor file,
+usually named \tt{SqlMap.config}, which provides the details for your data
+source, data maps, and other features like caching, and transactions. At
+runtime, your application code will call a class method provided by the SQLMap
+library to read and parse your \tt{SqlMap.config} file. After parsing the
+configuration file, a DataMapper client will be returned by SQLMap for your
+application to use.
+
+\subsection{DataMapper clients}
+Currently, the SQLMap PHP DataMapper framework revolves around the
+\tt{TSqlMapper} class, which acts as a facade to the DataMapper framework API.
+You can create a DataMapper client by instantiating an object of the
+\tt{TSqlMapper} class. An instance of the \tt{TSqlMapper} class (your
+DataMapper client) is created by reading a single configuration file. Each
+configuration file can specify one database or data source. You can of couse
+use multiple DataMapper clients in your application. Just create another
+configuration file and pass the name of that file when the DataMapper client
+is created. The configuration files might use a different account with the
+same database, or reference different databases on different servers. You can
+read from one client and write to another, if that's what you need to do. See
+Section~\ref{section:4.4.1} for more details on building a \tt{TSqlMapper}
+instance, but first, let's take a look at the DataMapper configuration file.
+
+\section{DataMapper Configuration File (SqlMap.config)}
+A sample configuration file for a PHP web application is shown in
+Example~\ref{example:4.1}. Not all configuration elements are required. The
+following sections describe the elements of this \tt{SqlMap.config} file in
+more detail.
+
+\begin{example}\label{example:4.1}
+Sample SqlMap.Config for a PHP Web Application.
+\begin{verbatim}
+<?xml version="1.0" encoding="utf-8"?>
+<sqlMapConfig>
+
+    <provider class="TAdodbProvider" >
+        <datasource ConnectionString="mysql://user:pass@localhost/test1" />
+    </provider>
+
+    <sqlMaps>
+        <sqlMap name="Account" resource="maps/Account.xml"/>
+        <sqlMap name="Order" resource="maps/Order.xml"/>
+        <sqlMap name="Category" resource="maps/Category.xml"/>
+        <sqlMap name="LineItem" resource="maps/LineItem.xml"/>
+    </sqlMaps>
+
+</sqlMapConfig>
+\end{verbatim}
+\end{example}
+
+\section{DataMapper Configuration Elements}
+Sometimes the values we use in an XML configuration file occur in more than
+one element. Often, there are values that change when we move the application
+from one server to another. To help you manage configuration values, you can
+specify a standard properties file (with name=value entries) as part of a
+DataMapper configuration. Each named value in the properties file becomes a
+shell variable that can be used in the DataMapper configuration file and your
+Data Map definition files (see Chapter~\ref{section:3}).
+
+\subsection{\tt{<properties>} attributes}
+The \tt{<properties>} element can accept one \tt{resource} attribute to
+specify the location of the properties file.
+
+\begin{table}[!hpt]
+\caption{Attributes of the \tt{<properties>} element} \label{table:4.3}
+\centering
+\begin{tabular}{|l|l|}
+ \hline
+ \textbf{Attribute} & \textbf{Description} \\
+ \hline
+ \tt{resource} &
+  \begin{minipage}{0.7\textwidth}\vspace{2mm}
+    Specify the properties file to be loaded from the directory relative to
+    the current file.
+    \vspace{-3mm}\begin{verbatim}
+    resource="properties.config"
+    \end{verbatim}\vspace{-5mm}
+  \end{minipage}
+  \\
+  \hline
+\end{tabular}
+\end{table}
+
+For example, if the ``properties.config'' file contains
+
+\begin{verbatim}
+<?xml version="1.0" encoding="utf-8" ?>
+<settings>
+  <add key="username" value="albert" />
+</settings>
+\end{verbatim}
+
+then all elements in the DataMapper configuration can use the variable
+\tt{\${username}} to insert the value ``albert''. For example:
+
+\begin{verbatim}
+<provider ConnectionString="mysql://${username}:..."
+\end{verbatim}
+
+Properties are handy during building, testing, and deployment by making it
+easy to reconfigure your application for multiple environments.
+
+\subsection{\tt{<property>} element and attributes}
+You can also specify more than one properties file or add property keys and
+values directly into your \tt{SqlMap.config} file by using \tt{<property>}
+elements. For example:
+
+\begin{verbatim}
+<properties>
+ <property resource="myProperties.config"/>
+ <property resource="anotherProperties.config"/>
+ <property key="host" value="ibatis.com" />
+</properties>
+\end{verbatim}
+
+\begin{table}[!hpt]
+\caption{Attributes of the \tt{<property>} element} \label{table:4.3}
+\centering
+\begin{tabular}{|l|l|}
+ \hline
+ \textbf{Attribute} & \textbf{Description} \\
+ \hline
+ \tt{resource} &
+ \begin{minipage}{0.7\textwidth}\vspace{2mm}
+    Specify the properties file to be loaded from the directory relative to
+    the current file.
+    \vspace{-3mm}\begin{verbatim}
+    resource="properties.config"
+    \end{verbatim}\vspace{-5mm}
+  \end{minipage}
+  \\
+  \hline
+%
+ \tt{key} &
+  \begin{minipage}{0.7\textwidth}\vspace{2mm}
+   Defines a property key (variable) name
+    \vspace{-3mm}\begin{verbatim}
+    key="username"
+    \end{verbatim}\vspace{-5mm}
+  \end{minipage}
+  \\
+  \hline
+%
+ \tt{value} &
+  \begin{minipage}{0.7\textwidth}\vspace{2mm}
+   Defines a value that will be used by the DataMapper in place of the
+   the specified property key/variable
+    \vspace{-3mm}\begin{verbatim}
+    value="mydbuser"
+    \end{verbatim}\vspace{-5mm}
+  \end{minipage}
+  \\
+  \hline
+\end{tabular}
+\end{table}
+
+\subsection{The \tt{<typeHandler>} Element}
+The \tt{<typeHandler>} element allows for the configuration and use of a
+Custom Type Handler (see the Custom Type Handler section). This extends the
+DataMapper's capabilities in handling types that are specific to your database
+provider, are not handled by your database provider, or just happen to be a
+part of your application design.
+
+\begin{verbatim}
+  <typeHandler type="date" callback="TDateTimeHandler"/>
+\end{verbatim}
+
+The \tt{<typeHandler>} element has three attributes:
+\begin{table}[!hpt]
+\caption{Attributes of the \tt{<typeHandler>} element} \label{table:4.5}
+\centering
+\begin{tabular}{|l|l|}
+ \hline
+ \textbf{Attribute} & \textbf{Description} \\
+ \hline
+%
+ \tt{type} &
+ \begin{minipage}{0.7\textwidth}\vspace{2mm}
+    Refers to the name of the type to handle
+    \vspace{-3mm}\begin{verbatim}
+    type="date"
+    \end{verbatim}\vspace{-5mm}
+  \end{minipage}
+  \\
+  \hline
+%
+ \tt{dbType} &
+ \begin{minipage}{0.7\textwidth}\vspace{2mm}
+    Indicates the provider dbType to handle
+    \vspace{-3mm}\begin{verbatim}
+    dbType="Varchar2"
+    \end{verbatim}\vspace{-5mm}
+  \end{minipage}
+  \\
+  \hline
+%
+ \tt{callback} &
+ \begin{minipage}{0.7\textwidth}\vspace{2mm}
+   The custom type handler class name
+    \vspace{-3mm}\begin{verbatim}
+    callback="TDateTimeHandler"
+    \end{verbatim}\vspace{-5mm}
+  \end{minipage}
+  \\
+  \hline
+\end{tabular}
+\end{table}
+
+
+\subsection{The \tt{<provider>} element and attribute}
+The \tt{<provider>} element encloses a \tt{<datasource>} that configure the
+database system for use by the framework.
+\begin{table}[!hpt]
+\caption{Attributes of the \tt{<provider>} element} \label{table:4.3}
+\centering
+\begin{tabular}{|l|l|}
+ \hline
+ \textbf{Attribute} & \textbf{Description} \\
+ \hline
+ \tt{class} &
+ \begin{minipage}{0.7\textwidth}\vspace{2mm}
+    The database provider class that extends
+    \tt{TDatabaseProvider}.
+    \vspace{-3mm}\begin{verbatim}
+    class="TAdodbProvider"
+    \end{verbatim}\vspace{-5mm}
+  \end{minipage}
+  \\
+  \hline
+  \end{tabular}
+\end{table}
+
+\subsection{The \tt{<datasource>} element and attributes}
+The \tt{<datasource>} element specifies the connection string.
+Example~\ref{example:4.2} shows sample element MySql.
+
+\begin{example}\label{example:4.2}
+Sample \tt{<provider>} and \tt{<datasource>} elements.
+\begin{verbatim}
+<!-- The ${properties} are defined in an external file, -->
+<!-- but the values could also be coded inline. -->
+
+<!-- Connecting to a MySQL database -->
+<provider class="TAdodbProvider" >
+  <datasource
+    ConnectionString="mysql://${username}:${password}@${host}/${database}" />
+</provider>
+\end{verbatim}
+\end{example}
+
+\begin{table}[!hpt]
+\caption{Attributes of the \tt{<datasource>} element} \label{table:4.4}
+\centering
+\begin{tabular}{|l|l|}
+ \hline
+ \textbf{Attribute} & \textbf{Description} \\
+ \hline
+%
+ \tt{connectionString} &
+ \begin{minipage}{0.7\textwidth}\vspace{2mm}
+    Data Source Name (DSN) connection string.
+    \vspace{-3mm}\begin{verbatim}
+    connectionString="mysql://root:pwd@localhost/mydb"
+    \end{verbatim}\vspace{-5mm}
+  \end{minipage}
+  \\
+  \hline
+%
+ \tt{driver} &
+ \begin{minipage}{0.7\textwidth}\vspace{2mm}
+    Database driver name (mysql, sqlite, etc.)
+    \vspace{-3mm}\begin{verbatim}
+    driver="mysql"
+    \end{verbatim}\vspace{-5mm}
+  \end{minipage}
+  \\
+  \hline
+%
+ \tt{host} &
+ \begin{minipage}{0.7\textwidth}\vspace{2mm}
+    DB host name/IP (and port number) in the format \tt{host[:port]}.
+    \vspace{-3mm}\begin{verbatim}
+    connectionString="mysql://root:pwd@localhost/mydb"
+    \end{verbatim}\vspace{-5mm}
+  \end{minipage}
+  \\
+  \hline
+%
+ \tt{username} &
+ \begin{minipage}{0.7\textwidth}\vspace{2mm}
+    Database connection username.\vspace{2mm}
+  \end{minipage}
+  \\
+  \hline
+%
+ \tt{password} &
+ \begin{minipage}{0.7\textwidth}\vspace{2mm}
+    Database connection password.\vspace{2mm}
+  \end{minipage}
+  \\
+  \hline
+%
+ \tt{database} &
+ \begin{minipage}{0.7\textwidth}\vspace{2mm}
+    Database name to use in the connection.\vspace{2mm}
+  \end{minipage}
+  \\
+  \hline
+  \end{tabular}
+\end{table}
+
+\begin{mybox}{Tip:}
+   Use Data Source Name (DSN) connection string or specify the
+   necessary individual connection parameters.
+\end{mybox}
+
+\subsection{The \tt{<sqlMap>} Element}
+On a daily basis, most of your work will be with the Data Maps, which are
+covered by Chapter~\ref{section:3}. The Data Maps define the actual SQL
+statements or stored procedures used by your application. The parameter and
+result objects are also defined as part of the Data Map. As your application
+grows, you may have several varieties of Data Map. To help you keep your Data
+Maps organized, you can create any number of Data Map definition files and
+incorporate them by reference in the DataMapper configuration. All of the
+definition files used by a DataMapper instance must be listed in the
+configuration file.
+
+Example~\ref{example:4.3} shows \tt{<sqlMap>} elements for loading a set of
+Data Map definitions. For more about Data Map definition files, see
+Chapter~\ref{section:3}.
+
+\begin{example}\label{example:4.3}
+Specifying \tt{sqlMap} locations
+\begin{verbatim}
+<!-- Relative path from the directory of the
+     current file using a property variable -->
+<sqlMap resource="${root}/Maps/Account.xml"/>
+<sqlMap resource="${root}/Maps/Category.xml"/>
+<sqlMap resource="${root}/Maps/Product.xml"/>
+
+<!-- Full file path with a property variable -->
+<sqlMap resource="/${projectdir}/MyApp/Maps/Account.xml"/>
+<sqlMap resource="/${projectdir}/MyApp/Maps/Category.xml"/>
+<sqlMap resource="/${projectdir}/MyApp/Maps/Product.xml"/>
+\end{verbatim}
+\end{example}
+
+\begin{mybox}{Tip:}
+Since the application root directory location differs by project type
+(Windows, Web, or library), it is best to use a properties variable to
+indicate the relative path when using the \tt{<sqlMap>} \tt{resource}
+attribute. Having a variable defined in a properties file makes it easy to
+change the path to all your Data Mapper configuration resources in one
+location (note the \tt{\$\{projectdir\}} and \tt{\$\{root\}} variables in the
+example above).
+\end{mybox}

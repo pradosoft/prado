@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMapConfig>
+
+	<provider class="TAdodbProvider">
+		<datasource driver="sqlite" host="protected/person-db/test.db" />
+	</provider>
+
+	<sqlMaps>
+		<sqlMap resource="person-db/person.xml"/>
+		<sqlMap resource="person-db/personHelper.xml"/>
+	</sqlMaps>
+
+</sqlMapConfig>

@@ -1,0 +1,941 @@
+\chapter{Result Maps}\label{section:3.5}
+Chapter~\ref{section:3.4} describes Parameter Maps and Inline parameters,
+which map object properties to parameters in a database query. Result Maps
+finish the job by mapping the result of a database query (a set of columns) to
+object properties. Next to Mapped Statements, the Result Map is probably one
+of the most commonly used and most important features to understand.
+
+A Result Map lets you control how data is extracted from the result of a
+query, and how the columns are mapped to object properties. A Result Map can
+describe the column type, a null value replacement, and complex property
+mappings including Collections. Example~\ref{example:3.24} shows the structure
+of a \tt{<resultMap>} element.
+
+\begin{example}\label{example:3.24}
+The structure of a \tt{<resultMap>} element.
+\begin{verbatim}
+<resultMap id="resultMapIdentifier"
+           [class="class.name"]
+           [extends="[sqlMapNamespace.]resultMapId"]>
+
+   <result property="propertyName"
+           column="columnName"
+           [columnIndex="columnIndex"]
+           [dbType="databaseType"]
+           [type="propertyCLRType"]
+           [resultMapping="resultMapName"]
+           [nullValue="nullValueReplacement"]
+           [select="someOtherStatementName"]
+           [lazyLoad="true|false"]
+           [typeHandler="class.name"]
+   />
+   <result ... .../>
+   <result ... .../>
+</resultMap>
+\end{verbatim}
+\end{example}
+
+In Example~\ref{example:3.24}, the [brackets] indicate optional attributes.
+The \tt{id} attribute is required and provides a name for the statement to
+reference. The \tt{class} attribute is also required, and specifies the full
+name of a PHP class. This is the class that will be instantiated and populated
+based on the result mappings it contains.
+
+The \tt{resultMap} can contain any number of property mappings that map object
+properties to the columns of a result element. The property mappings are
+applied, and the columns are read, in the order that they are defined.
+Maintaining the element order ensures consistent results between different
+drivers and providers.
+
+\begin{mybox}{Note:}
+As with parameter classes, the result class must be a PHP class object or
+array instance.
+\end{mybox}
+
+\section{Extending \tt{resultMaps}}
+The optional \tt{extends} attribute can be set to the name of another
+\tt{resultMap} upon which to base this \tt{resultMap}. All properties of the
+``super'' \tt{resultMap} will be included as part of this \tt{resultMap}, and
+values from the ``super'' \tt{resultMap} are set before any values specified
+by this \tt{resultMap}. The effect is similar to extending a class.
+
+\begin{mybox}{Tip:}
+The ``super'' \tt{resultMap} must be defined in the file before the extending
+\tt{resultMap}. The classes for the super and sub \tt{resultMaps} need not be
+the same, and do not need to be related in any way.
+\end{mybox}
+
+\section{\tt{<resultMap>} attributes}
+The \tt{<resultMap>} element accepts three attributes: \tt{id} (required),
+\tt{class} (optional), and \tt{extends} (optional).
+
+\subsection{\tt{id} attribute}
+The required \tt{id} attribute provides a unique identifier for the
+\tt{<resultMap>} within this Data Map.
+
+\subsection{\tt{class} attribute}
+The optional \tt{class} attribute specifies an object class to use with this
+\tt{<resultMap>}. The full classname must be specified. Any class can be used.
+
+\begin{mybox}{Note:}
+As with parameter classes, the result class must be a PHP class object or
+array instance.
+\end{mybox}
+
+\subsection{\tt{extends} attribute}
+The optional \tt{extends} attribute allows the result map to inherit all of
+the properties of the ``super'' \tt{resultMap} that it extends.
+
+\section{\tt{<result>} Elements}
+
+The \tt{<resultMap>} element holds one or more \tt{<result>} child elements
+that map SQL result sets to object properties.
+
+\subsection{\tt{property} attribute}
+The \tt{property} attribute is the name of a property of the result object
+that will be returned by the Mapped Statement. The name can be used more than
+once depending on the number of times it is needed to populate the results.
+
+\subsection{\tt{column} attribute}
+The \tt{column} attribute value is the name of the column in the result set
+from which the value will be used to populate the property.
+
+\subsection{\tt{columnIndex} attribute}
+The \tt{columnIndex} attribute value is the index of the column in the
+ResultSet from which the value will be used to populate the object property.
+This is not likely needed in 99\% of applications and sacrifices
+maintainability and readability for speed. Some providers may not realize any
+performance benefit, while others will speed up dramatically.
+
+\subsection{\tt{dbType} attribute}
+The \tt{dbType} attribute is used to explicitly specify the database column
+type of the ResultSet column that will be used to populate the object
+property. Although Result Maps do not have the same difficulties with null
+values, specifying the type can be useful for certain mapping types such as
+Date properties. Because an application language has one Date value type and
+SQL databases may have many (usually at least 3), specifying the date may
+become necessary in some cases to ensure that dates (or other types) are set
+correctly. Similarly, String types may be populated by a \tt{VarChar},
+\tt{Char} or \tt{CLOB}, so specifying the type might be needed in those cases
+too.
+
+\subsection{\tt{type} attribute}
+The \tt{type} attribute is used to explicitly specify the property type of the
+parameter to be set. If the attribute \tt{type} is not set and the framework
+cannot otherwise determine the type, the type is assumed to be \tt{StdObject}.
+
+\subsection{\tt{resultMapping} attribute}
+The \tt{resultMapping} attribute can be set to the name of another
+\tt{resultMap} used to fill the property. If the \tt{resultMap} is in an other
+mapping file, you must specified the fully qualified name as :
+
+\begin{verbatim}
+resultMapping="[namespace.sqlMap.]resultMappingId"
+
+resultMapping="Newspaper"
+<!--resultMapping with a fully qualified name.-->
+resultMapping="LineItem.LineItem"
+\end{verbatim}
+
+\subsection{\tt{nullValue} attribute}
+The \tt{nullValue} attribute can be set to any valid value (based on property
+type). The \tt{nullValue} attribute is used to specify an outgoing null value
+replacement. What this means is that when the value is detected in the object
+property, a NULL will be written to the database (the opposite behavior of an
+inbound null value replacement). This allows you to use a ``magic'' null
+number in your application for types that do not support null values (such as
+int, double, float). When these types of properties contain a matching null
+value (say, $-9999$), a NULL will be written to the database instead of the
+value.
+
+If your database has a NULLABLE column, but you want your application to
+represent NULL with a constant value, you can specify it in the Result Map as
+shown in Example~\ref{example:3.25}.
+
+\begin{example}\label{example:3.25}
+Specifying a \tt{nullvalue} attribute in a Result Map
+\begin{verbatim}
+<resultMap id="get-product-result" class="product">
+  <result property="id" column="PRD_ID"/>
+  <result property="description" column="PRD_DESCRIPTION"/>
+  <result property="subCode" column="PRD_SUB_CODE" nullValue="-9999"/>
+</resultMap>
+\end{verbatim}
+\end{example}
+
+In Example~\ref{example:3.25}, if PRD\_SUB\_CODE is read as NULL, then the
+\tt{subCode} property will be set to the value of $-9999$. This allows you to
+use a primitive type to represent a NULLABLE column in the database. Remember
+that if you want this to work for queries as well as updates/inserts, you must
+also specify the \tt{nullValue} in the Parameter Map (see,
+Section~\ref{section:nullValueParameter}).
+
+\subsection{\tt{select} attribute}
+The \tt{select} attribute is used to describe a relationship between objects
+and to automatically load complex (i.e. user defined) property types. The
+value of the statement property must be the name of another mapped statement.
+The value of the database column (the column attribute) that is defined in the
+same property element as this statement attribute will be passed to the
+related mapped statement as the parameter. More information about supported
+primitive types and complex property mappings/relationships is discussed later
+in this document. The \tt{lazyLoad} attribute can be specified with the
+\tt{select}.
+
+\subsection{\tt{lazyLoad} attribute}
+Use the \tt{lazyLoad} attribute with the \tt{select} attribute to indicate
+whether or not the select statement's results should be lazy loaded. This can
+provide a performance boost by delaying the loading of the select statement's
+results until they are needed/accessed.
+
+\subsection{\tt{typeHandler} attribute}
+The \tt{typeHandler} attribute allows the use of a Custom Type Handler (see
+the Custom Type Handler in the following section). This allows you to extend
+the DataMapper's capabilities in handling types that are specific to your
+database provider, are not handled by your database provider, or just happen
+to be a part of your application design. You can create custom type handlers
+to deal with storing and retrieving booleans from your database for example.
+
+\section{Custom Type Handlers}
+A custom type handler allows you to extend the DataMapper's capabilities in
+handling types that are specific to your database provider, not handled by
+your database provider, or just happen to be part of your application design.
+The SQLMap for PHP DataMapper provides an interface,
+\tt{ITypeHandlerCallback}, for you to use in implementing your custom type
+handler.
+
+\begin{example}\label{example:3.26}
+\tt{ITypeHandlerCallback} interface
+\begin{verbatim}
+interface ITypeHandlerCallback
+{
+    public function getParameter($object);
+
+    public function getResult($string);
+
+    public function createNewInstance();
+}
+\end{verbatim}
+\end{example}
+
+The \tt{getParameter} method allows you to process a \tt{<statement>}
+parameter's value before it is added as an parameter. This enables you to do
+any necessary type conversion and clean-up before the DataMapper gets to work.
+
+The \tt{getResult} method allows you to process a database result value right
+after it has been retrieved by the DataMapper and before it is used in your
+\tt{resultClass}, \tt{resultMap}, or \tt{listClass}.
+
+The \tt{createNewInstance} method allows the DataMapper to create new instance
+of a particular type handled by this callback.
+
+One scenario where custom type handlers are useful are the when you want to
+use date time values in the database. First, consider a very basic TDateTime
+class.
+
+\begin{verbatim}
+class TDateTime
+{
+    private $_datetime;
+
+    public function __construct($datetime=null)
+    {
+        if(!is_null($datetime))
+            $this->setDatetime($datetime);
+    }
+
+    public function getTimestamp()
+    {
+        return strtotime($this->getDatetime());
+    }
+
+    public function getDateTime()
+    {
+        return $this->_datetime;
+    }
+
+    public function setDateTime($value)
+    {
+        $this->_datetime = $value;
+    }
+}
+\end{verbatim}
+
+We can use a custom type handler to intercept result and parameter mapping
+that uses the say ``data'' as one of its property type. The handler can be
+written as follows.
+
+\begin{example}\label{example:3.27}
+A \tt{TDateTime} Type Handler
+\begin{verbatim}
+class TDateTimeHandler implements ITypeHandlerCallback
+{
+    public function getResult($string)
+    {
+        return new TDateTime($string);
+    }
+
+    public function getParameter($parameter)
+    {
+        if($parameter instanceof TDateTime)
+            return $parameter->getTimestamp();
+        else
+            return $parameter;
+    }
+
+    public function createNewInstance()
+    {
+        return new TDateTime;
+    }
+}
+\end{verbatim}
+\end{example}
+
+With our custom type handler we can use the handler in our SqlMaps. To do
+that, we specify it as a basic \tt{<typeHandler>} for all \tt{date} types
+mapped in our SqlMap files
+
+\begin{example}\label{example:3.29}
+\tt{<typeHandler>} in SqlMap.config
+\begin{verbatim}
+[Our SqlMap.config]
+
+<typeHandlers>
+ <typeHandler type="date" callback="TDateTimeHandler"/>
+</typeHandlers>
+
+
+[One of our SqlMap.xml files]
+ <parameterMap id="boc-params">
+  <parameter property="releasedDate" type="date"/>
+ </parameterMap>
+
+ <resultMap id="boc-result"  class="BudgetObjectCode">
+  <result property="releasedDate" column="BOC_DATE" type="date"/>
+ </resultMap>
+\end{verbatim}
+\end{example}
+
+%3.5.5. Inheritance Mapping The iBATIS DataMapper supports the implementation
+%of object-oriented inheritance (subclassing) in your object model. There are
+%several developer options for mapping entity classes and subclasses to
+%database results:
+%
+%resultMap for each class resultMap with submaps for a class hierarchy
+%resultMap with extended resultMaps for each subclass You can use the most
+%efficient mapping strategies from a SQL and query performance perspective when
+%using the inheritance mappings of the DataMapper. To implement an inheritance
+%mapping, the resultMap must define one or more columns in your query's
+%resultset that will serve to identify which resultMap should be used to map
+%each result record to a specific subclass. In many cases, you will use one
+%column value for the DataMapper to use in identifying the proper resultMap and
+%subclass. This column is known as a discriminator.
+%
+%For example, we have a table defined in a database that contains Document
+%records. There are five table columns used to store Document IDs, Titles,
+%Types, PageNumbers, and Cities. Perhaps this table belongs to a legacy
+%database, and we need to create an application using this table with a domain
+%model that defines a class hierarchy of different types of Documents. Or
+%perhaps we are creating a new application and database and just want to
+%persist the data found in a set of related classes into one table. In either
+%case, the DataMapper's inheritance mapping feature can help.
+%
+%\begin{verbatim}
+%// Database table Document
+%CREATE TABLE [Documents] (
+%    [Document_ID] [int] NOT NULL ,
+%    [Document_Title] [varchar] (32) NULL ,
+%    [Document_Type] [varchar] (32)  NULL ,
+%    [Document_PageNumber] [int] NULL  ,
+%    [Document_City] [varchar] (32)  NULL
+%)
+%\end{verbatim}
+%
+%To illustrate this, let's take a look at a few example classes shown below
+%that have a relationship through inheritance and whose properties can be
+%persisted into our Documents table. First, we have a base Document class that
+%has Id and Title properties. Next, we have a Book class that inherits from
+%Document and contains an additional property called PageNumber. Last, we have
+%a Newspaper class that also inherits from Document and contains a City
+%property.
+%
+%Example 3.30. Documents, Books, and Newspapers!
+%
+%\begin{verbatim}
+%// C# class
+%public class Document {
+%  private int _id = -1;
+%  private string _title = string.Empty;
+%
+%  public int Id
+%  {
+%    get { return _id; }
+%    set { _id = value; }
+%  }
+%
+%  public string Title
+%  {
+%    get { return _title; }
+%    set { _title = value; }
+%  }
+%}
+%
+%public class Book : Document {
+%  private int _pageNumber = -1;
+%
+%  public int PageNumber
+%  {
+%    get { return _pageNumber; }
+%    set { _pageNumber = value; }
+%  }
+%}
+%
+%public class Newspaper : Document {
+%  private string _city = string.Empty;
+%
+%  public string City
+%  {
+%    get { return _city; }
+%    set { _city = value; }
+%  }
+%}
+%\end{verbatim}
+%
+%Now that we have our classes and database table, we can start working on our
+%mappings. We can create one <select> statement that returns all columns in the
+%table. To help the DataMapper discriminate between the different Document
+%records, we're going to indicate that the Document\_Type column holds values
+%that will distinguish one record from another for mapping the results into our
+%class hierarchy.
+%
+%\begin{verbatim}
+%// Document mapping file
+%<select id="GetAllDocument" resultMap="document">
+%   select
+%     Document_Id, Document_Title, Document_Type,
+%     Document_PageNumber, Document_City
+%   from Documents
+%   order by Document_Type, Document_Id
+%</select>
+%
+%<resultMap id="document" class="Document">
+%  <result property="Id" column="Document_ID"/>
+%  <result property="Title" column="Document_Title"/>
+%  <discriminator column="Document_Type" type="string"/>
+%  <subMap value="Book" resultMapping="book"/>
+%  <subMap value="Newspaper" resultMapping="newspaper"/>
+%</resultMap>
+%
+%<resultMap id="book" class="Book" extends="document">
+%  <property="PageNumber" column="Document_PageNumber"/>
+%</resultMap>
+%
+%<resultMap id="newspaper" class="Newspaper"  extends="document">
+%  <property="City" column="Document_City"/>
+%</resultMap>
+%\end{verbatim}
+%
+%The DataMapper compares the data found in the discriminator column to the
+%different <submap> values using the column value's string equivalence. Based
+%on this string value, iBATIS DataMapper will use the resultMap named "Book" or
+%"Newspaper" as defined in the <submap> elements or it will use the "super"
+%resultMap "Document" if neither of the submap values satisfy the comparison.
+%With these resultMaps, we can implement an object-oriented inheritance mapping
+%to our database table.
+%
+%If you want to use custom logic, you can use the typeHandler attribute of the
+%<discriminator> element to specify a custom type handler for the discriminator
+%column.
+%
+%Example 3.31. Complex disciminator usage with Custom Type Handler
+%
+%\begin{verbatim}
+%<alias>
+%  <typeAlias alias="CustomInheritance"
+%  type="IBatisNet.DataMapper.Test.Domain.CustomInheritance, IBatisNet.DataMapper.Test"/>
+%</alias>
+%
+%<resultMaps>
+%  <resultMap id="document-custom-formula" class="Document">
+%    <result property="Id" column="Document_ID"/>
+%    <result property="Title" column="Document_Title"/>
+%    <discriminator column="Document_Type" typeHandler="CustomInheritance"/>
+%    <subMap value="Book" resultMapping="book"/>
+%    <subMap value="Newspaper" resultMapping="newspaper"/>
+%  </resultMap>
+%</resultMaps>
+%\end{verbatim}
+%
+%The value of the typeHandler attribute specifies which of our classes
+%implements the ITypeHandlerCallback interface. This interface furnishes a
+%GetResult method for coding custom logic to read the column result value and
+%return a value for the DataMapper to use in its comparison to the resultMap's
+%defined <submap> values.
+%
+%Example 3.32. Example ITypeHandlerCallback interface implementation
+%
+%\begin{verbatim}
+%public class CustomInheritance : ITypeHandlerCallback {
+%  #region ITypeHandlerCallback members
+%
+%  public object ValueOf(string nullValue)
+%  {
+%    throw new NotImplementedException();
+%  }
+%
+%  public object GetResult(IResultGetter getter)
+%  {
+%   string type = getter.Value.ToString();
+%
+%   if (type=="Monograph" || type=="Book")
+%   {
+%     return "Book";
+%   }
+%   else if (type=="Tabloid" || type=="Broadsheet" || type=="Newspaper")
+%   {
+%     return "Newspaper";
+%   }
+%   else
+%   {
+%     return "Document";
+%   }
+%
+%  }
+%
+%  public void SetParameter(IParameterSetter setter, object parameter)
+%  {
+%   throw new NotImplementedException();
+%  }
+%  #endregion
+%}
+%\end{verbatim}
+
+\section{Implicit Result Maps}
+If the columns returned by a SQL statement match the result object, you may
+not need an explicit Result Map. If you have control over the relational
+schema, you might be able to name the columns so they also work as property
+names. In Example~\ref{example:3.33}, the column names and property names
+already match, so a result map is not needed.
+
+\begin{example}\label{example:3.33}
+A Mapped Statement that doesn't need a Result Map
+\begin{verbatim}
+<statement id="selectProduct" resultClass="Product">
+  select
+    id,
+    description
+  from PRODUCT
+  where id = #value#
+</statement>
+\end{verbatim}
+\end{example}
+
+Another way to skip a result map is to use column aliasing to make the column
+names match the properties names, as shown in Example~\ref{example:3.34}.
+
+\begin{example}\label{example:3.34}
+A Mapped Statement using column aliasing instead of a Result Map
+\begin{verbatim}
+<statement id="selectProduct" resultClass="Product">
+  select
+  PRD_ID as id,
+  PRD_DESCRIPTION as description
+  from PRODUCT
+  where PRD_ID = #value#
+</statement>
+\end{verbatim}
+\end{example}
+
+Of course, these techniques will not work if you need to specify a column
+type, a null value, or any other property attributes.
+
+\section{Primitive Results (i.e. String, Integer, Boolean)}
+Many times, we don't need to return an object with multiple properties. We
+just need a string, integer, boolean, and so forth. If you don't need to
+populate an object, SQLMap can return one of the primitive types instead. If
+you just need the value, you can use a primitive type as a result class, as
+shown in Example~\ref{example:3.35}.
+
+\begin{example}\label{example:3.35}
+Selecting a primitive type
+\begin{verbatim}
+<select id="selectProductCount" resultClass="integer">
+  select count(1)
+  from PRODUCT
+</select>
+\end{verbatim}
+\end{example}
+
+\begin{example}\label{example:3.36}
+Loading a simple list of product descriptions
+\begin{verbatim}
+<resultMap id="select-product-result" resultClass="System.String">
+  <result property="value" column="PRD_DESCRIPTION"/>
+</resultMap>
+\end{verbatim}
+\end{example}
+
+\section{Maps with ResultMaps}
+Instead of a rich object, sometimes all you might need is a simple key/value
+list of the data, where each property is an entry on the list. If so, Result
+Maps can populate an array instance as easily as property objects. The syntax
+for using an array is identical to the rich object syntax. As shown in Example
+~\ref{example:3.37}, only the result object changes.
+
+\begin{example}\label{example:3.37}
+Result Maps can use arrays.
+\begin{verbatim}
+<resultMap id="select-product-result" class="array">
+  <result property="id" column="PRD_ID"/>
+  <result property="code" column="PRD_CODE"/>
+  <result property="description" column="PRD_DESCRIPTION"/>
+  <result property="suggestedPrice" column="PRD_SUGGESTED_PRICE"/>
+</resultMap>
+\end{verbatim}
+\end{example}
+
+In Example~\ref{example:3.37}, an array instance would be created for each row
+in the result set and populated with the Product data. The property name
+attributes, like \tt{id}, \tt{code}, and so forth, would be the key of the
+entry, and the value of the mapped columns would be the value of the entry.
+
+As shown in Example~\ref{example:3.38}, you can also use an implicit Result
+Map with an array type.
+
+\begin{example}\label{example:3.38}
+Implicit Result Maps can use arrays too.
+\begin{verbatim}
+<statement id="selectProductCount" resultClass="array">
+  select * from PRODUCT
+</statement>
+\end{verbatim}
+\end{example}
+
+What set of entries is returned by Example~\ref{example:3.38} depends on what
+columns are in the result set. If the set of column changes (because columns
+are added or removed), the new set of entries would automatically be returned.
+
+\begin{mybox}{Note:}
+Certain providers may return column names in upper case or lower case format.
+When accessing values with such a provider, you will have to pass the key name
+in the expected case.
+\end{mybox}
+
+\section{Complex Properties}
+In a relational database, one table will often refer to another. Likewise,
+some of your business objects may include another object or list of objects.
+Types that nest other types are called ``complex types''. You may not want a
+statement to return a simple type, but a fully-formed complex type.
+
+In the database, a related column is usually represented via a 1:1
+relationship, or a 1:M relationship where the class that holds the complex
+property is from the ``many side'' of the relationship and the property itself
+is from the ``one side'' of the relationship. The column returned from the
+database will not be the property we want; it is a key to be used in another
+query.
+
+From the framework's perspective, the problem is not so much loading a complex
+type, but loading each ``complex property''. To solve this problem, you can
+specify in the Result Map a statement to run to load a given property. In
+Example~\ref{example:3.39}, the ``category'' property of the
+``select-product-result'' element is a complex property.
+
+\begin{example}\label{example:3.39}
+A Result Map with a Complex Property
+\begin{verbatim}
+  <resultMap id="select-product-result" class="product">
+    <result property="id" column="PRD_ID"/>
+    <result property="description" column="PRD_DESCRIPTION"/>
+    <result property="category" column="PRD_CAT_ID" select="selectCategory"/>
+  </resultMap>
+
+  <resultMap id="select-category-result" class="category">
+    <result property="id" column="CAT_ID"/>
+    <result property="description" column="CAT_DESCRIPTION"/>
+  </resultMap>
+
+  <select id="selectProduct" parameterClass="int" resultMap="select-product-result">
+   select * from PRODUCT where PRD_ID = #value#
+  </select>
+
+  <select id="selectCategory" parameterClass="int" resultMap="select-category-result">
+   select * from CATEGORY where CAT_ID = #value#
+  </select>
+\end{verbatim}
+\end{example}
+
+In Example~\ref{example:3.39}, the framework will use the ``selectCategory''
+statement to populate the ``category'' property. The value of each category is
+passed to the ``selectCategory'' statement, and the object returned is set to
+the category property. When the process completes, each Product instance will
+have the the appropriate category object instance set.
+
+\section{Avoiding N+1 Selects (1:1)}
+A problem with Example~\ref{example:3.39} may be that whenever you load a
+Product, two statements execute: one for the Product and one for the Category.
+For a single Product, this issue may seem trivial. But if you load 10
+products, then 11 statements execute. For 100 Products, instead of one
+statement product statement executing, a total of 101 statements execute. The
+number of statements executing for Example~\ref{example:3.40} will always be
+N+1: 100+1=101.
+
+\begin{example}\label{example:3.40}
+N+1 Selects (1:1)
+\begin{verbatim}
+  <resultMap id="select-product-result" class="product">
+    <result property="id" column="PRD_ID"/>
+    <result property="description" column="PRD_DESCRIPTION"/>
+    <result property="category" column="PRD_CAT_ID" select="selectCategory"/>
+  </resultMap>
+
+  <resultMap id="select-category-result" class="category">
+    <result property="id" column="CAT_ID"/>
+    <result property="description" column="CAT_DESCRIPTION"/>
+  </resultMap>
+
+  <!-- This statement executes 1 time -->
+  <select id="selectProducts" parameterClass="int" resultMap="select-product-result">
+   select * from PRODUCT
+  </select>
+
+  <!-- This statement executes N times (once for each product returned above) -->
+  <select id="selectCategory" parameterClass="int" resultMap="select-category-result">
+   select * from CATEGORY where CAT_ID = #value#
+  </select>
+
+\end{verbatim}
+\end{example}
+
+One way to mitigate the problem is to cache the ``selectCategory'' statement .
+We might have a hundred products, but there might only be five categories.
+Instead of running a SQL query or stored procedure, the framework will return
+the category object from it cache. A 101 statements would still run, but they
+would not be hitting the database. (See Chapter~\ref{section:3.8} for more
+about caches.)
+
+Another solution is to use a standard SQL join to return the columns you need
+from the another table. A join can bring all the columns we need over from the
+database in a single query. When you have a nested object, you can reference
+nested properties using a dotted notation, like ``category.description''.
+
+Example~\ref{example:3.41} solves the same problem as
+Example~\ref{example:3.40}, but uses a join instead of nested properties.
+
+\begin{example}\label{example:3.41}
+Resolving complex properties with a join
+\begin{verbatim}
+  <resultMap id="select-product-result" class="product">
+    <result property="id" column="PRD_ID"/>
+    <result property="description" column="PRD_DESCRIPTION"/>
+    <result property="category" resultMapping="Category.CategoryResult" />
+  </resultMap>
+
+  <statement id="selectProduct" parameterClass="int" resultMap="select-product-result">
+    select *
+    from PRODUCT, CATEGORY
+    where PRD_CAT_ID=CAT_ID
+    and PRD_ID = #value#
+  </statement>
+\end{verbatim}
+\end{example}
+
+\begin{mybox}{Lazy Loading vs. Joins (1:1):}
+It's important to note that using a join is not always better. If you are in a
+situation where it is rare to access the related object (e.g. the category
+property of the Product class) then it might actually be faster to avoid the
+join and the unnecessary loading of all category properties. This is
+especially true for database designs that involve outer joins or nullable
+and/or non-indexed columns. In these situations it might be better to use the
+sub-select solution with lazy loading enabled. The general rule of thumb is:
+use the join if you're more likely going to access the associated properties
+than not. Otherwise, only use it if lazy loading is not an option.
+\\
+\\
+If you're having trouble deciding which way to go, don't worry. No matter
+which way you go, you can always change it without impacting your application
+source code. Example~\ref{example:3.40} and \ref{example:3.41} result in
+exactly the same object graph and are loaded using the exact same method call
+from the application. The only consideration is that if you were to enable
+caching, then the using the separate select (not the join) solution could
+result in a cached instance being returned. But more often than not, that
+won't cause a problem (your application shouldn't be dependent on instance
+level equality i.e. ``==='').
+\end{mybox}
+
+\section{Complex Collection Properties}
+It is also possible to load properties that represent lists of complex
+objects. In the database the data would be represented by a M:M relationship,
+or a 1:M relationship where the class containing the list is on the ``one
+side'' of the relationship and the objects in the list are on the ``many
+side''. To load a \tt{TList} of objects, there is no change to the statement
+(see example above). The only difference required to cause the SQLMap
+DataMapper framework to load the property as a \tt{TList} is that the property
+on the business object must be of type \tt{TList}. For example, if a Category
+has a \tt{TList} of Product instances, the mapping would look like this
+(assuming Category has a property called "ProductList" of \tt{TList}.):
+
+\begin{example}\label{example:3.42}
+Mapping that creates a list of complex objects
+\begin{verbatim}
+<resultMaps>
+
+  <resultMap id="select-category-result" class="Category">
+    <result property="Id" column="CAT_ID"/>
+    <result property="Description" column="CAT_DESCRIPTION"/>
+    <result property="ProductList" column="CAT_ID" select="selectProductsByCatId"/>
+  </resultMap>
+
+  <resultMap id="select-product-result" class="Product">
+    <result property="Id" column="PRD_ID"/>
+    <result property="Description" column="PRD_DESCRIPTION"/>
+  </resultMap>
+<resultMaps>
+
+<statements>
+
+  <statement id="selectCategory" parameterClass="int"
+            resultMap="select-category-result">
+    select * from CATEGORY where CAT_ID = #value#
+  </statement>
+
+  <statement id="selectProductsByCatId" parameterClass="int"
+            resultMap="select-product-result">
+    select * from PRODUCT where PRD_CAT_ID = #value#
+  </statement>
+</statements>
+\end{verbatim}
+\end{example}
+
+\section{Avoiding N+1 Select Lists (1:M and M:N)}
+This is similar to the 1:1 situation above, but is of even greater concern due
+to the potentially large amount of data involved. The problem with the
+solution above is that whenever you load a Category, two SQL statements are
+actually being run (one for the Category and one for the list of associated
+Products). This problem seems trivial when loading a single Category, but if
+you were to run a query that loaded ten (10) Categories, a separate query
+would be run for each Category to load its associated list of Products. This
+results in eleven (11) queries total: one for the list of Categories and one
+for each Category returned to load each related list of Products (N+1 or in
+this case 10+1=11). To make this situation worse, we're dealing with
+potentially large lists of data.
+
+\begin{example}\label{example:3.43}
+N+1 Select Lists (1:M and M:N)
+\begin{verbatim}
+<resultMaps>
+
+  <resultMap id="select-category-result" class="Category">
+    <result property="Id" column="CAT_ID"/>
+    <result property="Description" column="CAT_DESCRIPTION"/>
+    <result property="ProductList" column="CAT_ID" select="selectProductsByCatId"/>
+  </resultMap>
+
+  <resultMap id="select-product-result" class="Product">
+    <result property="Id" column="PRD_ID"/>
+    <result property="Description" column="PRD_DESCRIPTION"/>
+  </resultMap>
+<resultMaps>
+
+<statements>
+
+  <!-- This statement executes 1 time -->
+  <statement id="selectCategory" parameterClass="int"
+            resultMap="select-category-result">
+    select * from CATEGORY where CAT_ID = #value#
+  </statement>
+
+  <!-- This statement executes N times (once for each category returned above)
+       and returns a list of Products (1:M) -->
+  <statement id="selectProductsByCatId" parameterClass="int"
+            resultMap="select-product-result">
+    select * from PRODUCT where PRD_CAT_ID = #value#
+  </statement>
+</statements>
+\end{verbatim}
+\end{example}
+
+\subsection{1:N \& M:N Solution?}
+Currently the feature that resolves this issue not implemented, but the
+development discussions are active, and we expect it to be included in a
+future release.
+
+\begin{mybox}{Lazy Loading vs. Joins (1:M and M:N):}
+As with the 1:1 situation described previously, it's important to note that
+using a join is not always better. This is even more true for collection
+properties than it was for individual value properties due to the greater
+amount of data. If you are in a situation where it is rare to access the
+related object (e.g. the ProductList property of the Category class) then it
+might actually be faster to avoid the join and the unnecessary loading of the
+list of products. This is especially true for database designs that involve
+outer joins or nullable and/or non-indexed columns. In these situations it
+might be better to use the sub-select solution with the lazy loading. The
+general rule of thumb is: use the join if you're more likely going to access
+the associated properties than not. Otherwise, only use it if lazy loading is
+not an option.
+\\
+\\
+As mentioned earlier, if you're having trouble deciding which way to go, don't
+worry. No matter which way you go, you can always change it without impacting
+your PHP code. The two examples above would result in exactly the same object
+graph and are loaded using the exact same method call. The only consideration
+is that if you were to enable caching, then the using the separate select (not
+the join) solution could result in a cached instance being returned. But more
+often than not, that won't cause a problem (your application should not be
+dependent on instance level equality i.e. ``==='').
+\end{mybox}
+
+\section{Composite Keys or Multiple Complex Parameters Properties}
+You might have noticed that in the above examples there is only a single key
+being used as specified in the \tt{resultMap} by the \tt{column} attribute.
+This would suggest that only a single column can be associated to a related
+mapped statement. However, there is an alternate syntax that allows multiple
+columns to be passed to the related mapped statement. This comes in handy for
+situations where a composite key relationship exists, or even if you simply
+want to use a parameter of some name other than \tt{\#value\#}. The alternate
+syntax for the column attribute is simply \{param1=column1, param2=column2,
+$\cdots$, paramN=columnN\}. Consider the example below where the PAYMENT table
+is keyed by both Customer ID and Order ID:
+
+\begin{example}\label{example:3.44}
+Mapping a composite key
+\begin{verbatim}
+<resultMaps>
+  <resultMap id="select-order-result" class="order">
+    <result property="id" column="ORD_ID"/>
+    <result property="customerId" column="ORD_CST_ID"/>
+    ...
+    <result property="payments" column="{itemId=ORD_ID, custId=ORD_CST_ID}"
+      select="selectOrderPayments"/>
+  </resultMap>
+<resultMaps>
+
+<statements>
+
+  <statement id="selectOrderPayments" resultMap="select-payment-result">
+    select * from PAYMENT
+    where PAY_ORD_ID = #itemId#
+    and PAY_CST_ID = #custId#
+  </statement>
+</statements>
+\end{verbatim}
+\end{example}
+
+Optionally you can just specify the column names as long as they're in the
+same order as the parameters. For example:
+\begin{verbatim}
+{ORD_ID, ORD_CST_ID}
+\end{verbatim}
+
+\begin{mybox}{Important!}
+Currently the SQLMap DataMapper framework does not automatically resolve
+circular relationships. Be aware of this when implementing parent/child
+relationships (trees). An easy work around is to simply define a second result
+map for one of the cases that does not load the parent object (or vice versa),
+or use a join as described in the ``N+1 avoidance'' solutions.
+\end{mybox}
+
+\begin{mybox}{Note:}
+Result Map names are always local to the Data Map definition file that they
+are defined in. You can refer to a Result Map in another Data Map definition
+file by prefixing the name of the Result Map with the namespace of the SqlMap
+set in the \tt{<sqlMap>} root element.
+\end{mybox}

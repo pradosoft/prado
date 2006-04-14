@@ -1,0 +1,302 @@
+\chapter{Using SQLMap PHP DataMapper}
+The SQLMap DataMapper API provides four core functions:
+
+\begin{itemize}
+  \item build a \tt{TSqlMapper} instance from a configuration file or cache
+  \item execute an update query (including insert and delete).
+  \item execute a select query for a single object
+  \item execute a select query for a list of objects
+\end{itemize}
+
+The API also provides support for retrieving paginated lists and managing
+transactions.
+
+\section{Building a \tt{TSqlMapper} instance}
+An XML document is a wonderful tool for describing a database configuration
+(Chapter~\ref{section:4.3}) or defining a set of data mappings
+(Chapter~\ref{section:3}), but you can't execute XML. In order to use the
+SQLMap configuration and definitions in your PHP application, you need a class
+you can call.
+
+The framework provides service methods that you can call which read the
+configuration file (and any of its definition files) and builds a
+\tt{TSqlMapper} object. The \tt{TSqlMapper} object provides access to the rest
+of the framework. Example~\ref{example:9.4} shows a singleton Mapper that is
+similar to the one bundled with the framework.
+
+\begin{example}\label{example:9.4}
+A Mapper singleton you can call from your own applications
+\begin{verbatim}
+require_once('/path/to/SQLMap/TSqlMapper.php');
+
+class TMapper
+{
+    private static $_mapper;
+
+    public static function configure($configFile)
+    {
+        if(is_null(self::$_mapper))
+        {
+            $builder = new TDomSqlMapBuilder();
+            self::$_mapper = $builder->configure($configFile);
+        }
+        return self::$_mapper;
+    }
+
+    public static function instance()
+    {
+        return self::$_mapper;
+    }
+}
+\end{verbatim}
+\end{example}
+
+To obtain the \tt{TSqlMapper} instance, first configure the mapper once,
+\begin{verbatim}
+TMapper::configure('path/to/sqlmap.config');
+\end{verbatim}
+The \tt{TDomSqlMapBuilder} object will go throught the the \tt{sqlmap.config}
+file and build a \tt{TSqlMapper} instance. To use \tt{TSqlMapper} in your
+application, specify one of the \tt{TSqlMapper} methods (see Section ???).
+Here's an example:
+\begin{verbatim}
+$list = TMapper::instance()->queryForList("PermitNoForYearList", $values);
+\end{verbatim}
+
+\subsection{Multiple Databases}
+If you need access to more than one database from the same application, create
+a DataMapper configuration file for that database and another Mapper class to
+go with it.
+
+\subsection{\tt{TDomSqlMapBuilder} Configuration Options}
+If you find that you already have loaded your DataMapper configuration
+information as a \tt{SimpleXMLElement} instance within your application, the
+\tt{TDomSqlMapBuilder} provides \tt{Configure} overloads for those types as
+well.
+
+\section{Exploring the SQLMap PHP DataMapper API through the \tt{TSqlMapper}}
+The \tt{TSqlMapper} instance acts as a facade to provide access the rest of
+the DataMapper framework. The DataMapper API methods are shown in Example
+4.11.
+
+\begin{example}
+The SQLMap DataMapper API for PHP.
+\begin{verbatim}
+ /* Query API */
+ public function queryForObject($statementName, $parameter=null, $result=null);
+ public function queryForList($statementName, $parameter=null, $result=null,
+                                    $skip=-1, $max=-1);
+ public function queryForPagedList($statementName, $parameter=null, $pageSize=10);
+ public function queryForMap($statementName, $parameter=null,
+                                    $keyProperty=null, $valueProperty=null);
+
+ public function insert($statementName, $parameter=null)
+ public function update($statementName, $parameter=null)
+ public function delete($statementName, $parameter=null)
+
+ /* Connection API */
+ public function openConnection()
+ public function closeConnection()
+
+ /* Transaction API */
+ public function beginTransaction()
+ public function commitTransaction()
+ public function rollBackTransaction()
+\end{verbatim}
+\end{example}
+
+Note that each of the API methods accept the name of the Mapped Statement as
+the first parameter. The \tt{statementName} parameter corresponds to the
+\tt{id} of the Mapped Statement in the Data Map definition (see
+Section~\ref{section:3.3}). In each case, a \tt{parameterObject} also may be
+passed. The following sections describe how the API methods work.
+
+\subsection{Insert, Update, Delete}
+\begin{verbatim}
+ public function insert($statementName, $parameter=null)
+ public function update($statementName, $parameter=null)
+ public function delete($statementName, $parameter=null)
+\end{verbatim}
+
+If a Mapped Statement uses one of the \tt{<insert>}, \tt{<update>}, or
+\tt{<delete>} statement-types, then it should use the corresponding API
+method. The \tt{<insert>} element supports a nested \tt{<selectKey>} element
+for generating primary keys (see Section~\ref{section:3.3.3}). If the
+\tt{<selectKey>} stanza is used, then \tt{insert} returns the generated key;
+otherwise a null object is returned. Both the \tt{update} and \tt{delete}
+methods return the number of rows affected by the statement.
+
+\subsection{QueryForObject}
+\begin{verbatim}
+public function queryForObject($statementName, $parameter=null, $result=null);
+\end{verbatim}
+
+If a Mapped Statement is expected to select a single row, then call it using
+\tt{queryForObject}. Since the Mapped Statement definition specifies the
+result class expected, the framework can both create and populate the result
+class for you. Alternatively, if you need to manage the result object
+yourself, say because it is being populated by more than one statement, you
+can use the alternate form and pass your \tt{\$resultObject} as the third
+parameter.
+
+\subsection{QueryForList}
+
+\begin{verbatim}
+public function queryForList($statementName, $parameter=null, $result=null,
+                                    $skip=-1, $max=-1);
+\end{verbatim}
+If a Mapped Statement is expected to select multiple rows, then call it using
+\tt{queryForList}. Each entry in the list will be an result object populated
+from the corresponding row of the query result. If you need to manage the
+\tt{\$resultObject} yourself, then it can be passed as the third parameter. If
+you need to obtain a partial result, the fourth parameter \tt{\$skip} and
+fifth parameter \tt{\$max} allow you to skip a number of records (the starting
+point) and the maximum number to return.
+
+
+\subsection{QueryForPagedList}
+\begin{verbatim}
+ public function queryForPagedList($statementName, $parameter=null, $pageSize=10);
+\end{verbatim}
+We live in an age of information overflow. A database query often returns more
+hits than users want to see at once, and our requirements may say that we need
+to offer a long list of results a ``page'' at a time. If the query returns
+1000 hits, we might need to present the hits to the user in sets of fifty, and
+let them move back and forth between the sets. Since this is such a common
+requirement, the framework provides a convenience method.
+
+The \tt{TSqlMapPagedList} interface includes methods for navigating through
+pages (\tt{nextPage()}, \tt{previousPage()}, \tt{gotoPage(\$pageIndex)}) and
+also checking the status of the page (\tt{getIsFirstPage()},
+\tt{getIsMiddlePage()}, \tt{getIsLastPage()}, \tt{getIsNextPageAvailable()},
+\tt{getIsPreviousPageAvailable()}, \tt{getCurrentPageIndex()},
+\tt{getPageSize()}). The total number of records available is not accessible
+from the \tt{TSqlMapPagedList} interface, unless a virtual count is defined
+using \tt{setVirtualCount(\$value)}, this should be easily accomplished by
+simply executing a second statement that counts the expected results.
+
+\begin{mybox}{Tip:}
+The \tt{queryForPagedList} method is convenient, but note that a larger set
+(up to 3 times the page size) will first be returned by the database provider
+and the smaller set extracted by the framework. The higher the page size, the
+larger set that will be returned and thrown away. For very large sets, you may
+want to use a stored procedure or your own query that uses \tt{\$skip} and
+\tt{\$max} as parameters in \tt{queryForList}.
+\end{mybox}
+
+\subsection{QueryForMap}
+\begin{verbatim}
+public function queryForMap($statementName, $parameter=null,
+                                    $keyProperty=null, $valueProperty=null);
+\end{verbatim}
+The \tt{queryForList} methods return the result objects within a \tt{TList} or
+array instance. Alternatively, the \tt{queryForMap} returns a TMap or
+associative array instance. The value of each entry is one of the result
+objects. The key to each entry is indicated by the \tt{\$keyProperty}
+parameter. This is the name of the one of the properties of the result object,
+the value of which is used as the key for each entry. For example, If you
+needed a set of \tt{Employee} objects, you might want them returned as a
+\tt{TMap} keyed by each object's \tt{EmployeeNumber} property.
+
+If you don't need the entire result object in your result, you can add the
+\tt{\$valueProperty} parameter to indicate which result object property should
+be the value of an entry. For example, you might just want the
+\tt{EmployeeName} keyed by \tt{EmployeeNumber}.
+
+\subsection{Transaction}
+The DataMapper API includes methods to demarcate transactional boundaries. A
+transaction can be started, committed and/or rolled back. You can call the
+transaction methods from the \tt{TSqlMapper} instance.
+
+\begin{verbatim}
+// Begin a transactional session using Adodb transaction API
+public function beginTransaction()
+
+// Commit a transaction, uses Adodb transaction API
+public function commitTransaction()
+
+// RollBack a transaction, uses Adodb transaction API
+public void RollBackTransaction()
+\end{verbatim}
+
+\begin{example}\label{example:9.15}
+Using transactions
+\begin{verbatim}
+try
+{
+    $sqlMap->beginTransaction();
+    $item = $sqlMap->queryForObject("getItem", $itemId);
+    $item->setDescription($newDescription);
+    $sqlMap->update("updateItem", $item);
+    $sqlMap->commitTransaction();
+}
+catch
+{
+    $sqlMap->rollBackTransaction();
+}
+\end{verbatim}
+\end{example}
+
+\section{Coding Examples}
+\begin{example}\label{example:10.1}
+Executing Update (insert, update, delete)
+\begin{verbatim}
+$product = new Product();
+$product->setId(1);
+$product->setDescription('Shih Tzui');
+
+$key = $sqlMap->insert('insertProduct', $product);
+\end{verbatim}
+\end{example}
+
+\begin{example}\label{example:10.2}
+Executing Query for Object (select)
+\begin{verbatim}
+$key = 1;
+$product = $sqlMap->queryForObject ('getProduct', $key);
+\end{verbatim}
+\end{example}
+
+\begin{example}\label{example:10.3}
+Executing Query for Object (select) With Preallocated Result Object
+\begin{verbatim}
+$customer = new Customer();
+
+$sqlMap->beginTransaction();
+
+$sqlMap->queryForObject('getCust', $parameter, $customer);
+$sqlMap->queryForObject('getAddr', $parameter, $customer);
+$sqlMap->commitTransaction();
+\end{verbatim}
+\end{example}
+
+\begin{example}\label{example:10.4}
+Executing Query for List (select)
+\begin{verbatim}
+$list = $sqlMap->queryForList ('getProductList');
+\end{verbatim}
+\end{example}
+
+\begin{example}\label{example:10.4}
+Executing Query for List (select) With Result Boundaries
+\begin{verbatim}
+$list = $sqlMap->queryForList ('getProductList', $key, null, 0, 40);
+\end{verbatim}
+\end{example}
+
+\begin{example}\label{example:10.5}
+Executing Query for Paginated List (select)
+\begin{verbatim}
+$list = $sqlMap->queryForPagedList ('getProductList', null, 10);
+$list->nextPage();
+$list->previousPage();
+\end{verbatim}
+\end{example}
+
+\begin{example}\label{example:10.6}
+Executing Query for Map
+\begin{verbatim}
+ $map = $sqlMap->QueryForMap('getProductList', null, 'productCode');
+ $product = $map['EST-93'];
+\end{verbatim}
+\end{example}

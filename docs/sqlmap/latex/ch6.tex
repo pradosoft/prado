@@ -1,0 +1,119 @@
+\chapter{Cache Models}\label{section:3.8}
+Some values in a database are know to change slower than others. To improve
+performance, many developers like to cache often-used data to avoid making
+unnecessary trips back to the database. SQLMap provides its own caching
+system, that you configure through a \tt{<cacheModel>} element.
+
+The results from a query Mapped Statement can be cached simply by specifying
+the \tt{cacheModel} parameter in the statement tag (seen above). A cache model
+is a configured cache that is defined within your DataMapper configuration
+file. Cache models are configured using the \tt{cacheModel} element as
+follows:
+
+\begin{example}\label{example:3.45}
+Configuring a cache using the Cache Model element
+\begin{verbatim}
+<cacheModel id="product-cache" implementation="LRU" >
+  <flushInterval hours="24"/>
+  <flushOnExecute  statement="insertProduct"/>
+  <flushOnExecute  statement="updateProduct"/>
+  <flushOnExecute  statement="deleteProduct"/>
+  <property name="CacheSize" value="100"/>
+</cacheModel>
+\end{verbatim}
+\end{example}
+
+The cache model above will create an instance of a cache named
+``product-cache'' that uses a Least Recently Used (LRU) implementation. The
+value of the \tt{type} attribute is either a class name, or an alias for one
+of the included implementations (see below). Based on the flush elements
+specified within the cache model, this cache will be flushed every 24 hours.
+There can be only one flush interval element and it can be set using hours,
+minutes, seconds or milliseconds. In addition the cache will be flushed
+whenever the \tt{insertProduct}, \tt{updateProduct}, or \tt{deleteProduct}
+mapped statements are executed. There can be any number of ``flush on
+execute'' elements specified for a cache. Some cache implementations may need
+additional properties, such as the ``cache-size'' property demonstrated above.
+In the case of the LRU cache, the size determines the number of entries to
+store in the cache. Once a cache model is configured, you can specify the
+cache model to be used by a mapped statement, for example:
+
+\begin{example}\label{example:3.46}
+Specifying a Cache Model from a Mapped Statement
+\begin{verbatim}
+<statement id="getProductList" cacheModel="product-cache">
+  select * from PRODUCT where PRD_CAT_ID = #value#
+</statement>
+\end{verbatim}
+\end{example}
+
+\section{Cache Implementation}
+The cache model uses a pluggable framework for supporting different types of
+caches. The choice of cache is specified in the ``implementation'' attribute
+of the \tt{cacheModel} element as discussed above. The class name specified
+must be an implementation of the \tt{ISqlMapCache} interface, or one of the
+two aliases discussed below. Further configuration parameters can be passed to
+the implementation via the property elements contained within the body of the
+\tt{cacheModel}. Currently there are 2 implementations included with the PHP
+distribution.
+
+\subsection{Least Recently Used [LRU] Cache} The LRU cache implementation uses
+an Least Recently Used algorithm to determines how objects are automatically
+removed from the cache. When the cache becomes over full, the object that was
+accessed least recently will be removed from the cache. This way, if there is
+a particular object that is often referred to, it will stay in the cache with
+the least chance of being removed. The LRU cache makes a good choice for
+applications that have patterns of usage where certain objects may be popular
+to one or more users over a longer period of time (e.g. navigating back and
+forth between paginated lists, popular search keys etc.).
+
+The LRU implementation is configured as follows:
+\begin{example}\label{example:3.48}
+Configuring a LRU type cache
+\begin{verbatim}
+<cacheModel id="product-cache"  implementation="LRU" >
+  <flushInterval hours="24"/>
+  <flushOnExecute  statement="insertProduct"/>
+  <flushOnExecute  statement="updateProduct"/>
+  <flushOnExecute  statement="deleteProduct"/>
+   <property name="CacheSize" value="100"/>
+</cacheModel>
+\end{verbatim}
+\end{example}
+
+Only a single property is recognized by the LRU cache implementation. This
+property, named \tt{CacheSize} must be set to an integer value representing
+the maximum number of objects to hold in the cache at once. An important thing
+to remember here is that an object can be anything from a single string
+instance to an array of object. So take care not to store too much in your
+cache and risk running out of memory and disk space.
+
+\subsection{FIFO Cache}
+The FIFO cache implementation uses an First In First Out algorithm to
+determines how objects are automatically removed from the cache. When the
+cache becomes over full, the oldest object will be removed from the cache. The
+FIFO cache is good for usage patterns where a particular query will be
+referenced a few times in quick succession, but then possibly not for some
+time later.
+
+The FIFO implementation is configured as follows:
+
+\begin{example}\label{example:3.49}
+Configuring a FIFO type cache
+\begin{verbatim}
+<cacheModel id="product-cache" implementation="FIFO" >
+  <flushInterval hours="24"/>
+  <flushOnExecute  statement="insertProduct"/>
+  <flushOnExecute  statement="updateProduct"/>
+  <flushOnExecute  statement="deleteProduct"/>
+  <property name="CacheSize" value="100"/>
+</cacheModel>
+\end{verbatim}
+\end{example}
+
+Only a single property is recognized by the FIFO cache implementation. This
+property, named \tt{CacheSize} must be set to an integer value representing
+the maximum number of objects to hold in the cache at once. An important thing
+to remember here is that an object can be anything from a single String
+instance to an array of object. So take care not to store too much in your
+cache and risk running out of memory and disk space.

@@ -1,0 +1,9 @@
+<h1>Database Examples</h1>
+<com:TRepeater id="productList">
+	<prop:ItemTemplate>
+	<div>
+		Code: <%# $this->DataItem['productid'] %>
+		Category: <%# $this->DataItem['category'] %>
+	</div>
+	</prop:ItemTemplate>
+</com:TRepeater>

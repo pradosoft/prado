@@ -68,7 +68,7 @@ class TPagedList extends TList
 	/**
 	 * @var integer current page index
 	 */
-	private $_currentPageIndex=0;
+	private $_currentPageIndex=-1;
 	/**
 	 * @var integer user-assigned number of items in data source
 	 */

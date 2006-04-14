@@ -1,0 +1,257 @@
+\section{Test First!}
+
+Let's say that our most important client has a database and one of the tables
+in the database is a list of people. Our client tells us:
+
+``We would like to use a web application to display the people in this table
+and to add, edit, and delete individual records.''
+
+Not a complicated story, but it will cover the CRUD most developers want to
+learn first. :) Let's start with the people table that the client mentioned.
+Since we're keeping it simple, we'll say it's a table in an Access database.
+The table definition is shown as Example~\ref{example:1}.
+
+\begin{example}\label{example:1}
+The Person Table
+\begin{verbatim}
+Name              Type            Size
+PER_ID            Long Integer      4
+PER_FIRST_NAME    Text             40
+PER_LAST_NAME     Text             40
+PER_BIRTH_DATE    Date/Time         8
+PER_WEIGHT_KG     Double            8
+PER_HEIGHT_M      Double            8
+\end{verbatim}
+\end{example}
+
+\begin{mybox}{Tip:}
+    This example is bundled with a SQLite database file ``Data/test.db''
+    that contains the \tt{Person} table and some data, ready to use.
+\end{mybox}
+
+The first thing our story says is that client would like to display a list of
+people. Example~\ref{example:2} shows our test for that.
+
+\begin{example}\label{example:2}
+Tests/PersonTest.php
+\begin{verbatim}
+<?php
+class PersonTest extends UnitTestCase
+{
+    function testPersonList()
+    {
+        //try it
+        $people = TMapper::instance()->queryForList("SelectAll");
+
+        //test it
+        $this->assertNotNull($people, "Person list is not returned");
+        $this->assertTrue($people->getCount() > 0, "Person list is empty");
+        $person = $people[0];
+        $this->assertNotNull($person, "Person not returned");
+    }
+}
+?>
+\end{verbatim}
+\end{example}
+
+Well, Example 2 sure looks easy enough! We ask a method to ``select all'', and
+it returns a list of person objects. But, what code do we need to write to
+pass this test?
+
+\begin{mybox}{Note:}
+    Save the PersonTest.php into a \tt{Tests} directory. The unit tests are
+    written for the SimpleTest framework (http://simpletest.sf.net).
+\end{mybox}
+
+Now, to setup the testing framework, suppose you have the \tt{SimpleTest}
+framework installed. Then we need to create an entry file to run the tests.
+See the \tt{SimpleTest} documentation for further details on setting up tests.
+
+\begin{example}\label{example:2a}
+Unit test entry file, \tt{run\_tests.php}.
+\begin{verbatim}
+<?php
+require_once('../tests/simpletest/unit_tester.php');
+require_once('../tests/simpletest/reporter.php');
+require_once('../SQLMap/TMapper.php');
+require_once('Models/Person.php');
+
+//supress strict warnings from Adodb.
+error_reporting(E_ALL);
+
+$test = new GroupTest('All tests');
+$test->addTestFile('Tests/PersonTest.php'); $test->run(new HtmlReporter());
+?>
+\end{verbatim}
+\end{example}
+To run the tests, point your browser to the ``run\_test.php'' script file
+served from your web server.
+
+Let's see. The test uses a list of person objects. We could start with a blank
+object, just to satisfy the test, and add the display properties later. But
+let's be naughty and skip a step. Our fully-formed person object is shown in
+Example~\ref{example:3}.
+
+\begin{example}\label{example:3}
+Models/Person.php
+\begin{verbatim}
+<?php
+class Person
+{
+    public $ID = -1;
+    public $FirstName;
+    public $LastName;
+    public $WeightInKilograms = 0.0;
+    public $HeightInMeters = 0.0;
+
+    private $_birthDate;
+
+    //setters and getter for BirthDate
+    public function getBirthDate()
+    {
+        return $this->_birthDate;
+    }
+
+    public function setBirthDate($value)
+    {
+        $this->_birthDate = $value;
+    }
+}
+?>
+\end{verbatim}
+\end{example}
+
+OK, that was fun! The \tt{\$this->assertXXX} methods are built into
+\tt{UnitTestCase} class. So to run Example~\ref{example:2}, we just need the
+\tt{TMapper} object and \tt{queryForList} method. Wonderfully, the SQLMap
+DataMapper framework has a \tt{TMapper}class built into it that will work just
+fine for for us to use in this tutorial, so we don't need to write that
+either.
+
+When the \tt{TMapper->instance()} method is called, an instance of the SQLMap
+\tt{TSqlMapper} class is returned that has various methods available such as
+\tt{queryForList}. In this example, the SQLMap \tt{TSqlMapper->queryForList()}
+method executes our SQL statement (or stored procedure) and returns the result
+as a list. Each row in the result becomes an entry in the list. Along with
+\tt{queryForList()}, there are also \tt{delete()}, \tt{insert()},
+\tt{queryForObject()}, \tt{queryForPagedList()} and a few other methods in the
+SQLMap API. (See Chapter 9 in the SQLMap DataMapper Developer Guide for
+details.)
+
+Looking at Example~\ref{example:2}, we see that the \tt{queryForList()} method
+takes the name of the statement we want to run. OK. Easy enough. But where
+does SQLMap get the ``SelectAll'' statement? Some systems try to generate SQL
+statements for you, but SQLMap specializes in data mapping, not code
+generation. It's our job (or the job of our database administrator) to craft
+the SQL or provide a stored procedure. We then describe the statement in an
+XML element, like the one shown in Example~\ref{example:4}.
+
+\begin{example}\label{example:4}
+We use XML elements to map a database statement to an application object.
+\begin{verbatim}
+<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap>
+    <select id="SelectAll" resultClass="Person">
+        SELECT
+            per_id as ID,
+            per_first_name as FirstName,
+            per_last_name as LastName,
+            per_birth_date as BirthDate,
+            per_weight_kg as WeightInKilograms,
+            per_height_m as HeightInMeters
+        FROM
+            person
+    </select>
+</sqlMap>
+\end{verbatim}
+\end{example}
+
+The SQLMap mapping documents can hold several sets of related elements, like
+those shown in Example~\ref{example:4}. We can also have as many mapping
+documents as we need to help organize our code. Additionally, having multiple
+mapping documents is handy when several developers are working on the project
+at once.
+
+So, the framework gets the SQL code for the query from the mapping, and plugs
+it into a prepared statement. But, how does SQLMap know where to find the
+table's datasource?
+
+Surprise! More XML! You can define a configuration file for each datasource
+your application uses. Example~\ref{example:5} shows a configuration file for
+our SQLite database.
+
+\begin{example}\label{example:5}
+sqlmap.config - a configuration file for our SQLite database
+\begin{verbatim}
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMapConfig>
+    <provider class="TAdodbProvider">
+        <datasource driver="sqlite" host="Data/test.db" />
+    </provider>
+    <sqlMaps>
+        <sqlMap resource="Data/person.xml"/>
+    </sqlMaps>
+</sqlMapConfig>
+\end{verbatim}
+\end{example}
+
+The \tt{<provider>} specifies the database provider class, in this case
+\tt{TAdodbProvider} using the Adodb library. The \tt{<datasource>} tag
+specifies the database connection details. In this case, for an SQLite
+database, we just need the driver name, and the host that points to the actual
+SQLite database file.
+
+The last part of the configuration file ("sqlMaps") is where we list our
+mapping documents, like the one shown back in Example~\ref{example:4}. We can
+list as many documents as we need here, and they will all be read when the
+configuration is parsed.
+
+OK, so how does the configuration get parsed?
+
+Look back at Example~\ref{example:2}. The heart of the code is the call to the
+``\tt{TMapper}'' object (under the remark "try it"). The \tt{TMapper} object
+is a singleton that handles the instantiation and configuration of an SQLMap
+\tt{TSqlMapper} object, which provides a facade to the SQLMap DataMapper
+framework API.
+
+The first time that the \tt{TMapper} is called, it reads in the
+\tt{sqlmap.config} file and associated mapping documents to create an instance
+of the \tt{TSqlMapper} class. On subsequent calls, it reuses the
+\tt{TSqlMapper} object so that the configuration is re-read only when files
+change.
+
+The framework comes bundled with a default \tt{TMapper} class for you to use
+immediately to get access to the SQLMap SqlMapper object. If you want to use a
+different name other than \tt{sqlmap.config} at the default location for the
+configuration file, or need to use more than one database and have one
+SqlMapper per database, you can also write your own class to mimic the role of
+the Mapper class view by copying and modifying the standard version.
+
+\begin{mybox}{Tip:}
+    You can also call \tt{TMapper::configure('/path/to/your/sqlmap.config')}
+    to configure the \tt{TMapper} for a specific configuration file.
+\end{mybox}
+
+If we put this all together into a solution, we can ``green bar'' our test. At
+this point you should have the following files.
+\begin{verbatim}
+Data/person.xml             % Mapping file.
+Data/test.db                % SQLite database file.
+
+Models/Person.php           % Person class file.
+
+Tests/PersonTest.php        % Unit test case for Person mapping.
+
+run_tests.php               % Unit test entry point.
+sqlmap.config               % SQLMap configuration file.
+\end{verbatim}
+
+Run the tests by pointing your browser URL to the ``run\_tests.php'' server
+file.
+
+\begin{figure}[!h]
+    \centering
+        \includegraphics[width=0.7\textwidth]{example1}
+    \caption{Green Bar!}
+    \label{fig:diagram}
+\end{figure}

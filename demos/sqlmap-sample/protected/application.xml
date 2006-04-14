@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<application id="Database" Mode="Debug">
+  <paths>
+	<alias id="Example" path="business-objects" />
+  </paths>
+  <modules>
+  	<module id="cache" class="System.Caching.TSqliteCache" />
+  	<module id="petshop-sqlmap" 
+  			enableConfigCache="true"
+  			class="System.DataAccess.TSQLMap" 
+  			configFile="Application.petshop-sqlmap" />
+  	<module id="person-sample"
+  			class="System.DataAccess.TSQLMap"
+  			configFile="Application.person-sqlmap" />
+  </modules>
+</application>

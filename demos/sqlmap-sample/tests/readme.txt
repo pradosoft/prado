@@ -1,0 +1,1 @@
+The ''Data'' directory and ''Data/test.db'' must be writable by PHP for SQLite database to work.

@@ -1,0 +1,306 @@
+\chapter{Parameter Maps and Inline Parameters}\label{section:3.4}
+Most SQL statements are useful because we can pass them values at runtime.
+Someone wants a database record with the ID 42, and we need to merge that ID
+number into a select statement. A list of one or more parameters are passed at
+runtime, and each placeholder is replaced in turn. This is simple but labor
+intensive, since developers spend a lot of time counting symbols to make sure
+everything is in sync.
+
+\begin{mybox}{Note:}
+Preceding sections briefly touched on inline parameters, which automatically
+map properties to named parameters. Many iBATIS developers prefer this
+approach. But others prefer to stick to the standard, anonymous approach to
+SQL parameters by using parameter maps. Sometimes people need to retain the
+purity of the SQL statements; other times they need the detailed specification
+offered by parameter maps due to database or provider-specific information
+that needs to be used.
+\end{mybox}
+
+\section{Parameter Map}
+A Parameter Map defines an ordered list of values that match up with the
+placeholders of a parameterized query statement. While the attributes
+specified by the map still need to be in the correct order, each parameter is
+named. You can populate the underlying class in any order, and the Parameter
+Map ensures each value is passed in the correct order.
+
+Parameter Maps can be provided as an external element and \emph{inline}.
+Example~\ref{example:3.16} shows an external Parameter Map.
+
+\begin{example}\label{example:3.16}
+An external Parameter Map
+\begin{verbatim}
+<parameterMap id="parameterMapIdentifier"
+  [extends="[sqlMapNamespace.]parameterMapId"]>
+  <parameter
+    property ="propertyName"
+    [column="columnName"]
+    [dbType="databaseType"]
+    [type="propertyCLRType"]
+    [nullValue="nullValueReplacement"]
+    [size="columnSize"]
+    [precision="columnPrecision"]
+    [scale="columnScale"]
+    [typeHandler="class.name"]
+  <parameter ... ... />
+  <parameter ... ... />
+</parameterMap>
+\end{verbatim}
+\end{example}
+
+In Example~\ref{example:3.16}, the parts in [brackets] are optional. The
+\tt{parameterMap} element only requires the id attribute.
+Example~\ref{example:3.17} shows a typical \tt{<parameterMap>}.
+
+\begin{example}\label{example:3.17}
+A typical \tt{<parameterMap>} element
+\begin{verbatim}
+<parameterMap id="insert-product-param" class="Product">
+  <parameter property="description" />
+  <parameter property="id"/>
+</parameterMap>
+
+<statement id="insertProduct" parameterMap="insert-product-param">
+  insert into PRODUCT (PRD_DESCRIPTION, PRD_ID) values (?,?);
+</statement>
+\end{verbatim}
+\end{example}
+
+\begin{mybox}{Note:}
+Parameter Map names are always local to the Data Map definition file where
+they are defined. You can refer to a Parameter Map in another Data Map
+definition file by prefixing the \tt{id} of the Parameter Map with the
+namespace of the Data Map (set in the \tt{<sqlMap>} root element). If the
+Parameter Map in Example~\ref{example:3.17} were in a Data Map named
+``Product'', it could be referenced from another file using
+``Product.insert-product-param''.
+\end{mybox}
+
+\subsection{\tt{<parameterMap>} attributes} The \tt{<parameterMap>} element
+accepts two attributes: \tt{id} (required) and \tt{extends} (optional).
+
+\subsubsection{\tt{id} attribute} The required \tt{id} attribute provides a
+unique identifier for the \tt{<parameterMap>} within this Data Map.
+
+\subsubsection{\tt{extends} attribute}
+The optional \tt{extends} attribute can be set to the name of another
+\tt{parameterMap} upon which to base this \tt{parameterMap}. All properties of
+the super \tt{parameterMap} will be included as part of this
+\tt{parameterMap}, and values from the super \tt{parameterMap} are set before
+any values specified by this \tt{parameterMap}. The effect is similar to
+extending a class.
+
+\section{\tt{<parameter>} Elements}
+The \tt{<parameterMap>} element holds one or more parameter child elements
+that map object properties to placeholders in a SQL statement. The sections
+that follow describe each of the attributes.
+
+\subsection{\tt{property} attribute}
+The \tt{property} attribute of \tt{<parameter>} is the name of a property of
+the parameter object. It may also be the name of an entry in an array. The
+name can be used more than once depending on the number of times it is needed
+in the statement. (In an update, you might set a column that is also part of
+the where clause.)
+
+\subsection{\tt{direction} attribute}
+The \tt{direction} attribute may be used to indicate a stored procedure
+parameter's direction.
+
+\subsection{\tt{column} attribute}
+The \tt{column} attribute is used to define to the name of a parameter used by
+a stored procedure.
+
+\begin{table}[!h]\centering\label{table:3.3}
+\caption{Parameter \tt{direction} attribute values }
+\begin{tabular}{|l|l|}
+  \hline
+  % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+  \textbf{Value} & \textbf{Description}\\
+  \hline
+  Input & input-only \\
+  \hline
+  Output & output-only \\
+  \hline
+  InputOutput & bidirectional \\
+  \hline
+\end{tabular}
+\end{table}
+
+\subsection{\tt{dbType} attribute}
+The \tt{dbType} attribute is used to explicitly specify the database column
+type of the parameter to be set by this property. This attribute is normally
+only required if the column is nullable. Although, another reason to use the
+\tt{dbType} attribute is to explicitly specify date types. Most SQL databases
+have more than one \tt{datetime} type. Usually, a database has at least three
+different types (DATE, DATETIME, TIMESTAMP). In order for the value to map
+correctly, you might need to specify the column's \tt{dbType}.
+
+\begin{mybox}{Note:}
+Most providers only need the \tt{dbType} specified for nullable columns. In
+this case, you only need to specify the type for the columns that are
+nullable.
+\end{mybox}
+
+\subsection{\tt{type} attribute}
+The \tt{type} attribute is used to specify the type of the parameter's
+property. This attribute is useful when passing \tt{InputOutput} and
+\tt{Output} parameters into stored procedures. The framework uses the
+specified type to properly handle and set the parameter object's properties
+with the procedure's output values after execution.
+
+%If the attribute type is not set and the framework cannot otherwise determine
+%the type, the type is assumed to be an StdObject. Section~\ref{section:6}
+%details the types and available aliases that have pre-built support in the
+%framework.
+
+\subsection{\tt{nullValue} attribute}\label{section:nullValueParameter}
+The \tt{nullValue} attribute can be set to any valid value (based on property
+type). The \tt{nullValue} attribute is used to specify an outgoing null value
+replacement. What this means is that when the value is detected in the object
+property, a NULL will be written to the database (the opposite behavior of an
+inbound null value replacement). This allows you to use a magic null number in
+your application for types that do not support null values (such as int,
+double, float). When these types of properties contain a matching null value
+(for example, say, $-9999$), a NULL will be written to the database instead of
+the value.
+
+
+\begin{mybox}{Tip:}
+For round-trip transparency of null values, you must also specify database
+columns null value replacements in your Result Map (see
+Chapter~\ref{section:3.5}).
+\end{mybox}
+
+
+\subsection{\tt{size} attribute}
+The \tt{size} attribute sets the maximum size of the data within the column.
+
+\subsection{\tt{precision} attribute}
+The \tt{precision} attribute is used to set the maximum number of digits used
+to represent the property value.
+
+\subsection{\tt{scale} attribute}
+The \tt{scale} attribute sets the number of decimal places used to resolve the
+property value.
+
+\subsection{\tt{typeHandler} attribute}
+The \tt{typeHandler} attribute allows the use of a Custom Type Handler (see
+the Custom Type Handler section). This allows you to extend the DataMapper's
+capabilities in handling types that are specific to your database provider,
+are not handled by your database provider, or just happen to be a part of your
+application design. You can create custom type handlers to deal with storing
+and retrieving booleans from your database for example.
+
+\section{Inline Parameter Maps}\label{section:3.4.3}
+If you prefer to use inline parameters instead of parameter maps, you can add
+extra type information inline too. The inline parameter map syntax lets you
+embed the property name, the property type, the column type, and a null value
+replacement into a parametrized SQL statement. The next four examples shows
+statements written with inline parameters.
+
+\begin{example}\label{example:3.18}
+ A \tt{<statement>} using inline parameters
+\begin{verbatim}
+<statement id="insertProduct" parameterClass="Product">
+  insert into PRODUCT (PRD_ID, PRD_DESCRIPTION)
+  values (#id#, #description#)
+</statement>
+\end{verbatim}
+\end{example}
+
+The following example shows how \tt{dbTypes} can be declared inline.
+
+\begin{example}\label{example:3.19}
+ A \tt{<statement>} using an inline parameter map with a type
+\begin{verbatim}
+<statement id="insertProduct" parameterClass="Product">
+  insert into PRODUCT (PRD_ID, PRD_DESCRIPTION)
+  values (#id, dbType=int#, #description, dbType=VarChar#)
+</statement>
+\end{verbatim}
+\end{example}
+
+The next example shows how \tt{dbTypes} and null value replacements can also
+be declared inline.
+
+\begin{example}\label{example:3.20}
+A \tt{<statement>} using an inline parameter map with a null value replacement
+\begin{verbatim}
+<statement id="insertProduct" parameterClass="Product">
+  insert into PRODUCT (PRD_ID, PRD_DESCRIPTION)
+  values (#id, dbType=int, nullValue=-999999#, #description, dbType=VarChar#)
+</statement>
+\end{verbatim}
+\end{example}
+
+\begin{example}\label{example:3.21}
+A more complete example.
+\begin{verbatim}
+<update id="UpdateAccountViaInlineParameters" parameterClass="Account">
+ update Accounts set
+ Account_FirstName = #FirstName#,
+ Account_LastName = #LastName#,
+ Account_Email = #EmailAddress,type=string,dbType=Varchar,nullValue=no_email@provided.com#
+ where
+ Account_ID = #Id#
+</update>
+\end{verbatim}
+\end{example}
+
+\begin{mybox}{Note:}
+Inline parameter maps are handy for small jobs, but when there are a lot of
+type descriptors and null value replacements in a complex statement, an
+industrial-strength, external \tt{parameterMap} can be easier.
+\end{mybox}
+
+\section{Standard Type Parameters}
+In practice, you will find that many statements take a single parameter, often
+an \tt{integer} or a \tt{string}. Rather than wrap a single value in another
+object, you can use the standard library object (string, integer, et cetera)
+as the parameter directly. Example~\ref{example:3.22} shows a statement using
+a standard type parameter.
+
+\begin{example}\label{example:3.22}
+A \tt{<statement>} using standard type parameters
+\begin{verbatim}
+<statement id="getProduct" parameterClass="System.Int32">
+  select * from PRODUCT where PRD_ID = #value#
+</statement>
+\end{verbatim}
+\end{example}
+
+Assuming \tt{PRD\_ID} is a numeric type, when a call is made to this Mapped
+Statement, a standard integer can be passed in. The \tt{\#value\#} parameter
+will be replaced with the value of the integer. The name \tt{value} is simply
+a placeholder, you can use another moniker of your choice. Result Maps support
+primitive types as results as well.
+
+For your convenience, the following PHP primitive types are supported.
+\begin{itemize}
+  \item \tt{string}
+  \item \tt{float} or \tt{double}
+  \item \tt{integer} or \tt{int}
+  \item \tt{bool} or \tt{boolean}
+\end{itemize}
+
+\section{Array Type Parameters}
+You can also pass in a array as a parameter object. This would usually be a an
+associative array. Example~\ref{example:3.23} shows a \tt{<statement>} using
+an array for a \tt{parameterClass}.
+
+
+\begin{example}\label{example:3.23}
+A \tt{<statement>} using an array for a \tt{parameterClass}
+\begin{verbatim}
+<statement id="getProduct" parameterClass="array">
+  select * from PRODUCT
+  where PRD_CAT_ID = #catId#
+  and PRD_CODE = #code#
+</statement>
+\end{verbatim}
+\end{example}
+
+In Example~\ref{example:3.23}, notice that the SQL in this Mapped Statement
+looks like any other. There is no difference in how the inline parameters are
+used. If an associative array is passed, it must contain keys named \tt{catId}
+and \tt{code}. The values referenced by those keys must be of the appropriate
+type for the column, just as they would be if passed from a properties object.

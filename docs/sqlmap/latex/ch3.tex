@@ -1,0 +1,714 @@
+\chapter{Working with Data Maps}\label{section:3}
+\section{Introduction}
+
+If you want to know how to configure and install SQLMap, see the Developer
+Guide section~\ref{section:4} . But if you want to know how SQLMap really
+works, continue from here.
+
+The Data Map definition file is where the interesting stuff happens. Here, you
+define how your application interacts with your database. As mentioned, the
+Data Map definition is an XML descriptor file. By using a service routine
+provided by SQLMap, the XML descriptors are rendered into a client object (or
+Mapper). To access your Data Maps, your application calls the client object
+and passes in the name of the statement you need.
+
+The real work of using SQLMap is not so much in the application code, but in
+the XML descriptors that SQLMap renders. Instead of monkeying with application
+source code, you monkey with XML descriptors instead. The benefit is that the
+XML descriptors are much better suited to the task of mapping your object
+properties to database entities. At least, that's our own experience with our
+own applications. Of course, your mileage may vary.
+
+\section{What's in a Data Map definition file, anyway?}
+
+If you read the Tutorial, you've already seen some simple Data Map examples,
+like the one shown in Example~\ref{example:2.1}.
+
+\begin{example}\label{example:3.1}
+ A simple Data Map (PHP)
+ \begin{verbatim}
+<?xml version="1.0" encoding="UTF-8" ?>
+  <sqlMap namespace="LineItem">
+    <insert id="InsertLineItem" parameterClass="LineItem">
+      INSERT INTO [LinesItem]
+        (Order_Id, LineItem_LineNum, Item_Id, LineItem_Quantity, LineItem_UnitPrice)
+      VALUES
+       (#Order.Id#, #LineNumber#, #Item.Id#, #Quantity#, #Item.ListPrice#)
+    </insert>
+</sqlMap>
+ \end{verbatim}
+\end{example}
+This map takes some properties from a \tt{LineItem} instance and merges the
+values into the SQL statement. The value-add is that our SQL in separated from
+our program code, and we can pass our \tt{LineItem} instance directly to a
+library method:
+\begin{verbatim}
+TMapper::instance()->insert("InsertLineItem",$lineItem);
+\end{verbatim}
+No fuss, no muss. Likewise, see Example\ref{example:3.2} for a simple select
+statement.
+
+\begin{mybox}{Info:}
+\textbf{A Quick Glance at Inline Parameters}
+
+Say we have a mapped statement element that looks like this:
+\begin{verbatim}
+ <statement id="InsertProduct">
+  insert into Products (Product_Id, Product_Description)
+  values (#Id#, #Description#);
+</statement>
+\end{verbatim}
+The inline parameters here are \tt{\#Id\#} and \tt{\#Description\#}. Let's
+also say that we have an object with the properties \tt{Id} and
+\tt{Description}. If we set the object properties to $5$ and ``dog'',
+respectively, and passed the object to the mapped statement, we'd end up with
+a runtime query that looked like this:
+\begin{verbatim}
+insert into Products (Product_Id, Product_Description) values (5, 'dog');
+\end{verbatim}
+For more about inline parameters, see Chapter~\ref{section:3.4}.
+\end{mybox}
+
+But, what if you wanted some ice cream with that pie? And maybe a cherry on
+top? What if we wanted to cache the result of the select? Or, what if we
+didn't want to use SQL aliasing or named parameters. (Say, because we were
+using pre-existing SQL that we didn't want to touch.)
+Example~\ref{example:3.2} shows a Data Map that specifies a cache, and uses a
+\tt{<parameterMap>} and a \tt{<resultMap>} to keep our SQL pristine.
+
+\begin{example}\label{example:3.2}
+A Data Map definition file with some bells and whistles
+\begin{verbatim}
+<?xml version="1.0" encoding="UTF-8" ?>
+  <sqlMap namespace="Product">
+
+    <cacheModel id="productCache" type="LRU">
+      <flushInterval hours="24"/>
+      <property name="CacheSize" value="1000" />
+    </cacheModel>
+
+    <resultMap id="productResult" class="Product">
+      <result property="Id" column="Product_Id"/>
+      <result property="Description" column="Product_Description"/>
+    </resultMap>
+
+    <select id="GetProduct" parameterMap="productParam" cacheModel="productCache">
+      select * from Products where Product_Id = ?
+    </select>
+
+    <parameterMap id="productParam" class="Product">
+      <parameter property="Id"/>
+    </parameterMap>
+
+</sqlMap>
+\end{verbatim}
+\end{example}
+In Example~\ref{example:3.2}, \tt{<parameterMap>} maps the SQL ``?'' to the
+product \tt{Id} property. The \tt{<resultMap>} maps the columns to our object
+properties. The \tt{<cacheModel>} keeps the result of the last one thousand of
+these queries in active memory for up to 24 hours.
+
+Example~\ref{example:3.2} is longer and more complex than
+Example~\ref{example:3.1}, but considering what you get in return, it seems
+like a fair trade. (A bargain even.)
+
+Many agile developers would start with something like
+Example~\ref{example:3.1} and add features like caching later. If you changed
+the Data Map from Example~\ref{example:3.1} to Example~\ref{example:3.2}, you
+would not have to touch your application source code at all. You can start
+simple and add complexity only when it is needed.
+
+A single Data Map definition file can contain as many Cache Models, Type
+Aliases, Result Maps, Parameter Maps, and Mapped Statements (including stored
+procedures), as you like. Everything is loaded into the same configuration, so
+you can define elements in one Data Map and then use them in another. Use
+discretion and organize the statements and maps appropriately for your
+application by finding some logical way to group them.
+
+\section{Mapped Statements}
+Mapped Statements can hold any SQL statement and can use Parameter Maps and
+Result Maps for input and output. (A stored procedure is a specialized form of
+a statement. See section~\ref{section:3.3.1} and \ref{section:3.3.2} for more
+information.)
+
+If the case is simple, the Mapped Statement can reference the parameter and
+result classes directly. Mapped Statements support caching through reference
+to a Cache Model element. The following example shows the syntax for a
+statement element.
+
+\begin{example}\label{example:3.3}
+Statement element syntax
+\begin{verbatim}
+<statement id="statement.name"
+  [parameterMap="parameterMap.name"]
+  [parameterClass="class.name"]
+  [resultMap="resultMap.name"]
+  [resultClass="class.name"]
+  [listClass="class.name"]
+  [cacheModel="cache.name"]
+>
+
+  select * from Products where Product_Id = [?|#propertyName#]
+  order by [$simpleDynamic$]
+
+</statement>
+\end{verbatim}
+\end{example}
+In Example~\ref{example:3.3}, the [bracketed] parts are optional, and some
+options are mutually exclusive. It is perfectly legal to have a Mapped
+Statement as simple as shown by Example~\ref{example:3.4}.
+
+\begin{example}\label{example:3.4}
+A simplistic Mapped Statement
+\begin{verbatim}
+<statement id="InsertTestProduct" >
+  insert into Products (Product_Id, Product_Description) values (1, "Shih Tzu")
+</statement>
+\end{verbatim}
+\end{example}
+
+Example~\ref{example:3.4} is obviously unlikely, unless you are running a
+test. But it does shows that you can use SQLMap to execute arbitrary SQL
+statements. More likely, you will use the object mapping features with
+Parameter Maps (Chapter~\ref{section:3.4}) and Result Maps
+(Chapter~\ref{section:3.5}) since that's where the magic happens.
+
+\subsection{Statement Types}\label{section:3.3.1}
+The \tt{<statement>} element is a general ``catch all'' element that can be
+used for any type of SQL statement. Generally it is a good idea to use one of
+the more specific statement-type elements. The more specific elements provided
+better error-checking and even more functionality. (For example, the insert
+statement can return a database-generated key.) Table~\ref{table:3.1}
+summarizes the statement-type elements and their supported attributes and
+features. The various attributes used by statement-type elements are covered
+in Section~\ref{section:3.3.4}.
+\begin{table}[!hpt]
+\caption{The six statement-type elements } \label{table:3.1}
+ \centering
+\begin{tabular}{|l|l|l|l|}
+  \hline
+  \textbf{Statement Element} &
+  \textbf{Attribute} &
+  \textbf{Child Elements} &
+  \textbf{Methods} \\
+  \hline
+  % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+  \tt{<statement>} &
+  \begin{minipage}{0.17\textwidth}
+  \vspace{3mm}
+    id \\
+    parameterClass \\
+    resultClass \\
+    listClass \\
+    parameterMap \\
+    resultMap\\
+    cacheModel
+    \vspace{3mm}
+    \end{minipage}
+ &
+   \begin{minipage}{0.22\textwidth}
+     None
+   \end{minipage}
+ &
+    \begin{minipage}{0.2\textwidth}
+      Insert \\ Update \\ Delete \\ All query methods
+    \end{minipage}
+ \\
+  \hline
+  \tt{<insert>} &
+  \begin{minipage}{0.17\textwidth}
+  \vspace{3mm}
+    id \\
+    parameterClass \\
+    parameterMap
+    \vspace{3mm}
+    \end{minipage}
+ &
+   \begin{minipage}{0.22\textwidth}
+     \tt{<selectKey>}\\
+     \tt{<generate>}
+   \end{minipage}
+ &
+    \begin{minipage}{0.2\textwidth}
+      Insert \\ Update \\ Delete
+    \end{minipage}
+\\
+\hline
+  \tt{<update>} &
+  \begin{minipage}{0.17\textwidth}
+  \vspace{3mm}
+    id \\
+    parameterClass \\
+    parameterMap \\
+    extends
+    \vspace{3mm}
+    \end{minipage}
+ &
+   \begin{minipage}{0.22\textwidth}
+     \tt{<generate>}
+   \end{minipage}
+ &
+    \begin{minipage}{0.2\textwidth}
+      Insert \\ Update \\ Delete
+    \end{minipage}
+ \\
+ \hline
+   \tt{<delete>} &
+  \begin{minipage}{0.17\textwidth}
+  \vspace{3mm}
+    id \\
+    parameterClass \\
+    parameterMap \\
+    extends
+    \vspace{3mm}
+    \end{minipage}
+ &
+   \begin{minipage}{0.22\textwidth}
+     \tt{<generate>}
+   \end{minipage}
+ &
+    \begin{minipage}{0.2\textwidth}
+      Insert \\ Update \\ Delete
+    \end{minipage}
+ \\
+ \hline
+  \tt{<select>} &
+  \begin{minipage}{0.17\textwidth}
+  \vspace{3mm}
+    id\\
+    parameterClass\\
+    resultClass\\
+    listClass \\
+    parameterMap \\
+    resultMap \\
+    cacheModel \\
+    extends
+    \vspace{3mm}
+    \end{minipage}
+ &
+   \begin{minipage}{0.22\textwidth}
+     \tt{<generate>}
+   \end{minipage}
+ &
+    \begin{minipage}{0.2\textwidth}
+      All query methods
+    \end{minipage}
+ \\
+ \hline
+   \tt{<procedure>} &
+  \begin{minipage}{0.17\textwidth}
+  \vspace{3mm}
+    id\\
+    parameterMap \\
+    resultClass\\
+    resultMap \\
+    cacheModel
+    \vspace{3mm}
+    \end{minipage}
+ &
+   \begin{minipage}{0.22\textwidth}
+     None
+   \end{minipage}
+ &
+    \begin{minipage}{0.2\textwidth}
+      Insert \\ Update \\ Delete \\ All query methods
+    \end{minipage}
+ \\
+ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Stored Procedures}\label{section:3.3.2}
+
+????
+
+\section{The SQL} \label{section:3.3.3}
+If you are not using stored procedures, the most important part of a
+statement-type element is the SQL. You can use any SQL statement that is valid
+for your database system. Since SQLMap passes the SQL through to a standard
+libraries (Adodb for PHP), you can use any statement with SQLMap that you
+could use without SQLMap. You can use whatever functions your database system
+supports, and even send multiple statements, so long as your driver or
+provider supports them.
+
+%If standard, static SQL isn't enough, iBATIS can help you build a dynamic SQL
+%statement. See Section 3.9 for more about Dynamic SQL.
+
+
+\subsection{Escaping XML symbols} Because you are combining SQL and XML in a
+single document, conflicts can occur. The most common conflict is the
+greater-than and less-than symbols (><). SQL statements use these symbols as
+operators, but they are reserved symbols in XML. A simple solution is to
+escape the SQL statements that uses XML reserved symbols within a CDATA
+element. Example~\ref{example:3.6} demonstrates this.
+
+\begin{example}\label{example:3.6}
+Using CDATA to ``escape'' SQL code
+\begin{verbatim}
+<statement id="SelectPersonsByAge" parameterClass="int" resultClass="Person">
+  <![CDATA[
+     SELECT * FROM PERSON WHERE AGE > #value#
+  ]]>
+</statement>
+\end{verbatim}
+\end{example}
+
+\subsection{Auto-Generated Keys}
+Many database systems support auto-generation of primary key fields, as a
+vendor extension. Some vendors pre-generate keys (e.g. Oracle), some vendors
+post-generate keys (e.g. MS-SQL Server and MySQL). In either case, you can
+obtain a pre-generated key using a \tt{<selectKey>} stanza within an
+\tt{<insert>} element. Example~\ref{example:3.7} shows an \tt{<insert>}
+statement for either approach.
+
+\begin{example}\label{example:3.7}
+\normalfont \tt{<insert>} statements using \tt{<selectKey>} stanzas
+\begin{verbatim}
+<!¡ªOracle SEQUENCE Example using .NET 1.1 System.Data.OracleClient -->
+<insert id="insertProduct-ORACLE" parameterClass="product">
+  <selectKey resultClass="int" type="pre" property="Id" >
+     SELECT STOCKIDSEQUENCE.NEXTVAL AS VALUE FROM DUAL
+  </selectKey>
+  insert into PRODUCT (PRD_ID,PRD_DESCRIPTION) values (#id#,#description#)
+</insert>
+
+<!¡ª Microsoft SQL Server IDENTITY Column Example -->
+<insert id="insertProduct-MS-SQL" parameterClass="product">
+  insert into PRODUCT (PRD_DESCRIPTION)
+  values (#description#)
+ <selectKey resultClass="int" type="post" property="id" >
+   select @@IDENTITY as value
+ </selectKey>
+</insert>
+
+<!-- MySQL Example -->
+<insert id="insertProduct-MYSQL" parameterClass="product">
+  insert into PRODUCT (PRD_DESCRIPTION)
+  values (#description#)
+ <selectKey resultClass="int" type="post" property="id" >
+   select LAST_INSERT_ID() as value
+ </selectKey>
+</insert>
+\end{verbatim}
+\end{example}
+
+\subsection{\tt{<generate>} tag}
+You can use SQLMap to execute any SQL statement your application requires.
+When the requirements for a statement are simple and obvious, you may not even
+need to write a SQL statement at all. The \tt{<generate>} tag can be used to
+create simple SQL statements automatically, based on a \tt{<parameterMap>}
+element. The four CRUD statement types (insert, select, update, and delete)
+are supported. For a select, you can select all or select by a key (or keys).
+Example~\ref{example:3.8} shows an example of generating the usual array of
+CRUD statements.
+
+\begin{mybox}{Important:}
+The intended use of the \tt{<generate>} tag is to save developers the trouble
+of coding mundane SQL statements (and only mundane statements). It is not
+meant as a object-to-relational mapping tool. There are many frameworks that
+provide extensive object-to-relational mapping features. The \tt{<generate>}
+tag is not a replacement for any of those. When the \tt{<generate>} tag does
+not suit your needs, use a conventional statement instead.
+\end{mybox}
+
+\begin{example}\label{example:3.8}
+\normalfont Creating the ``usual suspects'' with the \tt{<generate>} tag
+\begin{verbatim}
+  <parameterMap id="insert-generate-params">
+    <parameter property="Name" column="Category_Name"/>
+    <parameter property="Guid" column="Category_Guid" dbType="UniqueIdentifier"/>
+  </parameterMap>
+
+  <parameterMap id="update-generate-params" extends="insert-generate-params">
+    <parameter property="Id" column="Category_Id" />
+  </parameterMap>
+
+  <parameterMap id="delete-generate-params">
+    <parameter property="Id" column="Category_Id" />
+    <parameter property="Name" column="Category_Name"/>
+  </parameterMap>
+
+  <parameterMap id="select-generate-params">
+    <parameter property="Id" column="Category_Id" />
+    <parameter property="Name" column="Category_Name"/>
+    <parameter property="Guid" column="Category_Guid" dbType="UniqueIdentifier"/>
+  </parameterMap>
+
+  <update id="UpdateCategoryGenerate" parameterMap="update-generate-params">
+    <generate table="Categories" by="Category_Id"/>
+  </update>
+
+  <delete id="DeleteCategoryGenerate" parameterMap="delete-generate-params">
+    <generate table="Categories" by="Category_Id, Category_Name"/>
+  </delete>
+
+  <select id="SelectByPKCategoryGenerate" resultClass="Category" parameterClass="Category"
+          parameterMap="select-generate-params">
+    <generate table="Categories" by="Category_Id"/>
+  </select>
+
+  <select id="SelectAllCategoryGenerate" resultClass="Category"
+          parameterMap="select-generate-params">
+    <generate table="Categories" />
+  </select>
+
+  <insert id="InsertCategoryGenerate" parameterMap="insert-generate-params">
+    <selectKey property="Id" type="post" resultClass="int">
+      select @@IDENTITY as value
+    </selectKey>
+    <generate table="Categories" />
+  </insert>
+\end{verbatim}
+\end{example}
+The tag generates ANSI SQL, which should work with any compliant database.
+Special types, such as blobs, are not supported, and vendor-specific types are
+also not supported. But, the generate tag does keep the simple things simple.
+
+\begin{mybox}{Note:}
+The SQL is generated when the DataMapper instance is built and can be cached
+afterward, so there is no performance impact at execution time.
+\end{mybox}
+
+The generate tag supports two attributes :
+\begin{table}[!htb]\centering\label{table:3.2}
+\caption{\tt{<generate>} attributes}
+\begin{tabular}{|l|l|l|}
+  \hline
+  % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+  \textbf{Attribute} & \textbf{Description} & \textbf{Required} \\
+  \hline
+  table & specifies the table name to use in the SQL statement. & yes \\
+  \hline
+  by & specifies the columns to use in a WHERE clause & no \\
+  \hline
+\end{tabular}
+\end{table}
+
+\section{Statement-type Element Attributes}\label{section:3.3.4}
+The six statement-type elements take various attributes. See
+Section~\ref{section:3.3.1} for a table itemizing which attributes each
+element-type accepts. The individual attributes are described in the sections
+that follow.
+
+\subsection{\tt{id} attribute}
+The required \tt{id} attribute provides a name for this statement, which must
+be unique within this \tt{<SqlMap>}.
+
+\subsection{\tt{parameterMap} attribute}
+A Parameter Map defines an ordered list of values that match up with the ``?''
+placeholders of a standard, parameterized query statement.
+Example~\ref{example:3.9} shows a \tt{<parameterMap>} and a corresponding
+\tt{<statement>}.
+
+\begin{example}\label{example:3.9}
+A \tt{parameterMap} and corresponding statement
+\begin{verbatim}
+<parameterMap id="insert-product-param" class="Product">
+  <parameter property="id"/>
+  <parameter property="description"/>
+</parameterMap>
+
+<statement id="insertProduct" parameterMap="insert-product-param">
+  insert into PRODUCT (PRD_ID, PRD_DESCRIPTION) values (?,?);
+</statement>
+\end{verbatim}
+\end{example}
+
+In Example~\ref{example:3.9}, the Parameter Map describes two parameters that
+will match, in order, two placeholders in the SQL statement. The first ``?''
+is replaced by the value of the \tt{id} property. The second is replaced with
+the \tt{description} property.
+
+SQLMap also supports named, inline parameters, which most developers seem to
+prefer. However, Parameter Maps are useful when the SQL must be kept in a
+standard form or when extra information needs to be provided. For more about
+Parameter Maps see Chapter~\ref{section:3.4}.
+
+\subsection{\tt{parameterClass} attribute }
+If a \tt{parameterMap} attribute is not specified, you may specify a
+\tt{parameterClass} instead and use inline parameters (see
+Section~\ref{section:3.4.3}). The value of the \tt{parameterClass} attribute
+can be any existing PHP class name. Example~\ref{example:3.10} shows a
+statement using a PHP class named \tt{Product} in \tt{parameterClass}
+attribute.
+
+\begin{example}\label{example:3.10}
+Specify the \tt{parameterClass} with a PHP class name.
+\begin{verbatim}
+<statement id="statementName" parameterClass="Product">
+  insert into PRODUCT values (#id#, #description#, #price#)
+</statement>
+\end{verbatim}
+\end{example}
+
+\subsection{\tt{resultMap} attribute}
+A Result Map lets you control how data is extracted from the result of a
+query, and how the columns are mapped to object properties.
+Example~\ref{example:3.11} shows a \tt{<resultMap>} element and a
+corresponding \tt{<statement>} element.
+\begin{example}\label{example:3.11}
+A \tt{<resultMap>} and corresponding \tt{<statement>}
+\begin{verbatim}
+<resultMap id="select-product-result" class="product">
+  <result property="id" column="PRD_ID"/>
+  <result property="description" column="PRD_DESCRIPTION"/>
+</resultMap>
+
+<statement id="selectProduct" resultMap="select-product-result">
+  select * from PRODUCT
+</statement>
+\end{verbatim}
+\end{example}
+
+In Example~\ref{example:3.11}, the result of the SQL query will be mapped to
+an instance of the \tt{Product} class using the ``select-product-result''
+\tt{<resultMap>}. The \tt{<resultMap>} says to populate the \tt{id} property
+from the \tt{PRD\_ID} column, and to populate the \tt{description} property
+from the \tt{PRD\_DESCRIPTION} column.
+
+\begin{mybox}{Tip:}
+In Example~\ref{example:3.11}, note that using `` select * '' is supported. If
+you want all the columns, you don't need to map them all individually. (Though
+many developers consider it a good practice to always specify the columns
+expected.)
+\end{mybox}
+
+For more about Result Maps, see Chapter~\ref{section:3.5}.
+
+\subsection{\tt{resultClass} attribute}
+If a \tt{resultMap} is not specified, you may specify a \tt{resultClass}
+instead. The value of the \tt{resultClass} attribute can be the name of a PHP
+class or primitives like \tt{integer}, \tt{string}, or \tt{array}. The class
+specified will be automatically mapped to the columns in the result, based on
+the result metadata. The following example shows a \tt{<statement>} element
+with a \tt{resultClass} attribute.
+
+\begin{example}\label{example:3.12}
+A \tt{<statement>} element with \tt{resultClass} attribute
+\begin{verbatim}
+<statement id="SelectPerson" parameterClass="int" resultClass="Person">
+  SELECT
+  PER_ID as Id,
+  PER_FIRST_NAME as FirstName,
+  PER_LAST_NAME as LastName,
+  PER_BIRTH_DATE as BirthDate,
+  PER_WEIGHT_KG as WeightInKilograms,
+  PER_HEIGHT_M as HeightInMeters
+  FROM PERSON
+  WHERE PER_ID = #value#
+</statement>
+\end{verbatim}
+\end{example}
+
+In Example~\ref{example:3.12}, the \tt{Person} class has properties including:
+\tt{Id}, \tt{FirstName}, \tt{LastName}, \tt{BirthDate},
+\tt{WeightInKilograms}, and \tt{HeightInMeters}. Each of these corresponds
+with the column aliases described by the SQL select statement using the ``as''
+keyword ¨Ca standard SQL feature. When executed, a \tt{Person} object is
+instantiated and populated by matching the object property names to the column
+names from the query.
+
+Using SQL aliases to map columns to properties saves defining a
+\tt{<resultMap>} element, but there are limitations. There is no way to
+specify the types of the output columns (if needed), there is no way to
+automatically load related data such as complex properties.You can overcome
+these limitations with an explicit Result Map (Chapter~\ref{section:3.5}).
+
+\subsection{\tt{listClass} attribute}
+In addition to providing the ability to return an \tt{TList} of objects, the
+DataMapper supports the use of custom collection: a class that implements
+\tt{ArrayAccess}. The following is an example of a TList (it implements
+ArrayAccess) class that can be used with the DataMapper.
+
+\begin{example}\label{example:3.13}
+An \tt{ArrayAccess} implementation, by extending \tt{TList}.
+\begin{verbatim}
+class AccountCollection extends TList
+{
+    public function addRange($accounts)
+    {
+        foreach($accounts as $account)
+            $this->add($account);
+    }
+
+    public function copyTo(TList $array)
+    {
+        $array->copyFrom($this);
+    }
+}
+\end{verbatim}
+\end{example}
+An \tt{ArrayAccess} class can be specified for a select statement through the
+\tt{listClass} attribute. The value of the \tt{listClass} attribute is the
+full name of a PHP class that implements \tt{ArrayAccess}. The statement
+should also indicate the \tt{resultClass} so that the DataMapper knows how to
+handle the type of objects in the collection. The \tt{resultClass} specified
+will be automatically mapped to the columns in the result, based on the result
+metadata. The following example shows a \tt{<statement>} element with a
+\tt{listClass} attribute.
+
+\begin{example}\label{example:3.14}
+A \tt{<statement>} element with \tt{listClass} attribute
+\begin{verbatim}
+<statement id="GetAllAccounts"
+ listClass="AccountCollection"
+ resultClass="Account">
+   select
+   Account_ID as Id,
+   Account_FirstName as FirstName,
+   Account_LastName as LastName,
+   Account_Email as EmailAddress
+   from Accounts
+   order by Account_LastName, Account_FirstName
+</statement>
+\end{verbatim}
+\end{example}
+
+\subsection{\tt{cacheModel} attribute}
+If you want to cache the result of a query, you can specify a Cache Model as
+part of the \tt{<statement>} element. Example~\ref{example:3.15} shows a
+\tt{<cacheModel>} element and a corresponding \tt{<statement>}.
+
+\begin{example}\label{example:3.15}
+A \tt{<cacheModel>} element with its corresponding \tt{<statement>}
+\begin{verbatim}
+<cacheModel id="product-cache" implementation="LRU">
+  <flushInterval hours="24"/>
+  <flushOnExecute statement="insertProduct"/>
+  <flushOnExecute statement="updateProduct"/>
+  <flushOnExecute statement="deleteProduct"/>
+  <property name="size" value="1000" />
+</cacheModel>
+
+<statement id="selectProductList" parameterClass="int" cacheModel="product-cache">
+  select * from PRODUCT where PRD_CAT_ID = #value#
+</statement>
+\end{verbatim}
+\end{example}
+
+In Example~\ref{example:3.15}, a cache is defined for products that uses a
+Least Recently Used [LRU] type and flushes every 24 hours or whenever
+associated update statements are executed. For more about Cache Models, see
+Section~\ref{section:3.8}.
+
+\subsection{\tt{extends} attribute}
+When writing Sql, you often encounter duplicate fragments of SQL. SQLMap
+offers a simple yet powerful attribute to reuse them.
+
+\begin{verbatim}
+<select id="GetAllAccounts"
+  resultMap="indexed-account-result">
+select
+  Account_ID,
+  Account_FirstName,
+  Account_LastName,
+  Account_Email
+from Accounts
+</select>
+
+<select id="GetAllAccountsOrderByName"
+  extends="GetAllAccounts"
+  resultMap="indexed-account-result">
+    order by Account_FirstName
+</select>
+\end{verbatim}

@@ -2,48 +2,54 @@
 
 class TSQLMap extends TModule
 {
-	private $_SQLMapLibrary='';
 	private $_configFile;
 	private $_sqlmap;
-	private $_provider;
+	private $_enableCache=false;
 
 	/**
 	 * File extension of external configuration file
 	 */
-	const CONFIG_FILE_EXT='.config';
-
-	public function getSQLMapLibrary()
+	const CONFIG_FILE_EXT='.xml';
+	
+	/**
+	 * Saves the current sqlmap instance to cache.
+	 * @return boolean true if sqlmap was cached, false otherwise.
+	 */
+	protected function cacheSqlMap()
 	{
-		if(strlen($this->_SQLMapLibrary) < 1)
-			return dirname(__FILE__).'/SQLMap';
-		else
-			return $this->_SQLMapLibrary;
-	}
-
-	public function setSQLMapLibrary($path)
-	{
-		$this->_SQLMapLibrary = Prado::getPathOfNamespace($path);
+		if($this->getEnableConfigCache())
+		{
+			$cache = $this->getApplication()->getCache();
+			if(!is_null($cache))
+				return $cache->add($this->getID(), $this->_sqlmap);
+		}
+		return false;
 	}
 
 	/**
-	 * @return string external configuration file. Defaults to null.
+	 * Loads sqlmap data mapper instance from cache.
+	 * @return boolean true if load was successful, false otherwise.
+	 */
+	protected function loadSqlMapCache()
+	{
+		if($this->getEnableConfigCache())
+		{
+			$cache = $this->getApplication()->getCache();			
+			Prado::using('System.DataAccess.SQLMap.TSqlMapper');		
+			if(!is_null($cache))
+				$this->_sqlmap = $cache->get($this->getID());
+			return $this->_sqlmap instanceof TSqlMapper;
+		}
+		return false;
+	}
+	
+	/**
+	 * @return string sqlmap configuration file.
 	 */
 	public function getConfigFile()
 	{
 		return $this->_configFile;
-	}
-
-	public function init($xml)
-	{
-		$config = $xml->getElementByTagName('provider');
-		$class = $config->getAttribute('class');
-		$provider = Prado::createComponent($class);
-		$datasource = $config->getElementByTagName('datasource');
-		$properties = $datasource->getAttributes();
-		foreach($properties as $name=>$value)
-			$provider->setSubproperty($name,$value);
-		$this->_provider = $provider;
-	}
+	}	
 
 	/**
 	 * @param string external configuration file in namespace format. The file
@@ -52,26 +58,68 @@ class TSQLMap extends TModule
 	 */
 	public function setConfigFile($value)
 	{
-		if(($this->_configFile=Prado::getPathOfNamespace(
-					$value,self::CONFIG_FILE_EXT))===null)
+		$file = Prado::getPathOfNamespace($value,self::CONFIG_FILE_EXT);
+		if(is_null($file))
 			throw new TConfigurationException('sqlmap_configfile_invalid',$value);
+		else
+			$this->_configFile = $file;
+	}
+	
+	/**
+	 * Set true to cache sqlmap instances. 
+	 * @param boolean true to cache sqlmap instance.
+	 */
+	public function setEnableConfigCache($value)
+	{
+		$this->_enableCache = TPropertyValue::ensureBoolean($value, false);
+	}
+	
+	/**
+	 * @return boolean true if configuration should be cached, false otherwise.
+	 */
+	public function getEnableConfigCache()
+	{
+		return $this->_enableCache;
 	}
 
+	/**
+	 * Configure the data mapper using sqlmap configuration file.
+	 * If cache is enabled, the data mapper instance is cached.
+	 * @param string sqlmap configuration file.
+	 * @return TSqlMapper sqlmap instance.
+	 */
 	protected function configure($configFile)
 	{
-		include($this->getSQLMapLibrary().'/TSqlMapper.php');
+		Prado::using('System.DataAccess.SQLMap.TSqlMapper');
 		$builder = new TDomSqlMapBuilder();
 		$this->_sqlmap = $builder->configure($configFile);
-		if(!is_null($this->_provider))
-			$this->_sqlmap->setDataProvider($this->_provider);
+		$this->cacheSqlMap();
+		return $this->_sqlmap;			
 	}
 
+	/**
+	 * Initialize the sqlmap if necessary, returns the TSqlMapper instance.
+	 * @return TSqlMapper data mapper for this module.
+	 */
 	public function getClient()
 	{
-		if(is_null($this->_sqlmap))
+		if(is_null($this->_sqlmap) && !$this->loadSqlMapCache())
 			$this->configure($this->getConfigFile());
 		return $this->_sqlmap;
 	}
+	
+	/**
+	 * This magic method allows this TSQLMap module to be treated like
+	 * TSqlMapper instance.
+	 * @param string calling method name
+	 * @param array calling parameters
+	 * @return mixed data obtained from TSqlMapper method call.
+	 */
+	public function __call($method, $params)
+	{
+		$client = $this->getClient();
+		return call_user_func_array(array($client,$method),$params);
+	}	
 }
 
 ?>
