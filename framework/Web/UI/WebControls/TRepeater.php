@@ -259,6 +259,35 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	}
 
 	/**
+	 * @return string the field of the data source that provides the keys of the list items.
+	 */
+	public function getDataKeyField()
+	{
+		return $this->getViewState('DataKeyField','');
+	}
+
+	/**
+	 * @param string the field of the data source that provides the keys of the list items.
+	 */
+	public function setDataKeyField($value)
+	{
+		$this->setViewState('DataKeyField',$value,'');
+	}
+
+	/**
+	 * @return TList the keys used in the data listing control.
+	 */
+	public function getDataKeys()
+	{
+		if(($dataKeys=$this->getViewState('DataKeys',null))===null)
+		{
+			$dataKeys=new TList;
+			$this->setViewState('DataKeys',$dataKeys,null);
+		}
+		return $dataKeys;
+	}
+
+	/**
 	 * Creates a repeater item instance based on the item type and index.
 	 * @param integer zero-based item index
 	 * @param string item type, may be 'Header', 'Footer', 'Empty', 'Item', 'Separator', 'AlternatingItem'.
@@ -405,11 +434,18 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	protected function performDataBinding($data)
 	{
 		$this->reset();
+
+		$keys=$this->getDataKeys();
+		$keys->clear();
+		$keyField=$this->getDataKeyField();
+
 		$items=$this->getItems();
 		$itemIndex=0;
 		$hasSeparator=$this->_separatorTemplate!==null;
 		foreach($data as $dataItem)
 		{
+			if($keyField!=='')
+				$keys->add($this->getDataFieldValue($dataItem,$keyField));
 			if($itemIndex===0 && $this->_headerTemplate!==null)
 				$this->_header=$this->createItemInternal(-1,self::IT_HEADER,true,null);
 			if($hasSeparator && $itemIndex>0)
@@ -492,6 +528,22 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	public function onItemCommand($param)
 	{
 		$this->raiseEvent('OnItemCommand',$this,$param);
+	}
+
+	/**
+	 * Returns the value of the data at the specified field.
+	 * If data is an array, TMap or TList, the value will be returned at the index
+	 * of the specified field. If the data is a component with a property named
+	 * as the field name, the property value will be returned.
+	 * Otherwise, an exception will be raised.
+	 * @param mixed data item
+	 * @param mixed field name
+	 * @return mixed data value at the specified field
+	 * @throws TInvalidDataValueException if the data is invalid
+	 */
+	protected function getDataFieldValue($data,$field)
+	{
+		return TDataFieldAccessor::getDataFieldValue($data,$field);
 	}
 }
 

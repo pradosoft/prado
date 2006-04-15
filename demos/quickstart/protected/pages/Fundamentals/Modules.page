@@ -41,7 +41,7 @@ Error handler module is used to capture and process all error conditions in an a
 PRADO is released with a few more modules besides the core ones. They include caching modules (<tt>TSqliteCache</tt> and <tt>TMemCache</tt>), user management module (<tt>TUserManager</tt>), authentication and authorization module (<tt>TAuthManager</tt>), etc.
 </p>
 <p>
-When <tt>TPageService</tt> is requested, it also loads modules specific for page service, including asset manager (<tt>TAssetManager</tt>), template manager (<tt>TTemplateManager</tt>), theme/skin manager (<tt>TThemeManager</tt>), and page state persister (<tt>TPageStatePersister</tt>).
+When <tt>TPageService</tt> is requested, it also loads modules specific for page service, including asset manager (<tt>TAssetManager</tt>), template manager (<tt>TTemplateManager</tt>), theme/skin manager (<tt>TThemeManager</tt>).
 </p>
 <p>
 Custom modules and core modules are all configurable via <a href="?page=Configurations.Overview">configurations</a>.
