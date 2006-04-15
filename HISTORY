@@ -6,6 +6,7 @@ NEW: TOutputCache (Qiang)
 NEW: TQueue (Qiang)
 NEW: TPageStateFormatter (Qiang)
 NEW: TSessionPageStatePersister (Qiang)
+NEW: SQLMap (Wei)
 
 Version 3.0RC2 April 16, 2006
 =============================
