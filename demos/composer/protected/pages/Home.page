@@ -40,10 +40,10 @@ No properties defined.<br/>
 <prop:ItemTemplate>
 <tr>
   <td>
-  <com:TTextBox ID="PropertyName" Text=<%# $this->Parent->DataItem->Name %> CssClass="slTextBox"/>
+  <com:TTextBox ID="PropertyName" Text=<%# $this->DataItem->Name %> CssClass="slTextBox"/>
   </td>
   <td>
-  <com:TDropDownList ID="PropertyType" SelectedValue=<%# $this->Parent->DataItem->Type %> >
+  <com:TDropDownList ID="PropertyType" SelectedValue=<%# $this->DataItem->Type %> >
     <com:TListItem Text="string" />
     <com:TListItem Text="integer" />
     <com:TListItem Text="boolean" />
@@ -53,41 +53,41 @@ No properties defined.<br/>
   </com:TDropDownList>
   </td>
   <td>
-  <com:TTextBox ID="DefaultValue" Text=<%# $this->Parent->DataItem->DefaultValue %> CssClass="slTextBox"/>
+  <com:TTextBox ID="DefaultValue" Text=<%# $this->DataItem->DefaultValue %> CssClass="slTextBox"/>
   </td>
   <td>
-  <com:TDropDownList ID="Storage" SelectedValue=<%# $this->Parent->DataItem->Storage %> >
+  <com:TDropDownList ID="Storage" SelectedValue=<%# $this->DataItem->Storage %> >
     <com:TListItem Text="ViewState" />
     <com:TListItem Text="ControlState" />
     <com:TListItem Text="Memory" />
   </com:TDropDownList>
   </td>
   <td>
-  <com:TCheckBox ID="IsProtected" Text="protected" Checked=<%# $this->Parent->DataItem->IsProtected %> />
-  <com:TCheckBox ID="ReadOnly" Text="read-only" Checked=<%# $this->Parent->DataItem->ReadOnly %> />
+  <com:TCheckBox ID="IsProtected" Text="protected" Checked=<%# $this->DataItem->IsProtected %> />
+  <com:TCheckBox ID="ReadOnly" Text="read-only" Checked=<%# $this->DataItem->ReadOnly %> />
   </td>
   <td>
-  <com:TTextBox ID="Comments" Text=<%# $this->Parent->DataItem->Comments %> CssClass="slTextBox"/>
+  <com:TTextBox ID="Comments" Text=<%# $this->DataItem->Comments %> CssClass="slTextBox"/>
   </td>
   <td>
   <com:TButton
   		Text="Remove"
   		CommandName="remove"
-  		CommandParameter=<%# $this->Parent->ItemIndex %>
+  		CommandParameter=<%# $this->ItemIndex %>
   		CssClass="button"
   		/>
   <com:TButton
   		Text="Up"
   		CommandName="up"
-  		CommandParameter=<%# $this->Parent->ItemIndex %>
-  		Enabled=<%# $this->Parent->ItemIndex > 0%>
+  		CommandParameter=<%# $this->ItemIndex %>
+  		Enabled=<%# $this->ItemIndex > 0%>
   		CssClass="button"
   		/>
   <com:TButton
   		Text="Down"
   		CommandName="down"
-  		CommandParameter=<%# $this->Parent->ItemIndex %>
-  		Enabled=<%# $this->Parent->ItemIndex < $this->Page->ClassDefinition->Properties->Count-1 %>
+  		CommandParameter=<%# $this->ItemIndex %>
+  		Enabled=<%# $this->ItemIndex < $this->Page->ClassDefinition->Properties->Count-1 %>
   		CssClass="button"
   		/>
   </td>
@@ -123,30 +123,30 @@ No properties defined.<br/>
 <prop:ItemTemplate>
 <tr>
   <td>
-  <com:TTextBox ID="EventName" Text=<%# $this->Parent->DataItem->Name %> CssClass="slTextBox"/>
+  <com:TTextBox ID="EventName" Text=<%# $this->DataItem->Name %> CssClass="slTextBox"/>
   </td>
   <td>
-  <com:TTextBox ID="Comments" Text=<%# $this->Parent->DataItem->Comments %> CssClass="slTextBox"/>
+  <com:TTextBox ID="Comments" Text=<%# $this->DataItem->Comments %> CssClass="slTextBox"/>
   </td>
   <td>
   <com:TButton
   		Text="Remove"
   		CommandName="remove"
-  		CommandParameter=<%# $this->Parent->ItemIndex %>
+  		CommandParameter=<%# $this->ItemIndex %>
   		CssClass="button"
   		/>
   <com:TButton
   		Text="Up"
   		CommandName="up"
-  		CommandParameter=<%# $this->Parent->ItemIndex %>
-  		Enabled=<%# $this->Parent->ItemIndex > 0%>
+  		CommandParameter=<%# $this->ItemIndex %>
+  		Enabled=<%# $this->ItemIndex > 0%>
   		CssClass="button"
   		/>
   <com:TButton
   		Text="Down"
   		CommandName="down"
-  		CommandParameter=<%# $this->Parent->ItemIndex %>
-  		Enabled=<%# $this->Parent->ItemIndex < $this->Page->ClassDefinition->Events->Count-1 %>
+  		CommandParameter=<%# $this->ItemIndex %>
+  		Enabled=<%# $this->ItemIndex < $this->Page->ClassDefinition->Events->Count-1 %>
   		CssClass="button"
   		/>
   </td>

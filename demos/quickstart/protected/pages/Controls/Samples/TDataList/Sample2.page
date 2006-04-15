@@ -26,7 +26,7 @@
 <tr>
   <td>
   <com:TLinkButton
-       Text=<%#$this->Parent->DataItem['id']%>
+       Text=<%#$this->DataItem['id']%>
        CommandName="select"
        />
   <%#$this->DataItem['name']%>
@@ -83,7 +83,7 @@
   <td align="right">Name</td>
   <td><com:TTextBox
            ID="ProductName"
-           Text=<%#$this->Parent->DataItem['name'] %>
+           Text=<%#$this->DataItem['name'] %>
            />
   </td>
 </tr>
@@ -91,7 +91,7 @@
   <td align="right">Quantity</td>
   <td><com:TTextBox
            ID="ProductQuantity"
-           Text=<%#$this->Parent->DataItem['quantity'] %>
+           Text=<%#$this->DataItem['quantity'] %>
            />
   </td>
 </tr>
@@ -99,7 +99,7 @@
   <td align="right">Price</td>
   <td><com:TTextBox
            ID="ProductPrice"
-           Text=<%#$this->Parent->DataItem['price'] %>
+           Text=<%#$this->DataItem['price'] %>
            />
   </td>
 </tr>
@@ -107,7 +107,7 @@
   <td align="right">Imported</td>
   <td><com:TCheckBox
            ID="ProductImported"
-           Checked=<%#$this->Parent->DataItem['imported'] %>
+           Checked=<%#$this->DataItem['imported'] %>
            />
   </td>
 </tr>

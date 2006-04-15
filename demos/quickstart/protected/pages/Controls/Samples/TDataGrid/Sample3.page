@@ -48,11 +48,11 @@
 		/>
 	<com:TTemplateColumn HeaderText="Rating">
 		<prop:ItemTemplate>
-		<img src="images/star<%#$this->NamingContainer->DataItem['rating']%>.gif" alt="" />
+		<img src="images/star<%#$this->Parent->DataItem['rating']%>.gif" alt="" />
 		</prop:ItemTemplate>
 		<prop:EditItemTemplate>
 		<com:TDropDownList
-			SelectedValue=<%#$this->NamingContainer->DataItem['rating'] %>
+			SelectedValue=<%#$this->Parent->DataItem['rating'] %>
 			ID="Rating">
 			<com:TListItem Value="1" />
 			<com:TListItem Value="2" />

@@ -9,6 +9,8 @@ BUG: Ticket#129 - TRadioButtonList in TWizard step does not postback correctly (
 CHG: Moved localize() into PradoBase (Qiang)
 CHG: List controls now use array keys as list item values even if the array is integer-indexed (Qiang)
 CHG: THttpUtility::htmlEncode and htmlDecode now do not deal with & (Qiang)
+CHG: Expressions appeared in a template are evaluated in PreRender stage (Qiang)
+CHG: The context of expressions appeared in a template is changed to the template control (Qiang)
 ENH: Optimized the representation and evaluation of template expressions (Qiang)
 ENH: Added Raw layout to TDataList (Qiang)
 ENH: Added TRepeater.DataKeys and TRepeater.DataKeyField (Qiang)

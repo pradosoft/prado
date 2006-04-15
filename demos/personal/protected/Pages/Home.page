@@ -1,3 +1,5 @@
 <com:TContent ID="main">
 main content
+<com:TTextBox ID="TextBox" /><com:TButton Text="Submit" />
+<com:TLiteral Text=<%=$this->TextBox->Text %> />
 </com:TContent>

@@ -36,8 +36,8 @@ class ClassDefinition extends TComponent
 		if($this->Comments!=='')
 		{
 			$str.=" *\n";
-			$str.=implode("\n * ",explode("\n",wordwrap($this->Comments)));
-			$str.=" *\n\n";
+			$str.=" * ".implode("\n * ",explode("\n",wordwrap($this->Comments)));
+			$str.="\n *\n";
 		}
 		if($this->Author!=='')
 		{
@@ -171,9 +171,18 @@ class ClassDefinition extends TComponent
 			$name=$event->Name;
 			if($name==='')
 				continue;
+			if(strncasecmp($name,'on',2)!==0)
+				$name='On'.$name;
+			else
+			{
+				$name[0]='O';
+				$name[1]='n';
+			}
+			$methodName=$name;
+			$methodName[0]='o';
 			$comments=implode("\n\t * ",explode("\n",wordwrap($event->Comments)));
 			$writer->write("\n\t/**\n\t * Raises <b>$name</b> event.\n\t * $comments\n\t * @param TEventParameter event parameter\n\t */\n");
-			$writer->write("\tpublic function $name(\$param)\n\t{\n\t\t\$this->raiseEvent('$name',\$this,\$param);\n\t}\n");
+			$writer->write("\tpublic function $methodName(\$param)\n\t{\n\t\t\$this->raiseEvent('$name',\$this,\$param);\n\t}\n");
 		}
 	}
 

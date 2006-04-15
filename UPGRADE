@@ -16,9 +16,13 @@ for both A and B.
 
 Upgrading from v3.0.0 RC1
 -------------------------
-- !!! The context of template expression/statements/databinding tags
-  is changed to the control owning the template. Previously, it was
-  the control representing the tag.
+- !!! Expressions appeared in a template are now evaluated in PreRender
+  stage. Previously, for template expressions, they are evaluated during
+  rendering stage, while for property expressions, they are done right
+  after the controls are constructed.
+- !!! The context of the expressions appeared in a template is changed
+  to the template control. Previously, it is the component/control
+  associated with the expression.
 - !!! List controls databound with integer-indexed arrays will have
   the integers as their list item values. Previously, it used the array
   values as the list item values.
