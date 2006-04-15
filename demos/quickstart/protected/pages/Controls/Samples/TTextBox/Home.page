@@ -89,7 +89,7 @@ Safety feature (cross-site scripting prevention):
 <b>SafeText:</b>
 <com:TLabel ID="Output"
 	BackColor="silver"
-	Text=<%#$this->Page->TextBox2->SafeText%> />
+	Text=<%#$this->TextBox2->SafeText%> />
 </td></tr>
 
 </table>

@@ -5,11 +5,13 @@
 <h2>Dynamic Property Tags</h2>
 <p>
 Dynamic property tags are very similar to dynamic content tags, except that they are applied to component properties. The purpose of dynamic property tags is to allow more versatile component property configuration. Note, you are not required to use dynamic property tags because what can be done using dynamic property tags can also be done in PHP code. However, using dynamic property tags bring you much more convenience at accomplishing the same tasks. The basic usage of dynamic property tags is as follows,
+</p>
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:ComponentType PropertyName=DynamicPropertyTag ...&gt;
 body content
 &lt;/com:ComponentType&gt;
 </com:TTextHighlighter>
+<p>
 where you may enclose <tt>DynamicPropertyTag</tt> within single or double quotes for better readability.
 </p>
 <p>
@@ -19,51 +21,54 @@ Like dynamic content tags, we have <a href="#et">expression tags</a>, <a href="#
 <a name="et"></a>
 <h3>Expression Tags</h3>
 <p>
-An expression tag represents a PHP expression that is evaluated when the template is being instantiated. The expression evaluation result is assigned to the corresponding component property. The format of expression tags is as follows,
+An expression tag represents a PHP expression that is evaluated when the control is in <tt>PreRender</tt> stage. The expression evaluation result is assigned to the corresponding component property. The format of expression tags is as follows,
+</p>
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;%= PhpExpression %&gt;
 </com:TTextHighlighter>
-In the expression, <tt>$this</tt> refers to the component specified by the component tag. The following example specifies a <tt>TLabel</tt> control whose <tt>Text</tt> property is initialized as the current page title when the <tt>TLabel</tt> control is being constructed,
+<p>
+In the expression, <tt>$this</tt> refers to the control owning the template. The following example specifies a <tt>TLabel</tt> control whose <tt>Text</tt> property is initialized as the current page title when the <tt>TLabel</tt> control is being constructed,
+</p>
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TLabel Text=&lt;%= $this-&gt;Page-&gt;Title %&gt; /&gt;
 </com:TTextHighlighter>
-</p>
-<p>
-Note, unlike dynamic content tags, the expressions tags for component properties are evaluated when the components are being constructed, while for the dynamic content tags, the expressions are evaluated when the controls are being rendered.
-</p>
 
 <a name="dt"></a>
 <h3>Databind Tags</h3>
 <p>
-Databind tags are similar to expression tags, except that they can only be used with control properties and the expressions are evaluated only when a <tt>dataBind()</tt> call is invoked on the controls represented by the component tags. In the expression, <tt>$this</tt> refers to the control itself. Databind tags do not apply to all components. They can only be used for controls.
+Databind tags are similar to expression tags, except that they can only be used with control properties and the expressions are evaluated only when a <tt>dataBind()</tt> call is invoked on the controls represented by the component tags. In the expression, <tt>$this</tt> refers to the control owning the template. Databind tags do not apply to all components. They can only be used for controls.
 </p>
 <p>
 The format of databind tags is as follows,
+</p>
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;%# PhpExpression %&gt;
 </com:TTextHighlighter>
-</p>
 
 <a name="pt"></a>
 <h3>Parameter Tags</h3>
 <p>
 Parameter tags are used to assign application parameter values to the corresponding component properties. The format of parameter tags is as follows,
+</p>
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;%$ ParameterName %&gt;
 </com:TTextHighlighter>
+<p>
 Note, application parameters are usually defined in application configurations or page directory configurations. The parameters are evaluated when the template is instantiated.
 </p>
 
 <a name="at"></a>
 <h3>Asset Tags</h3>
 <p>
-Asset tags are used to publish private files and assign the corresponding the URLs to the component properties. For example, if you have an image file that is not Web-accessible and you want to make it visible to end-users, you can use asset tags to publish this file and show the URL to end-users so that they can fetch the published image.
+Asset tags are used to publish private files and assign the corresponding the URLs to the component properties. For example, if you have an image file that is not Web-accessible and you want to make it visible to end-users, you can use asset tags to publish this file and show the URL to end-users so that they can fetch the published image. The asset tags are evaluated when the template is instantiated.
 </p>
 <p>
 The format of asset tags is as follows,
+</p>
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;%~ LocalFileName %&gt;
 </com:TTextHighlighter>
+<p>
 where <tt>LocalFileName</tt> refers to a file path that is relative to the directory containing the current template file. The file path can be a single file or a directory. If the latter, the content in the whole directory will be made accessible by end-users.
 </p>
 <p>
@@ -74,9 +79,12 @@ BE VERY CAUTIOUS when you are using asset tags as it may expose to end-users fil
 <h3>Localization Tags</h3>
 <p>
 Localization tags represent localized texts. They are in the following format,
+</p>
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;%[string]%&gt;
 </com:TTextHighlighter>
-where <tt>string</tt> will be translated to different languages according to the end-user's language preference.
+<p>
+where <tt>string</tt> will be translated to different languages according to the end-user's language preference. The localization tags are evaluated when the template is instantiated.
+</p>
 
 </com:TContent>

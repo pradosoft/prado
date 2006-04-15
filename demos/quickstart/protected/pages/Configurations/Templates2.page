@@ -10,7 +10,7 @@ Dynamic content tags are introduced as shortcuts to some commonly used <a href="
 <a name="et"></a>
 <h3>Expression Tags</h3>
 <p>
-An expression tag represents a PHP expression that is evaluated when the template control is being rendered. The expression evaluation result is inserted at the place where the tag resides in the template. The context (namely <tt>$this</tt>) of the expression is the control owning the template.
+An expression tag represents a PHP expression that is evaluated when the template control is in <tt>PreRender</tt> stage. The expression evaluation result is inserted at the place where the tag resides in the template. The context (namely <tt>$this</tt>) of the expression is the control owning the template.
 </p>
 <p>
 The format of an expression tag is as follows,

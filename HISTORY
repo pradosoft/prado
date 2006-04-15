@@ -10,13 +10,20 @@ NEW: SQLMap (Wei)
 
 Version 3.0RC2 April 16, 2006
 =============================
+BUG: Ticket#54 - recursive reverse() definition (Wei)
+BUG: Ticket#93 - ValidationGroup not working in TImageMap for js validator (Wei)
+BUG: Ticket#97 - Invalid return type value for TSimpleDateFormatter::parse (Wei)
 BUG: Ticket#118 - Variables that may not have been initialized (Qiang)
+BUG: Ticket#121 - OnClick don't fire with TImageButton and TRequiredFieldValidator (Wei)
 BUG: Ticket#129 - TRadioButtonList in TWizard step does not postback correctly (Qiang)
 CHG: Moved localize() into PradoBase (Qiang)
 CHG: List controls now use array keys as list item values even if the array is integer-indexed (Qiang)
 CHG: THttpUtility::htmlEncode and htmlDecode now do not deal with & (Qiang)
+CHG: Expressions appeared in a template are evaluated in PreRender stage (Qiang)
+CHG: The context of expressions appeared in a template is changed to the template control (Qiang)
 ENH: Optimized the representation and evaluation of template expressions (Qiang)
 ENH: Added Raw layout to TDataList (Qiang)
+ENH: Added TRepeater.DataKeys and TRepeater.DataKeyField (Qiang)
 
 Version 3.0RC1 April 5, 2006
 ============================

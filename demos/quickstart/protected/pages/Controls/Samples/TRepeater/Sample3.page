@@ -19,7 +19,7 @@ The following example allows users to modify the existing tabular data using a <
   <td>
   <com:TTextBox
        ID="ProductName"
-       Text=<%#$this->Parent->DataItem['name']%> />
+       Text=<%#$this->DataItem['name']%> />
   </td>
   <td>
   <com:TDropDownList
@@ -29,12 +29,12 @@ The following example allows users to modify the existing tabular data using a <
   <com:TTextBox
        ID="ProductPrice"
        Columns="7"
-       Text=<%#$this->Parent->DataItem['price']%> />
+       Text=<%#$this->DataItem['price']%> />
   </td>
   <td>
   <com:TCheckBox
        ID="ProductImported"
-       Checked=<%#$this->Parent->DataItem['imported']%> />
+       Checked=<%#$this->DataItem['imported']%> />
   <com:TRequiredFieldValidator
        ControlToValidate="ProductName"
        ErrorMessage="Product name cannot be empty."
