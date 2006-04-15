@@ -202,6 +202,7 @@ function parse_html($page,$html)
 	$html = preg_replace('/<\/com:TTextHighlighter>/', '`2`', $html);
 	$html = preg_replace_callback('/(`1`)([^`]*)(`2`)/m', 'escape_verbatim', $html);
 	$html = preg_replace_callback('/(<div class="source">)([^<]*)(<\/div>)/', 'escape_verbatim', $html);
+	$html = preg_replace_callback('/(<pre>)([^<]*)(<\/pre>)/', 'escape_verbatim', $html);
 
 	//<code>
 	$html = preg_replace_callback('/<code>([^<]*)<\/code>/', 'escape_verb', $html);
@@ -210,7 +211,11 @@ function parse_html($page,$html)
 
 	//runbar
 	$html = preg_replace('/<com:RunBar\s+PagePath="([^"]*)"\s+\/>/',
-			'Try, \href{http://www.pradosoft.com/demos/quickstart/index.php?page=$1}{$1}', $html);
+			'\href{http://www.pradosoft.com/demos/quickstart/index.php?page=$1}{$1 Demo}', $html);
+
+	//DocLink
+	$html = preg_replace('/<com:DocLink\s+ClassPath="([^"]*)[.]([^.]*)"\s+\/>/',
+                        '\href{http://www.pradosoft.com/docs/manual/$1/$2.html}{$1.$2 API Reference}', $html);
 
 	//text modifiers
 	$html = preg_replace('/<b>([^<]*)<\/b>/', '\textbf{$1}', $html);
