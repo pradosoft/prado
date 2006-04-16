@@ -268,17 +268,12 @@ demos/quickstart/protected/pages/Fundamentals/Architecture.page -text
 demos/quickstart/protected/pages/Fundamentals/Components.page -text
 demos/quickstart/protected/pages/Fundamentals/Controls.page -text
 demos/quickstart/protected/pages/Fundamentals/Hangman.page -text
-demos/quickstart/protected/pages/Fundamentals/HelloWorld.page -text
 demos/quickstart/protected/pages/Fundamentals/Modules.page -text
 demos/quickstart/protected/pages/Fundamentals/Pages.page -text
 demos/quickstart/protected/pages/Fundamentals/Samples/Hangman/Home.page -text
 demos/quickstart/protected/pages/Fundamentals/Samples/Hangman/Home.php -text
 demos/quickstart/protected/pages/Fundamentals/Samples/Hangman/sequence.vsd -text
 demos/quickstart/protected/pages/Fundamentals/Samples/Hangman/words.txt -text
-demos/quickstart/protected/pages/Fundamentals/Samples/HelloWorld/Home.page -text
-demos/quickstart/protected/pages/Fundamentals/Samples/HelloWorld/Home.php -text
-demos/quickstart/protected/pages/Fundamentals/Samples/HelloWorld/sequence.gif -text
-demos/quickstart/protected/pages/Fundamentals/Samples/HelloWorld/sequence.vsd -text
 demos/quickstart/protected/pages/Fundamentals/Samples/config.xml -text
 demos/quickstart/protected/pages/Fundamentals/Services.page -text
 demos/quickstart/protected/pages/Fundamentals/applifecycles.gif -text
@@ -898,7 +893,6 @@ tests/FunctionalTests/quickstart/Controls/Repeater3TestCase.php -text
 tests/FunctionalTests/quickstart/Controls/TableTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/TextBoxTestCase.php -text
 tests/FunctionalTests/quickstart/Fundamentals/HangmanTestCase.php -text
-tests/FunctionalTests/quickstart/Fundamentals/HelloWorldTestCase.php -text
 tests/FunctionalTests/selenium/SeleneseRunner.html -text
 tests/FunctionalTests/selenium/SeleniumLog.html -text
 tests/FunctionalTests/selenium/TestRunner-splash.html -text
