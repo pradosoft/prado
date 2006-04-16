@@ -42,7 +42,7 @@ class TI18NControl extends TControl
 	 */
 	public function getCharset()
 	{
-		$app = $this->getApplication()->getGlobalization();
+		$app = $this->getApplication()->getGlobalization(false);
 
 		//instance charset
 		$charset = $this->getViewState('Charset','');

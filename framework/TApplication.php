@@ -754,10 +754,13 @@ class TApplication extends TComponent
 	}
 
 	/**
+	 * @param boolean whether to create globalization if it does not exist
 	 * @return TGlobalization globalization module
 	 */
-	public function getGlobalization()
+	public function getGlobalization($createIfNotExists=true)
 	{
+		if($this->_globalization===null && $createIfNotExists)
+			$this->_globalization=new TGlobalization;
 		return $this->_globalization;
 	}
 

@@ -859,12 +859,7 @@ tests/FunctionalTests/features/protected/pages/I18N/BasicI18N.php -text
 tests/FunctionalTests/features/protected/pages/I18N/Home.page -text
 tests/FunctionalTests/features/protected/pages/I18N/Home.zh_CN.page -text
 tests/FunctionalTests/features/protected/pages/I18N/config.xml -text
-tests/FunctionalTests/features/protected/pages/ImageMap/Home.page -text
-tests/FunctionalTests/features/protected/pages/ImageMap/Home.php -text
-tests/FunctionalTests/features/protected/pages/ImageMap/hotspot.jpg -text
-tests/FunctionalTests/features/protected/pages/MultiView/Home.page -text
 tests/FunctionalTests/features/protected/pages/RatingList.page -text
-tests/FunctionalTests/features/protected/pages/Wizard/Home.page -text
 tests/FunctionalTests/index.php -text
 tests/FunctionalTests/quickstart.php -text
 tests/FunctionalTests/quickstart/Advanced/I18N.php -text

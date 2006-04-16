@@ -533,14 +533,14 @@ class PradoBase
 	public static function localize($text, $parameters=array(), $catalogue=null, $charset=null)
 	{
 		Prado::using('System.I18N.Translation');
-		$app = Prado::getApplication()->getGlobalization();
+		$app = Prado::getApplication()->getGlobalization(false);
 
 		$params = array();
 		foreach($parameters as $key => $value)
 			$params['{'.$key.'}'] = $value;
 
 		//no translation handler provided
-		if(($config = $app->getTranslationConfiguration())===null)
+		if($app===null || ($config = $app->getTranslationConfiguration())===null)
 			return strtr($text, $params);
 
 		Translation::init();

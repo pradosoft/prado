@@ -100,7 +100,7 @@ class TTemplateManager extends TModule
 	 */
 	protected function getLocalizedTemplate($filename)
 	{
-		if(($app=$this->getApplication()->getGlobalization())===null)
+		if(($app=$this->getApplication()->getGlobalization(false))===null)
 			return $filename;
 		foreach($app->getLocalizedResource($filename) as $file)
 		{
