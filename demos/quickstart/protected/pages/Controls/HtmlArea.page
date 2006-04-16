@@ -28,7 +28,6 @@ The client-side visual editting capability is supported by Internet Explorer 5.0
 </p>
 
 <pre>
-<code>
                 Windows XP        MacOS X 10.4
 ----------------------------------------------------
 MSIE 6                  OK
@@ -42,7 +41,6 @@ Opera 9 Preview 1       OK(1)           OK(1)
 ----------------------------------------------------
 (1) - Partialy working
 ----------------------------------------------------
-</code>
 </pre>
 
 <com:RunBar PagePath="Controls.Samples.THtmlArea.Home" />
