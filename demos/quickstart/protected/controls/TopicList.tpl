@@ -6,7 +6,8 @@
     <li><a href="?page=GettingStarted.Introduction">Introduction</a></li>
     <li><a href="?page=GettingStarted.AboutPrado">What is PRADO?</a></li>
     <li><a href="?page=GettingStarted.Installation">Installation</a></li>
-    <li><a href="?page=GettingStarted.Upgrading">Upgrading from Earlier Versions</a></li>
+    <li><a href="?page=GettingStarted.HelloWorld">Creating First PRADO Application</a></li>
+    <li><a href="?page=GettingStarted.Upgrading">Upgrading from v2.x and v1.x</a></li>
 </ul>
 </div>
 
@@ -20,7 +21,6 @@
     <li><a href="?page=Fundamentals.Modules">Modules</a></li>
     <li><a href="?page=Fundamentals.Services">Services</a></li>
     <li><a href="?page=Fundamentals.Applications">Applications</a></li>
-    <li><a href="?page=Fundamentals.HelloWorld">Sample: Hello World</a></li>
     <li><a href="?page=Fundamentals.Hangman">Sample: Hangman Game</a></li>
 </ul>
 </div>

@@ -14,7 +14,10 @@ $base = realpath(dirname(__FILE__).'/../../demos/quickstart/protected/pages/');
 $pages['Getting Started'] = array(
 	'GettingStarted/Introduction.page',
 	'GettingStarted/AboutPrado.page',
-	'GettingStarted/Installation.page');
+	'GettingStarted/Installation.page',
+	'GettingStarted/HelloWorld.page',
+	'GettingStarted/Upgrading.page'
+	);
 
 $pages['Fundamentals'] = array(
 	'Fundamentals/Architecture.page',
@@ -24,7 +27,6 @@ $pages['Fundamentals'] = array(
     'Fundamentals/Modules.page',
     'Fundamentals/Services.page',
     'Fundamentals/Applications.page',
-    'Fundamentals/HelloWorld.page',
     'Fundamentals/Hangman.page');
 
 $pages['Configurations'] = array(
