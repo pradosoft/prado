@@ -4,25 +4,33 @@
 PRADO is a component-based and event-driven programming framework for developing Web applications in PHP 5. PRADO stands for <b>P</b>HP <b>R</b>apid <b>A</b>pplication <b>D</b>evelopment <b>O</b>bject-oriented.
 </p>
 <p>
-PRADO stipulates a protocol of writing and using components to construct Web applications. A component is a software unit that is self-contained and can be reused with trivial customization.
+A primary goal of PRADO is to enable maximum reusability in Web programming. By reusability, we mean not only reusing one's own code, but also reusing other people's code in an easy way. The latter is more important as it saves the effort of reinventing the wheels and may cut off development time dramatically. The introduction of the concept of component is for this purpose.
 </p>
 <p>
-PRADO implements an event-driven programming paradigm that allows delegation of extensible behavior to components. End-user activities, such as clicking on a submit button, are captured as server events. Methods or functions may be attached to these events so that when the events happen, they are invoked automatically to respond to the events. Compared with the traditional Web programming in which developers have to deal with the raw POST or GET variables, event-driven programming helps developers better focus on the necessary logic and reduces significantly the low-level repetitive coding.
+To achieve the above goal, PRADO stipulates a protocol of writing and using components to construct Web applications. A component is a software unit that is self-contained and can be reused with trivial customization. New components can be created by simple composition of existing components.
+</p>
+<p>
+To facilitate interacting with components, PRADO implements an event-driven programming paradigm that allows delegation of extensible behavior to components. End-user activities, such as clicking on a submit button, are captured as server events. Methods or functions may be attached to these events so that when the events happen, they are invoked automatically to respond to the events. Compared with the traditional Web programming in which developers have to deal with the raw POST or GET variables, event-driven programming helps developers better focus on the necessary logic and reduces significantly the low-level repetitive coding.
+</p>
+<p>
+In summary, developing a PRADO Web application mainly involves instantiating prebuilt component types, configuring them by setting their properties, responding to their events by writing handler functions, and composing them into pages for the application. It is very similar to RAD toolkits, such as Borland Delphi and Microsoft Visual Basic, that are used to develop desktop GUI applications.
 </p>
 
 <h2>Why PRADO?</h2>
 <p>
-A primary goal of PRADO is to enable maximum reusability in Web programming. By reusability, we mean not only reusing one's own code, but also reusing other people's code in an easy way. The latter is more important as it saves the effort of reinventing the wheels and may cut off development time dramatically. The introduction of the concept of component is for this purpose.
+PRADO is mostly quoted as a unique framework. In fact, it is so unique that it may turn your boring PHP programming into a fun task. The following list is a short summary of the main features of PRADO,
 </p>
-<p>
-Reusing existing components is very easy. It merely involves getting and setting component properties, and sometimes responding to component events. PRADO provides a complete set of components that deal with common Web programming tasks, such as collecting and validating user inputs through generic HTML elements, manipulating tabular data, etc. These components can be rapidly glued together and form Web pages that are highly user interactive. For example, using the datagrid component, one only needs to write a few lines of PHP code (mainly to populate the data into the datagrid), and he can create a page presenting a data table which allows paging, sorting, editting, and deleting rows of data.
-</p>
-<p>
-Developing new components can also be very easy. A new component class can be created by composing together several existing components in a template which specifies the layout of the constituent components. The page that you are reading now is such an example. It is the presentation of a component without a single line of PHP code.
-</p>
-<p>
-Developing a PRADO Web application mainly involves instantiating prebuilt component types, configuring them by setting their properties, responding to their events by writing handler functions, and composing them into pages for the application. It is very similar to RAD toolkits, such as Borland Delphi and Microsoft Visual Basic, that are used to develop desktop GUI applications.
-</p>
+<ul>
+<li>Reusability - Code following the PRADO component protocol are highly reusable. Everything in PRADO is a reusable component.</li>
+<li>Event-driven programming - End-user activities, such as clicking on a submit button, are captured as server events so that developers have better focus on dealing with user interactions.</li>
+<li>Team integration - Presentation and logic are separately stored. PRADO applications are themable.</li>
+<li>Powerful Web controls - PRADO comes with a set of powerful components dealing with Web user interfaces. Highly interactive Web pages can be created with a few lines of code. For example, using the datagrid component, one can quickly create a page presenting a data table which allows paging, sorting, editing, and deleting rows of the data.
+<li>I18N and L10N support - PRADO includes complete support for building applications with multiple languages and locales.</li>
+<li>Seamless Ajax support - PRADO provides a set of Ajax-enabled components that can be easily used (to be available in v3.1).</li>
+<li>XHTML compliance - Web pages generated by PRADO are XHTML-compliant.</li>
+<li>Accommodation of existing work - PRADO is a generic framework with focus on the presentational layer. It does not exclude developers from using most existing class libraries or toolkits. For example, one can AdoDB or Creole to deal with DB in his PRADO application.
+<li>Other features - Powerful error/exception handling and message logging; generic caching and selective output caching; customizable and localizable error handling; extensible authentication and authorization; security measures such as cross-site script (CSS) prevention, cookie protection, etc.</li>
+</ul>
 
 <h2>What Is PRADO Best For?</h2>
 <p>
@@ -32,7 +40,29 @@ PRADO is best suitable for creating Web front-ends that are highly user-interact
 PRADO does not exclude other back-end solutions such as most DB abstraction layers. In fact, they can be used like what you usually do with traditional PHP programming.
 </p>
 <p>
-Without server caching techniques, PRADO may not be suitable for developing extremely high-traffic Web applications, such as popular portals, forums, etc. In these applications, every niche of potential performance gain must be exploited and server caching (e.g. Zend optimizer) is almost a must.
+Without caching techniques, PRADO may not be suitable for developing extremely high-traffic Web applications, such as popular portals, forums, etc. In these applications, every niche of potential performance gain must be exploited and server caching (e.g. Zend optimizer) is almost a must. PRADO implements a generic cache technique and enables selective caching of part of Web contents.
+</p>
+
+<h2>How Is PRADO Compared with Other Frameworks?</h2>
+<p>
+PRADO is described as a unique framework. Its uniqueness mainly lies in the component-based and event-driven programming paradigm that it tries to promote. Although this programming paradigm is not new in desktop application programming and not new in a few Web programming languages, PRADO is perhaps the first PHP framework enabling it.
+</p>
+<p>
+Most PHP frameworks are trying to establish a loose standard of organizing PHP programming, most preferably the MVC (model-view-controller) model. It is difficult to compare PRADO with these frameworks because they have different focuses. What we can say is, PRADO is more like a high-level language built upon PHP while those MVC frameworks stand for the best programming practices. Both aim to help developers to rapidly complete Web application development. The advantage of PRADO is its rich set of prebuilt powerful components and extreme reusability of the PRADO code, while the advantage of the MVC frameworks is the complete separation of model, view and controller, which greatly facilitates team integration.
+</p>
+
+<h2>History of PRADO</h2>
+<p>
+The very original inspiration of PRADO came from Apache Tapestry. During the design and implementation, I borrowed many ideas from Borland Delphi and Microsoft ASP.NET. The first version of PRADO came out in June 2004 and was written in PHP 4. Driven by the Zend PHP 5 coding contest, I rewrote PRADO in PHP 5, which proved to be a wise move, thanks to the new object model provided by PHP 5. PRADO won the grand prize in the Zend contest, earning high votes both from the public and from the judges' panel.
+</p>
+<p>
+In August 2004, PRADO was hosted on SourceForge as an open source project. Soon after, the project site <a href="http://www.xisc.com/">xisc.com</a> was announced to public. With the fantastic support of PRADO developer team and PRADO users, PRADO evolved to version 2.0 in mid 2005. In this version, Wei Zhuo contributed to PRADO with the excellent I18 and L10N support.
+</p>
+<p>
+In May 2005, we decided to completely rewrite the PRADO framework to resolve a few fundamental issues found in version 2.0 and to catch up with some cool features available in Microsoft ASP.NET 2.0. After nearly a year's hard work with over 50,000 lines of new code, version 3.0 was finally made available in April 2006.
+</p>
+<p>
+Starting from version 3.0, significant efforts are allocated to ensure the quality and stability of PRADO. If we say PRADO v2.x and v1.x are proof-of-concept work, we can say PRADO 3.x grows up to a serious project that is suitable for business application development.
 </p>
 
 </com:TContent>
