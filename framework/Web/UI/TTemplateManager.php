@@ -429,7 +429,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					$component->bindProperty($name,$value[1]);
 					break;
 				case self::CONFIG_EXPRESSION:		// expression
-					$component->setSubProperty($name,$component->evaluateExpression($value[1]));
+					$component->autoBindProperty($name,$value[1]);
 					break;
 				case self::CONFIG_TEMPLATE:
 					$component->setSubProperty($name,$value[1]);
@@ -442,7 +442,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					$component->setSubProperty($name,$this->getApplication()->getParameters()->itemAt($value[1]));
 					break;
 				case self::CONFIG_LOCALIZATION:
-					$component->setSubProperty($name,localize($value[1]));
+					$component->setSubProperty($name,Prado::localize($value[1]));
 					break;
 				default:	// an error if reaching here
 					break;
