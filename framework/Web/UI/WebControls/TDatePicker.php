@@ -406,7 +406,7 @@ class TDatePicker extends TTextBox
 	 */
 	protected function getCurrentCulture()
 	{
-		$app = $this->getApplication()->getGlobalization();
+		$app = $this->getApplication()->getGlobalization(false);
 		return $this->getCulture() == '' ?
 				($app ? $app->getCulture() : 'en') : $this->getCulture();
 	}

@@ -69,7 +69,7 @@ class THttpResponse extends TModule implements ITextWriter
 	/**
 	 * @var string character set, e.g. UTF-8
 	 */
-	private $_charset;
+	private $_charset='';
 
 	/**
 	 * Destructor.
@@ -285,10 +285,10 @@ class THttpResponse extends TModule implements ITextWriter
 	 */
 	protected function sendContentTypeHeader()
 	{
-		$charset = $this->getCharset();
-		if(empty($charset) && ($globalization=$this->getApplication()->getGlobalization())!==null)
-			$charset = $globalization->getCharset();
-		if(!empty($charset))
+		$charset=$this->getCharset();
+		if($charset==='' && ($globalization=$this->getApplication()->getGlobalization(false))!==null)
+			$charset=$globalization->getCharset();
+		if($charset==='')
 		{
 			$header='Content-Type: '.$this->getContentType().';charset='.$charset;
 			$this->appendHeader($header);

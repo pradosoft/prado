@@ -1,0 +1,37 @@
+<com:TContent ID="Content">
+<h1>Validations Triggered by TButton</h1>
+
+<com:TTextBox ID="TextBox1" />
+<com:TRequiredFieldValidator
+	Text="Textbox1 required"
+	ControlToValidate="TextBox1"
+	ValidationGroup="Group1" />
+<com:TButton Text="Submit1"
+	ValidationGroup="Group1"
+	OnClick="button1Clicked" />
+<com:TLabel ID="Result1" />
+
+<hr/>
+
+<com:TTextBox ID="TextBox2" />
+<com:TRequiredFieldValidator
+	Text="Textbox2 required"
+	ControlToValidate="TextBox2" />
+<com:TButton Text="Submit2"
+	OnClick="button2Clicked" />
+<com:TLabel ID="Result2" />
+
+<hr/>
+
+<com:TTextBox ID="TextBox3" />
+<com:TRequiredFieldValidator
+	Text="Textbox3 required"
+	EnableClientScript="false"
+	ControlToValidate="TextBox3"
+	ValidationGroup="Group3" />
+<com:TButton Text="Submit3"
+	ValidationGroup="Group3"
+	OnClick="button3Clicked" />
+<com:TLabel ID="Result3" />
+
+</com:TContent>

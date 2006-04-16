@@ -166,7 +166,7 @@ class TNumberFormat extends TI18NControl
 	 */
 	protected function getFormattedValue()
 	{
-		$app = $this->Application->getGlobalization();
+		$app = $this->getApplication()->getGlobalization();
 		//initialized the default class wide formatter
 		if(is_null(self::$formatter))
 			self::$formatter = new NumberFormat($app->getCulture());

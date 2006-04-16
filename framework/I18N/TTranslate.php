@@ -168,7 +168,7 @@ class TTranslate extends TI18NControl
 	 */
 	protected function translateText($text, $subs)
 	{
-		$app = $this->Application->getGlobalization();
+		$app = $this->getApplication()->getGlobalization();
 
 		//no translation handler provided
 		if(is_null($config = $app->getTranslationConfiguration()))
