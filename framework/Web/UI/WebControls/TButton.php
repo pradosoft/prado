@@ -49,7 +49,7 @@
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TButton extends TWebControl implements IPostBackEventHandler
+class TButton extends TWebControl implements IPostBackEventHandler, IButtonControl
 {
 	/**
 	 * @return string tag name of the button
@@ -206,8 +206,7 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * Sets the command name associated with the {@link onCommand OnCommand} event.
-	 * @param string the text caption to be set
+	 * @param string the command name associated with the {@link onCommand OnCommand} event.
 	 */
 	public function setCommandName($value)
 	{
@@ -223,8 +222,7 @@ class TButton extends TWebControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * Sets the parameter associated with the {@link onCommand OnCommand} event.
-	 * @param string the text caption to be set
+	 * @param string the parameter associated with the {@link onCommand OnCommand} event.
 	 */
 	public function setCommandParameter($value)
 	{
