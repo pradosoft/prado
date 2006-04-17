@@ -491,7 +491,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 		if($checkParents)
 		{
 			for($control=$this;$control;$control=$control->_parent)
-				if(!$control->getViewState('Visible',true))
+				if(!$control->getVisible(false))
 					return false;
 			return true;
 		}

@@ -1293,6 +1293,8 @@ class TWizard extends TWebControl implements INamingContainer
 			$type=$this->getStepType($this->getActiveStep());
 			$index=$this->getActiveStepIndex();
 			$navParam=new TWizardNavigationEventParameter($index);
+			if($sender->canGetProperty('CausesValidation') && $sender->getCausesValidation() && ($page=$this->getPage())!==null && !$page->getIsValid())
+				$navParam->setCancelNavigation(true);
 
 			$handled=false;
 			$movePrev=false;
