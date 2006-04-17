@@ -304,8 +304,6 @@ demos/quickstart/themes/PradoSoft/pradologo.gif -text
 demos/quickstart/themes/PradoSoft/style.css -text
 demos/quickstart/themes/Simple/style.css -text
 docs/application.xml -text
-docs/conceptual-structure.vsd -text
-docs/request-sequence.vsd -text
 docs/specs/application.dtd -text
 docs/specs/application.xsd -text
 docs/specs/config.dtd -text
