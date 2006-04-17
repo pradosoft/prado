@@ -56,7 +56,7 @@ Prado::using('System.Web.UI.WebControls.TImage');
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEventHandler
+class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEventHandler, IButtonControl
 {
 	/**
 	 * @var integer x coordinate that the image is being clicked at
@@ -223,8 +223,7 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	}
 
 	/**
-	 * Sets the command name associated with the {@link onCommand OnCommand} event.
-	 * @param string the text caption to be set
+	 * @param string the command name associated with the {@link onCommand OnCommand} event.
 	 */
 	public function setCommandName($value)
 	{
@@ -240,8 +239,7 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	}
 
 	/**
-	 * Sets the parameter associated with the {@link onCommand OnCommand} event.
-	 * @param string the text caption to be set
+	 * @param string the parameter associated with the {@link onCommand OnCommand} event.
 	 */
 	public function setCommandParameter($value)
 	{

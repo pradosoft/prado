@@ -11,6 +11,9 @@ NEW: SQLMap (Wei)
 Version 3.0.0 May 1, 2006
 =========================
 BUG: Ticket#131 - TImageMap and TLinkButton continue to postback even client validator fails (Wei)
+BUG: TControl.Visible did not make use of overriden getVisible() (Qiang)
+BUG: TWizard did not stop navigation upon a validation failure (Qiang)
+ENH: TButton, TImageButton and TLinkButton now implement IButtonControl interface (Qiang)
 
 Version 3.0RC2 April 16, 2006
 =============================

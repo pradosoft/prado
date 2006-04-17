@@ -1077,7 +1077,7 @@ class TWizard extends TWebControl implements INamingContainer
 			// if the button clicked causes validation which fails,
 			// by default we will cancel navigation to the new step
 			$button=$param->getCommandSource();
-			if($button->canGetProperty('CausesValidation') && $button->getCausesValidation() && ($page=$this->getPage())!==null && !$page->getIsValid())
+			if(($button instanceof IButtonControl) && $button->getCausesValidation() && ($page=$this->getPage())!==null && !$page->getIsValid())
 				$navParam->setCancelNavigation(true);
 
 			$this->_activeStepIndexSet=false;
@@ -1292,6 +1292,8 @@ class TWizard extends TWebControl implements INamingContainer
 			$type=$this->getStepType($this->getActiveStep());
 			$index=$this->getActiveStepIndex();
 			$navParam=new TWizardNavigationEventParameter($index);
+			if(($sender instanceof IButtonControl) && $sender->getCausesValidation() && ($page=$this->getPage())!==null && !$page->getIsValid())
+				$navParam->setCancelNavigation(true);
 
 			$handled=false;
 			$movePrev=false;

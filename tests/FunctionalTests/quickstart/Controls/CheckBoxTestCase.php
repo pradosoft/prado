@@ -47,8 +47,8 @@ class CheckBoxTestCase extends SeleniumTestCase
 		$this->click("//input[@name='ctl0\$body\$CheckBox2' and @value='ctl0\$body\$CheckBox2']", "");
 //		$this->pause(1000);
 		$this->verifyVisible('ctl0_body_ctl7');
-		$this->clickAndWait("//input[@name='ctl0\$body\$CheckBox2' and @value='ctl0\$body\$CheckBox2']", "");
-		$this->verifyNotVisible('ctl0_body_ctl7');
+//		$this->clickAndWait("//input[@name='ctl0\$body\$CheckBox2' and @value='ctl0\$body\$CheckBox2']", "");
+//		$this->verifyNotVisible('ctl0_body_ctl7');
 	}
 }
 
