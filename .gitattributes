@@ -325,8 +325,6 @@ demos/sqlmap-sample/tests/readme.txt -text
 demos/sqlmap-sample/tests/run_tests.php -text
 demos/sqlmap-sample/tests/sqlmap.xml -text
 docs/application.xml -text
-docs/conceptual-structure.vsd -text
-docs/request-sequence.vsd -text
 docs/specs/application.dtd -text
 docs/specs/application.xsd -text
 docs/specs/config.dtd -text

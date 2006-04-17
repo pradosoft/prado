@@ -1681,10 +1681,7 @@ _381=Prado.Validation.ValidateValidationGroup(_379["ValidationGroup"]);
 _381=Prado.Validation.ValidateNonGroup(form);
 }
 if(!_381){
-if(_379["StopEvent"]){
-Event.stop(_378);
-}
-return;
+return Event.stop(_378);
 }
 }
 if(_379["PostBackUrl"]&&_379["PostBackUrl"].length>0){
