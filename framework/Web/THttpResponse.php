@@ -288,7 +288,7 @@ class THttpResponse extends TModule implements ITextWriter
 		$charset=$this->getCharset();
 		if($charset==='' && ($globalization=$this->getApplication()->getGlobalization(false))!==null)
 			$charset=$globalization->getCharset();
-		if($charset==='')
+		if($charset!=='')
 		{
 			$header='Content-Type: '.$this->getContentType().';charset='.$charset;
 			$this->appendHeader($header);
