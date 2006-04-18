@@ -220,9 +220,11 @@ class THttpResponse extends TModule implements ITextWriter
 	 * Sends a file back to user.
 	 * Make sure not to output anything else after calling this method.
 	 * @param string file name
+	 * @param string content to be set. If null, the content will be read from the server file pointed to by $fileName.
+	 * @param string mime type of the content.
 	 * @throws TInvalidDataValueException if the file cannot be found
 	 */
-	public function writeFile($fileName)
+	public function writeFile($fileName,$content=null,$mimeType=null)
 	{
 		static $defaultMimeTypes=array(
 			'css'=>'text/css',
@@ -234,26 +236,31 @@ class THttpResponse extends TModule implements ITextWriter
 			'js'=>'javascript/js'
 		);
 
-		if(!is_file($fileName))
-			throw new TInvalidDataValueException('httpresponse_file_inexistent',$fileName);
+		if($mimeType===null)
+		{
+			if(function_exists('mime_content_type'))
+				$mimeType=mime_content_type($fileName);
+			else
+			{
+				$ext=array_pop(explode('.',$fileName));
+				if(isset($defaultMimeTypes[$ext]))
+					$mimeType=$defaultMimeTypes[$ext];
+				else
+					$mimeType='text/plain';
+			}
+		}
+		$fn=basename($fileName);
 		header('Pragma: public');
 		header('Expires: 0');
 		header('Cache-Component: must-revalidate, post-check=0, pre-check=0');
-		$mimeType='text/plain';
-		if(function_exists('mime_content_type'))
-			$mimeType=mime_content_type($fileName);
-		else
-		{
-			$ext=array_pop(explode('.',$fileName));
-			if(isset($defaultMimeTypes[$ext]))
-				$mimeType=$defaultMimeTypes[$ext];
-		}
-		$fn=basename($fileName);
 		header("Content-type: $mimeType");
 		header('Content-Length: '.filesize($fileName));
 		header("Content-Disposition: attachment; filename=\"$fn\"");
 		header('Content-Transfer-Encoding: binary');
-		readfile($fileName);
+		if($content===null)
+			readfile($fileName);
+		else
+			echo $content;
 	}
 
 	/**

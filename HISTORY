@@ -6,6 +6,7 @@ BUG: Non-control components can now use expressions in their properties (Qiang)
 BUG: TControl.Visible did not make use of overriden getVisible() (Qiang)
 BUG: TWizard did not stop navigation upon a validation failure (Qiang)
 ENH: TButton, TImageButton and TLinkButton now implement IButtonControl interface (Qiang)
+ENH: TResponse::writeFile takes two additional parameters to allow sending memory data (Qiang)
 
 Version 3.0RC2 April 16, 2006
 =============================
