@@ -254,7 +254,7 @@ class THttpResponse extends TModule implements ITextWriter
 		header('Expires: 0');
 		header('Cache-Component: must-revalidate, post-check=0, pre-check=0');
 		header("Content-type: $mimeType");
-		header('Content-Length: '.filesize($fileName));
+		header('Content-Length: '.($content===null?filesize($fileName):strlen($content)));
 		header("Content-Disposition: attachment; filename=\"$fn\"");
 		header('Content-Transfer-Encoding: binary');
 		if($content===null)
