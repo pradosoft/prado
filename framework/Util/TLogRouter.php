@@ -596,7 +596,7 @@ class TBrowserLogRoute extends TLogRoute
 		$response->write($this->renderHeader());
 		for($i=0,$n=count($logs);$i<$n;++$i)
 		{
-			$timing['total'] = $logs[$i][3] - $first;
+			$timing['total'] = $logs[$i+1][3] - $first;
 			if ($i<$n-1)
 				$timing['delta'] = $logs[$i+1][3] - $logs[$i][3];
 			else
