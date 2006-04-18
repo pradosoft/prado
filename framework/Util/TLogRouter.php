@@ -591,17 +591,18 @@ class TBrowserLogRoute extends TLogRoute
 	{
 		if(empty($logs) || $this->getApplication()->getMode()==='Performance') return;
 		$first = $logs[0][3];
-		$prev = $first;
 		$even = true;
 		$response = $this->getApplication()->getResponse();
 		$response->write($this->renderHeader());
-		foreach($logs as $log)
+		for($i=0,$n=count($logs);$i<$n;++$i)
 		{
-			$timing['total'] = $log[3] - $first;
-			$timing['delta'] = $log[3] - $prev;
+			$timing['total'] = $logs[$i][3] - $first;
+			if ($i<$n-1)
+				$timing['delta'] = $logs[$i+1][3] - $logs[$i][3];
+			else
+				$timing['delta'] = '?';
 			$timing['even'] = !($even = !$even);
-			$prev=$log[3];
-			$response->write($this->renderMessage($log,$timing));
+			$response->write($this->renderMessage($logs[$i],$timing));
 		}
 		$response->write($this->renderFooter());
 	}
