@@ -202,6 +202,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	 * @var string hash code of the template
 	 */
 	private $_hashCode='';
+	private $_tplControl=null;
 
 
 	/**
@@ -275,6 +276,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	 */
 	public function instantiateIn($tplControl)
 	{
+		$this->_tplControl=$tplControl;
 		if(($page=$tplControl->getPage())===null)
 			$page=$this->getService()->getRequestedPage();
 		$controls=array();
@@ -405,7 +407,13 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					$component->bindProperty($name,$value[1]);
 					break;
 				case self::CONFIG_EXPRESSION:
-					$component->autoBindProperty($name,$value[1]);
+					if($component instanceof TControl)
+						$component->autoBindProperty($name,$value[1]);
+					else
+					{
+						$setter='set'.$name;
+						$component->$setter($this->_tplControl->evaluateExpression($value[1]));
+					}
 					break;
 				case self::CONFIG_TEMPLATE:
 					$setter='set'.$name;
@@ -451,7 +459,10 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					$component->bindProperty($name,$value[1]);
 					break;
 				case self::CONFIG_EXPRESSION:		// expression
-					$component->autoBindProperty($name,$value[1]);
+					if($component instanceof TControl)
+						$component->autoBindProperty($name,$value[1]);
+					else
+						$component->setSubProperty($name,$this->_tplControl->evaluateExpression($value[1]));
 					break;
 				case self::CONFIG_TEMPLATE:
 					$component->setSubProperty($name,$value[1]);
@@ -823,7 +834,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 		{
 			foreach($attributes as $name=>$att)
 			{
-				if(is_array($att) && ($att[0]===self::CONFIG_DATABIND || $att[0]===self::CONFIG_EXPRESSION))
+				if(is_array($att) && ($att[0]===self::CONFIG_DATABIND))
 					throw new TConfigurationException('template_databind_forbidden',$type,$name);
 				if(($pos=strpos($name,'.'))!==false)
 				{
