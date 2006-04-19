@@ -41,17 +41,24 @@ class TJavascriptLogger extends TWebControl
 	}
 
 	/**
+	 * Registers the required logger javascript.
+	 * @param TEventParameter event parameter
+	 */
+	public function onPreRender($param)
+	{
+		$this->getPage()->getClientScript()->registerPradoScript('logger');
+	}
+
+	/**
 	 * Register the required javascript libraries and
 	 * display some general usage information.
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{
-		$this->getPage()->getClientScript()->registerPradoScript('logger');
 		$info = '(<a href="http://gleepglop.com/javascripts/logger/" target="_blank">more info</a>).';
 		$usage = 'Press ALT-D (Or CTRL-D on OS X) to toggle the javascript log console';
 		$writer->write("{$usage} {$info}");
-		parent::renderContents($writer);
 	}
 }
 
