@@ -238,15 +238,14 @@ class THttpResponse extends TModule implements ITextWriter
 
 		if($mimeType===null)
 		{
+			$mimeType='text/plain';
 			if(function_exists('mime_content_type'))
 				$mimeType=mime_content_type($fileName);
-			else
+			else if(($ext=strrchr($fileName,'.'))!==false)
 			{
-				$ext=array_pop(explode('.',$fileName));
+				$ext=substr($ext,1);
 				if(isset($defaultMimeTypes[$ext]))
 					$mimeType=$defaultMimeTypes[$ext];
-				else
-					$mimeType='text/plain';
 			}
 		}
 		$fn=basename($fileName);

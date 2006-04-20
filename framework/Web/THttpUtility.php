@@ -20,8 +20,8 @@
  */
 class THttpUtility
 {
-	private static $_encodeTable=array('<'=>'&lt;','>'=>'&gt;','"'=>'&quote;');
-	private static $_decodeTable=array('&lt;'=>'<','&gt;'=>'>','&quote;'=>'"');
+	private static $_encodeTable=array('<'=>'&lt;','>'=>'&gt;','"'=>'&quot;');
+	private static $_decodeTable=array('&lt;'=>'<','&gt;'=>'>','&quot;'=>'"');
 
 	/**
 	 * HTML-encodes a string.

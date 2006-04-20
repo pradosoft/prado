@@ -93,7 +93,7 @@ Localization tags represent localized texts. They are in the following format,
 &lt;%[string]%&gt;
 </com:TTextHighlighter>
 <p>
-where <tt>string</tt> will be translated to different languages according to the end-user's language preference.
+where <tt>string</tt> will be translated to different languages according to the end-user's language preference. Localization tags are in fact shortcuts to the function call <tt>Prado::localize(string)</tt>.
 </p>
 
 </com:TContent>

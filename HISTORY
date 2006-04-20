@@ -12,6 +12,8 @@ Version 3.0.0 May 1, 2006
 =========================
 BUG: Ticket#131 - TImageMap and TLinkButton continue to postback even client validator fails (Wei)
 BUG: Ticket#135 - TBrowserLogRoute reports wrong timings (Qiang)
+BUG: Ticket#137 - The JavasciptLogger does not work (Qiang)
+BUG: Ticket#138 - missing file in TDataGrid (Qiang)
 BUG: Non-control components can now use expressions in their properties (Qiang)
 BUG: TControl.Visible did not make use of overriden getVisible() (Qiang)
 BUG: TWizard did not stop navigation upon a validation failure (Qiang)

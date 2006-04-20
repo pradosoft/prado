@@ -114,7 +114,7 @@ function clickMe($sender,$param)
 <com:TTextHighlighter CssClass="source">
 function clickMe($sender,$param)
 {
-  $sender->Text=localize("Hello, world!");
+  $sender->Text=Prado::localize("Hello, world!");
 }
 </com:TTextHighlighter>
 
@@ -129,7 +129,7 @@ $message = "There are " . $num_users . " users online.";
 This problem can be solved using the <tt>localize</tt> function with string substitution. For example, the <tt>$message</tt> string above can be constructed as follows.
 <com:TTextHighlighter CssClass="source">
 $num_users = 12;
-$message = localize("There are {num_users} users online.", array('num_users'=>$num_users));
+$message = Prado::localize("There are {num_users} users online.", array('num_users'=>$num_users));
 </com:TTextHighlighter>
 <p>Where the second parameter in <tt>localize</tt> takes an associative array with the key as the substitution to find in the text and replaced it with the associated value.
 The <tt>localize</tt> function does not solve the problem of localizing languages that have plural forms, the solution is to use <a href="#choice-format">TChoiceFormat</a>.</p>
