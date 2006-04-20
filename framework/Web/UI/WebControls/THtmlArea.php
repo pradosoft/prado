@@ -33,7 +33,7 @@ Prado::using('System.Web.UI.WebControls.TTextBox');
  * under the situation.
  *
  * The default editor gives only the basic tool bar. To change or add
- * additional tool bars, use the Options property to add additional
+ * additional tool bars, use the {@link setOptions Options} property to add additional
  * editor options with each options on a new line.
  * See http://tinymce.moxiecode.com/tinymce/docs/index.html
  * for a list of options. The options can be change/added as shown in the
@@ -79,7 +79,7 @@ Prado::using('System.Web.UI.WebControls.TTextBox');
 class THtmlArea extends TTextBox
 {
 	// Qiang: need to clean up the following (too inefficient)
-	private $langs = array(
+	private static $_langs = array(
 		'da' => array('da'),
 		'fa' => array('fa'),
 		'hu' => array('hu'),
@@ -307,17 +307,21 @@ class THtmlArea extends TTextBox
 	{
 		$app = $this->getApplication()->getGlobalization();
 		if(empty($culture) && !is_null($app))
-				$culture = $app->getCulture();
+			$culture = $app->getCulture();
 		$variants = array();
 		if(!is_null($app))
 			$variants = $app->getCultureVariants($culture);
 
 		//default the variant to "en"
 		if(count($variants) == 0)
-			$variants[] = empty($culture) ? 'en' : strtolower($culture);
+		{
+			if($empty($culture))
+				return 'en';
+			$variants[] = strtolower($culture);
+		}
 
 		// TODO: triple loops???
-		foreach($this->langs as $js => $langs)
+		foreach(self::$_langs as $js => $langs)
 		{
 			foreach($variants as $variant)
 			{
