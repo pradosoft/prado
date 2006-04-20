@@ -11,6 +11,11 @@
  */
 
 /**
+ * Includes TTextBox class
+ */
+Prado::using('System.Web.UI.WebControls.TTextBox');
+
+/**
  * THtmlArea class
  *
  * THtmlArea wraps the visual editting functionalities provided by the
@@ -73,7 +78,8 @@
  */
 class THtmlArea extends TTextBox
 {
-	protected $langs = array(
+	// Qiang: need to clean up the following (too inefficient)
+	private $langs = array(
 		'da' => array('da'),
 		'fa' => array('fa'),
 		'hu' => array('hu'),
@@ -310,6 +316,7 @@ class THtmlArea extends TTextBox
 		if(count($variants) == 0)
 			$variants[] = empty($culture) ? 'en' : strtolower($culture);
 
+		// TODO: triple loops???
 		foreach($this->langs as $js => $langs)
 		{
 			foreach($variants as $variant)

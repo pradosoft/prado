@@ -11,9 +11,10 @@
  */
 
 /**
- * Includes TTableCell class
+ * Includes TTableCell and TTableHeaderCell classes
  */
 Prado::using('System.Web.UI.WebControls.TTableCell');
+Prado::using('System.Web.UI.WebControls.TTableHeaderCell');
 
 /**
  * TTableRow class.
