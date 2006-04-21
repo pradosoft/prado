@@ -229,8 +229,8 @@ class TValidationSummary extends TWebControl
 	 */
 	protected function getClientScriptOptions()
 	{
-		$options['ID'] = $this->ClientID;
-		$options['FormID'] = $this->Page->Form->ClientID;
+		$options['ID'] = $this->getClientID();
+		$options['FormID'] = $this->getPage()->getForm()->getClientID();
 		if($this->getShowMessageBox())
 			$options['ShowMessageBox']=true;
 		if(!$this->getShowSummary())
