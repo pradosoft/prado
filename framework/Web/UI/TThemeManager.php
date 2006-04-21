@@ -107,7 +107,6 @@ class TThemeManager extends TModule
 			$this->_basePath=Prado::getPathOfAlias($value);
 			if($this->_basePath===null || !is_dir($this->_basePath))
 				throw new TInvalidDataValueException('thememanager_basepath_invalid',$value);
-			$this->_basePath=$value;
 		}
 	}
 

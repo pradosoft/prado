@@ -4,6 +4,7 @@ BUG: Ticket#131 - TImageMap and TLinkButton continue to postback even client val
 BUG: Ticket#135 - TBrowserLogRoute reports wrong timings (Qiang)
 BUG: Ticket#137 - The JavasciptLogger does not work (Qiang)
 BUG: Ticket#138 - missing file in TDataGrid (Qiang)
+BUG: Ticket#139 - TThemeManager::setBasePath() should understand an alias path (Qiang)
 BUG: Non-control components can now use expressions in their properties (Qiang)
 BUG: TControl.Visible did not make use of overriden getVisible() (Qiang)
 BUG: TWizard did not stop navigation upon a validation failure (Qiang)
