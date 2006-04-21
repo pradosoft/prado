@@ -1,19 +1,54 @@
+function $() {
+  var results = [], element;
+  for (var i = 0; i < arguments.length; i++) {
+    element = arguments[i];
+    if (typeof element == 'string')
+      element = document.getElementById(element);
+    results.push(Element.extend(element));
+  }
+  return results.length < 2 ? results[0] : results;
+}
+
 document.getElementsByClassName = function(className, parentElement) {
   var children = ($(parentElement) || document.body).getElementsByTagName('*');
   return $A(children).inject([], function(elements, child) {
     if (child.className.match(new RegExp("(^|\\s)" + className + "(\\s|$)")))
-      elements.push(child);
+      elements.push(Element.extend(child));
     return elements;
   });
 }
 
 /*--------------------------------------------------------------------------*/
 
-if (!window.Element) {
+if (!window.Element)
   var Element = new Object();
+
+Element.extend = function(element) {
+  if (!element) return;
+  if (_nativeExtensions) return element;
+  
+  if (!element._extended && element.tagName && element != window) {
+    var methods = Element.Methods, cache = Element.extend.cache;
+    for (property in methods) {
+      var value = methods[property];
+      if (typeof value == 'function')
+        element[property] = cache.findOrStore(value);
+    }
+  }
+  
+  element._extended = true;
+  return element;
 }
 
-Object.extend(Element, {
+Element.extend.cache = {
+  findOrStore: function(value) {
+    return this[value] = this[value] || function() {
+      return value.apply(null, [this].concat($A(arguments)));
+    }
+  }
+}
+
+Element.Methods = {
   visible: function(element) {
     return $(element).style.display != 'none';
   },
@@ -46,6 +81,19 @@ Object.extend(Element, {
 
   update: function(element, html) {
     $(element).innerHTML = html.stripScripts();
+    setTimeout(function() {html.evalScripts()}, 10);
+  },
+  
+  replace: function(element, html) {
+    element = $(element);
+    if (element.outerHTML) {
+      element.outerHTML = html.stripScripts();
+    } else {
+      var range = element.ownerDocument.createRange();
+      range.selectNodeContents(element);
+      element.parentNode.replaceChild(
+        range.createContextualFragment(html.stripScripts()), element);
+    }
     setTimeout(function() {html.evalScripts()}, 10);
   },
   
@@ -87,6 +135,13 @@ Object.extend(Element, {
     return $(element).innerHTML.match(/^\s*$/);
   },
   
+  childOf: function(element, ancestor) {
+    element = $(element), ancestor = $(ancestor);
+    while (element = element.parentNode)
+      if (element == ancestor) return true;
+    return false;
+  },
+  
   scrollTo: function(element) {
     element = $(element);
     var x = element.x ? element.x : element.offsetLeft,
@@ -114,7 +169,7 @@ Object.extend(Element, {
   
   setStyle: function(element, style) {
     element = $(element);
-    for (name in style) 
+    for (var name in style) 
       element.style[name.camelize()] = style[name];
   },
   
@@ -180,7 +235,32 @@ Object.extend(Element, {
     element.style.overflow = element._overflow;
     element._overflow = undefined;
   }
-});
+}
+
+Object.extend(Element, Element.Methods);
+
+var _nativeExtensions = false;
+
+if(!HTMLElement && /Konqueror|Safari|KHTML/.test(navigator.userAgent)) {
+  var HTMLElement = {}
+  HTMLElement.prototype = document.createElement('div').__proto__;
+}
+
+Element.addMethods = function(methods) {
+  Object.extend(Element.Methods, methods || {});
+  
+  if(typeof HTMLElement != 'undefined') {
+    var methods = Element.Methods, cache = Element.extend.cache;
+    for (property in methods) {
+      var value = methods[property];
+      if (typeof value == 'function')
+        HTMLElement.prototype[property] = cache.findOrStore(value);
+    }
+    _nativeExtensions = true;
+  }
+}
+
+Element.addMethods();
 
 var Toggle = new Object();
 Toggle.display = Element.toggle;
@@ -200,7 +280,8 @@ Abstract.Insertion.prototype = {
       try {
         this.element.insertAdjacentHTML(this.adjacency, this.content);
       } catch (e) {
-        if (this.element.tagName.toLowerCase() == 'tbody') {
+        var tagName = this.element.tagName.toLowerCase();
+        if (tagName == 'tbody' || tagName == 'tr') {
           this.insertContent(this.contentFromAnonymousTable());
         } else {
           throw e;

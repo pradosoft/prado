@@ -704,7 +704,7 @@ Prado.Inspector =
 
 		cObj=mObj.appendChild(this.d.createElement("div"));
 		cObj.className="credits";
-		cObj.innerHTML = "<b>[esc] to <a href=\"javascript:Prado.Inspector.cleanUp();\">close</a></b><br />Javascript Object Tree V2.0, <a target=\"_blank\" href=\"http://slayeroffice.com/?c=/content/tools/js_tree.html\">more info</a>.";
+		cObj.innerHTML = "<b>[esc] to <a href=\"javascript:Prado.Inspector.cleanUp();\">close</a></b><br />Javascript Object Tree V2.0.";
 
 		window.scrollTo(0,0);
 	},

@@ -1,26 +1,29 @@
 
-/** 
- * get element
- @ @param element or element id string
- @ returns element
- */
-function $(n,d) {
-    if(isElement(n)) return n;
-	if(isString(n)==false) return null;
-	var p,i,x;  
-	if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
-		d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
-		if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
-		for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=DOM.find(n,d.layers[i].document);
-		if(!x && d.getElementById) x=d.getElementById(n); return x;
-}
-
 /**
  * Similar to bindAsEventLister, but takes additional arguments.
  */
-Function.prototype.bindEvent = function() {
-  var __method = this, args = $A(arguments), object = args.shift();
-  return function(event) {
-    return __method.apply(object, [event || window.event].concat(args));
-  }
+Function.prototype.bindEvent = function() 
+{
+	var __method = this, args = $A(arguments), object = args.shift();
+	return function(event) 
+	{
+		return __method.apply(object, [event || window.event].concat(args));
+	}
+}
+
+/**
+ * Creates a new function by copying function definition from
+ * the <tt>base</tt> and optional <tt>definition</tt>.
+ * @param function a base function to copy from.
+ * @param array additional definition
+ * @param function return a new function with definition from both
+ * <tt>base</tt> and <tt>definition</tt>.
+ */
+Class.extend = function(base, definition)
+{
+		var component = Class.create();
+		Object.extend(component.prototype, base.prototype);
+		if(definition) 
+			Object.extend(component.prototype, definition);
+		return component;
 }

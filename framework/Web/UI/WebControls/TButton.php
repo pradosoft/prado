@@ -109,6 +109,7 @@ class TButton extends TWebControl implements IPostBackEventHandler, IButtonContr
 	{
 		$options['ID']=$this->getClientID();
 		$options['CausesValidation']=$this->getCausesValidation();
+		$options['EventTarget'] = $this->getUniqueID();
 		$options['ValidationGroup']=$this->getValidationGroup();
 
 		return $options;

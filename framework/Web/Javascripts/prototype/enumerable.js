@@ -102,7 +102,7 @@ var Enumerable = {
     var result;
     this.each(function(value, index) {
       value = (iterator || Prototype.K)(value, index);
-      if (value >= (result || value))
+      if (result == undefined || value >= result)
         result = value;
     });
     return result;
@@ -112,7 +112,7 @@ var Enumerable = {
     var result;
     this.each(function(value, index) {
       value = (iterator || Prototype.K)(value, index);
-      if (value <= (result || value))
+      if (result == undefined || value < result)
         result = value;
     });
     return result;
@@ -164,8 +164,7 @@ var Enumerable = {
 
     var collections = [this].concat(args).map($A);
     return this.map(function(value, index) {
-      iterator(value = collections.pluck(index));
-      return value;
+      return iterator(collections.pluck(index));
     });
   },
   

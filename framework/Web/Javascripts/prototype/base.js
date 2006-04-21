@@ -9,7 +9,7 @@ var Class = {
 var Abstract = new Object();
 
 Object.extend = function(destination, source) {
-  for (property in source) {
+  for (var property in source) {
     destination[property] = source[property];
   }
   return destination;
@@ -99,23 +99,4 @@ PeriodicalExecuter.prototype = {
       }
     }
   }
-}
-
-/*--------------------------------------------------------------------------*/
-
-function $() {
-  var elements = new Array();
-
-  for (var i = 0; i < arguments.length; i++) {
-    var element = arguments[i];
-    if (typeof element == 'string')
-      element = document.getElementById(element);
-
-    if (arguments.length == 1) 
-      return element;
-
-    elements.push(element);
-  }
-
-  return elements;
 }

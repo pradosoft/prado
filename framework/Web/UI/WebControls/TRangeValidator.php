@@ -271,11 +271,11 @@ class TRangeValidator extends TBaseValidator
 	protected function getClientScriptOptions()
 	{
 		$options=parent::getClientScriptOptions();
-		$options['minimumvalue']=$this->getMinValue();
-		$options['maximumvalue']=$this->getMaxValue();
-		$options['type']=$this->getDataType();
+		$options['MinValue']=$this->getMinValue();
+		$options['MaxValue']=$this->getMaxValue();
+		$options['DataType']=$this->getDataType();
 		if(($dateFormat=$this->getDateFormat())!=='')
-			$options['dateformat']=$dateFormat;
+			$options['DateFormat']=$dateFormat;
 		return $options;
 	}
 }

@@ -1,4 +1,46 @@
 Object.extend(String.prototype, {
+  gsub: function(pattern, replacement) {
+    var result = '', source = this, match;
+    replacement = arguments.callee.prepareReplacement(replacement);
+    
+    while (source.length > 0) {
+      if (match = source.match(pattern)) {
+        result += source.slice(0, match.index);
+        result += (replacement(match) || '').toString();
+        source  = source.slice(match.index + match[0].length);
+      } else {
+        result += source, source = '';
+      }
+    }
+    return result;
+  },
+  
+  sub: function(pattern, replacement, count) {
+    replacement = this.gsub.prepareReplacement(replacement);
+    count = count === undefined ? 1 : count;
+    
+    return this.gsub(pattern, function(match) {
+      if (--count < 0) return match[0];
+      return replacement(match);
+    });
+  },
+  
+  scan: function(pattern, iterator) {
+    this.gsub(pattern, iterator);
+    return this;
+  },
+  
+  truncate: function(length, truncation) {
+    length = length || 30;
+    truncation = truncation === undefined ? '...' : truncation;
+    return this.length > length ? 
+      this.slice(0, length - truncation.length) + truncation : this;
+  },
+
+  strip: function() {
+    return this.replace(/^\s+/, '').replace(/\s+$/, '');
+  },
+  
   stripTags: function() {
     return this.replace(/<\/?[^>]+>/gi, '');
   },
@@ -16,7 +58,7 @@ Object.extend(String.prototype, {
   },
   
   evalScripts: function() {
-    return this.extractScripts().map(eval);
+    return this.extractScripts().map(function(script) { return eval(script) });
   },
 
   escapeHTML: function() {
@@ -62,8 +104,31 @@ Object.extend(String.prototype, {
   },
 
   inspect: function() {
-    return "'" + this.replace('\\', '\\\\').replace("'", '\\\'') + "'";
+    return "'" + this.replace(/\\/g, '\\\\').replace(/'/g, '\\\'') + "'";
   }
 });
 
+String.prototype.gsub.prepareReplacement = function(replacement) {
+  if (typeof replacement == 'function') return replacement;
+  var template = new Template(replacement);
+  return function(match) { return template.evaluate(match) };
+}
+
 String.prototype.parseQuery = String.prototype.toQueryParams;
+
+var Template = Class.create();
+Template.Pattern = /(^|.|\r|\n)(#\{(.*?)\})/;
+Template.prototype = {
+  initialize: function(template, pattern) {
+    this.template = template.toString();
+    this.pattern  = pattern || Template.Pattern;
+  },
+  
+  evaluate: function(object) {
+    return this.template.gsub(this.pattern, function(match) {
+      var before = match[1];
+      if (before == '\\') return match[2];
+      return before + (object[match[3]] || '').toString();
+    });
+  }
+}

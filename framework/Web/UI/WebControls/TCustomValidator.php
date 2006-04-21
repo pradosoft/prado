@@ -107,7 +107,7 @@ class TCustomValidator extends TBaseValidator
 	{
 		$options=parent::getClientScriptOptions();
 		if(($clientJs=$this->getClientValidationFunction())!=='')
-			$options['clientvalidationfunction']=$clientJs;
+			$options['ClientValidationFunction']=$clientJs;
 		return $options;
 	}
 }

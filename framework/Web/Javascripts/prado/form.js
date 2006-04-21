@@ -1,4 +1,4 @@
-Prado.Focus = Class.create();
+/*Prado.Focus = Class.create();
 
 Prado.Focus.setFocus = function(id)
 {
@@ -97,29 +97,18 @@ Prado.Focus.isVisible = function(element)
 	}
     return true;
 }
+*/
+
 
 Prado.PostBack = function(event,options)
 {
 	var form = $(options['FormID']);
 	var canSubmit = true;
-	if(options['CausesValidation'] && Prado.Validation)
-	{
-		var valid = true;
-		if(options['ValidationGroup'])
-		{
-			valid = Prado.Validation.ValidateValidationGroup(options['ValidationGroup']);
-			//	Prado.Validation.SetActiveGroup(Event.element(event), options['ValidationGroup']);
-		}
-		else
-		{
-			valid = Prado.Validation.ValidateNonGroup(form);
-		}
 
-		if(!valid)
-		{
-			//if(options['StopEvent']) 
+	if(options['CausesValidation'] && typeof(Prado.Validation) != "undefined")
+	{
+		if(!Prado.Validation.validate(options['FormID'], options['ValidationGroup']))
 			return Event.stop(event);
-		}
 	}
 
 	if(options['PostBackUrl'] && options['PostBackUrl'].length > 0)

@@ -1,0 +1,45 @@
+<com:TContent ID="Content">
+<h1>Prado RangeValidator Tests Integer</h1>
+<div>
+	<p>Integers between 1 and 4</p>
+	<div>
+		<com:TTextBox ID="text1" />
+		<com:TRangeValidator
+			ID="validator1"
+			ControlToValidate="text1"
+			ErrorMessage="Numbers between 1 and 4"
+			MinValue="1"
+			MaxValue="4"
+			DataType="Integer"
+			ControlCssClass="required" />
+	</div>
+	<p>Integers &gt;= 2</p>
+	<div>
+		<com:TTextBox ID="text2" />
+		<com:TRangeValidator
+			ID="validator2"
+			ControlToValidate="text2"
+			ErrorMessage="Numbers &gt;= 2"
+			MinValue="2"
+			DataType="Integer"
+			ControlCssClass="required" />
+	</div>
+	
+	<p>Integers &lt;= 20</p>
+	<div>
+		<com:TTextBox ID="text3" />
+		<com:TRangeValidator
+			ID="validator3"
+			ControlToValidate="text3"
+			ErrorMessage="Numbers &lt;= 20"
+			MaxValue="20"
+			DataType="Integer"
+			ControlCssClass="required" />
+	</div>
+		
+	<com:TButton ID="submit1" Text="Test" />
+</div>
+
+
+
+</com:TContent>

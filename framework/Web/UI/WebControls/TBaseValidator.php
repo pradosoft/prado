@@ -131,14 +131,18 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	protected function getClientScriptOptions()
 	{
-		$options['id'] = $this->getClientID();
-		$options['display'] = $this->getDisplay();
-		$options['errormessage'] = $this->getErrorMessage();
-		$options['focusonerror'] = $this->getFocusOnError();
-		$options['focuselementid'] = $this->getFocusElementID();
-		$options['validationgroup'] = $this->getValidationGroup();
-		$options['controltovalidate'] = $this->getValidationTarget()->getClientID();
-		$options['controlcssclass'] = $this->getControlCssClass();
+		$options['ID'] = $this->getClientID();
+		$options['FormID'] = $this->getPage()->getForm()->getClientID();
+		$options['Display'] = $this->getDisplay();
+		$options['ErrorMessage'] = $this->getErrorMessage();
+		if($this->getFocusOnError())
+		{
+			$options['FocusOnError'] = $this->getFocusOnError();
+			$options['FocusElementID'] = $this->getFocusElementID();
+		}
+		$options['ValidationGroup'] = $this->getValidationGroup();
+		$options['ControlToValidate'] = $this->getValidationTarget()->getClientID();
+		$options['ControlCssClass'] = $this->getControlCssClass();
 		return $options;
 	}
 
@@ -156,8 +160,10 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		$scriptKey = "TBaseValidator:$formID";
 		if($this->getEnableClientScript() && !$scripts->isEndScriptRegistered($scriptKey))
 		{
+			$manager['FormID'] = $formID;
+			$options = TJavaScript::encode($manager); 
 			$scripts->registerPradoScript('validator');
-			$scripts->registerEndScript($scriptKey, "Prado.Validation.AddForm('$formID');");
+			$scripts->registerEndScript($scriptKey, "new Prado.Validation({$options});");
 		}
 		if($this->getEnableClientScript())
 			$this->registerClientScriptValidator();
@@ -195,7 +201,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			$scriptKey = "prado:".$this->getClientID();
 			$scripts = $this->getPage()->getClientScript();
 			$options =  TJavaScript::encode($this->getClientScriptOptions());
-			$js = "new Prado.Validation(Prado.Validation.{$class}, {$options});";
+			$js = "new Prado.WebUI.{$class}({$options});";
 			$scripts->registerEndScript($scriptKey, $js);
 		}
 	}

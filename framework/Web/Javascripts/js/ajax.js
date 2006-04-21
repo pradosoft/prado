@@ -1,516 +1,614 @@
-var Ajax={getTransport:function(){
-return Try.these(function(){
-return new ActiveXObject("Msxml2.XMLHTTP");
-},function(){
-return new ActiveXObject("Microsoft.XMLHTTP");
-},function(){
-return new XMLHttpRequest();
-})||false;
-},activeRequestCount:0};
-Ajax.Responders={responders:[],_each:function(_1){
-this.responders._each(_1);
-},register:function(_2){
-if(!this.include(_2)){
-this.responders.push(_2);
+var Ajax = {
+getTransport: function() {
+return Try.these(
+function() {return new XMLHttpRequest()},
+function() {return new ActiveXObject('Msxml2.XMLHTTP')},
+function() {return new ActiveXObject('Microsoft.XMLHTTP')}
+) || false;
+},
+activeRequestCount: 0
 }
-},unregister:function(_3){
-this.responders=this.responders.without(_3);
-},dispatch:function(_4,_5,_6,_7){
-this.each(function(_8){
-if(_8[_4]&&typeof _8[_4]=="function"){
-try{
-_8[_4].apply(_8,[_5,_6,_7]);
+Ajax.Responders = {
+responders: [],
+_each: function(iterator) {
+this.responders._each(iterator);
+},
+register: function(responderToAdd) {
+if (!this.include(responderToAdd))
+this.responders.push(responderToAdd);
+},
+unregister: function(responderToRemove) {
+this.responders = this.responders.without(responderToRemove);
+},
+dispatch: function(callback, request, transport, json) {
+this.each(function(responder) {
+if (responder[callback] && typeof responder[callback] == 'function') {
+try {
+responder[callback].apply(responder, [request, transport, json]);
+} catch (e) {}
 }
-catch(e){
+});
+}
+};
+Object.extend(Ajax.Responders, Enumerable);
+Ajax.Responders.register({
+onCreate: function() {
+Ajax.activeRequestCount++;
+},
+onComplete: function() {
+Ajax.activeRequestCount--;
+}
+});
+Ajax.Base = function() {};
+Ajax.Base.prototype = {
+setOptions: function(options) {
+this.options = {
+method: 'post',
+asynchronous: true,
+contentType:'application/x-www-form-urlencoded',
+parameters: ''
+}
+Object.extend(this.options, options || {});
+},
+responseIsSuccess: function() {
+return this.transport.status == undefined
+|| this.transport.status == 0 
+|| (this.transport.status >= 200 && this.transport.status < 300);
+},
+responseIsFailure: function() {
+return !this.responseIsSuccess();
+}
+}
+Ajax.Request = Class.create();
+Ajax.Request.Events = 
+['Uninitialized', 'Loading', 'Loaded', 'Interactive', 'Complete'];
+Ajax.Request.prototype = Object.extend(new Ajax.Base(), {
+initialize: function(url, options) {
+this.transport = Ajax.getTransport();
+this.setOptions(options);
+this.request(url);
+},
+request: function(url) {
+var parameters = this.options.parameters || '';
+if (parameters.length > 0) parameters += '&_=';
+try {
+this.url = url;
+if (this.options.method == 'get' && parameters.length > 0)
+this.url += (this.url.match(/\?/) ? '&' : '?') + parameters;
+Ajax.Responders.dispatch('onCreate', this, this.transport);
+this.transport.open(this.options.method, this.url, 
+this.options.asynchronous);
+if (this.options.asynchronous) {
+this.transport.onreadystatechange = this.onStateChange.bind(this);
+setTimeout((function() {this.respondToReadyState(1)}).bind(this), 10);
+}
+this.setRequestHeaders();
+var body = this.options.postBody ? this.options.postBody : parameters;
+this.transport.send(this.options.method == 'post' ? body : null);
+} catch (e) {
+this.dispatchException(e);
+}
+},
+setRequestHeaders: function() {
+var requestHeaders = 
+['X-Requested-With', 'XMLHttpRequest',
+ 'X-Prototype-Version', Prototype.Version,
+ 'Accept', 'text/javascript, text/html, application/xml, text/xml, * 
+if (this.transport.overrideMimeType)
+requestHeaders.push('Connection', 'close');
+}
+if (this.options.requestHeaders)
+requestHeaders.push.apply(requestHeaders, this.options.requestHeaders);
+for (var i = 0; i < requestHeaders.length; i += 2)
+this.transport.setRequestHeader(requestHeaders[i], requestHeaders[i+1]);
+},
+onStateChange: function() {
+var readyState = this.transport.readyState;
+if (readyState != 1)
+this.respondToReadyState(this.transport.readyState);
+},
+header: function(name) {
+try {
+return this.transport.getResponseHeader(name);
+} catch (e) {}
+},
+evalJSON: function() {
+try {
+return eval('(' + this.header('X-JSON') + ')');
+} catch (e) {}
+},
+evalResponse: function() {
+try {
+return eval(this.transport.responseText);
+} catch (e) {
+this.dispatchException(e);
+}
+},
+respondToReadyState: function(readyState) {
+var event = Ajax.Request.Events[readyState];
+var transport = this.transport, json = this.evalJSON();
+if (event == 'Complete') {
+try {
+(this.options['on' + this.transport.status]
+ || this.options['on' + (this.responseIsSuccess() ? 'Success' : 'Failure')]
+ || Prototype.emptyFunction)(transport, json);
+} catch (e) {
+this.dispatchException(e);
+}
+if ((this.header('Content-type') || '').match(/^text\/javascript/i))
+this.evalResponse();
+}
+try {
+(this.options['on' + event] || Prototype.emptyFunction)(transport, json);
+Ajax.Responders.dispatch('on' + event, this, transport, json);
+} catch (e) {
+this.dispatchException(e);
+}
+if (event == 'Complete')
+this.transport.onreadystatechange = Prototype.emptyFunction;
+},
+dispatchException: function(exception) {
+(this.options.onException || Prototype.emptyFunction)(this, exception);
+Ajax.Responders.dispatch('onException', this, exception);
+}
+});
+Ajax.Updater = Class.create();
+Object.extend(Object.extend(Ajax.Updater.prototype, Ajax.Request.prototype), {
+initialize: function(container, url, options) {
+this.containers = {
+success: container.success ? $(container.success) : $(container),
+failure: container.failure ? $(container.failure) :
+(container.success ? null : $(container))
+}
+this.transport = Ajax.getTransport();
+this.setOptions(options);
+var onComplete = this.options.onComplete || Prototype.emptyFunction;
+this.options.onComplete = (function(transport, object) {
+this.updateContent();
+onComplete(transport, object);
+}).bind(this);
+this.request(url);
+},
+updateContent: function() {
+var receiver = this.responseIsSuccess() ?
+this.containers.success : this.containers.failure;
+var response = this.transport.responseText;
+if (!this.options.evalScripts)
+response = response.stripScripts();
+if (receiver) {
+if (this.options.insertion) {
+new this.options.insertion(receiver, response);
+} else {
+Element.update(receiver, response);
+}
+}
+if (this.responseIsSuccess()) {
+if (this.onComplete)
+setTimeout(this.onComplete.bind(this), 10);
 }
 }
 });
-}};
-Object.extend(Ajax.Responders,Enumerable);
-Ajax.Responders.register({onCreate:function(){
-Ajax.activeRequestCount++;
-},onComplete:function(){
-Ajax.activeRequestCount--;
-}});
-Ajax.Base=function(){
-};
-Ajax.Base.prototype={setOptions:function(_9){
-this.options={method:"post",asynchronous:true,parameters:""};
-Object.extend(this.options,_9||{});
-},responseIsSuccess:function(){
-return this.transport.status==undefined||this.transport.status==0||(this.transport.status>=200&&this.transport.status<300);
-},responseIsFailure:function(){
-return !this.responseIsSuccess();
-}};
-Ajax.Request=Class.create();
-Ajax.Request.Events=["Uninitialized","Loading","Loaded","Interactive","Complete"];
-Ajax.Request.prototype=Object.extend(new Ajax.Base(),{initialize:function(url,_11){
-this.transport=Ajax.getTransport();
-this.setOptions(_11);
-this.request(url);
-},request:function(url){
-var _12=this.options.parameters||"";
-if(_12.length>0){
-_12+="&_=";
-}
-try{
-this.url=url;
-if(this.options.method=="get"&&_12.length>0){
-this.url+=(this.url.match(/\?/)?"&":"?")+_12;
-}
-Ajax.Responders.dispatch("onCreate",this,this.transport);
-this.transport.open(this.options.method,this.url,this.options.asynchronous);
-if(this.options.asynchronous){
-this.transport.onreadystatechange=this.onStateChange.bind(this);
-setTimeout((function(){
-this.respondToReadyState(1);
-}).bind(this),10);
-}
-this.setRequestHeaders();
-var _13=this.options.postBody?this.options.postBody:_12;
-this.transport.send(this.options.method=="post"?_13:null);
-}
-catch(e){
-this.dispatchException(e);
-}
-},setRequestHeaders:function(){
-var _14=["X-Requested-With","XMLHttpRequest","X-Prototype-Version",Prototype.Version];
-if(this.options.method=="post"){
-_14.push("Content-type","application/x-www-form-urlencoded");
-if(this.transport.overrideMimeType){
-_14.push("Connection","close");
-}
-}
-if(this.options.requestHeaders){
-_14.push.apply(_14,this.options.requestHeaders);
-}
-for(var i=0;i<_14.length;i+=2){
-this.transport.setRequestHeader(_14[i],_14[i+1]);
-}
-},onStateChange:function(){
-var _16=this.transport.readyState;
-if(_16!=1){
-this.respondToReadyState(this.transport.readyState);
-}
-},header:function(_17){
-try{
-return this.transport.getResponseHeader(_17);
-}
-catch(e){
-}
-},evalJSON:function(){
-try{
-return eval(this.header("X-JSON"));
-}
-catch(e){
-}
-},evalResponse:function(){
-try{
-return eval(this.transport.responseText);
-}
-catch(e){
-this.dispatchException(e);
-}
-},respondToReadyState:function(_18){
-var _19=Ajax.Request.Events[_18];
-var _20=this.transport,json=this.evalJSON();
-if(_19=="Complete"){
-try{
-(this.options["on"+this.transport.status]||this.options["on"+(this.responseIsSuccess()?"Success":"Failure")]||Prototype.emptyFunction)(_20,json);
-}
-catch(e){
-this.dispatchException(e);
-}
-if((this.header("Content-type")||"").match(/^text\/javascript/i)){
-this.evalResponse();
-}
-}
-try{
-(this.options["on"+_19]||Prototype.emptyFunction)(_20,json);
-Ajax.Responders.dispatch("on"+_19,this,_20,json);
-}
-catch(e){
-this.dispatchException(e);
-}
-if(_19=="Complete"){
-this.transport.onreadystatechange=Prototype.emptyFunction;
-}
-},dispatchException:function(_21){
-(this.options.onException||Prototype.emptyFunction)(this,_21);
-Ajax.Responders.dispatch("onException",this,_21);
-}});
-Ajax.Updater=Class.create();
-Object.extend(Object.extend(Ajax.Updater.prototype,Ajax.Request.prototype),{initialize:function(_22,url,_23){
-this.containers={success:_22.success?$(_22.success):$(_22),failure:_22.failure?$(_22.failure):(_22.success?null:$(_22))};
-this.transport=Ajax.getTransport();
-this.setOptions(_23);
-var _24=this.options.onComplete||Prototype.emptyFunction;
-this.options.onComplete=(function(_25,_26){
-this.updateContent();
-_24(_25,_26);
-}).bind(this);
-this.request(url);
-},updateContent:function(){
-var _27=this.responseIsSuccess()?this.containers.success:this.containers.failure;
-var _28=this.transport.responseText;
-if(!this.options.evalScripts){
-_28=_28.stripScripts();
-}
-if(_27){
-if(this.options.insertion){
-new this.options.insertion(_27,_28);
-}else{
-Element.update(_27,_28);
-}
-}
-if(this.responseIsSuccess()){
-if(this.onComplete){
-setTimeout(this.onComplete.bind(this),10);
-}
-}
-}});
-Ajax.PeriodicalUpdater=Class.create();
-Ajax.PeriodicalUpdater.prototype=Object.extend(new Ajax.Base(),{initialize:function(_29,url,_30){
-this.setOptions(_30);
-this.onComplete=this.options.onComplete;
-this.frequency=(this.options.frequency||2);
-this.decay=(this.options.decay||1);
-this.updater={};
-this.container=_29;
-this.url=url;
+Ajax.PeriodicalUpdater = Class.create();
+Ajax.PeriodicalUpdater.prototype = Object.extend(new Ajax.Base(), {
+initialize: function(container, url, options) {
+this.setOptions(options);
+this.onComplete = this.options.onComplete;
+this.frequency = (this.options.frequency || 2);
+this.decay = (this.options.decay || 1);
+this.updater = {};
+this.container = container;
+this.url = url;
 this.start();
-},start:function(){
-this.options.onComplete=this.updateComplete.bind(this);
+},
+start: function() {
+this.options.onComplete = this.updateComplete.bind(this);
 this.onTimerEvent();
-},stop:function(){
-this.updater.onComplete=undefined;
+},
+stop: function() {
+this.updater.onComplete = undefined;
 clearTimeout(this.timer);
-(this.onComplete||Prototype.emptyFunction).apply(this,arguments);
-},updateComplete:function(_31){
-if(this.options.decay){
-this.decay=(_31.responseText==this.lastText?this.decay*this.options.decay:1);
-this.lastText=_31.responseText;
+(this.onComplete || Prototype.emptyFunction).apply(this, arguments);
+},
+updateComplete: function(request) {
+if (this.options.decay) {
+this.decay = (request.responseText == this.lastText ? 
+this.decay * this.options.decay : 1);
+this.lastText = request.responseText;
 }
-this.timer=setTimeout(this.onTimerEvent.bind(this),this.decay*this.frequency*1000);
-},onTimerEvent:function(){
-this.updater=new Ajax.Updater(this.container,this.url,this.options);
-}});
-Prado.AJAX={Service:"Prototype"};
-Prado.AJAX.EvalScript=function(_32){
-var _33=new RegExp(Ajax.Updater.ScriptFragment,"img");
-var _34=_32.match(_33);
-if(_34){
-_33=new RegExp(Ajax.Updater.ScriptFragment,"im");
-setTimeout((function(){
-for(var i=0;i<_34.length;i++){
-eval(_34[i].match(_33)[1]);
+this.timer = setTimeout(this.onTimerEvent.bind(this), 
+this.decay * this.frequency * 1000);
+},
+onTimerEvent: function() {
+this.updater = new Ajax.Updater(this.container, this.url, this.options);
 }
-}).bind(this),50);
+});
+Prado.AJAX = { Service : 'Prototype' };
+Prado.AJAX.EvalScript = function(output)
+{
+var match = new RegExp(Ajax.Updater.ScriptFragment, 'img');
+var scripts= output.match(match);
+if (scripts) 
+{
+match = new RegExp(Ajax.Updater.ScriptFragment, 'im');
+setTimeout((function() 
+{
+for (var i = 0; i < scripts.length; i++)
+eval(scripts[i].match(match)[1]);
+}).bind(this), 50);
 }
-};
-Prado.AJAX.Request=Class.create();
-Prado.AJAX.Request.prototype=Object.extend(Ajax.Request.prototype,{evalJSON:function(){
-try{
-var _35=this.transport.getResponseHeader("X-JSON"),object;
-object=eval(_35);
+}
+Prado.AJAX.Request = Class.create();
+Prado.AJAX.Request.prototype = Object.extend(Ajax.Request.prototype, 
+{
+evalJSON: function() 
+{
+try 
+{
+var json = this.transport.getResponseHeader('X-JSON'), object;
+object = eval(json);
 return object;
+} 
+catch (e) 
+{
+if(isString(json))
+{
+return Prado.AJAX.JSON.parse(json);
 }
-catch(e){
-if(isString(_35)){
-return Prado.AJAX.JSON.parse(_35);
 }
+},
+respondToReadyState: function(readyState) {
+var event = Ajax.Request.Events[readyState];
+var transport = this.transport, json = this.evalJSON();
+if(event == 'Complete' && transport.status)
+Ajax.Responders.dispatch('on' + transport.status, this, transport, json);
+(this.options['on' + event] || Prototype.emptyFunction)(transport, json);
+Ajax.Responders.dispatch('on' + event, this, transport, json);
+if (event == 'Complete')
+(this.options['on' + this.transport.status]
+ || this.options['on' + (this.responseIsSuccess() ? 'Success' : 'Failure')]
+ || Prototype.emptyFunction)(transport, json);
+if (event == 'Complete')
+this.transport.onreadystatechange = Prototype.emptyFunction;
 }
-},respondToReadyState:function(_36){
-var _37=Ajax.Request.Events[_36];
-var _38=this.transport,json=this.evalJSON();
-if(_37=="Complete"&&_38.status){
-Ajax.Responders.dispatch("on"+_38.status,this,_38,json);
-}
-(this.options["on"+_37]||Prototype.emptyFunction)(_38,json);
-Ajax.Responders.dispatch("on"+_37,this,_38,json);
-if(_37=="Complete"){
-(this.options["on"+this.transport.status]||this.options["on"+(this.responseIsSuccess()?"Success":"Failure")]||Prototype.emptyFunction)(_38,json);
-}
-if(_37=="Complete"){
-this.transport.onreadystatechange=Prototype.emptyFunction;
-}
-}});
-Prado.AJAX.Error=function(e,_40){
-e.name="Prado.AJAX.Error";
-e.code=_40;
+});
+Prado.AJAX.Error = function(e, code) 
+{
+e.name = 'Prado.AJAX.Error';
+e.code = code;
 return e;
-};
-Prado.AJAX.RequestBuilder=Class.create();
-Prado.AJAX.RequestBuilder.prototype={initialize:function(){
-this.body="";
-this.data=[];
-},encode:function(_41){
-return Prado.AJAX.JSON.stringify(_41);
-},build:function(_42){
-var sep="";
-for(var _44 in _42){
-if(isFunction(_42[_44])){
-continue;
 }
-try{
-this.body+=sep+_44+"=";
-this.body+=encodeURIComponent(this.encode(_42[_44]));
+Prado.AJAX.RequestBuilder = Class.create();
+Prado.AJAX.RequestBuilder.prototype = 
+{
+initialize : function()
+{
+this.body = '';
+this.data = [];
+},
+encode : function(data)
+{
+return Prado.AJAX.JSON.stringify(data);
+},
+build : function(data) 
+{
+var sep = '';
+for ( var argName in data) 
+{
+if(isFunction(data[argName])) continue;
+try 
+{
+this.body += sep + argName + '=';
+this.body += encodeURIComponent(this.encode(data[argName]));
+} catch (e) {
+throw Prado.AJAX.Error(e, 1006);
 }
-catch(e){
-throw Prado.AJAX.Error(e,1006);
+sep = '&';
 }
-sep="&";
-}
-},getAll:function(){
+},
+getAll : function()
+{
 this.build(this.data);
 return this.body;
-}};
-Prado.AJAX.RemoteObject=function(){
-};
-Prado.AJAX.RemoteObject.Request=Class.create();
-Prado.AJAX.RemoteObject.Request.prototype=Object.extend(Prado.AJAX.Request.prototype,{initialize:function(_45){
-this.transport=Ajax.getTransport();
-this.setOptions(_45);
-this.post=new Prado.AJAX.RequestBuilder();
-},invokeRemoteObject:function(url,_46){
-this.initParameters(_46);
-this.options.postBody=this.post.getAll();
+}
+}
+Prado.AJAX.RemoteObject = function(){};
+Prado.AJAX.RemoteObject.Request = Class.create();
+Prado.AJAX.RemoteObject.Request.prototype = Object.extend(Prado.AJAX.Request.prototype,
+{
+initialize : function(options)
+{
+this.transport = Ajax.getTransport();
+this.setOptions(options);
+this.post = new Prado.AJAX.RequestBuilder();
+},
+invokeRemoteObject : function(url, args)
+{
+this.initParameters(args);
+this.options.postBody = this.post.getAll();
 this.request(url);
-},initParameters:function(_47){
-this.post.data["__parameters"]=[];
-for(var i=0;i<_47.length;i++){
-this.post.data["__parameters"][i]=_47[i];
+},
+initParameters : function(args)
+{
+this.post.data['__parameters'] = [];
+for(var i = 0; i<args.length; i++)
+this.post.data['__parameters'][i] = args[i];
 }
-}});
-Prado.AJAX.RemoteObject.prototype={baseInitialize:function(_48,_49){
-this.__handlers=_48||{};
-this.__service=new Prado.AJAX.RemoteObject.Request(_49);
-},__call:function(url,_50,_51){
-this.__service.options.onSuccess=this.__onSuccess.bind(this);
-this.__callback=_50;
-return this.__service.invokeRemoteObject(url+"/"+_50,_51);
-},__onSuccess:function(_52,_53){
-if(this.__handlers[this.__callback]){
-this.__handlers[this.__callback](_53,_52.responseText);
+});
+Prado.AJAX.RemoteObject.prototype = 
+{
+baseInitialize : function(handlers, options)
+{
+this.__handlers = handlers || {};
+this.__service = new Prado.AJAX.RemoteObject.Request(options);
+},
+__call : function(url, method, args)
+{
+this.__service.options.onSuccess = this.__onSuccess.bind(this);
+this.__callback = method;
+return this.__service.invokeRemoteObject(url+"/"+method, args);
+},
+__onSuccess : function(transport, json)
+{
+if(this.__handlers[this.__callback])
+this.__handlers[this.__callback](json, transport.responseText);
 }
-}};
-Prado.AJAX.Exception={"on505":function(_54,_55,e){
-var msg="HTTP "+_55.status+" with response";
-Logger.error(msg,_55.responseText);
+};
+Prado.AJAX.Exception =
+{
+"on505" : function(request, transport, e)
+{
+var msg = 'HTTP '+transport.status+" with response";
+Logger.error(msg, transport.responseText);
 Logger.exception(e);
-},onComplete:function(_57,_58,e){
-if(_58.status!=505){
-var msg="HTTP "+_58.status+" with response : \n";
-msg+=_58.responseText+"\n";
-msg+="Data : \n"+inspect(e);
+},
+onComplete : function(request, transport, e)
+{
+if(transport.status != 505)
+{
+var msg = 'HTTP '+transport.status+" with response : \n";
+msg += transport.responseText + "\n";
+msg += "Data : \n"+inspect(e);
 Logger.warn(msg);
 }
-},format:function(e){
-var msg=e.type+" with message \""+e.message+"\"";
-msg+=" in "+e.file+"("+e.line+")\n";
-msg+="Stack trace:\n";
-var _59=e.trace;
-for(var i=0;i<_59.length;i++){
-msg+="  #"+i+" "+_59[i].file;
-msg+="("+_59[i].line+"): ";
-msg+=_59[i]["class"]+"->"+_59[i]["function"]+"()"+"\n";
+},
+format : function(e)
+{
+var msg = e.type + " with message \""+e.message+"\"";
+msg += " in "+e.file+"("+e.line+")\n";
+msg += "Stack trace:\n";
+var trace = e.trace;
+for(var i = 0; i<trace.length; i++)
+{
+msg += "#"+i+" "+trace[i].file;
+msg += "("+trace[i].line+"): ";
+msg += trace[i]["class"]+"->"+trace[i]["function"]+"()"+"\n";
 }
 return msg;
-},logException:function(e){
-var msg=Prado.AJAX.Exception.format(e);
-Logger.error("Server Error "+e.code,msg);
-}};
-Event.OnLoad(function(){
-if(typeof Logger!="undefined"){
-Logger.exception=Prado.AJAX.Exception.logException;
+},
+logException : function(e)
+{
+var msg = Prado.AJAX.Exception.format(e);
+Logger.error("Server Error "+e.code, msg);
+}
+}
+Event.OnLoad(function()
+{ 
+if(typeof Logger != "undefined") 
+{
+Logger.exception = Prado.AJAX.Exception.logException;
 Ajax.Responders.register(Prado.AJAX.Exception);
 }
 });
-Prado.AJAX.Callback=Class.create();
-Prado.AJAX.Callback.prototype=Object.extend(new Prado.AJAX.RemoteObject(),{initialize:function(ID,_61){
-if(!isString(ID)&&typeof (ID.id)!="undefined"){
-ID=ID.id;
-}
-if(!isString(ID)){
-throw new Error("A Control ID must be specified");
-}
-this.baseInitialize(this,_61);
-this.options=_61||[];
-this.__service.post.data["__ID"]=ID;
+Prado.AJAX.Callback = Class.create();
+Prado.AJAX.Callback.prototype = Object.extend(new Prado.AJAX.RemoteObject(),
+{
+initialize : function(ID, options)
+{
+if(!isString(ID) && typeof(ID.id) != "undefined")
+ID = ID.id;
+if(!isString(ID)) 
+throw new Error('A Control ID must be specified');
+this.baseInitialize(this, options);
+this.options = options || [];
+this.__service.post.data['__ID'] = ID;
 this.requestCallback();
-},collectPostData:function(){
-var IDs=Prado.AJAX.Callback.IDs;
-this.__service.post.data["__data"]={};
-for(var i=0;i<IDs.length;i++){
-var id=IDs[i];
-if(id.indexOf("[]")>-1){
-this.__service.post.data["__data"][id]=this.collectArrayPostData(id);
-}else{
-if(isObject($(id))){
-this.__service.post.data["__data"][id]=$F(id);
+},
+collectPostData : function()
+{
+var IDs = Prado.AJAX.Callback.IDs;
+this.__service.post.data['__data'] = {};
+for(var i = 0; i<IDs.length; i++)
+{
+var id = IDs[i];
+if(id.indexOf("[]") > -1)
+this.__service.post.data['__data'][id] = 
+this.collectArrayPostData(id);
+else if(isObject($(id)))
+this.__service.post.data['__data'][id] = $F(id);
 }
+},
+collectArrayPostData : function(name)
+{
+var elements = document.getElementsByName(name);
+var data = [];
+$A(elements).each(function(el)
+{ 
+if($F(el)) data.push($F(el)); 
+});
+return data;
+},
+requestCallback : function()
+{
+this.collectPostData();
+if(Prado.AJAX.Validate(this.options))
+return this.__call(Prado.AJAX.Callback.Server, 'handleCallback', this.options.params);
+},
+handleCallback : function(result, output)
+{
+if(typeof(result) != "undefined" && !isNull(result))
+{
+this.options.onSuccess(result['data'], output);
+if(result['actions'])
+result.actions.each(Prado.AJAX.Callback.Action.__run);
 }
-}
-},collectArrayPostData:function(_64){
-var _65=document.getElementsByName(_64);
-var _66=[];
-$A(_65).each(function(el){
-if($F(el)){
-_66.push($F(el));
 }
 });
-return _66;
-},requestCallback:function(){
-this.collectPostData();
-if(Prado.AJAX.Validate(this.options)){
-return this.__call(Prado.AJAX.Callback.Server,"handleCallback",this.options.params);
-}
-},handleCallback:function(_68,_69){
-if(typeof (_68)!="undefined"&&!isNull(_68)){
-this.options.onSuccess(_68["data"],_69);
-if(_68["actions"]){
-_68.actions.each(Prado.AJAX.Callback.Action.__run);
+Prado.AJAX.Callback.Action =
+{
+__run : function(command)
+{
+for(var name in command)
+{
+if(command[name][0] && ($(command[name][0]) || command[name][0].indexOf("[]") > -1))
+{
+name.toFunction().apply(this,command[name]);
 }
 }
-}});
-Prado.AJAX.Callback.Action={__run:function(_70){
-for(var _71 in _70){
-if(_70[_71][0]&&($(_70[_71][0])||_70[_71][0].indexOf("[]")>-1)){
-_71.toFunction().apply(this,_70[_71]);
 }
+};
+Prado.AJAX.Validate = function(options)
+{
+if(options.CausesValidation)
+{
+if(options.ValidatorGroup)
+return Prado.Validation.ValidateValidatorGroup(options.ValidatorGroup);
+else if(options.ValidationGroup)
+return Prado.Validation.ValidateValidationGroup(options.ValidationGroup);
+else
+return Prado.Validation.ValidateNonGroup(options.ValidationForm);
 }
-}};
-Prado.AJAX.Validate=function(_72){
-if(_72.CausesValidation){
-if(_72.ValidatorGroup){
-return Prado.Validation.ValidateValidatorGroup(_72.ValidatorGroup);
-}else{
-if(_72.ValidationGroup){
-return Prado.Validation.ValidateValidationGroup(_72.ValidationGroup);
-}else{
-return Prado.Validation.ValidateNonGroup(_72.ValidationForm);
-}
-}
-}else{
+else
 return true;
-}
 };
-Prado.AJAX.Callback.Server="";
-Prado.AJAX.Callback.IDs=[];
-Prado.Callback=function(ID,_73,_74,_75){
-var _76={"params":[_73]||[],"onSuccess":_74||Prototype.emptyFunction,"CausesValidation":true};
-Object.extend(_76,_75||{});
-new Prado.AJAX.Callback(ID,_76);
+Prado.AJAX.Callback.Server = '';
+Prado.AJAX.Callback.IDs = [];
+Prado.Callback = function(ID, params, onSuccess, options)
+{
+var callback =
+{
+'params' : [params] || [],
+'onSuccess' : onSuccess || Prototype.emptyFunction, 
+'CausesValidation' : true
+};
+Object.extend(callback, options || {});
+new Prado.AJAX.Callback(ID, callback);
 return false;
-};
-Array.prototype.______array="______array";
-Prado.AJAX.JSON={org:"http://www.JSON.org",copyright:"(c)2005 JSON.org",license:"http://www.crockford.com/JSON/license.html",stringify:function(arg){
-var c,i,l,s="",v;
-switch(typeof arg){
-case "object":
-if(arg){
-if(arg.______array=="______array"){
-for(i=0;i<arg.length;++i){
-v=this.stringify(arg[i]);
-if(s){
-s+=",";
 }
-s+=v;
+Array.prototype.______array = '______array';
+Prado.AJAX.JSON = {
+org: 'http: 
+copyright: '(c)2005 JSON.org',
+license: 'http: 
+stringify: function (arg) {
+var c, i, l, s = '', v;
+switch (typeof arg) {
+case 'object':
+if (arg) {
+if (arg.______array == '______array') {
+for (i = 0; i < arg.length; ++i) {
+v = this.stringify(arg[i]);
+if (s) {
+s += ',';
 }
-return "["+s+"]";
-}else{
-if(typeof arg.toString!="undefined"){
-for(i in arg){
-v=arg[i];
-if(typeof v!="undefined"&&typeof v!="function"){
-v=this.stringify(v);
-if(s){
-s+=",";
+s += v;
 }
-s+=this.stringify(i)+":"+v;
+return '[' + s + ']';
+} else if (typeof arg.toString != 'undefined') {
+for (i in arg) {
+v = arg[i];
+if (typeof v != 'undefined' && typeof v != 'function') {
+v = this.stringify(v);
+if (s) {
+s += ',';
 }
-}
-return "{"+s+"}";
+s += this.stringify(i) + ':' + v;
 }
 }
+return '{' + s + '}';
 }
-return "null";
-case "number":
-return isFinite(arg)?String(arg):"null";
-case "string":
-l=arg.length;
-s="\"";
-for(i=0;i<l;i+=1){
-c=arg.charAt(i);
-if(c>=" "){
-if(c=="\\"||c=="\""){
-s+="\\";
 }
-s+=c;
-}else{
-switch(c){
-case "\b":
-s+="\\b";
+return 'null';
+case 'number':
+return isFinite(arg) ? String(arg) : 'null';
+case 'string':
+l = arg.length;
+s = '"';
+for (i = 0; i < l; i += 1) {
+c = arg.charAt(i);
+if (c >= ' ') {
+if (c == '\\' || c == '"') {
+s += '\\';
+}
+s += c;
+} else {
+switch (c) {
+case '\b':
+s += '\\b';
 break;
-case "\f":
-s+="\\f";
+case '\f':
+s += '\\f';
 break;
-case "\n":
-s+="\\n";
+case '\n':
+s += '\\n';
 break;
-case "\r":
-s+="\\r";
+case '\r':
+s += '\\r';
 break;
-case "\t":
-s+="\\t";
+case '\t':
+s += '\\t';
 break;
 default:
-c=c.charCodeAt();
-s+="\\u00"+Math.floor(c/16).toString(16)+(c%16).toString(16);
+c = c.charCodeAt();
+s += '\\u00' + Math.floor(c / 16).toString(16) +
+(c % 16).toString(16);
 }
 }
 }
-return s+"\"";
-case "boolean":
+return s + '"';
+case 'boolean':
 return String(arg);
 default:
-return "null";
+return 'null';
 }
-},parse:function(_79){
-var at=0;
-var ch=" ";
-function error(m){
-throw {name:"JSONError",message:m,at:at-1,text:_79};
+},
+parse: function (text) {
+var at = 0;
+var ch = ' ';
+function error(m) {
+throw {
+name: 'JSONError',
+message: m,
+at: at - 1,
+text: text
+};
 }
-function next(){
-ch=_79.charAt(at);
-at+=1;
+function next() {
+ch = text.charAt(at);
+at += 1;
 return ch;
 }
-function white(){
-while(ch){
-if(ch<=" "){
+function white() {
+while (ch) {
+if (ch <= ' ') {
 next();
-}else{
-if(ch=="/"){
-switch(next()){
-case "/":
-while(next()&&ch!="\n"&&ch!="\r"){
-}
+} else if (ch == '/') {
+switch (next()) {
+case '/':
+while (next() && ch != '\n' && ch != '\r') {}
 break;
-case "*":
+case '*':
 next();
-for(;;){
-if(ch){
-if(ch=="*"){
-if(next()=="/"){
+for (;;) {
+if (ch) {
+if (ch == '*') {
+if (next() == '/') {
 next();
 break;
 }
-}else{
+} else {
 next();
 }
-}else{
+} else {
 error("Unterminated comment");
 }
 }
@@ -518,79 +616,73 @@ break;
 default:
 error("Syntax error");
 }
-}else{
+} else {
 break;
 }
 }
 }
-}
-function string(){
-var i,s="",t,u;
-if(ch=="\""){
-outer:
-while(next()){
-if(ch=="\""){
+function string() {
+var i, s = '', t, u;
+if (ch == '"') {
+outer:while (next()) {
+if (ch == '"') {
 next();
 return s;
-}else{
-if(ch=="\\"){
-switch(next()){
-case "b":
-s+="\b";
+} else if (ch == '\\') {
+switch (next()) {
+case 'b':
+s += '\b';
 break;
-case "f":
-s+="\f";
+case 'f':
+s += '\f';
 break;
-case "n":
-s+="\n";
+case 'n':
+s += '\n';
 break;
-case "r":
-s+="\r";
+case 'r':
+s += '\r';
 break;
-case "t":
-s+="\t";
+case 't':
+s += '\t';
 break;
-case "u":
-u=0;
-for(i=0;i<4;i+=1){
-t=parseInt(next(),16);
-if(!isFinite(t)){
+case 'u':
+u = 0;
+for (i = 0; i < 4; i += 1) {
+t = parseInt(next(), 16);
+if (!isFinite(t)) {
 break outer;
 }
-u=u*16+t;
+u = u * 16 + t;
 }
-s+=String.fromCharCode(u);
+s += String.fromCharCode(u);
 break;
 default:
-s+=ch;
+s += ch;
 }
-}else{
-s+=ch;
-}
+} else {
+s += ch;
 }
 }
 }
 error("Bad string");
 }
-function array(){
-var a=[];
-if(ch=="["){
+function array() {
+var a = [];
+if (ch == '[') {
 next();
 white();
-if(ch=="]"){
+if (ch == ']') {
 next();
 return a;
 }
-while(ch){
+while (ch) {
 a.push(value());
 white();
-if(ch=="]"){
+if (ch == ']') {
 next();
 return a;
-}else{
-if(ch!=","){
+} else if (ch != ',') {
 break;
-}
 }
 next();
 white();
@@ -598,31 +690,29 @@ white();
 }
 error("Bad array");
 }
-function object(){
-var k,o={};
-if(ch=="{"){
+function object() {
+var k, o = {};
+if (ch == '{') {
 next();
 white();
-if(ch=="}"){
+if (ch == '}') {
 next();
 return o;
 }
-while(ch){
-k=string();
+while (ch) {
+k = string();
 white();
-if(ch!=":"){
+if (ch != ':') {
 break;
 }
 next();
-o[k]=value();
+o[k] = value();
 white();
-if(ch=="}"){
+if (ch == '}') {
 next();
 return o;
-}else{
-if(ch!=","){
+} else if (ch != ',') {
 break;
-}
 }
 next();
 white();
@@ -630,56 +720,57 @@ white();
 }
 error("Bad object");
 }
-function number(){
-var n="",v;
-if(ch=="-"){
-n="-";
+function number() {
+var n = '', v;
+if (ch == '-') {
+n = '-';
 next();
 }
-while(ch>="0"&&ch<="9"){
-n+=ch;
+while (ch >= '0' && ch <= '9') {
+n += ch;
 next();
 }
-if(ch=="."){
-n+=".";
-while(next()&&ch>="0"&&ch<="9"){
-n+=ch;
+if (ch == '.') {
+n += '.';
+while (next() && ch >= '0' && ch <= '9') {
+n += ch;
 }
 }
-if(ch=="e"||ch=="E"){
-n+="e";
+if (ch == 'e' || ch == 'E') {
+n += 'e';
 next();
-if(ch=="-"||ch=="+"){
-n+=ch;
-next();
-}
-while(ch>="0"&&ch<="9"){
-n+=ch;
+if (ch == '-' || ch == '+') {
+n += ch;
 next();
 }
+while (ch >= '0' && ch <= '9') {
+n += ch;
+next();
 }
-v=+n;
-if(!isFinite(v)){
-}else{
+}
+v = +n;
+if (!isFinite(v)) {
+} else {
 return v;
 }
 }
-function word(){
-switch(ch){
-case "t":
-if(next()=="r"&&next()=="u"&&next()=="e"){
+function word() {
+switch (ch) {
+case 't':
+if (next() == 'r' && next() == 'u' && next() == 'e') {
 next();
 return true;
 }
 break;
-case "f":
-if(next()=="a"&&next()=="l"&&next()=="s"&&next()=="e"){
+case 'f':
+if (next() == 'a' && next() == 'l' && next() == 's' &&
+next() == 'e') {
 next();
 return false;
 }
 break;
-case "n":
-if(next()=="u"&&next()=="l"&&next()=="l"){
+case 'n':
+if (next() == 'u' && next() == 'l' && next() == 'l') {
 next();
 return null;
 }
@@ -687,1325 +778,1745 @@ break;
 }
 error("Syntax error");
 }
-function value(){
+function value() {
 white();
-switch(ch){
-case "{":
+switch (ch) {
+case '{':
 return object();
-case "[":
+case '[':
 return array();
-case "\"":
+case '"':
 return string();
-case "-":
+case '-':
 return number();
 default:
-return ch>="0"&&ch<="9"?number():word();
+return ch >= '0' && ch <= '9' ? number() : word();
 }
 }
 return value();
-}};
-var Autocompleter={};
-Autocompleter.Base=function(){
-};
-Autocompleter.Base.prototype={baseInitialize:function(_86,_87,_88){
-this.element=$(_86);
-this.update=$(_87);
-this.hasFocus=false;
-this.changed=false;
-this.active=false;
-this.index=0;
-this.entryCount=0;
-if(this.setOptions){
-this.setOptions(_88);
-}else{
-this.options=_88||{};
 }
-this.options.paramName=this.options.paramName||this.element.name;
-this.options.tokens=this.options.tokens||[];
-this.options.frequency=this.options.frequency||0.4;
-this.options.minChars=this.options.minChars||1;
-this.options.onShow=this.options.onShow||function(_86,_87){
-if(!_87.style.position||_87.style.position=="absolute"){
-_87.style.position="absolute";
-Position.clone(_86,_87,{setHeight:false,offsetTop:_86.offsetHeight});
-}
-Effect.Appear(_87,{duration:0.15});
 };
-this.options.onHide=this.options.onHide||function(_89,_90){
-new Effect.Fade(_90,{duration:0.15});
-};
-if(typeof (this.options.tokens)=="string"){
-this.options.tokens=new Array(this.options.tokens);
+var Autocompleter = {}
+Autocompleter.Base = function() {};
+Autocompleter.Base.prototype = {
+baseInitialize: function(element, update, options) {
+this.element = $(element); 
+this.update= $(update);
+this.hasFocus= false; 
+this.changed = false; 
+this.active= false; 
+this.index = 0; 
+this.entryCount= 0;
+if (this.setOptions)
+this.setOptions(options);
+else
+this.options = options || {};
+this.options.paramName= this.options.paramName || this.element.name;
+this.options.tokens = this.options.tokens || [];
+this.options.frequency= this.options.frequency || 0.4;
+this.options.minChars = this.options.minChars || 1;
+this.options.onShow = this.options.onShow || 
+function(element, update){ 
+if(!update.style.position || update.style.position=='absolute') {
+update.style.position = 'absolute';
+Position.clone(element, update, {setHeight: false, offsetTop: element.offsetHeight});
 }
-this.observer=null;
-this.element.setAttribute("autocomplete","off");
+Effect.Appear(update,{duration:0.15});
+};
+this.options.onHide = this.options.onHide || 
+function(element, update){ new Effect.Fade(update,{duration:0.15}) };
+if (typeof(this.options.tokens) == 'string') 
+this.options.tokens = new Array(this.options.tokens);
+this.observer = null;
+this.element.setAttribute('autocomplete','off');
 Element.hide(this.update);
-Event.observe(this.element,"blur",this.onBlur.bindAsEventListener(this));
-Event.observe(this.element,"keypress",this.onKeyPress.bindAsEventListener(this));
-},show:function(){
-if(Element.getStyle(this.update,"display")=="none"){
-this.options.onShow(this.element,this.update);
+Event.observe(this.element, "blur", this.onBlur.bindAsEventListener(this));
+Event.observe(this.element, "keypress", this.onKeyPress.bindAsEventListener(this));
+},
+show: function() {
+if(Element.getStyle(this.update, 'display')=='none') this.options.onShow(this.element, this.update);
+if(!this.iefix && 
+(navigator.appVersion.indexOf('MSIE')>0) &&
+(navigator.userAgent.indexOf('Opera')<0) &&
+(Element.getStyle(this.update, 'position')=='absolute')) {
+new Insertion.After(this.update, 
+ '<iframe id="' + this.update.id + '_iefix" '+
+ 'style="display:none;position:absolute;filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);" ' +
+ 'src="javascript:false;" frameborder="0" scrolling="no"></iframe>');
+this.iefix = $(this.update.id+'_iefix');
 }
-if(!this.iefix&&(navigator.appVersion.indexOf("MSIE")>0)&&(navigator.userAgent.indexOf("Opera")<0)&&(Element.getStyle(this.update,"position")=="absolute")){
-new Insertion.After(this.update,"<iframe id=\""+this.update.id+"_iefix\" "+"style=\"display:none;position:absolute;filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);\" "+"src=\"javascript:false;\" frameborder=\"0\" scrolling=\"no\"></iframe>");
-this.iefix=$(this.update.id+"_iefix");
-}
-if(this.iefix){
-setTimeout(this.fixIEOverlapping.bind(this),50);
-}
-},fixIEOverlapping:function(){
-Position.clone(this.update,this.iefix);
-this.iefix.style.zIndex=1;
-this.update.style.zIndex=2;
+if(this.iefix) setTimeout(this.fixIEOverlapping.bind(this), 50);
+},
+fixIEOverlapping: function() {
+Position.clone(this.update, this.iefix);
+this.iefix.style.zIndex = 1;
+this.update.style.zIndex = 2;
 Element.show(this.iefix);
-},hide:function(){
+},
+hide: function() {
 this.stopIndicator();
-if(Element.getStyle(this.update,"display")!="none"){
-this.options.onHide(this.element,this.update);
+if(Element.getStyle(this.update, 'display')!='none') this.options.onHide(this.element, this.update);
+if(this.iefix) Element.hide(this.iefix);
+},
+startIndicator: function() {
+if(this.options.indicator) Element.show(this.options.indicator);
+},
+stopIndicator: function() {
+if(this.options.indicator) Element.hide(this.options.indicator);
+},
+onKeyPress: function(event) {
+if(this.active)
+switch(event.keyCode) {
+ case Event.KEY_TAB:
+ case Event.KEY_RETURN:
+ this.selectEntry();
+ Event.stop(event);
+ case Event.KEY_ESC:
+ this.hide();
+ this.active = false;
+ Event.stop(event);
+ return;
+ case Event.KEY_LEFT:
+ case Event.KEY_RIGHT:
+ return;
+ case Event.KEY_UP:
+ this.markPrevious();
+ this.render();
+ if(navigator.appVersion.indexOf('AppleWebKit')>0) Event.stop(event);
+ return;
+ case Event.KEY_DOWN:
+ this.markNext();
+ this.render();
+ if(navigator.appVersion.indexOf('AppleWebKit')>0) Event.stop(event);
+ return;
 }
-if(this.iefix){
-Element.hide(this.iefix);
-}
-},startIndicator:function(){
-if(this.options.indicator){
-Element.show(this.options.indicator);
-}
-},stopIndicator:function(){
-if(this.options.indicator){
-Element.hide(this.options.indicator);
-}
-},onKeyPress:function(_91){
-if(this.active){
-switch(_91.keyCode){
-case Event.KEY_TAB:
-case Event.KEY_RETURN:
-this.selectEntry();
-Event.stop(_91);
-case Event.KEY_ESC:
-this.hide();
-this.active=false;
-Event.stop(_91);
-return;
-case Event.KEY_LEFT:
-case Event.KEY_RIGHT:
-return;
-case Event.KEY_UP:
-this.markPrevious();
-this.render();
-if(navigator.appVersion.indexOf("AppleWebKit")>0){
-Event.stop(_91);
-}
-return;
-case Event.KEY_DOWN:
-this.markNext();
-this.render();
-if(navigator.appVersion.indexOf("AppleWebKit")>0){
-Event.stop(_91);
-}
-return;
-}
-}else{
-if(_91.keyCode==Event.KEY_TAB||_91.keyCode==Event.KEY_RETURN){
-return;
-}
-}
-this.changed=true;
-this.hasFocus=true;
-if(this.observer){
-clearTimeout(this.observer);
-}
-this.observer=setTimeout(this.onObserverEvent.bind(this),this.options.frequency*1000);
-},onHover:function(_92){
-var _93=Event.findElement(_92,"LI");
-if(this.index!=_93.autocompleteIndex){
-this.index=_93.autocompleteIndex;
+ else 
+ if(event.keyCode==Event.KEY_TAB || event.keyCode==Event.KEY_RETURN || 
+ (navigator.appVersion.indexOf('AppleWebKit') > 0 && event.keyCode == 0)) return;
+this.changed = true;
+this.hasFocus = true;
+if(this.observer) clearTimeout(this.observer);
+this.observer = 
+setTimeout(this.onObserverEvent.bind(this), this.options.frequency*1000);
+},
+activate: function() {
+this.changed = false;
+this.hasFocus = true;
+this.getUpdatedChoices();
+},
+onHover: function(event) {
+var element = Event.findElement(event, 'LI');
+if(this.index != element.autocompleteIndex) 
+{
+this.index = element.autocompleteIndex;
 this.render();
 }
-Event.stop(_92);
-},onClick:function(_94){
-var _95=Event.findElement(_94,"LI");
-this.index=_95.autocompleteIndex;
+Event.stop(event);
+},
+onClick: function(event) {
+var element = Event.findElement(event, 'LI');
+this.index = element.autocompleteIndex;
 this.selectEntry();
 this.hide();
-},onBlur:function(_96){
-setTimeout(this.hide.bind(this),250);
-this.hasFocus=false;
-this.active=false;
-},render:function(){
-if(this.entryCount>0){
-for(var i=0;i<this.entryCount;i++){
-this.index==i?Element.addClassName(this.getEntry(i),"selected"):Element.removeClassName(this.getEntry(i),"selected");
-}
-if(this.hasFocus){
+},
+onBlur: function(event) {
+ setTimeout(this.hide.bind(this), 250);
+this.hasFocus = false;
+this.active = false; 
+}, 
+render: function() {
+if(this.entryCount > 0) {
+for (var i = 0; i < this.entryCount; i++)
+this.index==i ? 
+Element.addClassName(this.getEntry(i),"selected") : 
+Element.removeClassName(this.getEntry(i),"selected");
+if(this.hasFocus) { 
 this.show();
-this.active=true;
+this.active = true;
 }
-}else{
-this.active=false;
+} else {
+this.active = false;
 this.hide();
 }
-},markPrevious:function(){
-if(this.index>0){
-this.index--;
-}else{
-this.index=this.entryCount-1;
-}
-},markNext:function(){
-if(this.index<this.entryCount-1){
-this.index++;
-}else{
-this.index=0;
-}
-},getEntry:function(_97){
-return this.update.firstChild.childNodes[_97];
-},getCurrentEntry:function(){
+},
+markPrevious: function() {
+if(this.index > 0) this.index--
+else this.index = this.entryCount-1;
+},
+markNext: function() {
+if(this.index < this.entryCount-1) this.index++
+else this.index = 0;
+},
+getEntry: function(index) {
+return this.update.firstChild.childNodes[index];
+},
+getCurrentEntry: function() {
 return this.getEntry(this.index);
-},selectEntry:function(){
-this.active=false;
+},
+selectEntry: function() {
+this.active = false;
 this.updateElement(this.getCurrentEntry());
-},updateElement:function(_98){
-if(this.options.updateElement){
-this.options.updateElement(_98);
+},
+updateElement: function(selectedElement) {
+if (this.options.updateElement) {
+this.options.updateElement(selectedElement);
 return;
 }
-var _99="";
-if(this.options.select){
-var _100=document.getElementsByClassName(this.options.select,_98)||[];
-if(_100.length>0){
-_99=Element.collectTextNodes(_100[0],this.options.select);
-}
-}else{
-_99=Element.collectTextNodesIgnoreClass(_98,"informal");
-}
-var _101=this.findLastToken();
-if(_101!=-1){
-var _102=this.element.value.substr(0,_101+1);
-var _103=this.element.value.substr(_101+1).match(/^\s+/);
-if(_103){
-_102+=_103[0];
-}
-this.element.value=_102+_99;
-}else{
-this.element.value=_99;
+var value = '';
+if (this.options.select) {
+var nodes = document.getElementsByClassName(this.options.select, selectedElement) || [];
+if(nodes.length>0) value = Element.collectTextNodes(nodes[0], this.options.select);
+} else
+value = Element.collectTextNodesIgnoreClass(selectedElement, 'informal');
+var lastTokenPos = this.findLastToken();
+if (lastTokenPos != -1) {
+var newValue = this.element.value.substr(0, lastTokenPos + 1);
+var whitespace = this.element.value.substr(lastTokenPos + 1).match(/^\s+/);
+if (whitespace)
+newValue += whitespace[0];
+this.element.value = newValue + value;
+} else {
+this.element.value = value;
 }
 this.element.focus();
-if(this.options.afterUpdateElement){
-this.options.afterUpdateElement(this.element,_98);
-}
-},updateChoices:function(_104){
-if(!this.changed&&this.hasFocus){
-this.update.innerHTML=_104;
+if (this.options.afterUpdateElement)
+this.options.afterUpdateElement(this.element, selectedElement);
+},
+updateChoices: function(choices) {
+if(!this.changed && this.hasFocus) {
+this.update.innerHTML = choices;
 Element.cleanWhitespace(this.update);
 Element.cleanWhitespace(this.update.firstChild);
-if(this.update.firstChild&&this.update.firstChild.childNodes){
-this.entryCount=this.update.firstChild.childNodes.length;
-for(var i=0;i<this.entryCount;i++){
-var _105=this.getEntry(i);
-_105.autocompleteIndex=i;
-this.addObservers(_105);
+if(this.update.firstChild && this.update.firstChild.childNodes) {
+this.entryCount = 
+this.update.firstChild.childNodes.length;
+for (var i = 0; i < this.entryCount; i++) {
+var entry = this.getEntry(i);
+entry.autocompleteIndex = i;
+this.addObservers(entry);
 }
-}else{
-this.entryCount=0;
+} else { 
+this.entryCount = 0;
 }
 this.stopIndicator();
-this.index=0;
+this.index = 0;
 this.render();
 }
-},addObservers:function(_106){
-Event.observe(_106,"mouseover",this.onHover.bindAsEventListener(this));
-Event.observe(_106,"click",this.onClick.bindAsEventListener(this));
-},onObserverEvent:function(){
-this.changed=false;
-if(this.getToken().length>=this.options.minChars){
+},
+addObservers: function(element) {
+Event.observe(element, "mouseover", this.onHover.bindAsEventListener(this));
+Event.observe(element, "click", this.onClick.bindAsEventListener(this));
+},
+onObserverEvent: function() {
+this.changed = false; 
+if(this.getToken().length>=this.options.minChars) {
 this.startIndicator();
 this.getUpdatedChoices();
-}else{
-this.active=false;
+} else {
+this.active = false;
 this.hide();
 }
-},getToken:function(){
-var _107=this.findLastToken();
-if(_107!=-1){
-var ret=this.element.value.substr(_107+1).replace(/^\s+/,"").replace(/\s+$/,"");
-}else{
-var ret=this.element.value;
+},
+getToken: function() {
+var tokenPos = this.findLastToken();
+if (tokenPos != -1)
+var ret = this.element.value.substr(tokenPos + 1).replace(/^\s+/,'').replace(/\s+$/,'');
+else
+var ret = this.element.value;
+return /\n/.test(ret) ? '' : ret;
+},
+findLastToken: function() {
+var lastTokenPos = -1;
+for (var i=0; i<this.options.tokens.length; i++) {
+var thisTokenPos = this.element.value.lastIndexOf(this.options.tokens[i]);
+if (thisTokenPos > lastTokenPos)
+lastTokenPos = thisTokenPos;
 }
-return /\n/.test(ret)?"":ret;
-},findLastToken:function(){
-var _109=-1;
-for(var i=0;i<this.options.tokens.length;i++){
-var _110=this.element.value.lastIndexOf(this.options.tokens[i]);
-if(_110>_109){
-_109=_110;
+return lastTokenPos;
 }
 }
-return _109;
-}};
-Ajax.Autocompleter=Class.create();
-Object.extend(Object.extend(Ajax.Autocompleter.prototype,Autocompleter.Base.prototype),{initialize:function(_111,_112,url,_113){
-this.baseInitialize(_111,_112,_113);
-this.options.asynchronous=true;
-this.options.onComplete=this.onComplete.bind(this);
-this.options.defaultParams=this.options.parameters||null;
-this.url=url;
-},getUpdatedChoices:function(){
-entry=encodeURIComponent(this.options.paramName)+"="+encodeURIComponent(this.getToken());
-this.options.parameters=this.options.callback?this.options.callback(this.element,entry):entry;
-if(this.options.defaultParams){
-this.options.parameters+="&"+this.options.defaultParams;
+Ajax.Autocompleter = Class.create();
+Object.extend(Object.extend(Ajax.Autocompleter.prototype, Autocompleter.Base.prototype), {
+initialize: function(element, update, url, options) {
+this.baseInitialize(element, update, options);
+this.options.asynchronous= true;
+this.options.onComplete= this.onComplete.bind(this);
+this.options.defaultParams = this.options.parameters || null;
+this.url = url;
+},
+getUpdatedChoices: function() {
+entry = encodeURIComponent(this.options.paramName) + '=' + 
+encodeURIComponent(this.getToken());
+this.options.parameters = this.options.callback ?
+this.options.callback(this.element, entry) : entry;
+if(this.options.defaultParams) 
+this.options.parameters += '&' + this.options.defaultParams;
+new Ajax.Request(this.url, this.options);
+},
+onComplete: function(request) {
+this.updateChoices(request.responseText);
 }
-new Ajax.Request(this.url,this.options);
-},onComplete:function(_114){
-this.updateChoices(_114.responseText);
-}});
-Autocompleter.Local=Class.create();
-Autocompleter.Local.prototype=Object.extend(new Autocompleter.Base(),{initialize:function(_115,_116,_117,_118){
-this.baseInitialize(_115,_116,_118);
-this.options.array=_117;
-},getUpdatedChoices:function(){
+});
+Autocompleter.Local = Class.create();
+Autocompleter.Local.prototype = Object.extend(new Autocompleter.Base(), {
+initialize: function(element, update, array, options) {
+this.baseInitialize(element, update, options);
+this.options.array = array;
+},
+getUpdatedChoices: function() {
 this.updateChoices(this.options.selector(this));
-},setOptions:function(_119){
-this.options=Object.extend({choices:10,partialSearch:true,partialChars:2,ignoreCase:true,fullSearch:false,selector:function(_120){
-var ret=[];
-var _121=[];
-var _122=_120.getToken();
-var _123=0;
-for(var i=0;i<_120.options.array.length&&ret.length<_120.options.choices;i++){
-var elem=_120.options.array[i];
-var _125=_120.options.ignoreCase?elem.toLowerCase().indexOf(_122.toLowerCase()):elem.indexOf(_122);
-while(_125!=-1){
-if(_125==0&&elem.length!=_122.length){
-ret.push("<li><strong>"+elem.substr(0,_122.length)+"</strong>"+elem.substr(_122.length)+"</li>");
+},
+setOptions: function(options) {
+this.options = Object.extend({
+choices: 10,
+partialSearch: true,
+partialChars: 2,
+ignoreCase: true,
+fullSearch: false,
+selector: function(instance) {
+var ret = [];var partial = [];var entry = instance.getToken();
+var count = 0;
+for (var i = 0; i < instance.options.array.length &&
+ret.length < instance.options.choices ; i++) { 
+var elem = instance.options.array[i];
+var foundPos = instance.options.ignoreCase ? 
+elem.toLowerCase().indexOf(entry.toLowerCase()) : 
+elem.indexOf(entry);
+while (foundPos != -1) {
+if (foundPos == 0 && elem.length != entry.length) { 
+ret.push("<li><strong>" + elem.substr(0, entry.length) + "</strong>" + 
+elem.substr(entry.length) + "</li>");
 break;
-}else{
-if(_122.length>=_120.options.partialChars&&_120.options.partialSearch&&_125!=-1){
-if(_120.options.fullSearch||/\s/.test(elem.substr(_125-1,1))){
-_121.push("<li>"+elem.substr(0,_125)+"<strong>"+elem.substr(_125,_122.length)+"</strong>"+elem.substr(_125+_122.length)+"</li>");
+} else if (entry.length >= instance.options.partialChars && 
+instance.options.partialSearch && foundPos != -1) {
+if (instance.options.fullSearch || /\s/.test(elem.substr(foundPos-1,1))) {
+partial.push("<li>" + elem.substr(0, foundPos) + "<strong>" +
+elem.substr(foundPos, entry.length) + "</strong>" + elem.substr(
+foundPos + entry.length) + "</li>");
 break;
 }
 }
+foundPos = instance.options.ignoreCase ? 
+elem.toLowerCase().indexOf(entry.toLowerCase(), foundPos + 1) : 
+elem.indexOf(entry, foundPos + 1);
 }
-_125=_120.options.ignoreCase?elem.toLowerCase().indexOf(_122.toLowerCase(),_125+1):elem.indexOf(_122,_125+1);
 }
+if (partial.length)
+ret = ret.concat(partial.slice(0, instance.options.choices - ret.length))
+return "<ul>" + ret.join('') + "</ul>";
 }
-if(_121.length){
-ret=ret.concat(_121.slice(0,_120.options.choices-ret.length));
+}, options || {});
 }
-return "<ul>"+ret.join("")+"</ul>";
-}},_119||{});
-}});
-Field.scrollFreeActivate=function(_126){
-setTimeout(function(){
-Field.activate(_126);
-},1);
-};
-Ajax.InPlaceEditor=Class.create();
-Ajax.InPlaceEditor.defaultHighlightColor="#FFFF99";
-Ajax.InPlaceEditor.prototype={initialize:function(_127,url,_128){
-this.url=url;
-this.element=$(_127);
-this.options=Object.extend({okButton:true,okText:"ok",cancelLink:true,cancelText:"cancel",savingText:"Saving...",clickToEditText:"Click to edit",okText:"ok",rows:1,onComplete:function(_129,_127){
-new Effect.Highlight(_127,{startcolor:this.options.highlightcolor});
-},onFailure:function(_130){
-alert("Error communicating with the server: "+_130.responseText.stripTags());
-},callback:function(form){
+});
+Field.scrollFreeActivate = function(field) {
+setTimeout(function() {
+Field.activate(field);
+}, 1);
+}
+Ajax.InPlaceEditor = Class.create();
+Ajax.InPlaceEditor.defaultHighlightColor = "#FFFF99";
+Ajax.InPlaceEditor.prototype = {
+initialize: function(element, url, options) {
+this.url = url;
+this.element = $(element);
+this.options = Object.extend({
+okButton: true,
+okText: "ok",
+cancelLink: true,
+cancelText: "cancel",
+savingText: "Saving...",
+clickToEditText: "Click to edit",
+okText: "ok",
+rows: 1,
+onComplete: function(transport, element) {
+new Effect.Highlight(element, {startcolor: this.options.highlightcolor});
+},
+onFailure: function(transport) {
+alert("Error communicating with the server: " + transport.responseText.stripTags());
+},
+callback: function(form) {
 return Form.serialize(form);
-},handleLineBreaks:true,loadingText:"Loading...",savingClassName:"inplaceeditor-saving",loadingClassName:"inplaceeditor-loading",formClassName:"inplaceeditor-form",highlightcolor:Ajax.InPlaceEditor.defaultHighlightColor,highlightendcolor:"#FFFFFF",externalControl:null,submitOnBlur:false,ajaxOptions:{}},_128||{});
-if(!this.options.formId&&this.element.id){
-this.options.formId=this.element.id+"-inplaceeditor";
-if($(this.options.formId)){
-this.options.formId=null;
+},
+handleLineBreaks: true,
+loadingText: 'Loading...',
+savingClassName: 'inplaceeditor-saving',
+loadingClassName: 'inplaceeditor-loading',
+formClassName: 'inplaceeditor-form',
+highlightcolor: Ajax.InPlaceEditor.defaultHighlightColor,
+highlightendcolor: "#FFFFFF",
+externalControl: null,
+submitOnBlur: false,
+ajaxOptions: {},
+evalScripts: false
+}, options || {});
+if(!this.options.formId && this.element.id) {
+this.options.formId = this.element.id + "-inplaceeditor";
+if ($(this.options.formId)) {
+ this.options.formId = null;
 }
 }
-if(this.options.externalControl){
-this.options.externalControl=$(this.options.externalControl);
+if (this.options.externalControl) {
+this.options.externalControl = $(this.options.externalControl);
 }
-this.originalBackground=Element.getStyle(this.element,"background-color");
-if(!this.originalBackground){
-this.originalBackground="transparent";
+this.originalBackground = Element.getStyle(this.element, 'background-color');
+if (!this.originalBackground) {
+this.originalBackground = "transparent";
 }
-this.element.title=this.options.clickToEditText;
-this.onclickListener=this.enterEditMode.bindAsEventListener(this);
-this.mouseoverListener=this.enterHover.bindAsEventListener(this);
-this.mouseoutListener=this.leaveHover.bindAsEventListener(this);
-Event.observe(this.element,"click",this.onclickListener);
-Event.observe(this.element,"mouseover",this.mouseoverListener);
-Event.observe(this.element,"mouseout",this.mouseoutListener);
-if(this.options.externalControl){
-Event.observe(this.options.externalControl,"click",this.onclickListener);
-Event.observe(this.options.externalControl,"mouseover",this.mouseoverListener);
-Event.observe(this.options.externalControl,"mouseout",this.mouseoutListener);
+this.element.title = this.options.clickToEditText;
+this.onclickListener = this.enterEditMode.bindAsEventListener(this);
+this.mouseoverListener = this.enterHover.bindAsEventListener(this);
+this.mouseoutListener = this.leaveHover.bindAsEventListener(this);
+Event.observe(this.element, 'click', this.onclickListener);
+Event.observe(this.element, 'mouseover', this.mouseoverListener);
+Event.observe(this.element, 'mouseout', this.mouseoutListener);
+if (this.options.externalControl) {
+Event.observe(this.options.externalControl, 'click', this.onclickListener);
+Event.observe(this.options.externalControl, 'mouseover', this.mouseoverListener);
+Event.observe(this.options.externalControl, 'mouseout', this.mouseoutListener);
 }
-},enterEditMode:function(evt){
-if(this.saving){
-return;
-}
-if(this.editing){
-return;
-}
-this.editing=true;
+},
+enterEditMode: function(evt) {
+if (this.saving) return;
+if (this.editing) return;
+this.editing = true;
 this.onEnterEditMode();
-if(this.options.externalControl){
+if (this.options.externalControl) {
 Element.hide(this.options.externalControl);
 }
 Element.hide(this.element);
 this.createForm();
-this.element.parentNode.insertBefore(this.form,this.element);
+this.element.parentNode.insertBefore(this.form, this.element);
 Field.scrollFreeActivate(this.editField);
-if(evt){
+ if (evt) {
 Event.stop(evt);
 }
 return false;
-},createForm:function(){
-this.form=document.createElement("form");
-this.form.id=this.options.formId;
-Element.addClassName(this.form,this.options.formClassName);
-this.form.onsubmit=this.onSubmit.bind(this);
+},
+createForm: function() {
+this.form = document.createElement("form");
+this.form.id = this.options.formId;
+Element.addClassName(this.form, this.options.formClassName)
+this.form.onsubmit = this.onSubmit.bind(this);
 this.createEditField();
-if(this.options.textarea){
-var br=document.createElement("br");
+if (this.options.textarea) {
+var br = document.createElement("br");
 this.form.appendChild(br);
 }
-if(this.options.okButton){
-okButton=document.createElement("input");
-okButton.type="submit";
-okButton.value=this.options.okText;
+if (this.options.okButton) {
+okButton = document.createElement("input");
+okButton.type = "submit";
+okButton.value = this.options.okText;
+okButton.className = 'editor_ok_button';
 this.form.appendChild(okButton);
 }
-if(this.options.cancelLink){
-cancelLink=document.createElement("a");
-cancelLink.href="#";
+if (this.options.cancelLink) {
+cancelLink = document.createElement("a");
+cancelLink.href = "#";
 cancelLink.appendChild(document.createTextNode(this.options.cancelText));
-cancelLink.onclick=this.onclickCancel.bind(this);
+cancelLink.onclick = this.onclickCancel.bind(this);
+cancelLink.className = 'editor_cancel';
 this.form.appendChild(cancelLink);
 }
-},hasHTMLLineBreaks:function(_134){
-if(!this.options.handleLineBreaks){
-return false;
-}
-return _134.match(/<br/i)||_134.match(/<p>/i);
-},convertHTMLLineBreaks:function(_135){
-return _135.replace(/<br>/gi,"\n").replace(/<br\/>/gi,"\n").replace(/<\/p>/gi,"\n").replace(/<p>/gi,"");
-},createEditField:function(){
+},
+hasHTMLLineBreaks: function(string) {
+if (!this.options.handleLineBreaks) return false;
+return string.match(/<br/i) || string.match(/<p>/i);
+},
+convertHTMLLineBreaks: function(string) {
+return string.replace(/<br>/gi, "\n").replace(/<br\/>/gi, "\n").replace(/<\/p>/gi, "\n").replace(/<p>/gi, "");
+},
+createEditField: function() {
 var text;
-if(this.options.loadTextURL){
-text=this.options.loadingText;
-}else{
-text=this.getText();
+if(this.options.loadTextURL) {
+text = this.options.loadingText;
+} else {
+text = this.getText();
 }
-var obj=this;
-if(this.options.rows==1&&!this.hasHTMLLineBreaks(text)){
-this.options.textarea=false;
-var _138=document.createElement("input");
-_138.obj=this;
-_138.type="text";
-_138.name="value";
-_138.value=text;
-_138.style.backgroundColor=this.options.highlightcolor;
-var size=this.options.size||this.options.cols||0;
-if(size!=0){
-_138.size=size;
+var obj = this;
+if (this.options.rows == 1 && !this.hasHTMLLineBreaks(text)) {
+this.options.textarea = false;
+var textField = document.createElement("input");
+textField.obj = this;
+textField.type = "text";
+textField.name = "value";
+textField.value = text;
+textField.style.backgroundColor = this.options.highlightcolor;
+textField.className = 'editor_field';
+var size = this.options.size || this.options.cols || 0;
+if (size != 0) textField.size = size;
+if (this.options.submitOnBlur)
+textField.onblur = this.onSubmit.bind(this);
+this.editField = textField;
+} else {
+this.options.textarea = true;
+var textArea = document.createElement("textarea");
+textArea.obj = this;
+textArea.name = "value";
+textArea.value = this.convertHTMLLineBreaks(text);
+textArea.rows = this.options.rows;
+textArea.cols = this.options.cols || 40;
+textArea.className = 'editor_field';
+if (this.options.submitOnBlur)
+textArea.onblur = this.onSubmit.bind(this);
+this.editField = textArea;
 }
-if(this.options.submitOnBlur){
-_138.onblur=this.onSubmit.bind(this);
-}
-this.editField=_138;
-}else{
-this.options.textarea=true;
-var _140=document.createElement("textarea");
-_140.obj=this;
-_140.name="value";
-_140.value=this.convertHTMLLineBreaks(text);
-_140.rows=this.options.rows;
-_140.cols=this.options.cols||40;
-if(this.options.submitOnBlur){
-_140.onblur=this.onSubmit.bind(this);
-}
-this.editField=_140;
-}
-if(this.options.loadTextURL){
+if(this.options.loadTextURL) {
 this.loadExternalText();
 }
 this.form.appendChild(this.editField);
-},getText:function(){
+},
+getText: function() {
 return this.element.innerHTML;
-},loadExternalText:function(){
-Element.addClassName(this.form,this.options.loadingClassName);
-this.editField.disabled=true;
-new Ajax.Request(this.options.loadTextURL,Object.extend({asynchronous:true,onComplete:this.onLoadedExternalText.bind(this)},this.options.ajaxOptions));
-},onLoadedExternalText:function(_141){
-Element.removeClassName(this.form,this.options.loadingClassName);
-this.editField.disabled=false;
-this.editField.value=_141.responseText.stripTags();
-},onclickCancel:function(){
+},
+loadExternalText: function() {
+Element.addClassName(this.form, this.options.loadingClassName);
+this.editField.disabled = true;
+new Ajax.Request(
+this.options.loadTextURL,
+Object.extend({
+asynchronous: true,
+onComplete: this.onLoadedExternalText.bind(this)
+}, this.options.ajaxOptions)
+);
+},
+onLoadedExternalText: function(transport) {
+Element.removeClassName(this.form, this.options.loadingClassName);
+this.editField.disabled = false;
+this.editField.value = transport.responseText.stripTags();
+},
+onclickCancel: function() {
 this.onComplete();
 this.leaveEditMode();
 return false;
-},onFailure:function(_142){
-this.options.onFailure(_142);
-if(this.oldInnerHTML){
-this.element.innerHTML=this.oldInnerHTML;
-this.oldInnerHTML=null;
+},
+onFailure: function(transport) {
+this.options.onFailure(transport);
+if (this.oldInnerHTML) {
+this.element.innerHTML = this.oldInnerHTML;
+this.oldInnerHTML = null;
 }
 return false;
-},onSubmit:function(){
-var form=this.form;
-var _143=this.editField.value;
+},
+onSubmit: function() {
+ var form = this.form;
+var value = this.editField.value;
 this.onLoading();
-new Ajax.Updater({success:this.element,failure:null},this.url,Object.extend({parameters:this.options.callback(form,_143),onComplete:this.onComplete.bind(this),onFailure:this.onFailure.bind(this)},this.options.ajaxOptions));
-if(arguments.length>1){
+if (this.options.evalScripts) {
+new Ajax.Request(
+this.url, Object.extend({
+parameters: this.options.callback(form, value),
+onComplete: this.onComplete.bind(this),
+onFailure: this.onFailure.bind(this),
+asynchronous:true, 
+evalScripts:true
+}, this.options.ajaxOptions));
+} else{
+new Ajax.Updater(
+{ success: this.element,
+ failure: null }, 
+this.url, Object.extend({
+parameters: this.options.callback(form, value),
+onComplete: this.onComplete.bind(this),
+onFailure: this.onFailure.bind(this)
+}, this.options.ajaxOptions));
+}
+ if (arguments.length > 1) {
 Event.stop(arguments[0]);
 }
 return false;
-},onLoading:function(){
-this.saving=true;
+},
+onLoading: function() {
+this.saving = true;
 this.removeForm();
 this.leaveHover();
 this.showSaving();
-},showSaving:function(){
-this.oldInnerHTML=this.element.innerHTML;
-this.element.innerHTML=this.options.savingText;
-Element.addClassName(this.element,this.options.savingClassName);
-this.element.style.backgroundColor=this.originalBackground;
+},
+showSaving: function() {
+this.oldInnerHTML = this.element.innerHTML;
+this.element.innerHTML = this.options.savingText;
+Element.addClassName(this.element, this.options.savingClassName);
+this.element.style.backgroundColor = this.originalBackground;
 Element.show(this.element);
-},removeForm:function(){
-if(this.form){
-if(this.form.parentNode){
-Element.remove(this.form);
+},
+removeForm: function() {
+if(this.form) {
+if (this.form.parentNode) Element.remove(this.form);
+this.form = null;
 }
-this.form=null;
-}
-},enterHover:function(){
-if(this.saving){
-return;
-}
-this.element.style.backgroundColor=this.options.highlightcolor;
-if(this.effect){
+},
+enterHover: function() {
+if (this.saving) return;
+this.element.style.backgroundColor = this.options.highlightcolor;
+if (this.effect) {
 this.effect.cancel();
 }
-Element.addClassName(this.element,this.options.hoverClassName);
-},leaveHover:function(){
-if(this.options.backgroundColor){
-this.element.style.backgroundColor=this.oldBackground;
+Element.addClassName(this.element, this.options.hoverClassName)
+},
+leaveHover: function() {
+if (this.options.backgroundColor) {
+this.element.style.backgroundColor = this.oldBackground;
 }
-Element.removeClassName(this.element,this.options.hoverClassName);
-if(this.saving){
-return;
-}
-this.effect=new Effect.Highlight(this.element,{startcolor:this.options.highlightcolor,endcolor:this.options.highlightendcolor,restorecolor:this.originalBackground});
-},leaveEditMode:function(){
-Element.removeClassName(this.element,this.options.savingClassName);
+Element.removeClassName(this.element, this.options.hoverClassName)
+if (this.saving) return;
+this.effect = new Effect.Highlight(this.element, {
+startcolor: this.options.highlightcolor,
+endcolor: this.options.highlightendcolor,
+restorecolor: this.originalBackground
+});
+},
+leaveEditMode: function() {
+Element.removeClassName(this.element, this.options.savingClassName);
 this.removeForm();
 this.leaveHover();
-this.element.style.backgroundColor=this.originalBackground;
+this.element.style.backgroundColor = this.originalBackground;
 Element.show(this.element);
-if(this.options.externalControl){
+if (this.options.externalControl) {
 Element.show(this.options.externalControl);
 }
-this.editing=false;
-this.saving=false;
-this.oldInnerHTML=null;
+this.editing = false;
+this.saving = false;
+this.oldInnerHTML = null;
 this.onLeaveEditMode();
-},onComplete:function(_144){
+},
+onComplete: function(transport) {
 this.leaveEditMode();
-this.options.onComplete.bind(this)(_144,this.element);
-},onEnterEditMode:function(){
-},onLeaveEditMode:function(){
-},dispose:function(){
-if(this.oldInnerHTML){
-this.element.innerHTML=this.oldInnerHTML;
+this.options.onComplete.bind(this)(transport, this.element);
+},
+onEnterEditMode: function() {},
+onLeaveEditMode: function() {},
+dispose: function() {
+if (this.oldInnerHTML) {
+this.element.innerHTML = this.oldInnerHTML;
 }
 this.leaveEditMode();
-Event.stopObserving(this.element,"click",this.onclickListener);
-Event.stopObserving(this.element,"mouseover",this.mouseoverListener);
-Event.stopObserving(this.element,"mouseout",this.mouseoutListener);
-if(this.options.externalControl){
-Event.stopObserving(this.options.externalControl,"click",this.onclickListener);
-Event.stopObserving(this.options.externalControl,"mouseover",this.mouseoverListener);
-Event.stopObserving(this.options.externalControl,"mouseout",this.mouseoutListener);
+Event.stopObserving(this.element, 'click', this.onclickListener);
+Event.stopObserving(this.element, 'mouseover', this.mouseoverListener);
+Event.stopObserving(this.element, 'mouseout', this.mouseoutListener);
+if (this.options.externalControl) {
+Event.stopObserving(this.options.externalControl, 'click', this.onclickListener);
+Event.stopObserving(this.options.externalControl, 'mouseover', this.mouseoverListener);
+Event.stopObserving(this.options.externalControl, 'mouseout', this.mouseoutListener);
 }
-}};
-Form.Element.DelayedObserver=Class.create();
-Form.Element.DelayedObserver.prototype={initialize:function(_145,_146,_147){
-this.delay=_146||0.5;
-this.element=$(_145);
-this.callback=_147;
-this.timer=null;
-this.lastValue=$F(this.element);
-Event.observe(this.element,"keyup",this.delayedListener.bindAsEventListener(this));
-},delayedListener:function(_148){
-if(this.lastValue==$F(this.element)){
-return;
 }
-if(this.timer){
-clearTimeout(this.timer);
+};
+Ajax.InPlaceCollectionEditor = Class.create();
+Object.extend(Ajax.InPlaceCollectionEditor.prototype, Ajax.InPlaceEditor.prototype);
+Object.extend(Ajax.InPlaceCollectionEditor.prototype, {
+createEditField: function() {
+if (!this.cached_selectTag) {
+var selectTag = document.createElement("select");
+var collection = this.options.collection || [];
+var optionTag;
+collection.each(function(e,i) {
+optionTag = document.createElement("option");
+optionTag.value = (e instanceof Array) ? e[0] : e;
+if(this.options.value==optionTag.value) optionTag.selected = true;
+optionTag.appendChild(document.createTextNode((e instanceof Array) ? e[1] : e));
+selectTag.appendChild(optionTag);
+}.bind(this));
+this.cached_selectTag = selectTag;
 }
-this.timer=setTimeout(this.onTimerEvent.bind(this),this.delay*1000);
-this.lastValue=$F(this.element);
-},onTimerEvent:function(){
-this.timer=null;
-this.callback(this.element,$F(this.element));
-}};
-var Droppables={drops:[],remove:function(_149){
-this.drops=this.drops.reject(function(d){
-return d.element==$(_149);
+this.editField = this.cached_selectTag;
+if(this.options.loadTextURL) this.loadExternalText();
+this.form.appendChild(this.editField);
+this.options.callback = function(form, value) {
+return "value=" + encodeURIComponent(value);
+}
+}
 });
-},add:function(_151){
-_151=$(_151);
-var _152=Object.extend({greedy:true,hoverclass:null},arguments[1]||{});
-if(_152.containment){
-_152._containers=[];
-var _153=_152.containment;
-if((typeof _153=="object")&&(_153.constructor==Array)){
-_153.each(function(c){
-_152._containers.push($(c));
+Form.Element.DelayedObserver = Class.create();
+Form.Element.DelayedObserver.prototype = {
+initialize: function(element, delay, callback) {
+this.delay = delay || 0.5;
+this.element = $(element);
+this.callback= callback;
+this.timer = null;
+this.lastValue = $F(this.element); 
+Event.observe(this.element,'keyup',this.delayedListener.bindAsEventListener(this));
+},
+delayedListener: function(event) {
+if(this.lastValue == $F(this.element)) return;
+if(this.timer) clearTimeout(this.timer);
+this.timer = setTimeout(this.onTimerEvent.bind(this), this.delay * 1000);
+this.lastValue = $F(this.element);
+},
+onTimerEvent: function() {
+this.timer = null;
+this.callback(this.element, $F(this.element));
+}
+};
+var Droppables = {
+drops: [],
+remove: function(element) {
+this.drops = this.drops.reject(function(d) { return d.element==$(element) });
+},
+add: function(element) {
+element = $(element);
+var options = Object.extend({
+greedy: true,
+hoverclass: null,
+tree: false
+}, arguments[1] || {});
+if(options.containment) {
+options._containers = [];
+var containment = options.containment;
+if((typeof containment == 'object') && 
+(containment.constructor == Array)) {
+containment.each( function(c) { options._containers.push($(c)) });
+} else {
+options._containers.push($(containment));
+}
+}
+if(options.accept) options.accept = [options.accept].flatten();
+Element.makePositioned(element);options.element = element;
+this.drops.push(options);
+},
+findDeepestChild: function(drops) {
+deepest = drops[0];
+for (i = 1; i < drops.length; ++i)
+if (Element.isParent(drops[i].element, deepest.element))
+deepest = drops[i];
+return deepest;
+},
+isContained: function(element, drop) {
+var containmentNode;
+if(drop.tree) {
+containmentNode = element.treeNode; 
+} else {
+containmentNode = element.parentNode;
+}
+return drop._containers.detect(function(c) { return containmentNode == c });
+},
+isAffected: function(point, element, drop) {
+return (
+(drop.element!=element) &&
+((!drop._containers) ||
+this.isContained(element, drop)) &&
+((!drop.accept) ||
+(Element.classNames(element).detect( 
+function(v) { return drop.accept.include(v) } ) )) &&
+Position.within(drop.element, point[0], point[1]) );
+},
+deactivate: function(drop) {
+if(drop.hoverclass)
+Element.removeClassName(drop.element, drop.hoverclass);
+this.last_active = null;
+},
+activate: function(drop) {
+if(drop.hoverclass)
+Element.addClassName(drop.element, drop.hoverclass);
+this.last_active = drop;
+},
+show: function(point, element) {
+if(!this.drops.length) return;
+var affected = [];
+if(this.last_active) this.deactivate(this.last_active);
+this.drops.each( function(drop) {
+if(Droppables.isAffected(point, element, drop))
+affected.push(drop);
 });
-}else{
-_152._containers.push($(_153));
-}
-}
-if(_152.accept){
-_152.accept=[_152.accept].flatten();
-}
-Element.makePositioned(_151);
-_152.element=_151;
-this.drops.push(_152);
-},isContained:function(_154,drop){
-var _156=_154.parentNode;
-return drop._containers.detect(function(c){
-return _156==c;
-});
-},isAffected:function(_157,_158,drop){
-return ((drop.element!=_158)&&((!drop._containers)||this.isContained(_158,drop))&&((!drop.accept)||(Element.classNames(_158).detect(function(v){
-return drop.accept.include(v);
-})))&&Position.within(drop.element,_157[0],_157[1]));
-},deactivate:function(drop){
-if(drop.hoverclass){
-Element.removeClassName(drop.element,drop.hoverclass);
-}
-this.last_active=null;
-},activate:function(drop){
-if(drop.hoverclass){
-Element.addClassName(drop.element,drop.hoverclass);
-}
-this.last_active=drop;
-},show:function(_160,_161){
-if(!this.drops.length){
-return;
-}
-if(this.last_active){
-this.deactivate(this.last_active);
-}
-this.drops.each(function(drop){
-if(Droppables.isAffected(_160,_161,drop)){
-if(drop.onHover){
-drop.onHover(_161,drop.element,Position.overlap(drop.overlap,drop.element));
-}
-if(drop.greedy){
+if(affected.length>0) {
+drop = Droppables.findDeepestChild(affected);
+Position.within(drop.element, point[0], point[1]);
+if(drop.onHover)
+drop.onHover(element, drop.element, Position.overlap(drop.overlap, drop.element));
 Droppables.activate(drop);
-throw $break;
 }
-}
-});
-},fire:function(_162,_163){
-if(!this.last_active){
-return;
-}
+},
+fire: function(event, element) {
+if(!this.last_active) return;
 Position.prepare();
-if(this.isAffected([Event.pointerX(_162),Event.pointerY(_162)],_163,this.last_active)){
-if(this.last_active.onDrop){
-this.last_active.onDrop(_163,this.last_active.element,_162);
-}
-}
-},reset:function(){
-if(this.last_active){
+if (this.isAffected([Event.pointerX(event), Event.pointerY(event)], element, this.last_active))
+if (this.last_active.onDrop) 
+this.last_active.onDrop(element, this.last_active.element, event);
+},
+reset: function() {
+if(this.last_active)
 this.deactivate(this.last_active);
 }
-}};
-var Draggables={drags:[],observers:[],register:function(_164){
-if(this.drags.length==0){
-this.eventMouseUp=this.endDrag.bindAsEventListener(this);
-this.eventMouseMove=this.updateDrag.bindAsEventListener(this);
-this.eventKeypress=this.keyPress.bindAsEventListener(this);
-Event.observe(document,"mouseup",this.eventMouseUp);
-Event.observe(document,"mousemove",this.eventMouseMove);
-Event.observe(document,"keypress",this.eventKeypress);
 }
-this.drags.push(_164);
-},unregister:function(_165){
-this.drags=this.drags.reject(function(d){
-return d==_165;
-});
-if(this.drags.length==0){
-Event.stopObserving(document,"mouseup",this.eventMouseUp);
-Event.stopObserving(document,"mousemove",this.eventMouseMove);
-Event.stopObserving(document,"keypress",this.eventKeypress);
+var Draggables = {
+drags: [],
+observers: [],
+register: function(draggable) {
+if(this.drags.length == 0) {
+this.eventMouseUp = this.endDrag.bindAsEventListener(this);
+this.eventMouseMove = this.updateDrag.bindAsEventListener(this);
+this.eventKeypress= this.keyPress.bindAsEventListener(this);
+Event.observe(document, "mouseup", this.eventMouseUp);
+Event.observe(document, "mousemove", this.eventMouseMove);
+Event.observe(document, "keypress", this.eventKeypress);
 }
-},activate:function(_166){
-window.focus();
-this.activeDraggable=_166;
-},deactivate:function(_167){
-this.activeDraggable=null;
-},updateDrag:function(_168){
-if(!this.activeDraggable){
-return;
+this.drags.push(draggable);
+},
+unregister: function(draggable) {
+this.drags = this.drags.reject(function(d) { return d==draggable });
+if(this.drags.length == 0) {
+Event.stopObserving(document, "mouseup", this.eventMouseUp);
+Event.stopObserving(document, "mousemove", this.eventMouseMove);
+Event.stopObserving(document, "keypress", this.eventKeypress);
 }
-var _169=[Event.pointerX(_168),Event.pointerY(_168)];
-if(this._lastPointer&&(this._lastPointer.inspect()==_169.inspect())){
-return;
-}
-this._lastPointer=_169;
-this.activeDraggable.updateDrag(_168,_169);
-},endDrag:function(_170){
-if(!this.activeDraggable){
-return;
-}
-this._lastPointer=null;
-this.activeDraggable.endDrag(_170);
-this.activeDraggable=null;
-},keyPress:function(_171){
-if(this.activeDraggable){
-this.activeDraggable.keyPress(_171);
-}
-},addObserver:function(_172){
-this.observers.push(_172);
+},
+activate: function(draggable) {
+window.focus();this.activeDraggable = draggable;
+},
+deactivate: function() {
+this.activeDraggable = null;
+},
+updateDrag: function(event) {
+if(!this.activeDraggable) return;
+var pointer = [Event.pointerX(event), Event.pointerY(event)];
+if(this._lastPointer && (this._lastPointer.inspect() == pointer.inspect())) return;
+this._lastPointer = pointer;
+this.activeDraggable.updateDrag(event, pointer);
+},
+endDrag: function(event) {
+if(!this.activeDraggable) return;
+this._lastPointer = null;
+this.activeDraggable.endDrag(event);
+this.activeDraggable = null;
+},
+keyPress: function(event) {
+if(this.activeDraggable)
+this.activeDraggable.keyPress(event);
+},
+addObserver: function(observer) {
+this.observers.push(observer);
 this._cacheObserverCallbacks();
-},removeObserver:function(_173){
-this.observers=this.observers.reject(function(o){
-return o.element==_173;
-});
+},
+removeObserver: function(element) { this.observers = this.observers.reject( function(o) { return o.element==element });
 this._cacheObserverCallbacks();
-},notify:function(_175,_176,_177){
-if(this[_175+"Count"]>0){
-this.observers.each(function(o){
-if(o[_175]){
-o[_175](_175,_176,_177);
-}
+},
+notify: function(eventName, draggable, event) { if(this[eventName+'Count'] > 0)
+this.observers.each( function(o) {
+if(o[eventName]) o[eventName](eventName, draggable, event);
+});
+},
+_cacheObserverCallbacks: function() {
+['onStart','onEnd','onDrag'].each( function(eventName) {
+Draggables[eventName+'Count'] = Draggables.observers.select(
+function(o) { return o[eventName]; }
+).length;
 });
 }
-},_cacheObserverCallbacks:function(){
-["onStart","onEnd","onDrag"].each(function(_178){
-Draggables[_178+"Count"]=Draggables.observers.select(function(o){
-return o[_178];
-}).length;
-});
-}};
-var Draggable=Class.create();
-Draggable.prototype={initialize:function(_179){
-var _180=Object.extend({handle:false,starteffect:function(_179){
-new Effect.Opacity(_179,{duration:0.2,from:1,to:0.7});
-},reverteffect:function(_181,_182,_183){
-var dur=Math.sqrt(Math.abs(_182^2)+Math.abs(_183^2))*0.02;
-_181._revert=new Effect.Move(_181,{x:-_183,y:-_182,duration:dur});
-},endeffect:function(_185){
-new Effect.Opacity(_185,{duration:0.2,from:0.7,to:1});
-},zindex:1000,revert:false,snap:false},arguments[1]||{});
-this.element=$(element);
-if(_180.handle&&(typeof _180.handle=="string")){
-this.handle=Element.childrenWithClassName(this.element,_180.handle)[0];
 }
-if(!this.handle){
-this.handle=$(_180.handle);
+var Draggable = Class.create();
+Draggable.prototype = {
+initialize: function(element) {
+var options = Object.extend({
+handle: false,
+starteffect: function(element) {
+element._opacity = Element.getOpacity(element); 
+new Effect.Opacity(element, {duration:0.2, from:element._opacity, to:0.7}); 
+},
+reverteffect: function(element, top_offset, left_offset) {
+var dur = Math.sqrt(Math.abs(top_offset^2)+Math.abs(left_offset^2))*0.02;
+element._revert = new Effect.Move(element, { x: -left_offset, y: -top_offset, duration: dur});
+},
+endeffect: function(element) {
+var toOpacity = typeof element._opacity == 'number' ? element._opacity : 1.0
+new Effect.Opacity(element, {duration:0.2, from:0.7, to:toOpacity}); 
+},
+zindex: 1000,
+revert: false,
+scroll: false,
+scrollSensitivity: 20,
+scrollSpeed: 15,
+snap: false}, arguments[1] || {});
+this.element = $(element);
+if(options.handle && (typeof options.handle == 'string')) {
+var h = Element.childrenWithClassName(this.element, options.handle, true);
+if(h.length>0) this.handle = h[0];
 }
-if(!this.handle){
-this.handle=this.element;
-}
+if(!this.handle) this.handle = $(options.handle);
+if(!this.handle) this.handle = this.element;
+if(options.scroll && !options.scroll.scrollTo && !options.scroll.outerHTML)
+options.scroll = $(options.scroll);
 Element.makePositioned(this.element);
-this.delta=this.currentDelta();
-this.options=_180;
-this.dragging=false;
-this.eventMouseDown=this.initDrag.bindAsEventListener(this);
-Event.observe(this.handle,"mousedown",this.eventMouseDown);
+this.delta= this.currentDelta();
+this.options= options;
+this.dragging = false; 
+this.eventMouseDown = this.initDrag.bindAsEventListener(this);
+Event.observe(this.handle, "mousedown", this.eventMouseDown);
 Draggables.register(this);
-},destroy:function(){
-Event.stopObserving(this.handle,"mousedown",this.eventMouseDown);
+},
+destroy: function() {
+Event.stopObserving(this.handle, "mousedown", this.eventMouseDown);
 Draggables.unregister(this);
-},currentDelta:function(){
-return ([parseInt(Element.getStyle(this.element,"left")||"0"),parseInt(Element.getStyle(this.element,"top")||"0")]);
-},initDrag:function(_186){
-if(Event.isLeftClick(_186)){
-var src=Event.element(_186);
-if(src.tagName&&(src.tagName=="INPUT"||src.tagName=="SELECT"||src.tagName=="BUTTON"||src.tagName=="TEXTAREA")){
-return;
-}
-if(this.element._revert){
+},
+currentDelta: function() {
+return([
+parseInt(Element.getStyle(this.element,'left') || '0'),
+parseInt(Element.getStyle(this.element,'top') || '0')]);
+},
+initDrag: function(event) {
+if(Event.isLeftClick(event)) {
+ var src = Event.element(event);
+if(src.tagName && (
+src.tagName=='INPUT' ||
+src.tagName=='SELECT' ||
+src.tagName=='OPTION' ||
+src.tagName=='BUTTON' ||
+src.tagName=='TEXTAREA')) return;
+if(this.element._revert) {
 this.element._revert.cancel();
-this.element._revert=null;
+this.element._revert = null;
 }
-var _188=[Event.pointerX(_186),Event.pointerY(_186)];
-var pos=Position.cumulativeOffset(this.element);
-this.offset=[0,1].map(function(i){
-return (_188[i]-pos[i]);
-});
+var pointer = [Event.pointerX(event), Event.pointerY(event)];
+var pos = Position.cumulativeOffset(this.element);
+this.offset = [0,1].map( function(i) { return (pointer[i] - pos[i]) });
 Draggables.activate(this);
-Event.stop(_186);
+Event.stop(event);
 }
-},startDrag:function(_190){
-this.dragging=true;
-if(this.options.zindex){
-this.originalZ=parseInt(Element.getStyle(this.element,"z-index")||0);
-this.element.style.zIndex=this.options.zindex;
+},
+startDrag: function(event) {
+this.dragging = true;
+if(this.options.zindex) {
+this.originalZ = parseInt(Element.getStyle(this.element,'z-index') || 0);
+this.element.style.zIndex = this.options.zindex;
 }
-if(this.options.ghosting){
-this._clone=this.element.cloneNode(true);
+if(this.options.ghosting) {
+this._clone = this.element.cloneNode(true);
 Position.absolutize(this.element);
-this.element.parentNode.insertBefore(this._clone,this.element);
+this.element.parentNode.insertBefore(this._clone, this.element);
 }
-Draggables.notify("onStart",this,_190);
-if(this.options.starteffect){
-this.options.starteffect(this.element);
+if(this.options.scroll) {
+if (this.options.scroll == window) {
+var where = this._getWindowScroll(this.options.scroll);
+this.originalScrollLeft = where.left;
+this.originalScrollTop = where.top;
+} else {
+this.originalScrollLeft = this.options.scroll.scrollLeft;
+this.originalScrollTop = this.options.scroll.scrollTop;
 }
-},updateDrag:function(_191,_192){
-if(!this.dragging){
-this.startDrag(_191);
 }
+Draggables.notify('onStart', this, event);
+if(this.options.starteffect) this.options.starteffect(this.element);
+},
+updateDrag: function(event, pointer) {
+if(!this.dragging) this.startDrag(event);
 Position.prepare();
-Droppables.show(_192,this.element);
-Draggables.notify("onDrag",this,_191);
-this.draw(_192);
-if(this.options.change){
-this.options.change(this);
+Droppables.show(pointer, this.element);
+Draggables.notify('onDrag', this, event);
+this.draw(pointer);
+if(this.options.change) this.options.change(this);
+if(this.options.scroll) {
+this.stopScrolling();
+var p;
+if (this.options.scroll == window) {
+with(this._getWindowScroll(this.options.scroll)) { p = [ left, top, left+width, top+height ]; }
+} else {
+p = Position.page(this.options.scroll);
+p[0] += this.options.scroll.scrollLeft;
+p[1] += this.options.scroll.scrollTop;
+p.push(p[0]+this.options.scroll.offsetWidth);
+p.push(p[1]+this.options.scroll.offsetHeight);
 }
-if(navigator.appVersion.indexOf("AppleWebKit")>0){
-window.scrollBy(0,0);
+var speed = [0,0];
+if(pointer[0] < (p[0]+this.options.scrollSensitivity)) speed[0] = pointer[0]-(p[0]+this.options.scrollSensitivity);
+if(pointer[1] < (p[1]+this.options.scrollSensitivity)) speed[1] = pointer[1]-(p[1]+this.options.scrollSensitivity);
+if(pointer[0] > (p[2]-this.options.scrollSensitivity)) speed[0] = pointer[0]-(p[2]-this.options.scrollSensitivity);
+if(pointer[1] > (p[3]-this.options.scrollSensitivity)) speed[1] = pointer[1]-(p[3]-this.options.scrollSensitivity);
+this.startScrolling(speed);
 }
-Event.stop(_191);
-},finishDrag:function(_193,_194){
-this.dragging=false;
-if(this.options.ghosting){
+if(navigator.appVersion.indexOf('AppleWebKit')>0) window.scrollBy(0,0);
+Event.stop(event);
+},
+finishDrag: function(event, success) {
+this.dragging = false;
+if(this.options.ghosting) {
 Position.relativize(this.element);
 Element.remove(this._clone);
-this._clone=null;
+this._clone = null;
 }
-if(_194){
-Droppables.fire(_193,this.element);
+if(success) Droppables.fire(event, this.element);
+Draggables.notify('onEnd', this, event);
+var revert = this.options.revert;
+if(revert && typeof revert == 'function') revert = revert(this.element);
+var d = this.currentDelta();
+if(revert && this.options.reverteffect) {
+this.options.reverteffect(this.element, 
+d[1]-this.delta[1], d[0]-this.delta[0]);
+} else {
+this.delta = d;
 }
-Draggables.notify("onEnd",this,_193);
-var _195=this.options.revert;
-if(_195&&typeof _195=="function"){
-_195=_195(this.element);
-}
-var d=this.currentDelta();
-if(_195&&this.options.reverteffect){
-this.options.reverteffect(this.element,d[1]-this.delta[1],d[0]-this.delta[0]);
-}else{
-this.delta=d;
-}
-if(this.options.zindex){
-this.element.style.zIndex=this.originalZ;
-}
-if(this.options.endeffect){
+if(this.options.zindex)
+this.element.style.zIndex = this.originalZ;
+if(this.options.endeffect) 
 this.options.endeffect(this.element);
-}
 Draggables.deactivate(this);
 Droppables.reset();
-},keyPress:function(_196){
-if(!_196.keyCode==Event.KEY_ESC){
-return;
+},
+keyPress: function(event) {
+if(event.keyCode!=Event.KEY_ESC) return;
+this.finishDrag(event, false);
+Event.stop(event);
+},
+endDrag: function(event) {
+if(!this.dragging) return;
+this.stopScrolling();
+this.finishDrag(event, true);
+Event.stop(event);
+},
+draw: function(point) {
+var pos = Position.cumulativeOffset(this.element);
+var d = this.currentDelta();
+pos[0] -= d[0]; pos[1] -= d[1];
+if(this.options.scroll && (this.options.scroll != window)) {
+pos[0] -= this.options.scroll.scrollLeft-this.originalScrollLeft;
+pos[1] -= this.options.scroll.scrollTop-this.originalScrollTop;
 }
-this.finishDrag(_196,false);
-Event.stop(_196);
-},endDrag:function(_197){
-if(!this.dragging){
-return;
-}
-this.finishDrag(_197,true);
-Event.stop(_197);
-},draw:function(_198){
-var pos=Position.cumulativeOffset(this.element);
-var d=this.currentDelta();
-pos[0]-=d[0];
-pos[1]-=d[1];
-var p=[0,1].map(function(i){
-return (_198[i]-pos[i]-this.offset[i]);
+var p = [0,1].map(function(i){ 
+return (point[i]-pos[i]-this.offset[i]) 
 }.bind(this));
-if(this.options.snap){
-if(typeof this.options.snap=="function"){
-p=this.options.snap(p[0],p[1]);
-}else{
-if(this.options.snap instanceof Array){
-p=p.map(function(v,i){
-return Math.round(v/this.options.snap[i])*this.options.snap[i];
-}.bind(this));
-}else{
-p=p.map(function(v){
-return Math.round(v/this.options.snap)*this.options.snap;
-}.bind(this));
+if(this.options.snap) {
+if(typeof this.options.snap == 'function') {
+p = this.options.snap(p[0],p[1],this);
+} else {
+if(this.options.snap instanceof Array) {
+p = p.map( function(v, i) {
+return Math.round(v/this.options.snap[i])*this.options.snap[i] }.bind(this))
+} else {
+p = p.map( function(v) {
+return Math.round(v/this.options.snap)*this.options.snap }.bind(this))
+}
+}}
+var style = this.element.style;
+if((!this.options.constraint) || (this.options.constraint=='horizontal'))
+style.left = p[0] + "px";
+if((!this.options.constraint) || (this.options.constraint=='vertical'))
+style.top= p[1] + "px";
+if(style.visibility=="hidden") style.visibility = "";},
+stopScrolling: function() {
+if(this.scrollInterval) {
+clearInterval(this.scrollInterval);
+this.scrollInterval = null;
+Draggables._lastScrollPointer = null;
+}
+},
+startScrolling: function(speed) {
+this.scrollSpeed = [speed[0]*this.options.scrollSpeed,speed[1]*this.options.scrollSpeed];
+this.lastScrolled = new Date();
+this.scrollInterval = setInterval(this.scroll.bind(this), 10);
+},
+scroll: function() {
+var current = new Date();
+var delta = current - this.lastScrolled;
+this.lastScrolled = current;
+if(this.options.scroll == window) {
+with (this._getWindowScroll(this.options.scroll)) {
+if (this.scrollSpeed[0] || this.scrollSpeed[1]) {
+var d = delta / 1000;
+this.options.scroll.scrollTo( left + d*this.scrollSpeed[0], top + d*this.scrollSpeed[1] );
 }
 }
+} else {
+this.options.scroll.scrollLeft += this.scrollSpeed[0] * delta / 1000;
+this.options.scroll.scrollTop+= this.scrollSpeed[1] * delta / 1000;
 }
-var _200=this.element.style;
-if((!this.options.constraint)||(this.options.constraint=="horizontal")){
-_200.left=p[0]+"px";
+Position.prepare();
+Droppables.show(Draggables._lastPointer, this.element);
+Draggables.notify('onDrag', this);
+Draggables._lastScrollPointer = Draggables._lastScrollPointer || $A(Draggables._lastPointer);
+Draggables._lastScrollPointer[0] += this.scrollSpeed[0] * delta / 1000;
+Draggables._lastScrollPointer[1] += this.scrollSpeed[1] * delta / 1000;
+if (Draggables._lastScrollPointer[0] < 0)
+Draggables._lastScrollPointer[0] = 0;
+if (Draggables._lastScrollPointer[1] < 0)
+Draggables._lastScrollPointer[1] = 0;
+this.draw(Draggables._lastScrollPointer);
+if(this.options.change) this.options.change(this);
+},
+_getWindowScroll: function(w) {
+var T, L, W, H;
+with (w.document) {
+if (w.document.documentElement && documentElement.scrollTop) {
+T = documentElement.scrollTop;
+L = documentElement.scrollLeft;
+} else if (w.document.body) {
+T = body.scrollTop;
+L = body.scrollLeft;
 }
-if((!this.options.constraint)||(this.options.constraint=="vertical")){
-_200.top=p[1]+"px";
+if (w.innerWidth) {
+W = w.innerWidth;
+H = w.innerHeight;
+} else if (w.document.documentElement && documentElement.clientWidth) {
+W = documentElement.clientWidth;
+H = documentElement.clientHeight;
+} else {
+W = body.offsetWidth;
+H = body.offsetHeight
 }
-if(_200.visibility=="hidden"){
-_200.visibility="";
 }
-}};
-var SortableObserver=Class.create();
-SortableObserver.prototype={initialize:function(_201,_202){
-this.element=$(_201);
-this.observer=_202;
-this.lastValue=Sortable.serialize(this.element);
-},onStart:function(){
-this.lastValue=Sortable.serialize(this.element);
-},onEnd:function(){
+return { top: T, left: L, width: W, height: H };
+}
+}
+var SortableObserver = Class.create();
+SortableObserver.prototype = {
+initialize: function(element, observer) {
+this.element = $(element);
+this.observer= observer;
+this.lastValue = Sortable.serialize(this.element);
+},
+onStart: function() {
+this.lastValue = Sortable.serialize(this.element);
+},
+onEnd: function() {
 Sortable.unmark();
-if(this.lastValue!=Sortable.serialize(this.element)){
-this.observer(this.element);
+if(this.lastValue != Sortable.serialize(this.element))
+this.observer(this.element)
 }
-}};
-var Sortable={sortables:new Array(),options:function(_203){
-_203=$(_203);
-return this.sortables.detect(function(s){
-return s.element==_203;
-});
-},destroy:function(_205){
-_205=$(_205);
-this.sortables.findAll(function(s){
-return s.element==_205;
-}).each(function(s){
+}
+var Sortable = {
+sortables: {},
+_findRootElement: function(element) {
+while (element.tagName != "BODY") {
+if(element.id && Sortable.sortables[element.id]) return element;
+element = element.parentNode;
+}
+},
+options: function(element) {
+element = Sortable._findRootElement($(element));
+if(!element) return;
+return Sortable.sortables[element.id];
+},
+destroy: function(element){
+var s = Sortable.options(element);
+if(s) {
 Draggables.removeObserver(s.element);
-s.droppables.each(function(d){
-Droppables.remove(d);
-});
-s.draggables.invoke("destroy");
-});
-this.sortables=this.sortables.reject(function(s){
-return s.element==_205;
-});
-},create:function(_206){
-_206=$(_206);
-var _207=Object.extend({element:_206,tag:"li",dropOnEmpty:false,tree:false,overlap:"vertical",constraint:"vertical",containment:_206,handle:false,only:false,hoverclass:null,ghosting:false,format:null,onChange:Prototype.emptyFunction,onUpdate:Prototype.emptyFunction},arguments[1]||{});
-this.destroy(_206);
-var _208={revert:true,ghosting:_207.ghosting,constraint:_207.constraint,handle:_207.handle};
-if(_207.starteffect){
-_208.starteffect=_207.starteffect;
+s.droppables.each(function(d){ Droppables.remove(d) });
+s.draggables.invoke('destroy');
+delete Sortable.sortables[s.element.id];
 }
-if(_207.reverteffect){
-_208.reverteffect=_207.reverteffect;
-}else{
-if(_207.ghosting){
-_208.reverteffect=function(_206){
-_206.style.top=0;
-_206.style.left=0;
+},
+create: function(element) {
+element = $(element);
+var options = Object.extend({ 
+element: element,
+tag: 'li',dropOnEmpty: false,
+tree:false,
+treeTag: 'ul',
+overlap: 'vertical',constraint:'vertical',containment: element, handle:false, only:false,
+hoverclass:null,
+ghosting:false,
+scroll:false,
+scrollSensitivity: 20,
+scrollSpeed: 15,
+format:/^[^_]*_(.*)$/,
+onChange:Prototype.emptyFunction,
+onUpdate:Prototype.emptyFunction
+}, arguments[1] || {});
+this.destroy(element);
+var options_for_draggable = {
+revert:true,
+scroll:options.scroll,
+scrollSpeed: options.scrollSpeed,
+scrollSensitivity: options.scrollSensitivity,
+ghosting:options.ghosting,
+constraint:options.constraint,
+handle:options.handle };
+if(options.starteffect)
+options_for_draggable.starteffect = options.starteffect;
+if(options.reverteffect)
+options_for_draggable.reverteffect = options.reverteffect;
+else
+if(options.ghosting) options_for_draggable.reverteffect = function(element) {
+element.style.top= 0;
+element.style.left = 0;
 };
+if(options.endeffect)
+options_for_draggable.endeffect = options.endeffect;
+if(options.zindex)
+options_for_draggable.zindex = options.zindex;
+var options_for_droppable = {
+overlap: options.overlap,
+containment: options.containment,
+tree:options.tree,
+hoverclass:options.hoverclass,
+onHover: Sortable.onHover
+ }
+var options_for_tree = {
+onHover:Sortable.onEmptyHover,
+overlap:options.overlap,
+containment:options.containment,
+hoverclass: options.hoverclass
 }
+Element.cleanWhitespace(element); 
+options.draggables = [];
+options.droppables = [];
+if(options.dropOnEmpty || options.tree) {
+Droppables.add(element, options_for_tree);
+options.droppables.push(element);
 }
-if(_207.endeffect){
-_208.endeffect=_207.endeffect;
-}
-if(_207.zindex){
-_208.zindex=_207.zindex;
-}
-var _209={overlap:_207.overlap,containment:_207.containment,hoverclass:_207.hoverclass,onHover:Sortable.onHover,greedy:!_207.dropOnEmpty};
-Element.cleanWhitespace(element);
-_207.draggables=[];
-_207.droppables=[];
-if(_207.dropOnEmpty){
-Droppables.add(element,{containment:_207.containment,onHover:Sortable.onEmptyHover,greedy:false});
-_207.droppables.push(element);
-}
-(this.findElements(element,_207)||[]).each(function(e){
-var _210=_207.handle?Element.childrenWithClassName(e,_207.handle)[0]:e;
-_207.draggables.push(new Draggable(e,Object.extend(_208,{handle:_210})));
-Droppables.add(e,_209);
-_207.droppables.push(e);
+(this.findElements(element, options) || []).each( function(e) {
+ var handle = options.handle ? 
+Element.childrenWithClassName(e, options.handle)[0] : e;
+options.draggables.push(
+new Draggable(e, Object.extend(options_for_draggable, { handle: handle })));
+Droppables.add(e, options_for_droppable);
+if(options.tree) e.treeNode = element;
+options.droppables.push(e);
 });
-this.sortables.push(_207);
-Draggables.addObserver(new SortableObserver(element,_207.onUpdate));
-},findElements:function(_211,_212){
-if(!_211.hasChildNodes()){
-return null;
-}
-var _213=[];
-$A(_211.childNodes).each(function(e){
-if(e.tagName&&e.tagName.toUpperCase()==_212.tag.toUpperCase()&&(!_212.only||(Element.hasClassName(e,_212.only)))){
-_213.push(e);
-}
-if(_212.tree){
-var _214=this.findElements(e,_212);
-if(_214){
-_213.push(_214);
-}
-}
+if(options.tree) {
+(Sortable.findTreeElements(element, options) || []).each( function(e) {
+Droppables.add(e, options_for_tree);
+e.treeNode = element;
+options.droppables.push(e);
 });
-return (_213.length>0?_213.flatten():null);
-},onHover:function(_215,_216,_217){
-if(_217>0.5){
-Sortable.mark(_216,"before");
-if(_216.previousSibling!=_215){
-var _218=_215.parentNode;
-_215.style.visibility="hidden";
-_216.parentNode.insertBefore(_215,_216);
-if(_216.parentNode!=_218){
-Sortable.options(_218).onChange(_215);
 }
-Sortable.options(_216.parentNode).onChange(_215);
-}
-}else{
-Sortable.mark(_216,"after");
-var _219=_216.nextSibling||null;
-if(_219!=_215){
-var _218=_215.parentNode;
-_215.style.visibility="hidden";
-_216.parentNode.insertBefore(_215,_219);
-if(_216.parentNode!=_218){
-Sortable.options(_218).onChange(_215);
-}
-Sortable.options(_216.parentNode).onChange(_215);
-}
-}
-},onEmptyHover:function(_220,_221){
-if(_220.parentNode!=_221){
-var _222=_220.parentNode;
-_221.appendChild(_220);
-Sortable.options(_222).onChange(_220);
-Sortable.options(_221).onChange(_220);
-}
-},unmark:function(){
-if(Sortable._marker){
-Element.hide(Sortable._marker);
-}
-},mark:function(_223,_224){
-var _225=Sortable.options(_223.parentNode);
-if(_225&&!_225.ghosting){
+this.sortables[element.id] = options;
+Draggables.addObserver(new SortableObserver(element, options.onUpdate));
+},
+findElements: function(element, options) {
+return Element.findChildren(
+element, options.only, options.tree ? true : false, options.tag);
+},
+findTreeElements: function(element, options) {
+return Element.findChildren(
+element, options.only, options.tree ? true : false, options.treeTag);
+},
+onHover: function(element, dropon, overlap) {
+if(Element.isParent(dropon, element)) return;
+if(overlap > .33 && overlap < .66 && Sortable.options(dropon).tree) {
 return;
+} else if(overlap>0.5) {
+Sortable.mark(dropon, 'before');
+if(dropon.previousSibling != element) {
+var oldParentNode = element.parentNode;
+element.style.visibility = "hidden";dropon.parentNode.insertBefore(element, dropon);
+if(dropon.parentNode!=oldParentNode) 
+Sortable.options(oldParentNode).onChange(element);
+Sortable.options(dropon.parentNode).onChange(element);
 }
-if(!Sortable._marker){
-Sortable._marker=$("dropmarker")||document.createElement("DIV");
+} else {
+Sortable.mark(dropon, 'after');
+var nextElement = dropon.nextSibling || null;
+if(nextElement != element) {
+var oldParentNode = element.parentNode;
+element.style.visibility = "hidden";dropon.parentNode.insertBefore(element, nextElement);
+if(dropon.parentNode!=oldParentNode) 
+Sortable.options(oldParentNode).onChange(element);
+Sortable.options(dropon.parentNode).onChange(element);
+}
+}
+},
+onEmptyHover: function(element, dropon, overlap) {
+var oldParentNode = element.parentNode;
+var droponOptions = Sortable.options(dropon);
+if(!Element.isParent(dropon, element)) {
+var index;
+var children = Sortable.findElements(dropon, {tag: droponOptions.tag});
+var child = null;
+if(children) {
+var offset = Element.offsetSize(dropon, droponOptions.overlap) * (1.0 - overlap);
+for (index = 0; index < children.length; index += 1) {
+if (offset - Element.offsetSize (children[index], droponOptions.overlap) >= 0) {
+offset -= Element.offsetSize (children[index], droponOptions.overlap);
+} else if (offset - (Element.offsetSize (children[index], droponOptions.overlap) / 2) >= 0) {
+child = index + 1 < children.length ? children[index + 1] : null;
+break;
+} else {
+child = children[index];
+break;
+}
+}
+}
+dropon.insertBefore(element, child);
+Sortable.options(oldParentNode).onChange(element);
+droponOptions.onChange(element);
+}
+},
+unmark: function() {
+if(Sortable._marker) Element.hide(Sortable._marker);
+},
+mark: function(dropon, position) {
+ var sortable = Sortable.options(dropon.parentNode);
+if(sortable && !sortable.ghosting) return; 
+if(!Sortable._marker) {
+Sortable._marker = $('dropmarker') || document.createElement('DIV');
 Element.hide(Sortable._marker);
-Element.addClassName(Sortable._marker,"dropmarker");
-Sortable._marker.style.position="absolute";
+Element.addClassName(Sortable._marker, 'dropmarker');
+Sortable._marker.style.position = 'absolute';
 document.getElementsByTagName("body").item(0).appendChild(Sortable._marker);
 }
-var _226=Position.cumulativeOffset(_223);
-Sortable._marker.style.left=_226[0]+"px";
-Sortable._marker.style.top=_226[1]+"px";
-if(_224=="after"){
-if(_225.overlap=="horizontal"){
-Sortable._marker.style.left=(_226[0]+_223.clientWidth)+"px";
-}else{
-Sortable._marker.style.top=(_226[1]+_223.clientHeight)+"px";
-}
-}
+var offsets = Position.cumulativeOffset(dropon);
+Sortable._marker.style.left = offsets[0] + 'px';
+Sortable._marker.style.top = offsets[1] + 'px';
+if(position=='after')
+if(sortable.overlap == 'horizontal') 
+Sortable._marker.style.left = (offsets[0]+dropon.clientWidth) + 'px';
+else
+Sortable._marker.style.top = (offsets[1]+dropon.clientHeight) + 'px';
 Element.show(Sortable._marker);
-},serialize:function(_227){
-_227=$(_227);
-var _228=this.options(_227);
-var _229=Object.extend({tag:_228.tag,only:_228.only,name:_227.id,format:_228.format||/^[^_]*_(.*)$/},arguments[1]||{});
-return $(this.findElements(_227,_229)||[]).map(function(item){
-return (encodeURIComponent(_229.name)+"[]="+encodeURIComponent(item.id.match(_229.format)?item.id.match(_229.format)[1]:""));
-}).join("&");
-}};
-if(!Control){
-var Control={};
+},
+_tree: function(element, options, parent) {
+var children = Sortable.findElements(element, options) || [];
+for (var i = 0; i < children.length; ++i) {
+var match = children[i].id.match(options.format);
+if (!match) continue;
+var child = {
+id: encodeURIComponent(match ? match[1] : null),
+element: element,
+parent: parent,
+children: new Array,
+position: parent.children.length,
+container: Sortable._findChildrenElement(children[i], options.treeTag.toUpperCase())
 }
-Control.Slider=Class.create();
-Control.Slider.prototype={initialize:function(_231,_232,_233){
-var _234=this;
-if(_231 instanceof Array){
-this.handles=_231.collect(function(e){
-return $(e);
+if (child.container)
+this._tree(child.container, options, child)
+parent.children.push (child);
+}
+return parent; 
+},
+_findChildrenElement: function (element, containerTag) {
+if (element && element.hasChildNodes)
+for (var i = 0; i < element.childNodes.length; ++i)
+if (element.childNodes[i].tagName == containerTag)
+return element.childNodes[i];
+return null;
+},
+tree: function(element) {
+element = $(element);
+var sortableOptions = this.options(element);
+var options = Object.extend({
+tag: sortableOptions.tag,
+treeTag: sortableOptions.treeTag,
+only: sortableOptions.only,
+name: element.id,
+format: sortableOptions.format
+}, arguments[1] || {});
+var root = {
+id: null,
+parent: null,
+children: new Array,
+container: element,
+position: 0
+}
+return Sortable._tree (element, options, root);
+},
+_constructIndex: function(node) {
+var index = '';
+do {
+if (node.id) index = '[' + node.position + ']' + index;
+} while ((node = node.parent) != null);
+return index;
+},
+sequence: function(element) {
+element = $(element);
+var options = Object.extend(this.options(element), arguments[1] || {});
+return $(this.findElements(element, options) || []).map( function(item) {
+return item.id.match(options.format) ? item.id.match(options.format)[1] : '';
 });
-}else{
-this.handles=[$(_231)];
-}
-this.track=$(_232);
-this.options=_233||{};
-this.axis=this.options.axis||"horizontal";
-this.increment=this.options.increment||1;
-this.step=parseInt(this.options.step||"1");
-this.range=this.options.range||$R(0,1);
-this.value=0;
-this.values=this.handles.map(function(){
-return 0;
+},
+setSequence: function(element, new_sequence) {
+element = $(element);
+var options = Object.extend(this.options(element), arguments[2] || {});
+var nodeMap = {};
+this.findElements(element, options).each( function(n) {
+if (n.id.match(options.format))
+nodeMap[n.id.match(options.format)[1]] = [n, n.parentNode];
+n.parentNode.removeChild(n);
 });
-this.spans=this.options.spans?this.options.spans.map(function(s){
-return $(s);
-}):false;
-this.options.startSpan=$(this.options.startSpan||null);
-this.options.endSpan=$(this.options.endSpan||null);
-this.restricted=this.options.restricted||false;
-this.maximum=this.options.maximum||this.range.end;
-this.minimum=this.options.minimum||this.range.start;
-this.alignX=parseInt(this.options.alignX||"0");
-this.alignY=parseInt(this.options.alignY||"0");
-this.trackLength=this.maximumOffset()-this.minimumOffset();
-this.handleLength=this.isVertical()?this.handles[0].offsetHeight:this.handles[0].offsetWidth;
-this.active=false;
-this.dragging=false;
-this.disabled=false;
-if(this.options.disabled){
-this.setDisabled();
+new_sequence.each(function(ident) {
+var n = nodeMap[ident];
+if (n) {
+n[1].appendChild(n[0]);
+delete nodeMap[ident];
 }
-this.allowedValues=this.options.values?this.options.values.sortBy(Prototype.K):false;
+});
+},
+serialize: function(element) {
+element = $(element);
+var options = Object.extend(Sortable.options(element), arguments[1] || {});
+var name = encodeURIComponent(
+(arguments[1] && arguments[1].name) ? arguments[1].name : element.id);
+if (options.tree) {
+return Sortable.tree(element, arguments[1]).children.map( function (item) {
+return [name + Sortable._constructIndex(item) + "=" + 
+encodeURIComponent(item.id)].concat(item.children.map(arguments.callee));
+}).flatten().join('&');
+} else {
+return Sortable.sequence(element, arguments[1]).map( function(item) {
+return name + "[]=" + encodeURIComponent(item);
+}).join('&');
+}
+}
+}
+Element.isParent = function(child, element) {
+if (!child.parentNode || child == element) return false;
+if (child.parentNode == element) return true;
+return Element.isParent(child.parentNode, element);
+}
+Element.findChildren = function(element, only, recursive, tagName) {
+if(!element.hasChildNodes()) return null;
+tagName = tagName.toUpperCase();
+if(only) only = [only].flatten();
+var elements = [];
+$A(element.childNodes).each( function(e) {
+if(e.tagName && e.tagName.toUpperCase()==tagName &&
+(!only || (Element.classNames(e).detect(function(v) { return only.include(v) }))))
+elements.push(e);
+if(recursive) {
+var grandchildren = Element.findChildren(e, only, recursive, tagName);
+if(grandchildren) elements.push(grandchildren);
+}
+});
+return (elements.length>0 ? elements.flatten() : []);
+}
+Element.offsetSize = function (element, type) {
+if (type == 'vertical' || type == 'height')
+return element.offsetHeight;
+else
+return element.offsetWidth;
+}
+if(!Control) var Control = {};
+Control.Slider = Class.create();
+Control.Slider.prototype = {
+initialize: function(handle, track, options) {
+var slider = this;
+if(handle instanceof Array) {
+this.handles = handle.collect( function(e) { return $(e) });
+} else {
+this.handles = [$(handle)];
+}
+this.track = $(track);
+this.options = options || {};
+this.axis= this.options.axis || 'horizontal';
+this.increment = this.options.increment || 1;
+this.step= parseInt(this.options.step || '1');
+this.range = this.options.range || $R(0,1);
+this.value = 0;this.values= this.handles.map( function() { return 0 });
+this.spans = this.options.spans ? this.options.spans.map(function(s){ return $(s) }) : false;
+this.options.startSpan = $(this.options.startSpan || null);
+this.options.endSpan = $(this.options.endSpan || null);
+this.restricted = this.options.restricted || false;
+this.maximum = this.options.maximum || this.range.end;
+this.minimum = this.options.minimum || this.range.start;
+this.alignX = parseInt(this.options.alignX || '0');
+this.alignY = parseInt(this.options.alignY || '0');
+this.trackLength = this.maximumOffset() - this.minimumOffset();
+this.handleLength = this.isVertical() ? this.handles[0].offsetHeight : this.handles[0].offsetWidth;
+this.active = false;
+this.dragging = false;
+this.disabled = false;
+if(this.options.disabled) this.setDisabled();
+this.allowedValues = this.options.values ? this.options.values.sortBy(Prototype.K) : false;
+if(this.allowedValues) {
+this.minimum = this.allowedValues.min();
+this.maximum = this.allowedValues.max();
+}
+this.eventMouseDown = this.startDrag.bindAsEventListener(this);
+this.eventMouseUp = this.endDrag.bindAsEventListener(this);
+this.eventMouseMove = this.update.bindAsEventListener(this);
+this.handles.each( function(h,i) {
+i = slider.handles.length-1-i;
+slider.setValue(parseFloat(
+(slider.options.sliderValue instanceof Array ? 
+slider.options.sliderValue[i] : slider.options.sliderValue) || 
+ slider.range.start), i);
+Element.makePositioned(h);Event.observe(h, "mousedown", slider.eventMouseDown);
+});
+Event.observe(this.track, "mousedown", this.eventMouseDown);
+Event.observe(document, "mouseup", this.eventMouseUp);
+Event.observe(document, "mousemove", this.eventMouseMove);
+this.initialized = true;
+},
+dispose: function() {
+var slider = this;
+Event.stopObserving(this.track, "mousedown", this.eventMouseDown);
+Event.stopObserving(document, "mouseup", this.eventMouseUp);
+Event.stopObserving(document, "mousemove", this.eventMouseMove);
+this.handles.each( function(h) {
+Event.stopObserving(h, "mousedown", slider.eventMouseDown);
+});
+},
+setDisabled: function(){
+this.disabled = true;
+},
+setEnabled: function(){
+this.disabled = false;
+},
+getNearestValue: function(value){
 if(this.allowedValues){
-this.minimum=this.allowedValues.min();
-this.maximum=this.allowedValues.max();
-}
-this.eventMouseDown=this.startDrag.bindAsEventListener(this);
-this.eventMouseUp=this.endDrag.bindAsEventListener(this);
-this.eventMouseMove=this.update.bindAsEventListener(this);
-this.handles.each(function(h,i){
-i=_234.handles.length-1-i;
-_234.setValue(parseFloat((_234.options.sliderValue instanceof Array?_234.options.sliderValue[i]:_234.options.sliderValue)||_234.range.start),i);
-Element.makePositioned(h);
-Event.observe(h,"mousedown",_234.eventMouseDown);
+if(value >= this.allowedValues.max()) return(this.allowedValues.max());
+if(value <= this.allowedValues.min()) return(this.allowedValues.min());
+var offset = Math.abs(this.allowedValues[0] - value);
+var newValue = this.allowedValues[0];
+this.allowedValues.each( function(v) {
+var currentOffset = Math.abs(v - value);
+if(currentOffset <= offset){
+newValue = v;
+offset = currentOffset;
+} 
 });
-Event.observe(this.track,"mousedown",this.eventMouseDown);
-Event.observe(document,"mouseup",this.eventMouseUp);
-Event.observe(document,"mousemove",this.eventMouseMove);
-this.initialized=true;
-},dispose:function(){
-var _236=this;
-Event.stopObserving(this.track,"mousedown",this.eventMouseDown);
-Event.stopObserving(document,"mouseup",this.eventMouseUp);
-Event.stopObserving(document,"mousemove",this.eventMouseMove);
-this.handles.each(function(h){
-Event.stopObserving(h,"mousedown",_236.eventMouseDown);
-});
-},setDisabled:function(){
-this.disabled=true;
-},setEnabled:function(){
-this.disabled=false;
-},getNearestValue:function(_237){
-if(this.allowedValues){
-if(_237>=this.allowedValues.max()){
-return (this.allowedValues.max());
+return newValue;
 }
-if(_237<=this.allowedValues.min()){
-return (this.allowedValues.min());
-}
-var _238=Math.abs(this.allowedValues[0]-_237);
-var _239=this.allowedValues[0];
-this.allowedValues.each(function(v){
-var _240=Math.abs(v-_237);
-if(_240<=_238){
-_239=v;
-_238=_240;
-}
-});
-return _239;
-}
-if(_237>this.range.end){
-return this.range.end;
-}
-if(_237<this.range.start){
-return this.range.start;
-}
-return _237;
-},setValue:function(_241,_242){
-if(!this.active){
-this.activeHandle=this.handles[_242];
-this.activeHandleIdx=_242;
+if(value > this.range.end) return this.range.end;
+if(value < this.range.start) return this.range.start;
+return value;
+},
+setValue: function(sliderValue, handleIdx){
+if(!this.active) {
+this.activeHandle= this.handles[handleIdx];
+this.activeHandleIdx = handleIdx;
 this.updateStyles();
 }
-_242=_242||this.activeHandleIdx||0;
-if(this.initialized&&this.restricted){
-if((_242>0)&&(_241<this.values[_242-1])){
-_241=this.values[_242-1];
+handleIdx = handleIdx || this.activeHandleIdx || 0;
+if(this.initialized && this.restricted) {
+if((handleIdx>0) && (sliderValue<this.values[handleIdx-1]))
+sliderValue = this.values[handleIdx-1];
+if((handleIdx < (this.handles.length-1)) && (sliderValue>this.values[handleIdx+1]))
+sliderValue = this.values[handleIdx+1];
 }
-if((_242<(this.handles.length-1))&&(_241>this.values[_242+1])){
-_241=this.values[_242+1];
-}
-}
-_241=this.getNearestValue(_241);
-this.values[_242]=_241;
-this.value=this.values[0];
-this.handles[_242].style[this.isVertical()?"top":"left"]=this.translateToPx(_241);
+sliderValue = this.getNearestValue(sliderValue);
+this.values[handleIdx] = sliderValue;
+this.value = this.values[0];
+this.handles[handleIdx].style[this.isVertical() ? 'top' : 'left'] = 
+this.translateToPx(sliderValue);
 this.drawSpans();
-if(!this.dragging||!this.event){
-this.updateFinished();
+if(!this.dragging || !this.event) this.updateFinished();
+},
+setValueBy: function(delta, handleIdx) {
+this.setValue(this.values[handleIdx || this.activeHandleIdx || 0] + delta, 
+handleIdx || this.activeHandleIdx || 0);
+},
+translateToPx: function(value) {
+return Math.round(
+((this.trackLength-this.handleLength)/(this.range.end-this.range.start)) * 
+(value - this.range.start)) + "px";
+},
+translateToValue: function(offset) {
+return ((offset/(this.trackLength-this.handleLength) * 
+(this.range.end-this.range.start)) + this.range.start);
+},
+getRange: function(range) {
+var v = this.values.sortBy(Prototype.K); 
+range = range || 0;
+return $R(v[range],v[range+1]);
+},
+minimumOffset: function(){
+return(this.isVertical() ? this.alignY : this.alignX);
+},
+maximumOffset: function(){
+return(this.isVertical() ?
+this.track.offsetHeight - this.alignY : this.track.offsetWidth - this.alignX);
+},
+isVertical:function(){
+return (this.axis == 'vertical');
+},
+drawSpans: function() {
+var slider = this;
+if(this.spans)
+$R(0, this.spans.length-1).each(function(r) { slider.setSpan(slider.spans[r], slider.getRange(r)) });
+if(this.options.startSpan)
+this.setSpan(this.options.startSpan,
+$R(0, this.values.length>1 ? this.getRange(0).min() : this.value ));
+if(this.options.endSpan)
+this.setSpan(this.options.endSpan, 
+$R(this.values.length>1 ? this.getRange(this.spans.length-1).max() : this.value, this.maximum));
+},
+setSpan: function(span, range) {
+if(this.isVertical()) {
+span.style.top = this.translateToPx(range.start);
+span.style.height = this.translateToPx(range.end - range.start + this.range.start);
+} else {
+span.style.left = this.translateToPx(range.start);
+span.style.width = this.translateToPx(range.end - range.start + this.range.start);
 }
-},setValueBy:function(_243,_244){
-this.setValue(this.values[_244||this.activeHandleIdx||0]+_243,_244||this.activeHandleIdx||0);
-},translateToPx:function(_245){
-return Math.round(((this.trackLength-this.handleLength)/(this.range.end-this.range.start))*(_245-this.range.start))+"px";
-},translateToValue:function(_246){
-return ((_246/(this.trackLength-this.handleLength)*(this.range.end-this.range.start))+this.range.start);
-},getRange:function(_247){
-var v=this.values.sortBy(Prototype.K);
-_247=_247||0;
-return $R(v[_247],v[_247+1]);
-},minimumOffset:function(){
-return (this.isVertical()?this.alignY:this.alignX);
-},maximumOffset:function(){
-return (this.isVertical()?this.track.offsetHeight-this.alignY:this.track.offsetWidth-this.alignX);
-},isVertical:function(){
-return (this.axis=="vertical");
-},drawSpans:function(){
-var _248=this;
-if(this.spans){
-$R(0,this.spans.length-1).each(function(r){
-_248.setSpan(_248.spans[r],_248.getRange(r));
-});
-}
-if(this.options.startSpan){
-this.setSpan(this.options.startSpan,$R(0,this.values.length>1?this.getRange(0).min():this.value));
-}
-if(this.options.endSpan){
-this.setSpan(this.options.endSpan,$R(this.values.length>1?this.getRange(this.spans.length-1).max():this.value,this.maximum));
-}
-},setSpan:function(span,_251){
-if(this.isVertical()){
-span.style.top=this.translateToPx(_251.start);
-span.style.height=this.translateToPx(_251.end-_251.start);
-}else{
-span.style.left=this.translateToPx(_251.start);
-span.style.width=this.translateToPx(_251.end-_251.start);
-}
-},updateStyles:function(){
-this.handles.each(function(h){
-Element.removeClassName(h,"selected");
-});
-Element.addClassName(this.activeHandle,"selected");
-},startDrag:function(_252){
-if(Event.isLeftClick(_252)){
+},
+updateStyles: function() {
+this.handles.each( function(h){ Element.removeClassName(h, 'selected') });
+Element.addClassName(this.activeHandle, 'selected');
+},
+startDrag: function(event) {
+if(Event.isLeftClick(event)) {
 if(!this.disabled){
-this.active=true;
-var _253=Event.element(_252);
-var _254=[Event.pointerX(_252),Event.pointerY(_252)];
-if(_253==this.track){
-var _255=Position.cumulativeOffset(this.track);
-this.event=_252;
-this.setValue(this.translateToValue((this.isVertical()?_254[1]-_255[1]:_254[0]-_255[0])-(this.handleLength/2)));
-var _255=Position.cumulativeOffset(this.activeHandle);
-this.offsetX=(_254[0]-_255[0]);
-this.offsetY=(_254[1]-_255[1]);
-}else{
-while((this.handles.indexOf(_253)==-1)&&_253.parentNode){
-_253=_253.parentNode;
-}
-this.activeHandle=_253;
-this.activeHandleIdx=this.handles.indexOf(this.activeHandle);
+this.active = true;
+var handle = Event.element(event);
+var pointer= [Event.pointerX(event), Event.pointerY(event)];
+if(handle==this.track) {
+var offsets= Position.cumulativeOffset(this.track); 
+this.event = event;
+this.setValue(this.translateToValue( 
+ (this.isVertical() ? pointer[1]-offsets[1] : pointer[0]-offsets[0])-(this.handleLength/2)
+));
+var offsets= Position.cumulativeOffset(this.activeHandle);
+this.offsetX = (pointer[0] - offsets[0]);
+this.offsetY = (pointer[1] - offsets[1]);
+} else {
+ while((this.handles.indexOf(handle) == -1) && handle.parentNode) 
+handle = handle.parentNode;
+this.activeHandle= handle;
+this.activeHandleIdx = this.handles.indexOf(this.activeHandle);
 this.updateStyles();
-var _255=Position.cumulativeOffset(this.activeHandle);
-this.offsetX=(_254[0]-_255[0]);
-this.offsetY=(_254[1]-_255[1]);
+var offsets= Position.cumulativeOffset(this.activeHandle);
+this.offsetX = (pointer[0] - offsets[0]);
+this.offsetY = (pointer[1] - offsets[1]);
 }
 }
-Event.stop(_252);
+Event.stop(event);
 }
-},update:function(_256){
-if(this.active){
-if(!this.dragging){
-this.dragging=true;
+},
+update: function(event) {
+ if(this.active) {
+if(!this.dragging) this.dragging = true;
+this.draw(event);
+ if(navigator.appVersion.indexOf('AppleWebKit')>0) window.scrollBy(0,0);
+Event.stop(event);
+ }
+},
+draw: function(event) {
+var pointer = [Event.pointerX(event), Event.pointerY(event)];
+var offsets = Position.cumulativeOffset(this.track);
+pointer[0] -= this.offsetX + offsets[0];
+pointer[1] -= this.offsetY + offsets[1];
+this.event = event;
+this.setValue(this.translateToValue( this.isVertical() ? pointer[1] : pointer[0] ));
+if(this.initialized && this.options.onSlide)
+this.options.onSlide(this.values.length>1 ? this.values : this.value, this);
+},
+endDrag: function(event) {
+if(this.active && this.dragging) {
+this.finishDrag(event, true);
+Event.stop(event);
 }
-this.draw(_256);
-if(navigator.appVersion.indexOf("AppleWebKit")>0){
-window.scrollBy(0,0);
-}
-Event.stop(_256);
-}
-},draw:function(_257){
-var _258=[Event.pointerX(_257),Event.pointerY(_257)];
-var _259=Position.cumulativeOffset(this.track);
-_258[0]-=this.offsetX+_259[0];
-_258[1]-=this.offsetY+_259[1];
-this.event=_257;
-this.setValue(this.translateToValue(this.isVertical()?_258[1]:_258[0]));
-if(this.initialized&&this.options.onSlide){
-this.options.onSlide(this.values.length>1?this.values:this.value,this);
-}
-},endDrag:function(_260){
-if(this.active&&this.dragging){
-this.finishDrag(_260,true);
-Event.stop(_260);
-}
-this.active=false;
-this.dragging=false;
-},finishDrag:function(_261,_262){
-this.active=false;
-this.dragging=false;
+this.active = false;
+this.dragging = false;
+},
+finishDrag: function(event, success) {
+this.active = false;
+this.dragging = false;
 this.updateFinished();
-},updateFinished:function(){
-if(this.initialized&&this.options.onChange){
-this.options.onChange(this.values.length>1?this.values:this.value,this);
+},
+updateFinished: function() {
+if(this.initialized && this.options.onChange) 
+this.options.onChange(this.values.length>1 ? this.values : this.value, this);
+this.event = null;
 }
-this.event=null;
-}};
-Prado.AutoCompleter=Class.create();
-Prado.AutoCompleter.Base=function(){
-};
-Prado.AutoCompleter.Base.prototype=Object.extend(Autocompleter.Base.prototype,{updateElement:function(_263){
-if(this.options.updateElement){
-this.options.updateElement(_263);
+}
+Prado.AutoCompleter = Class.create();
+Prado.AutoCompleter.Base = function(){};
+Prado.AutoCompleter.Base.prototype = Object.extend(Autocompleter.Base.prototype,
+{
+updateElement: function(selectedElement) 
+{
+if (this.options.updateElement) {
+this.options.updateElement(selectedElement);
 return;
 }
-var _264=Element.collectTextNodesIgnoreClass(_263,"informal");
-var _265=this.findLastToken();
-if(_265!=-1){
-var _266=this.element.value.substr(0,_265+1);
-var _267=this.element.value.substr(_265+1).match(/^\s+/);
-if(_267){
-_266+=_267[0];
-}
-this.element.value=(_266+_264).trim();
-}else{
-this.element.value=_264.trim();
+var value = Element.collectTextNodesIgnoreClass(selectedElement, 'informal');
+var lastTokenPos = this.findLastToken();
+if (lastTokenPos != -1) {
+var newValue = this.element.value.substr(0, lastTokenPos + 1);
+var whitespace = this.element.value.substr(lastTokenPos + 1).match(/^\s+/);
+if (whitespace)
+newValue += whitespace[0];
+this.element.value = (newValue + value).trim();
+} else {
+this.element.value = value.trim();
 }
 this.element.focus();
-if(this.options.afterUpdateElement){
-this.options.afterUpdateElement(this.element,_263);
+if (this.options.afterUpdateElement)
+this.options.afterUpdateElement(this.element, selectedElement);
 }
-}});
-Prado.AutoCompleter.prototype=Object.extend(new Autocompleter.Base(),{initialize:function(_268,_269,_270){
-this.baseInitialize(_268,_269,_270);
-},onUpdateReturn:function(_271){
-if(isString(_271)&&_271.length>0){
-this.updateChoices(_271);
+});
+Prado.AutoCompleter.prototype = Object.extend(new Autocompleter.Base(),
+{
+initialize : function(element, update, options)
+{
+this.baseInitialize(element, update, options);
+},
+onUpdateReturn : function(result)
+{
+if(isString(result) && result.length > 0)
+this.updateChoices(result);
+},
+getUpdatedChoices : function()
+{
+Prado.Callback(this.element.id, this.getToken(), this.onUpdateReturn.bind(this));
 }
-},getUpdatedChoices:function(){
-Prado.Callback(this.element.id,this.getToken(),this.onUpdateReturn.bind(this));
-}});
-Prado.ActivePanel={callbacks:{},register:function(id,_272){
-Prado.ActivePanel.callbacks[id]=_272;
-},update:function(id,_273){
-var _274=new Prado.ActivePanel.Request(id,Prado.ActivePanel.callbacks[id]);
-_274.callback(_273);
-}};
-Prado.ActivePanel.Request=Class.create();
-Prado.ActivePanel.Request.prototype={initialize:function(_275,_276){
-this.element=_275;
-this.setOptions(_276);
-},setOptions:function(_277){
-this.options={onSuccess:this.onSuccess.bind(this)};
-Object.extend(this.options,_277||{});
-},callback:function(_278){
-this.options.params=[_278];
-new Prado.AJAX.Callback(this.element,this.options);
-},onSuccess:function(_279,_280){
-if(this.options.update){
-if(!this.options.evalScripts){
-_280=_280.stripScripts();
+});
+Prado.ActivePanel =
+{
+callbacks : {},
+register : function(id, options)
+{
+Prado.ActivePanel.callbacks[id] = options;
+},
+update : function(id, param)
+{
+var request = new Prado.ActivePanel.Request(id,
+Prado.ActivePanel.callbacks[id]);
+request.callback(param);
 }
-Element.update(this.options.update,_280);
 }
-}};
-Prado.DropContainer=Class.create();
-Prado.DropContainer.prototype=Object.extend(new Prado.ActivePanel.Request(),{initialize:function(_281,_282){
-this.element=_281;
-this.setOptions(_282);
-Object.extend(this.options,{onDrop:this.onDrop.bind(this),evalScripts:true,onSuccess:_282.onSuccess||this.onSuccess.bind(this)});
-Droppables.add(_281,this.options);
-},onDrop:function(_283,_284){
-this.callback(_283.id);
-}});
-Prado.ActiveImageButton=Class.create();
-Prado.ActiveImageButton.prototype={initialize:function(_285,_286){
-this.element=$(_285);
-this.options=_286;
-Event.observe(this.element,"click",this.click.bind(this));
-},click:function(e){
-var el=$("{$this->ClientID}");
-var _287=Position.cumulativeOffset(this.element);
-var _288=[e.clientX,e.clientY];
-var _289=(_288[0]-_287[0]+1)+","+(_288[1]-_287[1]+1);
-Prado.Callback(this.element,_289,null,this.options);
+Prado.ActivePanel.Request = Class.create();
+Prado.ActivePanel.Request.prototype =
+{
+initialize : function(element, options)
+{
+this.element = element;
+this.setOptions(options);
+},
+setOptions : function(options)
+{
+this.options =
+{
+onSuccess : this.onSuccess.bind(this)
+}
+Object.extend(this.options, options || {});
+},
+callback : function(param)
+{
+this.options.params = [param];
+new Prado.AJAX.Callback(this.element, this.options);
+},
+onSuccess : function(result, output)
+{
+if(this.options.update)
+{
+if (!this.options.evalScripts)
+output = output.stripScripts();
+Element.update(this.options.update, output);
+}
+}
+}
+Prado.DropContainer = Class.create();
+Prado.DropContainer.prototype = Object.extend(new Prado.ActivePanel.Request(),
+{
+initialize : function(element, options)
+{
+this.element = element;
+this.setOptions(options);
+Object.extend(this.options,
+{
+onDrop : this.onDrop.bind(this),
+evalScripts : true,
+onSuccess : options.onSuccess || this.onSuccess.bind(this)
+});
+Droppables.add(element, this.options);
+},
+onDrop : function(draggable, droppable)
+{
+this.callback(draggable.id)
+}
+});
+Prado.ActiveImageButton = Class.create();
+Prado.ActiveImageButton.prototype = 
+{
+initialize : function(element, options)
+{
+this.element = $(element);
+this.options = options;
+Event.observe(this.element, "click", this.click.bind(this));
+},
+click : function(e)
+{
+var el = $('{$this->ClientID}');
+var imagePos = Position.cumulativeOffset(this.element);
+var clickedPos = [e.clientX, e.clientY];
+var param = (clickedPos[0]-imagePos[0]+1)+","+(clickedPos[1]-imagePos[1]+1);
+Prado.Callback(this.element, param, null, this.options);
 Event.stop(e);
-}};
-
+}
+}

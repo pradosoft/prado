@@ -1,0 +1,45 @@
+<com:TContent ID="Content">
+<h1>Prado RangeValidator Tests String</h1>
+<div>
+	<p>Strings between 'd' and 'y'</p>
+	<div>
+		<com:TTextBox ID="text1" />
+		<com:TRangeValidator
+			ID="validator1"
+			ControlToValidate="text1"
+			ErrorMessage="Strings between 'd' and 'y'"
+			MinValue="d"
+			MaxValue="y"
+			DataType="String"
+			ControlCssClass="required" />
+	</div>
+	<p>Strings &gt;= 'd'</p>
+	<div>
+		<com:TTextBox ID="text2" />
+		<com:TRangeValidator
+			ID="validator2"
+			ControlToValidate="text2"
+			ErrorMessage="Strings &gt;= 'd'"
+			MinValue="d"
+			DataType="String"
+			ControlCssClass="required" />
+	</div>
+	
+	<p>Strings &lt;= 'y'</p>
+	<div>
+		<com:TTextBox ID="text3" />
+		<com:TRangeValidator
+			ID="validator3"
+			ControlToValidate="text3"
+			ErrorMessage="Strings &lt;= 'y'"
+			MaxValue="y"
+			DataType="String"
+			ControlCssClass="required" />
+	</div>
+		
+	<com:TButton ID="submit1"Text="Test" />
+</div>
+
+
+
+</com:TContent>

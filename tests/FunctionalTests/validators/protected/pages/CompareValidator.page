@@ -1,0 +1,31 @@
+<com:TContent ID="Content">
+<h1>Prado CompareValidator Tests</h1>
+<div>
+	<div>
+		<com:TTextBox ID="text1" />
+		<com:TTextBox ID="text2" />
+		<com:TCompareValidator
+			ID="validator1"
+			ControlToValidate="text1"
+			ControlToCompare="text2"
+			ErrorMessage="Must match"
+			ControlCssClass="required" />
+	</div>
+	
+	<div>
+		<com:TTextBox ID="text3" />
+		<com:TCompareValidator
+			ID="validator2"
+			ControlToValidate="text3"
+			ValueToCompare="12/1/2005"
+			DataType="Date"
+			DateFormat="d/M/yyyy"
+			ErrorMessage="Must be a date 12/1/2005"
+			ControlCssClass="required" />
+	</div>
+
+	<com:TButton ID="submit1" Text="Test" />
+</div>
+
+
+</com:TContent>

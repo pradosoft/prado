@@ -14,6 +14,9 @@
  * TDataGridColumn class file
  */
 Prado::using('System.Web.UI.WebControls.TDataGridColumn');
+Prado::using('System.Web.UI.WebControls.TButton');
+Prado::using('System.Web.UI.WebControls.TLinkButton');
+Prado::using('System.Web.UI.WebControls.TImageButton');
 
 /**
  * TButtonColumn class
@@ -93,6 +96,54 @@ class TButtonColumn extends TDataGridColumn
 	}
 
 	/**
+	 * @return string the URL of the image file for image buttons
+	 */
+	public function getImageUrl()
+	{
+		return $this->getViewState('ImageUrl','');
+	}
+
+	/**
+	 * @param string the URL of the image file for image buttons
+	 */
+	public function setImageUrl($value)
+	{
+		$this->setViewState('ImageUrl',$value,'');
+	}
+
+	/**
+	 * @return string the field name from the data source to bind to the button image url
+	 */
+	public function getDataImageUrlField()
+	{
+		return $this->getViewState('DataImageUrlField','');
+	}
+
+	/**
+	 * @param string the field name from the data source to bind to the button image url
+	 */
+	public function setDataImageUrlField($value)
+	{
+		$this->setViewState('DataImageUrlField',$value,'');
+	}
+
+	/**
+	 * @return string the formatting string used to control how the button image url will be displayed.
+	 */
+	public function getDataImageUrlFormatString()
+	{
+		return $this->getViewState('DataImageUrlFormatString','');
+	}
+
+	/**
+	 * @param string the formatting string used to control how the button image url will be displayed.
+	 */
+	public function setDataImageUrlFormatString($value)
+	{
+		$this->setViewState('DataImageUrlFormatString',$value,'');
+	}
+
+	/**
 	 * @return string the type of command button. Defaults to LinkButton.
 	 */
 	public function getButtonType()
@@ -101,11 +152,11 @@ class TButtonColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the type of command button, LinkButton or PushButton
+	 * @param string the type of command button, LinkButton, PushButton or ImageButton
 	 */
 	public function setButtonType($value)
 	{
-		$this->setViewState('ButtonType',TPropertyValue::ensureEnum($value,'LinkButton','PushButton'),'LinkButton');
+		$this->setViewState('ButtonType',TPropertyValue::ensureEnum($value,'LinkButton','PushButton','ImageButton'),'LinkButton');
 	}
 
 	/**
@@ -170,15 +221,21 @@ class TButtonColumn extends TDataGridColumn
 		parent::initializeCell($cell,$columnIndex,$itemType);
 		if($itemType===TDataGrid::IT_ITEM || $itemType===TDataGrid::IT_ALTERNATINGITEM || $itemType===TDataGrid::IT_SELECTEDITEM || $itemType===TDataGrid::IT_EDITITEM)
 		{
-			if($this->getButtonType()==='LinkButton')
-				$button=Prado::createComponent('System.Web.UI.WebControls.TLinkButton');
-			else
-				$button=Prado::createComponent('System.Web.UI.WebControls.TButton');
+			$buttonType=$this->getButtonType();
+			if($buttonType==='LinkButton')
+				$button=new TLinkButton;
+			else if($buttonType==='PushButton')
+				$button=new TButton;
+			else // image button
+			{
+				$button=new TImageButton;
+				$button->setImageUrl($this->getImageUrl());
+			}
 			$button->setText($this->getText());
 			$button->setCommandName($this->getCommandName());
 			$button->setCausesValidation($this->getCausesValidation());
 			$button->setValidationGroup($this->getValidationGroup());
-			if($this->getDataTextField()!=='')
+			if($this->getDataTextField()!=='' || ($buttonType==='ImageButton' && $this->getDataImageUrlField()!==''))
 				$button->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
 			$cell->getControls()->add($button);
 		}
@@ -191,14 +248,20 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function dataBindColumn($sender,$param)
 	{
-		if(($field=$this->getDataTextField())!=='')
+		if($sender instanceof IButtonControl)
 		{
-			$item=$sender->getNamingContainer();
-			$data=$item->getDataItem();
-			$value=$this->getDataFieldValue($data,$field);
-			$text=$this->formatDataValue($this->getDataTextFormatString(),$value);
-			if(($sender instanceof TLinkButton) || ($sender instanceof TButton))
+			if(($field=$this->getDataTextField())!=='')
+			{
+				$value=$this->getDataFieldValue($sender->getNamingContainer()->getDataItem(),$field);
+				$text=$this->formatDataValue($this->getDataTextFormatString(),$value);
 				$sender->setText($text);
+			}
+			if(($sender instanceof TImageButton) && ($field=$this->getDataImageUrlField())!=='')
+			{
+				$value=$this->getDataFieldValue($sender->getNamingContainer()->getDataItem(),$field);
+				$url=$this->formatDataValue($this->getDataImageUrlFormatString(),$value);
+				$sender->setImageUrl($url);
+			}
 		}
 	}
 }

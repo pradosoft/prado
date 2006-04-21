@@ -89,7 +89,7 @@ class TRegularExpressionValidator extends TBaseValidator
 	protected function getClientScriptOptions()
 	{
 		$options = parent::getClientScriptOptions();
-		$options['validationexpression']=$this->getRegularExpression();
+		$options['ValidationExpression']=$this->getRegularExpression();
 		return $options;
 	}
 }

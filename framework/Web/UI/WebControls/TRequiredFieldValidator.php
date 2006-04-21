@@ -68,7 +68,7 @@ class TRequiredFieldValidator extends TBaseValidator
 	protected function getClientScriptOptions()
 	{
 		$options = parent::getClientScriptOptions();
-		$options['initialvalue']=$this->getInitialValue();
+		$options['InitialValue']=$this->getInitialValue();
 		return $options;
 	}
 }

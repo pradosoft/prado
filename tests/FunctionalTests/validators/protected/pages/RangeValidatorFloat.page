@@ -1,0 +1,45 @@
+<com:TContent ID="Content">
+<h1>Prado RangeValidator Tests Float</h1>
+<div>
+	<p>Float between 1.4 and 4.4</p>
+	<div>
+		<com:TTextBox ID="text1" />
+		<com:TRangeValidator
+			ID="validator1"
+			ControlToValidate="text1"
+			ErrorMessage="Numbers between 1.4 and 4.4"
+			MinValue="1.4"
+			MaxValue="4.4"
+			DataType="Float"
+			ControlCssClass="required" />
+	</div>
+	<p>Float &gt;= 2.2</p>
+	<div>
+		<com:TTextBox ID="text2" />
+		<com:TRangeValidator
+			ID="validator2"
+			ControlToValidate="text2"
+			ErrorMessage="Numbers &gt;= 2.2"
+			MinValue="2.2"
+			DataType="Float"
+			ControlCssClass="required" />
+	</div>
+	
+	<p>Float &lt;= 20.2</p>
+	<div>
+		<com:TTextBox ID="text3" />
+		<com:TRangeValidator
+			ID="validator3"
+			ControlToValidate="text3"
+			ErrorMessage="Numbers &lt;= 20.2"
+			MaxValue="20.2"
+			DataType="Float"
+			ControlCssClass="required" />
+	</div>
+		
+	<com:TButton ID="submit1"Text="Test" />
+</div>
+
+
+
+</com:TContent>
