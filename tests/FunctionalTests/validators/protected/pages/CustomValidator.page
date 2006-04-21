@@ -1,0 +1,26 @@
+<com:TContent ID="Content">
+<h1>Prado CustomValidator Tests</h1>
+
+<script type="text/javascript">
+var MyCustomValidator = 
+{
+	validate : function(sender, value)
+	{
+		return value == "Prado";
+	}
+}
+</script>
+<div>
+	<com:TTextBox ID="text1" />
+	<com:TCustomValidator
+		ID="validator1"
+		ControlToValidate="text1"
+		ErrorMessage="Enter 'Prado'"
+		ControlCssClass="required"
+		ClientValidationFunction="MyCustomValidator.validate" 
+		OnServerValidate="CustomValidation"
+		/>
+		<com:TButton ID="submit1" Text="Test" />
+</div>
+
+</com:TContent>

@@ -63,10 +63,11 @@ Prado.Element =
 				el.options[el.options.length] = new Option(options[i][0],options[i][1]);
 		}
 	},
-/**
- * A delayed focus on a particular element
- * @param {element} element to apply focus()
- */
+
+	/**
+	 * A delayed focus on a particular element
+	 * @param {element} element to apply focus()
+	 */
 	focus : function(element)
 	{
 		var obj = $(element);
@@ -173,60 +174,3 @@ Prado.Element.Selection =
 		});
 	}
 };
-
-
-/**
- * Alias some of the prototype functions.
- * Insert a html fragment relative to an element.
- */
-Object.extend(Prado.Element,
-{
-	/**
-	 * 
-	 */
-	Insert : 
-	{
-		/**
-		 * Insert directly after the element.
-		 */
-		After : function(element, innerHTML)
-		{
-			new Insertion.After(element, innerHTML);
-		},
-
-		/**
-		 * Insert directly after the element
-		 */
-		Before : function(element, innerHTML)
-		{
-			new Insertion.Before(element. innerHTML);
-		},
-
-		/**
-		 * Insert below the element container.
-		 */
-		Below : function(element, innerHTML)
-		{
-			new Insertion.Bottom(element, innerHTML);
-		},
-
-		/**
-		 * Insert above the element container.
-		 */
-		Above : function(element, innerHTML)
-		{
-			new Insertion.Top(element, innerHTML);
-		}
-	},
-	CssClass :
-	{
-		/**
-		 * Set the css class name of an element.
-		 */
-		set : function(element, cssClass)
-		{
-			element = new Element.ClassNames(element);
-			element.set(cssClass);
-		}
-	}
-});

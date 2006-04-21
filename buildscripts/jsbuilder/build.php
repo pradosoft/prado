@@ -6,9 +6,6 @@
  * This script compresses a list of javascript source files
  * and merges them into a few for redistribution.
  *
- * This script should be run from command line with PHP.
- * JRE 1.4 or above is required in order to run the js compression program.
- *
  * By default, all libraries will be built.
  * You may, however, specify one or several to be built (to save time during development).
  * To do so, pass the library names (without .js) as command line arguments.
@@ -21,12 +18,6 @@
  * @version $Revision: $  $Date: $
  * @package Tools
  */
-
-//compress using a script, has more options but lesss robut
-//define('COMPRESS_COMMAND','java -jar '.dirname(__FILE__).'/custom_rhino.jar packer.js %s > %s');
-
-//compress using build-in engine, very robust.
-define('COMPRESS_COMMAND','java -jar '.dirname(__FILE__).'/custom_rhino.jar -c %s > %s');
 
 /**
  * The root directory for storing all source js files
@@ -51,7 +42,6 @@ $libraries = array(
 		//base javascript functions
 		'prototype/prototype.js',
 		'prototype/base.js',
-		'extended/util.js',
 		'extended/base.js',
 		'prototype/string.js',
 		'extended/string.js',
@@ -62,11 +52,13 @@ $libraries = array(
 
 		//dom functions
 		'prototype/dom.js',
-		'extended/dom.js',
 		'prototype/form.js',
 		'prototype/event.js',
 		'extended/event.js',
 		'prototype/position.js',
+
+		//element selectors
+		'prototype/selector.js',
 
 		//build dom elements with DIV, A, UL, etc functions
 		'effects/builder.js',
@@ -114,8 +106,8 @@ $libraries = array(
 
 	//validator
 	'validator.js' => array(
-		'prado/validation.js',
-		'prado/validators.js'
+		'prado/validation3.js'
+		//'prado/validators.js'
 	),
 
 	//date picker
@@ -157,15 +149,24 @@ foreach($libraries as $libFile => $sourceFiles)
 		echo "...adding $sourceFile\n";
 		$contents.=file_get_contents($sourceFile)."\n\n";		
 	}
-	$tempFile=$libFile.'.tmp';
-	file_put_contents($tempFile,$contents);
-	$command=sprintf(COMPRESS_COMMAND,$tempFile,$libFile);
-	system($command);
-	@unlink($tempFile);
+
+	file_put_contents($libFile,compress_js($contents));
+	echo "Saving file {$libFile}\n"; 
 	$builds++;
 }
 if($builds > 0)	
 	echo "\nJavascript build complete, {$builds} file(s) compressed.";
 else
 	echo "No files to build.";
+
+//remove comments from javascript files.
+function compress_js($string)
+{
+	$string = preg_replace('/\/\/[^\n\r]*[\n\r]/', ' ', $string);
+	$string = preg_replace('/\/\*[^*]*\*+([^\/][^*]*\*+)*\//', ' ', $string);
+	$string = preg_replace('/  |\t|\r/', '', $string);
+	$string = preg_replace('/(\n[ \t]*){2,}/', "\n", $string);
+	return $string;
+}
+
 ?>

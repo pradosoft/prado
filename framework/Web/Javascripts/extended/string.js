@@ -79,13 +79,14 @@ Object.extend(String.prototype, {
 			if(command[new String(action)]) 
 				command=command[new String(action)]; 
 		});
-		if(isFunction(command))
+		if(typeof(command) == "function")
 			return command;
 		else
 		{
 			if(typeof Logger != "undefined")
 				Logger.error("Missing function", this);
-			return Prototype.emptyFunction;
+				
+			throw new Error	("Missing function '"+this+"'");
 		}
 	},
 
@@ -110,11 +111,17 @@ Object.extend(String.prototype, {
 	 */
 	toDouble : function(decimalchar)
 	{
+		if(this.length <= 0) return null;
 		decimalchar = decimalchar || ".";
 		var exp = new RegExp("^\\s*([-\\+])?(\\d+)?(\\" + decimalchar + "(\\d+))?\\s*$");
 		var m = this.match(exp);
+		
 		if (m == null)	
 			return null;
+		m[1] = m[1] || "";
+		m[2] = m[2] || "0";
+		m[4] = m[4] || "0";
+				
 		var cleanInput = m[1] + (m[2].length>0 ? m[2] : "0") + "." + m[4];
 		var num = parseFloat(cleanInput);
 		return (isNaN(num) ? null : num);

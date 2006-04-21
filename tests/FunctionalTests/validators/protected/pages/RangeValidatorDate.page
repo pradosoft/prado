@@ -1,0 +1,48 @@
+<com:TContent ID="Content">
+<h1>Prado RangeValidator Tests Date</h1>
+<div>
+	<p>Dates between 22/1/2005 and 3/2/2005</p>
+	<div>
+		<com:TTextBox ID="text1" />
+		<com:TRangeValidator
+			ID="validator1"
+			ControlToValidate="text1"
+			ErrorMessage="Dates between 22/1/2005 and 3/2/2005"
+			MinValue="22/1/2005"
+			MaxValue="3/2/2005"
+			DataType="Date"
+			DateFormat="d/M/yyyy"
+			ControlCssClass="required" />
+	</div>
+	<p>Dates &gt;= 22/1/2005</p>
+	<div>
+		<com:TTextBox ID="text2" />
+		<com:TRangeValidator
+			ID="validator2"
+			ControlToValidate="text2"
+			ErrorMessage="Dates &gt;= 22/1/2005"
+			MinValue="22/1/2005"
+			DataType="Date"
+			DateFormat="d/M/yyyy"
+			ControlCssClass="required" />
+	</div>
+	
+	<p>Dates &lt;= 3/2/2005</p>
+	<div>
+		<com:TTextBox ID="text3" />
+		<com:TRangeValidator
+			ID="validator3"
+			ControlToValidate="text3"
+			ErrorMessage="Dates &lt;= 3/2/2005"
+			MaxValue="3/2/2005"
+			DataType="Date"
+			DateFormat="d/M/yyyy"
+			ControlCssClass="required" />
+	</div>
+		
+	<com:TButton ID="submit1"Text="Test" />
+</div>
+
+
+
+</com:TContent>

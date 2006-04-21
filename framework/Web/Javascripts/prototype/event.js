@@ -104,4 +104,5 @@ Object.extend(Event, {
 });
 
 /* prevent memory leaks in IE */
-Event.observe(window, 'unload', Event.unloadCache, false);
+if (navigator.appVersion.match(/\bMSIE\b/))
+  Event.observe(window, 'unload', Event.unloadCache, false);

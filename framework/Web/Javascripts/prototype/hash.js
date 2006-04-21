@@ -1,6 +1,6 @@
 var Hash = {
   _each: function(iterator) {
-    for (key in this) {
+    for (var key in this) {
       var value = this[key];
       if (typeof value == 'function') continue;
       

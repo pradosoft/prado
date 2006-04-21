@@ -219,7 +219,7 @@ class TValidationSummary extends TWebControl
 		if(!$this->getEnabled(true) || !$this->getEnableClientScript())
 			return;
 		$options=TJavaScript::encode($this->getClientScriptOptions());
-		$script = "new Prado.Validation.Summary({$options});";
+		$script = "new Prado.WebUI.TValidationSummary({$options});";
 		$this->getPage()->getClientScript()->registerEndScript($this->getClientID(), $script);
 	}
 
@@ -229,19 +229,19 @@ class TValidationSummary extends TWebControl
 	 */
 	protected function getClientScriptOptions()
 	{
-		$options['id'] = $this->ClientID;
-		$options['form'] = $this->Page->Form->ClientID;
+		$options['ID'] = $this->ClientID;
+		$options['FormID'] = $this->Page->Form->ClientID;
 		if($this->getShowMessageBox())
-			$options['showmessagebox']='True';
+			$options['ShowMessageBox']=true;
 		if(!$this->getShowSummary())
-			$options['showsummary']='False';
+			$options['ShowSummary']=false;
 
-		$options['headertext']=$this->getHeaderText();
-		$options['displaymode']=$this->getDisplayMode();
+		$options['HeaderText']=$this->getHeaderText();
+		$options['DisplayMode']=$this->getDisplayMode();
 
-		$options['refresh'] = $this->getAutoUpdate();
-		$options['validationgroup'] =  $this->getValidationGroup();
-		$options['display'] = $this->getDisplay();
+		$options['Refresh'] = $this->getAutoUpdate();
+		$options['ValidationGroup'] =  $this->getValidationGroup();
+		$options['Display'] = $this->getDisplay();
 		return $options;
 	}
 

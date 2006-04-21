@@ -46,7 +46,7 @@ var Form = {
     form = $(form);
     var elements = new Array();
 
-    for (tagName in Form.Element.Serializers) {
+    for (var tagName in Form.Element.Serializers) {
       var tagElements = form.getElementsByTagName(tagName);
       for (var j = 0; j < tagElements.length; j++)
         elements.push(tagElements[j]);
@@ -168,23 +168,17 @@ Form.Element.Serializers = {
     var value = '', opt, index = element.selectedIndex;
     if (index >= 0) {
       opt = element.options[index];
-      value = opt.value;
-      if (!value && !('value' in opt))
-        value = opt.text;
+      value = opt.value || opt.text;
     }
     return [element.name, value];
   },
   
   selectMany: function(element) {
-    var value = new Array();
+    var value = [];
     for (var i = 0; i < element.length; i++) {
       var opt = element.options[i];
-      if (opt.selected) {
-        var optValue = opt.value;
-        if (!optValue && !('value' in opt))
-          optValue = opt.text;
-        value.push(optValue);
-      }
+      if (opt.selected)
+        value.push(opt.value || opt.text);
     }
     return [element.name, value];
   }

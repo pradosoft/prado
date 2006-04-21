@@ -1,16 +1,18 @@
 Prado.WebUI = Class.create();
 
 //base postback-able controls
-Prado.WebUI.PostBackControl = Class.create();
-Object.extend(Prado.WebUI.PostBackControl.prototype,
+/*Prado.WebUI.PostBackControl = Class.create();
+Prado.WebUI.PostBackControl.prototype =
 {
 	initialize : function(options)
 	{
 		this.element = $(options['ID']);
-		if(options['CausesValidation'] && Prado.Validation)
+		
+/*		if(options.CausesValidation && typeof(Prado.Validation) != 'undefined')
 		{
-			Prado.Validation.AddTarget(options['ID'], options['ValidationGroup']);
+			Prado.Validation.registerTarget(options);
 		}
+		
 		//TODO: what do the following options do?
 		//options['PostBackUrl']
 		//options['ClientSubmit']
@@ -18,7 +20,7 @@ Object.extend(Prado.WebUI.PostBackControl.prototype,
 		if(this.onInit)
 			this.onInit(options);
 	}
-});
+};
 
 //short cut to create postback components
 Prado.WebUI.createPostBackComponent = function(definition)
@@ -30,19 +32,28 @@ Prado.WebUI.createPostBackComponent = function(definition)
 }
 
 Prado.WebUI.TButton = Prado.WebUI.createPostBackComponent();
+*/
+Prado.WebUI.PostBackControl = Class.create();
 
-Prado.WebUI.ClickableComponent = Prado.WebUI.createPostBackComponent(
+Prado.WebUI.PostBackControl.prototype = 
 {
 	_elementOnClick : null, //capture the element's onclick function
 
+	initialize : function(options)
+	{
+		this.element = $(options.ID);
+		if(this.onInit)
+			this.onInit(options);
+	},
+	
 	onInit : function(options)
 	{
-		if(isFunction(this.element.onclick))
+		if(typeof(this.element.onclick)=="function")
 		{
 			this._elementOnClick = this.element.onclick;
 			this.element.onclick = null;
 		}
-		Event.observe(this.element, "click", this.onClick.bindEvent(this,options));
+		Event.observe(this.element, "click", this.onClick.bindEvent(this,options));		
 	},
 
 	onClick : function(event, options)
@@ -53,12 +64,12 @@ Prado.WebUI.ClickableComponent = Prado.WebUI.createPostBackComponent(
 		if(this._elementOnClick)
 		{
 			var onclicked = this._elementOnClick(event);
-			if(isBoolean(onclicked))
+			if(typeof(onclicked) == "boolean")
 				doPostBack = onclicked;
 		}
 		if(doPostBack)
 			this.onPostBack(event,options);
-		if(isBoolean(onclicked) && !onclicked)
+		if(typeof(onclicked) == "boolean" && !onclicked)
 			Event.stop(event);
 	},
 
@@ -66,19 +77,19 @@ Prado.WebUI.ClickableComponent = Prado.WebUI.createPostBackComponent(
 	{
 		Prado.PostBack(event,options);
 	}
-});
+};
 
-Prado.WebUI.TLinkButton = Prado.WebUI.ClickableComponent;
-Prado.WebUI.TCheckBox = Prado.WebUI.ClickableComponent;
-Prado.WebUI.TBulletedList = Prado.WebUI.ClickableComponent;
-Prado.WebUI.TImageMap = Prado.WebUI.ClickableComponent;
+Prado.WebUI.TButton = Class.extend(Prado.WebUI.PostBackControl);
+Prado.WebUI.TLinkButton = Class.extend(Prado.WebUI.PostBackControl);
+Prado.WebUI.TCheckBox = Class.extend(Prado.WebUI.PostBackControl);
+Prado.WebUI.TBulletedList = Class.extend(Prado.WebUI.PostBackControl);
+Prado.WebUI.TImageMap = Class.extend(Prado.WebUI.PostBackControl);
 
 /**
  * TImageButton client-side behaviour. With validation, Firefox needs 
  * to capture the x,y point of the clicked image in hidden form fields.
  */
-Prado.WebUI.TImageButton = Class.create();
-Object.extend(Prado.WebUI.TImageButton.prototype,Prado.WebUI.ClickableComponent.prototype);
+Prado.WebUI.TImageButton = Class.extend(Prado.WebUI.PostBackControl);
 Object.extend(Prado.WebUI.TImageButton.prototype,
 {
 	/**
@@ -123,7 +134,7 @@ Object.extend(Prado.WebUI.TImageButton.prototype,
 /**
  * Radio button, only initialize if not already checked.
  */
-Prado.WebUI.TRadioButton = Prado.WebUI.createPostBackComponent(Prado.WebUI.ClickableComponent.prototype);
+Prado.WebUI.TRadioButton = Class.extend(Prado.WebUI.PostBackControl);
 Prado.WebUI.TRadioButton.prototype.onRadioButtonInitialize = Prado.WebUI.TRadioButton.prototype.initialize;
 Object.extend(Prado.WebUI.TRadioButton.prototype,
 {
@@ -136,7 +147,7 @@ Object.extend(Prado.WebUI.TRadioButton.prototype,
 });
 
 
-Prado.WebUI.TTextBox = Prado.WebUI.createPostBackComponent(
+Prado.WebUI.TTextBox = Class.extend(Prado.WebUI.PostBackControl,
 {
 	onInit : function(options)
 	{
@@ -159,7 +170,7 @@ Prado.WebUI.TTextBox = Prado.WebUI.createPostBackComponent(
 	}
 });
 
-Prado.WebUI.TListControl = Prado.WebUI.createPostBackComponent(
+Prado.WebUI.TListControl = Class.extend(Prado.WebUI.PostBackControl,
 {
 	onInit : function(options)
 	{
@@ -167,11 +178,11 @@ Prado.WebUI.TListControl = Prado.WebUI.createPostBackComponent(
 	}
 });
 
-Prado.WebUI.TListBox = Prado.WebUI.TListControl;
-Prado.WebUI.TDropDownList = Prado.WebUI.TListControl;
+Prado.WebUI.TListBox = Class.extend(Prado.WebUI.TListControl);
+Prado.WebUI.TDropDownList = Class.extend(Prado.WebUI.TListControl);
 
 Prado.WebUI.DefaultButton = Class.create();
-Object.extend(Prado.WebUI.DefaultButton.prototype,
+Prado.WebUI.DefaultButton.prototype = 
 {
 	initialize : function(options)
 	{
@@ -195,22 +206,25 @@ Object.extend(Prado.WebUI.DefaultButton.prototype,
 			}
 		}
 	}
-});
+};
 
 Prado.WebUI.TTextHighlighter=Class.create();
-Prado.WebUI.TTextHighlighter.prototype={initialize:function(id)
+Prado.WebUI.TTextHighlighter.prototype=
 {
-	if(!window.clipboardData) return;
-	var options =
+	initialize:function(id)
 	{
-		href : 'javascript:;//copy code to clipboard',
-		onclick : 'Prado.WebUI.TTextHighlighter.copy(this)',
-		onmouseover : 'Prado.WebUI.TTextHighlighter.hover(this)',
-		onmouseout : 'Prado.WebUI.TTextHighlighter.out(this)'
+		if(!window.clipboardData) return;
+		var options =
+		{
+			href : 'javascript:;/'+'/copy code to clipboard',
+			onclick : 'Prado.WebUI.TTextHighlighter.copy(this)',
+			onmouseover : 'Prado.WebUI.TTextHighlighter.hover(this)',
+			onmouseout : 'Prado.WebUI.TTextHighlighter.out(this)'
+		}
+		var div = DIV({className:'copycode'}, A(options, 'Copy Code'));
+		document.write(DIV(null,div).innerHTML);
 	}
-	var div = DIV({className:'copycode'}, A(options, 'Copy Code'));
-	document.write(DIV(null,div).innerHTML);
-}};
+};
 
 Object.extend(Prado.WebUI.TTextHighlighter,
 {

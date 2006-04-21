@@ -1,0 +1,22 @@
+<com:TContent ID="Content">
+<h1>Prado RegularExpressionValidator Tests</h1>
+<div>
+	<div>
+		<com:TTextBox ID="text1" />
+		<com:TRegularExpressionValidator
+			ID="validator1"
+			ControlToValidate="text1"
+			ErrorMessage="5 digits"
+			RegularExpression="\d{5}"
+			ControlCssClass="required" />
+		<com:TTextBox ID="text2" />
+		<com:TEmailAddressValidator
+			ID="validator2"
+			ControlToValidate="text2"
+			ErrorMessage="Email Address!"
+			ControlCssClass="required" />
+	</div>
+	<com:TButton ID="submit1" Text="Test" />
+</div>
+
+</com:TContent>

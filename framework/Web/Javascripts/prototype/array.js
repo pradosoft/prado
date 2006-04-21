@@ -12,7 +12,8 @@ var $A = Array.from = function(iterable) {
 
 Object.extend(Array.prototype, Enumerable);
 
-//Array.prototype._reverse = Array.prototype.reverse;
+if (!Array.prototype._reverse)
+  Array.prototype._reverse = Array.prototype.reverse;
 
 Object.extend(Array.prototype, {
   _each: function(iterator) {
@@ -41,7 +42,7 @@ Object.extend(Array.prototype, {
   
   flatten: function() {
     return this.inject([], function(array, value) {
-      return array.concat(value.constructor == Array ?
+      return array.concat(value && value.constructor == Array ?
         value.flatten() : [value]);
     });
   },
@@ -58,20 +59,11 @@ Object.extend(Array.prototype, {
       if (this[i] == object) return i;
     return -1;
   },
-
-/*  
+  
   reverse: function(inline) {
     return (inline !== false ? this : this.toArray())._reverse();
   },
-*/  
-  shift: function() {
-    var result = this[0];
-    for (var i = 0; i < this.length - 1; i++)
-      this[i] = this[i + 1];
-    this.length--;
-    return result;
-  },
-
+  
   inspect: function() {
     return '[' + this.map(Object.inspect).join(', ') + ']';
   }

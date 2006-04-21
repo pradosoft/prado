@@ -1,0 +1,57 @@
+<com:TContent ID="Content">
+
+<div>
+	<div class="lista">
+		<com:TCheckBoxList ID="list1">
+			<com:TListItem Value="1" Text="One" />
+			<com:TListItem Value="2" Text="Two" />
+			<com:TListItem Value="3" Text="Three" />
+			<com:TListItem Value="4" Text="Four" />
+		</com:TCheckBoxList>
+		<com:TRequiredListValidator
+			ID="validator1"
+			ControlToValidate="list1"
+			ErrorMessage="Must select at least 1 and no more than 3"
+			ControlCssClass="required"
+			MinSelection="1"
+			MaxSelection="3" />
+
+	</div>
+	<div>
+		<com:TListBox ID="list2" SelectionMode="Multiple" Rows="5" Style="width:10em">
+			<com:TListItem Value="1" Text="One" />
+			<com:TListItem Value="2" Text="Two" />
+			<com:TListItem Value="3" Text="Three" />
+			<com:TListItem Value="4" Text="Four" />
+			<com:TListItem Value="5" Text="Five" />
+		</com:TListBox>
+		<com:TRequiredListValidator
+			ID="validator2"
+			ControlToValidate="list2"
+			ErrorMessage='Must select at least 2 and no more than 3 and value "two"'
+			MinSelection="2"
+			MaxSelection="3"
+			RequiredSelections="2" />
+	</div>
+
+	<div class="lista">
+		<com:TCheckBoxList ID="list3">
+			<com:TListItem Value="1" Text="One" />
+			<com:TListItem Value="2" Text="Two" />
+			<com:TListItem Value="3" Text="Three" />
+			<com:TListItem Value="4" Text="Four" />
+		</com:TCheckBoxList>
+		<com:TRequiredListValidator
+			ID="validator3"
+			ControlToValidate="list3"
+			ErrorMessage="Must select at least 1"
+			ControlCssClass="required"
+			MinSelection="1"/>
+
+	</div>
+
+
+	<com:TButton ID="submit1" Text="Test" />
+</div>
+
+</com:TContent>

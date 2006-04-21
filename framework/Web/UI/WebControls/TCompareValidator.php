@@ -32,7 +32,8 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  * - <b>Integer</b> A 32-bit signed integer data type.
  * - <b>Float</b> A double-precision floating point number data type.
  * - <b>Currency</b> A decimal data type that can contain currency symbols.
- * - <b>Date</b> A date data type. The format follows the GNU date syntax.
+ * - <b>Date</b> A date data type. The format can be specified by the 
+ * {@link setDateFormat DateFormat} property 
  * - <b>String</b> A string data type.
  *
  * Use the {@link setOperator Operator} property to specify the type of comparison
@@ -220,15 +221,15 @@ class TCompareValidator extends TBaseValidator
 		if(($name=$this->getControlToCompare())!=='')
 		{
 			if(($control=$this->findControl($name))!==null)
-				$options['controltocompare']=$options['controlhookup']=$control->getClientID();
+				$options['ControlToCompare']=$control->getClientID();
 		}
 		if(($value=$this->getValueToCompare())!=='')
-			$options['valuetocompare']=$value;
+			$options['ValueToCompare']=$value;
 		if(($operator=$this->getOperator())!=='Equal')
-			$options['operator']=$operator;
-		$options['type']=$this->getDataType();
+			$options['Operator']=$operator;
+		$options['DataType']=$this->getDataType();
 		if(($dateFormat=$this->getDateFormat())!=='')
-			$options['dateformat']=$dateFormat;
+			$options['DateFormat']=$dateFormat;
 		return $options;
 	}
 }

@@ -1,0 +1,108 @@
+<com:TContent ID="Content">
+<h1>RequiredFieldValidator Tests</h1>
+<div>
+<!-- group 1 -->
+<com:TValidationSummary ID="summary1" ValidationGroup="group1" AutoUpdate="False" />
+<div>
+	<com:TTextBox ID="text1" />
+	<com:TRequiredFieldValidator 
+		ID="validator1" 
+		ControlToValidate="text1"
+		ControlCssClass="required"
+		Display="Dynamic"
+		CssClass="message"
+		ValidationGroup="group1"
+		ErrorMessage="text1!"/>
+
+	<com:TCheckBox ID="check1" />
+	<com:TRequiredFieldValidator
+		ID="validator2"
+		ControlToValidate="check1"
+		ControlCssClass="required"
+		Display="Dynamic"
+		CssClass="message"
+		ValidationGroup="group1"
+		ErrorMessage="check 1!" />
+	<com:TButton ID="submit1" Text="Group1" ValidationGroup="group1" />
+</div>
+<!-- group 2 -->
+<com:TValidationSummary ID="summary2" ValidationGroup="group2" />
+<div>
+	<com:TTextBox ID="text2" />
+	<com:TRequiredFieldValidator 
+		ID="validator3" 
+		ControlToValidate="text2"
+		ControlCssClass="required"
+		CssClass="message"
+		ValidationGroup="group2"
+		ErrorMessage="text2!"/>
+
+	<com:TCheckBox ID="check2" />
+	<com:TRequiredFieldValidator
+		ID="validator4"
+		ControlToValidate="check2"
+		ControlCssClass="required"
+		CssClass="message"
+		ValidationGroup="group2"
+		ErrorMessage="check 2!" />
+	<com:TButton ID="submit2" Text="Group2" ValidationGroup="group2"/>
+</div>
+
+<!-- no group -->
+<com:TValidationSummary ID="summary3" />
+
+<div>
+	<com:TTextBox ID="text3" />
+	<com:TRequiredFieldValidator 
+		ID="validator5" 
+		ControlToValidate="text3"
+		ControlCssClass="required"
+		CssClass="message"
+		ErrorMessage="text3!"/>
+
+	<com:TCheckBox ID="check3" />
+	<com:TRequiredFieldValidator
+		ID="validator6"
+		ControlToValidate="check3"
+		ControlCssClass="required"
+		CssClass="message"
+		ErrorMessage="check 3!" />
+</div>
+<div>
+	<com:TTextBox ID="text4" />
+	<com:TRequiredFieldValidator 
+		ID="validator7" 
+		ControlToValidate="text4"
+		ControlCssClass="required"
+		CssClass="message"
+		ErrorMessage="text4!"/>
+
+	<com:TCheckBox ID="check4" />
+	<com:TRequiredFieldValidator
+		ID="validator8"
+		ControlToValidate="check4"
+		ControlCssClass="required"
+		CssClass="message"
+		ErrorMessage="check 4!" />
+
+</div>
+	<com:TButton ID="submit3" Text="No Group" />
+
+
+
+<com:TButton ID="submit4" Text="Submit By Pass" CausesValidation="False" />
+
+</div>
+
+<div><h2>InitialValue Test</h2>
+	<com:TTextBox id="text5" Text="test"/>
+	<com:TRequiredFieldValidator 
+			id="validator9"
+			ValidationGroup="group4"
+			ControlToValidate="text5"
+			InitialValue="test"
+			ErrorMessage="change 'test' to something else" />
+	<com:TButton id="submit5" Text="initial value" ValidationGroup="group4" />
+</div>
+
+</com:TContent>

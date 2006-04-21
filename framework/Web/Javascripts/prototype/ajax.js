@@ -1,9 +1,9 @@
 var Ajax = {
   getTransport: function() {
     return Try.these(
+      function() {return new XMLHttpRequest()},
       function() {return new ActiveXObject('Msxml2.XMLHTTP')},
-      function() {return new ActiveXObject('Microsoft.XMLHTTP')},
-      function() {return new XMLHttpRequest()}
+      function() {return new ActiveXObject('Microsoft.XMLHTTP')}
     ) || false;
   },
   
@@ -55,6 +55,7 @@ Ajax.Base.prototype = {
     this.options = {
       method:       'post',
       asynchronous: true,
+      contentType:  'application/x-www-form-urlencoded',
       parameters:   ''
     }
     Object.extend(this.options, options || {});
@@ -114,11 +115,11 @@ Ajax.Request.prototype = Object.extend(new Ajax.Base(), {
   setRequestHeaders: function() {
     var requestHeaders = 
       ['X-Requested-With', 'XMLHttpRequest',
-       'X-Prototype-Version', Prototype.Version];
+       'X-Prototype-Version', Prototype.Version,
+       'Accept', 'text/javascript, text/html, application/xml, text/xml, */*'];
 
     if (this.options.method == 'post') {
-      requestHeaders.push('Content-type', 
-        'application/x-www-form-urlencoded');
+      requestHeaders.push('Content-type', this.options.contentType);
 
       /* Force "Connection: close" for Mozilla browsers to work around
        * a bug where XMLHttpReqeuest sends an incorrect Content-length
@@ -149,7 +150,7 @@ Ajax.Request.prototype = Object.extend(new Ajax.Base(), {
   
   evalJSON: function() {
     try {
-      return eval(this.header('X-JSON'));
+      return eval('(' + this.header('X-JSON') + ')');
     } catch (e) {}
   },
   

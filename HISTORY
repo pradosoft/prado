@@ -11,6 +11,9 @@ BUG: TWizard did not stop navigation upon a validation failure (Qiang)
 ENH: TButton, TImageButton and TLinkButton now implement IButtonControl interface (Qiang)
 ENH: TResponse::writeFile takes two additional parameters to allow sending memory data (Qiang)
 ENH: TButtonColumn can now be a column of image buttons (Qiang)
+CHG: Rewrote client-side javascript validators, check your client-side validation behaviour (Wei)
+CHG: Updated the javascript Prototype library, a few utilties functions REMOVED, may break your existing javascript code. (Wei)
+CHG: Build javascript without compression, only comments are removed. (Wei)
 
 Version 3.0RC2 April 16, 2006
 =============================
