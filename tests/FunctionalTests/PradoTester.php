@@ -42,7 +42,7 @@ class PradoTester
 			else if($entry[0]!=='.')
 				$this->collectTestFiles($groupTest,$fullPath);
 		}
-		closedir($folder);
+		@closedir($folder);
 	}
 
 	protected function isValidFile($entry)
