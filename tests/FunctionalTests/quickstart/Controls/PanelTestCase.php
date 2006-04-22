@@ -8,7 +8,7 @@ class PanelTestCase extends SeleniumTestCase
 		$this->verifyTextPresent("This is panel content with", "");
 		$this->verifyElementPresent("//span[text()='label']");
 		$this->verifyTextPresent("grouping text", "");
-		$this->click("//input[@name='ctl0\$body\$ctl17' and @value='ctl0\$body\$ctl17']", "");
+		$this->click("//input[@name='ctl0\$body\$ctl17']", "");
 		$this->verifyTextNotPresent("You have clicked on 'button2'.");
 		$this->clickAndWait("//input[@type='submit' and @value='button2']", "");
 		$this->verifyTextPresent("You have clicked on 'button2'.");

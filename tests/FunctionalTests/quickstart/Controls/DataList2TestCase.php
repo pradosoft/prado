@@ -22,7 +22,7 @@ class DataList2TestCase extends SeleniumTestCase
 		$this->clickAndWait("id=ctl0_body_DataList_ctl5_ctl0", "");
 		$this->type("ctl0\$body\$DataList\$ctl5\$ProductQuantity", "11");
 		$this->type("ctl0\$body\$DataList\$ctl5\$ProductPrice", "140.99");
-		$this->click("//input[@name='ctl0\$body\$DataList\$ctl5\$ProductImported' and @value='ctl0\$body\$DataList\$ctl5\$ProductImported']", "");
+		$this->click("//input[@name='ctl0\$body\$DataList\$ctl5\$ProductImported']", "");
 		$this->clickAndWait("link=Save", "");
 
 		// verify item is saved
@@ -34,7 +34,7 @@ class DataList2TestCase extends SeleniumTestCase
 		$this->clickAndWait("id=ctl0_body_DataList_ctl3_ctl1", "");
 		$this->type("ctl0\$body\$DataList\$ctl3\$ProductName", "Hard Drive");
 		$this->type("ctl0\$body\$DataList\$ctl3\$ProductQuantity", "23");
-		$this->click("//input[@name='ctl0\$body\$DataList\$ctl3\$ProductImported' and @value='ctl0\$body\$DataList\$ctl3\$ProductImported']", "");
+		$this->click("//input[@name='ctl0\$body\$DataList\$ctl3\$ProductImported']", "");
 		$this->clickAndWait("link=Cancel", "");
 
 		// verify item is canceled
