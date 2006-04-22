@@ -19,7 +19,7 @@ class DataGrid3TestCase extends SeleniumTestCase
 		$this->type("ctl0\$body\$DataGrid\$ctl2\$ctl7", "Design Pattern: Elements of Reusable Object-Oriented Software");
 		$this->type("ctl0\$body\$DataGrid\$ctl2\$ctl8", "Addison Wesley Professional");
 		$this->type("ctl0\$body\$DataGrid\$ctl2\$ctl9", "\$57.04");
-		$this->click("//input[@name='ctl0\$body\$DataGrid\$ctl2\$ctl10' and @value='ctl0\$body\$DataGrid\$ctl2\$ctl10']", "");
+		$this->click("//input[@name='ctl0\$body\$DataGrid\$ctl2\$ctl10']", "");
 		$this->select("ctl0\$body\$DataGrid\$ctl2\$Rating", "label=1");
 		$this->clickAndWait("link=Save", "");
 

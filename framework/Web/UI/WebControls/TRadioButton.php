@@ -101,6 +101,14 @@ class TRadioButton extends TCheckBox
 		$this->setViewState('GroupName',$value,'');
 	}
 
+	protected function getValueAttribute()
+	{
+		if(($value=parent::getValueAttribute())==='')
+			return $this->getUniqueID();
+		else
+			return $value;
+	}
+
 	/**
 	 * @return string the name used to fetch radiobutton post data
 	 */
