@@ -12,9 +12,10 @@
 <project name="prado" basedir="." default="dist">
 
   <property name="version" value="3.0.0"/>
-  <property name="state" value="RC1"/>
+  <property name="state" value=""/>
+  <property name="pear.state" value="stable"/>
   <property name="pkgname" value="${phing.project.name}-${version}${state}"/>
-  <property name="pkgname.pear" value="${pkgname}${state}-pear"/>
+  <property name="pkgname.pear" value="${pkgname}${pear.state}-pear"/>
   <property name="src.dir" value="framework"/>
   <property name="doc.dir" value="docs"/>
   <property name="build.base.dir" value="build"/>
@@ -52,12 +53,11 @@
   <!--
       Various resource files in framework
   -->
-  <fileset dir="." id="res">
+  <fileset dir="." id="framework">
     <exclude name="${src.dir}/**/.svn"/>
-    <include name="${src.dir}/**/*.html"/>
-    <include name="${src.dir}/**/*.css"/>
-    <include name="${src.dir}/**/*.txt"/>
-    <include name="${src.dir}/**/*.js"/>
+    <exclude name="${src.dir}/**/*.bak"/>
+    <exclude name="${src.dir}/**/*~"/>
+    <include name="${src.dir}/**/*"/>
   </fileset>
 
   <!--
@@ -183,7 +183,7 @@
     </if>
 
     <echo>Running Unit Tests</echo>
-    <phpunit2 codecoverage="${codecoverage}" haltonfailure="true" haltonerror="true" printsummary="true">
+    <phpunit2 codecoverage="${codecoverage}" haltonfailure="false" haltonerror="false" printsummary="true">
       <batchtest>
         <fileset dir="${tests.dir}">
 	  <include name="**/*Test.php"/>
@@ -210,8 +210,7 @@
   <target name="build-standard-package">
     <echo>Building standard package...</echo>
     <copy todir="${build.src.dir}">
-      <fileset refid="src"/>
-      <fileset refid="res"/>
+      <fileset refid="framework"/>
       <fileset refid="docs"/>
       <fileset refid="misc"/>
       <fileset refid="demos"/>
