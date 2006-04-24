@@ -37,6 +37,7 @@
   <property name="config.xsd" value="${doc.dir}/specs/config.xsd"/>
   <property name="codecoverage" value="false"/>
   <property name="zca" value="/usr/local/Zend/ZendStudioClient-5.1.0/bin/ZendCodeAnalyzer"/>
+  <property name="quickstart" value="${build.base.dir}/docs/prado3_quick_start.pdf"/>
 
   <taskdef name="phplint" classname="PhpLintTask" classpath="buildscripts/phing/tasks"/>
   <taskdef name="xmllint" classname="XmlLintTask" classpath="buildscripts/phing/tasks"/>
@@ -149,6 +150,13 @@
     <phpdoc title="PRADO ${version}${state} API Documentation" destdir="${doc.build.dir}" sourcepath="${src.dir}" output="HTML:Smarty:PHP"/>
   </target>
 
+  <target name="quickstart" description="Generate Quickstart PDF">
+    <delete file="${quickstart}"/>
+    <exec command="php build.php" dir="buildscripts/texbuilder" passthru="true"/>
+    <exec command="pdflatex prado3_quick_start.tex" dir="buildscripts/texbuilder" passthru="true"/>
+    <move file="buildscripts/texbuilder/prado3_quick_start.pdf" tofile="${quickstart}"/>
+  </target>
+
   <target name="test" description="Run unit tests">
     <echo>Preparing directory structure</echo>
     <delete dir="${reports.unit.dir}"/>
@@ -215,7 +223,7 @@
       <fileset refid="misc"/>
       <fileset refid="demos"/>
       <fileset dir="${build.base.dir}">
-        <include name="docs/manual/**/*"/>
+        <include name="docs/**/*"/>
 	<include name="${prado.lite}"/>
       </fileset>
     </copy>
