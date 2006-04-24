@@ -57,6 +57,7 @@
     <include name="${src.dir}/**/*.html"/>
     <include name="${src.dir}/**/*.css"/>
     <include name="${src.dir}/**/*.txt"/>
+    <include name="${src.dir}/**/*.js"/>
   </fileset>
 
   <!--
