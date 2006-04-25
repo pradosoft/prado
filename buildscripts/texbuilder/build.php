@@ -155,7 +155,12 @@ function include_figure($info, $filename)
 function anchor($matches)
 {
 	$page = get_current_path();
-	return '\hypertarget{'.$page.'/'.$matches[1].'}{}';
+	return '\hypertarget{'.$page.'/'.strtolower($matches[1]).'}{}';
+}
+
+function texttt($matches)
+{
+	return '\texttt{'.str_replace(array('#','_'),array('\#','\_'), $matches[1]).'}';
 }
 
 function get_current_path()
@@ -222,7 +227,7 @@ function parse_html($page,$html)
 	//text modifiers
 	$html = preg_replace('/<b>([^<]*)<\/b>/', '\textbf{$1}', $html);
 	$html = preg_replace('/<i>([^<]*)<\/i>/', '\emph{$1}', $html);
-	$html = preg_replace('/<tt>([^<]*)<\/tt>/', '\texttt{$1}', $html);
+	$html = preg_replace_callback('/<tt>([^<]*)<\/tt>/', 'texttt', $html);
 
 	//links
 	$html = preg_replace_callback('/<a[^>]+href="([^"]*)"[^>]*>([^<]*)<\/a>/',

@@ -48,10 +48,9 @@ Prado::using('System.I18N.TI18NControl');
  *   if the Value property is not specified.
  * - <b>Pattern</b>, string,
  *   <br>Gets or sets the formatting pattern. The predefined patterns are
- *   'full date', 'long date', 'medium date', 'short date', 'full time',
- *   'long time', 'medium time', and 'short time'. Custom patterns can
- *   specified when the Pattern property does not match the predefined
- *   patterns.
+ *   'fulldate',           'longdate', 'mediumdate', 'shortdate', 'fulltime',
+ * 'longtime', 'mediumtime', and 'shorttime'. Custom patterns can   specified
+ * when the Pattern property does not match the predefined   patterns.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version v1.0, last update on Sat Dec 11 15:25:11 EST 2004
@@ -69,7 +68,7 @@ class TDateFormat extends TI18NControl
 	 * A set of pattern presets and their respective formatting shorthand.
 	 * @var array
 	 */
-	protected $patternPresets = array(
+	static private $_patternPresets = array(
 			'fulldate'=>'P','full'=>'P',
 			'longdate'=>'D','long'=>'d',
 			'mediumdate'=>'p','medium'=>'p',
@@ -132,7 +131,7 @@ class TDateFormat extends TI18NControl
 	protected function getPreset($string)
 	{
 		$string = strtolower($string);
-		foreach($this->patternPresets as $pattern => $preset)
+		foreach(self::$_patternPresets as $pattern => $preset)
 		{
 			if($string == $pattern)
 				return $preset;

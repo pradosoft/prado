@@ -15,7 +15,7 @@
   <a href="?page=Controls.ColorPicker">TColorPicker</a> represents an input field taking color values via a color dialog.
   </li>
 
-  <li>*
+  <li>
   <a href="?page=Controls.DatePicker">TDatePicker</a> represents an input field taking date values via a calendar dialog.
   </li>
 
@@ -27,7 +27,7 @@
   <a href="?page=Controls.FileUpload">TFileUpload</a> represents a file upload field. It allows users to upload a file to server.
   </li>
 
-  <li>
+  <li>*
   <a href="?page=Controls.Head">THead</a> represents the &lt;head&gt; element on an HTML Web page. It is required by a PRADO page should it use themes.
   </li>
 

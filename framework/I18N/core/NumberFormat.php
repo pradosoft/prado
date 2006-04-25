@@ -63,7 +63,7 @@ require_once(dirname(__FILE__).'/util.php');
  *  $ja = new NumberFormat('ja_JP');
  * 
  *  //Japanese currency pattern, and using Japanese Yen symbol
- *  $ja->format(123.14,'c','JPY'); //ï¿?123 (Yen 123)
+ *  $ja->format(123.14,'c','JPY'); //ï¿½?123 (Yen 123)
  * </code>
  * For each culture, the symbol for each currency may be different.
  * 
@@ -166,11 +166,16 @@ class NumberFormat
 			$string = substr($string, 0, $dp);	
 			
 		$integer = '';
+
+		$digitSize = $this->formatInfo->getDigitSize();
+		
+		$string = str_pad($string, $digitSize, '0',STR_PAD_LEFT);
 		
 		$len = strlen($string);
 		
 		$groupSeparator = $this->formatInfo->GroupSeparator;
 		$groupSize = $this->formatInfo->GroupSizes;
+		
 		
 		$firstGroup = true;
 		$multiGroup = is_int($groupSize[1]);

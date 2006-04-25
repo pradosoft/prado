@@ -128,7 +128,12 @@ class DateFormat
 			if($pattern{0} == "'"
 				&& $pattern{strlen($pattern)-1} == "'")
 			{
-				$tokens[$i] = preg_replace('/(^\')|(\'$)/','',$pattern);
+				$sub = preg_replace('/(^\')|(\'$)/','',$pattern);
+				$tokens[$i] =  str_replace('``````','\'',$sub);
+			}
+			else if($pattern == '``````')
+			{
+				$tokens[$i] = '\'';
 			}
 			else
 			{
@@ -145,7 +150,7 @@ class DateFormat
 						throw new
 						Exception('function '.$function.' not found.');
 				}
-			}
+			}			
 		}
 
 		return I18N_toEncoding(implode('',$tokens), $charset);
@@ -269,6 +274,7 @@ class DateFormat
 		$token = null;
 
 		$text = false;
+		$pattern = preg_replace("/''/", '``````', $pattern);
 
 		for($i = 0; $i < strlen($pattern); $i++)
 		{
@@ -278,7 +284,7 @@ class DateFormat
 			}
 			else
 			{
-				$tokens[] = str_replace("''","'",$token);
+				$tokens[] = str_replace("","'",$token);
 				$token = $pattern{$i};
 			}
 

@@ -353,7 +353,7 @@ validator.manager.updateSummary(validator.group);
 this._isObserving[control.id+this.options.ID] = true;
 }
 },
-trim : function(value)
+_trim : function(value)
 {
 return typeof(value) == "string" ? value.trim() : "";
 },
@@ -393,20 +393,20 @@ getValidationValue : function(control)
  {
  case 'TDatePicker':
  if(control.type == "text")
- return this.trim($F(control));
+ return this._trim($F(control));
  else
  {
- this.observeDatePickerChanges();
+ this._observeDatePickerChanges();
 return Prado.WebUI.TDatePicker.getDropDownDate(control).getTime();
  }
  default:
- if(this.isListControlType())
- return this.getFirstSelectedListValue(); 
+ if(this._isListControlType())
+ return this._getFirstSelectedListValue(); 
  else
- return this.trim($F(control));
+ return this._trim($F(control));
  }
  },
-observeDatePickerChanges : function()
+_observeDatePickerChanges : function()
  {
  if(Prado.Browser().ie)
  {
@@ -416,11 +416,11 @@ this.observeChanges(DatePicker.getMonthListControl(this.control));
 this.observeChanges(DatePicker.getYearListControl(this.control));
  }
  },
-getSelectedValuesAndChecks : function(elements, initialValue)
+_getSelectedValuesAndChecks : function(elements, initialValue)
 {
 var checked = 0;
 var values = [];
-var isSelected = this.isCheckBoxType(elements[0]) ? 'checked' : 'selected';
+var isSelected = this._isCheckBoxType(elements[0]) ? 'checked' : 'selected';
 elements.each(function(element)
 {
 if(element[isSelected] && element.value != initialValue)
@@ -431,7 +431,7 @@ values.push(element.value);
 });
 return {'checks' : checked, 'values' : values};
 }, 
-getListElements : function()
+_getListElements : function()
 {
 switch(this.options.ControlType)
 {
@@ -440,7 +440,7 @@ var elements = [];
 for(var i = 0; i < this.options.TotalItems; i++)
 {
 var element = $(this.options.ControlToValidate+"_"+i);
-if(this.isCheckBoxType(element))
+if(this._isCheckBoxType(element))
 elements.push(element);
 }
 return elements;
@@ -457,7 +457,7 @@ default:
 return [];
 }
 },
-isCheckBoxType : function(element)
+_isCheckBoxType : function(element)
 {
 if(element && element.type)
 {
@@ -466,18 +466,18 @@ return type == "checkbox" || type == "radio";
 }
 return false;
 },
-isListControlType : function()
+_isListControlType : function()
 {
 var list = ['TCheckBoxList', 'TRadioButtonList', 'TListBox'];
 return list.include(this.options.ControlType);
 },
-getFirstSelectedListValue : function()
+_getFirstSelectedListValue : function()
 {
 var initial = "";
 if(typeof(this.options.InitialValue) != "undefined")
 initial = this.options.InitialValue;
-var elements = this.getListElements();
-var selection = this.getSelectedValuesAndChecks(elements, initial);
+var elements = this._getListElements();
+var selection = this._getSelectedValuesAndChecks(elements, initial);
 return selection.values.length > 0 ? selection.values[0] : initial;
 }
 }
@@ -493,7 +493,7 @@ return true;
 else
 {
 var a = this.getValidationValue();
-var b = this.trim(this.options.InitialValue);
+var b = this._trim(this.options.InitialValue);
 return(a != b);
 }
 }
@@ -595,16 +595,16 @@ Prado.WebUI.TListControlValidator = Class.extend(Prado.WebUI.TBaseValidator,
 {
 evaluateIsValid : function()
 {
-var elements = this.getListElements();
+var elements = this._getListElements();
 if(elements && elements.length <= 0)
 return true;
 this.observeListElements(elements);
-var selection = this.getSelectedValuesAndChecks(elements);
+var selection = this._getSelectedValuesAndChecks(elements);
 return this.isValidList(selection.checks, selection.values);
 },
 observeListElements : function(elements)
  {
-if(Prado.Browser().ie && this.isCheckBoxType(elements[0]))
+if(Prado.Browser().ie && this._isCheckBoxType(elements[0]))
 {
 var validator = this;
 elements.each(function(element)
@@ -638,5 +638,15 @@ var required = [];
 if(this.options.Required && this.options.Required.length > 0)
 required = this.options.Required.split(/,\s*/);
 return required;
+}
+});
+Prado.WebUI.TDataTypeValidator = Class.extend(Prado.WebUI.TBaseValidator,
+{
+evaluateIsValid : function()
+{
+var value = this.getValidationValue();
+if(value.length <= 0)
+return true;
+return this.convert(this.options.DataType, value) != null;
 }
 });

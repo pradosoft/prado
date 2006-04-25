@@ -667,9 +667,9 @@ Prado.WebUI.TBaseValidator.prototype =
 	},
 	
 	/**
-	 * @return string trims the string value, empty string if value is not string.
+	 * @return string _trims the string value, empty string if value is not string.
 	 */
-	trim : function(value)
+	_trim : function(value)
 	{
 		return typeof(value) == "string" ? value.trim() : "";
 	},
@@ -720,25 +720,26 @@ Prado.WebUI.TBaseValidator.prototype =
 	 	{
 	 		case 'TDatePicker':
 	 			if(control.type == "text")
-	 				return this.trim($F(control));
+	 				return this._trim($F(control));
 	 			else
 	 			{
-	 				this.observeDatePickerChanges();
+	 				this._observeDatePickerChanges();
 		
 	 				return Prado.WebUI.TDatePicker.getDropDownDate(control).getTime();
 	 			}
 	 		default:
-	 			if(this.isListControlType())
-	 				return this.getFirstSelectedListValue();	 			
+	 			if(this._isListControlType())
+	 				return this._getFirstSelectedListValue();	 			
 	 			else
-		 			return this.trim($F(control));
+		 			return this._trim($F(control));
 	 	}
 	 },
 	 
 	 /**
 	  * Observe changes in the drop down list date picker, IE only.
+	  * @private
 	  */
-	 observeDatePickerChanges : function()
+	 _observeDatePickerChanges : function()
 	 {
 	 	if(Prado.Browser().ie)
 	 	{
@@ -753,12 +754,13 @@ Prado.WebUI.TBaseValidator.prototype =
 	 * Gets numeber selections and their values.
 	 * @return object returns selected values in <tt>values</tt> property
 	 * and number of selections in <tt>checks</tt> property.
+	 * @private
 	 */
-	getSelectedValuesAndChecks : function(elements, initialValue)
+	_getSelectedValuesAndChecks : function(elements, initialValue)
 	{
 		var checked = 0;
 		var values = [];
-		var isSelected = this.isCheckBoxType(elements[0]) ? 'checked' : 'selected';
+		var isSelected = this._isCheckBoxType(elements[0]) ? 'checked' : 'selected';
 		elements.each(function(element)
 		{
 			if(element[isSelected] && element.value != initialValue)
@@ -774,8 +776,9 @@ Prado.WebUI.TBaseValidator.prototype =
 	 * Gets an array of the list control item input elements, for TCheckBoxList
 	 * checkbox inputs are returned, for TListBox HTML option elements are returned.
 	 * @return array list control option elements.
+	 * @private
 	 */
-	getListElements : function()
+	_getListElements : function()
 	{
 		switch(this.options.ControlType)
 		{
@@ -784,7 +787,7 @@ Prado.WebUI.TBaseValidator.prototype =
 				for(var i = 0; i < this.options.TotalItems; i++)
 				{
 					var element = $(this.options.ControlToValidate+"_"+i);
-					if(this.isCheckBoxType(element))
+					if(this._isCheckBoxType(element))
 						elements.push(element);
 				}
 				return elements;
@@ -804,8 +807,9 @@ Prado.WebUI.TBaseValidator.prototype =
 	
 	/**
 	 * @return boolean true if element is of checkbox or radio type.
+	 * @private
 	 */
-	isCheckBoxType : function(element)
+	_isCheckBoxType : function(element)
 	{
 		if(element && element.type)
 		{
@@ -817,8 +821,9 @@ Prado.WebUI.TBaseValidator.prototype =
 	
 	/**
 	 * @return boolean true if control to validate is of some of the TListControl type.
+	 * @private
 	 */
-	isListControlType : function()
+	_isListControlType : function()
 	{
 		var list = ['TCheckBoxList', 'TRadioButtonList', 'TListBox'];
 		return list.include(this.options.ControlType);
@@ -826,14 +831,15 @@ Prado.WebUI.TBaseValidator.prototype =
 	
 	/**
 	 * @return string gets the first selected list value, initial value if none found.
+	 * @private
 	 */
-	getFirstSelectedListValue : function()
+	_getFirstSelectedListValue : function()
 	{
 		var initial = "";
 		if(typeof(this.options.InitialValue) != "undefined")
 			initial = this.options.InitialValue;			
-		var elements = this.getListElements();		
-		var selection = this.getSelectedValuesAndChecks(elements, initial);
+		var elements = this._getListElements();		
+		var selection = this._getSelectedValuesAndChecks(elements, initial);
 		return selection.values.length > 0 ? selection.values[0] : initial;
 	}
 }
@@ -862,7 +868,7 @@ Prado.WebUI.TRequiredFieldValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	    else
 	    {
         	var a = this.getValidationValue();
-        	var b = this.trim(this.options.InitialValue);
+        	var b = this._trim(this.options.InitialValue);
         	return(a != b);
     	}
 	}
@@ -1099,13 +1105,13 @@ Prado.WebUI.TListControlValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	 */
 	evaluateIsValid : function()
 	{
-		var elements = this.getListElements();
+		var elements = this._getListElements();
 		if(elements && elements.length <= 0)
 			return true;
 		
 		this.observeListElements(elements);
 		
-		var selection = this.getSelectedValuesAndChecks(elements);
+		var selection = this._getSelectedValuesAndChecks(elements);
 		return this.isValidList(selection.checks, selection.values);
 	},
 	
@@ -1114,7 +1120,7 @@ Prado.WebUI.TListControlValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	 */
 	 observeListElements : function(elements)
 	 {
-		if(Prado.Browser().ie && this.isCheckBoxType(elements[0]))
+		if(Prado.Browser().ie && this._isCheckBoxType(elements[0]))
 		{
 			var validator = this;
 			elements.each(function(element)
@@ -1165,6 +1171,25 @@ Prado.WebUI.TListControlValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	}
 });
 
-
-
+/**
+ * TDataTypeValidator verifies if the input data is of the type specified
+ * by <tt>DataType</tt> option.
+ * The following data types are supported:
+ * - <b>Integer</b> A 32-bit signed integer data type.
+ * - <b>Float</b> A double-precision floating point number data type.
+ * - <b>Date</b> A date data type.
+ * - <b>String</b> A string data type.
+ * For <b>Date</b> type, the option <tt>DateFormat</tt>
+ * will be used to determine how to parse the date string. 
+ */
+Prado.WebUI.TDataTypeValidator = Class.extend(Prado.WebUI.TBaseValidator,
+{
+	evaluateIsValid : function()
+	{
+		var value = this.getValidationValue();
+		if(value.length <= 0)
+			return true;
+		return this.convert(this.options.DataType, value) != null;
+	}
+});
 

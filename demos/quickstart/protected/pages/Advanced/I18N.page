@@ -170,23 +170,145 @@ The time is {time}.
 &lt;com:TDateFormat Value="12/01/2005" /&gt;
 </com:TTextHighlighter>
 
-<p>There are of 4 localized date patterns and 4 localized time patterns. They can be used in any combination. If using a combined pattern, the first must be the date, followed by a space, and lastly the time pattern. For example, full date pattern with short time pattern.</p>
+<p>The <tt>Pattern</tt> property accepts 4 predefined localized date patterns and 4 predefined localized time patterns.
+<ul>
+	<li><tt>fulldate</tt></li>
+	<li><tt>longdate</tt></li>
+	<li><tt>mediumdate</tt></li>
+	<li><tt>shortdate</tt></li>
+	<li><tt>fulltime</tt></li>
+	<li><tt>longtime</tt></li>
+	<li><tt>mediumtime</tt></li>
+	<li><tt>shorttime</tt></li>
+</ul>
+The predefined can be used in any combination. If using a combined predefined pattern, 
+the first pattern must be the date, followed by a space, and lastly the time pattern. 
+For example, full date pattern with short time pattern. The actual ordering of the 
+date-time and the actual pattern will be determine automatically from locale data specified 
+by the <tt>Culture</tt> property.</p>
 
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TDateFormat Pattern="fulldate shorttime" /&gt;
 </com:TTextHighlighter>
+
+<p>You can also specify a custom pattern using the following sub-patterns. 
+The date/time format is specified by means of a string time pattern. In this pattern, all ASCII letters are reserved as pattern letters, which are defined as the following:
+<com:TTextHighlighter Language="text" CssClass="source">
+ Symbol   Meaning                 Presentation        Example
+ ------   -------                 ------------        -------
+ G        era designator          (Text)              AD
+ y        year                    (Number)            1996
+ M        month in year           (Text &amp; Number)     July &amp; 07
+ d        day in month            (Number)            10
+ h        hour in am/pm (1~12)    (Number)            12
+ H        hour in day (0~23)      (Number)            0
+ m        minute in hour          (Number)            30
+ s        second in minute        (Number)            55
+ E        day of week             (Text)              Tuesday
+ D        day in year             (Number)            189
+ F        day of week in month    (Number)            2 (2nd Wed in July)
+ w        week in year            (Number)            27
+ W        week in month           (Number)            2
+ a        am/pm marker            (Text)              PM
+ k        hour in day (1~24)      (Number)            24
+ K        hour in am/pm (0~11)    (Number)            0
+ z        time zone               (Time)              Pacific Standard Time
+ '        escape for text         (Delimiter)         'Date='
+ ''       single quote            (Literal)           'o''clock'
+</com:TTextHighlighter>
+</p>
+
+<p>The count of pattern letters determine the format.</p>
+
+<p>(Text): 4 letters uses full form, less than 4, use short or abbreviated form 
+if it exists. (e.g., "EEEE" produces "Monday", "EEE" produces "Mon")</p>
+
+<p>(Number): the minimum number of digits. Shorter numbers are zero-padded
+ to this amount (e.g. if "m" produces "6", "mm" produces "06"). Year is 
+ handled specially; that is, if the count of 'y' is 2, the Year will be 
+ truncated to 2 digits. (e.g., if "yyyy" produces "1997", "yy" produces "97".) 
+ Unlike other fields, fractional seconds are padded on the right with zero.</p>
+
+<p>(Text and Number): 3 or over, use text, otherwise use number. (e.g., 
+"M" produces "1", "MM" produces "01", "MMM" produces "Jan", and "MMMM" 
+produces "January".)</p>
+
+<p>Any characters in the pattern that are not in the ranges of ['a'..'z'] 
+and ['A'..'Z'] will be treated as quoted text. For instance, characters 
+like ':', '.', ' ', and '@' will appear in the resulting time text 
+even they are not embraced within single quotes.</p>
+
+<p>Examples using the US locale:
+
+<com:TTextHighlighter Language="text" CssClass="source">
+Format Pattern                         Result
+--------------                         -------
+"yyyy.MM.dd G 'at' HH:mm:ss"      -&gt;&gt;  1996.07.10 AD at 15:08:56
+"EEE, MMM d, ''yy"                -&gt;&gt;  Wed, Jul 10, '96
+"h:mm a"                          -&gt;&gt;  12:08 PM
+"hh 'o''clock' a, z"              -&gt;&gt;  12 o'clock PM, Pacific Daylight Time
+"K:mm a"                          -&gt;&gt;  0:00 PM
+"yyyy.MMMM.dd G hh:mm a"          -&gt;&gt;  1996.July.10 AD 12:08 PM
+</com:TTextHighlighter>
+</p>
 
 <p>If the <tt>Value</tt> property is not specified, the current date and time is used.</p>
 
 <h2>TNumberFormat</h2>
 <p>PRADO's Internationalization framework provide localized currency formatting and number formatting. Please note that the <tt>TNumberFormat</tt> component provides formatting only, it does not perform current conversion or exchange.</p>
 
+<p>Numbers can be formatted as currency, percentage, decimal or scientific 
+numbers by specifying the <tt>Type</tt> attribute. The valid types are:
+<ul>
+	<li><tt>currency</tt></li>
+	<li><tt>percentage</tt></li>
+	<li><tt>decimal</tt></li>
+	<li><tt>scientific</tt></li>
+</ul>
+</p>
+ 
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TNumberFormat Type="currency" Value="100" /&gt;
 </com:TTextHighlighter>
 
 <p><tt>Culture</tt> and <tt>Currency</tt> properties may be specified to format locale specific numbers. </p>
 
+<p>If someone from US want to see sales figures from a store in
+Germany (say using the EURO currency), formatted using the german
+ currency, you would need to use the attribute <tt>Culture="de_DE"</tt> to get
+the currency right, e.g. 100,00$. The decimal and grouping separator is
+then also from the <tt>de_DE</tt> locale. This may lead to some confusion because
+people from US uses the "," (comma) as thousand separator. Therefore a <tt>Currency</tt>
+attribute is available, so that the output from the following example results in $100.00
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TNumberFormat Type="currency" 
+          Culture="en_US" Currency="EUR" Value="100" /&gt;
+</com:TTextHighlighter>
+</p>
+
+<p>The <tt>Pattern</tt> property determines the number of digits, thousand grouping 
+positions, the number of decimal points and the decimal position. The actual characters that 
+are used to represent the decimal points and thousand points are culture specific
+and will change automatically according to the <tt>Culture</tt> property. The valid
+<tt>Pattern</tt> characters are:
+<ul>
+	<li><tt># (hash)</tt> - represents the optional digits</li>
+	<li><tt>0 (zero)</tt> - represents the mandatory digits, zero left filled</li>
+	<li><tt>. (full stop)</tt> - the position of the decimal point (only 1 decimal point is allowed)</li>
+	<li><tt>, (comma)</tt> - thousand point separation (up to 2 commas are allowed)</li>
+</ul>
+For example, consider the <tt>Value="1234567.12345"</tt> and 
+with <tt>Culture="en_US"</tt> (which uses "," for thousand point separator and "." for decimal separators).
+<com:TTextHighlighter Language="text" CssClass="source">
+Pattern                      Output
+-------                      ------
+##,###.00               -&gt;&gt;  1,234,567.12
+##,###.##               -&gt;&gt;  1,234,567.12345
+##,##.0000              -&gt;&gt;  1,23,45,67.1235
+##,###,##.0             -&gt;&gt;  12,345,67.1
+000,000,000.0           -&gt;&gt;  001,234,567.1
+</com:TTextHighlighter>
+</p>
 
 <h2>TTranslateParameter</h2>
 <p>Compound messages, i.e., string substitution, can be accomplished with <tt>TTranslateParameter</tt>.

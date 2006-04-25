@@ -166,7 +166,7 @@ foreach($libraries as $libFile => $sourceFiles)
 	echo "Saving file {$libFile}\n"; 
 	$builds++;
 }
-if(preg_match('/doc*/', $argv[1]))
+if(isset($argv[1]) && preg_match('/doc*/', $argv[1]))
 {
 	$files = "";
 	foreach($libraries as $lib)

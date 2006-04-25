@@ -99,6 +99,19 @@ class TDataTypeValidator extends TBaseValidator
 	}
 
 	/**
+	 * Returns an array of javascript validator options.
+	 * @return array javascript validator options.
+	 */
+	protected function getClientScriptOptions()
+	{
+		$options = parent::getClientScriptOptions();
+		$options['DataType']=$this->getDataType();
+		if(($dateFormat=$this->getDateFormat())!=='')
+			$options['DateFormat']=$dateFormat;
+		return $options;
+	}
+
+	/**
 	 * This method overrides the parent's implementation.
 	 * The validation succeeds if the input data is of valid type.
 	 * The validation always succeeds if ControlToValidate is not specified
