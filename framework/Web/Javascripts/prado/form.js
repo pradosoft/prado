@@ -129,9 +129,9 @@ Prado.PostBack = function(event,options)
 
 	$('PRADO_POSTBACK_TARGET').value = options['EventTarget'];
 	$('PRADO_POSTBACK_PARAMETER').value = options['EventParameter'];
-	Event.fireEvent(form,"submit");
 	if(options['StopEvent']) 
 		Event.stop(event);
+	Event.fireEvent(form,"submit");
 }
 
 /*

@@ -95,9 +95,10 @@ Object.extend(Event,
         else if(element.fireEvent)
         {
             element.fireEvent('on'+type);
-            element[type]();
+            if(element[type])
+	            element[type]();
         }
-        else
+        else if(element[type])
             element[type]();
 	}
 });

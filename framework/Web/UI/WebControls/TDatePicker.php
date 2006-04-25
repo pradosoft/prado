@@ -245,22 +245,49 @@ class TDatePicker extends TTextBox
 	/**
 	 * @return integer current selected date from the date picker as timestamp.
 	 */
-	public function getDate()
+	public function getTimeStamp()
 	{
-		$date = $this->getDateFromText();
-		return $date[0];
+		return $this->getTimeStampFromText();
 	}
 
 	/**
 	 * Sets the date for the date picker using timestamp.
 	 * @param integer time stamp for the date picker
 	 */
-	public function setDate($value)
+	public function setTimeStamp($value)
 	{
 		$date = TPropertyValue::ensureInteger($value);
 		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',
 						$this->getDateFormat());
 		$this->setText($formatter->format($date));
+	}
+
+	/**
+	 * @return string the date string.
+	 */
+	public function getDate()
+	{
+		return $this->getText();
+	}
+	
+	/**
+	 * @param string date string
+	 */
+	public function setDate($value)
+	{
+		$this->setText($value);
+	}
+
+	/**
+	 * Returns the value to be validated.
+	 * This methid is required by IValidatable interface.
+	 * @return integer the value of the property to be validated.
+	 */
+	public function getValidationPropertyValue()
+	{
+		if($this->getText() === '')
+			return '';
+		return $this->getTimeStamp();
 	}
 
 	/**
@@ -396,6 +423,7 @@ class TDatePicker extends TTextBox
 
 		$date = $this->getLocalizedCalendarInfo();
 		$options['MonthNames'] = TJavaScript::encode($date->getMonthNames(),false);
+		$options['AbbreviatedMonthNames'] = TJavaScript::encode($date->getAbbreviatedMonthNames(),false);
 		$options['ShortWeekDayNames'] = TJavaScript::encode($date->getAbbreviatedDayNames(),false);
 
 		return $options;
@@ -439,7 +467,8 @@ class TDatePicker extends TTextBox
 			$writer->addAttribute('class', $class);
 		$writer->renderBeginTag('span');
 
-		$date = $this->getDateFromText();
+		$date = @getdate($this->getTimeStampFromText());
+
 		$this->renderCalendarSelections($writer, $date);
 
 		//render a hidden input field
@@ -481,9 +510,9 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Gets the date from the text input using TSimpleDateFormatter
-	 * @return array current selected date
+	 * @return integer current selected date timestamp
 	 */
-	protected function getDateFromText()
+	protected function getTimeStampFromText()
 	{
 		$pattern = $this->getDateFormat();
 		$pattern = str_replace(array('MMMM', 'MMM'), array('MM','MM'), $pattern);
@@ -559,7 +588,7 @@ class TDatePicker extends TTextBox
 			case 'MMM':
 			case 'MM': return $info->getAbbreviatedMonthNames();
 			case 'M':
-				$array = array(); for($i=1;$i<=12;$i++) $array[$i] = $i;
+				$array = array(); for($i=1;$i<=12;$i++) $array[$i-1] = $i;
 				return $array;
 			default :	return $info->getMonthNames();
 		}

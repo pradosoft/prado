@@ -118,6 +118,7 @@ template_property_duplicated			= Property {0} is configured twice or more.
 template_eventhandler_invalid			= {0}.{1} can only accept a static string.
 template_controlid_invalid				= {0}.ID can only accept a static text string.
 template_controlskinid_invalid			= {0}.SkinID can only accept a static text string.
+template_content_unexpected				= Unexpected content is encountered when instantiating template: {0}.
 
 xmldocument_file_read_failed			= TXmlDocument is unable to read file '{0}'.
 xmldocument_file_write_failed			= TXmlDocument is unable to write file '{0}'.
@@ -165,7 +166,7 @@ templatecontrol_placeholder_inexistent	= TContent '{0}' does not have a matching
 page_form_duplicated					= A page can contain at most one TForm. Use regular HTML form tags for the rest forms.
 page_isvalid_unknown					= TPage.IsValid has not been evaluated yet.
 page_postbackcontrol_invalid			= Unable to determine postback control '{0}'.
-page_control_outofform					= Control '{0}' must be enclosed within TForm.
+page_control_outofform					= {0} '{1}' must be enclosed within TForm.
 page_head_duplicated					= A page can contain at most one THead.
 page_statepersister_invalid				= Page state persister must implement IPageStatePersister interface.
 
@@ -183,6 +184,7 @@ webcontrol_style_invalid				= {0}.Style must take string value only.
 listcontrol_selection_invalid			= {0} has an invalid selection that is set before performing databinding.
 listcontrol_selectedindex_invalid		= {0}.SelectedIndex has an invalid value {1}.
 listcontrol_selectedvalue_invalid		= {0}.SelectedValue has an invalid value '{1}'.
+listcontrol_expression_invalid			= {0} is evaluating an invalid expression '{1}' : {2}
 
 label_associatedcontrol_invalid			= TLabel.AssociatedControl '{0}' cannot be found.
 
@@ -196,7 +198,9 @@ tablestyle_cellpadding_invalid			= TTableStyle.CellPadding must take an integer 
 tablestyle_cellspacing_invalid			= TTableStyle.CellSpacing must take an integer equal to or greater than -1.
 
 pagestatepersister_pagestate_corrupted	= Page state is corrupted.
-pagestatepersister_privatekey_invalid	= TPageStatePersister.PrivateKey must take a string no shorter than 8 characters.
+
+sessionpagestatepersister_pagestate_corrupted = Page state is corrupted.
+sessionpagestatepersister_historysize_invalid = TSessionPageStatePersister.History must be an integer greater than 0.
 
 listitemcollection_item_invalid			= TListItemCollection can only take strings or TListItem objects.
 
@@ -226,6 +230,8 @@ basevalidator_validatable_required		= {0}.ControlToValidate must point to a cont
 basevalidator_forcontrol_unsupported	= {0}.ForControl is not supported.
 
 comparevalidator_controltocompare_invalid = TCompareValidator.ControlToCompare contains an invalid control ID path.
+
+tlistcontrolvalidator_invalid_control	= {0}.ControlToValidate contains an invalid TListControl ID path, "{1}" is a {2}.
 
 repeater_template_required				= TRepeater.{0} requires a template instance implementing ITemplate interface.
 datalist_template_required				= TDataList.{0} requires a template instance implementing ITemplate interface.
@@ -278,3 +284,13 @@ htmlarea_tarfile_invalid				= THtmlArea is unable to locate the TinyMCE tar file
 parametermodule_parameterfile_unchangeable = TParameterModule.ParameterFile is not changeable because the module is already initialized.
 parametermodule_parameterfile_invalid	= TParameterModule.ParameterFile '{0}' is invalid. Make sure it is in namespace format and the file extension is '.xml'.
 parametermodule_parameterid_required	= Parameter element must have 'id' attribute.
+
+datagridcolumn_expression_invalid		= {0} is evaluating an invalid expression '{1}' : {2}
+
+outputcache_duration_invalid			= {0}.Duration must be an integer no less than 0.
+
+stack_data_not_iterable					= TStack can only fetch data from an array or a traversable object.
+stack_empty								= TStack is empty.
+
+queue_data_not_iterable					= TQueue can only fetch data from an array or a traversable object.
+queue_empty								= TQueue is empty.

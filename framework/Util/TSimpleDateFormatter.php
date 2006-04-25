@@ -190,18 +190,20 @@ class TSimpleDateFormatter
 
 	/**
 	 * Parse the string according to the pattern.
-	 * @param string date string to parse
+	 * @param string|int date string or integer to parse
 	 * @return int date time stamp
 	 * @throws TInvalidDataValueException if date string is malformed.
 	 */
 	public function parse($value,$defaultToCurrentTime=true)
 	{
-		if(!is_string($value))
+		if(is_int($value))
+			return $value;
+		else if(!is_string($value))
 			throw new TInvalidDataValueException('date_to_parse_must_be_string', $value);
 
 		if(empty($this->pattern)) return time();
 
-		$date = $this->getDate(time());
+		$date = time();
 
 		if($this->length(trim($value)) < 1)
 			return $defaultToCurrentTime ? $date : null;
@@ -246,7 +248,8 @@ class TSimpleDateFormatter
 				if ($token=='y')    { $x=2;$y=4; }
 				$year = $this->getInteger($value,$i_val,$x,$y);
 				if(is_null($year))
-					throw new TInvalidDataValueException('Invalid year', $value);
+					return null;
+					//throw new TInvalidDataValueException('Invalid year', $value);
 				$i_val += strlen($year);
 				if(strlen($year) == 2)
 				{
@@ -264,7 +267,8 @@ class TSimpleDateFormatter
 									$this->length($token),2);
 				$iMonth = intval($month);
 				if(is_null($month) || $iMonth < 1 || $iMonth > 12 )
-					throw new TInvalidDataValueException('Invalid month', $value);
+					return null;
+					//throw new TInvalidDataValueException('Invalid month', $value);
 				$i_val += strlen($month);
 				$month = $iMonth;
 			}
@@ -274,14 +278,16 @@ class TSimpleDateFormatter
 									$this->length($token), 2);
 				$iDay = intval($day);
 				if(is_null($day) || $iDay < 1 || $iDay >31)
-					throw new TInvalidDataValueException('Invalid day', $value);
+					return null;
+					//throw new TInvalidDataValueException('Invalid day', $value);
 				$i_val += strlen($day);
 				$day = $iDay;
 			}
 			else
 			{
 				if($this->substring($value, $i_val, $this->length($token)) != $token)
-					throw new TInvalidDataValueException("Subpattern '{$this->pattern}' mismatch", $value);
+					return null;
+					//throw new TInvalidDataValueException("Subpattern '{$this->pattern}' mismatch", $value);
 				else
 					$i_val += $this->length($token);
 			}

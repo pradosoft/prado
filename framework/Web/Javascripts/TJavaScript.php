@@ -96,9 +96,16 @@ class TJavaScript
 	 * //expects the following javascript code
 	 * // {'onLoading':'doit','onComplete':'more'}
 	 * </code>
+	 * 
+	 * To pass raw javascript statements start strings with 
+	 * <tt>javascript:</tt>. E.g. 
+	 * <code>
+	 * $options['onLoading'] = "javascript:function(){ alert('hello'); }";
+	 * //outputs {'onLoading':function(){ alert('hello'); }}
+	 * </code>
 	 *
-	 * For higher complexity data structures use {@link jsonEncode} and {@link jsonDecode}
-	 * to serialize and unserialize.
+	 * For higher complexity data structures use {@link jsonEncode} and {@link
+	 * jsonDecode} to serialize and unserialize.
 	 *
 	 * @param mixed PHP variable to be encoded
 	 * @param boolean whether the output is a map or a list.
@@ -115,6 +122,8 @@ class TJavaScript
 				if(($first==='[' && $last===']') || ($first==='{' && $last==='}'))
 					return $value;
 			}
+			else if(strpos($value, 'javascript:')===0)
+				return substr($value,11);
 			return "'".self::quoteString($value)."'";
 		}
 		else if(is_bool($value))

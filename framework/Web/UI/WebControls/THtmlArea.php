@@ -315,7 +315,7 @@ class THtmlArea extends TTextBox
 		//default the variant to "en"
 		if(count($variants) == 0)
 		{
-			if($empty($culture))
+			if(empty($culture))
 				return 'en';
 			$variants[] = strtolower($culture);
 		}
