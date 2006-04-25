@@ -27,18 +27,6 @@ define('SOURCE_DIR',realpath(dirname(__FILE__).'/../../framework/Web/JavaScripts
  * The directory for storing compressed js files
  */
 define('TARGET_DIR',realpath(dirname(__FILE__).'/../../framework/Web/JavaScripts/js'));
-/**
- * Location of the perl JS doc generator.
- */
-define('JS_DOC', realpath(dirname(__FILE__).'/JSDoc/jsdoc.pl'));
-/**
- * Javascript documentation output directory.
- */
-define('DOC_OUTPUT_DIR', realpath(dirname(__FILE__).'/../../docs/Javascript'));
-/**
- * Javascript documentation build command
- */
-define('BUILD_DOC', sprintf('perl "%s" --no-sources -d "%s" ', JS_DOC, DOC_OUTPUT_DIR).'%s');
 
 if(SOURCE_DIR===false || TARGET_DIR===false)
 	die('Unable to determine the build path.');
@@ -166,18 +154,7 @@ foreach($libraries as $libFile => $sourceFiles)
 	echo "Saving file {$libFile}\n"; 
 	$builds++;
 }
-if(preg_match('/doc*/', $argv[1]))
-{
-	$files = "";
-	foreach($libraries as $lib)
-	{
-		foreach($lib as $source)
-			$files .= sprintf(' "%s/%s"', SOURCE_DIR, $source);
-	}
-	$command = sprintf(BUILD_DOC, $files);
-	system($command);
-}
-else if($builds > 0)	
+if($builds > 0)	
 	echo "\nJavascript build complete, {$builds} file(s) compressed.";
 else
 	echo "No files to build.";

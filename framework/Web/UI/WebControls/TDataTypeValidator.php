@@ -23,6 +23,7 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  * The following data types are supported:
  * - <b>Integer</b> A 32-bit signed integer data type.
  * - <b>Float</b> A double-precision floating point number data type.
+ * - <b>Currency</b> A decimal data type that can contain currency symbols.
  * - <b>Date</b> A date data type.
  * - <b>String</b> A string data type.
  * For <b>Date</b> type, the property {@link setDateFormat DateFormat}
@@ -45,13 +46,12 @@ class TDataTypeValidator extends TBaseValidator
 	}
 
 	/**
-	 * Sets the data type (Integer, Float, Date, String) that the values being
-	 * compared are converted to before the comparison is made.
+	 * Sets the data type (Integer, Float, Currency, Date, String) that the values being compared are converted to before the comparison is made.
 	 * @param string the data type
 	 */
 	public function setDataType($value)
 	{
-		$this->setViewState('DataType',TPropertyValue::ensureEnum($value,'Integer','Float','Date','String'),'String');
+		$this->setViewState('DataType',TPropertyValue::ensureEnum($value,'Integer','Float','Date','Currency','String'),'String');
 	}
 
 	/**
@@ -85,6 +85,8 @@ class TDataTypeValidator extends TBaseValidator
 				return preg_match('/^[-+]?[0-9]+$/',trim($value));
 			case 'Float':
 				return preg_match('/^[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?$/',trim($value));
+			case 'Currency':
+				return preg_match('/[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?$/',trim($value));
 			case 'Date':
 				$dateFormat = $this->getDateFormat();
 				if(strlen($dateFormat))

@@ -12,47 +12,45 @@
 </tr>
 
 <tr>
-	<td class="samplenote">Button Mode, pre-selected date</td>
+	<td class="samplenote">Button Mode</td>
 	<td class="sampleaction">
-		<com:TDatePicker Mode="Button" Date="20-10-2005"/>
+		<com:TDatePicker Mode="Button" />
 	</td>
 </tr>
 
 <tr>
 	<td class="samplenote">InputMode="DropDownList", custom DateFormat</td>
 	<td class="sampleaction">
-		<com:TDatePicker DateFormat="yyyy/MMM" InputMode="DropDownList"/>
+		<com:TDatePicker DateFormat="yyyy/MMMM" InputMode="DropDownList"/>
 	</td>
 </tr>
 
 <tr>
 	<td class="samplenote">InputMode="DropDownList", custom DateFormat, Culture</td>
 	<td class="sampleaction">
-		<com:TDatePicker DateFormat="MMM/yyyy" Culture="fr" InputMode="DropDownList"/>
+		<com:TDatePicker DateFormat="MM/yyyy" Culture="fr" InputMode="DropDownList"/>
 	</td>
 </tr>
 
 
 <tr>
-	<td class="samplenote">Custom DateFormat, culture, ImageButton mode, pre-selected date</td>
+	<td class="samplenote">Custom DateFormat, culture, ImageButton mode</td>
 	<td class="sampleaction">
-		<com:TDatePicker Mode="ImageButton" Culture="zh_CN" 
-			DateFormat="日期：yyyy年M月d日"  
-			Timestamp=<%= @strtotime("-1 year") %>/>
+		<com:TDatePicker Mode="ImageButton" Culture="zh_CN" DateFormat="日期：yyyy年M月d日"/>
 	</td>
 </tr>
 
 <tr>
 	<td class="samplenote">Custom DateFormat, DropDownList, pre-selected date set in as Text</td>
 	<td class="sampleaction">
-		<com:TDatePicker DateFormat="yyyy/MMMM/dd" Date="2005/05/15" InputMode="DropDownList"/>
+		<com:TDatePicker DateFormat="yyyy/MMMM/dd" Text="2005/05/15" InputMode="DropDownList"/>
 	</td>
 </tr>
 
 <tr>
 	<td class="samplenote">DropDownList, pre-selected date as integer</td>
 	<td class="sampleaction">
-		<com:TDatePicker InputMode="DropDownList" Timestamp=<%= @strtotime("-1 month") %>/>
+		<com:TDatePicker InputMode="DropDownList" Date=<%= @strtotime("-1 month") %>/>
 	</td>
 </tr>
 	

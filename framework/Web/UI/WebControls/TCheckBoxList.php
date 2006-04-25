@@ -47,7 +47,7 @@ Prado::using('System.Web.UI.WebControls.TCheckBox');
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingContainer, IPostBackDataHandler,  IValidatable
+class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingContainer, IPostBackDataHandler
 {
 	private $_repeatedControl;
 	private $_isEnabled;
@@ -381,16 +381,6 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 			$this->setTabIndex($tabIndex);
 		}
 	}
-	
-	/**
-	 * Returns the value to be validated.
-	 * This methid is required by IValidatable interface.
-	 * @return mixed the value of the property to be validated.
-	 */
-	public function getValidationPropertyValue()
-	{
-		return $this->getSelectedValue();
-	}	
 }
 
 ?>

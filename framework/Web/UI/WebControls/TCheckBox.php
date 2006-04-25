@@ -340,7 +340,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 		if($clientID!=='')
 			$writer->addAttribute('id',$clientID);
 		$writer->addAttribute('type','checkbox');
-		if(($value = $this->getValueAttribute()) !== '')
+		if(($value=$this->getValueAttribute())!=='')
 			$writer->addAttribute('value',$value);
 		if(($uniqueID=$this->getUniqueID())!=='')
 			$writer->addAttribute('name',$uniqueID);

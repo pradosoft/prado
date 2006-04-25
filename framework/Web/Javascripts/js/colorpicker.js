@@ -257,7 +257,7 @@ this.input.parentNode.appendChild(this.iePopUp);
 if(mode == "Full")
 this.initializeFullPicker();
 }
-this.show(mode);
+this.show();
 },
 show : function(type)
 {
@@ -276,7 +276,6 @@ Event.observe(document,"keydown", this._documentKeyDownEvent);
 this.showing = true;
 if(type == "Full")
 {
-this.observeMouseMovement();
 var color = Rico.Color.createFromHex(this.input.value);
 this.inputs.oldColor.style.backgroundColor = color.asHex();
 this.setColor(color,true);
@@ -293,11 +292,6 @@ this.element.style.display = "none";
 this.showing = false;
 Event.stopObserving(document.body, "click", this._documentClickEvent);
 Event.stopObserving(document,"keydown", this._documentKeyDownEvent); 
-if(this._observingMouseMove)
-{
-Event.stopObserving(document.body, "mousemove", this._onMouseMove);
-this._observingMouseMove = false;
-}
 }
 },
 keyPressed : function(event,type)
@@ -373,7 +367,7 @@ updateColor : function(color)
 {
 this.input.value = color.toString().toUpperCase();
 this.button.style.backgroundColor = color.toString();
-if(typeof(this.onChange) == "function")
+if(isFunction(this.onChange))
 this.onChange(color);
 },
 getFullPickerContainer : function(pickerID)
@@ -400,7 +394,7 @@ TD({className:'currentcolor',colSpan:2},
 this.inputs['currentColor'], this.inputs['oldColor'])),
 TR(null,
 TD(null,'H:'),
-TD(null,this.inputs['H'], '??')),
+TD(null,this.inputs['H'], '°')),
 TR(null,
 TD(null,'S:'),
 TD(null,this.inputs['S'], '%')),
@@ -469,39 +463,26 @@ this._onHueMouseDown = this.onHueMouseDown.bind(this);
 this._onMouseUp = this.onMouseUp.bind(this);
 this._onMouseMove = this.onMouseMove.bind(this);
 Event.observe(this.inputs.background, "mousedown", this._onColorMouseDown);
-Event.observe(this.inputs.selector, "mousedown", this._onColorMouseDown);
 Event.observe(this.inputs.hue, "mousedown", this._onHueMouseDown);
-Event.observe(this.inputs.slider, "mousedown", this._onHueMouseDown);
 Event.observe(document.body, "mouseup", this._onMouseUp);
-this.observeMouseMovement();
+Event.observe(document.body, "mousemove", this._onMouseMove);
 Event.observe(this.buttons.Cancel, "click", this.hide.bindEvent(this,this.options['Mode']));
 Event.observe(this.buttons.OK, "click", this.onOKClicked.bind(this));
-},
-observeMouseMovement : function()
-{
-if(!this._observingMouseMove)
-{
-Event.observe(document.body, "mousemove", this._onMouseMove);
-this._observingMouseMove = true;
-}
 },
 onColorMouseDown : function(ev)
 {
 this.isMouseDownOnColor = true;
 this.onMouseMove(ev);
-Event.stop(ev);
 },
 onHueMouseDown : function(ev)
 {
 this.isMouseDownOnHue = true;
 this.onMouseMove(ev);
-Event.stop(ev);
 },
 onMouseUp : function(ev)
 {
 this.isMouseDownOnColor = false;
 this.isMouseDownOnHue = false;
-Event.stop(ev);
 },
 onMouseMove : function(ev)
 {
@@ -509,7 +490,6 @@ if(this.isMouseDownOnColor)
 this.changeSV(ev);
 if(this.isMouseDownOnHue)
 this.changeH(ev);
-Event.stop(ev);
 },
 changeSV : function(ev)
 {
@@ -518,12 +498,9 @@ var py = Event.pointerY(ev);
 var pos = Position.cumulativeOffset(this.inputs.background);
 var x = this.truncate(px - pos[0],0,255); 
 var y = this.truncate(py - pos[1],0,255);
+var h = this.truncate(this.inputs.H.value,0,360)/360;
 var s = x/255;
 var b = (255-y)/255;
-var current_s = parseInt(this.inputs.S.value);
-var current_b = parseInt(this.inputs.V.value);
-if(current_s == parseInt(s*100) && current_b == parseInt(b*100)) return;
-var h = this.truncate(this.inputs.H.value,0,360)/360;
 var color = new Rico.Color();
 color.rgb = Rico.Color.HSBtoRGB(h,s,b);
 this.inputs.selector.style.left = x+"px";
@@ -537,9 +514,6 @@ var py = Event.pointerY(ev);
 var pos = Position.cumulativeOffset(this.inputs.background);
 var y = this.truncate(py - pos[1],0,255);
 var h = (255-y)/255;
-var current_h = this.truncate(this.inputs.H.value,0,360);
-current_h = current_h == 0 ? 360 : current_h;
-if(current_h == parseInt(h*360)) return;
 var s = parseInt(this.inputs.S.value)/100;
 var b = parseInt(this.inputs.V.value)/100;
 var color = new Rico.Color();

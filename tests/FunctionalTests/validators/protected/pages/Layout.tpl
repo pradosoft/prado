@@ -21,11 +21,6 @@
 		margin-top: 2em;
 		display: block;
 	}
-	.required
-	{
-		border: 1px solid red;
-		background-color: pink;
-	}
 	/*]]>*/
 	</style>
 </com:THead>

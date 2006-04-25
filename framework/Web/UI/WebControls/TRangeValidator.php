@@ -29,6 +29,7 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  * operation is performed. The following value types are supported:
  * - <b>Integer</b> A 32-bit signed integer data type.
  * - <b>Float</b> A double-precision floating point number data type.
+ * - <b>Currency</b> A decimal data type that can contain currency symbols.
  * - <b>Date</b> A date data type. The date format can be specified by
  *   setting {@link setDateFormat DateFormat} property, which must be recognizable
  *   by {@link TSimpleDateFormatter}. If the property is not set,
@@ -86,13 +87,13 @@ class TRangeValidator extends TBaseValidator
 	}
 
 	/**
-	 * Sets the data type (Integer, Float, Date, String) that the values being
-	 * compared are converted to before the comparison is made.
+	 * Sets the data type (Integer, Float, Currency, Date, String) that the values
+	 * being compared are converted to before the comparison is made.
 	 * @param string the data type
 	 */
 	public function setDataType($value)
 	{
-		$this->setViewState('DataType',TPropertyValue::ensureEnum($value,'Integer','Float','Date','String'),'String');
+		$this->setViewState('DataType',TPropertyValue::ensureEnum($value,'Integer','Float','Date','Currency','String'),'String');
 	}
 
 	/**
@@ -130,6 +131,8 @@ class TRangeValidator extends TBaseValidator
 				return $this->isValidInteger($value);
 			case 'Float':
 				return $this->isValidFloat($value);
+			case 'Currency':
+				return $this->isValidCurrency($value);
 			case 'Date':
 				return $this->isValidDate($value);
 			default:
@@ -173,6 +176,38 @@ class TRangeValidator extends TBaseValidator
 		if($maxValue!=='')
 			$valid=$valid && ($value<=floatval($maxValue));
 		return $valid;
+	}
+
+	/**
+	 * Determine if the value is a valid currency range,
+	 * @param string currency value
+	 * @return boolean true if within range.
+	 */
+	protected function isValidCurrency($value)
+	{
+		$minValue=$this->getMinValue();
+		$maxValue=$this->getMaxValue();
+
+		$valid=true;
+		$value = $this->getCurrencyValue($value);
+		if($minValue!=='')
+			$valid=$valid && ($value>= $this->getCurrencyValue($minValue));
+		if($maxValue!=='')
+			$valid=$valid && ($value<= $this->getCurrencyValue($minValue));
+		return $valid;
+	}
+
+	/**
+	 * Parse the string into a currency value, return the float value of the currency.
+	 * @param string currency as string
+	 * @return float currency value.
+	 */
+	protected function getCurrencyValue($value)
+	{
+		if(preg_match('/[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?/',$value,$matches))
+			return floatval($matches[0]);
+		else
+			return 0.0;
 	}
 
 	/**

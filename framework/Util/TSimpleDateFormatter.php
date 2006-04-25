@@ -190,20 +190,18 @@ class TSimpleDateFormatter
 
 	/**
 	 * Parse the string according to the pattern.
-	 * @param string|int date string or integer to parse
+	 * @param string date string to parse
 	 * @return int date time stamp
 	 * @throws TInvalidDataValueException if date string is malformed.
 	 */
 	public function parse($value,$defaultToCurrentTime=true)
 	{
-		if(is_int($value))
-			return $value;
-		else if(!is_string($value))
+		if(!is_string($value))
 			throw new TInvalidDataValueException('date_to_parse_must_be_string', $value);
 
 		if(empty($this->pattern)) return time();
 
-		$date = time();
+		$date = $this->getDate(time());
 
 		if($this->length(trim($value)) < 1)
 			return $defaultToCurrentTime ? $date : null;
