@@ -11,9 +11,12 @@ BUG: TWizard did not stop navigation upon a validation failure (Qiang)
 ENH: TButton, TImageButton and TLinkButton now implement IButtonControl interface (Qiang)
 ENH: TResponse::writeFile takes three additional parameters to allow sending memory data (Qiang)
 ENH: TButtonColumn can now be a column of image buttons (Qiang)
+ENH: Format string in classes extending TDataGridColumn can now evaluate an expression (Qiang)
+ENH: Format string in classes extending TListControl can now evaluate an expression (Qiang)
 CHG: Rewrote client-side javascript validators, check your client-side validation behaviour (Wei)
 CHG: Updated the javascript Prototype library, a few utilties functions REMOVED, may break your existing javascript code. (Wei)
 CHG: Build javascript without compression, only comments are removed. (Wei)
+NEW: TListControlValidator (Wei)
 
 Version 3.0RC2 April 16, 2006
 =============================
