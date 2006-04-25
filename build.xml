@@ -12,9 +12,10 @@
 <project name="prado" basedir="." default="dist">
 
   <property name="version" value="3.0.0"/>
-  <property name="state" value="RC1"/>
+  <property name="state" value=""/>
+  <property name="pear.state" value="stable"/>
   <property name="pkgname" value="${phing.project.name}-${version}${state}"/>
-  <property name="pkgname.pear" value="${pkgname}${state}-pear"/>
+  <property name="pkgname.pear" value="${pkgname}${pear.state}-pear"/>
   <property name="src.dir" value="framework"/>
   <property name="doc.dir" value="docs"/>
   <property name="build.base.dir" value="build"/>
@@ -36,6 +37,7 @@
   <property name="config.xsd" value="${doc.dir}/specs/config.xsd"/>
   <property name="codecoverage" value="false"/>
   <property name="zca" value="/usr/local/Zend/ZendStudioClient-5.1.0/bin/ZendCodeAnalyzer"/>
+  <property name="quickstart" value="${build.base.dir}/docs/prado3_quick_start.pdf"/>
 
   <taskdef name="phplint" classname="PhpLintTask" classpath="buildscripts/phing/tasks"/>
   <taskdef name="xmllint" classname="XmlLintTask" classpath="buildscripts/phing/tasks"/>
@@ -52,11 +54,11 @@
   <!--
       Various resource files in framework
   -->
-  <fileset dir="." id="res">
+  <fileset dir="." id="framework">
     <exclude name="${src.dir}/**/.svn"/>
-    <include name="${src.dir}/**/*.html"/>
-    <include name="${src.dir}/**/*.css"/>
-    <include name="${src.dir}/**/*.txt"/>
+    <exclude name="${src.dir}/**/*.bak"/>
+    <exclude name="${src.dir}/**/*~"/>
+    <include name="${src.dir}/**/*"/>
   </fileset>
 
   <!--
@@ -148,6 +150,13 @@
     <phpdoc title="PRADO ${version}${state} API Documentation" destdir="${doc.build.dir}" sourcepath="${src.dir}" output="HTML:Smarty:PHP"/>
   </target>
 
+  <target name="quickstart" description="Generate Quickstart PDF">
+    <delete file="${quickstart}"/>
+    <exec command="php build.php" dir="buildscripts/texbuilder" passthru="true"/>
+    <exec command="pdflatex prado3_quick_start.tex" dir="buildscripts/texbuilder" passthru="true"/>
+    <move file="buildscripts/texbuilder/prado3_quick_start.pdf" tofile="${quickstart}"/>
+  </target>
+
   <target name="test" description="Run unit tests">
     <echo>Preparing directory structure</echo>
     <delete dir="${reports.unit.dir}"/>
@@ -181,7 +190,7 @@
     </if>
 
     <echo>Running Unit Tests</echo>
-    <phpunit2 codecoverage="${codecoverage}" haltonfailure="true" haltonerror="true" printsummary="true">
+    <phpunit2 codecoverage="${codecoverage}" haltonfailure="false" haltonerror="false" printsummary="true">
       <batchtest>
         <fileset dir="${tests.dir}">
 	  <include name="**/*Test.php"/>
@@ -209,13 +218,12 @@
   <target name="build-standard-package">
     <echo>Building standard package...</echo>
     <copy todir="${build.src.dir}">
-      <fileset refid="src"/>
-      <fileset refid="res"/>
+      <fileset refid="framework"/>
       <fileset refid="docs"/>
       <fileset refid="misc"/>
       <fileset refid="demos"/>
       <fileset dir="${build.base.dir}">
-        <include name="docs/manual/**/*"/>
+        <include name="docs/**/*"/>
 	<include name="${prado.lite}"/>
       </fileset>
     </copy>

@@ -222,9 +222,10 @@ class THttpResponse extends TModule implements ITextWriter
 	 * @param string file name
 	 * @param string content to be set. If null, the content will be read from the server file pointed to by $fileName.
 	 * @param string mime type of the content.
+	 * @param array list of headers to be sent
 	 * @throws TInvalidDataValueException if the file cannot be found
 	 */
-	public function writeFile($fileName,$content=null,$mimeType=null)
+	public function writeFile($fileName,$content=null,$mimeType=null,$headers=null)
 	{
 		static $defaultMimeTypes=array(
 			'css'=>'text/css',
@@ -249,9 +250,17 @@ class THttpResponse extends TModule implements ITextWriter
 			}
 		}
 		$fn=basename($fileName);
-		header('Pragma: public');
-		header('Expires: 0');
-		header('Cache-Component: must-revalidate, post-check=0, pre-check=0');
+		if(is_array($headers))
+		{
+			foreach($headers as $h)
+				header($h);
+		}
+		else
+		{
+			header('Pragma: public');
+			header('Expires: 0');
+			header('Cache-Component: must-revalidate, post-check=0, pre-check=0');
+		}
 		header("Content-type: $mimeType");
 		header('Content-Length: '.($content===null?filesize($fileName):strlen($content)));
 		header("Content-Disposition: attachment; filename=\"$fn\"");

@@ -1,0 +1,33 @@
+<com:TContent ID="Content">
+	<h1>Data Type Validator Tests</h1>
+	Integer test.
+	<com:TTextBox ID="textbox1" />
+	<com:TDataTypeValidator ID="validator1" 
+		ControlToValidate="textbox1"
+		DataType="Integer" 
+		ErrorMessage="Please enter an integer." />
+	
+	<hr />
+	
+	Float test.
+	<com:TTextBox ID="textbox2" />
+	<com:TDataTypeValidator ID="validator2" 
+		ControlToValidate="textbox2"
+		DataType="Float" 
+		ErrorMessage="Please enter float value." />
+	
+	<hr />
+	
+	Date Test
+	<com:TTextBox ID="textbox3" />
+	<com:TDataTypeValidator ID="validator3" 
+		ControlToValidate="textbox3"
+		DataType="Date"
+		DateFormat="d/M/yyyy" 
+		ErrorMessage="Please enter a date d/M/yyyy." />
+
+	<hr />
+	
+	<com:TButton ID="button1" Text="submit!" />
+		
+</com:TContent>

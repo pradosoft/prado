@@ -4,6 +4,7 @@
 /UPGRADE -text
 /build.xml -text
 buildscripts/.htaccess -text
+buildscripts/jsbuilder/JavaScript[!!-~]Documentation[!!-~]Tool.html -text
 buildscripts/jsbuilder/build.php -text
 buildscripts/phing/style/coverage-frames.xsl -text
 buildscripts/phing/style/log.xsl -text
@@ -16,7 +17,6 @@ buildscripts/phing/tasks/ZendCodeAnalyzerTask.php -text
 buildscripts/phpbuilder/build.php -text
 buildscripts/setup.php -text
 buildscripts/texbuilder/build.php -text
-buildscripts/texbuilder/prado3_quick_start.pdf -text
 buildscripts/texbuilder/prado3_quick_start.tex -text
 demos/composer/index.php -text
 demos/composer/index2.php -text
@@ -977,6 +977,7 @@ framework/Web/UI/WebControls/TLabel.php -text
 framework/Web/UI/WebControls/TLinkButton.php -text
 framework/Web/UI/WebControls/TListBox.php -text
 framework/Web/UI/WebControls/TListControl.php -text
+framework/Web/UI/WebControls/TListControlValidator.php -text
 framework/Web/UI/WebControls/TLiteral.php -text
 framework/Web/UI/WebControls/TMultiView.php -text
 framework/Web/UI/WebControls/TOutputCache.php -text
@@ -1160,12 +1161,15 @@ tests/FunctionalTests/validators/protected/pages/CheckBox.php -text
 tests/FunctionalTests/validators/protected/pages/CompareValidator.page -text
 tests/FunctionalTests/validators/protected/pages/CustomValidator.page -text
 tests/FunctionalTests/validators/protected/pages/CustomValidator.php -text
+tests/FunctionalTests/validators/protected/pages/DataTypeValidator.page -text
+tests/FunctionalTests/validators/protected/pages/DatePicker.page -text
 tests/FunctionalTests/validators/protected/pages/ImageButton.page -text
 tests/FunctionalTests/validators/protected/pages/ImageButton.php -text
 tests/FunctionalTests/validators/protected/pages/Layout.php -text
 tests/FunctionalTests/validators/protected/pages/Layout.tpl -text
 tests/FunctionalTests/validators/protected/pages/LinkButton.page -text
 tests/FunctionalTests/validators/protected/pages/LinkButton.php -text
+tests/FunctionalTests/validators/protected/pages/ListControl.page -text
 tests/FunctionalTests/validators/protected/pages/RangeValidatorDate.page -text
 tests/FunctionalTests/validators/protected/pages/RangeValidatorFloat.page -text
 tests/FunctionalTests/validators/protected/pages/RangeValidatorInteger.page -text
@@ -1179,8 +1183,10 @@ tests/FunctionalTests/validators/tests/ButtonTestCase.php -text
 tests/FunctionalTests/validators/tests/CheckBoxTestCase.php -text
 tests/FunctionalTests/validators/tests/CompareValidatorTestCase.php -text
 tests/FunctionalTests/validators/tests/CustomValidatorTestCase.php -text
+tests/FunctionalTests/validators/tests/DatePickerTestCase.php -text
 tests/FunctionalTests/validators/tests/ImageButtonTestCase.php -text
 tests/FunctionalTests/validators/tests/LinkButtonTestCase.php -text
+tests/FunctionalTests/validators/tests/ListControlTestCase.php -text
 tests/FunctionalTests/validators/tests/RangeValidatorTestCase.php -text
 tests/FunctionalTests/validators/tests/RegExpValidatorTestCase.php -text
 tests/FunctionalTests/validators/tests/RequiredFieldTestCase.php -text

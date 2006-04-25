@@ -1,10 +1,41 @@
 Prado.WebUI.TDatePicker = Class.create();
+Object.extend(Prado.WebUI.TDatePicker,
+{
+getDropDownDate : function(control)
+{
+var now=new Date();
+var year=now.getFullYear();
+var month=now.getMonth();
+var day=1;
+var month_list = this.getMonthListControl(control);
+ var day_list = this.getDayListControl(control);
+ var year_list = this.getYearListControl(control);
+var day = day_list ? $F(day_list) : 1;
+var month = month_list ? $F(month_list) : now.getMonth();
+var year = year_list ? $F(year_list) : now.getFullYear();
+return new Date(year,month,day, 0, 0, 0);
+},
+getYearListControl : function(control)
+{
+return $(control.id+"_year");
+},
+getMonthListControl : function(control)
+{
+return $(control.id+"_month");
+},
+getDayListControl : function(control)
+{
+return $(control.id+"_day");
+}
+});
 Prado.WebUI.TDatePicker.prototype = 
 {
 MonthNames : ["January","February","March","April",
 "May","June","July","August",
 "September","October","November","December"
 ],
+AbbreviatedMonthNames : ["Jan", "Feb", "Mar", "Apr", "May", 
+"Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
 ShortWeekDayNames : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
 Format : "yyyy-MM-dd",
 FirstDayOfWeek : 1,
@@ -138,7 +169,7 @@ this._calDiv.appendChild(div);
 var todayButton = document.createElement("button");
 todayButton.className = "todayButton";
 var today = this.newDate();
-var buttonText = today.SimpleFormat(this.Format);
+var buttonText = today.SimpleFormat(this.Format,this);
 todayButton.appendChild(document.createTextNode(buttonText));
 div.appendChild(todayButton);
 if(Prado.Browser().ie)
@@ -292,20 +323,27 @@ var m = d.getMonth() + n;
 this.setMonth(m);
 return false;
 },
-onchange : function() 
+onChange : function() 
 {
 if(this.options.InputMode == "TextBox")
+{
 this.control.value = this.formatDate();
+Event.fireEvent(this.control, "change");
+}
 else
 {
-var day = $(this.options.ID+"_day");
-var month = $(this.options.ID+"_month");
-var year = $(this.options.ID+"_year");
+var day = Prado.WebUI.TDatePicker.getDayListControl(this.control);
+var month = Prado.WebUI.TDatePicker.getMonthListControl(this.control);
+var year = Prado.WebUI.TDatePicker.getYearListControl(this.control);
 var date = this.selectedDate;
 if(day)
+{
 day.selectedIndex = date.getDate()-1;
+}
 if(month)
+{
 month.selectedIndex = date.getMonth();
+}
 if(year)
 {
 var years = year.options;
@@ -313,17 +351,18 @@ var currentYear = date.getFullYear();
 for(var i = 0; i < years.length; i++)
 years[i].selected = years[i].value.toInteger() == currentYear;
 }
+Event.fireEvent(day || month || year, "change");
 }
 },
 formatDate : function()
 {
-return this.selectedDate ? this.selectedDate.SimpleFormat(this.Format) : '';
+return this.selectedDate ? this.selectedDate.SimpleFormat(this.Format,this) : '';
 },
 newDate : function(date)
 {
 if(!date)
 date = new Date();
-if(isString(date)|| isNumber(date))
+if(typeof(date) == "string" || typeof(date) == "number")
 date = new Date(date);
 return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0,0,0);
 },
@@ -334,8 +373,8 @@ return;
 this.selectedDate = this.newDate(date);
 this.updateHeader();
 this.update();
-if (isFunction(this.onchange))
-this.onchange();
+if (typeof(this.onChange) == "function")
+this.onChange();
 },
 getElement : function() 
 {
@@ -343,7 +382,7 @@ return this._calDiv;
 },
 getSelectedDate : function () 
 {
-return isNull(this.selectedDate) ? null : this.newDate(this.selectedDate);
+return this.selectedDate == null ? null : this.newDate(this.selectedDate);
 },
 setYear : function(year) 
 {
@@ -374,8 +413,9 @@ if(this.options.InputMode == "TextBox")
 pos[1] += this.control.offsetHeight;
 else
 {
-if($(this.options.ID+"_day"))
-pos[1] += $(this.options.ID+"_day").offsetHeight-1;
+var dayList = Prado.WebUI.TDatePicker.getDayListControl(this.control);
+if(dayList)
+pos[1] += dayList.offsetHeight-1;
 }
 this._calDiv.style.display = "block";
 this._calDiv.style.top = (pos[1]-1) + "px";
@@ -385,7 +425,7 @@ this.documentClickEvent = this.hideOnClick.bindEvent(this);
 this.documentKeyDownEvent = this.keyPressed.bindEvent(this);
 Event.observe(document.body, "click", this.documentClickEvent);
 var date = this.getDateFromInput();
-if(!isNull(date))
+if(date)
 {
 this.selectedDate = date;
 this.setSelectedDate(date);
@@ -399,20 +439,7 @@ getDateFromInput : function()
 if(this.options.InputMode == "TextBox")
 return Date.SimpleParse($F(this.control), this.Format);
 else
-{
-var now=new Date();
-var year=now.getFullYear();
-var month=now.getMonth();
-var date=1;
-if($(this.options.ID+"_day"))
-day = $F(this.options.ID+"_day");
-if($(this.options.ID+"_month"))
-month = $F(this.options.ID+"_month");
-if($(this.options.ID+"_year"))
-year = $F(this.options.ID+"_year");
-var newdate=new Date(year,month,day, 0, 0, 0);
-return newdate;
-}
+return Prado.WebUI.TDatePicker.getDropDownDate(this.control);
 },
 hideOnClick : function(ev)
 {
@@ -484,7 +511,10 @@ this.dateSlot[index].data.parentNode.className = "empty";
 },
 hover : function(ev)
 {
-Element.condClassName(Event.element(ev), "hover", ev.type=="mouseover");
+if(ev.type == "mouseover")
+Event.element(ev).addClassName("hover");
+else
+Event.element(ev).removeClassName("hover");
 },
 updateHeader : function () {
 var options = this._monthSelect.options;

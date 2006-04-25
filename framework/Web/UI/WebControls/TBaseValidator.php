@@ -131,6 +131,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	protected function getClientScriptOptions()
 	{
+		$control = $this->getValidationTarget();
 		$options['ID'] = $this->getClientID();
 		$options['FormID'] = $this->getPage()->getForm()->getClientID();
 		$options['Display'] = $this->getDisplay();
@@ -141,8 +142,9 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			$options['FocusElementID'] = $this->getFocusElementID();
 		}
 		$options['ValidationGroup'] = $this->getValidationGroup();
-		$options['ControlToValidate'] = $this->getValidationTarget()->getClientID();
+		$options['ControlToValidate'] = $control->getClientID();
 		$options['ControlCssClass'] = $this->getControlCssClass();
+		$options['ControlType'] = get_class($control);
 		return $options;
 	}
 
@@ -163,7 +165,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			$manager['FormID'] = $formID;
 			$options = TJavaScript::encode($manager); 
 			$scripts->registerPradoScript('validator');
-			$scripts->registerEndScript($scriptKey, "new Prado.Validation({$options});");
+			$scripts->registerEndScript($scriptKey, "new Prado.ValidationManager({$options});");
 		}
 		if($this->getEnableClientScript())
 			$this->registerClientScriptValidator();
