@@ -101,14 +101,14 @@ class TRadioButton extends TCheckBox
 		$this->setViewState('GroupName',$value,'');
 	}
 
-	protected function getValueAttribute()
+/*	protected function getValueAttribute()
 	{
 		if(($value=parent::getValueAttribute())==='')
 			return $this->getUniqueID();
 		else
 			return $value;
 	}
-
+*/
 	/**
 	 * @return string the name used to fetch radiobutton post data
 	 */
@@ -146,7 +146,8 @@ class TRadioButton extends TCheckBox
 			$writer->addAttribute('id',$clientID);
 		$writer->addAttribute('type','radio');
 		$writer->addAttribute('name',$this->getUniqueGroupName());
-		$writer->addAttribute('value',$this->getValueAttribute());
+		if(($value =  $this->getValueAttribute()) !== '')
+			$writer->addAttribute('value',$value);
 		if($this->getChecked())
 			$writer->addAttribute('checked','checked');
 		if(!$this->getEnabled(true))

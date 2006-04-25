@@ -21,6 +21,9 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  * TRequiredFieldValidator makes the associated input control a required field.
  * The input control fails validation if its value does not change from
  * the {@link setInitialValue InitialValue} property upon losing focus.
+ * 
+ * Validation will also succeed if input is of TListControl type and the number
+ * of selected values different from the initial value is greater than zero.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -53,12 +56,32 @@ class TRequiredFieldValidator extends TBaseValidator
 	 * This method overrides the parent's implementation.
 	 * The validation succeeds if the input component changes its data
 	 * from the {@link getInitialValue InitialValue} or the input control is not given.
+	 * 
+	 * Validation will also succeed if input is of TListControl type and the
+	 * number of selected values different from the initial value is greater
+	 * than zero.
+	 * 
 	 * @return boolean whether the validation succeeds
 	 */
 	protected function evaluateIsValid()
 	{
-		$value=$this->getValidationValue($this->getValidationTarget());
-		return trim($value)!==trim($this->getInitialValue()) || (is_bool($value) && $value);
+		$control = $this->getValidationTarget();
+		$initial = trim($this->getInitialValue());
+		if($control instanceof TListControl)
+		{
+			$count = 0;
+			foreach($control->getItems() as $item)
+			{
+				if($item->getSelected() && $item->getValue() != $initial)
+					$count++;
+			}
+			return $count > 0;
+		}
+		else
+		{
+			$value=$this->getValidationValue($control);
+			return trim($value)!==$initial || (is_bool($value) && $value);
+		}
 	}
 
 	/**
@@ -69,6 +92,9 @@ class TRequiredFieldValidator extends TBaseValidator
 	{
 		$options = parent::getClientScriptOptions();
 		$options['InitialValue']=$this->getInitialValue();
+		$control = $this->getValidationTarget();
+		if($control instanceof TListControl)
+			$options['TotalItems'] = $control->getItemCount();
 		return $options;
 	}
 }

@@ -1,0 +1,58 @@
+<com:TContent ID="Content">
+	<h1>List Control Required Field Validation Test</h1>	
+	<com:TCheckBoxList ID="list1">
+		<com:TListItem Text="Select a color below" Value="" />
+		<com:TListItem Text="Red" />
+		<com:TListItem Text="Blue" />
+		<com:TListItem Text="Green" />
+	</com:TCheckBoxList>
+	
+	<com:TRequiredFieldValidator ID="validator1"
+		ControlToValidate="list1"
+		InitialValue="Select a color below"
+		ErrorMessage="*" />
+	
+	<hr />
+	
+	<com:TDropDownList ID="list2">
+		<com:TListItem Text="--- Select a color ---" />
+		<com:TListItem Text="Red" />
+		<com:TListItem Text="Blue" />
+		<com:TListItem Text="Green" />
+	</com:TDropDownList>
+	
+	<com:TRequiredFieldValidator ID="validator2"
+		ControlToValidate="list2"
+		InitialValue="--- Select a color ---"
+		ErrorMessage="*" />
+	
+	<hr />
+	
+	<com:TListBox ID="list3">
+		<com:TListItem Text="Don't select this one" />
+		<com:TListItem Text="Red" />
+		<com:TListItem Text="Blue" />
+		<com:TListItem Text="Green" />
+	</com:TListBox>
+	
+	<com:TRequiredFieldValidator ID="validator3"
+		ControlToValidate="list3"
+		InitialValue="Don't select this one"
+		ErrorMessage="*" />
+	
+	<hr />
+	
+	<com:TRadioButtonList ID="list4">
+		<com:TListItem Text="Select something else" />
+		<com:TListItem Text="Red" />
+		<com:TListItem Text="Blue" />
+		<com:TListItem Text="Green" />
+	</com:TRadioButtonList>
+	
+	<com:TRequiredFieldValidator ID="validator4"
+		ControlToValidate="list4"
+		InitialValue="Select something else"
+		ErrorMessage="*" />
+	
+	<com:TButton ID="submit1" Text="Submit!" />
+</com:TContent>

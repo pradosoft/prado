@@ -1299,9 +1299,10 @@ element.dispatchEvent(event);
 else if(element.fireEvent)
 {
 element.fireEvent('on'+type);
+if(element[type])
 element[type]();
 }
-else
+else if(element[type])
 element[type]();
 }
 });
@@ -1868,9 +1869,9 @@ lastFocus.value = options['EventTarget'];
 }
 $('PRADO_POSTBACK_TARGET').value = options['EventTarget'];
 $('PRADO_POSTBACK_PARAMETER').value = options['EventParameter'];
-Event.fireEvent(form,"submit");
 if(options['StopEvent']) 
 Event.stop(event);
+Event.fireEvent(form,"submit");
 }
 Prado.Element = 
 {

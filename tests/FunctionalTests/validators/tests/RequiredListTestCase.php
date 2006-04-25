@@ -5,35 +5,36 @@ class RequiredListTestCase extends SeleniumTestCase
 	
 	function test()
 	{
+		$base = "ctl0_Content_";
 		$this->open("validators/index.php?page=RequiredListValidator");
 		$this->assertLocation("index.php?page=RequiredListValidator");
-		$this->click("submit1");
-		$this->assertVisible("validator1");
-		$this->assertVisible("validator2");
-		$this->assertVisible("validator3");
-		$this->click("list1:0");
-		$this->select("list2", "label=One");
-		$this->select("list2", "label=Two");
-		$this->click("list3:3");
-		$this->clickAndWait("submit1");
-		$this->assertNotVisible("validator1");
-		$this->assertNotVisible("validator2");
-		$this->assertNotVisible("validator3");
-		$this->click("list1:1"); 	 
-		$this->click("list1:2"); 	 
-		$this->click("list1:3"); 	 
-		$this->select("list2", "label=Two");
-		$this->click("list1:3"); 	 
-		$this->click("submit1"); 		
-		$this->assertNotVisible("validator1");
-		$this->assertNotVisible("validator2");		
-		$this->assertNotVisible("validator3");
-		$this->click("list3:3");
-		$this->click("submit1"); 		
+		$this->click("{$base}submit1");
+		$this->assertVisible("{$base}validator1");
+		$this->assertVisible("{$base}validator2");
+		$this->assertVisible("{$base}validator3");
+		$this->click("{$base}list1_0");
+		$this->select("{$base}list2", "label=One");
+		$this->select("{$base}list2", "label=Two");
+		$this->click("{$base}list3_3");
+		$this->clickAndWait("{$base}submit1");
+		$this->assertNotVisible("{$base}validator1");
+		$this->assertNotVisible("{$base}validator2");
+		$this->assertNotVisible("{$base}validator3");
+		$this->click("{$base}list1_1"); 	 
+		$this->click("{$base}list1_2"); 	 
+		$this->click("{$base}list1_3"); 	 
+		$this->select("{$base}list2", "label=Two");
+		$this->click("{$base}list1_3"); 	 
+		$this->click("{$base}submit1"); 		
+		$this->assertNotVisible("{$base}validator1");
+		$this->assertNotVisible("{$base}validator2");		
+		$this->assertNotVisible("{$base}validator3");
+		$this->click("{$base}list3_3");
+		$this->click("{$base}submit1"); 		
 		$this->pause(200);
-		$this->assertNotVisible("validator1");
-		$this->assertNotVisible("validator2");		
-		$this->assertVisible("validator3");
+		$this->assertNotVisible("{$base}validator1");
+		$this->assertNotVisible("{$base}validator2");		
+		$this->assertNotVisible("{$base}validator3");
 	}
 }
 
