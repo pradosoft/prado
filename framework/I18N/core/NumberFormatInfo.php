@@ -324,6 +324,13 @@ class NumberFormatInfo
 				}
 			}
 		}
+		
+		if(is_int($decimalPos))
+			$digitPattern = substr($pattern,0,$decimalPos);
+		else
+			$digitPattern  = $pattern;
+		
+		$digitPattern  = preg_replace('/[^0]/','',$digitPattern);
 
 		$info['groupPos1'] = $groupPos1;
 		$info['groupSize1'] = $groupSize1;
@@ -331,6 +338,7 @@ class NumberFormatInfo
 		$info['groupSize2'] = $groupSize2;
 		$info['decimalPos'] = $decimalPos;
 		$info['decimalPoints'] = $decimalPoints;
+		$info['digitSize'] = strlen($digitPattern);
 		return $info;
 	}
 	
@@ -363,6 +371,16 @@ class NumberFormatInfo
     function setDecimalDigits($value)
     {
     	return $this->pattern['decimalPoints'] = $value;
+    }
+    
+    function getDigitSize()
+    {
+    	return $this->pattern['digitSize'];
+    }
+    
+    function setDigitSize($value)
+    {
+    	$this->pattern['digitSize'] = $value;
     }
     
     /**

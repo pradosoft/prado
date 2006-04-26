@@ -26,14 +26,19 @@ Validators share a common set of properties, which are defined in the base class
     <li><tt>Dynamic</tt> - the space for displaying the error message is NOT reserved. Therefore, showing up the error message will shift the layout of your page around (usually down).</li>
     </ul>
 </li>
+<li><tt>ControlCssClass</tt> - the Css class that is applied to the control being validated in case the validation fails.</li>
+<li><tt>FocusOnError</tt> - set focus at the validating place if the validation fails. Defaults to false.</li>
+<li><tt>FocusElementID</tt> - the ID of the HTML element that will receive focus if validation fails and <tt>FocusOnError</tt> is true.</li>
 </ul>
 
+<a name="TRequiredFieldValidator"></a>
 <h2>TRequiredFieldValidator</h2>
 <p>
 TRequiredFieldValidator ensures that the user enters some data in the specified input field. By default, TRequiredFieldValidator will check if the user input is empty or not. The validation fails if the input is empty. By setting <tt>InitialValue</tt>, the validator can check if the user input is different from <tt>InitialValue</tt>. If not, the validation fails.
 </p>
 <com:RunBar PagePath="Controls.Samples.TRequiredFieldValidator.Home" />
 
+<a name="TRegularExpressionValidator"></a>
 <h2>TRegularExpressionValidator</h2>
 <p>
 TRegularExpressionValidator verifies the user input against a regular pattern. The validation fails if the input does not match the pattern. The regular expression can be specified by the <tt>RegularExpression</tt> property. Some commonly used regular expressions include:
@@ -58,7 +63,7 @@ Note, TRegularExpressionValidator only checks for nonempty user input. Use a TRe
 </p>
 <com:RunBar PagePath="Controls.Samples.TRegularExpressionValidator.Home" />
 
-<h2>TEmailAddressValidator</h2>
+<h2 id="TEmailAddressValidator">TEmailAddressValidator</h2>
 <p>
 TEmailAddressValidator verifies that the user input is a valid email address. The validator uses a regular expression to check if the input is in a valid email address format. If <tt>CheckMXRecord</tt> is true, the validator will also check whether the MX record indicated by the email address is valid, provided <tt>checkdnsrr()</tt> is available in the installed PHP.
 </p>
@@ -66,7 +71,8 @@ TEmailAddressValidator verifies that the user input is a valid email address. Th
 Note, if the input being validated is empty, TEmailAddressValidator will not do validation. Use a TRequiredFieldValidator to ensure the value is not empty.
 </p>
 <com:RunBar PagePath="Controls.Samples.TEmailAddressValidator.Home" />
-
+	
+<a name="TCompareValidator"></a>
 <h2>TCompareValidator</h2>
 <p>
 TCompareValidator compares the user input with a constant value specified by <tt>ValueToCompare</tt>, or another user input specified by <tt>ControlToCompare</tt>. The <tt>Operator</tt> property specifies how to compare the values, which includes <tt>Equal</tt>, <tt>NotEqual</tt>, <tt>GreaterThan</tt>, <tt>GreaterThanEqual</tt>, <tt>LessThan</tt> and <tt>LessThanEqual</tt>. Before comparison, the values being compared will be converted to the type specified by <tt>DataType</tt> listed as follows,
@@ -75,26 +81,40 @@ TCompareValidator compares the user input with a constant value specified by <tt
 <li><tt>String</tt> - A string data type.</li>
 <li><tt>Integer</tt> - A 32-bit signed integer data type.</li>
 <li><tt>Float</tt> - A double-precision floating point number data type.</li>
-<li><tt>Currency</tt> - A decimal data type that can contain currency symbols.</li>
 <li><tt>Date</tt> - A date data type. The date format can be specified by setting <tt>DateFormat</tt> property, which must be recognizable by <tt>TSimpleDateFormatter</tt>. If the property is not set, the GNU date syntax is assumed.</li>
 </ul>
 <p>
 Note, if the input being validated is empty, TEmailAddressValidator will not do validation. Use a TRequiredFieldValidator to ensure the value is not empty.
 </p>
+<p>
+<b>N.B.</b> If validating against a <a href="?page=Controls.DatePicker">TDatePicker</a> the <tt>DataType</tt> must be equal to "Date" and the <tt>DateFormat</tt> property of the validator must be equal to the <tt>DateFormat</tt> of the <a href="?page=Controls.DatePicker">TDatePicker</a>.
+</p>
 <com:RunBar PagePath="Controls.Samples.TCompareValidator.Home" />
 
+<a name="TDataTypeValidator"></a>
 <h2>TDataTypeValidator</h2>
 <p>
 TDataTypeValidator verifies if the input data is of specific type indicated by <tt>DataType</tt>. The data types that can be checked against are the same as those in TCompareValidator.
 </p>
+<p>
+<b>N.B.</b> If validating against a <a href="?page=Controls.DatePicker">TDatePicker</a> the <tt>DataType</tt> must be equal to "Date" and the <tt>DateFormat</tt> property of the validator must be equal to the <tt>DateFormat</tt> of the <a href="?page=Controls.DatePicker">TDatePicker</a>.
+</p>
+
+
 <com:RunBar PagePath="Controls.Samples.TDataTypeValidator.Home" />
 
+<a name="TRangeValidator"></a>
 <h2>TRangeValidator</h2>
 <p>
 TRangeValidator verifies whether an input value is within a specified range. TRangeValidator uses three key properties to perform its validation. The <tt>MinValue</tt> and <tt>MaxValue</tt> properties specify the minimum and maximum values of the valid range. The <tt>DataType</tt> property specifies the data type of the value being validated. The value will be first converted into the specified type and then compare with the valid range. The data types that can be checked against are the same as those in TCompareValidator.
 </p>
+<p>
+<b>N.B.</b> If validating against a <a href="?page=Controls.DatePicker">TDatePicker</a> the <tt>DataType</tt> must be equal to "Date" and the <tt>DateFormat</tt> property of the validator must be equal to the <tt>DateFormat</tt> of the <a href="?page=Controls.DatePicker">TDatePicker</a>.
+</p>
+
 <com:RunBar PagePath="Controls.Samples.TRangeValidator.Home" />
 
+<a name="TCustomValidator"></a>
 <h2>TCustomValidator</h2>
 <p>
 TCustomValidator performs user-defined validation (either server-side or client-side or both) on an input control.
@@ -118,7 +138,7 @@ function ValidationFunctionName(sender, parameter)
 </com:TTextHighlighter>
 <com:RunBar PagePath="Controls.Samples.TCustomValidator.Home" />
 
-
+<a name="TValidationSummary"></a>
 <h2>TValidationSummary</h2>
 <p>
 TValidationSummary displays a summary of validation errors inline on a Web page, in a message box, or both.

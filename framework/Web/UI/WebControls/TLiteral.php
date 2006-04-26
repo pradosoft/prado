@@ -15,10 +15,13 @@
  *
  * TLiteral displays a static text on the Web page.
  * TLiteral is similar to the TLabel control, except that the TLiteral
- * control does not allow child controls and do not have style properties (e.g. BackColor, Font, etc.)
+ * control does not have style properties (e.g. BackColor, Font, etc.)
  * You can programmatically control the text displayed in the control by setting
  * the {@link setText Text} property. The text displayed may be HTML-encoded
  * if the {@link setEncode Encode} property is set true (defaults to false).
+ *
+ * TLiteral will render the contents enclosed within its component tag
+ * if {@link setText Text} is empty.
  *
  * Note, if {@link setEncode Encode} is false, make sure {@link setText Text}
  * does not contain unwanted characters that may bring security vulnerabilities.
@@ -76,6 +79,8 @@ class TLiteral extends TControl
 			else
 				$writer->write($text);
 		}
+		else
+			parent::renderContents($writer);
 	}
 }
 

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * TListControlValidator class file
  *
@@ -10,7 +9,7 @@
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
  */
- 
+
 /**
  * Using TBaseValidator class
  */
@@ -18,9 +17,9 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
 
 /**
  * TListControlValidator class.
- * 
+ *
  * TListControlValidator checks the number of selection and their values
- * for a <b>TListControl that allows multiple selection</b>. 
+ * for a <b>TListControl that allows multiple selection</b>.
  *
  * You can specify the minimum or maximum (or both) number of selections
  * required using the {@link setMinSelection MinSelection} and
@@ -37,9 +36,9 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  *		<com:TListItem Text="item3" Value="value3" />
  *	</com:TListBox>
  *
- *	<com:TRequiredListValidator 
+ *	<com:TRequiredListValidator
  *		ControlToValidate="listbox"
- *		MinSelection="2" 
+ *		MinSelection="2"
  *		ErrorMessage="Please select at least 2" />
  * </code>
  * - "value1" must be selected <b>and</b> at least 1 other
@@ -47,14 +46,14 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  *	<com:TCheckBoxList ID="checkboxes">
  *		<com:TListItem Text="item1" Value="value1" />
  *		<com:TListItem Text="item2" Value="value2" />
- *		<com:TListItem Text="item3" Value="value3" />		
+ *		<com:TListItem Text="item3" Value="value3" />
  *	</com:TCheckBoxList>
  *
- *	<com:TRequiredListValidator 
+ *	<com:TRequiredListValidator
  *		ControlToValidate="checkboxes"
  *		RequiredSelections="value1"
  *		MinSelection="2"
- *		ErrorMessage="Please select 'item1' and at least 1 other" /> 
+ *		ErrorMessage="Please select 'item1' and at least 1 other" />
  * </code>
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail.com>
@@ -63,112 +62,115 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  * @since 3.0
  */
 class TListControlValidator extends TBaseValidator
-{	
+{
 	/**
-	 * @return int min number of selections 
+	 * @return integer min number of selections. Defaults to -1, meaning not set.
 	 */
-	function getMinSelection()
+	public function getMinSelection()
 	{
-		return $this->getViewState('MinSelection','');
+		return $this->getViewState('MinSelection',-1);
 	}
-	
+
 	/**
-	 * @param int minimum number of selections.
+	 * @param integer minimum number of selections.
 	 */
-	function setMinSelection($value)
+	public function setMinSelection($value)
 	{
-		$this->setViewState('MinSelection',$value,'');
+		if(($value=TPropertyValue::ensureInteger($value))<0)
+			$value=-1;
+		$this->setViewState('MinSelection',$value,-1);
 	}
-	
+
 	/**
-	 * @return int max number of selections 
+	 * @return integer max number of selections.  Defaults to -1, meaning not set.
 	 */
-	function getMaxSelection()
+	public function getMaxSelection()
 	{
-		return $this->getViewState('MaxSelection','');
+		return $this->getViewState('MaxSelection',-1);
 	}
-	
+
 	/**
-	 * @param int max number of selections.
-	 */	
-	function setMaxSelection($value)
+	 * @param integer max number of selections.
+	 */
+	public function setMaxSelection($value)
 	{
-		$this->setViewState('MaxSelection',$value,'');
+		if(($value=TPropertyValue::ensureInteger($value))<0)
+			$value=-1;
+		$this->setViewState('MaxSelection',$value,-1);
 	}
 
 	/**
 	 * Get a comma separated list of required selected values.
-	 * @return string comma separated list of required values. 
+	 * @return string comma separated list of required values.
 	 */
-	function getRequiredSelections()
+	public function getRequiredSelections()
 	{
 		return $this->getViewState('RequiredSelections','');
 	}
-		
+
 	/**
 	 * Set the list of required values, using aa comma separated list.
-	 * @param string comma separated list of required values. 
+	 * @param string comma separated list of required values.
 	 */
-	function setRequiredSelections($value)
+	public function setRequiredSelections($value)
 	{
 		$this->setViewState('RequiredSelections',$value,'');
-	}	
-	
+	}
+
 	/**
 	 * This method overrides the parent's implementation.
 	 * The validation succeeds if the input component changes its data
 	 * from the InitialValue or the input component is not given.
 	 * @return boolean whether the validation succeeds
 	 */
-	public function evaluateIsValid()
-	{		
+	protected function evaluateIsValid()
+	{
 		$control=$this->getValidationTarget();
-		
+
 		$exists = true;
-		list($count, $values) = $this->getSelection($control);
+		$values = $this->getSelection($control);
+		$count = count($values);
 		$required = $this->getRequiredValues();
-		
+
 		//if required, check the values
 		if(!empty($required))
 		{
-			if(count($values) < count($required) ) 
+			if($count < count($required) )
 				return false;
 			foreach($required as $require)
 				$exists = $exists && in_array($require, $values);
 		}
-		
+
 		$min = $this->getMinSelection();
 		$max = $this->getMaxSelection();
-		
-		if($min !== '' && $max !=- '')
-			return $exists && $count >= intval($min) && $count <= intval($max);
-		else if($min === '' && $max !== '')
-			return $exists && $count <= intval($max);
-		else if($min !== '' && $max === '')
-			return $exists && $count >= intval($min);		
-	}	
-	
+
+		if($min !== -1 && $max !== -1)
+			return $exists && $count >= $min && $count <= $max;
+		else if($min === -1 && $max !== -1)
+			return $exists && $count <= $max;
+		else if($min !== -1 && $max === -1)
+			return $exists && $count >= $min;
+		else
+			return $exists;
+	}
+
 	/**
 	 * @param TListControl control to validate
 	 * @return array number of selected values and its values.
 	 */
 	protected function getSelection($control)
 	{
-		$count = 0;
 		$values = array();
 
 		//get the data
 		foreach($control->getItems() as $item)
 		{
-			if($item->getSelected()) 
-			{
-				$count++;
+			if($item->getSelected())
 				$values[] = $item->getValue();
-			}
 		}
-		return array($count, $values);		
+		return $values;
 	}
-	
+
 	/**
 	 * @return array list of required values.
 	 */
@@ -180,7 +182,7 @@ class TListControlValidator extends TBaseValidator
 			$required = preg_split('/,\s*/', $string);
 		return $required;
 	}
-	
+
 	/**
 	 * Returns an array of javascript validator options.
 	 * @return array javascript validator options.
@@ -189,26 +191,26 @@ class TListControlValidator extends TBaseValidator
 	{
 		$options = parent::getClientScriptOptions();
 		$control = $this->getValidationTarget();
-		
+
 		if(!$control instanceof TListControl)
 		{
 			throw new TConfigurationException(
-				'tlistcontrolvalidator_invalid_control', 
+				'tlistcontrolvalidator_invalid_control',
 				$this->getID(),$this->getControlToValidate(), get_class($control));
 		}
-		
+
 		$min = $this->getMinSelection();
 		$max = $this->getMaxSelection();
-		if($min !== '')
-			$options['Min']= intval($min);
-		if($max !== '')
-			$options['Max']= intval($max);
+		if($min !== -1)
+			$options['Min']= $min;
+		if($max !== -1)
+			$options['Max']= $max;
 		$required = $this->getRequiredSelections();
 		if(strlen($required) > 0)
 			$options['Required']= $required;
 		$options['TotalItems'] = $control->getItemCount();
 
 		return $options;
-	}	
+	}
 }
 ?>

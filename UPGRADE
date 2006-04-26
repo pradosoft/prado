@@ -1,17 +1,22 @@
 
-         Upgrading Instructions for PRADO Framework v3.0.0 RC2
-         =====================================================
+         Upgrading Instructions for PRADO Framework v3.0.0
+         =================================================
 
 !!!IMPORTANT!!!
 
 After upgrading, remember to delete everything under
-your PRADO application's cache and runtime directories.
+your PRADO application's assets and runtime directories.
 
 
 The following upgrading instructions are cumulative. That is,
 if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
+
+
+Upgrading from v3.0.0 RC2
+-------------------------
+There should be no compatibility issues.
 
 
 Upgrading from v3.0.0 RC1
@@ -26,6 +31,7 @@ Upgrading from v3.0.0 RC1
 - !!! List controls databound with integer-indexed arrays will have
   the integers as their list item values. Previously, it used the array
   values as the list item values.
+
 
 Upgrading from v3.0.0 beta
 --------------------------
