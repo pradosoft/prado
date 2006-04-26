@@ -48,21 +48,21 @@ Without caching techniques, PRADO may not be suitable for developing extremely h
 PRADO is described as a unique framework. Its uniqueness mainly lies in the component-based and event-driven programming paradigm that it tries to promote. Although this programming paradigm is not new in desktop application programming and not new in a few Web programming languages, PRADO is perhaps the first PHP framework enabling it.
 </p>
 <p>
-Most PHP frameworks are trying to establish a loose standard of organizing PHP programming, most preferably the MVC (model-view-controller) model. It is difficult to compare PRADO with these frameworks because they have different focuses. What we can say is, PRADO is more like a high-level language built upon PHP while those MVC frameworks stand for the best programming practices. Both aim to help developers to rapidly complete Web application development. The advantage of PRADO is its rich set of prebuilt powerful components and extreme reusability of the PRADO code, while the advantage of the MVC frameworks is the complete separation of model, view and controller, which greatly facilitates team integration.
+Most PHP frameworks are trying to establish a loose standard of organizing PHP programming, most preferably the MVC (model-view-controller) model. It is difficult to compare PRADO with these frameworks because they have different focuses. What we can say is, PRADO is more like a high-level language built upon PHP, while the MVC frameworks stand for the best programming practices. Both aim to help developers to rapidly complete Web application development. The advantage of PRADO is its rich set of prebuilt powerful components and extreme reusability of the PRADO code, while the advantage of the MVC frameworks is the complete separation of model, view and controller, which greatly facilitates team integration.
 </p>
 
 <h2>History of PRADO</h2>
 <p>
-The very original inspiration of PRADO came from Apache Tapestry. During the design and implementation, I borrowed many ideas from Borland Delphi and Microsoft ASP.NET. The first version of PRADO came out in June 2004 and was written in PHP 4. Driven by the Zend PHP 5 coding contest, I rewrote PRADO in PHP 5, which proved to be a wise move, thanks to the new object model provided by PHP 5. PRADO won the grand prize in the Zend contest, earning high votes both from the public and from the judges' panel.
+The very original inspiration of PRADO came from Apache Tapestry. During the design and implementation, I borrowed many ideas from Borland Delphi and Microsoft ASP.NET. The first version of PRADO came out in June 2004 and was written in PHP 4. Driven by the Zend PHP 5 coding contest, I rewrote PRADO in PHP 5, which proved to be a wise move, thanks to the new object model provided by PHP 5. PRADO won the grand prize in the Zend contest, earning the highest votes from both the public and the judges' panel.
 </p>
 <p>
-In August 2004, PRADO was hosted on SourceForge as an open source project. Soon after, the project site <a href="http://www.xisc.com/">xisc.com</a> was announced to public. With the fantastic support of PRADO developer team and PRADO users, PRADO evolved to version 2.0 in mid 2005. In this version, Wei Zhuo contributed to PRADO with the excellent I18 and L10N support.
+In August 2004, PRADO started to be hosted on SourceForge as an open source project. Soon after, the project site <a href="http://www.xisc.com/">xisc.com</a> was announced to public. With the fantastic support of PRADO developer team and PRADO users, PRADO evolved to version 2.0 in mid 2005. In this version, Wei Zhuo contributed to PRADO with the excellent I18N and L10N support.
 </p>
 <p>
 In May 2005, we decided to completely rewrite the PRADO framework to resolve a few fundamental issues found in version 2.0 and to catch up with some cool features available in Microsoft ASP.NET 2.0. After nearly a year's hard work with over 50,000 lines of new code, version 3.0 was finally made available in April 2006.
 </p>
 <p>
-Starting from version 3.0, significant efforts are allocated to ensure the quality and stability of PRADO. If we say PRADO v2.x and v1.x are proof-of-concept work, we can say PRADO 3.x grows up to a serious project that is suitable for business application development.
+Starting from version 3.0, significant efforts are allocated to ensure the quality and stability of PRADO. If we say PRADO v2.x and v1.x are proof-of-concept work, we can say PRADO 3.x has grown up to a project that is suitable for serious business application development.
 </p>
 
 </com:TContent>

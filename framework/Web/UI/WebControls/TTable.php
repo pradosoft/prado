@@ -45,7 +45,7 @@ Prado::using('System.Web.UI.WebControls.TTableRow');
  *       <com:TTableCell Text="content" />
  *       <com:TTableCell Text="content" />
  *     </com:TTableRow>
- *   <com:TTable>
+ *   </com:TTable>
  * </code>
  * The above can also be accomplished in code as follows,
  * <code>

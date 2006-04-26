@@ -5,11 +5,15 @@
 
 <p>
 <tt>TLiteral</tt> displays a static text on a Web page. <tt>TLiteral</tt> is similar to the <tt>TLabel</tt> control, except that the <tt>TLiteral</tt>
- * control does not allow child controls and has no style properties, such as <tt>BackColor</tt>, <tt>Font</tt>, etc.
+ * control has no style properties, such as <tt>BackColor</tt>, <tt>Font</tt>, etc.
 </p>
 
 <p>
 The text displayed by <tt>TLiteral</tt> can be programmatically controlled by setting the <tt>Text</tt> property. The text displayed may be HTML-encoded if the <tt>Encode</tt> is true (the default value is false).
+</p>
+
+<p>
+<tt>TLiteral</tt> will render the contents enclosed within its component tag if <tt>Text</tt> is empty.
 </p>
 
 <p>
