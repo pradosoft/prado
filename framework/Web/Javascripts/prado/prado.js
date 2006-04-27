@@ -1,8 +1,8 @@
 
-var Prado = 
-{ 
-	Version: '3.0',
-	
+var Prado =
+{
+	Version: '3.0.0',
+
 	/**
 	 * Returns browser information. Example
 	 * <code>
@@ -36,12 +36,12 @@ var Prado =
 		info.operaOld = info.opera && !info.opera7;
 		return info;
 	},
-	
-	ImportCss : function(doc, css_file) 
+
+	ImportCss : function(doc, css_file)
 	{
 		if (Prado.Browser().ie)
 			var styleSheet = doc.createStyleSheet(css_file);
-		else 
+		else
 		{
 			var elm = doc.createElement("link");
 
@@ -51,5 +51,5 @@ var Prado =
 			if (headArr = doc.getElementsByTagName("head"))
 				headArr[0].appendChild(elm);
 		}
-	}	
+	}
 };

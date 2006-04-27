@@ -1803,9 +1803,9 @@ var newdate=new Date(year,month-1,date, 0, 0, 0);
 return newdate;
 }
 });
-var Prado = 
-{ 
-Version: '3.0',
+var Prado =
+{
+Version: '3.0.0',
 Browser : function()
 {
 var info = { Version : "1.0" };
@@ -1830,11 +1830,11 @@ info.opera7 = ( ( info.agent.toLowerCase().indexOf( 'opera 7' ) > -1 ) || ( info
 info.operaOld = info.opera && !info.opera7;
 return info;
 },
-ImportCss : function(doc, css_file) 
+ImportCss : function(doc, css_file)
 {
 if (Prado.Browser().ie)
 var styleSheet = doc.createStyleSheet(css_file);
-else 
+else
 {
 var elm = doc.createElement("link");
 elm.rel = "stylesheet";
