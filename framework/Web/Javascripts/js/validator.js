@@ -156,41 +156,45 @@ Prado.WebUI.TValidationSummary.prototype =
 group : null,
 options : {},
 visible : false,
-summary : null,
+messages : null,
 initialize : function(options)
 {
 this.options = options;
 this.group = options.ValidationGroup;
-this.summary = $(options.ID);
-this.visible = this.summary.style.visibility != "hidden"
-this.visible = this.visible && this.summary.style.display != "none";
+this.messages = $(options.ID);
+this.visible = this.messages.style.visibility != "hidden"
+this.visible = this.visible && this.messages.style.display != "none";
 Prado.Validation.addSummary(options.FormID, this);
 },
 updateSummary : function(validators, update)
 {
 if(validators.length <= 0)
-return this.hideSummary(update);
+{
+if(update || this.options.Refresh != false)
+{
+return this.hideSummary(validators);
+}
+return;
+}
 var refresh = update || this.visible == false || this.options.Refresh != false;
 if(this.options.ShowSummary != false && refresh)
 {
-this.displayHTMLMessages(this.getMessages(validators));
-this.visible = true;
+this.updateHTMLMessages(this.getMessages(validators));
+this.showSummary(validators);
 }
 if(this.options.ScrollToSummary != false)
-window.scrollTo(this.summary.offsetLeft-20, this.summary.offsetTop-20);
+window.scrollTo(this.messages.offsetLeft-20, this.messages.offsetTop-20);
 if(this.options.ShowMessageBox == true && refresh)
 {
 this.alertMessages(this.getMessages(validators));
 this.visible = true;
 }
 },
-displayHTMLMessages : function(messages)
+updateHTMLMessages : function(messages)
 {
-this.summary.show();
-this.summary.style.visibility = "visible";
-while(this.summary.childNodes.length > 0)
-this.summary.removeChild(this.summary.lastChild);
-new Insertion.Bottom(this.summary, this.formatSummary(messages));
+while(this.messages.childNodes.length > 0)
+this.messages.removeChild(this.messages.lastChild);
+new Insertion.Bottom(this.messages, this.formatSummary(messages));
 },
 alertMessages : function(messages)
 {
@@ -208,15 +212,28 @@ messages.push(message);
 })
 return messages;
 },
-hideSummary : function(refresh)
+hideSummary : function(validators)
+{if(typeof(this.options.OnHideSummary) == "function")
 {
-if(refresh || this.options.Refresh != false)
-{
-if(this.options.Display == "None" || this.options.Display == "Dynamic")
-this.summary.hide();
-this.summary.style.visibility="hidden";
-this.visible = false;
+this.messages.style.visibility="visible";
+this.options.OnHideSummary(this,validators)
 }
+else
+{
+this.messages.style.visibility="hidden";
+if(this.options.Display == "None" || this.options.Display == "Dynamic")
+this.messages.hide();
+}
+this.visible = false;
+},
+showSummary : function(validators)
+{
+this.messages.style.visibility="visible";
+if(typeof(this.options.OnShowSummary) == "function")
+this.options.OnShowSummary(this,validators);
+else
+this.messages.show();
+this.visible = true;
 },
 formats : function(type)
 {
@@ -330,6 +347,7 @@ if(this.isValid)
 if(typeof(this.options.OnSuccess) == "function")
 {
 this.visible = true;
+this.message.style.visibility = "visible";
 this.updateControlCssClass(this.control, this.isValid);
 this.options.OnSuccess(this, invoker);
 }
@@ -341,6 +359,7 @@ else
 if(typeof(this.options.OnError) == "function")
 {
 this.visible = true;
+this.message.style.visibility = "visible";
 this.updateControlCssClass(this.control, this.isValid);
 this.options.OnError(this, invoker);
 }

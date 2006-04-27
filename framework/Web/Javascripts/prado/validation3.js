@@ -336,7 +336,7 @@ Prado.WebUI.TValidationSummary.prototype =
 	group : null,	
 	options : {},
 	visible : false,
-	summary : null,
+	messages : null,
 	
 	/**
 	 * <code>
@@ -356,9 +356,9 @@ Prado.WebUI.TValidationSummary.prototype =
 	{
 		this.options = options;
 		this.group = options.ValidationGroup;
-		this.summary = $(options.ID);
-		this.visible = this.summary.style.visibility != "hidden"
-		this.visible = this.visible && this.summary.style.display != "none";
+		this.messages = $(options.ID);
+		this.visible = this.messages.style.visibility != "hidden"
+		this.visible = this.visible && this.messages.style.display != "none";
 		Prado.Validation.addSummary(options.FormID, this);
 	},
 	
@@ -370,19 +370,25 @@ Prado.WebUI.TValidationSummary.prototype =
 	 */
 	updateSummary : function(validators, update)
 	{
-		if(validators.length <= 0)	
-			return this.hideSummary(update);
+		if(validators.length <= 0)
+		{
+			if(update || this.options.Refresh != false)
+			{
+				return this.hideSummary(validators);
+			}
+			return;
+		}
 
 		var refresh = update || this.visible == false || this.options.Refresh != false;
 				
 		if(this.options.ShowSummary != false && refresh)
 		{
-			this.displayHTMLMessages(this.getMessages(validators));
-			this.visible = true;
+			this.updateHTMLMessages(this.getMessages(validators));
+			this.showSummary(validators);
 		}
 		
 		if(this.options.ScrollToSummary != false)
-			window.scrollTo(this.summary.offsetLeft-20, this.summary.offsetTop-20);
+			window.scrollTo(this.messages.offsetLeft-20, this.messages.offsetTop-20);
 		
 		if(this.options.ShowMessageBox == true && refresh)
 		{
@@ -394,13 +400,11 @@ Prado.WebUI.TValidationSummary.prototype =
 	/**
 	 * Display the validator error messages as inline HTML.
 	 */
-	displayHTMLMessages : function(messages)
+	updateHTMLMessages : function(messages)
 	{
-		this.summary.show();
-		this.summary.style.visibility = "visible";
-		while(this.summary.childNodes.length > 0)
-			this.summary.removeChild(this.summary.lastChild);
-		new Insertion.Bottom(this.summary, this.formatSummary(messages));	
+		while(this.messages.childNodes.length > 0)
+			this.messages.removeChild(this.messages.lastChild);
+		new Insertion.Bottom(this.messages, this.formatSummary(messages));	
 	},
 	
 	/**
@@ -428,18 +432,34 @@ Prado.WebUI.TValidationSummary.prototype =
 	},	
 	
 	/**
-	 * Hides the validation summary if options['Refresh'] is not false.
-	 * @param boolean true to always hide the summary
+	 * Hides the validation summary.
 	 */
-	hideSummary : function(refresh)
-	{
-		if(refresh || this.options.Refresh != false)
+	hideSummary : function(validators)
+	{	if(typeof(this.options.OnHideSummary) == "function")
 		{
+			this.messages.style.visibility="visible";
+			this.options.OnHideSummary(this,validators)
+		}
+		else
+		{
+			this.messages.style.visibility="hidden";
 			if(this.options.Display == "None" || this.options.Display == "Dynamic")
-				this.summary.hide();
-			this.summary.style.visibility="hidden";
-			this.visible = false;
-		}		
+				this.messages.hide();
+		}
+		this.visible = false;
+	},
+	
+	/**
+	 * Shows the validation summary.
+	 */
+	showSummary : function(validators)
+	{
+		this.messages.style.visibility="visible";
+		if(typeof(this.options.OnShowSummary) == "function")
+			this.options.OnShowSummary(this,validators);
+		else
+			this.messages.show();
+		this.visible = true;
 	},
 	
 	/**
@@ -638,6 +658,7 @@ Prado.WebUI.TBaseValidator.prototype =
 			if(typeof(this.options.OnSuccess) == "function")
 			{
 				this.visible = true;
+				this.message.style.visibility = "visible";
 				this.updateControlCssClass(this.control, this.isValid);	
 				this.options.OnSuccess(this, invoker);
 			}
@@ -648,7 +669,8 @@ Prado.WebUI.TBaseValidator.prototype =
 		{
 			if(typeof(this.options.OnError) == "function")
 			{
-				this.visible = true;				
+				this.visible = true;		
+				this.message.style.visibility = "visible";		
 				this.updateControlCssClass(this.control, this.isValid);
 				this.options.OnError(this, invoker);
 			}
