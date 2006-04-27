@@ -594,7 +594,7 @@ class TValidatorClientScript extends TComponent
 	/**
 	 * Ensure the string is a valid javascript function. If the string begins
 	 * with "javascript:" valid javascript function is assumed, otherwise the
-	 * code block is enclosed with "function(validator, invoker){ }" block.
+	 * code block is enclosed with "function(validator, sender){ }" block.
 	 * @param string javascript code.
 	 * @return string javascript function code.
 	 */
@@ -604,7 +604,7 @@ class TValidatorClientScript extends TComponent
 			return $javascript;
 		else
 		{
-			$code = "function(validator, invoker){ {$javascript} }";
+			$code = "function(validator, sender){ {$javascript} }";
 			return TJavascript::quoteFunction($code);
 		}
 	}
