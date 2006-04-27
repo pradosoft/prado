@@ -1805,7 +1805,7 @@ return newdate;
 });
 var Prado = 
 { 
-Version: '3.0a',
+Version: '3.0',
 Browser : function()
 {
 var info = { Version : "1.0" };

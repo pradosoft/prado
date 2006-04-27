@@ -321,10 +321,10 @@ this.visible = false;
 },
 validate : function(invoker)
 {
-if(this.enabled)
-this.isValid = this.evaluateIsValid();
 if(typeof(this.options.OnValidate) == "function")
 this.options.OnValidate(this, invoker);
+if(this.enabled)
+this.isValid = this.evaluateIsValid();
 if(this.isValid)
 {
 if(typeof(this.options.OnSuccess) == "function")
@@ -656,3 +656,13 @@ required = this.options.Required.split(/,\s*/);
 return required;
 }
 });
+Prado.WebUI.TDataTypeValidator = Class.extend(Prado.WebUI.TBaseValidator, 
+{ 
+evaluateIsValid : function() 
+{ 
+var value = this.getValidationValue(); 
+if(value.length <= 0) 
+return true; 
+return this.convert(this.options.DataType, value) != null; 
+} 
+}); 
