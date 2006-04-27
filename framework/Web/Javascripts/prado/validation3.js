@@ -1189,5 +1189,25 @@ Prado.WebUI.TListControlValidator = Class.extend(Prado.WebUI.TBaseValidator,
 });
 
 
-
+/** 
+ * TDataTypeValidator verifies if the input data is of the type specified 
+ * by <tt>DataType</tt> option. 
+ * The following data types are supported: 
+ * - <b>Integer</b> A 32-bit signed integer data type. 
+ * - <b>Float</b> A double-precision floating point number data type. 
+ * - <b>Date</b> A date data type. 
+ * - <b>String</b> A string data type. 
+ * For <b>Date</b> type, the option <tt>DateFormat</tt> 
+ * will be used to determine how to parse the date string.  
+ */ 
+Prado.WebUI.TDataTypeValidator = Class.extend(Prado.WebUI.TBaseValidator, 
+{ 
+        evaluateIsValid : function() 
+        { 
+                var value = this.getValidationValue(); 
+                if(value.length <= 0) 
+                        return true; 
+                return this.convert(this.options.DataType, value) != null; 
+        } 
+}); 
 
