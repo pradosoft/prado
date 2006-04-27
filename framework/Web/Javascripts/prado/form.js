@@ -107,7 +107,7 @@ Prado.PostBack = function(event,options)
 
 	if(options['CausesValidation'] && typeof(Prado.Validation) != "undefined")
 	{
-		if(!Prado.Validation.validate(options['FormID'], options['ValidationGroup']))
+		if(!Prado.Validation.validate(options['FormID'], options['ValidationGroup'], $(options['ID'])))
 			return Event.stop(event);
 	}
 

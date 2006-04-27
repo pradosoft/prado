@@ -710,9 +710,7 @@ framework/Web/Javascripts/prado/controls.js -text
 framework/Web/Javascripts/prado/element.js -text
 framework/Web/Javascripts/prado/form.js -text
 framework/Web/Javascripts/prado/prado.js -text
-framework/Web/Javascripts/prado/validation.js -text
 framework/Web/Javascripts/prado/validation3.js -text
-framework/Web/Javascripts/prado/validators.js -text
 framework/Web/Javascripts/prototype/AUTHORS -text
 framework/Web/Javascripts/prototype/LICENSE -text
 framework/Web/Javascripts/prototype/README -text
@@ -771,6 +769,7 @@ framework/Web/UI/WebControls/TButtonColumn.php -text
 framework/Web/UI/WebControls/TCheckBox.php -text
 framework/Web/UI/WebControls/TCheckBoxColumn.php -text
 framework/Web/UI/WebControls/TCheckBoxList.php -text
+framework/Web/UI/WebControls/TClientScript.php -text
 framework/Web/UI/WebControls/TColorPicker.php -text
 framework/Web/UI/WebControls/TCompareValidator.php -text
 framework/Web/UI/WebControls/TContent.php -text
@@ -859,6 +858,7 @@ tests/FunctionalTests/features/protected/pages/I18N/Home.page -text
 tests/FunctionalTests/features/protected/pages/I18N/Home.zh_CN.page -text
 tests/FunctionalTests/features/protected/pages/I18N/config.xml -text
 tests/FunctionalTests/features/protected/pages/RatingList.page -text
+tests/FunctionalTests/features/protected/pages/ValidatorEffects.page -text
 tests/FunctionalTests/index.php -text
 tests/FunctionalTests/quickstart.php -text
 tests/FunctionalTests/quickstart/Advanced/I18N.php -text

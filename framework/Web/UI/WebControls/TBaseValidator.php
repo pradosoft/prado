@@ -41,6 +41,10 @@
  * and {@link setText Text} are empty, the body content of the validator will
  * be displayed. Error display is controlled by {@link setDisplay Display} property.
  *
+ * You can also customized the client-side behaviour by adding javascript
+ * code to the subproperties of the {@link getClientValidation ClientValidation}
+ * property.
+ *
  * You can also place a {@link TValidationSummary} control on a page to display error messages
  * from the validators together. In this case, only the {@link setErrorMessage ErrorMessage}
  * property of the validators will be displayed in the {@link TValidationSummary} control.
@@ -75,6 +79,8 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * @var boolean whether the validator has been registered with the page
 	 */
 	private $_registered=false;
+	
+	private $_clientScript;
 
 	/**
 	 * Constructor.
@@ -145,7 +151,42 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		$options['ControlToValidate'] = $control->getClientID();
 		$options['ControlCssClass'] = $this->getControlCssClass();
 		$options['ControlType'] = get_class($control);
+		
+		if(!is_null($this->_clientScript))
+			$options = array_merge($options,$this->_clientScript->getOptions());
+		
 		return $options;
+	}
+	
+	/**
+	 * Gets the TValidatorClientScript that allows modification of the client-
+	 * side validator events. 
+	 * 
+	 * The client-side validator supports the following events.
+	 * # <tt>OnValidate</tt> -- raised before client-side validation is
+	 * executed. 
+	 * # <tt>OnSuccess</tt> -- raised after client-side validation is completed
+	 * and is successfull, overrides default validator error messages updates.
+	 * # <tt>OnError</tt> -- raised after client-side validation is completed
+	 * and failed, overrides default validator error message updates.  
+	 * 
+	 * You can attach custom javascript code to each of these events
+	 * 
+	 * @return TValidatorClientScript javascript validator event options.
+	 */
+	public function getClientValidation()
+	{
+		if(is_null($this->_clientScript))
+			$this->_clientScript = $this->createClientScript();
+		return $this->_clientScript;
+	}
+	
+	/**
+	 * @return TValidatorClientScript javascript validator event options.
+	 */
+	protected function createClientScript()
+	{
+		return new TValidatorClientScript($this->getPage()->getClientScript());
 	}
 
 	/**
@@ -446,4 +487,74 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			parent::renderContents($writer);
 	}
 }
+
+/**
+ * TValidatorClientScript class.
+ * 
+ * @todo Add doc to quickstart and classes.
+ * 
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
+class TValidatorClientScript extends TComponent
+{
+	private $_options;
+	private $_manager;
+	private $_effectsEnabled = false;
+	
+	public function __construct($manager)
+	{
+		$this->_options = new TMap;
+		$this->_manager = $manager;
+	}
+	
+	public function getOnValidate()
+	{
+		return $this->_options->itemAt['OnValidate'];	
+	}
+	
+	public function setOnValidate($javascript)
+	{
+		$this->_options->add('OnValidate', $this->ensureFunction($javascript));
+	}
+	
+	public function setOnSuccess($javascript)
+	{
+		$this->_options->add('OnSuccess', $this->ensureFunction($javascript));
+	}
+	
+	public function getOnSuccess()
+	{
+		return $this->_options->itemAt('OnSuccess');
+	}
+	
+	public function setOnError($javascript)
+	{
+		$this->_options->add('OnError', $this->ensureFunction($javascript));
+	}
+	
+	public function getOnError()
+	{
+		return $this->_options->itemAt('OnError');
+	}
+	
+	public function getOptions()
+	{
+		return $this->_options->toArray();
+	}
+	
+	private function ensureFunction($javascript)
+	{
+		if(TJavascript::isFunction($javascript))
+			return $javascript;
+		else
+		{
+			$code = "function(validator, invoker){ {$javascript} }";
+			return TJavascript::quoteFunction($code);
+		}
+	}
+}
+
 ?>

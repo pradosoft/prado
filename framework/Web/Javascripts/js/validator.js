@@ -3,11 +3,11 @@ Prado.Validation =Class.create();
 Object.extend(Prado.Validation,
 {
 managers : {},
-validate : function(formID, groupID)
+validate : function(formID, groupID, invoker)
 {
 if(this.managers[formID])
 {
-return this.managers[formID].validate(groupID);
+return this.managers[formID].validate(groupID, invoker);
 }
 else
 {
@@ -49,14 +49,14 @@ initialize : function(options)
 this.options = options;
 Prado.Validation.managers[options.FormID] = this;
 },
-validate : function(group)
+validate : function(group, invoker)
 {
 if(group)
-return this._validateGroup(group);
+return this._validateGroup(group, invoker);
 else
-return this._validateNonGroup();
+return this._validateNonGroup(invoker);
 },
-_validateGroup: function(groupID)
+_validateGroup: function(groupID, invoker)
 {
 var valid = true;
 if(this.groups.include(groupID))
@@ -64,7 +64,7 @@ if(this.groups.include(groupID))
 this.validators.each(function(validator)
 {
 if(validator.group == groupID)
-valid = valid & validator.validate();
+valid = valid & validator.validate(invoker);
 else
 validator.hide();
 });
@@ -72,13 +72,13 @@ validator.hide();
 this.updateSummary(groupID, true);
 return valid;
 },
-_validateNonGroup : function()
+_validateNonGroup : function(invoker)
 {
 var valid = true;
 this.validators.each(function(validator)
 {
 if(!validator.group)
-valid = valid & validator.validate();
+valid = valid & validator.validate(invoker);
 else
 validator.hide();
 });
@@ -275,11 +275,9 @@ options : {},
 _isObserving : {},
 group : null,
 manager : null,
+message : null,
 initialize : function(options)
 {
-options.OnValidate = options.OnValidate || Prototype.emptyFunction;
-options.OnSuccess = options.OnSuccess || Prototype.emptyFunction;
-options.OnError = options.OnError || Prototype.emptyFunction;
 this.options = options;
 this.control = $(options.ControlToValidate);
 this.message = $(options.ID);
@@ -321,16 +319,34 @@ this.isValid = true;
 this.updateControl();
 this.visible = false;
 },
-validate : function()
+validate : function(invoker)
 {
 if(this.enabled)
 this.isValid = this.evaluateIsValid();
-this.options.OnValidate(this);
-this.updateControl();
+if(typeof(this.options.OnValidate) == "function")
+this.options.OnValidate(this, invoker);
 if(this.isValid)
-this.options.OnSuccess(this);
+{
+if(typeof(this.options.OnSuccess) == "function")
+{
+this.visible = true;
+this.updateControlCssClass(this.control, this.isValid);
+this.options.OnSuccess(this, invoker);
+}
 else
-this.options.OnError(this);
+this.updateControl();
+}
+else
+{
+if(typeof(this.options.OnError) == "function")
+{
+this.visible = true;
+this.updateControlCssClass(this.control, this.isValid);
+this.options.OnError(this, invoker);
+}
+else
+this.updateControl();
+}
 this.observeChanges(this.control);
 return this.isValid;
 },
@@ -353,7 +369,7 @@ validator.manager.updateSummary(validator.group);
 this._isObserving[control.id+this.options.ID] = true;
 }
 },
-_trim : function(value)
+trim : function(value)
 {
 return typeof(value) == "string" ? value.trim() : "";
 },
@@ -393,20 +409,20 @@ getValidationValue : function(control)
  {
  case 'TDatePicker':
  if(control.type == "text")
- return this._trim($F(control));
+ return this.trim($F(control));
  else
  {
- this._observeDatePickerChanges();
+ this.observeDatePickerChanges();
 return Prado.WebUI.TDatePicker.getDropDownDate(control).getTime();
  }
  default:
- if(this._isListControlType())
- return this._getFirstSelectedListValue(); 
+ if(this.isListControlType())
+ return this.getFirstSelectedListValue(); 
  else
- return this._trim($F(control));
+ return this.trim($F(control));
  }
  },
-_observeDatePickerChanges : function()
+observeDatePickerChanges : function()
  {
  if(Prado.Browser().ie)
  {
@@ -416,11 +432,11 @@ this.observeChanges(DatePicker.getMonthListControl(this.control));
 this.observeChanges(DatePicker.getYearListControl(this.control));
  }
  },
-_getSelectedValuesAndChecks : function(elements, initialValue)
+getSelectedValuesAndChecks : function(elements, initialValue)
 {
 var checked = 0;
 var values = [];
-var isSelected = this._isCheckBoxType(elements[0]) ? 'checked' : 'selected';
+var isSelected = this.isCheckBoxType(elements[0]) ? 'checked' : 'selected';
 elements.each(function(element)
 {
 if(element[isSelected] && element.value != initialValue)
@@ -431,7 +447,7 @@ values.push(element.value);
 });
 return {'checks' : checked, 'values' : values};
 }, 
-_getListElements : function()
+getListElements : function()
 {
 switch(this.options.ControlType)
 {
@@ -440,7 +456,7 @@ var elements = [];
 for(var i = 0; i < this.options.TotalItems; i++)
 {
 var element = $(this.options.ControlToValidate+"_"+i);
-if(this._isCheckBoxType(element))
+if(this.isCheckBoxType(element))
 elements.push(element);
 }
 return elements;
@@ -457,7 +473,7 @@ default:
 return [];
 }
 },
-_isCheckBoxType : function(element)
+isCheckBoxType : function(element)
 {
 if(element && element.type)
 {
@@ -466,18 +482,18 @@ return type == "checkbox" || type == "radio";
 }
 return false;
 },
-_isListControlType : function()
+isListControlType : function()
 {
 var list = ['TCheckBoxList', 'TRadioButtonList', 'TListBox'];
 return list.include(this.options.ControlType);
 },
-_getFirstSelectedListValue : function()
+getFirstSelectedListValue : function()
 {
 var initial = "";
 if(typeof(this.options.InitialValue) != "undefined")
 initial = this.options.InitialValue;
-var elements = this._getListElements();
-var selection = this._getSelectedValuesAndChecks(elements, initial);
+var elements = this.getListElements();
+var selection = this.getSelectedValuesAndChecks(elements, initial);
 return selection.values.length > 0 ? selection.values[0] : initial;
 }
 }
@@ -493,7 +509,7 @@ return true;
 else
 {
 var a = this.getValidationValue();
-var b = this._trim(this.options.InitialValue);
+var b = this.trim(this.options.InitialValue);
 return(a != b);
 }
 }
@@ -595,16 +611,16 @@ Prado.WebUI.TListControlValidator = Class.extend(Prado.WebUI.TBaseValidator,
 {
 evaluateIsValid : function()
 {
-var elements = this._getListElements();
+var elements = this.getListElements();
 if(elements && elements.length <= 0)
 return true;
 this.observeListElements(elements);
-var selection = this._getSelectedValuesAndChecks(elements);
+var selection = this.getSelectedValuesAndChecks(elements);
 return this.isValidList(selection.checks, selection.values);
 },
 observeListElements : function(elements)
  {
-if(Prado.Browser().ie && this._isCheckBoxType(elements[0]))
+if(Prado.Browser().ie && this.isCheckBoxType(elements[0]))
 {
 var validator = this;
 elements.each(function(element)
@@ -638,15 +654,5 @@ var required = [];
 if(this.options.Required && this.options.Required.length > 0)
 required = this.options.Required.split(/,\s*/);
 return required;
-}
-});
-Prado.WebUI.TDataTypeValidator = Class.extend(Prado.WebUI.TBaseValidator,
-{
-evaluateIsValid : function()
-{
-var value = this.getValidationValue();
-if(value.length <= 0)
-return true;
-return this.convert(this.options.DataType, value) != null;
 }
 });
