@@ -24,12 +24,16 @@ ENH: TButtonColumn can now be a column of image buttons (Qiang)
 ENH: TLiteral will display body content if Text is empty (Qiang)
 ENH: Format string in classes extending TDataGridColumn can now evaluate an expression (Qiang)
 ENH: Format string in classes extending TListControl can now evaluate an expression (Qiang)
+ENH: Custom visual effects can be added to client-side validators. (Wei)
+ENH: TJavascript::encode() allows raw javascript code when string begins with "javascript:" (Wei)
 CHG: Rewrote client-side javascript validators, check your client-side validation behaviour (Wei)
 CHG: Updated the javascript Prototype library, a few utilties functions REMOVED, may break your existing javascript code. (Wei)
 CHG: Build javascript without compression, only comments are removed. (Wei)
 CHG: TDatePicker's date can be set using Date property, it value must be in same format as DateFormat, TimeStamp must be set as integer (wei)
 CHG: TSimpleDateFormatter::parse() now return an integer or null on parse error (Wei)
 NEW: TListControlValidator (Wei)
+NEW: TClientScript (Wei)
+
 
 
 Version 3.0RC2 April 16, 2006

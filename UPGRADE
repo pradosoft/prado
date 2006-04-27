@@ -16,7 +16,9 @@ for both A and B.
 
 Upgrading from v3.0.0 RC2
 -------------------------
-There should be no compatibility issues.
+There should be no PHP compatibility issues. Javascript libraries
+were updated and client-side validators rewritten. 
+
 
 
 Upgrading from v3.0.0 RC1

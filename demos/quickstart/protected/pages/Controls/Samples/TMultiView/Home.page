@@ -5,8 +5,8 @@
 <com:TMultiView ID="MultiView" ActiveViewIndex="0" OnActiveViewChanged="viewChanged">
   <com:TView ID="View1">
     <h2>View 1</h2>
-    <p>Please enter a paragraph:</p>
-    <com:THtmlArea ID="Memo" />
+    <p>Please enter a memo:</p>
+    <com:TTextBox ID="Memo" />
     <hr/>
     <com:TButton Text="View 2" CommandName="NextView" />
     <com:TButton Text="View 3" CommandName="SwitchViewIndex" CommandParameter="2" />

@@ -80,7 +80,7 @@ class TLiteral extends TControl
 				$writer->write($text);
 		}
 		else
-			parent::renderContents($writer);
+			parent::render($writer);
 	}
 }
 

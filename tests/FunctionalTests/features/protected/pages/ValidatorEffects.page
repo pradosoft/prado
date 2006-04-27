@@ -1,0 +1,91 @@
+<com:TContent ID="Content">
+
+<h1>Validator Visual Effects Test</h1>
+<fieldset id="quickRegistration">
+	<legend>Create New Account</legend>
+
+<com:TClientScript UsingPradoScripts="effects" />
+
+<div class="username">
+	Username: 
+	<com:TTextBox ID="Username" />
+	<com:TRequiredFieldValidator
+		ID="UsernameVal"
+		ControlToValidate="Username"
+		ValidationGroup="registration" 
+		ControlCssClass="required"
+		Display="Dynamic"
+		ErrorMessage="a username is required.">
+	<prop:ClientValidation.OnError>
+		Effect.Shake(validator.control);
+		Effect.Appear(validator.message);
+	</prop:ClientValidation.OnError>
+	<prop:ClientValidation.OnSuccess>
+		Effect.Fade(validator.message);
+	</prop:ClientValidation.OnSuccess>
+	</com:TRequiredFieldValidator>		
+</div>
+<div class="password">
+	Password
+	<com:TTextBox ID="Password" TextMode="Password" />
+	<!-- alternate synatx : see 
+	http://encytemedia.com/blog/articles/2006/03/07/prototype-gets-some-serious-syntactic-sugar
+	-->
+<com:TRequiredFieldValidator
+	ID="PasswordVal"
+	ControlToValidate="Password"
+	ValidationGroup="registration" 
+	ControlCssClass="required"
+	Display="Dynamic"
+	ClientValidation.OnError="validator.message.visualEffect('appear')"
+	ClientValidation.OnSuccess="validator.message.visualEffect('fade')"
+	ErrorMessage="a password is required." />	
+</div>	
+<div class="create">
+	<com:TButton ID="Create" ValidationGroup="registration" Text="Create New Account"/>
+</div>
+
+</fieldset>
+
+
+<fieldset id="LoginForm">
+	<legend>Sign In</legend>
+
+<div class="username">
+	Login Name:
+	<com:TTextBox ID="UserID" />
+		
+	<com:TRequiredFieldValidator
+		ID="UserVal1"
+		ControlToValidate="UserID"
+		Display="None"
+		ValidationGroup="signin"
+		ErrorMessage="the username or email was not provided" />
+</div>
+
+<div class="password" >
+	Password:
+	<com:TTextBox ID="Pass" TextMode="Password" />
+	<com:TRequiredFieldValidator
+		ID="loginValidator3"
+		ControlToValidate="Pass"
+		Display="None"
+		ValidationGroup="signin"
+		ErrorMessage="the password was not provided" />
+</div>
+
+
+<com:TButton ID="login" ValidationGroup="signin" CssClass="button" Text="Sign In" />
+
+<div class="validation">
+	<com:TValidationSummary 
+		ID="summary2"
+		ValidationGroup="signin"
+		AutoUpdate="false"
+		HeaderText="<p>You could not login because</p>" />
+</div>
+
+</fieldset>
+
+
+</com:TContent>
