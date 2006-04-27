@@ -15,7 +15,7 @@
   <property name="state" value=""/>
   <property name="pear.state" value="stable"/>
   <property name="pkgname" value="${phing.project.name}-${version}${state}"/>
-  <property name="pkgname.pear" value="${pkgname}${pear.state}-pear"/>
+  <property name="pkgname.pear" value="${pkgname}-pear"/>
   <property name="src.dir" value="framework"/>
   <property name="doc.dir" value="docs"/>
   <property name="build.base.dir" value="build"/>
@@ -38,10 +38,12 @@
   <property name="codecoverage" value="false"/>
   <property name="zca" value="/usr/local/Zend/ZendStudioClient-5.1.0/bin/ZendCodeAnalyzer"/>
   <property name="quickstart" value="${build.base.dir}/docs/prado3_quick_start.pdf"/>
+  <property name="notes">This is the latest release of PRADO.</property>
 
   <taskdef name="phplint" classname="PhpLintTask" classpath="buildscripts/phing/tasks"/>
   <taskdef name="xmllint" classname="XmlLintTask" classpath="buildscripts/phing/tasks"/>
   <taskdef name="analyze" classname="ZendCodeAnalyzerTask" classpath="buildscripts/phing/tasks"/>
+  <taskdef name="pear-package" classname="BuildPradoPEARPackageTask" classpath="buildscripts/phing/tasks"/>
 
   <!--
       PHP Source Files in framework
@@ -52,7 +54,7 @@
   </fileset>
 
   <!--
-      Various resource files in framework
+      All Source Files in framework
   -->
   <fileset dir="." id="framework">
     <exclude name="${src.dir}/**/.svn"/>
@@ -213,7 +215,6 @@
       </then>
     </if>
   </target>
-
   
   <target name="build-standard-package">
     <echo>Building standard package...</echo>
@@ -228,8 +229,35 @@
       </fileset>
     </copy>
   </target>
+
+  <target name="build-pear-package">
+    <echo>Preparing files for PEAR package...</echo>
+    <delete dir="${build.pear.dir}"/>
+    <mkdir dir="${build.pear.dir}"/>
+    <copy todir="${build.pear.dir}">
+      <fileset refid="src"/>
+      <fileset dir="${build.base.dir}">
+	<include name="${prado.lite}"/>
+      </fileset>
+    </copy>
+    
+    <echo>Creating package.xml...</echo>
+    <pear-package dir="${build.pear.dir}" destFile="${build.base.dir}/pear/package.xml" version="${version}" state="${pear.state}" notes="${notes}">
+      <fileset refid="src"/>
+      <fileset dir="${build.base.dir}">
+	<include name="${prado.lite}"/>
+      </fileset>
+    </pear-package>
+  </target>
   
-  <target name="build" depends="versioncheck,prepare,doc,pradolite,build-standard-package" description="Creating the main PRADO build"/>
+  <target name="build" depends="versioncheck,prepare,doc,quickstart,pradolite,build-standard-package,build-pear-package" description="Creating the main PRADO build"/>
+
+  <target name="dist-pear" depends="build-pear-package" description="Create PRADO PEAR package">
+    <delete file="${dist.pearfile}"/>
+    <mkdir dir="${dist.base.dir}"/>
+    <tar compression="gzip" destFile="${dist.pearfile}" basedir="${build.base.dir}/pear"/>
+    <exec command="pear package-validate ${dist.pearfile}" dir="." passthru="true"/>
+  </target>
 
   <target name="dist" depends="build" description="Create PRADO distributions">
     <!--<tar compression="gzip" destFile="${dist.tarfile}" basedir="${build.base.dir}/standard"/>-->
