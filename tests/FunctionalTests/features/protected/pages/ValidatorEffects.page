@@ -86,7 +86,7 @@
 		HeaderText="<p>You could not login because</p>">
 	<prop:ClientValidation.OnShowSummary>
 		Effect.Appear(summary.messages)
-		Effect.Shake(summary.messages)
+		Effect.Shake(summary.messages,{ queue: 'end'})
 	</prop:ClientValidation.OnShowSummary>	
 	</com:TValidationSummary>
 </div>
