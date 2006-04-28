@@ -37,6 +37,11 @@
 class TValidationSummary extends TWebControl
 {
 	/**
+	 * @var TValidatorClientScript validator client-script options.
+	 */
+	private $_clientScript;
+	
+	/**
 	 * Constructor.
 	 * This method sets the foreground color to red.
 	 */
@@ -242,9 +247,32 @@ class TValidationSummary extends TWebControl
 		$options['Refresh'] = $this->getAutoUpdate();
 		$options['ValidationGroup'] =  $this->getValidationGroup();
 		$options['Display'] = $this->getDisplay();
+		
+		if(!is_null($this->_clientScript))
+			$options = array_merge($options,$this->_clientScript->getOptions());
+					
 		return $options;
 	}
 
+	/**
+	 * @return TValidationSummaryClientScript client-side validation summary
+	 * event options.
+	 */
+	public function getClientValidation()
+	{
+		if(is_null($this->_clientScript))
+			$this->_clientScript = $this->createClientScript();
+		return $this->_clientScript;
+	}
+	
+	/**
+	 * @return TValidationSummaryClientScript javascript validation summary
+	 * event options.
+	 */
+	protected function createClientScript()
+	{
+		return new TValidationSummaryClientScript;
+	}
 	/**
 	 * Get the list of validation error messages.
 	 * @return array list of validator error messages.
@@ -341,6 +369,107 @@ class TValidationSummary extends TWebControl
 		}
 		$writer->write($content);
 	}
+}
+
+/**
+ * TValidationSummaryClientScript class.
+ * 
+ * Client-side validation summary events such as {@link setOnHideSummary
+ * OnHideSummary} and {@link setOnShowSummary OnShowSummary} can be modified
+ * through the {@link TBaseValidator:: getClientValidation ClientValidation}
+ * property of a validation summary. 
+ * 
+ * The <tt>OnHideSummary</tt> event is raise when the validation summary
+ * requests to hide the messages.
+ * 
+ * The <tt>OnShowSummary</tt> event is raised when the validation summary
+ * requests to show the messages.
+ * 
+ * See the quickstart documentation for further details.
+ * 
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
+class TValidationSummaryClientScript extends TComponent
+{
+	/**
+	 * @var TMap client-side validation summary event javascript code.
+	 */
+	private $_options;
+	
+	/**
+	 * Constructor.
+	 */
+	public function __construct()
+	{
+		$this->_options = new TMap;
+	}
+
+	/**
+	 * @return string javascript code for client-side OnHideSummary event.
+	 */
+	public function getOnHideSummary()
+	{
+		return $this->_options->itemAt['OnHideSummary'];	
+	}
+	
+	/**
+	 * Client-side OnHideSummary validation summary event is raise when all the
+	 * validators are valid. This will override the default client-side
+	 * validation summary behaviour.
+	 * @param string javascript code for client-side OnHideSummary event.
+	 */
+	public function setOnHideSummary($javascript)
+	{
+		$this->_options->add('OnHideSummary', $this->ensureFunction($javascript));
+	}
+	
+	/**
+	 * Client-side OnShowSummary event is raise when one or more validators are
+	 * not valid. This will override the default client-side validation summary
+	 * behaviour.
+	 * @param string javascript code for client-side OnShowSummary event.
+	 */
+	public function setOnShowSummary($javascript)
+	{
+		$this->_options->add('OnShowSummary', $this->ensureFunction($javascript));
+	}
+	
+	/**
+	 * @return string javascript code for client-side OnShowSummary event.
+	 */
+	public function getOnShowSummary()
+	{
+		return $this->_options->itemAt('OnShowSummary');
+	}
+	
+	/**
+	 * @return array list of client-side event code.
+	 */
+	public function getOptions()
+	{
+		return $this->_options->toArray();
+	}
+	
+	/**
+	 * Ensure the string is a valid javascript function. If the string begins
+	 * with "javascript:" valid javascript function is assumed, otherwise the
+	 * code block is enclosed with "function(summary, validators){ }" block.
+	 * @param string javascript code.
+	 * @return string javascript function code.
+	 */
+	private function ensureFunction($javascript)
+	{
+		if(TJavascript::isFunction($javascript))
+			return $javascript;
+		else
+		{
+			$code = "function(summary, validators){ {$javascript} }";
+			return TJavascript::quoteFunction($code);
+		}
+	}	
 }
 
 ?>

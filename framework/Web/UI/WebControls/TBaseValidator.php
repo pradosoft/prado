@@ -43,7 +43,7 @@
  *
  * You can also customized the client-side behaviour by adding javascript
  * code to the subproperties of the {@link getClientValidation ClientValidation}
- * property.
+ * property. See quickstart documentation for further details.
  *
  * You can also place a {@link TValidationSummary} control on a page to display error messages
  * from the validators together. In this case, only the {@link setErrorMessage ErrorMessage}
@@ -79,7 +79,9 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * @var boolean whether the validator has been registered with the page
 	 */
 	private $_registered=false;
-	
+	/**
+	 * @var TValidatorClientScript validator client-script options.
+	 */
 	private $_clientScript;
 
 	/**
@@ -186,7 +188,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	protected function createClientScript()
 	{
-		return new TValidatorClientScript($this->getPage()->getClientScript());
+		return new TValidatorClientScript;
 	}
 
 	/**
@@ -491,7 +493,21 @@ abstract class TBaseValidator extends TLabel implements IValidator
 /**
  * TValidatorClientScript class.
  * 
- * @todo Add doc to quickstart and classes.
+ * Client-side validator events can be modified through the {@link
+ * TBaseValidator::getClientValidation ClientValidation} property of a
+ * validator. The subproperties of ClientValidation are those of the
+ * TValidatorClientScript properties. The client-side validator supports the
+ * following events.
+ * 
+ * The <tt>OnValidate</tt> event is raise before the validator validation
+ * functions are called.
+ * 
+ * The <tt>OnSuccess</tt> event is raised after the validator has successfully
+ * validate the control.
+ * 
+ * The <tt>OnError</tt> event is raised after the validator fails validation.
+ * 
+ * See the quickstart documentation for further details.
  * 
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $Date: $
@@ -500,58 +516,95 @@ abstract class TBaseValidator extends TLabel implements IValidator
  */
 class TValidatorClientScript extends TComponent
 {
+	/**
+	 * @var TMap client-side validator event javascript code.
+	 */
 	private $_options;
-	private $_manager;
-	private $_effectsEnabled = false;
 	
-	public function __construct($manager)
+	/**
+	 * Constructor.
+	 */
+	public function __construct()
 	{
 		$this->_options = new TMap;
-		$this->_manager = $manager;
 	}
 	
+	/**
+	 * @return string javascript code for client-side OnValidate event.
+	 */
 	public function getOnValidate()
 	{
 		return $this->_options->itemAt['OnValidate'];	
 	}
 	
+	/**
+	 * Client-side OnValidate validator event is raise before the validators
+	 * validation functions are called. 
+	 * @param string javascript code for client-side OnValidate event.
+	 */
 	public function setOnValidate($javascript)
 	{
 		$this->_options->add('OnValidate', $this->ensureFunction($javascript));
 	}
 	
+	/**
+	 * Client-side OnSuccess event is raise after validation is successfull.
+	 * This will override the default client-side validator behaviour.
+	 * @param string javascript code for client-side OnSuccess event.
+	 */
 	public function setOnSuccess($javascript)
 	{
 		$this->_options->add('OnSuccess', $this->ensureFunction($javascript));
 	}
 	
+	/**
+	 * @return string javascript code for client-side OnSuccess event.
+	 */
 	public function getOnSuccess()
 	{
 		return $this->_options->itemAt('OnSuccess');
 	}
 	
+	/**
+	 * Client-side OnError event is raised after validation failure.
+	 * This will override the default client-side validator behaviour.
+	 * @param string javascript code for client-side OnError event.
+	 */
 	public function setOnError($javascript)
 	{
 		$this->_options->add('OnError', $this->ensureFunction($javascript));
 	}
 	
+	/**
+	 * @return string javascript code for client-side OnError event.
+	 */
 	public function getOnError()
 	{
 		return $this->_options->itemAt('OnError');
 	}
 	
+	/**
+	 * @return array list of client-side event code.
+	 */
 	public function getOptions()
 	{
 		return $this->_options->toArray();
 	}
 	
+	/**
+	 * Ensure the string is a valid javascript function. If the string begins
+	 * with "javascript:" valid javascript function is assumed, otherwise the
+	 * code block is enclosed with "function(validator, sender){ }" block.
+	 * @param string javascript code.
+	 * @return string javascript function code.
+	 */
 	private function ensureFunction($javascript)
 	{
 		if(TJavascript::isFunction($javascript))
 			return $javascript;
 		else
 		{
-			$code = "function(validator, invoker){ {$javascript} }";
+			$code = "function(validator, sender){ {$javascript} }";
 			return TJavascript::quoteFunction($code);
 		}
 	}

@@ -8,6 +8,7 @@ NEW: SQLMap (Wei)
 
 Version 3.0.0 May 1, 2006
 =========================
+BUG: Ticket#68  - 2 TButtons with THtmlArea causes second button to fail to function (Wei)
 BUG: Ticket#70  - Javascript for TDataTypeValidator added (Wei)
 BUG: Ticket#131 - TImageMap and TLinkButton continue to postback even client validator fails (Wei)
 BUG: Ticket#135 - TBrowserLogRoute reports wrong timings (Qiang)
@@ -26,6 +27,7 @@ ENH: Format string in classes extending TDataGridColumn can now evaluate an expr
 ENH: Format string in classes extending TListControl can now evaluate an expression (Qiang)
 ENH: Custom visual effects can be added to client-side validators. (Wei)
 ENH: TJavascript::encode() allows raw javascript code when string begins with "javascript:" (Wei)
+ENH: Update TinyMCE to 2.0.5.1
 CHG: Rewrote client-side javascript validators, check your client-side validation behaviour (Wei)
 CHG: Updated the javascript Prototype library, a few utilties functions REMOVED, may break your existing javascript code. (Wei)
 CHG: Build javascript without compression, only comments are removed. (Wei)
@@ -33,7 +35,6 @@ CHG: TDatePicker's date can be set using Date property, it value must be in same
 CHG: TSimpleDateFormatter::parse() now return an integer or null on parse error (Wei)
 NEW: TListControlValidator (Wei)
 NEW: TClientScript (Wei)
-
 
 
 Version 3.0RC2 April 16, 2006

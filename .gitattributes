@@ -1021,9 +1021,12 @@ tests/FunctionalTests/config.php -text
 tests/FunctionalTests/features.php -text
 tests/FunctionalTests/features/index.php -text
 tests/FunctionalTests/features/protected/application.xml -text
+tests/FunctionalTests/features/protected/controls/LabeledTextBox.tpl -text
+tests/FunctionalTests/features/protected/controls/LabeledTextbox.php -text
 tests/FunctionalTests/features/protected/controls/Layout.php -text
 tests/FunctionalTests/features/protected/controls/Layout.tpl -text
 tests/FunctionalTests/features/protected/pages/ColorPicker.page -text
+tests/FunctionalTests/features/protected/pages/CompositeControl.page -text
 tests/FunctionalTests/features/protected/pages/DatePicker.page -text
 tests/FunctionalTests/features/protected/pages/FeatureList.page -text
 tests/FunctionalTests/features/protected/pages/FeatureList.php -text
@@ -1035,6 +1038,7 @@ tests/FunctionalTests/features/protected/pages/I18N/Home.zh_CN.page -text
 tests/FunctionalTests/features/protected/pages/I18N/config.xml -text
 tests/FunctionalTests/features/protected/pages/RatingList.page -text
 tests/FunctionalTests/features/protected/pages/ValidatorEffects.page -text
+tests/FunctionalTests/features/tests/CompositeControlTestCase.php -text
 tests/FunctionalTests/index.php -text
 tests/FunctionalTests/quickstart.php -text
 tests/FunctionalTests/quickstart/Advanced/I18N.php -text
@@ -1155,6 +1159,7 @@ tests/FunctionalTests/tickets/protected/pages/Ticket27.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket54.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket54Master.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket54Master.tpl -text
+tests/FunctionalTests/tickets/protected/pages/Ticket68.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket72.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket72.php -text
 tests/FunctionalTests/tickets/protected/pages/config.xml -text

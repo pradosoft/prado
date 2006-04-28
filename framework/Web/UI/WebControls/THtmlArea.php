@@ -78,44 +78,44 @@ Prado::using('System.Web.UI.WebControls.TTextBox');
  */
 class THtmlArea extends TTextBox
 {
-	// Qiang: need to clean up the following (too inefficient)
+	/**
+	 * @var array list of locale => language file pairs.
+	 */
 	private static $_langs = array(
-		'da' => array('da'),
-		'fa' => array('fa'),
-		'hu' => array('hu'),
-		'nb' => array('nb'),
-		'pt_br' => array('pt_BR'),
-		'sk' => array('sk'),
-		'zh_tw_utf8' => array('zh_TW', 'zh_HK'),
-		'ar' => array('ar'),
-		'de' => array('de'),
-		'fi' => array('fi'),
-		'is' => array('is'),
-		'nl' => array('nl'),
-		'sv' => array('sv'),
-		'ca' => array('ca'),
-		'el' => array('el'),
-		'fr' => array('fr'),
-		'it' => array('it'),
-		'nn' => array('nn'), //what is nn?
-//		'ru' => array('ru'),
-		'th' => array('th'),
-		'cs' => array('cs'),
-		'en' => array('en'),
-		'fr_ca' => array('fr_CA'),
-		'ja' => array('ja'),
-		'pl' => array('pl'),
-//		'ru_KOI8-R' => array('ru'), /// what is this?
-		'zh_cn' => array('zh_CN'),
-		'cy' => array('cy'), //what is this?
-		'es' => array('es'),
-		'he' => array('he'),
-		'ko' => array('ko'),
-		'pt' => array('pt'),
-		'ru_UTF-8' => array('ru'),
-		'tr' => array('tr'),
-		'si' => array('si'),
-//		'zh_tw' => array('zh_TW'),
+			'ar' => 'ar',
+			'ca' => 'ca',
+			'cs' => 'cs',
+			'da' => 'da',
+			'de' => 'de',
+			'el' => 'el',
+			'en' => 'en',
+			'es' => 'es',
+			'fa' => 'fa',
+			'fi' => 'fi',
+			'fr' => 'fr',
+			'fr_CA' => 'fr_ca',
+			'he' => 'he',
+			'hu' => 'hu',
+			'is' => 'is',
+			'it' => 'it',
+			'ja' => 'ja',
+			'ko' => 'ko',
+			'nb' => 'nb',
+			'nl' => 'nl',
+			'pl' => 'pl',
+			'pt' => 'pt',
+			'pt_BR' => 'pt_br',
+			'ru' => 'ru_UTF-8',
+			'si' => 'si',
+			'sk' => 'sk',
+			'sv' => 'sv',
+			'th' => 'th',
+			'tr' => 'tr',
+			'vi' => 'vi',
+			'zh' => 'zh_cn_utf8',
+			'zh_CN' => 'zh_cn_utf8',
+			'zh_HK' => 'zh_tw_utf8',
+			'zh_TW' => 'zh_tw_utf8'
 		);
 
 	/**
@@ -271,9 +271,14 @@ class THtmlArea extends TTextBox
 		$options['elements'] = $this->getClientID();
 		$options['language'] = $this->getLanguageSuffix($this->getCulture());
 		$options['theme'] = 'advanced';
+
+		//make it basic advanced to fit into 1 line of buttons.
+		//$options['theme_advanced_buttons1'] = 'bold,italic,underline,strikethrough,separator,justifyleft,justifycenter,justifyright, justifyfull,separator,bullist,numlist,separator,undo,redo,separator,link,unlink,separator,charmap,separator,code,help';
+		//$options['theme_advanced_buttons2'] = ' ';
 		$options['theme_advanced_buttons1'] = 'formatselect,fontselect,fontsizeselect,separator,bold,italic,underline,strikethrough,sub,sup';
 		$options['theme_advanced_buttons2'] = 'justifyleft,justifycenter,justifyright,justifyfull,separator,bullist,numlist,separator,outdent,indent,separator,forecolor,backcolor,separator,hr,link,unlink,image,charmap,separator,removeformat,code,help';
 		$options['theme_advanced_buttons3'] = ' ';
+
 		$options['theme_advanced_toolbar_location'] = 'top';
 		$options['theme_advanced_toolbar_align'] = 'left';
 		$options['theme_advanced_path_location'] = 'bottom';
@@ -312,22 +317,10 @@ class THtmlArea extends TTextBox
 		if(!is_null($app))
 			$variants = $app->getCultureVariants($culture);
 
-		//default the variant to "en"
-		if(count($variants) == 0)
+		foreach($variants as $variant)
 		{
-			if(empty($culture))
-				return 'en';
-			$variants[] = strtolower($culture);
-		}
-
-		// TODO: triple loops???
-		foreach(self::$_langs as $js => $langs)
-		{
-			foreach($variants as $variant)
-			{
-				if(in_array($variant, $langs))
-					return $js;
-			}
+			if(isset(self::$_langs[$variant]))
+				return self::$_langs[$variant];
 		}
 
 		return 'en';
