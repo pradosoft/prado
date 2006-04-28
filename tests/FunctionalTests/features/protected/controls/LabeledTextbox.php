@@ -7,7 +7,7 @@ class LabeledTextBox extends TCompositeControl
 {
 	public function getTextBox()
 	{
-		return $this->textbox;
+		return $this->getRegisteredObject('textbox');
 	}
 	
 	public function getLabel()

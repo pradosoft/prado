@@ -772,6 +772,10 @@ Prado.WebUI.TBaseValidator.prototype =
 		
 	 				return Prado.WebUI.TDatePicker.getDropDownDate(control).getTime();
 	 			}
+	 		case 'THtmlArea':
+	 			if(typeof tinyMCE != "undefined")
+					tinyMCE.triggerSave();
+				return this.trim($F(control));
 	 		default:
 	 			if(this.isListControlType())
 	 				return this.getFirstSelectedListValue();	 			
