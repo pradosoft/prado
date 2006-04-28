@@ -772,7 +772,6 @@ framework/Web/UI/WebControls/TCheckBoxList.php -text
 framework/Web/UI/WebControls/TClientScript.php -text
 framework/Web/UI/WebControls/TColorPicker.php -text
 framework/Web/UI/WebControls/TCompareValidator.php -text
-framework/Web/UI/WebControls/TCompositeControl.php -text
 framework/Web/UI/WebControls/TContent.php -text
 framework/Web/UI/WebControls/TContentPlaceHolder.php -text
 framework/Web/UI/WebControls/TCustomValidator.php -text

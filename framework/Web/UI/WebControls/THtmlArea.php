@@ -271,10 +271,12 @@ class THtmlArea extends TTextBox
 		$options['elements'] = $this->getClientID();
 		$options['language'] = $this->getLanguageSuffix($this->getCulture());
 		$options['theme'] = 'advanced';
-		
+
 		//make it basic advanced to fit into 1 line of buttons.
-		$options['theme_advanced_buttons1'] = 'bold,italic,underline,strikethrough,separator,justifyleft,justifycenter,justifyright, justifyfull,separator,bullist,numlist,separator,undo,redo,separator,link,unlink,separator,charmap,separator,code,help';
-		$options['theme_advanced_buttons2'] = ' ';
+		//$options['theme_advanced_buttons1'] = 'bold,italic,underline,strikethrough,separator,justifyleft,justifycenter,justifyright, justifyfull,separator,bullist,numlist,separator,undo,redo,separator,link,unlink,separator,charmap,separator,code,help';
+		//$options['theme_advanced_buttons2'] = ' ';
+		$options['theme_advanced_buttons1'] = 'formatselect,fontselect,fontsizeselect,separator,bold,italic,underline,strikethrough,sub,sup';
+		$options['theme_advanced_buttons2'] = 'justifyleft,justifycenter,justifyright,justifyfull,separator,bullist,numlist,separator,outdent,indent,separator,forecolor,backcolor,separator,hr,link,unlink,image,charmap,separator,removeformat,code,help';
 		$options['theme_advanced_buttons3'] = ' ';
 
 		$options['theme_advanced_toolbar_location'] = 'top';

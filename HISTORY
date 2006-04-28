@@ -27,7 +27,6 @@ CHG: TDatePicker's date can be set using Date property, it value must be in same
 CHG: TSimpleDateFormatter::parse() now return an integer or null on parse error (Wei)
 NEW: TListControlValidator (Wei)
 NEW: TClientScript (Wei)
-NEW: TCompositeControl (Wei)
 
 
 Version 3.0RC2 April 16, 2006

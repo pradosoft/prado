@@ -3,8 +3,14 @@
  * Created on 28/04/2006
  */
 
-class LabeledTextBox extends TCompositeControl
+class LabeledTextBox extends TTemplateControl
 {
+	public function __construct()
+	{
+		parent::__construct();
+		$this->ensureChildControls();
+	}
+
 	public function getTextBox()
 	{
 		return $this->getRegisteredObject('textbox');
@@ -12,7 +18,7 @@ class LabeledTextBox extends TCompositeControl
 	
 	public function getLabel()
 	{
-		return $this->label;
+		return $this->getRegisteredObject('label');
 	}
 } 
 
