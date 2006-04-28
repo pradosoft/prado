@@ -1,0 +1,12 @@
+<com:TContent ID="Content">
+<h1>Composite Control Test</h1>
+	<com:LabeledTextBox id="user" Label.Text="username:" /><br />
+	<com:LabeledTextBox id="pass" Label.Text="password:" /><br />
+	<com:TButton Text="Submit" />
+
+<com:TPanel Visible=<%= $this->user->TextBox->Text != "" %> >
+<h2>Result</h2>
+	User: <%= $this->user->TextBox->Text %> Pass: <%= $this->pass->TextBox->Text %>
+</com:TPanel>
+
+</com:TContent>

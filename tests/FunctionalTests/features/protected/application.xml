@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <application id="FeatureTests" Mode="Debug">
+	<paths>
+		<using namespace="Application.controls.*" />
+	</paths>
 	<services>
 	  <service id="page" class="TPageService" DefaultPage="FeatureList">
 	    <pages MasterClass="Application.controls.Layout" />

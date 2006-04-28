@@ -772,6 +772,7 @@ framework/Web/UI/WebControls/TCheckBoxList.php -text
 framework/Web/UI/WebControls/TClientScript.php -text
 framework/Web/UI/WebControls/TColorPicker.php -text
 framework/Web/UI/WebControls/TCompareValidator.php -text
+framework/Web/UI/WebControls/TCompositeControl.php -text
 framework/Web/UI/WebControls/TContent.php -text
 framework/Web/UI/WebControls/TContentPlaceHolder.php -text
 framework/Web/UI/WebControls/TCustomValidator.php -text
@@ -845,9 +846,12 @@ tests/FunctionalTests/config.php -text
 tests/FunctionalTests/features.php -text
 tests/FunctionalTests/features/index.php -text
 tests/FunctionalTests/features/protected/application.xml -text
+tests/FunctionalTests/features/protected/controls/LabeledTextBox.tpl -text
+tests/FunctionalTests/features/protected/controls/LabeledTextbox.php -text
 tests/FunctionalTests/features/protected/controls/Layout.php -text
 tests/FunctionalTests/features/protected/controls/Layout.tpl -text
 tests/FunctionalTests/features/protected/pages/ColorPicker.page -text
+tests/FunctionalTests/features/protected/pages/CompositeControl.page -text
 tests/FunctionalTests/features/protected/pages/DatePicker.page -text
 tests/FunctionalTests/features/protected/pages/FeatureList.page -text
 tests/FunctionalTests/features/protected/pages/FeatureList.php -text
@@ -859,6 +863,7 @@ tests/FunctionalTests/features/protected/pages/I18N/Home.zh_CN.page -text
 tests/FunctionalTests/features/protected/pages/I18N/config.xml -text
 tests/FunctionalTests/features/protected/pages/RatingList.page -text
 tests/FunctionalTests/features/protected/pages/ValidatorEffects.page -text
+tests/FunctionalTests/features/tests/CompositeControlTestCase.php -text
 tests/FunctionalTests/index.php -text
 tests/FunctionalTests/quickstart.php -text
 tests/FunctionalTests/quickstart/Advanced/I18N.php -text
