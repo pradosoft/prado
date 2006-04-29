@@ -285,6 +285,16 @@ class THttpResponse extends TModule implements ITextWriter
 	}
 
 	/**
+	 * Reloads the current page.
+	 * The effect of this method call is the same as user pressing the
+	 * refresh button on his browser (without post data).
+	 **/
+	public function reload()
+	{
+		$this->redirect($this->getRequest()->getRequestUri());
+	}
+
+	/**
 	 * Outputs the buffered content, sends content-type and charset header.
 	 */
 	public function flush()

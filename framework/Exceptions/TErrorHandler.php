@@ -214,10 +214,10 @@ class TErrorHandler extends TModule
 			// if PHP exception, we want to show the 2nd stack level context
 			// because the 1st stack level is of little use (it's in error handler)
 			$trace=$exception->getTrace();
-			if(isset($trace[0]) && isset($trace[0]['file']) && isset($trace[0]['line']))
+			if(isset($trace[1]) && isset($trace[1]['file']) && isset($trace[1]['line']))
 			{
-				$fileName=$trace[0]['file'];
-				$errorLine=$trace[0]['line'];
+				$fileName=$trace[1]['file'];
+				$errorLine=$trace[1]['line'];
 			}
 		}
 		$lines=file($fileName);

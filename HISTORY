@@ -17,6 +17,7 @@ ENH: TButtonColumn can now be a column of image buttons (Qiang)
 ENH: TLiteral will display body content if Text is empty (Qiang)
 ENH: Format string in classes extending TDataGridColumn can now evaluate an expression (Qiang)
 ENH: Format string in classes extending TListControl can now evaluate an expression (Qiang)
+ENH: Added THttpResponse::reload() (Qiang)
 ENH: Custom visual effects can be added to client-side validators. (Wei)
 ENH: TJavascript::encode() allows raw javascript code when string begins with "javascript:" (Wei)
 ENH: Update TinyMCE to 2.0.5.1
