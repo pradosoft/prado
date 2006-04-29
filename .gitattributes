@@ -6,6 +6,7 @@
 buildscripts/.htaccess -text
 buildscripts/jsbuilder/JavaScript[!!-~]Documentation[!!-~]Tool.html -text
 buildscripts/jsbuilder/build.php -text
+buildscripts/jsbuilder/jsmin.php -text
 buildscripts/phing/style/coverage-frames.xsl -text
 buildscripts/phing/style/log.xsl -text
 buildscripts/phing/style/phpunit2-frames.xsl -text

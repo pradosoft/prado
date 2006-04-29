@@ -40,6 +40,8 @@ define('DOC_OUTPUT_DIR', realpath(dirname(__FILE__).'/../../docs/Javascript'));
  */
 define('BUILD_DOC', sprintf('perl "%s" --no-sources -d "%s" ', JS_DOC, DOC_OUTPUT_DIR).'%s');
 
+include(dirname(__FILE__).'/jsmin.php');
+
 if(SOURCE_DIR===false || TARGET_DIR===false)
 	die('Unable to determine the build path.');
 if(!is_writable(TARGET_DIR))
@@ -161,8 +163,12 @@ foreach($libraries as $libFile => $sourceFiles)
 		echo "...adding $sourceFile\n";
 		$contents.=file_get_contents($sourceFile)."\n\n";		
 	}
-
-	file_put_contents($libFile,compress_js($contents));
+	$tempFile=$libFile.'.tmp';
+	file_put_contents($tempFile,$contents);
+	$jsMin = new JSMin($tempFile, $libFile);
+	$jsMin -> minify();
+	unset($jsMin);
+	@unlink($tempFile);
 	echo "Saving file {$libFile}\n"; 
 	$builds++;
 }
