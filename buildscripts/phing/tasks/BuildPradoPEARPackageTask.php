@@ -44,13 +44,14 @@ class BuildPradoPEARPackageTask extends MatchingTask {
      * @param PEAR_PackageFileManager2 $pkg
      */
     private function setOptions($pkg) {        
-		$options['baseinstalldir'] = 'prado';
+		$options['baseinstalldir'] = 'prado3';
         $options['packagedirectory'] = $this->dir->getAbsolutePath();
         
         if(empty($this->filesets)) {
 			throw new BuildException("You must use a <fileset> tag to specify the files to include in the package.xml");
 		}
         
+        // Use PEAR_PackageFileManager_Fileset from phing as file list generator
 		$options['filelistgenerator'] = 'Fileset';
         
 		// Some Phing-specific options needed by our Fileset reader
@@ -67,6 +68,7 @@ class BuildPradoPEARPackageTask extends MatchingTask {
         } else {
             $this->log("Creating [default] package.xml file in base directory.", PROJECT_MSG_INFO);
         }
+        $options['dir_roles'] = array('framework' => 'php');
         $pkg->setOptions($options);
     }
 
@@ -88,7 +90,7 @@ class BuildPradoPEARPackageTask extends MatchingTask {
 		$this->setOptions($package);
 
 		// the hard-coded stuff
-		$package->setPackage('prado');
+		$package->setPackage('prado3');
 		$package->setSummary('PRADO is a component-based and event-driven framework for rapid Web programming in PHP 5.');
 		$package->setDescription('PRADO reconceptualizes Web application development in terms of components, events and properties instead of procedures, URLs and query parameters.
 
@@ -117,7 +119,9 @@ o Team Integration - PRADO enables separation of content and presentation. Compo
 		$package->setLicense('BSD', 'http://www.opensource.org/licenses/bsd-license.php');
 		
 		// Add package maintainers
-		$package->addMaintainer('lead', 'xue', 'Qiang Xue', 'qiang.xue@gmail.com');
+		$package->addMaintainer('lead', 'qxue', 'Qiang Xue', 'qiang.xue@gmail.com');
+		$package->addMaintainer('lead', 'jrags', 'Jason Ragsdale', 'jrags@jasrags.net');
+		$package->addMaintainer('lead', 'knut', 'Knut Urdalen', 'knut.urdalen@gmail.com');
 
 		// "core" dependencies
 		$package->setPhpDep('5.0.0');

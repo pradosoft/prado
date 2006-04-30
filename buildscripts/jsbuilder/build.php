@@ -40,12 +40,12 @@ define('DOC_OUTPUT_DIR', realpath(dirname(__FILE__).'/../../docs/Javascript'));
  */
 define('BUILD_DOC', sprintf('perl "%s" --no-sources -d "%s" ', JS_DOC, DOC_OUTPUT_DIR).'%s');
 
+include_once(dirname(__FILE__).'/jsmin.php');
+
 if(SOURCE_DIR===false || TARGET_DIR===false)
 	die('Unable to determine the build path.');
 if(!is_writable(TARGET_DIR))
 	die('Unable to create files under '.TARGET_DIR.'.');
-
-include(dirname(__FILE__).'/jsmin.php');
 
 /**
  * list of js library files to be compressed and built
@@ -82,7 +82,7 @@ $libraries = array(
 //		'extra/behaviour.js',
 
 		'extended/date.js',
-	
+
 		//prado core
 		'prado/prado.js',
 		'prado/form.js',
@@ -159,9 +159,9 @@ foreach($libraries as $libFile => $sourceFiles)
 		$sourceFile=SOURCE_DIR.'/'.$sourceFile;
 		if(!is_file($sourceFile))
 			echo "Source file not found: $sourceFile\n";
-		
+
 		echo "...adding $sourceFile\n";
-		$contents.=file_get_contents($sourceFile)."\n\n";		
+		$contents.=file_get_contents($sourceFile)."\n\n";
 	}
 	$tempFile=$libFile.'.tmp';
 	file_put_contents($tempFile,$contents);
@@ -169,7 +169,7 @@ foreach($libraries as $libFile => $sourceFiles)
 	$jsMin -> minify();
 	unset($jsMin);
 	@unlink($tempFile);
-	echo "Saving file {$libFile}\n"; 
+	echo "Saving file {$libFile}\n";
 	$builds++;
 }
 if(isset($argv[1]) && preg_match('/doc*/', $argv[1]))
@@ -183,7 +183,7 @@ if(isset($argv[1]) && preg_match('/doc*/', $argv[1]))
 	$command = sprintf(BUILD_DOC, $files);
 	system($command);
 }
-else if($builds > 0)	
+else if($builds > 0)
 	echo "\nJavascript build complete, {$builds} file(s) compressed.";
 else
 	echo "No files to build.";
