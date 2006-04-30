@@ -16,9 +16,9 @@ for both A and B.
 
 Upgrading from v3.0.0 RC2
 -------------------------
-There should be no PHP compatibility issues. Remember to clean up 'assets'
-directory of your PRADO application as Javascript libraries were updated
-and client-side validators rewritten.
+- Template comment tag is changed from <! ... !> to <!-- ... --!>
+- Remember to clean up 'assets' directory of your PRADO application
+  as Javascript libraries were updated and client-side validators rewritten.
 
 
 Upgrading from v3.0.0 RC1

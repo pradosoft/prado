@@ -146,7 +146,7 @@ class TTemplateManager extends TModule
 class TTemplate extends TApplicationComponent implements ITemplate
 {
 	/**
-	 *  '<!.*?!>' - template comments
+	 *  '<!--.*?--!>' - template comments
 	 *	'<!--.*?-->'  - HTML comments
 	 *	'<\/?com:([\w\.]+)((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?"|\s*[\w\.]+=<%.*?%>)*)\s*\/?>' - component tags
 	 *	'<\/?prop:([\w\.]+)\s*>'  - property tags
@@ -616,17 +616,17 @@ class TTemplate extends TApplicationComponent implements ITemplate
 						$expectPropEnd=false;
 					}
 				}
-				else if(strpos($str,'<!--')===0)	// HTML comments
+				else if(strpos($str,'<!--')===0)	// comments
 				{
-					// do nothing
-				}
-				else if(strpos($str,'<!')===0)		// template comments
-				{
-					if($expectPropEnd)
-						throw new TConfigurationException('template_comments_forbidden');
-					if($matchStart>$textStart)
-						$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
-					$textStart=$matchEnd+1;
+					if(strrpos($str,'--!>')===strlen($str)-4)  // template comments
+					{
+						if($expectPropEnd)
+							throw new TConfigurationException('template_comments_forbidden');
+						if($matchStart>$textStart)
+							$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
+						$textStart=$matchEnd+1;
+					}
+					// else, HTML comments and we do nothing
 				}
 				else
 					throw new TConfigurationException('template_matching_unexpected',$match);

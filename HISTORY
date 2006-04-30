@@ -27,6 +27,7 @@ CHG: Build javascript without compression, only comments are removed. (Wei)
 CHG: TDatePicker's date can be set using Date property, it value must be in same format as DateFormat, TimeStamp must be set as integer (wei)
 CHG: TSimpleDateFormatter::parse() now return an integer or null on parse error (Wei)
 CHG: TControl::createControls() is changed to public. (Qiang)
+CHG: Template comment tag is changed from <! ... !> to <!-- ... --!> (Qiang)
 NEW: TListControlValidator (Wei)
 NEW: TClientScript (Wei)
 
