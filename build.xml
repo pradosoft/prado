@@ -20,7 +20,7 @@
   <property name="doc.dir" value="docs"/>
   <property name="build.base.dir" value="build"/>
   <property name="build.src.dir" value="${build.base.dir}/standard/${pkgname}"/>
-  <property name="build.pear.dir" value="${build.base.dir}/pear/${pkgname.pear}"/>
+  <property name="build.pear.dir" value="${build.base.dir}/pear"/>
   <property name="doc.build.dir" value="${build.base.dir}/docs/manual"/>
   <property name="dist.base.dir" value="dist"/>
   <property name="dist.zipfile" value="${dist.base.dir}/${pkgname}.zip"/>
@@ -97,7 +97,7 @@
     <echo message="the future you can add this to build.properties or"/>
     <echo message="enter it on the command line: "/>
     <echo message=" "/>
-    <echo message="-Dversion=3.0"/>
+    <echo message="-Dversion=3.0.0"/>
     <echo message="====================================================="/>	
     <input propertyname="version" promptChar=":">PRADO version for package</input>
 
@@ -137,15 +137,6 @@
     </phplint>
   </target>
 
-  <target name="prepare" description="Prepare directory layout for build">
-    <phingcall target="clean"/>
-    <mkdir dir="${build.base.dir}"/>
-    <mkdir dir="${dist.base.dir}"/>
-    <mkdir dir="${reports.unit.dir}"/>
-    <mkdir dir="${reports.codecoverage.dir}"/>
-    <mkdir dir="${doc.build.dir}"/>
-  </target>
-
   <target name="doc" description="Generate API documentation">
     <delete dir="${doc.build.dir}"/>
     <mkdir dir="${doc.build.dir}"/>
@@ -161,6 +152,8 @@
 
   <target name="test" description="Run unit tests">
     <echo>Preparing directory structure</echo>
+    <delete dir="${reports.dir}"/>
+    <mkdir dir="${reports.dir}"/>
     <delete dir="${reports.unit.dir}"/>
     <delete dir="${reports.codecoverage.dir}"/>
     <mkdir dir="${reports.unit.dir}"/>
@@ -235,7 +228,7 @@
     <delete dir="${build.pear.dir}"/>
     <mkdir dir="${build.pear.dir}"/>
     <copy todir="${build.pear.dir}">
-      <fileset refid="src"/>
+      <fileset refid="framework"/>
       <fileset dir="${build.base.dir}">
 	<include name="${prado.lite}"/>
       </fileset>
@@ -243,20 +236,22 @@
     
     <echo>Creating package.xml...</echo>
     <pear-package dir="${build.pear.dir}" destFile="${build.base.dir}/pear/package.xml" version="${version}" state="${pear.state}" notes="${notes}">
-      <fileset refid="src"/>
+      <fileset refid="framework"/>
       <fileset dir="${build.base.dir}">
 	<include name="${prado.lite}"/>
       </fileset>
     </pear-package>
   </target>
   
-  <target name="build" depends="versioncheck,prepare,doc,quickstart,pradolite,build-standard-package,build-pear-package" description="Creating the main PRADO build"/>
+  <target name="build" depends="versioncheck,doc,quickstart,pradolite,build-standard-package" description="Creating the main PRADO build"/>
 
   <target name="dist-pear" depends="build-pear-package" description="Create PRADO PEAR package">
     <delete file="${dist.pearfile}"/>
     <mkdir dir="${dist.base.dir}"/>
-    <tar compression="gzip" destFile="${dist.pearfile}" basedir="${build.base.dir}/pear"/>
-    <exec command="pear package-validate ${dist.pearfile}" dir="." passthru="true"/>
+    <!--<tar compression="gzip" destFile="${dist.pearfile}" basedir="${build.pear.dir}"/>-->
+    <exec command="pear package" dir="${build.pear.dir}" passthru="true"/>
+    <!--<exec command="pear package-validate prado3-${version}.tgz" dir="${build.pear.dir}" passthru="true"/>-->
+    <move file="${build.pear.dir}/prado3-${version}.tgz" tofile="${dist.pearfile}"/>
   </target>
 
   <target name="dist" depends="build" description="Create PRADO distributions">
@@ -288,5 +283,13 @@
       <fileset refid="src"/>
     </analyze>
   </target>
+
+  <target name="install" description="Install PEAR package locally">
+    <exec command="sudo pear install ${dist.pearfile}" dir="." passthru="true"/>
+  </target>
   
+  <target name="uninstall" description="Uninstall PEAR package locally">
+    <exec command="sudo pear uninstall pear.pradosoft.com/prado3" dir="." passthru="true"/>   
+  </target>
+
 </project>
