@@ -1,0 +1,17 @@
+<com:TContent ID="Content">
+	<com:TClientScript UsingPradoScripts="ajax" />
+	<com:TActiveControl id="control1" />
+	<com:TTextBox />
+	<com:TCheckBoxList>
+		<com:TListItem Text="One" />
+		<com:TListItem Text="Two" />
+	</com:TCheckBoxList>
+	<com:TButton id="button1" Text="Submit" />
+	<script>
+		Event.observe("<%= $this->button1->ClientID %>", "click", function(event)
+		{
+			new Prado.Callback("<%= $this->control1->UniqueID %>", 1);
+			Event.stop(event);
+		});
+	</script>
+</com:TContent>

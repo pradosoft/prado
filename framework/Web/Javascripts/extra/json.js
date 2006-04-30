@@ -21,7 +21,7 @@ SOFTWARE.
 
 Array.prototype.______array = '______array';
 
-Prado.AJAX.JSON = {
+Prado.JSON = {
     org: 'http://www.JSON.org',
     copyright: '(c)2005 JSON.org',
     license: 'http://www.crockford.com/JSON/license.html',

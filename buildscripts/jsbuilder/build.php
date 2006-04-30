@@ -45,6 +45,8 @@ if(SOURCE_DIR===false || TARGET_DIR===false)
 if(!is_writable(TARGET_DIR))
 	die('Unable to create files under '.TARGET_DIR.'.');
 
+include(dirname(__FILE__).'/jsmin.php');
+
 /**
  * list of js library files to be compressed and built
  */
@@ -98,12 +100,12 @@ $libraries = array(
 	//active controls
 	'ajax.js' => array(
 		'prototype/ajax.js',
-		'prado/ajax.js',
-		'extra/json.js',
-		'effects/controls.js',
+		'prado/ajax3.js',
+		'extra/json.js'
+/*		'effects/controls.js',
 		'effects/dragdrop.js',
 		'effects/slider.js',
-		'prado/activecontrols.js'
+		'prado/activecontrols.js'*/
 	),
 	//logging
 	'logger.js' => array(
@@ -161,8 +163,12 @@ foreach($libraries as $libFile => $sourceFiles)
 		echo "...adding $sourceFile\n";
 		$contents.=file_get_contents($sourceFile)."\n\n";		
 	}
-
-	file_put_contents($libFile,compress_js($contents));
+	$tempFile=$libFile.'.tmp';
+	file_put_contents($tempFile,$contents);
+	$jsMin = new JSMin($tempFile, $libFile);
+	$jsMin -> minify();
+	unset($jsMin);
+	@unlink($tempFile);
 	echo "Saving file {$libFile}\n"; 
 	$builds++;
 }
@@ -181,15 +187,5 @@ else if($builds > 0)
 	echo "\nJavascript build complete, {$builds} file(s) compressed.";
 else
 	echo "No files to build.";
-
-//remove comments from javascript files.
-function compress_js($string)
-{
-	$string = preg_replace('/\/\/[^\n\r]*[\n\r]/', ' ', $string);
-	$string = preg_replace('/\/\*[^*]*\*+([^\/][^*]*\*+)*\//', ' ', $string);
-	$string = preg_replace('/  |\t|\r/', '', $string);
-	$string = preg_replace('/(\n[ \t]*){2,}/', "\n", $string);
-	return $string;
-}
 
 ?>

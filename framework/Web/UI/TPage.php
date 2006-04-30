@@ -36,7 +36,7 @@ class TPage extends TTemplateControl
 	const FIELD_PAGESTATE='PRADO_PAGESTATE';
 	const FIELD_CALLBACK_TARGET='PRADO_CALLBACK_TARGET';
 	const FIELD_CALLBACK_PARAMETER='PRADO_CALLBACK_PARAMETER';
-	const FIELD_CALLBACK_ID='PRADO_CALLBACK_ID';
+//	const FIELD_CALLBACK_ID='PRADO_CALLBACK_ID';
 	/**
 	 * @var array system post fields
 	 */
@@ -46,8 +46,8 @@ class TPage extends TTemplateControl
 		'PRADO_LASTFOCUS'=>true,
 		'PRADO_PAGESTATE'=>true,
 		'PRADO_CALLBACK_TARGET'=>true,
-		'PRADO_CALLBACK_PARAMETER'=>true,
-		'PRADO_CALLBACK_ID'=>true
+		'PRADO_CALLBACK_PARAMETER'=>true
+		//'PRADO_CALLBACK_ID'=>true
 	);
 	/**
 	 * @var TForm form instance
@@ -149,7 +149,11 @@ class TPage extends TTemplateControl
 	 * @var string state string to be stored on the client side
 	 */
 	private $_clientState='';
-
+	/**
+	 * @var array post data loader IDs.
+	 */
+	private $_postDataLoaders=array();
+	
 	/**
 	 * Constructor.
 	 * Sets the page object to itself.
@@ -259,10 +263,158 @@ class TPage extends TTemplateControl
 		$this->unloadRecursive();
 	}
 
+	/**
+	 * Sets Adapter to TActivePageAdapter and calls apter to process the
+	 * callback request.
+	 */
 	protected function processCallbackRequest($writer)
 	{
+		$this->setAdapter(new TActivePageAdapter($this));
+		
+		Prado::trace("Page onPreInit()",'System.Web.UI.TPage');
+		$this->onPreInit(null);
+
+		Prado::trace("Page initRecursive()",'System.Web.UI.TPage');
+		$this->initRecursive();
+
+		Prado::trace("Page onInitComplete()",'System.Web.UI.TPage');
+		$this->onInitComplete(null);
+
+		$this->_restPostData=new TMap;
+		Prado::trace("Page loadPageState()",'System.Web.UI.TPage');
+		$this->loadPageState();
+		Prado::trace("Page processPostData()",'System.Web.UI.TPage');
+		$this->processPostData($this->_postData,true);
+		Prado::trace("Page onPreLoad()",'System.Web.UI.TPage');
+		$this->onPreLoad(null);
+		Prado::trace("Page loadRecursive()",'System.Web.UI.TPage');
+		$this->loadRecursive();
+		Prado::trace("Page processPostData()",'System.Web.UI.TPage');
+		$this->processPostData($this->_restPostData,false);
+		Prado::trace("Page raiseChangedEvents()",'System.Web.UI.TPage');
+		$this->raiseChangedEvents();
+
+		$this->getAdapter()->processCallbackEvent($writer); 
+
+/*		
+		Prado::trace("Page raisePostBackEvent()",'System.Web.UI.TPage');
+		$this->raisePostBackEvent();
+*/		
+		Prado::trace("Page onLoadComplete()",'System.Web.UI.TPage');
+		$this->onLoadComplete(null);
+
+		Prado::trace("Page preRenderRecursive()",'System.Web.UI.TPage');
+		$this->preRenderRecursive();
+		Prado::trace("Page onPreRenderComplete()",'System.Web.UI.TPage');
+		$this->onPreRenderComplete(null);
+
+/*		Prado::trace("Page savePageState()",'System.Web.UI.TPage');
+		$this->savePageState();
+		Prado::trace("Page onSaveStateComplete()",'System.Web.UI.TPage');
+		$this->onSaveStateComplete(null);
+
+		Prado::trace("Page renderControl()",'System.Web.UI.TPage');
+		$this->renderControl($writer);
+*/
+		$this->getAdapter()->renderCallbackResponse($writer);
+		
+		Prado::trace("Page unloadRecursive()",'System.Web.UI.TPage');
+		$this->unloadRecursive();			
+	}
+	
+	/**
+	 * Gets the callback response handler that permits changing the callback
+	 * response headers and contents.
+	 * @return TCallbackResponse callback response handler.
+	 */
+	public function getCallbackResponse()
+	{
+		return $this->getAdapter()->getCallbackResponseHandler();
+	}
+	
+	/**
+	 * Set a new callback respond handler.
+	 * @param TCallbackResponse a different callback response handler.
+	 */
+	public function setCallbackResponse($responder)
+	{
+		$this->getAdapter()->setCallbackResponseHandler($responder);
+	}
+	
+	/**
+	 * Gets the callback client script handler that allows javascript functions
+	 * to be executed during the callback response. 
+	 * @return TCallbackClientScript interface to client-side javascript code.
+	 */
+	public function getCallbackClient()
+	{
+		return $this->getAdapter()->getCallbackClientHandler();
+	}
+	
+	/**
+	 * Set a new callback client handler.
+	 * @param TCallbackClientScript new callback client script handler.
+	 */
+	public function setCallbackClient($client)
+	{
+		$this->getAdapter()->setCallbackClientHandler($client);
+	}
+	
+	/**
+	 * @return TControl the control responsible for the current callback event,
+	 * null if nonexistent
+	 */
+	public function getCallbackEventTarget()
+	{
+		return $this->getAdapter()->getCallbackEventTarget();
 	}
 
+	/**
+	 * Registers a control to raise callback event in the current request.
+	 * @param TControl control registered to raise callback event.
+	 */
+	public function setCallbackEventTarget(TControl $control)
+	{
+		$this->getAdapter()->setCallbackEventTarget($control);
+	}
+
+	/**
+	 * Callback parameter is decoded assuming JSON encoding. 
+	 * @return string callback event parameter
+	 */
+	public function getCallbackEventParameter()
+	{
+		return $this->getAdapter()->getCallbackEventParameter();
+	}
+	
+	/**
+	 * @param mixed callback event parameter
+	 */
+	public function setCallbackEventParameter($value)
+	{
+		$this->getAdapter()->setCallbackEventParameter($value);
+	}
+	
+	/**
+	 * Register post data loaders for Callback to collect post data.
+	 * This method should only be called by framework developers.
+	 * @param TControl control that requires post data.
+	 * @see TControl::preRenderRecursive();
+	 */
+	public function registerPostDataLoader($control)
+	{
+		$this->_postDataLoaders[] = $control->getUniqueID();
+	}
+	
+	/**
+	 * Get a list of IDs of controls that are enabled and require post data.
+	 * @return array list of IDs implementing IPostBackDataHandler
+	 */
+	public function getPostDataLoaders()
+	{
+		return $this->_postDataLoaders;
+	}
+	
 	/**
 	 * @return TForm the form on the page
 	 */
@@ -541,12 +693,11 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * TBD
 	 * @return boolean whether this is a callback request
 	 */
 	public function getIsCallback()
 	{
-		return false;
+		return $this->getIsPostBack() && $this->getRequest()->contains(self::FIELD_CALLBACK_TARGET);
 	}
 
 	/**

@@ -6,6 +6,7 @@
 buildscripts/.htaccess -text
 buildscripts/jsbuilder/JavaScript[!!-~]Documentation[!!-~]Tool.html -text
 buildscripts/jsbuilder/build.php -text
+buildscripts/jsbuilder/jsmin.php -text
 buildscripts/phing/style/coverage-frames.xsl -text
 buildscripts/phing/style/log.xsl -text
 buildscripts/phing/style/phpunit2-frames.xsl -text
@@ -880,6 +881,7 @@ framework/Web/Javascripts/js/rico.js -text
 framework/Web/Javascripts/js/validator.js -text
 framework/Web/Javascripts/prado/activecontrols.js -text
 framework/Web/Javascripts/prado/ajax.js -text
+framework/Web/Javascripts/prado/ajax3.js -text
 framework/Web/Javascripts/prado/controls.js -text
 framework/Web/Javascripts/prado/element.js -text
 framework/Web/Javascripts/prado/form.js -text
@@ -924,6 +926,11 @@ framework/Web/THttpRequest.php -text
 framework/Web/THttpResponse.php -text
 framework/Web/THttpSession.php -text
 framework/Web/THttpUtility.php -text
+framework/Web/UI/ActiveControls/TActiveControl.php -text
+framework/Web/UI/ActiveControls/TActiveControlAdapter.php -text
+framework/Web/UI/ActiveControls/TActivePageAdapter.php -text
+framework/Web/UI/ActiveControls/TCallbackClientScript.php -text
+framework/Web/UI/ActiveControls/TCallbackResponse.php -text
 framework/Web/UI/TClientScriptManager.php -text
 framework/Web/UI/TControl.php -text
 framework/Web/UI/TControlAdapter.php -text
@@ -1025,6 +1032,8 @@ tests/FunctionalTests/features/protected/controls/LabeledTextBox.tpl -text
 tests/FunctionalTests/features/protected/controls/LabeledTextbox.php -text
 tests/FunctionalTests/features/protected/controls/Layout.php -text
 tests/FunctionalTests/features/protected/controls/Layout.tpl -text
+tests/FunctionalTests/features/protected/pages/ActiveControls/ActiveControl.page -text
+tests/FunctionalTests/features/protected/pages/ActiveControls/config.xml -text
 tests/FunctionalTests/features/protected/pages/ColorPicker.page -text
 tests/FunctionalTests/features/protected/pages/CompositeControl.page -text
 tests/FunctionalTests/features/protected/pages/DatePicker.page -text

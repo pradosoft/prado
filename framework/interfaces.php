@@ -280,4 +280,41 @@ interface IBindable
 	public function dataBind();
 }
 
+/**
+ * IActiveControl interface.
+ * 
+ * Active controls must implement IActiveControl interface.
+ * 
+ * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
+ * @version $Revision: $  $Date: $
+ * @package System
+ * @since 3.0
+ */
+interface IActiveControl
+{
+	
+}
+
+/**
+ * ICallbackEventHandler interface.
+ * 
+ * If a control wants to respond to callback event, it must implement this
+ * interface.
+ *  
+ * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
+ * @version $Revision: $  $Date: $
+ * @package System
+ * @since 3.0
+ */
+interface ICallbackEventHandler
+{
+	/**
+	 * Raises callback event. The implementation of this function should raise
+	 * appropriate event(s) (e.g. OnClick, OnCommand) indicating the component
+	 * is responsible for the callback event.
+	 * @param TCallbackEventParameter the parameter associated with the callback event
+	 */
+	public function raiseCallbackEvent($eventArgument);
+}
+
 ?>
