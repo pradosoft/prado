@@ -1006,7 +1006,7 @@ class TWizard extends TWebControl implements INamingContainer
 	/**
 	 * Creates child controls within the wizard
 	 */
-	protected function createChildControls()
+	public function createChildControls()
 	{
 		$this->reset();
 		$this->createSideBar();
@@ -1651,7 +1651,7 @@ class TTemplatedWizardStep extends TWizardStep implements INamingContainer
 	 * Creates child controls.
 	 * This method mainly instantiates the content template, if any.
 	 */
-	protected function createChildControls()
+	public function createChildControls()
 	{
 		$this->getControls()->clear();
 		if($this->_contentTemplate)

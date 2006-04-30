@@ -123,7 +123,7 @@ class TTemplateControl extends TControl implements INamingContainer
 	 * This method is overriden to load and instantiate control template.
 	 * This method should only be used by framework and control developers.
 	 */
-	protected function createChildControls()
+	public function createChildControls()
 	{
 		if($tpl=$this->getTemplate(true))
 		{

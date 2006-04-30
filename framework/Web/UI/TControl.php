@@ -866,7 +866,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 * Do not call this method directly. Instead, call {@link ensureChildControls}
 	 * to ensure child controls are created only once.
 	 */
-	protected function createChildControls()
+	public function createChildControls()
 	{
 	}
 
