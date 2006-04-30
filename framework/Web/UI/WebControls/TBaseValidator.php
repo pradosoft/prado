@@ -42,7 +42,7 @@
  * be displayed. Error display is controlled by {@link setDisplay Display} property.
  *
  * You can also customized the client-side behaviour by adding javascript
- * code to the subproperties of the {@link getClientValidation ClientValidation}
+ * code to the subproperties of the {@link getClientSide ClientSide}
  * property. See quickstart documentation for further details.
  *
  * You can also place a {@link TValidationSummary} control on a page to display error messages
@@ -176,7 +176,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * 
 	 * @return TValidatorClientScript javascript validator event options.
 	 */
-	public function getClientValidation()
+	public function getClientSide()
 	{
 		if(is_null($this->_clientScript))
 			$this->_clientScript = $this->createClientScript();
@@ -494,10 +494,9 @@ abstract class TBaseValidator extends TLabel implements IValidator
  * TValidatorClientScript class.
  * 
  * Client-side validator events can be modified through the {@link
- * TBaseValidator::getClientValidation ClientValidation} property of a
- * validator. The subproperties of ClientValidation are those of the
- * TValidatorClientScript properties. The client-side validator supports the
- * following events.
+ * TBaseValidator::getClientSide ClientSide} property of a validator. The
+ * subproperties of ClientSide are those of the TValidatorClientScript
+ * properties. The client-side validator supports the following events.
  * 
  * The <tt>OnValidate</tt> event is raise before the validator validation
  * functions are called.

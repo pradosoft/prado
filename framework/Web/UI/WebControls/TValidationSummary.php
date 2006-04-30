@@ -258,7 +258,7 @@ class TValidationSummary extends TWebControl
 	 * @return TValidationSummaryClientScript client-side validation summary
 	 * event options.
 	 */
-	public function getClientValidation()
+	public function getClientSide()
 	{
 		if(is_null($this->_clientScript))
 			$this->_clientScript = $this->createClientScript();
@@ -376,8 +376,8 @@ class TValidationSummary extends TWebControl
  * 
  * Client-side validation summary events such as {@link setOnHideSummary
  * OnHideSummary} and {@link setOnShowSummary OnShowSummary} can be modified
- * through the {@link TBaseValidator:: getClientValidation ClientValidation}
- * property of a validation summary. 
+ * through the {@link TBaseValidator:: getClientSide ClientSide} property of a
+ * validation summary.
  * 
  * The <tt>OnHideSummary</tt> event is raise when the validation summary
  * requests to hide the messages.

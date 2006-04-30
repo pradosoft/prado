@@ -188,14 +188,4 @@ else if($builds > 0)
 else
 	echo "No files to build.";
 
-//remove comments from javascript files.
-function compress_js($string)
-{
-	$string = preg_replace('/\/\/[^\n\r]*[\n\r]/', ' ', $string);
-	$string = preg_replace('/\/\*[^*]*\*+([^\/][^*]*\*+)*\//', ' ', $string);
-	$string = preg_replace('/  |\t|\r/', '', $string);
-	$string = preg_replace('/(\n[ \t]*){2,}/', "\n", $string);
-	return $string;
-}
-
 ?>
