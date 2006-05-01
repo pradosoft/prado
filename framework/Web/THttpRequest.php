@@ -163,8 +163,20 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 			$getVariables=array();
 			for($i=0;$i<$n;++$i)
 			{
-				if($i+1<$n)
-					$getVariables[$paths[$i]]=$paths[++$i];
+				if($i+1<$n) {
+					$varName = $paths[$i];
+					$varVal = $paths[++$i];
+					if (strpos($varName, '[]') == strlen($varName)-2) {
+						$varName = substr($varName,0, strpos($varName, '[]'));
+						if (isset($getVariables[$varName])) {
+							$getVariables[$varName][] = $varVal;
+						} else {
+							$getVariables[$varName] = array($varVal);
+						}
+					} else {
+						$getVariables[$varName]=$varVal;
+					}
+				}
 			}
 			$this->_items=array_merge($getVariables,array_merge($_GET,$_POST));
 		}
