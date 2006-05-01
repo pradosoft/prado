@@ -38,7 +38,7 @@ Prado.Element =
         else if(el.fireEvent)
 		{
             el.fireEvent('onclick');
-			if(isFunction(el.onclick))
+			if(typeof(el.onclick) == "function")
 				el.onclick();
 		}
 	},
@@ -71,7 +71,7 @@ Prado.Element =
 	focus : function(element)
 	{
 		var obj = $(element);
-		if(isObject(obj) && isdef(obj.focus))
+		if(typeof(obj) != "undefined" && typeof(obj.focus) != "undefined")
 			setTimeout(function(){ obj.focus(); }, 100);
 		return false;
 	}
