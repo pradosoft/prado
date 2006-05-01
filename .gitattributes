@@ -719,6 +719,7 @@ framework/I18N/core/data/kok.dat -text
 framework/I18N/core/data/kok_IN.dat -text
 framework/I18N/core/data/kw.dat -text
 framework/I18N/core/data/kw_GB.dat -text
+framework/I18N/core/data/license.txt -text
 framework/I18N/core/data/lt.dat -text
 framework/I18N/core/data/lt_LT.dat -text
 framework/I18N/core/data/lv.dat -text

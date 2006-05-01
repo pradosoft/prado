@@ -16,13 +16,13 @@
 		ControlCssClass="required"
 		Display="Dynamic"
 		ErrorMessage="a username is required.">
-	<prop:ClientValidation.OnError>
+	<prop:ClientSide.OnError>
 		Effect.Shake(validator.control);
 		Effect.Appear(validator.message);
-	</prop:ClientValidation.OnError>
-	<prop:ClientValidation.OnSuccess>
+	</prop:ClientSide.OnError>
+	<prop:ClientSide.OnSuccess>
 		Effect.Fade(validator.message);
-	</prop:ClientValidation.OnSuccess>
+	</prop:ClientSide.OnSuccess>
 	</com:TRequiredFieldValidator>		
 </div>
 <div class="password">
@@ -37,8 +37,8 @@
 	ValidationGroup="registration" 
 	ControlCssClass="required"
 	Display="Dynamic"
-	ClientValidation.OnError="validator.message.visualEffect('appear')"
-	ClientValidation.OnSuccess="validator.message.visualEffect('fade')"
+	ClientSide.OnError="validator.message.visualEffect('appear')"
+	ClientSide.OnSuccess="validator.message.visualEffect('fade')"
 	ErrorMessage="a password is required." />	
 </div>	
 <div class="create">
@@ -82,12 +82,12 @@
 		ID="summary2"
 		ValidationGroup="signin"
 		Display="Dynamic"
-		ClientValidation.OnHideSummary="Effect.Squish(summary.messages)"
+		ClientSide.OnHideSummary="Effect.Squish(summary.messages)"
 		HeaderText="<p>You could not login because</p>">
-	<prop:ClientValidation.OnShowSummary>
+	<prop:ClientSide.OnShowSummary>
 		Effect.Appear(summary.messages)
 		Effect.Shake(summary.messages,{ queue: 'end'})
-	</prop:ClientValidation.OnShowSummary>	
+	</prop:ClientSide.OnShowSummary>	
 	</com:TValidationSummary>
 </div>
 

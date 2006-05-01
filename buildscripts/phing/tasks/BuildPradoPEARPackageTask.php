@@ -124,9 +124,9 @@ o Team Integration - PRADO enables separation of content and presentation. Compo
 		$package->addMaintainer('lead', 'knut', 'Knut Urdalen', 'knut.urdalen@gmail.com');
 
 		// "core" dependencies
-		$package->setPhpDep('5.0.0');
-		$package->setPearinstallerDep('1.4.0');
-				
+		$package->setPhpDep('5.0.4');
+		$package->setPearinstallerDep('1.4.7');
+
 		$package->generateContents();
 
         $e = $package->writePackageFile();

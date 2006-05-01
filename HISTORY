@@ -25,7 +25,7 @@ ENH: TLiteral will display body content if Text is empty (Qiang)
 ENH: Format string in classes extending TDataGridColumn can now evaluate an expression (Qiang)
 ENH: Format string in classes extending TListControl can now evaluate an expression (Qiang)
 ENH: Added THttpResponse::reload() (Qiang)
-ENH: Custom visual effects can be added to client-side validators. (Wei)
+ENH: Custom visual effects can be added to client-side validators via ClientSide property in validators. (Wei)
 ENH: TJavascript::encode() allows raw javascript code when string begins with "javascript:" (Wei)
 ENH: Update TinyMCE to 2.0.5.1
 CHG: Rewrote client-side javascript validators, check your client-side validation behaviour (Wei)
