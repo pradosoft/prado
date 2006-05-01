@@ -161,22 +161,13 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 			$paths=explode('/',$pathInfo);
 			$n=count($paths);
 			$getVariables=array();
-			for($i=0;$i<$n;++$i)
+			for($i=0;$i<$n-1;++$i)
 			{
-				if($i+1<$n) {
-					$varName = $paths[$i];
-					$varVal = $paths[++$i];
-					if (strpos($varName, '[]') == strlen($varName)-2) {
-						$varName = substr($varName,0, strpos($varName, '[]'));
-						if (isset($getVariables[$varName])) {
-							$getVariables[$varName][] = $varVal;
-						} else {
-							$getVariables[$varName] = array($varVal);
-						}
-					} else {
-						$getVariables[$varName]=$varVal;
-					}
-				}
+				$name=$paths[$i];
+				if(($pos=strpos($name,'[]'))!==false)
+					$getVariables[substr($name,0,$pos)][]=$paths[++$i];
+				else
+					$getVariables[$name]=$paths[++$i];
 			}
 			$this->_items=array_merge($getVariables,array_merge($_GET,$_POST));
 		}
@@ -464,24 +455,41 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 			if($encodeGetItems)
 			{
 				foreach($getItems as $name=>$value)
-					$url.=$amp.urlencode($name).'='.urlencode($value);
+				{
+					if(is_array($value))
+					{
+						$name=urlencode($name.'[]');
+						foreach($value as $v)
+							$url.=$amp.$name.'='.$v;
+					}
+					else
+						$url.=$amp.urlencode($name).'='.urlencode($value);
+				}
 			}
 			else
 			{
 				foreach($getItems as $name=>$value)
-					$url.=$amp.$name.'='.$value;
+				{
+					if(is_array($value))
+					{
+						foreach($value as $v)
+							$url.=$amp.$name.'[]='.$v;
+					}
+					else
+						$url.=$amp.$name.'='.$value;
+				}
 			}
 		}
 		if($this->getUrlFormat()==='Path')
 		{
 			$url=strtr($url,array($amp=>'/','?'=>'/','='=>'/'));
-			if(defined('SID') && SID != '')
+			if(defined('SID') && SID != '' && !((int)ini_get('session.use_cookies')===1 && ((int)ini_get('session.use_only_cookies')===1)))
 				$url.='?'.SID;
 			return $this->getApplicationUrl().'/'.$url;
 		}
 		else
 		{
-			if(defined('SID') && SID != '')
+			if(defined('SID') && SID != '' && !((int)ini_get('session.use_cookies')===1 && ((int)ini_get('session.use_only_cookies')===1)))
 				$url.=$amp.SID;
 			return $this->getApplicationUrl().'?'.$url;
 		}
