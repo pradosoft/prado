@@ -1215,9 +1215,6 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	protected function preRenderRecursive()
 	{
 		$this->autoDataBindProperties();
-		
-		if($this->getEnabled() && $this instanceof IPostBackDataHandler)
-			$this->getPage()->registerPostDataLoader($this);
 
 		if($this->getVisible(false))
 		{
@@ -1238,6 +1235,10 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 			}
 		}
 		$this->_stage=self::CS_PRERENDERED;
+		
+	
+		if($this->getEnabled() && $this instanceof IPostBackDataHandler)
+			$this->getPage()->registerPostDataLoader($this);		
 	}
 
 	/**

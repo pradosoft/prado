@@ -3,7 +3,8 @@ Prado.Validation=Class.create();Object.extend(Prado.Validation,{managers:{},vali
 {if(this.managers[formID])
 {return this.managers[formID].validate(groupID,invoker);}
 else
-{throw new Error("Form '"+form+"' is not registered with Prado.Validation");}},isValid:function(formID,groupID)
+{throw new Error("Form '"+form+"' is not registered with Prado.Validation");}},getForm:function()
+{var keys=$H(this.managers).keys();return keys[0];},isValid:function(formID,groupID)
 {if(this.managers[formID])
 return this.managers[formID].isValid(groupID);return true;},addValidator:function(formID,validator)
 {if(this.managers[formID])

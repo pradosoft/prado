@@ -15,7 +15,7 @@ class TActiveControlAdapter extends TControlAdapter
 		if(!self::$_renderedPosts)
 		{
 			$options = TJavascript::encode($this->getPage()->getPostDataLoaders(),false);
-			$script = "Prado.Callback.PostDataLoaders.concat({$options});";
+			$script = "Prado.CallbackRequest.PostDataLoaders.concat({$options});";
 			$this->getPage()->getClientScript()->registerEndScript(get_class($this), $script);
 			self::$_renderedPosts = true;
 		}

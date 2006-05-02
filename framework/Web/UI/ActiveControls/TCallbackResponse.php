@@ -11,8 +11,7 @@
 
 class TCallbackResponse extends THttpResponse
 {
-	const CALLBACK_DATA_HEADER = 'X-PRADO-DATA';
-	const CALLBACK_ACTION_HEADER = 'X-PRADO-ACTIONS';	
+	
 }
 
 

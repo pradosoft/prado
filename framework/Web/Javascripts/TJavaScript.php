@@ -24,6 +24,11 @@
 class TJavaScript
 {
 	/**
+	 * @var TJSON JSON decoder and encoder instance
+	 */
+	private static $_json;
+	
+	/**
 	 * Renders a list of javascript files
 	 * @param array URLs to the javascript files
 	 * @return string rendering result
@@ -191,8 +196,9 @@ class TJavaScript
 	 */
 	public static function jsonEncode($value)
 	{
-		Prado::using('System.Web.Javascripts.TJSON');
-		return TJSON::encode($value);
+		if(is_null(self::$_json))
+			self::$_json = Prado::createComponent('System.Web.Javascripts.TJSON');
+		return self::$_json->encode($value);
 	}
 
 	/**
@@ -203,8 +209,9 @@ class TJavaScript
 	 */
 	public static function jsonDecode($value)
 	{
-		Prado::using('System.Web.Javascripts.TJSON');
-		return TJSON::decode($value);
+		if(is_null(self::$_json))
+			self::$_json = Prado::createComponent('System.Web.Javascripts.TJSON');
+		return self::$_json->decode($value);
 	}
 }
 

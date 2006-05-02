@@ -63,10 +63,8 @@ class TCallbackClientScript
 	 */
 	public function callClientFunction($function, $params=null)
 	{
-		if(!is_array($params) && $params !== null) 
+		if(!is_array($params)) 
 			$params = array($params);
-		else
-			$params = array();
 			
 		if(count($params) > 0)
 		{

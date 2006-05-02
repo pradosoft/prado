@@ -1,16 +1,21 @@
 <com:TContent ID="Content">
 	<com:TClientScript UsingPradoScripts="ajax" />
-	<com:TActiveControl id="control1" />
-	<com:TTextBox />
+	<com:TActiveControl id="control1" 
+		ClientSide.CausesValidation="false"
+		ClientSide.OnSuccess="Logger.info('result:'+result)" />
+	<com:TTextBox id="text1" />
+	<com:TRequiredFieldValidator
+		ControlToValidate="text1"
+		ErrorMessage="*" />
 	<com:TCheckBoxList>
 		<com:TListItem Text="One" />
 		<com:TListItem Text="Two" />
 	</com:TCheckBoxList>
-	<com:TButton id="button1" Text="Submit" />
+	<com:TButton id="button1" Text="Submit" CausesValidation="false" />
 	<script>
 		Event.observe("<%= $this->button1->ClientID %>", "click", function(event)
 		{
-			new Prado.Callback("<%= $this->control1->UniqueID %>", 1);
+			<%= $this->control1->CallbackReference %>	
 			Event.stop(event);
 		});
 	</script>

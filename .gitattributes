@@ -931,6 +931,7 @@ framework/Web/UI/ActiveControls/TActiveControl.php -text
 framework/Web/UI/ActiveControls/TActiveControlAdapter.php -text
 framework/Web/UI/ActiveControls/TActivePageAdapter.php -text
 framework/Web/UI/ActiveControls/TCallbackClientScript.php -text
+framework/Web/UI/ActiveControls/TCallbackClientSideOptions.php -text
 framework/Web/UI/ActiveControls/TCallbackResponse.php -text
 framework/Web/UI/TClientScriptManager.php -text
 framework/Web/UI/TControl.php -text

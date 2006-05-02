@@ -20,28 +20,53 @@ this.transport=Ajax.getTransport();this.setOptions(options);var onComplete=this.
 response=response.stripScripts();if(receiver){if(this.options.insertion){new this.options.insertion(receiver,response);}else{Element.update(receiver,response);}}
 if(this.responseIsSuccess()){if(this.onComplete)
 setTimeout(this.onComplete.bind(this),10);}}});Ajax.PeriodicalUpdater=Class.create();Ajax.PeriodicalUpdater.prototype=Object.extend(new Ajax.Base(),{initialize:function(container,url,options){this.setOptions(options);this.onComplete=this.options.onComplete;this.frequency=(this.options.frequency||2);this.decay=(this.options.decay||1);this.updater={};this.container=container;this.url=url;this.start();},start:function(){this.options.onComplete=this.updateComplete.bind(this);this.onTimerEvent();},stop:function(){this.updater.onComplete=undefined;clearTimeout(this.timer);(this.onComplete||Prototype.emptyFunction).apply(this,arguments);},updateComplete:function(request){if(this.options.decay){this.decay=(request.responseText==this.lastText?this.decay*this.options.decay:1);this.lastText=request.responseText;}
-this.timer=setTimeout(this.onTimerEvent.bind(this),this.decay*this.frequency*1000);},onTimerEvent:function(){this.updater=new Ajax.Updater(this.container,this.url,this.options);}});Prado.Callback=Class.create();Object.extend(Prado.Callback,{FIELD_CALLBACK_TARGET:'PRADO_CALLBACK_TARGET',FIELD_CALLBACK_PARAMETER:'PRADO_CALLBACK_PARAMETER',PostDataLoaders:['PRADO_PAGESTATE'],Exception:{"on505":function(request,transport,data)
-{var msg='HTTP '+transport.status+" with response";Logger.error(msg,transport.responseText);this.logException(data);},onComplete:function(request,transport,data)
-{if(transport.status!=505)
-{var msg='HTTP '+transport.status+" with response : \n";msg+=transport.responseText+"\n";msg+="Data : \n"+inspect(data);Logger.warn(msg);}},formatException:function(e)
+this.timer=setTimeout(this.onTimerEvent.bind(this),this.decay*this.frequency*1000);},onTimerEvent:function(){this.updater=new Ajax.Updater(this.container,this.url,this.options);}});Object.extend(Ajax.Request.prototype,{respondToReadyState:function(readyState)
+{var event=Ajax.Request.Events[readyState];var transport=this.transport,json=this.getHeaderData(Prado.CallbackRequest.DATA_HEADER);if(event=='Complete')
+{Ajax.Responders.dispatch('on'+transport.status,this,transport,json);Prado.CallbackRequest.dispatchActions(this.getHeaderData(Prado.CallbackRequest.ACTION_HEADER));try{(this.options['on'+this.transport.status]||this.options['on'+(this.responseIsSuccess()?'Success':'Failure')]||Prototype.emptyFunction)(transport,json);}catch(e){this.dispatchException(e);}
+if((this.header('Content-type')||'').match(/^text\/javascript/i))
+this.evalResponse();}
+try{(this.options['on'+event]||Prototype.emptyFunction)(transport,json);Ajax.Responders.dispatch('on'+event,this,transport,json);}catch(e){this.dispatchException(e);}
+if(event=='Complete')
+this.transport.onreadystatechange=Prototype.emptyFunction;},getHeaderData:function(name)
+{try
+{var json=this.header(name);return eval('('+json+')');}
+catch(e)
+{if(typeof(json)=="string")
+{Logger.info("using json")
+return Prado.CallbackRequest.decode(json);}}}});Prado.CallbackRequest=Class.create();Object.extend(Prado.CallbackRequest,{FIELD_CALLBACK_TARGET:'PRADO_CALLBACK_TARGET',FIELD_CALLBACK_PARAMETER:'PRADO_CALLBACK_PARAMETER',PostDataLoaders:['PRADO_PAGESTATE'],DATA_HEADER:'X-PRADO-DATA',ACTION_HEADER:'X-PRADO-ACTIONS',ERROR_HEADER:'X-PRADO-ERROR',dispatchActions:function(actions)
+{actions.each(this.__run);},__run:function(command)
+{for(var method in command)
+{if(command[method][0])
+{var id=command[method][0];if($(id)||id.indexOf("[]")>-1)
+method.toFunction().apply(this,command[method]);else if(typeof(Logger)!="undefined")
+{Logger.error("Error in executing callback response:","Unable to find HTML element with ID '"+id+"' before executing "+method+"().");}}}},Exception:{"on505":function(request,transport,data)
+{var e=request.getHeaderData(Prado.CallbackRequest.ERROR_HEADER);Logger.error("Callback Server Error "+e.code,this.formatException(e));},'on200':function(request,transport,data)
+{if(transport.status<500)
+{var msg='HTTP '+transport.status+" with response : \n";msg+=transport.responseText+"\n";msg+="Data : \n"+inspect(data)+"\n";msg+="Actions : \n";request.getHeaderData(Prado.CallbackRequest.ACTION_HEADER).each(function(action)
+{msg+=inspect(action)+"\n";})
+Logger.warn(msg);}},onException:function(e)
+{Logger.error('Uncaught Callback Client Exception:',e);},formatException:function(e)
 {var msg=e.type+" with message \""+e.message+"\"";msg+=" in "+e.file+"("+e.line+")\n";msg+="Stack trace:\n";var trace=e.trace;for(var i=0;i<trace.length;i++)
 {msg+="  #"+i+" "+trace[i].file;msg+="("+trace[i].line+"): ";msg+=trace[i]["class"]+"->"+trace[i]["function"]+"()"+"\n";}
-return msg;},logException:function(e)
-{Logger.error("Callback Request Error "+e.code,this.formatException(e));}},encode:function(data)
-{Prado.JSON.stringify(data);},decode:function(data)
+msg+=e.version+" "+e.time+"\n";return msg;}},encode:function(data)
+{return Prado.JSON.stringify(data);},decode:function(data)
 {return Prado.JSON.parse(data);}})
 Event.OnLoad(function()
 {if(typeof Logger!="undefined")
-Ajax.Responders.register(Prado.Callback.Exception);});Prado.Callback.prototype={url:window.location.href,options:{},id:null,parameters:null,initialize:function(id,parameters,onSuccess,options)
-{this.options=options||{};this.id=id;this.parameters=parameters;var request={postBody:this._getPostData(),onSuccess:this._onSuccess.bind(this)}
-Object.extend(this.options||{},request);new Ajax.Request(this.url,this.options);},_getPostData:function()
-{var data={};Prado.Callback.PostDataLoaders.each(function(name)
+Ajax.Responders.register(Prado.CallbackRequest.Exception);});Prado.CallbackRequest.prototype={url:window.location.href,options:{},id:null,request:null,initialize:function(id,options)
+{this.options=options||{};this.id=id;var request={postBody:this._getPostData(),parameters:''}
+Object.extend(this.options||{},request);if(this.options.CausesValidation!=false&&typeof(Prado.Validation)!="undefined")
+{var form=this.options.Form||Prado.Validation.getForm();if(Prado.Validation.validate(form,this.options.ValidationGroup,this)==false)
+return;}
+this.request=new Ajax.Request(this.url,this.options);},_getPostData:function()
+{var data={};Prado.CallbackRequest.PostDataLoaders.each(function(name)
 {$A(document.getElementsByName(name)).each(function(element)
 {var value=$F(element);if(typeof(value)!="undefined")
 data[name]=value;})})
-if(typeof(this.parameters)!="undefined")
-data[Prado.Callback.FIELD_CALLBACK_PARAMETER]=Prado.Callback.encode(this.parameters);data[Prado.Callback.FIELD_CALLBACK_TARGET]=this.id;return $H(data).toQueryString();},_onSuccess:function(response,transport,json)
-{}}
+if(typeof(this.options.params)!="undefined")
+data[Prado.CallbackRequest.FIELD_CALLBACK_PARAMETER]=Prado.CallbackRequest.encode(this.options.params);data[Prado.CallbackRequest.FIELD_CALLBACK_TARGET]=this.id;return $H(data).toQueryString();}}
+Prado.Callback=function(UniqueID,parameter,onSuccess,options)
+{var callback={'params':parameter||'','onSuccess':onSuccess||Prototype.emptyFunction,'CausesValidation':true};Object.extend(callback,options||{});new Prado.CallbackRequest(UniqueID,callback);return false;}
 Array.prototype.______array='______array';Prado.JSON={org:'http://www.JSON.org',copyright:'(c)2005 JSON.org',license:'http://www.crockford.com/JSON/license.html',stringify:function(arg){var c,i,l,s='',v;switch(typeof arg){case'object':if(arg){if(arg.______array=='______array'){for(i=0;i<arg.length;++i){v=this.stringify(arg[i]);if(s){s+=',';}
 s+=v;}
 return'['+s+']';}else if(typeof arg.toString!='undefined'){for(i in arg){v=arg[i];if(typeof v!='undefined'&&typeof v!='function'){v=this.stringify(v);if(s){s+=',';}

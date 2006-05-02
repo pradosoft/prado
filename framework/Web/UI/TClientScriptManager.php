@@ -164,6 +164,21 @@ class TClientScriptManager extends TApplicationComponent
 		}
 	}
 
+	public function getCallbackReference($callbackHandler, $options=null)
+	{
+		$options = !is_array($options) ? array() : $options; 
+		$class = new TReflectionClass($callbackHandler);
+		if($class->hasMethod('getClientSide'))
+		{
+			$clientSide = $callbackHandler->getClientSide();
+			$options = array_merge($options, $clientSide->getOptions()->toArray());
+		}
+		$optionString = TJavascript::encode($options);
+		$this->registerPradoScriptInternal('ajax');
+		$id = $callbackHandler->getUniqueID();
+		return "new Prado.CallbackRequest('{$id}',{$optionString})";
+	}
+
 	/**
 	 * Registers postback javascript for a control.
 	 * @param string javascript class responsible for the control being registered for postback

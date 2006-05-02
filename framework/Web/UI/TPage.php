@@ -323,25 +323,6 @@ class TPage extends TTemplateControl
 	}
 	
 	/**
-	 * Gets the callback response handler that permits changing the callback
-	 * response headers and contents.
-	 * @return TCallbackResponse callback response handler.
-	 */
-	public function getCallbackResponse()
-	{
-		return $this->getAdapter()->getCallbackResponseHandler();
-	}
-	
-	/**
-	 * Set a new callback respond handler.
-	 * @param TCallbackResponse a different callback response handler.
-	 */
-	public function setCallbackResponse($responder)
-	{
-		$this->getAdapter()->setCallbackResponseHandler($responder);
-	}
-	
-	/**
 	 * Gets the callback client script handler that allows javascript functions
 	 * to be executed during the callback response. 
 	 * @return TCallbackClientScript interface to client-side javascript code.

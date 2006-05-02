@@ -256,7 +256,7 @@ selection[method](isList?element:el,value);},click:function(element)
 {var el=$(element);if(!el)return;if(document.createEvent)
 {var evt=document.createEvent('HTMLEvents');evt.initEvent('click',true,true);el.dispatchEvent(evt);}
 else if(el.fireEvent)
-{el.fireEvent('onclick');if(typeof(el.onclick)=="function")
+{el.fireEvent('onclick');if(isFunction(el.onclick))
 el.onclick();}},setAttribute:function(element,attribute,value)
 {var el=$(element);if(attribute=="disabled"&&value==false)
 el.removeAttribute(attribute);else
@@ -265,7 +265,7 @@ el.setAttribute(attribute,value);},setOptions:function(element,options)
 {while(el.length>0)
 el.remove(0);for(var i=0;i<options.length;i++)
 el.options[el.options.length]=new Option(options[i][0],options[i][1]);}},focus:function(element)
-{var obj=$(element);if(typeof(obj)!="undefined"&&typeof(obj.focus)!="undefined")
+{var obj=$(element);if(isObject(obj)&&isdef(obj.focus))
 setTimeout(function(){obj.focus();},100);return false;}}
 Prado.Element.Selection={inputValue:function(el,value)
 {switch(el.type.toLowerCase())
