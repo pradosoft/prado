@@ -460,9 +460,12 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 					{
 						$name=urlencode($name.'[]');
 						foreach($value as $v)
-							$url.=$amp.$name.'='.$v;
+						{
+							if(($v=trim($v))!=='')
+								$url.=$amp.$name.'='.$v;
+						}
 					}
-					else
+					else if(($value=trim($value))!=='')
 						$url.=$amp.urlencode($name).'='.urlencode($value);
 				}
 			}
@@ -473,9 +476,12 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 					if(is_array($value))
 					{
 						foreach($value as $v)
-							$url.=$amp.$name.'[]='.$v;
+						{
+							if(($v=trim($v))!=='')
+								$url.=$amp.$name.'[]='.$v;
+						}
 					}
-					else
+					else if(($value=trim($value))!=='')
 						$url.=$amp.$name.'='.$value;
 				}
 			}
