@@ -1,3 +1,7 @@
+Version 3.0.1 June 1, 2006
+==========================
+ENH: added sanity check to calling event handlers (Qiang)
+
 Version 3.0.0 May 1, 2006
 =========================
 BUG: Ticket#68  - 2 TButtons with THtmlArea causes second button to fail to function (Wei)

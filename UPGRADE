@@ -1,5 +1,5 @@
 
-         Upgrading Instructions for PRADO Framework v3.0.0
+         Upgrading Instructions for PRADO Framework v3.0.1
          =================================================
 
 !!!IMPORTANT!!!
@@ -13,6 +13,9 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
+
+Upgrading from v3.0.0
+---------------------
 
 Upgrading from v3.0.0 RC2
 -------------------------

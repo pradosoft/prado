@@ -360,7 +360,10 @@ class TComponent
 							$object=$this->getSubProperty(substr($method,0,$pos));
 							$method=substr($method,$pos+1);
 						}
-						$object->$method($sender,$param);
+						if(method_exists($object,$method))
+							$object->$method($sender,$param);
+						else
+							throw new TInvalidDataValueException('component_eventhandler_invalid',get_class($this),$name);
 					}
 				}
 				else
