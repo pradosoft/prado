@@ -10,7 +10,6 @@
       <route class="TFileLogRoute" />
     </module>
     -->
-    <module class="THttpRequest" UrlFormat="Path" />
   </modules>
   <paths>
     <using namespace="Application.controls.*" />

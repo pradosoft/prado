@@ -599,6 +599,54 @@ class TWizard extends TWebControl implements INamingContainer
 	}
 
 	/**
+	 * @return TPanel container of the wizard header
+	 */
+	public function getHeader()
+	{
+		return $this->_header;
+	}
+
+	/**
+	 * @return TPanel container of the wizard step content
+	 */
+	public function getStepContent()
+	{
+		return $this->_stepContent;
+	}
+
+	/**
+	 * @return TPanel container of the wizard side bar
+	 */
+	public function getSideBar()
+	{
+		return $this->_sideBar;
+	}
+
+	/**
+	 * @var TWizardNavigationContainer container of the start navigation
+	 */
+	public function getStartNavigation()
+	{
+		return $this->_startNavigation;
+	}
+
+	/**
+	 * @var TWizardNavigationContainer container of the step navigation
+	 */
+	public function getStepNavigation()
+	{
+		return $this->_stepNavigation;
+	}
+
+	/**
+	 * @var TWizardNavigationContainer container of the finish navigation
+	 */
+	public function getFinishNavigation()
+	{
+		return $this->_finishNavigation;
+	}
+
+	/**
 	 * Raises <b>OnActiveStepChanged</b> event.
 	 * This event is raised when the current visible step is changed in the
 	 * wizard.

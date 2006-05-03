@@ -3,6 +3,7 @@ Version 3.0.1 June 1, 2006
 CHG: Ticket#153 - TAssetManager now ignores .svn directories (Qiang)
 CHG: Ticket#154 - HTML comments are now parsed as regular template strings (Qiang)
 ENH: Ticket#151 - added sanity check GET parameters in constructUrl() (Qiang)
+ENH: Ticket#152 - constituent parts of TWizard are exposed (Qiang)
 ENH: added sanity check to calling event handlers (Qiang)
 
 Version 3.0.0 May 1, 2006
