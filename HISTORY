@@ -1,5 +1,6 @@
 Version 3.0.1 June 1, 2006
 ==========================
+ENH: Ticket#153 - TAssetManager now ignores .svn directories (Qiang)
 ENH: added sanity check to calling event handlers (Qiang)
 
 Version 3.0.0 May 1, 2006
