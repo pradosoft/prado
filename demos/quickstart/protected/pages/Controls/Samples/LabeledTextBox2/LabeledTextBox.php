@@ -1,6 +1,6 @@
 <?php
 
-class LabeledTextBox extends TControl implements INamingContainer
+class LabeledTextBox extends TCompositeControl
 {
 	private $_label;
 	private $_textbox;

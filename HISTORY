@@ -7,6 +7,7 @@ CHG: Ticket#153 - TAssetManager now ignores .svn directories (Qiang)
 CHG: Ticket#154 - HTML comments are now parsed as regular template strings (Qiang)
 CHG: Ticket#151 - URL format is modified to handle empty GET values (Qiang)
 NEW: TTableHeaderRow, TTableFooterRow and table section support (Qiang)
+NEW: TCompositeControl (Qiang)
 
 Version 3.0.0 May 1, 2006
 =========================

@@ -11,6 +11,11 @@
  */
 
 /**
+ * Includes TCompositeControl class
+ */
+Prado::using('System.Web.UI.TCompositeControl');
+
+/**
  * TTemplateControl class.
  * TTemplateControl is the base class for all controls that use templates.
  * By default, a control template is assumed to be in a file under the same
@@ -22,7 +27,7 @@
  * @package System.Web.UI
  * @since 3.0
  */
-class TTemplateControl extends TControl implements INamingContainer
+class TTemplateControl extends TCompositeControl
 {
 	/**
 	 * template file extension.
