@@ -124,13 +124,21 @@ class TTable extends TWebControl
 	}
 
 	/**
-	 * @return TTableRowCollection list of {@link TTableRow} controls
+	 * Creates a control collection object that is to be used to hold child controls
+	 * @return TTableRowCollection control collection
+	 * @see getControls
+	 */
+	protected function createControlCollection()
+	{
+		return new TTableRowCollection($this);
+	}
+
+	/**
+	 * @return TTableCellCollection list of {@link TTableCell} controls
 	 */
 	public function getRows()
 	{
-		if(!$this->_rows)
-			$this->_rows=new TTableRowCollection($this);
-		return $this->_rows;
+		return $this->getControls();
 	}
 
 	/**
@@ -288,10 +296,10 @@ class TTable extends TWebControl
 	 */
 	public function renderContents($writer)
 	{
-		if($this->_rows)
+		if($this->getHasControls())
 		{
 			$writer->writeLine();
-			foreach($this->_rows as $row)
+			foreach($this->getControls() as $row)
 			{
 				$row->renderControl($writer);
 				$writer->writeLine();
@@ -299,6 +307,7 @@ class TTable extends TWebControl
 		}
 	}
 }
+
 
 /**
  * TTableRowCollection class.
@@ -310,22 +319,8 @@ class TTable extends TWebControl
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TTableRowCollection extends TList
+class TTableRowCollection extends TControlCollection
 {
-	/**
-	 * @var mixed row collection owner
-	 */
-	private $_owner=null;
-
-	/**
-	 * Constructor.
-	 * @param mixed row collection owner
-	 */
-	public function __construct($owner=null)
-	{
-		$this->_owner=$owner;
-	}
-
 	/**
 	 * Inserts an item at the specified position.
 	 * This overrides the parent implementation by performing additional
@@ -337,28 +332,9 @@ class TTableRowCollection extends TList
 	public function insertAt($index,$item)
 	{
 		if($item instanceof TTableRow)
-		{
 			parent::insertAt($index,$item);
-			if($this->_owner)
-				$this->_owner->getControls()->insertAt($index,$item);
-		}
 		else
 			throw new TInvalidDataTypeException('tablerowcollection_tablerow_required');
-	}
-
-	/**
-	 * Removes an item at the specified position.
-	 * This overrides the parent implementation by performing additional
-	 * cleanup work when removing a table row.
-	 * @param integer the index of the item to be removed.
-	 * @return mixed the removed item.
-	 */
-	public function removeAt($index)
-	{
-		$item=parent::removeAt($index);
-		if($item instanceof TTableRow)
-			$this->_owner->getControls()->remove($item);
-		return $item;
 	}
 }
 

@@ -32,11 +32,6 @@ Prado::using('System.Web.UI.WebControls.TTableHeaderCell');
 class TTableRow extends TWebControl
 {
 	/**
-	 * @var TTableCellCollection cell collection
-	 */
-	private $_cells=null;
-
-	/**
 	 * @return string tag name for the table
 	 */
 	protected function getTagName()
@@ -67,13 +62,21 @@ class TTableRow extends TWebControl
 	}
 
 	/**
+	 * Creates a control collection object that is to be used to hold child controls
+	 * @return TTableCellCollection control collection
+	 * @see getControls
+	 */
+	protected function createControlCollection()
+	{
+		return new TTableCellCollection($this);
+	}
+
+	/**
 	 * @return TTableCellCollection list of {@link TTableCell} controls
 	 */
 	public function getCells()
 	{
-		if(!$this->_cells)
-			$this->_cells=new TTableCellCollection($this);
-		return $this->_cells;
+		return $this->getControls();
 	}
 
 	/**
@@ -124,10 +127,10 @@ class TTableRow extends TWebControl
 	 */
 	public function renderContents($writer)
 	{
-		if($this->_cells)
+		if($this->getHasControls())
 		{
 			$writer->writeLine();
-			foreach($this->_cells as $cell)
+			foreach($this->getControls() as $cell)
 			{
 				$cell->renderControl($writer);
 				$writer->writeLine();
@@ -135,8 +138,6 @@ class TTableRow extends TWebControl
 		}
 	}
 }
-
-
 
 /**
  * TTableCellCollection class.
@@ -148,23 +149,8 @@ class TTableRow extends TWebControl
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TTableCellCollection extends TList
+class TTableCellCollection extends TControlCollection
 {
-	/**
-	 * @var mixed cell collection owner
-	 */
-	private $_owner=null;
-
-	/**
-	 * Constructor.
-	 * @param mixed cell collection owner
-	 */
-	public function __construct($owner=null)
-	{
-		$this->_owner=$owner;
-	}
-
-
 	/**
 	 * Inserts an item at the specified position.
 	 * This overrides the parent implementation by performing additional
@@ -176,28 +162,10 @@ class TTableCellCollection extends TList
 	public function insertAt($index,$item)
 	{
 		if($item instanceof TTableCell)
-		{
 			parent::insertAt($index,$item);
-			if($this->_owner)
-				$this->_owner->getControls()->insertAt($index,$item);
-		}
 		else
 			throw new TInvalidDataTypeException('tablecellcollection_tablecell_required');
 	}
-
-	/**
-	 * Removes an item at the specified position.
-	 * This overrides the parent implementation by performing additional
-	 * cleanup work when removing a table cell.
-	 * @param integer the index of the item to be removed.
-	 * @return mixed the removed item.
-	 */
-	public function removeAt($index)
-	{
-		$item=parent::removeAt($index);
-		if($item instanceof TTableCell)
-			$this->_owner->getControls()->remove($item);
-		return $item;
-	}
 }
+
 ?>
