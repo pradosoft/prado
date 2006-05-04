@@ -27,7 +27,7 @@ $caption = $this->getViewState('Caption');
 Control state is like view state in every aspect except that control state cannot be disabled. Control state is intended to be used for storing crucial state information without which a page or control may not work properly.
 </p>
 <p>
-To store and retrieve a variable in control state, use the followign commands,
+To store and retrieve a variable in control state, use the following commands,
 </p>
 <com:TTextHighlighter CssClass="source">
 $this->setControlState('Caption',$caption);
@@ -39,7 +39,7 @@ $caption = $this->getControlState('Caption');
 Application state refers to data that is persistent across user sessions and page requests. A typical example of application state is the user visit counter. The counter value is persistent even if the current user session terminates. Note, view state and control state are lost if the user requests for a different page, while session state is lost if the user session terminates.
 </p>
 <p>
-To store and retrieve a variable in application state, use the followign commands,
+To store and retrieve a variable in application state, use the following commands,
 </p>
 <com:TTextHighlighter CssClass="source">
 $application->setGlobalState('Caption',$caption);

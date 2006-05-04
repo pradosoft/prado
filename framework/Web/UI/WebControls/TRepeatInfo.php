@@ -261,6 +261,7 @@ class TRepeatInfo extends TComponent
 		// render items
 		if($tableLayout)
 		{
+			$writer->renderBeginTag('tbody');
 			$column=0;
 			for($i=0;$i<$itemCount;++$i)
 			{
@@ -297,6 +298,7 @@ class TRepeatInfo extends TComponent
 					$column=0;
 				}
 			}
+			$writer->renderEndTag();
 		}
 		else
 		{
@@ -353,6 +355,7 @@ class TRepeatInfo extends TComponent
 
 		if($tableLayout)
 		{
+			$writer->renderBeginTag('tbody');
 			$renderedItems=0;
 			for($row=0;$row<$rows;++$row)
 			{
@@ -407,6 +410,7 @@ class TRepeatInfo extends TComponent
 				$writer->renderEndTag();
 				$writer->writeLine();
 			}
+			$writer->renderEndTag();
 		}
 		else
 		{
@@ -461,6 +465,7 @@ class TRepeatInfo extends TComponent
 	{
 		if($tableLayout)
 		{
+			$writer->renderBeginTag('thead');
 			$writer->renderBeginTag('tr');
 			if($columns>1)
 				$writer->addAttribute('colspan',"$columns");
@@ -469,6 +474,7 @@ class TRepeatInfo extends TComponent
 				$style->addAttributesToRender($writer);
 			$writer->renderBeginTag('th');
 			$user->renderItem($writer,$this,'Header',-1);
+			$writer->renderEndTag();
 			$writer->renderEndTag();
 			$writer->renderEndTag();
 		}
@@ -492,6 +498,7 @@ class TRepeatInfo extends TComponent
 	{
 		if($tableLayout)
 		{
+			$writer->renderBeginTag('tfoot');
 			$writer->renderBeginTag('tr');
 			if($columns>1)
 				$writer->addAttribute('colspan',"$columns");
@@ -499,6 +506,7 @@ class TRepeatInfo extends TComponent
 				$style->addAttributesToRender($writer);
 			$writer->renderBeginTag('td');
 			$user->renderItem($writer,$this,'Footer',-1);
+			$writer->renderEndTag();
 			$writer->renderEndTag();
 			$writer->renderEndTag();
 		}
