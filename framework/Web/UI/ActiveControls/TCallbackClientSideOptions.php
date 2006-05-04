@@ -34,27 +34,35 @@ class TClientSideOptions extends TComponent
 }
 
 /**
+ * TCallbackClientSideOptions class.
+ * 
  * The following client side events are executing in order if the callback
  * request and response are send and received successfuly.
  * 
- * - <b>onUninitialized</b> executed when AJAX request is uninitialized. 
- * - <b>onLoading</b> executed when AJAX request is initiated 
- * - <b>onLoaded</b> executed when AJAX request begins. 
- * - <b>onInteractive</b> executed when AJAX request is in progress. 
- * - <b>onComplete</b>executed when AJAX response returns.
+ * - <b>onUninitialized</b> executed when callback request is uninitialized. 
+ * - <b>onLoading</b> executed when callback request is initiated 
+ * - <b>onLoaded</b> executed when callback request begins. 
+ * - <b>onInteractive</b> executed when callback request is in progress. 
+ * - <b>onComplete</b>executed when callback response returns.
  * 
  * The <tt>OnSuccess</tt> and <tt>OnFailure</tt> events are raised when the
  * response is returned. A successful request/response will raise
  * <tt>OnSuccess</tt> event otherwise <tt>OnFailure</tt> will be raised.
  * 
- * - <b>onSuccess</b> executed when AJAX request returns and is successful. 
- * - <b>onFailure</b> executed when AJAX request returns and fails.
+ * - <b>onSuccess</b> executed when callback request returns and is successful. 
+ * - <b>onFailure</b> executed when callback request returns and fails.
+ * - <b>onException</b> raised when callback request fails due to
+ * request/response errors.
  * 
- * - <b>CausesValidation</b> true to perform before callback request.
- * - <b>ValidationGroup</b> validation grouping name.  
  */
 class TCallbackClientSideOptions extends TClientSideOptions
 {
+	/**
+	 * Returns javascript statement enclosed within a javascript function.
+	 * @param string javascript statement, if string begins within
+	 * "javascript:" the whole string is assumed to be a function.
+	 * @return string javascript statement wrapped in a javascript function
+	 */
 	protected function ensureFunction($javascript)
 	{
 		if(TJavascript::isFunction($javascript))
@@ -175,34 +183,38 @@ class TCallbackClientSideOptions extends TClientSideOptions
 		$this->setFunction('onFailure', $javascript);
 	}
 	
-	public function getCausesValidation()
+	/**
+	 * @return string javascript code for client-side onException event
+	 */
+	public function getOnException()
 	{
-		return $this->getOption('CausesValidation');
+		return $this->getOption('onException');
 	}
 	
-	public function setCausesValidation($value)
+	/**
+	 * @param string javascript code for client-side onException event.
+	 */
+	public function setOnException($javascript)
 	{
-		$this->getOptions()->add('CausesValidation', TPropertyValue::ensureBoolean($value));
+		$this->setFunction('onException', $javascript);
+	}	
+	
+	/**
+	 * @return boolean true to post the state on callback, default is post the
+	 * state on callback.
+	 */
+	public function getPostState()
+	{
+		return $this->getOption('PostState');
 	}
 	
-	public function getValidationGroup()
+	/**
+	 * @param boolean true to post the state of the form with callback requests.
+	 * Default is to post the state.
+	 */
+	public function setPostState($value)
 	{
-		return $this->getOption('ValidationGroup');
-	}
-	
-	public function setValidationGroup($value)
-	{
-		$this->getOptions()->add('ValidationGroup', $value);
-	}
-	
-	public function getValidationForm()
-	{
-		return $this->getOption('Form');
-	}
-	
-	public function setValidationForm($value)
-	{
-		$this->getOptions()->add('Form', $value);
+		$this->getOptions()->add('PostState', TPropertyValue::ensureBoolean($value));
 	}
 } 
 

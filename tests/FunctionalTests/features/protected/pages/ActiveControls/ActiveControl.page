@@ -1,22 +1,31 @@
 <com:TContent ID="Content">
+	<h1>TCallback Demo</h1>
 	<com:TClientScript UsingPradoScripts="ajax" />
-	<com:TActiveControl id="control1" 
-		ClientSide.CausesValidation="false"
-		ClientSide.OnSuccess="Logger.info('result:'+result)" />
+	<com:TCallback id="control1" 
+		OnCallback="control1onCallback">
+		<com:TButton id="button2" Text="Hello" Visible="false"/>
+	</com:TCallback>
 	<com:TTextBox id="text1" />
-	<com:TRequiredFieldValidator
-		ControlToValidate="text1"
-		ErrorMessage="*" />
+
 	<com:TCheckBoxList>
 		<com:TListItem Text="One" />
 		<com:TListItem Text="Two" />
 	</com:TCheckBoxList>
+
+	<com:TPanel id="panel2" Visible="false">
+		asdad <com:TCheckBox id="checkbox1" />
+	</com:TPanel>
+
+	<input type="hidden" name="PRADO_CALLBACK_TARGET" value="<%= $this->control1->UniqueID %>" />
+
 	<com:TButton id="button1" Text="Submit" CausesValidation="false" />
 	<script>
 		Event.observe("<%= $this->button1->ClientID %>", "click", function(event)
 		{
 			<%= $this->control1->CallbackReference %>	
+		
 			Event.stop(event);
 		});
+		
 	</script>
 </com:TContent>

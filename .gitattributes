@@ -930,6 +930,7 @@ framework/Web/THttpUtility.php -text
 framework/Web/UI/ActiveControls/TActiveControl.php -text
 framework/Web/UI/ActiveControls/TActiveControlAdapter.php -text
 framework/Web/UI/ActiveControls/TActivePageAdapter.php -text
+framework/Web/UI/ActiveControls/TCallback.php -text
 framework/Web/UI/ActiveControls/TCallbackClientScript.php -text
 framework/Web/UI/ActiveControls/TCallbackClientSideOptions.php -text
 framework/Web/UI/ActiveControls/TCallbackResponse.php -text
@@ -1035,6 +1036,7 @@ tests/FunctionalTests/features/protected/controls/LabeledTextbox.php -text
 tests/FunctionalTests/features/protected/controls/Layout.php -text
 tests/FunctionalTests/features/protected/controls/Layout.tpl -text
 tests/FunctionalTests/features/protected/pages/ActiveControls/ActiveControl.page -text
+tests/FunctionalTests/features/protected/pages/ActiveControls/ActiveControl.php -text
 tests/FunctionalTests/features/protected/pages/ActiveControls/config.xml -text
 tests/FunctionalTests/features/protected/pages/ColorPicker.page -text
 tests/FunctionalTests/features/protected/pages/CompositeControl.page -text

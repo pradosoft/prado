@@ -74,6 +74,18 @@ Prado.Element =
 		if(typeof(obj) != "undefined" && typeof(obj.focus) != "undefined")
 			setTimeout(function(){ obj.focus(); }, 100);
 		return false;
+	},
+	
+	replaceContent : function(element, method, content, boundary, transport)
+	{
+		if(boundary)
+		{
+			var f = RegExp('(<!--'+boundary+'-->)([\\s\\S\\w\\W]*)(<!--//'+boundary+'-->)',"m");
+			var result = transport.responseText.match(f);
+			if(result && result.length >= 2)
+				content = result[2];
+		}
+		method.toFunction().apply(this,[element,content]);
 	}
 }
 

@@ -4,13 +4,13 @@
  * Created on 25/04/2006
  */
 
-class TActiveControl extends TControl implements ICallbackEventHandler, IActiveControl
+class TCallback extends TWebControl implements ICallbackEventHandler
 {	
 	/**
 	 * @var TCallbackClientSideOptions client-side options.
 	 */
 	private $_clientSide;
-	
+		
 	/**
 	 * Creates a new callback control, sets the adapter to
 	 * TActiveControlAdapter. If you override this class, be sure to set the
@@ -21,6 +21,14 @@ class TActiveControl extends TControl implements ICallbackEventHandler, IActiveC
 		parent::__construct();
 		$this->setAdapter(new TActiveControlAdapter($this));
 	}
+	
+	/**
+	 * @return string tag name of the panel
+	 */
+	protected function getTagName()
+	{
+		return 'div';
+	}	
 	
 	/**
 	 * @return boolean whether callback event trigger by this button will cause
@@ -145,6 +153,13 @@ class TActiveControl extends TControl implements ICallbackEventHandler, IActiveC
 		$client = $this->getPage()->getClientScript(); 
 		return $client->getCallbackReference($this, $this->getCallbackOptions());
 	}
+	
+	public function render($writer)
+	{
+		parent::render($writer);
+		if($this->getPage()->getIsCallback())
+			$this->getPage()->getCallbackClient()->replace($this, $writer);
+	}	
 } 
 
 ?>

@@ -32,7 +32,7 @@
  * @package System.Web.UI.ActiveControls
  * @since 3.0
  */ 
-class TCallbackClientScript 
+class TCallbackClientScript extends TApplicationComponent
 {
 	/**
 	 * @var TList list of client functions to execute.
@@ -69,7 +69,7 @@ class TCallbackClientScript
 		if(count($params) > 0)
 		{
 			if($params[0] instanceof TControl)
-				$params[0] = $params[0]->getID();
+				$params[0] = $params[0]->getClientID();
 		}
 		$this->_actions->add(array($function => $params));
 	}
@@ -188,22 +188,20 @@ class TCallbackClientScript
 	 * @param TControl|string new HTML content, if content is of a TControl, the
 	 * controls render method is called.
 	 */
-	public function update($element, $innerHTML)
+	public function update($element, $content)
 	{
-		if($innerHTML instanceof TControl)
-			$innerHTML = $innerHTML->render();
-		$this->callClientFunction('Element.update', array($element, $innerHTML));
+		$this->replace($element, $content, 'Element.update');
 	}
 
 	/**
 	 * Replace the innerHTML of a content with fragements of the response body.
 	 * @param TControl|string control element or element id
 	 */
-	public function replaceContent($element)
+/*	public function replaceContent($element)
 	{
 		$this->callClientFunction('Prado.Element.replaceContent', $element);
 	}
-
+*/
 	/**
 	 * Add a Css class name to the element.
 	 * @param TControl|string control element or element id
@@ -229,10 +227,10 @@ class TCallbackClientScript
 	 * @param TControl|string control element or element id
 	 * @param string new CssClass name for the element.
 	 */
-	public function setCssClass($element, $cssClass)
+	/*public function setCssClass($element, $cssClass)
 	{
 		$this->callClientFunction('Prado.Element.CssClass.set', array($element, $cssClass));
-	}
+	}*/
 
 	/**
 	 * Scroll the top of the browser viewing area to the location of the
@@ -261,11 +259,9 @@ class TCallbackClientScript
 	 * @param TControl|string HTML fragement, otherwise if TControl, its render
 	 * method will be called.
 	 */
-	public function insertAfter($element, $innerHTML)
+	public function insertAfter($element, $content)
 	{
-		if($innerHTML instanceof TControl)
-			$innerHTML = $innerHTML->render();
-		$this->callClientFunction('Prado.Element.Insert.After', array($element, $innerHTML));
+		$this->replace($element, $content, 'Element.Insert.After');
 	}
 
 	/**
@@ -274,11 +270,9 @@ class TCallbackClientScript
 	 * @param TControl|string HTML fragement, otherwise if TControl, its render
 	 * method will be called.
 	 */	
-	public function insertBefore($element, $innerHTML)
+	public function insertBefore($element, $content)
 	{
-		if($innerHTML instanceof TControl)
-			$innerHTML = $innerHTML->render();
-		$this->callClientFunction('Prado.Element.Insert.Before', array($element, $innerHTML));
+		$this->replace($element, $content, 'Element.Insert.Before');
 	}
 
 	/**
@@ -287,11 +281,9 @@ class TCallbackClientScript
 	 * @param TControl|string HTML fragement, otherwise if TControl, its render
 	 * method will be called.
 	 */
-	public function insertBelow($element, $innerHTML)
+	public function insertBelow($element, $content)
 	{
-		if($innerHTML instanceof TControl)
-			$innerHTML = $innerHTML->render();
-		$this->callClientFunction('Prado.Element.Insert.Below', array($element, $innerHTML));
+		$this->replace($element, $content, 'Element.Insert.Below');
 	}
 
 	/**
@@ -300,12 +292,75 @@ class TCallbackClientScript
 	 * @param TControl|string HTML fragement, otherwise if TControl, its render
 	 * method will be called.
 	 */
-	public function insertAbove($element, $innerHTML)
+	public function insertAbove($element, $content)
 	{
-		if($innerHTML instanceof TControl)
-			$innerHTML = $innerHTML->render();
-		$this->callClientFunction('Prado.Element.Insert.Above', array($element, $innerHTML));
-	}	
+		$this->replace($element, $content, 'Element.Insert.Above');
+	}
+	
+	/**
+	 * Replace the content of an element with new content. The new content can
+	 * be a string or a TControl component. If the <tt>content</tt> parameter is
+	 * a TControl component, its rendered method will be called and its contents
+	 * will be used for replacement.
+	 * @param TControl|string control element or HTML element id.
+	 * @param TControl|string HTML fragement, otherwise it will TControl's
+	 * rendered content.
+	 * @param string replacement method, default is to replace the outter
+	 * html content.
+	 * @param string provide a custom boundary.
+	 * @see insertAbout
+	 * @see insertBelow
+	 * @see insertBefore
+	 * @see insertAfter
+	 */
+	public function replace($element, $content, $method="Element.replace", $boundary=null)
+	{
+		if($content instanceof TControl)
+		{
+			$boundary = $this->getRenderedContentBoundary($content);
+			$this->callClientFunction('Prado.Element.replaceContent', 
+					array($element, $method, null, $boundary));		
+		}
+		else if($content instanceof THtmlWriter)
+		{
+			$boundary = $this->getResponseContentBoundary($content);
+			$this->callClientFunction('Prado.Element.replaceContent', 
+					array($element, $method, null, $boundary));		
+		}
+		else
+		{
+			$this->callClientFunction('Prado.Element.replaceContent', 
+				array($element, $method, $content, $boundary));		
+		}
+	}
+	
+	/**
+	 * Renders the control and return the content boundary from
+	 * TCallbackResponseWriter. This method should only be used by framework
+	 * component developers.
+	 * @param TControl control to be rendered on callback response.
+	 * @return string the boundary for which the rendered content is wrapped.
+	 */
+	private function getRenderedContentBoundary($control)
+	{
+		$writer = $this->getResponse()->createHtmlWriter();
+		$control->render($writer);
+		return $writer->getWriter()->getBoundary();
+	}
+	
+	/**
+	 * @param THtmlWriter the writer responsible for rendering html content.
+	 * @return string content boundary.
+	 */
+	private function getResponseContentBoundary($html)
+	{
+		if($html instanceof THtmlWriter)
+		{
+			if($html->getWriter() instanceof TCallbackResponseWriter)
+				return $html->getWriter()->getBoundary();
+		}	
+		return null;
+	}
 
 	/**
 	 * Add a visual effect the element.

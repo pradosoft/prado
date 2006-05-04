@@ -50,7 +50,7 @@ class TActivePageAdapter extends TControlAdapter
 	public function __construct(TPage $control)
 	{
 		parent::__construct($control);
-		//$this->getApplication()->setResponse($this->getCallbackResponseHandler());
+		$this->getApplication()->setResponse($this->createCallbackResponseHandler());
 		$this->trapCallbackErrorsExceptions();
 	}
 
@@ -75,6 +75,7 @@ class TActivePageAdapter extends TControlAdapter
 	{
 		Prado::trace("ActivePage renderCallbackResponse()",'System.Web.UI.ActiveControls.TActivePageAdapter');
 		$this->renderResponse($writer);
+		//$this->getResponse()->flush();
 	}	
 	
 	/**
@@ -87,9 +88,11 @@ class TActivePageAdapter extends TControlAdapter
 		$executeJavascript = $this->getCallbackClientHandler()->getClientFunctionsToExecute()->toArray();
 		$actions = TJavascript::jsonEncode($executeJavascript);
 		$response->appendHeader(self::CALLBACK_ACTION_HEADER.': '.$actions);
-		$data = TJavascript::jsonEncode($this->_result->getData());
-		$response->appendHeader(self::CALLBACK_DATA_HEADER.': '.$data);
-		$response->flush();		
+		if($this->_result)
+		{
+			$data = TJavascript::jsonEncode($this->_result->getData());
+			$response->appendHeader(self::CALLBACK_DATA_HEADER.': '.$data);
+		}		
 	}
 	
 	/**
@@ -104,12 +107,14 @@ class TActivePageAdapter extends TControlAdapter
 		 {
 			if($callbackHandler instanceof ICallbackEventHandler)
 			{
-				$writer = $this->getResponse()->createHtmlWriter();
-				$this->_result = new TCallbackEventParameter($writer, $this->getCallbackEventParameter()); 
+				$param = $this->getCallbackEventParameter();
+				$this->_result = new TCallbackEventParameter($this->getResponse(), $param);
 				$callbackHandler->raiseCallbackEvent($this->_result);
 			}
 			else
+			{
 				throw new TInvalidCallbackHandlerException($callbackHandler->getUniqueID());
+			}
 		 }
 		 else
 		 {
@@ -193,6 +198,11 @@ class TActivePageAdapter extends TControlAdapter
 		$this->_callbackClient = $handler;
 	}
 	
+	protected function createCallbackResponseHandler()
+	{
+		return new TCallbackResponse();
+	}
+	
 }
 
 /**
@@ -213,9 +223,9 @@ class TActivePageAdapter extends TControlAdapter
 class TCallbackEventParameter extends TEventParameter
 {
 	/**
-	 * @var THtmlWriter output content.
+	 * @var TCallbackResponse output content.
 	 */
-	private $_output;
+	private $_response;
 	/**
 	 * @var mixed callback request parameter.
 	 */
@@ -228,9 +238,9 @@ class TCallbackEventParameter extends TEventParameter
 	/**
 	 * Creates a new TCallbackEventParameter.
 	 */
-	public function __construct($writer, $parameter)
+	public function __construct($response, $parameter)
 	{
-		$this->_output = $writer;
+		$this->_response = $response;
 		$this->_parameter = $parameter;
 	}
 
@@ -239,7 +249,7 @@ class TCallbackEventParameter extends TEventParameter
 	 */
 	public function getOutput()
 	{
-		return $this->_output;
+		return $this->_response->createHtmlWriter();
 	}
 	
 	/**
@@ -283,6 +293,7 @@ class TCallbackErrorHandler extends TErrorHandler
 			error_log("Error happened while processing an existing error:\n".$exception->__toString());
 			header('HTTP/1.0 500 Internal Error');
 		}
+		$this->getApplication()->getResponse()->flush();
 	}
 	
 	private function getExceptionData($exception)

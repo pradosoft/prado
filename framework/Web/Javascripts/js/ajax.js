@@ -22,7 +22,8 @@ if(this.responseIsSuccess()){if(this.onComplete)
 setTimeout(this.onComplete.bind(this),10);}}});Ajax.PeriodicalUpdater=Class.create();Ajax.PeriodicalUpdater.prototype=Object.extend(new Ajax.Base(),{initialize:function(container,url,options){this.setOptions(options);this.onComplete=this.options.onComplete;this.frequency=(this.options.frequency||2);this.decay=(this.options.decay||1);this.updater={};this.container=container;this.url=url;this.start();},start:function(){this.options.onComplete=this.updateComplete.bind(this);this.onTimerEvent();},stop:function(){this.updater.onComplete=undefined;clearTimeout(this.timer);(this.onComplete||Prototype.emptyFunction).apply(this,arguments);},updateComplete:function(request){if(this.options.decay){this.decay=(request.responseText==this.lastText?this.decay*this.options.decay:1);this.lastText=request.responseText;}
 this.timer=setTimeout(this.onTimerEvent.bind(this),this.decay*this.frequency*1000);},onTimerEvent:function(){this.updater=new Ajax.Updater(this.container,this.url,this.options);}});Object.extend(Ajax.Request.prototype,{respondToReadyState:function(readyState)
 {var event=Ajax.Request.Events[readyState];var transport=this.transport,json=this.getHeaderData(Prado.CallbackRequest.DATA_HEADER);if(event=='Complete')
-{Ajax.Responders.dispatch('on'+transport.status,this,transport,json);Prado.CallbackRequest.dispatchActions(this.getHeaderData(Prado.CallbackRequest.ACTION_HEADER));try{(this.options['on'+this.transport.status]||this.options['on'+(this.responseIsSuccess()?'Success':'Failure')]||Prototype.emptyFunction)(transport,json);}catch(e){this.dispatchException(e);}
+{try
+{Ajax.Responders.dispatch('on'+transport.status,this,transport,json);Prado.CallbackRequest.dispatchActions(transport,this.getHeaderData(Prado.CallbackRequest.ACTION_HEADER));(this.options['on'+this.transport.status]||this.options['on'+(this.responseIsSuccess()?'Success':'Failure')]||Prototype.emptyFunction)(transport,json);}catch(e){this.dispatchException(e);}
 if((this.header('Content-type')||'').match(/^text\/javascript/i))
 this.evalResponse();}
 try{(this.options['on'+event]||Prototype.emptyFunction)(transport,json);Ajax.Responders.dispatch('on'+event,this,transport,json);}catch(e){this.dispatchException(e);}
@@ -33,12 +34,13 @@ this.transport.onreadystatechange=Prototype.emptyFunction;},getHeaderData:functi
 catch(e)
 {if(typeof(json)=="string")
 {Logger.info("using json")
-return Prado.CallbackRequest.decode(json);}}}});Prado.CallbackRequest=Class.create();Object.extend(Prado.CallbackRequest,{FIELD_CALLBACK_TARGET:'PRADO_CALLBACK_TARGET',FIELD_CALLBACK_PARAMETER:'PRADO_CALLBACK_PARAMETER',PostDataLoaders:['PRADO_PAGESTATE'],DATA_HEADER:'X-PRADO-DATA',ACTION_HEADER:'X-PRADO-ACTIONS',ERROR_HEADER:'X-PRADO-ERROR',dispatchActions:function(actions)
-{actions.each(this.__run);},__run:function(command)
+return Prado.CallbackRequest.decode(json);}}}});Prado.CallbackRequest=Class.create();Object.extend(Prado.CallbackRequest,{FIELD_CALLBACK_TARGET:'PRADO_CALLBACK_TARGET',FIELD_CALLBACK_PARAMETER:'PRADO_CALLBACK_PARAMETER',FIELD_CALLBACK_PAGESTATE:'PRADO_PAGESTATE',PostDataLoaders:[],DATA_HEADER:'X-PRADO-DATA',ACTION_HEADER:'X-PRADO-ACTIONS',ERROR_HEADER:'X-PRADO-ERROR',dispatchActions:function(transport,actions)
+{if(actions&&actions.length>0)
+actions.each(this.__run.bind(this,transport));},__run:function(transport,command)
 {for(var method in command)
 {if(command[method][0])
 {var id=command[method][0];if($(id)||id.indexOf("[]")>-1)
-method.toFunction().apply(this,command[method]);else if(typeof(Logger)!="undefined")
+method.toFunction().apply(this,command[method].concat(transport));else if(typeof(Logger)!="undefined")
 {Logger.error("Error in executing callback response:","Unable to find HTML element with ID '"+id+"' before executing "+method+"().");}}}},Exception:{"on505":function(request,transport,data)
 {var e=request.getHeaderData(Prado.CallbackRequest.ERROR_HEADER);Logger.error("Callback Server Error "+e.code,this.formatException(e));},'on200':function(request,transport,data)
 {if(transport.status<500)
@@ -59,12 +61,14 @@ Object.extend(this.options||{},request);if(this.options.CausesValidation!=false&
 {var form=this.options.Form||Prado.Validation.getForm();if(Prado.Validation.validate(form,this.options.ValidationGroup,this)==false)
 return;}
 this.request=new Ajax.Request(this.url,this.options);},_getPostData:function()
-{var data={};Prado.CallbackRequest.PostDataLoaders.each(function(name)
+{var data={};var callback=Prado.CallbackRequest;if(this.options.PostState!=false)
+{callback.PostDataLoaders.each(function(name)
 {$A(document.getElementsByName(name)).each(function(element)
 {var value=$F(element);if(typeof(value)!="undefined")
-data[name]=value;})})
+data[name]=value;})})}
 if(typeof(this.options.params)!="undefined")
-data[Prado.CallbackRequest.FIELD_CALLBACK_PARAMETER]=Prado.CallbackRequest.encode(this.options.params);data[Prado.CallbackRequest.FIELD_CALLBACK_TARGET]=this.id;return $H(data).toQueryString();}}
+data[callback.FIELD_CALLBACK_PARAMETER]=callback.encode(this.options.params);var pageState=$F(callback.FIELD_CALLBACK_PAGESTATE);if(typeof(pageState)!="undefined")
+data[callback.FIELD_CALLBACK_PAGESTATE]=pageState;data[callback.FIELD_CALLBACK_TARGET]=this.id;return $H(data).toQueryString();}}
 Prado.Callback=function(UniqueID,parameter,onSuccess,options)
 {var callback={'params':parameter||'','onSuccess':onSuccess||Prototype.emptyFunction,'CausesValidation':true};Object.extend(callback,options||{});new Prado.CallbackRequest(UniqueID,callback);return false;}
 Array.prototype.______array='______array';Prado.JSON={org:'http://www.JSON.org',copyright:'(c)2005 JSON.org',license:'http://www.crockford.com/JSON/license.html',stringify:function(arg){var c,i,l,s='',v;switch(typeof arg){case'object':if(arg){if(arg.______array=='______array'){for(i=0;i<arg.length;++i){v=this.stringify(arg[i]);if(s){s+=',';}

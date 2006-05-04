@@ -13,11 +13,13 @@ Object.extend(Ajax.Request.prototype,
 	    var transport = this.transport, json = this.getHeaderData(Prado.CallbackRequest.DATA_HEADER);
 		
 	    if (event == 'Complete') 
-	    {
+	    {	      
+	      try 
+	      {
 			Ajax.Responders.dispatch('on' + transport.status, this, transport, json);
-			Prado.CallbackRequest.dispatchActions(this.getHeaderData(Prado.CallbackRequest.ACTION_HEADER));
-	      
-	      try {
+			Prado.CallbackRequest.dispatchActions(transport,this.getHeaderData(Prado.CallbackRequest.ACTION_HEADER));
+	      	
+	      	
 	        (this.options['on' + this.transport.status]
 	         || this.options['on' + (this.responseIsSuccess() ? 'Success' : 'Failure')]
 	         || Prototype.emptyFunction)(transport, json);
@@ -82,9 +84,13 @@ Object.extend(Prado.CallbackRequest,
 	 */
 	FIELD_CALLBACK_PARAMETER : 'PRADO_CALLBACK_PARAMETER',
 	/**
+	 * Callback request page state field name,
+	 */
+	FIELD_CALLBACK_PAGESTATE : 'PRADO_PAGESTATE',
+	/**
 	 * List of form fields that will be collected during callback.
 	 */
-	PostDataLoaders : ['PRADO_PAGESTATE'],
+	PostDataLoaders : [],
 	/**
 	 * Response data header name.
 	 */
@@ -101,15 +107,16 @@ Object.extend(Prado.CallbackRequest,
 	/**
 	 * Dispatch callback response actions.
 	 */
-	dispatchActions : function(actions)
+	dispatchActions : function(transport,actions)
 	{
-		actions.each(this.__run);
+		if(actions && actions.length > 0)
+			actions.each(this.__run.bind(this,transport));
 	},
 	
 	/**
 	 * Prase and evaluate a Callback clien-side action
 	 */
-	__run : function(command)
+	__run : function(transport, command)
 	{
 		for(var method in command)
 		{
@@ -117,7 +124,7 @@ Object.extend(Prado.CallbackRequest,
 			{
 				var id = command[method][0];
 				if($(id) || id.indexOf("[]") > -1)
-					method.toFunction().apply(this,command[method]);
+					method.toFunction().apply(this,command[method].concat(transport));
 				else if(typeof(Logger) != "undefined")
 				{
 					Logger.error("Error in executing callback response:", 
@@ -269,19 +276,25 @@ Prado.CallbackRequest.prototype =
 	_getPostData : function()
 	{
 		var data = {};
-		
-		Prado.CallbackRequest.PostDataLoaders.each(function(name)
+		var callback = Prado.CallbackRequest;
+		if(this.options.PostState != false)
 		{
-			$A(document.getElementsByName(name)).each(function(element)
+			callback.PostDataLoaders.each(function(name)
 			{
-				var value = $F(element);
-				if(typeof(value) != "undefined")
-					data[name] = value;
+				$A(document.getElementsByName(name)).each(function(element)
+				{
+					var value = $F(element);
+					if(typeof(value) != "undefined")
+						data[name] = value;
+				})
 			})
-		})
+		}
 		if(typeof(this.options.params) != "undefined")
-			data[Prado.CallbackRequest.FIELD_CALLBACK_PARAMETER] = Prado.CallbackRequest.encode(this.options.params);
-		data[Prado.CallbackRequest.FIELD_CALLBACK_TARGET] = this.id;
+			data[callback.FIELD_CALLBACK_PARAMETER] = callback.encode(this.options.params);
+		var pageState = $F(callback.FIELD_CALLBACK_PAGESTATE);
+		if(typeof(pageState) != "undefined")
+			data[callback.FIELD_CALLBACK_PAGESTATE] = pageState;
+		data[callback.FIELD_CALLBACK_TARGET] = this.id;
 		return $H(data).toQueryString();
 	}
 }

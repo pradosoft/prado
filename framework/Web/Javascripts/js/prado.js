@@ -256,7 +256,7 @@ selection[method](isList?element:el,value);},click:function(element)
 {var el=$(element);if(!el)return;if(document.createEvent)
 {var evt=document.createEvent('HTMLEvents');evt.initEvent('click',true,true);el.dispatchEvent(evt);}
 else if(el.fireEvent)
-{el.fireEvent('onclick');if(isFunction(el.onclick))
+{el.fireEvent('onclick');if(typeof(el.onclick)=="function")
 el.onclick();}},setAttribute:function(element,attribute,value)
 {var el=$(element);if(attribute=="disabled"&&value==false)
 el.removeAttribute(attribute);else
@@ -265,8 +265,12 @@ el.setAttribute(attribute,value);},setOptions:function(element,options)
 {while(el.length>0)
 el.remove(0);for(var i=0;i<options.length;i++)
 el.options[el.options.length]=new Option(options[i][0],options[i][1]);}},focus:function(element)
-{var obj=$(element);if(isObject(obj)&&isdef(obj.focus))
-setTimeout(function(){obj.focus();},100);return false;}}
+{var obj=$(element);if(typeof(obj)!="undefined"&&typeof(obj.focus)!="undefined")
+setTimeout(function(){obj.focus();},100);return false;},replaceContent:function(element,method,content,boundary,transport)
+{if(boundary)
+{var f=RegExp('(<!--'+boundary+'-->)([\\s\\S\\w\\W]*)(<!--//'+boundary+'-->)',"m");var result=transport.responseText.match(f);if(result&&result.length>=2)
+content=result[2];}
+method.toFunction().apply(this,[element,content]);}}
 Prado.Element.Selection={inputValue:function(el,value)
 {switch(el.type.toLowerCase())
 {case'checkbox':case'radio':return el.checked=value;}},selectValue:function(el,value)
