@@ -60,6 +60,11 @@
 class THttpRequest extends TApplicationComponent implements IteratorAggregate,ArrayAccess,IModule
 {
 	/**
+	 * Separator used to separate GET variable name and value when URL format is Path.
+	 */
+	const URL_PARAM_SEPARATOR=',';
+
+	/**
 	 * @var boolean whether the module is initialized
 	 */
 	private $_initialized=false;
@@ -159,15 +164,22 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 		if($this->getUrlFormat()==='Path' && ($pathInfo=trim($this->_pathInfo,'/'))!=='')
 		{
 			$paths=explode('/',$pathInfo);
-			$n=count($paths);
-			$getVariables=array();
-			for($i=0;$i<$n-1;++$i)
+			foreach($paths as $path)
 			{
-				$name=$paths[$i];
-				if(($pos=strpos($name,'[]'))!==false)
-					$getVariables[substr($name,0,$pos)][]=$paths[++$i];
-				else
-					$getVariables[$name]=$paths[++$i];
+				if(($path=trim($path))!=='')
+				{
+					if(($pos=strpos($path,','))!==false)
+					{
+						$name=substr($path,0,$pos);
+						$value=substr($path,$pos+1);
+						if(($pos=strpos($name,'[]'))!==false)
+							$getVariables[substr($name,0,$pos)][]=$value;
+						else
+							$getVariables[$name]=$value;
+					}
+					else
+						$getVariables[$path]='';
+				}
 			}
 			$this->_items=array_merge($getVariables,array_merge($_GET,$_POST));
 		}
@@ -224,7 +236,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	/**
 	 * Sets the format of URLs constructed and interpretted by the request module.
 	 * A 'Get' URL format is like index.php?name1=value1&name2=value2
-	 * while a 'Path' URL format is like index.php/name1/value1/name2/value.
+	 * while a 'Path' URL format is like index.php/name1,value1/name2,value.
 	 * Changing the UrlFormat will affect {@link constructUrl} and how GET variables
 	 * are parsed.
 	 * @param string the format of URLs. Valid values include 'Path' and 'Get'.
@@ -460,12 +472,9 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 					{
 						$name=urlencode($name.'[]');
 						foreach($value as $v)
-						{
-							if(($v=trim($v))!=='')
-								$url.=$amp.$name.'='.$v;
-						}
+							$url.=$amp.$name.'='.$v;
 					}
-					else if(($value=trim($value))!=='')
+					else
 						$url.=$amp.urlencode($name).'='.urlencode($value);
 				}
 			}
@@ -476,19 +485,16 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 					if(is_array($value))
 					{
 						foreach($value as $v)
-						{
-							if(($v=trim($v))!=='')
-								$url.=$amp.$name.'[]='.$v;
-						}
+							$url.=$amp.$name.'[]='.$v;
 					}
-					else if(($value=trim($value))!=='')
+					else
 						$url.=$amp.$name.'='.$value;
 				}
 			}
 		}
 		if($this->getUrlFormat()==='Path')
 		{
-			$url=strtr($url,array($amp=>'/','?'=>'/','='=>'/'));
+			$url=strtr($url,array($amp=>'/','?'=>'/','='=>self::URL_PARAM_SEPARATOR));
 			if(defined('SID') && SID != '' && !((int)ini_get('session.use_cookies')===1 && ((int)ini_get('session.use_only_cookies')===1)))
 				$url.='?'.SID;
 			return $this->getApplicationUrl().'/'.$url;
