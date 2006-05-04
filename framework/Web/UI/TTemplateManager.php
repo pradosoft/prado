@@ -338,7 +338,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 						$parent->addParsedObject($component);
 				}
 			}
-			else if($object[1] instanceof TCompositeLiteral)
+			else
 			{
 				if($object[1] instanceof TCompositeLiteral)
 				{
@@ -358,8 +358,6 @@ class TTemplate extends TApplicationComponent implements ITemplate
 						$parent->addParsedObject($object[1]);
 				}
 			}
-			else
-				throw new TConfigurationException('template_content_unexpected',(string)$object[1]);
 		}
 		// delay setting parent till now because the parent may cause
 		// the child to do lifecycle catchup which may cause problem
