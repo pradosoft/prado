@@ -11,10 +11,9 @@
  */
 
 /**
- * Includes TTableCell and TTableHeaderCell classes
+ * Includes TTableCell class
  */
 Prado::using('System.Web.UI.WebControls.TTableCell');
-Prado::using('System.Web.UI.WebControls.TTableHeaderCell');
 
 /**
  * TTableRow class.
@@ -119,6 +118,23 @@ class TTableRow extends TWebControl
 	public function setVerticalAlign($value)
 	{
 		$this->getStyle()->setVerticalAlign($value);
+	}
+
+	/**
+	 * @return string location of a row in a table. Defaults to 'Body'.
+	 */
+	public function getTableSection()
+	{
+		return $this->getViewState('TableSection','Body');
+	}
+
+	/**
+	 * @param string location of a row in a table. Valid values include 'Header', 'Footer' and 'Body'.
+	 */
+	public function setTableSection($value)
+	{
+		$value=TPropertyValue::ensureEnum($value,'Header','Body','Footer');
+		$this->setViewState('TableSection',$value,'Body');
 	}
 
 	/**

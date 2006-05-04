@@ -934,6 +934,7 @@ framework/Web/UI/ActiveControls/TCallbackClientScript.php -text
 framework/Web/UI/ActiveControls/TCallbackClientSideOptions.php -text
 framework/Web/UI/ActiveControls/TCallbackResponse.php -text
 framework/Web/UI/TClientScriptManager.php -text
+framework/Web/UI/TCompositeControl.php -text
 framework/Web/UI/TControl.php -text
 framework/Web/UI/TControlAdapter.php -text
 framework/Web/UI/TForm.php -text
@@ -1006,7 +1007,9 @@ framework/Web/UI/WebControls/TStatements.php -text
 framework/Web/UI/WebControls/TStyle.php -text
 framework/Web/UI/WebControls/TTable.php -text
 framework/Web/UI/WebControls/TTableCell.php -text
+framework/Web/UI/WebControls/TTableFooterRow.php -text
 framework/Web/UI/WebControls/TTableHeaderCell.php -text
+framework/Web/UI/WebControls/TTableHeaderRow.php -text
 framework/Web/UI/WebControls/TTableRow.php -text
 framework/Web/UI/WebControls/TTemplateColumn.php -text
 framework/Web/UI/WebControls/TTextBox.php -text

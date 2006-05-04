@@ -460,7 +460,7 @@ class TPageService extends TService
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
- * @package System.Services
+ * @package System.Web.Services
  * @since 3.0
  */
 class TPageConfiguration extends TComponent

@@ -357,6 +357,39 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
+	 * @return string caption for the datagrid
+	 */
+	public function getCaption()
+	{
+		return $this->getViewState('Caption','');
+	}
+
+	/**
+	 * @param string caption for the datagrid
+	 */
+	public function setCaption($value)
+	{
+		$this->setViewState('Caption',$value,'');
+	}
+
+	/**
+	 * @return string datagrid caption alignment. Defaults to 'NotSet'.
+	 */
+	public function getCaptionAlign()
+	{
+		return $this->getViewState('CaptionAlign','NotSet');
+	}
+
+	/**
+	 * @param string datagrid caption alignment. Valid values include
+	 * 'NotSet','Top','Bottom','Left','Right'.
+	 */
+	public function setCaptionAlign($value)
+	{
+		$this->setViewState('CaptionAlign',TPropertyValue::ensureEnum($value,'NotSet','Top','Bottom','Left','Right'),'NotSet');
+	}
+
+	/**
 	 * @return TDataGridItem the header item
 	 */
 	public function getHeader()
@@ -1444,6 +1477,23 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
+	 * Renders the openning tag for the datagrid control which will render table caption if present.
+	 * @param THtmlWriter the writer used for the rendering purpose
+	 */
+	public function renderBeginTag($writer)
+	{
+		parent::renderBeginTag($writer);
+		if(($caption=$this->getCaption())!=='')
+		{
+			if(($align=$this->getCaptionAlign())!=='NotSet')
+				$writer->addAttribute('align',strtolower($align));
+			$writer->renderBeginTag('caption');
+			$writer->write($caption);
+			$writer->renderEndTag();
+		}
+	}
+
+	/**
 	 * Renders the datagrid.
 	 * @param THtmlWriter writer for the rendering purpose
 	 */
@@ -1457,18 +1507,45 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 				$this->_topPager->renderControl($writer);
 				$writer->writeLine();
 			}
-			$this->renderBeginTag($writer);
-			$this->_header->renderControl($writer);
-			foreach($this->getItems() as $item)
-				$item->renderControl($writer);
-			$this->_footer->renderControl($writer);
-			$this->renderEndTag($writer);
+			$this->renderTable($writer);
 			if($this->_bottomPager)
 			{
 				$writer->writeLine();
 				$this->_bottomPager->renderControl($writer);
 			}
 		}
+	}
+
+	/**
+	 * Renders the tabular data.
+	 * @param THtmlWriter writer
+	 */
+	protected function renderTable($writer)
+	{
+		$this->renderBeginTag($writer);
+		if($this->_header->getVisible())
+		{
+			$writer->writeLine();
+			$writer->renderBeginTag('thead');
+			$this->_header->render($writer);
+			$writer->renderEndTag();
+		}
+		$writer->writeLine();
+		$writer->renderBeginTag('tbody');
+		foreach($this->getItems() as $item)
+			$item->renderControl($writer);
+		$writer->renderEndTag();
+
+		if($this->_footer->getVisible())
+		{
+			$writer->writeLine();
+			$writer->renderBeginTag('tfoot');
+			$this->_footer->render($writer);
+			$writer->renderEndTag();
+		}
+
+		$writer->writeLine();
+		$this->renderEndTag($writer);
 	}
 }
 
@@ -1758,6 +1835,10 @@ class TDataGridItem extends TTableRow implements INamingContainer
 		$this->_itemIndex=$itemIndex;
 		$this->_dataSourceIndex=$dataSourceIndex;
 		$this->setItemType($itemType);
+		if($itemType===TDataGrid::IT_HEADER)
+			$this->setTableSection('Header');
+		else if($itemType===TDataGrid::IT_FOOTER)
+			$this->setTableSection('Footer');
 	}
 
 	/**

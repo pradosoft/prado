@@ -13,6 +13,7 @@
 Prado::using('System.Web.UI.WebControls.*');
 Prado::using('System.Web.UI.TControl');
 Prado::using('System.Web.UI.WebControls.TWebControl');
+Prado::using('System.Web.UI.TCompositeControl');
 Prado::using('System.Web.UI.TTemplateControl');
 Prado::using('System.Web.UI.TForm');
 Prado::using('System.Web.UI.TClientScriptManager');

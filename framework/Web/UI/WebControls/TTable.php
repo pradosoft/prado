@@ -298,11 +298,63 @@ class TTable extends TWebControl
 	{
 		if($this->getHasControls())
 		{
-			$writer->writeLine();
+			$renderTableSection=false;
 			foreach($this->getControls() as $row)
 			{
-				$row->renderControl($writer);
+				if($row->getTableSection()!=='Body')
+				{
+					$renderTableSection=true;
+					break;
+				}
+			}
+			if($renderTableSection)
+			{
+				$currentSection='Header';
 				$writer->writeLine();
+				foreach($this->getControls() as $index=>$row)
+				{
+					if(($section=$row->getTableSection())===$currentSection)
+					{
+						if($index===0 && $currentSection==='Header')
+							$writer->renderBeginTag('thead');
+					}
+					else
+					{
+						if($currentSection==='Header')
+						{
+							if($index>0)
+								$writer->renderEndTag();
+							if($section==='Body')
+								$writer->renderBeginTag('tbody');
+							else
+								$writer->renderBeginTag('tfoot');
+							$currentSection=$section;
+						}
+						else if($currentSection==='Body')
+						{
+							$writer->renderEndTag();
+							if($section==='Footer')
+								$writer->renderBeginTag('tfoot');
+							else
+								throw new TConfigurationException('table_tablesection_outoforder');
+							$currentSection=$section;
+						}
+						else // Footer
+							throw new TConfigurationException('table_tablesection_outoforder');
+					}
+					$row->renderControl($writer);
+					$writer->writeLine();
+				}
+				$writer->renderEndTag();
+			}
+			else
+			{
+				$writer->writeLine();
+				foreach($this->getControls() as $row)
+				{
+					$row->renderControl($writer);
+					$writer->writeLine();
+				}
 			}
 		}
 	}

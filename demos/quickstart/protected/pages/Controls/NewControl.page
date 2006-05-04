@@ -13,7 +13,7 @@ In general, there are two ways of writing new controls: composition of existing 
 Composition is the easiest way of creating new controls. It mainly involves instantiating existing controls, configuring them and making them the constituent components. The properties of the constituent components are exposed through <a href="?page=Fundamentals.Components">subproperties</a>.
 </p>
 <p>
-One can compose a new control in two ways. One is to override the <tt>TControl::createChildControls()</tt> method. The other is to extend <tt>TTemplateControl</tt> (or its child classes) and write a control template. The latter is easier to use and can organize the layout constituent compoents more intuitively, while the former is more efficient because it does not require parsing of the template.
+One can compose a new control in two ways. One is to extend <tt>TCompositeControl</tt> and override the <tt>TControl::createChildControls()</tt> method. The other is to extend <tt>TTemplateControl</tt> (or its child classes) and write a control template. The latter is easier to use and can organize the layout constituent compoents more intuitively, while the former is more efficient because it does not require parsing of the template.
 </p>
 <p>
 As an example, we show how to create a labeled textbox called <tt>LabeledTextBox</tt> using the above two approaches. A labeled textbox displays a label besides a textbox. We want reuse the PRADO provided <tt>TLabel</tt> and <tt>TTextBox</tt> to accomplish this task.
@@ -48,13 +48,13 @@ In the above, the method call to <tt>ensureChildControls()</tt> ensures that bot
 
 <h3>Composition by Overriding <tt>createChildControls()</tt></h3>
 <p>
-For a composite control as simple as <tt>LabeledTextBox</tt>, it is better to create it by extending <tt>TControl</tt> and overriding the <tt>createChildControls()</tt> method, because it does not use templates and thus saves template parsing time. Note, the new control class must implement the <tt>INamingContainer</tt> interface to ensure the global uniqueness of the ID of its constituent controls.
+For a composite control as simple as <tt>LabeledTextBox</tt>, it is better to create it by extending <tt>TCompositeControl</tt> and overriding the <tt>createChildControls()</tt> method, because it does not use templates and thus saves template parsing time.
 </p>
 <p>
 Complete code for <tt>LabeledTextBox</tt> is shown as follows,
 </p>
 <com:TTextHighlighter CssClass="source">
-class LabeledTextBox extends TControl implements INamingContainer {
+class LabeledTextBox extends TCompositeControl {
     private $_label;
     private $_textbox;
     protected function createChildControls() {
