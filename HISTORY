@@ -5,6 +5,7 @@ CHG: Ticket#154 - HTML comments are now parsed as regular template strings (Qian
 ENH: Ticket#151 - added sanity check GET parameters in constructUrl() (Qiang)
 ENH: Ticket#152 - constituent parts of TWizard are exposed (Qiang)
 ENH: added sanity check to calling event handlers (Qiang)
+NEW: TTableHeaderRow, TTableFooterRow and table section support (Qiang)
 
 Version 3.0.0 May 1, 2006
 =========================

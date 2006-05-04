@@ -270,6 +270,8 @@ view_visible_readonly					= TView.Visible is read-only. Use TView.Active to togg
 wizard_step_invalid						= The step to be activated cannot be found in wizard step collection.
 wizard_command_invalid					= Invalid wizard navigation command '{0}'.
 
+table_tablesection_outoforder			= TTable table sections must be in the order of: Header, Body and Footer.
+
 completewizardstep_steptype_readonly	= TCompleteWizardStep.StepType is read-only.
 
 wizardstepcollection_wizardstep_required = TWizardStepCollection can only accept objects of TWizardStep or its derived classes.
