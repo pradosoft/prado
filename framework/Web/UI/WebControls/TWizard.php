@@ -894,8 +894,13 @@ class TWizard extends TWebControl implements INamingContainer
 		$activeStep=$this->getActiveStep();
 		$activeStepIndex=$this->getActiveStepIndex();
 
-		if(!$this->_navigation || $activeStepIndex<0 || $activeStepIndex>=$wizardSteps->getCount())
+		if(!$this->_navigation)
 			return;
+		else if($activeStepIndex<0 || $activeStepIndex>=$wizardSteps->getCount())
+		{
+			$this->_navigation->setVisible(false);
+			return;
+		}
 
 		// set visibility of different types of navigation panel
 		$showStandard=true;
@@ -1184,7 +1189,8 @@ class TWizard extends TWebControl implements INamingContainer
 		$this->_stepContent=new TPanel;
 		$this->_stepContent->getControls()->add($multiView);
 		$this->getControls()->add($this->_stepContent);
-		$multiView->setActiveViewIndex(0);
+		if($multiView->getViews()->getCount())
+			$multiView->setActiveViewIndex(0);
 	}
 
 	/**

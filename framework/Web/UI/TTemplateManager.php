@@ -259,6 +259,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 		if(($page=$tplControl->getPage())===null)
 			$page=$this->getService()->getRequestedPage();
 		$controls=array();
+		$directChildren=array();
 		foreach($this->_tpl as $key=>$object)
 		{
 			$parent=isset($controls[$object[0]])?$controls[$object[0]]:$tplControl;
@@ -290,7 +291,10 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					// apply attributes
 					foreach($properties as $name=>$value)
 						$this->configureControl($component,$name,$value);
-					$component->createdOnTemplate($parent);
+					if($parent===$tplControl)
+						$directChildren[]=$component;
+					else
+						$component->createdOnTemplate($parent);
 				}
 				else if($component instanceof TComponent)
 				{
@@ -304,7 +308,10 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					}
 					foreach($properties as $name=>$value)
 						$this->configureComponent($component,$name,$value);
-					$parent->addParsedObject($component);
+					if($parent===$tplControl)
+						$directChildren[]=$component;
+					else
+						$parent->addParsedObject($component);
 				}
 			}
 			else	// string
@@ -314,11 +321,29 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					// need to clone a new object because the one in template is reused
 					$o=clone $object[1];
 					$o->setContainer($tplControl);
-					$parent->addParsedObject($o);
+					if($parent===$tplControl)
+						$directChildren[]=$o;
+					else
+						$parent->addParsedObject($o);
 				}
 				else
-					$parent->addParsedObject($object[1]);
+				{
+					if($parent===$tplControl)
+						$directChildren[]=$object[1];
+					else
+						$parent->addParsedObject($object[1]);
+				}
 			}
+		}
+		// delay setting parent till now because the parent may cause
+		// the child to do lifecycle catchup which may cause problem
+		// if the child needs its own child controls.
+		foreach($directChildren as $control)
+		{
+			if($control instanceof TControl)
+				$control->createdOnTemplate($tplControl);
+			else
+				$tplControl->addParsedObject($control);
 		}
 	}
 
