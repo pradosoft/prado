@@ -213,6 +213,7 @@ class TAssetManager extends TModule
 	 * File modification time is used to ensure the copied files are latest.
 	 * @param string the source directory
 	 * @param string the destination directory
+	 * @todo a generic solution to ignore certain directories and files
 	 */
 	protected function copyDirectory($src,$dst)
 	{
@@ -221,7 +222,7 @@ class TAssetManager extends TModule
 		$folder=@opendir($src);
 		while($file=@readdir($folder))
 		{
-			if($file==='.' || $file==='..')
+			if($file==='.' || $file==='..' || $file==='.svn')
 				continue;
 			else if(is_file($src.'/'.$file))
 			{

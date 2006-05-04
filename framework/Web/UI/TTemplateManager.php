@@ -132,9 +132,7 @@ class TTemplateManager extends TModule
  * - directive: directive specifies the property values for the template owner.
  * It is in the format of &lt;% property name-value pairs %&gt;
  * - expressions: They are in the formate of &lt;= PHP expression &gt; and &lt;% PHP statements &gt;
- * - comments: There are two kinds of comments, regular HTML comments and special template comments.
- * The former is in the format of &lt;!-- comments --&gt;, which will be treated as text strings.
- * The latter is in the format of &lt;%* comments %&gt;, which will be stripped out.
+ * - comments: Special template comments enclosed within &lt;!-- comments --!&gt; will be stripped out.
  *
  * Tags other than the above are not required to be well-formed.
  *
@@ -152,13 +150,12 @@ class TTemplate extends TApplicationComponent implements ITemplate
 {
 	/**
 	 *  '<!--.*?--!>' - template comments
-	 *	'<!--.*?-->'  - HTML comments
 	 *	'<\/?com:([\w\.]+)((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?"|\s*[\w\.]+=<%.*?%>)*)\s*\/?>' - component tags
 	 *	'<\/?prop:([\w\.]+)\s*>'  - property tags
 	 *	'<%@\s*((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?")*)\s*%>'  - directives
 	 *	'<%[%#~\\$=\\[](.*?)%>'  - expressions
 	 */
-	const REGEX_RULES='/<!--.*?--!>|<!--.*?-->|<\/?com:([\w\.]+)((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?"|\s*[\w\.]+=<%.*?%>)*)\s*\/?>|<\/?prop:([\w\.]+)\s*>|<%@\s*((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?")*)\s*%>|<%[%#~\\$=\\[](.*?)%>/msS';
+	const REGEX_RULES='/<!--.*?--!>|<\/?com:([\w\.]+)((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?"|\s*[\w\.]+=<%.*?%>)*)\s*\/?>|<\/?prop:([\w\.]+)\s*>|<%@\s*((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?")*)\s*%>|<%[%#~\\$=\\[](.*?)%>/msS';
 
 	/**
 	 * Different configurations of component property/event/attribute
@@ -280,6 +277,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 		if(($page=$tplControl->getPage())===null)
 			$page=$this->getService()->getRequestedPage();
 		$controls=array();
+		$directChildren=array();
 		foreach($this->_tpl as $key=>$object)
 		{
 			if($object[0]===-1)
@@ -315,7 +313,10 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					// apply attributes
 					foreach($properties as $name=>$value)
 						$this->configureControl($component,$name,$value);
-					$component->createdOnTemplate($parent);
+					if($parent===$tplControl)
+						$directChildren[]=$component;
+					else
+						$component->createdOnTemplate($parent);
 					if($component->getAllowChildControls())
 						$controls[$key]=$component;
 				}
@@ -331,19 +332,44 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					}
 					foreach($properties as $name=>$value)
 						$this->configureComponent($component,$name,$value);
-					$parent->addParsedObject($component);
+					if($parent===$tplControl)
+						$directChildren[]=$component;
+					else
+						$parent->addParsedObject($component);
 				}
 			}
-			else if(is_string($object[1]))
-				$parent->addParsedObject($object[1]);
 			else if($object[1] instanceof TCompositeLiteral)
 			{
-				$o=clone $object[1];
-				$o->setContainer($tplControl);
-				$parent->addParsedObject($o);
+				if($object[1] instanceof TCompositeLiteral)
+				{
+					// need to clone a new object because the one in template is reused
+					$o=clone $object[1];
+					$o->setContainer($tplControl);
+					if($parent===$tplControl)
+						$directChildren[]=$o;
+					else
+						$parent->addParsedObject($o);
+				}
+				else
+				{
+					if($parent===$tplControl)
+						$directChildren[]=$object[1];
+					else
+						$parent->addParsedObject($object[1]);
+				}
 			}
 			else
 				throw new TConfigurationException('template_content_unexpected',(string)$object[1]);
+		}
+		// delay setting parent till now because the parent may cause
+		// the child to do lifecycle catchup which may cause problem
+		// if the child needs its own child controls.
+		foreach($directChildren as $control)
+		{
+			if($control instanceof TControl)
+				$control->createdOnTemplate($tplControl);
+			else
+				$tplControl->addParsedObject($control);
 		}
 	}
 
@@ -640,15 +666,11 @@ class TTemplate extends TApplicationComponent implements ITemplate
 				}
 				else if(strpos($str,'<!--')===0)	// comments
 				{
-					if(strrpos($str,'--!>')===strlen($str)-4)  // template comments
-					{
-						if($expectPropEnd)
-							throw new TConfigurationException('template_comments_forbidden');
-						if($matchStart>$textStart)
-							$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
-						$textStart=$matchEnd+1;
-					}
-					// else, HTML comments and we do nothing
+					if($expectPropEnd)
+						throw new TConfigurationException('template_comments_forbidden');
+					if($matchStart>$textStart)
+						$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
+					$textStart=$matchEnd+1;
 				}
 				else
 					throw new TConfigurationException('template_matching_unexpected',$match);
