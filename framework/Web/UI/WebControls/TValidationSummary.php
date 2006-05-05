@@ -37,9 +37,9 @@
 class TValidationSummary extends TWebControl
 {
 	/**
-	 * @var TClientSideValidationSummaryOptions validation client side options.
+	 * @var TValidatorClientScript validator client-script options.
 	 */
-	private $_clientSide;
+	private $_clientScript;
 	
 	/**
 	 * Constructor.
@@ -248,30 +248,30 @@ class TValidationSummary extends TWebControl
 		$options['ValidationGroup'] =  $this->getValidationGroup();
 		$options['Display'] = $this->getDisplay();
 		
-		if(!is_null($this->_clientSide))
-			$options = array_merge($options,$this->_clientSide->getOptions()->toArray());
+		if(!is_null($this->_clientScript))
+			$options = array_merge($options,$this->_clientScript->getOptions());
 					
 		return $options;
 	}
 
 	/**
-	 * @return TClientSideValidationSummaryOptions client-side validation summary
+	 * @return TValidationSummaryClientScript client-side validation summary
 	 * event options.
 	 */
 	public function getClientSide()
 	{
-		if(is_null($this->_clientSide))
-			$this->_clientSide = $this->createClientScript();
-		return $this->_clientSide;
+		if(is_null($this->_clientScript))
+			$this->_clientScript = $this->createClientScript();
+		return $this->_clientScript;
 	}
 	
 	/**
-	 * @return TClientSideValidationSummaryOptions javascript validation summary
+	 * @return TValidationSummaryClientScript javascript validation summary
 	 * event options.
 	 */
 	protected function createClientScript()
 	{
-		return new TClientSideValidationSummaryOptions;
+		return new TValidationSummaryClientScript;
 	}
 	/**
 	 * Get the list of validation error messages.
@@ -372,7 +372,7 @@ class TValidationSummary extends TWebControl
 }
 
 /**
- * TClientSideValidationSummaryOptions class.
+ * TValidationSummaryClientScript class.
  * 
  * Client-side validation summary events such as {@link setOnHideSummary
  * OnHideSummary} and {@link setOnShowSummary OnShowSummary} can be modified
@@ -392,14 +392,27 @@ class TValidationSummary extends TWebControl
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TClientSideValidationSummaryOptions extends TClientSideOptions
+class TValidationSummaryClientScript extends TComponent
 {
+	/**
+	 * @var TMap client-side validation summary event javascript code.
+	 */
+	private $_options;
+	
+	/**
+	 * Constructor.
+	 */
+	public function __construct()
+	{
+		$this->_options = new TMap;
+	}
+
 	/**
 	 * @return string javascript code for client-side OnHideSummary event.
 	 */
 	public function getOnHideSummary()
 	{
-		return $this->getOption('OnHideSummary');	
+		return $this->_options->itemAt['OnHideSummary'];	
 	}
 	
 	/**
@@ -410,7 +423,7 @@ class TClientSideValidationSummaryOptions extends TClientSideOptions
 	 */
 	public function setOnHideSummary($javascript)
 	{
-		$this->getOptions()->add('OnHideSummary', $this->ensureFunction($javascript));
+		$this->_options->add('OnHideSummary', $this->ensureFunction($javascript));
 	}
 	
 	/**
@@ -421,7 +434,7 @@ class TClientSideValidationSummaryOptions extends TClientSideOptions
 	 */
 	public function setOnShowSummary($javascript)
 	{
-		$this->getOptions()->add('OnShowSummary', $this->ensureFunction($javascript));
+		$this->_options->add('OnShowSummary', $this->ensureFunction($javascript));
 	}
 	
 	/**
@@ -429,7 +442,15 @@ class TClientSideValidationSummaryOptions extends TClientSideOptions
 	 */
 	public function getOnShowSummary()
 	{
-		return $this->getOption('OnShowSummary');
+		return $this->_options->itemAt('OnShowSummary');
+	}
+	
+	/**
+	 * @return array list of client-side event code.
+	 */
+	public function getOptions()
+	{
+		return $this->_options->toArray();
 	}
 	
 	/**
@@ -439,7 +460,7 @@ class TClientSideValidationSummaryOptions extends TClientSideOptions
 	 * @param string javascript code.
 	 * @return string javascript function code.
 	 */
-	protected function ensureFunction($javascript)
+	private function ensureFunction($javascript)
 	{
 		if(TJavascript::isFunction($javascript))
 			return $javascript;

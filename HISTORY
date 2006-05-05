@@ -5,10 +5,8 @@ ENH: Ticket#152 - constituent parts of TWizard are exposed (Qiang)
 ENH: added sanity check to calling event handlers (Qiang)
 CHG: Ticket#151 - URL format is modified to handle empty GET values (Qiang)
 CHG: Ticket#153 - TAssetManager now ignores .svn directories (Qiang)
-CHG: Renamed TValidatorClientScript to TClientSideValidatorOptions, TValidationSummaryClientScript to TClientSideValidationSummaryOptions (wei)
 NEW: TTableHeaderRow, TTableFooterRow and table section support (Qiang)
 NEW: TCompositeControl (Qiang)
-NEW: TClientOptions abstract base class (Wei)
 
 Version 3.0.0 May 1, 2006
 =========================
