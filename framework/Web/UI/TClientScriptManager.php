@@ -1,6 +1,6 @@
 <?php
 /**
- * TClientScriptManager class file
+ * TClientScriptManager and TClientSideOptions class file.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
@@ -116,6 +116,15 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function registerPradoScript($name)
 	{
+		$this->registerPradoScriptInternal($name);
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('Page.ClientScript','registerPradoScript',$params);
+	}
+
+	private function registerPradoScriptInternal($name)
+	{
 		if(!isset($this->_registeredPradoScripts[$name]))
 		{
 			$this->_registeredPradoScripts[$name]=true;
@@ -155,6 +164,21 @@ class TClientScriptManager extends TApplicationComponent
 		}
 	}
 
+	public function getCallbackReference($callbackHandler, $options=null)
+	{
+		$options = !is_array($options) ? array() : $options; 
+		$class = new TReflectionClass($callbackHandler);
+		if($class->hasMethod('getClientSide'))
+		{
+			$clientSide = $callbackHandler->getClientSide();
+			$options = array_merge($options, $clientSide->getOptions()->toArray());
+		}
+		$optionString = TJavascript::encode($options);
+		$this->registerPradoScriptInternal('ajax');
+		$id = $callbackHandler->getUniqueID();
+		return "new Prado.CallbackRequest('{$id}',{$optionString})";
+	}
+
 	/**
 	 * Registers postback javascript for a control.
 	 * @param string javascript class responsible for the control being registered for postback
@@ -162,51 +186,63 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function registerPostBackControl($jsClass,$options)
 	{
-		if(!isset($options['FormID']))
-			$options['FormID']=$this->_page->getForm()->getClientID();
+		if(!isset($options['FormID']) && ($form=$this->_page->getForm())!==null)
+			$options['FormID']=$form->getClientID();
 		$optionString=TJavaScript::encode($options);
 		$code="new $jsClass($optionString);";
-		$this->registerEndScript(sprintf('%08X', crc32($code)), $code);
 
-		$this->registerHiddenField(TPage::FIELD_POSTBACK_TARGET,'');
-		$this->registerHiddenField(TPage::FIELD_POSTBACK_PARAMETER,'');
+		$this->_endScripts[sprintf('%08X', crc32($code))]=$code;
+		$this->_hiddenFields[TPage::FIELD_POSTBACK_TARGET]='';
+		$this->_hiddenFields[TPage::FIELD_POSTBACK_PARAMETER]='';
+		$this->registerPradoScriptInternal('prado');
 
-		$this->registerPradoScript('prado');
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('Page.ClientScript','registerPostBackControl',$params);
 	}
 
 	/**
 	 * Register a default button to panel. When the $panel is in focus and
 	 * the 'enter' key is pressed, the $button will be clicked.
-	 * @param TControl panel to register the default button action
-	 * @param TControl button to trigger a postback
+	 * @param string client ID of the container object
+	 * @param string client ID of the button
 	 */
-	public function registerDefaultButton($panel, $button)
+	public function registerDefaultButton($containerID, $buttonID)
 	{
-		$options = TJavaScript::encode($this->getDefaultButtonOptions($panel, $button));
+		$options = TJavaScript::encode($this->getDefaultButtonOptions($containerID, $buttonID));
 		$code = "new Prado.WebUI.DefaultButton($options);";
-		$this->registerEndScript("prado:".$panel->getClientID(), $code);
-		$this->registerPradoScript('prado');
+
+		$this->_endScripts['prado:'.$containerID]=$code;
+		$this->registerPradoScriptInternal('prado');
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('Page.ClientScript','registerDefaultButton',$params);
 	}
 
 	/**
 	 * Registers the control to receive default focus.
-	 * @param TControl|string the control or the client ID of the HTML element to receive default focus
+	 * @param string the client ID of the control to receive default focus
 	 */
 	public function registerFocusControl($target)
 	{
-		$this->registerPradoScript('prado');
-		if($target instanceof TControl)
-			$target=$target->getClientID();
-		$this->registerEndScript('prado:focus','Prado.Focus.setFocus("'.TJavaScript::quoteString($target).'");');
+		$this->registerPradoScriptInternal('prado');
+		$this->_endScripts['prado:focus']='Prado.Focus.setFocus("'.TJavaScript::quoteString($target).'");';
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('Page.ClientScript','registerFocusControl',$params);
 	}
 
 	/**
+	 * @param string client ID of the container object
+	 * @param string client ID of the button
 	 * @return array default button options.
 	 */
-	protected function getDefaultButtonOptions($panel, $button)
+	protected function getDefaultButtonOptions($containerID, $buttonID)
 	{
-		$options['Panel'] = $panel->getClientID();
-		$options['Target'] = $button->getClientID();
+		$options['Panel'] = $containerID;
+		$options['Target'] = $buttonID;
 		$options['Event'] = 'click';
 		return $options;
 	}
@@ -219,6 +255,10 @@ class TClientScriptManager extends TApplicationComponent
 	public function registerStyleSheetFile($key,$url)
 	{
 		$this->_styleSheetFiles[$key]=$url;
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('Page.ClientScript','registerStyleSheetFile',$params);
 	}
 
 	/**
@@ -229,6 +269,10 @@ class TClientScriptManager extends TApplicationComponent
 	public function registerStyleSheet($key,$css)
 	{
 		$this->_styleSheets[$key]=$css;
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('Page.ClientScript','registerStyleSheet',$params);
 	}
 
 	/**
@@ -239,6 +283,10 @@ class TClientScriptManager extends TApplicationComponent
 	public function registerHeadScriptFile($key,$url)
 	{
 		$this->_headScriptFiles[$key]=$url;
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('Page.ClientScript','registerHeadScriptFile',$params);
 	}
 
 	/**
@@ -249,6 +297,10 @@ class TClientScriptManager extends TApplicationComponent
 	public function registerHeadScript($key,$script)
 	{
 		$this->_headScripts[$key]=$script;
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('Page.ClientScript','registerHeadScript',$params);
 	}
 
 	/**
@@ -258,8 +310,11 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function registerScriptFile($key,$url)
 	{
-		if(!isset($this->_scriptFiles[$key]))
-			$this->_scriptFiles[$key]=$url;
+		$this->_scriptFiles[$key]=$url;
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('Page.ClientScript','registerScriptFile',$params);
 	}
 
 	/**
@@ -270,6 +325,10 @@ class TClientScriptManager extends TApplicationComponent
 	public function registerBeginScript($key,$script)
 	{
 		$this->_beginScripts[$key]=$script;
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('Page.ClientScript','registerBeginScript',$params);
 	}
 
 	/**
@@ -280,6 +339,10 @@ class TClientScriptManager extends TApplicationComponent
 	public function registerEndScript($key,$script)
 	{
 		$this->_endScripts[$key]=$script;
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('Page.ClientScript','registerEndScript',$params);
 	}
 
 	/**
@@ -290,8 +353,11 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function registerHiddenField($name,$value)
 	{
-		if(!isset($this->_hiddenFields[$name]))
-			$this->_hiddenFields[$name]=$value;
+		$this->_hiddenFields[$name]=$value;
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('Page.ClientScript','registerHiddenField',$params);
 	}
 
 	/**
@@ -463,6 +529,73 @@ class TClientScriptManager extends TApplicationComponent
 		}
 		if($str!=='')
 			$writer->write("<div>\n".$str."</div>\n");
+	}
+}
+
+/**
+ * TClientSideOptions abstract class.
+ *
+ * TClientSideOptions manages client-side options for components that have
+ * common client-side javascript behaviours and client-side events such as
+ * between ActiveControls and validators.
+ *
+ * @author <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI
+ * @since 3.0
+ */
+abstract class TClientSideOptions extends TComponent
+{
+	/**
+	 * @var TMap list of client-side options.
+	 */
+	private $_options;
+	
+	/**
+	 * Constructor, initialize the options list.
+	 */
+	public function __construct()
+	{
+		$this->_options = Prado::createComponent('System.Collections.TMap');
+	}
+	
+	/**
+	 * Adds on client-side event handler by wrapping the code within a
+	 * javascript function block. If the code begins with "javascript:", the
+	 * code is assumed to be a javascript function block rather than arbiturary
+	 * javascript statements.
+	 * @param string option name
+	 * @param string javascript statements.
+	 */
+	protected function setFunction($name, $code)
+	{
+		$this->_options->add($name, $this->ensureFunction($code));
+	}
+	
+	/**
+	 * @return string gets a particular option, null if not set.
+	 */
+	protected function getOption($name)
+	{
+		return $this->_options->itemAt($name);
+	}
+	
+	/**
+	 * @return TMap gets the list of options as TMap
+	 */
+	public function getOptions()
+	{
+		return $this->_options;
+	}
+	
+	/**
+	 * Ensure that the javascript statements are wrapped in a javascript
+	 * function block. Default has no wrapping. Override this method to
+	 * customize the wrapping javascript function block.
+	 */
+	protected function ensureFunction($javascript)
+	{
+		return $javascript;
 	}
 }
 
