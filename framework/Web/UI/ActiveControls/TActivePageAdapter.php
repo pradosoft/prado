@@ -285,7 +285,7 @@ class TCallbackErrorHandler extends TErrorHandler
 		{
 			$response = $this->getApplication()->getResponse();
 			$data = TJavascript::jsonEncode($this->getExceptionData($exception));			
-			$response->appendHeader('HTTP/1.0 505 Internal Error');
+			$response->appendHeader('HTTP/1.0 500 Internal Error');
 			$response->appendHeader(TActivePageAdapter::CALLBACK_ERROR_HEADER.': '.$data);
 		}
 		else

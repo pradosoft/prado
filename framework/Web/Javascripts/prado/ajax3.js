@@ -103,6 +103,14 @@ Object.extend(Prado.CallbackRequest,
 	 * Response errors/exceptions header name.
 	 */
 	ERROR_HEADER : 'X-PRADO-ERROR',
+	/**
+	 * Callback request queque.
+	 */
+	Queque : [],
+	/**
+	 * Requests In progress.
+	 */
+	InProgress : [],
 	
 	/**
 	 * Dispatch callback response actions.
@@ -140,9 +148,9 @@ Object.extend(Prado.CallbackRequest,
 	Exception :
 	{
 		/**
-		 * Server returns 505 exception. Just log it.
+		 * Server returns 500 exception. Just log it.
 		 */
-		"on505" : function(request, transport, data)
+		"on500" : function(request, transport, data)
 		{	
 			var e = request.getHeaderData(Prado.CallbackRequest.ERROR_HEADER);
 			Logger.error("Callback Server Error "+e.code, this.formatException(e));
@@ -163,7 +171,6 @@ Object.extend(Prado.CallbackRequest,
 				{
 					msg += inspect(action)+"\n";
 				})
-				
 				Logger.warn(msg);
 			}
 		},
@@ -209,9 +216,60 @@ Object.extend(Prado.CallbackRequest,
 	 */
 	decode : function(data)
 	{
-		return Prado.JSON.parse(data);
+		if(typeof(data) == "string" && data.trim().length > 0)
+			return Prado.JSON.parse(data);
+		else
+			return null;
+	},
+	
+	/**
+	 * Dispatch quequed requests, and set a timeout.
+	 */
+	dispatchQuequedRequest : function()
+	{
+		requests = Prado.CallbackRequest;
+		if(requests.InProgress.length == 0 && requests.Queque.length > 0)
+		{
+			var item = requests.Queque.pop();
+			item.callback = new Ajax.Request(item.url, item.options);
+			item.callback.callbackID = item.id;
+			item.timeout = setTimeout(function()
+			{
+				requests.removeInProgress(item.callback);
+			}, item.options.TimeOut);
+			requests.InProgress.push(item);
+		}
+	},
+	
+	/**
+	 * Remove a request currently in progress and call dispatchQuequedRequest.
+	 */
+	removeInProgress : function(request)
+	{
+		if(request && request.callbackID)
+		{
+			var stillInProgress = [];
+			requests = Prado.CallbackRequest;
+			requests.InProgress.each(function(item)
+			{
+				if(item.callback.callbackID == request.callbackID)
+				{
+					item.callback.transport.abort();
+					request.transport.abort();
+					clearTimeout(item.timeout);	
+				}
+				else
+				{
+					stillInProgress.push(item);
+				}
+			})
+			requests.InProgress = stillInProgress;
+		}
+		requests.dispatchQuequedRequest();
 	}
 })
+
+Ajax.Responders.register({onComplete : Prado.CallbackRequest.removeInProgress});
 
 //Add HTTP exception respones when logger is enabled.
 Event.OnLoad(function()
@@ -233,7 +291,10 @@ Prado.CallbackRequest.prototype =
 	/**
 	 * Callback options, including onXXX events.
 	 */
-	options : {},
+	options : 
+	{
+		TimeOut : 30000 // 30 second timeout.
+	},
 	
 	/**
 	 * Callback target ID. E.g. $control->getUniqueID();
@@ -243,14 +304,15 @@ Prado.CallbackRequest.prototype =
 	/**
 	 * Current callback request.
 	 */
-	request : null,
+	callback : null,
 	
 	/**
 	 * Prepare and inititate a callback request.
 	 */
 	initialize : function(id, options)
 	{
-		this.options = options || {};	
+		Object.extend(this.options, options || {});
+		
 		this.id = id;
 		
 		var request = 
@@ -258,14 +320,18 @@ Prado.CallbackRequest.prototype =
 			postBody : this._getPostData(),
 			parameters : ''
 		}
-		Object.extend(this.options || {},request);
+		
+		Object.extend(this.options, request);		
+		
 		if(this.options.CausesValidation != false && typeof(Prado.Validation) != "undefined")
 		{
 			var form =  this.options.Form || Prado.Validation.getForm();
 			if(Prado.Validation.validate(form,this.options.ValidationGroup,this) == false)
 				return;
 		}
-		this.request = new Ajax.Request(this.url, this.options);
+		
+		Prado.CallbackRequest.Queque.push(this);
+		Prado.CallbackRequest.dispatchQuequedRequest();
 	},
 
 	/**

@@ -76,7 +76,7 @@ Prado.Element =
 		return false;
 	},
 	
-	replaceContent : function(element, method, content, boundary, transport)
+	replace : function(element, method, content, boundary, transport)
 	{
 		if(boundary)
 		{

@@ -2,19 +2,15 @@
 	<h1>TCallback Demo</h1>
 	<com:TClientScript UsingPradoScripts="ajax" />
 	<com:TCallback id="control1" 
-		OnCallback="control1onCallback">
-		<com:TButton id="button2" Text="Hello" Visible="false"/>
-	</com:TCallback>
+		OnCallback="control1onCallback" />
+		
+	<com:TActiveLabel id="label1" Text="Name:" />
 	<com:TTextBox id="text1" />
 
 	<com:TCheckBoxList>
 		<com:TListItem Text="One" />
 		<com:TListItem Text="Two" />
 	</com:TCheckBoxList>
-
-	<com:TPanel id="panel2" Visible="false">
-		asdad <com:TCheckBox id="checkbox1" />
-	</com:TPanel>
 
 	<input type="hidden" name="PRADO_CALLBACK_TARGET" value="<%= $this->control1->UniqueID %>" />
 

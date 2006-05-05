@@ -318,20 +318,16 @@ class TCallbackClientScript extends TApplicationComponent
 		if($content instanceof TControl)
 		{
 			$boundary = $this->getRenderedContentBoundary($content);
-			$this->callClientFunction('Prado.Element.replaceContent', 
-					array($element, $method, null, $boundary));		
+			$content = null;
 		}
 		else if($content instanceof THtmlWriter)
 		{
 			$boundary = $this->getResponseContentBoundary($content);
-			$this->callClientFunction('Prado.Element.replaceContent', 
-					array($element, $method, null, $boundary));		
+			$content = null;
 		}
-		else
-		{
-			$this->callClientFunction('Prado.Element.replaceContent', 
-				array($element, $method, $content, $boundary));		
-		}
+
+		$this->callClientFunction('Prado.Element.replace', 
+					array($element, $method, $content, $boundary));		
 	}
 	
 	/**

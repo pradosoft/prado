@@ -4,7 +4,7 @@
  * Created on 25/04/2006
  */
 
-class TCallback extends TWebControl implements ICallbackEventHandler
+class TCallback extends TControl implements ICallbackEventHandler
 {	
 	/**
 	 * @var TCallbackClientSideOptions client-side options.
@@ -21,15 +21,7 @@ class TCallback extends TWebControl implements ICallbackEventHandler
 		parent::__construct();
 		$this->setAdapter(new TActiveControlAdapter($this));
 	}
-	
-	/**
-	 * @return string tag name of the panel
-	 */
-	protected function getTagName()
-	{
-		return 'div';
-	}	
-	
+
 	/**
 	 * @return boolean whether callback event trigger by this button will cause
 	 * input validation, default is true
@@ -153,13 +145,6 @@ class TCallback extends TWebControl implements ICallbackEventHandler
 		$client = $this->getPage()->getClientScript(); 
 		return $client->getCallbackReference($this, $this->getCallbackOptions());
 	}
-	
-	public function render($writer)
-	{
-		parent::render($writer);
-		if($this->getPage()->getIsCallback())
-			$this->getPage()->getCallbackClient()->replace($this, $writer);
-	}	
 } 
 
 ?>

@@ -216,6 +216,22 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	{
 		$this->getOptions()->add('PostState', TPropertyValue::ensureBoolean($value));
 	}
+	
+	/**
+	 * @return integer callback request timeout.
+	 */
+	public function getRequestTimeOut()
+	{
+		return $this->getOption('TimeOut');
+	}
+	
+	/**
+	 * @param integer callback request timeout 
+	 */
+	public function setRequestTimeOut($value)
+	{
+		$this->getOptions()->add('TimeOut', TPropertyValue::ensureInteger($value));
+	}
 } 
 
 ?>

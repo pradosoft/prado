@@ -266,7 +266,7 @@ el.setAttribute(attribute,value);},setOptions:function(element,options)
 el.remove(0);for(var i=0;i<options.length;i++)
 el.options[el.options.length]=new Option(options[i][0],options[i][1]);}},focus:function(element)
 {var obj=$(element);if(typeof(obj)!="undefined"&&typeof(obj.focus)!="undefined")
-setTimeout(function(){obj.focus();},100);return false;},replaceContent:function(element,method,content,boundary,transport)
+setTimeout(function(){obj.focus();},100);return false;},replace:function(element,method,content,boundary,transport)
 {if(boundary)
 {var f=RegExp('(<!--'+boundary+'-->)([\\s\\S\\w\\W]*)(<!--//'+boundary+'-->)',"m");var result=transport.responseText.match(f);if(result&&result.length>=2)
 content=result[2];}
