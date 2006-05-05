@@ -930,6 +930,7 @@ framework/Web/THttpUtility.php -text
 framework/Web/UI/ActiveControls/TActiveControlAdapter.php -text
 framework/Web/UI/ActiveControls/TActiveLabel.php -text
 framework/Web/UI/ActiveControls/TActivePageAdapter.php -text
+framework/Web/UI/ActiveControls/TActivePanel.php -text
 framework/Web/UI/ActiveControls/TCallback.php -text
 framework/Web/UI/ActiveControls/TCallbackClientScript.php -text
 framework/Web/UI/ActiveControls/TCallbackClientSideOptions.php -text
