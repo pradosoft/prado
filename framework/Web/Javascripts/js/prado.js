@@ -253,11 +253,8 @@ Prado.Element={setValue:function(element,value)
 el.value=value;},select:function(element,method,value)
 {var el=$(element);var isList=element.indexOf('[]')>-1;if(!el&&!isList)return;method=isList?'check'+method:el.tagName.toLowerCase()+method;var selection=Prado.Element.Selection;if(isFunction(selection[method]))
 selection[method](isList?element:el,value);},click:function(element)
-{var el=$(element);if(!el)return;if(document.createEvent)
-{var evt=document.createEvent('HTMLEvents');evt.initEvent('click',true,true);el.dispatchEvent(evt);}
-else if(el.fireEvent)
-{el.fireEvent('onclick');if(typeof(el.onclick)=="function")
-el.onclick();}},setAttribute:function(element,attribute,value)
+{var el=$(element);if(el)
+Event.fireEvent(el,'click');},setAttribute:function(element,attribute,value)
 {var el=$(element);if(attribute=="disabled"&&value==false)
 el.removeAttribute(attribute);else
 el.setAttribute(attribute,value);},setOptions:function(element,options)

@@ -26,21 +26,8 @@ Prado.Element =
 	click : function(element)
 	{
 		var el = $(element);
-		//Logger.info(el);
-		if(!el) return;
-		if(document.createEvent)
-        {
-            var evt = document.createEvent('HTMLEvents');
-            evt.initEvent('click', true, true);
-            el.dispatchEvent(evt);
-			//Logger.warn("dispatching click for "+el.id);
-        }
-        else if(el.fireEvent)
-		{
-            el.fireEvent('onclick');
-			if(typeof(el.onclick) == "function")
-				el.onclick();
-		}
+		if(el) 
+			Event.fireEvent(el,'click');
 	},
 	
 	setAttribute : function(element, attribute, value)
