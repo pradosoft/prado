@@ -25,6 +25,7 @@ class TActivePageAdapter extends TControlAdapter
 	const CALLBACK_DATA_HEADER = 'X-PRADO-DATA';
 	const CALLBACK_ACTION_HEADER = 'X-PRADO-ACTIONS';
 	const CALLBACK_ERROR_HEADER = 'X-PRADO-ERROR';
+	const CALLBACK_PAGESTATE_HEADER = 'X-PRADO-PAGESTATE';
 		
 	/**
 	 * @var ICallbackEventHandler callback event handler. 
@@ -80,7 +81,7 @@ class TActivePageAdapter extends TControlAdapter
 	
 	/**
 	 * Renders the callback response by adding additional callback data and
-	 * javascript actions in the header.
+	 * javascript actions in the header and page state if required.
 	 */
 	protected function renderResponse($writer)
 	{
@@ -92,7 +93,15 @@ class TActivePageAdapter extends TControlAdapter
 		{
 			$data = TJavascript::jsonEncode($this->_result->getData());
 			$response->appendHeader(self::CALLBACK_DATA_HEADER.': '.$data);
-		}		
+		}
+		if(($handler = $this->getCallbackEventTarget()) !== null)
+		{
+			if($handler->getClientSide()->getEnablePageStateUpdate())
+			{
+				$pagestate = $this->getPage()->getClientState();
+				$response->appendHeader(self::CALLBACK_PAGESTATE_HEADER.': '.$pagestate);
+			}
+		}
 	}
 	
 	/**

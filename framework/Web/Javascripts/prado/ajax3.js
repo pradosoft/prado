@@ -16,6 +16,7 @@ Object.extend(Ajax.Request.prototype,
 	    {	      
 	      try 
 	      {
+	      	Prado.CallbackRequest.updatePageState(this,transport);
 			Ajax.Responders.dispatch('on' + transport.status, this, transport, json);
 			Prado.CallbackRequest.dispatchActions(transport,this.getHeaderData(Prado.CallbackRequest.ACTION_HEADER));
 	      	
@@ -104,13 +105,13 @@ Object.extend(Prado.CallbackRequest,
 	 */
 	ERROR_HEADER : 'X-PRADO-ERROR',
 	/**
-	 * Callback request queque.
+	 * Page state header name.
 	 */
-	Queque : [],
+	PAGESTATE_HEADER : 'X-PRADO-PAGESTATE',
 	/**
-	 * Requests In progress.
+	 * Current requests in progress.
 	 */
-	InProgress : [],
+	requestInProgress : null,
 	
 	/**
 	 * Dispatch callback response actions.
@@ -223,53 +224,71 @@ Object.extend(Prado.CallbackRequest,
 	},
 	
 	/**
-	 * Dispatch quequed requests, and set a timeout.
+	 * Dispatch a priority request, it will call abortRequestInProgress first.
 	 */
-	dispatchQuequedRequest : function()
+	dispatchPriorityRequest : function(callback)
 	{
-		requests = Prado.CallbackRequest;
-		if(requests.InProgress.length == 0 && requests.Queque.length > 0)
+		Logger.info("priority request "+callback.id)
+		this.abortRequestInProgress();
+		
+		callback.request = new Ajax.Request(callback.url, callback.options);
+		callback.timeout = setTimeout(function()
 		{
-			var item = requests.Queque.pop();
-			item.callback = new Ajax.Request(item.url, item.options);
-			item.callback.callbackID = item.id;
-			item.timeout = setTimeout(function()
-			{
-				requests.removeInProgress(item.callback);
-			}, item.options.TimeOut);
-			requests.InProgress.push(item);
+			Logger.warn("priority timeout");
+			Prado.CallbackRequest.abortRequestInProgress();
+		},callback.options.RequestTimeOut);
+		
+		this.requestInProgress = callback;
+		Logger.info("dispatched "+this.requestInProgress)
+	},
+	
+	/**
+	 * Dispatch a normal request, no timeouts or aborting of requests.
+	 */
+	dispatchNormalRequest : function(callback)
+	{
+		Logger.info("dispatching normal request");
+		new Ajax.Request(callback.url, callback.options);
+	},
+	
+	/**
+	 * Abort the current priority request in progress.
+	 */
+	abortRequestInProgress : function()
+	{
+		inProgress = Prado.CallbackRequest.requestInProgress;
+		if(inProgress)
+		{
+			Logger.warn("aborted "+inProgress.id)
+			inProgress.request.transport.abort();
+			clearTimeout(inProgress.timeout);
+			Prado.CallbackRequest.requestInProgress = null;
 		}
 	},
 	
 	/**
-	 * Remove a request currently in progress and call dispatchQuequedRequest.
+	 * Updates the page state. It will update only if EnablePageStateUpdate and
+	 * HasPriority options are both true.
 	 */
-	removeInProgress : function(request)
+	updatePageState : function(request, transport)
 	{
-		if(request && request.callbackID)
+		pagestate = $(this.FIELD_CALLBACK_PAGESTATE);
+		if(request.options.EnablePageStateUpdate && request.options.HasPriority && pagestate)
 		{
-			var stillInProgress = [];
-			requests = Prado.CallbackRequest;
-			requests.InProgress.each(function(item)
-			{
-				if(item.callback.callbackID == request.callbackID)
-				{
-					item.callback.transport.abort();
-					request.transport.abort();
-					clearTimeout(item.timeout);	
-				}
-				else
-				{
-					stillInProgress.push(item);
-				}
-			})
-			requests.InProgress = stillInProgress;
+			Logger.warn("updating page state");
+			pagestate.value = request.header(this.PAGESTATE_HEADER);
 		}
-		requests.dispatchQuequedRequest();
 	}
 })
 
-Ajax.Responders.register({onComplete : Prado.CallbackRequest.removeInProgress});
+/**
+ * Automatically aborts the current request when a priority request has returned.
+ */
+Ajax.Responders.register({onComplete : function(request)
+{
+	if(request.options.HasPriority)
+		Prado.CallbackRequest.abortRequestInProgress();
+}});
 
 //Add HTTP exception respones when logger is enabled.
 Event.OnLoad(function()
@@ -291,10 +310,7 @@ Prado.CallbackRequest.prototype =
 	/**
 	 * Callback options, including onXXX events.
 	 */
-	options : 
-	{
-		TimeOut : 30000 // 30 second timeout.
-	},
+	options : {	},
 	
 	/**
 	 * Callback target ID. E.g. $control->getUniqueID();
@@ -304,34 +320,39 @@ Prado.CallbackRequest.prototype =
 	/**
 	 * Current callback request.
 	 */
-	callback : null,
+	request : null,
 	
 	/**
 	 * Prepare and inititate a callback request.
 	 */
 	initialize : function(id, options)
 	{
-		Object.extend(this.options, options || {});
-		
 		this.id = id;
-		
-		var request = 
+
+		this.options = 
 		{
+			RequestTimeOut : 30000, // 30 second timeout.
+			EnablePageStateUpdate : true,
+			HasPriority : true,
+			CausesValidation : true,
+			ValidationGroup : null,
+			PostInputs : true,
 			postBody : this._getPostData(),
 			parameters : ''
 		}
-		
-		Object.extend(this.options, request);		
-		
-		if(this.options.CausesValidation != false && typeof(Prado.Validation) != "undefined")
+		Object.extend(this.options, options || {});
+				
+		if(this.options.CausesValidation && typeof(Prado.Validation) != "undefined")
 		{
 			var form =  this.options.Form || Prado.Validation.getForm();
 			if(Prado.Validation.validate(form,this.options.ValidationGroup,this) == false)
 				return;
 		}
 		
-		Prado.CallbackRequest.Queque.push(this);
-		Prado.CallbackRequest.dispatchQuequedRequest();
+		if(this.options.HasPriority)
+			Prado.CallbackRequest.dispatchPriorityRequest(this);
+		else
+			Prado.CallbackRequest.dispatchNormalRequest(this);
 	},
 
 	/**
@@ -343,7 +364,7 @@ Prado.CallbackRequest.prototype =
 	{
 		var data = {};
 		var callback = Prado.CallbackRequest;
-		if(this.options.PostState != false)
+		if(this.options.PostInputs != false)
 		{
 			callback.PostDataLoaders.each(function(name)
 			{
@@ -378,8 +399,7 @@ Prado.Callback = function(UniqueID, parameter, onSuccess, options)
 	var callback =  
 	{
 		'params' : parameter || '',
-		'onSuccess' : onSuccess || Prototype.emptyFunction, 
-		'CausesValidation' : true
+		'onSuccess' : onSuccess || Prototype.emptyFunction
 	};
 
 	Object.extend(callback, options || {});

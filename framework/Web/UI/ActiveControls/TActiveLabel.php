@@ -29,7 +29,7 @@ class TActiveLabel extends TLabel
 	/**
 	 * Creates a new callback control, sets the adapter to
 	 * TActiveControlAdapter. If you override this class, be sure to set the
-	 * adapter appropriately by, for example, call this constructor.
+	 * adapter appropriately by, for example, by calling this constructor.
 	 */
 	public function __construct()
 	{
@@ -44,7 +44,7 @@ class TActiveLabel extends TLabel
 	public function setText($value)
 	{
 		parent::setText($value);
-		if($this->getPage()->getAllowCallbackUpdate())
+		if($this->getIsInitialized())
 		{
 			$this->getPage()->getCallbackClient()->update($this, $value);
 		}
@@ -59,7 +59,7 @@ class TActiveLabel extends TLabel
 	public function setForControl($value)
 	{
 		parent::setForControl($value);
-		if($this->getPage()->getAllowCallbackUpdate())
+		if($this->getIsInitialized())
 		{
 			$id=$this->findControl($value)->getClientID();
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'for', $id);

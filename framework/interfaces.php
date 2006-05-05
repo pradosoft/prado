@@ -315,6 +315,11 @@ interface ICallbackEventHandler
 	 * @param TCallbackEventParameter the parameter associated with the callback event
 	 */
 	public function raiseCallbackEvent($eventArgument);
+	
+	/**
+	 * @return TCallbackClientSideOptions client-side options.
+	 */
+	public function getClientSide(); 
 }
 
 ?>

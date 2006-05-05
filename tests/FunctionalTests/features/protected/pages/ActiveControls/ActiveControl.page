@@ -2,6 +2,11 @@
 	<h1>TCallback Demo</h1>
 	<com:TClientScript UsingPradoScripts="ajax" />
 	<com:TCallback id="control1" 
+		ClientSide.EnablePageStateUpdate="false"
+		OnCallback="control1onCallback" />
+		
+	<com:TCallback id="control2" 
+		ClientSide.HasPriority="false"
 		OnCallback="control1onCallback" />
 		
 	<com:TActiveLabel id="label1" Text="Name:" />
@@ -12,13 +17,18 @@
 		<com:TListItem Text="Two" />
 	</com:TCheckBoxList>
 
-	<input type="hidden" name="PRADO_CALLBACK_TARGET" value="<%= $this->control1->UniqueID %>" />
-
-	<com:TButton id="button1" Text="Submit" CausesValidation="false" />
+	<com:TButton id="button1" Text="Submit 1" CausesValidation="false" />
+	<com:TButton id="button2" Text="Submit 2" CausesValidation="false" />
 	<script>
 		Event.observe("<%= $this->button1->ClientID %>", "click", function(event)
 		{
 			<%= $this->control1->CallbackReference %>	
+		
+			Event.stop(event);
+		});
+		Event.observe("<%= $this->button2->ClientID %>", "click", function(event)
+		{
+			<%= $this->control2->CallbackReference %>	
 		
 			Event.stop(event);
 		});

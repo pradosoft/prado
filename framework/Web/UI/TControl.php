@@ -997,6 +997,14 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	{
 		return isset($this->_rf[self::RF_NAMED_OBJECTS][$name]);
 	}
+	
+	/**
+	 * @return boolean true if the control has been initialized.
+	 */
+	public function getIsInitialized()
+	{
+		return $this->getControlStage() >= self::CS_CHILD_INITIALIZED;
+	}
 
 	/**
 	 * Returns the named registered object.

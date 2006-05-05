@@ -1,37 +1,4 @@
 <?php
-/*
- * Created on 1/05/2006
- */
-
-class TClientSideOptions extends TComponent
-{
-	private $_options;
-	
-	public function __construct()
-	{
-		$this->_options = Prado::createComponent('System.Collections.TMap');
-	}
-	
-	protected function setFunction($name, $code)
-	{
-		$this->_options->add($name, $this->ensureFunction($code));
-	}
-	
-	protected function getOption($name)
-	{
-		return $this->_options->itemAt($name);
-	}
-	
-	public function getOptions()
-	{
-		return $this->_options;
-	}
-	
-	protected function ensureFunction($javascript)
-	{
-		return $javascript;
-	}
-}
 
 /**
  * TCallbackClientSideOptions class.
@@ -54,6 +21,15 @@ class TClientSideOptions extends TComponent
  * - <b>onException</b> raised when callback request fails due to
  * request/response errors.
  * 
+ * - <b>PostInputs</b> true to collect the form inputs and post them during
+ * callback, default is true.
+ * - <b>RequestTimeOut</b> The request timeout in milliseconds.
+ * - <b>HasPriority</b> true to ensure that the callback request will be sent
+ * immediately and will abort existing prioritized requests. It does not affect
+ * callbacks that are not prioritized.
+ * - <b>EnablePageStateUpdate</b> enable the callback response to enable the
+ * viewstate update. This will automatically set HasPrority to true when
+ * enabled.
  */
 class TCallbackClientSideOptions extends TClientSideOptions
 {
@@ -65,13 +41,7 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	 */
 	protected function ensureFunction($javascript)
 	{
-		if(TJavascript::isFunction($javascript))
-			return $javascript;
-		else
-		{
-			$code = "function(request, result){ {$javascript} }";
-			return TJavascript::quoteFunction($code);
-		}
+		return "function(request, result){ {$javascript} }";
 	}
 	
 	/**
@@ -200,21 +170,21 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	}	
 	
 	/**
-	 * @return boolean true to post the state on callback, default is post the
-	 * state on callback.
+	 * @return boolean true to post the inputs of the form on callback, default
+	 * is post the inputs on callback.
 	 */
 	public function getPostState()
 	{
-		return $this->getOption('PostState');
+		return $this->getOption('PostInputs');
 	}
 	
 	/**
-	 * @param boolean true to post the state of the form with callback requests.
-	 * Default is to post the state.
+	 * @param boolean true to post the inputs of the form with callback
+	 * requests. Default is to post the inputs.
 	 */
 	public function setPostState($value)
 	{
-		$this->getOptions()->add('PostState', TPropertyValue::ensureBoolean($value));
+		$this->setOption('PostInputs', TPropertyValue::ensureBoolean($value));
 	}
 	
 	/**
@@ -222,7 +192,7 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	 */
 	public function getRequestTimeOut()
 	{
-		return $this->getOption('TimeOut');
+		return $this->getOption('RequestTimeOut');
 	}
 	
 	/**
@@ -230,7 +200,53 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	 */
 	public function setRequestTimeOut($value)
 	{
-		$this->getOptions()->add('TimeOut', TPropertyValue::ensureInteger($value));
+		$this->setOption('RequestTimeOut', TPropertyValue::ensureInteger($value));
+	}
+	
+	/**
+	 * @return boolean true if the callback request has priority and will abort
+	 * existing prioritized request in order to send immediately. It does not
+	 * affect callbacks that are not prioritized.
+	 */
+	public function getHasPriority()
+	{
+		return $this->getOption('HasPriority');
+	}
+	
+	/**
+	 * @param boolean true to ensure that the callback request will be sent
+	 * immediately and will abort existing prioritized requests. It does not
+	 * affect callbacks that are not prioritized.
+	 */
+	public function setHasPriority($value)
+	{
+		$hasPriority = TPropertyValue::ensureBoolean($value);
+		$this->setOption('HasPriority', $hasPriority);
+		if(!$hasPriority)
+			$this->setEnablePageStateUpdate(false);
+	}
+	
+	/**
+	 * Set to true to enable the callback response to enable the viewstate
+	 * update. This will automatically set HasPrority to true.
+	 * @param boolean true enables the callback response to update the
+	 * viewstate.
+	 */
+	public function setEnablePageStateUpdate($value)
+	{
+		$enabled = TPropertyValue::ensureBoolean($value); 
+		$this->setOption('EnablePageStateUpdate', $enabled);
+		if($enabled) 
+			$this->setHasPriority(true);
+	}
+	
+	/**
+	 * @return boolean client-side viewstate will be updated on callback
+	 * response if true.
+	 */
+	public function getEnablePageStateUpdate()
+	{
+		return $this->getOption('EnablePageStateUpdate');
 	}
 } 
 

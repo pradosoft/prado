@@ -7,7 +7,8 @@ class ActiveControl extends TPage
 {
 	public function control1onCallback($sender, $param)
 	{
-		$this->label1->setText("The time is ".time());
+		sleep(5);
+		$this->label1->setText("The time is ".time()." from ".$sender->ID);
 	}
 }
 ?>

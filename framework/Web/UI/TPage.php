@@ -153,12 +153,7 @@ class TPage extends TTemplateControl
 	 * @var array post data loader IDs.
 	 */
 	private $_postDataLoaders=array();
-	/**
-	 * @var boolean true if callback request is allowed to update the client-
-	 * side contents during callback response.
-	 */
-	private $_allowCallbackUpdate=false;
-	
+
 	/**
 	 * Constructor.
 	 * Sets the page object to itself.
@@ -282,8 +277,6 @@ class TPage extends TTemplateControl
 		Prado::trace("Page initRecursive()",'System.Web.UI.TPage');
 		$this->initRecursive();
 
-		$this->setAllowCallbackUpdate(true);
-
 		Prado::trace("Page onInitComplete()",'System.Web.UI.TPage');
 		$this->onInitComplete(null);
 
@@ -316,11 +309,12 @@ class TPage extends TTemplateControl
 		Prado::trace("Page onPreRenderComplete()",'System.Web.UI.TPage');
 		$this->onPreRenderComplete(null);
 
-/*		Prado::trace("Page savePageState()",'System.Web.UI.TPage');
+		Prado::trace("Page savePageState()",'System.Web.UI.TPage');
 		$this->savePageState();
 		Prado::trace("Page onSaveStateComplete()",'System.Web.UI.TPage');
 		$this->onSaveStateComplete(null);
 
+/*
 		Prado::trace("Page renderControl()",'System.Web.UI.TPage');
 		$this->renderControl($writer);
 */
@@ -328,28 +322,6 @@ class TPage extends TTemplateControl
 		
 		Prado::trace("Page unloadRecursive()",'System.Web.UI.TPage');
 		$this->unloadRecursive();			
-	}
-	
-	/**
-	 * Returns true if callback request is allowed to update the client- side
-	 * contents during callback response. Default is true if {@link
-	 * getIsCallback IsCallback} is true and onInit stage has been completed.
-	 * @return boolean true to allow client-side update.
-	 */
-	public function getAllowCallbackUpdate()
-	{
-		return $this->_allowCallbackUpdate;
-	}
-	
-	/**
-	 * Set to true to allow callback request to update client-side content
-	 * during callback response. Default is true if {@link getIsCallback
-	 * IsCallback} is true and onInit stage has been completed.
-	 * @param boolean true to allow callback to update client-side content.
-	 */
-	public function setAllowCallbackUpdate($value)
-	{
-		$this->_allowCallbackUpdate = TPropertyValue::ensureBoolean($value);
 	}
 	
 	/**

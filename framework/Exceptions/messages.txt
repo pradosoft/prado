@@ -296,3 +296,5 @@ stack_empty								= TStack is empty.
 
 queue_data_not_iterable					= TQueue can only fetch data from an array or a traversable object.
 queue_empty								= TQueue is empty.
+
+callback_not_support_no_priority_state_update	= Callback request does not support unprioritized pagestate update.

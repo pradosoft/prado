@@ -23,7 +23,7 @@ setTimeout(this.onComplete.bind(this),10);}}});Ajax.PeriodicalUpdater=Class.crea
 this.timer=setTimeout(this.onTimerEvent.bind(this),this.decay*this.frequency*1000);},onTimerEvent:function(){this.updater=new Ajax.Updater(this.container,this.url,this.options);}});Object.extend(Ajax.Request.prototype,{respondToReadyState:function(readyState)
 {var event=Ajax.Request.Events[readyState];var transport=this.transport,json=this.getHeaderData(Prado.CallbackRequest.DATA_HEADER);if(event=='Complete')
 {try
-{Ajax.Responders.dispatch('on'+transport.status,this,transport,json);Prado.CallbackRequest.dispatchActions(transport,this.getHeaderData(Prado.CallbackRequest.ACTION_HEADER));(this.options['on'+this.transport.status]||this.options['on'+(this.responseIsSuccess()?'Success':'Failure')]||Prototype.emptyFunction)(transport,json);}catch(e){this.dispatchException(e);}
+{Prado.CallbackRequest.updatePageState(this,transport);Ajax.Responders.dispatch('on'+transport.status,this,transport,json);Prado.CallbackRequest.dispatchActions(transport,this.getHeaderData(Prado.CallbackRequest.ACTION_HEADER));(this.options['on'+this.transport.status]||this.options['on'+(this.responseIsSuccess()?'Success':'Failure')]||Prototype.emptyFunction)(transport,json);}catch(e){this.dispatchException(e);}
 if((this.header('Content-type')||'').match(/^text\/javascript/i))
 this.evalResponse();}
 try{(this.options['on'+event]||Prototype.emptyFunction)(transport,json);Ajax.Responders.dispatch('on'+event,this,transport,json);}catch(e){this.dispatchException(e);}
@@ -34,7 +34,7 @@ this.transport.onreadystatechange=Prototype.emptyFunction;},getHeaderData:functi
 catch(e)
 {if(typeof(json)=="string")
 {Logger.info("using json")
-return Prado.CallbackRequest.decode(json);}}}});Prado.CallbackRequest=Class.create();Object.extend(Prado.CallbackRequest,{FIELD_CALLBACK_TARGET:'PRADO_CALLBACK_TARGET',FIELD_CALLBACK_PARAMETER:'PRADO_CALLBACK_PARAMETER',FIELD_CALLBACK_PAGESTATE:'PRADO_PAGESTATE',PostDataLoaders:[],DATA_HEADER:'X-PRADO-DATA',ACTION_HEADER:'X-PRADO-ACTIONS',ERROR_HEADER:'X-PRADO-ERROR',Queque:[],InProgress:[],dispatchActions:function(transport,actions)
+return Prado.CallbackRequest.decode(json);}}}});Prado.CallbackRequest=Class.create();Object.extend(Prado.CallbackRequest,{FIELD_CALLBACK_TARGET:'PRADO_CALLBACK_TARGET',FIELD_CALLBACK_PARAMETER:'PRADO_CALLBACK_PARAMETER',FIELD_CALLBACK_PAGESTATE:'PRADO_PAGESTATE',PostDataLoaders:[],DATA_HEADER:'X-PRADO-DATA',ACTION_HEADER:'X-PRADO-ACTIONS',ERROR_HEADER:'X-PRADO-ERROR',PAGESTATE_HEADER:'X-PRADO-PAGESTATE',requestInProgress:null,dispatchActions:function(transport,actions)
 {if(actions&&actions.length>0)
 actions.each(this.__run.bind(this,transport));},__run:function(transport,command)
 {for(var method in command)
@@ -54,27 +54,29 @@ msg+=e.version+" "+e.time+"\n";return msg;}},encode:function(data)
 {return Prado.JSON.stringify(data);},decode:function(data)
 {if(typeof(data)=="string"&&data.trim().length>0)
 return Prado.JSON.parse(data);else
-return null;},dispatchQuequedRequest:function()
-{requests=Prado.CallbackRequest;if(requests.InProgress.length==0&&requests.Queque.length>0)
-{var item=requests.Queque.pop();item.callback=new Ajax.Request(item.url,item.options);item.callback.callbackID=item.id;item.timeout=setTimeout(function()
-{requests.removeInProgress(item.callback);},item.options.TimeOut);requests.InProgress.push(item);}},removeInProgress:function(request)
-{if(request&&request.callbackID)
-{var stillInProgress=[];requests=Prado.CallbackRequest;requests.InProgress.each(function(item)
-{if(item.callback.callbackID==request.callbackID)
-{item.callback.transport.abort();request.transport.abort();clearTimeout(item.timeout);}
-else
-{stillInProgress.push(item);}})
-requests.InProgress=stillInProgress;}
-requests.dispatchQuequedRequest();}})
-Ajax.Responders.register({onComplete:Prado.CallbackRequest.removeInProgress});Event.OnLoad(function()
+return null;},dispatchPriorityRequest:function(callback)
+{Logger.info("priority request "+callback.id)
+this.abortRequestInProgress();callback.request=new Ajax.Request(callback.url,callback.options);callback.timeout=setTimeout(function()
+{Logger.warn("priority timeout");Prado.CallbackRequest.abortRequestInProgress();},callback.options.RequestTimeOut);this.requestInProgress=callback;Logger.info("dispatched "+this.requestInProgress)},dispatchNormalRequest:function(callback)
+{Logger.info("dispatching normal request");new Ajax.Request(callback.url,callback.options);},abortRequestInProgress:function()
+{inProgress=Prado.CallbackRequest.requestInProgress;if(inProgress)
+{Logger.warn("aborted "+inProgress.id)
+inProgress.request.transport.abort();clearTimeout(inProgress.timeout);Prado.CallbackRequest.requestInProgress=null;}},updatePageState:function(request,transport)
+{pagestate=$(this.FIELD_CALLBACK_PAGESTATE);if(request.options.EnablePageStateUpdate&&request.options.HasPriority&&pagestate)
+{Logger.warn("updating page state");pagestate.value=request.header(this.PAGESTATE_HEADER);}}})
+Ajax.Responders.register({onComplete:function(request)
+{if(request.options.HasPriority)
+Prado.CallbackRequest.abortRequestInProgress();}});Event.OnLoad(function()
 {if(typeof Logger!="undefined")
-Ajax.Responders.register(Prado.CallbackRequest.Exception);});Prado.CallbackRequest.prototype={url:window.location.href,options:{TimeOut:30000},id:null,callback:null,initialize:function(id,options)
-{Object.extend(this.options,options||{});this.id=id;var request={postBody:this._getPostData(),parameters:''}
-Object.extend(this.options,request);if(this.options.CausesValidation!=false&&typeof(Prado.Validation)!="undefined")
+Ajax.Responders.register(Prado.CallbackRequest.Exception);});Prado.CallbackRequest.prototype={url:window.location.href,options:{},id:null,request:null,initialize:function(id,options)
+{this.id=id;this.options={RequestTimeOut:30000,EnablePageStateUpdate:true,HasPriority:true,CausesValidation:true,ValidationGroup:null,PostInputs:true,postBody:this._getPostData(),parameters:''}
+Object.extend(this.options,options||{});if(this.options.CausesValidation&&typeof(Prado.Validation)!="undefined")
 {var form=this.options.Form||Prado.Validation.getForm();if(Prado.Validation.validate(form,this.options.ValidationGroup,this)==false)
 return;}
-Prado.CallbackRequest.Queque.push(this);Prado.CallbackRequest.dispatchQuequedRequest();},_getPostData:function()
-{var data={};var callback=Prado.CallbackRequest;if(this.options.PostState!=false)
+if(this.options.HasPriority)
+Prado.CallbackRequest.dispatchPriorityRequest(this);else
+Prado.CallbackRequest.dispatchNormalRequest(this);},_getPostData:function()
+{var data={};var callback=Prado.CallbackRequest;if(this.options.PostInputs!=false)
 {callback.PostDataLoaders.each(function(name)
 {$A(document.getElementsByName(name)).each(function(element)
 {var value=$F(element);if(typeof(value)!="undefined")
@@ -83,7 +85,7 @@ if(typeof(this.options.params)!="undefined")
 data[callback.FIELD_CALLBACK_PARAMETER]=callback.encode(this.options.params);var pageState=$F(callback.FIELD_CALLBACK_PAGESTATE);if(typeof(pageState)!="undefined")
 data[callback.FIELD_CALLBACK_PAGESTATE]=pageState;data[callback.FIELD_CALLBACK_TARGET]=this.id;return $H(data).toQueryString();}}
 Prado.Callback=function(UniqueID,parameter,onSuccess,options)
-{var callback={'params':parameter||'','onSuccess':onSuccess||Prototype.emptyFunction,'CausesValidation':true};Object.extend(callback,options||{});new Prado.CallbackRequest(UniqueID,callback);return false;}
+{var callback={'params':parameter||'','onSuccess':onSuccess||Prototype.emptyFunction};Object.extend(callback,options||{});new Prado.CallbackRequest(UniqueID,callback);return false;}
 Array.prototype.______array='______array';Prado.JSON={org:'http://www.JSON.org',copyright:'(c)2005 JSON.org',license:'http://www.crockford.com/JSON/license.html',stringify:function(arg){var c,i,l,s='',v;switch(typeof arg){case'object':if(arg){if(arg.______array=='______array'){for(i=0;i<arg.length;++i){v=this.stringify(arg[i]);if(s){s+=',';}
 s+=v;}
 return'['+s+']';}else if(typeof arg.toString!='undefined'){for(i in arg){v=arg[i];if(typeof v!='undefined'&&typeof v!='function'){v=this.stringify(v);if(s){s+=',';}
