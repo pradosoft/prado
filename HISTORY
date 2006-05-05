@@ -1,5 +1,6 @@
 Version 3.1.0 To be released
 ============================
+ENH: Ticket#117 - added support to configure subproperties in a group. (Qiang)
 NEW: TOutputCache (Qiang)
 NEW: TQueue (Qiang)
 NEW: TSessionPageStatePersister (Qiang)

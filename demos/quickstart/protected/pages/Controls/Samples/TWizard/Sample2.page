@@ -10,23 +10,30 @@
         BorderWidth="1px"
         BorderStyle="Solid"
         HeaderText="Please let us know your preference"
-		SideBarStyle.Width="100px"
-		SideBarStyle.Height="100px"
-		SideBarStyle.BackColor="#507CD1"
-		SideBarStyle.HorizontalAlign="Center"
 		StepStyle.HorizontalAlign="Center"
 		NavigationStyle.HorizontalAlign="Center"
-		NavigationButtonStyle.BackColor="White"
-		NavigationButtonStyle.BorderColor="#507CD1"
-		NavigationButtonStyle.BorderStyle="Solid"
-		NavigationButtonStyle.BorderWidth="1px"
-		NavigationButtonStyle.ForeColor="#284E98"
 		SideBarButtonStyle.ForeColor="White"
-        HeaderStyle.BackColor="#284E98"
-		HeaderStyle.Font.Bold="True"
-		HeaderStyle.ForeColor="White"
-		HeaderStyle.HorizontalAlign="Center"
 		OnCompleteButtonClick="wizardCompleted" >
+
+  <prop:SideBarStyle
+		Width="100px"
+		Height="100px"
+		BackColor="#507CD1"
+		HorizontalAlign="Center"
+        />
+  <prop:NavigationButtonStyle
+		BackColor="White"
+		BorderColor="#507CD1"
+		BorderStyle="Solid"
+		BorderWidth="1px"
+		ForeColor="#284E98"
+        />
+  <prop:HeaderStyle
+        BackColor="#284E98"
+		Font.Bold="True"
+		ForeColor="White"
+		HorizontalAlign="Center"
+        />
 
   <com:TWizardStep Title="Step 1">
     <p>
