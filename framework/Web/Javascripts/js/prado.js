@@ -123,20 +123,20 @@ Event.observe(window,'unload',Event.unloadCache,false);Object.extend(Event,{OnLo
 {return e.keyCode!=null?e.keyCode:e.charCode},isHTMLEvent:function(type)
 {var events=['abort','blur','change','error','focus','load','reset','resize','scroll','select','submit','unload'];return events.include(type);},isMouseEvent:function(type)
 {var events=['click','mousedown','mousemove','mouseout','mouseover','mouseup'];return events.include(type);},fireEvent:function(element,type)
-{element=$(element);if(document.createEvent)
+{element=$(element);if(type=="submit")
+return element.submit();if(document.createEvent)
 {if(Event.isHTMLEvent(type))
 {var event=document.createEvent('HTMLEvents');event.initEvent(type,true,true);}
 else if(Event.isMouseEvent(type))
 {var event=document.createEvent('MouseEvents');event.initMouseEvent(type,true,true,document.defaultView,1,0,0,0,0,false,false,false,false,0,null);}
 else
-{if(Logger)
+{if(typeof(Logger)!="undefined")
 Logger.error("undefined event",type);return;}
 element.dispatchEvent(event);}
-else if(element.fireEvent)
-{element.fireEvent('on'+type);if(element[type])
-element[type]();}
-else if(element[type])
-element[type]();}});var Position={includeScrollOffsets:false,prepare:function(){this.deltaX=window.pageXOffset||document.documentElement.scrollLeft||document.body.scrollLeft||0;this.deltaY=window.pageYOffset||document.documentElement.scrollTop||document.body.scrollTop||0;},realOffset:function(element){var valueT=0,valueL=0;do{valueT+=element.scrollTop||0;valueL+=element.scrollLeft||0;element=element.parentNode;}while(element);return[valueL,valueT];},cumulativeOffset:function(element){var valueT=0,valueL=0;do{valueT+=element.offsetTop||0;valueL+=element.offsetLeft||0;element=element.offsetParent;}while(element);return[valueL,valueT];},positionedOffset:function(element){var valueT=0,valueL=0;do{valueT+=element.offsetTop||0;valueL+=element.offsetLeft||0;element=element.offsetParent;if(element){p=Element.getStyle(element,'position');if(p=='relative'||p=='absolute')break;}}while(element);return[valueL,valueT];},offsetParent:function(element){if(element.offsetParent)return element.offsetParent;if(element==document.body)return element;while((element=element.parentNode)&&element!=document.body)
+else if(document.createEventObject)
+{var evObj=document.createEventObject();element.fireEvent('on'+type,evObj);}
+else if(typeof(element['on'+type])=="function")
+element['on'+type]();}});var Position={includeScrollOffsets:false,prepare:function(){this.deltaX=window.pageXOffset||document.documentElement.scrollLeft||document.body.scrollLeft||0;this.deltaY=window.pageYOffset||document.documentElement.scrollTop||document.body.scrollTop||0;},realOffset:function(element){var valueT=0,valueL=0;do{valueT+=element.scrollTop||0;valueL+=element.scrollLeft||0;element=element.parentNode;}while(element);return[valueL,valueT];},cumulativeOffset:function(element){var valueT=0,valueL=0;do{valueT+=element.offsetTop||0;valueL+=element.offsetLeft||0;element=element.offsetParent;}while(element);return[valueL,valueT];},positionedOffset:function(element){var valueT=0,valueL=0;do{valueT+=element.offsetTop||0;valueL+=element.offsetLeft||0;element=element.offsetParent;if(element){p=Element.getStyle(element,'position');if(p=='relative'||p=='absolute')break;}}while(element);return[valueL,valueT];},offsetParent:function(element){if(element.offsetParent)return element.offsetParent;if(element==document.body)return element;while((element=element.parentNode)&&element!=document.body)
 if(Element.getStyle(element,'position')!='static')
 return element;return document.body;},within:function(element,x,y){if(this.includeScrollOffsets)
 return this.withinIncludingScrolloffsets(element,x,y);this.xcomp=x;this.ycomp=y;this.offset=this.cumulativeOffset(element);return(y>=this.offset[1]&&y<this.offset[1]+element.offsetHeight&&x>=this.offset[0]&&x<this.offset[0]+element.offsetWidth);},withinIncludingScrolloffsets:function(element,x,y){var offsetcache=this.realOffset(element);this.xcomp=x+offsetcache[0]-this.deltaX;this.ycomp=y+offsetcache[1]-this.deltaY;this.offset=this.cumulativeOffset(element);return(this.ycomp>=this.offset[1]&&this.ycomp<this.offset[1]+element.offsetHeight&&this.xcomp>=this.offset[0]&&this.xcomp<this.offset[0]+element.offsetWidth);},overlap:function(mode,element){if(!mode)return 0;if(mode=='vertical')

@@ -63,13 +63,15 @@ Object.extend(Event,
 	 * Dispatch the DOM event of a given <tt>type</tt> on a DOM 
 	 * <tt>element</tt>. Only HTMLEvent and MouseEvent can be 
 	 * dispatched, keyboard events or UIEvent can not be dispatch 
-	 * via javascript.
+	 * via javascript consistently.
 	 * @param {Object} element id string or a DOM element.
 	 * @param {String} event type to dispatch.
 	 */
 	fireEvent : function(element,type)
 	{
 		element = $(element);
+		if(type == "submit")
+			return element.submit();
 		if(document.createEvent)
         {            
 			if(Event.isHTMLEvent(type))
@@ -86,19 +88,18 @@ Object.extend(Event,
 			}
 			else
 			{
-				if(Logger) 
+				if(typeof(Logger) != "undefined") 
 					Logger.error("undefined event", type);
 				return;
 			}
             element.dispatchEvent(event);
         }
-        else if(element.fireEvent)
+        else if(document.createEventObject)
         {
-            element.fireEvent('on'+type);
-            if(element[type])
-	            element[type]();
+        	var evObj = document.createEventObject();
+            element.fireEvent('on'+type, evObj);
         }
-        else if(element[type])
-            element[type]();
+        else if(typeof(element['on'+type]) == "function")
+            element['on'+type]();
 	}
 });
