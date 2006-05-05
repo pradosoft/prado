@@ -1,9 +1,29 @@
 <?php
-
-/*
- * Created on 25/04/2006
+/**
+ * TCallback class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.ActiveControls
  */
 
+/**
+ * TCallback component class.
+ *
+ * The TCallback provides a basic callback handler that can be invoke from the
+ * client side by running the javascript code obtained from the
+ * {@link getCallbackReference CallbackReference} property. The event {@link
+ * onCallback OnCallback} is raise when a callback is requested by the TCallback
+ * component.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.ActiveControls
+ * @since 3.0
+ */
 class TCallback extends TControl implements ICallbackEventHandler
 {	
 	/**
@@ -138,12 +158,14 @@ class TCallback extends TControl implements ICallbackEventHandler
 	 * Returns the javascript statement to invoke a callback request for this
 	 * control. Additional options for callback can be set via subproperties of
 	 * {@link getClientSide ClientSide} property. E.g. ClientSide.OnSuccess="..."
+	 * @param TControl callback handler control, use current object if null.
 	 * @return string javascript statement to invoke a callback.
 	 */
-	public function getCallbackReference()
+	public function getCallbackReference($control=null)
 	{
 		$client = $this->getPage()->getClientScript(); 
-		return $client->getCallbackReference($this, $this->getCallbackOptions());
+		$object = is_null($control) ? $this : $control;
+		return $client->getCallbackReference($object, $this->getCallbackOptions());
 	}
 } 
 

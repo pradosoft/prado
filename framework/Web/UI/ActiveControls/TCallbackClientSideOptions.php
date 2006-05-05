@@ -1,5 +1,15 @@
 <?php
-
+/**
+ * TCallbackClientSideOptions class file
+ *
+ * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.ActiveControls
+ */
+ 
 /**
  * TCallbackClientSideOptions class.
  * 
@@ -30,6 +40,11 @@
  * - <b>EnablePageStateUpdate</b> enable the callback response to enable the
  * viewstate update. This will automatically set HasPrority to true when
  * enabled.
+ * 
+ * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.ActiveControls
+ * @since 3.0
  */
 class TCallbackClientSideOptions extends TClientSideOptions
 {

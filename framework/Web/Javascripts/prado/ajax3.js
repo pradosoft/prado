@@ -19,8 +19,7 @@ Object.extend(Ajax.Request.prototype,
 	      	Prado.CallbackRequest.updatePageState(this,transport);
 			Ajax.Responders.dispatch('on' + transport.status, this, transport, json);
 			Prado.CallbackRequest.dispatchActions(transport,this.getHeaderData(Prado.CallbackRequest.ACTION_HEADER));
-	      	
-	      	
+	      
 	        (this.options['on' + this.transport.status]
 	         || this.options['on' + (this.responseIsSuccess() ? 'Success' : 'Failure')]
 	         || Prototype.emptyFunction)(transport, json);
@@ -179,8 +178,14 @@ Object.extend(Prado.CallbackRequest,
 		/**
 		 * Uncaught exceptions during callback response.
 		 */
-		onException : function(e)
+		onException : function(request,e)
 		{
+			msg = "";
+			for(var v in e)
+			{
+				if(typeof(v[e]) != "object" && typeof(v[e]) != "function")
+					msg += v+":"+e[v]+"\n";
+			}
 			Logger.error('Uncaught Callback Client Exception:', e);
 		},
 	

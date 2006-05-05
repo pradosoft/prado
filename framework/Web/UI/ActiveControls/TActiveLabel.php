@@ -36,6 +36,30 @@ class TActiveLabel extends TLabel
 		parent::__construct();
 		$this->setAdapter(new TActiveControlAdapter($this));
 	}
+	
+	/**
+	 * @param boolean true to allow fine grain callback updates.
+	 */
+	public function setAllowCallbackUpdate($value)
+	{
+		$this->setViewState('CallbackUpdate', TPropertyValue::ensureBoolean($value), true);
+	}
+
+	/**
+	 * @return true to allow fine grain callback updates.
+	 */
+	public function getAllowCallbackUpdate()
+	{
+		return $this->getViewState('CallbackUpdate', true);
+	}
+
+	/**
+	 * @return true if can update changes on the client-side during callback.
+	 */
+	protected function canUpdateClientSide()
+	{
+		return $this->getIsInitialized() && $this->getAllowCallbackUpdate();
+	}
 
 	/**
 	 * On callback response, the inner HTMl of the label is updated.
@@ -44,7 +68,7 @@ class TActiveLabel extends TLabel
 	public function setText($value)
 	{
 		parent::setText($value);
-		if($this->getIsInitialized())
+		if($this->canUpdateClientSide())
 		{
 			$this->getPage()->getCallbackClient()->update($this, $value);
 		}
@@ -59,7 +83,7 @@ class TActiveLabel extends TLabel
 	public function setForControl($value)
 	{
 		parent::setForControl($value);
-		if($this->getIsInitialized())
+		if($this->canUpdateClientSide())
 		{
 			$id=$this->findControl($value)->getClientID();
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'for', $id);

@@ -20,6 +20,8 @@ class TActiveControlAdapter extends TControlAdapter
 			self::$_renderedPosts = true;
 		}
 		parent::render($writer);
+		if($this->getPage()->getIsCallback())
+			$this->getPage()->getCallbackClient()->replace($this->getControl(), $writer);
 	}	
 } 
 ?>

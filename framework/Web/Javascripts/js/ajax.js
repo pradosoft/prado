@@ -46,8 +46,11 @@ method.toFunction().apply(this,command[method].concat(transport));else if(typeof
 {if(transport.status<500)
 {var msg='HTTP '+transport.status+" with response : \n";msg+=transport.responseText+"\n";msg+="Data : \n"+inspect(data)+"\n";msg+="Actions : \n";request.getHeaderData(Prado.CallbackRequest.ACTION_HEADER).each(function(action)
 {msg+=inspect(action)+"\n";})
-Logger.warn(msg);}},onException:function(e)
-{Logger.error('Uncaught Callback Client Exception:',e);},formatException:function(e)
+Logger.warn(msg);}},onException:function(request,e)
+{msg="";for(var v in e)
+{if(typeof(v[e])!="object"&&typeof(v[e])!="function")
+msg+=v+":"+e[v]+"\n";}
+Logger.error('Uncaught Callback Client Exception:',e);},formatException:function(e)
 {var msg=e.type+" with message \""+e.message+"\"";msg+=" in "+e.file+"("+e.line+")\n";msg+="Stack trace:\n";var trace=e.trace;for(var i=0;i<trace.length;i++)
 {msg+="  #"+i+" "+trace[i].file;msg+="("+trace[i].line+"): ";msg+=trace[i]["class"]+"->"+trace[i]["function"]+"()"+"\n";}
 msg+=e.version+" "+e.time+"\n";return msg;}},encode:function(data)
