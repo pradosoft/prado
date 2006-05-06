@@ -101,7 +101,8 @@ $libraries = array(
 	'ajax.js' => array(
 		'prototype/ajax.js',
 		'prado/ajax3.js',
-		'extra/json.js'
+		'extra/json.js',
+		'prado/activecontrols3.js'
 /*		'effects/controls.js',
 		'effects/dragdrop.js',
 		'effects/slider.js',

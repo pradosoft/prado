@@ -221,11 +221,12 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	/**
 	 * @return boolean true if the callback request has priority and will abort
 	 * existing prioritized request in order to send immediately. It does not
-	 * affect callbacks that are not prioritized.
+	 * affect callbacks that are not prioritized. Default is true.
 	 */
 	public function getHasPriority()
 	{
-		return $this->getOption('HasPriority');
+		$option =  $this->getOption('HasPriority');
+		return is_null($option) ? true : $option;
 	}
 	
 	/**
@@ -257,11 +258,12 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	
 	/**
 	 * @return boolean client-side viewstate will be updated on callback
-	 * response if true.
+	 * response if true. Default is true.
 	 */
 	public function getEnablePageStateUpdate()
 	{
-		return $this->getOption('EnablePageStateUpdate');
+		$option = $this->getOption('EnablePageStateUpdate');
+		return is_null($option) ? true : $option;
 	}
 } 
 

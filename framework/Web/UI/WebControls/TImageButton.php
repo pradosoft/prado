@@ -88,18 +88,24 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 		if(($uniqueID=$this->getUniqueID())!=='')
 			$writer->addAttribute('name',$uniqueID);
 		if($this->getEnabled(true))
-		{
-			if($this->canCauseValidation())
-			{
-				$writer->addAttribute('id',$this->getClientID());
-				$this->getPage()->getClientScript()->registerPostBackControl('Prado.WebUI.TImageButton',$this->getPostBackOptions());
-			}
-		}
+				$this->renderClientControlScript($writer);
 		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');
 		parent::addAttributesToRender($writer);
 	}
 
+	/**
+	 * Renders the client-script code.
+	 */
+	protected function renderClientControlScript($writer)
+	{
+		if($this->canCauseValidation())
+		{
+			$writer->addAttribute('id',$this->getClientID());
+			$cs = $this->getPage()->getClientScript(); 
+			$cs->registerPostBackControl(get_class($this),$this->getPostBackOptions());
+		}
+	}
 	/**
 	 * @return boolean whether to perform validation if the button is clicked
 	 */

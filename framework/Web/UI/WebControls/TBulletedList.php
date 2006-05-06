@@ -321,15 +321,24 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 		else
 		{
 			$this->_currentRenderItemIndex = $index;
-			$this->getPage()->getClientScript()->registerPostBackControl('Prado.WebUI.TBulletedList',$this->getPostBackOptions());
 			$writer->addAttribute('id', $this->getClientID().$index);
 			$writer->addAttribute('href', "javascript:;//".$this->getClientID().$index);
+			$this->renderClientControlScript($writer);
 		}
 		if(($accesskey=$this->getAccessKey())!=='')
 			$writer->addAttribute('accesskey',$accesskey);
 		$writer->renderBeginTag('a');
 		$writer->write(THttpUtility::htmlEncode($item->getText()));
 		$writer->renderEndTag();
+	}
+	
+	/**
+	 * Renders the client-script code.
+	 */
+	protected function renderClientControlScript($writer)
+	{
+		$cs = $this->getPage()->getClientScript(); 
+		$cs->registerPostBackControl(get_class($this),$this->getPostBackOptions());
 	}
 
 	/**

@@ -867,8 +867,6 @@ framework/Web/Javascripts/extended/builder.js -text
 framework/Web/Javascripts/extended/date.js -text
 framework/Web/Javascripts/extended/event.js -text
 framework/Web/Javascripts/extended/string.js -text
-framework/Web/Javascripts/extra/behaviour.js -text
-framework/Web/Javascripts/extra/getElementsBySelector.js -text
 framework/Web/Javascripts/extra/json.js -text
 framework/Web/Javascripts/extra/logger.js -text
 framework/Web/Javascripts/js/ajax.js -text
@@ -927,10 +925,12 @@ framework/Web/THttpRequest.php -text
 framework/Web/THttpResponse.php -text
 framework/Web/THttpSession.php -text
 framework/Web/THttpUtility.php -text
+framework/Web/UI/ActiveControls/TActiveButton.php -text
 framework/Web/UI/ActiveControls/TActiveControlAdapter.php -text
 framework/Web/UI/ActiveControls/TActiveLabel.php -text
 framework/Web/UI/ActiveControls/TActivePageAdapter.php -text
 framework/Web/UI/ActiveControls/TActivePanel.php -text
+framework/Web/UI/ActiveControls/TActiveTextBox.php -text
 framework/Web/UI/ActiveControls/TCallback.php -text
 framework/Web/UI/ActiveControls/TCallbackClientScript.php -text
 framework/Web/UI/ActiveControls/TCallbackClientSideOptions.php -text
@@ -1041,6 +1041,8 @@ tests/FunctionalTests/features/protected/controls/Layout.php -text
 tests/FunctionalTests/features/protected/controls/Layout.tpl -text
 tests/FunctionalTests/features/protected/pages/ActiveControls/ActiveControl.page -text
 tests/FunctionalTests/features/protected/pages/ActiveControls/ActiveControl.php -text
+tests/FunctionalTests/features/protected/pages/ActiveControls/Calculator.page -text
+tests/FunctionalTests/features/protected/pages/ActiveControls/Calculator.php -text
 tests/FunctionalTests/features/protected/pages/ActiveControls/config.xml -text
 tests/FunctionalTests/features/protected/pages/ColorPicker.page -text
 tests/FunctionalTests/features/protected/pages/CompositeControl.page -text

@@ -76,7 +76,6 @@ class TActivePageAdapter extends TControlAdapter
 	{
 		Prado::trace("ActivePage renderCallbackResponse()",'System.Web.UI.ActiveControls.TActivePageAdapter');
 		$this->renderResponse($writer);
-		//$this->getResponse()->flush();
 	}	
 	
 	/**

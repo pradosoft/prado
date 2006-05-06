@@ -44,8 +44,9 @@ method.toFunction().apply(this,command[method].concat(transport));else if(typeof
 {Logger.error("Error in executing callback response:","Unable to find HTML element with ID '"+id+"' before executing "+method+"().");}}}},Exception:{"on500":function(request,transport,data)
 {var e=request.getHeaderData(Prado.CallbackRequest.ERROR_HEADER);Logger.error("Callback Server Error "+e.code,this.formatException(e));},'on200':function(request,transport,data)
 {if(transport.status<500)
-{var msg='HTTP '+transport.status+" with response : \n";msg+=transport.responseText+"\n";msg+="Data : \n"+inspect(data)+"\n";msg+="Actions : \n";request.getHeaderData(Prado.CallbackRequest.ACTION_HEADER).each(function(action)
-{msg+=inspect(action)+"\n";})
+{var msg='HTTP '+transport.status+" with response : \n";msg+=transport.responseText+"\n";msg+="Data : \n"+inspect(data)+"\n";msg+="Actions : \n";data=request.getHeaderData(Prado.CallbackRequest.ACTION_HEADER);if(data&&data.length>0)
+{data.each(function(action)
+{msg+=inspect(action)+"\n";});}
 Logger.warn(msg);}},onException:function(request,e)
 {msg="";for(var v in e)
 {if(typeof(v[e])!="object"&&typeof(v[e])!="function")
@@ -62,18 +63,22 @@ return null;},dispatchPriorityRequest:function(callback)
 this.abortRequestInProgress();callback.request=new Ajax.Request(callback.url,callback.options);callback.timeout=setTimeout(function()
 {Logger.warn("priority timeout");Prado.CallbackRequest.abortRequestInProgress();},callback.options.RequestTimeOut);this.requestInProgress=callback;Logger.info("dispatched "+this.requestInProgress)},dispatchNormalRequest:function(callback)
 {Logger.info("dispatching normal request");new Ajax.Request(callback.url,callback.options);},abortRequestInProgress:function()
-{inProgress=Prado.CallbackRequest.requestInProgress;if(inProgress)
+{inProgress=Prado.CallbackRequest.requestInProgress;Logger.info("aborting ... "+inProgress);if(inProgress)
 {Logger.warn("aborted "+inProgress.id)
-inProgress.request.transport.abort();clearTimeout(inProgress.timeout);Prado.CallbackRequest.requestInProgress=null;}},updatePageState:function(request,transport)
+inProgress.request.transport.abort();clearTimeout(inProgress.timeout);Prado.CallbackRequest.requestInProgress=null;return true;}
+return false;},updatePageState:function(request,transport)
 {pagestate=$(this.FIELD_CALLBACK_PAGESTATE);if(request.options.EnablePageStateUpdate&&request.options.HasPriority&&pagestate)
-{Logger.warn("updating page state");pagestate.value=request.header(this.PAGESTATE_HEADER);}}})
+{data=request.header(this.PAGESTATE_HEADER);if(typeof(data)=="string"&&data.length>0)
+{Logger.warn("updating page state");pagestate.value=data;}
+else
+{Logger.debug("Bad page state:"+data);}}}})
 Ajax.Responders.register({onComplete:function(request)
 {if(request.options.HasPriority)
 Prado.CallbackRequest.abortRequestInProgress();}});Event.OnLoad(function()
 {if(typeof Logger!="undefined")
 Ajax.Responders.register(Prado.CallbackRequest.Exception);});Prado.CallbackRequest.prototype={url:window.location.href,options:{},id:null,request:null,initialize:function(id,options)
-{this.id=id;this.options={RequestTimeOut:30000,EnablePageStateUpdate:true,HasPriority:true,CausesValidation:true,ValidationGroup:null,PostInputs:true,postBody:this._getPostData(),parameters:''}
-Object.extend(this.options,options||{});if(this.options.CausesValidation&&typeof(Prado.Validation)!="undefined")
+{this.id=id;this.options={RequestTimeOut:30000,EnablePageStateUpdate:true,HasPriority:true,CausesValidation:true,ValidationGroup:null,PostInputs:true}
+Object.extend(this.options,options||{});Object.extend(this.options,{postBody:this._getPostData(),parameters:''});if(this.options.CausesValidation&&typeof(Prado.Validation)!="undefined")
 {var form=this.options.Form||Prado.Validation.getForm();if(Prado.Validation.validate(form,this.options.ValidationGroup,this)==false)
 return;}
 if(this.options.HasPriority)
@@ -127,4 +132,5 @@ break;case'n':if(next()=='u'&&next()=='l'&&next()=='l'){next();return null;}
 break;}
 error("Syntax error");}
 function value(){white();switch(ch){case'{':return object();case'[':return array();case'"':return string();case'-':return number();default:return ch>='0'&&ch<='9'?number():word();}}
-return value();}};
+return value();}};Prado.WebUI.CallbackControl=Class.extend(Prado.WebUI.PostBackControl,{onPostBack:function(event,options)
+{new Prado.CallbackRequest(options.EventTarget,options);Event.stop(event);}});Prado.WebUI.TActiveButton=Class.extend(Prado.WebUI.CallbackControl);

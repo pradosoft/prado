@@ -9,7 +9,7 @@ class ActiveControl extends TPage
 	
 	public function slowResponse($sender, $param)
 	{
-		sleep(3);
+		sleep(1);
 		$this->label1->setText("The time is ".time()." from ".$sender->ID);
 		$this->label1->setForeColor($this->getColor());
 		$this->label1->renderControl($param->getOutput());
@@ -20,9 +20,13 @@ class ActiveControl extends TPage
 		$this->getCallbackClient()->shake($this->panel1);
 	}
 	
-	public function fastResponse($sender, $param)
+	public function onButtonClicked($sender, $param)
 	{
 		$this->label2->setText("Muahaha !!! the time is ".time()." from ".$sender->ID);
+	}
+	
+	public function fastResponse($sender, $param)
+	{
 		$style['color'] = $this->getColor();
 		$this->getCallbackClient()->setStyle($this->label2, $style);
 		$this->getCallbackClient()->shake($this->label2);

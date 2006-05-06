@@ -167,10 +167,14 @@ Object.extend(Prado.CallbackRequest,
 				msg += transport.responseText + "\n";
 				msg += "Data : \n"+inspect(data)+"\n";
 				msg += "Actions : \n";
-				request.getHeaderData(Prado.CallbackRequest.ACTION_HEADER).each(function(action)
+				data = request.getHeaderData(Prado.CallbackRequest.ACTION_HEADER);
+				if(data && data.length > 0)
 				{
-					msg += inspect(action)+"\n";
-				})
+					data.each(function(action)
+					{
+						msg += inspect(action)+"\n";
+					});
+				}
 				Logger.warn(msg);
 			}
 		},
@@ -262,13 +266,16 @@ Object.extend(Prado.CallbackRequest,
 	abortRequestInProgress : function()
 	{
 		inProgress = Prado.CallbackRequest.requestInProgress;
+		Logger.info("aborting ... "+inProgress);
 		if(inProgress)
 		{
 			Logger.warn("aborted "+inProgress.id)
 			inProgress.request.transport.abort();
 			clearTimeout(inProgress.timeout);
 			Prado.CallbackRequest.requestInProgress = null;
+			return true;
 		}
+		return false;
 	},
 	
 	/**
@@ -280,8 +287,16 @@ Object.extend(Prado.CallbackRequest,
 		pagestate = $(this.FIELD_CALLBACK_PAGESTATE);
 		if(request.options.EnablePageStateUpdate && request.options.HasPriority && pagestate)
 		{
-			Logger.warn("updating page state");
-			pagestate.value = request.header(this.PAGESTATE_HEADER);
+			data = request.header(this.PAGESTATE_HEADER);
+			if(typeof(data) == "string" && data.length > 0)
+			{
+				Logger.warn("updating page state");
+				pagestate.value = data;
+			}
+			else
+			{
+				Logger.debug("Bad page state:"+data);
+			}
 		}
 	}
 })
@@ -341,12 +356,17 @@ Prado.CallbackRequest.prototype =
 			HasPriority : true,
 			CausesValidation : true,
 			ValidationGroup : null,
-			PostInputs : true,
-			postBody : this._getPostData(),
-			parameters : ''
+			PostInputs : true
 		}
 		Object.extend(this.options, options || {});
-				
+		
+		//override parameter and postBody options.
+		Object.extend(this.options, 
+		{
+			postBody : this._getPostData(),
+			parameters : ''			
+		});
+
 		if(this.options.CausesValidation && typeof(Prado.Validation) != "undefined")
 		{
 			var form =  this.options.Form || Prado.Validation.getForm();

@@ -113,13 +113,20 @@ abstract class TListControl extends TDataBoundControl
 		if($this->getIsMultiSelect())
 			$writer->addAttribute('multiple','multiple');
 		if($this->getEnabled(true) && $this->getAutoPostBack() && $page->getClientSupportsJavaScript())
-		{
-			$writer->addAttribute('id',$this->getClientID());
-			$this->getPage()->getClientScript()->registerPostBackControl('Prado.WebUI.'.get_class($this),$this->getPostBackOptions());
-		}
+			$this->renderClientControlScript($writer);
 		if(!$this->getEnabled(true) && $this->getEnabled())
 			$writer->addAttribute('disabled','disabled');
 		parent::addAttributesToRender($writer);
+	}
+
+	/**
+	 * Renders the client-script code.
+	 */
+	protected function renderClientControlScript($writer)
+	{
+		$writer->addAttribute('id',$this->getClientID());		
+		$cs = $this->getPage()->getClientScript(); 
+		$cs->registerPostBackControl(get_class($this),$this->getPostBackOptions());
 	}
 
 	/**

@@ -1005,6 +1005,14 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	{
 		return $this->getControlStage() >= self::CS_CHILD_INITIALIZED;
 	}
+	
+	/**
+	 * @return boolean true if the control has loaded post data.
+	 */
+	public function getHasLoadedPostData()
+	{
+		return $this->getControlStage() >= self::CS_LOADED;
+	}
 
 	/**
 	 * Returns the named registered object.

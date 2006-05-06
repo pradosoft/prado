@@ -58,7 +58,9 @@ class TActiveLabel extends TLabel
 	 */
 	protected function canUpdateClientSide()
 	{
-		return $this->getIsInitialized() && $this->getAllowCallbackUpdate();
+		return 	$this->getIsInitialized() 
+				&& $this->getPage()->getIsCallback() 
+				&& $this->getAllowCallbackUpdate();
 	}
 
 	/**
@@ -69,9 +71,7 @@ class TActiveLabel extends TLabel
 	{
 		parent::setText($value);
 		if($this->canUpdateClientSide())
-		{
 			$this->getPage()->getCallbackClient()->update($this, $value);
-		}
 	}
 	
 	/**

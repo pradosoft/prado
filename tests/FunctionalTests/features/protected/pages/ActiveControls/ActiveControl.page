@@ -1,16 +1,16 @@
 <com:TContent ID="Content">
 	<h1>TCallback Demo</h1>
-	<com:TClientScript UsingPradoScripts="ajax" />
 	<com:TCallback id="control1" 
 		ClientSide.EnablePageStateUpdate="false"
 		OnCallback="slowResponse" />
-		
-	<com:TCallback id="control2" 
-		ClientSide.HasPriority="false"
-		OnCallback="fastResponse" />
-		
+	
 	<com:TActiveLabel id="label1" Text="Name:" AllowCallbackUpdate="false" />
 	<com:TTextBox id="text1" />
+	
+	<com:TRequiredFieldValidator 
+		ControlToValidate="text1"
+		ErrorMessage="*" />
+	
 	<com:TActiveLabel id="label2" />
 
 	<com:TActivePanel id="panel1" >
@@ -24,7 +24,9 @@
 	
 
 	<com:TButton id="button1" Text="Submit 1 (3s delay)" CausesValidation="false" />
-	<com:TButton id="button2" Text="Submit 2" CausesValidation="false" />
+	
+	<com:TActiveButton id="button2" Text="Submit 2" OnClick="onButtonClicked" OnCallback="fastResponse" />
+
 	<script>
 		Event.observe("<%= $this->button1->ClientID %>", "click", function(event)
 		{
@@ -32,12 +34,6 @@
 		
 			Event.stop(event);
 		});
-		Event.observe("<%= $this->button2->ClientID %>", "click", function(event)
-		{
-			<%= $this->control2->CallbackReference %>	
-		
-			Event.stop(event);
-		});
-		
+
 	</script>
 </com:TContent>

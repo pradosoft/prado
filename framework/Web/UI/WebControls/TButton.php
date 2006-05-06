@@ -72,18 +72,25 @@ class TButton extends TWebControl implements IPostBackEventHandler, IButtonContr
 		if(($uniqueID=$this->getUniqueID())!=='')
 			$writer->addAttribute('name',$uniqueID);
 		$writer->addAttribute('value',$this->getText());
-		if($this->getEnabled(true))
-		{
-			if($this->canCauseValidation())
-			{
-				$writer->addAttribute('id',$this->getClientID());
-				$this->getPage()->getClientScript()->registerPostBackControl('Prado.WebUI.TButton',$this->getPostBackOptions());
-			}
-		}
+		if($this->getEnabled(true) )
+			$this->renderClientControlScript($writer);
 		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');
 
 		parent::addAttributesToRender($writer);
+	}
+
+	/**
+	 * Renders the client-script code.
+	 */
+	protected function renderClientControlScript($writer)
+	{
+		if($this->canCauseValidation())
+		{
+			$writer->addAttribute('id',$this->getClientID());		
+			$cs = $this->getPage()->getClientScript(); 
+			$cs->registerPostBackControl(get_class($this),$this->getPostBackOptions());
+		}
 	}
 
 	/**

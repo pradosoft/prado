@@ -177,16 +177,33 @@ class TClientScriptManager extends TApplicationComponent
 	}
 
 	/**
+	 * Registers callback javascript for a control.
+	 * @param string javascript class responsible for the control being registered for callback
+	 * @param array callback options
+	 */
+	public function registerCallbackControl($class, $options)
+	{
+		$optionString=TJavaScript::encode($options);
+		$code="new Prado.WebUI.{$class}({$optionString});";
+		$this->_endScripts[sprintf('%08X', crc32($code))]=$code;
+		$this->registerPradoScriptInternal('ajax');
+
+		$params=func_get_args();
+		foreach($this->_page->getCachingStack() as $item)
+			$item->registerAction('Page.ClientScript','registerCallbackControl',$params);
+	}
+
+	/**
 	 * Registers postback javascript for a control.
 	 * @param string javascript class responsible for the control being registered for postback
 	 * @param array postback options
 	 */
-	public function registerPostBackControl($jsClass,$options)
+	public function registerPostBackControl($class,$options)
 	{
 		if(!isset($options['FormID']) && ($form=$this->_page->getForm())!==null)
 			$options['FormID']=$form->getClientID();
 		$optionString=TJavaScript::encode($options);
-		$code="new $jsClass($optionString);";
+		$code="new Prado.WebUI.{$class}({$optionString});";
 
 		$this->_endScripts[sprintf('%08X', crc32($code))]=$code;
 		$this->_hiddenFields[TPage::FIELD_POSTBACK_TARGET]='';
