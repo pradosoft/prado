@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>TImageButton</h1>
+<h1 id="3001">TImageButton</h1>
 <com:DocLink ClassPath="System.Web.UI.WebControls.TImageButton" />
 
 <p>

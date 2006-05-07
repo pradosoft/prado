@@ -14,6 +14,9 @@
 </div>
 
 <com:TPanel ID="MainMenu" CssClass="mainmenu">
+<div style="float:left; color:black; margin-top:-5px">
+	<com:SearchBox />
+</div>
 <a href="?">Home</a> |
 <a href="http://www.pradosoft.com">PradoSoft.com</a> |
 <a href="prado3_quick_start.pdf">PDF Version</a> |

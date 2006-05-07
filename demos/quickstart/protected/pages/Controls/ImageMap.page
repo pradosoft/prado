@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>TImageMap</h1>
+<h1 id="3101">TImageMap</h1>
 <com:DocLink ClassPath="System.Web.UI.WebControls.TImageMap" />
 
 <p>

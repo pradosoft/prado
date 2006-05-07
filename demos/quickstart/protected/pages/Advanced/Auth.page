@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>Authentication and Authorization</h1>
+<h1 id="5501">Authentication and Authorization</h1>
 <p>
 Authentication is a process of verifying whether someone is who he claims he is. It usually involves a username and a password, but may include any other methods of demonstrating identity, such as a smart card, fingerprints, etc.
 </p>
@@ -8,7 +8,7 @@ Authentication is a process of verifying whether someone is who he claims he is.
 Authorization is finding out if the person, once identified, is permitted to manipulate specific resources. This is usually determined by finding out if that person is of a particular role that has access to the resources.
 </p>
 
-<h2>How PRADO Auth Framework Works</h2>
+<h2 id="5502">How PRADO Auth Framework Works</h2>
 <p>
 PRADO provides an extensible authentication/authorization framework. As described in <a href="?page=Fundamentals.Applications">application lifecycles</a>, <tt>TApplication</tt> reserves several lifecycles for modules responsible for authentication and authorization. PRADO provides the <tt>TAuthManager</tt> module for such purposes. Developers can plug in their own auth modules easily. <tt>TAuthManager</tt> is designed to be used together with <tt>TUserManager</tt> module, which implements a read-only user database.
 </p>
@@ -19,7 +19,7 @@ When a page request occurs, <tt>TAuthManager</tt> will try to restore user infor
 During <tt>Authorization</tt> application lifecycle, which occurs after <tt>Authentication</tt> lifecycle, <tt>TAuthManager</tt> will verify if the current user has access to the requested page according to a set of authorization rules. The authorization is role-based, i.e., a user has access to a page if 1) the page explicitly states that the user has access; 2) or the user is of a particular role that has access to the page. If the user does not have access to the page, <tt>TAuthManager</tt> will redirect user browser to the login page which is specified by <tt>LoginPage</tt> property.
 </p>
 
-<h2>Using PRADO Auth Framework</h2>
+<h2 id="5503">Using PRADO Auth Framework</h2>
 <p>
 To enable PRADO auth framework, add the <tt>TAuthManager</tt> module and <tt>TUserManager</tt> module to <a href="?page=Configurations.AppConfig">application configuration</a>,
 </p>
@@ -75,7 +75,7 @@ When a page request is being processed, a list of authorization rules may be ava
 In the above example, anonymous users will be denied from posting to <tt>PageID1</tt> and <tt>PageID2</tt>, while <tt>User1</tt> and <tt>User2</tt> and all users of role <tt>Role1</tt> can access the two pages (in both <tt>get</tt> and <tt>post</tt> methods).
 </p>
 
-<h2>Using <tt>TUserManager</tt></h2>
+<h2 id="5504">Using <tt>TUserManager</tt></h2>
 <p>
 As aforementioned, <tt>TUserManager</tt> implements a read-only user database. The user information are specified in either application configuration or an external XML file.
 </p>

@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>THtmlArea</h1>
+<h1 id="2801">THtmlArea</h1>
 <com:DocLink ClassPath="System.Web.UI.WebControls.THtmlArea" />
 
 <p>

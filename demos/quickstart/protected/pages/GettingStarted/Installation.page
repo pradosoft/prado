@@ -1,5 +1,5 @@
 <com:TContent ID="body" >
-<h1>Installing PRADO</h1>
+<h1 id="301">Installing PRADO</h1>
 <p>
 If you are viewing this page from your own Web server, you are already done with the installation.
 </p>

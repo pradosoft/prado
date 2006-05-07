@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>Applications</h1>
+<h1 id="1201">Applications</h1>
 <p>
 An application is an instance of <tt>TApplication</tt> or its derived class. It manages modules that provide different functionalities and are loaded when needed. It provides services to end-users. It is the central place to store various parameters used in an application. In a PRADO application, the application instance is the only object that is globally accessible via <tt>Prado::getApplication()</tt> function call.
 </p>
@@ -14,7 +14,7 @@ $application->run();
 where the method <tt>run()</tt> starts the application to handle user requests.
 </p>
 
-<h2>Directory Organization</h2>
+<h2 id="1202">Directory Organization</h2>
 <p>
 A minimal PRADO application contains two files: an entry file and a page template file. They must be organized as follows,
 </p>
@@ -33,7 +33,7 @@ A minimal PRADO application contains two files: an entry file and a page templat
 A product PRADO application usually needs more files. It may include an application configuration file named <tt>application.xml</tt> under the application base path <tt>protected</tt>. The pages may be organized in directories, some of which may contain page configuration files named <tt>config.xml</tt>. Fore more details, please see <a href="?page=Configurations.Overview">configurations</a> section.
 </p>
 
-<h2>Application Deployment</h2>
+<h2 id="1203">Application Deployment</h2>
 <p>
 Deploying a PRADO application mainly involves copying directories. For example, to deploy the above minimal application to another server, follow the following steps,
 </p>
@@ -43,7 +43,7 @@ Deploying a PRADO application mainly involves copying directories. For example, 
 <li>Remove all content under <tt>assets</tt> and <tt>runtime</tt> directories and make sure both directories are writable by the Web server process.</li>
 </ol>
 
-<h2>Application Lifecycles</h2>
+<h2 id="1204">Application Lifecycles</h2>
 <p>
 Like page lifecycles, an application also has lifecycles. Application modules can register for the lifecycle events. When the application reaches a particular lifecycle and raises the corresponding event, the registered module methods are invoked automatically. Modules included in the PRADO release, such as <tt>TAuthManager</tt>, are using this way to accomplish their goals.
 </p>

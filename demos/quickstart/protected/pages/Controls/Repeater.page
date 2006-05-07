@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>TRepeater</h1>
+<h1 id="5301">TRepeater</h1>
 <p>
 TRepeater displays its content defined in templates repeatedly based on the given data specified by the <tt>DataSource</tt> or <tt>DataSourceID</tt> property. The repeated contents can be retrieved from the <tt>Items</tt> property. Each item is created by instantiating a template and each is a child control of the repeater.
 </p>

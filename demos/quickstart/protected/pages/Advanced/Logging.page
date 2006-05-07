@@ -1,12 +1,12 @@
 <com:TContent ID="body" >
 
-<h1>Logging</h1>
+<h1 id="6101">Logging</h1>
 <p>
 PRADO provides a highly flexible and extensible logging functionality. Messages logged can be classified according to log levels and message categories. Using level and category filters, the messages can be further routed to different destinations, such as files, emails, browser windows, etc. The following diagram shows the basic architecture of PRADO logging mechanism,
 </p>
 <img src="<%~ logrouter.gif %>" alt="Log router" />
 
-<h2>Using Logging Functions</h2>
+<h2 id="6102">Using Logging Functions</h2>
 <p>
 The following two methods are provided for logging messages in PRADO,
 </p>
@@ -18,7 +18,7 @@ Prado::trace($message, $category);
 The difference between <tt>Prado::log()</tt> and <tt>Prado::trace()</tt> is  that the latter automatically selects the log level according to the application mode. If the application is in <tt>Debug</tt> mode, stack trace information is appended to the messages. <tt>Prado::trace()</tt> is widely used in the core code of the PRADO framework.
 </p>
 
-<h2>Message Routing</h2>
+<h2 id="6103">Message Routing</h2>
 <p>
 Messages logged using the above two functions are kept in memory. To make use of the messages, developers need to route them to specific destinations, such as files, emails, or browser windows. The message routing is managed by <tt>System.Util.TLogRouter</tt> module. When plugged into an application, it can route the messages to different destination in parallel. Currently, PRADO provides three types of routes:
 </p>
@@ -44,7 +44,7 @@ To enable message routing, plug in and configure the <tt>TLogRouter</tt> module 
 In the above, the <tt>Levels</tt> and <tt>Categories</tt> specify the log and category filters to selectively retrieve the messages to the corresponding destinations.
 </p>
 
-<h2>Message Filtering</h2>
+<h2 id="6104">Message Filtering</h2>
 <p>
 Messages can be filtered according to their log levels and categories. Each log message is associated with a log level and a category. With levels and categories, developers can selectively retrieve messages that they are interested on.
 </p>

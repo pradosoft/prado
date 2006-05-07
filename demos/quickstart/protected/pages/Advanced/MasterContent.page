@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>Master and Content</h1>
+<h1 id="5801">Master and Content</h1>
 <p>
 Pages in a Web application often share common portions. For example, all pages of this tutorial application share the same header and footer portions. If we repeatedly put header and footer in every page source file, it will be a maintenance headache if in future we want to something in the header or footer. To solve this problem, PRADO introduces the concept of master and content. It is essentially a decorator pattern, with content being decorated by master.
 </p>

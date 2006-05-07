@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>List Controls</h1>
+<h1 id="4801">List Controls</h1>
 <p>
 List controls covered in this section all inherit directly or indirectly from <tt>TListControl</tt>. Therefore, they share the same set of commonly used properties, including,
 </p>
@@ -48,19 +48,19 @@ $listbox->dataBind();
 </li>
 </ul>
 
-<h2>TListBox</h2>
+<h2 id="4802">TListBox</h2>
 <p>
 <tt>TListBox</tt> displays a list box that allows single or multiple selection. Set the property <tt>SelectionMode</tt> as <tt>Single</tt> to make a single selection list box, and <tt>Multiple</tt> a multiple selection list box. The number of rows displayed in the box is specified via the <tt>Rows</tt> property value.
 </p>
 <com:RunBar PagePath="Controls.Samples.TListBox.Home" />
 
-<h2>TDropDownList</h2>
+<h2 id="4803">TDropDownList</h2>
 <p>
 <tt>TDropDownList</tt> displays a dropdown list box that allows users to select a single option from a few prespecified ones.
 </p>
 <com:RunBar PagePath="Controls.Samples.TDropDownList.Home" />
 
-<h2>TCheckBoxList</h2>
+<h2 id="4804">TCheckBoxList</h2>
 <p>
 <tt>TCheckBoxList</tt> displays a list of checkboxes on a Web page. The alignment of the text besides each checkbox can be specified <tt>TextAlign</tt>. The layout of the checkboxes can be controlled by the following properties:
 </p>
@@ -72,13 +72,13 @@ $listbox->dataBind();
 
 <com:RunBar PagePath="Controls.Samples.TCheckBoxList.Home" />
 
-<h2>TRadioButtonList</h2>
+<h2 id="4805">TRadioButtonList</h2>
 <p>
 <tt>TRadioButtonList</tt> is similar to <tt>TCheckBoxList</tt> in every aspect except that each <tt>TRadioButtonList</tt> displays a group of radiobuttons. Only one of the radiobuttions can be selected (<tt>TCheckBoxList</tt> allows multiple selections.)
 </p>
 <com:RunBar PagePath="Controls.Samples.TRadioButtonList.Home" />
 
-<h2>TBulletedList</h2>
+<h2 id="4806">TBulletedList</h2>
 <p>
 <tt>TBulletedList</tt> displays items in a bullet format on a Web page. The style of the bullets can be specified by <tt>BulletStyle</tt>. When the style is <tt>CustomImage</tt>, the bullets are displayed as images, which is specified by <tt>BulletImageUrl</tt>.
 </p>

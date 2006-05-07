@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>TDataGrid</h1>
+<h1 id="5201">TDataGrid</h1>
 
 <p>
 TDatagrid is an important control in building complex Web applications. It displays data in a tabular format with rows (also called items) and columns. A row is composed by cells, while columns govern how cells should be displayed according to their association with the columns. Data specified via <tt>DataSource</tt> or <tt>DataSourceID</tt> are bound to the rows and feed contents to cells.
@@ -12,7 +12,7 @@ TDataGrid is highly interactive. Users can sort the data along specified columns
 Rows of TDataGrid can be accessed via its <tt>Items</tt> property. A row (item) can be in one of several modes: browsing, editting and selecting, which affects how cells in the row are displayed. To change an item's mode, modify <tt>EditItemIndex</tt> or <tt>SelectedItemIndex</tt>. Note, if an item is in edit mode, then selecting this item will have no effect.
 </p>
 
-<h2>Columns</h2>
+<h2 id="5202">Columns</h2>
 <p>
 Columns of a data grid determine how the associated cells are displayed. For example, cells associated with a <tt>TBoundColumn</tt> are displayed differently according to their modes. A cell is displayed as a static text if the cell is in browsing mode, a text box if it is in editting mode, and so on.
 </p>
@@ -28,7 +28,7 @@ PRADO provides five types of columns:
   <li><tt>TTemplateColumn</tt> displays the cells according to different templates defined for it.</li>
 </ul>
 
-<h2>Item Styles</h2>
+<h2 id="5203">Item Styles</h2>
 <p>
 TDataGrid defines different styles applied to its items. For example, <tt>AlternatingItemStyle</tt> is applied to alternating items (item 2, 4, 6, etc.) Through these properties, one can set CSS style fields or CSS classes for the items.
 </p>
@@ -36,7 +36,7 @@ TDataGrid defines different styles applied to its items. For example, <tt>Altern
 Item styles are applied in a hierarchical way. Styles in higher hierarchy will inherit from styles in lower hierarchy. Starting from the lowest hierarchy, the item styles include item's own style, <tt>ItemStyle</tt>, <tt>AlternatingItemStyle</tt>, <tt>SelectedItemStyle</tt>, and <tt>EditItemStyle</tt>. Therefore, if background color is set as red in <tt>ItemStyle</tt>, <tt>EditItemStyle</tt> will also have red background color, unless it is explicitly set to a different value.
 </p>
 
-<h2>Events</h2>
+<h2 id="5204">Events</h2>
 <p>
 TDataGrid provides several events to facilitate manipulation of its items,
 </p>
@@ -57,9 +57,9 @@ TDataGrid provides several events to facilitate manipulation of its items,
   </li>
 </ul>
 
-<h2>Using TDataGrid</h2>
+<h2 id="5205">Using TDataGrid</h2>
 
-<h3>Automatically Generated Columns</h3>
+<h3 id="5210">Automatically Generated Columns</h3>
 <p>
 TDataGrid by default will create a list of columns based on the structure of the bound data. TDataGrid will read the first row of the data, extract the field names of the row, and construct a column for each field. Each column is of type <tt>TBoundColumn</tt>.
 </p>
@@ -77,7 +77,7 @@ public function onLoad($param) {
 </com:TTextHighlighter>
 <com:RunBar PagePath="Controls.Samples.TDataGrid.Sample1" />
 
-<h3>Manually Specified Columns</h3>
+<h3 id="5211">Manually Specified Columns</h3>
 <p>
 Using automatically generated columns gives a quick way of browsing tabular data. In real applications, however, automatically generated columns are often not sufficient because developers have no way customizing their appearance. Manually specified columns are thus more desirable.
 </p>
@@ -109,7 +109,7 @@ The following example uses manually specified columns to show a list of book inf
 <com:RunBar PagePath="Controls.Samples.TDataGrid.Sample2" />
 
 
-<h2>Interacting with TDataGrid</h2>
+<h2 id="5206">Interacting with TDataGrid</h2>
 <p>
 Besides the rich data presentation functionalities as demonstrated in previous section, TDataGrid is also highly user interactive. An import usage of TDataGrid is editting or deleting rows of data. The <tt>TBoundColumn</tt> can adjust the associated cell presentation according to the mode of datagrid items. When an item is in browsing mode, the cell is displayed with a static text; when the item is in editting mode, a textbox is displayed to collect user inputs. TDataGrid provides <tt>TEditCommandColumn</tt> for switching item modes. In addition, <tt>TButtonColumn</tt> offers developers the flexibility of creating arbitrary buttons for various user interactions.
 </p>
@@ -118,7 +118,7 @@ The following example shows how to make the previous book information table an i
 </p>
 <com:RunBar PagePath="Controls.Samples.TDataGrid.Sample3" />
 
-<h2>Sorting</h2>
+<h2 id="5207">Sorting</h2>
 <p>
 TDataGrid supports sorting its items according to specific columns. To enable sorting, set <tt>AllowSorting</tt> to true. This will turn column headers into clickable buttons if their <tt>SortExpression</tt> property is not empty. When users click on the header buttons, an <tt>OnSortCommand</tt> event will be raised. Developers can write handlers to respond to the sort command and sort the data according to <tt>SortExpression</tt> which is specified in the corresponding column.
 </p>
@@ -127,7 +127,7 @@ The following example turns the datagrid in <a href="?page=Controls.Samples.TDat
 </p>
 <com:RunBar PagePath="Controls.Samples.TDataGrid.Sample4" />
 
-<h2>Paging</h2>
+<h2 id="5208">Paging</h2>
 <p>
 When dealing with large datasets, paging is helpful in reducing the page size and complexity. TDataGrid has an embedded pager that allows users to specify which page of data they want to see. The pager can be customized via <tt>PagerStyle</tt>. For example, <tt>PagerStyle.Visible</tt> determines whether the pager is visible or not; <tt>PagerStyle.Position</tt> indicates where the pager is displayed; and <tt>PagerStyle.Mode</tt> specifies what type of pager is displayed, a numeric one or a next-prev one.
 </p>
@@ -146,7 +146,7 @@ The following example enables the paging functionality of the datagrid shown in 
 </p>
 <com:RunBar PagePath="Controls.Samples.TDataGrid.Sample5" />
 
-<h3>Custom Paging</h3>
+<h3 id="5212">Custom Paging</h3>
 <p>
 The paging functionality shown above requires loading all data into memory, even though only a portion of them is displayed in a page. For large datasets, this is inefficient and may not always be feasible. TDataGrid provides custom paging to solve this problem. Custom paging only requires the portion of the data to be displayed to end users.
 </p>
@@ -155,7 +155,7 @@ To enable custom paging, set both <tt>AllowPaging</tt> and <tt>AllowCustomPaging
 </p>
 <com:RunBar PagePath="Controls.Samples.TDataGrid.Sample6" />
 
-<h2>Extending TDataGrid</h2>
+<h2 id="5209">Extending TDataGrid</h2>
 <p>
 Besides traditional class inheritance, extensibility of TDataGrid is mainly through developing new datagrid column components. For example, one may want to display an image column. He may use <tt>TTemplateColumn</tt> to accomplish this task. A better solution is to develop an image column component so that the work can be reused easily in other projects.
 </p>

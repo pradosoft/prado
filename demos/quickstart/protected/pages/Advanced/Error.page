@@ -1,11 +1,11 @@
 <com:TContent ID="body" >
 
-<h1>Error Handling and Reporting</h1>
+<h1 id="6301">Error Handling and Reporting</h1>
 <p>
 PRADO provides a complete error handling and reporting framework based on the PHP 5 exception mechanism.
 </p>
 
-<h2>Exception Classes</h2>
+<h2 id="6302">Exception Classes</h2>
 <p>
 Errors occur in a PRADO application may be classified into three categories: those caused by PHP script parsing, those caused by wrong code (such as calling an undefined function, setting an unknown property), and those caused by improper use of the Web application by client users (such as attempting to access restricted pages). PRADO is unable to deal with the first category of errors because they cannot be caughted in PHP code. PRADO provides an exception hierarchy to deal with the second and third categories.
 </p>
@@ -32,18 +32,18 @@ Exceptions raised due to improper usage of the PRADO framework inherit from <tt>
 Errors due to improper usage of the Web application by client users inherit from <tt>TApplicationException</tt>.
 </p>
 
-<h2>Raising Exceptions</h2>
+<h2 id="6303">Raising Exceptions</h2>
 <p>
 Raising exceptions in PRADO has no difference than raising a normal PHP exception. The only thing matters is to raise the right exception. In general, exceptions meant to be shown to application users should use <tt>THttpException</tt>, while exceptions shown to developers should use other exception classes.
 </p>
 
-<h2>Error Capturing and Reporting</h2>
+<h2 id="6304">Error Capturing and Reporting</h2>
 <p>
 Exceptions raised during the runtime of PRADO applications are captured by <tt>System.Exceptions.TErrorHandler</tt> module. Different output templates are used to display the captured exceptions. <tt>THttpException</tt> is assumed to contain error messages that are meant for application end users and thus uses a specific group of templates. For all other exceptions, a common template shown as follows is used for presenting the exceptions.
 </p>
 <a href="<%~ exception2.gif %>" target="_blank"><img src="<%~ exception.gif %>" alt="exception page" style="border:0px"/></a>
 
-<h2>Customizing Error Display</h2>
+<h2 id="6305">Customizing Error Display</h2>
 <p>
 Developers can customize the presentation of exception messages. By default, all error output templates are stored under <tt>framework/Exceptions/templates</tt>. The location can be changed by configuring <tt>TErrorHandler</tt> in application configuration,
 </p>

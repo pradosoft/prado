@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>Application Configurations</h1>
+<h1 id="1801">Application Configurations</h1>
 <p>
 Application configurations are used to specify the global behavior of an application. They include specification of path aliases, namespace usages, module and service configurations, and parameters.
 </p>

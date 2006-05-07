@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>Page Configurations</h1>
+<h1 id="1901">Page Configurations</h1>
 <p>
 Page configurations are mainly used by <tt>TPageService</tt> to modify or append the application configuration. As the name indicates, a page configuration is associated with a directory storing some page files. It is stored as an XML file named <tt>config.xml</tt>.
 </p>

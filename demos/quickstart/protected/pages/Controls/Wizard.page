@@ -1,9 +1,9 @@
 <com:TContent ID="body" >
 
-<h1>TWizard</h1>
+<h1 id="4701">TWizard</h1>
 <com:DocLink ClassPath="System.Web.UI.WebControls.TWizard" />
 
-<h2>Overview</h2>
+<h2 id="4702">Overview</h2>
 <p>
 <tt>TWizard</tt> is analogous to the installation wizard commonly used to install software on Windows. It splits a large form and presents the user with a series of smaller forms, called wizard steps, to complete. The following figure shows how a wizard is composed of when presented to users, where <tt>step content</tt> is the main content of a wizard step for users to complete, <tt>header</tt> refers to header content common to all steps, <tt>navigation</tt> contains buttons that allow users to navigate step by step, and <tt>side bar</tt> contains a list of hyperlinks by which users can reach to any step with one click. The visibility of the side bar can be toggled by setting <tt>ShowSideBar</tt>.
 </p>
@@ -49,15 +49,15 @@ In the above, <tt>StepType</tt> refers to the type of a wizard step, which can a
 </ul>
 
 
-<h2>Using TWizard</h2>
+<h2 id="4703">Using TWizard</h2>
 
-<h3>A Single-Step Wizard Sample</h3>
+<h3 id="4704">A Single-Step Wizard Sample</h3>
 <p>
 In this sample, we use wizard to collect user's preference of color. In the first step, the user is presented with a dropdown list from which he can choose hist favorite color. In the second step, the complete step, his choice in the previous step is displayed. In real application, at this step the choice may be stored in database in the backend.
 </p>
 <com:RunBar PagePath="Controls.Samples.TWizard.Sample1" />
 
-<h3>Customizing Wizard Styles</h3>
+<h3 id="4705">Customizing Wizard Styles</h3>
 <p>
 <tt>TWizard</tt> defines a whole set of properties for customization of appearance of its various components as shown in the above figure. In particular, the following properties are provided for style customization:
 </p>
@@ -69,7 +69,7 @@ In this sample, we use wizard to collect user's preference of color. In the firs
 </ul>
 <com:RunBar PagePath="Controls.Samples.TWizard.Sample2" />
 
-<h3>Customizing Wizard Navigation</h3>
+<h3 id="4706">Customizing Wizard Navigation</h3>
 <p>
 Given a set of wizard steps, <tt>TWizard</tt> supports three different ways of navigation among them:
 </p>
@@ -80,7 +80,7 @@ Given a set of wizard steps, <tt>TWizard</tt> supports three different ways of n
 </ul>
 <com:RunBar PagePath="Controls.Samples.TWizard.Sample3" />
 
-<h3>Using Templates in Wizard</h3>
+<h3 id="4707">Using Templates in Wizard</h3>
 <p>
 <tt>TWizard</tt> supports more concrete control of its outlook through templating. In particular, it provides the following template properties that allow complete customization of the wizard's header, navigation and side bar.
 </p>
@@ -91,7 +91,7 @@ Given a set of wizard steps, <tt>TWizard</tt> supports three different ways of n
 </ul>
 <com:RunBar PagePath="Controls.Samples.TWizard.Sample4" />
 
-<h3>Using Templated Wizard Steps</h3>
+<h3 id="4708">Using Templated Wizard Steps</h3>
 <p>
 Wizard steps can also be templated. By using <tt>TTemplatedWizardStep</tt>, one can customize step content and navigation through its <tt>ContentTemplate</tt> and <tt>NavigationTemplate</tt> properties, respectively. This is useful for control developers to build specialized wizards, such as user registration, shopping carts, etc.
 </p>

@@ -1,5 +1,5 @@
 <com:TContent ID="body" >
-<h1>What is PRADO?</h1>
+<h1 id="201">What is PRADO?</h1>
 <p>
 PRADO is a component-based and event-driven programming framework for developing Web applications in PHP 5. PRADO stands for <b>P</b>HP <b>R</b>apid <b>A</b>pplication <b>D</b>evelopment <b>O</b>bject-oriented.
 </p>
@@ -16,7 +16,7 @@ To facilitate interacting with components, PRADO implements an event-driven prog
 In summary, developing a PRADO Web application mainly involves instantiating prebuilt component types, configuring them by setting their properties, responding to their events by writing handler functions, and composing them into pages for the application. It is very similar to RAD toolkits, such as Borland Delphi and Microsoft Visual Basic, that are used to develop desktop GUI applications.
 </p>
 
-<h2>Why PRADO?</h2>
+<h2 id="202">Why PRADO?</h2>
 <p>
 PRADO is mostly quoted as a unique framework. In fact, it is so unique that it may turn your boring PHP programming into a fun task. The following list is a short summary of the main features of PRADO,
 </p>
@@ -32,7 +32,7 @@ PRADO is mostly quoted as a unique framework. In fact, it is so unique that it m
 <li>Other features - Powerful error/exception handling and message logging; generic caching and selective output caching; customizable and localizable error handling; extensible authentication and authorization; security measures such as cross-site script (CSS) prevention, cookie protection, etc.</li>
 </ul>
 
-<h2>What Is PRADO Best For?</h2>
+<h2 id="203">What Is PRADO Best For?</h2>
 <p>
 PRADO is best suitable for creating Web front-ends that are highly user-interactive and require small to medium traffic. It can be used to develop systems as simple as a blog system to systems as complex as a content management system (CMS) or a complete e-commerce solution. PRADO can help you cut your development time significantly.
 </p>
@@ -43,7 +43,7 @@ PRADO does not exclude other back-end solutions such as most DB abstraction laye
 Without caching techniques, PRADO may not be suitable for developing extremely high-traffic Web applications, such as popular portals, forums, etc. In these applications, every niche of potential performance gain must be exploited and server caching (e.g. Zend optimizer) is almost a must. PRADO implements a generic cache technique and enables selective caching of part of Web contents.
 </p>
 
-<h2>How Is PRADO Compared with Other Frameworks?</h2>
+<h2 id="204">How Is PRADO Compared with Other Frameworks?</h2>
 <p>
 PRADO is described as a unique framework. Its uniqueness mainly lies in the component-based and event-driven programming paradigm that it tries to promote. Although this programming paradigm is not new in desktop application programming and not new in a few Web programming languages, PRADO is perhaps the first PHP framework enabling it.
 </p>
@@ -51,7 +51,7 @@ PRADO is described as a unique framework. Its uniqueness mainly lies in the comp
 Most PHP frameworks are trying to establish a loose standard of organizing PHP programming, most preferably the MVC (model-view-controller) model. It is difficult to compare PRADO with these frameworks because they have different focuses. What we can say is, PRADO is more like a high-level language built upon PHP, while the MVC frameworks stand for the best programming practices. Both aim to help developers to rapidly complete Web application development. The advantage of PRADO is its rich set of prebuilt powerful components and extreme reusability of the PRADO code, while the advantage of the MVC frameworks is the complete separation of model, view and controller, which greatly facilitates team integration.
 </p>
 
-<h2>History of PRADO</h2>
+<h2 id="205">History of PRADO</h2>
 <p>
 The very original inspiration of PRADO came from Apache Tapestry. During the design and implementation, I borrowed many ideas from Borland Delphi and Microsoft ASP.NET. The first version of PRADO came out in June 2004 and was written in PHP 4. Driven by the Zend PHP 5 coding contest, I rewrote PRADO in PHP 5, which proved to be a wise move, thanks to the new object model provided by PHP 5. PRADO won the grand prize in the Zend contest, earning the highest votes from both the public and the judges' panel.
 </p>

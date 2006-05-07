@@ -1,8 +1,8 @@
 <com:TContent ID="body" >
 
-<h1>Security</h1>
+<h1 id="5601">Security</h1>
 
-<h2>Viewstate Protection</h2>
+<h2 id="5602">Viewstate Protection</h2>
 <p>
 Viewstate lies at the heart of PRADO. Viewstate represents data that can be used to restore pages to the state that is last seen by end users before making the current request. By default, PRADO uses hidden fields to store viewstate information.
 </p>
@@ -26,7 +26,7 @@ HMAC check requires a private key that should be secret to end users. Developers
 HMAC check does not prevent end users from reading the viewstate content. An added security measure is to encrypt the viewstate information so that end users cannot decipher it. To enable viewstate encryption, set the <tt>EnableStateEncryption</tt> of pages to true. This can be done in <a href="?page=Configurations.PageConfig">page configurations</a> or in page code. Note, encrypting viewstate may degrade the application performance. A better strategy is to store viewstate on the server side, rather than the default hidden field.
 </p>
 
-<h2>Cross Site Scripting Prevention</h2>
+<h2 id="5603">Cross Site Scripting Prevention</h2>
 <p>
 Cross site scripting (also known as XSS) occurs when a web application gathers malicious data from a user. Often attackers will inject JavaScript, VBScript, ActiveX, HTML, or Flash into a vulnerable application to fool other application users and gather data from them. For example, a poorly design forum system may display user input in forum posts without any checking. An attacker can then inject a piece of malicious JavaScript code into a post so that when other users read this post, the JavaScript runs unexpectedly on their computers.
 </p>
@@ -37,7 +37,7 @@ One of the most important measures to prevent XSS attacks is to check user input
 PRADO incorporates the work of <a href="http://pixel-apes.com/safehtml/">SafeHTML</a> and provides developers with a useful component called <tt>TSafeHtml</tt>. By enclosing content within a <tt>TSafeHtml</tt> component tag, the enclosed content are ensured to be safe to end users. In addition, the commonly used <tt>TTextBox</tt> has a <tt>SafeText</tt> property which contains user input that are ensured to be safe if displayed directly to end users.
 </p>
 
-<h2>Cookie Attack Prevention</h2>
+<h2 id="5604">Cookie Attack Prevention</h2>
 <p>
 Protecting cookies from being attacked is of extreme important, as session IDs are commonly stored in cookies. If one gets hold of a session ID, he essentially owns all relevant session information.
 </p>
