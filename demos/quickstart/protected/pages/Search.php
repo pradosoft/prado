@@ -23,7 +23,7 @@ class Search extends TPage
 		$t = count($words);
 		for($i = 0; $i<$t; $i++)
 		{
-			if($this->containsKeys($words[$i], $keys))
+			if($this->containsKeys(strtolower($words[$i]), $keys))
 			{
 				$words[$i] = '<span class="searchterm">'.$words[$i].'</span>';
 				$where = $i;
