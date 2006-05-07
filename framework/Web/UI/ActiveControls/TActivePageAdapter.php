@@ -257,7 +257,7 @@ class TCallbackEventParameter extends TEventParameter
 	 */
 	public function getOutput()
 	{
-		return $this->_response->createHtmlWriter();
+		return $this->_response->createHtmlWriter(null,$this);
 	}
 	
 	/**

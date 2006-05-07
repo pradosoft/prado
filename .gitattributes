@@ -879,6 +879,7 @@ framework/Web/Javascripts/js/prado.js -text
 framework/Web/Javascripts/js/rico.js -text
 framework/Web/Javascripts/js/validator.js -text
 framework/Web/Javascripts/prado/activecontrols.js -text
+framework/Web/Javascripts/prado/activecontrols3.js -text
 framework/Web/Javascripts/prado/ajax.js -text
 framework/Web/Javascripts/prado/ajax3.js -text
 framework/Web/Javascripts/prado/controls.js -text
@@ -931,6 +932,7 @@ framework/Web/UI/ActiveControls/TActiveLabel.php -text
 framework/Web/UI/ActiveControls/TActivePageAdapter.php -text
 framework/Web/UI/ActiveControls/TActivePanel.php -text
 framework/Web/UI/ActiveControls/TActiveTextBox.php -text
+framework/Web/UI/ActiveControls/TAutoComplete.php -text
 framework/Web/UI/ActiveControls/TCallback.php -text
 framework/Web/UI/ActiveControls/TCallbackClientScript.php -text
 framework/Web/UI/ActiveControls/TCallbackClientSideOptions.php -text
@@ -1041,6 +1043,8 @@ tests/FunctionalTests/features/protected/controls/Layout.php -text
 tests/FunctionalTests/features/protected/controls/Layout.tpl -text
 tests/FunctionalTests/features/protected/pages/ActiveControls/ActiveControl.page -text
 tests/FunctionalTests/features/protected/pages/ActiveControls/ActiveControl.php -text
+tests/FunctionalTests/features/protected/pages/ActiveControls/AutoComplete.page -text
+tests/FunctionalTests/features/protected/pages/ActiveControls/AutoComplete.php -text
 tests/FunctionalTests/features/protected/pages/ActiveControls/Calculator.page -text
 tests/FunctionalTests/features/protected/pages/ActiveControls/Calculator.php -text
 tests/FunctionalTests/features/protected/pages/ActiveControls/config.xml -text

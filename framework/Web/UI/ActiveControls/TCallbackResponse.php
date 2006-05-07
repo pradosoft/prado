@@ -7,9 +7,9 @@ class TCallbackResponse extends THttpResponse
 {
 	private $_writers=array();
 	
-	public function createHtmlWriter($type=null)
+	public function createHtmlWriter($type=null,$parameter=null)
 	{
-		$writer = new TCallbackResponseWriter();
+		$writer = new TCallbackResponseWriter($parameter);
 		$this->_writers[] = $writer;
 		if($type===null)
 			$type=$this->getHtmlWriterType();
@@ -27,10 +27,17 @@ class TCallbackResponse extends THttpResponse
 class TCallbackResponseWriter extends TTextWriter
 {
 	private $_boundary;
+	private $_response;
 	
-	public function __construct()
+	public function __construct($response)
 	{
+		$this->_response = $response;
 		$this->_boundary = sprintf('%x',crc32((string)$this));
+	}
+	
+	public function getResponse()
+	{
+		return $this->_response;
 	}
 	
 	public function getBoundary()

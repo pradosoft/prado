@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <configuration>
-  <paths>
-    <using namespace="System.Web.UI.ActiveControls.*" />
-  </paths>
+	<paths>
+		<using namespace="System.Web.UI.ActiveControls.*" />
+	</paths> 
 </configuration>

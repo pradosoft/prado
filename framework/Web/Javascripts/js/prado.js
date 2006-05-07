@@ -265,9 +265,12 @@ el.options[el.options.length]=new Option(options[i][0],options[i][1]);}},focus:f
 {var obj=$(element);if(typeof(obj)!="undefined"&&typeof(obj.focus)!="undefined")
 setTimeout(function(){obj.focus();},100);return false;},replace:function(element,method,content,boundary,transport)
 {if(boundary)
-{var f=RegExp('(<!--'+boundary+'-->)([\\s\\S\\w\\W]*)(<!--//'+boundary+'-->)',"m");var result=transport.responseText.match(f);if(result&&result.length>=2)
-content=result[2];}
-method.toFunction().apply(this,[element,content]);}}
+{result=Prado.Element.extractContent(transport.responseText,boundary);if(result!=null)
+content=result;}
+method.toFunction().apply(this,[element,content]);},extractContent:function(text,boundary)
+{f=RegExp('(<!--'+boundary+'-->)([\\s\\S\\w\\W]*)(<!--//'+boundary+'-->)',"m");result=text.match(f);if(result&&result.length>=2)
+return result[2];else
+return null;}}
 Prado.Element.Selection={inputValue:function(el,value)
 {switch(el.type.toLowerCase())
 {case'checkbox':case'radio':return el.checked=value;}},selectValue:function(el,value)

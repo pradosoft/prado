@@ -102,11 +102,11 @@ $libraries = array(
 		'prototype/ajax.js',
 		'prado/ajax3.js',
 		'extra/json.js',
+		'effects/controls.js',
 		'prado/activecontrols3.js'
-/*		'effects/controls.js',
-		'effects/dragdrop.js',
-		'effects/slider.js',
-		'prado/activecontrols.js'*/
+//		'effects/dragdrop.js',
+//		'effects/slider.js',
+//		'prado/activecontrols.js'
 	),
 	//logging
 	'logger.js' => array(
