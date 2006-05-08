@@ -26,7 +26,7 @@ require_once 'phing/Task.php';
  * var-global-unused          Global variable 'fixErrors' is defined but never used.
  * break-depth                Break/continue with depth more than current nesting level. 
  * 
- * @author   Knut Urdalen <knut.urdalen@telio.no>
+ * @author   Knut Urdalen <knut.urdalen@gmail.com>
  * @package  phing.tasks.ext
  */
 class ZendCodeAnalyzerTask extends Task {
