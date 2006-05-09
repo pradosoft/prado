@@ -11,7 +11,7 @@ $mainTexFile = dirname(__FILE__).'/prado3_quick_start.tex';
 $base = realpath(dirname(__FILE__).'/../../demos/quickstart/protected/pages/');
 
 //search index data directory
-$index_dir = realpath(dirname(__FILE__).'/../../demos/quickstart/protected/index/data');
+$index_dir = realpath(dirname(__FILE__).'/../../demos/quickstart/protected/index/data/');
 
 
 //list page into chapters

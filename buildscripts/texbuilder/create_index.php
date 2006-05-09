@@ -1,7 +1,10 @@
 <?php
 
 // Create quickstart search index
-require_once (dirname(__FILE__).'/Zend/Search/Lucene.php');
+$zend_path = realpath(dirname(__FILE__).'/../../demos/quickstart/protected/index');
+set_include_path(get_include_path().';'.$zend_path);
+require_once ('Zend/Search/Lucene.php');
+
 
 class quickstart_index
 {
@@ -31,7 +34,7 @@ class quickstart_index
 			
 			//searchable text
 			$doc->addField(Zend_Search_Lucene_Field::Keyword('page', strtolower($headers['title'])));
-			$body = strtolower($this->sanitize($headers['content']));
+			$body = strtolower($this->sanitize($headers['content'])).' '.strtolower($headers['title']);
 			$doc->addField(Zend_Search_Lucene_Field::Unstored('contents',$body));
 			$this->_index->addDocument($doc);
 		}		
