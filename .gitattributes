@@ -23,9 +23,6 @@ buildscripts/texbuilder/Zend/LICENSE.txt -text
 buildscripts/texbuilder/Zend/Search/Exception.php -text
 buildscripts/texbuilder/Zend/Search/Lucene.php -text
 buildscripts/texbuilder/Zend/Search/Lucene/Analysis/Analyzer.php -text
-buildscripts/texbuilder/Zend/Search/Lucene/Analysis/Analyzer/Common.php -text
-buildscripts/texbuilder/Zend/Search/Lucene/Analysis/Analyzer/Common/Text.php -text
-buildscripts/texbuilder/Zend/Search/Lucene/Analysis/Analyzer/Common/Text/CaseInsensitive.php -text
 buildscripts/texbuilder/Zend/Search/Lucene/Analysis/Token.php -text
 buildscripts/texbuilder/Zend/Search/Lucene/Analysis/TokenFilter.php -text
 buildscripts/texbuilder/Zend/Search/Lucene/Analysis/TokenFilter/LowerCase.php -text
