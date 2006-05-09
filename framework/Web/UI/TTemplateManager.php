@@ -546,6 +546,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 		$container=-1;
 		$matchEnd=0;
 		$c=0;
+		$this->_directive=null;
 		try
 		{
 			for($i=0;$i<$n;++$i)
@@ -598,7 +599,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					if($matchStart>$textStart)
 						$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
 					$textStart=$matchEnd+1;
-					if(isset($tpl[0]))
+					if(isset($tpl[0]) || $this->_directive!==null)
 						throw new TConfigurationException('template_directive_nonunique');
 					$this->_directive=$this->parseAttributes($match[4][0],$match[4][1]);
 				}
@@ -675,18 +676,23 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					}
 					if(($last=count($stack))<1 || $stack[$last-1][0]!=='@')
 					{
-						if($matchStart>$textStart && $container>=0)
+						if($matchStart>$textStart)
 						{
 							$value=substr($input,$textStart,$matchStart-$textStart);
 							if(strrpos($prop,'template')===strlen($prop)-8)
 								$value=$this->parseTemplateProperty($value,$textStart);
 							else
 								$value=$this->parseAttribute($value);
-							$type=$tpl[$container][1];
-							$this->validateAttributes($type,array($prop=>$value));
-							if(isset($tpl[$container][2][$prop]))
-								throw new TConfigurationException('template_property_duplicated',$prop);
-							$tpl[$container][2][$prop]=$value;
+							if($container>=0)
+							{
+								$type=$tpl[$container][1];
+								$this->validateAttributes($type,array($prop=>$value));
+								if(isset($tpl[$container][2][$prop]))
+									throw new TConfigurationException('template_property_duplicated',$prop);
+								$tpl[$container][2][$prop]=$value;
+							}
+							else	// a property for the template control
+								$this->_directive[$prop]=$value;
 							$textStart=$matchEnd+1;
 						}
 						$expectPropEnd=false;
@@ -729,6 +735,9 @@ class TTemplate extends TApplicationComponent implements ITemplate
 			else
 				throw new TConfigurationException('template_format_invalid',$this->_tplFile,$line,$e->getMessage());
 		}
+
+		if($this->_directive===null)
+			$this->_directive=array();
 
 		// optimization by merging consecutive strings, expressions, statements and bindings
 		$objects=array();

@@ -10,6 +10,9 @@
       <route class="TFileLogRoute" />
     </module>
     -->
+   <module id="search" 
+    	class="Application.index.ZendSearch"
+    	IndexDataDirectory="Application.index.data" />
   </modules>
   <paths>
     <using namespace="Application.controls.*" />

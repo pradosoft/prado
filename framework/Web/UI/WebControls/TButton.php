@@ -19,7 +19,7 @@
  * A <b>command</b> button has a command name (specified by
  * the {@link setCommandName CommandName} property) and and a command parameter
  * (specified by {@link setCommandParameter CommandParameter} property)
- * associated with the button. This allows you to create multiple TLinkButton
+ * associated with the button. This allows you to create multiple TButton
  * components on a Web page and programmatically determine which one is clicked
  * with what parameter. You can provide an event handler for
  * {@link onCommand OnCommand} event to programmatically control the actions performed

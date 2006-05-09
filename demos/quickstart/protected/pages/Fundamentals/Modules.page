@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>Modules</h1>
+<h1 id="1001">Modules</h1>
 <p>
 A module is an instance of a class implementing the <tt>IModule</tt> interface. A module is commonly designed to provide specific functionality that may be plugged into a PRADO application and shared by all components in the application.
 </p>
@@ -12,31 +12,31 @@ There are three core modules that are loaded by default whenever an application 
 </p>
 
 <a name="request"></a>
-<h2>Request Module</h2>
+<h2 id="1002">Request Module</h2>
 <p>
 Request module represents provides storage and access scheme for user request sent via HTTP. User request data comes from several sources, including URL, post data, session data, cookie data, etc. These data can all be accessed via the request module. By default, PRADO uses <tt>THttpRequest</tt> as request module. The request module can be accessed via the <tt>Request</tt> property of application and controls.
 </p>
 
 <a name="response"></a>
-<h2>Response Module</h2>
+<h2 id="1003">Response Module</h2>
 <p>
 Response module implements the mechanism for sending output to client users. Response module may be configured to control how output are cached on the client side. It may also be used to send cookies back to the client side. By default, PRADO uses <tt>THttpResponse</tt> as response module. The response module can be accessed via the <tt>Response</tt> property of application and controls.
 </p>
 
 <a name="session"></a>
-<h2>Session Module</h2>
+<h2 id="1004">Session Module</h2>
 <p>
 Session module encapsulates the functionalities related with user session handling. Session module is automatically loaded when an application uses session. By default, PRADO uses <tt>THttpSession</tt> as session module, which is a simple wrapper of the session functions provided by PHP. The session module can be accessed via the <tt>Session</tt> property of application and controls.
 </p>
 
 <a name="error"></a>
-<h2>Error Handler Module</h2>
+<h2 id="1005">Error Handler Module</h2>
 <p>
 Error handler module is used to capture and process all error conditions in an application. PRADO uses <tt>TErrorHandler</tt> as error handler module. It captures all PHP warnings, notices and exceptions, and displays in an appropriate form to end-users. The error handler module can be accessed via the <tt>ErrorHandler</tt> property of the application instance.
 </p>
 
 <a name="custom"></a>
-<h2>Custom Modules</h2>
+<h2 id="1006">Custom Modules</h2>
 <p>
 PRADO is released with a few more modules besides the core ones. They include caching modules (<tt>TSqliteCache</tt> and <tt>TMemCache</tt>), user management module (<tt>TUserManager</tt>), authentication and authorization module (<tt>TAuthManager</tt>), etc.
 </p>

@@ -1,5 +1,5 @@
 <com:TContent ID="body" >
-<h1>Architecture</h1>
+<h1 id="601">Architecture</h1>
 
 <p>
 PRADO is primarily a presentational framework, although it is not limited to be so. The framework focuses on making Web programming, which deals most of the time with user interactions, to be component-based and event-driven so that developers can be more productive. The following class tree depicts some of the major classes provided by PRADO,

@@ -1,0 +1,28 @@
+<com:TContent ID="body">
+<div class="quicksearch">
+	<div class="search">
+	<com:SearchBox ID="search"  />
+	</div>
+	<com:TRepeater id="results">
+	<prop:HeaderTemplate>
+	<div class="searchHeader">
+		Found <%# $this->Parent->Data->Count %> results.
+	</div>
+	</prop:HeaderTemplate>
+	<prop:ItemTemplate>
+	<div class="searchItem">		
+		<div class="searchItemLink">
+		<%# $this->ItemIndex + 1 %>.
+		<a href="<%# $this->DataItem->link %>">
+			<%# $this->DataItem->title %>
+		</a>
+		</div>
+		<p class="searchItemBody"><%# $this->Page->HighlightSearch($this->DataItem->text) %></p>
+	</div>
+	</prop:ItemTemplate>
+	<prop:EmptyTemplate>
+		Unable to find "<%= htmlentities($this->Page->search->Text) %>".
+	</prop:EmptyTemplate>
+	</com:TRepeater>
+</div>	
+</com:TContent>

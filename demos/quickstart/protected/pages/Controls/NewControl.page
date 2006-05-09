@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>Writing New Controls</h1>
+<h1 id="5401">Writing New Controls</h1>
 <p>
 Writing new controls is often desired by advanced programmers, because they want to reuse the code that they write for dealing with complex presentation and user interactions.
 </p>
@@ -8,7 +8,7 @@ Writing new controls is often desired by advanced programmers, because they want
 In general, there are two ways of writing new controls: composition of existing controls and extending existing controls. They all require that the new control inherit from <tt>TControl</tt> or its child classes.
 </p>
 
-<h2>Composition of Existing Controls</h2>
+<h2 id="5402">Composition of Existing Controls</h2>
 <p>
 Composition is the easiest way of creating new controls. It mainly involves instantiating existing controls, configuring them and making them the constituent components. The properties of the constituent components are exposed through <a href="?page=Fundamentals.Components">subproperties</a>.
 </p>
@@ -19,7 +19,7 @@ One can compose a new control in two ways. One is to extend <tt>TCompositeContro
 As an example, we show how to create a labeled textbox called <tt>LabeledTextBox</tt> using the above two approaches. A labeled textbox displays a label besides a textbox. We want reuse the PRADO provided <tt>TLabel</tt> and <tt>TTextBox</tt> to accomplish this task.
 </p>
 
-<h3>Composition by Writing Templates</h3>
+<h3 id="5404">Composition by Writing Templates</h3>
 <p>
 We need two files: a control class file named <tt>LabeledTextBox.php</tt> and a control template file named <tt>LabeledTextBox.tpl</tt>. Both must reside under the same directory.
 </p>
@@ -46,7 +46,7 @@ In the above, the method call to <tt>ensureChildControls()</tt> ensures that bot
 </p>
 <com:RunBar PagePath="Controls.Samples.LabeledTextBox1.Home" />
 
-<h3>Composition by Overriding <tt>createChildControls()</tt></h3>
+<h3 id="5405">Composition by Overriding <tt>createChildControls()</tt></h3>
 <p>
 For a composite control as simple as <tt>LabeledTextBox</tt>, it is better to create it by extending <tt>TCompositeControl</tt> and overriding the <tt>createChildControls()</tt> method, because it does not use templates and thus saves template parsing time.
 </p>
@@ -80,7 +80,7 @@ class LabeledTextBox extends TCompositeControl {
 </com:TTextHighlighter>
 <com:RunBar PagePath="Controls.Samples.LabeledTextBox2.Home" />
 
-<h3>Using <tt>LabeledTextBox</tt></h3>
+<h3 id="5406">Using <tt>LabeledTextBox</tt></h3>
 <p>
 To use <tt>LabeledTextBox</tt> control, first we need to include the corresponding class file. Then in a page template, we can write lines like the following,
 </p>
@@ -91,7 +91,7 @@ To use <tt>LabeledTextBox</tt> control, first we need to include the correspondi
 In the above, <tt>Label.Text</tt> is a subproperty of <tt>LabeledTextBox</tt>, which refers to the <tt>Text</tt> property of the <tt>Label</tt> property. For other details of using <tt>LabeledTextBox</tt>, see the above online examples.
 </p>
 
-<h2>Extending Existing Controls</h2>
+<h2 id="5403">Extending Existing Controls</h2>
 <p>
 Extending existing controls is the same as conventional class inheritance. It allows developers to customize existing control classes by overriding their properties, methods, events, or creating new ones.
 </p>
@@ -102,7 +102,7 @@ The difficulty of the task depends on how much an existing class needs to be cus
 In this section, we mainly introduce the base control classes <tt>TControl</tt> and <tt>TWebControl</tt>, showing how they can be customized. We also introduce how to write controls with specific functionalities, such as loading post data, raising post data and databinding with data source.
 </p>
 
-<h3>Extending <tt>TControl</tt></h3>
+<h3 id="5407">Extending <tt>TControl</tt></h3>
 <p>
 <tt>TControl</tt> is the base class of all control classes. Two methods are of the most importance for derived control classes:
 </p>
@@ -125,7 +125,7 @@ Other important properties and methods include:
   <li>Control lifecycles - Life page lifecycles, controls also have lifecycles. Each control undergoes the following lifecycles in order: constructor, <tt>onInit()</tt>, <tt>onLoad()</tt>, <tt>onPreRender()</tt>, <tt>render()</tt>, and <tt>onUnload</tt>. More details can be found in the <a href="?page=Fundamentals.Pages">page</a> section.</li>
 </ul>
 
-<h3>Extending <tt>TWebControl</tt></h3>
+<h3 id="5408">Extending <tt>TWebControl</tt></h3>
 <p>
 <tt>TWebControl</tt> is mainly used as a base class for controls representing HTML elements. It provides a set of properties that are common among HTML elements. It breaks the <tt>TControl::render()</tt> into the following methods that are more suitable for rendering an HTML element:
 </p>
@@ -139,7 +139,7 @@ Other important properties and methods include:
 When rendering the openning HTML tag, <tt>TWebControl</tt> calls <tt>getTagName()</tt> to obtain the tag name. Derived classes may override this method to render different tag names.
 </p>
 
-<h3>Creating Controls with Special Functionalities</h3>
+<h3 id="5409">Creating Controls with Special Functionalities</h3>
 <p>
 If a control wants to respond to client-side events and translate them into server side events (called postback events), such as <tt>TButton</tt>, it has to implement the <tt>IPostBackEventHandler</tt> interface.
 </p>

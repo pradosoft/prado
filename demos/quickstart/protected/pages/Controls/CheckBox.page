@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>TCheckBox</h1>
+<h1 id="2101">TCheckBox</h1>
 <com:DocLink ClassPath="System.Web.UI.WebControls.TCheckBox" />
 
 <p>

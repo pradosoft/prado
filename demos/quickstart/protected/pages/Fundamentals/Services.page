@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>Services</h1>
+<h1 id="1101">Services</h1>
 <p>
 A service is an instance of a class implementing the <tt>IService</tt> interface. Each kind of service processes a specific type of user requests. For example, the page service responds to users' requests for PRADO pages.
 </p>
@@ -14,7 +14,7 @@ http://hostname/index.php?page=Fundamentals.Services
 Developers may implement additional services for their applications. To make a service available, configure it in <a href="?page=Configurations.AppConfig">application configurations</a>.
 </p>
 
-<h2>Page Service</h2>
+<h2 id="1102">Page Service</h2>
 <p>
 PRADO implements <tt>TPageService</tt> to process users' page requests. Pages are stored under a directory specified by the <tt>BasePath</tt> property of the page service. The property defaults to <tt>pages</tt> directory under the application base path. You may change this default by configuring the service in the application configuration.
 </p>

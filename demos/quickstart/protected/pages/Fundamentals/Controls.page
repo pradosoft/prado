@@ -1,10 +1,10 @@
 <com:TContent ID="body" >
-<h1>Controls</h1>
+<h1 id="801">Controls</h1>
 <p>
 A control is an instance of class <tt>TControl</tt> or its subclass. A control is a component defined in addition with user interface. The base class <tt>TControl</tt> defines the parent-child relationship among controls which reflects the containment relationship among user interface elements.
 </p>
 
-<h2>Control Tree</h2>
+<h2 id="802">Control Tree</h2>
 <p>
 Controls are related to each other via parent-child relationship. Each parent control can have one or several child controls. A parent control is in charge of the state transition of its child controls. The rendering result of the child controls are usually used to compose the parent control's presentation. The parent-child relationship brings together controls into a control tree. A page is at the root of the tree, whose presentation is returned to the end-users.
 </p>
@@ -17,12 +17,12 @@ $parent->Controls[]=$child;
 where the property <tt>Controls</tt> refers to the child control collection of the parent.
 </p>
 
-<h2>Control Identification</h2>
+<h2 id="803">Control Identification</h2>
 <p>
 Each control has an <tt>ID</tt> property that can be uniquely identify itself among its sibling controls. In addition, each control has a <tt>UniqueID</tt> and a <tt>ClientID</tt> which can be used to globally identify the control in the tree that the control resides in. <tt>UniqueID</tt> and <tt>ClientID</tt> are very similar. The former is used by the framework to determine the location of the corresponding control in the tree, while the latter is mainly used on the client side as HTML tag IDs. In general, you should not rely on the explicit format of <tt>UniqueID</tt> or <tt>ClientID</tt>.
 </p>
 
-<h2>Naming Containers</h2>
+<h2 id="804">Naming Containers</h2>
 <p>
 Each control has a naming container which is a control creating a unique namespace for differentiating between controls with the same <tt>ID</tt>. For example, a <tt>TRepeater</tt> control creates multiple items each having child controls with the same <tt>ID</tt>s. To differentiate these child controls, each item serves as a naming container. Therefore, a child control may be uniquely identified using its naming container's <tt>ID</tt> together with its own <tt>ID</tt>. As you may already have understood, <tt>UniqueID</tt> and <tt>ClientID</tt> rely on the naming containers.
 </p>
@@ -30,7 +30,7 @@ Each control has a naming container which is a control creating a unique namespa
 A control can serve as a naming container if it implements the <tt>INamingContainer</tt> interface.
 </p>
 
-<h2>ViewState and ControlState</h2>
+<h2 id="805">ViewState and ControlState</h2>
 <p>
 HTTP is a stateless protocol, meaning it does not provide functionality to support continuing interaction between a user and a server. Each request is considered as discrete and independent of each other. A Web application, however, often needs to know what a user has done in previous requests. People thus introduce sessions to help remember such state information.
 </p>

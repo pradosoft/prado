@@ -10,6 +10,10 @@ $mainTexFile = dirname(__FILE__).'/prado3_quick_start.tex';
 //page root location
 $base = realpath(dirname(__FILE__).'/../../demos/quickstart/protected/pages/');
 
+//search index data directory
+$index_dir = realpath(dirname(__FILE__).'/../../demos/quickstart/protected/index/data/');
+
+
 //list page into chapters
 $pages['Getting Started'] = array(
 	'GettingStarted/Introduction.page',
@@ -94,6 +98,11 @@ $pages['Advanced Topics'] = array(
 	'Advanced/Error.page',
 	'Advanced/Performance.page');
 
+$pages['Client-side Scripting'] = array(
+	'Advanced/Scripts.page',
+	'Advanced/Scripts1.page',
+	'Advanced/Scripts2.page',
+	'Advanced/Scripts3.page');
 
 //-------------- END CONFIG ------------------
 
@@ -273,12 +282,51 @@ function get_section_label($section)
 	return '\hypertarget{'.str_replace('/', '.', $section).'}{}';
 }
 
+
+function set_header_id($content, $count)
+{
+	global $header_count;
+	$header_count = $count*100;
+	$content = preg_replace_callback('/<h1>/', "h1", $content);
+	$content = preg_replace_callback('/<h2>/', "h2", $content);
+	$content = preg_replace_callback('/<h3>/', "h3", $content);
+	return $content;
+}
+
+function h1($matches)
+{
+	global $header_count;
+	return "<h1 id=\"".(++$header_count)."\">";
+}
+
+function h2($matches)
+{
+	global $header_count;
+	return "<h2 id=\"".(++$header_count)."\">";
+}
+
+function h3($matches)
+{
+	global $header_count;
+	return "<h3 id=\"".(++$header_count)."\">";
+}
+
+$header_count = 0;
+
 //--------------- BEGIN PROCESSING -------------------
+
+
+//--------------- Indexer -------------------
+
+require_once('create_index.php');
+$indexer = new quickstart_index($index_dir);
 
 // ---------------- Create the Tex files ---------
 $count = 1;
+$j = 1;
 $current_path = '';
 echo "Compiling .page files to Latex files\n\n";
+
 foreach($pages as $chapter => $sections)
 {
 	$content = '\chapter{'.$chapter.'}'.get_chapter_label($chapter);
@@ -289,8 +337,16 @@ foreach($pages as $chapter => $sections)
 		echo "    Adding $section\n";
 		$page = $base.'/'.$section;
 		$current_path = $page;
+		
+		//add id to <h1>, <h2>, <3>
+		$content = set_header_id(file_get_contents($page),$j++);
+		file_put_contents($page, $content);
+		
 		$content .= get_section_label($section);
-		$content .= parse_html($page,file_get_contents($page));
+		$file_content = file_get_contents($page);
+		$tex = parse_html($page,$file_content);
+		$content .= $tex;
+		$indexer->add($file_content,$section, filemtime($page));
 	}
 
 	//var_dump($content);
@@ -299,6 +355,7 @@ foreach($pages as $chapter => $sections)
 	echo "\n";
 }
 
+$indexer->commit();
 
 if($argc <= 1 && $count > 1)
 {

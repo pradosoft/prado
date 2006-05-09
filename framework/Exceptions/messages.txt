@@ -103,7 +103,7 @@ pageserviceconf_page_invalid			= <page> element must have an "id" attribute in p
 
 template_closingtag_unexpected			= Unexpected closing tag '{0}' is found.
 template_closingtag_expected			= Closing tag '{0}' is expected.
-template_directive_nonunique			= Directive '<%@ ... %>' must appear at most once in a template.
+template_directive_nonunique			= Directive '<%@ ... %>' must appear at the beginning of the template and can appear at most once.
 template_comments_forbidden				= Template comments are not allowed within property tags.
 template_matching_unexpected			= Unexpected matching.
 template_property_unknown				= {0} has no property called '{1}'.

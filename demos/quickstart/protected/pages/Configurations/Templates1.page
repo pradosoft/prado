@@ -1,5 +1,5 @@
 <com:TContent ID="body" >
-<h1>Templates: Part I</h1>
+<h1 id="1501">Templates: Part I</h1>
 <p>
 Templates are used to specify the presentational layout of controls. A template can contain static text, components, or controls that contribute to the ultimate presentation of the associated control. By default, an instance of <tt>TTemplateControl</tt> or its subclass may automatically load and instantiate a template from a file whose name is the same as the control class name. For page templates, the file name suffix must be <tt>.page</tt>; for other regular template controls, the suffix is <tt>.tpl</tt>.
 </p>
@@ -7,7 +7,7 @@ Templates are used to specify the presentational layout of controls. A template 
 </p>
 
 <a name="ct"></a>
-<h2>Component Tags</h2>
+<h2 id="1502">Component Tags</h2>
 <p>
 A component tag specifies a component as part of the body content of the template control. If the component is a control, it usually will become a child or grand child of the template control, and its rendering result will be inserted at the place where it is appearing in the template.
 </p>
@@ -43,7 +43,7 @@ PropertyValue
 It is equivalent to <tt>...PropertyName="PropertyValue"...</tt> in every aspect. Property initialization tags must be directly enclosed between the corresponding opening and closing component tag.
 </p>
 
-<h3>Component IDs</h3>
+<h3 id="1505">Component IDs</h3>
 <p>
 When specified in templates, component <tt>ID</tt> property has special meaning in addition to its normal property definition. A component tag specified with an ID value in template will register the corresponding component to the template owner control. The component can thus be directly accessed from the template control with its ID value. For example, in <tt>Home</tt> page's template, the following component tag
 <com:TTextHighlighter Language="prado" CssClass="source">
@@ -53,7 +53,7 @@ makes it possible to get the textbox object in code using <tt>$page->TextBox</tt
 </p>
 
 <a name="tct"></a>
-<h2>Template Control Tags</h2>
+<h2 id="1503">Template Control Tags</h2>
 A template control tag is used to configure the initial property values of the control owning the template. Its format is as follows,
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;%@ PropertyName="PropertyValue" ... %&gt;
@@ -68,7 +68,7 @@ Template control tag is optional in a template. Each template can contain at mos
 </p>
 
 <a name="cot"></a>
-<h2>Comment Tags</h2>
+<h2 id="1504">Comment Tags</h2>
 <p>
 Comment tags are used to put comments in the template or the ultimate rendering result. There are two types of comment tags. One is like that in HTML and will be displayed to the end-users. The other only appear in a template and will be stripped out when the template is instantiated and displayed to the end-users. The format of these two comment tags is as follows,
 </p>

@@ -332,3 +332,36 @@ dd
 	margin-bottom: 0.75em;
 }
 
+.quicksearch .search .searchBox
+{
+	width: 25em;
+}
+
+.quicksearch .search
+{
+	text-align: center;
+	padding: 2em;
+}
+
+.searchItem
+{
+	margin-top: 20px;
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+.searchItemBody
+{
+	margin-top: 0em;
+	font-size: 0.9em;
+}
+
+.searchItemLink
+{
+	font-size: 1.05em;
+}
+
+.searchterm
+{
+	font-weight: bold;
+}

@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>TLabel</h1>
+<h1 id="3501">TLabel</h1>
 <com:DocLink ClassPath="System.Web.UI.WebControls.TLabel" />
 
 <p>

@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>TPlaceHolder</h1>
+<h1 id="4001">TPlaceHolder</h1>
 <com:DocLink ClassPath="System.Web.UI.WebControls.TPlaceHolder" />
 
 <p>

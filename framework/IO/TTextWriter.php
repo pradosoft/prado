@@ -19,7 +19,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
- * @package System
+ * @package System.IO
  * @since 3.0
  */
 class TTextWriter extends TComponent implements ITextWriter
