@@ -33,12 +33,12 @@ $requirements = array(
 	array(true,'version_compare(PHP_VERSION,"5.0.4",">=")','PHP version check','PHP 5.0.4 or higher required'),
 	array(false,'version_compare(PHP_VERSION,"5.1.0",">=")','PHP version check','PHP 5.1.0 or higher preferred'),
 	array(true,'class_exists("DOMDocument",false)','DOM extension check','DOM extension required'),
-	array(false,'function_exists("iconv")','ICONV function check','ICONV extension optional'),
-	array(false,'extension_loaded("zlib")','Zlib check','Zlib extension optional'),
-	array(false,'extension_loaded("sqlite")','SQLite check','SQLite extension optional'),
-	array(false,'extension_loaded("memcache")','Memcache check','Memcache extension optional'),
-	array(false,'extension_loaded("apc")','APC cache check','APC extension optional'),
-	array(false,'extension_loaded("mcrypt")','Mcrypt check','Mcrypt extension optional'),
+	array(false,'function_exists("iconv")','ICONV extension check','ICONV extension optional'),
+	array(false,'extension_loaded("zlib")','Zlib extension check','Zlib extension optional'),
+	array(false,'extension_loaded("sqlite")','SQLite extension check','SQLite extension optional'),
+	array(false,'extension_loaded("memcache")','Memcache extension check','Memcache extension optional'),
+	array(false,'extension_loaded("apc")','APC extension check','APC extension optional'),
+	array(false,'extension_loaded("mcrypt")','Mcrypt extension check','Mcrypt extension optional'),
 );
 
 $results = "<table class=\"result\">\n";

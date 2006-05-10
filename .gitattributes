@@ -892,8 +892,10 @@ framework/interfaces.php -text
 framework/prado.php -text
 /index.html -text
 requirements/index.php -text
+requirements/messages-bg.txt -text
 requirements/messages-zh.txt -text
 requirements/messages.txt -text
+requirements/template-bg.html -text
 requirements/template-zh.html -text
 requirements/template.html -text
 tests/FunctionalTests/PradoTester.php -text
