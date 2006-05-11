@@ -369,7 +369,7 @@ class TView extends TControl
 
 	/**
 	 * @param boolean
-	 * @throw TInvalidOperationException whenever this method is invoked.
+	 * @throws TInvalidOperationException whenever this method is invoked.
 	 */
 	public function setVisible($value)
 	{

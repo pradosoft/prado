@@ -365,3 +365,21 @@ dd
 {
 	font-weight: bold;
 }
+
+.searchAPIItem
+{
+	margin-top: 5px;
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+.searchHeader, .emptyResult
+{
+	margin-top: 30px;
+}
+
+.empty_search_result
+{
+	text-align: center;
+	margin: 30px;
+}

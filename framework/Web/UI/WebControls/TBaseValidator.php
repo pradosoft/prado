@@ -414,7 +414,8 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * @return TControl control to be validated. Null if no control is found.
-	 * @throw TConfigurationException if {@link getControlToValidate ControlToValidate} is empty or does not point to a valid control
+	 * @throws TConfigurationException if {@link getControlToValidate
+	 * ControlToValidate} is empty or does not point to a valid control
 	 */
 	protected function getValidationTarget()
 	{

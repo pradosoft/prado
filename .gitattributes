@@ -4,6 +4,9 @@
 /UPGRADE -text
 /build.xml -text
 buildscripts/.htaccess -text
+buildscripts/index/api_index.php -text
+buildscripts/index/build.php -text
+buildscripts/index/quickstart_index.php -text
 buildscripts/jsbuilder/JavaScript[!!-~]Documentation[!!-~]Tool.html -text
 buildscripts/jsbuilder/build.php -text
 buildscripts/jsbuilder/jsmin.php -text
@@ -19,7 +22,7 @@ buildscripts/phing/tasks/ZendCodeAnalyzerTask.php -text
 buildscripts/phpbuilder/build.php -text
 buildscripts/setup.php -text
 buildscripts/texbuilder/build.php -text
-buildscripts/texbuilder/create_index.php -text
+buildscripts/texbuilder/pages.php -text
 buildscripts/texbuilder/prado3_quick_start.tex -text
 demos/composer/index.php -text
 demos/composer/index2.php -text
@@ -112,9 +115,12 @@ demos/quickstart/protected/index/Zend/Search/Lucene/Storage/File.php -text
 demos/quickstart/protected/index/Zend/Search/Lucene/Storage/File/Filesystem.php -text
 demos/quickstart/protected/index/Zend/Search/TODO.txt -text
 demos/quickstart/protected/index/ZendSearch.php -text
-demos/quickstart/protected/index/data/_0.cfs -text
-demos/quickstart/protected/index/data/deletable -text
-demos/quickstart/protected/index/data/segments -text
+demos/quickstart/protected/index/api/_0.cfs -text
+demos/quickstart/protected/index/api/deletable -text
+demos/quickstart/protected/index/api/segments -text
+demos/quickstart/protected/index/quickstart/_0.cfs -text
+demos/quickstart/protected/index/quickstart/deletable -text
+demos/quickstart/protected/index/quickstart/segments -text
 demos/quickstart/protected/pages/Advanced/Assets.page -text
 demos/quickstart/protected/pages/Advanced/Auth.page -text
 demos/quickstart/protected/pages/Advanced/Error.page -text

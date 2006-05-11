@@ -148,7 +148,8 @@ class TAssetManager extends TModule
 	 * @param boolean If true, file modification time will be checked even if the application
 	 * is in performance mode.
 	 * @return string an absolute URL to the published directory
-	 * @throw TInvalidDataValueException if the file path to be published is invalid
+	 * @throws TInvalidDataValueException if the file path to be published is
+	 * invalid
 	 */
 	public function publishFilePath($path,$checkTimestamp=false)
 	{

@@ -46,7 +46,7 @@ class TDataFieldAccessor
 	 * @param mixed data containing the field value, can be an array, TMap, TList or object.
 	 * @param mixed field value
 	 * @return mixed value at the specified field
-	 * @throw TInvalidDataValueException if field or data is invalid
+	 * @throws TInvalidDataValueException if field or data is invalid
 	 */
 	public static function getDataFieldValue($data,$field)
 	{

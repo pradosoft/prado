@@ -1,21 +1,40 @@
 <?php
 
-// Create quickstart search index
-$zend_path = realpath(dirname(__FILE__).'/../../demos/quickstart/protected/index');
-set_include_path(get_include_path().';'.$zend_path);
-require_once ('Zend/Search/Lucene.php');
-
-
 class quickstart_index
 {
 	private $_index;
 	private $_dir;
 	
-	public function __construct($index_file)
+	private $_base;
+	private $_source;
+	
+	public function __construct($index_file, $base, $source)
 	{
 		$this->_index = new Zend_Search_Lucene($index_file, true);
 		$this->_dir = $index_file;
+		$this->_base = $base;
+		$this->_source = $source;
+	}
+	
+	public function create_index()
+	{
 		echo "Building search index...\n";
+		$pages = include($this->_source);
+		$count = 0;
+		foreach($pages as $chapter => $sections)
+		{
+			foreach($sections as $section)
+			{
+				echo "    Adding $section\n";
+				$page = $this->_base.'/'.$section;
+				$file_content = file_get_contents($page);
+				$this->add($file_content,$section, filemtime($page));
+				$count++;
+			}		
+		}
+		
+		$this->_index->commit();
+		echo "\n {$count} files indexed.\n";		
 	}
 	
 	public function add($content, $section, $mtime)
