@@ -5,7 +5,7 @@ class LabeledTextBox extends TCompositeControl
 	private $_label;
 	private $_textbox;
 
-	protected function createChildControls()
+	public function createChildControls()
 	{
 		$this->_label=new TLabel;
 		$this->_label->setID('Label');
