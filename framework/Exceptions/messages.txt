@@ -298,3 +298,8 @@ queue_data_not_iterable					= TQueue can only fetch data from an array or a trav
 queue_empty								= TQueue is empty.
 
 callback_not_support_no_priority_state_update	= Callback request does not support unprioritized pagestate update.
+
+xmltransform_xslextension_required = TXmlTransform require the PHP's XSL extension
+xmltransform_transformpath_invalid = TransformPath '{0}' is invalid.
+xmltransform_documentpath_invalid = DocumentPath '{0}' is invalid.
+xmltransform_transform_required = Either TransformContent or TransformPath property must be set.
