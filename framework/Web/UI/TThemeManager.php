@@ -301,6 +301,14 @@ class TTheme extends TApplicationComponent implements ITheme
 	}
 
 	/**
+	 * @return string the URL to the theme folder (without ending slash)
+	 */
+	public function getBaseUrl()
+	{
+		return $this->_themeUrl;
+	}
+
+	/**
 	 * Applies the theme to a particular control.
 	 * The control's class name and SkinID value will be used to
 	 * identify which skin to be applied. If the control's SkinID is empty,
