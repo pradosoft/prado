@@ -26,10 +26,13 @@ class ZendSearch extends TModule
 	
 	protected function importZendNamespace()
 	{
-		$zendBase = !is_null($this->_ZF) ? $this->_ZF.'.*' : 'Application.index.*';
-		$path = !is_null($this->_ZF) ? $this->_ZF.'.Zend.*' : 'Application.index.Zend.*';
-		Prado::using($zendBase);
-		Prado::setPathOfAlias('Zend', Prado::getPathOfNamespace($path));
+		if(is_null(Prado::getPathOfAlias('Zend')))
+		{
+			$zendBase = !is_null($this->_ZF) ? $this->_ZF.'.*' : 'Application.index.*';
+			$path = !is_null($this->_ZF) ? $this->_ZF.'.Zend.*' : 'Application.index.Zend.*';
+			Prado::using($zendBase);
+			Prado::setPathOfAlias('Zend', Prado::getPathOfNamespace($path));
+		}
 	}
 	
 	protected function getZendSearch()

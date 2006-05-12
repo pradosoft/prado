@@ -161,7 +161,7 @@ class CultureInfo
 	 * Initializes a new instance of the CultureInfo class based on the 
 	 * culture specified by name. E.g. <code>new CultureInfo('en_AU');</cdoe>
 	 * The culture indentifier must be of the form 
-	 * "<language>_(country/region/variant)".
+	 * "language_(country/region/variant)".
 	 * @param string a culture name, e.g. "en_AU".
 	 * @return return new CultureInfo.
 	 */

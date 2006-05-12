@@ -111,7 +111,7 @@ class TAssetManager extends TModule
 			throw new TInvalidOperationException('assetmanager_basepath_unchangeable');
 		else
 		{
-			$this->_basePath=Prado::getPathOfAlias($value);
+			$this->_basePath=Prado::getPathOfNamespace($value);
 			if($this->_basePath===null || !is_dir($this->_basePath) || !is_writable($this->_basePath))
 				throw new TInvalidDataValueException('assetmanage_basepath_invalid',$value);
 		}
@@ -148,7 +148,8 @@ class TAssetManager extends TModule
 	 * @param boolean If true, file modification time will be checked even if the application
 	 * is in performance mode.
 	 * @return string an absolute URL to the published directory
-	 * @throw TInvalidDataValueException if the file path to be published is invalid
+	 * @throws TInvalidDataValueException if the file path to be published is
+	 * invalid
 	 */
 	public function publishFilePath($path,$checkTimestamp=false)
 	{

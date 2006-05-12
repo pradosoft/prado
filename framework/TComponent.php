@@ -397,7 +397,7 @@ class TComponent
 	 * Evaluates a list of PHP statements.
 	 * @param string PHP statements
 	 * @return string content echoed or printed by the PHP statements
-	 * @throw TInvalidOperationException if the statements are invalid
+	 * @throws TInvalidOperationException if the statements are invalid
 	 */
 	public function evaluateStatements($statements)
 	{

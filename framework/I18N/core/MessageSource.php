@@ -121,7 +121,7 @@ abstract class MessageSource implements IMessageSource
 	 * @param string the location of the resource.
 	 * @param string the filename of the custom message source.
 	 * @return MessageSource a new message source of the specified type. 
-	 * @throw InvalidMessageSourceTypeException
+	 * @throws InvalidMessageSourceTypeException
 	 */
 	static function &factory($type, $source='.', $filename='')
 	{

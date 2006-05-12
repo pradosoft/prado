@@ -9,9 +9,17 @@ class Search extends TPage
 	{
 		if(!$this->IsPostBack && strlen($text = $this->search->getText()) > 0)
 		{
-			$search = $this->getApplication()->getModule("search");
-			$this->results->setDataSource($search->find($text));
-			$this->results->dataBind();
+			$quickstart = $this->getApplication()->getModule("quickstart_search");
+			$hits_1 =  $quickstart->find($text);
+			$this->quickstart_results->setDataSource($hits_1);
+			$this->quickstart_results->dataBind();
+
+			$api = $this->getApplication()->getModule("api_search");
+			$hits_2 = $api->find($text);
+			$this->api_results->setDataSource($hits_2);
+			$this->api_results->dataBind();
+			
+			$this->emptyResult->setVisible(count($hits_1)+count($hits_2) == 0);
 		}
 	}
 	

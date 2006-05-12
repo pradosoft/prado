@@ -129,7 +129,7 @@ class THttpResponse extends TModule implements ITextWriter
 	}
 
 	/**
-	 * @string content type, default is text/html
+	 * @return string content type, default is text/html
 	 */
 	public function setContentType($type)
 	{

@@ -161,7 +161,7 @@ templatecontrol_mastercontrol_invalid	= Master control must be of type TTemplate
 templatecontrol_contentid_duplicated	= TContent ID '{0}' is duplicated.
 templatecontrol_placeholderid_duplicated= TContentPlaceHolder ID '{0}' is duplicated.
 templatecontrol_directive_invalid		= {0}.{1} can only accept a static text string through a template directive.
-templatecontrol_placeholder_inexistent	= TContent '{0}' does not have a matching TPlaceHolder.
+templatecontrol_placeholder_inexistent	= TContent '{0}' does not have a matching TContentPlaceHolder.
 
 page_form_duplicated					= A page can contain at most one TForm. Use regular HTML form tags for the rest forms.
 page_isvalid_unknown					= TPage.IsValid has not been evaluated yet.
