@@ -171,7 +171,7 @@ function getPreferredLanguage()
  */
 function getPradoVersion()
 {
-	$coreFile=dirname(__FILE__).'/../framework/core.php';
+	$coreFile=dirname(__FILE__).'/../framework/PradoBase.php';
 	if(is_file($coreFile))
 	{
 		$contents=file_get_contents($coreFile);
