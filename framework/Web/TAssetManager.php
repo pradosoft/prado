@@ -111,7 +111,7 @@ class TAssetManager extends TModule
 			throw new TInvalidOperationException('assetmanager_basepath_unchangeable');
 		else
 		{
-			$this->_basePath=Prado::getPathOfAlias($value);
+			$this->_basePath=Prado::getPathOfNamespace($value);
 			if($this->_basePath===null || !is_dir($this->_basePath) || !is_writable($this->_basePath))
 				throw new TInvalidDataValueException('assetmanage_basepath_invalid',$value);
 		}
