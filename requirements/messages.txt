@@ -18,3 +18,5 @@ ICONV extension check				= ICONV extension check
 ICONV extension optional			= ICONV extension is optional. If it is absent, some internationalization components may not work properly.
 Mcrypt extension check				= Mcrypt extension check
 Mcrypt extension optional			= Mcrypt extension is optional. If it is absent, sensitive data, such as viewstate, cannot be encrypted.
+XSL extension check					= XSL extension check
+XSL extension optional				= XSL extension is optional. If it is absent, you will not be able to use TXmlTransform.

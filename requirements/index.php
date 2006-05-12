@@ -39,6 +39,7 @@ $requirements = array(
 	array(false,'extension_loaded("memcache")','Memcache extension check','Memcache extension optional'),
 	array(false,'extension_loaded("apc")','APC extension check','APC extension optional'),
 	array(false,'extension_loaded("mcrypt")','Mcrypt extension check','Mcrypt extension optional'),
+	array(false,'extension_loaded("xsl")','XSL extension check','XSL extension optional'),
 );
 
 $results = "<table class=\"result\">\n";
@@ -171,7 +172,7 @@ function getPreferredLanguage()
  */
 function getPradoVersion()
 {
-	$coreFile=dirname(__FILE__).'/../framework/core.php';
+	$coreFile=dirname(__FILE__).'/../framework/PradoBase.php';
 	if(is_file($coreFile))
 	{
 		$contents=file_get_contents($coreFile);

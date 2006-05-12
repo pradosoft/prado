@@ -18,3 +18,5 @@ ICONV extension check = ICONV模块检查
 ICONV extension optional = ICONV模块是可选的。如果它不存在，某些国际化控件将无法正常工作。
 Mcrypt extension check = Mcrypt模块检查
 Mcrypt extension optional = Mcrypt模块是可选的。如果它不存在，某些敏感数据，例如viewstate，将无法被加密。
+XSL extension check = XSL模块检查
+XSL extension optional = XSL模块是可选的。如果它不存在，您将无法使用TXmlTransform。
