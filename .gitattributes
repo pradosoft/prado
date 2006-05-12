@@ -1536,4 +1536,7 @@ tests/unit/TComponentTest.php -text
 tests/unit/Web/UI/WebControls/TDropDownListTest.php -text
 tests/unit/Web/UI/WebControls/TLabelTest.php -text
 tests/unit/Web/UI/WebControls/TRequiredFieldValidatorTest.php -text
+tests/unit/Web/UI/WebControls/TXmlTransformTest.php -text
+tests/unit/Web/UI/WebControls/data/hello.xml -text
+tests/unit/Web/UI/WebControls/data/hello.xsl -text
 tests/unit/phpunit2.php -text
