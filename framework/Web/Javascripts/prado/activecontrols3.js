@@ -38,6 +38,7 @@ Prado.WebUI.TAutoComplete = Class.extend(Autocompleter.Base,
   	onComplete : function(request, boundary) 
   	{
   		result = Prado.Element.extractContent(request.responseText, boundary);
-		this.updateChoices(result);
+  		if(typeof(result) == "string" && result.length > 0)
+			this.updateChoices(result);
 	}	
 });

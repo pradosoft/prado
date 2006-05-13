@@ -994,6 +994,7 @@ framework/Web/UI/ActiveControls/TAutoComplete.php -text
 framework/Web/UI/ActiveControls/TCallback.php -text
 framework/Web/UI/ActiveControls/TCallbackClientScript.php -text
 framework/Web/UI/ActiveControls/TCallbackClientSideOptions.php -text
+framework/Web/UI/ActiveControls/TCallbackOptions.php -text
 framework/Web/UI/ActiveControls/TCallbackResponse.php -text
 framework/Web/UI/TClientScriptManager.php -text
 framework/Web/UI/TCompositeControl.php -text

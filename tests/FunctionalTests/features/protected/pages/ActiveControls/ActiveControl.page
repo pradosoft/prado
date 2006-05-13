@@ -1,7 +1,12 @@
 <com:TContent ID="Content">
 	<h1>TCallback Demo</h1>
+	<com:TCallbackOptions
+		ID="options1"
+		ClientSide.OnSuccess="alert('ok')"
+		ClientSide.EnablePageStateUpdate="false"  />
+
 	<com:TCallback id="control1" 
-		ClientSide.EnablePageStateUpdate="false"
+		CallbackOptions="options1"
 		OnCallback="slowResponse" />
 	
 	<com:TActiveLabel id="label1" Text="Name:" AllowCallbackUpdate="false" />

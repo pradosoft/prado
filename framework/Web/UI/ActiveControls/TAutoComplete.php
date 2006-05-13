@@ -59,10 +59,41 @@ class TAutoComplete extends TActiveTextBox implements ICallbackEventHandler, INa
 	 */
 	protected function createClientSideOptions()
 	{
+		if(($id=$this->getCallbackOptions())!=='' && ($control=$this->findControl($id))!==null)
+		{
+			if($control instanceof TCallbackOptions)
+			{
+				$options = clone($control->getClientSide());
+				$options->setEnablePageStateUpdate(false);
+				return $options;
+			}
+		}
 		$options = new TAutoCompleteClientSideOptions;
 		$options->setEnablePageStateUpdate(false);
 		return $options;
 	}
+	
+	/**
+	 * Sets the ID of a TCallbackOptions component to duplicate the client-side
+	 * options for this control. The {@link getClientSide ClientSide}
+	 * subproperties has precendent over the CallbackOptions property.
+	 * @param string ID of a TCallbackOptions control from which ClientSide
+	 * options are cloned.
+	 */
+	public function setCallbackOptions($value)
+	{
+		$this->setViewState('CallbackOptions', $value,'');		
+	}
+	
+	/**
+	 * @return string ID of a TCallbackOptions control from which ClientSide
+	 * options are cloned.
+	 */
+	public function getCallbackOptions()
+	{
+		return $this->getViewState('CallbackOptions','');
+	}
+
 	
 	public function renderEndTag($writer)
 	{
@@ -91,9 +122,11 @@ class TAutoComplete extends TActiveTextBox implements ICallbackEventHandler, INa
 	/**
 	 * @return array list of callback options.
 	 */
-	protected function getCallbackOptions()
+	protected function getCallbackClientSideOptions()
 	{
 		$options = $this->getClientSide()->getOptions()->toArray();
+		if(isset($options['tokens']))
+			$options['tokens'] = TJavascript::encode($options['tokens'],false);
 		if($this->getAutoPostBack())
 			$options = array_merge($options,$this->getPostBackOptions()); 
 		$options['ResultPanel'] = $this->getResultPanel()->getClientID();
@@ -132,7 +165,7 @@ class TAutoCompleteClientSideOptions extends TCallbackClientSideOptions
 	
 	public function setSeparator($value)
 	{
-		$this->setOption('tokens', $chars = preg_split('//', $value, -1, PREG_SPLIT_NO_EMPTY));
+		$this->setOption('tokens', preg_split('//', $value, -1, PREG_SPLIT_NO_EMPTY));
 	}
 	
 	public function getFrequency()

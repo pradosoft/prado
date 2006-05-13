@@ -101,7 +101,33 @@ class TActiveButton extends TButton implements ICallbackEventHandler
 	 */
 	protected function createClientSideOptions()
 	{
-		return new TCallbackClientSideOptions;
+		if(($id=$this->getCallbackOptions())!=='' && ($control=$this->findControl($id))!==null)
+		{
+			if($control instanceof TCallbackOptions)
+				return clone($control->getClientSide());
+		}
+		return new TCallbackClientSideOptions;		
+	}
+	
+	/**
+	 * Sets the ID of a TCallbackOptions component to duplicate the client-side
+	 * options for this control. The {@link getClientSide ClientSide}
+	 * subproperties has precendent over the CallbackOptions property.
+	 * @param string ID of a TCallbackOptions control from which ClientSide
+	 * options are cloned.
+	 */
+	public function setCallbackOptions($value)
+	{
+		$this->setViewState('CallbackOptions', $value,'');		
+	}
+	
+	/**
+	 * @return string ID of a TCallbackOptions control from which ClientSide
+	 * options are cloned.
+	 */
+	public function getCallbackOptions()
+	{
+		return $this->getViewState('CallbackOptions','');
 	}
 	
 	/**
@@ -117,7 +143,7 @@ class TActiveButton extends TButton implements ICallbackEventHandler
 	/**
 	 * @return array list of callback options.
 	 */
-	protected function getCallbackOptions()
+	protected function getCallbackClientSideOptions()
 	{
 		return array_merge($this->getPostBackOptions(), 
 			$this->getClientSide()->getOptions()->toArray());
@@ -134,7 +160,7 @@ class TActiveButton extends TButton implements ICallbackEventHandler
 	{
 		$client = $this->getPage()->getClientScript(); 
 		$object = is_null($control) ? $this : $control;
-		return $client->getCallbackReference($object, $this->getPostBackOptions());
+		return $client->getCallbackReference($object, $this->getCallbackClientSideOptions());
 	}
 } 
 

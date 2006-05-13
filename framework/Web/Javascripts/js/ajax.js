@@ -192,4 +192,5 @@ this.editField=this.cached_selectTag;if(this.options.loadTextURL)this.loadExtern
 {new Prado.CallbackRequest(options.EventTarget,options);Event.stop(event);}});Prado.WebUI.TActiveButton=Class.extend(Prado.WebUI.CallbackControl);Prado.WebUI.TAutoComplete=Class.extend(Autocompleter.Base,{initialize:function(options)
 {this.options=options;this.baseInitialize(options.ID,options.ResultPanel,options);Object.extend(this.options,{onSuccess:this.onComplete.bind(this)});},getUpdatedChoices:function()
 {Prado.Callback(this.options.EventTarget,this.getToken(),null,this.options);},onComplete:function(request,boundary)
-{result=Prado.Element.extractContent(request.responseText,boundary);this.updateChoices(result);}});
+{result=Prado.Element.extractContent(request.responseText,boundary);if(typeof(result)=="string"&&result.length>0)
+this.updateChoices(result);}});

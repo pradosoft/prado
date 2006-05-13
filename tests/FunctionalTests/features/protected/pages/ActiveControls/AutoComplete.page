@@ -2,15 +2,33 @@
 	<style>
 .autocomplete
 {
-  border:1px solid black;
+  border:1px solid #919EA9;
   background-color:white;
+}
+.autocomplete ul, .autocomplete li
+{
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-size: 12px;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	color: #333;
+}
+
+.autocomplete li
+{
+	padding: 4px;
+	border-top: 1px solid #ccc;
 }
 .autocomplete .selected
 {
-  background-color: #888;
+  background-color: #ffc;
 }
 	</style>
-	<com:TAutoComplete OnCallback="suggestEmails" ResultPanel.CssClass="autocomplete" />
+	<com:TAutoComplete Style="width: 20em"
+		OnCallback="suggestCountries"
+		ClientSide.Separator=", " 
+		ResultPanel.CssClass="autocomplete" />
 	
 <p><br /></p>
 <p><br /></p>
