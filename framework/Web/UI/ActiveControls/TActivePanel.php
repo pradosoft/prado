@@ -15,6 +15,11 @@ class TActivePanel extends TPanel
 		parent::__construct();
 		$this->setAdapter(new TActiveControlAdapter($this));
 	}
+	
+	public function getActiveControl()
+	{
+		return $this->getAdapter()->getActiveControl();
+	}
 } 
 
 ?>

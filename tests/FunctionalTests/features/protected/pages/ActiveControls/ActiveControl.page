@@ -1,15 +1,10 @@
 <com:TContent ID="Content">
 	<h1>TCallback Demo</h1>
-	<com:TCallbackOptions
-		ID="options1"
-		ClientSide.OnSuccess="alert('ok')"
-		ClientSide.EnablePageStateUpdate="false"  />
 
 	<com:TCallback id="control1" 
-		CallbackOptions="options1"
 		OnCallback="slowResponse" />
 	
-	<com:TActiveLabel id="label1" Text="Name:" AllowCallbackUpdate="false" />
+	<com:TActiveLabel id="label1" Text="Name:" />
 	<com:TTextBox id="text1" />
 	
 	<com:TRequiredFieldValidator 
@@ -18,7 +13,7 @@
 	
 	<com:TActiveLabel id="label2" />
 
-	<com:TActivePanel id="panel1" >
+	<com:TActivePanel id="panel1" ActiveControl.EnableUpdate="false" >
 		<com:TPanel id="panel2" Visible="false">
 		<com:TCheckBoxList>
 			<com:TListItem Text="One" />
@@ -35,7 +30,7 @@
 	<script>
 		Event.observe("<%= $this->button1->ClientID %>", "click", function(event)
 		{
-			<%= $this->control1->CallbackReference %>	
+			<%= $this->control1->ActiveControl->Javascript %>	
 		
 			Event.stop(event);
 		});

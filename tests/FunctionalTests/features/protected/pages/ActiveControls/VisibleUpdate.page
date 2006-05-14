@@ -1,0 +1,9 @@
+<com:TContent ID="Content">
+	<h1>TCallback Demo</h1>
+
+	<com:TActiveButton id="button1" Text="Button 1" OnClick="click1" />
+	<com:TActiveButton id="button2" Text="Button 2" OnClick="click2" />
+
+	<com:TActiveLabel id="label1" />
+	
+</com:TContent>

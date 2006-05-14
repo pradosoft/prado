@@ -27,7 +27,7 @@
 	</style>
 	<com:TAutoComplete Style="width: 20em"
 		OnCallback="suggestCountries"
-		ClientSide.Separator=", " 
+		Separator=", " 
 		ResultPanel.CssClass="autocomplete" />
 	
 <p><br /></p>

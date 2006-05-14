@@ -317,9 +317,9 @@ interface ICallbackEventHandler
 	public function raiseCallbackEvent($eventArgument);
 	
 	/**
-	 * @return TCallbackClientSideOptions client-side options.
+	 * @return TBaseActiveControl Active control properties.
 	 */
-	public function getClientSide(); 
+	public function getActiveControl(); 
 }
 
 ?>

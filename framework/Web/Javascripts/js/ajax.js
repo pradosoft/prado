@@ -34,13 +34,18 @@ this.transport.onreadystatechange=Prototype.emptyFunction;},getHeaderData:functi
 catch(e)
 {if(typeof(json)=="string")
 {Logger.info("using json")
-return Prado.CallbackRequest.decode(json);}}}});Prado.CallbackRequest=Class.create();Object.extend(Prado.CallbackRequest,{FIELD_CALLBACK_TARGET:'PRADO_CALLBACK_TARGET',FIELD_CALLBACK_PARAMETER:'PRADO_CALLBACK_PARAMETER',FIELD_CALLBACK_PAGESTATE:'PRADO_PAGESTATE',PostDataLoaders:[],DATA_HEADER:'X-PRADO-DATA',ACTION_HEADER:'X-PRADO-ACTIONS',ERROR_HEADER:'X-PRADO-ERROR',PAGESTATE_HEADER:'X-PRADO-PAGESTATE',requestInProgress:null,dispatchActions:function(transport,actions)
+return Prado.CallbackRequest.decode(json);}}}});Prado.CallbackRequest=Class.create();Object.extend(Prado.CallbackRequest,{FIELD_CALLBACK_TARGET:'PRADO_CALLBACK_TARGET',FIELD_CALLBACK_PARAMETER:'PRADO_CALLBACK_PARAMETER',FIELD_CALLBACK_PAGESTATE:'PRADO_PAGESTATE',FIELD_POSTBACK_TARGET:'PRADO_POSTBACK_TARGET',FIELD_POSTBACK_PARAMETER:'PRADO_POSTBACK_PARAMETER',PostDataLoaders:[],DATA_HEADER:'X-PRADO-DATA',ACTION_HEADER:'X-PRADO-ACTIONS',ERROR_HEADER:'X-PRADO-ERROR',PAGESTATE_HEADER:'X-PRADO-PAGESTATE',requestInProgress:null,dispatchActions:function(transport,actions)
 {if(actions&&actions.length>0)
 actions.each(this.__run.bind(this,transport));},__run:function(transport,command)
 {for(var method in command)
 {if(command[method][0])
 {var id=command[method][0];if($(id)||id.indexOf("[]")>-1)
-method.toFunction().apply(this,command[method].concat(transport));else if(typeof(Logger)!="undefined")
+{try
+{method.toFunction().apply(this,command[method].concat(transport));}
+catch(e)
+{if(typeof(Logger)!="undefined")
+Prado.CallbackRequest.Exception.onException(null,e);}}
+else if(typeof(Logger)!="undefined")
 {Logger.error("Error in executing callback response:","Unable to find HTML element with ID '"+id+"' before executing "+method+"().");}}}},Exception:{"on500":function(request,transport,data)
 {var e=request.getHeaderData(Prado.CallbackRequest.ERROR_HEADER);Logger.error("Callback Server Error "+e.code,this.formatException(e));},'on200':function(request,transport,data)
 {if(transport.status<500)
@@ -48,10 +53,9 @@ method.toFunction().apply(this,command[method].concat(transport));else if(typeof
 {data.each(function(action)
 {msg+=inspect(action)+"\n";});}
 Logger.warn(msg);}},onException:function(request,e)
-{msg="";for(var v in e)
-{if(typeof(v[e])!="object"&&typeof(v[e])!="function")
-msg+=v+":"+e[v]+"\n";}
-Logger.error('Uncaught Callback Client Exception:',e);},formatException:function(e)
+{msg="";$H(e).each(function(item)
+{msg+=item.key+": "+item.value+"\n";})
+Logger.error('Uncaught Callback Client Exception:',msg);},formatException:function(e)
 {var msg=e.type+" with message \""+e.message+"\"";msg+=" in "+e.file+"("+e.line+")\n";msg+="Stack trace:\n";var trace=e.trace;for(var i=0;i<trace.length;i++)
 {msg+="  #"+i+" "+trace[i].file;msg+="("+trace[i].line+"): ";msg+=trace[i]["class"]+"->"+trace[i]["function"]+"()"+"\n";}
 msg+=e.version+" "+e.time+"\n";return msg;}},encode:function(data)
@@ -91,7 +95,9 @@ Prado.CallbackRequest.dispatchNormalRequest(this);},_getPostData:function()
 data[name]=value;})})}
 if(typeof(this.options.params)!="undefined")
 data[callback.FIELD_CALLBACK_PARAMETER]=callback.encode(this.options.params);var pageState=$F(callback.FIELD_CALLBACK_PAGESTATE);if(typeof(pageState)!="undefined")
-data[callback.FIELD_CALLBACK_PAGESTATE]=pageState;data[callback.FIELD_CALLBACK_TARGET]=this.id;return $H(data).toQueryString();}}
+data[callback.FIELD_CALLBACK_PAGESTATE]=pageState;data[callback.FIELD_CALLBACK_TARGET]=this.id;if(this.options.EventTarget)
+data[callback.FIELD_POSTBACK_TARGET]=this.options.EventTarget;if(this.options.EventParameter)
+data[callback.FIELD_POSTBACK_PARAMETER]=this.options.EventParameter;return $H(data).toQueryString();}}
 Prado.Callback=function(UniqueID,parameter,onSuccess,options)
 {var callback={'params':parameter||'','onSuccess':onSuccess||Prototype.emptyFunction};Object.extend(callback,options||{});new Prado.CallbackRequest(UniqueID,callback);return false;}
 Array.prototype.______array='______array';Prado.JSON={org:'http://www.JSON.org',copyright:'(c)2005 JSON.org',license:'http://www.crockford.com/JSON/license.html',stringify:function(arg){var c,i,l,s='',v;switch(typeof arg){case'object':if(arg){if(arg.______array=='______array'){for(i=0;i<arg.length;++i){v=this.stringify(arg[i]);if(s){s+=',';}

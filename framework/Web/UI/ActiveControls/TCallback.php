@@ -27,11 +27,6 @@
 class TCallback extends TControl implements ICallbackEventHandler
 {	
 	/**
-	 * @var TCallbackClientSideOptions client-side options.
-	 */
-	private $_clientSide;
-		
-	/**
 	 * Creates a new callback control, sets the adapter to
 	 * TActiveControlAdapter. If you override this class, be sure to set the
 	 * adapter appropriately by, for example, call this constructor.
@@ -43,104 +38,13 @@ class TCallback extends TControl implements ICallbackEventHandler
 	}
 
 	/**
-	 * @return boolean whether callback event trigger by this button will cause
-	 * input validation, default is true
+	 * @return TBaseActiveCallbackControl base callback options.
 	 */
-	public function getCausesValidation()
+	public function getActiveControl()
 	{
-		return $this->getViewState('CausesValidation',true);
-	}
-
-	/**
-	 * @param boolean whether callback event trigger by this button will cause
-	 * input validation
-	 */
-	public function setCausesValidation($value)
-	{
-		$this->setViewState('CausesValidation',TPropertyValue::ensureBoolean($value),true);
-	}	
-	
-	/**
-	 * @return string the group of validators which the button causes validation
-	 * upon callback
-	 */
-	public function getValidationGroup()
-	{
-		return $this->getViewState('ValidationGroup','');
-	}
-
-	/**
-	 * @param string the group of validators which the button causes validation
-	 * upon callback
-	 */
-	public function setValidationGroup($value)
-	{
-		$this->setViewState('ValidationGroup',$value,'');
+		return $this->getAdapter()->getActiveControl();
 	}
 	
-	/**
-	 * Callback client-side options can be set by setting the properties of
-	 * the ClientSide property. E.g. <com:TCallback ClientSide.OnSuccess="..." />
-	 * See {@link TCallbackClientSideOptions} for details on the properties of
-	 * ClientSide.
-	 * @return TCallbackClientSideOptions client-side callback options.
-	 */
-	public function getClientSide()
-	{
-		if(is_null($this->_clientSide))
-			$this->_clientSide = $this->createClientSideOptions();
-		return $this->_clientSide;
-	}
-	
-	/**
-	 * @return TCallbackClientSideOptions callback client-side options.
-	 */
-	protected function createClientSideOptions()
-	{
-		if(($id=$this->getCallbackOptions())!=='' && ($control=$this->findControl($id))!==null)
-		{
-			if($control instanceof TCallbackOptions)
-				return clone($control->getClientSide());
-		}
-		return new TCallbackClientSideOptions;		
-	}
-	
-	/**
-	 * Sets the ID of a TCallbackOptions component to duplicate the client-side
-	 * options for this control. The {@link getClientSide ClientSide}
-	 * subproperties has precendent over the CallbackOptions property.
-	 * @param string ID of a TCallbackOptions control from which ClientSide
-	 * options are cloned.
-	 */
-	public function setCallbackOptions($value)
-	{
-		$this->setViewState('CallbackOptions', $value,'');		
-	}
-	
-	/**
-	 * @return string ID of a TCallbackOptions control from which ClientSide
-	 * options are cloned.
-	 */
-	public function getCallbackOptions()
-	{
-		return $this->getViewState('CallbackOptions','');
-	}
-
-	/**
-	 * @return boolean whether to perform validation if the callback is
-	 * requested.
-	 */
-	protected function canCauseValidation()
-	{
-		if($this->getCausesValidation())
-		{
-			$group=$this->getValidationGroup();
-			return $this->getPage()->getValidators($group)->getCount()>0;
-		}
-		else
-			return false;
-	}	
-
 	/**
 	 * Raises the callback event. This method is required by {@link
 	 * ICallbackEventHandler} interface. If {@link getCausesValidation
@@ -152,8 +56,8 @@ class TCallback extends TControl implements ICallbackEventHandler
 	 */	
 	public function raiseCallbackEvent($param)
 	{
-		if($this->getCausesValidation())
-			$this->getPage()->validate($this->getValidationGroup());
+		if($this->getActiveControl()->canCauseValidation())
+			$this->getPage()->validate($this->getActiveControl()->getValidationGroup());
 		$this->onCallback($param);
 	}
 		
@@ -167,31 +71,6 @@ class TCallback extends TControl implements ICallbackEventHandler
 	public function onCallback($param)
 	{
 		$this->raiseEvent('OnCallback', $this, $param);
-	}
-	
-	/**
-	 * @return array list of callback javascript options.
-	 */
-	protected function getCallbackClientSideOptions()
-	{
-		$validate = $this->getCausesValidation();
-		$options['CausesValidation']= $validate ? '' : false;
-		$options['ValidationGroup']=$this->getValidationGroup();
-		return $options;
-	}
-		
-	/**
-	 * Returns the javascript statement to invoke a callback request for this
-	 * control. Additional options for callback can be set via subproperties of
-	 * {@link getClientSide ClientSide} property. E.g. ClientSide.OnSuccess="..."
-	 * @param TControl callback handler control, use current object if null.
-	 * @return string javascript statement to invoke a callback.
-	 */
-	public function getCallbackReference($control=null)
-	{
-		$client = $this->getPage()->getClientScript(); 
-		$object = is_null($control) ? $this : $control;
-		return $client->getCallbackReference($object, $this->getCallbackClientSideOptions());
 	}
 } 
 

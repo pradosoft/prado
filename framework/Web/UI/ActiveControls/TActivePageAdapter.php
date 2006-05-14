@@ -95,7 +95,7 @@ class TActivePageAdapter extends TControlAdapter
 		}
 		if(($handler = $this->getCallbackEventTarget()) !== null)
 		{
-			if($handler->getClientSide()->getEnablePageStateUpdate())
+			if($handler->getActiveControl()->getClientSide()->getEnablePageStateUpdate())
 			{
 				$pagestate = $this->getPage()->getClientState();
 				$response->appendHeader(self::CALLBACK_PAGESTATE_HEADER.': '.$pagestate);

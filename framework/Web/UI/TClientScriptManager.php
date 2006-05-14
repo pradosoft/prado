@@ -168,7 +168,7 @@ class TClientScriptManager extends TApplicationComponent
 	{
 		$options = !is_array($options) ? array() : $options; 
 		$class = new TReflectionClass($callbackHandler);
-		$clientSide = $callbackHandler->getClientSide();
+		$clientSide = $callbackHandler->getActiveControl()->getClientSide();
 		$options = array_merge($options, $clientSide->getOptions()->toArray());
 		$optionString = TJavascript::encode($options);
 		$this->registerPradoScriptInternal('ajax');

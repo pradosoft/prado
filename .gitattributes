@@ -991,6 +991,7 @@ framework/Web/UI/ActiveControls/TActivePageAdapter.php -text
 framework/Web/UI/ActiveControls/TActivePanel.php -text
 framework/Web/UI/ActiveControls/TActiveTextBox.php -text
 framework/Web/UI/ActiveControls/TAutoComplete.php -text
+framework/Web/UI/ActiveControls/TBaseActiveControl.php -text
 framework/Web/UI/ActiveControls/TCallback.php -text
 framework/Web/UI/ActiveControls/TCallbackClientScript.php -text
 framework/Web/UI/ActiveControls/TCallbackClientSideOptions.php -text
@@ -1109,6 +1110,10 @@ tests/FunctionalTests/features/protected/pages/ActiveControls/AutoComplete.page 
 tests/FunctionalTests/features/protected/pages/ActiveControls/AutoComplete.php -text
 tests/FunctionalTests/features/protected/pages/ActiveControls/Calculator.page -text
 tests/FunctionalTests/features/protected/pages/ActiveControls/Calculator.php -text
+tests/FunctionalTests/features/protected/pages/ActiveControls/Calculator2.page -text
+tests/FunctionalTests/features/protected/pages/ActiveControls/Calculator2.php -text
+tests/FunctionalTests/features/protected/pages/ActiveControls/VisibleUpdate.page -text
+tests/FunctionalTests/features/protected/pages/ActiveControls/VisibleUpdate.php -text
 tests/FunctionalTests/features/protected/pages/ActiveControls/config.xml -text
 tests/FunctionalTests/features/protected/pages/ColorPicker.page -text
 tests/FunctionalTests/features/protected/pages/CompositeControl.page -text

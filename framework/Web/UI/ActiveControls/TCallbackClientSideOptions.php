@@ -265,6 +265,30 @@ class TCallbackClientSideOptions extends TClientSideOptions
 		$option = $this->getOption('EnablePageStateUpdate');
 		return is_null($option) ? true : $option;
 	}
+	
+	public function getPostBackTarget()
+	{
+		return $this->getOption('EventTarget');
+	}
+	
+	public function setPostBackTarget($value)
+	{
+		if($value instanceof TControl)
+			$value = $value->getUniqueID();
+		$this->setOption('EventTarget', $value);
+	}
+
+	public function getPostBackParameter()
+	{
+		return $this->getOption('EventParameter');
+	}
+	
+	public function setPostBackParameter($value)
+	{
+		$this->setOption('EventParameter', $value);
+	}
+	
+	
 } 
 
 ?>

@@ -87,6 +87,11 @@ Object.extend(Prado.CallbackRequest,
 	 * Callback request page state field name,
 	 */
 	FIELD_CALLBACK_PAGESTATE : 'PRADO_PAGESTATE',
+	
+	FIELD_POSTBACK_TARGET : 'PRADO_POSTBACK_TARGET',
+	
+	FIELD_POSTBACK_PARAMETER : 'PRADO_POSTBACK_PARAMETER',
+
 	/**
 	 * List of form fields that will be collected during callback.
 	 */
@@ -132,7 +137,17 @@ Object.extend(Prado.CallbackRequest,
 			{
 				var id = command[method][0];
 				if($(id) || id.indexOf("[]") > -1)
-					method.toFunction().apply(this,command[method].concat(transport));
+				{
+					try
+					{
+						method.toFunction().apply(this,command[method].concat(transport));
+					}
+					catch(e)
+					{	
+						if(typeof(Logger) != "undefined")
+							Prado.CallbackRequest.Exception.onException(null,e);
+					}
+				}
 				else if(typeof(Logger) != "undefined")
 				{
 					Logger.error("Error in executing callback response:", 
@@ -185,12 +200,11 @@ Object.extend(Prado.CallbackRequest,
 		onException : function(request,e)
 		{
 			msg = "";
-			for(var v in e)
+			$H(e).each(function(item)
 			{
-				if(typeof(v[e]) != "object" && typeof(v[e]) != "function")
-					msg += v+":"+e[v]+"\n";
-			}
-			Logger.error('Uncaught Callback Client Exception:', e);
+				msg += item.key+": "+item.value+"\n";
+			})	
+			Logger.error('Uncaught Callback Client Exception:', msg);
 		},
 	
 		/**
@@ -407,6 +421,10 @@ Prado.CallbackRequest.prototype =
 		if(typeof(pageState) != "undefined")
 			data[callback.FIELD_CALLBACK_PAGESTATE] = pageState;
 		data[callback.FIELD_CALLBACK_TARGET] = this.id;
+		if(this.options.EventTarget)
+			data[callback.FIELD_POSTBACK_TARGET] = this.options.EventTarget;
+		if(this.options.EventParameter)
+			data[callback.FIELD_POSTBACK_PARAMETER] = this.options.EventParameter;
 		return $H(data).toQueryString();
 	}
 }

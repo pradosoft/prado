@@ -11,6 +11,62 @@ class TAutoComplete extends TActiveTextBox implements ICallbackEventHandler, INa
 	private $_repeater=null;
 	private $_resultPanel=null;
 	
+	public function getSeparator()
+	{
+		return $this->getViewState('tokens', '');
+	}
+	
+	public function setSeparator($value)
+	{
+		$this->setViewState('tokens', TPropertyValue::ensureString($value), '');
+	}
+	
+	public function getFrequency()
+	{
+		return $this->getViewState('frequency', '');
+	}
+	
+	public function setFrequency($value)
+	{
+		$this->setViewState('frequency', TPropertyValue::ensureFloat($value),'');
+	}
+	
+	public function getMinChars()
+	{
+		return $this->getViewState('minChars','');
+	}
+	
+	public function setMinChars($value)
+	{
+		$this->setViewState('minChars', TPropertyValue::ensureInteger($value), '');
+	}
+	
+	/**
+	 * Raises the callback event. This method is required by {@link
+	 * ICallbackEventHandler} interface. If {@link getCausesValidation
+	 * CausesValidation} is true, it will invoke the page's {@link TPage::
+	 * validate validate} method first. It will raise {@link onCallback
+	 * OnCallback} event and then the {@link onClick OnClick} event. This method
+	 * is mainly used by framework and control developers.
+	 * @param TCallbackEventParameter the event parameter
+	 */	
+ 	public function raiseCallbackEvent($param)
+	{
+		$this->onCallback($param);
+	}
+
+	/**
+	 * This method is invoked when a callback is requested. The method raises
+	 * 'OnCallback' event to fire up the event handlers. If you override this
+	 * method, be sure to call the parent implementation so that the event
+	 * handler can be invoked.
+	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 */		
+	public function onCallback($param)
+	{
+		$this->raiseEvent('OnCallback', $this, $param);
+	}
+		
 	public function setDataSource($data)
 	{
 		$this->getSuggestions()->setDataSource($data);
@@ -54,47 +110,6 @@ class TAutoComplete extends TActiveTextBox implements ICallbackEventHandler, INa
 		return $repeater;
 	}
 
-	/**
-	 * @return TCallbackClientSideOptions callback client-side options.
-	 */
-	protected function createClientSideOptions()
-	{
-		if(($id=$this->getCallbackOptions())!=='' && ($control=$this->findControl($id))!==null)
-		{
-			if($control instanceof TCallbackOptions)
-			{
-				$options = clone($control->getClientSide());
-				$options->setEnablePageStateUpdate(false);
-				return $options;
-			}
-		}
-		$options = new TAutoCompleteClientSideOptions;
-		$options->setEnablePageStateUpdate(false);
-		return $options;
-	}
-	
-	/**
-	 * Sets the ID of a TCallbackOptions component to duplicate the client-side
-	 * options for this control. The {@link getClientSide ClientSide}
-	 * subproperties has precendent over the CallbackOptions property.
-	 * @param string ID of a TCallbackOptions control from which ClientSide
-	 * options are cloned.
-	 */
-	public function setCallbackOptions($value)
-	{
-		$this->setViewState('CallbackOptions', $value,'');		
-	}
-	
-	/**
-	 * @return string ID of a TCallbackOptions control from which ClientSide
-	 * options are cloned.
-	 */
-	public function getCallbackOptions()
-	{
-		return $this->getViewState('CallbackOptions','');
-	}
-
-	
 	public function renderEndTag($writer)
 	{
 		$this->getPage()->getClientScript()->registerPradoScript('effects');
@@ -109,24 +124,36 @@ class TAutoComplete extends TActiveTextBox implements ICallbackEventHandler, INa
 	
 	public function render($writer)
 	{
-		if($this->canUpdateClientSide())
+		if($this->getPage()->getIsCallback())
+		{
+			if($this->getActiveControl()->canUpdateClientSide())
+				$this->renderSuggestions($writer);
+		}
+		else
+			parent::render($writer);	
+	}
+
+	protected function renderSuggestions($writer)
+	{
+		if($this->getSuggestions()->getItems()->getCount() > 0)
 		{
 			$this->getSuggestions()->render($writer); 
 			$boundary = $writer->getWriter()->getBoundary();
 			$writer->getWriter()->getResponse()->setData($boundary);
-		}
-		else
-			parent::render($writer);	
+		}		
 	}
 	
 	/**
 	 * @return array list of callback options.
 	 */
-	protected function getCallbackClientSideOptions()
+	protected function getAutoCompleteOptions()
 	{
-		$options = $this->getClientSide()->getOptions()->toArray();
-		if(isset($options['tokens']))
-			$options['tokens'] = TJavascript::encode($options['tokens'],false);
+		$this->getActiveControl()->getClientSide()->setEnablePageStateUpdate(false);
+		if(strlen($string = $this->getSeparator()))
+		{
+			$token = preg_split('//', $string, -1, PREG_SPLIT_NO_EMPTY);
+			$options['tokens'] = TJavascript::encode($token,false);
+		} 
 		if($this->getAutoPostBack())
 			$options = array_merge($options,$this->getPostBackOptions()); 
 		$options['ResultPanel'] = $this->getResultPanel()->getClientID();
@@ -135,57 +162,16 @@ class TAutoComplete extends TActiveTextBox implements ICallbackEventHandler, INa
 		return $options;
 	}
 	
-	/**
-	 * Adds attribute name-value pairs to renderer.
-	 * This method overrides the parent implementation with additional textbox specific attributes.
-	 * @param THtmlWriter the writer used for the rendering purpose
-	 */
-	protected function addAttributesToRender($writer)
+	public function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		$this->renderClientControlScript($writer);
+		$writer->addAttribute('id',$this->getClientID());
+		$this->getActiveControl()->registerCallbackClientScript($this->getAutoCompleteOptions());
 	}
 	
-}
-
-/**
- * Client-side options for TAutoComplete.
- * 
- * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  $Date: $
- * @package System.Web.UI.ActiveControls
- * @since 3.0
- */
-class TAutoCompleteClientSideOptions extends TCallbackClientSideOptions
-{
-	public function getSeparator()
+	protected function renderClientControlScript($writer)
 	{
-		return $this->getOption('tokens');
-	}
-	
-	public function setSeparator($value)
-	{
-		$this->setOption('tokens', preg_split('//', $value, -1, PREG_SPLIT_NO_EMPTY));
-	}
-	
-	public function getFrequency()
-	{
-		return $this->getOption('frequency');
-	}
-	
-	public function setFrequency($value)
-	{
-		$this->setOption('frequency', TPropertyValue::ensureFloat($value));
-	}
-	
-	public function getMinChars()
-	{
-		return 	$this->getOption('minChars');
-	}
-	
-	public function setMinChars($value)
-	{
-		$this->setOption('minChars', TPropertyValue::ensureInteger($value));
+		
 	}
 }
 
