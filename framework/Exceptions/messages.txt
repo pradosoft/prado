@@ -42,6 +42,10 @@ appconfig_serviceid_required			= Application configuration <service> element mus
 appconfig_servicetype_required			= Application configuration <service id="{0}"> must have a "class" attribute.
 appconfig_parameterid_required			= Application configuration <parameter> element must have an "id" attribute.
 
+securitymanager_validationkey_invalid	= TSecurityManager.ValidationKey must not be empty.
+securitymanager_encryptionkey_invalid	= TSecurityManager.EncryptionKey must not be empty.
+securitymanager_mcryptextension_required = Mcrypt PHP extension is required in order to use TSecurityManager's encryption feature.
+
 uri_format_invalid						= '{0}' is not a valid URI.
 
 httpresponse_bufferoutput_unchangeable	= THttpResponse.BufferOutput cannot be modified after THttpResponse is initialized.

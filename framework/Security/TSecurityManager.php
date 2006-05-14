@@ -43,8 +43,10 @@ class TSecurityManager extends TModule
 {
 	const STATE_VALIDATION_KEY='prado:securitymanager:validationkey';
 	const STATE_ENCRYPTION_KEY='prado:securitymanager:encryptionkey';
-	private $_validationKey;
-	private $_encryptionKey;
+	const STATE_INIT_VECTOR='prado:securitymanager:initvector';
+	private $_validationKey=null;
+	private $_encryptionKey=null;
+	private $_initVector=null;
 	private $_validation='SHA1';
 	private $_encryption='3DES';
 
@@ -63,19 +65,16 @@ class TSecurityManager extends TModule
 	 */
 	protected function generateRandomKey()
 	{
-		$v1=rand();
-		$v2=rand();
-		$v3=rand();
-		return md5("$v1$v2$v3");
+		return rand().rand().rand().rand();
 	}
 
 	/**
 	 * @return string the private key used to generate HMAC.
-	 * If the key is not explicitly set, a random one is generated and used.
+	 * If the key is not explicitly set, a random one is generated and returned.
 	 */
 	public function getValidationKey()
 	{
-		if(empty($this->_validationKey))
+		if($this->_validationKey===null)
 		{
 			if(($this->_validationKey=$this->getApplication()->getGlobalState(self::STATE_VALIDATION_KEY))===null)
 			{
@@ -88,22 +87,23 @@ class TSecurityManager extends TModule
 
 	/**
 	 * @param string the key used to generate HMAC
-	 * @throws TInvalidDataValueException if the key is shorter than 8 characters.
+	 * @throws TInvalidDataValueException if the key is empty
 	 */
 	public function setValidationKey($value)
 	{
-		if(strlen($value)<8)
+		if($value!=='')
+			$this->_validationKey=$value;
+		else
 			throw new TInvalidDataValueException('securitymanager_validationkey_invalid');
-		$this->_validationKey=$value;
 	}
 
 	/**
 	 * @return string the private key used to encrypt/decrypt data.
-	 * If the key is not explicitly set, a random one is generated and used.
+	 * If the key is not explicitly set, a random one is generated and returned.
 	 */
 	public function getEncryptionKey()
 	{
-		if(empty($this->_encryptionKey))
+		if($this->_encryptionKey===null)
 		{
 			if(($this->_encryptionKey=$this->getApplication()->getGlobalState(self::STATE_ENCRYPTION_KEY))===null)
 			{
@@ -116,13 +116,14 @@ class TSecurityManager extends TModule
 
 	/**
 	 * @param string the key used to encrypt/decrypt data.
-	 * @throws TInvalidDataValueException if the key is shorter than 8 characters.
+	 * @throws TInvalidDataValueException if the key is empty
 	 */
 	public function setEncryptionKey($value)
 	{
-		if(strlen($value)<8)
+		if($value!=='')
+			$this->_encryptionKey=$value;
+		else
 			throw new TInvalidDataValueException('securitymanager_encryptionkey_invalid');
-		$this->_encryptionKey=$value;
 	}
 
 	/**
@@ -167,7 +168,15 @@ class TSecurityManager extends TModule
 	{
 		if(function_exists('mcrypt_encrypt'))
 		{
-			return mcrypt_encrypt(MCRYPT_3DES, $this->getEncryptionKey(), $data, MCRYPT_MODE_CBC);
+			$module=mcrypt_module_open(MCRYPT_3DES, '', MCRYPT_MODE_CBC, '');
+			$key=substr(md5($this->getEncryptionKey()),0,mcrypt_enc_get_key_size($module));
+			srand();
+			$iv=mcrypt_create_iv(mcrypt_enc_get_iv_size($module), MCRYPT_RAND);
+			mcrypt_generic_init($module,$key,$iv);
+			$encrypted=$iv.mcrypt_generic($module,$data);
+			mcrypt_generic_deinit($module);
+			mcrypt_module_close($module);
+			return $encrypted;
 		}
 		else
 			throw new TNotSupportedException('securitymanager_mcryptextension_required');
@@ -183,7 +192,15 @@ class TSecurityManager extends TModule
 	{
 		if(function_exists('mcrypt_decrypt'))
 		{
-			return mcrypt_decrypt(MCRYPT_3DES, $this->getEncryptionKey(), $data, MCRYPT_MODE_CBC);
+			$module=mcrypt_module_open(MCRYPT_3DES, '', MCRYPT_MODE_CBC, '');
+			$key=substr(md5($this->getEncryptionKey()),0,mcrypt_enc_get_key_size($module));
+			$ivSize=mcrypt_enc_get_iv_size($module);
+			$iv=substr($data,0,$ivSize);
+			mcrypt_generic_init($module,$key,$iv);
+			$decrypted=mdecrypt_generic($module,substr($data,$ivSize));
+			mcrypt_generic_deinit($module);
+			mcrypt_module_close($module);
+			return rtrim($decrypted,"\0");
 		}
 		else
 			throw new TNotSupportedException('securitymanager_mcryptextension_required');
@@ -238,10 +255,7 @@ class TSecurityManager extends TModule
 			$func='md5';
 		}
 		$key=$this->getValidationKey();
-		if (strlen($key) > 64)
-			$key = pack($pack, $func($key));
-		if (strlen($key) < 64)
-			$key = str_pad($key, 64, chr(0));
+		$key=str_pad($func($key), 64, chr(0));
 		return $func((str_repeat(chr(0x5C), 64) ^ substr($key, 0, 64)) . pack($pack, $func((str_repeat(chr(0x36), 64) ^ substr($key, 0, 64)) . $data)));
 	}
 }

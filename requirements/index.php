@@ -30,15 +30,70 @@
  * @var array List of requirements (required or not, check item, hint)
  */
 $requirements = array(
-	array(true,'version_compare(PHP_VERSION,"5.0.4",">=")','PHP version check','PHP 5.0.4 or higher required'),
-	array(false,'version_compare(PHP_VERSION,"5.1.0",">=")','PHP version check','PHP 5.1.0 or higher preferred'),
-	array(true,'class_exists("DOMDocument",false)','DOM extension check','DOM extension required'),
-	array(false,'function_exists("iconv")','ICONV extension check','ICONV extension optional'),
-	array(false,'extension_loaded("zlib")','Zlib extension check','Zlib extension optional'),
-	array(false,'extension_loaded("sqlite")','SQLite extension check','SQLite extension optional'),
-	array(false,'extension_loaded("memcache")','Memcache extension check','Memcache extension optional'),
-	array(false,'extension_loaded("apc")','APC extension check','APC extension optional'),
-	array(false,'extension_loaded("mcrypt")','Mcrypt extension check','Mcrypt extension optional'),
+	array(
+		true,
+		version_compare(PHP_VERSION,"5.0.4",">="),
+		'PHP version check',
+		'PHP 5.0.4 or higher required'),
+	array(
+		false,
+		version_compare(PHP_VERSION,"5.1.0",">="),
+		'PHP version check','PHP 5.1.0 or higher preferred'),
+	array(
+		true,
+		isset($_SERVER["HTTP_ACCEPT"]),
+		'$_SERVER["HTTP_ACCEPT"] check',
+		'HTTP_ACCEPT required'),
+	array(
+		true,
+		isset($_SERVER["SCRIPT_FILENAME"]) && realpath($_SERVER["SCRIPT_FILENAME"])===realpath(__FILE__),
+		'$_SERVER["SCRIPT_FILENAME"] check',
+		'SCRIPT_FILENAME required'),
+	array(
+		true,
+		isset($_SERVER["REQUEST_URI"]) || isset($_SERVER["QUERY_STRING"]),
+		'$_SERVER["REQUEST_URI"] check',
+		'REQUEST_URI required'),
+	array(
+		true,
+		isset($_SERVER["PATH_INFO"]) || strpos($_SERVER["PHP_SELF"],$_SERVER["SCRIPT_NAME"])===0,
+		'$_SERVER["PATH_INFO"] check',
+		'PATH_INFO required'),
+	array(
+		true,
+		class_exists("DOMDocument",false),
+		'DOM extension check',
+		'DOM extension required'),
+	array(
+		false,
+		function_exists("iconv"),
+		'ICONV extension check',
+		'ICONV extension optional'),
+	array(
+		false,
+		extension_loaded("zlib"),
+		'Zlib extension check',
+		'Zlib extension optional'),
+	array(
+		false,
+		extension_loaded("sqlite"),
+		'SQLite extension check',
+		'SQLite extension optional'),
+	array(
+		false,
+		extension_loaded("memcache"),
+		'Memcache extension check',
+		'Memcache extension optional'),
+	array(
+		false,
+		extension_loaded("apc"),
+		'APC extension check',
+		'APC extension optional'),
+	array(
+		false,
+		extension_loaded("mcrypt"),
+		'Mcrypt extension check',
+		'Mcrypt extension optional'),
 	array(false,'extension_loaded("xsl")','XSL extension check','XSL extension optional'),
 );
 
@@ -47,7 +102,8 @@ $conclusion = 0;
 foreach($requirements as $requirement)
 {
 	list($required,$expression,$aspect,$hint)=$requirement;
-	eval('$ret='.$expression.';');
+	//eval('$ret='.$expression.';');
+	$ret=$expression;
 	if($required)
 	{
 		if($ret)
