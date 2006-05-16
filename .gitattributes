@@ -1462,4 +1462,7 @@ tests/unit/Web/UI/WebControls/TRequiredFieldValidatorTest.php -text
 tests/unit/Web/UI/WebControls/TXmlTransformTest.php -text
 tests/unit/Web/UI/WebControls/data/hello.xml -text
 tests/unit/Web/UI/WebControls/data/hello.xsl -text
+tests/unit/Xml/TXmlDocumentTest.php -text
+tests/unit/Xml/TXmlElementListTest.php -text
+tests/unit/Xml/TXmlElementTest.php -text
 tests/unit/phpunit2.php -text
