@@ -1456,6 +1456,14 @@ tests/unit/SQLMap/sqlite.xml -text
 tests/unit/SQLMap/sqlite/backup.db -text
 tests/unit/SQLMap/sqlite/tests.db -text
 tests/unit/TComponentTest.php -text
+tests/unit/Web/TAssetManagerTest.php -text
+tests/unit/Web/THttpCookieCollectionTest.php -text
+tests/unit/Web/THttpCookieTest.php -text
+tests/unit/Web/THttpRequestTest.php -text
+tests/unit/Web/THttpResponseTest.php -text
+tests/unit/Web/THttpSessionTest.php -text
+tests/unit/Web/THttpUtilityTest.php -text
+tests/unit/Web/TUriTest.php -text
 tests/unit/Web/UI/WebControls/TDropDownListTest.php -text
 tests/unit/Web/UI/WebControls/TLabelTest.php -text
 tests/unit/Web/UI/WebControls/TRequiredFieldValidatorTest.php -text
