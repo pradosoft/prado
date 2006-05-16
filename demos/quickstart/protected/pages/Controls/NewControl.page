@@ -61,12 +61,12 @@ class LabeledTextBox extends TCompositeControl {
         $this->_label=new TLabel;
         $this->_label->setID('Label');
         // add the label as a child of LabeledTextBox
-        $this->getControls()->add($label);
+        $this->getControls()->add($this->_label);
         $this->_textbox=new TTextBox;
         $this->_textbox->setID('TextBox');
         $this->_label->setForControl('TextBox');
         // add the textbox as a child of LabeledTextBox
-        $this->getControls()->add($textbox);
+        $this->getControls()->add($this->_textbox);
     }
     public function getLabel() {
         $this->ensureChildControls();
