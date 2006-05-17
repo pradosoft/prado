@@ -50,7 +50,7 @@ Prado::using('System.Web.UI.WebControls.TTextBox');
  *                     <b>ButtonText</b> property
  *  # <b>ImageButton</b> -- Shows an image next to the text input, clicking on
  *                          the image shows the date picker, image source can be
- *                          change through the <b>ImageUrl</b> property.
+ *                          change through the <b>ButtonImageUrl</b> property.
  *
  * The <b>CssClass</b> property can be used to override the css class name
  * for the date picker panel. <b>CalendarStyle</b> property sets the packages

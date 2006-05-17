@@ -182,7 +182,7 @@ abstract class TListControl extends TDataBoundControl
 		$textFormat=$this->getDataTextFormatString();
 		foreach($data as $key=>$object)
 		{
-			$item=new TListItem;
+			$item=$items->createListItem();
 			if(is_array($object) || is_object($object))
 			{
 				$text=TDataFieldAccessor::getDataFieldValue($object,$textField);
@@ -195,7 +195,6 @@ abstract class TListControl extends TDataBoundControl
 				$item->setValue("$key");
 			}
 			$item->setText($this->formatDataValue($textFormat,$text));
-			$items->add($item);
 		}
 		// SelectedValue or SelectedIndex may be set before databinding
 		// so we make them be effective now
@@ -213,6 +212,16 @@ abstract class TListControl extends TDataBoundControl
 			$this->setSelectedIndex($this->_cachedSelectedIndex);
 			$this->_cachedSelectedIndex=-1;
 		}
+	}
+
+	/**
+	 * Creates a collection object to hold list items.
+	 * This method may be overriden to create a customized collection.
+	 * @return TListItemCollection the collection object
+	 */
+	protected function createListItemCollection()
+	{
+		return new TListItemCollection;
 	}
 
 	/**
@@ -238,7 +247,7 @@ abstract class TListControl extends TDataBoundControl
 		$this->_stateLoaded=true;
 		if(!$this->getIsDataBound())
 		{
-			$this->_items=new TListItemCollection;
+			$this->_items=$this->createListItemCollection();
 			$this->_items->loadState($this->getViewState('Items',null));
 		}
 		$this->clearViewState('Items');
@@ -379,7 +388,7 @@ abstract class TListControl extends TDataBoundControl
 	public function getItems()
 	{
 		if(!$this->_items)
-			$this->_items=new TListItemCollection;
+			$this->_items=$this->createListItemCollection();
 		return $this->_items;
 	}
 
@@ -637,6 +646,23 @@ abstract class TListControl extends TDataBoundControl
 class TListItemCollection extends TList
 {
 	/**
+	 * Creates a list item object.
+	 * This method may be overriden to provide a customized list item object.
+	 * @param integer index where the newly created item is to be inserted at.
+	 * If -1, the item will be appended to the end.
+	 * @return TListItem list item object
+	 */
+	public function createListItem($index=-1)
+	{
+		$item=new TListItem;
+		if($index<0)
+			$this->add($item);
+		else
+			$this->insertAt($index,$item);
+		return $item;
+	}
+
+	/**
 	 * Inserts an item into the collection.
 	 * @param integer the location where the item will be inserted.
 	 * The current item at the place and the following ones will be moved backward.
@@ -645,10 +671,13 @@ class TListItemCollection extends TList
 	 */
 	public function insertAt($index,$item)
 	{
-		if(is_string($item))
-			parent::insertAt($index,new TListItem($item));
-		else if($item instanceof TListItem)
+		if($item instanceof TListItem)
 			parent::insertAt($index,$item);
+		else if(is_string($item))
+		{
+			$item=$this->createListItem($index);
+			$item->setText($item);
+		}
 		else
 			throw new TInvalidDataTypeException('listitemcollection_item_invalid',get_class($this));
 	}
@@ -728,10 +757,7 @@ class TListItemCollection extends TList
 	{
 		$this->clear();
 		if($state!==null)
-		{
-			foreach($state as $item)
-				$this->add(new TListItem($item[0],$item[1],$item[2],$item[3]));
-		}
+			$this->copyFrom($state);
 	}
 
 	/**
@@ -741,15 +767,7 @@ class TListItemCollection extends TList
 	 */
 	public function saveState()
 	{
-		if($this->getCount()>0)
-		{
-			$state=array();
-			foreach($this as $item)
-				$state[]=array($item->getText(),$item->getValue(),$item->getEnabled(),$item->getSelected());
-			return $state;
-		}
-		else
-			return null;
+		return ($this->getCount()>0) ? $this->toArray() : null;
 	}
 }
 
