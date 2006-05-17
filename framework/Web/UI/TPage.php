@@ -270,7 +270,7 @@ class TPage extends TTemplateControl
 	protected function processCallbackRequest($writer)
 	{
 		$this->setAdapter(new TActivePageAdapter($this));
-		
+
 		Prado::trace("Page onPreInit()",'System.Web.UI.TPage');
 		$this->onPreInit(null);
 
@@ -295,12 +295,12 @@ class TPage extends TTemplateControl
 		$this->raiseChangedEvents();
 
 
-		$this->getAdapter()->processCallbackEvent($writer); 
+		$this->getAdapter()->processCallbackEvent($writer);
 
-/*		
+/*
 		Prado::trace("Page raisePostBackEvent()",'System.Web.UI.TPage');
 		$this->raisePostBackEvent();
-*/		
+*/
 		Prado::trace("Page onLoadComplete()",'System.Web.UI.TPage');
 		$this->onLoadComplete(null);
 
@@ -319,21 +319,21 @@ class TPage extends TTemplateControl
 		$this->renderControl($writer);
 */
 		$this->getAdapter()->renderCallbackResponse($writer);
-		
+
 		Prado::trace("Page unloadRecursive()",'System.Web.UI.TPage');
-		$this->unloadRecursive();			
+		$this->unloadRecursive();
 	}
-	
+
 	/**
 	 * Gets the callback client script handler that allows javascript functions
-	 * to be executed during the callback response. 
+	 * to be executed during the callback response.
 	 * @return TCallbackClientScript interface to client-side javascript code.
 	 */
 	public function getCallbackClient()
 	{
 		return $this->getAdapter()->getCallbackClientHandler();
 	}
-	
+
 	/**
 	 * Set a new callback client handler.
 	 * @param TCallbackClientScript new callback client script handler.
@@ -342,7 +342,7 @@ class TPage extends TTemplateControl
 	{
 		$this->getAdapter()->setCallbackClientHandler($client);
 	}
-	
+
 	/**
 	 * @return TControl the control responsible for the current callback event,
 	 * null if nonexistent
@@ -362,14 +362,14 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * Callback parameter is decoded assuming JSON encoding. 
+	 * Callback parameter is decoded assuming JSON encoding.
 	 * @return string callback event parameter
 	 */
 	public function getCallbackEventParameter()
 	{
 		return $this->getAdapter()->getCallbackEventParameter();
 	}
-	
+
 	/**
 	 * @param mixed callback event parameter
 	 */
@@ -377,7 +377,7 @@ class TPage extends TTemplateControl
 	{
 		$this->getAdapter()->setCallbackEventParameter($value);
 	}
-	
+
 	/**
 	 * Register post data loaders for Callback to collect post data.
 	 * This method should only be called by framework developers.
@@ -388,7 +388,7 @@ class TPage extends TTemplateControl
 	{
 		$this->_postDataLoaders[] = $control->getUniqueID();
 	}
-	
+
 	/**
 	 * Get a list of IDs of controls that are enabled and require post data.
 	 * @return array list of IDs implementing IPostBackDataHandler
@@ -397,7 +397,7 @@ class TPage extends TTemplateControl
 	{
 		return $this->_postDataLoaders;
 	}
-	
+
 	/**
 	 * @return TForm the form on the page
 	 */
@@ -879,8 +879,8 @@ class TPage extends TTemplateControl
 		$this->_inFormRender=true;
 		$cs=$this->getClientScript();
 		$cs->registerHiddenField(self::FIELD_PAGESTATE,$this->getClientState());
-		$cs->renderHiddenFields($writer);
-		$cs->renderScriptFiles($writer);
+		//$cs->renderHiddenFields($writer);
+		//$cs->renderScriptFiles($writer);
 		$cs->renderBeginScripts($writer);
 	}
 
