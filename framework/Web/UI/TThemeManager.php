@@ -207,6 +207,7 @@ class TTheme extends TApplicationComponent implements ITheme
 	public function __construct($themePath,$themeUrl)
 	{
 		$this->_themeUrl=$themeUrl;
+		$this->_themePath=realpath($themePath);
 		$this->_name=basename($themePath);
 		$cacheValid=false;
 		// TODO: the following needs to be cleaned up (Qiang)
@@ -306,6 +307,14 @@ class TTheme extends TApplicationComponent implements ITheme
 	public function getBaseUrl()
 	{
 		return $this->_themeUrl;
+	}
+
+	/**
+	 * @return string the file path to the theme folder
+	 */
+	public function getBasePath()
+	{
+		return $this->_themePath;
 	}
 
 	/**
