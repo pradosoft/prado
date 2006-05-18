@@ -123,6 +123,7 @@ demos/quickstart/protected/index/quickstart/deletable -text
 demos/quickstart/protected/index/quickstart/segments -text
 demos/quickstart/protected/pages/Advanced/Assets.page -text
 demos/quickstart/protected/pages/Advanced/Auth.page -text
+demos/quickstart/protected/pages/Advanced/Collections.page -text
 demos/quickstart/protected/pages/Advanced/Error.page -text
 demos/quickstart/protected/pages/Advanced/I18N.page -text
 demos/quickstart/protected/pages/Advanced/Logging.page -text

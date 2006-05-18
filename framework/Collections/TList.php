@@ -30,7 +30,7 @@
  * to determine the number of items in the list.
  *
  * To extend TList by doing additional operations with each addition or removal
- * operations, override {@link insertAt()}, and {@link removeAt()}.
+ * operation, override {@link insertAt()}, and {@link removeAt()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
