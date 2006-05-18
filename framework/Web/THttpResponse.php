@@ -65,7 +65,7 @@ class THttpResponse extends TModule implements ITextWriter
 	/**
 	 * @var string content type
 	 */
-	private $_contentType='text/html';
+	private $_contentType=null;
 	/**
 	 * @var string character set, e.g. UTF-8
 	 */
@@ -315,9 +315,11 @@ class THttpResponse extends TModule implements ITextWriter
 			$charset=$globalization->getCharset();
 		if($charset!=='')
 		{
-			$header='Content-Type: '.$this->getContentType().';charset='.$charset;
-			$this->appendHeader($header);
+			$contentType=$this->_contentType===null?'text/html':$this->_contentType;
+			$this->appendHeader('Content-Type: '.$contentType.';charset='.$charset);
 		}
+		else if($this->_contentType!==null)
+			$this->appendHeader('Content-Type: '.$this->_contentType.';charset=UTF-8');
 	}
 
 	/**
