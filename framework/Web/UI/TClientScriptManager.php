@@ -159,7 +159,7 @@ class TClientScriptManager extends TApplicationComponent
 			$scriptLoader=$basePath.'/'.self::SCRIPT_LOADER;
 			$url=$this->publishFilePath($scriptLoader).'?js='.trim($files,',');
 			if($this->getApplication()->getMode()===TApplication::STATE_DEBUG)
-				$url.='&__nocache';
+				$url.='&amp;mode=debug';
 			$writer->write(TJavaScript::renderScriptFile($url));
 		}
 	}
