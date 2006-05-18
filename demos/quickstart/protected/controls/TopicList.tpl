@@ -64,6 +64,7 @@
 <div class="topic">
 <div>Avanced Topics</div>
 <ul>
+	<li><a href="?page=Advanced.Collections">Collections</a></li>
     <li><a href="?page=Advanced.Auth">Authentication and Authorization</a></li>
     <li><a href="?page=Advanced.Security">Security</a></li>
     <li><a href="?page=Advanced.Scripts">Client-side Scripting</a></li>

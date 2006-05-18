@@ -2,6 +2,7 @@ Version 3.0.1 June 1, 2006
 ==========================
 BUG: Ticket#44 - THtmlArea (tiny_mce) not working on some systems (Qiang)
 BUG: Ticket#167 - TSecurityManager issues warning when trying to encrypt/decrypt strings (Qiang)
+BUG: Ticket#179 - CGI incompatibility causing clientscripts.php failure (Qiang)
 ENH: Ticket#150 - TDataGrid and TDataList now render table section tags (Qiang)
 ENH: Ticket#152 - constituent parts of TWizard are exposed (Qiang)
 ENH: added sanity check to calling event handlers (Qiang)
