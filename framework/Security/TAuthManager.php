@@ -11,15 +11,15 @@
  */
 
 /**
- * Using TUserManager class
+ * Using IUserManager interface
  */
-Prado::using('System.Security.TUserManager');
+Prado::using('System.Security.IUserManager');
 
 /**
  * TAuthManager class
  *
  * TAuthManager performs user authentication and authorization for a Prado application.
- * TAuthManager works together with a {@link TUserManager} module that can be
+ * TAuthManager works together with a {@link IUserManager} module that can be
  * specified via the {@link setUserManager UserManager} property.
  * If an authorization fails, TAuthManager will try to redirect the client
  * browser to a login page that is specified via the {@link setLoginPage LoginPage}.
@@ -45,7 +45,7 @@ class TAuthManager extends TModule
 	 */
 	private $_initialized=false;
 	/**
-	 * @var TUserManager user manager instance
+	 * @var IUserManager user manager instance
 	 */
 	private $_userManager=null;
 	/**
@@ -61,7 +61,7 @@ class TAuthManager extends TModule
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
 	 * @param TXmlElement configuration for this module, can be null
-	 * @throws TConfigurationException if user manager does not exist or is not TUserManager
+	 * @throws TConfigurationException if user manager does not exist or is not IUserManager
 	 */
 	public function init($config)
 	{
@@ -72,7 +72,7 @@ class TAuthManager extends TModule
 		{
 			if(($users=$application->getModule($this->_userManager))===null)
 				throw new TConfigurationException('authmanager_usermanager_inexistent',$this->_userManager);
-			if(!($users instanceof TUserManager))
+			if(!($users instanceof IUserManager))
 				throw new TConfigurationException('authmanager_usermanager_invalid',$this->_userManager);
 			$this->_userManager=$users;
 		}
@@ -83,7 +83,7 @@ class TAuthManager extends TModule
 	}
 
 	/**
-	 * @return TUserManager user manager instance
+	 * @return IUserManager user manager instance
 	 */
 	public function getUserManager()
 	{
@@ -91,14 +91,14 @@ class TAuthManager extends TModule
 	}
 
 	/**
-	 * @param string|TUserManager the user manager module ID or the user mananger object
-	 * @throws TInvalidOperationException if the module has been initialized or the user manager object is not TUserManager
+	 * @param string|IUserManager the user manager module ID or the user mananger object
+	 * @throws TInvalidOperationException if the module has been initialized or the user manager object is not IUserManager
 	 */
 	public function setUserManager($provider)
 	{
 		if($this->_initialized)
 			throw new TInvalidOperationException('authmanager_usermanager_unchangeable');
-		if(!is_string($provider) && !($provider instanceof TUserManager))
+		if(!is_string($provider) && !($provider instanceof IUserManager))
 			throw new TConfigurationException('authmanager_usermanager_invalid',$this->_userManager);
 		$this->_userManager=$provider;
 	}
@@ -283,7 +283,7 @@ class TAuthManager extends TModule
 			throw new TConfigurationException('authmanager_session_required');
 		else
 		{
-			$this->_userManager->switchToGuest($this->getUser());
+			$this->getUser()->setIsGuest(true);
 			$session->destroy();
 		}
 	}

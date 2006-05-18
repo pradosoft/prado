@@ -710,9 +710,11 @@ framework/I18N/schema/sqlite.sql -text
 framework/IO/TTarFileExtractor.php -text
 framework/IO/TTextWriter.php -text
 framework/PradoBase.php -text
+framework/Security/IUserManager.php -text
 framework/Security/TAuthManager.php -text
 framework/Security/TAuthorizationRule.php -text
 framework/Security/TSecurityManager.php -text
+framework/Security/TUser.php -text
 framework/Security/TUserManager.php -text
 framework/TApplication.php -text
 framework/TApplicationComponent.php -text
