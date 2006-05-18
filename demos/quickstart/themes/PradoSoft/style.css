@@ -90,7 +90,7 @@ a
 
 #toc {
 	background-color: #F3F3F3;
-	width:200px;
+	width:220px;
 	padding:0px 10px 0px 10px;
 }
 
@@ -138,18 +138,15 @@ a
 {
     list-style: none;
     margin: 0px;
-    padding: 0px;
+    padding: 5px;
+	padding-left: 15px;
+	border-bottom: 1px dotted #D8D8D8;
 }
 
 .topic a {
-    display: block;
 	color:#4F811A;
-	padding: 5px;
-	padding-left: 20px;
-	height: 12px;
 	font-size: 8pt;
 	text-decoration: none;
-	border-bottom: 1px dotted #D8D8D8;
 }
 
 .topic a:hover {

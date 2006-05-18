@@ -28,11 +28,6 @@
  * Note, count($map) will always return 1. You should use {@link getCount()}
  * to determine the number of items in the map.
  *
- * To extend TMap by doing additional operations with each added or removed item,
- * you can override {@link addedItem} and {@link removedItem}.
- * You can also override {@link canAddItem} and {@link canRemoveItem} to
- * control whether to add or remove a particular item.
- *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Collections
