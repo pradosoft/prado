@@ -7,7 +7,7 @@ Prado::using('System.Collections.*');
 Prado::using('System.DataAccess.SQLMap.DataMapper.TTypeHandlerFactory');
 Prado::using('System.DataAccess.SQLMap.DataMapper.TSqlMapCache');
 Prado::using('System.DataAccess.SQLMap.DataMapper.TDataMapperException');
-Prado::using('System.DataAccess.TAdodbProvider');
+Prado::using('System.DataAccess.TAdodb');
 
 /**
  * DataMapper client, a facade to provide access the rest of the DataMapper

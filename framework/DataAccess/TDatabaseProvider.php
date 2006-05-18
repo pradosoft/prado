@@ -52,11 +52,16 @@ abstract class TDatabaseProvider extends TModule
 	}
 
 	/**
+	 * If the driver is <tt>sqlite</tt>, the host must be dot path to the sqlite
+	 * file.
 	 * @return string the DB host name/IP (and port number) in the format "host[:port]"
 	 */
 	public function getHost()
 	{
-		return $this->_host;
+		if(strtolower($this->getDriver()) == "sqlite")
+			return Prado::getPathOfNamespace($this->_host);
+		else
+			return $this->_host;
 	}
 
 	/**
@@ -136,6 +141,24 @@ abstract class TDatabaseProvider extends TModule
 		$this->_persistent=$value;
 	}
 
+	protected function buildDsn()
+	{
+		$driver = $this->getDriver().'://';
+		$user = $this->getUsername();
+		$pass = rawurlencode($this->getPassword());
+		$pass = strlen($pass) > 0 ? ':'.$pass : $pass;
+		$host = $this->getHost().'/';
+		if(strtolower($this->getDriver()) == 'sqlite')
+			$host = rawurlencode($host);
+		else
+			$host = '@'.$host;
+		$db = $this->getDatabase();
+		$db = strlen($db) > 0 ? '/'.$db : $db;
+		$persist = $this->getUsePersistentConnection() ? '': '?persit';
+		
+		return $driver.$user.$pass.$host.$persist;
+	}
+
 	/**
 	 * @return TDbConnection a database connection
 	 */
@@ -194,16 +217,6 @@ interface IDbConnection
 	public function completeTransaction();
 
 	/**
-	 * Fail the current transaction.
-	 */
-	public function failTransaction();
-
-	/**
-	 * @return boolean true if transaction has failed.
-	 */
-	public function getHasTransactionFailed();
-
-	/**
 	 * Makes all changes made since the previous commit/rollback permanent and
 	 * releases any database locks.
 	 */
@@ -252,6 +265,11 @@ abstract class TDbConnection extends TComponent implements IDbConnection
 	public function getProvider()
 	{
 		return $this->_provider;
+	}
+
+	public function __destruct()
+	{
+		$this->close();
 	}
 }
 

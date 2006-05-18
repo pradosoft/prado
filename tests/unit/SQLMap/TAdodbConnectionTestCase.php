@@ -14,7 +14,7 @@ class TAdodbConnectionTestCase extends UnitTestCase
 		$file = dirname(__FILE__).'/resources/data.db';
 		$this->db_file = dirname(__FILE__).'/resources/test.db';
 		copy($file,$this->db_file);
-		$provider = new TAdodbProvider();
+		$provider = new TAdodb();
 		$provider->importAdodbLibrary();
 	}
 
@@ -25,7 +25,7 @@ class TAdodbConnectionTestCase extends UnitTestCase
 
 	function testProviderCreation()
 	{
-		$provider = new TAdodbProvider();
+		$provider = new TAdodb();
 		$connection = $provider->getConnection();
 		$this->assertTrue($connection instanceof TAdodbConnection);
 		try

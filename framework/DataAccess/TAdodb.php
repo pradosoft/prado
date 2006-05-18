@@ -7,9 +7,9 @@ Prado::using('System.DataAccess.TDatabaseProvider');
  *
  * Usage:
  * <code>
- * $provider = new TAdodbProvider;
- * $provider->setConnectionString($dsn);
- * $connection = $provider->getConnection();
+ * $provider = new TAdodb; 
+ * $provider->setConnectionString($dsn); $
+ * connection = $provider->getConnection(); 
  * $resultSet = $connection->execute('....');
  * </code>
  *
@@ -18,7 +18,7 @@ Prado::using('System.DataAccess.TDatabaseProvider');
  * @package System.DataAccess
  * @since 3.0
  */
-class TAdodbProvider extends TDatabaseProvider
+class TAdodb extends TDatabaseProvider
 {
 	const FETCH_ASSOCIATIVE='associative';
 	const FETCH_NUMERIC='numeric';
@@ -29,18 +29,40 @@ class TAdodbProvider extends TDatabaseProvider
 	private $_cachedir='';
 	private $_fetchMode = 'associative';
 
-	private static $_hasImported=false;
-
-	private $_adodbLibrary='';
-
 	public function getConnection()
 	{
-		if(is_null($this->_connection) || is_null($this->_connection->getProvider()))
-		{
-			$this->importAdodbLibrary();
-			$this->_connection = new TAdodbConnection($this);
-		}
+		$this->initialize();	
 		return $this->_connection;
+	}
+
+	public function initialize()
+	{
+		if(!class_exists('ADOConnection', false))
+			$this->importAdodbLibrary();
+		if(is_null($this->_connection))
+			$this->_connection = new TAdodbConnection($this);
+	}
+
+	public function enableActiveRecords()
+	{
+		$conn = $this->getConnection();
+		if(is_null($conn->getInternalConnection()) && $conn->open())
+		{
+			Prado::using('System.DataAccess.TActiveRecord');
+			TActiveRecord::setDatabaseAdapter($conn->getInternalConnection());
+		}
+	}
+
+	protected function getAdodbLibrary()
+	{
+		return Prado::getPathOfNamespace('System.3rdParty.adodb');
+	}
+
+	protected function importAdodbLibrary()
+	{
+		$path = $this->getAdodbLibrary();
+		require($path.'/adodb-exceptions.inc.php');
+		require($path.'/adodb.inc.php');
 	}
 
 	/**
@@ -50,30 +72,7 @@ class TAdodbProvider extends TDatabaseProvider
 	{
 		return $this->_cachedir;
 	}
-
-	public function getAdodbLibrary()
-	{
-		if(strlen($this->_adodbLibrary) < 1)
-			return dirname(__FILE__).'/adodb';
-		else
-			return $this->_adodbLibrary;
-	}
-
-	public function setAdodbLibrary($path)
-	{
-		$this->_adodbLibrary = Prado::getPathOfNamespace($path);
-	}
-
-	public function importAdodbLibrary()
-	{
-		if(!self::$_hasImported)
-		{
-			require($this->getAdodbLibrary().'/adodb-exceptions.inc.php');
-			require($this->getAdodbLibrary().'/adodb.inc.php');
-			self::$_hasImported = true;
-		}
-	}
-
+	
 	/**
 	 * Sets the cache directory for ADODB (in adodb it is
 	 * called to $ADODB_CACHE_DIR)
@@ -126,8 +125,16 @@ class TAdodbConnection extends TDbConnection
 	private $_connection;
 
 	/**
+	 * Gets the internal connection. 
+	 */
+	public function getInternalConnection()
+	{
+		return $this->_connection;
+	}
+	
+	/**
 	 * Constructor, initialize a new Adodb connection.
-	 * @param string|TAdodbProvider DSN connection string or a TAdodbProvider
+	 * @param string|TAdodb DSN connection string or a TAdodb
 	 */
 	public function __construct($provider=null)
 	{
@@ -142,7 +149,7 @@ class TAdodbConnection extends TDbConnection
 	 */
 	protected function initProvider($connectionString)
 	{
-		$provider  = new TAdodbProvider();
+		$provider  = new TAdodb();
 		$provider->setConnectionString($connectionString);
 		$this->setProvider($provider);
 	}
@@ -214,21 +221,6 @@ class TAdodbConnection extends TDbConnection
 		return $this->connection->CompleteTrans();
 	}
 
-	/**
-	 * Fail the current transaction.
-	 */
-	public function failTransaction()
-	{
-		return $this->connection->FailTrans();
-	}
-
-	/**
-	 * @return boolean true if transaction has failed.
-	 */
-	public function getHasTransactionFailed()
-	{
-		return $this->connection->HasFailedTrans();
-	}
 
 	public function commit()
 	{
@@ -250,12 +242,11 @@ class TAdodbConnection extends TDbConnection
 		if($this->getIsClosed())
 		{
 			$provider = $this->getProvider();
-			$provider->importAdodbLibrary();
+			$provider->initialize();
 			if(strlen($provider->getConnectionString()) < 1)
 			{
 				if(strlen($provider->getDriver()) < 1)
 					throw new TDbConnectionException('db_driver_required');
-
 				$this->_connection=ADONewConnection($provider->getDriver());
 				$this->initConnection();
 			}
@@ -295,11 +286,11 @@ class TAdodbConnection extends TDbConnection
 	{
 		global $ADODB_FETCH_MODE;
 		$provider = $this->getProvider();
-		if($provider->getFetchMode()===TAdodbProvider::FETCH_ASSOCIATIVE)
+		if($provider->getFetchMode()===TAdodb::FETCH_ASSOCIATIVE)
 			$ADODB_FETCH_MODE=ADODB_FETCH_ASSOC;
-		else if($provider->fetchMode===TAdodbProvider::FETCH_NUMERIC)
+		else if($provider->fetchMode===TAdodb::FETCH_NUMERIC)
 			$ADODB_FETCH_MODE=ADODB_FETCH_NUM;
-		else if($provider->fetchMode===TAdodbProvider::FETCH_BOTH)
+		else if($provider->fetchMode===TAdodb::FETCH_BOTH)
 			$ADODB_FETCH_MODE=ADODB_FETCH_BOTH;
 		else
 			$ADODB_FETCH_MODE=ADODB_FETCH_DEFAULT;
