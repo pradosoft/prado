@@ -424,7 +424,7 @@ class TXmlElementList extends TList
 	 * Inserts an item at the specified position.
 	 * This overrides the parent implementation by performing additional
 	 * operations for each newly added TXmlElement object.
-	 * @param integer the speicified position.
+	 * @param integer the specified position.
 	 * @param mixed new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a TXmlElement object.
 	 */
