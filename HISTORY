@@ -1,5 +1,6 @@
 Version 3.0.1 June 1, 2006
 ==========================
+BUG: Ticket#37 - Changes of config files do not trigger cache update (Qiang)
 BUG: Ticket#44 - THtmlArea (tiny_mce) not working on some systems (Qiang)
 BUG: Ticket#167 - TSecurityManager issues warning when trying to encrypt/decrypt strings (Qiang)
 BUG: Ticket#179 - CGI incompatibility causing clientscripts.php failure (Qiang)
