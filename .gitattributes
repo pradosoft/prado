@@ -437,8 +437,6 @@ framework/3rdParty/adodb/docs/tips_portable_sql.htm -text
 framework/3rdParty/adodb/docs/tute.htm -text
 framework/3rdParty/adodb/drivers/adodb-ado5.inc.php -text
 framework/3rdParty/adodb/drivers/adodb-ado_mssql.inc.php -text
-framework/3rdParty/adodb/drivers/adodb-db2.inc.php -text
-framework/3rdParty/adodb/drivers/adodb-firebird.inc.php -text
 framework/3rdParty/adodb/drivers/adodb-ldap.inc.php -text
 framework/3rdParty/adodb/drivers/adodb-mssql.inc.php -text
 framework/3rdParty/adodb/drivers/adodb-mssqlpo.inc.php -text
@@ -449,7 +447,6 @@ framework/3rdParty/adodb/drivers/adodb-oci8.inc.php -text
 framework/3rdParty/adodb/drivers/adodb-oci805.inc.php -text
 framework/3rdParty/adodb/drivers/adodb-oci8po.inc.php -text
 framework/3rdParty/adodb/drivers/adodb-odbc.inc.php -text
-framework/3rdParty/adodb/drivers/adodb-odbc_db2.inc.php -text
 framework/3rdParty/adodb/drivers/adodb-odbc_mssql.inc.php -text
 framework/3rdParty/adodb/drivers/adodb-odbc_oracle.inc.php -text
 framework/3rdParty/adodb/drivers/adodb-oracle.inc.php -text
@@ -458,16 +455,9 @@ framework/3rdParty/adodb/drivers/adodb-pdo_mssql.inc.php -text
 framework/3rdParty/adodb/drivers/adodb-pdo_mysql.inc.php -text
 framework/3rdParty/adodb/drivers/adodb-pdo_oci.inc.php -text
 framework/3rdParty/adodb/drivers/adodb-pdo_pgsql.inc.php -text
-framework/3rdParty/adodb/drivers/adodb-postgres.inc.php -text
 framework/3rdParty/adodb/drivers/adodb-postgres64.inc.php -text
 framework/3rdParty/adodb/drivers/adodb-postgres7.inc.php -text
-framework/3rdParty/adodb/drivers/adodb-postgres8.inc.php -text
-framework/3rdParty/adodb/drivers/adodb-sapdb.inc.php -text
-framework/3rdParty/adodb/drivers/adodb-sqlanywhere.inc.php -text
 framework/3rdParty/adodb/drivers/adodb-sqlite.inc.php -text
-framework/3rdParty/adodb/drivers/adodb-sqlitepo.inc.php -text
-framework/3rdParty/adodb/drivers/adodb-sybase.inc.php -text
-framework/3rdParty/adodb/drivers/adodb-sybase_ase.inc.php -text
 framework/3rdParty/adodb/license.txt -text
 framework/3rdParty/adodb/readme.txt -text
 framework/3rdParty/geshi/docs/COPYING -text

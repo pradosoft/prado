@@ -1,8 +1,36 @@
 <?php
+/**
+ * TDatabaseProvider and TDbConnection class and IDbConnection interface file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.DataAccess
+ */
 
 /**
- * Database access module.
- *
+ * Database provider or adapter base class.
+ * 
+ * All database providers should extend this base class to provide a uniform
+ * configuration to the database. Database providers should allow the database
+ * connection to be set via the {@link setConnectionString ConnectionString}
+ * property using a DSN string. The DSN format is
+ * <code>
+ *	$driver://$username:$password@host/$database?options[=value]
+ * </code>
+ * Alternatively the database connections details can be set via the {@link
+ * setDriver Driver}, {@link setUsername Username}, {@link setPassword
+ * Password}, {@link setHost Host} and {@link setDatabase Database} properties.
+ * Additional options for individual database driver may be added via the {@link
+ * setConnectionOptions ConnectionOptions} property.
+ * 
+ * Database provider implementation must implement the {@link getConnection
+ * Connection} property that returns a database connection or client. A
+ * DSN connection string the represents the available connection properties can
+ * be obtained from the protected method {@link buildConnectionString} method.
+ * 
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $Date: $
  * @package System.DataAccess
@@ -10,16 +38,40 @@
  */
 abstract class TDatabaseProvider extends TModule
 {
+	/**
+	 * @var string DSN connection string.
+	 */
 	private $_connectionString = '';
+	/**
+	 * @var string database name.
+	 */
 	private $_database='';
+	/**
+	 * @var string database driver name.
+	 */
 	private $_driver='';
+	/**
+	 * @var string database host name.
+	 */
 	private $_host='';
+	/**
+	 * @var string database connection username credentail.
+	 */
 	private $_username='';
+	/**
+	 * @var string database connection password credential.
+	 */
 	private $_password='';
-	private $_persistent=true;
+	/**
+	 * @var string additional connection options.
+	 */
+	private $_options='';
+	
 
 	/**
-	 * @param string used to open the connection
+	 * DSN connection string of the form 
+	 * <tt>$driver://$username:$password@host/$database?options[=value]</tt>
+	 * @param string DSN style connection string.
 	 */
 	public function	setConnectionString($value)
 	{
@@ -27,7 +79,7 @@ abstract class TDatabaseProvider extends TModule
 	}
 
 	/**
-	 * @return string used to open the connection
+	 * @return string DSN connection string
 	 */
 	public function getConnectionString()
 	{
@@ -35,7 +87,7 @@ abstract class TDatabaseProvider extends TModule
 	}
 
 	/**
-	 * @return string the DB driver (mysql, sqlite, etc.)
+	 * @return string database driver name (mysql, sqlite, etc.)
 	 */
 	public function getDriver()
 	{
@@ -43,8 +95,7 @@ abstract class TDatabaseProvider extends TModule
 	}
 
 	/**
-	 * Sets the DB driver (mysql, sqlite, etc.)
-	 * @param string the DB driver
+	 * @param string database driver name.
 	 */
 	public function setDriver($value)
 	{
@@ -53,8 +104,10 @@ abstract class TDatabaseProvider extends TModule
 
 	/**
 	 * If the driver is <tt>sqlite</tt>, the host must be dot path to the sqlite
-	 * file.
-	 * @return string the DB host name/IP (and port number) in the format "host[:port]"
+	 * file. E.g. "<tt>Application.pages.my_db</tt>". The database filename
+	 * should not contain any dots.
+	 * @return string database host name/IP (and port number) in the format
+	 * "host[:port]"
 	 */
 	public function getHost()
 	{
@@ -65,7 +118,8 @@ abstract class TDatabaseProvider extends TModule
 	}
 
 	/**
-	 * Sets the DB host name/IP (and port number) in the format "host[:port]"
+	 * Sets the database host name/IP or resource (and port number) in the
+	 * format "host [: port]"
 	 * @param string the DB host
 	 */
 	public function setHost($value)
@@ -74,7 +128,7 @@ abstract class TDatabaseProvider extends TModule
 	}
 
 	/**
-	 * @return string the DB username
+	 * @return string database connection username credential.
 	 */
 	public function getUsername()
 	{
@@ -82,8 +136,7 @@ abstract class TDatabaseProvider extends TModule
 	}
 
 	/**
-	 * Sets the DB username
-	 * @param string the DB username
+	 * @param string database connection username credential.
 	 */
 	public function setUsername($value)
 	{
@@ -91,7 +144,7 @@ abstract class TDatabaseProvider extends TModule
 	}
 
 	/**
-	 * @return string the DB password
+	 * @return string database connection password
 	 */
 	public function getPassword()
 	{
@@ -99,8 +152,7 @@ abstract class TDatabaseProvider extends TModule
 	}
 
 	/**
-	 * Sets the DB password
-	 * @param string the DB password
+	 * @param string database connection password.
 	 */
 	public function setPassword($value)
 	{
@@ -108,7 +160,7 @@ abstract class TDatabaseProvider extends TModule
 	}
 
 	/**
-	 * @return string the database name
+	 * @return string default database name to connect.
 	 */
 	public function getDatabase()
 	{
@@ -116,8 +168,7 @@ abstract class TDatabaseProvider extends TModule
 	}
 
 	/**
-	 * Sets the database name
-	 * @param string the database name
+	 * @param string default database name to connect to.
 	 */
 	public function setDatabase($value)
 	{
@@ -125,23 +176,27 @@ abstract class TDatabaseProvider extends TModule
 	}
 
 	/**
-	 * @return boolean whether the DB connection is persistent
+	 * @return string additional connection options.
 	 */
-	public function getUsePersistentConnection()
+	public function getConnectionOptions()
 	{
-		return $this->_persistent;
+		return $this->_options;
 	}
 
 	/**
-	 * Sets whether the DB connection should be persistent
-	 * @param boolean whether the DB connection should be persistent
+	 * @param string additional connection options for each individual database
+	 * driver.
 	 */
-	public function setUsePersistentConnection($value)
+	public function setConnectionOptions($value)
 	{
-		$this->_persistent=$value;
+		$this->_options=$value;
 	}
 
-	protected function buildDsn()
+	/**
+	 * @return string the DSN connection string build from individual connection
+	 * properties.
+	 */
+	protected function buildConnectionString()
 	{
 		$driver = $this->getDriver().'://';
 		$user = $this->getUsername();
@@ -154,9 +209,9 @@ abstract class TDatabaseProvider extends TModule
 			$host = '@'.$host;
 		$db = $this->getDatabase();
 		$db = strlen($db) > 0 ? '/'.$db : $db;
-		$persist = $this->getUsePersistentConnection() ? '': '?persit';
+		$options = $this->getConnectionOptions();
 		
-		return $driver.$user.$pass.$host.$persist;
+		return $driver.$user.$pass.$host.$options;
 	}
 
 	/**
@@ -187,7 +242,7 @@ interface IDbConnection
 	public function getIsClosed();
 
 	/**
-	 * Opens a database connection with settings provided in the ConnectionString.
+	 * Opens a database connection using settings of a TDatabaseProvider.
 	 */
 	public function open();
 
@@ -207,24 +262,26 @@ interface IDbConnection
 	public function execute($sql, $parameters=array());
 
 	/**
-	 * Start a transaction on this connection.
+	 * Start a transaction on this connection. Not all database will support
+	 * transactions.
 	 */
 	public function beginTransaction();
 
 	/**
-	 * Finish and cleanup transactions.
+	 * Finish and cleanup transactions. Not all database will support
+	 * transactions.
 	 */
 	public function completeTransaction();
 
 	/**
 	 * Makes all changes made since the previous commit/rollback permanent and
-	 * releases any database locks.
+	 * releases any database locks. Not all database will support transactions.
 	 */
 	public function commit();
 
 	/**
 	 * Undoes all changes made in the current transaction and releases any
-	 * database locks
+	 * database locks. Not all database will support transactions.
 	 */
 	public function rollback();
 
@@ -240,7 +297,7 @@ interface IDbConnection
 
 /**
  * Performs the connection to the database using a TDatabaseProvider,
- * executes SQL statements.
+ * and provides an interface for executing SQL statements and transactions.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $Date: $
@@ -249,24 +306,39 @@ interface IDbConnection
  */
 abstract class TDbConnection extends TComponent implements IDbConnection
 {
+	/**
+	 * @string TDatabaseProvider database provider containing connection
+	 * details.
+	 */
 	private $_provider;
 
-	public function __construct($provider)
+	/**
+	 * Creates a new database connection context.
+	 */
+	public function __construct(TDatabaseProvider $provider)
 	{
-		if($provider instanceof TDatabaseProvider)
-			$this->setProvider($provider);
+		$this->setProvider($provider);
 	}
 
+	/**
+	 * @param TDatabaseProvider sets the connection details.
+	 */
 	public function setProvider($provider)
 	{
 		$this->_provider = $provider;
 	}
 
+	/**
+	 * @param TDatabaseProvider gets the database connection details.
+	 */
 	public function getProvider()
 	{
 		return $this->_provider;
 	}
 
+	/**
+	 * Automatically closes the database connection.
+	 */
 	public function __destruct()
 	{
 		$this->close();
