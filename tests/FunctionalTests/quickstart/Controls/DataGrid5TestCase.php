@@ -47,11 +47,11 @@ class DataGrid5TestCase extends SeleniumTestCase
 		$this->verifyTextNotPresent('ITN006','');
 
 		// show top pager
-		$this->clickAndWait("//input[@name='ctl0\$body\$ctl1$0' and @value='Top']", "");
+		$this->clickAndWait("//input[@name='ctl0\$body\$ctl1\$c0' and @value='Top']", "");
 		$this->clickAndWait("id=ctl0_body_DataGrid_ctl8_ctl3", "");
 		$this->clickAndWait("link=1", "");
 		// hide top pager
-		$this->clickAndWait("//input[@name='ctl0\$body\$ctl1$0' and @value='Top']", "");
+		$this->clickAndWait("//input[@name='ctl0\$body\$ctl1\$c0' and @value='Top']", "");
 
 		// change next prev caption
 		$this->type("ctl0\$body\$NextPageText", "Next Page");

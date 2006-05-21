@@ -138,7 +138,7 @@ return this.trim($F(control));}},observeDatePickerChanges:function()
 {checked++;values.push(element.value);}});return{'checks':checked,'values':values};},getListElements:function()
 {switch(this.options.ControlType)
 {case'TCheckBoxList':case'TRadioButtonList':var elements=[];for(var i=0;i<this.options.TotalItems;i++)
-{var element=$(this.options.ControlToValidate+"_"+i);if(this.isCheckBoxType(element))
+{var element=$(this.options.ControlToValidate+"_c"+i);if(this.isCheckBoxType(element))
 elements.push(element);}
 return elements;case'TListBox':var elements=[];var element=$(this.options.ControlToValidate);if(element&&(type=element.type.toLowerCase()))
 {if(type=="select-one"||type=="select-multiple")

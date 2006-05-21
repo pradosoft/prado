@@ -1,27 +1,27 @@
 
 /**
  * Prado client-side javascript validation fascade.
- * 
+ *
  * There are 4 basic classes, Validation, ValidationManager, ValidationSummary
  * and TBaseValidator, that interact together to perform validation.
- * The <tt>Prado.Validation</tt> class co-ordinates together the 
+ * The <tt>Prado.Validation</tt> class co-ordinates together the
  * validation scheme and is responsible for maintaining references
- * to ValidationManagers. 
- * 
+ * to ValidationManagers.
+ *
  * The ValidationManager class is responsible for maintaining refereneces
  * to individual validators, validation summaries and their associated
  * groupings.
- * 
+ *
  * The ValidationSummary take cares of display the validator error messages
- * as html output or an alert output. 
- * 
+ * as html output or an alert output.
+ *
  * The TBaseValidator is the base class for all validators and contains
  * methods to interact with the actual inputs, data type conversion.
- * 
+ *
  * An instance of ValidationManager must be instantiated first for a
  * particular form before instantiating validators and summaries.
- * 
- * Usage example: adding a required field to a text box input with 
+ *
+ * Usage example: adding a required field to a text box input with
  * ID "input1" in a form with ID "form1".
  * <code>
  * <script type="text/javascript" src="../prado.js"></script>
@@ -33,16 +33,16 @@
  *  <input type="submit text="submit" />
  * <script type="text/javascript">
  * new Prado.ValidationManager({FormID : 'form1'});
- * var options = 
+ * var options =
  * {
  *		ID :				'validator1',
  *		FormID :			'form1',
- *		ErrorMessage :		'*', 
+ *		ErrorMessage :		'*',
  *		ControlToValidate : 'input1'
  *	}
  * new Prado.WebUI.TRequiredFieldValidator(options);
  * new Prado.WebUI.TValidationSummary({ID:'summary1',FormID:'form1'});
- * 
+ *
  * //watch the form onsubmit event, check validators, stop if not valid.
  * Event.observe("form1", "submit" function(ev)
  * {
@@ -67,10 +67,10 @@ Prado.Validation =  Class.create();
 Object.extend(Prado.Validation,
 {
 	managers : {},
-	
+
 	/**
-	 * Validate the validators (those that <strong>DO NOT</strong> 
-	 * belong to a particular group) the form specified by the 
+	 * Validate the validators (those that <strong>DO NOT</strong>
+	 * belong to a particular group) the form specified by the
 	 * <tt>formID</tt> parameter. If <tt>groupID</tt> is specified
 	 * then only validators belonging to that group will be validated.
 	 * @param string ID of the form to validate
@@ -88,11 +88,11 @@ Object.extend(Prado.Validation,
 			throw new Error("Form '"+form+"' is not registered with Prado.Validation");
 		}
 	},
-	
+
 	/**
 	 * Check if the validators are valid for a particular form (and group).
 	 * The validators states will not be changed.
-	 * The <tt>validate</tt> function should be called first. 
+	 * The <tt>validate</tt> function should be called first.
 	 * @param string ID of the form to validate
 	 * @param string ID of the group to validate.
 	 */
@@ -102,7 +102,7 @@ Object.extend(Prado.Validation,
 			return this.managers[formID].isValid(groupID);
 		return true;
 	},
-		
+
 	/**
 	 * Add a new validator to a particular form.
 	 * @param string the form that the validator belongs.
@@ -117,7 +117,7 @@ Object.extend(Prado.Validation,
 			throw new Error("A validation manager for form '"+formID+"' needs to be created first.");
 		return this.managers[formID];
 	},
-	
+
 	/**
 	 * Add a new validation summary.
 	 * @param string the form that the validation summary belongs.
@@ -129,14 +129,14 @@ Object.extend(Prado.Validation,
 		if(this.managers[formID])
 			this.managers[formID].addSummary(validator);
 		else
-			throw new Error("A validation manager for form '"+formID+"' needs to be created first.");		
+			throw new Error("A validation manager for form '"+formID+"' needs to be created first.");
 		return this.managers[formID];
 	}
 });
 
 Prado.ValidationManager = Class.create();
 /**
- * Validation manager instances. Manages validators for a particular 
+ * Validation manager instances. Manages validators for a particular
  * HTML form. The manager contains references to all the validators
  * summaries, and their groupings for a particular form.
  * Generally, <tt>Prado.Validation</tt> methods should be called rather
@@ -148,7 +148,7 @@ Prado.ValidationManager.prototype =
 	summaries : [], // validation summaries
 	groups : [], // validation groups
 	options : {},
-	
+
 	/**
 	 * <code>
 	 * options['FormID']*	The ID of HTML form to manage.
@@ -159,7 +159,7 @@ Prado.ValidationManager.prototype =
 		this.options = options;
 		Prado.Validation.managers[options.FormID] = this;
 	},
-	
+
 	/**
 	 * Validate the validators managed by this validation manager.
 	 * @param string only validate validators belonging to a group (optional)
@@ -171,12 +171,12 @@ Prado.ValidationManager.prototype =
 		if(group)
 			return this._validateGroup(group, invoker);
 		else
-			return this._validateNonGroup(invoker);	
+			return this._validateNonGroup(invoker);
 	},
-	
+
 	/**
 	 * Validate a particular group of validators.
-	 * @param string ID of the form 
+	 * @param string ID of the form
 	 * @param HTMLElement element that calls for validation
 	 * @return boolean false if group is not valid, true otherwise.
 	 */
@@ -196,7 +196,7 @@ Prado.ValidationManager.prototype =
 		this.updateSummary(groupID, true);
 		return valid;
 	},
-		
+
 	/**
 	 * Validate validators that doesn't belong to any group.
 	 * @return boolean false if not valid, true otherwise.
@@ -215,7 +215,7 @@ Prado.ValidationManager.prototype =
 		this.updateSummary(null, true);
 		return valid;
 	},
-	
+
 	/**
 	 * Gets the state of all the validators, true if they are all valid.
 	 * @return boolean true if the validators are valid.
@@ -227,7 +227,7 @@ Prado.ValidationManager.prototype =
 		else
 			return this._isValidNonGroup();
 	},
-	
+
 	/**
 	 * @return boolean true if all validators not belonging to a group are valid.
 	 */
@@ -237,11 +237,11 @@ Prado.ValidationManager.prototype =
 		this.validators.each(function(validator)
 		{
 			if(!validator.group)
-				valid = valid & validator.isValid;	
+				valid = valid & validator.isValid;
 		});
 		return valid;
 	},
-	
+
 	/**
 	 * @return boolean true if all validators belonging to the group are valid.
 	 */
@@ -253,12 +253,12 @@ Prado.ValidationManager.prototype =
 			this.validators.each(function(validator)
 			{
 				if(validator.group == groupID)
-					valid = valid & validator.isValid;	
+					valid = valid & validator.isValid;
 			});
-		}	
+		}
 		return valid;
 	},
-	
+
 	/**
 	 * Add a validator to this manager.
 	 * @param Prado.WebUI.TBaseValidator a new validator
@@ -269,7 +269,7 @@ Prado.ValidationManager.prototype =
 		if(validator.group && !this.groups.include(validator.group))
 			this.groups.push(validator.group);
 	},
-	
+
 	/**
 	 * Add a validation summary.
 	 * @param Prado.WebUI.TValidationSummary validation summary.
@@ -278,7 +278,7 @@ Prado.ValidationManager.prototype =
 	{
 		this.summaries.push(summary);
 	},
-	
+
 	/**
 	 * Gets all validators that belong to a group or that the validator
 	 * group is null and the validator validation was false.
@@ -295,7 +295,7 @@ Prado.ValidationManager.prototype =
 		});
 		return validators;
 	},
-	
+
 	/**
 	 * Update the summary of a particular group.
 	 * @param string validation group to update.
@@ -318,8 +318,8 @@ Prado.ValidationManager.prototype =
 /**
  * TValidationSummary displays a summary of validation errors inline on a Web page,
  * in a message box, or both. By default, a validation summary will collect
- * <tt>ErrorMessage</tt> of all failed validators on the page. If 
- * <tt>ValidationGroup</tt> is not empty, only those validators who belong 
+ * <tt>ErrorMessage</tt> of all failed validators on the page. If
+ * <tt>ValidationGroup</tt> is not empty, only those validators who belong
  * to the group will show their error messages in the summary.
  *
  * The summary can be displayed as a list, as a bulleted list, or as a single
@@ -328,16 +328,16 @@ Prado.ValidationManager.prototype =
  *
  * The summary can be displayed on the Web page and in a message box by setting
  * the <tt>ShowSummary</tt> and <tt>ShowMessageBox</tt>
- * options, respectively. 
+ * options, respectively.
  */
 Prado.WebUI.TValidationSummary = Class.create();
-Prado.WebUI.TValidationSummary.prototype = 
+Prado.WebUI.TValidationSummary.prototype =
 {
-	group : null,	
+	group : null,
 	options : {},
 	visible : false,
 	messages : null,
-	
+
 	/**
 	 * <code>
 	 * options['ID']*				Validation summary ID, i.e., an HTML element ID
@@ -351,7 +351,7 @@ Prado.WebUI.TValidationSummary.prototype =
 	 * options['Display']			Display mode, 'None', 'Static', 'Dynamic'.
 	 * options['ScrollToSummary']	True to scroll to the validation summary upon refresh.
 	 * </code>
-	 */	
+	 */
 	initialize : function(options)
 	{
 		this.options = options;
@@ -361,7 +361,7 @@ Prado.WebUI.TValidationSummary.prototype =
 		this.visible = this.visible && this.messages.style.display != "none";
 		Prado.Validation.addSummary(options.FormID, this);
 	},
-	
+
 	/**
 	 * Update the validation summary to show the error message from
 	 * validators that failed validation.
@@ -380,23 +380,23 @@ Prado.WebUI.TValidationSummary.prototype =
 		}
 
 		var refresh = update || this.visible == false || this.options.Refresh != false;
-				
+
 		if(this.options.ShowSummary != false && refresh)
 		{
 			this.updateHTMLMessages(this.getMessages(validators));
 			this.showSummary(validators);
 		}
-		
+
 		if(this.options.ScrollToSummary != false)
 			window.scrollTo(this.messages.offsetLeft-20, this.messages.offsetTop-20);
-		
+
 		if(this.options.ShowMessageBox == true && refresh)
 		{
 			this.alertMessages(this.getMessages(validators));
 			this.visible = true;
 		}
 	},
-	
+
 	/**
 	 * Display the validator error messages as inline HTML.
 	 */
@@ -404,9 +404,9 @@ Prado.WebUI.TValidationSummary.prototype =
 	{
 		while(this.messages.childNodes.length > 0)
 			this.messages.removeChild(this.messages.lastChild);
-		new Insertion.Bottom(this.messages, this.formatSummary(messages));	
+		new Insertion.Bottom(this.messages, this.formatSummary(messages));
 	},
-	
+
 	/**
 	 * Display the validator error messages as an alert box.
 	 */
@@ -415,7 +415,7 @@ Prado.WebUI.TValidationSummary.prototype =
 		var text = this.formatMessageBox(messages);
 		setTimeout(function(){ alert(text); },20);
 	},
-	
+
 	/**
 	 * @return array list of validator error messages.
 	 */
@@ -423,14 +423,14 @@ Prado.WebUI.TValidationSummary.prototype =
 	{
 		var messages = [];
 		validators.each(function(validator)
-		{ 
-			var message = validator.getErrorMessage();	
+		{
+			var message = validator.getErrorMessage();
 			if(typeof(message) == 'string' && message.length > 0)
 				messages.push(message);
 		})
-		return messages;		
-	},	
-	
+		return messages;
+	},
+
 	/**
 	 * Hides the validation summary.
 	 */
@@ -448,7 +448,7 @@ Prado.WebUI.TValidationSummary.prototype =
 		}
 		this.visible = false;
 	},
-	
+
 	/**
 	 * Shows the validation summary.
 	 */
@@ -461,7 +461,7 @@ Prado.WebUI.TValidationSummary.prototype =
 			this.messages.show();
 		this.visible = true;
 	},
-	
+
 	/**
 	 * Return the format parameters for the summary.
 	 * @param string format type, "List", "SingleParagraph" or "BulletList"
@@ -493,7 +493,7 @@ Prado.WebUI.TValidationSummary.prototype =
 		output += format.first;
 		messages.each(function(message)
 		{
-			output += message.length > 0 ? format.pre + message + format.post : "";	
+			output += message.length > 0 ? format.pre + message + format.post : "";
 		});
 //		for(var i = 0; i < messages.length; i++)
 	//		output += (messages[i].length>0) ? format.pre + messages[i] + format.post : "";
@@ -531,24 +531,24 @@ Prado.WebUI.TValidationSummary.prototype =
 /**
  * TBaseValidator serves as the base class for validator controls.
  *
- * Validation is performed when a postback control, such as a TButton, 
- * a TLinkButton or a TTextBox (under AutoPostBack mode) is submitting 
+ * Validation is performed when a postback control, such as a TButton,
+ * a TLinkButton or a TTextBox (under AutoPostBack mode) is submitting
  * the page and its <tt>CausesValidation</tt> option is true.
  * The input control to be validated is specified by <tt>ControlToValidate</tt>
  * option.
  */
 Prado.WebUI.TBaseValidator = Class.create();
-Prado.WebUI.TBaseValidator.prototype = 
+Prado.WebUI.TBaseValidator.prototype =
 {
-	enabled : true, 
+	enabled : true,
 	visible : false,
-	isValid : true, 
+	isValid : true,
 	options : {},
 	_isObserving : {},
 	group : null,
 	manager : null,
 	message : null,
-	
+
 	/**
 	 * <code>
 	 * options['ID']*				Validator ID, e.g. span with message
@@ -571,15 +571,15 @@ Prado.WebUI.TBaseValidator.prototype =
 	/*	options.OnValidate = options.OnValidate || Prototype.emptyFunction;
 		options.OnSuccess = options.OnSuccess || Prototype.emptyFunction;
 		options.OnError = options.OnError || Prototype.emptyFunction;
-	*/	
+	*/
 		this.options = options;
 		this.control = $(options.ControlToValidate);
 		this.message = $(options.ID);
 		this.group = options.ValidationGroup;
-		
+
 		this.manager = Prado.Validation.addValidator(options.FormID, this);
 	},
-	
+
 	/**
 	 * @return string validation error message.
 	 */
@@ -589,8 +589,8 @@ Prado.WebUI.TBaseValidator.prototype =
 	},
 
 	/**
-	 * Update the validator span, input CSS class, and focus particular 
-	 * element. Updating the validator control will set the validator 
+	 * Update the validator span, input CSS class, and focus particular
+	 * element. Updating the validator control will set the validator
 	 * <tt>visible</tt> property to true.
 	 */
 	updateControl: function()
@@ -601,18 +601,18 @@ Prado.WebUI.TBaseValidator.prototype =
 				this.isValid ? this.message.hide() : this.message.show();
 			this.message.style.visibility = this.isValid ? "hidden" : "visible";
 		}
-		
+
 		if(this.control)
-			this.updateControlCssClass(this.control, this.isValid);	
-		
+			this.updateControlCssClass(this.control, this.isValid);
+
 		if(this.options.FocusOnError && !this.isValid)
 			Prado.Element.focus(this.options.FocusElementID);
-		
+
 		this.visible = true;
 	},
-	
+
 	/**
-	 * Add a css class to the input control if validator is invalid, 
+	 * Add a css class to the input control if validator is invalid,
 	 * removes the css class if valid.
 	 * @param object html control element
 	 * @param boolean true to remove the css class, false to add.
@@ -626,9 +626,9 @@ Prado.WebUI.TBaseValidator.prototype =
 				control.removeClassName(CssClass);
 			else
 				control.addClassName(CssClass);
-		}		
+		}
 	},
-	
+
 	/**
 	 * Hides the validator messages and remove any validation changes.
 	 */
@@ -652,14 +652,14 @@ Prado.WebUI.TBaseValidator.prototype =
 
 		if(this.enabled)
 			this.isValid = this.evaluateIsValid();
-				
+
 		if(this.isValid)
 		{
 			if(typeof(this.options.OnSuccess) == "function")
 			{
 				this.visible = true;
 				this.message.style.visibility = "visible";
-				this.updateControlCssClass(this.control, this.isValid);	
+				this.updateControlCssClass(this.control, this.isValid);
 				this.options.OnSuccess(this, invoker);
 			}
 			else
@@ -669,20 +669,20 @@ Prado.WebUI.TBaseValidator.prototype =
 		{
 			if(typeof(this.options.OnError) == "function")
 			{
-				this.visible = true;		
-				this.message.style.visibility = "visible";		
+				this.visible = true;
+				this.message.style.visibility = "visible";
 				this.updateControlCssClass(this.control, this.isValid);
 				this.options.OnError(this, invoker);
 			}
 			else
 				this.updateControl();
 		}
-	
+
 		this.observeChanges(this.control);
-					
+
 		return this.isValid;
 	},
-	
+
 	/**
 	 * Observe changes to the control input, re-validate upon change. If
 	 * the validator is not visible, no updates are propagated.
@@ -691,14 +691,14 @@ Prado.WebUI.TBaseValidator.prototype =
 	observeChanges : function(control)
 	{
 		if(!control) return;
-		
+
 		var canObserveChanges = this.options.ObserveChanges != false;
 		var currentlyObserving = this._isObserving[control.id+this.options.ID];
 
 		if(canObserveChanges && !currentlyObserving)
 		{
 			var validator = this;
-			
+
 			Event.observe(control, 'change', function()
 			{
 				if(validator.visible)
@@ -710,7 +710,7 @@ Prado.WebUI.TBaseValidator.prototype =
 			this._isObserving[control.id+this.options.ID] = true;
 		}
 	},
-	
+
 	/**
 	 * @return string trims the string value, empty string if value is not string.
 	 */
@@ -718,7 +718,7 @@ Prado.WebUI.TBaseValidator.prototype =
 	{
 		return typeof(value) == "string" ? value.trim() : "";
 	},
-	
+
 	/**
 	 * Convert the value to a specific data type.
 	 * @param {string} the data type, "Integer", "Double", "Date" or "String"
@@ -742,18 +742,18 @@ Prado.WebUI.TBaseValidator.prototype =
 					return value;
 				else
 				{
-					var value = string.toDate(this.options.DateFormat);	
+					var value = string.toDate(this.options.DateFormat);
 					if(value && typeof(value.getTime) == "function")
 						return value.getTime();
 					else
 						return null;
 				}
 			case "String":
-				return string.toString();		
+				return string.toString();
 		}
 		return value;
 	},
-	
+
 	/**
 	 * @return mixed control value to validate
 	 */
@@ -769,7 +769,7 @@ Prado.WebUI.TBaseValidator.prototype =
 	 			else
 	 			{
 	 				this.observeDatePickerChanges();
-		
+
 	 				return Prado.WebUI.TDatePicker.getDropDownDate(control).getTime();
 	 			}
 	 		case 'THtmlArea':
@@ -778,12 +778,12 @@ Prado.WebUI.TBaseValidator.prototype =
 				return this.trim($F(control));
 	 		default:
 	 			if(this.isListControlType())
-	 				return this.getFirstSelectedListValue();	 			
+	 				return this.getFirstSelectedListValue();
 	 			else
 		 			return this.trim($F(control));
 	 	}
 	 },
-	 
+
 	 /**
 	  * Observe changes in the drop down list date picker, IE only.
 	  */
@@ -797,7 +797,7 @@ Prado.WebUI.TBaseValidator.prototype =
 			this.observeChanges(DatePicker.getYearListControl(this.control));
 	 	}
 	 },
-	 
+
 	/**
 	 * Gets numeber selections and their values.
 	 * @return object returns selected values in <tt>values</tt> property
@@ -817,8 +817,8 @@ Prado.WebUI.TBaseValidator.prototype =
 			}
 		});
 		return {'checks' : checked, 'values' : values};
-	},	 
-	
+	},
+
 	/**
 	 * Gets an array of the list control item input elements, for TCheckBoxList
 	 * checkbox inputs are returned, for TListBox HTML option elements are returned.
@@ -832,7 +832,7 @@ Prado.WebUI.TBaseValidator.prototype =
 				var elements = [];
 				for(var i = 0; i < this.options.TotalItems; i++)
 				{
-					var element = $(this.options.ControlToValidate+"_"+i);
+					var element = $(this.options.ControlToValidate+"_c"+i);
 					if(this.isCheckBoxType(element))
 						elements.push(element);
 				}
@@ -841,7 +841,7 @@ Prado.WebUI.TBaseValidator.prototype =
 				var elements = [];
 				var element = $(this.options.ControlToValidate);
 				if(element && (type = element.type.toLowerCase()))
-				{ 
+				{
 					if(type == "select-one" || type == "select-multiple")
 						elements = $A(element.options);
 				}
@@ -850,7 +850,7 @@ Prado.WebUI.TBaseValidator.prototype =
 				return [];
 		}
 	},
-	
+
 	/**
 	 * @return boolean true if element is of checkbox or radio type.
 	 */
@@ -863,7 +863,7 @@ Prado.WebUI.TBaseValidator.prototype =
 		}
 		return false;
 	},
-	
+
 	/**
 	 * @return boolean true if control to validate is of some of the TListControl type.
 	 */
@@ -872,7 +872,7 @@ Prado.WebUI.TBaseValidator.prototype =
 		var list = ['TCheckBoxList', 'TRadioButtonList', 'TListBox'];
 		return list.include(this.options.ControlType);
 	},
-	
+
 	/**
 	 * @return string gets the first selected list value, initial value if none found.
 	 */
@@ -880,8 +880,8 @@ Prado.WebUI.TBaseValidator.prototype =
 	{
 		var initial = "";
 		if(typeof(this.options.InitialValue) != "undefined")
-			initial = this.options.InitialValue;			
-		var elements = this.getListElements();		
+			initial = this.options.InitialValue;
+		var elements = this.getListElements();
 		var selection = this.getSelectedValuesAndChecks(elements, initial);
 		return selection.values.length > 0 ? selection.values[0] : initial;
 	}
@@ -896,7 +896,7 @@ Prado.WebUI.TBaseValidator.prototype =
  * options['InitialValue']		Validation fails if control input equals initial value.
  * </code>
  */
-Prado.WebUI.TRequiredFieldValidator = Class.extend(Prado.WebUI.TBaseValidator, 
+Prado.WebUI.TRequiredFieldValidator = Class.extend(Prado.WebUI.TBaseValidator,
 {
 	/**
 	 * @return boolean true if the input value is not empty nor equal to the initial value.
@@ -939,7 +939,7 @@ Prado.WebUI.TRequiredFieldValidator = Class.extend(Prado.WebUI.TBaseValidator,
  * to perform. Valid operators include Equal, NotEqual, GreaterThan, GreaterThanEqual,
  * LessThan and LessThanEqual.
  * <code>
- * options['ControlToCompare'] 
+ * options['ControlToCompare']
  * options['ValueToCompare']
  * options['Operator']
  * options['Type']
@@ -949,14 +949,14 @@ Prado.WebUI.TRequiredFieldValidator = Class.extend(Prado.WebUI.TBaseValidator,
 Prado.WebUI.TCompareValidator = Class.extend(Prado.WebUI.TBaseValidator,
 {
 	//_observingComparee : false,
-	
+
 	/**
 	 * Compares the input to another input or a given value.
 	 */
 	evaluateIsValid : function()
 	{
 		var value = this.getValidationValue();
-	    if (value.length <= 0) 
+	    if (value.length <= 0)
 	    	return true;
 
     	var comparee = $(this.options.ControlToCompare);
@@ -964,23 +964,23 @@ Prado.WebUI.TCompareValidator = Class.extend(Prado.WebUI.TBaseValidator,
 		if(comparee)
 			var compareTo = this.getValidationValue(comparee);
 		else
-			var compareTo = this.options.ValueToCompare || "";		
-		
+			var compareTo = this.options.ValueToCompare || "";
+
 	    var isValid =  this.compare(value, compareTo);
-	    
+
 		if(comparee)
 		{
-			this.updateControlCssClass(comparee, isValid);				
+			this.updateControlCssClass(comparee, isValid);
 			this.observeChanges(comparee);
-		}	
-		return isValid;		
+		}
+		return isValid;
 	},
-	
+
 	/**
 	 * Compares two values, their values are casted to type defined
-	 * by <tt>DataType</tt> option. False is returned if the first 
+	 * by <tt>DataType</tt> option. False is returned if the first
 	 * operand converts to null. Returns true if the second operand
-	 * converts to null. The comparision is done based on the 
+	 * converts to null. The comparision is done based on the
 	 * <tt>Operator</tt> option.
 	 */
 	compare : function(operand1, operand2)
@@ -990,7 +990,7 @@ Prado.WebUI.TCompareValidator = Class.extend(Prado.WebUI.TBaseValidator,
 			return false;
 		if ((op2 = this.convert(this.options.DataType, operand2)) == null)
         	return true;
-    	switch (this.options.Operator) 
+    	switch (this.options.Operator)
 		{
 	        case "NotEqual":
 	            return (op1 != op2);
@@ -1009,9 +1009,9 @@ Prado.WebUI.TCompareValidator = Class.extend(Prado.WebUI.TBaseValidator,
 });
 
 /**
- * TCustomValidator performs user-defined client-side validation on an 
+ * TCustomValidator performs user-defined client-side validation on an
  * input component.
- * 
+ *
  * To create a client-side validation function, add the client-side
  * validation javascript function to the page template.
  * The function should have the following signature:
@@ -1056,8 +1056,8 @@ Prado.WebUI.TCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
  * TRangeValidator tests whether an input value is within a specified range.
  *
  * TRangeValidator uses three key properties to perform its validation.
- * The <tt>MinValue</tt> and <tt>MaxValue</tt> options specify the minimum 
- * and maximum values of the valid range. The <tt>DataType</tt> option is 
+ * The <tt>MinValue</tt> and <tt>MaxValue</tt> options specify the minimum
+ * and maximum values of the valid range. The <tt>DataType</tt> option is
  * used to specify the data type of the value and the minimum and maximum range values.
  * These values are converted to this data type before the validation
  * operation is performed. The following value types are supported:
@@ -1065,7 +1065,7 @@ Prado.WebUI.TCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
  * - <b>Float</b> A double-precision floating point number data type.
  * - <b>Date</b> A date data type. The date format can be specified by
  *   setting <tt>DateFormat</tt> option, which must be recognizable
- *   by <tt>Date.SimpleParse</tt> javascript function. 
+ *   by <tt>Date.SimpleParse</tt> javascript function.
  * - <b>String</b> A string data type.
  * <code>
  * options['MinValue']		Minimum range value
@@ -1084,19 +1084,19 @@ Prado.WebUI.TRangeValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	{
 		var value = this.getValidationValue();
 		if(value.length <= 0)
-			return true;		
+			return true;
 		if(typeof(this.options.DataType) == "undefined")
 			this.options.DataType = "String";
-		
+
 		var min = this.convert(this.options.DataType, this.options.MinValue || null);
 		var max = this.convert(this.options.DataType, this.options.MaxValue || null);
 		value = this.convert(this.options.DataType, value);
-		
+
 		if(value == null)
 			return false;
-		
+
 		var valid = true;
-		
+
 		if(min != null)
 			valid = valid && value >= min;
 		if(max != null)
@@ -1120,9 +1120,9 @@ Prado.WebUI.TRegularExpressionValidator = Class.extend(Prado.WebUI.TBaseValidato
 	evaluateIsValid : function()
 	{
 		var value = this.getValidationValue();
-	    if (value.length <= 0) 
+	    if (value.length <= 0)
 	    	return true;
-	    	
+
 	    var rx = new RegExp(this.options.ValidationExpression);
 	    var matches = rx.exec(value);
 	    return (matches != null && value == matches[0]);
@@ -1138,7 +1138,7 @@ Prado.WebUI.TEmailAddressValidator = Prado.WebUI.TRegularExpressionValidator;
 
 /**
  * TListControlValidator checks the number of selection and their values
- * for a TListControl that allows multiple selections. 
+ * for a TListControl that allows multiple selections.
  */
 Prado.WebUI.TListControlValidator = Class.extend(Prado.WebUI.TBaseValidator,
 {
@@ -1151,13 +1151,13 @@ Prado.WebUI.TListControlValidator = Class.extend(Prado.WebUI.TBaseValidator,
 		var elements = this.getListElements();
 		if(elements && elements.length <= 0)
 			return true;
-		
+
 		this.observeListElements(elements);
-		
+
 		var selection = this.getSelectedValuesAndChecks(elements);
 		return this.isValidList(selection.checks, selection.values);
 	},
-	
+
 	/**
 	 * Observe list elements for IE browsers of changes
 	 */
@@ -1170,19 +1170,19 @@ Prado.WebUI.TListControlValidator = Class.extend(Prado.WebUI.TBaseValidator,
 			{
 				validator.observeChanges(element);
 			});
-		}		
+		}
 	 },
-	
+
 	/**
 	 * Determine if the number of checked and the checked values
-	 * satisfy the required number of checks and/or the checked values 
+	 * satisfy the required number of checks and/or the checked values
 	 * equal to the required values.
 	 * @return boolean true if checked values and number of checks are satisfied.
 	 */
 	isValidList : function(checked, values)
-	{	
+	{
 		var exists = true;
-		
+
 		//check the required values
 		var required = this.getRequiredValues();
 		if(required.length > 0)
@@ -1191,17 +1191,17 @@ Prado.WebUI.TListControlValidator = Class.extend(Prado.WebUI.TBaseValidator,
 				return false;
 			required.each(function(requiredValue)
 			{
-				exists = exists && values.include(requiredValue);			
+				exists = exists && values.include(requiredValue);
 			});
 		}
-		
-		var min = typeof(this.options.Min) == "undefined" ? 
+
+		var min = typeof(this.options.Min) == "undefined" ?
 					Number.NEGATIVE_INFINITY : this.options.Min;
-		var max = typeof(this.options.Max) == "undefined" ? 
+		var max = typeof(this.options.Max) == "undefined" ?
 					Number.POSITIVE_INFINITY : this.options.Max;
 		return exists && checked >= min && checked <= max;
 	},
-	
+
 	/**
 	 * @return array list of required options that must be selected.
 	 */
@@ -1215,25 +1215,25 @@ Prado.WebUI.TListControlValidator = Class.extend(Prado.WebUI.TBaseValidator,
 });
 
 
-/** 
- * TDataTypeValidator verifies if the input data is of the type specified 
- * by <tt>DataType</tt> option. 
- * The following data types are supported: 
- * - <b>Integer</b> A 32-bit signed integer data type. 
- * - <b>Float</b> A double-precision floating point number data type. 
- * - <b>Date</b> A date data type. 
- * - <b>String</b> A string data type. 
- * For <b>Date</b> type, the option <tt>DateFormat</tt> 
- * will be used to determine how to parse the date string.  
- */ 
-Prado.WebUI.TDataTypeValidator = Class.extend(Prado.WebUI.TBaseValidator, 
-{ 
-        evaluateIsValid : function() 
-        { 
-                var value = this.getValidationValue(); 
-                if(value.length <= 0) 
-                        return true; 
-                return this.convert(this.options.DataType, value) != null; 
-        } 
-}); 
+/**
+ * TDataTypeValidator verifies if the input data is of the type specified
+ * by <tt>DataType</tt> option.
+ * The following data types are supported:
+ * - <b>Integer</b> A 32-bit signed integer data type.
+ * - <b>Float</b> A double-precision floating point number data type.
+ * - <b>Date</b> A date data type.
+ * - <b>String</b> A string data type.
+ * For <b>Date</b> type, the option <tt>DateFormat</tt>
+ * will be used to determine how to parse the date string.
+ */
+Prado.WebUI.TDataTypeValidator = Class.extend(Prado.WebUI.TBaseValidator,
+{
+        evaluateIsValid : function()
+        {
+                var value = this.getValidationValue();
+                if(value.length <= 0)
+                        return true;
+                return this.convert(this.options.DataType, value) != null;
+        }
+});
 

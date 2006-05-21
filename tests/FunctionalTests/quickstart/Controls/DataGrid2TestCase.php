@@ -37,13 +37,13 @@ class DataGrid2TestCase extends SeleniumTestCase
 		//$this->verifyElementPresent("//img[@src='images/star2.gif']",'');
 
 		// verify toggle column visibility
-		$this->clickAndWait("//input[@name='ctl0\$body\$ctl1\$0' and @value='Book Title']", "");
+		$this->clickAndWait("//input[@name='ctl0\$body\$ctl1\$c0' and @value='Book Title']", "");
 		$this->verifyTextNotPresent('Head First Design Patterns','');
-		$this->clickAndWait("//input[@name='ctl0\$body\$ctl1\$3' and @value='In-stock']", "");
+		$this->clickAndWait("//input[@name='ctl0\$body\$ctl1\$c3' and @value='In-stock']", "");
 		$this->verifyElementNotPresent('ctl0_body_DataGrid_ctl1_ctl6','');
-		$this->clickAndWait("//input[@name='ctl0\$body\$ctl1$3' and @value='In-stock']", "");
+		$this->clickAndWait("//input[@name='ctl0\$body\$ctl1\$c3' and @value='In-stock']", "");
 		$this->verifyElementPresent('ctl0_body_DataGrid_ctl1_ctl6','');
-		$this->clickAndWait("//input[@name='ctl0\$body\$ctl1$0' and @value='Book Title']", "");
+		$this->clickAndWait("//input[@name='ctl0\$body\$ctl1\$c0' and @value='Book Title']", "");
 		$this->verifyTextPresent('Head First Design Patterns','');
 	}
 }
