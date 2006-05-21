@@ -264,7 +264,6 @@ class TPageService extends TService
 			{
 				$configCached=false;
 				$paths=explode('.',$pagePath);
-				array_pop($paths);
 				$configPath=$this->getBasePath();
 				foreach($paths as $path)
 				{

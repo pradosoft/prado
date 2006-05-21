@@ -73,7 +73,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	/**
 	 * format of control ID
 	 */
-	const ID_FORMAT='/^\\w*$/';
+	const ID_FORMAT='/^[a-zA-Z_]\\w*$/';
 	/**
 	 * separator char between IDs in a UniqueID
 	 */

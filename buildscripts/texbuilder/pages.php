@@ -76,6 +76,7 @@ $pages['Write New Controls'] = array(
 	'Controls/NewControl.page');
 
 $pages['Advanced Topics'] = array(
+	'Advanced/Collections.page',
 	'Advanced/Auth.page',
 	'Advanced/Security.page',
 	'Advanced/Assets.page',
@@ -95,6 +96,6 @@ $pages['Client-side Scripting'] = array(
 
 
 return $pages;
-//-------------- END CONFIG ---------------- 
+//-------------- END CONFIG ----------------
 
 ?>

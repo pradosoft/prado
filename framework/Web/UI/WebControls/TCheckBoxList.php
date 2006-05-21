@@ -62,7 +62,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 		parent::__construct();
 		$this->_repeatedControl=$this->createRepeatedControl();
 		$this->_repeatedControl->setEnableViewState(false);
-		$this->_repeatedControl->setID('0');
+		$this->_repeatedControl->setID('c0');
 		$this->getControls()->add($this->_repeatedControl);
 	}
 
@@ -282,7 +282,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 			$repeatedControl->getAttributes()->copyFrom($item->getAttributes());
 		else if($repeatedControl->getHasAttributes())
 			$repeatedControl->getAttributes()->clear();
-		$repeatedControl->setID("$index");
+		$repeatedControl->setID("c$index");
 		$repeatedControl->setText($item->getText());
 		$repeatedControl->setChecked($item->getSelected());
 		$repeatedControl->setAttribute('value',$item->getValue());
@@ -301,7 +301,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	{
 		if($this->getEnabled(true))
 		{
-			$index=(int)substr($key,strlen($this->getUniqueID())+1);
+			$index=(int)substr($key,strlen($this->getUniqueID())+2);
 			$this->ensureDataBound();
 			if($index>=0 && $index<$this->getItemCount())
 			{
@@ -353,7 +353,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 		$n=$this->getItemCount();
 		for($i=0;$i<$n;++$i)
 		{
-			$this->_repeatedControl->setID("$i");
+			$this->_repeatedControl->setID("c$i");
 			$page->registerRequiresPostData($this->_repeatedControl);
 		}
 	}
@@ -381,7 +381,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 			$this->setTabIndex($tabIndex);
 		}
 	}
-	
+
 	/**
 	 * Returns the value to be validated.
 	 * This methid is required by IValidatable interface.
@@ -390,7 +390,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	public function getValidationPropertyValue()
 	{
 		return $this->getSelectedValue();
-	}	
+	}
 }
 
 ?>
