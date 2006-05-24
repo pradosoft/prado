@@ -1,0 +1,19 @@
+<com:TContent ID="Content">
+
+Global state:
+<com:TTextBox ID="TextBox2" />
+<com:TButton Text="Submit" OnClick="updateGlobal" />
+
+<br/>
+
+Your input:
+<com:TTextBox ID="TextBox" />
+<com:TButton Text="Submit" ValidationGroup="Foo" OnClick="buttonClicked" />
+<com:TCustomValidator
+	ValidationGroup="Foo"
+	ControlToValidate="TextBox"
+	Text="Your input must match the global state."
+	OnServerValidate="customValidation" />
+<br/>
+
+</com:TContent>
