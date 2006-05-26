@@ -1,0 +1,5 @@
+<com:TContent ID="Content">
+	<h2>Safari LinkButton Test</h2>
+	<com:TLinkButton ID="linkButton1" Text="Click Me" OnClick="linkButton1_Clicked" />
+	<com:TLabel ID="label1" Text="Label 1" />
+</com:TContent>

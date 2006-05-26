@@ -22,11 +22,11 @@
 /**
  * The root directory for storing all source js files
  */
-define('SOURCE_DIR',realpath(dirname(__FILE__).'/../../framework/Web/JavaScripts'));
+define('SOURCE_DIR',realpath(dirname(__FILE__).'/../../framework/Web/Javascripts'));
 /**
  * The directory for storing compressed js files
  */
-define('TARGET_DIR',realpath(dirname(__FILE__).'/../../framework/Web/JavaScripts/js'));
+define('TARGET_DIR',realpath(dirname(__FILE__).'/../../framework/Web/Javascripts/js'));
 /**
  * Location of the perl JS doc generator.
  */
@@ -147,20 +147,20 @@ $builds = 0;
 /**
  * loop through all target files and build them one by one
  */
-foreach($libraries as $libFile => $sourceFiles)
+foreach($libraries as $jsFile => $sourceFiles)
 {
-	if(!empty($requestedLibs) && !in_array($libFile,$requestedLibs))
+	if(!empty($requestedLibs) && !in_array($jsFile,$requestedLibs))
 		continue;
-	$libFile=TARGET_DIR.'/'.$libFile;
-	echo "\nBuilding $libFile...\n";
+	$libFile=TARGET_DIR.'/'.$jsFile;
+	echo "\nBuilding $jsFile...\n";
 	$contents='';
-	foreach($sourceFiles as $sourceFile)
+	foreach($sourceFiles as $sourceJsFile)
 	{
-		$sourceFile=SOURCE_DIR.'/'.$sourceFile;
+		$sourceFile=SOURCE_DIR.'/'.$sourceJsFile;
 		if(!is_file($sourceFile))
 			echo "Source file not found: $sourceFile\n";
 		
-		echo "...adding $sourceFile\n";
+		echo "...adding $sourceJsFile\n";
 		$contents.=file_get_contents($sourceFile)."\n\n";		
 	}
 	$tempFile=$libFile.'.tmp';
@@ -169,10 +169,11 @@ foreach($libraries as $libFile => $sourceFiles)
 	$jsMin -> minify();
 	unset($jsMin);
 	@unlink($tempFile);
-	echo "Saving file {$libFile}\n"; 
+	echo "Saving file {$jsFile}\n"; 
 	$builds++;
 }
-if(isset($argv[1]) && preg_match('/doc*/', $argv[1]))
+
+if(isset($argv[1]) && preg_match('/(doc)+/', $argv[1]))
 {
 	$files = "";
 	foreach($libraries as $lib)
