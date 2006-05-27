@@ -1,0 +1,9 @@
+<com:TContent ID="Content">
+	<h1>Test Ticket #163</h1>
+	<h2>Missing currency sign in TNumberFormat if Value is 0</h2>
+	<com:TNumberFormat Type="currency" Culture="no" Currency="NOK" Value="100"/>
+	<hr />
+	<com:TNumberFormat Type="currency" Culture="no" Currency="NOK" Value="0"/>
+	<hr />
+	<com:TNumberFormat Type="currency" Culture="no" Currency="NOK" Value="-100"/>
+</com:TContent>
