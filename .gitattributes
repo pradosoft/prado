@@ -741,6 +741,7 @@ framework/Web/Javascripts/colorpicker/target_white.gif -text
 framework/Web/Javascripts/datepicker/calendar.png -text
 framework/Web/Javascripts/datepicker/datepicker.js -text
 framework/Web/Javascripts/datepicker/default.css -text
+framework/Web/Javascripts/datepicker/spacer.gif -text
 framework/Web/Javascripts/effects/CHANGELOG -text
 framework/Web/Javascripts/effects/MIT-LICENSE -text
 framework/Web/Javascripts/effects/README -text

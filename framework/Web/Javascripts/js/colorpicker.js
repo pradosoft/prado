@@ -34,7 +34,7 @@ Event.observe(this.button,"click",this._buttonOnClick);Event.observe(this.input,
 {var constructor=mode=="Basic"?"getBasicPickerContainer":"getFullPickerContainer"
 this.element=this[constructor](this.options['ID'],this.options['Palette'])
 document.body.appendChild(this.element);this.element.style.display="none";if(Prado.Browser().ie)
-{this.iePopUp=document.createElement('iframe');this.iePopUp.src="";this.iePopUp.style.position="absolute"
+{this.iePopUp=document.createElement('iframe');this.iePopUp.src=Prado.WebUI.TColorPicker.UIImages['button.gif'];this.iePopUp.style.position="absolute"
 this.iePopUp.scrolling="no"
 this.iePopUp.frameBorder="0"
 this.input.parentNode.appendChild(this.iePopUp);}

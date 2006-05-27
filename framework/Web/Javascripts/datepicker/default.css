@@ -21,6 +21,7 @@
 	margin-left: 1px;
 }
 
+
 .TDatePickerImageButton:hover
 {
 	border-color: #ddd;
@@ -31,9 +32,9 @@
 	font-size: 11px;
 }
 
-.TDatePicker .calendarHeader button
+.TDatePicker input.button
 {
-	font-size: 12px;
+	font-size: 11px;
 	width: 32px;
 }
 
@@ -41,6 +42,7 @@
 {
 	padding: 4px 0;
 	border: 1px solid white;
+	text-align: center;
 }
 .TDatePicker .hover
 {
@@ -61,25 +63,36 @@
 {
 	border: 1px solid white;
 	cursor: default;
-	height: 23px;
+	height: 22px;
 }
+
 .TDatePicker th
 {
 	width: 28px;
 }
+
+.TDatePicker .calendarBody
+{
+	text-align: center;
+	width: 210px;
+	margin: 3px 6px;
+}
+
 .TDatePicker .grid
 {
 	border-spacing: 0px;
-	margin: 3px;
 }
+
 .TDatePicker .calendarFooter
 {
 	margin: 2px;
 	border-top: 1px solid #919EA9;
 	padding-top: 2px;
 }
-.TDatePicker .calendarFooter button
+.TDatePicker .todayButton
 {
-	font-size: 12px;
+	font-size: 11px;
 	margin: 4px;
+	padding-left: 1em;
+	padding-right: 1em;
 }

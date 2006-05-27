@@ -74,7 +74,7 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 			if(Prado.Browser().ie)
 			{
 				this.iePopUp = document.createElement('iframe');
-				this.iePopUp.src = "";
+				this.iePopUp.src = Prado.WebUI.TColorPicker.UIImages['button.gif'];
 				this.iePopUp.style.position = "absolute"
 				this.iePopUp.scrolling="no"
 				this.iePopUp.frameBorder="0"

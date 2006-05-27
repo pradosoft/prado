@@ -81,11 +81,14 @@ Prado.WebUI.TDatePicker.prototype =
 		Object.extend(this,options);
 		
 		Event.observe(this.trigger, triggerEvent, this.show.bindEvent(this));
-		this.create();	
+	
 	},
 
 	create : function()
 	{
+		if(typeof(this._calDiv) != "undefined")
+			return;
+			
 		var div;
 		var table;
 		var tbody;
@@ -115,9 +118,10 @@ Prado.WebUI.TDatePicker.prototype =
 		
 		// Previous Month Button
 		td = document.createElement("td");
-		var previousMonth = document.createElement("button");
-		previousMonth.className = "prevMonthButton";
-		previousMonth.appendChild(document.createTextNode("<<"));
+		var previousMonth = document.createElement("input");
+		previousMonth.className = "prevMonthButton button";
+		previousMonth.type = "button"
+		previousMonth.value = "<<";
 		td.appendChild(previousMonth);
 		tr.appendChild(td);
 		
@@ -162,9 +166,10 @@ Prado.WebUI.TDatePicker.prototype =
 		
 		
 		td = document.createElement("td");
-		td.className = "nextMonthButton";
-		var nextMonth = document.createElement("button");
-		nextMonth.appendChild(document.createTextNode(">>"));
+		var nextMonth = document.createElement("input");
+		nextMonth.className = "nextMonthButton button";
+		nextMonth.type = "button";
+		nextMonth.value = ">>";
 		td.appendChild(nextMonth);
 		tr.appendChild(td);
 		
@@ -178,6 +183,7 @@ Prado.WebUI.TDatePicker.prototype =
 		
 		var text;
 		table = document.createElement("table");
+		table.align="center";
 		table.className = "grid";
 	
 	    div.appendChild(table);
@@ -226,11 +232,12 @@ Prado.WebUI.TDatePicker.prototype =
 		div.className = "calendarFooter";
 		this._calDiv.appendChild(div);
 
-		var todayButton = document.createElement("button");
+		var todayButton = document.createElement("input");
+		todayButton.type="button";
 		todayButton.className = "todayButton";
 		var today = this.newDate();
 		var buttonText = today.SimpleFormat(this.Format,this);
-		todayButton.appendChild(document.createTextNode(buttonText));
+		todayButton.value = buttonText;
 		div.appendChild(todayButton);
 		
 		/*var clearButton = document.createElement("button");
@@ -243,7 +250,7 @@ Prado.WebUI.TDatePicker.prototype =
 		if(Prado.Browser().ie)
 		{
 			this.iePopUp = document.createElement('iframe');
-			this.iePopUp.src = "";
+			this.iePopUp.src = Prado.WebUI.TDatePicker.spacer;
 			this.iePopUp.style.position = "absolute"
 			this.iePopUp.scrolling="no"
 			this.iePopUp.frameBorder="0"
@@ -521,6 +528,8 @@ Prado.WebUI.TDatePicker.prototype =
 	
 	show : function() 
 	{
+		this.create();
+			
 		if(!this.showing)
 		{
 			var pos = Position.cumulativeOffset(this.control);
