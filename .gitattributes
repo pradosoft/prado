@@ -1046,9 +1046,11 @@ tests/FunctionalTests/tickets.php -text
 tests/FunctionalTests/tickets/index.php -text
 tests/FunctionalTests/tickets/protected/pages/Layout.php -text
 tests/FunctionalTests/tickets/protected/pages/Layout.tpl -text
+tests/FunctionalTests/tickets/protected/pages/TestHtmlArea.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket121.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket121.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket163.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket169.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket191.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket191.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket21.page -text
@@ -1068,6 +1070,7 @@ tests/FunctionalTests/tickets/protected/pages/config.xml -text
 tests/FunctionalTests/tickets/protected/pages/hotspot.jpg -text
 tests/FunctionalTests/tickets/tests/Ticket121TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket163TestCase.php -text
+tests/FunctionalTests/tickets/tests/Ticket169TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket191TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket21TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket27TestCase.php -text

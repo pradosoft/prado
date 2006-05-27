@@ -83,6 +83,12 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * @var TValidatorClientScript validator client-script options.
 	 */
 	private $_clientScript;
+	/**
+	 * Controls for which the client-side validation3.js file needs to handle
+	 * them specially.
+	 * @var array list of control class names
+	 */
+	private static $_clientClass = array('THtmlArea', 'TDatePicker');
 
 	/**
 	 * Constructor.
@@ -152,12 +158,28 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		$options['ValidationGroup'] = $this->getValidationGroup();
 		$options['ControlToValidate'] = $control->getClientID();
 		$options['ControlCssClass'] = $this->getControlCssClass();
-		$options['ControlType'] = get_class($control);
+		
+		$options['ControlType'] = $this->getClientControlClass($control);
 		
 		if(!is_null($this->_clientScript))
 			$options = array_merge($options,$this->_clientScript->getOptions());
 		
 		return $options;
+	}
+	
+	/**
+	 * Gets the Control type for client-side validation. If new cases exists in
+	 * TBaseValidator::$_clientClass, be sure to update the corresponding 
+	 * "Javascript/validation3.js" file as well.
+	 * @param TControl control to validate.
+	 * @return string control type for client-side validation.
+	 */
+	private function getClientControlClass($control)
+	{
+		foreach(self::$_clientClass as $type)
+			if($control instanceof $type)
+				return $type;
+		return get_class($control);
 	}
 	
 	/**

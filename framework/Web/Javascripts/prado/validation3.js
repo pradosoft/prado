@@ -754,7 +754,9 @@ Prado.WebUI.TBaseValidator.prototype =
 		return value;
 	},
 
-	/**
+	/** 
+	 * The ControlType property comes from TBaseValidator::getClientControlClass()
+	 * Be sure to update the TBaseValidator::$_clientClass if new cases are added. 
 	 * @return mixed control value to validate
 	 */
 	 getValidationValue : function(control)
