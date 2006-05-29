@@ -34,7 +34,7 @@ demos/blog/protected/Common/BlogUserManager.php -text
 demos/blog/protected/Common/XListMenu.php -text
 demos/blog/protected/Common/messages.txt -text
 demos/blog/protected/Common/schema.sql -text
-demos/blog/protected/Data/Options.xml -text
+demos/blog/protected/Data/Settings.xml -text
 demos/blog/protected/Layouts/MainLayout.php -text
 demos/blog/protected/Layouts/MainLayout.tpl -text
 demos/blog/protected/Pages/Admin/AdminMenu.php -text
@@ -83,7 +83,6 @@ demos/blog/protected/Portlets/Portlet.php -text
 demos/blog/protected/Portlets/SearchPortlet.php -text
 demos/blog/protected/Portlets/SearchPortlet.tpl -text
 demos/blog/protected/application.xml -text
-demos/blog/sitemap.txt -text
 demos/blog/themes/Basic/style.css -text
 demos/composer/index.php -text
 demos/composer/index2.php -text

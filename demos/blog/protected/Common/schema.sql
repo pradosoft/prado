@@ -61,7 +61,7 @@ INSERT INTO tblUsers (id,name,full_name,role,status,passwd,email,reg_time,websit
 	VALUES (1,'admin','Prado User',1,0,'4d688da592969d0a56b5accec3ce8554','admin@example.com',1148819681,'http://www.pradosoft.com');
 
 INSERT INTO tblPosts (id,author_id,create_time,title,content,status)
-	VALUES (1,1,1148819691,'Welcome to Prado Weblog','Congratulations! You have successfully installed Prado Weblog. An administrator account has been created. Please login with <b>admin/prado</b> and update your password as soon as possible.',0);
+	VALUES (1,1,1148819691,'Welcome to Prado Weblog','Congratulations! You have successfully installed Prado Blog -- a PRADO-driven weblog system. A default administrator account has been created. Please login with <b>admin/prado</b> and update your password as soon as possible.',0);
 
 INSERT INTO tblCategories (name,description,post_count)
 	VALUES ('Miscellaneous','This category holds posts on any topic.',1);

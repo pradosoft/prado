@@ -4,16 +4,16 @@
 
 <com:Application.Pages.Admin.AdminMenu />
 
-<com:TPanel GroupingText="Site settings">
+<com:TPanel GroupingText="General settings">
 
 <span class="input-label">Title</span>
 <br/>
-<com:TTextBox ID="SiteTitle" />
+<com:TTextBox ID="SiteTitle" Columns="50"/>
 <br/>
 
 <span class="input-label">Subtitle</span>
 <br/>
-<com:TTextBox ID="SiteSubtitle" />
+<com:TTextBox ID="SiteSubtitle" Columns="50"/>
 <br/>
 
 <span class="input-label">Owner name</span>
@@ -28,7 +28,7 @@
 
 <span class="input-label">Site theme</span>
 <br/>
-<com:TDropDownList ID="ThemeList" />
+<com:TDropDownList ID="ThemeName" />
 <br/>
 
 </com:TPanel>
@@ -52,5 +52,6 @@
 </com:TPanel>
 
 <com:TLinkButton Text="Save" OnClick="saveButtonClicked" />
+<com:TLabel ID="Result" Visible=<%= $this->IsPostBack && $this->IsValid %> Text="Your changes have been saved." />
 
 </com:TContent>

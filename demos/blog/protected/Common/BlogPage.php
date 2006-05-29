@@ -2,6 +2,12 @@
 
 class BlogPage extends TPage
 {
+	public function onPreInit($param)
+	{
+		parent::onPreInit($param);
+		$this->Theme=$this->Application->Parameters['ThemeName'];
+	}
+
 	public function getDataAccess()
 	{
 		return $this->getApplication()->getModule('data');

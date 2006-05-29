@@ -19,7 +19,7 @@
       <route class="TFileLogRoute" Categories="System" Levels="Notice,Warning,Error,Alert,Fatal" />
     </module>
     -->
-    <module class="System.Util.TParameterModule" ParameterFile="Application.Data.Options" />
+    <module class="System.Util.TParameterModule" ParameterFile="Application.Data.Settings" />
   </modules>
   <services>
     <!-- page service -->
