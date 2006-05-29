@@ -31,8 +31,8 @@ Data type validator with client-side validation disabled:
 	ValidationGroup="Group2"
 	EnableClientScript="false"
 	ControlToValidate="TextBox2"
-	DataType="Currency"
-	Text="You must enter a currency." />
+	DataType="Integer"
+	Text="You must enter an integer." />
 <com:TButton Text="Submit" ValidationGroup="Group2" />
 </td>
 </tr>
@@ -47,7 +47,8 @@ Validating a date input:
 	ValidationGroup="Group3"
 	ControlToValidate="TextBox3"
 	DataType="Date"
-	Text="You must enter a valid date." />
+	DateFormat="d/M/yyyy"
+	Text="You must enter a valid date (d/M/yyyy)." />
 <com:TButton Text="Submit" ValidationGroup="Group3" />
 </td>
 </tr>

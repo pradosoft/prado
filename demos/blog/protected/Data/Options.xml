@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<parameters>
+	<parameter id="SiteTitle" value="Qiang's Blog" />
+	<parameter id="SiteSubtitle" value="A PRADO-driven weblog" />
+	<parameter id="SiteOwner" value="Qiang Xue" />
+	<parameter id="AdminEmail" value="admin@example.com" />
+</parameters>

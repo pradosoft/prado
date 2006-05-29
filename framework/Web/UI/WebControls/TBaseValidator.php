@@ -83,6 +83,12 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * @var TClientSideValidatorOptions validator client-script options.
 	 */
 	private $_clientSide;
+	/**
+	 * Controls for which the client-side validation3.js file needs to handle
+	 * them specially.
+	 * @var array list of control class names
+	 */
+	private static $_clientClass = array('THtmlArea', 'TDatePicker');
 
 	/**
 	 * Constructor.
@@ -152,28 +158,44 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		$options['ValidationGroup'] = $this->getValidationGroup();
 		$options['ControlToValidate'] = $control->getClientID();
 		$options['ControlCssClass'] = $this->getControlCssClass();
-		$options['ControlType'] = get_class($control);
-		
+
+		$options['ControlType'] = $this->getClientControlClass($control);
+
 		if(!is_null($this->_clientSide))
 			$options = array_merge($options,$this->_clientSide->getOptions()->toArray());
-		
+
 		return $options;
 	}
-	
+
+	/**
+	 * Gets the Control type for client-side validation. If new cases exists in
+	 * TBaseValidator::$_clientClass, be sure to update the corresponding
+	 * "Javascript/validation3.js" file as well.
+	 * @param TControl control to validate.
+	 * @return string control type for client-side validation.
+	 */
+	private function getClientControlClass($control)
+	{
+		foreach(self::$_clientClass as $type)
+			if($control instanceof $type)
+				return $type;
+		return get_class($control);
+	}
+
 	/**
 	 * Gets the TClientSideValidatorOptions that allows modification of the client-
-	 * side validator events. 
-	 * 
+	 * side validator events.
+	 *
 	 * The client-side validator supports the following events.
 	 * # <tt>OnValidate</tt> -- raised before client-side validation is
-	 * executed. 
+	 * executed.
 	 * # <tt>OnSuccess</tt> -- raised after client-side validation is completed
 	 * and is successfull, overrides default validator error messages updates.
 	 * # <tt>OnError</tt> -- raised after client-side validation is completed
-	 * and failed, overrides default validator error message updates.  
-	 * 
+	 * and failed, overrides default validator error message updates.
+	 *
 	 * You can attach custom javascript code to each of these events
-	 * 
+	 *
 	 * @return TClientSideValidatorOptions javascript validator event options.
 	 */
 	public function getClientSide()
@@ -182,7 +204,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			$this->_clientSide = $this->createClientSideOptions();
 		return $this->_clientSide;
 	}
-	
+
 	/**
 	 * @return TClientSideValidatorOptions javascript validator event options.
 	 */
@@ -206,7 +228,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		if($this->getEnableClientScript() && !$scripts->isEndScriptRegistered($scriptKey))
 		{
 			$manager['FormID'] = $formID;
-			$options = TJavaScript::encode($manager); 
+			$options = TJavaScript::encode($manager);
 			$scripts->registerPradoScript('validator');
 			$scripts->registerEndScript($scriptKey, "new Prado.ValidationManager({$options});");
 		}
@@ -493,22 +515,22 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 /**
  * TClientSideValidatorOptions class.
- * 
+ *
  * Client-side validator events can be modified through the {@link
  * TBaseValidator::getClientSide ClientSide} property of a validator. The
  * subproperties of ClientSide are those of the TClientSideValidatorOptions
  * properties. The client-side validator supports the following events.
- * 
+ *
  * The <tt>OnValidate</tt> event is raise before the validator validation
  * functions are called.
- * 
+ *
  * The <tt>OnSuccess</tt> event is raised after the validator has successfully
  * validate the control.
- * 
+ *
  * The <tt>OnError</tt> event is raised after the validator fails validation.
- * 
+ *
  * See the quickstart documentation for further details.
- * 
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
@@ -521,19 +543,19 @@ class TClientSideValidatorOptions extends TClientSideOptions
 	 */
 	public function getOnValidate()
 	{
-		return $this->getOption('OnValidate');	
+		return $this->getOption('OnValidate');
 	}
-	
+
 	/**
 	 * Client-side OnValidate validator event is raise before the validators
-	 * validation functions are called. 
+	 * validation functions are called.
 	 * @param string javascript code for client-side OnValidate event.
 	 */
 	public function setOnValidate($javascript)
 	{
 		$this->setFunction('OnValidate', $javascript);
 	}
-	
+
 	/**
 	 * Client-side OnSuccess event is raise after validation is successfull.
 	 * This will override the default client-side validator behaviour.
@@ -543,7 +565,7 @@ class TClientSideValidatorOptions extends TClientSideOptions
 	{
 		$this->setFunction('OnSuccess', $javascript);
 	}
-	
+
 	/**
 	 * @return string javascript code for client-side OnSuccess event.
 	 */
@@ -551,7 +573,7 @@ class TClientSideValidatorOptions extends TClientSideOptions
 	{
 		return $this->getOption('OnSuccess');
 	}
-	
+
 	/**
 	 * Client-side OnError event is raised after validation failure.
 	 * This will override the default client-side validator behaviour.
@@ -561,7 +583,7 @@ class TClientSideValidatorOptions extends TClientSideOptions
 	{
 		$this->setFunction('OnError', $javascript);
 	}
-	
+
 	/**
 	 * @return string javascript code for client-side OnError event.
 	 */
@@ -569,7 +591,7 @@ class TClientSideValidatorOptions extends TClientSideOptions
 	{
 		return $this->getOption('OnError');
 	}
-	
+
 	/**
 	 * Ensure the string is a valid javascript function. If the string begins
 	 * with "javascript:" valid javascript function is assumed, otherwise the

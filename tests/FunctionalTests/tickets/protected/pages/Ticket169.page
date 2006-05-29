@@ -1,0 +1,8 @@
+<com:TContent ID="Content">
+	<com:Application.pages.TestHtmlArea ID="test1"/>
+	<com:TRequiredFieldValidator
+		ID="validator1"
+		ControlToValidate="test1"
+		ErrorMessage="required" />
+	<com:TButton Text="Click Me" />
+</com:TContent>

@@ -1,0 +1,21 @@
+<com:TContent ID="Main">
+
+<h2>User Profile</h2>
+
+Username: <%= $this->CurrentUser->Name %>
+<br/>
+
+Full name: <%= $this->CurrentUser->FullName %>
+<br/>
+
+Email: <%= $this->CurrentUser->Email %>
+<br/>
+
+Privilege: <%= $this->CurrentUser->Role===0? 'User':'Administrator' %>
+<br/>
+
+Personal website: <%= $this->CurrentUser->Website %>
+<br/>
+
+
+</com:TContent>

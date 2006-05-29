@@ -79,6 +79,23 @@ class TThemeManager extends TModule
 	}
 
 	/**
+	 * @return array list of available theme names
+	 */
+	public function getAvailableThemes()
+	{
+		$themes=array();
+		$basePath=$this->getBasePath();
+		$folder=@opendir($basePath);
+		while($file=@readdir($folder))
+		{
+			if($file!=='.' && $file!=='..' && $file!=='.svn' && is_dir($basePath.'/'.$file))
+				$themes[]=$file;
+		}
+		closedir($folder);
+		return $themes;
+	}
+
+	/**
 	 * @return string the base path for all themes. It is returned as an absolute path.
 	 * @throws TConfigurationException if base path is not set and "themes" directory does not exist.
 	 */

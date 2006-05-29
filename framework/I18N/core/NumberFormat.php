@@ -122,7 +122,6 @@ class NumberFormat
 
 		$string = (string)$number;
 		
-		
 		$decimal = $this->formatDecimal($string);	
 		$integer = $this->formatInteger(abs($number));
 			
@@ -130,9 +129,9 @@ class NumberFormat
 			$result = $integer.$decimal;
 		else
 			$result = $integer;
-		
+
 		//get the suffix
-		if($number > 0)
+		if($number >= 0)
 			$suffix = $this->formatInfo->PositivePattern;
 		else if($number < 0)
 			$suffix = $this->formatInfo->NegativePattern;

@@ -1,0 +1,16 @@
+<com:TContent ID="Content">
+
+<com:TImageButton
+	ImageUrl="http://www.pradosoft.com/images/powered.gif"
+	Text="Foo"
+	ValidationGroup="Foo"
+	OnClick="buttonClicked" />
+<com:TTextBox ID="FooTextBox" Text="sometext"  />
+<com:TRequiredFieldValidator
+	ValidationGroup="Foo"
+	ControlToValidate="FooTextBox"
+	Text="Field required." />
+
+<com:TLabel ID="Result" />
+
+</com:TContent>

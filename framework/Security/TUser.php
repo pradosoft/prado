@@ -57,6 +57,7 @@ class TUser extends TComponent implements IUser
 	public function __construct(IUserManager $manager)
 	{
 		$this->_manager=$manager;
+		$this->_name=$manager->getGuestName();
 	}
 
 	/**

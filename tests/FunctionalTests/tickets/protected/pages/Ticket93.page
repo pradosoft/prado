@@ -1,0 +1,61 @@
+<com:TContent ID="Content">
+
+<h2>ValidationGroups without any inputs with grouping</h2>
+<p>This test can not be tested using automation.</p>
+<com:TImageMap ImageUrl=<%~hotspot.jpg%> AlternateText="Navigate buttons" OnClick="buttonClicked" >
+
+<com:TRectangleHotSpot
+	hotspotmode="Navigate"
+	NavigateUrl="navigate1.htm"
+	alternatetext="Button 1"
+	top="30"
+	left="175"
+	bottom="110"
+	right="355" />
+
+<com:TRectangleHotSpot
+	hotspotmode="PostBack"
+	PostBackValue="test1"
+	CausesValidation="true"
+	ValidationGroup="Group1"
+	alternatetext="Button 2"
+	top="155"
+	left="175"
+	bottom="240"
+	right="355" />
+
+<com:TRectangleHotSpot
+	hotspotmode="PostBack"
+	PostBackValue="test2"
+	CausesValidation="true"
+	alternatetext="Button 3"
+	ValidationGroup="Group2"
+	top="285"
+	left="175"
+	bottom="365"
+	right="355" />
+
+</com:TImageMap>
+<div>
+<com:TTextBox ID="TextBox" />
+<com:TRequiredFieldValidator
+	ValidationGroup="Group1"
+	EnableClientScript="true"
+	ControlToValidate="TextBox"
+	Text="textbox 1 required" />
+
+<com:TTextBox ID="TextBox2" />
+<com:TRequiredFieldValidator
+	ValidationGroup="Group2"
+	EnableClientScript="false"
+	ControlToValidate="TextBox2"
+	Text="textbox 2 required" />
+
+<com:TRequiredFieldValidator
+	ValidationGroup=""
+	EnableClientScript="true"
+	ControlToValidate="TextBox2"
+	Text="No one is required" />
+</div>
+
+</com:TContent>

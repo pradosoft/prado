@@ -681,6 +681,18 @@ class TDatePicker extends TTextBox
 		else
 			throw new TConfigurationException('datepicker_calendarstyle_invalid',$style);
 	}
+	
+	/**
+	 * Publish the spacer.gif for IE iframe source.
+	 * @return string the URL for the spacer.gif.
+	 */
+	protected function publishIFrameSpacer()
+	{
+		$cs = $this->getPage()->getClientScript();
+		$spacer = 'System.Web.Javascripts.datepicker.spacer';
+		if(($file = Prado::getPathOfNamespace($spacer,'.gif')) != null)
+			return $this->publishFilePath($file);
+	}
 
 	/**
 	 * Add the client id to the input textbox, and register the client scripts.
@@ -696,18 +708,24 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Registers the javascript code to initialize the date picker.
-	 * Must use "Event.OnLoad" to initialize the date picker when the
-	 * full page is loaded, otherwise IE will throw an error.
 	 */
 	protected function registerCalendarClientScript()
 	{
 		if($this->getShowCalendar())
 		{
-			$scripts = $this->getPage()->getClientScript();
-			$scripts->registerPradoScript("datepicker");
+			$cs = $this->getPage()->getClientScript();
+			$cs->registerPradoScript("datepicker");
+			
+			if(!$cs->isEndScriptRegistered('TDatePicker.spacer'))
+			{
+				$spacer = $this->publishIFrameSpacer();
+				$code = "Prado.WebUI.TDatePicker.spacer = '$spacer';";
+				$cs->registerEndScript('TDatePicker.spacer', $code);
+			}	
+
 			$options = TJavaScript::encode($this->getDatePickerOptions());
-			$code = "Event.OnLoad(function(){ new Prado.WebUI.TDatePicker($options); });";
-			$scripts->registerEndScript("prado:".$this->getClientID(), $code);
+			$code = "new Prado.WebUI.TDatePicker($options);";
+			$cs->registerEndScript("prado:".$this->getClientID(), $code);
 		}
 	}
 }

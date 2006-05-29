@@ -64,6 +64,7 @@ Object.extend(Event,
 	 * <tt>element</tt>. Only HTMLEvent and MouseEvent can be 
 	 * dispatched, keyboard events or UIEvent can not be dispatch 
 	 * via javascript consistently.
+	 * For the "submit" event the submit() method is called.
 	 * @param {Object} element id string or a DOM element.
 	 * @param {String} event type to dispatch.
 	 */
@@ -85,12 +86,6 @@ Object.extend(Event,
 				event.initMouseEvent(type,true,true,
 					document.defaultView, 1, 0, 0, 0, 0, false, 
 							false, false, false, 0, null);
-			}
-			else
-			{
-				if(typeof(Logger) != "undefined") 
-					Logger.error("undefined event", type);
-				return;
 			}
             element.dispatchEvent(event);
         }

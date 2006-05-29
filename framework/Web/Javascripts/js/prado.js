@@ -129,9 +129,6 @@ return element.submit();if(document.createEvent)
 {var event=document.createEvent('HTMLEvents');event.initEvent(type,true,true);}
 else if(Event.isMouseEvent(type))
 {var event=document.createEvent('MouseEvents');event.initMouseEvent(type,true,true,document.defaultView,1,0,0,0,0,false,false,false,false,0,null);}
-else
-{if(typeof(Logger)!="undefined")
-Logger.error("undefined event",type);return;}
 element.dispatchEvent(event);}
 else if(document.createEventObject)
 {var evObj=document.createEventObject();element.fireEvent('on'+type,evObj);}

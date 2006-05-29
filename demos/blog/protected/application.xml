@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<application id="personal" mode="Debug">
+  <paths>
+    <using namespace="Application.Common.*" />
+  </paths>
+  <!-- modules configured and loaded for all services -->
+  <modules>
+    <!-- Remove this comment mark to enable caching
+    <module id="cache" class="System.Caching.TSqliteCache" />
+    -->
+    <!-- Remove this comment mark to enable PATH url format
+    <module id="request" class="THttpRequest" UrlFormat="Path" />
+    -->
+    <!--
+    <module id="session" class="THttpSession" />
+    <module id="log" class="System.Util.TLogRouter">
+      <route class="TBrowserLogRoute" />
+      <route class="TFileLogRoute" Categories="System" Levels="Notice,Warning,Error,Alert,Fatal" />
+    </module>
+    -->
+    <module class="System.Util.TParameterModule" ParameterFile="Application.Data.Options" />
+  </modules>
+  <services>
+    <!-- page service -->
+    <service id="page" class="TPageService" BasePath="Application.Pages" DefaultPage="Posts.ListPost">
+      <!-- modules configured and loaded when page service is requested -->
+      <modules>
+        <!-- user manager module -->
+        <module id="users" class="Application.Common.BlogUserManager" />
+        <!-- auth manager module -->
+        <module id="auth" class="System.Security.TAuthManager" UserManager="users" LoginPage="Posts.ListPost" />
+        <module id="data" class="Application.Common.BlogDataModule" />
+      </modules>
+	  <pages MasterClass="Application.Layouts.MainLayout" Theme="Basic" />
+    </service>
+  </services>
+</application>
