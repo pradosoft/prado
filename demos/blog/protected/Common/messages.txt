@@ -1,0 +1,4 @@
+blogdatamodule_dbconnect_failed			= Unable to connect to database: {0}
+blogdatamodule_dbfile_invalid			= BlogDataModule.DbFile='{0}' is invalid.
+blogdatamodule_createdatabase_failed	= BlogDataModule failed to create database when executing SQL: {1}. Last SQL error is: {0}.
+blogdatamodule_query_failed				= Failed to execute SQL: {1}. Last SQL error is: {0}.

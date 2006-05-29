@@ -1,0 +1,113 @@
+<com:TContent ID="Main">
+
+<div class="post">
+<div class="post-title">
+<%= $this->CurrentPost->Title %>
+</div>
+<div class="post-time">
+<%= date('l, F j, Y \a\t h:i:s a',$this->CurrentPost->CreateTime) %>
+by
+<%= '<a href="' . $this->Service->constructUrl('Users.ViewUser',array('id'=>$this->CurrentPost->AuthorID)) . '">' . $this->CurrentPost->AuthorName . '</a>' %>
+<%= $this->CanEditPost ? '| <a href="' . $this->Service->constructUrl('Posts.EditPost',array('id'=>$this->CurrentPost->ID)) . '">Edit</a> | ' : '';
+%>
+<com:TLinkButton
+	Text="Delete"
+	OnClick="deleteButtonClicked"
+	Visible=<%= $this->CanEditPost %>
+	Attributes.onclick="if(!confirm('Are you sure to delete this post? This will also delete all related comments.')) return false;"
+	/>
+</div>
+<div class="post-content">
+<%= $this->CurrentPost->Content %>
+</div>
+<div class="post-footer">
+<com:TRepeater ID="CategoryList" EnableViewState="false">
+	<prop:ItemTemplate>
+	[
+	<a href="<%# $this->Service->constructUrl('Posts.ListPost',array('cat'=>$this->DataItem->ID)) %>"><%# $this->DataItem->Name %></a>
+	]
+	</prop:ItemTemplate>
+</com:TRepeater>
+</div>
+</div>
+
+<div class="comments">
+<a name="comments"></a>
+<h3>Comments</h3>
+
+<com:TRepeater ID="CommentList" OnItemCommand="repeaterItemCommand">
+	<prop:ItemTemplate>
+<div class="comment">
+<div class="comment-header">
+<com:TLinkButton
+	Text="Delete"
+	Attributes.onclick="if(!confirm('Are you sure to delete this comment?')) return false;"
+	CommandParameter=<%# $this->DataItem->ID %>
+	Visible=<%= $this->Page->CanEditPost %> Style="float:right"/>
+<%# date('F j, Y \a\t h:i:s a',$this->DataItem->CreateTime) %>
+by
+<%# $this->DataItem->AuthorWebsite==='' ?
+		$this->DataItem->AuthorName :
+		'<a href="' . $this->DataItem->AuthorWebsite . '">' . $this->DataItem->AuthorName . '</a>' %>
+</div>
+<div class="comment-content">
+<%# $this->DataItem->Content %>
+</div>
+</div>
+	</prop:ItemTemplate>
+</com:TRepeater>
+
+<h4>Leave your comment</h4>
+
+<span class="input-label">Name</span>
+<com:TRequiredFieldValidator
+	ControlToValidate="CommentAuthor"
+	ValidationGroup="comment""
+	Display="Dynamic"
+	Text="...is required"
+	ControlCssClass="inputerror" />
+<br/>
+<com:TTextBox ID="CommentAuthor" />
+<br/>
+
+<span class="input-label">Email address</span>
+<com:TRequiredFieldValidator
+	ControlToValidate="CommentEmail"
+	ValidationGroup="comment""
+	Display="Dynamic"
+	Text="...is required"
+	ControlCssClass="inputerror" />
+<com:TEmailAddressValidator
+	ControlToValidate="CommentEmail"
+	ValidationGroup="comment"
+	Display="Dynamic"
+	Text="*"
+	ErrorMessage="You entered an invalid email address."
+	ControlCssClass="inputerror" />
+<br/>
+<com:TTextBox ID="CommentEmail" />
+<br/>
+
+<span class="input-label">Personal website</span>
+<br/>
+<com:TTextBox ID="CommentWebsite" Columns="70"/>
+<br/>
+
+<span class="input-label">Comment</span>
+<com:TRequiredFieldValidator
+	ControlToValidate="CommentContent"
+	ValidationGroup="comment"
+	Display="Dynamic"
+	Text="...is required"
+	ControlCssClass="inputerror" />
+<br/>
+<com:TTextBox ID="CommentContent" TextMode="MultiLine" Columns="55" Rows="10"/>
+<br/>
+
+<com:TLinkButton
+	Text="Submit"
+	ValidationGroup="comment"
+	OnClick="submitCommentButtonClicked" />
+
+</div>
+</com:TContent>

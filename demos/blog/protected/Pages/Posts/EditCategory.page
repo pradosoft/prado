@@ -1,0 +1,36 @@
+<com:TContent ID="Main">
+
+<h2>Update Post Category</h2>
+
+<span class="input-label">Category name</span>
+<com:TRequiredFieldValidator
+	Display="Dynamic"
+	ControlToValidate="CategoryName"
+	ErrorMessage="...is required"
+	ValidationGroup="category" />
+<com:TCustomValidator
+	ControlToValidate="CategoryName"
+	ValidationGroup="category"
+	Display="Dynamic"
+	OnServerValidate="checkCategoryName"
+	Text="...must be unique"
+	ControlCssClass="inputerror" />
+<br/>
+<com:TTextBox ID="CategoryName" Columns="50" MaxLength="128" />
+<br/>
+
+<span class="input-label">Description</span>
+<br/>
+<com:TTextBox
+	ID="CategoryDescription"
+	TextMode="MultiLine"
+	Columns="50"
+	Rows="5" />
+<br/>
+
+<com:TLinkButton
+	Text="Save"
+	OnClick="saveButtonClicked"
+	ValidationGroup="category" />
+
+</com:TContent>
