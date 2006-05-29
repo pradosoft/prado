@@ -494,6 +494,45 @@ abstract class TListControl extends TDataBoundControl
     	$this->_cachedSelectedValue=$value;
     }
 
+
+	/**
+	 * @return array list of the selected item values (strings)
+	 */
+	public function getSelectedValues()
+	{
+		$values=array();
+		if($this->_items)
+		{
+			foreach($this->_items as $item)
+			{
+				if($item->getSelected())
+					$values[]=$item->getValue();
+			}
+		}
+		return $values;
+	}
+
+	/**
+	 * @param array list of the selected item values
+	 */
+	public function setSelectedValues($values)
+	{
+		if($this->_items)
+		{
+			$this->clearSelection();
+			$lookup=array();
+			foreach($this->_items as $item)
+				$lookup[$item->getValue()]=$item;
+			foreach($values as $value)
+			{
+				if(isset($lookup["$value"]))
+					$lookup["$value"]->setSelected(true);
+		    	else
+		    		throw new TInvalidDataValueException('listcontrol_selectedvalue_invalid',get_class($this),$value);
+			}
+		}
+	}
+
     /**
      * @return string selected value
      */
