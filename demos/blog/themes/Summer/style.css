@@ -7,9 +7,9 @@ body {
 	margin: 0;
 	padding: 0;
 	font-family: verdana, 'trebuchet ms', sans-serif;
-	font-size: 12px;
+	font-size: 10pt;
 	color: #333;
-	background: #36414d;
+	background-color: gray;
 	min-width:750px;
 }
 
@@ -19,7 +19,11 @@ form {
 }
 
 a {
-	text-decoration: underline;
+	color: #BF6060;
+}
+
+a:hover {
+	color: red;
 }
 
 a img {
@@ -27,13 +31,13 @@ a img {
 }
 
 #page {
-	background:#fff;
+	background-color:#fff;
 	margin:0 auto;
 	width:800px;
 }
 
 #header {
-	background: #a3b8cc;
+	background-color: #F2B6B6;
 	border-bottom: 1px solid silver;
 }
 
@@ -48,11 +52,17 @@ a img {
 	padding:5px;
 	padding-left: 20px;
     margin:0;
-	font-size: 12pt;
+   	color: #BF6060;
+	font-size: 11pt;
+}
+
+#header a {
+	color: #BF6060;
+	text-decoration: none;
 }
 
 #main {
-	background:#fff;
+	background-color:#fff;
 	float:left;
 	width:560px;
 	padding: 20px;
@@ -63,7 +73,7 @@ a img {
 }
 
 #sidebar {
-	background:#e6ecf2;
+	background-color:#FFE6E6;
 	float:right;
 	width:200px;
 }
@@ -77,7 +87,7 @@ a img {
 }
 
 #footer {
-	background:#fff;
+	background-color:#fff;
 	clear:both;
 	color: gray;
 	font-size:8pt;
@@ -90,7 +100,7 @@ a img {
 	margin: 10px;
 	border-bottom: 1px solid silver;
 	border-right: 1px solid silver;
-	background: #dae0e6;
+	background-color: #FFBFBF;
 }
 
 .portlet-title {
@@ -100,11 +110,10 @@ a img {
 	w\idth: auto;
 
 	margin: 0;
-	border-left: 5px solid #36414d;
-	border-bottom: 1px solid silver;
+	border-left: 5px solid #BFA260;
 	padding: 5px;
 	color: #fff;
-	background: #a3b8cc;
+	background-color: #FF8080;
 	font-size: 8pt;
 	font-weight: bold;
 	line-height: 1;
@@ -112,7 +121,7 @@ a img {
 }
 
 .portlet-title a {
-	color: yellow;
+	color: #BF6060;
 	text-decoration: none;
 	text-transform: none;
 }
@@ -123,7 +132,6 @@ a img {
 
 .portlet-content {
 	margin: 0 0 10px 0;
-	border-top: 1px solid #cfd4d9;
 	padding: 10px 10px 0 10px;
 	font-size: 10px;
 }
@@ -140,7 +148,6 @@ a img {
 }
 
 .portlet-content a {
-	color: #36414d;
 	text-decoration: none;
 }
 
@@ -173,7 +180,7 @@ a img {
 }
 
 .post-footer a {
-	color: #36414d;
+	color: #BF6060;
 }
 
 .comments {
@@ -189,7 +196,7 @@ a img {
 }
 
 .comment-header {
-	background-color: #e6ecf2;
+	background-color: #FFE6E6;
 	padding: 3px;
 	font-size: 8pt;
 }
@@ -204,19 +211,19 @@ a img {
 
 .grid-header {
 	color: #fff;
-	background: #a3b8cc;
+	background-color: #FF8080;
 }
 
 .grid-row1 {
-	background: #dae0e6;
+	background-color: #FFBFBF;
 }
 
 .grid-row2 {
-	background: #e6ecf2;
+	background-color: #FFE6E6;
 }
 
 .grid-row-selected {
-	background: lightyellow;
+	background-color: lightyellow;
 }
 
 .grid-pager {
@@ -231,7 +238,7 @@ a img {
 
 .submenu {
 	margin-bottom: 10px;
-	border-bottom: 5px solid #a3b8cc;
+	border-bottom: 5px solid #FF8080;
 	padding-right: 10px;
 	text-align: right;
 }
@@ -249,13 +256,101 @@ a img {
 }
 
 .submenu-active {
+	color: white;
 	text-decoration: none;
-	background: #a3b8cc;
+	background-color: #FF8080;
 	padding: 3px 5px 0 5px;
 }
 
 .submenu-inactive {
 	text-decoration: none;
-	background: #dae0e6;
+	background-color: #FFBFBF;
 	padding: 3px 5px 0 5px;
+}
+
+.input-label {
+}
+
+.input-error1, .input-error2, .input-error3 {
+	border: 1px solid red;
+	background-color: lightyellow;
+}
+
+.link-button {
+}
+
+.link-button:link, .link-button:visited {
+	color:#284E98;
+	padding: 3px;
+	background-color:#FFBFBF;
+	text-decoration: none;
+	margin-right: 2px;
+	border-right:1px solid gray;
+	border-bottom:1px solid gray;
+}
+
+.link-button:link.active, .link-button:visited.active, .link-button:hover {
+	color:red;
+	background-color:#FFE6E6;
+}
+
+.profile-table {
+	width: 100%;
+	background-color: #aaa;
+	border-collapse: collapse;
+}
+
+.profile-table td {
+	padding: 5px;
+	border: 1px solid #BFA260;
+}
+
+.profile-table-label {
+	background-color: #FF8080;
+	color: white;
+	font-weight: bold;
+}
+
+.profile-table-value {
+	background-color: #FFBFBF;
+}
+
+.category {
+	padding: 5px;
+	margin-bottom: 10px;
+	border-bottom: 1px solid silver;
+	border-right: 1px solid silver;
+	background-color: #FFBFBF;
+}
+
+.category-name {
+	font-weight: bold;
+}
+
+.category-name a {
+	color: #BF6060;
+	text-decoration: none;
+	text-transform: none;
+}
+
+.category-description {
+	font-style: italic;
+}
+
+.postlist-pager {
+	text-align: right;
+	margin-top: 30px;
+	border-top: 1px solid silver;
+}
+
+.postlist-pager a {
+	text-decoration: none;
+}
+
+.search-title {
+	padding: 5px;
+	margin-bottom: 10px;
+	border-bottom: 1px solid silver;
+	border-right: 1px solid silver;
+	background-color: #FFBFBF;
 }

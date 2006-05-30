@@ -1,25 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<application id="personal" mode="Debug">
+<application id="blog" mode="Debug">
   <paths>
     <using namespace="Application.Common.*" />
   </paths>
   <!-- modules configured and loaded for all services -->
   <modules>
-    <!-- Remove this comment mark to enable caching
-    <module id="cache" class="System.Caching.TSqliteCache" />
-    -->
     <!-- Remove this comment mark to enable PATH url format
     <module id="request" class="THttpRequest" UrlFormat="Path" />
     -->
-    <!--
-    <module id="session" class="THttpSession" />
+    <module id="cache" class="System.Caching.TSqliteCache" />
+    <module class="Application.Common.BlogErrorHandler" />
     <module id="log" class="System.Util.TLogRouter">
-      <route class="TBrowserLogRoute" />
-      <route class="TFileLogRoute" Categories="System" Levels="Notice,Warning,Error,Alert,Fatal" />
+      <route class="TFileLogRoute" Categories="BlogApplication" />
     </module>
-    -->
-    <module class="System.Util.TParameterModule" ParameterFile="Application.Data.Options" />
+    <module class="System.Util.TParameterModule" ParameterFile="Application.Data.Settings" />
   </modules>
   <services>
     <!-- page service -->

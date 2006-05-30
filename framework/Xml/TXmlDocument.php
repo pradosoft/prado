@@ -35,11 +35,11 @@ class TXmlElement extends TComponent
 	/**
 	 * @var string tagname of this element
 	 */
-	private $_tagName;
+	private $_tagName='unknown';
 	/**
 	 * @var string text enclosed between openning and closing tags of this element
 	 */
-	private $_value;
+	private $_value='';
 	/**
 	 * @var TXmlElementList list of child elements of this element
 	 */

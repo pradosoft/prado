@@ -1,7 +1,24 @@
 <?php
+/**
+ * BlogUser class file
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ */
 
 Prado::using('System.Security.TUser');
 
+/**
+ * BlogUser class
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ */
 class BlogUser extends TUser
 {
 	private $_id;
@@ -14,6 +31,11 @@ class BlogUser extends TUser
 	public function setID($value)
 	{
 		$this->_id=$value;
+	}
+
+	public function getIsAdmin()
+	{
+		return $this->isInRole('admin');
 	}
 
 	public function saveToString()

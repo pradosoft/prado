@@ -1,14 +1,33 @@
 <?php
+/**
+ * EditCategory class file
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ */
 
+/**
+ * EditCategory class
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ */
 class EditCategory extends BlogPage
 {
-	public function getCurrentCategory()
+	private $_category;
+
+	public function onInit($param)
 	{
+		parent::onInit($param);
 		$id=TPropertyValue::ensureInteger($this->Request['id']);
-		if(($cat=$this->DataAccess->queryCategoryByID($id))!==null)
-			return $cat;
-		else
-			throw new BlogException('xxx');
+		$this->_category=$this->DataAccess->queryCategoryByID($id);
+		if($this->_category===null)
+			throw new BlogException(500,'category_id_invalid',$id);
 	}
 
 	public function onLoad($param)
@@ -16,9 +35,8 @@ class EditCategory extends BlogPage
 		parent::onLoad($param);
 		if(!$this->IsPostBack)
 		{
-			$catRecord=$this->getCurrentCategory();
-			$this->CategoryName->Text=$catRecord->Name;
-			$this->CategoryDescription->Text=$catRecord->Description;
+			$this->CategoryName->Text=$this->_category->Name;
+			$this->CategoryDescription->Text=$this->_category->Description;
 		}
 	}
 
@@ -26,11 +44,10 @@ class EditCategory extends BlogPage
 	{
 		if($this->IsValid)
 		{
-			$categoryRecord=$this->getCurrentCategory();
-			$categoryRecord->Name=$this->CategoryName->Text;
-			$categoryRecord->Description=$this->CategoryDescription->Text;
-			$this->DataAccess->updateCategory($categoryRecord);
-			$this->gotoPage('Posts.ListPost',array('cat'=>$categoryRecord->ID));
+			$this->_category->Name=$this->CategoryName->Text;
+			$this->_category->Description=$this->CategoryDescription->Text;
+			$this->DataAccess->updateCategory($this->_category);
+			$this->gotoPage('Posts.ListPost',array('cat'=>$this->_category->ID));
 		}
 	}
 

@@ -1,5 +1,22 @@
 <?php
+/**
+ * MyPost class file
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ */
 
+/**
+ * MyPost class
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ */
 class MyPost extends BlogPage
 {
 	protected function bindData()
@@ -7,8 +24,8 @@ class MyPost extends BlogPage
 		$author=$this->User->ID;
 		$offset=$this->PostGrid->CurrentPageIndex*$this->PostGrid->PageSize;
 		$limit=$this->PostGrid->PageSize;
-		$this->PostGrid->DataSource=$this->DataAccess->queryPosts("author_id=$author",'','','ORDER BY a.status ASC, create_time DESC',"LIMIT $offset,$limit");
-		$this->PostGrid->VirtualItemCount=$this->DataAccess->queryPostCount("author_id=$author",'','');
+		$this->PostGrid->DataSource=$this->DataAccess->queryPosts("author_id=$author",'','ORDER BY a.status DESC, create_time DESC',"LIMIT $offset,$limit");
+		$this->PostGrid->VirtualItemCount=$this->DataAccess->queryPostCount("author_id=$author",'');
 		$this->PostGrid->dataBind();
 	}
 

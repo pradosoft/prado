@@ -9,7 +9,7 @@ Welcome, <b><%= $this->User->Name %></b>!
 <li><a href="<%= $this->Service->constructUrl('Posts.MyPost') %>">My post</a></li>
 <li><a href="<%= $this->Service->constructUrl('Users.ViewUser',array('id'=>$this->User->ID)) %>">Profile</a></li>
 <%%
-if($this->User->isInRole('admin'))
+if($this->User->IsAdmin)
     echo '<li><a href="'.$this->Service->constructUrl('Admin.PostMan').'">Admin</a></li>';
 %>
 <li><com:TLinkButton Text="Logout" OnClick="logout" /></li>

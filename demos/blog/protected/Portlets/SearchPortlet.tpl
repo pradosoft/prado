@@ -11,10 +11,12 @@ Keyword
 	Display="Dynamic"/>
 <br/>
 <com:TTextBox ID="Keyword" />
+<br/><br/>
 <com:TLinkButton
 	ID="SearchButton"
 	Text="Search"
 	ValidationGroup="search"
+	CssClass="link-button"
 	OnClick="search" />
 </com:TPanel><!-- end of portlet-content -->
 

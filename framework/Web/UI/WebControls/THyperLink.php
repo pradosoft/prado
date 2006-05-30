@@ -22,10 +22,6 @@
  * If both {@link getImageUrl ImageUrl} and {@link getText Text} are empty,
  * the content enclosed within the control tag will be rendered.
  *
- * Note, {@link getText Text} is not HTML-encoded when displayed.
- * Make sure it does not contain unwanted characters that may bring
- * security vulnerabilities.
- *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
@@ -66,7 +62,7 @@ class THyperLink extends TWebControl
 		if(($imageUrl=$this->getImageUrl())==='')
 		{
 			if(($text=$this->getText())!=='')
-				$writer->write($text);
+				$writer->write(THttpUtility::htmlEncode($text));
 			else
 				parent::renderContents($writer);
 		}
@@ -77,7 +73,7 @@ class THyperLink extends TWebControl
 			if(($toolTip=$this->getToolTip())!=='')
 				$image->setToolTip($toolTip);
 			if(($text=$this->getText())!=='')
-				$image->setAlternateText($text);
+				$image->setAlternateText(THttpUtility::htmlEncode($text));
 			$image->renderControl($writer);
 		}
 	}

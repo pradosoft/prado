@@ -1,8 +1,25 @@
 <?php
+/**
+ * BlogUserManager class file
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ */
 
 Prado::using('System.Security.IUserManager');
 Prado::using('Application.Common.BlogUser');
 
+/**
+ * BlogUserManager class
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ */
 class BlogUserManager extends TModule implements IUserManager
 {
 	public function getGuestName()
@@ -29,7 +46,7 @@ class BlogUserManager extends TModule implements IUserManager
 				$user->setID($userRecord->ID);
 				$user->setName($username);
 				$user->setIsGuest(false);
-				$user->setRoles($userRecord->Role===0?'user':'admin');
+				$user->setRoles($userRecord->Role===UserRecord::ROLE_USER?'user':'admin');
 				return $user;
 			}
 			else
@@ -47,7 +64,7 @@ class BlogUserManager extends TModule implements IUserManager
 	{
 		$db=$this->Application->getModule('data');
 		if(($userRecord=$db->queryUserByName($username))!==null)
-			return $userRecord->Password===md5($password);
+			return $userRecord->Password===md5($password) && $userRecord->Status===UserRecord::STATUS_NORMAL;
 		else
 			return false;
 	}
