@@ -36,7 +36,7 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  *		<com:TListItem Text="item3" Value="value3" />
  *	</com:TListBox>
  *
- *	<com:TRequiredListValidator
+ *	<com:TListControlValidator
  *		ControlToValidate="listbox"
  *		MinSelection="2"
  *		ErrorMessage="Please select at least 2" />
@@ -49,7 +49,7 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  *		<com:TListItem Text="item3" Value="value3" />
  *	</com:TCheckBoxList>
  *
- *	<com:TRequiredListValidator
+ *	<com:TListControlValidator
  *		ControlToValidate="checkboxes"
  *		RequiredSelections="value1"
  *		MinSelection="2"
