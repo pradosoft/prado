@@ -124,6 +124,30 @@ class TUserManager extends TModule implements IUserManager
 	}
 
 	/**
+	 * Returns an array of all users.
+	 * Each array element represents a single user.
+	 * The array key is the username in lower case, and the array value is the
+	 * corresponding user password.
+	 * @return array list of users
+	 */
+	public function getUsers()
+	{
+		return $this->_users;
+	}
+
+	/**
+	 * Returns an array of user role information.
+	 * Each array element represents the roles for a single user.
+	 * The array key is the username in lower case, and the array value is
+	 * the roles (represented as an array) that the user is in.
+	 * @return array list of user role information
+	 */
+	public function getRoles()
+	{
+		return $this->_roles;
+	}
+
+	/**
 	 * @return string the full path to the file storing user/role information
 	 */
 	public function getUserFile()

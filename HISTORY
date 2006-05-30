@@ -11,6 +11,7 @@ BUG: Ticket#181 - Unable to change Content-Type in response header if charset is
 BUG: Ticket#200 - onClick javascript event triggered twice on CheckBox label (Qiang)
 ENH: Ticket#150 - TDataGrid and TDataList now render table section tags (Qiang)
 ENH: Ticket#152 - constituent parts of TWizard are exposed (Qiang)
+ENH: Ticket#184 - added TUserManager.Users and Roles properties (Qiang)
 ENH: added sanity check to calling event handlers (Qiang)
 ENH: added search for quickstart tutorials (Wei)
 ENH: added support to property tags for template owner control (Qiang)
