@@ -1,3 +1,5 @@
+<%@ Title="Edit Category" %>
+
 <com:TContent ID="Main">
 
 <h2>Update Post Category</h2>
@@ -14,7 +16,7 @@
 	Display="Dynamic"
 	OnServerValidate="checkCategoryName"
 	Text="...must be unique"
-	ControlCssClass="inputerror" />
+	ControlCssClass="input-error1" />
 <br/>
 <com:TTextBox ID="CategoryName" Columns="50" MaxLength="128" />
 <br/>
@@ -27,10 +29,11 @@
 	Columns="50"
 	Rows="5" />
 <br/>
-
+<br/>
 <com:TLinkButton
 	Text="Save"
 	OnClick="saveButtonClicked"
+	CssClass="link-button"
 	ValidationGroup="category" />
 
 </com:TContent>

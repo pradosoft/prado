@@ -4,8 +4,9 @@
     <parameter id="SiteSubtitle" value="The first time at dog beach :-p" />
     <parameter id="SiteOwner" value="LP" />
     <parameter id="AdminEmail" value="LP@LG.com" />
-    <parameter id="MultipleUser" value="false" />
-    <parameter id="AccountApproval" value="false" />
-    <parameter id="PostApproval" value="false" />
-    <parameter id="ThemeName" value="Basic" />
+    <parameter id="MultipleUser" value="true" />
+    <parameter id="AccountApproval" value="true" />
+    <parameter id="PostPerPage" value="3" />
+    <parameter id="PostApproval" value="true" />
+    <parameter id="ThemeName" value="Summer" />
 </parameters>

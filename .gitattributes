@@ -26,7 +26,7 @@ buildscripts/texbuilder/pages.php -text
 buildscripts/texbuilder/prado3_quick_start.tex -text
 demos/blog/index.php -text
 demos/blog/protected/Common/BlogDataModule.php -text
-demos/blog/protected/Common/BlogErrors.php -text
+demos/blog/protected/Common/BlogErrorHandler.php -text
 demos/blog/protected/Common/BlogException.php -text
 demos/blog/protected/Common/BlogPage.php -text
 demos/blog/protected/Common/BlogUser.php -text
@@ -43,7 +43,6 @@ demos/blog/protected/Pages/Admin/ConfigMan.page -text
 demos/blog/protected/Pages/Admin/ConfigMan.php -text
 demos/blog/protected/Pages/Admin/PostMan.page -text
 demos/blog/protected/Pages/Admin/PostMan.php -text
-demos/blog/protected/Pages/Admin/Settings.page -text
 demos/blog/protected/Pages/Admin/UserMan.page -text
 demos/blog/protected/Pages/Admin/UserMan.php -text
 demos/blog/protected/Pages/Admin/config.xml -text
@@ -64,6 +63,8 @@ demos/blog/protected/Pages/Posts/NewPost.php -text
 demos/blog/protected/Pages/Posts/ViewPost.page -text
 demos/blog/protected/Pages/Posts/ViewPost.php -text
 demos/blog/protected/Pages/Posts/config.xml -text
+demos/blog/protected/Pages/SearchPost.page -text
+demos/blog/protected/Pages/SearchPost.php -text
 demos/blog/protected/Pages/Users/EditUser.page -text
 demos/blog/protected/Pages/Users/EditUser.php -text
 demos/blog/protected/Pages/Users/NewUser.page -text
@@ -83,7 +84,10 @@ demos/blog/protected/Portlets/Portlet.php -text
 demos/blog/protected/Portlets/SearchPortlet.php -text
 demos/blog/protected/Portlets/SearchPortlet.tpl -text
 demos/blog/protected/application.xml -text
-demos/blog/themes/Basic/style.css -text
+demos/blog/themes/Fall/style.css -text
+demos/blog/themes/Spring/style.css -text
+demos/blog/themes/Summer/style.css -text
+demos/blog/themes/Winter/style.css -text
 demos/composer/index.php -text
 demos/composer/index2.php -text
 demos/composer/protected/pages/ClassDefinition.php -text

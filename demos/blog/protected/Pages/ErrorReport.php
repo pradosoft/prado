@@ -1,11 +1,28 @@
 <?php
+/**
+ * ErrorReport class file
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ */
 
+/**
+ * ErrorReport class
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ */
 class ErrorReport extends BlogPage
 {
-	public function getErrorMessage()
+	public function onLoad($param)
 	{
-		$id=TPropertyValue::ensureInteger($this->Request['id']);
-		return BlogErrors::getMessage($id);
+		parent::onLoad($param);
+		$this->ErrorMessage->Text=$this->Application->SecurityManager->validateData(urldecode($this->Request['msg']));
 	}
 }
 

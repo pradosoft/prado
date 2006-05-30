@@ -25,7 +25,7 @@
 	<com:TBoundColumn
 		HeaderText="Status"
 		DataField="Status"
-		DataFormatString="#{0}?'Published':'Draft'"
+		DataFormatString="#{0}===0?'Published':({0}===1?'Draft':'Pending')"
 		ItemStyle.Width="70px"
 		/>
 	<com:TBoundColumn

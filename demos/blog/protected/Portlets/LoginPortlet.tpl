@@ -23,13 +23,19 @@ Password
 <br/>
 <com:TTextBox ID="Password" TextMode="Password" />
 
-<br/>
+<br/><br/>
+
 <com:TLinkButton
 	ID="LoginButton"
 	Text="Login"
 	ValidationGroup="login"
+	CssClass="link-button"
 	OnClick="loginButtonClicked" />
-| <a href="<%= $this->Service->constructUrl('Users.NewUser') %>">Register</a>
+<com:THyperLink
+	Text="Register"
+	NavigateUrl=<%= $this->Service->constructUrl('Users.NewUser') %>
+	Visible=<%= TPropertyValue::ensureBoolean($this->Application->Parameters['MultipleUser']) %>
+	CssClass="link-button" />
 
 </com:TPanel><!-- end of portlet-content -->
 

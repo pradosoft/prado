@@ -1,7 +1,22 @@
 <?php
+/**
+ * BlogDataModule class file
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ */
 
-// post status: 0 - draft, 1 - published
-// comment status: 0 - awaiting approval, 1 - published
+/**
+ * BlogDataModule class
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ */
 class BlogDataModule extends TModule
 {
 	const DB_FILE_EXT='.db';
@@ -24,7 +39,7 @@ class BlogDataModule extends TModule
 	public function setDbFile($value)
 	{
 		if(($this->_dbFile=Prado::getPathOfNamespace($value,self::DB_FILE_EXT))===null)
-			throw new BlogException('blogdatamodule_dbfile_invalid',$value);
+			throw new BlogException(500,'blogdatamodule_dbfile_invalid',$value);
 	}
 
 	protected function createDatabase()
@@ -36,7 +51,7 @@ class BlogDataModule extends TModule
 			if(trim($statement)!=='')
 			{
 				if(@sqlite_query($this->_db,$statement)===false)
-					throw new BlogException('blogdatamodule_createdatabase_failed',sqlite_error_string(sqlite_last_error($this->_db)),$statement);
+					throw new BlogException(500,'blogdatamodule_createdatabase_failed',sqlite_error_string(sqlite_last_error($this->_db)),$statement);
 			}
 		}
 	}
@@ -47,7 +62,7 @@ class BlogDataModule extends TModule
 		$newDb=!is_file($dbFile);
 		$error='';
 		if(($this->_db=sqlite_open($dbFile,0666,$error))===false)
-			throw new BlogException('blogdatamodule_dbconnect_failed',$error);
+			throw new BlogException(500,'blogdatamodule_dbconnect_failed',$error);
 		if($newDb)
 			$this->createDatabase();
 	}
@@ -69,7 +84,7 @@ class BlogDataModule extends TModule
 		if(($result=@sqlite_query($this->_db,$sql))!==false)
 			return $result;
 		else
-			throw new BlogException('blogdatamodule_query_failed',sqlite_error_string(sqlite_last_error($this->_db)),$sql);
+			throw new BlogException(500,'blogdatamodule_query_failed',sqlite_error_string(sqlite_last_error($this->_db)),$sql);
 	}
 
 	protected function populateUserRecord($row)
@@ -143,8 +158,8 @@ class BlogDataModule extends TModule
 		$website=sqlite_escape_string($user->Website);
 		$createTime=time();
 		$sql="INSERT INTO tblUsers ".
-				"(name,full_name,role,passwd,email,reg_time,website) ".
-				"VALUES ('$name','$fullName',{$user->Role},'$passwd','$email',$createTime,'$website')";
+				"(name,full_name,role,passwd,email,reg_time,status,website) ".
+				"VALUES ('$name','$fullName',{$user->Role},'$passwd','$email',$createTime,{$user->Status},'$website')";
 		$this->query($sql);
 		$user->ID=sqlite_last_insert_rowid($this->_db);
 	}
@@ -192,13 +207,11 @@ class BlogDataModule extends TModule
 		return $postRecord;
 	}
 
-	public function queryPosts($authorFilter,$timeFilter,$categoryFilter,$orderBy,$limit)
+	public function queryPosts($postFilter,$categoryFilter,$orderBy,$limit)
 	{
 		$filter='';
-		if($authorFilter!=='')
-			$filter.=" AND $authorFilter";
-		if($timeFilter!=='')
-			$filter.=" AND $timeFilter";
+		if($postFilter!=='')
+			$filter.=" AND $postFilter";
 		if($categoryFilter!=='')
 			$filter.=" AND a.id IN (SELECT post_id AS id FROM tblPost2Category WHERE $categoryFilter)";
 		$sql="SELECT a.id AS id,
@@ -221,13 +234,11 @@ class BlogDataModule extends TModule
 		return $posts;
 	}
 
-	public function queryPostCount($authorFilter,$timeFilter,$categoryFilter)
+	public function queryPostCount($postFilter,$categoryFilter)
 	{
 		$filter='';
-		if($authorFilter!=='')
-			$filter.=" AND $authorFilter";
-		if($timeFilter!=='')
-			$filter.=" AND $timeFilter";
+		if($postFilter!=='')
+			$filter.=" AND $postFilter";
 		if($categoryFilter!=='')
 			$filter.=" AND a.id IN (SELECT post_id AS id FROM tblPost2Category WHERE $categoryFilter)";
 		$sql="SELECT COUNT(a.id) AS post_count
@@ -259,6 +270,11 @@ class BlogDataModule extends TModule
 			return $this->populatePostRecord($row);
 		else
 			return null;
+	}
+
+	public function escapeString($string)
+	{
+		return sqlite_escape_string($string);
 	}
 
 	public function insertPost($post,$catIDs)
@@ -382,7 +398,7 @@ class BlogDataModule extends TModule
 
 	public function queryCategories()
 	{
-		$sql="SELECT * FROM tblCategories";
+		$sql="SELECT * FROM tblCategories ORDER BY name ASC";
 		$result=$this->query($sql);
 		$rows=sqlite_fetch_all($result,SQLITE_ASSOC);
 		$cats=array();
@@ -398,7 +414,7 @@ class BlogDataModule extends TModule
 				a.description AS description,
 				a.post_count AS post_count
 				FROM tblCategories a, tblPost2Category b
-				WHERE a.id=b.category_id AND b.post_id=$postID";
+				WHERE a.id=b.category_id AND b.post_id=$postID ORDER BY a.name";
 		$result=$this->query($sql);
 		$rows=sqlite_fetch_all($result,SQLITE_ASSOC);
 		$cats=array();
@@ -486,6 +502,11 @@ class BlogDataModule extends TModule
 
 class UserRecord
 {
+	const ROLE_USER=0;
+	const ROLE_ADMIN=1;
+	const STATUS_NORMAL=0;
+	const STATUS_DISABLED=1;
+	const STATUS_PENDING=2;
 	public $ID;
 	public $Name;
 	public $FullName;
@@ -500,6 +521,9 @@ class UserRecord
 
 class PostRecord
 {
+	const STATUS_PUBLISHED=0;
+	const STATUS_DRAFT=1;
+	const STATUS_PENDING=2;
 	public $ID;
 	public $AuthorID;
 	public $AuthorName;

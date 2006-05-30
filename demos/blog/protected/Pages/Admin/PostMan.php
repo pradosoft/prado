@@ -1,13 +1,30 @@
 <?php
+/**
+ * PostMan class file
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ */
 
+/**
+ * PostMan class
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ */
 class PostMan extends BlogPage
 {
 	protected function bindData()
 	{
 		$offset=$this->PostGrid->CurrentPageIndex*$this->PostGrid->PageSize;
 		$limit=$this->PostGrid->PageSize;
-		$this->PostGrid->DataSource=$this->DataAccess->queryPosts('','','','ORDER BY a.status DESC, create_time DESC',"LIMIT $offset,$limit");
-		$this->PostGrid->VirtualItemCount=$this->DataAccess->queryPostCount('','','');
+		$this->PostGrid->DataSource=$this->DataAccess->queryPosts('','','ORDER BY a.status DESC, create_time DESC',"LIMIT $offset,$limit");
+		$this->PostGrid->VirtualItemCount=$this->DataAccess->queryPostCount('','');
 		$this->PostGrid->dataBind();
 	}
 

@@ -1,13 +1,39 @@
 <?php
+/**
+ * EditUser class file
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ */
 
+/**
+ * EditUser class
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ */
 class EditUser extends BlogPage
 {
-	public function getCurrentUser()
+	private $_userRecord=null;
+
+	public function onInit($param)
 	{
-		if(($user=$this->DataAccess->queryUserByID($this->User->ID))!==null)
-			return $user;
+		parent::onInit($param);
+		if(($id=$this->Request['id'])!==null)
+		{
+			$id=TPropertyValue::ensureInteger($id);
+			if(!$this->User->IsAdmin && $this->User->ID!==$id)
+				throw new BlogException(500,'profile_edit_disallowed',$id);
+		}
 		else
-			throw new BlogException('xxx');
+			$id=$this->User->ID;
+		if(($this->_userRecord=$this->DataAccess->queryUserByID($id))===null)
+			throw new BlogException(500,'profile_id_invalid',$id);
 	}
 
 	public function onLoad($param)
@@ -15,7 +41,7 @@ class EditUser extends BlogPage
 		parent::onLoad($param);
 		if(!$this->IsPostBack)
 		{
-			$userRecord=$this->getCurrentUser();
+			$userRecord=$this->_userRecord;
 			$this->Username->Text=$userRecord->Name;
 			$this->FullName->Text=$userRecord->FullName;
 			$this->Email->Text=$userRecord->Email;
@@ -27,7 +53,7 @@ class EditUser extends BlogPage
 	{
 		if($this->IsValid)
 		{
-			$userRecord=$this->getCurrentUser();
+			$userRecord=$this->_userRecord;
 			if($this->Password->Text!=='')
 				$userRecord->Password=md5($this->Password->Text);
 			$userRecord->FullName=$this->FullName->Text;

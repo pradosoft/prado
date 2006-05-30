@@ -6,19 +6,17 @@ Categories
 	Text="[+]"
 	Tooltip="Create a new category"
 	NavigateUrl=<%= $this->Service->constructUrl('Posts.NewCategory') %>
-	Visible=<%= $this->User->isInRole('admin') %> />
+	Visible=<%= $this->User->IsAdmin %> />
 </h2>
 
 <div class="portlet-content">
-<ul>
-<com:TRepeater ID="CategoryList" EnableViewState="false">
-	<prop:ItemTemplate>
-	<li>
-	<a href="<%# $this->Service->constructUrl('Posts.ListPost',array('cat'=>$this->DataItem->ID)) %>"><%# $this->DataItem->Name . ' (' . $this->DataItem->PostCount . ')' %></a>
-	</li>
-	</prop:ItemTemplate>
-</com:TRepeater>
-</ul>
+<com:TBulletedList
+	ID="CategoryList"
+	DisplayMode="HyperLink"
+	DataTextField="Name"
+	DataValueField="ID"
+	EnableViewState="false"
+	/>
 </div><!-- end of portlet-content -->
 
 </div><!-- end of portlet -->
