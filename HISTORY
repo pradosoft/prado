@@ -1,4 +1,4 @@
-Version 3.0.1 June 1, 2006
+Version 3.0.1 June 4, 2006
 ==========================
 BUG: Ticket#28 - OnClick does not work with Safari/KHTML (Wei)
 BUG: Ticket#37 - Changes of config files do not trigger cache update (Qiang)

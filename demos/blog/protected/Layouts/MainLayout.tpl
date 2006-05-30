@@ -34,6 +34,8 @@
 
 <com:Application.Portlets.ArchivePortlet />
 
+<com:Application.Portlets.CommentPortlet />
+
 </div><!-- end of sidebar -->
 
 <div id="footer">

@@ -34,6 +34,7 @@ class ConfigMan extends BlogPage
 			$this->MultipleUser->Checked=TPropertyValue::ensureBoolean($parameters['MultipleUser']);
 			$this->AccountApproval->Checked=TPropertyValue::ensureBoolean($parameters['AccountApproval']);
 			$this->PostPerPage->Text=$parameters['PostPerPage'];
+			$this->RecentComments->Text=$parameters['RecentComments'];
 			$this->PostApproval->Checked=TPropertyValue::ensureBoolean($parameters['PostApproval']);
 			$themes=$this->Service->ThemeManager->AvailableThemes;
 			$this->ThemeName->DataSource=$themes;
@@ -55,6 +56,7 @@ class ConfigMan extends BlogPage
 		$elements[]=$this->createParameter('MultipleUser',$this->MultipleUser->Checked);
 		$elements[]=$this->createParameter('AccountApproval',$this->AccountApproval->Checked);
 		$elements[]=$this->createParameter('PostPerPage',$this->PostPerPage->Text);
+		$elements[]=$this->createParameter('RecentComments',$this->RecentComments->Text);
 		$elements[]=$this->createParameter('PostApproval',$this->PostApproval->Checked);
 		$themeName=$this->ThemeName->SelectedItem->Text;
 		$elements[]=$this->createParameter('ThemeName',$themeName);

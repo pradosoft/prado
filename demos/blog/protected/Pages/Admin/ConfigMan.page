@@ -56,6 +56,16 @@
 	Text="Please enter a number." />
 <br/>
 
+<span class="input-label">Number of recent comments shown</span>
+<com:TTextBox ID="RecentComments" Columns="8"/>
+<com:TRegularExpressionValidator
+	ControlToValidate="RecentComments"
+	ValidationGroup="settings"
+	Display="Dynamic"
+	RegularExpression="[1-9]\d*"
+	Text="Please enter a number." />
+<br/>
+
 <com:TCheckBox ID="PostApproval" Text="New posts need approval" />
 <br/>
 

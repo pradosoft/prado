@@ -66,5 +66,11 @@ INSERT INTO tblPosts (id,author_id,create_time,title,content,status)
 INSERT INTO tblCategories (name,description,post_count)
 	VALUES ('Miscellaneous','This category holds posts on any topic.',1);
 
+INSERT INTO tblCategories (name,description,post_count)
+	VALUES ('PRADO','Topics related with the PRADO framework.',0);
+
+INSERT INTO tblCategories (name,description,post_count)
+	VALUES ('PHP','Topics related with PHP.',0);
+
 INSERT INTO tblPost2Category (post_id,category_id)
 	VALUES (1,1);
