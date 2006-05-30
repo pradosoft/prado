@@ -240,6 +240,8 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 		{
 			$attributes=$this->getAttributes();
 			$value=$attributes->remove('value');
+			// onclick js should only be added to input tag
+			$onclick=$attributes->remove('onclick');
 			if($attributes->getCount())
 			{
 				$writer->addAttributes($attributes);
@@ -248,6 +250,8 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 			if($value!==null)
 				$attributes->add('value',$value);
 		}
+		else
+			$onclick='';
 		if($needSpan)
 			$writer->renderBeginTag('span');
 		$clientID=$this->getClientID();
@@ -256,16 +260,16 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 			if($this->getTextAlign()==='Left')
 			{
 				$this->renderLabel($writer,$clientID,$text);
-				$this->renderInputTag($writer,$clientID);
+				$this->renderInputTag($writer,$clientID,$onclick);
 			}
 			else
 			{
-				$this->renderInputTag($writer,$clientID);
+				$this->renderInputTag($writer,$clientID,$onclick);
 				$this->renderLabel($writer,$clientID,$text);
 			}
 		}
 		else
-			$this->renderInputTag($writer,$clientID);
+			$this->renderInputTag($writer,$clientID,$onclick);
 		if($needSpan)
 			$writer->renderEndTag();
 	}
@@ -334,14 +338,17 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	 * Renders a checkbox input element.
 	 * @param THtmlWriter the writer for the rendering purpose
 	 * @param string checkbox id
+	 * @param string onclick js
 	 */
-	protected function renderInputTag($writer,$clientID)
+	protected function renderInputTag($writer,$clientID,$onclick)
 	{
 		if($clientID!=='')
 			$writer->addAttribute('id',$clientID);
 		$writer->addAttribute('type','checkbox');
 		if(($value = $this->getValueAttribute()) !== '')
 			$writer->addAttribute('value',$value);
+		if($onclick!=='')
+			$writer->addAttribute('onclick',$onclick);
 		if(($uniqueID=$this->getUniqueID())!=='')
 			$writer->addAttribute('name',$uniqueID);
 		if($this->getChecked())

@@ -43,6 +43,7 @@ by
 	<prop:ItemTemplate>
 <div class="comment">
 <div class="comment-header">
+<a name="c<%# $this->DataItem->ID %>"></a>
 <com:TLinkButton
 	Text="Delete"
 	Attributes.onclick="if(!confirm('Are you sure to delete this comment?')) return false;"

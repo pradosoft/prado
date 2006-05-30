@@ -341,9 +341,22 @@ class BlogDataModule extends TModule
 		return $commentRecord;
 	}
 
+	public function queryComments($filter,$orderBy,$limit)
+	{
+		if($filter!=='')
+			$filter='WHERE '.$filter;
+		$sql="SELECT * FROM tblComments $filter $orderBy $limit";
+		$result=$this->query($sql);
+		$rows=sqlite_fetch_all($result,SQLITE_ASSOC);
+		$comments=array();
+		foreach($rows as $row)
+			$comments[]=$this->populateCommentRecord($row);
+		return $comments;
+	}
+
 	public function queryCommentsByPostID($id)
 	{
-		$sql="SELECT * FROM tblComments WHERE post_id=$id";
+		$sql="SELECT * FROM tblComments WHERE post_id=$id ORDER BY create_time DESC";
 		$result=$this->query($sql);
 		$rows=sqlite_fetch_all($result,SQLITE_ASSOC);
 		$comments=array();

@@ -1523,7 +1523,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	protected function renderTable($writer)
 	{
 		$this->renderBeginTag($writer);
-		if($this->_header->getVisible())
+		if($this->_header && $this->_header->getVisible())
 		{
 			$writer->writeLine();
 			$writer->renderBeginTag('thead');
@@ -1536,7 +1536,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			$item->renderControl($writer);
 		$writer->renderEndTag();
 
-		if($this->_footer->getVisible())
+		if($this->_footer && $this->_footer->getVisible())
 		{
 			$writer->writeLine();
 			$writer->renderBeginTag('tfoot');

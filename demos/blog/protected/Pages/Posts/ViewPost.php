@@ -75,7 +75,7 @@ class ViewPost extends BlogPage
 
 	public function deleteButtonClicked($sender,$param)
 	{
-		$this->DataAccess->deletePost($this->PostID);
+		$this->DataAccess->deletePost($this->CurrentPost->ID);
 		$this->gotoDefaultPage();
 	}
 

@@ -78,6 +78,8 @@ demos/blog/protected/Portlets/ArchivePortlet.php -text
 demos/blog/protected/Portlets/ArchivePortlet.tpl -text
 demos/blog/protected/Portlets/CategoryPortlet.php -text
 demos/blog/protected/Portlets/CategoryPortlet.tpl -text
+demos/blog/protected/Portlets/CommentPortlet.php -text
+demos/blog/protected/Portlets/CommentPortlet.tpl -text
 demos/blog/protected/Portlets/LoginPortlet.php -text
 demos/blog/protected/Portlets/LoginPortlet.tpl -text
 demos/blog/protected/Portlets/Portlet.php -text

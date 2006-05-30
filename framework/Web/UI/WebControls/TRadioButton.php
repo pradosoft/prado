@@ -139,14 +139,17 @@ class TRadioButton extends TCheckBox
 	 * Renders a radiobutton input element.
 	 * @param THtmlWriter the writer for the rendering purpose
 	 * @param string checkbox id
+	 * @param string onclick js
 	 */
-	protected function renderInputTag($writer,$clientID)
+	protected function renderInputTag($writer,$clientID,$onclick)
 	{
 		if($clientID!=='')
 			$writer->addAttribute('id',$clientID);
 		$writer->addAttribute('type','radio');
 		$writer->addAttribute('name',$this->getUniqueGroupName());
 		$writer->addAttribute('value',$this->getValueAttribute());
+		if($onclick!=='')
+			$writer->addAttribute('onclick',$onclick);
 		if($this->getChecked())
 			$writer->addAttribute('checked','checked');
 		if(!$this->getEnabled(true))
