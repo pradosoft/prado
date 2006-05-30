@@ -3,6 +3,12 @@
 <com:TPanel ID="CategoryPanel" Visible="false" CssClass="category">
 <div class="category-name">
 <%= $this->Category->Name %>
+<com:THyperLink
+	Text="[#]"
+	Tooltip="Edit this category"
+	Visible=<%= $this->User->IsAdmin %>
+	NavigateUrl=<%= $this->Service->constructUrl('Posts.EditCategory',array('id'=>$this->Category->ID)) %>
+	/>
 <com:TLinkButton
 	Text="[-]"
 	Tooltip="Delete this category"
