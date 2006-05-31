@@ -43,6 +43,7 @@ class NewPost extends BlogPage
 			else
 				$postRecord->Status=PostRecord::STATUS_PUBLISHED;
 			$postRecord->CreateTime=time();
+			$postRecord->ModifyTime=$postRecord->CreateTime;
 			$postRecord->AuthorID=$this->User->ID;
 			$cats=array();
 			foreach($this->Categories->SelectedValues as $value)

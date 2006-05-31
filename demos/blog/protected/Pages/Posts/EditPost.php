@@ -41,7 +41,7 @@ class EditPost extends BlogPage
 			$postRecord=$this->_postRecord;
 			$this->Title->Text=$postRecord->Title;
 			$this->Content->Text=$postRecord->Content;
-			$this->DraftMode->Checked=$postRecord->Status!==PostRecord::STATUS_PUBLISHED;
+			$this->DraftMode->Checked=$postRecord->Status===PostRecord::STATUS_DRAFT;
 			$this->Categories->DataSource=$this->DataAccess->queryCategories();
 			$this->Categories->dataBind();
 			$cats=$this->DataAccess->queryCategoriesByPostID($postRecord->ID);

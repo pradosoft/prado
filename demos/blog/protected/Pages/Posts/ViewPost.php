@@ -29,7 +29,7 @@ class ViewPost extends BlogPage
 		if($this->_post===null)
 			throw new BlogException(500,'post_id_invalid',$id);
 		// if post is not published, only the author and admin can view it
-		if($this->_post->Status!==PostRecord::STATUS_PUBLISHED && !$this->User->IsAdmin && $this->User->ID!==$this->_post->AuthorID)
+		if($this->_post->Status!==PostRecord::STATUS_PUBLISHED && $this->_post->Status!==PostRecord::STATUS_STICKY && !$this->User->IsAdmin && $this->User->ID!==$this->_post->AuthorID)
 			throw new BlogException(500,'post_view_disallowed',$id);
 		$this->Title=htmlentities($this->_post->Title,ENT_QUOTES,'UTF-8');
 	}
@@ -48,7 +48,7 @@ class ViewPost extends BlogPage
 	public function onLoad($param)
 	{
 		parent::onLoad($param);
-		$this->Status->Visible=$this->_post->Status!==PostRecord::STATUS_PUBLISHED;
+		$this->Status->Visible=$this->_post->Status!==PostRecord::STATUS_PUBLISHED && $this->_post->Status!==PostRecord::STATUS_STICKY;
 		$this->CategoryList->DataSource=$this->DataAccess->queryCategoriesByPostID($this->_post->ID);
 		$this->CategoryList->dataBind();
 		$this->CommentList->DataSource=$this->DataAccess->queryCommentsByPostID($this->_post->ID);

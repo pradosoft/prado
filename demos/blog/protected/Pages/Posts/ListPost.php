@@ -28,7 +28,7 @@ class ListPost extends BlogPage
 		$this->_posts=$this->DataAccess->queryPosts(
 				$this->getPostFilter(),
 				$this->getCategoryFilter(),
-				'ORDER BY create_time DESC',
+				'ORDER BY a.status DESC, create_time DESC',
 				'LIMIT '.$this->getPageOffset().','.$this->getPageSize());
 		if($this->Request['cat']!==null)
 		{
@@ -36,6 +36,7 @@ class ListPost extends BlogPage
 			$this->_category=$this->DataAccess->queryCategoryByID($catID);
 			$this->CategoryPanel->Visible=true;
 		}
+		$this->Title=$this->Application->Parameters['SiteTitle'];
 	}
 
 	private function getPageOffset()
@@ -73,7 +74,7 @@ class ListPost extends BlogPage
 
 	private function getPostFilter()
 	{
-		$filter='a.status=0';
+		$filter='(a.status=0 OR a.status=3)';
 		if(($timeFilter=$this->getTimeFilter())!=='')
 			return "$filter AND $timeFilter";
 		else
