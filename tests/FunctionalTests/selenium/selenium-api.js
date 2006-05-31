@@ -411,8 +411,16 @@ Selenium.prototype.assertNotVisible = function(locator) {
 };
 
 Selenium.prototype.isVisible = function(element) {
-    var visibility = this.getEffectiveStyleProperty(element, "visibility");
-    var isDisplayed = this.isDisplayed(element);
+    if(/Konqueror|Safari|KHTML/.test(navigator.userAgent))
+	{
+		var visibility = element.style["visibility"];
+		var isDisplayed = element.style["display"] != "none";
+	}
+	else
+	{
+		var visibility = this.getEffectiveStyleProperty(element, "visibility");
+    	var isDisplayed = this.isDisplayed(element);
+	}
     return (visibility != "hidden" && isDisplayed);
 };
 
