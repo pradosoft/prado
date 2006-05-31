@@ -23,10 +23,10 @@ div=document.createElement("div");div.className="calendarFooter";this._calDiv.ap
 this.iePopUp.scrolling="no"
 this.iePopUp.frameBorder="0"
 document.body.appendChild(this.iePopUp);}
-document.body.appendChild(this._calDiv);this.update();this.updateHeader();this.ieHack(true);previousMonth.hideFocus=true;nextMonth.hideFocus=true;todayButton.hideFocus=true;Event.observe(previousMonth,"click",this.prevMonth.bindEvent(this));Event.observe(nextMonth,"click",this.nextMonth.bindEvent(this));Event.observe(todayButton,"click",this.selectToday.bindEvent(this));Event.observe(this._monthSelect,"change",this.monthSelect.bindEvent(this));Event.observe(this._yearSelect,"change",this.yearSelect.bindEvent(this));Event.observe(this._calDiv,"mousewheel",this.mouseWheelChange.bindEvent(this));Event.observe(calendarBody,"click",this.selectDate.bindEvent(this));},ieHack:function(cleanup)
+document.body.appendChild(this._calDiv);this.update();this.updateHeader();this.ieHack(true);previousMonth.hideFocus=true;nextMonth.hideFocus=true;todayButton.hideFocus=true;Event.observe(previousMonth,"click",this.prevMonth.bindEvent(this));Event.observe(nextMonth,"click",this.nextMonth.bindEvent(this));Event.observe(todayButton,"click",this.selectToday.bindEvent(this));Event.observe(this._monthSelect,"change",this.monthSelect.bindEvent(this));Event.observe(this._yearSelect,"change",this.yearSelect.bindEvent(this));Event.observe(this._calDiv,"mousewheel",this.mouseWheelChange.bindEvent(this));Event.observe(calendarBody,"click",this.selectDate.bindEvent(this));Event.observe(this.control,"blur",this.hide.bind(this));Prado.Element.focus(this.control);},ieHack:function(cleanup)
 {if(this.iePopUp)
 {this.iePopUp.style.display="block";this.iePopUp.style.top=(this._calDiv.offsetTop-1)+"px";this.iePopUp.style.left=(this._calDiv.offsetLeft-1)+"px";this.iePopUp.style.width=Math.abs(this._calDiv.offsetWidth-2)+"px";this.iePopUp.style.height=(this._calDiv.offsetHeight+1)+"px";if(cleanup)this.iePopUp.style.display="none";}},keyPressed:function(ev)
-{if(!this.showing)return;if(!ev)ev=document.parentWindow.event;var kc=ev.keyCode!=null?ev.keyCode:ev.charCode;if(kc==Event.KEY_RETURN)
+{if(!this.showing)return;if(!ev)ev=document.parentWindow.event;var kc=ev.keyCode!=null?ev.keyCode:ev.charCode;if(kc==Event.KEY_RETURN||kc==Event.KEY_SPACEBAR)
 {this.setSelectedDate(this.selectedDate);Event.stop(ev);this.hide();}
 if(kc==Event.KEY_ESC)
 {Event.stop(ev);this.hide();}
@@ -88,13 +88,11 @@ this.onChange();},getElement:function()
 {var d=this.newDate(this.selectedDate);d.setFullYear(year);this.setSelectedDate(d);},setMonth:function(month)
 {var d=this.newDate(this.selectedDate);d.setMonth(month);this.setSelectedDate(d);},nextMonth:function()
 {this.setMonth(this.selectedDate.getMonth()+1);},prevMonth:function()
-{this.setMonth(this.selectedDate.getMonth()-1);},show:function()
+{this.setMonth(this.selectedDate.getMonth()-1);},getDatePickerOffsetHeight:function()
+{if(this.options.InputMode=="TextBox")
+return this.control.offsetHeight;var control=Prado.WebUI.TDatePicker.getDayListControl(this.control);if(control)return control.offsetHeight;var control=Prado.WebUI.TDatePicker.getMonthListControl(this.control);if(control)return control.offsetHeight;var control=Prado.WebUI.TDatePicker.getYearListControl(this.control);if(control)return control.offsetHeight;return 0;},show:function()
 {this.create();if(!this.showing)
-{var pos=Position.cumulativeOffset(this.control);if(this.options.InputMode=="TextBox")
-pos[1]+=this.control.offsetHeight;else
-{var dayList=Prado.WebUI.TDatePicker.getDayListControl(this.control);if(dayList)
-pos[1]+=dayList.offsetHeight-1;}
-this._calDiv.style.display="block";this._calDiv.style.top=(pos[1]-1)+"px";this._calDiv.style.left=pos[0]+"px";this.ieHack(false);this.documentClickEvent=this.hideOnClick.bindEvent(this);this.documentKeyDownEvent=this.keyPressed.bindEvent(this);Event.observe(document.body,"click",this.documentClickEvent);var date=this.getDateFromInput();if(date)
+{var pos=Position.cumulativeOffset(this.control);pos[1]+=this.getDatePickerOffsetHeight();this._calDiv.style.display="block";this._calDiv.style.top=(pos[1]-1)+"px";this._calDiv.style.left=pos[0]+"px";this.ieHack(false);this.documentClickEvent=this.hideOnClick.bindEvent(this);this.documentKeyDownEvent=this.keyPressed.bindEvent(this);Event.observe(document.body,"click",this.documentClickEvent);var date=this.getDateFromInput();if(date)
 {this.selectedDate=date;this.setSelectedDate(date);}
 Event.observe(document,"keydown",this.documentKeyDownEvent);this.showing=true;}},getDateFromInput:function()
 {if(this.options.InputMode=="TextBox")
