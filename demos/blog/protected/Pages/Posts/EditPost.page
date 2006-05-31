@@ -34,6 +34,7 @@ Display="Dynamic"
 <br/>
 
 <com:TCheckBox ID="DraftMode" Text="in draft mode (the post will not be published)" />
+
 <br/>
 <br/>
 

@@ -537,6 +537,7 @@ class PostRecord
 	const STATUS_PUBLISHED=0;
 	const STATUS_DRAFT=1;
 	const STATUS_PENDING=2;
+	const STATUS_STICKY=3;
 	public $ID;
 	public $AuthorID;
 	public $AuthorName;

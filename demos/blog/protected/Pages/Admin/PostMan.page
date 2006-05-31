@@ -43,7 +43,9 @@
 		<%#
 			$this->Parent->DataItem->Status===0 ?
 				'Published' :
-				($this->Parent->DataItem->Status===1 ? 'Draft' : 'Pending')
+				($this->Parent->DataItem->Status===1 ?
+					'Draft' :
+					($this->Parent->DataItem->Status===2 ? 'Pending' : 'Sticky'))
 		%>
 		</prop:ItemTemplate>
 		<prop:EditItemTemplate>
@@ -51,6 +53,7 @@
 			<com:TListItem Value="0" Text="Published" />
 			<com:TListItem Value="1" Text="Draft" />
 			<com:TListItem Value="2" Text="Pending" />
+			<com:TListItem Value="3" Text="Sticky" />
 		</com:TDropDownList>
 		</prop:EditItemTemplate>
 	</com:TTemplateColumn>
