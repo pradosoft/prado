@@ -60,7 +60,7 @@
 	<com:TBoundColumn
 		HeaderText="Time"
 		ReadOnly="true"
-		DataField="CreateTime"
+		DataField="ModifyTime"
 		DataFormatString="#date('M j, Y',{0})"
 		ItemStyle.Wrap="false"
 		ItemStyle.Width="90px"

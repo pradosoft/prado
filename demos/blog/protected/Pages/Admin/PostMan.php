@@ -23,7 +23,7 @@ class PostMan extends BlogPage
 	{
 		$offset=$this->PostGrid->CurrentPageIndex*$this->PostGrid->PageSize;
 		$limit=$this->PostGrid->PageSize;
-		$this->PostGrid->DataSource=$this->DataAccess->queryPosts('','','ORDER BY a.status DESC, create_time DESC',"LIMIT $offset,$limit");
+		$this->PostGrid->DataSource=$this->DataAccess->queryPosts('','','ORDER BY a.status DESC, modify_time DESC',"LIMIT $offset,$limit");
 		$this->PostGrid->VirtualItemCount=$this->DataAccess->queryPostCount('','');
 		$this->PostGrid->dataBind();
 	}

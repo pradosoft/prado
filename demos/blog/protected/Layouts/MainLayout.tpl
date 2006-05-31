@@ -14,7 +14,7 @@
 <com:TForm>
 
 <div id="header">
-<h1 id="header-title"><a href="?"><%$ SiteTitle %></a></h1>
+<h1 id="header-title"><a href="<%=$this->Request->ApplicationUrl %>"><%$ SiteTitle %></a></h1>
 <h2 id="header-subtitle"><%$ SiteSubtitle %></h2>
 </div><!-- end of header -->
 

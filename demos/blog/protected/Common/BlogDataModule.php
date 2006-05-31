@@ -282,8 +282,8 @@ class BlogDataModule extends TModule
 		$title=sqlite_escape_string($post->Title);
 		$content=sqlite_escape_string($post->Content);
 		$sql="INSERT INTO tblPosts
-				(author_id,create_time,title,content,status)
-				VALUES ({$post->AuthorID},{$post->CreateTime},'$title','$content',{$post->Status})";
+				(author_id,create_time,modify_time,title,content,status)
+				VALUES ({$post->AuthorID},{$post->CreateTime},{$post->ModifyTime},'$title','$content',{$post->Status})";
 		$this->query($sql);
 		$post->ID=sqlite_last_insert_rowid($this->_db);
 		foreach($catIDs as $catID)
