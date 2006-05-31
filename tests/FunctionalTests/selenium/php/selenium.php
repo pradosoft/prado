@@ -112,15 +112,17 @@ class SeleneseInterpreter
 	public function __call($func, $args)
 	{
 		if($func{0} == '_') return;
+		
 		$ID = isset($args[0]) ? $args[0] : "";
-		//if($ID instanceof TControl)
-		//	$ID = $ID->ClientID;
 		$value = isset($args[1]) ? $args[1] : "";
 		if(strpos(strtolower($func),'htmlpresent') || strpos(strtolower($func),'htmlnotpresent'))
 			$ID = htmlspecialchars($ID);
-		//$command = "|{$func}|{$ID}|{$value}|";
 		$command = array($func, $ID, $value);
 		$trace = debug_backtrace();
+		
+		if(is_int(strpos(strtolower($func), 'visible')))
+			$this->addCommand(array('pause','500',''),$trace);
+		
 		return $this->addCommand($command, $trace);
 	}
 
