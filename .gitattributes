@@ -1067,17 +1067,6 @@ tests/FunctionalTests/selenium/core/selenium.css -text
 tests/FunctionalTests/selenium/core/xpath/dom.js -text
 tests/FunctionalTests/selenium/core/xpath/misc.js -text
 tests/FunctionalTests/selenium/core/xpath/xpath.js -text
-tests/FunctionalTests/selenium/dom-images/butmin.gif -text
-tests/FunctionalTests/selenium/dom-images/butplus.gif -text
-tests/FunctionalTests/selenium/dom-styles/default.css -text
-tests/FunctionalTests/selenium/html-xpath/carnation.jpg -text
-tests/FunctionalTests/selenium/html-xpath/example.html -text
-tests/FunctionalTests/selenium/html-xpath/html-xpath-patched.js -text
-tests/FunctionalTests/selenium/html-xpath/html-xpath.js -text
-tests/FunctionalTests/selenium/html-xpath/license.txt -text
-tests/FunctionalTests/selenium/html-xpath/rainbow.jpg -text
-tests/FunctionalTests/selenium/jsmock/mock-tests.html -text
-tests/FunctionalTests/selenium/jsmock/mock.js -text
 tests/FunctionalTests/selenium/php/TestRunner.php -text
 tests/FunctionalTests/selenium/php/results.php -text
 tests/FunctionalTests/selenium/php/selenium.php -text
