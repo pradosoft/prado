@@ -1522,11 +1522,6 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 							$control->loadStateRecursive($state[$control->_id],$needViewState);
 							unset($state[$control->_id]);
 						}
-						else
-						{
-							$s=array();
-							$control->loadStateRecursive($s,$needViewState);
-						}
 					}
 				}
 			}
@@ -1560,11 +1555,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 			foreach($this->_rf[self::RF_CONTROLS] as $control)
 			{
 				if($control instanceof TControl)
-				{
-					$cs=&$control->saveStateRecursive($needViewState);
-					if(!empty($cs))
-						$state[$control->_id]=&$cs;
-				}
+					$state[$control->_id]=&$control->saveStateRecursive($needViewState);
 			}
 		}
 		if($needViewState && !empty($this->_viewState))

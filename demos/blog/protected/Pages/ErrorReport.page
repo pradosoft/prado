@@ -1,3 +1,5 @@
+<%@ Title="Error" %>
+
 <com:TContent ID="Main">
 
 <h2>Error</h2>

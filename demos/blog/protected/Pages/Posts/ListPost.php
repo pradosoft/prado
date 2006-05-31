@@ -36,6 +36,7 @@ class ListPost extends BlogPage
 			$this->_category=$this->DataAccess->queryCategoryByID($catID);
 			$this->CategoryPanel->Visible=true;
 		}
+		$this->Title=$this->Application->Parameters['SiteTitle'];
 	}
 
 	private function getPageOffset()

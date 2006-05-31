@@ -1,3 +1,5 @@
+<%@ Title="Search Results" %>
+
 <com:TContent ID="Main">
 
 <div class="search-title">
