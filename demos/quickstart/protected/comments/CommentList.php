@@ -15,6 +15,7 @@ class CommentList extends TTemplateControl
 	private $_exclude = array(
 		'Comments', 
 		'Markdown',
+		'Search',
 		'GettingStarted.Introduction');
 
 	private $_quickstart;
