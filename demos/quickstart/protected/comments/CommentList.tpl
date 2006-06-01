@@ -16,7 +16,7 @@
 			</span>
 			<div class="comment">
 				<com:TSafeHtml>
-				<com:TMarkdown>
+				<com:TMarkdown TextHighlighter.CssClass="source">
 					<%# $this->DataItem['comment'] %>
 				</com:TMarkdown>
 				</com:TSafeHtml>
@@ -70,7 +70,7 @@
 				<h3 style="margin:0">Preview comment</h3>
 					<div class="comment">
 						<com:TSafeHtml>
-							<com:TMarkdown>
+							<com:TMarkdown TextHighlighter.CssClass="source">
 							<%= $this->content->Text %>
 							</com:TMarkdown>
 						</com:TSafeHtml>
@@ -90,7 +90,7 @@
 			<h3 style="margin:0">Preview comment</h3>
 			<div class="comment">
 			<com:TSafeHtml>
-				<com:TMarkdown>
+				<com:TMarkdown TextHighlighter.CssClass="source">
 				<%= $this->content->Text %>
 				</com:TMarkdown>
 			</com:TSafeHtml>
