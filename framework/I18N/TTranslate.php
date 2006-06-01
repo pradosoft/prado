@@ -28,19 +28,19 @@ Prado::using('System.I18N.TI18NControl');
  * Depending on the culture set on the page, the phrase "Goodbye" will
  * be translated.
  *
- * The values of any attribute in TTranslate are consider as values for
- * substitution. Strings enclosed with "{" and "}" are consider as the
- * parameters. The following example will substitution the string
- * "{time}" with the value of the attribute "time="#time()". Note that
- * the value of the attribute time is evaluated.
+ * The {@link getParameters Parameters} property can be use to add name values pairs for
+ * substitution. Substrings enclosed with "{" and "}" in the translation message are consider as the
+ * parameter names during substitution lookup. The following example will substitute the substring
+ * "{time}" with the value of the parameter attribute "Parameters.time=<%= time() %>. Note that
+ * the value of the parameter named "time" is evaluated.
  * <code>
- * <com:TTranslate time="#time()">
+ * <com:TTranslate Parameters.time=<%= time() %> >
  *   The unix-time is "{time}".
  * </com:TTranslate>
  * </code>
  *
  * More complex string substitution can be applied using the
- * TParam component.
+ * TTranslateParameter component.
  *
  * Namespace: System.I18N
  *
@@ -134,6 +134,68 @@ class TTranslate extends TI18NControl
 	}
 
 	/**
+	 * Returns the list of custom parameters.
+	 * Custom parameters are name-value pairs that may subsititute translation
+	 * place holders during rendering.
+	 * @return TAttributeCollection the list of custom parameters
+	 */
+	public function getParameters()
+	{
+		if($parameters=$this->getViewState('Parameters',null))
+			return $parameters;
+		else
+		{
+			$parameters=new TAttributeCollection;
+			$this->setViewState('Parameters',$parameters,null);
+			return $parameters;
+		}
+	}
+
+	/**
+	 * @return boolean whether the named parameter exists
+	 */
+	public function hasParameter($name)
+	{
+		if($parameters=$this->getViewState('Parameters',null))
+			return $parameters->contains($name);
+		else
+			return false;
+	}
+
+	/**
+	 * @return string parameter value, null if parameter does not exist
+	 */
+	public function getParameter($name)
+	{
+		if($parameters=$this->getViewState('Parameters',null))
+			return $parameters->itemAt($name);
+		else
+			return null;
+	}
+
+	/**
+	 * @param string parameter name
+	 * @param string value of the parameter
+	 */
+	public function setParameter($name,$value)
+	{
+		$this->getParameters()->add($name,$value);
+	}
+
+	/**
+	 * Removes the named parameter.
+	 * @param string the name of the parameter to be removed.
+	 * @return string parameter value removed, null if parameter does not exist.
+	 */
+	public function removeParameter($name)
+	{
+		if($parameters=$this->getViewState('Parameters',null))
+			return $parameters->remove($name);
+		else
+			return null;
+	}
+
+	/**
 	 * renders the translated string.
 	 */
 	public function render($writer)
@@ -141,6 +203,8 @@ class TTranslate extends TI18NControl
 		$textWriter=new TTextWriter;
 		$htmlWriter=new THtmlWriter($textWriter);
 		$subs = array();
+		foreach($this->getParameters() as $key => $value)
+			$subs['{'.$key.'}'] = $value;
 		foreach($this->getControls() as $control)
 		{
 			if($control instanceof TTranslateParameter)

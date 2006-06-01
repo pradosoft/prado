@@ -148,9 +148,11 @@ To translate a message or string in the template, use <tt>TTranslate</tt>.</p>
 &lt;com:TTranslate Text="Goodbye" /&gt;
 </com:TTextHighlighter>
 
-<p><tt>TTranslate</tt> can also perform string substitution. Any attributes of <tt>TTranslate</tt> will be substituted with <tt>{attribute name}</tt> in the translation. E.g.</p>
+<p><tt>TTranslate</tt> can also perform string substitution. 
+The <tt>Parameters</tt> property can be use to add name values pairs for substitution. Substrings in the translation enclosed with "{" and "}" are consider as the
+ parameter names during substitution lookup. The following example will substitute the substring "{time}" with the value of the parameter attribute "<tt>Parameters.time=&lt;%= time() %&gt;</tt>". 
 <com:TTextHighlighter Language="prado" CssClass="source">
-&lt;com:TTranslate time="late"&gt;
+&lt;com:TTranslate Parameters.time=&lt;%= time() %&gt; &gt;
 The time is {time}.
 &lt;/com:TTranslate&gt;
 </com:TTextHighlighter>
