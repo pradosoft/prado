@@ -441,6 +441,8 @@ docs/specs/application.xsd -text
 docs/specs/config.dtd -text
 docs/specs/config.xsd -text
 framework/.htaccess -text
+framework/3rdParty/Markdown/License.text -text
+framework/3rdParty/Markdown/MarkdownParser.php -text
 framework/3rdParty/SafeHtml/HTMLSax3.php -text
 framework/3rdParty/SafeHtml/HTMLSax3/Decorators.php -text
 framework/3rdParty/SafeHtml/HTMLSax3/States.php -text
@@ -942,6 +944,7 @@ framework/Web/UI/WebControls/TListBox.php -text
 framework/Web/UI/WebControls/TListControl.php -text
 framework/Web/UI/WebControls/TListControlValidator.php -text
 framework/Web/UI/WebControls/TLiteral.php -text
+framework/Web/UI/WebControls/TMarkdown.php -text
 framework/Web/UI/WebControls/TMultiView.php -text
 framework/Web/UI/WebControls/TPanel.php -text
 framework/Web/UI/WebControls/TPlaceHolder.php -text

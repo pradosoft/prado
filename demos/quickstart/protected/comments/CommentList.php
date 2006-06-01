@@ -12,7 +12,10 @@ Prado::using('System.I18N.*');
  */
 class CommentList extends TTemplateControl
 {
-	private $_exclude = array('Comments', 'GettingStarted.Introduction');
+	private $_exclude = array(
+		'Comments', 
+		'Markdown',
+		'GettingStarted.Introduction');
 
 	private $_quickstart;
 	

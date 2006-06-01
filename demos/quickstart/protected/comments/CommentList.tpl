@@ -16,7 +16,9 @@
 			</span>
 			<div class="comment">
 				<com:TSafeHtml>
+				<com:TMarkdown>
 					<%# $this->DataItem['comment'] %>
+				</com:TMarkdown>
 				</com:TSafeHtml>
 			</div>
 		</div>
@@ -38,7 +40,8 @@
 				Please use the <a href="http://pradosoft.com/wiki/index.php/Main_Page">Prado wiki</a> for longer pieces and detailed solutions</a>.
 			</p>
 			<p>Comments will be periodically reviewed, integrated into the documentation and removed.
-			You may use HTML in your comment.</p>
+			You may use <a href="?page=Markdown">markdown syntax</a> in your comment. </p>
+
 			<div class="comment_email">
 			<com:TLabel ID="email_label" Text="Email:" ForControl="email"/>
 			<com:TTextBox ID="email" />
@@ -67,7 +70,9 @@
 				<h3 style="margin:0">Preview comment</h3>
 					<div class="comment">
 						<com:TSafeHtml>
+							<com:TMarkdown>
 							<%= $this->content->Text %>
+							</com:TMarkdown>
 						</com:TSafeHtml>
 					</div>
 				</div>
@@ -85,7 +90,9 @@
 			<h3 style="margin:0">Preview comment</h3>
 			<div class="comment">
 			<com:TSafeHtml>
+				<com:TMarkdown>
 				<%= $this->content->Text %>
+				</com:TMarkdown>
 			</com:TSafeHtml>
 			</div>
 		</div>
