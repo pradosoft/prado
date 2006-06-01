@@ -130,6 +130,10 @@ demos/quickstart/index.php -text
 demos/quickstart/index2.php -text
 demos/quickstart/protected/.htaccess -text
 demos/quickstart/protected/application.xml -text
+demos/quickstart/protected/comments/CommentList.php -text
+demos/quickstart/protected/comments/CommentList.tpl -text
+demos/quickstart/protected/comments/QuickStartComments.php -text
+demos/quickstart/protected/comments/comments.db -text
 demos/quickstart/protected/controls/DocLink.php -text
 demos/quickstart/protected/controls/Layout.php -text
 demos/quickstart/protected/controls/Layout.tpl -text
@@ -233,6 +237,8 @@ demos/quickstart/protected/pages/Advanced/mastercontent.gif -text
 demos/quickstart/protected/pages/Advanced/mastercontent.vsd -text
 demos/quickstart/protected/pages/Advanced/pcrelation.gif -text
 demos/quickstart/protected/pages/Advanced/pcrelation.vsd -text
+demos/quickstart/protected/pages/Comments.page -text
+demos/quickstart/protected/pages/Comments.php -text
 demos/quickstart/protected/pages/Configurations/AppConfig.page -text
 demos/quickstart/protected/pages/Configurations/Overview.page -text
 demos/quickstart/protected/pages/Configurations/PageConfig.page -text

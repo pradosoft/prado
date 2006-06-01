@@ -19,6 +19,7 @@
   </modules>
   <paths>
     <using namespace="Application.controls.*" />
+	<using namespace="Application.comments.*" />
   </paths>
   <services>
     <service id="page" class="TPageService" DefaultPage="GettingStarted.Introduction" />
