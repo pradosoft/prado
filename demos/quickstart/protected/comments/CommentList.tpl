@@ -2,7 +2,8 @@
 
 <com:TRepeater ID="comments">
 	<prop:HeaderTemplate>
-		<h2 class="comment_header">Comments</h2>
+		<h2 class="comment_header">Comments 
+			<span style="font-size:0.8em">( <a href="#add_comments">Add your comments</a> )</span></h2>
 	</prop:HeaderTemplate>
 	<prop:ItemTemplate>
 		<div class="comment_item comment_item<%# $this->ItemIndex%2 %>">
@@ -24,10 +25,20 @@
 
 <com:TMultiView ID="multiView1" ActiveViewIndex="0">
 	<com:TView ID="view1">
-		<div class="add_comments">
-			<h3>Add your comment</h3>
-			<p>Add comments and notes that can solve or clarify a particular problem or task.
-				Please use the forum to ask questions. You may be HTML in your comment.</p>
+		<div id="add_comments" class="add_comments">
+			<h3>Post a comment</h3>
+			<p><strong>Note:</strong> 
+				Please only use the comments in relation to this page for
+				<ul> 
+					<li>questions/critcisms/suggestions on the documentation,</li>
+					<li>small notes that can solve or clarify a particular problem or task.</li>
+				</ul>
+				If you experience errors please <a href="http://trac.pradosoft.com/newticket">file a ticket</a> 
+				or <a href="http://www.pradosoft.com/forum/">ask at the forum</a>.
+				Please use the <a href="http://pradosoft.com/wiki/index.php/Main_Page">Prado wiki</a> for longer pieces and detailed solutions</a>.
+			</p>
+			<p>Comments will be periodically reviewed, integrated into the documentation and removed.
+			You may use HTML in your comment.</p>
 			<div class="comment_email">
 			<com:TLabel ID="email_label" Text="Email:" ForControl="email"/>
 			<com:TTextBox ID="email" />
