@@ -223,9 +223,24 @@ class TValidationSummary extends TWebControl
 	{
 		if(!$this->getEnabled(true) || !$this->getEnableClientScript())
 			return;
+		$cs = $this->getPage()->getClientScript();
+		$cs->registerPradoScript('validator');
+
+		//need to register the validation manager is validation summary is alone.
+		$formID=$this->getPage()->getForm()->getClientID();
+		$scriptKey = "TBaseValidator:$formID";
+		if($this->getEnableClientScript() && !$cs->isEndScriptRegistered($scriptKey))
+		{
+			$manager['FormID'] = $formID;
+			$options = TJavaScript::encode($manager); 
+			$cs->registerPradoScript('validator');
+			$cs->registerEndScript($scriptKey, "new Prado.ValidationManager({$options});");
+		}
+
+
 		$options=TJavaScript::encode($this->getClientScriptOptions());
 		$script = "new Prado.WebUI.TValidationSummary({$options});";
-		$this->getPage()->getClientScript()->registerEndScript($this->getClientID(), $script);
+		$cs->registerEndScript($this->getClientID(), $script);
 	}
 
 	/**

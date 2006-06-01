@@ -47,10 +47,19 @@ Copyright 2004 ThoughtWorks, Inc
         var autFrame = document.getElementById('myiframe');
         var autFrameDocument = getIframeDocument(autFrame);
         this.rootDocument = autFrameDocument;
-        var domViewer = window.open(getDocumentBase(document) + 'domviewer/domviewer.html');
+        var domViewer = window.open('<?php echo $base_dir; ?>core/domviewer/domviewer.html');
         return false;
     }
 	
+	Logger.prototype.openLogWindow = function() 
+	{
+        this.logWindow = window.open(
+            "<?php echo $base_dir; ?>core/SeleniumLog.html", "SeleniumLog",
+            "width=600,height=250,bottom=0,right=0,status,scrollbars,resizable"
+        );
+        return this.logWindow;
+    }
+
 	var post_results_to = "<?php echo $driver; ?>";
 	
 </script>
