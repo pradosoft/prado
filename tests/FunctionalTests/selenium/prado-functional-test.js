@@ -1,4 +1,45 @@
 
+/**
+ * Override selenium implementation.
+ */
+Selenium.prototype.getAttribute = function(target) {
+    return this.page().findAttribute(target);
+};
+
+
+/**
+ * Override selenium implementation.
+ */
+Selenium.prototype.isVisible = function(locator) {
+    var element;
+    element = this.page().findElement(locator); 
+
+	if(/Konqueror|Safari|KHTML/.test(navigator.userAgent))
+		var visibility = element.style["visibility"];
+	else
+    	var visibility = this.findEffectiveStyleProperty(element, "visibility");
+
+   	var _isDisplayed = this._isDisplayed(element);
+    return (visibility != "hidden" && _isDisplayed);
+};
+
+
+/**
+ * Override selenium implementation.
+ */
+Selenium.prototype._isDisplayed = function(element) {
+    if(/Konqueror|Safari|KHTML/.test(navigator.userAgent))
+		var display = element.style["display"];
+	else
+		var display = this.findEffectiveStyleProperty(element, "display");
+    if (display == "none") return false;
+    if (element.parentNode.style) {
+        return this._isDisplayed(element.parentNode);
+    }
+    return true;
+};
+
+
 function runNextTest() {
     if (!runAllTests)
             return;
