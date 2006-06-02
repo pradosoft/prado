@@ -356,16 +356,37 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	 * @param string property name
 	 * @param mixed property initial value
 	 */
+	protected function configureControl2($control,$name,$value)
+	{
+		if(strncasecmp($name,'on',2)===0)		// is an event
+			$this->configureEvent($control,$name,$value,$control);
+		else if(($pos=strrpos($name,'.'))===false)	// is a simple property or custom attribute
+			$this->configureProperty($control,$name,$value);
+		else	// is a subproperty
+		{
+			$subName=substr($name,$pos+1);
+			if(strncasecmp($subName,'on',2)===0) // is an event: XXX.YYY.OnZZZ
+			{
+				$object=$control->getSubProperty(substr($name,0,$pos));
+				if(($object instanceof TControl))
+					$this->configureEvent($object,$subName,$value,$control);
+				else
+					$this->configureSubProperty($control,$name,$value);
+			}
+			else
+				$this->configureSubProperty($control,$name,$value);
+		}
+	}
+
 	protected function configureControl($control,$name,$value)
 	{
 		if(strncasecmp($name,'on',2)===0)		// is an event
-			$this->configureEvent($control,$name,$value);
-		else if(strpos($name,'.')===false)	// is a simple property or custom attribute
+			$this->configureEvent($control,$name,$value,$control);
+		else if(($pos=strrpos($name,'.'))===false)	// is a simple property or custom attribute
 			$this->configureProperty($control,$name,$value);
 		else	// is a subproperty
 			$this->configureSubProperty($control,$name,$value);
 	}
-
 	/**
 	 * Configures a property of a non-control component.
 	 * @param TComponent component to be configured
@@ -385,13 +406,14 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	 * @param TControl control to be configured
 	 * @param string event name
 	 * @param string event handler
+	 * @param TControl context control
 	 */
-	protected function configureEvent($component,$name,$value)
+	protected function configureEvent($control,$name,$value,$contextControl)
 	{
 		if(strpos($value,'.')===false)
-			$component->attachEventHandler($name,array($component,'TemplateControl.'.$value));
+			$control->attachEventHandler($name,array($contextControl,'TemplateControl.'.$value));
 		else
-			$component->attachEventHandler($name,array($component,$value));
+			$control->attachEventHandler($name,array($contextControl,$value));
 	}
 
 	/**
