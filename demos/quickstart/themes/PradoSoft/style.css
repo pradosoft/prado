@@ -380,3 +380,141 @@ dd
 	text-align: center;
 	margin: 30px;
 }
+
+/** Comments **/
+#comments
+{
+	margin: 10px;
+}
+
+.comment_header
+{
+	border-bottom: 1px solid silver;
+}
+
+.comment_item
+{
+	padding: 10px;
+	border: 1px solid silver;
+	margin: 0 10px 10px 10px;
+}
+
+.comment_item .number
+{
+	float: right;
+	font-size: 1.5em;
+	font-weight: bold;
+	color: silver;
+}
+
+.comment_item1
+{
+	background-color: #EDEDED;
+}
+
+.comment_item .email
+{
+	font-weight: bold;
+	display: block;
+}
+
+.comment_item .date
+{
+	font-size: 0.85em;
+	display: block;
+	border-bottom: 1px dotted silver;
+}
+
+.comment_item .comment
+{
+	padding: 10px;
+}
+
+.add_comments
+{
+	margin-top: 2em;
+}
+
+.add_comments .comment_email
+{
+	margin-bottom: 5px;
+}
+
+.add_comments .comment_email input
+{
+	width: 25em;
+}
+
+.add_comments .comment_content textarea
+{
+	width: 75%;
+	height: 200px;
+	padding: 5px;
+}
+
+.add_comments .comment_email label, .add_comments .comment_content label
+{
+	width: 8em;
+	float: left;
+	text-align: right;
+	padding-right: 5px;
+}
+
+.add_comments .add_comment
+{
+	padding-left: 8.2em;
+	padding-top: 0.5em;
+}
+
+.add_comments .please_add
+{
+	padding-left: 8.2em;
+}
+
+.add_comments h3, .comment_added h3
+{
+	border-bottom: 1px solid silver;
+}
+
+.comment_preview
+{
+	margin: 10px;
+	padding: 10px;
+	border: 1px solid silver;
+}
+
+.comment_preview .comment
+{
+	padding: 10px;
+}
+
+.comment_added
+{
+	margin-top: 3em;
+	border-top: 1px dotted silver;
+	padding: 10px;
+}
+
+.comment_added .comment
+{
+	padding: 10px;
+	margin-top: 10px;
+}
+
+.comment_added .thank
+{
+	background-color: #ffffcc;
+	padding: 20px;
+}
+
+pre code
+{
+	display: block;
+	padding: 0.5em;
+	border-style:solid;
+	border-width:1px;
+	border-color:#eeeeee;
+	background-color:#ffffee;
+	font-family: "Courier New", Courier, mono;
+	margin: 0.2em;
+}

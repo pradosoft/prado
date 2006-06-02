@@ -42,12 +42,13 @@ class ListBoxTestCase extends SeleniumTestCase
 		$this->verifySelectOptions("ctl0\$body\$ctl7[]","item 1,item 2,item 3,item 4");
 
 		// multiselection list box's behavior upon postback
-		$this->select("ctl0\$body\$ListBox2[]", "label=item 3");
+		$this->addSelection("ctl0\$body\$ListBox2[]", "label=item 3");
 		$this->clickAndWait("name=ctl0\$body\$ctl8", "");
 		$this->verifyText("ctl0_body_MultiSelectionResult2","Your selection is: (Index: 1, Value: value 2, Text: item 2)(Index: 2, Value: value 3, Text: item 3)(Index: 3, Value: value 4, Text: item 4)");
 
 		// Auto postback multiselection list box
-		$this->selectAndWait("ctl0\$body\$ctl9[]", "label=item 1");
+		$this->addSelection("ctl0\$body\$ctl9[]", "label=item 1");
+		$this->waitForPageToLoad(1000);
 		$this->verifyText("ctl0_body_MultiSelectionResult","Your selection is: (Index: 0, Value: value 1, Text: item 1)(Index: 1, Value: value 2, Text: item 2)(Index: 3, Value: value 4, Text: item 4)");
 
 		// Databind to an integer-indexed array
@@ -73,7 +74,6 @@ class ListBoxTestCase extends SeleniumTestCase
 		// List box causing validation
 		$this->verifyNotVisible('ctl0_body_ctl12');
 		$this->select("ctl0\$body\$VListBox2", "label=Agree");
-//		$this->pause(1000);
 		$this->verifyVisible('ctl0_body_ctl12');
 		$this->type("ctl0\$body\$TextBox", "test");
 		$this->selectAndWait("ctl0\$body\$VListBox2", "label=Disagree");

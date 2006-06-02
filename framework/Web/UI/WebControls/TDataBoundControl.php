@@ -59,7 +59,7 @@ abstract class TDataBoundControl extends TWebControl
 	 */
 	public function setDataSource($value)
 	{
-		$this->_dataSource=$this->validateDataSource($value);;
+		$this->_dataSource=$this->validateDataSource($value);
 		$this->onDataSourceChanged();
 	}
 

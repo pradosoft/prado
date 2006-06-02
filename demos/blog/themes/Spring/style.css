@@ -30,6 +30,11 @@ a img {
 	border: 0px none;
 }
 
+div {
+    overflow: hidden;
+    word-wrap: break-word;
+}
+
 #page {
 	background-color:#fff;
 	margin:0 auto;

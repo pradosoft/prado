@@ -12,6 +12,7 @@ Object.extend(Event, {
   KEY_RIGHT:    39,
   KEY_DOWN:     40,
   KEY_DELETE:   46,
+  KEY_SPACEBAR: 32,
 
   element: function(event) {
     return event.target || event.srcElement;

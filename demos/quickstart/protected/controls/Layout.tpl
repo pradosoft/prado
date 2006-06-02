@@ -32,6 +32,7 @@
 <div id="content">
 <com:TContentPlaceHolder ID="body" />
 </div>
+<com:CommentList Visible="true" />
 </td>
 </tr>
 </table>

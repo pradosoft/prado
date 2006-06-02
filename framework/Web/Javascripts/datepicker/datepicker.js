@@ -282,8 +282,11 @@ Prado.WebUI.TDatePicker.prototype =
 		Event.observe(this._calDiv, "mousewheel", this.mouseWheelChange.bindEvent(this));		
 		
 		Event.observe(calendarBody, "click", this.selectDate.bindEvent(this));
+		
+		Event.observe(this.control, "blur", this.hide.bind(this));
+		Prado.Element.focus(this.control);
 				
-	},
+	},A
 	
 	ieHack : function(cleanup) 
 	{
@@ -305,7 +308,7 @@ Prado.WebUI.TDatePicker.prototype =
 		if (!ev) ev = document.parentWindow.event;
 		var kc = ev.keyCode != null ? ev.keyCode : ev.charCode;
 		
-		if(kc == Event.KEY_RETURN)
+		if(kc == Event.KEY_RETURN || kc == Event.KEY_SPACEBAR)
 		{
 			this.setSelectedDate(this.selectedDate);
 			Event.stop(ev);
@@ -526,6 +529,22 @@ Prado.WebUI.TDatePicker.prototype =
 		this.setMonth(this.selectedDate.getMonth()-1);
 	},
 	
+	getDatePickerOffsetHeight : function()
+	{
+		if(this.options.InputMode == "TextBox")
+			return this.control.offsetHeight;
+
+		var control = Prado.WebUI.TDatePicker.getDayListControl(this.control);
+		if(control) return control.offsetHeight;
+
+		var control = Prado.WebUI.TDatePicker.getMonthListControl(this.control);
+		if(control) return control.offsetHeight;		
+
+		var control = Prado.WebUI.TDatePicker.getYearListControl(this.control);
+		if(control) return control.offsetHeight;	
+		return 0;
+	},
+	
 	show : function() 
 	{
 		this.create();
@@ -534,15 +553,8 @@ Prado.WebUI.TDatePicker.prototype =
 		{
 			var pos = Position.cumulativeOffset(this.control);
 			
-			if(this.options.InputMode == "TextBox")
-				pos[1] += this.control.offsetHeight;
-			else
-			{
-				var dayList = Prado.WebUI.TDatePicker.getDayListControl(this.control);
-				if(dayList)
-					pos[1] += dayList.offsetHeight-1;
-			}
-
+			pos[1] += this.getDatePickerOffsetHeight();
+			
 			this._calDiv.style.display = "block";
 			this._calDiv.style.top = (pos[1]-1) + "px";
 			this._calDiv.style.left = pos[0] + "px";

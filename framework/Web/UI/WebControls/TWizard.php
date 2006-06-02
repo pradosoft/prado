@@ -622,7 +622,7 @@ class TWizard extends TWebControl implements INamingContainer
 	}
 
 	/**
-	 * @var TWizardNavigationContainer container of the start navigation
+	 * @return TWizardNavigationContainer container of the start navigation
 	 */
 	public function getStartNavigation()
 	{
@@ -630,7 +630,7 @@ class TWizard extends TWebControl implements INamingContainer
 	}
 
 	/**
-	 * @var TWizardNavigationContainer container of the step navigation
+	 * @return TWizardNavigationContainer container of the step navigation
 	 */
 	public function getStepNavigation()
 	{
@@ -638,7 +638,7 @@ class TWizard extends TWebControl implements INamingContainer
 	}
 
 	/**
-	 * @var TWizardNavigationContainer container of the finish navigation
+	 * @return TWizardNavigationContainer container of the finish navigation
 	 */
 	public function getFinishNavigation()
 	{

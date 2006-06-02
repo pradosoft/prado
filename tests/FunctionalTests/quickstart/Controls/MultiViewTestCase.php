@@ -9,8 +9,8 @@ class MultiViewTestCase extends SeleniumTestCase
 		$this->verifyTitle("PRADO QuickStart Sample", "");
 
 		// view 1 : type in a string
-		$this->verifyNotVisible('ctl0_body_Result1');
-		$this->verifyNotVisible('ctl0_body_Result2');
+		$this->verifyElementNotPresent('ctl0_body_Result1');
+		$this->verifyElementNotPresent('ctl0_body_Result2');
 		$this->type('ctl0_body_Memo','test');
 		$this->clickAndWait('ctl0$body$ctl1');
 
@@ -20,8 +20,8 @@ class MultiViewTestCase extends SeleniumTestCase
 		$this->clickAndWait('ctl0$body$ctl7');
 
 		// view 2 : update dropdownlist
-		$this->verifyNotVisible('ctl0_body_Result1');
-		$this->verifyNotVisible('ctl0_body_Result2');
+		$this->verifyElementNotPresent('ctl0_body_Result1');
+		$this->verifyElementNotPresent('ctl0_body_Result2');
 		$this->select('ctl0$body$DropDownList', "label=Blue");
 		$this->clickAndWait('ctl0$body$ctl4');
 
