@@ -1,3 +1,5 @@
+<%@ Title="System Configuration" %>
+
 <com:TContent ID="Main">
 
 <h2>Administration Center</h2>
