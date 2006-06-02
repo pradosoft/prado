@@ -11,9 +11,10 @@
  */
 
 /**
- * Using TDataBoundControl cass
+ * Using TDataBoundControl and TDataFieldAccessor cass
  */
 Prado::using('System.Web.UI.WebControls.TDataBoundControl');
+Prado::using('System.Util.TDataFieldAccessor');
 
 /**
  * TRepeater class
