@@ -2,7 +2,7 @@
 
 <com:TRepeater ID="comments">
 	<prop:HeaderTemplate>
-		<h2 class="comment_header">Comments 
+		<h2 class="comment_header">Comments
 			<span style="font-size:0.8em">( <a href="#add_comments">Add your comments</a> )</span></h2>
 	</prop:HeaderTemplate>
 	<prop:ItemTemplate>
@@ -16,7 +16,7 @@
 			</span>
 			<div class="comment">
 				<com:TSafeHtml>
-				<com:TMarkdown TextHighlighter.CssClass="source">
+				<com:TMarkdown CssClass="source">
 					<%# $this->DataItem['comment'] %>
 				</com:TMarkdown>
 				</com:TSafeHtml>
@@ -29,13 +29,13 @@
 	<com:TView ID="view1">
 		<div id="add_comments" class="add_comments">
 			<h3>Post a comment</h3>
-			<p><strong>Note:</strong> 
+			<p><strong>Note:</strong>
 				Please only use the comments in relation to this page for
-				<ul> 
+				<ul>
 					<li>questions/critcisms/suggestions on the documentation,</li>
 					<li>small notes that can solve or clarify a particular problem or task.</li>
 				</ul>
-				If you experience errors please <a href="http://trac.pradosoft.com/newticket">file a ticket</a> 
+				If you experience errors please <a href="http://trac.pradosoft.com/newticket">file a ticket</a>
 				or <a href="http://www.pradosoft.com/forum/">ask at the forum</a>.
 				Please use the <a href="http://pradosoft.com/wiki/index.php/Main_Page">Prado wiki</a> for longer pieces and detailed solutions</a>.
 			</p>
@@ -49,8 +49,8 @@
 				ControlToValidate="email"
 				Display="Dynamic"
 				ErrorMessage="An email address is required." />
-			<com:TEmailAddressValidator	
-				ControlToValidate="email" 
+			<com:TEmailAddressValidator
+				ControlToValidate="email"
 				CheckMXRecord="false"
 				Display="Dynamic"
 				ErrorMessage="Please provide your email address."/>
@@ -70,13 +70,13 @@
 				<h3 style="margin:0">Preview comment</h3>
 					<div class="comment">
 						<com:TSafeHtml>
-							<com:TMarkdown TextHighlighter.CssClass="source">
+							<com:TMarkdown CssClass="source">
 							<%= $this->content->Text %>
 							</com:TMarkdown>
 						</com:TSafeHtml>
 					</div>
 				</div>
-			</com:TPlaceHolder>			
+			</com:TPlaceHolder>
 			<div class="add_comment">
 				<com:TButton ID="previewComment" Text="Preview Comment" />
 				<com:TButton ID="addComment" Text="Add Comment" OnClick="addComment_Clicked"/>
@@ -90,7 +90,7 @@
 			<h3 style="margin:0">Preview comment</h3>
 			<div class="comment">
 			<com:TSafeHtml>
-				<com:TMarkdown TextHighlighter.CssClass="source">
+				<com:TMarkdown CssClass="source">
 				<%= $this->content->Text %>
 				</com:TMarkdown>
 			</com:TSafeHtml>
