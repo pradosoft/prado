@@ -33,7 +33,7 @@ class TPageStatePersister extends TApplicationComponent implements IPageStatePer
 	private $_page;
 
 	/**
-	 * @param TPage the page that this persister works for
+	 * @return TPage the page that this persister works for
 	 */
 	public function getPage()
 	{

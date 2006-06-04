@@ -152,7 +152,8 @@ class TFileUpload extends TWebControl implements IPostBackDataHandler, IValidata
 	}
 
 	/**
-	 * @return integer an error code describing the status of this file uploading
+	 * Returns an error code describing the status of this file uploading.
+	 * @return integer the error code
 	 * @see http://www.php.net/manual/en/features.file-upload.errors.php
 	 */
 	public function getErrorCode()

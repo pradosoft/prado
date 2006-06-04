@@ -4,6 +4,7 @@
 /UPGRADE -text
 /build.xml -text
 buildscripts/.htaccess -text
+buildscripts/classtree/build.php -text
 buildscripts/index/api_index.php -text
 buildscripts/index/build.php -text
 buildscripts/index/quickstart_index.php -text
