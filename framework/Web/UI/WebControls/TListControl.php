@@ -586,6 +586,7 @@ abstract class TListControl extends TDataBoundControl
 	public function onSelectedIndexChanged($param)
 	{
 		$this->raiseEvent('OnSelectedIndexChanged',$this,$param);
+		$this->onTextChanged($param);
 	}
 
 	/**
