@@ -659,6 +659,7 @@ class TComponentReflection extends TComponent
 					'type'=>$this->determinePropertyType($method),
 					'readonly'=>!$class->hasMethod('set'.$name),
 					'class'=>$className,
+					'comments'=>$method->getDocComment()
 				);
 			}
 		}
@@ -670,6 +671,7 @@ class TComponentReflection extends TComponent
 				$this->_events[]=array(
 					'name'=>$name,
 					'class'=>$className,
+					'comments'=>$method->getDocComment()
 				);
 			}
 		}
@@ -699,10 +701,12 @@ class TComponentReflection extends TComponent
 	}
 
 	/**
-	 * @return array list of component properties. Each array element is of the following
-	 * structure: [name]=>property name, [type]=>property type,
-	 * [readonly]=>whether the property is read-only, [class]=>the class where the
-	 * property is inherited from
+	 * @return array list of component properties. Each array element is of the following structure:
+	 * [name]=>property name,
+	 * [type]=>property type,
+	 * [readonly]=>whether the property is read-only,
+	 * [class]=>the class where the property is inherited from,
+	 * [comments]=>comments	associated with the property.
 	 */
 	public function getProperties()
 	{
@@ -710,8 +714,10 @@ class TComponentReflection extends TComponent
 	}
 
 	/**
-	 * @return array list of component events. Each array element is of the following
-	 * structure: [name]=>event name,[class]=>the class where the event is inherited from
+	 * @return array list of component events. Each array element is of the following structure:
+	 * [name]=>event name,
+	 * [class]=>the class where the event is inherited from.
+	 * [comments]=>comments associated with the event.
 	 */
 	public function getEvents()
 	{
