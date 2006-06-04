@@ -213,7 +213,7 @@ class TMultiView extends TControl
 	 * @param mixed event parameter
 	 * @return boolean whether this event is handled
 	 */
-	public function onBubbleEvent($sender,$param)
+	public function bubbleEvent($sender,$param)
 	{
 		if(!$this->_ignoreBubbleEvents && ($param instanceof TCommandEventParameter))
 		{

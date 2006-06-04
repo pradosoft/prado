@@ -1333,7 +1333,7 @@ class TWizard extends TWebControl implements INamingContainer
 	 * @param TEventParameter event parameter
 	 * @throws TInvalidDataValueException if a navigation command is associated with an invalid parameter
 	 */
-	public function onBubbleEvent($sender,$param)
+	public function bubbleEvent($sender,$param)
 	{
 		if($param instanceof TCommandEventParameter)
 		{

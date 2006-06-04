@@ -75,7 +75,7 @@ class TApplicationComponent extends TComponent
 	}
 
 	/**
-	 * @return IUser user
+	 * @return IUser information about the current user
 	 */
 	public function getUser()
 	{

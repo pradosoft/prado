@@ -217,7 +217,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
-	 * @return TDataGridColumnCollection automatically specified datagrid columns
+	 * @return TDataGridColumnCollection automatically generated datagrid columns
 	 */
 	public function getAutoColumns()
 	{
@@ -683,7 +683,6 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
-	 * Handles <b>OnBubbleEvent</b>.
 	 * This method overrides parent's implementation to handle
 	 * {@link onItemCommand OnItemCommand} event which is bubbled from
 	 * {@link TDataGridItem} child controls.
@@ -696,7 +695,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	 * @param TEventParameter event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
-	public function onBubbleEvent($sender,$param)
+	public function bubbleEvent($sender,$param)
 	{
 		if($param instanceof TDataGridCommandEventParameter)
 		{
@@ -1890,14 +1889,13 @@ class TDataGridItem extends TTableRow implements INamingContainer
 	}
 
 	/**
-	 * Handles <b>BubbleEvent</b>.
 	 * This method overrides parent's implementation by wrapping event parameter
 	 * for <b>OnCommand</b> event with item information.
 	 * @param TControl the sender of the event
 	 * @param TEventParameter event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
-	public function onBubbleEvent($sender,$param)
+	public function bubbleEvent($sender,$param)
 	{
 		if($param instanceof TCommandEventParameter)
 		{
@@ -1934,14 +1932,13 @@ class TDataGridPager extends TPanel implements INamingContainer
 	}
 
 	/**
-	 * Handles <b>BubbleEvent</b>.
 	 * This method overrides parent's implementation by wrapping event parameter
 	 * for <b>OnCommand</b> event with item information.
 	 * @param TControl the sender of the event
 	 * @param TEventParameter event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
-	public function onBubbleEvent($sender,$param)
+	public function bubbleEvent($sender,$param)
 	{
 		if($param instanceof TCommandEventParameter)
 		{

@@ -582,12 +582,8 @@ class TEventParameter extends TComponent
 /**
  * TComponentReflection class.
  *
- * TComponentReflection provides functionalities to inspect the properties and events
- * defined in a component. It shows the definition of component properties, including
- * their name, type, writability and defining class. It also shows the definition
- * of component events, including their name and defining class.
- *
- * Note, only public properties and events are displayed.
+ * TComponentReflection provides functionalities to inspect the public/protected
+ * properties, events and methods defined in a class.
  *
  * The following code displays the properties and events defined in {@link TDataGrid},
  * <code>
@@ -606,74 +602,99 @@ class TComponentReflection extends TComponent
 	private $_className;
 	private $_properties=array();
 	private $_events=array();
+	private $_methods=array();
 
 	/**
 	 * Constructor.
-	 * @param TComponent|string the component instance or the class name
+	 * @param object|string the component instance or the class name
 	 * @throws TInvalidDataTypeException if the object is not a component
 	 */
 	public function __construct($component)
 	{
-		if(is_string($component))
+		if(is_string($component) && class_exists($component,false))
 			$this->_className=$component;
-		else if($component instanceof TComponent)
+		else if(is_object($component))
 			$this->_className=get_class($component);
 		else
 			throw new TInvalidDataTypeException('componentreflection_class_invalid');
 		$this->reflect();
 	}
 
+	private function isPropertyMethod($method)
+	{
+		$methodName=$method->getName();
+		return $method->getNumberOfRequiredParameters()===0
+				&& strncasecmp($methodName,'get',3)===0
+				&& isset($methodName[3]);
+	}
+
+	private function isEventMethod($method)
+	{
+		$methodName=$method->getName();
+		return strncasecmp($methodName,'on',2)===0
+				&& isset($methodName[2]);
+	}
+
 	private function reflect()
 	{
 		$class=new TReflectionClass($this->_className);
-		$methods=$class->getMethods();
 		$properties=array();
 		$events=array();
-		foreach($methods as $method)
+		$methods=array();
+		$isComponent=is_subclass_of($this->_className,'TComponent') || strcasecmp($this->_className,'TComponent')===0;
+		foreach($class->getMethods() as $method)
 		{
-			if($method->isPublic() && !$method->isStatic())
+			if($method->isPublic() || $method->isProtected())
 			{
 				$methodName=$method->getName();
-				if($method->getNumberOfRequiredParameters()===0 && strncasecmp($methodName,'get',3)===0 && isset($methodName[3]))
+				if(!$method->isStatic() && $isComponent)
 				{
-					$propertyName=substr($methodName,3);
-					$readOnly=!$class->hasMethod('set'.$propertyName);
-					$methodClass=$method->getDeclaringClass()->getName();
-					$properties[$methodClass][$propertyName]=$method;
+					if($this->isPropertyMethod($method))
+						$properties[substr($methodName,3)]=$method;
+					else if($this->isEventMethod($method))
+					{
+						$methodName[0]='O';
+						$events[$methodName]=$method;
+					}
 				}
-				else if(strncasecmp($methodName,'on',2)===0 && isset($methodName[2]))
-				{
-					$methodName[0]='O';
-					$methodClass=$method->getDeclaringClass()->getName();
-					$events[$methodClass][$methodName]=$method;
-				}
+				if(strncmp($methodName,'__',2)!==0)
+					$methods[$methodName]=$method;
 			}
 		}
-		foreach($properties as $className=>$props)
+		$reserved=array();
+		ksort($properties);
+		foreach($properties as $name=>$method)
 		{
-			ksort($props);
-			foreach($props as $name=>$method)
-			{
-				$this->_properties[]=array(
-					'name'=>$name,
-					'type'=>$this->determinePropertyType($method),
-					'readonly'=>!$class->hasMethod('set'.$name),
-					'class'=>$className,
-					'comments'=>$method->getDocComment()
-				);
-			}
+			$this->_properties[$name]=array(
+				'type'=>$this->determinePropertyType($method),
+				'readonly'=>!$class->hasMethod('set'.$name),
+				'protected'=>$method->isProtected(),
+				'class'=>$method->getDeclaringClass()->getName(),
+				'comments'=>$method->getDocComment()
+			);
+			$reserved['get'.strtolower($name)]=1;
+			$reserved['set'.strtolower($name)]=1;
 		}
-		foreach($events as $className=>$evts)
+		ksort($events);
+		foreach($events as $name=>$method)
 		{
-			ksort($evts);
-			foreach($evts as $name=>$method)
-			{
-				$this->_events[]=array(
-					'name'=>$name,
-					'class'=>$className,
+			$this->_events[$name]=array(
+				'class'=>$method->getDeclaringClass()->getName(),
+				'protected'=>$method->isProtected(),
+				'comments'=>$method->getDocComment()
+			);
+			$reserved[strtolower($name)]=1;
+		}
+		ksort($methods);
+		foreach($methods as $name=>$method)
+		{
+			if(!isset($reserved[strtolower($name)]))
+				$this->_methods[$name]=array(
+					'class'=>$method->getDeclaringClass()->getName(),
+					'protected'=>$method->isProtected(),
+					'static'=>$method->isStatic(),
 					'comments'=>$method->getDocComment()
 				);
-			}
 		}
 	}
 
@@ -701,10 +722,11 @@ class TComponentReflection extends TComponent
 	}
 
 	/**
-	 * @return array list of component properties. Each array element is of the following structure:
-	 * [name]=>property name,
+	 * @return array list of component properties. Array keys are property names.
+	 * Each array element is of the following structure:
 	 * [type]=>property type,
 	 * [readonly]=>whether the property is read-only,
+	 * [protected]=>whether the method is protected or not
 	 * [class]=>the class where the property is inherited from,
 	 * [comments]=>comments	associated with the property.
 	 */
@@ -714,14 +736,28 @@ class TComponentReflection extends TComponent
 	}
 
 	/**
-	 * @return array list of component events. Each array element is of the following structure:
-	 * [name]=>event name,
+	 * @return array list of component events. Array keys are event names.
+	 * Each array element is of the following structure:
+	 * [protected]=>whether the event is protected or not
 	 * [class]=>the class where the event is inherited from.
 	 * [comments]=>comments associated with the event.
 	 */
 	public function getEvents()
 	{
 		return $this->_events;
+	}
+
+	/**
+	 * @return array list of public/protected methods. Array keys are method names.
+	 * Each array element is of the following structure:
+	 * [protected]=>whether the method is protected or not
+	 * [static]=>whether the method is static or not
+	 * [class]=>the class where the property is inherited from,
+	 * [comments]=>comments associated with the event.
+	 */
+	public function getMethods()
+	{
+		return $this->_methods;
 	}
 }
 

@@ -463,7 +463,6 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	}
 
 	/**
-	 * Handles <b>BubbleEvent</b>.
 	 * This method overrides parent's implementation to handle
 	 * {@link onItemCommand OnItemCommand} event which is bubbled from
 	 * {@link TRepeaterItem} child controls.
@@ -472,7 +471,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 * @param TEventParameter event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
-	public function onBubbleEvent($sender,$param)
+	public function bubbleEvent($sender,$param)
 	{
 		if($param instanceof TRepeaterCommandEventParameter)
 		{
@@ -717,14 +716,13 @@ class TRepeaterItem extends TControl implements INamingContainer
 	}
 
 	/**
-	 * Handles <b>BubbleEvent</b>.
 	 * This method overrides parent's implementation by wrapping event parameter
 	 * for <b>Command</b> event with item information.
 	 * @param TControl the sender of the event
 	 * @param TEventParameter event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
-	public function onBubbleEvent($sender,$param)
+	public function bubbleEvent($sender,$param)
 	{
 		if($param instanceof TCommandEventParameter)
 		{

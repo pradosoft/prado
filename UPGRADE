@@ -23,6 +23,8 @@ Upgrading from v3.0.0
   /index.php/ServiceID,ServiceParam/Name1,Value1/Name2,Value2/...
   In v3.0.0, the above URL is written as:
   /index.php/ServiceID/ServiceParam/Name1/Value1/Name2/Value2/...
+- TControl::onBubbleEvent() has been changed to TControl::bubbleEvent().
+  This change only affects user controls that override this method.
 
 Upgrading from v3.0.0 RC2
 -------------------------
