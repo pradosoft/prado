@@ -203,7 +203,7 @@ abstract class TListControl extends TDataBoundControl
 		{
 			$index=$items->findIndexByValue($this->_cachedSelectedValue);
 			if($index===-1 || ($this->_cachedSelectedIndex!==-1 && $this->_cachedSelectedIndex!==$index))
-				throw new TInvalidDataValueException('listcontrol_selection_invalid');
+				throw new TInvalidDataValueException('listcontrol_selection_invalid',get_class($this));
 			$this->setSelectedIndex($index);
 			$this->_cachedSelectedValue=null;
 			$this->_cachedSelectedIndex=-1;
@@ -594,6 +594,7 @@ abstract class TListControl extends TDataBoundControl
 	public function onSelectedIndexChanged($param)
 	{
 		$this->raiseEvent('OnSelectedIndexChanged',$this,$param);
+		$this->onTextChanged($param);
 	}
 
 	/**

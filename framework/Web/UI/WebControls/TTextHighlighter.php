@@ -11,9 +11,10 @@
  */
 
 /**
- * Using GeSHi and TTextWriter classes
+ * Using GeSHi and TTextProcessor classes
  */
 Prado::using('System.3rdParty.geshi.geshi');
+Prado::using('System.Web.UI.WebControls.TTextProcessor');
 
 /**
  * TTextHighlighter class.
@@ -31,7 +32,7 @@ Prado::using('System.3rdParty.geshi.geshi');
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TTextHighlighter extends TWebControl
+class TTextHighlighter extends TTextProcessor
 {
 	/**
 	 * @return string tag name of the panel
@@ -77,6 +78,22 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
+	 * @return boolean true will show "Copy Code" link. Defaults to false.
+	 */
+	public function getEnableCopyCode()
+	{
+		return $this->getViewState('CopyCode', false);
+	}
+
+	/**
+	 * @param boolean true to show the "Copy Code" link.
+	 */
+	public function setEnableCopyCode($value)
+	{
+		$this->setViewState('CopyCode', TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
 	 * Registers css style for the highlighted result.
 	 * This method overrides parent implementation.
 	 * @param THtmlWriter writer
@@ -85,31 +102,6 @@ class TTextHighlighter extends TWebControl
 	{
 		parent::onPreRender($writer);
 		$this->registerHighlightScripts();
-	}
-
-	/**
-	 * HTML-decodes static text.
-	 * This method overrides parent implementation.
-	 * @param mixed object to be added as body content
-	 */
-	public function addParsedObject($object)
-	{
-		if(is_string($object))
-			$object=html_entity_decode($object);
-		parent::addParsedObject($object);
-	}
-
-	/**
-	 * Renders body content.
-	 * This method overrides parent implementation by replacing
-	 * the body content with syntax highlighted result.
-	 * @param THtmlWriter writer
-	 */
-	public function renderContents($writer)
-	{
-		$textWriter=new TTextWriter;
-		parent::renderContents(new THtmlWriter($textWriter));
-		$writer->write($this->highlightText($textWriter->flush()));
 	}
 
 	/**
@@ -131,27 +123,12 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @return boolean true will show "Copy Code" link. Defaults to false.
+	 * Processes a text string.
+	 * This method is required by the parent class.
+	 * @param string text string to be processed
+	 * @return string the processed text result
 	 */
-	public function getEnableCopyCode()
-	{
-		return $this->getViewState('CopyCode', false);
-	}
-
-	/**
-	 * @param boolean true to show the "Copy Code" link.
-	 */
-	public function setEnableCopyCode($value)
-	{
-		$this->setViewState('CopyCode', TPropertyValue::ensureBoolean($value), false);
-	}
-
-	/**
-	 * Returns the highlighted text.
-	 * @param string text to highlight.
-	 * @return string highlighted text.
-	 */
-	protected function highlightText($text)
+	public function processText($text)
 	{
 		$geshi = new GeSHi(trim($text), $this->getLanguage());
 		if($this->getShowLineNumbers())

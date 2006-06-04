@@ -128,7 +128,7 @@ abstract class TDataBoundControl extends TWebControl
 	}
 
 	/**
-	 * @return boolean if databind has been invoked in the previous page request
+	 * @return boolean whether databind has been invoked in the previous page request
 	 */
 	protected function getIsDataBound()
 	{
@@ -272,7 +272,7 @@ abstract class TDataBoundControl extends TWebControl
 	}
 
 	/**
-	 * Sets page's <b>OnPreLoad</b> event handler as {@link onPagePreLoad}.
+	 * Sets page's <b>OnPreLoad</b> event handler as {@link pagePreLoad}.
 	 * If viewstate is disabled and the current request is a postback,
 	 * {@link setRequiresDataBinding RequiresDataBinding} will be set true.
 	 * This method overrides the parent implementation.
@@ -282,7 +282,7 @@ abstract class TDataBoundControl extends TWebControl
 	{
 		parent::onInit($param);
 		$page=$this->getPage();
-		$page->attachEventHandler('OnPreLoad',array($this,'onPagePreLoad'));
+		$page->attachEventHandler('OnPreLoad',array($this,'pagePreLoad'));
 	}
 
 	/**
@@ -291,7 +291,7 @@ abstract class TDataBoundControl extends TWebControl
 	 * @param mixed event sender
 	 * @param TEventParameter event parameter
 	 */
-	public function onPagePreLoad($sender,$param)
+	public function pagePreLoad($sender,$param)
 	{
 		$this->_initialized=true;
 		$isPostBack=$this->getPage()->getIsPostBack();

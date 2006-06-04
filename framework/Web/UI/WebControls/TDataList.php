@@ -635,7 +635,6 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * Handles <b>BubbleEvent</b>.
 	 * This method overrides parent's implementation to handle
 	 * {@link onItemCommand OnItemCommand} event which is bubbled from
 	 * {@link TDataListItem} child controls.
@@ -648,7 +647,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 * @param TEventParameter event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
-	public function onBubbleEvent($sender,$param)
+	public function bubbleEvent($sender,$param)
 	{
 		if($param instanceof TDataListCommandEventParameter)
 		{
@@ -1356,14 +1355,13 @@ class TDataListItem extends TWebControl implements INamingContainer
 	}
 
 	/**
-	 * Handles <b>BubbleEvent</b>.
 	 * This method overrides parent's implementation by wrapping event parameter
 	 * for <b>Command</b> event with item information.
 	 * @param TControl the sender of the event
 	 * @param TEventParameter event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
-	public function onBubbleEvent($sender,$param)
+	public function bubbleEvent($sender,$param)
 	{
 		if($param instanceof TCommandEventParameter)
 		{

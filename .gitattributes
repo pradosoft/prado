@@ -4,6 +4,7 @@
 /UPGRADE -text
 /build.xml -text
 buildscripts/.htaccess -text
+buildscripts/classtree/build.php -text
 buildscripts/index/api_index.php -text
 buildscripts/index/build.php -text
 buildscripts/index/quickstart_index.php -text
@@ -1107,6 +1108,7 @@ framework/Web/UI/WebControls/TTableRow.php -text
 framework/Web/UI/WebControls/TTemplateColumn.php -text
 framework/Web/UI/WebControls/TTextBox.php -text
 framework/Web/UI/WebControls/TTextHighlighter.php -text
+framework/Web/UI/WebControls/TTextProcessor.php -text
 framework/Web/UI/WebControls/TValidationSummary.php -text
 framework/Web/UI/WebControls/TWebControl.php -text
 framework/Web/UI/WebControls/TWebControlAdapter.php -text

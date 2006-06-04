@@ -34,8 +34,11 @@ ENH: refactored TUserManager and TAuthManager so that they are easier to be exte
 ENH: template syntax now supports setting event handler via subproperties (Qiang)
 CHG: Ticket#151 - URL format is modified to handle empty GET values (Qiang)
 CHG: Ticket#153 - TAssetManager now ignores .svn directories (Qiang)
+CHG: Changed TControl::onBubbleEvent() to TControl::bubbleEvent() (Qiang)
 NEW: TTableHeaderRow, TTableFooterRow and table section support (Qiang)
 NEW: TCompositeControl (Qiang)
+NEW: TTextProcessor (Qiang)
+NEW: TMarkdown (Wei)
 NEW: Blog demo (Qiang)
 
 Version 3.0.0 May 1, 2006

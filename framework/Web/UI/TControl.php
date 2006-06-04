@@ -591,6 +591,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	}
 
 	/**
+	 * Sets a custom control attribute.
 	 * @param string attribute name
 	 * @param string value of the attribute
 	 */
@@ -1336,18 +1337,18 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	}
 
 	/**
-	 * Invokes the parent's onBubbleEvent method.
+	 * Invokes the parent's bubbleEvent method.
 	 * A control who wants to bubble an event must call this method in its onEvent method.
 	 * @param TControl sender of the event
 	 * @param TEventParameter event parameter
-	 * @see onBubbleEvent
+	 * @see bubbleEvent
 	 */
 	protected function raiseBubbleEvent($sender,$param)
 	{
 		$control=$this;
 		while($control=$control->_parent)
 		{
-			if($control->onBubbleEvent($sender,$param))
+			if($control->bubbleEvent($sender,$param))
 				break;
 		}
 	}
@@ -1361,7 +1362,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 * @return boolean true if the event bubbling is handled and no more bubbling.
 	 * @see raiseBubbleEvent
 	 */
-	public function onBubbleEvent($sender,$param)
+	public function bubbleEvent($sender,$param)
 	{
 		return false;
 	}

@@ -11,12 +11,18 @@
  */
 
 /**
+ * Using TTextHighlighter and MarkdownParser classes
+ */
+Prado::using('System.Web.UI.WebControls.TTextHighlighter');
+Prado::using('System.3rdParty.Markdown.MarkdownParser');
+
+/**
  * TMarkdown class
  *
  * TMarkdown is a control that produces HTML from code with markdown syntax.
  *
- * Markdown is a text-to-HTML conversion tool for web writers. Markdown allows 
- * you to write using an easy-to-read, easy-to-write plain text format, then 
+ * Markdown is a text-to-HTML conversion tool for web writers. Markdown allows
+ * you to write using an easy-to-read, easy-to-write plain text format, then
  * convert it to structurally valid XHTML (or HTML).
  * Further documentation regarding Markdown can be found at
  * http://daringfireball.net/projects/markdown/
@@ -27,56 +33,33 @@
  * See http://www.pradosoft.com/demos/quickstart/?page=Markdown for
  * details on the Markdown syntax usage.
  *
+ * TMarkdown also performs syntax highlighting for code blocks whose language
+ * is recognized by {@link TTextHighlighter}.
+ * The language of a code block must be specified in the first line of the block
+ * and enclosed within a pair of square brackets (e.g. [php]).
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
- * @since 3.0
+ * @since 3.0.1
  */
-class TMarkdown extends TControl
+class TMarkdown extends TTextHighlighter
 {
 	/**
-	 * @var TTextHighlighter
+	 * Processes a text string.
+	 * This method is required by the parent class.
+	 * @param string text string to be processed
+	 * @return string the processed text result
 	 */
-	private $_highlighter;
-
-	/**
-	 * Renders body content.
-	 * This method overrides parent implementation by removing
-	 * malicious javascript code from the body content
-	 * @param THtmlWriter writer
-	 */
-	public function render($writer)
+	public function processText($text)
 	{
-		$textWriter=new TTextWriter;
-		parent::render(new THtmlWriter($textWriter));
-		$writer->write($this->renderMarkdown($textWriter->flush()));
-	}
-
-	/**
-	 * Use MarkdownParser to render the HTML content.
-	 * @param string markdown content
-	 * @return string HTML content
-	 */
-	protected function renderMarkdown($text)
-	{
-		$renderer = Prado::createComponent('System.3rdParty.Markdown.MarkdownParser');
+		$renderer = new MarkdownParser;
 		$result = $renderer->parse($text);
 		return preg_replace_callback(
-				'/<pre><code>\[\s*(\w+)\s*\]\n+((.|\n)*?)\s*<\\/code><\\/pre>/im', 
+				'/<pre><code>\[\s*(\w+)\s*\]\n+((.|\n)*?)\s*<\\/code><\\/pre>/im',
 				array($this, 'highlightCode'), $result);
 	}
 
-	/**
-	 * @return TTextHighlighter source code highlighter
-	 */
-	public function getTextHighlighter()
-	{
-		if(is_null($this->_highlighter))
-			$this->_highlighter = new TTextHighlighter;
-		return $this->_highlighter;
-	}
-
-	
 	/**
 	 * Highlights source code using TTextHighlighter
 	 * @param array matches of code blocks
@@ -84,29 +67,14 @@ class TMarkdown extends TControl
 	 */
 	protected function highlightCode($matches)
 	{
-		$text = new TTextWriter;
-		$writer = new THtmlWriter($text);
-		$hi = $this->getTextHighlighter();
-		if($hi->getControls()->getCount() > 0)
-			$hi->getControls()->removeAt(0);
-		$hi->addParsedObject(html_entity_decode($matches[2]));
-		$hi->setLanguage($matches[1]);
-		$hi->render($writer);
-		return $text->flush();
-	}
+		$geshi=new GeSHi(html_entity_decode($matches[2],ENT_QUOTES,'UTF-8'), $matches[1]);
+		if($this->getShowLineNumbers())
+			$geshi->enable_line_numbers(GESHI_NORMAL_LINE_NUMBERS);
+		$geshi->enable_classes();
+		if($this->getEnableCopyCode())
+			$geshi->set_header_content($this->getHeaderTemplate());
 
-	/**
-	 * Registers css style for the highlighted result.
-	 * This method overrides parent implementation.
-	 * @param THtmlWriter writer
-	 */
-	public function onPreRender($writer)
-	{
-		parent::onPreRender($writer);
-		$hi = $this->getTextHighlighter();
-		$this->getControls()->insertAt(0,$hi);
-		$hi->onPreRender($writer);
-		$this->getControls()->removeAt(0);
+		return $geshi->parse_code();
 	}
 }
 
