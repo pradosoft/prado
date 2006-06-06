@@ -35,7 +35,7 @@
 		HeaderText="Role"
 		ItemStyle.HorizontalAlign="Center"
 		ItemStyle.Wrap="false"
-		ItemStyle.Width="7px" >
+		ItemStyle.Width="50px" >
 		<prop:ItemTemplate>
 		<%#	$this->Parent->DataItem->Role===0 ?	'User' : 'Admin' %>
 		</prop:ItemTemplate>
