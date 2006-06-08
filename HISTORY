@@ -1,6 +1,7 @@
 Version 3.0.2 July 2, 2006
 ==========================
 BUG: Ticket#213 - PRADO Requirements Checker charset error (Qiang)
+CHG: ensureChildControls() is now invoked in TControl::initRecursive (Qiang)
 
 Version 3.0.1 June 4, 2006
 ==========================
