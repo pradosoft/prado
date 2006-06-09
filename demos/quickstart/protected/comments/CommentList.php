@@ -43,7 +43,6 @@ class CommentList extends TTemplateControl
 		$this->_quickstart->addNewComment($page, 
 			$this->email->getText(), $this->content->getText());
 		$this->multiView1->setActiveViewIndex(1);
-		$this->listComments($page);
 	}
 	
 	public function setVisible($value)
