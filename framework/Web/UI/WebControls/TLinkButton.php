@@ -83,7 +83,8 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler, IButtonC
 		if($this->getEnabled(true))
 		{
 			//create unique no-op url references
-			$nop = "#".$this->getClientID();
+			//$nop = "#".$this->getClientID();
+			$nop = "javascript:;//".$this->getClientID();
 			$writer->addAttribute('href', $nop);
 			$this->getPage()->getClientScript()->registerPostBackControl('Prado.WebUI.TLinkButton',$this->getPostBackOptions());
 		}

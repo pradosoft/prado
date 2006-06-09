@@ -239,13 +239,6 @@ Prado.WebUI.TDatePicker.prototype =
 		var buttonText = today.SimpleFormat(this.Format,this);
 		todayButton.value = buttonText;
 		div.appendChild(todayButton);
-		
-		/*var clearButton = document.createElement("button");
-		clearButton.className = "clearButton";
-		buttonText = "Clear";
-		clearButton.appendChild(document.createTextNode(buttonText));
-		div.appendChild(clearButton);
-		*/
 
 		if(Prado.Browser().ie)
 		{
@@ -283,10 +276,9 @@ Prado.WebUI.TDatePicker.prototype =
 		
 		Event.observe(calendarBody, "click", this.selectDate.bindEvent(this));
 		
-		Event.observe(this.control, "blur", this.hide.bind(this));
 		Prado.Element.focus(this.control);
 				
-	},A
+	},
 	
 	ieHack : function(cleanup) 
 	{
@@ -308,7 +300,7 @@ Prado.WebUI.TDatePicker.prototype =
 		if (!ev) ev = document.parentWindow.event;
 		var kc = ev.keyCode != null ? ev.keyCode : ev.charCode;
 		
-		if(kc == Event.KEY_RETURN || kc == Event.KEY_SPACEBAR)
+		if(kc == Event.KEY_RETURN || kc == Event.KEY_SPACEBAR || kc == Event.KEY_TAB)
 		{
 			this.setSelectedDate(this.selectedDate);
 			Event.stop(ev);
@@ -318,8 +310,7 @@ Prado.WebUI.TDatePicker.prototype =
 		{
 			Event.stop(ev); this.hide();
 		}
-		
-		
+				
 		var getDaysPerMonth = function (nMonth, nYear) 
 		{
 			nMonth = (nMonth + 12) % 12;
@@ -600,6 +591,7 @@ Prado.WebUI.TDatePicker.prototype =
 		if(!within) this.hide();
 	},
 	
+
 	hide : function()
 	{
 		if(this.showing)
@@ -667,11 +659,13 @@ Prado.WebUI.TDatePicker.prototype =
 	
 	hover : function(ev)
 	{
-		//conditionally add the hover class to the event target element.
-		if(ev.type == "mouseover")
-			Event.element(ev).addClassName("hover");
-		else
-			Event.element(ev).removeClassName("hover");
+		if(Event.element(ev).tagName)
+		{
+			if(ev.type == "mouseover")
+				Event.element(ev).addClassName("hover");
+				else
+				Event.element(ev).removeClassName("hover");
+		}
 	},
 	
 	updateHeader : function () {
