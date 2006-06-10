@@ -264,14 +264,19 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	{
 		if($this->getEnabled(true))
 		{
-			$class = get_class($this);
-			$scriptKey = "prado:".$this->getClientID();
-			$scripts = $this->getPage()->getClientScript();
-			$options =  TJavaScript::encode($this->getClientScriptOptions());
-			$js = "new Prado.WebUI.{$class}({$options});";
-			$scripts->registerEndScript($scriptKey, $js);
+			$key = 'prado:'.$this->getClientID();
+			$options = TJavaScript::encode($this->getClientScriptOptions());
+			$script = 'new '.$this->getClientClassName().'('.$options.');';
+			$this->getPage()->getClientScript()->registerEndScript($key, $script);
 		}
 	}
+
+	/**
+	 * Gets the name of the javascript class responsible for performing validation for this control.
+	 * This method overrides the parent implementation.
+	 * @return string the javascript class name
+	 */
+	abstract protected function getClientClassName();
 
 	/**
 	 * This method overrides the parent implementation to forbid setting ForControl.

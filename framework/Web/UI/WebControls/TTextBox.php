@@ -152,9 +152,9 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	 */
 	protected function renderClientControlScript($writer)
 	{
-		$writer->addAttribute('id',$this->getClientID());		
+		$writer->addAttribute('id',$this->getClientID());
 		$cs = $this->getPage()->getClientScript();
-		$cs->registerPostBackControl(get_class($this),$this->getPostBackOptions());
+		$cs->registerPostBackControl('Prado.WebUI.TTextBox',$this->getPostBackOptions());
 	}
 
 	/**

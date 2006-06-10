@@ -50,6 +50,16 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
 class TRegularExpressionValidator extends TBaseValidator
 {
 	/**
+	 * Gets the name of the javascript class responsible for performing validation for this control.
+	 * This method overrides the parent implementation.
+	 * @return string the javascript class name
+	 */
+	protected function getClientClassName()
+	{
+		return 'Prado.WebUI.TRegularExpressionValidator';
+	}
+
+	/**
 	 * @return string the regular expression that determines the pattern used to validate a field.
 	 */
 	public function getRegularExpression()

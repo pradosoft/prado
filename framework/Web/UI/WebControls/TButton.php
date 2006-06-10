@@ -87,9 +87,9 @@ class TButton extends TWebControl implements IPostBackEventHandler, IButtonContr
 	{
 		if($this->canCauseValidation())
 		{
-			$writer->addAttribute('id',$this->getClientID());		
-			$cs = $this->getPage()->getClientScript(); 
-			$cs->registerPostBackControl(get_class($this),$this->getPostBackOptions());
+			$writer->addAttribute('id',$this->getClientID());
+			$cs = $this->getPage()->getClientScript();
+			$cs->registerPostBackControl('Prado.WebUI.TButton',$this->getPostBackOptions());
 		}
 	}
 

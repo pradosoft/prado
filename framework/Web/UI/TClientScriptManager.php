@@ -166,7 +166,7 @@ class TClientScriptManager extends TApplicationComponent
 
 	public function getCallbackReference(ICallbackEventHandler $callbackHandler, $options=null)
 	{
-		$options = !is_array($options) ? array() : $options; 
+		$options = !is_array($options) ? array() : $options;
 		$class = new TReflectionClass($callbackHandler);
 		$clientSide = $callbackHandler->getActiveControl()->getClientSide();
 		$options = array_merge($options, $clientSide->getOptions()->toArray());
@@ -203,7 +203,7 @@ class TClientScriptManager extends TApplicationComponent
 		if(!isset($options['FormID']) && ($form=$this->_page->getForm())!==null)
 			$options['FormID']=$form->getClientID();
 		$optionString=TJavaScript::encode($options);
-		$code="new Prado.WebUI.{$class}({$optionString});";
+		$code="new {$class}({$optionString});";
 
 		$this->_endScripts[sprintf('%08X', crc32($code))]=$code;
 		$this->_hiddenFields[TPage::FIELD_POSTBACK_TARGET]='';
@@ -564,7 +564,7 @@ abstract class TClientSideOptions extends TComponent
 	 * @var TMap list of client-side options.
 	 */
 	private $_options;
-	
+
 	/**
 	 * Constructor, initialize the options list.
 	 */
@@ -572,7 +572,7 @@ abstract class TClientSideOptions extends TComponent
 	{
 		$this->_options = Prado::createComponent('System.Collections.TMap');
 	}
-	
+
 	/**
 	 * Adds on client-side event handler by wrapping the code within a
 	 * javascript function block. If the code begins with "javascript:", the
@@ -584,10 +584,10 @@ abstract class TClientSideOptions extends TComponent
 	protected function setFunction($name, $code)
 	{
 		if(!TJavascript::isFunction($code))
-			$code = TJavascript::quoteFunction($this->ensureFunction($code));		
+			$code = TJavascript::quoteFunction($this->ensureFunction($code));
 		$this->setOption($name, $code);
 	}
-	
+
 	/**
 	 * @return string gets a particular option, null if not set.
 	 */
@@ -595,7 +595,7 @@ abstract class TClientSideOptions extends TComponent
 	{
 		return $this->_options->itemAt($name);
 	}
-	
+
 	/**
 	 * @param string option name
 	 * @param mixed option value.
@@ -604,7 +604,7 @@ abstract class TClientSideOptions extends TComponent
 	{
 		$this->_options->add($name, $value);
 	}
-	
+
 	/**
 	 * @return TMap gets the list of options as TMap
 	 */
@@ -612,7 +612,7 @@ abstract class TClientSideOptions extends TComponent
 	{
 		return $this->_options;
 	}
-	
+
 	/**
 	 * Ensure that the javascript statements are wrapped in a javascript
 	 * function block. Default has no wrapping. Override this method to

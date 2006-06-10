@@ -55,6 +55,16 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
 class TCustomValidator extends TBaseValidator
 {
 	/**
+	 * Gets the name of the javascript class responsible for performing validation for this control.
+	 * This method overrides the parent implementation.
+	 * @return string the javascript class name
+	 */
+	protected function getClientClassName()
+	{
+		return 'Prado.WebUI.TCustomValidator';
+	}
+
+	/**
 	 * @return string the name of the custom client-side script function used for validation.
 	 */
 	public function getClientValidationFunction()

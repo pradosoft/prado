@@ -48,6 +48,16 @@ class TListBox extends TListControl implements IPostBackDataHandler, IValidatabl
 	}
 
 	/**
+	 * Gets the name of the javascript class responsible for performing postback for this control.
+	 * This method overrides the parent implementation.
+	 * @return string the javascript class name
+	 */
+	protected function getClientClassName()
+	{
+		return 'Prado.WebUI.TListBox';
+	}
+
+	/**
 	 * Registers the list control to load post data on postback.
 	 * This method overrides the parent implementation.
 	 * @param mixed event parameter

@@ -113,22 +113,25 @@ abstract class TListControl extends TDataBoundControl
 		$page->ensureRenderInForm($this);
 		if($this->getIsMultiSelect())
 			$writer->addAttribute('multiple','multiple');
-		if($this->getEnabled(true) && $this->getAutoPostBack() && $page->getClientSupportsJavaScript())
-			$this->renderClientControlScript($writer);
-		if(!$this->getEnabled(true) && $this->getEnabled())
+		if($this->getEnabled(true))
+		{
+			if($this->getAutoPostBack() && $page->getClientSupportsJavaScript())
+			{
+				$writer->addAttribute('id',$this->getClientID());
+				$this->getPage()->getClientScript()->registerPostBackControl($this->getClientClassName(),$this->getPostBackOptions());
+			}
+		}
+		else if($this->getEnabled())
 			$writer->addAttribute('disabled','disabled');
 		parent::addAttributesToRender($writer);
 	}
 
 	/**
-	 * Renders the client-script code.
+	 * Gets the name of the javascript class responsible for performing postback for this control.
+	 * This method overrides the parent implementation.
+	 * @return string the javascript class name
 	 */
-	protected function renderClientControlScript($writer)
-	{
-		$writer->addAttribute('id',$this->getClientID());
-		$cs = $this->getPage()->getClientScript();
-		$cs->registerPostBackControl(get_class($this),$this->getPostBackOptions());
-	}
+	abstract protected function getClientClassName();
 
 	/**
 	 * @return array postback options for JS postback code

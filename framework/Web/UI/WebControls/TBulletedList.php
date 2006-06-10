@@ -84,6 +84,16 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 	}
 
 	/**
+	 * Gets the name of the javascript class responsible for performing postback for this control.
+	 * This method overrides the parent implementation.
+	 * @return string the javascript class name
+	 */
+	protected function getClientClassName()
+	{
+		return 'Prado.WebUI.TBulletedList';
+	}
+
+	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This overrides the parent implementation with additional bulleted list specific attributes.
 	 * @param THtmlWriter the writer used for the rendering purpose
@@ -323,22 +333,14 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 			$this->_currentRenderItemIndex = $index;
 			$writer->addAttribute('id', $this->getClientID().$index);
 			$writer->addAttribute('href', "javascript:;//".$this->getClientID().$index);
-			$this->renderClientControlScript($writer);
+			$cs = $this->getPage()->getClientScript();
+			$cs->registerPostBackControl('Prado.WebUI.TBulletedList',$this->getPostBackOptions());
 		}
 		if(($accesskey=$this->getAccessKey())!=='')
 			$writer->addAttribute('accesskey',$accesskey);
 		$writer->renderBeginTag('a');
 		$writer->write(THttpUtility::htmlEncode($item->getText()));
 		$writer->renderEndTag();
-	}
-	
-	/**
-	 * Renders the client-script code.
-	 */
-	protected function renderClientControlScript($writer)
-	{
-		$cs = $this->getPage()->getClientScript(); 
-		$cs->registerPostBackControl(get_class($this),$this->getPostBackOptions());
 	}
 
 	/**

@@ -102,8 +102,8 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 		if($this->canCauseValidation())
 		{
 			$writer->addAttribute('id',$this->getClientID());
-			$cs = $this->getPage()->getClientScript(); 
-			$cs->registerPostBackControl(get_class($this),$this->getPostBackOptions());
+			$cs = $this->getPage()->getClientScript();
+			$cs->registerPostBackControl('Prado.WebUI.TImageButton',$this->getPostBackOptions());
 		}
 	}
 	/**

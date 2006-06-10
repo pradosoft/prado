@@ -21,7 +21,7 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  * TRequiredFieldValidator makes the associated input control a required field.
  * The input control fails validation if its value does not change from
  * the {@link setInitialValue InitialValue} property upon losing focus.
- * 
+ *
  * Validation will also succeed if input is of TListControl type and the number
  * of selected values different from the initial value is greater than zero.
  *
@@ -32,6 +32,16 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  */
 class TRequiredFieldValidator extends TBaseValidator
 {
+	/**
+	 * Gets the name of the javascript class responsible for performing validation for this control.
+	 * This method overrides the parent implementation.
+	 * @return string the javascript class name
+	 */
+	protected function getClientClassName()
+	{
+		return 'Prado.WebUI.TRequiredFieldValidator';
+	}
+
 	/**
 	 * @return string the initial value of the associated input control. Defaults to empty string.
 	 * If the associated input control does not change from this initial value
@@ -56,11 +66,11 @@ class TRequiredFieldValidator extends TBaseValidator
 	 * This method overrides the parent's implementation.
 	 * The validation succeeds if the input component changes its data
 	 * from the {@link getInitialValue InitialValue} or the input control is not given.
-	 * 
+	 *
 	 * Validation will also succeed if input is of TListControl type and the
 	 * number of selected values different from the initial value is greater
 	 * than zero.
-	 * 
+	 *
 	 * @return boolean whether the validation succeeds
 	 */
 	protected function evaluateIsValid()

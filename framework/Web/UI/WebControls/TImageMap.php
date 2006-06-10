@@ -118,14 +118,14 @@ class TImageMap extends TImage implements IPostBackEventHandler
 			$writer->renderEndTag();
 		}
 	}
-	
+
 	/**
 	 * Renders the client-script code.
 	 */
 	protected function renderClientControlScript($writer,$options)
 	{
-		$cs = $this->getPage()->getClientScript(); 
-		$cs->registerPostBackControl(get_class($this),$options);
+		$cs = $this->getPage()->getClientScript();
+		$cs->registerPostBackControl('Prado.WebUI.TImageMap',$options);
 	}
 
 	/**
