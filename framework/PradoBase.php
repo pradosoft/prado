@@ -90,7 +90,7 @@ class PradoBase
 
 	/**
 	 * Class autoload loader.
-	 * This method is provided to be invoked within an __auload() magic method.
+	 * This method is provided to be invoked within an __autoload() magic method.
 	 * @param string class name
 	 */
 	public static function autoload($className)

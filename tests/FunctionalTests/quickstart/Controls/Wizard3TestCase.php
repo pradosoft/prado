@@ -12,15 +12,15 @@ class Wizard3TestCase extends SeleniumTestCase
 		$this->verifyTextPresent('A Mini Survey');
 		$this->verifyTextPresent('PRADO QuickStart Sample');
 		$this->click('ctl0_body_Wizard3_StudentCheckBox');
-		$this->clickAndWait('ctl0$body$Wizard3$ctl8$ctl0');
+		$this->clickAndWait('ctl0$body$Wizard3$ctl4$ctl0');
 
 		// step 2
 		$this->select('ctl0$body$Wizard3$DropDownList11', "label=Chemistry");
-		$this->clickAndWait('ctl0$body$Wizard3$ctl9$ctl1');
+		$this->clickAndWait('ctl0$body$Wizard3$ctl5$ctl1');
 
 		// step 3
 		$this->select('ctl0$body$Wizard3$DropDownList22', "label=Tennis");
-		$this->clickAndWait('ctl0$body$Wizard3$ctl10$ctl1');
+		$this->clickAndWait('ctl0$body$Wizard3$ctl6$ctl1');
 
 		// step 4
 		$this->verifyTextPresent('You are a college student');
@@ -31,11 +31,11 @@ class Wizard3TestCase extends SeleniumTestCase
 		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TWizard.Sample3&amp;notheme=true", "");
 
 		// step 1
-		$this->clickAndWait('ctl0$body$Wizard3$ctl8$ctl0');
+		$this->clickAndWait('ctl0$body$Wizard3$ctl4$ctl0');
 
 		// step 3
 		$this->select('ctl0$body$Wizard3$DropDownList22', "label=Baseball");
-		$this->clickAndWait('ctl0$body$Wizard3$ctl10$ctl1');
+		$this->clickAndWait('ctl0$body$Wizard3$ctl6$ctl1');
 
 		// step 4
 		$this->verifyTextNotPresent('You are a college student');

@@ -1165,6 +1165,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 */
 	protected function initRecursive($namingContainer=null)
 	{
+		$this->ensureChildControls();
 		if($this->getHasControls())
 		{
 			if($this instanceof INamingContainer)
@@ -1235,7 +1236,6 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 
 		if($this->getVisible(false))
 		{
-			$this->ensureChildControls();
 			if(isset($this->_rf[self::RF_ADAPTER]))
 				$this->_rf[self::RF_ADAPTER]->onPreRender(null);
 			else

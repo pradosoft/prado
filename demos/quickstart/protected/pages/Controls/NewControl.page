@@ -122,7 +122,7 @@ Other important properties and methods include:
   <li><tt>Attributes</tt> - collection of custom attributes. This is useful for allowing users to specify attributes of the output HTML elements that are not covered by control properties.</li>
   <li><tt>getViewState()</tt> and <tt>setViewState()</tt> - these methods are commonly used for defining properties that are stored in viewstate.</li>
   <li><tt>saveState()</tt> and <tt>loadState()</tt> - these two methods can be overriden to provide last step state saving and loading.</li>
-  <li>Control lifecycles - Life page lifecycles, controls also have lifecycles. Each control undergoes the following lifecycles in order: constructor, <tt>onInit()</tt>, <tt>onLoad()</tt>, <tt>onPreRender()</tt>, <tt>render()</tt>, and <tt>onUnload</tt>. More details can be found in the <a href="?page=Fundamentals.Pages">page</a> section.</li>
+  <li>Control lifecycles - Like pages, controls also have lifecycles. Each control undergoes the following lifecycles in order: constructor, <tt>onInit()</tt>, <tt>onLoad()</tt>, <tt>onPreRender()</tt>, <tt>render()</tt>, and <tt>onUnload</tt>. More details can be found in the <a href="?page=Fundamentals.Pages">page</a> section.</li>
 </ul>
 
 <h3 id="5408">Extending <tt>TWebControl</tt></h3>

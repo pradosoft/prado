@@ -14,11 +14,11 @@ class Wizard5TestCase extends SeleniumTestCase
 		$this->verifyVisible('ctl0_body_Wizard1_SideBarList_ctl1_SideBarButton');
 		$this->verifyAttribute('ctl0_body_Wizard1_SideBarList_ctl2_SideBarButton@disabled','regexp:true|disabled');
 		$this->select('ctl0_body_Wizard1_DropDownList1', "label=Cyan");
-		$this->clickAndWait('ctl0$body$Wizard1$ctl6$ctl0');
+		$this->clickAndWait('ctl0$body$Wizard1$ctl4$ctl0');
 
 		// step 2
 		$this->select('ctl0_body_Wizard1_Step2_DropDownList2','label=Football');
-		$this->clickAndWait('ctl0$body$Wizard1$ctl8$ctl0');
+		$this->clickAndWait('ctl0$body$Wizard1$ctl6$ctl0');
 
 		// step 1
 		$this->verifySelected('ctl0_body_Wizard1_DropDownList1','label=Cyan');
@@ -26,7 +26,7 @@ class Wizard5TestCase extends SeleniumTestCase
 
 		// step 2
 		$this->verifySelected('ctl0_body_Wizard1_Step2_DropDownList2','label=Football');
-		$this->clickAndWait('ctl0$body$Wizard1$ctl8$ctl1');
+		$this->clickAndWait('ctl0$body$Wizard1$ctl6$ctl1');
 
 		// step 3
 		$this->verifyTextPresent('Your favorite color is: Cyan');

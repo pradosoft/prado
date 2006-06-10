@@ -24,7 +24,8 @@ class CommentPortlet extends Portlet
 	public function onLoad($param)
 	{
 		parent::onLoad($param);
-		$comments=$this->Application->getModule('data')->queryComments('','ORDER BY create_time DESC','LIMIT 10');
+		$commentLimit=TPropertyValue::ensureInteger($this->Application->Parameters['RecentComments']);
+		$comments=$this->Application->getModule('data')->queryComments('','ORDER BY create_time DESC',"LIMIT $commentLimit");
 		foreach($comments as $comment)
 		{
 			$comment->ID=$this->Service->constructUrl('Posts.ViewPost',array('id'=>$comment->PostID)).'#c'.$comment->ID;

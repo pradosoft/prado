@@ -695,7 +695,7 @@ class TPageConfiguration extends TComponent
 					$ps=explode(',',$pages);
 					foreach($ps as $p)
 					{
-						if($page===trim($p))
+						if(strcasecmp($page,trim($p))===0)
 						{
 							$ruleApplies=true;
 							break;
@@ -719,7 +719,7 @@ class TPageConfiguration extends TComponent
 					$properties=$node->getAttributes();
 					if(($id=$properties->itemAt('id'))===null)
 						throw new TConfigurationException('pageserviceconf_page_invalid',$configPath);
-					if($id===$page)
+					if(strcasecmp($id,$page)===0)
 						$this->_properties=array_merge($this->_properties,$properties->toArray());
 				}
 			}

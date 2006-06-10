@@ -14,6 +14,10 @@ version B between A and C, you need to following the instructions
 for both A and B.
 
 
+Upgrading from v3.0.1
+---------------------
+
+
 Upgrading from v3.0.0
 ---------------------
 - URL format is modified when THttpRequest.UrlFormat=='Path'.

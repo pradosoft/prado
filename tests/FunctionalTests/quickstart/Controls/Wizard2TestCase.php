@@ -14,7 +14,7 @@ class Wizard2TestCase extends SeleniumTestCase
 		$this->verifyVisible('ctl0_body_Wizard1_SideBarList_ctl0_SideBarButton');
 		$this->verifyAttribute('ctl0_body_Wizard1_SideBarList_ctl1_SideBarButton@disabled','regexp:true|disabled');
 		$this->select('ctl0$body$Wizard1$DropDownList1', "label=Blue");
-		$this->clickAndWait('ctl0$body$Wizard1$ctl8$ctl1');
+		$this->clickAndWait('ctl0$body$Wizard1$ctl6$ctl1');
 
 		// step 2
 		$this->verifyTextPresent('Your favorite color is: Blue');

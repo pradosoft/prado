@@ -23,10 +23,10 @@ div=document.createElement("div");div.className="calendarFooter";this._calDiv.ap
 this.iePopUp.scrolling="no"
 this.iePopUp.frameBorder="0"
 document.body.appendChild(this.iePopUp);}
-document.body.appendChild(this._calDiv);this.update();this.updateHeader();this.ieHack(true);previousMonth.hideFocus=true;nextMonth.hideFocus=true;todayButton.hideFocus=true;Event.observe(previousMonth,"click",this.prevMonth.bindEvent(this));Event.observe(nextMonth,"click",this.nextMonth.bindEvent(this));Event.observe(todayButton,"click",this.selectToday.bindEvent(this));Event.observe(this._monthSelect,"change",this.monthSelect.bindEvent(this));Event.observe(this._yearSelect,"change",this.yearSelect.bindEvent(this));Event.observe(this._calDiv,"mousewheel",this.mouseWheelChange.bindEvent(this));Event.observe(calendarBody,"click",this.selectDate.bindEvent(this));Event.observe(this.control,"blur",this.hide.bind(this));Prado.Element.focus(this.control);},ieHack:function(cleanup)
+document.body.appendChild(this._calDiv);this.update();this.updateHeader();this.ieHack(true);previousMonth.hideFocus=true;nextMonth.hideFocus=true;todayButton.hideFocus=true;Event.observe(previousMonth,"click",this.prevMonth.bindEvent(this));Event.observe(nextMonth,"click",this.nextMonth.bindEvent(this));Event.observe(todayButton,"click",this.selectToday.bindEvent(this));Event.observe(this._monthSelect,"change",this.monthSelect.bindEvent(this));Event.observe(this._yearSelect,"change",this.yearSelect.bindEvent(this));Event.observe(this._calDiv,"mousewheel",this.mouseWheelChange.bindEvent(this));Event.observe(calendarBody,"click",this.selectDate.bindEvent(this));Prado.Element.focus(this.control);},ieHack:function(cleanup)
 {if(this.iePopUp)
 {this.iePopUp.style.display="block";this.iePopUp.style.top=(this._calDiv.offsetTop-1)+"px";this.iePopUp.style.left=(this._calDiv.offsetLeft-1)+"px";this.iePopUp.style.width=Math.abs(this._calDiv.offsetWidth-2)+"px";this.iePopUp.style.height=(this._calDiv.offsetHeight+1)+"px";if(cleanup)this.iePopUp.style.display="none";}},keyPressed:function(ev)
-{if(!this.showing)return;if(!ev)ev=document.parentWindow.event;var kc=ev.keyCode!=null?ev.keyCode:ev.charCode;if(kc==Event.KEY_RETURN||kc==Event.KEY_SPACEBAR)
+{if(!this.showing)return;if(!ev)ev=document.parentWindow.event;var kc=ev.keyCode!=null?ev.keyCode:ev.charCode;if(kc==Event.KEY_RETURN||kc==Event.KEY_SPACEBAR||kc==Event.KEY_TAB)
 {this.setSelectedDate(this.selectedDate);Event.stop(ev);this.hide();}
 if(kc==Event.KEY_ESC)
 {Event.stop(ev);this.hide();}
@@ -110,7 +110,8 @@ for(i=1;i<=monthLength;i++,index++){var slot=this.dateSlot[index];var slotNode=s
 if(d1.toISODate()==selected){slotNode.className+=" selected";}
 d1=new Date(d1.getFullYear(),d1.getMonth(),d1.getDate()+1);}
 var lastDateIndex=index;while(index<42){this.dateSlot[index].value=-1;this.dateSlot[index].data.data=String.fromCharCode(160);this.dateSlot[index].data.parentNode.className="empty";++index;}},hover:function(ev)
+{if(Event.element(ev).tagName)
 {if(ev.type=="mouseover")
 Event.element(ev).addClassName("hover");else
-Event.element(ev).removeClassName("hover");},updateHeader:function(){var options=this._monthSelect.options;var m=this.selectedDate.getMonth();for(var i=0;i<options.length;++i){options[i].selected=false;if(options[i].value==m){options[i].selected=true;}}
+Event.element(ev).removeClassName("hover");}},updateHeader:function(){var options=this._monthSelect.options;var m=this.selectedDate.getMonth();for(var i=0;i<options.length;++i){options[i].selected=false;if(options[i].value==m){options[i].selected=true;}}
 options=this._yearSelect.options;var year=this.selectedDate.getFullYear();for(var i=0;i<options.length;++i){options[i].selected=false;if(options[i].value==year){options[i].selected=true;}}}};

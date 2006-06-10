@@ -85,18 +85,18 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler, IButtonC
 		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');
 	}
-	
+
 	/**
 	 * Renders the client-script code.
 	 */
 	protected function renderClientControlScript($writer)
 	{
 		//create unique no-op url references
-		$nop = "#".$this->getClientID();
+		$nop = "javascript:;//".$this->getClientID();
 		$writer->addAttribute('href', $nop);
-		$cs = $this->getPage()->getClientScript(); 
+		$cs = $this->getPage()->getClientScript();
 		$cs->registerPostBackControl(get_class($this),$this->getPostBackOptions());
-	}	
+	}
 
 	/**
 	 * Returns postback specifications for the button.

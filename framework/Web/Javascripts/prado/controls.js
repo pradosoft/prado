@@ -61,6 +61,7 @@ Prado.WebUI.PostBackControl.prototype =
 		var src = Event.element(event);
 		var doPostBack = true;
 		var onclicked = null;
+
 		if(this._elementOnClick)
 		{
 			var onclicked = this._elementOnClick(event);
