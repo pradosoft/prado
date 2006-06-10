@@ -137,7 +137,7 @@ class TAuthorizationRule extends TComponent
 	}
 
 	/**
-	 * @var boolean if this rule applies to everyone
+	 * @return boolean if this rule applies to everyone
 	 */
 	public function getEveryoneApplied()
 	{
