@@ -31,8 +31,8 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  * type before the comparison operation is performed. The following value types are supported:
  * - <b>Integer</b> A 32-bit signed integer data type.
  * - <b>Float</b> A double-precision floating point number data type.
- * - <b>Date</b> A date data type. The format can be specified by the 
- * {@link setDateFormat DateFormat} property 
+ * - <b>Date</b> A date data type. The format can be specified by the
+ * {@link setDateFormat DateFormat} property
  * - <b>String</b> A string data type.
  *
  * Use the {@link setOperator Operator} property to specify the type of comparison
@@ -46,6 +46,16 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  */
 class TCompareValidator extends TBaseValidator
 {
+	/**
+	 * Gets the name of the javascript class responsible for performing validation for this control.
+	 * This method overrides the parent implementation.
+	 * @return string the javascript class name
+	 */
+	protected function getClientClassName()
+	{
+		return 'Prado.WebUI.TCompareValidator';
+	}
+
 	/**
 	 * @return string the data type that the values being compared are converted to before the comparison is made. Defaults to String.
 	 */

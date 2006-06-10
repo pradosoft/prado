@@ -39,6 +39,16 @@ class TDropDownList extends TListControl implements IPostBackDataHandler, IValid
 	}
 
 	/**
+	 * Gets the name of the javascript class responsible for performing postback for this control.
+	 * This method overrides the parent implementation.
+	 * @return string the javascript class name
+	 */
+	protected function getClientClassName()
+	{
+		return 'Prado.WebUI.TDropDownList';
+	}
+
+	/**
 	 * Loads user input data.
 	 * This method is primarly used by framework developers.
 	 * @param string the key that can be used to retrieve data from the input data collection

@@ -115,12 +115,19 @@ abstract class TListControl extends TDataBoundControl
 		if($this->getEnabled(true) && $this->getAutoPostBack() && $page->getClientSupportsJavaScript())
 		{
 			$writer->addAttribute('id',$this->getClientID());
-			$this->getPage()->getClientScript()->registerPostBackControl('Prado.WebUI.'.get_class($this),$this->getPostBackOptions());
+			$this->getPage()->getClientScript()->registerPostBackControl($this->getClientClassName(),$this->getPostBackOptions());
 		}
 		if(!$this->getEnabled(true) && $this->getEnabled())
 			$writer->addAttribute('disabled','disabled');
 		parent::addAttributesToRender($writer);
 	}
+
+	/**
+	 * Gets the name of the javascript class responsible for performing postback for this control.
+	 * This method overrides the parent implementation.
+	 * @return string the javascript class name
+	 */
+	abstract protected function getClientClassName();
 
 	/**
 	 * @return array postback options for JS postback code

@@ -84,6 +84,16 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 	}
 
 	/**
+	 * Gets the name of the javascript class responsible for performing postback for this control.
+	 * This method overrides the parent implementation.
+	 * @return string the javascript class name
+	 */
+	protected function getClientClassName()
+	{
+		return 'Prado.WebUI.TBulletedList';
+	}
+
+	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This overrides the parent implementation with additional bulleted list specific attributes.
 	 * @param THtmlWriter the writer used for the rendering purpose

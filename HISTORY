@@ -1,5 +1,6 @@
 Version 3.0.2 July 2, 2006
 ==========================
+BUG: Ticket#182 - List and validator controls cause problem in child classes (Qiang)
 BUG: Ticket#213 - PRADO Requirements Checker charset error (Qiang)
 CHG: ensureChildControls() is now invoked in TControl::initRecursive (Qiang)
 

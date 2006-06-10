@@ -37,6 +37,16 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
 class TDataTypeValidator extends TBaseValidator
 {
 	/**
+	 * Gets the name of the javascript class responsible for performing validation for this control.
+	 * This method overrides the parent implementation.
+	 * @return string the javascript class name
+	 */
+	protected function getClientClassName()
+	{
+		return 'Prado.WebUI.TDataTypeValidator';
+	}
+
+	/**
 	 * @return string the data type that the values being compared are converted to before the comparison is made. Defaults to String.
 	 */
 	public function getDataType()
