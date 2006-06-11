@@ -877,11 +877,7 @@ class TPage extends TTemplateControl
 			throw new TConfigurationException('page_form_duplicated');
 		$this->_formRendered=true;
 		$this->_inFormRender=true;
-		$cs=$this->getClientScript();
-		$cs->registerHiddenField(self::FIELD_PAGESTATE,$this->getClientState());
-		//$cs->renderHiddenFields($writer);
-		//$cs->renderScriptFiles($writer);
-		$cs->renderBeginScripts($writer);
+		$this->getClientScript()->registerHiddenField(self::FIELD_PAGESTATE,$this->getClientState());
 	}
 
 	/**
@@ -889,25 +885,16 @@ class TPage extends TTemplateControl
 	 */
 	public function endFormRender($writer)
 	{
-		$cs=$this->getClientScript();
-		if($this->getClientSupportsJavaScript())
+		if($this->_focus)
 		{
-			if($this->_focus)
-			{
-				if(($this->_focus instanceof TControl) && $this->_focus->getVisible(true))
-					$focus=$this->_focus->getClientID();
-				else
-					$focus=$this->_focus;
-				$cs->registerFocusControl($focus);
-			}
-			else if($this->_postData && ($lastFocus=$this->_postData->itemAt(self::FIELD_LASTFOCUS))!==null)
-				$cs->registerFocusControl($lastFocus);
-			$cs->renderHiddenFields($writer);
-			$cs->renderScriptFiles($writer);
-			$cs->renderEndScripts($writer);
+			if(($this->_focus instanceof TControl) && $this->_focus->getVisible(true))
+				$focus=$this->_focus->getClientID();
+			else
+				$focus=$this->_focus;
+			$this->getClientScript()->registerFocusControl($focus);
 		}
-		else
-			$cs->renderHiddenFields($writer);
+		else if($this->_postData && ($lastFocus=$this->_postData->itemAt(self::FIELD_LASTFOCUS))!==null)
+			$cs->registerFocusControl($lastFocus);
 		$this->_inFormRender=false;
 	}
 
@@ -1087,6 +1074,27 @@ class TPage extends TTemplateControl
 		$this->_pagePath=$value;
 	}
 
+	/**
+	 * Registers an action associated with the content being cached.
+	 * The registered action will be replayed if the content stored
+	 * in the cache is served to end-users.
+	 * @param string context of the action method. This is a property-path
+	 * referring to the context object (e.g. Page, Page.ClientScript).
+	 * @param string method name of the context object
+	 * @param array list of parameters to be passed to the action method
+	 */
+	public function registerCachingAction($context,$funcName,$funcParams)
+	{
+		if($this->_cachingStack)
+		{
+			foreach($this->_cachingStack as $cache)
+				$cache->registerAction($context,$funcName,$funcParams);
+		}
+	}
+
+	/**
+	 * @return TStack stack of {@link TOutputCache} objects
+	 */
 	public function getCachingStack()
 	{
 		if(!$this->_cachingStack)

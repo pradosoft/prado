@@ -116,14 +116,20 @@ abstract class TListControl extends TDataBoundControl
 		if($this->getEnabled(true))
 		{
 			if($this->getAutoPostBack() && $page->getClientSupportsJavaScript())
-			{
-				$writer->addAttribute('id',$this->getClientID());
-				$this->getPage()->getClientScript()->registerPostBackControl($this->getClientClassName(),$this->getPostBackOptions());
-			}
+				$this->renderClientControlScript($writer);
 		}
 		else if($this->getEnabled())
 			$writer->addAttribute('disabled','disabled');
 		parent::addAttributesToRender($writer);
+	}
+
+	/**
+	 * Renders the javascript for list control.
+	 */
+	protected function renderClientControlScript($writer)
+	{
+		$writer->addAttribute('id',$this->getClientID());
+		$this->getPage()->getClientScript()->registerPostBackControl($this->getClientClassName(),$this->getPostBackOptions());
 	}
 
 	/**

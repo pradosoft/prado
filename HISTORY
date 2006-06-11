@@ -1,6 +1,7 @@
 Version 3.1.0 To be released
 ============================
 BUG: Ticket#188 - Postback js caused controls not inheritable (Qiang)
+ENH: Ticket#180, #222 - Prado js files are not rendered at the beginning of the form (Qiang)
 ENH: Ticket#99 - TXmlTransform control (Knut)
 ENH: Ticket#117 - added support to configure subproperties in a group. (Qiang)
 NEW: TOutputCache (Qiang)

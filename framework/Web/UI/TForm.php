@@ -70,12 +70,33 @@ class TForm extends TControl
 	 */
 	public function render($writer)
 	{
-		$this->addAttributesToRender($writer);
-		$writer->renderBeginTag('form');
 		$page=$this->getPage();
 		$page->beginFormRender($writer);
-		$this->renderChildren($writer);
+		$textWriter=new TTextWriter;
+		$this->renderChildren(new THtmlWriter($textWriter));
+		$content=$textWriter->flush();
 		$page->endFormRender($writer);
+
+		$this->addAttributesToRender($writer);
+		$writer->renderBeginTag('form');
+
+		if($page->getClientSupportsJavaScript())
+		{
+			$cs=$page->getClientScript();
+			$cs->renderHiddenFields($writer);
+			$cs->renderScriptFiles($writer);
+			$cs->renderBeginScripts($writer);
+
+			$writer->write($content);
+
+			$cs->renderEndScripts($writer);
+		}
+		else
+		{
+			$cs->renderHiddenFields($writer);
+			$writer->write($content);
+		}
+
 		$writer->renderEndTag();
 	}
 

@@ -72,9 +72,9 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	private $_registeredPradoScripts=array();
 	/**
-	 * @var array registered PRADO script files
+	 * @var array published PRADO script files
 	 */
-	private $_registeredPradoFiles=array();
+	private $_publishedPradoFiles=array();
 	/**
 	 * Client-side javascript library dependencies
 	 * @var array
@@ -119,24 +119,24 @@ class TClientScriptManager extends TApplicationComponent
 		$this->registerPradoScriptInternal($name);
 
 		$params=func_get_args();
-		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('Page.ClientScript','registerPradoScript',$params);
+		$this->_page->registerCachingAction('Page.ClientScript','registerPradoScript',$params);
 	}
 
 	private function registerPradoScriptInternal($name)
 	{
 		if(!isset($this->_registeredPradoScripts[$name]))
 		{
-			$this->_registeredPradoScripts[$name]=true;
-			if(!isset(self::$_pradoScripts[$name]))
+			if(isset(self::$_pradoScripts[$name]))
+				$this->_registeredPradoScripts[$name]=true;
+			else
 				throw new TInvalidOperationException('csmanager_pradoscript_invalid',$name);
 			$basePath=Prado::getFrameworkPath().'/'.self::SCRIPT_PATH;
 			foreach(self::$_pradoScripts[$name] as $script)
 			{
-				if(!isset($this->_registeredPradoFiles[$script]))
+				if(!isset($this->_publishedPradoFiles[$script]))
 				{
 					$this->publishFilePath($basePath.'/'.$script.'.js');
-					$this->_registeredPradoFiles[$script]=false;
+					$this->_publishedPradoFiles[$script]=true;
 				}
 			}
 		}
@@ -144,15 +144,7 @@ class TClientScriptManager extends TApplicationComponent
 
 	protected function renderPradoScripts($writer)
 	{
-		$files='';
-		foreach($this->_registeredPradoFiles as $file=>$rendered)
-		{
-			if(!$rendered)
-			{
-				$files.=','.$file;
-				$this->_registeredPradoFiles[$file]=true;
-			}
-		}
+		$files=implode(',',array_keys($this->_publishedPradoFiles));
 		if($files!=='')
 		{
 			$basePath=Prado::getFrameworkPath().'/'.self::SCRIPT_PATH;
@@ -189,8 +181,7 @@ class TClientScriptManager extends TApplicationComponent
 		$this->registerPradoScriptInternal('ajax');
 
 		$params=func_get_args();
-		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('Page.ClientScript','registerCallbackControl',$params);
+		$this->_page->registerCachingAction('Page.ClientScript','registerCallbackControl',$params);
 	}
 
 	/**
@@ -211,8 +202,7 @@ class TClientScriptManager extends TApplicationComponent
 		$this->registerPradoScriptInternal('prado');
 
 		$params=func_get_args();
-		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('Page.ClientScript','registerPostBackControl',$params);
+		$this->_page->registerCachingAction('Page.ClientScript','registerPostBackControl',$params);
 	}
 
 	/**
@@ -230,8 +220,7 @@ class TClientScriptManager extends TApplicationComponent
 		$this->registerPradoScriptInternal('prado');
 
 		$params=func_get_args();
-		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('Page.ClientScript','registerDefaultButton',$params);
+		$this->_page->registerCachingAction('Page.ClientScript','registerDefaultButton',$params);
 	}
 
 	/**
@@ -244,8 +233,7 @@ class TClientScriptManager extends TApplicationComponent
 		$this->_endScripts['prado:focus']='Prado.Focus.setFocus("'.TJavaScript::quoteString($target).'");';
 
 		$params=func_get_args();
-		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('Page.ClientScript','registerFocusControl',$params);
+		$this->_page->registerCachingAction('Page.ClientScript','registerFocusControl',$params);
 	}
 
 	/**
@@ -271,8 +259,7 @@ class TClientScriptManager extends TApplicationComponent
 		$this->_styleSheetFiles[$key]=$url;
 
 		$params=func_get_args();
-		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('Page.ClientScript','registerStyleSheetFile',$params);
+		$this->_page->registerCachingAction('Page.ClientScript','registerStyleSheetFile',$params);
 	}
 
 	/**
@@ -285,8 +272,7 @@ class TClientScriptManager extends TApplicationComponent
 		$this->_styleSheets[$key]=$css;
 
 		$params=func_get_args();
-		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('Page.ClientScript','registerStyleSheet',$params);
+		$this->_page->registerCachingAction('Page.ClientScript','registerStyleSheet',$params);
 	}
 
 	/**
@@ -299,8 +285,7 @@ class TClientScriptManager extends TApplicationComponent
 		$this->_headScriptFiles[$key]=$url;
 
 		$params=func_get_args();
-		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('Page.ClientScript','registerHeadScriptFile',$params);
+		$this->_page->registerCachingAction('Page.ClientScript','registerHeadScriptFile',$params);
 	}
 
 	/**
@@ -313,8 +298,7 @@ class TClientScriptManager extends TApplicationComponent
 		$this->_headScripts[$key]=$script;
 
 		$params=func_get_args();
-		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('Page.ClientScript','registerHeadScript',$params);
+		$this->_page->registerCachingAction('Page.ClientScript','registerHeadScript',$params);
 	}
 
 	/**
@@ -327,8 +311,7 @@ class TClientScriptManager extends TApplicationComponent
 		$this->_scriptFiles[$key]=$url;
 
 		$params=func_get_args();
-		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('Page.ClientScript','registerScriptFile',$params);
+		$this->_page->registerCachingAction('Page.ClientScript','registerScriptFile',$params);
 	}
 
 	/**
@@ -341,8 +324,7 @@ class TClientScriptManager extends TApplicationComponent
 		$this->_beginScripts[$key]=$script;
 
 		$params=func_get_args();
-		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('Page.ClientScript','registerBeginScript',$params);
+		$this->_page->registerCachingAction('Page.ClientScript','registerBeginScript',$params);
 	}
 
 	/**
@@ -355,8 +337,7 @@ class TClientScriptManager extends TApplicationComponent
 		$this->_endScripts[$key]=$script;
 
 		$params=func_get_args();
-		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('Page.ClientScript','registerEndScript',$params);
+		$this->_page->registerCachingAction('Page.ClientScript','registerEndScript',$params);
 	}
 
 	/**
@@ -370,8 +351,7 @@ class TClientScriptManager extends TApplicationComponent
 		$this->_hiddenFields[$name]=$value;
 
 		$params=func_get_args();
-		foreach($this->_page->getCachingStack() as $item)
-			$item->registerAction('Page.ClientScript','registerHiddenField',$params);
+		$this->_page->registerCachingAction('Page.ClientScript','registerHiddenField',$params);
 	}
 
 	/**
@@ -488,17 +468,8 @@ class TClientScriptManager extends TApplicationComponent
 	public function renderScriptFiles($writer)
 	{
 		$this->renderPradoScripts($writer);
-		$files=array();
-		foreach($this->_scriptFiles as $key=>$file)
-		{
-			if($file!==true)
-			{
-				$files[]=$file;
-				$this->_scriptFiles[$key]=true;
-			}
-		}
-		if(!empty($files))
-			$writer->write(TJavaScript::renderScriptFiles($files));
+		if(!empty($this->_scriptFiles))
+			$writer->write(TJavaScript::renderScriptFiles($this->_scriptFiles));
 	}
 
 	/**
@@ -525,20 +496,14 @@ class TClientScriptManager extends TApplicationComponent
 		$str='';
 		foreach($this->_hiddenFields as $name=>$value)
 		{
-			if($value!==true)
+			if(is_array($value))
 			{
-				if(is_array($value))
-				{
-					foreach($value as $v)
-						$str.='<input type="hidden" name="'.$name.'[]" id="'.$name.'" value="'.THttpUtility::htmlEncode($value)."\" />\n";
-				}
-				else
-				{
-					$str.='<input type="hidden" name="'.$name.'" id="'.$name.'" value="'.THttpUtility::htmlEncode($value)."\" />\n";
-				}
-				// set hidden field value to true to indicate this field is rendered
-				// Note, hidden field rendering is invoked twice (at the beginning and ending of TForm)
-				$this->_hiddenFields[$name]=true;
+				foreach($value as $v)
+					$str.='<input type="hidden" name="'.$name.'[]" id="'.$name.'" value="'.THttpUtility::htmlEncode($value)."\" />\n";
+			}
+			else
+			{
+				$str.='<input type="hidden" name="'.$name.'" id="'.$name.'" value="'.THttpUtility::htmlEncode($value)."\" />\n";
 			}
 		}
 		if($str!=='')
