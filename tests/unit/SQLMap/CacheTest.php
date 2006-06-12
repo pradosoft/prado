@@ -96,7 +96,7 @@ class CacheTest extends BaseTest
 	protected function 	getCacheModel() 
 	{
 		$cache = new TSqlMapCacheModel();
-		$cache->setFlushInterval(5*60);
+	//	$cache->setFlushInterval(5*60);
 		$cache->setImplementation('LRU');
 		$cache->initialize($this->sqlmap);
 		return $cache;

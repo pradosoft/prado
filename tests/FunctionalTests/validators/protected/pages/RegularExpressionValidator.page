@@ -14,6 +14,7 @@
 			ID="validator2"
 			ControlToValidate="text2"
 			ErrorMessage="Email Address!"
+			CheckMXRecord="false"
 			ControlCssClass="required" />
 	</div>
 	<com:TButton ID="submit1" Text="Test" />

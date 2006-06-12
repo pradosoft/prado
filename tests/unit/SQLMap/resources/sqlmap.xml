@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <sqlMapConfig>
 
-	<provider class="TAdodbProvider">
+	<provider class="TAdodb">
 		<datasource driver="sqlite" host="resources/test.db" />
 	</provider>
 

@@ -113,6 +113,10 @@ $libraries = array(
 		'extra/logger.js',
 	),
 
+	'containers.js' => array(
+		'effects/dragdrop.js',
+	),
+
 	//rico
 	'rico.js' => array(
 		'rico/rico.js',

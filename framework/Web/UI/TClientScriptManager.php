@@ -122,6 +122,9 @@ class TClientScriptManager extends TApplicationComponent
 		$this->_page->registerCachingAction('Page.ClientScript','registerPradoScript',$params);
 	}
 
+	/**
+	 * Registers a prado javascript library to be loaded.
+	 */
 	private function registerPradoScriptInternal($name)
 	{
 		if(!isset($this->_registeredPradoScripts[$name]))
@@ -142,6 +145,10 @@ class TClientScriptManager extends TApplicationComponent
 		}
 	}
 
+	/** 
+	 * Renders the <script> tag that will load the javascript library files.
+	 * @param THtmlWriter writer that renders the <script> tag.
+	 */
 	protected function renderPradoScripts($writer)
 	{
 		$files=implode(',',array_keys($this->_publishedPradoFiles));
@@ -156,6 +163,12 @@ class TClientScriptManager extends TApplicationComponent
 		}
 	}
 
+	/** 
+	 * Returns javascript statement that create a new callback request object.
+	 * @param ICallbackEventHandler callback response handler
+	 * @param array additional callback options
+	 * @return string javascript statement that creates a new callback request.
+	 */
 	public function getCallbackReference(ICallbackEventHandler $callbackHandler, $options=null)
 	{
 		$options = !is_array($options) ? array() : $options;
@@ -176,7 +189,7 @@ class TClientScriptManager extends TApplicationComponent
 	public function registerCallbackControl($class, $options)
 	{
 		$optionString=TJavaScript::encode($options);
-		$code="new Prado.WebUI.{$class}({$optionString});";
+		$code="new {$class}({$optionString});";
 		$this->_endScripts[sprintf('%08X', crc32($code))]=$code;
 		$this->registerPradoScriptInternal('ajax');
 

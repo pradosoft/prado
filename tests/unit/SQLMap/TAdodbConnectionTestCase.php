@@ -1,11 +1,13 @@
 <?php
 
-require_once(SQLMAP_DIR.'/TMapper.php');
+require_once dirname(__FILE__).'/../phpunit2.php';
+
+require_once(dirname(__FILE__).'/common.php');
 
 /**
  * @package System.DataAccess
  */
-class TAdodbConnectionTestCase extends UnitTestCase
+class TAdodbConnectionTestCase extends PHPUnit2_Framework_TestCase
 {
 	protected $db_file;
 
@@ -15,7 +17,6 @@ class TAdodbConnectionTestCase extends UnitTestCase
 		$this->db_file = dirname(__FILE__).'/resources/test.db';
 		copy($file,$this->db_file);
 		$provider = new TAdodb();
-		$provider->importAdodbLibrary();
 	}
 
 	function getDsn()

@@ -302,6 +302,9 @@ queue_data_not_iterable					= TQueue can only fetch data from an array or a trav
 queue_empty								= TQueue is empty.
 
 callback_not_support_no_priority_state_update	= Callback request does not support unprioritized pagestate update.
+callback_invalid_callback_options		= '{1}' is not a valid TCallbackOptions control for Callback control '{0}'.
+callback_invalid_clientside_options		= Callback ClientSide property must be either a string that is the ID of a TCallbackOptions control or an instance of TCallbackClientSideOptions.=======
+callback_not_support_no_priority_state_update	= Callback request does not support unprioritized pagestate update.
 
 xmltransform_xslextension_required = TXmlTransform require the PHP's XSL extension
 xmltransform_transformpath_invalid = TransformPath '{0}' is invalid.

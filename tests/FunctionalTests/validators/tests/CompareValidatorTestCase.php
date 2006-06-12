@@ -21,7 +21,6 @@ class CompareValidatorTestCase extends SeleniumTestCase
 		$this->assertVisible("{$base}validator1");
 
 		$this->type("{$base}text2", "qwe");
-		$this->assertNotVisible("{$base}validator1");
 		$this->clickAndWait("//input[@type='submit' and @value='Test']", "");
 		$this->assertNotVisible("{$base}validator1");
 		$this->assertNotVisible("{$base}validator2");

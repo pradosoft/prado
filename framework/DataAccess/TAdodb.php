@@ -143,6 +143,7 @@ class TAdodb extends TDatabaseProvider
 	 */
 	public function getConnection()
 	{
+		$this->init(null);
 		return $this->_connection;
 	}
 	
@@ -303,9 +304,10 @@ class TAdodbConnection extends TDbConnection
 	 */
 	public function __construct($provider=null)
 	{
-		parent::__construct($provider);
 		if(is_string($provider))
 			$this->initProvider($provider);
+		else
+			parent::__construct($provider);
 	}
 
 	/**
@@ -329,7 +331,6 @@ class TAdodbConnection extends TDbConnection
 		//close any open connections before serializing.
 		$this->close();
 		$this->_connection = null;
-		return array_keys(get_object_vars($this));
 	}
 
 	/**

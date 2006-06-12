@@ -9,7 +9,7 @@
 	</settings>
 	
 	<!-- ==== Database configuration =========	-->
-	<provider class="TAdodbProvider" >
+	<provider class="TAdodb" >
 		<datasource driver="sqlite" database="sqlite/tests.db" />
 	</provider>
 		

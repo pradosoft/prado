@@ -111,6 +111,7 @@ class TConfigDeserialize
 			$property->initialize($sqlMap, $resultMap);
 			$resultMap->addResultProperty($property);
 		}
+		
 		$discriminator = null;
 		if(isset($node->discriminator))
 		{
@@ -118,18 +119,24 @@ class TConfigDeserialize
 			$this->loadConfiguration($discriminator, $node->discriminator, $file);
 			$discriminator->initMapping($sqlMap, $resultMap);
 		}
+		
+		
+	
 		foreach($node->subMap as $subMapNode)
 		{
-			if(is_null($discriminator))
-				throw new TSqlMapConfigurationException(
-					'sqlmap_undefined_discriminator', $resultMap->getID(), $file);
-			$subMap = new TSubMap;
-			$this->loadConfiguration($subMap, $subMapNode, $file);
-			$discriminator->add($subMap);
+			if(isset($subMapNode['value']))
+			{
+				if(is_null($discriminator))
+					throw new TSqlMapConfigurationException(
+						'sqlmap_undefined_discriminator', $resultMap->getID(), $file);
+		
+						$subMap = new TSubMap;
+						$this->loadConfiguration($subMap, $subMapNode, $file);
+						$discriminator->add($subMap);
+			}
 		}
 		if(!is_null($discriminator))
 			$resultMap->setDiscriminator($discriminator);
-
 		return $resultMap;
 	}
 

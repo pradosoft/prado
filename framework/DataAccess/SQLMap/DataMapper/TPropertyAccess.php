@@ -39,7 +39,7 @@ class TPropertyAccess
 	 */
 	public static function get($object,$path)
 	{
-		if(!is_array($object) && !is_object($object))
+		if(!is_array($object) || !is_object($object))
 			return $object;
 		$properties = explode('.', $path);
 		foreach($properties as $prop)
@@ -67,6 +67,34 @@ class TPropertyAccess
 		return $object;
 	}
 
+	public static function has($object, $path)
+	{
+		if(!is_array($object) || !is_object($object))
+			return false;
+		$properties = explode('.', $path);
+		foreach($properties as $prop)
+		{	
+			if(is_array($object) || $object instanceof ArrayAccess)
+			{
+				if(isset($object[$prop]))
+					$object = $object[$prop];
+				else
+					return false;
+			}
+			else if(is_object($object))
+			{
+				$getter = 'get'.$prop;
+				if(is_callable(array($object,$getter)))
+					$object = $object->{$getter}();
+				else if(in_array($prop, array_keys(get_object_vars($object))))
+					$object = $object->{$prop};
+				return false;
+			}
+			else
+				return false;
+		}
+		return true;
+	}
 
 	public static function set($object, $path, $value)
 	{
