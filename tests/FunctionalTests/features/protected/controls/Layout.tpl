@@ -27,6 +27,7 @@
 <body>
 <com:TForm>
 <com:TContentPlaceHolder ID="Content" />
+<com:TJavascriptLogger />
 </com:TForm>
 </body>
 </html>
