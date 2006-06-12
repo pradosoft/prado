@@ -1,8 +1,10 @@
 Version 3.0.2 July 2, 2006
 ==========================
 BUG: Ticket#182 - List and validator controls cause problem in child classes (Qiang)
+BUG: Ticket#191 - Duplicated postbacks occur when using TButton with validators (Qiang)
 BUG: Ticket#213 - PRADO Requirements Checker charset error (Qiang)
 CHG: ensureChildControls() is now invoked in TControl::initRecursive (Qiang)
+CHG: Postback enabled control will always disable default client-side browser action. (Qiang)
 
 Version 3.0.1 June 4, 2006
 ==========================

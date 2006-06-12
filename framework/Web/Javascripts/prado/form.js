@@ -129,7 +129,11 @@ Prado.PostBack = function(event,options)
 
 	$('PRADO_POSTBACK_TARGET').value = options['EventTarget'];
 	$('PRADO_POSTBACK_PARAMETER').value = options['EventParameter'];
-	if(options['StopEvent']) 
+	/**
+	 * Since google toolbar prevents browser default action,
+	 * we will always disable default client-side browser action
+	 */
+	/*if(options['StopEvent']) */
 		Event.stop(event);
 	Event.fireEvent(form,"submit");
 }

@@ -16,7 +16,9 @@ for both A and B.
 
 Upgrading from v3.0.1
 ---------------------
-
+- Postback enabled control will always disable default client-side browser action.
+  This is due to google toolbar's interference of event stopping scheme.
+  This modification should only affect user-derived postback javascripts.
 
 Upgrading from v3.0.0
 ---------------------
