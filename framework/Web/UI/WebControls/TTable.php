@@ -68,11 +68,6 @@ Prado::using('System.Web.UI.WebControls.TTableRow');
 class TTable extends TWebControl
 {
 	/**
-	 * @var TTableRowCollection row collection
-	 */
-	private $_rows=null;
-
-	/**
 	 * @return string tag name for the table
 	 */
 	protected function getTagName()
