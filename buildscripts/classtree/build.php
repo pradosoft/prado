@@ -13,7 +13,7 @@ $exclusions=array(
 	);
 $a=new ClassTreeBuilder($rootPath,$exclusions);
 $a->buildTree();
-$a->saveToFile('classtree.data');
+$a->saveToFile('classes.data');
 
 class ClassTreeBuilder
 {
@@ -173,6 +173,10 @@ class ClassTreeBuilder
 		}
 		closedir($folder);
 		return $files;
+	}
+
+	public function saveAsTagLib($fileName)
+	{
 	}
 }
 

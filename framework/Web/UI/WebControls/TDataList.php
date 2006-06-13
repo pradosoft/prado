@@ -1129,10 +1129,12 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 		$hasSeparator=$this->_separatorTemplate!==null;
 		$selectedIndex=$this->getSelectedItemIndex();
 		$editIndex=$this->getEditItemIndex();
-		foreach($data as $dataItem)
+		foreach($data as $key=>$dataItem)
 		{
 			if($keyField!=='')
 				$keys->add($this->getDataFieldValue($dataItem,$keyField));
+			else
+				$keys->add($key);
 			if($itemIndex===0 && $this->_headerTemplate!==null)
 				$this->_header=$this->createItemInternal(-1,'Header',true,null);
 			if($hasSeparator && $itemIndex>0)
