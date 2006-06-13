@@ -247,8 +247,7 @@ form.action=options['PostBackUrl'];if(options['TrackFocus'])
 {var active=document.activeElement;if(active)
 lastFocus.value=active.id;else
 lastFocus.value=options['EventTarget'];}}
-$('PRADO_POSTBACK_TARGET').value=options['EventTarget'];$('PRADO_POSTBACK_PARAMETER').value=options['EventParameter'];if(options['StopEvent'])
-Event.stop(event);Event.fireEvent(form,"submit");}
+$('PRADO_POSTBACK_TARGET').value=options['EventTarget'];$('PRADO_POSTBACK_PARAMETER').value=options['EventParameter'];Event.stop(event);Event.fireEvent(form,"submit");}
 Prado.Element={setValue:function(element,value)
 {var el=$(element);if(el&&typeof(el.value)!="undefined")
 el.value=value;},select:function(element,method,value)

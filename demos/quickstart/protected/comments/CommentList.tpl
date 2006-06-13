@@ -3,7 +3,10 @@
 <com:TRepeater ID="comments">
 	<prop:HeaderTemplate>
 		<h2 class="comment_header">Comments
-			<span style="font-size:0.8em">( <a href="#add_comments">Add your comments</a> )</span></h2>
+			<com:TPlaceHolder Visible=<%$ enableNewComment %> >
+			<span style="font-size:0.8em">( <a href="#add_comments">Add your comments</a> )</span>
+			</com:TPlaceHolder>
+		</h2>
 	</prop:HeaderTemplate>
 	<prop:ItemTemplate>
 		<div class="comment_item comment_item<%# $this->ItemIndex%2 %>">
@@ -25,7 +28,7 @@
 	</prop:ItemTemplate>
 </com:TRepeater>
 
-<com:TMultiView ID="multiView1" ActiveViewIndex="0">
+<com:TMultiView ID="multiView1" ActiveViewIndex="0" Visible=<%$ enableNewComment %> >
 	<com:TView ID="view1">
 		<div id="add_comments" class="add_comments">
 			<h3>Post a comment</h3>
