@@ -77,8 +77,8 @@ class THttpResponse extends TModule implements ITextWriter
 	 */
 	public function __destruct()
 	{
-		if($this->_bufferOutput)
-			@ob_end_flush();
+		//if($this->_bufferOutput)
+		//	@ob_end_flush();
 	}
 
 	/**

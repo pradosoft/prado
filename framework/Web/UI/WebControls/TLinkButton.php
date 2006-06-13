@@ -95,7 +95,17 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler, IButtonC
 		$nop = "javascript:;//".$this->getClientID();
 		$writer->addAttribute('href', $nop);
 		$cs = $this->getPage()->getClientScript();
-		$cs->registerPostBackControl('Prado.WebUI.TLinkButton',$this->getPostBackOptions());
+		$cs->registerPostBackControl($this->getClientClassName(),$this->getPostBackOptions());
+	}
+
+	/**
+	 * Gets the name of the javascript class responsible for performing postback for this control.
+	 * This method overrides the parent implementation.
+	 * @return string the javascript class name
+	 */
+	protected function getClientClassName()
+	{
+		return 'Prado.WebUI.TLinkButton';
 	}
 
 	/**

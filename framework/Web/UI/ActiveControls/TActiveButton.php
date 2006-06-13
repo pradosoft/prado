@@ -15,7 +15,7 @@ class TActiveButton extends TButton implements ICallbackEventHandler
 		parent::__construct();
 		$this->setAdapter(new TActiveControlAdapter($this));
 	}
-	
+
 	/**
 	 * @return TBaseActiveCallbackControl base callback options.
 	 */
@@ -23,7 +23,7 @@ class TActiveButton extends TButton implements ICallbackEventHandler
 	{
 		return $this->getAdapter()->getActiveControl();
 	}
-	
+
 	/**
 	 * Raises the callback event. This method is required by {@link
 	 * ICallbackEventHandler} interface. If {@link getCausesValidation
@@ -32,7 +32,7 @@ class TActiveButton extends TButton implements ICallbackEventHandler
 	 * OnCallback} event and then the {@link onClick OnClick} event. This method
 	 * is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter the event parameter
-	 */	
+	 */
  	public function raiseCallbackEvent($param)
 	{
 		$this->raisePostBackEvent($param);
@@ -45,7 +45,7 @@ class TActiveButton extends TButton implements ICallbackEventHandler
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
 	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
-	 */		
+	 */
 	public function onCallback($param)
 	{
 		$this->raiseEvent('OnCallback', $this, $param);
@@ -58,22 +58,32 @@ class TActiveButton extends TButton implements ICallbackEventHandler
 	{
 		parent::setText($value);
 		if($this->getActiveControl()->canUpdateClientSide())
-			$this->getPage()->getCallbackClient()->setAttribute($this, 'value', $value);			
+			$this->getPage()->getCallbackClient()->setAttribute($this, 'value', $value);
 	}
-	
+
 	/**
 	 * Renders the callback control javascript statement.
 	 */
 	protected function renderClientControlScript($writer)
 	{
 	}
-	
+
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id',$this->getClientID());
-		$this->getActiveControl()->registerCallbackClientScript($this->getPostBackOptions());		
+		$this->getActiveControl()->registerCallbackClientScript($this->getPostBackOptions());
 	}
-} 
+
+	/**
+	 * Gets the name of the javascript class responsible for performing postback for this control.
+	 * This method overrides the parent implementation.
+	 * @return string the javascript class name
+	 */
+	protected function getClientClassName()
+	{
+		return 'Prado.WebUI.TActiveButton';
+	}
+}
 
 ?>

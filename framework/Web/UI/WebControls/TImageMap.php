@@ -110,7 +110,7 @@ class TImageMap extends TImage implements IPostBackEventHandler
 					$options['EventParameter']="$i";
 					$options['CausesValidation']=$hotspot->getCausesValidation();
 					$options['ValidationGroup']=$hotspot->getValidationGroup();
-					$cs->registerPostBackControl('Prado.WebUI.TImageMap',$options);
+					$cs->registerPostBackControl($this->getClientClassName(),$options);
 				}
 				$hotspot->render($writer);
 				$writer->writeLine();
@@ -118,6 +118,16 @@ class TImageMap extends TImage implements IPostBackEventHandler
 			}
 			$writer->renderEndTag();
 		}
+	}
+
+	/**
+	 * Gets the name of the javascript class responsible for performing postback for this control.
+	 * This method overrides the parent implementation.
+	 * @return string the javascript class name
+	 */
+	protected function getClientClassName()
+	{
+		return 'Prado.WebUI.TImageMap';
 	}
 
 	/**

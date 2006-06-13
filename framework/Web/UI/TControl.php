@@ -998,7 +998,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	{
 		return isset($this->_rf[self::RF_NAMED_OBJECTS][$name]);
 	}
-	
+
 	/**
 	 * @return boolean true if the control has been initialized.
 	 */
@@ -1006,7 +1006,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	{
 		return $this->getControlStage() >= self::CS_CHILD_INITIALIZED;
 	}
-	
+
 	/**
 	 * @return boolean true if the control has loaded post data.
 	 */
@@ -1250,9 +1250,9 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 						$control->evaluateDynamicContent();
 				}
 			}
-			
+
 			if($this instanceof IPostBackDataHandler)
-				$this->getPage()->registerPostDataLoader($this);					
+				$this->getPage()->registerPostDataLoader($this);
 		}
 		$this->_stage=self::CS_PRERENDERED;
 	}
@@ -1820,7 +1820,6 @@ interface IPostBackEventHandler
 	 */
 	public function raisePostBackEvent($param);
 }
-
 
 /**
  * IPostBackDataHandler interface

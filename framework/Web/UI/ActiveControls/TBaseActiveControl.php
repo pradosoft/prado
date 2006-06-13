@@ -12,30 +12,30 @@ class TBaseActiveControl extends TComponent
 		$this->_control = $control;
 		$this->_options = new TMap;
 	}
-	
+
 	protected function setOption($name,$value,$default=null)
 	{
 		$value = is_null($value) ? $default : $value;
 		if(!is_null($value))
 			$this->_options->add($name,$value);
 	}
-	
+
 	protected function getOption($name,$default=null)
 	{
 		$item = $this->_options->itemAt($name);
 		return is_null($item) ? $default : $item;
 	}
-		
+
 	protected function getPage()
 	{
 		return $this->_control->getPage();
 	}
-	
+
 	protected function getControl()
 	{
 		return $this->_control;
 	}
-		
+
 	/**
 	 * @param boolean true to allow fine grain callback updates.
 	 */
@@ -51,18 +51,18 @@ class TBaseActiveControl extends TComponent
 	{
 		return $this->getOption('EnableUpdate', true);
 	}
-	
+
 	public function canUpdateClientSide()
 	{
-		return 	$this->getControl()->getIsInitialized() 
-				&& $this->getPage()->getIsCallback() 
+		return 	$this->getControl()->getIsInitialized()
+				&& $this->getPage()->getIsCallback()
 				&& $this->getEnableUpdate();
 	}
 }
 
 
 class TBaseActiveCallbackControl extends TBaseActiveControl
-{ 
+{
 	/**
 	 * Callback client-side options can be set by setting the properties of
 	 * the ClientSide property. E.g. <com:TCallback ClientSide.OnSuccess="..." />
@@ -79,13 +79,13 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 		}
 		return $client;
 	}
-	
+
 	/**
 	 * @return TCallbackClientSideOptions callback client-side options.
 	 */
 	protected function createClientSide()
 	{
-		if(($id=$this->getCallbackOptions())!=='' 
+		if(($id=$this->getCallbackOptions())!==''
 			&& ($control=$this->getControl()->findControl($id))!==null)
 		{
 			if($control instanceof TCallbackOptions)
@@ -103,9 +103,9 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 */
 	public function setCallbackOptions($value)
 	{
-		$this->setOption('CallbackOptions', $value, '');		
+		$this->setOption('CallbackOptions', $value, '');
 	}
-	
+
 	/**
 	 * @return string ID of a TCallbackOptions control from which ClientSide
 	 * options are cloned.
@@ -131,8 +131,8 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	public function setCausesValidation($value)
 	{
 		$this->setOption('CausesValidation',TPropertyValue::ensureBoolean($value),true);
-	}	
-	
+	}
+
 	/**
 	 * @return string the group of validators which the button causes validation
 	 * upon callback
@@ -164,8 +164,8 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 		}
 		else
 			return false;
-	}	
-	
+	}
+
 	/**
 	 * @return array list of callback javascript options.
 	 */
@@ -177,15 +177,18 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 		$options['ValidationGroup']=$this->getValidationGroup();
 		return $options;
 	}
-	
+
 	public function registerCallbackClientScript($options=null)
 	{
-		$cs = $this->getPage()->getClientScript(); 
+		$cs = $this->getPage()->getClientScript();
 		if(is_array($options))
 			$options = array_merge($this->getClientSideOptions(),$options);
 		else
-			$options = $this->getClientSideOptions();			
-		$cs->registerCallbackControl(get_class($this->getControl()), $options);
+			$options = $this->getClientSideOptions();
+		// TODO (xue):
+		// We need explicitly specify what js class is to be used
+		// to avoid problem that may occur in extended child class
+		$cs->registerCallbackControl('Prado.WebUI.'.get_class($this->getControl()), $options);
 	}
 
 	/**
@@ -197,7 +200,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 */
 	public function getJavascript()
 	{
-		$client = $this->getPage()->getClientScript(); 
+		$client = $this->getPage()->getClientScript();
 		return $client->getCallbackReference($this->getControl(),$this->getClientSideOptions());
 	}
 }
