@@ -6,6 +6,7 @@ BUG: Ticket#213 - PRADO Requirements Checker charset error (Qiang)
 CHG: ensureChildControls() is now invoked in TControl::initRecursive (Qiang)
 CHG: Postback enabled control will always disable default client-side browser action. (Qiang)
 ENH: TRepeater, TDataList and TDataGrid will store data indices in DataKeys if DataKeyField is not set. (Qiang)
+ENH: Added TPageService.BasePageClass property (Qiang)
 
 Version 3.0.1 June 4, 2006
 ==========================
