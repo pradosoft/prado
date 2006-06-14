@@ -5,7 +5,7 @@
 $pdflatexExec = "C:/Wei/miktex/texmf/MiKTeX/bin/pdflatex.exe";
 $pdfTex = "$pdflatexExec -interaction=nonstopmode -max-print-line=120 %s";
 
-$mainTexFile = dirname(__FILE__).'/prado3_quick_start.tex';
+$mainTexFile = dirname(__FILE__).'/quickstart.tex';
 
 //page root location
 $base = realpath(dirname(__FILE__).'/../../demos/quickstart/protected/pages/');
@@ -244,14 +244,14 @@ foreach($pages as $chapter => $sections)
 		echo "    Adding $section\n";
 		$page = $base.'/'.$section;
 		$current_path = $page;
-		
+
 		//add id to <h1>, <h2>, <3>
 		$tmp_content = set_header_id(file_get_contents($page),$j++);
 		file_put_contents($page, $tmp_content);
-		
+
 		$content .= get_section_label($section);
 		$file_content = file_get_contents($page);
-		$tex = 
+		$tex =
 		$content .= parse_html($page,$file_content);
 	}
 
@@ -265,7 +265,7 @@ foreach($pages as $chapter => $sections)
 
 if($argc <= 1 && $count > 1)
 {
-	echo "** Use pdflatex to compile prado3_quick_start.tex to obtain PDF version of quickstart tutorial. **\n";
+	echo "** Use pdflatex to compile quickstart.tex to obtain PDF version of quickstart tutorial. **\n";
 	exit;
 }
 if($argv[1] == 'pdf')
@@ -277,7 +277,7 @@ if($argv[1] == 'pdf')
 		system($command);
 		system($command); //run it twice
 
-		echo "\n\n** PDF file prado3_quick_start.pdf created **\n\n";
+		echo "\n\n** PDF file quickstart.pdf created **\n\n";
 
 	}
 	else
