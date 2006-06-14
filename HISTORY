@@ -5,6 +5,7 @@ BUG: Ticket#191 - Duplicated postbacks occur when using TButton with validators 
 BUG: Ticket#213 - PRADO Requirements Checker charset error (Qiang)
 CHG: ensureChildControls() is now invoked in TControl::initRecursive (Qiang)
 CHG: Postback enabled control will always disable default client-side browser action. (Qiang)
+CHG: CSS and JS files in a theme are now included in page in alphabetic order (Qiang)
 ENH: TRepeater, TDataList and TDataGrid will store data indices in DataKeys if DataKeyField is not set. (Qiang)
 ENH: Added TPageService.BasePageClass property (Qiang)
 
