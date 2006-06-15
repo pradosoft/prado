@@ -59,7 +59,7 @@ class TActiveControlAdapter extends TControlAdapter
 		}
 	}
 	
-	public function getActiveControl()
+	public function getBaseActiveControl()
 	{
 		if(is_null($this->_baseActiveControl))
 		{

@@ -18,7 +18,7 @@ class TActivePanel extends TPanel
 	
 	public function getActiveControl()
 	{
-		return $this->getAdapter()->getActiveControl();
+		return $this->getAdapter()->getBaseActiveControl();
 	}
 } 
 

@@ -15,9 +15,20 @@
  *
  * The TCallback provides a basic callback handler that can be invoke from the
  * client side by running the javascript code obtained from the
- * {@link getCallbackReference CallbackReference} property. The event {@link
- * onCallback OnCallback} is raise when a callback is requested by the TCallback
- * component.
+ * {@link TBaseActiveCallbackControl::getJavascript ActiveControl.Javascript} property. 
+ * The event {@link onCallback OnCallback} is raise when a callback is requested made.
+ * 
+ * Example usage:
+ * <code>
+ * 	<com:TCallback ID="callback1" OnCallback="callback1_Requested" />
+ *  <script type="text/javascript">
+ * 		function do_callback1()
+ *      {
+ *           <%= $this->callback1->ActiveControl->Javascript %>
+ *      }
+ *  </script>
+ *  <div onclick="do_callback1()">Click Me!</div>
+ * </code>
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $Date: $
@@ -38,17 +49,17 @@ class TCallback extends TControl implements ICallbackEventHandler
 	}
 
 	/**
-	 * @return TBaseActiveCallbackControl base callback options.
+	 * @return TBaseActiveCallbackControl standard callback options.
 	 */
 	public function getActiveControl()
 	{
-		return $this->getAdapter()->getActiveControl();
+		return $this->getAdapter()->getBaseActiveControl();
 	}
 	
 	/**
 	 * Raises the callback event. This method is required by {@link
 	 * ICallbackEventHandler} interface. If {@link getCausesValidation
-	 * CausesValidation} is true, it will invoke the page's {@link TPage::
+	 * ActiveControl.CausesValidation} is true, it will invoke the page's {@link TPage::
 	 * validate validate} method first. It will raise {@link onCallback
 	 * OnCallback} event. This method is mainly used by framework and control
 	 * developers.

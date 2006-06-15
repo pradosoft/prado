@@ -1,18 +1,59 @@
 <?php
-/*
- * Created on 13/05/2006
+/**
+ * TBaseActiveControl and TBaseActiveCallbackControl class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.ActiveControls
+ */
+
+/**
+ * TBaseActiveControl class provided additional basic property for every
+ * active control. An instance of TBaseActiveControl or its decendent
+ * TBaseActiveCallbackControl is created by {@link TActiveControlAdapter::getBaseActiveControl()}
+ * method.
+ * 
+ * The {@link setEnableUpdate EnableUpdate} property determines wether the active
+ * control is allowed to update the contents of the client-side when the callback
+ * response returns. 
+ * 
+ * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.ActiveControls
+ * @since 3.0
  */
 class TBaseActiveControl extends TComponent
 {
+	/**
+	 * @TMap map of active control options.
+	 */
 	private $_options;
+	/**
+	 * @TControl attached control.
+	 */
 	private $_control;
 
+	/**
+	 * Constructor. Attach a base active control to an active control instance.
+	 * @param TControl active control
+	 */
 	public function __construct($control)
 	{
 		$this->_control = $control;
 		$this->_options = new TMap;
 	}
 
+	/** 
+	 * Sets a named options with a value. Options are used to store and retrive
+	 * named values for the base active controls.
+	 * @param string option name.
+	 * @param mixed new value.
+	 * @param mixed default value.
+	 * @return mixed options value.
+	 */
 	protected function setOption($name,$value,$default=null)
 	{
 		$value = is_null($value) ? $default : $value;
@@ -20,17 +61,30 @@ class TBaseActiveControl extends TComponent
 			$this->_options->add($name,$value);
 	}
 
+	/** 
+	 * Gets an option named value. Options are used to store and retrive
+	 * named values for the base active controls.
+	 * @param string option name.
+	 * @param mixed default value.
+	 * @return mixed options value.
+	 */
 	protected function getOption($name,$default=null)
 	{
 		$item = $this->_options->itemAt($name);
 		return is_null($item) ? $default : $item;
 	}
 
+	/**
+	 * @return TPage the page containing the attached control.
+	 */
 	protected function getPage()
 	{
 		return $this->_control->getPage();
 	}
 
+	/**
+	 * @return TControl the attached control.
+	 */
 	protected function getControl()
 	{
 		return $this->_control;
@@ -44,14 +98,21 @@ class TBaseActiveControl extends TComponent
 		$this->setOption('EnableUpdate', TPropertyValue::ensureBoolean($value), true);
 	}
 
-	/**
-	 * @return true to allow fine grain callback updates.
+	/** 
+	 * @return boolean true to allow fine grain callback updates.
 	 */
 	public function getEnableUpdate()
 	{
 		return $this->getOption('EnableUpdate', true);
 	}
 
+	/** 
+	 * Returns true if callback response is allowed to update the browser contents.
+	 * Is is true if the control is initilized, and is a callback request and 
+	 * the {@link setEnableUpdate EnabledUpdate} property is true.
+	 * @return boolean true if the callback response is allowed update 
+	 * client-side contents. 
+	 */
 	public function canUpdateClientSide()
 	{
 		return 	$this->getControl()->getIsInitialized()
@@ -60,21 +121,44 @@ class TBaseActiveControl extends TComponent
 	}
 }
 
-
+/**
+ * TBaseActiveCallbackControl is a common set of options and functionality for
+ * active controls that can perform callback requests. 
+ * 
+ * The properties of TBaseActiveCallbackControl can be accessed and changed from
+ * each individual active controls' {@link getActiveControl ActiveControl} 
+ * property.
+ * 
+ * The following example to set the validation group property of a TCallback component.
+ * <code>
+ * 	<com:TCallback ActiveControl.ValidationGroup="group1" ... />
+ * </code>
+ * 
+ * Additional client-side options and events can be set using the 
+ * {@link getClientSide ClientSide} property. The following example to show 
+ * an alert box when a TCallback component response returns successfully.
+ * <code>
+ * 	<com:TCallback Active.Control.ClientSide.OnSuccess="alert('ok!')" ... />
+ * </code>
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $  Fri Jun 16 08:40:43 EST 2006 $
+ * @package System.Web.UI.ActiveControls
+ * @since 3.0
+ */
 class TBaseActiveCallbackControl extends TBaseActiveControl
 {
 	/**
 	 * Callback client-side options can be set by setting the properties of
-	 * the ClientSide property. E.g. <com:TCallback ClientSide.OnSuccess="..." />
-	 * See {@link TCallbackClientSideOptions} for details on the properties of
-	 * ClientSide.
+	 * the ClientSide property. E.g. <com:TCallback ActiveControl.ClientSide.OnSuccess="..." />
+	 * See {@link TCallbackClientSideOptions} for details on the properties of ClientSide.
 	 * @return TCallbackClientSideOptions client-side callback options.
 	 */
 	public function getClientSide()
 	{
 		if(is_null($client = $this->getOption('ClientSide')))
 		{
-			$client = $this->createClientSide();
+			$client = $this->createClientSideOptions();
 			$this->setOption('ClientSide', $client);
 		}
 		return $client;
@@ -83,9 +167,9 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	/**
 	 * @return TCallbackClientSideOptions callback client-side options.
 	 */
-	protected function createClientSide()
+	protected function createClientSideOptions()
 	{
-		if(($id=$this->getCallbackOptions())!==''
+		if(($id=$this->getCallbackOptionID())!=='' 
 			&& ($control=$this->getControl()->findControl($id))!==null)
 		{
 			if($control instanceof TCallbackOptions)
@@ -101,7 +185,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 * @param string ID of a TCallbackOptions control from which ClientSide
 	 * options are cloned.
 	 */
-	public function setCallbackOptions($value)
+	public function setCallbackOptionID($value)
 	{
 		$this->setOption('CallbackOptions', $value, '');
 	}
@@ -110,7 +194,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 * @return string ID of a TCallbackOptions control from which ClientSide
 	 * options are cloned.
 	 */
-	public function getCallbackOptions()
+	public function getCallbackOptionID()
 	{
 		return $this->getOption('CallbackOptions', '');
 	}
@@ -178,17 +262,23 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 		return $options;
 	}
 
-	public function registerCallbackClientScript($options=null)
+	/**
+	 * Registers the callback control javascript code. Client-side options are
+	 * merged and passed to the javascript code. This method should be called by
+	 * Active component developers wanting to register the javascript to initialize
+	 * the active component with additional options offered by the 
+	 * {@link getClientSide ClientSide} property.
+	 * @param string client side javascript class name.
+	 * @param array additional callback options.
+	 */
+	public function registerCallbackClientScript($class,$options=null)
 	{
 		$cs = $this->getPage()->getClientScript();
 		if(is_array($options))
 			$options = array_merge($this->getClientSideOptions(),$options);
 		else
-			$options = $this->getClientSideOptions();
-		// TODO (xue):
-		// We need explicitly specify what js class is to be used
-		// to avoid problem that may occur in extended child class
-		$cs->registerCallbackControl('Prado.WebUI.'.get_class($this->getControl()), $options);
+			$options = $this->getClientSideOptions();			
+		$cs->registerCallbackControl($class, $options);
 	}
 
 	/**

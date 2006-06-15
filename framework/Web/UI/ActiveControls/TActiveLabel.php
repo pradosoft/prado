@@ -13,11 +13,12 @@
 /**
  * TActiveLabel class
  *
- * The active control counterpart of TLabel component. During a callback
- * request, setting {@link setText Text} property will also set the text of the
- * label on the client upon callback completion. Similarly, setting {@link
- * setForControl ForControl} will set the client-side for attribute on the
- * label.
+ * The active control counterpart of TLabel component. When
+ * {@link TBaseActiveControl::setEnableUpdate ActiveControl.EnableUpdate}
+ * property is true the during a callback request, setting {@link setText Text} 
+ * property will also set the text of the label on the client upon callback 
+ * completion. Similarly, setting {@link setForControl ForControl} will also set
+ * the client-side "for" attribute on the label.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $Date: $
@@ -37,9 +38,12 @@ class TActiveLabel extends TLabel
 		$this->setAdapter(new TActiveControlAdapter($this));
 	}
 	
+	/**
+	 * @return TBaseActiveControl basic active control options.
+	 */
 	public function getActiveControl()
 	{
-		return $this->getAdapter()->getActiveControl();
+		return $this->getAdapter()->getBaseActiveControl();
 	}
 	
 	/**

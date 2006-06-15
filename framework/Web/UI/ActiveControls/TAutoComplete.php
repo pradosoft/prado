@@ -139,7 +139,7 @@ class TAutoComplete extends TActiveTextBox implements ICallbackEventHandler, INa
 		{
 			$this->getSuggestions()->render($writer); 
 			$boundary = $writer->getWriter()->getBoundary();
-			$writer->getWriter()->getResponse()->setData($boundary);
+			$this->getResponse()->getAdapter()->setResponseData($boundary);
 		}		
 	}
 	
@@ -162,17 +162,34 @@ class TAutoComplete extends TActiveTextBox implements ICallbackEventHandler, INa
 		return $options;
 	}
 	
+	/**
+	 * Override parent implementation, no javascript is rendered here instead 
+	 * the javascript required for active control is registered in {@link addAttributesToRender}.
+	 */
+	protected function renderClientControlScript($writer)
+	{
+	}
+	
+	/**
+	 * Ensure that the ID attribute is rendered and registers the javascript code
+	 * for initializing the active control.
+	 */
+
 	public function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id',$this->getClientID());
-		$this->getActiveControl()->registerCallbackClientScript($this->getAutoCompleteOptions());
+		$this->getActiveControl()->registerCallbackClientScript(
+			$this->getClientClassName(), $this->getAutoCompleteOptions());
 	}
-	
-	protected function renderClientControlScript($writer)
+
+	/**
+	 * @return string corresponding javascript class name for this TActiveButton.
+	 */
+	protected function getClientClassName()
 	{
-		
-	}
+		return 'Prado.WebUI.TAutoComplete';
+	}	
 }
 
 /**

@@ -1,6 +1,6 @@
 <?php
 /**
- * TActivePageAdapter class file
+ * TActivePageAdapter class file.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link http://www.pradosoft.com/
@@ -39,11 +39,7 @@ class TActivePageAdapter extends TControlAdapter
 	 * @var TCallbackClientScript callback client script handler
 	 */
 	private $_callbackClient;
-	/**
-	 * @var TCallbackEventParameter callback result.
-	 */
-	private $_result;
-	 
+
 	/**
 	 * Constructor, trap errors and exception to let the callback response
 	 * handle them.
@@ -51,7 +47,11 @@ class TActivePageAdapter extends TControlAdapter
 	public function __construct(TPage $control)
 	{
 		parent::__construct($control);
-		$this->getApplication()->setResponse($this->createCallbackResponseHandler());
+		
+		//TODO: can this be done later?
+		$response = $this->getApplication()->getResponse();
+		$response->setAdapter(new TCallbackResponseAdapter($response));
+		
 		$this->trapCallbackErrorsExceptions();
 	}
 
@@ -88,11 +88,19 @@ class TActivePageAdapter extends TControlAdapter
 		$executeJavascript = $this->getCallbackClientHandler()->getClientFunctionsToExecute()->toArray();
 		$actions = TJavascript::jsonEncode($executeJavascript);
 		$response->appendHeader(self::CALLBACK_ACTION_HEADER.': '.$actions);
-		if($this->_result)
+		
+		//send response data in header
+		if($response->getHasAdapter())
 		{
-			$data = TJavascript::jsonEncode($this->_result->getData());
-			$response->appendHeader(self::CALLBACK_DATA_HEADER.': '.$data);
+			$responseData = $response->getAdapter()->getResponseData();
+			if(!is_null($responseData))
+			{
+				$data = TJavascript::jsonEncode($responseData);
+				$response->appendHeader(self::CALLBACK_DATA_HEADER.': '.$data);
+			}
 		}
+		
+		//sends page state in header
 		if(($handler = $this->getCallbackEventTarget()) !== null)
 		{
 			if($handler->getActiveControl()->getClientSide()->getEnablePageStateUpdate())
@@ -102,7 +110,7 @@ class TActivePageAdapter extends TControlAdapter
 			}
 		}
 	}
-	
+
 	/**
 	 * Trys to find the callback event handler and raise its callback event.
 	 * @throws TInvalidCallbackRequestException if call back target is not found.
@@ -116,8 +124,8 @@ class TActivePageAdapter extends TControlAdapter
 			if($callbackHandler instanceof ICallbackEventHandler)
 			{
 				$param = $this->getCallbackEventParameter();
-				$this->_result = new TCallbackEventParameter($this->getResponse(), $param);
-				$callbackHandler->raiseCallbackEvent($this->_result);
+				$result = new TCallbackEventParameter($this->getResponse(), $param);
+				$callbackHandler->raiseCallbackEvent($result);
 			}
 			else
 			{
@@ -129,14 +137,6 @@ class TActivePageAdapter extends TControlAdapter
 		 	$target = $this->getRequest()->itemAt(TPage::FIELD_CALLBACK_TARGET);
 		 	throw new TInvalidCallbackRequestException($target);
 		 }
-	}
-	
-	/**
-	 * @return mixed callback event result.
-	 */
-	public function getCallbackEventResult()
-	{
-		return $this->_callbackEventResult->getResult();
 	}
 	
 	/**
@@ -196,21 +196,7 @@ class TActivePageAdapter extends TControlAdapter
 		if(is_null($this->_callbackClient))
 			$this->_callbackClient = new TCallbackClientScript;
 		return $this->_callbackClient;
-	}
-	
-	/**
-	 * @param TCallbackClientScript new callback client handler.
-	 */
-	public function setCallbackClientHandler($handler)
-	{
-		$this->_callbackClient = $handler;
-	}
-	
-	protected function createCallbackResponseHandler()
-	{
-		return new TCallbackResponse();
-	}
-	
+	}	
 }
 
 /**
@@ -231,17 +217,13 @@ class TActivePageAdapter extends TControlAdapter
 class TCallbackEventParameter extends TEventParameter
 {
 	/**
-	 * @var TCallbackResponse output content.
+	 * @var THttpResponse output content.
 	 */
 	private $_response;
 	/**
 	 * @var mixed callback request parameter.
 	 */
 	private $_parameter;
-	/**
-	 * @var mixed callback response data.
-	 */
-	private $_data;
 
 	/**
 	 * Creates a new TCallbackEventParameter.
@@ -257,7 +239,7 @@ class TCallbackEventParameter extends TEventParameter
 	 */
 	public function getOutput()
 	{
-		return $this->_response->createHtmlWriter(null,$this);
+		return $this->_response->createHtmlWriter(null);
 	}
 	
 	/**
@@ -273,7 +255,7 @@ class TCallbackEventParameter extends TEventParameter
 	 */
 	public function setData($value)
 	{
-		$this->_data = $value;
+		$this->_response->getAdapter()->setResponseData($value);
 	}
 	
 	/**
@@ -281,7 +263,7 @@ class TCallbackEventParameter extends TEventParameter
 	 */
 	public function getData()
 	{
-		return $this->_data;
+		return $this->_response->getAdapter()->getResponseData();
 	}
 }
 
