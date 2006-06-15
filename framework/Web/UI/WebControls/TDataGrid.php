@@ -1047,10 +1047,12 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			$editIndex=$this->getEditItemIndex();
 			$index=0;
 			$dsIndex=$ds->getAllowPaging()?$ds->getFirstIndexInPage():0;
-			foreach($ds as $data)
+			foreach($ds as $key=>$data)
 			{
 				if($keyField!=='')
 					$keys->add($this->getDataFieldValue($data,$keyField));
+				else
+					$keys->add($key);
 				if($index===$editIndex)
 					$itemType=self::IT_EDITITEM;
 				else if($index===$selectedIndex)

@@ -24,7 +24,7 @@ buildscripts/phpbuilder/build.php -text
 buildscripts/setup.php -text
 buildscripts/texbuilder/build.php -text
 buildscripts/texbuilder/pages.php -text
-buildscripts/texbuilder/prado3_quick_start.tex -text
+buildscripts/texbuilder/quickstart.tex -text
 demos/blog/index.php -text
 demos/blog/protected/Common/BlogDataModule.php -text
 demos/blog/protected/Common/BlogErrorHandler.php -text

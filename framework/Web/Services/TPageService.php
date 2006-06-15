@@ -96,6 +96,10 @@ class TPageService extends TService
 	 */
 	private $_basePath=null;
 	/**
+	 * @var string base path class in namespace format
+	 */
+	private $_basePageClass='TPage';
+	/**
 	 * @var string default page
 	 */
 	private $_defaultPage='Home';
@@ -398,6 +402,25 @@ class TPageService extends TService
 	}
 
 	/**
+	 * Sets the base page class name (in namespace format).
+	 * If a page only has a template file without page class file,
+	 * this base page class will be instantiated.
+	 * @param string class name
+	 */
+	public function setBasePageClass($value)
+	{
+		$this->_basePageClass=$value;
+	}
+
+	/**
+	 * @return string base page class name in namespace format. Defaults to 'TPage'.
+	 */
+	public function getBasePageClass()
+	{
+		return $this->_basePageClass;
+	}
+
+	/**
 	 * Runs the service.
 	 * This will create the requested page, initializes it with the property values
 	 * specified in the configuration, and executes the page.
@@ -417,9 +440,9 @@ class TPageService extends TService
 					throw new TConfigurationException('pageservice_pageclass_unknown',$className);
 			}
 			else
-				$className='TPage';
+				$className=$this->getBasePageClass();
 
-			$this->_page=new $className();
+			$this->_page=Prado::createComponent($className);
 
 			$this->_page->setPagePath($this->getRequestedPagePath());
 			// initialize page properties with those set in configurations

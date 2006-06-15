@@ -229,6 +229,42 @@ class TXmlElement extends TComponent
  * You can also get the version and encoding of the XML document by
  * the Version and Encoding properties.
  *
+ * To construct an XML string, you may do the following:
+ * <code>
+ * $doc=new TXmlDocument('1.0','utf-8');
+ * $doc->TagName='Root';
+ *
+ * $proc=new TXmlElement('Proc');
+ * $proc->setAttribute('Name','xxxx');
+ * $doc->Elements[]=$proc;
+ *
+ * $query=new TXmlElement('Query');
+ * $query->setAttribute('ID','xxxx');
+ * $proc->Elements[]=$query;
+ *
+ * $attr=new TXmlElement('Attr');
+ * $attr->setAttribute('Name','aaa');
+ * $attr->Value='1';
+ * $query->Elements[]=$attr;
+ *
+ * $attr=new TXmlElement('Attr');
+ * $attr->setAttribute('Name','bbb');
+ * $attr->Value='1';
+ * $query->Elements[]=$attr;
+ * </code>
+ * The above code represents the following XML string:
+ * <code>
+ * <?xml version="1.0" encoding="utf-8"?>
+ * <Root>
+ *   <Proc Name="xxxx">
+ *     <Query ID="xxxx">
+ *       <Attr Name="aaa">1</Attr>
+ *       <Attr Name="bbb">1</Attr>
+ *     </Query>
+ *   </Proc>
+ * </Root>
+ * </code>
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Xml

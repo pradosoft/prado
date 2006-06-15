@@ -473,10 +473,22 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function validate()
 	{
+		$this->onValidate();
 		$this->setIsValid(true);
 		$control=$this->getValidationTarget();
 		if($control && $this->getVisible(true) && $this->getEnabled())
-			$this->setIsValid($this->evaluateIsValid());
+		{
+			if($this->evaluateIsValid())
+			{
+				$this->setIsValid(true);
+				$this->onSuccess();
+			}
+			else
+			{
+				$this->setIsValid(false);
+				$this->onError();
+			}
+		}
 		return $this->getIsValid();
 	}
 
@@ -502,6 +514,30 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * @return boolean whether the validation succeeds
 	 */
 	abstract protected function evaluateIsValid();
+
+	/**
+	 * This event is raised when the validator succeeds in validation.
+	 */
+	public function onSuccess()
+	{
+		$this->raiseEvent('OnSuccess',$this,null);
+	}
+
+	/**
+	 * This event is raised when the validator fails in validation.
+	 */
+	public function onError()
+	{
+		$this->raiseEvent('OnError',$this,null);
+	}
+
+	/**
+	 * This event is raised right before the validator starts to perform validation.
+	 */
+	public function onValidate()
+	{
+		$this->raiseEvent('OnValidate',$this,null);
+	}
 
 	/**
 	 * Renders the validator control.

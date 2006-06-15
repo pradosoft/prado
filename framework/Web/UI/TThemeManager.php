@@ -305,6 +305,8 @@ class TTheme extends TApplicationComponent implements ITheme
 				}
 			}
 			closedir($dir);
+			sort($this->_cssFiles);
+			sort($this->_jsFiles);
 			if($cache!==null)
 				$cache->set(self::THEME_CACHE_PREFIX.$themePath,array($this->_skins,$this->_cssFiles,$this->_jsFiles,time()));
 		}

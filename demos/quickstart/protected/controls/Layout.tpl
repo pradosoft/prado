@@ -19,7 +19,7 @@
 </div>
 <a href="?">Home</a> |
 <a href="http://www.pradosoft.com">PradoSoft.com</a> |
-<a href="prado3_quick_start.pdf">PDF Version</a> |
+<a href="../../docs/quickstart.pdf">PDF Version</a> |
 <com:THyperLink ID="PrinterLink" Text="Printer-friendly Version" />
 </com:TPanel>
 
