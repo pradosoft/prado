@@ -356,28 +356,6 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	 * @param string property name
 	 * @param mixed property initial value
 	 */
-	protected function configureControl2($control,$name,$value)
-	{
-		if(strncasecmp($name,'on',2)===0)		// is an event
-			$this->configureEvent($control,$name,$value,$control);
-		else if(($pos=strrpos($name,'.'))===false)	// is a simple property or custom attribute
-			$this->configureProperty($control,$name,$value);
-		else	// is a subproperty
-		{
-			$subName=substr($name,$pos+1);
-			if(strncasecmp($subName,'on',2)===0) // is an event: XXX.YYY.OnZZZ
-			{
-				$object=$control->getSubProperty(substr($name,0,$pos));
-				if(($object instanceof TControl))
-					$this->configureEvent($object,$subName,$value,$control);
-				else
-					$this->configureSubProperty($control,$name,$value);
-			}
-			else
-				$this->configureSubProperty($control,$name,$value);
-		}
-	}
-
 	protected function configureControl($control,$name,$value)
 	{
 		if(strncasecmp($name,'on',2)===0)		// is an event
@@ -387,6 +365,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 		else	// is a subproperty
 			$this->configureSubProperty($control,$name,$value);
 	}
+
 	/**
 	 * Configures a property of a non-control component.
 	 * @param TComponent component to be configured
@@ -605,7 +584,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					if($matchStart>$textStart)
 						$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
 					$textStart=$matchEnd+1;
-					$literal=trim(THttpUtility::htmlDecode($match[5][0]));
+					$literal=trim($match[5][0]);
 					if($str[2]==='=')	// expression
 						$tpl[$c++]=array($container,array(TCompositeLiteral::TYPE_EXPRESSION,$literal));
 					else if($str[2]==='%')  // statements
@@ -800,21 +779,44 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	 */
 	protected function parseAttribute($value)
 	{
-		$matches=array();
-		if(!preg_match('/\\s*(<%#.*?%>|<%=.*?%>|<%~.*?%>|<%\\$.*?%>|<%\\[.*?\\]%>)\\s*/msS',$value,$matches) || $matches[0]!==$value)
-			return THttpUtility::htmlDecode($value);
-		$value=THttpUtility::htmlDecode($matches[1]);
-		if($value[2]==='#') // databind
-			return array(self::CONFIG_DATABIND,substr($value,3,strlen($value)-5));
-		else if($value[2]==='=') // a dynamic initialization
-			return array(self::CONFIG_EXPRESSION,substr($value,3,strlen($value)-5));
-		else if($value[2]==='~') // a URL
-			return array(self::CONFIG_ASSET,trim(substr($value,3,strlen($value)-5)));
-		else if($value[2]==='[')
-			return array(self::CONFIG_LOCALIZATION,trim(substr($value,3,strlen($value)-6)));
-		else if($value[2]==='$')
-			return array(self::CONFIG_PARAMETER,trim(substr($value,3,strlen($value)-5)));
-		return '';
+		if(($n=preg_match_all('/<%[#=].*?%>/msS',$value,$matches,PREG_OFFSET_CAPTURE))>0)
+		{
+			$isDataBind=false;
+			$textStart=0;
+			$expr='';
+			for($i=0;$i<$n;++$i)
+			{
+				$match=$matches[0][$i];
+				$token=$match[0];
+				$offset=$match[1];
+				$length=strlen($token);
+				if($token[2]==='#')
+					$isDataBind=true;
+				if($offset>$textStart)
+					$expr.=".'".strtr(substr($value,$textStart,$offset-$textStart),array("'"=>"\\'","\\"=>"\\\\"))."'";
+				$expr.='.('.substr($token,3,$length-5).')';
+				$textStart=$offset+$length;
+			}
+			$length=strlen($value);
+			if($length>$textStart)
+				$expr.=".'".substr($value,$textStart,$length-$textStart)."'";
+			if($isDataBind)
+				return array(self::CONFIG_DATABIND,ltrim($expr,'.'));
+			else
+				return array(self::CONFIG_EXPRESSION,ltrim($expr,'.'));
+		}
+		else if(preg_match('/\\s*(<%~.*?%>|<%\\$.*?%>|<%\\[.*?\\]%>)\\s*/msS',$value,$matches) && $matches[0]===$value)
+		{
+			$value=$matches[1];
+			if($value[2]==='~') // a URL
+				return array(self::CONFIG_ASSET,trim(substr($value,3,strlen($value)-5)));
+			else if($value[2]==='[')
+				return array(self::CONFIG_LOCALIZATION,trim(substr($value,3,strlen($value)-6)));
+			else if($value[2]==='$')
+				return array(self::CONFIG_PARAMETER,trim(substr($value,3,strlen($value)-5)));
+		}
+		else
+			return $value;
 	}
 
 	protected function validateAttributes($type,$attributes)
