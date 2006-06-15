@@ -63,6 +63,7 @@
 class TOutputCache extends TControl implements INamingContainer
 {
 	const CACHE_ID_PREFIX='prado:outputcache';
+	private $_cacheModuleID='';
 	private $_dataCached=false;
 	private $_cacheAvailable=false;
 	private $_cacheChecked=false;
@@ -92,12 +93,23 @@ class TOutputCache extends TControl implements INamingContainer
 		if(!$this->_cacheChecked)
 		{
 			$this->_cacheChecked=true;
-			if(!$this->getPage()->getIsPostBack() && ($this->_cache=$this->getApplication()->getCache())!==null && $this->_duration>0)
+			if(!$this->getPage()->getIsPostBack() && $this->_duration>0)
 			{
-				$this->_cacheAvailable=true;
-				$data=$this->_cache->get($this->getCacheKey());
-				if(($this->_dataCached=($data!==false)))
-					list($this->_contents,$this->_state,$this->_actions)=$data;
+				if($this->_cacheModuleID!=='')
+				{
+					$this->_cache=$this->getApplication()->getModule($this->_cacheModuleID);
+					if(!($this->_cache instanceof ICache))
+						throw new TConfigurationException('outputcache_cachemoduleid_invalid',$this->_cacheModuleID);
+				}
+				else
+					$this->_cache=$this->getApplication()->getCache();
+				if($this->_cache!==null)
+				{
+					$this->_cacheAvailable=true;
+					$data=$this->_cache->get($this->getCacheKey());
+					if(($this->_dataCached=($data!==false)))
+						list($this->_contents,$this->_state,$this->_actions)=$data;
+				}
 			}
 		}
 	}
@@ -269,6 +281,22 @@ class TOutputCache extends TControl implements INamingContainer
 	protected function getBaseCacheKey()
 	{
 		return self::CACHE_ID_PREFIX.$this->_keyPrefix.$this->getPage()->getPagePath().$this->getUniqueID();
+	}
+
+	/**
+	 * @return string the ID of the cache module. Defaults to '', meaning the primary cache module is used.
+	 */
+	public function getCacheModuleID()
+	{
+		return $this->_cacheModuleID;
+	}
+
+	/**
+	 * @param string the ID of the cache module. If empty, the primary cache module will be used.
+	 */
+	public function setCacheModuleID($value)
+	{
+		$this->_cacheModuleID=$value;
 	}
 
 	/**
