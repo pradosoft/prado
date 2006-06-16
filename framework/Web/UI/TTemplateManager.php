@@ -799,7 +799,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 			}
 			$length=strlen($value);
 			if($length>$textStart)
-				$expr.=".'".substr($value,$textStart,$length-$textStart)."'";
+				$expr.=".'".strtr(substr($value,$textStart,$length-$textStart),array("'"=>"\\'","\\"=>"\\\\"))."'";
 			if($isDataBind)
 				return array(self::CONFIG_DATABIND,ltrim($expr,'.'));
 			else
