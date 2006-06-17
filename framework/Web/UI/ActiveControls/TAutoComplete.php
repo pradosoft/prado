@@ -3,7 +3,7 @@
  * Created on 7/05/2006
  */
 
-class TAutoComplete extends TActiveTextBox implements ICallbackEventHandler, INamingContainer
+class TAutoComplete extends TActiveTextBox implements INamingContainer
 {
 	/**
 	 * @var ITemplate template for repeater items

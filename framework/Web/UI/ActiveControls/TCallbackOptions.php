@@ -1,10 +1,31 @@
 <?php
-/*
- * Created on 12/05/2006
+/**
+ * TCallbackOptions component class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  : $
+ * @package System.Web.UI.ActiveControls
  */
 
+/**
+ * TCallbackOptions class.
+ * 
+ * TCallbackOptions allows common set of callback client-side options
+ * to be attached to other active controls.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $  Sun Jun 18 08:10:50 EST 2006 $
+ * @package System.Web.UI.ActiveControls
+ * @since 3.0
+ */
 class TCallbackOptions extends TControl
 { 
+	/**
+	 * @var TCallbackClientSideOptions client side callback options.
+	 */
 	private $_clientSide;
 	
 	/**
@@ -28,7 +49,6 @@ class TCallbackOptions extends TControl
 	{
 		return new TCallbackClientSideOptions;
 	}
-	
 }
 
 ?>

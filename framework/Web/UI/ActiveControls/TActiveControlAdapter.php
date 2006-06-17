@@ -1,26 +1,68 @@
 <?php
+/**
+ * TActiveControlAdapter and TCallbackPageStateTracker class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  : $
+ * @package System.Web.UI.ActiveControls
+ */
+
 /*
- * Created on 29/04/2006
+ * Load common active control options.
  */
 Prado::using('System.Web.UI.ActiveControls.TBaseActiveControl');
 
+/**
+ * TActiveControlAdapter class.
+ * 
+ * Customize the parent TControl class for active control classes. 
+ * TActiveControlAdapter instantiates a common base active control class
+ * throught the {@link getBaseActiveControl BaseActiveControl} property.
+ * The type of BaseActiveControl can be provided in the second parameter in the
+ * constructor. Default is TBaseActiveControl or TBaseActiveCallbackControl if
+ * the control adapted implements ICallbackEventHandler.
+ * 
+ * TActiveControlAdapter will tracking viewstate changes to update the 
+ * corresponding client-side properties.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $  Sun Jun 18 20:35:34 EST 2006 $
+ * @package System.Web.UI.ActiveControls
+ * @since 3.0
+ */
 class TActiveControlAdapter extends TControlAdapter
 {
-	private static $_renderedPosts = false;
-	
+	/**
+	 * @var string base active control class name.
+	 */
 	private $_activeControlType;
-	
+	/**
+	 * @var TBaseActiveControl base active control instance.
+	 */
 	private $_baseActiveControl;
-	
+	/**
+	 * @var TCallbackPageStateTracker view state tracker.
+	 */
 	private $_stateTracker;
 	
-	public function __construct($control, $baseCallbackClass=null)
+	/**
+	 * Constructor.
+	 * @param IActiveControl active control to adapt.
+	 * @param string Base active control class name.
+	 */
+	public function __construct(IActiveControl $control, $baseCallbackClass=null)
 	{
 		parent::__construct($control);
-		$this->setBaseControlType($baseCallbackClass);
+		$this->setBaseControlClass($baseCallbackClass);
 	}
 	
-	private function setBaseControlType($type)
+	/**
+	 * @param string base active control instance
+	 */
+	protected function setBaseControlClass($type)
 	{
 		if(is_null($type))
 		{
@@ -30,22 +72,21 @@ class TActiveControlAdapter extends TControlAdapter
 				$this->_activeControlType = 'TBaseActiveControl';
 		}
 		else
-		{
 			$this->_activeControlType = $type;
-		}
 	}
 	
 	/**
-	 * Render the callback request post data loaders once only.
+	 * Renders the callback client scripts.
 	 */
 	public function render($writer)
 	{
 		$this->renderCallbackClientScripts();
 		parent::render($writer);
-		if($this->getPage()->getIsCallback())
-			$this->getPage()->getCallbackClient()->replace($this->getControl(), $writer);
 	}
 	
+	/**
+	 * Register the callback clientscripts and sets the post loader IDs. 
+	 */
 	protected function renderCallbackClientScripts()
 	{
 		$cs = $this->getPage()->getClientScript();
@@ -54,11 +95,14 @@ class TActiveControlAdapter extends TControlAdapter
 		{
 			$cs->registerPradoScript('ajax');
 			$options = TJavascript::encode($this->getPage()->getPostDataLoaders(),false);
-			$script = "Prado.CallbackRequest.PostDataLoaders = {$options};";
+			$script = "Prado.CallbackRequest.addPostLoaders({$options});";
 			$cs->registerEndScript($key, $script);
 		}
 	}
 	
+	/**
+	 * @return TBaseActiveControl Common active control options.
+	 */
 	public function getBaseActiveControl()
 	{
 		if(is_null($this->_baseActiveControl))
@@ -69,6 +113,9 @@ class TActiveControlAdapter extends TControlAdapter
 		return $this->_baseActiveControl;
 	}
 	
+	/**
+	 * @return boolean true if the viewstate needs to be tracked.
+	 */
 	protected function getIsTrackingPageState()
 	{
 		if($this->getPage()->getIsCallback())
@@ -83,6 +130,10 @@ class TActiveControlAdapter extends TControlAdapter
 		return false;
 	}
 	
+	/**
+	 * Loads additional persistent control state. Starts viewstate tracking
+	 * if necessary.
+	 */
 	public function loadState()
 	{
 		if($this->getIsTrackingPageState())
@@ -93,6 +144,10 @@ class TActiveControlAdapter extends TControlAdapter
 		parent::loadState();
 	}
 	
+	/**
+	 * Saves additional persistent control state. Respond to viewstate changes
+	 * if necessary.
+	 */
 	public function saveState()
 	{
 		if(!is_null($this->_stateTracker) 
@@ -104,6 +159,18 @@ class TActiveControlAdapter extends TControlAdapter
 	}
 } 
 
+/**
+ * TCallbackPageStateTracker class.
+ * 
+ * Tracking changes to the page state during callback.
+ * 
+ * @todo Complete this class! (Wei)
+ * 
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $  Sun Jun 18 20:51:25 EST 2006 $
+ * @package System
+ * @since 3.0
+ */
 class TCallbackPageStateTracker
 {
 	private $_states = array('Visible', 'Enabled', 'Attributes', 'Style', 'TabIndex', 'ToolTip', 'AccessKey');

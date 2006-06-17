@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<application id="FeatureTests" Mode="Debug">
+	<paths>
+		<using namespace="System.Web.UI.ActiveControls.*" />
+	</paths>
+	<services>
+	  <service id="page" class="TPageService" DefaultPage="FeatureList">
+	  </service>
+	</services>
+</application>

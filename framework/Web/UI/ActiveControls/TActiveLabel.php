@@ -25,7 +25,7 @@
  * @package System.Web.UI.ActiveControls
  * @since 3.0
  */
-class TActiveLabel extends TLabel
+class TActiveLabel extends TLabel implements IActiveControl
 {
 	/**
 	 * Creates a new callback control, sets the adapter to

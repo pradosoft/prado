@@ -292,7 +292,10 @@ interface IBindable
  */
 interface IActiveControl
 {
-	
+	/**
+	 * @return TBaseActiveControl Active control properties.
+	 */
+	public function getActiveControl(); 	
 }
 
 /**
@@ -315,11 +318,6 @@ interface ICallbackEventHandler
 	 * @param TCallbackEventParameter the parameter associated with the callback event
 	 */
 	public function raiseCallbackEvent($eventArgument);
-	
-	/**
-	 * @return TBaseActiveControl Active control properties.
-	 */
-	public function getActiveControl(); 
 }
 
 ?>

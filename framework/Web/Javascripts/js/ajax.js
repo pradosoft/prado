@@ -33,20 +33,16 @@ this.transport.onreadystatechange=Prototype.emptyFunction;},getHeaderData:functi
 {var json=this.header(name);return eval('('+json+')');}
 catch(e)
 {if(typeof(json)=="string")
-{Logger.info("using json")
-return Prado.CallbackRequest.decode(json);}}}});Prado.CallbackRequest=Class.create();Object.extend(Prado.CallbackRequest,{FIELD_CALLBACK_TARGET:'PRADO_CALLBACK_TARGET',FIELD_CALLBACK_PARAMETER:'PRADO_CALLBACK_PARAMETER',FIELD_CALLBACK_PAGESTATE:'PRADO_PAGESTATE',FIELD_POSTBACK_TARGET:'PRADO_POSTBACK_TARGET',FIELD_POSTBACK_PARAMETER:'PRADO_POSTBACK_PARAMETER',PostDataLoaders:[],DATA_HEADER:'X-PRADO-DATA',ACTION_HEADER:'X-PRADO-ACTIONS',ERROR_HEADER:'X-PRADO-ERROR',PAGESTATE_HEADER:'X-PRADO-PAGESTATE',requestInProgress:null,dispatchActions:function(transport,actions)
+return Prado.CallbackRequest.decode(json);}}});Prado.CallbackRequest=Class.create();Object.extend(Prado.CallbackRequest,{FIELD_CALLBACK_TARGET:'PRADO_CALLBACK_TARGET',FIELD_CALLBACK_PARAMETER:'PRADO_CALLBACK_PARAMETER',FIELD_CALLBACK_PAGESTATE:'PRADO_PAGESTATE',FIELD_POSTBACK_TARGET:'PRADO_POSTBACK_TARGET',FIELD_POSTBACK_PARAMETER:'PRADO_POSTBACK_PARAMETER',PostDataLoaders:[],DATA_HEADER:'X-PRADO-DATA',ACTION_HEADER:'X-PRADO-ACTIONS',ERROR_HEADER:'X-PRADO-ERROR',PAGESTATE_HEADER:'X-PRADO-PAGESTATE',requestInProgress:null,addPostLoaders:function(ids)
+{this.PostDataLoaders=this.PostDataLoaders.concat(ids);},dispatchActions:function(transport,actions)
 {if(actions&&actions.length>0)
 actions.each(this.__run.bind(this,transport));},__run:function(transport,command)
 {for(var method in command)
-{if(command[method][0])
-{var id=command[method][0];if($(id)||id.indexOf("[]")>-1)
 {try
 {method.toFunction().apply(this,command[method].concat(transport));}
 catch(e)
 {if(typeof(Logger)!="undefined")
-Prado.CallbackRequest.Exception.onException(null,e);}}
-else if(typeof(Logger)!="undefined")
-{Logger.error("Error in executing callback response:","Unable to find HTML element with ID '"+id+"' before executing "+method+"().");}}}},Exception:{"on500":function(request,transport,data)
+Prado.CallbackRequest.Exception.onException(null,e);}}},Exception:{"on500":function(request,transport,data)
 {var e=request.getHeaderData(Prado.CallbackRequest.ERROR_HEADER);Logger.error("Callback Server Error "+e.code,this.formatException(e));},'on200':function(request,transport,data)
 {if(transport.status<500)
 {var msg='HTTP '+transport.status+" with response : \n";msg+=transport.responseText+"\n";msg+="Data : \n"+inspect(data)+"\n";msg+="Actions : \n";data=request.getHeaderData(Prado.CallbackRequest.ACTION_HEADER);if(data&&data.length>0)
@@ -63,19 +59,17 @@ msg+=e.version+" "+e.time+"\n";return msg;}},encode:function(data)
 {if(typeof(data)=="string"&&data.trim().length>0)
 return Prado.JSON.parse(data);else
 return null;},dispatchPriorityRequest:function(callback)
-{Logger.info("priority request "+callback.id)
-this.abortRequestInProgress();callback.request=new Ajax.Request(callback.url,callback.options);callback.timeout=setTimeout(function()
-{Logger.warn("priority timeout");Prado.CallbackRequest.abortRequestInProgress();},callback.options.RequestTimeOut);this.requestInProgress=callback;Logger.info("dispatched "+this.requestInProgress)},dispatchNormalRequest:function(callback)
-{Logger.info("dispatching normal request");new Ajax.Request(callback.url,callback.options);},abortRequestInProgress:function()
-{inProgress=Prado.CallbackRequest.requestInProgress;Logger.info("aborting ... "+inProgress);if(inProgress)
-{Logger.warn("aborted "+inProgress.id)
-inProgress.request.transport.abort();clearTimeout(inProgress.timeout);Prado.CallbackRequest.requestInProgress=null;return true;}
+{this.abortRequestInProgress();callback.request=new Ajax.Request(callback.url,callback.options);callback.timeout=setTimeout(function()
+{Prado.CallbackRequest.abortRequestInProgress();},callback.options.RequestTimeOut);this.requestInProgress=callback;},dispatchNormalRequest:function(callback)
+{new Ajax.Request(callback.url,callback.options);},abortRequestInProgress:function()
+{inProgress=Prado.CallbackRequest.requestInProgress;if(inProgress)
+{inProgress.request.transport.abort();clearTimeout(inProgress.timeout);Prado.CallbackRequest.requestInProgress=null;return true;}
 return false;},updatePageState:function(request,transport)
 {pagestate=$(this.FIELD_CALLBACK_PAGESTATE);if(request.options.EnablePageStateUpdate&&request.options.HasPriority&&pagestate)
 {data=request.header(this.PAGESTATE_HEADER);if(typeof(data)=="string"&&data.length>0)
-{Logger.warn("updating page state");pagestate.value=data;}
-else
-{Logger.debug("Bad page state:"+data);}}}})
+pagestate.value=data;else
+{if(typeof(Logger)!="undefined")
+Logger.debug("Bad page state:"+data);}}}})
 Ajax.Responders.register({onComplete:function(request)
 {if(request.options.HasPriority)
 Prado.CallbackRequest.abortRequestInProgress();}});Event.OnLoad(function()
@@ -199,4 +193,7 @@ this.editField=this.cached_selectTag;if(this.options.loadTextURL)this.loadExtern
 {this.options=options;this.baseInitialize(options.ID,options.ResultPanel,options);Object.extend(this.options,{onSuccess:this.onComplete.bind(this)});},getUpdatedChoices:function()
 {Prado.Callback(this.options.EventTarget,this.getToken(),null,this.options);},onComplete:function(request,boundary)
 {result=Prado.Element.extractContent(request.responseText,boundary);if(typeof(result)=="string"&&result.length>0)
-this.updateChoices(result);}});
+this.updateChoices(result);}});Prado.WebUI.TActiveTextBox=Class.extend(Prado.WebUI.TTextBox,{onInit:function(options)
+{if(options['TextMode']!='MultiLine')
+Event.observe(this.element,"keydown",this.handleReturnKey.bind(this));Event.observe(this.element,"change",this.doCallback.bindEvent(this,options));},doCallback:function(event,options)
+{new Prado.CallbackRequest(options.EventTarget,options);Event.stop(event);}});

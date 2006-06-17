@@ -10,6 +10,8 @@
  * @package System.Web.UI.ActiveControls
  */
 
+Prado::using('System.Web.UI.ActiveControls.TCallbackClientSideOptions');
+
 /**
  * TBaseActiveControl class provided additional basic property for every
  * active control. An instance of TBaseActiveControl or its decendent
@@ -163,40 +165,64 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 		}
 		return $client;
 	}
+	
+	/**
+	 * Sets the client side options. Can only be set when client side is null.
+	 * @param TCallbackClientSideOptions client side options.
+	 */
+	public function setClientSide($client)
+	{
+		if(is_null($this->getOption('ClientSide')))
+			$this->setOption('ClientSide', $client);
+		else
+			throw new TConfigurationException(
+				'active_controls_client_side_exists', $this->getControl()->getID());
+	}
 
 	/**
 	 * @return TCallbackClientSideOptions callback client-side options.
 	 */
 	protected function createClientSideOptions()
 	{
-		if(($id=$this->getCallbackOptionID())!=='' 
-			&& ($control=$this->getControl()->findControl($id))!==null)
-		{
-			if($control instanceof TCallbackOptions)
-				return $control->getClientSide();
-		}
 		return new TCallbackClientSideOptions;
 	}
 
 	/**
-	 * Sets the ID of a TCallbackOptions component to duplicate the client-side
+	 * Sets default callback options. Takes the ID of a TCallbackOptions 
+	 * component to duplicate the client-side
 	 * options for this control. The {@link getClientSide ClientSide}
 	 * subproperties has precendent over the CallbackOptions property.
 	 * @param string ID of a TCallbackOptions control from which ClientSide
 	 * options are cloned.
 	 */
-	public function setCallbackOptionID($value)
+	public function setCallbackOptions($value)
 	{
 		$this->setOption('CallbackOptions', $value, '');
 	}
 
 	/**
 	 * @return string ID of a TCallbackOptions control from which ClientSide
-	 * options are cloned.
+	 * options are duplicated.
 	 */
-	public function getCallbackOptionID()
+	public function getCallbackOptions()
 	{
 		return $this->getOption('CallbackOptions', '');
+	}
+
+	/** 
+	 * Returns an array of default callback client-side options. The default options
+	 * are obtained from the client-side options of a TCallbackOptions control with
+	 * ID specified by {@link setCallbackOptionsID CallbackOptionsID}. 
+	 * @return array list of default callback client-side options. 
+	 */
+	protected function getDefaultClientSideOptions()
+	{
+		if(($id=$this->getCallbackOptions())!=='' 
+			&& ($control=$this->getControl()->findControl($id))!==null
+			&& $control instanceof TCallbackOptions)
+				return $control->getClientSide()->getOptions()->toArray();
+		else
+			return array();
 	}
 
 	/**
@@ -255,7 +281,8 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 */
 	protected function getClientSideOptions()
 	{
-		$options = $this->getClientSide()->getOptions()->toArray();
+		$default = $this->getDefaultClientSideOptions();
+		$options = array_merge($default,$this->getClientSide()->getOptions()->toArray());
 		$validate = $this->getCausesValidation();
 		$options['CausesValidation']= $validate ? '' : false;
 		$options['ValidationGroup']=$this->getValidationGroup();

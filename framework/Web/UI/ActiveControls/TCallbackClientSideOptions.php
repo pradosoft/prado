@@ -266,11 +266,17 @@ class TCallbackClientSideOptions extends TClientSideOptions
 		return is_null($option) ? true : $option;
 	}
 	
+	/**
+	 * @return string post back target ID
+	 */
 	public function getPostBackTarget()
 	{
 		return $this->getOption('EventTarget');
 	}
 	
+	/**
+	 * @param string post back target ID
+	 */
 	public function setPostBackTarget($value)
 	{
 		if($value instanceof TControl)
@@ -278,17 +284,21 @@ class TCallbackClientSideOptions extends TClientSideOptions
 		$this->setOption('EventTarget', $value);
 	}
 
+	/**
+	 * @return string post back event parameter.
+	 */
 	public function getPostBackParameter()
 	{
 		return $this->getOption('EventParameter');
 	}
 	
+	/**
+	 * @param string post back event parameter.
+	 */
 	public function setPostBackParameter($value)
 	{
 		$this->setOption('EventParameter', $value);
 	}
-	
-	
 } 
 
 ?>

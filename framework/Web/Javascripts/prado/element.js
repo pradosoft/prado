@@ -71,7 +71,15 @@ Prado.Element =
 			if(result != null)
 				content = result;
 		}
-		method.toFunction().apply(this,[element,content]);
+		if(typeof(element) == "string")
+		{
+			if($(element))
+				method.toFunction().apply(this,[element,content]);
+		}
+		else
+		{
+			method.toFunction().apply(this,[content]);
+		}
 	},
 	
 	extractContent : function(text, boundary)
@@ -82,6 +90,11 @@ Prado.Element =
 			return result[2];
 		else
 			return null;
+	},
+	
+	evaluateScript : function(content)
+	{
+		content.evalScripts();
 	}
 }
 

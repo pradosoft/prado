@@ -7,8 +7,10 @@
  * @copyright Copyright &copy; 2006 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Revision: $  $Date: $
- * @package System.Web.UI.WebControls
+ * @package System.Web.UI.ActiveControls
  */
+
+Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 
 /** 
  * TActiveButton is the active control counter part to TButton.
@@ -17,7 +19,7 @@
  * callback request is initiated. 
  * 
  * The {@link onCallback OnCallback} event is raised during a callback request 
- * and it is raise before the {@link onClick OnClick} event.
+ * and it is raise <b>after</b> the {@link onClick OnClick} event.
  * 
  * When the {@link TBaseActiveCallbackControl::setEnableUpdate ActiveControl.EnableUpdate}
  * property is true, changing the {@link setText Text} property during callback request
@@ -28,7 +30,7 @@
  * @package System.Web.UI.ActiveControls
  * @since 3.0
  */
-class TActiveButton extends TButton implements ICallbackEventHandler
+class TActiveButton extends TButton implements ICallbackEventHandler, IActiveControl
 {
 	/**
 	 * Creates a new callback control, sets the adapter to
@@ -53,15 +55,15 @@ class TActiveButton extends TButton implements ICallbackEventHandler
 	 * Raises the callback event. This method is required by {@link
 	 * ICallbackEventHandler} interface. If {@link getCausesValidation
 	 * CausesValidation} is true, it will invoke the page's {@link TPage::
-	 * validate validate} method first. It will raise {@link onCallback
-	 * OnCallback} event first and then the {@link onClick OnClick} event. 
+	 * validate validate} method first. It will raise {@link onClick
+	 * OnClick} event first and then the {@link onCallback OnCallback} event. 
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter the event parameter
 	 */
  	public function raiseCallbackEvent($param)
 	{
-		$this->onCallback($param);
 		$this->raisePostBackEvent($param);
+		$this->onCallback($param);
 	}
 
 	/**
@@ -110,16 +112,6 @@ class TActiveButton extends TButton implements ICallbackEventHandler
 
 	/**
 	 * @return string corresponding javascript class name for this TActiveButton.
-	 */
-	protected function getClientClassName()
-	{
-		return 'Prado.WebUI.TActiveButton';
-	}
-
-	/**
-	 * Gets the name of the javascript class responsible for performing postback for this control.
-	 * This method overrides the parent implementation.
-	 * @return string the javascript class name
 	 */
 	protected function getClientClassName()
 	{

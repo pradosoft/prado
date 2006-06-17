@@ -313,7 +313,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 * @see insertBefore
 	 * @see insertAfter
 	 */
-	public function replace($element, $content, $method="Element.replace", $boundary=null)
+	protected function replace($element, $content, $method="Element.replace", $boundary=null)
 	{
 		if($content instanceof TControl)
 		{
@@ -325,9 +325,28 @@ class TCallbackClientScript extends TApplicationComponent
 			$boundary = $this->getResponseContentBoundary($content);
 			$content = null;
 		}
-
+		
 		$this->callClientFunction('Prado.Element.replace', 
 					array($element, $method, $content, $boundary));		
+	}
+	
+	/**
+	 * Replace the content of an element with new content contained in writer.
+	 * @param TControl|string control element or HTML element id.
+	 * @param THtmlWriter writer for the content.
+	 */
+	public function replaceContent($element,$writer)
+	{
+		$this->replace($element, $writer);
+	}
+	
+	/**
+	 * Evaluate a block of javascript enclosed in a boundary.
+	 * @param THtmlWriter writer for the content.
+	 */
+	public function evaluateScript($writer)
+	{
+		$this->replace(null, $writer, 'Prado.Element.evaluateScript');
 	}
 	
 	/**

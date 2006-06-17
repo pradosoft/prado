@@ -1,0 +1,48 @@
+<com:TForm ID="form1">
+	
+	<style>
+	.autocomplete
+	{
+	  border:1px solid #919EA9;
+	  background-color:white;
+	}
+	.autocomplete ul, .autocomplete li
+	{
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		font-size: 12px;
+		font-family: Tahoma, Arial, Helvetica, sans-serif;
+		color: #333;
+	}
+
+	.autocomplete li
+	{
+		padding: 4px;
+		border-top: 1px solid #ccc;
+	}
+	.autocomplete .selected
+	{
+	  background-color: #ffc;
+	}
+	</style>
+	
+	<h1>TAutoComplete Test</h1>
+	
+		<com:TAutoComplete Style="width: 20em"
+			OnCallback="suggestCountries"
+			Separator=", " 
+			ResultPanel.CssClass="autocomplete" />
+
+	<p><br /></p>
+	<p><br /></p>
+	<p><br /></p>
+	<p><br /></p>
+	<p><br /></p>
+	<p><br /></p>
+	<p><br /></p>
+	<p><br /></p>
+	<p><br /></p>
+	<p><br /></p>
+	<com:TJavascriptLogger />
+</com:TForm>

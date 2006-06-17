@@ -124,7 +124,8 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * Adds attributes to renderer.
+	 * Adds attributes to renderer. Calls parent implementation and renders the 
+	 * client control scripts.
 	 * @param THtmlWriter the renderer
 	 */
 	protected function addAttributesToRender($writer)
@@ -137,6 +138,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			$writer->addStyleAttribute('visibility','hidden');
 		$writer->addAttribute('id',$this->getClientID());
 		parent::addAttributesToRender($writer);
+		$this->renderClientControlScript($writer);
 	}
 
 	/**
@@ -217,11 +219,10 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * Renders the javascript code to the end script.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param THtmlWriter the renderer
 	 */
-	public function onPreRender($param)
+	public function renderClientControlScript($writer)
 	{
-		parent::onPreRender($param);
 		$scripts = $this->getPage()->getClientScript();
 		$formID=$this->getPage()->getForm()->getClientID();
 		$scriptKey = "TBaseValidator:$formID";
@@ -236,7 +237,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			$this->registerClientScriptValidator();
 		$this->updateControlCssClass();
 	}
-
+	
 	/**
 	 * Update the ControlToValidate component's css class depending
 	 * if the ControlCssClass property is set, and whether this is valid.

@@ -1,0 +1,28 @@
+<com:TForm ID="form1">
+	<h1>Nested Active Controls Test</h1>
+	<com:TCallback ID="callback1" OnCallback="callback1_requested" />
+	<com:TActivePanel ID="panel1">
+		<com:TPlaceHolder ID="content1" Visible="false">
+			Something lalala 
+			<com:TActiveButton ID="button1" Text="Button 1" OnClick="button1_clicked" />
+			<com:TActiveLabel ID="label3" Text="Label 3" />
+			
+		</com:TPlaceHolder>
+		<com:TActiveLabel ID="label1" Text="Label 1" />
+	</com:TActivePanel>
+	<div id="div1" style="border:1px solid #666; background-color: #ffe; text-align: center; padding:1em; margin: 2em">
+		Click Me!
+	</div>
+	<com:TActiveLabel ID="label2" Text="Label 2" />
+	<script type="text/javascript">
+		Event.OnLoad(function()
+		{
+			Event.observe($("div1"), "click", function()
+			{
+				Prado.Callback("<%= $this->callback1->ClientID %>")
+			})
+		})
+	</script>
+	<com:TJavascriptLogger />
+	
+</com:TForm>

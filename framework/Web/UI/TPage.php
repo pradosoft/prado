@@ -269,6 +269,8 @@ class TPage extends TTemplateControl
 	 */
 	protected function processCallbackRequest($writer)
 	{
+		Prado::using('System.Web.UI.ActiveControls.TActivePageAdapter');
+		
 		$this->setAdapter(new TActivePageAdapter($this));
 
 		Prado::trace("Page onPreInit()",'System.Web.UI.TPage');

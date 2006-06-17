@@ -42,3 +42,19 @@ Prado.WebUI.TAutoComplete = Class.extend(Autocompleter.Base,
 			this.updateChoices(result);
 	}	
 });
+
+Prado.WebUI.TActiveTextBox = Class.extend(Prado.WebUI.TTextBox,
+{
+	onInit : function(options)
+	{
+		if(options['TextMode'] != 'MultiLine')
+			Event.observe(this.element, "keydown", this.handleReturnKey.bind(this));
+		Event.observe(this.element, "change", this.doCallback.bindEvent(this,options));
+	},
+	
+	doCallback : function(event, options)
+	{
+		new Prado.CallbackRequest(options.EventTarget, options);
+		Event.stop(event);
+	}
+});

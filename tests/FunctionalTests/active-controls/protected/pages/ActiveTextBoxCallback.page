@@ -1,0 +1,5 @@
+<com:TForm ID="form1">
+	<h1>ActiveTextBox Callback Test</h1>
+	<com:TActiveTextBox	ID="textbox1" AutoPostBack="true" OnCallback="textbox1_callback" />
+	<com:TActiveLabel ID="label1" Text="Label 1" />
+</com:TForm>

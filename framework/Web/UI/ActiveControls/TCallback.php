@@ -35,7 +35,7 @@
  * @package System.Web.UI.ActiveControls
  * @since 3.0
  */
-class TCallback extends TControl implements ICallbackEventHandler
+class TCallback extends TControl implements ICallbackEventHandler, IActiveControl
 {	
 	/**
 	 * Creates a new callback control, sets the adapter to

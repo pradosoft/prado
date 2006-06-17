@@ -267,10 +267,15 @@ setTimeout(function(){obj.focus();},100);return false;},replace:function(element
 {if(boundary)
 {result=Prado.Element.extractContent(transport.responseText,boundary);if(result!=null)
 content=result;}
-method.toFunction().apply(this,[element,content]);},extractContent:function(text,boundary)
+if(typeof(element)=="string")
+{if($(element))
+method.toFunction().apply(this,[element,content]);}
+else
+{method.toFunction().apply(this,[content]);}},extractContent:function(text,boundary)
 {f=RegExp('(<!--'+boundary+'-->)([\\s\\S\\w\\W]*)(<!--//'+boundary+'-->)',"m");result=text.match(f);if(result&&result.length>=2)
 return result[2];else
-return null;}}
+return null;},evaluateScript:function(content)
+{content.evalScripts();}}
 Prado.Element.Selection={inputValue:function(el,value)
 {switch(el.type.toLowerCase())
 {case'checkbox':case'radio':return el.checked=value;}},selectValue:function(el,value)

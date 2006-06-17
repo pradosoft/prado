@@ -429,6 +429,22 @@ class TClientScriptManager extends TApplicationComponent
 	{
 		return isset($this->_endScripts[$key]);
 	}
+	
+	/**
+	 * @return boolean true if any end scripts are registered.
+	 */
+	public function hasEndScripts()
+	{
+		return count($this->_endScripts) > 0;
+	}
+	
+	/**
+	 * @return boolean true if any begin scripts are registered.
+	 */
+	public function hasBeginScripts()
+	{
+		return count($this->_beginScripts) > 0;
+	}
 
 	/**
 	 * @param string a unique key

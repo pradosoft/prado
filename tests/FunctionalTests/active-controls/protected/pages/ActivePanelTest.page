@@ -1,0 +1,22 @@
+<com:TForm ID="form1">
+	<h1>Active Panel replacement tests </h1>
+	<com:TCallback ID="callback1" OnCallback="callback1_requested" />
+	<com:TActivePanel ID="panel1">
+		<com:TPlaceHolder ID="content1" Visible="false">
+			Something lalala <com:TButton ID="button1" Text="Button Text"/>
+		</com:TPlaceHolder>
+	</com:TActivePanel>
+	<div id="div1" style="border:1px solid #666; background-color: #ffe; text-align: center; padding:3em">
+		Click Me!
+	</div>
+	<script type="text/javascript">
+		Event.OnLoad(function()
+		{
+			Event.observe($("div1"), "click", function()
+			{
+				Prado.Callback("<%= $this->callback1->ClientID %>")
+			})
+		})
+	</script>
+	<com:TJavascriptLogger />
+</com:TForm>

@@ -19,7 +19,7 @@ Object.extend(Ajax.Request.prototype,
 	      	Prado.CallbackRequest.updatePageState(this,transport);
 			Ajax.Responders.dispatch('on' + transport.status, this, transport, json);
 			Prado.CallbackRequest.dispatchActions(transport,this.getHeaderData(Prado.CallbackRequest.ACTION_HEADER));
-	      
+
 	        (this.options['on' + this.transport.status]
 	         || this.options['on' + (this.responseIsSuccess() ? 'Success' : 'Failure')]
 	         || Prototype.emptyFunction)(transport, json);
@@ -57,10 +57,7 @@ Object.extend(Ajax.Request.prototype,
 		catch (e) 
 		{
 			if(typeof(json) == "string")
-			{
-				Logger.info("using json")
 				return Prado.CallbackRequest.decode(json);
-			}
 		}
 	}
 });
@@ -118,6 +115,14 @@ Object.extend(Prado.CallbackRequest,
 	requestInProgress : null,
 	
 	/**
+	 * Add ids of inputs element to post in the request.
+	 */
+	addPostLoaders : function(ids)
+	{
+		this.PostDataLoaders = this.PostDataLoaders.concat(ids);
+	},
+	
+	/**
 	 * Dispatch callback response actions.
 	 */
 	dispatchActions : function(transport,actions)
@@ -133,26 +138,14 @@ Object.extend(Prado.CallbackRequest,
 	{
 		for(var method in command)
 		{
-			if(command[method][0])
+			try
 			{
-				var id = command[method][0];
-				if($(id) || id.indexOf("[]") > -1)
-				{
-					try
-					{
-						method.toFunction().apply(this,command[method].concat(transport));
-					}
-					catch(e)
-					{	
-						if(typeof(Logger) != "undefined")
-							Prado.CallbackRequest.Exception.onException(null,e);
-					}
-				}
-				else if(typeof(Logger) != "undefined")
-				{
-					Logger.error("Error in executing callback response:", 
-					"Unable to find HTML element with ID '"+id+"' before executing "+method+"().");		
-				}
+				method.toFunction().apply(this,command[method].concat(transport));
+			}
+			catch(e)
+			{	
+				if(typeof(Logger) != "undefined")
+					Prado.CallbackRequest.Exception.onException(null,e);
 			}
 		}
 	},
@@ -251,18 +244,18 @@ Object.extend(Prado.CallbackRequest,
 	 */
 	dispatchPriorityRequest : function(callback)
 	{
-		Logger.info("priority request "+callback.id)
+		//Logger.info("priority request "+callback.id)
 		this.abortRequestInProgress();
 		
 		callback.request = new Ajax.Request(callback.url, callback.options);
 		callback.timeout = setTimeout(function()
 		{
-			Logger.warn("priority timeout");
+		//	Logger.warn("priority timeout");
 			Prado.CallbackRequest.abortRequestInProgress();
 		},callback.options.RequestTimeOut);
 		
 		this.requestInProgress = callback;
-		Logger.info("dispatched "+this.requestInProgress)
+		//Logger.info("dispatched "+this.requestInProgress)
 	},
 	
 	/**
@@ -270,7 +263,7 @@ Object.extend(Prado.CallbackRequest,
 	 */
 	dispatchNormalRequest : function(callback)
 	{
-		Logger.info("dispatching normal request");
+	//	Logger.info("dispatching normal request");
 		new Ajax.Request(callback.url, callback.options);
 	},
 	
@@ -280,10 +273,10 @@ Object.extend(Prado.CallbackRequest,
 	abortRequestInProgress : function()
 	{
 		inProgress = Prado.CallbackRequest.requestInProgress;
-		Logger.info("aborting ... "+inProgress);
+		//Logger.info("aborting ... "+inProgress);
 		if(inProgress)
 		{
-			Logger.warn("aborted "+inProgress.id)
+		//	Logger.warn("aborted "+inProgress.id)
 			inProgress.request.transport.abort();
 			clearTimeout(inProgress.timeout);
 			Prado.CallbackRequest.requestInProgress = null;
@@ -303,13 +296,11 @@ Object.extend(Prado.CallbackRequest,
 		{
 			data = request.header(this.PAGESTATE_HEADER);
 			if(typeof(data) == "string" && data.length > 0)
-			{
-				Logger.warn("updating page state");
 				pagestate.value = data;
-			}
 			else
 			{
-				Logger.debug("Bad page state:"+data);
+				if(typeof(Logger) != "undefined")
+					Logger.debug("Bad page state:"+data);
 			}
 		}
 	}

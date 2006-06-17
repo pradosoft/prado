@@ -1,6 +1,6 @@
 <?php
 /**
- * TActivePageAdapter class file.
+ * TActivePageAdapter, TCallbackEventParameter, TCallbackErrorHandler and TInvalidCallbackException class file.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link http://www.pradosoft.com/
@@ -9,11 +9,16 @@
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.ActiveControls
  */
- 
+
+/**
+ * Load callback response adapter class.
+ */
+Prado::using('System.Web.UI.ActiveControls.TCallbackResponseAdapter');
+
 /**
  * TActivePageAdapter class.
  * 
- * Callback request page handler.
+ * Callback request handler.
  * 
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @version $Revision: $  $Date: $
@@ -22,9 +27,21 @@
  */
 class TActivePageAdapter extends TControlAdapter
 {	
+	/**
+	 * Callback response data header name.
+	 */
 	const CALLBACK_DATA_HEADER = 'X-PRADO-DATA';
+	/**
+	 * Callback response client-side action header name.
+	 */
 	const CALLBACK_ACTION_HEADER = 'X-PRADO-ACTIONS';
+	/**
+	 * Callback error header name.
+	 */
 	const CALLBACK_ERROR_HEADER = 'X-PRADO-ERROR';
+	/**
+	 * Callback page state header name.
+	 */
 	const CALLBACK_PAGESTATE_HEADER = 'X-PRADO-PAGESTATE';
 		
 	/**
@@ -57,6 +74,7 @@ class TActivePageAdapter extends TControlAdapter
 
 	/**
 	 * Process the callback request.
+	 * @param THtmlWriter html content writer.
 	 */
 	public function processCallbackEvent($writer)
 	{
@@ -64,6 +82,9 @@ class TActivePageAdapter extends TControlAdapter
 		$this->raiseCallbackEvent();
 	}
 	
+	/**
+	 * Trap errors and exceptions to be handled by TCallbackErrorHandler.
+	 */
 	protected function trapCallbackErrorsExceptions()
 	{
 		$this->getApplication()->setErrorHandler(new TCallbackErrorHandler);
@@ -71,6 +92,7 @@ class TActivePageAdapter extends TControlAdapter
 	
 	/**
 	 * Render the callback response.
+	 * @param THtmlWriter html content writer.
 	 */
 	public function renderCallbackResponse($writer)
 	{
@@ -81,14 +103,12 @@ class TActivePageAdapter extends TControlAdapter
 	/**
 	 * Renders the callback response by adding additional callback data and
 	 * javascript actions in the header and page state if required.
+	 * @param THtmlWriter html content writer.
 	 */
 	protected function renderResponse($writer)
 	{
 		$response = $this->getResponse();
-		$executeJavascript = $this->getCallbackClientHandler()->getClientFunctionsToExecute()->toArray();
-		$actions = TJavascript::jsonEncode($executeJavascript);
-		$response->appendHeader(self::CALLBACK_ACTION_HEADER.': '.$actions);
-		
+
 		//send response data in header
 		if($response->getHasAdapter())
 		{
@@ -109,12 +129,29 @@ class TActivePageAdapter extends TControlAdapter
 				$response->appendHeader(self::CALLBACK_PAGESTATE_HEADER.': '.$pagestate);
 			}
 		}
+		
+		//safari must receive at least 1 byte of data.
+		$writer->write(" ");
+
+		//output the end javascript
+		if($this->getPage()->getClientScript()->hasEndScripts())
+		{
+			$writer = $response->createHtmlWriter();
+			$this->getPage()->getClientScript()->renderEndScripts($writer);
+			$this->getPage()->getCallbackClient()->evaluateScript($writer);
+		}
+		
+		//output the actions
+		$executeJavascript = $this->getCallbackClientHandler()->getClientFunctionsToExecute()->toArray();
+		$actions = TJavascript::jsonEncode($executeJavascript);
+		$response->appendHeader(self::CALLBACK_ACTION_HEADER.': '.$actions);
+
 	}
 
 	/**
 	 * Trys to find the callback event handler and raise its callback event.
-	 * @throws TInvalidCallbackRequestException if call back target is not found.
-	 * @throws TInvalidCallbackHandlerException if the requested target does not
+	 * @throws TInvalidCallbackException if call back target is not found.
+	 * @throws TInvalidCallbackException if the requested target does not
 	 * implement ICallbackEventHandler.
 	 */
 	private function raiseCallbackEvent()
@@ -129,13 +166,14 @@ class TActivePageAdapter extends TControlAdapter
 			}
 			else
 			{
-				throw new TInvalidCallbackHandlerException($callbackHandler->getUniqueID());
+				throw new TInvalidCallbackException(
+					'callback_invalid_handler', $callbackHandler->getUniqueID());
 			}
 		 }
 		 else
 		 {
 		 	$target = $this->getRequest()->itemAt(TPage::FIELD_CALLBACK_TARGET);
-		 	throw new TInvalidCallbackRequestException($target);
+		 	throw new TInvalidCallbackException('callback_invalid_target', $target);
 		 }
 	}
 	
@@ -164,7 +202,7 @@ class TActivePageAdapter extends TControlAdapter
 	}
 
 	/**
-	 * Callback parameter is decoded assuming JSON encoding. 
+	 * Gets callback parameter. JSON encoding is assumed.
 	 * @return string postback event parameter
 	 */
 	public function getCallbackEventParameter()
@@ -187,7 +225,7 @@ class TActivePageAdapter extends TControlAdapter
 	}
 	
 	/**
-	 * Gets the callback client script handler that allows javascript functions
+	 * Gets the callback client script handler. It handlers the javascript functions
 	 * to be executed during the callback response. 
 	 * @return TCallbackClientScript callback client handler.
 	 */
@@ -267,16 +305,34 @@ class TCallbackEventParameter extends TEventParameter
 	}
 }
 
+/**
+ * TCallbackErrorHandler class.
+ * 
+ * Captures errors and exceptions and send them back during callback response.
+ * When the application is in debug mode, the error and exception stack trace
+ * are shown. A TJavascriptLogger must be present on the client-side to view
+ * the error stack trace.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $  Sun Jun 18 19:11:47 EST 2006 $
+ * @package System.Web.UI.ActiveControls
+ * @since 3.0
+ */
 class TCallbackErrorHandler extends TErrorHandler
 {
+	/**
+	 * Displays the exceptions to the client-side TJavascriptLogger.
+	 * A HTTP 500 status code is sent and the stack trace is sent as JSON encoded.
+	 * @param Exception exception details.
+	 */
 	protected function displayException($exception)
 	{
 		if($this->getApplication()->getMode()===TApplication::STATE_DEBUG)
 		{
 			$response = $this->getApplication()->getResponse();
-			$data = TJavascript::jsonEncode($this->getExceptionData($exception));			
+			$trace = TJavascript::jsonEncode($this->getExceptionStackTrace($exception));			
 			$response->appendHeader('HTTP/1.0 500 Internal Error');
-			$response->appendHeader(TActivePageAdapter::CALLBACK_ERROR_HEADER.': '.$data);
+			$response->appendHeader(TActivePageAdapter::CALLBACK_ERROR_HEADER.': '.$trace);
 		}
 		else
 		{
@@ -286,9 +342,13 @@ class TCallbackErrorHandler extends TErrorHandler
 		$this->getApplication()->getResponse()->flush();
 	}
 	
-	private function getExceptionData($exception)
+	/**
+	 * @param Exception exception details.
+	 * @return array exception stack trace details.
+	 */
+	private function getExceptionStackTrace($exception)
 	{
-		$data['code']=$exception->getCode() > 0 ? $exception->getCode() : 505;
+		$data['code']=$exception->getCode() > 0 ? $exception->getCode() : 500;
 		$data['file']=$exception->getFile();
 		$data['line']=$exception->getLine();
 		$data['trace']=$exception->getTrace();
@@ -310,13 +370,16 @@ class TCallbackErrorHandler extends TErrorHandler
 	}
 }
 
-class TInvalidCallbackHandlerException extends TException
+/**
+ * TInvalidCallbackException class.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $  Sun Jun 18 19:17:13 EST 2006 $
+ * @package System.Web.UI.ActiveControls
+ * @since 3.0
+ */
+class TInvalidCallbackException extends TException
 {
-	
 } 
-
-class TInvalidCallbackRequestException extends TException
-{
-}
 
 ?>
