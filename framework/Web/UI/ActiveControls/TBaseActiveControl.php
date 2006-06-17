@@ -217,12 +217,27 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 */
 	protected function getDefaultClientSideOptions()
 	{
-		if(($id=$this->getCallbackOptions())!=='' 
-			&& ($control=$this->getControl()->findControl($id))!==null
-			&& $control instanceof TCallbackOptions)
+		if(($id=$this->getCallbackOptions())!=='')
+		{
+			if(($pos=strrpos($id,'.'))!==false)
+			{
+				$control=$this->getControl()->getSubProperty(substr($id,0,$pos));
+				$newid=substr($id,$pos+1);
+				if ($control!==null)
+					$control=$control->findControl($newid);
+			}
+			else 
+			{
+				 $control=$this->getControl()->findControl($id);
+			}
+			
+			if($control instanceof TCallbackOptions)
 				return $control->getClientSide()->getOptions()->toArray();
-		else
-			return array();
+			else
+				throw new TConfigurationException('callback_invalid_callback_options_ID', $id);				
+		}
+	
+		return array();
 	}
 
 	/**
