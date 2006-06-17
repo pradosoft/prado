@@ -9,7 +9,13 @@ class AutoCompleteTest extends TPage
 	{
 		$sender->setDataSource($this->matchCountries($param->getParameter()));
 		$sender->dataBind();
-		$sender->render($param->getOutput());
+		$sender->flush($param->getOutput());
+		$this->label1->Text = "suggestion for ".$param->getParameter();
+	}
+	
+	public function callback_requested($sender, $param)
+	{
+		$this->label1->Text = "Label 1: ".$this->textbox3->Text;
 	}
 	
 	protected function matchCountries($token)

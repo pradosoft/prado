@@ -15,6 +15,11 @@
 		font-family: Tahoma, Arial, Helvetica, sans-serif;
 		color: #333;
 	}
+	
+	ul.different 
+	{
+		background-color: pink;
+	}
 
 	.autocomplete li
 	{
@@ -27,14 +32,33 @@
 	}
 	</style>
 	
-	<h1>TAutoComplete Test</h1>
+	<h1 id="heading">TAutoComplete Test</h1>
+	<div><strong>Manual Testing Required</strong></div>
 	
 		<com:TAutoComplete Style="width: 20em"
-			OnCallback="suggestCountries"
+			ID="textbox1"
+			OnSuggest="suggestCountries"
 			Separator=", " 
 			ResultPanel.CssClass="autocomplete" />
 
+		<com:TAutoComplete Style="width: 30em; height: 20em" TextMode="MultiLine"
+				OnSuggest="suggestCountries"
+				Separator=", \n" 
+				ResultPanel.CssClass="autocomplete">
+			<prop:Suggestions.HeaderTemplate>
+				<ul class="different">
+			</prop:Suggestions.HeaderTemplate>
+		</com:TAutoComplete>
+				
+		<com:TAutoComplete Style="width: 20em"
+			id="textbox3"
+			OnSuggest="suggestCountries"
+			OnCallback="callback_requested"
+			Separator=", " AutoPostBack="true"
+			ResultPanel.CssClass="autocomplete" />				
+
 	<p><br /></p>
+	<com:TActiveLabel ID="label1" Text="Label 1" />
 	<p><br /></p>
 	<p><br /></p>
 	<p><br /></p>

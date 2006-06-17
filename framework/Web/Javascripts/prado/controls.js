@@ -53,10 +53,10 @@ Prado.WebUI.PostBackControl.prototype =
 			this._elementOnClick = this.element.onclick;
 			this.element.onclick = null;
 		}
-		Event.observe(this.element, "click", this.onClick.bindEvent(this,options));		
+		Event.observe(this.element, "click", this.elementClicked.bindEvent(this,options));		
 	},
 
-	onClick : function(event, options)
+	elementClicked : function(event, options)
 	{
 		var src = Event.element(event);
 		var doPostBack = true;
