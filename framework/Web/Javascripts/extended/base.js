@@ -33,7 +33,7 @@ Class.extend = function(base, definition)
 	Copyright 2006, Dean Edwards
 	License: http://creativecommons.org/licenses/LGPL/2.1/
 */
-/*
+
 var Base = function() {
 	if (arguments.length) {
 		if (this == window) { // cast an object to this class
@@ -134,7 +134,6 @@ Base.implement = function(_interface) {
 	if (_interface instanceof Function) _interface = _interface.prototype;
 	this.prototype.extend(_interface);
 };
-*/
 
 /*
  * Signals and Slots for Prototype: Easy custom javascript events

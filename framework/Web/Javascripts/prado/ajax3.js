@@ -11,7 +11,7 @@ Object.extend(Ajax.Request.prototype,
 	{
 	    var event = Ajax.Request.Events[readyState];
 	    var transport = this.transport, json = this.getHeaderData(Prado.CallbackRequest.DATA_HEADER);
-		
+
 	    if (event == 'Complete') 
 	    {	      
 	      try 

@@ -85,3 +85,98 @@ Prado.WebUI.TAutoComplete = Class.extend(Prado.WebUI.TAutoComplete,
 			this.updateChoices(result);
 	}	
 });
+
+/** 
+ * Callback Timer class. 
+ */
+Prado.WebUI.TCallbackTimer = Base.extend(
+{
+	count : 0,
+	timeout : 0,
+	
+	constructor : function(options)
+	{
+		this.options = Object.extend(
+		{
+			Interval : 1,
+			DecayRate : 0
+		}, options || {})
+		
+		this.onComplete = this.options.onComplete;
+		Prado.WebUI.TCallbackTimer.register(this);
+	},
+	
+	startTimer : function()
+	{
+		this.options.onComplete = this.onRequestComplete.bind(this);
+		setTimeout(this.onTimerEvent.bind(this), 200);
+	},
+	
+	stopTimer : function()
+	{
+		(this.onComplete || Prototype.emptyFunction).apply(this, arguments);
+		this.options.onComplete = undefined;
+		clearTimeout(this.timer);
+		this.timer = undefined;
+		this.count = 0;
+	},
+	
+	onTimerEvent : function()
+	{
+		this.options.params = this.timeout/1000;
+		new Prado.CallbackRequest(this.options.ID, this.options);
+	},
+	
+	onRequestComplete : function()
+	{
+		(this.onComplete || Prototype.emptyFunction).apply(this, arguments);
+		this.timer = setTimeout(this.onTimerEvent.bind(this), this.getNewTimeout())
+	},
+	
+	getNewTimeout : function()
+	{
+		switch(this.options.DecayType)
+		{
+			case 'Exponential':
+				t = (Math.exp(this.options.DecayRate*this.count*this.options.Interval))-1;
+			break;
+			case 'Linear':
+				t = this.options.DecayRate*this.count*this.options.Interval;
+			break;
+			case 'Quadratic':
+				t = this.options.DecayRate*this.count*this.count*this.options.Interval;
+			break;
+			case 'Cubic':
+				t = this.options.DecayRate*this.count*this.count*this.count*this.options.Interval;
+			break;
+			default : t = 0;
+		}
+		this.timeout = (t + this.options.Interval)*1000;
+		this.count++;
+		return parseInt(this.timeout);
+	}
+},
+//class methods
+{
+	timers : {},
+	
+	register : function(timer)
+	{
+		this.timers[timer.options.ID] = timer;
+	},
+	
+	start : function(id)
+	{
+		if(this.timers[id])
+			this.timers[id].startTimer();
+	},	
+	
+	stop : function(id)
+	{
+		if(this.timers[id])
+			this.timers[id].stopTimer();
+	}
+});
+
+
+
