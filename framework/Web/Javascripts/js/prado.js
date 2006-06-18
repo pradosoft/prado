@@ -252,7 +252,7 @@ $('PRADO_POSTBACK_TARGET').value=options['EventTarget'];$('PRADO_POSTBACK_PARAME
 Prado.Element={setValue:function(element,value)
 {var el=$(element);if(el&&typeof(el.value)!="undefined")
 el.value=value;},select:function(element,method,value)
-{var el=$(element);var isList=element.indexOf('[]')>-1;if(!el&&!isList)return;method=isList?'check'+method:el.tagName.toLowerCase()+method;var selection=Prado.Element.Selection;if(isFunction(selection[method]))
+{var el=$(element);var isList=element.indexOf('[]')>-1;if(!el&&!isList)return;method=isList?'check'+method:el.tagName.toLowerCase()+method;var selection=Prado.Element.Selection;if(typeof(selection[method])=="function")
 selection[method](isList?element:el,value);},click:function(element)
 {var el=$(element);if(el)
 Event.fireEvent(el,'click');},setAttribute:function(element,attribute,value)

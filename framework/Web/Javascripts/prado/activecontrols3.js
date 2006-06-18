@@ -15,6 +15,17 @@ Prado.WebUI.CallbackControl = Class.extend(Prado.WebUI.PostBackControl,
  */
 Prado.WebUI.TActiveButton = Class.extend(Prado.WebUI.CallbackControl);
 
+/** 
+ * Active check box.
+ */
+Prado.WebUI.TActiveCheckBox = Class.extend(Prado.WebUI.CallbackControl,
+{
+	onPostBack : function(event, options)
+	{
+		new Prado.CallbackRequest(options.EventTarget, options);
+	}		
+});
+
 /**
  * TActiveTextBox control, handles onchange event.
  */

@@ -1,0 +1,29 @@
+<com:TForm ID="form1">
+	<h1>Active CheckBox Test</h1>
+	<com:TActiveCheckBox ID="checkbox1" Text="CheckBox 1" OnCallback="checkbox_requested" />
+	<com:TActiveCheckBox ID="checkbox2" Text="CheckBox 2" OnCallback="checkbox_requested">
+		<prop:ActiveControl.ClientSide OnLoading="$('status').show()" OnComplete="$('status').hide()" />
+	</com:TActiveCheckBox>
+	<div style="margin:1em; padding:0.5em; text-align:center; border:1px solid #ccc;">
+		<com:TActiveLabel ID="label1" Text="Label 1" />
+	</div>
+	<div style="margin:1em; padding: 1em; text-align: center">
+		<com:TActiveButton id="change_text1" 
+			OnClick="change_checkbox1_text" Text="Change CheckBox 1 Text"/>
+		<com:TActiveButton id="change_checked1"
+			OnClick="change_checkbox1_checked" Text="Toggle CheckBox 1"/>
+
+		<com:TActiveButton id="change_text2" 
+			OnClick="change_checkbox2_text" Text="Change CheckBox 2 Text"/>
+		<com:TActiveButton id="change_checked2"
+			OnClick="change_checkbox2_checked" Text="Toggle CheckBox 2"/>
+	</div>
+	<div id="status" style="margin:1em; padding:0.5em; 
+		text-align:center; 
+		background-color:#900; 
+		color:white; display: none;
+		position: absolute; right: 0; top: 0">
+		Loading...
+	</div>
+	<com:TJavascriptLogger />
+</com:TForm>

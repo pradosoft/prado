@@ -19,7 +19,7 @@ Prado.Element =
 		if(!el && !isList) return;
 		method = isList ? 'check'+method : el.tagName.toLowerCase()+method;
 		var selection = Prado.Element.Selection;
-		if(isFunction(selection[method])) 
+		if(typeof(selection[method]) == "function") 
 			selection[method](isList ? element : el,value);
 	},
 
