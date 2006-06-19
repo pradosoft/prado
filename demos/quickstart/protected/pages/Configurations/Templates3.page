@@ -44,6 +44,20 @@ The format of databind tags is as follows,
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;%# PhpExpression %&gt;
 </com:TTextHighlighter>
+<p>
+Since v3.0.2, expression tags and databind tags can be embedded within static strings. For example, you can write the following in a template,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TLabel&gt;
+  &lt;prop:Text&gt;
+  Today is &lt;%= date('F d, Y',time()) &gt;.
+  The page class is &lt;%= get_class($this) %&gt;.
+  &lt;/prop:Text&gt;
+&lt;/com:TLabel&gt;
+</com:TTextHighlighter>
+<p>
+Previously, you would have to use a single expression with string concatenations to achieve the same effect.
+</p>
 
 <a name="pt"></a>
 <h3 id="1705">Parameter Tags</h3>

@@ -609,7 +609,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
- * @package System.Web.UI
+ * @package System.Web
  * @since 3.0
  */
 class TSessionIterator implements Iterator

@@ -134,10 +134,13 @@ abstract class TListControl extends TDataBoundControl
 
 	/**
 	 * Gets the name of the javascript class responsible for performing postback for this control.
-	 * This method overrides the parent implementation.
+	 * Derived classes may override this method and return customized js class names.
 	 * @return string the javascript class name
 	 */
-	abstract protected function getClientClassName();
+	protected function getClientClassName()
+	{
+		return 'Prado.WebUI.TListControl';
+	}
 
 	/**
 	 * @return array postback options for JS postback code

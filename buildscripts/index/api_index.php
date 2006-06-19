@@ -25,6 +25,7 @@ class api_index
 		$count = 0;
 		foreach($files as $file)
 		{
+			echo " processing $file...\n";
 			$content = $this->get_details($file, $this->_api);
 			
 			$doc = new Zend_Search_Lucene_Document();
@@ -86,8 +87,8 @@ class api_index
 			if(is_file($filepath) && $entry[0] !== '_')
 				$files[] = realpath($filepath);
 		}
-		return $files;
 		$d->close();
+		return $files;
 	}
 	
 	function get_doc_content($file)

@@ -167,7 +167,7 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * @return string style of bullets. Valid values include
+	 * @param string style of bullets. Valid values include
 	 * 'NotSet','Numbered','LowerAlpha','UpperAlpha','LowerRoman','UpperRoman','Disc','Circle','Square','CustomImage'
 	 */
 	public function setBulletStyle($value)
@@ -176,7 +176,7 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * @param string display mode of the list. Defaults to 'Text'.
+	 * @return string display mode of the list. Defaults to 'Text'.
 	 */
 	public function getDisplayMode()
 	{
