@@ -169,7 +169,12 @@
                ignorelist="*pradolite.php,*3rdParty/*,*Javascripts/*,*I18N/core/*"
                output="HTML:frames:default,CHM:default:default,HTML:Smarty:PradoSoft" />
     <!-- generate CHM file -->
-    <exec command="${hhc} ${build.doc.dir}/manual/CHMdefaultConverter/phpdoc.hhp" />
+    <if>
+      <equals arg1="${prado.winbuild}" arg2="true"/>
+      <then>
+        <exec command="${hhc} ${build.doc.dir}/manual/CHMdefaultConverter/phpdoc.hhp" />
+      </then>
+    </if>
     
     <echo>Indexing API manuals...</echo>
     <prado-api-index docdir="${build.doc.dir}/manual/HTMLSmartyConverter" todir="${build.doc.dir}/manual/HTMLSmartyConverter" />
@@ -187,11 +192,14 @@
     </move>
     <move file="${build.doc.dir}/manual/CHMdefaultConverter/documentation.chm" todir="${build.src.dir}/docs" />
     
-    <!--
-    <exec command="tar czvf ${pkgname}.tar.gz ${pkgname}" dir="${build.base.dir}"/>
-    <move file="${build.base.dir}/${pkgname}.tar.gz" todir="${build.dist.dir}" />
-    -->
     <echo>Generating compressed distribution files...</echo>
+    <if>
+      <equals arg1="${prado.winbuild}" arg2="false"/>
+      <then>
+        <exec command="tar czvf ${pkgname}.tar.gz ${pkgname}" dir="${build.base.dir}"/>
+        <move file="${build.base.dir}/${pkgname}.tar.gz" todir="${build.dist.dir}" />
+      </then>
+    </if>
     <exec command="zip ${pkgname}.zip -r ${pkgname}" dir="${build.base.dir}" />
     <move file="${build.base.dir}/${pkgname}.zip" todir="${build.dist.dir}" />
 
@@ -229,11 +237,14 @@
   </target>
 
   <target name="snapshot" depends="rebuild">  
-    <!--
-    <exec command="tar czvf ${pkgname}.tar.gz ${pkgname}" dir="${build.base.dir}"/>
-    <move file="${build.base.dir}/${pkgname}.tar.gz" todir="${build.dist.dir}" />
-    -->
     <echo>Generating compressed distribution files...</echo>
+    <if>
+      <equals arg1="${prado.winbuild}" arg2="false"/>
+      <then>
+        <exec command="tar czvf ${pkgname}.tar.gz ${pkgname}" dir="${build.base.dir}"/>
+        <move file="${build.base.dir}/${pkgname}.tar.gz" todir="${build.dist.dir}" />
+      </then>
+    </if>
     <exec command="zip ${pkgname}.zip -r ${pkgname}" dir="${build.base.dir}" />
     <move file="${build.base.dir}/${pkgname}.zip" tofile="${build.snapshot.dir}/prado-latest.zip" />
     <copy file="${build.src.dir}/HISTORY" tofile="${build.snapshot.dir}/changelog-latest.txt" />

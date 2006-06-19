@@ -11,6 +11,10 @@ class PradoVersionTask extends PropertyTask
 	{
 		$this->addProperty('prado.version',$this->getPradoVersion());
 		$this->addProperty('prado.revision',$this->getPradoRevision());
+		if(substr(PHP_OS, 0, 3) == 'WIN')
+			$this->addProperty('prado.winbuild','true');
+		else
+			$this->addProperty('prado.winbuild','false');
 	}
 
 	/**
