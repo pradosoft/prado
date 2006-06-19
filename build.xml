@@ -78,6 +78,8 @@
     <exclude name="**/*~"/>
     <exclude name="**/runtime/*"/>
     <exclude name="**/assets/*"/>
+    <exclude name="**/runtime/*/**"/>
+    <exclude name="**/assets/*/**"/>
     <exclude name="demos/blog/protected/Data/Blog.db" />
     <include name="demos/**/*"/>
   </fileset>

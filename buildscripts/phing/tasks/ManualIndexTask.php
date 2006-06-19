@@ -29,7 +29,7 @@ class ManualIndexTask extends Task
 		$zend_path = $srcdir.'/demos/quickstart/protected/index';
 		set_include_path(get_include_path().PATH_SEPARATOR.realpath($zend_path));
 		require_once ('Zend/Search/Lucene.php');
-		require_once($srcdir.'/buildscripts/index/API_index.php');
+		require_once($srcdir.'/buildscripts/index/api_index.php');
 		$api = new api_index($this->todir, realpath($this->docdir));
 		$api->create_index();
 	}
