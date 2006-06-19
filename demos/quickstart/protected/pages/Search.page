@@ -4,24 +4,6 @@
 	<com:SearchBox ID="search"  />
 	</div>
 
-	<com:TRepeater id="api_results">
-	<prop:HeaderTemplate>
-	<div class="searchHeader">
-		Found <%# $this->Parent->Data->Count %> classes in API documentation.
-	</div>
-	</prop:HeaderTemplate>
-	<prop:ItemTemplate>
-	<div class="searchAPIItem">		
-		<div class="searchItemLink">
-		<%# $this->ItemIndex + 1 %>.
-		<a href="http://www.pradosoft.com/docs/manual/<%# $this->DataItem->link %>">
-			<%# $this->DataItem->title %>
-		</a>
-		</div>
-	</div>
-	</prop:ItemTemplate>
-	</com:TRepeater>
-
 	<com:TRepeater id="quickstart_results">
 	<prop:HeaderTemplate>
 	<div class="searchHeader">

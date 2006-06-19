@@ -1,0 +1,3 @@
+#!/bin/sh
+
+buildscripts/phing/bin/phing $0 $@

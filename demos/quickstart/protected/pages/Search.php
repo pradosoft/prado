@@ -13,13 +13,8 @@ class Search extends TPage
 			$hits_1 =  $quickstart->find($text);
 			$this->quickstart_results->setDataSource($hits_1);
 			$this->quickstart_results->dataBind();
-
-			$api = $this->getApplication()->getModule("api_search");
-			$hits_2 = $api->find($text);
-			$this->api_results->setDataSource($hits_2);
-			$this->api_results->dataBind();
 			
-			$this->emptyResult->setVisible(count($hits_1)+count($hits_2) == 0);
+			$this->emptyResult->setVisible(!count($hits_1));
 		}
 	}
 	
