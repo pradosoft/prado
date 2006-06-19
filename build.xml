@@ -86,9 +86,9 @@
       Writable files and directories
   -->
   <fileset dir="." id="writables">
-    <include name="demos/**/runtime" />
-    <include name="demos/**/assets" />
-    <include name="demos/blog/protected/Data" />
+    <include name="${build.src.dir}/demos/**/runtime" />
+    <include name="${build.src.dir}/demos/**/assets" />
+    <include name="${build.src.dir}/demos/blog/protected/Data" />
   </fileset>
 
   <target name="help">
@@ -131,7 +131,7 @@
     </copy>
     
     <echo>Changing file permissions...</echo>
-    <chmod mode="777">
+    <chmod mode="0777">
       <fileset refid="writables" />
     </chmod>
     
