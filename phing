@@ -1,3 +1,5 @@
 #!/bin/sh
+PHING_HOME=`pwd`/buildscripts/phing
+export PHING_HOME
+php -d html_errors=off -qC buildscripts/phing/bin/phing.php -logger phing.listener.AnsiColorLogger $@
 
-buildscripts/phing/bin/phing $0 $@
