@@ -190,7 +190,12 @@
         <include name="**/**" />
       </fileset>
     </move>
-    <move file="${build.doc.dir}/manual/CHMdefaultConverter/documentation.chm" todir="${build.src.dir}/docs" />
+    <if>
+      <equals arg1="${prado.winbuild}" arg2="true"/>
+      <then>
+        <move file="${build.doc.dir}/manual/CHMdefaultConverter/documentation.chm" tofile="${build.src.dir}/docs/manual.chm" />
+      </then>
+    </if>
     
     <echo>Generating compressed distribution files...</echo>
     <if>
