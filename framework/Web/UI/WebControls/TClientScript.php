@@ -104,9 +104,12 @@ class TClientScript extends TControl
 		$types = preg_split('/,|\s+/', $this->getPreRenderControlTypes());
 		foreach($types as $type)
 		{
-			$control = Prado::createComponent($type);
-			$control->setPage($this->getPage());
-			$control->onPreRender($param);
+			if(strlen($type))
+			{
+				$control = Prado::createComponent(trim($type));
+				$control->setPage($this->getPage());
+				$control->onPreRender($param);
+			}
 		}		
 	}
 }
