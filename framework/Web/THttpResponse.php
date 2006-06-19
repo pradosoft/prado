@@ -274,12 +274,15 @@ class THttpResponse extends TModule implements ITextWriter
 	/**
 	 * Redirects the browser to the specified URL.
 	 * The current application will be terminated after this method is invoked.
-	 * @param string URL to be redirected to
+	 * @param string URL to be redirected to. If the URL is a relative one, the base URL of
+	 * the current request will be inserted at the beginning.
 	 */
 	public function redirect($url)
 	{
 		if(!$this->getApplication()->getRequestCompleted())
 			$this->getApplication()->onEndRequest();
+		if($url[0]==='/')
+			$url=$this->getRequest()->getBaseUrl().$url;
 		header('Location:'.$url);
 		exit();
 	}

@@ -259,7 +259,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function getIsSecureConnection()
 	{
-		return !empty($_SERVER['HTTPS']);
+		return isset($_SERVER['HTTPS']) && strcasecmp($_SERVER['HTTPS'],'off');
 	}
 
 	/**
@@ -287,6 +287,14 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	}
 
 	/**
+	 * @return string schema and hostname of the requested URL
+	 */
+	public function getBaseUrl()
+	{
+		return ($this->getIsSecureConnection() ? "https://" : "http://") . $_SERVER ['HTTP_HOST'];
+	}
+	
+	/**
 	 * @return string entry script URL (w/o host part)
 	 */
 	public function getApplicationUrl()
@@ -294,6 +302,14 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 		return $_SERVER['SCRIPT_NAME'];
 	}
 
+	/**
+	 * @return string entry script URL (w/ host part)
+	 */
+	public function getAbsoluteApplicationUrl()
+	{
+		return $this->getBaseUrl() . $this->getApplicationUrl();
+	}
+	
 	/**
 	 * @return string application entry script file path (processed w/ realpath())
 	 */
