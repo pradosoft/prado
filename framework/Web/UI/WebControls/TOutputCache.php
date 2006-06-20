@@ -27,13 +27,18 @@
  * where content to be cached can be static text and/or component tags.
  *
  * The validity of the cached content is determined based on two factors:
- * the {@link setDuration Duration} and the {@link getCacheDependency CacheDependency}.
+ * the {@link setDuration Duration} and the cache dependency.
  * The former specifies the number of seconds that the data can remain
- * valid in cache (defaults to 60s), while the latter specifies a dependency
- * that the data depends on. If the dependency changes, the cached content
- * is invalidated. By default, TOutputCache doesn't specify a dependency.
- * Derived classes may override {@link getCacheDependency()} method to
- * enforce a dependency (such as system state change, etc.)
+ * valid in cache (defaults to 60s), while the latter specifies conditions 
+ * that the cached data depends on. If a dependency changes, 
+ * (e.g. relevant data in DB are updated), the cached data will be invalidated.
+ *
+ * There are two ways to specify cache dependency. One may write event handlers
+ * to respond to the {@link onCheckDependency OnCheckDependency} event and set
+ * the event parameter's {@link TOutputCacheEventParameter::getIsValid IsValid}
+ * property to indicate whether the cached data remains valid or not.
+ * One can also extend TOutputCache and override its {@link getCacheDependency CacheDependency}
+ * function. While the former is easier to use, the latter offers more extensibility.
  *
  * The content fetched from cache may be variated with respect to
  * some parameters. It supports variation with respect to request parameters,
@@ -107,13 +112,16 @@ class TOutputCache extends TControl implements INamingContainer
 				{
 					$this->_cacheAvailable=true;
 					$data=$this->_cache->get($this->getCacheKey());
-					if(($this->_dataCached=($data!==false)))
+					$param=new TOutputCacheEventParameter;
+					$this->onCheckDependency($param);
+					$this->_dataCached=($data!==false && $param->getIsValid());
+					if($this->_dataCached)
 						list($this->_contents,$this->_state,$this->_actions)=$data;
 				}
 			}
 		}
 	}
-
+	
 	/**
 	 * Performs the Init step for the control and all its child controls.
 	 * This method overrides the parent implementation by setting up
@@ -371,6 +379,18 @@ class TOutputCache extends TControl implements INamingContainer
 	}
 
 	/**
+	 * This event is raised when the output cache is checking cache dependency.
+	 * An event handler may be written to check customized dependency conditions.
+	 * The checking result should be saved by setting {@link TOutputCacheEventParameter::setIsValid IsValid}
+	 * property of the event parameter (which defaults to true).
+	 * @param TOutputCacheEventParameter event parameter
+	 */
+	public function onCheckDependency($param)
+	{
+		$this->raiseEvent('OnCheckDependency',$this,$param);
+	}
+
+	/**
 	 * Renders the output cache control.
 	 * This method overrides the parent implementation by capturing the output
 	 * from its child controls and saving it into cache, if output cache is needed.
@@ -396,6 +416,41 @@ class TOutputCache extends TControl implements INamingContainer
 		}
 		else
 			parent::render($writer);
+	}
+}
+
+/**
+ * TOutputCacheEventParameter class
+ *
+ * TOutputCacheEventParameter encapsulates the parameter data for
+ * <b>OnCheckDependency</b> event of {@link TOutputCache} control.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
+class TOutputCacheEventParameter extends TEventParameter
+{
+	/**
+	 * @var boolean whether the dependency remains valid
+	 */
+	private $_isValid=true;
+
+	/**
+	 * @return boolean whether the dependency remains valid. Defaults to true.
+	 */
+	public function getIsValid()
+	{
+		return $this->_isValid;
+	}
+
+	/**
+	 * @param boolean whether the dependency remains valid
+	 */
+	public function setIsValid($value)
+	{
+		$this->_isValid=TPropertyValue::ensureBoolean($value);
 	}
 }
 
