@@ -9,6 +9,7 @@ CHG: ensureChildControls() is now invoked in TControl::initRecursive (Qiang)
 CHG: Postback enabled control will always disable default client-side browser action. (Qiang)
 CHG: CSS and JS files in a theme are now included in page in alphabetic order (Qiang)
 ENH: Ticket#206 - Added OnValidate, OnError, OnSuccess events to validators (Qiang)
+ENH: Ticket#230 - Added TDataList.EmptyTemplate property (Qiang)
 ENH: Ticket#231 - Added TButton.ButtonType property to allow reset button (Qiang)
 ENH: Ticket#232 - Allow <%# %> and <%= %> embedded within property values (Qiang)
 
