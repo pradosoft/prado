@@ -3,6 +3,7 @@ Version 3.0.2 July 2, 2006
 BUG: Ticket#182 - List and validator controls cause problem in child classes (Qiang)
 BUG: Ticket#191 - Duplicated postbacks occur when using TButton with validators (Qiang)
 BUG: Ticket#213 - PRADO Requirements Checker charset error (Qiang)
+BUG: Ticket#234 - Postback target could be out of date (Qiang)
 BUG: Ticket#244 - redirect() needs absolute URL (Qiang)
 BUG: Ticket#245 - getIsSecureConnection() is not working correctly (Qiang)
 CHG: ensureChildControls() is now invoked in TControl::initRecursive (Qiang)
