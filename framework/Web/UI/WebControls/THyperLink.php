@@ -73,7 +73,7 @@ class THyperLink extends TWebControl
 			if(($toolTip=$this->getToolTip())!=='')
 				$image->setToolTip($toolTip);
 			if(($text=$this->getText())!=='')
-				$image->setAlternateText(THttpUtility::htmlEncode($text));
+				$image->setAlternateText($text);
 			$image->renderControl($writer);
 		}
 	}

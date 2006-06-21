@@ -13,36 +13,34 @@
 /**
  * TButton class
  *
- * TButton creates a click button on the page. It is used to submit data to a page.
- * You can create either a <b>submit</b> button or a <b>command</b> button.
+ * TButton creates a click button on the page. It is mainly used to submit data to a page.
  *
- * A <b>command</b> button has a command name (specified by
- * the {@link setCommandName CommandName} property) and and a command parameter
- * (specified by {@link setCommandParameter CommandParameter} property)
- * associated with the button. This allows you to create multiple TButton
+ * TButton raises two server-side events, {@link onClick OnClick} and {@link onCommand OnCommand},
+ * when it is clicked on the client-side. The difference between these two events
+ * is that the event {@link onCommand OnCommand} is bubbled up to the button's ancestor controls.
+ * And within the event parameter for {@link onCommand OnCommand} contains the reference
+ * to the {@link setCommandName CommandName} and {@link setCommandParameter CommandParameter}
+ * property values that are set for the button object. This allows you to create multiple TButton
  * components on a Web page and programmatically determine which one is clicked
- * with what parameter. You can provide an event handler for
- * {@link onCommand OnCommand} event to programmatically control the actions performed
- * when the command button is clicked. In the event handler, you can determine
- * the {@link setCommandName CommandName} property value and
- * the {@link setCommandParameter CommandParameter} property value
- * through the {@link TCommandParameter::getName Name} and
- * {@link TCommandParameter::getParameter Parameter} properties of the event
- * parameter which is of type {@link TCommandEventParameter}.
+ * with what parameter.
  *
- * A <b>submit</b> button does not have a command name associated with the button
- * and clicking on it simply posts the Web page back to the server.
- * By default, a TButton component is a submit button.
- * You can provide an event handler for the {@link onClick OnClick} event
- * to programmatically control the actions performed when the submit button is clicked.
- *
- * Clicking on button can trigger form validation, if
+ * Clicking on button can also trigger form validation, if
  * {@link setCausesValidation CausesValidation} is true.
- * And the validation may be restricted within a certain group of validator
+ * The validation may be restricted within a certain group of validator
  * controls by setting {@link setValidationGroup ValidationGroup} property.
  * If validation is successful, the data will be post back to the same page.
  *
  * TButton displays the {@link setText Text} property as the button caption.
+ *
+ * TButton can be one of three {@link setButtonType ButtonType}: Submit, Button and Reset.
+ * By default, it is a Submit button and the form submission uses the browser's
+ * default submission capability. If it is Button or Reset, postback may occur
+ * if one of the following conditions is met:
+ * - an event handler is attached to {@link onClick OnClick} event;
+ * - an event handler is attached to {@link onCommand OnCommand} event;
+ * - the button is in a non-empty validation group.
+ * In addition, clicking on a Reset button will clear up all input fields
+ * if the button does not cause a postback.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -68,13 +66,13 @@ class TButton extends TWebControl implements IPostBackEventHandler, IButtonContr
 	{
 		$page=$this->getPage();
 		$page->ensureRenderInForm($this);
-		$writer->addAttribute('type','submit');
+		$writer->addAttribute('type',strtolower($this->getButtonType()));
 		if(($uniqueID=$this->getUniqueID())!=='')
 			$writer->addAttribute('name',$uniqueID);
 		$writer->addAttribute('value',$this->getText());
 		if($this->getEnabled(true))
 		{
-			if($this->canCauseValidation())
+			if($this->needPostBackScript())
 			{
 				$writer->addAttribute('id',$this->getClientID());
 				$this->getPage()->getClientScript()->registerPostBackControl('Prado.WebUI.TButton',$this->getPostBackOptions());
@@ -98,6 +96,15 @@ class TButton extends TWebControl implements IPostBackEventHandler, IButtonContr
 		}
 		else
 			return false;
+	}
+
+	/**
+	 * @return boolean whether the button needs javascript to do postback
+	 */
+	protected function needPostBackScript()
+	{
+		return $this->canCauseValidation() || ($this->getButtonType()!=='Submit' &&
+			($this->hasEventHandler('OnClick') || $this->hasEventHandler('OnCommand')));
 	}
 
 	/**
@@ -244,6 +251,22 @@ class TButton extends TWebControl implements IPostBackEventHandler, IButtonContr
 	public function setValidationGroup($value)
 	{
 		$this->setViewState('ValidationGroup',$value,'');
+	}
+
+	/**
+	 * @return string the type of the button. Defaults to 'Submit'.
+	 */
+	public function getButtonType()
+	{
+		return $this->getViewState('ButtonType','Submit');
+	}
+
+	/**
+	 * @param string the type of the button. Valid values include 'Submit', 'Reset', 'Button'.
+	 */
+	public function setButtonType($value)
+	{
+		$this->setViewState('ButtonType',TPropertyValue::ensureEnum($value,'Submit','Reset','Button'),'Submit');
 	}
 }
 
