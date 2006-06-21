@@ -115,6 +115,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 * @var Itemplate various item templates
 	 */
 	private $_itemTemplate=null;
+	private $_emptyTemplate=null;
 	private $_alternatingItemTemplate=null;
 	private $_selectedItemTemplate=null;
 	private $_editItemTemplate=null;
@@ -360,6 +361,26 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	public function getFooter()
 	{
 		return $this->_footer;
+	}
+
+	/**
+	 * @return ITemplate the template applied when no data is bound to the datalist
+	 */
+	public function getEmptyTemplate()
+	{
+		return $this->_emptyTemplate;
+	}
+
+	/**
+	 * @param ITemplate the template applied when no data is bound to the datalist
+	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 */
+	public function setEmptyTemplate($value)
+	{
+		if($value instanceof ITemplate || $value===null)
+			$this->_emptyTemplate=$value;
+		else
+			throw new TInvalidDataTypeException('datalist_template_required','EmptyTemplate');
 	}
 
 	/**
@@ -1109,6 +1130,8 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 			if($this->_footerTemplate!==null)
 				$this->_footer=$this->createItemInternal(-1,'Footer',false,null);
 		}
+		else if($this->_emptyTemplate!==null)
+			$this->_emptyTemplate->instantiateIn($this);
 		$this->clearChildState();
 	}
 
@@ -1150,6 +1173,8 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 		}
 		if($itemIndex>0 && $this->_footerTemplate!==null)
 			$this->_footer=$this->createItemInternal(-1,'Footer',true,null);
+		if($itemIndex===0 && $this->_emptyTemplate!==null)
+			$this->_emptyTemplate->instantiateIn($this);
 		$this->setViewState('ItemCount',$itemIndex,0);
 	}
 
@@ -1162,9 +1187,14 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	{
 		if($this->getHasControls())
 		{
-			$this->applyItemStyles();
-			$repeatInfo=$this->getRepeatInfo();
-			$repeatInfo->renderRepeater($writer,$this);
+			if($this->getItemCount()>0)
+			{
+				$this->applyItemStyles();
+				$repeatInfo=$this->getRepeatInfo();
+				$repeatInfo->renderRepeater($writer,$this);
+			}
+			else if($this->_emptyTemplate!==null)
+				parent::render($writer);
 		}
 	}
 }
@@ -1317,7 +1347,7 @@ class TDataListItem extends TWebControl implements INamingContainer
 	}
 
 	/**
-	 * @return string item type, can be 'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager'
+	 * @return string item type
 	 */
 	public function getItemType()
 	{
@@ -1325,7 +1355,7 @@ class TDataListItem extends TWebControl implements INamingContainer
 	}
 
 	/**
-	 * @param mixed data to be associated with the item
+	 * @param string item type. Valid values include 'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager'.
 	 */
 	public function setItemType($value)
 	{

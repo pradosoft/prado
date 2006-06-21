@@ -240,6 +240,7 @@ listcontrolvalidator_invalid_control	= {0}.ControlToValidate contains an invalid
 
 repeater_template_required				= TRepeater.{0} requires a template instance implementing ITemplate interface.
 datalist_template_required				= TDataList.{0} requires a template instance implementing ITemplate interface.
+datagrid_template_required				= TDataGrid.{0} requires a template instance implementing ITemplate interface.
 templatecolumn_template_required		= TTemplateColumn.{0} requires a template instance implementing ITemplate interface.
 
 datagrid_currentpageindex_invalid		= TDataGrid.CurrentPageIndex must be no less than 0.

@@ -44,15 +44,6 @@ Prado::using('System.Util.TDataFieldAccessor');
 abstract class TBaseDataList extends TDataBoundControl
 {
 	/**
-	 * No body content should be added to data list control.
-	 * This method is invoked when body content is parsed and added to this control.
-	 * @param mixed body content to be added
-	 */
-	public function addParsedObject($object)
-	{
-	}
-
-	/**
 	 * Creates a style object for the control.
 	 * This method creates a {@link TTableStyle} to be used by the data list control.
 	 * @return TTableStyle control style to be used
