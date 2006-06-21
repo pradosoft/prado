@@ -186,6 +186,14 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	private $_pagedDataSource=null;
 	private $_topPager=null;
 	private $_bottomPager=null;
+	/**
+	 * @var ITemplate template used when empty data is bounded
+	 */
+	private $_emptyTemplate=null;
+	/**
+	 * @var boolean whether empty template is effective
+	 */
+	private $_useEmptyTemplate=false;
 
 	/**
 	 * @return string tag name (table) of the datagrid
@@ -197,13 +205,15 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 
 	/**
 	 * Adds objects parsed in template to datagrid.
-	 * Only datagrid columns are added into {@link getColumns Columns} collection.
+	 * Datagrid columns are added into {@link getColumns Columns} collection.
 	 * @param mixed object parsed in template
 	 */
 	public function addParsedObject($object)
 	{
 		if($object instanceof TDataGridColumn)
 			$this->getColumns()->add($object);
+		else
+			parent::addParsedObject($object);
 	}
 
 	/**
@@ -683,6 +693,26 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
+	 * @return ITemplate the template applied when no data is bound to the datagrid
+	 */
+	public function getEmptyTemplate()
+	{
+		return $this->_emptyTemplate;
+	}
+
+	/**
+	 * @param ITemplate the template applied when no data is bound to the datagrid
+	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 */
+	public function setEmptyTemplate($value)
+	{
+		if($value instanceof ITemplate || $value===null)
+			$this->_emptyTemplate=$value;
+		else
+			throw new TInvalidDataTypeException('datagrid_template_required','EmptyTemplate');
+	}
+
+	/**
 	 * This method overrides parent's implementation to handle
 	 * {@link onItemCommand OnItemCommand} event which is bubbled from
 	 * {@link TDataGridItem} child controls.
@@ -953,6 +983,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		$this->_footer=null;
 		$this->_topPager=null;
 		$this->_bottomPager=null;
+		$this->_useEmptyTemplate=false;
 	}
 
 	/**
@@ -968,6 +999,17 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			$ds->setDataSource(new TDummyDataSource($itemCount));
 		else
 			$ds->setDataSource(new TDummyDataSource($this->getViewState('DataSourceCount',0)));
+
+		if($ds->getCount()===0 && $ds->getCurrentPageIndex()===0 && $this->_emptyTemplate!==null)
+		{
+			$this->_emptyTemplate->instantiateIn($this);
+			$this->_useEmptyTemplate=true;
+			$this->clearViewState('ItemCount');
+			$this->clearViewState('PageCount');
+			$this->clearViewState('DataSourceCount');
+			return;
+		}
+
 		$columns=new TList($this->getColumns());
 		$columns->mergeWith($this->_autoColumns);
 
@@ -1020,9 +1062,21 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		$keyField=$this->getDataKeyField();
 		$this->_pagedDataSource=$ds=$this->createPagedDataSource();
 		$ds->setDataSource($data);
+
 		$allowPaging=$ds->getAllowPaging();
 		if($allowPaging && $ds->getCurrentPageIndex()>=$ds->getPageCount())
 			throw new TInvalidDataValueException('datagrid_currentpageindex_invalid');
+
+		if($ds->getCount()===0 && $ds->getCurrentPageIndex()===0 && $this->_emptyTemplate!==null)
+		{
+			$this->_emptyTemplate->instantiateIn($this);
+			$this->_useEmptyTemplate=true;
+			$this->clearViewState('ItemCount');
+			$this->clearViewState('PageCount');
+			$this->clearViewState('DataSourceCount');
+			return;
+		}
+
 		// get all columns
 		if($this->getAutoGenerateColumns())
 		{
@@ -1046,7 +1100,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			$selectedIndex=$this->getSelectedItemIndex();
 			$editIndex=$this->getEditItemIndex();
 			$index=0;
-			$dsIndex=$ds->getAllowPaging()?$ds->getFirstIndexInPage():0;
+			$dsIndex=$allowPaging?$ds->getFirstIndexInPage():0;
 			foreach($ds as $key=>$data)
 			{
 				if($keyField!=='')
@@ -1502,17 +1556,31 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	{
 		if($this->getHasControls())
 		{
-			$this->applyItemStyles();
-			if($this->_topPager)
+			if($this->_useEmptyTemplate)
 			{
-				$this->_topPager->renderControl($writer);
-				$writer->writeLine();
+				$control=new TWebControl;
+				$control->setID($this->getClientID());
+				$control->copyBaseAttributes($this);
+				if($this->getHasStyle())
+					$control->getStyle()->copyFrom($this->getStyle());
+				$control->renderBeginTag($writer);
+				$this->renderContents($writer);
+				$control->renderEndTag($writer);
 			}
-			$this->renderTable($writer);
-			if($this->_bottomPager)
+			else
 			{
-				$writer->writeLine();
-				$this->_bottomPager->renderControl($writer);
+				$this->applyItemStyles();
+				if($this->_topPager)
+				{
+					$this->_topPager->renderControl($writer);
+					$writer->writeLine();
+				}
+				$this->renderTable($writer);
+				if($this->_bottomPager)
+				{
+					$writer->writeLine();
+					$this->_bottomPager->renderControl($writer);
+				}
 			}
 		}
 	}

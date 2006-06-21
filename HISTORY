@@ -12,9 +12,9 @@ ENH: Ticket#206 - Added OnValidate, OnError, OnSuccess events to validators (Qia
 ENH: Ticket#230 - Added TDataList.EmptyTemplate property (Qiang)
 ENH: Ticket#231 - Added TButton.ButtonType property to allow reset button (Qiang)
 ENH: Ticket#232 - Allow <%# %> and <%= %> embedded within property values (Qiang)
-
 ENH: TRepeater, TDataList and TDataGrid will store data indices in DataKeys if DataKeyField is not set. (Qiang)
 ENH: Added TPageService.BasePageClass property (Qiang)
+ENH: Added TDataGrid.EmptyTemplate property (Qiang)
 
 Version 3.0.1 June 4, 2006
 ==========================

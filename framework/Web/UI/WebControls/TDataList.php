@@ -384,19 +384,6 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * @return TStyle the style for the content representing no data is bounded.
-	 */
-	public function getEmptyStyle()
-	{
-		if(($style=$this->getViewState('EmptyStyle',null))===null)
-		{
-			$style=new TStyle;
-			$this->setViewState('EmptyStyle',$style,null);
-		}
-		return $style;
-	}
-
-	/**
 	 * @return ITemplate the separator template
 	 */
 	public function getSeparatorTemplate()
@@ -969,7 +956,6 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 
 		$headerStyle=$this->getViewState('HeaderStyle',null);
 		$footerStyle=$this->getViewState('FooterStyle',null);
-		$emptyStyle=$this->getViewState('EmptyStyle',null);
 		$separatorStyle=$this->getViewState('SeparatorStyle',null);
 
 		foreach($this->getControls() as $index=>$item)
@@ -983,10 +969,6 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 				case 'Footer':
 					if($footerStyle)
 						$item->getStyle()->mergeWith($footerStyle);
-					break;
-				case 'Empty':
-					if($emptyStyle)
-						$item->getStyle()->mergeWith($emptyStyle);
 					break;
 				case 'Separator':
 					if($separatorStyle)
@@ -1050,9 +1032,6 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 				break;
 			case 'Footer':
 				$template=$this->_footerTemplate;
-				break;
-			case 'Empty':
-				$template=$this->_emptyTemplate;
 				break;
 			case 'Item':
 				$template=$this->_itemTemplate;
@@ -1152,7 +1131,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 				$this->_footer=$this->createItemInternal(-1,'Footer',false,null);
 		}
 		else if($this->_emptyTemplate!==null)
-			$this->createItemInternal(-1,'Empty',false,null);
+			$this->_emptyTemplate->instantiateIn($this);
 		$this->clearChildState();
 	}
 
@@ -1195,7 +1174,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 		if($itemIndex>0 && $this->_footerTemplate!==null)
 			$this->_footer=$this->createItemInternal(-1,'Footer',true,null);
 		if($itemIndex===0 && $this->_emptyTemplate!==null)
-			$this->createItemInternal(-1,'Empty',true,null);
+			$this->_emptyTemplate->instantiateIn($this);
 		$this->setViewState('ItemCount',$itemIndex,0);
 	}
 
@@ -1208,14 +1187,14 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	{
 		if($this->getHasControls())
 		{
-			$this->applyItemStyles();
-			if($this->getItemCount()===0 && $this->_emptyTemplate!==null)
-				parent::render($writer);
-			else
+			if($this->getItemCount()>0)
 			{
+				$this->applyItemStyles();
 				$repeatInfo=$this->getRepeatInfo();
 				$repeatInfo->renderRepeater($writer,$this);
 			}
+			else if($this->_emptyTemplate!==null)
+				parent::render($writer);
 		}
 	}
 }
@@ -1376,11 +1355,11 @@ class TDataListItem extends TWebControl implements INamingContainer
 	}
 
 	/**
-	 * @param string item type. Valid values include 'Header','Footer','Empty','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager'.
+	 * @param string item type. Valid values include 'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager'.
 	 */
 	public function setItemType($value)
 	{
-		$this->_itemType=TPropertyValue::ensureEnum($value,'Header','Footer','Empty','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager');
+		$this->_itemType=TPropertyValue::ensureEnum($value,'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager');
 	}
 
 	/**
