@@ -45,8 +45,10 @@
  * which is specified by {@link setVaryByParam VaryByParam} property.
  * If a specified request parameter is different, a different version of
  * cached content is used. This is extremely useful if a page's content
- * may be variated according to some GET parameters. To variate the cached
- * content by other factors, override {@link calculateCacheKey()} method.
+ * may be variated according to some GET parameters. 
+ * The content being cached may also be variated with user sessions if
+ * {@link setVaryBySession VaryBySession} is set true.
+ * To variate the cached content by other factors, override {@link calculateCacheKey()} method.
  *
  * Output caches can be nested. An outer cache takes precedence over an
  * inner cache. This means, if the content cached by the inner cache expires
@@ -80,6 +82,7 @@ class TOutputCache extends TControl implements INamingContainer
 	private $_actions=array();
 	private $_varyByParam='';
 	private $_keyPrefix='';
+	private $_varyBySession=false;
 
 	/**
 	 * Returns a value indicating whether body contents are allowed for this control.
@@ -262,12 +265,17 @@ class TOutputCache extends TControl implements INamingContainer
 	 * Calculates the cache key.
 	 * The key is calculated based on the unique ID of this control
 	 * and the request parameters specified via {@link setVaryByParam VaryByParam}.
+	 * If {@link getVaryBySession VaryBySession} is true, the session ID
+	 * will also participate in the key calculation.
 	 * This method may be overriden to support other variations in
 	 * the calculated cache key.
 	 * @return string cache key
 	 */
 	protected function calculateCacheKey()
 	{
+		$key=$this->getBaseCacheKey();
+		if($this->_varyBySession())
+			$key.=$this->getSession()->getSessionID();
 		if($this->_varyByParam!=='')
 		{
 			$params=array();
@@ -277,10 +285,9 @@ class TOutputCache extends TControl implements INamingContainer
 				$name=trim($name);
 				$params[$name]=$request->itemAt($name);
 			}
-			return $this->getBaseCacheKey().serialize($params);
+			$key.=serialize($params);
 		}
-		else
-			return $this->getBaseCacheKey();
+		return $key;
 	}
 
 	/**
@@ -376,6 +383,22 @@ class TOutputCache extends TControl implements INamingContainer
 	public function setVaryByParam($value)
 	{
 		$this->_varyByParam=trim($value);
+	}
+
+	/**
+	 * @return boolean whether the content being cached should be differentiated according to user sessions. Defaults to false.
+	 */
+	public function getVaryBySession()
+	{
+		return $this->_varyBySession;
+	}
+
+	/**
+	 * @param boolean whether the content being cached should be differentiated according to user sessions.
+	 */
+	public function setVaryBySession($value)
+	{
+		$this->_varyBySession=TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
