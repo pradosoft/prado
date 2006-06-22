@@ -35,7 +35,7 @@
  *
  * There are two ways to specify cache dependency. One may write event handlers
  * to respond to the {@link onCheckDependency OnCheckDependency} event and set
- * the event parameter's {@link TOutputCacheEventParameter::getIsValid IsValid}
+ * the event parameter's {@link TOutputCacheCheckDependencyEventParameter::getIsValid IsValid}
  * property to indicate whether the cached data remains valid or not.
  * One can also extend TOutputCache and override its {@link getCacheDependency CacheDependency}
  * function. While the former is easier to use, the latter offers more extensibility.
@@ -115,7 +115,7 @@ class TOutputCache extends TControl implements INamingContainer
 				{
 					$this->_cacheAvailable=true;
 					$data=$this->_cache->get($this->getCacheKey());
-					$param=new TOutputCacheEventParameter;
+					$param=new TOutputCacheCheckDependencyEventParameter;
 					$this->onCheckDependency($param);
 					$this->_dataCached=($data!==false && $param->getIsValid());
 					if($this->_dataCached)
@@ -287,6 +287,9 @@ class TOutputCache extends TControl implements INamingContainer
 			}
 			$key.=serialize($params);
 		}
+		$param=new TOutputCacheCalculateKeyEventParameter;
+		$this->onCalculateKey($param);
+		$key.=$param->getCacheKey();
 		return $key;
 	}
 
@@ -404,13 +407,26 @@ class TOutputCache extends TControl implements INamingContainer
 	/**
 	 * This event is raised when the output cache is checking cache dependency.
 	 * An event handler may be written to check customized dependency conditions.
-	 * The checking result should be saved by setting {@link TOutputCacheEventParameter::setIsValid IsValid}
+	 * The checking result should be saved by setting {@link TOutputCacheCheckDependencyEventParameter::setIsValid IsValid}
 	 * property of the event parameter (which defaults to true).
-	 * @param TOutputCacheEventParameter event parameter
+	 * @param TOutputCacheCheckDependencyEventParameter event parameter
 	 */
 	public function onCheckDependency($param)
 	{
 		$this->raiseEvent('OnCheckDependency',$this,$param);
+	}
+
+	/**
+	 * This event is raised when the output cache is calculating cache key.
+	 * By varying cache keys, one can obtain different versions of cached content.
+	 * An event handler may be written to add variety of the key calculation.
+	 * The value set in {@link TOutputCacheCalculateKeyEventParameter::setCacheKey CacheKey} of
+	 * this event parameter will be appended to the default key calculation scheme.
+	 * @param TOutputCacheCalculateKeyEventParameter event parameter
+	 */
+	public function onCalculateKey($param)
+	{
+		$this->raiseEvent('OnCalculateKey',$this,$param);
 	}
 
 	/**
@@ -443,9 +459,9 @@ class TOutputCache extends TControl implements INamingContainer
 }
 
 /**
- * TOutputCacheEventParameter class
+ * TOutputCacheCheckDependencyEventParameter class
  *
- * TOutputCacheEventParameter encapsulates the parameter data for
+ * TOutputCacheCheckDependencyEventParameter encapsulates the parameter data for
  * <b>OnCheckDependency</b> event of {@link TOutputCache} control.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -453,7 +469,7 @@ class TOutputCache extends TControl implements INamingContainer
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TOutputCacheEventParameter extends TEventParameter
+class TOutputCacheCheckDependencyEventParameter extends TEventParameter
 {
 	/**
 	 * @var boolean whether the dependency remains valid
@@ -474,6 +490,42 @@ class TOutputCacheEventParameter extends TEventParameter
 	public function setIsValid($value)
 	{
 		$this->_isValid=TPropertyValue::ensureBoolean($value);
+	}
+}
+
+
+/**
+ * TOutputCacheCalculateKeyEventParameter class
+ *
+ * TOutputCacheCalculateKeyEventParameter encapsulates the parameter data for
+ * <b>OnCalculateKey</b> event of {@link TOutputCache} control.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0
+ */
+class TOutputCacheCalculateKeyEventParameter extends TEventParameter
+{
+	/**
+	 * @var string cache key to be appended to the default calculation scheme.
+	 */
+	private $_cacheKey='';
+
+	/**
+	 * @return string cache key to be appended to the default calculation scheme.
+	 */
+	public function getCacheKey()
+	{
+		return $this->_cacheKey;
+	}
+
+	/**
+	 * @param string cache key to be appended to the default calculation scheme
+	 */
+	public function setCacheKey($value)
+	{
+		$this->_cacheKey=TPropertyValue::ensureString($value);
 	}
 }
 
