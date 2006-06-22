@@ -1507,6 +1507,7 @@ framework/Web/UI/WebControls/TLinkButton.php -text
 framework/Web/UI/WebControls/TListBox.php -text
 framework/Web/UI/WebControls/TListControl.php -text
 framework/Web/UI/WebControls/TListControlValidator.php -text
+framework/Web/UI/WebControls/TListItem.php -text
 framework/Web/UI/WebControls/TLiteral.php -text
 framework/Web/UI/WebControls/TMarkdown.php -text
 framework/Web/UI/WebControls/TMultiView.php -text
