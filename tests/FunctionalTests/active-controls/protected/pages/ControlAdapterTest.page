@@ -1,0 +1,23 @@
+<com:TForm ID="form1">
+	<h1>Control Adapter - State Tracking Tests</h1>
+	<com:TActiveButton ID="button1" Text="Test Button 1" />
+	<com:TActiveButton ID="button2" Text="Test Button 2" 
+		Attributes.onclick="alert('ok')"
+		Style.Font.Size="12" Style.BackColor="blue" Style.Height="2em" />
+	
+	<div style="margin:1em; padding: 0.5em; border:1px solid #ccc; text-align:center">
+		<com:TActiveButton ID="test1" Text="Enable/Disable Button 1" OnClick="change_enabled"/>
+		<com:TActiveButton ID="test2" Text="Hide/Show Button 1" OnClick="change_visible"/>
+		<br />
+		<com:TActiveButton ID="test3" Text="Change Button 1 Tooltip" OnClick="change_tooltip"/>
+		<com:TActiveButton ID="test4" Text="Change Button 1 TabIndex" OnClick="change_tabindex"/>
+		<com:TActiveButton ID="test5" Text="Change Button 1 AccessKey" OnClick="change_accesskey"/>
+		<br />
+		<com:TActiveButton ID="test6" Text="Change Button 1 BGColor" OnClick="change_bgcolor1"/>
+		<com:TActiveButton ID="test7" Text="Change Button 2 BGColor" OnClick="change_bgcolor2"/>
+		<br />
+		<com:TActiveButton ID="test8" Text="Change Button 1 Attributes" OnClick="change_attributes1"/>
+		<com:TActiveButton ID="test9" Text="Change Button 2 Attributes" OnClick="change_attributes2"/>
+	</div>
+	<com:TJavascriptLogger />
+</com:TForm>

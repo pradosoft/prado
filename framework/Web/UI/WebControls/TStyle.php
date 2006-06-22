@@ -55,6 +55,15 @@ class TStyle extends TComponent
 	}
 
 	/**
+	 * Need to clone the font object.
+	 */
+	public function __clone()
+	{
+		if(!is_null($this->_font))
+			$this->_font = clone($this->_font);
+	}
+
+	/**
 	 * @return string the background color of the control
 	 */
 	public function getBackColor()
@@ -140,6 +149,14 @@ class TStyle extends TComponent
 	}
 
 	/**
+	 * @return boolean true if CSS is set or empty.
+	 */
+	public function hasCssClass()
+	{
+		return !is_null($this->_class);
+	}
+
+	/**
 	 * @param string the name of the CSS class of the control
 	 */
 	public function setCssClass($value)
@@ -155,6 +172,14 @@ class TStyle extends TComponent
 		if($this->_font===null)
 			$this->_font=new TFont;
 		return $this->_font;
+	}
+	
+	/**
+	 * @return boolean true if font is set.
+	 */
+	public function hasFont()
+	{
+		return $this->_font !== null;
 	}
 
 	/**
@@ -336,6 +361,14 @@ class TStyle extends TComponent
 			$this->_font->addAttributesToRender($writer);
 		if($this->_class!==null)
 			$writer->addAttribute('class',$this->_class);
+	}
+	
+	/**
+	 * @return array list of style fields.
+	 */
+	public function getStyleFields()
+	{
+		return $this->_fields;
 	}
 }
 

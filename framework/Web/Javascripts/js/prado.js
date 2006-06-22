@@ -257,7 +257,8 @@ selection[method](isList?element:el,value);},click:function(element)
 {var el=$(element);if(el)
 Event.fireEvent(el,'click');},setAttribute:function(element,attribute,value)
 {var el=$(element);if(attribute=="disabled"&&value==false)
-el.removeAttribute(attribute);else
+el.removeAttribute(attribute);else if(attribute.match(/^on/i))
+el[attribute]=eval("(function(event){"+value+"})");else
 el.setAttribute(attribute,value);},setOptions:function(element,options)
 {var el=$(element);if(el&&el.tagName.toLowerCase()=="select")
 {while(el.length>0)

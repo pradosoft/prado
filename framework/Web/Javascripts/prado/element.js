@@ -35,6 +35,8 @@ Prado.Element =
 		var el = $(element);
 		if(attribute == "disabled" && value==false)
 			el.removeAttribute(attribute);
+		else if(attribute.match(/^on/i)) //event methods
+			el[attribute] = eval("(function(event){"+value+"})");
 		else
 			el.setAttribute(attribute, value);
 	},
