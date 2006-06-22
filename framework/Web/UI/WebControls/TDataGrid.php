@@ -1069,8 +1069,9 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 
 		if($ds->getCount()===0 && $ds->getCurrentPageIndex()===0 && $this->_emptyTemplate!==null)
 		{
-			$this->_emptyTemplate->instantiateIn($this);
 			$this->_useEmptyTemplate=true;
+			$this->_emptyTemplate->instantiateIn($this);
+			$this->dataBindChildren();
 			$this->clearViewState('ItemCount');
 			$this->clearViewState('PageCount');
 			$this->clearViewState('DataSourceCount');
