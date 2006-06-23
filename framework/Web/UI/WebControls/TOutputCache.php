@@ -29,8 +29,8 @@
  * The validity of the cached content is determined based on two factors:
  * the {@link setDuration Duration} and the cache dependency.
  * The former specifies the number of seconds that the data can remain
- * valid in cache (defaults to 60s), while the latter specifies conditions 
- * that the cached data depends on. If a dependency changes, 
+ * valid in cache (defaults to 60s), while the latter specifies conditions
+ * that the cached data depends on. If a dependency changes,
  * (e.g. relevant data in DB are updated), the cached data will be invalidated.
  *
  * There are two ways to specify cache dependency. One may write event handlers
@@ -45,7 +45,7 @@
  * which is specified by {@link setVaryByParam VaryByParam} property.
  * If a specified request parameter is different, a different version of
  * cached content is used. This is extremely useful if a page's content
- * may be variated according to some GET parameters. 
+ * may be variated according to some GET parameters.
  * The content being cached may also be variated with user sessions if
  * {@link setVaryBySession VaryBySession} is set true.
  * To variate the cached content by other factors, override {@link calculateCacheKey()} method.
@@ -124,7 +124,7 @@ class TOutputCache extends TControl implements INamingContainer
 			}
 		}
 	}
-	
+
 	/**
 	 * Performs the Init step for the control and all its child controls.
 	 * This method overrides the parent implementation by setting up
@@ -274,7 +274,7 @@ class TOutputCache extends TControl implements INamingContainer
 	protected function calculateCacheKey()
 	{
 		$key=$this->getBaseCacheKey();
-		if($this->_varyBySession())
+		if($this->_varyBySession)
 			$key.=$this->getSession()->getSessionID();
 		if($this->_varyByParam!=='')
 		{
