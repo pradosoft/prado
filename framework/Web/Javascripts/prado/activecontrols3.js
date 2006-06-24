@@ -85,7 +85,7 @@ Prado.WebUI.TAutoComplete = Class.extend(Prado.WebUI.TAutoComplete,
 	
 	getUpdatedChoices : function()
 	{
-		options = new Array(this.getToken(),"__TAutComplete_onSuggest__");
+		options = new Array(this.getToken(),"__TAutoComplete_onSuggest__");
 		Prado.Callback(this.options.EventTarget, options, null, this.options);
 	},
 	

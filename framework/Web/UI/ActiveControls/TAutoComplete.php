@@ -139,7 +139,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
  	public function raiseCallbackEvent($param)
 	{
 		$token = $param->getParameter();
-		if(is_array($token) && count($token) == 2 && $token[1] === '__TAutComplete_onSuggest__')
+		if(is_array($token) && count($token) == 2 && $token[1] === '__TAutoComplete_onSuggest__')
 		{
 			$parameter = new TCallbackEventParameter($this->getResponse(), $token[0]);
 			$this->onSuggest($parameter);
