@@ -1,0 +1,26 @@
+<com:TForm ID="form1">
+	<h1>Active Drop Down List Test Case</h1>
+	
+	<com:TActiveDropDownList ID="list1" AutoPostBack="true" OnSelectedIndexChanged="list1_changed">
+		<com:TListItem Value="value 1" Text="item 1" />
+		<com:TListItem Value="value 2" Text="item 2" />
+		<com:TListItem Value="value 3" Text="item 3" />
+		<com:TListItem Value="value 4" Text="item 4" />
+	</com:TActiveDropDownList>
+
+	<com:TActiveDropDownList ID="list2" 
+		Enabled="false"
+		AutoPostBack="true" OnSelectedIndexChanged="list2_changed" />
+
+	<div style="margin:1em; padding:1em; border:1px solid #ccc; text-align:center;">
+	<com:TActiveLabel ID="label1" Text="Label 1" />
+	</div>
+	<div style="margin:1em; padding:0.5em; text-align:center; border:1px solid #ccc;">
+		<com:TActiveButton ID="button1" Text="Select Index 3" OnClick="select_index_3" />
+		<com:TActiveButton ID="button2" Text="Clear selection" OnClick="clear_selections" />
+		<com:TActiveButton ID="button3" Text="Select Value 'value 2'" OnClick="select_value_2" />
+	</div>
+	
+	<com:TJavascriptLogger />
+	
+</com:TForm>

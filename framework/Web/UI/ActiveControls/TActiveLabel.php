@@ -11,6 +11,11 @@
  */
 
 /**
+ * Load active control adapter.
+ */
+Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
+
+/**
  * TActiveLabel class
  *
  * The active control counterpart of TLabel component. When

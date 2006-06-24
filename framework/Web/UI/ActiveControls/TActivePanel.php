@@ -11,6 +11,11 @@
  */
 
 /**
+ * Load active control adapter.
+ */
+Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
+
+/**
  * TActivePanel is the TPanel active control counterpart.
  * 
  * TActivePanel allows the client-side panel contents to be updated during a 

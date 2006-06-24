@@ -11,6 +11,11 @@
  */
 
 /**
+ * Load active control adapter.
+ */
+Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
+
+/**
  * TActiveCheckBox class.
  * 
  * The active control counter part to checkbox. The {@link setAutoPostBack AutoPostBack}
@@ -49,16 +54,12 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 
 	/**
 	 * Raises the callback event. This method is required by {@link
-	 * ICallbackEventHandler} interface. If {@link getCausesValidation
-	 * CausesValidation} is true, it will invoke the page's {@link TPage::
-	 * validate validate} method first. It will raise {@link onCheckedChanged
-	 * OnCheckedChanged} event first and then the {@link onCallback OnCallback} event. 
+	 * ICallbackEventHandler} interface. 
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter the event parameter
 	 */
  	public function raiseCallbackEvent($param)
 	{
-		$this->raisePostDataChangedEvent($param);
 		$this->onCallback($param);
 	}
 

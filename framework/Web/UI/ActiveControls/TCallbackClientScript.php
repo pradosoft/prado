@@ -53,7 +53,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function getClientFunctionsToExecute()
 	{
-		return $this->_actions;
+		return $this->_actions->toArray();
 	}
 	
 	/**
@@ -89,18 +89,41 @@ class TCallbackClientScript extends TApplicationComponent
 	 * or radio button list.
 	 * The second parameter determines the selection method. Valid methods are
 	 *  - <b>Value</b>, select or check by value
-	 *  - <b>Index</b>, select or check by list index (zero based index)
-	 *  - <b>All</b>, selects or checks all in the list
+	 *  - <b>Values</b>, select or check by a list of values
+	 *  - <b>Index</b>, select or check by index (zero based index)
+	 *  - <b>Indices</b>, select or check by a list of index (zero based index)
 	 *  - <b>Clear</b>, clears or selections or checks in the list
-	 *  - <b>Invert</b>, inverts the current selection or checks.
+	 *  - <b>All</b>, select all
+	 *  - <b>Invert</b>, invert the selection.
 	 * @param TControl|string list control
 	 * @param string selection method
 	 * @param string|int the value or index to select/check.
+	 * @param string selection control type, either 'check' or 'select'
 	 */
-	public function select($listControl, $method="Value", $valueOrIndex=null)
+	public function select($control, $method='Value', $value=null, $type=null)
 	{
-		$this->callClientFunction('Prado.Element.select', array($listControl, $method, $valueOrIndex));
+		$method = TPropertyValue::ensureEnum($method, 
+				'Value', 'Index', 'Clear', 'Indices', 'Values', 'All', 'Invert');
+		$type = is_null($type) ? $this->getSelectionControlType($control) : $type;
+		$total = $this->getSelectionControlIsListType($control) ? $control->getItemCount() : 1;
+		$this->callClientFunction('Prado.Element.select', 
+				array($control, $type.$method, $value, $total));
 	}		
+	
+	private function getSelectionControlType($control)
+	{
+		if(is_string($control)) return 'check';
+		if($control instanceof TCheckBoxList)
+			return 'check';
+		if($control instanceof TCheckBox)
+			return 'check';
+		return 'select';
+	}
+	
+	private function getSelectionControlIsListType($control)
+	{
+		return $control instanceof TListControl;
+	}
 
 	/**
 	 * Client script to click on an element. <b>This client-side function
@@ -138,7 +161,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 * @param TControl|string control element or element id
 	 * @param TCollection a list of new options
 	 */
-	public function setOptions($control, $items)
+	public function setListItems($control, $items)
 	{
 		$options = array();
 		foreach($items as $item)

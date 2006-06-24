@@ -11,6 +11,11 @@
  */
 
 /**
+ * Load active control adapter.
+ */
+Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
+
+/**
  * TCallback component class.
  *
  * The TCallback provides a basic callback handler that can be invoke from the

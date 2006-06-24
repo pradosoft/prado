@@ -11,6 +11,11 @@
  */
 
 /**
+ * Load active text box.
+ */
+Prado::using('System.Web.UI.ActiveControls.TActiveTextBox');
+
+/**
  * TAutoComplete class.
  * 
  * TAutoComplete is a textbox that provides a list of suggestion on 

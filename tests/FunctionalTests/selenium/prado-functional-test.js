@@ -39,7 +39,21 @@ Selenium.prototype._isDisplayed = function(element) {
     return true;
 };
 
-
+Selenium.prototype.assertEmptySelection = function(selectLocator, optionLocator) 
+{
+	/**
+   * Verifies that the selected option of a drop-down satisfies the optionSpecifier.
+   * 
+   * <p>See the select command for more information about option locators.</p>
+   * 
+   * @param selectLocator an <a href="#locators">element locator</a> identifying a drop-down menu
+   * @param optionLocator an option locator, typically just an option label (e.g. "John Smith")
+   */
+    var element = this.page().findElement(selectLocator);
+    var locator = this.optionLocatorFactory.fromLocatorString(optionLocator);
+   return element.selectedIndex == -1;
+}
+	
 function runNextTest() {
     if (!runAllTests)
             return;

@@ -117,7 +117,7 @@ class TBaseActiveControl extends TComponent
 	 */
 	public function canUpdateClientSide()
 	{
-		return 	$this->getControl()->getIsInitialized()
+		return 	$this->getControl()->getHasChildInitialized()
 				&& $this->getPage()->getIsCallback()
 				&& $this->getEnableUpdate();
 	}
@@ -319,7 +319,9 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 		if(is_array($options))
 			$options = array_merge($this->getClientSideOptions(),$options);
 		else
-			$options = $this->getClientSideOptions();			
+			$options = $this->getClientSideOptions();
+		//remove true as default to save bytes
+		$options['CausesValidation']= $options['CausesValidation'] ? '' : false;		
 		$cs->registerCallbackControl($class, $options);
 	}
 

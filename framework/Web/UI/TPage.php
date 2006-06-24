@@ -291,8 +291,10 @@ class TPage extends TTemplateControl
 		$this->onPreLoad(null);
 		Prado::trace("Page loadRecursive()",'System.Web.UI.TPage');
 		$this->loadRecursive();
+
 		Prado::trace("Page processPostData()",'System.Web.UI.TPage');
 		$this->processPostData($this->_restPostData,false);
+
 		Prado::trace("Page raiseChangedEvents()",'System.Web.UI.TPage');
 		$this->raiseChangedEvents();
 
@@ -388,7 +390,8 @@ class TPage extends TTemplateControl
 	 */
 	public function registerPostDataLoader($control)
 	{
-		$this->_postDataLoaders[] = $control->getUniqueID();
+		$id=is_string($control)?$control:$control->getUniqueID();
+		$this->_postDataLoaders[$id] = true;
 	}
 
 	/**
@@ -397,7 +400,7 @@ class TPage extends TTemplateControl
 	 */
 	public function getPostDataLoaders()
 	{
-		return $this->_postDataLoaders;
+		return array_keys($this->_postDataLoaders);
 	}
 
 	/**
@@ -747,6 +750,7 @@ class TPage extends TTemplateControl
 	{
 		$id=is_string($control)?$control:$control->getUniqueID();
 		$this->_controlsRegisteredForPostData[$id]=true;
+		$this->registerPostDataLoader($id);
 		$params=func_get_args();
 		foreach($this->getCachingStack() as $item)
 			$item->registerAction('Page','registerRequiresPostData',$id);

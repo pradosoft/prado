@@ -1000,11 +1000,19 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	}
 
 	/**
-	 * @return boolean true if the control has been initialized.
+	 * @return boolean true if the child control has been initialized.
 	 */
-	public function getIsInitialized()
+	public function getHasChildInitialized()
 	{
 		return $this->getControlStage() >= self::CS_CHILD_INITIALIZED;
+	}
+
+	/**
+	 * @return boolean true if the onInit event has raised.
+	 */
+	public function getHasInitialized()
+	{
+		return $this->getControlStage() >= self::CS_INITIALIZED;		
 	}
 
 	/**
@@ -1012,7 +1020,23 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 */
 	public function getHasLoadedPostData()
 	{
+		return $this->getControlStage() >= self::CS_STATE_LOADED;
+	}
+
+	/**
+	 * @return boolean true if the onLoad event has raised.
+	 */
+	public function getHasLoaded()
+	{
 		return $this->getControlStage() >= self::CS_LOADED;
+	}
+	
+	/**
+	 * @return boolean true if onPreRender event has raised.
+	 */
+	public function getHasPreRendered()
+	{
+		return $this->getControlStage() >= self::CS_PRERENDERED;
 	}
 
 	/**
@@ -1250,11 +1274,18 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 						$control->evaluateDynamicContent();
 				}
 			}
-
-			if($this instanceof IPostBackDataHandler)
-				$this->getPage()->registerPostDataLoader($this);
+			$this->addToPostDataLoader();
 		}
 		$this->_stage=self::CS_PRERENDERED;
+	}
+	
+	/**
+	 * Add controls implementing IPostBackDataHandler to post data loaders. 
+	 */
+	protected function addToPostDataLoader()
+	{
+		if($this instanceof IPostBackDataHandler)
+			$this->getPage()->registerPostDataLoader($this);		
 	}
 
 	/**

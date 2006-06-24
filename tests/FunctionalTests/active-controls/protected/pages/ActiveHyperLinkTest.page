@@ -1,0 +1,13 @@
+<com:TForm ID="form1">
+	<h1>Active HyperLink Test Case</h1>
+	
+	<div style="margin:1em; padding:1em; border:1px solid #ccc; text-align:center;">
+	<com:TActiveHyperLink ID="link1" Text="Link 1" NavigateUrl="http://www.pradosoft.com" />
+	</div>
+	<com:TActiveButton ID="button1" Text="Change Text" OnClick="change_text" />
+	<com:TActiveButton ID="button2" Text="Change Image" OnClick="change_image" />
+	<com:TActiveButton ID="button3" Text="Change Target" OnClick="change_target" />
+	<com:TActiveButton ID="button4" Text="Change URL" OnClick="change_url" />
+	
+	<com:TJavascriptLogger />
+</com:TForm>

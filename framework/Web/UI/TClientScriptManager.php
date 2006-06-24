@@ -198,12 +198,14 @@ class TClientScriptManager extends TApplicationComponent
 	}
 
 	/**
-	 * Registers postback javascript for a control.
+	 * Registers postback javascript for a control. A null class parameter will prevent
+	 * the javascript code registration.
 	 * @param string javascript class responsible for the control being registered for postback
 	 * @param array postback options
 	 */
 	public function registerPostBackControl($class,$options)
 	{
+		if(is_null($class)) return;
 		if(!isset($options['FormID']) && ($form=$this->_page->getForm())!==null)
 			$options['FormID']=$form->getClientID();
 		$optionString=TJavaScript::encode($options);

@@ -215,4 +215,6 @@ this.timeout=(t+this.options.Interval)*1000;this.count++;return parseInt(this.ti
 {if(this.timers[id])
 this.timers[id].startTimer();},stop:function(id)
 {if(this.timers[id])
-this.timers[id].stopTimer();}});
+this.timers[id].stopTimer();}});Prado.WebUI.ActiveListControl=Base.extend({constructor:function(options)
+{this.element=$(options.ID);this.options=options;Event.observe(this.element,"change",this.doCallback.bind(this));},doCallback:function(event)
+{new Prado.CallbackRequest(this.options.EventTarget,this.options);Event.stop(event);}});Prado.WebUI.TActiveDropDownList=Prado.WebUI.ActiveListControl;

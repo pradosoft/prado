@@ -12,15 +12,15 @@ Prado.Element =
 			el.value = value;
 	},
 
-	select : function(element, method, value)
+	select : function(element, method, value, total)
 	{
 		var el = $(element);
-		var isList = element.indexOf('[]') > -1;
-		if(!el && !isList) return;
-		method = isList ? 'check'+method : el.tagName.toLowerCase()+method;
 		var selection = Prado.Element.Selection;
 		if(typeof(selection[method]) == "function") 
-			selection[method](isList ? element : el,value);
+		{
+			control = selection.isSelectable(el) ? [el] : selection.getListElements(element,total);
+			selection[method](control, value);
+		}
 	},
 
 	click : function(element)
@@ -102,6 +102,22 @@ Prado.Element =
 
 Prado.Element.Selection = 
 {
+	isSelectable : function(el)
+	{
+		if(el && el.type)
+		{
+			switch(el.type.toLowerCase()) 
+			{
+				case 'checkbox':
+				case 'radio':
+				case 'select':
+				case 'select-one':
+				return true;
+			}
+		}
+		return false;
+	},
+	
 	inputValue : function(el, value)
 	{
 		switch(el.type.toLowerCase()) 
@@ -112,61 +128,125 @@ Prado.Element.Selection =
 		}
 	},
 
-	selectValue : function(el, value)
+	selectValue : function(elements, value)
 	{
-		$A(el.options).each(function(option)
+		elements.each(function(el)
 		{
-			option.selected = option.value == value;
-		});
-	},
-
-	selectIndex : function(el, index)
-	{
-		if(el.type == 'select-one')
-			el.selectedIndex = index;
-		else
-		{
-			for(var i = 0; i<el.length; i++)
+			$A(el.options).each(function(option)
 			{
-				if(i == index)
-					el.options[i].selected = true;
+				if(typeof(value) == "boolean")
+					options.selected = value;
+				else if(option.value == value)
+					option.selected = true;
+			});			
+		})
+	},
+	
+	selectValues : function(elements, values)
+	{
+		selection = this;
+		values.each(function(value)
+		{
+			selection.selectValue(elements,value);
+		})
+	},
+
+	selectIndex : function(elements, index)
+	{
+		elements.each(function(el)
+		{
+			if(el.type.toLowerCase() == 'select-one')
+				el.selectedIndex = index;
+			else
+			{
+				for(var i = 0; i<el.length; i++)
+				{
+					if(i == index)
+						el.options[i].selected = true;
+				}
 			}
-		}
+		})
 	},
-
-	selectClear : function(el)
+	
+	selectAll : function(elements)
 	{
-		el.selectedIndex = -1;
-	},
-
-	selectAll : function(el)
-	{
-		$A(el.options).each(function(option)
+		elements.each(function(el)
 		{
-			option.selected = true;
-			Logger.warn(option.value);
+			if(el.type.toLowerCase() != 'select-one')
+			{
+				$A(el.options).each(function(option)
+				{
+					option.selected = true;
+				})
+			}			
+		})
+	},
+
+	selectInvert : function(elements)
+	{
+		elements.each(function(el)
+		{
+			if(el.type.toLowerCase() != 'select-one')
+			{
+				$A(el.options).each(function(option)
+				{
+					option.selected = !options.selected;
+				})
+			}			
+		})
+	},
+	
+	selectIndices : function(elements, indices)
+	{
+		selection = this;
+		indices.each(function(index)
+		{
+			selection.selectIndex(elements,index);
+		})
+	},
+
+	selectClear : function(elements)
+	{
+		elements.each(function(el)
+		{
+			el.selectedIndex = -1;			
+		})
+	},
+
+	getListElements : function(element, total)
+	{
+		elements = new Array();
+		for(i = 0; i < total; i++)
+		{
+			el = $(element+"_c"+i);
+			if(el)
+				elements.push(el);
+		}		
+		return elements;
+	},
+	
+	checkValue : function(elements, value)
+	{
+		elements.each(function(el)
+		{
+			if(typeof(value) == "boolean")
+				el.checked = value;
+			else if(el.value == value)
+				el.checked = true;
 		});
 	},
 
-	selectInvert : function(el)
+	checkValues : function(elements, values)
 	{
-		$A(el.options).each(function(option)
+		selection = this;
+		values.each(function(value)
 		{
-			option.selected = !option.selected;
-		});
+			selection.checkValue(elements, value);
+		})
 	},
 
-	checkValue : function(name, value)
+	checkIndex : function(elements, index)
 	{
-		$A(document.getElementsByName(name)).each(function(el)
-		{
-			el.checked = el.value == value
-		});
-	},
-
-	checkIndex : function(name, index)
-	{
-		var elements = $A(document.getElementsByName(name));
 		for(var i = 0; i<elements.length; i++)
 		{
 			if(i == index)
@@ -174,26 +254,36 @@ Prado.Element.Selection =
 		}
 	},
 
-	checkClear : function(name)
+	checkIndices : function(elements, indices)
 	{
-		$A(document.getElementsByName(name)).each(function(el)
+		selection = this;
+		indices.each(function(index)
+		{
+			selection.checkIndex(elements, index);
+		})
+	},
+
+	checkClear : function(elements)
+	{
+		elements.each(function(el)
 		{
 			el.checked = false;
 		});
 	},
-
-	checkAll : function(name)
+	
+	checkAll : function(elements)
 	{
-		$A(document.getElementsByName(name)).each(function(el)
+		elements.each(function(el)
 		{
 			el.checked = true;
-		});
+		})
 	},
-	checkInvert : function(name)
+	
+	checkInvert : function(elements)
 	{
-		$A(document.getElementsByName(name)).each(function(el)
+		elements.each(function(el)
 		{
-			el.checked = !el.checked;
-		});
+			el.checked != el.checked;
+		})
 	}
 };

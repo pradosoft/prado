@@ -11,6 +11,11 @@
  */
 
 /**
+ * Load active control adapter.
+ */
+Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
+
+/**
  * TActiveTextBox class.
  * 
  * TActiveTextBox allows the {@link setText Text} property of the textbox to
@@ -58,16 +63,12 @@ class TActiveTextBox extends TTextBox implements ICallbackEventHandler, IActiveC
 	
 	/**
 	 * Raises the callback event. This method is required by {@link
-	 * ICallbackEventHandler} interface. If {@link getCausesValidation
-	 * CausesValidation} is true, it will invoke the page's {@link TPage::
-	 * validate validate} method first. It will raise {@link onTextChanged
-	 * onTextChanged} event first and then the {@link onCallback OnCallback} event. 
+	 * ICallbackEventHandler} interface. 
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter the event parameter
 	 */
  	public function raiseCallbackEvent($param)
 	{
-		$this->raisePostDataChangedEvent($param);
 		$this->onCallback($param);
 	}	
 	

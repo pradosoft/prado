@@ -10,6 +10,9 @@
  * @package System.Web.UI.ActiveControls
  */
 
+/**
+ * Load active control adapter.
+ */
 Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 
 /** 

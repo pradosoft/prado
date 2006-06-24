@@ -11,6 +11,11 @@
  */
 
 /**
+ * Load active callback control.
+ */
+Prado::using('System.Web.UI.ActiveControls.TCallback');
+
+/**
  * TCallbackTimer class.
  * 
  * TCallbackTimer sends callback request every {@link setInterval Interval} seconds.

@@ -90,13 +90,17 @@ class TActiveControlAdapter extends TControlAdapter
 	protected function renderCallbackClientScripts()
 	{
 		$cs = $this->getPage()->getClientScript();
-		$key = get_class($this);
+		$key = 'Prado.CallbackRequest.addPostLoaders';
 		if(!$cs->isEndScriptRegistered($key))
 		{
 			$cs->registerPradoScript('ajax');
-			$options = TJavascript::encode($this->getPage()->getPostDataLoaders(),false);
-			$script = "Prado.CallbackRequest.addPostLoaders({$options});";
-			$cs->registerEndScript($key, $script);
+			$data = $this->getPage()->getPostDataLoaders();
+			if(count($data) > 0)
+			{
+				$options = TJavascript::encode($data,false);
+				$script = "Prado.CallbackRequest.addPostLoaders({$options});";
+				$cs->registerEndScript($key, $script);
+			}
 		}
 	}
 	

@@ -142,7 +142,7 @@ class TActivePageAdapter extends TControlAdapter
 		}
 		
 		//output the actions
-		$executeJavascript = $this->getCallbackClientHandler()->getClientFunctionsToExecute()->toArray();
+		$executeJavascript = $this->getCallbackClientHandler()->getClientFunctionsToExecute();
 		$actions = TJavascript::jsonEncode($executeJavascript);
 		$response->appendHeader(self::CALLBACK_ACTION_HEADER.': '.$actions);
 
