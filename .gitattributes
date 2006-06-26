@@ -1511,7 +1511,9 @@ framework/Web/UI/WebControls/TListItem.php -text
 framework/Web/UI/WebControls/TLiteral.php -text
 framework/Web/UI/WebControls/TMarkdown.php -text
 framework/Web/UI/WebControls/TMultiView.php -text
+framework/Web/UI/WebControls/TPager.php -text
 framework/Web/UI/WebControls/TPanel.php -text
+framework/Web/UI/WebControls/TPanelStyle.php -text
 framework/Web/UI/WebControls/TPlaceHolder.php -text
 framework/Web/UI/WebControls/TRadioButton.php -text
 framework/Web/UI/WebControls/TRadioButtonList.php -text

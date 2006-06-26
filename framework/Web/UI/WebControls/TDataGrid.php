@@ -1049,7 +1049,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
-	 * Performs databinding to populate data list items from data source.
+	 * Performs databinding to populate datagrid items from data source.
 	 * This method is invoked by {@link dataBind()}.
 	 * You may override this function to provide your own way of data population.
 	 * @param Traversable the bound data
@@ -1758,7 +1758,7 @@ class TDataGridCommandEventParameter extends TCommandEventParameter
  * {@link TDataGrid::onSortCommand SortCommand} event of {@link TDataGrid} controls.
  *
  * The {@link getCommandSource CommandSource} property refers to the control
- * that originally raises the Command event, while {@link getSortExpression SortExpression}
+ * that originally raises the OnCommand event, while {@link getSortExpression SortExpression}
  * gives the sort expression carried with the sort command.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -1779,7 +1779,7 @@ class TDataGridSortCommandEventParameter extends TEventParameter
 
 	/**
 	 * Constructor.
-	 * @param TControl the control originally raises the <b>Command</b> event.
+	 * @param TControl the control originally raises the <b>OnCommand</b> event.
 	 * @param TDataGridCommandEventParameter command event parameter
 	 */
 	public function __construct($source,TDataGridCommandEventParameter $param)
@@ -1789,7 +1789,7 @@ class TDataGridSortCommandEventParameter extends TEventParameter
 	}
 
 	/**
-	 * @return TControl the control originally raises the <b>Command</b> event.
+	 * @return TControl the control originally raises the <b>OnCommand</b> event.
 	 */
 	public function getCommandSource()
 	{
@@ -1812,7 +1812,7 @@ class TDataGridSortCommandEventParameter extends TEventParameter
  * {@link TDataGrid::onPageIndexChanged PageIndexChanged} event of {@link TDataGrid} controls.
  *
  * The {@link getCommandSource CommandSource} property refers to the control
- * that originally raises the Command event, while {@link getNewPageIndex NewPageIndex}
+ * that originally raises the OnCommand event, while {@link getNewPageIndex NewPageIndex}
  * returns the new page index carried with the page command.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -1833,7 +1833,7 @@ class TDataGridPageChangedEventParameter extends TEventParameter
 
 	/**
 	 * Constructor.
-	 * @param TControl the control originally raises the <b>Command</b> event.
+	 * @param TControl the control originally raises the <b>OnCommand</b> event.
 	 * @param integer new page index
 	 */
 	public function __construct($source,$newPageIndex)
@@ -1843,7 +1843,7 @@ class TDataGridPageChangedEventParameter extends TEventParameter
 	}
 
 	/**
-	 * @return TControl the control originally raises the <b>Command</b> event.
+	 * @return TControl the control originally raises the <b>OnCommand</b> event.
 	 */
 	public function getCommandSource()
 	{
