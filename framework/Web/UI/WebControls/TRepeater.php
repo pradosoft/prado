@@ -452,7 +452,10 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 		if($itemIndex>0 && $this->_footerTemplate!==null)
 			$this->_footer=$this->createItemInternal(-1,self::IT_FOOTER,true,null);
 		if($itemIndex===0 && $this->_emptyTemplate!==null)
+		{
 			$this->_emptyTemplate->instantiateIn($this);
+			$this->dataBindChildren();
+		}
 		$this->setViewState('ItemCount',$itemIndex,0);
 	}
 

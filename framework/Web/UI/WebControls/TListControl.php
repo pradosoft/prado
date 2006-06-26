@@ -471,7 +471,7 @@ abstract class TListControl extends TDataBoundControl
 					$this->_items->itemAt($index)->setSelected(true);
 			}
 		}
-		
+
 		if($this->getAdapter() instanceof IListControlAdaptee)
 			$this->getAdapter()->setSelectedIndices($indices);
 	}
@@ -558,9 +558,9 @@ abstract class TListControl extends TDataBoundControl
 		    		throw new TInvalidDataValueException('listcontrol_selectedvalue_invalid',get_class($this),$value);
 			}
 		}
-		
+
 		if($this->getAdapter() instanceof IListControlAdaptee)
-			$this->getAdapter()->setSelectedValues($values);		
+			$this->getAdapter()->setSelectedValues($values);
 	}
 
     /**
@@ -589,9 +589,9 @@ abstract class TListControl extends TDataBoundControl
 		    foreach($this->_items as $item)
 		    	$item->setSelected(false);
 	    }
-	
+
 		if($this->getAdapter() instanceof IListControlAdaptee)
-			$this->getAdapter()->clearSelection();	
+			$this->getAdapter()->clearSelection();
     }
 
 	/**
@@ -727,7 +727,7 @@ class TListItemCollection extends TList
 			$this->insertAt($index,$item);
 		return $item;
 	}
-	
+
 	/**
 	 * @return TListItem new item.
 	 */
@@ -852,15 +852,15 @@ class TListItemCollection extends TList
  * @package System.Web.UI.ActiveControls
  * @since 3.0
  */
-interface IListControlAdaptee
+interface IListControlAdapter
 {
-	/** 
-	 * Selects an item based on zero-base index on the client side. 
+	/**
+	 * Selects an item based on zero-base index on the client side.
 	 * @param integer the index (zero-based) of the item to be selected
 	 */
 	public function setSelectedIndex($index);
-	/** 
-	 * Selects a list of item based on zero-base indices on the client side. 
+	/**
+	 * Selects a list of item based on zero-base indices on the client side.
 	 * @param array list of index of items to be selected
 	 */
 	public function setSelectedIndices($indices);
@@ -870,13 +870,13 @@ interface IListControlAdaptee
 	 * @param string the value of the item to be selected.
 	 */
 	public function setSelectedValue($value);
-	
-	/** 
+
+	/**
 	 * Sets selection by a list of item values on the client side.
 	 * @param array list of the selected item values
 	 */
 	public function setSelectedValues($values);
-	
+
     /**
      * Clears all existing selections on the client side.
      */
