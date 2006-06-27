@@ -529,43 +529,11 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
-	 * @return boolean whether the custom paging is enabled. Defaults to false.
-	 */
-	public function getAllowCustomPaging()
-	{
-		return $this->getViewState('AllowCustomPaging',false);
-	}
-
-	/**
-	 * @param boolean whether the custom paging is enabled
-	 */
-	public function setAllowCustomPaging($value)
-	{
-		$this->setViewState('AllowCustomPaging',TPropertyValue::ensureBoolean($value),false);
-	}
-
-	/**
-	 * @return boolean whether paging is enabled. Defaults to false.
-	 */
-	public function getAllowPaging()
-	{
-		return $this->getViewState('AllowPaging',false);
-	}
-
-	/**
 	 * @return boolean whether sorting is enabled. Defaults to false.
 	 */
 	public function getAllowSorting()
 	{
 		return $this->getViewState('AllowSorting',false);
-	}
-
-	/**
-	 * @param boolean whether paging is enabled
-	 */
-	public function setAllowPaging($value)
-	{
-		$this->setViewState('AllowPaging',TPropertyValue::ensureBoolean($value),false);
 	}
 
 	/**
@@ -590,74 +558,6 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	public function setAutoGenerateColumns($value)
 	{
 		$this->setViewState('AutoGenerateColumns',TPropertyValue::ensureBoolean($value),true);
-	}
-
-	/**
-	 * @return integer the zero-based index of the current page. Defaults to 0.
-	 */
-	public function getCurrentPageIndex()
-	{
-		return $this->getViewState('CurrentPageIndex',0);
-	}
-
-	/**
-	 * @param integer the zero-based index of the current page
-	 * @throws TInvalidDataValueException if the value is less than 0
-	 */
-	public function setCurrentPageIndex($value)
-	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
-			throw new TInvalidDataValueException('datagrid_currentpageindex_invalid');
-		$this->setViewState('CurrentPageIndex',$value,0);
-	}
-
-	/**
-	 * @return integer the number of rows displayed each page. Defaults to 10.
-	 */
-	public function getPageSize()
-	{
-		return $this->getViewState('PageSize',10);
-	}
-
-	/**
-	 * @param integer the number of rows displayed within a page
-	 * @throws TInvalidDataValueException if the value is less than 1
-	 */
-	public function setPageSize($value)
-	{
-		if(($value=TPropertyValue::ensureInteger($value))<1)
-			throw new TInvalidDataValueException('datagrid_pagesize_invalid');
-		$this->setViewState('PageSize',TPropertyValue::ensureInteger($value),10);
-	}
-
-	/**
-	 * @return integer number of pages of items available
-	 */
-	public function getPageCount()
-	{
-		if($this->_pagedDataSource)
-			return $this->_pagedDataSource->getPageCount();
-		else
-			return $this->getViewState('PageCount',0);
-	}
-
-	/**
-	 * @return integer virtual number of items in the grid. Defaults to 0, meaning not set.
-	 */
-	public function getVirtualItemCount()
-	{
-		return $this->getViewState('VirtualItemCount',0);
-	}
-
-	/**
-	 * @param integer virtual number of items in the grid
-	 * @throws TInvalidDataValueException if the value is less than 0
-	 */
-	public function setVirtualItemCount($value)
-	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
-			throw new TInvalidDataValueException('datagrid_virtualitemcount_invalid');
-		$this->setViewState('VirtualItemCount',$value,0);
 	}
 
 	/**
@@ -955,21 +855,6 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			}
 			$this->restoreGridFromViewState();
 		}
-		$this->clearViewState('ItemCount');
-	}
-
-	/**
-	 * @return TPagedDataSource creates a paged data source
-	 */
-	private function createPagedDataSource()
-	{
-		$ds=new TPagedDataSource;
-		$ds->setCurrentPageIndex($this->getCurrentPageIndex());
-		$ds->setPageSize($this->getPageSize());
-		$ds->setAllowPaging($this->getAllowPaging());
-		$ds->setAllowCustomPaging($this->getAllowCustomPaging());
-		$ds->setVirtualItemCount($this->getVirtualItemCount());
-		return $ds;
 	}
 
 	/**
@@ -992,42 +877,27 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	protected function restoreGridFromViewState()
 	{
 		$this->reset();
-		$itemCount=$this->getViewState('ItemCount',0);
-		$this->_pagedDataSource=$ds=$this->createPagedDataSource();
-		$allowPaging=$ds->getAllowPaging();
-		if($allowPaging && $ds->getAllowCustomPaging())
-			$ds->setDataSource(new TDummyDataSource($itemCount));
-		else
-			$ds->setDataSource(new TDummyDataSource($this->getViewState('DataSourceCount',0)));
 
-		if($ds->getCount()===0 && $ds->getCurrentPageIndex()===0 && $this->_emptyTemplate!==null)
-		{
-			$this->_emptyTemplate->instantiateIn($this);
-			$this->_useEmptyTemplate=true;
-			$this->clearViewState('ItemCount');
-			$this->clearViewState('PageCount');
-			$this->clearViewState('DataSourceCount');
-			return;
-		}
+		$allowPaging=$this->getAllowPaging();
+
+		$itemCount=$this->getViewState('ItemCount',0);
+		$dsIndex=$this->getViewState('DataSourceIndex',0);
 
 		$columns=new TList($this->getColumns());
 		$columns->mergeWith($this->_autoColumns);
 
 		$items=$this->getItems();
-		$items->clear();
 
 		if($columns->getCount())
 		{
 			foreach($columns as $column)
 				$column->initialize();
 			if($allowPaging)
-				$this->_topPager=$this->createPager($ds);
+				$this->_topPager=$this->createPager();
 			$this->_header=$this->createItemInternal(-1,-1,self::IT_HEADER,false,null,$columns);
 			$selectedIndex=$this->getSelectedItemIndex();
 			$editIndex=$this->getEditItemIndex();
-			$index=0;
-			$dsIndex=$ds->getAllowPaging()?$ds->getFirstIndexInPage():0;
-			foreach($ds as $data)
+			for($index=0;$index<$itemCount;++$index)
 			{
 				if($index===$editIndex)
 					$itemType=self::IT_EDITITEM;
@@ -1038,14 +908,17 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 				else
 					$itemType=self::IT_ITEM;
 				$items->add($this->createItemInternal($index,$dsIndex,$itemType,false,null,$columns));
-				$index++;
 				$dsIndex++;
 			}
 			$this->_footer=$this->createItemInternal(-1,-1,self::IT_FOOTER,false,null,$columns);
 			if($allowPaging)
-				$this->_bottomPager=$this->createPager($ds);
+				$this->_bottomPager=$this->createPager();
 		}
-		$this->_pagedDataSource=null;
+		if(!$dsIndex && $this->_emptyTemplate!==null)
+		{
+			$this->_useEmptyTemplate=true;
+			$this->_emptyTemplate->instantiateIn($this);
+		}
 	}
 
 	/**
@@ -1060,29 +933,12 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		$keys=$this->getDataKeys();
 		$keys->clear();
 		$keyField=$this->getDataKeyField();
-		$this->_pagedDataSource=$ds=$this->createPagedDataSource();
-		$ds->setDataSource($data);
-
-		$allowPaging=$ds->getAllowPaging();
-		if($allowPaging && $ds->getCurrentPageIndex()>=$ds->getPageCount())
-			throw new TInvalidDataValueException('datagrid_currentpageindex_invalid');
-
-		if($ds->getCount()===0 && $ds->getCurrentPageIndex()===0 && $this->_emptyTemplate!==null)
-		{
-			$this->_useEmptyTemplate=true;
-			$this->_emptyTemplate->instantiateIn($this);
-			$this->dataBindChildren();
-			$this->clearViewState('ItemCount');
-			$this->clearViewState('PageCount');
-			$this->clearViewState('DataSourceCount');
-			return;
-		}
 
 		// get all columns
 		if($this->getAutoGenerateColumns())
 		{
 			$columns=new TList($this->getColumns());
-			$autoColumns=$this->createAutoColumns($ds);
+			$autoColumns=$this->createAutoColumns($data);
 			$columns->mergeWith($autoColumns);
 		}
 		else
@@ -1090,22 +946,23 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 
 		$items=$this->getItems();
 
+		$index=0;
+		$allowPaging=$this->getAllowPaging() && ($data instanceof TPagedDataSource);
+		$dsIndex=$allowPaging?$data->getFirstIndexInPage():0;
+		$this->setViewState('DataSourceIndex',$dsIndex,0);
 		if($columns->getCount())
 		{
 			foreach($columns as $column)
 				$column->initialize();
-			$allowPaging=$ds->getAllowPaging();
 			if($allowPaging)
-				$this->_topPager=$this->createPager($ds);
+				$this->_topPager=$this->createPager();
 			$this->_header=$this->createItemInternal(-1,-1,self::IT_HEADER,true,null,$columns);
 			$selectedIndex=$this->getSelectedItemIndex();
 			$editIndex=$this->getEditItemIndex();
-			$index=0;
-			$dsIndex=$allowPaging?$ds->getFirstIndexInPage():0;
-			foreach($ds as $key=>$data)
+			foreach($data as $key=>$row)
 			{
 				if($keyField!=='')
-					$keys->add($this->getDataFieldValue($data,$keyField));
+					$keys->add($this->getDataFieldValue($row,$keyField));
 				else
 					$keys->add($key);
 				if($index===$editIndex)
@@ -1116,24 +973,21 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 					$itemType=self::IT_ALTERNATINGITEM;
 				else
 					$itemType=self::IT_ITEM;
-				$items->add($this->createItemInternal($index,$dsIndex,$itemType,true,$data,$columns));
+				$items->add($this->createItemInternal($index,$dsIndex,$itemType,true,$row,$columns));
 				$index++;
 				$dsIndex++;
 			}
 			$this->_footer=$this->createItemInternal(-1,-1,self::IT_FOOTER,true,null,$columns);
 			if($allowPaging)
-				$this->_bottomPager=$this->createPager($ds);
-			$this->setViewState('ItemCount',$index,0);
-			$this->setViewState('PageCount',$ds->getPageCount(),0);
-			$this->setViewState('DataSourceCount',$ds->getDataSourceCount(),0);
+				$this->_bottomPager=$this->createPager();
 		}
-		else
+		$this->setViewState('ItemCount',$index,0);
+		if(!$dsIndex && $this->_emptyTemplate!==null)
 		{
-			$this->clearViewState('ItemCount');
-			$this->clearViewState('PageCount');
-			$this->clearViewState('DataSourceCount');
+			$this->_useEmptyTemplate=true;
+			$this->_emptyTemplate->instantiateIn($this);
+			$this->dataBindChildren();
 		}
-		$this->_pagedDataSource=null;
 	}
 
 	/**
@@ -1191,10 +1045,10 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		}
 	}
 
-	private function createPager($pagedDataSource)
+	private function createPager()
 	{
 		$pager=new TDataGridPager($this);
-		$this->buildPager($pager,$pagedDataSource);
+		$this->buildPager($pager);
 		$this->onPagerCreated(new TDataGridPagerEventParameter($pager));
 		$this->getControls()->add($pager);
 		return $pager;
@@ -1203,81 +1057,87 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	/**
 	 * Builds the pager content based on pager style.
 	 * @param TDataGridPager the container for the pager
-	 * @param TPagedDataSource data source bound to the datagrid
 	 */
-	protected function buildPager($pager,$dataSource)
+	protected function buildPager($pager)
 	{
 		switch($this->getPagerStyle()->getMode())
 		{
 			case 'NextPrev':
-				$this->buildNextPrevPager($pager,$dataSource);
+				$this->buildNextPrevPager($pager);
 				break;
 			case 'Numeric':
-				$this->buildNumericPager($pager,$dataSource);
+				$this->buildNumericPager($pager);
 				break;
 		}
 	}
 
 	/**
 	 * Creates a pager button.
-	 * @param string button type, LinkButton or PushButton
+	 * Depending on the button type, a TLinkButton or a TButton may be created.
+	 * If it is enabled (clickable), its command name and parameter will also be set.
+	 * Derived classes may override this method to create additional types of buttons, such as TImageButton.
+	 * @param string button type, either LinkButton or PushButton
 	 * @param boolean whether the button should be enabled
+	 * @param string caption of the button
+	 * @param string CommandName corresponding to the OnCommand event of the button
+	 * @param string CommandParameter corresponding to the OnCommand event of the button
 	 * @return mixed the button instance
 	 */
-	protected function createPagerButton($buttonType,$enabled)
+	protected function createPagerButton($buttonType,$enabled,$text,$commandName,$commandParameter)
 	{
 		if($buttonType==='LinkButton')
 		{
-			return $enabled?new TLinkButton:new TLabel;
+			if($enabled)
+				$button=new TLinkButton;
+			else
+			{
+				$button=new TLabel;
+				$button->setText($text);
+				return $button;
+			}
 		}
 		else
 		{
 			$button=new TButton;
 			if(!$enabled)
 				$button->setEnabled(false);
-			return $button;
 		}
+		$button->setText($text);
+		$button->setCommandName($commandName);
+		$button->setCommandParameter($commandParameter);
+		$button->setCausesValidation(false);
+		return $button;
 	}
 
 	/**
 	 * Builds a next-prev pager
 	 * @param TDataGridPager the container for the pager
-	 * @param TPagedDataSource data source bound to the datagrid
 	 */
-	protected function buildNextPrevPager($pager,$dataSource)
+	protected function buildNextPrevPager($pager)
 	{
 		$style=$this->getPagerStyle();
 		$buttonType=$style->getButtonType();
 		$controls=$pager->getControls();
-		if($dataSource->getIsFirstPage())
+		$currentPageIndex=$this->getCurrentPageIndex();
+		if($currentPageIndex===0)
 		{
-			$label=$this->createPagerButton($buttonType,false);
-			$label->setText($style->getPrevPageText());
+			$label=$this->createPagerButton($buttonType,false,$style->getPrevPageText(),'','');
 			$controls->add($label);
 		}
 		else
 		{
-			$button=$this->createPagerButton($buttonType,true);
-			$button->setText($style->getPrevPageText());
-			$button->setCommandName(self::CMD_PAGE);
-			$button->setCommandParameter(self::CMD_PAGE_PREV);
-			$button->setCausesValidation(false);
+			$button=$this->createPagerButton($buttonType,true,$style->getPrevPageText(),self::CMD_PAGE,self::CMD_PAGE_PREV);
 			$controls->add($button);
 		}
-		$controls->add('&nbsp;');
-		if($dataSource->getIsLastPage())
+		$controls->add("\n");
+		if($currentPageIndex===$this->getPageCount()-1)
 		{
-			$label=$this->createPagerButton($buttonType,false);
-			$label->setText($style->getNextPageText());
+			$label=$this->createPagerButton($buttonType,false,$style->getNextPageText(),'','');
 			$controls->add($label);
 		}
 		else
 		{
-			$button=$this->createPagerButton($buttonType,true);
-			$button->setText($style->getNextPageText());
-			$button->setCommandName(self::CMD_PAGE);
-			$button->setCommandParameter(self::CMD_PAGE_NEXT);
-			$button->setCausesValidation(false);
+			$button=$this->createPagerButton($buttonType,true,$style->getNextPageText(),self::CMD_PAGE,self::CMD_PAGE_NEXT);
 			$controls->add($button);
 		}
 	}
@@ -1285,15 +1145,14 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	/**
 	 * Builds a numeric pager
 	 * @param TDataGridPager the container for the pager
-	 * @param TPagedDataSource data source bound to the datagrid
 	 */
-	protected function buildNumericPager($pager,$dataSource)
+	protected function buildNumericPager($pager)
 	{
 		$style=$this->getPagerStyle();
 		$buttonType=$style->getButtonType();
 		$controls=$pager->getControls();
-		$pageCount=$dataSource->getPageCount();
-		$pageIndex=$dataSource->getCurrentPageIndex()+1;
+		$pageCount=$this->getPageCount();
+		$pageIndex=$this->getCurrentPageIndex()+1;
 		$maxButtonCount=$style->getPageButtonCount();
 		$buttonCount=$maxButtonCount>$pageCount?$pageCount:$maxButtonCount;
 		$startPageIndex=1;
@@ -1312,51 +1171,40 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 
 		if($startPageIndex>1)
 		{
-			$button=$this->createPagerButton($buttonType,true);
-			$button->setText($style->getPrevPageText());
-			$button->setCommandName(self::CMD_PAGE);
-			$button->setCommandParameter($startPageIndex-1);
-			$button->setCausesValidation(false);
+			$prevPageIndex=$startPageIndex-1;
+			$button=$this->createPagerButton($buttonType,true,$style->getPrevPageText(),self::CMD_PAGE,"$prevPageIndex");
 			$controls->add($button);
-			$controls->add('&nbsp;');
+			$controls->add("\n");
 		}
 
 		for($i=$startPageIndex;$i<=$endPageIndex;++$i)
 		{
 			if($i===$pageIndex)
 			{
-				$label=$this->createPagerButton($buttonType,false);
-				$label->setText("$i");
+				$label=$this->createPagerButton($buttonType,false,"$i",'','');
 				$controls->add($label);
 			}
 			else
 			{
-				$button=$this->createPagerButton($buttonType,true);
-				$button->setText("$i");
-				$button->setCommandName(self::CMD_PAGE);
-				$button->setCommandParameter($i);
-				$button->setCausesValidation(false);
+				$button=$this->createPagerButton($buttonType,true,"$i",self::CMD_PAGE,"$i");
 				$controls->add($button);
 			}
 			if($i<$endPageIndex)
-				$controls->add('&nbsp;');
+				$controls->add("\n");
 		}
 
 		if($pageCount>$endPageIndex)
 		{
-			$controls->add('&nbsp;');
-			$button=$this->createPagerButton($buttonType,true);
-			$button->setText($style->getNextPageText());
-			$button->setCommandName(self::CMD_PAGE);
-			$button->setCommandParameter($endPageIndex+1);
-			$button->setCausesValidation(false);
+			$controls->add("\n");
+			$nextPageIndex=$endPageIndex+1;
+			$button=$this->createPagerButton($buttonType,true,$style->getNextPageText(),self::CMD_PAGE,"$nextPageIndex");
 			$controls->add($button);
 		}
 	}
 
 	/**
 	 * Automatically generates datagrid columns based on datasource schema
-	 * @param TPagedDataSource data source bound to the datagrid
+	 * @param Traversable data source bound to the datagrid
 	 * @return TDataGridColumnCollection
 	 */
 	protected function createAutoColumns($dataSource)

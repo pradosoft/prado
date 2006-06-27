@@ -301,3 +301,16 @@ stack_empty								= TStack is empty.
 
 queue_data_not_iterable					= TQueue can only fetch data from an array or a traversable object.
 queue_empty								= TQueue is empty.
+
+pager_pagebuttoncount_invalid			= TPager.PageButtonCount must be an integer no less than 1.
+pager_currentpageindex_invalid			= TPager.CurrentPageIndex is out of range.
+pager_pagecount_invalid					= TPager.PageCount cannot be smaller than 0.
+pager_controltopaginate_invalid			= TPager.ControlToPaginate {0} must be a valid ID path pointing to a TDataBoundControl-derived control.
+
+databoundcontrol_pagesize_invalid		= {0}.PageSize must be an integer no smaller than 1.
+databoundcontrol_virtualitemcount_invalid = {0}.VirtualItemCount must be an integer no smaller than 0.
+databoundcontrol_currentpageindex_invalid = {0}.CurrentPageIndex is out of range.
+databoundcontrol_datasource_invalid		= {0}.DataSource is not valid.
+databoundcontrol_datasourceid_inexistent = databoundcontrol_datasourceid_inexistent.
+databoundcontrol_datasourceid_invalid	= databoundcontrol_datasourceid_invalid
+databoundcontrol_datamember_invalid		= databoundcontrol_datamember_invalid

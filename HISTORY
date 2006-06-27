@@ -16,6 +16,7 @@ ENH: Ticket#232 - Allow <%# %> and <%= %> embedded within property values (Qiang
 ENH: TRepeater, TDataList and TDataGrid will store data indices in DataKeys if DataKeyField is not set. (Qiang)
 ENH: Added TPageService.BasePageClass property (Qiang)
 ENH: Added TDataGrid.EmptyTemplate property (Qiang)
+ENH: Added paging feature to all TDataBoundControl-derived controls (Qiang)
 NEW: Added TPager (Qiang)
 
 Version 3.0.1 June 4, 2006
