@@ -834,6 +834,7 @@ demos/quickstart/protected/pages/Controls/List.page -text
 demos/quickstart/protected/pages/Controls/Literal.page -text
 demos/quickstart/protected/pages/Controls/MultiView.page -text
 demos/quickstart/protected/pages/Controls/NewControl.page -text
+demos/quickstart/protected/pages/Controls/Pager.page -text
 demos/quickstart/protected/pages/Controls/Panel.page -text
 demos/quickstart/protected/pages/Controls/PlaceHolder.page -text
 demos/quickstart/protected/pages/Controls/RadioButton.page -text
@@ -907,6 +908,8 @@ demos/quickstart/protected/pages/Controls/Samples/TListBox/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TLiteral/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TMultiView/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TMultiView/Home.php -text
+demos/quickstart/protected/pages/Controls/Samples/TPager/Sample1.page -text
+demos/quickstart/protected/pages/Controls/Samples/TPager/Sample1.php -text
 demos/quickstart/protected/pages/Controls/Samples/TPanel/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TPanel/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TPanel/hello_world.gif -text
@@ -1602,6 +1605,7 @@ tests/FunctionalTests/quickstart/Controls/LabelTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/LinkButtonTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/ListBoxTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/MultiViewTestCase.php -text
+tests/FunctionalTests/quickstart/Controls/PagerTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/PanelTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/RadioButtonListTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/RadioButtonTestCase.php -text
