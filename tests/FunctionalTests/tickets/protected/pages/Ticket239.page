@@ -1,0 +1,19 @@
+<com:TContent ID="Content">
+
+<com:TMultiView ActiveViewIndex="0">
+	<com:TView ID="view1" OnActivate="activateView" OnDeactivate="deactivateView">
+		view1
+	    <com:TButton Text="Next view" CommandName="NextView" />
+	</com:TView>
+	<com:TView ID="view2" OnActivate="activateView" OnDeactivate="deactivateView">
+		view2   
+		<com:TButton Text="Prev view" CommandName="PreviousView" />    
+		<com:TButton Text="Next view" CommandName="NextView" />
+	</com:TView>
+	<com:TView ID="view3" OnActivate="activateView" OnDeactivate="deactivateView">
+		view3 
+		<com:TButton Text="Prev view" CommandName="PreviousView" />
+	</com:TView>
+</com:TMultiView>
+<com:TLabel ID="Result" EnableViewState="false" />
+</com:TContent>
