@@ -18,7 +18,7 @@ class QuickStartComments
 	 * @var sqlite connection.
 	 */
 	private $_connection;
-	
+
 	/**
 	 * Sets the sqlite comment database file.
 	 */
@@ -26,7 +26,7 @@ class QuickStartComments
 	{
 		$this->_database = realpath(dirname(__FILE__).'/comments.db');
 	}
-	
+
 	/**
 	 * Closed the database connection.
 	 */
@@ -35,7 +35,7 @@ class QuickStartComments
 		if(!is_null($this->_connection))
 			sqlite_close($this->_connection);
 	}
-	
+
 	/**
 	 * @return resource sqlite database connection.
 	 */
@@ -45,7 +45,7 @@ class QuickStartComments
 			$this->_connection = sqlite_open($this->_database);
 		return $this->_connection;
 	}
-	
+
 	/**
 	 * Quote database input data.
 	 */
@@ -53,7 +53,7 @@ class QuickStartComments
 	{
 		return sqlite_escape_string($value);
 	}
-	
+
 	/**
 	 * Executes an sqlite query.
 	 * @param string SQL
@@ -63,7 +63,7 @@ class QuickStartComments
 	{
 		return sqlite_query($this->getConnection(), $sql);
 	}
-	
+
 	/**
 	 * Returns a row from the sqlite result.
 	 * @param resource sqlite result
@@ -76,7 +76,7 @@ class QuickStartComments
 		else
 			return false;
 	}
-	
+
 	/**
 	 * Fetch all the records for given SQL query.
 	 * @param string SQL query.
@@ -90,7 +90,7 @@ class QuickStartComments
 			$rows[] = $row;
 		return $rows;
 	}
-	
+
 	/**
 	 * Returns all the comments for a given page.
 	 * @param string specific page comments
@@ -99,10 +99,10 @@ class QuickStartComments
 	public function getComments($pageID)
 	{
 		$page = $this->quote($pageID);
-		$sql = "SELECT * FROM comments WHERE page=\"$page\" AND approved = 1 ORDER BY date_added ASC";
+		$sql = "SELECT * FROM comments WHERE page='$page' AND approved = 1 ORDER BY date_added ASC";
 		return $this->fetchAll($sql);
 	}
-	
+
 	/**
 	 * Adds a new comment for moderation.
 	 * @param string ID of the page to comment belongs
@@ -117,11 +117,11 @@ class QuickStartComments
 		$date_added = time();
 		$sql = <<<EOD
 		INSERT INTO comments(page, email, comment, date_added)
-				VALUES ("$page", "$email", "$comment", "$date_added")
+				VALUES ('$page', '$email', '$comment', '$date_added')
 EOD;
 		return $this->query($sql);
 	}
-	
+
 	/**
 	 * Update an existing comment.
 	 * @param string comment ID
@@ -136,13 +136,13 @@ EOD;
 		$comment = $this->quote($content);
 		$page = $this->quote($page);
 		$sql = <<<EOD
-		UPDATE comments SET 
-			email = "$email", comment = "$comment", page = "$page"
+		UPDATE comments SET
+			email = '$email', comment = '$comment', page = '$page'
 			WHERE id = $ID;
 EOD;
 		$this->query($sql);
 	}
-	
+
 	/**
 	 * Delete a comment.
 	 * @param string comment ID
@@ -152,7 +152,7 @@ EOD;
 		$ID = intval($commentID);
 		$this->query("DELETE FROM comments WHERE id=$ID");
 	}
-		
+
 	/**
 	 * @return array all the quequed comments.
 	 */
@@ -160,7 +160,7 @@ EOD;
 	{
 		return $this->fetchAll("SELECT * FROM comments WHERE approved != 1");
 	}
-	
+
 	/**
 	 * Approve a quequed comment.
 	 * @param string comment ID.

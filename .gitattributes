@@ -749,9 +749,6 @@ demos/quickstart/protected/index/Zend/Search/Lucene/Storage/File.php -text
 demos/quickstart/protected/index/Zend/Search/Lucene/Storage/File/Filesystem.php -text
 demos/quickstart/protected/index/Zend/Search/TODO.txt -text
 demos/quickstart/protected/index/ZendSearch.php -text
-demos/quickstart/protected/index/api/_0.cfs -text
-demos/quickstart/protected/index/api/deletable -text
-demos/quickstart/protected/index/api/segments -text
 demos/quickstart/protected/index/quickstart/_0.cfs -text
 demos/quickstart/protected/index/quickstart/deletable -text
 demos/quickstart/protected/index/quickstart/segments -text

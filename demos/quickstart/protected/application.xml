@@ -13,9 +13,6 @@
    <module id="quickstart_search" 
     	class="Application.index.ZendSearch"
     	IndexDataDirectory="Application.index.quickstart" />
-   <module id="api_search" 
-    	class="Application.index.ZendSearch"
-    	IndexDataDirectory="Application.index.api" />
   </modules>
   <paths>
     <using namespace="Application.controls.*" />

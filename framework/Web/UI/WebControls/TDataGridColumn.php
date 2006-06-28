@@ -68,6 +68,7 @@ abstract class TDataGridColumn extends TApplicationComponent
 	 * By explicitly specifying the column ID, one can access the column
 	 * by $templateControl->ColumnID.
 	 * @param string the ID of the column.
+	 * @throws TInvalidDataValueException if the ID is of bad format
 	 */
 	public function setID($value)
 	{

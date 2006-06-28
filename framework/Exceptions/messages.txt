@@ -292,6 +292,7 @@ parametermodule_parameterfile_unchangeable = TParameterModule.ParameterFile is n
 parametermodule_parameterfile_invalid	= TParameterModule.ParameterFile '{0}' is invalid. Make sure it is in namespace format and the file extension is '.xml'.
 parametermodule_parameterid_required	= Parameter element must have 'id' attribute.
 
+datagridcolumn_id_invalid				= {0}.ID '{1}' is invalid. Only alphanumeric and underline characters are allowed. The first character must be an alphabetic or underline character.
 datagridcolumn_expression_invalid		= {0} is evaluating an invalid expression '{1}' : {2}
 
 outputcache_duration_invalid			= {0}.Duration must be an integer no less than 0.
