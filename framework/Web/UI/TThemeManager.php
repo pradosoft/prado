@@ -10,6 +10,8 @@
  * @package System.Web.UI
  */
 
+Prado::using('System.Web.Services.TPageService');
+
 /**
  * TThemeManager class
  *
@@ -63,7 +65,11 @@ class TThemeManager extends TModule
 	public function init($config)
 	{
 		$this->_initialized=true;
-		$this->getService()->setThemeManager($this);
+		$service=$this->getService();
+		if($service instanceof TPageService)
+			$service->setThemeManager($this);
+		else
+			throw new TConfigurationException('thememanager_service_unavailable');
 	}
 
 	/**
@@ -105,7 +111,7 @@ class TThemeManager extends TModule
 		{
 			$this->_basePath=dirname($this->getRequest()->getApplicationFilePath()).'/'.self::DEFAULT_BASEPATH;
 			if(($basePath=realpath($this->_basePath))===false || !is_dir($basePath))
-				throw new TConfigurationException('thememanager_basepath_invalid',$this->_basePath);
+				throw new TConfigurationException('thememanager_basepath_invalid2',$this->_basePath);
 			$this->_basePath=$basePath;
 		}
 		return $this->_basePath;
