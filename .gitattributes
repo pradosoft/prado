@@ -749,9 +749,6 @@ demos/quickstart/protected/index/Zend/Search/Lucene/Storage/File.php -text
 demos/quickstart/protected/index/Zend/Search/Lucene/Storage/File/Filesystem.php -text
 demos/quickstart/protected/index/Zend/Search/TODO.txt -text
 demos/quickstart/protected/index/ZendSearch.php -text
-demos/quickstart/protected/index/api/_0.cfs -text
-demos/quickstart/protected/index/api/deletable -text
-demos/quickstart/protected/index/api/segments -text
 demos/quickstart/protected/index/quickstart/_0.cfs -text
 demos/quickstart/protected/index/quickstart/deletable -text
 demos/quickstart/protected/index/quickstart/segments -text
@@ -834,6 +831,7 @@ demos/quickstart/protected/pages/Controls/List.page -text
 demos/quickstart/protected/pages/Controls/Literal.page -text
 demos/quickstart/protected/pages/Controls/MultiView.page -text
 demos/quickstart/protected/pages/Controls/NewControl.page -text
+demos/quickstart/protected/pages/Controls/Pager.page -text
 demos/quickstart/protected/pages/Controls/Panel.page -text
 demos/quickstart/protected/pages/Controls/PlaceHolder.page -text
 demos/quickstart/protected/pages/Controls/RadioButton.page -text
@@ -907,6 +905,8 @@ demos/quickstart/protected/pages/Controls/Samples/TListBox/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TLiteral/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TMultiView/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TMultiView/Home.php -text
+demos/quickstart/protected/pages/Controls/Samples/TPager/Sample1.page -text
+demos/quickstart/protected/pages/Controls/Samples/TPager/Sample1.php -text
 demos/quickstart/protected/pages/Controls/Samples/TPanel/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TPanel/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TPanel/hello_world.gif -text
@@ -1753,6 +1753,7 @@ tests/FunctionalTests/quickstart/Controls/LabelTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/LinkButtonTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/ListBoxTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/MultiViewTestCase.php -text
+tests/FunctionalTests/quickstart/Controls/PagerTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/PanelTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/RadioButtonListTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/RadioButtonTestCase.php -text
@@ -1814,6 +1815,8 @@ tests/FunctionalTests/tickets/protected/pages/Ticket191.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket191.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket21.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket21.php -text
+tests/FunctionalTests/tickets/protected/pages/Ticket239.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket239.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket27.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket28.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket28.php -text
@@ -1832,6 +1835,7 @@ tests/FunctionalTests/tickets/tests/Ticket163TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket169TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket191TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket21TestCase.php -text
+tests/FunctionalTests/tickets/tests/Ticket239TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket27TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket28TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket54TestCase.php -text

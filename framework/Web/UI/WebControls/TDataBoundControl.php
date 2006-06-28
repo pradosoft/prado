@@ -12,6 +12,7 @@
 
 Prado::using('System.Web.UI.WebControls.TDataSourceControl');
 Prado::using('System.Web.UI.WebControls.TDataSourceView');
+Prado::using('System.Collections.TPagedDataSource');
 
 /**
  * TDataBoundControl class.
@@ -20,7 +21,22 @@ Prado::using('System.Web.UI.WebControls.TDataSourceView');
  * data from data sources. It provides basic properties and methods that allow
  * the derived controls to associate with data sources and retrieve data from them.
  *
- * TBC...
+ * TBC....
+ *
+ * TDataBoundControl is equipped with paging capabilities. By setting
+ * {@link setAllowPaging AllowPaging} to true, the input data will be paged
+ * and only one page of data is actually populated into the data-bound control.
+ * This saves a lot of memory when dealing with larget datasets.
+ *
+ * To specify the number of data items displayed on each page, set
+ * the {@link setPageSize PageSize} property, and to specify which
+ * page of data to be displayed, set {@link setCurrentPageIndex CurrentPageIndex}.
+ *
+ * When the size of the original data is too big to be loaded all in the memory,
+ * one can enable custom paging. In custom paging, the total number of data items
+ * is specified manually via {@link setVirtualItemCount VirtualItemCount},
+ * and the data source only needs to contain the current page of data. To enable
+ * custom paging, set {@link setAllowCustomPaging AllowCustomPaging} to true.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -152,6 +168,109 @@ abstract class TDataBoundControl extends TWebControl
 	}
 
 	/**
+	 * @return boolean whether paging is enabled. Defaults to false.
+	 */
+	public function getAllowPaging()
+	{
+		return $this->getViewState('AllowPaging',false);
+	}
+
+	/**
+	 * @param boolean whether paging is enabled
+	 */
+	public function setAllowPaging($value)
+	{
+		$this->setViewState('AllowPaging',TPropertyValue::ensureBoolean($value),false);
+	}
+
+	/**
+	 * @return boolean whether the custom paging is enabled. Defaults to false.
+	 */
+	public function getAllowCustomPaging()
+	{
+		return $this->getViewState('AllowCustomPaging',false);
+	}
+
+	/**
+	 * Sets a value indicating whether the custom paging should be enabled.
+	 * When the pager is in custom paging mode, the {@link setVirtualItemCount VirtualItemCount}
+	 * property is used to determine the paging, and the data items in the
+	 * {@link setDataSource DataSource} are considered to be in the current page.
+	 * @param boolean whether the custom paging is enabled
+	 */
+	public function setAllowCustomPaging($value)
+	{
+		$this->setViewState('AllowCustomPaging',TPropertyValue::ensureBoolean($value),false);
+	}
+
+	/**
+	 * @return integer the zero-based index of the current page. Defaults to 0.
+	 */
+	public function getCurrentPageIndex()
+	{
+		return $this->getViewState('CurrentPageIndex',0);
+	}
+
+	/**
+	 * @param integer the zero-based index of the current page
+	 * @throws TInvalidDataValueException if the value is less than 0
+	 */
+	public function setCurrentPageIndex($value)
+	{
+		if(($value=TPropertyValue::ensureInteger($value))<0)
+			throw new TInvalidDataValueException('databoundcontrol_currentpageindex_invalid',get_class($this));
+		$this->setViewState('CurrentPageIndex',$value,0);
+	}
+
+	/**
+	 * @return integer the number of data items on each page. Defaults to 10.
+	 */
+	public function getPageSize()
+	{
+		return $this->getViewState('PageSize',10);
+	}
+
+	/**
+	 * @param integer the number of data items on each page.
+	 * @throws TInvalidDataValueException if the value is less than 1
+	 */
+	public function setPageSize($value)
+	{
+		if(($value=TPropertyValue::ensureInteger($value))<1)
+			throw new TInvalidDataValueException('databoundcontrol_pagesize_invalid',get_class($this));
+		$this->setViewState('PageSize',TPropertyValue::ensureInteger($value),10);
+	}
+
+	/**
+	 * @return integer number of pages of data items available
+	 */
+	public function getPageCount()
+	{
+		return $this->getViewState('PageCount',1);
+	}
+
+	/**
+	 * @return integer virtual number of data items in the data source. Defaults to 0.
+	 * @see setAllowCustomPaging
+	 */
+	public function getVirtualItemCount()
+	{
+		return $this->getViewState('VirtualItemCount',0);
+	}
+
+	/**
+	 * @param integer virtual number of data items in the data source.
+	 * @throws TInvalidDataValueException if the value is less than 0
+	 * @see setAllowCustomPaging
+	 */
+	public function setVirtualItemCount($value)
+	{
+		if(($value=TPropertyValue::ensureInteger($value))<0)
+			throw new TInvalidDataValueException('databoundcontrol_virtualitemcount_invalid',get_class($this));
+		$this->setViewState('VirtualItemCount',$value,0);
+	}
+
+	/**
 	 * Sets a value indicating whether a databind call is required by the data bound control.
 	 * If true and the control has been prerendered while it uses the data source
 	 * specified by {@link setDataSourceID}, a databind call will be called by this method.
@@ -185,6 +304,20 @@ abstract class TDataBoundControl extends TWebControl
 	}
 
 	/**
+	 * @return TPagedDataSource creates a paged data source
+	 */
+	protected function createPagedDataSource()
+	{
+		$ds=new TPagedDataSource;
+		$ds->setCurrentPageIndex($this->getCurrentPageIndex());
+		$ds->setPageSize($this->getPageSize());
+		$ds->setAllowPaging($this->getAllowPaging());
+		$ds->setAllowCustomPaging($this->getAllowCustomPaging());
+		$ds->setVirtualItemCount($this->getVirtualItemCount());
+		return $ds;
+	}
+
+	/**
 	 * Performs databinding.
 	 * This method overrides the parent implementation by calling
 	 * {@link performSelect} which fetches data from data source and does
@@ -197,7 +330,22 @@ abstract class TDataBoundControl extends TWebControl
 		$this->onDataBinding(null);
 		$data=$this->getData();
 		if($data instanceof Traversable)
-			$this->performDataBinding($data);
+		{
+			if($this->getAllowPaging())
+			{
+				$ds=$this->createPagedDataSource();
+				$ds->setDataSource($data);
+				$this->setViewState('PageCount',$ds->getPageCount());
+				if($ds->getCurrentPageIndex()>=$ds->getPageCount())
+					throw new TInvalidDataValueException('databoundcontrol_currentpageindex_invalid',get_class($this));
+				$this->performDataBinding($ds);
+			}
+			else
+			{
+				$this->clearViewState('PageCount');
+				$this->performDataBinding($data);
+			}
+		}
 		$this->setIsDataBound(true);
 		$this->onDataBound(null);
 	}
@@ -336,7 +484,7 @@ abstract class TDataBoundControl extends TWebControl
 		else if(($value instanceof Traversable) || $value===null)
 			return $value;
 		else
-			throw new TInvalidDataTypeException('databoundcontrol_datasource_invalid');
+			throw new TInvalidDataTypeException('databoundcontrol_datasource_invalid',get_class($this));
 	}
 
 	public function getDataMember()

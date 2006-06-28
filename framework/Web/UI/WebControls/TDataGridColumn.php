@@ -51,8 +51,31 @@ Prado::using('System.Util.TDataFieldAccessor');
  */
 abstract class TDataGridColumn extends TApplicationComponent
 {
+	private $_id='';
 	private $_owner=null;
 	private $_viewState=array();
+
+	/**
+	 * @return string the ID of the column.
+	 */
+	public function getID()
+	{
+		return $this->_id;
+	}
+
+	/**
+	 * Sets the ID of the column.
+	 * By explicitly specifying the column ID, one can access the column
+	 * by $templateControl->ColumnID.
+	 * @param string the ID of the column.
+	 * @throws TInvalidDataValueException if the ID is of bad format
+	 */
+	public function setID($value)
+	{
+		if(!preg_match(TControl::ID_FORMAT,$value))
+			throw new TInvalidDataValueException('datagridcolumn_id_invalid',get_class($this),$value);
+		$this->_id=$value;
+	}
 
 	/**
 	 * @return string the text to be displayed in the header of this column

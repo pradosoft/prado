@@ -293,6 +293,7 @@ parametermodule_parameterfile_unchangeable = TParameterModule.ParameterFile is n
 parametermodule_parameterfile_invalid	= TParameterModule.ParameterFile '{0}' is invalid. Make sure it is in namespace format and the file extension is '.xml'.
 parametermodule_parameterid_required	= Parameter element must have 'id' attribute.
 
+datagridcolumn_id_invalid				= {0}.ID '{1}' is invalid. Only alphanumeric and underline characters are allowed. The first character must be an alphabetic or underline character.
 datagridcolumn_expression_invalid		= {0} is evaluating an invalid expression '{1}' : {2}
 
 outputcache_cachemoduleid_invalid		= TOutputCache.CacheModuleID is set with an invalid cache module ID {0}. Either the module does not exist or does not implement ICache interface.
@@ -303,6 +304,19 @@ stack_empty								= TStack is empty.
 
 queue_data_not_iterable					= TQueue can only fetch data from an array or a traversable object.
 queue_empty								= TQueue is empty.
+
+pager_pagebuttoncount_invalid			= TPager.PageButtonCount must be an integer no less than 1.
+pager_currentpageindex_invalid			= TPager.CurrentPageIndex is out of range.
+pager_pagecount_invalid					= TPager.PageCount cannot be smaller than 0.
+pager_controltopaginate_invalid			= TPager.ControlToPaginate {0} must be a valid ID path pointing to a TDataBoundControl-derived control.
+
+databoundcontrol_pagesize_invalid		= {0}.PageSize must be an integer no smaller than 1.
+databoundcontrol_virtualitemcount_invalid = {0}.VirtualItemCount must be an integer no smaller than 0.
+databoundcontrol_currentpageindex_invalid = {0}.CurrentPageIndex is out of range.
+databoundcontrol_datasource_invalid		= {0}.DataSource is not valid.
+databoundcontrol_datasourceid_inexistent = databoundcontrol_datasourceid_inexistent.
+databoundcontrol_datasourceid_invalid	= databoundcontrol_datasourceid_invalid
+databoundcontrol_datamember_invalid		= databoundcontrol_datamember_invalid
 
 callback_not_support_no_priority_state_update	= Callback request does not support unprioritized pagestate update.
 callback_invalid_callback_options		= '{1}' is not a valid TCallbackOptions control for Callback control '{0}'.
@@ -316,7 +330,7 @@ callback_decay_be_not_negative			= Decay rate for TCallbackTimer "{0}" must be n
 
 callback_no_autopostback				= Control "{0}" can not enable AutoPostBack.
 
-xmltransform_xslextension_required = TXmlTransform require the PHP's XSL extension
-xmltransform_transformpath_invalid = TransformPath '{0}' is invalid.
-xmltransform_documentpath_invalid = DocumentPath '{0}' is invalid.
-xmltransform_transform_required = Either TransformContent or TransformPath property must be set.
+xmltransform_xslextension_required		= TXmlTransform requires the PHP's XSL extension.
+xmltransform_transformpath_invalid		= TXmlTransform.TransformPath '{0}' is invalid.
+xmltransform_documentpath_invalid		= TXmlTransform.DocumentPath '{0}' is invalid.
+xmltransform_transform_required			= Either TransformContent or TransformPath property must be set for TXmlTransform.

@@ -10,27 +10,18 @@
  * @package System.Web.UI.WebControls
  */
 
-Prado::using('System.Web.UI.WebControls.TDataBoundControl');
-Prado::using('System.Web.UI.WebControls.TPanelStyle');
-Prado::using('System.Collections.TPagedDataSource');
-Prado::using('System.Collections.TDummyDataSource');
-
 /**
  * TPager class.
  *
- * TPager creates a pager that controls the paging of the data populated
- * to a data-bound control specified by {@link setControlToPaginate ControlToPaginate}.
- * To specify the number of data items displayed on each page, set
- * the {@link setPageSize PageSize} property, and to specify which
- * page of data to be displayed, set {@link setCurrentPageIndex CurrentPageIndex}.
+ * TPager creates a pager that provides UI for end-users to interactively
+ * specify which page of data to be rendered in a {@link TDataBoundControl}-derived control,
+ * such as {@link TDataList}, {@link TRepeater}, {@link TCheckBoxList}, etc.
+ * The target data-bound control is specified by {@link setControlToPaginate ControlToPaginate},
+ * which must be the ID path of the target control reaching from the pager's
+ * naming container. Note, the target control must have its {@link TDataBoundControl::setAllowPaging AllowPaging}
+ * set to true.
  *
- * When the size of the original data is too big to be loaded all in the memory,
- * one can enable custom paging. In custom paging, the total number of data items
- * is specified manually via {@link setVirtualItemCount VirtualItemCount}, and the data source
- * only needs to contain the current page of data. To enable custom paging,
- * set {@link setAllowCustomPaging AllowCustomPaging} to true.
- *
- * TPager can be in one of three {@link setMode Mode}:
+ * TPager can display three different UIs, specified via {@link setMode Mode}:
  * - NextPrev: a next page and a previous page button are rendered.
  * - Numeric: a list of page index buttons are rendered.
  * - List: a dropdown list of page indices are rendered.
@@ -39,27 +30,17 @@ Prado::using('System.Collections.TDummyDataSource');
  * the end-user interacts with it and specifies a new page (e.g. clicking
  * on a page button that leads to a new page.) The new page index may be obtained
  * from the event parameter's property {@link TPagerPageChangedEventParameter::getNewPageIndex NewPageIndex}.
+ * Normally, in the event handler, one can set the {@link TDataBoundControl::getCurrentPageIndex CurrentPageIndex}
+ * to this new page index so that the new page of data is rendered.
  *
- * When multiple pagers are associated with the same data-bound control,
- * these pagers will do synchronization among each other so that the interaction
- * with one pager will automatically update the UI of the other relevant pagers.
- *
- * The following example shows a typical usage of TPager:
- * <code>
- * $pager->ControlToPaginate="Path.To.Control";
- * $pager->DataSource=$data;
- * $pager->dataBind();
- * </code>
- * Note, the data is assigned to the pager and dataBind() is invoked against the pager.
- * Without the pager, one has to set datasource for the target control and call
- * its dataBind() directly.
+ * Multiple pagers can be associated with the same data-bound control.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
  * @since 3.0.2
  */
-class TPager extends TDataBoundControl implements INamingContainer
+class TPager extends TWebControl implements INamingContainer
 {
 	/**
 	 * Command name that TPager understands.
@@ -71,36 +52,6 @@ class TPager extends TDataBoundControl implements INamingContainer
 	const CMD_PAGE_LAST='Last';
 
 	/**
-	 * @var array list of all pagers, used to synchronize their appearance
-	 */
-	static private $_pagers=array();
-
-	/**
-	 * Registers the pager itself to a global list.
-	 * This method overrides the parent implementation and is invoked during
-	 * OnInit control lifecycle.
-	 * @param mixed event parameter
-	 */
-	public function onInit($param)
-	{
-		parent::onInit($param);
-		self::$_pagers[]=$this;
-	}
-
-	/**
-	 * Unregisters the pager from a global list.
-	 * This method overrides the parent implementation and is invoked during
-	 * OnUnload control lifecycle.
-	 * @param mixed event parameter
-	 */
-	public function onUnload($param)
-	{
-		parent::onUnload($param);
-		if(($index=array_search($this,self::$_pagers,true))!==false)
-			unset(self::$_pagers[$index]);
-	}
-
-	/**
 	 * Restores the pager state.
 	 * This method overrides the parent implementation and is invoked when
 	 * the control is loading persistent state.
@@ -108,10 +59,11 @@ class TPager extends TDataBoundControl implements INamingContainer
 	public function loadState()
 	{
 		parent::loadState();
-		if(!$this->getEnableViewState(true))
-			return;
-		if(!$this->getIsDataBound())
-			$this->restoreFromViewState();
+		if($this->getEnableViewState(true))
+		{
+			$this->getControls()->clear();
+			$this->buildPager();
+		}
 	}
 
 	/**
@@ -131,107 +83,6 @@ class TPager extends TDataBoundControl implements INamingContainer
 	public function setControlToPaginate($value)
 	{
 		$this->setViewState('ControlToPaginate',$value,'');
-	}
-
-	/**
-	 * @return integer the zero-based index of the current page. Defaults to 0.
-	 */
-	public function getCurrentPageIndex()
-	{
-		return $this->getViewState('CurrentPageIndex',0);
-	}
-
-	/**
-	 * @param integer the zero-based index of the current page
-	 * @throws TInvalidDataValueException if the value is less than 0
-	 */
-	public function setCurrentPageIndex($value)
-	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
-			throw new TInvalidDataValueException('pager_currentpageindex_invalid');
-		$this->setViewState('CurrentPageIndex',$value,0);
-	}
-
-	/**
-	 * @return integer the number of data items on each page. Defaults to 10.
-	 */
-	public function getPageSize()
-	{
-		return $this->getViewState('PageSize',10);
-	}
-
-	/**
-	 * @param integer the number of data items on each page.
-	 * @throws TInvalidDataValueException if the value is less than 1
-	 */
-	public function setPageSize($value)
-	{
-		if(($value=TPropertyValue::ensureInteger($value))<1)
-			throw new TInvalidDataValueException('pager_pagesize_invalid');
-		$this->setViewState('PageSize',TPropertyValue::ensureInteger($value),10);
-	}
-
-	/**
-	 * @return integer number of pages
-	 */
-	public function getPageCount()
-	{
-		if(($count=$this->getItemCount())<1)
-			return 1;
-		else
-		{
-			$pageSize=$this->getPageSize();
-			return (int)(($count+$pageSize-1)/$pageSize);
-		}
-	}
-
-	/**
-	 * @return boolean whether the custom paging is enabled. Defaults to false.
-	 */
-	public function getAllowCustomPaging()
-	{
-		return $this->getViewState('AllowCustomPaging',false);
-	}
-
-	/**
-	 * Sets a value indicating whether the custom paging should be enabled.
-	 * When the pager is in custom paging mode, the {@link setVirtualItemCount VirtualItemCount}
-	 * property is used to determine the paging, and the data items in the
-	 * {@link setDataSource DataSource} are considered to be in the current page.
-	 * @param boolean whether the custom paging is enabled
-	 */
-	public function setAllowCustomPaging($value)
-	{
-		$this->setViewState('AllowCustomPaging',TPropertyValue::ensureBoolean($value),false);
-	}
-
-	/**
-	 * @return integer virtual number of data items in the data source. Defaults to 0.
-	 * @see setAllowCustomPaging
-	 */
-	public function getVirtualItemCount()
-	{
-		return $this->getViewState('VirtualItemCount',0);
-	}
-
-	/**
-	 * @param integer virtual number of data items in the data source.
-	 * @throws TInvalidDataValueException if the value is less than 0
-	 * @see setAllowCustomPaging
-	 */
-	public function setVirtualItemCount($value)
-	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
-			throw new TInvalidDataValueException('pager_virtualitemcount_invalid');
-		$this->setViewState('VirtualItemCount',$value,0);
-	}
-
-	/**
-	 * @return integer total number of items in the datasource.
-	 */
-	public function getItemCount()
-	{
-		return $this->getViewState('ItemCount',0);
 	}
 
 	/**
@@ -350,38 +201,57 @@ class TPager extends TDataBoundControl implements INamingContainer
 	}
 
 	/**
-	 * @return TPagedDataSource creates a paged data source
+	 * @return integer the zero-based index of the current page. Defaults to 0.
 	 */
-	private function createPagedDataSource()
+	public function getCurrentPageIndex()
 	{
-		$ds=new TPagedDataSource;
-		$ds->setAllowPaging(true);
-		$customPaging=$this->getAllowCustomPaging();
-		$ds->setAllowCustomPaging($customPaging);
-		$ds->setCurrentPageIndex($this->getCurrentPageIndex());
-		$ds->setPageSize($this->getPageSize());
-		if($customPaging)
-			$ds->setVirtualItemCount($this->getVirtualItemCount());
-		return $ds;
+		return $this->getViewState('CurrentPageIndex',0);
 	}
 
 	/**
-	 * Removes the existing child controls.
+	 * @param integer the zero-based index of the current page
+	 * @throws TInvalidDataValueException if the value is less than 0
 	 */
-	protected function reset()
+	protected function setCurrentPageIndex($value)
 	{
-		$this->getControls()->clear();
+		if(($value=TPropertyValue::ensureInteger($value))<0)
+			throw new TInvalidDataValueException('pager_currentpageindex_invalid');
+		$this->setViewState('CurrentPageIndex',$value,0);
 	}
 
 	/**
-	 * Restores the pager from viewstate.
+	 * @return integer number of pages of data items available
 	 */
-	protected function restoreFromViewState()
+	public function getPageCount()
 	{
-		$this->reset();
-		$ds=$this->createPagedDataSource();
-		$ds->setDataSource(new TDummyDataSource($this->getItemCount()));
-		$this->buildPager($ds);
+		return $this->getViewState('PageCount',0);
+	}
+
+	/**
+	 * @param integer number of pages of data items available
+	 * @throws TInvalidDataValueException if the value is less than 0
+	 */
+	protected function setPageCount($value)
+	{
+		if(($value=TPropertyValue::ensureInteger($value))<0)
+			throw new TInvalidDataValueException('pager_pagecount_invalid');
+		$this->setViewState('PageCount',$value,0);
+	}
+
+	/**
+	 * @return boolean whether the current page is the first page Defaults to false.
+	 */
+	public function getIsFirstPage()
+	{
+		return $this->getCurrentPageIndex()===0;
+	}
+
+	/**
+	 * @return boolean whether the current page is the last page
+	 */
+	public function getIsLastPage()
+	{
+		return $this->getCurrentPageIndex()===$this->getPageCount()-1;
 	}
 
 	/**
@@ -390,66 +260,43 @@ class TPager extends TDataBoundControl implements INamingContainer
 	 * You may override this function to provide your own way of data population.
 	 * @param Traversable the bound data
 	 */
-	protected function performDataBinding($data)
+	public function onPreRender($param)
 	{
-		$this->reset();
+		parent::onPreRender($param);
 
 		$controlID=$this->getControlToPaginate();
 		if(($targetControl=$this->getNamingContainer()->findControl($controlID))===null || !($targetControl instanceof TDataBoundControl))
 			throw new TConfigurationException('pager_controltopaginate_invalid',$controlID);
 
-		$ds=$this->createPagedDataSource();
-		$ds->setDataSource($this->getDataSource());
-		$this->setViewState('ItemCount',$ds->getDataSourceCount());
-
-		$this->buildPager($ds);
-		$this->synchronizePagers($targetControl,$ds);
-
-		$targetControl->setDataSource($ds);
-		$targetControl->dataBind();
-	}
-
-	/**
-	 * Synchronizes the state of all pagers who have the same {@link getControlToPaginate ControlToPaginate}.
-	 * @param TDataBoundControl the control whose content is to be paginated
-	 * @param TPagedDataSource the paged data source associated with the pager
-	 */
-	protected function synchronizePagers($targetControl,$dataSource)
-	{
-		foreach(self::$_pagers as $pager)
+		if($targetControl->getAllowPaging() && $targetControl->getPageCount()>1)
 		{
-			if($pager!==$this && $pager->getNamingContainer()->findControl($pager->getControlToPaginate())===$targetControl)
-			{
-				$pager->reset();
-				$pager->setCurrentPageIndex($dataSource->getCurrentPageIndex());
-				$customPaging=$dataSource->getAllowCustomPaging();
-				$pager->setAllowCustomPaging($customPaging);
-				$pager->setViewState('ItemCount',$dataSource->getDataSourceCount());
-				if($customPaging)
-					$pager->setVirtualItemCount($dataSource->getVirtualItemCount());
-				$pager->buildPager($dataSource);
-			}
+			$this->setVisible(true);
+			$this->getControls()->clear();
+			$this->setPageCount($targetControl->getPageCount());
+			$this->setCurrentPageIndex($targetControl->getCurrentPageIndex());
+			$this->buildPager();
 		}
+		else
+			$this->setVisible(false);
 	}
 
 	/**
 	 * Builds the pager content based on the pager mode.
 	 * Current implementation includes building 'NextPrev', 'Numeric' and 'List' pagers.
 	 * Derived classes may override this method to provide additional pagers.
-	 * @param TPagedDataSource data source bound to the target control
 	 */
-	protected function buildPager($dataSource)
+	protected function buildPager()
 	{
 		switch($this->getMode())
 		{
 			case 'NextPrev':
-				$this->buildNextPrevPager($dataSource);
+				$this->buildNextPrevPager();
 				break;
 			case 'Numeric':
-				$this->buildNumericPager($dataSource);
+				$this->buildNumericPager();
 				break;
 			case 'List':
-				$this->buildListPager($dataSource);
+				$this->buildListPager();
 				break;
 		}
 	}
@@ -494,13 +341,12 @@ class TPager extends TDataBoundControl implements INamingContainer
 
 	/**
 	 * Builds a next-prev pager
-	 * @param TPagedDataSource data source bound to the pager
 	 */
-	protected function buildNextPrevPager($dataSource)
+	protected function buildNextPrevPager()
 	{
 		$buttonType=$this->getButtonType();
 		$controls=$this->getControls();
-		if($dataSource->getIsFirstPage())
+		if($this->getIsFirstPage())
 		{
 			if(($text=$this->getFirstPageText())!=='')
 			{
@@ -523,7 +369,7 @@ class TPager extends TDataBoundControl implements INamingContainer
 			$controls->add($button);
 		}
 		$controls->add("\n");
-		if($dataSource->getIsLastPage())
+		if($this->getIsLastPage())
 		{
 			$label=$this->createPagerButton($buttonType,false,$this->getNextPageText(),'','');
 			$controls->add($label);
@@ -549,14 +395,13 @@ class TPager extends TDataBoundControl implements INamingContainer
 
 	/**
 	 * Builds a numeric pager
-	 * @param TPagedDataSource data source bound to the pager
 	 */
-	protected function buildNumericPager($dataSource)
+	protected function buildNumericPager()
 	{
 		$buttonType=$this->getButtonType();
 		$controls=$this->getControls();
-		$pageCount=$dataSource->getPageCount();
-		$pageIndex=$dataSource->getCurrentPageIndex()+1;
+		$pageCount=$this->getPageCount();
+		$pageIndex=$this->getCurrentPageIndex()+1;
 		$maxButtonCount=$this->getPageButtonCount();
 		$buttonCount=$maxButtonCount>$pageCount?$pageCount:$maxButtonCount;
 		$startPageIndex=1;
@@ -620,15 +465,14 @@ class TPager extends TDataBoundControl implements INamingContainer
 
 	/**
 	 * Builds a dropdown list pager
-	 * @param TPagedDataSource data source bound to the pager
 	 */
-	protected function buildListPager($dataSource)
+	protected function buildListPager()
 	{
 		$list=new TDropDownList;
 		$this->getControls()->add($list);
-		$list->setDataSource(range(1,$dataSource->getPageCount()));
+		$list->setDataSource(range(1,$this->getPageCount()));
 		$list->dataBind();
-		$list->setSelectedIndex($dataSource->getCurrentPageIndex());
+		$list->setSelectedIndex($this->getCurrentPageIndex());
 		$list->setAutoPostBack(true);
 		$list->attachEventHandler('OnSelectedIndexChanged',array($this,'listIndexChanged'));
 	}

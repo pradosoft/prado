@@ -677,7 +677,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 			if(strcasecmp($command,self::CMD_SELECT)===0)
 			{
 				$this->setSelectedItemIndex($param->getItem()->getItemIndex());
-				$this->onSelectedIndexChanged(null);
+				$this->onSelectedIndexChanged($param);
 				return true;
 			}
 			else if(strcasecmp($command,self::CMD_EDIT)===0)
