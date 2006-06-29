@@ -53,7 +53,7 @@
  *
  * TMemCache may be configured in application configuration file as follows
  * <code>
- * <module id="cache" type="System.Caching.TMemCache" Host="localhost" Port="11211" />
+ * <module id="cache" class="System.Caching.TMemCache" Host="localhost" Port="11211" />
  * </code>
  * where {@link getHost Host} and {@link getPort Port} are configurable properties
  * of TMemCache.

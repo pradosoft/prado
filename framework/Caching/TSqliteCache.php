@@ -55,7 +55,7 @@
  *
  * TSqliteCache may be configured in application configuration file as follows
  * <code>
- * <module id="cache" type="System.Caching.TSqliteCache" DbFile="Application.Data.site" />
+ * <module id="cache" class="System.Caching.TSqliteCache" DbFile="Application.Data.site" />
  * </code>
  * where {@link getDbFile DbFile} is a property specifying the location of the
  * SQLite DB file (in the namespace format).
