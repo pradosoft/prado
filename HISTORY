@@ -21,6 +21,7 @@ ENH: Added TPageService.BasePageClass property (Qiang)
 ENH: Added TDataGrid.EmptyTemplate property (Qiang)
 ENH: Added paging feature to all TDataBoundControl-derived controls (Qiang)
 NEW: Added TPager (Qiang)
+NEW: Added Dreamweaver taglib extension (Stanislav, Qiang)
 
 Version 3.0.1 June 4, 2006
 ==========================
