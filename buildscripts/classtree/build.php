@@ -1,7 +1,10 @@
 <?php
 
-$rootPath=dirname(__FILE__).'/../../framework';
-require_once($rootPath.'/prado.php');
+$basePath=dirname(__FILE__);
+$frameworkPath=realpath($basePath.'/../../framework');
+require_once($frameworkPath.'/prado.php');
+require_once($basePath.'/DWExtension.php');
+
 $exclusions=array(
 	'prado.php',
 	'pradolite.php',
@@ -11,25 +14,26 @@ $exclusions=array(
 	'/I18N/core',
 	'/3rdParty',
 	);
-$a=new ClassTreeBuilder($rootPath,$exclusions);
+$a=new ClassTreeBuilder($frameworkPath,$exclusions);
 $a->buildTree();
-$a->saveToFile('classes.data');
+$a->saveToFile($basePath.'/classes.data');
+$a->saveAsDWExtension($basePath);
 
 class ClassTreeBuilder
 {
 	const REGEX_RULES='/^\s*(abstract\s+)?class\s+(\w+)(\s+extends\s+(\w+)\s*|\s*)/msS';
-	private $_basePath;
+	private $_frameworkPath;
 	private $_exclusions;
 	private $_classes=array();
 
-	public function __construct($basePath,$exclusions)
+	public function __construct($frameworkPath,$exclusions)
 	{
-		$this->_basePath=realpath($basePath);
+		$this->_frameworkPath=realpath($frameworkPath);
 		$this->_exclusions=array();
 		foreach($exclusions as $exclusion)
 		{
 			if($exclusion[0]==='/')
-				$this->_exclusions[realpath($basePath.'/'.$exclusion)]=true;
+				$this->_exclusions[realpath($frameworkPath.'/'.$exclusion)]=true;
 			else
 				$this->_exclusions[$exclusion]=true;
 		}
@@ -37,7 +41,7 @@ class ClassTreeBuilder
 
 	public function buildTree()
 	{
-		$sourceFiles=$this->getSourceFiles($this->_basePath);
+		$sourceFiles=$this->getSourceFiles($this->_frameworkPath);
 		foreach($sourceFiles as $sourceFile)
 			$this->parseFile($sourceFile);
 		ksort($this->_classes);
@@ -73,7 +77,7 @@ class ClassTreeBuilder
 	protected function parseFile($sourceFile)
 	{
 		include_once($sourceFile);
-		$classFile=strtr(substr($sourceFile,strlen($this->_basePath)),'\\','/');
+		$classFile=strtr(substr($sourceFile,strlen($this->_frameworkPath)),'\\','/');
 		echo "Parsing $classFile...\n";
 		$content=file_get_contents($sourceFile);
 		if(preg_match('/@package\s+([\w\.]+)\s*/msS',$content,$matches)>0)
@@ -175,8 +179,75 @@ class ClassTreeBuilder
 		return $files;
 	}
 
-	public function saveAsTagLib($fileName)
+	public function saveAsDWExtension($basePath)
 	{
+		$tagPath=$basePath.'/Configuration/TagLibraries/PRADO';
+
+		// prepare the directory to save tag lib
+		@mkdir($basePath.'/Configuration');
+		@mkdir($basePath.'/Configuration/TagLibraries');
+		@mkdir($basePath.'/Configuration/TagLibraries/PRADO');
+
+		$docMXI = new PradoMXIDocument(Prado::getVersion());
+		$tagChooser = new PradoTagChooser;
+
+		$controlClass = new ReflectionClass('TControl');
+
+		foreach($this->_classes as $className=>$classInfo)
+		{
+			$class = new ReflectionClass($className);
+			if($class->isInstantiable() && ($className==='TControl' || $class->isSubclassOf($controlClass)))
+			{
+				$docMXI->addTag($className);
+				$tagChooser->addElement($className);
+				$docVTM = new PradoVTMDocument($className);
+				foreach($classInfo['Properties'] as $name=>$property)
+				{
+					$type=$property['type'];
+					if(isset($this->_classes[$type]) && ($type==='TFont' || strrpos($type,'Style')===strlen($type)-5 && $type!=='TStyle'))
+						$this->processObjectType($type,$this->_classes[$type],$name,$docVTM);
+					if($property['readonly'] || $property['protected'])
+						continue;
+					if(($type=$this->checkType($className,$name,$property['type']))!=='')
+						$docVTM->addAttribute($name,$type);
+				}
+				foreach($classInfo['Events'] as $name=>$event)
+				{
+					$docVTM->addEvent($name);
+				}
+				file_put_contents($tagPath.'/'.$className.'.vtm',$docVTM->getXML());
+			}
+		}
+
+		file_put_contents($basePath.'/PRADO.mxi',$docMXI->getXML());
+		file_put_contents($tagPath.'/TagChooser.xml',$tagChooser->getXML());
+
+	}
+
+	private	function processObjectType($objectType,$objectInfo,$prefix,$doc)
+	{
+		foreach($objectInfo['Properties'] as $name=>$property)
+		{
+			if($property['type']==='TFont')
+				$this->processObjectType('TFont',$this->_classes['TFont'],$prefix.'.'.$name,$doc);
+			if($property['readonly'] || $property['protected'])
+				continue;
+			if(($type=$this->checkType($objectType,$name,$property['type']))!=='')
+				$doc->addAttribute($prefix.'.'.$name,$type);
+		}
+	}
+
+	private	function checkType($className,$propertyName,$type)
+	{
+		if(strrpos($propertyName,'Color')===strlen($propertyName)-5)
+			return 'color';
+		if($propertyName==='Style')
+			return 'style';
+		if($type==='boolean')
+			return array('true','false');
+		if($type==='string' || $type==='integer' || $type==='ITemplate')
+			return 'text';
+		return '';
 	}
 }
 

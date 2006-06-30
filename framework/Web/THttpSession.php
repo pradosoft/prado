@@ -376,7 +376,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 		if($this->_started)
 			throw new TInvalidOperationException('httpsession_transid_unchangeable');
 		else
-			ini_set('session.use_only_cookies',TPropertyValue::ensureBoolean($value)?'1':'0');
+			ini_set('session.use_trans_sid',TPropertyValue::ensureBoolean($value)?'1':'0');
 	}
 
 	/**

@@ -680,7 +680,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 						if($matchStart>$textStart)
 						{
 							$value=substr($input,$textStart,$matchStart-$textStart);
-							if(strrpos($prop,'template')===strlen($prop)-8)
+							if(substr($prop,-8,8)==='template')
 								$value=$this->parseTemplateProperty($value,$textStart);
 							else
 								$value=$this->parseAttribute($value);
@@ -701,7 +701,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 				}
 				else if(strpos($str,'<!--')===0)	// comments
 				{
-					if(strrpos($str,'--!>')===strlen($str)-4)  // template comments
+					if(substr($str,-4,4)==='--!>')  // template comments
 					{
 						if($expectPropEnd)
 							throw new TConfigurationException('template_comments_forbidden');
@@ -799,7 +799,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 			if(isset($attributes[$name]))
 				throw new TConfigurationException('template_property_duplicated',$name);
 			$value=$match[2][0];
-			if(strrpos($name,'template')===strlen($name)-8)
+			if(substr($name,-8,8)==='template')
 			{
 				if($value[0]==='\'' || $value[0]==='"')
 					$attributes[$name]=$this->parseTemplateProperty(substr($value,1,strlen($value)-2),$match[2][1]+1);

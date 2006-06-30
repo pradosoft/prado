@@ -42,7 +42,7 @@
  * by the application object to handle errors.
  *
  * TErrorHandler may be configured in application configuration file as follows
- * <module id="error" type="TErrorHandler" ErrorTemplatePath="System.Exceptions" />
+ * <module id="error" class="TErrorHandler" ErrorTemplatePath="System.Exceptions" />
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $

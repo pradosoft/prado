@@ -310,6 +310,8 @@ buildscripts/PhpDocumentor/user/error.ini -text
 buildscripts/PhpDocumentor/user/pear-makedocs.ini -text
 buildscripts/PhpDocumentor/user/prado.ini -text
 buildscripts/PhpDocumentor/user/testdocbook.ini -text
+buildscripts/classtree/DWExtension.php -text
+buildscripts/classtree/DWExtensionReadme.txt -text
 buildscripts/classtree/build.php -text
 buildscripts/index/api_index.php -text
 buildscripts/index/build.php -text

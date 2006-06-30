@@ -144,7 +144,9 @@ authmanager_usermanager_invalid			= TAuthManager.UserManager '{0}' does not refe
 authmanager_usermanager_unchangeable	= TAuthManager.UserManager cannot be modified after the module is initialized.
 authmanager_session_required			= TAuthManager requires a session application module.
 
-thememanager_basepath_invalid			= TThemeManager.BasePath '{0}' is not a valid directory.
+thememanager_service_unavailable		= TThemeManager requires TPageService to be available. This error often occurs when you configure TThemeManager outside of the page service configuration.
+thememanager_basepath_invalid			= TThemeManager.BasePath '{0}' is not a valid path alias. Make sure you have defined this alias in configuration and it points to a valid directory.
+thememanager_basepath_invalid2			= TThemeManager.BasePath '{0}' is not a valid directory.
 thememanager_basepath_unchangeable		= TThemeManager.BasePath cannot be modified after the module is initialized.
 
 theme_baseurl_required					= TThemeManager.BasePath is required. By default, a directory named 'themes' under the directory containing the application entry script is assumed.

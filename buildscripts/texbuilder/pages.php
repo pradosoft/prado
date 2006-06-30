@@ -50,6 +50,7 @@ $pages['Control Reference : Standard Controls'] = array(
 	'Controls/LinkButton.page',
 	'Controls/Literal.page',
 	'Controls/MultiView.page',
+	'Controls/Pager.page',
 	'Controls/Panel.page',
 	'Controls/PlaceHolder.page',
 	'Controls/RadioButton.page',
