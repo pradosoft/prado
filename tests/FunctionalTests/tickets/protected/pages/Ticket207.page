@@ -1,0 +1,20 @@
+<com:TContent ID="Content">
+	<h2>Validators ClientSide.OnError triggered twice</h2>
+	<com:TTextBox ID="T" /><br />
+	  <com:TRequiredFieldValidator ControlToValidate="T" Text="Error"
+	    ClientSide.OnError="Logger.info('error on T fired')" />
+	  <br />
+	  <com:TTextBox ID="B" /><br />
+	  <com:TRequiredFieldValidator ControlToValidate="B" Text="Error" />
+	  <br />
+	<com:TButton Text="submit" />
+	<h3>Conditions</h3>
+<pre>
+	(TextBox? B is just there to prevent server submission)
+	To verify try exactly this:
+
+	1. Enter nothing and click on submit : 1 error event will be triggered
+	2. Enter something into TextBox? T and click on submit : no error event (ok)
+	3. Delete your text from TextBox? T again and click on submit : error event will be triggered twice
+</pre>	
+</com:TContent>

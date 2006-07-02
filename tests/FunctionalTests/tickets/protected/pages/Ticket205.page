@@ -1,0 +1,4 @@
+<com:TContent ID="Content">
+	<h3>TCustomValidator not enabling ControlCssClass or prop:ClientSide.OnError after postback.</h3>
+	
+</com:TContent>
