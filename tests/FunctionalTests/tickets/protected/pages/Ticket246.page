@@ -1,0 +1,17 @@
+<com:TContent ID="Content">
+	<h2>TDatePicker inside absolute DIV with scrollbar</h2>
+	
+	<div style="position:absolute; top:100px; 
+			width: 400px; background-color: #fee; 
+			overflow: scroll;
+			border:1px solid red; height:350px; text-align:center">
+		<p style="height:200px; background-color: #eef;"></p>
+		<com:TDatePicker ID="datePicker1" DateFormat="dd/MM/yyyy" InputMode="DropDownList" />
+		<br /><br />
+		<com:TDropDownList ID="dropDownList1">
+			<com:TListItem Value="value 1" Text="item 1" />
+			<com:TListItem Value="value 2" Text="item 2" />
+		</com:TDropDownList>
+		<p style="height:400px; width:600px; background-color:#efe;"></p>
+	</div>
+</com:TContent>

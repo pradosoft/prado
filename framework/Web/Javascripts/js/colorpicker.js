@@ -33,7 +33,7 @@ Event.observe(this.button,"click",this._buttonOnClick);Event.observe(this.input,
 {var mode=this.options['Mode'];if(this.element==null)
 {var constructor=mode=="Basic"?"getBasicPickerContainer":"getFullPickerContainer"
 this.element=this[constructor](this.options['ID'],this.options['Palette'])
-document.body.appendChild(this.element);this.element.style.display="none";if(Prado.Browser().ie)
+this.input.parentNode.appendChild(this.element);this.element.style.display="none";if(Prado.Browser().ie)
 {this.iePopUp=document.createElement('iframe');this.iePopUp.src=Prado.WebUI.TColorPicker.UIImages['button.gif'];this.iePopUp.style.position="absolute"
 this.iePopUp.scrolling="no"
 this.iePopUp.frameBorder="0"
@@ -42,7 +42,7 @@ if(mode=="Full")
 this.initializeFullPicker();}
 this.show(mode);},show:function(type)
 {if(!this.showing)
-{var pos=Position.cumulativeOffset(this.input);pos[1]+=this.input.offsetHeight;this.element.style.top=(pos[1]-1)+"px";this.element.style.left=pos[0]+"px";this.element.style.display="block";this.ieHack(type);this._documentClickEvent=this.hideOnClick.bindEvent(this,type);this._documentKeyDownEvent=this.keyPressed.bindEvent(this,type);Event.observe(document.body,"click",this._documentClickEvent);Event.observe(document,"keydown",this._documentKeyDownEvent);this.showing=true;if(type=="Full")
+{var pos=Position.positionedOffset(this.input);pos[1]+=this.input.offsetHeight;this.element.style.top=(pos[1]-1)+"px";this.element.style.left=pos[0]+"px";this.element.style.display="block";this.ieHack(type);this._documentClickEvent=this.hideOnClick.bindEvent(this,type);this._documentKeyDownEvent=this.keyPressed.bindEvent(this,type);Event.observe(document.body,"click",this._documentClickEvent);Event.observe(document,"keydown",this._documentKeyDownEvent);this.showing=true;if(type=="Full")
 {this.observeMouseMovement();var color=Rico.Color.createFromHex(this.input.value);this.inputs.oldColor.style.backgroundColor=color.asHex();this.setColor(color,true);}}},hide:function(event)
 {if(this.showing)
 {if(this.iePopUp)

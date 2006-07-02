@@ -219,7 +219,7 @@ class THtmlArea extends TTextBox
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		if($this->getEnableVisualEdit())
+		if($this->getEnableVisualEdit() && $this->getEnabled(true))
 		{
 			$writer->addAttribute('id',$this->getClientID());
 			$this->registerEditorClientScript($writer);

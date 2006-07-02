@@ -124,7 +124,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * Adds attributes to renderer. Calls parent implementation and renders the 
+	 * Adds attributes to renderer. Calls parent implementation and renders the
 	 * client control scripts.
 	 * @param THtmlWriter the renderer
 	 */
@@ -237,7 +237,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			$this->registerClientScriptValidator();
 		$this->updateControlCssClass();
 	}
-	
+
 	/**
 	 * Update the ControlToValidate component's css class depending
 	 * if the ControlCssClass property is set, and whether this is valid.
@@ -632,6 +632,25 @@ class TClientSideValidatorOptions extends TClientSideOptions
 	public function getOnError()
 	{
 		return $this->getOption('OnError');
+	}
+
+	/**
+	 * @param boolean true to revalidate when the control to validate changes value.
+	 */
+	public function setObserveChanges($value)
+	{
+		$this->setOption('ObserveChanges', TPropertyValue::ensureBoolean($value));
+	}
+
+	/**
+	 * @return boolean true to observe changes.
+	 */
+	public function getObserveChanges()
+	{
+		if(($option=$this->getOption('ObserveChanges'))!==null)
+			return $option;
+		else
+			return true;
 	}
 
 	/**

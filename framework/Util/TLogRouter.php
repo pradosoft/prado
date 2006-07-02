@@ -22,8 +22,8 @@
  * or an external configuration file specified by {@link setConfigFile ConfigFile}.
  * The format is as follows,
  * <code>
- *   &lt;route class="TFileLogRoute" Categories="System.Web.UI" Levels="Warning" /&gt;
- *   &lt;route class="TEmailLogRoute" Categories="Application" Levels="Fatal" Emails="admin@pradosoft.com" /&gt;
+ *   <route class="TFileLogRoute" Categories="System.Web.UI" Levels="Warning" />
+ *   <route class="TEmailLogRoute" Categories="Application" Levels="Fatal" Emails="admin@pradosoft.com" />
  * </code>
  * You can specify multiple routes with different filtering conditions and different
  * targets, even if the routes are of the same type.

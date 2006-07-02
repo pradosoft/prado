@@ -1,0 +1,4 @@
+<com:TContent ID="Content">
+	<h2>Disabled HTMLArea</h2>
+	<com:THtmlArea ID="htmlArea1" Width="500px" Height="250px" Enabled="false"/>
+</com:TContent>

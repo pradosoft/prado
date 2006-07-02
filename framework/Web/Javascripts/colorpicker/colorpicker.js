@@ -68,7 +68,7 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 		{
 			var constructor = mode == "Basic" ? "getBasicPickerContainer": "getFullPickerContainer"
 			this.element = this[constructor](this.options['ID'], this.options['Palette'])
-			document.body.appendChild(this.element);
+			this.input.parentNode.appendChild(this.element);
 			this.element.style.display = "none";
 
 			if(Prado.Browser().ie)
@@ -90,7 +90,7 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 	{
 		if(!this.showing)
 		{
-			var pos = Position.cumulativeOffset(this.input);
+			var pos = Position.positionedOffset(this.input);
 			pos[1] += this.input.offsetHeight;
 
 			this.element.style.top = (pos[1]-1) + "px";

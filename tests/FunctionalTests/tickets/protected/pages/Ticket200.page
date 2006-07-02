@@ -1,0 +1,6 @@
+<com:TContent ID="Content">
+	<com:TLinkButton ID="linkButton1" Text="Click Me" OnClick="linkButton1_Clicked" />
+	<p style="height:500px"><br /></p>
+	<com:TLinkButton ID="linkButton2" Text="Click Me" OnClick="linkButton2_Clicked" />
+	<p style="height:500px"></br></p>
+</com:TContent>

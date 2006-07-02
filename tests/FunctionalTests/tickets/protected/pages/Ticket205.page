@@ -1,0 +1,26 @@
+<com:TContent ID="Content">
+	<h3>TCustomValidator not enabling ControlCssClass or prop:ClientSide.OnError after postback.</h3>
+	<style>
+		.required
+		{
+			border: 1px solid red;
+			background-color: pink;
+		}
+	</style>
+	<script type="text/javascript">
+		function clientSideCustomValidate(sender, param)
+		{
+			return param == "Prado";
+		}
+	</script>
+	<com:TTextBox ID="textbox1" />
+	<com:TCustomValidator
+		ID="validator1"
+		ControlToValidate="textbox1"
+		ControlCssClass="required"
+		OnServerValidate="customValidate"
+		ClientValidationFunction="clientSideCustomValidate"
+		ClientSide.OnError="alert('error')"
+		ErrorMessage="must equal to 'Prado'" />
+	<com:TButton ID="button1" Text="Submit!" />
+</com:TContent>

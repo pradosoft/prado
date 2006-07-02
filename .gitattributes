@@ -696,10 +696,6 @@ demos/quickstart/index.php -text
 demos/quickstart/index2.php -text
 demos/quickstart/protected/.htaccess -text
 demos/quickstart/protected/application.xml -text
-demos/quickstart/protected/comments/CommentList.php -text
-demos/quickstart/protected/comments/CommentList.tpl -text
-demos/quickstart/protected/comments/QuickStartComments.php -text
-demos/quickstart/protected/comments/comments.db -text
 demos/quickstart/protected/controls/DocLink.php -text
 demos/quickstart/protected/controls/Layout.php -text
 demos/quickstart/protected/controls/Layout.tpl -text
@@ -1500,6 +1496,7 @@ framework/Web/Javascripts/colorpicker/colorpicker.js -text
 framework/Web/Javascripts/colorpicker/default.css -text
 framework/Web/Javascripts/colorpicker/hue.gif -text
 framework/Web/Javascripts/colorpicker/slider.gif -text
+framework/Web/Javascripts/colorpicker/spacer.gif -text
 framework/Web/Javascripts/colorpicker/target_black.gif -text
 framework/Web/Javascripts/colorpicker/target_white.gif -text
 framework/Web/Javascripts/datepicker/calendar.png -text
