@@ -1,13 +1,17 @@
 <com:TContent ID="Content">
 	<h2>Validators ClientSide.OnError triggered twice</h2>
-	<com:TTextBox ID="T" /><br />
-	  <com:TRequiredFieldValidator ControlToValidate="T" Text="Error"
-	    ClientSide.OnError="Logger.info('error on T fired')" />
+	<h3>Use ClientSide.ObseveChanges="false"</h3>
+	<com:TTextBox ID="text1" /><br />
+	  <com:TRequiredFieldValidator 
+		id="validator1"
+		ControlToValidate="text1" Text="Error"
+		ClientSide.ObserveChanges="false"
+	    ClientSide.OnError="alert('error on text1 fired')" />
 	  <br />
-	  <com:TTextBox ID="B" /><br />
-	  <com:TRequiredFieldValidator ControlToValidate="B" Text="Error" />
+	  <com:TTextBox ID="text2" /><br />
+	  <com:TRequiredFieldValidator id="validator2" ControlToValidate="text2" Text="Error" />
 	  <br />
-	<com:TButton Text="submit" />
+	<com:TButton id="button1" Text="submit" />
 	<h3>Conditions</h3>
 <pre>
 	(TextBox? B is just there to prevent server submission)

@@ -647,12 +647,30 @@ class TValidatorClientScript extends TComponent
 	}
 
 	/**
+	 * @param boolean true to revalidate when the control to validate changes value.
+	 */
+	public function setObserveChanges($value)
+	{
+		$this->_options->add('ObserveChanges', TPropertyValue::ensureBoolean($value));
+	}
+
+	/**
+	 * @return boolean true to observe changes.
+	 */
+	public function getObserveChanges()
+	{
+		$changes =  $this->_options->itemAt('ObserveChanges');
+		return is_null($changes) ? true : $changes;
+	}
+
+	/**
 	 * @return array list of client-side event code.
 	 */
 	public function getOptions()
 	{
 		return $this->_options->toArray();
 	}
+	
 
 	/**
 	 * Ensure the string is a valid javascript function. If the string begins
