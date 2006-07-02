@@ -247,10 +247,10 @@ Prado.WebUI.TDatePicker.prototype =
 			this.iePopUp.style.position = "absolute"
 			this.iePopUp.scrolling="no"
 			this.iePopUp.frameBorder="0"
-			document.body.appendChild(this.iePopUp);
+			this.control.parentNode.appendChild(this.iePopUp);
 		}
 
-		document.body.appendChild(this._calDiv);
+		this.control.parentNode.appendChild(this._calDiv);
 		
 		this.update();
 		this.updateHeader();
@@ -542,8 +542,8 @@ Prado.WebUI.TDatePicker.prototype =
 			
 		if(!this.showing)
 		{
-			var pos = Position.cumulativeOffset(this.control);
-			
+			var pos = Position.positionedOffset(this.control);
+						
 			pos[1] += this.getDatePickerOffsetHeight();
 			
 			this._calDiv.style.display = "block";

@@ -1376,6 +1376,7 @@ framework/Web/Javascripts/colorpicker/colorpicker.js -text
 framework/Web/Javascripts/colorpicker/default.css -text
 framework/Web/Javascripts/colorpicker/hue.gif -text
 framework/Web/Javascripts/colorpicker/slider.gif -text
+framework/Web/Javascripts/colorpicker/spacer.gif -text
 framework/Web/Javascripts/colorpicker/target_black.gif -text
 framework/Web/Javascripts/colorpicker/target_white.gif -text
 framework/Web/Javascripts/datepicker/calendar.png -text
