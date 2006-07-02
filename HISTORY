@@ -17,6 +17,7 @@ ENH: Ticket#231 - Added TButton.ButtonType property to allow reset button (Qiang
 ENH: Ticket#232 - Allow <%# %> and <%= %> embedded within property values (Qiang)
 ENH: Ticket#256 - Datagrid columns can now be accessed via IDs (Qiang)
 ENH: Ticket#257 - OnSelectedIndexChanged event of TDataList and TDataGrid now passes the original command parameter (Qiang)
+ENH: Ticket#262 - Added TCheckBox.Value property (Qiang)
 ENH: TRepeater, TDataList and TDataGrid will store data indices in DataKeys if DataKeyField is not set. (Qiang)
 ENH: Added TPageService.BasePageClass property (Qiang)
 ENH: Added TDataGrid.EmptyTemplate property (Qiang)

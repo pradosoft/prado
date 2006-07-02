@@ -60,13 +60,10 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	public function loadPostData($key,$values)
 	{
 		$checked=$this->getChecked();
-		if(isset($values[$key])!=$checked)
-		{
-			$this->setChecked(!$checked);
-			return true;
-		}
-		else
-			return false;
+		if($newChecked=isset($values[$key]))
+			$this->setValue($values[$key]);
+		$this->setChecked($newChecked);
+		return $newChecked!==$checked;
 	}
 
 	/**
@@ -131,6 +128,22 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	public function setText($value)
 	{
 		$this->setViewState('Text',$value,'');
+	}
+
+	/**
+	 * @return string the value of the checkbox. Defaults to empty.
+	 */
+	public function getValue()
+	{
+		return $this->getViewState('Value','');
+	}
+
+	/**
+	 * @param string the value of the checkbox
+	 */
+	public function setValue($value)
+	{
+		$this->setViewState('Value',$value,'');
 	}
 
 	/**
@@ -309,13 +322,18 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	 */
 	protected function getValueAttribute()
 	{
-		$attributes=$this->getViewState('InputAttributes',null);
-		if($attributes && $attributes->contains('value'))
-			return $attributes->itemAt('value');
-		else if($this->hasAttribute('value'))
-			return $this->getAttribute('value');
+		if(($value=$this->getValue())!=='')
+			return $value;
 		else
-			return '';
+		{
+			$attributes=$this->getViewState('InputAttributes',null);
+			if($attributes && $attributes->contains('value'))
+				return $attributes->itemAt('value');
+			else if($this->hasAttribute('value'))
+				return $this->getAttribute('value');
+			else
+				return '';
+		}
 	}
 
 	/**
@@ -345,7 +363,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 		if($clientID!=='')
 			$writer->addAttribute('id',$clientID);
 		$writer->addAttribute('type','checkbox');
-		if(($value = $this->getValueAttribute()) !== '')
+		if(($value=$this->getValueAttribute())!=='')
 			$writer->addAttribute('value',$value);
 		if($onclick!=='')
 			$writer->addAttribute('onclick',$onclick);
