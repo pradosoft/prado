@@ -152,7 +152,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 				throw new TInvalidDataValueException('list_index_invalid',$index);
 		}
 		else
-			throw new TInvalidOperation('list_readonly',get_class($this));
+			throw new TInvalidOperationException('list_readonly',get_class($this));
 	}
 
 	/**
@@ -201,7 +201,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 				throw new TInvalidDataValueException('list_index_invalid',$index);
 		}
 		else
-			throw new TInvalidOperation('list_readonly',get_class($this));
+			throw new TInvalidOperationException('list_readonly',get_class($this));
 	}
 
 	/**

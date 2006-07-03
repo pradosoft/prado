@@ -189,7 +189,7 @@ class TFileUpload extends TWebControl implements IPostBackDataHandler, IValidata
 				throw new TInvalidOperationException('fileupload_saveas_failed');
 		}
 		else
-			throw new TInvalidOperation('fileupload_saveas_forbidden');
+			throw new TInvalidOperationException('fileupload_saveas_forbidden');
 	}
 
 	/**
