@@ -317,3 +317,5 @@ databoundcontrol_datasource_invalid		= {0}.DataSource is not valid.
 databoundcontrol_datasourceid_inexistent = databoundcontrol_datasourceid_inexistent.
 databoundcontrol_datasourceid_invalid	= databoundcontrol_datasourceid_invalid
 databoundcontrol_datamember_invalid		= databoundcontrol_datamember_invalid
+
+clientscript_invalid_file_position		= Invalid file position '{1}' for TClientScript control '{0}', must be 'Head', 'Here' or 'Begin'.

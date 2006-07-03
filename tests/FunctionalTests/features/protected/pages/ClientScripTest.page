@@ -1,0 +1,30 @@
+<com:TContent ID="Content">
+	<h1>ClientScript Test</h1>
+	
+	<com:TClientScript ScriptUrl=<%~ test.js %> ScriptPosition="Head">
+		if(typeof(ClientScriptInfo) == "undefined")
+			ClientScriptInfo = [];
+		ClientScriptInfo.push("ok 3?")
+	</com:TClientScript>
+		
+	<com:TClientScript ScriptPosition="Begin">
+		if(typeof(ClientScriptInfo) == "undefined")
+			ClientScriptInfo = [];
+		ClientScriptInfo.push("ok 2!")
+	</com:TClientScript>
+	
+	<com:TLabel ID="label1" Text="Label 1" />
+	<input type="button" id="button1" value="update" />
+	
+	<com:TClientScript ScriptPosition="End" UsingPradoScripts="prado">
+		Event.observe("button1", "click", function()
+		{
+			element = $("<%= $this->label1->ClientID %>");
+			if(element)
+				element.innerHTML = inspect(ClientScriptInfo);
+			else
+				alert("failed");
+		});
+	</com:TClientScript>
+	
+</com:TContent>
