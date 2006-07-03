@@ -27,7 +27,7 @@ Prado::using('System.Web.UI.WebControls.TListControl');
  * @package System.Web.UI.ActiveControls
  * @since 3.0
  */
-class TActiveListControlAdapter extends TActiveControlAdapter implements IListControlAdaptee
+class TActiveListControlAdapter extends TActiveControlAdapter implements IListControlAdapter
 {
 	/**
 	 * @return boolean true if can update client-side attributes.

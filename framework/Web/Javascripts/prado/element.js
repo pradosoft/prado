@@ -46,10 +46,9 @@ Prado.Element =
 		var el = $(element);
 		if(el && el.tagName.toLowerCase() == "select")
 		{
-			while(el.length > 0)
-				el.remove(0);
+			el.options.length = options.length;
 			for(var i = 0; i<options.length; i++)
-				el.options[el.options.length] = new Option(options[i][0],options[i][1]);
+				el.options[i] = new Option(options[i][0],options[i][1]);
 		}
 	},
 

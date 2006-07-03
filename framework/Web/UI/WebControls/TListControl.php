@@ -436,7 +436,7 @@ abstract class TListControl extends TDataBoundControl
 				throw new TInvalidDataValueException('listcontrol_selectedindex_invalid',get_class($this),$index);
 		}
 		$this->_cachedSelectedIndex=$index;
-		if($this->getAdapter() instanceof IListControlAdaptee)
+		if($this->getAdapter() instanceof IListControlAdapter)
 			$this->getAdapter()->setSelectedIndex($index);
 	}
 
@@ -472,7 +472,7 @@ abstract class TListControl extends TDataBoundControl
 			}
 		}
 
-		if($this->getAdapter() instanceof IListControlAdaptee)
+		if($this->getAdapter() instanceof IListControlAdapter)
 			$this->getAdapter()->setSelectedIndices($indices);
 	}
 
@@ -517,7 +517,7 @@ abstract class TListControl extends TDataBoundControl
 	    		throw new TInvalidDataValueException('listcontrol_selectedvalue_invalid',get_class($this),$value);
     	}
     	$this->_cachedSelectedValue=$value;
-		if($this->getAdapter() instanceof IListControlAdaptee)
+		if($this->getAdapter() instanceof IListControlAdapter)
 			$this->getAdapter()->setSelectedValue($value);
     }
 
@@ -559,7 +559,7 @@ abstract class TListControl extends TDataBoundControl
 			}
 		}
 
-		if($this->getAdapter() instanceof IListControlAdaptee)
+		if($this->getAdapter() instanceof IListControlAdapter)
 			$this->getAdapter()->setSelectedValues($values);
 	}
 
@@ -590,7 +590,7 @@ abstract class TListControl extends TDataBoundControl
 		    	$item->setSelected(false);
 	    }
 
-		if($this->getAdapter() instanceof IListControlAdaptee)
+		if($this->getAdapter() instanceof IListControlAdapter)
 			$this->getAdapter()->clearSelection();
     }
 
