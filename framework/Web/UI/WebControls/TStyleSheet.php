@@ -1,7 +1,26 @@
 <?php
+/**
+ * TStyleSheet class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ */
 
 /**
  * TStyleSheet class.
+ *
+ * TStyleSheet represents the link to a stylesheet file and/or a piece of
+ * stylesheet code. To specify the link to a CSS file, set {@link setStyleSheetUrl StyleSheetUrl}.
+ * The child rendering result of TStyleSheet is treated as CSS code and
+ * is rendered within an appropriate style HTML element.
+ * Therefore, if the child content is not empty, you should place the TStyleSheet
+ * control in the head section of your page to conform to the HTML standard.
+ * If only CSS file URL is specified, you may place the control anywhere on your page
+ * and the style element will be rendered in the right position.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version : $  Tue Jul  4 04:38:16 EST 2006 $
@@ -11,65 +30,47 @@
 class TStyleSheet extends TControl
 {
 	/**
-	 * @param string stylesheet url or asset resource.
+	 * @param string URL to the stylesheet file
 	 */
-	public function setStyleUrl($value)
+	public function setStyleSheetUrl($value)
 	{
-		$this->setViewState('StyleUrl', $value);	
+		$this->setViewState('StyleSheetUrl', $value);
 	}
-	
+
 	/**
-	 * @return string stylesheet url.
+	 * @return string URL to the stylesheet file
 	 */
-	public function getStyleUrl()
+	public function getStyleSheetUrl()
 	{
-		return $this->getViewState('StyleUrl', '');
+		return $this->getViewState('StyleSheetUrl', '');
 	}
-	
+
 	/**
-	 * Registers the stylesheet urls. Calls {@link renderChildren} to capture
-	 * the body content to render the stylesheet in the head.
+	 * Registers the stylesheet file and content to be rendered.
+	 * This method overrides the parent implementation and is invoked right before rendering.
 	 * @param mixed event parameter
 	 */
 	public function onPreRender($param)
 	{
 		if($this->getEnabled(true))
 		{
-			$this->registerCustomStyleSheetFile();
-			$this->registerCustomStyleSheet();
+			if(($url=$this->getStyleSheetUrl())!=='')
+				$this->getPage()->getClientScript()->registerStyleSheetFile($url,$url);
 		}
 	}
-	
+
 	/**
-	 * Overrides parent implementation, renders nothing.
+	 * Renders the control.
+	 * This method overrides the parent implementation and renders nothing.
+	 * @param ITextWriter writer
 	 */
-	public function renderChildren($writer)
+	public function render($writer)
 	{
-		
-	}
-	
-	/**
-	 * Register custom stylesheet file.
-	 */
-	protected function registerCustomStyleSheetFile()
-	{
-		$cs = $this->getPage()->getClientScript();
-		$url = $this->getStyleUrl();
-		if(strlen($url) > 0)
-			$cs->registerStyleSheetFile($url, $url);		
-	}
-	
-	/**
-	 * Registers  the body content as stylesheet.
-	 */
-	protected function registerCustomStyleSheet()
-	{
-		$cs = $this->getPage()->getClientScript();
 		$textWriter=new TTextWriter;
 		parent::renderChildren(new THtmlWriter($textWriter));
-		$text = $textWriter->flush();
-		if(strlen($text)>0)
-			$cs->registerStyleSheet(sprintf('%08X', crc32($text)), $text);
+		if(($css=trim($textWriter->flush()))!=='')
+			$writer->write("<style type=\"text/css\">\n/*<![CDATA[*/\n{$css}\n/*]]>*/\n</style>\n");
 	}
 }
+
 ?>

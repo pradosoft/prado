@@ -1,3 +1,8 @@
+Version 3.0.3 August 6, 2006
+============================
+BUG: Ticket#264 - Typos in some exception throw statements (Knut)
+NEW: Added TStyleSheet (Wei)
+
 Version 3.0.2 July 2, 2006
 ==========================
 BUG: Ticket#182 - List and validator controls cause problem in child classes (Qiang)
