@@ -213,7 +213,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		if($object instanceof TDataGridColumn)
 			$this->getColumns()->add($object);
 		else
-			parent::addParsedObject($object);
+			parent::addParsedObject($object);  // this is needed by EmptyTemplate
 	}
 
 	/**
@@ -244,6 +244,14 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		if(!$this->_items)
 			$this->_items=new TDataGridItemCollection;
 		return $this->_items;
+	}
+
+	/**
+	 * @return integer number of items
+	 */
+	public function getItemCount()
+	{
+		return $this->_items?$this->_items->getCount():0;
 	}
 
 	/**
@@ -1423,7 +1431,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 				$this->renderContents($writer);
 				$control->renderEndTag($writer);
 			}
-			else
+			else if($this->getViewState('ItemCount',0)>0)
 			{
 				$this->applyItemStyles();
 				if($this->_topPager)
