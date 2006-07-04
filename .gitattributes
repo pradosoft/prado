@@ -1569,6 +1569,7 @@ framework/Web/Javascripts/ratings/stars1.png -text
 framework/Web/Javascripts/rico/colors.js -text
 framework/Web/Javascripts/rico/extension.js -text
 framework/Web/Javascripts/rico/rico.js -text
+framework/Web/Services/IFeedContentProvider.php -text
 framework/Web/Services/TFeedService.php -text
 framework/Web/Services/TPageService.php -text
 framework/Web/TAssetManager.php -text
@@ -1679,6 +1680,8 @@ framework/Web/UI/WebControls/TWebControl.php -text
 framework/Web/UI/WebControls/TWebControlAdapter.php -text
 framework/Web/UI/WebControls/TWizard.php -text
 framework/Web/UI/WebControls/TXmlTransform.php -text
+framework/Xml/TFeedDocument.php -text
+framework/Xml/TRssFeedDocument.php -text
 framework/Xml/TXmlDocument.php -text
 framework/interfaces.php -text
 framework/prado.php -text
@@ -2144,6 +2147,7 @@ tests/unit/Web/UI/WebControls/TRequiredFieldValidatorTest.php -text
 tests/unit/Web/UI/WebControls/TXmlTransformTest.php -text
 tests/unit/Web/UI/WebControls/data/hello.xml -text
 tests/unit/Web/UI/WebControls/data/hello.xsl -text
+tests/unit/Xml/TRssFeedDocumentTest.php -text
 tests/unit/Xml/TXmlDocumentTest.php -text
 tests/unit/Xml/TXmlElementListTest.php -text
 tests/unit/Xml/TXmlElementTest.php -text
