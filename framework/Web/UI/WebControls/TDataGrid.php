@@ -900,13 +900,16 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		{
 			foreach($columns as $column)
 				$column->initialize();
-			if($allowPaging)
-				$this->_topPager=$this->createPager();
-			$this->_header=$this->createItemInternal(-1,-1,self::IT_HEADER,false,null,$columns);
 			$selectedIndex=$this->getSelectedItemIndex();
 			$editIndex=$this->getEditItemIndex();
 			for($index=0;$index<$itemCount;++$index)
 			{
+				if($index===0)
+				{
+					if($allowPaging)
+						$this->_topPager=$this->createPager();
+					$this->_header=$this->createItemInternal(-1,-1,self::IT_HEADER,false,null,$columns);
+				}
 				if($index===$editIndex)
 					$itemType=self::IT_EDITITEM;
 				else if($index===$selectedIndex)
@@ -918,9 +921,12 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 				$items->add($this->createItemInternal($index,$dsIndex,$itemType,false,null,$columns));
 				$dsIndex++;
 			}
-			$this->_footer=$this->createItemInternal(-1,-1,self::IT_FOOTER,false,null,$columns);
-			if($allowPaging)
-				$this->_bottomPager=$this->createPager();
+			if($index>0)
+			{
+				$this->_footer=$this->createItemInternal(-1,-1,self::IT_FOOTER,false,null,$columns);
+				if($allowPaging)
+					$this->_bottomPager=$this->createPager();
+			}
 		}
 		if(!$dsIndex && $this->_emptyTemplate!==null)
 		{
