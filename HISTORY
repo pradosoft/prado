@@ -8,6 +8,7 @@ NEW: TOutputCache (Qiang)
 NEW: TQueue (Qiang)
 NEW: TSessionPageStatePersister (Qiang)
 NEW: SQLMap (Wei)
+NEW: TFeedService, TRssFeedDocument (Knut, Qiang)
 
 Version 3.0.2 July 2, 2006
 ==========================
