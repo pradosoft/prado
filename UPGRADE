@@ -14,6 +14,9 @@ version B between A and C, you need to following the instructions
 for both A and B.
 
 
+Upgrading from v3.0.2
+---------------------
+
 Upgrading from v3.0.1
 ---------------------
 - Postback enabled control will always disable default client-side browser action.

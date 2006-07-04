@@ -213,7 +213,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		if($object instanceof TDataGridColumn)
 			$this->getColumns()->add($object);
 		else
-			parent::addParsedObject($object);
+			parent::addParsedObject($object);  // this is needed by EmptyTemplate
 	}
 
 	/**
@@ -244,6 +244,14 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		if(!$this->_items)
 			$this->_items=new TDataGridItemCollection;
 		return $this->_items;
+	}
+
+	/**
+	 * @return integer number of items
+	 */
+	public function getItemCount()
+	{
+		return $this->_items?$this->_items->getCount():0;
 	}
 
 	/**
@@ -892,13 +900,16 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		{
 			foreach($columns as $column)
 				$column->initialize();
-			if($allowPaging)
-				$this->_topPager=$this->createPager();
-			$this->_header=$this->createItemInternal(-1,-1,self::IT_HEADER,false,null,$columns);
 			$selectedIndex=$this->getSelectedItemIndex();
 			$editIndex=$this->getEditItemIndex();
 			for($index=0;$index<$itemCount;++$index)
 			{
+				if($index===0)
+				{
+					if($allowPaging)
+						$this->_topPager=$this->createPager();
+					$this->_header=$this->createItemInternal(-1,-1,self::IT_HEADER,false,null,$columns);
+				}
 				if($index===$editIndex)
 					$itemType=self::IT_EDITITEM;
 				else if($index===$selectedIndex)
@@ -910,9 +921,12 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 				$items->add($this->createItemInternal($index,$dsIndex,$itemType,false,null,$columns));
 				$dsIndex++;
 			}
-			$this->_footer=$this->createItemInternal(-1,-1,self::IT_FOOTER,false,null,$columns);
-			if($allowPaging)
-				$this->_bottomPager=$this->createPager();
+			if($index>0)
+			{
+				$this->_footer=$this->createItemInternal(-1,-1,self::IT_FOOTER,false,null,$columns);
+				if($allowPaging)
+					$this->_bottomPager=$this->createPager();
+			}
 		}
 		if(!$dsIndex && $this->_emptyTemplate!==null)
 		{
@@ -1287,6 +1301,8 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 
 		foreach($this->getControls() as $index=>$item)
 		{
+			if(!($item instanceof TDataGridItem) && !($item instanceof TDataGridPager))
+				continue;
 			$itemType=$item->getItemType();
 			switch($itemType)
 			{
@@ -1423,7 +1439,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 				$this->renderContents($writer);
 				$control->renderEndTag($writer);
 			}
-			else
+			else if($this->getViewState('ItemCount',0)>0)
 			{
 				$this->applyItemStyles();
 				if($this->_topPager)

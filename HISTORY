@@ -10,6 +10,13 @@ NEW: TSessionPageStatePersister (Qiang)
 NEW: SQLMap (Wei)
 NEW: TFeedService, TRssFeedDocument (Knut, Qiang)
 
+Version 3.0.3 August 6, 2006
+============================
+BUG: Ticket#264 - Typos in some exception throw statements (Knut)
+BUG: Ticket#268 - THttpResponse.redirect() may fail for some browsers (Qiang)
+BUG: TDataGrid may complain getting ItemType on a non-object if the grid is not data-bound (Qiang)
+NEW: Added TStyleSheet (Wei)
+
 Version 3.0.2 July 2, 2006
 ==========================
 BUG: Ticket#182 - List and validator controls cause problem in child classes (Qiang)

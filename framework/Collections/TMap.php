@@ -123,7 +123,7 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 		if(!$this->_r)
 			$this->_d[$key]=$value;
 		else
-			throw new TInvalidOperation('map_readonly',get_class($this));
+			throw new TInvalidOperationException('map_readonly',get_class($this));
 	}
 
 	/**
@@ -146,7 +146,7 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 				return null;
 		}
 		else
-			throw new TInvalidOperation('map_readonly',get_class($this));
+			throw new TInvalidOperationException('map_readonly',get_class($this));
 	}
 
 	/**

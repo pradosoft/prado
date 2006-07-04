@@ -13,6 +13,7 @@
 ini_set('track_errors', 1);
 
 /* set classpath */
+/*
 if (getenv('PHP_CLASSPATH')) {
 //    define('PHP_CLASSPATH',  getenv('PHP_CLASSPATH') . PATH_SEPARATOR . get_include_path());
     define('PHP_CLASSPATH',  realpath(dirname(__FILE__).'/../classes') . PATH_SEPARATOR . get_include_path());
@@ -20,6 +21,9 @@ if (getenv('PHP_CLASSPATH')) {
 } else {
     define('PHP_CLASSPATH',  get_include_path());
 }
+*/
+define('PHP_CLASSPATH',  realpath(dirname(__FILE__).'/../classes') . PATH_SEPARATOR . get_include_path());
+ini_set('include_path', PHP_CLASSPATH);
 
 require_once 'phing/Phing.php';
 
