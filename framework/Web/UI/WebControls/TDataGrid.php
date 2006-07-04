@@ -1295,6 +1295,8 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 
 		foreach($this->getControls() as $index=>$item)
 		{
+			if(!($item instanceof TDataGridItem) && !($item instanceof TDataGridPager))
+				continue;
 			$itemType=$item->getItemType();
 			switch($itemType)
 			{
