@@ -129,7 +129,7 @@ class TTable extends TWebControl
 	}
 
 	/**
-	 * @return TTableCellCollection list of {@link TTableCell} controls
+	 * @return TTableRowCollection list of {@link TTableRow} controls
 	 */
 	public function getRows()
 	{
