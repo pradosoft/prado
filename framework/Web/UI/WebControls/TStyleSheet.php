@@ -66,10 +66,12 @@ class TStyleSheet extends TControl
 	 */
 	public function render($writer)
 	{
-		$textWriter=new TTextWriter;
-		parent::renderChildren(new THtmlWriter($textWriter));
-		if(($css=trim($textWriter->flush()))!=='')
-			$writer->write("<style type=\"text/css\">\n/*<![CDATA[*/\n{$css}\n/*]]>*/\n</style>\n");
+		if($this->getHasControls())
+		{
+			$writer->write("<style type=\"text/css\">\n/*<![CDATA[*/\n");
+			$this->renderChildren($writer);
+			$writer->write("\n/*]]>*/\n</style>\n");
+		}
 	}
 }
 
