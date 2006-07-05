@@ -1,0 +1,6 @@
+June 7, 2005, by Qiang Xue (qiang.xue@gmail.com)
+------------------------------------------------
+- changed all class memeber declarations from 'var $varname' to 'private $varname'.
+- removed all reference usages, including creating new objects, returning and passing objects.
+- modified expectation.php line 106 from  'function test($compare, &$nasty=false) {' to 'function test($compare) {'.
+- added HtmlReporterWithCoverage.php
