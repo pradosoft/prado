@@ -93,5 +93,14 @@
 
 </fieldset>
 
+<com:TLinkButton ID="linkButton1" 
+	Text="Click Me" 
+	OnClick="linkButton1_Clicked">
+	<prop:Attributes.onclick>
+	if(!confirm('<%= Prado::localize("Confirm Delete") %>')) 
+		return false;
+	</prop:Attributes.onclick>
+</com:TLinkButton>
+
 
 </com:TContent>

@@ -1553,9 +1553,6 @@ requirements/messages.txt -text
 requirements/template-bg.html -text
 requirements/template-zh.html -text
 requirements/template.html -text
-tests/FunctionalTests/PradoTester.php -text
-tests/FunctionalTests/README.txt -text
-tests/FunctionalTests/config.php -text
 tests/FunctionalTests/features.php -text
 tests/FunctionalTests/features/index.php -text
 tests/FunctionalTests/features/protected/application.xml -text
@@ -1574,7 +1571,6 @@ tests/FunctionalTests/features/protected/pages/I18N/config.xml -text
 tests/FunctionalTests/features/protected/pages/RatingList.page -text
 tests/FunctionalTests/features/protected/pages/ValidatorEffects.page -text
 tests/FunctionalTests/index.php -text
-tests/FunctionalTests/quickstart.php -text
 tests/FunctionalTests/quickstart/Advanced/I18N.php -text
 tests/FunctionalTests/quickstart/Controls/BulletedListTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/ButtonTestCase.php -text
