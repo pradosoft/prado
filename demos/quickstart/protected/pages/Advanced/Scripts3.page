@@ -29,4 +29,7 @@ that require a particular library will also automatically load the necessary lib
 For example, if you add a TDatePicker component on the page, the <tt>datapicker</tt>
 and its dependencies will be automatically included on the page.</p>
 
+<p>See <a href="?page=Controls.ClientScript">TClientScript</a> for options of adding
+	your custom javascript code to the page.</p>
+
 </com:TContent>

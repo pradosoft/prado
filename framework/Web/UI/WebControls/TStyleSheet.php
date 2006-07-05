@@ -52,11 +52,8 @@ class TStyleSheet extends TControl
 	 */
 	public function onPreRender($param)
 	{
-		if($this->getEnabled(true))
-		{
-			if(($url=$this->getStyleSheetUrl())!=='')
-				$this->getPage()->getClientScript()->registerStyleSheetFile($url,$url);
-		}
+		if(($url=$this->getStyleSheetUrl())!=='')
+			$this->getPage()->getClientScript()->registerStyleSheetFile($url,$url);
 	}
 
 	/**

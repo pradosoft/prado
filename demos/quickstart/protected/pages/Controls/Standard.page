@@ -11,6 +11,10 @@
   <a href="?page=Controls.CheckBox">TCheckBox</a> represents a checkbox on a Web page. It can be used to collect two-state user input.
   </li>
 
+  <li>
+  <a href="?page=Controls.ClientScript">TClientScript</a> adds javascript code to the page.
+  </li>
+
   <li>*
   <a href="?page=Controls.ColorPicker">TColorPicker</a> represents an input field taking color values via a color dialog.
   </li>

@@ -807,6 +807,7 @@ demos/quickstart/protected/pages/Configurations/Templates3.page -text
 demos/quickstart/protected/pages/Construction.page -text
 demos/quickstart/protected/pages/Controls/Button.page -text
 demos/quickstart/protected/pages/Controls/CheckBox.page -text
+demos/quickstart/protected/pages/Controls/ClientScript.page -text
 demos/quickstart/protected/pages/Controls/ColorPicker.page -text
 demos/quickstart/protected/pages/Controls/Data.page -text
 demos/quickstart/protected/pages/Controls/DataGrid.page -text
