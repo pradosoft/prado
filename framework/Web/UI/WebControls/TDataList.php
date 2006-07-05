@@ -960,6 +960,8 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 
 		foreach($this->getControls() as $index=>$item)
 		{
+			if(!($item instanceof TDataListItem))
+				continue;
 			switch($item->getItemType())
 			{
 				case 'Header':
@@ -1112,9 +1114,9 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 			$items=$this->getItems();
 			$selectedIndex=$this->getSelectedItemIndex();
 			$editIndex=$this->getEditItemIndex();
+			$hasSeparator=$this->_separatorTemplate!==null;
 			if($this->_headerTemplate!==null)
 				$this->_header=$this->createItemInternal(-1,'Header',false,null);
-			$hasSeparator=$this->_separatorTemplate!==null;
 			for($i=0;$i<$itemCount;++$i)
 			{
 				if($hasSeparator && $i>0)

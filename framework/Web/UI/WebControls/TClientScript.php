@@ -13,29 +13,29 @@
 /**
  * TClientScript class
  *
- * Allows importing of Prado Client Scripts from template via the 
- * {@link setUsingPradoScripts UsingPradoScripts} property. Multiple Prado
+ * Allows importing of Prado Client Scripts from template via the
+ * {@link setPradoScripts PradoScripts} property. Multiple Prado
  * client-scripts can be specified using comma delimited string of the
  * javascript library to include on the page. For example,
- * 
+ *
  * <code>
- * <com:TClientScript UsingPradoScripts="effects, rico" />
+ * <com:TClientScript PradoScripts="effects, rico" />
  * </code>
- * 
+ *
  * Custom javascript files can be register using the {@link setScriptUrl ScriptUrl}
- * property. 
+ * property.
  * <code>
  * <com:TClientScript ScriptUrl=<%~ test.js %> />
  * </code>
- * 
+ *
  * Contents within TClientScript will be treated as javascript code and will be
  * rendered in place.
- * 
+ *
  * The {@link setPreRenderControlTypes PreRenderControlTypes} property can
  * be used to specify that controls type/class names that should pre-render itself
  * even though they may not be rendered on the page. This is useful to publish
  * controls that require assets and is only visible after a callback response.
- * 
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
@@ -47,24 +47,24 @@ class TClientScript extends TControl
 	 * @return string comma delimited list of javascript libraries to included
 	 * on the page.
 	 */
-	public function getUsingPradoScripts()
+	public function getPradoScripts()
 	{
 		return $this->getViewState('PradoScripts', '');
 	}
-	
+
 	/**
 	 * Include javascript library to the current page. The current supported
 	 * libraries are: "prado", "effects", "ajax", "validator", "logger",
 	 * "datepicker", "rico", "colorpicker". Library dependencies are
 	 * automatically resolved.
-	 * 
+	 *
 	 * @param string comma delimited list of javascript libraries to include.
 	 */
-	public function setUsingPradoScripts($value)
+	public function setPradoScripts($value)
 	{
 		$this->setViewState('PradoScripts', $value, '');
 	}
-	
+
 	/**
 	 * @return string custom javascript file url.
 	 */
@@ -72,7 +72,7 @@ class TClientScript extends TControl
 	{
 		return $this->getViewState('ScriptUrl', '');
 	}
-	
+
 	/**
 	 * @param string custom javascript file url.
 	 */
@@ -80,16 +80,16 @@ class TClientScript extends TControl
 	{
 		$this->setViewState('ScriptUrl', $value, '');
 	}
-	
+
 	/**
-	 * @param string comma delimited list of controls that wish to be prerendered 
+	 * @param string comma delimited list of controls that wish to be prerendered
 	 * so as to publish its assets.
 	 */
 	public function setPreRenderControlTypes($value)
 	{
 		$this->setViewState('PreRenderControls', $value);
 	}
-	
+
 	/**
 	 * @return string comma delimited list of controls types that require prerendering.
 	 */
@@ -106,20 +106,19 @@ class TClientScript extends TControl
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		$scripts = preg_split('/,|\s+/', $this->getUsingPradoScripts());
+		$scripts = preg_split('/,|\s+/', $this->getPradoScripts());
 		$cs = $this->getPage()->getClientScript();
 		foreach($scripts as $script)
 		{
-			$script = trim($script);
-			if(strlen($script) > 0)
+			if(($script = trim($script))!=='')
 				$cs->registerPradoScript($script);
 		}
 		$this->preRenderControls($param);
 	}
-		
+
 	/**
 	 * Renders the body content as javascript block.
-	 * Overrides parent implementation, parent renderChildren method is called during  
+	 * Overrides parent implementation, parent renderChildren method is called during
 	 * {@link registerCustomScript}.
 	 * @param THtmlWriter the renderer
 	 */
@@ -128,15 +127,14 @@ class TClientScript extends TControl
 		$this->renderCustomScriptFile($writer);
 		$this->renderCustomScript($writer);
 	}
-	
+
 	/**
 	 * Renders the custom script file.
 	 * @param THtmLWriter the renderer
 	 */
 	protected function renderCustomScriptFile($writer)
 	{
-		$scriptUrl = $this->getScriptUrl();
-		if(strlen($scriptUrl) > 0)
+		if(($scriptUrl = $this->getScriptUrl())!=='')
 			$writer->write("<script type=\"text/javascript\" src=\"$scriptUrl\"></script>\n");
 	}
 
@@ -153,7 +151,7 @@ class TClientScript extends TControl
 			$writer->write("\n/*]]>*/\n</script>\n");
 		}
 	}
-	
+
 	/**
 	 * PreRender other controls to allow them to publish their assets. Useful
 	 * when callback response components that require assets to be present on the page.
@@ -170,7 +168,7 @@ class TClientScript extends TControl
 				$control->setPage($this->getPage());
 				$control->onPreRender($param);
 			}
-		}		
+		}
 	}
 }
 
