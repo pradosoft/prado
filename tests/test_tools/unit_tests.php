@@ -1,7 +1,7 @@
 <?php
 
 if(!defined('PRADO_FRAMEWORK'))
-	define('PRADO_FRAMEWORK',realpath(dirname(__FILE__).'/../framework'));
+	define('PRADO_FRAMEWORK',realpath(dirname(__FILE__).'/../../framework'));
 
 $TEST_TOOLS = dirname(__FILE__);
 
@@ -11,11 +11,6 @@ require_once($TEST_TOOLS.'/simpletest/mock_objects.php');
 require_once($TEST_TOOLS.'/simpletest/reporter.php');
 
 require_once(PRADO_FRAMEWORK.'/prado.php');
-
-//set_include_path(get_include_path().";".PRADO_FRAMEWORK);
-
-//error_reporting(E_ALL);
-//restore_error_handler();
 
 class TMockApplication extends TApplication
 {
