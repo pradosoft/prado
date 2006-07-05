@@ -76,22 +76,47 @@ class TRequiredFieldValidator extends TBaseValidator
 	protected function evaluateIsValid()
 	{
 		$control = $this->getValidationTarget();
-		$initial = trim($this->getInitialValue());
 		if($control instanceof TListControl)
-		{
-			$count = 0;
-			foreach($control->getItems() as $item)
-			{
-				if($item->getSelected() && $item->getValue() != $initial)
-					$count++;
-			}
-			return $count > 0;
-		}
+			return $this->validateListControl($control);
+		else if($control instanceof TRadioButton && strlen($control->getGroupName()) > 0)
+			return $this->validateRadioButtonGroup($control);
 		else
+			return $this->validateStandardControl($control);
+	}
+	
+	private function validateListControl($control)
+	{
+		$initial = trim($this->getInitialValue());
+		$count = 0;
+		foreach($control->getItems() as $item)
 		{
-			$value=$this->getValidationValue($control);
-			return trim($value)!==$initial || (is_bool($value) && $value);
+			if($item->getSelected() && $item->getValue() != $initial)
+				$count++;
 		}
+		return $count > 0;
+	}
+	
+	private function validateRadioButtonGroup($control)
+	{
+		$initial = trim($this->getInitialValue());
+		foreach($control->getRadioButtonsInGroup() as $radio)
+		{
+			if($radio->getChecked())
+			{
+				if(strlen($value = $radio->getValue()) > 0)
+					return $value !== $initial;
+				else
+					return true;
+			}
+		}
+		return false;
+	}
+	
+	private function validateStandardControl($control)
+	{
+		$initial = trim($this->getInitialValue());
+		$value=$this->getValidationValue($control);
+		return trim($value)!==$initial || (is_bool($value) && $value);
 	}
 
 	/**
@@ -105,6 +130,8 @@ class TRequiredFieldValidator extends TBaseValidator
 		$control = $this->getValidationTarget();
 		if($control instanceof TListControl)
 			$options['TotalItems'] = $control->getItemCount();
+		if($control instanceof TRadioButton && strlen($control->getGroupName()) > 0)
+			$options['GroupName'] = $control->getGroupName();
 		return $options;
 	}
 }

@@ -1,0 +1,14 @@
+<com:TContent ID="Content">
+	<h1>RadioButton Group Tests</h1>
+	<com:TRadioButton ID="button1" Text="Button 1" GroupName="group1" />
+	<com:TRadioButton ID="button2" Text="Button 2" GroupName="group1" />
+	<com:TRadioButton ID="button3" Text="Button 3" GroupName="group1" />
+	
+	<com:TRequiredFieldValidator id="validator1"
+		ControlToValidate="button1"
+		ErrorMessage="*" />
+	
+	<com:TLabel ID="label1" Text="Label 1" />
+	
+	<com:TButton ID="button4" Text="Show Groupings" OnClick="button4_Clicked" />
+</com:TContent>

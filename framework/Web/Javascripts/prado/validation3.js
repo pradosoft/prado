@@ -778,6 +778,9 @@ Prado.WebUI.TBaseValidator.prototype =
 	 			if(typeof tinyMCE != "undefined")
 					tinyMCE.triggerSave();
 				return this.trim($F(control));
+			case 'TRadioButton':
+				if(this.options.GroupName)
+					return this.getRadioButtonGroupValue();
 	 		default:
 	 			if(this.isListControlType())
 	 				return this.getFirstSelectedListValue();
@@ -785,6 +788,18 @@ Prado.WebUI.TBaseValidator.prototype =
 		 			return this.trim($F(control));
 	 	}
 	 },
+
+	getRadioButtonGroupValue : function()
+	{
+		name = this.control.name;
+		value = "";
+		$A(document.getElementsByName(name)).each(function(el)
+		{
+			if(el.checked)
+				value =  el.value;
+		});
+		return value;
+	},
 
 	 /**
 	  * Observe changes in the drop down list date picker, IE only.

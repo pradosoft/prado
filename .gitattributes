@@ -1564,11 +1564,8 @@ tests/FunctionalTests/features/protected/controls/LabeledTextbox.php -text
 tests/FunctionalTests/features/protected/controls/Layout.php -text
 tests/FunctionalTests/features/protected/controls/Layout.tpl -text
 tests/FunctionalTests/features/protected/pages/ColorPicker.page -text
-tests/FunctionalTests/features/protected/pages/CompositeControl.page -text
-tests/FunctionalTests/features/protected/pages/DatePicker.page -text
 tests/FunctionalTests/features/protected/pages/FeatureList.page -text
 tests/FunctionalTests/features/protected/pages/FeatureList.php -text
-tests/FunctionalTests/features/protected/pages/HtmlArea.page -text
 tests/FunctionalTests/features/protected/pages/I18N/BasicI18N.page -text
 tests/FunctionalTests/features/protected/pages/I18N/BasicI18N.php -text
 tests/FunctionalTests/features/protected/pages/I18N/Home.page -text
@@ -1576,7 +1573,6 @@ tests/FunctionalTests/features/protected/pages/I18N/Home.zh_CN.page -text
 tests/FunctionalTests/features/protected/pages/I18N/config.xml -text
 tests/FunctionalTests/features/protected/pages/RatingList.page -text
 tests/FunctionalTests/features/protected/pages/ValidatorEffects.page -text
-tests/FunctionalTests/features/tests/CompositeControlTestCase.php -text
 tests/FunctionalTests/index.php -text
 tests/FunctionalTests/quickstart.php -text
 tests/FunctionalTests/quickstart/Advanced/I18N.php -text
