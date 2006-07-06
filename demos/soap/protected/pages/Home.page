@@ -1,0 +1,20 @@
+<html>
+<head>
+  <title>TSoapService Demo</title>
+</head>
+<body>
+<h1>TSoapService Demo</h1>
+<p>Welcome to the TSoapService demo. See <a href="index.php?soap=SimpleService&wsdl">service description</a>.</p>
+
+<com:TForm>
+<h2>Soap Calculator</h2>
+<com:TTextBox ID="a" Columns="3"/> + <com:TTextBox ID="b" Columns="3"/> = <com:TTextBox ID="result" Columns="3"/> <com:TButton Text="Compute" OnClick="onCompute"/>
+
+<h2>Highlight source code</h2>
+<com:TButton Text="Highlight this" OnClick="onHighlight"/> <br/>
+<br/>
+<com:TLabel ID="SourceCode"/>
+
+</com:TForm>
+</body>
+</html>

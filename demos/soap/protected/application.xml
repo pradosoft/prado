@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<application id="soap" mode="Debug">
+  <paths>
+    <using namespace="Application.webservices.*" />
+  </paths>
+  <services>
+    <service id="page" class="TPageService"/>
+    <service id="soap" class="System.Web.Services.TSoapService"/>
+  </services>
+</application>

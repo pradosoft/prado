@@ -997,6 +997,12 @@ demos/quickstart/themes/PradoSoft/mantissample.jpg -text
 demos/quickstart/themes/PradoSoft/pradologo.gif -text
 demos/quickstart/themes/PradoSoft/style.css -text
 demos/quickstart/themes/Simple/style.css -text
+demos/soap/index.php -text
+demos/soap/protected/application.xml -text
+demos/soap/protected/pages/Home.page -text
+demos/soap/protected/pages/Home.php -text
+demos/soap/protected/runtime/global.cache -text
+demos/soap/protected/webservices/SimpleService.php -text
 demos/sqlmap-sample/index.php -text
 demos/sqlmap-sample/protected/application.xml -text
 demos/sqlmap-sample/protected/business-objects/Person.php -text
@@ -1056,6 +1062,10 @@ framework/3rdParty/TinyMCE/license.txt -text
 framework/3rdParty/TinyMCE/readme.txt -text
 framework/3rdParty/TinyMCE/tiny_mce.md5 -text
 framework/3rdParty/TinyMCE/tiny_mce.tar -text
+framework/3rdParty/WsdlGen/Wsdl.php -text
+framework/3rdParty/WsdlGen/WsdlGenerator.php -text
+framework/3rdParty/WsdlGen/WsdlMessage.php -text
+framework/3rdParty/WsdlGen/WsdlOperation.php -text
 framework/3rdParty/adodb/ADOdb_Active_Record.php -text
 framework/3rdParty/adodb/adodb-csvlib.inc.php -text
 framework/3rdParty/adodb/adodb-errorhandler.inc.php -text
@@ -1572,6 +1582,7 @@ framework/Web/Javascripts/rico/rico.js -text
 framework/Web/Services/IFeedContentProvider.php -text
 framework/Web/Services/TFeedService.php -text
 framework/Web/Services/TPageService.php -text
+framework/Web/Services/TSoapService.php -text
 framework/Web/TAssetManager.php -text
 framework/Web/THttpRequest.php -text
 framework/Web/THttpResponse.php -text
