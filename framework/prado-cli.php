@@ -18,7 +18,7 @@ if($console->hasOptions())
 {
 	if($dir = $console->getOption('create'))
 		create_new_prado_project($dir);
-	if($console->getOptions('tests'))
+	if($console->getOption('tests'))
 		create_test_fixtures($dir);
 }
 else
@@ -102,7 +102,7 @@ function render_unit_test_fixture()
 	$tester = realpath(dirname(__FILE__).'/../tests/test_tools/unit_tests.php');
 return '<?php
 
-include_once "'.$tester.'";
+include_once \''.$tester.'\';
 
 $app_directory = "../protected";
 $test_cases = dirname(__FILE__)."/unit";
@@ -118,7 +118,7 @@ function render_functional_test_fixture()
 	$tester = realpath(dirname(__FILE__).'/../tests/test_tools/functional_tests.php');
 return '<?php
 
-include_once "'.$tester.'";
+include_once \''.$tester.'\';
 
 $test_cases = dirname(__FILE__)."/functional";
 
@@ -131,7 +131,10 @@ $tester->run(new SimpleReporter());
 function create_directory($dir, $mask)
 {
 	if(!is_dir($dir))
+	{
 		mkdir($dir);
+		echo "creating $dir\n";
+	}	
 	if(is_dir($dir))
 		chmod($dir, $mask);
 }	
@@ -139,7 +142,10 @@ function create_directory($dir, $mask)
 function create_file($filename, $content)
 {
 	if(!is_file($filename))
+	{
 		file_put_contents($filename, $content);
+		echo "creating $filename\n";
+	}
 }
 
 function render_index_file()
@@ -148,7 +154,7 @@ function render_index_file()
 return '<?php
 
 $basePath=dirname(__FILE__);
-$frameworkPath="'.$framework.'";
+$frameworkPath=\''.$framework.'\';
 $assetsPath=$basePath."/assets";
 $runtimePath=$basePath."/protected/runtime";
 
@@ -286,6 +292,7 @@ class ConsoleOptions
 	{
 		if(is_null($this->_values))
 			$this->_values = $this->getNamedOptions();
+				
 		return isset($this->_values[$name]) ? $this->_values[$name] : null;
 	}
 	
@@ -320,9 +327,10 @@ class ConsoleOptions
 		{
 			foreach($this->_options as $name => $option)
 			{
-				if(strpos($option[0],$value[0]) !== false 
-					|| strpos($option[1], $value[0]) !== false)
-					$options[$name] = $value[1];
+				$short = str_replace(':', '', $option[0]);
+				$long = str_replace('=', '', $option[1]);
+				if($short == $value[0] || $long == $value[0])
+					$options[$name] = is_null($value[1]) ? true : $value[1];
 			}
 		}
 		return $options;

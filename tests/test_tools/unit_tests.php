@@ -88,7 +88,7 @@ class PradoUnitTester
 
 	function run($reporter)
 	{
-		$rootPath=$this->_root;
+		$rootPath=realpath($this->_root);
 		$rootUri=dirname($_SERVER['PHP_SELF']);
 		if(isset($_GET['target']))
 		{

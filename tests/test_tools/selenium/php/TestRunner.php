@@ -80,7 +80,7 @@ Copyright 2004 ThoughtWorks, Inc
 		<table class="layout">
 		  <tr class="selenium">
 			<th width="25%" height="1" class="header">
-			  <h1><a href="http://selenium.thoughtworks.com" title="The Selenium Project">Selenium</a> TestRunner</h1>
+			  <h3><a href="http://selenium.thoughtworks.com" title="The Selenium Project">Selenium</a></h3>
 			</th>
 		  </tr>
 		  <tr>
@@ -139,19 +139,18 @@ Copyright 2004 ThoughtWorks, Inc
 				  <td>incomplete</td>
 				</tr>
 			  </table>
-	
+	<!--
 			  <fieldset>
 				<legend>Tools</legend>
-	<!--
 				<button type="button" id="domViewer1" onClick="openDomViewer();">
 				  View DOM
-				</button> -->
+				</button> 
 				<button type="button" onClick="LOG.show();">
 				  Show Log
 				</button>
 	
 			  </fieldset>
-	
+	-->
 			</td>
 		  </tr>
 		  </table>
