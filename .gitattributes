@@ -1001,7 +1001,6 @@ demos/soap/index.php -text
 demos/soap/protected/application.xml -text
 demos/soap/protected/pages/Home.page -text
 demos/soap/protected/pages/Home.php -text
-demos/soap/protected/runtime/global.cache -text
 demos/soap/protected/webservices/SimpleService.php -text
 demos/sqlmap-sample/index.php -text
 demos/sqlmap-sample/protected/application.xml -text
