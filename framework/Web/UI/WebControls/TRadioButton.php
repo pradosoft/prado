@@ -63,7 +63,43 @@ class TRadioButton extends TCheckBox
 	 * @var string the name used to fetch radiobutton post data
 	 */
 	private $_uniqueGroupName=null;
+	/**
+	 * @var int number radio buttons created
+	 */
+	private static $_counter=0;
+	/**
+	 * @var int unique unmutable radio button id
+	 */
+	private $_radioUid;
 
+	public function __construct()
+	{
+		parent::__construct();
+		$this->_radioUid = self::$_counter++;
+	}
+	
+	/**
+	 * Registers the radio button groupings. If overriding onInit method, 
+	 * ensure to call parent implemenation.
+	 * @param TEventParameter event parameter to be passed to the event handlers
+	 */
+	public function onInit($param)
+	{
+		parent::onInit($param);
+		$this->registerRadioButton($this);
+	}
+	
+	/**
+	 * Unregisters the radio button groupings. If overriding onInit method,
+	 * ensure to call parent implemenation.
+	 * @param TEventParameter event parameter to be passed to the event handlers
+	 */
+	public function onUnLoad($param)
+	{
+		parent::onUnLoad($param);
+		$this->unregisterRadioButton($this);
+	}
+	
 	/**
 	 * Loads user input data.
 	 * This method is primarly used by framework developers.
@@ -105,24 +141,31 @@ class TRadioButton extends TCheckBox
 	public function setGroupName($value)
 	{
 		$this->setViewState('GroupName',$value,'');
-		$this->registerRadioButton($this);
 	}
 	
 	/**
 	 * Register radio button control grouping.
 	 * @param TRadioButton control to add
 	 */
-	private function registerRadioButton(TRadioButton $control)
+	protected function registerRadioButton(TRadioButton $control)
 	{
-		$id = $control->getUniqueID();
-		if(!isset(self::$_radiobuttons[$id]))
-			self::$_radiobuttons[$id] = $control;
+		if(!isset(self::$_radiobuttons[$control->_radioUid]))
+			self::$_radiobuttons[$control->_radioUid] = $control;
+	}
+	
+	/**
+	 * Unregister radio button control for grouping
+	 * @param TRadioButton control to unregister.
+	 */
+	protected function unregisterRadioButton(TRadioButton $control)
+	{
+		if(isset(self::$_radiobuttons[$control->_radioUid]))
+			unset(self::$_radiobuttons[$control->_radioUid]);
 	}
 	
 	/**  
-	 * Gets an array of RadioButtons with same group name.
-	 * Radio buttons are grouped when the GroupName property is set.
-	 * This method will always return at least the current radio button in the array.
+	 * Gets an array of RadioButtons with same group name. This method will
+	 * always return at least the current radio button in the array.
 	 * @return array list of TRadioButton with the same group
 	 */
 	public function getRadioButtonsInGroup()
