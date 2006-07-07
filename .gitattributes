@@ -1691,6 +1691,17 @@ tests/FunctionalTests/validators/tests/RegExpValidatorTestCase.php -text
 tests/FunctionalTests/validators/tests/RequiredFieldTestCase.php -text
 tests/FunctionalTests/validators/tests/RequiredListTestCase.php -text
 tests/FunctionalTests/validators/tests/ValidationSummaryTestCase.php -text
+tests/test_tools/simpletest/collector.php -text
+tests/test_tools/simpletest/compatibility.php -text
+tests/test_tools/simpletest/cookies.php -text
+tests/test_tools/simpletest/detached.php -text
+tests/test_tools/simpletest/exceptions.php -text
+tests/test_tools/simpletest/invoker.php -text
+tests/test_tools/simpletest/reflection_php4.php -text
+tests/test_tools/simpletest/reflection_php5.php -text
+tests/test_tools/simpletest/selector.php -text
+tests/test_tools/simpletest/simpletest.php -text
+tests/test_tools/simpletest/test_case.php -text
 tests/unit/Collections/TListTest.php -text
 tests/unit/Collections/TMapTest.php -text
 tests/unit/I18N/core/CultureInfoTest.php -text

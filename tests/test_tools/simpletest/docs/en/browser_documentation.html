@@ -21,9 +21,6 @@
 <a href="group_test_documentation.html">Group tests</a>
 </li>
 <li>
-<a href="server_stubs_documentation.html">Server stubs</a>
-</li>
-<li>
 <a href="mock_objects_documentation.html">Mock objects</a>
 </li>
 <li>
@@ -76,9 +73,9 @@
     
     $browser = &amp;new SimpleBrowser();
     $browser-&gt;get('http://php.net/');
-    $browser-&gt;clickLink('reporting bugs');
-    $browser-&gt;clickLink('statistics');
-    $page = $browser-&gt;clickLink('PHP 5 bugs only');
+    $browser-&gt;click('reporting bugs');
+    $browser-&gt;click('statistics');
+    $page = $browser-&gt;click('PHP 5 bugs only');
     preg_match('/status=Open.*?by=Any.*?(\d+)&lt;\/a&gt;/', $page, $matches);
     print $matches[1];
 ?&gt;</strong>
@@ -298,13 +295,21 @@
                     <tr>
 <td><span class="new_code">useFrames()</span></td><td>Enables frames support</td>
 </tr>
+                    <tr>
+<td><span class="new_code">ignoreCookies()</span></td><td>Disables sending and receiving of cookies</td>
+</tr>
+                    <tr>
+<td><span class="new_code">useCookies()</span></td><td>Enables cookie support</td>
+</tr>
                 </tbody>
 </table>
                 The methods <span class="new_code">SimpleBrowser::setConnectionTimeout()</span>
                 <span class="new_code">SimpleBrowser::setMaximumRedirects()</span>,
                 <span class="new_code">SimpleBrowser::setMaximumNestedFrames()</span>,
-                <span class="new_code">SimpleBrowser::ignoreFrames()</span> and
-                <span class="new_code">SimpleBrowser::useFrames()</span> continue to apply
+                <span class="new_code">SimpleBrowser::ignoreFrames()</span>,
+                <span class="new_code">SimpleBrowser::useFrames()</span>,
+                <span class="new_code">SimpleBrowser::ignoreCookies()</span> and
+                <span class="new_code">SimpleBrowser::useCokies()</span> continue to apply
                 to every subsequent request.
                 The other methods are frames aware.
                 This means that if you have an individual frame that is not
@@ -332,7 +337,7 @@ class TestOfRegistration extends UnitTestCase {
         $browser-&gt;get('http://my-site.com/register.php');
         $browser-&gt;setField('email', 'me@here');
         $browser-&gt;setField('password', 'Secret');
-        $browser-&gt;clickSubmit('Register');
+        $browser-&gt;click('Register');
         <strong>
         $authenticator = &amp;new Authenticator();
         $member = &amp;$authenticator-&gt;findByEmail('me@here');
@@ -361,14 +366,14 @@ class TestOfSecurity extends UnitTestCase {
         $first-&gt;get('http://my-site.com/login.php');
         $first-&gt;setField('name', 'Me');
         $first-&gt;setField('password', 'Secret');
-        $first-&gt;clickSubmit('Enter');
+        $first-&gt;click('Enter');
         $this-&gt;assertEqual($first-&gt;getTitle(), 'Welcome');
         
         $second = &amp;new SimpleBrowser();
         $second-&gt;get('http://my-site.com/login.php');
         $second-&gt;setField('name', 'Me');
         $second-&gt;setField('password', 'Secret');
-        $second-&gt;clickSubmit('Enter');
+        $second-&gt;click('Enter');
         $this-&gt;assertEqual($second-&gt;getTitle(), 'Access Denied');</strong>
     }
 }

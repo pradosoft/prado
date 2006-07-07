@@ -3,12 +3,14 @@
      *	base include file for SimpleTest
      *	@package	SimpleTest
      *	@subpackage	UnitTester
-     *	@version	$Id: dumper.php,v 1.22 2005/02/05 04:51:17 lastcraft Exp $
+     *	@version	$Id: dumper.php,v 1.28 2006/01/03 01:17:07 lastcraft Exp $
      */
     /**
      * does type matter
      */
-    define('TYPE_MATTERS', true);
+    if (! defined('TYPE_MATTERS')) {
+        define('TYPE_MATTERS', true);
+    }
     
     /**
      *    Displays variables as text and does diffs.
@@ -35,7 +37,7 @@
                 case "Object":
                     return "Object: of " . get_class($value);
                 case "String":
-                    return "String: " . $this->clipString($value, 100);
+                    return "String: " . $this->clipString($value, 200);
                 default:
                     return "$type: $value";
             }
@@ -184,8 +186,8 @@
             $position = $this->_stringDiffersAt($first, $second);
             $message = "at character $position";
             $message .= " with [" .
-                    $this->clipString($first, 100, $position) . "] and [" .
-                    $this->clipString($second, 100, $position) . "]";
+                    $this->clipString($first, 200, $position) . "] and [" .
+                    $this->clipString($second, 200, $position) . "]";
             return $message;
         }
         
@@ -221,9 +223,10 @@
             if (is_object($second) || is_array($second)) {
                 return $this->_describeGenericDifference($first, $second);
             }
-            return "because " . $this->describeValue($first) .
+            return "because [" . $this->describeValue($first) .
                     "] differs from [" .
-                    $this->describeValue($second) . "]";
+                    $this->describeValue($second) . "] by " .
+                    abs($first - $second);
         }
         
         /**
@@ -331,7 +334,7 @@
             $position = 0;
             $step = strlen($first);
             while ($step > 1) {
-                $step = (integer)(($step + 1)/2);
+                $step = (integer)(($step + 1) / 2);
                 if (strncmp($first, $second, $position + $step) == 0) {
                     $position += $step;
                 }
@@ -358,23 +361,42 @@
          *    Extracts the last assertion that was not within
          *    Simpletest itself. The name must start with "assert".
          *    @param array $stack      List of stack frames.
-         *    @param string $format    String formatting.
-         *    @param string $prefix    Prefix of method to search for.
          *    @access public
          *    @static
          */
-        function getFormattedAssertionLine($stack, $format = '%d', $prefix = 'assert') {
+        function getFormattedAssertionLine($stack) {
             foreach ($stack as $frame) {
-                if (isset($frame['file']) && strpos($frame['file'], 'simpletest') !== false) {     // dirname() is a bit slow.
-                    if (substr(dirname($frame['file']), -10) == 'simpletest') {
-                        continue;
+                if (isset($frame['file'])) {
+                    if (strpos($frame['file'], SIMPLE_TEST) !== false) {
+                        if (dirname($frame['file']) . '/' == SIMPLE_TEST) {
+                            continue;
+                        }
                     }
                 }
-                if (strncmp($frame['function'], $prefix, strlen($prefix)) == 0) {
-                    return sprintf($format, $frame['line']);
+                if (SimpleDumper::_stackFrameIsAnAssertion($frame)) {
+                    return ' at [' . $frame['file'] . ' line ' . $frame['line'] . ']';
                 }
             }
             return '';
+        }
+        
+        /**
+         *    Tries to determine if the method call is an assertion.
+         *    @param array $frame     PHP stack frame.
+         *    @access private
+         *    @static
+         */
+        function _stackFrameIsAnAssertion($frame) {
+            if (($frame['function'] == 'fail') || ($frame['function'] == 'pass')) {
+                return true;
+            }
+            if (strncmp($frame['function'], 'assert', 6) == 0) {
+                return true;
+            }
+            if (strncmp($frame['function'], 'expect', 6) == 0) {
+                return true;
+            }
+            return false;
         }
     }
 ?>

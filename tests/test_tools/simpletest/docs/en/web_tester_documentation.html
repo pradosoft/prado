@@ -21,9 +21,6 @@
 <a href="group_test_documentation.html">Group tests</a>
 </li>
 <li>
-<a href="server_stubs_documentation.html">Server stubs</a>
-</li>
-<li>
 <a href="mock_objects_documentation.html">Mock objects</a>
 </li>
 <li>
@@ -153,7 +150,7 @@ class TestOfLastcraft extends WebTestCase {
     
     function testHomepage() {<strong>
         $this-&gt;get('http://www.lastcraft.com/');
-        $this-&gt;assertWantedPattern('/why the last craft/i');</strong>
+        $this-&gt;assertTest('Why the last craft');</strong>
     }
 }
 </pre>
@@ -169,16 +166,16 @@ class TestOfLastcraft extends WebTestCase {
 <td><span class="new_code">assertTitle($title)</span></td><td>Pass if title is an exact match</td>
 </tr>
                     <tr>
-<td><span class="new_code">assertWantedPattern($pattern)</span></td><td>A Perl pattern match against the page content</td>
+<td><span class="new_code">assertPattern($pattern)</span></td><td>A Perl pattern match against the page content</td>
 </tr>
                     <tr>
-<td><span class="new_code">assertNoUnwantedPattern($pattern)</span></td><td>A Perl pattern match to not find content</td>
+<td><span class="new_code">assertNoPattern($pattern)</span></td><td>A Perl pattern match to not find content</td>
 </tr>
                     <tr>
-<td><span class="new_code">assertWantedText($text)</span></td><td>Pass if matches visible and "alt" text</td>
+<td><span class="new_code">assertText($text)</span></td><td>Pass if matches visible and "alt" text</td>
 </tr>
                     <tr>
-<td><span class="new_code">assertNoUnwantedText($text)</span></td><td>Pass if doesn't match visible and "alt" text</td>
+<td><span class="new_code">assertNoText($text)</span></td><td>Pass if doesn't match visible and "alt" text</td>
 </tr>
                     <tr>
 <td><span class="new_code">assertLink($label)</span></td><td>Pass if a link with this text is present</td>
@@ -217,10 +214,7 @@ class TestOfLastcraft extends WebTestCase {
 <td><span class="new_code">assertHeader($header, $content)</span></td><td>Pass if a header was fetched matching this value</td>
 </tr>
                     <tr>
-<td><span class="new_code">assertNoUnwantedHeader($header)</span></td><td>Pass if a header was not fetched</td>
-</tr>
-                    <tr>
-<td><span class="new_code">assertHeaderPattern($header, $pattern)</span></td><td>Pass if a header was fetched matching this Perl regex</td>
+<td><span class="new_code">assertNoHeader($header)</span></td><td>Pass if a header was not fetched</td>
 </tr>
                     <tr>
 <td><span class="new_code">assertCookie($name, $value)</span></td><td>Pass if there is currently a matching cookie</td>
@@ -240,6 +234,10 @@ class TestOfLastcraft extends WebTestCase {
                 So now we could instead test against the title tag with...
 <pre>
 <strong>$this-&gt;assertTitle('The Last Craft? Web developer tutorials on PHP, Extreme programming and Object Oriented development');</strong>
+</pre>
+                ...or, if that is too long and fragile...
+<pre>
+<strong>$this-&gt;assertTitle(new PatternExpectation('/The Last Craft/'));</strong>
 </pre>
                 As well as the simple HTML content checks we can check
                 that the MIME type is in a list of allowed types with...
@@ -319,7 +317,7 @@ class TestOfLastcraft extends WebTestCase {
     function testContact() {
         $this-&gt;get('http://www.lastcraft.com/');<strong>
         $this-&gt;clickLink('About');
-        $this-&gt;assertTitle('About Last Craft');</strong>
+        $this-&gt;assertTitle(new PatternExpectation('/About Last Craft/'));</strong>
     }
 }
 </pre>
@@ -327,10 +325,15 @@ class TestOfLastcraft extends WebTestCase {
             </p>
             <p>
                 If the target is a button rather than an anchor tag, then
-                <span class="new_code">clickSubmit()</span> should be used
+                <span class="new_code">clickSubmit()</span> can be used
                 with the button title...
 <pre>
 <strong>$this-&gt;clickSubmit('Go!');</strong>
+</pre>
+                If you are not sure or don't care, the usual case, then just
+                use the <span class="new_code">click()</span> method...
+<pre>
+<strong>$this-&gt;click('Go!');</strong>
 </pre>
             </p>
             <p>

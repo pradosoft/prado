@@ -3,7 +3,116 @@ Simple Test interface changes
 Because the SimpleTest tool set is still evolving it is likely that tests
 written with earlier versions will fail with the newest ones. The most
 dramatic changes are in the alpha releases. Here is a list of possible
-problems...
+problems and their fixes...
+
+Failure to connect now emits failures
+-------------------------------------
+It used to be that you would have to use the
+getTransferError() call on the web tester to see if
+there was a socket level error in a fetch. This check
+is now always carried out by the WebTestCase unless
+the fetch is prefaced with WebTestCase::ignoreErrors().
+The ignore directive only lasts for test case fetching
+action such as get() and click().
+
+No method SimpleTestOptions::ignore()
+-------------------------------------
+This is deprecated in version 1.0.1beta and has been moved
+to SimpleTest::ignore() as that is more readable. In
+addition, parent classes are also ignored automatically.
+If you are using PHP5 you can skip this directive simply
+by marking your test case as abstract.
+
+No method assertCopy()
+----------------------
+This is deprecated in 1.0.1 in favour of assertClone().
+The assertClone() method is slightly different in that
+the objects must be identical, but without being a
+reference. It is thus not a strict inversion of
+assertReference().
+
+Constructor wildcard override has no effect in mocks
+----------------------------------------------------
+As of 1.0.1beta this is now set with setWildcard() instead
+of in the constructor.
+
+No methods setStubBaseClass()/getStubBaseClass()
+------------------------------------------------
+As mocks are now used instead of stubs, these methods
+stopped working and are now removed as of the 1.0.1beta
+release. The mock objects may be freely used instead.
+
+No method addPartialMockCode()
+------------------------------
+The ability to insert arbitrary partial mock code
+has been removed. This was a low value feature
+causing needless complications.It was removed
+in the 1.0.1beta release.
+
+No method setMockBaseClass()
+----------------------------
+The ability to change the mock base class has been
+scheduled for removal and is deprecated since the
+1.0.1beta version. This was a rarely used feature
+except as a workaround for PHP5 limitations. As
+these limitations are being resolved it's hoped
+that the bundled mocks can be used directly.
+
+No class Stub
+-------------
+Server stubs are deprecated from 1.0.1 as the mocks now
+have exactly the same interface. Just use mock objects
+instead.
+
+No class SimpleTestOptions
+--------------------------
+This was replced by the shorter SimpleTest in 1.0.1beta1
+and is since deprecated.
+
+No file simple_test.php
+-----------------------
+This was renamed test_case.php in 1.0.1beta to more accurately
+reflect it's purpose. This file should never be directly
+included in test suites though, as it's part of the
+underlying mechanics and has a tendency to be refactored.
+
+No class WantedPatternExpectation
+---------------------------------
+This was deprecated in 1.0.1alpha in favour of the simpler
+name PatternExpectation.
+
+No class NoUnwantedPatternExpectation
+-------------------------------------
+This was deprecated in 1.0.1alpha in favour of the simpler
+name NoPatternExpectation.
+
+No method assertNoUnwantedPattern()
+-----------------------------------
+This has been renamed to assertNoPattern() in 1.0.1alpha and
+the old form is deprecated.
+
+No method assertWantedPattern()
+-------------------------------
+This has been renamed to assertPattern() in 1.0.1alpha and
+the old form is deprecated.
+
+No method assertExpectation()
+-----------------------------
+This was renamed as assert() in 1.0.1alpha and the old form
+has been deprecated.
+
+No class WildcardExpectation
+----------------------------
+This was a mostly internal class for the mock objects. It was
+renamed AnythingExpectation to bring it closer to JMock and
+NMock in version 1.0.1alpha.
+
+Missing UnitTestCase::assertErrorPattern()
+------------------------------------------
+This method is deprecated for version 1.0.1 onwards.
+This method has been subsumed by assertError() that can now
+take an expectation. Simply pass a PatternExpectation
+into assertError() to simulate the old behaviour.
 
 No HTML when matching page elements
 -----------------------------------
@@ -29,7 +138,9 @@ My custom test case ignored by tally()
 --------------------------------------
 The _assertTrue method has had it's signature changed due to a bug
 in the PHP 5.0.1 release. You must now use getTest() from within
-that method to get the test case.
+that method to get the test case. Mock compatibility with other
+unit testers is now deprecated as of 1.0.1alpha as PEAR::PHUnit2
+should soon have mock support of it's own.
 
 Broken code extending SimpleRunner
 ----------------------------------
@@ -142,13 +253,13 @@ test case expansion against the ease of writing user interfaces.
 
 Code such as...
 
-$test = &new MyTestCase();
+$test = new MyTestCase();
 $test->attachObserver(new TestHtmlDisplay());
 $test->run();
 
 ...should be rewritten as...
 
-$test = &new MyTestCase();
+$test = new MyTestCase();
 $test->run(new HtmlReporter());
 
 If you previously attached multiple observers then the workaround

@@ -23,9 +23,6 @@
 <a href="group_test_documentation.html">Group tests</a>
 </li>
 <li>
-<a href="server_stubs_documentation.html">Server stubs</a>
-</li>
-<li>
 <a href="mock_objects_documentation.html">Mock objects</a>
 </li>
 <li>
@@ -101,8 +98,8 @@
 <pre>
 class TestOfNewsService extends UnitTestCase {
     ...
-    function testConnectionFailure() {<strong>
-        $writer = &amp;new MockWriter($this);
+    function testConnectionFailure() {&lt;strong&gt;
+        $writer = &amp;new MockWriter();
         $writer-&gt;expectOnce('write', array(
                 'Cannot connect to news service ' .
                 '"BBC News" at this time. ' .
@@ -110,8 +107,6 @@ class TestOfNewsService extends UnitTestCase {
         
         $service = &amp;new NewsService('BBC News');
         $service-&gt;publish($writer);
-        
-        $writer-&gt;tally();</strong>
     }
 }
 </pre>
@@ -129,15 +124,13 @@ class TestOfNewsService extends UnitTestCase {
 class TestOfNewsService extends UnitTestCase {
     ...
     function testConnectionFailure() {
-        $writer = &amp;new MockWriter($this);<strong>
+        $writer = &amp;new MockWriter();<strong>
         $writer-&gt;expectOnce(
                 'write',
-                array(new WantedPatternExpectation('/cannot connect/i')));</strong>
+                array(new PatternExpectation('/cannot connect/i')));</strong>
         
         $service = &amp;new NewsService('BBC News');
         $service-&gt;publish($writer);
-        
-        $writer-&gt;tally();
     }
 }
 </pre>
@@ -179,10 +172,10 @@ class TestOfNewsService extends UnitTestCase {
 <td><span class="new_code">NotIndenticalExpectation</span></td><td>Inverts the mock object logic</td>
 </tr>
                     <tr>
-<td><span class="new_code">WantedPatternExpectation</span></td><td>Uses a Perl Regex to match a string</td>
+<td><span class="new_code">PatternExpectation</span></td><td>Uses a Perl Regex to match a string</td>
 </tr>
                     <tr>
-<td><span class="new_code">NoUnwantedPatternExpectation</span></td><td>Passes only if failing a Perl Regex</td>
+<td><span class="new_code">NoPatternExpectation</span></td><td>Passes only if failing a Perl Regex</td>
 </tr>
                     <tr>
 <td><span class="new_code">IsAExpectation</span></td><td>Checks the type or class name only</td>
@@ -208,29 +201,26 @@ class TestOfNewsService extends UnitTestCase {
 </p>
             <p>
                 The expectation classes can be used not just for sending assertions
-                from mock objects, but also for selecting behaviour for either
-                the
-                <a href="mock_objects_documentation.html">mock objects</a>
-                or the
-                <a href="server_stubs_documentation.html">server stubs</a>.
+                from mock objects, but also for selecting behaviour for the
+                <a href="mock_objects_documentation.html">mock objects</a>.
                 Anywhere a list of arguments is given, a list of expectation objects
                 can be inserted instead.
             </p>
             <p>
-                Suppose we want an authorisation server stub to simulate a successful login
+                Suppose we want an authorisation server mock to simulate a successful login
                 only if it receives a valid session object.
                 We can do this as follows...
 <pre>
-Stub::generate('Authorisation');
+Mock::generate('Authorisation');
 <strong>
-$authorisation = new StubAuthorisation();
+$authorisation = new MockAuthorisation();
 $authorisation-&gt;setReturnValue(
         'isAllowed',
         true,
         array(new IsAExpectation('Session', 'Must be a session')));
 $authorisation-&gt;setReturnValue('isAllowed', false);</strong>
 </pre>
-                We have set the default stub behaviour to return false when
+                We have set the default mock behaviour to return false when
                 <span class="new_code">isAllowed</span> is called.
                 When we call the method with a single parameter that
                 is a <span class="new_code">Session</span> object, it will return true.
@@ -299,14 +289,14 @@ $authorisation-&gt;setReturnValue('isAllowed', false);</strong>
             </p>
             <p>
                 The most crude way of doing this is to use the
-                <span class="new_code">SimpleTest::assertExpectation()</span> method to
+                <span class="new_code">SimpleTest::assert()</span> method to
                 test against it directly...
 <pre>
 <strong>class TestOfNetworking extends UnitTestCase {
     ...
     function testGetValidIp() {
         $server = &amp;new Server();
-        $this-&gt;assertExpectation(
+        $this-&gt;assert(
                 new ValidIp(),
                 $server-&gt;getIp(),
                 'Server IP address-&gt;%s');
@@ -327,7 +317,7 @@ $authorisation-&gt;setReturnValue('isAllowed', false);</strong>
 class TestOfNetworking extends UnitTestCase {
     ...<strong>
     function assertValidIp($ip, $message = '%s') {
-        $this-&gt;assertExpectation(new ValidIp(), $ip, $message);
+        $this-&gt;assert(new ValidIp(), $ip, $message);
     }</strong>
     
     function testGetValidIp() {

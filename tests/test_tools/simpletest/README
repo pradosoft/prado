@@ -21,12 +21,6 @@ A web tester similar in concept to JWebUnit is also included. There is no
 JavaScript or tables support, but forms, authentication, cookies and
 frames are handled.
 
-You are not tied to just using SimpleTest, though. The mocks and stubs
-will work with other test frameworks and SimpleTest can use other
-framework's (PHPUnit, PEAR::PhpUnit) test cases as it's own. The
-web browser part of the web tester can also be used independently either
-in other testers or as part of a scripting solution.
-
 You can see a release schedule at http://www.lastcraft.com/overview.php
 which is also copied to the documentation folder with this release.
 A full PHPDocumenter API documentation exists at
@@ -61,7 +55,7 @@ The full tests read some test data from the LastCraft site. If the site
 is down or has been modified for a later version then you will get
 spurious errors. A unit_tests.php failure on the other hand would be
 very serious. As far as we know we haven't yet managed to check in any
-test failures so please correct us if you find one.
+unit test failures so please correct us if you find one.
 
 Even if all of the tests run please verify that your existing test suites
 also function as expected. If they don't see the file...
@@ -74,14 +68,18 @@ your current tests appear to run.
 
 There is a documentation folder which contains the core reference information
 in English and French, although this information is fairly basic.
-You can find a tutorial on http://www.lastcraft.com/first_test_tutorial.php
-to get you started and this material will eventually become included
-with the project documentation. A French translation exists at
+You can find a tutorial on...
+
+http://www.lastcraft.com/first_test_tutorial.php
+
+...to get you started and this material will eventually become included
+with the project documentation. A French translation exists at...
+
 http://www.onpk.net/index.php/2005/01/12/254-tutoriel-simpletest-decouvrir-les-tests-unitaires.
 
 If you download and use and possibly even extend this tool, please let us
 know. Any feedback, even bad, is always welcome and we will work to get
-your suggestions into the version one release. Ideally please send your
+your suggestions into the next release. Ideally please send your
 comments to...
 
 simpletest-support@lists.sourceforge.net
@@ -105,6 +103,6 @@ really are invaluable, but sadly you are too many to mention in full.
 Thanks to all on the advanced PHP forum on SitePoint, especially Harry
 Feucks. Early adopters are always an inspiration.
 
-yours Marcus Baker, Jason Sweat and Perrick Penet.
+yours Marcus Baker, Jason Sweat, Travis Swicegood and Perrick Penet.
 -- 
 marcus@lastcraft.com

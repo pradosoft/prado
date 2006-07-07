@@ -21,9 +21,6 @@
 <a href="group_test_documentation.html">Group tests</a>
 </li>
 <li>
-<a href="server_stubs_documentation.html">Server stubs</a>
-</li>
-<li>
 <a href="mock_objects_documentation.html">Mock objects</a>
 </li>
 <li>
@@ -96,7 +93,9 @@ class SimpleFormTests extends WebTestCase {
                 their default values just as they would appear in the web browser.
                 The assertion tests that a HTML widget exists in the page with the
                 name "a" and that it is currently set to the value
-                "A default"
+                "A default".
+                As usual, we could use a pattern expectation instead if a fixed
+                string.
             </p>
             <p>
                 We could submit the form straight away, but first we'll change
@@ -108,7 +107,7 @@ class SimpleFormTests extends WebTestCase {
         $this-&gt;get('http://www.my-site.com/');
         $this-&gt;assertField('a', 'A default');<strong>
         $this-&gt;setField('a', 'New value');
-        $this-&gt;clickSubmit('Go');</strong>
+        $this-&gt;click('Go');</strong>
     }
 }
 </pre>
@@ -235,7 +234,7 @@ class SimpleFormTests extends WebTestCase {
         $this-&gt;get('http://www.lastcraft.com/form_testing_documentation.php');
         $this-&gt;assertField('crud', array('c', 'r', 'u', 'd'));
         $this-&gt;setField('crud', array('r'));
-        $this-&gt;clickSubmit('Enable Privileges');
+        $this-&gt;click('Enable Privileges');
     }</strong>
 }
 </pre>
@@ -261,7 +260,7 @@ class SimpleFormTests extends WebTestCase {
         $this-&gt;post(
                 'http://www.my-site.com/add_user.php',
                 array('type' =&gt; 'superuser'));
-        $this-&gt;assertNoUnwantedPattern('/user created/i');
+        $this-&gt;assertNoText('user created');
     }</strong>
 }
 </pre>

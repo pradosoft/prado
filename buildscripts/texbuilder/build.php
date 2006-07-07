@@ -14,14 +14,15 @@ $base = realpath(dirname(__FILE__).'/../../demos/quickstart/protected/pages/');
 
 $pages = include('pages.php');
 
+/*
 function escape_verbatim($matches)
 {
-	return "\begin{verbatim}".str_replace('\$', '$', $matches[2])."\end{verbatim}\n";
+	return "\begin{verbatim}".str_replace(array('\$','\%', '\{', '\}'), array('$', '%', '{','}'), $matches[2])."\end{verbatim}\n";
 }
 
 function escape_verb($matches)
 {
-	$text = str_replace(array('\{', '\}'), array('{','}'), $matches[1]);
+	$text = str_replace(array('\$','\%', '\{', '\}'), array('$', '%', '{','}'), $matches[1]);
 	return '\verb<'.$text.'<';
 }
 
@@ -119,6 +120,11 @@ function parse_html($page,$html)
 	//escape { and }
 	$html = preg_replace('/([^\s]+){([^}]*)}([^\s]+)/', '$1\\\{$2\\\}$3', $html);
 
+	$html = preg_replace_callback('/<img\s+src="?<%~([^"]*)%>"?[^\\/]*\/>/', 'include_image', $html);
+
+	//escape %
+	$html = str_replace('%', '\%', $html);
+
 	//codes
 	$html = str_replace('$', '\$', $html);
 	$html = preg_replace('/<com:TTextHighlighter[^>]*>/', '`1`', $html);
@@ -129,8 +135,6 @@ function parse_html($page,$html)
 
 	//<code>
 	$html = preg_replace_callback('/<code>([^<]*)<\/code>/', 'escape_verb', $html);
-
-	$html = preg_replace_callback('/<img\s+src="?<%~([^"]*)%>"?[^\\/]*\/>/', 'include_image', $html);
 
 	//runbar
 	$html = preg_replace('/<com:RunBar\s+PagePath="([^"]*)"\s+\/>/',
@@ -219,14 +223,10 @@ function h3($matches)
 }
 
 $header_count = 0;
-
+*/
 //--------------- BEGIN PROCESSING -------------------
 
-
-//--------------- Indexer -------------------
-
-//require_once('create_index.php');
-//$indexer = new quickstart_index($index_dir);
+include('Page2Tex.php');
 
 // ---------------- Create the Tex files ---------
 $count = 1;
@@ -234,9 +234,11 @@ $j = 1;
 $current_path = '';
 echo "Compiling .page files to Latex files\n\n";
 
+$parser = new Page2Tex($base, dirname(__FILE__));
+
 foreach($pages as $chapter => $sections)
 {
-	$content = '\chapter{'.$chapter.'}'.get_chapter_label($chapter);
+	$content = '\chapter{'.$chapter.'}'.$parser->get_chapter_label($chapter);
 	echo "Creating ch{$count}.txt => Chapter {$count}: {$chapter}\n";
 	echo str_repeat('-',60)."\n";
 	foreach($sections as $section)
@@ -244,15 +246,16 @@ foreach($pages as $chapter => $sections)
 		echo "    Adding $section\n";
 		$page = $base.'/'.$section;
 		$current_path = $page;
+		$parser->setCurrentPage($current_path);
 
 		//add id to <h1>, <h2>, <3>
-		$tmp_content = set_header_id(file_get_contents($page),$j++);
+		$tmp_content = $parser->set_header_id(file_get_contents($page),$j++);
 		file_put_contents($page, $tmp_content);
 
-		$content .= get_section_label($section);
+		$content .= $parser->get_section_label($section);
 		$file_content = file_get_contents($page);
 		$tex =
-		$content .= parse_html($page,$file_content);
+		$content .= $parser->parse_html($page,$file_content);
 	}
 
 	//var_dump($content);
