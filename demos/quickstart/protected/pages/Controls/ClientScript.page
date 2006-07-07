@@ -1,0 +1,52 @@
+<com:TContent ID="body" >
+
+<h1>TClientScript</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TClientScript" />
+<h2>Including Bundled Javascript Libraries in Prado</h2>
+<p>
+<tt>TClientScript</tt> allows javascript code to be insert or linked to the 
+page template. Prado is bundled with a large library of javascript functionality
+including effects, AJAX, basic event handlers, and many others. The bundled 
+javascript libraries can be linked to the current page template using the 
+<tt>UsingPradoScripts</tt> property. Multiple bundled javascript libraries
+can be specified using comma delimited string of the name of javascript library 
+to include on the page. For following example will include the "ajax" and "effects" library.
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TClientScript UsingPradoScripts="ajax, effects" /&gt;
+</com:TTextHighlighter>
+
+<p>
+	The available bundled libraries included in Prado are 
+	<ul>
+	    <li><tt>prado</tt> : basic prado javascript framework based on Prototype</li>
+	    <li><tt>effects</tt> : visual effects from script.aculo.us</li>
+	    <li><tt>ajax</tt> : ajax and callback related based on Prototype</li>
+	    <li><tt>validator</tt> : validation</li>
+	    <li><tt>logger</tt> : javascript logger and object browser</li>
+	    <li><tt>datepicker</tt> : datepicker</li>
+	    <li><tt>rico</tt> : Rico library</li>
+	    <li><tt>colorpicker</tt> : colorpicker</li>
+	</ul>
+</p>
+<p>The dependencies for each library are automatically resolved. That is, 
+	specifying, say the "ajax", will also include the "prado" library.</p>
+	
+<h2>Including Custom Javascript Files</h2>
+<p>Custom javascript files can be register using the <tt>ScriptUrl</tt> property.
+The following example includes the javascript file "test.js" to the page. In this case, the file
+"test.js" is relative the current template you are using. Since the property value is
+<a href="?page=Configurations.Templates3">dynamic asset tag</a>, the file "test.js" will be published
+automatically, that is, the file will be copied to the assets directory if necessary.
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TClientScript ScriptUrl=&lt;%~ test.js %&gt; /&gt;
+</com:TTextHighlighter>
+<p>You can include javascript files from other servers by specifying the full URL string in
+	the <tt>ScriptUrl</tt> property.</p>
+
+<h2>Including Custom Javascript Code Blocks</h2>
+<p> Any content within the <tt>TClientScript</tt> control tag will be considered as
+	javascript code and will be rendered where it is declared.</p>
+
+</com:TContent>

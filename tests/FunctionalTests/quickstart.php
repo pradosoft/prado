@@ -1,8 +1,8 @@
 <?php
 
-require(dirname(__FILE__).'/PradoTester.php');
+require('../test_tools/functional_tests.php');
 
-$tester=new PradoTester(dirname(__FILE__).'/quickstart');
+$tester=new PradoFunctionalTester(dirname(__FILE__).'/quickstart');
 $tester->run(new SimpleReporter());
 
 ?>

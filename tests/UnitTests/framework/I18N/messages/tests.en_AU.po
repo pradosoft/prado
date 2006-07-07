@@ -1,7 +1,0 @@
-msgid ""
-msgstr ""
-"PO-Revision-Date: 2005-01-09 14:17:13\n"
-
-msgid "Testing123"
-msgstr ""
-

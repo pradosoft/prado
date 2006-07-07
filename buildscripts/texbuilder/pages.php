@@ -33,6 +33,7 @@ $pages['Configurations'] = array(
 $pages['Control Reference : Standard Controls'] = array(
 	'Controls/Button.page',
 	'Controls/CheckBox.page',
+	'Controls/ClientScript.page',
 	'Controls/ColorPicker.page',
 	'Controls/DatePicker.page',
 	'Controls/Expression.page',

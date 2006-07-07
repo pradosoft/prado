@@ -10,12 +10,16 @@ if(!isset($_SERVER['argv']))
 
 //command line options.
 $options['create'] = array('c:', 'create=', '<directory>', 'create a new project <directory>');
+$options['tests'] = array('t', 'create-tests', '', 'create unit and function test fixtures');
+
 $console = new ConsoleOptions($options, $_SERVER['argv']);
 
 if($console->hasOptions())
 {
 	if($dir = $console->getOption('create'))
 		create_new_prado_project($dir);
+	if($console->getOption('tests'))
+		create_test_fixtures($dir);
 }
 else
 {
@@ -51,24 +55,98 @@ function create_new_prado_project($dir)
 	$htaccessFile = $protectedPath.'/.htaccess';
 	$defaultPageFile = $pagesPath.'/Home.page';
 	
+	$tests = $basePath.'/tests';
+	$unit_tests = $tests.'/unit';
+	$functional_tests = $tests.'/functional';
+	
 	create_directory($basePath, 0755);
 	create_directory($assetPath,0777);
 	create_directory($protectedPath,0755);
 	create_directory($runtimePath,0777);
 	create_directory($pagesPath,0755);
+	
+	create_directory($tests,0755);
+	create_directory($unit_tests,0755);
+	create_directory($functional_tests,0755);
+	
+	create_file($indexFile, render_index_file());
+	create_file($htaccessFile, render_htaccess_file());
+	create_file($defaultPageFile, render_default_page());
+}
+
+function create_test_fixtures($dir)
+{
+	if(strlen(trim($dir)) == 0)
+		return;
 		
-	file_put_contents($indexFile, render_index_file());
-	file_put_contents($htaccessFile, render_htaccess_file());
-	file_put_contents($defaultPageFile, render_default_page());
+	$rootPath = realpath(dirname(trim($dir)));
+	$basePath = $rootPath.'/'.basename($dir);
+		
+	$tests = $basePath.'/tests';
+	$unit_tests = $tests.'/unit';
+	$functional_tests = $tests.'/functional';
+	
+	create_directory($tests,0755);
+	create_directory($unit_tests,0755);
+	create_directory($functional_tests,0755);
+	
+	$unit_test_index = $tests.'/unit.php';
+	$functional_test_index = $tests.'/functional.php';
+	
+	create_file($unit_test_index, render_unit_test_fixture());
+	create_file($functional_test_index, render_functional_test_fixture());
+}
+
+function render_unit_test_fixture()
+{
+	$tester = realpath(dirname(__FILE__).'/../tests/test_tools/unit_tests.php');
+return '<?php
+
+include_once \''.$tester.'\';
+
+$app_directory = "../protected";
+$test_cases = dirname(__FILE__)."/unit";
+
+$tester = new PradoUnitTester($test_cases, $app_directory);
+$tester->run(new HtmlReporter());
+
+?>';	
+}
+
+function render_functional_test_fixture()
+{
+	$tester = realpath(dirname(__FILE__).'/../tests/test_tools/functional_tests.php');
+return '<?php
+
+include_once \''.$tester.'\';
+
+$test_cases = dirname(__FILE__)."/functional";
+
+$tester=new PradoFunctionalTester($test_cases);
+$tester->run(new SimpleReporter());
+
+?>';
 }
 
 function create_directory($dir, $mask)
 {
 	if(!is_dir($dir))
+	{
 		mkdir($dir);
+		echo "creating $dir\n";
+	}	
 	if(is_dir($dir))
 		chmod($dir, $mask);
 }	
+
+function create_file($filename, $content)
+{
+	if(!is_file($filename))
+	{
+		file_put_contents($filename, $content);
+		echo "creating $filename\n";
+	}
+}
 
 function render_index_file()
 {
@@ -76,7 +154,7 @@ function render_index_file()
 return '<?php
 
 $basePath=dirname(__FILE__);
-$frameworkPath="'.$framework.'";
+$frameworkPath=\''.$framework.'\';
 $assetsPath=$basePath."/assets";
 $runtimePath=$basePath."/protected/runtime";
 
@@ -214,6 +292,7 @@ class ConsoleOptions
 	{
 		if(is_null($this->_values))
 			$this->_values = $this->getNamedOptions();
+				
 		return isset($this->_values[$name]) ? $this->_values[$name] : null;
 	}
 	
@@ -248,9 +327,10 @@ class ConsoleOptions
 		{
 			foreach($this->_options as $name => $option)
 			{
-				if(strpos($option[0],$value[0]) !== false 
-					|| strpos($option[1], $value[0]) !== false)
-					$options[$name] = $value[1];
+				$short = str_replace(':', '', $option[0]);
+				$long = str_replace('=', '', $option[1]);
+				if($short == $value[0] || $long == $value[0])
+					$options[$name] = is_null($value[1]) ? true : $value[1];
 			}
 		}
 		return $options;

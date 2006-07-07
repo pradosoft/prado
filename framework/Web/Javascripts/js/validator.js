@@ -129,9 +129,13 @@ switch(this.options.ControlType)
 return this.trim($F(control));else
 {this.observeDatePickerChanges();return Prado.WebUI.TDatePicker.getDropDownDate(control).getTime();}
 case'THtmlArea':if(typeof tinyMCE!="undefined")
-tinyMCE.triggerSave();return this.trim($F(control));default:if(this.isListControlType())
+tinyMCE.triggerSave();return this.trim($F(control));case'TRadioButton':if(this.options.GroupName)
+return this.getRadioButtonGroupValue();default:if(this.isListControlType())
 return this.getFirstSelectedListValue();else
-return this.trim($F(control));}},observeDatePickerChanges:function()
+return this.trim($F(control));}},getRadioButtonGroupValue:function()
+{name=this.control.name;value="";$A(document.getElementsByName(name)).each(function(el)
+{if(el.checked)
+value=el.value;});return value;},observeDatePickerChanges:function()
 {if(Prado.Browser().ie)
 {var DatePicker=Prado.WebUI.TDatePicker;this.observeChanges(DatePicker.getDayListControl(this.control));this.observeChanges(DatePicker.getMonthListControl(this.control));this.observeChanges(DatePicker.getYearListControl(this.control));}},getSelectedValuesAndChecks:function(elements,initialValue)
 {var checked=0;var values=[];var isSelected=this.isCheckBoxType(elements[0])?'checked':'selected';elements.each(function(element)

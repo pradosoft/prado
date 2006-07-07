@@ -1,5 +1,0 @@
-- test TPropertyValue
-- test TControl lifecycles with a Web page
-- test TControl state management with a Web page
-- test TControl adding and removing child controls with a Web page
-- test TControl::applyStyleSheetSkin() with a Web page
