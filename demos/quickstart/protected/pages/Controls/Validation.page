@@ -26,7 +26,7 @@ Validators share a common set of properties, which are defined in the base class
     <li><tt>Dynamic</tt> - the space for displaying the error message is NOT reserved. Therefore, showing up the error message will shift the layout of your page around (usually down).</li>
     </ul>
 </li>
-<li><tt>ControlCssClass</tt> - the Css class that is applied to the control being validated in case the validation fails.</li>
+<li><tt>ControlCssClass</tt> - the CSS class that is applied to the control being validated in case the validation fails.</li>
 <li><tt>FocusOnError</tt> - set focus at the validating place if the validation fails. Defaults to false.</li>
 <li><tt>FocusElementID</tt> - the ID of the HTML element that will receive focus if validation fails and <tt>FocusOnError</tt> is true.</li>
 </ul>
@@ -71,7 +71,7 @@ TEmailAddressValidator verifies that the user input is a valid email address. Th
 Note, if the input being validated is empty, TEmailAddressValidator will not do validation. Use a TRequiredFieldValidator to ensure the value is not empty.
 </p>
 <com:RunBar PagePath="Controls.Samples.TEmailAddressValidator.Home" />
-	
+
 <a name="TCompareValidator"></a>
 <h2 id="4904">TCompareValidator</h2>
 <p>

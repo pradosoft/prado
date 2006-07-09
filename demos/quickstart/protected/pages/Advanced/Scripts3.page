@@ -1,20 +1,20 @@
 <com:TContent ID="body" >
-<h1 id="6801">Javascript in Prado, Questions and Answers</h1>
-<h2 id="6802">How do I include the predefined javascript libraries?</h2>
+<h1 id="6801">Javascript in PRADO, Questions and Answers</h1>
+<h2 id="6802">How do I include the predefined Javascript libraries?</h2>
 <ul><li>Adding libraries in the template
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TClientScript UsingPradoScripts="effects" /&gt;
-</com:TTextHighlighter> 
-    </li>   
+</com:TTextHighlighter>
+    </li>
     <li>Adding libraries in PHP code
     <com:TTextHighlighter Language="php" CssClass="source">
-$this->getPage()->getClientScript()->registerPradoScript("effects");    
+$this->getPage()->getClientScript()->registerPradoScript("effects");
     </com:TTextHighlighter>
     </li>
-</ul>   
-The available packaged libraries included in Prado are 
+</ul>
+The available packaged libraries included in Prado are
 <ul>
-    <li><tt>prado</tt> : basic prado javascript framework based on Prototype</li>
+    <li><tt>prado</tt> : basic PRADO javascript framework based on Prototype</li>
     <li><tt>effects</tt> : visual effects from script.aculo.us</li>
     <li><tt>ajax</tt> : ajax and callback related based on Prototype</li>
     <li><tt>validator</tt> : validation</li>
@@ -24,12 +24,12 @@ The available packaged libraries included in Prado are
     <li><tt>colorpicker</tt> : colorpicker</li>
 </ul>
 
-<p>The dependencies for each library are automatically resolved. Components 
+<p>The dependencies for each library are automatically resolved. Components
 that require a particular library will also automatically load the necessary libraries.
-For example, if you add a TDatePicker component on the page, the <tt>datapicker</tt>
+For example, if you add a TDatePicker component on the page, the <tt>datepicker</tt>
 and its dependencies will be automatically included on the page.</p>
 
 <p>See <a href="?page=Controls.ClientScript">TClientScript</a> for options of adding
-	your custom javascript code to the page.</p>
+	your custom Javascript code to the page.</p>
 
 </com:TContent>

@@ -52,10 +52,10 @@ Messages can be filtered according to their log levels and categories. Each log 
 Log levels defined in <tt>System.Util.TLogger</tt> include : <tt>DEBUG</tt>, <tt>INFO</tt>, <tt>NOTICE</tt>, <tt>WARNING</tt>, <tt>ERROR</tt>, <tt>ALERT</tt>, <tt>FATAL</tt>. Messages can be filtered according log level criteria. For example, if a filter specifies <tt>WARNING</tt> and <tt>ERROR</tt> levels, then only those messages that are of <tt>WARNING</tt> and <tt>ERROR</tt> will be returned.
 </p>
 <p>
-Message categories are hierarchical. A category whose name is the prefix of another is said to be the ancestor category of the other category. For example, <tt>System.Web</tt> category is the ancestor of <tt>System.Web.UI</tt> and <tt>System.Web.UI.WebControls</tt> categories. Messages can be selectively retrieved using such hierarchical category filters. For example, if the category filter is <tt>System.Web</tt>, then all messages in the <tt>System.Web</tt> are returned. In addition, messages in the childd categories, such as <tt>System.Web.UI.WebControls</tt>, are also returned.
+Message categories are hierarchical. A category whose name is the prefix of another is said to be the ancestor category of the other category. For example, <tt>System.Web</tt> category is the ancestor of <tt>System.Web.UI</tt> and <tt>System.Web.UI.WebControls</tt> categories. Messages can be selectively retrieved using such hierarchical category filters. For example, if the category filter is <tt>System.Web</tt>, then all messages in the <tt>System.Web</tt> are returned. In addition, messages in the child categories, such as <tt>System.Web.UI.WebControls</tt>, are also returned.
 </p>
 <p>
-By convention, the messages logged in the core code of PRADO are categorized according to the namespace of the corresponding classes. For example, messsages logged in <tt>TPage</tt> will be of category <tt>System.Web.UI.TPage</tt>.
+By convention, the messages logged in the core code of PRADO are categorized according to the namespace of the corresponding classes. For example, messages logged in <tt>TPage</tt> will be of category <tt>System.Web.UI.TPage</tt>.
 </p>
 
 </com:TContent>

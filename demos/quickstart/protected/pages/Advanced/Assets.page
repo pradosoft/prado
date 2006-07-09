@@ -36,7 +36,7 @@ Asset publishing is managed by the <tt>System.Web.TAssetManager</tt> module. By 
 
 <h2 id="5704">Performance</h2>
 <p>
-PRADO uses caching techniques to ensure the efficiency of asset publishing. Publishing an asset essentially requires file copy operation, which is expensive. To save unnecessary file copy operations, <tt>System.Web.TAssetManager</tt> only publishes an asset when it has a newer file modification time than the published file. When an application runs under the <tt>Performance</tt> mode, such timestamp checkings are also omitted.
+PRADO uses caching techniques to ensure the efficiency of asset publishing. Publishing an asset essentially requires file copy operation, which is expensive. To save unnecessary file copy operations, <tt>System.Web.TAssetManager</tt> only publishes an asset when it has a newer file modification time than the published file. When an application runs under the <tt>Performance</tt> mode, such timestamp checking is also omitted.
 </p>
 <p>
 ADVISORY: Do not overuse asset publishing. The asset concept is mainly used to help better reuse and redistribute component classes. Normally, you should not use asset publishing for resources that are not bound to any component in an application. For example, you should not use asset publishing for images that are mainly used as design elements (e.g. logos, background images, etc.) Let Web server to directly serve these images will help improve the performance of your application.

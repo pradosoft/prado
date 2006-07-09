@@ -7,7 +7,7 @@ PRADO provides a complete error handling and reporting framework based on the PH
 
 <h2 id="6302">Exception Classes</h2>
 <p>
-Errors occur in a PRADO application may be classified into three categories: those caused by PHP script parsing, those caused by wrong code (such as calling an undefined function, setting an unknown property), and those caused by improper use of the Web application by client users (such as attempting to access restricted pages). PRADO is unable to deal with the first category of errors because they cannot be caughted in PHP code. PRADO provides an exception hierarchy to deal with the second and third categories.
+Errors occur in a PRADO application may be classified into three categories: those caused by PHP script parsing, those caused by wrong code (such as calling an undefined function, setting an unknown property), and those caused by improper use of the Web application by client users (such as attempting to access restricted pages). PRADO is unable to deal with the first category of errors because they cannot be caught in PHP code. PRADO provides an exception hierarchy to deal with the second and third categories.
 </p>
 <p>
 All errors in PRADO applications are represented as exceptions. The base class for all PRADO exceptions is <tt>TException</tt>. It provides the message internationalization functionality to all system exceptions. An error message may be translated into different languages according to the user browser's language preference.
@@ -21,7 +21,7 @@ Exceptions raised due to improper usage of the PRADO framework inherit from <tt>
 <li><tt>TInvalidDataTypeException</tt> - data type is incorrect or unexpected.</li>
 <li><tt>TInvalidDataFormatException</tt> - format of data is incorrect.</li>
 <li><tt>TInvalidOperationException</tt> - invalid operation request.</li>
-<li><tt>TPhpErrorException</tt> - caughtable PHP errors, warnings, notices, etc.</li>
+<li><tt>TPhpErrorException</tt> - catchable PHP errors, warnings, notices, etc.</li>
 <li><tt>TSecurityException</tt> - errors related with security.</li>
 <li><tt>TIOException</tt> - IO operation error, such as file open failure.</li>
 <li><tt>TDBException</tt> - errors related with database operations.</li>

@@ -796,8 +796,6 @@ demos/quickstart/protected/pages/Advanced/mastercontent.gif -text
 demos/quickstart/protected/pages/Advanced/mastercontent.vsd -text
 demos/quickstart/protected/pages/Advanced/pcrelation.gif -text
 demos/quickstart/protected/pages/Advanced/pcrelation.vsd -text
-demos/quickstart/protected/pages/Comments.page -text
-demos/quickstart/protected/pages/Comments.php -text
 demos/quickstart/protected/pages/Configurations/AppConfig.page -text
 demos/quickstart/protected/pages/Configurations/Overview.page -text
 demos/quickstart/protected/pages/Configurations/PageConfig.page -text

@@ -2,7 +2,7 @@
 
 <h1 id="5501">Collections</h1>
 <p>
-Collection is a basic data structure in programming. In traditional PHP programming, array is used widely to represent collection data structure. A PHP array is a mix of cardinal-indxed array and hash table.
+Collection is a basic data structure in programming. In traditional PHP programming, array is used widely to represent collection data structure. A PHP array is a mix of cardinal-indexed array and hash table.
 </p>
 <p>
 To enable object-oriented manipulation of collections, PRADO provides a set of powerful collection classes. Among them, the <tt>TList</tt> and <tt>TMap</tt> are the most fundamental and usually serve as the base classes for other collection classes. Since many PRADO components have properties that are of collection type, it is very important for developers to master the usage of PRADO collection classes.

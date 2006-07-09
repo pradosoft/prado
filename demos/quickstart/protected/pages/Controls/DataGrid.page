@@ -6,15 +6,15 @@
 TDatagrid is an important control in building complex Web applications. It displays data in a tabular format with rows (also called items) and columns. A row is composed by cells, while columns govern how cells should be displayed according to their association with the columns. Data specified via <tt>DataSource</tt> or <tt>DataSourceID</tt> are bound to the rows and feed contents to cells.
 </p>
 <p>
-TDataGrid is highly interactive. Users can sort the data along specified columns, navigate through different pages of the data, and perform actions, such as editting and deleting, on rows of the data.
+TDataGrid is highly interactive. Users can sort the data along specified columns, navigate through different pages of the data, and perform actions, such as editing and deleting, on rows of the data.
 </p>
 <p>
-Rows of TDataGrid can be accessed via its <tt>Items</tt> property. A row (item) can be in one of several modes: browsing, editting and selecting, which affects how cells in the row are displayed. To change an item's mode, modify <tt>EditItemIndex</tt> or <tt>SelectedItemIndex</tt>. Note, if an item is in edit mode, then selecting this item will have no effect.
+Rows of TDataGrid can be accessed via its <tt>Items</tt> property. A row (item) can be in one of several modes: browsing, editing and selecting, which affects how cells in the row are displayed. To change an item's mode, modify <tt>EditItemIndex</tt> or <tt>SelectedItemIndex</tt>. Note, if an item is in edit mode, then selecting this item will have no effect.
 </p>
 
 <h2 id="5202">Columns</h2>
 <p>
-Columns of a data grid determine how the associated cells are displayed. For example, cells associated with a <tt>TBoundColumn</tt> are displayed differently according to their modes. A cell is displayed as a static text if the cell is in browsing mode, a text box if it is in editting mode, and so on.
+Columns of a data grid determine how the associated cells are displayed. For example, cells associated with a <tt>TBoundColumn</tt> are displayed differently according to their modes. A cell is displayed as a static text if the cell is in browsing mode, a text box if it is in editing mode, and so on.
 </p>
 <p>
 PRADO provides five types of columns:
@@ -103,7 +103,7 @@ The following example uses manually specified columns to show a list of book inf
   <li>Publisher - displayed as a piece of text using <tt>TBoundColumn</tt>.</li>
   <li>Price - displayed as a piece of text using <tt>TBoundColumn</tt> with output formatting string and customized styles.</li>
   <li>In-stock or not - displayed as a checkbox using <tt>TCheckBoxColumn</tt>.</li>
-  <li>Rating - displayed as an image using <tt>TTemplateColumn</tt> which allows maximum freedom in specifiying cell contents.</li>
+  <li>Rating - displayed as an image using <tt>TTemplateColumn</tt> which allows maximum freedom in specifying cell contents.</li>
 </ul>
 <p>Pay attention to how item (row) styles and column styles cooperate together to affect the appearance of the cells in the datagrid.</p>
 <com:RunBar PagePath="Controls.Samples.TDataGrid.Sample2" />
@@ -111,7 +111,7 @@ The following example uses manually specified columns to show a list of book inf
 
 <h2 id="5206">Interacting with TDataGrid</h2>
 <p>
-Besides the rich data presentation functionalities as demonstrated in previous section, TDataGrid is also highly user interactive. An import usage of TDataGrid is editting or deleting rows of data. The <tt>TBoundColumn</tt> can adjust the associated cell presentation according to the mode of datagrid items. When an item is in browsing mode, the cell is displayed with a static text; when the item is in editting mode, a textbox is displayed to collect user inputs. TDataGrid provides <tt>TEditCommandColumn</tt> for switching item modes. In addition, <tt>TButtonColumn</tt> offers developers the flexibility of creating arbitrary buttons for various user interactions.
+Besides the rich data presentation functionalities as demonstrated in previous section, TDataGrid is also highly user interactive. An import usage of TDataGrid is editing or deleting rows of data. The <tt>TBoundColumn</tt> can adjust the associated cell presentation according to the mode of datagrid items. When an item is in browsing mode, the cell is displayed with a static text; when the item is in editing mode, a textbox is displayed to collect user inputs. TDataGrid provides <tt>TEditCommandColumn</tt> for switching item modes. In addition, <tt>TButtonColumn</tt> offers developers the flexibility of creating arbitrary buttons for various user interactions.
 </p>
 <p>
 The following example shows how to make the previous book information table an interactive one. It allows users to edit and delete book items from the table. Two additional columns are used in the example to allow users interact with the datagrid: <tt>TEditCommandColumn</tt> and <tt>TButtonColumn</tt>.

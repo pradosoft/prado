@@ -24,7 +24,7 @@ The default editor gives only the basic tool bar. To change or add additional to
 </com:TTextHighlighter>
 
 <p>
-The client-side visual editting capability is supported by Internet Explorer 5.0+ for Windows and Gecko-based browser. If the browser does not support the visual editting, a traditional textarea will be displayed.
+The client-side visual editing capability is supported by Internet Explorer 5.0+ for Windows and Gecko-based browser. If the browser does not support the visual editing, a traditional textarea will be displayed.
 </p>
 
 <pre>
@@ -39,7 +39,7 @@ Firefox 1.5b2           OK              OK
 Safari 2.0 (412)                        OK(1)
 Opera 9 Preview 1       OK(1)           OK(1)
 ----------------------------------------------------
-(1) - Partialy working
+(1) - Partially working
 ----------------------------------------------------
 </pre>
 

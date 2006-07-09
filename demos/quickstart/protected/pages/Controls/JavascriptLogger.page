@@ -4,7 +4,7 @@
 <com:DocLink ClassPath="System.Web.UI.WebControls.TJavascriptLogger" />
 
 <p>
-<tt>TJavascriptLogger</tt> provides logging for client-side javascript. It is mainly a wrapper of the javascript developed at <a href="http://gleepglop.com/javascripts/logger/">http://gleepglop.com/javascripts/logger/</a>.
+<tt>TJavascriptLogger</tt> provides logging for client-side javascript. It is mainly a wrapper of the Javascript developed at <a href="http://gleepglop.com/javascripts/logger/">http://gleepglop.com/javascripts/logger/</a>.
 </p>
 
 <p>
@@ -15,7 +15,7 @@ To use <tt>TJavascriptLogger</tt>, simply place the following component tag in a
 </com:TTextHighlighter>
 
 <p>
-Then, the client-side javascript may contain the following statements. When they are executed, they will appear in the logger window.
+Then, the client-side Javascript may contain the following statements. When they are executed, they will appear in the logger window.
 </p>
 <com:TTextHighlighter Language="js" CssClass="source">
 Logger.info('something happend');

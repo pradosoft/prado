@@ -18,7 +18,7 @@
     <li> Dates, Times.</li>
     <li> Numbers, Currency, Measurements.</li>
     <li> Phone numbers.</li>
-    <li> Honorifics and personal titles.</li>
+    <li> Honorific and personal titles.</li>
     <li> Postal address.</li>
     <li> Page layout.</li>
 </ul>
@@ -26,7 +26,7 @@
 <p>If possible all manner of text should be isolated and store in a persistence format. These text include, application error messages, hard coded strings in PHP files, emails, static HTML text, and text on form elements (e.g. buttons).</p>
 
 <h2 id="6204">Configuration</h2>
-<p>To enable the localization features in Prado, you need to add a few configuration options in your <a href="?page=Configurations.AppConfig">application configuration</a>.
+<p>To enable the localization features in PRADO, you need to add a few configuration options in your <a href="?page=Configurations.AppConfig">application configuration</a>.
 First you need to include the <tt>System.I18N.*</tt> namespace to your paths.
 </p>
 <com:TTextHighlighter Language="xml" CssClass="source">
@@ -98,7 +98,7 @@ Lastly, you can change the globalization settings on page by page basis using <a
 &lt;%@ Application.Globalization.Culture="zh" %&gt;
 </com:TTextHighlighter>
 
-<h2 id="6207">Localizing your Prado application</h2>
+<h2 id="6207">Localizing your PRADO application</h2>
 There are two areas in your application that may need message or string localization, in PHP code and in the templates. To localize strings within PHP, use the <tt>localize</tt> function detailed below. To localize text in the template, use the <a href="#ttranslate">TTranslate</a> component.
 <h2 id="6208">Using <tt>localize</tt> function to translate text within PHP</h2>
 
@@ -134,7 +134,7 @@ $message = Prado::localize("There are {num_users} users online.", array('num_use
 <p>Where the second parameter in <tt>localize</tt> takes an associative array with the key as the substitution to find in the text and replaced it with the associated value.
 The <tt>localize</tt> function does not solve the problem of localizing languages that have plural forms, the solution is to use <a href="#choice-format">TChoiceFormat</a>.</p>
 
-<p>The following sample demonstrates the basics of localization in Prado.</p>
+<p>The following sample demonstrates the basics of localization in PRADO.</p>
 <com:RunBar PagePath="Advanced.Samples.I18N.Home" />
 
 <h1 id="6202">I18N Components</h1>
@@ -148,9 +148,9 @@ To translate a message or string in the template, use <tt>TTranslate</tt>.</p>
 &lt;com:TTranslate Text="Goodbye" /&gt;
 </com:TTextHighlighter>
 
-<p><tt>TTranslate</tt> can also perform string substitution. 
+<p><tt>TTranslate</tt> can also perform string substitution.
 The <tt>Parameters</tt> property can be use to add name values pairs for substitution. Substrings in the translation enclosed with "{" and "}" are consider as the
- parameter names during substitution lookup. The following example will substitute the substring "{time}" with the value of the parameter attribute "<tt>Parameters.time=&lt;%= time() %&gt;</tt>". 
+ parameter names during substitution lookup. The following example will substitute the substring "{time}" with the value of the parameter attribute "<tt>Parameters.time=&lt;%= time() %&gt;</tt>".
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TTranslate Parameters.time=&lt;%= time() %&gt; &gt;
 The time is {time}.
@@ -183,17 +183,17 @@ The time is {time}.
 	<li><tt>mediumtime</tt></li>
 	<li><tt>shorttime</tt></li>
 </ul>
-The predefined can be used in any combination. If using a combined predefined pattern, 
-the first pattern must be the date, followed by a space, and lastly the time pattern. 
-For example, full date pattern with short time pattern. The actual ordering of the 
-date-time and the actual pattern will be determine automatically from locale data specified 
+The predefined can be used in any combination. If using a combined predefined pattern,
+the first pattern must be the date, followed by a space, and lastly the time pattern.
+For example, full date pattern with short time pattern. The actual ordering of the
+date-time and the actual pattern will be determine automatically from locale data specified
 by the <tt>Culture</tt> property.</p>
 
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TDateFormat Pattern="fulldate shorttime" /&gt;
 </com:TTextHighlighter>
 
-<p>You can also specify a custom pattern using the following sub-patterns. 
+<p>You can also specify a custom pattern using the following sub-patterns.
 The date/time format is specified by means of a string time pattern. In this pattern, all ASCII letters are reserved as pattern letters, which are defined as the following:
 <com:TTextHighlighter Language="text" CssClass="source">
  Symbol   Meaning                 Presentation        Example
@@ -222,22 +222,22 @@ The date/time format is specified by means of a string time pattern. In this pat
 
 <p>The count of pattern letters determine the format.</p>
 
-<p>(Text): 4 letters uses full form, less than 4, use short or abbreviated form 
+<p>(Text): 4 letters uses full form, less than 4, use short or abbreviated form
 if it exists. (e.g., "EEEE" produces "Monday", "EEE" produces "Mon")</p>
 
 <p>(Number): the minimum number of digits. Shorter numbers are zero-padded
- to this amount (e.g. if "m" produces "6", "mm" produces "06"). Year is 
- handled specially; that is, if the count of 'y' is 2, the Year will be 
- truncated to 2 digits. (e.g., if "yyyy" produces "1997", "yy" produces "97".) 
+ to this amount (e.g. if "m" produces "6", "mm" produces "06"). Year is
+ handled specially; that is, if the count of 'y' is 2, the Year will be
+ truncated to 2 digits. (e.g., if "yyyy" produces "1997", "yy" produces "97".)
  Unlike other fields, fractional seconds are padded on the right with zero.</p>
 
-<p>(Text and Number): 3 or over, use text, otherwise use number. (e.g., 
-"M" produces "1", "MM" produces "01", "MMM" produces "Jan", and "MMMM" 
+<p>(Text and Number): 3 or over, use text, otherwise use number. (e.g.,
+"M" produces "1", "MM" produces "01", "MMM" produces "Jan", and "MMMM"
 produces "January".)</p>
 
-<p>Any characters in the pattern that are not in the ranges of ['a'..'z'] 
-and ['A'..'Z'] will be treated as quoted text. For instance, characters 
-like ':', '.', ' ', and '@' will appear in the resulting time text 
+<p>Any characters in the pattern that are not in the ranges of ['a'..'z']
+and ['A'..'Z'] will be treated as quoted text. For instance, characters
+like ':', '.', ' ', and '@' will appear in the resulting time text
 even they are not embraced within single quotes.</p>
 
 <p>Examples using the US locale:
@@ -259,7 +259,7 @@ Format Pattern                         Result
 <h2 id="6212">TNumberFormat</h2>
 <p>PRADO's Internationalization framework provide localized currency formatting and number formatting. Please note that the <tt>TNumberFormat</tt> component provides formatting only, it does not perform current conversion or exchange.</p>
 
-<p>Numbers can be formatted as currency, percentage, decimal or scientific 
+<p>Numbers can be formatted as currency, percentage, decimal or scientific
 numbers by specifying the <tt>Type</tt> attribute. The valid types are:
 <ul>
 	<li><tt>currency</tt></li>
@@ -268,7 +268,7 @@ numbers by specifying the <tt>Type</tt> attribute. The valid types are:
 	<li><tt>scientific</tt></li>
 </ul>
 </p>
- 
+
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TNumberFormat Type="currency" Value="100" /&gt;
 </com:TTextHighlighter>
@@ -283,13 +283,13 @@ then also from the <tt>de_DE</tt> locale. This may lead to some confusion becaus
 people from US uses the "," (comma) as thousand separator. Therefore a <tt>Currency</tt>
 attribute is available, so that the output from the following example results in $100.00
 <com:TTextHighlighter Language="prado" CssClass="source">
-&lt;com:TNumberFormat Type="currency" 
+&lt;com:TNumberFormat Type="currency"
           Culture="en_US" Currency="EUR" Value="100" /&gt;
 </com:TTextHighlighter>
 </p>
 
-<p>The <tt>Pattern</tt> property determines the number of digits, thousand grouping 
-positions, the number of decimal points and the decimal position. The actual characters that 
+<p>The <tt>Pattern</tt> property determines the number of digits, thousand grouping
+positions, the number of decimal points and the decimal position. The actual characters that
 are used to represent the decimal points and thousand points are culture specific
 and will change automatically according to the <tt>Culture</tt> property. The valid
 <tt>Pattern</tt> characters are:
@@ -299,7 +299,7 @@ and will change automatically according to the <tt>Culture</tt> property. The va
 	<li><tt>. (full stop)</tt> - the position of the decimal point (only 1 decimal point is allowed)</li>
 	<li><tt>, (comma)</tt> - thousand point separation (up to 2 commas are allowed)</li>
 </ul>
-For example, consider the <tt>Value="1234567.12345"</tt> and 
+For example, consider the <tt>Value="1234567.12345"</tt> and
 with <tt>Culture="en_US"</tt> (which uses "," for thousand point separator and "." for decimal separators).
 <com:TTextHighlighter Language="text" CssClass="source">
 Pattern                      Output
