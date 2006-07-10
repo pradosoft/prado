@@ -587,6 +587,7 @@ buildscripts/phing/tasks/XmlLintTask.php -text
 buildscripts/phing/tasks/ZendCodeAnalyzerTask.php -text
 buildscripts/phpbuilder/build.php -text
 buildscripts/setup.php -text
+buildscripts/texbuilder/Page2Tex.php -text
 buildscripts/texbuilder/build.php -text
 buildscripts/texbuilder/pages.php -text
 buildscripts/texbuilder/quickstart.tex -text

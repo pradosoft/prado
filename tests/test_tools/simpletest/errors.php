@@ -41,7 +41,7 @@
         function invoke($method) {
             set_error_handler('simpleTestErrorHandler');
             parent::invoke($method);
-            $queue = &SimpleErrorQueue::instance();
+            $queue = SimpleErrorQueue::instance();
             while (list($severity, $message, $file, $line, $globals) = $queue->extract()) {
                 $severity = SimpleErrorQueue::getSeverityAsString($severity);
                 $test_case = $this->getTestCase();
@@ -121,7 +121,7 @@
          *    @access public
          *    @static
          */
-        function &instance() {
+        static function instance() {
             static $queue = false;
             if (! $queue) {
                 $queue = new SimpleErrorQueue();
@@ -137,7 +137,7 @@
          *    @access public
          *    @static
          */
-        function getSeverityAsString($severity) {
+         static function getSeverityAsString($severity) {
             static $map = array(
                     E_STRICT => 'E_STRICT',
                     E_ERROR => 'E_ERROR',
@@ -174,7 +174,7 @@
                 $label = SimpleErrorQueue::getSeverityAsString($severity);
                 error_log("$label: $message in $filename on line $line");
             }
-            $queue = &SimpleErrorQueue::instance();
+            $queue = SimpleErrorQueue::instance();
             $queue->add($severity, $message, $filename, $line, $super_globals);
             set_error_handler('simpleTestErrorHandler');
         }
