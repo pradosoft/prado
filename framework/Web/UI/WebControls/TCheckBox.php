@@ -143,7 +143,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	 */
 	public function setValue($value)
 	{
-		$this->setViewState('Value',$value,'');
+		$this->setViewState('Value',TPropertyValue::ensureString($value),'');
 	}
 
 	/**
