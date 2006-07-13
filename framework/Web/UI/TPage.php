@@ -146,6 +146,7 @@ class TPage extends TTemplateControl
 	/**
 	 * Constructor.
 	 * Sets the page object to itself.
+	 * Derived classes must call parent implementation.
 	 */
 	public function __construct()
 	{
