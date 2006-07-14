@@ -478,7 +478,7 @@
          */
         function _requireWithError($file) {
             $this->_enableErrorReporting();
-            include($file);
+            include_once($file);
             $error = isset($php_errormsg) ? $php_errormsg : false;
             $this->_disableErrorReporting();
             $self_inflicted_errors = array(
