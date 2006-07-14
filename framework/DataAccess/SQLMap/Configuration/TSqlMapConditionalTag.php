@@ -21,13 +21,13 @@ class TSqlMapConditionalTag extends TComponent
 	(
 		'isNull', 'isNotNull', 
 		'isEmpty', 'isNotEmpty'
-	)
+	);
 	
 	public static $ParameterChecks = array
 	(
 		'isPropertyAvailable', 'isPropertyNotAvailable',
 		'isParameterPresent', 'isParameterNotPresent'
-	)
+	);
 	
 	private $_tagName;
 	private $_prepend='';
@@ -67,7 +67,7 @@ class TSqlMapConditionalTag extends TComponent
 			return $this->evaluateUnary($context, $value);
 		else if(in_array($this->getTagName(), self::$ConditionalChecks))
 		{
-			$comparee = $this->getComparisonValue($parameter)
+			$comparee = $this->getComparisonValue($parameter);
 			return $this->evaluateConditional($context, $value, $comparee);
 		}
 		else

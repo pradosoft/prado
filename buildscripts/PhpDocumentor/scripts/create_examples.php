@@ -55,8 +55,8 @@ $output = array(
 	$output_directory.'/docs/phpdoc_DOM_default'		=> 'HTML:default:DOM/default',
 	$output_directory.'/docs/phpdoc_DOM_l0l33t'		=> 'HTML:default:DOM/l0l33t',
 	$output_directory.'/docs/phpdoc_DOM_phpdoc_de' 		=> 'HTML:default:DOM/phpdoc.de',
-	$output_directory.'/docs/phpdoc_smarty_default' 	=> 'HTML:Smarty:default'
-	$output_directory.'/docs/phpdoc_pdf_default' 		=> 'PDF:default:default'
+	$output_directory.'/docs/phpdoc_smarty_default' 	=> 'HTML:Smarty:default',
+	$output_directory.'/docs/phpdoc_pdf_default' 		=> 'PDF:default:default',
 	$output_directory.'/docs/phpdoc_chm_default' 		=> 'CHM:default:default'
 	);
 
