@@ -1,0 +1,122 @@
+\documentclass{book}
+\usepackage[pdftex]{graphicx}
+\usepackage[pdftex]{hyperref}
+
+\usepackage{fancyhdr,url}
+
+%---------- fonts Type 1 -----------------
+%\usepackage{times}
+%\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+
+%
+
+%------------------------Page set-up-----------------------------------------
+
+\renewcommand{\baselinestretch}{1.25}
+\setlength{\hoffset}{-1in}
+\setlength{\oddsidemargin}{3.5cm}
+\setlength{\evensidemargin}{3.5cm}
+\setlength{\topmargin}{0cm}
+\setlength{\footskip}{2cm}
+\setlength{\headheight}{14pt}
+\setlength{\marginparwidth}{0cm}
+\setlength{\marginparsep}{0cm}
+\setlength{\marginparpush}{0cm}
+\setlength{\textwidth}{15cm}
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{0.75\baselineskip}
+
+%------------------------------------------------------------------------------
+
+
+%---- change link style ----
+\hypersetup{colorlinks, linkcolor=blue, pdfstartview={FitH}}
+
+
+% Pages and Fancyheadings stuff
+%-----------------------------------------------------------------------
+\cfoot{\thepage}
+\fancyhead[LE,RO]{}
+\fancyhead[LO]{\nouppercase{\scshape\rightmark}}
+\fancyhead[RE]{\nouppercase{\scshape\leftmark}}
+%-----------------------------------------------------------------------
+
+%----------------- TITLE --------------
+
+\title{\Huge{\bfseries{Time Tracker}}\\ \LARGE A PRADO Application
+    \thanks{Copyright 2005-2006. All Rights Reserved.}
+}
+\author{Wei Zhuo}
+\date{\today}
+
+
+%-------------- BEGIN DOCUMENT ------------------
+
+
+\begin{document}
+
+\maketitle
+
+\pagestyle{plain}
+\addcontentsline{toc}{chapter}{Contents}
+\pagenumbering{roman}
+\tableofcontents
+
+\include{preface}
+
+\chapter*{License}
+\addcontentsline{toc}{chapter}{License}
+PRADO is free software released under the terms of the following BSD license.\\
+Copyright 2004-2006, The PRADO Group (http://www.pradosoft.com).
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+\begin{enumerate}
+	\item Redistributions of source code must retain the above copyright notice,
+this list of conditions and the following disclaimer.
+
+ \item Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.
+
+\item Neither the name of the PRADO Group nor the names of its contributors may
+be used to endorse or promote products derived from this software without
+specific prior written permission.
+\end{enumerate}
+
+\begin{verbatim}
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+\end{verbatim}
+
+
+\newpage
+
+\pagestyle{fancyplain}
+\pagenumbering{arabic}
+
+\include{ch1}
+\include{ch2}
+\include{ch3}
+\include{ch4}
+\include{ch5}
+\include{ch6}
+\include{ch7}
+\include{ch8}
+\include{ch9}
+\include{ch10}
+\include{ch11}
+\include{ch12}
+\include{ch13}
+
+\end{document}

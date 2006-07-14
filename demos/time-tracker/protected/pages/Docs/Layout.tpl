@@ -23,7 +23,7 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 <tr>
 <td valign="top" width="1">
-<com:Application.controls.TopicList ID="TopicPanel" />
+<com:Application.pages.Docs.TopicList ID="TopicPanel" />
 </td>
 <td valign="top">
 <div id="content">

@@ -4,5 +4,5 @@
   <paths>
     <alias id="Pages" path="." />
   </paths>
-  <pages MasterClass="Application.controls.Layout" Theme="PradoSoft" />
+  <pages MasterClass="Application.pages.Docs.Layout" />
 </configuration>
