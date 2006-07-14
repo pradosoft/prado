@@ -1,0 +1,73 @@
+<com:TContent ID="body">
+<h1>Writing a Unit Test</h1>
+<p>Unit testing is a useful tool when we want to start to test
+	our individual business logic classes.  
+	The <tt>tests/unit</tt> directory will be used to hold the unit test cases and <tt>tests/functional</tt> directory
+to hold the function test cases.
+</p>
+
+<h2>Write a unit test case</h2>
+<p>We will start be writing a very simple unit test case.</p>
+<com:TTextHighlighter Language="php" CssClass="source">
+&lt;?php
+class ProjectTestCase extends UnitTestCase
+{
+	function testProjectClassExists()
+	{
+		$project = new Project();
+		$this->pass();
+	}
+}
+?&gt;
+</com:TTextHighlighter>
+<p>Save the code as <tt>ProjectTestCase.php</tt> in the <tt>document_root/time-tracker/tests/unit/</tt>
+directory.</p>
+
+<h2>Run your first unit test case from your browser</h2>
+<p>Point your browser to your development server's unit test case runner, e.g.
+	<tt>http://web-server-address/time-tracker/tests/unit.php</tt>. You should see the following	
+<img src="<%~ unit_test1.png %>" class="figure"/>
+<div class="caption"><b>Figure 1:</b> Unit test runner</div>
+</p>
+<p>Clicking on the <tt>ProjectTestCase.php</tt> like, you should see 
+<img src="<%~ unit_test2.png %>" class="figure"/>
+<div class="caption"><b>Figure 2:</b> Unit test failure</div>
+</p>
+
+<h2>Smallest step to make the test pass.</h2>
+
+<p>Obviously, we need create the class <tt>Project</tt>, so lets define the class.</p>
+<com:TTextHighlighter Language="php" CssClass="source">
+&lt;?php
+class Project
+{
+}
+?&gt;
+</com:TTextHighlighter>
+<p>Save the above code as <tt>time-tracker/protected/pages/APP_CODE/Project.php</tt>.
+	Where the <tt>APP_CODE</tt> directory will contain most of your business logic code for the Time Tracker application.</p>
+<p>We also need to add the following line in our test case so as to include the <tt>Project</tt> class file when running the tests.</p>
+
+<p class="note">
+The statement <tt>Prado::using('Application.APP_CODE.Project')</tt> basically 
+loads the <tt>Project.php</tt> class file. It assumes that a class name <tt>Project</tt> has filename <tt>Project.php</tt>.
+For futher details regarding <tt>Prado::using</tt> can be found in <a href="http://www.pradosoft.com/demos/quickstart/index.php?page=Fundamentals.Components#704">Prado Namespaces</a> documentation.
+</p>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+&lt;?php
+Prado::using('Application.APP_CODE.Project');
+class ProjectTestCase extends UnitTestCase
+{
+	...
+}
+?&gt;
+</com:TTextHighlighter>
+<p>Run the unit test runner again, we see that the test has passed.
+	<img src="<%~ unit_test3.png %>" class="figure"/>
+	<div class="caption"><b>Figure 3:</b> Unit test success</div>
+</p>	
+<p>
+Later on, we shall write more test cases. See the SimpleTest documentation for detailed tutorial on writing test cases.</p>
+
+</com:TContent>

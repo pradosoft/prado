@@ -1,0 +1,3 @@
+timetracker_user_readonly_id 	= Time tracker user ID is read-only.
+invalid_creator_and_manager		= Unable to find time tracker usernames '{1}' and '{2}' for project '{0}'.
+project_exists					= Project '{0}' already exists.

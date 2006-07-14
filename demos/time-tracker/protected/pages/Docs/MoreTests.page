@@ -1,0 +1,140 @@
+<com:TContent ID="body">
+
+<h1>Finishing up test case</h1>
+<p>Up to this point, you should have the follow pieces of files and code.
+<img src=<%~ project1.png %> class="figure" />
+</p>
+
+<p>So what else can we test for at this point? A few reasonable
+tests are to see what happens if the project already exists, and what if
+the username does not exists.</p>
+
+<p>First we shall refactor our test code since much of the setup code 
+for the mocked connection will need to be repeated in other test assertions.
+We change the test case to have these three new methods.
+</p>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+function setupMockConnectionFor($project)
+{
+	$customer = new TimeTrackerUser();
+	$customer->ID = 1;
+	$customer->Name = "Customer A";
+	
+	$manager = new TimeTrackerUser();
+	$manager->ID = 2;
+	$manager->Name = "Manager A";
+	
+	$conn = $this->connection;
+	
+	//return the customer and manager
+	$conn->setReturnValue('queryForObject', 
+				$customer, array('GetUserByName', 'Customer A'));
+	$conn->setReturnValue('queryForObject', 
+				$manager, array('GetUserByName', 'Manager A'));
+	
+	//project does not exist
+	$conn->setReturnValue('queryForObject', 
+				null, array('GetProjectByName', 'Project 1'));
+	
+	$param['project'] = $project;
+	$param['creator'] = $customer->ID;
+	$param['manager'] = $manager->ID; 
+			
+	$conn->setReturnValue('insert', 
+				true, array('CreateNewProject', $param));
+	$conn->setReturnReference('queryForObject', 
+				$project, array('GetProjectByID', 1));	
+}
+
+function createNewTestProject()
+{
+	$project = new Project();
+	$project->Name = "Project 1";
+	$project->CreatorUserName = "Customer A";
+	$project->ManagerUserName = "Manager A";
+	
+	return $project;
+}
+
+function assertProjectCreated($project)
+{
+	$this->assertTrue($this->dao->createNewProject($project));		
+	$this->assertEqual($this->dao->getProjectByID(1), $project);
+}
+</com:TTextHighlighter>
+
+<p>Our refactored test method <tt>testProjectDaoCanCreateNewProject()</tt> 
+is as follows.</p>
+<com:TTextHighlighter Language="php" CssClass="source">
+function testProjectDaoCanCreateNewProject()
+{
+	$project = $this->createNewTestProject();
+
+	if(($conn = $this->connection) instanceof MockTSqlMapper)
+	{
+		$this->setupMockConnectionFor($project);
+		$conn->expectMinimumCallCount('queryForObject', 3);
+		$conn->expectAtLeastOnce('insert');
+	}
+	
+	$this->assertProjectCreated($project);	
+}
+</com:TTextHighlighter>
+
+<p>To test that the project already exists, we modify the mock
+connection and test for an exception.</p>
+<com:TTextHighlighter Language="php" CssClass="source">
+function testProjectExistsException()
+{
+	$project = $this->createNewTestProject();
+	
+	if(($conn = $this->connection) instanceof MockTSqlMapper)
+	{
+		//make the project exist
+		$conn->setReturnValue('queryForObject', 
+				$project, array('GetProjectByName', 'Project 1'));
+		$this->setupMockConnectionFor($project);
+	}
+	
+	try
+	{
+		$this->assertProjectCreated($project);		
+		$this->fail();
+	}
+	catch(TimeTrackerException $e)
+	{
+		$this->pass();
+	}
+}
+</com:TTextHighlighter>
+
+<p>Other test method for testing missing customer and manager users
+are done similarly. At this point, the test case file looks quite large.
+We shall not add more tests to this case and we should rename the file 
+from <tt>ProjectDaoTestCase.php</tt> to <tt>CreateNewProjectTestCase.php</tt>.
+
+<div class="note"><b class="tip">Note:</b>
+A heirachical exception class may be more useful in testing for specific
+exceptions. For simplicity, we decided to use only <tt>TimeTrackerException</tt>
+for this small project.
+</div>
+
+<div class="tip"><b class="tip">Tip:</b>Class, method and file naming is very
+important to any project, the name should inform you at first glance what
+is to be expected from the class, method or file. In addition, the naming
+scheme should be uniform over the project.
+</div>
+
+<div class="info"><b class="tip">Comment:</b>
+These test may be too ridget as any changes to the implementation may
+actually cause the tests to fail. This is the case with grey-box/white-box
+testing, you are actually testing the implementation. Black box tests may
+be more preferable, as it should only test the class interface (the method or 
+function details such as parameters and may be return values). However, 
+with the use of database connection to retrive data within the objects under test,
+it may be more suitable to do intergration tests.
+</div>
+
+</com:TContent>
+

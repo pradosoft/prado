@@ -1,0 +1,19 @@
+<com:TContent ID="body">
+<h1>Prado Time Tracker</h1>
+<p>This documentation is complete walk-through guide detailing the
+steps involved in implementating of the Prado Time Tracker web application.
+</p>
+<h2>Target Audience</h2>
+<p>The guide is intended for readers who has some experience
+using PHP version 5 and some basic concepts of Object-Oriented application
+design. The guide will assume that the reader understands the primary concepts
+of class, methods, class inheritance, and other basic features offered by PHP
+version 5 or later.</p>
+<h2>Questions and Comments</h2>
+<p>Readers are encouraged to ask questions as the forum regarding any
+particular aspect of this documentation. Comment and constructive criticisms
+are most welcome. Questions and comments may be directed at
+<a href="http://www.pradosoft.com/forum/">http://www.pradosoft.com/forum/</a>.
+</p>
+
+</com:TContent>

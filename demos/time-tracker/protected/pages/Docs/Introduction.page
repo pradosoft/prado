@@ -1,0 +1,64 @@
+<com:TContent ID="body">
+<h1>Introduction</h1>
+
+<p>The Time Tracker is a fully functional sample application designed to 
+	introduce you to many of Prado's features. This guide is a step by step
+	walkthrough starting from installation to deployment. The Time Tracker
+	application is based on the 
+	<a href="http://www.asp.net/downloads/starterkits/">ASP.NET's Time Tracker Starter Kit</a>.
+</p>
+
+<h1>Time Tracker Overview</h1>
+<p>The Time Tracker is a business web application for keeping track of hours spent
+on a project, with ability to handle multiple resources as well as multiple projects.</p>
+<h2>Basic Application Requirements</h2>
+<p>The functional requirements of the Time Tracker is based on the 
+	<a href="http://www.asp.net/downloads/starterkits/">ASP.NET's Time Tracker Starter Kit</a> 
+	description.</p>
+<p class="requirements">
+<h3>Create projects</h3>
+<ul>
+	<li>Define projection information like due dates, hours to complete, project
+		resources, and more.</li>
+	<li>Break down projects into tasks and track work on per-task basis.</li>
+</ul>
+<h3>Create and track tasks</h3>
+<ul>
+	<li>Track time spent each day by category and project.</li>
+</ul>
+<h3>Use reports to track progress</h3>
+<ul>
+	<li>Track overall progress across multiple projects, including estimated and actual work.</li>
+	<li>Track total work for team resources across multiple projects.</li>
+</ul>
+</p>
+
+<h2>Technologies and Design Approached Demonstrated</h2>
+<ul>
+	<li>Prado event-driven component framework</li>
+	<li>Separation of concerns: persistent storage, business logic, presentation</li>
+	<li>Object-Relational mapping using SQLMap</li>
+	<li>Unit testing and functional testing</li>
+	<li>Promote code reuse</li>
+</ul>
+
+<h1>Requirements</h1>
+<p>The Time Tracker web application requires the following software and knowledge.</p>
+<h2>Software requirements</h2>
+<p>It is assumed that you are able to obtain and install the following pieces of software.</p>
+<ol>
+	<li>PHP version 5.0.4 or greater</li>
+	<li>A web server, such as Apache, able to run PHP scripts</li>
+	<li>MySQL database server version 4.1 or greater (alternatively SQLite or Postgres)</li>
+	<li>Prado version 3.1 or later</li>	
+</ol>
+
+<p>In addition to software requirements, we assumed that you have some of the following knowledge.</p>
+<ul>
+	<li>Access the internet to download packaged code, and unzip these code.</li>
+	<li>Understand the basic concepts of Object-Oriented programming in PHP such as
+		classes, objects, methods, etc.</li>
+	<li>Basic understanding of relational databases and Structured Query Language (SQL).</li>
+	<li>Knows how to have fun, this is mandatory.</li>
+</ul>
+</com:TContent>

@@ -1,0 +1,210 @@
+<com:TContent ID="body">
+<h1>Using SQLMap Data Mapper</h1>
+<p>Before proceeding with write the code to pass the test in the previous section, we shall
+make a design decision. We shall use SQLMap as our data access layer. Note
+that <b>SQLMap is only available</b> offically in <b>Prado 3.1</b> or later.</p>
+
+<p>SQLMap is an PHP implemenation of an Object/Relational 
+data mapper. SQLMap has the following basic features:
+<ol>
+	<li>collects all the Structured Query Language
+(SQL) statements in an external XML file</li>
+	<li>Maps data return from database queries into PHP objects</li>
+	<li>Takes PHP objects as parameters in SQL queries</li>
+</ol>
+<p>SQLMap can be seen as a generic data mapper, rather than an
+Object Relational Mapping (ORM) solution.</p>
+
+<p>The SQLMap API consists of the following methods. See the <a href="sqlmap">SQLMap manual</a> 
+for further details.</p>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+/* Query API */
+public function queryForObject($statementName, $parameter=null, $result=null);
+public function queryForList($statementName, $parameter=null, $result=null,
+                                $skip=-1, $max=-1);
+public function queryForPagedList($statementName, $parameter=null, $pageSize=10);
+public function queryForMap($statementName, $parameter=null,
+                                $keyProperty=null, $valueProperty=null);
+public function insert($statementName, $parameter=null)
+public function update($statementName, $parameter=null)
+public function delete($statementName, $parameter=null)
+
+/* Connection API */
+public function openConnection()
+public function closeConnection()
+
+/* Transaction API */
+public function beginTransaction()
+public function commitTransaction()
+public function rollBackTransaction()
+</com:TTextHighlighter>
+
+<h2>Fetch and Inserting Data Using SQLMap</h2>
+<p>Back to our <tt>ProjectDao</tt> class, for testing we shall write the code
+assuming we have an SQLMap client instance. The SQLMap client or connection
+will be mocked or faked using a proxy. Later on, we shall extend our tests,
+to become an intergration test, to include
+a test database connection.</p>
+
+<h2>Creating a SQLMap connection</h2>
+<p>We can test the <tt>ProjectDao</tt> using mock objects (see SimpleTest documentation
+regarding mock objects) or using a real database connection. In PHP version
+5.0.x, the sqlite database client is bundled by default. For version 5.1 or later
+the sqlite database client is available as an extension. We shall use a sqlite
+database to conduct our unit tests because the database can be restored to
+the orginal state by just reloading the orginal database file.</p>
+
+<div class="info"><b class="tip">Comment:</b>
+Unit tests using mocked objects may be too ridget as we need to mock
+the connection object and thus the test is of the grey-box/white-box variaity.
+That is, you are actually testing the implementation of the object under test
+consideration. Thus, any changes to the implementation of the objects
+under tests may actually cause the tests to fail. Black box tests may
+be more preferable, as it should only test the class interface (the method or 
+function details such as parameters and may be return values). A further 
+disadvantage when using mocks for complex database connection is the complexity
+required in setting the mocks for testing.
+</div>
+
+<p>First, let us define the database table for projects.</p>
+<com:TTextHighlighter Language="sql" CssClass="source">
+Field               Type            Null
+----------------------------------------
+ProjectID           INTEGER         Yes
+Name                VARCHAR(255)    No
+Description         VARCHAR(255)    No
+CreationDate        INT             No
+Disabled            INT(1)          No
+EstimateDuration    INT             No
+CompletionDate      INT             No
+CreatorID           INTEGER         No
+ManagerID           INTEGER         Yes 
+</com:TTextHighlighter>	
+
+<p>The corresponding SQLite query to create the table is given below.</p>
+
+<com:TTextHighlighter Language="sql" CssClass="source">
+CREATE TABLE projects ( 
+	ProjectID INTEGER PRIMARY KEY, 
+	Name VARCHAR(255) NOT NULL, 
+	Description VARCHAR(255) NOT NULL, 
+	CreationDate INT NOT NULL, 
+	Disabled INT(1) NOT NULL, 
+	EstimateDuration INT NOT NULL, 
+	CompletionDate INT NOT NULL, 
+	CreatorID INTEGER NOT NULL, 
+	ManagerID INTEGER 
+);
+CREATE UNIQUE INDEX projects_Name ON projects(Name);
+CREATE INDEX project_name_index ON projects(Name);
+</com:TTextHighlighter>
+
+<h2>Testing with Mocked Database Connection</h2>
+<p>At this point, we have said nothing about databases. To create some unit tests
+for the <tt>ProjectDao</tt> class, we are not going to use real database connections
+but using a Mocked <tt>TSqlMapper</tt>. We modifiy the test as follows.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source">
+Prado::using('Application.APP_CODE.*');
+Prado::using('System.DataAccess.SQLMap.TSqlMapper');
+
+Mock::generate('TSqlMapper');
+
+class ProjectDaoTestCase extends UnitTestCase
+{
+	protected $dao;
+	protected $connection;
+	
+	function setup()
+	{
+		$this->dao= new ProjectDao();
+		$this->connection = new MockTSqlMapper($this);
+		$this->dao->setConnection($this->connection);
+	}
+
+	function testProjectDaoCanCreateNewProject()
+	{
+		$project = new Project();
+		$project->Name = "Project 1";
+
+		if(($conn = $this->connection) instanceof MockTSqlMapper)
+		{
+			$conn->expectOnce('insert', array('CreateNewProject', $project));
+			$conn->setReturnValue('insert', true);
+			
+			$conn->expectOnce('queryForObject', array('GetProjectByID', 1));
+			$conn->setReturnReference('queryForObject', $project);
+		}
+
+		$this->assertTrue($this->dao->createNewProject($project));		
+		$this->assertEqual($this->dao->getProjectByID(1), $project);
+	}
+}
+</com:TTextHighlighter>
+<p>The test code looks slight more complicated because later on we want to
+test the same assertions against some real data.</p>
+<p>
+In the first two lines above, we simply import the business code and the <tt>TSqlMapper</tt> class.
+We generate a <tt>MockTSqlMapper</tt>, a mock class or <tt>TSqlMapper</tt> using 
+<tt>Mock::generate('TSqlMapper')</tt>. The method <tt>Mock::generate()</tt> is available from
+the SimpleTest unit testing framework. An instance of <tt>MockTSqlMapper</tt>
+will be used as our test connection for the DAO objects. This allows us to interogate the
+internal workings of our <tt>ProjectDao</tt> class. 
+</p>
+
+<p>In the <tt>setup()</tt> (this method is called before every test method), we create an instance of 
+<tt>ProjectDao</tt> and set the connection to an instance of <tt>MockTSqlMapper</tt>.
+</p>
+
+<h2>Testing internal workings of ProjectDao</h2>
+
+<p>So how do we test the internal workings of the ProjectDao <tt>createNewProject</tt> method?
+First, we assume that the connection object will perform the correct database insertion and queries.
+Then, we set the return value of the MockTSqlMapper instance to return what we have assumed. 
+In addition, we expect that the TSqlMapper method <tt>queryForObject</tt> is called only once with 
+the parameters we have assumed (e.g. <tt>$project</tt>). See the SimpleTest tutorial for further details regarding
+unit testing with Mocks.
+</p>
+
+<p>In our assertions and expectations, we have
+<com:TTextHighlighter Language="php" CssClass="source">
+$conn->expectOnce('insert', array('CreateNewProject', $project));
+$conn->setReturnValue('insert', true);
+
+$this->assertTrue($this->dao->createNewProject($project));		
+</com:TTextHighlighter>
+This means that, we expect the <tt>createNewProject</tt> method in <tt>ProjectDao</tt>
+to call the TSqlMapper method <tt>insert</tt> with parameter <tt>$project</tt> only once.
+In addition, we <b>assume</b> that the returned value from the <tt>insert</tt> method of TSqlMapper
+returns <tt>true</tt>. Finally, we test the <tt>createNewProject</tt> method with an assertion.
+</p>
+
+<p>We now run the unit tests, we see that there are some failures or errors. Since we 
+have not created any code in <tt>ProjectDao</tt> that performs what we want, the tests will fail. 
+So lets make these test pass, we add some code to <tt>ProjectDao</tt> class. 
+
+<com:TTextHighlighter Language="php" CssClass="source">
+class ProjectDao extends BaseDao
+{
+	public function createNewProject($project)
+	{
+		$sqlmap = $this->getConnection();
+		return $sqlmap->insert('CreateNewProject', $project);	
+	} 
+	
+	public function getProjectByID($projectID)
+	{
+		$sqlmap = $this->getConnection();
+		return $sqlmap->queryForObject('GetProjectByID', $projectID);
+	}
+}
+</com:TTextHighlighter>
+</p>
+
+<p>If we run the unit tests again, we should see a green bar indicating that the tests have passed.
+We can now proceed further and add more tests. Of course, the above test does not cover many
+conditions, such as, <i>what happens if the project already exists?</i>, the details of these
+tests is the subject of the next section. The full test suite can be found in the source.
+</p>
+</com:TContent>

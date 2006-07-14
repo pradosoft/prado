@@ -1,0 +1,39 @@
+<com:TContent ID="body">
+<h1>Writing a Functional Web Test</h1>
+<p>In addition to unit testing, we shall also do some functional
+testing or web testing. Functional tests are, in this case, basically automated tests that will 
+interact with the overall web application, as if it was the user, while checking the output for correctness.
+The functional test tool we shall use here is based on <a href="http://selenium.openqa.org/">Selenium</a> where the test cases can be written and run using PHP and SimpleTest.
+</p>
+<com:TTextHighlighter>
+&lt;?php
+class HelloPradoTestCase extends SeleniumTestCase
+{
+	function test()
+	{
+		$this->open('../index.php');
+		$this->assertTextPresent('Welcome to Prado!');
+	}
+}
+?&gt;
+</com:TTextHighlighter>
+<p>Save the code as <tt>HelloPradoTestCase.php</tt> in the <tt>document_root/time-tracker/tests/functional/</tt>
+directory.</p>
+
+<p>
+Functional test cases are written very similar to unit test cases. The method such as 
+<tt>open($url)</tt> are those found in Selenium. All the methods available in Selenium are available.
+</p>
+
+<h2>Run your first unit test case from your browser</h2>
+<p>Point your browser to your development server's unit test case runner, e.g.
+	<tt>http://web-server-address/time-tracker/tests/functional.php</tt>. You should see the following	
+	<img src="<%~ functional_test1.png %>" class="figure"/>
+	<div class="caption"><b>Figure 4:</b> Functional test runner</div>
+</p>
+<p>Clicking on the <b>All</b> button, you should see
+	<img src="<%~ functional_test2.png %>" class="figure"/>
+	<div class="caption"><b>Figure 5:</b> Functional test success</div>
+</p>	 
+
+</com:TContent>
