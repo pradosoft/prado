@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+
+<sqlMap Name="PersonHelper">
+
+  <select id="Select" parameterClass="int" resultClass="Person">
+   select
+    PER_ID as ID,
+    PER_FIRST_NAME as FirstName,
+    PER_LAST_NAME as LastName,
+    PER_BIRTH_DATE as BirthDate,
+    PER_WEIGHT_KG as WeightInKilograms,
+    PER_HEIGHT_M as HeightInMeters
+    from PERSON
+	WHERE
+      PER_ID = #value#
+  </select>
+
+  <insert id="Insert" parameterClass="Person">
+   insert into PERSON 
+    (PER_ID, PER_FIRST_NAME, PER_LAST_NAME,
+    PER_BIRTH_DATE, PER_WEIGHT_KG, PER_HEIGHT_M)
+   values 
+    (#ID#, #FirstName#, #LastName#, 
+    #BirthDate#, #WeightInKilograms#, #HeightInMeters#)
+  </insert>
+
+  <update id="Update" parameterClass="Person">
+   update PERSON set
+    PER_FIRST_NAME = #FirstName#,
+    PER_LAST_NAME = #LastName#, 
+    PER_BIRTH_DATE = #BirthDate#,
+    PER_WEIGHT_KG = #WeightInKilograms#,
+    PER_HEIGHT_M = #HeightInMeters#
+   where PER_ID = #ID#
+  </update>
+
+  <delete id="Delete" parameterClass="int">
+   delete from PERSON
+   where PER_ID = #value#
+  </delete>
+
+</sqlMap>
