@@ -1,6 +1,6 @@
 <?php
 /**
- * Base DAO class file.
+ * Logout class file.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
@@ -11,34 +11,23 @@
  */
 
 /**
- * Base DAO class.
+ * Logout page class.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $16/07/2006: $
  * @package Demos
  * @since 3.1
  */
-class BaseDao
+class Logout extends TPage
 {
 	/**
-	 * @var TSqlMapper sqlmap client.
+	 * Logs out the current user and redirect to default page.
 	 */
-	private $_connection;
-	
-	/**
-	 * @param TSqlMapper sqlmap client.
-	 */
-	public function setConnection($connection)
+	function onLoad($param)
 	{
-		$this->_connection = $connection;
-	}
-	
-	/**
-	 * @return TSqlMapper sqlmap client.
-	 */
-	protected function getConnection()
-	{
-		return $this->_connection;
+		$this->Application->getModule('auth')->logout();
+		$url = $this->Service->constructUrl($this->Service->DefaultPage);
+		$this->Response->redirect($url);		
 	}
 }
 

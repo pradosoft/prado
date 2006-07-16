@@ -56,7 +56,7 @@ class TParameterMap extends TComponent
 		$typeHandler = $mapping->getTypeHandler();
 		try
 		{
-			$value = TPropertyAccess::get($parameterValue, $mapping->getProperty());		
+			$value = TPropertyAccess::get($parameterValue, $mapping->getProperty());	
 		}
 		catch (TInvalidPropertyException $e)
 		{

@@ -1,6 +1,6 @@
 <?php
 
-include_once '../../prado-trunk/tests/test_tools/unit_tests.php';
+include_once '../../../tests/test_tools/unit_tests.php';
 
 $app_directory = "../protected";
 $test_cases = dirname(__FILE__)."/unit";

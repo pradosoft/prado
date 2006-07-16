@@ -138,7 +138,7 @@ class CustomInheritance implements ITypeHandlerCallback
 		throw new TDataMapperException('not implemented');
 	}
 
-	public function createNewInstance()
+	public function createNewInstance($data=null)
 	{
 		throw new TDataMapperException('can not create');
 	}

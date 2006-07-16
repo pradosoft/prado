@@ -375,18 +375,23 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	 * @return object the object.
 	 * @see executeQueryForObject()
 	 */
-	public function runQueryForObject($connection, $sql, $result)
+	public function runQueryForObject($connection, $sql, &$result)
 	{
 		$recordSet = $this->executeSQLQuery($connection, $sql);
-		$object = $this->applyResultMap($recordSet->fetchRow(), $result);
 		
-		//get group by result
+		$object = null;
+		
+		while($row = $recordSet->fetchRow())
+			$object = $this->applyResultMap($row, $result);	
+
 		foreach($this->getGroupbyResults() as $group)
 			$object = $group->updateProperties();
+
 		$this->clearGroupByResults();
 
 		$this->executePostSelect($connection);
 		$this->onExecuteQuery($sql);
+		
 		return $object;
 	}
 
@@ -403,7 +408,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 
 		$sql = $this->_command->create($connection, $this->_statement, $parameter);
 
-		$this->executeSQLQuery($connection, $sql);
+		$result = $this->executeSQLQuery($connection, $sql);
 
 		if(is_null($generatedKey))
 			$generatedKey = $this->getPostGeneratedSelectKey($connection, $parameter);
@@ -525,7 +530,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	 * @param object the result object, will create if necessary.
 	 * @return object the result filled with data, null if not filled.
 	 */
-	protected function applyResultMap($row, $resultObject=null)
+	protected function applyResultMap($row, &$resultObject=null)
 	{
 		if($row === false) return null;
 
@@ -550,7 +555,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	protected function fillResultClass($resultClass, $row, $resultObject)
 	{
 		if(is_null($resultObject))
-			$resultObject = $this->_statement->createInstanceOfResultClass();
+			$resultObject = $this->_statement->createInstanceOfResultClass($row);
 
 		if($resultObject instanceOf ArrayAccess)
 			return $this->fillResultArrayList($row, $resultObject);
@@ -608,14 +613,13 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	 * @param object result object to fill, will create new instances if required.
 	 * @return object result object filled with data.
 	 */
-	protected function fillResultMap($resultMapName, $row, $resultObject)
+	protected function fillResultMap($resultMapName, $row, &$resultObject)
 	{
 		$resultMap = $this->_sqlMap->getResultMap($resultMapName);
 		$resultMap = $resultMap->resolveSubMap($row);
 
 		if(is_null($resultObject))
 			$resultObject = $resultMap->createInstanceOfResult();
-
 		if(is_object($resultObject))
 		{
 			if(strlen($resultMap->getGroupBy()) > 0)
@@ -641,20 +645,40 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	 * @see getGroupByResults()
 	 * @see runQueryForList()
 	 */
-	protected function addResultMapGroupBy($resultMap, $row, $resultObject)
+	protected function addResultMapGroupBy($resultMap, $row, &$resultObject)
 	{
 		$group = $this->getResultMapGroupKey($resultMap, $row, $resultObject);
+		
 		foreach($resultMap->getColumns() as $property)
 		{
-			$this->setObjectProperty($resultMap, $property, $row, $resultObject);
+			$scalar = $this->setObjectProperty($resultMap, $property, $row, $resultObject);
 			if(strlen($property->getResultMapping()) > 0)
 			{
 				$key = $property->getProperty();
-				$value = TPropertyAccess::get($resultObject, $key);
-				$this->_groupBy[$group]->addValue($key, $value);
+				$value = $this->extractGroupByValue($property, $resultObject);
+				if(!empty($value))
+					$this->_groupBy[$group]->addValue($key, $value);
 			}
 		}
+		
 		return null;
+	}
+	
+	/**
+	 * Extract value from the object for later adding to a GroupBy collection.
+	 * @param TResultProperty result property
+	 * @param mixed result object
+	 * @return mixed collection element
+	 */
+	protected function extractGroupByValue($property, $resultObject)
+	{
+		$key = $property->getProperty();	
+		$value = TPropertyAccess::get($resultObject, $key);
+		$type = strtolower($property->getType());
+		if(($type == 'array' || $type == 'map') && is_array($value) && count($value) == 1)
+			return $value[0];
+		else
+			return $value;
 	}
 
 	/**
@@ -747,7 +771,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	 * @param array a result set row retrieved from the database
 	 * @param object the result object
 	 */
-	protected function setObjectProperty($resultMap, $property, $row, $resultObject)
+	protected function setObjectProperty($resultMap, $property, $row, &$resultObject)
 	{
 		$select = $property->getSelect();
 		$key = $property->getProperty();
@@ -756,8 +780,12 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		if(strlen($select) == 0 && is_null($nested))
 		{
 			$value = $property->getDatabaseValue($row);
-			TPropertyAccess::set($resultObject, $key, $value);
+			
 			$this->_IsRowDataFound = $this->_IsRowDataFound || ($value != null);
+			if(is_array($resultObject) || is_object($resultObject))
+				TPropertyAccess::set($resultObject, $key, $value);
+			else
+				$resultObject = $value;
 		}
 		else if(!is_null($nested))
 		{
@@ -844,12 +872,12 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	 * @param object the result object
 	 * @return boolean true if the data was found, false otherwise.
 	 */
-	protected function fillPropertyWithResultMap($resultMap, $row, $resultObject)
+	protected function fillPropertyWithResultMap($resultMap, $row, &$resultObject)
 	{
 		$dataFound = false;
 		foreach($resultMap->getColumns() as $property)
 		{
-			$this->_IsRowDataFound = false;
+			$this->_IsRowDataFound = false;		
 			$this->setObjectProperty($resultMap, $property, $row, $resultObject);
 			$dataFound = $dataFound || $this->_IsRowDataFound;
 		}

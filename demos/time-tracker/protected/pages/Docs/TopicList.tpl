@@ -14,7 +14,7 @@
 
 <div>Testing Business Code</div>
 <ul>
-	<li><a href="?page=Docs.CreateBusinessCode">Create Business Code</a></li>
+	<li><a href="?page=Docs.DatabaseDesign">Database Design</a></li>
 	<li><a href="?page=Docs.UsingSQLMap">Using SQLMap Data Mapper</a></li>
 	<li><a href="?page=Docs.UserClassAndExceptions">User Class and Exceptions</a></li>
 	<li><a href="?page=Docs.MoreTests">More Tests</a></li>

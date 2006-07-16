@@ -13,9 +13,9 @@ $pages['Installation and Setup'] = array(
 );
 
 $pages['SQLMap for PHP Tutorial'] = array(
-	'Tutorial/TestFirst.page',
-	'Tutorial/TestSecond.page',
-	'Tutorial/TestAgain.page'
+	'Manual/Tutorial/TestFirst.page',
+	'Manual/Tutorial/TestSecond.page',
+	'Manual/Tutorial/TestAgain.page'
 );
 
 $pages['Using SQLMap DataMapper'] = array(

@@ -34,7 +34,15 @@ material applies to both implementations.
 SQLMap PHP Developer Guide.</p>
 
 <p>A Tutorial is also available. We recommend reviewing the Tutorial for your
-platform before reading this Guide.</p>
+platform before reading this Guide.
+
+<a href="?page=Tutorial.TestFirst">SQLMap Tutorial</a>
+<ul>
+	<li><a href="index.php?page=Sample.crud1">Tutorial 1 Sample</a></li>
+	<li><a href="index.php?page=Sample.crud2">Tutorial 2 Sample</a></li>
+	<li><a href="index.php?page=Sample.ProductList">Product List Sample</a></li>
+</ul>	
+</p>
 
 <h1>Support</h1>
 

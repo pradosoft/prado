@@ -1,6 +1,6 @@
 <?php
 
-include_once '../../prado-trunk\tests\test_tools\functional_tests.php';
+include_once '../../../tests/test_tools/functional_tests.php';
 
 $test_cases = dirname(__FILE__)."/functional";
 

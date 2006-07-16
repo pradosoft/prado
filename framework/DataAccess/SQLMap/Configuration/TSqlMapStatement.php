@@ -79,14 +79,14 @@ class TSqlMapStatement extends TComponent
 		return array(); //new TList;
 	}
 
-	protected function createInstanceOf($type)
+	protected function createInstanceOf($type,$row=null)
 	{
 		$handler = $this->_typeHandler->getTypeHandler($type);
 		
 		try
 		{
 			if(!is_null($handler))
-					return $handler->createNewInstance();		
+					return $handler->createNewInstance($row);		
 			else
 				return TTypeHandlerFactory::createInstanceOf($type);
 		}
@@ -99,10 +99,10 @@ class TSqlMapStatement extends TComponent
 					
 	}
 
-	public function createInstanceOfResultClass()
+	public function createInstanceOfResultClass($row)
 	{
 		if(strlen($type= $this->getResultClass()) > 0)
-			return $this->createInstanceOf($type);
+			return $this->createInstanceOf($type,$row);
 	}
 }
 

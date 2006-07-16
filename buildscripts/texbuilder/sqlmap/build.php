@@ -8,7 +8,7 @@ $pdfTex = "$pdflatexExec -interaction=nonstopmode -max-print-line=120 %s";
 $mainTexFile = dirname(__FILE__).'/sqlmap.tex';
 
 //page root location
-$base = realpath(dirname(__FILE__).'/../protected/pages/');
+$base = realpath(dirname(__FILE__).'/../../../demos/sqlmap/protected/pages/');
 
 //-------------- END CONFIG ------------------
 

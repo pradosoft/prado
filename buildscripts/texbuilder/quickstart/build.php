@@ -8,7 +8,7 @@ $pdfTex = "$pdflatexExec -interaction=nonstopmode -max-print-line=120 %s";
 $mainTexFile = dirname(__FILE__).'/quickstart.tex';
 
 //page root location
-$base = realpath(dirname(__FILE__).'/../../demos/quickstart/protected/pages/');
+$base = realpath(dirname(__FILE__).'/../../../demos/quickstart/protected/pages/');
 
 //-------------- END CONFIG ------------------
 

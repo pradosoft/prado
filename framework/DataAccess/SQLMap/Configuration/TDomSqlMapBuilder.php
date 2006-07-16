@@ -63,6 +63,9 @@ class TDomSqlMapBuilder
 		
 		if(isset($document->settings) && isset($document->settings->setting))
 			$this->configureSettings($document->settings);
+			
+		if(isset($document->typeHandler))
+			$this->loadTypeHandler($document, $this->_configFile);			
 
 		//load database provider
 		if(isset($document->provider) && isset($document->provider->datasource))
@@ -157,11 +160,19 @@ class TDomSqlMapBuilder
 	{
 		//$id = (string)$node['id'];
 		$class = (string)$providerNode['class'];
-		if(strlen($class) > 0 && class_exists($class,false))
+		if(strlen($class) > 0)
 		{
-			$provider = new $class;
-			$this->_deserialize->loadConfiguration($provider, $node,$file);
-			$this->_sqlMapper->setDataProvider($provider);
+			if(class_exists($class,false))
+			{
+				$provider = new $class;
+				$this->_deserialize->loadConfiguration($provider, $node,$file);
+				$this->_sqlMapper->setDataProvider($provider);
+			}
+			else
+			{
+				throw new TSqlMapConfigurationException(
+						'sqlmap_unable_find_provider_class_def', $file, $class);
+			}
 		}
 		else
 		{
@@ -170,11 +181,38 @@ class TDomSqlMapBuilder
 		}
 		//var_dump($node);
 	}
-/*
-	protected function loadTypeHandlers()
+
+	protected function loadTypeHandler($nodes, $file)
 	{
+		foreach($nodes->typeHandler as $node)
+		{
+			if(!is_null($node['type']) && !is_null($node['callback']))
+			{
+				$type = (string)$node['type'];
+				$class = (string)$node['callback'];
+				if(class_exists('Prado', false))
+				{
+					$handler = Prado::createComponent($class);
+				}
+				else
+				{
+					if(class_exists($class,false))
+						$handler = new $class;
+					else
+					throw new TSqlMapConfigurationException(
+							'sqlmap_type_handler_class_undef', $file, $class);
+				}
+				$factory = $this->_sqlMapper->getTypeHandlerFactory();
+				$factory->register($type, $handler);
+			}
+			else
+			{
+				throw new TSqlMapConfigurationException(
+					'sqlmap_type_handler_callback_undef', $file);
+			}
+		}
 	}
-*/
+
 	protected function loadSqlMappingFiles($sqlmappings)
 	{
 		foreach($sqlmappings->sqlMap as $node)

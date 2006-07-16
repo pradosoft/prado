@@ -1,21 +1,17 @@
 <?php
 
-$pages['preface'] = array(
-	'preface.page'
-	);
-
 //list page into chapters
 $pages['Getting Started'] = array(
-	'Introduction.page',
-	'GettingStarted.page',
-	'WritingUnitTest.page',
-	'WritingFunctionalTest.page'
+	'Docs/Introduction.page',
+	'Docs/GettingStarted.page',
+	'Docs/WritingUnitTest.page',
+	'Docs/WritingFunctionalTest.page'
 	);
 
 $pages['Testing Business Code'] = array(
-	'CreateBusinessCode.page',
-	'UsingSQLMap.page',
-	'UserClassAndExceptions.page'
+	'Docs/CreateBusinessCode.page',
+	'Docs/UsingSQLMap.page',
+	'Docs/UserClassAndExceptions.page'
 	);
 return $pages;
 

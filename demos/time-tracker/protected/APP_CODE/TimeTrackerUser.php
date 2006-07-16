@@ -1,31 +1,48 @@
 <?php
+/**
+ * TimeTrackerUser class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005-2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $16/07/2006: $
+ * @package Demos
+ */
 
+/**
+ * Import TUser and TUserManager
+ */
 Prado::using('System.Security.TUser');
 Prado::using('System.Security.TUserManager');
 
+/**
+ * User class for Time Tracker application.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $  $16/07/2006: $
+ * @package Demos
+ * @since 3.1
+ */
 class TimeTrackerUser extends TUser
 {
-	private $_ID;
+	private $_emailAddress;
 	
-	public function __construct()
+	/**
+	 * @param string user email address
+	 */
+	public function setEmailAddress($value)
 	{
-		parent::__construct(new TUserManager());
+		$this->_emailAddress = $value;
 	}
-		
-	public function getID(){ return $this->_ID; }
-	public function setID($value)
-	{ 
-		if(is_null($this->_ID))
-			$this->_ID = $value;
-		else
-			throw new TimeTrackerUserException(
-				'timetracker_user_readonly_id');
-	}
-}
-
-class TimeTrackerUserException extends TimeTrackerException
-{
 	
+	/**
+	 * @return string user email address
+	 */
+	public function getEmailAddress()
+	{
+		return $this->_emailAddress;
+	}
 }
 
 ?>

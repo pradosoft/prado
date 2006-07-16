@@ -55,8 +55,10 @@ class TTypeHandlerFactory
 				case 'integer': case 'int': return 0;
 				case 'bool': case 'boolean': return false;
 			}
-				
-			if(class_exists($type, false)) //NO auto loading
+			
+			if(class_exists('Prado', false))
+				return Prado::createComponent($type);
+			else if(class_exists($type, false)) //NO auto loading
 				return new $type;
 			else
 				throw new TDataMapperException('sqlmap_unable_to_find_class', $type);
@@ -125,10 +127,10 @@ interface ITypeHandlerCallback
 	 * for this type (e.g. File type), you can simply return the String representation
 	 * as it was passed in.  It is not recommended to return null, unless null was passed
 	 * in.
-	 * @param string nullValue.
+	 * @param array result row.
 	 * @return mixed
 	 */
-	public function createNewInstance();
+	public function createNewInstance($row=null);
 }
 
 ?>

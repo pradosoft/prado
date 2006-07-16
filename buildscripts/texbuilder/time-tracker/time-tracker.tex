@@ -42,6 +42,17 @@
 \fancyhead[RE]{\nouppercase{\scshape\leftmark}}
 %-----------------------------------------------------------------------
 
+
+% boxes
+
+\newsavebox{\fmboxb}
+\newenvironment{mybox}
+    {\vspace{-2mm}\begin{center}\begin{lrbox}{\fmboxb}\hspace{2mm}
+        \begin{minipage}{0.85\textwidth} \vspace{2mm}\small}
+    {  \vspace{2mm} \end{minipage}
+    \hspace{2mm}\end{lrbox}\fbox{\usebox{\fmboxb}}\end{center}}
+
+
 %----------------- TITLE --------------
 
 \title{\Huge{\bfseries{Time Tracker}}\\ \LARGE A PRADO Application

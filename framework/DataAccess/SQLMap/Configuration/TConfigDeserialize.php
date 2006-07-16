@@ -104,6 +104,7 @@ class TConfigDeserialize
 	public function resultMap($node, $sqlMap, $file)
 	{
 		$resultMap = new TResultMap;
+		$resultMap->initialize($sqlMap);
 		$this->loadConfiguration($resultMap, $node, $file);
 		foreach($node->result as $result)
 		{

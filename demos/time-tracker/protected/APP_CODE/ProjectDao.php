@@ -1,10 +1,26 @@
 <?php
+/**
+ * Project DAO class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005-2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: $  $16/07/2006: $
+ * @package Demos
+ */
 
-Prado::using('Application.APP_CODE.BaseDao');
-
+/**
+ * Project DAO class.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $  $16/07/2006: $
+ * @package Demos
+ * @since 3.1
+ */
 class ProjectDao extends BaseDao
 {
-	public function createNewProject($project)
+/*	public function createNewProject($project)
 	{
 		$sqlmap = $this->getConnection();
 		$creator = $sqlmap->queryForObject('GetUserByName', $project->CreatorUserName);
@@ -71,6 +87,7 @@ class ProjectDao extends BaseDao
 			return $sqlmap->insert('AddUserToProject', $param);
 		}	
 	}
+*/
 }
 
 ?>

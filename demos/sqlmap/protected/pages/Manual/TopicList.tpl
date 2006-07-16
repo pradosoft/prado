@@ -16,9 +16,9 @@
 
 <div>SQLMap for PHP Tutorial</div>
 <ul>
-	<li><a href="?page=Tutorial.TestFirst">Test First!</a></li>
-	<li><a href="?page=Tutorial.TestSecond">Playtest second!</a></li>
-	<li><a href="?page=Tutorial.TestAgain">Test, test, again ...</a></li>
+	<li><a href="?page=Manual.Tutorial.TestFirst">Test First!</a></li>
+	<li><a href="?page=Manual.Tutorial.TestSecond">Playtest second!</a></li>
+	<li><a href="?page=Manual.Tutorial.TestAgain">Test, test, again ...</a></li>
 </ul>
 
 <div>Using SQLMap DataMapper</div>

@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <configuration>
-  <paths>
-    <alias id="Pages" path="." />
-  </paths>
-  <pages MasterClass="Application.pages.Docs.Layout" />
+
+    <modules>
+        <module id="theme"
+                class="System.Web.UI.TThemeManager"
+                BasePath="Quickstart.themes"
+                BaseUrl="../quickstart/themes" />
+    </modules>
+  <pages MasterClass="Application.pages.Docs.Layout" Theme="PradoSoft"/>
 </configuration>

@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <application id="Database" Mode="Debug">
   <paths>
-	<alias id="Example" path="business-objects" />
+	<alias id="Example" path="APP_CODE" />
+	<alias id="Quickstart" path="../../quickstart" />
+	<using namespace="Quickstart.protected.controls.*" />
   </paths>
-  <modules>
-  	<module id="cache" class="System.Caching.TSqliteCache" />
-  	<module id="petshop-sqlmap" 
-  			enableConfigCache="true"
-  			class="System.DataAccess.TSQLMap" 
-  			configFile="Application.petshop-sqlmap" />
-  	<module id="person-sample"
-  			class="System.DataAccess.TSQLMap"
-  			configFile="Application.person-sqlmap" />
-  </modules>
+  <services>
+    <service id="page" class="TPageService" DefaultPage="Manual.Overview" />
+  </services>  
 </application>

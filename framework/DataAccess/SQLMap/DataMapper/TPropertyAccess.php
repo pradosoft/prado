@@ -39,7 +39,7 @@ class TPropertyAccess
 	 */
 	public static function get($object,$path)
 	{
-		if(!is_array($object) || !is_object($object))
+		if(!is_array($object) && !is_object($object))
 			return $object;
 		$properties = explode('.', $path);
 		foreach($properties as $prop)
@@ -49,7 +49,7 @@ class TPropertyAccess
 				if(isset($object[$prop]))
 					$object = $object[$prop];
 				else
-					throw new TInvalidPropertyException('sqlmap_invalid_property',$path);
+					throw new TInvalidPropertyException('sqlmap_invalid_property',$path);					
 			}
 			else if(is_object($object))
 			{
@@ -69,7 +69,7 @@ class TPropertyAccess
 
 	public static function has($object, $path)
 	{
-		if(!is_array($object) || !is_object($object))
+		if(!is_array($object) && !is_object($object))
 			return false;
 		$properties = explode('.', $path);
 		foreach($properties as $prop)

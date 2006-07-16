@@ -8,6 +8,7 @@ class TResultMap extends TComponent
 	private $_extendMap='';
 	private $_groupBy='';
 	private $_discriminator=null;
+	private $_typeHandlerFactory=null;
 
 	public function __construct()
 	{
@@ -32,6 +33,11 @@ class TResultMap extends TComponent
 	public function getDiscriminator(){ return $this->_discriminator; }
 	public function setDiscriminator($value){ $this->_discriminator = $value; }
 
+	public function initialize($sqlMap, $resultMap=null)
+	{
+		$this->_typeHandlerFactory = $sqlMap->getTypeHandlerFactory();
+	}
+
 	public function addResultProperty(TResultProperty $property)
 	{
 		$this->_columns->add($property->getProperty(), $property);
@@ -39,7 +45,21 @@ class TResultMap extends TComponent
 	
 	public function createInstanceOfResult()
 	{
-		return TTypeHandlerFactory::createInstanceOf($this->getClass());
+		$handler = $this->_typeHandlerFactory->getTypeHandler($this->getClass());
+
+		try
+		{
+			if(!is_null($handler))
+					return $handler->createNewInstance();		
+			else
+				return TTypeHandlerFactory::createInstanceOf($this->getClass());
+		}
+		catch (TDataMapperException $e)
+		{
+			throw new TSqlMapExecutionException(
+				'sqlmap_unable_to_create_new_instance', 
+					$this->getClass(), get_class($handler), $this->getID());
+		}
 	}
 
 	public function resolveSubMap($row)

@@ -175,7 +175,7 @@ class HundredsBool implements ITypeHandlerCallback
 			return 200;
 	}
 
-	public function createNewInstance()
+	public function createNewInstance($data=null)
 	{
 		throw new TDataMapperException('can not create');
 	}
@@ -203,7 +203,7 @@ class OuiNonBool implements ITypeHandlerCallback
 			return self::NO;
 	}
 
-	public function createNewInstance()
+	public function createNewInstance($data=null)
 	{
 		throw new TDataMapperException('can not create');
 	}
@@ -225,7 +225,7 @@ class TDateTimeHandler implements ITypeHandlerCallback
 			return $parameter;
 	}
 
-	public function createNewInstance()
+	public function createNewInstance($data=null)
 	{
 		return new TDateTime;
 	}
