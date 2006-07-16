@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMapConfig>
+	
+	<typeHandler type="TimeTrackerUser" 
+		callback="TimeTrackerUserTypeHandler"/>
+	
+    <provider class="TAdodb">
+        <datasource 
+        	driver="mysql"
+        	username="time-tracker"
+        	password="prado"
+        	host="localhost"
+        	database="time-tracker" />
+    </provider>
+    
+    <sqlMaps>
+        <sqlMap resource="users.xml"/>
+		<sqlMap resource="project.xml"/>
+    </sqlMaps>
+    
+</sqlMapConfig>

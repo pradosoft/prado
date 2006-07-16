@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<application id="Database" Mode="Debug">
+
+  <!-- configure to use Quickstart theme directory -->
+  <paths>
+	<alias id="Quickstart" path="../../quickstart" />
+	<using namespace="Quickstart.protected.controls.*" />
+	<using namespace="System.DataAccess.*" />
+	<using namespace="System.Security.*" />
+	<using namespace="Application.App_Code.*" />
+  </paths>
+  <modules>
+  	<module id="sqlmap" class="TSQLMap"
+  		configFile="Application.App_Data.mysql-sqlmap" />
+	<module id="daos" class="DaoManager" Connection="sqlmap">
+		<dao id="UserDao" class="Application.App_Code.UserDao" />
+		<dao id="ProjectDao" class="Application.App_Code.ProjectDao" />
+	</module>
+  </modules>
+  <services>
+    <service id="page" class="TPageService" DefaultPage="TimeTracker.UserList"/>
+  </services>    
+ </application>
