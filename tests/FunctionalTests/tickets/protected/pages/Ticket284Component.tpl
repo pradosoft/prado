@@ -1,0 +1,94 @@
+<com:TDatePicker ID="datePicker"
+	Style.width="68px"
+	Mode="ImageButton"
+	DateFormat="MM/dd/yyyy" />
+
+<com:TDropDownList ID="hourPicker" Style.width="40px" Visible="false">
+	<com:TListItem Text="00" Value="00" />
+	<com:TListItem Text="01" Value="01" />
+	<com:TListItem Text="02" Value="02" />
+	<com:TListItem Text="03" Value="03" />
+	<com:TListItem Text="04" Value="04" />
+	<com:TListItem Text="05" Value="05" />
+	<com:TListItem Text="06" Value="06" />
+	<com:TListItem Text="07" Value="07" />
+	<com:TListItem Text="08" Value="08" />
+	<com:TListItem Text="09" Value="09" />
+	<com:TListItem Text="10" Value="10" />
+	<com:TListItem Text="11" Value="11" />
+	<com:TListItem Text="12" Value="12" />
+	<com:TListItem Text="13" Value="13" />
+	<com:TListItem Text="14" Value="14" />
+	<com:TListItem Text="15" Value="15" />
+	<com:TListItem Text="16" Value="16" />
+	<com:TListItem Text="17" Value="17" />
+	<com:TListItem Text="18" Value="18" />
+	<com:TListItem Text="19" Value="19" />
+	<com:TListItem Text="20" Value="20" />
+	<com:TListItem Text="21" Value="21" />
+	<com:TListItem Text="22" Value="22" />
+	<com:TListItem Text="23" Value="23" />	
+</com:TDropDownList>
+
+<com:TDropDownList ID="minutePicker" Style.width="40px" Visible="false">
+	<com:TListItem Text="00" Value="00" />
+	<com:TListItem Text="01" Value="01" />
+	<com:TListItem Text="02" Value="02" />
+	<com:TListItem Text="03" Value="03" />
+	<com:TListItem Text="04" Value="04" />
+	<com:TListItem Text="05" Value="05" />
+	<com:TListItem Text="06" Value="06" />
+	<com:TListItem Text="07" Value="07" />
+	<com:TListItem Text="08" Value="08" />
+	<com:TListItem Text="09" Value="09" />
+	<com:TListItem Text="10" Value="10" />
+	<com:TListItem Text="11" Value="11" />
+	<com:TListItem Text="12" Value="12" />
+	<com:TListItem Text="13" Value="13" />
+	<com:TListItem Text="14" Value="14" />
+	<com:TListItem Text="15" Value="15" />
+	<com:TListItem Text="16" Value="16" />
+	<com:TListItem Text="17" Value="17" />
+	<com:TListItem Text="18" Value="18" />
+	<com:TListItem Text="19" Value="19" />
+	<com:TListItem Text="20" Value="20" />
+	<com:TListItem Text="21" Value="21" />
+	<com:TListItem Text="22" Value="22" />
+	<com:TListItem Text="23" Value="23" />
+	<com:TListItem Text="24" Value="24" />
+	<com:TListItem Text="25" Value="25" />
+	<com:TListItem Text="26" Value="26" />
+	<com:TListItem Text="27" Value="27" />
+	<com:TListItem Text="28" Value="28" />
+	<com:TListItem Text="29" Value="29" />
+	<com:TListItem Text="30" Value="30" />
+	<com:TListItem Text="31" Value="31" />
+	<com:TListItem Text="32" Value="32" />
+	<com:TListItem Text="33" Value="33" />
+	<com:TListItem Text="34" Value="34" />
+	<com:TListItem Text="35" Value="35" />
+	<com:TListItem Text="36" Value="36" />
+	<com:TListItem Text="37" Value="37" />
+	<com:TListItem Text="38" Value="38" />
+	<com:TListItem Text="39" Value="39" />
+	<com:TListItem Text="40" Value="40" />
+	<com:TListItem Text="41" Value="41" />
+	<com:TListItem Text="42" Value="42" />
+	<com:TListItem Text="43" Value="43" />
+	<com:TListItem Text="44" Value="44" />
+	<com:TListItem Text="45" Value="45" />
+	<com:TListItem Text="46" Value="46" />
+	<com:TListItem Text="47" Value="47" />
+	<com:TListItem Text="48" Value="48" />
+	<com:TListItem Text="49" Value="49" />
+	<com:TListItem Text="50" Value="50" />
+	<com:TListItem Text="51" Value="51" />
+	<com:TListItem Text="52" Value="52" />
+	<com:TListItem Text="53" Value="53" />
+	<com:TListItem Text="54" Value="54" />
+	<com:TListItem Text="55" Value="55" />
+	<com:TListItem Text="56" Value="56" />
+	<com:TListItem Text="57" Value="57" />
+	<com:TListItem Text="58" Value="58" />
+	<com:TListItem Text="59" Value="59" />
+</com:TDropDownList>

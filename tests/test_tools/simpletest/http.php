@@ -3,222 +3,16 @@
      *	base include file for SimpleTest
      *	@package	SimpleTest
      *	@subpackage	WebTester
-     *	@version	$Id: http.php,v 1.98 2005/02/02 23:25:23 lastcraft Exp $
+     *	@version	$Id: http.php,v 1.112 2005/12/07 18:04:58 lastcraft Exp $
      */
 
     /**#@+
      *	include other SimpleTest class files
      */
     require_once(dirname(__FILE__) . '/socket.php');
+    require_once(dirname(__FILE__) . '/cookies.php');
     require_once(dirname(__FILE__) . '/url.php');
     /**#@-*/
-    
-    /**
-     *    Cookie data holder. Cookie rules are full of pretty
-     *    arbitary stuff. I have used...
-     *    http://wp.netscape.com/newsref/std/cookie_spec.html
-     *    http://www.cookiecentral.com/faq/
-	 *    @package SimpleTest
-	 *    @subpackage WebTester
-     */
-    class SimpleCookie {
-        protected $_host;
-        protected $_name;
-        protected $_value;
-        protected $_path;
-        protected $_expiry;
-        protected $_is_secure;
-        
-        /**
-         *    Constructor. Sets the stored values.
-         *    @param string $name            Cookie key.
-         *    @param string $value           Value of cookie.
-         *    @param string $path            Cookie path if not host wide.
-         *    @param string $expiry          Expiry date as string.
-         *    @param boolean $is_secure      Currently ignored.
-         */
-        function SimpleCookie($name, $value = false, $path = false, $expiry = false, $is_secure = false) {
-            $this->_host = false;
-            $this->_name = $name;
-            $this->_value = $value;
-            $this->_path = ($path ? $this->_fixPath($path) : "/");
-            $this->_expiry = false;
-            if (is_string($expiry)) {
-                $this->_expiry = strtotime($expiry);
-            } elseif (is_integer($expiry)) {
-                $this->_expiry = $expiry;
-            }
-            $this->_is_secure = $is_secure;
-        }
-        
-        /**
-         *    Sets the host. The cookie rules determine
-         *    that the first two parts are taken for
-         *    certain TLDs and three for others. If the
-         *    new host does not match these rules then the
-         *    call will fail.
-         *    @param string $host       New hostname.
-         *    @return boolean           True if hostname is valid.
-         *    @access public
-         */
-        function setHost($host) {
-            if ($host = $this->_truncateHost($host)) {
-                $this->_host = $host;
-                return true;
-            }
-            return false;
-        }
-        
-        /**
-         *    Accessor for the truncated host to which this
-         *    cookie applies.
-         *    @return string       Truncated hostname.
-         *    @access public
-         */
-        function getHost() {
-            return $this->_host;
-        }
-        
-        /**
-         *    Test for a cookie being valid for a host name.
-         *    @param string $host    Host to test against.
-         *    @return boolean        True if the cookie would be valid
-         *                           here.
-         */
-        function isValidHost($host) {
-            return ($this->_truncateHost($host) === $this->getHost());
-        }
-        
-        /**
-         *    Extracts just the domain part that determines a
-         *    cookie's host validity.
-         *    @param string $host    Host name to truncate.
-         *    @return string        Domain or false on a bad host.
-         *    @access private
-         */
-        function _truncateHost($host) {
-            $tlds = SimpleUrl::getAllTopLevelDomains();
-            if (preg_match('/[a-z\-]+\.(' . $tlds . ')$/i', $host, $matches)) {
-                return $matches[0];
-            } elseif (preg_match('/[a-z\-]+\.[a-z\-]+\.[a-z\-]+$/i', $host, $matches)) {
-                return $matches[0];
-            }
-            return false;
-        }
-        
-        /**
-         *    Accessor for name.
-         *    @return string       Cookie key.
-         *    @access public
-         */
-        function getName() {
-            return $this->_name;
-        }
-        
-        /**
-         *    Accessor for value. A deleted cookie will
-         *    have an empty string for this.
-         *    @return string       Cookie value.
-         *    @access public
-         */
-        function getValue() {
-            return $this->_value;
-        }
-        
-        /**
-         *    Accessor for path.
-         *    @return string       Valid cookie path.
-         *    @access public
-         */
-        function getPath() {
-            return $this->_path;
-        }
-        
-        /**
-         *    Tests a path to see if the cookie applies
-         *    there. The test path must be longer or
-         *    equal to the cookie path.
-         *    @param string $path       Path to test against.
-         *    @return boolean           True if cookie valid here.
-         *    @access public
-         */
-        function isValidPath($path) {
-            return (strncmp(
-                    $this->_fixPath($path),
-                    $this->getPath(),
-                    strlen($this->getPath())) == 0);
-        }
-        
-        /**
-         *    Accessor for expiry.
-         *    @return string       Expiry string.
-         *    @access public
-         */
-        function getExpiry() {
-            if (! $this->_expiry) {
-                return false;
-            }
-            return gmdate("D, d M Y H:i:s", $this->_expiry) . " GMT";
-        }
-        
-        /**
-         *    Test to see if cookie is expired against
-         *    the cookie format time or timestamp.
-         *    Will give true for a session cookie.
-         *    @param integer/string $now  Time to test against. Result
-         *                                will be false if this time
-         *                                is later than the cookie expiry.
-         *                                Can be either a timestamp integer
-         *                                or a cookie format date.
-         *    @access public
-         */
-        function isExpired($now) {
-            if (! $this->_expiry) {
-                return true;
-            }
-            if (is_string($now)) {
-                $now = strtotime($now);
-            }
-            return ($this->_expiry < $now);
-        }
-        
-        /**
-         *    Ages the cookie by the specified number of
-         *    seconds.
-         *    @param integer $interval   In seconds.
-         *    @public
-         */
-        function agePrematurely($interval) {
-            if ($this->_expiry) {
-                $this->_expiry -= $interval;
-            }
-        }
-        
-        /**
-         *    Accessor for the secure flag.
-         *    @return boolean       True if cookie needs SSL.
-         *    @access public
-         */
-        function isSecure() {
-            return $this->_is_secure;
-        }
-        
-        /**
-         *    Adds a trailing and leading slash to the path
-         *    if missing.
-         *    @param string $path            Path to fix.
-         *    @access private
-         */
-        function _fixPath($path) {
-            if (substr($path, 0, 1) != '/') {
-                $path = '/' . $path;
-            }
-            if (substr($path, -1, 1) != '/') {
-                $path .= '/';
-            }
-            return $path;
-        }
-    }
     
     /**
      *    Creates HTTP headers for the end point of
@@ -278,7 +72,7 @@
          *    @return SimpleSocket       New socket.
          *    @access public
          */
-        function createConnection($method, $timeout) {
+        function &createConnection($method, $timeout) {
             $default_port = ('https' == $this->_url->getScheme()) ? 443 : 80;
             $socket = $this->_createSocket(
                     $this->_url->getScheme() ? $this->_url->getScheme() : 'http',
@@ -302,11 +96,13 @@
          *    @return SimpleSocket/SimpleSecureSocket New socket.
          *    @access protected
          */
-        function _createSocket($scheme, $host, $port, $timeout) {
+        function &_createSocket($scheme, $host, $port, $timeout) {
             if (in_array($scheme, array('https'))) {
-                return new SimpleSecureSocket($host, $port, $timeout);
+                $socket = new SimpleSecureSocket($host, $port, $timeout);
+            } else {
+                $socket = new SimpleSocket($host, $port, $timeout);
             }
-            return new SimpleSocket($host, $port, $timeout);
+            return $socket;
         }
     }
     
@@ -370,22 +166,23 @@
          *    @return SimpleSocket        New socket.
          *    @access public
          */
-        function createConnection($method, $timeout) {
+        function &createConnection($method, $timeout) {
             $socket = $this->_createSocket(
                     $this->_proxy->getScheme() ? $this->_proxy->getScheme() : 'http',
                     $this->_proxy->getHost(),
                     $this->_proxy->getPort() ? $this->_proxy->getPort() : 8080,
                     $timeout);
-            if (! $socket->isError()) {
-                $socket->write($this->_getRequestLine($method) . "\r\n");
-                $socket->write($this->_getHostLine() . "\r\n");
-                if ($this->_username && $this->_password) {
-                    $socket->write('Proxy-Authorization: Basic ' .
-                            base64_encode($this->_username . ':' . $this->_password) .
-                            "\r\n");
-                }
-                $socket->write("Connection: close\r\n");
+            if ($socket->isError()) {
+                return $socket;
             }
+            $socket->write($this->_getRequestLine($method) . "\r\n");
+            $socket->write($this->_getHostLine() . "\r\n");
+            if ($this->_username && $this->_password) {
+                $socket->write('Proxy-Authorization: Basic ' .
+                        base64_encode($this->_username . ':' . $this->_password) .
+                        "\r\n");
+            }
+            $socket->write("Connection: close\r\n");
             return $socket;
         }
     }
@@ -398,42 +195,41 @@
      */
     class SimpleHttpRequest {
         protected $_route;
-        protected $_method;
         protected $_encoding;
         protected $_headers;
         protected $_cookies;
         
         /**
-         *    Saves the URL ready for fetching.
-         *    @param SimpleRoute $route   Request route.
-         *    @param string $method                  HTTP request method,
-         *                                           usually GET.
+         *    Builds the socket request from the different pieces.
+         *    These include proxy information, URL, cookies, headers,
+         *    request method and choice of encoding.
+         *    @param SimpleRoute $route              Request route.
          *    @param SimpleFormEncoding $encoding    Content to send with
-         *                                           request or false.
+         *                                           request.
          *    @access public
          */
-        function SimpleHttpRequest($route, $method, $encoding = false) {
+        function SimpleHttpRequest($route, $encoding) {
             $this->_route = $route;
-            $this->_method = $method;
             $this->_encoding = $encoding;
             $this->_headers = array();
             $this->_cookies = array();
         }
         
         /**
-         *    Fetches the content and parses the headers.
+         *    Dispatches the content to the route's socket.
          *    @param integer $timeout      Connection timeout.
          *    @return SimpleHttpResponse   A response which may only have
-         *                                 an error.
+         *                                 an error, but hopefully has a
+         *                                 complete web page.
          *    @access public
          */
-        function fetch($timeout) {
-            $socket = $this->_route->createConnection($this->_method, $timeout);
-            if ($socket->isError()) {
-                return $this->_createResponse($socket);
+        function &fetch($timeout) {
+            $socket = $this->_route->createConnection($this->_encoding->getMethod(), $timeout);
+            if (! $socket->isError()) {
+                $this->_dispatchRequest($socket, $this->_encoding);
             }
-            $this->_dispatchRequest($socket, $this->_method, $this->_encoding);
-            return $this->_createResponse($socket);
+            $response = $this->_createResponse($socket);
+            return $response;
         }
         
         /**
@@ -444,38 +240,21 @@
          *    @param SimpleFormEncoding $encoding   Content to send with request.
          *    @access private
          */
-        function _dispatchRequest($socket, $method, $encoding) {
-            if ($encoding || ($method == 'POST')) {
-                $socket->write("Content-Length: " . $this->_getContentLength($encoding) . "\r\n");
-                $socket->write("Content-Type: application/x-www-form-urlencoded\r\n");
-            }
+        function _dispatchRequest($socket, $encoding) {
             foreach ($this->_headers as $header_line) {
                 $socket->write($header_line . "\r\n");
             }
             if (count($this->_cookies) > 0) {
-                $socket->write("Cookie: " . $this->_marshallCookies($this->_cookies) . "\r\n");
+                $socket->write("Cookie: " . implode(";", $this->_cookies) . "\r\n");
             }
+            $encoding->writeHeadersTo($socket);
             $socket->write("\r\n");
-            if ($encoding) {
-                $socket->write($encoding->asString());
-            }
-        }
-        
-        /**
-         *    Calculates the length of the encoded content.
-         *    @param SimpleFormEncoding $encoding   Content to send with
-         *                                          request or false.
-         */
-        function _getContentLength($encoding) {
-            if (! $encoding) {
-                return 0;
-            }
-            return (integer)strlen($encoding->asString());
+            $encoding->writeTo($socket);
         }
         
         /**
          *    Adds a header line to the request.
-         *    @param string $header_line    Text of header line.
+         *    @param string $header_line    Text of full header line.
          *    @access public
          */
         function addHeaderLine($header_line) {
@@ -483,27 +262,14 @@
         }
         
         /**
-         *    Adds a cookie to the request.
-         *    @param SimpleCookie $cookie   Additional cookie.
+         *    Reads all the relevant cookies from the
+         *    cookie jar.
+         *    @param SimpleCookieJar $jar     Jar to read
+         *    @param SimpleUrl $url           Url to use for scope.
          *    @access public
          */
-        function setCookie($cookie) {
-            $this->_cookies[] = $cookie;
-        }
-        
-        /**
-         *    Serialises the cookie hash ready for
-         *    transmission.
-         *    @param hash $cookies     Parsed cookies.
-         *    @return array            Cookies in header form.
-         *    @access private
-         */
-        function _marshallCookies($cookies) {
-            $cookie_pairs = array();
-            foreach ($cookies as $cookie) {
-                $cookie_pairs[] = $cookie->getName() . "=" . $cookie->getValue();
-            }
-            return implode(";", $cookie_pairs);
+        function readCookiesFromJar($jar, $url) {
+            $this->_cookies = $jar->selectAsPairs($url);
         }
         
         /**
@@ -512,12 +278,12 @@
          *    @return SimpleHttpResponse    Parsed response object.
          *    @access protected
          */
-        function _createResponse($socket) {
-            return new SimpleHttpResponse(
+        function &_createResponse($socket) {
+            $response = new SimpleHttpResponse(
                     $socket,
-                    $this->_method,
                     $this->_route->getUrl(),
                     $this->_encoding);
+            return $response;
         }
     }
     
@@ -642,12 +408,20 @@
         }
         
         /**
-         *    Accessor for any new cookies.
-         *    @return array       List of new cookies.
+         *    Writes new cookies to the cookie jar.
+         *    @param SimpleCookieJar $jar   Jar to write to.
+         *    @param SimpleUrl $url         Host and path to write under.
          *    @access public
          */
-        function getNewCookies() {
-            return $this->_cookies;
+        function writeCookiesToJar($jar, $url) {
+            foreach ($this->_cookies as $cookie) {
+                $jar->setCookie(
+                        $cookie->getName(),
+                        $cookie->getValue(),
+                        $url->getHost(),
+                        $cookie->getPath(),
+                        $cookie->getExpiry());
+            }
         }
 
         /**
@@ -657,7 +431,7 @@
          *    @access protected
          */
         function _parseHeaderLine($header_line) {
-            if (preg_match('/HTTP\/(\d+\.\d+)\s+(.*?)\s/i', $header_line, $matches)) {
+            if (preg_match('/HTTP\/(\d+\.\d+)\s+(\d+)/i', $header_line, $matches)) {
                 $this->_http_version = $matches[1];
                 $this->_response_code = $matches[2];
             }
@@ -705,9 +479,8 @@
 	 *    @subpackage WebTester
      */
     class SimpleHttpResponse extends SimpleStickyError {
-        protected $_method;
         protected $_url;
-        protected $_request_data;
+        protected $_encoding;
         protected $_sent;
         protected $_content;
         protected $_headers;
@@ -717,16 +490,14 @@
          *    content and headers.
          *    @param SimpleSocket $socket   Network connection to fetch
          *                                  response text from.
-         *    @param string $method         HTTP request method.
          *    @param SimpleUrl $url         Resource name.
-         *    @param mixed $request_data    Record of content sent.
+         *    @param mixed $encoding        Record of content sent.
          *    @access public
          */
-        function SimpleHttpResponse($socket, $method, $url, $request_data = '') {
+        function SimpleHttpResponse($socket, $url, $encoding) {
             $this->SimpleStickyError();
-            $this->_method = $method;
             $this->_url = $url;
-            $this->_request_data = $request_data;
+            $this->_encoding = $encoding;
             $this->_sent = $socket->getSent();
             $this->_content = false;
             $raw = $this->_readAll($socket);
@@ -747,7 +518,7 @@
                 $this->_setError('Nothing fetched');
                 $this->_headers = new SimpleHttpHeaders('');
             } elseif (! strstr($raw, "\r\n\r\n")) {
-                $this->_setError('Could not parse headers');
+                $this->_setError('Could not split headers from content');
                 $this->_headers = new SimpleHttpHeaders($raw);
             } else {
                 list($headers, $this->_content) = split("\r\n\r\n", $raw, 2);
@@ -761,7 +532,7 @@
          *    @access public
          */
         function getMethod() {
-            return $this->_method;
+            return $this->_encoding->getMethod();
         }
         
         /**
@@ -779,7 +550,7 @@
          *    @access public
          */
         function getRequestData() {
-            return $this->_request_data;
+            return $this->_encoding;
         }
         
         /**

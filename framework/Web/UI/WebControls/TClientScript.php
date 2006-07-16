@@ -31,11 +31,6 @@
  * Contents within TClientScript will be treated as javascript code and will be
  * rendered in place.
  *
- * The {@link setPreRenderControlTypes PreRenderControlTypes} property can
- * be used to specify that controls type/class names that should pre-render itself
- * even though they may not be rendered on the page. This is useful to publish
- * controls that require assets and is only visible after a callback response.
- *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
@@ -82,23 +77,6 @@ class TClientScript extends TControl
 	}
 
 	/**
-	 * @param string comma delimited list of controls that wish to be prerendered
-	 * so as to publish its assets.
-	 */
-	public function setPreRenderControlTypes($value)
-	{
-		$this->setViewState('PreRenderControls', $value);
-	}
-
-	/**
-	 * @return string comma delimited list of controls types that require prerendering.
-	 */
-	public function getPreRenderControlTypes()
-	{
-		return $this->getViewState('PreRenderControls', '');
-	}
-
-	/**
 	 * Calls the client script manager to add each of the requested client
 	 * script libraries.
 	 * @param mixed event parameter
@@ -113,7 +91,6 @@ class TClientScript extends TControl
 			if(($script = trim($script))!=='')
 				$cs->registerPradoScript($script);
 		}
-		$this->preRenderControls($param);
 	}
 
 	/**
@@ -149,25 +126,6 @@ class TClientScript extends TControl
 			$writer->write("<script type=\"text/javascript\">\n/*<![CDATA[*/\n");
 			$this->renderChildren($writer);
 			$writer->write("\n/*]]>*/\n</script>\n");
-		}
-	}
-
-	/**
-	 * PreRender other controls to allow them to publish their assets. Useful
-	 * when callback response components that require assets to be present on the page.
-	 * @param mixed event paramater
-	 */
-	protected function preRenderControls($param)
-	{
-		$types = preg_split('/,|\s+/', $this->getPreRenderControlTypes());
-		foreach($types as $type)
-		{
-			if(strlen($type))
-			{
-				$control = Prado::createComponent(trim($type));
-				$control->setPage($this->getPage());
-				$control->onPreRender($param);
-			}
 		}
 	}
 }

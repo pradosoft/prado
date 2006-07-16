@@ -7,7 +7,7 @@ Web applications often need to remember what an end user has done in previous pa
 
 <h2 id="6002">View State</h2>
 <p>
-View state lies at the heart of PRADO. With view state, Web pages become stateful and are capable of restoring pages to the state that end users interacted with before the current page request. Web programming thus resembles to Windows GUI programming, and developers can think continuously without worrying about the roundtrips between end users and the Web server. For example, with view state, a textbox control is able to detect if the user input changes the content in the textbox.
+View state lies at the heart of PRADO. With view state, Web pages become stateful and are capable of restoring pages to the state that end users interacted with before the current page request. Web programming thus resembles to Windows GUI programming, and developers can think continuously without worrying about the round trips between end users and the Web server. For example, with view state, a textbox control is able to detect if the user input changes the content in the textbox.
 </p>
 <p>
 View state is only available to controls. View state of a control can be disabled by setting its <tt>EnableViewState</tt> property to false. To store a variable in view state, call the following,

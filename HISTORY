@@ -15,9 +15,11 @@ Version 3.0.3 August 6, 2006
 BUG: Ticket#264 - Typos in some exception throw statements (Knut)
 BUG: Ticket#268 - THttpResponse.redirect() may fail for some browsers (Qiang)
 BUG: TDataGrid may complain getting ItemType on a non-object if the grid is not data-bound (Qiang)
+BUG: TCheckBox.Value should be converted to string (Qiang)
 ENH: Ticket#220 - TClientScripts method to import custom javascript files (Wei)
 ENH: Ticket#225 - TRadioButton::getRadioButtonsInGroup() added (Wei)
 ENH: Ticket#223 - Use TRequiredFieldValidator for TRadioButtons with GroupName property (Wei)
+ENH: Ticket#277 - Added TControl.CustomData property (Qiang)
 NEW: Added TStyleSheet (Wei)
 
 Version 3.0.2 July 2, 2006

@@ -453,6 +453,28 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	}
 
 	/**
+	 * Returns custom data associated with this control.
+	 * A control may be associated with some custom data for various purposes.
+	 * For example, a button may be associated with a string to identify itself
+	 * in a generic OnClick event handler.
+	 * @return mixed custom data associated with this control. Defaults to null.
+	 */
+	public function getCustomData()
+	{
+		return $this->getViewState('CustomData',null);
+	}
+
+	/**
+	 * Associates custom data with this control.
+	 * Note, the custom data must be serializable and unserializable.
+	 * @param mixed custom data
+	 */
+	public function setCustomData($value)
+	{
+		$this->getViewState('CustomData',$value,null);
+	}
+
+	/**
 	 * @return boolean whether the control has child controls
 	 */
 	public function getHasControls()

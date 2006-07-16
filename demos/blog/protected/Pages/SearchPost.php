@@ -21,7 +21,7 @@ class SearchPost extends BlogPage
 		foreach($keywords as $keyword)
 		{
 			if(($keyword=$this->DataAccess->escapeString(trim($keyword)))!=='')
-				$filter.=" AND content LIKE '%$keyword%'";
+				$filter.=" AND (content LIKE '%$keyword%' OR title LIKE '%$keyword%')";
 		}
 		return $filter;
 	}

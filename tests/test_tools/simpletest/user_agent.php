@@ -3,153 +3,24 @@
      *	Base include file for SimpleTest
      *	@package	SimpleTest
      *	@subpackage	WebTester
-     *	@version	$Id: user_agent.php,v 1.43 2005/01/02 22:46:08 lastcraft Exp $
+     *	@version	$Id: user_agent.php,v 1.55 2005/12/07 18:04:58 lastcraft Exp $
      */
 
     /**#@+
      *	include other SimpleTest class files
      */
+    require_once(dirname(__FILE__) . '/cookies.php');
     require_once(dirname(__FILE__) . '/http.php');
     require_once(dirname(__FILE__) . '/encoding.php');
     require_once(dirname(__FILE__) . '/authentication.php');
     /**#@-*/
    
-    define('DEFAULT_MAX_REDIRECTS', 3);
-    define('DEFAULT_CONNECTION_TIMEOUT', 15);
+    if (! defined('DEFAULT_MAX_REDIRECTS')) {
+        define('DEFAULT_MAX_REDIRECTS', 3);
+    }
     
-    /**
-     *    Repository for cookies. This stuff is a
-     *    tiny bit browser dependent.
-	 *    @package SimpleTest
-	 *    @subpackage WebTester
-     */
-    class SimpleCookieJar {
-        protected $_cookies;
-        
-        /**
-         *    Constructor. Jar starts empty.
-         *    @access public
-         */
-        function SimpleCookieJar() {
-            $this->_cookies = array();
-        }
-        
-        /**
-         *    Removes expired and temporary cookies as if
-         *    the browser was closed and re-opened.
-         *    @param string/integer $now   Time to test expiry against.
-         *    @access public
-         */
-        function restartSession($date = false) {
-            $surviving_cookies = array();
-            for ($i = 0; $i < count($this->_cookies); $i++) {
-                if (! $this->_cookies[$i]->getValue()) {
-                    continue;
-                }
-                if (! $this->_cookies[$i]->getExpiry()) {
-                    continue;
-                }
-                if ($date && $this->_cookies[$i]->isExpired($date)) {
-                    continue;
-                }
-                $surviving_cookies[] = $this->_cookies[$i];
-            }
-            $this->_cookies = $surviving_cookies;
-        }
-        
-        /**
-         *    Ages all cookies in the cookie jar.
-         *    @param integer $interval     The old session is moved
-         *                                 into the past by this number
-         *                                 of seconds. Cookies now over
-         *                                 age will be removed.
-         *    @access public
-         */
-        function agePrematurely($interval) {
-            for ($i = 0; $i < count($this->_cookies); $i++) {
-                $this->_cookies[$i]->agePrematurely($interval);
-            }
-        }
-        
-        /**
-         *    Adds a cookie to the jar. This will overwrite
-         *    cookies with matching host, paths and keys.
-         *    @param SimpleCookie $cookie        New cookie.
-         *    @access public
-         */
-        function setCookie($cookie) {
-            for ($i = 0; $i < count($this->_cookies); $i++) {
-                $is_match = $this->_isMatch(
-                        $cookie,
-                        $this->_cookies[$i]->getHost(),
-                        $this->_cookies[$i]->getPath(),
-                        $this->_cookies[$i]->getName());
-                if ($is_match) {
-                    $this->_cookies[$i] = $cookie;
-                    return;
-                }
-            }
-            $this->_cookies[] = $cookie;
-        }
-        
-        /**
-         *    Fetches a hash of all valid cookies filtered
-         *    by host, path and keyed by name
-         *    Any cookies with missing categories will not
-         *    be filtered out by that category. Expired
-         *    cookies must be cleared by restarting the session.
-         *    @param string $host   Host name requirement.
-         *    @param string $path   Path encompassing cookies.
-         *    @return hash          Valid cookie objects keyed
-         *                          on the cookie name.
-         *    @access public
-         */
-        function getValidCookies($host = false, $path = "/") {
-            $valid_cookies = array();
-            foreach ($this->_cookies as $cookie) {
-                if ($this->_isMatch($cookie, $host, $path, $cookie->getName())) {
-                    $valid_cookies[] = $cookie;
-                }
-            }
-            return $valid_cookies;
-        }
-        
-        /**
-         *    Tests cookie for matching against search
-         *    criteria.
-         *    @param SimpleTest $cookie    Cookie to test.
-         *    @param string $host          Host must match.
-         *    @param string $path          Cookie path must be shorter than
-         *                                 this path.
-         *    @param string $name          Name must match.
-         *    @return boolean              True if matched.
-         *    @access private
-         */
-        function _isMatch($cookie, $host, $path, $name) {
-            if ($cookie->getName() != $name) {
-                return false;
-            }
-            if ($host && $cookie->getHost() && !$cookie->isValidHost($host)) {
-                return false;
-            }
-            if (! $cookie->isValidPath($path)) {
-                return false;
-            }
-            return true;
-        }
-        
-        /**
-         *    Adds the current cookies to a request.
-         *    @param SimpleHttpRequest $request    Request to modify.
-         *    @param SimpleUrl $url                Cookie selector.
-         *    @access private
-         */
-        function addHeaders($request, $url) {
-            $cookies = $this->getValidCookies($url->getHost(), $url->getPath());
-            foreach ($cookies as $cookie) {
-                $request->setCookie($cookie);
-            }
-        }
+    if (! defined('DEFAULT_CONNECTION_TIMEOUT')) {
+        define('DEFAULT_CONNECTION_TIMEOUT', 15);
     }
 
     /**
@@ -160,13 +31,14 @@
      */
     class SimpleUserAgent {
         protected $_cookie_jar;
+        protected $_cookies_enabled = true;
         protected $_authenticator;
-        protected $_max_redirects;
-        protected $_proxy;
-        protected $_proxy_username;
-        protected $_proxy_password;
-        protected $_connection_timeout;
-        protected $_additional_headers;
+        protected $_max_redirects = DEFAULT_MAX_REDIRECTS;
+        protected $_proxy = false;
+        protected $_proxy_username = false;
+        protected $_proxy_password = false;
+        protected $_connection_timeout = DEFAULT_CONNECTION_TIMEOUT;
+        protected $_additional_headers = array();
         
         /**
          *    Starts with no cookies, realms or proxies.
@@ -175,12 +47,6 @@
         function SimpleUserAgent() {
             $this->_cookie_jar = new SimpleCookieJar();
             $this->_authenticator = new SimpleAuthenticator();
-            $this->setMaximumRedirects(DEFAULT_MAX_REDIRECTS);
-            $this->_proxy = false;
-            $this->_proxy_username = false;
-            $this->_proxy_password = false;
-            $this->setConnectionTimeout(DEFAULT_CONNECTION_TIMEOUT);
-            $this->_additional_headers = array();
         }
         
         /**
@@ -227,11 +93,7 @@
          *    @access public
          */
         function setCookie($name, $value, $host = false, $path = '/', $expiry = false) {
-            $cookie = new SimpleCookie($name, $value, $path, $expiry);
-            if ($host) {
-                $cookie->setHost($host);
-            }
-            $this->_cookie_jar->setCookie($cookie);
+            $this->_cookie_jar->setCookie($name, $value, $host, $path, $expiry);
         }
         
         /**
@@ -245,23 +107,14 @@
          *    @access public
          */
         function getCookieValue($host, $path, $name) {
-            $longest_path = '';
-            foreach ($this->_cookie_jar->getValidCookies($host, $path) as $cookie) {
-                if ($name == $cookie->getName()) {
-                    if (strlen($cookie->getPath()) > strlen($longest_path)) {
-                        $value = $cookie->getValue();
-                        $longest_path = $cookie->getPath();
-                    }
-                }
-            }
-            return (isset($value) ? $value : false);
+            return $this->_cookie_jar->getCookieValue($host, $path, $name);
         }
         
         /**
          *    Reads the current cookies within the base URL.
          *    @param string $name     Key of cookie to find.
          *    @param SimpleUrl $base  Base URL to search from.
-         *    @return string          Null if there is no base URL, false
+         *    @return string/boolean  Null if there is no base URL, false
          *                            if the cookie is not set.
          *    @access public
          */
@@ -270,6 +123,22 @@
                 return null;
             }
             return $this->getCookieValue($base->getHost(), $base->getPath(), $name);
+        }
+        
+        /**
+         *    Switches off cookie sending and recieving.
+         *    @access public
+         */
+        function ignoreCookies() {
+            $this->_cookies_enabled = false;
+        }
+        
+        /**
+         *    Switches back on the cookie sending and recieving.
+         *    @access public
+         */
+        function useCookies() {
+            $this->_cookies_enabled = true;
         }
         
         /**
@@ -305,7 +174,7 @@
                 $this->_proxy = false;
                 return;
             }
-            if (strncmp($proxy, 'http://', 7) != 0) {
+            if ((strncmp($proxy, 'http://', 7) != 0) && (strncmp($proxy, 'https://', 8) != 0)) {
                 $proxy = 'http://'. $proxy;
             }
             $this->_proxy = new SimpleUrl($proxy);
@@ -338,18 +207,17 @@
         /**
          *    Fetches a URL as a response object. Will keep trying if redirected.
          *    It will also collect authentication realm information.
-         *    @param string $method                   GET, POST, etc.
-         *    @param string/SimpleUrl $url            Target to fetch.
-         *    @param SimpleFormEncoding $parameters   Additional parameters for request.
-         *    @return SimpleHttpResponse              Hopefully the target page.
+         *    @param string/SimpleUrl $url      Target to fetch.
+         *    @param SimpleEncoding $encoding   Additional parameters for request.
+         *    @return SimpleHttpResponse        Hopefully the target page.
          *    @access public
          */
-        function fetchResponse($method, $url, $parameters = false) {
-            if ($method != 'POST') {
-                $url->addRequestParameters($parameters);
-                $parameters = false;
+        function &fetchResponse($url, $encoding) {
+            if ($encoding->getMethod() != 'POST') {
+                $url->addRequestParameters($encoding);
+                $encoding->clear();
             }
-            $response = $this->_fetchWhileRedirected($method, $url, $parameters);
+            $response = $this->_fetchWhileRedirected($url, $encoding);
             if ($headers = $response->getHeaders()) {
                 if ($headers->isChallenge()) {
                     $this->_authenticator->addRealm(
@@ -364,84 +232,72 @@
         /**
          *    Fetches the page until no longer redirected or
          *    until the redirect limit runs out.
-         *    @param string $method                  GET, POST, etc.
          *    @param SimpleUrl $url                  Target to fetch.
-         *    @param SimpelFormEncoding $parameters  Additional parameters for request.
+         *    @param SimpelFormEncoding $encoding    Additional parameters for request.
          *    @return SimpleHttpResponse             Hopefully the target page.
          *    @access private
          */
-        function _fetchWhileRedirected($method, $url, $parameters) {
+        function &_fetchWhileRedirected($url, $encoding) {
             $redirects = 0;
             do {
-                $response = $this->_fetch($method, $url, $parameters);
+                $response = $this->_fetch($url, $encoding);
                 if ($response->isError()) {
                     return $response;
                 }
                 $headers = $response->getHeaders();
                 $location = new SimpleUrl($headers->getLocation());
                 $url = $location->makeAbsolute($url);
-                $this->_addCookiesToJar($url, $headers->getNewCookies());
+                if ($this->_cookies_enabled) {
+                    $headers->writeCookiesToJar($this->_cookie_jar, $url);
+                }
                 if (! $headers->isRedirect()) {
                     break;
                 }
-                $method = 'GET';
-                $parameters = false;
+                $encoding = new SimpleGetEncoding();
             } while (! $this->_isTooManyRedirects(++$redirects));
             return $response;
         }
         
         /**
          *    Actually make the web request.
-         *    @param string $method                   GET, POST, etc.
          *    @param SimpleUrl $url                   Target to fetch.
-         *    @param SimpleFormEncoding $parameters   Additional parameters for request.
+         *    @param SimpleFormEncoding $encoding     Additional parameters for request.
          *    @return SimpleHttpResponse              Headers and hopefully content.
          *    @access protected
          */
-        function _fetch($method, $url, $parameters) {
-            if (! $parameters) {
-                $parameters = new SimpleFormEncoding();
-            }
-            $request = $this->_createRequest($method, $url, $parameters);
-            return $request->fetch($this->_connection_timeout);
+        function &_fetch($url, $encoding) {
+            $request = $this->_createRequest($url, $encoding);
+            $response = $request->fetch($this->_connection_timeout);
+            return $response;
         }
         
         /**
          *    Creates a full page request.
-         *    @param string $method                   Fetching method.
-         *    @param SimpleUrl $url                   Target to fetch as url object.
-         *    @param SimpleFormEncoding $parameters   POST/GET parameters.
-         *    @return SimpleHttpRequest               New request.
+         *    @param SimpleUrl $url                 Target to fetch as url object.
+         *    @param SimpleFormEncoding $encoding   POST/GET parameters.
+         *    @return SimpleHttpRequest             New request.
          *    @access private
          */
-        function _createRequest($method, $url, $parameters) {
-            $request = $this->_createHttpRequest($method, $url, $parameters);
+        function &_createRequest($url, $encoding) {
+            $request = $this->_createHttpRequest($url, $encoding);
             $this->_addAdditionalHeaders($request);
-            $this->_cookie_jar->addHeaders($request, $url);
+            if ($this->_cookies_enabled) {
+                $request->readCookiesFromJar($this->_cookie_jar, $url);
+            }
             $this->_authenticator->addHeaders($request, $url);
             return $request;
         }
         
         /**
          *    Builds the appropriate HTTP request object.
-         *    @param string $method                  Fetching method.
          *    @param SimpleUrl $url                  Target to fetch as url object.
          *    @param SimpleFormEncoding $parameters  POST/GET parameters.
          *    @return SimpleHttpRequest              New request object.
          *    @access protected
          */
-        function _createHttpRequest($method, $url, $parameters) {
-            if ($method == 'POST') {
-                $request = new SimpleHttpRequest(
-                        $this->_createRoute($url),
-                        'POST',
-                        $parameters);
-                return $request;
-            }
-            if ($parameters) {
-                $url->addRequestParameters($parameters);
-            }
-            return new SimpleHttpRequest($this->_createRoute($url), $method);
+        function &_createHttpRequest($url, $encoding) {
+            $request = new SimpleHttpRequest($this->_createRoute($url), $encoding);
+            return $request;
         }
         
         /**
@@ -450,15 +306,17 @@
          *    @return SimpleRoute     Route to take to fetch URL.
          *    @access protected
          */
-        function _createRoute($url) {
+        function &_createRoute($url) {
             if ($this->_proxy) {
-                return new SimpleProxyRoute(
+                $route = new SimpleProxyRoute(
                         $url,
                         $this->_proxy,
                         $this->_proxy_username,
                         $this->_proxy_password);
+            } else {
+                $route = new SimpleRoute($url);
             }
-            return new SimpleRoute($url);
+            return $route;
         }
         
         /**
@@ -469,21 +327,6 @@
         function _addAdditionalHeaders($request) {
             foreach ($this->_additional_headers as $header) {
                 $request->addHeaderLine($header);
-            }
-        }
-        
-        /**
-         *    Extracts new cookies into the cookie jar.
-         *    @param SimpleUrl $url     Target to fetch as url object.
-         *    @param array $cookies     New cookies.
-         *    @access private
-         */
-        function _addCookiesToJar($url, $cookies) {
-            foreach ($cookies as $cookie) {
-                if ($url->getHost()) {
-                    $cookie->setHost($url->getHost());
-                }
-                $this->_cookie_jar->setCookie($cookie);
             }
         }
     }

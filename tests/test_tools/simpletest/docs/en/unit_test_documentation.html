@@ -21,9 +21,6 @@
 <a href="group_test_documentation.html">Group tests</a>
 </li>
 <li>
-<a href="server_stubs_documentation.html">Server stubs</a>
-</li>
-<li>
 <a href="mock_objects_documentation.html">Mock objects</a>
 </li>
 <li>
@@ -164,6 +161,12 @@ class FileTestCase extends UnitTestCase {
 <td><span class="new_code">assertNotEqual($x, $y)</span></td><td>Fail if $x == $y is true</td>
 </tr>
                     <tr>
+<td><span class="new_code">assertWithinMargin($x, $y, $m)</span></td><td>Fail if abs($x - $y) &lt; $m is false</td>
+</tr>
+                    <tr>
+<td><span class="new_code">assertOutsideMargin($x, $y, $m)</span></td><td>Fail if abs($x - $y) &lt; $m is true</td>
+</tr>
+                    <tr>
 <td><span class="new_code">assertIdentical($x, $y)</span></td><td>Fail if $x == $y is false or a type mismatch</td>
 </tr>
                     <tr>
@@ -176,19 +179,19 @@ class FileTestCase extends UnitTestCase {
 <td><span class="new_code">assertCopy($x, $y)</span></td><td>Fail if $x and $y are the same variable</td>
 </tr>
                     <tr>
-<td><span class="new_code">assertWantedPattern($p, $x)</span></td><td>Fail unless the regex $p matches $x</td>
+<td><span class="new_code">assertPattern($p, $x)</span></td><td>Fail unless the regex $p matches $x</td>
 </tr>
                     <tr>
-<td><span class="new_code">assertNoUnwantedPattern($p, $x)</span></td><td>Fail if the regex $p matches $x</td>
+<td><span class="new_code">assertNoPattern($p, $x)</span></td><td>Fail if the regex $p matches $x</td>
 </tr>
                     <tr>
 <td><span class="new_code">assertNoErrors()</span></td><td>Fail if any PHP error occoured</td>
 </tr>
                     <tr>
-<td><span class="new_code">assertError($x)</span></td><td>Fail if no PHP error or incorrect message</td>
+<td><span class="new_code">assertError($x)</span></td><td>Fail if no PHP error or incorrect message/expectation</td>
 </tr>
                     <tr>
-<td><span class="new_code">assertErrorPattern($p)</span></td><td>Fail unless the error matches the regex $p</td>
+<td><span class="new_code">assertExpectation($e)</span></td><td>Fail on failed expectation object</td>
 </tr>
                 </tbody>
 </table>
@@ -226,7 +229,7 @@ $this-&gt;assertReference($a, $b);</strong>
 </pre>
                 Will fail as the variable <span class="new_code">$a</span> is a copy of <span class="new_code">$b</span>.
 <pre>
-<strong>$this-&gt;assertWantedPattern('/hello/i', 'Hello world');</strong>
+<strong>$this-&gt;assertPattern('/hello/i', 'Hello world');</strong>
 </pre>
                 This will pass as using a case insensitive match the string
                 <span class="new_code">hello</span> is contained in <span class="new_code">Hello world</span>.

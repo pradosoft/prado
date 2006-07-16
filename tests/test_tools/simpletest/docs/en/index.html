@@ -24,9 +24,6 @@
 <a href="group_test_documentation.html">Group tests</a>
 </li>
 <li>
-<a href="server_stubs_documentation.html">Server stubs</a>
-</li>
-<li>
 <a href="mock_objects_documentation.html">Mock objects</a>
 </li>
 <li>
@@ -101,26 +98,22 @@
                 We start by creating a test script which we will call
                 <em>tests/log_test.php</em> and populate it as follows...
 <pre>
-<strong>&lt;?php
+&lt;?php<strong>
 require_once('simpletest/unit_tester.php');
 require_once('simpletest/reporter.php');
 require_once('../classes/log.php');
-?&gt;</strong>
-</pre>
-                Here the <em>simpletest</em> folder is either local or in the path.
-                You would have to edit these locations depending on where you
-                placed the toolset.
-                Next we create a test case...
-<pre>
-&lt;?php
-require_once('simpletest/unit_tester.php');
-require_once('simpletest/reporter.php');
-require_once('../classes/log.php');
-<strong>
+
 class TestOfLogging extends UnitTestCase {
 }</strong>
 ?&gt;
 </pre>
+                Here the <em>simpletest</em> folder is either local or in the path.
+                You would have to edit these locations depending on where you
+                placed the toolset.
+                The <span class="new_code">TestOfLogging</span> is our frst test case and it's
+                currently empty.
+            </p>
+            <p>
                 Now we have five lines of scaffolding code and still no tests.
                 However from this part on we get return on our investment very quickly.
                 We'll assume that the <span class="new_code">Log</span> class
@@ -376,27 +369,28 @@ Mock::generate('Log');</strong>
 class TestOfSessionLogging extends UnitTestCase {
     
     function testLogInIsLogged() {<strong>
-        $log = &amp;new MockLog($this);
+        $log = &amp;new MockLog();
         $log-&gt;expectOnce('message', array('User fred logged in.'));</strong>
         $session_pool = &amp;new SessionPool($log);
-        $session_pool-&gt;logIn('fred');<strong>
-        $log-&gt;tally();</strong>
+        $session_pool-&gt;logIn('fred');
     }
 }
 ?&gt;
 </pre>
-                The <span class="new_code">tally()</span> call is needed to
-                tell the mock object that time is up for the expected call
-                count.
-                Without it the mock would wait forever for the method
-                call to come in without ever actually notifying the test case.
-                The other test will be triggered when the call to
+                The test will be triggered when the call to
                 <span class="new_code">message()</span> is invoked on the
                 <span class="new_code">MockLog</span> object.
                 The mock call will trigger a parameter comparison and then send the
                 resulting pass or fail event to the test display.
                 Wildcards can be included here too so as to prevent tests
                 becoming too specific.
+            </p>
+            <p>
+                If the mock reaches the end of the test case without the
+                method being called, the <span class="new_code">expectOnce()</span>
+                expectation will trigger a test failure.
+                In other words the mocks can detect the absence of
+                behaviour as well as the presence.
             </p>
             <p>
                 The mock objects in the SimpleTest suite can have arbitrary
@@ -439,12 +433,12 @@ class TestOfAbout extends WebTestCase {
     
     function setUp() {
         $this-&gt;get('http://test-server/index.php');
-        $this-&gt;clickLink('About');
+        $this-&gt;click('About');
     }
     
     function testSearchEngineOptimisations() {
         $this-&gt;assertTitle('A long title about us for search engines');
-        $this-&gt;assertWantedPattern('/a popular keyphrase/i');
+        $this-&gt;assertPattern('/a popular keyphrase/i');
     }
 }</strong>
 $test = &amp;new TestOfAbout();

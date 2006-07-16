@@ -56,39 +56,44 @@ Prado::using('System.Web.UI.WebControls.TRadioButtonList');
 class TRadioButton extends TCheckBox
 {
 	/**
-	 * @param array list of radio buttons registered.
+	 * @param array list of radio buttons that are on the current page hierarchy
 	 */
-	private static $_radiobuttons=array();	
+	private static $_activeButtons=array();
+	/**
+	 * @var integer number of radio buttons created
+	 */
+	private static $_buttonCount=0;
+	/**
+	 * @var integer global ID of this radiobutton
+	 */
+	private $_globalID;
 	/**
 	 * @var string the name used to fetch radiobutton post data
 	 */
 	private $_uniqueGroupName=null;
-	/**
-	 * @var int number radio buttons created
-	 */
-	private static $_counter=0;
-	/**
-	 * @var int unique unmutable radio button id
-	 */
-	private $_radioUid;
 
+	/**
+	 * Constructor.
+	 * Registers the radiobutton in a global radiobutton collection.
+	 * If overridden, the parent implementation must be invoked first.
+	 */
 	public function __construct()
 	{
 		parent::__construct();
-		$this->_radioUid = self::$_counter++;
+		$this->_globalID = self::$_buttonCount++;
 	}
-	
+
 	/**
-	 * Registers the radio button groupings. If overriding onInit method, 
+	 * Registers the radio button groupings. If overriding onInit method,
 	 * ensure to call parent implemenation.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
 	public function onInit($param)
 	{
 		parent::onInit($param);
-		$this->registerRadioButton($this);
+		self::$_activeButtons[$this->_globalID]=$this;
 	}
-	
+
 	/**
 	 * Unregisters the radio button groupings. If overriding onInit method,
 	 * ensure to call parent implemenation.
@@ -96,10 +101,10 @@ class TRadioButton extends TCheckBox
 	 */
 	public function onUnLoad($param)
 	{
+		unset(self::$_activeButtons[$this->_globalID]);
 		parent::onUnLoad($param);
-		$this->unregisterRadioButton($this);
 	}
-	
+
 	/**
 	 * Loads user input data.
 	 * This method is primarly used by framework developers.
@@ -142,42 +147,23 @@ class TRadioButton extends TCheckBox
 	{
 		$this->setViewState('GroupName',$value,'');
 	}
-	
+
 	/**
-	 * Register radio button control grouping.
-	 * @param TRadioButton control to add
-	 */
-	protected function registerRadioButton(TRadioButton $control)
-	{
-		if(!isset(self::$_radiobuttons[$control->_radioUid]))
-			self::$_radiobuttons[$control->_radioUid] = $control;
-	}
-	
-	/**
-	 * Unregister radio button control for grouping
-	 * @param TRadioButton control to unregister.
-	 */
-	protected function unregisterRadioButton(TRadioButton $control)
-	{
-		if(isset(self::$_radiobuttons[$control->_radioUid]))
-			unset(self::$_radiobuttons[$control->_radioUid]);
-	}
-	
-	/**  
-	 * Gets an array of RadioButtons with same group name. This method will
-	 * always return at least the current radio button in the array.
+	 * Gets an array of radiobuttons whose group name is the same as this radiobutton's.
+	 * Note, only those radiobuttons that are on the current page hierarchy may be
+	 * returned in the result.
 	 * @return array list of TRadioButton with the same group
 	 */
 	public function getRadioButtonsInGroup()
 	{
 		$group = $this->getUniqueGroupName();
 		$buttons = array();
-		foreach(self::$_radiobuttons as $control)
+		foreach(self::$_activeButtons as $control)
 		{
 			if($control->getUniqueGroupName() === $group)
 				$buttons[] = $control;
 		}
-		return count($buttons) > 0 ? $buttons : array($this);
+		return $buttons;
 	}
 
 	/**

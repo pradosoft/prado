@@ -5,7 +5,7 @@
 TRepeater displays its content defined in templates repeatedly based on the given data specified by the <tt>DataSource</tt> or <tt>DataSourceID</tt> property. The repeated contents can be retrieved from the <tt>Items</tt> property. Each item is created by instantiating a template and each is a child control of the repeater.
 </p>
 <p>
-Like normal control templates, the repeater templates can contain static text, controls and special tags, which after instantiation, become child contents of the corresponding item. TRepeater defiens five templates for different purposes,
+Like normal control templates, the repeater templates can contain static text, controls and special tags, which after instantiation, become child contents of the corresponding item. TRepeater defines five templates for different purposes,
 </p>
 <ul>
   <li><tt>HeaderTemplate</tt> - the template used for displaying content at the beginning of a repeater;</li>

@@ -3,7 +3,7 @@
      *	base include file for SimpleTest
      *	@package	SimpleTest
      *	@subpackage	WebTester
-     *	@version	$Id: url.php,v 1.22 2005/02/02 23:25:23 lastcraft Exp $
+     *	@version	$Id: url.php,v 1.29 2006/01/14 02:45:34 lastcraft Exp $
      */
 
     /**#@+
@@ -17,7 +17,8 @@
      *    got broken in PHP 4.3.0. Adds some browser specific
      *    functionality such as expandomatics.
      *    Guesses a bit trying to separate the host from
-     *    the path.
+     *    the path and tries to keep a raw, possibly unparsable,
+     *    request string as long as possible.
 	 *    @package SimpleTest
 	 *    @subpackage WebTester
      */
@@ -30,7 +31,10 @@
         protected $_path;
         protected $_request;
         protected $_fragment;
+        protected $_x;
+        protected $_y;
         protected $_target;
+        protected $_raw = false;
         
         /**
          *    Constructor. Parses URL into sections.
@@ -39,6 +43,7 @@
          */
         function SimpleUrl($url) {
             list($x, $y) = $this->_chompCoordinates($url);
+            $this->setCoordinates($x, $y);
             $this->_scheme = $this->_chompScheme($url);
             list($this->_username, $this->_password) = $this->_chompLogin($url);
             $this->_host = $this->_chompHost($url);
@@ -49,7 +54,6 @@
             }
             $this->_path = $this->_chompPath($url);
             $this->_request = $this->_parseRequest($this->_chompRequest($url));
-            $this->_request->setCoordinates($x, $y);
             $this->_fragment = (strncmp($url, "#", 1) == 0 ? substr($url, 1) : false);
             $this->_target = false;
         }
@@ -96,7 +100,7 @@
          */
         function _chompLogin($url) {
             $prefix = '';
-            if (preg_match('/(\/\/)(.*)/', $url, $matches)) {
+            if (preg_match('/^(\/\/)(.*)/', $url, $matches)) {
                 $prefix = $matches[1];
                 $url = $matches[2];
             }
@@ -123,7 +127,7 @@
          *    @access private
          */
         function _chompHost($url) {
-            if (preg_match('/(\/\/)(.*?)(\/.*|\?.*|#.*|$)/', $url, $matches)) {
+            if (preg_match('/^(\/\/)(.*?)(\/.*|\?.*|#.*|$)/', $url, $matches)) {
                 $url = $matches[3];
                 return $matches[2];
             }
@@ -178,7 +182,8 @@
          *    @access private
          */
         function _parseRequest($raw) {
-            $request = new SimpleFormEncoding();
+            $this->_raw = $raw;
+            $request = new SimpleGetEncoding();
             foreach (split("&", $raw) as $pair) {
                 if (preg_match('/(.*?)=(.*)/', $pair, $matches)) {
                     $request->add($matches[1], urldecode($matches[2]));
@@ -293,12 +298,28 @@
         }
         
         /**
+         *    Sets image coordinates. Set to false to clear
+         *    them.
+         *    @param integer $x    Horizontal position.
+         *    @param integer $y    Vertical position.
+         *    @access public
+         */
+        function setCoordinates($x = false, $y = false) {
+            if (($x === false) || ($y === false)) {
+                $this->_x = $this->_y = false;
+                return;
+            }
+            $this->_x = (integer)$x;
+            $this->_y = (integer)$y;
+        }
+        
+        /**
          *    Accessor for horizontal image coordinate.
          *    @return integer        X value.
          *    @access public
          */
         function getX() {
-            return $this->_request->getX();
+            return $this->_x;
         }
          
         /**
@@ -307,17 +328,23 @@
          *    @access public
          */
         function getY() {
-            return $this->_request->getY();
+            return $this->_y;
         }
        
         /**
          *    Accessor for current request parameters
-         *    in URL string form
+         *    in URL string form. Will return teh original request
+         *    if at all possible even if it doesn't make much
+         *    sense.
          *    @return string   Form is string "?a=1&b=2", etc.
          *    @access public
          */
         function getEncodedRequest() {
-            $encoded = $this->_request->asString();
+            if ($this->_raw) {
+                $encoded = $this->_raw;
+            } else {
+                $encoded = $this->_request->asUrlRequest();
+            }
             if ($encoded) {
                 return '?' . preg_replace('/^\?/', '', $encoded);
             }
@@ -331,6 +358,7 @@
          *    @access public
          */
         function addRequestParameter($key, $value) {
+            $this->_raw = false;
             $this->_request->add($key, $value);
         }
         
@@ -341,6 +369,7 @@
          *    @access public
          */
         function addRequestParameters($parameters) {
+            $this->_raw = false;
             $this->_request->merge($parameters);
         }
         
@@ -349,18 +378,8 @@
          *    @access public
          */
         function clearRequest() {
-            $this->_request = new SimpleFormEncoding();
-        }
-        
-        /**
-         *    Sets image coordinates. Set to flase to clear
-         *    them.
-         *    @param integer $x    Horizontal position.
-         *    @param integer $y    Vertical position.
-         *    @access public
-         */
-        function setCoordinates($x = false, $y = false) {
-            $this->_request->setCoordinates($x, $y);
+            $this->_raw = false;
+            $this->_request = new SimpleGetEncoding();
         }
         
         /**
@@ -380,6 +399,7 @@
          *    @access public
          */
         function setTarget($frame) {
+            $this->_raw = false;
             $this->_target = $frame;
         }
         
@@ -402,7 +422,8 @@
             }
             $encoded = $this->getEncodedRequest();
             $fragment = $this->getFragment() ? '#'. $this->getFragment() : '';
-            return "$scheme://$identity$host$path$encoded$fragment";
+            $coords = $this->getX() === false ? '' : '?' . $this->getX() . ',' . $this->getY();
+            return "$scheme://$identity$host$path$encoded$fragment$coords";
         }
         
         /**
@@ -417,27 +438,23 @@
                 $base = new SimpleUrl($base);
             }
             $scheme = $this->getScheme() ? $this->getScheme() : $base->getScheme();
-            $host = $this->getHost() ? $this->getHost() : $base->getHost();
-            $port = $this->_extractAbsolutePort($base);
+            if ($this->getHost()) {
+                $host = $this->getHost();
+                $port = $this->getPort() ? ':' . $this->getPort() : '';
+                $identity = $this->getIdentity() ? $this->getIdentity() . '@' : '';
+                if (! $identity) {
+                    $identity = $base->getIdentity() ? $base->getIdentity() . '@' : '';
+                }
+            } else {
+                $host = $base->getHost();
+                $port = $base->getPort() ? ':' . $base->getPort() : '';
+                $identity = $base->getIdentity() ? $base->getIdentity() . '@' : '';
+            }
             $path = $this->normalisePath($this->_extractAbsolutePath($base));
-            $identity = $this->_getIdentity() ? $this->_getIdentity() . '@' : '';
             $encoded = $this->getEncodedRequest();
             $fragment = $this->getFragment() ? '#'. $this->getFragment() : '';
-            return new SimpleUrl("$scheme://$identity$host$port$path$encoded$fragment");
-        }
-        
-        /**
-         *    Extracts the port from the base URL if it's needed, but
-         *    not present, in the current URL.
-         *    @param string/SimpleUrl $base       Base URL.
-         *    @param string                       Absolute port number.
-         *    @access private
-         */
-        function _extractAbsolutePort($base) {
-            if ($this->getHost()) {
-                return ($this->getPort() ? ':' . $this->getPort() : '');
-            }
-            return ($base->getPort() ? ':' . $base->getPort() : '');
+            $coords = $this->getX() === false ? '' : '?' . $this->getX() . ',' . $this->getY();
+            return new SimpleUrl("$scheme://$identity$host$port$path$encoded$fragment$coords");
         }
         
         /**
@@ -473,10 +490,10 @@
         /**
          *    Extracts the username and password for use in rendering
          *    a URL.
-         *    @return string/boolean    Form of username:password@ or false.
-         *    @access private
+         *    @return string/boolean    Form of username:password or false.
+         *    @access public
          */
-        function _getIdentity() {
+        function getIdentity() {
             if ($this->_username && $this->_password) {
                 return $this->_username . ':' . $this->_password;
             }

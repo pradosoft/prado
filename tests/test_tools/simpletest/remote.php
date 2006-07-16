@@ -3,7 +3,7 @@
      *	base include file for SimpleTest
      *	@package	SimpleTest
      *	@subpackage	UnitTester
-     *	@version	$Id: remote.php,v 1.11 2004/08/04 22:09:39 lastcraft Exp $
+     *	@version	$Id: remote.php,v 1.12 2005/08/03 17:26:55 lastcraft Exp $
      */
 
     /**#@+
@@ -11,7 +11,7 @@
      */
     require_once(dirname(__FILE__) . '/browser.php');
     require_once(dirname(__FILE__) . '/xml.php');
-    require_once(dirname(__FILE__) . '/simple_test.php');
+    require_once(dirname(__FILE__) . '/test_case.php');
     /**#@-*/
 
     /**
@@ -74,7 +74,7 @@
          *    @return SimpleBrowser           New browser.
          *    @access protected
          */
-        function _createBrowser() {
+        function &_createBrowser() {
             return new SimpleBrowser();
         }
         
@@ -84,7 +84,7 @@
          *    @return SimpleTestXmlListener      XML reader.
          *    @access protected
          */
-        function _createParser($reporter) {
+        function &_createParser($reporter) {
             return new SimpleTestXmlParser($reporter);
         }
         

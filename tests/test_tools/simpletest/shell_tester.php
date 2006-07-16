@@ -3,13 +3,13 @@
      *	base include file for SimpleTest
      *	@package	SimpleTest
      *	@subpackage	UnitTester
-     *	@version	$Id: shell_tester.php,v 1.14 2004/08/17 18:18:32 lastcraft Exp $
+     *	@version	$Id: shell_tester.php,v 1.19 2005/08/03 17:26:55 lastcraft Exp $
      */
 
     /**#@+
      *	include other SimpleTest class files
      */
-    require_once(dirname(__FILE__) . '/simple_test.php');
+    require_once(dirname(__FILE__) . '/test_case.php');
     /**#@-*/
 
     /**
@@ -127,6 +127,40 @@
             $shell = $this->_getShell();
             return $shell->getOutputAsList();
 		}
+        
+        /**
+         *    Will trigger a pass if the two parameters have
+         *    the same value only. Otherwise a fail. This
+         *    is for testing hand extracted text, etc.
+         *    @param mixed $first          Value to compare.
+         *    @param mixed $second         Value to compare.
+         *    @param string $message       Message to display.
+         *    @return boolean              True on pass
+         *    @access public
+         */
+        function assertEqual($first, $second, $message = "%s") {
+            return $this->assert(
+                    new EqualExpectation($first),
+                    $second,
+                    $message);
+        }
+        
+        /**
+         *    Will trigger a pass if the two parameters have
+         *    a different value. Otherwise a fail. This
+         *    is for testing hand extracted text, etc.
+         *    @param mixed $first           Value to compare.
+         *    @param mixed $second          Value to compare.
+         *    @param string $message        Message to display.
+         *    @return boolean               True on pass
+         *    @access public
+         */
+        function assertNotEqual($first, $second, $message = "%s") {
+            return $this->assert(
+                    new NotEqualExpectation($first),
+                    $second,
+                    $message);
+        }
 
         /**
          *    Tests the last status code from the shell.
@@ -153,7 +187,7 @@
          */
         function assertOutput($expected, $message = "%s") {
             $shell = $this->_getShell();
-            return $this->assertExpectation(
+            return $this->assert(
                     new EqualExpectation($expected),
                     $shell->getOutput(),
                     $message);
@@ -169,8 +203,8 @@
          */
         function assertOutputPattern($pattern, $message = "%s") {
             $shell = $this->_getShell();
-            return $this->assertExpectation(
-                    new WantedPatternExpectation($pattern),
+            return $this->assert(
+                    new PatternExpectation($pattern),
                     $shell->getOutput(),
                     $message);
         }
@@ -185,8 +219,8 @@
          */
         function assertNoOutputPattern($pattern, $message = "%s") {
             $shell = $this->_getShell();
-            return $this->assertExpectation(
-                    new UnwantedPatternExpectation($pattern),
+            return $this->assert(
+                    new NoPatternExpectation($pattern),
                     $shell->getOutput(),
                     $message);
         }
@@ -226,8 +260,8 @@
          */
         function assertFilePattern($pattern, $path, $message = "%s") {
             $shell = $this->_getShell();
-            return $this->assertExpectation(
-                    new WantedPatternExpectation($pattern),
+            return $this->assert(
+                    new PatternExpectation($pattern),
                     implode('', file($path)),
                     $message);
         }
@@ -243,8 +277,8 @@
          */
         function assertNoFilePattern($pattern, $path, $message = "%s") {
             $shell = $this->_getShell();
-            return $this->assertExpectation(
-                    new UnwantedPatternExpectation($pattern),
+            return $this->assert(
+                    new NoPatternExpectation($pattern),
                     implode('', file($path)),
                     $message);
         }
@@ -255,7 +289,7 @@
          *    @return Shell        Current shell.
          *    @access protected
          */
-        function _getShell() {
+        function &_getShell() {
             return $this->_current_shell;
         }
 
@@ -264,8 +298,9 @@
          *    @return Shell        New shell object.
          *    @access protected
          */
-        function _createShell() {
-            return new SimpleShell();
+        function &_createShell() {
+            $shell = new SimpleShell();
+            return $shell;
         }
     }
 ?>

@@ -13,7 +13,7 @@ In general, there are two ways of writing new controls: composition of existing 
 Composition is the easiest way of creating new controls. It mainly involves instantiating existing controls, configuring them and making them the constituent components. The properties of the constituent components are exposed through <a href="?page=Fundamentals.Components">subproperties</a>.
 </p>
 <p>
-One can compose a new control in two ways. One is to extend <tt>TCompositeControl</tt> and override the <tt>TControl::createChildControls()</tt> method. The other is to extend <tt>TTemplateControl</tt> (or its child classes) and write a control template. The latter is easier to use and can organize the layout constituent compoents more intuitively, while the former is more efficient because it does not require parsing of the template.
+One can compose a new control in two ways. One is to extend <tt>TCompositeControl</tt> and override the <tt>TControl::createChildControls()</tt> method. The other is to extend <tt>TTemplateControl</tt> (or its child classes) and write a control template. The latter is easier to use and can organize the layout constituent components more intuitively, while the former is more efficient because it does not require parsing of the template.
 </p>
 <p>
 As an example, we show how to create a labeled textbox called <tt>LabeledTextBox</tt> using the above two approaches. A labeled textbox displays a label besides a textbox. We want reuse the PRADO provided <tt>TLabel</tt> and <tt>TTextBox</tt> to accomplish this task.
@@ -130,8 +130,8 @@ Other important properties and methods include:
 <tt>TWebControl</tt> is mainly used as a base class for controls representing HTML elements. It provides a set of properties that are common among HTML elements. It breaks the <tt>TControl::render()</tt> into the following methods that are more suitable for rendering an HTML element:
 </p>
 <ul>
-  <li><tt>addAttributesToRender()</tt> - adds attributes for the HTML element to be rendered. This method is often overriden by derived classes as they usually have different attributes to be rendered.</li>
-  <li><tt>renderBeginTag()</tt> - renders the openning HTML tag.</li>
+  <li><tt>addAttributesToRender()</tt> - adds attributes for the HTML element to be rendered. This method is often overridden by derived classes as they usually have different attributes to be rendered.</li>
+  <li><tt>renderBeginTag()</tt> - renders the opening HTML tag.</li>
   <li><tt>renderContents()</tt> - renders the content enclosed within the HTML element. By default, it displays the items in the <tt>Controls</tt> collection of the control. Derived classes may override this method to render customized contents.</li>
   <li><tt>renderEndTag()</tt> - renders the closing HTML tag.</li>
 </ul>

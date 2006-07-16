@@ -136,7 +136,7 @@ class TTextHighlighter extends TTextProcessor
 		$geshi->enable_classes();
 		if($this->getEnableCopyCode())
 			$geshi->set_header_content($this->getHeaderTemplate());
-
+		
 		return $geshi->parse_code();
 	}
 

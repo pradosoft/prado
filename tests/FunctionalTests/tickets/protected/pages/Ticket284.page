@@ -1,0 +1,14 @@
+<com:TContent ID="Content">
+
+
+<com:Application.pages.Ticket284Component ID="fooBar" ShowHours="true" ShowMinutes="true" />
+<com:TCustomValidator
+	ControlToValidate="fooBar"
+	OnServerValidate="checkUserAvailability"
+	Display="Dynamic"
+	Text="Unavailable."
+	CssClass="inlineError" />
+<com:TButton Text="POST it!" />
+
+</com:TContent>
+

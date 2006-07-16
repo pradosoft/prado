@@ -3,8 +3,184 @@
      *	base include file for SimpleTest
      *	@package	SimpleTest
      *	@subpackage	WebTester
-     *	@version	$Id: encoding.php,v 1.6 2005/01/02 23:43:23 lastcraft Exp $
+     *	@version	$Id: encoding.php,v 1.17 2005/07/20 13:41:40 lastcraft Exp $
      */
+     
+    /**#@+
+     *	include other SimpleTest class files
+     */
+    require_once(dirname(__FILE__) . '/socket.php');
+    /**#@-*/
+
+    /**
+     *    Single post parameter.
+	 *    @package SimpleTest
+	 *    @subpackage WebTester
+     */
+    class SimpleEncodedPair {
+        protected $_key;
+        protected $_value;
+        
+        /**
+         *    Stashes the data for rendering later.
+         *    @param string $key       Form element name.
+         *    @param string $value     Data to send.
+         */
+        function SimpleEncodedPair($key, $value) {
+            $this->_key = $key;
+            $this->_value = $value;
+        }
+        
+        /**
+         *    The pair as a single string.
+         *    @return string        Encoded pair.
+         *    @access public
+         */
+        function asRequest() {
+            return $this->_key . '=' . urlencode($this->_value);
+        }
+        
+        /**
+         *    The MIME part as a string.
+         *    @return string        MIME part encoding.
+         *    @access public
+         */
+        function asMime() {
+            $part = 'Content-Disposition: form-data; ';
+            $part .= "name=\"" . $this->_key . "\"\r\n";
+            $part .= "\r\n" . $this->_value;
+            return $part;
+        }
+        
+        /**
+         *    Is this the value we are looking for?
+         *    @param string $key    Identifier.
+         *    @return boolean       True if matched.
+         *    @access public
+         */
+        function isKey($key) {
+            return $key == $this->_key;
+        }
+        
+        /**
+         *    Is this the value we are looking for?
+         *    @return string       Identifier.
+         *    @access public
+         */
+        function getKey() {
+            return $this->_key;
+        }
+        
+        /**
+         *    Is this the value we are looking for?
+         *    @return string       Content.
+         *    @access public
+         */
+        function getValue() {
+            return $this->_value;
+        }
+    }
+
+    /**
+     *    Single post parameter.
+	 *    @package SimpleTest
+	 *    @subpackage WebTester
+     */
+    class SimpleAttachment {
+        protected $_key;
+        protected $_content;
+        protected $_filename;
+        
+        /**
+         *    Stashes the data for rendering later.
+         *    @param string $key          Key to add value to.
+         *    @param string $content      Raw data.
+         *    @param hash $filename       Original filename.
+         */
+        function SimpleAttachment($key, $content, $filename) {
+            $this->_key = $key;
+            $this->_content = $content;
+            $this->_filename = $filename;
+        }
+        
+        /**
+         *    The pair as a single string.
+         *    @return string        Encoded pair.
+         *    @access public
+         */
+        function asRequest() {
+            return '';
+        }
+        
+        /**
+         *    The MIME part as a string.
+         *    @return string        MIME part encoding.
+         *    @access public
+         */
+        function asMime() {
+            $part = 'Content-Disposition: form-data; ';
+            $part .= 'name="' . $this->_key . '"; ';
+            $part .= 'filename="' . $this->_filename . '"';
+            $part .= "\r\nContent-Type: " . $this->_deduceMimeType();
+            $part .= "\r\n\r\n" . $this->_content;
+            return $part;
+        }
+        
+        /**
+         *    Attempts to figure out the MIME type from the
+         *    file extension and the content.
+         *    @return string        MIME type.
+         *    @access private
+         */
+        function _deduceMimeType() {
+            if ($this->_isOnlyAscii($this->_content)) {
+                return 'text/plain';
+            }
+            return 'application/octet-stream';
+        }
+        
+        /**
+         *    Tests each character is in the range 0-127.
+         *    @param string $ascii    String to test.
+         *    @access private
+         */
+        function _isOnlyAscii($ascii) {
+            for ($i = 0, $length = strlen($ascii); $i < $length; $i++) {
+                if (ord($ascii[$i]) > 127) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        /**
+         *    Is this the value we are looking for?
+         *    @param string $key    Identifier.
+         *    @return boolean       True if matched.
+         *    @access public
+         */
+        function isKey($key) {
+            return $key == $this->_key;
+        }
+        
+        /**
+         *    Is this the value we are looking for?
+         *    @return string       Identifier.
+         *    @access public
+         */
+        function getKey() {
+            return $this->_key;
+        }
+        
+        /**
+         *    Is this the value we are looking for?
+         *    @return string       Content.
+         *    @access public
+         */
+        function getValue() {
+            return $this->_filename;
+        }
+    }
 
     /**
      *    Bundle of GET/POST parameters. Can include
@@ -12,25 +188,30 @@
 	 *    @package SimpleTest
 	 *    @subpackage WebTester
      */
-    class SimpleFormEncoding {
+    class SimpleEncoding {
         protected $_request;
-        protected $_x;
-        protected $_y;
         
         /**
          *    Starts empty.
-         *    @param array $query/SimpleQueryString  Hash of parameters.
-         *                                           Multiple values are
-         *                                           as lists on a single key.
+         *    @param array $query       Hash of parameters.
+         *                              Multiple values are
+         *                              as lists on a single key.
          *    @access public
          */
-        function SimpleFormEncoding($query = false) {
+        function SimpleEncoding($query = false) {
             if (! $query) {
                 $query = array();
             }
-            $this->_request = array();
-            $this->setCoordinates();
+            $this->clear();
             $this->merge($query);
+        }
+        
+        /**
+         *    Empties the request of parameters.
+         *    @access public
+         */
+        function clear() {
+            $this->_request = array();
         }
         
         /**
@@ -43,16 +224,35 @@
             if ($value === false) {
                 return;
             }
-            if (! isset($this->_request[$key])) {
-                $this->_request[$key] = array();
-            }
             if (is_array($value)) {
                 foreach ($value as $item) {
-                    $this->_request[$key][] = $item;
+                    $this->_addPair($key, $item);
                 }
             } else {
-                $this->_request[$key][] = $value;
+                $this->_addPair($key, $value);
             }
+        }
+        
+        /**
+         *    Adds a new value into the request.
+         *    @param string $key            Key to add value to.
+         *    @param string/array $value    New data.
+         *    @access private
+         */
+        function _addPair($key, $value) {
+            $this->_request[] = new SimpleEncodedPair($key, $value);
+        }
+        
+        /**
+         *    Adds a MIME part to the query. Does nothing for a
+         *    form encoded packet.
+         *    @param string $key          Key to add value to.
+         *    @param string $content      Raw data.
+         *    @param hash $filename       Original filename.
+         *    @access public
+         */
+        function attach($key, $content, $filename) {
+            $this->_request[] = new SimpleAttachment($key, $content, $filename);
         }
         
         /**
@@ -63,51 +263,12 @@
          */
         function merge($query) {
             if (is_object($query)) {
-                foreach ($query->getKeys() as $key) {
-                    $this->add($key, $query->getValue($key));
-                }
-                if ($query->getX() !== false) {
-                    $this->setCoordinates($query->getX(), $query->getY());
-                }
+                $this->_request = array_merge($this->_request, $query->getAll());
             } elseif (is_array($query)) {
                 foreach ($query as $key => $value) {
                     $this->add($key, $value);
                 }
             }
-        }
-        
-        /**
-         *    Sets image coordinates. Set to false to clear
-         *    them.
-         *    @param integer $x    Horizontal position.
-         *    @param integer $y    Vertical position.
-         *    @access public
-         */
-        function setCoordinates($x = false, $y = false) {
-            if (($x === false) || ($y === false)) {
-                $this->_x = $this->_y = false;
-                return;
-            }
-            $this->_x = (integer)$x;
-            $this->_y = (integer)$y;
-        }
-        
-        /**
-         *    Accessor for horizontal image coordinate.
-         *    @return integer        X value.
-         *    @access public
-         */
-        function getX() {
-            return $this->_x;
-        }
-         
-        /**
-         *    Accessor for vertical image coordinate.
-         *    @return integer        Y value.
-         *    @access public
-         */
-        function getY() {
-            return $this->_y;
         }
         
         /**
@@ -118,22 +279,227 @@
          *    @access public
          */
         function getValue($key) {
-            if (! isset($this->_request[$key])) {
+            $values = array();
+            foreach ($this->_request as $pair) {
+                if ($pair->isKey($key)) {
+                    $values[] = $pair->getValue();
+                }
+            }
+            if (count($values) == 0) {
                 return false;
-            } elseif (count($this->_request[$key]) == 1) {
-                return $this->_request[$key][0];
+            } elseif (count($values) == 1) {
+                return $values[0];
             } else {
-                return $this->_request[$key];
+                return $values;
             }
         }
         
         /**
-         *    Accessor for key list.
-         *    @return array        List of keys present.
+         *    Accessor for listing of pairs.
+         *    @return array        All pair objects.
          *    @access public
          */
-        function getKeys() {
-            return array_keys($this->_request);
+        function getAll() {
+            return $this->_request;
+        }
+        
+        /**
+         *    Renders the query string as a URL encoded
+         *    request part.
+         *    @return string        Part of URL.
+         *    @access protected
+         */
+        function _encode() {
+            $statements = array();
+            foreach ($this->_request as $pair) {
+                if ($statement = $pair->asRequest()) {
+                    $statements[] = $statement;
+                }
+            }
+            return implode('&', $statements);
+        }
+    }
+    
+    /**
+     *    Bundle of GET parameters. Can include
+     *    repeated parameters.
+	 *    @package SimpleTest
+	 *    @subpackage WebTester
+     */
+    class SimpleGetEncoding extends SimpleEncoding {
+        
+        /**
+         *    Starts empty.
+         *    @param array $query       Hash of parameters.
+         *                              Multiple values are
+         *                              as lists on a single key.
+         *    @access public
+         */
+        function SimpleGetEncoding($query = false) {
+            $this->SimpleEncoding($query);
+        }
+        
+        /**
+         *    HTTP request method.
+         *    @return string        Always GET.
+         *    @access public
+         */
+        function getMethod() {
+            return 'GET';
+        }
+        
+        /**
+         *    Writes no extra headers.
+         *    @param SimpleSocket $socket        Socket to write to.
+         *    @access public
+         */
+        function writeHeadersTo($socket) {
+        }
+        
+        /**
+         *    No data is sent to the socket as the data is encoded into
+         *    the URL.
+         *    @param SimpleSocket $socket        Socket to write to.
+         *    @access public
+         */
+        function writeTo($socket) {
+        }
+        
+        /**
+         *    Renders the query string as a URL encoded
+         *    request part for attaching to a URL.
+         *    @return string        Part of URL.
+         *    @access public
+         */
+        function asUrlRequest() {
+            return $this->_encode();
+        }
+    }
+    
+    /**
+     *    Bundle of URL parameters for a HEAD request.
+	 *    @package SimpleTest
+	 *    @subpackage WebTester
+     */
+    class SimpleHeadEncoding extends SimpleGetEncoding {
+        
+        /**
+         *    Starts empty.
+         *    @param array $query       Hash of parameters.
+         *                              Multiple values are
+         *                              as lists on a single key.
+         *    @access public
+         */
+        function SimpleHeadEncoding($query = false) {
+            $this->SimpleGetEncoding($query);
+        }
+        
+        /**
+         *    HTTP request method.
+         *    @return string        Always HEAD.
+         *    @access public
+         */
+        function getMethod() {
+            return 'HEAD';
+        }
+    }
+    
+    /**
+     *    Bundle of POST parameters. Can include
+     *    repeated parameters.
+	 *    @package SimpleTest
+	 *    @subpackage WebTester
+     */
+    class SimplePostEncoding extends SimpleEncoding {
+        
+        /**
+         *    Starts empty.
+         *    @param array $query       Hash of parameters.
+         *                              Multiple values are
+         *                              as lists on a single key.
+         *    @access public
+         */
+        function SimplePostEncoding($query = false) {
+            $this->SimpleEncoding($query);
+        }
+        
+        /**
+         *    HTTP request method.
+         *    @return string        Always POST.
+         *    @access public
+         */
+        function getMethod() {
+            return 'POST';
+        }
+        
+        /**
+         *    Dispatches the form headers down the socket.
+         *    @param SimpleSocket $socket        Socket to write to.
+         *    @access public
+         */
+        function writeHeadersTo($socket) {
+            $socket->write("Content-Length: " . (integer)strlen($this->_encode()) . "\r\n");
+            $socket->write("Content-Type: application/x-www-form-urlencoded\r\n");
+        }
+        
+        /**
+         *    Dispatches the form data down the socket.
+         *    @param SimpleSocket $socket        Socket to write to.
+         *    @access public
+         */
+        function writeTo($socket) {
+            $socket->write($this->_encode());
+        }
+        
+        /**
+         *    Renders the query string as a URL encoded
+         *    request part for attaching to a URL.
+         *    @return string        Part of URL.
+         *    @access public
+         */
+        function asUrlRequest() {
+            return '';
+        }
+    }
+    
+    /**
+     *    Bundle of POST parameters in the multipart
+     *    format. Can include file uploads.
+	 *    @package SimpleTest
+	 *    @subpackage WebTester
+     */
+    class SimpleMultipartEncoding extends SimplePostEncoding {
+        protected $_boundary;
+        
+        /**
+         *    Starts empty.
+         *    @param array $query       Hash of parameters.
+         *                              Multiple values are
+         *                              as lists on a single key.
+         *    @access public
+         */
+        function SimpleMultipartEncoding($query = false, $boundary = false) {
+            $this->SimplePostEncoding($query);
+            $this->_boundary = ($boundary === false ? uniqid('st') : $boundary);
+        }
+        
+        /**
+         *    Dispatches the form headers down the socket.
+         *    @param SimpleSocket $socket        Socket to write to.
+         *    @access public
+         */
+        function writeHeadersTo($socket) {
+            $socket->write("Content-Length: " . (integer)strlen($this->_encode()) . "\r\n");
+            $socket->write("Content-Type: multipart/form-data, boundary=" . $this->_boundary . "\r\n");
+        }
+        
+        /**
+         *    Dispatches the form data down the socket.
+         *    @param SimpleSocket $socket        Socket to write to.
+         *    @access public
+         */
+        function writeTo($socket) {
+            $socket->write($this->_encode());
         }
         
         /**
@@ -142,15 +508,14 @@
          *    @return string        Part of URL.
          *    @access public
          */
-        function asString() {
-            $statements = array();
-            foreach ($this->_request as $key => $values) {
-                foreach ($values as $value) {
-                    $statements[] = "$key=" . urlencode($value);
-                }
+        function _encode() {
+            $stream = '';
+            foreach ($this->_request as $pair) {
+                $stream .= "--" . $this->_boundary . "\r\n";
+                $stream .= $pair->asMime() . "\r\n";
             }
-            $coords = ($this->_x !== false) ? '?' . $this->_x . ',' . $this->_y : '';
-            return implode('&', $statements) . $coords;
+            $stream .= "--" . $this->_boundary . "--\r\n";
+            return $stream;
         }
     }
 ?>

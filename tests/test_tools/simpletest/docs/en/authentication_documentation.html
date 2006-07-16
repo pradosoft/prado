@@ -21,9 +21,6 @@
 <a href="group_test_documentation.html">Group tests</a>
 </li>
 <li>
-<a href="server_stubs_documentation.html">Server stubs</a>
-</li>
-<li>
 <a href="mock_objects_documentation.html">Mock objects</a>
 </li>
 <li>
@@ -109,6 +106,19 @@ class AuthenticationTest extends WebTestCase {
                 on the amount of detail you want to see.
             </p>
             <p>
+                One theme that runs through SimpleTest is the ability to use
+                <span class="new_code">SimpleExpectation</span> objects wherever a simple
+                match is not enough.
+                If you want only an approximate match to the realm for
+                example, you can do this...
+<pre>
+class AuthenticationTest extends WebTestCase {
+    function test401Header() {
+        $this-&gt;get('http://www.lastcraft.com/protected/');
+        $this-&gt;assertRealm(<strong>new PatternExpectation('/simpletest/i')</strong>);
+    }
+}
+</pre>
                 Most of the time we are not interested in testing the
                 authentication itself, but want to get past it to test
                 the pages underneath.
@@ -116,7 +126,7 @@ class AuthenticationTest extends WebTestCase {
                 an authentication response...
 <pre>
 class AuthenticationTest extends WebTestCase {
-    function testAuthentication() {
+    function testCanAuthenticate() {
         $this-&gt;get('http://www.lastcraft.com/protected/');<strong>
         $this-&gt;authenticate('Me', 'Secret');</strong>
         $this-&gt;assertTitle(...);
@@ -208,9 +218,15 @@ class LogInTest extends WebTestCase {
 </pre>
                 All we are doing is confirming that the cookie is set.
                 As the value is likely to be rather cryptic it's not
-                really worth testing this.
-            </p>
-            <p>
+                really worth testing this with...
+<pre>
+class LogInTest extends WebTestCase {
+    function testSessionCookieIsCorrectPattern() {
+        $this-&gt;get('http://www.my-site.com/login.php');
+        $this-&gt;assertCookie('SID', <strong>new PatternExpectation('/[a-f0-9]{32}/i')</strong>);
+    }
+}
+</pre>
                 The rest of the test would be the same as any other form,
                 but we might want to confirm that we still have the same
                 cookie after log-in as before we entered.
@@ -224,8 +240,8 @@ class LogInTest extends WebTestCase {
         $session = $this-&gt;getCookie('SID');
         $this-&gt;setField('u', 'Me');
         $this-&gt;setField('p', 'Secret');
-        $this-&gt;clickSubmit('Log in');
-        $this-&gt;assertWantedPattern('/Welcome Me/');
+        $this-&gt;click('Log in');
+        $this-&gt;assertText('Welcome Me');
         $this-&gt;assertCookie('SID', $session);</strong>
     }
 }
@@ -243,7 +259,7 @@ class LogInTest extends WebTestCase {
         $this-&gt;get('http://www.my-site.com/login.php');<strong>
         $this-&gt;setCookie('SID', 'Some other session');
         $this-&gt;get('http://www.my-site.com/restricted.php');</strong>
-        $this-&gt;assertWantedPattern('/Access denied/');
+        $this-&gt;assertText('Access denied');
     }
 }
 </pre>
@@ -266,12 +282,12 @@ class LogInTest extends WebTestCase {
         $this-&gt;get('http://www.my-site.com/login.php');
         $this-&gt;setField('u', 'Me');
         $this-&gt;setField('p', 'Secret');
-        $this-&gt;clickSubmit('Log in');
-        $this-&gt;assertWantedPattern('/Welcome Me/');<strong>
+        $this-&gt;click('Log in');
+        $this-&gt;assertText('Welcome Me');<strong>
         
         $this-&gt;restart();
         $this-&gt;get('http://www.my-site.com/restricted.php');
-        $this-&gt;assertWantedPattern('/Access denied/');</strong>
+        $this-&gt;assertText('Access denied');</strong>
     }
 }
 </pre>
@@ -297,13 +313,13 @@ class LogInTest extends WebTestCase {
         $this-&gt;get('http://www.my-site.com/login.php');
         $this-&gt;setField('u', 'Me');
         $this-&gt;setField('p', 'Secret');
-        $this-&gt;clickSubmit('Log in');
-        $this-&gt;assertWantedPattern('/Welcome Me/');
+        $this-&gt;click('Log in');
+        $this-&gt;assertText('Welcome Me');
         <strong>
         $this-&gt;ageCookies(3600);</strong>
         $this-&gt;restart();
         $this-&gt;get('http://www.my-site.com/restricted.php');
-        $this-&gt;assertWantedPattern('/Access denied/');
+        $this-&gt;assertText('Access denied');
     }
 }
 </pre>
