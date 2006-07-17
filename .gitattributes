@@ -1067,6 +1067,7 @@ demos/time-tracker/protected/App_Code/ProjectDao.php -text
 demos/time-tracker/protected/App_Code/TimeTrackerException.php -text
 demos/time-tracker/protected/App_Code/TimeTrackerUser.php -text
 demos/time-tracker/protected/App_Code/TimeTrackerUserTypeHandler.php -text
+demos/time-tracker/protected/App_Code/TrackerAuthManager.php -text
 demos/time-tracker/protected/App_Code/UserDao.php -text
 demos/time-tracker/protected/App_Code/UserManager.php -text
 demos/time-tracker/protected/App_Code/exceptions.txt -text

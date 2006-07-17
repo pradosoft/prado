@@ -82,12 +82,14 @@
 		(#token#, #username#, NOW())
 </insert>
 
-<select id="ValidateAutoSignon" resultClass="TimeTrackerUser">
+<select id="ValidateAutoSignon" resultMap="time-tracker-user">
 	SELECT
 		users.Username as Name,
-		users.EmailAddress as EmailAddress
+		users.EmailAddress as EmailAddress,
+		user_roles.RoleType as role
 	FROM
-		users, signon
+		users LEFT JOIN user_roles ON users.Username = user_roles.UserID,
+		signon
 	WHERE
 		users.Username = signon.Username
 		AND signon.SessionToken = #value#

@@ -45,6 +45,8 @@ class Login extends TPage
 		if($this->Page->IsValid)
 		{
 			$auth = $this->Application->getModule('auth');
+			if($this->remember->Checked)
+				$auth->rememberSignon($this->User);
 			$this->Response->redirect($auth->getReturnUrl());
 		}
 	}

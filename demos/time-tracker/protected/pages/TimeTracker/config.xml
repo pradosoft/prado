@@ -6,7 +6,7 @@
     <!-- user manager module -->
   	<module id="users" class="Application.App_Code.UserManager" />
     <!-- auth manager module -->
-    <module id="auth" class="System.Security.TAuthManager" 
+    <module id="auth" class="Application.App_Code.TrackerAuthManager" 
 		UserManager="users" LoginPage="TimeTracker.Login" />
   </modules>
 

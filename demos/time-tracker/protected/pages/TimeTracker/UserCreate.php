@@ -61,9 +61,7 @@ class UserCreate extends TPage
 			$userDao->addNewUser($newUser, $this->password->Text);
 	
 			//update the user
-			$auth = $this->Application->getModule('auth');
-			$auth->updateSessionUser($newUser);
-			$this->Application->User = $newUser;
+			$this->User->Manager->updateCredential($newUser);
 			
 			//return to requested page
 			$this->Response->redirect($auth->getReturnUrl());
