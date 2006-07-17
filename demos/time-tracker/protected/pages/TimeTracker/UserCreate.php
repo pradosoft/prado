@@ -54,18 +54,26 @@ class UserCreate extends TPage
 			$newUser->EmailAddress = $this->email->Text;
 			$newUser->Name = $this->username->Text;
 			$newUser->IsGuest = false;
-			$newUser->Roles = $this->Application->Parameters['NewUserRoles'];
+			if($this->User->isInRole('admin'))
+				$newUser->Roles = $this->role->SelectedValue;
+			else
+				$newUser->Roles = $this->Application->Parameters['NewUserRoles'];
 	
 			//save the user
 			$userDao = $this->Application->Modules['daos']->getDao('UserDao');
 			$userDao->addNewUser($newUser, $this->password->Text);
 	
 			//update the user
-			$this->User->Manager->updateCredential($newUser);
+			if(!$this->User->isInRole('admin'))
+			{
+				$auth = $this->Application->getModule('auth');
+				$auth->updateCredential($newUser);
 			
-			//return to requested page
-			$this->Response->redirect($auth->getReturnUrl());
-			
+				//return to requested page
+				$this->Response->redirect($auth->getReturnUrl());
+			}
+			else
+				$this->Response->reload();
 			//goto default page.
 			//$url = $this->Service->constructUrl($this->Service->DefaultPage);
 			//$this->Response->redirect($url);		

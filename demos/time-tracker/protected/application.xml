@@ -18,6 +18,6 @@
 	</module>
   </modules>
   <services>
-    <service id="page" class="TPageService" DefaultPage="TimeTracker.UserList"/>
+    <service id="page" class="TPageService" DefaultPage="TimeTracker.TimeEntry"/>
   </services>    
  </application>
