@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap>
+
+<insert ID="AddNewTimeEntry" parameterClass="TimeEntry">
+	INSERT INTO time_entry(
+		EntryCreated, 
+		Duration, 
+		Description, 
+		CategoryID,
+		EntryDate, 
+		CreatorID, 
+		UserID
+	)
+	VALUES(
+		NOW(), 
+		#Duration#, 
+		#Description#, 
+		#Category.ID#,
+		#ReportDate, typeHandler=DateTime#, 
+		#CreatorUserName#, 
+		#Username#
+	)
+  <selectKey property="ID" type="post" resultClass="int">
+		select LAST_INSERT_ID() as value
+  </selectKey>
+</insert>
+
+<resultMap id="time-entry-result" class="TimeEntry">
+	<result property="ID" column="EntryID" type="integer" />
+	<result property="DateCreated" column="EntryCreated" typeHandler="DateTime" />
+	<result property="Duration" column="Duration" type="float" />
+	<result property="Description" column="Description" />
+	<result property="Category" column="CategoryID" />
+	<result property="ReportDate" column="EntryDate" typeHandler="DateTime" />
+	<result property="CreatorUserName" column="CreatorID" />
+	<result property="Username" column="UserID" />
+</resultMap>
+
+<select ID="GetTimeEntryByID" resultMap="time-entry-result">
+	SELECT 
+		*
+	FROM 
+		time_entry
+	WHERE
+		EntryID = #value#
+</select>
+
+<delete id="DeleteTimeEntry" parameterClass="integer">
+	DELETE FROM time_entry WHERE EntryID = #value#
+</delete>
+
+<select ID="GetAllTimeEntriesByProjectIdAndUser" resultMap="time-entry-result">
+	SELECT 
+		time_entry.*
+	FROM
+		time_entry, categories
+	WHERE
+			time_entry.UserID = #username#
+		AND time_entry.CategoryID = categories.CategoryID
+		AND categories.ProjectID = #project#
+	ORDER BY 
+		EntryID ASC
+</select>
+
+<update ID="UpdateTimeEntry" parameterClass="TimeEntry">
+	UPDATE time_entry SET
+		Duration = #Duration#,
+		Description = #Description#,
+		CategoryID = #Category.ID#,
+		EntryDate = #ReportDate, typeHandler=DateTime#,
+		UserID = #Username#
+	WHERE
+		EntryID = #ID#
+</update>
+
+<select id="GetTimeEntriesByDate" parameterClass="array" resultMap="time-entry-result">
+	SELECT 
+		time_entry.*
+	FROM
+		time_entry
+	WHERE
+			time_entry.UserID = #username#
+	AND
+		time_entry.EntryDate BETWEEN 
+			#startDate, typeHandler=DateTime# and 
+			#endDate, typeHandler=DateTime#
+	ORDER BY 
+		EntryID ASC
+</select>
+
+</sqlMap>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap>
+
+<select id="GetTimeReportByProjectID" resultClass="UserReport">
+	SELECT
+		categories.CategoryID as CategoryID,
+		time_entry.UserID as Username,
+		SUM(time_entry.Duration) as ActualDuration
+	FROM
+		time_entry, categories
+	WHERE
+		categories.CategoryID = time_entry.CategoryID
+	AND categories.ProjectID = #value#
+	GROUP BY
+		categories.ProjectID
+	ORDER BY
+		categories.ProjectID
+</select>
+
+<select id="GetTimeReportByCategoryID" resultClass="UserReport">
+	SELECT
+		categories.CategoryID as CategoryID,
+		time_entry.UserID as Username,
+		SUM(time_entry.Duration) as ActualDuration
+	FROM
+		time_entry, categories
+	WHERE
+		categories.CategoryID = time_entry.CategoryID
+	AND categories.CategoryID = #value#
+	GROUP BY
+		time_entry.UserID
+	ORDER BY
+		categories.CategoryID
+</select>	
+
+<select id="GetTimeReportByUsername" resultClass="float">
+	SELECT
+		SUM(Duration) as TotalDuration
+	FROM
+		time_entry
+	WHERE
+		UserID = #value#
+</select>
+
+</sqlMap>
