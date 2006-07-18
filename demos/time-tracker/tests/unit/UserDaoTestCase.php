@@ -11,6 +11,7 @@ class UserDaoTestCase extends BaseTestCase
 		parent::setup();
 		$app = Prado::getApplication();
 		$this->userDao = $app->getModule('daos')->getDao('UserDao');
+		$this->flushDatabase();
 	}
 	
 	function assertIsAdmin($user)
@@ -105,7 +106,6 @@ class UserDaoTestCase extends BaseTestCase
 		$check = $this->userDao->getUserByName($user->Name);
 		
 		$this->assertSameUser($check, $user);
-		$this->flushDatabase();
 	}
 	
 	function testDeleteUserByName()
@@ -117,8 +117,6 @@ class UserDaoTestCase extends BaseTestCase
 		
 		$users = $this->userDao->getAllUsers();
 		$this->assertEqual(count($users), 2);
-		
-		$this->flushDatabase();
 	}
 	
 	function testAutoSignon()
@@ -131,8 +129,6 @@ class UserDaoTestCase extends BaseTestCase
 		$check = $this->userDao->validateSignon($token);
 		
 		$this->assertIsAdmin($check);
-		
-		$this->flushDatabase(); 
 	}
 	
 
@@ -145,8 +141,6 @@ class UserDaoTestCase extends BaseTestCase
 		
 		$check = $this->userDao->validateSignon('adasd');
 		$this->assertNull($check);
-
-		$this->flushDatabase(); 
 	}
 
 	function testAdminRoles()
@@ -169,8 +163,6 @@ class UserDaoTestCase extends BaseTestCase
 		
 		$this->assertIsManagerRole($check);
 		$this->assertIsConsultantRole($check);
-		
-		$this->flushDatabase();
 	}
 	
 	function testSetUserRoleNoNullUser()
@@ -206,8 +198,6 @@ class UserDaoTestCase extends BaseTestCase
 		$this->assertIsAdminRole($check);
 		$this->assertIsManagerRole($check);
 		$this->assertNotConsultantRole($check);
-		
-		$this->flushDatabase();
 	}
 	
 	function testUpdateUserPassword()
@@ -223,8 +213,6 @@ class UserDaoTestCase extends BaseTestCase
 		$success = $this->userDao->validateUser('admin', $pass);
 		
 		$this->assertTrue($success);
-		
-		$this->flushDatabase();
 	}
 	
 	function testClearSignonTokens()

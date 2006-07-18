@@ -1,7 +1,7 @@
 <?php
 
 $basePath=dirname(__FILE__);
-$frameworkPath='../../framework/prado.php';
+$frameworkPath='../../framework/pradolite.php';
 $assetsPath=$basePath."/assets";
 $runtimePath=$basePath."/protected/runtime";
 

@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <sqlMapConfig>
 	
-	<typeHandler type="TimeTrackerUser" 
-		callback="TimeTrackerUserTypeHandler"/>
+	<typeHandlers>
+		<typeHandler type="TimeTrackerUser" 
+			callback="TimeTrackerUserTypeHandler"/>
+		<typeHandler type="DateTime" callback="DateTimeMySQL" />
+	</typeHandlers>
 	
     <provider class="TAdodb">
         <datasource 
@@ -14,8 +17,11 @@
     </provider>
     
     <sqlMaps>
-        <sqlMap resource="users.xml"/>
-		<sqlMap resource="project.xml"/>
+        <sqlMap resource="mysql-maps/users.xml"/>
+		<sqlMap resource="mysql-maps/projects.xml"/>
+		<sqlMap resource="mysql-maps/category.xml" />
+		<sqlMap resource="mysql-maps/time-entry.xml" />
+		<sqlMap resource="mysql-maps/reports.xml" />
     </sqlMaps>
     
 </sqlMapConfig>

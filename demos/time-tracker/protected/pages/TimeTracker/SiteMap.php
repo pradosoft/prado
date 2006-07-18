@@ -43,7 +43,7 @@ class SiteMap extends TTemplateControl
 			case 'ReportResource':
 				$active = $this->ReportMenu;
 				break;
-			case 'TimeEntry':
+			default:
 				$active = $this->LogMenu;
 				break;
 		}

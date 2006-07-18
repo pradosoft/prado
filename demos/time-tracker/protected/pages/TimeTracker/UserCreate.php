@@ -11,8 +11,10 @@
  */
 
 /**
- * Create new user page class. Validate that the usernames are unique
- * and set the new user credentials as the current application credentials.
+ * Create new user wizard page class. Validate that the usernames are unique and
+ * set the new user credentials as the current application credentials.
+ * 
+ * If logged in as admin, the user role can be change during creation.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $16/07/2006: $
@@ -22,6 +24,18 @@
 class UserCreate extends TPage
 {
 	/**
+	 * Sets the default new user roles, default role is set in config.xml
+	 */
+	public function onLoad($param)
+	{
+		if(!$this->IsPostBack)
+		{
+			$this->role->SelectedValue = 	
+				$this->Application->Parameters['NewUserRoles'];
+		}
+	}
+	
+	/**
 	 * Verify that the username is not taken.
 	 * @param TControl custom validator that created the event.
 	 * @param TServerValidateEventParameter validation parameters.
@@ -29,12 +43,27 @@ class UserCreate extends TPage
 	public function checkUsername($sender, $param)
 	{
 		$userDao = $this->Application->Modules['daos']->getDao('UserDao');
-		$user = $userDao->getUserByName($this->username->Text);
-		if(!is_null($user))
+		if($userDao->usernameExists($this->username->Text))
 		{
 			$param->IsValid = false;
 			$sender->ErrorMessage = 
-				"The user name is already taken, try '{$user->Name}01'";
+				"The user name is already taken, try '{$this->username->Text}01'";
+		}
+	}
+	
+	/**
+	 * Skip the role assignment step if not admin.
+	 */
+	public function userWizardNextStep($sender, $param)
+	{
+		if($param->CurrentStepIndex == 0)
+		{
+			//create user with admin credentials
+			if(!$this->User->isInRole('admin'))
+			{
+				$this->createNewUser($sender, $param);
+				$param->NextStepIndex = 2;
+			}
 		}
 	}
 	
@@ -54,30 +83,29 @@ class UserCreate extends TPage
 			$newUser->EmailAddress = $this->email->Text;
 			$newUser->Name = $this->username->Text;
 			$newUser->IsGuest = false;
-			if($this->User->isInRole('admin'))
-				$newUser->Roles = $this->role->SelectedValue;
-			else
-				$newUser->Roles = $this->Application->Parameters['NewUserRoles'];
+			$newUser->Roles = $this->role->SelectedValue;
 	
 			//save the user
 			$userDao = $this->Application->Modules['daos']->getDao('UserDao');
 			$userDao->addNewUser($newUser, $this->password->Text);
 	
-			//update the user
+			//update the user credentials if not admin
 			if(!$this->User->isInRole('admin'))
 			{
 				$auth = $this->Application->getModule('auth');
 				$auth->updateCredential($newUser);
-			
-				//return to requested page
-				$this->Response->redirect($auth->getReturnUrl());
 			}
-			else
-				$this->Response->reload();
-			//goto default page.
-			//$url = $this->Service->constructUrl($this->Service->DefaultPage);
-			//$this->Response->redirect($url);		
 		}
+	}
+	
+	/**
+	 * Continue with requested page.
+	 */
+	public function wizardCompleted($sender, $param)
+	{
+		//return to requested page
+		$auth = $this->Application->getModule('auth');
+		$this->Response->redirect($auth->getReturnUrl());
 	}
 }
 

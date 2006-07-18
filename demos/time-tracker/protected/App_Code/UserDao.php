@@ -34,6 +34,16 @@ class UserDao extends BaseDao
 	}
 	
 	/**
+	 * @param string username
+	 * @return boolean true if username already exists, false otherwise.
+	 */
+	public function usernameExists($username)
+	{
+		$sqlmap = $this->getConnection();
+		return $sqlmap->queryForObject('UsernameExists', $username);
+	}
+	
+	/**
 	 * @return array list of all enabled users.
 	 */
 	public function getAllUsers()

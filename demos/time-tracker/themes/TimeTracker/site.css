@@ -155,7 +155,7 @@ li.active ul.level2 li a:hover
 
 /** forms **/
 
-fieldset.login, fieldset.signup
+fieldset
 {
 	margin: 0;
 	border: 1px solid #6495ED;
@@ -210,8 +210,20 @@ fieldset.login .signin input
 	margin-left: 133px;
 }
 
-fieldset.signup .create
+fieldset.signup .wizardNav
 {
 	margin: 1em;
 	padding-left: 9em;
+}
+
+/** list */
+
+.row0
+{
+	background-color: #cdf;
+}
+
+.row1
+{
+	background-color: #eef;
 }

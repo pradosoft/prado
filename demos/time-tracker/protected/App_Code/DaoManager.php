@@ -98,7 +98,7 @@ class DaoManager extends TModule
 			return $this->_dao[$class]['instance'];
 		}
 		else
-			throw TimeTrackerException('daomanager_undefined_dao', $class);
+			throw new TimeTrackerException('daomanager_undefined_dao', $class);
 	}
 	
 	/**

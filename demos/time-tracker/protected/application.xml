@@ -15,6 +15,9 @@
 	<module id="daos" class="DaoManager" Connection="sqlmap">
 		<dao id="UserDao" class="Application.App_Code.UserDao" />
 		<dao id="ProjectDao" class="Application.App_Code.ProjectDao" />
+		<dao id="TimeEntryDao" class="Application.App_Code.TimeEntryDao" />
+		<dao id="CategoryDao" class="Application.App_Code.CategoryDao" />
+		<dao id="ReportDao" class="Application.App_Code.UserReportsDao" />
 	</module>
   </modules>
   <services>
