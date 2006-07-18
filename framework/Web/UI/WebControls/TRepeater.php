@@ -36,6 +36,12 @@ Prado::using('System.Util.TDataFieldAccessor');
  * {@link setSeparatorTemplate SeparatorTemplate}, if not empty, will be
  * displayed between items.
  *
+ * Each repeater item has a {@link TRepeaterItem::getItemType type}
+ * which tells the position of the item in the repeater. An item in the header
+ * of the repeater is of type TRepeater::IT_HEADER. A body item may be of either
+ * TRepeater::IT_ITEM or TRepeater::IT_ALTERNATINGITEM, depending whether the item
+ * index is odd or even.
+ *
  * You can retrive the repeated contents by the {@link getItems Items} property.
  * The header and footer items can be accessed by {@link getHeader Header}
  * and {@link getFooter Footer} properties, respectively.
@@ -46,9 +52,17 @@ Prado::using('System.Util.TDataFieldAccessor');
  * databinding, an {@link onItemDataBound OnItemDataBound} event will be raised.
  *
  * TRepeater raises an {@link onItemCommand OnItemCommand} whenever a button control
- * within some repeater item raises a <b>Command</b> event. Therefore,
- * you can handle all sorts of <b>Command</b> event in a central place by
+ * within some repeater item raises a <b>OnCommand</b> event. Therefore,
+ * you can handle all sorts of <b>OnCommand</b> event in a central place by
  * writing an event handler for {@link onItemCommand OnItemCommand}.
+ *
+ * Note, the data bound to the repeater are reset to null after databinding.
+ * There are several ways to access the data associated with a repeater item:
+ * - Access the data in {@link onItemDataBound OnItemDataBound} event
+ * - Use {@link getDataKeys DataKeys} to obtain the data key associated with
+ * the specified repeater item and use the key to fetch the corresponding data
+ * from some persistent storage such as DB.
+ * - Save the data in viewstate and get it back during postbacks.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
