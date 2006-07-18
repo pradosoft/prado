@@ -1368,7 +1368,6 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 		return false;
 	}
 
-
 	/**
 	 * Broadcasts an event.
 	 * The event will be sent to all controls on the current page hierarchy.
@@ -1385,7 +1384,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 * @param TControl sender of this event
 	 * @param TEventParameter event parameter
 	 */
-	protected function broadcastEvent($name,$sender,$param)
+	public function broadcastEvent($name,$sender,$param)
 	{
 		$rootControl=(($page=$this->getPage())===null)?$this:$page;
 		$rootControl->broadcastEventInternal($name,$sender,new TBroadcastEventParameter($name,$param));
@@ -1398,7 +1397,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 * @param TControl sender of the event
 	 * @param TBroadcastEventParameter event parameter
 	 */
-	final protected function broadcastEventInternal($name,$sender,$param)
+	private function broadcastEventInternal($name,$sender,$param)
 	{
 		if($this->hasEvent($name))
 			$this->raiseEvent($name,$sender,$param->getParameter());
