@@ -8,6 +8,7 @@ ENH: Ticket#220 - TClientScripts method to import custom javascript files (Wei)
 ENH: Ticket#225 - TRadioButton::getRadioButtonsInGroup() added (Wei)
 ENH: Ticket#223 - Use TRequiredFieldValidator for TRadioButtons with GroupName property (Wei)
 ENH: Ticket#277 - Added TControl.CustomData property (Qiang)
+ENH: Ticket#287 - TControl::broadcastEvent() may raise events now (Qiang)
 NEW: Added TStyleSheet (Wei)
 
 Version 3.0.2 July 2, 2006
