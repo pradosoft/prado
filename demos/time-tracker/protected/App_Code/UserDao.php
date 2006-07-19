@@ -51,7 +51,7 @@ class UserDao extends BaseDao
 		$sqlmap = $this->getConnection();
 		return $sqlmap->queryForList('GetAllUsers');
 	}
-	
+		
 	/**
 	 * @param TimeTrackerUser new user details.
 	 * @param string new user password.

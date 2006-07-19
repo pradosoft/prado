@@ -1119,6 +1119,7 @@ demos/time-tracker/protected/pages/TimeTracker/Logout.php -text
 demos/time-tracker/protected/pages/TimeTracker/MainLayout.php -text
 demos/time-tracker/protected/pages/TimeTracker/MainLayout.tpl -text
 demos/time-tracker/protected/pages/TimeTracker/ProjectDetails.page -text
+demos/time-tracker/protected/pages/TimeTracker/ProjectDetails.php -text
 demos/time-tracker/protected/pages/TimeTracker/ProjectList.page -text
 demos/time-tracker/protected/pages/TimeTracker/ReportProject.page -text
 demos/time-tracker/protected/pages/TimeTracker/ReportResource.page -text
@@ -1141,6 +1142,8 @@ demos/time-tracker/tests/unit/ProjectTestCase.php -text
 demos/time-tracker/tests/unit/TimeEntryDaoTestCase.php -text
 demos/time-tracker/tests/unit/UserDaoTestCase.php -text
 demos/time-tracker/themes/TimeTracker/background.png -text
+demos/time-tracker/themes/TimeTracker/bar.png -text
+demos/time-tracker/themes/TimeTracker/project.css -text
 demos/time-tracker/themes/TimeTracker/site.css -text
 demos/time-tracker/themes/TimeTracker/tabs.png -text
 docs/application.xml -text

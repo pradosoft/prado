@@ -1,0 +1,70 @@
+fieldset.project label
+{
+	display: block;
+	font-size: 0.9em;
+	margin-bottom: 0.2em;
+}
+
+.projectInfo
+{
+	width: 40%;
+	float: left;
+}
+
+.projectMembers
+{
+	width: 40%;
+	float: left;
+	margin-left: 0.3em;
+}
+
+fieldset.project h2
+{
+	background-color: #D2E8E8;
+	font-size: 0.8em;
+	color: #4169E1;
+	padding: 0.65em;
+	text-align: center;
+	background-image: url(bar.png);
+	background-repeat: repeat-x;
+	background-position: center;
+}
+
+.projectInfo div, .projectMembers div
+{
+	margin: 0.7em 0;
+}
+
+.projectInfo div input, .projectInfo div.manager select
+{
+	width: 15em;
+}
+
+.projectInfo .estimateHours input
+{
+	width: 4em;
+}
+
+.projectInfo .description textarea
+{
+	width: 17em;
+	height: 10em;
+}
+
+.projectMembers select
+{
+	width: 15em;
+	height: 17em;
+}
+
+.actionButtons
+{
+	float: left;
+	width: 90%;
+	padding: 0.65em;
+	text-align: center;
+	background-color: #D2E8E8;
+	background-image: url(bar.png);
+	background-repeat: repeat-x;
+	background-position: center;
+}

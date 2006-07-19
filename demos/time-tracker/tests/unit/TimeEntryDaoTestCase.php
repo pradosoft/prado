@@ -155,7 +155,7 @@ class TimeEntryDaoTestCase extends BaseTestCase
 
 		return array($entry, $entry2, $added);
 	}
-/*	
+	
 	function testCreateNewTimeEntry()
 	{
 		$added = $this->createTimeEntry1();
@@ -247,7 +247,7 @@ class TimeEntryDaoTestCase extends BaseTestCase
 		$this->assertEqual($list[0]->Username, 'consultant');
 		$this->assertEqual($list[0]->ActualDuration, 1.2);
 	}
-*/
+
 	function testTimeReportsByProject()
 	{
 		$added = $this->createTimeEntries2();
@@ -256,7 +256,10 @@ class TimeEntryDaoTestCase extends BaseTestCase
 		
 		$list = $this->reportDao->getTimeReportsByProjectID(1);
 		
-		var_dump($list);
+		$this->assertEqual(count($list),1);
+		$this->assertEqual($list[0]->Username, 'consultant');
+		$this->assertEqual($list[0]->CategoryID, 1);
+		$this->assertEqual($list[0]->ActualDuration, 6.7);
 	}
 
 }

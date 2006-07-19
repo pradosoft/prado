@@ -1,4 +1,46 @@
 <com:TContent ID="Main">
-<h1>Project Details</h1>
+<h1>Create New Project</h1>
+
+<fieldset class="project"><legend>Project Configuration</legend>
+  <p>Define the project and specify which users will be part of the project. 
+  	 Then add categories to the project to help keep track of specific areas of 
+  	 product. Press the <tt>SAVE</tt> button at the bottom for your configuration 
+  	 to take effect.</p>
+  <div class="projectInfo">
+  	<h2>Project Information</h2>
+  	<div class="projectName">
+  	<com:TLabel ForControl="projectName" Text="Project Name"/>
+  	<com:TTextBox ID="projectName" />
+  	</div>
+  	<div class="manager">
+  	<com:TLabel ForControl="manager" Text="Project Manager" />
+  	<com:TDropDownList ID="manager" />
+  	</div>
+  	<div class="completionDate">
+  	<com:TLabel ForControl="completionDate" Text="Estimated complete date:"/>
+  	<com:TDatePicker ID="completionDate" InputMode="DropDownList" />
+  	</div>
+  	<div class="estimateHours">
+  	<com:TLabel ForControl="estimateHours" Text="Estimated Duration (in hours):"/>
+  	<com:TTextBox ID="estimateHours" />
+  	</div>
+  	<div class="description">
+  	<com:TLabel ForControl="description" Text="Description:" />
+  	<com:TTextBox ID="description" TextMode="MultiLine" />
+  	</div>
+  </div>
+  
+  <div class="projectMembers">
+  	<h2>Specify Project Members</h2>
+  	<p>Select a resource. Use ctrl+click to select multiple resources at once:</p>
+  	<com:TListBox ID="members" SelectionMode="Multiple" />
+  </div> 
+  
+  <div class="actionButtons">
+  	<com:TButton Text="Save" />
+  	<com:TButton Text="Cancel" />
+  	<com:TButton Text="Delete" />
+  </div>
+ </fieldset>
 
 </com:TContent>
