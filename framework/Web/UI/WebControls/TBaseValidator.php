@@ -11,6 +11,11 @@
  */
 
 /**
+ * Using TLabel class
+ */
+Prado::using('System.Web.UI.WebControls.TLabel');
+
+/**
  * TBaseValidator class
  *
  * TBaseValidator serves as the base class for validator controls.
@@ -670,7 +675,7 @@ class TValidatorClientScript extends TComponent
 	{
 		return $this->_options->toArray();
 	}
-	
+
 
 	/**
 	 * Ensure the string is a valid javascript function. If the string begins
