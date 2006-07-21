@@ -75,6 +75,7 @@ class THtmlWriter extends TApplicationComponent implements ITextWriter
 		'onchange'=>true,
 		'src'=>true,
 		'title'=>true,
+		'label'=>true,
 		'value'=>true
 	);
 	/**
