@@ -621,23 +621,52 @@ abstract class TListControl extends TDataBoundControl
 		if($this->_items)
 		{
 			$writer->writeLine();
+			$previousGroup=null;
 			foreach($this->_items as $item)
 			{
 				if($item->getEnabled())
 				{
-					if($item->getSelected())
-						$writer->addAttribute('selected','selected');
-					$writer->addAttribute('value',$item->getValue());
 					if($item->getHasAttributes())
 					{
+						$group=$item->getAttributes()->remove('Group');
+						if($group!==$previousGroup)
+						{
+							if($previousGroup!==null)
+							{
+								$writer->renderEndTag();
+								$writer->writeLine();
+								$previousGroup=null;
+							}
+							if($group!==null)
+							{
+								$writer->addAttribute('label',$group);
+								$writer->renderBeginTag('optgroup');
+								$writer->writeLine();
+								$previousGroup=$group;
+							}
+						}
 						foreach($item->getAttributes() as $name=>$value)
 							$writer->addAttribute($name,$value);
 					}
+					else if($previousGroup!==null)
+					{
+						$writer->renderEndTag();
+						$writer->writeLine();
+						$previousGroup=null;
+					}
+					if($item->getSelected())
+						$writer->addAttribute('selected','selected');
+					$writer->addAttribute('value',$item->getValue());
 					$writer->renderBeginTag('option');
 					$writer->write(THttpUtility::htmlEncode($item->getText()));
 					$writer->renderEndTag();
 					$writer->writeLine();
 				}
+			}
+			if($previousGroup!==null)
+			{
+				$writer->renderEndTag();
+				$writer->writeLine();
 			}
 		}
 	}

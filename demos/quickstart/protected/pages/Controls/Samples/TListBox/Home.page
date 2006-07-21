@@ -255,6 +255,20 @@ List box causing validation:
 </td>
 </tr>
 
+<tr>
+<td class="samplenote">
+List box with option groups:
+</td>
+<td class="sampleaction">
+<com:TListBox>
+  <com:TListItem Value="value 1" Text="item 1" Attributes.Group="group 1"/>
+  <com:TListItem Value="value 2" Text="item 2" Attributes.Group="group 1"/>
+  <com:TListItem Value="value 3" Text="item 3" Attributes.Group="group 2"/>
+  <com:TListItem Value="value 4" Text="item 4" Attributes.Group="group 2"/>
+</com:TListBox>
+</td>
+</tr>
+
 </table>
 
 </com:TContent>
