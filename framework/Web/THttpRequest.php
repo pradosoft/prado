@@ -162,27 +162,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 		}
 
 		if($this->getUrlFormat()==='Path' && ($pathInfo=trim($this->_pathInfo,'/'))!=='')
-		{
-			$paths=explode('/',$pathInfo);
-			foreach($paths as $path)
-			{
-				if(($path=trim($path))!=='')
-				{
-					if(($pos=strpos($path,','))!==false)
-					{
-						$name=substr($path,0,$pos);
-						$value=substr($path,$pos+1);
-						if(($pos=strpos($name,'[]'))!==false)
-							$getVariables[substr($name,0,$pos)][]=$value;
-						else
-							$getVariables[$name]=$value;
-					}
-					else
-						$getVariables[$path]='';
-				}
-			}
 			$this->_items=array_merge($this->parseUrl(),$_POST);
-		}
 		else
 			$this->_items=array_merge($_GET,$_POST);
 
