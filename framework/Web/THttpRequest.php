@@ -448,6 +448,8 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 * If you do so, you may also need to override {@link parseUrl} so that the URL can be properly parsed.
 	 * The URL is constructed as the following format:
 	 * /entryscript.php?serviceID=serviceParameter&get1=value1&...
+	 * If {@link setUrlFormat UrlFormat} is 'Path', the following format is used instead:
+	 * /entryscript.php/serviceID/serviceParameter/get1,value1/get2,value2...
 	 * @param string service ID
 	 * @param string service parameter
 	 * @param array GET parameters, null if not needed
@@ -458,7 +460,10 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function constructUrl($serviceID,$serviceParam,$getItems=null,$encodeAmpersand=false,$encodeGetItems=true)
 	{
-		$url=$serviceID.'='.$serviceParam;
+		if($this->getUrlFormat()==='Path')
+			$url=$serviceID.'/'.$serviceParam;
+		else
+			$url=$serviceID.'='.$serviceParam;
 		$amp=$encodeAmpersand?'&amp;':'&';
 		if(is_array($getItems) || $getItems instanceof Traversable)
 		{
@@ -507,7 +512,10 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 
 	/**
 	 * Parses the request URL and returns an array of input parameters (including GET variables).
+	 * This method is invoked when the URL format is 'Path'.
+	 * You may override this method to support customized URL format.
 	 * @return array list of input parameters, indexed by parameter names
+	 * @see constructUrl
 	 */
 	protected function parseUrl()
 	{
@@ -515,6 +523,8 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 		{
 			$paths=explode('/',$this->_pathInfo);
 			$getVariables=$_GET;
+			$index=0;
+			$serviceID=null;
 			foreach($paths as $path)
 			{
 				if(($path=trim($path))!=='')
@@ -528,6 +538,13 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 						else
 							$getVariables[$name]=$value;
 					}
+					else if($index===0)
+					{
+						$serviceID=$path;
+						$getVariables[$serviceID]='';
+					}
+					else if($index===1 && $serviceID!==null)
+						$getVariables[$serviceID]=$path;
 					else
 						$getVariables[$path]='';
 				}

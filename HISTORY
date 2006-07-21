@@ -11,6 +11,7 @@ ENH: Ticket#223 - Use TRequiredFieldValidator for TRadioButtons with GroupName p
 ENH: Ticket#277 - Added TControl.CustomData property (Qiang)
 ENH: Ticket#287 - TControl::broadcastEvent() may raise events now (Qiang)
 ENH: Ticket#292 - Added THttpRequest::parseUrl() so that it is easier to be extended (Qiang)
+ENH: Better URL 'Path' format (Qiang)
 NEW: Added TStyleSheet (Wei)
 
 Version 3.0.2 July 2, 2006
