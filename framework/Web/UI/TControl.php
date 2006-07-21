@@ -1423,27 +1423,36 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	/**
 	 * Broadcasts an event.
 	 * The event will be sent to all controls on the current page hierarchy.
-	 * If this control is not on a page, the event will be sent to all its
-	 * child controls recursively.
-	 * Controls implementing {@link IBroadcastEventReceiver} will get a chance
-	 * to respond to the event.
-	 * @param TControl sender of the event
-	 * @param TBroadcastEventParameter event parameter
+	 * If a control defines the event, the event will be raised for the control.
+	 * If a control implements {@link IBroadcastEventReceiver}, its
+	 * {@link IBroadcastEventReceiver::broadcastEventReceived broadcastEventReceived()} method will
+	 * be invoked which gives the control a chance to respond to the event.
+	 * For example, when broadcasting event 'OnClick', all controls having 'OnClick'
+	 * event will have this event raised, and all controls implementing
+	 * {@link IBroadcastEventReceiver} will also have its
+	 * {@link IBroadcastEventReceiver::broadcastEventReceived broadcastEventReceived()}
+	 * invoked.
+	 * @param string name of the broadcast event
+	 * @param TControl sender of this event
+	 * @param TEventParameter event parameter
 	 */
-	protected function broadcastEvent($sender,TBroadCastEventParameter $param)
+	public function broadcastEvent($name,$sender,$param)
 	{
-		$origin=(($page=$this->getPage())===null)?$this:$page;
-		$origin->broadcastEventInternal($sender,$param);
+		$rootControl=(($page=$this->getPage())===null)?$this:$page;
+		$rootControl->broadcastEventInternal($name,$sender,new TBroadcastEventParameter($name,$param));
 	}
 
 	/**
 	 * Recursively broadcasts an event.
 	 * This method should only be used by framework developers.
+	 * @param string name of the broadcast event
 	 * @param TControl sender of the event
 	 * @param TBroadcastEventParameter event parameter
 	 */
-	final protected function broadcastEventInternal($sender,$param)
+	private function broadcastEventInternal($name,$sender,$param)
 	{
+		if($this->hasEvent($name))
+			$this->raiseEvent($name,$sender,$param->getParameter());
 		if($this instanceof IBroadcastEventReceiver)
 			$this->broadcastEventReceived($sender,$param);
 		if($this->getHasControls())
@@ -1451,7 +1460,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 			foreach($this->_rf[self::RF_CONTROLS] as $control)
 			{
 				if($control instanceof TControl)
-					$control->broadcastEventInternal($sender,$param);
+					$control->broadcastEventInternal($name,$sender,$param);
 			}
 		}
 	}

@@ -43,6 +43,12 @@ Prado::using('System.Web.UI.WebControls.TPanel');
  * To change the state of an item, set {@link setEditItemIndex EditItemIndex}
  * or {@link setSelectedItemIndex SelectedItemIndex} property.
  *
+ * Each datagrid item has a {@link TDataGridItem::getItemType type}
+ * which tells the position and state of the item in the datalist. An item in the header
+ * of the repeater is of type 'Header'. A body item may be of either
+ * 'Item', 'AlternatingItem', 'SelectedItem' or 'EditItem', depending whether the item
+ * index is odd or even, whether it is being selected or edited.
+ *
  * A datagrid is specified with a list of columns. Each column specifies how the corresponding
  * table column will be displayed. For example, the header/footer text of that column,
  * the cells in that column, and so on. The following column types are currently
@@ -127,6 +133,14 @@ Prado::using('System.Web.UI.WebControls.TPanel');
  * TDataGrid also raises an {@link onItemCreated OnItemCreated} event for
  * every newly created datagrid item. You can respond to this event to customize
  * the content or style of the newly created item.
+ *
+ * Note, the data bound to the datagrid are reset to null after databinding.
+ * There are several ways to access the data associated with a datagrid row:
+ * - Access the data in {@link onItemDataBound OnItemDataBound} event
+ * - Use {@link getDataKeys DataKeys} to obtain the data key associated with
+ * the specified datagrid row and use the key to fetch the corresponding data
+ * from some persistent storage such as DB.
+ * - Save the data in viewstate and get it back during postbacks.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $

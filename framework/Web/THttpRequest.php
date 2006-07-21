@@ -162,27 +162,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 		}
 
 		if($this->getUrlFormat()==='Path' && ($pathInfo=trim($this->_pathInfo,'/'))!=='')
-		{
-			$paths=explode('/',$pathInfo);
-			foreach($paths as $path)
-			{
-				if(($path=trim($path))!=='')
-				{
-					if(($pos=strpos($path,','))!==false)
-					{
-						$name=substr($path,0,$pos);
-						$value=substr($path,$pos+1);
-						if(($pos=strpos($name,'[]'))!==false)
-							$getVariables[substr($name,0,$pos)][]=$value;
-						else
-							$getVariables[$name]=$value;
-					}
-					else
-						$getVariables[$path]='';
-				}
-			}
-			$this->_items=array_merge($getVariables,array_merge($_GET,$_POST));
-		}
+			$this->_items=array_merge($this->parseUrl(),$_POST);
 		else
 			$this->_items=array_merge($_GET,$_POST);
 
@@ -293,7 +273,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	{
 		return ($this->getIsSecureConnection() ? "https://" : "http://") . $_SERVER ['HTTP_HOST'];
 	}
-	
+
 	/**
 	 * @return string entry script URL (w/o host part)
 	 */
@@ -309,7 +289,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	{
 		return $this->getBaseUrl() . $this->getApplicationUrl();
 	}
-	
+
 	/**
 	 * @return string application entry script file path (processed w/ realpath())
 	 */
@@ -465,18 +445,25 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	/**
 	 * Constructs a URL that is recognizable by Prado.
 	 * You may override this method to provide your own way of URL formatting.
+	 * If you do so, you may also need to override {@link parseUrl} so that the URL can be properly parsed.
 	 * The URL is constructed as the following format:
 	 * /entryscript.php?serviceID=serviceParameter&get1=value1&...
+	 * If {@link setUrlFormat UrlFormat} is 'Path', the following format is used instead:
+	 * /entryscript.php/serviceID/serviceParameter/get1,value1/get2,value2...
 	 * @param string service ID
 	 * @param string service parameter
 	 * @param array GET parameters, null if not needed
 	 * @param boolean whether to encode the ampersand in URL, defaults to false.
 	 * @param boolean whether to encode the GET parameters (their names and values), defaults to true.
 	 * @return string URL
+	 * @see parseUrl
 	 */
 	public function constructUrl($serviceID,$serviceParam,$getItems=null,$encodeAmpersand=false,$encodeGetItems=true)
 	{
-		$url=$serviceID.'='.$serviceParam;
+		if($this->getUrlFormat()==='Path')
+			$url=$serviceID.'/'.$serviceParam;
+		else
+			$url=$serviceID.'='.$serviceParam;
 		$amp=$encodeAmpersand?'&amp;':'&';
 		if(is_array($getItems) || $getItems instanceof Traversable)
 		{
@@ -521,6 +508,51 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 				$url.=$amp.SID;
 			return $this->getApplicationUrl().'?'.$url;
 		}
+	}
+
+	/**
+	 * Parses the request URL and returns an array of input parameters (including GET variables).
+	 * This method is invoked when the URL format is 'Path'.
+	 * You may override this method to support customized URL format.
+	 * @return array list of input parameters, indexed by parameter names
+	 * @see constructUrl
+	 */
+	protected function parseUrl()
+	{
+		if($this->_pathInfo!=='')
+		{
+			$paths=explode('/',$this->_pathInfo);
+			$getVariables=$_GET;
+			$index=0;
+			$serviceID=null;
+			foreach($paths as $path)
+			{
+				if(($path=trim($path))!=='')
+				{
+					if(($pos=strpos($path,','))!==false)
+					{
+						$name=substr($path,0,$pos);
+						$value=substr($path,$pos+1);
+						if(($pos=strpos($name,'[]'))!==false)
+							$getVariables[substr($name,0,$pos)][]=$value;
+						else
+							$getVariables[$name]=$value;
+					}
+					else if($index===0)
+					{
+						$serviceID=$path;
+						$getVariables[$serviceID]='';
+					}
+					else if($index===1 && $serviceID!==null)
+						$getVariables[$serviceID]=$path;
+					else
+						$getVariables[$path]='';
+				}
+			}
+			return $getVariables;
+		}
+		else
+			return $_GET;
 	}
 
 	/**

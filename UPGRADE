@@ -16,6 +16,10 @@ for both A and B.
 
 Upgrading from v3.0.2
 ---------------------
+- The signature of TControl::broadcastEvent() is changed from
+  broadcastEvent($sender,TBroadCastEventParameter $param) to
+  broadcastEvent($name,$sender,$param).
+  This makes the call to broadcastEvent() to be consistent with raiseEvent().
 
 Upgrading from v3.0.1
 ---------------------

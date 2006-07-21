@@ -11,6 +11,11 @@
  */
 
 /**
+ * Using TLabel class
+ */
+Prado::using('System.Web.UI.WebControls.TLabel');
+
+/**
  * TBaseValidator class
  *
  * TBaseValidator serves as the base class for validator controls.
@@ -474,10 +479,10 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function validate()
 	{
-		$this->onValidate();
+		if($visible=$this->getVisible(true))
+			$this->onValidate();
 		$this->setIsValid(true);
-		$control=$this->getValidationTarget();
-		if($control && $this->getVisible(true) && $this->getEnabled())
+		if($this->getValidationTarget() && $visible && $this->getEnabled())
 		{
 			if($this->evaluateIsValid())
 			{
@@ -534,6 +539,9 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * This event is raised right before the validator starts to perform validation.
+	 * You may use this event to change the behavior of validation.
+	 * For example, you may disable the validator if certain condition is satisfied.
+	 * Note, the event will NOT be raised if the validator is invisible.
 	 */
 	public function onValidate()
 	{

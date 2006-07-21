@@ -85,11 +85,25 @@ Prado::using('System.Web.UI.WebControls.TRepeatInfo');
  * event will be raised. Note, the selected index may not be actually changed.
  * The event mainly informs the server side that the end-user has made a selection.
  *
+ * Each datalist item has a {@link TDataListItem::getItemType type}
+ * which tells the position and state of the item in the datalist. An item in the header
+ * of the repeater is of type 'Header'. A body item may be of either
+ * 'Item', 'AlternatingItem', 'SelectedItem' or 'EditItem', depending whether the item
+ * index is odd or even, whether it is being selected or edited.
+ *
  * TDataList raises an {@link onItemCommand OnItemCommand} whenever a button control
  * within some TDataList item raises a <b>OnCommand</b> event. If the command name
  * is one of the followings: 'edit', 'update', 'select', 'delete', 'cancel' (case-insensitive),
  * another event will also be raised. For example, if the command name is 'edit',
  * then the new event is {@link onEditCommand OnEditCommand}.
+ *
+ * Note, the data bound to the datalist are reset to null after databinding.
+ * There are several ways to access the data associated with a datalist item:
+ * - Access the data in {@link onItemDataBound OnItemDataBound} event
+ * - Use {@link getDataKeys DataKeys} to obtain the data key associated with
+ * the specified datalist item and use the key to fetch the corresponding data
+ * from some persistent storage such as DB.
+ * - Save the data in viewstate and get it back during postbacks.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
