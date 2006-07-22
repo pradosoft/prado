@@ -68,6 +68,10 @@ class TRadioButton extends TCheckBox
 	 */
 	private $_globalID;
 	/**
+	 * @var string previous UniqueID (used to calculate UniqueGroup)
+	 */
+	private $_previousUniqueID=null;
+	/**
 	 * @var string the name used to fetch radiobutton post data
 	 */
 	private $_uniqueGroupName=null;
@@ -140,12 +144,45 @@ class TRadioButton extends TCheckBox
 	}
 
 	/**
-	 * Sets the name of the group that the radio button belongs to
+	 * Sets the name of the group that the radio button belongs to.
+	 * The group is unique among the control's naming container.
 	 * @param string the group name
+	 * @see setGlobalGroupName
 	 */
 	public function setGroupName($value)
 	{
 		$this->setViewState('GroupName',$value,'');
+		$this->_uniqueGroupName=null;
+	}
+
+	/**
+	 * @return string the name of the global group that the radio button belongs to. Defaults to empty.
+	 */
+	public function getGlobalGroupName()
+	{
+		return $this->getViewState('GlobalGroupName','');
+	}
+
+	/**
+	 * Sets the name of the global group that the radio button belongs to.
+	 * A global group is a radiobutton group unique in the whole page hierarchy,
+	 * while the {@link setGroupName GroupName} specifies a group that is unique
+	 * among the control's naming container.
+	 * For example, each cell of a {@link TDataGrid} is a naming container.
+	 * If you specify {@link setGroupName GroupName} for a radiobutton in a cell,
+	 * it groups together radiobutton within a cell, but not the other, even though
+	 * they have the same {@link setGroupName GroupName}.
+	 * On the contratry, if {@link setGlobalGroupName GlobalGroupName} is used instead,
+	 * it will group all appropriate radio buttons on the whole page hierarchy.
+	 * Note, when both {@link setGlobalGroupName GlobalGroupName} and
+	 * {@link setGroupName GroupName}, the former takes precedence.
+	 * @param string the group name
+	 * @see setGroupName
+	 */
+	public function setGlobalGroupName($value)
+	{
+		$this->setViewState('GlobalGroupName',$value,'');
+		$this->_uniqueGroupName=null;
 	}
 
 	/**
@@ -182,10 +219,12 @@ class TRadioButton extends TCheckBox
 	 */
 	private function getUniqueGroupName()
 	{
-		if($this->_uniqueGroupName===null)
+		if(($groupName=$this->getGlobalGroupName())!=='')
+			return $groupName;
+		else if(($uniqueID=$this->getUniqueID())!==$this->_previousUniqueID || $this->_uniqueGroupName===null)
 		{
 			$groupName=$this->getGroupName();
-			$uniqueID=$this->getUniqueID();
+			$this->_previousUniqueID=$uniqueID;
 			if($uniqueID!=='')
 			{
 				if(($pos=strrpos($uniqueID,TControl::ID_SEPARATOR))!==false)
