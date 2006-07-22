@@ -1679,6 +1679,7 @@ tests/FunctionalTests/validators/protected/pages/RangeValidatorString.page -text
 tests/FunctionalTests/validators/protected/pages/RegularExpressionValidator.page -text
 tests/FunctionalTests/validators/protected/pages/RequiredFieldValidator.page -text
 tests/FunctionalTests/validators/protected/pages/RequiredListValidator.page -text
+tests/FunctionalTests/validators/protected/pages/StringRangeValidator.page -text
 tests/FunctionalTests/validators/protected/pages/ValidationSummary.page -text
 tests/FunctionalTests/validators/protected/pages/config.xml -text
 tests/FunctionalTests/validators/tests/ButtonTestCase.php -text

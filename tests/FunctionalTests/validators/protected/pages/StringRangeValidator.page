@@ -1,0 +1,12 @@
+<com:TContent ID="Content">
+
+	<com:TTextBox ID="text1" />
+	<com:TRangeValidator
+		ControlToValidate="text1"
+		MinValue="5"
+		MaxValue="7"
+		DataType="StringLength"
+		ErrorMessage="String length must be between 5 and 7" />
+	<com:TButton Text="Submit!" />
+	
+</com:TContent>
