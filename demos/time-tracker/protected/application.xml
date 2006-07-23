@@ -21,6 +21,6 @@
 	</module>
   </modules>
   <services>
-    <service id="page" class="TPageService" DefaultPage="TimeTracker.TimeEntry"/>
+    <service id="page" class="TPageService" DefaultPage="TimeTracker.LogTimeEntry"/>
   </services>    
  </application>

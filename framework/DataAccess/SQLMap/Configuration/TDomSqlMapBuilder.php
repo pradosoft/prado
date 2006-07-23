@@ -64,8 +64,8 @@ class TDomSqlMapBuilder
 		if(isset($document->settings) && isset($document->settings->setting))
 			$this->configureSettings($document->settings);
 			
-		if(isset($document->typeHandler))
-			$this->loadTypeHandler($document, $this->_configFile);			
+		foreach($document->xpath('//typeHandler') as $handler)	
+			$this->loadTypeHandler($handler, $this->_configFile);			
 
 		//load database provider
 		if(isset($document->provider) && isset($document->provider->datasource))
@@ -79,8 +79,8 @@ class TDomSqlMapBuilder
 					'sqlmap_unable_to_find_db_config', $this->_configFile);
 		}
 
-		if(isset($document->sqlMaps) && isset($document->sqlMaps->sqlMap))
-			$this->loadSqlMappingFiles($document->sqlMaps);
+		foreach($document->xpath('//sqlMap') as $sqlmap)
+			$this->loadSqlMappingFiles($sqlmap);
 
 		if($this->_sqlMapper->getIsCacheModelsEnabled())
 			$this->attachCacheModel();
@@ -182,46 +182,40 @@ class TDomSqlMapBuilder
 		//var_dump($node);
 	}
 
-	protected function loadTypeHandler($nodes, $file)
+	protected function loadTypeHandler($node, $file)
 	{
-		foreach($nodes->typeHandler as $node)
+		if(!is_null($node['type']) && !is_null($node['callback']))
 		{
-			if(!is_null($node['type']) && !is_null($node['callback']))
+			$type = (string)$node['type'];
+			$dbType = (string)$node['dbType'];
+			$class = (string)$node['callback'];
+			if(class_exists('Prado', false))
 			{
-				$type = (string)$node['type'];
-				$class = (string)$node['callback'];
-				if(class_exists('Prado', false))
-				{
-					$handler = Prado::createComponent($class);
-				}
-				else
-				{
-					if(class_exists($class,false))
-						$handler = new $class;
-					else
-					throw new TSqlMapConfigurationException(
-							'sqlmap_type_handler_class_undef', $file, $class);
-				}
-				$factory = $this->_sqlMapper->getTypeHandlerFactory();
-				$factory->register($type, $handler);
+				$handler = Prado::createComponent($class);
 			}
 			else
 			{
+				if(class_exists($class,false))
+					$handler = new $class;
+				else
 				throw new TSqlMapConfigurationException(
-					'sqlmap_type_handler_callback_undef', $file);
+						'sqlmap_type_handler_class_undef', $file, $class);
 			}
+			$factory = $this->_sqlMapper->getTypeHandlerFactory();
+			$factory->register($type, $handler, $dbType);
+		}
+		else
+		{
+			throw new TSqlMapConfigurationException(
+				'sqlmap_type_handler_callback_undef', $file);
 		}
 	}
 
-	protected function loadSqlMappingFiles($sqlmappings)
+	protected function loadSqlMappingFiles($node)
 	{
-		foreach($sqlmappings->sqlMap as $node)
-		{
-			$resource = $this->getResourceFromPath((string)$node['resource']);
-			$sqlmap = $this->getConfigAsXmlDocument($resource);
-			$this->configureSqlMap($sqlmap,$resource);
-		}
-
+		$resource = $this->getResourceFromPath((string)$node['resource']);
+		$sqlmap = $this->getConfigAsXmlDocument($resource);
+		$this->configureSqlMap($sqlmap,$resource);
 		$this->resolveResultMapping();
 	}
 
@@ -243,27 +237,26 @@ class TDomSqlMapBuilder
 	//	if(isset($document->typeAlias))
 	//		foreach($document->typeAlias as $node)
 	//			TTypeAliasDeSerializer::Deserialize($node, $this->_sqlMapper);
-		if(isset($document->resultMap))
-			foreach($document->resultMap as $node)
-				$this->loadResultMap($node,$document,$file);
-		if(isset($document->parameterMap))
-			foreach($document->parameterMap as $node)
-				$this->loadParameterMap($node, $document, $file);
-		if(isset($document->statement))
-			foreach($document->statement as $node)
-				$this->loadStatementTag($node, $document,$file);
-		if(isset($document->select))
-			foreach($document->select as $node)
-				$this->loadSelectTag($node, $document, $file);
-		if(isset($document->insert))
-			foreach($document->insert as $node)
-				$this->loadInsertTag($node, $document, $file);
-		if(isset($document->update))
-			foreach($document->update as $node)
-				$this->loadUpdateTag($node, $document, $file);
-		if(isset($document->delete))
-			foreach($document->delete as $node)
-				$this->loadDeleteTag($node, $document, $file);
+		foreach($document->xpath('//resultMap') as $node)	
+			$this->loadResultMap($node,$document,$file);
+
+		foreach($document->xpath('//parameterMap') as $node)
+			$this->loadParameterMap($node, $document, $file);
+
+		foreach($document->xpath('//statement') as $node)
+			$this->loadStatementTag($node, $document,$file);
+		
+		foreach($document->xpath('//select') as $node)
+			$this->loadSelectTag($node, $document, $file);
+
+		foreach($document->xpath('//insert') as $node)
+			$this->loadInsertTag($node, $document, $file);
+		
+		foreach($document->xpath('//update') as $node)
+			$this->loadUpdateTag($node, $document, $file);
+
+		foreach($document->xpath('//delete') as $node)
+			$this->loadDeleteTag($node, $document, $file);
 /*		if(isset($document->procedure))
 			foreach($document->procedure as $node)
 				$this->loadProcedureTag($node);
@@ -391,7 +384,7 @@ class TDomSqlMapBuilder
 			if(isset($superNodes[0]))
 				$commandText = (string)$superNodes[0] . $commandText;
 			else
-				throw TSqlMapConfigurationException(
+				throw new TSqlMapConfigurationException(
 						'sqlmap_unable_to_find_parent_sql', $extend, $file);
 		}
 
@@ -404,15 +397,15 @@ class TDomSqlMapBuilder
 
 	protected function applyInlineParameterMap($statement, $sqlStatement, $node, $file)
 	{
+		$scope['statement']  = $statement->getID();
+		$scope['file'] = $file;
+	
 		if($statement->parameterMap() == null)
 		{
-			$scope['statement']  = $statement->getID();
-			$scope['file'] = $file;
-
 			// Build a Parametermap with the inline parameters.
 			// if they exist. Then delete inline infos from sqltext.
 			$parameterParser = new TInlineParameterMapParser;
-			$sqlText = $parameterParser->parseInlineParameterMap(
+			$sqlText = $parameterParser->parse(
 							$this->_sqlMapper, $statement, $sqlStatement, $scope);
 			if(count($sqlText['parameters']) > 0)
 			{
@@ -424,7 +417,16 @@ class TDomSqlMapBuilder
 			}
 			$sqlStatement = $sqlText['sql'];
 		}
-		$sql = new TStaticSql();
+		
+		$simpleDynamic = new TSimpleDynamicParser;
+		$dynamics = $simpleDynamic->parse($this->_sqlMapper, $statement, $sqlStatement, $scope);
+		if(count($dynamics['parameters']) > 0)
+		{
+			$sql = new TSimpleDynamicSql($dynamics['parameters']);
+			$sqlStatement = $dynamics['sql'];
+		}
+		else
+			$sql = new TStaticSql();
 		$sql->buildPreparedStatement($statement, $sqlStatement);
 		$statement->setSql($sql);
 	}

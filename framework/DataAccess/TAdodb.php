@@ -402,21 +402,13 @@ class TAdodbConnection extends TDbConnection
 	}
 
 	/**
-	 * Finish and cleanup transactions.
-	 */
-	public function completeTransaction()
-	{
-		return $this->connection->CompleteTrans();
-	}
-
-	/**
 	 * End a transaction successfully. 
 	 * @return true if successful. If the database does not support
 	 * transactions, will return true also as data is always committed.
 	 */
 	public function commit()
 	{
-		return $this->connection->CommitTrans();
+		return $this->_connection->CommitTrans();
 	}
 
 	/**
@@ -426,7 +418,7 @@ class TAdodbConnection extends TDbConnection
 	 */
 	public function rollback()
 	{
-		return $this->connection->RollbackTrans();
+		return $this->_connection->RollbackTrans();
 	}
 
 	/**

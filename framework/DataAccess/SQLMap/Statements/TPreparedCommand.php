@@ -5,7 +5,7 @@ class TPreparedCommand
 
 	public function create($connection, $statement, $parameterObject)
 	{
-		$prepared = $statement->getSQL()->getPreparedStatement();
+		$prepared = $statement->getSQL()->getPreparedStatement($parameterObject);
 		$parameters = $this->applyParameterMap($connection, 
 							$prepared, $statement, $parameterObject);
 		return array('sql'=>$prepared->getPreparedSql(), 

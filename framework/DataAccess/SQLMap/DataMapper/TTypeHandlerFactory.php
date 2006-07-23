@@ -11,25 +11,25 @@ class TTypeHandlerFactory
 		$this->_typeHandlerMap = new TMap;
 	}
 
-	public function getTypeHandler($type, $dbType=null)
+	public function getTypeHandler($type, $dbType='')
 	{
 		$dbTypeHandlerMap = $this->_typeHandlerMap[$type];
 		$handler = null;
 		if(!is_null($dbTypeHandlerMap))
 		{
-			if(is_null($dbType))
+			if(empty($dbType))
 				$handler = $dbTypeHandlerMap[self::NullDbType];
 			else
 			{
 				$handler = $dbTypeHandlerMap[$dbType];
-				if(is_null($handler))
+				if(is_null($handler))	
 					$handler = $dbTypeHandlerMap[self::NullDbType];
 			}
 		}
 		return $handler;
 	}
 
-	public function register($type, $handler, $dbType=null)
+	public function register($type, $handler, $dbType='')
 	{
 		$map = $this->_typeHandlerMap[$type];
 		if(is_null($map))
@@ -37,7 +37,7 @@ class TTypeHandlerFactory
 			$map = new TMap;
 			$this->_typeHandlerMap->add($type, $map);
 		}
-		if(is_null($dbType))
+		if(empty($dbType))
 			$map->add(self::NullDbType, $handler);
 		else
 			$map->add($dbType, $handler);

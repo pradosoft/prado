@@ -1,4 +1,17 @@
 <com:TContent ID="Main">
-<h1>Project Reports</h1>
+<h2>Project Reports</h2>
+
+<fieldset>
+	<legend>Project Report</legend>
+<com:TMultiView ID="views" ActiveViewIndex="0">
+	<com:TView>
+		<com:TLabel ForControl="projects" 
+			Text="Select a project. Use ctrl+click to select multiple resources at once: "/>
+		<com:TListBox ID="projects" CssClass="projects" />
+		<com:TButton Text="Generate Report" />		
+	</com:TView>
+</com:TMultiView>
+
+</fieldset>
 
 </com:TContent>

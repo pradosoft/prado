@@ -1,7 +1,7 @@
 <com:TPanel CssClass="sitemap" Visible="true">
 <ul class="level1">
 	<li class="<com:TPlaceHolder ID="LogMenu" />">
-		<a class="menuitem" href="?page=TimeTracker.TimeEntry">Log</a>
+		<a class="menuitem" href="?page=TimeTracker.LogTimeEntry">Log</a>
 	</li>
 	<com:TPlaceHolder Visible=<%= $this->User->isInRole('manager') %> >
 	<li class="<com:TPlaceHolder ID="ReportMenu" />">

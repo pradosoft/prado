@@ -5,7 +5,10 @@ class CategoryDao extends BaseDao
 	function addNewCategory($category)
 	{
 		$sqlmap = $this->getConnection();
-		$sqlmap->insert('AddNewCategory', $category);
+		$exists = $this->getCategoryByNameInProject(
+			$category->Name, $category->ProjectID);
+		if(!$exists)
+			$sqlmap->insert('AddNewCategory', $category);
 	}	
 	
 	function getCategoryByID($categoryID)

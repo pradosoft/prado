@@ -4,7 +4,7 @@ class TInlineParameterMapParser
 {
 	private $PARAMETER_TOKEN_REGEXP = '/#(#?[^#]+#?)#/';
 
-	public function parseInlineParameterMap($sqlMap, $statement, $sqlText, $scope)
+	public function parse($sqlMap, $statement, $sqlText, $scope)
 	{
 		$parameterClass = !is_null($statement) 
 							? $statement->getParameterClass() : null;

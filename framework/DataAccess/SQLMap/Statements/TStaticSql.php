@@ -10,7 +10,7 @@ class TStaticSql extends TComponent
 		$this->_preparedStatement = $factory->prepare();
 	}
 
-	public function getPreparedStatement()
+	public function getPreparedStatement($parameter=null)
 	{
 		return $this->_preparedStatement;
 	}

@@ -268,12 +268,6 @@ interface IDbConnection
 	public function beginTransaction();
 
 	/**
-	 * Finish and cleanup transactions. Not all database will support
-	 * transactions.
-	 */
-	public function completeTransaction();
-
-	/**
 	 * Makes all changes made since the previous commit/rollback permanent and
 	 * releases any database locks. Not all database will support transactions.
 	 */

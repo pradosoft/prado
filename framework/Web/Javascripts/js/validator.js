@@ -55,7 +55,7 @@ this.visible=this.visible&&this.messages.style.display!="none";Prado.Validation.
 return;}
 var refresh=update||this.visible==false||this.options.Refresh!=false;if(this.options.ShowSummary!=false&&refresh)
 {this.updateHTMLMessages(this.getMessages(validators));this.showSummary(validators);}
-if(this.options.ScrollToSummary!=false)
+if(this.options.ScrollToSummary!=false&&refresh)
 window.scrollTo(this.messages.offsetLeft-20,this.messages.offsetTop-20);if(this.options.ShowMessageBox==true&&refresh)
 {this.alertMessages(this.getMessages(validators));this.visible=true;}},updateHTMLMessages:function(messages)
 {while(this.messages.childNodes.length>0)

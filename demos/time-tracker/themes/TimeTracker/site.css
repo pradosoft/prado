@@ -227,3 +227,10 @@ fieldset.signup .wizardNav
 {
 	background-color: #eef;
 }
+
+
+.required-input, .required-input1, .required-input2
+{
+	border: 2px solid red;
+	background-color: #FFE4E1
+}

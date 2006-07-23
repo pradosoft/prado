@@ -62,10 +62,17 @@ class ProjectDao extends BaseDao
 		return $sqlmap->queryForList('GetProjectMembers', $projectID);
 	}
 	
-	public function getAllProjects()
+	public function getAllProjects($sort='', $order='ASC')
 	{
 		$sqlmap = $this->getConnection();
-		return $sqlmap->queryForList('GetAllProjects');	
+		if($sort === '')
+			return $sqlmap->queryForList('GetAllProjects');
+		else
+		{
+			$param['sort'] = $sort;
+			$param['order'] = $order;
+			return $sqlmap->queryForList('GetAllProjectsOrdered', $param);
+		}		
 	}
 	
 	public function getProjectsByManagerName($manager)

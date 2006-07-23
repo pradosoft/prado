@@ -396,7 +396,7 @@ Prado.WebUI.TValidationSummary.prototype =
 			this.showSummary(validators);
 		}
 
-		if(this.options.ScrollToSummary != false)
+		if(this.options.ScrollToSummary != false && refresh)
 			window.scrollTo(this.messages.offsetLeft-20, this.messages.offsetTop-20);
 
 		if(this.options.ShowMessageBox == true && refresh)

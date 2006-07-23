@@ -45,9 +45,11 @@ class TResultProperty extends TComponent
 	{ 
 		if(is_null($this->_typeHandlerFactory)) return null;
 		if(!is_null($this->_typeHandler))
-			return $this->_typeHandlerFactory->getTypeHandler($this->_typeHandler);
+			return $this->_typeHandlerFactory->getTypeHandler(
+					$this->_typeHandler, $this->_dbType);
 		else if(!is_null($this->getType()))
-			return $this->_typeHandlerFactory->getTypeHandler($this->getType());
+			return $this->_typeHandlerFactory->getTypeHandler(
+					$this->getType(), $this->_dbType);
 		else
 			return null;
 	}

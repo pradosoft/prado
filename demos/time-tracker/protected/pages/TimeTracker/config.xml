@@ -13,7 +13,7 @@
   <authorization>
     <allow roles="admin" />
 	<allow pages="ProjectList, ProjectDetails, ReportResource, ReportProject" roles="manager" />
-	<allow pages="TimeEntry" roles="consultant" />
+	<allow pages="LogTimeEntry" roles="consultant" />
 	<allow pages="UserCreate,Logout,Login" users="*" />
     <deny users="*" />
   </authorization>

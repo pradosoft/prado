@@ -220,7 +220,6 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		$list = $result instanceof ArrayAccess ? $result : 
 							$this->_statement->createInstanceOfListClass();
 		$recordSet = $this->executeSQLQueryLimit($connection, $sql, $max, $skip);
-
 		if(!is_null($delegate))
 		{
 			while($row = $recordSet->fetchRow())

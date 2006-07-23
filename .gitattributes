@@ -1112,6 +1112,10 @@ demos/time-tracker/protected/pages/Docs/project1.png -text
 demos/time-tracker/protected/pages/Docs/unit_test1.png -text
 demos/time-tracker/protected/pages/Docs/unit_test2.png -text
 demos/time-tracker/protected/pages/Docs/unit_test3.png -text
+demos/time-tracker/protected/pages/TimeTracker/CategoryDataList.php -text
+demos/time-tracker/protected/pages/TimeTracker/CategoryDataList.tpl -text
+demos/time-tracker/protected/pages/TimeTracker/LogTimeEntry.page -text
+demos/time-tracker/protected/pages/TimeTracker/LogTimeEntry.php -text
 demos/time-tracker/protected/pages/TimeTracker/Login.page -text
 demos/time-tracker/protected/pages/TimeTracker/Login.php -text
 demos/time-tracker/protected/pages/TimeTracker/Logout.page -text
@@ -1121,11 +1125,13 @@ demos/time-tracker/protected/pages/TimeTracker/MainLayout.tpl -text
 demos/time-tracker/protected/pages/TimeTracker/ProjectDetails.page -text
 demos/time-tracker/protected/pages/TimeTracker/ProjectDetails.php -text
 demos/time-tracker/protected/pages/TimeTracker/ProjectList.page -text
+demos/time-tracker/protected/pages/TimeTracker/ProjectList.php -text
 demos/time-tracker/protected/pages/TimeTracker/ReportProject.page -text
 demos/time-tracker/protected/pages/TimeTracker/ReportResource.page -text
 demos/time-tracker/protected/pages/TimeTracker/SiteMap.php -text
 demos/time-tracker/protected/pages/TimeTracker/SiteMap.tpl -text
-demos/time-tracker/protected/pages/TimeTracker/TimeEntry.page -text
+demos/time-tracker/protected/pages/TimeTracker/TimeEntryList.php -text
+demos/time-tracker/protected/pages/TimeTracker/TimeEntryList.tpl -text
 demos/time-tracker/protected/pages/TimeTracker/UserCreate.page -text
 demos/time-tracker/protected/pages/TimeTracker/UserCreate.php -text
 demos/time-tracker/protected/pages/TimeTracker/UserList.page -text
@@ -1146,6 +1152,7 @@ demos/time-tracker/themes/TimeTracker/bar.png -text
 demos/time-tracker/themes/TimeTracker/project.css -text
 demos/time-tracker/themes/TimeTracker/site.css -text
 demos/time-tracker/themes/TimeTracker/tabs.png -text
+demos/time-tracker/themes/TimeTracker/time-entry.css -text
 docs/application.xml -text
 docs/specs/application.dtd -text
 docs/specs/application.xsd -text
@@ -1261,6 +1268,7 @@ framework/DataAccess/SQLMap/Configuration/TParameterMap.php -text
 framework/DataAccess/SQLMap/Configuration/TParameterProperty.php -text
 framework/DataAccess/SQLMap/Configuration/TResultMap.php -text
 framework/DataAccess/SQLMap/Configuration/TResultProperty.php -text
+framework/DataAccess/SQLMap/Configuration/TSimpleDynamicParser.php -text
 framework/DataAccess/SQLMap/Configuration/TSqlMapCacheModel.php -text
 framework/DataAccess/SQLMap/Configuration/TSqlMapDelete.php -text
 framework/DataAccess/SQLMap/Configuration/TSqlMapInsert.php -text
@@ -1284,6 +1292,7 @@ framework/DataAccess/SQLMap/Statements/TPreparedCommand.php -text
 framework/DataAccess/SQLMap/Statements/TPreparedStatement.php -text
 framework/DataAccess/SQLMap/Statements/TPreparedStatementFactory.php -text
 framework/DataAccess/SQLMap/Statements/TSelectMappedStatement.php -text
+framework/DataAccess/SQLMap/Statements/TSimpleDynamicSql.php -text
 framework/DataAccess/SQLMap/Statements/TStaticSql.php -text
 framework/DataAccess/SQLMap/Statements/TUpdateMappedStatement.php -text
 framework/DataAccess/SQLMap/TMapper.php -text
