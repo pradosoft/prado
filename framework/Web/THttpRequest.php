@@ -547,6 +547,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 						$getVariables[$serviceID]=$path;
 					else
 						$getVariables[$path]='';
+					$index++;
 				}
 			}
 			return $getVariables;
