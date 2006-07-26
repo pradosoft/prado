@@ -6,7 +6,7 @@ BUG: Ticket#297 - THttpRequest::constructUrl() encoding bug about array GET para
 BUG: TDataGrid may complain getting ItemType on a non-object if the grid is not data-bound (Qiang)
 BUG: TCheckBox.Value should be converted to string (Qiang)
 CHG: Ticket#206 - TBaseValidator.OnValidate is raised only when the validator is visible (Qiang)
-ENH: Ticket#178 - Added TRadioButton.GlobalGroupName property (Qiang)
+ENH: Ticket#178 - Added TRadioButton.UniqueGroupName property (Qiang)
 ENH: Ticket#220 - TClientScripts method to import custom javascript files (Wei)
 ENH: Ticket#225 - TRadioButton::getRadioButtonsInGroup() added (Wei)
 ENH: Ticket#223 - Use TRequiredFieldValidator for TRadioButtons with GroupName property (Wei)
