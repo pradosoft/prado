@@ -96,13 +96,17 @@ class TPropertyAccess
 		return true;
 	}
 
-	public static function set($object, $path, $value)
+	public static function set(&$object, $path, $value)
 	{
 		$properties = explode('.', $path);
 		$prop = array_pop($properties);
 		if(count($properties) > 0)
 			$object = self::get($object, implode('.',$properties));
-		if(is_object($object))
+		if(is_array($object) || $object instanceof ArrayAccess)
+		{
+			$object[$prop] = $value;
+		}
+		else if(is_object($object))
 		{
 			$setter = 'set'.$prop;
 			if(is_callable(array($object, $setter)))

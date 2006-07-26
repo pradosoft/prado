@@ -14,10 +14,11 @@ class UserReportsDao extends BaseDao
 		return $sqlmap->queryForList('GetTimeReportByCategoryID', $categoryID);		
 	}
 	
-	public function getTimeReportsByProjectID($projectID)
+	public function getTimeReportsByProjectIDs($projects)
 	{
+		$ids = implode(',', array_map('intval', $projects));
 		$sqlmap = $this->getConnection();
-		return $sqlmap->queryForList('GetTimeReportByProjectID', $projectID);				
+		return $sqlmap->queryForList('GetTimeReportByProjectIDs', $ids);				
 	}
 		
 }

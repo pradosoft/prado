@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<application id="Database" Mode="Debug">
+<application id="Database" Mode="Performance">
 
   <!-- configure to use Quickstart theme directory -->
   <paths>
@@ -10,6 +10,7 @@
 	<using namespace="Application.App_Code.*" />
   </paths>
   <modules>
+    <module id="cache" class="System.Caching.TMemCache" />
   	<module id="sqlmap" class="TSQLMap"
   		configFile="Application.App_Data.mysql-sqlmap" />
 	<module id="daos" class="DaoManager" Connection="sqlmap">

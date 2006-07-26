@@ -50,8 +50,10 @@ class LogTimeEntry extends TPage
 		$this->projectMembers->DataSource = $users;
 		$this->projectMembers->dataBind();
 		if(is_int($index = array_search($this->User->Name, $users)))
+		{
 			$this->projectMembers->SelectedIndex = $index;
-		$this->showTimeSheet();
+			$this->showTimeSheet();
+		}
 	}
 	
 	public function showTimeSheet()

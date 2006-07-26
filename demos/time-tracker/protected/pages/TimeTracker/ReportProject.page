@@ -5,10 +5,10 @@
 	<legend>Project Report</legend>
 <com:TMultiView ID="views" ActiveViewIndex="0">
 	<com:TView>
-		<com:TLabel ForControl="projects" 
+		<com:TLabel ForControl="projectList" 
 			Text="Select a project. Use ctrl+click to select multiple resources at once: "/>
-		<com:TListBox ID="projects" CssClass="projects" />
-		<com:TButton Text="Generate Report" />		
+		<com:TListBox ID="projectList" CssClass="projects" SelectionMode="Multiple" />
+		<com:TButton Text="Generate Report" OnClick="generateReport_Clicked"/>		
 	</com:TView>
 </com:TMultiView>
 

@@ -49,9 +49,9 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	private $_IsRowDataFound = false;
 
 	/**
-	 * @var array group by result data cache.
+	 * @var TSQLMapGroupByTree group by result data cache.
 	 */
-	private $_groupBy=array();
+	private $_groupBy;
 
 	/**
 	 * @var Post select is to query for list.
@@ -114,7 +114,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	 */
 	protected function clearGroupByResults()
 	{
-		$this->_groupBy = array();
+		$this->_groupBy = new TSQLMapGroupByTree();
 	}
 
 	/**
@@ -127,6 +127,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		$this->_sqlMap = $sqlMap;
 		$this->_statement = $statement;
 		$this->_command = new TPreparedCommand();
+		$this->clearGroupByResults();
 	}
 
 	/**
@@ -232,17 +233,18 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		else
 		{
 			while($row = $recordSet->fetchRow())
-			{
-				$obj = $this->applyResultMap($row);
-				if(!is_null($obj))
-					$list[] = $obj;
-			}
+				$list[] = $this->applyResultMap($row);
 		}
 
+//		var_dump($list);
+		//var_dump($this->_groupBy);
 		//get the groupings
-		foreach($this->getGroupbyResults() as $group)
+		/*foreach($this->getGroupbyResults() as $group)
 			$list[] = $group->updateProperties();
 		$this->clearGroupByResults();
+*/
+		if(!$this->_groupBy->isEmpty())
+			$list = $this->_groupBy->collect();
 
 		$this->executePostSelect($connection);
 		$this->onExecuteQuery($sql);
@@ -383,8 +385,8 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		while($row = $recordSet->fetchRow())
 			$object = $this->applyResultMap($row, $result);	
 
-		foreach($this->getGroupbyResults() as $group)
-			$object = $group->updateProperties();
+//		foreach($this->getGroupbyResults() as $group)
+	//		$object = $group->updateProperties();
 
 		$this->clearGroupByResults();
 
@@ -537,7 +539,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		$resultClass = $this->_statement->getResultClass();
 
 		if($this->_sqlMap->getResultMaps()->contains($resultMapName))
-			return $this->fillResultMap($resultMapName, $row, $resultObject);
+			return $this->fillResultMap($resultMapName, $row, null, $resultObject);
 		else if(strlen($resultClass) > 0)
 			return $this->fillResultClass($resultClass, $row, $resultObject);
 		else
@@ -612,7 +614,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	 * @param object result object to fill, will create new instances if required.
 	 * @return object result object filled with data.
 	 */
-	protected function fillResultMap($resultMapName, $row, &$resultObject)
+	protected function fillResultMap($resultMapName, $row, $parentGroup=null, &$resultObject=null)
 	{
 		$resultMap = $this->_sqlMap->getResultMap($resultMapName);
 		$resultMap = $resultMap->resolveSubMap($row);
@@ -622,7 +624,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		if(is_object($resultObject))
 		{
 			if(strlen($resultMap->getGroupBy()) > 0)
-				return $this->addResultMapGroupBy($resultMap, $row, $resultObject);
+				return $this->addResultMapGroupBy($resultMap, $row, $parentGroup, $resultObject);
 			else
 				foreach($resultMap->getColumns() as $property)
 					$this->setObjectProperty($resultMap, $property, $row, $resultObject);
@@ -644,23 +646,32 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	 * @see getGroupByResults()
 	 * @see runQueryForList()
 	 */
-	protected function addResultMapGroupBy($resultMap, $row, &$resultObject)
+	protected function addResultMapGroupBy($resultMap, $row, $parent, &$resultObject)
 	{
 		$group = $this->getResultMapGroupKey($resultMap, $row, $resultObject);
-		
+
+		if(empty($parent))
+		{
+			$root= new TResultMapGroupBy(null, $resultObject);
+			$this->_groupBy->add('root#'.$group, $group, $root);
+		}
+				
 		foreach($resultMap->getColumns() as $property)
 		{
 			$scalar = $this->setObjectProperty($resultMap, $property, $row, $resultObject);
-			if(strlen($property->getResultMapping()) > 0)
+			$key = $property->getProperty();
+			if(strlen($nested = $property->getResultMapping()) > 0)
 			{
-				$key = $property->getProperty();
-				$value = $this->extractGroupByValue($property, $resultObject);
-				if(!empty($value))
-					$this->_groupBy[$group]->addValue($key, $value);
+				if($this->_sqlMap->getResultMaps()->contains($nested))
+					$value = $this->fillResultMap($nested, $row, $group);
+				else	
+					$value = $this->extractGroupByValue($property, $resultObject);
+
+				$groupby = new TResultMapGroupBy($key, $value);
+				$this->_groupBy->add($parent, $group, $groupby);
 			}
 		}
-		
-		return null;
+		return $resultObject;
 	}
 	
 	/**
@@ -693,10 +704,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		$groupBy = $resultMap->getGroupBy();
 		if(isset($row[$groupBy]))
 		{
-			$group = $row[$groupBy];
-			if(!isset($this->_groupBy[$group]))
-				$this->_groupBy[$group] = new TResultMapGroupBy($group, $resultObject);
-			return $group;
+			return $resultMap->getID().':'.$row[$groupBy];
 		}
 		else
 		{
@@ -788,10 +796,20 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		}
 		else if(!is_null($nested))
 		{
-			$obj = $nested->createInstanceOfResult();
-			if($this->fillPropertyWithResultMap($nested, $row, $obj) == false)
-				$obj = null;
-			TPropertyAccess::set($resultObject, $key, $obj);
+			if($property->isListType($resultObject) || $property->isArrayType($resultObject))
+			{
+				if(strlen($resultMap->getGroupBy()) <= 0)
+					throw new TSqlMapExecutionException(
+						'sqlmap_non_groupby_array_list_type', $resultMap->getID(),
+						get_class($resultObject), $key);
+			}
+			else
+			{
+				$obj = $nested->createInstanceOfResult();
+				if($this->fillPropertyWithResultMap($nested, $row, $obj) == false)
+					$obj = null;
+				TPropertyAccess::set($resultObject, $key, $obj);
+			}
 		}
 		else //'select' ResultProperty
 		{
@@ -911,39 +929,140 @@ class TPostSelectBinding
 
 class TResultMapGroupBy
 {
-	private $_ID='';
 	private $_object='';
-	private $_values = array();
+	private $_property='';
 
-	public function __construct($id, $object)
+	public function __construct($property, $object)
 	{
-		$this->setID($id);
-		$this->setObject($object);
+		$this->_property = $property;
+		$this->_object = $object;
 	}
-
-	public function getID(){ return $this->_ID; }
-	public function setID($value){ $this->_ID = $value; }
-
-	public function getObject(){ return $this->_object; }
-	public function setObject($value){ $this->_object = $value; }
-
-	public function addValue($property, $value)
+	
+	public function getObject()
 	{
-		$this->_values[$property][] = $value;
+		return $this->_object;
 	}
-
-	public function getProperties()
+	
+	public function getProperty()
 	{
-		return array_keys($this->_values);
+		return $this->_property;
 	}
+}
 
-	public function updateProperties()
+class TSQLMapGroupByTree
+{
+	private $_tree = array();
+	
+	private $_entries = array();
+	
+	private $_list = array();
+	
+	public function isEmpty()
 	{
-		foreach($this->_values as $property => $value)
+		return count($this->_entries) == 0;
+	}
+	
+	public function add($parent, $node, $object='')
+	{
+		if(isset($this->_entries[$parent]) && isset($this->_entries[$node]))
+			return;
+		$this->_entries[$node] = $object;
+		if(empty($parent))
 		{
-			TPropertyAccess::set($this->getObject(), $property, $value);
+			if(isset($this->_entries[$node]))
+				return;
+			$this->_tree[$node] = array();
 		}
-		return $this->getObject();
+		$found = $this->addNode($this->_tree, $parent, $node);
+		if(!$found && !empty($parent))
+		{
+			$this->_tree[$parent] = array();
+			$this->_entries[$parent] = $object;
+			$this->addNode($this->_tree, $parent, $node);
+		}
+	}
+	
+	protected function addNode(&$childs, $parent, $node)
+	{
+		$found = false;
+		reset($childs);
+		for($i = 0, $k = count($childs); $i < $k; $i++)
+		{
+			$key = key($childs);
+			next($childs);
+			if($key == $parent)
+			{
+				$found = true;
+				$childs[$key][$node] = array();
+			}
+			else
+			{
+				$found = $found || $this->addNode($childs[$key], $parent, $node);
+			}
+		}
+		return $found;
+	}
+	
+	public function collect()
+	{
+		while(count($this->_tree) > 0)
+			$this->findAndCollectChilds(null, $this->_tree);
+		return $this->getList();
+	}
+	
+	protected function isChild(&$nodes)
+	{
+		$isChild = true;
+		foreach($nodes as $node)
+		{
+			if(count($node) != 0)
+			{
+				$isChild = false;
+				break;
+			}
+		}
+		return $isChild;		
+	}
+	
+	protected function findAndCollectChilds($parent, &$nodes)
+	{
+		$isChild = $this->isChild($nodes);
+		reset($nodes);
+		
+		$childs = array();
+		for($i = 0, $k = count($nodes); $i < $k; $i++)
+		{
+			$key = key($nodes);
+			next($nodes);
+			if($isChild)
+			{
+				$childs[] = $key;
+				unset($nodes[$key]);
+			}
+			else
+				$this->findAndCollectChilds($key, $nodes[$key]);
+		}
+		if(count($childs) > 0)
+			$this->onChildNodesVisited($parent, $childs);
+	}
+	
+	protected function onChildNodesVisited($parent, $nodes)
+	{
+		if(empty($parent))
+			return;
+		$parentObject = $this->_entries[$parent]->getObject();
+		foreach($nodes as $node)
+		{	
+			$property= $this->_entries[$node]->getProperty();
+			$parentObject->{$property}[] = $this->_entries[$node]->getObject();
+		}
+		if($this->_entries[$parent]->getProperty() === null)
+			$this->_list[] = $parentObject;
+	}
+	
+	public function getList()
+	{
+		return $this->_list;
 	}
 }
 
