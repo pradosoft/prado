@@ -592,6 +592,7 @@ buildscripts/texbuilder/build.php -text
 buildscripts/texbuilder/pages.php -text
 buildscripts/texbuilder/quickstart.tex -text
 demos/blog/index.php -text
+demos/blog/protected/.htaccess -text
 demos/blog/protected/Common/BlogDataModule.php -text
 demos/blog/protected/Common/BlogErrorHandler.php -text
 demos/blog/protected/Common/BlogException.php -text
@@ -659,6 +660,7 @@ demos/blog/themes/Summer/style.css -text
 demos/blog/themes/Winter/style.css -text
 demos/composer/index.php -text
 demos/composer/index2.php -text
+demos/composer/protected/.htaccess -text
 demos/composer/protected/pages/ClassDefinition.php -text
 demos/composer/protected/pages/Home.page -text
 demos/composer/protected/pages/Home.php -text
@@ -676,6 +678,7 @@ demos/helloworld/protected/.htaccess -text
 demos/helloworld/protected/pages/Home.page -text
 demos/helloworld/protected/pages/Home.php -text
 demos/personal/index.php -text
+demos/personal/protected/.htaccess -text
 demos/personal/protected/Pages/Home.page -text
 demos/personal/protected/Pages/Home.php -text
 demos/personal/protected/Pages/Layout.php -text
