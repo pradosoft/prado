@@ -5,14 +5,14 @@
 	</li>
 	<com:TPlaceHolder Visible=<%= $this->User->isInRole('manager') %> >
 	<li class="<com:TPlaceHolder ID="ReportMenu" />">
-		<span class="menuitem">Reports</span>
+		<a class="menuitem" href="?page=TimeTracker.ReportProject">Reports</a>
 		<ul class="level2">
 			<li><a href="?page=TimeTracker.ReportProject">Project Reports</a></li>
 			<li><a href="?page=TimeTracker.ReportResource">Resources Report</a></li>
 		</ul>
 	</li>
 	<li class="<com:TPlaceHolder ID="ProjectMenu" />">
-		<span class="menuitem">Projects</span>
+		<a class="menuitem" href="?page=TimeTracker.ProjectList">Projects</a>
 		<ul class="level2">
 			<li><a href="?page=TimeTracker.ProjectDetails">Create New Project</a></li>
 			<li><a href="?page=TimeTracker.ProjectList">List Projects</a></li>
@@ -21,7 +21,7 @@
 	</com:TPlaceHolder>
 	<com:TPlaceHolder Visible=<%= $this->User->isInRole('admin') %> >
 	<li class="<com:TPlaceHolder ID="AdminMenu" />">
-		<span class="menuitem">Adminstration</span>
+		<a class="menuitem" href="?page=TimeTracker.UserList">Adminstration</a>
 		<ul class="level2">
 			<li><a href="?page=TimeTracker.UserCreate">Create New User</a></li>
 			<li><a href="?page=TimeTracker.UserList">List Users</a></li>

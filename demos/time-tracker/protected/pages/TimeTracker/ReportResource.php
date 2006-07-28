@@ -34,6 +34,15 @@ class ReportResource extends TPage
 	
 	public function generateReport_Clicked($sender, $param)
 	{
+		if(count($this->projectList->SelectedValues) > 0
+			&& count($this->resourceList->SelectedValues) >0)
+		{
+			$this->showReport();
+		}
+	}
+
+	protected function showReport()
+	{
 		$this->views->ActiveViewIndex = 1;
 		$reportDao = $this->Application->Modules['daos']->getDao('ReportDao');
 		$projects = $this->projectList->SelectedValues;
@@ -43,7 +52,7 @@ class ReportResource extends TPage
 		
 		$report = $reportDao->getUserProjectTimeReports($users, $projects, $start, $end);
 		$this->resource_report->DataSource = $report;
-		$this->resource_report->dataBind();
+		$this->resource_report->dataBind();		
 	}
 	
 	public function resource_report_itemCreated($sender, $param)

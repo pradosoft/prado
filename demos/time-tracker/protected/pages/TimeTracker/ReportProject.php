@@ -22,11 +22,17 @@ class ReportProject extends TPage
 	
 	public function generateReport_Clicked($sender, $param)
 	{
+		if(count($this->projectList->SelectedValues) > 0)
+			$this->showReport();
+	}
+	
+	protected function showReport()
+	{
 		$reportDao = $this->Application->Modules['daos']->getDao('ReportDao');
 		$reports = $reportDao->getTimeReportsByProjectIDs($this->projectList->SelectedValues);
 		$this->views->ActiveViewIndex = 1;
 		$this->projects->DataSource = $reports;
-		$this->projects->dataBind();
+		$this->projects->dataBind();		
 	}
 	
 	public function project_itemCreated($sender, $param)

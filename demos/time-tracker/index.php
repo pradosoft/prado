@@ -14,6 +14,13 @@ if(!is_writable($runtimePath))
 
 require_once($frameworkPath);
 
+function h($text)
+{
+	$app = Prado::getApplication()->getGlobalization();
+	$charset = $app ? $app->getCharset() : 'UTF-8';
+	return htmlentities($text, ENT_QUOTES, $charset);
+}
+
 $application=new TApplication;
 $application->run();
 

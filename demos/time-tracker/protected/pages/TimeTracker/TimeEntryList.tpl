@@ -25,9 +25,9 @@
 	</prop:FooterTemplate>
 	<prop:ItemTemplate>
 	  <tr>
-	  	<td class="categoryName"><%# $this->DataItem->Category->Name %></td>
-	  	<td class="description"><%# $this->DataItem->Description %></td>
-	  	<td class="duration"><%# $this->DataItem->Duration %></td>
+	  	<td class="categoryName"><%# h($this->DataItem->Category->Name) %></td>
+	  	<td class="description"><%# h($this->DataItem->Description) %></td>
+	  	<td class="duration"><%# h($this->DataItem->Duration) %></td>
 	  	<td class="date">
 	  		<com:System.I18N.TDateFormat 
 	  			Pattern="dd/MM/yyyy"

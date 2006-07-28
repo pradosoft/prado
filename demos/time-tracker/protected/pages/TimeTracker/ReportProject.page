@@ -22,9 +22,9 @@
 					<th>Est. Completion</th>
 				</tr>
 				<tr>
-					<td><%# $this->DataItem->ProjectName %></td>
-					<td><%# $this->DataItem->EstimateHours %></td>
-					<td><%# $this->DataItem->ActualHours %></td>
+					<td><%# h($this->DataItem->ProjectName) %></td>
+					<td><%# h($this->DataItem->EstimateHours) %></td>
+					<td><%# h($this->DataItem->ActualHours) %></td>
 					<td>
 						<com:System.I18N.TDateFormat 
 							Pattern="dd/MM/yyyy"
@@ -49,9 +49,9 @@
 					<th>Actual Hours</th>
 					</tr>
 					<tr>
-						<td><%# $this->DataItem->CategoryName %></td>
-						<td><%# $this->DataItem->EstimateHours %></td>
-						<td><%# $this->DataItem->ActualHours %></td>
+						<td><%# h($this->DataItem->CategoryName) %></td>
+						<td><%# h($this->DataItem->EstimateHours) %></td>
+						<td><%# h($this->DataItem->ActualHours) %></td>
 					</tr>
 					
 					
@@ -60,10 +60,10 @@
 					<!-- member -->				
 						<tr>
 							<td colspan="2">
-							<%# $this->DataItem['username'] %>
+							<%# h($this->DataItem['username']) %>
 						</td>
 						<td>
-							<%# $this->DataItem['hours'] %>
+							<%# h($this->DataItem['hours']) %>
 						</td>
 						</tr>
 					<!-- //member -->

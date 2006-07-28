@@ -31,9 +31,9 @@
 	
 	<com:TView>
 		 <h3>Beginning Date</h3>
-		 <h4><%= $this->dateFrom->Date %></h4> 	 
+		 <h4><%= h($this->dateFrom->Date) %></h4> 	 
 		 <h3>Ending Date</h3>
-		 <h4><%= $this->dateTo->Date %></h4>
+		 <h4><%= h($this->dateTo->Date) %></h4>
 		 
 		 <com:TRepeater ID="resource_report" OnItemCreated="resource_report_itemCreated" EnableViewState="false">
 		 	<prop:ItemTemplate>
@@ -43,8 +43,8 @@
 		 			<th>Total Hours</th>
 		 		</tr>
 		 		<tr>
-		 			<td><%# $this->DataItem->Username %></td>
-		 			<td><%# $this->DataItem->TotalHours %></td>
+		 			<td><%# h($this->DataItem->Username) %></td>
+		 			<td><%# h($this->DataItem->TotalHours) %></td>
 		 		</tr>
 		 	</table>
 		 	
@@ -68,10 +68,10 @@
 							Pattern="dd/MM/yyyy"
 							Value=<%# $this->DataItem->ReportDate %> />
 				</td>
-		 		<td><%# $this->DataItem->ProjectName %></td>
-		 		<td><%# $this->DataItem->CategoryName %></td>
-		 		<td><%# $this->DataItem->Duration %></td>
-		 		<td><%# $this->DataItem->Description %></td>
+		 		<td><%# h($this->DataItem->ProjectName) %></td>
+		 		<td><%# h($this->DataItem->CategoryName) %></td>
+		 		<td><%# h($this->DataItem->Duration) %></td>
+		 		<td><%# h($this->DataItem->Description) %></td>
 		 	</tr>
 		 	</prop:ItemTemplate>
 		 	</com:TRepeater>

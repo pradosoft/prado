@@ -13,7 +13,7 @@
 </h1>
 <div class="minheading">
 <h2 class="login">
-	<com:TLabel CssClass="name" Text="Welcome <%= $this->User->Name %>" />
+	<com:TLabel CssClass="name" Text="Welcome <%= h($this->User->Name) %>" />
 	<com:THyperLink 
 		Text="Login"
 		NavigateUrl=<%= $this->Service->constructUrl('TimeTracker.Login') %>

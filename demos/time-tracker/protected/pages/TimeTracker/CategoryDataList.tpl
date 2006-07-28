@@ -16,9 +16,9 @@
 
 	<prop:ItemTemplate>
 	  <tr>
-	  	<td class="categoryName"><%# $this->DataItem->Name %></td>
-	  	<td class="abbrev"><%# $this->DataItem->Abbreviation %></td>
-	  	<td class="duration"><%# $this->DataItem->EstimateDuration %></td>
+	  	<td class="categoryName"><%# h($this->DataItem->Name) %></td>
+	  	<td class="abbrev"><%# h($this->DataItem->Abbreviation) %></td>
+	  	<td class="duration"><%# h($this->DataItem->EstimateDuration) %></td>
 	  	<td class="edit">
 	  		<com:TButton Text="Edit" CommandName="edit"/>	  			
 	  		<com:TButton Text="Delete" CommandName="delete"

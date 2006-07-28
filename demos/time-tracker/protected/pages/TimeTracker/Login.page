@@ -34,5 +34,6 @@
   </div>
   <div class="create">
   	<a href="?page=TimeTracker.UserCreate">Create New User</a>
+  </div>
  </fieldset>
  </com:TContent>
