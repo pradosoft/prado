@@ -48,11 +48,11 @@ class TDomSqlMapBuilder
 	public function build(SimpleXMLElement $document)
 	{
 		$this->_document = $document;
-		$this->initialize($document);
+		$this->initializeSQLMap($document);
 		return $this->_sqlMapper;
 	}
 
-	protected function initialize($document)
+	protected function initializeSQLMap($document)
 	{
 		$this->_sqlMapper = new TSqlMapper(new TTypeHandlerFactory);
 
@@ -81,6 +81,7 @@ class TDomSqlMapBuilder
 
 		foreach($document->xpath('//sqlMap') as $sqlmap)
 			$this->loadSqlMappingFiles($sqlmap);
+		$this->resolveResultMapping();
 
 		if($this->_sqlMapper->getIsCacheModelsEnabled())
 			$this->attachCacheModel();
@@ -216,7 +217,6 @@ class TDomSqlMapBuilder
 		$resource = $this->getResourceFromPath((string)$node['resource']);
 		$sqlmap = $this->getConfigAsXmlDocument($resource);
 		$this->configureSqlMap($sqlmap,$resource);
-		$this->resolveResultMapping();
 	}
 
 	protected function getResourceFromPath($resource)

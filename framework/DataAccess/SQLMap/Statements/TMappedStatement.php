@@ -49,7 +49,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	private $_IsRowDataFound = false;
 
 	/**
-	 * @var TSQLMapGroupByTree group by result data cache.
+	 * @var TSQLMapObjectCollectionTree group by object collection tree
 	 */
 	private $_groupBy;
 
@@ -102,19 +102,11 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	}
 
 	/**
-	 * @return TResultMapGroupBy[] list of results obtained from group by result maps.
-	 */
-	protected function getGroupByResults()
-	{
-		return $this->_groupBy;
-	}
-
-	/**
 	 * Empty the group by results cache.
 	 */
-	protected function clearGroupByResults()
+	protected function initialGroupByResults()
 	{
-		$this->_groupBy = new TSQLMapGroupByTree();
+		$this->_groupBy = new TSQLMapObjectCollectionTree();
 	}
 
 	/**
@@ -127,7 +119,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		$this->_sqlMap = $sqlMap;
 		$this->_statement = $statement;
 		$this->_command = new TPreparedCommand();
-		$this->clearGroupByResults();
+		$this->initialGroupByResults();
 	}
 
 	/**
@@ -236,18 +228,15 @@ class TMappedStatement extends TComponent implements IMappedStatement
 				$list[] = $this->applyResultMap($row);
 		}
 
-//		var_dump($list);
-		//var_dump($this->_groupBy);
-		//get the groupings
-		/*foreach($this->getGroupbyResults() as $group)
-			$list[] = $group->updateProperties();
-		$this->clearGroupByResults();
-*/
 		if(!$this->_groupBy->isEmpty())
+		{
 			$list = $this->_groupBy->collect();
+			$this->initialGroupByResults();
+		}	
 
 		$this->executePostSelect($connection);
 		$this->onExecuteQuery($sql);
+
 		return $list;
 	}
 
@@ -385,10 +374,13 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		while($row = $recordSet->fetchRow())
 			$object = $this->applyResultMap($row, $result);	
 
-//		foreach($this->getGroupbyResults() as $group)
-	//		$object = $group->updateProperties();
-
-		$this->clearGroupByResults();
+		//var_dump($this->_groupBy);
+		if(!$this->_groupBy->isEmpty())
+		{
+			$list = $this->_groupBy->collect();
+			$this->initialGroupByResults();
+			$object = $list[0];
+		}	
 
 		$this->executePostSelect($connection);
 		$this->onExecuteQuery($sql);
@@ -637,80 +629,66 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	}
 
 	/**
-	 * ResultMap with GroupBy property. Save results temporarily, retrieve it later using
-	 * <tt>TMappedStatement::getGroupByResults()</tt> and <tt>TResultMapGroupBy::updateProperties()</tt>
+	 * ResultMap with GroupBy property. Save object collection graph in a tree
+	 * and collect the result later.
 	 * @param TResultMap result mapping details.
 	 * @param array a result set row retrieved from the database
 	 * @param object the result object
-	 * @return null, always returns null, use getGroupByResults() to obtain the result object list.
-	 * @see getGroupByResults()
-	 * @see runQueryForList()
+	 * @return object result object.
 	 */
 	protected function addResultMapGroupBy($resultMap, $row, $parent, &$resultObject)
 	{
-		$group = $this->getResultMapGroupKey($resultMap, $row, $resultObject);
+		$group = $this->getResultMapGroupKey($resultMap, $row);
 
 		if(empty($parent))
 		{
-			$root= new TResultMapGroupBy(null, $resultObject);
-			$this->_groupBy->add('root#'.$group, $group, $root);
+			$rootObject = array('object'=>$resultObject, 'property' => null); 
+			$this->_groupBy->add(null, $group, $rootObject);
 		}
 				
 		foreach($resultMap->getColumns() as $property)
 		{
-			$scalar = $this->setObjectProperty($resultMap, $property, $row, $resultObject);
-			$key = $property->getProperty();
-			if(strlen($nested = $property->getResultMapping()) > 0)
+			//set properties.
+			$this->setObjectProperty($resultMap, $property, $row, $resultObject);
+			$nested = $property->getResultMapping();
+			
+			//nested property
+			if($this->_sqlMap->getResultMaps()->contains($nested))
 			{
-				if($this->_sqlMap->getResultMaps()->contains($nested))
-					$value = $this->fillResultMap($nested, $row, $group);
-				else	
-					$value = $this->extractGroupByValue($property, $resultObject);
+				$nestedMap = $this->_sqlMap->getResultMap($nested);
+				$groupKey = $this->getResultMapGroupKey($nestedMap, $row);
+				
+				//add the node reference first
+				if(empty($parent))
+					$this->_groupBy->add($group, $groupKey, '');
+					
+				//get the nested result mapping value
+				$value = $this->fillResultMap($nested, $row, $groupKey);
 
-				$groupby = new TResultMapGroupBy($key, $value);
-				$this->_groupBy->add($parent, $group, $groupby);
+				//add it to the object tree graph
+				$groupObject = array('object'=>$value, 'property' => $property->getProperty());
+				if(empty($parent))
+					$this->_groupBy->add($group, $groupKey, $groupObject);
+				else
+					$this->_groupBy->add($parent, $groupKey, $groupObject);
 			}
 		}
 		return $resultObject;
 	}
 	
 	/**
-	 * Extract value from the object for later adding to a GroupBy collection.
-	 * @param TResultProperty result property
-	 * @param mixed result object
-	 * @return mixed collection element
-	 */
-	protected function extractGroupByValue($property, $resultObject)
-	{
-		$key = $property->getProperty();	
-		$value = TPropertyAccess::get($resultObject, $key);
-		$type = strtolower($property->getType());
-		if(($type == 'array' || $type == 'map') && is_array($value) && count($value) == 1)
-			return $value[0];
-		else
-			return $value;
-	}
-
-	/**
 	 * Gets the result 'group by' groupping key for each row.
 	 * @param TResultMap result mapping details.
 	 * @param array a result set row retrieved from the database
-	 * @param object the result object
 	 * @return string groupping key.
-	 * @throws TSqlMapExecutionException if unable to find grouping key.
 	 */
-	protected function getResultMapGroupKey($resultMap, $row, $resultObject)
+	protected function getResultMapGroupKey($resultMap, $row)
 	{
 		$groupBy = $resultMap->getGroupBy();
 		if(isset($row[$groupBy]))
-		{
-			return $resultMap->getID().':'.$row[$groupBy];
-		}
+			return $resultMap->getID().$row[$groupBy];
 		else
-		{
-			throw new TSqlMapExecutionException('sqlmap_unable_to_find_groupby', 
-						$groupBy, $resultMap->getID());
-		}
+			return $resultMap->getID().crc32(serialize($row));
 	}
 
 	/**
@@ -783,8 +761,11 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		$select = $property->getSelect();
 		$key = $property->getProperty();
 		$nested = $property->getNestedResultMap();
-
-		if(strlen($select) == 0 && is_null($nested))
+		if($key === '')
+		{
+			$resultObject = $property->getDatabaseValue($row);	
+		}
+		else if(strlen($select) == 0 && is_null($nested))
 		{
 			$value = $property->getDatabaseValue($row);
 			
@@ -927,45 +908,55 @@ class TPostSelectBinding
 	public function setMethod($value){ $this->_method = $value; }
 }
 
-class TResultMapGroupBy
+/**
+ * TSQLMapObjectCollectionTree class.
+ * 
+ * Maps object collection graphs as trees. Nodes in the collection can
+ * be {@link add} using parent relationships. The object collections can be
+ * build using the {@link collect} method.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $  $27/07/2006: $
+ * @package System.DataAccess.SQLMap.Statements
+ * @since 3.1
+ */
+class TSQLMapObjectCollectionTree
 {
-	private $_object='';
-	private $_property='';
-
-	public function __construct($property, $object)
-	{
-		$this->_property = $property;
-		$this->_object = $object;
-	}
-	
-	public function getObject()
-	{
-		return $this->_object;
-	}
-	
-	public function getProperty()
-	{
-		return $this->_property;
-	}
-}
-
-class TSQLMapGroupByTree
-{
+	/**
+	 * @var array object graph as tree
+	 */
 	private $_tree = array();
-	
+	/**
+	 * @var array tree node values
+	 */
 	private $_entries = array();
-	
+	/**
+	 * @var array resulting object collection
+	 */
 	private $_list = array();
 	
+	/**
+	 * @return boolean true if the graph is empty
+	 */
 	public function isEmpty()
 	{
 		return count($this->_entries) == 0;
 	}
 	
+	/**
+	 * Add a new node to the object tree graph.
+	 * @param string parent node id
+	 * @param string new node id
+	 * @param mixed node value
+	 */
 	public function add($parent, $node, $object='')
 	{
-		if(isset($this->_entries[$parent]) && isset($this->_entries[$node]))
+		if(isset($this->_entries[$parent]) && !is_null($this->_entries[$parent])  
+			&& isset($this->_entries[$node]) && !is_null($this->_entries[$node]))
+		{
+			$this->_entries[$node] = $object;
 			return;
+		}
 		$this->_entries[$node] = $object;
 		if(empty($parent))
 		{
@@ -982,6 +973,13 @@ class TSQLMapGroupByTree
 		}
 	}
 	
+	/**
+	 * Find the parent node and add the new node as its child.
+	 * @param array list of nodes to check
+	 * @param string parent node id
+	 * @param string new node id
+	 * @return boolean true if parent node is found.
+	 */
 	protected function addNode(&$childs, $parent, $node)
 	{
 		$found = false;
@@ -1003,64 +1001,90 @@ class TSQLMapGroupByTree
 		return $found;
 	}
 	
+	/**
+	 * @return array object collection
+	 */
 	public function collect()
 	{
 		while(count($this->_tree) > 0)
-			$this->findAndCollectChilds(null, $this->_tree);
-		return $this->getList();
+			$this->collectChildren(null, $this->_tree);
+		return $this->getCollection();
 	}
 	
-	protected function isChild(&$nodes)
+	/**
+	 * @param array list of nodes to check
+	 * @return boolean true if all nodes are leaf nodes, false otherwise
+	 */
+	protected function hasChildren(&$nodes)
 	{
-		$isChild = true;
+		$hasChildren = false;
 		foreach($nodes as $node)
-		{
 			if(count($node) != 0)
-			{
-				$isChild = false;
-				break;
-			}
-		}
-		return $isChild;		
+				return true;
+		return $hasChildren;		
 	}
 	
-	protected function findAndCollectChilds($parent, &$nodes)
+	/**
+	 * Visit all the child nodes and collect them by removing.
+	 * @param string parent node id
+	 * @param array list of child nodes.
+	 */
+	protected function collectChildren($parent, &$nodes)
 	{
-		$isChild = $this->isChild($nodes);
-		reset($nodes);
-		
+		$noChildren = !$this->hasChildren($nodes);		
 		$childs = array();
-		for($i = 0, $k = count($nodes); $i < $k; $i++)
+		for(reset($nodes); $key = key($nodes);)
 		{
-			$key = key($nodes);
 			next($nodes);
-			if($isChild)
+			if($noChildren)
 			{
 				$childs[] = $key;
 				unset($nodes[$key]);
 			}
 			else
-				$this->findAndCollectChilds($key, $nodes[$key]);
+				$this->collectChildren($key, $nodes[$key]);
 		}
 		if(count($childs) > 0)
 			$this->onChildNodesVisited($parent, $childs);
 	}
 	
+	/**
+	 * Set the object properties for all the child nodes visited.
+	 * @param string parent node id
+	 * @param array list of child nodes visited.
+	 */
 	protected function onChildNodesVisited($parent, $nodes)
 	{
-		if(empty($parent))
+		if(empty($parent) || empty($this->_entries[$parent]))
 			return;
-		$parentObject = $this->_entries[$parent]->getObject();
+	
+		$parentObject = $this->_entries[$parent]['object'];
+		$property = $this->_entries[$nodes[0]]['property'];		
+		
+		$list = TPropertyAccess::get($parentObject, $property);
+	
 		foreach($nodes as $node)
-		{	
-			$property= $this->_entries[$node]->getProperty();
-			$parentObject->{$property}[] = $this->_entries[$node]->getObject();
+		{
+			if($list instanceof TList)
+				$parentObject->{$property}[] = $this->_entries[$node]['object'];
+			else if(is_array($list))
+				$list[] = $this->_entries[$node]['object'];
+			else
+				throw TSqlMapExecutionException(
+					'sqlmap_property_must_be_list');
 		}
-		if($this->_entries[$parent]->getProperty() === null)
+		
+		if(is_array($list))
+			TPropertyAccess::set($parentObject, $property, $list);
+	
+		if($this->_entries[$parent]['property'] === null)
 			$this->_list[] = $parentObject;
 	}
 	
-	public function getList()
+	/**
+	 * @return array object collection.
+	 */
+	protected function getCollection()
 	{
 		return $this->_list;
 	}

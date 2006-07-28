@@ -30,7 +30,9 @@ class UserDao extends BaseDao
 	public function getUserByName($username)
 	{
 		$sqlmap = $this->getConnection();
-		return $sqlmap->queryForObject('GetUserByName', $username);	
+		$user = $sqlmap->queryForObject('GetUserByName', $username);
+		var_dump($user);
+		return $user;	
 	}
 	
 	/**

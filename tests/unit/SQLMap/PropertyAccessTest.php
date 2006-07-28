@@ -7,7 +7,6 @@ require_once(dirname(__FILE__).'/BaseTest.php');
  */
 class PropertyAccessTest extends BaseTest
 {
-
 	function testGetPublicProperty()
 	{
 		$account = new AccountBis();

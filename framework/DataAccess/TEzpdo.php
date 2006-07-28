@@ -47,9 +47,14 @@ class TEzpdo extends TDatabaseProvider
 		if($this->getApplication()->getMode() != TApplication::STATE_PERFORMANCE)
 		{
 			if(!is_dir($path))
-				throw new TConfigurationException('ezpdo_compile_dir_not_found', $path);
+			{
+				if(@mkdir($path)===false)
+					throw new TConfigurationException('ezpdo_compile_dir_not_found' . $path);
+			}
 			$this->_options['auto_compile'] = false;
 		}
+		if(!is_dir($path))
+			throw new TConfigurationException('ezpdo_missing_compile_dir', $path);
 	}
 	
 	/**
@@ -68,7 +73,7 @@ class TEzpdo extends TDatabaseProvider
 		if(strlen($dsn = $this->getConnectionString()) > 0)
 			$options['default_dsn'] = $dsn;
 		else
-			$options['default_dsn'] = $this->buildDsn();
+			$options['default_dsn'] = $this->buildConnectionString();
 			
 		return array_merge($this->_options, $options);
 	}
