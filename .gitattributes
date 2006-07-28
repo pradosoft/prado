@@ -1083,6 +1083,13 @@ demos/time-tracker/protected/App_Data/MySQL4/reports.xml -text
 demos/time-tracker/protected/App_Data/MySQL4/time-entry.xml -text
 demos/time-tracker/protected/App_Data/MySQL4/time-tracker-mysql.sql -text
 demos/time-tracker/protected/App_Data/MySQL4/users.xml -text
+demos/time-tracker/protected/App_Data/Sqlite/category.xml -text
+demos/time-tracker/protected/App_Data/Sqlite/projects.xml -text
+demos/time-tracker/protected/App_Data/Sqlite/reports.xml -text
+demos/time-tracker/protected/App_Data/Sqlite/time-entry.xml -text
+demos/time-tracker/protected/App_Data/Sqlite/time-tracker.db -text
+demos/time-tracker/protected/App_Data/Sqlite/time-tracker.db.bak -text
+demos/time-tracker/protected/App_Data/Sqlite/users.xml -text
 demos/time-tracker/protected/App_Data/TimeTrackerUserTypeHandler.php -text
 demos/time-tracker/protected/App_Data/mysql4-sqlmap.xml -text
 demos/time-tracker/protected/App_Data/sqlite-sqlmap.xml -text
