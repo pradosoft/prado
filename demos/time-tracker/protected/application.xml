@@ -10,9 +10,12 @@
 	<using namespace="Application.App_Code.*" />
   </paths>
   <modules>
+
     <module id="cache" class="System.Caching.TMemCache" />
   	<module id="sqlmap" class="TSQLMap"
+		EnableConfigCache="true"
   		configFile="Application.App_Data.mysql-sqlmap" />
+
 	<module id="daos" class="DaoManager" Connection="sqlmap">
 		<dao id="UserDao" class="Application.App_Code.UserDao" />
 		<dao id="ProjectDao" class="Application.App_Code.ProjectDao" />

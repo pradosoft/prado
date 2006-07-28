@@ -88,21 +88,24 @@ class LogTimeEntry extends TPage
 		if(!$this->IsValid)
 			return;
 		
-		$entry = new TimeEntry;
-		$entry->CreatorUserName = $this->User->Name;
-		$category = new Category;
-		$category->ID = $this->category->SelectedValue;
-		$entry->Category = $category;
-		$entry->Description = $this->description->Text;
-		$entry->Duration = floatval($this->hours->Text);
-		$entry->ReportDate = $this->day->TimeStamp;
-		$entry->Username = $this->projectMembers->SelectedItem->Text;
-		
-		$this->hours->Text = '';
-		$this->description->Text = '';
-		
-		$this->getTimeEntryDao()->addNewTimeEntry($entry);
-		$this->showTimeSheet();
+		if($this->projectMembers->SelectedItem)
+		{
+			$entry = new TimeEntry;
+			$entry->CreatorUserName = $this->User->Name;
+			$category = new Category;
+			$category->ID = $this->category->SelectedValue;
+			$entry->Category = $category;
+			$entry->Description = $this->description->Text;
+			$entry->Duration = floatval($this->hours->Text);
+			$entry->ReportDate = $this->day->TimeStamp;
+			$entry->Username = $this->projectMembers->SelectedItem->Text;
+			
+			$this->hours->Text = '';
+			$this->description->Text = '';
+			
+			$this->getTimeEntryDao()->addNewTimeEntry($entry);
+			$this->showTimeSheet();
+		}
 	}
 }
 

@@ -125,11 +125,11 @@ class CategoryDaoTestCase extends BaseTestCase
 		try
 		{
 			$this->categoryDao->addNewCategory($category);
-			$this->fail();
+			$this->pass();
 		}
 		catch(TSqlMapQueryExecutionException $e)
 		{
-			$this->pass();
+			$this->fail();
 		}
 		$check = $this->categoryDao->getCategoryByID(1);
 		$this->assertEqual($category, $check);

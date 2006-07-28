@@ -1126,7 +1126,9 @@ demos/time-tracker/protected/pages/TimeTracker/ProjectDetails.php -text
 demos/time-tracker/protected/pages/TimeTracker/ProjectList.page -text
 demos/time-tracker/protected/pages/TimeTracker/ProjectList.php -text
 demos/time-tracker/protected/pages/TimeTracker/ReportProject.page -text
+demos/time-tracker/protected/pages/TimeTracker/ReportProject.php -text
 demos/time-tracker/protected/pages/TimeTracker/ReportResource.page -text
+demos/time-tracker/protected/pages/TimeTracker/ReportResource.php -text
 demos/time-tracker/protected/pages/TimeTracker/SiteMap.php -text
 demos/time-tracker/protected/pages/TimeTracker/SiteMap.tpl -text
 demos/time-tracker/protected/pages/TimeTracker/TimeEntryList.php -text

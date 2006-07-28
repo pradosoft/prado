@@ -33,15 +33,6 @@ class TimeEntryDao extends BaseDao
 		$sqlmap = $this->getConnection();
 		$sqlmap->update('UpdateTimeEntry', $entry);
 	}
-	
-	public function getTimeEntriesByDate($username, $start, $end)
-	{
-		$sqlmap = $this->getConnection();
-		$param['username'] = $username;
-		$param['startDate'] = $start;
-		$param['endDate'] = $end;
-		return $sqlmap->queryForList('GetTimeEntriesByDate', $param);	
-	}
 }
 
 ?>

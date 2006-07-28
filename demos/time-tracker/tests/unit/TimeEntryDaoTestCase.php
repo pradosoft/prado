@@ -209,59 +209,6 @@ class TimeEntryDaoTestCase extends BaseTestCase
 		
 		$this->assertSameEntry($entry, $verify);
 	}
-	
-	function testgetEntriesByDate()
-	{
-		$added = $this->createTimeEntries2();
-		$this->entryDao->addNewTimeEntry($added[0]);
-		$this->entryDao->addNewTimeEntry($added[1]);
-
-		$start = strtotime('-5 days');
-		$end = strtotime('-1 day');
-		$list = $this->entryDao->getTimeEntriesByDate('consultant', $start, $end);
-		
-		$this->assertEqual(count($list),1);
-		
-		$this->assertSameEntry($list[0], $added[1]);
-	}
-
-	function testUserTimeReports()
-	{
-		$added = $this->createTimeEntries2();
-		$this->entryDao->addNewTimeEntry($added[0]);
-		$this->entryDao->addNewTimeEntry($added[1]);
-		
-		$time = $this->reportDao->getUserTimeReport('consultant');
-		$this->assertEqual($time, 6.7);
-	}
-
-
-	function testTimeReportsByCategory()
-	{
-		$added = $this->createTimeEntries2();
-		$this->entryDao->addNewTimeEntry($added[0]);
-		$this->entryDao->addNewTimeEntry($added[1]);
-		
-		$list = $this->reportDao->getTimeReportsByCategoryID(1);
-		$this->assertEqual(count($list),1);
-		$this->assertEqual($list[0]->Username, 'consultant');
-		$this->assertEqual($list[0]->ActualDuration, 1.2);
-	}
-
-	function testTimeReportsByProject()
-	{
-		$added = $this->createTimeEntries2();
-		$this->entryDao->addNewTimeEntry($added[0]);
-		$this->entryDao->addNewTimeEntry($added[1]);
-		
-		$list = $this->reportDao->getTimeReportsByProjectID(1);
-		
-		$this->assertEqual(count($list),1);
-		$this->assertEqual($list[0]->Username, 'consultant');
-		$this->assertEqual($list[0]->CategoryID, 1);
-		$this->assertEqual($list[0]->ActualDuration, 6.7);
-	}
-
 }
 
 ?>
