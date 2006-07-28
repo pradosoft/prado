@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <sqlMap>
 
-<resultMap ID="project-result" class="Project">
+<resultMap id="project-result" class="Project">
 	<result property="ID" column="ProjectID" type="integer"/>
 	<result property="Name" column="Name" />
 	<result property="Description" column="Description" />
@@ -13,11 +13,11 @@
 	<result property="ActualDuration" column="ActualDuration" type="float" />
 </resultMap>
 
-<select ID="ProjectNameExists" resultClass="boolean">
+<select id="ProjectNameExists" resultClass="boolean">
 	SELECT COUNT(Name) FROM project WHERE Name = #value#
 </select>
 
-<insert ID="CreateNewProject" parameterClass="Project">
+<insert id="CreateNewProject" parameterClass="Project">
 	INSERT INTO project
 	(Name, Description, CreationDate, EstimateDuration, CompletionDate, CreatorID, ManagerID)
 	VALUES
@@ -29,7 +29,7 @@
     </selectKey>
 </insert>
 
-<select ID="GetProjectByID" parameterClass="integer" resultMap="project-result">
+<select id="GetProjectByID" parameterClass="integer" resultMap="project-result">
 	SELECT 
 		project.ProjectID as ProjectID,
 		project.Name as Name,
@@ -52,7 +52,7 @@
 		project.Name
 </select>
 
-<select ID="GetAllProjects" resultMap="project-result">
+<select id="GetAllProjects" resultMap="project-result">
 	SELECT 
 		project.ProjectID as ProjectID,
 		project.Name as Name,
@@ -70,11 +70,13 @@
 		Disabled = 0
 	GROUP BY
 		project.ProjectID
-	ORDER BY
-		project.Name
 </select>
 
-<select ID="GetProjectsByManagerName" resultMap="project-result">
+<select id="GetAllProjectsOrdered" resultMap="project-result" extends="GetAllProjects">
+	ORDER BY $sort$ $order$
+</select>
+
+<select id="GetProjectsByManagerName" resultMap="project-result">
 	SELECT 
 		project.ProjectID as ProjectID,
 		project.Name as Name,
@@ -97,7 +99,7 @@
 		project.Name
 </select>
 
-<select ID="GetProjectsByUserName" resultMap="project-result">
+<select id="GetProjectsByUserName" resultMap="project-result">
 	SELECT 
 		project.ProjectID as ProjectID,
 		project.Name as Name,
@@ -122,24 +124,24 @@
 		project.Name
 </select>
 
-<update ID="DeleteProject" parameterClass="integer">
+<update id="DeleteProject" parameterClass="integer">
 	UPDATE project SET Disabled = 1 WHERE ProjectID = #value#
 </update>
 
-<select ID="GetProjectMembers" parameterClass="integer">
+<select id="GetProjectMembers" parameterClass="integer">
 	SELECT UserID FROM project_members WHERE ProjectID = #value#
 </select>
 
-<insert ID="AddUserToProject" parameterClass="array">
+<insert id="AddUserToProject" parameterClass="array">
 	INSERT INTO project_members (UserID, ProjectID)
 	VALUES(#username#, #project#)
 </insert>
 
-<delete ID="RemoveUserFromProject" parameterClass="array">
+<delete id="RemoveUserFromProject" parameterClass="array">
 	DELETE FROM project_members WHERE ProjectID = #project# AND UserID = #username#
 </delete>
 
-<update ID="UpdateProject" parameterClass="Project">
+<update id="UpdateProject" parameterClass="Project">
 	UPDATE project
 	SET 
 		CompletionDate = #CompletionDate, typeHandler=DateTime#,

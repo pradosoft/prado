@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <sqlMap>
 
-<insert ID="AddNewTimeEntry" parameterClass="TimeEntry">
+<insert id="AddNewTimeEntry" parameterClass="TimeEntry">
 	INSERT INTO time_entry(
 		EntryCreated, 
 		Duration, 
@@ -36,7 +36,23 @@
 	<result property="Username" column="UserID" />
 </resultMap>
 
-<select ID="GetTimeEntryByID" resultMap="time-entry-result">
+<resultMap id="time-entry-category-result" class="TimeEntry">
+	<result property="ID" column="EntryID" type="integer" />
+	<result property="DateCreated" column="EntryCreated" typeHandler="DateTime" />
+	<result property="Duration" column="Duration" type="float" />
+	<result property="Description" column="Description" />
+	<result property="Category" resultMapping="entry-category" />
+	<result property="ReportDate" column="EntryDate" typeHandler="DateTime" />
+	<result property="CreatorUserName" column="CreatorID" />
+	<result property="Username" column="UserID" />
+</resultMap>
+
+<resultMap id="entry-category" class="Category">
+	<result property="ID" column="CategoryID" />
+	<result property="Name" column="CategoryName" />
+</resultMap>
+
+<select id="GetTimeEntryByID" resultMap="time-entry-result">
 	SELECT 
 		*
 	FROM 
@@ -49,9 +65,10 @@
 	DELETE FROM time_entry WHERE EntryID = #value#
 </delete>
 
-<select ID="GetAllTimeEntriesByProjectIdAndUser" resultMap="time-entry-result">
+<select id="GetAllTimeEntriesByProjectIdAndUser" resultMap="time-entry-category-result">
 	SELECT 
-		time_entry.*
+		time_entry.*,
+		categories.Name as CategoryName
 	FROM
 		time_entry, categories
 	WHERE
@@ -62,7 +79,7 @@
 		EntryID ASC
 </select>
 
-<update ID="UpdateTimeEntry" parameterClass="TimeEntry">
+<update id="UpdateTimeEntry" parameterClass="TimeEntry">
 	UPDATE time_entry SET
 		Duration = #Duration#,
 		Description = #Description#,
@@ -72,20 +89,5 @@
 	WHERE
 		EntryID = #ID#
 </update>
-
-<select id="GetTimeEntriesByDate" parameterClass="array" resultMap="time-entry-result">
-	SELECT 
-		time_entry.*
-	FROM
-		time_entry
-	WHERE
-			time_entry.UserID = #username#
-	AND
-		time_entry.EntryDate BETWEEN 
-			#startDate, typeHandler=DateTime# and 
-			#endDate, typeHandler=DateTime#
-	ORDER BY 
-		EntryID ASC
-</select>
 
 </sqlMap>

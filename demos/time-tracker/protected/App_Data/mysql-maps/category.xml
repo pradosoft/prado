@@ -10,7 +10,7 @@
 	<result property="ActualDuration" column="ActualDuration" type="float" />
 </resultMap>
 
-<insert ID="AddNewCategory" parameterClass="Category">
+<insert id="AddNewCategory" parameterClass="Category">
 	INSERT INTO categories 
 	(Name, ProjectID, Abbreviation, EstimateDuration)
 	VALUES(#Name#, #ProjectID#, #Abbreviation#, #EstimateDuration#)
@@ -19,7 +19,7 @@
     </selectKey>
 </insert>
 
-<select ID="GetCategoryByID" parameterClass="integer" resultMap="category-result">
+<select id="GetCategoryByID" parameterClass="integer" resultMap="category-result">
 	SELECT 
 		categories.*,
 		sum(time_entry.Duration) as ActualDuration
@@ -34,7 +34,7 @@
 		categories.Name
 </select>
 
-<select ID="GetAllCategories" resultMap="category-result">
+<select id="GetAllCategories" resultMap="category-result">
 	SELECT 
 		categories.*,
 		sum(time_entry.Duration) as ActualDuration
@@ -51,7 +51,7 @@
 	DELETE FROM categories WHERE CategoryID = #value#
 </delete>
 
-<select ID="GetCategoriesByProjectID" resultMap="category-result">
+<select id="GetCategoriesByProjectID" resultMap="category-result">
 	SELECT 
 		categories.*,
 		sum(time_entry.Duration) as ActualDuration
@@ -66,7 +66,7 @@
 		categories.Name
 </select>
 
-<select ID="GetCategoryByNameInProject" parameterClass="array" resultMap="category-result">
+<select id="GetCategoryByNameInProject" parameterClass="array" resultMap="category-result">
 	SELECT 
 		categories.*,
 		sum(time_entry.Duration) as ActualDuration
@@ -80,7 +80,7 @@
 		categories.CategoryID
 </select>
 
-<update ID="UpdateCategory" parameterClass="Category">
+<update id="UpdateCategory" parameterClass="Category">
 	UPDATE categories SET
 		Abbreviation = #Abbreviation#,
 		EstimateDuration = #EstimateDuration#,
