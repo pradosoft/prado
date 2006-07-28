@@ -1,14 +1,85 @@
 <com:TContent ID="Main">
 <h2>Project Reports</h2>
 
-<fieldset>
+<fieldset class="project-report">
 	<legend>Project Report</legend>
 <com:TMultiView ID="views" ActiveViewIndex="0">
 	<com:TView>
 		<com:TLabel ForControl="projectList" 
-			Text="Select a project. Use ctrl+click to select multiple resources at once: "/>
+			Text="Select a project. Use ctrl+click to select multiple projects at once: "/>
 		<com:TListBox ID="projectList" CssClass="projects" SelectionMode="Multiple" />
 		<com:TButton Text="Generate Report" OnClick="generateReport_Clicked"/>		
+	</com:TView>
+	<com:TView>
+		<com:TRepeater ID="projects" onItemCreated="project_itemCreated" EnableViewState="false">
+		<prop:ItemTemplate>
+		<!-- project -->
+			<table class="project">
+				<tr>
+					<th>Project Name</th>
+					<th>Est. Hours</th>
+					<th>Actual Hours</th>
+					<th>Est. Completion</th>
+				</tr>
+				<tr>
+					<td><%# $this->DataItem->ProjectName %></td>
+					<td><%# $this->DataItem->EstimateHours %></td>
+					<td><%# $this->DataItem->ActualHours %></td>
+					<td>
+						<com:System.I18N.TDateFormat 
+							Pattern="dd/MM/yyyy"
+							Value=<%# $this->DataItem->EstimateCompletion %> />
+					</td>
+				</tr>
+				
+			<com:TRepeater ID="category" onItemCreated="Page.category_itemCreated" EnableViewState="false">
+			<prop:HeaderTemplate>
+				<tr><td></td><td colspan="2">
+			</prop:HeaderTemplate>
+			<prop:FooterTemplate>
+				</tr></td><td></td>
+			</prop:FooterTemplate>
+			<prop:ItemTemplate>			
+
+			<!-- category -->
+				<table class="category">
+					<tr>
+					<th>Category</th>
+					<th>Est. Hours</th>
+					<th>Actual Hours</th>
+					</tr>
+					<tr>
+						<td><%# $this->DataItem->CategoryName %></td>
+						<td><%# $this->DataItem->EstimateHours %></td>
+						<td><%# $this->DataItem->ActualHours %></td>
+					</tr>
+					
+					
+				<com:TRepeater ID="members" EnableViewState="false">
+					<prop:ItemTemplate>
+					<!-- member -->				
+						<tr>
+							<td colspan="2">
+							<%# $this->DataItem['username'] %>
+						</td>
+						<td>
+							<%# $this->DataItem['hours'] %>
+						</td>
+						</tr>
+					<!-- //member -->
+					</prop:ItemTemplate>
+				</com:TRepeater>
+				
+				</table>		
+			<!-- //category -->
+								
+			</prop:ItemTemplate>
+			</com:TRepeater>
+							
+			</table>
+		<!-- //project -->
+		</prop:ItemTemplate>
+		</com:TRepeater>
 	</com:TView>
 </com:TMultiView>
 

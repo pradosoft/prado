@@ -1067,6 +1067,7 @@ demos/time-tracker/protected/App_Code/DaoManager.php -text
 demos/time-tracker/protected/App_Code/DateTimeMySQL.php -text
 demos/time-tracker/protected/App_Code/Project.php -text
 demos/time-tracker/protected/App_Code/ProjectDao.php -text
+demos/time-tracker/protected/App_Code/ReportsDao.php -text
 demos/time-tracker/protected/App_Code/TimeEntry.php -text
 demos/time-tracker/protected/App_Code/TimeEntryDao.php -text
 demos/time-tracker/protected/App_Code/TimeTrackerException.php -text
@@ -1075,8 +1076,6 @@ demos/time-tracker/protected/App_Code/TimeTrackerUserTypeHandler.php -text
 demos/time-tracker/protected/App_Code/TrackerAuthManager.php -text
 demos/time-tracker/protected/App_Code/UserDao.php -text
 demos/time-tracker/protected/App_Code/UserManager.php -text
-demos/time-tracker/protected/App_Code/UserReport.php -text
-demos/time-tracker/protected/App_Code/UserReportsDao.php -text
 demos/time-tracker/protected/App_Code/exceptions.txt -text
 demos/time-tracker/protected/App_Data/mysql-maps/category.xml -text
 demos/time-tracker/protected/App_Data/mysql-maps/projects.xml -text

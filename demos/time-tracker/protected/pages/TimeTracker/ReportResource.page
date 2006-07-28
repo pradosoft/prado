@@ -1,4 +1,85 @@
 <com:TContent ID="Main">
 <h1>Resource Report</h1>
 
+<fieldset class="resource-report">
+	<legend>Resource Report</legend>
+	<com:TMultiView ID="views" ActiveViewIndex="0">
+	<com:TView>
+		<h2>STEP 1 - Select project(s)</h2>
+		<com:TLabel ForControl="projectList" 
+			Text="Select a project. Use ctrl+click to select multiple projects at once: "/>
+		<com:TListBox ID="projectList" CssClass="projects" SelectionMode="Multiple" />
+		<h2>STEP 2 - Select resource(s)</h2>
+		<com:TLabel ForControl="resourceList" 
+			Text="Select a resource. Use ctrl+click to select multiple resources at once: "/>
+		<com:TListBox ID="resourceList" CssClass="resource" SelectionMode="Multiple" />
+		<h2>STEP 3 - Select a date range</h2>
+		<div class="date-from">
+		<com:TLabel ForControl="dateFrom" Text="Dates from:"/>
+		<com:TDatePicker id="dateFrom" 
+			TimeStamp=<%= strtotime("-1 year") %>
+			InputMode="DropDownList" />
+		</div>
+		<div class="date-to">
+		<com:TLabel ForControl="dateTo" Text="to:"/>
+		<com:TDatePicker id="dateTo" InputMode="DropDownList"/>
+		</div>
+		<div class="buttons">
+			<com:TButton Text="Generate Report" Onclick="generateReport_Clicked"/>
+		</div>	
+	</com:TView>
+	
+	<com:TView>
+		 <h3>Beginning Date</h3>
+		 <h4><%= $this->dateFrom->Date %></h4> 	 
+		 <h3>Ending Date</h3>
+		 <h4><%= $this->dateTo->Date %></h4>
+		 
+		 <com:TRepeater ID="resource_report" OnItemCreated="resource_report_itemCreated" EnableViewState="false">
+		 	<prop:ItemTemplate>
+		 	<table class="resource">
+		 		<tr>
+		 			<th>Consultant</th>
+		 			<th>Total Hours</th>
+		 		</tr>
+		 		<tr>
+		 			<td><%# $this->DataItem->Username %></td>
+		 			<td><%# $this->DataItem->TotalHours %></td>
+		 		</tr>
+		 	</table>
+		 	
+		 	<com:TRepeater ID="time_entries">
+		 	<prop:HeaderTemplate>
+		 		<table>
+		 			<tr>
+		 				<th>Reported Date</th>
+		 				<th>Project Name</th>
+		 				<th>Category Name</th>
+		 				<th>Duration</th>
+		 				<th>Description</th>
+		 			</tr>
+		 	</prop:HeaderTemplate>
+		 	<prop:FooterTemplate>
+		 		</table>
+		 	</prop:FooterTemplate>
+		 	<prop:ItemTemplate>
+		 	<tr>
+		 		<td><com:System.I18N.TDateFormat 
+							Pattern="dd/MM/yyyy"
+							Value=<%# $this->DataItem->ReportDate %> />
+				</td>
+		 		<td><%# $this->DataItem->ProjectName %></td>
+		 		<td><%# $this->DataItem->CategoryName %></td>
+		 		<td><%# $this->DataItem->Duration %></td>
+		 		<td><%# $this->DataItem->Description %></td>
+		 	</tr>
+		 	</prop:ItemTemplate>
+		 	</com:TRepeater>
+		 	</prop:ItemTemplate>
+		 </com:TRepeater>
+		 
+	</com:TView>
+	
+	</com:TMultiView>
+</fieldset>
 </com:TContent>

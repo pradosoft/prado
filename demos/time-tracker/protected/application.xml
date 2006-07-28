@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<application id="Database" Mode="Performance">
+<application id="Database" Mode="Debug">
 
   <!-- configure to use Quickstart theme directory -->
   <paths>
@@ -18,7 +18,7 @@
 		<dao id="ProjectDao" class="Application.App_Code.ProjectDao" />
 		<dao id="TimeEntryDao" class="Application.App_Code.TimeEntryDao" />
 		<dao id="CategoryDao" class="Application.App_Code.CategoryDao" />
-		<dao id="ReportDao" class="Application.App_Code.UserReportsDao" />
+		<dao id="ReportDao" class="Application.App_Code.ReportsDao" />
 	</module>
   </modules>
   <services>

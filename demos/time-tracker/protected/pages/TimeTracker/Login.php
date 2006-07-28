@@ -1,7 +1,4 @@
 <?php
-
-Prado::using('Application.App_Data.ezpdo.Models.*');
-
 /**
  * Login Page class file.
  *
@@ -26,19 +23,6 @@ Prado::using('Application.App_Data.ezpdo.Models.*');
  */
 class Login extends TPage
 {
-	
-	function onLoad($param)
-	{
-		//$category = new TimeEntryCategory();
-		$ezpdo = $this->Application->Modules['ezpdo']->getConnection();
-		//$cats = $ezpdo->find('from TimeEntryCategory');
-		$category = $ezpdo->create('TimeEntryCategory');
-		//$category->Name = "Category 1";
-		//$category->Abbreviation = "CAT1";
-		var_dump($category);
-		//$ezpdo->commit($category);
-	}
-	
 	/**
 	 * Validates the username and password.
 	 * @param TControl custom validator that created the event.

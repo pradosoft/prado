@@ -968,7 +968,8 @@ class TSQLMapObjectCollectionTree
 		if(!$found && !empty($parent))
 		{
 			$this->_tree[$parent] = array();
-			$this->_entries[$parent] = $object;
+			if(!isset($this->_entries[$parent]) || $object !== '')
+				$this->_entries[$parent] = $object;
 			$this->addNode($this->_tree, $parent, $node);
 		}
 	}
