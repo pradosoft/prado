@@ -18,7 +18,7 @@
  * @package Demos
  * @since 3.1
  */
-class Project
+class ProjectRecord
 {
 	public $ActualDuration = 0;
 	public $CreatorUserName = '';

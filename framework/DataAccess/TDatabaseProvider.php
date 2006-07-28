@@ -103,16 +103,19 @@ abstract class TDatabaseProvider extends TModule
 	}
 
 	/**
-	 * If the driver is <tt>sqlite</tt>, the host must be dot path to the sqlite
-	 * file. E.g. "<tt>Application.pages.my_db</tt>". The database filename
-	 * should not contain any dots.
+	 * If the driver is <tt>sqlite</tt>, the host must be dot directory of to
+	 * the sqlite file. E.g. "<tt>Application.pages.my_db</tt>". The database
+	 * filename must be specified by the <tt>Database</tt> attribute.
 	 * @return string database host name/IP (and port number) in the format
 	 * "host[:port]"
 	 */
 	public function getHost()
 	{
 		if(strtolower($this->getDriver()) == "sqlite")
-			return Prado::getPathOfNamespace($this->_host);
+		{
+			$dir = Prado::getPathOfNamespace($this->_host);
+			return $dir.'/'.$this->getDatabase();
+		}
 		else
 			return $this->_host;
 	}

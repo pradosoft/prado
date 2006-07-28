@@ -11,6 +11,11 @@ class TSQLMap extends TModule
 	 */
 	const CONFIG_FILE_EXT='.xml';
 	
+	protected function getCacheKey()
+	{
+		return $this->getID().$this->getConfigFile();
+	}
+	
 	/**
 	 * Saves the current sqlmap instance to cache.
 	 * @return boolean true if sqlmap was cached, false otherwise.
@@ -21,7 +26,7 @@ class TSQLMap extends TModule
 		{
 			$cache = $this->getApplication()->getCache();
 			if(!is_null($cache))
-				return $cache->add($this->getID(), $this->_sqlmap);
+				return $cache->add($this->getCacheKey(), $this->_sqlmap);
 		}
 		return false;
 	}
@@ -37,7 +42,7 @@ class TSQLMap extends TModule
 			$cache = $this->getApplication()->getCache();			
 			Prado::using('System.DataAccess.SQLMap.TSqlMapper');		
 			if(!is_null($cache))
-				$this->_sqlmap = $cache->get($this->getID());
+				$this->_sqlmap = $cache->get($this->getCacheKey());
 			return $this->_sqlmap instanceof TSqlMapper;
 		}
 		return false;

@@ -1,6 +1,6 @@
 <?php
 
-class Category
+class CategoryRecord
 {
 	public $ActualDuration = 0.0;
 	public $Abbreviation = '';

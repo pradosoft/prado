@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<application id="Database" Mode="Debug">
+<application id="Time-Tracker" Mode="Debug">
 
   <!-- configure to use Quickstart theme directory -->
   <paths>
@@ -8,20 +8,32 @@
 	<using namespace="System.DataAccess.*" />
 	<using namespace="System.Security.*" />
 	<using namespace="Application.App_Code.*" />
+	<using namespace="Application.App_Code.Dao.*" />
+	<using namespace="Application.App_Data.*" />
   </paths>
   <modules>
 
-    <module id="cache" class="System.Caching.TMemCache" />
-  	<module id="sqlmap" class="TSQLMap"
+<!--    
+	<module id="cache" class="System.Caching.TMemCache" />
+-->
+
+
+	<module id="sqlmap" class="TSQLMap"
 		EnableConfigCache="true"
-  		configFile="Application.App_Data.mysql-sqlmap" />
+  		configFile="Application.App_Data.sqlite-sqlmap" />
+
+<!--
+	<module id="sqlmap" class="TSQLMap"
+		EnableConfigCache="true"
+  		configFile="Application.App_Data.mysql4-sqlmap" />
+-->
 
 	<module id="daos" class="DaoManager" Connection="sqlmap">
-		<dao id="UserDao" class="Application.App_Code.UserDao" />
-		<dao id="ProjectDao" class="Application.App_Code.ProjectDao" />
-		<dao id="TimeEntryDao" class="Application.App_Code.TimeEntryDao" />
-		<dao id="CategoryDao" class="Application.App_Code.CategoryDao" />
-		<dao id="ReportDao" class="Application.App_Code.ReportsDao" />
+		<dao id="UserDao" class="Application.App_Code.Dao.UserDao" />
+		<dao id="ProjectDao" class="Application.App_Code.Dao.ProjectDao" />
+		<dao id="TimeEntryDao" class="Application.App_Code.Dao.TimeEntryDao" />
+		<dao id="CategoryDao" class="Application.App_Code.Dao.CategoryDao" />
+		<dao id="ReportDao" class="Application.App_Code.Dao.ReportsDao" />
 	</module>
   </modules>
   <services>

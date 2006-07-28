@@ -374,7 +374,6 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		while($row = $recordSet->fetchRow())
 			$object = $this->applyResultMap($row, $result);	
 
-		//var_dump($this->_groupBy);
 		if(!$this->_groupBy->isEmpty())
 		{
 			$list = $this->_groupBy->collect();

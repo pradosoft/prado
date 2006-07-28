@@ -51,6 +51,7 @@ class ReportResource extends TPage
 		$end = $this->dateTo->TimeStamp;
 		
 		$report = $reportDao->getUserProjectTimeReports($users, $projects, $start, $end);
+
 		$this->resource_report->DataSource = $report;
 		$this->resource_report->dataBind();		
 	}

@@ -175,11 +175,11 @@ class UserDaoTestCase extends BaseTestCase
 		try
 		{
 			$this->userDao->updateUserRoles($user);
-			$this->fail();
+			$this->pass();
 		}
 		catch(TDataMapperException $e)
 		{
-			$this->pass();
+			$this->fail();
 		}
 		
 		$check = $this->sqlmap->queryForObject('GetUserByName', 'user1');

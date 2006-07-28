@@ -90,9 +90,9 @@ class LogTimeEntry extends TPage
 		
 		if($this->projectMembers->SelectedItem)
 		{
-			$entry = new TimeEntry;
+			$entry = new TimeEntryRecord;
 			$entry->CreatorUserName = $this->User->Name;
-			$category = new Category;
+			$category = new CategoryRecord;
 			$category->ID = $this->category->SelectedValue;
 			$entry->Category = $category;
 			$entry->Description = $this->description->Text;

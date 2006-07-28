@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMapConfig>
+	
+	<typeHandlers>
+		<typeHandler type="TimeTrackerUser" 
+			callback="TimeTrackerUserTypeHandler"/>
+		<typeHandler type="DateTime" 
+			callback="DateTimeTypeHandler" />
+	</typeHandlers>
+	
+    <provider class="TAdodb">
+        <datasource 
+			driver="sqlite" 
+			host="Application.App_Data.SQLite" 
+			database="time-tracker.db" />
+    </provider>
+    
+    <sqlMaps>
+        <sqlMap resource="SQLite/users.xml"/>
+		<sqlMap resource="SQLite/projects.xml"/>
+		<sqlMap resource="SQLite/category.xml" />
+		<sqlMap resource="SQLite/time-entry.xml" />
+		<sqlMap resource="SQLite/reports.xml" />
+    </sqlMaps>
+    
+</sqlMapConfig>

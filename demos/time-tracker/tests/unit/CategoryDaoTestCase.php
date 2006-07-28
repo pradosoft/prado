@@ -18,7 +18,7 @@ class CategoryDaoTestCase extends BaseTestCase
 	
 	function createNewProject()
 	{
-		$project = new Project;
+		$project = new ProjectRecord;
 		$project->CreatorUserName = "admin";
 		$project->DateCreated = time();
 		$project->CompletionDate = strtotime('+1 month');
@@ -32,7 +32,7 @@ class CategoryDaoTestCase extends BaseTestCase
 
 	function createNewProject2()
 	{
-		$project = new Project;
+		$project = new ProjectRecord;
 		$project->CreatorUserName = "manager";
 		$project->DateCreated = time();
 		$project->CompletionDate = strtotime('+1 week');
@@ -46,7 +46,7 @@ class CategoryDaoTestCase extends BaseTestCase
 
 	function createNewCategory()
 	{
-		$category = new Category;
+		$category = new CategoryRecord;
 		$category->Name = 'Category 1';
 		$category->EstimateDuration = 5.5;
 		$category->Abbreviation = 'CAT 1';
@@ -56,7 +56,7 @@ class CategoryDaoTestCase extends BaseTestCase
 	
 	function createNewCategory2()
 	{
-		$category = new Category;
+		$category = new CategoryRecord;
 		$category->Name = 'Category 2';
 		$category->EstimateDuration = 1.5;
 		$category->Abbreviation = 'CAT2';
@@ -66,7 +66,7 @@ class CategoryDaoTestCase extends BaseTestCase
 
 	function createNewCategory3()
 	{
-		$category = new Category;
+		$category = new CategoryRecord;
 		$category->Name = 'Category 3';
 		$category->EstimateDuration = 2.5;
 		$category->Abbreviation = 'CAT3';
@@ -109,6 +109,7 @@ class CategoryDaoTestCase extends BaseTestCase
 		$this->categoryDao->addNewCategory($category);
 		
 		$check = $this->categoryDao->getCategoryByID(1);
+
 		$this->assertEqual($category, $check);
 	}
 	

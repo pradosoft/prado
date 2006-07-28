@@ -64,7 +64,7 @@ class TimeEntryList extends TTemplateControl
 		$id = $this->entries->DataKeys[$param->Item->ItemIndex];
 		
 		$entry = $this->getTimeEntryDao()->getTimeEntryByID($id);
-		$category = new Category;
+		$category = new CategoryRecord;
 		$category->ID = $param->Item->category->SelectedValue;
 		$entry->Category = $category;
 		$entry->Description = $param->Item->description->Text;

@@ -58,7 +58,7 @@ class CategoryDataList extends TTemplateControl
 		$item = $param->Item;
 		
 		$id = $this->categories->DataKeys[$param->Item->ItemIndex];
-		$category = new Category;
+		$category = new CategoryRecord;
 		$category->ID = $id;
 		$category->Name = $item->name->Text;
 		$category->Abbreviation = $item->abbrev->Text;
@@ -75,7 +75,7 @@ class CategoryDataList extends TTemplateControl
 		if(!$this->Page->IsValid)
 			return;
 		
-		$newCategory = new Category;
+		$newCategory = new CategoryRecord;
 		$newCategory->Name = $this->categoryName->Text;
 		$newCategory->Abbreviation = $this->abbrev->Text;
 		$newCategory->EstimateDuration = floatval($this->duration->Text);

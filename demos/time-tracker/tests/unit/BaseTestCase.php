@@ -1,5 +1,8 @@
 <?php
 
+
+Prado::using('Application.App_Code.Dao.*');
+
 class BaseTestCase extends UnitTestCase
 {
 	protected $sqlmap;
@@ -10,7 +13,28 @@ class BaseTestCase extends UnitTestCase
 		$this->sqlmap = $app->getModule('daos')->getConnection();
 	}
 	
+	
 	function flushDatabase()
+	{
+		$conn = $this->sqlmap->openConnection();
+		switch(strtolower($conn->getProvider()->getDriver()))
+		{
+			case 'mysql':
+			return $this->flushMySQLDatabase();
+			case 'sqlite':
+			return $this->flushSQLiteDatabase(); 
+		}		
+	}
+	
+	function flushSQLiteDatabase()
+	{
+		$conn = $this->sqlmap->openConnection();
+		$file = $conn->getProvider()->getHost();
+		$backup = $file.'.bak';
+		copy($backup, $file);
+	}
+	
+	function flushMySQLDatabase()
 	{
 		$conn = $this->sqlmap->openConnection();
 		$file = Prado::getPathOfNamespace('Application.App_Data.mysql-reset','.sql');

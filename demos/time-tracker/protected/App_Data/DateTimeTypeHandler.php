@@ -1,6 +1,6 @@
 <?php
 
-class DateTimeMySQL implements ITypeHandlerCallback
+class DateTimeTypeHandler implements ITypeHandlerCallback
 {
 	/**
 	 * Not implemented.

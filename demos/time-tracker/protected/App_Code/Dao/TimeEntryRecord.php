@@ -1,6 +1,6 @@
 <?php
 
-class TimeEntry
+class TimeEntryRecord
 {
 	public $CreatorUserName='';
 	public $Category;

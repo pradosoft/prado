@@ -116,7 +116,7 @@ class ProjectDetails extends TPage
 		if(!$this->Page->IsValid)
 			return;
 			
-		$newProject = new Project;
+		$newProject = new ProjectRecord;
 		
 		$projectDao = $this->getProjectDao();
 		

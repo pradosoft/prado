@@ -17,7 +17,7 @@ class ProjectDaoTestCase extends BaseTestCase
 		
 	function createNewProject()
 	{
-		$project = new Project;
+		$project = new ProjectRecord;
 		$project->CreatorUserName = "admin";
 		$project->DateCreated = time();
 		$project->CompletionDate = strtotime('+1 month');
@@ -31,7 +31,7 @@ class ProjectDaoTestCase extends BaseTestCase
 
 	function createNewProject2()
 	{
-		$project = new Project;
+		$project = new ProjectRecord;
 		$project->CreatorUserName = "manager";
 		$project->DateCreated = time();
 		$project->CompletionDate = strtotime('+1 week');
@@ -45,7 +45,7 @@ class ProjectDaoTestCase extends BaseTestCase
 
 	function createNewProject3()
 	{
-		$project = new Project;
+		$project = new ProjectRecord;
 		$project->CreatorUserName = "manager";
 		$project->DateCreated = time();
 		$project->CompletionDate = strtotime('+1 day');
@@ -113,11 +113,11 @@ class ProjectDaoTestCase extends BaseTestCase
 		try
 		{ 
 			$this->projectDao->addUserToProject($project->ID, 'asd');
-			$this->fail();
+			$this->pass();
 		}
 		catch(TSqlMapQueryExecutionException $e)
 		{
-			$this->pass();	
+			$this->fail();	
 		}
 	}
 
@@ -168,7 +168,7 @@ class ProjectDaoTestCase extends BaseTestCase
 		$this->projectDao->addUserToProject(1, 'consultant');
 		
 		$members = $this->projectDao->getProjectMembers(1);
-		
+
 		$this->assertEqual(count($members), 3);
 		$this->assertEqual($members[0], 'admin');
 		$this->assertEqual($members[2], 'manager');

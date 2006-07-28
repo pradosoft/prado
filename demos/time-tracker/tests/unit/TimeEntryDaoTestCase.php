@@ -24,7 +24,7 @@ class TimeEntryDaoTestCase extends BaseTestCase
 	
 	function createNewProject()
 	{
-		$project = new Project;
+		$project = new ProjectRecord;
 		$project->CreatorUserName = "admin";
 		$project->DateCreated = time();
 		$project->CompletionDate = strtotime('+1 month');
@@ -38,7 +38,7 @@ class TimeEntryDaoTestCase extends BaseTestCase
 
 	function createNewProject2()
 	{
-		$project = new Project;
+		$project = new ProjectRecord;
 		$project->CreatorUserName = "manager";
 		$project->DateCreated = time();
 		$project->CompletionDate = strtotime('+1 week');
@@ -52,7 +52,7 @@ class TimeEntryDaoTestCase extends BaseTestCase
 	
 	function createNewCategory()
 	{
-		$category = new Category;
+		$category = new CategoryRecord;
 		$category->Name = 'Category 1';
 		$category->EstimateDuration = 5.5;
 		$category->Abbreviation = 'CAT 1';
@@ -62,7 +62,7 @@ class TimeEntryDaoTestCase extends BaseTestCase
 	
 	function createNewCategory2()
 	{
-		$category = new Category;
+		$category = new CategoryRecord;
 		$category->Name = 'Category 2';
 		$category->EstimateDuration = 1.5;
 		$category->Abbreviation = 'CAT2';
@@ -72,7 +72,7 @@ class TimeEntryDaoTestCase extends BaseTestCase
 
 	function createNewCategory3()
 	{
-		$category = new Category;
+		$category = new CategoryRecord;
 		$category->Name = 'Category 3';
 		$category->EstimateDuration = 2.5;
 		$category->Abbreviation = 'CAT3';
@@ -119,7 +119,7 @@ class TimeEntryDaoTestCase extends BaseTestCase
 	{
 		$added = $this->createProjectsAndCategories();		
 		
-		$entry = new TimeEntry;
+		$entry = new TimeEntryRecord;
 		$entry->CreatorUserName = "admin";
 		$entry->Category = $added[2];
 		$entry->Description = "New work";
@@ -135,7 +135,7 @@ class TimeEntryDaoTestCase extends BaseTestCase
 	{
 		$added = $this->createProjectsAndCategories();		
 		
-		$entry = new TimeEntry;
+		$entry = new TimeEntryRecord;
 		$entry->CreatorUserName = "admin";
 		$entry->Category = $added[2];
 		$entry->Description = "New work";
@@ -144,7 +144,7 @@ class TimeEntryDaoTestCase extends BaseTestCase
 		$entry->ReportDate = strtotime('-10 day');
 		$entry->Username = 'consultant';
 		
-		$entry2 = new TimeEntry;
+		$entry2 = new TimeEntryRecord;
 		$entry2->CreatorUserName = "admin";
 		$entry2->Category = $added[4];
 		$entry2->Description = "New work 2";
