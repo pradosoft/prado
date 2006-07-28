@@ -6,7 +6,7 @@ $frameworkPath='../../framework/prado.php';
 $assetsPath=$basePath."/assets";
 $runtimePath=$basePath."/protected/runtime";
 
-$sqliteDbDir = $basePath."/protected/App_Data/Sqlite";
+$sqliteDbDir = $basePath."/protected/App_Data/SQLite";
 
 if(!is_file($frameworkPath))
 	die("Unable to find prado framework path $frameworkPath.");
