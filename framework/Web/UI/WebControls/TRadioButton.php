@@ -68,6 +68,10 @@ class TRadioButton extends TCheckBox
 	 */
 	private $_globalID;
 	/**
+	 * @var string previous UniqueID (used to calculate UniqueGroup)
+	 */
+	private $_previousUniqueID=null;
+	/**
 	 * @var string the name used to fetch radiobutton post data
 	 */
 	private $_uniqueGroupName=null;
@@ -140,12 +144,64 @@ class TRadioButton extends TCheckBox
 	}
 
 	/**
-	 * Sets the name of the group that the radio button belongs to
+	 * Sets the name of the group that the radio button belongs to.
+	 * The group is unique among the control's naming container.
 	 * @param string the group name
+	 * @see setUniqueGroupName
 	 */
 	public function setGroupName($value)
 	{
 		$this->setViewState('GroupName',$value,'');
+		$this->_uniqueGroupName=null;
+	}
+
+	/**
+	 * @return string the name used to fetch radiobutton post data
+	 */
+	public function getUniqueGroupName()
+	{
+		if(($groupName=$this->getViewState('UniqueGroupName',''))!=='')
+			return $groupName;
+		else if(($uniqueID=$this->getUniqueID())!==$this->_previousUniqueID || $this->_uniqueGroupName===null)
+		{
+			$groupName=$this->getGroupName();
+			$this->_previousUniqueID=$uniqueID;
+			if($uniqueID!=='')
+			{
+				if(($pos=strrpos($uniqueID,TControl::ID_SEPARATOR))!==false)
+				{
+					if($groupName!=='')
+						$groupName=substr($uniqueID,0,$pos+1).$groupName;
+					else if($this->getNamingContainer() instanceof TRadioButtonList)
+						$groupName=substr($uniqueID,0,$pos);
+				}
+				if($groupName==='')
+					$groupName=$uniqueID;
+			}
+			$this->_uniqueGroupName=$groupName;
+		}
+		return $this->_uniqueGroupName;
+	}
+
+	/**
+	 * Sets the unique group name that the radio button belongs to.
+	 * A unique group is a radiobutton group unique among the whole page hierarchy,
+	 * while the {@link setGroupName GroupName} specifies a group that is unique
+	 * among the control's naming container only.
+	 * For example, each cell of a {@link TDataGrid} is a naming container.
+	 * If you specify {@link setGroupName GroupName} for a radiobutton in a cell,
+	 * it groups together radiobutton within a cell, but not the other, even though
+	 * they have the same {@link setGroupName GroupName}.
+	 * On the contratry, if {@link setUniqueGroupName UniqueGroupName} is used instead,
+	 * it will group all appropriate radio buttons on the whole page hierarchy.
+	 * Note, when both {@link setUniqueGroupName UniqueGroupName} and
+	 * {@link setGroupName GroupName}, the former takes precedence.
+	 * @param string the group name
+	 * @see setGroupName
+	 */
+	public function setUniqueGroupName($value)
+	{
+		$this->setViewState('UniqueGroupName',$value,'');
 	}
 
 	/**
@@ -175,32 +231,6 @@ class TRadioButton extends TCheckBox
 			return $this->getUniqueID();
 		else
 			return $value;
-	}
-
-	/**
-	 * @return string the name used to fetch radiobutton post data
-	 */
-	private function getUniqueGroupName()
-	{
-		if($this->_uniqueGroupName===null)
-		{
-			$groupName=$this->getGroupName();
-			$uniqueID=$this->getUniqueID();
-			if($uniqueID!=='')
-			{
-				if(($pos=strrpos($uniqueID,TControl::ID_SEPARATOR))!==false)
-				{
-					if($groupName!=='')
-						$groupName=substr($uniqueID,0,$pos+1).$groupName;
-					else if($this->getNamingContainer() instanceof TRadioButtonList)
-						$groupName=substr($uniqueID,0,$pos);
-				}
-				if($groupName==='')
-					$groupName=$uniqueID;
-			}
-			$this->_uniqueGroupName=$groupName;
-		}
-		return $this->_uniqueGroupName;
 	}
 
 	/**

@@ -21,6 +21,13 @@ Prado::using('System.Web.UI.WebControls.TListControl');
  * TDropDownList displays a dropdown list on a Web page.
  * It inherits all properties and events from {@link TListControl}.
  *
+ * Since v3.0.3, TDropDownList starts to support optgroup. To specify an option group for
+ * a list item, set a Group attribute with it,
+ * <code>
+ *  $listitem->Attributes->Group="Group Name";
+ *  // or <com:TListItem Attributes.Group="Group Name" .../> in template
+ * </code>
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls

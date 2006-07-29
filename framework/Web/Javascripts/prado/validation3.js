@@ -1113,11 +1113,20 @@ Prado.WebUI.TRangeValidator = Class.extend(Prado.WebUI.TBaseValidator,
 			return true;
 		if(typeof(this.options.DataType) == "undefined")
 			this.options.DataType = "String";
-
-		var min = this.convert(this.options.DataType, this.options.MinValue || null);
-		var max = this.convert(this.options.DataType, this.options.MaxValue || null);
-		value = this.convert(this.options.DataType, value);
-
+		
+		if(this.options.DataType != "StringLength")
+		{
+			var min = this.convert(this.options.DataType, this.options.MinValue || null);
+			var max = this.convert(this.options.DataType, this.options.MaxValue || null);
+			value = this.convert(this.options.DataType, value);
+		}
+		else
+		{
+			var min = this.options.MinValue || 0;
+			var max = this.options.MaxValue || Number.POSITIVE_INFINITY;
+			value = value.length;
+		}
+		
 		if(value == null)
 			return false;
 

@@ -475,7 +475,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 					{
 						$name=urlencode($name.'[]');
 						foreach($value as $v)
-							$url.=$amp.$name.'='.$v;
+							$url.=$amp.$name.'='.urlencode($v);
 					}
 					else
 						$url.=$amp.urlencode($name).'='.urlencode($value);
@@ -547,6 +547,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 						$getVariables[$serviceID]=$path;
 					else
 						$getVariables[$path]='';
+					$index++;
 				}
 			}
 			return $getVariables;

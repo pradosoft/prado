@@ -184,6 +184,20 @@ Dropdown list causing validation:
 </td>
 </tr>
 
+<tr>
+<td class="samplenote">
+Dropdown list with option groups:
+</td>
+<td class="sampleaction">
+<com:TDropDownList>
+  <com:TListItem Value="value 1" Text="item 1" Attributes.Group="group 1"/>
+  <com:TListItem Value="value 2" Text="item 2" Attributes.Group="group 1"/>
+  <com:TListItem Value="value 3" Text="item 3" Attributes.Group="group 2"/>
+  <com:TListItem Value="value 4" Text="item 4" Attributes.Group="group 2"/>
+</com:TDropDownList>
+</td>
+</tr>
+
 </table>
 
 </com:TContent>

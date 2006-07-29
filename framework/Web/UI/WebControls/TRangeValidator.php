@@ -34,6 +34,13 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  *   by {@link TSimpleDateFormatter}. If the property is not set,
  *   the GNU date syntax is assumed.
  * - <b>String</b> A string data type.
+ * - <b>StringLength</b> check for string length.
+ * 
+ * The TRangeValidator allows a special DataType "StringLength" that
+ * can be used to verify minimum and maximum string length. The 
+ * {@link setCharset Charset} property can be used to force a particular 
+ * charset for comparison. Otherwise, the application charset is used and is
+ * defaulted as UTF-8.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -96,13 +103,14 @@ class TRangeValidator extends TBaseValidator
 	}
 
 	/**
-	 * Sets the data type (Integer, Float, Date, String) that the values being
-	 * compared are converted to before the comparison is made.
+	 * Sets the data type (Integer, Float, Date, String, StringLength) that the
+	 * values being compared are converted to before the comparison is made.
 	 * @param string the data type
 	 */
 	public function setDataType($value)
 	{
-		$this->setViewState('DataType',TPropertyValue::ensureEnum($value,'Integer','Float','Date','String'),'String');
+		$this->setViewState('DataType',TPropertyValue::ensureEnum(
+			$value,'Integer','Float','Date','String', 'StringLength'),'String');
 	}
 
 	/**
@@ -120,6 +128,22 @@ class TRangeValidator extends TBaseValidator
 	public function getDateFormat()
 	{
 		return $this->getViewState('DateFormat', '');
+	}
+
+	/**
+	 * @param string charset for string length comparison.
+	 */
+	public function setCharset($value)
+	{
+		$this->setViewState('Charset', $value, '');
+	}
+	
+	/**
+	 * @return string charset for string length comparison.
+	 */
+	public function getCharset()
+	{
+		return $this->getViewState('Charset', '');
 	}
 
 	/**
@@ -142,6 +166,8 @@ class TRangeValidator extends TBaseValidator
 				return $this->isValidFloat($value);
 			case 'Date':
 				return $this->isValidDate($value);
+			case 'StringLength':
+				return $this->isValidStringLength($value);
 			default:
 				return $this->isValidString($value);
 		}
@@ -236,6 +262,33 @@ class TRangeValidator extends TBaseValidator
 			$valid=$valid && (strcmp($value,$minValue)>=0);
 		if($maxValue!=='')
 			$valid=$valid && (strcmp($value,$maxValue)<=0);
+		return $valid;
+	}
+	
+	/**
+	 * @param string string for comparision
+	 * @return boolean true if min and max string length are satisfied. 
+	 */
+	protected function isValidStringLength($value)
+	{
+		$minValue=$this->getMinValue();
+		$maxValue=$this->getMaxValue();
+
+		$valid=true;
+		$charset = $this->getCharset();
+		if($charset==='')
+		{
+			$app= $this->getApplication()->getGlobalization();
+			$charset = $app ? $app->getCharset() : null;
+			if(!$charset)
+				$charset = 'UTF-8';
+		}
+		
+		$length = iconv_strlen($value, $charset);
+		if($minValue!=='')
+			$valid = $valid && $length >= intval($minValue);
+		if($maxValue!=='')
+			$valid = $valid && $length <= intval($maxValue);
 		return $valid;
 	}
 
