@@ -24,6 +24,7 @@ div.main
 	-moz-border-radius: 15px 15px 0 0;
 }
 
+
 h1.heading, h1 a
 {
 	color: white;
@@ -36,6 +37,15 @@ h1.heading, h1 a:hover
 {
 	color: white;
 }
+
+h1.heading
+{
+	background-image: url(sync.gif);
+	background-repeat: no-repeat;
+	background-position: center left;
+	padding: 0px 0px 5px 75px;
+}
+
 
 h1 .subheading
 {
@@ -117,12 +127,20 @@ ul.level1 li .menuitem
 	color: #f71;	
 	font-weight: bold;
 	letter-spacing: 2px;
+	text-decoration: none;
 }
 
 ul.level1 li.active .menuitem
 {
 	background-color: White;
 	background-image: none;
+}
+
+ul.level1 li .menuitem img
+{
+	border: 0 none;
+	vertical-align: middle;
+	margin-top: -4px;
 }
 
 ul.level2
