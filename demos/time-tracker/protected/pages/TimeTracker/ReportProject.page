@@ -7,8 +7,16 @@
 	<com:TView>
 		<com:TLabel ForControl="projectList" 
 			Text="Select a project. Use ctrl+click to select multiple projects at once: "/>
+		<span class="required">*</span><br />	
 		<com:TListBox ID="projectList" CssClass="projects" SelectionMode="Multiple" />
-		<com:TButton Text="Generate Report" OnClick="generateReport_Clicked"/>		
+		<com:TRequiredFieldValidator 
+			Style="display:block"
+			ControlToValidate="projectList"
+			ErrorMessage="Please select at least one project."
+			ControlCssClass="required-input" />
+		<div class="buttons">
+		<com:TButton Text="Generate Report" OnClick="generateReport_Clicked"/>
+		</div>		
 	</com:TView>
 	<com:TView>
 		<com:TRepeater ID="projects" onItemCreated="project_itemCreated" EnableViewState="false">
@@ -16,16 +24,16 @@
 		<!-- project -->
 			<table class="project">
 				<tr>
-					<th>Project Name</th>
-					<th>Est. Hours</th>
-					<th>Actual Hours</th>
-					<th>Est. Completion</th>
+					<th class="name">Project Name</th>
+					<th class="est-hour">Est. Hours</th>
+					<th class="hours">Actual Hours</th>
+					<th class="completion">Est. Completion</th>
 				</tr>
 				<tr>
-					<td><%# h($this->DataItem->ProjectName) %></td>
-					<td><%# h($this->DataItem->EstimateHours) %></td>
-					<td><%# h($this->DataItem->ActualHours) %></td>
-					<td>
+					<td class="name"><%# h($this->DataItem->ProjectName) %></td>
+					<td class="est-hour"><%# h($this->DataItem->EstimateHours) %></td>
+					<td class="hours"><%# h($this->DataItem->ActualHours) %></td>
+					<td class="completion">
 						<com:System.I18N.TDateFormat 
 							Pattern="dd/MM/yyyy"
 							Value=<%# $this->DataItem->EstimateCompletion %> />
@@ -34,24 +42,24 @@
 				
 			<com:TRepeater ID="category" onItemCreated="Page.category_itemCreated" EnableViewState="false">
 			<prop:HeaderTemplate>
-				<tr><td></td><td colspan="2">
+				<tr><td class="left-filler">&nbsp;</td><td colspan="2" class="sub-table">
 			</prop:HeaderTemplate>
 			<prop:FooterTemplate>
-				</tr></td><td></td>
+				</td><td class="right-filler">&nbsp;</td></tr>
 			</prop:FooterTemplate>
 			<prop:ItemTemplate>			
 
 			<!-- category -->
 				<table class="category">
 					<tr>
-					<th>Category</th>
-					<th>Est. Hours</th>
-					<th>Actual Hours</th>
+					<th class="category">Category</th>
+					<th class="est-hour">Est. Hours</th>
+					<th class="hours">Actual Hours</th>
 					</tr>
 					<tr>
-						<td><%# h($this->DataItem->CategoryName) %></td>
-						<td><%# h($this->DataItem->EstimateHours) %></td>
-						<td><%# h($this->DataItem->ActualHours) %></td>
+						<td class="category"><%# h($this->DataItem->CategoryName) %></td>
+						<td class="est-hour"><%# h($this->DataItem->EstimateHours) %></td>
+						<td class="hours"><%# h($this->DataItem->ActualHours) %></td>
 					</tr>
 					
 					
@@ -59,10 +67,10 @@
 					<prop:ItemTemplate>
 					<!-- member -->				
 						<tr>
-							<td colspan="2">
+							<td colspan="2" class="username">
 							<%# h($this->DataItem['username']) %>
 						</td>
-						<td>
+						<td class="hours">
 							<%# h($this->DataItem['hours']) %>
 						</td>
 						</tr>

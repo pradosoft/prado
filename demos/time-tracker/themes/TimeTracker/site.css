@@ -1,12 +1,13 @@
 html
 {
+	background: url(background.png) repeat-x top;
 	background-color: #eef;
 }
 body
 {
-	background: url(background.png) repeat-x top;
-	margin: 0;
+	margin: 0 auto;
 	padding: 2em;
+	max-width: 60em;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
 }
 
@@ -40,10 +41,10 @@ h1.heading, h1 a:hover
 
 h1.heading
 {
-	background-image: url(sync.gif);
+	background-image: url(clock.gif);
 	background-repeat: no-repeat;
 	background-position: center left;
-	padding: 0px 0px 5px 75px;
+	padding: 0px 0px 5px 70px;
 }
 
 
@@ -251,4 +252,12 @@ fieldset.signup .wizardNav
 {
 	border: 2px solid red;
 	background-color: #FFE4E1
+}
+
+.copyrights
+{
+	font-size: 0.8em;
+	text-align: center;
+	color: #708090;
+	margin-top: 2em;
 }

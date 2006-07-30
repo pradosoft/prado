@@ -65,6 +65,7 @@ CREATE TABLE project (
   `Name` varchar(255) NOT NULL,
   Description varchar(255) default NULL,
   CreationDate datetime NOT NULL,
+  CompletionDate datetime NOT NULL,
   Disabled tinyint(1) NOT NULL default '0',
   EstimateDuration float(10,2) NOT NULL default '0.00',
   CreatorID varchar(50) NOT NULL,

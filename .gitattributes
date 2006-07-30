@@ -1159,14 +1159,16 @@ demos/time-tracker/tests/unit/UserDaoTestCase.php -text
 demos/time-tracker/themes/TimeTracker/background.png -text
 demos/time-tracker/themes/TimeTracker/bar.png -text
 demos/time-tracker/themes/TimeTracker/bell.gif -text
+demos/time-tracker/themes/TimeTracker/clock.gif -text
 demos/time-tracker/themes/TimeTracker/group.gif -text
 demos/time-tracker/themes/TimeTracker/project.css -text
+demos/time-tracker/themes/TimeTracker/report.css -text
 demos/time-tracker/themes/TimeTracker/report.gif -text
 demos/time-tracker/themes/TimeTracker/site.css -text
-demos/time-tracker/themes/TimeTracker/sync.gif -text
 demos/time-tracker/themes/TimeTracker/tabs.png -text
 demos/time-tracker/themes/TimeTracker/time-entry.css -text
 demos/time-tracker/themes/TimeTracker/time.gif -text
+demos/time-tracker/themes/clock.png -text
 docs/application.xml -text
 docs/specs/application.dtd -text
 docs/specs/application.xsd -text

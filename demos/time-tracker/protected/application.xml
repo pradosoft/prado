@@ -13,11 +13,10 @@
   </paths>
   <modules>
 
-<!--    
+<!--   
 	<module id="cache" class="System.Caching.TMemCache" />
+
 -->
-
-
 	<module id="sqlmap" class="TSQLMap"
 		EnableConfigCache="true"
   		configFile="Application.App_Data.sqlite-sqlmap" />
