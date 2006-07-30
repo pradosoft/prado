@@ -15,7 +15,7 @@ ENH: Ticket#263 - TListBox and TDropDownList support optgroup now (Qiang)
 ENH: Ticket#277 - Added TControl.CustomData property (Qiang)
 ENH: Ticket#287 - TControl::broadcastEvent() may raise events now (Qiang)
 ENH: Ticket#292 - Added THttpRequest::parseUrl() so that it is easier to be extended (Qiang)
-ENH: Better URL 'Path' format (Qiang)
+ENH: Ticket#309 - Added THttpRequest.UrlParamSeparator property (Qiang)
 NEW: Added TStyleSheet (Wei)
 
 

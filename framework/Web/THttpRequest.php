@@ -62,8 +62,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	/**
 	 * Separator used to separate GET variable name and value when URL format is Path.
 	 */
-	const URL_PARAM_SEPARATOR=',';
-
+	private $_separator=',';
 	/**
 	 * @var boolean whether the module is initialized
 	 */
@@ -224,6 +223,26 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	public function setUrlFormat($value)
 	{
 		$this->_urlFormat=TPropertyValue::ensureEnum($value,'Path','Get');
+	}
+
+	/**
+	 * @return string separator used to separate GET variable name and value when URL format is Path. Defaults to comma ','.
+	 */
+	public function getUrlParamSeparator()
+	{
+		return $this->_separator;
+	}
+
+	/**
+	 * @param string separator used to separate GET variable name and value when URL format is Path.
+	 * @throws TInvalidDataValueException if the separator is not a single character
+	 */
+	public function setUrlParamSeparator($value)
+	{
+		if(strlen($value)===1)
+			$this->_separator=$value;
+		else
+			throw new TInvalidDataValueException('httprequest_separator_invalid');
 	}
 
 	/**
@@ -460,10 +479,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function constructUrl($serviceID,$serviceParam,$getItems=null,$encodeAmpersand=false,$encodeGetItems=true)
 	{
-		if($this->getUrlFormat()==='Path')
-			$url=$serviceID.'/'.$serviceParam;
-		else
-			$url=$serviceID.'='.$serviceParam;
+		$url=$serviceID.'='.$serviceParam;
 		$amp=$encodeAmpersand?'&amp;':'&';
 		if(is_array($getItems) || $getItems instanceof Traversable)
 		{
@@ -497,7 +513,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 		}
 		if($this->getUrlFormat()==='Path')
 		{
-			$url=strtr($url,array($amp=>'/','?'=>'/','='=>self::URL_PARAM_SEPARATOR));
+			$url=strtr($url,array($amp=>'/','?'=>'/','='=>$this->_separator));
 			if(defined('SID') && SID != '' && !((int)ini_get('session.use_cookies')===1 && ((int)ini_get('session.use_only_cookies')===1)))
 				$url.='?'.SID;
 			return $this->getApplicationUrl().'/'.$url;
@@ -523,13 +539,12 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 		{
 			$paths=explode('/',$this->_pathInfo);
 			$getVariables=$_GET;
-			$index=0;
 			$serviceID=null;
 			foreach($paths as $path)
 			{
 				if(($path=trim($path))!=='')
 				{
-					if(($pos=strpos($path,','))!==false)
+					if(($pos=strpos($path,$this->_separator))!==false)
 					{
 						$name=substr($path,0,$pos);
 						$value=substr($path,$pos+1);
@@ -538,16 +553,8 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 						else
 							$getVariables[$name]=$value;
 					}
-					else if($index===0)
-					{
-						$serviceID=$path;
-						$getVariables[$serviceID]='';
-					}
-					else if($index===1 && $serviceID!==null)
-						$getVariables[$serviceID]=$path;
 					else
 						$getVariables[$path]='';
-					$index++;
 				}
 			}
 			return $getVariables;
