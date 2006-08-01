@@ -46,7 +46,7 @@ class TPropertyAccess
 		{	
 			if(is_array($object) || $object instanceof ArrayAccess)
 			{
-				if(isset($object[$prop]))
+				if(array_key_exists($prop, $object))
 					$object = $object[$prop];
 				else
 					throw new TInvalidPropertyException('sqlmap_invalid_property',$path);					
@@ -76,7 +76,7 @@ class TPropertyAccess
 		{	
 			if(is_array($object) || $object instanceof ArrayAccess)
 			{
-				if(isset($object[$prop]))
+				if(array_key_exists($prop, $object))
 					$object = $object[$prop];
 				else
 					return false;
