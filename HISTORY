@@ -2,6 +2,7 @@ Version 3.0.3 August 6, 2006
 ============================
 BUG: Ticket#264 - Typos in some exception throw statements (Knut)
 BUG: Ticket#268 - THttpResponse.redirect() may fail for some browsers (Qiang)
+BUG: Ticket#285 - NumberFormat Rounding Bug (Wei)
 BUG: Ticket#297 - THttpRequest::constructUrl() encoding bug about array GET parameters (Qiang)
 BUG: TDataGrid may complain getting ItemType on a non-object if the grid is not data-bound (Qiang)
 BUG: TCheckBox.Value should be converted to string (Qiang)

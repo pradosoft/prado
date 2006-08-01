@@ -161,9 +161,14 @@ class NumberFormat
 		$string = (string)$string;
 		$dp = strpos($string, '.');
 		
+		$decimalDigits = $this->formatInfo->DecimalDigits;
+//		var_dump($decimalDigits);
+		//if not decimal digits, assume 0 decimal points.
+		if(is_int($decimalDigits) && $decimalDigits > 0)
+			$string = (string)round(floatval($string),$decimalDigits);
 		if(is_int($dp))
-			$string = substr($string, 0, $dp);	
-			
+			$string = substr($string, 0, $dp);
+
 		$integer = '';
 
 		$digitSize = $this->formatInfo->getDigitSize();
@@ -233,7 +238,9 @@ class NumberFormat
 	
 		$decimalDigits = $this->formatInfo->DecimalDigits;
 		$decimalSeparator = $this->formatInfo->DecimalSeparator;
-
+		
+		//do the correct rounding here
+		//$string = round(floatval($string), $decimalDigits);
 		if(is_int($dp))
 		{		
 			if($decimalDigits == -1)

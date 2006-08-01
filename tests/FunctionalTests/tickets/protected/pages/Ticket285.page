@@ -1,0 +1,7 @@
+<com:TContent ID="Content">
+
+<com:System.I18N.TNumberFormat Value="349.999" Pattern="#.00" />
+
+<com:System.I18N.TNumberFormat Value="349.99" Pattern="#.00" />
+
+</com:TContent>
