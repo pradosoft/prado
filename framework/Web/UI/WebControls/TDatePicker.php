@@ -69,6 +69,15 @@ Prado::using('System.Web.UI.WebControls.TTextBox');
 class TDatePicker extends TTextBox
 {
 	/**
+	 * AutoPostBack is not supported.
+	 */
+	public function setAutoPostBack($value)
+	{
+		throw new TNotSupportedException('tdatepicker_autopostback_unsupported',
+			get_class($this)); 
+	}
+	
+	/**
 	 * @return string the format of the date string
 	 */
 	public function getDateFormat()
