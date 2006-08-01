@@ -7,6 +7,7 @@ BUG: Ticket#297 - THttpRequest::constructUrl() encoding bug about array GET para
 BUG: TDataGrid may complain getting ItemType on a non-object if the grid is not data-bound (Qiang)
 BUG: TCheckBox.Value should be converted to string (Qiang)
 BUG: Ticket#302 - TDatePicker's bug with AutoPostBack set to "true" (Wei)
+BUG: Ticket#306 - Prado::localize function may fail when localized string passed as parameter (Wei)
 BUG: Ticket#311 - Several bugs in TDatePicker (Wei)
 BUG: Ticket#312 - TDatePicker's ReadOnly property bug (Wei)
 CHG: Ticket#206 - TBaseValidator.OnValidate is raised only when the validator is visible (Qiang)
