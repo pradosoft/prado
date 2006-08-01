@@ -1635,6 +1635,7 @@ tests/FunctionalTests/tickets/protected/pages/Ticket284.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket284Component.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket284Component.tpl -text
 tests/FunctionalTests/tickets/protected/pages/Ticket311.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket312.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket54.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket54Master.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket54Master.tpl -text

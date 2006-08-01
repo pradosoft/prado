@@ -328,7 +328,7 @@ class TDatePicker extends TTextBox
 	 */
 	protected function renderDatePickerButtons($writer)
 	{
-		if($this->getShowCalendar())
+		if($this->getShowCalendar() && $this->getEnabled(true))
 		{
 			switch ($this->getMode())
 			{
@@ -553,6 +553,8 @@ class TDatePicker extends TTextBox
 		$writer->addAttribute('id', $this->getClientID().'_day');
 		$writer->addAttribute('name', $this->getUniqueID().'$day');
 		$writer->addAttribute('class', 'datepicker_day_options');
+		if($this->getReadOnly() || !$this->getEnabled(true))
+			$writer->addAttribute('disabled', 'disabled');
 		$writer->renderBeginTag('select');
 		$this->renderDropDownListOptions($writer, $days, $selected);
 		$writer->renderEndTag();
@@ -570,6 +572,8 @@ class TDatePicker extends TTextBox
 		$writer->addAttribute('id', $this->getClientID().'_month');
 		$writer->addAttribute('name', $this->getUniqueID().'$month');
 		$writer->addAttribute('class', 'datepicker_month_options');
+		if($this->getReadOnly() || !$this->getEnabled(true))
+			$writer->addAttribute('disabled', 'disabled');		
 		$writer->renderBeginTag('select');
 		$this->renderDropDownListOptions($writer,
 					$this->getLocalizedMonthNames($info), $selected-1);
@@ -614,6 +618,8 @@ class TDatePicker extends TTextBox
 			$years[$i] = $i;
 		$writer->addAttribute('id', $this->getClientID().'_year');
 		$writer->addAttribute('name', $this->getUniqueID().'$year');
+		if($this->getReadOnly() || !$this->getEnabled(true))
+			$writer->addAttribute('disabled', 'disabled');		
 		$writer->renderBeginTag('select');
 		$writer->addAttribute('class', 'datepicker_year_options');
 		$this->renderDropDownListOptions($writer, $years, $selected);

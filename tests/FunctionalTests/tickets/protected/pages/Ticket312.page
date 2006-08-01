@@ -1,0 +1,11 @@
+<com:TContent ID="Content">
+<com:TButton Text="Click me" />
+<com:TDatePicker
+  ReadOnly="true"
+  InputMode="DropDownList"
+  DateFormat="M/yyyy" />
+
+<com:TDatePicker
+  DateFormat="d/M/yyyy" />
+  
+</com:TContent>
