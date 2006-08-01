@@ -1614,6 +1614,7 @@ tests/FunctionalTests/quickstart/Controls/Wizard5TestCase.php -text
 tests/FunctionalTests/quickstart/Fundamentals/HangmanTestCase.php -text
 tests/FunctionalTests/tickets.php -text
 tests/FunctionalTests/tickets/index.php -text
+tests/FunctionalTests/tickets/protected/messages/en/messages.xml -text
 tests/FunctionalTests/tickets/protected/pages/Layout.php -text
 tests/FunctionalTests/tickets/protected/pages/Layout.tpl -text
 tests/FunctionalTests/tickets/protected/pages/TestHtmlArea.php -text
@@ -1635,6 +1636,7 @@ tests/FunctionalTests/tickets/protected/pages/Ticket284.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket284Component.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket284Component.tpl -text
 tests/FunctionalTests/tickets/protected/pages/Ticket285.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket306.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket311.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket312.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket54.page -text

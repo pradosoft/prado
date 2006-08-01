@@ -1,0 +1,12 @@
+<com:TContent ID="Content">
+
+<com:TTranslate>
+  {field} is required.
+  <com:TTranslateParameter Key="field">
+	  <com:TTranslate>
+  		city
+  		</com:TTranslate>
+  </com:TTranslateParameter>
+</com:TTranslate>
+
+</com:TContent>
