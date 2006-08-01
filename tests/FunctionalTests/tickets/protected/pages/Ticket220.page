@@ -16,7 +16,7 @@
 	<com:TLabel ID="label1" Text="Label 1" />
 	<input type="button" id="button1" value="update" />
 	
-	<com:TClientScript UsingPradoScripts="prado">
+	<com:TClientScript PradoScripts="prado">
 		Event.observe("button1", "click", function()
 		{
 			element = $("<%= $this->label1->ClientID %>");

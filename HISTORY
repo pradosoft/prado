@@ -11,6 +11,7 @@ BUG: Ticket#306 - Prado::localize function may fail when localized string passed
 BUG: Ticket#311 - Several bugs in TDatePicker (Wei)
 BUG: Ticket#312 - TDatePicker's ReadOnly property bug (Wei)
 CHG: Ticket#206 - TBaseValidator.OnValidate is raised only when the validator is visible (Qiang)
+CHG: Raised PHP version requirement to 5.1 and above (Qiang)
 ENH: Ticket#178 - Added TRadioButton.UniqueGroupName property (Qiang)
 ENH: Ticket#220 - TClientScripts method to import custom javascript files (Wei)
 ENH: Ticket#225 - TRadioButton::getRadioButtonsInGroup() added (Wei)

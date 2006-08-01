@@ -563,86 +563,16 @@ class PradoBase
 }
 
 /**
- * The following code is meant to fill the gaps between different PHP versions.
+ * TReflectionClass class.
+ * This class was originally written to cope with the incompatibility between different PHP versions.
+ * It is equivalent to ReflectionClass for PHP version >= 5.1.0
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System
+ * @since 3.0
  */
-if(version_compare(phpversion(),'5.1.0','>='))
+class TReflectionClass extends ReflectionClass
 {
-	/**
-	 * TReflectionClass class.
-	 * This class is written to cope with the incompatibility between different PHP versions.
-	 * It is equivalent to ReflectionClass if PHP version >= 5.1.0
-	 * @author Qiang Xue <qiang.xue@gmail.com>
-	 * @version $Revision: $  $Date: $
-	 * @package System
-	 * @since 3.0
-	 */
-	class TReflectionClass extends ReflectionClass
-	{
-	}
-}
-else // PHP < 5.1.0
-{
-	/**
-	 * TReflectionClass class.
-	 * This class is written to cope with the incompatibility between different PHP versions.
-	 * It mainly provides a way to detect if a method exists for a given class name.
-	 *
-	 * @author Qiang Xue <qiang.xue@gmail.com>
-	 * @version $Revision: $  $Date: $
-	 * @package System
-	 * @since 3.0
-	 */
-	class TReflectionClass extends ReflectionClass
-	{
-		/**
-		 * @param string method name
-		 * @return boolean whether the method exists
-		 */
-		public function hasMethod($method)
-		{
-			try
-			{
-				return $this->getMethod($method)!==null;
-			}
-			catch(Exception $e)
-			{
-				return false;
-			}
-		}
-
-		/**
-		 * @param string property name
-		 * @return boolean whether the property exists
-		 */
-		public function hasProperty($property)
-		{
-			try
-			{
-				return $this->getProperty($property)!==null;
-			}
-			catch(Exception $e)
-			{
-				return false;
-			}
-		}
-	}
-
-	if(!function_exists('property_exists'))
-	{
-		/**
-		 * Detects whether an object contains the specified member variable.
-		 * @param object
-		 * @param string member variable (property) name
-		 * @return boolean
-		 */
-		function property_exists($object, $property)
-		{
-			if(is_object($object))
-				return array_key_exists($property, get_object_vars($object));
-			else
-				return false;
-		}
-	}
 }
 
 ?>

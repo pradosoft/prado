@@ -57,7 +57,7 @@
  * @package System.Web
  * @since 3.0
  */
-class THttpRequest extends TApplicationComponent implements IteratorAggregate,ArrayAccess,IModule
+class THttpRequest extends TApplicationComponent implements IteratorAggregate,ArrayAccess,Countable,IModule
 {
 	/**
 	 * Separator used to separate GET variable name and value when URL format is Path.
@@ -658,6 +658,16 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	public function getCount()
 	{
 		return count($this->_items);
+	}
+
+	/**
+	 * Returns the number of items in the request.
+	 * This method is required by Countable interface.
+	 * @return integer number of items in the request.
+	 */
+	public function count()
+	{
+		return $this->getCount();
 	}
 
 	/**

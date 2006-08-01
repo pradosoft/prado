@@ -24,16 +24,15 @@
  * unset($map[$key]); // remove the value with the specified key
  * if(isset($map[$key])) // if the map contains the key
  * foreach($map as $key=>$value) // traverse the items in the map
+ * $n=count($map);  // returns the number of items in the map
  * </code>
- * Note, count($map) will always return 1. You should use {@link getCount()}
- * to determine the number of items in the map.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Collections
  * @since 3.0
  */
-class TMap extends TComponent implements IteratorAggregate,ArrayAccess
+class TMap extends TComponent implements IteratorAggregate,ArrayAccess,Countable
 {
 	/**
 	 * @var array internal data storage
@@ -82,6 +81,16 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess
 	public function getIterator()
 	{
 		return new TMapIterator($this->_d);
+	}
+
+	/**
+	 * Returns the number of items in the map.
+	 * This method is required by Countable interface.
+	 * @return integer number of items in the map.
+	 */
+	public function count()
+	{
+		return $this->getCount();
 	}
 
 	/**

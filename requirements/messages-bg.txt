@@ -2,8 +2,7 @@
 passed with warnings			= Конфигурацията на вашия сървър удовлетворява минималните изисквания на PRADO. Моля, обърнете внимание на предупрежденията по-долу.
 failed					= За съжаление, вашият сървър не удовлетворява изискванията на PRADO.
 PHP version check			= Проверка за версията на PHP
-PHP 5.0.4 or higher required		= Изисква се PHP 5.0.4 или по-висока версия.
-PHP 5.1.0 or higher preferred		= Препоръчва се PHP 5.1.0 или по-висока версия. Това ще предотврати грешката предизвикана от рекурсивните __get/__set извиквания.
+PHP 5.1.0 or higher required		= Изисква се PHP 5.1.0 или по-висока версия.
 SQLite extension check			= Проверка за SQLite
 SQLite extension optional		= SQLite разширението е незадължително. Ако не е заредено, няма да можете да ползвате TSqliteCache.
 Memcache extension check		= Проверка за Memcache

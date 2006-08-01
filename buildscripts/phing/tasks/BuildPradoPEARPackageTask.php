@@ -8,12 +8,12 @@ require_once 'PEAR/PackageFileManager/File.php';
 /**
  * Task for creating a PEAR package definition file package.xml to be used with
  * the PEAR distribution of PRADO.
- * 
+ *
  * @author   Knut Urdalen <knut.urdalen@gmail.com>
  * @package  phing.tasks.ext
  */
 class BuildPradoPEARPackageTask extends MatchingTask {
-    
+
     /* Base directory for reading files. */
     private $dir;
 
@@ -24,7 +24,7 @@ class BuildPradoPEARPackageTask extends MatchingTask {
 	private $state = 'stable';
 	private $notes;
 	private $filesets = array();
-	
+
     /* Package file */
     private $packageFile;
 
@@ -43,21 +43,21 @@ class BuildPradoPEARPackageTask extends MatchingTask {
      *
      * @param PEAR_PackageFileManager2 $pkg
      */
-    private function setOptions($pkg) {        
+    private function setOptions($pkg) {
 		$options['baseinstalldir'] = 'prado3';
         $options['packagedirectory'] = $this->dir->getAbsolutePath();
-        
+
         if(empty($this->filesets)) {
 			throw new BuildException("You must use a <fileset> tag to specify the files to include in the package.xml");
 		}
-        
+
         // Use PEAR_PackageFileManager_Fileset from phing as file list generator
 		$options['filelistgenerator'] = 'Fileset';
-        
+
 		// Some Phing-specific options needed by our Fileset reader
 		$options['phing_project'] = $this->getProject();
 		$options['phing_filesets'] = $this->filesets;
-		
+
 		if($this->packageFile !== null) {
             // Create one with full path
             $f = new PhingFile($this->packageFile->getAbsolutePath());
@@ -81,7 +81,7 @@ class BuildPradoPEARPackageTask extends MatchingTask {
         if($this->dir === null) {
             throw new BuildException("You must specify the \"dir\" attribute for PEAR package task.");
         }
-        
+
 		if($this->version === null) {
             throw new BuildException("You must specify the \"version\" attribute for PEAR package task.");
         }
@@ -110,21 +110,21 @@ o Team Integration - PRADO enables separation of content and presentation. Compo
 
 		$package->setReleaseVersion($this->version);
 		$package->setAPIVersion($this->version);
-		
+
 		$package->setReleaseStability($this->state);
 		$package->setAPIStability($this->state);
-		
+
 		$package->setNotes($this->notes);
-		
+
 		$package->setLicense('BSD', 'http://www.opensource.org/licenses/bsd-license.php');
-		
+
 		// Add package maintainers
 		$package->addMaintainer('lead', 'qxue', 'Qiang Xue', 'qiang.xue@gmail.com');
 		$package->addMaintainer('lead', 'jrags', 'Jason Ragsdale', 'jrags@jasrags.net');
 		$package->addMaintainer('lead', 'knut', 'Knut Urdalen', 'knut.urdalen@gmail.com');
 
 		// "core" dependencies
-		$package->setPhpDep('5.0.4');
+		$package->setPhpDep('5.1.0');
 		$package->setPearinstallerDep('1.4.7');
 
 		$package->generateContents();
@@ -175,7 +175,7 @@ o Team Integration - PRADO enables separation of content and presentation. Compo
 	public function setState($v) {
 		$this->state = $v;
 	}
-	
+
 	/**
 	 * Sets release notes field.
 	 * @param string $v

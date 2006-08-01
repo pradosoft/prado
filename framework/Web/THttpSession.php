@@ -61,7 +61,7 @@
  * @package System.Web
  * @since 3.0
  */
-class THttpSession extends TApplicationComponent implements IteratorAggregate,ArrayAccess,IModule
+class THttpSession extends TApplicationComponent implements IteratorAggregate,ArrayAccess,Countable,IModule
 {
 	/**
 	 * @var boolean whether this module has been initialized
@@ -139,7 +139,8 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 				session_set_save_handler(array($this,'_open'),array($this,'_close'),array($this,'_read'),array($this,'_write'),array($this,'_destroy'),array($this,'_gc'));
 			if($this->_cookie!==null)
 				session_set_cookie_params($this->_cookie->getExpire(),$this->_cookie->getPath(),$this->_cookie->getDomain(),$this->_cookie->getSecure());
-			session_start();
+			if(ini_get('session.auto_start')!=='1')
+				session_start();
 			$this->_started=true;
 		}
 	}
@@ -484,6 +485,16 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 	public function getCount()
 	{
 		return count($_SESSION);
+	}
+
+	/**
+	 * Returns the number of items in the session.
+	 * This method is required by Countable interface.
+	 * @return integer number of items in the session.
+	 */
+	public function count()
+	{
+		return $this->getCount();
 	}
 
 	/**

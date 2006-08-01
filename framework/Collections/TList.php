@@ -25,9 +25,8 @@
  * unset($list[$index]); // remove the item at $index
  * if(isset($list[$index])) // if the list has an item at $index
  * foreach($list as $index=>$item) // traverse each item in the list
+ * $n=count($list); // returns the number of items in the list
  * </code>
- * Note, count($list) will always return 1. You should use {@link getCount()}
- * to determine the number of items in the list.
  *
  * To extend TList by doing additional operations with each addition or removal
  * operation, override {@link insertAt()}, and {@link removeAt()}.
@@ -37,7 +36,7 @@
  * @package System.Collections
  * @since 3.0
  */
-class TList extends TComponent implements IteratorAggregate,ArrayAccess
+class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countable
 {
 	/**
 	 * internal data storage
@@ -92,6 +91,16 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess
 	public function getIterator()
 	{
 		return new TListIterator($this->_d);
+	}
+
+	/**
+	 * Returns the number of items in the list.
+	 * This method is required by Countable interface.
+	 * @return integer number of items in the list.
+	 */
+	public function count()
+	{
+		return $this->getCount();
 	}
 
 	/**
