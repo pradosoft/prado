@@ -384,7 +384,9 @@ class TDatePicker extends TTextBox
 			$year = intval($values[$key.'$year']);
 		else
 			$year = $date['year'];
+		
 		$date = @mktime(0, 0, 0, $month, $day, $year);
+
 		$pattern = $this->getDateFormat();
 		$pattern = str_replace(array('MMMM', 'MMM'), array('MM','MM'), $pattern);
 		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter', $pattern);
@@ -497,12 +499,13 @@ class TDatePicker extends TTextBox
 	{
 		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',
 						$this->getDateFormat());
+
 		foreach($formatter->getDayMonthYearOrdering() as $type)
 		{
 			if($type == 'day')
 				$this->renderCalendarDayOptions($writer,$date['mday']);
 			elseif($type == 'month')
-				$this->renderCalendarMonthOptions($writer,$date['mon']-1);
+				$this->renderCalendarMonthOptions($writer,$date['mon']);
 			elseif($type == 'year')
 				$this->renderCalendarYearOptions($writer,$date['year']);
 		}
@@ -562,13 +565,14 @@ class TDatePicker extends TTextBox
 	 */
 	protected function renderCalendarMonthOptions($writer, $selected=null)
 	{
+
 		$info = $this->getLocalizedCalendarInfo();
 		$writer->addAttribute('id', $this->getClientID().'_month');
 		$writer->addAttribute('name', $this->getUniqueID().'$month');
 		$writer->addAttribute('class', 'datepicker_month_options');
 		$writer->renderBeginTag('select');
 		$this->renderDropDownListOptions($writer,
-					$this->getLocalizedMonthNames($info), $selected);
+					$this->getLocalizedMonthNames($info), $selected-1);
 		$writer->renderEndTag();
 	}
 
@@ -585,8 +589,12 @@ class TDatePicker extends TTextBox
 						$this->getDateFormat());
 		switch($formatter->getMonthPattern())
 		{
-			case 'MMM':
-			case 'MM': return $info->getAbbreviatedMonthNames();
+			case 'MMM': return $info->getAbbreviatedMonthNames();
+			case 'MM': 
+				$array = array(); 
+				for($i=1;$i<=12;$i++)
+						$array[$i-1] = $i < 10 ? '0'.$i : $i;
+				return $array;
 			case 'M':
 				$array = array(); for($i=1;$i<=12;$i++) $array[$i-1] = $i;
 				return $array;

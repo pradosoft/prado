@@ -1,0 +1,18 @@
+<com:TContent ID="Content">
+<com:TButton Text="Click me" />
+<com:TDatePicker
+  InputMode="DropDownList"
+  DateFormat="M/yyyy" />
+
+<com:TDatePicker
+  InputMode="DropDownList"
+  DateFormat="MM/yyyy" />
+  
+  <com:TDatePicker
+  InputMode="DropDownList"
+  DateFormat="MMM/yyyy" />
+  
+  <com:TDatePicker
+  InputMode="DropDownList"
+  DateFormat="MMMM/yyyy" />
+</com:TContent>
