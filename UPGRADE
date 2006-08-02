@@ -16,6 +16,9 @@ for both A and B.
 
 Upgrading from v3.0.2
 ---------------------
+- The minimum PHP version required is raised to 5.1.0 and above.
+  If your server is installed with a lower version of PHP, you will
+  have to upgrade it in order to run PRADO applications.
 - The signature of TControl::broadcastEvent() is changed from
   broadcastEvent($sender,TBroadCastEventParameter $param) to
   broadcastEvent($name,$sender,$param).

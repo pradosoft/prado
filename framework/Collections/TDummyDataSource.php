@@ -26,7 +26,7 @@
  * @package System.Collections
  * @since 3.0
  */
-class TDummyDataSource extends TComponent implements IteratorAggregate
+class TDummyDataSource extends TComponent implements IteratorAggregate, Countable
 {
 	private $_count;
 
@@ -53,6 +53,16 @@ class TDummyDataSource extends TComponent implements IteratorAggregate
 	public function getIterator()
 	{
 		return new TDummyDataSourceIterator($this->_count);
+	}
+
+	/**
+	 * Returns the number of (virtual) items in the data source.
+	 * This method is required by Countable interface.
+	 * @return integer number of (virtual) items in the data source.
+	 */
+	public function count()
+	{
+		return $this->getCount();
 	}
 }
 

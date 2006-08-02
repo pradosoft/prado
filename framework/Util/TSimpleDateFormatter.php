@@ -294,11 +294,14 @@ class TSimpleDateFormatter
 		}
 		if ($i_val != $this->length($value))
 			throw new TInvalidDataValueException("Pattern '{$this->pattern}' mismatch", $value);
-
+		//var_dump('month is '.$month);
 		if(!$defaultToCurrentTime && (is_null($month) || is_null($day) || is_null($year)))
 			return null;
 		else
+		{
+			$day = intval($day) <= 0 ? 1 : intval($day);
 			return @mktime(0, 0, 0, $month, $day, $year);
+		}
 	}
 
 	/**

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<xliff version="1.0">
+ <file source-language="EN" target-language="en" datatype="plaintext" original="messages" date="2006-08-01T12:08:27Z" product-name="messages">
+  <body>
+  
+<trans-unit id="1">
+<source>{field} is required.</source>
+<target>Lütfen '{field}' alanını doldurunuz.</target>
+</trans-unit>
+
+<trans-unit id="2">
+<source>city</source>
+<target>Şehir</target>
+</trans-unit>
+</body>
+ </file>
+</xliff>

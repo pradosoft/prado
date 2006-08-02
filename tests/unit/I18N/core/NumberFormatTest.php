@@ -12,6 +12,7 @@ class NumberFormatTest extends PHPUnit2_Framework_TestCase {
     $formatter = new NumberFormat();
     $number = '123456789.125156';
     $wanted = '123,456,789.125156';
+
     $this->assertEquals($wanted, $formatter->format($number));
     
     //currency
@@ -87,8 +88,7 @@ class NumberFormatTest extends PHPUnit2_Framework_TestCase {
     $pattern = '0000';
     $wanted = '0005';
     
-    //this should fail!!!
-    $this->assertNotEquals($wanted, $formatter->format($number, $pattern));
+    $this->assertEquals($wanted, $formatter->format($number, $pattern));
   }
   
   function testFormatWithANegativeValue() {
@@ -105,7 +105,28 @@ class NumberFormatTest extends PHPUnit2_Framework_TestCase {
     $expected = "10E";
     $this->assertEquals('10E', $formatter->format($number, 'e'));
   }
+  
+  function testRounding()
+  {
+  	  $formatter = new NumberFormat();
+  	  
+  	  $number = 349.999;
+  	  $pattern = '#.00';
+  	  $expected = '350.00';
+  	  
+  	  $this->assertEquals($expected, $formatter->format($number, $pattern));
+  }
 
+  function testRounding2()
+  {
+  	  $formatter = new NumberFormat();
+  	  
+  	  $number = 349.99;
+  	  $pattern = '#.00';
+  	  $expected = '349.99';
+  	  
+  	  $this->assertEquals($expected, $formatter->format($number, $pattern));
+  }
 }
 
 ?>

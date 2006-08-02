@@ -129,7 +129,7 @@ class TTemplateControl extends TCompositeControl
 	 */
 	public function createChildControls()
 	{
-		if($tpl=$this->getTemplate(true))
+		if($tpl=$this->getTemplate())
 		{
 			foreach($tpl->getDirective() as $name=>$value)
 			{

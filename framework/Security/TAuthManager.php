@@ -195,10 +195,6 @@ class TAuthManager extends TModule
 	public function onAuthenticate($param)
 	{
 		$application=$this->getApplication();
-		if($this->hasEventHandler('OnAuthenticate'))
-			$this->raiseEvent('OnAuthenticate',$this,$application);
-		if($application->getUser()!==null)
-			return;
 
 		if(($session=$application->getSession())===null)
 			throw new TConfigurationException('authmanager_session_required');
@@ -206,6 +202,10 @@ class TAuthManager extends TModule
 		$sessionInfo=$session->itemAt($this->generateUserSessionKey());
 		$user=$this->_userManager->getUser(null)->loadFromString($sessionInfo);
 		$application->setUser($user);
+
+		// event handler gets a chance to do further auth work
+		if($this->hasEventHandler('OnAuthenticate'))
+			$this->raiseEvent('OnAuthenticate',$this,$application);
 	}
 
 	/**

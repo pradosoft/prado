@@ -28,7 +28,7 @@
  * @package System.Collections
  * @since 3.0
  */
-class TPagedDataSource extends TComponent implements IteratorAggregate
+class TPagedDataSource extends TComponent implements IteratorAggregate,Countable
 {
 	/**
 	 * @var mixed original data source
@@ -180,6 +180,16 @@ class TPagedDataSource extends TComponent implements IteratorAggregate
 		if(!$this->_allowCustomPaging && $this->getIsLastPage())
 			return $this->getDataSourceCount()-$this->getFirstIndexInPage();
 		return $this->_pageSize;
+	}
+
+	/**
+	 * Returns the number of items in the current page.
+	 * This method is required by Countable interface.
+	 * @return integer number of items in the current page.
+	 */
+	public function count()
+	{
+		return $this->getCount();
 	}
 
 	/**

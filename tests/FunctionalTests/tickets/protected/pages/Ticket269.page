@@ -1,0 +1,10 @@
+<com:TContent ID="Content">
+
+	<com:System.I18N.TDateFormat
+		Value="2006-07-05"
+		Culture="de_DE"
+		Pattern="dd.MMMM.yyyy" />
+	<br />
+	<com:TLabel Text="Zurück" />
+	
+</com:TContent>
