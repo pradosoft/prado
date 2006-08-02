@@ -215,10 +215,14 @@ class TClientScriptManager extends TApplicationComponent
 	 * Registers a CSS file to be rendered in the page head
 	 * @param string a unique key identifying the file
 	 * @param string URL to the CSS file
+	 * @param string media type of the CSS (such as 'print', 'screen', etc.). Defaults to empty, meaning the CSS applies to all media types.
 	 */
-	public function registerStyleSheetFile($key,$url)
+	public function registerStyleSheetFile($key,$url,$media='')
 	{
-		$this->_styleSheetFiles[$key]=$url;
+		if($media==='')
+			$this->_styleSheetFiles[$key]=$url;
+		else
+			$this->_styleSheetFiles[$key]=array($url,$media);
 	}
 
 	/**
@@ -226,7 +230,7 @@ class TClientScriptManager extends TApplicationComponent
 	 * @param string a unique key identifying the CSS block
 	 * @param string CSS block
 	 */
-	public function registerStyleSheet($key,$css)
+	public function registerStyleSheet($key,$css,$media='')
 	{
 		$this->_styleSheets[$key]=$css;
 	}
@@ -373,7 +377,12 @@ class TClientScriptManager extends TApplicationComponent
 	{
 		$str='';
 		foreach($this->_styleSheetFiles as $url)
-			$str.="<link rel=\"stylesheet\" type=\"text/css\" href=\"".THttpUtility::htmlEncode($url)."\" />\n";
+		{
+			if(is_array($url))
+				$str.="<link rel=\"stylesheet\" type=\"text/css\" media=\"{$url[1]}\" href=\"".THttpUtility::htmlEncode($url[0])."\" />\n";
+			else
+				$str.="<link rel=\"stylesheet\" type=\"text/css\" href=\"".THttpUtility::htmlEncode($url)."\" />\n";
+		}
 		$writer->write($str);
 	}
 

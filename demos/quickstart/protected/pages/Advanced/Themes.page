@@ -28,6 +28,9 @@ This will apply the 'Blue' skin to the button. Note, the initial property values
 <p>
 To use the Javascript files and CSS files contained in a theme, a <tt>THead</tt> control must be placed on the page template. This is because the theme will register those files with the page and <tt>THead</tt> is the right place to load those files.
 </p>
+<p>
+It is possible to specify media types of CSS files contained in a theme. By default, a CSS file applies to all media types. If the CSS file is named like <tt>mystyle.print.css</tt>, it will be applied only to <tt>print</tt> media type. As another example, <tt>mystyle.screen.css</tt> applies to <tt>screen</tt> media only, and <tt>mystyle.css</tt> applies to all media types.
+</p>
 
 <h2 id="5905">Theme Storage</h2>
 <p>

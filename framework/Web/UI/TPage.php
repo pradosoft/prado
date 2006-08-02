@@ -490,17 +490,34 @@ class TPage extends TTemplateControl
 		if($this->_theme instanceof ITheme)
 		{
 			foreach($this->_theme->getStyleSheetFiles() as $url)
-				$cs->registerStyleSheetFile($url,$url);
+				$cs->registerStyleSheetFile($url,$url,$this->getCssMediaType($url));
 			foreach($this->_theme->getJavaScriptFiles() as $url)
 				$cs->registerHeadScriptFile($url,$url);
 		}
 		if($this->_styleSheet instanceof ITheme)
 		{
 			foreach($this->_styleSheet->getStyleSheetFiles() as $url)
-				$cs->registerStyleSheetFile($url,$url);
+				$cs->registerStyleSheetFile($url,$url,$this->getCssMediaType($url));
 			foreach($this->_styleSheet->getJavaScriptFiles() as $url)
 				$cs->registerHeadScriptFile($url,$url);
 		}
+	}
+
+	/**
+	 * Determines the media type of the CSS file.
+	 * The media type is determined according to the following file name pattern:
+	 *        xxx.media-type.extension
+	 * For example, 'mystyle.print.css' means its media type is 'print'.
+	 * @param string CSS URL
+	 * @return string media type of the CSS file
+	 */
+	private function getCssMediaType($url)
+	{
+		$segs=explode('.',basename($url));
+		if(isset($segs[2]))
+			return $segs[count($segs)-2];
+		else
+			return '';
 	}
 
 	/**

@@ -22,6 +22,7 @@ ENH: Ticket#277 - Added TControl.CustomData property (Qiang)
 ENH: Ticket#287 - TControl::broadcastEvent() may raise events now (Qiang)
 ENH: Ticket#292 - Added THttpRequest::parseUrl() so that it is easier to be extended (Qiang)
 ENH: Ticket#309 - Added THttpRequest.UrlParamSeparator property (Qiang)
+ENH: Ticket#316 - Added media type support to CSS files in a theme (Qiang)
 NEW: Added TStyleSheet (Wei)
 
 
