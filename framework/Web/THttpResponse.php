@@ -314,15 +314,14 @@ class THttpResponse extends TModule implements ITextWriter
 	protected function sendContentTypeHeader()
 	{
 		$charset=$this->getCharset();
-		if($charset==='' && ($globalization=$this->getApplication()->getGlobalization(false))!==null)
+		if(empty($charset) && ($globalization=$this->getApplication()->getGlobalization(false))!==null)
 			$charset=$globalization->getCharset();
-		if($charset!=='')
-		{
-			$contentType=$this->_contentType===null?'text/html':$this->_contentType;
-			$this->appendHeader('Content-Type: '.$contentType.';charset='.$charset);
-		}
-		else if($this->_contentType!==null)
-			$this->appendHeader('Content-Type: '.$this->_contentType.';charset=UTF-8');
+
+		$contentType=empty($this->_contentType)?'text/html':$this->_contentType;
+		$charset=empty($charset)?'UTF-8':$charset;
+
+		//default is "Content-Type: text/html;charset=UTF-8"
+		$this->appendHeader('Content-Type: '.$contentType.';charset='.$charset);
 	}
 
 	/**
