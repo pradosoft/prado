@@ -13,11 +13,11 @@ class Search extends TPage
 			$hits_1 =  $quickstart->find($text);
 			$this->quickstart_results->setDataSource($hits_1);
 			$this->quickstart_results->dataBind();
-			
+
 			$this->emptyResult->setVisible(!count($hits_1));
 		}
 	}
-	
+
 	public function highlightSearch($text)
 	{
 		$words = str_word_count($text, 1);
@@ -33,7 +33,7 @@ class Search extends TPage
 				break;
 			}
 		}
-		
+
 		$min = 	$where - 15 < 0 ? 0 : $where - 15;
 		$max = 	$where + 15 > $t ? $t : $where + 15;
 		$subtext = array_splice($words, $min, $max-$min);
@@ -41,13 +41,13 @@ class Search extends TPage
 		$suffix = $max == $t ? '' : '...';
 		return $prefix.implode(' ', $subtext).$suffix;
 	}
-	
+
 	protected function containsKeys($word, $keys)
 	{
 		foreach($keys as $key)
 		{
 			if(is_int(strpos($word, $key)))
-				return true;	
+				return true;
 		}
 		return false;
 	}

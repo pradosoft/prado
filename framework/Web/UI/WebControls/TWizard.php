@@ -716,9 +716,11 @@ class TWizard extends TWebControl implements INamingContainer
 	}
 
 	/**
+	 * Returns the multiview that holds the wizard steps.
+	 * This method should only be used by control developers.
 	 * @return TMultiView the multiview holding wizard steps
 	 */
-	protected function getMultiView()
+	public function getMultiView()
 	{
 		if($this->_multiView===null)
 		{
@@ -741,7 +743,6 @@ class TWizard extends TWebControl implements INamingContainer
 		if(($wizard=$step->getWizard())!==null)
 			$wizard->getWizardSteps()->remove($step);
 		$step->setWizard($this);
-		$this->getMultiView()->getViews()->add($step);
 		$this->wizardStepsChanged();
 	}
 
@@ -753,7 +754,6 @@ class TWizard extends TWebControl implements INamingContainer
 	 */
 	public function removedWizardStep($step)
 	{
-		$this->getMultiView()->getViews()->remove($step);
 		$step->setWizard(null);
 		$this->wizardStepsChanged();
 	}
@@ -1263,7 +1263,7 @@ class TWizard extends TWebControl implements INamingContainer
 		if($this->_sideBarDataList!==null)
 		{
 			$this->_sideBarDataList->setDataSource($this->getWizardSteps());
-			$this->_sideBarDataList->setSelectedIndex($this->getActiveStepIndex());
+			$this->_sideBarDataList->setSelectedItemIndex($this->getActiveStepIndex());
 			$this->_sideBarDataList->dataBind();
 		}
 	}
@@ -1817,6 +1817,7 @@ class TWizardStepCollection extends TList
 		if($item instanceof TWizardStep)
 		{
 			parent::insertAt($index,$item);
+			$this->_wizard->getMultiView()->getViews()->insertAt($index,$item);
 			$this->_wizard->addedWizardStep($item);
 		}
 		else
@@ -1831,6 +1832,7 @@ class TWizardStepCollection extends TList
 	public function removeAt($index)
 	{
 		$step=parent::removeAt($index);
+		$this->_wizard->getMultiView()->getViews()->remove($step);
 		$this->_wizard->removedWizardStep($step);
 		return $step;
 	}
