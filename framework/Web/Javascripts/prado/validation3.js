@@ -652,6 +652,8 @@ Prado.WebUI.TBaseValidator.prototype =
 
 		if(this.enabled)
 			this.isValid = this.evaluateIsValid();
+		else
+			this.isValid = true;
 
 		if(this.isValid)
 		{

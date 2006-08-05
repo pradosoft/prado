@@ -96,7 +96,8 @@ control.addClassName(CssClass);}},hide:function()
 {this.isValid=true;this.updateControl();this.visible=false;},validate:function(invoker)
 {if(typeof(this.options.OnValidate)=="function")
 this.options.OnValidate(this,invoker);if(this.enabled)
-this.isValid=this.evaluateIsValid();if(this.isValid)
+this.isValid=this.evaluateIsValid();else
+this.isValid=true;if(this.isValid)
 {if(typeof(this.options.OnSuccess)=="function")
 {this.visible=true;this.message.style.visibility="visible";this.updateControlCssClass(this.control,this.isValid);this.options.OnSuccess(this,invoker);}
 else

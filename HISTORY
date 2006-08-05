@@ -20,6 +20,7 @@ ENH: Ticket#223 - Use TRequiredFieldValidator for TRadioButtons with GroupName p
 ENH: StringLength, multi-byte, check in TRangeValidator (Wei)
 ENH: Ticket#263 - TListBox and TDropDownList support optgroup now (Qiang)
 ENH: Ticket#277 - Added TControl.CustomData property (Qiang)
+ENH: Ticket#278 - client-side validator enable/disable (conditional) (Wei)
 ENH: Ticket#287 - TControl::broadcastEvent() may raise events now (Qiang)
 ENH: Ticket#292 - Added THttpRequest::parseUrl() so that it is easier to be extended (Qiang)
 ENH: Ticket#309 - Added THttpRequest.UrlParamSeparator property (Qiang)
