@@ -23,6 +23,7 @@ ENH: Ticket#277 - Added TControl.CustomData property (Qiang)
 ENH: Ticket#287 - TControl::broadcastEvent() may raise events now (Qiang)
 ENH: Ticket#292 - Added THttpRequest::parseUrl() so that it is easier to be extended (Qiang)
 ENH: Ticket#309 - Added THttpRequest.UrlParamSeparator property (Qiang)
+ENH: Ticket#313 - Added TTableStyle.BorderCollapse property (Qiang)
 ENH: Ticket#316 - Added media type support to CSS files in a theme (Qiang)
 ENH: Validating TDatePicker does not need to explictly specific the DateFormat in validators. (Wei)
 ENH: TRequireFieldValidator can be used to validate a valid date (Wei).
