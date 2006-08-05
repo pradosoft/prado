@@ -199,7 +199,10 @@ class TAssetManager extends TModule
 	protected function copyFile($src,$dst)
 	{
 		if(!is_dir($dst))
+		{
 			@mkdir($dst);
+			@chmod($dst, 0777);
+		}	
 		$dstFile=$dst.'/'.basename($src);
 		if(@filemtime($dstFile)<@filemtime($src))
 		{

@@ -460,6 +460,7 @@ class TTarFileExtractor
 					              .$v_header['filename'].'}');
                     return false;
                 }
+                chmod($v_header['filename'], 0777);
             }
           } else {
               if (($v_dest_file = @fopen($v_header['filename'], "wb")) == 0) {
@@ -549,6 +550,7 @@ class TTarFileExtractor
             $this->_error("Unable to create directory '$p_dir'");
             return false;
         }
+        chmod($p_dir,0777);
 
         return true;
     }
