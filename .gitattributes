@@ -1567,6 +1567,8 @@ tests/FunctionalTests/features/protected/controls/Layout.tpl -text
 tests/FunctionalTests/features/protected/pages/ColorPicker.page -text
 tests/FunctionalTests/features/protected/pages/FeatureList.page -text
 tests/FunctionalTests/features/protected/pages/FeatureList.php -text
+tests/FunctionalTests/features/protected/pages/FocusControl.page -text
+tests/FunctionalTests/features/protected/pages/FocusControl.php -text
 tests/FunctionalTests/features/protected/pages/I18N/BasicI18N.page -text
 tests/FunctionalTests/features/protected/pages/I18N/BasicI18N.php -text
 tests/FunctionalTests/features/protected/pages/I18N/Home.page -text
