@@ -516,7 +516,7 @@ class PradoBase
 	 */
 	public static function varDump($var,$depth=10,$highlight=false)
 	{
-		require_once(PRADO_DIR.'/Util/TVarDumper.php');
+		Prado::using('System.Util.TVarDumper');
 		return TVarDumper::dump($var,$depth,$highlight);
 	}
 

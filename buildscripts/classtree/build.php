@@ -6,9 +6,9 @@ require_once($frameworkPath.'/prado.php');
 require_once($basePath.'/DWExtension.php');
 
 $exclusions=array(
-	'prado.php',
+//	'prado.php',
 	'pradolite.php',
-	'PradoBase.php',
+//	'PradoBase.php',
 	'clientscripts.php',
 	'.svn',
 	'/I18N/core',
