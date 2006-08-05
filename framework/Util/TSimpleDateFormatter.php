@@ -185,7 +185,10 @@ class TSimpleDateFormatter
 	 */
 	public function isValidDate($value)
 	{
-		return !is_null($this->parse($value, false));
+		if(is_null($value))
+			return false;
+		else
+			return !is_null($this->parse($value, false));
 	}
 
 	/**

@@ -1630,6 +1630,7 @@ tests/FunctionalTests/tickets/protected/pages/Ticket239.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket239.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket269.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket27.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket274.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket28.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket28.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket284.page -text
@@ -1656,6 +1657,7 @@ tests/FunctionalTests/tickets/tests/Ticket169TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket191TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket21TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket239TestCase.php -text
+tests/FunctionalTests/tickets/tests/Ticket274TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket27TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket284TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket285TestCase.php -text

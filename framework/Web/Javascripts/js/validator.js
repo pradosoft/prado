@@ -125,7 +125,11 @@ return value;},getValidationValue:function(control)
 control=this.control
 switch(this.options.ControlType)
 {case'TDatePicker':if(control.type=="text")
-return this.trim($F(control));else
+{value=this.trim($F(control));if(this.options.DateFormat)
+{date=value.toDate(this.options.DateFormat);return date==null?'':date;}
+else
+return value;}
+else
 {this.observeDatePickerChanges();return Prado.WebUI.TDatePicker.getDropDownDate(control).getTime();}
 case'THtmlArea':if(typeof tinyMCE!="undefined")
 tinyMCE.triggerSave();return this.trim($F(control));case'TRadioButton':if(this.options.GroupName)

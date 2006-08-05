@@ -1,0 +1,22 @@
+<com:TContent ID="Content">
+
+<com:TDatePicker ID="MyDate" 
+		DateFormat="dd/MM/yyyy" 
+		Mode="ImageButton" />
+	<com:TRequiredFieldValidator
+		ID="validator1" 
+		ControlToValidate="MyDate"
+		EnableClientScript="false"
+		ErrorMessage="date required (dd/MM/yyyy)" />
+		
+	<com:TDataTypeValidator
+		ID="validator2"
+		DataType="Date"
+		DateFormat="dd/MM/yyyy"
+		ControlToValidate="MyDate"
+		EnableClientScript="false"
+		ErrorMessage="date must be of the form dd/MM/yyyy" />
+
+	<com:TButton ID="button1" Text="Submit!" />
+	
+</com:TContent>

@@ -165,6 +165,10 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		$options['ControlCssClass'] = $this->getControlCssClass();
 
 		$options['ControlType'] = $this->getClientControlClass($control);
+		
+		//get date format from date picker target control
+		if($control instanceof TDatePicker)
+			$options['DateFormat'] = $control->getDateFormat();
 
 		if(!is_null($this->_clientScript))
 			$options = array_merge($options,$this->_clientScript->getOptions());
