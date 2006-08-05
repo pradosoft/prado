@@ -37,7 +37,7 @@
  * to respond to the {@link onCheckDependency OnCheckDependency} event and set
  * the event parameter's {@link TOutputCacheCheckDependencyEventParameter::getIsValid IsValid}
  * property to indicate whether the cached data remains valid or not.
- * One can also extend TOutputCache and override its {@link getCacheDependency CacheDependency}
+ * One can also extend TOutputCache and override its {@link getCacheDependency}
  * function. While the former is easier to use, the latter offers more extensibility.
  *
  * The content fetched from cache may be variated with respect to

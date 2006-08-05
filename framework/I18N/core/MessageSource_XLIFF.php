@@ -473,10 +473,15 @@ class MessageSource_XLIFF extends MessageSource
 		$variant = array_shift($variants);
 		$file = $this->getSource($variant);
 		$dir = dirname($file);
-		if(!is_dir($dir)) @mkdir($dir);
+		if(!is_dir($dir)) 
+		{
+			@mkdir($dir);
+			@chmod($dir,0777);
+		}
 		if(!is_dir($dir))
 			throw new TException("Unable to create directory $dir");
 		file_put_contents($file, $this->getTemplate($catalogue));
+		chmod($file, 0777);
 		return array($variant, $file);
 	}
 

@@ -145,7 +145,7 @@ class TClientScriptManager extends TApplicationComponent
 		}
 	}
 
-	/** 
+	/**
 	 * Renders the <script> tag that will load the javascript library files.
 	 * @param THtmlWriter writer that renders the <script> tag.
 	 */
@@ -163,7 +163,7 @@ class TClientScriptManager extends TApplicationComponent
 		}
 	}
 
-	/** 
+	/**
 	 * Returns javascript statement that create a new callback request object.
 	 * @param ICallbackEventHandler callback response handler
 	 * @param array additional callback options
@@ -244,8 +244,11 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function registerFocusControl($target)
 	{
-		$this->registerPradoScriptInternal('prado');
-		$this->_endScripts['prado:focus']='Prado.Focus.setFocus("'.TJavaScript::quoteString($target).'");';
+		$this->registerPradoScriptInternal('effects');
+		if($target instanceof TControl)
+			$target=$target->getClientID();
+		$id = TJavaScript::quoteString($target);
+		$this->_endScripts['prado:focus'] = 'new Effect.ScrollTo("'.$id.'"); Prado.Element.focus("'.$id.'");';
 
 		$params=func_get_args();
 		$this->_page->registerCachingAction('Page.ClientScript','registerFocusControl',$params);
@@ -268,10 +271,14 @@ class TClientScriptManager extends TApplicationComponent
 	 * Registers a CSS file to be rendered in the page head
 	 * @param string a unique key identifying the file
 	 * @param string URL to the CSS file
+	 * @param string media type of the CSS (such as 'print', 'screen', etc.). Defaults to empty, meaning the CSS applies to all media types.
 	 */
-	public function registerStyleSheetFile($key,$url)
+	public function registerStyleSheetFile($key,$url,$media='')
 	{
-		$this->_styleSheetFiles[$key]=$url;
+		if($media==='')
+			$this->_styleSheetFiles[$key]=$url;
+		else
+			$this->_styleSheetFiles[$key]=array($url,$media);
 
 		$params=func_get_args();
 		$this->_page->registerCachingAction('Page.ClientScript','registerStyleSheetFile',$params);
@@ -282,7 +289,7 @@ class TClientScriptManager extends TApplicationComponent
 	 * @param string a unique key identifying the CSS block
 	 * @param string CSS block
 	 */
-	public function registerStyleSheet($key,$css)
+	public function registerStyleSheet($key,$css,$media='')
 	{
 		$this->_styleSheets[$key]=$css;
 
@@ -431,7 +438,7 @@ class TClientScriptManager extends TApplicationComponent
 	{
 		return isset($this->_endScripts[$key]);
 	}
-	
+
 	/**
 	 * @return boolean true if any end scripts are registered.
 	 */
@@ -439,7 +446,7 @@ class TClientScriptManager extends TApplicationComponent
 	{
 		return count($this->_endScripts) > 0;
 	}
-	
+
 	/**
 	 * @return boolean true if any begin scripts are registered.
 	 */
@@ -464,7 +471,12 @@ class TClientScriptManager extends TApplicationComponent
 	{
 		$str='';
 		foreach($this->_styleSheetFiles as $url)
-			$str.="<link rel=\"stylesheet\" type=\"text/css\" href=\"".THttpUtility::htmlEncode($url)."\" />\n";
+		{
+			if(is_array($url))
+				$str.="<link rel=\"stylesheet\" type=\"text/css\" media=\"{$url[1]}\" href=\"".THttpUtility::htmlEncode($url[0])."\" />\n";
+			else
+				$str.="<link rel=\"stylesheet\" type=\"text/css\" href=\"".THttpUtility::htmlEncode($url)."\" />\n";
+		}
 		$writer->write($str);
 	}
 

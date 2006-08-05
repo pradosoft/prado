@@ -46,6 +46,22 @@ class TStyleSheet extends TControl
 	}
 
 	/**
+	 * @return string media type of the CSS (such as 'print', 'screen', etc.). Defaults to empty, meaning the CSS applies to all media types.
+	 */
+	public function getMediaType()
+	{
+		return $this->getViewState('MediaType','');
+	}
+
+	/**
+	 * @param string media type of the CSS (such as 'print', 'screen', etc.). If empty, it means the CSS applies to all media types.
+	 */
+	public function setMediaType($value)
+	{
+		$this->setViewState('MediaType',$value,'');
+	}
+
+	/**
 	 * Registers the stylesheet file and content to be rendered.
 	 * This method overrides the parent implementation and is invoked right before rendering.
 	 * @param mixed event parameter
@@ -53,7 +69,7 @@ class TStyleSheet extends TControl
 	public function onPreRender($param)
 	{
 		if(($url=$this->getStyleSheetUrl())!=='')
-			$this->getPage()->getClientScript()->registerStyleSheetFile($url,$url);
+			$this->getPage()->getClientScript()->registerStyleSheetFile($url,$url,$this->getMediaType());
 	}
 
 	/**

@@ -296,7 +296,8 @@ class TDatePicker extends TTextBox
 	{
 		if($this->getText() === '')
 			return '';
-		return $this->getTimeStamp();
+		$date = $this->getTimeStamp();
+		return $date == null ? '' : $date;
 	}
 
 	/**

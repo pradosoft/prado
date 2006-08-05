@@ -1,0 +1,46 @@
+<com:TContent ID="Content">
+
+<com:TRadioButtonList ID="list">
+	<com:TListItem Text="Button 1" />
+	<com:TListItem Text="Button 2" />
+	<com:TListItem Text="Button 3" Selected="true"/>
+	<com:TListItem Text="Button 4" />
+	<com:TListItem Text="Button 5" />
+</com:TRadioButtonList>
+
+<com:TButton Text="Focus" OnClick="doFocus" />
+
+<p style="height: 400px; background-color: #fc0; font-size: 10em">
+a
+<com:TButton ID="button1" Text="Button 1" />
+</p>
+
+<p style="height: 400px; background-color: #fcc; font-size: 10em">
+b
+<com:TButton ID="button2" Text="Button 2" />
+</p>
+
+<p style="height: 400px; background-color: #ccf; font-size: 10em">
+c
+<com:TButton ID="button3" Text="Button 3" />
+</p>
+
+<p style="height: 400px; background-color: #cf0; font-size: 10em">
+d
+</p>
+
+<p style="height: 400px; background-color: #ffc; font-size: 10em">
+e
+<com:TButton ID="button4" Text="Button 4" />
+</p>
+
+<p style="height: 400px; background-color: #f0f; font-size: 10em">
+f
+</p>
+
+<p style="height: 400px; background-color: #0cf; font-size: 10em">
+g
+<com:TButton ID="button5" Text="Button 5" />
+</p>
+
+</com:TContent>

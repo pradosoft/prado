@@ -89,6 +89,9 @@ class TDataTypeValidator extends TBaseValidator
 	 */
 	protected function evaluateDataTypeCheck($value)
 	{
+		if($value=='')
+			return true;
+		
 		switch($this->getDataType())
 		{
 			case 'Integer':

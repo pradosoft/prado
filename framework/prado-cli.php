@@ -65,10 +65,6 @@ function create_new_prado_project($dir)
 	create_directory($runtimePath,0777);
 	create_directory($pagesPath,0755);
 	
-	create_directory($tests,0755);
-	create_directory($unit_tests,0755);
-	create_directory($functional_tests,0755);
-	
 	create_file($indexFile, render_index_file());
 	create_file($htaccessFile, render_htaccess_file());
 	create_file($defaultPageFile, render_default_page());

@@ -10,7 +10,7 @@ class DataTypeValidatorTestCase extends SeleniumTestCase
 		$base = "ctl0_Content_";
 		$this->open("validators/index.php?page=DataTypeValidator", "");
 		$this->verifyTextPresent("Data Type Validator Tests", "");
-		$this->clickAndWait("//input[@type='submit' and @value='submit!']", "");
+		$this->click("//input[@type='submit' and @value='submit!']", "");
 		
 		$this->assertNotVisible("{$base}validator1");
 		$this->assertNotVisible("{$base}validator2");

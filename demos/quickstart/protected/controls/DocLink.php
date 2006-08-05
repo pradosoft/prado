@@ -22,7 +22,8 @@ class DocLink extends THyperLink
 		{
 			$classFile=array_pop($paths).'.html';
 			$this->setNavigateUrl(self::BASE_URL . '/' . implode('.',$paths) . '/' . $classFile);
-			$this->setText('API Manual');
+			if($this->getText() === '')
+				$this->setText('API Manual');
 		}
 	}
 }

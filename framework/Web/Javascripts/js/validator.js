@@ -97,7 +97,8 @@ control.addClassName(CssClass);}},hide:function()
 {this.isValid=true;this.updateControl();this.visible=false;},validate:function(invoker)
 {if(typeof(this.options.OnValidate)=="function")
 this.options.OnValidate(this,invoker);if(this.enabled)
-this.isValid=this.evaluateIsValid();if(this.isValid)
+this.isValid=this.evaluateIsValid();else
+this.isValid=true;if(this.isValid)
 {if(typeof(this.options.OnSuccess)=="function")
 {this.visible=true;this.message.style.visibility="visible";this.updateControlCssClass(this.control,this.isValid);this.options.OnSuccess(this,invoker);}
 else
@@ -126,7 +127,11 @@ return value;},getValidationValue:function(control)
 control=this.control
 switch(this.options.ControlType)
 {case'TDatePicker':if(control.type=="text")
-return this.trim($F(control));else
+{value=this.trim($F(control));if(this.options.DateFormat)
+{date=value.toDate(this.options.DateFormat);return date==null?'':date;}
+else
+return value;}
+else
 {this.observeDatePickerChanges();return Prado.WebUI.TDatePicker.getDropDownDate(control).getTime();}
 case'THtmlArea':if(typeof tinyMCE!="undefined")
 tinyMCE.triggerSave();return this.trim($F(control));case'TRadioButton':if(this.options.GroupName)

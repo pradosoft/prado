@@ -403,6 +403,10 @@ class TTableStyle extends TStyle
 	 * @var string grid line setting of the table
 	 */
 	private $_gridLines=null;
+	/**
+	 * @var boolean whether the table border should be collapsed
+	 */
+	private $_borderCollapse=null;
 
 	/**
 	 * Sets the style attributes to default values.
@@ -416,6 +420,7 @@ class TTableStyle extends TStyle
 		$this->_cellPadding=null;
 		$this->_cellSpacing=null;
 		$this->_gridLines=null;
+		$this->_borderCollapse=null;
 	}
 
 	/**
@@ -439,6 +444,8 @@ class TTableStyle extends TStyle
 				$this->_cellSpacing=$style->_cellSpacing;
 			if($style->_gridLines!==null)
 				$this->_gridLines=$style->_gridLines;
+			if($style->_borderCollapse!==null)
+				$this->_borderCollapse=$style->_borderCollapse;
 		}
 	}
 
@@ -463,6 +470,8 @@ class TTableStyle extends TStyle
 				$this->_cellSpacing=$style->_cellSpacing;
 			if($this->_gridLines===null && $style->_gridLines!==null)
 				$this->_gridLines=$style->_gridLines;
+			if($this->_borderCollapse===null && $style->_borderCollapse!==null)
+				$this->_borderCollapse=$style->_borderCollapse;
 		}
 	}
 
@@ -484,11 +493,10 @@ class TTableStyle extends TStyle
 			$writer->addAttribute('cellpadding',"$cellPadding");
 
 		if(($cellSpacing=$this->getCellSpacing())>=0)
-		{
 			$writer->addAttribute('cellspacing',"$cellSpacing");
-			if($this->getCellSpacing()===0)
-				$writer->addStyleAttribute('border-collapse','collapse');
-		}
+
+		if($this->getBorderCollapse())
+			$writer->addStyleAttribute('border-collapse','collapse');
 
 		switch($this->getGridLines())
 		{
@@ -587,6 +595,23 @@ class TTableStyle extends TStyle
 	public function setGridLines($value)
 	{
 		$this->_gridLines=TPropertyValue::ensureEnum($value,array('None', 'Horizontal', 'Vertical', 'Both'));
+	}
+
+
+	/**
+	 * @return boolean whether the table borders should be collapsed. Defaults to false.
+	 */
+	public function getBorderCollapse()
+	{
+		return $this->_borderCollapse===null?false:$this->_borderCollapse;
+	}
+
+	/**
+	 * @param boolean whether the table borders should be collapsed.
+	 */
+	public function setBorderCollapse($value)
+	{
+		$this->_borderCollapse=TPropertyValue::ensureBoolean($value);
 	}
 }
 

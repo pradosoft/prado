@@ -1,0 +1,41 @@
+<com:TContent ID="body">
+	<h1>Validator Toggle - Server and Client Side</h1>
+	<com:TLabel ForControl="text1" Text="Text 1:" />
+	<com:TTextBox ID="text1" />
+	<com:TRequiredFieldValidator
+		ID="validator1"
+		ControlToValidate="text1" 
+		ErrorMessage="Text 1 is required" />
+	<div>
+	<com:TCheckBox ID="check1" Text="More..." />
+	</div>
+	
+	<com:TPanel ID="panel1" Style="display:none" > 
+		<com:TLabel ForControl="text2" Text="Text 2:" />
+		<com:TTextBox ID="text2" />
+		
+	<com:TRequiredFieldValidator
+		ID="validator2"
+		ControlToValidate="text2"
+		OnValidate="validator2_onValidate"
+		OnPreRender="validate2_onPostValidate"
+		ErrorMessage="Text 2 is required">
+	<prop:ClientSide.OnValidate>
+		validator.enabled = $("<%= $this->check1->ClientID %>").checked;
+	</prop:ClientSide.OnValidate>
+	</com:TRequiredFieldValidator>	
+	
+	</com:TPanel>
+	
+	<com:TButton ID="button1" Text="Submit!" />
+	
+	<com:TClientScript>
+	Event.OnLoad(function()
+	{
+		Event.observe("<%= $this->check1->ClientID %>", "click", function(ev)
+		{
+			$("<%= $this->panel1->ClientID %>").toggle();
+		});
+	});
+	</com:TClientScript>
+</com:TContent>

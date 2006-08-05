@@ -168,12 +168,33 @@ class TGlobalization extends TModule
 	{
 		if($config['type'] == 'XLIFF' || $config['type'] == 'gettext')
 		{
-			$config['source'] = Prado::getPathOfNamespace($config['source']);
-			if($config['source']===null || !is_dir($config['source']))
-				throw new TException("invalid source dir '{$config['source']}'");
+			if($config['source'])
+			{
+				$config['source'] = Prado::getPathOfNamespace($config['source']);
+				if(!is_dir($config['source']))
+				{
+					if(@mkdir($config['source'])===false)
+					throw new TConfigurationException('globalization_source_path_failed',
+						$config['source']);
+					chmod($config['source'], 0777); //make it deletable									
+				}
+			}
+			else
+			{
+				throw new TConfigurationException("invalid source dir '{$config['source']}'");
+			}
 		}
 		if($config['cache'])
+		{
 			$config['cache'] = $this->getApplication()->getRunTimePath().'/i18n';
+			if(!is_dir($config['cache']))
+			{
+				if(@mkdir($config['cache'])===false)
+					throw new TConfigurationException('globalization_cache_path_failed',
+						$config['cache']);
+				chmod($config['cache'], 0777); //make it deletable				
+			}
+		}
 		$this->_translation = $config;
 	}
 

@@ -171,7 +171,7 @@ class TPanelStyle extends TStyle
 	/**
 	 * Sets the style attributes to default values.
 	 * This method overrides the parent implementation by
-	 * resetting additional TTableStyle specific attributes.
+	 * resetting additional TPanelStyle specific attributes.
 	 */
 	public function reset()
 	{

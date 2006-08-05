@@ -14,8 +14,10 @@ Version 3.0.3 August 6, 2006
 ============================
 BUG: Ticket#264 - Typos in some exception throw statements (Knut)
 BUG: Ticket#268 - THttpResponse.redirect() may fail for some browsers (Qiang)
+BUG: Ticket#271 - Page method setFocus doesn't work (Wei)
 BUG: Ticket#285 - NumberFormat Rounding Bug (Wei)
 BUG: Ticket#297 - THttpRequest::constructUrl() encoding bug about array GET parameters (Qiang)
+BUG: Ticket#320 - Typo in calling TDataList::setSelectedItemIndex and a bug in inserting wizard steps (Qiang)
 BUG: TDataGrid may complain getting ItemType on a non-object if the grid is not data-bound (Qiang)
 BUG: TCheckBox.Value should be converted to string (Qiang)
 BUG: Ticket#302 - TDatePicker's bug with AutoPostBack set to "true" (Wei)
@@ -31,9 +33,14 @@ ENH: Ticket#223 - Use TRequiredFieldValidator for TRadioButtons with GroupName p
 ENH: StringLength, multi-byte, check in TRangeValidator (Wei)
 ENH: Ticket#263 - TListBox and TDropDownList support optgroup now (Qiang)
 ENH: Ticket#277 - Added TControl.CustomData property (Qiang)
+ENH: Ticket#278 - client-side validator enable/disable (conditional) (Wei)
 ENH: Ticket#287 - TControl::broadcastEvent() may raise events now (Qiang)
 ENH: Ticket#292 - Added THttpRequest::parseUrl() so that it is easier to be extended (Qiang)
 ENH: Ticket#309 - Added THttpRequest.UrlParamSeparator property (Qiang)
+ENH: Ticket#313 - Added TTableStyle.BorderCollapse property (Qiang)
+ENH: Ticket#316 - Added media type support to CSS files in a theme (Qiang)
+ENH: Validating TDatePicker does not need to explictly specific the DateFormat in validators. (Wei)
+ENH: TRequireFieldValidator can be used to validate a valid date (Wei).
 NEW: Added TStyleSheet (Wei)
 
 

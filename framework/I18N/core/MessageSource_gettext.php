@@ -431,7 +431,11 @@ class MessageSource_gettext extends MessageSource
 		$po_file = $this->getPOFile($mo_file);
 
 		$dir = dirname($mo_file);
-		if(!is_dir($dir)) @mkdir($dir);
+		if(!is_dir($dir))
+		{ 
+			@mkdir($dir);
+			@chmod($dir,0777);
+		}
 		if(!is_dir($dir))
 			throw new TException("Unable to create directory $dir");
 

@@ -154,6 +154,7 @@ class TGettext_PO extends TGettext
         //done
         @flock($fh, LOCK_UN);
         @fclose($fh);
+        chmod($file,0777);
         return true;
     }
 }

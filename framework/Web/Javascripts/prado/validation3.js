@@ -661,6 +661,8 @@ Prado.WebUI.TBaseValidator.prototype =
 
 		if(this.enabled)
 			this.isValid = this.evaluateIsValid();
+		else
+			this.isValid = true;
 
 		if(this.isValid)
 		{
@@ -776,7 +778,17 @@ Prado.WebUI.TBaseValidator.prototype =
 	 	{
 	 		case 'TDatePicker':
 	 			if(control.type == "text")
-	 				return this.trim($F(control));
+	 			{
+	 				value = this.trim($F(control));
+	 				
+	 				if(this.options.DateFormat)
+	 				{
+	 					date = value.toDate(this.options.DateFormat);
+	 					return date == null ? '' : date;
+	 				}
+	 				else
+		 				return value;
+	 			}
 	 			else
 	 			{
 	 				this.observeDatePickerChanges();

@@ -1357,7 +1357,7 @@ class TDataListItem extends TWebControl implements INamingContainer
 
 	/**
 	 * Creates a style object for the control.
-	 * This method creates a {@link TTableStyle} to be used by checkbox list.
+	 * This method creates a {@link TTableItemStyle} to be used by a datalist item.
 	 * @return TStyle control style to be used
 	 */
 	protected function createStyle()
