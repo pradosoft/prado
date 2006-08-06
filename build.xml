@@ -135,6 +135,7 @@
     </copy>
     
     <copy file="buildscripts/classtree/DWExtensionReadme.txt" tofile="${build.src.dir}/editors/Dreamweaver/readme.txt" />
+    <copy file="framework/pradolite.php" tofile="${build.src.dir}/framework/pradolite.php" />
     
     <echo>Changing file permissions...</echo>
     <chmod mode="0777">
