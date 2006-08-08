@@ -12,12 +12,12 @@
 
 /**
  * TCallbackResponseAdapter alters the THttpResponse's outputs.
- * 
+ *
  * A TCallbackResponseWriter is used instead of the TTextWrite when
  * createHtmlWriter is called. Each call to createHtmlWriter will create
  * a new TCallbackResponseWriter. When flushContent() is called each
  * instance of TCallbackResponseWriter's content is flushed.
- * 
+ *
  * The callback response data can be set using the {@link setResponseData ResponseData}
  * property.
  *
@@ -36,9 +36,9 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 	 * @mixed callback response data.
 	 */
 	private $_data;
-	
+
 	/**
-	 * Returns a new instance of THtmlWriter. 
+	 * Returns a new instance of THtmlWriter.
 	 * An instance of TCallbackResponseWriter is created to hold the content.
 	 * @param string writer class name.
 	 * @param THttpResponse http response handler.
@@ -49,7 +49,7 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 		$this->_writers[] = $writer;
 		return parent::createNewHtmlWriter($type,$writer);
 	}
-	
+
 	/**
 	 * Flushes the contents in the writers.
 	 */
@@ -59,7 +59,7 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 			echo $writer->flush();
 		parent::flushContent();
 	}
-	
+
 	/**
 	 * @param mixed callback response data.
 	 */
@@ -67,7 +67,7 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 	{
 		$this->_data = $data;
 	}
-	
+
 	/**
 	 * @return mixed callback response data.
 	 */
@@ -79,7 +79,7 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 
 /**
  * TCallbackResponseWriter class.
- * 
+ *
  * TCallbackResponseWriter class enclosed a chunck of content within a
  * html comment boundary. This allows multiple chuncks of content to return
  * in the callback response and update multiple HTML elements.
@@ -87,7 +87,7 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
  * The {@link setBoundary Boundary} property sets boundary identifier in the
  * HTML comment that forms the boundary. By default, the boundary identifier
  * is generated from the object instance ID.
- * 
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  Sun Jun 18 08:02:21 EST 2006 $
  * @package System.Web.UI.ActiveControls
@@ -99,15 +99,15 @@ class TCallbackResponseWriter extends TTextWriter
 	 * @var string boundary ID
 	 */
 	private $_boundary;
-	
+
 	/**
 	 * Constructor. Generates boundary ID using object instance ID.
 	 */
 	public function __construct()
 	{
-		$this->_boundary = sprintf('%x',crc32((string)$this));
+		$this->_boundary = sprintf('%x',crc32(time()));
 	}
-		
+
 	/**
 	 * @return string boundary identifier.
 	 */
@@ -115,7 +115,7 @@ class TCallbackResponseWriter extends TTextWriter
 	{
 		return $this->_boundary;
 	}
-	
+
 	/**
 	 * @param string boundary identifier.
 	 */
@@ -123,7 +123,7 @@ class TCallbackResponseWriter extends TTextWriter
 	{
 		$this->_boundary = $value;
 	}
-	
+
 	/**
 	 * Returns the text content wrapped within a HTML comment with boundary
 	 * identifier as its comment content.
