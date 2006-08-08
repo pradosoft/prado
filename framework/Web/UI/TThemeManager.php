@@ -292,10 +292,10 @@ class TTheme extends TApplicationComponent implements ITheme
 					$template=new TTemplate(file_get_contents($themePath.'/'.$file),$themePath,$themePath.'/'.$file);
 					foreach($template->getItems() as $skin)
 					{
-						if($skin[0]!==-1)
-							throw new TConfigurationException('theme_control_nested',$skin[1],dirname($themePath));
-						else if(!isset($skin[2]))  // a text string, ignored
+						if(!isset($skin[2]))  // a text string, ignored
 							continue;
+						else if($skin[0]!==-1)
+							throw new TConfigurationException('theme_control_nested',$skin[1],dirname($themePath));
 						$type=$skin[1];
 						$id=isset($skin[2]['skinid'])?$skin[2]['skinid']:0;
 						unset($skin[2]['skinid']);
