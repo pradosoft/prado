@@ -524,6 +524,9 @@ abstract class TListControl extends TDataBoundControl
 	}
 
 	/**
+	 * Selects a list of values.
+	 * Unlike {@link setSelectedValue}, this function should only be called
+	 * after the list items are populated. Otherwise, it would have no effect.
 	 * @param array list of the selected item values
 	 */
 	public function setSelectedValues($values)
