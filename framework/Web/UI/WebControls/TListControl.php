@@ -446,6 +446,9 @@ abstract class TListControl extends TDataBoundControl
 	}
 
 	/**
+	 * Selects a list of values by their indices.
+	 * Unlike {@link setSelectedIndex}, this function should only be called
+	 * after the list items are populated. Otherwise, it would have no effect.
 	 * @param array list of index of items to be selected
 	 */
 	public function setSelectedIndices($indices)
