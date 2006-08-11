@@ -7,14 +7,14 @@ Object.extend(Ajax.Request.prototype,
 	 * Customize the response, dispatch onXXX response code events, and
 	 * tries to execute response actions (javascript statements).
 	 */
-	respondToReadyState : function(readyState) 
+	respondToReadyState : function(readyState)
 	{
 	    var event = Ajax.Request.Events[readyState];
 	    var transport = this.transport, json = this.getHeaderData(Prado.CallbackRequest.DATA_HEADER);
 
-	    if (event == 'Complete') 
-	    {	      
-	      try 
+	    if (event == 'Complete')
+	    {
+	      try
 	      {
 	      	Prado.CallbackRequest.updatePageState(this,transport);
 			Ajax.Responders.dispatch('on' + transport.status, this, transport, json);
@@ -29,19 +29,19 @@ Object.extend(Ajax.Request.prototype,
 	      if ((this.header('Content-type') || '').match(/^text\/javascript/i))
 	        this.evalResponse();
 	    }
-	    
+
 	    try {
 	      (this.options['on' + event] || Prototype.emptyFunction)(transport, json);
 	      Ajax.Responders.dispatch('on' + event, this, transport, json);
 	    } catch (e) {
 	      this.dispatchException(e);
 	    }
-	    
+
 	    /* Avoid memory leak in MSIE: clean up the oncomplete event handler */
 	    if (event == 'Complete')
 	      this.transport.onreadystatechange = Prototype.emptyFunction;
 	},
-	
+
 	/**
 	 * Gets header data assuming JSON encoding.
 	 * @param string header name
@@ -49,12 +49,12 @@ Object.extend(Ajax.Request.prototype,
 	 */
 	getHeaderData : function(name)
 	{
-		try 
+		try
 		{
 			var json = this.header(name);
 			return eval('(' + json + ')');
-		} 
-		catch (e) 
+		}
+		catch (e)
 		{
 			if(typeof(json) == "string")
 				return Prado.CallbackRequest.decode(json);
@@ -84,9 +84,9 @@ Object.extend(Prado.CallbackRequest,
 	 * Callback request page state field name,
 	 */
 	FIELD_CALLBACK_PAGESTATE : 'PRADO_PAGESTATE',
-	
+
 	FIELD_POSTBACK_TARGET : 'PRADO_POSTBACK_TARGET',
-	
+
 	FIELD_POSTBACK_PARAMETER : 'PRADO_POSTBACK_PARAMETER',
 
 	/**
@@ -113,7 +113,7 @@ Object.extend(Prado.CallbackRequest,
 	 * Current requests in progress.
 	 */
 	requestInProgress : null,
-	
+
 	/**
 	 * Add ids of inputs element to post in the request.
 	 */
@@ -121,7 +121,7 @@ Object.extend(Prado.CallbackRequest,
 	{
 		this.PostDataLoaders = this.PostDataLoaders.concat(ids);
 	},
-	
+
 	/**
 	 * Dispatch callback response actions.
 	 */
@@ -130,7 +130,7 @@ Object.extend(Prado.CallbackRequest,
 		if(actions && actions.length > 0)
 			actions.each(this.__run.bind(this,transport));
 	},
-	
+
 	/**
 	 * Prase and evaluate a Callback clien-side action
 	 */
@@ -143,13 +143,13 @@ Object.extend(Prado.CallbackRequest,
 				method.toFunction().apply(this,command[method].concat(transport));
 			}
 			catch(e)
-			{	
+			{
 				if(typeof(Logger) != "undefined")
 					Prado.CallbackRequest.Exception.onException(null,e);
 			}
 		}
 	},
-	
+
 	/**
 	 * Respond to Prado Callback request exceptions.
 	 */
@@ -159,11 +159,11 @@ Object.extend(Prado.CallbackRequest,
 		 * Server returns 500 exception. Just log it.
 		 */
 		"on500" : function(request, transport, data)
-		{	
+		{
 			var e = request.getHeaderData(Prado.CallbackRequest.ERROR_HEADER);
 			Logger.error("Callback Server Error "+e.code, this.formatException(e));
 		},
-		
+
 		/**
 		 * Callback OnComplete event,logs reponse and data to console.
 		 */
@@ -186,7 +186,7 @@ Object.extend(Prado.CallbackRequest,
 				Logger.warn(msg);
 			}
 		},
-	
+
 		/**
 		 * Uncaught exceptions during callback response.
 		 */
@@ -196,10 +196,10 @@ Object.extend(Prado.CallbackRequest,
 			$H(e).each(function(item)
 			{
 				msg += item.key+": "+item.value+"\n";
-			})	
+			})
 			Logger.error('Uncaught Callback Client Exception:', msg);
 		},
-	
+
 		/**
 		 * Formats the exception message for display in console.
 		 */
@@ -219,7 +219,7 @@ Object.extend(Prado.CallbackRequest,
 			return msg;
 		}
 	},
-	
+
 	/**
 	 * @return string JSON encoded data.
 	 */
@@ -227,7 +227,7 @@ Object.extend(Prado.CallbackRequest,
 	{
 		return Prado.JSON.stringify(data);
 	},
-	
+
 	/**
 	 * @return mixed javascript data decoded from string using JSON decoding.
 	 */
@@ -238,7 +238,7 @@ Object.extend(Prado.CallbackRequest,
 		else
 			return null;
 	},
-	
+
 	/**
 	 * Dispatch a priority request, it will call abortRequestInProgress first.
 	 */
@@ -246,18 +246,18 @@ Object.extend(Prado.CallbackRequest,
 	{
 		//Logger.info("priority request "+callback.id)
 		this.abortRequestInProgress();
-		
+
 		callback.request = new Ajax.Request(callback.url, callback.options);
 		callback.timeout = setTimeout(function()
 		{
 		//	Logger.warn("priority timeout");
 			Prado.CallbackRequest.abortRequestInProgress();
 		},callback.options.RequestTimeOut);
-		
+
 		this.requestInProgress = callback;
 		//Logger.info("dispatched "+this.requestInProgress)
 	},
-	
+
 	/**
 	 * Dispatch a normal request, no timeouts or aborting of requests.
 	 */
@@ -266,7 +266,7 @@ Object.extend(Prado.CallbackRequest,
 	//	Logger.info("dispatching normal request");
 		new Ajax.Request(callback.url, callback.options);
 	},
-	
+
 	/**
 	 * Abort the current priority request in progress.
 	 */
@@ -284,7 +284,7 @@ Object.extend(Prado.CallbackRequest,
 		}
 		return false;
 	},
-	
+
 	/**
 	 * Updates the page state. It will update only if EnablePageStateUpdate and
 	 * HasPriority options are both true.
@@ -317,44 +317,48 @@ Ajax.Responders.register({onComplete : function(request)
 
 //Add HTTP exception respones when logger is enabled.
 Event.OnLoad(function()
-{ 
-	if(typeof Logger != "undefined") 
+{
+	if(typeof Logger != "undefined")
 		Ajax.Responders.register(Prado.CallbackRequest.Exception);
 });
 
 /**
  * Create and prepare a new callback request.
+ * Call the dispatch() method to start the callback request.
+ * <code>
+ * request = new Prado.CallbackRequest(UniqueID, callback);
+ * request.dispatch();
+ * </code>
  */
-Prado.CallbackRequest.prototype = 
+Prado.CallbackRequest.prototype =
 {
 	/**
 	 * Callback URL, same url as the current page.
 	 */
 	url : window.location.href,
-	
+
 	/**
 	 * Callback options, including onXXX events.
 	 */
 	options : {	},
-	
+
 	/**
 	 * Callback target ID. E.g. $control->getUniqueID();
 	 */
 	id : null,
-	
+
 	/**
 	 * Current callback request.
 	 */
 	request : null,
-	
+
 	/**
 	 * Prepare and inititate a callback request.
 	 */
 	initialize : function(id, options)
 	{
 		this.id = id;
-
-		this.options = 
+		this.options = Object.extend(
 		{
 			RequestTimeOut : 30000, // 30 second timeout.
 			EnablePageStateUpdate : true,
@@ -362,14 +366,87 @@ Prado.CallbackRequest.prototype =
 			CausesValidation : true,
 			ValidationGroup : null,
 			PostInputs : true
-		}
-		Object.extend(this.options, options || {});
-		
+		}, options || {});
+	},
+
+	/**
+	 * Sets the request parameter
+	 * @param {Object} parameter value
+	 */
+	setParameter : function(value)
+	{
+		this.options['params'] = value;
+	},
+
+	/**
+	 * @return {Object} request paramater value.
+	 */
+	getParameter : function()
+	{
+		return this.options['params'];
+	},
+
+	/**
+	 * Sets the callback request timeout.
+	 * @param {integer} timeout in  milliseconds
+	 */
+	setRequestTimeOut : function(timeout)
+	{
+		this.options['RequestTimeOut'] = timeout;
+	},
+
+	/**
+	 * @return {integer} request timeout in milliseconds
+	 */
+	getRequestTimeOut : function()
+	{
+		return this.options['RequestTimeOut'];
+	},
+
+	/**
+	 * Set true to enable validation on callback dispatch.
+	 * @param {boolean} true to validate
+	 */
+	setCausesValidation : function(validate)
+	{
+		this.options['CausesValidation'] = validate;
+	},
+
+	/**
+	 * @return {boolean} validate on request dispatch
+	 */
+	getCausesValidation : function()
+	{
+		return this.options['CausesValidation'];
+	},
+
+	/**
+	 * Sets the validation group to validate during request dispatch.
+	 * @param {string} validation group name
+	 */
+	setValidationGroup : function(group)
+	{
+		this.options['ValidationGroup'] = group;
+	},
+
+	/**
+	 * @return {string} validation group name.
+	 */
+	getValidationGroup : function()
+	{
+		return this.options['ValidationGroup'];
+	},
+
+	/**
+	 * Dispatch the callback request.
+	 */
+	dispatch : function()
+	{
 		//override parameter and postBody options.
-		Object.extend(this.options, 
+		Object.extend(this.options,
 		{
 			postBody : this._getPostData(),
-			parameters : ''			
+			parameters : ''
 		});
 
 		if(this.options.CausesValidation && typeof(Prado.Validation) != "undefined")
@@ -378,7 +455,7 @@ Prado.CallbackRequest.prototype =
 			if(Prado.Validation.validate(form,this.options.ValidationGroup,this) == false)
 				return;
 		}
-		
+
 		if(this.options.HasPriority)
 			Prado.CallbackRequest.dispatchPriorityRequest(this);
 		else
@@ -386,7 +463,7 @@ Prado.CallbackRequest.prototype =
 	},
 
 	/**
-	 * Collects the form inputs, encode the parameters, and sets the callback 
+	 * Collects the form inputs, encode the parameters, and sets the callback
 	 * target id. The resulting string is the request content body.
 	 * @return string request body content containing post data.
 	 */
@@ -430,14 +507,15 @@ Prado.CallbackRequest.prototype =
  */
 Prado.Callback = function(UniqueID, parameter, onSuccess, options)
 {
-	var callback =  
+	var callback =
 	{
 		'params' : parameter || '',
 		'onSuccess' : onSuccess || Prototype.emptyFunction
 	};
 
 	Object.extend(callback, options || {});
-	
-	new Prado.CallbackRequest(UniqueID, callback);
+
+	request = new Prado.CallbackRequest(UniqueID, callback);
+	request.dispatch();
 	return false;
 }

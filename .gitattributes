@@ -1687,7 +1687,6 @@ framework/Web/Javascripts/js/logger.js -text
 framework/Web/Javascripts/js/prado.js -text
 framework/Web/Javascripts/js/rico.js -text
 framework/Web/Javascripts/js/validator.js -text
-framework/Web/Javascripts/prado/activecontrols.js -text
 framework/Web/Javascripts/prado/activecontrols3.js -text
 framework/Web/Javascripts/prado/ajax.js -text
 framework/Web/Javascripts/prado/ajax3.js -text

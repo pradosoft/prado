@@ -75,8 +75,16 @@ Ajax.Responders.register({onComplete:function(request)
 Prado.CallbackRequest.abortRequestInProgress();}});Event.OnLoad(function()
 {if(typeof Logger!="undefined")
 Ajax.Responders.register(Prado.CallbackRequest.Exception);});Prado.CallbackRequest.prototype={url:window.location.href,options:{},id:null,request:null,initialize:function(id,options)
-{this.id=id;this.options={RequestTimeOut:30000,EnablePageStateUpdate:true,HasPriority:true,CausesValidation:true,ValidationGroup:null,PostInputs:true}
-Object.extend(this.options,options||{});Object.extend(this.options,{postBody:this._getPostData(),parameters:''});if(this.options.CausesValidation&&typeof(Prado.Validation)!="undefined")
+{this.id=id;this.options=Object.extend({RequestTimeOut:30000,EnablePageStateUpdate:true,HasPriority:true,CausesValidation:true,ValidationGroup:null,PostInputs:true},options||{});},setParameter:function(value)
+{this.options['params']=value;},getParameter:function()
+{return this.options['params'];},setRequestTimeOut:function(timeout)
+{this.options['RequestTimeOut']=timeout;},getRequestTimeOut:function()
+{return this.options['RequestTimeOut'];},setCausesValidation:function(validate)
+{this.options['CausesValidation']=validate;},getCausesValidation:function()
+{return this.options['CausesValidation'];},setValidationGroup:function(group)
+{this.options['ValidationGroup']=group;},getValidationGroup:function()
+{return this.options['ValidationGroup'];},dispatch:function()
+{Object.extend(this.options,{postBody:this._getPostData(),parameters:''});if(this.options.CausesValidation&&typeof(Prado.Validation)!="undefined")
 {var form=this.options.Form||Prado.Validation.getForm();if(Prado.Validation.validate(form,this.options.ValidationGroup,this)==false)
 return;}
 if(this.options.HasPriority)
@@ -93,7 +101,7 @@ data[callback.FIELD_CALLBACK_PAGESTATE]=pageState;data[callback.FIELD_CALLBACK_T
 data[callback.FIELD_POSTBACK_TARGET]=this.options.EventTarget;if(this.options.EventParameter)
 data[callback.FIELD_POSTBACK_PARAMETER]=this.options.EventParameter;return $H(data).toQueryString();}}
 Prado.Callback=function(UniqueID,parameter,onSuccess,options)
-{var callback={'params':parameter||'','onSuccess':onSuccess||Prototype.emptyFunction};Object.extend(callback,options||{});new Prado.CallbackRequest(UniqueID,callback);return false;}
+{var callback={'params':parameter||'','onSuccess':onSuccess||Prototype.emptyFunction};Object.extend(callback,options||{});request=new Prado.CallbackRequest(UniqueID,callback);request.dispatch();return false;}
 Array.prototype.______array='______array';Prado.JSON={org:'http://www.JSON.org',copyright:'(c)2005 JSON.org',license:'http://www.crockford.com/JSON/license.html',stringify:function(arg){var c,i,l,s='',v;switch(typeof arg){case'object':if(arg){if(arg.______array=='______array'){for(i=0;i<arg.length;++i){v=this.stringify(arg[i]);if(s){s+=',';}
 s+=v;}
 return'['+s+']';}else if(typeof arg.toString!='undefined'){for(i in arg){v=arg[i];if(typeof v!='undefined'&&typeof v!='function'){v=this.stringify(v);if(s){s+=',';}
@@ -189,15 +197,15 @@ if(this.saving)return;this.effect=new Effect.Highlight(this.element,{startcolor:
 this.editing=false;this.saving=false;this.oldInnerHTML=null;this.onLeaveEditMode();},onComplete:function(transport){this.leaveEditMode();this.options.onComplete.bind(this)(transport,this.element);},onEnterEditMode:function(){},onLeaveEditMode:function(){},dispose:function(){if(this.oldInnerHTML){this.element.innerHTML=this.oldInnerHTML;}
 this.leaveEditMode();Event.stopObserving(this.element,'click',this.onclickListener);Event.stopObserving(this.element,'mouseover',this.mouseoverListener);Event.stopObserving(this.element,'mouseout',this.mouseoutListener);if(this.options.externalControl){Event.stopObserving(this.options.externalControl,'click',this.onclickListener);Event.stopObserving(this.options.externalControl,'mouseover',this.mouseoverListener);Event.stopObserving(this.options.externalControl,'mouseout',this.mouseoutListener);}}};Ajax.InPlaceCollectionEditor=Class.create();Object.extend(Ajax.InPlaceCollectionEditor.prototype,Ajax.InPlaceEditor.prototype);Object.extend(Ajax.InPlaceCollectionEditor.prototype,{createEditField:function(){if(!this.cached_selectTag){var selectTag=document.createElement("select");var collection=this.options.collection||[];var optionTag;collection.each(function(e,i){optionTag=document.createElement("option");optionTag.value=(e instanceof Array)?e[0]:e;if(this.options.value==optionTag.value)optionTag.selected=true;optionTag.appendChild(document.createTextNode((e instanceof Array)?e[1]:e));selectTag.appendChild(optionTag);}.bind(this));this.cached_selectTag=selectTag;}
 this.editField=this.cached_selectTag;if(this.options.loadTextURL)this.loadExternalText();this.form.appendChild(this.editField);this.options.callback=function(form,value){return"value="+encodeURIComponent(value);}}});Form.Element.DelayedObserver=Class.create();Form.Element.DelayedObserver.prototype={initialize:function(element,delay,callback){this.delay=delay||0.5;this.element=$(element);this.callback=callback;this.timer=null;this.lastValue=$F(this.element);Event.observe(this.element,'keyup',this.delayedListener.bindAsEventListener(this));},delayedListener:function(event){if(this.lastValue==$F(this.element))return;if(this.timer)clearTimeout(this.timer);this.timer=setTimeout(this.onTimerEvent.bind(this),this.delay*1000);this.lastValue=$F(this.element);},onTimerEvent:function(){this.timer=null;this.callback(this.element,$F(this.element));}};Prado.WebUI.CallbackControl=Class.extend(Prado.WebUI.PostBackControl,{onPostBack:function(event,options)
-{new Prado.CallbackRequest(options.EventTarget,options);Event.stop(event);}});Prado.WebUI.TActiveButton=Class.extend(Prado.WebUI.CallbackControl);Prado.WebUI.TActiveCheckBox=Class.extend(Prado.WebUI.CallbackControl,{onPostBack:function(event,options)
-{new Prado.CallbackRequest(options.EventTarget,options);}});Prado.WebUI.TActiveTextBox=Class.extend(Prado.WebUI.TTextBox,{onInit:function(options)
+{request=new Prado.CallbackRequest(options.EventTarget,options);request.dispatch();Event.stop(event);}});Prado.WebUI.TActiveButton=Class.extend(Prado.WebUI.CallbackControl);Prado.WebUI.TActiveCheckBox=Class.extend(Prado.WebUI.CallbackControl,{onPostBack:function(event,options)
+{request=new Prado.CallbackRequest(options.EventTarget,options);request.dispatch();}});Prado.WebUI.TActiveTextBox=Class.extend(Prado.WebUI.TTextBox,{onInit:function(options)
 {if(options['TextMode']!='MultiLine')
 Event.observe(this.element,"keydown",this.handleReturnKey.bind(this));Event.observe(this.element,"change",this.doCallback.bindEvent(this,options));},doCallback:function(event,options)
-{new Prado.CallbackRequest(options.EventTarget,options);Event.stop(event);}});Prado.WebUI.TAutoComplete=Class.extend(Autocompleter.Base,Prado.WebUI.TActiveTextBox.prototype);Prado.WebUI.TAutoComplete=Class.extend(Prado.WebUI.TAutoComplete,{initialize:function(options)
+{request=new Prado.CallbackRequest(options.EventTarget,options);request.dispatch();Event.stop(event);}});Prado.WebUI.TAutoComplete=Class.extend(Autocompleter.Base,Prado.WebUI.TActiveTextBox.prototype);Prado.WebUI.TAutoComplete=Class.extend(Prado.WebUI.TAutoComplete,{initialize:function(options)
 {this.options=options;this.baseInitialize(options.ID,options.ResultPanel,options);Object.extend(this.options,{onSuccess:this.onComplete.bind(this)});if(options.AutoPostBack)
 this.onInit(options);},doCallback:function(event,options)
 {if(!this.active)
-{new Prado.CallbackRequest(options.EventTarget,options);Event.stop(event);}},onClick:function(event)
+{request=new Prado.CallbackRequest(options.EventTarget,options);request.dispatch();Event.stop(event);}},onClick:function(event)
 {var element=Event.findElement(event,'LI');this.index=element.autocompleteIndex;this.selectEntry();this.hide();Event.fireEvent(this.element,"change");},getUpdatedChoices:function()
 {options=new Array(this.getToken(),"__TAutoComplete_onSuggest__");Prado.Callback(this.options.EventTarget,options,null,this.options);},onComplete:function(request,boundary)
 {result=Prado.Element.extractContent(request.responseText,boundary);if(typeof(result)=="string"&&result.length>0)
@@ -206,7 +214,7 @@ this.updateChoices(result);}});Prado.WebUI.TCallbackTimer=Base.extend({count:0,t
 this.onComplete=this.options.onComplete;Prado.WebUI.TCallbackTimer.register(this);},startTimer:function()
 {this.options.onComplete=this.onRequestComplete.bind(this);setTimeout(this.onTimerEvent.bind(this),200);},stopTimer:function()
 {(this.onComplete||Prototype.emptyFunction).apply(this,arguments);this.options.onComplete=undefined;clearTimeout(this.timer);this.timer=undefined;this.count=0;},onTimerEvent:function()
-{this.options.params=this.timeout/1000;new Prado.CallbackRequest(this.options.ID,this.options);},onRequestComplete:function()
+{this.options.params=this.timeout/1000;request=new Prado.CallbackRequest(this.options.ID,this.options);request.dispatch();},onRequestComplete:function()
 {(this.onComplete||Prototype.emptyFunction).apply(this,arguments);this.timer=setTimeout(this.onTimerEvent.bind(this),this.getNewTimeout())},getNewTimeout:function()
 {switch(this.options.DecayType)
 {case'Exponential':t=(Math.exp(this.options.DecayRate*this.count*this.options.Interval))-1;break;case'Linear':t=this.options.DecayRate*this.count*this.options.Interval;break;case'Quadratic':t=this.options.DecayRate*this.count*this.count*this.options.Interval;break;case'Cubic':t=this.options.DecayRate*this.count*this.count*this.count*this.options.Interval;break;default:t=0;}
@@ -217,4 +225,4 @@ this.timers[id].startTimer();},stop:function(id)
 {if(this.timers[id])
 this.timers[id].stopTimer();}});Prado.WebUI.ActiveListControl=Base.extend({constructor:function(options)
 {this.element=$(options.ID);this.options=options;Event.observe(this.element,"change",this.doCallback.bind(this));},doCallback:function(event)
-{new Prado.CallbackRequest(this.options.EventTarget,this.options);Event.stop(event);}});Prado.WebUI.TActiveDropDownList=Prado.WebUI.ActiveListControl;
+{request=new Prado.CallbackRequest(this.options.EventTarget,this.options);request.dispatch();Event.stop(event);}});Prado.WebUI.TActiveDropDownList=Prado.WebUI.ActiveListControl;

@@ -334,11 +334,16 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	}
 
 	/**
-	 * Returns the javascript statement to invoke a callback request for this
-	 * control. Additional options for callback can be set via subproperties of
-	 * {@link getClientSide ClientSide} property. E.g. ClientSide.
-	 * OnSuccess="..."
-	 * @return string javascript statement to invoke a callback.
+	 * Returns the javascript callback request instance. To invoke a callback
+	 * request for this control call the <tt>dispatch()</tt> method on the
+	 * request instance. Example code in javascript
+	 * <code>
+	 *   request = <%= $this->mycallback->ActiveControl->Javascript %>;
+	 *   request.setParameter('hello');
+	 *   request.dispatch(); //make the callback request.
+	 * </code>
+	 * @return string javascript client-side callback request object (javascript
+	 * code)
 	 */
 	public function getJavascript()
 	{
