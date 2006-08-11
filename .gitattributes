@@ -1311,6 +1311,7 @@ framework/DataAccess/SQLMap/Statements/TPreparedStatement.php -text
 framework/DataAccess/SQLMap/Statements/TPreparedStatementFactory.php -text
 framework/DataAccess/SQLMap/Statements/TSelectMappedStatement.php -text
 framework/DataAccess/SQLMap/Statements/TSimpleDynamicSql.php -text
+framework/DataAccess/SQLMap/Statements/TSqlMapSelect.php -text
 framework/DataAccess/SQLMap/Statements/TStaticSql.php -text
 framework/DataAccess/SQLMap/Statements/TUpdateMappedStatement.php -text
 framework/DataAccess/SQLMap/TMapper.php -text
@@ -1855,6 +1856,17 @@ requirements/messages.txt -text
 requirements/template-bg.html -text
 requirements/template-zh.html -text
 requirements/template.html -text
+tests/FunctionalTests/active-controls/protected/pages/CustomTemplateComponent.php -text
+tests/FunctionalTests/active-controls/protected/pages/CustomTemplateComponent.tpl -text
+tests/FunctionalTests/active-controls/protected/pages/CustomTemplateControlTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/CustomTemplateControlTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/ReplaceContentTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/ReplaceContentTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/TextBoxValidationCallback.page -text
+tests/FunctionalTests/active-controls/protected/pages/TextBoxValidationCallback.php -text
+tests/FunctionalTests/active-controls/tests/CustomTemplateTestCase.php -text
+tests/FunctionalTests/active-controls/tests/ReplaceContentTestCase.php -text
+tests/FunctionalTests/active-controls/tests/TextBoxGroupValidationTestCase.php -text
 tests/FunctionalTests/features.php -text
 tests/FunctionalTests/features/index.php -text
 tests/FunctionalTests/features/protected/application.xml -text

@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2006 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version :   : 
+ * @version :   :
  * @package System.Web.UI.ActiveControls
  */
 
@@ -17,10 +17,10 @@ Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 
 /**
  * TActivePanel is the TPanel active control counterpart.
- * 
- * TActivePanel allows the client-side panel contents to be updated during a 
+ *
+ * TActivePanel allows the client-side panel contents to be updated during a
  * callback response using the {@link flush} method.
- * 
+ *
  * Example: Assume $param is an instance of TCallbackEventParameter attached to
  * the OnCallback event a TCallback with ID "callback1", and
  * "panel1" is the ID of a TActivePanel.
@@ -48,7 +48,7 @@ class TActivePanel extends TPanel implements IActiveControl
 		parent::__construct();
 		$this->setAdapter(new TActiveControlAdapter($this));
 	}
-	
+
 	/**
 	 * @return TBaseActiveControl standard active control options.
 	 */
@@ -56,19 +56,17 @@ class TActivePanel extends TPanel implements IActiveControl
 	{
 		return $this->getAdapter()->getBaseActiveControl();
 	}
-	
+
 	/**
 	 * Renders and replaces the panel's content on the client-side.
 	 * @param THtmlWriter html writer
 	 */
-	public function flush($writer)
+	public function render($writer)
 	{
+		parent::render($writer);
 		if($this->getActiveControl()->canUpdateClientSide())
-		{
-			$this->render($writer);
 			$this->getPage()->getCallbackClient()->replaceContent($this,$writer);
-		}
 	}
-} 
+}
 
 ?>

@@ -1,0 +1,21 @@
+<com:TForm>
+<h1>TextBox AutoPostBack With Group Validation</h1>
+<com:TTextBox ID="Address" Columns="60" Maxlength="128" />
+<com:TRequiredFieldValidator
+	ID="validator1"
+	ControlToValidate="Address"
+	ValidationGroup="post"
+	ErrorMessage="*" />
+
+<com:TActiveTextBox
+	AutoPostBack="true"
+	ID="ZipCode"
+	Columns="4"
+	Maxlength="12"
+	ValidationGroup="post"
+	OnCallback="lookupZipCode"/>
+<com:TJavascriptLogger />
+
+<com:TActiveTextBox ID="City" Columns="60" Maxlength="128" />
+
+</com:TForm>

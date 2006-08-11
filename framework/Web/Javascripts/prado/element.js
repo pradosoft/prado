@@ -1,4 +1,4 @@
-Prado.Element = 
+Prado.Element =
 {
 	/**
 	 * Set the value of a particular element.
@@ -16,7 +16,7 @@ Prado.Element =
 	{
 		var el = $(element);
 		var selection = Prado.Element.Selection;
-		if(typeof(selection[method]) == "function") 
+		if(typeof(selection[method]) == "function")
 		{
 			control = selection.isSelectable(el) ? [el] : selection.getListElements(element,total);
 			selection[method](control, value);
@@ -26,10 +26,10 @@ Prado.Element =
 	click : function(element)
 	{
 		var el = $(element);
-		if(el) 
+		if(el)
 			Event.fireEvent(el,'click');
 	},
-	
+
 	setAttribute : function(element, attribute, value)
 	{
 		var el = $(element);
@@ -63,7 +63,7 @@ Prado.Element =
 			setTimeout(function(){ obj.focus(); }, 100);
 		return false;
 	},
-	
+
 	replace : function(element, method, content, boundary, transport)
 	{
 		if(boundary)
@@ -82,7 +82,7 @@ Prado.Element =
 			method.toFunction().apply(this,[content]);
 		}
 	},
-	
+
 	extractContent : function(text, boundary)
 	{
 		f = RegExp('(<!--'+boundary+'-->)([\\s\\S\\w\\W]*)(<!--//'+boundary+'-->)',"m");
@@ -92,20 +92,20 @@ Prado.Element =
 		else
 			return null;
 	},
-	
+
 	evaluateScript : function(content)
 	{
 		content.evalScripts();
 	}
 }
 
-Prado.Element.Selection = 
+Prado.Element.Selection =
 {
 	isSelectable : function(el)
 	{
 		if(el && el.type)
 		{
-			switch(el.type.toLowerCase()) 
+			switch(el.type.toLowerCase())
 			{
 				case 'checkbox':
 				case 'radio':
@@ -116,12 +116,12 @@ Prado.Element.Selection =
 		}
 		return false;
 	},
-	
+
 	inputValue : function(el, value)
 	{
-		switch(el.type.toLowerCase()) 
+		switch(el.type.toLowerCase())
 		{
-			case 'checkbox':  
+			case 'checkbox':
 			case 'radio':
 			return el.checked = value;
 		}
@@ -137,10 +137,10 @@ Prado.Element.Selection =
 					options.selected = value;
 				else if(option.value == value)
 					option.selected = true;
-			});			
+			});
 		})
 	},
-	
+
 	selectValues : function(elements, values)
 	{
 		selection = this;
@@ -166,7 +166,7 @@ Prado.Element.Selection =
 			}
 		})
 	},
-	
+
 	selectAll : function(elements)
 	{
 		elements.each(function(el)
@@ -177,7 +177,7 @@ Prado.Element.Selection =
 				{
 					option.selected = true;
 				})
-			}			
+			}
 		})
 	},
 
@@ -191,10 +191,10 @@ Prado.Element.Selection =
 				{
 					option.selected = !options.selected;
 				})
-			}			
+			}
 		})
 	},
-	
+
 	selectIndices : function(elements, indices)
 	{
 		selection = this;
@@ -208,7 +208,7 @@ Prado.Element.Selection =
 	{
 		elements.each(function(el)
 		{
-			el.selectedIndex = -1;			
+			el.selectedIndex = -1;
 		})
 	},
 
@@ -220,10 +220,10 @@ Prado.Element.Selection =
 			el = $(element+"_c"+i);
 			if(el)
 				elements.push(el);
-		}		
+		}
 		return elements;
 	},
-	
+
 	checkValue : function(elements, value)
 	{
 		elements.each(function(el)
@@ -269,7 +269,7 @@ Prado.Element.Selection =
 			el.checked = false;
 		});
 	},
-	
+
 	checkAll : function(elements)
 	{
 		elements.each(function(el)
@@ -277,7 +277,7 @@ Prado.Element.Selection =
 			el.checked = true;
 		})
 	},
-	
+
 	checkInvert : function(elements)
 	{
 		elements.each(function(el)
@@ -286,3 +286,27 @@ Prado.Element.Selection =
 		})
 	}
 };
+
+
+Prado.Element.Insert =
+{
+	append: function(element, content)
+	{
+		new Insertion.Bottom(element, content);
+	},
+
+	prepend: function(element, content)
+	{
+		new Insertion.Top(element, content);
+	},
+
+	after: function(element, content)
+	{
+		new Insertion.After(element, content);
+	},
+
+	before: function(element, content)
+	{
+		new Insertion.Before(element, content);
+	}
+}

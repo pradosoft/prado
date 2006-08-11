@@ -1,0 +1,22 @@
+<com:TForm>
+
+<h1>Callback Replace Content Test</h1>
+
+<com:TPanel ID="panel1" style="border:1px solid red; background-color: #ffc; padding:2em;">
+Main Panel
+	<com:TPanel ID="subpanel" style="border:1px solid blue; background-color: #fff; padding: 2em;">
+		Sub Panel
+	</com:TPanel>
+</com:TPanel>
+
+<com:TTextBox ID="content" />
+<com:TActiveButton id="btn_append" Text="Append to Sub Panel" OnCallback="appendContent"/>
+<com:TActiveButton id="btn_prepend" Text="Prepend to Sub Panel" OnCallback="prependContent" />
+<com:TActiveButton id="btn_before" Text="Insert Before Sub Panel" OnCallback="insertContentBefore"/>
+<com:TActiveButton id="btn_after" Text="Insert After Sub Panel" OnCallback="insertContentAfter"/>
+
+<com:TActiveButton id="btn_replace" Text="Replace" OnCallback="replaceContent"/>
+
+<com:TJavascriptLogger />
+
+</com:TForm>

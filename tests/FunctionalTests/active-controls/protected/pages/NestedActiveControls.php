@@ -5,9 +5,9 @@ class NestedActiveControls extends TPage
 	function callback1_requested($sender, $param)
 	{
 		$this->content1->visible = true;
-		$this->panel1->flush($param->output);
+		$this->panel1->render($param->output);
 	}
-	
+
 	function button1_clicked($sender, $param)
 	{
 		$this->label1->Text = "Label 1: Button 1 Clicked";

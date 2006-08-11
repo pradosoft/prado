@@ -1,0 +1,16 @@
+<com:TForm ID="form1">
+
+	<h1>Add Dynamic Custom TTemplateControl Test</h1>
+	<com:TActivePanel ID="Foo">
+		<com:TTextBox ID="foo" />
+	</com:TActivePanel>
+	<com:TActiveButton ID="button2" Text="Button 1"
+		OnClick="button2_onclick" OnCallback="button2_callback"/>
+
+	<com:TActivePanel ID="placeholder" />
+
+	<com:TActiveLabel ID="label1" Text="Label 1" />
+
+
+	<com:TJavascriptLogger />
+</com:TForm>
