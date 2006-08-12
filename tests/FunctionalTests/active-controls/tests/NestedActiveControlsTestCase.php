@@ -9,18 +9,18 @@ class NestedActiveControlsTestCase extends SeleniumTestCase
 		$this->assertText("label1", "Label 1");
 		$this->assertText("label2", "Label 2");
 		$this->assertTextNotPresent("Label 3");
-		
+
 		$this->click("div1");
-		$this->pause(500);
+		$this->pause(800);
 		$this->assertTextPresent("Something lalala");
 		$this->assertText("label3", "Label 3");
-		
+
 		$this->click("button1");
-		$this->pause(500);
+		$this->pause(800);
 		$this->assertText("label1", "Label 1: Button 1 Clicked");
 		$this->assertText("label2", "Label 2: Button 1 Clicked");
 		$this->assertText("label3", "Label 3: Button 1 Clicked");
-	}	
+	}
 }
 
 ?>

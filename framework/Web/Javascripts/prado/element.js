@@ -33,10 +33,20 @@ Prado.Element =
 	setAttribute : function(element, attribute, value)
 	{
 		var el = $(element);
-		if(attribute == "disabled" && value==false)
+		if((attribute == "disabled" || attribute == "multiple") && value==false)
 			el.removeAttribute(attribute);
 		else if(attribute.match(/^on/i)) //event methods
-			el[attribute] = eval("(function(event){"+value+"})");
+		{
+			try
+			{
+				eval("(func = function(event){"+value+"})");
+				el[attribute] = func;
+			}
+			catch(e)
+			{
+				throw "Error in evaluating '"+value+"' for attribute "+attribute+" for element "+element.id;
+			}
+		}
 		else
 			el.setAttribute(attribute, value);
 	},
@@ -110,6 +120,7 @@ Prado.Element.Selection =
 				case 'checkbox':
 				case 'radio':
 				case 'select':
+				case 'select-multiple':
 				case 'select-one':
 				return true;
 			}

@@ -205,6 +205,11 @@ class TCallbackClientScript extends TApplicationComponent
 		$this->callClientFunction('Element.remove', $element);
 	}
 
+	public function addPostDataLoader($name)
+	{
+		$this->callClientFunction('Prado.CallbackRequest.addPostLoaders', $name);
+	}
+
 	/**
 	 * Update the element's innerHTML with new content.
 	 * @param TControl|string control element or element id

@@ -13,14 +13,14 @@ class ReplaceContentTestCase extends SeleniumTestCase
 		$this->type('content', 'something');
 
 		$this->click('btn_append');
-		$this->pause(500);
+		$this->pause(800);
 
 		$this->assertText('subpanel', 'Sub Panel something');
 		$this->assertText('panel1', 'Main Panel Sub Panel something');
 
 		$this->type('content', 'more');
 		$this->click('btn_prepend');
-		$this->pause(500);
+		$this->pause(800);
 
 		$this->assertText('subpanel', 'more Sub Panel something');
 		$this->assertText('panel1', 'Main Panel more Sub Panel something');
@@ -28,14 +28,14 @@ class ReplaceContentTestCase extends SeleniumTestCase
 
 		$this->type('content', 'prado');
 		$this->click('btn_before');
-		$this->pause(500);
+		$this->pause(800);
 
 		$this->assertText('subpanel', 'more Sub Panel something');
 		$this->assertText('panel1', 'Main Panel pradomore Sub Panel something');
 
 		$this->type('content', ' php ');
 		$this->click('btn_after');
-		$this->pause(500);
+		$this->pause(800);
 
 		$this->type('content', 'mauahahaha');
 		$this->click('btn_replace');

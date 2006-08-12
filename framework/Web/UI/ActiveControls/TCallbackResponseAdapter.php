@@ -86,7 +86,7 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
  *
  * The {@link setBoundary Boundary} property sets boundary identifier in the
  * HTML comment that forms the boundary. By default, the boundary identifier
- * is generated from the object instance ID.
+ * is generated using microtime.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  Sun Jun 18 08:02:21 EST 2006 $
@@ -101,11 +101,11 @@ class TCallbackResponseWriter extends TTextWriter
 	private $_boundary;
 
 	/**
-	 * Constructor. Generates boundary ID using object instance ID.
+	 * Constructor. Generates unique boundary ID using microtime.
 	 */
 	public function __construct()
 	{
-		$this->_boundary = sprintf('%x',crc32(time()));
+		$this->_boundary = sprintf('%x',crc32(microtime()));
 	}
 
 	/**

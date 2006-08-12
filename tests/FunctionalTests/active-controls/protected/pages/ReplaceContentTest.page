@@ -9,7 +9,16 @@ Main Panel
 	</com:TPanel>
 </com:TPanel>
 
+<com:TPanel ID="newPanel" Visible="false">
+	Time : <com:TButton Text=<%= time() %> />
+</com:TPanel>
+
+<div>
 <com:TTextBox ID="content" />
+<br />
+<com:TCheckBox ID="check1" Text="Replace using Controls" />
+</div>
+
 <com:TActiveButton id="btn_append" Text="Append to Sub Panel" OnCallback="appendContent"/>
 <com:TActiveButton id="btn_prepend" Text="Prepend to Sub Panel" OnCallback="prependContent" />
 <com:TActiveButton id="btn_before" Text="Insert Before Sub Panel" OnCallback="insertContentBefore"/>

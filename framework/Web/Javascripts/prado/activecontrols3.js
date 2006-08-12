@@ -15,6 +15,10 @@ Prado.WebUI.CallbackControl = Class.extend(Prado.WebUI.PostBackControl,
  * TActiveButton control.
  */
 Prado.WebUI.TActiveButton = Class.extend(Prado.WebUI.CallbackControl);
+/**
+ * TActiveLinkButton control.
+ */
+Prado.WebUI.TActiveLinkButton = Class.extend(Prado.WebUI.CallbackControl);
 
 /**
  * Active check box.
@@ -27,6 +31,12 @@ Prado.WebUI.TActiveCheckBox = Class.extend(Prado.WebUI.CallbackControl,
 		request.dispatch();
 	}
 });
+
+/**
+ * TActiveRadioButton control.
+ */
+Prado.WebUI.TActiveRadioButton = Class.extend(Prado.WebUI.TActiveCheckBox);
+
 
 /**
  * TActiveTextBox control, handles onchange event.
@@ -212,3 +222,4 @@ Prado.WebUI.ActiveListControl = Base.extend(
 });
 
 Prado.WebUI.TActiveDropDownList = Prado.WebUI.ActiveListControl;
+Prado.WebUI.TActiveListBox = Prado.WebUI.ActiveListControl;

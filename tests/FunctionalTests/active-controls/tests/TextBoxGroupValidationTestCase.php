@@ -16,7 +16,7 @@ class TextBoxGroupValidationTestCase extends SeleniumTestCase
 
 		$this->assertNotVisible('validator1');
 
-		$this->pause(500);
+		$this->pause(800);
 		$this->assertValue('City', 'City: Sydney Zip: 2000');
 	}
 }

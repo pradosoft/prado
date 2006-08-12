@@ -10,7 +10,7 @@ class CustomTemplateTestCase extends SeleniumTestCase
 
 		$this->type('foo', 'Foo Bar!');
 		$this->click('button2');
-		$this->pause(500);
+		$this->pause(800);
 
 		$this->assertVisible('ctl1_ThePanel');
 		$this->assertTextPresent('Client ID: ctl1_ThePanel');

@@ -1855,6 +1855,14 @@ requirements/messages.txt -text
 requirements/template-bg.html -text
 requirements/template-zh.html -text
 requirements/template.html -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveLinkButtonTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveLinkButtonTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveListBoxTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveListBoxTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveRadioButtonListTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveRadioButtonListTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveRadioButtonTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveRadioButtonTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/CustomTemplateComponent.php -text
 tests/FunctionalTests/active-controls/protected/pages/CustomTemplateComponent.tpl -text
 tests/FunctionalTests/active-controls/protected/pages/CustomTemplateControlTest.page -text
@@ -1863,6 +1871,10 @@ tests/FunctionalTests/active-controls/protected/pages/ReplaceContentTest.page -t
 tests/FunctionalTests/active-controls/protected/pages/ReplaceContentTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/TextBoxValidationCallback.page -text
 tests/FunctionalTests/active-controls/protected/pages/TextBoxValidationCallback.php -text
+tests/FunctionalTests/active-controls/tests/ActiveLinkButtonTestCase.php -text
+tests/FunctionalTests/active-controls/tests/ActiveListBoxTestCase.php -text
+tests/FunctionalTests/active-controls/tests/ActiveRadioButtonListTestCase.php -text
+tests/FunctionalTests/active-controls/tests/ActiveRadioButtonTestCase.php -text
 tests/FunctionalTests/active-controls/tests/CustomTemplateTestCase.php -text
 tests/FunctionalTests/active-controls/tests/ReplaceContentTestCase.php -text
 tests/FunctionalTests/active-controls/tests/TextBoxGroupValidationTestCase.php -text

@@ -120,6 +120,13 @@ Object.extend(Prado.CallbackRequest,
 	addPostLoaders : function(ids)
 	{
 		this.PostDataLoaders = this.PostDataLoaders.concat(ids);
+		list = [];
+		this.PostDataLoaders.each(function(id)
+		{
+			if(list.indexOf(id) < 0)
+				list.push(id);
+		});
+		this.PostDataLoaders = list;
 	},
 
 	/**
@@ -477,9 +484,13 @@ Prado.CallbackRequest.prototype =
 			{
 				$A(document.getElementsByName(name)).each(function(element)
 				{
-					var value = $F(element);
-					if(typeof(value) != "undefined")
-						data[name] = value;
+					//IE will try to get elements with ID == name as well.
+					if(element.type && element.name == name)
+					{
+						value = $F(element);
+						if(typeof(value) != "undefined")
+							data[name] = value;
+					}
 				})
 			})
 		}

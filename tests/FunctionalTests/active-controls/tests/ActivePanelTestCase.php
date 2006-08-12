@@ -8,7 +8,7 @@ class ActivePanelTestCase extends SeleniumTestCase
 		$this->verifyTextPresent("Active Panel replacement tests");
 		$this->assertTextNotPresent('Something lalala');
 		$this->click("div1");
-		$this->pause(500);
+		$this->pause(800);
 		$this->assertTextPresent("Something lalala");
 	}
 }

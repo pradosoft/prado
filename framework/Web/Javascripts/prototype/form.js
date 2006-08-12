@@ -7,17 +7,17 @@ var Field = {
   focus: function(element) {
     $(element).focus();
   },
-  
+
   present: function() {
     for (var i = 0; i < arguments.length; i++)
       if ($(arguments[i]).value == '') return false;
     return true;
   },
-  
+
   select: function(element) {
     $(element).select();
   },
-   
+
   activate: function(element) {
     element = $(element);
     element.focus();
@@ -32,16 +32,16 @@ var Form = {
   serialize: function(form) {
     var elements = Form.getElements($(form));
     var queryComponents = new Array();
-    
+
     for (var i = 0; i < elements.length; i++) {
       var queryComponent = Form.Element.serialize(elements[i]);
       if (queryComponent)
         queryComponents.push(queryComponent);
     }
-    
+
     return queryComponents.join('&');
   },
-  
+
   getElements: function(form) {
     form = $(form);
     var elements = new Array();
@@ -53,19 +53,19 @@ var Form = {
     }
     return elements;
   },
-  
+
   getInputs: function(form, typeName, name) {
     form = $(form);
     var inputs = form.getElementsByTagName('input');
-    
+
     if (!typeName && !name)
       return inputs;
-      
+
     var matchingInputs = new Array();
     for (var i = 0; i < inputs.length; i++) {
       var input = inputs[i];
       if ((typeName && input.type != typeName) ||
-          (name && input.name != name)) 
+          (name && input.name != name))
         continue;
       matchingInputs.push(input);
     }
@@ -111,25 +111,25 @@ Form.Element = {
     element = $(element);
     var method = element.tagName.toLowerCase();
     var parameter = Form.Element.Serializers[method](element);
-    
+
     if (parameter) {
       var key = encodeURIComponent(parameter[0]);
       if (key.length == 0) return;
-      
+
       if (parameter[1].constructor != Array)
         parameter[1] = [parameter[1]];
-      
+
       return parameter[1].map(function(value) {
         return key + '=' + encodeURIComponent(value);
       }).join('&');
     }
   },
-  
+
   getValue: function(element) {
     element = $(element);
     var method = element.tagName.toLowerCase();
     var parameter = Form.Element.Serializers[method](element);
-    
+
     if (parameter)
       return parameter[1];
   }
@@ -137,13 +137,15 @@ Form.Element = {
 
 Form.Element.Serializers = {
   input: function(element) {
+  	if(typeof(element.type) == "undefined")
+		return false;
     switch (element.type.toLowerCase()) {
       case 'submit':
       case 'hidden':
       case 'password':
       case 'text':
         return Form.Element.Serializers.textarea(element);
-      case 'checkbox':  
+      case 'checkbox':
       case 'radio':
         return Form.Element.Serializers.inputSelector(element);
     }
@@ -158,12 +160,12 @@ Form.Element.Serializers = {
   textarea: function(element) {
     return [element.name, element.value];
   },
-  
+
   select: function(element) {
-    return Form.Element.Serializers[element.type == 'select-one' ? 
+    return Form.Element.Serializers[element.type == 'select-one' ?
       'selectOne' : 'selectMany'](element);
   },
-  
+
   selectOne: function(element) {
     var value = '', opt, index = element.selectedIndex;
     if (index >= 0) {
@@ -172,7 +174,7 @@ Form.Element.Serializers = {
     }
     return [element.name, value];
   },
-  
+
   selectMany: function(element) {
     var value = [];
     for (var i = 0; i < element.length; i++) {
@@ -196,15 +198,15 @@ Abstract.TimedObserver.prototype = {
     this.frequency = frequency;
     this.element   = $(element);
     this.callback  = callback;
-    
+
     this.lastValue = this.getValue();
     this.registerCallback();
   },
-  
+
   registerCallback: function() {
     setInterval(this.onTimerEvent.bind(this), this.frequency * 1000);
   },
-  
+
   onTimerEvent: function() {
     var value = this.getValue();
     if (this.lastValue != value) {
@@ -235,14 +237,14 @@ Abstract.EventObserver.prototype = {
   initialize: function(element, callback) {
     this.element  = $(element);
     this.callback = callback;
-    
+
     this.lastValue = this.getValue();
     if (this.element.tagName.toLowerCase() == 'form')
       this.registerFormCallbacks();
     else
       this.registerCallback(this.element);
   },
-  
+
   onElementEvent: function() {
     var value = this.getValue();
     if (this.lastValue != value) {
@@ -250,17 +252,17 @@ Abstract.EventObserver.prototype = {
       this.lastValue = value;
     }
   },
-  
+
   registerFormCallbacks: function() {
     var elements = Form.getElements(this.element);
     for (var i = 0; i < elements.length; i++)
       this.registerCallback(elements[i]);
   },
-  
+
   registerCallback: function(element) {
     if (element.type) {
       switch (element.type.toLowerCase()) {
-        case 'checkbox':  
+        case 'checkbox':
         case 'radio':
           Event.observe(element, 'click', this.onElementEvent.bind(this));
           break;
@@ -272,7 +274,7 @@ Abstract.EventObserver.prototype = {
           Event.observe(element, 'change', this.onElementEvent.bind(this));
           break;
       }
-    }    
+    }
   }
 }
 

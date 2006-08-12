@@ -1,0 +1,38 @@
+<com:TForm ID="form1">
+	<h1>Active Radio Button Test</h1>
+	<com:TActiveRadioButton ID="radio1"
+			GroupName="group1" Text="Radio Button 1"
+			OnCallback="radiobutton_requested"/>
+	<com:TActiveRadioButton ID="radio2"
+			GroupName="group1" Text="Radio Button 2"
+			OnCallback="radiobutton_requested">
+		<prop:ActiveControl.ClientSide OnLoading="$('status').show()" OnComplete="$('status').hide()" />
+	</com:TActiveRadioButton>
+	<com:TActiveRadioButton ID="radio3"
+			Text="Radio Button 3"
+			OnCallback="radiobutton_requested"	/>
+	<div style="margin:1em; padding:0.5em; text-align:center; border:1px solid #ccc;">
+		<com:TActiveLabel ID="label1" Text="Label 1" />
+	</div>
+	<div style="margin:1em; padding: 1em; text-align: center">
+		<com:TActiveButton id="change_text1"
+			OnClick="change_radio1_text" Text="Change Radio Button 1 Text"/>
+		<com:TActiveButton id="change_radio1"
+			OnClick="change_radio1_checked" Text="Check Radio Button 1"/>
+
+		<com:TActiveButton id="change_text2"
+			OnClick="change_radio2_text" Text="Change Radio Button 2 Text"/>
+		<com:TActiveButton id="change_radio2"
+			OnClick="change_radio2_checked" Text="Check Radio Button 2"/>
+
+	</div>
+
+	<div id="status" style="margin:1em; padding:0.5em;
+		text-align:center;
+		background-color:#900;
+		color:white; display: none;
+		position: absolute; right: 0; top: 0">
+		Loading...
+	</div>
+	<com:TJavascriptLogger />
+</com:TForm>
