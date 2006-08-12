@@ -112,9 +112,9 @@ Prado.WebUI.TAutoComplete = Class.extend(Prado.WebUI.TAutoComplete,
 });
 
 /**
- * Callback Timer class.
+ * Period Callback class.
  */
-Prado.WebUI.TCallbackTimer = Base.extend(
+Prado.WebUI.TPeriodicCallback = Base.extend(
 {
 	count : 0,
 	timeout : 0,
@@ -128,7 +128,7 @@ Prado.WebUI.TCallbackTimer = Base.extend(
 		}, options || {})
 
 		this.onComplete = this.options.onComplete;
-		Prado.WebUI.TCallbackTimer.register(this);
+		Prado.WebUI.TPeriodicCallback.register(this);
 	},
 
 	startTimer : function()
@@ -223,3 +223,117 @@ Prado.WebUI.ActiveListControl = Base.extend(
 
 Prado.WebUI.TActiveDropDownList = Prado.WebUI.ActiveListControl;
 Prado.WebUI.TActiveListBox = Prado.WebUI.ActiveListControl;
+
+/**
+ * Observe event of a particular control to trigger a callback request.
+ */
+Prado.WebUI.TEventTriggeredCallback = Base.extend(
+{
+	constructor : function(options)
+	{
+		this.options = options;
+		element = $(options['ControlID']);
+		if(element)
+			Event.observe(element, this.getEventName(element), this.doCallback.bind(this));
+	},
+
+	getEventName : function(element)
+	{
+		name = this.options.EventName;
+   		if(typeof(name) == "undefined" && element.type)
+		{
+      		switch (element.type.toLowerCase())
+			{
+          		case 'password':
+		        case 'text':
+		        case 'textarea':
+		        case 'select-one':
+		        case 'select-multiple':
+          			return 'change';
+      		}
+		}
+		return typeof(name) == "undefined"  || name == "undefined" ? 'click' : name;
+    },
+
+	doCallback : function(event)
+	{
+		request = new Prado.CallbackRequest(this.options.ID, this.options);
+		request.dispatch();
+		if(this.options.StopEvent == true)
+			Event.stop(event);
+	}
+});
+
+/**
+ * Observe changes to a property of a particular control to trigger a callback.
+ */
+Prado.WebUI.TValueTriggeredCallback = Base.extend(
+{
+	count : 1,
+
+	observing : true,
+
+	constructor : function(options)
+	{
+		this.options = options;
+		this.options.PropertyName = this.options.PropertyName || 'value';
+		element = $(options['ControlID']);
+		this.value = element ? element[this.options.PropertyName] : undefined;
+		Prado.WebUI.TValueTriggeredCallback.register(this);
+		this.startObserving();
+	},
+
+	stopObserving : function()
+	{
+		clearTimeout(this.timer);
+		this.observing = false;
+	},
+
+	startObserving : function()
+	{
+		this.timer = setTimeout(this.checkChanges.bind(this), this.options.Interval*1000);
+	},
+
+	checkChanges : function()
+	{
+		element = $(this.options.ControlID);
+		if(element)
+		{
+			value = element[this.options.PropertyName];
+			if(this.value != value)
+			{
+				this.doCallback(this.value, value);
+				this.value = value;
+				this.count=1;
+			}
+			else
+				this.count = this.count + this.options.Decay;
+			if(this.observing)
+				this.time = setTimeout(this.checkChanges.bind(this),
+					parseInt(this.options.Interval*1000*this.count));
+		}
+	},
+
+	doCallback : function(oldValue, newValue)
+	{
+		request = new Prado.CallbackRequest(this.options.ID, this.options);
+		param = {'OldValue' : oldValue, 'NewValue' : newValue};
+		request.setParameter(param);
+		request.dispatch();
+	}
+},
+//class methods
+{
+	timers : {},
+
+	register : function(timer)
+	{
+		this.timers[timer.options.ID] = timer;
+	},
+
+	stop : function(id)
+	{
+		if(this.timers[id])
+			this.timers[id].stopObserving();
+	}
+});

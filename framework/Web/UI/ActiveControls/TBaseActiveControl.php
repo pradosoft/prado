@@ -328,8 +328,10 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 			$options = array_merge($this->getClientSideOptions(),$options);
 		else
 			$options = $this->getClientSideOptions();
+
 		//remove true as default to save bytes
-		$options['CausesValidation']= $options['CausesValidation'] ? '' : false;
+		if($options['CausesValidation']===true)
+			$options['CausesValidation']='';
 		$cs->registerCallbackControl($class, $options);
 	}
 

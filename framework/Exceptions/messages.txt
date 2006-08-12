@@ -341,3 +341,5 @@ xmltransform_xslextension_required		= TXmlTransform requires the PHP's XSL exten
 xmltransform_transformpath_invalid		= TXmlTransform.TransformPath '{0}' is invalid.
 xmltransform_documentpath_invalid		= TXmlTransform.DocumentPath '{0}' is invalid.
 xmltransform_transform_required			= Either TransformContent or TransformPath property must be set for TXmlTransform.
+
+ttriggeredcallback_invalid_controlid	= ControlID property for '{0}' must not be empty.

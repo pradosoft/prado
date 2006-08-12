@@ -1,6 +1,6 @@
 <?php
 /**
- * TCallbackTimer class file.
+ * TPeriodicCallback class file.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link http://www.pradosoft.com/
@@ -16,13 +16,13 @@
 Prado::using('System.Web.UI.ActiveControls.TCallback');
 
 /**
- * TCallbackTimer class.
- * 
- * TCallbackTimer sends callback request every {@link setInterval Interval} seconds.
+ * TPeriodicCallback class.
+ *
+ * TPeriodicCallback sends callback request every {@link setInterval Interval} seconds.
  * Upon each callback request, the {@link onCallback OnCallback} event is raised.
- * 
+ *
  * The intervals between each request can be increased when the browser is inactive
- * by changing the {@link setDecayRate DecayRate} to a positive number. The 
+ * by changing the {@link setDecayRate DecayRate} to a positive number. The
  * default decay rate, {@link setDecayType DecayType}, is linear and can be changed to
  * 'Exponential', 'Linear', 'Quadratic' or 'Cubic'.
  *
@@ -31,7 +31,7 @@ Prado::using('System.Web.UI.ActiveControls.TCallback');
  * @package System.Web.UI.ActiveControls
  * @since 3.0
  */
-class TCallbackTimer extends TCallback
+class TPeriodicCallback extends TCallback
 {
 	/**
 	 * @return float seconds between callback requests. Default is 1 second.
@@ -40,7 +40,7 @@ class TCallbackTimer extends TCallback
 	{
 		return $this->getViewState('Interval', 1);
 	}
-	
+
 	/**
 	 * @param float seconds between callback requests, must be a positive number, default is 1 second.
 	 */
@@ -51,7 +51,7 @@ class TCallbackTimer extends TCallback
 			throw new TConfigurationException('callback_interval_be_positive', $this->getID());
 		$this->setViewState('Interval', $interval, 1);
 	}
-	
+
 	/**
 	 * Gets the decay rate between callbacks. Default is 0;
 	 * @return float decay rate between callbacks.
@@ -60,7 +60,7 @@ class TCallbackTimer extends TCallback
 	{
 		return $this->getViewState('Decay', 0);
 	}
-	
+
 	/**
 	 * Sets the decay rate between callback. Default is 0;
 	 * @param float decay rate between callbacks.
@@ -72,13 +72,13 @@ class TCallbackTimer extends TCallback
 			throw new TConfigurationException('callback_decay_be_not_negative', $this->getID());
 		$this->setViewState('Decay', $decay);
 	}
-	
+
 	/**
 	 * @param string Decay type, allows 'Exponential', 'Linear', 'Quadratic' and 'Cubic'. Default is 'Linear'.
 	 */
 	public function setDecayType($value)
 	{
-		$this->setViewState('DecayType', TPropertyValue::ensureEnum($value, 
+		$this->setViewState('DecayType', TPropertyValue::ensureEnum($value,
 			'Exponential', 'Linear', 'Quadratic', 'Cubic'), 'Linear');
 	}
 
@@ -89,27 +89,27 @@ class TCallbackTimer extends TCallback
 	{
 		return $this->getViewState('DecayType', 'Linear');
 	}
-	
+
 	/**
 	 * Registers the javascript code to start the timer.
 	 */
 	public function startTimer()
 	{
 		$id = $this->getClientID();
-		$code = "Prado.WebUI.TCallbackTimer.start('{$id}');";
+		$code = "Prado.WebUI.TPeriodicCallback.start('{$id}');";
 		$cs = $this->getPage()->getClientScript();
 		$cs->registerEndScript("{$id}:start", $code);
 	}
-	
+
 	/**
 	 * Registers the javascript code to stop the timer.
 	 */
 	public function stopTimer()
 	{
 		$id = $this->getClientID();
-		$code = "Prado.WebUI.TCallbackTimer.stop('{$id}');";
+		$code = "Prado.WebUI.TPeriodicCallback.stop('{$id}');";
 		$cs = $this->getPage()->getClientScript();
-		$cs->registerEndScript("{$id}:stop", $code);		
+		$cs->registerEndScript("{$id}:stop", $code);
 	}
 
 	/**
@@ -132,15 +132,15 @@ class TCallbackTimer extends TCallback
 	{
 		parent::render($writer);
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getTimerOptions());		
+			$this->getClientClassName(), $this->getTimerOptions());
 	}
 
 	/**
-	 * @return string corresponding javascript class name for this TActiveButton.
+	 * @return string corresponding javascript class name for TPeriodicCallback.
 	 */
 	protected function getClientClassName()
 	{
-		return 'Prado.WebUI.TCallbackTimer';
+		return 'Prado.WebUI.TPeriodicCallback';
 	}
 }
 

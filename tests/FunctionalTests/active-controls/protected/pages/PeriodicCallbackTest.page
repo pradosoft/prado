@@ -1,18 +1,18 @@
 <com:TForm ID="form1">
-	<h1>TCallbackTimer + ViewState Tests</h1>
+	<h1>TPeriodicCallback + ViewState Tests</h1>
 	<com:TActiveButton id="button1" Text="Start Timer" OnCallback="start_timer" />
 	<com:TActiveButton Text="Stop Timer" OnCallback="stop_timer" />
 	<div style="margin:1em; padding:1em; border:1px solid #ccc;">
 		<com:TActiveLabel ID="label1" Text="ViewState Counter : " />
 	</div>
-	<com:TCallbackTimer ID="timer1" Interval="0.1" OnCallback="tick">
-		<prop:ActiveControl.ClientSide 
-			OnLoading="$('status').show()" 
+	<com:TPeriodicCallback ID="timer1" Interval="0.1" OnCallback="tick">
+		<prop:ActiveControl.ClientSide
+			OnLoading="$('status').show()"
 			OnComplete="$('status').hide()" />
-	</com:TCallbackTimer>
-	<div id="status" style="margin:1em; padding:0.5em; 
-		text-align:center; 
-		background-color:#900; 
+	</com:TPeriodicCallback>
+	<div id="status" style="margin:1em; padding:0.5em;
+		text-align:center;
+		background-color:#900;
 		color:white; display: none;
 		position: absolute; right: 0; top: 0">
 		Loading...

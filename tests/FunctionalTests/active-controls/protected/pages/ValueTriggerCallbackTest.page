@@ -1,0 +1,14 @@
+<com:TForm>
+<h1>Value Trigger Callback Test</h1>
+
+<com:TTextBox ID="text1" />
+
+<com:TValueTriggeredCallback
+	ControlID="text1"
+	OnCallback="text1_changed" />
+
+<com:TActiveLabel ID="label1" Text="Label 1" />
+
+<com:TJavascriptLogger />
+
+</com:TForm>

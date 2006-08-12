@@ -1,0 +1,31 @@
+<com:TForm ID="form1">
+
+	<h1>Event Triggered Callback Test</h1>
+
+	<com:TTextBox ID="text1" Text="Focus me" />
+
+	<com:TPanel ID="panel1" style="padding: 2em; border:1px solid #ccc; background-color: #ffc;">
+		Mouse over this panel
+	</com:TPanel>
+
+	<input id="button1" type="button" value="Click me" />
+
+	<com:TEventTriggeredCallback
+		ControlID="text1"
+		EventName="focus"
+		OnCallback="text1_focused" />
+
+	<com:TEventTriggeredCallback
+		ControlID="panel1"
+		EventName="mouseover"
+		OnCallback="panel1_onmouseover" />
+
+	<com:TEventTriggeredCallback
+		ControlID="button1"
+		OnCallback="button1_clicked" />
+
+	<div style="padding: 2em; border:1px solid #ccc; margin-top:2em">
+		<com:TActiveLabel ID="label1" Text="Label 1" />
+	</div>
+	<com:TJavascriptLogger />
+</com:TForm>
