@@ -1,6 +1,7 @@
 Version 3.0.4 September 3, 2006
 ===============================
 BUG: Fixed a bug that would prevent from using <prop:> tag in skins (Qiang)
+BUG: Fixed a typo in TControl::setCustomData() (Qiang)
 ENH: TListControl.SelectedValues and SelectedIndices can now be set before databinding (Qiang)
 
 Version 3.0.3 August 6, 2006

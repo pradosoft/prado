@@ -470,7 +470,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 */
 	public function setCustomData($value)
 	{
-		$this->getViewState('CustomData',$value,null);
+		$this->setViewState('CustomData',$value,null);
 	}
 
 	/**
