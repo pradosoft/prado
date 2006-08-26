@@ -940,7 +940,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 		{
 			foreach($this->_rf[self::RF_CONTROLS] as $control)
 			{
-				if($control instanceof $type)
+				if(is_object($control) && get_class($control)===$type)
 					$controls[]=$control;
 				if(($control instanceof TControl) && $control->getHasControls())
 					$controls=array_merge($controls,$control->findControlsByType($type));
