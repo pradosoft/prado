@@ -59,6 +59,21 @@ $requirements = array(
 		class_exists("DOMDocument",false),
 		'DOM extension check',
 		'DOM extension required'),
+    array(
+        true,
+        extension_loaded("SPL"),
+        'SPL extension check',
+        'SPL extension required'),
+    array(
+        true,
+        extension_loaded("CType"),
+        'CType extension check',
+        'CType extension required'),
+    array(
+        true,
+        extension_loaded("pcre"),
+        'PCRE extension check',
+        'PCRE extension required'),
 	array(
 		false,
 		function_exists("iconv"),

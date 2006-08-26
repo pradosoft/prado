@@ -6,7 +6,7 @@ ENH: Ticket#336 - Speed up TSqliteCache with LIMIT SQL clause (Qiang)
 ENH: TListControl.SelectedValues and SelectedIndices can now be set before databinding (Qiang)
 ENH: Upgrade Scriptaculous javascript library to 1.6.2 (Wei)
 CHG: Unify all client-side javascript event handler syntax. (Wei)
-
+CHG: Added more conditions in the requirement checker (Qiang)
 
 Version 3.0.3 August 6, 2006
 ============================
