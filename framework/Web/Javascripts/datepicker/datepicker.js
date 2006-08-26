@@ -10,41 +10,41 @@ Object.extend(Prado.WebUI.TDatePicker,
 		var year=now.getFullYear();
 		var month=now.getMonth();
 		var day=1;
-		
+
 		var month_list = this.getMonthListControl(control);
 	 	var day_list = this.getDayListControl(control);
 	 	var year_list = this.getYearListControl(control);
-		
+
 		var day = day_list ? $F(day_list) : 1;
 		var month = month_list ? $F(month_list) : now.getMonth();
 		var year = year_list ? $F(year_list) : now.getFullYear();
-		
+
 		return new Date(year,month,day, 0, 0, 0);
 	},
-	
+
 	getYearListControl : function(control)
 	{
 		return $(control.id+"_year");
 	},
-	
+
 	getMonthListControl : function(control)
 	{
 		return $(control.id+"_month");
 	},
-	
+
 	getDayListControl : function(control)
 	{
 		return $(control.id+"_day");
 	}
 });
 
-Prado.WebUI.TDatePicker.prototype = 
+Prado.WebUI.TDatePicker.prototype =
 {
 	MonthNames : [	"January",		"February",		"March",	"April",
 		"May",			"June",			"July",		"August",
 		"September",	"October",		"November",	"December"
 	],
-	AbbreviatedMonthNames : ["Jan", "Feb", "Mar", "Apr", "May", 
+	AbbreviatedMonthNames : ["Jan", "Feb", "Mar", "Apr", "May",
 						"Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
 
 	ShortWeekDayNames : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
@@ -52,20 +52,20 @@ Prado.WebUI.TDatePicker.prototype =
 	Format : "yyyy-MM-dd",
 
 	FirstDayOfWeek : 1, // 0 for sunday
-	
+
 	ClassName : "TDatePicker",
 
 	FromYear : 2000, UpToYear: 2015,
-	
+
 	initialize : function(options)
 	{
 		this.options = options || [];
-		this.control = $(options.ID);	
+		this.control = $(options.ID);
 		this.dateSlot = new Array(42);
 		this.weekSlot = new Array(6);
 		this.minimalDaysInFirstWeek	= 4;
 		this.selectedDate = this.newDate();
-		
+
 		//which element to trigger to show the calendar
 		if(this.options.Trigger)
 		{
@@ -77,45 +77,45 @@ Prado.WebUI.TDatePicker.prototype =
 			this.trigger  = this.control;
 			var triggerEvent = this.options.TriggerEvent || "focus";
 		}
-		
+
 		Object.extend(this,options);
-		
+
 		Event.observe(this.trigger, triggerEvent, this.show.bindEvent(this));
-	
+
 	},
 
 	create : function()
 	{
 		if(typeof(this._calDiv) != "undefined")
 			return;
-			
+
 		var div;
 		var table;
 		var tbody;
 		var tr;
 		var td;
-	
+
 		// Create the top-level div element
 		this._calDiv = document.createElement("div");
 		this._calDiv.className = this.ClassName;
-		this._calDiv.style.display = "none";		
+		this._calDiv.style.display = "none";
 		this._calDiv.style.position = "absolute"
-		
+
 		// header div
 		div = document.createElement("div");
 		div.className = "calendarHeader";
 		this._calDiv.appendChild(div);
-		
+
 		table = document.createElement("table");
 		table.style.cellSpacing = 0;
 		div.appendChild(table);
-		
+
 		tbody = document.createElement("tbody");
 		table.appendChild(tbody);
-		
+
 		tr = document.createElement("tr");
 		tbody.appendChild(tr);
-		
+
 		// Previous Month Button
 		td = document.createElement("td");
 		var previousMonth = document.createElement("input");
@@ -124,11 +124,11 @@ Prado.WebUI.TDatePicker.prototype =
 		previousMonth.value = "<<";
 		td.appendChild(previousMonth);
 		tr.appendChild(td);
-		
-		
-		
+
+
+
 		//
-		// Create the month drop down 
+		// Create the month drop down
 		//
 		td = document.createElement("td");
 		tr.appendChild(td);
@@ -144,9 +144,9 @@ Prado.WebUI.TDatePicker.prototype =
 	        this._monthSelect.appendChild(opt);
 	    }
 		td.appendChild(this._monthSelect);
-		
 
-		// 
+
+		//
 		// Create the year drop down
 		//
 		td = document.createElement("td");
@@ -163,8 +163,8 @@ Prado.WebUI.TDatePicker.prototype =
 			this._yearSelect.appendChild(opt);
 		}
 		td.appendChild(this._yearSelect);
-		
-		
+
+
 		td = document.createElement("td");
 		var nextMonth = document.createElement("input");
 		nextMonth.className = "nextMonthButton button";
@@ -172,26 +172,26 @@ Prado.WebUI.TDatePicker.prototype =
 		nextMonth.value = ">>";
 		td.appendChild(nextMonth);
 		tr.appendChild(td);
-		
+
 		// Calendar body
 		div = document.createElement("div");
 		div.className = "calendarBody";
 		this._calDiv.appendChild(div);
 		var calendarBody = div;
-		
-		// Create the inside of calendar body	
-		
+
+		// Create the inside of calendar body
+
 		var text;
 		table = document.createElement("table");
 		table.align="center";
 		table.className = "grid";
-	
+
 	    div.appendChild(table);
 		var thead = document.createElement("thead");
 		table.appendChild(thead);
 		tr = document.createElement("tr");
 		thead.appendChild(tr);
-		
+
 		for(i=0; i < 7; ++i) {
 			td = document.createElement("th");
 			text = document.createTextNode(this.ShortWeekDayNames[(i+this.FirstDayOfWeek)%7]);
@@ -199,11 +199,11 @@ Prado.WebUI.TDatePicker.prototype =
 			td.className = "weekDayHead";
 			tr.appendChild(td);
 		}
-		
+
 		// Date grid
 		tbody = document.createElement("tbody");
 		table.appendChild(tbody);
-		
+
 		for(week=0; week<6; ++week) {
 			tr = document.createElement("tr");
 			tbody.appendChild(tr);
@@ -220,13 +220,13 @@ Prado.WebUI.TDatePicker.prototype =
 				tmp.value = -1;
 				tmp.data = text;
 				this.dateSlot[(week*7)+day] = tmp;
-				
+
 				Event.observe(td, "mouseover", this.hover.bindEvent(this));
 				Event.observe(td, "mouseout", this.hover.bindEvent(this));
-				
+
 			}
 		}
-		
+
 		// Calendar Footer
 		div = document.createElement("div");
 		div.className = "calendarFooter";
@@ -251,18 +251,18 @@ Prado.WebUI.TDatePicker.prototype =
 		}
 
 		this.control.parentNode.appendChild(this._calDiv);
-		
+
 		this.update();
 		this.updateHeader();
-		
+
 		this.ieHack(true);
 
-		// IE55+ extension		
+		// IE55+ extension
 		previousMonth.hideFocus = true;
 		nextMonth.hideFocus = true;
 		todayButton.hideFocus = true;
 		// end IE55+ extension
-		
+
 		// hook up events
 		Event.observe(previousMonth, "click", this.prevMonth.bindEvent(this));
 		Event.observe(nextMonth, "click", this.nextMonth.bindEvent(this));
@@ -272,18 +272,18 @@ Prado.WebUI.TDatePicker.prototype =
 		Event.observe(this._yearSelect, "change", this.yearSelect.bindEvent(this));
 
 		// ie6 extension
-		Event.observe(this._calDiv, "mousewheel", this.mouseWheelChange.bindEvent(this));		
-		
+		Event.observe(this._calDiv, "mousewheel", this.mouseWheelChange.bindEvent(this));
+
 		Event.observe(calendarBody, "click", this.selectDate.bindEvent(this));
-		
+
 		Prado.Element.focus(this.control);
-				
+
 	},
-	
-	ieHack : function(cleanup) 
+
+	ieHack : function(cleanup)
 	{
 		// IE hack
-		if(this.iePopUp) 
+		if(this.iePopUp)
 		{
 			this.iePopUp.style.display = "block";
 			this.iePopUp.style.top = (this._calDiv.offsetTop -1 ) + "px";
@@ -299,7 +299,7 @@ Prado.WebUI.TDatePicker.prototype =
 		if(!this.showing) return;
 		if (!ev) ev = document.parentWindow.event;
 		var kc = ev.keyCode != null ? ev.keyCode : ev.charCode;
-		
+
 		if(kc == Event.KEY_RETURN || kc == Event.KEY_SPACEBAR || kc == Event.KEY_TAB)
 		{
 			this.setSelectedDate(this.selectedDate);
@@ -310,8 +310,8 @@ Prado.WebUI.TDatePicker.prototype =
 		{
 			Event.stop(ev); this.hide();
 		}
-				
-		var getDaysPerMonth = function (nMonth, nYear) 
+
+		var getDaysPerMonth = function (nMonth, nYear)
 		{
 			nMonth = (nMonth + 12) % 12;
 	        var days= [31,28,31,30,31,30,31,31,30,31,30,31];
@@ -355,43 +355,43 @@ Prado.WebUI.TDatePicker.prototype =
 			else
 				d -= 604800000; // -7 days
 		}
-		else if (kc == Event.KEY_DOWN) 
+		else if (kc == Event.KEY_DOWN)
 		{
 			if(ev.ctrlKey || ev.shiftKey) // +1 year
 			{
 				current.setDate( Math.min(current.getDate(), getDaysPerMonth(current.getMonth(),current.getFullYear() + 1)) ); // no need to catch dec -> jan for the year
 				d = current.setFullYear( current.getFullYear() + 1 );
 			}
-			else 
+			else
 				d += 7 * 24 * 61 * 60 * 1000; // +7 days
 		}
 		this.setSelectedDate(d);
-		Event.stop(ev);	
+		Event.stop(ev);
 	},
-	
+
 	selectDate : function(ev)
 	{
 		var el = Event.element(ev);
 		while (el.nodeType != 1)
 			el = el.parentNode;
-		
+
 		while (el != null && el.tagName && el.tagName.toLowerCase() != "td")
 			el = el.parentNode;
-			
+
 		// if no td found, return
 		if (el == null || el.tagName == null || el.tagName.toLowerCase() != "td")
 			return;
-			
+
 		var d = this.newDate(this.selectedDate);
 		var n = Number(el.firstChild.data);
 		if (isNaN(n) || n <= 0 || n == null)
 			return;
-					
+
 		d.setDate(n);
 		this.setSelectedDate(d);
 		this.hide();
 	},
-	
+
 	selectToday : function()
 	{
 		if(this.selectedDate.toISODate() == this.newDate().toISODate())
@@ -399,36 +399,36 @@ Prado.WebUI.TDatePicker.prototype =
 
 		this.setSelectedDate(this.newDate());
 	},
-	
+
 	clearSelection : function()
 	{
 		this.setSelectedDate(this.newDate());
 		this.hide();
 	},
-	
+
 	monthSelect : function(ev)
 	{
 		this.setMonth(Form.Element.getValue(Event.element(ev)));
 	},
-	
+
 	yearSelect : function(ev)
 	{
 		this.setYear(Form.Element.getValue(Event.element(ev)));
 	},
-	
+
 	// ie6 extension
-	mouseWheelChange : function (e) 
+	mouseWheelChange : function (e)
 	{
 		if (e == null) e = document.parentWindow.event;
 		var n = - e.wheelDelta / 120;
 		var d = this.newDate(this.selectedDate);
 		var m = d.getMonth() + n;
 		this.setMonth(m);
-			
+
 		return false;
 	},
 
-	onChange : function() 
+	onChange : function()
 	{
 		if(this.options.InputMode == "TextBox")
 		{
@@ -459,7 +459,7 @@ Prado.WebUI.TDatePicker.prototype =
 			Event.fireEvent(day || month || year, "change");
 		}
 	},
-	
+
 	formatDate : function()
 	{
 		return this.selectedDate ? this.selectedDate.SimpleFormat(this.Format,this) : '';
@@ -474,52 +474,52 @@ Prado.WebUI.TDatePicker.prototype =
 		return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0,0,0);
 	},
 
-	setSelectedDate : function(date) 
+	setSelectedDate : function(date)
 	{
 		if (date == null)
 			return;
 		this.selectedDate = this.newDate(date);
-	
+
 		this.updateHeader();
 		this.update();
 		if (typeof(this.onChange) == "function")
-			this.onChange();
+			this.onChange(this, date);
 	},
 
-	getElement : function() 
+	getElement : function()
 	{
 		return this._calDiv;
 	},
 
-	getSelectedDate : function () 
+	getSelectedDate : function ()
 	{
 		return this.selectedDate == null ? null : this.newDate(this.selectedDate);
 	},
-	
-	setYear : function(year) 
+
+	setYear : function(year)
 	{
 		var d = this.newDate(this.selectedDate);
 		d.setFullYear(year);
 		this.setSelectedDate(d);
 	},
 
-	setMonth : function (month) 
+	setMonth : function (month)
 	{
 		var d = this.newDate(this.selectedDate);
 		d.setMonth(month);
 		this.setSelectedDate(d);
 	},
 
-	nextMonth : function () 
+	nextMonth : function ()
 	{
 		this.setMonth(this.selectedDate.getMonth()+1);
 	},
 
-	prevMonth : function () 
+	prevMonth : function ()
 	{
 		this.setMonth(this.selectedDate.getMonth()-1);
 	},
-	
+
 	getDatePickerOffsetHeight : function()
 	{
 		if(this.options.InputMode == "TextBox")
@@ -529,27 +529,27 @@ Prado.WebUI.TDatePicker.prototype =
 		if(control) return control.offsetHeight;
 
 		var control = Prado.WebUI.TDatePicker.getMonthListControl(this.control);
-		if(control) return control.offsetHeight;		
+		if(control) return control.offsetHeight;
 
 		var control = Prado.WebUI.TDatePicker.getYearListControl(this.control);
-		if(control) return control.offsetHeight;	
+		if(control) return control.offsetHeight;
 		return 0;
 	},
-	
-	show : function() 
+
+	show : function()
 	{
 		this.create();
-			
+
 		if(!this.showing)
 		{
 			var pos = Position.positionedOffset(this.control);
-						
+
 			pos[1] += this.getDatePickerOffsetHeight();
-			
+
 			this._calDiv.style.display = "block";
 			this._calDiv.style.top = (pos[1]-1) + "px";
 			this._calDiv.style.left = pos[0] + "px";
-			
+
 			this.ieHack(false);
 			this.documentClickEvent = this.hideOnClick.bindEvent(this);
 			this.documentKeyDownEvent = this.keyPressed.bindEvent(this);
@@ -560,7 +560,7 @@ Prado.WebUI.TDatePicker.prototype =
 				this.selectedDate = date;
 				this.setSelectedDate(date);
 			}
-			Event.observe(document,"keydown", this.documentKeyDownEvent); 
+			Event.observe(document,"keydown", this.documentKeyDownEvent);
 			this.showing = true;
 		}
 	},
@@ -572,7 +572,7 @@ Prado.WebUI.TDatePicker.prototype =
 		else
 			return Prado.WebUI.TDatePicker.getDropDownDate(this.control);
 	},
-	
+
 	//hide the calendar when clicked outside any calendar
 	hideOnClick : function(ev)
 	{
@@ -585,12 +585,12 @@ Prado.WebUI.TDatePicker.prototype =
 			within = within || el == this.trigger;
 			within = within || el == this.control;
 			if(within) break;
-			el = el.parentNode;			
+			el = el.parentNode;
 		}
 		while(el);
 		if(!within) this.hide();
 	},
-	
+
 
 	hide : function()
 	{
@@ -599,28 +599,28 @@ Prado.WebUI.TDatePicker.prototype =
 			this._calDiv.style.display = "none";
 			if(this.iePopUp)
 				this.iePopUp.style.display = "none";
-			this.showing = false;	
-			Event.stopObserving(document.body, "click", this.documentClickEvent);	
-			Event.stopObserving(document,"keydown", this.documentKeyDownEvent); 
-		}	
+			this.showing = false;
+			Event.stopObserving(document.body, "click", this.documentClickEvent);
+			Event.stopObserving(document,"keydown", this.documentKeyDownEvent);
+		}
 	},
-	
-	update : function() 
+
+	update : function()
 	{
 		// Calculate the number of days in the month for the selected date
 		var date = this.selectedDate;
 		var today = (this.newDate()).toISODate();
-		
+
 		var selected = date.toISODate();
 		var d1 = new Date(date.getFullYear(), date.getMonth(), 1);
 		var d2 = new Date(date.getFullYear(), date.getMonth()+1, 1);
 		var monthLength = Math.round((d2 - d1) / (24 * 60 * 60 * 1000));
-		
+
 		// Find out the weekDay index for the first of this month
 		var firstIndex = (d1.getDay() - this.FirstDayOfWeek) % 7 ;
 	    if (firstIndex < 0)
 	    	firstIndex += 7;
-		
+
 		var index = 0;
 		while (index < firstIndex) {
 			this.dateSlot[index].value = -1;
@@ -628,7 +628,7 @@ Prado.WebUI.TDatePicker.prototype =
 			this.dateSlot[index].data.parentNode.className = "empty";
 			index++;
 		}
-	        
+
 	    for (i = 1; i <= monthLength; i++, index++) {
 			var slot = this.dateSlot[index];
 			var slotNode = slot.data.parentNode;
@@ -645,18 +645,18 @@ Prado.WebUI.TDatePicker.prototype =
 			}
 			d1 = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate()+1);
 		}
-		
+
 		var lastDateIndex = index;
-	        
+
 	    while(index < 42) {
 			this.dateSlot[index].value = -1;
 			this.dateSlot[index].data.data = String.fromCharCode(160);
 			this.dateSlot[index].data.parentNode.className = "empty";
 			++index;
 		}
-		
+
 	},
-	
+
 	hover : function(ev)
 	{
 		if(Event.element(ev).tagName)
@@ -667,7 +667,7 @@ Prado.WebUI.TDatePicker.prototype =
 				Event.element(ev).removeClassName("hover");
 		}
 	},
-	
+
 	updateHeader : function () {
 
 		var options = this._monthSelect.options;
@@ -678,7 +678,7 @@ Prado.WebUI.TDatePicker.prototype =
 				options[i].selected = true;
 			}
 		}
-		
+
 		options = this._yearSelect.options;
 		var year = this.selectedDate.getFullYear();
 		for(var i=0; i < options.length; ++i) {
@@ -687,8 +687,8 @@ Prado.WebUI.TDatePicker.prototype =
 				options[i].selected = true;
 			}
 		}
-	
+
 	}
-	
-	
+
+
 };

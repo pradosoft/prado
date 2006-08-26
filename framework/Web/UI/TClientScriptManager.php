@@ -477,4 +477,81 @@ class TClientScriptManager extends TApplicationComponent
 	}
 }
 
+/**
+ * TClientSideOptions abstract class.
+ *
+ * TClientSideOptions manages client-side options for components that have
+ * common client-side javascript behaviours and client-side events such as
+ * between ActiveControls and validators.
+ *
+ * @author <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI
+ * @since 3.0
+ */
+abstract class TClientSideOptions extends TComponent
+{
+	/**
+	 * @var TMap list of client-side options.
+	 */
+	private $_options;
+
+	/**
+	 * Constructor, initialize the options list.
+	 */
+	public function __construct()
+	{
+		$this->_options = Prado::createComponent('System.Collections.TMap');
+	}
+
+	/**
+	 * Adds on client-side event handler by wrapping the code within a
+	 * javascript function block. If the code begins with "javascript:", the
+	 * code is assumed to be a javascript function block rather than arbiturary
+	 * javascript statements.
+	 * @param string option name
+	 * @param string javascript statements.
+	 */
+	protected function setFunction($name, $code)
+	{
+		if(!TJavascript::isFunction($code))
+			$code = TJavascript::quoteFunction($this->ensureFunction($code));
+		$this->setOption($name, $code);
+	}
+
+	/**
+	 * @return string gets a particular option, null if not set.
+	 */
+	protected function getOption($name)
+	{
+		return $this->_options->itemAt($name);
+	}
+
+	/**
+	 * @param string option name
+	 * @param mixed option value.
+	 */
+	protected function setOption($name, $value)
+	{
+		$this->_options->add($name, $value);
+	}
+
+	/**
+	 * @return TMap gets the list of options as TMap
+	 */
+	public function getOptions()
+	{
+		return $this->_options;
+	}
+
+	/**
+	 * Ensure that the javascript statements are wrapped in a javascript
+	 * function block as <code>function(sender, parameter){ //code }</code>.
+	 */
+	protected function ensureFunction($javascript)
+	{
+		return "function(sender, parameter){ {$javascript} }";
+	}
+}
+
 ?>

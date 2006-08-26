@@ -1,4 +1,4 @@
-/** 
+/**
  * Prado AJAX service. The default service provider is JPSpan.
  */
 Prado.AJAX = { Service : 'Prototype' };
@@ -11,10 +11,10 @@ Prado.AJAX.EvalScript = function(output)
 
 	var match = new RegExp(Ajax.Updater.ScriptFragment, 'img');
 	var scripts  = output.match(match);
-	if (scripts) 
+	if (scripts)
 	{
 		match = new RegExp(Ajax.Updater.ScriptFragment, 'im');
-		setTimeout((function() 
+		setTimeout((function()
 		{
 			for (var i = 0; i < scripts.length; i++)
 				eval(scripts[i].match(match)[1]);
@@ -27,21 +27,21 @@ Prado.AJAX.EvalScript = function(output)
  * AJAX service request using Prototype's AJAX request class.
  */
 Prado.AJAX.Request = Class.create();
-Prado.AJAX.Request.prototype = Object.extend(Ajax.Request.prototype, 
+Prado.AJAX.Request.prototype = Object.extend(Ajax.Request.prototype,
 {
 	/**
 	 * Evaluate the respond JSON data, override parent implementing.
 	 * If default eval fails, try parsing the JSON data (slower).
 	 */
-	evalJSON: function() 
+	evalJSON: function()
 	{
-		try 
+		try
 		{
 			var json = this.transport.getResponseHeader('X-JSON'), object;
 			object = eval(json);
 			return object;
-		} 
-		catch (e) 
+		}
+		catch (e)
 		{
 			if(isString(json))
 			{
@@ -49,15 +49,15 @@ Prado.AJAX.Request.prototype = Object.extend(Ajax.Request.prototype,
 			}
 		}
 	},
-	
+
 	respondToReadyState: function(readyState) {
     var event = Ajax.Request.Events[readyState];
     var transport = this.transport, json = this.evalJSON();
 
-	
+
 	if(event == 'Complete' && transport.status)
     	Ajax.Responders.dispatch('on' + transport.status, this, transport, json);
-    	
+
    (this.options['on' + event] || Prototype.emptyFunction)(transport, json);
     Ajax.Responders.dispatch('on' + event, this, transport, json);
 
@@ -66,15 +66,15 @@ Prado.AJAX.Request.prototype = Object.extend(Ajax.Request.prototype,
        || this.options['on' + (this.responseIsSuccess() ? 'Success' : 'Failure')]
        || Prototype.emptyFunction)(transport, json);
 
- 
+
     /* Avoid memory leak in MSIE: clean up the oncomplete event handler */
     if (event == 'Complete')
       this.transport.onreadystatechange = Prototype.emptyFunction;
   }
-  	
+
 });
 
-Prado.AJAX.Error = function(e, code) 
+Prado.AJAX.Error = function(e, code)
 {
     e.name = 'Prado.AJAX.Error';
     e.code = code;
@@ -85,7 +85,7 @@ Prado.AJAX.Error = function(e, code)
  * Post data builder, serialize the data using JSON.
  */
 Prado.AJAX.RequestBuilder = Class.create();
-Prado.AJAX.RequestBuilder.prototype = 
+Prado.AJAX.RequestBuilder.prototype =
 {
 	initialize : function()
 	{
@@ -96,13 +96,13 @@ Prado.AJAX.RequestBuilder.prototype =
 	{
 		return Prado.AJAX.JSON.stringify(data);
 	},
-	build : function(data) 
+	build : function(data)
 	{
 		var sep = '';
-        for ( var argName in data) 
+        for ( var argName in data)
 		{
 			if(isFunction(data[argName])) continue;
-            try 
+            try
 			{
                 this.body += sep + argName + '=';
                 this.body += encodeURIComponent(this.encode(data[argName]));
@@ -110,9 +110,9 @@ Prado.AJAX.RequestBuilder.prototype =
                 throw Prado.AJAX.Error(e, 1006);
             }
             sep = '&';
-        }        
+        }
     },
-	
+
 	getAll : function()
 	{
 		this.build(this.data);
@@ -141,7 +141,7 @@ Prado.AJAX.RemoteObject.Request.prototype = Object.extend(Prado.AJAX.Request.pro
 	},
 
 	/**
-	 * Call the remote object, 
+	 * Call the remote object,
 	 * @param string the remote server url
 	 * @param array additional arguments
 	 */
@@ -165,7 +165,7 @@ Prado.AJAX.RemoteObject.Request.prototype = Object.extend(Prado.AJAX.Request.pro
 
 /**
  * Base proxy class for Prado RemoteObjects via AJAX.
- * e.g. 
+ * e.g.
  * <code>
  *	var TestObject1 = Class.create();
  *	TestObject1.prototype = Object.extend(new Prado.AJAX.RemoteObject(),
@@ -182,18 +182,18 @@ Prado.AJAX.RemoteObject.Request.prototype = Object.extend(Prado.AJAX.Request.pro
  *		}
  *	});
  *</code>
- * And client usage, 
+ * And client usage,
  * <code>
  *	var test1 = new TestObject1(); //create new remote object
  *	test1.method1(); //call the method, no onComplete hook
  *
  *  var onComplete = { method1 : function(result){ alert(result) } };
  *  //create new remote object with onComplete callback
- *  var test2 = new TestObject1(onComplete); 
+ *  var test2 = new TestObject1(onComplete);
  *  test2.method1(); //call it, on success, onComplete's method1 is called.
  * </code>
  */
-Prado.AJAX.RemoteObject.prototype = 
+Prado.AJAX.RemoteObject.prototype =
 {
 	baseInitialize : function(handlers, options)
 	{
@@ -207,11 +207,11 @@ Prado.AJAX.RemoteObject.prototype =
 		this.__callback = method;
 		return this.__service.invokeRemoteObject(url+"/"+method, args);
 	},
-	
+
 	__onSuccess : function(transport, json)
 	{
 		if(this.__handlers[this.__callback])
-			this.__handlers[this.__callback](json, transport.responseText);		
+			this.__handlers[this.__callback](json, transport.responseText);
 	}
 };
 
@@ -224,12 +224,12 @@ Prado.AJAX.Exception =
 	 * Server returns 505 exception. Just log it.
 	 */
 	"on505" : function(request, transport, e)
-	{		
+	{
 		var msg = 'HTTP '+transport.status+" with response";
 		Logger.error(msg, transport.responseText);
 		Logger.exception(e);
 	},
-	
+
 	onComplete : function(request, transport, e)
 	{
 		if(transport.status != 505)
@@ -265,8 +265,8 @@ Prado.AJAX.Exception =
 
 //Add HTTP exception respones when logger is enabled.
 Event.OnLoad(function()
-{ 
-	if(typeof Logger != "undefined") 
+{
+	if(typeof Logger != "undefined")
 	{
 		Logger.exception = Prado.AJAX.Exception.logException;
 		Ajax.Responders.register(Prado.AJAX.Exception);
@@ -274,7 +274,7 @@ Event.OnLoad(function()
 });
 
 /**
- * Prado Callback service that provides component intergration, 
+ * Prado Callback service that provides component intergration,
  * viewstate (read only), and automatic form data serialization.
  * Usage: <code>new Prado.AJAX.Callback('MyPage.MyComponentID.raiseCallbackEvent', options)</code>
  * These classes should be called by the components developers.
@@ -283,7 +283,7 @@ Event.OnLoad(function()
 Prado.AJAX.Callback = Class.create();
 Prado.AJAX.Callback.prototype = Object.extend(new Prado.AJAX.RemoteObject(),
 {
-	
+
 	/**
 	 * Create and request a new Prado callback service.
 	 * @param string|element the callback ID, must be of the form, <t>ClassName.ComponentID.MethodName</t>
@@ -294,14 +294,14 @@ Prado.AJAX.Callback.prototype = Object.extend(new Prado.AJAX.RemoteObject(),
 	{
 		if(!isString(ID) && typeof(ID.id) != "undefined")
 			ID = ID.id;
-		if(!isString(ID)) 
+		if(!isString(ID))
 			throw new Error('A Control ID must be specified');
 		this.baseInitialize(this, options);
 		this.options = options || [];
 		this.__service.post.data['__ID'] = ID;
 		this.requestCallback();
 	},
-	
+
 	/**
 	 * Get form data for components that implements IPostBackHandler.
 	 */
@@ -313,7 +313,7 @@ Prado.AJAX.Callback.prototype = Object.extend(new Prado.AJAX.RemoteObject(),
 		{
 			var id = IDs[i];
 			if(id.indexOf("[]") > -1)
-				this.__service.post.data['__data'][id] = 
+				this.__service.post.data['__data'][id] =
 					this.collectArrayPostData(id);
 			else if(isObject($(id)))
 				this.__service.post.data['__data'][id] = $F(id);
@@ -325,12 +325,12 @@ Prado.AJAX.Callback.prototype = Object.extend(new Prado.AJAX.RemoteObject(),
 		var elements = document.getElementsByName(name);
 		var data = [];
 		$A(elements).each(function(el)
-		{ 
-			if($F(el)) data.push($F(el)); 
+		{
+			if($F(el)) data.push($F(el));
 		});
 		return data;
 	},
-	
+
 	/**
 	 * Prepares and calls the AJAX request.
 	 * Collects the data from components that implements IPostBackHandler
@@ -377,7 +377,7 @@ Prado.AJAX.Callback.Action =
 
 
 /**
- * Returns false if validation required and validates to false, 
+ * Returns false if validation required and validates to false,
  * returns true otherwise.
  * @return boolean true if validation passes.
  */
@@ -406,20 +406,22 @@ Prado.AJAX.Callback.IDs = [];
 /**
  * Simple AJAX callback interface, suitable for inline javascript.
  * e.g., <code><a href="..." onclick="Prado.Callback('..', 'Hello');">Click me</a></code>
- * @param string callback ID
- * @param array parameters to pass to the callback service
+ * @param {String} callback ID
+ * @param {Array} parameters to pass to the callback service
+ * @param {Function} on callback success handler method
+ * @param {Object} additional callback options
  */
 Prado.Callback = function(ID, params, onSuccess, options)
 {
-	var callback =  
+	var callback =
 	{
 		'params' : [params] || [],
-		'onSuccess' : onSuccess || Prototype.emptyFunction, 
+		'onSuccess' : onSuccess || Prototype.emptyFunction,
 		'CausesValidation' : true
 	};
 
 	Object.extend(callback, options || {});
-	
+
 	new Prado.AJAX.Callback(ID, callback);
 	return false;
 }

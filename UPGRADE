@@ -15,6 +15,14 @@ for both A and B.
 
 Upgrading from v3.0.3
 ---------------------
+- This change affects existing client-side javascript handlers such as
+  <com:TRequiredFieldValidator ClientSide.OnSuccess="xxx" />
+  All ClientSide javascript event handlers (such as ClientSide.OnSuccess)
+  are by default wrapped within the function block.
+       function(sender, parameter){ // handler code }
+  You may override this behaviour by providing your own javascript statement block
+  as "javascript:MyHandlerFunction", e.g. ClientSide.OnSuccess="javascript:MyHandlerFunction"
+  or ClientSide.OnSuccess="javascript:function(validator,sender){ ... }"
 
 
 Upgrading from v3.0.2

@@ -4,43 +4,43 @@
 <fieldset id="quickRegistration">
 	<legend>Create New Account</legend>
 
-<com:TClientScript UsingPradoScripts="effects,logger" />
+<com:TClientScript PradoScripts="effects,logger" />
 
 <div class="username">
-	Username: 
+	Username:
 	<com:TTextBox ID="Username" />
 	<com:TRequiredFieldValidator
 		ID="UsernameVal"
 		ControlToValidate="Username"
-		ValidationGroup="registration" 
+		ValidationGroup="registration"
 		ControlCssClass="required"
 		Display="Dynamic"
 		ErrorMessage="a username is required.">
 	<prop:ClientSide.OnError>
-		Effect.Shake(validator.control);
-		Effect.Appear(validator.message);
+		Effect.Shake(sender.control);
+		Effect.Appear(sender.message);
 	</prop:ClientSide.OnError>
 	<prop:ClientSide.OnSuccess>
-		Effect.Fade(validator.message);
+		Effect.Fade(sender.message);
 	</prop:ClientSide.OnSuccess>
-	</com:TRequiredFieldValidator>		
+	</com:TRequiredFieldValidator>
 </div>
 <div class="password">
 	Password
 	<com:TTextBox ID="Password" TextMode="Password" />
-	<!-- alternate synatx : see 
+	<!-- alternate synatx : see
 	http://encytemedia.com/blog/articles/2006/03/07/prototype-gets-some-serious-syntactic-sugar
 	-->
 <com:TRequiredFieldValidator
 	ID="PasswordVal"
 	ControlToValidate="Password"
-	ValidationGroup="registration" 
+	ValidationGroup="registration"
 	ControlCssClass="required"
 	Display="Dynamic"
-	ClientSide.OnError="validator.message.visualEffect('appear')"
-	ClientSide.OnSuccess="validator.message.visualEffect('fade')"
-	ErrorMessage="a password is required." />	
-</div>	
+	ClientSide.OnError="sender.message.visualEffect('appear')"
+	ClientSide.OnSuccess="sender.message.visualEffect('fade')"
+	ErrorMessage="a password is required." />
+</div>
 <div class="create">
 	<com:TButton ID="Create" ValidationGroup="registration" Text="Create New Account"/>
 </div>
@@ -54,7 +54,7 @@
 <div class="username">
 	Login Name:
 	<com:TTextBox ID="UserID" />
-		
+
 	<com:TRequiredFieldValidator
 		ID="UserVal1"
 		ControlToValidate="UserID"
@@ -78,26 +78,26 @@
 <com:TButton ID="login" ValidationGroup="signin" CssClass="button" Text="Sign In" />
 
 <div class="validation">
-	<com:TValidationSummary 
+	<com:TValidationSummary
 		ID="summary2"
 		ValidationGroup="signin"
 		Display="Dynamic"
-		ClientSide.OnHideSummary="Effect.Squish(summary.messages)"
+		ClientSide.OnHideSummary="Effect.Squish(sender.messages)"
 		HeaderText="<p>You could not login because</p>">
 	<prop:ClientSide.OnShowSummary>
-		Effect.Appear(summary.messages)
-		Effect.Shake(summary.messages,{ queue: 'end'})
-	</prop:ClientSide.OnShowSummary>	
+		Effect.Appear(sender.messages)
+		Effect.Shake(sender.messages,{ queue: 'end'})
+	</prop:ClientSide.OnShowSummary>
 	</com:TValidationSummary>
 </div>
 
 </fieldset>
 
-<com:TLinkButton ID="linkButton1" 
-	Text="Click Me" 
+<com:TLinkButton ID="linkButton1"
+	Text="Click Me"
 	OnClick="linkButton1_Clicked">
 	<prop:Attributes.onclick>
-	if(!confirm('<%= Prado::localize("Confirm Delete") %>')) 
+	if(!confirm('<%= Prado::localize("Confirm Delete") %>'))
 		return false;
 	</prop:Attributes.onclick>
 </com:TLinkButton>
