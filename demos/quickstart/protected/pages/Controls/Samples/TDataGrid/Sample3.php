@@ -138,13 +138,13 @@ class Sample3 extends TPage
 		if($item->ItemType==='EditItem')
 		{
 			// set column width of textboxes
-			$item->Cells[0]->Controls[0]->Columns=40;
-			$item->Cells[2]->Controls[0]->Columns=5;
+			$item->BookTitleColumn->TextBox->Columns=40;
+			$item->PriceColumn->TextBox->Columns=5;
 		}
 		if($item->ItemType==='Item' || $item->ItemType==='AlternatingItem' || $item->ItemType==='EditItem')
 		{
 			// add an aleart dialog to delete buttons
-			$item->Cells[6]->Controls[0]->Attributes->onclick='if(!confirm(\'Are you sure?\')) return false;';
+			$item->DeleteColumn->Button->Attributes->onclick='if(!confirm(\'Are you sure?\')) return false;';
 		}
 	}
 
@@ -160,11 +160,11 @@ class Sample3 extends TPage
 		$item=$param->Item;
 		$this->updateBook(
 			$this->DataGrid->DataKeys[$item->ItemIndex],	// ISBN
-			$item->Cells[0]->Controls[0]->Text,				// title
-			$item->Cells[1]->Controls[0]->Text,				// publisher
-			$item->Cells[2]->Controls[0]->Text,				// price
-			$item->Cells[3]->Controls[0]->Checked,			// instock
-			$item->Cells[4]->Rating->SelectedValue			// rating
+			$item->BookTitleColumn->TextBox->Text,			// title
+			$item->PublisherColumn->TextBox->Text,			// publisher
+			$item->PriceColumn->TextBox->Text,				// price
+			$item->InStockColumn->CheckBox->Checked,		// instock
+			$item->RatingColumn->Rating->SelectedValue		// rating
 			);
 		$this->DataGrid->EditItemIndex=-1;
 		$this->DataGrid->DataSource=$this->Data;

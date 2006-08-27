@@ -1075,6 +1075,11 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 				$cell=new TTableHeaderCell;
 			else
 				$cell=new TTableCell;
+			if(($id=$column->getID())!=='')
+			{
+				$cell->setID($id);
+				$item->registerObject($id,$cell);
+			}
 			$column->initializeCell($cell,$index,$itemType);
 			$cells->add($cell);
 			$index++;

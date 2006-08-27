@@ -36,6 +36,14 @@ Prado::using('System.Web.UI.WebControls.THyperLink');
  * The same rule applies to {@link setNavigateUrl NavigateUrl} and
  * {@link setDataNavigateUrlField DataNavigateUrlField} properties.
  *
+ * The hyperlinks in the column can be accessed by one of the following two methods:
+ * <code>
+ * $datagridItem->HyperLinkColumnID->HyperLink
+ * $datagridItem->HyperLinkColumnID->Controls[0]
+ * </code>
+ * The second method is possible because the hyperlink control created within the
+ * datagrid cell is the first child.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
@@ -178,6 +186,7 @@ class THyperLinkColumn extends TDataGridColumn
 			if($this->getDataTextField()!=='' || $this->getDataNavigateUrlField()!=='')
 				$link->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
 			$cell->getControls()->add($link);
+			$cell->registerObject('HyperLink',$link);
 		}
 	}
 
