@@ -18,14 +18,14 @@ Prado::using('System.Web.UI.WebControls.TListControl');
 
 /**
  * TActiveListControlAdapter class.
- * 
+ *
  * Adapte the list controls to allows the selections on the client-side to be altered
  * during callback response.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  Sun Jun 25 04:53:43 EST 2006 $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TActiveListControlAdapter extends TActiveControlAdapter implements IListControlAdapter
 {
@@ -36,9 +36,9 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 	{
 		return $this->getControl()->getActiveControl()->canUpdateClientSide();
 	}
-	
-	/** 
-	 * Selects an item based on zero-base index on the client side. 
+
+	/**
+	 * Selects an item based on zero-base index on the client side.
 	 * @param integer the index (zero-based) of the item to be selected
 	 */
 	public function setSelectedIndex($index)
@@ -48,8 +48,8 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 					$this->getControl(), 'Index', $index);
 	}
 
-	/** 
-	 * Selects a list of item based on zero-base indices on the client side. 
+	/**
+	 * Selects a list of item based on zero-base indices on the client side.
 	 * @param array list of index of items to be selected
 	 */
 	public function setSelectedIndices($indices)
@@ -66,7 +66,7 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 			}
 			if(count($list) > 0)
 				$this->getPage()->getCallbackClient()->select(
-					$this->getControl(), 'Indices', $list);			
+					$this->getControl(), 'Indices', $list);
 		}
 	}
 
@@ -80,8 +80,8 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 			$this->getPage()->getCallbackClient()->select(
 					$this->getControl(), 'Value', $value);
 	}
-	
-	/** 
+
+	/**
 	 * Sets selection by a list of item values on the client side.
 	 * @param array list of the selected item values
 	 */
@@ -97,7 +97,7 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 					$this->getControl(), 'Values', $list);
 		}
 	}
-	
+
     /**
      * Clears all existing selections on the client side.
      */
@@ -123,19 +123,19 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 
 /**
  * TActiveListItemCollection class.
- * 
+ *
  * Allows TActiveDropDownList and TActiveListBox to add new options
  * during callback response. New options can only be added <b>after</b> the
- * {@link TControl::onLoad OnLoad} event. 
- * 
- * The {@link getListHasChanged ListHasChanged} property is true when the 
+ * {@link TControl::onLoad OnLoad} event.
+ *
+ * The {@link getListHasChanged ListHasChanged} property is true when the
  * list items has changed. The control responsible for the list needs to
  * repopulate the client-side options.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  Sun Jun 25 21:15:05 EST 2006 $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TActiveListItemCollection extends TListItemCollection
 {
@@ -147,7 +147,7 @@ class TActiveListItemCollection extends TListItemCollection
 	 * @var boolean true if list items were changed.
 	 */
 	private $_hasChanged=false;
-	
+
 	/**
 	 * @return boolean true if active controls can update client-side and
 	 * the onLoad event has already been raised.
@@ -157,7 +157,7 @@ class TActiveListItemCollection extends TListItemCollection
 		return $this->getControl()->getActiveControl()->canUpdateClientSide()
 				&& $this->getControl()->getHasLoaded();
 	}
-	
+
 	/**
 	 * @param IActiveControl a active list control.
 	 */
@@ -165,7 +165,7 @@ class TActiveListItemCollection extends TListItemCollection
 	{
 		$this->_control = $control;
 	}
-	
+
 	/**
 	 * @return IActiveControl active control using the collection.
 	 */
@@ -173,7 +173,7 @@ class TActiveListItemCollection extends TListItemCollection
 	{
 		return $this->_control;
 	}
-	
+
 	/**
 	 * @return boolean true if the list has changed after onLoad event.
 	 */
@@ -181,7 +181,7 @@ class TActiveListItemCollection extends TListItemCollection
 	{
 		return $this->_hasChanged;
 	}
-	
+
 	/**
 	 * Inserts an item into the collection.
 	 * The new option is added on the client-side during callback.
@@ -196,7 +196,7 @@ class TActiveListItemCollection extends TListItemCollection
 		if($this->canUpdateClientSide())
 			$this->_hasChanged = true;
 	}
-	
+
 	/**
 	 * Removes an item from at specified index.
 	 * @param int zero based index.
@@ -205,7 +205,7 @@ class TActiveListItemCollection extends TListItemCollection
 	{
 		parent::removeAt($index);
 		if($this->canUpdateClientSide())
-			$this->_hasChanged = true;		
+			$this->_hasChanged = true;
 	}
 }
 

@@ -1,11 +1,11 @@
 <?php
 
-class PeriodicCallbackTestCase extends SeleniumTestCase
+class TimeTriggeredCallbackTestCase extends SeleniumTestCase
 {
 	function test()
 	{
-		$this->open("active-controls/index.php?page=PeriodicCallbackTest");
-		$this->verifyTextPresent("TPeriodicCallback + ViewState Tests");
+		$this->open("active-controls/index.php?page=TimeTriggeredCallbackTest");
+		$this->verifyTextPresent("TimeTriggeredCallback + ViewState Tests");
 
 		$this->assertText("label1", "ViewState Counter :");
 

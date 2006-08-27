@@ -1,6 +1,6 @@
 <?php
 /**
- * TPeriodicCallback class file.
+ * TTimeTriggeredCallback class file.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link http://www.pradosoft.com/
@@ -16,9 +16,9 @@
 Prado::using('System.Web.UI.ActiveControls.TCallback');
 
 /**
- * TPeriodicCallback class.
+ * TTimeTriggeredCallback class.
  *
- * TPeriodicCallback sends callback request every {@link setInterval Interval} seconds.
+ * TTimeTriggeredCallback sends callback request every {@link setInterval Interval} seconds.
  * Upon each callback request, the {@link onCallback OnCallback} event is raised.
  *
  * The intervals between each request can be increased when the browser is inactive
@@ -29,9 +29,9 @@ Prado::using('System.Web.UI.ActiveControls.TCallback');
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version : $  Mon Jun 19 21:29:42 EST 2006 $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
-class TPeriodicCallback extends TCallback
+class TTimeTriggeredCallback extends TCallback
 {
 	/**
 	 * @return float seconds between callback requests. Default is 1 second.
@@ -96,7 +96,7 @@ class TPeriodicCallback extends TCallback
 	public function startTimer()
 	{
 		$id = $this->getClientID();
-		$code = "Prado.WebUI.TPeriodicCallback.start('{$id}');";
+		$code = "Prado.WebUI.TTimeTriggeredCallback.start('{$id}');";
 		$cs = $this->getPage()->getClientScript();
 		$cs->registerEndScript("{$id}:start", $code);
 	}
@@ -107,7 +107,7 @@ class TPeriodicCallback extends TCallback
 	public function stopTimer()
 	{
 		$id = $this->getClientID();
-		$code = "Prado.WebUI.TPeriodicCallback.stop('{$id}');";
+		$code = "Prado.WebUI.TTimeTriggeredCallback.stop('{$id}');";
 		$cs = $this->getPage()->getClientScript();
 		$cs->registerEndScript("{$id}:stop", $code);
 	}
@@ -136,11 +136,11 @@ class TPeriodicCallback extends TCallback
 	}
 
 	/**
-	 * @return string corresponding javascript class name for TPeriodicCallback.
+	 * @return string corresponding javascript class name for TTimeTriggeredCallback.
 	 */
 	protected function getClientClassName()
 	{
-		return 'Prado.WebUI.TPeriodicCallback';
+		return 'Prado.WebUI.TTimeTriggeredCallback';
 	}
 }
 

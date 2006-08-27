@@ -1,0 +1,24 @@
+<com:TForm ID="form1">
+
+	<h1>TActiveImageButton Functional Test</h1>
+
+	This is
+	<com:TActiveImageButton
+		ID="image1"
+		ImageUrl=<%~ report.gif %> OnClick="image1_clicked" />
+	an image.
+
+	<div style="border:1px solid #ccc; padding:1em; border:1em">
+	<com:TActiveLabel ID="label1" Text="Label 1" />
+	</div>
+
+	<com:TActiveButton ID="button1" Text="Change Text" OnClick="change_text" />
+	<com:TActiveButton ID="button2" Text="Change Image"
+		CustomData=<%~ group.gif %>
+		OnClick="change_image" />
+	<com:TActiveButton ID="button3" Text="Change Align" OnClick="change_align" />
+	<com:TActiveButton ID="button4" Text="Change Description" OnClick="change_description" />
+
+	<com:TJavascriptLogger />
+
+</com:TForm>

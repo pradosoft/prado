@@ -1,6 +1,6 @@
 <?php
 
-class PeriodicCallbackTest extends TPage
+class TimeTriggeredCallbackTest extends TPage
 {
 	function start_timer($sender, $param)
 	{

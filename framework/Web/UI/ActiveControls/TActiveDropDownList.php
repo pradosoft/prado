@@ -18,12 +18,12 @@ Prado::using('System.Web.UI.ActiveControls.TActiveListControlAdapter');
 /**
 /**
  * TActiveDropDownList class.
- * 
- * The active control counter part to drop down list control. 
- * The {@link setAutoPostBack AutoPostBack} property is set to true by default. 
- * Thus, when the drop down list selection is changed the {@link onCallback OnCallback} event is 
- * raised after {@link OnSelectedIndexChanged} event. 
- * 
+ *
+ * The active control counter part to drop down list control.
+ * The {@link setAutoPostBack AutoPostBack} property is set to true by default.
+ * Thus, when the drop down list selection is changed the {@link onCallback OnCallback} event is
+ * raised after {@link OnSelectedIndexChanged} event.
+ *
  * With {@link TBaseActiveControl::setEnableUpdate() ActiveControl.EnabledUpdate}
  * set to true (default is true), changes to the selection, <b>after</b> OnLoad event has
  * been raised, will be updated.
@@ -32,7 +32,7 @@ Prado::using('System.Web.UI.ActiveControls.TActiveListControlAdapter');
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version : $  Sun Jun 25 19:55:19 EST 2006 $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TActiveDropDownList extends TDropDownList implements ICallbackEventHandler, IActiveControl
 {
@@ -65,7 +65,7 @@ class TActiveDropDownList extends TDropDownList implements ICallbackEventHandler
 	{
 		return 'Prado.WebUI.TActiveDropDownList';
 	}
-	
+
 	/**
 	 * Loads user input data.
 	 * Disables ActiveControl.EnableUpdate subproperty during loading post data
@@ -82,7 +82,7 @@ class TActiveDropDownList extends TDropDownList implements ICallbackEventHandler
 		$this->getActiveControl()->setEnableUpdate($enabled);
 		return $result;
 	}
-	
+
 	/**
 	 * Creates a collection object to hold list items. A specialized
 	 * TActiveListItemCollection is created to allow the drop down list options
@@ -96,15 +96,15 @@ class TActiveDropDownList extends TDropDownList implements ICallbackEventHandler
 		$collection->setControl($this);
 		return $collection;
 	}
-	
+
 	/**
-	 * Override parent implementation, no javascript is rendered here instead 
+	 * Override parent implementation, no javascript is rendered here instead
 	 * the javascript required for active control is registered in {@link addAttributesToRender}.
 	 */
 	protected function renderClientControlScript($writer)
 	{
 	}
-	
+
 	/**
 	 * Ensure that the ID attribute is rendered and registers the javascript code
 	 * for initializing the active control.
@@ -114,12 +114,12 @@ class TActiveDropDownList extends TDropDownList implements ICallbackEventHandler
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id',$this->getClientID());
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());		
-	}		
-	
+			$this->getClientClassName(), $this->getPostBackOptions());
+	}
+
 	/**
 	 * Raises the callback event. This method is required by {@link
-	 * ICallbackEventHandler} interface. 
+	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter the event parameter
 	 */
@@ -138,8 +138,8 @@ class TActiveDropDownList extends TDropDownList implements ICallbackEventHandler
 	public function onCallback($param)
 	{
 		$this->raiseEvent('OnCallback', $this, $param);
-	}	
-	
+	}
+
 	/**
 	 * Updates the client-side options if the item list has changed after the OnLoad event.
 	 */

@@ -10,7 +10,7 @@
  * @package System.Web.UI.ActiveControls
  */
 
-Prado::using('System.Web.UI.ActiveControls.TCallbackClientSideOptions');
+Prado::using('System.Web.UI.ActiveControls.TCallbackClientSide');
 
 /**
  * TBaseActiveControl class provided additional basic property for every
@@ -25,7 +25,7 @@ Prado::using('System.Web.UI.ActiveControls.TCallbackClientSideOptions');
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TBaseActiveControl extends TComponent
 {
@@ -154,21 +154,21 @@ class TBaseActiveControl extends TComponent
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  Fri Jun 16 08:40:43 EST 2006 $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TBaseActiveCallbackControl extends TBaseActiveControl
 {
 	/**
 	 * Callback client-side options can be set by setting the properties of
 	 * the ClientSide property. E.g. <com:TCallback ActiveControl.ClientSide.OnSuccess="..." />
-	 * See {@link TCallbackClientSideOptions} for details on the properties of ClientSide.
-	 * @return TCallbackClientSideOptions client-side callback options.
+	 * See {@link TCallbackClientSide} for details on the properties of ClientSide.
+	 * @return TCallbackClientSide client-side callback options.
 	 */
 	public function getClientSide()
 	{
 		if(is_null($client = $this->getOption('ClientSide')))
 		{
-			$client = $this->createClientSideOptions();
+			$client = $this->createClientSide();
 			$this->setOption('ClientSide', $client);
 		}
 		return $client;
@@ -176,7 +176,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 
 	/**
 	 * Sets the client side options. Can only be set when client side is null.
-	 * @param TCallbackClientSideOptions client side options.
+	 * @param TCallbackClientSide client side options.
 	 */
 	public function setClientSide($client)
 	{
@@ -188,11 +188,11 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	}
 
 	/**
-	 * @return TCallbackClientSideOptions callback client-side options.
+	 * @return TCallbackClientSide callback client-side options.
 	 */
-	protected function createClientSideOptions()
+	protected function createClientSide()
 	{
-		return new TCallbackClientSideOptions;
+		return new TCallbackClientSide;
 	}
 
 	/**

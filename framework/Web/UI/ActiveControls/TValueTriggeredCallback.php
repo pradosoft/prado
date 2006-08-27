@@ -1,5 +1,34 @@
 <?php
+/**
+ * TValueTriggeredCallback class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: 27/08/2006 $
+ * @package System.Web.UI.ActiveControls
+ */
 
+/**
+ * TValueTriggeredCallback Class
+ *
+ * Observes the value with {@link setPropertyName PropertyName} of a
+ * control with {@link setControlID ControlID}. Changes to the observed
+ * property value will trigger a new callback request. The values are
+ * observed using a {@link setPollingInterval PollingInterval} (in seconds).
+ * That is, the property is checked for changes every
+ * {@link setPollingInterval PollingInterval} seconds.
+ *
+ * A {@link setDecayRate DecayRate} can be set to increase the polling
+ * interval linearly if no changes are observed. Once a change is
+ * observe, the polling interval is reset to the original value.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $ 27/08/2006 $
+ * @package System.Web.UI.ActiveControls
+ * @since 3.1
+ */
 class TValueTriggeredCallback extends TTriggeredCallback
 {
 	/**

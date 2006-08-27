@@ -1,11 +1,11 @@
 <com:TForm ID="form1">
-	
+
 	<h1>TActiveButton Functional Test</h1>
-	<com:TActiveButton ID="button2" Text="Button 1" 
+	<com:TActiveButton ID="button2" Text="Button 1"
 		OnClick="button2_onclick" OnCallback="button2_oncallback" />
-	
+
 	<com:TActiveLabel ID="label1" Text="Label 1" />
-		
+
 	<com:TJavascriptLogger />
-	
+
 </com:TForm>

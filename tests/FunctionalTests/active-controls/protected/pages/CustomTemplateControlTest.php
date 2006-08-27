@@ -16,7 +16,7 @@ class CustomTemplateControlTest extends TPage
 
 	function button2_callback($sender, $param)
 	{
-		$this->placeholder->render($param->output);
+		$this->placeholder->render($param->NewWriter);
 
 		$this->label1->Text .= " using callback!";
 		$this->label1->Text .= "... and this is the textbox text: ". $this->foo->Text;

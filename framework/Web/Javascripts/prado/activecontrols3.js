@@ -20,6 +20,16 @@ Prado.WebUI.TActiveButton = Class.extend(Prado.WebUI.CallbackControl);
  */
 Prado.WebUI.TActiveLinkButton = Class.extend(Prado.WebUI.CallbackControl);
 
+Prado.WebUI.TActiveImageButton = Class.extend(Prado.WebUI.TImageButton,
+{
+	onPostBack : function(event, options)
+	{
+		this.addXYInput(event,options);
+		request = new Prado.CallbackRequest(options.EventTarget, options);
+		request.dispatch();
+		Event.stop(event);
+	}
+});
 /**
  * Active check box.
  */
@@ -112,9 +122,9 @@ Prado.WebUI.TAutoComplete = Class.extend(Prado.WebUI.TAutoComplete,
 });
 
 /**
- * Period Callback class.
+ * Time Triggered Callback class.
  */
-Prado.WebUI.TPeriodicCallback = Base.extend(
+Prado.WebUI.TTimeTriggeredCallback = Base.extend(
 {
 	count : 0,
 	timeout : 0,
@@ -128,7 +138,7 @@ Prado.WebUI.TPeriodicCallback = Base.extend(
 		}, options || {})
 
 		this.onComplete = this.options.onComplete;
-		Prado.WebUI.TPeriodicCallback.register(this);
+		Prado.WebUI.TTimeTriggeredCallback.register(this);
 	},
 
 	startTimer : function()

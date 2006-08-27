@@ -1,5 +1,29 @@
 <?php
+/**
+ * TEventTriggeredCallback class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: 27/08/2006 $
+ * @package System.Web.UI.ActiveControls
+ */
 
+/**
+ * TEventTriggeredCallback Class
+ *
+ * Triggers a new callback request when a particular {@link setEventName EventName}
+ * on a control with ID given by {@link setControlID ControlID} is raised.
+ *
+ * The default action of the event on the client-side can be prevented when
+ * {@link setPreventDefaultAction PreventDefaultAction} is set to true.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $ 27/08/2006 $
+ * @package System.Web.UI.ActiveControls
+ * @since 3.1
+ */
 class TEventTriggeredCallback extends TTriggeredCallback
 {
 	/**

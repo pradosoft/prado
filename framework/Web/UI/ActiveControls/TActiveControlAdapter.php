@@ -17,21 +17,21 @@ Prado::using('System.Web.UI.ActiveControls.TBaseActiveControl');
 
 /**
  * TActiveControlAdapter class.
- * 
- * Customize the parent TControl class for active control classes. 
+ *
+ * Customize the parent TControl class for active control classes.
  * TActiveControlAdapter instantiates a common base active control class
  * throught the {@link getBaseActiveControl BaseActiveControl} property.
  * The type of BaseActiveControl can be provided in the second parameter in the
  * constructor. Default is TBaseActiveControl or TBaseActiveCallbackControl if
  * the control adapted implements ICallbackEventHandler.
- * 
- * TActiveControlAdapter will tracking viewstate changes to update the 
+ *
+ * TActiveControlAdapter will tracking viewstate changes to update the
  * corresponding client-side properties.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  Sun Jun 18 20:35:34 EST 2006 $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TActiveControlAdapter extends TControlAdapter
 {
@@ -47,7 +47,7 @@ class TActiveControlAdapter extends TControlAdapter
 	 * @var TCallbackPageStateTracker view state tracker.
 	 */
 	private $_stateTracker;
-	
+
 	/**
 	 * Constructor.
 	 * @param IActiveControl active control to adapt.
@@ -58,7 +58,7 @@ class TActiveControlAdapter extends TControlAdapter
 		parent::__construct($control);
 		$this->setBaseControlClass($baseCallbackClass);
 	}
-	
+
 	/**
 	 * @param string base active control instance
 	 */
@@ -74,7 +74,7 @@ class TActiveControlAdapter extends TControlAdapter
 		else
 			$this->_activeControlType = $type;
 	}
-	
+
 	/**
 	 * Renders the callback client scripts.
 	 */
@@ -83,9 +83,9 @@ class TActiveControlAdapter extends TControlAdapter
 		$this->renderCallbackClientScripts();
 		parent::render($writer);
 	}
-	
+
 	/**
-	 * Register the callback clientscripts and sets the post loader IDs. 
+	 * Register the callback clientscripts and sets the post loader IDs.
 	 */
 	protected function renderCallbackClientScripts()
 	{
@@ -103,7 +103,7 @@ class TActiveControlAdapter extends TControlAdapter
 			}
 		}
 	}
-	
+
 	/**
 	 * @return TBaseActiveControl Common active control options.
 	 */
@@ -116,7 +116,7 @@ class TActiveControlAdapter extends TControlAdapter
 		}
 		return $this->_baseActiveControl;
 	}
-	
+
 	/**
 	 * @return boolean true if the viewstate needs to be tracked.
 	 */
@@ -127,13 +127,13 @@ class TActiveControlAdapter extends TControlAdapter
 			$target = $this->getPage()->getCallbackEventTarget();
 			if($target instanceof ICallbackEventHandler)
 			{
-				$client = $target->getActiveControl()->getClientSide(); 
+				$client = $target->getActiveControl()->getClientSide();
 				return $client->getEnablePageStateUpdate();
 			}
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Loads additional persistent control state. Starts viewstate tracking
 	 * if necessary.
@@ -147,21 +147,21 @@ class TActiveControlAdapter extends TControlAdapter
 		}
 		parent::loadState();
 	}
-	
+
 	/**
 	 * Saves additional persistent control state. Respond to viewstate changes
 	 * if necessary.
 	 */
 	public function saveState()
 	{
-		if(!is_null($this->_stateTracker) 
+		if(!is_null($this->_stateTracker)
 			&& $this->getControl()->getActiveControl()->canUpdateClientSide())
 		{
 			$this->_stateTracker->respondToChanges();
 		}
 		parent::saveState();
 	}
-	
+
 	/**
 	 * @return TCallbackPageStateTracker state tracker.
 	 */
@@ -169,19 +169,17 @@ class TActiveControlAdapter extends TControlAdapter
 	{
 		return $this->_stateTracker;
 	}
-} 
+}
 
 /**
  * TCallbackPageStateTracker class.
- * 
+ *
  * Tracking changes to the page state during callback.
- * 
- * @todo Complete this class! (Wei)
- * 
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  Sun Jun 18 20:51:25 EST 2006 $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TCallbackPageStateTracker
 {
@@ -201,7 +199,7 @@ class TCallbackPageStateTracker
 	 * @var object null object.
 	 */
 	private $_nullObject;
-		
+
 	/**
 	 * Constructor. Add a set of default states to track.
 	 * @param TControl control to track.
@@ -214,7 +212,7 @@ class TCallbackPageStateTracker
 		$this->_states = new TMap;
 		$this->addStatesToTrack();
 	}
-	
+
 	/**
 	 * Add a list of view states to track. Each state is added
 	 * to the StatesToTrack property with the view state name as key.
@@ -232,9 +230,9 @@ class TCallbackPageStateTracker
 		$states['Style'] = array('TStyleDiff', array($this, 'updateStyle'));
 		$states['TabIndex'] = array('TScalarDiff', array($this, 'updateTabIndex'));
 		$states['ToolTip'] = array('TScalarDiff', array($this, 'updateToolTip'));
-		$states['AccessKey'] = array('TScalarDiff', array($this, 'updateAccessKey'));	
+		$states['AccessKey'] = array('TScalarDiff', array($this, 'updateAccessKey'));
 	}
-	
+
 	/**
 	 * @return TMap list of viewstates to track.
 	 */
@@ -242,7 +240,7 @@ class TCallbackPageStateTracker
 	{
 		return $this->_states;
 	}
-	
+
 	/**
 	 * Start tracking view state changes. The clone function on objects are called
 	 * for those viewstate having an object as value.
@@ -255,7 +253,7 @@ class TCallbackPageStateTracker
 			$this->_existingState[$name] = is_object($obj) ? clone($obj) : $obj;
 		}
 	}
-	
+
 	/**
 	 * @array list of viewstate and the changed data.
 	 */
@@ -275,7 +273,7 @@ class TCallbackPageStateTracker
 		}
 		return $changes;
 	}
-		
+
 	/**
 	 * For each of the changes call the corresponding change handlers.
 	 */
@@ -284,7 +282,7 @@ class TCallbackPageStateTracker
 		foreach($this->getChanges() as $change)
 			call_user_func_array($change[0], $change[1]);
 	}
-	
+
 	/**
 	 * @return TCallbackClientScript callback client scripting
 	 */
@@ -292,36 +290,36 @@ class TCallbackPageStateTracker
 	{
 		return $this->_control->getPage()->getCallbackClient();
 	}
-	
+
 	/**
 	 * Updates the tooltip.
 	 * @param string new tooltip
 	 */
 	protected function updateToolTip($value)
 	{
-		$this->client()->setAttribute($this->_control, 'title', $value); 
+		$this->client()->setAttribute($this->_control, 'title', $value);
 	}
-	
+
 	/**
 	 * Updates the tab index.
 	 * @param integer tab index
 	 */
 	protected function updateTabIndex($value)
 	{
-		$this->client()->setAttribute($this->_control, 'tabindex', $value); 
+		$this->client()->setAttribute($this->_control, 'tabindex', $value);
 	}
-	
+
 	/**
 	 * Updates the modifier access key
 	 * @param string access key
 	 */
 	protected function updateAccessKey($value)
 	{
-		$this->client()->setAttribute($this->_control, 'accesskey', $value); 
+		$this->client()->setAttribute($this->_control, 'accesskey', $value);
 	}
-	
+
 	/**
-	 * Hides or shows the control on the client-side. The control must be 
+	 * Hides or shows the control on the client-side. The control must be
 	 * already rendered on the client-side.
 	 * @param boolean true to show the control, false to hide.
 	 */
@@ -332,7 +330,7 @@ class TCallbackPageStateTracker
 		else
 			$this->client()->show($this->_control);
 	}
-	
+
 	/**
 	 * Enables or Disables the control on the client-side.
 	 * @param boolean true to enable the control, false to disable.
@@ -341,7 +339,7 @@ class TCallbackPageStateTracker
 	{
 		$this->client()->setAttribute($this->_control, 'disabled', $enable===false);
 	}
-	
+
 	/**
 	 * Updates the CSS style on the control on the client-side.
 	 * @param array list of new CSS style declarations.
@@ -353,7 +351,7 @@ class TCallbackPageStateTracker
 		if(count($style['Style']) > 0)
 			$this->client()->setStyle($this->_control, $style['Style']);
 	}
-	
+
 	/**
 	 * Updates/adds a list of attributes on the control.
 	 * @param array list of attribute name-value pairs.
@@ -371,12 +369,12 @@ class TCallbackPageStateTracker
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  Thu Jun 22 02:50:45 EST 2006 $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 abstract class TViewStateDiff
 {
 	/**
-	 * @var mixed updated viewstate 
+	 * @var mixed updated viewstate
 	 */
 	protected $_new;
 	/**
@@ -387,9 +385,9 @@ abstract class TViewStateDiff
 	 * @var object null value.
 	 */
 	protected $_null;
-	
+
 	/**
-	 * Constructor. 
+	 * Constructor.
 	 * @param mixed updated viewstate value.
 	 * @param mixed viewstate value at the begining of the request.
 	 * @param object representing the null value.
@@ -400,7 +398,7 @@ abstract class TViewStateDiff
 		$this->_old = $old;
 		$this->_null = $null;
 	}
-	
+
 	/**
 	 * @return mixed view state changes, nullObject if no difference.
 	 */
@@ -409,13 +407,13 @@ abstract class TViewStateDiff
 
 /**
  * TScalarDiff class.
- * 
+ *
  * Calculate the changes to a scalar value.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  Thu Jun 22 02:54:42 EST 2006 $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TScalarDiff extends TViewStateDiff
 {
@@ -424,8 +422,8 @@ class TScalarDiff extends TViewStateDiff
 	 */
 	public function getDifference()
 	{
-		if(gettype($this->_new) === gettype($this->_old) 
-			&& $this->_new === $this->_old) 
+		if(gettype($this->_new) === gettype($this->_old)
+			&& $this->_new === $this->_old)
 			return $this->_null;
 		else
 			return $this->_new;
@@ -434,23 +432,23 @@ class TScalarDiff extends TViewStateDiff
 
 /**
  * TStyleDiff class.
- * 
+ *
  * Calculates the changes to the Style properties.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  Thu Jun 22 02:55:47 EST 2006 $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TStyleDiff extends TViewStateDiff
 {
-	/** 
+	/**
 	 * @param TStyle control style
 	 * @return array all the style properties combined.
 	 */
 	protected function getCombinedStyle($obj)
 	{
-		if(!($obj instanceof TStyle)) 
+		if(!($obj instanceof TStyle))
 			return array();
 		$style = $obj->getStyleFields();
 		$style = array_merge($style,$this->getStyleFromString($obj->getCustomStyle()));
@@ -458,7 +456,7 @@ class TStyleDiff extends TViewStateDiff
 			$style = array_merge($style, $this->getStyleFromString($obj->getFont()->toString()));
 		return $style;
 	}
-	
+
 	/**
 	 * @param string CSS custom style string.
 	 * @param array CSS style as name-value array.
@@ -476,7 +474,7 @@ class TStyleDiff extends TViewStateDiff
 		}
 		return $style;
 	}
-	
+
 	/**
 	 * @return string changes to the CSS class name.
 	 */
@@ -484,16 +482,16 @@ class TStyleDiff extends TViewStateDiff
 	{
 		if(is_null($this->_old))
 		{
-			return !is_null($this->_new) && $this->_new->hasCssClass() 
-						? $this->_new->getCssClass() : null;		
+			return !is_null($this->_new) && $this->_new->hasCssClass()
+						? $this->_new->getCssClass() : null;
 		}
 		else
 		{
-			return $this->_old->getCssClass() !== $this->_new->getCssClass() ? 
+			return $this->_old->getCssClass() !== $this->_new->getCssClass() ?
 				$this->_new->getCssClass() : null;
 		}
 	}
-	
+
 	/**
 	 * @return array list of changes to the control style.
 	 */
@@ -526,13 +524,13 @@ class TStyleDiff extends TViewStateDiff
 
 /**
  * TAttributesDiff class.
- * 
+ *
  * Calculate the changes to attributes collection.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  Thu Jun 22 02:54:42 EST 2006 $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TMapCollectionDiff extends TViewStateDiff
 {
@@ -543,7 +541,7 @@ class TMapCollectionDiff extends TViewStateDiff
 	{
 		if(is_null($this->_old))
 		{
-			return !is_null($this->_new) ? $this->_new->toArray() : $this->_null;			
+			return !is_null($this->_new) ? $this->_new->toArray() : $this->_null;
 		}
 		else
 		{

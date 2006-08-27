@@ -25,7 +25,7 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version : $  Mon Jun 26 00:48:08 EST 2006 $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TActiveRadioButtonList extends TRadioButtonList implements IActiveControl, ICallbackEventHandler
 {

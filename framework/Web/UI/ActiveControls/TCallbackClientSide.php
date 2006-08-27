@@ -1,6 +1,6 @@
 <?php
 /**
- * TCallbackClientSideOptions class file
+ * TCallbackClientSide class file
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link http://www.pradosoft.com/
@@ -9,28 +9,28 @@
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.ActiveControls
  */
- 
+
 /**
- * TCallbackClientSideOptions class.
- * 
+ * TCallbackClientSide class.
+ *
  * The following client side events are executing in order if the callback
  * request and response are send and received successfuly.
- * 
- * - <b>onUninitialized</b> executed when callback request is uninitialized. 
- * - <b>onLoading</b> executed when callback request is initiated 
- * - <b>onLoaded</b> executed when callback request begins. 
- * - <b>onInteractive</b> executed when callback request is in progress. 
+ *
+ * - <b>onUninitialized</b> executed when callback request is uninitialized.
+ * - <b>onLoading</b> executed when callback request is initiated
+ * - <b>onLoaded</b> executed when callback request begins.
+ * - <b>onInteractive</b> executed when callback request is in progress.
  * - <b>onComplete</b>executed when callback response returns.
- * 
+ *
  * The <tt>OnSuccess</tt> and <tt>OnFailure</tt> events are raised when the
  * response is returned. A successful request/response will raise
  * <tt>OnSuccess</tt> event otherwise <tt>OnFailure</tt> will be raised.
- * 
- * - <b>onSuccess</b> executed when callback request returns and is successful. 
+ *
+ * - <b>onSuccess</b> executed when callback request returns and is successful.
  * - <b>onFailure</b> executed when callback request returns and fails.
  * - <b>onException</b> raised when callback request fails due to
  * request/response errors.
- * 
+ *
  * - <b>PostInputs</b> true to collect the form inputs and post them during
  * callback, default is true.
  * - <b>RequestTimeOut</b> The request timeout in milliseconds.
@@ -40,13 +40,13 @@
  * - <b>EnablePageStateUpdate</b> enable the callback response to enable the
  * viewstate update. This will automatically set HasPrority to true when
  * enabled.
- * 
+ *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
-class TCallbackClientSideOptions extends TClientSideOptions
+class TCallbackClientSide extends TClientSideOptions
 {
 	/**
 	 * Returns javascript statement enclosed within a javascript function.
@@ -56,9 +56,9 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	 */
 	protected function ensureFunction($javascript)
 	{
-		return "function(request, result){ {$javascript} }";
+		return "function(sender, parameter){ {$javascript} }";
 	}
-	
+
 	/**
 	 * @return string javascript code for client-side onUninitialized event
 	 */
@@ -66,7 +66,7 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	{
 		return $this->getOption('onUninitialized');
 	}
-	
+
 	/**
 	 * @param string javascript code for client-side onUninitialized event.
 	 */
@@ -74,7 +74,7 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	{
 		$this->setFunction('onUninitialized', $javascript);
 	}
-	
+
 	/**
 	 * @return string javascript code for client-side onLoading event
 	 */
@@ -82,7 +82,7 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	{
 		return $this->getOption('onLoading');
 	}
-	
+
 	/**
 	 * @param string javascript code for client-side onLoading event.
 	 */
@@ -90,7 +90,7 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	{
 		$this->setFunction('onLoading', $javascript);
 	}
-		
+
 	/**
 	 * @return string javascript code for client-side onLoaded event
 	 */
@@ -98,7 +98,7 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	{
 		return $this->getOption('onLoaded');
 	}
-	
+
 	/**
 	 * @param string javascript code for client-side onLoaded event.
 	 */
@@ -113,7 +113,7 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	{
 		return $this->getOption('onInteractive');
 	}
-	
+
 	/**
 	 * @param string javascript code for client-side onInteractive event.
 	 */
@@ -128,7 +128,7 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	{
 		return $this->getOption('onComplete');
 	}
-	
+
 	/**
 	 * @param string javascript code for client-side onComplete event.
 	 */
@@ -143,7 +143,7 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	{
 		return $this->getOption('onSuccess');
 	}
-	
+
 	/**
 	 * @param string javascript code for client-side onSuccess event.
 	 */
@@ -159,7 +159,7 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	{
 		return $this->getOption('onFailure');
 	}
-	
+
 	/**
 	 * @param string javascript code for client-side onFailure event.
 	 */
@@ -167,7 +167,7 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	{
 		$this->setFunction('onFailure', $javascript);
 	}
-	
+
 	/**
 	 * @return string javascript code for client-side onException event
 	 */
@@ -175,15 +175,15 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	{
 		return $this->getOption('onException');
 	}
-	
+
 	/**
 	 * @param string javascript code for client-side onException event.
 	 */
 	public function setOnException($javascript)
 	{
 		$this->setFunction('onException', $javascript);
-	}	
-	
+	}
+
 	/**
 	 * @return boolean true to post the inputs of the form on callback, default
 	 * is post the inputs on callback.
@@ -192,7 +192,7 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	{
 		return $this->getOption('PostInputs');
 	}
-	
+
 	/**
 	 * @param boolean true to post the inputs of the form with callback
 	 * requests. Default is to post the inputs.
@@ -201,7 +201,7 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	{
 		$this->setOption('PostInputs', TPropertyValue::ensureBoolean($value));
 	}
-	
+
 	/**
 	 * @return integer callback request timeout.
 	 */
@@ -209,15 +209,15 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	{
 		return $this->getOption('RequestTimeOut');
 	}
-	
+
 	/**
-	 * @param integer callback request timeout 
+	 * @param integer callback request timeout
 	 */
 	public function setRequestTimeOut($value)
 	{
 		$this->setOption('RequestTimeOut', TPropertyValue::ensureInteger($value));
 	}
-	
+
 	/**
 	 * @return boolean true if the callback request has priority and will abort
 	 * existing prioritized request in order to send immediately. It does not
@@ -228,7 +228,7 @@ class TCallbackClientSideOptions extends TClientSideOptions
 		$option =  $this->getOption('HasPriority');
 		return is_null($option) ? true : $option;
 	}
-	
+
 	/**
 	 * @param boolean true to ensure that the callback request will be sent
 	 * immediately and will abort existing prioritized requests. It does not
@@ -241,7 +241,7 @@ class TCallbackClientSideOptions extends TClientSideOptions
 		if(!$hasPriority)
 			$this->setEnablePageStateUpdate(false);
 	}
-	
+
 	/**
 	 * Set to true to enable the callback response to enable the viewstate
 	 * update. This will automatically set HasPrority to true.
@@ -250,12 +250,12 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	 */
 	public function setEnablePageStateUpdate($value)
 	{
-		$enabled = TPropertyValue::ensureBoolean($value); 
+		$enabled = TPropertyValue::ensureBoolean($value);
 		$this->setOption('EnablePageStateUpdate', $enabled);
-		if($enabled) 
+		if($enabled)
 			$this->setHasPriority(true);
 	}
-	
+
 	/**
 	 * @return boolean client-side viewstate will be updated on callback
 	 * response if true. Default is true.
@@ -265,7 +265,7 @@ class TCallbackClientSideOptions extends TClientSideOptions
 		$option = $this->getOption('EnablePageStateUpdate');
 		return is_null($option) ? true : $option;
 	}
-	
+
 	/**
 	 * @return string post back target ID
 	 */
@@ -273,7 +273,7 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	{
 		return $this->getOption('EventTarget');
 	}
-	
+
 	/**
 	 * @param string post back target ID
 	 */
@@ -291,7 +291,7 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	{
 		return $this->getOption('EventParameter');
 	}
-	
+
 	/**
 	 * @param string post back event parameter.
 	 */
@@ -299,6 +299,6 @@ class TCallbackClientSideOptions extends TClientSideOptions
 	{
 		$this->setOption('EventParameter', $value);
 	}
-} 
+}
 
 ?>

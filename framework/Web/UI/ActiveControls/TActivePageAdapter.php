@@ -1,6 +1,7 @@
 <?php
 /**
- * TActivePageAdapter, TCallbackEventParameter, TCallbackErrorHandler and TInvalidCallbackException class file.
+ * TActivePageAdapter, TCallbackEventParameter, TCallbackErrorHandler
+ * and TInvalidCallbackException class file.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link http://www.pradosoft.com/
@@ -17,16 +18,16 @@ Prado::using('System.Web.UI.ActiveControls.TCallbackResponseAdapter');
 
 /**
  * TActivePageAdapter class.
- * 
+ *
  * Callback request handler.
- * 
+ *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TActivePageAdapter extends TControlAdapter
-{	
+{
 	/**
 	 * Callback response data header name.
 	 */
@@ -43,9 +44,9 @@ class TActivePageAdapter extends TControlAdapter
 	 * Callback page state header name.
 	 */
 	const CALLBACK_PAGESTATE_HEADER = 'X-PRADO-PAGESTATE';
-		
+
 	/**
-	 * @var ICallbackEventHandler callback event handler. 
+	 * @var ICallbackEventHandler callback event handler.
 	 */
 	private $_callbackEventTarget;
 	/**
@@ -64,11 +65,11 @@ class TActivePageAdapter extends TControlAdapter
 	public function __construct(TPage $control)
 	{
 		parent::__construct($control);
-		
+
 		//TODO: can this be done later?
 		$response = $this->getApplication()->getResponse();
 		$response->setAdapter(new TCallbackResponseAdapter($response));
-		
+
 		$this->trapCallbackErrorsExceptions();
 	}
 
@@ -81,7 +82,7 @@ class TActivePageAdapter extends TControlAdapter
 		Prado::trace("ActivePage raiseCallbackEvent()",'System.Web.UI.ActiveControls.TActivePageAdapter');
 		$this->raiseCallbackEvent();
 	}
-	
+
 	/**
 	 * Trap errors and exceptions to be handled by TCallbackErrorHandler.
 	 */
@@ -89,7 +90,7 @@ class TActivePageAdapter extends TControlAdapter
 	{
 		$this->getApplication()->setErrorHandler(new TCallbackErrorHandler);
 	}
-	
+
 	/**
 	 * Render the callback response.
 	 * @param THtmlWriter html content writer.
@@ -98,8 +99,8 @@ class TActivePageAdapter extends TControlAdapter
 	{
 		Prado::trace("ActivePage renderCallbackResponse()",'System.Web.UI.ActiveControls.TActivePageAdapter');
 		$this->renderResponse($writer);
-	}	
-	
+	}
+
 	/**
 	 * Renders the callback response by adding additional callback data and
 	 * javascript actions in the header and page state if required.
@@ -119,7 +120,7 @@ class TActivePageAdapter extends TControlAdapter
 				$response->appendHeader(self::CALLBACK_DATA_HEADER.': '.$data);
 			}
 		}
-		
+
 		//sends page state in header
 		if(($handler = $this->getCallbackEventTarget()) !== null)
 		{
@@ -129,7 +130,7 @@ class TActivePageAdapter extends TControlAdapter
 				$response->appendHeader(self::CALLBACK_PAGESTATE_HEADER.': '.$pagestate);
 			}
 		}
-		
+
 		//safari must receive at least 1 byte of data.
 		$writer->write(" ");
 
@@ -140,7 +141,7 @@ class TActivePageAdapter extends TControlAdapter
 			$this->getPage()->getClientScript()->renderEndScripts($writer);
 			$this->getPage()->getCallbackClient()->evaluateScript($writer);
 		}
-		
+
 		//output the actions
 		$executeJavascript = $this->getCallbackClientHandler()->getClientFunctionsToExecute();
 		$actions = TJavascript::jsonEncode($executeJavascript);
@@ -176,7 +177,7 @@ class TActivePageAdapter extends TControlAdapter
 		 	throw new TInvalidCallbackException('callback_invalid_target', $target);
 		 }
 	}
-	
+
 	/**
 	 * @return TControl the control responsible for the current callback event,
 	 * null if nonexistent
@@ -215,7 +216,7 @@ class TActivePageAdapter extends TControlAdapter
 		}
 		return $this->_callbackEventParameter;
 	}
-	
+
 	/**
 	 * @param mixed postback event parameter
 	 */
@@ -223,10 +224,10 @@ class TActivePageAdapter extends TControlAdapter
 	{
 		$this->_callbackEventParameter=$value;
 	}
-	
+
 	/**
 	 * Gets the callback client script handler. It handlers the javascript functions
-	 * to be executed during the callback response. 
+	 * to be executed during the callback response.
 	 * @return TCallbackClientScript callback client handler.
 	 */
 	public function getCallbackClientHandler()
@@ -234,23 +235,30 @@ class TActivePageAdapter extends TControlAdapter
 		if(is_null($this->_callbackClient))
 			$this->_callbackClient = new TCallbackClientScript;
 		return $this->_callbackClient;
-	}	
+	}
 }
 
 /**
  * TCallbackEventParameter class.
- * 
+ *
  * The TCallbackEventParameter provides the parameter passed during the callback
  * requestion in the {@link getParameter Parameter} property. The
- * callback response response content (e.g. new HTML content) can be written to
- * the {@link getOutput Output} property, which returns an instance of
- * THtmlWriter. The response data (i.e., passing results back to the client-side
- * callback handler function) can be set using {@link setData Data} property. 
- * 
+ * callback response content (e.g. new HTML content) must be rendered
+ * using an THtmlWriter obtained from the {@link getNewWriter NewWriter}
+ * property, which returns a <b>NEW</b> instance of TCallbackResponseWriter.
+ *
+ * Each instance TCallbackResponseWriter is associated with a unique
+ * boundary delimited. By default each panel only renders its own content.
+ * To replace the content of ONE panel with that of rendered from multiple panels
+ * use the same writer instance for the panels to be rendered.
+ *
+ * The response data (i.e., passing results back to the client-side
+ * callback handler function) can be set using {@link setData Data} property.
+ *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TCallbackEventParameter extends TEventParameter
 {
@@ -273,13 +281,13 @@ class TCallbackEventParameter extends TEventParameter
 	}
 
 	/**
-	 * @return THtmlWriter holds the response content.
+	 * @return TCallbackResponseWriter holds the response content.
 	 */
-	public function getOutput()
+	public function getNewWriter()
 	{
 		return $this->_response->createHtmlWriter(null);
 	}
-	
+
 	/**
 	 * @return mixed callback request parameter.
 	 */
@@ -287,7 +295,7 @@ class TCallbackEventParameter extends TEventParameter
 	{
 		return $this->_parameter;
 	}
-	
+
 	/**
 	 * @param mixed callback response data.
 	 */
@@ -295,7 +303,7 @@ class TCallbackEventParameter extends TEventParameter
 	{
 		$this->_response->getAdapter()->setResponseData($value);
 	}
-	
+
 	/**
 	 * @return mixed callback response data.
 	 */
@@ -307,7 +315,7 @@ class TCallbackEventParameter extends TEventParameter
 
 /**
  * TCallbackErrorHandler class.
- * 
+ *
  * Captures errors and exceptions and send them back during callback response.
  * When the application is in debug mode, the error and exception stack trace
  * are shown. A TJavascriptLogger must be present on the client-side to view
@@ -316,7 +324,7 @@ class TCallbackEventParameter extends TEventParameter
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  Sun Jun 18 19:11:47 EST 2006 $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TCallbackErrorHandler extends TErrorHandler
 {
@@ -330,7 +338,7 @@ class TCallbackErrorHandler extends TErrorHandler
 		if($this->getApplication()->getMode()===TApplication::STATE_DEBUG)
 		{
 			$response = $this->getApplication()->getResponse();
-			$trace = TJavascript::jsonEncode($this->getExceptionStackTrace($exception));			
+			$trace = TJavascript::jsonEncode($this->getExceptionStackTrace($exception));
 			$response->appendHeader('HTTP/1.0 500 Internal Error');
 			$response->appendHeader(TActivePageAdapter::CALLBACK_ERROR_HEADER.': '.$trace);
 		}
@@ -341,7 +349,7 @@ class TCallbackErrorHandler extends TErrorHandler
 		}
 		$this->getApplication()->getResponse()->flush();
 	}
-	
+
 	/**
 	 * @param Exception exception details.
 	 * @return array exception stack trace details.
@@ -376,10 +384,10 @@ class TCallbackErrorHandler extends TErrorHandler
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  Sun Jun 18 19:17:13 EST 2006 $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TInvalidCallbackException extends TException
 {
-} 
+}
 
 ?>

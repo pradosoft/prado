@@ -26,7 +26,7 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version : $  Mon Jun 26 00:49:25 EST 2006 $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallbackEventHandler
 {

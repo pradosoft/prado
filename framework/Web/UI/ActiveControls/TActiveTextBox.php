@@ -17,7 +17,7 @@ Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 
 /**
  * TActiveTextBox class.
- * 
+ *
  * TActiveTextBox allows the {@link setText Text} property of the textbox to
  * be changed during callback. When {@link setAutoPostBack AutoPostBack} property
  * is true, changes to the textbox contents will perform a callback request causing
@@ -27,7 +27,7 @@ Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  Sun Jun 18 20:05:16 EST 2006 $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TActiveTextBox extends TTextBox implements ICallbackEventHandler, IActiveControl
 {
@@ -41,7 +41,7 @@ class TActiveTextBox extends TTextBox implements ICallbackEventHandler, IActiveC
 		parent::__construct();
 		$this->setAdapter(new TActiveControlAdapter($this));
 	}
-	
+
 	/**
 	 * @return TBaseActiveCallbackControl standard callback control options.
 	 */
@@ -60,18 +60,18 @@ class TActiveTextBox extends TTextBox implements ICallbackEventHandler, IActiveC
 		if($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData())
 			$this->getPage()->getCallbackClient()->setValue($this, $value);
 	}
-	
+
 	/**
 	 * Raises the callback event. This method is required by {@link
-	 * ICallbackEventHandler} interface. 
+	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter the event parameter
 	 */
  	public function raiseCallbackEvent($param)
 	{
 		$this->onCallback($param);
-	}	
-	
+	}
+
 	/**
 	 * This method is invoked when a callback is requested. The method raises
 	 * 'OnCallback' event to fire up the event handlers. If you override this

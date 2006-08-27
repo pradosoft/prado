@@ -1747,7 +1747,7 @@ framework/Web/UI/ActiveControls/TAutoComplete.php -text
 framework/Web/UI/ActiveControls/TBaseActiveControl.php -text
 framework/Web/UI/ActiveControls/TCallback.php -text
 framework/Web/UI/ActiveControls/TCallbackClientScript.php -text
-framework/Web/UI/ActiveControls/TCallbackClientSideOptions.php -text
+framework/Web/UI/ActiveControls/TCallbackClientSide.php -text
 framework/Web/UI/ActiveControls/TCallbackOptions.php -text
 framework/Web/UI/ActiveControls/TEventTriggeredCallback.php -text
 framework/Web/UI/ActiveControls/TTriggeredCallback.php -text
@@ -1858,6 +1858,8 @@ requirements/messages.txt -text
 requirements/template-bg.html -text
 requirements/template-zh.html -text
 requirements/template.html -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveImageButtonTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveImageButtonTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveLinkButtonTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveLinkButtonTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveListBoxTest.page -text
@@ -1878,6 +1880,9 @@ tests/FunctionalTests/active-controls/protected/pages/TextBoxValidationCallback.
 tests/FunctionalTests/active-controls/protected/pages/TextBoxValidationCallback.php -text
 tests/FunctionalTests/active-controls/protected/pages/ValueTriggerCallbackTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/ValueTriggerCallbackTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/group.gif -text
+tests/FunctionalTests/active-controls/protected/pages/report.gif -text
+tests/FunctionalTests/active-controls/tests/ActiveImageButtonTestCase.php -text
 tests/FunctionalTests/active-controls/tests/ActiveLinkButtonTestCase.php -text
 tests/FunctionalTests/active-controls/tests/ActiveListBoxTestCase.php -text
 tests/FunctionalTests/active-controls/tests/ActiveRadioButtonListTestCase.php -text

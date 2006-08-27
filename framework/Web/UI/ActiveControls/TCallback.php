@@ -20,9 +20,9 @@ Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
  *
  * The TCallback provides a basic callback handler that can be invoke from the
  * client side by running the javascript code obtained from the
- * {@link TBaseActiveCallbackControl::getJavascript ActiveControl.Javascript} property. 
+ * {@link TBaseActiveCallbackControl::getJavascript ActiveControl.Javascript} property.
  * The event {@link onCallback OnCallback} is raise when a callback is requested made.
- * 
+ *
  * Example usage:
  * <code>
  * 	<com:TCallback ID="callback1" OnCallback="callback1_Requested" />
@@ -38,10 +38,10 @@ Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TCallback extends TControl implements ICallbackEventHandler, IActiveControl
-{	
+{
 	/**
 	 * Creates a new callback control, sets the adapter to
 	 * TActiveControlAdapter. If you override this class, be sure to set the
@@ -60,7 +60,7 @@ class TCallback extends TControl implements ICallbackEventHandler, IActiveContro
 	{
 		return $this->getAdapter()->getBaseActiveControl();
 	}
-	
+
 	/**
 	 * Raises the callback event. This method is required by {@link
 	 * ICallbackEventHandler} interface. If {@link getCausesValidation
@@ -69,25 +69,25 @@ class TCallback extends TControl implements ICallbackEventHandler, IActiveContro
 	 * OnCallback} event. This method is mainly used by framework and control
 	 * developers.
 	 * @param TCallbackEventParameter the event parameter
-	 */	
+	 */
 	public function raiseCallbackEvent($param)
 	{
 		if($this->getActiveControl()->canCauseValidation())
 			$this->getPage()->validate($this->getActiveControl()->getValidationGroup());
 		$this->onCallback($param);
 	}
-		
+
 	/**
 	 * This method is invoked when a callback is requested. The method raises
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
 	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
-	 */		
+	 */
 	public function onCallback($param)
 	{
 		$this->raiseEvent('OnCallback', $this, $param);
 	}
-} 
+}
 
 ?>

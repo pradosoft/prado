@@ -22,7 +22,7 @@ Object.extend(Ajax.Request.prototype,
 
 	        (this.options['on' + this.transport.status]
 	         || this.options['on' + (this.responseIsSuccess() ? 'Success' : 'Failure')]
-	         || Prototype.emptyFunction)(transport, json);
+	         || Prototype.emptyFunction)(this, json);
 	  	      } catch (e) {
 	        this.dispatchException(e);
 	      }
@@ -31,7 +31,7 @@ Object.extend(Ajax.Request.prototype,
 	    }
 
 	    try {
-	      (this.options['on' + event] || Prototype.emptyFunction)(transport, json);
+	      (this.options['on' + event] || Prototype.emptyFunction)(this, json);
 	      Ajax.Responders.dispatch('on' + event, this, transport, json);
 	    } catch (e) {
 	      this.dispatchException(e);

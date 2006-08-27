@@ -27,14 +27,14 @@ Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
  * <code>
  * function callback1_requested($sender, $param)
  * {
- * 	   $this->panel1->flush($param->getOutput());
+ * 	   $this->panel1->render($param->getNewWriter());
  * }
  * </code>
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  Sun Jun 18 01:23:54 EST 2006 $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TActivePanel extends TPanel implements IActiveControl
 {

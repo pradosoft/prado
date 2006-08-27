@@ -1,5 +1,26 @@
 <?php
+/**
+ * TTriggeredCallback class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: 27/08/2006 $
+ * @package System.Web.UI.ActiveControls
+ */
 
+/**
+ * TTriggeredCallback abstract Class
+ *
+ * Base class for triggered callback controls. The {@link setControlID ControlID}
+ * property sets the control ID to observe the trigger.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $ 27/08/2006 $
+ * @package System.package
+ * @since version
+ */
 abstract class TTriggeredCallback extends TCallback
 {
 	/**

@@ -471,7 +471,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 */
 	public function setCustomData($value)
 	{
-		$this->getViewState('CustomData',$value,null);
+		$this->setViewState('CustomData',$value,null);
 	}
 
 	/**
@@ -1034,7 +1034,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 */
 	public function getHasInitialized()
 	{
-		return $this->getControlStage() >= self::CS_INITIALIZED;		
+		return $this->getControlStage() >= self::CS_INITIALIZED;
 	}
 
 	/**
@@ -1052,7 +1052,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	{
 		return $this->getControlStage() >= self::CS_LOADED;
 	}
-	
+
 	/**
 	 * @return boolean true if onPreRender event has raised.
 	 */
@@ -1300,14 +1300,14 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 		}
 		$this->_stage=self::CS_PRERENDERED;
 	}
-	
+
 	/**
-	 * Add controls implementing IPostBackDataHandler to post data loaders. 
+	 * Add controls implementing IPostBackDataHandler to post data loaders.
 	 */
 	protected function addToPostDataLoader()
 	{
 		if($this instanceof IPostBackDataHandler)
-			$this->getPage()->registerPostDataLoader($this);		
+			$this->getPage()->registerPostDataLoader($this);
 	}
 
 	/**

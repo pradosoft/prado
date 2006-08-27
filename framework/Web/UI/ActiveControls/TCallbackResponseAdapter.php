@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2006 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version 3.0
+ * @version $Revision: $  Sun Jun 18 07:52:14 EST 2006 $
  * @package System.Web.UI.ActiveControls
  */
 
@@ -24,7 +24,7 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  Sun Jun 18 07:52:14 EST 2006 $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TCallbackResponseAdapter extends THttpResponseAdapter
 {
@@ -91,7 +91,7 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  Sun Jun 18 08:02:21 EST 2006 $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TCallbackResponseWriter extends TTextWriter
 {

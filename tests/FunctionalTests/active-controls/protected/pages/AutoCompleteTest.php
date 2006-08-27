@@ -9,15 +9,15 @@ class AutoCompleteTest extends TPage
 	{
 		$sender->setDataSource($this->matchCountries($param->getParameter()));
 		$sender->dataBind();
-		$sender->flush($param->getOutput());
+		$sender->render($param->getNewWriter());
 		$this->label1->Text = "suggestion for ".$param->getParameter();
 	}
-	
+
 	public function callback_requested($sender, $param)
 	{
 		$this->label1->Text = "Label 1: ".$this->textbox3->Text;
 	}
-	
+
 	protected function matchCountries($token)
 	{
 		$info = Prado::createComponent('System.I18N.core.CultureInfo', 'en');
@@ -31,9 +31,9 @@ class AutoCompleteTest extends TPage
 				$list[] = $country;
 				$count++;
 				if($count > 10) break;
-			}	
+			}
 		}
-		return $list;				 
+		return $list;
 	}
 }
 

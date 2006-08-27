@@ -17,25 +17,25 @@ Prado::using('System.Web.UI.ActiveControls.TActiveTextBox');
 
 /**
  * TAutoComplete class.
- * 
- * TAutoComplete is a textbox that provides a list of suggestion on 
+ *
+ * TAutoComplete is a textbox that provides a list of suggestion on
  * the current partial word typed in the textbox. The suggestions are
  * requested using callbacks, and raises the {@link onSuggestion OnSuggestion}
  * event. The events of the TActiveText (from which TAutoComplete is extended from)
  * and {@link onSuggestion OnSuggestion} are mutually exculsive. That is,
  * if {@link onTextChange OnTextChange} and/or {@link onCallback OnCallback}
  * events are raise, then {@link onSuggestion OnSuggestion} will not be raise, and
- * vice versa. 
- * 
+ * vice versa.
+ *
  * The list of suggestions should be set in the {@link onSuggestion OnSuggestion}
- * event handler. The partial word to match the suggestion is in the 
+ * event handler. The partial word to match the suggestion is in the
  * {@link TCallbackEventParameter::getParameter TCallbackEventParameter::Parameter}
  * property. The datasource of the TAutoComplete must be set using {@link setDataSource}
  * method. This sets the datasource for the suggestions repeater, available through
- * the {@link getSuggestions Suggestions} property. Header, footer templates and 
+ * the {@link getSuggestions Suggestions} property. Header, footer templates and
  * other properties of the repeater can be access via the {@link getSuggestions Suggestions}
  * property (e.g. they can be set in the .page templates).
- * 
+ *
  * To return the list of suggestions back to the browser, in your {@link onSuggestion OnSuggestion}
  * event handler, do
  * <code>
@@ -44,27 +44,27 @@ Prado::using('System.Web.UI.ActiveControls.TActiveTextBox');
  *   $token = $param->getParameter(); //the partial word to match
  *   $sender->setDataSource($this->getSuggestionsFor($token)); //set suggestions
  *   $sender->dataBind();
- *   $sender->flush($param->getOutput()); //sends suggestion back to browser.
+ *   $sender->render($param->getNewWriter()); //sends suggestion back to browser.
  * }
  * </code>
- * 
+ *
  * TAutoComplete allows multiple suggestions within one textbox with each
- * word or phrase separated by any characters specified in the 
+ * word or phrase separated by any characters specified in the
  * {@link setSeparator Separator} property. The {@link setFrequency Frequency}
  * and {@link setMinChars MinChars} properties sets the delay and minimum number
  * of characters typed, respectively, before requesting for sugggestions.
- * 
+ *
  * Use {@link onTextChange OnTextChange} and/or {@link onCallback OnCallback} events
  * to handle post backs due to {@link setAutoPostBack AutoPostBack}.
- * 
+ *
  * In the {@link getSuggestions Suggestions} TRepater item template, all HTML text elements
  * are considered as text for the suggestion. Text within HTML elements with CSS class name
  * "informal" are ignored as text for suggestions.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  Mon Jun 19 03:50:05 EST 2006 $
- * @package System
- * @since 3.0
+ * @package System.Web.UI.ActiveControls
+ * @since 3.1
  */
 class TAutoComplete extends TActiveTextBox implements INamingContainer
 {
@@ -76,7 +76,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	 * @var TPanel result panel holding the suggestion items.
 	 */
 	private $_resultPanel=null;
-	
+
 	/**
 	 * @return string word or token separators (delimiters).
 	 */
@@ -84,7 +84,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	{
 		return $this->getViewState('tokens', '');
 	}
-	
+
 	/**
 	 * @return string word or token separators (delimiters).
 	 */
@@ -92,7 +92,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	{
 		$this->setViewState('tokens', TPropertyValue::ensureString($value), '');
 	}
-	
+
 	/**
 	 * @return float maximum delay (in seconds) before requesting a suggestion.
 	 */
@@ -100,7 +100,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	{
 		return $this->getViewState('frequency', '');
 	}
-	
+
 	/**
 	 * @param float maximum delay (in seconds) before requesting a suggestion.
 	 * Default is 0.4.
@@ -109,7 +109,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	{
 		$this->setViewState('frequency', TPropertyValue::ensureFloat($value),'');
 	}
-	
+
 	/**
 	 * @return integer minimum number of characters before requesting a suggestion.
 	 */
@@ -117,7 +117,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	{
 		return $this->getViewState('minChars','');
 	}
-	
+
 	/**
 	 * @param integer minimum number of characters before requesting a suggestion.
 	 */
@@ -125,17 +125,17 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	{
 		$this->setViewState('minChars', TPropertyValue::ensureInteger($value), '');
 	}
-	
+
 	/**
 	 * Raises the callback event. This method is overrides the parent implementation.
-	 * If {@link setAutoPostBack AutoPostBack} is enabled it will raise 
-	 * {@link onTextChanged OnTextChanged} event event and then the 
+	 * If {@link setAutoPostBack AutoPostBack} is enabled it will raise
+	 * {@link onTextChanged OnTextChanged} event event and then the
 	 * {@link onCallback OnCallback} event. The {@link onSuggest OnSuggest} event is
 	 * raise if the request is to find sugggestions, the {@link onTextChanged OnTextChanged}
 	 * and {@link onCallback OnCallback} events are <b>NOT</b> raised.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter the event parameter
-	 */	
+	 */
  	public function raiseCallbackEvent($param)
 	{
 		$token = $param->getParameter();
@@ -149,17 +149,17 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	}
 
 	/**
-	 * This method is invoked when a autocomplete suggestion is requested. 
+	 * This method is invoked when a autocomplete suggestion is requested.
 	 * The method raises 'OnSuggest' event. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
 	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
-	 */		
+	 */
 	public function onSuggest($param)
 	{
 		$this->raiseEvent('OnSuggest', $this, $param);
 	}
-	
+
 	/**
 	 * @param array data source for suggestions.
 	 */
@@ -167,7 +167,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	{
 		$this->getSuggestions()->setDataSource($data);
 	}
-	
+
 	/**
 	 * @return TPanel suggestion results panel.
 	 */
@@ -177,7 +177,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 			$this->_resultPanel = $this->createResultPanel();
 		return $this->_resultPanel;
 	}
-	
+
 	/**
 	 * @return TPanel new instance of result panel. Default uses TPanel.
 	 */
@@ -188,7 +188,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 		$panel->setID('result');
 		return $panel;
 	}
-	
+
 	/**
 	 * @return TRepeater suggestion list repeater
 	 */
@@ -198,7 +198,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 			$this->_repeater = $this->createRepeater();
 		return $this->_repeater;
 	}
-	
+
 	/**
 	 * @return TRepeater new instance of TRepater to render the list of suggestions.
 	 */
@@ -221,22 +221,24 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 		parent::renderEndTag($writer);
 		$this->renderResultPanel($writer);
 	}
-	
+
 	/**
 	 * Renders the result panel.
 	 * @param THtmlWriter the renderer.
 	 */
 	protected function renderResultPanel($writer)
 	{
-		$this->getResultPanel()->render($writer);	
+		$this->getResultPanel()->render($writer);
 	}
-	
+
 	/**
 	 * Flush and returns the suggestions content back to the browser client.
 	 * @param THtmlWriter the renderer.
 	 */
-	public function flush($writer)
+	public function render($writer)
 	{
+		if(!$this->getPage()->getIsCallback())
+			parent::render($writer);
 		if($this->getActiveControl()->canUpdateClientSide())
 				$this->renderSuggestions($writer);
 	}
@@ -249,12 +251,12 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	{
 		if($this->getSuggestions()->getItems()->getCount() > 0)
 		{
-			$this->getSuggestions()->render($writer); 
+			$this->getSuggestions()->render($writer);
 			$boundary = $writer->getWriter()->getBoundary();
 			$this->getResponse()->getAdapter()->setResponseData($boundary);
-		}		
+		}
 	}
-	
+
 	/**
 	 * @return array list of callback options.
 	 */
@@ -266,7 +268,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 			$string = strtr($string,array('\t'=>"\t",'\n'=>"\n",'\r'=>"\r"));
 			$token = preg_split('//', $string, -1, PREG_SPLIT_NO_EMPTY);
 			$options['tokens'] = TJavascript::encode($token,false);
-		} 
+		}
 		if($this->getAutoPostBack())
 		{
 			$options = array_merge($options,$this->getPostBackOptions());
@@ -277,15 +279,15 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 		$options['EventTarget'] = $this->getUniqueID();
 		return $options;
 	}
-	
+
 	/**
-	 * Override parent implementation, no javascript is rendered here instead 
+	 * Override parent implementation, no javascript is rendered here instead
 	 * the javascript required for active control is registered in {@link addAttributesToRender}.
 	 */
 	protected function renderClientControlScript($writer)
 	{
 	}
-	
+
 	/**
 	 * Ensure that the ID attribute is rendered and registers the javascript code
 	 * for initializing the active control.
@@ -305,21 +307,24 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	protected function getClientClassName()
 	{
 		return 'Prado.WebUI.TAutoComplete';
-	}	
+	}
 }
 
 /**
- * TWizardSideBarTemplate class.
- * TWizardSideBarTemplate is the default template for wizard sidebar.
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
- * @package System.Web.UI.WebControls
- * @since 3.0
+ * TAutoCompleteTemplate class.
+ *
+ * TAutoCompleteTemplate is the default template for TAutoCompleteTemplate
+ * item template.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $  Mon Jun 19 03:50:05 EST 2006 $
+ * @package System.Web.UI.ActiveControls
+ * @since 3.1
  */
 class TAutoCompleteTemplate extends TComponent implements ITemplate
 {
 	private $_template;
-	
+
 	public function __construct($template)
 	{
 		$this->_template = $template;

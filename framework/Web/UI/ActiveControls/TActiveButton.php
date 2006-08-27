@@ -15,23 +15,23 @@
  */
 Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 
-/** 
+/**
  * TActiveButton is the active control counter part to TButton.
- * 
+ *
  * When a TActiveButton is clicked, rather than a normal post back request a
- * callback request is initiated. 
- * 
- * The {@link onCallback OnCallback} event is raised during a callback request 
+ * callback request is initiated.
+ *
+ * The {@link onCallback OnCallback} event is raised during a callback request
  * and it is raise <b>after</b> the {@link onClick OnClick} event.
- * 
+ *
  * When the {@link TBaseActiveCallbackControl::setEnableUpdate ActiveControl.EnableUpdate}
  * property is true, changing the {@link setText Text} property during callback request
  * will update the button's caption upon callback response completion.
- * 
+ *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TActiveButton extends TButton implements ICallbackEventHandler, IActiveControl
 {
@@ -59,7 +59,7 @@ class TActiveButton extends TButton implements ICallbackEventHandler, IActiveCon
 	 * ICallbackEventHandler} interface. If {@link getCausesValidation
 	 * CausesValidation} is true, it will invoke the page's {@link TPage::
 	 * validate validate} method first. It will raise {@link onClick
-	 * OnClick} event first and then the {@link onCallback OnCallback} event. 
+	 * OnClick} event first and then the {@link onCallback OnCallback} event.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter the event parameter
 	 */
@@ -81,8 +81,8 @@ class TActiveButton extends TButton implements ICallbackEventHandler, IActiveCon
 		$this->raiseEvent('OnCallback', $this, $param);
 	}
 
-	/** 
-	 * Updates the button text on the client-side if the 
+	/**
+	 * Updates the button text on the client-side if the
 	 * {@link setEnableUpdate EnableUpdate} property is set to true.
 	 * @param string caption of the button
 	 */
@@ -94,7 +94,7 @@ class TActiveButton extends TButton implements ICallbackEventHandler, IActiveCon
 	}
 
 	/**
-	 * Override parent implementation, no javascript is rendered here instead 
+	 * Override parent implementation, no javascript is rendered here instead
 	 * the javascript required for active control is registered in {@link addAttributesToRender}.
 	 */
 	protected function renderClientControlScript($writer)
@@ -110,7 +110,7 @@ class TActiveButton extends TButton implements ICallbackEventHandler, IActiveCon
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id',$this->getClientID());
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());		
+			$this->getClientClassName(), $this->getPostBackOptions());
 	}
 
 	/**

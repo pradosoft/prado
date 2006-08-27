@@ -17,12 +17,12 @@ Prado::using('System.Web.UI.ActiveControls.TActiveListControlAdapter');
 
 /**
  * TActiveCheckBoxList class.
- * 
- * The active control counter part to checkbox list control. 
- * The {@link setAutoPostBack AutoPostBack} property is set to true by default. 
- * Thus, when a checkbox is clicked a {@link onCallback OnCallback} event is 
- * raised after {@link OnSelectedIndexChanged} event. 
- * 
+ *
+ * The active control counter part to checkbox list control.
+ * The {@link setAutoPostBack AutoPostBack} property is set to true by default.
+ * Thus, when a checkbox is clicked a {@link onCallback OnCallback} event is
+ * raised after {@link OnSelectedIndexChanged} event.
+ *
  * With {@link TBaseActiveControl::setEnableUpdate() ActiveControl.EnabledUpdate}
  * set to true (default is true), changes to the selection will be updated
  * on the client side.
@@ -30,7 +30,7 @@ Prado::using('System.Web.UI.ActiveControls.TActiveListControlAdapter');
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version : $  Sun Jun 25 01:50:27 EST 2006 $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICallbackEventHandler
 {
@@ -53,7 +53,7 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 	{
 		return $this->getAdapter()->getBaseActiveControl();
 	}
-	
+
 	/**
 	 * No client class for this control.
 	 * This method overrides the parent implementation.
@@ -62,8 +62,8 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 	protected function getClientClassName()
 	{
 		return null;
-	}	
-	
+	}
+
 	/**
 	 * Creates a control used for repetition (used as a template).
 	 * @return TControl the control to be repeated
@@ -72,10 +72,10 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 	{
 		return new TActiveCheckBox;
 	}
-	
+
 	/**
 	 * Raises the callback event. This method is required by {@link
-	 * ICallbackEventHandler} interface. 
+	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter the event parameter
 	 */
@@ -94,7 +94,7 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 	public function onCallback($param)
 	{
 		$this->raiseEvent('OnCallback', $this, $param);
-	}	
+	}
 }
 
 ?>

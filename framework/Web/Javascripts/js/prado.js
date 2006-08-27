@@ -360,7 +360,15 @@ Event.stop(event);},onPostBack:function(event,options)
 {if(!this.hasXYInput)
 {this.addXYInput(event,options);this.hasXYInput=true;}
 Prado.PostBack(event,options);},addXYInput:function(event,options)
-{var imagePos=Position.cumulativeOffset(this.element);var clickedPos=[event.clientX,event.clientY];var x=clickedPos[0]-imagePos[0]+1;var y=clickedPos[1]-imagePos[1]+1;var id=options['EventTarget'];var x_input=INPUT({type:'hidden',name:id+'_x',value:x});var y_input=INPUT({type:'hidden',name:id+'_y',value:y});this.element.parentNode.appendChild(x_input);this.element.parentNode.appendChild(y_input);}});Prado.WebUI.TRadioButton=Class.extend(Prado.WebUI.PostBackControl);Prado.WebUI.TRadioButton.prototype.onRadioButtonInitialize=Prado.WebUI.TRadioButton.prototype.initialize;Object.extend(Prado.WebUI.TRadioButton.prototype,{initialize:function(options)
+{imagePos=Position.cumulativeOffset(this.element);clickedPos=[event.clientX,event.clientY];x=clickedPos[0]-imagePos[0]+1;y=clickedPos[1]-imagePos[1]+1;x=x<0?0:x;y=y<0?0:y;id=options['EventTarget'];x_input=$(id+"_x");y_input=$(id+"_y");if(x_input)
+{x_input.value=x;}
+else
+{x_input=INPUT({type:'hidden',name:id+'_x','id':id+'_x',value:x});this.element.parentNode.appendChild(x_input);}
+if(y_input)
+{y_input.value=y;}
+else
+{y_input=INPUT({type:'hidden',name:id+'_y','id':id+'_y',value:y});this.element.parentNode.appendChild(y_input);}
+Logger.info("x="+x+", y="+y);}});Prado.WebUI.TRadioButton=Class.extend(Prado.WebUI.PostBackControl);Prado.WebUI.TRadioButton.prototype.onRadioButtonInitialize=Prado.WebUI.TRadioButton.prototype.initialize;Object.extend(Prado.WebUI.TRadioButton.prototype,{initialize:function(options)
 {this.element=$(options['ID']);if(!this.element.checked)
 this.onRadioButtonInitialize(options);}});Prado.WebUI.TTextBox=Class.extend(Prado.WebUI.PostBackControl,{onInit:function(options)
 {if(options['TextMode']!='MultiLine')

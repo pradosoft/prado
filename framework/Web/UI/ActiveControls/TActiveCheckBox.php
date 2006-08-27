@@ -17,18 +17,18 @@ Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 
 /**
  * TActiveCheckBox class.
- * 
+ *
  * The active control counter part to checkbox. The {@link setAutoPostBack AutoPostBack}
- * property is set to true by default. Thus, when the checkbox is clicked a 
+ * property is set to true by default. Thus, when the checkbox is clicked a
  * {@link onCallback OnCallback} event is raise after {@link OnCheckedChanged} event.
- * 
- * The {@link setText Text} and {@link setChecked Checked} properties can be 
+ *
+ * The {@link setText Text} and {@link setChecked Checked} properties can be
  * changed during a callback.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version : $  Tue Jun 20 01:29:35 EST 2006 $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiveControl
 {
@@ -54,7 +54,7 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 
 	/**
 	 * Raises the callback event. This method is required by {@link
-	 * ICallbackEventHandler} interface. 
+	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter the event parameter
 	 */
@@ -75,8 +75,8 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 		$this->raiseEvent('OnCallback', $this, $param);
 	}
 
-	/** 
-	 * Updates the button text on the client-side if the 
+	/**
+	 * Updates the button text on the client-side if the
 	 * {@link setEnableUpdate EnableUpdate} property is set to true.
 	 * @param string caption of the button
 	 */
@@ -87,10 +87,10 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 			$this->getPage()->getCallbackClient()->update(
 				$this->getDefaultLabelID(), $value);
 	}
-	
+
 	/**
 	 * Sets a value indicating whether the checkbox is to be checked or not.
-	 * Updates checkbox checked state on the client-side if the 
+	 * Updates checkbox checked state on the client-side if the
 	 * {@link setEnableUpdate EnableUpdate} property is set to true.
 	 * @param boolean whether the checkbox is to be checked or not.
 	 */
@@ -100,7 +100,7 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 		parent::setChecked($value);
 		if($this->getActiveControl()->canUpdateClientSide())
 			$this->getPage()->getCallbackClient()->check($this, $value);
-	}	
+	}
 
 	/**
 	 * Registers the javascript code for initializing the active control.
@@ -108,7 +108,7 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 	protected function renderClientControlScript($writer)
 	{
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());		
+			$this->getClientClassName(), $this->getPostBackOptions());
 	}
 
 	/**
@@ -118,9 +118,9 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 	{
 		return 'Prado.WebUI.TActiveCheckBox';
 	}
-	
-	/** 
-	 * Overrides parent implementation to ensure label has ID. 
+
+	/**
+	 * Overrides parent implementation to ensure label has ID.
 	 * @return TMap list of attributes to be rendered for label beside the checkbox
 	 */
 	public function getLabelAttributes()
@@ -129,7 +129,7 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 		$attributes['id'] = $this->getDefaultLabelID();
 		return $attributes;
 	}
-	
+
 	/**
 	 * Renders a label beside the checkbox.
 	 * @param THtmlWriter the writer for the rendering purpose
@@ -140,8 +140,8 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 	{
 		$writer->addAttribute('id', $this->getDefaultLabelID());
 		parent::renderLabel($writer, $clientID, $text);
-	}	
-	
+	}
+
 	/**
 	 * @return string checkbox label ID;
 	 */
@@ -149,7 +149,7 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 	{
 		if($attributes=$this->getViewState('LabelAttributes',null))
 			return $this->getLabelAttributes()->itemAt('id');
-		else 
+		else
 			return $this->getClientID().'_label';
 	}
 }

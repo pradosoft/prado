@@ -20,15 +20,15 @@ Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
  *
  * The active control counterpart of TLabel component. When
  * {@link TBaseActiveControl::setEnableUpdate ActiveControl.EnableUpdate}
- * property is true the during a callback request, setting {@link setText Text} 
- * property will also set the text of the label on the client upon callback 
+ * property is true the during a callback request, setting {@link setText Text}
+ * property will also set the text of the label on the client upon callback
  * completion. Similarly, setting {@link setForControl ForControl} will also set
  * the client-side "for" attribute on the label.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TActiveLabel extends TLabel implements IActiveControl
 {
@@ -42,7 +42,7 @@ class TActiveLabel extends TLabel implements IActiveControl
 		parent::__construct();
 		$this->setAdapter(new TActiveControlAdapter($this));
 	}
-	
+
 	/**
 	 * @return TBaseActiveControl basic active control options.
 	 */
@@ -50,7 +50,7 @@ class TActiveLabel extends TLabel implements IActiveControl
 	{
 		return $this->getAdapter()->getBaseActiveControl();
 	}
-	
+
 	/**
 	 * On callback response, the inner HTMl of the label is updated.
 	 * @param string the text value of the label
@@ -61,7 +61,7 @@ class TActiveLabel extends TLabel implements IActiveControl
 		if($this->getActiveControl()->canUpdateClientSide())
 			$this->getPage()->getCallbackClient()->update($this, $value);
 	}
-	
+
 	/**
 	 * Sets the ID of the control that the label is associated with.
 	 * The control must be locatable via {@link TControl::findControl} using the ID.
@@ -77,6 +77,6 @@ class TActiveLabel extends TLabel implements IActiveControl
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'for', $id);
 		}
 	}
-} 
+}
 
 ?>

@@ -15,15 +15,15 @@
  *
  * The active control counterpart of THyperLink component. When
  * {@link TBaseActiveControl::setEnableUpdate ActiveControl.EnableUpdate}
- * property is true the during a callback request, setting {@link setText Text} 
- * property will also set the text of the label on the client upon callback 
+ * property is true the during a callback request, setting {@link setText Text}
+ * property will also set the text of the label on the client upon callback
  * completion. Similarly, for other properties such as {@link setImageUrl ImageUrl},
  * {@link setNavigateUrl NavigateUrl} and {@link setTarget Target}.
- * 
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version : $  Mon Jun 26 00:08:24 EST 2006 $
  * @package System.Web.UI.ActiveControls
- * @since 3.0
+ * @since 3.1
  */
 class TActiveHyperLink extends THyperLink implements IActiveControl
 {
@@ -37,7 +37,7 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 		parent::__construct();
 		$this->setAdapter(new TActiveControlAdapter($this));
 	}
-	
+
 	/**
 	 * @return TBaseActiveControl basic active control options.
 	 */
@@ -45,7 +45,7 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 	{
 		return $this->getAdapter()->getBaseActiveControl();
 	}
-	
+
 	/**
 	 * On callback response, the inner HTMl of the label is updated.
 	 * @param string the text value of the label
@@ -56,7 +56,7 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 		if($this->getActiveControl()->canUpdateClientSide())
 			$this->getPage()->getCallbackClient()->update($this, $value);
 	}
-	
+
 	/**
 	 * Sets the location of image file of the THyperLink.
 	 * @param string the image file location
@@ -72,7 +72,7 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 			$this->getPage()->getCallbackClient()->update($this, $textWriter->flush());
 		}
 	}
-	
+
 	/**
 	 * Sets the URL to link to when the THyperLink component is clicked.
 	 * @param string the URL
@@ -83,7 +83,7 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 		if($this->getActiveControl()->canUpdateClientSide())
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'href', $value);
 	}
-	
+
 	/**
 	 * Sets the target window or frame to display the Web page content linked to when the THyperLink component is clicked.
 	 * @param string the target window, valid values include '_blank', '_parent', '_self', '_top' and empty string.
@@ -92,8 +92,8 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 	{
 		parent::setTarget($value);
 		if($this->getActiveControl()->canUpdateClientSide())
-			$this->getPage()->getCallbackClient()->setAttribute($this, 'target', $value);		
-	}			
+			$this->getPage()->getCallbackClient()->setAttribute($this, 'target', $value);
+	}
 }
 
 ?>
