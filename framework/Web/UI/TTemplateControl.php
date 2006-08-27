@@ -235,6 +235,8 @@ class TTemplateControl extends TCompositeControl
 			foreach($this->_contents as $id=>$content)
 				$master->injectContent($id,$content);
 		}
+		else if(!empty($this->_contents))
+			throw new TConfigurationException('templatecontrol_mastercontrol_required',get_class($this));
 		parent::initRecursive($namingContainer);
 	}
 }

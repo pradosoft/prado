@@ -26,6 +26,15 @@ Prado::using('System.Web.UI.WebControls.TDataGridColumn');
  * If {@link setReadOnly ReadOnly} is false, TBoundColumn will display cells in edit mode
  * with textboxes. Otherwise, a static text is displayed.
  *
+ * When a datagrid row is in edit mode, the textbox control in the TBoundColumn
+ * can be accessed by one of the following two methods:
+ * <code>
+ * $datagridItem->BoundColumnID->TextBox
+ * $datagridItem->BoundColumnID->Controls[0]
+ * </code>
+ * The second method is possible because the textbox control created within the
+ * datagrid cell is the first child.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
@@ -103,6 +112,7 @@ class TBoundColumn extends TDataGridColumn
 				{
 					$textBox=Prado::createComponent('System.Web.UI.WebControls.TTextBox');
 					$cell->getControls()->add($textBox);
+					$cell->registerObject('TextBox',$textBox);
 					$control=$textBox;
 				}
 				if(($dataField=$this->getDataField())!=='')

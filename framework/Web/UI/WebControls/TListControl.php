@@ -94,6 +94,8 @@ abstract class TListControl extends TDataBoundControl
 	 */
 	private $_cachedSelectedIndex=-1;
 	private $_cachedSelectedValue=null;
+	private $_cachedSelectedIndices=null;
+	private $_cachedSelectedValues=null;
 
 	/**
 	 * @return string tag name of the list control
@@ -213,18 +215,32 @@ abstract class TListControl extends TDataBoundControl
 		// so we make them be effective now
 		if($this->_cachedSelectedValue!==null)
 		{
-			$index=$items->findIndexByValue($this->_cachedSelectedValue);
-			if($index===-1 || ($this->_cachedSelectedIndex!==-1 && $this->_cachedSelectedIndex!==$index))
-				throw new TInvalidDataValueException('listcontrol_selection_invalid',get_class($this));
-			$this->setSelectedIndex($index);
-			$this->_cachedSelectedValue=null;
-			$this->_cachedSelectedIndex=-1;
+			$this->setSelectedValue($this->_cachedSelectedValue);
+			$this->resetCachedSelections();
 		}
 		else if($this->_cachedSelectedIndex!==-1)
 		{
 			$this->setSelectedIndex($this->_cachedSelectedIndex);
-			$this->_cachedSelectedIndex=-1;
+			$this->resetCachedSelections();
 		}
+		else if($this->_cachedSelectedValues!==null)
+		{
+			$this->setSelectedValues($this->_cachedSelectedValues);
+			$this->resetCachedSelections();
+		}
+		else if($this->_cachedSelectedIndices!==null)
+		{
+			$this->setSelectedIndices($this->_cachedSelectedIndices);
+			$this->resetCachedSelections();
+		}
+	}
+
+	private function resetCachedSelections()
+	{
+		$this->_cachedSelectedValue=null;
+		$this->_cachedSelectedIndex=-1;
+		$this->_cachedSelectedValues=null;
+		$this->_cachedSelectedIndices=null;
 	}
 
 	/**
@@ -461,16 +477,22 @@ abstract class TListControl extends TDataBoundControl
 	 */
 	public function setSelectedIndices($indices)
 	{
-		if($this->_items)
+		if($this->getIsMultiSelect())
 		{
-			$this->clearSelection();
-			$n=$this->_items->getCount();
-			foreach($indices as $index)
+			if($this->_items)
 			{
-				if($index>=0 && $index<$n)
-					$this->_items->itemAt($index)->setSelected(true);
+				$this->clearSelection();
+				$n=$this->_items->getCount();
+				foreach($indices as $index)
+				{
+					if($index>=0 && $index<$n)
+						$this->_items->itemAt($index)->setSelected(true);
+				}
 			}
+			$this->_cachedSelectedIndices=$indices;
 		}
+		else
+			throw new TNotSupportedException('listcontrol_multiselect_unsupported',get_class($this));
 
 		if($this->getAdapter() instanceof IListControlAdapter)
 			$this->getAdapter()->setSelectedIndices($indices);
@@ -544,20 +566,26 @@ abstract class TListControl extends TDataBoundControl
 	 */
 	public function setSelectedValues($values)
 	{
-		if($this->_items)
+		if($this->getIsMultiSelect())
 		{
-			$this->clearSelection();
-			$lookup=array();
-			foreach($this->_items as $item)
-				$lookup[$item->getValue()]=$item;
-			foreach($values as $value)
+			if($this->_items)
 			{
-				if(isset($lookup["$value"]))
-					$lookup["$value"]->setSelected(true);
-		    	else
-		    		throw new TInvalidDataValueException('listcontrol_selectedvalue_invalid',get_class($this),$value);
+				$this->clearSelection();
+				$lookup=array();
+				foreach($this->_items as $item)
+					$lookup[$item->getValue()]=$item;
+				foreach($values as $value)
+				{
+					if(isset($lookup["$value"]))
+						$lookup["$value"]->setSelected(true);
+			    	else
+			    		throw new TInvalidDataValueException('listcontrol_selectedvalue_invalid',get_class($this),$value);
+				}
 			}
+			$this->_cachedSelectedValues=$values;
 		}
+		else
+			throw new TNotSupportedException('listcontrol_multiselect_unsupported',get_class($this));
 
 		if($this->getAdapter() instanceof IListControlAdapter)
 			$this->getAdapter()->setSelectedValues($values);

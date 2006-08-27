@@ -40,7 +40,7 @@ class TValidationSummary extends TWebControl
 	 * @var TClientSideValidationSummaryOptions validation client side options.
 	 */
 	private $_clientSide;
-	
+
 	/**
 	 * Constructor.
 	 * This method sets the foreground color to red.
@@ -232,7 +232,7 @@ class TValidationSummary extends TWebControl
 		if($this->getEnableClientScript() && !$cs->isEndScriptRegistered($scriptKey))
 		{
 			$manager['FormID'] = $formID;
-			$options = TJavaScript::encode($manager); 
+			$options = TJavaScript::encode($manager);
 			$cs->registerPradoScript('validator');
 			$cs->registerEndScript($scriptKey, "new Prado.ValidationManager({$options});");
 		}
@@ -262,7 +262,7 @@ class TValidationSummary extends TWebControl
 		$options['Refresh'] = $this->getAutoUpdate();
 		$options['ValidationGroup'] =  $this->getValidationGroup();
 		$options['Display'] = $this->getDisplay();
-		
+
 		if(!is_null($this->_clientSide))
 			$options = array_merge($options,$this->_clientSide->getOptions()->toArray());
 					
@@ -279,7 +279,7 @@ class TValidationSummary extends TWebControl
 			$this->_clientSide = $this->createClientScript();
 		return $this->_clientSide;
 	}
-	
+
 	/**
 	 * @return TClientSideValidationSummaryOptions javascript validation summary
 	 * event options.
@@ -388,20 +388,20 @@ class TValidationSummary extends TWebControl
 
 /**
  * TClientSideValidationSummaryOptions class.
- * 
+ *
  * Client-side validation summary events such as {@link setOnHideSummary
  * OnHideSummary} and {@link setOnShowSummary OnShowSummary} can be modified
  * through the {@link TBaseValidator:: getClientSide ClientSide} property of a
  * validation summary.
- * 
+ *
  * The <tt>OnHideSummary</tt> event is raise when the validation summary
  * requests to hide the messages.
- * 
+ *
  * The <tt>OnShowSummary</tt> event is raised when the validation summary
  * requests to show the messages.
- * 
+ *
  * See the quickstart documentation for further details.
- * 
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
@@ -416,7 +416,7 @@ class TClientSideValidationSummaryOptions extends TClientSideOptions
 	{
 		return $this->getOption('OnHideSummary');	
 	}
-	
+
 	/**
 	 * Client-side OnHideSummary validation summary event is raise when all the
 	 * validators are valid. This will override the default client-side
@@ -427,7 +427,7 @@ class TClientSideValidationSummaryOptions extends TClientSideOptions
 	{
 		$this->setFunction('OnHideSummary', $javascript);
 	}
-	
+
 	/**
 	 * Client-side OnShowSummary event is raise when one or more validators are
 	 * not valid. This will override the default client-side validation summary
@@ -438,7 +438,7 @@ class TClientSideValidationSummaryOptions extends TClientSideOptions
 	{
 		$this->setFunction('OnShowSummary', $javascript);
 	}
-	
+
 	/**
 	 * @return string javascript code for client-side OnShowSummary event.
 	 */

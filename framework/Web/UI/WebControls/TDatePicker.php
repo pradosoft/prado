@@ -19,8 +19,6 @@ Prado::using('System.Web.UI.WebControls.TTextBox');
  *
  * TDatePicker class.
  *
- * Be aware, this control is EXPERIMENTAL and is not stablized yet.
- *
  * TDatePicker displays a text box for date input purpose.
  * When the text box receives focus, a calendar will pop up and users can
  * pick up from it a date that will be automatically entered into the text box.
@@ -69,14 +67,18 @@ Prado::using('System.Web.UI.WebControls.TTextBox');
 class TDatePicker extends TTextBox
 {
 	/**
+	 * @var TDatePickerClientScript validator client-script options.
+	 */
+	private $_clientScript;
+		/**
 	 * AutoPostBack is not supported.
 	 */
 	public function setAutoPostBack($value)
 	{
 		throw new TNotSupportedException('tdatepicker_autopostback_unsupported',
-			get_class($this)); 
+			get_class($this));
 	}
-	
+
 	/**
 	 * @return string the format of the date string
 	 */
@@ -278,13 +280,38 @@ class TDatePicker extends TTextBox
 	{
 		return $this->getText();
 	}
-	
+
 	/**
 	 * @param string date string
 	 */
 	public function setDate($value)
 	{
 		$this->setText($value);
+	}
+
+	/**
+	 * Gets the TDatePickerClientScript to set the TDatePicker event handlers.
+	 *
+	 * The date picker on the client-side supports the following events.
+	 * # <tt>OnDateChanged</tt> -- raised when the date is changed.
+	 *
+	 * You can attach custom javascript code to each of these events
+	 *
+	 * @return TDatePickerClientScript javascript validator event options.
+	 */
+	public function getClientSide()
+	{
+		if(is_null($this->_clientScript))
+			$this->_clientScript = $this->createClientScript();
+		return $this->_clientScript;
+	}
+
+	/**
+	 * @return TDatePickerClientScript javascript validator event options.
+	 */
+	protected function createClientScript()
+	{
+		return new TDatePickerClientScript;
 	}
 
 	/**
@@ -394,7 +421,7 @@ class TDatePicker extends TTextBox
 			$year = intval($values[$key.'$year']);
 		else
 			$year = $date['year'];
-		
+
 		$date = @mktime(0, 0, 0, $month, $day, $year);
 
 		$pattern = $this->getDateFormat();
@@ -421,6 +448,9 @@ class TDatePicker extends TTextBox
 			$options['Trigger'] = $this->getDatePickerButtonID();
 
 		$options = array_merge($options, $this->getCulturalOptions());
+		if(!is_null($this->_clientScript))
+			$options = array_merge($options,
+				$this->_clientScript->getOptions()->toArray());
 		return $options;
 	}
 
@@ -583,7 +613,7 @@ class TDatePicker extends TTextBox
 		$writer->addAttribute('name', $this->getUniqueID().'$month');
 		$writer->addAttribute('class', 'datepicker_month_options');
 		if($this->getReadOnly() || !$this->getEnabled(true))
-			$writer->addAttribute('disabled', 'disabled');		
+			$writer->addAttribute('disabled', 'disabled');
 		$writer->renderBeginTag('select');
 		$this->renderDropDownListOptions($writer,
 					$this->getLocalizedMonthNames($info), $selected-1);
@@ -604,8 +634,8 @@ class TDatePicker extends TTextBox
 		switch($formatter->getMonthPattern())
 		{
 			case 'MMM': return $info->getAbbreviatedMonthNames();
-			case 'MM': 
-				$array = array(); 
+			case 'MM':
+				$array = array();
 				for($i=1;$i<=12;$i++)
 						$array[$i-1] = $i < 10 ? '0'.$i : $i;
 				return $array;
@@ -629,7 +659,7 @@ class TDatePicker extends TTextBox
 		$writer->addAttribute('id', $this->getClientID().'_year');
 		$writer->addAttribute('name', $this->getUniqueID().'$year');
 		if($this->getReadOnly() || !$this->getEnabled(true))
-			$writer->addAttribute('disabled', 'disabled');		
+			$writer->addAttribute('disabled', 'disabled');
 		$writer->renderBeginTag('select');
 		$writer->addAttribute('class', 'datepicker_year_options');
 		$this->renderDropDownListOptions($writer, $years, $selected);
@@ -705,7 +735,7 @@ class TDatePicker extends TTextBox
 		else
 			throw new TConfigurationException('datepicker_calendarstyle_invalid',$style);
 	}
-	
+
 	/**
 	 * Publish the spacer.gif for IE iframe source.
 	 * @return string the URL for the spacer.gif.
@@ -739,15 +769,53 @@ class TDatePicker extends TTextBox
 		{
 			$cs = $this->getPage()->getClientScript();
 			$cs->registerPradoScript("datepicker");
-			
+
 			if(!$cs->isEndScriptRegistered('TDatePicker.spacer'))
 			{
 				$spacer = $this->publishIFrameSpacer();
 				$code = "Prado.WebUI.TDatePicker.spacer = '$spacer';";
 				$cs->registerEndScript('TDatePicker.spacer', $code);
 			}
-			$cs->registerPostBackControl('Prado.WebUI.TDatePicker', $this->getDatePickerOptions());
+
+			$options = TJavaScript::encode($this->getDatePickerOptions());
+			$code = "new Prado.WebUI.TDatePicker($options);";
+			$cs->registerEndScript("prado:".$this->getClientID(), $code);
 		}
+	}
+}
+
+/**
+ * TDatePickerClientScript class.
+ *
+ * Client-side date picker event {@link setOnDateChanged OnDateChanged}
+ * can be modified through the {@link TDatePicker:: getClientSide ClientSide}
+ * property of a date picker.
+ *
+ * The <tt>OnDateChanged</tt> event is raise when the date picker's date
+ * is changed.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TDatePickerClientScript extends TClientSideOptions
+{
+	/**
+	 * Javascript code to execute when the date picker's date is changed.
+	 * @param string javascript code
+	 */
+	public function setOnDateChanged($javascript)
+	{
+		$this->setFunction('OnDateChanged', $javascript);
+	}
+
+	/**
+	 * @return string javascript code to execute when the date picker's date is changed.
+	 */
+	public function getOnDateChanged()
+	{
+		return $this->getOption('OnDateChanged');
 	}
 }
 

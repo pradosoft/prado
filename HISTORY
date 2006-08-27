@@ -10,6 +10,18 @@ NEW: TSessionPageStatePersister (Qiang)
 NEW: SQLMap (Wei)
 NEW: TFeedService, TRssFeedDocument (Knut, Qiang)
 
+Version 3.0.4 September 3, 2006
+===============================
+BUG: Fixed a bug that would prevent from using <prop:> tag in skins (Qiang)
+BUG: Fixed a typo in TControl::setCustomData() (Qiang)
+ENH: Ticket#336 - Speed up TSqliteCache with LIMIT SQL clause (Qiang)
+ENH: TListControl.SelectedValues and SelectedIndices can now be set before databinding (Qiang)
+ENH: Upgrade Scriptaculous javascript library to 1.6.2 (Wei)
+ENH: Cells in TDataGrid rows can now be accessed via the corresponding column IDs (Qiang)
+ENH: Input controls in some datagrid columns can now be accessed in a named fashion (Qiang)
+CHG: Unify all client-side javascript event handler syntax. (Wei)
+CHG: Added more conditions in the requirement checker (Qiang)
+CHG: TControl::findControlsByType() now only returns objects of the specified type (Qiang)
 Version 3.0.3 August 6, 2006
 ============================
 BUG: Ticket#264 - Typos in some exception throw statements (Knut)

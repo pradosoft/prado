@@ -28,6 +28,15 @@ Prado::using('System.Web.UI.WebControls.TCheckBox');
  * TCheckBoxColumn will display an enabled checkbox provided the cells are
  * in edit mode. Otherwise, the checkboxes will be disabled to prevent from editting.
  *
+ * The checkbox control in the TCheckBoxColumn can be accessed by one of
+ * the following two methods:
+ * <code>
+ * $datagridItem->CheckBoxColumnID->CheckBox
+ * $datagridItem->CheckBoxColumnID->Controls[0]
+ * </code>
+ * The second method is possible because the checkbox control created within the
+ * datagrid cell is the first child.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
@@ -87,6 +96,7 @@ class TCheckBoxColumn extends TDataGridColumn
 				$checkBox->setEnabled(false);
 			$cell->setHorizontalAlign('Center');
 			$cell->getControls()->add($checkBox);
+			$cell->registerObject('CheckBox',$checkBox);
 			if($this->getDataField()!=='')
 				$checkBox->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
 		}

@@ -89,7 +89,7 @@ class TJavaScript
 		else
 			return strtr($js,array("\t"=>'\t',"\n"=>'\n',"\r"=>'\r','"'=>'\"','\''=>'\\\'','\\'=>'\\\\'));
 	}
-	
+
 	/**
 	 * @return string considers the string as raw javascript function code
 	 */
@@ -98,16 +98,16 @@ class TJavaScript
 		if(self::isFunction($js))
 			return $js;
 		else
-			return 'javascript:'.$js; 
+			return 'javascript:'.$js;
 	}
-	
+
 	/**
 	 * @return boolean true if string is raw javascript function code, i.e., if
 	 * the string begins with <tt>javascript:</tt>
 	 */
 	public static function isFunction($js)
 	{
-		return preg_match('/^\s*javascript:/', $js);
+		return preg_match('/^\s*javascript:/i', $js);
 	}
 
 	/**
@@ -124,9 +124,9 @@ class TJavaScript
 	 *
 	 * For higher complexity data structures use {@link jsonEncode} and {@link jsonDecode}
 	 * to serialize and unserialize.
-	 * 
+	 *
 	 * Note: strings begining with <tt>javascript:</tt> will be considered as
-	 * raw javascript code and no encoding of that string will be enforced. 
+	 * raw javascript code and no encoding of that string will be enforced.
 	 *
 	 * @param mixed PHP variable to be encoded
 	 * @param boolean whether the output is a map or a list.

@@ -38,6 +38,14 @@ Prado::using('System.Web.UI.WebControls.TDataGridColumn');
  * properties affect the corresponding properties of the edit and update buttons.
  * The cancel button does not cause validation by default.
  *
+ * The command buttons in the column can be accessed by one of the following methods:
+ * <code>
+ * $datagridItem->ButtonColumnID->EditButton (or UpdateButton, CancelButton)
+ * $datagridItem->ButtonColumnID->Controls[0]
+ * </code>
+ * The second method is possible because the button control created within the
+ * datagrid cell is the first child.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
@@ -154,13 +162,21 @@ class TEditCommandColumn extends TDataGridColumn
 	{
 		parent::initializeCell($cell,$columnIndex,$itemType);
 		if($itemType===TDataGrid::IT_ITEM || $itemType===TDataGrid::IT_ALTERNATINGITEM || $itemType===TDataGrid::IT_SELECTEDITEM)
-			$cell->getControls()->add($this->createButton('Edit',$this->getEditText(),false,''));
+		{
+			$button=$this->createButton('Edit',$this->getEditText(),false,'');
+			$cell->getControls()->add($button);
+			$cell->registerObject('EditButton',$button);
+		}
 		else if($itemType===TDataGrid::IT_EDITITEM)
 		{
 			$controls=$cell->getControls();
-			$controls->add($this->createButton('Update',$this->getUpdateText(),$this->getCausesValidation(),$this->getValidationGroup()));
+			$button=$this->createButton('Update',$this->getUpdateText(),$this->getCausesValidation(),$this->getValidationGroup());
+			$controls->add($button);
+			$cell->registerObject('UpdateButton',$button);
 			$controls->add('&nbsp;');
-			$controls->add($this->createButton('Cancel',$this->getCancelText(),false,''));
+			$button=$this->createButton('Cancel',$this->getCancelText(),false,'');
+			$controls->add($button);
+			$cell->registerObject('CancelButton',$button);
 		}
 	}
 

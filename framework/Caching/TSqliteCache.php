@@ -117,7 +117,7 @@ class TSqliteCache extends TCache
 		$error='';
 		if(($this->_db=new SQLiteDatabase($this->_file,0666,$error))===false)
 			throw new TConfigurationException('sqlitecache_connection_failed',$error);
-		if(($res=$this->_db->query('SELECT * FROM sqlite_master WHERE tbl_name=\''.self::CACHE_TABLE.'\' AND type=\'table\''))!=false)
+		if(($res=$this->_db->query('SELECT * FROM sqlite_master WHERE tbl_name=\''.self::CACHE_TABLE.'\' AND type=\'table\' LIMIT 1'))!=false)
 		{
 			if($res->numRows()===0)
 			{
@@ -161,7 +161,7 @@ class TSqliteCache extends TCache
 	 */
 	protected function getValue($key)
 	{
-		$sql='SELECT value FROM '.self::CACHE_TABLE.' WHERE key=\''.$key.'\' AND (expire=0 OR expire>'.time().')';
+		$sql='SELECT value FROM '.self::CACHE_TABLE.' WHERE key=\''.$key.'\' AND (expire=0 OR expire>'.time().') LIMIT 1';
 		if(($ret=$this->_db->query($sql))!=false && ($row=$ret->fetch(SQLITE_ASSOC))!==false)
 			return $row['value'];
 		else

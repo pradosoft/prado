@@ -85,7 +85,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	private $_registered=false;
 	/**
-	 * @var TClientSideValidatorOptions validator client-script options.
+	 * @var TValidatorClientSide validator client-script options.
 	 */
 	private $_clientSide;
 	/**
@@ -167,7 +167,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		$options['ControlCssClass'] = $this->getControlCssClass();
 
 		$options['ControlType'] = $this->getClientControlClass($control);
-		
+
 		//get date format from date picker target control
 		if($control instanceof TDatePicker)
 			$options['DateFormat'] = $control->getDateFormat();
@@ -194,7 +194,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * Gets the TClientSideValidatorOptions that allows modification of the client-
+	 * Gets the TValidatorClientSide that allows modification of the client-
 	 * side validator events.
 	 *
 	 * The client-side validator supports the following events.
@@ -207,21 +207,21 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 *
 	 * You can attach custom javascript code to each of these events
 	 *
-	 * @return TClientSideValidatorOptions javascript validator event options.
+	 * @return TValidatorClientSide javascript validator event options.
 	 */
 	public function getClientSide()
 	{
 		if(is_null($this->_clientSide))
-			$this->_clientSide = $this->createClientSideOptions();
+			$this->_clientSide = $this->createClientSide();
 		return $this->_clientSide;
 	}
 
 	/**
-	 * @return TClientSideValidatorOptions javascript validator event options.
+	 * @return TValidatorClientSide javascript validator event options.
 	 */
-	protected function createClientSideOptions()
+	protected function createClientSide()
 	{
-		return new TClientSideValidatorOptions;
+		return new TValidatorClientSide;
 	}
 
 	/**
@@ -568,11 +568,11 @@ abstract class TBaseValidator extends TLabel implements IValidator
 }
 
 /**
- * TClientSideValidatorOptions class.
+ * TValidatorClientSide class.
  *
  * Client-side validator events can be modified through the {@link
  * TBaseValidator::getClientSide ClientSide} property of a validator. The
- * subproperties of ClientSide are those of the TClientSideValidatorOptions
+ * subproperties of ClientSide are those of the TValidatorClientSide
  * properties. The client-side validator supports the following events.
  *
  * The <tt>OnValidate</tt> event is raise before the validator validation
@@ -590,7 +590,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TClientSideValidatorOptions extends TClientSideOptions
+class TValidatorClientSide extends TClientSideOptions
 {
 	/**
 	 * @return string javascript code for client-side OnValidate event.
@@ -659,10 +659,8 @@ class TClientSideValidatorOptions extends TClientSideOptions
 	 */
 	public function getObserveChanges()
 	{
-		if(($option=$this->getOption('ObserveChanges'))!==null)
-			return $option;
-		else
-			return true;
+		$changes = $this->getOption('ObserveChanges');
+		return is_null($changes) ? true : $changes;
 	}
 
 	/**

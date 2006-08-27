@@ -160,7 +160,7 @@ The summary can be displayed as a list, a bulleted list, or a single paragraph b
 		<li>The <tt>OnError</tt> event is raised after the validator fails validation.</li>
 	</ul>
 	The corresponding events for the client side is available as sub-properties
-	of the <tt>ClientSide</tt> property of the validator. 
+	of the <tt>ClientSide</tt> property of the validator.
 </p>
 <p>The following example pop-up a message saying "hello" when the validator fails on the client-side.
 <com:TTextHighlighter Language="prado" CssClass="source">
@@ -172,18 +172,19 @@ The summary can be displayed as a list, a bulleted list, or a single paragraph b
 </com:TTextHighlighter>
 The resulting client-side event callback function is of the following form.
 <com:TTextHighlighter Language="javascript" CssClass="source">
-function onErrorHandler(validator, sender)
+function onErrorHandler(sender, parameter)
 {
 	alert("hello");
 }
 </com:TTextHighlighter>
-Where <tt>validator</tt> is the current client-side validator and <tt>sender</tt>
+Where <tt>sender</tt> is the current client-side validator and <tt>parameter</tt>
 is the control that invoked the validator.
 </p>
 <h3>Conditional Validation Example</h3>
 <p>
 The following example show the use of client-side and server side validator events. The example
-demonstrates conditional validation. 
+demonstrates conditional validation.
 <com:RunBar PagePath="Controls.Samples.TClientSideValidator.Home" />
 </p>
+
 </com:TContent>

@@ -9,15 +9,15 @@ class Ticket274TestCase extends SeleniumTestCase
 		$this->assertTitle('Verifying Ticket 274');
 		$this->assertNotVisible($base.'validator1');
 		$this->assertNotVisible($base.'validator2');
-		
-		$this->click($base.'button1');		
+
+		$this->clickAndWait($base.'button1');
 		$this->assertVisible($base.'validator1');
 		$this->assertNotVisible($base.'validator2');
-		
+
 		$this->type($base.'MyDate', 'asd');
-		$this->click($base.'button1');
+		$this->clickAndWait($base.'button1');
 		$this->assertVisible($base.'validator1');
-		$this->assertNotVisible($base.'validator2');		
+		$this->assertNotVisible($base.'validator2');
 	}
 }
 

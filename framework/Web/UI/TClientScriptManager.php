@@ -623,12 +623,11 @@ abstract class TClientSideOptions extends TComponent
 
 	/**
 	 * Ensure that the javascript statements are wrapped in a javascript
-	 * function block. Default has no wrapping. Override this method to
-	 * customize the wrapping javascript function block.
+	 * function block as <code>function(sender, parameter){ //code }</code>.
 	 */
 	protected function ensureFunction($javascript)
 	{
-		return $javascript;
+		return "function(sender, parameter){ {$javascript} }";
 	}
 }
 

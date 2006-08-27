@@ -23,16 +23,19 @@
 	>
 
 	<com:TBoundColumn
+		ID="BookTitleColumn"
 		HeaderText="Book Title"
 		HeaderStyle.Width="400px"
 		DataField="title"
 		/>
 	<com:TBoundColumn
+		ID="PublisherColumn"
 		HeaderText="Publisher"
 		HeaderStyle.Width="150px"
 		DataField="publisher"
 		/>
 	<com:TBoundColumn
+		ID="PriceColumn"
 		ItemStyle.HorizontalAlign="Right"
 		ItemStyle.Wrap="false"
 		ItemStyle.Font.Italic="false"
@@ -43,10 +46,11 @@
 		DataFormatString="$%.2f"
 		/>
 	<com:TCheckBoxColumn
+		ID="InStockColumn"
 		HeaderText="In-stock"
 		DataField="instock"
 		/>
-	<com:TTemplateColumn HeaderText="Rating">
+	<com:TTemplateColumn ID="RatingColumn" HeaderText="Rating">
 		<prop:ItemTemplate>
 		<img src="images/star<%#$this->Parent->DataItem['rating']%>.gif" alt="" />
 		</prop:ItemTemplate>
@@ -70,6 +74,7 @@
 		ItemStyle.Font.Italic="false"
 		/>
 	<com:TButtonColumn
+		ID="DeleteColumn"
 		HeaderText="Delete"
 		HeaderStyle.Width="50px"
 		ItemStyle.HorizontalAlign="Center"

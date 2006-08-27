@@ -39,6 +39,14 @@ Prado::using('System.Web.UI.WebControls.TImageButton');
  * The buttons' <b>CausesValidation</b> and <b>ValidationGroup</b> property values
  * are determined by the column's corresponding properties.
  *
+ * The buttons in the column can be accessed by one of the following two methods:
+ * <code>
+ * $datagridItem->ButtonColumnID->Button
+ * $datagridItem->ButtonColumnID->Controls[0]
+ * </code>
+ * The second method is possible because the button control created within the
+ * datagrid cell is the first child.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
@@ -238,6 +246,7 @@ class TButtonColumn extends TDataGridColumn
 			if($this->getDataTextField()!=='' || ($buttonType==='ImageButton' && $this->getDataImageUrlField()!==''))
 				$button->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
 			$cell->getControls()->add($button);
+			$cell->registerObject('Button',$button);
 		}
 	}
 

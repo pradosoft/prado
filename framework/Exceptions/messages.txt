@@ -165,6 +165,7 @@ control_stylesheet_applied				= StyleSheet skin has already been applied to {0}.
 control_id_nonunique					= {0}.ID '{1}' is not unique among all controls under the same naming container.
 
 templatecontrol_mastercontrol_invalid	= Master control must be of type TTemplateControl or a child class.
+templatecontrol_mastercontrol_required	= Control '{0}' requires a master control since the control uses TContent.
 templatecontrol_contentid_duplicated	= TContent ID '{0}' is duplicated.
 templatecontrol_placeholderid_duplicated= TContentPlaceHolder ID '{0}' is duplicated.
 templatecontrol_directive_invalid		= {0}.{1} can only accept a static text string through a template directive.
@@ -192,6 +193,7 @@ listcontrol_selection_invalid			= {0} has an invalid selection that is set befor
 listcontrol_selectedindex_invalid		= {0}.SelectedIndex has an invalid value {1}.
 listcontrol_selectedvalue_invalid		= {0}.SelectedValue has an invalid value '{1}'.
 listcontrol_expression_invalid			= {0} is evaluating an invalid expression '{1}' : {2}
+listcontrol_multiselect_unsupported		= {0} does not support multiselection.
 
 label_associatedcontrol_invalid			= TLabel.AssociatedControl '{0}' cannot be found.
 

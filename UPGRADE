@@ -13,6 +13,17 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
+Upgrading from v3.0.3
+---------------------
+- This change affects existing client-side javascript handlers such as
+  <com:TRequiredFieldValidator ClientSide.OnSuccess="xxx" />
+  All ClientSide javascript event handlers (such as ClientSide.OnSuccess)
+  are by default wrapped within the function block.
+       function(sender, parameter){ // handler code }
+  You may override this behaviour by providing your own javascript statement block
+  as "javascript:MyHandlerFunction", e.g. ClientSide.OnSuccess="javascript:MyHandlerFunction"
+  or ClientSide.OnSuccess="javascript:function(validator,sender){ ... }"
+
 
 Upgrading from v3.0.2
 ---------------------
@@ -41,45 +52,6 @@ Upgrading from v3.0.0
   /index.php/ServiceID/ServiceParam/Name1/Value1/Name2/Value2/...
 - TControl::onBubbleEvent() has been changed to TControl::bubbleEvent().
   This change only affects user controls that override this method.
-
-Upgrading from v3.0.0 RC2
--------------------------
-- Template comment tag is changed from <! ... !> to <!-- ... --!>
-- Remember to clean up 'assets' directory of your PRADO application
-  as Javascript libraries were updated and client-side validators rewritten.
-
-
-Upgrading from v3.0.0 RC1
--------------------------
-- !!! Expressions appeared in a template are now evaluated in PreRender
-  stage. Previously, for template expressions, they are evaluated during
-  rendering stage, while for property expressions, they are done right
-  after the controls are constructed.
-- !!! The context of the expressions appeared in a template is changed
-  to the template control. Previously, it is the component/control
-  associated with the expression.
-- !!! List controls databound with integer-indexed arrays will have
-  the integers as their list item values. Previously, it used the array
-  values as the list item values.
-
-
-Upgrading from v3.0.0 beta
---------------------------
-- THttpSession.UseCustomStorage replaces the previous Storage.
-- Pagers in TDataGrid are now enclosed within panels. The event indicating
-  their creation is changed to OnPagerCreated instead of OnItemCreated.
-- TTextHighlighter.EnableCopyCode defaults to false now.
-- THtmlArea default toolbar and size are modified.
-- TTarFileExtrator is moved to System.IO
-  Cache classes are moved to System.Caching
-  TXmlDocument is moved to System.Xml
-  TLogger, TLogRouter, TDataFieldAccessor, TSimpleDateFormatter are moved to System.Util
-
-
-Upgrading from v3.0.0 alpha
----------------------------
-All event names must start with 'On'.
-
 
 Upgrading from v2.x and v1.x
 ----------------------------
