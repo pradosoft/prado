@@ -7,6 +7,7 @@ ENH: TListControl.SelectedValues and SelectedIndices can now be set before datab
 ENH: Upgrade Scriptaculous javascript library to 1.6.2 (Wei)
 ENH: Cells in TDataGrid rows can now be accessed via the corresponding column IDs (Qiang)
 ENH: Input controls in some datagrid columns can now be accessed in a named fashion (Qiang)
+ENH: Prado::fatalError() now displays function parameter information (Qiang)
 CHG: Unify all client-side javascript event handler syntax. (Wei)
 CHG: Added more conditions in the requirement checker (Qiang)
 CHG: TControl::findControlsByType() now only returns objects of the specified type (Qiang)
