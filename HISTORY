@@ -10,6 +10,7 @@ ENH: Input controls in some datagrid columns can now be accessed in a named fash
 CHG: Unify all client-side javascript event handler syntax. (Wei)
 CHG: Added more conditions in the requirement checker (Qiang)
 CHG: TControl::findControlsByType() now only returns objects of the specified type (Qiang)
+CHG: Moved createdOnTemplate() and addParsedObject() from TControl to TComponent (Qiang)
 
 Version 3.0.3 August 6, 2006
 ============================
