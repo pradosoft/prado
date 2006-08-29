@@ -146,7 +146,6 @@ Object.extend(Prado.WebUI.TImageButton.prototype,
 			y_input = INPUT({type:'hidden',name:id+'_y','id':id+'_y',value:y});
 			this.element.parentNode.appendChild(y_input);
 		}
-		Logger.info("x="+x+", y="+y);
 	}
 });
 

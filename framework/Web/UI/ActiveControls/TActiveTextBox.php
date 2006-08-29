@@ -85,31 +85,6 @@ class TActiveTextBox extends TTextBox implements ICallbackEventHandler, IActiveC
 	}
 
 	/**
-	 * Loads user input data.
-	 * This method is primarly used by framework developers.
-	 * @param string the key that can be used to retrieve data from the input data collection
-	 * @param array the input data collection
-	 * @return boolean whether the data of the component has been changed
-	 */
-	public function loadPostData($key,$values)
-	{
-		$value=$values[$key];
-		if($this->getAutoTrim())
-			$value=trim($value);
-		if(!$this->getReadOnly() && $this->getText()!==$value)
-		{
-			$enabled = $this->getActiveControl()->getEnableUpdate();
-			$this->getActiveControl()->setEnableUpdate(false);
-			$this->setText($value);
-			$this->getActiveControl()->setEnableUpdate($enabled);
-			return true;
-		}
-		else
-			return false;
-	}
-
-
-	/**
 	 * Renders the javascript for textbox.
 	 */
 	protected function renderClientControlScript($writer)

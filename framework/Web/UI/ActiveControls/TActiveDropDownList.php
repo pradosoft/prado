@@ -67,23 +67,6 @@ class TActiveDropDownList extends TDropDownList implements ICallbackEventHandler
 	}
 
 	/**
-	 * Loads user input data.
-	 * Disables ActiveControl.EnableUpdate subproperty during loading post data
-	 * to avoid duplicating selection changes.
-	 * @param string the key that can be used to retrieve data from the input data collection
-	 * @param array the input data collection
-	 * @return boolean whether the data of the component has been changed
-	 */
-	public function loadPostData($key,$values)
-	{
-		$enabled = $this->getActiveControl()->getEnableUpdate();
-		$this->getActiveControl()->setEnableUpdate(false);
-		$result = parent::loadPostData($key, $values);
-		$this->getActiveControl()->setEnableUpdate($enabled);
-		return $result;
-	}
-
-	/**
 	 * Creates a collection object to hold list items. A specialized
 	 * TActiveListItemCollection is created to allow the drop down list options
 	 * to be added.

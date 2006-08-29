@@ -29,12 +29,6 @@ class ActiveListBoxTestCase extends SeleniumTestCase
 		$this->pause(800);
 		$this->assertEmptySelection("list1");
 
-		$this->click('button7');
-		$this->pause(800);
-		$this->click("button1");
-		$this->pause(800);
-		$this->assertSelectedIndexes('list1', '3');
-
 		$this->click('button6');
 		$this->pause(800);
 		$this->click("button1");

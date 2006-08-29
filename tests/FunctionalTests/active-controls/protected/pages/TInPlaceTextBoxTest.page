@@ -1,0 +1,53 @@
+<com:TForm ID="form1">
+
+<style>
+	.textbox, .editor
+	{
+		font-family: Arial, Helvetica, sans-serif;
+		font-size: 1.2em;
+		display: block;
+		width: 20em;
+	}
+
+	.textbox
+	{
+		padding: 2px 0px 4px 2px;
+		border:1px solid #eee;
+	}
+
+
+	.editor
+	{
+		background-color: #ffc;
+	}
+	.loader
+	{
+		 position:absolute;
+		 right:0px;
+		 top:0px;
+		 color:white;
+		 background-color:#900;
+		 padding: 0.5em 1em;
+	}
+</style>
+
+	<h1>TInPlaceTextBox Functional Test</h1>
+
+	<com:TInPlaceTextBox id="label1"
+		OnTextChanged="label1_changed"
+		EditTriggerControlID="link1"
+		TextBoxCssClass="editor"
+		ActiveControl.ClientSide.OnLoading="Element.show('loader')"
+		ActiveControl.ClientSide.OnComplete="Element.hide('loader')"
+		CssClass="textbox" Text="Label 1" />
+<span id="loader" style="display:none;" class="loader">Loading...</span>
+	<a href="#" id="link1">Edit</a>
+	<com:TRequiredFieldValidator
+		ControlToValidate="label1"
+		ErrorMessage="*" />
+
+	<com:TActiveLabel ID="status" Text="Status:" />
+
+	<com:TJavascriptLogger />
+
+</com:TForm>

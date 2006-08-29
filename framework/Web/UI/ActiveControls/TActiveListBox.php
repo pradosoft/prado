@@ -51,22 +51,6 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 	}
 
 	/**
-	 * Loads user input data. Disables the client-side update during loading
-	 * and restore the EnableUpdate of ActiveControl after loading.
-	 * @param string the key that can be used to retrieve data from the input data collection
-	 * @param array the input data collection
-	 * @return boolean whether the data of the component has been changed
-	 */
-	public function loadPostData($key,$values)
-	{
-		$enabled = $this->getActiveControl()->getEnableUpdate();
-		$this->getActiveControl()->setEnableUpdate(false);
-		$result = parent::loadPostData($key, $values);
-		$this->getActiveControl()->setEnableUpdate($enabled);
-		return $result;
-	}
-
-	/**
 	 * Sets the selection mode of the list control (Single, Multiple)
 	 * on the client-side if the  {@link setEnableUpdate EnableUpdate}
 	 * property is set to true.

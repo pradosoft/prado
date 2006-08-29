@@ -153,6 +153,10 @@ class TPage extends TTemplateControl
 	 * @var array post data loader IDs.
 	 */
 	private $_postDataLoaders=array();
+	/**
+	 * @var boolean true if loading post data.
+	 */
+	private $_isLoadingPostData=false;
 
 	/**
 	 * Constructor.
@@ -271,7 +275,7 @@ class TPage extends TTemplateControl
 	protected function processCallbackRequest($writer)
 	{
 		Prado::using('System.Web.UI.ActiveControls.TActivePageAdapter');
-		
+
 		$this->setAdapter(new TActivePageAdapter($this));
 
 		Prado::trace("Page onPreInit()",'System.Web.UI.TPage');
@@ -825,6 +829,7 @@ class TPage extends TTemplateControl
 	 */
 	protected function processPostData($postData,$beforeLoad)
 	{
+		$this->_isLoadingPostData=true;
 		if($beforeLoad)
 			$this->_restPostData=new TMap;
 		foreach($postData as $key=>$value)
@@ -859,6 +864,15 @@ class TPage extends TTemplateControl
 				unset($this->_controlsRequiringPostData[$key]);
 			}
 		}
+		$this->_isLoadingPostData=false;
+	}
+
+	/**
+	 * @return boolean true if loading post data.
+	 */
+	public function getIsLoadingPostData()
+	{
+		return $this->_isLoadingPostData;
 	}
 
 	/**

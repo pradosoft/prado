@@ -119,13 +119,15 @@ class TBaseActiveControl extends TComponent
 	/**
 	 * Returns true if callback response is allowed to update the browser contents.
 	 * Is is true if the control is initilized, and is a callback request and
-	 * the {@link setEnableUpdate EnabledUpdate} property is true.
+	 * the {@link setEnableUpdate EnabledUpdate} property is true and
+	 * the page is not loading post data.
 	 * @return boolean true if the callback response is allowed update
 	 * client-side contents.
 	 */
 	public function canUpdateClientSide()
 	{
 		return 	$this->getControl()->getHasChildInitialized()
+				&& $this->getPage()->getIsLoadingPostData() == false
 				&& $this->getPage()->getIsCallback()
 				&& $this->getEnableUpdate();
 	}
