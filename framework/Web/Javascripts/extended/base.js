@@ -2,10 +2,10 @@
 /**
  * Similar to bindAsEventLister, but takes additional arguments.
  */
-Function.prototype.bindEvent = function() 
+Function.prototype.bindEvent = function()
 {
 	var __method = this, args = $A(arguments), object = args.shift();
-	return function(event) 
+	return function(event)
 	{
 		return __method.apply(object, [event || window.event].concat(args));
 	}
@@ -23,7 +23,7 @@ Class.extend = function(base, definition)
 {
 		var component = Class.create();
 		Object.extend(component.prototype, base.prototype);
-		if(definition) 
+		if(definition)
 			Object.extend(component.prototype, definition);
 		return component;
 }
@@ -139,16 +139,18 @@ Base.implement = function(_interface) {
  * Signals and Slots for Prototype: Easy custom javascript events
  * http://tetlaw.id.au/view/blog/signals-and-slots-for-prototype-easy-custom-javascript-events
  * Andrew Tetlaw
- * Version 1 (2006-05-03)
+ * Version 1.2 (2006-06-19)
  *
  * http://creativecommons.org/licenses/by-sa/2.5/
- */
+ *
 Signal = {
 	throwErrors : true,
 	MT : function(){ return true },
 	connect : function(obj1, func1, obj2, func2, options) {
 		var options = Object.extend({
-			connectOnce : false
+			connectOnce : false,
+			before : false,
+			mutate : function() {return arguments;}
 		}, options || {});
 		if(typeof func1 != 'string' || typeof func2 != 'string') return;
 
@@ -160,8 +162,13 @@ Signal = {
 			// having the slotFunc in a var and setting it by using an anonymous function in this way
 			// is apparently a good way to prevent memory leaks in IE if the objects are DOM nodes.
 			var slotFunc = function() {
-				var args = arguments;
-				var result = sigObj[signame].apply(sigObj,args);
+				var args = [];
+				for(var x = 0; x < arguments.length; x++){
+					args.push(arguments[x]);
+				}
+				args = options.mutate.apply(null,args)
+				var result;
+				if(!options.before) result = sigObj[signame].apply(sigObj,arguments); //default: call sign before slot
 				sigObj[slotsname].each(function(slot){
 					try {
 						if(slot && slot[0]) { // testing for null, a disconnect may have nulled this slot
@@ -171,7 +178,8 @@ Signal = {
 						if(Signal.throwErrors) throw e;
 					}
 				});
-				return result;
+				if(options.before) result = sigObj[signame].apply(sigObj,arguments); //call slot before sig
+				return result; //return sig result
 			};
 			(function() {
 				sigObj[slotsname] = $A([]);
@@ -179,8 +187,8 @@ Signal = {
 				sigObj[func1] = slotFunc;
 			})();
 		}
-		var con = (sigObj[slotsname].length > 0) ? 
-					(options.connectOnce ? !sigObj[slotsname].any(function(slot) { return (slot[0] == slotObj && slot[1] == func2) }) : true) : 
+		var con = (sigObj[slotsname].length > 0) ?
+					(options.connectOnce ? !sigObj[slotsname].any(function(slot) { return (slot[0] == slotObj && slot[1] == func2) }) : true) :
 					true;
 		if(con) {
 			sigObj[slotsname].push([slotObj,func2]);
@@ -230,3 +238,97 @@ Signal = {
 		Signal.disconnect(obj1, func1, obj2, func2, Object.extend(options || {}, {disconnectAll : true}))
 	}
 }
+*/
+
+/*
+ Tests
+
+//   1. Simple Test 1 "hello Fred" should trigger "Fred is a stupid head"
+
+
+      sayHello = function(n) {
+      	alert("Hello! " + n);
+      }
+      moron = function(n) {
+      	alert(n + " is a stupid head");
+      }
+      Signal.connect(null,'sayHello',null,'moron');
+
+      onclick="sayHello('Fred')"
+
+
+//   2. Simple Test 2 repeated insults about Fred
+
+
+      Signal.connect(null,'sayHello2',null,'moron2');
+      Signal.connect(null,'sayHello2',null,'moron2');
+      Signal.connect(null,'sayHello2',null,'moron2');
+
+
+//   3. Simple Test 3 multiple insults about Fred
+
+
+      Signal.connect(null,'sayHello3',null,'moron3');
+      Signal.connect(null,'sayHello3',null,'bonehead3');
+      Signal.connect(null,'sayHello3',null,'idiot3');
+
+
+//   4. Simple Test 4 3 insults about Fred first - 3 then none
+
+
+      Signal.connect(null,'sayHello4',null,'moron4');
+      Signal.connect(null,'sayHello4',null,'moron4');
+      Signal.connect(null,'sayHello4',null,'moron4');
+      Signal.disconnect(null,'sayHello4',null,'moron4');
+      Signal.disconnect(null,'sayHello4',null,'moron4');
+      Signal.disconnect(null,'sayHello4',null,'moron4');
+
+
+//   5. Simple Test 5 connect 3 insults about Fred first - only one, then none
+
+
+      Signal.connect(null,'sayHello5',null,'moron5');
+      Signal.connect(null,'sayHello5',null,'moron5');
+      Signal.connect(null,'sayHello5',null,'moron5');
+      Signal.disconnectAll(null,'sayHello5',null,'moron5');
+
+
+//   6. Simple Test 6 connect 3 insults but only one comes out
+
+
+      Signal.connectOnce(null,'sayHello6',null,'moron6');
+      Signal.connectOnce(null,'sayHello6',null,'moron6');
+      Signal.connectOnce(null,'sayHello6',null,'moron6');
+
+
+//   7. Simple Test 7 connect via objects
+
+
+      var o = {};
+      o.sayHello = function(n) {
+      	alert("Hello! " + n + " (from object o)");
+      }
+      var m = {};
+      m.moron = function(n) {
+      	alert(n + " is a stupid head (from object m)");
+      }
+
+      Signal.connect(o,'sayHello',m,'moron');
+
+      onclick="o.sayHello('Fred')"
+
+
+//   8. Simple Test 8 connect but the insult comes first using {before:true}
+
+
+      Signal.connect(null,'sayHello8',null,'moron8', {before:true});
+
+
+//   9. Simple Test 9 connect but the insult is mutated
+
+
+      Signal.connect(null,'sayHello9',null,'moron9', {mutate:function() { return ['smelly ' + arguments[0]] }});
+
+
+*/
+ */

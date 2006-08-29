@@ -95,7 +95,8 @@ Prado.Element.focus(this.options.FocusElementID);this.visible=true;},updateContr
 control.removeClassName(CssClass);else
 control.addClassName(CssClass);}},hide:function()
 {this.isValid=true;this.updateControl();this.visible=false;},validate:function(invoker)
-{if(typeof(this.options.OnValidate)=="function")
+{if(!this.control)
+this.control=$(this.options.ControlToValidate);if(typeof(this.options.OnValidate)=="function")
 this.options.OnValidate(this,invoker);if(this.enabled)
 this.isValid=this.evaluateIsValid();else
 this.isValid=true;if(this.isValid)

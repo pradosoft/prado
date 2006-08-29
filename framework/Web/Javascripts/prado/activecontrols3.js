@@ -115,7 +115,7 @@ Prado.WebUI.TAutoComplete = Class.extend(Prado.WebUI.TAutoComplete,
 
   	onComplete : function(request, boundary)
   	{
-  		result = Prado.Element.extractContent(request.responseText, boundary);
+  		result = Prado.Element.extractContent(request.transport.responseText, boundary);
   		if(typeof(result) == "string" && result.length > 0)
 			this.updateChoices(result);
 	}

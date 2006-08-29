@@ -222,15 +222,6 @@ class TCallbackClientScript extends TApplicationComponent
 	}
 
 	/**
-	 * Replace the innerHTML of a content with fragements of the response body.
-	 * @param TControl|string control element or element id
-	 */
-/*	public function replaceContent($element)
-	{
-		$this->callClientFunction('Prado.Element.replaceContent', $element);
-	}
-*/
-	/**
 	 * Add a Css class name to the element.
 	 * @param TControl|string control element or element id
 	 * @param string CssClass name to add.

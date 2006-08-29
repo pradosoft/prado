@@ -97,7 +97,7 @@ Object.extend(Prado.Validation,
 		var keys = $H(this.managers).keys();
 		return keys[0];
 	},
-	
+
 	/**
 	 * Check if the validators are valid for a particular form (and group).
 	 * The validators states will not be changed.
@@ -656,6 +656,10 @@ Prado.WebUI.TBaseValidator.prototype =
 	 */
 	validate : function(invoker)
 	{
+		//try to find the control.
+		if(!this.control)
+			this.control = $(this.options.ControlToValidate);
+
 		if(typeof(this.options.OnValidate) == "function")
 			this.options.OnValidate(this, invoker);
 
@@ -765,9 +769,9 @@ Prado.WebUI.TBaseValidator.prototype =
 		return value;
 	},
 
-	/** 
+	/**
 	 * The ControlType property comes from TBaseValidator::getClientControlClass()
-	 * Be sure to update the TBaseValidator::$_clientClass if new cases are added. 
+	 * Be sure to update the TBaseValidator::$_clientClass if new cases are added.
 	 * @return mixed control value to validate
 	 */
 	 getValidationValue : function(control)
@@ -780,7 +784,7 @@ Prado.WebUI.TBaseValidator.prototype =
 	 			if(control.type == "text")
 	 			{
 	 				value = this.trim($F(control));
-	 				
+
 	 				if(this.options.DateFormat)
 	 				{
 	 					date = value.toDate(this.options.DateFormat);
@@ -1125,7 +1129,7 @@ Prado.WebUI.TRangeValidator = Class.extend(Prado.WebUI.TBaseValidator,
 			return true;
 		if(typeof(this.options.DataType) == "undefined")
 			this.options.DataType = "String";
-		
+
 		if(this.options.DataType != "StringLength")
 		{
 			var min = this.convert(this.options.DataType, this.options.MinValue || null);
@@ -1138,7 +1142,7 @@ Prado.WebUI.TRangeValidator = Class.extend(Prado.WebUI.TBaseValidator,
 			var max = this.options.MaxValue || Number.POSITIVE_INFINITY;
 			value = value.length;
 		}
-		
+
 		if(value == null)
 			return false;
 

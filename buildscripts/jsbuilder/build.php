@@ -103,7 +103,8 @@ $libraries = array(
 		'prado/ajax3.js',
 		'extra/json.js',
 		'effects/controls.js',
-		'prado/activecontrols3.js'
+		'prado/activecontrols3.js',
+		'prado/inlineeditor.js'
 //		'effects/dragdrop.js',
 //		'effects/slider.js',
 //		'prado/activecontrols.js'
@@ -174,7 +175,7 @@ foreach($libraries as $jsFile => $sourceFiles)
 	$jsMin -> minify();
 	unset($jsMin);
 	@unlink($tempFile);
-	echo "Saving file {$jsFile}\n"; 
+	echo "Saving file {$jsFile}\n";
 	$builds++;
 }
 

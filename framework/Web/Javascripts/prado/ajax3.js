@@ -262,6 +262,7 @@ Object.extend(Prado.CallbackRequest,
 		},callback.options.RequestTimeOut);
 
 		this.requestInProgress = callback;
+		return true;
 		//Logger.info("dispatched "+this.requestInProgress)
 	},
 
@@ -272,6 +273,7 @@ Object.extend(Prado.CallbackRequest,
 	{
 	//	Logger.info("dispatching normal request");
 		new Ajax.Request(callback.url, callback.options);
+		return true;
 	},
 
 	/**
@@ -460,13 +462,13 @@ Prado.CallbackRequest.prototype =
 		{
 			var form =  this.options.Form || Prado.Validation.getForm();
 			if(Prado.Validation.validate(form,this.options.ValidationGroup,this) == false)
-				return;
+				return false;
 		}
 
 		if(this.options.HasPriority)
-			Prado.CallbackRequest.dispatchPriorityRequest(this);
+			return Prado.CallbackRequest.dispatchPriorityRequest(this);
 		else
-			Prado.CallbackRequest.dispatchNormalRequest(this);
+			return Prado.CallbackRequest.dispatchNormalRequest(this);
 	},
 
 	/**
