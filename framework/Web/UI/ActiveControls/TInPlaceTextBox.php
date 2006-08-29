@@ -190,6 +190,9 @@ class TInPlaceTextBox extends TLabel implements
 		$this->setViewState('ValidationGroup',$value,'');
 	}
 
+	/**
+	 * On text changed.
+	 */
 	public function raisePostDataChangedEvent()
 	{
 		$this->onTextChanged(null);
