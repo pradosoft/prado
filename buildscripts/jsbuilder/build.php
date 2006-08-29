@@ -82,7 +82,7 @@ $libraries = array(
 //		'extra/behaviour.js',
 
 		'extended/date.js',
-	
+
 		//prado core
 		'prado/prado.js',
 		'prado/form.js',
@@ -151,7 +151,7 @@ foreach($libraries as $jsFile => $sourceFiles)
 {
 	if(!empty($requestedLibs) && !in_array($jsFile,$requestedLibs))
 		continue;
-	$libFile=TARGET_DIR.'/'.$jsFile;
+	//$libFile=TARGET_DIR.'/'.$jsFile;
 	echo "\nBuilding $jsFile...\n";
 	$contents='';
 	foreach($sourceFiles as $sourceJsFile)
@@ -159,17 +159,18 @@ foreach($libraries as $jsFile => $sourceFiles)
 		$sourceFile=SOURCE_DIR.'/'.$sourceJsFile;
 		if(!is_file($sourceFile))
 			echo "Source file not found: $sourceFile\n";
-		
+
 		echo "...adding $sourceJsFile\n";
-		$contents.=file_get_contents($sourceFile)."\n\n";		
+		$contents.=file_get_contents($sourceFile)."\n\n";
 	}
-	$tempFile=$libFile.'.tmp';
-	file_put_contents($tempFile,$contents);
-	$jsMin = new JSMin($tempFile, $libFile);
+	$debugFile=TARGET_DIR.'/debug/'.$jsFile;
+	$compressFile=TARGET_DIR.'/compressed/'.$jsFile;
+	file_put_contents($debugFile,$contents);
+	$jsMin = new JSMin($debugFile, $compressFile);
 	$jsMin -> minify();
 	unset($jsMin);
-	@unlink($tempFile);
-	echo "Saving file {$jsFile}\n"; 
+	//@unlink($tempFile);
+	echo "Saving file {$jsFile}\n";
 	$builds++;
 }
 
@@ -184,7 +185,7 @@ if(isset($argv[1]) && preg_match('/(doc)+/', $argv[1]))
 	$command = sprintf(BUILD_DOC, $files);
 	system($command);
 }
-else if($builds > 0)	
+else if($builds > 0)
 	echo "\nJavascript build complete, {$builds} file(s) compressed.";
 else
 	echo "No files to build.";

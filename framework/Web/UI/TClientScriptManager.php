@@ -121,7 +121,7 @@ class TClientScriptManager extends TApplicationComponent
 			$this->_registeredPradoScripts[$name]=true;
 			if(!isset(self::$_pradoScripts[$name]))
 				throw new TInvalidOperationException('csmanager_pradoscript_invalid',$name);
-			$basePath=Prado::getFrameworkPath().'/'.self::SCRIPT_PATH;
+			$basePath=$this->getPradoBaseScriptPath();
 			foreach(self::$_pradoScripts[$name] as $script)
 			{
 				if(!isset($this->_registeredPradoFiles[$script]))
@@ -131,6 +131,15 @@ class TClientScriptManager extends TApplicationComponent
 				}
 			}
 		}
+	}
+
+	protected function getPradoBaseScriptPath()
+	{
+		$basePath = Prado::getFrameworkPath().'/'.self::SCRIPT_PATH;
+		if($this->getApplication()->getMode()===TApplication::STATE_DEBUG)
+			return $basePath.'/debug';
+		else
+			return $basePath.'/compressed';
 	}
 
 	protected function renderPradoScripts($writer)
@@ -146,7 +155,7 @@ class TClientScriptManager extends TApplicationComponent
 		}
 		if($files!=='')
 		{
-			$basePath=Prado::getFrameworkPath().'/'.self::SCRIPT_PATH;
+			$basePath=$this->getPradoBaseScriptPath();
 			$scriptLoader=$basePath.'/'.self::SCRIPT_LOADER;
 			$url=$this->publishFilePath($scriptLoader).'?js='.trim($files,',');
 			if($this->getApplication()->getMode()===TApplication::STATE_DEBUG)
