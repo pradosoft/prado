@@ -317,14 +317,14 @@ class TDatePicker extends TTextBox
 	/**
 	 * Returns the value to be validated.
 	 * This methid is required by IValidatable interface.
-	 * @return integer the value of the property to be validated.
+	 * @return integer the interger timestamp if valid, otherwise the original text.
 	 */
 	public function getValidationPropertyValue()
 	{
-		if($this->getText() === '')
+		if(($text = $this->getText()) === '')
 			return '';
 		$date = $this->getTimeStamp();
-		return $date == null ? '' : $date;
+		return $date == null ? $text : $date;
 	}
 
 	/**

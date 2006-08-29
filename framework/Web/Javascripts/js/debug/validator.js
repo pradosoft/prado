@@ -756,9 +756,9 @@ Prado.WebUI.TBaseValidator.prototype =
 		return value;
 	},
 
-	/** 
+	/**
 	 * The ControlType property comes from TBaseValidator::getClientControlClass()
-	 * Be sure to update the TBaseValidator::$_clientClass if new cases are added. 
+	 * Be sure to update the TBaseValidator::$_clientClass if new cases are added.
 	 * @return mixed control value to validate
 	 */
 	 getValidationValue : function(control)
@@ -771,11 +771,11 @@ Prado.WebUI.TBaseValidator.prototype =
 	 			if(control.type == "text")
 	 			{
 	 				value = this.trim($F(control));
-	 				
-	 				if(this.options.DateFormat)
+
+					if(this.options.DateFormat)
 	 				{
 	 					date = value.toDate(this.options.DateFormat);
-	 					return date == null ? '' : date;
+	 					return date == null ? value : date;
 	 				}
 	 				else
 		 				return value;
@@ -1116,7 +1116,7 @@ Prado.WebUI.TRangeValidator = Class.extend(Prado.WebUI.TBaseValidator,
 			return true;
 		if(typeof(this.options.DataType) == "undefined")
 			this.options.DataType = "String";
-		
+
 		if(this.options.DataType != "StringLength")
 		{
 			var min = this.convert(this.options.DataType, this.options.MinValue || null);
@@ -1129,7 +1129,7 @@ Prado.WebUI.TRangeValidator = Class.extend(Prado.WebUI.TBaseValidator,
 			var max = this.options.MaxValue || Number.POSITIVE_INFINITY;
 			value = value.length;
 		}
-		
+
 		if(value == null)
 			return false;
 
@@ -1268,10 +1268,10 @@ Prado.WebUI.TDataTypeValidator = Class.extend(Prado.WebUI.TBaseValidator,
 {
         evaluateIsValid : function()
         {
-                var value = this.getValidationValue();
-                if(value.length <= 0)
-                        return true;
-                return this.convert(this.options.DataType, value) != null;
+			value = this.getValidationValue();
+			if(value.length <= 0)
+				return true;
+            return this.convert(this.options.DataType, value) != null;
         }
 });
 

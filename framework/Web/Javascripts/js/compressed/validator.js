@@ -127,7 +127,7 @@ control=this.control
 switch(this.options.ControlType)
 {case'TDatePicker':if(control.type=="text")
 {value=this.trim($F(control));if(this.options.DateFormat)
-{date=value.toDate(this.options.DateFormat);return date==null?'':date;}
+{date=value.toDate(this.options.DateFormat);return date==null?value:date;}
 else
 return value;}
 else
@@ -201,5 +201,5 @@ return false;required.each(function(requiredValue)
 var min=typeof(this.options.Min)=="undefined"?Number.NEGATIVE_INFINITY:this.options.Min;var max=typeof(this.options.Max)=="undefined"?Number.POSITIVE_INFINITY:this.options.Max;return exists&&checked>=min&&checked<=max;},getRequiredValues:function()
 {var required=[];if(this.options.Required&&this.options.Required.length>0)
 required=this.options.Required.split(/,\s*/);return required;}});Prado.WebUI.TDataTypeValidator=Class.extend(Prado.WebUI.TBaseValidator,{evaluateIsValid:function()
-{var value=this.getValidationValue();if(value.length<=0)
+{value=this.getValidationValue();if(value.length<=0)
 return true;return this.convert(this.options.DataType,value)!=null;}});
