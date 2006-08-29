@@ -222,7 +222,10 @@ class TAssetManager extends TModule
 	protected function copyDirectory($src,$dst)
 	{
 		if(!is_dir($dst))
+		{
 			@mkdir($dst);
+			@chmod($dst, 0777);
+		}
 		$folder=@opendir($src);
 		while($file=@readdir($folder))
 		{
