@@ -1,0 +1,12 @@
+<com:TContent ID="Content">
+<com:TDatePicker ID="Birthdate"
+	DateFormat="MMM/d/yyyy"
+	FromYear="1900" UpToYear="1990" InputMode="DropDownList" />
+
+<br />
+<%= $this->Birthdate->Date %>
+<br />
+<%= $this->Birthdate->TimeStamp %>
+
+<com:TButton Text="Submit!" />
+</com:TContent>

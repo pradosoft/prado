@@ -286,11 +286,8 @@ class TTemplate extends TApplicationComponent implements ITemplate
 		$directChildren=array();
 		foreach($this->_tpl as $key=>$object)
 		{
-			if($object[0]===-1)
-				$parent=$tplControl;
-			else if(isset($controls[$object[0]]))
-				$parent=$controls[$object[0]];
-			else
+			$parent=isset($controls[$object[0]])?$controls[$object[0]]:$tplControl;
+			if(($parent instanceof TControl) && !$parent->getAllowChildControls())
 				continue;
 			if(isset($object[2]))	// component
 			{
@@ -328,6 +325,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 				}
 				else if($component instanceof TComponent)
 				{
+					$controls[$key]=$component;
 					if(isset($properties['id']))
 					{
 						if(is_array($properties['id']))
@@ -341,7 +339,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					if($parent===$tplControl)
 						$directChildren[]=$component;
 					else
-						$parent->addParsedObject($component);
+						$component->createdOnTemplate($parent);
 				}
 			}
 			else
@@ -370,7 +368,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 		// if the child needs its own child controls.
 		foreach($directChildren as $control)
 		{
-			if($control instanceof TControl)
+			if($control instanceof TComponent)
 				$control->createdOnTemplate($tplControl);
 			else
 				$tplControl->addParsedObject($control);

@@ -3,8 +3,7 @@ Prado.Validation=Class.create();Object.extend(Prado.Validation,{managers:{},vali
 {if(this.managers[formID])
 {return this.managers[formID].validate(groupID,invoker);}
 else
-{throw new Error("Form '"+form+"' is not registered with Prado.Validation");}},getForm:function()
-{var keys=$H(this.managers).keys();return keys[0];},isValid:function(formID,groupID)
+{throw new Error("Form '"+form+"' is not registered with Prado.Validation");}},isValid:function(formID,groupID)
 {if(this.managers[formID])
 return this.managers[formID].isValid(groupID);return true;},addValidator:function(formID,validator)
 {if(this.managers[formID])
@@ -95,8 +94,7 @@ Prado.Element.focus(this.options.FocusElementID);this.visible=true;},updateContr
 control.removeClassName(CssClass);else
 control.addClassName(CssClass);}},hide:function()
 {this.isValid=true;this.updateControl();this.visible=false;},validate:function(invoker)
-{if(!this.control)
-this.control=$(this.options.ControlToValidate);if(typeof(this.options.OnValidate)=="function")
+{if(typeof(this.options.OnValidate)=="function")
 this.options.OnValidate(this,invoker);if(this.enabled)
 this.isValid=this.evaluateIsValid();else
 this.isValid=true;if(this.isValid)
@@ -129,7 +127,7 @@ control=this.control
 switch(this.options.ControlType)
 {case'TDatePicker':if(control.type=="text")
 {value=this.trim($F(control));if(this.options.DateFormat)
-{date=value.toDate(this.options.DateFormat);return date==null?'':date;}
+{date=value.toDate(this.options.DateFormat);return date==null?value:date;}
 else
 return value;}
 else
@@ -203,5 +201,5 @@ return false;required.each(function(requiredValue)
 var min=typeof(this.options.Min)=="undefined"?Number.NEGATIVE_INFINITY:this.options.Min;var max=typeof(this.options.Max)=="undefined"?Number.POSITIVE_INFINITY:this.options.Max;return exists&&checked>=min&&checked<=max;},getRequiredValues:function()
 {var required=[];if(this.options.Required&&this.options.Required.length>0)
 required=this.options.Required.split(/,\s*/);return required;}});Prado.WebUI.TDataTypeValidator=Class.extend(Prado.WebUI.TBaseValidator,{evaluateIsValid:function()
-{var value=this.getValidationValue();if(value.length<=0)
+{value=this.getValidationValue();if(value.length<=0)
 return true;return this.convert(this.options.DataType,value)!=null;}});

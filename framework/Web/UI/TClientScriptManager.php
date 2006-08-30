@@ -133,7 +133,7 @@ class TClientScriptManager extends TApplicationComponent
 				$this->_registeredPradoScripts[$name]=true;
 			else
 				throw new TInvalidOperationException('csmanager_pradoscript_invalid',$name);
-			$basePath=Prado::getFrameworkPath().'/'.self::SCRIPT_PATH;
+			$basePath=$this->getPradoBaseScriptPath();
 			foreach(self::$_pradoScripts[$name] as $script)
 			{
 				if(!isset($this->_publishedPradoFiles[$script]))
@@ -145,6 +145,15 @@ class TClientScriptManager extends TApplicationComponent
 		}
 	}
 
+	protected function getPradoBaseScriptPath()
+	{
+		$basePath = Prado::getFrameworkPath().'/'.self::SCRIPT_PATH;
+		if($this->getApplication()->getMode()===TApplication::STATE_DEBUG)
+			return $basePath.'/debug';
+		else
+			return $basePath.'/compressed';
+	}
+
 	/**
 	 * Renders the <script> tag that will load the javascript library files.
 	 * @param THtmlWriter writer that renders the <script> tag.
@@ -154,7 +163,7 @@ class TClientScriptManager extends TApplicationComponent
 		$files=implode(',',array_keys($this->_publishedPradoFiles));
 		if($files!=='')
 		{
-			$basePath=Prado::getFrameworkPath().'/'.self::SCRIPT_PATH;
+			$basePath=$this->getPradoBaseScriptPath();
 			$scriptLoader=$basePath.'/'.self::SCRIPT_LOADER;
 			$url=$this->publishFilePath($scriptLoader).'?js='.trim($files,',');
 			if($this->getApplication()->getMode()===TApplication::STATE_DEBUG)

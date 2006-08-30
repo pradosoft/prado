@@ -389,12 +389,38 @@ class PradoBase
 			echo ' -- ';
 			if(isset($t['class']))
 				echo $t['class'] . $t['type'];
-			echo $t['function'];
+			echo $t['function'] . '(';
 			if(isset($t['args']) && sizeof($t['args']) > 0)
-				echo '(...)';
-			else
-				echo '()';
-			echo "\n";
+			{
+				$count=0;
+				foreach($t['args'] as $item)
+				{
+					if(is_string($item))
+					{
+						$str=htmlentities(str_replace("\r\n", "", $item), ENT_QUOTES);
+						if (strlen($item) > 70)
+							echo "'". substr($str, 0, 70) . "...'";
+						else
+							echo "'" . $str . "'";
+					}
+					else if (is_int($item) || is_float($item))
+						echo $item;
+					else if (is_object($item))
+						echo get_class($item);
+					else if (is_array($item))
+						echo 'array(' . count($item) . ')';
+					else if (is_bool($item))
+						echo $item ? 'true' : 'false';
+					else if (is_null($item))
+						echo 'NULL';
+					else if (is_resource($item))
+						echo get_resource_type($item);
+					$count++;
+					if (count($t['args']) > $count)
+						echo ', ';
+				}
+			}
+			echo ")\n";
 		}
 		echo '</pre>';
 		exit(1);

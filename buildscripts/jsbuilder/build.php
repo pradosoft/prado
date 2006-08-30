@@ -157,7 +157,7 @@ foreach($libraries as $jsFile => $sourceFiles)
 {
 	if(!empty($requestedLibs) && !in_array($jsFile,$requestedLibs))
 		continue;
-	$libFile=TARGET_DIR.'/'.$jsFile;
+	//$libFile=TARGET_DIR.'/'.$jsFile;
 	echo "\nBuilding $jsFile...\n";
 	$contents='';
 	foreach($sourceFiles as $sourceJsFile)
@@ -169,9 +169,10 @@ foreach($libraries as $jsFile => $sourceFiles)
 		echo "...adding $sourceJsFile\n";
 		$contents.=file_get_contents($sourceFile)."\n\n";
 	}
-	$tempFile=$libFile.'.tmp';
-	file_put_contents($tempFile,$contents);
-	$jsMin = new JSMin($tempFile, $libFile);
+	$debugFile=TARGET_DIR.'/debug/'.$jsFile;
+	$compressFile=TARGET_DIR.'/compressed/'.$jsFile;
+	file_put_contents($debugFile,$contents);
+	$jsMin = new JSMin($debugFile, $compressFile);
 	$jsMin -> minify();
 	unset($jsMin);
 	@unlink($tempFile);

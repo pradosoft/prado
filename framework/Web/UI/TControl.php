@@ -782,11 +782,8 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 */
 	public function dataBind()
 	{
-		Prado::trace("Data bind properties",'System.Web.UI.TControl');
 		$this->dataBindProperties();
-		Prado::trace("onDataBinding()",'System.Web.UI.TControl');
 		$this->onDataBinding(null);
-		Prado::trace("dataBindChildren()",'System.Web.UI.TControl');
 		$this->dataBindChildren();
 	}
 
@@ -795,6 +792,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 */
 	protected function dataBindProperties()
 	{
+		Prado::trace("Data bind properties",'System.Web.UI.TControl');
 		if(isset($this->_rf[self::RF_DATA_BINDINGS]))
 		{
 			if(($context=$this->getTemplateControl())===null)
@@ -823,6 +821,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 */
 	protected function dataBindChildren()
 	{
+		Prado::trace("dataBindChildren()",'System.Web.UI.TControl');
 		if(isset($this->_rf[self::RF_CONTROLS]))
 		{
 			foreach($this->_rf[self::RF_CONTROLS] as $control)
@@ -1082,26 +1081,8 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	}
 
 	/**
-	 * This method is invoked after the control is instantiated by a template.
-	 * When this method is invoked, the control should have a valid TemplateControl
-	 * and has its properties initialized according to template configurations.
-	 * The control, however, has not been added to the page hierarchy yet.
-	 * The default implementation of this method will invoke
-	 * the potential parent control's {@link addParsedObject} to add the control as a child.
-	 * This method can be overriden.
-	 * @param TControl potential parent of this control
-	 * @see addParsedObject
-	 */
-	public function createdOnTemplate($parent)
-	{
-		$parent->addParsedObject($this);
-	}
-
-	/**
-	 * Processes an object that is created during parsing template.
-	 * The object can be either a component or a static text string.
-	 * By default, the object will be added into the child control collection.
-	 * This method can be overriden to customize the handling of newly created objects in template.
+	 * Adds the object instantiated on a template to the child control collection.
+	 * This method overrides the parent implementation.
 	 * Only framework developers and control developers should use this method.
 	 * @param string|TComponent text string or component parsed and instantiated in template
 	 * @see createdOnTemplate
@@ -1361,6 +1342,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 */
 	public function onDataBinding($param)
 	{
+		Prado::trace("onDataBinding()",'System.Web.UI.TControl');
 		$this->raiseEvent('OnDataBinding',$this,$param);
 	}
 

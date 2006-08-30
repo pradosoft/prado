@@ -317,14 +317,14 @@ class TDatePicker extends TTextBox
 	/**
 	 * Returns the value to be validated.
 	 * This methid is required by IValidatable interface.
-	 * @return integer the value of the property to be validated.
+	 * @return integer the interger timestamp if valid, otherwise the original text.
 	 */
 	public function getValidationPropertyValue()
 	{
-		if($this->getText() === '')
+		if(($text = $this->getText()) === '')
 			return '';
 		$date = $this->getTimeStamp();
-		return $date == null ? '' : $date;
+		return $date == null ? $text : $date;
 	}
 
 	/**
@@ -422,7 +422,9 @@ class TDatePicker extends TTextBox
 		else
 			$year = $date['year'];
 
-		$date = @mktime(0, 0, 0, $month, $day, $year);
+		$s = Prado::createComponent('System.Util.TDateTimeStamp');
+		$date = $s->getTimeStamp(0, 0, 0, $month, $day, $year);
+		//$date = @mktime(0, 0, 0, $month, $day, $year);
 
 		$pattern = $this->getDateFormat();
 		$pattern = str_replace(array('MMMM', 'MMM'), array('MM','MM'), $pattern);
@@ -509,7 +511,9 @@ class TDatePicker extends TTextBox
 			$writer->addAttribute('class', $class);
 		$writer->renderBeginTag('span');
 
-		$date = @getdate($this->getTimeStampFromText());
+		$s = Prado::createComponent('System.Util.TDateTimeStamp');
+		$date = $s->getDate($this->getTimeStampFromText());
+		//$date = @getdate($this->getTimeStampFromText());
 
 		$this->renderCalendarSelections($writer, $date);
 
