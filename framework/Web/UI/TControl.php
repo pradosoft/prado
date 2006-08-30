@@ -781,11 +781,8 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 */
 	public function dataBind()
 	{
-		Prado::trace("Data bind properties",'System.Web.UI.TControl');
 		$this->dataBindProperties();
-		Prado::trace("onDataBinding()",'System.Web.UI.TControl');
 		$this->onDataBinding(null);
-		Prado::trace("dataBindChildren()",'System.Web.UI.TControl');
 		$this->dataBindChildren();
 	}
 
@@ -794,6 +791,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 */
 	protected function dataBindProperties()
 	{
+		Prado::trace("Data bind properties",'System.Web.UI.TControl');
 		if(isset($this->_rf[self::RF_DATA_BINDINGS]))
 		{
 			if(($context=$this->getTemplateControl())===null)
@@ -822,6 +820,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 */
 	protected function dataBindChildren()
 	{
+		Prado::trace("dataBindChildren()",'System.Web.UI.TControl');
 		if(isset($this->_rf[self::RF_CONTROLS]))
 		{
 			foreach($this->_rf[self::RF_CONTROLS] as $control)
@@ -1291,6 +1290,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 */
 	public function onDataBinding($param)
 	{
+		Prado::trace("onDataBinding()",'System.Web.UI.TControl');
 		$this->raiseEvent('OnDataBinding',$this,$param);
 	}
 
