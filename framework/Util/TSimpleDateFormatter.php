@@ -168,12 +168,15 @@ class TSimpleDateFormatter
 	/**
 	 * Gets the time stamp from string or integer.
 	 * @param string|int date to parse
-	 * @return int parsed date time stamp
+	 * @return array date info array
 	 */
 	private function getDate($value)
 	{
-		if(is_int($value))
-			return @getdate($value);
+		if(!is_string($value))
+		{
+			$s = Prado::createComponent('System.Util.TDateTimeStamp');
+			return $s->getDate($value);
+		}
 		$date = @strtotime($value);
 		if($date < 0)
 			throw new TInvalidDataValueException('invalid_date', $value);
@@ -199,7 +202,7 @@ class TSimpleDateFormatter
 	 */
 	public function parse($value,$defaultToCurrentTime=true)
 	{
-		if(is_int($value))
+		if(is_int($value) || is_float($value))
 			return $value;
 		else if(!is_string($value))
 			throw new TInvalidDataValueException('date_to_parse_must_be_string', $value);
@@ -303,7 +306,8 @@ class TSimpleDateFormatter
 		else
 		{
 			$day = intval($day) <= 0 ? 1 : intval($day);
-			return @mktime(0, 0, 0, $month, $day, $year);
+			$s = Prado::createComponent('System.Util.TDateTimeStamp');
+			return $s->getTimeStamp(0, 0, 0, $month, $day, $year);
 		}
 	}
 
