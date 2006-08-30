@@ -113,6 +113,22 @@ class THead extends TControl
 	}
 
 	/**
+	 * @return string the URL for the shortcut icon of the page. Defaults to ''.
+	 */
+	public function getShortcutIcon()
+	{
+		return $this->getViewState('ShortcutIcon','');
+	}
+
+	/**
+	 * @param string the URL for the shortcut icon of the page.
+	 */
+	public function setShortcutIcon($url)
+	{
+		$this->setViewState('ShortcutIcon',$url,'');
+	}
+
+	/**
 	 * @return TMetaTagCollection meta tag collection
 	 */
 	public function getMetaTags()
@@ -136,6 +152,9 @@ class THead extends TControl
 		$writer->write("<head>\n<title>".THttpUtility::htmlEncode($title)."</title>\n");
 		if(($baseUrl=$this->getBaseUrl())!=='')
 			$writer->write('<base href="'.$baseUrl."\" />\n");
+		if(($icon=$this->getShortcutIcon())!=='')
+			$writer->write('<link rel="shortcut icon" href="'.$icon."\" />\n");
+
 		if(($metaTags=$this->getMetaTags())!==null)
 		{
 			foreach($metaTags as $metaTag)
