@@ -458,8 +458,6 @@ Signal = {
 
       Signal.connect(null,'sayHello9',null,'moron9', {mutate:function() { return ['smelly ' + arguments[0]] }});
 
-
-*/
  */
 
 Object.extend(String.prototype, {
