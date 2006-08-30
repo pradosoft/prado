@@ -1,7 +1,7 @@
 <com:TForm ID="form1">
 
 <style>
-	.textbox, .editor
+	.textbox
 	{
 		font-family: Arial, Helvetica, sans-serif;
 		font-size: 1.2em;
@@ -16,7 +16,7 @@
 	}
 
 
-	.editor
+	input.textbox
 	{
 		background-color: #ffc;
 	}
@@ -29,6 +29,11 @@
 		 background-color:#900;
 		 padding: 0.5em 1em;
 	}
+	input.required
+	{
+		border: 1px solid red;
+		background-color: pink;
+	}
 </style>
 
 	<h1>TInPlaceTextBox Functional Test</h1>
@@ -36,15 +41,21 @@
 	<com:TInPlaceTextBox id="label1"
 		OnTextChanged="label1_changed"
 		EditTriggerControlID="link1"
-		TextBoxCssClass="editor"
-		ActiveControl.ClientSide.OnLoading="Element.show('loader')"
-		ActiveControl.ClientSide.OnComplete="Element.hide('loader')"
-		CssClass="textbox" Text="Label 1" />
-<span id="loader" style="display:none;" class="loader">Loading...</span>
-	<a href="#" id="link1">Edit</a>
+		CssClass="textbox"
+		Text="Label 1">
+		<prop:ActiveControl.ClientSide
+			OnLoading="Element.show('loader')"
+			OnComplete="Element.hide('loader')" />
+	</com:TInPlaceTextBox>
+
 	<com:TRequiredFieldValidator
 		ControlToValidate="label1"
+		ControlCssClass="required"
 		ErrorMessage="*" />
+
+	<span id="loader" style="display:none;" class="loader">Loading...</span>
+
+	<a href="#" id="link1">Edit</a>
 
 	<com:TActiveLabel ID="status" Text="Status:" />
 

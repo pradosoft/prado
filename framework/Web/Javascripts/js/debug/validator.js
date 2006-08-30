@@ -90,6 +90,15 @@ Object.extend(Prado.Validation,
 	},
 
 	/**
+	 * @return string first form ID.
+	 */
+	getForm : function()
+	{
+		var keys = $H(this.managers).keys();
+		return keys[0];
+	},
+
+	/**
 	 * Check if the validators are valid for a particular form (and group).
 	 * The validators states will not be changed.
 	 * The <tt>validate</tt> function should be called first.
@@ -647,6 +656,16 @@ Prado.WebUI.TBaseValidator.prototype =
 	 */
 	validate : function(invoker)
 	{
+		//try to find the control.
+		if(!this.control)
+			this.control = $(this.options.ControlToValidate);
+
+		if(!this.control)
+		{
+			this.isValid = true;
+			return this.isValid;
+		}
+
 		if(typeof(this.options.OnValidate) == "function")
 			this.options.OnValidate(this, invoker);
 

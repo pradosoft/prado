@@ -10,7 +10,6 @@
  * @package System.Web.UI.ActiveControls
  */
 
-
 /**
  * TActiveRadioButton class.
  *

@@ -90,10 +90,26 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 	 */
 	createTextBox : function()
 	{
-		cssClass= this.options.TextBoxCssClass || 'editor_field';
+		cssClass= this.element.className || '';
 		inputName = this.options.EventTarget;
 		options = {'className' : cssClass, name : inputName, id : this.options.TextBoxID};
-		this.editField = this.options.TextMode == 'SingleLine' ? INPUT(options) : TEXTAREA(options);
+		if(this.options.TextMode == 'SingleLine')
+		{
+			if(this.options.MaxLength > 0)
+				options['maxlength'] = this.options.MaxLength;
+			this.editField = INPUT(options);
+		}
+		else
+		{
+			if(this.options.Rows > 0)
+				options['rows'] = this.options.Rows;
+			if(this.options.Columns > 0)
+				options['cols'] = this.options.Columns;
+			if(this.options.Wrap)
+				options['wrap'] = 'off';
+			this.editField = TEXTAREA(options);
+		}
+
 		this.editField.style.display="none";
 		this.element.parentNode.insertBefore(this.editField,this.element)
 
@@ -137,12 +153,14 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 	onTextBoxBlur : function(e)
 	{
 		text = this.element.innerHTML;
-		if(text != this.editField.value)
+		if(this.options.AutoPostBack && text != this.editField.value)
 			this.onTextChanged(text);
 		else
 		{
+			this.element.innerHTML = this.editField.value;
 			this.isEditing = false;
-			this.showLabel();
+			if(this.options.AutoHide)
+				this.showLabel();
 		}
 	},
 
@@ -195,8 +213,10 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 	{
 		this.isSaving = false;
 		this.isEditing = false;
-		this.showLabel();
+		if(this.options.AutoHide)
+			this.showLabel();
 		this.element.innerHTML = parameter == null ? this.editField.value : parameter;
+		this.editField.disabled = false;
 	},
 
 	onTextChangedFailure : function(sender, parameter)

@@ -660,6 +660,12 @@ Prado.WebUI.TBaseValidator.prototype =
 		if(!this.control)
 			this.control = $(this.options.ControlToValidate);
 
+		if(!this.control)
+		{
+			this.isValid = true;
+			return this.isValid;
+		}
+
 		if(typeof(this.options.OnValidate) == "function")
 			this.options.OnValidate(this, invoker);
 

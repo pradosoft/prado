@@ -1,32 +1,82 @@
 <?php
+/**
+ * TInPlaceTextBox class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Revision: 30/08/2006 $
+ * @package System.Web.UI.ActiveControls
+ */
 
-class TInPlaceTextBox extends TLabel implements
-	IActiveControl, ICallbackEventHandler, IPostBackDataHandler, IValidatable
+/**
+ * TInPlaceTextBox Class
+ * *
+ * TInPlaceTextBox is a component rendered as a label and allows its
+ * contents to be edited by changing the label to a textbox when
+ * the label is clicked or when another control or html element with
+ * ID given by {@link setEditTriggerControlID EditTriggerControlID} is clicked.
+ *
+ * If the {@link OnLoadingText} event is handled, a callback request is
+ * made when the label is clicked, while the request is being made the
+ * textbox is disabled from editing. The {@link OnLoadingText} event allows
+ * you to update the content of the textbox before the client is allowed
+ * to edit the content. After the callback request returns successfully,
+ * the textbox is enabled and the contents is then allowed to be edited.
+ *
+ * Once the textbox loses focus, if {@link setAutoPostBack AutoPostBack}
+ * is true and the textbox content has changed, a callback request is made and
+ * the {@link OnTextChanged} event is raised like that of the TActiveTextBox.
+ * During the request, the textbox is disabled.
+ *
+ * After the callback request returns sucessfully, the textbox is enabled.
+ * If the {@link setAutoHideTextBox AutoHideTextBox} property is true, then
+ * the textbox will be hidden and the label is then shown.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Revision: $ 30/08/2006 $
+ * @package System.Web.UI.ActiveControls
+ * @since 3.1
+ */
+class TInPlaceTextBox extends TActiveTextBox
 {
 	/**
-	 * Creates a new callback control, sets the adapter to
-	 * TActiveControlAdapter. If you override this class, be sure to set the
-	 * adapter appropriately by, for example, by calling this constructor.
+	 * Sets the auto post back to true by default.
 	 */
 	public function __construct()
 	{
 		parent::__construct();
-		$this->setAdapter(new TActiveControlAdapter($this));
+		$this->setAutoPostBack(true);
 	}
 
 	/**
-	 * @return TBaseActiveControl basic active control options.
+	 * @param boolean true to hide the textbox after losing focus.
 	 */
-	public function getActiveControl()
+	public function setAutoHideTextBox($value)
 	{
-		return $this->getAdapter()->getBaseActiveControl();
+		$this->setViewState('AutoHide', TPropertyValue::ensureBoolean($value), true);
 	}
 
+	/**
+	 * @return boolean true will hide the textbox after losing focus.
+	 */
+	public function getAutoHideTextBox()
+	{
+		return $this->getViewState('AutoHide', true);
+	}
+
+	/**
+	 * @param string ID of the control that can trigger to edit the textbox
+	 */
 	public function setEditTriggerControlID($value)
 	{
 		$this->setViewState('EditTriggerControlID', $value);
 	}
 
+	/**
+	 * @return string ID of the control that can trigger to edit the textbox
+	 */
 	public function getEditTriggerControlID()
 	{
 		return $this->getViewState('EditTriggerControlID');
@@ -45,53 +95,62 @@ class TInPlaceTextBox extends TLabel implements
 	}
 
 	/**
+	 * On callback response, the inner HTMl of the label and the
+	 * value of the textbox is updated
+	 * @param string the text value of the label
+	 */
+	public function setText($value)
+	{
+		TTextBox::setText($value);
+		if($this->getActiveControl()->canUpdateClientSide())
+		{
+			$client = $this->getPage()->getCallbackClient();
+			$client->update($this->getLabelClientID(), $value);
+			$client->setValue($this, $value);
+		}
+	}
+
+	/**
+	 * @return string tag name of the label.
+	 */
+	protected function getTagName()
+	{
+		return 'span';
+	}
+
+	/**
 	 * Adds attributes to renderer.
 	 * @param THtmlWriter the renderer
 	 * @throws TInvalidDataValueException if associated control cannot be found using the ID
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		parent::addAttributesToRender($writer);
+		TWebControl::addAttributesToRender($writer);
+		$page=$this->getPage();
+		$page->ensureRenderInForm($this);
 		$writer->addAttribute('id', $this->getLabelClientID());
-		$this->renderClientControlScript($writer);
+		if(!$this->getReadOnly())
+			$this->renderClientControlScript($writer);
 	}
 
+	/**
+	 * Renders the body content of the label.
+	 * @param THtmlWriter the writer for rendering
+	 */
+	public function renderContents($writer)
+	{
+		if(($text=$this->getText())==='')
+			parent::renderContents($writer);
+		else
+			$writer->write($text);
+	}
+
+	/**
+	 * @return string label client ID
+	 */
 	protected function getLabelClientID()
 	{
 		return $this->getClientID().'__label';
-	}
-
-	/**
-	 * On callback response, the inner HTMl of the label is updated.
-	 * @param string the text value of the label
-	 */
-	public function setText($value)
-	{
-		parent::setText($value);
-		if($this->getActiveControl()->canUpdateClientSide())
-			$this->getPage()->getCallbackClient()->update(
-				$this->getLabelClientID(), $value);
-	}
-
-	/**
-	 * Raises the callback event. This method is required by {@link
-	 * ICallbackEventHandler} interface.
-	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
-	 */
- 	public function raiseCallbackEvent($param)
-	{
-		$this->onCallback($param);
-	}
-
-	public function setTextBoxCssClass($value)
-	{
-		$this->setViewState('TextBoxCssClass', $value);
-	}
-
-	public function getTextBoxCssClass()
-	{
-		return $this->getViewState('TextBoxCssClass');
 	}
 
 	/**
@@ -115,105 +174,39 @@ class TInPlaceTextBox extends TLabel implements
 	/**
 	 * @return array callback options.
 	 */
-	protected function getTextBoxOptions()
+	protected function getPostBackOptions()
 	{
+		$options = parent::getPostBackOptions();
 		$options['ID'] = $this->getLabelClientID();
 		$options['TextBoxID'] = $this->getClientID();
-		$options['EventTarget'] = $this->getUniqueID();
-		$options['CausesValidation'] = $this->getCausesValidation();
-		$options['ValidationGroup'] = $this->getValidationGroup();
-		$options['TextMode'] = $this->getTextMode();
 		$options['ExternalControl'] = $this->getExternalControlID();
-		$options['TextBoxCssClass'] = $this->getTextBoxCssClass();
+		$options['AutoHide'] = $this->getAutoHideTextBox() == false ? '' : true;
+		$options['AutoPostBack'] = $this->getAutoPostBack() == false ? '' : true;
+		if($this->getTextMode()==='MultiLine')
+		{
+			$options['Columns'] = $this->getColumns();
+			$options['Rows'] = $this->getRows();
+			$options['Wrap'] = $this->getWrap()== false ? '' : true;
+		}
+		else
+		{
+			$length = $this->getMaxLength();
+			$options['MaxLength'] = $length > 0 ? $length : '';
+		}
+
 		if($this->hasEventHandler('OnLoadingText'))
 			$options['LoadTextOnEdit'] = true;
 		return $options;
 	}
 
 	/**
-	 * @return string the behavior mode (SingleLine or MultiLine) of the TextBox component. Defaults to SingleLine.
+	 * Raised when editing the content is requsted to be loaded from the
+	 * server side.
+	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
 	 */
-	public function getTextMode()
-	{
-		return $this->getViewState('TextMode','SingleLine');
-	}
-
-	/**
-	 * Sets the behavior mode (SingleLine or MultiLine) of the TextBox component.
-	 * @param string the text mode
-	 * @throws TInvalidDataValueException if the input value is not a valid text mode.
-	 */
-	public function setTextMode($value)
-	{
-		$this->setViewState('TextMode',TPropertyValue::ensureEnum($value,array('SingleLine','MultiLine')),'SingleLine');
-	}
-		/**
-	 * Returns the value to be validated.
-	 * This methid is required by IValidatable interface.
-	 * @return mixed the value of the property to be validated.
-	 */
-	public function getValidationPropertyValue()
-	{
-		return $this->getText();
-	}
-
-	/**
-	 * @return boolean whether postback event trigger by this text box will cause input validation, default is true.
-	 */
-	public function getCausesValidation()
-	{
-		return $this->getViewState('CausesValidation',true);
-	}
-
-	/**
-	 * @param boolean whether postback event trigger by this text box will cause input validation.
-	 */
-	public function setCausesValidation($value)
-	{
-		$this->setViewState('CausesValidation',TPropertyValue::ensureBoolean($value),true);
-	}
-
-
-	/**
-	 * @return string the group of validators which the text box causes validation upon postback
-	 */
-	public function getValidationGroup()
-	{
-		return $this->getViewState('ValidationGroup','');
-	}
-
-	/**
-	 * @param string the group of validators which the text box causes validation upon postback
-	 */
-	public function setValidationGroup($value)
-	{
-		$this->setViewState('ValidationGroup',$value,'');
-	}
-
-	/**
-	 * On text changed.
-	 */
-	public function raisePostDataChangedEvent()
-	{
-		$this->onTextChanged(null);
-	}
-
 	public function onLoadingText($param)
 	{
 		$this->raiseEvent('OnLoadingText',$this,$param);
-	}
-
-	/**
-	 * Raises <b>OnTextChanged</b> event.
-	 * This method is invoked when the value of the {@link getText Text}
-	 * property changes on postback.
-	 * If you override this method, be sure to call the parent implementation to ensure
-	 * the invocation of the attached event handlers.
-	 * @param TEventParameter event parameter to be passed to the event handlers
-	 */
-	public function onTextChanged($param)
-	{
-		$this->raiseEvent('OnTextChanged',$this,$param);
 	}
 
 	/**
@@ -222,16 +215,15 @@ class TInPlaceTextBox extends TLabel implements
 	protected function renderClientControlScript($writer)
 	{
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getTextBoxOptions());
+			$this->getClientClassName(), $this->getPostBackOptions());
 	}
 
 	/**
-	 * @return string corresponding javascript class name for this TActiveLabelTextBox.
+	 * @return string corresponding javascript class name for this TInPlaceTextBox
 	 */
 	protected function getClientClassName()
 	{
 		return 'Prado.WebUI.TInPlaceTextBox';
 	}
 }
-
 ?>

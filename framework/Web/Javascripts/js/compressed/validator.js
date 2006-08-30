@@ -3,7 +3,8 @@ Prado.Validation=Class.create();Object.extend(Prado.Validation,{managers:{},vali
 {if(this.managers[formID])
 {return this.managers[formID].validate(groupID,invoker);}
 else
-{throw new Error("Form '"+form+"' is not registered with Prado.Validation");}},isValid:function(formID,groupID)
+{throw new Error("Form '"+form+"' is not registered with Prado.Validation");}},getForm:function()
+{var keys=$H(this.managers).keys();return keys[0];},isValid:function(formID,groupID)
 {if(this.managers[formID])
 return this.managers[formID].isValid(groupID);return true;},addValidator:function(formID,validator)
 {if(this.managers[formID])
@@ -94,7 +95,10 @@ Prado.Element.focus(this.options.FocusElementID);this.visible=true;},updateContr
 control.removeClassName(CssClass);else
 control.addClassName(CssClass);}},hide:function()
 {this.isValid=true;this.updateControl();this.visible=false;},validate:function(invoker)
-{if(typeof(this.options.OnValidate)=="function")
+{if(!this.control)
+this.control=$(this.options.ControlToValidate);if(!this.control)
+{this.isValid=true;return this.isValid;}
+if(typeof(this.options.OnValidate)=="function")
 this.options.OnValidate(this,invoker);if(this.enabled)
 this.isValid=this.evaluateIsValid();else
 this.isValid=true;if(this.isValid)

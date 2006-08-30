@@ -18,8 +18,8 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: $ 27/08/2006 $
- * @package System.package
- * @since version
+ * @package System.Web.UI.ActiveControls
+ * @since 3.1
  */
 abstract class TTriggeredCallback extends TCallback
 {

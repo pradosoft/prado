@@ -11,6 +11,11 @@ class TInPlaceTextBoxTest extends TPage
 	{
 		$this->status->Text = "Status: ". $sender->Text;
 	}
+
+	function button_clicked($sender, $param)
+	{
+		$this->label1->Text = "hahahaha";
+	}
 }
 
 ?>
