@@ -286,8 +286,11 @@ class TTemplate extends TApplicationComponent implements ITemplate
 		$directChildren=array();
 		foreach($this->_tpl as $key=>$object)
 		{
-			$parent=isset($controls[$object[0]])?$controls[$object[0]]:$tplControl;
-			if(($parent instanceof TControl) && !$parent->getAllowChildControls())
+			if($object[0]===-1)
+				$parent=$tplControl;
+			else if(isset($controls[$object[0]]))
+				$parent=$controls[$object[0]];
+			else
 				continue;
 			if(isset($object[2]))	// component
 			{
