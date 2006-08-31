@@ -118,7 +118,8 @@ class TSimpleDateFormatter
 		$bits['dd'] = str_pad("{$date['mday']}", 2, '0', STR_PAD_LEFT);
 		$bits['d'] = $date['mday'];
 
-		return str_replace(array_keys($bits), $bits, $this->pattern);
+		$pattern = preg_replace('/M{3,4}/', 'MM', $this->pattern);
+		return str_replace(array_keys($bits), $bits, $pattern);
 	}
 
 	public function getMonthPattern()
