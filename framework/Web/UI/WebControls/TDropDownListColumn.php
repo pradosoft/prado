@@ -42,6 +42,15 @@ Prado::using('System.Web.UI.WebControls.TDropDownList');
  * Note, if you specify {@link setListDataSource ListDataSource}, do it before
  * calling the datagrid's dataBind().
  *
+ * The dropdown list control in the TDropDownListColumn can be accessed by one of
+ * the following two methods:
+ * <code>
+ * $datagridItem->DropDownListColumnID->DropDownList
+ * $datagridItem->DropDownListColumnID->Controls[0]
+ * </code>
+ * The second method is possible because the dropdown list control created within the
+ * datagrid cell is the first child.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
  * @package System.Web.UI.WebControls
