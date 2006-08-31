@@ -16,6 +16,7 @@ CHG: Added more conditions in the requirement checker (Qiang)
 CHG: TControl::findControlsByType() now only returns objects of the specified type (Qiang)
 CHG: Moved createdOnTemplate() and addParsedObject() from TControl to TComponent (Qiang)
 NEW: TDateTimeStamp class for supporting time stamps outside 1970-2038 using float (Wei)
+NEW: TDropDownListColumn (Qiang)
 
 Version 3.0.3 August 6, 2006
 ============================

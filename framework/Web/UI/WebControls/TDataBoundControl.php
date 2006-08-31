@@ -462,6 +462,7 @@ abstract class TDataBoundControl extends TWebControl
 	/**
 	 * Validates if the parameter is a valid data source.
 	 * If it is a string or an array, it will be converted as a TList object.
+	 * @param Traversable|array|string data source to be validated
 	 * @return Traversable the data that is traversable
 	 * @throws TInvalidDataTypeException if the data is neither null nor Traversable
 	 */

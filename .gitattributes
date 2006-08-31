@@ -1501,6 +1501,7 @@ framework/Web/UI/WebControls/TDataSourceView.php -text
 framework/Web/UI/WebControls/TDataTypeValidator.php -text
 framework/Web/UI/WebControls/TDatePicker.php -text
 framework/Web/UI/WebControls/TDropDownList.php -text
+framework/Web/UI/WebControls/TDropDownListColumn.php -text
 framework/Web/UI/WebControls/TEditCommandColumn.php -text
 framework/Web/UI/WebControls/TEmailAddressValidator.php -text
 framework/Web/UI/WebControls/TExpression.php -text
