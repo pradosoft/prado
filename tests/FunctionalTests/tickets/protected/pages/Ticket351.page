@@ -1,6 +1,7 @@
 <com:TContent ID="Content">
 <com:TDatePicker ID="Birthdate"
 	DateFormat="MMM/d/yyyy"
+	TimeStamp="-2000000000"
 	FromYear="1900" UpToYear="1990" InputMode="DropDownList" />
 
 <br />

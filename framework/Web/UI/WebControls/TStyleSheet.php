@@ -24,7 +24,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version : $  Tue Jul  4 04:38:16 EST 2006 $
- * @package System.Web.UI.WebControl
+ * @package System.Web.UI.WebControls
  * @since 3.0.2
  */
 class TStyleSheet extends TControl

@@ -20,7 +20,7 @@ class DataGrid3TestCase extends SeleniumTestCase
 		$this->type("ctl0\$body\$DataGrid\$ctl2\$ctl2", "Addison Wesley Professional");
 		$this->type("ctl0\$body\$DataGrid\$ctl2\$ctl3", "\$57.04");
 		$this->click("//input[@name='ctl0\$body\$DataGrid\$ctl2\$ctl4']", "");
-		$this->select("ctl0\$body\$DataGrid\$ctl2\$Rating", "label=1");
+		$this->select("ctl0\$body\$DataGrid\$ctl2\$ctl5", "label=1");
 		$this->clickAndWait("link=Save", "");
 
 		// verify the 2nd row is saved

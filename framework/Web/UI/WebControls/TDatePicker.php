@@ -263,14 +263,15 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Sets the date for the date picker using timestamp.
-	 * @param integer time stamp for the date picker
+	 * @param float time stamp for the date picker
 	 */
 	public function setTimeStamp($value)
 	{
-		$date = TPropertyValue::ensureInteger($value);
+		$date = TPropertyValue::ensureFloat($value);
 		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',
 						$this->getDateFormat());
-		$this->setText($formatter->format($date));
+						$d =$formatter->format($date);
+		$this->setText($d);
 	}
 
 	/**

@@ -164,7 +164,7 @@ class Sample3 extends TPage
 			$item->PublisherColumn->TextBox->Text,			// publisher
 			$item->PriceColumn->TextBox->Text,				// price
 			$item->InStockColumn->CheckBox->Checked,		// instock
-			$item->RatingColumn->Rating->SelectedValue		// rating
+			$item->RatingColumn->DropDownList->SelectedValue		// rating
 			);
 		$this->DataGrid->EditItemIndex=-1;
 		$this->DataGrid->DataSource=$this->Data;
