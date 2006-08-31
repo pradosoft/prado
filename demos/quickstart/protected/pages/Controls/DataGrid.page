@@ -22,6 +22,7 @@ PRADO provides five types of columns:
 <ul>
   <li><tt>TBoundColumn</tt> associates cells with a specific field of data and displays the cells according to their modes.</li>
   <li><tt>TCheckBoxColumn</tt> associates cells with a specific field of data and displays in each cell a checkbox whose check state is determined by the data field value.</li>
+  <li><tt>TDropDownListColumn</tt> associates cells with a specific field of data and displays the cells according to their modes. If in edit mode, a cell will be displayed with a <tt>TDropDownList</tt>.</li>
   <li><tt>THyperLinkColumn</tt> displays in the cells a hyperlink whose caption and URL can be either statically specified or bound to some fields of data.</li>
   <li><tt>TEditCommandColumn</tt> displays in the cells edit/update/cancel command buttons according to the state of the item that a cell resides in.</li>
   <li><tt>TButtonColumn</tt> displays in the cells a command button.</li>
@@ -114,7 +115,8 @@ The following example uses manually specified columns to show a list of book inf
 Besides the rich data presentation functionalities as demonstrated in previous section, TDataGrid is also highly user interactive. An import usage of TDataGrid is editing or deleting rows of data. The <tt>TBoundColumn</tt> can adjust the associated cell presentation according to the mode of datagrid items. When an item is in browsing mode, the cell is displayed with a static text; when the item is in editing mode, a textbox is displayed to collect user inputs. TDataGrid provides <tt>TEditCommandColumn</tt> for switching item modes. In addition, <tt>TButtonColumn</tt> offers developers the flexibility of creating arbitrary buttons for various user interactions.
 </p>
 <p>
-The following example shows how to make the previous book information table an interactive one. It allows users to edit and delete book items from the table. Two additional columns are used in the example to allow users interact with the datagrid: <tt>TEditCommandColumn</tt> and <tt>TButtonColumn</tt>.
+The following example shows how to make the previous book information table an interactive one. It allows users to edit and delete book items from the table. Two additional columns are used in the example to allow users interact with the datagrid: <tt>TEditCommandColumn</tt> and <tt>TButtonColumn</tt>. In addition,
+<tt>TDropDownListColumn</tt> replaces the previous <tt>TTemplateColumn</tt> to allow users to select a rating from a dropdown list. Note, it is also possible to use <tt>TTemplateColumn</tt> to achieve the same task.
 </p>
 <com:RunBar PagePath="Controls.Samples.TDataGrid.Sample3" />
 
