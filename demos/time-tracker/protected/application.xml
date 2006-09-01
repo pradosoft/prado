@@ -21,6 +21,10 @@
 		EnableConfigCache="true"
   		configFile="Application.App_Data.sqlite-sqlmap" />
 
+	<module id="globalization" 
+		class="System.I18N.TGlobalization"
+		Charset="UTF-8" />
+	
 <!--
 	<module id="sqlmap" class="TSQLMap"
 		EnableConfigCache="true"

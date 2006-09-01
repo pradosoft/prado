@@ -146,6 +146,17 @@ class TCallbackClientScript extends TApplicationComponent
 	}
 
 	/**
+	 * Raise the client side event (given by $eventName) on a particular element.
+	 * @param TControl|string control element or element id
+	 * @param string Event name, e.g. "click"
+	 */
+	public function raiseClientEvent($control, $eventName)
+	{
+		$this->callClientFunction('Event.fireEvent', 
+				array($control, strtolower($eventName)));
+	}
+
+	/**
 	 * Sets the attribute of a particular control.
 	 * @param TControl|string control element or element id
 	 * @param string attribute name

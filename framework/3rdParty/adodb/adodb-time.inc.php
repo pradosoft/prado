@@ -383,7 +383,8 @@ define('ADODB_DATE_VERSION',0.24);
 	 http://lists.debian.org/debian-glibc/2002/debian-glibc-200205/msg00010.html
 */
 
-if (!defined('ADODB_ALLOW_NEGATIVE_TS')) define('ADODB_NO_NEGATIVE_TS',1);
+if (!defined('ADODB_ALLOW_NEGATIVE_TS') 
+	&& !defined('ADODB_NO_NEGATIVE_TS')) define('ADODB_NO_NEGATIVE_TS',1);
 
 function adodb_date_test_date($y1,$m,$d=13)
 {

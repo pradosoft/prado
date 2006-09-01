@@ -14,7 +14,7 @@
 		{
 			Event.observe($("div1"), "click", function()
 			{
-				Prado.Callback("<%= $this->callback1->ClientID %>")
+				Prado.Callback("<%= $this->callback1->UniqueID %>")
 			})
 		})
 	</script>

@@ -302,6 +302,23 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	}
 
 	/**
+	 * @param mixed callback parameter value.
+	 */
+	public function setCallbackParameter($value)
+	{
+		$this->setOption('CallbackParameter', $value, '');
+	}
+
+	/**
+	 * @return mixed callback parameter value.
+	 */
+	public function getCallbackParameter()
+	{
+		return $this->getOption('CallbackParameter', '');
+	}
+
+
+	/**
 	 * @return array list of callback javascript options.
 	 */
 	protected function getClientSideOptions()
@@ -311,6 +328,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 		$validate = $this->getCausesValidation();
 		$options['CausesValidation']= $validate ? '' : false;
 		$options['ValidationGroup']=$this->getValidationGroup();
+		$options['params'] = $this->getCallbackParameter();
 		return $options;
 	}
 
