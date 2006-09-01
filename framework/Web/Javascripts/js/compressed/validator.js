@@ -180,7 +180,12 @@ return true;switch(this.options.Operator)
 {case"NotEqual":return(op1!=op2);case"GreaterThan":return(op1>op2);case"GreaterThanEqual":return(op1>=op2);case"LessThan":return(op1<op2);case"LessThanEqual":return(op1<=op2);default:return(op1==op2);}}});Prado.WebUI.TCustomValidator=Class.extend(Prado.WebUI.TBaseValidator,{evaluateIsValid:function()
 {var value=this.getValidationValue();var clientFunction=this.options.ClientValidationFunction;if(typeof(clientFunction)=="string"&&clientFunction.length>0)
 {validate=clientFunction.toFunction();return validate(this,value);}
-return true;}});Prado.WebUI.TRangeValidator=Class.extend(Prado.WebUI.TBaseValidator,{evaluateIsValid:function()
+return true;}});Prado.WebUI.TActiveCustomValidator=Class.extend(Prado.WebUI.TBaseValidator,{validatingValue:null,requestDispatched:false,evaluateIsValid:function()
+{value=this.getValidationValue();if(!this.requestDispatched&&value!=this.validatingValue)
+{this.validatingValue=value;request=new Prado.CallbackRequest(this.options.EventTarget,this.options);request.setParameter(value);request.setCausesValidation(false);request.options.onSuccess=this.callbackOnSuccess.bind(this);request.options.onFailure=this.callbackOnFailure.bind(this);request.dispatch();this.requestDispatched=true;return false;}
+return this.isValid;},callbackOnSuccess:function(request,data)
+{this.isValid=data;this.requestDispatched=false;Prado.Validation.validate(this.options.FormID,this.group,null);},callbackOnFailure:function(request,data)
+{this.requestDispatched=false;}});Prado.WebUI.TRangeValidator=Class.extend(Prado.WebUI.TBaseValidator,{evaluateIsValid:function()
 {var value=this.getValidationValue();if(value.length<=0)
 return true;if(typeof(this.options.DataType)=="undefined")
 this.options.DataType="String";if(this.options.DataType!="StringLength")

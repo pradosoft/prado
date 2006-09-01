@@ -120,9 +120,9 @@ class TCustomValidator extends TBaseValidator
 			$options['ClientValidationFunction']=$clientJs;
 		return $options;
 	}
-	
+
 	/**
-	 * Only register the client-side validator if 
+	 * Only register the client-side validator if
 	 * {@link setClientValidationFunction ClientValidationFunction} is set.
 	 */
 	protected function registerClientScriptValidator()

@@ -53,7 +53,7 @@
 		ControlCssClass="required"
 		ErrorMessage="*" />
 
-	<span id="loader" style="display:none;" class="loader">Loading...</span>
+	<span id="loader" style="display:none;" onfocus="alert('ok')" class="loader">Loading...</span>
 
 	<a href="#" id="link1">Edit</a>
 

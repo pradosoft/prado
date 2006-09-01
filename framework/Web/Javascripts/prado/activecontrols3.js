@@ -91,7 +91,7 @@ Prado.WebUI.TAutoComplete = Class.extend(Prado.WebUI.TAutoComplete,
 	{
 		if(!this.active)
 		{
-			request = new Prado.CallbackRequest(options.EventTarget, options);
+			request = new Prado.CallbackRequest(this.options.EventTarget, options);
 			request.dispatch();
 			Event.stop(event);
 		}

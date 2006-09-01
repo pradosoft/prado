@@ -1750,6 +1750,7 @@ framework/Web/THttpSession.php -text
 framework/Web/THttpUtility.php -text
 framework/Web/UI/ActiveControls/TActiveButton.php -text
 framework/Web/UI/ActiveControls/TActiveControlAdapter.php -text
+framework/Web/UI/ActiveControls/TActiveCustomValidator.php -text
 framework/Web/UI/ActiveControls/TActiveLabel.php -text
 framework/Web/UI/ActiveControls/TActivePageAdapter.php -text
 framework/Web/UI/ActiveControls/TActivePanel.php -text
@@ -1881,6 +1882,8 @@ tests/FunctionalTests/active-controls/protected/pages/ActiveRadioButtonListTest.
 tests/FunctionalTests/active-controls/protected/pages/ActiveRadioButtonListTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveRadioButtonTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveRadioButtonTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/CallbackCustomValidatorTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/CallbackCustomValidatorTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/CustomTemplateComponent.php -text
 tests/FunctionalTests/active-controls/protected/pages/CustomTemplateComponent.tpl -text
 tests/FunctionalTests/active-controls/protected/pages/CustomTemplateControlTest.page -text

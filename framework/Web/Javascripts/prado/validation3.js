@@ -1101,6 +1101,48 @@ Prado.WebUI.TCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 });
 
 /**
+ * Uses callback request to perform validation.
+ */
+Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
+{
+	validatingValue : null,
+	requestDispatched : false,
+
+	/**
+	 * Calls custom validation function.
+	 */
+	evaluateIsValid : function()
+	{
+		value = this.getValidationValue();
+		if(!this.requestDispatched && value != this.validatingValue)
+		{
+			this.validatingValue = value;
+			request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
+			request.setParameter(value);
+			request.setCausesValidation(false);
+			request.options.onSuccess = this.callbackOnSuccess.bind(this);
+			request.options.onFailure = this.callbackOnFailure.bind(this);
+			request.dispatch();
+			this.requestDispatched = true;
+			return false;
+		}
+		return this.isValid;
+	},
+
+	callbackOnSuccess : function(request, data)
+	{
+		this.isValid = data;
+		this.requestDispatched = false;
+		Prado.Validation.validate(this.options.FormID, this.group,null);
+	},
+
+	callbackOnFailure : function(request, data)
+	{
+		this.requestDispatched = false;
+	}
+});
+
+/**
  * TRangeValidator tests whether an input value is within a specified range.
  *
  * TRangeValidator uses three key properties to perform its validation.
