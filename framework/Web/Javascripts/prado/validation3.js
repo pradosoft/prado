@@ -557,6 +557,7 @@ Prado.WebUI.TBaseValidator.prototype =
 	group : null,
 	manager : null,
 	message : null,
+	requestDispatched : false,
 
 	/**
 	 * <code>
@@ -602,22 +603,27 @@ Prado.WebUI.TBaseValidator.prototype =
 	 * element. Updating the validator control will set the validator
 	 * <tt>visible</tt> property to true.
 	 */
-	updateControl: function()
+	updateControl: function(focus)
 	{
+		this.refreshControlAndMessage();
+
+		if(this.options.FocusOnError && !this.isValid )
+			Prado.Element.focus(this.options.FocusElementID);
+
+		this.visible = true;
+	},
+
+	refreshControlAndMessage : function()
+	{
+		this.visible = true;
 		if(this.message)
 		{
 			if(this.options.Display == "Dynamic")
 				this.isValid ? this.message.hide() : this.message.show();
 			this.message.style.visibility = this.isValid ? "hidden" : "visible";
 		}
-
 		if(this.control)
 			this.updateControlCssClass(this.control, this.isValid);
-
-		if(this.options.FocusOnError && !this.isValid)
-			Prado.Element.focus(this.options.FocusElementID);
-
-		this.visible = true;
 	},
 
 	/**
@@ -667,7 +673,10 @@ Prado.WebUI.TBaseValidator.prototype =
 		}
 
 		if(typeof(this.options.OnValidate) == "function")
-			this.options.OnValidate(this, invoker);
+		{
+			if(this.requestDispatched == false)
+				this.options.OnValidate(this, invoker);
+		}
 
 		if(this.enabled)
 			this.isValid = this.evaluateIsValid();
@@ -678,10 +687,11 @@ Prado.WebUI.TBaseValidator.prototype =
 		{
 			if(typeof(this.options.OnSuccess) == "function")
 			{
-				this.visible = true;
-				this.message.style.visibility = "visible";
-				this.updateControlCssClass(this.control, this.isValid);
-				this.options.OnSuccess(this, invoker);
+				if(this.requestDispatched == false)
+				{
+					this.refreshControlAndMessage();
+					this.options.OnSuccess(this, invoker);
+				}
 			}
 			else
 				this.updateControl();
@@ -690,10 +700,11 @@ Prado.WebUI.TBaseValidator.prototype =
 		{
 			if(typeof(this.options.OnError) == "function")
 			{
-				this.visible = true;
-				this.message.style.visibility = "visible";
-				this.updateControlCssClass(this.control, this.isValid);
-				this.options.OnError(this, invoker);
+				if(this.requestDispatched == false)
+				{
+					this.refreshControlAndMessage();
+					this.options.OnError(this, invoker)
+				}
 			}
 			else
 				this.updateControl();
@@ -1106,7 +1117,6 @@ Prado.WebUI.TCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 {
 	validatingValue : null,
-	requestDispatched : false,
 
 	/**
 	 * Calls custom validation function.

@@ -81,15 +81,16 @@ this.messages.show();this.visible=true;},formats:function(type)
 {var output=this.options.HeaderText?this.options.HeaderText+"\n":"";for(var i=0;i<messages.length;i++)
 {switch(this.options.DisplayMode)
 {case"List":output+=messages[i]+"\n";break;case"BulletList":default:output+="  - "+messages[i]+"\n";break;case"SingleParagraph":output+=messages[i]+" ";break;}}
-return output;}};Prado.WebUI.TBaseValidator=Class.create();Prado.WebUI.TBaseValidator.prototype={enabled:true,visible:false,isValid:true,options:{},_isObserving:{},group:null,manager:null,message:null,initialize:function(options)
+return output;}};Prado.WebUI.TBaseValidator=Class.create();Prado.WebUI.TBaseValidator.prototype={enabled:true,visible:false,isValid:true,options:{},_isObserving:{},group:null,manager:null,message:null,requestDispatched:false,initialize:function(options)
 {this.options=options;this.control=$(options.ControlToValidate);this.message=$(options.ID);this.group=options.ValidationGroup;this.manager=Prado.Validation.addValidator(options.FormID,this);},getErrorMessage:function()
-{return this.options.ErrorMessage;},updateControl:function()
-{if(this.message)
+{return this.options.ErrorMessage;},updateControl:function(focus)
+{this.refreshControlAndMessage();if(this.options.FocusOnError&&!this.isValid)
+Prado.Element.focus(this.options.FocusElementID);this.visible=true;},refreshControlAndMessage:function()
+{this.visible=true;if(this.message)
 {if(this.options.Display=="Dynamic")
 this.isValid?this.message.hide():this.message.show();this.message.style.visibility=this.isValid?"hidden":"visible";}
 if(this.control)
-this.updateControlCssClass(this.control,this.isValid);if(this.options.FocusOnError&&!this.isValid)
-Prado.Element.focus(this.options.FocusElementID);this.visible=true;},updateControlCssClass:function(control,valid)
+this.updateControlCssClass(this.control,this.isValid);},updateControlCssClass:function(control,valid)
 {var CssClass=this.options.ControlCssClass;if(typeof(CssClass)=="string"&&CssClass.length>0)
 {if(valid)
 control.removeClassName(CssClass);else
@@ -99,16 +100,20 @@ control.addClassName(CssClass);}},hide:function()
 this.control=$(this.options.ControlToValidate);if(!this.control)
 {this.isValid=true;return this.isValid;}
 if(typeof(this.options.OnValidate)=="function")
-this.options.OnValidate(this,invoker);if(this.enabled)
+{if(this.requestDispatched==false)
+this.options.OnValidate(this,invoker);}
+if(this.enabled)
 this.isValid=this.evaluateIsValid();else
 this.isValid=true;if(this.isValid)
 {if(typeof(this.options.OnSuccess)=="function")
-{this.visible=true;this.message.style.visibility="visible";this.updateControlCssClass(this.control,this.isValid);this.options.OnSuccess(this,invoker);}
+{if(this.requestDispatched==false)
+{this.refreshControlAndMessage();this.options.OnSuccess(this,invoker);}}
 else
 this.updateControl();}
 else
 {if(typeof(this.options.OnError)=="function")
-{this.visible=true;this.message.style.visibility="visible";this.updateControlCssClass(this.control,this.isValid);this.options.OnError(this,invoker);}
+{if(this.requestDispatched==false)
+{this.refreshControlAndMessage();this.options.OnError(this,invoker)}}
 else
 this.updateControl();}
 this.observeChanges(this.control);return this.isValid;},observeChanges:function(control)
@@ -180,7 +185,7 @@ return true;switch(this.options.Operator)
 {case"NotEqual":return(op1!=op2);case"GreaterThan":return(op1>op2);case"GreaterThanEqual":return(op1>=op2);case"LessThan":return(op1<op2);case"LessThanEqual":return(op1<=op2);default:return(op1==op2);}}});Prado.WebUI.TCustomValidator=Class.extend(Prado.WebUI.TBaseValidator,{evaluateIsValid:function()
 {var value=this.getValidationValue();var clientFunction=this.options.ClientValidationFunction;if(typeof(clientFunction)=="string"&&clientFunction.length>0)
 {validate=clientFunction.toFunction();return validate(this,value);}
-return true;}});Prado.WebUI.TActiveCustomValidator=Class.extend(Prado.WebUI.TBaseValidator,{validatingValue:null,requestDispatched:false,evaluateIsValid:function()
+return true;}});Prado.WebUI.TActiveCustomValidator=Class.extend(Prado.WebUI.TBaseValidator,{validatingValue:null,evaluateIsValid:function()
 {value=this.getValidationValue();if(!this.requestDispatched&&value!=this.validatingValue)
 {this.validatingValue=value;request=new Prado.CallbackRequest(this.options.EventTarget,this.options);request.setParameter(value);request.setCausesValidation(false);request.options.onSuccess=this.callbackOnSuccess.bind(this);request.options.onFailure=this.callbackOnFailure.bind(this);request.dispatch();this.requestDispatched=true;return false;}
 return this.isValid;},callbackOnSuccess:function(request,data)
