@@ -128,7 +128,10 @@ return element.submit();if(document.createEvent)
 {if(Event.isHTMLEvent(type))
 {var event=document.createEvent('HTMLEvents');event.initEvent(type,true,true);}
 else if(Event.isMouseEvent(type))
-{var event=document.createEvent('MouseEvents');event.initMouseEvent(type,true,true,document.defaultView,1,0,0,0,0,false,false,false,false,0,null);}
+{var event=document.createEvent('MouseEvents');if(event.initMouseEvent)
+{event.initMouseEvent(type,true,true,document.defaultView,1,0,0,0,0,false,false,false,false,0,null);}
+else
+{event.initEvent(type,true,true);}}
 element.dispatchEvent(event);}
 else if(document.createEventObject)
 {var evObj=document.createEventObject();element.fireEvent('on'+type,evObj);}
@@ -313,7 +316,7 @@ Event.observe(this.element,"keydown",this.handleReturnKey.bind(this));Event.obse
 {this.options=options;this._event=this.triggerEvent.bindEvent(this);Event.observe(options['Panel'],'keydown',this._event);},triggerEvent:function(ev,target)
 {var enterPressed=Event.keyCode(ev)==Event.KEY_RETURN;var isTextArea=Event.element(ev).tagName.toLowerCase()=="textarea";if(enterPressed&&!isTextArea)
 {var defaultButton=$(this.options['Target']);if(defaultButton)
-{this.triggered=true;Event.fireEvent(defaultButton,this.options['Event']);Event.stop(ev);}}}};Prado.WebUI.TTextHighlighter=Class.create();Prado.WebUI.TTextHighlighter.prototype={initialize:function(id)
+{this.triggered=true;$('PRADO_POSTBACK_TARGET').value=this.options.EventTarget;Event.fireEvent(defaultButton,this.options['Event']);Event.stop(ev);}}}};Prado.WebUI.TTextHighlighter=Class.create();Prado.WebUI.TTextHighlighter.prototype={initialize:function(id)
 {if(!window.clipboardData)return;var options={href:'javascript:;/'+'/copy code to clipboard',onclick:'Prado.WebUI.TTextHighlighter.copy(this)',onmouseover:'Prado.WebUI.TTextHighlighter.hover(this)',onmouseout:'Prado.WebUI.TTextHighlighter.out(this)'}
 var div=DIV({className:'copycode'},A(options,'Copy Code'));document.write(DIV(null,div).innerHTML);}};Object.extend(Prado.WebUI.TTextHighlighter,{copy:function(obj)
 {var parent=obj.parentNode.parentNode.parentNode;var text='';for(var i=0;i<parent.childNodes.length;i++)

@@ -201,6 +201,7 @@ class TClientScriptManager extends TApplicationComponent
 		$options = TJavaScript::encode($this->getDefaultButtonOptions($panel, $button));
 		$code = "new Prado.WebUI.DefaultButton($options);";
 		$this->registerEndScript("prado:".$panel->getClientID(), $code);
+		$this->registerHiddenField(TPage::FIELD_POSTBACK_TARGET,'');
 		$this->registerPradoScript('prado');
 	}
 
@@ -225,6 +226,7 @@ class TClientScriptManager extends TApplicationComponent
 	{
 		$options['Panel'] = $panel->getClientID();
 		$options['Target'] = $button->getClientID();
+		$options['EventTarget'] = $button->getUniqueID();
 		$options['Event'] = 'click';
 		return $options;
 	}
