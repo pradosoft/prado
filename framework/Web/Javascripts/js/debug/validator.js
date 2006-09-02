@@ -593,22 +593,25 @@ Prado.WebUI.TBaseValidator.prototype =
 	 * element. Updating the validator control will set the validator
 	 * <tt>visible</tt> property to true.
 	 */
-	updateControl: function()
+	updateControl: function(focus)
 	{
+		this.refreshControlAndMessage();
+
+		if(this.options.FocusOnError && !this.isValid )
+			Prado.Element.focus(this.options.FocusElementID);
+	},
+
+	refreshControlAndMessage : function()
+	{
+		this.visible = true;
 		if(this.message)
 		{
 			if(this.options.Display == "Dynamic")
 				this.isValid ? this.message.hide() : this.message.show();
 			this.message.style.visibility = this.isValid ? "hidden" : "visible";
 		}
-
 		if(this.control)
 			this.updateControlCssClass(this.control, this.isValid);
-
-		if(this.options.FocusOnError && !this.isValid)
-			Prado.Element.focus(this.options.FocusElementID);
-
-		this.visible = true;
 	},
 
 	/**
@@ -659,9 +662,7 @@ Prado.WebUI.TBaseValidator.prototype =
 		{
 			if(typeof(this.options.OnSuccess) == "function")
 			{
-				this.visible = true;
-				this.message.style.visibility = "visible";
-				this.updateControlCssClass(this.control, this.isValid);
+				this.refreshControlAndMessage();
 				this.options.OnSuccess(this, invoker);
 			}
 			else
@@ -671,9 +672,7 @@ Prado.WebUI.TBaseValidator.prototype =
 		{
 			if(typeof(this.options.OnError) == "function")
 			{
-				this.visible = true;
-				this.message.style.visibility = "visible";
-				this.updateControlCssClass(this.control, this.isValid);
+				this.refreshControlAndMessage();
 				this.options.OnError(this, invoker);
 			}
 			else
