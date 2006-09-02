@@ -20,6 +20,7 @@
  * To use TLabel as a form label, associate it with a control by setting the
  * {@link setForControl ForControl} property.
  * The associated control must be locatable within the label's naming container.
+ * If the associated control is not visible, the label will not be rendered, either.
  *
  * Note, {@link setText Text} will NOT be encoded for rendering.
  * Make sure it does not contain dangerous characters that you want to avoid.
@@ -31,6 +32,8 @@
  */
 class TLabel extends TWebControl
 {
+	private $_forControl='';
+
 	/**
 	 * @return string tag name of the label, returns 'label' if there is an associated control, 'span' otherwise.
 	 */
@@ -46,14 +49,34 @@ class TLabel extends TWebControl
 	 */
 	protected function addAttributesToRender($writer)
 	{
+		if($this->_forControl!=='')
+			$writer->addAttribute('for',$this->_forControl);
+		parent::addAttributesToRender($writer);
+	}
+
+	/**
+	 * Renders the label.
+	 * It overrides the parent implementation by checking if an associated
+	 * control is visible or not. If not, the label will not be rendered.
+	 * @param THtmlWriter writer
+	 */
+	public function render($writer)
+	{
 		if(($aid=$this->getForControl())!=='')
 		{
 			if($control=$this->findControl($aid))
-				$writer->addAttribute('for',$control->getClientID());
+			{
+				if($control->getVisible(true))
+				{
+					$this->_forControl=$control->getClientID();
+					parent::render($writer);
+				}
+			}
 			else
 				throw new TInvalidDataValueException('label_associatedcontrol_invalid',$aid);
 		}
-		parent::addAttributesToRender($writer);
+		else
+			parent::render($writer);
 	}
 
 	/**
