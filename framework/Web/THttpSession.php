@@ -271,22 +271,20 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 	}
 
 	/**
-	 * @return string (None|Allow|Only) how to use cookie to store session ID
-	 *               'None' means not using cookie, 'Allow' means using cookie, and 'Only' means using cookie only, defaults to 'Allow'.
+	 * @return THttpSessionCookieMode how to use cookie to store session ID. Defaults to THttpSessionCookieMode::Allow.
 	 */
 	public function getCookieMode()
 	{
 		if(ini_get('session.use_cookies')==='0')
-			return 'None';
+			return THttpSessionCookieMode::None;
 		else if(ini_get('session.use_only_cookies')==='0')
-			return 'Allow';
+			return THttpSessionCookieMode::Allow;
 		else
-			return 'Only';
+			return THttpSessionCookieMode::Only;
 	}
 
 	/**
-	 * @param string (None|Allow|Only) how to use cookie to store session ID
-	 *               'None' means not using cookie, 'Allow' means using cookie, and 'Only' means using cookie only.
+	 * @param THttpSessionCookieMode how to use cookie to store session ID
 	 * @throws TInvalidOperationException if session is started already
 	 */
 	public function setCookieMode($value)
@@ -295,10 +293,10 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 			throw new TInvalidOperationException('httpsession_cookiemode_unchangeable');
 		else
 		{
-			$value=TPropertyValue::ensureEnum($value,array('None','Allow','Only'));
-			if($value==='None')
+			$value=TPropertyValue::ensureEnumerable($value,'THttpSessionCookieMode');
+			if($value===THttpSessionCookieMode::None)
 				ini_set('session.use_cookies','0');
-			else if($value==='Allow')
+			else if($value===THttpSessionCookieMode::Allow)
 			{
 				ini_set('session.use_cookies','1');
 				ini_set('session.use_only_cookies','0');
@@ -695,4 +693,28 @@ class TSessionIterator implements Iterator
 		return $this->_key!==false;
 	}
 }
+
+
+/**
+ * THttpSessionCookieMode class.
+ * THttpSessionCookieMode defines the enumerable type for the possible methods of
+ * using cookies to store session ID.
+ *
+ * The following enumerable values are defined:
+ * - None: not using cookie.
+ * - Allow: using cookie.
+ * - Only: using cookie only.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web
+ * @since 3.0.4
+ */
+class THttpSessionCookieMode extends TEnumerable
+{
+	const None='None';
+	const Allow='Allow';
+	const Only='Only';
+}
+
 ?>

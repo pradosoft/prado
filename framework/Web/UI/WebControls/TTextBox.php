@@ -59,10 +59,6 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	 */
 	const DEFAULT_COLUMNS=20;
 	/**
-	 * @var array list of auto complete types
-	 */
-	private static $_autoCompleteTypes=array('BusinessCity','BusinessCountryRegion','BusinessFax','BusinessPhone','BusinessState','BusinessStreetAddress','BusinessUrl','BusinessZipCode','Cellular','Company','Department','Disabled','DisplayName','Email','FirstName','Gender','HomeCity','HomeCountryRegion','HomeFax','Homepage','HomePhone','HomeState','HomeStreetAddress','HomeZipCode','JobTitle','LastName','MiddleName','None','Notes','Office','Pager','Search');
-	/**
 	 * @var mixed safe text parser
 	 */
 	private static $_safeTextParser=null;
@@ -90,7 +86,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 		$page->ensureRenderInForm($this);
 		if(($uid=$this->getUniqueID())!=='')
 			$writer->addAttribute('name',$uid);
-		if(($textMode=$this->getTextMode())==='MultiLine')
+		if(($textMode=$this->getTextMode())===TTextBoxMode::MultiLine)
 		{
 			if(($rows=$this->getRows())<=0)
 				$rows=self::DEFAULT_ROWS;
@@ -103,7 +99,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 		}
 		else
 		{
-			if($textMode==='SingleLine')
+			if($textMode===TTextBoxMode::SingleLine)
 			{
 				$writer->addAttribute('type','text');
 				if(($text=$this->getText())!=='')
@@ -233,27 +229,20 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	}
 
 	/**
-	 * @return string the AutoComplete type of the textbox
+	 * @return TTextBoxAutoCompleteType the AutoComplete type of the textbox
 	 */
 	public function getAutoCompleteType()
 	{
-		return $this->getViewState('AutoCompleteType','None');
+		return $this->getViewState('AutoCompleteType',TTextBoxAutoCompleteType::None);
 	}
 
 	/**
-	 * @param string the AutoComplete type of the textbox, default value is 'None'.
-	 * Valid values include:
-	 * 'BusinessCity','BusinessCountryRegion','BusinessFax','BusinessPhone',
-	 * 'BusinessState','BusinessStreetAddress','BusinessUrl','BusinessZipCode',
-	 * 'Cellular','Company','Department','Disabled','DisplayName','Email',
-	 * 'FirstName','Gender','HomeCity','HomeCountryRegion','HomeFax','Homepage',
-	 * 'HomePhone','HomeState','HomeStreetAddress','HomeZipCode','JobTitle',
-	 * 'LastName','MiddleName','None','Notes','Office','Pager','Search'
+	 * @param TTextBoxAutoCompleteType the AutoComplete type of the textbox, default value is TTextBoxAutoCompleteType::None.
 	 * @throws TInvalidDataValueException if the input parameter is not a valid AutoComplete type
 	 */
 	public function setAutoCompleteType($value)
 	{
-		$this->setViewState('AutoCompleteType',TPropertyValue::ensureEnum($value,self::$_autoCompleteTypes),'None');
+		$this->setViewState('AutoCompleteType',TPropertyValue::ensureEnumerable($value,'TTextBoxAutoCompleteType'),TTextBoxAutoCompleteType::None);
 	}
 
 	/**
@@ -416,21 +405,21 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	}
 
 	/**
-	 * @return string the behavior mode (SingleLine, MultiLine, or Password) of the TTextBox component. Defaults to SingleLine.
+	 * @return TTextBoxMode the behavior mode of the TTextBox component. Defaults to TTextBoxMode::SingleLine.
 	 */
 	public function getTextMode()
 	{
-		return $this->getViewState('TextMode','SingleLine');
+		return $this->getViewState('TextMode',TTextBoxMode::SingleLine);
 	}
 
 	/**
-	 * Sets the behavior mode (SingleLine, MultiLine, or Password) of the TTextBox component.
-	 * @param string the text mode
+	 * Sets the behavior mode of the TTextBox component.
+	 * @param TTextBoxMode the text mode
 	 * @throws TInvalidDataValueException if the input value is not a valid text mode.
 	 */
 	public function setTextMode($value)
 	{
-		$this->setViewState('TextMode',TPropertyValue::ensureEnum($value,array('SingleLine','MultiLine','Password')),'SingleLine');
+		$this->setViewState('TextMode',TPropertyValue::ensureEnumerable($value,'TTextBoxMode'),TTextBoxMode::SingleLine);
 	}
 
 	/**
@@ -465,6 +454,74 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	{
 		$this->setViewState('Wrap',TPropertyValue::ensureBoolean($value),true);
 	}
+}
+
+/**
+ * TTextBoxMode class.
+ * TTextBoxMode defines the enumerable type for the possible mode
+ * that a {@link TTextBox} control could be at.
+ *
+ * The following enumerable values are defined:
+ * - SingleLine: the textbox will be a regular single line input
+ * - MultiLine: the textbox will be a textarea allowing multiple line input
+ * - Password: the textbox will hide user input like a password input box
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TTextBoxMode extends TEnumerable
+{
+	const SingleLine='SingleLine';
+	const MultiLine='MultiLine';
+	const Password='Password';
+}
+
+/**
+ * TTextBoxAutoCompleteType class.
+ * TTextBoxAutoCompleteType defines the possible AutoComplete type that is supported
+ * by a {@link TTextBox} control.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TTextBoxAutoCompleteType extends TEnumerable
+{
+	const BusinessCity='BusinessCity';
+	const BusinessCountryRegion='BusinessCountryRegion';
+	const BusinessFax='BusinessFax';
+	const BusinessPhone='BusinessPhone';
+	const BusinessState='BusinessState';
+	const BusinessStreetAddress='BusinessStreetAddress';
+	const BusinessUrl='BusinessUrl';
+	const BusinessZipCode='BusinessZipCode';
+	const Cellular='Cellular';
+	const Company='Company';
+	const Department='Department';
+	const Disabled='Disabled';
+	const DisplayName='DisplayName';
+	const Email='Email';
+	const FirstName='FirstName';
+	const Gender='Gender';
+	const HomeCity='HomeCity';
+	const HomeCountryRegion='HomeCountryRegion';
+	const HomeFax='HomeFax';
+	const Homepage='Homepage';
+	const HomePhone='HomePhone';
+	const HomeState='HomeState';
+	const HomeStreetAddress='HomeStreetAddress';
+	const HomeZipCode='HomeZipCode';
+	const JobTitle='JobTitle';
+	const LastName='LastName';
+	const MiddleName='MiddleName';
+	const None='None';
+	const Notes='Notes';
+	const Office='Office';
+	const Pager='Pager';
+	const Search='Search';
 }
 
 ?>

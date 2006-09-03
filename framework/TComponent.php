@@ -444,6 +444,32 @@ class TComponent
 }
 
 /**
+ * TEnumerable class.
+ * TEnumerable is the base class for all enumerable types.
+ * To define an enumerable type, extend TEnumberable and define string constants.
+ * Each constant represents an enumerable value.
+ * The constant name must be the same as the constant value.
+ * For example,
+ * <code>
+ * class TTextAlign extends TEnumerable
+ * {
+ *     const Left='Left';
+ *     const Right='Right';
+ * }
+ * </code>
+ * Then, one can use the enumerable values such as TTextAlign::Left and
+ * TTextAlign::Right.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System
+ * @since 3.0
+ */
+class TEnumerable
+{
+}
+
+/**
  * TPropertyValue class
  *
  * TPropertyValue is a utility class that provides static methods
@@ -568,6 +594,7 @@ class TPropertyValue
 
 	/**
 	 * Converts a value to enum type.
+	 * This method is deprecated. Try to use {@link ensureEnumerable}, instead.
 	 * This method mainly performs sanity check of a value to make sure
 	 * it is a valid enumeration value. Each enumeration value is a string
 	 * which is case-sensistive.
@@ -577,6 +604,7 @@ class TPropertyValue
 	 * till the last parameters are enumeration values.
 	 * @return string the valid enumeration value
 	 * @throws TInvalidDataValueException if the original value is not in the string array.
+	 * @deprecated deprecated since version 3.0.4
 	 */
 	public static function ensureEnum($value,$enums)
 	{
@@ -589,6 +617,30 @@ class TPropertyValue
 			return $value;
 		else
 			throw new TInvalidDataValueException('propertyvalue_enumvalue_invalid',$value,implode(' | ',$enums));
+	}
+
+	/**
+	 * Converts a value to enum type.
+	 * This method checks if the value is of the specified enumerable type.
+	 * A value is a valid enumerable value if it is equal to the name of a constant
+	 * in the specified enumerable type (class).
+	 * For more details about enumerable, see {@link TEnumerable}.
+	 * @param string enumerable value
+	 * @param string enumerable class name
+	 * @return string valid enumerable value
+	 * @throws TInvalidDataValueException if the original value is not a valid enumerable value.
+	 * @see ensureEnum
+	 * @sine 3.0.4
+	 */
+	public static function ensureEnumerable($value,$enumType)
+	{
+		static $types=array();
+		if(!isset($types[$enumType]))
+			$types[$enumType]=new ReflectionClass($enumType);
+		if($types[$enumType]->hasConstant($value))
+			return $value;
+		else
+			throw new TInvalidDataValueException('propertyvalue_enumvalue_invalid',$value,$enumType);
 	}
 }
 

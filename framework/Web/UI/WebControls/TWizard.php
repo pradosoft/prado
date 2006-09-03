@@ -85,6 +85,7 @@ class TWizard extends TWebControl implements INamingContainer
 {
 	/**
 	 * Wizard step types.
+	 * @deprecated deprecated since version 3.0.4 (use TWizardStepType constants instead)
 	 */
 	const ST_AUTO='Auto';
 	const ST_START='Start';
@@ -918,7 +919,7 @@ class TWizard extends TWebControl implements INamingContainer
 			}
 		}
 		$activeStepType=$this->getStepType($activeStep);
-		if($activeStepType===self::ST_COMPLETE)
+		if($activeStepType===TWizardStepType::Complete)
 		{
 			$this->_sideBar->setVisible(false);
 			$this->_header->setVisible(false);
@@ -1014,24 +1015,24 @@ class TWizard extends TWebControl implements INamingContainer
 	/**
 	 * Determines the type of the specified wizard step.
 	 * @param TWizardStep
-	 * @return string type of the step, 'Finish', 'Start', 'Step'.
+	 * @return TWizardStepType type of the step
 	 */
 	protected function getStepType($wizardStep)
 	{
-		if(($type=$wizardStep->getStepType())===self::ST_AUTO)
+		if(($type=$wizardStep->getStepType())===TWizardStepType::Auto)
 		{
 			$steps=$this->getWizardSteps();
 			if(($index=$steps->indexOf($wizardStep))>=0)
 			{
 				$stepCount=$steps->getCount();
-				if($stepCount===1 || ($index<$stepCount-1 && $steps->itemAt($index+1)->getStepType()==='Complete'))
-					return self::ST_FINISH;
+				if($stepCount===1 || ($index<$stepCount-1 && $steps->itemAt($index+1)->getStepType()===TWizardStepType::Complete))
+					return TWizardStepType::Finish;
 				else if($index===0)
-					return self::ST_START;
+					return TWizardStepType::Start;
 				else if($index===$stepCount-1)
-					return self::ST_FINISH;
+					return TWizardStepType::Finish;
 				else
-					return self::ST_STEP;
+					return TWizardStepType::Step;
 			}
 			else
 				return $type;
@@ -1162,7 +1163,7 @@ class TWizard extends TWebControl implements INamingContainer
 			if(($button=$item->findControl(self::ID_SIDEBAR_BUTTON))!==null)
 			{
 				$step=$item->getDataItem();
-				if(($this->getStepType($step)==='Complete'))
+				if(($this->getStepType($step)===TWizardStepType::Complete))
 					$button->setEnabled(false);
 				if(($title=$step->getTitle())!=='')
 					$button->setText($title);
@@ -1515,19 +1516,19 @@ class TWizardNavigationButtonStyle extends TStyle
 	}
 
 	/**
-	 * @return string button type. Default to 'Button'.
+	 * @return TWizardNavigationButtonType button type. Default to TWizardNavigationButtonType::Button.
 	 */
 	public function getButtonType()
 	{
-		return $this->_buttonType===null?'Button':$this->_buttonType;
+		return $this->_buttonType===null? TWizardNavigationButtonType::Button :$this->_buttonType;
 	}
 
 	/**
-	 * @param string button type. Valid values include 'Button', 'Image', 'Link'.
+	 * @param TWizardNavigationButtonType button type.
 	 */
 	public function setButtonType($value)
 	{
-		$this->_buttonType=TPropertyValue::ensureEnum($value,'Button','Image','Link');
+		$this->_buttonType=TPropertyValue::ensureEnumerable($value,'TWizardNavigationButtonType');
 	}
 
 	/**
@@ -1618,22 +1619,22 @@ class TWizardStep extends TView
 	}
 
 	/**
-	 * @return string the wizard step type. Defaults to 'Auto'.
+	 * @return TWizardStepType the wizard step type. Defaults to TWizardStepType::Auto.
 	 */
 	public function getStepType()
 	{
-		return $this->getViewState('StepType',TWizard::ST_AUTO);
+		return $this->getViewState('StepType',TWizardStepType::Auto);
 	}
 
 	/**
-	 * @param string the wizard step type. Valid values include 'Auto', 'Complete', 'Start', 'Step', 'Finish'.
+	 * @param TWizardStepType the wizard step type.
 	 */
 	public function setStepType($type)
 	{
-		$type=TPropertyValue::ensureEnum($type,TWizard::ST_AUTO,TWizard::ST_COMPLETE,TWizard::ST_STEP,TWizard::ST_START,TWizard::ST_FINISH);
+		$type=TPropertyValue::ensureEnumerable($type,'TWizardStepType');
 		if($type!==$this->getStepType())
 		{
-			$this->setViewState('StepType',$type,TWizard::ST_AUTO);
+			$this->setViewState('StepType',$type,TWizardStepType::Auto);
 			if($this->_wizard)
 				$this->_wizard->wizardStepsChanged();
 		}
@@ -1644,7 +1645,7 @@ class TWizardStep extends TView
 /**
  * TCompleteWizardStep class.
  *
- * TCompleteWizardStep represents a wizard step of type 'Complete'.
+ * TCompleteWizardStep represents a wizard step of type TWizardStepType::Complete.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Revision: $  $Date: $
@@ -1654,11 +1655,11 @@ class TWizardStep extends TView
 class TCompleteWizardStep extends TWizardStep
 {
 	/**
-	 * @return string the wizard step type. Always 'Complete'.
+	 * @return TWizardStepType the wizard step type. Always TWizardStepType::Complete.
 	 */
 	public function getStepType()
 	{
-		return 'Complete';
+		return TWizardStepType::Complete;
 	}
 
 	/**
@@ -2100,13 +2101,13 @@ class TWizardNavigationTemplate extends TComponent implements ITemplate
 	{
 		switch($buttonStyle->getButtonType())
 		{
-			case 'Button':
+			case TWizardNavigationButtonType::Button:
 				$button=new TButton;
 				break;
-			case 'Link'  :
+			case TWizardNavigationButtonType::Link:
 				$button=new TLinkButton;
 				break;
-			case 'Image' :
+			case TWizardNavigationButtonType::Image:
 				$button=new TImageButton;
 				$button->setImageUrl($buttonStyle->getImageUrl());
 				break;
@@ -2216,6 +2217,55 @@ class TWizardStepNavigationTemplate extends TWizardNavigationTemplate
 		$parent->setNextButton($nextButton);
 		$parent->setCancelButton($cancelButton);
 	}
+}
+
+
+/**
+ * TWizardNavigationButtonType class.
+ * TWizardNavigationButtonType defines the enumerable type for the possible types of buttons
+ * that can be used in the navigation part of a {@link TWizard}.
+ *
+ * The following enumerable values are defined:
+ * - Button: a regular click button
+ * - Image: an image button
+ * - Link: a hyperlink button
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TWizardNavigationButtonType extends TEnumerable
+{
+	const Button='Button';
+	const Image='Image';
+	const Link='Link';
+}
+
+
+/**
+ * TWizardStepType class.
+ * TWizardStepType defines the enumerable type for the possible types of {@link TWizard wizard} steps.
+ *
+ * The following enumerable values are defined:
+ * - Auto: the type is automatically determined based on the location of the wizard step in the whole step collection.
+ * - Complete: the step is the last summary step.
+ * - Start: the step is the first step
+ * - Step: the step is between the begin and the end steps.
+ * - Finish: the last step before the Complete step.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TWizardStepType extends TEnumerable
+{
+	const Auto='Auto';
+	const Complete='Complete';
+	const Start='Start';
+	const Step='Step';
+	const Finish='Finish';
 }
 
 ?>

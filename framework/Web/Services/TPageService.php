@@ -244,7 +244,7 @@ class TPageService extends TService
 			if(is_array($arr))
 			{
 				list($pageConfig,$timestamps)=$arr;
-				if($application->getMode()!==TApplication::STATE_PERFORMANCE)
+				if($application->getMode()!==TApplicationMode::Performance)
 				{
 					foreach($timestamps as $fileName=>$timestamp)
 					{

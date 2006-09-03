@@ -35,7 +35,7 @@ Prado::using('System.Security.TUser');
  * similar to the above sample.
  *
  * The user passwords may be specified as clear text, SH1 or MD5 hashed by setting
- * {@link setPasswordMode PasswordMode} as <b>Clear</b>, <b>SH1</b> or <b>MD5</b>.
+ * {@link setPasswordMode PasswordMode} as <b>Clear</b>, <b>SHA1</b> or <b>MD5</b>.
  * The default name for a guest user is <b>Guest</b>. It may be changed
  * by setting {@link setGuestName GuestName} property.
  *
@@ -67,9 +67,9 @@ class TUserManager extends TModule implements IUserManager
 	 */
 	private $_guestName='Guest';
 	/**
-	 * @var string password mode, Clear|MD5|SH1
+	 * @var TUserManagerPasswordMode password mode
 	 */
-	private $_passwordMode='MD5';
+	private $_passwordMode=TUserManagerPasswordMode::MD5;
 	/**
 	 * @var boolean whether the module has been initialized
 	 */
@@ -186,7 +186,7 @@ class TUserManager extends TModule implements IUserManager
 	}
 
 	/**
-	 * @return string (Clear|MD5|SH1) how password is stored, clear text, or MD5 or SH1 hashed. Default to MD5.
+	 * @return TUserManagerPasswordMode how password is stored, clear text, or MD5 or SHA1 hashed. Default to TUserManagerPasswordMode::MD5.
 	 */
 	public function getPasswordMode()
 	{
@@ -194,11 +194,11 @@ class TUserManager extends TModule implements IUserManager
 	}
 
 	/**
-	 * @param string (Clear|MD5|SH1) how password is stored, clear text, or MD5 or SH1 hashed.
+	 * @param TUserManagerPasswordMode how password is stored, clear text, or MD5 or SHA1 hashed.
 	 */
 	public function setPasswordMode($value)
 	{
-		$this->_passwordMode=TPropertyValue::ensureEnum($value,array('Clear','MD5','SHA1'));
+		$this->_passwordMode=TPropertyValue::ensureEnumerable($value,'TUserManagerPasswordMode');
 	}
 
 	/**
@@ -209,9 +209,9 @@ class TUserManager extends TModule implements IUserManager
 	 */
 	public function validateUser($username,$password)
 	{
-		if($this->_passwordMode==='MD5')
+		if($this->_passwordMode===TUserManagerPasswordMode::MD5)
 			$password=md5($password);
-		else if($this->_passwordMode==='SHA1')
+		else if($this->_passwordMode===TUserManagerPasswordMode::SHA1)
 			$password=sha1($password);
 		$username=strtolower($username);
 		return (isset($this->_users[$username]) && $this->_users[$username]===$password);
@@ -256,6 +256,28 @@ class TUserManager extends TModule implements IUserManager
 	{
 		$user->setIsGuest(true);
 	}
+}
+
+/**
+ * TUserManagerPasswordMode class.
+ * TUserManagerPasswordMode defines the enumerable type for the possible modes
+ * that user passwords can be specified for a {@link TUserManager}.
+ *
+ * The following enumerable values are defined:
+ * - Clear: the password is in plain text
+ * - MD5: the password is recorded as the MD5 hash value of the original password
+ * - SHA1: the password is recorded as the SHA1 hash value of the original password
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Security
+ * @since 3.0.4
+ */
+class TUserManagerPasswordMode extends TEnumerable
+{
+	const Clear='Clear';
+	const MD5='MD5';
+	const SHA1='SHA1';
 }
 
 ?>

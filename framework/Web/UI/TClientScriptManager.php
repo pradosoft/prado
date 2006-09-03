@@ -139,7 +139,7 @@ class TClientScriptManager extends TApplicationComponent
 	protected function getPradoScriptBasePath()
 	{
 		$basePath = Prado::getFrameworkPath().'/'.self::SCRIPT_PATH;
-		if($this->getApplication()->getMode()===TApplication::STATE_DEBUG)
+		if($this->getApplication()->getMode()===TApplicationMode::Debug)
 			return $basePath.'/debug';
 		else
 			return $basePath.'/compressed';
@@ -165,7 +165,7 @@ class TClientScriptManager extends TApplicationComponent
 			$basePath=$this->getPradoScriptBasePath();
 			$scriptLoader=$basePath.'/'.self::SCRIPT_LOADER;
 			$url=$this->publishFilePath($scriptLoader).'?js='.trim($files,',');
-			if($this->getApplication()->getMode()===TApplication::STATE_DEBUG)
+			if($this->getApplication()->getMode()===TApplicationMode::Debug)
 				$url.='&amp;mode=debug';
 			$writer->write(TJavaScript::renderScriptFile($url));
 		}

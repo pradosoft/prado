@@ -20,6 +20,8 @@ CHG: TControl::findControlsByType() now only returns objects of the specified ty
 CHG: Moved createdOnTemplate() and addParsedObject() from TControl to TComponent (Qiang)
 NEW: TDateTimeStamp class for supporting time stamps outside 1970-2038 using float (Wei)
 NEW: TDropDownListColumn (Qiang)
+NEW: Added TEnumerable and all needed enumerable types (Qiang)
+
 
 Version 3.0.3 August 6, 2006
 ============================
