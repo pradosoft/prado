@@ -58,7 +58,7 @@ class TForm extends TControl
 		if(($butt=$this->getDefaultButton())!=='')
 		{
 			if(($button=$this->findControl($butt))!==null)
-				$this->getPage()->getClientScript()->registerDefaultButton($this->getClientID(),$button->getClientID());
+				$this->getPage()->getClientScript()->registerDefaultButton($this, $button);
 			else
 				throw new TInvalidDataValueException('form_defaultbutton_invalid',$butt);
 		}

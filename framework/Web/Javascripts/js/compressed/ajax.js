@@ -210,7 +210,7 @@ Event.observe(this.element,"keydown",this.handleReturnKey.bind(this));Event.obse
 {this.options=options;this.baseInitialize(options.ID,options.ResultPanel,options);Object.extend(this.options,{onSuccess:this.onComplete.bind(this)});if(options.AutoPostBack)
 this.onInit(options);},doCallback:function(event,options)
 {if(!this.active)
-{request=new Prado.CallbackRequest(options.EventTarget,options);request.dispatch();Event.stop(event);}},onClick:function(event)
+{request=new Prado.CallbackRequest(this.options.EventTarget,options);request.dispatch();Event.stop(event);}},onClick:function(event)
 {var element=Event.findElement(event,'LI');this.index=element.autocompleteIndex;this.selectEntry();this.hide();Event.fireEvent(this.element,"change");},getUpdatedChoices:function()
 {options=new Array(this.getToken(),"__TAutoComplete_onSuggest__");Prado.Callback(this.options.EventTarget,options,null,this.options);},onComplete:function(request,boundary)
 {result=Prado.Element.extractContent(request.transport.responseText,boundary);if(typeof(result)=="string"&&result.length>0)

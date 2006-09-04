@@ -42,20 +42,19 @@ class TInlineFrame extends TWebControl
 	}
 
 	/**
-	 * @return string alignment of the iframe. Defaults to 'NotSet'.
+	 * @return TInlineFrameAlign alignment of the iframe. Defaults to TInlineFrameAlign::NotSet.
 	 */
 	public function getAlign()
 	{
-		return $this->getViewState('Align','NotSet');
+		return $this->getViewState('Align',TInlineFrameAlign::NotSet);
 	}
 
 	/**
-	 * @param string alignment of the iframe. Valid values include
-	 * 'NotSet', 'Left', 'Right', 'Top', 'Middle', 'Bottom'.
+	 * @param TInlineFrameAlign alignment of the iframe.
 	 */
 	public function setAlign($value)
 	{
-		$this->setViewState('Align',TPropertyValue::ensureEnum($value,'NotSet','Left','Right','Top','Middle','Bottom'),'NotSet');
+		$this->setViewState('Align',TPropertyValue::ensureEnum($value,'TInlineFrameAlign'),TInlineFrameAlign::NotSet);
 	}
 
 	/**
@@ -107,20 +106,19 @@ class TInlineFrame extends TWebControl
 	}
 
 	/**
-	 * @return string the visibility and position of scroll bars in an iframe. Defaults to 'Auto'.
+	 * @return TInlineFrameScrollBars the visibility and position of scroll bars in an iframe. Defaults to TInlineFrameScrollBars::Auto.
 	 */
 	public function getScrollBars()
 	{
-		return $this->getViewState('ScrollBars','Auto');
+		return $this->getViewState('ScrollBars',TInlineFrameScrollBars::Auto);
 	}
 
 	/**
-	 * @param string the visibility and position of scroll bars in an iframe.
-	 * Valid values include None, Auto, Both.
+	 * @param TInlineFrameScrollBars the visibility and position of scroll bars in an iframe.
 	 */
 	public function setScrollBars($value)
 	{
-		$this->setViewState('ScrollBars',TPropertyValue::ensureEnum($value,array('None','Auto','Both')),'Auto');
+		$this->setViewState('ScrollBars',TPropertyValue::ensureEnum($value,'TInlineFrameScrollBars'),TInlineFrameScrollBars::Auto);
 	}
 
 	/**
@@ -180,9 +178,9 @@ class TInlineFrame extends TWebControl
 			$writer->addAttribute('align',$align);
 
 		$scrollBars=$this->getScrollBars();
-		if($scrollBars==='None')
+		if($scrollBars===TInlineFrameScrollBars::None)
 			$writer->addAttribute('scrolling','no');
-		else if($scrollBars==='Both')
+		else if($scrollBars===TInlineFrameScrollBars::Both)
 			$writer->addAttribute('scrolling','yes');
 
 		if (!$this->getShowBorder())
@@ -199,5 +197,55 @@ class TInlineFrame extends TWebControl
 
 		parent::addAttributesToRender($writer);
 	}
+}
+
+/**
+ * TInlineFrameAlign class.
+ * TInlineFrameAlign defines the enumerable type for the possible alignments
+ * that the content in a {@link TInlineFrame} could be.
+ *
+ * The following enumerable values are defined:
+ * - NotSet: the alignment is not specified.
+ * - Left: left aligned
+ * - Right: right aligned
+ * - Top: top aligned
+ * - Middle: middle aligned
+ * - Bottom: bottom aligned
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TInlineFrameAlign extends TEnumerable
+{
+	const NotSet='NotSet';
+	const Left='Left';
+	const Right='Right';
+	const Top='Top';
+	const Middle='Middle';
+	const Bottom='Bottom';
+}
+
+/**
+ * TInlineFrameScrollBars class.
+ * TInlineFrameScrollBars defines the enumerable type for the possible scroll bar mode
+ * that a {@link TInlineFrame} control could use.
+ *
+ * The following enumerable values are defined:
+ * - None: no scroll bars.
+ * - Auto: scroll bars automatically appeared when needed.
+ * - Both: show both horizontal and vertical scroll bars all the time.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TInlineFrameScrollBars extends TEnumerable
+{
+	const None='None';
+	const Auto='Auto';
+	const Both='Both';
 }
 ?>

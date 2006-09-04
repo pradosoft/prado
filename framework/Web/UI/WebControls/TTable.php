@@ -107,7 +107,7 @@ class TTable extends TWebControl
 		$border=0;
 		if($this->getHasStyle())
 		{
-			if($this->getGridLines()!=='None')
+			if($this->getGridLines()!==TTableGridLines::None)
 			{
 				if(($border=$this->getBorderWidth())==='')
 					$border=1;
@@ -153,20 +153,19 @@ class TTable extends TWebControl
 	}
 
 	/**
-	 * @return string table caption alignment. Defaults to 'NotSet'.
+	 * @return TTableCaptionAlign table caption alignment. Defaults to TTableCaptionAlign::NotSet.
 	 */
 	public function getCaptionAlign()
 	{
-		return $this->getViewState('CaptionAlign','NotSet');
+		return $this->getViewState('CaptionAlign',TTableCaptionAlign::NotSet);
 	}
 
 	/**
-	 * @param string table caption alignment. Valid values include
-	 * 'NotSet','Top','Bottom','Left','Right'.
+	 * @param TTableCaptionAlign table caption alignment.
 	 */
 	public function setCaptionAlign($value)
 	{
-		$this->setViewState('CaptionAlign',TPropertyValue::ensureEnum($value,'NotSet','Top','Bottom','Left','Right'),'NotSet');
+		$this->setViewState('CaptionAlign',TPropertyValue::ensureEnum($value,'TTableCaptionAlign'),TTableCaptionAlign::NotSet);
 	}
 
 	/**
@@ -208,19 +207,18 @@ class TTable extends TWebControl
 	}
 
 	/**
-	 * @return string the horizontal alignment of the table content. Defaults to 'NotSet'.
+	 * @return THorizontalAlign the horizontal alignment of the table content. Defaults to THorizontalAlign::NotSet.
 	 */
 	public function getHorizontalAlign()
 	{
 		if($this->getHasStyle())
 			return $this->getStyle()->getHorizontalAlign();
 		else
-			return 'NotSet';
+			return THorizontalAlign::NotSet;
 	}
 
 	/**
-	 * @param string the horizontal alignment of the table content.
-	 * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'.
+	 * @param THorizontalAlign the horizontal alignment of the table content.
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -228,20 +226,18 @@ class TTable extends TWebControl
 	}
 
 	/**
-	 * @return string the grid line setting of the table. Defaults to 'None'.
+	 * @return TTableGridLines the grid line setting of the table. Defaults to TTableGridLines::None.
 	 */
 	public function getGridLines()
 	{
 		if($this->getHasStyle())
 			return $this->getStyle()->getGridLines();
 		else
-			return 'None';
+			return TTableGridLines::None;
 	}
 
 	/**
-	 * Sets the grid line style of the table.
-     * Valid values include 'None', 'Horizontal', 'Vertical', 'Both'.
-	 * @param string the grid line setting of the table
+	 * @param TTableGridLines the grid line setting of the table
 	 */
 	public function setGridLines($value)
 	{
@@ -277,7 +273,7 @@ class TTable extends TWebControl
 		parent::renderBeginTag($writer);
 		if(($caption=$this->getCaption())!=='')
 		{
-			if(($align=$this->getCaptionAlign())!=='NotSet')
+			if(($align=$this->getCaptionAlign())!==TTableCaptionAlign::NotSet)
 				$writer->addAttribute('align',strtolower($align));
 			$writer->renderBeginTag('caption');
 			$writer->write($caption);
@@ -296,7 +292,7 @@ class TTable extends TWebControl
 			$renderTableSection=false;
 			foreach($this->getControls() as $row)
 			{
-				if($row->getTableSection()!=='Body')
+				if($row->getTableSection()!==TTableRowSection::Body)
 				{
 					$renderTableSection=true;
 					break;
@@ -304,31 +300,31 @@ class TTable extends TWebControl
 			}
 			if($renderTableSection)
 			{
-				$currentSection='Header';
+				$currentSection=TTableRowSection::Header;
 				$writer->writeLine();
 				foreach($this->getControls() as $index=>$row)
 				{
 					if(($section=$row->getTableSection())===$currentSection)
 					{
-						if($index===0 && $currentSection==='Header')
+						if($index===0 && $currentSection===TTableRowSection::Header)
 							$writer->renderBeginTag('thead');
 					}
 					else
 					{
-						if($currentSection==='Header')
+						if($currentSection===TTableRowSection::Header)
 						{
 							if($index>0)
 								$writer->renderEndTag();
-							if($section==='Body')
+							if($section===TTableRowSection::Body)
 								$writer->renderBeginTag('tbody');
 							else
 								$writer->renderBeginTag('tfoot');
 							$currentSection=$section;
 						}
-						else if($currentSection==='Body')
+						else if($currentSection===TTableRowSection::Body)
 						{
 							$writer->renderEndTag();
-							if($section==='Footer')
+							if($section===TTableRowSection::Footer)
 								$writer->renderBeginTag('tfoot');
 							else
 								throw new TConfigurationException('table_tablesection_outoforder');
@@ -383,6 +379,33 @@ class TTableRowCollection extends TControlCollection
 		else
 			throw new TInvalidDataTypeException('tablerowcollection_tablerow_required');
 	}
+}
+
+
+/**
+ * TTableCaptionAlign class.
+ * TTableCaptionAlign defines the enumerable type for the possible alignments
+ * that a table caption can take.
+ *
+ * The following enumerable values are defined:
+ * - NotSet: alignment not specified
+ * - Top: top aligned
+ * - Bottom: bottom aligned
+ * - Left: left aligned
+ * - Right: right aligned
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TTableCaptionAlign extends TEnumerable
+{
+	const NotSet='NotSet';
+	const Top='Top';
+	const Bottom='Bottom';
+	const Left='Left';
+	const Right='Right';
 }
 
 ?>

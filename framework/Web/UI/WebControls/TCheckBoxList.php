@@ -116,20 +116,19 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	}
 
 	/**
-	 * @return string the alignment of the text caption, defaults to 'Right'.
+	 * @return TTextAlign the alignment of the text caption, defaults to TTextAlign::Right.
 	 */
 	public function getTextAlign()
 	{
-		return $this->getViewState('TextAlign','Right');
+		return $this->getViewState('TextAlign',TTextAlign::Right);
 	}
 
 	/**
-	 * Sets the text alignment of the checkboxes
-	 * @param string either 'Left' or 'Right'
+	 * @param TTextAlign the text alignment of the checkboxes
 	 */
 	public function setTextAlign($value)
 	{
-		$this->setViewState('TextAlign',TPropertyValue::ensureEnum($value,array('Left','Right')),'Right');
+		$this->setViewState('TextAlign',TPropertyValue::ensureEnum($value,'TTextAlign'),TTextAlign::Right);
 	}
 
 

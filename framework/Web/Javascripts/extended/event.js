@@ -82,10 +82,19 @@ Object.extend(Event,
 			}
 			else if(Event.isMouseEvent(type))
 			{
-				var event = document.createEvent('MouseEvents');
-				event.initMouseEvent(type,true,true,
-					document.defaultView, 1, 0, 0, 0, 0, false, 
-							false, false, false, 0, null);
+				var event = document.createEvent('MouseEvents');				
+				if (event.initMouseEvent)
+		        {
+					event.initMouseEvent(type,true,true,
+						document.defaultView, 1, 0, 0, 0, 0, false, 
+								false, false, false, 0, null);
+		        }
+		        else
+		        {
+		            // Safari
+		            // TODO we should be initialising other mouse-event related attributes here
+		            event.initEvent(type, true, true);
+		        }
 			}
             element.dispatchEvent(event);
         }

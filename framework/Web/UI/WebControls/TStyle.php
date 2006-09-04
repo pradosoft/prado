@@ -384,11 +384,11 @@ class TStyle extends TComponent
 class TTableStyle extends TStyle
 {
 	/**
-	 * @var string the URL of the background image for the table
+	 * @var TVerticalAlign the URL of the background image for the table
 	 */
 	private $_backImageUrl=null;
 	/**
-	 * @var string horizontal alignment of the contents within the table
+	 * @var THorizontalAlign horizontal alignment of the contents within the table
 	 */
 	private $_horizontalAlign=null;
 	/**
@@ -400,7 +400,7 @@ class TTableStyle extends TStyle
 	 */
 	private $_cellSpacing=null;
 	/**
-	 * @var string grid line setting of the table
+	 * @var TTableGridLines grid line setting of the table
 	 */
 	private $_gridLines=null;
 	/**
@@ -486,7 +486,7 @@ class TTableStyle extends TStyle
 		if(($url=trim($this->getBackImageUrl()))!=='')
 			$writer->addStyleAttribute('background-image','url('.$url.')');
 
-		if(($horizontalAlign=$this->getHorizontalAlign())!=='NotSet')
+		if(($horizontalAlign=$this->getHorizontalAlign())!==THorizontalAlign::NotSet)
 			$writer->addStyleAttribute('text-align',strtolower($horizontalAlign));
 
 		if(($cellPadding=$this->getCellPadding())>=0)
@@ -500,9 +500,9 @@ class TTableStyle extends TStyle
 
 		switch($this->getGridLines())
 		{
-			case 'Horizontal' : $writer->addAttribute('rules','rows'); break;
-			case 'Vertical' : $writer->addAttribute('rules','cols'); break;
-			case 'Both' : $writer->addAttribute('rules','all'); break;
+			case TTableGridLines::Horizontal : $writer->addAttribute('rules','rows'); break;
+			case TTableGridLines::Vertical : $writer->addAttribute('rules','cols'); break;
+			case TTableGridLines::Both : $writer->addAttribute('rules','all'); break;
 		}
 
 		parent::addAttributesToRender($writer);
@@ -526,21 +526,20 @@ class TTableStyle extends TStyle
 	}
 
 	/**
-	 * @return string the horizontal alignment of the contents within the table, defaults to 'NotSet'.
+	 * @return THorizontalAlign the horizontal alignment of the contents within the table, defaults to THorizontalAlign::NotSet.
 	 */
 	public function getHorizontalAlign()
 	{
-		return $this->_horizontalAlign===null?'NotSet':$this->_horizontalAlign;
+		return $this->_horizontalAlign===null?THorizontalAlign::NotSet:$this->_horizontalAlign;
 	}
 
 	/**
 	 * Sets the horizontal alignment of the contents within the table.
-     * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
-	 * @param string the horizontal alignment
+	 * @param THorizontalAlign the horizontal alignment
 	 */
 	public function setHorizontalAlign($value)
 	{
-		$this->_horizontalAlign=TPropertyValue::ensureEnum($value,array('NotSet','Left','Right','Center','Justify'));
+		$this->_horizontalAlign=TPropertyValue::ensureEnum($value,'THorizontalAlign');
 	}
 
 	/**
@@ -580,21 +579,20 @@ class TTableStyle extends TStyle
 	}
 
 	/**
-	 * @return string the grid line setting of the table. Defaults to 'None'.
+	 * @return TTableGridLines the grid line setting of the table. Defaults to TTableGridLines::None.
 	 */
 	public function getGridLines()
 	{
-		return $this->_gridLines===null?'None':$this->_gridLines;
+		return $this->_gridLines===null?TTableGridLines::None:$this->_gridLines;
 	}
 
 	/**
 	 * Sets the grid line style of the table.
-     * Valid values include 'None', 'Horizontal', 'Vertical', 'Both'.
-	 * @param string the grid line setting of the table
+	 * @param TTableGridLines the grid line setting of the table
 	 */
 	public function setGridLines($value)
 	{
-		$this->_gridLines=TPropertyValue::ensureEnum($value,array('None', 'Horizontal', 'Vertical', 'Both'));
+		$this->_gridLines=TPropertyValue::ensureEnum($value,'TTableGridLines');
 	}
 
 
@@ -627,11 +625,11 @@ class TTableStyle extends TStyle
 class TTableItemStyle extends TStyle
 {
 	/**
-	 * @var string horizontal alignment of the contents within the table item
+	 * @var THorizontalAlign horizontal alignment of the contents within the table item
 	 */
 	private $_horizontalAlign=null;
 	/**
-	 * @var string vertical alignment of the contents within the table item
+	 * @var TVerticalAlign vertical alignment of the contents within the table item
 	 */
 	private $_verticalAlign=null;
 	/**
@@ -702,49 +700,47 @@ class TTableItemStyle extends TStyle
 		if(!$this->getWrap())
 			$writer->addStyleAttribute('white-space','nowrap');
 
-		if(($horizontalAlign=$this->getHorizontalAlign())!=='NotSet')
+		if(($horizontalAlign=$this->getHorizontalAlign())!==THorizontalAlign::NotSet)
 			$writer->addAttribute('align',strtolower($horizontalAlign));
 
-		if(($verticalAlign=$this->getVerticalAlign())!=='NotSet')
+		if(($verticalAlign=$this->getVerticalAlign())!==TVerticalAlign::NotSet)
 			$writer->addAttribute('valign',strtolower($verticalAlign));
 
 		parent::addAttributesToRender($writer);
 	}
 
 	/**
-	 * @return string the horizontal alignment of the contents within the table item, defaults to 'NotSet'.
+	 * @return THorizontalAlign the horizontal alignment of the contents within the table item, defaults to THorizontalAlign::NotSet.
 	 */
 	public function getHorizontalAlign()
 	{
-		return $this->_horizontalAlign===null?'NotSet':$this->_horizontalAlign;
+		return $this->_horizontalAlign===null?THorizontalAlign::NotSet:$this->_horizontalAlign;
 	}
 
 	/**
 	 * Sets the horizontal alignment of the contents within the table item.
-     * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
-	 * @param string the horizontal alignment
+	 * @param THorizontalAlign the horizontal alignment
 	 */
 	public function setHorizontalAlign($value)
 	{
-		$this->_horizontalAlign=TPropertyValue::ensureEnum($value,array('NotSet','Left','Right','Center','Justify'));
+		$this->_horizontalAlign=TPropertyValue::ensureEnum($value,'THorizontalAlign');
 	}
 
 	/**
-	 * @return string the vertical alignment of the contents within the table item, defaults to 'NotSet'.
+	 * @return TVerticalAlign the vertical alignment of the contents within the table item, defaults to TVerticalAlign::NotSet.
 	 */
 	public function getVerticalAlign()
 	{
-		return $this->_verticalAlign===null?'NotSet':$this->_verticalAlign;
+		return $this->_verticalAlign===null?TVerticalAlign::NotSet:$this->_verticalAlign;
 	}
 
 	/**
 	 * Sets the vertical alignment of the contents within the table item.
-     * Valid values include 'NotSet','Top','Bottom','Middle'
-	 * @param string the horizontal alignment
+	 * @param TVerticalAlign the horizontal alignment
 	 */
 	public function setVerticalAlign($value)
 	{
-		$this->_verticalAlign=TPropertyValue::ensureEnum($value,array('NotSet','Top','Bottom','Middle'));
+		$this->_verticalAlign=TPropertyValue::ensureEnum($value,'TVerticalAlign');
 	}
 
 	/**
@@ -763,6 +759,78 @@ class TTableItemStyle extends TStyle
 	{
 		$this->_wrap=TPropertyValue::ensureBoolean($value);
 	}
+}
+
+/**
+ * THorizontalAlign class.
+ * THorizontalAlign defines the enumerable type for the possible horizontal alignments in a CSS style.
+ *
+ * The following enumerable values are defined:
+ * - NotSet: the alignment is not specified.
+ * - Left: left aligned
+ * - Right: right aligned
+ * - Center: center aligned
+ * - Justify: the begin and end are justified
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class THorizontalAlign extends TEnumerable
+{
+	const NotSet='NotSet';
+	const Left='Left';
+	const Right='Right';
+	const Center='Center';
+	const Justify='Justify';
+}
+
+/**
+ * TVerticalAlign class.
+ * TVerticalAlign defines the enumerable type for the possible vertical alignments in a CSS style.
+ *
+ * The following enumerable values are defined:
+ * - NotSet: the alignment is not specified.
+ * - Top: top aligned
+ * - Bottom: bottom aligned
+ * - Middle: middle aligned
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TVerticalAlign extends TEnumerable
+{
+	const NotSet='NotSet';
+	const Top='Top';
+	const Bottom='Bottom';
+	const Middle='Middle';
+}
+
+
+/**
+ * TTableGridLines class.
+ * TTableGridLines defines the enumerable type for the possible grid line types of an HTML table.
+ *
+ * The following enumerable values are defined:
+ * - None: no grid lines
+ * - Horizontal: horizontal grid lines only
+ * - Vertical: vertical grid lines only
+ * - Both: both horizontal and vertical grid lines are shown
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TTableGridLines extends TEnumerable
+{
+	const None='None';
+	const Horizontal='Horizontal';
+	const Vertical='Vertical';
+	const Both='Both';
 }
 
 ?>

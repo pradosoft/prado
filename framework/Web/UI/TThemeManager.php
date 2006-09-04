@@ -240,7 +240,7 @@ class TTheme extends TApplicationComponent implements ITheme
 			if(is_array($array))
 			{
 				list($skins,$cssFiles,$jsFiles,$timestamp)=$array;
-				if($this->getApplication()->getMode()!==TApplication::STATE_PERFORMANCE)
+				if($this->getApplication()->getMode()!==TApplicationMode::Performance)
 				{
 					if(($dir=opendir($themePath))===false)
 						throw new TIOException('theme_path_inexistent',$themePath);

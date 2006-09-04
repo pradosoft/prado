@@ -57,21 +57,21 @@ class TCompareValidator extends TBaseValidator
 	}
 
 	/**
-	 * @return string the data type that the values being compared are converted to before the comparison is made. Defaults to String.
+	 * @return TValidationDataType the data type that the values being compared are converted to before the comparison is made. Defaults to TValidationDataType::String.
 	 */
 	public function getDataType()
 	{
-		return $this->getViewState('DataType','String');
+		return $this->getViewState('DataType',TValidationDataType::String);
 	}
 
 	/**
-	 * Sets the data type (Integer, Float, Date, String) that the values being
+	 * Sets the data type that the values being
 	 * compared are converted to before the comparison is made.
-	 * @param string the data type
+	 * @param TValidationDataType the data type
 	 */
 	public function setDataType($value)
 	{
-		$this->setViewState('DataType',TPropertyValue::ensureEnum($value,'Integer','Float','Date','String'),'String');
+		$this->setViewState('DataType',TPropertyValue::ensureEnum($value,'TValidationDataType'),TValidationDataType::String);
 	}
 
 	/**
@@ -109,20 +109,20 @@ class TCompareValidator extends TBaseValidator
 	}
 
 	/**
-	 * @return string the comparison operation to perform (Equal, NotEqual, GreaterThan, GreaterThanEqual, LessThan, LessThanEqual). Defaults to Equal.
+	 * @return TValidationCompareOperator the comparison operation to perform. Defaults to TValidationCompareOperator::Equal.
 	 */
 	public function getOperator()
 	{
-		return $this->getViewState('Operator','Equal');
+		return $this->getViewState('Operator',TValidationCompareOperator::Equal);
 	}
 
 	/**
-	 * Sets the comparison operation to perform (Equal, NotEqual, GreaterThan, GreaterThanEqual, LessThan, LessThanEqual)
-	 * @param string the comparison operation
+	 * Sets the comparison operation to perform
+	 * @param TValidationCompareOperator the comparison operation
 	 */
 	public function setOperator($value)
 	{
-		$this->setViewState('Operator',TPropertyValue::ensureEnum($value,'Equal','NotEqual','GreaterThan','GreaterThanEqual','LessThan','LessThanEqual'),'Equal');
+		$this->setViewState('Operator',TPropertyValue::ensureEnum($value,'TValidationCompareOperator'),TValidationCompareOperator::Equal);
 	}
 
 	/**
@@ -167,17 +167,17 @@ class TCompareValidator extends TBaseValidator
 		$values = $this->getComparisonValues($value, $value2);
 		switch($this->getOperator())
 		{
-			case 'Equal':
+			case TValidationCompareOperator::Equal:
 				return $values[0] == $values[1];
-			case 'NotEqual':
+			case TValidationCompareOperator::NotEqual:
 				return $values[0] != $values[1];
-			case 'GreaterThan':
+			case TValidationCompareOperator::GreaterThan:
 				return $values[0] > $values[1];
-			case 'GreaterThanEqual':
+			case TValidationCompareOperator::GreaterThanEqual:
 				return $values[0] >= $values[1];
-			case 'LessThan':
+			case TValidationCompareOperator::LessThan:
 				return $values[0] < $values[1];
-			case 'LessThanEqual':
+			case TValidationCompareOperator::LessThanEqual:
 				return $values[0] <= $values[1];
 		}
 
@@ -194,11 +194,11 @@ class TCompareValidator extends TBaseValidator
 	{
 		switch($this->getDataType())
 		{
-			case 'Integer':
+			case TValidationDataType::Integer:
 				return array(intval($value1), intval($value2));
-			case 'Float':
+			case TValidationDataType::Float:
 				return array(floatval($value1), floatval($value2));
-			case 'Date':
+			case TValidationDataType::Date:
 				$dateFormat = $this->getDateFormat();
 				if($dateFormat!=='')
 				{
@@ -225,13 +225,42 @@ class TCompareValidator extends TBaseValidator
 		}
 		if(($value=$this->getValueToCompare())!=='')
 			$options['ValueToCompare']=$value;
-		if(($operator=$this->getOperator())!=='Equal')
+		if(($operator=$this->getOperator())!==TValidationCompareOperator::Equal)
 			$options['Operator']=$operator;
 		$options['DataType']=$this->getDataType();
 		if(($dateFormat=$this->getDateFormat())!=='')
 			$options['DateFormat']=$dateFormat;
 		return $options;
 	}
+}
+
+
+/**
+ * TValidationCompareOperator class.
+ * TValidationCompareOperator defines the enumerable type for the comparison operations
+ * that {@link TCompareValidator} can perform validation with.
+ *
+ * The following enumerable values are defined:
+ * - Equal
+ * - NotEqual
+ * - GreaterThan
+ * - GreaterThanEqual
+ * - LessThan
+ * - LessThanEqual
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TValidationCompareOperator extends TEnumerable
+{
+	const Equal='Equal';
+	const NotEqual='NotEqual';
+	const GreaterThan='GreaterThan';
+	const GreaterThanEqual='GreaterThanEqual';
+	const LessThan='LessThan';
+	const LessThanEqual='LessThanEqual';
 }
 
 ?>

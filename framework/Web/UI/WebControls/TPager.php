@@ -86,35 +86,35 @@ class TPager extends TWebControl implements INamingContainer
 	}
 
 	/**
-	 * @return string pager mode. Defaults to 'NextPrev'.
+	 * @return TPagerMode pager mode. Defaults to TPagerMode::NextPrev.
 	 */
 	public function getMode()
 	{
-		return $this->getViewState('Mode','NextPrev');
+		return $this->getViewState('Mode',TPagerMode::NextPrev);
 	}
 
 	/**
-	 * @param string pager mode. Valid values include 'NextPrev', 'Numeric' and 'List'.
+	 * @param TPagerMode pager mode.
 	 */
 	public function setMode($value)
 	{
-		$this->setViewState('Mode',TPropertyValue::ensureEnum($value,'NextPrev','Numeric','List'),'NextPrev');
+		$this->setViewState('Mode',TPropertyValue::ensureEnum($value,'TPagerMode'),TPagerMode::NextPrev);
 	}
 
 	/**
-	 * @return string the type of command button for paging. Defaults to 'LinkButton'.
+	 * @return TPagerButtonType the type of command button for paging. Defaults to TPagerButtonType::LinkButton.
 	 */
 	public function getButtonType()
 	{
-		return $this->getViewState('ButtonType','LinkButton');
+		return $this->getViewState('ButtonType',TPagerButtonType::LinkButton);
 	}
 
 	/**
-	 * @param string the type of command button for paging. Valid values include 'LinkButton' and 'PushButton'.
+	 * @param TPagerButtonType the type of command button for paging.
 	 */
 	public function setButtonType($value)
 	{
-		$this->setViewState('ButtonType',TPropertyValue::ensureEnum($value,'LinkButton','PushButton'));
+		$this->setViewState('ButtonType',TPropertyValue::ensureEnum($value,'TPagerButtonType'),TPagerButtonType::LinkButton);
 	}
 
 	/**
@@ -282,20 +282,20 @@ class TPager extends TWebControl implements INamingContainer
 
 	/**
 	 * Builds the pager content based on the pager mode.
-	 * Current implementation includes building 'NextPrev', 'Numeric' and 'List' pagers.
+	 * Current implementation includes building 'NextPrev', 'Numeric' and 'DropDownList' pagers.
 	 * Derived classes may override this method to provide additional pagers.
 	 */
 	protected function buildPager()
 	{
 		switch($this->getMode())
 		{
-			case 'NextPrev':
+			case TPagerMode::NextPrev:
 				$this->buildNextPrevPager();
 				break;
-			case 'Numeric':
+			case TPagerMode::Numeric:
 				$this->buildNumericPager();
 				break;
-			case 'List':
+			case TPagerMode::DropDownList:
 				$this->buildListPager();
 				break;
 		}
@@ -315,7 +315,7 @@ class TPager extends TWebControl implements INamingContainer
 	 */
 	protected function createPagerButton($buttonType,$enabled,$text,$commandName,$commandParameter)
 	{
-		if($buttonType==='LinkButton')
+		if($buttonType===TPagerButtonType::LinkButton)
 		{
 			if($enabled)
 				$button=new TLinkButton;
@@ -598,6 +598,48 @@ class TPagerPageChangedEventParameter extends TEventParameter
 	{
 		return $this->_newIndex;
 	}
+}
+
+
+/**
+ * TPagerMode class.
+ * TPagerMode defines the enumerable type for the possible modes that a {@link TPager} control can take.
+ *
+ * The following enumerable values are defined:
+ * - NextPrev: pager buttons are displayed as next and previous pages
+ * - Numeric: pager buttons are displayed as numeric page numbers
+ * - DropDownList: a dropdown list is used to select pages
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TPagerMode extends TEnumerable
+{
+	const NextPrev='NextPrev';
+	const Numeric='Numeric';
+	const DropDownList='DropDownList';
+}
+
+
+/**
+ * TPagerButtonType class.
+ * TPagerButtonType defines the enumerable type for the possible types of pager buttons.
+ *
+ * The following enumerable values are defined:
+ * - LinkButton: link buttons
+ * - PushButton: form submit buttons
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TPagerButtonType extends TEnumerable
+{
+	const LinkButton='LinkButton';
+	const PushButton='PushButton';
 }
 
 ?>

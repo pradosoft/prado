@@ -119,7 +119,7 @@ class TButton extends TWebControl implements IPostBackEventHandler, IButtonContr
 	 */
 	protected function needPostBackScript()
 	{
-		return $this->canCauseValidation() || ($this->getButtonType()!=='Submit' &&
+		return $this->canCauseValidation() || ($this->getButtonType()!==TButtonType::Submit &&
 			($this->hasEventHandler('OnClick') || $this->hasEventHandler('OnCommand')));
 	}
 
@@ -270,20 +270,41 @@ class TButton extends TWebControl implements IPostBackEventHandler, IButtonContr
 	}
 
 	/**
-	 * @return string the type of the button. Defaults to 'Submit'.
+	 * @return TButtonType the type of the button. Defaults to TButtonType::Submit.
 	 */
 	public function getButtonType()
 	{
-		return $this->getViewState('ButtonType','Submit');
+		return $this->getViewState('ButtonType',TButtonType::Submit);
 	}
 
 	/**
-	 * @param string the type of the button. Valid values include 'Submit', 'Reset', 'Button'.
+	 * @param TButtonType the type of the button.
 	 */
 	public function setButtonType($value)
 	{
-		$this->setViewState('ButtonType',TPropertyValue::ensureEnum($value,'Submit','Reset','Button'),'Submit');
+		$this->setViewState('ButtonType',TPropertyValue::ensureEnum($value,'TButtonType'),TButtonType::Submit);
 	}
+}
+
+/**
+ * TButtonType class.
+ * TButtonType defines the enumerable type for the possible types that a {@link TButton} can take.
+ *
+ * The following enumerable values are defined:
+ * - Submit: a normal submit button
+ * - Reset: a reset button
+ * - Button: a client button (normally does not perform form submission)
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TButtonType extends TEnumerable
+{
+	const Submit='Submit';
+	const Reset='Reset';
+	const Button='Button';
 }
 
 ?>

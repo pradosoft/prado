@@ -195,6 +195,7 @@ abstract class TListControl extends TDataBoundControl
 		if($valueField==='')
 			$valueField=1;
 		$textFormat=$this->getDataTextFormatString();
+		$groupField=$this->getDataGroupField();
 		foreach($data as $key=>$object)
 		{
 			$item=$items->createListItem();
@@ -203,6 +204,8 @@ abstract class TListControl extends TDataBoundControl
 				$text=TDataFieldAccessor::getDataFieldValue($object,$textField);
 				$value=TDataFieldAccessor::getDataFieldValue($object,$valueField);
 				$item->setValue($value);
+				if($groupField!=='')
+					$item->setAttribute('Group',TDataFieldAccessor::getDataFieldValue($object,$groupField));
 			}
 			else
 			{
@@ -393,6 +396,22 @@ abstract class TListControl extends TDataBoundControl
 	public function setDataValueField($value)
 	{
 		$this->setViewState('DataValueField',$value,'');
+	}
+
+	/**
+	 * @return string the field of the data source that provides the label of the list item groups
+	 */
+	public function getDataGroupField()
+	{
+		return $this->getViewState('DataGroupField','');
+	}
+
+	/**
+	 * @param string the field of the data source that provides the label of the list item groups
+	 */
+	public function setDataGroupField($value)
+	{
+		$this->setViewState('DataGroupField',$value,'');
 	}
 
 	/**

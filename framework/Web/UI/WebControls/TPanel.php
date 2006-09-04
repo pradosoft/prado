@@ -79,7 +79,7 @@ class TPanel extends TWebControl
 			else
 			{
 				$writer->addAttribute('id',$this->getClientID());
-				$this->getPage()->getClientScript()->registerDefaultButton($this->getClientID(), $button->getClientID());
+				$this->getPage()->getClientScript()->registerDefaultButton($this, $button);
 			}
 		}
 	}

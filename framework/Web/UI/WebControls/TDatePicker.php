@@ -131,30 +131,36 @@ class TDatePicker extends TTextBox
 		$this->setViewState('Culture', $value, '');
 	}
 
+	/**
+	 * @param TDatePickerInputMode input method of date values
+	 */
 	public function setInputMode($value)
 	{
-		$this->setViewState('InputMode', TPropertyValue::ensureEnum($value, 'TextBox', 'DropDownList'), 'TextBox');
-	}
-
-	public function getInputMode()
-	{
-		return $this->getViewState('InputMode', 'TextBox');
+		$this->setViewState('InputMode', TPropertyValue::ensureEnum($value, 'TDatePickerInputMode'), TDatePickerInputMode::TextBox);
 	}
 
 	/**
-	 * @param string calendar UI mode, "Basic", "Button" or "ImageButton"
+	 * @return TDatePickerInputMode input method of date values. Defaults to TDatePickerInputMode::TextBox.
+	 */
+	public function getInputMode()
+	{
+		return $this->getViewState('InputMode', TDatePickerInputMode::TextBox);
+	}
+
+	/**
+	 * @param TDatePickerMode calendar UI mode
 	 */
 	public function setMode($value)
 	{
-	   $this->setViewState('Mode', TPropertyValue::ensureEnum($value, 'Basic', 'Button', 'ImageButton'), 'Basic');
+	   $this->setViewState('Mode', TPropertyValue::ensureEnum($value, 'TDatePickerMode'), TDatePickerMode::Basic);
 	}
 
 	/**
-	 * @return string current calendar UI mode.
+	 * @return TDatePickerMode current calendar UI mode.
 	 */
 	public function getMode()
 	{
-	   return $this->getViewState('Mode', 'Basic');
+	   return $this->getViewState('Mode', TDatePickerMode::Basic);
 	}
 	/**
 	 * @param string the image url for "Image" UI mode.
@@ -340,12 +346,12 @@ class TDatePicker extends TTextBox
 	/**
 	 * Renders body content.
 	 * This method overrides parent implementation by adding
-	 * additional date picker button if Mode is "Button" or "ImageButton".
+	 * additional date picker button if Mode is Button or ImageButton.
 	 * @param THtmlWriter writer
 	 */
 	public function render($writer)
 	{
-		if($this->getInputMode() == 'TextBox')
+		if($this->getInputMode() == TDatePickerInputMode::TextBox)
 		{
 			parent::render($writer);
 			$this->renderDatePickerButtons($writer);
@@ -370,8 +376,8 @@ class TDatePicker extends TTextBox
 		{
 			switch ($this->getMode())
 			{
-				case 'Button': $this->renderButtonDatePicker($writer); break;
-				case 'ImageButton' : $this->renderImageButtonDatePicker($writer); break;
+				case TDatePickerMode::Button: $this->renderButtonDatePicker($writer); break;
+				case TDatePickerMode::ImageButton : $this->renderImageButtonDatePicker($writer); break;
 			}
 		}
 	}
@@ -386,7 +392,7 @@ class TDatePicker extends TTextBox
 	 */
 	public function loadPostData($key,$values)
 	{
-		if($this->getInputMode() == "TextBox")
+		if($this->getInputMode() == TDatePickerInputMode::TextBox)
 			return parent::loadPostData($key, $values);
 		$value = $this->getDateFromPostData($key, $values);
 		if(!$this->getReadOnly() && $this->getText()!==$value)
@@ -447,7 +453,7 @@ class TDatePicker extends TTextBox
 			$options['ClassName'] = $cssClass;
 		$options['FromYear'] = $this->getFromYear();
 		$options['UpToYear'] = $this->getUpToYear();
-		if($this->getMode()!=='Basic')
+		if($this->getMode()!==TDatePickerMode::Basic)
 			$options['Trigger'] = $this->getDatePickerButtonID();
 
 		$options = array_merge($options, $this->getCulturalOptions());
@@ -501,8 +507,8 @@ class TDatePicker extends TTextBox
 	 */
 	protected function renderDropDownListCalendar($writer)
 	{
-		if($this->getMode() == 'Basic')
-			$this->setMode('ImageButton');
+		if($this->getMode() == TDatePickerMode::Basic)
+			$this->setMode(TDatePickerMode::ImageButton);
 		parent::addAttributesToRender($writer);
 		$writer->removeAttribute('name');
 		$writer->removeAttribute('type');
@@ -822,6 +828,48 @@ class TDatePickerClientScript extends TClientSideOptions
 	{
 		return $this->getOption('OnDateChanged');
 	}
+}
+
+
+/**
+ * TDatePickerInputMode class.
+ * TDatePickerInputMode defines the enumerable type for the possible datepicker input methods.
+ *
+ * The following enumerable values are defined:
+ * - TextBox: text boxes are used to input date values
+ * - DropDownList: dropdown lists are used to pick up date values
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TDatePickerInputMode extends TEnumerable
+{
+	const TextBox='TextBox';
+	const DropDownList='DropDownList';
+}
+
+/**
+ * TDatePickerMode class.
+ * TDatePickerMode defines the enumerable type for the possible UI mode
+ * that a {@link TDatePicker} control can take.
+ *
+ * The following enumerable values are defined:
+ * - Basic: Only shows a text input, focusing on the input shows the date picker
+ * - Button: Shows a button next to the text input, clicking on the button shows the date, button text can be by the
+ * - ImageButton: Shows an image next to the text input, clicking on the image shows the date picker,
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TDatePickerMode extends TEnumerable
+{
+	const Basic='Basic';
+	const Button='Button';
+	const ImageButton='ImageButton';
 }
 
 ?>

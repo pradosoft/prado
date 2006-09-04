@@ -43,11 +43,9 @@ class TSecurityManager extends TModule
 {
 	const STATE_VALIDATION_KEY='prado:securitymanager:validationkey';
 	const STATE_ENCRYPTION_KEY='prado:securitymanager:encryptionkey';
-	const STATE_INIT_VECTOR='prado:securitymanager:initvector';
 	private $_validationKey=null;
 	private $_encryptionKey=null;
-	private $_initVector=null;
-	private $_validation='SHA1';
+	private $_validation=TSecurityManagerValidationMode::SHA1;
 	private $_encryption='3DES';
 
 	/**
@@ -127,7 +125,7 @@ class TSecurityManager extends TModule
 	}
 
 	/**
-	 * @return string hashing algorithm used to generate HMAC. Defaults to 'SHA1'.
+	 * @return TSecurityManagerValidationMode hashing algorithm used to generate HMAC. Defaults to TSecurityManagerValidationMode::SHA1.
 	 */
 	public function getValidation()
 	{
@@ -135,11 +133,11 @@ class TSecurityManager extends TModule
 	}
 
 	/**
-	 * @param string hashing algorithm used to generate HMAC. Valid values include 'SHA1' and 'MD5'.
+	 * @param TSecurityManagerValidationMode hashing algorithm used to generate HMAC.
 	 */
 	public function setValidation($value)
 	{
-		$this->_validation=TPropertyValue::ensureEnum($value,'SHA1','MD5');
+		$this->_validation=TPropertyValue::ensureEnum($value,'TSecurityManagerValidationMode');
 	}
 
 	/**
@@ -258,6 +256,27 @@ class TSecurityManager extends TModule
 		$key=str_pad($func($key), 64, chr(0));
 		return $func((str_repeat(chr(0x5C), 64) ^ substr($key, 0, 64)) . pack($pack, $func((str_repeat(chr(0x36), 64) ^ substr($key, 0, 64)) . $data)));
 	}
+}
+
+
+/**
+ * TSecurityManagerValidationMode class.
+ * TSecurityManagerValidationMode defines the enumerable type for the possible validation modes
+ * that can be used by {@link TSecurityManager}.
+ *
+ * The following enumerable values are defined:
+ * - MD5: an MD5 hash is generated from the data and used for validation.
+ * - SHA1: an SHA1 hash is generated from the data and used for validation.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Security
+ * @since 3.0.4
+ */
+class TSecurityManagerValidationMode extends TEnumerable
+{
+	const MD5='MD5';
+	const SHA1='SHA1';
 }
 
 ?>

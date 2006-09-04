@@ -54,39 +54,6 @@ abstract class TBaseDataList extends TDataBoundControl
 	}
 
 	/**
-	 * @return string caption of the table layout
-	 */
-	public function getCaption()
-	{
-		return $this->getViewState('Caption','');
-	}
-
-	/**
-	 * @param string caption of the table layout
-	 */
-	public function setCaption($value)
-	{
-		$this->setViewState('Caption','');
-	}
-
-	/**
-	 * @return string alignment of the caption of the table layout. Defaults to 'NotSet'.
-	 */
-	public function getCaptionAlign()
-	{
-		return $this->getViewState('CaptionAlign','NotSet');
-	}
-
-	/**
-	 * @return string alignment of the caption of the table layout.
-	 * Valid values include 'NotSet','Top','Bottom','Left','Right'.
-	 */
-	public function setCaptionAlign($value)
-	{
-		$this->setViewState('CaptionAlign',TPropertyValue::ensureEnum($value,'NotSet','Top','Bottom','Left','Right'),'NotSet');
-	}
-
-	/**
 	 * @return integer the cellspacing for the table layout. Defaults to -1, meaning not set.
 	 */
 	public function getCellSpacing()
@@ -125,19 +92,18 @@ abstract class TBaseDataList extends TDataBoundControl
 	}
 
 	/**
-	 * @return string the horizontal alignment of the table content. Defaults to 'NotSet'.
+	 * @return THorizontalAlign the horizontal alignment of the table content. Defaults to THorizontalAlign::NotSet.
 	 */
 	public function getHorizontalAlign()
 	{
 		if($this->getHasStyle())
 			return $this->getStyle()->getHorizontalAlign();
 		else
-			return 'NotSet';
+			return THorizontalAlign::NotSet;
 	}
 
 	/**
-	 * @param string the horizontal alignment of the table content.
-	 * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'.
+	 * @param THorizontalAlign the horizontal alignment of the table content.
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -145,20 +111,19 @@ abstract class TBaseDataList extends TDataBoundControl
 	}
 
 	/**
-	 * @return string the grid line setting of the table layout. Defaults to 'None'.
+	 * @return TTableGridLines the grid line setting of the table layout. Defaults to TTableGridLines::None.
 	 */
 	public function getGridLines()
 	{
 		if($this->getHasStyle())
 			return $this->getStyle()->getGridLines();
 		else
-			return 'None';
+			return TTableGridLines::None;
 	}
 
 	/**
 	 * Sets the grid line style of the table layout.
-     * Valid values include 'None', 'Horizontal', 'Vertical', 'Both'.
-	 * @param string the grid line setting of the table
+	 * @param TTableGridLines the grid line setting of the table
 	 */
 	public function setGridLines($value)
 	{

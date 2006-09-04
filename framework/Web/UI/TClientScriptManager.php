@@ -151,7 +151,7 @@ class TClientScriptManager extends TApplicationComponent
 	protected function getPradoScriptBasePath()
 	{
 		$basePath = Prado::getFrameworkPath().'/'.self::SCRIPT_PATH;
-		if($this->getApplication()->getMode()===TApplication::STATE_DEBUG)
+		if($this->getApplication()->getMode()===TApplicationMode::Debug)
 			return $basePath.'/debug';
 		else
 			return $basePath.'/compressed';
@@ -169,7 +169,7 @@ class TClientScriptManager extends TApplicationComponent
 			$basePath=$this->getPradoScriptBasePath();
 			$scriptLoader=$basePath.'/'.self::SCRIPT_LOADER;
 			$url=$this->publishFilePath($scriptLoader).'?js='.trim($files,',');
-			if($this->getApplication()->getMode()===TApplication::STATE_DEBUG)
+			if($this->getApplication()->getMode()===TApplicationMode::Debug)
 				$url.='&amp;mode=debug';
 			$writer->write(TJavaScript::renderScriptFile($url));
 		}
@@ -235,15 +235,16 @@ class TClientScriptManager extends TApplicationComponent
 	/**
 	 * Register a default button to panel. When the $panel is in focus and
 	 * the 'enter' key is pressed, the $button will be clicked.
-	 * @param string client ID of the container object
-	 * @param string client ID of the button
+	 * @param TControl panel to register the default button action
+	 * @param TControl button to trigger a postback
 	 */
-	public function registerDefaultButton($containerID, $buttonID)
+	public function registerDefaultButton($panel, $button)
 	{
-		$options = TJavaScript::encode($this->getDefaultButtonOptions($containerID, $buttonID));
+		$options = TJavaScript::encode($this->getDefaultButtonOptions($panel, $button));
 		$code = "new Prado.WebUI.DefaultButton($options);";
 
-		$this->_endScripts['prado:'.$containerID]=$code;
+		$this->_endScripts['prado:'.$panel->getClientID()]=$code;
+		$this->_hiddenFields[TPage::FIELD_POSTBACK_TARGET]='';
 		$this->registerPradoScriptInternal('prado');
 
 		$params=func_get_args();
@@ -267,14 +268,15 @@ class TClientScriptManager extends TApplicationComponent
 	}
 
 	/**
-	 * @param string client ID of the container object
-	 * @param string client ID of the button
+	 * @param TControl container control
+	 * @param IButtonControl button control
 	 * @return array default button options.
 	 */
-	protected function getDefaultButtonOptions($containerID, $buttonID)
+	protected function getDefaultButtonOptions($panel, $button)
 	{
-		$options['Panel'] = $containerID;
-		$options['Target'] = $buttonID;
+		$options['Panel'] = $panel->getClientID();
+		$options['Target'] = $button->getClientID();
+		$options['EventTarget'] = $button->getUniqueID();
 		$options['Event'] = 'click';
 		return $options;
 	}

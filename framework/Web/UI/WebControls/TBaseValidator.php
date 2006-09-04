@@ -137,7 +137,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	{
 		$display=$this->getDisplay();
 		$visible=$this->getEnabled(true) && !$this->getIsValid();
-		if($display==='None' || (!$visible && $display==='Dynamic'))
+		if($display===TValidatorDisplayStyle::None || (!$visible && $display===TValidatorDisplayStyle::Dynamic))
 			$writer->addStyleAttribute('display','none');
 		else if(!$visible)
 			$writer->addStyleAttribute('visibility','hidden');
@@ -311,20 +311,19 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @return string the display behavior (None, Static, Dynamic) of the error message in a validation control. Defaults to Static.
+	 * @return TValidatorDisplayStyle the style of displaying the error message. Defaults to TValidatorDisplayStyle::Fixed.
 	 */
 	public function getDisplay()
 	{
-		return $this->getViewState('Display','Static');
+		return $this->getViewState('Display',TValidatorDisplayStyle::Fixed);
 	}
 
 	/**
-	 * Sets the display behavior (None, Static, Dynamic) of the error message in a validation control.
-	 * @param string the display behavior (None, Static, Dynamic)
+	 * @param TValidatorDisplayStyle the style of displaying the error message
 	 */
 	public function setDisplay($value)
 	{
-		$this->setViewState('Display',TPropertyValue::ensureEnum($value,array('None','Static','Dynamic')),'Static');
+		$this->setViewState('Display',TPropertyValue::ensureEnum($value,'TValidatorDisplayStyle'),TValidatorDisplayStyle::Fixed);
 	}
 
 	/**
@@ -674,6 +673,53 @@ class TValidatorClientSide extends TClientSideOptions
 	{
 		return "function(validator, sender){ {$javascript} }";
 	}
+}
+
+
+/**
+ * TValidatorDisplayStyle class.
+ * TValidatorDisplayStyle defines the enumerable type for the possible styles
+ * that a validator control can display the error message.
+ *
+ * The following enumerable values are defined:
+ * - None: the error message is not displayed
+ * - Dynamic: the error message dynamically appears when the validator fails validation
+ * - Fixed: Similar to Dynamic except that the error message physically occupies the page layout (even though it may not be visible)
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TValidatorDisplayStyle extends TEnumerable
+{
+	const None='None';
+	const Dynamic='Dynamic';
+	const Fixed='Fixed';
+}
+
+/**
+ * TValidationDataType class.
+ * TValidationDataType defines the enumerable type for the possible data types that
+ * a comparison validator can validate upon.
+ *
+ * The following enumerable values are defined:
+ * - Integer
+ * - Float
+ * - Date
+ * - String
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TValidationDataType extends TEnumerable
+{
+	const Integer='Integer';
+	const Float='Float';
+	const Date='Date';
+	const String='String';
 }
 
 ?>

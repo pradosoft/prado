@@ -52,20 +52,19 @@ class TValidationSummary extends TWebControl
 	}
 
 	/**
-	 * @return string the display behavior (None, Static, Dynamic) of the error message in a validation summary component.
+	 * @return TValidationSummaryDisplayStyle the style of displaying the error messages. Defaults to TValidationSummaryDisplayStyle::Fixed.
 	 */
 	public function getDisplay()
 	{
-		return $this->getViewState('Display','Static');
+		return $this->getViewState('Display',TValidationSummaryDisplayStyle::Fixed);
 	}
 
 	/**
-	 * Sets the display behavior (None, Static, Dynamic) of the error message in a validation summary component.
-	 * @param string the display behavior (None, Static, Dynamic)
+	 * @param TValidationSummaryDisplayStyle the style of displaying the error messages
 	 */
 	public function setDisplay($value)
 	{
-		$this->setViewState('Display',TPropertyValue::ensureEnum($value,'None','Dynamic','Static'),'Static');
+		$this->setViewState('Display',TPropertyValue::ensureEnum($value,'TValidationSummaryDisplayStyle'),TValidationSummaryDisplayStyle::Fixed);
 	}
 
 	/**
@@ -86,20 +85,19 @@ class TValidationSummary extends TWebControl
 	}
 
 	/**
-	 * @return string the display mode (BulletList, List, SingleParagraph) of the validation summary. Defaults to BulletList.
+	 * @return TValidationSummaryDisplayMode the mode of displaying error messages. Defaults to TValidationSummaryDisplayMode::BulletList.
 	 */
 	public function getDisplayMode()
 	{
-		return $this->getViewState('DisplayMode','BulletList');
+		return $this->getViewState('DisplayMode',TValidationSummaryDisplayMode::BulletList);
 	}
 
 	/**
-	 * Sets the display mode (BulletList, List, SingleParagraph) of the validation summary.
-	 * @param string the display mode (BulletList, List, SingleParagraph)
+	 * @param TValidationSummaryDisplayMode the mode of displaying error messages
 	 */
 	public function setDisplayMode($value)
 	{
-		$this->setViewState('DisplayMode',TPropertyValue::ensureEnum($value,'List','SingleParagraph','BulletList'),'BulletList');
+		$this->setViewState('DisplayMode',TPropertyValue::ensureEnum($value,'TValidationSummaryDisplayMode'),TValidationSummaryDisplayMode::BulletList);
 	}
 
 	/**
@@ -206,7 +204,7 @@ class TValidationSummary extends TWebControl
 		$visible=$this->getEnabled(true) && count($this->getErrorMessages()) > 0;
 		if(!$visible)
 		{
-			if($display==='None' || $display==='Dynamic')
+			if($display===TValidationSummaryDisplayStyle::None || $display===TValidationSummaryDisplayStyle::Dynamic)
 				$writer->addStyleAttribute('display','none');
 			else
 				$writer->addStyleAttribute('visibility','hidden');
@@ -317,13 +315,13 @@ class TValidationSummary extends TWebControl
 //		    $this->setStyle('display:block');
 			switch($this->getDisplayMode())
 			{
-				case 'List':
+				case TValidationSummaryDisplayMode::SimpleList:
 					$this->renderList($writer);
 					break;
-				case 'SingleParagraph':
+				case TValidationSummaryDisplayMode::SingleParagraph:
 					$this->renderSingleParagraph($writer);
 					break;
-				case 'BulletList':
+				case TValidationSummaryDisplayMode::BulletList:
 					$this->renderBulletList($writer);
 					break;
 			}
@@ -458,6 +456,52 @@ class TClientSideValidationSummaryOptions extends TClientSideOptions
 	{
 		return "function(summary, validators){ {$javascript} }";
 	}	
+}
+
+
+/**
+ * TValidationSummaryDisplayMode class.
+ * TValidationSummaryDisplayMode defines the enumerable type for the possible modes
+ * that a {@link TValidationSummary} can organize and display the collected error messages.
+ *
+ * The following enumerable values are defined:
+ * - SimpleList: the error messages are displayed as a list without any decorations.
+ * - SingleParagraph: the error messages are concatenated together into a paragraph.
+ * - BulletList: the error messages are displayed as a bulleted list.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TValidationSummaryDisplayMode extends TEnumerable
+{
+	const SimpleList='SimpleList';
+	const SingleParagraph='SingleParagraph';
+	const BulletList='BulletList';
+}
+
+
+/**
+ * TValidationSummaryDisplay class.
+ * TValidationSummaryDisplay defines the enumerable type for the possible styles
+ * that a {@link TValidationSummary} can display the collected error messages.
+ *
+ * The following enumerable values are defined:
+ * - None: the error messages are not displayed
+ * - Dynamic: the error messages are dynamically added to display as the corresponding validators fail
+ * - Fixed: Similar to Dynamic except that the error messages physically occupy the page layout (even though they may not be visible)
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TValidationSummaryDisplayStyle extends TEnumerable
+{
+	const None='None';
+	const Dynamic='Dynamic';
+	const Fixed='Fixed';
 }
 
 ?>

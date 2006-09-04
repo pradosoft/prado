@@ -50,7 +50,7 @@ class TDataFieldAccessor
 	 */
 	public static function getDataFieldValue($data,$field)
 	{
-		if(Prado::getApplication()->getMode()===TApplication::STATE_PERFORMANCE)
+		if(Prado::getApplication()->getMode()===TApplicationMode::Performance)
 		{
 			if(is_array($data) || ($data instanceof ArrayAccess))
 				return $data[$field];

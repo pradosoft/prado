@@ -113,7 +113,8 @@ require_once(PRADO_DIR.'/I18N/TGlobalization.php');
 class TApplication extends TComponent
 {
 	/**
-	 * application state
+	 * possible application mode.
+	 * @deprecated deprecated since version 3.0.4 (use TApplicationMode constants instead)
 	 */
 	const STATE_OFF='Off';
 	const STATE_DEBUG='Debug';
@@ -261,9 +262,9 @@ class TApplication extends TComponent
 	 */
 	private $_authRules=null;
 	/**
-	 * @var string application mode
+	 * @var TApplicationMode application mode
 	 */
-	private $_mode='Debug';
+	private $_mode=TApplicationMode::Debug;
 
 	/**
 	 * Constructor.
@@ -466,7 +467,7 @@ class TApplication extends TComponent
 	}
 
 	/**
-	 * @return string application mode (Off|Debug|Normal|Peformance), defaults to Debug.
+	 * @return TApplicationMode application mode. Defaults to TApplicationMode::Debug.
 	 */
 	public function getMode()
 	{
@@ -474,11 +475,11 @@ class TApplication extends TComponent
 	}
 
 	/**
-	 * @param string application mode. Valid values include Off, Debug, Normal, or Peformance
+	 * @param TApplicationMode application mode
 	 */
 	public function setMode($value)
 	{
-		$this->_mode=TPropertyValue::ensureEnum($value,array(self::STATE_OFF,self::STATE_DEBUG,self::STATE_NORMAL,self::STATE_PERFORMANCE));
+		$this->_mode=TPropertyValue::ensureEnum($value,'TApplicationMode');
 	}
 
 	/**
@@ -1036,6 +1037,28 @@ class TApplication extends TComponent
 	{
 		$this->raiseEvent('OnEndRequest',$this,null);
 	}
+}
+
+/**
+ * TApplicationMode class.
+ * TApplicationMode defines the possible mode that an application can be set at by
+ * setting {@link TApplication::setMode Mode}.
+ * In particular, the following modes are defined
+ * - Off: the application is not running. Any request to the application will obtain an error.
+ * - Debug: the application is running in debug mode.
+ * - Debug: the application is running in normal production mode.
+ * - Performance: the application is running in performance mode.
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System
+ * @since 3.0.4
+ */
+class TApplicationMode extends TEnumerable
+{
+	const Off='Off';
+	const Debug='Debug';
+	const Normal='Normal';
+	const Performance='Performance';
 }
 
 

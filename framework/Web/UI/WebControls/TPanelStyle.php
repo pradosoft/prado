@@ -59,21 +59,21 @@ class TPanelStyle extends TStyle
 
 		switch($this->getScrollBars())
 		{
-			case 'Horizontal': $this->setStyleField('overflow-x','scroll'); break;
-			case 'Vertical': $this->setStyleField('overflow-y','scroll'); break;
-			case 'Both': $this->setStyleField('overflow','scroll'); break;
-			case 'Auto': $this->setStyleField('overflow','auto'); break;
+			case TScrollBars::Horizontal: $this->setStyleField('overflow-x','scroll'); break;
+			case TScrollBars::Vertical: $this->setStyleField('overflow-y','scroll'); break;
+			case TScrollBars::Both: $this->setStyleField('overflow','scroll'); break;
+			case TScrollBars::Auto: $this->setStyleField('overflow','auto'); break;
 		}
 
-		if(($align=$this->getHorizontalAlign())!=='NotSet')
+		if(($align=$this->getHorizontalAlign())!==THorizontalAlign::NotSet)
 			$this->setStyleField('text-align',strtolower($align));
 
 		if(!$this->getWrap())
 			$this->setStyleField('white-space','nowrap');
 
-		if(($direction=$this->getDirection())!=='NotSet')
+		if(($direction=$this->getDirection())!==TContentDirection::NotSet)
 		{
-			if($direction==='LeftToRight')
+			if($direction===TContentDirection::LeftToRight)
 				$this->setStyleField('direction','ltr');
 			else
 				$this->setStyleField('direction','rtl');
@@ -100,20 +100,19 @@ class TPanelStyle extends TStyle
 	}
 
 	/**
-	 * @return string alignment of the content in the panel. Defaults to 'NotSet'.
+	 * @return TContentDirection alignment of the content in the panel. Defaults to TContentDirection::NotSet.
 	 */
 	public function getDirection()
 	{
-		return $this->_direction===null?'NotSet':$this->_direction;
+		return $this->_direction===null?TContentDirection::NotSet:$this->_direction;
 	}
 
 	/**
-	 * @param string alignment of the content in the panel.
-	 * Valid values include 'NotSet', 'LeftToRight', 'RightToLeft'.
+	 * @param TContentDirection alignment of the content in the panel.
 	 */
 	public function setDirection($value)
 	{
-		$this->_direction=TPropertyValue::ensureEnum($value,array('NotSet','LeftToRight','RightToLeft'));
+		$this->_direction=TPropertyValue::ensureEnum($value,'TContentDirection');
 	}
 
 	/**
@@ -134,38 +133,36 @@ class TPanelStyle extends TStyle
 	}
 
 	/**
-	 * @return string the horizontal alignment of the contents within the panel, defaults to 'NotSet'.
+	 * @return THorizontalAlign the horizontal alignment of the contents within the panel, defaults to THorizontalAlign::NotSet.
 	 */
 	public function getHorizontalAlign()
 	{
-		return $this->_horizontalAlign===null?'NotSet':$this->_horizontalAlign;
+		return $this->_horizontalAlign===null?THorizontalAlign::NotSet:$this->_horizontalAlign;
 	}
 
 	/**
 	 * Sets the horizontal alignment of the contents within the panel.
-     * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
-	 * @param string the horizontal alignment
+	 * @param THorizontalAlign the horizontal alignment
 	 */
 	public function setHorizontalAlign($value)
 	{
-		$this->_horizontalAlign=TPropertyValue::ensureEnum($value,array('NotSet','Left','Right','Center','Justify'));
+		$this->_horizontalAlign=TPropertyValue::ensureEnum($value,'THorizontalAlign');
 	}
 
 	/**
-	 * @return string the visibility and position of scroll bars in a panel control, defaults to None.
+	 * @return TScrollBars the visibility and position of scroll bars in a panel control, defaults to TScrollBars::None.
 	 */
 	public function getScrollBars()
 	{
-		return $this->_scrollBars===null?'None':$this->_scrollBars;
+		return $this->_scrollBars===null?TScrollBars::None:$this->_scrollBars;
 	}
 
 	/**
-	 * @param string the visibility and position of scroll bars in a panel control.
-	 * Valid values include None, Auto, Both, Horizontal and Vertical.
+	 * @param TScrollBars the visibility and position of scroll bars in a panel control.
 	 */
 	public function setScrollBars($value)
 	{
-		$this->_scrollBars=TPropertyValue::ensureEnum($value,array('None','Auto','Both','Horizontal','Vertical'));
+		$this->_scrollBars=TPropertyValue::ensureEnum($value,'TScrollBars');
 	}
 
 	/**
@@ -230,6 +227,53 @@ class TPanelStyle extends TStyle
 				$this->_wrap=$style->_wrap;
 		}
 	}
+}
+
+/**
+ * TContentDirection class.
+ * TContentDirection defines the enumerable type for the possible directions that a panel can be at.
+ *
+ * The following enumerable values are defined:
+ * - NotSet: the direction is not specified
+ * - LeftToRight: content in a panel is left to right
+ * - RightToLeft: content in a panel is right to left
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TContentDirection extends TEnumerable
+{
+	const NotSet='NotSet';
+	const LeftToRight='LeftToRight';
+	const RightToLeft='RightToLeft';
+}
+
+/**
+ * TScrollBars class.
+ * TScrollBars defines the enumerable type for the possible scroll bar mode
+ * that a {@link TPanel} control could use.
+ *
+ * The following enumerable values are defined:
+ * - None: no scroll bars.
+ * - Auto: scroll bars automatically appeared when needed.
+ * - Both: show both horizontal and vertical scroll bars all the time.
+ * - Horizontal: horizontal scroll bar only
+ * - Vertical: vertical scroll bar only
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TScrollBars extends TEnumerable
+{
+	const None='None';
+	const Auto='Auto';
+	const Both='Both';
+	const Horizontal='Horizontal';
+	const Vertical='Vertical';
 }
 
 ?>

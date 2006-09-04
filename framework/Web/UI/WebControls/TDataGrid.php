@@ -45,8 +45,8 @@ Prado::using('System.Web.UI.WebControls.TPanel');
  *
  * Each datagrid item has a {@link TDataGridItem::getItemType type}
  * which tells the position and state of the item in the datalist. An item in the header
- * of the repeater is of type 'Header'. A body item may be of either
- * 'Item', 'AlternatingItem', 'SelectedItem' or 'EditItem', depending whether the item
+ * of the repeater is of type Header. A body item may be of either
+ * Item, AlternatingItem, SelectedItem or EditItem, depending whether the item
  * index is odd or even, whether it is being selected or edited.
  *
  * A datagrid is specified with a list of columns. Each column specifies how the corresponding
@@ -151,6 +151,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 {
 	/**
 	 * datagrid item types
+	 * @deprecated deprecated since version 3.0.4. Use TListItemType constants instead.
 	 */
 	const IT_HEADER='Header';
 	const IT_FOOTER='Footer';
@@ -406,20 +407,19 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
-	 * @return string datagrid caption alignment. Defaults to 'NotSet'.
+	 * @return TTableCaptionAlign datagrid caption alignment. Defaults to TTableCaptionAlign::NotSet.
 	 */
 	public function getCaptionAlign()
 	{
-		return $this->getViewState('CaptionAlign','NotSet');
+		return $this->getViewState('CaptionAlign',TTableCaptionAlign::NotSet);
 	}
 
 	/**
-	 * @param string datagrid caption alignment. Valid values include
-	 * 'NotSet','Top','Bottom','Left','Right'.
+	 * @param TTableCaptionAlign datagrid caption alignment. Valid values include
 	 */
 	public function setCaptionAlign($value)
 	{
-		$this->setViewState('CaptionAlign',TPropertyValue::ensureEnum($value,'NotSet','Top','Bottom','Left','Right'),'NotSet');
+		$this->setViewState('CaptionAlign',TPropertyValue::ensureEnum($value,'TTableCaptionAlign'),TTableCaptionAlign::NotSet);
 	}
 
 	/**
@@ -495,14 +495,14 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			if($current>=0 && $current<$itemCount)
 			{
 				$item=$items->itemAt($current);
-				if($item->getItemType()!==self::IT_EDITITEM)
-					$item->setItemType($current%2?self::IT_ALTERNATINGITEM:self::IT_ITEM);
+				if($item->getItemType()!==TListItemType::EditItem)
+					$item->setItemType($current%2?TListItemType::AlternatingItem:TListItemType::Item);
 			}
 			if($value>=0 && $value<$itemCount)
 			{
 				$item=$items->itemAt($value);
-				if($item->getItemType()!==self::IT_EDITITEM)
-					$item->setItemType(self::IT_SELECTEDITEM);
+				if($item->getItemType()!==TListItemType::EditItem)
+					$item->setItemType(TListItemType::SelectedItem);
 			}
 		}
 	}
@@ -545,9 +545,9 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			$items=$this->getItems();
 			$itemCount=$items->getCount();
 			if($current>=0 && $current<$itemCount)
-				$items->itemAt($current)->setItemType($current%2?self::IT_ALTERNATINGITEM:self::IT_ITEM);
+				$items->itemAt($current)->setItemType($current%2?TListItemType::AlternatingItem:TListItemType::Item);
 			if($value>=0 && $value<$itemCount)
-				$items->itemAt($value)->setItemType(self::IT_EDITITEM);
+				$items->itemAt($value)->setItemType(TListItemType::EditItem);
 		}
 	}
 
@@ -923,22 +923,22 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 				{
 					if($allowPaging)
 						$this->_topPager=$this->createPager();
-					$this->_header=$this->createItemInternal(-1,-1,self::IT_HEADER,false,null,$columns);
+					$this->_header=$this->createItemInternal(-1,-1,TListItemType::Header,false,null,$columns);
 				}
 				if($index===$editIndex)
-					$itemType=self::IT_EDITITEM;
+					$itemType=TListItemType::EditItem;
 				else if($index===$selectedIndex)
-					$itemType=self::IT_SELECTEDITEM;
+					$itemType=TListItemType::SelectedItem;
 				else if($index % 2)
-					$itemType=self::IT_ALTERNATINGITEM;
+					$itemType=TListItemType::AlternatingItem;
 				else
-					$itemType=self::IT_ITEM;
+					$itemType=TListItemType::Item;
 				$items->add($this->createItemInternal($index,$dsIndex,$itemType,false,null,$columns));
 				$dsIndex++;
 			}
 			if($index>0)
 			{
-				$this->_footer=$this->createItemInternal(-1,-1,self::IT_FOOTER,false,null,$columns);
+				$this->_footer=$this->createItemInternal(-1,-1,TListItemType::Footer,false,null,$columns);
 				if($allowPaging)
 					$this->_bottomPager=$this->createPager();
 			}
@@ -996,23 +996,23 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 				{
 					if($allowPaging)
 						$this->_topPager=$this->createPager();
-					$this->_header=$this->createItemInternal(-1,-1,self::IT_HEADER,true,null,$columns);
+					$this->_header=$this->createItemInternal(-1,-1,TListItemType::Header,true,null,$columns);
 				}
 				if($index===$editIndex)
-					$itemType=self::IT_EDITITEM;
+					$itemType=TListItemType::EditItem;
 				else if($index===$selectedIndex)
-					$itemType=self::IT_SELECTEDITEM;
+					$itemType=TListItemType::SelectedItem;
 				else if($index % 2)
-					$itemType=self::IT_ALTERNATINGITEM;
+					$itemType=TListItemType::AlternatingItem;
 				else
-					$itemType=self::IT_ITEM;
+					$itemType=TListItemType::Item;
 				$items->add($this->createItemInternal($index,$dsIndex,$itemType,true,$row,$columns));
 				$index++;
 				$dsIndex++;
 			}
 			if($index>0)
 			{
-				$this->_footer=$this->createItemInternal(-1,-1,self::IT_FOOTER,true,null,$columns);
+				$this->_footer=$this->createItemInternal(-1,-1,TListItemType::Footer,true,null,$columns);
 				if($allowPaging)
 					$this->_bottomPager=$this->createPager();
 			}
@@ -1029,7 +1029,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	/**
 	 * Creates a datagrid item instance based on the item type and index.
 	 * @param integer zero-based item index
-	 * @param string item type, may be self::IT_HEADER, self::IT_FOOTER, self::IT_ITEM, self::IT_SEPARATOR, self::IT_ALTERNATINGITEM, self::IT_SELECTEDITEM, self::IT_EDITITEM.
+	 * @param TListItemType item type
 	 * @return TDataGridItem created data list item
 	 */
 	protected function createItem($itemIndex,$dataSourceIndex,$itemType)
@@ -1071,15 +1071,12 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		$index=0;
 		foreach($columns as $column)
 		{
-			if($itemType===self::IT_HEADER)
+			if($itemType===TListItemType::Header)
 				$cell=new TTableHeaderCell;
 			else
 				$cell=new TTableCell;
 			if(($id=$column->getID())!=='')
-			{
-				$cell->setID($id);
 				$item->registerObject($id,$cell);
-			}
 			$column->initializeCell($cell,$index,$itemType);
 			$cells->add($cell);
 			$index++;
@@ -1103,10 +1100,10 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	{
 		switch($this->getPagerStyle()->getMode())
 		{
-			case 'NextPrev':
+			case TDataGridPagerMode::NextPrev:
 				$this->buildNextPrevPager($pager);
 				break;
-			case 'Numeric':
+			case TDataGridPagerMode::Numeric:
 				$this->buildNumericPager($pager);
 				break;
 		}
@@ -1126,7 +1123,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	 */
 	protected function createPagerButton($buttonType,$enabled,$text,$commandName,$commandParameter)
 	{
-		if($buttonType==='LinkButton')
+		if($buttonType===TDataGridPagerButtonType::LinkButton)
 		{
 			if($enabled)
 				$button=new TLinkButton;
@@ -1268,9 +1265,9 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 				}
 				else
 				{
-					$column->setHeaderText(self::IT_ITEM);
+					$column->setHeaderText(TListItemType::Item);
 					$column->setDataField($key);
-					$column->setSortExpression(self::IT_ITEM);
+					$column->setSortExpression(TListItemType::Item);
 					$autoColumns->add($column);
 				}
 			}
@@ -1326,31 +1323,31 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			$itemType=$item->getItemType();
 			switch($itemType)
 			{
-				case self::IT_HEADER:
+				case TListItemType::Header:
 					if($headerStyle)
 						$item->getStyle()->mergeWith($headerStyle);
 					if(!$this->getShowHeader())
 						$item->setVisible(false);
 					break;
-				case self::IT_FOOTER:
+				case TListItemType::Footer:
 					if($footerStyle)
 						$item->getStyle()->mergeWith($footerStyle);
 					if(!$this->getShowFooter())
 						$item->setVisible(false);
 					break;
-				case self::IT_SEPARATOR:
+				case TListItemType::Separator:
 					if($separatorStyle)
 						$item->getStyle()->mergeWith($separatorStyle);
 					break;
-				case self::IT_ITEM:
+				case TListItemType::Item:
 					if($itemStyle)
 						$item->getStyle()->mergeWith($itemStyle);
 					break;
-				case self::IT_ALTERNATINGITEM:
+				case TListItemType::AlternatingItem:
 					if($alternatingItemStyle)
 						$item->getStyle()->mergeWith($alternatingItemStyle);
 					break;
-				case self::IT_SELECTEDITEM:
+				case TListItemType::SelectedItem:
 					if($selectedItemStyle)
 						$item->getStyle()->mergeWith($selectedItemStyle);
 					if($index % 2==1)
@@ -1364,7 +1361,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 							$item->getStyle()->mergeWith($alternatingItemStyle);
 					}
 					break;
-				case self::IT_EDITITEM:
+				case TListItemType::EditItem:
 					if($editItemStyle)
 						$item->getStyle()->mergeWith($editItemStyle);
 					if($index % 2==1)
@@ -1378,18 +1375,18 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 							$item->getStyle()->mergeWith($alternatingItemStyle);
 					}
 					break;
-				case self::IT_PAGER:
+				case TListItemType::Pager:
 					if($pagerStyle)
 					{
 						$item->getStyle()->mergeWith($pagerStyle);
 						if($index===0)
 						{
-							if($pagerStyle->getPosition()==='Bottom' || !$pagerStyle->getVisible())
+							if($pagerStyle->getPosition()===TDataGridPagerPosition::Bottom || !$pagerStyle->getVisible())
 								$item->setVisible(false);
 						}
 						else
 						{
-							if($pagerStyle->getPosition()==='Top' || !$pagerStyle->getVisible())
+							if($pagerStyle->getPosition()===TDataGridPagerPosition::Top || !$pagerStyle->getVisible())
 								$item->setVisible(false);
 						}
 					}
@@ -1397,7 +1394,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 				default:
 					break;
 			}
-			if($this->_columns && $itemType!==self::IT_PAGER)
+			if($this->_columns && $itemType!==TListItemType::Pager)
 			{
 				$n=$this->_columns->getCount();
 				$cells=$item->getCells();
@@ -1409,9 +1406,9 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 						$cell->setVisible(false);
 					else
 					{
-						if($itemType===self::IT_HEADER)
+						if($itemType===TListItemType::Header)
 							$style=$column->getHeaderStyle(false);
-						else if($itemType===self::IT_FOOTER)
+						else if($itemType===TListItemType::Footer)
 							$style=$column->getFooterStyle(false);
 						else
 							$style=$column->getItemStyle(false);
@@ -1432,7 +1429,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		parent::renderBeginTag($writer);
 		if(($caption=$this->getCaption())!=='')
 		{
-			if(($align=$this->getCaptionAlign())!=='NotSet')
+			if(($align=$this->getCaptionAlign())!==TTableCaptionAlign::NotSet)
 				$writer->addAttribute('align',strtolower($align));
 			$writer->renderBeginTag('caption');
 			$writer->write($caption);
@@ -1789,21 +1786,21 @@ class TDataGridItem extends TTableRow implements INamingContainer
 	/**
 	 * Constructor.
 	 * @param integer zero-based index of the item in the item collection of datagrid
-	 * @param string item type, can be 'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager'.
+	 * @param TListItemType item type
 	 */
 	public function __construct($itemIndex,$dataSourceIndex,$itemType)
 	{
 		$this->_itemIndex=$itemIndex;
 		$this->_dataSourceIndex=$dataSourceIndex;
 		$this->setItemType($itemType);
-		if($itemType===TDataGrid::IT_HEADER)
-			$this->setTableSection('Header');
-		else if($itemType===TDataGrid::IT_FOOTER)
-			$this->setTableSection('Footer');
+		if($itemType===TListItemType::Header)
+			$this->setTableSection(TTableRowSection::Header);
+		else if($itemType===TListItemType::Footer)
+			$this->setTableSection(TTableRowSection::Footer);
 	}
 
 	/**
-	 * @return string item type.
+	 * @return TListItemType item type.
 	 */
 	public function getItemType()
 	{
@@ -1811,11 +1808,11 @@ class TDataGridItem extends TTableRow implements INamingContainer
 	}
 
 	/**
-	 * @param string item type, can be 'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager'
+	 * @param TListItemType item type
 	 */
 	public function setItemType($value)
 	{
-		$this->_itemType=$value;
+		$this->_itemType=TPropertyValue::ensureEnum($value,'TListItemType');
 	}
 
 	/**
@@ -1924,7 +1921,7 @@ class TDataGridPager extends TPanel implements INamingContainer
 	 */
 	public function getItemType()
 	{
-		return TDataGrid::IT_PAGER;
+		return TListItemType::Pager;
 	}
 }
 
@@ -2032,35 +2029,35 @@ class TDataGridPagerStyle extends TPanelStyle
 	private $_buttonType=null;
 
 	/**
-	 * @return string pager mode. Defaults to 'NextPrev'.
+	 * @return TDataGridPagerMode pager mode. Defaults to TDataGridPagerMode::NextPrev.
 	 */
 	public function getMode()
 	{
-		return $this->_mode===null?'NextPrev':$this->_mode;
+		return $this->_mode===null?TDataGridPagerMode::NextPrev : $this->_mode;
 	}
 
 	/**
-	 * @param string pager mode. Valid values include 'NextPrev' and 'Numeric'.
+	 * @param TDataGridPagerMode pager mode.
 	 */
 	public function setMode($value)
 	{
-		$this->_mode=TPropertyValue::ensureEnum($value,'NextPrev','Numeric');
+		$this->_mode=TPropertyValue::ensureEnum($value,'TDataGridPagerMode');
 	}
 
 	/**
-	 * @return string the type of command button. Defaults to LinkButton.
+	 * @return TDataGridPagerButtonType the type of command button. Defaults to TDataGridPagerButtonType::LinkButton.
 	 */
 	public function getButtonType()
 	{
-		return $this->_buttonType===null?'LinkButton':$this->_buttonType;
+		return $this->_buttonType===null?TDataGridPagerButtonType::LinkButton:$this->_buttonType;
 	}
 
 	/**
-	 * @param string the type of command button, LinkButton or PushButton
+	 * @param TDataGridPagerButtonType the type of command button
 	 */
 	public function setButtonType($value)
 	{
-		$this->_buttonType=TPropertyValue::ensureEnum($value,'LinkButton','PushButton');
+		$this->_buttonType=TPropertyValue::ensureEnum($value,'TDataGridPagerButtonType');
 	}
 
 	/**
@@ -2115,19 +2112,19 @@ class TDataGridPagerStyle extends TPanelStyle
 	}
 
 	/**
-	 * @return string where the pager is to be displayed. Defaults to 'Bottom'.
+	 * @return TDataGridPagerPosition where the pager is to be displayed. Defaults to TDataGridPagerPosition::Bottom.
 	 */
 	public function getPosition()
 	{
-		return $this->_position===null?'Bottom':$this->_position;
+		return $this->_position===null?TDataGridPagerPosition::Bottom:$this->_position;
 	}
 
 	/**
-	 * @param string where the pager is to be displayed. Valid values include 'Bottom', 'Top', 'TopAndBottom'
+	 * @param TDataGridPagerPosition where the pager is to be displayed.
 	 */
 	public function setPosition($value)
 	{
-		$this->_position=TPropertyValue::ensureEnum($value,'Bottom','Top','TopAndBottom');
+		$this->_position=TPropertyValue::ensureEnum($value,'TDataGridPagerPosition');
 	}
 
 	/**
@@ -2216,6 +2213,68 @@ class TDataGridPagerStyle extends TPanelStyle
 				$this->_buttonType=$style->_buttonType;
 		}
 	}
+}
+
+
+/**
+ * TDataGridPagerMode class.
+ * TDataGridPagerMode defines the enumerable type for the possible modes that a datagrid pager can take.
+ *
+ * The following enumerable values are defined:
+ * - NextPrev: pager buttons are displayed as next and previous pages
+ * - Numeric: pager buttons are displayed as numeric page numbers
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TDataGridPagerMode extends TEnumerable
+{
+	const NextPrev='NextPrev';
+	const Numeric='Numeric';
+}
+
+
+/**
+ * TDataGridPagerButtonType class.
+ * TDataGridPagerButtonType defines the enumerable type for the possible types of datagrid pager buttons.
+ *
+ * The following enumerable values are defined:
+ * - LinkButton: link buttons
+ * - PushButton: form submit buttons
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TDataGridPagerButtonType extends TEnumerable
+{
+	const LinkButton='LinkButton';
+	const PushButton='PushButton';
+}
+
+
+/**
+ * TDataGridPagerPosition class.
+ * TDataGridPagerPosition defines the enumerable type for the possible positions that a datagrid pager can be located at.
+ *
+ * The following enumerable values are defined:
+ * - Bottom: pager appears only at the bottom of the data grid.
+ * - Top: pager appears only at the top of the data grid.
+ * - TopAndBottom: pager appears on both top and bottom of the data grid.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TDataGridPagerPosition extends TEnumerable
+{
+	const Bottom='Bottom';
+	const Top='Top';
+	const TopAndBottom='TopAndBottom';
 }
 
 ?>

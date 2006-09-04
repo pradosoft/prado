@@ -20,7 +20,7 @@ Prado::using('System.Web.UI.WebControls.TListControl');
  *
  * TListBox displays a list box on a Web page that allows single or multiple selection.
  * The list box allows multiple selections if {@link setSelectionMode SelectionMode}
- * is 'Multiple'. It takes single selection only if 'Single'.
+ * is TListSelectionMode::Multiple. It takes single selection only if Single.
  * The property {@link setRows Rows} specifies how many rows of options are visible
  * at a time. See {@link TListControl} for inherited properties.
  *
@@ -47,7 +47,7 @@ class TListBox extends TListControl implements IPostBackDataHandler, IValidatabl
 	{
 		$rows=$this->getRows();
 		$writer->addAttribute('size',"$rows");
-		if($this->getSelectionMode()==='Multiple')
+		if($this->getSelectionMode()===TListSelectionMode::Multiple)
 			$writer->addAttribute('name',$this->getUniqueID().'[]');
 		else
 			$writer->addAttribute('name',$this->getUniqueID());
@@ -92,7 +92,7 @@ class TListBox extends TListControl implements IPostBackDataHandler, IValidatabl
 		if($selections!==null)
 		{
 			$items=$this->getItems();
-			if($this->getSelectionMode()==='Single')
+			if($this->getSelectionMode()===TListSelectionMode::Single)
 			{
 				$selection=is_array($selections)?$selections[0]:$selections;
 				$index=$items->findIndexByValue($selection,false);
@@ -158,7 +158,7 @@ class TListBox extends TListControl implements IPostBackDataHandler, IValidatabl
 	 */
 	protected function getIsMultiSelect()
 	{
-		return $this->getSelectionMode()==='Multiple';
+		return $this->getSelectionMode()===TListSelectionMode::Multiple;
 	}
 
 	/**
@@ -181,20 +181,19 @@ class TListBox extends TListControl implements IPostBackDataHandler, IValidatabl
 	}
 
 	/**
-	 * @return string the selection mode (Single, Multiple). Defaults to 'Single'.
+	 * @return TListSelectionMode the selection mode (Single, Multiple). Defaults to TListSelectionMode::Single.
 	 */
 	public function getSelectionMode()
 	{
-		return $this->getViewState('SelectionMode', 'Single');
+		return $this->getViewState('SelectionMode', TListSelectionMode::Single);
 	}
 
 	/**
-	 * Sets the selection mode of the list control (Single, Multiple)
-	 * @param string the selection mode
+	 * @param TListSelectionMode the selection mode
 	 */
 	public function setSelectionMode($value)
 	{
-		$this->setViewState('SelectionMode',TPropertyValue::ensureEnum($value,array('Single','Multiple')),'Single');
+		$this->setViewState('SelectionMode',TPropertyValue::ensureEnum($value,'TListSelectionMode'),TListSelectionMode::Single);
 	}
 
 	/**
@@ -207,4 +206,25 @@ class TListBox extends TListControl implements IPostBackDataHandler, IValidatabl
 		return $this->getSelectedValue();
 	}
 }
+
+
+/**
+ * TListSelectionMode class.
+ * TListSelectionMode defines the enumerable type for the possible selection modes of a {@link TListBox}.
+ *
+ * The following enumerable values are defined:
+ * - Single: single selection
+ * - Multiple: allow multiple selection
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TListSelectionMode extends TEnumerable
+{
+	const Single='Single';
+	const Multiple='Multiple';
+}
+
 ?>

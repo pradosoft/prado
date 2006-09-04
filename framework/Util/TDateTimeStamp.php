@@ -30,6 +30,7 @@
 
 if (!defined('ADODB_ALLOW_NEGATIVE_TS') 
 	&& !defined('ADODB_NO_NEGATIVE_TS')) define('ADODB_NO_NEGATIVE_TS',1);
+
 /**
  * TDateTimeStamp Class
  *

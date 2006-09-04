@@ -25,7 +25,7 @@ Prado::using('System.Web.UI.WebControls.TDataGridColumn');
  * The button captions are specified using {@link setEditText EditText},
  * {@link setUpdateText UpdateText}, and {@link setCancelText CancelText}.
  *
- * The buttons in the column can be set to display as hyperlinks or push buttons
+ * The buttons in the column can be set to display as hyperlinks, push or image buttons
  * by setting the {@link setButtonType ButtonType} property.
  *
  * When an edit button is clicked, the datagrid will generate an
@@ -54,19 +54,19 @@ Prado::using('System.Web.UI.WebControls.TDataGridColumn');
 class TEditCommandColumn extends TDataGridColumn
 {
 	/**
-	 * @return string the type of command button. Defaults to LinkButton.
+	 * @return TButtonColumnType the type of command button. Defaults to TButtonColumnType::LinkButton.
 	 */
 	public function getButtonType()
 	{
-		return $this->getViewState('ButtonType','LinkButton');
+		return $this->getViewState('ButtonType',TButtonColumnType::LinkButton);
 	}
 
 	/**
-	 * @param string the type of command button, LinkButton or PushButton
+	 * @param TButtonColumnType the type of command button.
 	 */
 	public function setButtonType($value)
 	{
-		$this->setViewState('ButtonType',TPropertyValue::ensureEnum($value,'LinkButton','PushButton'),'LinkButton');
+		$this->setViewState('ButtonType',TPropertyValue::ensureEnum($value,'TButtonColumnType'),TButtonColumnType::LinkButton);
 	}
 
 	/**
@@ -86,6 +86,22 @@ class TEditCommandColumn extends TDataGridColumn
 	}
 
 	/**
+	 * @return string the URL of the image file for edit image buttons
+	 */
+	public function getEditImageUrl()
+	{
+		return $this->getViewState('EditImageUrl','');
+	}
+
+	/**
+	 * @param string the URL of the image file for edit image buttons
+	 */
+	public function setEditImageUrl($value)
+	{
+		$this->setViewState('EditImageUrl',$value,'');
+	}
+
+	/**
 	 * @return string the caption of the update button. Defaults to 'Update'.
 	 */
 	public function getUpdateText()
@@ -102,6 +118,22 @@ class TEditCommandColumn extends TDataGridColumn
 	}
 
 	/**
+	 * @return string the URL of the image file for update image buttons
+	 */
+	public function getUpdateImageUrl()
+	{
+		return $this->getViewState('UpdateImageUrl','');
+	}
+
+	/**
+	 * @param string the URL of the image file for update image buttons
+	 */
+	public function setUpdateImageUrl($value)
+	{
+		$this->setViewState('UpdateImageUrl',$value,'');
+	}
+
+	/**
 	 * @return string the caption of the cancel button. Defaults to 'Cancel'.
 	 */
 	public function getCancelText()
@@ -115,6 +147,22 @@ class TEditCommandColumn extends TDataGridColumn
 	public function setCancelText($value)
 	{
 		$this->setViewState('CancelText',$value,'Cancel');
+	}
+
+	/**
+	 * @return string the URL of the image file for cancel image buttons
+	 */
+	public function getCancelImageUrl()
+	{
+		return $this->getViewState('CancelImageUrl','');
+	}
+
+	/**
+	 * @param string the URL of the image file for cancel image buttons
+	 */
+	public function setCancelImageUrl($value)
+	{
+		$this->setViewState('CancelImageUrl',$value,'');
 	}
 
 	/**
@@ -191,10 +239,21 @@ class TEditCommandColumn extends TDataGridColumn
 	 */
 	protected function createButton($commandName,$text,$causesValidation,$validationGroup)
 	{
-		if($this->getButtonType()==='LinkButton')
+		if($this->getButtonType()===TButtonColumnType::LinkButton)
 			$button=Prado::createComponent('System.Web.UI.WebControls.TLinkButton');
-		else
+		else if($this->getButtonType()===TButtonColumnType::PushButton)
 			$button=Prado::createComponent('System.Web.UI.WebControls.TButton');
+		else	// image buttons
+		{
+			$button=Prado::createComponent('System.Web.UI.WebControls.TImageButton');
+			if(strcasecmp($commandName,'Update')===0)
+				$url=$this->getUpdateImageUrl();
+			else if(strcasecmp($commandName,'Cancel')===0)
+				$url=$this->getCancelImageUrl();
+			else
+				$url=$this->getEditImageUrl();
+			$button->setImageUrl($url);
+		}
 		$button->setText($text);
 		$button->setCommandName($commandName);
 		$button->setCausesValidation($causesValidation);

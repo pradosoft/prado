@@ -843,13 +843,17 @@ class TPage extends TTemplateControl
 					if($control->loadPostData($key,$postData))
 						$this->_controlsPostDataChanged[]=$control;
 				}
-				else if($control instanceof IPostBackEventHandler)
+				else if($control instanceof IPostBackEventHandler && 
+					empty($this->_postData[self::FIELD_POSTBACK_TARGET]))
+				{
 					$this->_postData->add(self::FIELD_POSTBACK_TARGET,$key);  // not calling setPostBackEventTarget() because the control may be removed later
+				}
 				unset($this->_controlsRequiringPostData[$key]);
 			}
 			else if($beforeLoad)
 				$this->_restPostData->add($key,$value);
 		}
+
 		foreach($this->_controlsRequiringPostData as $key=>$value)
 		{
 			if($control=$this->findControl($key))

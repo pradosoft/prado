@@ -444,6 +444,32 @@ class TComponent
 }
 
 /**
+ * TEnumerable class.
+ * TEnumerable is the base class for all enumerable types.
+ * To define an enumerable type, extend TEnumberable and define string constants.
+ * Each constant represents an enumerable value.
+ * The constant name must be the same as the constant value.
+ * For example,
+ * <code>
+ * class TTextAlign extends TEnumerable
+ * {
+ *     const Left='Left';
+ *     const Right='Right';
+ * }
+ * </code>
+ * Then, one can use the enumerable values such as TTextAlign::Left and
+ * TTextAlign::Right.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System
+ * @since 3.0
+ */
+class TEnumerable
+{
+}
+
+/**
  * TPropertyValue class
  *
  * TPropertyValue is a utility class that provides static methods
@@ -568,19 +594,33 @@ class TPropertyValue
 
 	/**
 	 * Converts a value to enum type.
-	 * This method mainly performs sanity check of a value to make sure
-	 * it is a valid enumeration value. Each enumeration value is a string
-	 * which is case-sensistive.
+	 *
+	 * This method checks if the value is of the specified enumerable type.
+	 * A value is a valid enumerable value if it is equal to the name of a constant
+	 * in the specified enumerable type (class).
+	 * For more details about enumerable, see {@link TEnumerable}.
+	 *
+	 * For backward compatibility, this method also supports sanity
+	 * check of a string value to see if it is among the given list of strings.
 	 * @param mixed the value to be converted.
-	 * @param mixed array of valid enumeration values. If this is not an array,
-	 * the method considers its parameters are of variable length, and the second
-	 * till the last parameters are enumeration values.
+	 * @param mixed class name of the enumerable type, or array of valid enumeration values. If this is not an array,
+	 * the method considers its parameters are of variable length, and the second till the last parameters are enumeration values.
 	 * @return string the valid enumeration value
 	 * @throws TInvalidDataValueException if the original value is not in the string array.
 	 */
 	public static function ensureEnum($value,$enums)
 	{
-		if(!is_array($enums))
+		static $types=array();
+		if(func_num_args()===2 && is_string($enums))
+		{
+			if(!isset($types[$enums]))
+				$types[$enums]=new ReflectionClass($enums);
+			if($types[$enums]->hasConstant($value))
+				return $value;
+			else
+				throw new TInvalidDataValueException('propertyvalue_enumvalue_invalid',$value,$enums);
+		}
+		else if(!is_array($enums))
 		{
 			$enums=func_get_args();
 			array_shift($enums);

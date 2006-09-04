@@ -88,7 +88,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	private $_pathInfo;
 
-	private $_urlFormat='Get';
+	private $_urlFormat=THttpRequestUrlFormat::Get;
 	private $_services;
 	private $_requestResolved=false;
 	private $_enableCookieValidation=false;
@@ -160,7 +160,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 				$_COOKIE=$this->stripSlashes($_COOKIE);
 		}
 
-		if($this->getUrlFormat()==='Path' && ($pathInfo=trim($this->_pathInfo,'/'))!=='')
+		if($this->getUrlFormat()===THttpRequestUrlFormat::Path && ($pathInfo=trim($this->_pathInfo,'/'))!=='')
 			$this->_items=array_merge($this->parseUrl(),$_POST);
 		else
 			$this->_items=array_merge($_GET,$_POST);
@@ -205,7 +205,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	}
 
 	/**
-	 * @return string the format of URLs. Defaults to 'Get'.
+	 * @return THttpRequestUrlFormat the format of URLs. Defaults to THttpRequestUrlFormat::Get.
 	 */
 	public function getUrlFormat()
 	{
@@ -214,15 +214,15 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 
 	/**
 	 * Sets the format of URLs constructed and interpretted by the request module.
-	 * A 'Get' URL format is like index.php?name1=value1&name2=value2
-	 * while a 'Path' URL format is like index.php/name1,value1/name2,value.
+	 * A Get URL format is like index.php?name1=value1&name2=value2
+	 * while a Path URL format is like index.php/name1,value1/name2,value.
 	 * Changing the UrlFormat will affect {@link constructUrl} and how GET variables
 	 * are parsed.
-	 * @param string the format of URLs. Valid values include 'Path' and 'Get'.
+	 * @param THttpRequestUrlFormat the format of URLs.
 	 */
 	public function setUrlFormat($value)
 	{
-		$this->_urlFormat=TPropertyValue::ensureEnum($value,'Path','Get');
+		$this->_urlFormat=TPropertyValue::ensureEnum($value,'THttpRequestUrlFormat');
 	}
 
 	/**
@@ -467,7 +467,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 * If you do so, you may also need to override {@link parseUrl} so that the URL can be properly parsed.
 	 * The URL is constructed as the following format:
 	 * /entryscript.php?serviceID=serviceParameter&get1=value1&...
-	 * If {@link setUrlFormat UrlFormat} is 'Path', the following format is used instead:
+	 * If {@link setUrlFormat UrlFormat} is Path, the following format is used instead:
 	 * /entryscript.php/serviceID/serviceParameter/get1,value1/get2,value2...
 	 * @param string service ID
 	 * @param string service parameter
@@ -511,7 +511,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 				}
 			}
 		}
-		if($this->getUrlFormat()==='Path')
+		if($this->getUrlFormat()===THttpRequestUrlFormat::Path)
 		{
 			$url=strtr($url,array($amp=>'/','?'=>'/','='=>$this->_separator));
 			if(defined('SID') && SID != '' && !((int)ini_get('session.use_cookies')===1 && ((int)ini_get('session.use_only_cookies')===1)))
@@ -528,7 +528,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 
 	/**
 	 * Parses the request URL and returns an array of input parameters (including GET variables).
-	 * This method is invoked when the URL format is 'Path'.
+	 * This method is invoked when the URL format is Path.
 	 * You may override this method to support customized URL format.
 	 * @return array list of input parameters, indexed by parameter names
 	 * @see constructUrl
@@ -1197,6 +1197,26 @@ class TUri extends TComponent
 	{
 		return $this->_fragment;
 	}
+}
+
+/**
+ * THttpRequestUrlFormat class.
+ * THttpRequestUrlFormat defines the enumerable type for the possible URL formats
+ * that can be recognized by {@link THttpRequest}.
+ *
+ * The following enumerable values are defined:
+ * - Get: the URL format is like /path/to/index.php?name1=value1&name2=value2...
+ * - Path: the URL format is like /path/to/index.php/name1,value1/name2,value2...
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web
+ * @since 3.0.4
+ */
+class THttpRequestUrlFormat extends TEnumerable
+{
+	const Get='Get';
+	const Path='Path';
 }
 
 ?>

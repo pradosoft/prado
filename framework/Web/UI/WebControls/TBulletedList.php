@@ -24,7 +24,7 @@ Prado::using('System.Web.UI.WebControls.TListControl');
  * specifies the image used as bullets.
  *
  * TBulletedList displays the item texts in three different modes, specified
- * via {@link setDisplayMode DisplayMode}. When the mode is 'Text', the item texts
+ * via {@link setDisplayMode DisplayMode}. When the mode is Text, the item texts
  * are displayed as static texts; When the mode is 'HyperLink', each item
  * is displayed as a hyperlink whose URL is given by the item value, and the
  * {@link setTarget Target} property can be used to specify the target browser window;
@@ -73,11 +73,11 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 	{
 		switch($this->getBulletStyle())
 		{
-			case 'Numbered':
-			case 'LowerAlpha':
-			case 'UpperAlpha':
-			case 'LowerRoman':
-			case 'UpperRoman':
+			case TBulletStyle::Numbered:
+			case TBulletStyle::LowerAlpha:
+			case TBulletStyle::UpperAlpha:
+			case TBulletStyle::LowerRoman:
+			case TBulletStyle::UpperRoman:
 				return 'ol';
 		}
 		return 'ul';
@@ -103,36 +103,36 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 		$needStart=false;
 		switch($this->getBulletStyle())
 		{
-			case 'Numbered':
+			case TBulletStyle::Numbered:
 				$writer->addStyleAttribute('list-style-type','decimal');
 				$needStart=true;
 				break;
-			case 'LowerAlpha':
+			case TBulletStyle::LowerAlpha:
 				$writer->addStyleAttribute('list-style-type','lower-alpha');
 				$needStart=true;
 				break;
-			case 'UpperAlpha':
+			case TBulletStyle::UpperAlpha:
 				$writer->addStyleAttribute('list-style-type','upper-alpha');
 				$needStart=true;
 				break;
-			case 'LowerRoman':
+			case TBulletStyle::LowerRoman:
 				$writer->addStyleAttribute('list-style-type','lower-roman');
 				$needStart=true;
 				break;
-			case 'UpperRoman':
+			case TBulletStyle::UpperRoman:
 				$writer->addStyleAttribute('list-style-type','upper-roman');
 				$needStart=true;
 				break;
-			case 'Disc':
+			case TBulletStyle::Disc:
 				$writer->addStyleAttribute('list-style-type','disc');
 				break;
-			case 'Circle':
+			case TBulletStyle::Circle:
 				$writer->addStyleAttribute('list-style-type','circle');
 				break;
-			case 'Square':
+			case TBulletStyle::Square:
 				$writer->addStyleAttribute('list-style-type','square');
 				break;
-			case 'CustomImage':
+			case TBulletStyle::CustomImage:
 				$url=$this->getBulletImageUrl();
 				$writer->addStyleAttribute('list-style-image',"url($url)");
 				break;
@@ -159,37 +159,35 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 	}
 
 	/**
-	 * @return string style of bullets. Defaults to 'NotSet'.
+	 * @return TBulletStyle style of bullets. Defaults to TBulletStyle::NotSet.
 	 */
 	public function getBulletStyle()
 	{
-		return $this->getViewState('BulletStyle','NotSet');
+		return $this->getViewState('BulletStyle',TBulletStyle::NotSet);
 	}
 
 	/**
-	 * @param string style of bullets. Valid values include
-	 * 'NotSet','Numbered','LowerAlpha','UpperAlpha','LowerRoman','UpperRoman','Disc','Circle','Square','CustomImage'
+	 * @param TBulletStyle style of bullets.
 	 */
 	public function setBulletStyle($value)
 	{
-		$this->setViewState('BulletStyle',TPropertyValue::ensureEnum($value,'NotSet','Numbered','LowerAlpha','UpperAlpha','LowerRoman','UpperRoman','Disc','Circle','Square','CustomImage'),'NotSet');
+		$this->setViewState('BulletStyle',TPropertyValue::ensureEnum($value,'TBulletStyle'),TBulletStyle::NotSet);
 	}
 
 	/**
-	 * @return string display mode of the list. Defaults to 'Text'.
+	 * @return TBulletedListDisplayMode display mode of the list. Defaults to TBulletedListDisplayMode::Text.
 	 */
 	public function getDisplayMode()
 	{
-		return $this->getViewState('DisplayMode','Text');
+		return $this->getViewState('DisplayMode',TBulletedListDisplayMode::Text);
 	}
 
 	/**
-	 * @return string display mode of the list. Valid values include
-	 * 'Text', 'HyperLink', 'LinkButton'.
+	 * @return TBulletedListDisplayMode display mode of the list.
 	 */
 	public function setDisplayMode($value)
 	{
-		$this->setViewState('DisplayMode',TPropertyValue::ensureEnum($value,'Text','HyperLink','LinkButton'),'Text');
+		$this->setViewState('DisplayMode',TPropertyValue::ensureEnum($value,'TBulletedListDisplayMode'),TBulletedListDisplayMode::Text);
 	}
 
 	/**
@@ -282,13 +280,13 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 	{
 		switch($this->getDisplayMode())
 		{
-			case 'Text':
+			case TBulletedListDisplayMode::Text:
 				$this->renderTextItem($writer, $item, $index);
 				break;
-			case 'HyperLink':
+			case TBulletedListDisplayMode::HyperLink:
 				$this->renderHyperLinkItem($writer, $item, $index);
 				break;
-			case 'LinkButton':
+			case TBulletedListDisplayMode::LinkButton:
 				$this->renderLinkButtonItem($writer, $item, $index);
 				break;
 		}
@@ -440,4 +438,51 @@ class TBulletedListEventParameter extends TEventParameter
 		return $this->_index;
 	}
 }
+
+/**
+ * TBulletStyle class.
+ * TBulletStyle defines the enumerable type for the possible bullet styles that may be used
+ * for a {@link TBulletedList} control.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TBulletStyle extends TEnumerable
+{
+	const NotSet='NotSet';
+	const Numbered='Numbered';
+	const LowerAlpha='LowerAlpha';
+	const UpperAlpha='UpperAlpha';
+	const LowerRoman='LowerRoman';
+	const UpperRoman='UpperRoman';
+	const Disc='Disc';
+	const Circle='Circle';
+	const Square='Square';
+	const CustomImage='CustomImage';
+}
+
+/**
+ * TBulletedListDisplayMode class.
+ * TBulletedListDisplayMode defines the enumerable type for the possible display mode
+ * of a {@link TBulletedList} control.
+ *
+ * The following enumerable values are defined:
+ * - Text: the bulleted list items are displayed as plain texts
+ * - HyperLink: the bulleted list items are displayed as hyperlinks
+ * - LinkButton: the bulleted list items are displayed as link buttons that can cause postbacks
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TBulletedListDisplayMode extends TEnumerable
+{
+	const Text='Text';
+	const HyperLink='HyperLink';
+	const LinkButton='LinkButton';
+}
+
 ?>

@@ -357,7 +357,7 @@ Prado.WebUI.TValidationSummary.prototype =
 	 * options['DisplayMode']		Summary display style, 'BulletList', 'List', 'SingleParagraph'
 	 * options['Refresh']			True to update the summary upon validator state change.
 	 * options['ValidationGroup']	Validation summary group
-	 * options['Display']			Display mode, 'None', 'Static', 'Dynamic'.
+	 * options['Display']			Display mode, 'None', 'Fixed', 'Dynamic'.
 	 * options['ScrollToSummary']	True to scroll to the validation summary upon refresh.
 	 * </code>
 	 */
@@ -564,7 +564,7 @@ Prado.WebUI.TBaseValidator.prototype =
 	 * options['ID']*				Validator ID, e.g. span with message
 	 * options['FormID']*			HTML form that the validator belongs
 	 * options['ControlToValidate']*HTML form input to validate
-	 * options['Display']			Display mode, 'None', 'Static', 'Dynamic'
+	 * options['Display']			Display mode, 'None', 'Fixed', 'Dynamic'
 	 * options['ErrorMessage']		Validation error message
 	 * options['FocusOnError']		True to focus on validation error
 	 * options['FocusElementID']	Element to focus on error

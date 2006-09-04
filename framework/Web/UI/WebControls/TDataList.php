@@ -87,8 +87,8 @@ Prado::using('System.Web.UI.WebControls.TRepeatInfo');
  *
  * Each datalist item has a {@link TDataListItem::getItemType type}
  * which tells the position and state of the item in the datalist. An item in the header
- * of the repeater is of type 'Header'. A body item may be of either
- * 'Item', 'AlternatingItem', 'SelectedItem' or 'EditItem', depending whether the item
+ * of the repeater is of type Header. A body item may be of either
+ * Item, AlternatingItem, SelectedItem or EditItem, depending whether the item
  * index is odd or even, whether it is being selected or edited.
  *
  * TDataList raises an {@link onItemCommand OnItemCommand} whenever a button control
@@ -458,14 +458,14 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 			if($current>=0 && $current<$itemCount)
 			{
 				$item=$items->itemAt($current);
-				if($item->getItemType()!=='EditItem')
-					$item->setItemType($current%2?'AlternatingItem':'Item');
+				if($item->getItemType()!==TListItemType::EditItem)
+					$item->setItemType($current%2?TListItemType::AlternatingItem : TListItemType::Item);
 			}
 			if($value>=0 && $value<$itemCount)
 			{
 				$item=$items->itemAt($value);
-				if($item->getItemType()!=='EditItem')
-					$item->setItemType('SelectedItem');
+				if($item->getItemType()!==TListItemType::EditItem)
+					$item->setItemType(TListItemType::SelectedItem);
 			}
 		}
 	}
@@ -524,9 +524,9 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 			$items=$this->getItems();
 			$itemCount=$items->getCount();
 			if($current>=0 && $current<$itemCount)
-				$items->itemAt($current)->setItemType($current%2?'AlternatingItem':'Item');
+				$items->itemAt($current)->setItemType($current%2?TListItemType::AlternatingItem : TListItemType::Item);
 			if($value>=0 && $value<$itemCount)
-				$items->itemAt($value)->setItemType('EditItem');
+				$items->itemAt($value)->setItemType(TListItemType::EditItem);
 		}
 	}
 
@@ -605,7 +605,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * @return string alignment of the caption of the table layout. Defaults to 'NotSet'.
+	 * @return TTableCaptionAlign alignment of the caption of the table layout. Defaults to TTableCaptionAlign::NotSet.
 	 */
 	public function getCaptionAlign()
 	{
@@ -613,8 +613,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * @return string alignment of the caption of the table layout.
-	 * Valid values include 'NotSet','Top','Bottom','Left','Right'.
+	 * @return TTableCaptionAlign alignment of the caption of the table layout.
 	 */
 	public function setCaptionAlign($value)
 	{
@@ -638,7 +637,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * @return string the direction of traversing the list, defaults to 'Vertical'
+	 * @return TRepeatDirection the direction of traversing the list, defaults to TRepeatDirection::Vertical
 	 */
 	public function getRepeatDirection()
 	{
@@ -646,7 +645,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * @param string the direction (Vertical, Horizontal) of traversing the list
+	 * @param TRepeatDirection the direction of traversing the list
 	 */
 	public function setRepeatDirection($value)
 	{
@@ -654,7 +653,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * @return string how the list should be displayed, using table or using line breaks. Defaults to 'Table'.
+	 * @return TRepeatLayout how the list should be displayed, using table or using line breaks. Defaults to TRepeatLayout::Table.
 	 */
 	public function getRepeatLayout()
 	{
@@ -662,7 +661,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	}
 
 	/**
-	 * @param string how the list should be displayed, using table or using line breaks (Table, Flow, Raw)
+	 * @param TRepeatLayout how the list should be displayed, using table or using line breaks
 	 */
 	public function setRepeatLayout($value)
 	{
@@ -875,14 +874,14 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	{
 		switch($itemType)
 		{
-			case 'Header': return $this->getControls()->itemAt(0);
-			case 'Footer': return $this->getControls()->itemAt($this->getControls()->getCount()-1);
-			case 'Item':
-			case 'AlternatingItem':
-			case 'SelectedItem':
-			case 'EditItem':
+			case TListItemType::Header: return $this->getControls()->itemAt(0);
+			case TListItemType::Footer: return $this->getControls()->itemAt($this->getControls()->getCount()-1);
+			case TListItemType::Item:
+			case TListItemType::AlternatingItem:
+			case TListItemType::SelectedItem:
+			case TListItemType::EditItem:
 				return $this->getItems()->itemAt($index);
-			case 'Separator':
+			case TListItemType::Separator:
 				$i=$index+$index+1;
 				if($this->_headerTemplate!==null)
 					$i++;
@@ -895,7 +894,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 * Creates a data list item and does databinding if needed.
 	 * This method invokes {@link createItem} to create a new data list item.
 	 * @param integer zero-based item index.
-	 * @param string item type, may be 'Header', 'Footer', 'Item', 'Separator', 'AlternatingItem', 'SelectedItem', 'EditItem'.
+	 * @param TListItemType item type
 	 * @param boolean whether to do databinding for the item
 	 * @param mixed data to be associated with the item
 	 * @return TDataListItem the created item
@@ -925,7 +924,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	/**
 	 * Creates a DataList item instance based on the item type and index.
 	 * @param integer zero-based item index
-	 * @param string item type, may be 'Header', 'Footer', 'Item', 'Separator', 'AlternatingItem', 'SelectedItem', 'EditItem'.
+	 * @param TListItemType item type
 	 * @return TDataListItem created data list item
 	 */
 	protected function createItem($itemIndex,$itemType)
@@ -978,27 +977,27 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 				continue;
 			switch($item->getItemType())
 			{
-				case 'Header':
+				case TListItemType::Header:
 					if($headerStyle)
 						$item->getStyle()->mergeWith($headerStyle);
 					break;
-				case 'Footer':
+				case TListItemType::Footer:
 					if($footerStyle)
 						$item->getStyle()->mergeWith($footerStyle);
 					break;
-				case 'Separator':
+				case TListItemType::Separator:
 					if($separatorStyle)
 						$item->getStyle()->mergeWith($separatorStyle);
 					break;
-				case 'Item':
+				case TListItemType::Item:
 					if($itemStyle)
 						$item->getStyle()->mergeWith($itemStyle);
 					break;
-				case 'AlternatingItem':
+				case TListItemType::AlternatingItem:
 					if($alternatingItemStyle)
 						$item->getStyle()->mergeWith($alternatingItemStyle);
 					break;
-				case 'SelectedItem':
+				case TListItemType::SelectedItem:
 					if($selectedItemStyle)
 						$item->getStyle()->mergeWith($selectedItemStyle);
 					if($index % 2==1)
@@ -1012,7 +1011,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 							$item->getStyle()->mergeWith($alternatingItemStyle);
 					}
 					break;
-				case 'EditItem':
+				case TListItemType::EditItem:
 					if($editItemStyle)
 						$item->getStyle()->mergeWith($editItemStyle);
 					if($index % 2==1)
@@ -1043,30 +1042,30 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 		$template=null;
 		switch($item->getItemType())
 		{
-			case 'Header':
+			case TListItemType::Header:
 				$template=$this->_headerTemplate;
 				break;
-			case 'Footer':
+			case TListItemType::Footer:
 				$template=$this->_footerTemplate;
 				break;
-			case 'Item':
+			case TListItemType::Item:
 				$template=$this->_itemTemplate;
 				break;
-			case 'AlternatingItem':
+			case TListItemType::AlternatingItem:
 				if(($template=$this->_alternatingItemTemplate)===null)
 					$template=$this->_itemTemplate;
 				break;
-			case 'Separator':
+			case TListItemType::Separator:
 				$template=$this->_separatorTemplate;
 				break;
-			case 'SelectedItem':
+			case TListItemType::SelectedItem:
 				if(($template=$this->_selectedItemTemplate)===null)
 				{
 					if(!($item->getItemIndex()%2) || ($template=$this->_alternatingItemTemplate)===null)
 						$template=$this->_itemTemplate;
 				}
 				break;
-			case 'EditItem':
+			case TListItemType::EditItem:
 				if(($template=$this->_editItemTemplate)===null)
 				{
 					if($item->getItemIndex()!==$this->getSelectedItemIndex() || ($template=$this->_selectedItemTemplate)===null)
@@ -1130,21 +1129,21 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 			$editIndex=$this->getEditItemIndex();
 			$hasSeparator=$this->_separatorTemplate!==null;
 			if($this->_headerTemplate!==null)
-				$this->_header=$this->createItemInternal(-1,'Header',false,null);
+				$this->_header=$this->createItemInternal(-1,TListItemType::Header,false,null);
 			for($i=0;$i<$itemCount;++$i)
 			{
 				if($hasSeparator && $i>0)
-					$this->createItemInternal($i-1,'Separator',false,null);
+					$this->createItemInternal($i-1,TListItemType::Separator,false,null);
 				if($i===$editIndex)
-					$itemType='EditItem';
+					$itemType=TListItemType::EditItem;
 				else if($i===$selectedIndex)
-					$itemType='SelectedItem';
+					$itemType=TListItemType::SelectedItem;
 				else
-					$itemType=$i%2?'AlternatingItem':'Item';
+					$itemType=$i%2?TListItemType::AlternatingItem : TListItemType::Item;
 				$items->add($this->createItemInternal($i,$itemType,false,null));
 			}
 			if($this->_footerTemplate!==null)
-				$this->_footer=$this->createItemInternal(-1,'Footer',false,null);
+				$this->_footer=$this->createItemInternal(-1,TListItemType::Footer,false,null);
 		}
 		else if($this->_emptyTemplate!==null)
 			$this->_emptyTemplate->instantiateIn($this);
@@ -1175,20 +1174,20 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 			else
 				$keys->add($key);
 			if($itemIndex===0 && $this->_headerTemplate!==null)
-				$this->_header=$this->createItemInternal(-1,'Header',true,null);
+				$this->_header=$this->createItemInternal(-1,TListItemType::Header,true,null);
 			if($hasSeparator && $itemIndex>0)
-				$this->createItemInternal($itemIndex-1,'Separator',true,null);
+				$this->createItemInternal($itemIndex-1,TListItemType::Separator,true,null);
 			if($itemIndex===$editIndex)
-				$itemType='EditItem';
+				$itemType=TListItemType::EditItem;
 			else if($itemIndex===$selectedIndex)
-				$itemType='SelectedItem';
+				$itemType=TListItemType::SelectedItem;
 			else
-				$itemType=$itemIndex%2?'AlternatingItem':'Item';
+				$itemType=$itemIndex%2?TListItemType::AlternatingItem : TListItemType::Item;
 			$items->add($this->createItemInternal($itemIndex,$itemType,true,$dataItem));
 			$itemIndex++;
 		}
 		if($itemIndex>0 && $this->_footerTemplate!==null)
-			$this->_footer=$this->createItemInternal(-1,'Footer',true,null);
+			$this->_footer=$this->createItemInternal(-1,TListItemType::Footer,true,null);
 		if($itemIndex===0 && $this->_emptyTemplate!==null)
 		{
 			$this->_emptyTemplate->instantiateIn($this);
@@ -1335,9 +1334,9 @@ class TDataListItem extends TWebControl implements INamingContainer
 	private $_itemIndex='';
 	/**
 	 * type of the TDataListItem
-	 * @var string
+	 * @var TListItemType
 	 */
-	private $_itemType='';
+	private $_itemType;
 	/**
 	 * value of the data item
 	 * @var mixed
@@ -1347,7 +1346,7 @@ class TDataListItem extends TWebControl implements INamingContainer
 	/**
 	 * Constructor.
 	 * @param integer zero-based index of the item in the item collection of DataList
-	 * @param string item type, can be 'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager'.
+	 * @param TListItemType item type
 	 */
 	public function __construct($itemIndex,$itemType)
 	{
@@ -1366,7 +1365,7 @@ class TDataListItem extends TWebControl implements INamingContainer
 	}
 
 	/**
-	 * @return string item type
+	 * @return TListItemType item type
 	 */
 	public function getItemType()
 	{
@@ -1374,11 +1373,11 @@ class TDataListItem extends TWebControl implements INamingContainer
 	}
 
 	/**
-	 * @param string item type. Valid values include 'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager'.
+	 * @param TListItemType item type.
 	 */
 	public function setItemType($value)
 	{
-		$this->_itemType=TPropertyValue::ensureEnum($value,'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager');
+		$this->_itemType=TPropertyValue::ensureEnum($value,'TListItemType');
 	}
 
 	/**
