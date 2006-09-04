@@ -676,14 +676,6 @@ class TPage extends TTemplateControl
 	{
 		if($beforeLoad)
 			$this->_restPostData=new TMap;
-		//change the post back target
-		if(($target=$postData[self::FIELD_POSTBACK_TARGET])!==null
-			&& ($control=$this->findControl($target))
-			&& ($control instanceof IPostBackEventHandler))
-		{
-			$this->_postData->add(self::FIELD_POSTBACK_TARGET,$target);
-		}
-
 		foreach($postData as $key=>$value)
 		{
 			if($this->isSystemPostField($key))
