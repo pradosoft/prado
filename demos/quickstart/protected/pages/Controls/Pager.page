@@ -17,7 +17,7 @@ Note, the target data-bound control must have its <tt>AllowPaging</tt> set to tr
 <ul>
 <li><tt>NextPrev</tt> - a next page and a previous page button are rendered on each page.</li>
 <li><tt>Numeric</tt> - a list of page index buttons are rendered.</li>
-<li><tt>List</tt> - a dropdown list of page indices is rendered.</li>
+<li><tt>DropDownList</tt> - a dropdown list of page indices is rendered.</li>
 </ul>
 <p>
 These user interfaces may be further customized by configuring the following properties

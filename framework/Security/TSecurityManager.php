@@ -137,7 +137,7 @@ class TSecurityManager extends TModule
 	 */
 	public function setValidation($value)
 	{
-		$this->_validation=TPropertyValue::ensureEnumerable($value,'TSecurityManagerValidationMode');
+		$this->_validation=TPropertyValue::ensureEnum($value,'TSecurityManagerValidationMode');
 	}
 
 	/**

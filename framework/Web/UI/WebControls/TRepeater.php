@@ -38,8 +38,8 @@ Prado::using('System.Util.TDataFieldAccessor');
  *
  * Each repeater item has a {@link TRepeaterItem::getItemType type}
  * which tells the position of the item in the repeater. An item in the header
- * of the repeater is of type TRepeater::IT_HEADER. A body item may be of either
- * TRepeater::IT_ITEM or TRepeater::IT_ALTERNATINGITEM, depending whether the item
+ * of the repeater is of type TListItemType::Header. A body item may be of either
+ * TListItemType::Item or TListItemType::AlternatingItem, depending whether the item
  * index is odd or even.
  *
  * You can retrive the repeated contents by the {@link getItems Items} property.
@@ -73,6 +73,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 {
 	/**
 	 * Repeater item types
+	 * @deprecated deprecated since version 3.0.4. Use TListItemType constants instead.
 	 */
 	const IT_HEADER='Header';
 	const IT_FOOTER='Footer';
@@ -345,11 +346,11 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 		$template=null;
 		switch($item->getItemType())
 		{
-			case self::IT_HEADER: $template=$this->_headerTemplate; break;
-			case self::IT_FOOTER: $template=$this->_footerTemplate; break;
-			case self::IT_ITEM  : $template=$this->_itemTemplate; break;
-			case self::IT_SEPARATOR : $template=$this->_separatorTemplate; break;
-			case self::IT_ALTERNATINGITEM : $template=$this->_alternatingItemTemplate===null ? $this->_itemTemplate : $this->_alternatingItemTemplate; break;
+			case TListItemType::Header: $template=$this->_headerTemplate; break;
+			case TListItemType::Footer: $template=$this->_footerTemplate; break;
+			case TListItemType::Item  : $template=$this->_itemTemplate; break;
+			case TListItemType::Separator : $template=$this->_separatorTemplate; break;
+			case TListItemType::AlternatingItem : $template=$this->_alternatingItemTemplate===null ? $this->_itemTemplate : $this->_alternatingItemTemplate; break;
 		}
 		if($template!==null)
 			$template->instantiateIn($item);
@@ -416,16 +417,16 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 			$items=$this->getItems();
 			$hasSeparator=$this->_separatorTemplate!==null;
 			if($this->_headerTemplate!==null)
-				$this->_header=$this->createItemInternal(-1,self::IT_HEADER,false,null);
+				$this->_header=$this->createItemInternal(-1,TListItemType::Header,false,null);
 			for($i=0;$i<$itemCount;++$i)
 			{
 				if($hasSeparator && $i>0)
-					$this->createItemInternal($i-1,self::IT_SEPARATOR,false,null);
-				$itemType=$i%2==0?self::IT_ITEM:self::IT_ALTERNATINGITEM;
+					$this->createItemInternal($i-1,TListItemType::Separator,false,null);
+				$itemType=$i%2==0?TListItemType::Item : TListItemType::AlternatingItem;
 				$items->add($this->createItemInternal($i,$itemType,false,null));
 			}
 			if($this->_footerTemplate!==null)
-				$this->_footer=$this->createItemInternal(-1,self::IT_FOOTER,false,null);
+				$this->_footer=$this->createItemInternal(-1,TListItemType::Footer,false,null);
 		}
 		else if($this->_emptyTemplate!==null)
 			$this->_emptyTemplate->instantiateIn($this);
@@ -456,15 +457,15 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 			else
 				$keys->add($key);
 			if($itemIndex===0 && $this->_headerTemplate!==null)
-				$this->_header=$this->createItemInternal(-1,self::IT_HEADER,true,null);
+				$this->_header=$this->createItemInternal(-1,TListItemType::Header,true,null);
 			if($hasSeparator && $itemIndex>0)
-				$this->createItemInternal($itemIndex-1,self::IT_SEPARATOR,true,null);
-			$itemType=$itemIndex%2==0?self::IT_ITEM:self::IT_ALTERNATINGITEM;
+				$this->createItemInternal($itemIndex-1,TListItemType::Separator,true,null);
+			$itemType=$itemIndex%2==0?TListItemType::Item : TListItemType::AlternatingItem;
 			$items->add($this->createItemInternal($itemIndex,$itemType,true,$dataItem));
 			$itemIndex++;
 		}
 		if($itemIndex>0 && $this->_footerTemplate!==null)
-			$this->_footer=$this->createItemInternal(-1,self::IT_FOOTER,true,null);
+			$this->_footer=$this->createItemInternal(-1,TListItemType::Footer,true,null);
 		if($itemIndex===0 && $this->_emptyTemplate!==null)
 		{
 			$this->_emptyTemplate->instantiateIn($this);
@@ -674,9 +675,9 @@ class TRepeaterItem extends TControl implements INamingContainer
 	private $_itemIndex='';
 	/**
 	 * type of the TRepeaterItem
-	 * @var string
+	 * @var TListItemType
 	 */
-	private $_itemType='';
+	private $_itemType;
 	/**
 	 * value of the data item
 	 * @var mixed
@@ -686,7 +687,7 @@ class TRepeaterItem extends TControl implements INamingContainer
 	/**
 	 * Constructor.
 	 * @param integer zero-based index of the item in the item collection of repeater
-	 * @param string item type, can be 'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager'.
+	 * @param TListItemType item type
 	 */
 	public function __construct($itemIndex,$itemType)
 	{
@@ -695,7 +696,7 @@ class TRepeaterItem extends TControl implements INamingContainer
 	}
 
 	/**
-	 * @return string item type
+	 * @return TListItemType item type
 	 */
 	public function getItemType()
 	{
@@ -703,11 +704,11 @@ class TRepeaterItem extends TControl implements INamingContainer
 	}
 
 	/**
-	 * @param string item type. Valid values include 'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager'.
+	 * @param TListItemType item type.
 	 */
 	public function setItemType($value)
 	{
-		$this->_itemType=TPropertyValue::ensureEnum($value,'Header','Footer','Item','AlternatingItem','SelectedItem','EditItem','Separator','Pager');
+		$this->_itemType=TPropertyValue::ensureEnum($value,'TListItemType');
 	}
 
 	/**

@@ -121,20 +121,19 @@ class TTableRow extends TWebControl
 	}
 
 	/**
-	 * @return string location of a row in a table. Defaults to 'Body'.
+	 * @return TTableRowSection location of a row in a table. Defaults to TTableRowSection::Body.
 	 */
 	public function getTableSection()
 	{
-		return $this->getViewState('TableSection','Body');
+		return $this->getViewState('TableSection',TTableRowSection::Body);
 	}
 
 	/**
-	 * @param string location of a row in a table. Valid values include 'Header', 'Footer' and 'Body'.
+	 * @param TTableRowSection location of a row in a table.
 	 */
 	public function setTableSection($value)
 	{
-		$value=TPropertyValue::ensureEnum($value,'Header','Body','Footer');
-		$this->setViewState('TableSection',$value,'Body');
+		$this->setViewState('TableSection',TPropertyValue::ensureEnum($value,'TTableRowSection'),TTableRowSection::Body);
 	}
 
 	/**
@@ -182,6 +181,29 @@ class TTableCellCollection extends TControlCollection
 		else
 			throw new TInvalidDataTypeException('tablecellcollection_tablecell_required');
 	}
+}
+
+
+/**
+ * TTableRowSection class.
+ * TTableRowSection defines the enumerable type for the possible table sections
+ * that a {@link TTableRow} can be within.
+ *
+ * The following enumerable values are defined:
+ * - Header: in table header
+ * - Body: in table body
+ * - Footer: in table footer
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TTableRowSection extends TEnumerable
+{
+	const Header='Header';
+	const Body='Body';
+	const Footer='Footer';
 }
 
 ?>

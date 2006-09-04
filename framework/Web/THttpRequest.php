@@ -222,7 +222,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function setUrlFormat($value)
 	{
-		$this->_urlFormat=TPropertyValue::ensureEnumerable($value,'THttpRequestUrlFormat');
+		$this->_urlFormat=TPropertyValue::ensureEnum($value,'THttpRequestUrlFormat');
 	}
 
 	/**

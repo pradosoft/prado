@@ -323,7 +323,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function setDisplay($value)
 	{
-		$this->setViewState('Display',TPropertyValue::ensureEnumerable($value,'TValidatorDisplayStyle'),TValidatorDisplayStyle::Fixed);
+		$this->setViewState('Display',TPropertyValue::ensureEnum($value,'TValidatorDisplayStyle'),TValidatorDisplayStyle::Fixed);
 	}
 
 	/**
@@ -685,4 +685,29 @@ class TValidatorDisplayStyle extends TEnumerable
 	const Dynamic='Dynamic';
 	const Fixed='Fixed';
 }
+
+/**
+ * TValidationDataType class.
+ * TValidationDataType defines the enumerable type for the possible data types that
+ * a comparison validator can validate upon.
+ *
+ * The following enumerable values are defined:
+ * - Integer
+ * - Float
+ * - Date
+ * - String
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TValidationDataType extends TEnumerable
+{
+	const Integer='Integer';
+	const Float='Float';
+	const Date='Date';
+	const String='String';
+}
+
 ?>

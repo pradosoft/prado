@@ -1528,7 +1528,7 @@ class TWizardNavigationButtonStyle extends TStyle
 	 */
 	public function setButtonType($value)
 	{
-		$this->_buttonType=TPropertyValue::ensureEnumerable($value,'TWizardNavigationButtonType');
+		$this->_buttonType=TPropertyValue::ensureEnum($value,'TWizardNavigationButtonType');
 	}
 
 	/**
@@ -1631,7 +1631,7 @@ class TWizardStep extends TView
 	 */
 	public function setStepType($type)
 	{
-		$type=TPropertyValue::ensureEnumerable($type,'TWizardStepType');
+		$type=TPropertyValue::ensureEnum($type,'TWizardStepType');
 		if($type!==$this->getStepType())
 		{
 			$this->setViewState('StepType',$type,TWizardStepType::Auto);

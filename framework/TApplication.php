@@ -478,7 +478,7 @@ class TApplication extends TComponent
 	 */
 	public function setMode($value)
 	{
-		$this->_mode=TPropertyValue::ensureEnumerable($value,'TApplicationMode');
+		$this->_mode=TPropertyValue::ensureEnum($value,'TApplicationMode');
 	}
 
 	/**

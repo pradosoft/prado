@@ -17,8 +17,8 @@ Upgrading from v3.0.3
 ---------------------
 - The 'Static' value is changed to 'Fixed' for the Display property of 
   all validators as well as TValidationSummary, due to conflict with PHP keywords.
-- The 'List' value is changed to 'SimpleList' for the DisplayMode property
-  of TValidationSummary, due to conflict with PHP keywords.
+- The 'List' value is changed to 'SimpleList' for TValidationSummary.DisplayMode.
+- The 'List' value is changed to 'DropDownList' for TPager.Mode
 - This change affects existing client-side javascript handlers such as
   <com:TRequiredFieldValidator ClientSide.OnSuccess="xxx" />
   All ClientSide javascript event handlers (such as ClientSide.OnSuccess)

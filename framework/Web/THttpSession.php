@@ -293,7 +293,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 			throw new TInvalidOperationException('httpsession_cookiemode_unchangeable');
 		else
 		{
-			$value=TPropertyValue::ensureEnumerable($value,'THttpSessionCookieMode');
+			$value=TPropertyValue::ensureEnum($value,'THttpSessionCookieMode');
 			if($value===THttpSessionCookieMode::None)
 				ini_set('session.use_cookies','0');
 			else if($value===THttpSessionCookieMode::Allow)

@@ -198,7 +198,7 @@ class TUserManager extends TModule implements IUserManager
 	 */
 	public function setPasswordMode($value)
 	{
-		$this->_passwordMode=TPropertyValue::ensureEnumerable($value,'TUserManagerPasswordMode');
+		$this->_passwordMode=TPropertyValue::ensureEnum($value,'TUserManagerPasswordMode');
 	}
 
 	/**

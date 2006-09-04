@@ -47,7 +47,7 @@ class TDataTypeValidator extends TBaseValidator
 	}
 
 	/**
-	 * @return string the data type that the values being compared are converted to before the comparison is made. Defaults to String.
+	 * @return TValidationDataType the data type that the values being compared are converted to before the comparison is made. Defaults to TValidationDataType::String.
 	 */
 	public function getDataType()
 	{
@@ -55,13 +55,12 @@ class TDataTypeValidator extends TBaseValidator
 	}
 
 	/**
-	 * Sets the data type (Integer, Float, Date, String) that the values being
-	 * compared are converted to before the comparison is made.
-	 * @param string the data type
+	 * Sets the data type that the values being compared are converted to before the comparison is made.
+	 * @param TValidationDataType the data type
 	 */
 	public function setDataType($value)
 	{
-		$this->setViewState('DataType',TPropertyValue::ensureEnum($value,'Integer','Float','Date','String'),'String');
+		$this->setViewState('DataType',TPropertyValue::ensureEnum($value,'TValidationDataType'),TValidationDataType::String);
 	}
 
 	/**
@@ -94,11 +93,11 @@ class TDataTypeValidator extends TBaseValidator
 
 		switch($this->getDataType())
 		{
-			case 'Integer':
+			case TValidationDataType::Integer:
 				return preg_match('/^[-+]?[0-9]+$/',trim($value));
-			case 'Float':
+			case TValidationDataType::Float:
 				return preg_match('/^[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?$/',trim($value));
-			case 'Date':
+			case TValidationDataType::Date:
 				$dateFormat = $this->getDateFormat();
 				if(strlen($dateFormat))
 				{

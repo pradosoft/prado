@@ -43,8 +43,8 @@ class TTableHeaderCell extends TTableCell
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		if(($scope=$this->getScope())!=='NotSet')
-			$writer->addAttribute('scope',$scope==='Row'?'row':'col');
+		if(($scope=$this->getScope())!==TTableHeaderScope::NotSet)
+			$writer->addAttribute('scope',$scope===TTableHeaderScope::Row?'row':'col');
 		if(($text=$this->getAbbreviatedText())!=='')
 			$writer->addAttribute('abbr',$text);
 		if(($text=$this->getCategoryText())!=='')
@@ -52,20 +52,19 @@ class TTableHeaderCell extends TTableCell
 	}
 
 	/**
-	 * @return string the scope of the cells that the header cell applies to. Defaults to 'NotSet'.
+	 * @return TTableHeaderScope the scope of the cells that the header cell applies to. Defaults to TTableHeaderScope::NotSet.
 	 */
 	public function getScope()
 	{
-		return $this->getViewState('Scope','NotSet');
+		return $this->getViewState('Scope',TTableHeaderScope::NotSet);
 	}
 
 	/**
-	 * @param string the scope of the cells that the header cell applies to.
-	 * Valid values include 'NotSet','Row','Column'.
+	 * @param TTableHeaderScope the scope of the cells that the header cell applies to.
 	 */
 	public function setScope($value)
 	{
-		$this->setViewState('Scope',TPropertyValue::ensureEnum($value,'NotSet','Row','Column'),'NotSet');
+		$this->setViewState('Scope',TPropertyValue::ensureEnum($value,'TTableHeaderScope'),TTableHeaderScope::NotSet);
 	}
 
 	/**
@@ -99,6 +98,28 @@ class TTableHeaderCell extends TTableCell
 	{
 		$this->setViewState('CategoryText',$value,'');
 	}
+}
+
+
+/**
+ * TTableHeaderScope class.
+ * TTableHeaderScope defines the enumerable type for the possible table scopes that a table header is associated with.
+ *
+ * The following enumerable values are defined:
+ * - NotSet: the scope is not specified
+ * - Row: the scope is row-wise
+ * - Column: the scope is column-wise
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TTableHeaderScope extends TEnumerable
+{
+	const NotSet='NotSet';
+	const Row='Row';
+	const Column='Column';
 }
 
 ?>

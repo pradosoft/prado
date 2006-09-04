@@ -70,7 +70,7 @@ Total <%# $this->Parent->PageCount %> pages.
 Choose page:
 <com:TPager ID="Pager3" 
 	ControlToPaginate="DataList" 
-	Mode="List"
+	Mode="DropDownList"
 	OnPageIndexChanged="pageChanged"
 	/>
 

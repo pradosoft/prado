@@ -242,7 +242,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	 */
 	public function setAutoCompleteType($value)
 	{
-		$this->setViewState('AutoCompleteType',TPropertyValue::ensureEnumerable($value,'TTextBoxAutoCompleteType'),TTextBoxAutoCompleteType::None);
+		$this->setViewState('AutoCompleteType',TPropertyValue::ensureEnum($value,'TTextBoxAutoCompleteType'),TTextBoxAutoCompleteType::None);
 	}
 
 	/**
@@ -419,7 +419,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	 */
 	public function setTextMode($value)
 	{
-		$this->setViewState('TextMode',TPropertyValue::ensureEnumerable($value,'TTextBoxMode'),TTextBoxMode::SingleLine);
+		$this->setViewState('TextMode',TPropertyValue::ensureEnum($value,'TTextBoxMode'),TTextBoxMode::SingleLine);
 	}
 
 	/**

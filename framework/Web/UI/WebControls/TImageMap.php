@@ -88,19 +88,19 @@ class TImageMap extends TImage implements IPostBackEventHandler
 			$writer->addAttribute('name',self::MAP_NAME_PREFIX.$clientID);
 			$writer->renderBeginTag('map');
 			$writer->writeLine();
-			if(($mode=$this->getHotSpotMode())==='NotSet')
-				$mode='Navigate';
+			if(($mode=$this->getHotSpotMode())===THotSpotMode::NotSet)
+				$mode=THotSpotMode::Navigate;
 			$target=$this->getTarget();
 			$i=0;
 			$options['EventTarget'] = $this->getUniqueID();
 			$options['StopEvent'] = true;
 			foreach($hotspots as $hotspot)
 			{
-				if($hotspot->getHotSpotMode()==='NotSet')
+				if($hotspot->getHotSpotMode()===THotSpotMode::NotSet)
 					$hotspot->setHotSpotMode($mode);
 				if($target!=='' && $hotspot->getTarget()==='')
 					$hotspot->setTarget($target);
-				if($hotspot->getHotSpotMode()==='PostBack')
+				if($hotspot->getHotSpotMode()===THotSpotMode::PostBack)
 				{
 					$id=$clientID.'_'.$i;
 					$writer->addAttribute('id',$id);
@@ -135,9 +135,9 @@ class TImageMap extends TImage implements IPostBackEventHandler
 			if($index>=0 && $index<$hotspots->getCount())
 			{
 				$hotspot=$hotspots->itemAt($index);
-				if(($mode=$hotspot->getHotSpotMode())==='NotSet')
+				if(($mode=$hotspot->getHotSpotMode())===THotSpotMode::NotSet)
 					$mode=$this->getHotSpotMode();
-				if($mode==='PostBack')
+				if($mode===THotSpotMode::PostBack)
 				{
 					$postBackValue=$hotspot->getPostBackValue();
 					if($hotspot->getCausesValidation())
@@ -150,23 +150,22 @@ class TImageMap extends TImage implements IPostBackEventHandler
 	}
 
 	/**
-	 * @return string the behavior of hotspot regions in this imagemap when they are clicked. Defaults to 'NotSet'.
+	 * @return THotSpotMode the behavior of hotspot regions in this imagemap when they are clicked. Defaults to THotSpotMode::NotSet.
 	 */
 	public function getHotSpotMode()
 	{
-		return $this->getViewState('HotSpotMode','NotSet');
+		return $this->getViewState('HotSpotMode',THotSpotMode::NotSet);
 	}
 
 	/**
 	 * Sets the behavior of hotspot regions in this imagemap when they are clicked.
 	 * If an individual hotspot has a mode other than 'NotSet', the mode set in this
 	 * imagemap will be ignored. By default, 'NotSet' is equivalent to 'Navigate'.
-	 * @param string the behavior of hotspot regions in this imagemap when they are clicked.
-	 * Valid values include 'NotSet','Navigate','PostBack','Inactive'.
+	 * @param THotSpotMode the behavior of hotspot regions in this imagemap when they are clicked.
 	 */
 	public function setHotSpotMode($value)
 	{
-		$this->setViewState('HotSpotMode',TPropertyValue::ensureEnum($value,'NotSet','Navigate','PostBack','Inactive'),'NotSet');
+		$this->setViewState('HotSpotMode',TPropertyValue::ensureEnum($value,'THotSpotMode'),THotSpotMode::NotSet);
 	}
 
 	/**
@@ -365,20 +364,19 @@ abstract class THotSpot extends TComponent
 	}
 
 	/**
-	 * @return string the behavior of a HotSpot object when it is clicked. Defaults to 'NotSet'.
+	 * @return THotSpotMode the behavior of a HotSpot object when it is clicked. Defaults to THotSpotMode::NotSet.
 	 */
 	public function getHotSpotMode()
 	{
-		return $this->getViewState('HotSpotMode','NotSet');
+		return $this->getViewState('HotSpotMode',THotSpotMode::NotSet);
 	}
 
 	/**
-	 * @param string the behavior of a HotSpot object when it is clicked.
-	 * Valid values include 'NotSet','Navigate','PostBack','Inactive'.
+	 * @param THotSpotMode the behavior of a HotSpot object when it is clicked.
 	 */
 	public function setHotSpotMode($value)
 	{
-		$this->setViewState('HotSpotMode',TPropertyValue::ensureEnum($value,'NotSet','Navigate','PostBack','Inactive'),'NotSet');
+		$this->setViewState('HotSpotMode',TPropertyValue::ensureEnum($value,'THotSpotMode'),THotSpotMode::NotSet);
 	}
 
 	/**
@@ -487,15 +485,15 @@ abstract class THotSpot extends TComponent
 	{
 		$writer->addAttribute('shape',$this->getShape());
 		$writer->addAttribute('coords',$this->getCoordinates());
-		if(($mode=$this->getHotSpotMode())==='NotSet')
-			$mode='Navigate';
-		if($mode==='Navigate')
+		if(($mode=$this->getHotSpotMode())===THotSpotMode::NotSet)
+			$mode=THotSpotMode::Navigate;
+		if($mode===THotSpotMode::Navigate)
 		{
 			$writer->addAttribute('href',$this->getNavigateUrl());
 			if(($target=$this->getTarget())!=='')
 				$writer->addAttribute('target',$target);
 		}
-		else if($mode==='Inactive')
+		else if($mode===THotSpotMode::Inactive)
 			$writer->addAttribute('nohref','true');
 		$text=$this->getAlternateText();
 		$writer->addAttribute('title',$text);
@@ -721,6 +719,30 @@ class TPolygonHotSpot extends THotSpot
 	{
 		$this->setViewState('Coordinates',$value,'');
 	}
+}
+
+
+/**
+ * THotSpotMode class.
+ * THotSpotMode defines the enumerable type for the possible hot spot modes.
+ *
+ * The following enumerable values are defined:
+ * - NotSet: the mode is not specified
+ * - Navigate: clicking on the hotspot will redirect the browser to a different page
+ * - PostBack: clicking on the hotspot will cause a postback
+ * - Inactive: the hotspot is inactive (not clickable)
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class THotSpotMode extends TEnumerable
+{
+	const NotSet='NotSet';
+	const Navigate='Navigate';
+	const PostBack='PostBack';
+	const Inactive='Inactive';
 }
 
 ?>

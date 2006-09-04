@@ -10,6 +10,8 @@
  * @package System.Web.UI.WebControls
  */
 
+Prado::using('System.Web.UI.WebControls.TTable');
+
 /**
  * IRepeatInfoUser interface.
  * This interface must be implemented by classes who want to use {@link TRepeatInfo}.
@@ -57,7 +59,7 @@ interface IRepeatInfoUser
  * TRepeatInfo class.
  * TRepeatInfo represents repeat information for controls like {@link TCheckBoxList}.
  * The layout of the repeated items is specified via {@link setRepeatLayout RepeatLayout},
- * which can be either 'Table' (default), 'Flow' or 'Raw'.
+ * which can be either Table (default), Flow or Raw.
  * A table layout uses HTML table cells to organize the items while
  * a flow layout uses line breaks to organize the items.
  * The number of columns used to display the items is specified via
@@ -79,21 +81,21 @@ class TRepeatInfo extends TComponent
 	 */
 	private $_caption='';
 	/**
-	 * @var string alignment of the caption of the table used to organize the repeated items
+	 * @var TTableCaptionAlign alignment of the caption of the table used to organize the repeated items
 	 */
-	private $_captionAlign='NotSet';
+	private $_captionAlign=TTableCaptionAlign::NotSet;
 	/**
 	 * @var integer number of columns that the items should be arranged in
 	 */
 	private $_repeatColumns=0;
 	/**
-	 * @var string direction of the repetition
+	 * @var TRepeatDirection direction of the repetition
 	 */
-	private $_repeatDirection='Vertical';
+	private $_repeatDirection=TRepeatDirection::Vertical;
 	/**
-	 * @var string layout of the repeated items
+	 * @var TRepeatLayout layout of the repeated items
 	 */
-	private $_repeatLayout='Table';
+	private $_repeatLayout=TRepeatLayout::Table;
 
 	/**
 	 * @return string caption of the table layout
@@ -112,7 +114,7 @@ class TRepeatInfo extends TComponent
 	}
 
 	/**
-	 * @return string alignment of the caption of the table layout. Defaults to 'NotSet'.
+	 * @return TTableCaptionAlign alignment of the caption of the table layout. Defaults to TTableCaptionAlign::NotSet.
 	 */
 	public function getCaptionAlign()
 	{
@@ -120,12 +122,11 @@ class TRepeatInfo extends TComponent
 	}
 
 	/**
-	 * @return string alignment of the caption of the table layout.
-	 * Valid values include 'NotSet','Top','Bottom','Left','Right'.
+	 * @return TTableCaptionAlign alignment of the caption of the table layout.
 	 */
 	public function setCaptionAlign($value)
 	{
-		$this->_captionAlign=TPropertyValue::ensureEnum($value,array('NotSet','Top','Bottom','Left','Right'));
+		$this->_captionAlign=TPropertyValue::ensureEnum($value,'TTableCaptionAlign');
 	}
 
 	/**
@@ -147,7 +148,7 @@ class TRepeatInfo extends TComponent
 	}
 
 	/**
-	 * @return string the direction of traversing the repeated items, defaults to 'Vertical'
+	 * @return TRepeatDirection the direction of traversing the repeated items, defaults to TRepeatDirection::Vertical
 	 */
 	public function getRepeatDirection()
 	{
@@ -155,16 +156,15 @@ class TRepeatInfo extends TComponent
 	}
 
 	/**
-	 * Sets the direction of traversing the repeated items (Vertical, Horizontal)
-	 * @param string the direction of traversing the repeated items
+	 * @param TRepeatDirection the direction of traversing the repeated items
 	 */
 	public function setRepeatDirection($value)
 	{
-		$this->_repeatDirection=TPropertyValue::ensureEnum($value,array('Horizontal','Vertical'));
+		$this->_repeatDirection=TPropertyValue::ensureEnum($value,'TRepeatDirection');
 	}
 
 	/**
-	 * @return string how the repeated items should be displayed, using table or using line breaks. Defaults to 'Table'.
+	 * @return TRepeatLayout how the repeated items should be displayed, using table or using line breaks. Defaults to TRepeatLayout::Table.
 	 */
 	public function getRepeatLayout()
 	{
@@ -172,12 +172,11 @@ class TRepeatInfo extends TComponent
 	}
 
 	/**
-	 * @param string how the repeated items should be displayed, using table or using line breaks.
-	 * Valid values include 'Table', 'Flow' and 'Raw'.
+	 * @param TRepeatLayout how the repeated items should be displayed, using table or using line breaks.
 	 */
 	public function setRepeatLayout($value)
 	{
-		$this->_repeatLayout=TPropertyValue::ensureEnum($value,array('Table','Flow','Raw'));
+		$this->_repeatLayout=TPropertyValue::ensureEnum($value,'TRepeatLayout');
 	}
 
 	/**
@@ -187,7 +186,7 @@ class TRepeatInfo extends TComponent
 	 */
 	public function renderRepeater($writer, IRepeatInfoUser $user)
 	{
-		if($this->_repeatLayout==='Table')
+		if($this->_repeatLayout===TRepeatLayout::Table)
 		{
 			$control=new TTable;
 			if($this->_caption!=='')
@@ -196,7 +195,7 @@ class TRepeatInfo extends TComponent
 				$control->setCaptionAlign($this->_captionAlign);
 			}
 		}
-		else if($this->_repeatLayout==='Raw')
+		else if($this->_repeatLayout===TRepeatLayout::Raw)
 		{
 			$this->renderRawContents($writer,$user);
 			return;
@@ -210,7 +209,7 @@ class TRepeatInfo extends TComponent
 		$control->renderBeginTag($writer);
 		$writer->writeLine();
 
-		if($this->_repeatDirection==='Vertical')
+		if($this->_repeatDirection===TRepeatDirection::Vertical)
 			$this->renderVerticalContents($writer,$user);
 		else
 			$this->renderHorizontalContents($writer,$user);
@@ -248,7 +247,7 @@ class TRepeatInfo extends TComponent
 	 */
 	protected function renderHorizontalContents($writer,$user)
 	{
-		$tableLayout=($this->_repeatLayout==='Table');
+		$tableLayout=($this->_repeatLayout===TRepeatLayout::Table);
 		$hasSeparators=$user->getHasSeparators();
 		$itemCount=$user->getItemCount();
 		$columns=$this->_repeatColumns===0?$itemCount:$this->_repeatColumns;
@@ -330,7 +329,7 @@ class TRepeatInfo extends TComponent
 	 */
 	protected function renderVerticalContents($writer,$user)
 	{
-		$tableLayout=($this->_repeatLayout==='Table');
+		$tableLayout=($this->_repeatLayout===TRepeatLayout::Table);
 		$hasSeparators=$user->getHasSeparators();
 		$itemCount=$user->getItemCount();
 		if($this->_repeatColumns<=1)
@@ -514,6 +513,49 @@ class TRepeatInfo extends TComponent
 			$user->renderItem($writer,$this,'Footer',-1);
 		$writer->writeLine();
 	}
+}
+
+
+/**
+ * TRepeatDirection class.
+ * TRepeatDirection defines the enumerable type for the possible directions
+ * that repeated contents can repeat along
+ *
+ * The following enumerable values are defined:
+ * - Vertical
+ * - Horizontal
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TRepeatDirection extends TEnumerable
+{
+	const Vertical='Vertical';
+	const Horizontal='Horizontal';
+}
+
+/**
+ * TRepeatLayout class.
+ * TRepeatLayout defines the enumerable type for the possible layouts
+ * that repeated contents can take.
+ *
+ * The following enumerable values are defined:
+ * - Table: the repeated contents are organized using an HTML table
+ * - Flow: the repeated contents are organized using HTML spans and breaks
+ * - Raw: the repeated contents are stacked together without any additional decorations
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TRepeatLayout extends TEnumerable
+{
+	const Table='Table';
+	const Flow='Flow';
+	const Raw='Raw';
 }
 
 ?>

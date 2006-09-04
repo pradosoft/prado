@@ -40,19 +40,19 @@ class TColorPicker extends TTextBox
 	}
 
 	/**
-	 * @param string color picker UI mode, "Simple", "Basic" or "Full", default is "Basic"
+	 * @param TColorPickerMode color picker UI mode
 	 */
 	public function setMode($value)
 	{
-	   $this->setViewState('Mode', TPropertyValue::ensureEnum($value, 'Simple', 'Basic', 'Full'), 'Basic');
+	   $this->setViewState('Mode', TPropertyValue::ensureEnum($value, 'TColorPickerMode'), TColorPickerMode::Basic);
 	}
 
 	/**
-	 * @return string current color picker UI mode.
+	 * @return TColorPickerMode current color picker UI mode. Defaults to TColorPickerMode::Basic.
 	 */
 	public function getMode()
 	{
-	   return $this->getViewState('Mode', 'Basic');
+	   return $this->getViewState('Mode', TColorPickerMode::Basic);
 	}
 
 	/**
@@ -117,8 +117,8 @@ class TColorPicker extends TTextBox
 		{
 			$mode = $this->getMode();
 
-			if($mode == 'Full') $options['Mode'] = $mode;
-			else if($mode == 'Simple') $options['Palette'] = 'Tiny';
+			if($mode == TColorPickerMode::Full) $options['Mode'] = $mode;
+			else if($mode == TColorPickerMode::Simple) $options['Palette'] = 'Tiny';
 
 			$options['OKButtonText'] = $this->getOKButtonText();
 			$options['CancelButtonText'] = $this->getCancelButtonText();
@@ -231,6 +231,28 @@ class TColorPicker extends TTextBox
 		$writer->renderEndTag();
 	}
 
+}
+
+/**
+ * TColorPickerMode class.
+ * TColorPickerMode defines the enumerable type for the possible UI mode
+ * that a {@link TColorPicker} control can take.
+ *
+ * The following enumerable values are defined:
+ * - Simple
+ * - Basic
+ * - Full
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TColorPickerMode extends TEnumerable
+{
+	const Simple='Simple';
+	const Basic='Basic';
+	const Full='Full';
 }
 
 ?>

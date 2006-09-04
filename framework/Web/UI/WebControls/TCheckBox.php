@@ -147,19 +147,19 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	}
 
 	/**
-	 * @return string the alignment (Left or Right) of the text caption, defaults to Right.
+	 * @return TTextAlign the alignment (Left or Right) of the text caption, defaults to TTextAlign::Right.
 	 */
 	public function getTextAlign()
 	{
-		return $this->getViewState('TextAlign','Right');
+		return $this->getViewState('TextAlign',TTextAlign::Right);
 	}
 
 	/**
-	 * @param string the alignment of the text caption. Valid values include Left and Right.
+	 * @param TTextAlign the alignment of the text caption. Valid values include Left and Right.
 	 */
 	public function setTextAlign($value)
 	{
-		$this->setViewState('TextAlign',TPropertyValue::ensureEnum($value,array('Left','Right')),'Right');
+		$this->setViewState('TextAlign',TPropertyValue::ensureEnum($value,'TTextAlign'),TTextAlign::Right);
 	}
 
 	/**
@@ -270,7 +270,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 		$clientID=$this->getClientID();
 		if(($text=$this->getText())!=='')
 		{
-			if($this->getTextAlign()==='Left')
+			if($this->getTextAlign()===TTextAlign::Left)
 			{
 				$this->renderLabel($writer,$clientID,$text);
 				$this->renderInputTag($writer,$clientID,$onclick);
@@ -401,6 +401,25 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 		return $options;
 	}
 
+}
+
+/**
+ * TTextAlign class.
+ * TTextAlign defines the enumerable type for the possible text alignments
+ *
+ * The following enumerable values are defined:
+ * - Left: left aligned
+ * - Right: right aligned
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TTextAlign extends TEnumerable
+{
+	const Left='Left';
+	const Right='Right';
 }
 
 ?>

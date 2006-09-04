@@ -152,19 +152,19 @@ class TButtonColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return string the type of command button. Defaults to LinkButton.
+	 * @return TButtonColumnType the type of command button. Defaults to TButtonColumnType::LinkButton.
 	 */
 	public function getButtonType()
 	{
-		return $this->getViewState('ButtonType','LinkButton');
+		return $this->getViewState('ButtonType',TButtonColumnType::LinkButton);
 	}
 
 	/**
-	 * @param string the type of command button, LinkButton, PushButton or ImageButton
+	 * @param TButtonColumnType the type of command button
 	 */
 	public function setButtonType($value)
 	{
-		$this->setViewState('ButtonType',TPropertyValue::ensureEnum($value,'LinkButton','PushButton','ImageButton'),'LinkButton');
+		$this->setViewState('ButtonType',TPropertyValue::ensureEnum($value,'TButtonColumnType'),TButtonColumnType::LinkButton);
 	}
 
 	/**
@@ -230,9 +230,9 @@ class TButtonColumn extends TDataGridColumn
 		if($itemType===TDataGrid::IT_ITEM || $itemType===TDataGrid::IT_ALTERNATINGITEM || $itemType===TDataGrid::IT_SELECTEDITEM || $itemType===TDataGrid::IT_EDITITEM)
 		{
 			$buttonType=$this->getButtonType();
-			if($buttonType==='LinkButton')
+			if($buttonType===TButtonColumnType::LinkButton)
 				$button=new TLinkButton;
-			else if($buttonType==='PushButton')
+			else if($buttonType===TButtonColumnType::PushButton)
 				$button=new TButton;
 			else // image button
 			{
@@ -243,7 +243,7 @@ class TButtonColumn extends TDataGridColumn
 			$button->setCommandName($this->getCommandName());
 			$button->setCausesValidation($this->getCausesValidation());
 			$button->setValidationGroup($this->getValidationGroup());
-			if($this->getDataTextField()!=='' || ($buttonType==='ImageButton' && $this->getDataImageUrlField()!==''))
+			if($this->getDataTextField()!=='' || ($buttonType===TButtonColumnType::ImageButton && $this->getDataImageUrlField()!==''))
 				$button->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
 			$cell->getControls()->add($button);
 			$cell->registerObject('Button',$button);

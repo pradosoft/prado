@@ -35,10 +35,10 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  *   the GNU date syntax is assumed.
  * - <b>String</b> A string data type.
  * - <b>StringLength</b> check for string length.
- * 
+ *
  * The TRangeValidator allows a special DataType "StringLength" that
- * can be used to verify minimum and maximum string length. The 
- * {@link setCharset Charset} property can be used to force a particular 
+ * can be used to verify minimum and maximum string length. The
+ * {@link setCharset Charset} property can be used to force a particular
  * charset for comparison. Otherwise, the application charset is used and is
  * defaulted as UTF-8.
  *
@@ -94,23 +94,21 @@ class TRangeValidator extends TBaseValidator
 	}
 
 	/**
-	 * @return string the data type that the values being compared are
-	 * converted to before the comparison is made. Defaults to String.
+	 * @return TRangeValidationDataType the data type that the values being compared are
+	 * converted to before the comparison is made. Defaults to TRangeValidationDataType::String.
 	 */
 	public function getDataType()
 	{
-		return $this->getViewState('DataType','String');
+		return $this->getViewState('DataType',TRangeValidationDataType::String);
 	}
 
 	/**
-	 * Sets the data type (Integer, Float, Date, String, StringLength) that the
-	 * values being compared are converted to before the comparison is made.
-	 * @param string the data type
+	 * Sets the data type that the values being compared are converted to before the comparison is made.
+	 * @param TRangeValidationDataType the data type
 	 */
 	public function setDataType($value)
 	{
-		$this->setViewState('DataType',TPropertyValue::ensureEnum(
-			$value,'Integer','Float','Date','String', 'StringLength'),'String');
+		$this->setViewState('DataType',TPropertyValue::ensureEnum($value,'TRangeValidationDataType'),TRangeValidationDataType::String);
 	}
 
 	/**
@@ -137,7 +135,7 @@ class TRangeValidator extends TBaseValidator
 	{
 		$this->setViewState('Charset', $value, '');
 	}
-	
+
 	/**
 	 * @return string charset for string length comparison.
 	 */
@@ -160,13 +158,13 @@ class TRangeValidator extends TBaseValidator
 
 		switch($this->getDataType())
 		{
-			case 'Integer':
+			case TRangeValidationDataType::Integer:
 				return $this->isValidInteger($value);
-			case 'Float':
+			case TRangeValidationDataType::Float:
 				return $this->isValidFloat($value);
-			case 'Date':
+			case TRangeValidationDataType::Date:
 				return $this->isValidDate($value);
-			case 'StringLength':
+			case TRangeValidationDataType::StringLength:
 				return $this->isValidStringLength($value);
 			default:
 				return $this->isValidString($value);
@@ -264,10 +262,10 @@ class TRangeValidator extends TBaseValidator
 			$valid=$valid && (strcmp($value,$maxValue)<=0);
 		return $valid;
 	}
-	
+
 	/**
 	 * @param string string for comparision
-	 * @return boolean true if min and max string length are satisfied. 
+	 * @return boolean true if min and max string length are satisfied.
 	 */
 	protected function isValidStringLength($value)
 	{
@@ -283,7 +281,7 @@ class TRangeValidator extends TBaseValidator
 			if(!$charset)
 				$charset = 'UTF-8';
 		}
-		
+
 		$length = iconv_strlen($value, $charset);
 		if($minValue!=='')
 			$valid = $valid && $length >= intval($minValue);
@@ -308,4 +306,26 @@ class TRangeValidator extends TBaseValidator
 	}
 }
 
+
+/**
+ * TRangeValidationDataType class.
+ * TRangeValidationDataType defines the enumerable type for the possible data types that
+ * a range validator can validate upon.
+ *
+ * The following enumerable values are defined:
+ * - Integer
+ * - Float
+ * - Date
+ * - String
+ * - StringLength
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Revision: $  $Date: $
+ * @package System.Web.UI.WebControls
+ * @since 3.0.4
+ */
+class TRangeValidationDataType extends TValidationDataType
+{
+	const StringLength='StringLength';
+}
 ?>
