@@ -209,13 +209,13 @@ class TEditCommandColumn extends TDataGridColumn
 	public function initializeCell($cell,$columnIndex,$itemType)
 	{
 		parent::initializeCell($cell,$columnIndex,$itemType);
-		if($itemType===TDataGrid::IT_ITEM || $itemType===TDataGrid::IT_ALTERNATINGITEM || $itemType===TDataGrid::IT_SELECTEDITEM)
+		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem)
 		{
 			$button=$this->createButton('Edit',$this->getEditText(),false,'');
 			$cell->getControls()->add($button);
 			$cell->registerObject('EditButton',$button);
 		}
-		else if($itemType===TDataGrid::IT_EDITITEM)
+		else if($itemType===TListItemType::EditItem)
 		{
 			$controls=$cell->getControls();
 			$button=$this->createButton('Update',$this->getUpdateText(),$this->getCausesValidation(),$this->getValidationGroup());

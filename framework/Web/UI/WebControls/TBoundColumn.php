@@ -106,7 +106,7 @@ class TBoundColumn extends TDataGridColumn
 		parent::initializeCell($cell,$columnIndex,$itemType);
 		switch($itemType)
 		{
-			case TDataGrid::IT_EDITITEM:
+			case TListItemType::EditItem:
 				$control=$cell;
 				if(!$this->getReadOnly())
 				{
@@ -118,9 +118,9 @@ class TBoundColumn extends TDataGridColumn
 				if(($dataField=$this->getDataField())!=='')
 					$control->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
 				break;
-			case TDataGrid::IT_ITEM:
-			case TDataGrid::IT_ALTERNATINGITEM:
-			case TDataGrid::IT_SELECTEDITEM:
+			case TListItemType::Item:
+			case TListItemType::AlternatingItem:
+			case TListItemType::SelectedItem:
 				if($this->getDataField()!=='')
 					$cell->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
 				break;
