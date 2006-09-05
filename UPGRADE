@@ -1,5 +1,5 @@
 
-         Upgrading Instructions for PRADO Framework v3.0.4
+         Upgrading Instructions for PRADO Framework v3.0.5
          =================================================
 
 !!!IMPORTANT!!!
@@ -12,6 +12,12 @@ The following upgrading instructions are cumulative. That is,
 if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
+
+Upgrading from v3.0.4
+---------------------
+- TFileUpload::saveAs() will return false instead of raising an exception
+  if it encounters any error.
+
 
 Upgrading from v3.0.3
 ---------------------
