@@ -219,7 +219,7 @@ this.updateChoices(result);}});Prado.WebUI.TTimeTriggeredCallback=Base.extend({c
 this.onComplete=this.options.onComplete;Prado.WebUI.TTimeTriggeredCallback.register(this);},startTimer:function()
 {this.options.onComplete=this.onRequestComplete.bind(this);setTimeout(this.onTimerEvent.bind(this),200);},stopTimer:function()
 {(this.onComplete||Prototype.emptyFunction).apply(this,arguments);this.options.onComplete=undefined;clearTimeout(this.timer);this.timer=undefined;this.count=0;},onTimerEvent:function()
-{this.options.params=this.timeout/1000;request=new Prado.CallbackRequest(this.options.ID,this.options);request.dispatch();},onRequestComplete:function()
+{this.options.params=this.timeout/1000;request=new Prado.CallbackRequest(this.options.EventTarget,this.options);request.dispatch();},onRequestComplete:function()
 {(this.onComplete||Prototype.emptyFunction).apply(this,arguments);this.timer=setTimeout(this.onTimerEvent.bind(this),this.getNewTimeout())},getNewTimeout:function()
 {switch(this.options.DecayType)
 {case'Exponential':t=(Math.exp(this.options.DecayRate*this.count*this.options.Interval))-1;break;case'Linear':t=this.options.DecayRate*this.count*this.options.Interval;break;case'Quadratic':t=this.options.DecayRate*this.count*this.count*this.options.Interval;break;case'Cubic':t=this.options.DecayRate*this.count*this.count*this.count*this.options.Interval;break;default:t=0;}
@@ -237,7 +237,7 @@ Event.observe(element,this.getEventName(element),this.doCallback.bind(this));},g
 {switch(element.type.toLowerCase())
 {case'password':case'text':case'textarea':case'select-one':case'select-multiple':return'change';}}
 return typeof(name)=="undefined"||name=="undefined"?'click':name;},doCallback:function(event)
-{request=new Prado.CallbackRequest(this.options.ID,this.options);request.dispatch();if(this.options.StopEvent==true)
+{request=new Prado.CallbackRequest(this.options.EventTarget,this.options);request.dispatch();if(this.options.StopEvent==true)
 Event.stop(event);}});Prado.WebUI.TValueTriggeredCallback=Base.extend({count:1,observing:true,constructor:function(options)
 {this.options=options;this.options.PropertyName=this.options.PropertyName||'value';element=$(options['ControlID']);this.value=element?element[this.options.PropertyName]:undefined;Prado.WebUI.TValueTriggeredCallback.register(this);this.startObserving();},stopObserving:function()
 {clearTimeout(this.timer);this.observing=false;},startObserving:function()
@@ -248,7 +248,7 @@ Event.stop(event);}});Prado.WebUI.TValueTriggeredCallback=Base.extend({count:1,o
 else
 this.count=this.count+this.options.Decay;if(this.observing)
 this.time=setTimeout(this.checkChanges.bind(this),parseInt(this.options.Interval*1000*this.count));}},doCallback:function(oldValue,newValue)
-{request=new Prado.CallbackRequest(this.options.ID,this.options);param={'OldValue':oldValue,'NewValue':newValue};request.setParameter(param);request.dispatch();}},{timers:{},register:function(timer)
+{request=new Prado.CallbackRequest(this.options.EventTarget,this.options);param={'OldValue':oldValue,'NewValue':newValue};request.setParameter(param);request.dispatch();}},{timers:{},register:function(timer)
 {this.timers[timer.options.ID]=timer;},stop:function(id)
 {if(this.timers[id])
 this.timers[id].stopObserving();}});Prado.WebUI.TInPlaceTextBox=Base.extend({isSaving:false,isEditing:false,editField:null,constructor:function(options)

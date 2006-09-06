@@ -61,7 +61,8 @@ abstract class TTriggeredCallback extends TCallback
 	 */
 	protected function getTriggerOptions()
 	{
-		$options['ID'] = $this->getUniqueID();
+		$options['ID'] = $this->getClientID();
+		$options['EventTarget'] = $this->getUniqueID();
 		$options['ControlID'] = $this->getTargetControl();
 		return $options;
 	}

@@ -2147,7 +2147,7 @@ Prado.WebUI.TTimeTriggeredCallback = Base.extend(
 	onTimerEvent : function()
 	{
 		this.options.params = this.timeout/1000;
-		request = new Prado.CallbackRequest(this.options.ID, this.options);
+		request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.dispatch();
 	},
 
@@ -2255,7 +2255,7 @@ Prado.WebUI.TEventTriggeredCallback = Base.extend(
 
 	doCallback : function(event)
 	{
-		request = new Prado.CallbackRequest(this.options.ID, this.options);
+		request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.dispatch();
 		if(this.options.StopEvent == true)
 			Event.stop(event);
@@ -2314,7 +2314,7 @@ Prado.WebUI.TValueTriggeredCallback = Base.extend(
 
 	doCallback : function(oldValue, newValue)
 	{
-		request = new Prado.CallbackRequest(this.options.ID, this.options);
+		request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		param = {'OldValue' : oldValue, 'NewValue' : newValue};
 		request.setParameter(param);
 		request.dispatch();

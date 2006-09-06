@@ -115,9 +115,10 @@ class TTimeTriggeredCallback extends TCallback
 	/**
 	 * @return array list of timer options for client-side.
 	 */
-	protected function getTimerOptions()
+	protected function getTriggerOptions()
 	{
 		$options['ID'] = $this->getClientID();
+		$options['EventTarget']= $this->getUniqueID();
 		$options['Interval'] = $this->getInterval();
 		$options['DecayRate'] = $this->getDecayRate();
 		$options['DecayType'] = $this->getDecayType();
@@ -132,7 +133,7 @@ class TTimeTriggeredCallback extends TCallback
 	{
 		parent::render($writer);
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getTimerOptions());
+			$this->getClientClassName(), $this->getTriggerOptions());
 	}
 
 	/**
