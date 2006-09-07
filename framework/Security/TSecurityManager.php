@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Security
  */
 
@@ -35,7 +35,7 @@
  * Note, to use encryption, the PHP Mcrypt extension must be loaded.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Security
  * @since 3.0
  */
@@ -269,7 +269,7 @@ class TSecurityManager extends TModule
  * - SHA1: an SHA1 hash is generated from the data and used for validation.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Security
  * @since 3.0.4
  */

@@ -9,7 +9,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System
  */
 
@@ -36,7 +36,7 @@ require_once(PRADO_DIR.'/Util/TLogger.php');
  * rewritten for customization.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System
  * @since 3.0
  */
@@ -593,7 +593,7 @@ class PradoBase
  * This class was originally written to cope with the incompatibility between different PHP versions.
  * It is equivalent to ReflectionClass for PHP version >= 5.1.0
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System
  * @since 3.0
  */

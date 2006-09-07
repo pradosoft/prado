@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  */
 
@@ -65,7 +65,7 @@ Prado::using('System.Util.TDataFieldAccessor');
  * - Save the data in viewstate and get it back during postbacks.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -567,7 +567,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
  * The {@link getItem Item} property indicates the repeater item related with the event.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -608,7 +608,7 @@ class TRepeaterItemEventParameter extends TEventParameter
  * raises the Command event.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -663,7 +663,7 @@ class TRepeaterCommandEventParameter extends TCommandEventParameter
  * is given by {@link getItemType ItemType} property.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -760,7 +760,7 @@ class TRepeaterItem extends TControl implements INamingContainer
  * TRepeaterItemCollection represents a collection of repeater items.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */

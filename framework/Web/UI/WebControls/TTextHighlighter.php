@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 Wei Zhuo
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  */
 
@@ -28,7 +28,7 @@ Prado::using('System.Web.UI.WebControls.TTextProcessor');
  * to true, the highlighted result may be shown with line numbers.
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */

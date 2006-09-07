@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Security
  */
 /**
@@ -23,7 +23,7 @@
  * Verb can be either 'get' or 'post'. If it is absent, it means both.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Security
  * @since 3.0
  */
@@ -171,7 +171,7 @@ class TAuthorizationRule extends TComponent
  * To check if a user is allowed, call {@link isUserAllowed}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Security
  * @since 3.0
  */

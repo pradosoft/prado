@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Exceptions
  */
 
@@ -45,7 +45,7 @@
  * <module id="error" class="TErrorHandler" ErrorTemplatePath="System.Exceptions" />
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Exceptions
  * @since 3.0
  */

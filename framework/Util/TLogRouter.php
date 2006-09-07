@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Util
  */
 
@@ -29,7 +29,7 @@
  * targets, even if the routes are of the same type.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Util
  * @since 3.0
  */
@@ -143,7 +143,7 @@ class TLogRouter extends TModule
  * satisfying both filter conditions will they be returned.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Util
  * @since 3.0
  */
@@ -316,7 +316,7 @@ abstract class TLogRoute extends TApplicationComponent
  * specifies how many files to be kept.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Util
  * @since 3.0
  */
@@ -456,7 +456,7 @@ class TFileLogRoute extends TLogRoute
  * {@link setSentFrom SentFrom} address.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Util
  * @since 3.0
  */
@@ -581,7 +581,7 @@ class TEmailLogRoute extends TLogRoute
  * TBrowserLogRoute prints selected log messages in the response.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Util
  * @since 3.0
  */

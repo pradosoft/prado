@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web
  */
 
@@ -53,7 +53,7 @@
  * request module. It can be accessed via {@link TApplication::getRequest()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web
  * @since 3.0
  */
@@ -800,7 +800,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web
  * @since 3.0
  */
@@ -888,7 +888,7 @@ class THttpCookieCollection extends TList
  * domain, path, expire, and secure.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web
  * @since 3.0
  */
@@ -1043,7 +1043,7 @@ class THttpCookie extends TComponent
  * - fragment: anchor
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web
  * @since 3.0
  */
@@ -1209,7 +1209,7 @@ class TUri extends TComponent
  * - Path: the URL format is like /path/to/index.php/name1,value1/name2,value2...
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web
  * @since 3.0.4
  */

@@ -19,12 +19,12 @@
 // | Authors: Many @ Sitepointforums Advanced PHP Forums                  |
 // +----------------------------------------------------------------------+
 //
-// $Id: Decorators.php,v 1.2 2005/12/22 11:09:09 weizhuo Exp $
+// $Id$
 //
 /**
 * Decorators for dealing with parser options
 * @package System.Security.SafeHtml
-* @version $Id: Decorators.php,v 1.2 2005/12/22 11:09:09 weizhuo Exp $
+* @version $Id$
 * @see TSax3::set_option
 */
 /**

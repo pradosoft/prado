@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  */
 
@@ -28,7 +28,7 @@
  * (whether it succeeds or not).
  *
  * @author Marcus Nyeholt <tanus@users.sourceforge.net>, Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -183,7 +183,7 @@ class TFileUpload extends TWebControl implements IPostBackDataHandler, IValidata
 			if($deleteTempFile)
 				return move_uploaded_file($this->_localName,$fileName);
 			else if(is_uploaded_file($this->_localName))
-				return file_put_contents($fileName,file_get_contents($this->_localName))!==false
+				return file_put_contents($fileName,file_get_contents($this->_localName))!==false;
 			else
 				return false;
 		}

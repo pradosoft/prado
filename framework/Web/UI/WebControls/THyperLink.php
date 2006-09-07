@@ -6,7 +6,7 @@
  * @link http://www.xisc.com/
  * @copyright Copyright &copy; 2004-2005, Qiang Xue
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  */
 
@@ -23,7 +23,7 @@
  * the content enclosed within the control tag will be rendered.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */

@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  */
 
@@ -52,7 +52,7 @@ Prado::using('System.Web.UI.WebControls.TImage');
  * TImageButton displays the {@link setText Text} property as the hint text to the displayed image.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -308,7 +308,7 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
  * {@link TImageButton::onClick Click} event of {@link TImageButton} controls.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */

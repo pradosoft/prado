@@ -19,12 +19,12 @@
 // | Authors: Many @ Sitepointforums Advanced PHP Forums                  |
 // +----------------------------------------------------------------------+
 //
-// $Id: HTMLSax3.php,v 1.2 2005/12/22 11:09:09 weizhuo Exp $
+// $Id$
 //
 /**
 * Main parser components
 * @package    System.Security.SafeHtml
-* @version $Id: HTMLSax3.php,v 1.2 2005/12/22 11:09:09 weizhuo Exp $
+* @version $Id$
 */
 /**
 * Required classes

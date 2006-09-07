@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Exceptions
  */
 
@@ -28,7 +28,7 @@
  * "message.txt" will be used instead.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Exceptions
  * @since 3.0
  */
@@ -129,7 +129,7 @@ class TException extends Exception
  * TSystemException is the base class for all framework-level exceptions.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Exceptions
  * @since 3.0
  */
@@ -143,7 +143,7 @@ class TSystemException extends TException
  * TApplicationException is the base class for all user application-level exceptions.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Exceptions
  * @since 3.0
  */
@@ -157,7 +157,7 @@ class TApplicationException extends TException
  * TInvalidOperationException represents an exception caused by invalid operations.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Exceptions
  * @since 3.0
  */
@@ -171,7 +171,7 @@ class TInvalidOperationException extends TSystemException
  * TInvalidDataTypeException represents an exception caused by invalid data type.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Exceptions
  * @since 3.0
  */
@@ -185,7 +185,7 @@ class TInvalidDataTypeException extends TSystemException
  * TInvalidDataValueException represents an exception caused by invalid data value.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Exceptions
  * @since 3.0
  */
@@ -200,7 +200,7 @@ class TInvalidDataValueException extends TSystemException
  * such as error in an application configuration file or control template file.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Exceptions
  * @since 3.0
  */
@@ -214,7 +214,7 @@ class TConfigurationException extends TSystemException
  * TIOException represents an exception related with improper IO operations.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Exceptions
  * @since 3.0
  */
@@ -228,7 +228,7 @@ class TIOException extends TSystemException
  * TDbException represents an exception related with DB operations.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Exceptions
  * @since 3.0
  */
@@ -242,7 +242,7 @@ class TDbException extends TSystemException
  * TDbConnectionException represents an exception caused by DB connection failure.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Exceptions
  * @since 3.0
  */
@@ -256,7 +256,7 @@ class TDbConnectionException extends TDbException
  * TNotSupportedException represents an exception caused by using an unsupported PRADO feature.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Exceptions
  * @since 3.0
  */
@@ -271,7 +271,7 @@ class TNotSupportedException extends TSystemException
  * This exception is mainly thrown within a PHP error handler.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Exceptions
  * @since 3.0
  */
@@ -314,7 +314,7 @@ class TPhpErrorException extends TSystemException
  * It is used by {@link TErrorHandler} to provide different error output to users.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Exceptions
  * @since 3.0
  */

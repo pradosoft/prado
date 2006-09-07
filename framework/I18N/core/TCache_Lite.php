@@ -38,7 +38,7 @@
 * Mike BENOIT <ipso@snappymail.ca>
 *
 * @package System.I18N.core
-* @version $Id: TCache_Lite.php,v 1.3 2005/10/09 10:24:12 weizhuo Exp $
+* @version $Id$
 * @author Fabien MARTY <fab@php.net>
 * @copyright  1997-2005 The PHP Group
 * @license    http://www.gnu.org/copyleft/lesser.html GNU LGPL

@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Collections
  */
 
@@ -22,7 +22,7 @@
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Collections
  * @since 3.0
  */
@@ -76,7 +76,7 @@ class TDummyDataSource extends TComponent implements IteratorAggregate, Countabl
  * for traversing its dummy items.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Collections
  * @since 3.0
  */

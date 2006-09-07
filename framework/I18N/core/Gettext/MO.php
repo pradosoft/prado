@@ -29,7 +29,7 @@
 // | Copyright (c) 2004 Michael Wallner <mike@iworks.at>                  |
 // +----------------------------------------------------------------------+
 //
-// $Id: MO.php,v 1.3 2005/08/27 03:21:12 weizhuo Exp $
+// $Id$
 
 /**
  * File::Gettext::MO
