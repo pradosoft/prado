@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  */
 
@@ -28,7 +28,7 @@ Prado::using('System.Web.UI.WebControls.TDataGridColumn');
  * header will be displayed with {@link setHeaderText HeaderText}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -138,18 +138,18 @@ class TTemplateColumn extends TDataGridColumn
 		$template=null;
 		switch($itemType)
 		{
-			case TDataGrid::IT_HEADER:
+			case TListItemType::Header:
 				$template=$this->_headerTemplate;
 				break;
-			case TDataGrid::IT_FOOTER:
+			case TListItemType::Footer:
 				$template=$this->_footerTemplate;
 				break;
-			case TDataGrid::IT_ITEM:
-			case TDataGrid::IT_ALTERNATINGITEM:
-			case TDataGrid::IT_SELECTEDITEM:
+			case TListItemType::Item:
+			case TListItemType::AlternatingItem:
+			case TListItemType::SelectedItem:
 				$template=$this->_itemTemplate;
 				break;
-			case TDataGrid::IT_EDITITEM:
+			case TListItemType::EditItem:
 				$template=$this->_editItemTemplate===null?$this->_itemTemplate:$this->_editItemTemplate;
 				break;
 		}
@@ -159,7 +159,7 @@ class TTemplateColumn extends TDataGridColumn
 			$cell->getControls()->clear();
 			$template->instantiateIn($cell);
 		}
-		else if($itemType===TDataGrid::IT_ITEM || $itemType===TDataGrid::IT_ALTERNATINGITEM || $itemType===TDataGrid::IT_SELECTEDITEM || $itemType===TDataGrid::IT_EDITITEM)
+		else if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem || $itemType===TListItemType::EditItem)
 			$cell->setText('&nbsp;');
 	}
 }

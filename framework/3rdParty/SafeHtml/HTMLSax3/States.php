@@ -19,12 +19,12 @@
 // | Authors: Many @ Sitepointforums Advanced PHP Forums                  |
 // +----------------------------------------------------------------------+
 //
-// $Id: States.php,v 1.2 2005/12/22 11:09:09 weizhuo Exp $
+// $Id$
 //
 /**
 * Parsing states.
 * @package System.Security.SafeHtml
-* @version $Id: States.php,v 1.2 2005/12/22 11:09:09 weizhuo Exp $
+* @version $Id$
 */
 /**
 * Define parser states

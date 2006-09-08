@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Security
  */
 
@@ -30,7 +30,7 @@ Prado::using('System.Security.IUserManager');
  * <module id="users" class="System.Security.TUserManager" />
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Security
  * @since 3.0
  */

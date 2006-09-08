@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System
  */
 
@@ -67,7 +67,7 @@
  *   $object->MainContent->SubmitButton->buttonClicked($sender,$param);
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System
  * @since 3.0
  */
@@ -461,7 +461,7 @@ class TComponent
  * TTextAlign::Right.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System
  * @since 3.0
  */
@@ -498,7 +498,7 @@ class TEnumerable
  * - enum: enumerable type, represented by an array of strings.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System
  * @since 3.0
  */
@@ -637,7 +637,7 @@ class TPropertyValue
  * TEventParameter is the base class for all event parameter classes.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System
  * @since 3.0
  */
@@ -659,7 +659,7 @@ class TEventParameter extends TComponent
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System
  * @since 3.0
  */

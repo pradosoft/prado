@@ -14,7 +14,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System
  */
 

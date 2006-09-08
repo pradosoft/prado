@@ -28,7 +28,7 @@
 // | Copyright (c) 2004 Michael Wallner <mike@iworks.at>                  |
 // +----------------------------------------------------------------------+
 //
-// $Id: PO.php,v 1.2 2005/01/05 03:15:14 weizhuo Exp $
+// $Id$
 
 /**
  * File::Gettext::PO

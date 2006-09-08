@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  */
 
@@ -38,7 +38,7 @@ Prado::using('System.Web.UI.WebControls.TCheckBox');
  * datagrid cell is the first child.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -89,10 +89,10 @@ class TCheckBoxColumn extends TDataGridColumn
 	public function initializeCell($cell,$columnIndex,$itemType)
 	{
 		parent::initializeCell($cell,$columnIndex,$itemType);
-		if($itemType===TDataGrid::IT_ITEM || $itemType===TDataGrid::IT_ALTERNATINGITEM || $itemType===TDataGrid::IT_SELECTEDITEM || $itemType===TDataGrid::IT_EDITITEM)
+		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem || $itemType===TListItemType::EditItem)
 		{
 			$checkBox=new TCheckBox;
-			if($this->getReadOnly() || $itemType!==TDataGrid::IT_EDITITEM)
+			if($this->getReadOnly() || $itemType!==TListItemType::EditItem)
 				$checkBox->setEnabled(false);
 			$cell->setHorizontalAlign('Center');
 			$cell->getControls()->add($checkBox);

@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System
  */
 
@@ -106,7 +106,7 @@ require_once(PRADO_DIR.'/I18N/TGlobalization.php');
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System
  * @since 3.0
  */
@@ -1049,7 +1049,7 @@ class TApplication extends TComponent
  * - Debug: the application is running in normal production mode.
  * - Performance: the application is running in performance mode.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System
  * @since 3.0.4
  */
@@ -1068,7 +1068,7 @@ class TApplicationMode extends TEnumerable
  * This class is used internally by TApplication to parse and represent application configuration.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System
  * @since 3.0
  */
@@ -1255,7 +1255,7 @@ class TApplicationConfiguration extends TComponent
  * Cache will be exploited if it is enabled.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System
  * @since 3.0
  */

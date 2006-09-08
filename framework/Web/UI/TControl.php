@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI
  */
 
@@ -64,7 +64,7 @@ Prado::using('System.Web.UI.TControlAdapter');
  * They work together with page lifecycles to process a page request.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI
  * @since 3.0
  */
@@ -1718,7 +1718,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
  * controls to maintain a list of their child controls.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI
  * @since 3.0
  */
@@ -1803,7 +1803,7 @@ class TControlCollection extends TList
  * controls to it. This is useful for controls that do not allow child controls.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI
  * @since 3.0
  */
@@ -1836,7 +1836,7 @@ class TEmptyControlCollection extends TControlCollection
  * INamingContainer marks a control as a naming container.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI
  * @since 3.0
  */
@@ -1850,7 +1850,7 @@ interface INamingContainer
  * If a control wants to respond to postback event, it must implement this interface.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI
  * @since 3.0
  */
@@ -1871,7 +1871,7 @@ interface IPostBackEventHandler
  * If a control wants to load post data, it must implement this interface.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI
  * @since 3.0
  */
@@ -1901,7 +1901,7 @@ interface IPostBackDataHandler
  * If a control wants to validate user input, it must implement this interface.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI
  * @since 3.0
  */
@@ -1939,7 +1939,7 @@ interface IValidator
  * If a control wants to be validated by a validator, it must implement this interface.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI
  * @since 3.0
  */
@@ -1957,7 +1957,7 @@ interface IValidatable
  * If a control wants to check broadcast event, it must implement this interface.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI
  * @since 3.0
  */
@@ -1981,7 +1981,7 @@ interface IBroadcastEventReceiver
  * This interface must be implemented by theme.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI
  * @since 3.0
  */
@@ -2001,7 +2001,7 @@ interface ITheme
  * parsed template structures.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI
  * @since 3.0
  */
@@ -2024,7 +2024,7 @@ interface ITemplate
  * {@link TImageButton}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI
  * @since 3.0
  */
@@ -2102,7 +2102,7 @@ interface IButtonControl
  * {@link setParameter Parameter} property.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI
  * @since 3.0
  */
@@ -2164,7 +2164,7 @@ class TBroadcastEventParameter extends TEventParameter
  * with the command via {@link getCommandParameter CommandParameter} property.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI
  * @since 3.0
  */
@@ -2209,7 +2209,7 @@ class TCommandEventParameter extends TEventParameter
  * consecutive static strings, expressions and statements.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI
  * @since 3.0
  */

@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Collections
  */
 
@@ -51,7 +51,7 @@
  *
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Collections
  * @since 3.0
  */
@@ -372,7 +372,7 @@ class TPagedList extends TList
  * To obtain the page index before it was changed, use {@link getOldPageIndex OldPageIndex}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Collections
  * @since 3.0
  */
@@ -410,7 +410,7 @@ class TPagedListPageChangedEventParameter extends TEventParameter
  * Newly fetched data should be saved in {@link setData Data} property.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Collections
  * @since 3.0
  */

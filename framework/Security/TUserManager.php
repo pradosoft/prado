@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Security
  */
 
@@ -43,7 +43,7 @@ Prado::using('System.Security.TUser');
  * how users are authenticated and authorized in a Prado application.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Security
  * @since 3.0
  */
@@ -269,7 +269,7 @@ class TUserManager extends TModule implements IUserManager
  * - SHA1: the password is recorded as the SHA1 hash value of the original password
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Security
  * @since 3.0.4
  */

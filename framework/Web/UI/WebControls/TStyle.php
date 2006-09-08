@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  */
 
@@ -21,7 +21,7 @@ Prado::using('System.Web.UI.WebControls.TFont');
  * TStyle encapsulates the CSS style applied to a control.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -377,7 +377,7 @@ class TStyle extends TComponent
  * TTableStyle represents the CSS style specific for HTML table.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -618,7 +618,7 @@ class TTableStyle extends TStyle
  * TTableItemStyle represents the CSS style specific for HTML table item.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -773,7 +773,7 @@ class TTableItemStyle extends TStyle
  * - Justify: the begin and end are justified
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */
@@ -797,7 +797,7 @@ class THorizontalAlign extends TEnumerable
  * - Middle: middle aligned
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */
@@ -821,7 +821,7 @@ class TVerticalAlign extends TEnumerable
  * - Both: both horizontal and vertical grid lines are shown
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */

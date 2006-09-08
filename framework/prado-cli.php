@@ -30,7 +30,6 @@ Options:
 $details
 Example: php prado-cli.php -c ./example1
 
-
 EOD;
 }
 	
@@ -199,7 +198,7 @@ EOD;
 // | Author: Andrei Zmievski <andrei@php.net>                             |
 // +----------------------------------------------------------------------+
 //
-// $Id: Getopt.php,v 1.21.4.7 2003/12/05 21:57:01 andrei Exp $
+// $Id$
  
 /**
  * Command-line options parsing class.

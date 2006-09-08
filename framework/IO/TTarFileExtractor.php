@@ -4,7 +4,7 @@
  *
  * @author Vincent Blavet <vincent@phpconcept.net>
  * @copyright Copyright &copy; 1997-2003 The PHP Group
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.IO
  */
 
@@ -25,13 +25,13 @@
 // | Author: Vincent Blavet <vincent@phpconcept.net>                      |
 // +----------------------------------------------------------------------+
 //
-// $Id: Tar.php,v 1.29 2005/03/17 21:02:31 vblavet Exp $
+// $Id$
 
 /**
  * TTarFileExtractor class
  *
  * @author Vincent Blavet <vincent@phpconcept.net>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.IO
  * @since 3.0
  */

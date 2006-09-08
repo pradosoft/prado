@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  */
 
@@ -33,7 +33,7 @@ Prado::using('System.Web.UI.WebControls.TListControl');
  * will be raised under such a circumstance.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -410,7 +410,7 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
  * of the item that is currently being clicked.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -445,7 +445,7 @@ class TBulletedListEventParameter extends TEventParameter
  * for a {@link TBulletedList} control.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */
@@ -474,7 +474,7 @@ class TBulletStyle extends TEnumerable
  * - LinkButton: the bulleted list items are displayed as link buttons that can cause postbacks
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */

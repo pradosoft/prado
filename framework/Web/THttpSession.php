@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web
  */
 
@@ -57,7 +57,7 @@
  * and {@link getTimeOut TimeOut} are configurable properties of THttpSession.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web
  * @since 3.0
  */
@@ -617,7 +617,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
  * for traversing the session variables.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web
  * @since 3.0
  */
@@ -706,7 +706,7 @@ class TSessionIterator implements Iterator
  * - Only: using cookie only.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web
  * @since 3.0.4
  */

@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  */
 
@@ -47,7 +47,7 @@ Prado::using('System.Web.UI.WebControls.TDataGridColumn');
  * datagrid cell is the first child.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -209,13 +209,13 @@ class TEditCommandColumn extends TDataGridColumn
 	public function initializeCell($cell,$columnIndex,$itemType)
 	{
 		parent::initializeCell($cell,$columnIndex,$itemType);
-		if($itemType===TDataGrid::IT_ITEM || $itemType===TDataGrid::IT_ALTERNATINGITEM || $itemType===TDataGrid::IT_SELECTEDITEM)
+		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem)
 		{
 			$button=$this->createButton('Edit',$this->getEditText(),false,'');
 			$cell->getControls()->add($button);
 			$cell->registerObject('EditButton',$button);
 		}
-		else if($itemType===TDataGrid::IT_EDITITEM)
+		else if($itemType===TListItemType::EditItem)
 		{
 			$controls=$cell->getControls();
 			$button=$this->createButton('Update',$this->getUpdateText(),$this->getCausesValidation(),$this->getValidationGroup());

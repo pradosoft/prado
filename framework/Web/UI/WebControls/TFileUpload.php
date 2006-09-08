@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  */
 
@@ -28,7 +28,7 @@
  * (whether it succeeds or not).
  *
  * @author Marcus Nyeholt <tanus@users.sourceforge.net>, Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -174,22 +174,21 @@ class TFileUpload extends TWebControl implements IPostBackDataHandler, IValidata
 	 * @param string the file name used to save the uploaded file
 	 * @param boolean whether to delete the temporary file after saving.
 	 * If true, you will not be able to save the uploaded file again.
-	 * @throws TInvalidOperationException file uploading failed or the uploaded
-	 * file cannot be found on the server.
+	 * @return boolean true if the file saving is successful
 	 */
 	public function saveAs($fileName,$deleteTempFile=true)
 	{
 		if($this->_errorCode===UPLOAD_ERR_OK)
 		{
 			if($deleteTempFile)
-				move_uploaded_file($this->_localName,$fileName);
+				return move_uploaded_file($this->_localName,$fileName);
 			else if(is_uploaded_file($this->_localName))
-				file_put_contents($fileName,file_get_contents($this->_localName));
+				return file_put_contents($fileName,file_get_contents($this->_localName))!==false;
 			else
-				throw new TInvalidOperationException('fileupload_saveas_failed');
+				return false;
 		}
 		else
-			throw new TInvalidOperationException('fileupload_saveas_forbidden');
+			return false;
 	}
 
 	/**

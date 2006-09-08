@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI
  */
 
@@ -34,7 +34,7 @@ Prado::using('System.Web.Services.TPageService');
  * and {@link getBufferOutput BufferOutput} are configurable properties of THttpResponse.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI
  * @since 3.0
  */
@@ -182,7 +182,7 @@ class TThemeManager extends TModule
  * To apply a theme to a particular control, call {@link applySkin}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI
  * @since 3.0
  */

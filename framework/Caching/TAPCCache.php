@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Caching
  */
 
@@ -40,7 +40,7 @@
  * </code>
  *
  * @author Alban Hanry <compte_messagerie@hotmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Caching
  * @since 3.0b
  */

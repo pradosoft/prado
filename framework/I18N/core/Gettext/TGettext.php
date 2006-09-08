@@ -28,7 +28,7 @@
 // | Copyright (c) 2004 Michael Wallner <mike@iworks.at>                  |
 // +----------------------------------------------------------------------+
 //
-// $Id: TGettext.php,v 1.4 2005/01/09 23:36:23 qiangxue Exp $
+// $Id$
 
 /**
  * File::Gettext

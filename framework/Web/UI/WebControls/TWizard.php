@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  */
 
@@ -76,7 +76,7 @@ Prado::using('System.Web.UI.WebControls.TDataList');
  * - side bar: {@link getSideBarStyle SideBarStyle} and {@link getSideBarButtonStyle SideBarButtonStyle}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -1419,7 +1419,7 @@ class TWizard extends TWebControl implements INamingContainer
  * Otherwise, {@link setButtonText ButtonText} will be displayed as the button caption.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -1557,7 +1557,7 @@ class TWizardNavigationButtonStyle extends TStyle
  * set {@link setAllowReturn AllowReturn} to true.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -1647,7 +1647,7 @@ class TWizardStep extends TView
  * TCompleteWizardStep represents a wizard step of type TWizardStepType::Complete.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -1682,7 +1682,7 @@ class TCompleteWizardStep extends TWizardStep
  * if the navigation template is not specified, default navigation will be used.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -1784,7 +1784,7 @@ class TTemplatedWizardStep extends TWizardStep implements INamingContainer
  * by a {@link TWizard}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -1848,7 +1848,7 @@ class TWizardStepCollection extends TList
  * {@link getCancelButton CancelButton}, {@link getCompleteButton CompleteButton}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -1940,7 +1940,7 @@ class TWizardNavigationContainer extends TControl implements INamingContainer
  * to true.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -2005,7 +2005,7 @@ class TWizardNavigationEventParameter extends TEventParameter
  * TWizardSideBarTemplate class.
  * TWizardSideBarTemplate is the default template for wizard sidebar.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -2030,7 +2030,7 @@ class TWizardSideBarTemplate extends TComponent implements ITemplate
  * TWizardSideBarListItemTemplate class.
  * TWizardSideBarListItemTemplate is the default template for each item in the sidebar datalist.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -2053,7 +2053,7 @@ class TWizardSideBarListItemTemplate extends TComponent implements ITemplate
  * TWizardNavigationTemplate class.
  * TWizardNavigationTemplate is the base class for various navigation templates.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -2125,7 +2125,7 @@ class TWizardNavigationTemplate extends TComponent implements ITemplate
  * TWizardStartNavigationTemplate is the template used as default wizard start navigation panel.
  * It consists of two buttons, Next and Cancel.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -2155,7 +2155,7 @@ class TWizardStartNavigationTemplate extends TWizardNavigationTemplate
  * TWizardFinishNavigationTemplate is the template used as default wizard finish navigation panel.
  * It consists of three buttons, Previous, Complete and Cancel.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -2189,7 +2189,7 @@ class TWizardFinishNavigationTemplate extends TWizardNavigationTemplate
  * TWizardStepNavigationTemplate is the template used as default wizard step navigation panel.
  * It consists of three buttons, Previous, Next and Cancel.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -2230,7 +2230,7 @@ class TWizardStepNavigationTemplate extends TWizardNavigationTemplate
  * - Link: a hyperlink button
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */
@@ -2254,7 +2254,7 @@ class TWizardNavigationButtonType extends TEnumerable
  * - Finish: the last step before the Complete step.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */

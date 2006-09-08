@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  */
 
@@ -39,7 +39,7 @@ Prado::using('System.3rdParty.Markdown.MarkdownParser');
  * and enclosed within a pair of square brackets (e.g. [php]).
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0.1
  */

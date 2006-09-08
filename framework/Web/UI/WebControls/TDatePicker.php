@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  */
 
@@ -60,7 +60,7 @@ Prado::using('System.Web.UI.WebControls.TTextBox');
  * drop down list (day, month and year) are presented to select the date .
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -600,7 +600,7 @@ class TDatePicker extends TTextBox
 	 */
 	protected function renderCalendarDayOptions($writer, $selected=null)
 	{
-		$days = array(); for($i=1;$i<=31;$i++) $days[$i] = $i;
+		$days = $this->getDropDownDayOptions();
 		$writer->addAttribute('id', $this->getClientID().'_day');
 		$writer->addAttribute('name', $this->getUniqueID().'$day');
 		$writer->addAttribute('class', 'datepicker_day_options');
@@ -612,13 +612,28 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
+	 * @return array list of day options for a drop down list.
+	 */
+	protected function getDropDownDayOptions()
+	{
+		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',
+						$this->getDateFormat());
+		$days = array(); 
+		$requiresPadding = $formatter->getDayPattern() === 'dd';
+		for($i=1;$i<=31;$i++)
+		{
+			$days[$i] = $requiresPadding ? str_pad($i, 2, '0', STR_PAD_LEFT) : $i;
+		}
+		return $days;
+	}
+
+	/**
 	 * Renders the month drop down list options.
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 * @param mixed selected month.
 	 */
 	protected function renderCalendarMonthOptions($writer, $selected=null)
 	{
-
 		$info = $this->getLocalizedCalendarInfo();
 		$writer->addAttribute('id', $this->getClientID().'_month');
 		$writer->addAttribute('name', $this->getUniqueID().'$month');
@@ -806,7 +821,7 @@ class TDatePicker extends TTextBox
  * is changed.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */
@@ -840,7 +855,7 @@ class TDatePickerClientScript extends TClientSideOptions
  * - DropDownList: dropdown lists are used to pick up date values
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */
@@ -861,7 +876,7 @@ class TDatePickerInputMode extends TEnumerable
  * - ImageButton: Shows an image next to the text input, clicking on the image shows the date picker,
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */

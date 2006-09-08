@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  */
 
@@ -30,7 +30,7 @@
  * {@link setEnableClientScript EnableClientScript} is true.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -401,7 +401,7 @@ class TValidationSummary extends TWebControl
  * See the quickstart documentation for further details.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -470,7 +470,7 @@ class TClientSideValidationSummaryOptions extends TClientSideOptions
  * - BulletList: the error messages are displayed as a bulleted list.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */
@@ -493,7 +493,7 @@ class TValidationSummaryDisplayMode extends TEnumerable
  * - Fixed: Similar to Dynamic except that the error messages physically occupy the page layout (even though they may not be visible)
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */

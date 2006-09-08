@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Xml
  */
 
@@ -22,7 +22,7 @@
  * TBD: xpath
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Xml
  * @since 3.0
  */
@@ -266,7 +266,7 @@ class TXmlElement extends TComponent
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Xml
  * @since 3.0
  */
@@ -428,7 +428,7 @@ class TXmlDocument extends TXmlElement
  * You may manipulate the collection with the operations defined in {@link TList}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Xml
  * @since 3.0
  */

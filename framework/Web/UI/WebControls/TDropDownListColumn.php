@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2006 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  */
 
@@ -52,7 +52,7 @@ Prado::using('System.Web.UI.WebControls.TDropDownList');
  * datagrid cell is the first child.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */
@@ -242,7 +242,7 @@ class TDropDownListColumn extends TDataGridColumn
 		}
 		switch($itemType)
 		{
-			case TDataGrid::IT_EDITITEM:
+			case TListItemType::EditItem:
 				if(!$this->getReadOnly())
 				{
 					$listControl=clone $this->_listControl;
@@ -254,9 +254,9 @@ class TDropDownListColumn extends TDataGridColumn
 					$control=$cell;
 				$control->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
 				break;
-			case TDataGrid::IT_ITEM:
-			case TDataGrid::IT_ALTERNATINGITEM:
-			case TDataGrid::IT_SELECTEDITEM:
+			case TListItemType::Item:
+			case TListItemType::AlternatingItem:
+			case TListItemType::SelectedItem:
 				if($this->getDataField()!=='')
 					$cell->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
 				break;

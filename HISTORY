@@ -10,6 +10,10 @@ NEW: TSessionPageStatePersister (Qiang)
 NEW: SQLMap (Wei)
 NEW: TFeedService, TRssFeedDocument (Knut, Qiang)
 
+Version 3.0.5 October 8, 2006
+===============================
+CHG: Ticket#358 - TFileUpload::saveAs() now returns false instead of exception when error (Qiang)
+
 Version 3.0.4 September 4, 2006
 ===============================
 BUG: Fixed a bug that would prevent from using <prop:> tag in skins (Qiang)
