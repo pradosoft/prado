@@ -13,6 +13,7 @@ NEW: TFeedService, TRssFeedDocument (Knut, Qiang)
 Version 3.0.5 October 8, 2006
 ===============================
 CHG: Ticket#358 - TFileUpload::saveAs() now returns false instead of exception when error (Qiang)
+ENH: Ticket#366 - white spaces are now allowed around attribute names in template (Qiang)
 
 Version 3.0.4 September 4, 2006
 ===============================
