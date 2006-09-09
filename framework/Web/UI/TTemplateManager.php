@@ -148,12 +148,12 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	/**
 	 *  '<!--.*?--!>' - template comments
      *  '<!--.*?-->'  - HTML comments
-	 *	'<\/?com:([\w\.]+)((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?"|\s*[\w\.]+=<%.*?%>)*)\s*\/?>' - component tags
+	 *	'<\/?com:([\w\.]+)((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?"|\s*[\w\.]+\s*=\s*<%.*?%>)*)\s*\/?>' - component tags
 	 *	'<\/?prop:([\w\.]+)\s*>'  - property tags
-	 *	'<%@\s*((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?")*)\s*%>'  - directives
+	 *	'<%@\s*((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?")*)\s*%>'  - directives
 	 *	'<%[%#~\\$=\\[](.*?)%>'  - expressions
 	 */
-	const REGEX_RULES='/<!--.*?--!>|<!--.*?-->|<\/?com:([\w\.]+)((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?"|\s*[\w\.]+=<%.*?%>)*)\s*\/?>|<\/?prop:([\w\.]+)\s*>|<%@\s*((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?")*)\s*%>|<%[%#~\\$=\\[](.*?)%>/msS';
+	const REGEX_RULES='/<!--.*?--!>|<!--.*?-->|<\/?com:([\w\.]+)((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?"|\s*[\w\.]+\s*=\s*<%.*?%>)*)\s*\/?>|<\/?prop:([\w\.]+)\s*>|<%@\s*((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?")*)\s*%>|<%[%#~\\$=\\[](.*?)%>/msS';
 
 	/**
 	 * Different configurations of component property/event/attribute
@@ -739,7 +739,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	{
 		if($str==='')
 			return array();
-		$pattern='/([\w\.]+)=(\'.*?\'|".*?"|<%.*?%>)/msS';
+		$pattern='/([\w\.]+)\s*=\s*(\'.*?\'|".*?"|<%.*?%>)/msS';
 		$attributes=array();
 		$n=preg_match_all($pattern,$str,$matches,PREG_SET_ORDER|PREG_OFFSET_CAPTURE);
 		for($i=0;$i<$n;++$i)
