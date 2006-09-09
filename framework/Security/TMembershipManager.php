@@ -1,5 +1,6 @@
 <?php
 
+Prado::using('System.Security.TUser');
 
 interface IMembershipUser
 {
@@ -33,13 +34,14 @@ interface IMembershipUser
 	public function resetPassword($passwordAnswer=null);
 }
 
+/*
 interface IUserManager
 {
-}
+}*/
 
 
 
-class TMembershipUser extends TUser implements IMembershipUser
+abstract class TMembershipUser extends TUser implements IMembershipUser
 {
 }
 

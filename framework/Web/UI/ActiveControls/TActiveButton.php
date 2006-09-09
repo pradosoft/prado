@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2006 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  */
 
@@ -29,7 +29,7 @@ Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
  * will update the button's caption upon callback response completion.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */

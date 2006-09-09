@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2006 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  : $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  */
 
@@ -29,7 +29,7 @@ Prado::using('System.Web.UI.ActiveControls.TBaseActiveControl');
  * corresponding client-side properties.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  Sun Jun 18 20:35:34 EST 2006 $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */
@@ -177,7 +177,7 @@ class TActiveControlAdapter extends TControlAdapter
  * Tracking changes to the page state during callback.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  Sun Jun 18 20:51:25 EST 2006 $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */
@@ -367,7 +367,7 @@ class TCallbackPageStateTracker
  * Calculates the viewstate changes during the request.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  Thu Jun 22 02:50:45 EST 2006 $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */
@@ -411,7 +411,7 @@ abstract class TViewStateDiff
  * Calculate the changes to a scalar value.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  Thu Jun 22 02:54:42 EST 2006 $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */
@@ -436,7 +436,7 @@ class TScalarDiff extends TViewStateDiff
  * Calculates the changes to the Style properties.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  Thu Jun 22 02:55:47 EST 2006 $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */
@@ -528,7 +528,7 @@ class TStyleDiff extends TViewStateDiff
  * Calculate the changes to attributes collection.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  Thu Jun 22 02:54:42 EST 2006 $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */

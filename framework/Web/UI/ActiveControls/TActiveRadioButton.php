@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2006 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  : $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  */
 
@@ -25,7 +25,7 @@
  * and can not be changed using javascript.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  Mon Jun 26 00:47:14 EST 2006 $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */

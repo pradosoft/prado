@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2006 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: 31/08/2006 $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  */
 
@@ -26,7 +26,7 @@
  * will be true when validation is made during a callback request.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $ 31/08/2006 $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */

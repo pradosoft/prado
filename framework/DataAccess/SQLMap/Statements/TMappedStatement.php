@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.DataAccess.SQLMap.Statements
  */
 
@@ -17,7 +17,7 @@
  * This class is usualy instantiated during SQLMap configuration by TSqlDomBuilder.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.DataAccess.SQLMap.Statements
  * @since 3.0
  */
@@ -915,7 +915,7 @@ class TPostSelectBinding
  * build using the {@link collect} method.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  $27/07/2006: $
+ * @version $Id$
  * @package System.DataAccess.SQLMap.Statements
  * @since 3.1
  */

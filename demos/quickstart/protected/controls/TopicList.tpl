@@ -44,7 +44,7 @@
     <li><a href="?page=Controls.Validation">Validation Controls</a></li>
     <li><a href="?page=Controls.List">List Controls</a></li>
     <li><a href="?page=Controls.Data">Data Controls</a></li>
-    <li><a href="?page=Construction">Active Controls</a></li>
+    <li><a href="?page=ActiveControls.Home">Active Controls (AJAX)</a></li>
     <li><a href="?page=Controls.NewControl">Writing New Controls</a></li>
 </ul>
 </div>

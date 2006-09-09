@@ -28,7 +28,7 @@ Prado::using('System.DataAccess.TAdodb');
  * instances.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.DataAccess.SQLMap
  * @since 3.0
  */

@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2006 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  : $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  */
 
@@ -27,7 +27,7 @@ Prado::using('System.Web.UI.ActiveControls.TCallback');
  * 'Exponential', 'Linear', 'Quadratic' or 'Cubic'.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version : $  Mon Jun 19 21:29:42 EST 2006 $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */

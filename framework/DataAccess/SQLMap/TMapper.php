@@ -16,7 +16,7 @@ require_once(dirname(__FILE__).'/TSqlMapClient.php');
  * configure() call.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.DataAccess.SQLMap
  * @since 3.0
  */

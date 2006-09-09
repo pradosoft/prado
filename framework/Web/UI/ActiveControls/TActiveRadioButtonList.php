@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2006 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  : $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  */
 
@@ -23,7 +23,7 @@
  * on the client side.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version : $  Mon Jun 26 00:48:08 EST 2006 $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */

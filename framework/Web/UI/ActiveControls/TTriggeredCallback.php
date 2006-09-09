@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2006 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: 27/08/2006 $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  */
 
@@ -17,7 +17,7 @@
  * property sets the control ID to observe the trigger.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $ 27/08/2006 $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */

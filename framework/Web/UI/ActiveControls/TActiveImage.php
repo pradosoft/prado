@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2006 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  : $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  */
 
@@ -19,7 +19,7 @@
  * a callback request.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version : $  Mon Jun 26 00:44:25 EST 2006 $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */

@@ -761,6 +761,11 @@ demos/quickstart/protected/index/ZendSearch.php -text
 demos/quickstart/protected/index/quickstart/_0.cfs -text
 demos/quickstart/protected/index/quickstart/deletable -text
 demos/quickstart/protected/index/quickstart/segments -text
+demos/quickstart/protected/pages/ActiveControls/Home.page -text
+demos/quickstart/protected/pages/ActiveControls/TActiveButtonClass.png -text
+demos/quickstart/protected/pages/ActiveControls/TActiveButtonClass.vsd -text
+demos/quickstart/protected/pages/ActiveControls/postback-callback.png -text
+demos/quickstart/protected/pages/ActiveControls/postback-callback.vsd -text
 demos/quickstart/protected/pages/Advanced/Assets.page -text
 demos/quickstart/protected/pages/Advanced/Auth.page -text
 demos/quickstart/protected/pages/Advanced/Collections.page -text

@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.DataAccess
  */
 
@@ -32,7 +32,7 @@
  * be obtained from the protected method {@link buildConnectionString} method.
  * 
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.DataAccess
  * @since 3.0
  */
@@ -228,7 +228,7 @@ abstract class TDatabaseProvider extends TModule
  * and results are returned within the context of a connection.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.DataAccess
  * @since 3.0
  */
@@ -297,7 +297,7 @@ interface IDbConnection
  * and provides an interface for executing SQL statements and transactions.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.DataAccess
  * @since 3.0
  */

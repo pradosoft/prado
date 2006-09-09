@@ -7,7 +7,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  */
 
@@ -22,7 +22,7 @@ Prado::using('System.Web.UI.ActiveControls.TCallbackResponseAdapter');
  * Callback request handler.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */
@@ -256,7 +256,7 @@ class TActivePageAdapter extends TControlAdapter
  * callback handler function) can be set using {@link setData Data} property.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */
@@ -322,7 +322,7 @@ class TCallbackEventParameter extends TEventParameter
  * the error stack trace.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  Sun Jun 18 19:11:47 EST 2006 $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */
@@ -382,7 +382,7 @@ class TCallbackErrorHandler extends TErrorHandler
  * TInvalidCallbackException class.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  Sun Jun 18 19:17:13 EST 2006 $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */

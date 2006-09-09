@@ -4,7 +4,7 @@
  * a string token saved in the cookie.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  $16/07/2006: $
+ * @version $Id$
  * @package Demos
  * @since 3.1
  */

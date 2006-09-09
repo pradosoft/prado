@@ -286,7 +286,7 @@ interface IBindable
  * Active controls must implement IActiveControl interface.
  * 
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System
  * @since 3.0
  */
@@ -305,7 +305,7 @@ interface IActiveControl
  * interface.
  *  
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System
  * @since 3.0
  */

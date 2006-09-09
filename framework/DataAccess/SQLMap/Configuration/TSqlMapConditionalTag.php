@@ -4,7 +4,7 @@
  * TSqlMapConditionalTag class.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version : $  Wed Jun  7 07:57:22 EST 2006 $
+ * @version $Id$
  * @package System.DataAccess.SQLMap.Configuration
  * @since 3.0
  */

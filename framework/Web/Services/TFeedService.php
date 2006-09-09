@@ -112,7 +112,7 @@ class TFeedService extends TService
  * an XML string that represents the feed content.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Services
  * @since 3.1
  */

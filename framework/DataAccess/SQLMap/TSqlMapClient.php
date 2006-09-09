@@ -17,7 +17,7 @@ require_once(dirname(__FILE__).'/TSqlMapper.php');
  * cacheConfiguration(). 
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.DataAccess.SQLMap
  * @since 3.0
  */

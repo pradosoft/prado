@@ -14,6 +14,7 @@ $exclusions=array(
 	'.svn',
 	'/I18N/core',
 	'/3rdParty',
+	'/DataAccess/SQLMap'
 	);
 $a=new ClassTreeBuilder($frameworkPath,$exclusions);
 $a->buildTree();

@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2006 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  : $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  */
 
@@ -62,7 +62,7 @@ Prado::using('System.Web.UI.ActiveControls.TActiveTextBox');
  * "informal" are ignored as text for suggestions.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  Mon Jun 19 03:50:05 EST 2006 $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */
@@ -317,7 +317,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
  * item template.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  Mon Jun 19 03:50:05 EST 2006 $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */

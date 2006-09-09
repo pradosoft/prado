@@ -11,7 +11,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2006 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: 30/08/2006 $
+ * @version $Id$
  * @package System.Util
  */
 
@@ -59,7 +59,7 @@ if (!defined('ADODB_ALLOW_NEGATIVE_TS')
  * the 32-bit signed integer range.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $ 30/08/2006 $
+ * @version $Id$
  * @package System.Util
  * @since 3.0.4
  */

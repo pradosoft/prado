@@ -39,7 +39,7 @@ Prado::using('System.3rdParty.adodb.ADOdb_Active_Record');
  * 
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.DataAccess
  * @since 3.0
  */

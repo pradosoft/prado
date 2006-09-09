@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  */
 
@@ -28,7 +28,7 @@
  * </code>
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
- * @version $Revision: $  $Date: $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */

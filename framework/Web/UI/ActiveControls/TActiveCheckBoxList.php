@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2006 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  : $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  */
 
@@ -28,7 +28,7 @@ Prado::using('System.Web.UI.ActiveControls.TActiveListControlAdapter');
  * on the client side.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version : $  Sun Jun 25 01:50:27 EST 2006 $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */

@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2006 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Revision: $  Sun Jun 18 07:52:14 EST 2006 $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  */
 
@@ -22,7 +22,7 @@
  * property.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  Sun Jun 18 07:52:14 EST 2006 $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */
@@ -89,7 +89,7 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
  * is generated using microtime.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  Sun Jun 18 08:02:21 EST 2006 $
+ * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */
