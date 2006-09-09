@@ -123,6 +123,7 @@ template_eventhandler_invalid			= {0}.{1} can only accept a static string.
 template_controlid_invalid				= {0}.ID can only accept a static text string.
 template_controlskinid_invalid			= {0}.SkinID can only accept a static text string.
 template_content_unexpected				= Unexpected content is encountered when instantiating template: {0}.
+template_include_invalid				= Invalid template inclusion. Make sure {0} is a valid namespace pointing to an existing template file whose extension is .tpl.
 
 xmldocument_file_read_failed			= TXmlDocument is unable to read file '{0}'.
 xmldocument_file_write_failed			= TXmlDocument is unable to write file '{0}'.
