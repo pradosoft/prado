@@ -29,7 +29,7 @@ Prado::using('System.Web.UI.ActiveControls.TActiveTextBox');
  *
  * The list of suggestions should be set in the {@link onSuggestion OnSuggestion}
  * event handler. The partial word to match the suggestion is in the
- * {@link TCallbackEventParameter::getParameter TCallbackEventParameter::Parameter}
+ * {@link TCallbackEventParameter::getCallbackParameter TCallbackEventParameter::CallbackParameter}
  * property. The datasource of the TAutoComplete must be set using {@link setDataSource}
  * method. This sets the datasource for the suggestions repeater, available through
  * the {@link getSuggestions Suggestions} property. Header, footer templates and
@@ -41,7 +41,7 @@ Prado::using('System.Web.UI.ActiveControls.TActiveTextBox');
  * <code>
  * function autocomplete_suggestion($sender, $param)
  * {
- *   $token = $param->getParameter(); //the partial word to match
+ *   $token = $param->getCallbackParameter(); //the partial word to match
  *   $sender->setDataSource($this->getSuggestionsFor($token)); //set suggestions
  *   $sender->dataBind();
  *   $sender->render($param->getNewWriter()); //sends suggestion back to browser.
@@ -138,7 +138,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	 */
  	public function raiseCallbackEvent($param)
 	{
-		$token = $param->getParameter();
+		$token = $param->getCallbackParameter();
 		if(is_array($token) && count($token) == 2 && $token[1] === '__TAutoComplete_onSuggest__')
 		{
 			$parameter = new TCallbackEventParameter($this->getResponse(), $token[0]);

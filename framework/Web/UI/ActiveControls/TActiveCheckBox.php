@@ -148,7 +148,7 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 	protected function getDefaultLabelID()
 	{
 		if($attributes=$this->getViewState('LabelAttributes',null))
-			return $this->getLabelAttributes()->itemAt('id');
+			return TCheckBox::getLabelAttributes()->itemAt('id');
 		else
 			return $this->getClientID().'_label';
 	}

@@ -7,10 +7,10 @@ class AutoCompleteTest extends TPage
 {
 	public function suggestCountries($sender, $param)
 	{
-		$sender->setDataSource($this->matchCountries($param->getParameter()));
+		$sender->setDataSource($this->matchCountries($param->getCallbackParameter()));
 		$sender->dataBind();
 		$sender->render($param->getNewWriter());
-		$this->label1->Text = "suggestion for ".$param->getParameter();
+		$this->label1->Text = "suggestion for ".$param->getCallbackParameter();
 	}
 
 	public function callback_requested($sender, $param)

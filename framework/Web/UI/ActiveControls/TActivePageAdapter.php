@@ -242,7 +242,7 @@ class TActivePageAdapter extends TControlAdapter
  * TCallbackEventParameter class.
  *
  * The TCallbackEventParameter provides the parameter passed during the callback
- * requestion in the {@link getParameter Parameter} property. The
+ * requestion in the {@link getCallbackParameter CallbackParameter} property. The
  * callback response content (e.g. new HTML content) must be rendered
  * using an THtmlWriter obtained from the {@link getNewWriter NewWriter}
  * property, which returns a <b>NEW</b> instance of TCallbackResponseWriter.
@@ -253,7 +253,7 @@ class TActivePageAdapter extends TControlAdapter
  * use the same writer instance for the panels to be rendered.
  *
  * The response data (i.e., passing results back to the client-side
- * callback handler function) can be set using {@link setData Data} property.
+ * callback handler function) can be set using {@link setResponseData ResponseData} property.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @version $Id$
@@ -291,7 +291,7 @@ class TCallbackEventParameter extends TEventParameter
 	/**
 	 * @return mixed callback request parameter.
 	 */
-	public function getParameter()
+	public function getCallbackParameter()
 	{
 		return $this->_parameter;
 	}
@@ -299,7 +299,7 @@ class TCallbackEventParameter extends TEventParameter
 	/**
 	 * @param mixed callback response data.
 	 */
-	public function setData($value)
+	public function setResponesData($value)
 	{
 		$this->_response->getAdapter()->setResponseData($value);
 	}
@@ -307,7 +307,7 @@ class TCallbackEventParameter extends TEventParameter
 	/**
 	 * @return mixed callback response data.
 	 */
-	public function getData()
+	public function getResponesData()
 	{
 		return $this->_response->getAdapter()->getResponseData();
 	}

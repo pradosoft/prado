@@ -162,7 +162,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	 */
 	public function onCallback($param)
 	{
-		$action = $param->getParameter();
+		$action = $param->getCallbackParameter();
 		if(is_array($action) && $action[0] === '__InlineEditor_loadExternalText__')
 		{
 			$parameter = new TCallbackEventParameter($this->getResponse(), $action[1]);

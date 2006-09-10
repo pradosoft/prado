@@ -382,7 +382,7 @@ Prado.CallbackRequest.prototype =
 	 * Sets the request parameter
 	 * @param {Object} parameter value
 	 */
-	setParameter : function(value)
+	setCallbackParameter : function(value)
 	{
 		this.options['params'] = value;
 	},
@@ -390,7 +390,7 @@ Prado.CallbackRequest.prototype =
 	/**
 	 * @return {Object} request paramater value.
 	 */
-	getParameter : function()
+	getCallbackParameter : function()
 	{
 		return this.options['params'];
 	},

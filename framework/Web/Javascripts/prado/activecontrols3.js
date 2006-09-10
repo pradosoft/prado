@@ -38,7 +38,8 @@ Prado.WebUI.TActiveCheckBox = Class.extend(Prado.WebUI.CallbackControl,
 	onPostBack : function(event, options)
 	{
 		request = new Prado.CallbackRequest(options.EventTarget, options);
-		request.dispatch();
+		if(request.dispatch()==false)
+			Event.stop(event);
 	}
 });
 
@@ -328,7 +329,7 @@ Prado.WebUI.TValueTriggeredCallback = Base.extend(
 	{
 		request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		param = {'OldValue' : oldValue, 'NewValue' : newValue};
-		request.setParameter(param);
+		request.setCallbackParameter(param);
 		request.dispatch();
 	}
 },

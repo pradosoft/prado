@@ -670,7 +670,7 @@ Prado.CallbackRequest.prototype =
 	 * Sets the request parameter
 	 * @param {Object} parameter value
 	 */
-	setParameter : function(value)
+	setCallbackParameter : function(value)
 	{
 		this.options['params'] = value;
 	},
@@ -678,7 +678,7 @@ Prado.CallbackRequest.prototype =
 	/**
 	 * @return {Object} request paramater value.
 	 */
-	getParameter : function()
+	getCallbackParameter : function()
 	{
 		return this.options['params'];
 	},
@@ -2026,7 +2026,8 @@ Prado.WebUI.TActiveCheckBox = Class.extend(Prado.WebUI.CallbackControl,
 	onPostBack : function(event, options)
 	{
 		request = new Prado.CallbackRequest(options.EventTarget, options);
-		request.dispatch();
+		if(request.dispatch()==false)
+			Event.stop(event);
 	}
 });
 
@@ -2316,7 +2317,7 @@ Prado.WebUI.TValueTriggeredCallback = Base.extend(
 	{
 		request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		param = {'OldValue' : oldValue, 'NewValue' : newValue};
-		request.setParameter(param);
+		request.setCallbackParameter(param);
 		request.dispatch();
 	}
 },

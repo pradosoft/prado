@@ -1,0 +1,23 @@
+<com:TContent ID="body">
+<!-- $Id$ -->
+<h1>TActiveCheckBox</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveCheckBox" />
+
+<p>
+<tt>TActiveCheckBox</tt> is the active control counter part to
+<a href="?page=Controls.CheckBox">TCheckbox</a>. The <tt>AutoPostBack</tt>
+ property of <tt>TActiveCheckBox</tt> is set to true by default.
+ Thus, when the checkbox is clicked the
+ <tt>OnCallback</tt> event is raise after the <tt>OnCheckedChanged</tt> event.
+ </p>
+
+ <p>
+ The <tt>Text</tt> and <tt>Checked</tt> properties of <tt>TActiveCheckBox</tt>
+ can be changed during a callback request. The <tt>TextAlign</tt> property
+ of <tt>TActiveCheckBox</tt> <strong>can not</strong> be changed during
+ a callback request.
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TActiveCheckBox.Home" />
+
+</com:TContent>
