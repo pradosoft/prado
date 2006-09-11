@@ -263,6 +263,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	protected function getAutoCompleteOptions()
 	{
 		$this->getActiveControl()->getClientSide()->setEnablePageStateUpdate(false);
+		$options = array();
 		if(strlen($string = $this->getSeparator()))
 		{
 			$string = strtr($string,array('\t'=>"\t",'\n'=>"\n",'\r'=>"\r"));
