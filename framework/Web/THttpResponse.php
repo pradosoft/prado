@@ -27,13 +27,15 @@
  * By default, THttpResponse is registered with {@link TApplication} as the
  * response module. It can be accessed via {@link TApplication::getResponse()}.
  *
- * THttpRequest may be configured in application configuration file as follows
- * <module id="response" CacheExpire="20" CacheControl="nocache" BufferOutput="true" />
- * where {@link getCacheExpire CacheExpire}, {@link getCacheControl CacheControl}
- * and {@link getBufferOutput BufferOutput} are configurable properties of THttpResponse.
+ * THttpResponse may be configured in application configuration file as follows
  *
- * When sending headers the Charset set in {@link TGlobalization::getCharset()}
- * is use when Charset is null or empty in THttpResponse.
+ * <module id="response" CacheExpire="20" CacheControl="nocache" BufferOutput="true" />
+ *
+ * where {@link getCacheExpire CacheExpire}, {@link getCacheControl CacheControl}
+ * and {@link getBufferOutput BufferOutput} are optional properties of THttpResponse.
+ *
+ * THttpResponse sends charset header if either {@link setCharset() Charset}
+ * or {@link TGlobalization::setCharset() TGlobalization.Charset} is set.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Id$
