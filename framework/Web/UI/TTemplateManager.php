@@ -85,12 +85,28 @@ class TTemplateManager extends TModule
 				$array=$cache->get(self::TEMPLATE_CACHE_PREFIX.$fileName);
 				if(is_array($array))
 				{
-					list($template,$timestamp)=$array;
-					if(filemtime($fileName)<$timestamp)
+					list($template,$timestamps)=$array;
+					if($this->getApplication()->getMode()===TApplicationMode::Performance)
+						return $template;
+					$cacheValid=true;
+					foreach($timestamps as $tplFile=>$timestamp)
+					{
+						if(!is_file($tplFile) || filemtime($tplFile)>$timestamp)
+						{
+							$cacheValid=false;
+							break;
+						}
+					}
+					if($cacheValid)
 						return $template;
 				}
 				$template=new TTemplate(file_get_contents($fileName),dirname($fileName),$fileName);
-				$cache->set(self::TEMPLATE_CACHE_PREFIX.$fileName,array($template,time()));
+				$includedFiles=$template->getIncludedFiles();
+				$timestamps=array();
+				$timestamps[$fileName]=filemtime($fileName);
+				foreach($includedFiles as $includedFile)
+					$timestamps[$includedFile]=filemtime($includedFile);
+				$cache->set(self::TEMPLATE_CACHE_PREFIX.$fileName,array($template,$timestamps));
 				return $template;
 			}
 		}
@@ -206,6 +222,9 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	 */
 	private $_hashCode='';
 	private $_tplControl=null;
+	private $_includedFiles=array();
+	private $_includeAtLine=array();
+	private $_includeLines=array();
 
 
 	/**
@@ -540,6 +559,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	 */
 	protected function parse($input)
 	{
+		$input=$this->preprocess($input);
 		$tpl=&$this->_tpl;
 		$n=preg_match_all(self::REGEX_RULES,$input,$matches,PREG_SET_ORDER|PREG_OFFSET_CAPTURE);
 		$expectPropEnd=false;
@@ -732,10 +752,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 				$line=$this->_startingLine+1;
 			else
 				$line=$this->_startingLine+count(explode("\n",substr($input,0,$matchEnd+1)));
-			if(empty($this->_tplFile))
-				throw new TConfigurationException('template_format_invalid2',$line,$e->getMessage(),$input);
-			else
-				throw new TConfigurationException('template_format_invalid',$this->_tplFile,$line,$e->getMessage());
+			$this->handleException($e,$line,$input);
 		}
 
 		if($this->_directive===null)
@@ -948,6 +965,84 @@ class TTemplate extends TApplicationComponent implements ITemplate
 		}
 		else
 			throw new TConfigurationException('template_component_required',$type);
+	}
+
+	/**
+	 * @return array list of included external template files
+	 */
+	public function getIncludedFiles()
+	{
+		return $this->_includedFiles;
+	}
+
+	/**
+	 * Handles template parsing exception.
+	 * This method rethrows the exception caught during template parsing.
+	 * It adjusts the error location by giving out correct error line number and source file.
+	 * @param Exception template exception
+	 * @param int line number
+	 * @param string template string if no source file is used
+	 */
+	protected function handleException($e,$line,$input=null)
+	{
+		$srcFile=$this->_tplFile;
+		if(($n=count($this->_includedFiles))>0) // need to adjust error row number and file name
+		{
+			for($i=$n-1;$i>=0;--$i)
+			{
+				if($this->_includeAtLine[$i]<=$line)
+				{
+					if($line<$this->_includeAtLine[$i]+$this->_includeLines[$i])
+					{
+						$line=$line-$this->_includeAtLine[$i]+1;
+						$srcFile=$this->_includedFiles[$i];
+						break;
+					}
+					else
+						$line=$line-$this->_includeLines[$i]+1;
+				}
+			}
+		}
+		if(empty($srcFile))
+			throw new TConfigurationException('template_format_invalid2',$line,$e->getMessage(),$input);
+		else
+			throw new TConfigurationException('template_format_invalid',$srcFile,$line,$e->getMessage());
+	}
+
+	/**
+	 * Preprocesses the template string by including external templates
+	 * @param string template string
+	 * @return string expanded template string
+	 */
+	protected function preprocess($input)
+	{
+		if($n=preg_match_all('/<%include(.*?)%>/',$input,$matches,PREG_SET_ORDER|PREG_OFFSET_CAPTURE))
+		{
+			for($i=0;$i<$n;++$i)
+			{
+				$filePath=Prado::getPathOfNamespace(trim($matches[$i][1][0]),TTemplateManager::TEMPLATE_FILE_EXT);
+				if($filePath!==null && is_file($filePath))
+					$this->_includedFiles[]=$filePath;
+				else
+				{
+					$errorLine=count(explode("\n",substr($input,0,$matches[$i][0][1]+1)));
+					$this->handleException(new TConfigurationException('template_include_invalid',trim($matches[$i][1][0])),$errorLine,$input);
+				}
+			}
+			$base=0;
+			for($i=0;$i<$n;++$i)
+			{
+				$ext=file_get_contents($this->_includedFiles[$i]);
+				$length=strlen($matches[$i][0][0]);
+				$offset=$base+$matches[$i][0][1];
+				$this->_includeAtLine[$i]=count(explode("\n",substr($input,0,$offset)));
+				$this->_includeLines[$i]=count(explode("\n",$ext));
+				$input=substr_replace($input,$ext,$offset,$length);
+				$base+=strlen($ext)-$length;
+			}
+		}
+
+		return $input;
 	}
 }
 

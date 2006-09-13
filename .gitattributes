@@ -1837,6 +1837,7 @@ framework/Web/UI/WebControls/TListControl.php -text
 framework/Web/UI/WebControls/TListControlValidator.php -text
 framework/Web/UI/WebControls/TListItem.php -text
 framework/Web/UI/WebControls/TLiteral.php -text
+framework/Web/UI/WebControls/TLiteralColumn.php -text
 framework/Web/UI/WebControls/TMarkdown.php -text
 framework/Web/UI/WebControls/TMultiView.php -text
 framework/Web/UI/WebControls/TOutputCache.php -text

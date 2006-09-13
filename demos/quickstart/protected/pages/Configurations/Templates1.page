@@ -85,4 +85,19 @@ Comments INVISIBLE to end-users
 Note, template comments (by &lt;!-- ... --!&gt;) cannot appear in a property value.
 </p>
 
+<h2>Include Tags</h2>
+<p>
+Since version 3.0.5, PRADO starts to support external template inclusion. This is accomplished via include tags, where external template files are specified in namespace format and their file name must be terminated as <tt>.tpl</tt>.
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;%include path.to.templateFile %&gt;
+</com:TTextHighlighter>
+
+<p>
+External templates will be inserted at the places where the include tags occur in the base template.
+</p>
+<p>
+Note, nested template inclusion is not supported, i.e., you cannot have include tags in an external template.
+</p>
+
 </com:TContent>

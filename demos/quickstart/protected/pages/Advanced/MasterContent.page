@@ -39,4 +39,19 @@ Then, the contents are inserted into the master control according to the followi
 </p>
 <img src=<%~ mastercontent.gif %> alt="Master and Content" />
 <img src=<%~ pcrelation.gif %> alt="Parent-child relationship between master and content" />
+
+<h2>Master vs. External Template</h2>
+<p>
+Master is very similar to external templates which are introduced since version 3.0.5. A special <a href="?page=Configurations.Templates1">include tag</a> is used to include an external template file into a base template.
+</p>
+<p>
+Both master and external template can be used to share common contents among pages. A master is a template control whose template contains the common content and whose class file contains the logic associated with the master. An external template, on the other hand, is a pure template file without any class files.
+</p>
+<p>
+Therefore, use master control if the common content has to be associated with some logic, such as a page header with search box or login box. A master control allows you to specify how the common content should interact with end users. If you use external templates, you will have to put the needed logic in the page or control class who owns the base template.
+</p>
+<p>
+Performancewise, external template is lighter than master as the latter is a self-contained control participating the page lifecycles, while the former is used only when the template is being parsed.
+</p>
+
 </com:TContent>
