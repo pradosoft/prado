@@ -1128,7 +1128,7 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 		{
 			this.validatingValue = value;
 			request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
-			request.setParameter(value);
+			request.setCallbackParameter(value);
 			request.setCausesValidation(false);
 			request.options.onSuccess = this.callbackOnSuccess.bind(this);
 			request.options.onFailure = this.callbackOnFailure.bind(this);

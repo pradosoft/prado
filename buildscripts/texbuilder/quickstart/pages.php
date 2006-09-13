@@ -1,6 +1,6 @@
 <?php
 /*
- * Created on 11/05/2006
+ * $Id$
  */
 
 //list page into chapters
@@ -74,6 +74,15 @@ $pages['Control Reference : Data Controls'] = array(
 	'Controls/DataGrid.page',
 	'Controls/Repeater.page');
 
+$pages['Control Reference : Active Controls (AJAX)'] = array(
+	'ActiveControls/ActiveButton.page',
+	'ActiveControls/ActiveCheckBox.page',
+	'ActiveControls/ActiveCustomValidator.page');
+
+$pages['Active Control Overview'] = array(
+		'ActiveControls/Home.page',
+	'ActiveControls/Introduction.page');
+
 $pages['Write New Controls'] = array(
 	'Controls/NewControl.page');
 
@@ -95,7 +104,6 @@ $pages['Client-side Scripting'] = array(
 	'Advanced/Scripts1.page',
 	'Advanced/Scripts2.page',
 	'Advanced/Scripts3.page');
-
 
 return $pages;
 //-------------- END CONFIG ----------------

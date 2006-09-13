@@ -763,12 +763,15 @@ demos/quickstart/protected/index/quickstart/deletable -text
 demos/quickstart/protected/index/quickstart/segments -text
 demos/quickstart/protected/pages/ActiveControls/ActiveButton.page -text
 demos/quickstart/protected/pages/ActiveControls/ActiveCheckBox.page -text
+demos/quickstart/protected/pages/ActiveControls/ActiveCustomValidator.page -text
 demos/quickstart/protected/pages/ActiveControls/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Introduction.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveButton/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveButton/Home.php -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveCheckBox/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveCheckBox/Home.php -text
+demos/quickstart/protected/pages/ActiveControls/Samples/TActiveCustomValidator/Home.page -text
+demos/quickstart/protected/pages/ActiveControls/Samples/TActiveCustomValidator/Home.php -text
 demos/quickstart/protected/pages/ActiveControls/Samples/config.xml -text
 demos/quickstart/protected/pages/ActiveControls/TActiveButtonClass.png -text
 demos/quickstart/protected/pages/ActiveControls/TActiveButtonClass.vsd -text
@@ -1711,7 +1714,6 @@ framework/Web/Javascripts/js/debug/prado.js -text
 framework/Web/Javascripts/js/debug/rico.js -text
 framework/Web/Javascripts/js/debug/validator.js -text
 framework/Web/Javascripts/prado/activecontrols3.js -text
-framework/Web/Javascripts/prado/ajax.js -text
 framework/Web/Javascripts/prado/ajax3.js -text
 framework/Web/Javascripts/prado/controls.js -text
 framework/Web/Javascripts/prado/element.js -text
@@ -1957,6 +1959,7 @@ tests/FunctionalTests/features/protected/pages/ValidatorEffects.page -text
 tests/FunctionalTests/index.php -text
 tests/FunctionalTests/quickstart/ActiveControls/ActiveButtonTestCase.php -text
 tests/FunctionalTests/quickstart/ActiveControls/ActiveCheckBoxTestCase.php -text
+tests/FunctionalTests/quickstart/ActiveControls/ActiveCustomValidatorTestCase.php -text
 tests/FunctionalTests/quickstart/Advanced/I18N.php -text
 tests/FunctionalTests/quickstart/Controls/BulletedListTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/ButtonTestCase.php -text

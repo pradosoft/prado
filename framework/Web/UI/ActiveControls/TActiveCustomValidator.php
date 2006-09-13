@@ -86,7 +86,7 @@ class TActiveCustomValidator extends TCustomValidator
 	{
 		$this->_isCallback = true;
 		$result = $this->onServerValidate($param->getCallbackParameter());
-		$param->setData($result);
+		$param->setResponseData($result);
 		$this->onCallback($param);
 	}
 

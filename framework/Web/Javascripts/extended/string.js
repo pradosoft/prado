@@ -1,7 +1,8 @@
 /**
  * @class String extensions
  */
-Object.extend(String.prototype, {
+Object.extend(String.prototype, 
+{
 	/**
 	 * @param {String} "left" to pad the string on the left, "right" to pad right.
 	 * @param {Number} minimum string length.

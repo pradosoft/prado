@@ -32,7 +32,7 @@ TActiveButton</a> control.</p>
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveCustomValidator">TActiveCustomValidator</a>
+  <a href="?page=ActiveControls.ActiveCustomValidator">TActiveCustomValidator</a>
   validates a particular control using a callback request.
   </li>
 
@@ -86,7 +86,7 @@ TActiveButton</a> control.</p>
 
   <li>
   * <a href="?page=ActiveControls.CallbackOptions">TCallbackOptions</a>
-  	callback options such as <tt>OnLoading</tt/> client-side event handlers.
+  	callback options such as <tt>OnLoading</tt> client-side event handlers.
   </li>
 
 </ul>
@@ -159,7 +159,7 @@ TActiveButton</a> control.</p>
 
 <h2>Active Control Abilities</h2>
 
-<!-- tabular: align=|l|l|l|, width=(0.55 0.15 0.15 0.15) -->
+<!-- tabular: align=|l|l|l|l|, width=(0.35 0.15 0.15 0.15) -->
 <table class="tabular">
 	<tr>
 		<th>Control Name</th>

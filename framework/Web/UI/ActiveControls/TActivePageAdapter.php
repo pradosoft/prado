@@ -299,7 +299,7 @@ class TCallbackEventParameter extends TEventParameter
 	/**
 	 * @param mixed callback response data.
 	 */
-	public function setResponesData($value)
+	public function setResponseData($value)
 	{
 		$this->_response->getAdapter()->setResponseData($value);
 	}
@@ -307,7 +307,7 @@ class TCallbackEventParameter extends TEventParameter
 	/**
 	 * @return mixed callback response data.
 	 */
-	public function getResponesData()
+	public function getResponseData()
 	{
 		return $this->_response->getAdapter()->getResponseData();
 	}
