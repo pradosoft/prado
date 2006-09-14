@@ -3,14 +3,14 @@ Prado.WebUI.TDatePicker=Class.create();Object.extend(Prado.WebUI.TDatePicker,{ge
 {var now=new Date();var year=now.getFullYear();var month=now.getMonth();var day=1;var month_list=this.getMonthListControl(control);var day_list=this.getDayListControl(control);var year_list=this.getYearListControl(control);var day=day_list?$F(day_list):1;var month=month_list?$F(month_list):now.getMonth();var year=year_list?$F(year_list):now.getFullYear();return new Date(year,month,day,0,0,0);},getYearListControl:function(control)
 {return $(control.id+"_year");},getMonthListControl:function(control)
 {return $(control.id+"_month");},getDayListControl:function(control)
-{return $(control.id+"_day");}});Prado.WebUI.TDatePicker.prototype={MonthNames:["January","February","March","April","May","June","July","August","September","October","November","December"],AbbreviatedMonthNames:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],ShortWeekDayNames:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],Format:"yyyy-MM-dd",FirstDayOfWeek:1,ClassName:"TDatePicker",FromYear:2000,UpToYear:2015,initialize:function(options)
+{return $(control.id+"_day");}});Prado.WebUI.TDatePicker.prototype={MonthNames:["January","February","March","April","May","June","July","August","September","October","November","December"],AbbreviatedMonthNames:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],ShortWeekDayNames:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],Format:"yyyy-MM-dd",FirstDayOfWeek:1,ClassName:"",CalendarStyle:"default",FromYear:2000,UpToYear:2015,initialize:function(options)
 {this.options=options||[];this.control=$(options.ID);this.dateSlot=new Array(42);this.weekSlot=new Array(6);this.minimalDaysInFirstWeek=4;this.selectedDate=this.newDate();if(this.options.Trigger)
 {this.trigger=$(this.options.Trigger);var triggerEvent=this.options.TriggerEvent||"click";}
 else
 {this.trigger=this.control;var triggerEvent=this.options.TriggerEvent||"focus";}
 Object.extend(this,options);Event.observe(this.trigger,triggerEvent,this.show.bindEvent(this));},create:function()
 {if(typeof(this._calDiv)!="undefined")
-return;var div;var table;var tbody;var tr;var td;this._calDiv=document.createElement("div");this._calDiv.className=this.ClassName;this._calDiv.style.display="none";this._calDiv.style.position="absolute"
+return;var div;var table;var tbody;var tr;var td;this._calDiv=document.createElement("div");this._calDiv.className="TDatePicker_"+this.CalendarStyle+" "+this.ClassName;this._calDiv.style.display="none";this._calDiv.style.position="absolute"
 div=document.createElement("div");div.className="calendarHeader";this._calDiv.appendChild(div);table=document.createElement("table");table.style.cellSpacing=0;div.appendChild(table);tbody=document.createElement("tbody");table.appendChild(tbody);tr=document.createElement("tr");tbody.appendChild(tr);td=document.createElement("td");var previousMonth=document.createElement("input");previousMonth.className="prevMonthButton button";previousMonth.type="button"
 previousMonth.value="<<";td.appendChild(previousMonth);tr.appendChild(td);td=document.createElement("td");tr.appendChild(td);this._monthSelect=document.createElement("select");this._monthSelect.className="months";for(var i=0;i<this.MonthNames.length;i++){var opt=document.createElement("option");opt.innerHTML=this.MonthNames[i];opt.value=i;if(i==this.selectedDate.getMonth()){opt.selected=true;}
 this._monthSelect.appendChild(opt);}
@@ -99,7 +99,7 @@ Event.observe(document,"keydown",this.documentKeyDownEvent);this.showing=true;}}
 return Date.SimpleParse($F(this.control),this.Format);else
 return Prado.WebUI.TDatePicker.getDropDownDate(this.control);},hideOnClick:function(ev)
 {if(!this.showing)return;var el=Event.element(ev);var within=false;do
-{within=within||el.className==this.ClassName;within=within||el==this.trigger;within=within||el==this.control;if(within)break;el=el.parentNode;}
+{within=within||(el.className&&Element.hasClassName(el,"TDatePicker_"+this.CalendarStyle));within=within||el==this.trigger;within=within||el==this.control;if(within)break;el=el.parentNode;}
 while(el);if(!within)this.hide();},hide:function()
 {if(this.showing)
 {this._calDiv.style.display="none";if(this.iePopUp)

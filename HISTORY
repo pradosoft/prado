@@ -1,6 +1,7 @@
 Version 3.0.5 October 8, 2006
 ===============================
 CHG: Ticket#358 - TFileUpload::saveAs() now returns false instead of exception when error (Qiang)
+ENH: Easier to customize the TDatePicker using CssClass (Wei)
 ENH: Ticket#361 - Introduced include template tag that supports including external templates (Qiang)
 ENH: Ticket#366 - white spaces are now allowed around attribute names in template (Qiang)
 NEW: TLiteralColumn (Qiang)

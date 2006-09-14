@@ -451,6 +451,7 @@ class TDatePicker extends TTextBox
 		$options['FirstDayOfWeek'] = $this->getFirstDayOfWeek();
 		if(($cssClass=$this->getCssClass())!=='')
 			$options['ClassName'] = $cssClass;
+		$options['CalendarStyle'] = $this->getCalendarStyle();
 		$options['FromYear'] = $this->getFromYear();
 		$options['UpToYear'] = $this->getUpToYear();
 		if($this->getMode()!==TDatePickerMode::Basic)
