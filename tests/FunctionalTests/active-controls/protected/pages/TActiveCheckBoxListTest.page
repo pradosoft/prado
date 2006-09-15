@@ -1,12 +1,12 @@
 <com:TForm ID="form1">
 	<h1>TActiveCheckBoxList Test Case</h1>
-	
+
 	<com:TActiveCheckBoxList ID="list1" OnCallback="list1_callback">
 		<com:TListItem Value="value 1" Text="item 1" />
-		<com:TListItem Value="value 2" Text="item 2" />	
-		<com:TListItem Value="value 3" Text="item 3" />	
-		<com:TListItem Value="value 4" Text="item 4" />	
-		<com:TListItem Value="value 5" Text="item 5" />	
+		<com:TListItem Value="value 2" Text="item 2" />
+		<com:TListItem Value="value 3" Text="item 3" />
+		<com:TListItem Value="value 4" Text="item 4" />
+		<com:TListItem Value="value 5" Text="item 5" />
 	</com:TActiveCheckBoxList>
 	<div style="margin:1em; padding:1em; border:1px solid #ccc; text-align:center;">
 	<com:TActiveLabel ID="label1" Text="Label 1" />
@@ -18,7 +18,7 @@
 		<com:TActiveButton ID="button4" Text="Select Index 4" OnClick="select_index_4" />
 		<com:TActiveButton ID="button5" Text="Select Values 'value 2', 'value 5'" OnClick="select_values_25" />
 	</div>
-	
+
 	<com:TJavascriptLogger />
-		
+
 </com:TForm>

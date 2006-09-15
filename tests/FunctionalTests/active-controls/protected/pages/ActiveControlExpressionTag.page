@@ -1,0 +1,27 @@
+<com:TForm>
+
+<h1>Active Control With Expression Tag Test</h1>
+
+<com:TTextBox ID="textbox1" />
+
+<com:TActivePanel ID="panel1">
+	<com:TPlaceHolder ID="subpanel1" Visible="false">
+<div id="repeats"><com:TRepeater ID="repeater1">
+<prop:ItemTemplate>result - <%# $this->DataItem %> </prop:ItemTemplate>
+</com:TRepeater></div>
+<span id="contents">Text box content: <%= $this->textbox1->SafeText %></span>
+	</com:TPlaceHolder>
+</com:TActivePanel>
+
+<com:TPanel ID="panel2" Visible="false">
+	<span id="contents2">More Contents: <%= $this->textbox1->SafeText %></span>
+</com:TPanel>
+
+<com:TActiveButton ID="button1" Text="Update!"
+	OnClick="button1_clicked" OnCallback="button1_callback" />
+<com:TActiveButton ID="button2" Text="Show More!" Enabled="false"
+	OnCallback="button2_callback" />
+
+<com:TJavascriptLogger />
+
+</com:TForm>

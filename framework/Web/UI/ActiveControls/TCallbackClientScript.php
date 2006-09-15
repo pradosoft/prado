@@ -152,7 +152,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function raiseClientEvent($control, $eventName)
 	{
-		$this->callClientFunction('Event.fireEvent', 
+		$this->callClientFunction('Event.fireEvent',
 				array($control, strtolower($eventName)));
 	}
 
@@ -382,14 +382,16 @@ class TCallbackClientScript extends TApplicationComponent
 	/**
 	 * Renders the control and return the content boundary from
 	 * TCallbackResponseWriter. This method should only be used by framework
-	 * component developers.
+	 * component developers. The render() method is defered to be called in the
+	 * TActivePageAdapter class.
 	 * @param TControl control to be rendered on callback response.
 	 * @return string the boundary for which the rendered content is wrapped.
 	 */
 	private function getRenderedContentBoundary($control)
 	{
 		$writer = $this->getResponse()->createHtmlWriter();
-		$control->render($writer);
+		$adapter = $control->getPage()->getAdapter();
+		$adapter->registerControlToRender($control, $writer);
 		return $writer->getWriter()->getBoundary();
 	}
 

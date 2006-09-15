@@ -59,13 +59,23 @@ class TActivePanel extends TPanel implements IActiveControl
 
 	/**
 	 * Renders and replaces the panel's content on the client-side.
+	 * When render() is called before the OnPreRender event, such as when render()
+	 * is called during a callback event handler, the rendering
+	 * is defered until OnPreRender event is raised.
 	 * @param THtmlWriter html writer
 	 */
 	public function render($writer)
 	{
-		parent::render($writer);
-		if($this->getActiveControl()->canUpdateClientSide())
-			$this->getPage()->getCallbackClient()->replaceContent($this,$writer);
+		if($this->getHasPreRendered())
+		{
+			parent::render($writer);
+			if($this->getActiveControl()->canUpdateClientSide())
+				$this->getPage()->getCallbackClient()->replaceContent($this,$writer);
+		}
+		else
+		{
+			$this->getPage()->getAdapter()->registerControlToRender($this,$writer);
+		}
 	}
 }
 

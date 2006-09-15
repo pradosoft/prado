@@ -58,6 +58,8 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	private $_callbackClient;
 
+	private $_controlsToRender=array();
+
 	/**
 	 * Constructor, trap errors and exception to let the callback response
 	 * handle them.
@@ -81,6 +83,18 @@ class TActivePageAdapter extends TControlAdapter
 	{
 		Prado::trace("ActivePage raiseCallbackEvent()",'System.Web.UI.ActiveControls.TActivePageAdapter');
 		$this->raiseCallbackEvent();
+	}
+
+	/**
+	 * Register a control for defered render() call.
+	 * @param TControl control for defered rendering
+	 * @param THtmlWriter the renderer
+	 */
+	public function registerControlToRender($control,$writer)
+	{
+		$id = $control->getUniqueID();
+		if(!isset($this->_controlsToRender[$id]))
+			$this->_controlsToRender[$id] = array($control,$writer);
 	}
 
 	/**
@@ -108,6 +122,10 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	protected function renderResponse($writer)
 	{
+		//renders all the defered render() calls.
+		foreach($this->_controlsToRender as $rid => $forRender)
+			$forRender[0]->render($forRender[1]);
+
 		$response = $this->getResponse();
 
 		//send response data in header
