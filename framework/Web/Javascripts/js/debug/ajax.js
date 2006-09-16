@@ -468,12 +468,14 @@ Object.extend(Prado.CallbackRequest,
 			if(transport.status < 500)
 			{
 				var msg = 'HTTP '+transport.status+" with response : \n";
-				msg += transport.responseText + "\n";
-				msg += "Data : \n"+inspect(data)+"\n";
-				msg += "Actions : \n";
+				if(transport.responseText.trim().length >0)
+					msg += transport.responseText + "\n";
+				if(typeof(data)!="undefined" && data != null)
+					msg += "Data : \n"+inspect(data)+"\n";
 				data = request.getHeaderData(Prado.CallbackRequest.ACTION_HEADER);
 				if(data && data.length > 0)
 				{
+					msg += "Actions : \n";
 					data.each(function(action)
 					{
 						msg += inspect(action)+"\n";
@@ -2427,7 +2429,7 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 		options = new Array('__InlineEditor_loadExternalText__', this.getText());
 		request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.setCausesValidation(false);
-		request.setParameter(options);
+		request.setCallbackParameter(options);
 		request.options.onSuccess = this.onloadExternalTextSuccess.bind(this);
 		request.options.onFailure = this.onloadExternalTextFailure.bind(this);
 		request.dispatch();
@@ -2519,7 +2521,7 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 	onTextChanged : function(text)
 	{
 		request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
-		request.setParameter(text);
+		request.setCallbackParameter(text);
 		request.options.onSuccess = this.onTextChangedSuccess.bind(this);
 		request.options.onFailure = this.onTextChangedFailure.bind(this);
 		if(request.dispatch())

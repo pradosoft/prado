@@ -79,7 +79,7 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 		options = new Array('__InlineEditor_loadExternalText__', this.getText());
 		request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.setCausesValidation(false);
-		request.setParameter(options);
+		request.setCallbackParameter(options);
 		request.options.onSuccess = this.onloadExternalTextSuccess.bind(this);
 		request.options.onFailure = this.onloadExternalTextFailure.bind(this);
 		request.dispatch();
@@ -171,7 +171,7 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 	onTextChanged : function(text)
 	{
 		request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
-		request.setParameter(text);
+		request.setCallbackParameter(text);
 		request.options.onSuccess = this.onTextChangedSuccess.bind(this);
 		request.options.onFailure = this.onTextChangedFailure.bind(this);
 		if(request.dispatch())

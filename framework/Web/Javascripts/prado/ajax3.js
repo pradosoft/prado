@@ -180,12 +180,14 @@ Object.extend(Prado.CallbackRequest,
 			if(transport.status < 500)
 			{
 				var msg = 'HTTP '+transport.status+" with response : \n";
-				msg += transport.responseText + "\n";
-				msg += "Data : \n"+inspect(data)+"\n";
-				msg += "Actions : \n";
+				if(transport.responseText.trim().length >0)
+					msg += transport.responseText + "\n";
+				if(typeof(data)!="undefined" && data != null)
+					msg += "Data : \n"+inspect(data)+"\n";
 				data = request.getHeaderData(Prado.CallbackRequest.ACTION_HEADER);
 				if(data && data.length > 0)
 				{
+					msg += "Actions : \n";
 					data.each(function(action)
 					{
 						msg += inspect(action)+"\n";
