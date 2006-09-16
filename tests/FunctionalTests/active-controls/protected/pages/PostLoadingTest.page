@@ -1,0 +1,24 @@
+<com:TForm>
+
+	<h1>PostLoading Test</h1>
+	<com:TCallback ID="callback1" OnCallback="Page.callback1_requested" />
+
+	<com:TActivePanel ID="panel1" />
+
+	<div id="div1" style="border:1px solid #666; background-color: #ffe; text-align: center; padding:3em">
+		Click Me!
+	</div>
+
+	<script type="text/javascript">
+		Event.OnLoad(function()
+		{
+			Event.observe($("div1"), "click", function()
+			{
+				Prado.Callback("<%= $this->callback1->UniqueID %>")
+			})
+		})
+	</script>
+
+	<com:TJavascriptLogger />
+
+</com:TForm>
