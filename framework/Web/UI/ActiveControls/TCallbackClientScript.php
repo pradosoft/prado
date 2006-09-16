@@ -76,7 +76,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Client script to set the value of a particular input element.
-	 * @param TControl|string control element to set the new value
+	 * @param TControl control element to set the new value
 	 * @param string new value
 	 */
 	public function setValue($input, $text)
@@ -95,7 +95,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 *  - <b>Clear</b>, clears or selections or checks in the list
 	 *  - <b>All</b>, select all
 	 *  - <b>Invert</b>, invert the selection.
-	 * @param TControl|string list control
+	 * @param TControl list control
 	 * @param string selection method
 	 * @param string|int the value or index to select/check.
 	 * @param string selection control type, either 'check' or 'select'
@@ -128,7 +128,7 @@ class TCallbackClientScript extends TApplicationComponent
 	/**
 	 * Client script to click on an element. <b>This client-side function
 	 * is unpredictable.</b>
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 */
 	public function click($control)
 	{
@@ -137,7 +137,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Client script to check or uncheck a checkbox or radio button.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param boolean check or uncheck the checkbox or radio button.
 	 */
 	public function check($checkbox, $checked=true)
@@ -147,7 +147,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Raise the client side event (given by $eventName) on a particular element.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param string Event name, e.g. "click"
 	 */
 	public function raiseClientEvent($control, $eventName)
@@ -158,7 +158,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Sets the attribute of a particular control.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param string attribute name
 	 * @param string attribute value
 	 */
@@ -169,7 +169,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Sets the options of a select input element.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param TCollection a list of new options
 	 */
 	public function setListItems($control, $items)
@@ -182,7 +182,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Shows an element by changing its CSS display style as empty.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 */
 	public function show($element)
 	{
@@ -191,7 +191,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Hides an element by changing its CSS display style to "none".
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 */
 	public function hide($element)
 	{
@@ -200,7 +200,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Toggles the visibility of the element.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 */
 	public function toggle($element)
 	{
@@ -209,7 +209,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Removes an element from the HTML page.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 */
 	public function remove($element)
 	{
@@ -223,8 +223,8 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Update the element's innerHTML with new content.
-	 * @param TControl|string control element or element id
-	 * @param TControl|string new HTML content, if content is of a TControl, the
+	 * @param TControl control element or element id
+	 * @param TControl new HTML content, if content is of a TControl, the
 	 * controls render method is called.
 	 */
 	public function update($element, $content)
@@ -234,7 +234,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Add a Css class name to the element.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param string CssClass name to add.
 	 */
 	public function addCssClass($element, $cssClass)
@@ -244,7 +244,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Remove a Css class name from the element.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param string CssClass name to remove.
 	 */
 	public function removeCssClass($element, $cssClass)
@@ -254,7 +254,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Sets the CssClass of an element.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param string new CssClass name for the element.
 	 */
 	/*public function setCssClass($element, $cssClass)
@@ -265,7 +265,7 @@ class TCallbackClientScript extends TApplicationComponent
 	/**
 	 * Scroll the top of the browser viewing area to the location of the
 	 * element.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 */
 	public function scrollTo($element)
 	{
@@ -275,7 +275,7 @@ class TCallbackClientScript extends TApplicationComponent
 	/**
 	 * Sets the style of element. The style must be a key-value array where the
 	 * key is the style property and the value is the style value.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param array list of key-value pairs as style property and style value.
 	 */
 	public function setStyle($element, $styles)
@@ -285,8 +285,8 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Append a HTML fragement to the element.
-	 * @param TControl|string control element or element id
-	 * @param TControl|string HTML fragement, otherwise if TControl, its render
+	 * @param TControl control element or element id
+	 * @param TControl HTML fragement, otherwise if TControl, its render
 	 * method will be called.
 	 */
 	public function appendContent($element, $content)
@@ -296,8 +296,8 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Prepend a HTML fragement to the element.
-	 * @param TControl|string control element or element id
-	 * @param TControl|string HTML fragement, otherwise if TControl, its render
+	 * @param TControl control element or element id
+	 * @param TControl HTML fragement, otherwise if TControl, its render
 	 * method will be called.
 	 */
 	public function prependContent($element, $content)
@@ -307,8 +307,8 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Insert a HTML fragement after the element.
-	 * @param TControl|string control element or element id
-	 * @param TControl|string HTML fragement, otherwise if TControl, its render
+	 * @param TControl control element or element id
+	 * @param TControl HTML fragement, otherwise if TControl, its render
 	 * method will be called.
 	 */
 	public function insertContentAfter($element, $content)
@@ -318,8 +318,8 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Insert a HTML fragement in before the element.
-	 * @param TControl|string control element or element id
-	 * @param TControl|string HTML fragement, otherwise if TControl, its render
+	 * @param TControl control element or element id
+	 * @param TControl HTML fragement, otherwise if TControl, its render
 	 * method will be called.
 	 */
 	public function insertContentBefore($element, $content)
@@ -332,8 +332,8 @@ class TCallbackClientScript extends TApplicationComponent
 	 * be a string or a TControl component. If the <tt>content</tt> parameter is
 	 * a TControl component, its rendered method will be called and its contents
 	 * will be used for replacement.
-	 * @param TControl|string control element or HTML element id.
-	 * @param TControl|string HTML fragement, otherwise it will TControl's
+	 * @param TControl control element or HTML element id.
+	 * @param TControl HTML fragement, otherwise it will TControl's
 	 * rendered content.
 	 * @param string replacement method, default is to replace the outter
 	 * html content.
@@ -362,7 +362,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Replace the content of an element with new content contained in writer.
-	 * @param TControl|string control element or HTML element id.
+	 * @param TControl control element or HTML element id.
 	 * @param THtmlWriter writer for the content.
 	 */
 	public function replaceContent($element,$writer)
@@ -412,7 +412,7 @@ class TCallbackClientScript extends TApplicationComponent
 	/**
 	 * Add a visual effect the element.
 	 * @param string visual effect function name.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
 	public function visualEffect($type, $element, $options=null)
@@ -422,7 +422,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Visual Effect: Gradually make the element appear.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
 	public function appear($element, $options=null)
@@ -432,7 +432,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Visual Effect: Blind down.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
 	public function blindDown($element, $options=null)
@@ -442,7 +442,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Visual Effect: Blind up.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
 	public function blindUp($element, $options=null)
@@ -453,7 +453,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Visual Effect: Drop out.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
 	public function dropOut($element, $options=null)
@@ -463,7 +463,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Visual Effect: Gradually fade the element.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
 	public function fade($element, $options=null)
@@ -473,7 +473,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Visual Effect: Fold.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
 	public function fold($element, $options = null)
@@ -483,7 +483,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Visual Effect: Gradually make an element grow to a predetermined size.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
 	public function grow($element, $options=null)
@@ -493,7 +493,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Visual Effect: Gradually grow and fade the element.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
 	public function puff($element, $options=null)
@@ -503,7 +503,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Visual Effect: Pulsate.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
 	public function pulsate($element, $options=null)
@@ -513,7 +513,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Visual Effect: Shake the element.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
 	public function shake($element, $options=null)
@@ -523,7 +523,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Visual Effect: Shrink the element.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
 	public function shrink($element, $options=null)
@@ -533,7 +533,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Visual Effect: Slide down.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
 	public function slideDown($element, $options=null)
@@ -543,7 +543,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Visual Effect: Side up.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
 	public function slideUp($element, $options=null)
@@ -553,7 +553,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Visual Effect: Squish the element.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
 	public function squish($element, $options=null)
@@ -563,7 +563,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Visual Effect: Switch Off effect.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
 	public function switchOff($element, $options=null)
@@ -573,12 +573,23 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Visual Effect: High light the element for about 2 seconds.
-	 * @param TControl|string control element or element id
+	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
 	public function highlight($element, $options=null)
 	{
 		$this->visualEffect('Prado.Effect.Highlight', $element, $options);
+	}
+
+	/**
+	 * Set the opacity on a html element or control.
+	 * @param TControl control element or element id
+	 * @param float opacity value between 1 and 0
+	 */
+	public function setOpacity($element, $value)
+	{
+		$value = TPropertyValue::ensureFloat($value);
+		$this->callClientFunction('Element.setOpacity', array($element,$value));
 	}
 }
 
