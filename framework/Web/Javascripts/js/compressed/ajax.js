@@ -50,7 +50,7 @@ Prado.CallbackRequest.Exception.onException(null,e);}}},Exception:{"on500":funct
 {var msg='HTTP '+transport.status+" with response : \n";msg+=transport.responseText+"\n";msg+="Data : \n"+inspect(data)+"\n";msg+="Actions : \n";data=request.getHeaderData(Prado.CallbackRequest.ACTION_HEADER);if(data&&data.length>0)
 {data.each(function(action)
 {msg+=inspect(action)+"\n";});}
-Logger.warn(msg);}},onException:function(request,e)
+Logger.info(msg);}},onException:function(request,e)
 {msg="";$H(e).each(function(item)
 {msg+=item.key+": "+item.value+"\n";})
 Logger.error('Uncaught Callback Client Exception:',msg);},formatException:function(e)
@@ -65,13 +65,15 @@ return null;},dispatchPriorityRequest:function(callback)
 {Prado.CallbackRequest.abortRequestInProgress();},callback.options.RequestTimeOut);this.requestInProgress=callback;return true;},dispatchNormalRequest:function(callback)
 {new Ajax.Request(callback.url,callback.options);return true;},abortRequestInProgress:function()
 {inProgress=Prado.CallbackRequest.requestInProgress;if(inProgress)
-{inProgress.request.transport.abort();clearTimeout(inProgress.timeout);Prado.CallbackRequest.requestInProgress=null;return true;}
+{if(inProgress.request.transport.readyState<4)
+inProgress.request.transport.abort();clearTimeout(inProgress.timeout);Prado.CallbackRequest.requestInProgress=null;return true;}
 return false;},updatePageState:function(request,transport)
 {pagestate=$(this.FIELD_CALLBACK_PAGESTATE);if(request.options.EnablePageStateUpdate&&request.options.HasPriority&&pagestate)
 {data=request.header(this.PAGESTATE_HEADER);if(typeof(data)=="string"&&data.length>0)
 pagestate.value=data;else
 {if(typeof(Logger)!="undefined")
-Logger.debug("Bad page state:"+data);}}}})
+Logger.warn("Missing page state:"+data);return false;}}
+return true;}})
 Ajax.Responders.register({onComplete:function(request)
 {if(request.options.HasPriority)
 Prado.CallbackRequest.abortRequestInProgress();}});Event.OnLoad(function()

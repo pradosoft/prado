@@ -1891,6 +1891,8 @@ requirements/template-zh.html -text
 requirements/template.html -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveControlExpressionTag.page -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveControlExpressionTag.php -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveControlWithTinyMce.page -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveControlWithTinyMce.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveImageButtonTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveImageButtonTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveLinkButtonTest.page -text

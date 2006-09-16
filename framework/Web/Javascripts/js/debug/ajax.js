@@ -479,7 +479,7 @@ Object.extend(Prado.CallbackRequest,
 						msg += inspect(action)+"\n";
 					});
 				}
-				Logger.warn(msg);
+				Logger.info(msg);
 			}
 		},
 
@@ -574,8 +574,9 @@ Object.extend(Prado.CallbackRequest,
 		//Logger.info("aborting ... "+inProgress);
 		if(inProgress)
 		{
-		//	Logger.warn("aborted "+inProgress.id)
-			inProgress.request.transport.abort();
+			//abort if not ready.
+			if(inProgress.request.transport.readyState < 4)
+				inProgress.request.transport.abort();
 			clearTimeout(inProgress.timeout);
 			Prado.CallbackRequest.requestInProgress = null;
 			return true;
@@ -598,9 +599,11 @@ Object.extend(Prado.CallbackRequest,
 			else
 			{
 				if(typeof(Logger) != "undefined")
-					Logger.debug("Bad page state:"+data);
+					Logger.warn("Missing page state:"+data);
+				return false;
 			}
 		}
+		return true;
 	}
 })
 

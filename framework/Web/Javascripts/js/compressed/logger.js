@@ -26,7 +26,15 @@ return cookieArray},clear:function(name){this.set(name,"",-1)},clearAll:function
 for(var i=0;i<cookies.length;i++){this.clear(cookies[i].name)}}}
 Logger={logEntries:[],onupdate:new CustomEvent(),onclear:new CustomEvent(),log:function(message,tag){var logEntry=new LogEntry(message,tag||"info")
 this.logEntries.push(logEntry)
-this.onupdate.dispatch(logEntry)},info:function(message){this.log(message,'info')},debug:function(message){this.log(message,'debug')},warn:function(message){this.log(message,'warning')},error:function(message,error){this.log(message+": \n"+error,'error')},clear:function(){this.logEntries=[]
+this.onupdate.dispatch(logEntry)},info:function(message){this.log(message,'info')
+if(typeof(console)!="undefined")
+console.info(message);},debug:function(message){this.log(message,'debug')
+if(typeof(console)!="undefined")
+console.debug(message);},warn:function(message){this.log(message,'warning')
+if(typeof(console)!="undefined")
+console.warn(message);},error:function(message,error){this.log(message+": \n"+error,'error')
+if(typeof(console)!="undefined")
+console.error(message);},clear:function(){this.logEntries=[]
 this.onclear.dispatch()}}
 LogEntry=Class.create()
 LogEntry.prototype={initialize:function(message,tag){this.message=message

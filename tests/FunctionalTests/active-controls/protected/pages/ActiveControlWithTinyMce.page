@@ -1,0 +1,11 @@
+<com:TForm>
+<h1>Active Control with TinyMCE</h1>
+
+<com:THtmlArea ID="text1" />
+
+<com:TActiveButton ID="button1" Text="Save" OnCallback="button1_callback" />
+
+<com:TActiveLabel ID="label1" />
+
+<com:TJavascriptLogger />
+</com:TForm>
