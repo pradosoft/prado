@@ -143,11 +143,12 @@ Object.extend(Prado.CallbackRequest,
 	 */
 	__run : function(transport, command)
 	{
+		this.trasport = transport;
 		for(var method in command)
 		{
 			try
 			{
-				method.toFunction().apply(this,command[method].concat(transport));
+				method.toFunction().apply(this,command[method]);
 			}
 			catch(e)
 			{

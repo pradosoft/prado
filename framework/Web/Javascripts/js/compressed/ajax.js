@@ -39,9 +39,9 @@ return Prado.CallbackRequest.decode(json);}}});Prado.CallbackRequest=Class.creat
 list.push(id);});this.PostDataLoaders=list;},dispatchActions:function(transport,actions)
 {if(actions&&actions.length>0)
 actions.each(this.__run.bind(this,transport));},__run:function(transport,command)
-{for(var method in command)
+{this.trasport=transport;for(var method in command)
 {try
-{method.toFunction().apply(this,command[method].concat(transport));}
+{method.toFunction().apply(this,command[method]);}
 catch(e)
 {if(typeof(Logger)!="undefined")
 Prado.CallbackRequest.Exception.onException(null,e);}}},Exception:{"on500":function(request,transport,data)

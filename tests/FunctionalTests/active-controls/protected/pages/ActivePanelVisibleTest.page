@@ -1,0 +1,17 @@
+<com:TForm>
+
+<h1>ActivePanel Visible Test</h1>
+
+<com:TActiveRadioButton ID="rbA" Checked="true"
+    GroupName="group1" Text="Show A" OnCallback="showA"/>
+
+<com:TActiveRadioButton ID="tbB"
+    GroupName="group1" Text="Show B" OnCallback="showB"/>
+
+<com:TActivePanel ID="pnlA">foo</com:TActivePanel>
+
+<com:TActivePanel ID="pnlB">bar</com:TActivePanel>
+
+<com:TJavascriptLogger />
+
+</com:TForm>

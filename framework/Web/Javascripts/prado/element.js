@@ -74,11 +74,11 @@ Prado.Element =
 		return false;
 	},
 
-	replace : function(element, method, content, boundary, transport)
+	replace : function(element, method, content, boundary)
 	{
 		if(boundary)
 		{
-			result = Prado.Element.extractContent(transport.responseText, boundary);
+			result = Prado.Element.extractContent(this.transport.responseText, boundary);
 			if(result != null)
 				content = result;
 		}

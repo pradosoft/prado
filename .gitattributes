@@ -1899,6 +1899,8 @@ tests/FunctionalTests/active-controls/protected/pages/ActiveListBoxMasterTest.pa
 tests/FunctionalTests/active-controls/protected/pages/ActiveListBoxMasterTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveListBoxTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveListBoxTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/ActivePanelVisibleTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/ActivePanelVisibleTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveRadioButtonListTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveRadioButtonListTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveRadioButtonTest.page -text

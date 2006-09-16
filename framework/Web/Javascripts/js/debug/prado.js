@@ -599,7 +599,8 @@ Template.prototype = {
 /**
  * @class String extensions
  */
-Object.extend(String.prototype, {
+Object.extend(String.prototype, 
+{
 	/**
 	 * @param {String} "left" to pad the string on the left, "right" to pad right.
 	 * @param {Number} minimum string length.
@@ -2660,7 +2661,7 @@ Object.extend(Date,
 
 var Prado =
 {
-	Version: '3.0.0',
+	Version: '3.1',
 
 	/**
 	 * Returns browser information. Example
@@ -3000,11 +3001,11 @@ Prado.Element =
 		return false;
 	},
 
-	replace : function(element, method, content, boundary, transport)
+	replace : function(element, method, content, boundary)
 	{
 		if(boundary)
 		{
-			result = Prado.Element.extractContent(transport.responseText, boundary);
+			result = Prado.Element.extractContent(this.transport.responseText, boundary);
 			if(result != null)
 				content = result;
 		}
