@@ -130,6 +130,16 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function init($config)
 	{
+		// Fill in default request info when the script is run in command line
+		if(php_sapi_name()==='cli')
+		{
+			$_SERVER['REMOTE_ADDR']='127.0.0.1';
+			$_SERVER['REQUEST_METHOD']='GET';
+			$_SERVER['SERVER_NAME']='localhost';
+			$_SERVER['SERVER_PORT']=80;
+			$_SERVER['HTTP_USER_AGENT']='';
+		}
+
 		// Info about server variables:
 		// PHP_SELF contains real URI (w/ path info, w/o query string)
 		// SCRIPT_NAME is the real URI for the requested script (w/o path info and query string)
