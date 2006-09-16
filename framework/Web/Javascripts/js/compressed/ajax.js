@@ -39,7 +39,7 @@ return Prado.CallbackRequest.decode(json);}}});Prado.CallbackRequest=Class.creat
 list.push(id);});this.PostDataLoaders=list;},dispatchActions:function(transport,actions)
 {if(actions&&actions.length>0)
 actions.each(this.__run.bind(this,transport));},__run:function(transport,command)
-{this.trasport=transport;for(var method in command)
+{this.transport=transport;for(var method in command)
 {try
 {method.toFunction().apply(this,command[method]);}
 catch(e)

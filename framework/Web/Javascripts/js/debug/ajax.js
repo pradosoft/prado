@@ -431,7 +431,7 @@ Object.extend(Prado.CallbackRequest,
 	 */
 	__run : function(transport, command)
 	{
-		this.trasport = transport;
+		this.transport = transport;
 		for(var method in command)
 		{
 			try
