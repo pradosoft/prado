@@ -1691,6 +1691,7 @@ framework/Web/Javascripts/effects/slider.js -text
 framework/Web/Javascripts/extended/base.js -text
 framework/Web/Javascripts/extended/builder.js -text
 framework/Web/Javascripts/extended/date.js -text
+framework/Web/Javascripts/extended/effects.js -text
 framework/Web/Javascripts/extended/event.js -text
 framework/Web/Javascripts/extended/string.js -text
 framework/Web/Javascripts/extra/json.js -text

@@ -95,7 +95,8 @@ $libraries = array(
 
 	//effects
 	'effects.js' => array(
-		'effects/effects.js'
+		'effects/effects.js',
+		'extended/effects.js'
 	),
 	//active controls
 	'ajax.js' => array(

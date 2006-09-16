@@ -417,7 +417,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function visualEffect($type, $element, $options=null)
 	{
-		$this->callClientFunction($type, is_array($options) ? array($element, $options) : $element);
+		$this->callClientFunction($type, array($element, $options));
 	}
 
 	/**
@@ -578,7 +578,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function highlight($element, $options=null)
 	{
-		$this->visualEffect('Effect.Highlight', $element, $options);
+		$this->visualEffect('Prado.Effect.Highlight', $element, $options);
 	}
 }
 
