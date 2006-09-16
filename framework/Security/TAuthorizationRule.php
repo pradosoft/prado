@@ -77,7 +77,10 @@ class TAuthorizationRule extends TComponent
 			if(($user=trim(strtolower($user)))!=='')
 			{
 				if($user==='*')
+				{
 					$this->_everyone=true;
+					break;
+				}
 				else if($user==='?')
 					$this->_guest=true;
 				else
