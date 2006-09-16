@@ -452,6 +452,10 @@ Prado.CallbackRequest.prototype =
 	 */
 	dispatch : function()
 	{
+		//trigger tinyMCE to save data.
+		if(typeof tinyMCE != "undefined")
+			tinyMCE.triggerSave();
+
 		//override parameter and postBody options.
 		Object.extend(this.options,
 		{

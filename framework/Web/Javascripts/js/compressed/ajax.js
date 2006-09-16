@@ -86,7 +86,8 @@ Ajax.Responders.register(Prado.CallbackRequest.Exception);});Prado.CallbackReque
 {return this.options['CausesValidation'];},setValidationGroup:function(group)
 {this.options['ValidationGroup']=group;},getValidationGroup:function()
 {return this.options['ValidationGroup'];},dispatch:function()
-{Object.extend(this.options,{postBody:this._getPostData(),parameters:''});if(this.options.CausesValidation&&typeof(Prado.Validation)!="undefined")
+{if(typeof tinyMCE!="undefined")
+tinyMCE.triggerSave();Object.extend(this.options,{postBody:this._getPostData(),parameters:''});if(this.options.CausesValidation&&typeof(Prado.Validation)!="undefined")
 {var form=this.options.Form||Prado.Validation.getForm();if(Prado.Validation.validate(form,this.options.ValidationGroup,this)==false)
 return false;}
 if(this.options.HasPriority)
