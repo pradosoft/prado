@@ -9,6 +9,7 @@ $pages['Getting Started'] = array(
 	'GettingStarted/AboutPrado.page',
 	'GettingStarted/Installation.page',
 	'GettingStarted/HelloWorld.page',
+	'GettingStarted/CommandLine.page',
 	'GettingStarted/Upgrading.page'
 	);
 

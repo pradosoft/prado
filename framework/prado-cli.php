@@ -33,7 +33,7 @@ restore_exception_handler();
 
 //run it;
 PradoCommandLineInterpreter::run($_SERVER['argv']);
-if(strtolower($_SERVER['argv'][1])==='shell')
+if(count($_SERVER['argv']) > 1 && strtolower($_SERVER['argv'][1])==='shell')
 	include_once(dirname(__FILE__).'/3rdParty/PhpShell/php-shell-cmd.php');
 
 class PradoCommandLineInterpreter
