@@ -8,104 +8,90 @@
  * @package System.Web.Security
  * @since 3.1
  */
-Prado::using('System.Web.Security.');
 final class TMembership
 {
-	public static $ApplicationName;
-	public static $EnablePasswordReset=false;
-	public static $EnablePasswordRetrieval=false;
-	public static $HashAlgorithmType;
-	public static $IsHashAlgorithmFromMembershipConfig=false;
-	public static $MaxInvalidPasswordAttempts;
-	public static $MinRequiredNonAlphanumericCharacters;
-	public static $MinRequiredPasswordLength;
-	public static $PasswordAttemptWindow;
-	public static $PasswordStrengthReqularExpression;
-	public static $Provider;
-	public static $Providers;
-	public static $RequiresQuestionAndAnswer=false;
-	public static $UserIsOnlineTimeWindow;
-	private static $_punctuations;
-	private static $_s_HashAlgorithmFromConfig=false;
-	private static $_s_HashAlgorithmType;
-	private static $_s_Initialized=false;
-	private static $_s_InitializeException;
-	private static $_s_lock;
-	private static $_s_Provider;
-	private static $_s_Providers;
-	private static $_s_UserIsOnlineTimeWindow;
+	private static $_ApplicationName;
+	private static $_EnablePasswordReset=false;
+	private static $_EnablePasswordRetrieval=false;
+	private static $_HashAlgorithmType;
+	private static $_IsHashAlgorithmFromMembershipConfig=false;
+	private static $_MaxInvalidPasswordAttempts;
+	private static $_MinRequiredNonAlphanumericCharacters;
+	private static $_MinRequiredPasswordLength;
+	private static $_PasswordAttemptWindow;
+	private static $_PasswordStrengthReqularExpression;
+	private static $_Provider;
+	private static $_Providers;
+	private static $_RequiresQuestionAndAnswer=false;
+	private static $_UserIsOnlineTimeWindow=15;
+	private static $_punctuations='!@#$%^&*()_-+=[{]};:>./?';
+	private static $_HashAlgorithmFromConfig=false;
+	private static $_Initialized=false;
+	private static $_InitializeException;
 
-	public static function __construct()
-	{
-		self::$_punctuations="!@#$%^&*()_-+=[{]};:>./?";
-		self::$_s_UserIsOnlineTimeWindow=15;
-		self::$_s_lock = new stdClass();
-		self::$_s_Initialized=false;
-		self::$_s_InitializeException=null;
-	}
 	public static function getApplicationName()
 	{
-		return self::$ApplicationName;
+		return self::$_ApplicationName;
 	}
 	public static function setApplicationName($value)
 	{
-		self::$ApplicationName = TPropertyValue::ensureString($value);
+		self::$_ApplicationName = TPropertyValue::ensureString($value);
 	}
 	public static function getEnablePasswordReset()
 	{
-		return self::$EnablePasswordReset;
+		return self::$_EnablePasswordReset;
 	}
 	public static function getEnablePasswordRetrieval()
 	{
-		return self::$EnablePasswordRetrieval;
+		return self::$_EnablePasswordRetrieval;
 	}
 	public static function getHashAlgorithmType()
 	{
-		return self::$HashAlgorithmType;
+		return self::$_HashAlgorithmType;
 	}
 	public static function getHashAlgorithmFromMembershipConfig()
 	{
-		return self::$IsHashAlgorithmFromMembershipConfig;
+		return self::$_IsHashAlgorithmFromMembershipConfig;
 	}
 	public static function getMaxInvalidPasswordAttempts()
 	{
-		return self::$MaxInvalidPasswordAttempts;
+		return self::$_MaxInvalidPasswordAttempts;
 	}
 	public static function getMinRequiredNonAlphanumericCharacters()
 	{
-		return self::$MinRequiredNonAlphanumericCharacters;
+		return self::$_MinRequiredNonAlphanumericCharacters;
 	}
 	public static function getMinRequiredPasswordLength()
 	{
-		return self::$MinRequiredPasswordLength;
+		return self::$_MinRequiredPasswordLength;
 	}
 	public static function getPasswordAttemptWindow()
 	{
-		return self::$PasswordAttemptWindow;
+		return self::$_PasswordAttemptWindow;
 	}
 	public static function getPasswordStrengthReqularExpression()
 	{
-		return self::$PasswordStrengthReqularExpression;
+		return self::$_PasswordStrengthReqularExpression;
 	}
 	public static function getProvider()
 	{
-		return self::$Provider;
+		return self::$_Provider;
 	}
 	public static function getProviders()
 	{
-		return self::$Providers;
+		return self::$_Providers;
 	}
 	public static function getUserIsOnlineTimeWindow()
 	{
-		return self::$UserIsOnlineTimeWindow;
+		return self::$_UserIsOnlineTimeWindow;
 	}
 	public static function CreateUser($username,$password,$email=null,$passwordQuestion=null,$passwordAnswer=null,$isApproved=null,$providerUserKey=null)
 	{
-		return self::$Provider->CreateUser($username,$password,$email,$passwordQuestion,$passwordAnswer,$isApproved,$providerUserKey);
+		return self::$_Provider->CreateUser($username,$password,$email,$passwordQuestion,$passwordAnswer,$isApproved,$providerUserKey);
 	}
 	public static function DeleteUser($username,$deleteAllRelatedData=true)
 	{
-		return self::$Provider->DeleteUser($username,$deleteAllRelatedData);
+		return self::$_Provider->DeleteUser($username,$deleteAllRelatedData);
 	}
 	public static function FindUsersByEmail($emailToMatch,$pageIndex=null,$pageSize=null)
 	{
@@ -117,7 +103,7 @@ final class TMembership
 		{
 			throw new TException('PageSize_bad',$pageSize);
 		}
-		return self::$Provider->FindUsersByEmail($emailToMatch,$pageIndex,$pageSize);
+		return self::$_Provider->FindUsersByEmail($emailToMatch,$pageIndex,$pageSize);
 	}
 	public static function FindUsersByName($usernameToMatch,$pageIndex=null,$pageSize=null)
 	{
@@ -129,7 +115,7 @@ final class TMembership
 		{
 			throw new TException('PageSize_bad',$pageSize);
 		}
-		return self::$Provider->FindUsersByName($usernameToMatch,$pageIndex,$pageSize);
+		return self::$_Provider->FindUsersByName($usernameToMatch,$pageIndex,$pageSize);
 	}
 	public static function GeneratePassword($length,$numberOfNonAlphanumericCharacters)
 	{
@@ -161,7 +147,7 @@ final class TMembership
 		{
 			throw new TException('PageSize_bad',$pageSize);
 		}
-		return self::$Provider->GetAllUsers($pageIndex,$pageSize);
+		return self::$_Provider->GetAllUsers($pageIndex,$pageSize);
 	}
 	private static function GetCurrentUserName()
 	{
@@ -169,34 +155,34 @@ final class TMembership
 	}
 	public static function GetNumberOfUsersOnline()
 	{
-		return self::$Provider->GetNumberOfUsersOnline();
+		return self::$_Provider->GetNumberOfUsersOnline();
 	}
 	public static function GetUser($username=null,$providerUserKey=null,$userIsOnline=false)
 	{
 		if ($username===null && $providerUserKey===null)
 		{
-			return self::$Provider->GetUser(self::GetCurrentUserName(),null,true);
+			return self::$_Provider->GetUser(self::GetCurrentUserName(),null,true);
 		}
 		if ($username===null && $providerUserKey!==null)
 		{
-			return self::$Provider->GetUser(null,$providerUserKey,$userIsOnline);
+			return self::$_Provider->GetUser(null,$providerUserKey,$userIsOnline);
 		}
 		if ($username!==null && $providerUserKey===null)
 		{
-			return self::$Provider->GetUser($username,null,$userIsOnline);
+			return self::$_Provider->GetUser($username,null,$userIsOnline);
 		}
 	}
 	public static function GetUserNameByEmail($emailToMatch)
 	{
-		return self::$Provider->GetUserNameByEmail($emailToMatch);
+		return self::$_Provider->GetUserNameByEmail($emailToMatch);
 	}
 	private static function Initialize()
 	{
-		if (self::$_s_Initialized)
+		if (self::$__s_Initialized)
 		{
-			if (self::$_s_InitializeException!==null)
+			if (self::$__s_InitializeException!==null)
 			{
-				throw new self::$_s_InitializeException;
+				throw new self::$__s_InitializeException;
 			}
 		}
 		else
@@ -214,7 +200,7 @@ final class TMembership
 	}
 	public static function ValidateUser($username,$password)
 	{
-		return self::$Provider->ValidateUser($username,$password);
+		return self::$_Provider->ValidateUser($username,$password);
 	}
 }
 ?>

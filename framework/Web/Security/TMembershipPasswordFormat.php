@@ -5,7 +5,7 @@
  * 
  * Clear		Passwords are not encrypted. 
  * Encrypted	Passwords are encrypted using the encryption settings determined by the 
- * 				machineKey Element (ASP.NET Settings Schema) element configuration. 
+ * 				machineKey Element element configuration. 
  * Hashed		Passwords are encrypted one-way using the SHA1 hashing algorithm. 
  * 				You can specify a hashing algorithm different than the SHA1 
  * 				algorithm using the hashAlgorithmType attribute.

@@ -1,4 +1,13 @@
 <?php
+/**
+ * TRoles class.
+ *  Manages user membership in roles for authorization checking in an PRADO application. This class cannot be inherited.
+ *
+ * @author Jason Ragsdale <jrags@jasrags.net>
+ * @version $Id: TRoles.php 1398 2006-09-08 19:31:03Z xue $
+ * @package System.Web.Security
+ * @since 3.1
+ */
 final class TRoles
 {
 	private static $_ApplicationName;
@@ -15,10 +24,9 @@ final class TRoles
 	private static $_MaxCachedResults;
 	private static $_Provider;
 	private static $_Providers;
-	private static $_s_EnabledSet=false;
-	private static $_s_Initialized=false;
-	private static $_s_InitializeException;
-	private static $_s_lock;
+	private static $_EnabledSet=false;
+	private static $_Initialized=false;
+	private static $_InitializeException;
 
 	public static function getApplicationName()
 	{
@@ -124,7 +132,7 @@ final class TRoles
 	private static function EnsureEnabled()
 	{
 		self::Initialize();
-		if (!self::$_s_Initialized)
+		if (!self::$_Initialized)
 		{
 			throw new TException('Roles_feature_not_enabled');
 		}
@@ -155,20 +163,20 @@ final class TRoles
 	}
 	private static function Initialize()
 	{
-		if (self::$_s_Initialized)
+		if (self::$_Initialized)
 		{
-			if (self::$_s_InitializeException!==null)
+			if (self::$_InitializeException!==null)
 			{
 				throw new $_s_InitializeException;
 			}
 		}
 		else
 		{
-			if (self::$_s_Initialized)
+			if (self::$_Initialized)
 			{
-				if (self::$_s_InitializeException!==null)
+				if (self::$_InitializeException!==null)
 				{
-					throw new $_s_InitializeException;
+					throw new $_InitializeException;
 				}
 				return;
 			}
