@@ -72,18 +72,20 @@ PHP-Shell - Version 0.3.1
 >>
 </com:TTextHighlighter>
 Then we will get an instance of the Prado blog application, and from
-that instance we want an instance of the <tt>'data'</tt> module.
+that instance we want an instance of the <tt>'data'</tt> module. Notice that
+a <b>semicolon</b> at the end of the line <b>supresses the output</b>.
 
 <com:TTextHighlighter Language="cli" CssClass="source">
 >> $app = Prado::getApplication();
 
 >> $db = $app->getModule('data');
 </com:TTextHighlighter>
-Lastly, we want to use the data module to query for a post with <tt>ID=1</tt>.
+Lastly, we want to use the data module to query for a post with <tt>ID=1</tt>. Notice that
+we <b>leave out the semicolon</b> to show the results.
 <com:TTextHighlighter Language="cli" CssClass="source">
 >> $db->queryPostByID(1)
 </com:TTextHighlighter>
-There should not be any errors and you should see the following.
+There should not be any errors and you should see the following. 
 <com:TTextHighlighter Language="cli" CssClass="source">
 PostRecord#1
 (
