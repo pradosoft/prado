@@ -3,12 +3,20 @@
 
 /**
  * Prado command line developer tools.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Id$
  */
 
-if(!isset($_SERVER['argv']))
+if(!isset($_SERVER['argv']) || php_sapi_name()!=='cli')
 	die('Must be run from the command line');
 
 require_once(dirname(__FILE__).'/prado.php');
+
+//stub application class
 class PradoShellApplication extends TApplication
 {
 	public function run()
@@ -16,51 +24,78 @@ class PradoShellApplication extends TApplication
 		$this->initApplication();
 	}
 }
-class DummyHttpRequest extends THttpRequest
-{
-	protected function resolveRequest()
-	{
-	}
-}
-
-function __shell_print_var($shell,$var)
-{
-	if(!$shell->has_semicolon)
-		echo Prado::varDump($var);
-}
 
 restore_exception_handler();
 
-//run it;
-PradoCommandLineInterpreter::run($_SERVER['argv']);
-if(count($_SERVER['argv']) > 1 && strtolower($_SERVER['argv'][1])==='shell')
-	include_once(dirname(__FILE__).'/3rdParty/PhpShell/php-shell-cmd.php');
+//register action classes
+PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineCreateProject');
+PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineCreateTests');
+PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLinePhpShell');
+PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineUnitTest');
 
+//run it;
+PradoCommandLineInterpreter::getInstance()->run($_SERVER['argv']);
+
+//run PHP shell
+if(count($_SERVER['argv']) > 1 && strtolower($_SERVER['argv'][1])==='shell')
+{
+	function __shell_print_var($shell,$var)
+	{
+		if(!$shell->has_semicolon) echo Prado::varDump($var);
+	}
+	include_once(dirname(__FILE__).'/3rdParty/PhpShell/php-shell-cmd.php');
+}
+
+
+/**************** END CONFIGURATION **********************/
+
+/**
+ * PradoCommandLineInterpreter Class
+ *
+ * Command line interface, configures the action classes and dispatches the command actions.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Id$
+ * @since 3.0.5
+ */
 class PradoCommandLineInterpreter
 {
-	protected $_actions=array(
-	'PradoCommandLineCreateProject' => null,
-	'PradoCommandLineCreateTests' => null,
-	'PradoCommandLinePhpShell' => null
-	);
+	/**
+	 * @var array command action classes
+	 */
+	protected $_actions=array();
 
-	public function __construct()
+	/**
+	 * @param string action class name
+	 */
+	public function addActionClass($class)
 	{
-		foreach(array_keys($this->_actions) as $class)
-			$this->_actions[$class] = new $class;
+		$this->_actions[$class] = new $class;
 	}
 
-	public static function run($args)
+	/**
+	 * @return PradoCommandLineInterpreter static instance
+	 */
+	public static function getInstance()
+	{
+		static $instance;
+		if(is_null($instance))
+			$instance = new self;
+		return $instance;
+	}
+
+	/**
+	 * Dispatch the command line actions.
+	 * @param array command line arguments
+	 */
+	public function run($args)
 	{
 		echo "Command line tools for Prado ".Prado::getVersion().".\n";
 
 		if(count($args) > 1)
 			array_shift($args);
-		static $int;
-		if(is_null($int))
-			$int = new self;
 		$valid = false;
-		foreach($int->_actions as $class => $action)
+		foreach($this->_actions as $class => $action)
 		{
 			if($action->isValidAction($args))
 			{
@@ -73,9 +108,12 @@ class PradoCommandLineInterpreter
 			}
 		}
 		if(!$valid)
-			$int->printHelp();
+			$this->printHelp();
 	}
 
+	/**
+	 * Print command line help, default action.
+	 */
 	public function printHelp()
 	{
 		echo "usage: php prado-cli.php action <parameter> [optional]\n";
@@ -86,8 +124,20 @@ class PradoCommandLineInterpreter
 	}
 }
 
+/**
+ * Base class for command line actions.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Id$
+ * @since 3.0.5
+ */
 abstract class PradoCommandLineAction
 {
+	/**
+	 * Execute the action.
+	 * @param array command line parameters
+	 * @return boolean true if action was handled
+	 */
 	abstract public function performAction($args);
 
 	protected function createDirectory($dir, $mask)
@@ -135,9 +185,31 @@ abstract class PradoCommandLineAction
 
 EOD;
 	}
+
+	protected function initializePradoApplication($directory)
+	{
+		$app_dir = realpath($directory.'/protected/');
+		if($app_dir !== false)
+		{
+			$app = new PradoShellApplication($app_dir);
+			$app->run();
+			$dir = substr(str_replace(realpath('./'),'',$app_dir),1);
+
+			echo '** Loaded Prado appplication in directory "'.$dir."\".\n";
+		}
+		else
+			echo '** Unable to load Prado application in directory "'.$directory."\".\n";
+	}
+
 }
 
-
+/**
+ * Create a Prado project skeleton, including directories and files.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Id$
+ * @since 3.0.5
+ */
 class PradoCommandLineCreateProject extends PradoCommandLineAction
 {
 	protected $action = '-c';
@@ -223,6 +295,13 @@ EOD;
 	}
 }
 
+/**
+ * Creates test fixtures for a Prado application.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Id$
+ * @since 3.0.5
+ */
 class PradoCommandLineCreateTests extends PradoCommandLineAction
 {
 	protected $action = '-t';
@@ -292,6 +371,13 @@ $tester->run(new SimpleReporter());
 
 }
 
+/**
+ * Creates and run a Prado application in a PHP Shell.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Id$
+ * @since 3.0.5
+ */
 class PradoCommandLinePhpShell extends PradoCommandLineAction
 {
 	protected $action = 'shell';
@@ -302,27 +388,125 @@ class PradoCommandLinePhpShell extends PradoCommandLineAction
 	public function performAction($args)
 	{
 		if(count($args) > 1)
-			$this->createAndRunPradoApp($args);
+			$this->initializePradoApplication($args[1]);
 		return true;
-	}
-
-	protected function createAndRunPradoApp($args)
-	{
-		$app_dir = realpath($args[1].'/protected/');
-		if($app_dir !== false)
-		{
-			$app = new PradoShellApplication($app_dir);
-			$app->setRequest(new DummyHttpRequest());
-			$app->run();
-			$dir = substr(str_replace(realpath('./'),'',$app_dir),1);
-
-			echo '** Loaded Prado appplication in directory "'.$dir."\".\n";
-		}
-		else
-			echo '** Unable to load Prado application in directory "'.$args[1]."\".\n";
 	}
 }
 
+/**
+ * Runs unit test cases.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Id$
+ * @since 3.0.5
+ */
+class PradoCommandLineUnitTest extends PradoCommandLineAction
+{
+	protected $action = 'test';
+	protected $parameters = array('directory');
+	protected $optional = array('testcase ...');
+	protected $description = 'Runs all unit test cases in the given <directory>. Use [testcase] option to run specific test cases.';
 
+	protected $matches = array();
+
+	public function performAction($args)
+	{
+		$dir = realpath($args[1]);
+		if($dir !== false)
+			$this->runUnitTests($dir,$args);
+		else
+			echo '** Unable to find directory "'.$args[1]."\".\n";
+		return true;
+	}
+
+	protected function initializeTestRunner()
+	{
+		$TEST_TOOLS = realpath(dirname(__FILE__).'/../tests/test_tools/');
+
+		require_once($TEST_TOOLS.'/simpletest/unit_tester.php');
+		require_once($TEST_TOOLS.'/simpletest/web_tester.php');
+		require_once($TEST_TOOLS.'/simpletest/mock_objects.php');
+		require_once($TEST_TOOLS.'/simpletest/reporter.php');
+	}
+
+	protected function runUnitTests($dir, $args)
+	{
+		$app_dir = $this->getAppDir($dir);
+		if($app_dir !== false)
+			$this->initializePradoApplication($app_dir.'/../');
+
+		$this->initializeTestRunner();
+		$test_dir = $this->getTestDir($dir);
+		if($test_dir !== false)
+		{
+			$test =$this->getUnitTestCases($test_dir,$args);
+			$running_dir = substr(str_replace(realpath('./'),'',$test_dir),1);
+			echo 'Running unit tests in directory "'.$running_dir."\":\n";
+			$test->run(new TextReporter());
+		}
+		else
+		{
+			$running_dir = substr(str_replace(realpath('./'),'',$dir),1);
+			echo '** Unable to find test directory "'.$running_dir.'/unit" or "'.$running_dir.'/tests/unit".'."\n";
+		}
+	}
+
+	protected function getAppDir($dir)
+	{
+		$app_dir = realpath($dir.'/protected');
+		if($app_dir !== false)
+			return $app_dir;
+		return realpath($dir.'/../protected');
+	}
+
+	protected function getTestDir($dir)
+	{
+		$test_dir = realpath($dir.'/unit');
+		if($test_dir !== false)
+			return $test_dir;
+		return realpath($dir.'/tests/unit/');
+	}
+
+	protected function getUnitTestCases($dir,$args)
+	{
+		$matches = null;
+		if(count($args) > 2)
+			$matches = array_slice($args,2);
+		$test=new GroupTest(' ');
+		$this->addTests($test,$dir,true,$matches);
+		$test->setLabel(implode(' ',$this->matches));
+		return $test;
+	}
+
+	protected function addTests($test,$path,$recursive=true,$match=null)
+	{
+		$dir=opendir($path);
+		while(($entry=readdir($dir))!==false)
+		{
+			if(is_file($path.'/'.$entry) && (preg_match('/[^\s]*test[^\s]*\.php/', strtolower($entry))))
+			{
+				if($match==null||($match!=null && $this->hasMatch($match,$entry)))
+					$test->addTestFile($path.'/'.$entry);
+			}
+			if($entry!=='.' && $entry!=='..' && $entry!=='.svn' && is_dir($path.'/'.$entry) && $recursive)
+				$this->addTests($test,$path.'/'.$entry,$recursive,$match);
+		}
+		closedir($dir);
+	}
+
+	protected function hasMatch($match,$entry)
+	{
+		$file = strtolower(substr($entry,0,strrpos($entry,'.')));
+		foreach($match as $m)
+		{
+			if(strtolower($m) === $file)
+			{
+				$this->matches[] = $m;
+				return true;
+			}
+		}
+		return false;
+	}
+}
 
 ?>

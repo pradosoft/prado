@@ -10,13 +10,13 @@ set_time_limit(0);
 * - set default error-handler
 * - add exec-hooks for the extensions
 *
-* To keep the namespace clashing between shell and your program 
+* To keep the namespace clashing between shell and your program
 * as small as possible all public variables and functions from
 * the shell are prefixed with __shell:
-* 
+*
 * - $__shell is the object of the shell
 *   can be read, this is the shell object itself, don't touch it
-* - $__shell_retval is the return value of the eval() before 
+* - $__shell_retval is the return value of the eval() before
 *   it is printed
 *   can't be read, but overwrites existing vars with this name
 * - $__shell_exception is the catched Exception on Warnings, Notices, ..
@@ -45,7 +45,7 @@ else
 	require_once(dirname(__FILE__)."/PHP/Shell/Extensions/InlineHelp.php");
 	require_once(dirname(__FILE__)."/PHP/Shell/Extensions/VerbosePrint.php");
 	require_once(dirname(__FILE__)."/PHP/Shell/Extensions/LoadScript.php");
-}   
+}
 
 /**
 * default error-handler
@@ -65,7 +65,7 @@ else
 function __shell_default_error_handler($errno, $errstr, $errfile, $errline, $errctx) {
     ## ... what is this errno again ?
     if ($errno == 2048) return;
-  
+
     throw new Exception(sprintf("%s:%d\r\n%s", $errfile, $errline, $errstr));
 }
 
@@ -82,19 +82,19 @@ $__shell_exts->registerExtensions(array(
     "exectime"       => new PHP_Shell_Extensions_ExecutionTime(),
     "inlinehelp"     => new PHP_Shell_Extensions_InlineHelp(),
     "verboseprint"   => new PHP_Shell_Extensions_VerbosePrint(),
-    "loadscript"     => new PHP_Shell_Extensions_LoadScript(),
+    "loadscript"     => new PHP_Shell_Extensions_LoadScript()
 ));
 
 $f = <<<EOF
 PHP-Shell - Version %s%s
 (c) 2006, Jan Kneschke <jan@kneschke.de>
 
->> use '?' to open the inline help 
+>> use '?' to open the inline help
 
 EOF;
 
-printf($f, 
-    $__shell->getVersion(), 
+printf($f,
+    $__shell->getVersion(),
     $__shell->hasReadline() ? ', with readline() support' : '');
 unset($f);
 
@@ -109,7 +109,7 @@ while($__shell->input()) {
         *
         * you can set your own autoloader by defining __autoload() before including
         * this file
-        * 
+        *
         * @param string $classname name of the class
         */
 
@@ -133,7 +133,7 @@ while($__shell->input()) {
 
             $__shell_exts->exectime->startExecTime();
 
-            $__shell_retval = eval($__shell->getCode()); 
+            $__shell_retval = eval($__shell->getCode());
             if (isset($__shell_retval)) {
                 print $__shell_exts->colour->getColour("value");
 
@@ -151,7 +151,7 @@ while($__shell->input()) {
         print $__shell_exts->colour->getColour("exception");
         printf('%s (code: %d) got thrown'.PHP_EOL, get_class($__shell_exception), $__shell_exception->getCode());
         print $__shell_exception;
-        
+
         $__shell->resetCode();
 
         ## cleanup the variable namespace
@@ -160,7 +160,7 @@ while($__shell->input()) {
     print $__shell_exts->colour->getColour("default");
     $__shell_exts->exectime->stopTime();
     if ($__shell_exts->exectime->isShow()) {
-        printf(" (parse: %.4fs, exec: %.4fs)", 
+        printf(" (parse: %.4fs, exec: %.4fs)",
             $__shell_exts->exectime->getParseTime(),
             $__shell_exts->exectime->getExecTime()
         );
@@ -168,4 +168,4 @@ while($__shell->input()) {
 }
 
 print $__shell_exts->colour->getColour("reset");
- 
+
