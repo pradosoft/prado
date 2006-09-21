@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<application id="Providers" mode="Debug">
+
+	<modules>
+	<module id="MembershipProvider" 
+		class="System.Configuration.TProtectedConfiguration"
+		defaultProvider="SqlMembershipProvider" >
+    	<provider 
+    		id="SqlMembershipProvider" 
+    		Description="Our SQL Membership provider"
+          	class="System.Web.Security.TSqlMembershipProvider" 
+          	ConnectionStringName="SqlMembershipProvider"
+          	Enabled="true"
+          	EnablePasswordReset="True"
+			EnablePasswordRetrieval="True"
+			MaxInvalidPasswordAttempts="5"
+			MinRequiredNonAlphanumericCharacters="5"
+			MinRequiredPasswordLength="5"
+			PasswordAttemptWindow="5"
+			PasswordStrengthRegularExpression=""
+			RequiresQuestionAndAnswer="True"
+			RequiresUniqueEmail="True"/>
+    </module>
+    
+	<module id="RoleProvider"
+		class="System.Configuration.TProtectedConfiguration"
+		defaultProvider="SqlRoleProvider">
+        <provider 
+        	id="SqlRoleProvider"
+        	class="System.Web.Security.TSqlRoleProvider"
+         	ConnectionStringName="SqlRoleProvider" 
+          	ApplicationName="SampleApplication" 
+          	Enabled="true"
+      		CacheRolesInCookie="True"
+      		CookieName="PRADO"
+      		CookieTimeout="30"
+      		CookiePath="/"
+      		CookieRequireSSL="False"
+      		CookieSlidingExpiration="True"/>
+	</module>
+	</modules>
+</application>

@@ -11,31 +11,60 @@
 Prado::using('System.Web.Security.TRoleProvider');
 class TSqlRoleProvider extends TRoleProvider 
 {
-	private $_ApplicationName;
-	protected function __construct()
+	private $_connectionStringName;
+	
+	public function getConnectionStringName()
+	{
+		return $this->_connectionStringName;
+	}
+	public function setConnectionStringName($value)
+	{
+		$this->_connectionStringName = TPropertyValue::ensureString($value);
+	}
+	
+	public function __construct()
 	{
 		
 	}
-	public function getApplicationName()
-	{
-		return $this->_ApplicationName;
-	}
-	public function setApplicationName($value)
-	{
-		$this->_ApplicationName = TPropertyValue::ensureString($value);
-	}
-	public function AddUsersToRoles($usernames,$roleNames)
+	public function addUsersToRoles($usernames,$roleNames)
 	{
 		
 	}
-	public function CreateRole($roleName);
-	public function DeleteRole($roleName);
-	public function FineUsersInRole($roleName,$usernameToMatch);
-	public function GetAllRoles();
-	public function GetRolesForUser($username);
-	public function GetUsersIsRole($username,$roleName);
-	public function IsUserIsRole($username,$roleName);
-	public function RemoveUsersFromRoles($usernames,$roleNames);
-	public function RoleExists($roleName);
+	public function createRole($roleName)
+	{
+		
+	}
+	public function deleteRole($roleName)
+	{
+		
+	}
+	public function findUsersInRole($roleName,$usernameToMatch)
+	{
+		
+	}
+	public function getAllRoles()
+	{
+		
+	}
+	public function getRolesForUser($username)
+	{
+		
+	}
+	public function getUsersIsRole($username,$roleName)
+	{
+		
+	}
+	public function isUserIsRole($username,$roleName)
+	{
+		
+	}
+	public function removeUsersFromRoles($usernames,$roleNames)
+	{
+		
+	}
+	public function roleExists($roleName)
+	{
+		
+	}
 }
 ?>

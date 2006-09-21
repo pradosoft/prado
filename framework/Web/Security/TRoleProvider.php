@@ -11,22 +11,76 @@
 Prado::using('System.Configuration.Provider.TProviderBase');
 abstract class TRoleProvider extends TProviderBase 
 {
-	private abstract $_ApplicationName;
-	protected function __construct()
+	private $_cacheRolesInCookie=false;
+    private $_cookieName="PRADO";
+    private $_cookieTimeout="30";
+    private $_cookiePath="/";
+    private $_cookieRequireSSL=false;
+    private $_cookieSlidingExpiration=true;
+	
+	public function getCacheRolesInCookie()
+	{
+		return $this->_cacheRolesInCookie;
+	}
+	public function setCacheRolesInCookie($value)
+	{
+		$this->_cacheRolesInCookie = TPropertyValue::ensureBoolean($value);
+	}
+	public function getCookieName()
+	{
+		return $this->_cookieName;
+	}
+	public function setCookieName($value)
+	{
+		$this->_cookieName = TPropertyValue::ensureString($value);
+	}
+	public function getCookiePath()
+	{
+		return $this->_cookiePath;
+	}
+	public function setCookiePath($value)
+	{
+		$this->_cookiePath = TPropertyValue::ensureString($value);
+	}
+	public function getCookieRequireSSL()
+	{
+		return $this->_cookieRequireSSL;
+	}
+	public function setCookieRequireSSL($value)
+	{
+		$this->_cookieRequireSSL = TPropertyValue::ensureBoolean($value);
+	}
+	public function getCookieSlidingExpiration()
+	{
+		return $this->_cookieSlidingExpiration;
+	}
+	public function setCookieSlidingExpiration($value)
+	{
+		$this->_cookieSlidingExpiration = TPropertyValue::ensureBoolean($value);
+	}
+	public function getCookieTimeout()
+	{
+		return $this->_cookieTimeout;
+	}
+	public function setCookieTimeout($value)
+	{
+		$this->_cookieTimeout = TPropertyValue::ensureInteger($value);
+	}
+	
+	
+	public function __construct()
 	{
 		
 	}
-	public abstract function getApplicationName();
-	public abstract function setApplicationName($value);
-	public abstract function AddUsersToRoles($usernames,$roleNames);
-	public abstract function CreateRole($roleName);
-	public abstract function DeleteRole($roleName);
-	public abstract function FineUsersInRole($roleName,$usernameToMatch);
-	public abstract function GetAllRoles();
-	public abstract function GetRolesForUser($username);
-	public abstract function GetUsersIsRole($username,$roleName);
-	public abstract function IsUserIsRole($username,$roleName);
-	public abstract function RemoveUsersFromRoles($usernames,$roleNames);
-	public abstract function RoleExists($roleName);
+	public abstract function addUsersToRoles($usernames,$roleNames);
+	public abstract function createRole($roleName);
+	public abstract function deleteRole($roleName);
+	public abstract function findUsersInRole($roleName,$usernameToMatch);
+	public abstract function getAllRoles();
+	public abstract function getRolesForUser($username);
+	public abstract function getUsersIsRole($username,$roleName);
+	public abstract function isUserIsRole($username,$roleName);
+	public abstract function removeUsersFromRoles($usernames,$roleNames);
+	public abstract function roleExists($roleName);
 }
 ?>

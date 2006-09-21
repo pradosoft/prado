@@ -698,6 +698,11 @@ demos/personal/protected/application.xml -text
 demos/personal/themes/BlueTheme/buttons.skin -text
 demos/personal/themes/BlueTheme/icon_profile.gif -text
 demos/personal/themes/BlueTheme/labels.skin -text
+demos/providers/index.php -text
+demos/providers/protected/.htaccess -text
+demos/providers/protected/application.xml -text
+demos/providers/protected/pages/Home.page -text
+demos/providers/protected/pages/Home.php -text
 demos/quickstart/images/star1.gif -text
 demos/quickstart/images/star2.gif -text
 demos/quickstart/images/star3.gif -text
@@ -1296,6 +1301,7 @@ framework/Collections/TQueue.php -text
 framework/Collections/TStack.php -text
 framework/Configuration/Provider/TProviderBase.php -text
 framework/Configuration/Provider/TProviderException.php -text
+framework/Configuration/TProtectedConfiguration.php -text
 framework/DataAccess/SQLMap/Configuration/TConfigDeserialize.php -text
 framework/DataAccess/SQLMap/Configuration/TDiscriminator.php -text
 framework/DataAccess/SQLMap/Configuration/TDomSqlMapBuilder.php -text
@@ -1771,6 +1777,7 @@ framework/Web/Security/TRoleManagerModule.php -text
 framework/Web/Security/TRolePrincipal.php -text
 framework/Web/Security/TRoleProvider.php -text
 framework/Web/Security/TRoles.php -text
+framework/Web/Security/TSqlMembershipProvider.php -text
 framework/Web/Security/TSqlRoleProvider.php -text
 framework/Web/Security/TUrlAuthorizationModule.php -text
 framework/Web/Services/IFeedContentProvider.php -text
