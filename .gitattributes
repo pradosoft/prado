@@ -1481,6 +1481,7 @@ framework/Web/THttpRequest.php -text
 framework/Web/THttpResponse.php -text
 framework/Web/THttpSession.php -text
 framework/Web/THttpUtility.php -text
+framework/Web/TUrlMapping.php -text
 framework/Web/UI/TClientScriptManager.php -text
 framework/Web/UI/TCompositeControl.php -text
 framework/Web/UI/TControl.php -text
