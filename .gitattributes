@@ -806,6 +806,7 @@ demos/quickstart/protected/pages/Configurations/PageConfig.page -text
 demos/quickstart/protected/pages/Configurations/Templates1.page -text
 demos/quickstart/protected/pages/Configurations/Templates2.page -text
 demos/quickstart/protected/pages/Configurations/Templates3.page -text
+demos/quickstart/protected/pages/Configurations/UrlMapping.page -text
 demos/quickstart/protected/pages/Construction.page -text
 demos/quickstart/protected/pages/Controls/Button.page -text
 demos/quickstart/protected/pages/Controls/CheckBox.page -text

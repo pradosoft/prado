@@ -35,6 +35,7 @@
     <li><a href="?page=Configurations.Templates3">Templates: Part III</a></li>
     <li><a href="?page=Configurations.AppConfig">Application Configurations</a></li>
     <li><a href="?page=Configurations.PageConfig">Page Configurations</a></li>
+    <li><a href="?page=Configurations.UrlMapping">URL Mapping (Friendly URLs)</a></li>
 </ul>
 </div>
 

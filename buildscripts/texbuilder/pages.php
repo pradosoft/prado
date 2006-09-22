@@ -29,7 +29,9 @@ $pages['Configurations'] = array(
 	'Configurations/Templates2.page',
 	'Configurations/Templates3.page',
 	'Configurations/AppConfig.page',
-	'Configurations/PageConfig.page');
+	'Configurations/PageConfig.page',
+	'Configurations/UrlMapping.page'
+	);
 
 $pages['Control Reference : Standard Controls'] = array(
 	'Controls/Button.page',
