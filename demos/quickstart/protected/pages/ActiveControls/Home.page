@@ -37,7 +37,7 @@ TActiveButton</a> control.</p>
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveHyperLink">TActiveHyperLink</a>
+  <a href="?page=ActiveControls.ActiveHyperLink">TActiveHyperLink</a>
   represents a hyperlink on a Web page.
   </li>
 

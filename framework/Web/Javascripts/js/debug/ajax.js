@@ -763,6 +763,9 @@ Prado.CallbackRequest.prototype =
 				return false;
 		}
 
+		if(this.options.onPreDispatch)
+			this.options.onPreDispatch(this,null);
+
 		if(this.options.HasPriority)
 			return Prado.CallbackRequest.dispatchPriorityRequest(this);
 		else

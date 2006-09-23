@@ -769,6 +769,7 @@ demos/quickstart/protected/index/quickstart/segments -text
 demos/quickstart/protected/pages/ActiveControls/ActiveButton.page -text
 demos/quickstart/protected/pages/ActiveControls/ActiveCheckBox.page -text
 demos/quickstart/protected/pages/ActiveControls/ActiveCustomValidator.page -text
+demos/quickstart/protected/pages/ActiveControls/ActiveHyperLink.page -text
 demos/quickstart/protected/pages/ActiveControls/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Introduction.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveButton/Home.page -text
@@ -777,6 +778,9 @@ demos/quickstart/protected/pages/ActiveControls/Samples/TActiveCheckBox/Home.pag
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveCheckBox/Home.php -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveCustomValidator/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveCustomValidator/Home.php -text
+demos/quickstart/protected/pages/ActiveControls/Samples/TActiveHyperLink/Home.page -text
+demos/quickstart/protected/pages/ActiveControls/Samples/TActiveHyperLink/Home.php -text
+demos/quickstart/protected/pages/ActiveControls/Samples/TActiveHyperLink/hello_world.gif -text
 demos/quickstart/protected/pages/ActiveControls/Samples/config.xml -text
 demos/quickstart/protected/pages/ActiveControls/TActiveButtonClass.png -text
 demos/quickstart/protected/pages/ActiveControls/TActiveButtonClass.vsd -text

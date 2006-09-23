@@ -21,6 +21,10 @@ Prado::using('System.Web.UI.ActiveControls.TCallback');
  * TTimeTriggeredCallback sends callback request every {@link setInterval Interval} seconds.
  * Upon each callback request, the {@link onCallback OnCallback} event is raised.
  *
+ * The timer can be started by calling {@link startTimer()} and stopped using
+ * {@link stopTimer()}. The timer can be automatically started when
+ * {@link setStartTimerOnLoad StartTimerOnLoad} is true.
+ *
  * The intervals between each request can be increased when the browser is inactive
  * by changing the {@link setDecayRate DecayRate} to a positive number. The
  * default decay rate, {@link setDecayType DecayType}, is linear and can be changed to
@@ -113,6 +117,23 @@ class TTimeTriggeredCallback extends TCallback
 	}
 
 	/**
+	 * @param boolean true to start the timer when page loads.
+	 */
+	public function setStartTimerOnLoad($value)
+	{
+		$this->setViewState('StartTimerOnLoad', 
+				TPropertyValue::ensureBoolean($value), false);
+	}
+
+	/**
+	 * @return boolean true to start the timer when page loads.
+	 */
+	public function getStartTimerOnLoad()
+	{
+		return $this->getViewState('StartTimerOnLoad', false);
+	}
+
+	/**
 	 * @return array list of timer options for client-side.
 	 */
 	protected function getTriggerOptions()
@@ -134,6 +155,8 @@ class TTimeTriggeredCallback extends TCallback
 		parent::render($writer);
 		$this->getActiveControl()->registerCallbackClientScript(
 			$this->getClientClassName(), $this->getTriggerOptions());
+		if($this->getStartTimerOnLoad())
+			$this->startTimer();
 	}
 
 	/**

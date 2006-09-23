@@ -16,6 +16,7 @@
  * The following client side events are executing in order if the callback
  * request and response are send and received successfuly.
  *
+ * - <b>onPreDispatch</b> executed before a request is dispatched.
  * - <b>onUninitialized</b> executed when callback request is uninitialized.
  * - <b>onLoading</b> executed when callback request is initiated
  * - <b>onLoaded</b> executed when callback request begins.
@@ -57,6 +58,22 @@ class TCallbackClientSide extends TClientSideOptions
 	protected function ensureFunction($javascript)
 	{
 		return "function(sender, parameter){ {$javascript} }";
+	}
+
+	/**
+	 * @param string javascript code to be executed before a request is dispatched.
+	 */
+	public function setOnPreDispatch($javascript)
+	{
+		$this->setFunction('onPreDispatch', $javascript);
+	}
+
+	/**
+	 * @return string javascript code to be executed before a request is dispatched.
+	 */
+	public function getOnPreDispatch()
+	{
+		return $this->getOption('onPreDispatch');
 	}
 
 	/**

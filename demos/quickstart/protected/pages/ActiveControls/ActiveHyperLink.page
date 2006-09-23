@@ -1,0 +1,15 @@
+<com:TContent ID="body">
+<!-- $Id: ActiveCheckBox.page 1405 2006-09-10 01:03:56Z wei $ -->
+<h1 id="ActiveHyperLink">TActiveHyperLink</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveHyperLink" />
+
+<p>
+The active control counterpart of <a href=?page=Controls.HyperLink">THyperLink</a>
+component. During a callback request, changes to the <tt>Text</tt>, <tt>ImageUrl</tt>,
+<tt>NavigateUrl</tt> and <tt>Target</tt> properties on the server side will also
+change the corresponding attributes and content on the client-side.
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TActiveHyperLink.Home" />
+
+</com:TContent>

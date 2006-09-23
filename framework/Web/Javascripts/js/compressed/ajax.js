@@ -94,7 +94,8 @@ Ajax.Responders.register(Prado.CallbackRequest.Exception);});Prado.CallbackReque
 tinyMCE.triggerSave();Object.extend(this.options,{postBody:this._getPostData(),parameters:''});if(this.options.CausesValidation&&typeof(Prado.Validation)!="undefined")
 {var form=this.options.Form||Prado.Validation.getForm();if(Prado.Validation.validate(form,this.options.ValidationGroup,this)==false)
 return false;}
-if(this.options.HasPriority)
+if(this.options.onPreDispatch)
+this.options.onPreDispatch(this,null);if(this.options.HasPriority)
 return Prado.CallbackRequest.dispatchPriorityRequest(this);else
 return Prado.CallbackRequest.dispatchNormalRequest(this);},_getPostData:function()
 {var data={};var callback=Prado.CallbackRequest;if(this.options.PostInputs!=false)
