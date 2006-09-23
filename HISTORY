@@ -7,7 +7,7 @@ ENH: Added an interactive PHP shell, usage: "prado-cli.php shell" (Wei)
 ENH: Ticket#379 - TAuthorizationRule performance enhancement (Qiang)
 ENH: Easier to customize the TDatePicker using CssClass (Wei)
 NEW: TLiteralColumn (Qiang)
-NSW: TUrlMapping (Wei)
+NEW: TUrlMapping (Wei)
 
 Version 3.0.4 September 4, 2006
 ===============================
