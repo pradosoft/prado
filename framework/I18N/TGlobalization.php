@@ -160,6 +160,7 @@ class TGlobalization extends TModule
 	 * $config['catalogue'] = 'messages'; //default catalog
 	 * $config['autosave'] = 'true'; //save untranslated message
 	 * $config['cache'] = 'true'; //cache translated message
+	 * $config['marker'] = '@@'; // surround untranslated text with '@@'
 	 * </code>
 	 * Throws exception is source is not found.
 	 * @param TMap configuration options
@@ -176,7 +177,7 @@ class TGlobalization extends TModule
 					if(@mkdir($config['source'])===false)
 					throw new TConfigurationException('globalization_source_path_failed',
 						$config['source']);
-					chmod($config['source'], 0777); //make it deletable									
+					chmod($config['source'], 0777); //make it deletable
 				}
 			}
 			else
@@ -192,7 +193,7 @@ class TGlobalization extends TModule
 				if(@mkdir($config['cache'])===false)
 					throw new TConfigurationException('globalization_cache_path_failed',
 						$config['cache']);
-				chmod($config['cache'], 0777); //make it deletable				
+				chmod($config['cache'], 0777); //make it deletable
 			}
 		}
 		$this->_translation = $config;
