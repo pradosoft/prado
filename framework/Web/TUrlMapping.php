@@ -21,9 +21,9 @@
  * The mapping format is as follows.
  * <code>
  *  <module id="friendly-url" class="System.Web.TUrlMapping">
- *    <url pageClass="Posts.ViewPost" pattern="post/{id}/?" parameters.id="\d+" />
- *    <url pageClass="Posts.ListPost" pattern="archive/{time}/?" parameters.time="\d{6}" />
- *    <url pageClass="Posts.ListPost" pattern="category/{cat}/?" parameters.cat="\d+" />
+ *    <url ServiceParameter="Posts.ViewPost" pattern="post/{id}/?" parameters.id="\d+" />
+ *    <url ServiceParameter="Posts.ListPost" pattern="archive/{time}/?" parameters.time="\d{6}" />
+ *    <url ServiceParameter="Posts.ListPost" pattern="category/{cat}/?" parameters.cat="\d+" />
  *  </module>
  * </code>
  *
@@ -189,10 +189,10 @@ class TUrlMapping extends THttpRequest
 	{
 		$request = $this->getRequest();
 		$id = $pattern->getServiceID();
-		$page = $pattern->getPageClass();
+		$param = $pattern->getServiceParameter();
 		$request->setServiceID($id);
-		$request->setServiceParameter($page);
-		$request->add($id,$page);
+		$request->setServiceParameter($param);
+		$request->add($id,$param);
 	}
 }
 
@@ -227,9 +227,10 @@ class TUrlMapping extends THttpRequest
  * The parameter values are available through the standard <tt>Request</tt>
  * object. For example, <tt>$this->Request['year']</tt>.
  *
- * The {@link setPageClass PageClass} and {@link setServiceID ServiceID}
- * (the default ID is 'page') set the class and the service that will
- * handle the matching URL.
+ * The {@link setServiceParameter ServiceParameter} and {@link setServiceID ServiceID}
+ * (the default ID is 'page') set the service parameter and service id respectively.
+ * The service parameter for the TPageService is the Page class name, other service
+ * may use the service parameter differently.
  *
  * For more complicated mappings, the body of the <tt>&lt;url&gt;</tt>
  * can be used to specify the mapping pattern.
@@ -242,9 +243,9 @@ class TUrlMapping extends THttpRequest
 class TUrlMappingPattern extends TComponent
 {
 	/**
-	 * @var string page class name.
+	 * @var string service parameter such as Page class name.
 	 */
-	private $_pageClass;
+	private $_serviceParameter;
 	/**
 	 * @var string service ID, default is 'page'.
 	 */
@@ -277,10 +278,10 @@ class TUrlMappingPattern extends TComponent
 		$body = trim($config->getValue());
 		if(strlen($body)>0)
 			$this->setPattern($body);
-		if(is_null($this->_pageClass))
+		if(is_null($this->_serviceParameter))
 		{
 			throw new TConfigurationException(
-				'dispatcher_url_page_class_missing', $this->getPattern());
+				'dispatcher_url_service_parameter_missing', $this->getPattern());
 		}
 		$this->initializePattern();
 	}
@@ -310,19 +311,19 @@ class TUrlMappingPattern extends TComponent
 	}
 
 	/**
-	 * @param string name of the page class to handle the request.
+	 * @param string service parameter, such as page class name.
 	 */
-	public function setPageClass($value)
+	public function setServiceParameter($value)
 	{
-		$this->_pageClass=$value;
+		$this->_serviceParameter=$value;
 	}
 
 	/**
-	 * @return string page class name.
+	 * @return string service parameter, such as page class name.
 	 */
-	public function getPageClass()
+	public function getServiceParameter()
 	{
-		return $this->_pageClass;
+		return $this->_serviceParameter;
 	}
 
 	/**
