@@ -93,7 +93,7 @@ class TGlobalization extends TModule
 	 */
 	public function setDefaultCulture($culture)
 	{
-		$this->_defaultCharset = str_replace('-','_',$culture);
+		$this->_defaultCulture = str_replace('-','_',$culture);
 	}
 
 	/**
