@@ -1,0 +1,17 @@
+<com:TForm>
+<h1>Populate active list controls</h1>
+
+<com:TActiveListBox ID="list1" OnCallback="list_changed" />
+
+<com:TActiveDropDownList ID="list2" OnCallback="list_changed"  />
+
+
+<com:TActiveLabel ID="label1" />
+
+<com:TActiveButton ID="button1" Text="populate list 1" OnClick="populate_list1" />
+
+<com:TActiveButton ID="button2" Text="populate list 2" OnClick="populate_list2" />
+
+<com:TJavascriptLogger />
+
+</com:TForm>

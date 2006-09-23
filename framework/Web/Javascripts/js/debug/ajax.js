@@ -655,6 +655,8 @@ Prado.CallbackRequest.prototype =
 	 */
 	request : null,
 
+	Enabled : true,
+
 	/**
 	 * Prepare and inititate a callback request.
 	 */
@@ -765,6 +767,9 @@ Prado.CallbackRequest.prototype =
 
 		if(this.options.onPreDispatch)
 			this.options.onPreDispatch(this,null);
+
+		if(!this.Enabled)
+			return;
 
 		if(this.options.HasPriority)
 			return Prado.CallbackRequest.dispatchPriorityRequest(this);

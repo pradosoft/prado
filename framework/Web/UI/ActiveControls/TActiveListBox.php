@@ -13,6 +13,8 @@
 /**
  * TActiveListBox class.
  *
+ * List items can be added dynamically during a callback request.
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
  * @package System.Web.UI.ActiveControls
@@ -38,6 +40,20 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 	public function getActiveControl()
 	{
 		return $this->getAdapter()->getBaseActiveControl();
+	}
+
+	/**
+	 * Creates a collection object to hold list items. A specialized
+	 * TActiveListItemCollection is created to allow the drop down list options
+	 * to be added.
+	 * This method may be overriden to create a customized collection.
+	 * @return TActiveListItemCollection the collection object
+	 */
+	protected function createListItemCollection()
+	{
+		$collection  = new TActiveListItemCollection;
+		$collection->setControl($this);
+		return $collection;
 	}
 
 	/**
@@ -94,6 +110,15 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 	public function onCallback($param)
 	{
 		$this->raiseEvent('OnCallback', $this, $param);
+	}
+
+	/**
+	 * Updates the client-side options if the item list has changed after the OnLoad event.
+	 */
+	public function onPreRender($param)
+	{
+		parent::onPreRender($param);
+		$this->getAdapter()->updateListItems();
 	}
 }
 

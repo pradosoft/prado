@@ -1922,6 +1922,8 @@ requirements/messages.txt -text
 requirements/template-bg.html -text
 requirements/template-zh.html -text
 requirements/template.html -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveBricksTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveBricksTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveControlExpressionTag.page -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveControlExpressionTag.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveControlWithTinyMce.page -text
@@ -1948,6 +1950,10 @@ tests/FunctionalTests/active-controls/protected/pages/CustomTemplateControlTest.
 tests/FunctionalTests/active-controls/protected/pages/CustomTemplateControlTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/EventTriggeredCallback.page -text
 tests/FunctionalTests/active-controls/protected/pages/EventTriggeredCallback.php -text
+tests/FunctionalTests/active-controls/protected/pages/LTemplate.php -text
+tests/FunctionalTests/active-controls/protected/pages/LTemplate.tpl -text
+tests/FunctionalTests/active-controls/protected/pages/PopulateActiveList.page -text
+tests/FunctionalTests/active-controls/protected/pages/PopulateActiveList.php -text
 tests/FunctionalTests/active-controls/protected/pages/PostLoadingTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/PostLoadingTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/ReplaceContentTest.page -text
@@ -1971,6 +1977,7 @@ tests/FunctionalTests/active-controls/tests/ActiveRadioButtonListTestCase.php -t
 tests/FunctionalTests/active-controls/tests/ActiveRadioButtonTestCase.php -text
 tests/FunctionalTests/active-controls/tests/CustomTemplateTestCase.php -text
 tests/FunctionalTests/active-controls/tests/EventTriggerTestCase.php -text
+tests/FunctionalTests/active-controls/tests/PopulateListTestCase.php -text
 tests/FunctionalTests/active-controls/tests/PostLoadingTestCase.php -text
 tests/FunctionalTests/active-controls/tests/ReplaceContentTestCase.php -text
 tests/FunctionalTests/active-controls/tests/TextBoxGroupValidationTestCase.php -text

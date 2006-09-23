@@ -1,0 +1,42 @@
+<com:TForm>
+	<h3 class="ContentAlternating">Some AJAX Tests</h3>
+	<com:TPanel CssClass="Content">
+
+		<!-- <com:TTextBox
+			Id="SelectedBrick"
+			Text="LContentBrick" />-->
+
+		<com:TDropDownList Id="MySize">
+			<com:TListItem
+				Text="Large"
+				Value="Large" />
+
+			<com:TListItem
+				Text="Small"
+				Value="Small" />
+
+		</com:TDropDownList>
+
+		<com:TActiveButton
+			ID="insertBrick"
+			Text="Insert Brick"
+			OnCallback="insertBrick" />
+	</com:TPanel>
+
+
+	cell:
+	<com:TActivePanel
+		ID="placeholder"
+		Style="display: auto; border: 1px solid red">
+		in
+	</com:TActivePanel>
+
+	<com:TActivePanel
+		ID="AjaxInsertPoint"
+		Style="visibility: auto; border: 1px solid blue">
+		AIP
+	</com:TActivePanel>
+
+	<com:TJavascriptLogger />
+
+</com:TForm>

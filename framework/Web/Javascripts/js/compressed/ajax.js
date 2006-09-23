@@ -80,7 +80,7 @@ Ajax.Responders.register({onComplete:function(request)
 {if(request.options.HasPriority)
 Prado.CallbackRequest.abortRequestInProgress();}});Event.OnLoad(function()
 {if(typeof Logger!="undefined")
-Ajax.Responders.register(Prado.CallbackRequest.Exception);});Prado.CallbackRequest.prototype={url:window.location.href,options:{},id:null,request:null,initialize:function(id,options)
+Ajax.Responders.register(Prado.CallbackRequest.Exception);});Prado.CallbackRequest.prototype={url:window.location.href,options:{},id:null,request:null,Enabled:true,initialize:function(id,options)
 {this.id=id;this.options=Object.extend({RequestTimeOut:30000,EnablePageStateUpdate:true,HasPriority:true,CausesValidation:true,ValidationGroup:null,PostInputs:true},options||{});},setCallbackParameter:function(value)
 {this.options['params']=value;},getCallbackParameter:function()
 {return this.options['params'];},setRequestTimeOut:function(timeout)
@@ -95,7 +95,8 @@ tinyMCE.triggerSave();Object.extend(this.options,{postBody:this._getPostData(),p
 {var form=this.options.Form||Prado.Validation.getForm();if(Prado.Validation.validate(form,this.options.ValidationGroup,this)==false)
 return false;}
 if(this.options.onPreDispatch)
-this.options.onPreDispatch(this,null);if(this.options.HasPriority)
+this.options.onPreDispatch(this,null);if(!this.Enabled)
+return;if(this.options.HasPriority)
 return Prado.CallbackRequest.dispatchPriorityRequest(this);else
 return Prado.CallbackRequest.dispatchNormalRequest(this);},_getPostData:function()
 {var data={};var callback=Prado.CallbackRequest;if(this.options.PostInputs!=false)

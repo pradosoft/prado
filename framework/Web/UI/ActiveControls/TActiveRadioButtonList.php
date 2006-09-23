@@ -22,6 +22,8 @@
  * set to true (default is true), changes to the selection will be updated
  * on the client side.
  *
+ * List items can not be changed dynamically during a callback request.
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
  * @package System.Web.UI.ActiveControls
