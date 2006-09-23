@@ -302,6 +302,18 @@ Object.extend(Ajax.Request.prototype,
 
 	    if (event == 'Complete')
 	    {
+	      if ((this.header('Content-type') || '').match(/^text\/javascript/i))
+	      {
+	        try
+			{
+	           json = eval('(' + transport.responseText + ')');
+	        }catch (e)
+			{
+				if(typeof(json) == "string")
+					json = Prado.CallbackRequest.decode(result);
+			}
+	      }
+
 	      try
 	      {
 	      	Prado.CallbackRequest.updatePageState(this,transport);
@@ -314,8 +326,6 @@ Object.extend(Ajax.Request.prototype,
 	  	      } catch (e) {
 	        this.dispatchException(e);
 	      }
-	      if ((this.header('Content-type') || '').match(/^text\/javascript/i))
-	        this.evalResponse();
 	    }
 
 	    try {

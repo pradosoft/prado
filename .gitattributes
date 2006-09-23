@@ -1802,6 +1802,7 @@ framework/Web/Security/TSqlRoleProvider.php -text
 framework/Web/Security/TUrlAuthorizationModule.php -text
 framework/Web/Services/IFeedContentProvider.php -text
 framework/Web/Services/TFeedService.php -text
+framework/Web/Services/TJsonService.php -text
 framework/Web/Services/TPageService.php -text
 framework/Web/Services/TSoapService.php -text
 framework/Web/TAssetManager.php -text
