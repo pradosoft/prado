@@ -1,0 +1,75 @@
+<com:TContent ID="body" >
+
+<h1>URL Mapping (Friendly URLs)</h1>
+
+<com:DocLink ClassPath="System.Web.TUrlMapping" />
+
+<p>Using the <tt>TUrlMapping</tt> module different URLs can be
+mapped into any existing Prado pages or services. This allows
+the application to use nice looking and friendly URLs.
+</p>
+
+<p>
+The <tt>TUrlMapping</tt> module allows aributary URL path to be mapped to a
+particular service and page class. This module must be configured
+before a service is initialized, thus this module should be configured
+globally in the <a href="?page=Configurations.AppConfig">application configuration</a>
+file and before any services.
+</p>
+
+<p>The mapping format is as follows.
+<com:TTextHighlighter Language="xml" CssClass="source">
+<module id="friendly-url" class="System.Web.TUrlMapping">
+  <url pageClass="ClassName" pattern="regexp" parameters.id="regexp" />
+</module>
+</com:TTextHighlighter>
+</p>
+
+<p>The <tt>PageClass</tt> set the name of class that the matched URL will
+be requested.</p> The <tt>Pattern</tt> and <tt>Parameters</tt> attribute
+values are regular expression patterns that
+determine the mapping criteria. The <tt>Pattern</tt> property takes
+a regular expression with parameter names enclosed between a left brace '<tt>{</tt>'
+and a right brace '<tt>}</tt>'. The pattens for each parameter can be set
+using <tt>Parameters</tt>attribute collection.
+For example,
+<com:TTextHighlighter Language="xml" CssClass="source">
+<url pageClass="Pages.ShowArticles" pattern="articles/{year}/{month}/{day}"
+     parameters.year="\d{4}" parameters.month="\d{2}" parameters.day="\d+" />
+</com:TTextHighlighter>
+</p>
+The example is equivalent, using regular expression only, to
+<com:TTextHighlighter Language="xml" CssClass="source">
+<url pageClass="Pages.ShowArticles">
+<![CDATA[
+	articles/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d+)
+]]>
+</url>
+</com:TTextHighlighter>
+<p>
+In the above example, the pattern contains 3 parameters named "<tt>year</tt>",
+"<tt>month</tt>" and "<tt>day</tt>". The pattern for these parameters are,
+respectively, "<tt>\d{4}</tt>" (4 digits), "<tt>\d{2}</tt>" (2 digits)
+and "<tt>\d+</tt>" (1 or more digits).
+</p>
+
+<p>For example, an URL "<tt>http://example.com/index.php/articles/2006/07/21</tt>" will be matched
+and valid.  However, "<tt>http://example.com/index.php/articles/2006/07/hello</tt>" is not
+ valid since the "<tt>day</tt>" parameter pattern is not satisfied.
+ In the default <tt>TUrlMappingPattern</tt> class, the pattern is matched against the
+<b>path</b> property of the URL only. For example, only the
+"<tt>/index.php/articles/2006/07/21</tt>" portion of the URL is considered and the rest
+is ignored.
+ </p>
+
+
+<p>The parameter values are available through the standard <tt>Request</tt>
+object. For example, <tt>$this->Request['year']</tt>.
+</p>
+
+<p>The URL mapping are evaluated in order they are place and only the first mapping that matches
+ the URL will be used. Cascaded mapping can be achieved by placing the URL mappings
+ in particular order. For example, placing the most specific mappings first.
+ </p>
+
+</com:TContent>

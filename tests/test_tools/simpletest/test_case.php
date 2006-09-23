@@ -419,6 +419,11 @@
             return $this->_label;
         }
 
+		function setLabel($value)
+		{
+			$this->_label = $value;
+		}
+
         /**
          *    Adds a test into the suite. Can be either a group
          *    test or some other unit test.

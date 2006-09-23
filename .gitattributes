@@ -838,6 +838,7 @@ demos/quickstart/protected/pages/Configurations/PageConfig.page -text
 demos/quickstart/protected/pages/Configurations/Templates1.page -text
 demos/quickstart/protected/pages/Configurations/Templates2.page -text
 demos/quickstart/protected/pages/Configurations/Templates3.page -text
+demos/quickstart/protected/pages/Configurations/UrlMapping.page -text
 demos/quickstart/protected/pages/Construction.page -text
 demos/quickstart/protected/pages/Controls/Button.page -text
 demos/quickstart/protected/pages/Controls/CheckBox.page -text
@@ -1015,6 +1016,7 @@ demos/quickstart/protected/pages/Fundamentals/lifecycles.vsd -text
 demos/quickstart/protected/pages/Fundamentals/objectdiagram.gif -text
 demos/quickstart/protected/pages/Fundamentals/objectdiagram.vsd -text
 demos/quickstart/protected/pages/GettingStarted/AboutPrado.page -text
+demos/quickstart/protected/pages/GettingStarted/CommandLine.page -text
 demos/quickstart/protected/pages/GettingStarted/HelloWorld.page -text
 demos/quickstart/protected/pages/GettingStarted/Installation.page -text
 demos/quickstart/protected/pages/GettingStarted/Introduction.page -text
@@ -1224,6 +1226,20 @@ docs/sqlmap/sqlmap_tut.pdf -text
 framework/.htaccess -text
 framework/3rdParty/Markdown/License.text -text
 framework/3rdParty/Markdown/MarkdownParser.php -text
+framework/3rdParty/PhpShell/PHP/Shell.php -text
+framework/3rdParty/PhpShell/PHP/Shell/Commands.php -text
+framework/3rdParty/PhpShell/PHP/Shell/Extensions.php -text
+framework/3rdParty/PhpShell/PHP/Shell/Extensions/Autoload.php -text
+framework/3rdParty/PhpShell/PHP/Shell/Extensions/AutoloadDebug.php -text
+framework/3rdParty/PhpShell/PHP/Shell/Extensions/Colour.php -text
+framework/3rdParty/PhpShell/PHP/Shell/Extensions/ExecutionTime.php -text
+framework/3rdParty/PhpShell/PHP/Shell/Extensions/InlineHelp.php -text
+framework/3rdParty/PhpShell/PHP/Shell/Extensions/LoadScript.php -text
+framework/3rdParty/PhpShell/PHP/Shell/Extensions/Prototypes.php -text
+framework/3rdParty/PhpShell/PHP/Shell/Extensions/VerbosePrint.php -text
+framework/3rdParty/PhpShell/PHP/Shell/Options.php -text
+framework/3rdParty/PhpShell/README -text
+framework/3rdParty/PhpShell/php-shell-cmd.php -text
 framework/3rdParty/SafeHtml/HTMLSax3.php -text
 framework/3rdParty/SafeHtml/HTMLSax3/Decorators.php -text
 framework/3rdParty/SafeHtml/HTMLSax3/States.php -text
@@ -1793,6 +1809,7 @@ framework/Web/THttpRequest.php -text
 framework/Web/THttpResponse.php -text
 framework/Web/THttpSession.php -text
 framework/Web/THttpUtility.php -text
+framework/Web/TUrlMapping.php -text
 framework/Web/UI/ActiveControls/TActiveButton.php -text
 framework/Web/UI/ActiveControls/TActiveControlAdapter.php -text
 framework/Web/UI/ActiveControls/TActiveCustomValidator.php -text

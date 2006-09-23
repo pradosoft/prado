@@ -27,6 +27,14 @@ where each directory is explained as follows. Note, the above directory structur
 <li><tt>pages</tt> - base path storing all PRADO pages.</li>
 </ul>
 
+<div class="tip">
+<b class="tip">Tip:</b>You may also use the <tt>framework/prado-cli.php</tt> 
+<a href="?page=GettingStarted.CommandLine">command line script</a> 
+to create the Prado project directory structure. For example, type the command
+<tt>php path/to/prado-cli.php -c helloworld</tt> in the directory
+where you want to create the <tt>helloworld</tt> project.
+</div>
+
 <p>
 The three files that we need are explained as follows.
 </p>

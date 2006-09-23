@@ -1,4 +1,4 @@
-.TDatePicker
+.TDatePicker_default
 {
 	border: 1px solid #919EA9;
 	background-color: White;
@@ -27,69 +27,69 @@
 	border-color: #ddd;
 }
 
-.TDatePicker select
+.TDatePicker_default select
 {
 	font-size: 11px;
 }
 
-.TDatePicker input.button
+.TDatePicker_default input.button
 {
 	font-size: 11px;
 	width: 32px;
 }
 
-.TDatePicker .date
+.TDatePicker_default .date
 {
 	padding: 4px 0;
 	border: 1px solid white;
 	text-align: center;
 }
-.TDatePicker .hover
+.TDatePicker_default .hover
 {
 	border: 1px solid blue;
 }
-.TDatePicker .selected 
+.TDatePicker_default .selected 
 {
 	background-color: blue;
 	border: 1px solid blue;
 	color: white;
 }
-.TDatePicker .today
+.TDatePicker_default .today
 {
 	font-weight: bold;
 }
 
-.TDatePicker td.empty
+.TDatePicker_default td.empty
 {
 	border: 1px solid white;
 	cursor: default;
 	height: 22px;
 }
 
-.TDatePicker th
+.TDatePicker_default th
 {
 	width: 28px;
 }
 
-.TDatePicker .calendarBody
+.TDatePicker_default .calendarBody
 {
 	text-align: center;
 	width: 210px;
 	margin: 3px 6px;
 }
 
-.TDatePicker .grid
+.TDatePicker_default .grid
 {
 	border-spacing: 0px;
 }
 
-.TDatePicker .calendarFooter
+.TDatePicker_default .calendarFooter
 {
 	margin: 2px;
 	border-top: 1px solid #919EA9;
 	padding-top: 2px;
 }
-.TDatePicker .todayButton
+.TDatePicker_default .todayButton
 {
 	font-size: 11px;
 	margin: 4px;

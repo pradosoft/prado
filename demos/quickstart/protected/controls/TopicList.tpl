@@ -7,6 +7,7 @@
     <li><a href="?page=GettingStarted.AboutPrado">What is PRADO?</a></li>
     <li><a href="?page=GettingStarted.Installation">Installation</a></li>
     <li><a href="?page=GettingStarted.HelloWorld">Creating First PRADO Application</a></li>
+    <li><a href="?page=GettingStarted.CommandLine">Command Line Tool</a></li>
     <li><a href="?page=GettingStarted.Upgrading">Upgrading from v2.x and v1.x</a></li>
 </ul>
 </div>
@@ -34,6 +35,7 @@
     <li><a href="?page=Configurations.Templates3">Templates: Part III</a></li>
     <li><a href="?page=Configurations.AppConfig">Application Configurations</a></li>
     <li><a href="?page=Configurations.PageConfig">Page Configurations</a></li>
+    <li><a href="?page=Configurations.UrlMapping">URL Mapping (Friendly URLs)</a></li>
 </ul>
 </div>
 

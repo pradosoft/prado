@@ -53,7 +53,9 @@ Prado.WebUI.TDatePicker.prototype =
 
 	FirstDayOfWeek : 1, // 0 for sunday
 
-	ClassName : "TDatePicker",
+	ClassName : "",
+
+	CalendarStyle : "default",
 
 	FromYear : 2000, UpToYear: 2015,
 
@@ -97,7 +99,7 @@ Prado.WebUI.TDatePicker.prototype =
 
 		// Create the top-level div element
 		this._calDiv = document.createElement("div");
-		this._calDiv.className = this.ClassName;
+		this._calDiv.className = "TDatePicker_"+this.CalendarStyle+" "+this.ClassName;
 		this._calDiv.style.display = "none";
 		this._calDiv.style.position = "absolute"
 
@@ -581,7 +583,7 @@ Prado.WebUI.TDatePicker.prototype =
 		var within = false;
 		do
 		{
-			within = within || el.className == this.ClassName;
+			within = within || (el.className && Element.hasClassName(el, "TDatePicker_"+this.CalendarStyle));
 			within = within || el == this.trigger;
 			within = within || el == this.control;
 			if(within) break;
