@@ -115,7 +115,7 @@ class TUrlMapping extends THttpRequest
 	public function setConfigFile($value)
 	{
 		if(($this->_configFile=Prado::getPathOfNamespace($value,self::CONFIG_FILE_EXT))===null)
-			throw new TConfigurationException('logrouter_configfile_invalid',$value);
+			throw new TConfigurationException('urlpath_configfile_invalid',$value);
 	}
 
 	/**
