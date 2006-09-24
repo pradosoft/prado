@@ -262,6 +262,10 @@ class TUrlMappingPattern extends TComponent
 	 * @var string regular expression pattern.
 	 */
 	private $_regexp;
+	/**
+	 * @var boolean case sensitive matching, default is true
+	 */
+	private $_caseSensitive=true;
 
 	public function __construct()
 	{
@@ -359,6 +363,22 @@ class TUrlMappingPattern extends TComponent
 	}
 
 	/**
+	 * @param boolean case sensitive pattern matching, default is true.
+	 */
+	public function setCaseSensitive($value)
+	{
+		$this->_caseSensitive=TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @return boolean case sensitive pattern matching, default is true.
+	 */
+	public function getCaseSensitive()
+	{
+		return $this->_caseSensitive;
+	}
+
+	/**
 	 * @return TAttributeCollection parameter key value pairs.
 	 */
 	public function getParameters()
@@ -384,8 +404,20 @@ class TUrlMappingPattern extends TComponent
 		$path = $url->getPath();
 		$matches=array();
 		$pattern = str_replace('/', '\\/', $this->getRegExpPattern());
-		preg_match('/'.$pattern.'/', $path, $matches);
+		$modifiers = $this->getModifiers();
+		preg_match('/'.$pattern.'/'.$modifiers, $path, $matches);
 		return $matches;
+	}
+
+	/**
+	 * @return string regular expression matching modifiers.
+	 */
+	protected function getModifiers()
+	{
+		$modifiers = 'u';
+		if(!$this->getCaseSensitive())
+			$modifiers .= 'i';
+		return $modifiers;
 	}
 }
 
