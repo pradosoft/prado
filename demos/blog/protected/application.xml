@@ -15,10 +15,12 @@
       <route class="TFileLogRoute" Categories="BlogApplication" />
     </module>
     <module class="System.Util.TParameterModule" ParameterFile="Application.Data.Settings" />
+
+    <!-- use TUrlMapping to map URL patterns to particular requests -->
     <module id="friendly-url" class="System.Web.TUrlMapping">
-      <url pageClass="Posts.ViewPost" pattern="post/{id}/?" parameters.id="\d+" />
-      <url pageClass="Posts.ListPost" pattern="archive/{time}/?" parameters.time="\d{6}" />
-      <url pageClass="Posts.ListPost" pattern="category/{cat}/?" parameters.cat="\d+" />
+      <url ServiceParameter="Posts.ViewPost" pattern="post/{id}/?" parameters.id="\d+" />
+      <url ServiceParameter="Posts.ListPost" pattern="archive/{time}/?" parameters.time="\d{6}" />
+      <url ServiceParameter="Posts.ListPost" pattern="category/{cat}/?" parameters.cat="\d+" />
     </module>
   </modules>
   <services>

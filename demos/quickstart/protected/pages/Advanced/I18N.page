@@ -40,6 +40,7 @@ First you need to include the <tt>System.I18N.*</tt> namespace to your paths.
 <module id="globalization" class="TGlobalization">
     <translation type="XLIFF"
         source="MyApp.messages"
+        marker="@@"
         autosave="true" cache="true" />
 </module>
 </com:TTextHighlighter>
@@ -48,6 +49,7 @@ First you need to include the <tt>System.I18N.*</tt> namespace to your paths.
 where you are going to store your translate message catalogue. The <tt>autosave</tt>
 attribute if enabled, saves untranslated messages back into the message catalogue.
 With <tt>cache</tt> enabled, translated messages are saved in the application <tt>runtime/i18n</tt> directory.
+The <tt>marker</tt> value is used to surround any untranslated text.
 </p>
 
 <p>With the configuration complete, we can now start to localize your application. If you have <tt>autosave</tt> enabled, after running your application with some localization activity (i.e. translating some text), you will see a directory and a <tt>messages.xml</tt> created within your <tt>source</tt> directory.</p>

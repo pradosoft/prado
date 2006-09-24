@@ -56,6 +56,11 @@ $requirements = array(
 		'PATH_INFO required'),
 	array(
 		true,
+		class_exists('Reflection',false),
+		'Reflection extension check',
+		'Reflection extension required'),
+	array(
+		true,
 		class_exists("DOMDocument",false),
 		'DOM extension check',
 		'DOM extension required'),

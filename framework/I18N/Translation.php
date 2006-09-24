@@ -54,6 +54,10 @@ class Translation extends TComponent
 
 			self::$formatter = new MessageFormat($source, $app->getCharset());
 
+			//mark untranslated text
+			if($ps=$config['marker'])
+				self::$formatter->setUntranslatedPS(array($ps,$ps));
+
 			//save the message on end request
 			Prado::getApplication()->attachEventHandler(
 				'OnEndRequest', array('Translation', 'saveMessages'));

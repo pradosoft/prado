@@ -20,13 +20,21 @@ file and before any services.
 <p>The mapping format is as follows.
 <com:TTextHighlighter Language="xml" CssClass="source">
 <module id="friendly-url" class="System.Web.TUrlMapping">
-  <url pageClass="ClassName" pattern="regexp" parameters.id="regexp" />
+  <url serviceParameter="ClassName" pattern="regexp" parameters.id="regexp" />
 </module>
 </com:TTextHighlighter>
 </p>
 
-<p>The <tt>PageClass</tt> set the name of class that the matched URL will
-be requested.</p> The <tt>Pattern</tt> and <tt>Parameters</tt> attribute
+<p>The <tt>ServiceParameter</tt> and <tt>ServiceID</tt>
+ (the default ID is 'page') set the service parameter and service ID respectively.
+ The service parameter for the <tt>TPageService</tt> service is the
+ Page class name, e.g., for an URL "index.php?page=Home", "page" is the service ID and the service
+ parameter is "Home". Other services may use the service parameter and ID differently.
+See <a href="?page=Fundamentals.Services">Services</a> for further details.
+</p>
+
+<p>
+The <tt>Pattern</tt> and <tt>Parameters</tt> attribute
 values are regular expression patterns that
 determine the mapping criteria. The <tt>Pattern</tt> property takes
 a regular expression with parameter names enclosed between a left brace '<tt>{</tt>'
@@ -34,13 +42,13 @@ and a right brace '<tt>}</tt>'. The pattens for each parameter can be set
 using <tt>Parameters</tt>attribute collection.
 For example,
 <com:TTextHighlighter Language="xml" CssClass="source">
-<url pageClass="Pages.ShowArticles" pattern="articles/{year}/{month}/{day}"
+<url ServiceParameter="Pages.ShowArticles" pattern="articles/{year}/{month}/{day}"
      parameters.year="\d{4}" parameters.month="\d{2}" parameters.day="\d+" />
 </com:TTextHighlighter>
 </p>
 The example is equivalent, using regular expression only, to
 <com:TTextHighlighter Language="xml" CssClass="source">
-<url pageClass="Pages.ShowArticles">
+<url ServiceParmaeter="Pages.ShowArticles">
 <![CDATA[
 	articles/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d+)
 ]]>

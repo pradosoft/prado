@@ -596,6 +596,11 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 		}
 	}
 
+	protected function getRequestResolved()
+	{
+		return $this->_requestResolved;
+	}
+
 	/**
 	 * @return array IDs of the available services
 	 */
