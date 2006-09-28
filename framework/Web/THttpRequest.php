@@ -596,7 +596,10 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 		}
 	}
 
-	protected function getRequestResolved()
+	/**
+	 * @return boolean true if request is already resolved, false otherwise.
+	 */
+	public function getRequestResolved()
 	{
 		return $this->_requestResolved;
 	}
@@ -631,7 +634,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 * Sets the requested service ID.
 	 * @param string requested service ID
 	 */
-	protected function setServiceID($value)
+	public function setServiceID($value)
 	{
 		$this->_serviceID=$value;
 	}
@@ -650,7 +653,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 * Sets the requested service parameter.
 	 * @param string requested service parameter
 	 */
-	protected function setServiceParameter($value)
+	public function setServiceParameter($value)
 	{
 		$this->_serviceParam=$value;
 	}

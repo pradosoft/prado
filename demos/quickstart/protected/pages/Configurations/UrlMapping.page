@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>URL Mapping (Friendly URLs)</h1>
+<h1 id="2101">URL Mapping (Friendly URLs)</h1>
 
 <com:DocLink ClassPath="System.Web.TUrlMapping" />
 
@@ -17,16 +17,25 @@ globally in the <a href="?page=Configurations.AppConfig">application configurati
 file and before any services.
 </p>
 
+<div class="info"><b class="tip">Info:</b>
+The <tt>TUrlMapping</tt> must be configured before the
+<a href="?page=Fundamentals.Modules">Request module</a> resolves the request.
+This usually means delcaring the <tt>TUrlMapping</tt> module before any
+<tt>&lt;services&gt;</tt> tag in the  <a href="?page=Configurations.AppConfig">application configuration</a>.
+Specifying the mappings in the per directory <tt>config.xml</tt> is not supported.
+</div>
+
 <p>The mapping format is as follows.
 <com:TTextHighlighter Language="xml" CssClass="source">
 <module id="friendly-url" class="System.Web.TUrlMapping">
-  <url serviceParameter="ClassName" pattern="regexp" parameters.id="regexp" />
+  <url serviceParameter="ClassName" pattern="pattern" parameters.id="subpattern" />
 </module>
 </com:TTextHighlighter>
 </p>
 
 <p>The <tt>ServiceParameter</tt> and <tt>ServiceID</tt>
- (the default ID is 'page') set the service parameter and service ID respectively.
+ (the default ID is 'page') set the service parameter and service ID, respectively, of
+ the <a href="?page=Fundamentals.Modules">Request module</a>.
  The service parameter for the <tt>TPageService</tt> service is the
  Page class name, e.g., for an URL "index.php?page=Home", "page" is the service ID and the service
  parameter is "Home". Other services may use the service parameter and ID differently.
@@ -42,15 +51,15 @@ and a right brace '<tt>}</tt>'. The pattens for each parameter can be set
 using <tt>Parameters</tt>attribute collection.
 For example,
 <com:TTextHighlighter Language="xml" CssClass="source">
-<url ServiceParameter="Pages.ShowArticles" pattern="articles/{year}/{month}/{day}"
+<url ServiceParameter="ArticleView" pattern="articles/{year}/{month}/{day}"
      parameters.year="\d{4}" parameters.month="\d{2}" parameters.day="\d+" />
 </com:TTextHighlighter>
 </p>
-The example is equivalent, using regular expression only, to
+The example is equivalent to the following regular expression (it uses the "named group" feature in regular expressions available in PHP):
 <com:TTextHighlighter Language="xml" CssClass="source">
-<url ServiceParmaeter="Pages.ShowArticles">
+<url ServiceParmaeter="ArticleView">
 <![CDATA[
-	articles/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d+)
+	/articles\/(?P<year>\d{4})\/(?P<month>\d{2})\/(?P<day>\d+)/u
 ]]>
 </url>
 </com:TTextHighlighter>
@@ -59,19 +68,27 @@ In the above example, the pattern contains 3 parameters named "<tt>year</tt>",
 "<tt>month</tt>" and "<tt>day</tt>". The pattern for these parameters are,
 respectively, "<tt>\d{4}</tt>" (4 digits), "<tt>\d{2}</tt>" (2 digits)
 and "<tt>\d+</tt>" (1 or more digits).
+Essentially, the <tt>Parameters</tt> attribute name and values are used
+ as substrings in replacing the placeholders in the <tt>Pattern</tt> string
+to form a complete regular expression string.
 </p>
 
-<p>For example, an URL "<tt>http://example.com/index.php/articles/2006/07/21</tt>" will be matched
+<div class="note"><b class="tip">Note:</b> If you intended to use the <tt>RegularExpression</tt>
+property you need to escape the slash in regular expressions.
+</div>
+
+<p>Following from the above pattern example,
+an URL "<tt>http://example.com/index.php/articles/2006/07/21</tt>" will be matched
 and valid.  However, "<tt>http://example.com/index.php/articles/2006/07/hello</tt>" is not
  valid since the "<tt>day</tt>" parameter pattern is not satisfied.
  In the default <tt>TUrlMappingPattern</tt> class, the pattern is matched against the
 <b>path</b> property of the URL only. For example, only the
-"<tt>/index.php/articles/2006/07/21</tt>" portion of the URL is considered and the rest
-is ignored.
+"<tt>/index.php/articles/2006/07/21</tt>" portion of the URL is considered.
  </p>
 
-
-<p>The parameter values are available through the standard <tt>Request</tt>
+<p>
+The mapped request URL is equivalent to <tt>index.php?page=ArticleView&amp;year=2006&amp;month=07&amp;day=21</tt>.
+The request parameter values are available through the standard <tt>Request</tt>
 object. For example, <tt>$this->Request['year']</tt>.
 </p>
 

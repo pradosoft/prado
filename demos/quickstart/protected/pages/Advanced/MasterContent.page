@@ -40,7 +40,7 @@ Then, the contents are inserted into the master control according to the followi
 <img src=<%~ mastercontent.gif %> alt="Master and Content" />
 <img src=<%~ pcrelation.gif %> alt="Parent-child relationship between master and content" />
 
-<h2>Master vs. External Template</h2>
+<h2 id="6301">Master vs. External Template</h2>
 <p>
 Master is very similar to external templates which are introduced since version 3.0.5. A special <a href="?page=Configurations.Templates1">include tag</a> is used to include an external template file into a base template.
 </p>

@@ -70,8 +70,8 @@ The naming convention for the template files used for all other exceptions is as
 <p>
 Again, if the preferred language is not found, PRADO will try to use <tt>exception.html</tt>, instead.
 </p>
-<p>
-CAUTION: When saving a template file, please make sure the file is saved using UTF-8 encoding. On Windows, you may use <tt>Notepad.exe</tt> to accomplish such saving.
-</p>
+<div class="note">
+<b class="tip">CAUTION:</b> When saving a template file, please make sure the file is saved using UTF-8 encoding. On Windows, you may use <tt>Notepad.exe</tt> to accomplish such saving.
+</div>
 
 </com:TContent>

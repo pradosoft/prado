@@ -43,7 +43,7 @@
  * @package System.Web
  * @since 3.0.5
  */
-class TUrlMapping extends THttpRequest
+class TUrlMapping extends TModule
 {
 	/**
 	 * @var string default pattern class.
@@ -201,9 +201,9 @@ class TUrlMapping extends THttpRequest
  *
  * Describes an URL mapping pattern, if a given URL matches the pattern, the
  * TUrlMapping class will alter the THttpRequest parameters. The
- * url matching is done using regular expressions.
+ * url matching is done using patterns and regular expressions.
  *
- * The {@link setPattern Pattern} property takes a regular expression with
+ * The {@link setPattern Pattern} property takes an string expression with
  * parameter names enclosed between a left brace '{' and a right brace '}'.
  * The pattens for each parameter can be set using {@link getParameters Parameters}
  * attribute collection. For example
@@ -215,6 +215,17 @@ class TUrlMapping extends THttpRequest
  * In the above example, the pattern contains 3 parameters named "year",
  * "month" and "day". The pattern for these parameters are, respectively,
  * "\d{4}" (4 digits), "\d{2}" (2 digits) and "\d+" (1 or more digits).
+ * Essentially, the <tt>Parameters</tt> attribute name and values are used
+ * as substrings in replacing the placeholders in the <tt>Pattern</tt> string
+ * to form a complete regular expression string. A full regular expression
+ * may be expressed using the <tt>RegularExpression</tt> attribute or
+ * as the body content of the &lt;module&gt; tag. The above pattern is equivalent
+ * to the following regular expression pattern.
+ * <code>
+ * /articles\/(?P<year>\d{4})\/(?P<month>\d{2})\/(?P<day>\d+)/u
+ * </code>
+ * The above regular expression used the "named group" feature available in PHP.
+ * Notice that you need to escape the slash in regular expressions.
  *
  * In the TUrlMappingPattern class, the pattern is matched against the
  * <b>path</b> property of the url only.
@@ -281,20 +292,20 @@ class TUrlMappingPattern extends TComponent
 	{
 		$body = trim($config->getValue());
 		if(strlen($body)>0)
-			$this->setPattern($body);
+			$this->setRegularExpression($body);
 		if(is_null($this->_serviceParameter))
 		{
 			throw new TConfigurationException(
 				'dispatcher_url_service_parameter_missing', $this->getPattern());
 		}
-		$this->initializePattern();
 	}
 
 	/**
 	 * Subsitutue the parameter key value pairs as named groupings
 	 * in the regular expression matching pattern.
+	 * @return string regular expression pattern with parameter subsitution
 	 */
-	protected function initializePattern()
+	protected function getParameterizedPattern()
 	{
 		$params= array();
 		$values = array();
@@ -303,15 +314,27 @@ class TUrlMappingPattern extends TComponent
 			$params[] = '{'.$key.'}';
 			$values[] = '(?P<'.$key.'>'.$value.')';
 		}
-		$this->_regexp = str_replace($params,$values,$this->getPattern());
+		$params[] = '/';
+		$values[] = '\\/';
+		$regexp = str_replace($params,$values,$this->getPattern());
+		$modifiers = $this->getModifiers();
+		return '/'.$regexp.'/'.$modifiers;
 	}
 
 	/**
-	 * @return string mapping pattern
+	 * @return string full regular expression mapping pattern
 	 */
-	protected function getRegExpPattern()
+	public function getRegularExpression()
 	{
 		return $this->_regexp;
+	}
+
+	/**
+	 * @param string full regular expression mapping patern.
+	 */
+	public function setRegularExpression($value)
+	{
+		$this->_regexp;
 	}
 
 	/**
@@ -395,7 +418,8 @@ class TUrlMappingPattern extends TComponent
 	}
 
 	/**
-	 * Use regular expression to match the given url path.
+	 * Uses URL pattern (or full regular expression if available) to
+	 * match the given url path.
 	 * @param TUri url to match against
 	 * @return array matched parameters, empty if no matches.
 	 */
@@ -403,9 +427,10 @@ class TUrlMappingPattern extends TComponent
 	{
 		$path = $url->getPath();
 		$matches=array();
-		$pattern = str_replace('/', '\\/', $this->getRegExpPattern());
-		$modifiers = $this->getModifiers();
-		preg_match('/'.$pattern.'/'.$modifiers, $path, $matches);
+		$pattern = $this->getRegularExpression();
+		if($pattern === null)
+			$pattern = $this->getParameterizedPattern();
+		preg_match($pattern, $path, $matches);
 		return $matches;
 	}
 
