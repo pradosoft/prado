@@ -44,8 +44,11 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 	public function setSelectedIndex($index)
 	{
 		if($this->canUpdateClientSide())
+		{
+			$this->updateListItems();
 			$this->getPage()->getCallbackClient()->select(
 					$this->getControl(), 'Index', $index);
+		}
 	}
 
 	/**
@@ -56,6 +59,7 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 	{
 		if($this->canUpdateClientSide())
 		{
+			$this->updateListItems();
 			$n = $this->getControl()->getItemCount();
 			$list = array();
 			foreach($indices as $index)
@@ -77,8 +81,11 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 	public function setSelectedValue($value)
 	{
 		if($this->canUpdateClientSide())
+		{
+			$this->updateListItems();
 			$this->getPage()->getCallbackClient()->select(
 					$this->getControl(), 'Value', $value);
+		}
 	}
 
 	/**
@@ -89,6 +96,7 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 	{
 		if($this->canUpdateClientSide())
 		{
+			$this->updateListItems();
 			$list = array();
 			foreach($values as $value)
 				$list[] = $value;
@@ -104,7 +112,10 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
     public function clearSelection()
     {
 		if($this->canUpdateClientSide())
+		{
+			$this->updateListItems();
 			$this->getPage()->getCallbackClient()->select($this->getControl(), 'Clear');
+		}
     }
 
 	/**
@@ -112,11 +123,14 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 	 */
 	public function updateListItems()
 	{
-		if($this->canUpdateClientSide() && $this->getControl()->getHasItems())
+		if($this->canUpdateClientSide())
 		{
 			$items = $this->getControl()->getItems();
-			if($items instanceof TActiveListItemCollection && $items->getListHasChanged())
-				$this->getPage()->getCallbackClient()->setListItems($this->getControl(), $items);
+			if($items instanceof TActiveListItemCollection
+				&& $items->getListHasChanged())
+			{
+				$items->updateClientSide();
+			}
 		}
 	}
 }
@@ -180,6 +194,16 @@ class TActiveListItemCollection extends TListItemCollection
 	public function getListHasChanged()
 	{
 		return $this->_hasChanged;
+	}
+
+	/**
+	 * Update client-side list items.
+	 */
+	public function updateClientSide()
+	{
+		$client = $this->getControl()->getPage()->getCallbackClient();
+		$client->setListItems($this->getControl(), $this);
+		$this->_hasChanged=false;
 	}
 
 	/**

@@ -35,6 +35,12 @@ class ActiveDropDownListTestCase extends SeleniumTestCase
 		$this->pause(800);
 		$this->assertText("label1", "Selection 2: value 3 - item 5");
 
+		$this->click('button4');
+		$this->pause(800);
+		$this->assertSelected('list1', 'item 3');
+		$this->pause(300);
+		$this->assertSelected('list2', 'value 3 - item 3');
+
 	}
 }
 

@@ -4,7 +4,7 @@ class ActiveDropDownList extends TPage
 {
 	function list1_changed($sender)
 	{
-		$this->label1->setText("Selection 1: ".$sender->getSelectedValue());		
+		$this->label1->setText("Selection 1: ".$sender->getSelectedValue());
 		$this->addOptionsToList2($sender->getSelectedValue());
 	}
 
@@ -19,20 +19,27 @@ class ActiveDropDownList extends TPage
 	{
 		$this->label1->setText("Selection 2: ".$sender->getSelectedValue());
 	}
-	
+
 	function select_index_3()
 	{
 		$this->list1->setSelectedIndex(3);
 	}
-	
+
 	function clear_selections()
 	{
 		$this->list1->clearSelection();
 	}
-	
+
 	function select_value_2()
 	{
 		$this->list1->setSelectedValue("value 2");
+	}
+
+	function select_index_3_plus()
+	{
+		$this->list1->setSelectedValue("value 3");
+		$this->list1_changed($this->list1);
+		$this->list2->setSelectedValue("value 3 - item 3");
 	}
 }
 
