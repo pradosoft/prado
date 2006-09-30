@@ -5,6 +5,7 @@ ENH: Ticket#361 - Introduced include template tag that supports including extern
 ENH: Ticket#366 - white spaces are now allowed around attribute names in template (Qiang)
 ENH: Ticket#378 - PRADO applications can now run in command line (Qiang)
 ENH: Ticket#379 - TAuthorizationRule performance enhancement (Qiang)
+ENH: Ticket#394 - Enhancing TDropDownListColumn to allow specifying both text and value (Qiang)
 ENH: Easier to customize the TDatePicker using CssClass (Wei)
 ENH: Added an interactive PHP shell, usage: "prado-cli.php shell" (Wei)
 NEW: TLiteralColumn (Qiang)

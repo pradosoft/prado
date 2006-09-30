@@ -17,7 +17,9 @@ Upgrading from v3.0.4
 ---------------------
 - TFileUpload::saveAs() will return false instead of raising an exception
   if it encounters any error.
-
+- TDropDownListColumn.DataField is renamed to DataTextField and
+  DataFormatString is renamed to DataTextFormatString.
+  A new property named DataValueField is added.
 
 Upgrading from v3.0.3
 ---------------------
