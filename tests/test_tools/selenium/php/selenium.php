@@ -65,10 +65,21 @@ class SeleniumTestStorage
 {
 	protected $outputs = array();
 	protected $tests = array();
+	protected $options=array();
 
 	public function getTests()
 	{
 		return $this->tests;
+	}
+
+	public function getOptions()
+	{
+		return $this->options;
+	}
+
+	public function addOption($test_name, $option)
+	{
+		$this->options[$test_name] = $option;
 	}
 
 	public function addCommand($test_case_id, $command)
@@ -105,6 +116,11 @@ class SeleneseInterpreter
 		return $this->storage->getTests();
 	}
 
+	public function getOptions()
+	{
+		return $this->storage->getOptions();
+	}
+
 	public function getCommand()
 	{
 		$command = $this->storage->getCommand();
@@ -115,17 +131,31 @@ class SeleneseInterpreter
 	{
 		if($func{0} == '_') return;
 		
+		$trace = debug_backtrace();
+		if($this->isTestOptionFunction($func,$args,$trace))
+			return;
+		
 		$ID = isset($args[0]) ? $args[0] : "";
 		$value = isset($args[1]) ? $args[1] : "";
 		if(strpos(strtolower($func),'htmlpresent') || strpos(strtolower($func),'htmlnotpresent'))
 			$ID = htmlspecialchars($ID);
 		$command = array($func, $ID, $value);
-		$trace = debug_backtrace();
 		
 		if(is_int(strpos(strtolower($func), 'visible')))
 			$this->addCommand(array('pause','500',''),$trace);
 		
 		return $this->addCommand($command, $trace);
+	}
+
+	protected function isTestOptionFunction($func,$args,$trace)
+	{
+		if(strtolower($func)==='skipcondition')
+		{
+			list($trace, $test, $suite) = $this->tracer->getTrace($trace);
+			$this->storage->addOption($test,$args[0]);
+			return true;
+		}
+		return false;
 	}
 
 	protected function addCommand($command, $trace)
@@ -236,34 +266,26 @@ class SeleniumTestSuiteWriter
 
 	protected function renderHeader()
 	{
+		$base_dir = $this->runner->getDriver().'?sr=';
+
+		include(dirname(__FILE__).'/TestSuiteHeader.php');
+
 		$contents = <<<EOD
-<html>
-<head>
-<meta content="text/html; charset=UTF-8" http-equiv="content-type">
-<title>Test Suite</title>
-
-</head>
-
-<body>
-
-<table     cellpadding="1"
-           cellspacing="1"
-           border="1">
-        <tbody>
             <tr><td><b>{$this->name}</b></td></tr>
 EOD;
-		return $contents;
+		echo $contents;
 	}
 
 	public function render()
 	{
-		echo $this->renderHeader();
+		$this->renderHeader();
 		foreach($this->suites as $name => $suite)
 		{
 			$file = $suite[0]['trace']['file'];
 			$file = strtr($file,'\\','/');
+			$option = $suite[0]['option']===null?'':' unless="'.$suite[0]['option'].'" ';
 			$url = $this->runner->getDriver()."?case={$name}&file={$file}";
-			echo "<tr>\n";
+			echo "<tr{$option}>\n";
             echo "<td><a href=\"{$url}\">{$name}</a></td>\n";
             echo "</tr>\n";
 		}
@@ -289,7 +311,18 @@ EOD;
 	{
 		$trace = '';//$this->getJsTraceInfo();
 		$contents = <<<EOD
-     </tbody>
+        </tbody>
+    </table>
+
+    <br />
+    <em>Not supported in this browser</em>
+    <table id="skippedTests" cellpadding="1"
+           cellspacing="1"
+           border="1"
+           class="selenium">
+        <tbody>
+            <tr><td><b>Skipped Tests</b></td></tr>
+        </tbody>
     </table>
 	<script type="text/javascript">
 	/*<![CDATA[*/
@@ -377,11 +410,14 @@ class SeleniumTestRunnerServer
 
 	protected function initialize($int)
 	{
+		$options = $int->getOptions();
 		foreach($int->getTests() as $command)
 		{
 			$case = $command[5];
+			$option=isset($options[$case])?$options[$case]:null;
 			$this->cases[$case][] =
-				array('test' => $command[2], 'trace' => $command[4]);
+				array('test' => $command[2], 
+					'trace' => $command[4], 'option'=>$option);
 			if(is_null($this->name))
 				$this->name = $command[6];
 		}
@@ -449,6 +485,18 @@ class SeleniumTestCase extends UnitTestCase
 	protected $selenium;
 	protected $Page;
 
+	const KONQUEROR='browserVersion.isKonqueror';
+	const OPERA='browserVersion.isOpera';
+	const CHROME='browserVersion.isChrome';
+	const INTERNET_EXPLORER='browserVersion.isIE';
+	const SAFARI='browserVersion.isSafari';
+	const KHTML='browserVersion.khtml';
+	const FIREFOX='browserVersion.isFirefox';
+	const MOZILLA='browserVersion.isMozilla';
+	const GECKO='browserVersion.isGecko';
+
+	protected $options=array();
+
 	function __construct()
 	{
 		$server = SimpleSeleniumProxyServer::getInstance();
@@ -471,6 +519,25 @@ class SeleniumTestCase extends UnitTestCase
 			return $this->selenium->{$func}($args[0]);
 		else if (count($args) == 2)
 			return $this->selenium->{$func}($args[0], $args[1]);
+	}
+
+	function disabled()
+	{
+		$this->selenium->skipCondition('DISABLED');
+	}
+
+	function skipBrowsers()
+	{
+		$arg_list = func_get_args();
+		$browsers=array();
+		foreach($arg_list as $arg)
+		{
+			if(is_array($arg))
+				$browsers[] = '('.implode(' && ', $arg).')';
+			else
+				$browsers[] = $arg;
+		}
+		$this->selenium->skipCondition(implode(' || ', $browsers));
 	}
 }
 

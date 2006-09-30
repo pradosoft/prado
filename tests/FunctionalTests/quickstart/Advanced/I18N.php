@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 //New Test
 class I18NTestCase extends SeleniumTestCase

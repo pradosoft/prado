@@ -16,9 +16,12 @@
 
 /*---( Layout )---*/
 
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
 body {
-    margin: 0;
-    padding: 0;
     overflow: auto;
 }
 
@@ -37,15 +40,13 @@ tr {
 }
 
 .layout td {
-    margin: 0;
-    padding: 0;
     border: 0;
 }
 
 iframe {
+    border: 0px;
     width: 100%;
     height: 100%;
-    border: 0;
     background: white;
     overflow: auto;
 }
@@ -158,11 +159,6 @@ button, label {
     color: #f90;
 }
 
-.splash {
-    border: 1px solid black;
-    padding: 20px;
-    background: #ccc;
-}
 
 /*---( Logging Console )---*/
 
@@ -208,4 +204,84 @@ button, label {
 
 #logging-console li.debug {
     color: green;
+}
+
+table.selenium {
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 12;
+    border-width: 1px 1px 1px 1px;
+    border-spacing: 2px;
+    border-style: solid none solid none;
+    border-color: gray gray gray gray;
+    border-collapse: separate;
+    background-color: white;
+}
+
+table.selenium th {
+    border-width: 1px 1px 1px 1px;
+    padding: 1px 1px 1px 1px;
+    border-style: none none none none;
+    border-color: gray gray gray gray;
+    -moz-border-radius: 0px 0px 0px 0px;
+}
+
+table.selenium td {
+    border-width: 1px 1px 1px 1px;
+    padding: 1px 1px 1px 1px;
+    border-style: none none none none;
+    border-color: gray gray gray gray;
+    -moz-border-radius: 0px 0px 0px 0px;
+}
+
+div.executionOptions {
+    padding-left: 5em;
+}
+
+div.executionOptions label, div.executionOptions input {
+    display: block;
+    float: left;
+}
+
+div.executionOptions br {
+    clear: left;
+}
+
+#speedSlider {
+    text-align: left;
+    margin: 0px auto;
+    width: 260px;
+    line-height: 0px;
+    font-size: 0px;
+    padding: 0px;
+}
+
+#speedSlider #speedTrack {
+    background-color: #333;
+    width: 260px;
+    height: 2px;
+    <!--[if IE]> 
+    height: 2px; 
+    line-height: 2px; 
+    <![endif]--> 
+    z-index: 1;
+    border: 1px solid;
+    border-color: #999 #ddd #ddd #999;
+    cursor: pointer;
+}
+
+#speedSlider #speedHandle {
+    width: 12px;
+    top: -8px;
+    background-color: #666;
+    position: relative;
+    margin: 0px;
+    height: 8px;
+    <!--[if IE]> 
+    height: 8px; 
+    line-height: 8px; 
+    <![endif]--> 
+    z-index: 1;
+    border: 1px solid;
+    border-color: #999 #333 #333 #999;
+    cursor: pointer;
 }

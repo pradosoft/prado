@@ -1,3 +1,28 @@
+Object.extend(HtmlTestRunner.prototype, {
+    loadSuiteFrame: function() {
+        if (selenium == null) {
+            selenium = Selenium.createForWindow(this._getApplicationWindow());
+            this._registerCommandHandlers();
+        }
+        this.controlPanel.setHighlightOption();
+        //var testSuiteName = this.controlPanel.getTestSuiteName();
+        var testSuiteName = document.location+'?testSuites';
+		if (testSuiteName) {
+            suiteFrame.load(testSuiteName, this._onloadTestSuite.bind(this));
+        }
+    }
+});
+
+Object.extend(HtmlTestRunnerControlPanel.prototype, {
+    _parseQueryParameter: function() {
+        var tempRunInterval = this._getQueryParameter("runInterval");
+        if (tempRunInterval) {
+            this.setRunInterval(tempRunInterval);
+        }
+    }
+});
+
+
 
 /**
  * Override selenium implementation.
@@ -54,55 +79,17 @@ Selenium.prototype.assertEmptySelection = function(selectLocator, optionLocator)
    return element.selectedIndex == -1;
 }
 	
-function runNextTest() {
-    if (!runAllTests)
-            return;
 
-    suiteTable = getIframeDocument(getSuiteFrame()).getElementsByTagName("table")[0];
+Object.extend(HtmlTestSuite.prototype, {
+	_onTestSuiteComplete: function() {
+        this.markDone();
+        var result = new TestResult(this.failed, this.getTestTable());
+		postTestResults(this.failed, this.getTestTable(), result);
+   }
+});
 
-    // Do not change the row color of the first row
-    if (currentRowInSuite > 0) {
-        // Provide test-status feedback
-        if (testFailed) {
-            setCellColor(suiteTable.rows, currentRowInSuite, 0, failColor);
-        } else {
-            setCellColor(suiteTable.rows, currentRowInSuite, 0, passColor);
-        }
 
-        // Set the results from the previous test run
-        setResultsData(suiteTable, currentRowInSuite);
-    }
-
-    currentRowInSuite++;
-
-    // If we are done with all of the tests, set the title bar as pass or fail
-    if (currentRowInSuite >= suiteTable.rows.length) {
-        if (suiteFailed) {
-            setCellColor(suiteTable.rows, 0, 0, failColor);
-        } else {
-            setCellColor(suiteTable.rows, 0, 0, passColor);
-        }
-
-        LOG.warn("next? ", "warn");
-        // If this is an automated run (i.e., build script), then submit
-        // the test results by posting to a form
-
-        postTestResults(suiteFailed, suiteTable);
-    }
-
-    else {
-        // Make the current row blue
-        setCellColor(suiteTable.rows, currentRowInSuite, 0, workingColor);
-
-        testLink = suiteTable.rows[currentRowInSuite].cells[0].getElementsByTagName("a")[0];
-        testLink.focus();
-
-        var testFrame = getTestFrame();
-        addLoadListener(testFrame, startTest);
-
-        selenium.browserbot.setIFrameLocation(testFrame, testLink.href);
-    }
-}
+ 
 
 // Post the results to a servlet, CGI-script, etc.  The URL of the
 // results-handler defaults to "/postResults", but an alternative location
@@ -122,7 +109,7 @@ function runNextTest() {
 //      suite:      the suite table, including the hidden column of test results
 //      testTable.1 to testTable.N: the individual test tables
 //
-function postTestResults(suiteFailed, suiteTable) {
+function postTestResults(suiteFailed, suiteTable, result) {
 
     form = document.createElement("form");
     document.body.appendChild(form);
@@ -160,13 +147,12 @@ function postTestResults(suiteFailed, suiteTable) {
     }
 
     form.createHiddenField("result", suiteFailed == true ? "failed" : "passed");
-
-    form.createHiddenField("totalTime", Math.floor((currentTime - startTime) / 1000));
-    form.createHiddenField("numTestPasses", numTestPasses);
-    form.createHiddenField("numTestFailures", numTestFailures);
-    form.createHiddenField("numCommandPasses", numCommandPasses);
-    form.createHiddenField("numCommandFailures", numCommandFailures);
-    form.createHiddenField("numCommandErrors", numCommandErrors);
+	form.createHiddenField("totalTime", Math.floor((result.metrics.currentTime - result.metrics.startTime) / 1000));
+	form.createHiddenField("numTestPasses", result.metrics.numTestPasses);
+	form.createHiddenField("numTestFailures", result.metrics.numTestFailures);
+	form.createHiddenField("numCommandPasses", result.metrics.numCommandPasses);
+	form.createHiddenField("numCommandFailures", result.metrics.numCommandFailures);
+	form.createHiddenField("numCommandErrors", result.metrics.numCommandErrors);
 
     // Create an input for each test table.  The inputs are named
     // testTable.1, testTable.2, etc.
@@ -223,9 +209,9 @@ function parse_resultCell(resultCell,rowNum,form)
 function get_color_status(element)
 {
 	var color = element.getAttribute("bgcolor");
-	if(color == passColor) return "passed";
-	if(color == failColor) return "failed";
-	if(color == doneColor) return "done";
+	if(color == FeedbackColors.passColor) return "passed";
+	if(color == FeedbackColors.failColor) return "failed";
+	if(color == FeedbackColors.doneColor) return "done";
 	return "";
 }
 
