@@ -85,7 +85,7 @@ Comments INVISIBLE to end-users
 Note, template comments (by &lt;!-- ... --!&gt;) cannot appear in a property value.
 </p>
 
-<h2>Include Tags</h2>
+<h2 id="1601">Include Tags</h2>
 <p>
 Since version 3.0.5, PRADO starts to support external template inclusion. This is accomplished via include tags, where external template files are specified in namespace format and their file name must be terminated as <tt>.tpl</tt>.
 </p>

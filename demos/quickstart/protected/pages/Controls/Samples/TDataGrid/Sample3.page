@@ -53,9 +53,9 @@
 	<com:TDropDownListColumn 
 		ID="RatingColumn"
 		HeaderText="Rating"
-		DataField="rating"
+		DataTextField="rating"
 		>
-		<prop:DataFormatString><img src="images/star%s.gif" alt="" /></prop:DataFormatString>
+		<prop:DataTextFormatString><img src="images/star%s.gif" alt="" /></prop:DataTextFormatString>
 		<com:TListItem Value="1" />
 		<com:TListItem Value="2" />
 		<com:TListItem Value="3" />

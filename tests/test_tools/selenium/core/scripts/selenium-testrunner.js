@@ -15,433 +15,584 @@
 *
 */
 
-// The current row in the list of tests (test suite)
-currentRowInSuite = 0;
+// An object representing the current test, used external
+var currentTest = null; // TODO: get rid of this global, which mirrors the htmlTestRunner.currentTest
+var selenium = null;
 
-// An object representing the current test
-currentTest = null;
+var htmlTestRunner;
+var HtmlTestRunner = Class.create();
+Object.extend(HtmlTestRunner.prototype, {
+    initialize: function() {
+        this.metrics = new Metrics();
+        this.controlPanel = new HtmlTestRunnerControlPanel();
+        this.htmlTestSuite = null;
+        this.testFailed = false;
+        this.currentTest = null;
+        this.runAllTests = false;
+        this.appWindow = null;
+        // we use a timeout here to make sure the LOG has loaded first, so we can see _every_ error
+        setTimeout(function() {
+            this.loadSuiteFrame();
+        }.bind(this), 500);
+    },
 
-// Whether or not the jsFT should run all tests in the suite
-runAllTests = false;
+    markFailed: function() {
+        this.testFailed = true;
+        this.htmlTestSuite.markFailed();
+    },
 
-// Whether or not the current test has any errors;
-testFailed = false;
-suiteFailed = false;
-
-// Colors used to provide feedback
-passColor = "#ccffcc";
-doneColor = "#eeffee";
-failColor = "#ffcccc";
-workingColor = "#ffffcc";
-
-// Holds the handlers for each command.
-commandHandlers = null;
-
-// The number of tests run
-numTestPasses = 0;
-
-// The number of tests that have failed
-numTestFailures = 0;
-
-// The number of commands which have passed
-numCommandPasses = 0;
-
-// The number of commands which have failed
-numCommandFailures = 0;
-
-// The number of commands which have caused errors (element not found)
-numCommandErrors = 0;
-
-// The time that the test was started.
-startTime = null;
-
-// The current time.
-currentTime = null;
-
-// An simple enum for failureType
-ERROR = 0;
-FAILURE = 1;
-
-runInterval = 0;
-
-queryString = null;
-
-function setRunInterval() {
-    // Get the value of the checked runMode option.
-    // There should be a way of getting the value of the "group", but I don't know how.
-    var runModeOptions = document.forms['controlPanel'].runMode;
-    for (var i = 0; i < runModeOptions.length; i++) {
-        if (runModeOptions[i].checked) {
-            runInterval = runModeOptions[i].value;
-            break;
+    loadSuiteFrame: function() {
+        if (selenium == null) {
+            selenium = Selenium.createForWindow(this._getApplicationWindow());
+            this._registerCommandHandlers();
         }
-    }
-}
-
-function continueCurrentTest() {
-    document.getElementById('continueTest').disabled = true;
-    testLoop.resume();
-}
-
-function getApplicationFrame() {
-    return document.getElementById('myiframe');
-}
-
-function getSuiteFrame() {
-    return document.getElementById('testSuiteFrame');
-}
-
-function getTestFrame(){
-    return document.getElementById('testFrame');
-}
-
-function loadAndRunIfAuto() {
-    loadSuiteFrame();
-}
-
-function start() {
-	queryString = null;
-    setRunInterval();
-    loadSuiteFrame();
-}
-
-function loadSuiteFrame() {
-    var testAppFrame = document.getElementById('myiframe');
-    selenium = Selenium.createForFrame(testAppFrame);
-    registerCommandHandlers();
-
-    //set the runInterval if there is a queryParameter for it
-    var tempRunInterval = getQueryParameter("runInterval");
-    if (tempRunInterval) {
-        runInterval = tempRunInterval;
-    }
-
-    document.getElementById("modeRun").onclick = setRunInterval;
-    document.getElementById('modeWalk').onclick = setRunInterval;
-    document.getElementById('modeStep').onclick = setRunInterval;
-    document.getElementById('continueTest').onclick = continueCurrentTest;
-
-    var testSuiteName = getQueryParameter("test");
-
-    if (testSuiteName) {
-        addLoadListener(getSuiteFrame(), onloadTestSuite);
-        getSuiteFrame().src = testSuiteName;
-    } else {
-        onloadTestSuite();
-    }
-}
-
-function startSingleTest() {
-    removeLoadListener(getApplicationFrame(), startSingleTest);
-    var singleTestName = getQueryParameter("singletest");
-    addLoadListener(getTestFrame(), startTest);
-    getTestFrame().src = singleTestName;
-}
-
-function getIframeDocument(iframe)
-{
-    if (iframe.contentDocument) {
-        return iframe.contentDocument;
-    }
-    else {
-        return iframe.contentWindow.document;
-    }
-}
-
-function onloadTestSuite() {
-    removeLoadListener(getSuiteFrame(), onloadTestSuite);
-    
-    // Add an onclick function to each link in all suite tables
-    var allTables = getIframeDocument(getSuiteFrame()).getElementsByTagName("table");
-    for (var tableNum = 0; tableNum < allTables.length; tableNum++)
-    {
-        var skippedTable = allTables[tableNum];
-        for(rowNum = 1;rowNum < skippedTable.rows.length; rowNum++) {
-            addOnclick(skippedTable, rowNum);
-        }
-    }
-
-    suiteTable = getIframeDocument(getSuiteFrame()).getElementsByTagName("table")[0];
-    if (suiteTable!=null) {
-
-        if (isAutomatedRun()) {
-	    startTestSuite();
-        } else if (getQueryParameter("autoURL")) {
-
-            addLoadListener(getApplicationFrame(), startSingleTest);
-
-	    getApplicationFrame().src = getQueryParameter("autoURL");
-
-	} else {
-            testLink = suiteTable.rows[currentRowInSuite+1].cells[0].getElementsByTagName("a")[0];
-            getTestFrame().src = testLink.href;
-        }
-    }
-}
-
-// Adds an onclick function to the link in the given row in suite table.
-// This function checks whether the test has already been run and the data is
-// stored. If the data is stored, it sets the test frame to be the stored data.
-// Otherwise, it loads the fresh page.
-function addOnclick(suiteTable, rowNum) {
-    aLink = suiteTable.rows[rowNum].cells[0].getElementsByTagName("a")[0];
-    aLink.onclick = function(eventObj) {
-        srcObj = null;
-
-        // For mozilla-like browsers
-        if(eventObj)
-                srcObj = eventObj.target;
-
-        // For IE-like browsers
-        else if (getSuiteFrame().contentWindow.event)
-                srcObj = getSuiteFrame().contentWindow.event.srcElement;
-
-        // The target row (the event source is not consistently reported by browsers)
-        row = srcObj.parentNode.parentNode.rowIndex || srcObj.parentNode.parentNode.parentNode.rowIndex;
-
-        // If the row has a stored results table, use that
-        if(suiteTable.rows[row].cells[1]) {
-            var bodyElement = getIframeDocument(getTestFrame()).body;
-
-            // Create a div element to hold the results table.
-            var tableNode = getIframeDocument(getTestFrame()).createElement("div");
-            var resultsCell = suiteTable.rows[row].cells[1];
-            tableNode.innerHTML = resultsCell.innerHTML;
-
-            // Append this text node, and remove all the preceding nodes.
-            bodyElement.appendChild(tableNode);
-            while (bodyElement.firstChild != bodyElement.lastChild) {
-                bodyElement.removeChild(bodyElement.firstChild);
-            }
-        }
-        // Otherwise, just open up the fresh page.
-        else {
-            getTestFrame().src = suiteTable.rows[row].cells[0].getElementsByTagName("a")[0].href;
-        }
-
-        return false;
-    };
-}
-
-function isQueryParameterTrue(name) {
-    parameterValue = getQueryParameter(name);
-    return (parameterValue != null && parameterValue.toLowerCase() == "true");
-}
-
-function getQueryString() {
-	if (queryString != null) return queryString;
-	if (browserVersion.isHTA) {
-		var args = extractArgs();
-		if (args.length < 2) return null;
-		queryString = args[1];
-		return queryString;
-	} else {
-		return location.search.substr(1);
-	}
-}
-
-function extractArgs() {
-	var str = SeleniumHTARunner.commandLine;
-	if (str == null || str == "") return new Array();
-    var matches = str.match(/(?:"([^"]+)"|(?!"([^"]+)")(\S+))/g);
-    // We either want non quote stuff ([^"]+) surrounded by quotes
-    // or we want to look-ahead, see that the next character isn't
-    // a quoted argument, and then grab all the non-space stuff
-    // this will return for the line: "foo" bar
-    // the results "\"foo\"" and "bar"
-
-    // So, let's unquote the quoted arguments:
-    var args = new Array;
-    for (var i = 0; i < matches.length; i++) {
-        args[i] = matches[i];
-        args[i] = args[i].replace(/^"(.*)"$/, "$1");
-    }
-    return args;
-}
-
-function getQueryParameter(searchKey) {
-	var str = getQueryString();
-	if (str == null) return null;
-	var clauses = str.split('&');
-    for (var i = 0; i < clauses.length; i++) {
-        var keyValuePair = clauses[i].split('=',2);
-        var key = unescape(keyValuePair[0]);
-        if (key == searchKey) {
-            return unescape(keyValuePair[1]);
-        }
-    }
-    return null;
-}
-
-function isNewWindow() {
-    return isQueryParameterTrue("newWindow");
-}
-
-function isAutomatedRun() {
-    return isQueryParameterTrue("auto");
-}
-
-function resetMetrics() {
-    numTestPasses = 0;
-    numTestFailures = 0;
-    numCommandPasses = 0;
-    numCommandFailures = 0;
-    numCommandErrors = 0;
-    startTime = new Date().getTime();
-}
-
-function runSingleTest() {
-    runAllTests = false;
-    resetMetrics();
-    startTest();
-}
-
-function startTest() {
-    removeLoadListener(getTestFrame(), startTest);
-
-    // Scroll to the top of the test frame
-    if (getTestFrame().contentWindow) {
-        getTestFrame().contentWindow.scrollTo(0,0);
-    }
-    else {
-        frames['testFrame'].scrollTo(0,0);
-    }
-
-    currentTest = new HtmlTest(getIframeDocument(getTestFrame()));
-
-    testFailed = false;
-    storedVars = new Object();
-
-    testLoop = initialiseTestLoop();
-    testLoop.start();
-}
-
-function HtmlTest(testDocument) {
-    this.init(testDocument);
-}
-
-HtmlTest.prototype = {
-
-    init: function(testDocument) {
-        this.document = testDocument;
-        this.document.bgColor = "";
-        this.currentRow = null;
-        this.commandRows = new Array();
-        this.headerRow = null;
-        var tables = this.document.getElementsByTagName("table");
-        for (var i = 0; i < tables.length; i++) {
-            var candidateRows = tables[i].rows;
-            for (var j = 0; j < candidateRows.length; j++) {
-                if (!this.headerRow) {
-                    this.headerRow = candidateRows[j];
-                }
-                if (candidateRows[j].cells.length >= 3) {
-                    this.addCommandRow(candidateRows[j]);
-                }
-            }
+        this.controlPanel.setHighlightOption();
+        var testSuiteName = this.controlPanel.getTestSuiteName();
+        if (testSuiteName) {
+            suiteFrame.load(testSuiteName, this._onloadTestSuite.bind(this));
         }
     },
 
-    addCommandRow: function(row) {
-        if (row.cells[2] && row.cells[2].originalHTML) {
-            row.cells[2].innerHTML = row.cells[2].originalHTML;
+    _getApplicationWindow: function () {
+        if (this.controlPanel.isMultiWindowMode()) {
+            return this._getSeparateApplicationWindow();
         }
-        row.bgColor = "";
-        this.commandRows.push(row);
+        return $('myiframe').contentWindow;
     },
 
-    nextCommand: function() {
-        if (this.commandRows.length > 0) {
-            this.currentRow = this.commandRows.shift();
-        } else {
-            this.currentRow = null;
+    _getSeparateApplicationWindow: function () {
+        if (this.appWindow == null) {
+            this.appWindow = openSeparateApplicationWindow('TestRunner-splash.html');
         }
-        return this.currentRow;
-    }
+        return this.appWindow;
+    },
 
-};
-
-function startTestSuite() {
-    resetMetrics();
-    currentRowInSuite = 0;
-    runAllTests = true;
-    suiteFailed = false;
-
-    runNextTest();
-}
-
-function runNextTest() {
-    if (!runAllTests)
+    _onloadTestSuite:function () {
+        this.htmlTestSuite = new HtmlTestSuite(suiteFrame.getDocument());
+        if (! this.htmlTestSuite.isAvailable()) {
             return;
-
-    suiteTable = getIframeDocument(getSuiteFrame()).getElementsByTagName("table")[0];
-
-    // Do not change the row color of the first row
-    if (currentRowInSuite > 0) {
-        // Provide test-status feedback
-        if (testFailed) {
-            setCellColor(suiteTable.rows, currentRowInSuite, 0, failColor);
-        } else {
-            setCellColor(suiteTable.rows, currentRowInSuite, 0, passColor);
         }
-
-        // Set the results from the previous test run
-        setResultsData(suiteTable, currentRowInSuite);
-    }
-
-    currentRowInSuite++;
-
-    // If we are done with all of the tests, set the title bar as pass or fail
-    if (currentRowInSuite >= suiteTable.rows.length) {
-        if (suiteFailed) {
-            setCellColor(suiteTable.rows, 0, 0, failColor);
+        if (this.controlPanel.isAutomatedRun()) {
+            htmlTestRunner.startTestSuite();
+        } else if (this.controlPanel.getAutoUrl()) {
+            //todo what is the autourl doing, left to check it out
+            addLoadListener(this._getApplicationWindow(), this._startSingleTest.bind(this));
+            this._getApplicationWindow().src = this.controlPanel.getAutoUrl();
         } else {
-            setCellColor(suiteTable.rows, 0, 0, passColor);
+            this.htmlTestSuite.getSuiteRows()[0].loadTestCase();
         }
+    },
 
-        // If this is an automated run (i.e., build script), then submit
-        // the test results by posting to a form
-        if (isAutomatedRun())
-                postTestResults(suiteFailed, suiteTable);
+    _startSingleTest:function () {
+        removeLoadListener(getApplicationWindow(), this._startSingleTest.bind(this));
+        var singleTestName = this.controlPanel.getSingleTestName();
+        testFrame.load(singleTestName, this.startTest.bind(this));
+    },
+
+    _registerCommandHandlers: function () {
+        this.commandFactory = new CommandHandlerFactory();
+        this.commandFactory.registerAll(selenium);
+    },
+
+    startTestSuite: function() {
+        this.controlPanel.reset();
+        this.metrics.resetMetrics();
+        this.htmlTestSuite.reset();
+        this.runAllTests = true;
+        this.runNextTest();
+    },
+
+    runNextTest: function () {
+        if (!this.runAllTests) {
+            return;
+        }
+        this.htmlTestSuite.runNextTestInSuite();
+    },
+
+    startTest: function () {
+        this.controlPanel.reset();
+        testFrame.scrollToTop();
+        //todo: move testFailed and storedVars to TestCase
+        this.testFailed = false;
+        storedVars = new Object();
+        this.currentTest = new HtmlRunnerTestLoop(testFrame.getCurrentTestCase(), this.metrics, this.commandFactory);
+        currentTest = this.currentTest;
+        this.currentTest.start();
+    },
+
+    runSingleTest:function() {
+        this.runAllTests = false;
+        this.metrics.resetMetrics();
+        this.startTest();
+    }
+});
+
+var FeedbackColors = Class.create();
+Object.extend(FeedbackColors, {
+    passColor : "#ccffcc",
+    doneColor : "#eeffee",
+    failColor : "#ffcccc",
+    workingColor : "#ffffcc",
+    breakpointColor : "#cccccc"
+});
+
+
+var runInterval = 0;
+
+
+/** SeleniumFrame encapsulates an iframe element */
+var SeleniumFrame = Class.create();
+Object.extend(SeleniumFrame.prototype, {
+
+    initialize : function(frame) {
+        this.frame = frame;
+        addLoadListener(this.frame, this._handleLoad.bind(this));
+    },
+
+    getDocument : function() {
+        return this.frame.contentWindow.document;
+    },
+
+    _handleLoad: function() {
+		this._onLoad();
+        if (this.loadCallback) {
+            this.loadCallback();
+            this.loadCallback = null;
+        }
+    },
+
+    _onLoad: function() {
+    },
+
+    scrollToTop : function() {
+        this.frame.contentWindow.scrollTo(0, 0);
+    },
+
+    _setLocation: function(location) {
+        if (browserVersion.isSafari) {
+			// safari doesn't reload the page when the location equals to current location.
+			// hence, set the location to blank so that the page will reload automatically.
+			this.frame.src = "about:blank";
+            this.frame.src = location;
+        } else {
+            this.frame.contentWindow.location.replace(location);
+        }
+    },
+
+    load: function(/* url, [callback] */) {
+        if (arguments.length > 1) {
+            this.loadCallback = arguments[1];
+
+        }
+        this._setLocation(arguments[0]);
     }
 
-    else {
-        // Make the current row blue
-        setCellColor(suiteTable.rows, currentRowInSuite, 0, workingColor);
+});
 
-        testLink = suiteTable.rows[currentRowInSuite].cells[0].getElementsByTagName("a")[0];
-        testLink.focus();
+/** HtmlTestFrame - encapsulates the test-case iframe element */
+var HtmlTestFrame = Class.create();
+Object.extend(HtmlTestFrame.prototype, SeleniumFrame.prototype);
+Object.extend(HtmlTestFrame.prototype, {
 
-        var testFrame = getTestFrame();
-        addLoadListener(testFrame, startTest);
+    _onLoad: function() {
+        this.setCurrentTestCase();
+    },
 
-        selenium.browserbot.setIFrameLocation(testFrame, testLink.href);
+    setCurrentTestCase: function() {
+        //todo: this is not good looking
+        this.currentTestCase = new HtmlTestCase(this.getDocument(), htmlTestRunner.htmlTestSuite.getCurrentRow());
+    },
+
+    getCurrentTestCase: function() {
+        return this.currentTestCase;
     }
+
+});
+
+function onSeleniumLoad() {
+    suiteFrame = new SeleniumFrame(getSuiteFrame());
+    testFrame = new HtmlTestFrame(getTestFrame());
+    htmlTestRunner = new HtmlTestRunner();
 }
 
-function setCellColor(tableRows, row, col, colorStr) {
-    tableRows[row].cells[col].bgColor = colorStr;
+
+var suiteFrame;
+var testFrame;
+function getSuiteFrame() {
+    var f = $('testSuiteFrame');
+    if (f == null) {
+        f = top;
+        // proxyInjection mode does not set myiframe
+    }
+    return f;
 }
 
-// Sets the results from a test into a hidden column on the suite table.  So,
-// for each tests, the second column is set to the HTML from the test table.
-function setResultsData(suiteTable, row) {
-    // Create a text node of the test table
-    var resultTable = getIframeDocument(getTestFrame()).body.innerHTML;
-    if (!resultTable) return;
-
-    var tableNode = suiteTable.ownerDocument.createElement("div");
-    tableNode.innerHTML = resultTable;
-
-    var new_column = suiteTable.ownerDocument.createElement("td");
-    new_column.appendChild(tableNode);
-
-    // Set the column to be invisible
-    new_column.style.display = "none";
-
-    // Add the invisible column
-    suiteTable.rows[row].appendChild(new_column);
+function getTestFrame() {
+    var f = $('testFrame');
+    if (f == null) {
+        f = top;
+        // proxyInjection mode does not set myiframe
+    }
+    return f;
 }
+
+var HtmlTestRunnerControlPanel = Class.create();
+Object.extend(HtmlTestRunnerControlPanel.prototype, URLConfiguration.prototype);
+Object.extend(HtmlTestRunnerControlPanel.prototype, {
+    initialize: function() {
+        this._acquireQueryString();
+
+        this.runInterval = 0;
+
+        this.highlightOption = $('highlightOption');
+        this.pauseButton = $('pauseTest');
+        this.stepButton = $('stepTest');
+
+        this.highlightOption.onclick = (function() {
+            this.setHighlightOption();
+        }).bindAsEventListener(this);
+        this.pauseButton.onclick = this.pauseCurrentTest.bindAsEventListener(this);
+        this.stepButton.onclick = this.stepCurrentTest.bindAsEventListener(this);
+
+        this.speedController = new Control.Slider('speedHandle', 'speedTrack', {
+            range: $R(0, 1000),
+            onSlide: this.setRunInterval.bindAsEventListener(this),
+            onChange: this.setRunInterval.bindAsEventListener(this)
+        });
+
+        this._parseQueryParameter();
+    },
+
+    setHighlightOption: function () {
+        var isHighlight = this.highlightOption.checked;
+        selenium.browserbot.getCurrentPage().setHighlightElement(isHighlight);
+    },
+
+    _parseQueryParameter: function() {
+        var tempRunInterval = this._getQueryParameter("runInterval");
+        if (tempRunInterval) {
+            this.setRunInterval(tempRunInterval);
+        }
+        this.highlightOption.checked = this._getQueryParameter("highlight");
+    },
+
+    setRunInterval: function(runInterval) {
+        this.runInterval = runInterval;
+    },
+
+    setToPauseAtNextCommand: function() {
+        this.runInterval = -1;
+    },
+
+    pauseCurrentTest: function () {
+        this.setToPauseAtNextCommand();
+        this._switchPauseButtonToContinue();
+    },
+
+    continueCurrentTest: function () {
+        this.reset();
+        currentTest.resume();
+    },
+
+    reset: function() {
+        this.runInterval = this.speedController.value;
+        this._switchContinueButtonToPause();
+    },
+
+    _switchContinueButtonToPause: function() {
+        this.pauseButton.innerHTML = "Pause";
+        this.pauseButton.onclick = this.pauseCurrentTest.bindAsEventListener(this);
+    },
+
+    _switchPauseButtonToContinue: function() {
+        $('stepTest').disabled = false;
+        this.pauseButton.innerHTML = "Continue";
+        this.pauseButton.onclick = this.continueCurrentTest.bindAsEventListener(this);
+    },
+
+    stepCurrentTest: function () {
+        this.setToPauseAtNextCommand();
+        currentTest.resume();
+    },
+
+    isAutomatedRun: function() {
+        return this._isQueryParameterTrue("auto");
+    },
+
+    shouldSaveResultsToFile: function() {
+        return this._isQueryParameterTrue("save");
+    },
+
+    closeAfterTests: function() {
+        return this._isQueryParameterTrue("close");
+    },
+
+    getTestSuiteName: function() {
+        return this._getQueryParameter("test");
+    },
+
+    getSingleTestName: function() {
+        return this._getQueryParameter("singletest");
+    },
+
+    getAutoUrl: function() {
+        return this._getQueryParameter("autoURL");
+    },
+
+    getResultsUrl: function() {
+        return this._getQueryParameter("resultsUrl");
+    },
+
+    _acquireQueryString: function() {
+        if (this.queryString) return;
+        if (browserVersion.isHTA) {
+            var args = this._extractArgs();
+            if (args.length < 2) return null;
+            this.queryString = args[1];
+        } else {
+            this.queryString = location.search.substr(1);
+        }
+    }
+
+});
+
+
+var AbstractResultAwareRow = Class.create();
+Object.extend(AbstractResultAwareRow.prototype, {
+
+    initialize: function(trElement) {
+        this.trElement = trElement;
+    },
+
+    markWorking: function() {
+        this.trElement.bgColor = FeedbackColors.workingColor;
+        safeScrollIntoView(this.trElement);
+    },
+
+    markPassed: function() {
+        this.trElement.bgColor = FeedbackColors.passColor;
+    },
+
+    markDone: function() {
+        this.trElement.bgColor = FeedbackColors.doneColor;
+    },
+
+    markFailed: function() {
+        this.trElement.bgColor = FeedbackColors.failColor;
+    }
+
+});
+
+var HtmlTestCaseRow = Class.create();
+Object.extend(HtmlTestCaseRow.prototype, AbstractResultAwareRow.prototype);
+Object.extend(HtmlTestCaseRow.prototype, {
+
+    getCommand: function () {
+        return new SeleniumCommand(getText(this.trElement.cells[0]),
+                getText(this.trElement.cells[1]),
+                getText(this.trElement.cells[2]),
+                this.isBreakpoint());
+    },
+
+    markFailed: function(errorMsg) {
+        this.trElement.bgColor = FeedbackColors.failColor;
+        this.setMessage(errorMsg);
+    },
+
+    setMessage: function(message) {
+        this.trElement.cells[2].innerHTML = message;
+    },
+
+    reset: function() {
+        this.trElement.bgColor = '';
+        var thirdCell = this.trElement.cells[2];
+        if (thirdCell) {
+            if (thirdCell.originalHTML) {
+                thirdCell.innerHTML = thirdCell.originalHTML;
+            } else {
+                thirdCell.originalHTML = thirdCell.innerHTML;
+            }
+        }
+    },
+
+    onClick: function() {
+        if (this.trElement.isBreakpoint == undefined) {
+            this.trElement.isBreakpoint = true;
+            this.trElement.beforeBackgroundColor = Element.getStyle(this.trElement, "backgroundColor");
+            Element.setStyle(this.trElement, {"background-color" : FeedbackColors.breakpointColor});
+        } else {
+            this.trElement.isBreakpoint = undefined;
+            Element.setStyle(this.trElement, {"background-color" : this.trElement.beforeBackgroundColor});
+        }
+    },
+
+    addBreakpointSupport: function() {
+        Element.setStyle(this.trElement, {"cursor" : "pointer"});
+        this.trElement.onclick = function() {
+            this.onClick();
+        }.bindAsEventListener(this);
+    },
+
+    isBreakpoint: function() {
+        if (this.trElement.isBreakpoint == undefined || this.trElement.isBreakpoint == null) {
+            return false
+        }
+        return this.trElement.isBreakpoint;
+    }
+});
+
+var HtmlTestSuiteRow = Class.create();
+Object.extend(HtmlTestSuiteRow.prototype, AbstractResultAwareRow.prototype);
+Object.extend(HtmlTestSuiteRow.prototype, {
+
+    initialize: function(trElement, testFrame, htmlTestSuite) {
+        this.trElement = trElement;
+        this.testFrame = testFrame;
+        this.htmlTestSuite = htmlTestSuite;
+        this.link = trElement.getElementsByTagName("a")[0];
+        this.link.onclick = this._onClick.bindAsEventListener(this);
+    },
+
+    reset: function() {
+        this.trElement.bgColor = '';
+    },
+
+    _onClick: function() {
+        // todo: just send a message to the testSuite
+        this.loadTestCase(null);
+        return false;
+    },
+
+    loadTestCase: function(onloadFunction) {
+        this.htmlTestSuite.currentRowInSuite = this.trElement.rowIndex - 1;
+        // If the row has a stored results table, use that
+        var resultsFromPreviousRun = this.trElement.cells[1];
+        if (resultsFromPreviousRun) {
+            // this.testFrame.restoreTestCase(resultsFromPreviousRun.innerHTML);
+            var testBody = this.testFrame.getDocument().body;
+            testBody.innerHTML = resultsFromPreviousRun.innerHTML;
+            testFrame.setCurrentTestCase();
+            if (onloadFunction) {
+                onloadFunction();
+            }
+        } else {
+			this.testFrame.load(this.link.href, onloadFunction);
+        }
+    },
+
+    saveTestResults: function() {
+        // todo: GLOBAL ACCESS!
+        var resultHTML = this.testFrame.getDocument().body.innerHTML;
+        if (!resultHTML) return;
+
+        // todo: why create this div?
+        var divElement = this.trElement.ownerDocument.createElement("div");
+        divElement.innerHTML = resultHTML;
+
+        var hiddenCell = this.trElement.ownerDocument.createElement("td");
+        hiddenCell.appendChild(divElement);
+        hiddenCell.style.display = "none";
+
+        this.trElement.appendChild(hiddenCell);
+    }
+
+});
+
+var HtmlTestSuite = Class.create();
+Object.extend(HtmlTestSuite.prototype, {
+
+    initialize: function(suiteDocument) {
+        this.suiteDocument = suiteDocument;
+        this.suiteRows = this._collectSuiteRows();
+        this.titleRow = this.getTestTable().rows[0];
+        this.title = this.titleRow.cells[0].innerHTML;
+        this.reset();
+    },
+
+    reset: function() {
+        this.failed = false;
+        this.currentRowInSuite = -1;
+        this.titleRow.bgColor = '';
+        this.suiteRows.each(function(row) {
+            row.reset();
+        });
+    },
+
+    getTitle: function() {
+        return this.title;
+    },
+
+    getSuiteRows: function() {
+        return this.suiteRows;
+    },
+
+    getTestTable: function() {
+        var tables = $A(this.suiteDocument.getElementsByTagName("table"));
+        return tables[0];
+    },
+
+    isAvailable: function() {
+        return this.getTestTable() != null;
+    },
+
+    _collectSuiteRows: function () {
+        var result = [];
+        for (rowNum = 1; rowNum < this.getTestTable().rows.length; rowNum++) {
+            var rowElement = this.getTestTable().rows[rowNum];
+            result.push(new HtmlTestSuiteRow(rowElement, testFrame, this));
+        }
+        return result;
+    },
+
+    getCurrentRow: function() {
+        return this.suiteRows[this.currentRowInSuite];
+    },
+
+    markFailed: function() {
+        this.failed = true;
+        this.titleRow.bgColor = FeedbackColors.failColor;
+    },
+
+    markDone: function() {
+        if (!this.failed) {
+            this.titleRow.bgColor = FeedbackColors.passColor;
+        }
+    },
+
+    _startCurrentTestCase: function() {
+        this.getCurrentRow().markWorking();
+        this.getCurrentRow().loadTestCase(htmlTestRunner.startTest.bind(htmlTestRunner));
+    },
+
+    _onTestSuiteComplete: function() {
+        this.markDone();
+        new TestResult(this.failed, this.getTestTable()).post();
+    },
+
+    _updateSuiteWithResultOfPreviousTest: function() {
+        if (this.currentRowInSuite >= 0) {
+            this.getCurrentRow().saveTestResults();
+        }
+    },
+
+    runNextTestInSuite: function() {
+        this._updateSuiteWithResultOfPreviousTest();
+        this.currentRowInSuite++;
+
+        // If we are done with all of the tests, set the title bar as pass or fail
+        if (this.currentRowInSuite >= this.suiteRows.length) {
+            this._onTestSuiteComplete();
+        } else {
+            this._startCurrentTestCase();
+        }
+    }
+
+
+
+});
+
+var TestResult = Class.create();
+Object.extend(TestResult.prototype, {
 
 // Post the results to a servlet, CGI-script, etc.  The URL of the
 // results-handler defaults to "/postResults", but an alternative location
@@ -461,288 +612,584 @@ function setResultsData(suiteTable, row) {
 //      suite:      the suite table, including the hidden column of test results
 //      testTable.1 to testTable.N: the individual test tables
 //
-function postTestResults(suiteFailed, suiteTable) {
+    initialize: function (suiteFailed, suiteTable) {
+        this.controlPanel = htmlTestRunner.controlPanel;
+        this.metrics = htmlTestRunner.metrics;
+        this.suiteFailed = suiteFailed;
+        this.suiteTable = suiteTable;
+    },
 
-    form = document.createElement("form");
-    document.body.appendChild(form);
-
-    form.id = "resultsForm";
-    form.method="post";
-    form.target="myiframe";
-
-    var resultsUrl = getQueryParameter("resultsUrl");
-    if (!resultsUrl) {
-        resultsUrl = "./postResults";
-    }
-
-    var actionAndParameters = resultsUrl.split('?',2);
-    form.action = actionAndParameters[0];
-    var resultsUrlQueryString = actionAndParameters[1];
-
-    form.createHiddenField = function(name, value) {
-        input = document.createElement("input");
-        input.type = "hidden";
-        input.name = name;
-        input.value = value;
-        this.appendChild(input);
-    };
-
-    if (resultsUrlQueryString) {
-        var clauses = resultsUrlQueryString.split('&');
-        for (var i = 0; i < clauses.length; i++) {
-            var keyValuePair = clauses[i].split('=',2);
-            var key = unescape(keyValuePair[0]);
-            var value = unescape(keyValuePair[1]);
-            form.createHiddenField(key, value);
+    post: function () {
+        if (!this.controlPanel.isAutomatedRun()) {
+            return;
         }
-    }
+        var form = document.createElement("form");
+        document.body.appendChild(form);
 
-    form.createHiddenField("selenium.version", Selenium.version);
-    form.createHiddenField("selenium.revision", Selenium.revision);
-    
-    form.createHiddenField("result", suiteFailed == true ? "failed" : "passed");
+        form.id = "resultsForm";
+        form.method = "post";
+        form.target = "myiframe";
 
-    form.createHiddenField("totalTime", Math.floor((currentTime - startTime) / 1000));
-    form.createHiddenField("numTestPasses", numTestPasses);
-    form.createHiddenField("numTestFailures", numTestFailures);
-    form.createHiddenField("numCommandPasses", numCommandPasses);
-    form.createHiddenField("numCommandFailures", numCommandFailures);
-    form.createHiddenField("numCommandErrors", numCommandErrors);
-
-    // Create an input for each test table.  The inputs are named
-    // testTable.1, testTable.2, etc.
-    for (rowNum = 1; rowNum < suiteTable.rows.length;rowNum++) {
-        // If there is a second column, then add a new input
-        if (suiteTable.rows[rowNum].cells.length > 1) {
-            var resultCell = suiteTable.rows[rowNum].cells[1];
-            form.createHiddenField("testTable." + rowNum, resultCell.innerHTML);
-            // remove the resultCell, so it's not included in the suite HTML
-            resultCell.parentNode.removeChild(resultCell); 
+        var resultsUrl = this.controlPanel.getResultsUrl();
+        if (!resultsUrl) {
+            resultsUrl = "./postResults";
         }
+
+        var actionAndParameters = resultsUrl.split('?', 2);
+        form.action = actionAndParameters[0];
+        var resultsUrlQueryString = actionAndParameters[1];
+
+        form.createHiddenField = function(name, value) {
+            input = document.createElement("input");
+            input.type = "hidden";
+            input.name = name;
+            input.value = value;
+            this.appendChild(input);
+        };
+
+        if (resultsUrlQueryString) {
+            var clauses = resultsUrlQueryString.split('&');
+            for (var i = 0; i < clauses.length; i++) {
+                var keyValuePair = clauses[i].split('=', 2);
+                var key = unescape(keyValuePair[0]);
+                var value = unescape(keyValuePair[1]);
+                form.createHiddenField(key, value);
+            }
+        }
+
+        form.createHiddenField("selenium.version", Selenium.version);
+        form.createHiddenField("selenium.revision", Selenium.revision);
+
+        form.createHiddenField("result", this.suiteFailed ? "failed" : "passed");
+
+        form.createHiddenField("totalTime", Math.floor((this.metrics.currentTime - this.metrics.startTime) / 1000));
+        form.createHiddenField("numTestPasses", this.metrics.numTestPasses);
+        form.createHiddenField("numTestFailures", this.metrics.numTestFailures);
+        form.createHiddenField("numCommandPasses", this.metrics.numCommandPasses);
+        form.createHiddenField("numCommandFailures", this.metrics.numCommandFailures);
+        form.createHiddenField("numCommandErrors", this.metrics.numCommandErrors);
+
+        // Create an input for each test table.  The inputs are named
+        // testTable.1, testTable.2, etc.
+        for (rowNum = 1; rowNum < this.suiteTable.rows.length; rowNum++) {
+            // If there is a second column, then add a new input
+            if (this.suiteTable.rows[rowNum].cells.length > 1) {
+                var resultCell = this.suiteTable.rows[rowNum].cells[1];
+                form.createHiddenField("testTable." + rowNum, resultCell.innerHTML);
+                // remove the resultCell, so it's not included in the suite HTML
+                resultCell.parentNode.removeChild(resultCell);
+            }
+        }
+
+        form.createHiddenField("numTestTotal", rowNum);
+
+        // Add HTML for the suite itself
+        form.createHiddenField("suite", this.suiteTable.parentNode.innerHTML);
+
+        if (this.controlPanel.shouldSaveResultsToFile()) {
+            this._saveToFile(resultsUrl, form);
+        } else {
+            form.submit();
+        }
+        document.body.removeChild(form);
+        if (this.controlPanel.closeAfterTests()) {
+            window.top.close();
+        }
+    },
+
+    _saveToFile: function (fileName, form) {
+        // This only works when run as an IE HTA
+        var inputs = new Object();
+        for (var i = 0; i < form.elements.length; i++) {
+            inputs[form.elements[i].name] = form.elements[i].value;
+        }
+        var objFSO = new ActiveXObject("Scripting.FileSystemObject")
+        var scriptFile = objFSO.CreateTextFile(fileName);
+        scriptFile.WriteLine("<html><body>\n<h1>Test suite results </h1>" +
+                             "\n\n<table>\n<tr>\n<td>result:</td>\n<td>" + inputs["result"] + "</td>\n" +
+                             "</tr>\n<tr>\n<td>totalTime:</td>\n<td>" + inputs["totalTime"] + "</td>\n</tr>\n" +
+                             "<tr>\n<td>numTestPasses:</td>\n<td>" + inputs["numTestPasses"] + "</td>\n</tr>\n" +
+                             "<tr>\n<td>numTestFailures:</td>\n<td>" + inputs["numTestFailures"] + "</td>\n</tr>\n" +
+                             "<tr>\n<td>numCommandPasses:</td>\n<td>" + inputs["numCommandPasses"] + "</td>\n</tr>\n" +
+                             "<tr>\n<td>numCommandFailures:</td>\n<td>" + inputs["numCommandFailures"] + "</td>\n</tr>\n" +
+                             "<tr>\n<td>numCommandErrors:</td>\n<td>" + inputs["numCommandErrors"] + "</td>\n</tr>\n" +
+                             "<tr>\n<td>" + inputs["suite"] + "</td>\n<td>&nbsp;</td>\n</tr>");
+        var testNum = inputs["numTestTotal"];
+        for (var rowNum = 1; rowNum < testNum; rowNum++) {
+            scriptFile.WriteLine("<tr>\n<td>" + inputs["testTable." + rowNum] + "</td>\n<td>&nbsp;</td>\n</tr>");
+        }
+        scriptFile.WriteLine("</table></body></html>");
+        scriptFile.Close();
     }
-    
-    form.createHiddenField("numTestTotal", rowNum);
+});
 
-    // Add HTML for the suite itself
-    form.createHiddenField("suite", suiteTable.parentNode.innerHTML);
+/** HtmlTestCase encapsulates an HTML test document */
+var HtmlTestCase = Class.create();
+Object.extend(HtmlTestCase.prototype, {
 
-	if (isQueryParameterTrue("save")) {
-		saveToFile(resultsUrl, form);
-	} else {
-    	form.submit();
-    }
-    document.body.removeChild(form);
-	if (isQueryParameterTrue("close")) {
-    	window.top.close();
-    }
-}
+    initialize: function(testDocument, htmlTestSuiteRow) {
+        if (testDocument == null) {
+            throw "testDocument should not be null";
+        }
+        if (htmlTestSuiteRow == null) {
+            throw "htmlTestSuiteRow should not be null";
+        }
+        this.testDocument = testDocument;
+        this.htmlTestSuiteRow = htmlTestSuiteRow;
+        this.commandRows = this._collectCommandRows();
+        this.nextCommandRowIndex = 0;
+        this._addBreakpointSupport();
+    },
 
-function saveToFile(fileName, form) {
-	// This only works when run as an IE HTA
-	var inputs = new Object();
-	for (var i = 0; i < form.elements.length; i++) {
-		inputs[form.elements[i].name] = form.elements[i].value;
-	}
-	var objFSO = new ActiveXObject("Scripting.FileSystemObject")
-	var scriptFile = objFSO.CreateTextFile(fileName);
-	scriptFile.WriteLine("<html><body>\n<h1>Test suite results </h1>" +
-            "\n\n<table>\n<tr>\n<td>result:</td>\n<td>" + inputs["result"] + "</td>\n" +
-            "</tr>\n<tr>\n<td>totalTime:</td>\n<td>" + inputs["totalTime"] + "</td>\n</tr>\n" +
-            "<tr>\n<td>numTestPasses:</td>\n<td>" + inputs["numTestPasses"] + "</td>\n</tr>\n" +
-            "<tr>\n<td>numTestFailures:</td>\n<td>" + inputs["numTestFailures"] + "</td>\n</tr>\n" +
-            "<tr>\n<td>numCommandPasses:</td>\n<td>" + inputs["numCommandPasses"] + "</td>\n</tr>\n" +
-            "<tr>\n<td>numCommandFailures:</td>\n<td>" + inputs["numCommandFailures"] + "</td>\n</tr>\n" +
-            "<tr>\n<td>numCommandErrors:</td>\n<td>" + inputs["numCommandErrors"] + "</td>\n</tr>\n" +
-            "<tr>\n<td>" + inputs["suite"] + "</td>\n<td>&nbsp;</td>\n</tr>");
-    var testNum = inputs["numTestTotal"];
-    for (var rowNum = 1; rowNum < testNum; rowNum++) {
-    	scriptFile.WriteLine("<tr>\n<td>" + inputs["testTable." + rowNum] + "</td>\n<td>&nbsp;</td>\n</tr>");
-    }
-    scriptFile.WriteLine("</table></body></html>");
-    scriptFile.Close();
-}
+    _collectCommandRows: function () {
+        var commandRows = [];
+        var tables = $A(this.testDocument.getElementsByTagName("table"));
+        var self = this;
+        tables.each(function (table) {
+            $A(table.rows).each(function(candidateRow) {
+                if (self.isCommandRow(candidateRow)) {
+                    commandRows.push(new HtmlTestCaseRow(candidateRow));
+                }
+            }.bind(this));
+        });
+        return commandRows;
+    },
 
-function printMetrics() {
-    setText(document.getElementById("commandPasses"), numCommandPasses);
-    setText(document.getElementById("commandFailures"), numCommandFailures);
-    setText(document.getElementById("commandErrors"), numCommandErrors);
-    setText(document.getElementById("testRuns"), numTestPasses + numTestFailures);
-    setText(document.getElementById("testFailures"), numTestFailures);
+    isCommandRow:  function (row) {
+        return row.cells.length >= 3;
+    },
 
-    currentTime = new Date().getTime();
+    reset: function() {
+        /**
+         * reset the test to runnable state
+         */
+        this.nextCommandRowIndex = 0;
 
-    timeDiff = currentTime - startTime;
-    totalSecs = Math.floor(timeDiff / 1000);
+        this._setTitleColor('');
+        this.commandRows.each(function(row) {
+            row.reset();
+        });
 
-    minutes = Math.floor(totalSecs / 60);
-    seconds = totalSecs % 60;
+        // remove any additional fake "error" row added to the end of the document
+        var errorElement = this.testDocument.getElementById('error');
+        if (errorElement) {
+            Element.remove(errorElement);
+        }
+    },
 
-    setText(document.getElementById("elapsedTime"), pad(minutes)+":"+pad(seconds));
-}
+    getCommandRows: function () {
+        return this.commandRows;
+    },
 
-// Puts a leading 0 on num if it is less than 10
-function pad (num) {
-    return (num > 9) ? num : "0" + num;
-}
+    _setTitleColor: function(color) {
+        var headerRow = this.testDocument.getElementsByTagName("tr")[0];
+        if (headerRow) {
+            headerRow.bgColor = color;
+        }
+    },
 
-/*
- * Register all of the built-in command handlers with the CommandHandlerFactory.
- * TODO work out an easy way for people to register handlers without modifying the Selenium sources.
- */
-function registerCommandHandlers() {
-    commandFactory = new CommandHandlerFactory();
-    commandFactory.registerAll(selenium);
+    markFailed: function() {
+        this._setTitleColor(FeedbackColors.failColor);
+        this.htmlTestSuiteRow.markFailed();
+    },
 
-}
+    markPassed: function() {
+        this._setTitleColor(FeedbackColors.passColor);
+        this.htmlTestSuiteRow.markPassed();
+    },
 
-function initialiseTestLoop() {
-    testLoop = new TestLoop(commandFactory);
+    addErrorMessage: function(errorMsg, currentRow) {
+        if (currentRow) {
+            currentRow.markFailed(errorMsg);
+        } else {
+            var errorElement = this.testDocument.createElement("p");
+            errorElement.id = "error";
+            errorElement.innerHTML = errorMsg;
+            this.testDocument.body.appendChild(errorElement);
+            Element.setStyle(errorElement, {'backgroundColor': FeedbackColors.failColor});
+        }
+    },
 
-    testLoop.getCommandInterval = function() { return runInterval; };
-    testLoop.nextCommand = nextCommand;
-    testLoop.commandStarted = commandStarted;
-    testLoop.commandComplete = commandComplete;
-    testLoop.commandError = commandError;
-    testLoop.testComplete = testComplete;
-    testLoop.pause = function() {
-        document.getElementById('continueTest').disabled = false;
-    };
-    return testLoop;
-}
+    _addBreakpointSupport: function() {
+        this.commandRows.each(function(row) {
+            row.addBreakpointSupport();
+        });
+    },
 
-function nextCommand() {
-    var row = currentTest.nextCommand();
-    if (row == null) {
+    hasMoreCommandRows: function() {
+        return this.nextCommandRowIndex < this.commandRows.length;
+    },
+
+    getNextCommandRow: function() {
+        if (this.hasMoreCommandRows()) {
+            return this.commandRows[this.nextCommandRowIndex++];
+        }
         return null;
     }
-    row.cells[2].originalHTML = row.cells[2].innerHTML;
-    return new SeleniumCommand(getText(row.cells[0]), 
-                               getText(row.cells[1]),
-                               getText(row.cells[2]));
-}
 
-function removeNbsp(value) {
-    return value.replace(/\240/g, "");
-}
+});
 
-function scrollIntoView(element) {
-    if (element.scrollIntoView) {
-        element.scrollIntoView(false);
-        return;
+
+// TODO: split out an JavascriptTestCase class to handle the "sejs" stuff
+
+var get_new_rows = function() {
+    var row_array = new Array();
+    for (var i = 0; i < new_block.length; i++) {
+
+        var new_source = (new_block[i][0].tokenizer.source.slice(new_block[i][0].start,
+                new_block[i][0].end));
+
+        var row = '<td style="display:none;" class="js">getEval</td>' +
+                  '<td style="display:none;">currentTest.doNextCommand()</td>' +
+                  '<td style="white-space: pre;">' + new_source + '</td>' +
+                  '<td></td>'
+
+        row_array.push(row);
     }
-    // TODO: work out how to scroll browsers that don't support
-    // scrollIntoView (like Konqueror)
-}
-
-function commandStarted() {
-    currentTest.currentRow.bgColor = workingColor;
-    scrollIntoView(currentTest.currentRow.cells[0]);
-    printMetrics();
-}
-
-function commandComplete(result) {
-    if (result.failed) {
-        numCommandFailures += 1;
-        recordFailure(result.failureMessage);
-    } else if (result.passed) {
-        numCommandPasses += 1;
-        currentTest.currentRow.bgColor = passColor;
-    } else {
-        currentTest.currentRow.bgColor = doneColor;
-    }
-}
-
-function commandError(errorMessage) {
-    numCommandErrors += 1;
-    recordFailure(errorMessage);
-}
-
-function recordFailure(errorMsg) {
-    LOG.warn("recordFailure: " + errorMsg);
-    // Set cell background to red
-    currentTest.currentRow.bgColor = failColor;
-
-    // Set error message
-    currentTest.currentRow.cells[2].innerHTML = errorMsg;
-    currentTest.currentRow.title = errorMsg;
-    testFailed = true;
-    suiteFailed = true;
-}
-
-function testComplete() {
-    var resultColor = passColor;
-    if (testFailed) {
-        resultColor = failColor;
-        numTestFailures += 1;
-    } else {
-        numTestPasses += 1;
-    }
-
-    if (currentTest.headerRow) {
-        currentTest.headerRow.bgColor = resultColor;
-    }
-    
-    printMetrics();
-
-    window.setTimeout("runNextTest()", 1);
-}
-
-Selenium.prototype.doPause = function(waitTime) {
-    testLoop.pauseInterval = waitTime;
+    return row_array;
 };
 
-Selenium.prototype.doPause.dontCheckAlertsAndConfirms = true;
+
+var Metrics = Class.create();
+Object.extend(Metrics.prototype, {
+    initialize: function() {
+        // The number of tests run
+        this.numTestPasses = 0;
+        // The number of tests that have failed
+        this.numTestFailures = 0;
+        // The number of commands which have passed
+        this.numCommandPasses = 0;
+        // The number of commands which have failed
+        this.numCommandFailures = 0;
+        // The number of commands which have caused errors (element not found)
+        this.numCommandErrors = 0;
+        // The time that the test was started.
+        this.startTime = null;
+        // The current time.
+        this.currentTime = null;
+    },
+
+    printMetrics: function() {
+        setText($('commandPasses'), this.numCommandPasses);
+        setText($('commandFailures'), this.numCommandFailures);
+        setText($('commandErrors'), this.numCommandErrors);
+        setText($('testRuns'), this.numTestPasses + this.numTestFailures);
+        setText($('testFailures'), this.numTestFailures);
+
+        this.currentTime = new Date().getTime();
+
+        var timeDiff = this.currentTime - this.startTime;
+        var totalSecs = Math.floor(timeDiff / 1000);
+
+        var minutes = Math.floor(totalSecs / 60);
+        var seconds = totalSecs % 60;
+
+        setText($('elapsedTime'), this._pad(minutes) + ":" + this._pad(seconds));
+    },
+
+// Puts a leading 0 on num if it is less than 10
+    _pad: function(num) {
+        return (num > 9) ? num : "0" + num;
+    },
+
+    resetMetrics: function() {
+        this.numTestPasses = 0;
+        this.numTestFailures = 0;
+        this.numCommandPasses = 0;
+        this.numCommandFailures = 0;
+        this.numCommandErrors = 0;
+        this.startTime = new Date().getTime();
+    }
+
+});
+
+var HtmlRunnerCommandFactory = Class.create();
+Object.extend(HtmlRunnerCommandFactory.prototype, {
+
+    initialize: function(seleniumCommandFactory, testLoop) {
+        this.seleniumCommandFactory = seleniumCommandFactory;
+        this.testLoop = testLoop;
+        this.handlers = {
+            pause: {
+                execute: function(selenium, command) {
+                    testLoop.pauseInterval = command.target;
+                    return {};
+                }
+            }
+        };
+        //todo: register commands
+    },
+
+    getCommandHandler: function(command) {
+        if (this.handlers[command]) {
+            return this.handlers[command];
+        }
+        return this.seleniumCommandFactory.getCommandHandler(command);
+    }
+
+});
+
+var HtmlRunnerTestLoop = Class.create();
+Object.extend(HtmlRunnerTestLoop.prototype, new TestLoop());
+Object.extend(HtmlRunnerTestLoop.prototype, {
+    initialize: function(htmlTestCase, metrics, seleniumCommandFactory) {
+
+        this.commandFactory = new HtmlRunnerCommandFactory(seleniumCommandFactory, this);
+        this.metrics = metrics;
+
+        this.htmlTestCase = htmlTestCase;
+
+        se = selenium;
+        global.se = selenium;
+
+        this.currentRow = null;
+        this.currentRowIndex = 0;
+
+        // used for selenium tests in javascript
+        this.currentItem = null;
+        this.commandAgenda = new Array();
+
+        this.htmlTestCase.reset();
+
+        this.sejsElement = this.htmlTestCase.testDocument.getElementById('sejs');
+        if (this.sejsElement) {
+            var fname = 'Selenium JavaScript';
+            parse_result = parse(this.sejsElement.innerHTML, fname, 0);
+
+            var x2 = new ExecutionContext(GLOBAL_CODE);
+            ExecutionContext.current = x2;
+
+            execute(parse_result, x2)
+        }
+    },
+
+    _advanceToNextRow: function() {
+        if (this.htmlTestCase.hasMoreCommandRows()) {
+            this.currentRow = this.htmlTestCase.getNextCommandRow();
+            if (this.sejsElement) {
+                this.currentItem = agenda.pop();
+                this.currentRowIndex++;
+            }
+        } else {
+            this.currentRow = null;
+            this.currentItem = null;
+        }
+    },
+
+    nextCommand : function() {
+        this._advanceToNextRow();
+        if (this.currentRow == null) {
+            return null;
+        }
+        return this.currentRow.getCommand();
+    },
+
+    commandStarted : function() {
+        $('pauseTest').disabled = false;
+        this.currentRow.markWorking();
+        this.metrics.printMetrics();
+    },
+
+    commandComplete : function(result) {
+        if (result.failed) {
+            this.metrics.numCommandFailures += 1;
+            this._recordFailure(result.failureMessage);
+        } else if (result.passed) {
+            this.metrics.numCommandPasses += 1;
+            this.currentRow.markPassed();
+        } else {
+            this.currentRow.markDone();
+        }
+    },
+
+    commandError : function(errorMessage) {
+        this.metrics.numCommandErrors += 1;
+        this._recordFailure(errorMessage);
+    },
+
+    _recordFailure : function(errorMsg) {
+        LOG.warn("currentTest.recordFailure: " + errorMsg);
+        htmlTestRunner.markFailed();
+        this.htmlTestCase.addErrorMessage(errorMsg, this.currentRow);
+    },
+
+    testComplete : function() {
+        $('pauseTest').disabled = true;
+        $('stepTest').disabled = true;
+        if (htmlTestRunner.testFailed) {
+            this.htmlTestCase.markFailed();
+            this.metrics.numTestFailures += 1;
+        } else {
+            this.htmlTestCase.markPassed();
+            this.metrics.numTestPasses += 1;
+        }
+
+        this.metrics.printMetrics();
+
+        window.setTimeout(function() {
+            htmlTestRunner.runNextTest();
+        }, 1);
+    },
+
+    getCommandInterval : function() {
+        return htmlTestRunner.controlPanel.runInterval;
+    },
+
+    pause : function() {
+        htmlTestRunner.controlPanel.pauseCurrentTest();
+    },
+
+    doNextCommand: function() {
+        var _n = this.currentItem[0];
+        var _x = this.currentItem[1];
+
+        new_block = new Array()
+        execute(_n, _x);
+        if (new_block.length > 0) {
+            var the_table = this.htmlTestCase.testDocument.getElementById("se-js-table")
+            var loc = this.currentRowIndex
+            var new_rows = get_new_rows()
+
+            // make the new statements visible on screen...
+            for (var i = 0; i < new_rows.length; i++) {
+                the_table.insertRow(loc + 1);
+                the_table.rows[loc + 1].innerHTML = new_rows[i];
+                this.commandRows.unshift(the_table.rows[loc + 1])
+            }
+
+        }
+    }
+
+});
+
 
 Selenium.prototype.doBreak = function() {
-    document.getElementById('modeStep').checked = true;
-    runInterval = -1;
+    /** Halt the currently running test, and wait for the user to press the Continue button.
+     * This command is useful for debugging, but be careful when using it, because it will
+     * force automated tests to hang until a user intervenes manually.
+     */
+    // todo: should not refer to controlPanel directly
+    htmlTestRunner.controlPanel.setToPauseAtNextCommand();
 };
+
+Selenium.prototype.doStore = function(expression, variableName) {
+    /** This command is a synonym for storeExpression.
+     * @param expression the value to store
+     * @param variableName the name of a <a href="#storedVars">variable</a> in which the result is to be stored.
+     */
+    storedVars[variableName] = expression;
+}
 
 /*
  * Click on the located element, and attach a callback to notify
  * when the page is reloaded.
  */
-Selenium.prototype.doModalDialogTest = function(returnValue) {
+// DGF TODO this code has been broken for some time... what is it trying to accomplish?
+Selenium.prototype.XXXdoModalDialogTest = function(returnValue) {
     this.browserbot.doModalDialogTest(returnValue);
 };
 
-/*
- * Store the value of a form input in a variable
- */
-Selenium.prototype.doStoreValue = function(target, varName) {
-    if (!varName) {
-        // Backward compatibility mode: read the ENTIRE text of the page
-        // and stores it in a variable with the name of the target
-        value = this.page().bodyText();
-        storedVars[target] = value;
-        return;
-    }
-    var element = this.page().findElement(target);
-    storedVars[varName] = getInputValue(element);
-};
-
-/*
- * Store the text of an element in a variable
- */
-Selenium.prototype.doStoreText = function(target, varName) {
-    var element = this.page().findElement(target);
-    storedVars[varName] = getText(element);
-};
-
-/*
- * Store the value of an element attribute in a variable
- */
-Selenium.prototype.doStoreAttribute = function(target, varName) {
-    storedVars[varName] = this.page().findAttribute(target);
-};
-
-/*
- * Store the result of a literal value
- */
-Selenium.prototype.doStore = function(value, varName) {
-    storedVars[varName] = value;
-};
-
-Selenium.prototype.doEcho = function(msg) {
-	currentTest.currentRow.cells[2].innerHTML = msg;
+Selenium.prototype.doEcho = function(message) {
+    /** Prints the specified message into the third table cell in your Selenese tables.
+     * Useful for debugging.
+     * @param message the message to print
+     */
+    currentTest.currentRow.setMessage(message);
 }
+
+Selenium.prototype.assertSelected = function(selectLocator, optionLocator) {
+    /**
+     * Verifies that the selected option of a drop-down satisfies the optionSpecifier.  <i>Note that this command is deprecated; you should use assertSelectedLabel, assertSelectedValue, assertSelectedIndex, or assertSelectedId instead.</i>
+     *
+     * <p>See the select command for more information about option locators.</p>
+     *
+     * @param selectLocator an <a href="#locators">element locator</a> identifying a drop-down menu
+     * @param optionLocator an option locator, typically just an option label (e.g. "John Smith")
+     */
+    var element = this.page().findElement(selectLocator);
+    var locator = this.optionLocatorFactory.fromLocatorString(optionLocator);
+    if (element.selectedIndex == -1)
+    {
+        Assert.fail("No option selected");
+    }
+    locator.assertSelected(element);
+};
+
+/**
+ * Tell Selenium to expect a failure on the next command execution. This
+ * command temporarily installs a CommandFactory that generates
+ * CommandHandlers that expect a failure.
+ */
+Selenium.prototype.assertFailureOnNext = function(message) {
+    if (!message) {
+        throw new Error("Message must be provided");
+    }
+
+    var expectFailureCommandFactory =
+        new ExpectFailureCommandFactory(currentTest.commandFactory, message, "failure", executeCommandAndReturnFailureMessage);
+    currentTest.commandFactory = expectFailureCommandFactory;
+};
+
+/**
+ * Tell Selenium to expect an error on the next command execution. This
+ * command temporarily installs a CommandFactory that generates
+ * CommandHandlers that expect a failure.
+ */
+Selenium.prototype.assertErrorOnNext = function(message) {
+    if (!message) {
+        throw new Error("Message must be provided");
+    }
+
+    var expectFailureCommandFactory =
+        new ExpectFailureCommandFactory(currentTest.commandFactory, message, "error", executeCommandAndReturnErrorMessage);
+    currentTest.commandFactory = expectFailureCommandFactory;
+};
+
+function executeCommandAndReturnFailureMessage(baseHandler, originalArguments) {
+    var baseResult = baseHandler.execute.apply(baseHandler, originalArguments);
+    if (baseResult.passed) {
+        return null;
+    }
+    return baseResult.failureMessage;
+};
+
+function executeCommandAndReturnErrorMessage(baseHandler, originalArguments) {
+    try {
+        baseHandler.execute.apply(baseHandler, originalArguments);
+        return null;
+    }
+    catch (expected) {
+        return expected.message;
+    }
+};
+
+function ExpectFailureCommandHandler(baseHandler, originalCommandFactory, expectedErrorMessage, errorType, decoratedExecutor) {
+    this.execute = function() {
+        var baseFailureMessage = decoratedExecutor(baseHandler, arguments);
+        var result = {};
+        if (!baseFailureMessage) {
+            result.failed = true;
+            result.failureMessage = "Expected " + errorType + " did not occur.";
+        }
+        else {
+            if (! PatternMatcher.matches(expectedErrorMessage, baseFailureMessage)) {
+                result.failed = true;
+                result.failureMessage = "Expected " + errorType + " message '" + expectedErrorMessage
+                                        + "' but was '" + baseFailureMessage + "'";
+            }
+            else {
+                result.passed = true;
+                result.result = baseFailureMessage;
+            }
+        }
+        currentTest.commandFactory = originalCommandFactory;
+        return result;
+    };
+}
+
+function ExpectFailureCommandFactory(originalCommandFactory, expectedErrorMessage, errorType, decoratedExecutor) {
+    this.getCommandHandler = function(name) {
+        var baseHandler = originalCommandFactory.getCommandHandler(name);
+        return new ExpectFailureCommandHandler(baseHandler, originalCommandFactory, expectedErrorMessage, errorType, decoratedExecutor);
+    };
+};

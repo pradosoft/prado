@@ -151,7 +151,7 @@ The summary can be displayed as a list, a bulleted list, or a single paragraph b
 </p>
 <com:RunBar PagePath="Controls.Samples.TValidationSummary.Home" />
 
-<h2>Client and Server Side Conditional Validation</h2>
+<h2 id="5301">Client and Server Side Conditional Validation</h2>
 <p>
 	All validators contains the following events.
 	<ul>
@@ -180,7 +180,7 @@ function onErrorHandler(sender, parameter)
 Where <tt>sender</tt> is the current client-side validator and <tt>parameter</tt>
 is the control that invoked the validator.
 </p>
-<h3>Conditional Validation Example</h3>
+<h3 id="5302">Conditional Validation Example</h3>
 <p>
 The following example show the use of client-side and server side validator events. The example
 demonstrates conditional validation.

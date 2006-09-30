@@ -1,18 +1,18 @@
 <com:TContent ID="body" >
-<h1>Command Line Tool</h1>
+<h1 id="501">Command Line Tool</h1>
 <p>The optional <tt>prado-cli.php</tt> PHP script file in the <tt>framework</tt>
 directory provides command line tools to perform various tendious taks in Prado.
 The <tt>prado-cli.php</tt> can be used to create Prado project skeletons, create
 initial test fixtures, and access to an interactive PHP shell.
 </p>
-<h2>Requirements</h2>
+<h2 id="502">Requirements</h2>
 <p>
 To use the command line tool, you need to use your command prompt, command console
 or terminal. In addition, PHP must be able to execute PHP scripts from
 the command line.
 </p>
 
-<h2>Usage</h2>
+<h2 id="503">Usage</h2>
 <p>
 If you type <tt>php path/to/framework/prado-cli.php</tt>, you should see
 the following information. Alternatively, if you are not on Windows, 
@@ -38,7 +38,7 @@ actions:
 <p>The <b>&lt;parameter&gt;</b> are required parameters and <b>[optional]</b>
 are optional parameters. </p>
 
-<h2>Creating a new Prado project skeleton</h2>
+<h2 id="504">Creating a new Prado project skeleton</h2>
 
 <p>To create a Prado project skeleton, do the following:</p>
 <ol>
@@ -49,7 +49,7 @@ are optional parameters. </p>
 	the test fixtures for the <tt>helloworld</tt> project.</li>
 </ol>
 
-<h2>Interactive Shell</h2>
+<h2 id="505">Interactive Shell</h2>
 <p>
 The interactive shell allows you to evaluate PHP statements from te command line.
 The <tt>prado-cli.php</tt> script can be used to start the shell and load an existing

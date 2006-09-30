@@ -7,8 +7,8 @@ class Page2Tex
 	private $_base;
 	private $_dir;
 
-	private $_verb_find = array('\$','\%', '\{', '\}', "\t",'``');
-	private $_verb_replace = array('$', '%', '{','}', "     ",'"');
+	private $_verb_find = array('\$','\%', '\{', '\}', "\t",'``','`');
+	private $_verb_replace = array('$', '%', '{','}', "     ",'"','\'');
 
 	function __construct($base, $dir, $current='')
 	{
@@ -87,7 +87,7 @@ class Page2Tex
 
 	function texttt($matches)
 	{
-		return '\texttt{'.str_replace(array('#','_'),array('\#','\_'), $matches[1]).'}';
+		return '\texttt{'.str_replace(array('#','_','&amp;'),array('\#','\_','\&'), $matches[1]).'}';
 	}
 
 	function get_current_path()
@@ -130,6 +130,7 @@ class Page2Tex
 		$html = preg_replace('/<\/?p>/', '', $html);
 
 		$html = preg_replace('/(\s+|\(+|\[+)"/', '$1``', $html);
+		$html = preg_replace('/(\s+|\(+|\[+)\'/', '$1`', $html);
 
 		//escape { and }
 		$html = preg_replace('/([^\s]+){([^}]*)}([^\s]+)/', '$1\\\{$2\\\}$3', $html);
