@@ -76,6 +76,22 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	}
 
 	/**
+	 * @return boolean whether to render javascript.
+	 */
+	public function getEnableClientScript()
+	{
+		return $this->getViewState('EnableClientScript',true);
+	}
+
+	/**
+	 * @param boolean whether to render javascript.
+	 */
+	public function setEnableClientScript($value)
+	{
+		$this->setViewState('EnableClientScript',TPropertyValue::ensureBoolean($value),true);
+	}
+
+	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This method overrides the parent implementation with additional textbox specific attributes.
 	 * @param THtmlWriter the writer used for the rendering purpose
@@ -138,8 +154,13 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 		$isEnabled=$this->getEnabled(true);
 		if(!$isEnabled && $this->getEnabled())  // in this case parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');
-		if($isEnabled && $this->getAutoPostBack() && $page->getClientSupportsJavaScript())
+		if($isEnabled
+			&& $this->getEnableClientScript()
+			&& $this->getAutoPostBack()
+			&& $page->getClientSupportsJavaScript())
+		{
 			$this->renderClientControlScript($writer);
+		}
 		parent::addAttributesToRender($writer);
 	}
 

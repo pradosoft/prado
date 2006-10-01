@@ -76,6 +76,22 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	}
 
 	/**
+	 * @return boolean whether to render javascript.
+	 */
+	public function getEnableClientScript()
+	{
+		return $this->getViewState('EnableClientScript',true);
+	}
+
+	/**
+	 * @param boolean whether to render javascript.
+	 */
+	public function setEnableClientScript($value)
+	{
+		$this->setViewState('EnableClientScript',TPropertyValue::ensureBoolean($value),true);
+	}
+
+	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This overrides the parent implementation with additional button specific attributes.
 	 * @param THtmlWriter the writer used for the rendering purpose
@@ -87,8 +103,12 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 		$writer->addAttribute('type','image');
 		if(($uniqueID=$this->getUniqueID())!=='')
 			$writer->addAttribute('name',$uniqueID);
-		if($this->getEnabled(true))
+		if($this->getEnabled(true)
+			&& $this-canCauseValidation()
+			&& $this->getEnableClientScript())
+		{
 			$this->renderClientControlScript($writer);
+		}
 		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');
 		parent::addAttributesToRender($writer);
@@ -99,12 +119,9 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	 */
 	protected function renderClientControlScript($writer)
 	{
-		if($this->canCauseValidation())
-		{
-			$writer->addAttribute('id',$this->getClientID());
-			$cs = $this->getPage()->getClientScript();
-			$cs->registerPostBackControl($this->getClientClassName(),$this->getPostBackOptions());
-		}
+		$writer->addAttribute('id',$this->getClientID());
+		$cs = $this->getPage()->getClientScript();
+		$cs->registerPostBackControl($this->getClientClassName(),$this->getPostBackOptions());
 	}
 
 	/**

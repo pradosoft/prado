@@ -131,16 +131,16 @@ Event.observe(window,'unload',Event.unloadCache,false);Object.extend(Event,{OnLo
 {var w=document.addEventListener&&!window.addEventListener?document:window;Event.observe(w,'load',fn);},keyCode:function(e)
 {return e.keyCode!=null?e.keyCode:e.charCode},isHTMLEvent:function(type)
 {var events=['abort','blur','change','error','focus','load','reset','resize','scroll','select','submit','unload'];return events.include(type);},isMouseEvent:function(type)
-{var events=['click','mousedown','mousemove','mouseout','mouseover','mouseup'];return events.include(type);},fireEvent:function(element,type)
-{element=$(element);if(type=="submit")
+{var events=['click','mousedown','mousemove','mouseout','mouseover','mouseup'];return events.include(type);},fireEvent:function(element,type,canBubble)
+{canBubble=(typeof(canBubble)==undefined)?true:canBubble;element=$(element);if(type=="submit")
 return element.submit();if(document.createEvent)
 {if(Event.isHTMLEvent(type))
-{var event=document.createEvent('HTMLEvents');event.initEvent(type,true,true);}
+{var event=document.createEvent('HTMLEvents');event.initEvent(type,canBubble,true);}
 else if(Event.isMouseEvent(type))
 {var event=document.createEvent('MouseEvents');if(event.initMouseEvent)
-{event.initMouseEvent(type,true,true,document.defaultView,1,0,0,0,0,false,false,false,false,0,null);}
+{event.initMouseEvent(type,canBubble,true,document.defaultView,1,0,0,0,0,false,false,false,false,0,null);}
 else
-{event.initEvent(type,true,true);}}
+{event.initEvent(type,canBubble,true);}}
 element.dispatchEvent(event);}
 else if(document.createEventObject)
 {var evObj=document.createEventObject();element.fireEvent('on'+type,evObj);}
@@ -390,17 +390,8 @@ text+=node.nodeValue;}
 if(text.length>0)
 window.clipboardData.setData("Text",text);},hover:function(obj)
 {obj.parentNode.className="copycode copycode_hover";},out:function(obj)
-{obj.parentNode.className="copycode";}});Prado.WebUI.TRatingList=Class.create();Prado.WebUI.TRatingList.prototype={selectedIndex:-1,initialize:function(options)
-{this.options=options;this.element=$(options['ID']);Element.addClassName(this.element,options.cssClass);this.radios=document.getElementsByName(options.field);for(var i=0;i<this.radios.length;i++)
-{Event.observe(this.radios[i].parentNode,"mouseover",this.hover.bindEvent(this,i));Event.observe(this.radios[i].parentNode,"mouseout",this.recover.bindEvent(this,i));Event.observe(this.radios[i].parentNode,"click",this.click.bindEvent(this,i));}
-this.caption=CAPTION();this.element.appendChild(this.caption);this.selectedIndex=options.selectedIndex;this.setRating(this.selectedIndex);},hover:function(ev,index)
-{for(var i=0;i<this.radios.length;i++)
-this.radios[i].parentNode.className=(i<=index)?"rating_hover":"";this.setCaption(index);},recover:function(ev,index)
-{for(var i=0;i<=index;i++)
-Element.removeClassName(this.radios[i].parentNode,"rating_hover");this.setRating(this.selectedIndex);},click:function(ev,index)
-{for(var i=0;i<this.radios.length;i++)
-this.radios[i].checked=(i==index);this.selectedIndex=index;this.setRating(index);if(isFunction(this.options.onChange))
-this.options.onChange(this,index);},setRating:function(index)
-{for(var i=0;i<=index;i++)
-this.radios[i].parentNode.className="rating_selected";this.setCaption(index);},setCaption:function(index)
-{this.caption.innerHTML=index>-1?this.radios[index].value:this.options.caption;}}
+{obj.parentNode.className="copycode";}});Prado.WebUI.TCheckBoxList=Base.extend({constructor:function(options)
+{for(var i=0;i<options.ItemCount;i++)
+{var checkBoxOptions=Object.extend({ID:options.ListID+"_c"+i,EventTarget:options.ListName+"$c"+i},options);new Prado.WebUI.TCheckBox(checkBoxOptions);}}});Prado.WebUI.TRadioButtonList=Base.extend({constructor:function(options)
+{for(var i=0;i<options.ItemCount;i++)
+{var radioButtonOptions=Object.extend({ID:options.ListID+"_c"+i,EventTarget:options.ListName+"$c"+i},options);new Prado.WebUI.TRadioButton(radioButtonOptions);}}});

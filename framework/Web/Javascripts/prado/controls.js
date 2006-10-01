@@ -220,7 +220,7 @@ Prado.WebUI.DefaultButton.prototype =
 			if(defaultButton)
 			{
 				this.triggered = true;
-				$('PRADO_POSTBACK_TARGET').value = this.options.EventTarget;				
+				$('PRADO_POSTBACK_TARGET').value = this.options.EventTarget;
 				Event.fireEvent(defaultButton, this.options['Event']);
 				Event.stop(ev);
 			}
@@ -272,5 +272,38 @@ Object.extend(Prado.WebUI.TTextHighlighter,
 	out : function(obj)
 	{
 		obj.parentNode.className = "copycode";
+	}
+});
+
+
+Prado.WebUI.TCheckBoxList = Base.extend(
+{
+	constructor : function(options)
+	{
+		for(var i = 0; i<options.ItemCount; i++)
+		{
+			var checkBoxOptions = Object.extend(
+			{
+				ID : options.ListID+"_c"+i,
+				EventTarget : options.ListName+"$c"+i
+			}, options);
+			new Prado.WebUI.TCheckBox(checkBoxOptions);
+		}
+	}
+});
+
+Prado.WebUI.TRadioButtonList = Base.extend(
+{
+	constructor : function(options)
+	{
+		for(var i = 0; i<options.ItemCount; i++)
+		{
+			var radioButtonOptions = Object.extend(
+			{
+				ID : options.ListID+"_c"+i,
+				EventTarget : options.ListName+"$c"+i
+			}, options);
+			new Prado.WebUI.TRadioButton(radioButtonOptions);
+		}
 	}
 });

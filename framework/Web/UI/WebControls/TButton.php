@@ -58,6 +58,22 @@ class TButton extends TWebControl implements IPostBackEventHandler, IButtonContr
 	}
 
 	/**
+	 * @return boolean whether to render javascript.
+	 */
+	public function getEnableClientScript()
+	{
+		return $this->getViewState('EnableClientScript',true);
+	}
+
+	/**
+	 * @param boolean whether to render javascript.
+	 */
+	public function setEnableClientScript($value)
+	{
+		$this->setViewState('EnableClientScript',TPropertyValue::ensureBoolean($value),true);
+	}
+
+	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This overrides the parent implementation with additional button specific attributes.
 	 * @param THtmlWriter the writer used for the rendering purpose
@@ -72,7 +88,7 @@ class TButton extends TWebControl implements IPostBackEventHandler, IButtonContr
 		$writer->addAttribute('value',$this->getText());
 		if($this->getEnabled(true))
 		{
-			if($this->needPostBackScript())
+			if($this->needPostBackScript() && $this->getEnableClientScript())
 				$this->renderClientControlScript($writer);
 		}
 		else if($this->getEnabled()) // in this case, parent will not render 'disabled'

@@ -89,8 +89,7 @@ $libraries = array(
 		'prado/element.js',
 
 		//controls
-		'prado/controls.js',
-		'ratings/ratings.js'
+		'prado/controls.js'
 	),
 
 	//effects
@@ -105,7 +104,8 @@ $libraries = array(
 		'extra/json.js',
 		'effects/controls.js',
 		'prado/activecontrols3.js',
-		'prado/inlineeditor.js'
+		'prado/inlineeditor.js',
+		'ratings/ratings.js'
 //		'effects/dragdrop.js',
 //		'effects/slider.js',
 //		'prado/activecontrols.js'

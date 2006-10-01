@@ -49,6 +49,24 @@ Prado.WebUI.TActiveCheckBox = Class.extend(Prado.WebUI.CallbackControl,
 Prado.WebUI.TActiveRadioButton = Class.extend(Prado.WebUI.TActiveCheckBox);
 
 
+Prado.WebUI.TActiveCheckBoxList = Base.extend(
+{
+	constructor : function(options)
+	{
+		for(var i = 0; i<options.ItemCount; i++)
+		{
+			var checkBoxOptions = Object.extend(
+			{
+				ID : options.ListID+"_c"+i,
+				EventTarget : options.ListName+"$c"+i
+			}, options);
+			new Prado.WebUI.TActiveCheckBox(checkBoxOptions);
+		}
+	}
+});
+
+Prado.WebUI.TActiveRadioButtonList = Prado.WebUI.TActiveCheckBoxList;
+
 /**
  * TActiveTextBox control, handles onchange event.
  */
@@ -199,19 +217,17 @@ Prado.WebUI.TTimeTriggeredCallback = Base.extend(
 
 	register : function(timer)
 	{
-		this.timers[timer.options.ID] = timer;
+		Prado.WebUI.TTimeTriggeredCallback.timers[timer.options.ID] = timer;
 	},
 
 	start : function(id)
 	{
-		if(this.timers[id])
-			this.timers[id].startTimer();
+		Prado.WebUI.TTimeTriggeredCallback.timers[id].startTimer();
 	},
 
 	stop : function(id)
 	{
-		if(this.timers[id])
-			this.timers[id].stopTimer();
+		Prado.WebUI.TTimeTriggeredCallback.timers[id].stopTimer();
 	}
 });
 
@@ -339,12 +355,11 @@ Prado.WebUI.TValueTriggeredCallback = Base.extend(
 
 	register : function(timer)
 	{
-		this.timers[timer.options.ID] = timer;
+		Prado.WebUI.TValueTriggeredCallback.timers[timer.options.ID] = timer;
 	},
 
 	stop : function(id)
 	{
-		if(this.timers[id])
-			this.timers[id].stopObserving();
+		Prado.WebUI.TValueTriggeredCallback.timers[id].stopObserving();
 	}
 });

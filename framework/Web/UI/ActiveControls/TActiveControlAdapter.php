@@ -105,6 +105,14 @@ class TActiveControlAdapter extends TControlAdapter
 	}
 
 	/**
+	 * @param TBaseActiveControl change base active control
+	 */
+	public function setBaseActiveControl($control)
+	{
+		$this->_baseActiveControl=$control;
+	}
+
+	/**
 	 * @return TBaseActiveControl Common active control options.
 	 */
 	public function getBaseActiveControl()

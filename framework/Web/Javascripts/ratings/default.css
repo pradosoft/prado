@@ -6,24 +6,36 @@
 {
 	display: none;
 }
+
 .TRatingList_default td
 {
-	width: 17px;
+	width: 18px;
 	height: 18px;
-	background-image: url(default_blank.gif);
+	padding: 0;
+}
+
+.TRatingList_default td.rating
+{
+	background-image: url(default_combined.png);
 	background-repeat: no-repeat;
 	cursor: pointer;
+	background-position: 0px 0px;
 }
 .TRatingList_default td.rating_selected
 {
-	background-image: url(default_selected.gif);
+	background-position: 0px -100px;
 }
 
 .TRatingList_default td.rating_hover
 {
-	background-image: url(default_hover.gif);
+	background-position: 0px -200px;
 }
 .TRatingList_default td.rating_half
 {
-	background-image: url(default_half.gif);
+	background-position: 0px -300px;
+}
+
+.TRatingList_default td.rating_disabled
+{
+	cursor: default !important;
 }

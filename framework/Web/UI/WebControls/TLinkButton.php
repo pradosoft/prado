@@ -65,6 +65,22 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler, IButtonC
 	}
 
 	/**
+	 * @return boolean whether to render javascript.
+	 */
+	public function getEnableClientScript()
+	{
+		return $this->getViewState('EnableClientScript',true);
+	}
+
+	/**
+	 * @param boolean whether to render javascript.
+	 */
+	public function setEnableClientScript($value)
+	{
+		$this->setViewState('EnableClientScript',TPropertyValue::ensureBoolean($value),true);
+	}
+
+	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This overrides the parent implementation with additional button specific attributes.
 	 * @param THtmlWriter the writer used for the rendering purpose
@@ -80,7 +96,7 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler, IButtonC
 		// may be overwritten in the following
 		parent::addAttributesToRender($writer);
 
-		if($this->getEnabled(true))
+		if($this->getEnabled(true) && $this->getEnableClientScript())
 		{
 			$this->renderLinkButtonHref($writer);
 			$this->renderClientControlScript($writer);

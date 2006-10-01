@@ -106,16 +106,6 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	}
 
 	/**
-	 * Gets the name of the javascript class responsible for performing postback for this control.
-	 * This method overrides the parent implementation.
-	 * @return string the javascript class name
-	 */
-	protected function getClientClassName()
-	{
-		return 'Prado.WebUI.TCheckBoxList';
-	}
-
-	/**
 	 * @return TTextAlign the alignment of the text caption, defaults to TTextAlign::Right.
 	 */
 	public function getTextAlign()
@@ -296,6 +286,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 		$repeatedControl->setChecked($item->getSelected());
 		$repeatedControl->setAttribute('value',$item->getValue());
 		$repeatedControl->setEnabled($this->_isEnabled && $item->getEnabled());
+		$repeatedControl->setEnableClientScript(false);
 		$repeatedControl->renderControl($writer);
 	}
 
@@ -389,6 +380,14 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 			$this->setAccessKey($accessKey);
 			$this->setTabIndex($tabIndex);
 		}
+		//checkbox skipped the client control script in addAttributesToRender
+		if($this->getEnabled(true)
+			&& $this->getEnableClientScript()
+			&& $this->getAutoPostBack()
+			&& $this->getPage()->getClientSupportsJavaScript())
+		{
+			$this->renderClientControlScript($writer);
+		}
 	}
 
 	/**
@@ -399,6 +398,30 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	public function getValidationPropertyValue()
 	{
 		return $this->getSelectedValue();
+	}
+
+	/**
+	 * Gets the name of the javascript class responsible for performing postback for this control.
+	 * This method overrides the parent implementation.
+	 * @return string the javascript class name
+	 */
+	protected function getClientClassName()
+	{
+		return 'Prado.WebUI.TCheckBoxList';
+	}
+
+	/**
+	 * Gets the post back options for this checkbox.
+	 * @return array
+	 */
+	protected function getPostBackOptions()
+	{
+		$options['ListID'] = $this->getClientID();
+		$options['ValidationGroup'] = $this->getValidationGroup();
+		$options['CausesValidation'] = $this->getCausesValidation();
+		$options['ListName'] = $this->getUniqueID();
+		$options['ItemCount'] = $this->getItemCount();
+		return $options;
 	}
 }
 

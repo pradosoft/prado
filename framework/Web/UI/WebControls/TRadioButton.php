@@ -234,6 +234,22 @@ class TRadioButton extends TCheckBox
 	}
 
 	/**
+	 * @return boolean whether to render javascript.
+	 */
+	public function getEnableClientScript()
+	{
+		return $this->getViewState('EnableClientScript',true);
+	}
+
+	/**
+	 * @param boolean whether to render javascript.
+	 */
+	public function setEnableClientScript($value)
+	{
+		$this->setViewState('EnableClientScript',TPropertyValue::ensureBoolean($value),true);
+	}
+
+	/**
 	 * Renders a radiobutton input element.
 	 * @param THtmlWriter the writer for the rendering purpose
 	 * @param string checkbox id
@@ -254,8 +270,13 @@ class TRadioButton extends TCheckBox
 			$writer->addAttribute('disabled','disabled');
 
 		$page=$this->getPage();
-		if($this->getEnabled(true) && $this->getAutoPostBack() && $page->getClientSupportsJavaScript())
+		if($this->getEnabled(true)
+			&& $this->getEnableClientScript()
+			&& $this->getAutoPostBack()
+			&& $page->getClientSupportsJavaScript())
+		{
 			$this->renderClientControlScript($writer);
+		}
 
 		if(($accesskey=$this->getAccessKey())!=='')
 			$writer->addAttribute('accesskey',$accesskey);

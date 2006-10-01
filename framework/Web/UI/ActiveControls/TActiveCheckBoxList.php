@@ -43,9 +43,9 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 	 */
 	public function __construct()
 	{
-		parent::__construct();
 		$this->setAdapter(new TActiveListControlAdapter($this));
 		$this->setAutoPostBack(true);
+		parent::__construct();
 	}
 
 	/**
@@ -57,13 +57,20 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 	}
 
 	/**
-	 * No client class for this control.
-	 * This method overrides the parent implementation.
-	 * @return null no javascript class name.
+	 * @return string javascript client-side control class name.
 	 */
 	protected function getClientClassName()
 	{
-		return null;
+		return 'Prado.WebUI.TActiveCheckBoxList';
+	}
+
+	/**
+	 * Registers the javascript code for initializing the active control.
+	 */
+	protected function renderClientControlScript($writer)
+	{
+		$this->getActiveControl()->registerCallbackClientScript(
+			$this->getClientClassName(), $this->getPostBackOptions());
 	}
 
 	/**
@@ -72,7 +79,9 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 	 */
 	protected function createRepeatedControl()
 	{
-		return new TActiveCheckBox;
+		$control = new TActiveCheckBox;
+		$control->getAdapter()->setBaseActiveControl($this->getActiveControl());
+		return $control;
 	}
 
 	/**

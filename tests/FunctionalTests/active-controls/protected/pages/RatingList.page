@@ -1,0 +1,72 @@
+<com:THead/>
+<com:TForm>
+<style>
+	body
+	{
+		background-color: pink
+	}
+</style>
+<com:TLabel ID="label1" Text="Rate It:" />
+<com:TActiveRatingList ID="list1" CaptionID="label1" RatingStyle="blocks" OnCallback="list1_oncallback">
+	<com:TListItem Text="1 Star" />
+	<com:TListItem Text="2 Star" />
+	<com:TListItem Text="3 Star" />
+	<com:TListItem Text="4 Star" />
+	<com:TListItem Text="5 Star" />
+	<prop:ActiveControl.ClientSide
+		OnLoading="Element.show('status')"
+		OnComplete="Element.hide('status')" />
+</com:TActiveRatingList>
+
+
+<com:TActiveRatingList ID="list2" Rating="3.5" RatingStyle="blocks" ReadOnly="true">
+	<com:TListItem Text="1 Star" />
+	<com:TListItem Text="2 Star" />
+	<com:TListItem Text="3 Star" />
+	<com:TListItem Text="4 Star" />
+	<com:TListItem Text="5 Star" />
+</com:TActiveRatingList>
+
+<br />
+
+<com:TActiveRatingList RepeatColumns="5">
+	<com:TListItem Text="1 Star" />
+	<com:TListItem Text="2 Star" />
+	<com:TListItem Text="3 Star" />
+	<com:TListItem Text="4 Star" />
+	<com:TListItem Text="5 Star" />
+	<com:TListItem Text="6 Star" />
+	<com:TListItem Text="7 Star" />
+	<com:TListItem Text="8 Star" />
+	<com:TListItem Text="9 Star" />
+	<com:TListItem Text="10 Star" />
+	<prop:ActiveControl.ClientSide
+		OnLoading="Element.show('status')"
+		OnComplete="Element.hide('status')" />
+</com:TActiveRatingList>
+
+
+<com:TActiveRatingList ID="list3" Rating="3.5" ReadOnly="true">
+	<com:TListItem Text="1 Star" />
+	<com:TListItem Text="2 Star" />
+	<com:TListItem Text="3 Star" />
+	<com:TListItem Text="4 Star" />
+	<com:TListItem Text="5 Star" />
+</com:TActiveRatingList>
+
+<br />
+
+	<div id="status" style="margin:1em; padding:0.5em;
+		text-align:center;
+		background-color:#900;
+		color:white; display: none;
+		position: absolute; right: 0; top: 0">
+		Loading...
+	</div>
+
+<com:TActiveButton ID="button1" Text="Enable List" OnClick="button1_clicked" />
+<com:TActiveButton ID="button2" Text="Set Index 3" OnClick="button2_clicked" />
+
+<com:TJavascriptLogger />
+
+</com:TForm>

@@ -337,6 +337,22 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	}
 
 	/**
+	 * @return boolean whether to render javascript.
+	 */
+	public function getEnableClientScript()
+	{
+		return $this->getViewState('EnableClientScript',true);
+	}
+
+	/**
+	 * @param boolean whether to render javascript.
+	 */
+	public function setEnableClientScript($value)
+	{
+		$this->setViewState('EnableClientScript',TPropertyValue::ensureBoolean($value),true);
+	}
+
+	/**
 	 * Renders a label beside the checkbox.
 	 * @param THtmlWriter the writer for the rendering purpose
 	 * @param string checkbox id
@@ -375,8 +391,13 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 			$writer->addAttribute('disabled','disabled');
 
 		$page=$this->getPage();
-		if($this->getEnabled(true) && $this->getAutoPostBack() && $page->getClientSupportsJavaScript())
+		if($this->getEnabled(true)
+			&& $this->getEnableClientScript()
+			&& $this->getAutoPostBack()
+			&& $page->getClientSupportsJavaScript())
+		{
 			$this->renderClientControlScript($writer);
+		}
 
 		if(($accesskey=$this->getAccessKey())!=='')
 			$writer->addAttribute('accesskey',$accesskey);
@@ -419,7 +440,6 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 		$options['EventTarget'] = $this->getUniqueID();
 		return $options;
 	}
-
 }
 
 /**

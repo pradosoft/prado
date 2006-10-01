@@ -106,6 +106,22 @@ abstract class TListControl extends TDataBoundControl
 	}
 
 	/**
+	 * @return boolean whether to render javascript.
+	 */
+	public function getEnableClientScript()
+	{
+		return $this->getViewState('EnableClientScript',true);
+	}
+
+	/**
+	 * @param boolean whether to render javascript.
+	 */
+	public function setEnableClientScript($value)
+	{
+		$this->setViewState('EnableClientScript',TPropertyValue::ensureBoolean($value),true);
+	}
+
+	/**
 	 * Adds attributes to renderer.
 	 * @param THtmlWriter the renderer
 	 */
@@ -117,8 +133,12 @@ abstract class TListControl extends TDataBoundControl
 			$writer->addAttribute('multiple','multiple');
 		if($this->getEnabled(true))
 		{
-			if($this->getAutoPostBack() && $page->getClientSupportsJavaScript())
+			if($this->getAutoPostBack()
+				&& $this->getEnableClientScript()
+				&& $page->getClientSupportsJavaScript())
+			{
 				$this->renderClientControlScript($writer);
+			}
 		}
 		else if($this->getEnabled())
 			$writer->addAttribute('disabled','disabled');
