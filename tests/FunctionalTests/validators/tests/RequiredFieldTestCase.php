@@ -1,9 +1,12 @@
 <?php
 
-class RequiredFieldTestCase extends SeleniumTestCase 
+class RequiredFieldTestCase extends SeleniumTestCase
 {
 	function test()
 	{
+		//problem with test runner clicking on radio buttons
+		$this->skipBrowsers(self::OPERA);
+
 		$base = "ctl0_Content_";
 		$this->open("validators/index.php?page=RequiredFieldValidator");
 		$this->assertTextPresent("RequiredFieldValidator Tests");
@@ -45,11 +48,11 @@ class RequiredFieldTestCase extends SeleniumTestCase
 		$this->assertVisible("{$base}validator2");
 		$this->click("{$base}check2");
 		$this->clickAndWait("{$base}submit2");
-		
+
 		$this->type("{$base}text1", "Hello");
 		$this->click("{$base}check1");
 		$this->click("{$base}submit2");
-		
+
 		$this->assertNotVisible("{$base}validator5");
 		$this->assertNotVisible("{$base}validator6");
 		$this->assertNotVisible("{$base}validator7");
@@ -67,9 +70,9 @@ class RequiredFieldTestCase extends SeleniumTestCase
 		$this->assertNotVisible("{$base}validator5");
 		$this->assertNotVisible("{$base}validator6");
 		$this->assertNotVisible("{$base}validator7");
-		$this->assertNotVisible("{$base}validator8");		
+		$this->assertNotVisible("{$base}validator8");
 	}
-	
+
 	function testInitialValue()
 	{
 		$base = "ctl0_Content_";
