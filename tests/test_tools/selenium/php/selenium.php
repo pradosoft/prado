@@ -49,7 +49,7 @@ class SeleniumTestRunner
 		if((php_sapi_name() == 'cli')) return;
 		$file = dirname(__FILE__).'/TestRunner.php';
 		$driver = $this->driver;
-		
+
 		//$base_dir = $this->base_dir;
 		$base_dir = $driver.'?sr=';
 		include($file);
@@ -130,20 +130,20 @@ class SeleneseInterpreter
 	public function __call($func, $args)
 	{
 		if($func{0} == '_') return;
-		
+
 		$trace = debug_backtrace();
 		if($this->isTestOptionFunction($func,$args,$trace))
 			return;
-		
+
 		$ID = isset($args[0]) ? $args[0] : "";
 		$value = isset($args[1]) ? $args[1] : "";
 		if(strpos(strtolower($func),'htmlpresent') || strpos(strtolower($func),'htmlnotpresent'))
 			$ID = htmlspecialchars($ID);
 		$command = array($func, $ID, $value);
-		
+
 		if(is_int(strpos(strtolower($func), 'visible')))
 			$this->addCommand(array('pause','500',''),$trace);
-		
+
 		return $this->addCommand($command, $trace);
 	}
 
@@ -416,7 +416,7 @@ class SeleniumTestRunnerServer
 			$case = $command[5];
 			$option=isset($options[$case])?$options[$case]:null;
 			$this->cases[$case][] =
-				array('test' => $command[2], 
+				array('test' => $command[2],
 					'trace' => $command[4], 'option'=>$option);
 			if(is_null($this->name))
 				$this->name = $command[6];
@@ -528,7 +528,12 @@ class SeleniumTestCase extends UnitTestCase
 
 	function skipBrowsers()
 	{
-		$arg_list = func_get_args();
+		$conditions = $this->getBrowserOptions(func_get_args());
+		$this->selenium->skipCondition($conditions);
+	}
+
+	protected function getBrowserOptions($arg_list)
+	{
 		$browsers=array();
 		foreach($arg_list as $arg)
 		{
@@ -537,7 +542,13 @@ class SeleniumTestCase extends UnitTestCase
 			else
 				$browsers[] = $arg;
 		}
-		$this->selenium->skipCondition(implode(' || ', $browsers));
+		return implode(' || ', $browsers);
+	}
+
+	function targetBrowsers()
+	{
+		$conditions = $this->getBrowserOptions(func_get_args());
+		$this->selenium->skipCondition("!(".$conditions.")");
 	}
 }
 

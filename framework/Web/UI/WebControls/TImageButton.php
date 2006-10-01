@@ -103,11 +103,10 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 		$writer->addAttribute('type','image');
 		if(($uniqueID=$this->getUniqueID())!=='')
 			$writer->addAttribute('name',$uniqueID);
-		if($this->getEnabled(true)
-			&& $this-canCauseValidation()
-			&& $this->getEnableClientScript())
+		if($this->getEnabled(true))
 		{
-			$this->renderClientControlScript($writer);
+			if($this->canCauseValidation() && $this->getEnableClientScript())
+				$this->renderClientControlScript($writer);
 		}
 		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');

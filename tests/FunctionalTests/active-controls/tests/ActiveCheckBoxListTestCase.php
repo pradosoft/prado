@@ -4,6 +4,9 @@ class ActiveCheckBoxListTestCase extends SeleniumTestCase
 {
 	function test()
 	{
+		//problem with test runner clicking on radio buttons
+		$this->skipBrowsers(self::OPERA);
+
 		$this->open("active-controls/index.php?page=TActiveCheckBoxListTest");
 		$this->verifyTextPresent("TActiveCheckBoxList Test Case");
 

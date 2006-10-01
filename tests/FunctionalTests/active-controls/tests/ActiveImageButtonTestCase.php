@@ -10,7 +10,7 @@ class ActiveImageButtonTestCase extends SeleniumTestCase
 		$this->click("image1");
 		$this->pause(800);
 		//unable to determine mouse position
-		$this->assertTextPresent("Image clicked at x=0, y=0");
+		$this->assertTextPresent("regexp:Image clicked at x=\d+, y=\d+");
 	}
 }
 

@@ -5,7 +5,7 @@ Prado.WebUI.CallbackControl = Class.extend(Prado.WebUI.PostBackControl,
 {
 	onPostBack : function(event, options)
 	{
-		request = new Prado.CallbackRequest(options.EventTarget, options);
+		var request = new Prado.CallbackRequest(options.EventTarget, options);
 		request.dispatch();
 		Event.stop(event);
 	}
@@ -25,7 +25,7 @@ Prado.WebUI.TActiveImageButton = Class.extend(Prado.WebUI.TImageButton,
 	onPostBack : function(event, options)
 	{
 		this.addXYInput(event,options);
-		request = new Prado.CallbackRequest(options.EventTarget, options);
+		var request = new Prado.CallbackRequest(options.EventTarget, options);
 		request.dispatch();
 		Event.stop(event);
 	}
@@ -37,7 +37,7 @@ Prado.WebUI.TActiveCheckBox = Class.extend(Prado.WebUI.CallbackControl,
 {
 	onPostBack : function(event, options)
 	{
-		request = new Prado.CallbackRequest(options.EventTarget, options);
+		var request = new Prado.CallbackRequest(options.EventTarget, options);
 		if(request.dispatch()==false)
 			Event.stop(event);
 	}
@@ -81,7 +81,7 @@ Prado.WebUI.TActiveTextBox = Class.extend(Prado.WebUI.TTextBox,
 
 	doCallback : function(event, options)
 	{
-		request = new Prado.CallbackRequest(options.EventTarget, options);
+		var request = new Prado.CallbackRequest(options.EventTarget, options);
 		request.dispatch();
 		Event.stop(event);
 	}
@@ -110,7 +110,7 @@ Prado.WebUI.TAutoComplete = Class.extend(Prado.WebUI.TAutoComplete,
 	{
 		if(!this.active)
 		{
-			request = new Prado.CallbackRequest(this.options.EventTarget, options);
+			var request = new Prado.CallbackRequest(this.options.EventTarget, options);
 			request.dispatch();
 			Event.stop(event);
 		}
@@ -128,13 +128,13 @@ Prado.WebUI.TAutoComplete = Class.extend(Prado.WebUI.TAutoComplete,
 
 	getUpdatedChoices : function()
 	{
-		options = new Array(this.getToken(),"__TAutoComplete_onSuggest__");
+		var options = new Array(this.getToken(),"__TAutoComplete_onSuggest__");
 		Prado.Callback(this.options.EventTarget, options, null, this.options);
 	},
 
   	onComplete : function(request, boundary)
   	{
-  		result = Prado.Element.extractContent(request.transport.responseText, boundary);
+  		var result = Prado.Element.extractContent(request.transport.responseText, boundary);
   		if(typeof(result) == "string" && result.length > 0)
 			this.updateChoices(result);
 	}
@@ -178,7 +178,7 @@ Prado.WebUI.TTimeTriggeredCallback = Base.extend(
 	onTimerEvent : function()
 	{
 		this.options.params = this.timeout/1000;
-		request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
+		var request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.dispatch();
 	},
 
@@ -242,7 +242,7 @@ Prado.WebUI.ActiveListControl = Base.extend(
 
 	doCallback : function(event)
 	{
-		request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
+		var request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.dispatch();
 		Event.stop(event);
 	}
@@ -259,14 +259,14 @@ Prado.WebUI.TEventTriggeredCallback = Base.extend(
 	constructor : function(options)
 	{
 		this.options = options;
-		element = $(options['ControlID']);
+		var element = $(options['ControlID']);
 		if(element)
 			Event.observe(element, this.getEventName(element), this.doCallback.bind(this));
 	},
 
 	getEventName : function(element)
 	{
-		name = this.options.EventName;
+		var name = this.options.EventName;
    		if(typeof(name) == "undefined" && element.type)
 		{
       		switch (element.type.toLowerCase())
@@ -284,7 +284,7 @@ Prado.WebUI.TEventTriggeredCallback = Base.extend(
 
 	doCallback : function(event)
 	{
-		request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
+		var request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.dispatch();
 		if(this.options.StopEvent == true)
 			Event.stop(event);
@@ -304,7 +304,7 @@ Prado.WebUI.TValueTriggeredCallback = Base.extend(
 	{
 		this.options = options;
 		this.options.PropertyName = this.options.PropertyName || 'value';
-		element = $(options['ControlID']);
+		var element = $(options['ControlID']);
 		this.value = element ? element[this.options.PropertyName] : undefined;
 		Prado.WebUI.TValueTriggeredCallback.register(this);
 		this.startObserving();
@@ -323,10 +323,10 @@ Prado.WebUI.TValueTriggeredCallback = Base.extend(
 
 	checkChanges : function()
 	{
-		element = $(this.options.ControlID);
+		var element = $(this.options.ControlID);
 		if(element)
 		{
-			value = element[this.options.PropertyName];
+			var value = element[this.options.PropertyName];
 			if(this.value != value)
 			{
 				this.doCallback(this.value, value);
@@ -343,8 +343,8 @@ Prado.WebUI.TValueTriggeredCallback = Base.extend(
 
 	doCallback : function(oldValue, newValue)
 	{
-		request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
-		param = {'OldValue' : oldValue, 'NewValue' : newValue};
+		var request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
+		var param = {'OldValue' : oldValue, 'NewValue' : newValue};
 		request.setCallbackParameter(param);
 		request.dispatch();
 	}

@@ -4,6 +4,9 @@ class ActiveRadioButtonTestCase extends SeleniumTestCase
 {
 	function test()
 	{
+		//problem with test runner clicking on radio buttons
+		$this->skipBrowsers(self::OPERA);
+
 		$this->open("active-controls/index.php?page=ActiveRadioButtonTest");
 		$this->verifyTextPresent("Active Radio Button Test");
 		$this->assertText('label1', 'Label 1');

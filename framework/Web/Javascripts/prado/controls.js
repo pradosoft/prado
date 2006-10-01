@@ -1,38 +1,5 @@
 Prado.WebUI = Class.create();
 
-//base postback-able controls
-/*Prado.WebUI.PostBackControl = Class.create();
-Prado.WebUI.PostBackControl.prototype =
-{
-	initialize : function(options)
-	{
-		this.element = $(options['ID']);
-
-/*		if(options.CausesValidation && typeof(Prado.Validation) != 'undefined')
-		{
-			Prado.Validation.registerTarget(options);
-		}
-
-		//TODO: what do the following options do?
-		//options['PostBackUrl']
-		//options['ClientSubmit']
-
-		if(this.onInit)
-			this.onInit(options);
-	}
-};
-
-//short cut to create postback components
-Prado.WebUI.createPostBackComponent = function(definition)
-{
-	var component = Class.create();
-	Object.extend(component.prototype, Prado.WebUI.PostBackControl.prototype);
-	if(definition) Object.extend(component.prototype, definition);
-	return component;
-}
-
-Prado.WebUI.TButton = Prado.WebUI.createPostBackComponent();
-*/
 Prado.WebUI.PostBackControl = Class.create();
 
 Prado.WebUI.PostBackControl.prototype =
