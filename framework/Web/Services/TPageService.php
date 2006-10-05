@@ -240,7 +240,7 @@ class TPageService extends TService
 		{
 			$configCached=true;
 			$currentTimestamp=array();
-			$arr=$cache->get(self::CONFIG_CACHE_PREFIX.$pagePath);
+			$arr=$cache->get(self::CONFIG_CACHE_PREFIX.$this->getID().$pagePath);
 			if(is_array($arr))
 			{
 				list($pageConfig,$timestamps)=$arr;
@@ -284,7 +284,7 @@ class TPageService extends TService
 				if($config!==null)
 					$pageConfig->loadXmlElement($config,$application->getBasePath(),null);
 				$pageConfig->loadConfigurationFiles($pagePath,$this->getBasePath());
-				$cache->set(self::CONFIG_CACHE_PREFIX.$pagePath,array($pageConfig,$currentTimestamp));
+				$cache->set(self::CONFIG_CACHE_PREFIX.$this->getID().$pagePath,array($pageConfig,$currentTimestamp));
 			}
 		}
 		return $pageConfig;
