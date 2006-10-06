@@ -1,57 +1,69 @@
 <com:THead/>
 <com:TForm>
 <style>
-	body
+	.more td
 	{
-		background-color: pink
+		border: 1px solid #eee;
+		width: 40px;
+		height: 40px;
+	}
+	.more td.rating
+	{
+		background-position: 10px 10px;
+	}
+	.more td.rating_selected
+	{
+		background-position: 10px -90px;
 	}
 </style>
 <com:TLabel ID="label1" Text="Rate It:" />
 <com:TActiveRatingList ID="list1" CaptionID="label1" RatingStyle="blocks" OnCallback="list1_oncallback">
-	<com:TListItem Text="1 Star" />
-	<com:TListItem Text="2 Star" />
-	<com:TListItem Text="3 Star" />
-	<com:TListItem Text="4 Star" />
-	<com:TListItem Text="5 Star" />
-	<prop:ActiveControl.ClientSide
+	<com:TListItem Text="1 Block" />
+	<com:TListItem Text="2 Blocks" />
+	<com:TListItem Text="3 Blocks" />
+	<com:TListItem Text="4 Blocks" />
+	<com:TListItem Text="5 Blocks" />
+	<prop:ClientSide
 		OnLoading="Element.show('status')"
 		OnComplete="Element.hide('status')" />
-</com:TActiveRatingList>
-
-
-<com:TActiveRatingList ID="list2" Rating="3.5" RatingStyle="blocks" ReadOnly="true">
-	<com:TListItem Text="1 Star" />
-	<com:TListItem Text="2 Star" />
-	<com:TListItem Text="3 Star" />
-	<com:TListItem Text="4 Star" />
-	<com:TListItem Text="5 Star" />
 </com:TActiveRatingList>
 
 <br />
 
-<com:TActiveRatingList RepeatColumns="5">
+<com:TActiveRatingList ID="list2" Rating="3.5"
+	Attributes.title="3.5 Blocks"  RatingStyle="blocks" ReadOnly="true">
+	<com:TListItem Text="1 Block" />
+	<com:TListItem Text="2 Blocks" />
+	<com:TListItem Text="3 Blocks" />
+	<com:TListItem Text="4 Blocks" />
+	<com:TListItem Text="5 Blocks" />
+</com:TActiveRatingList>
+
+<br />
+
+<com:TActiveRatingList CssClass="more" RepeatColumns="2" RepeatDirection="Vertical">
 	<com:TListItem Text="1 Star" />
-	<com:TListItem Text="2 Star" />
-	<com:TListItem Text="3 Star" />
-	<com:TListItem Text="4 Star" />
-	<com:TListItem Text="5 Star" />
-	<com:TListItem Text="6 Star" />
-	<com:TListItem Text="7 Star" />
-	<com:TListItem Text="8 Star" />
-	<com:TListItem Text="9 Star" />
-	<com:TListItem Text="10 Star" />
-	<prop:ActiveControl.ClientSide
+	<com:TListItem Text="2 Stars" />
+	<com:TListItem Text="3 Stars" />
+	<com:TListItem Text="4 Stars" />
+	<com:TListItem Text="5 Stars" />
+	<com:TListItem Text="6 Stars" />
+	<com:TListItem Text="7 Stars" />
+	<com:TListItem Text="8 Stars" />
+	<com:TListItem Text="9 Stars" />
+	<com:TListItem Text="10 Stars" />
+	<prop:ClientSide
 		OnLoading="Element.show('status')"
 		OnComplete="Element.hide('status')" />
 </com:TActiveRatingList>
+<br />
 
-
-<com:TActiveRatingList ID="list3" Rating="3.5" ReadOnly="true">
+<com:TActiveRatingList ID="list3" Rating="3.5" Attributes.title="3.5 Stars" ReadOnly="true">
 	<com:TListItem Text="1 Star" />
-	<com:TListItem Text="2 Star" />
-	<com:TListItem Text="3 Star" />
-	<com:TListItem Text="4 Star" />
-	<com:TListItem Text="5 Star" />
+	<com:TListItem Text="2 Stars" />
+	<com:TListItem Text="3 Stars" />
+	<com:TListItem Text="4 Stars" />
+	<com:TListItem Text="5 Stars" />
 </com:TActiveRatingList>
 
 <br />
@@ -64,8 +76,9 @@
 		Loading...
 	</div>
 
-<com:TActiveButton ID="button1" Text="Enable List" OnClick="button1_clicked" />
-<com:TActiveButton ID="button2" Text="Set Index 3" OnClick="button2_clicked" />
+<com:TActiveButton ID="button1" Text="Enable" OnClick="button1_clicked" />
+<com:TActiveButton ID="button2" Text="Disable" OnClick="button2_clicked" />
+<com:TActiveButton ID="button5" Text="Index=3" OnClick="button5_clicked" />
 
 <com:TJavascriptLogger />
 

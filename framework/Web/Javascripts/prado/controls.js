@@ -252,7 +252,7 @@ Prado.WebUI.TCheckBoxList = Base.extend(
 			var checkBoxOptions = Object.extend(
 			{
 				ID : options.ListID+"_c"+i,
-				EventTarget : options.ListName+"$c"+i
+				EventTarget : options.ListID+"$c"+i
 			}, options);
 			new Prado.WebUI.TCheckBox(checkBoxOptions);
 		}
@@ -268,7 +268,7 @@ Prado.WebUI.TRadioButtonList = Base.extend(
 			var radioButtonOptions = Object.extend(
 			{
 				ID : options.ListID+"_c"+i,
-				EventTarget : options.ListName+"$c"+i
+				EventTarget : options.ListID+"$c"+i
 			}, options);
 			new Prado.WebUI.TRadioButton(radioButtonOptions);
 		}

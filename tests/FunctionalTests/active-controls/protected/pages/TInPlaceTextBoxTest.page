@@ -43,9 +43,9 @@
 		EditTriggerControlID="link1"
 		CssClass="textbox"
 		Text="Label 1">
-		<prop:ActiveControl.ClientSide
-			OnLoading="Element.show('loader')"
-			OnComplete="Element.hide('loader')" />
+		<prop:ClientSide
+			OnLoading="$('loader').show()"
+			OnComplete="$('loader').hide()" />
 	</com:TInPlaceTextBox>
 
 	<com:TRequiredFieldValidator

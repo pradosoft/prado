@@ -51,6 +51,14 @@ class TActiveTextBox extends TTextBox implements ICallbackEventHandler, IActiveC
 	}
 
 	/**
+	 * @return TCallbackClientSide client side request options.
+	 */
+	public function getClientSide()
+	{
+		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+	}
+
+	/**
 	 * Client-side Text property can only be updated after the OnLoad stage.
 	 * @param string text content for the textbox
 	 */

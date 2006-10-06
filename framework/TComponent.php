@@ -618,7 +618,9 @@ class TPropertyValue
 			if($types[$enums]->hasConstant($value))
 				return $value;
 			else
-				throw new TInvalidDataValueException('propertyvalue_enumvalue_invalid',$value,$enums);
+				throw new TInvalidDataValueException(
+					'propertyvalue_enumvalue_invalid',$value,
+						implode(' | ',$types[$enums]->getConstants()));
 		}
 		else if(!is_array($enums))
 		{

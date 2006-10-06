@@ -1,9 +1,35 @@
 <?php
+/**
+ * TActiveRatingList class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2006 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Id$
+ * @package System.Web.UI.ActiveControls
+ */
 
+/**
+ * TActiveRatingList Class
+ *
+ * Displays clickable images that represent a TActiveRadioButtonList
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Web.UI.ActiveControls
+ * @since 3.1
+ */
 class TActiveRatingList extends TActiveRadioButtonList
 {
+	/**
+	 * @var array list of published rating images.
+	 */
 	private $_ratingImages = array();
 
+	/**
+	 * Sets the default repeat direction to horizontal.
+	 */
 	public function __construct()
 	{
 		parent::__construct();
@@ -18,6 +44,19 @@ class TActiveRatingList extends TActiveRadioButtonList
 		return $this->getViewState('ReadOnly',false);
 	}
 
+	/**
+	 * @param boolean whether the items in the column can be edited
+	 */
+	public function setReadOnly($value)
+	{
+		$this->setViewState('ReadOnly',TPropertyValue::ensureBoolean($value),false);
+	}
+
+	/**
+	 * The repeat layout must be Table.
+	 * @param string repeat layout type
+	 * @throws TInvaliddataValueException when repeat layout is not Table.
+	 */
 	public function setRepeatLayout($value)
 	{
 		if($value!==TRepeatLayout::Table)
@@ -27,23 +66,24 @@ class TActiveRatingList extends TActiveRadioButtonList
 	}
 
 	/**
-	 * @param boolean whether the items in the column can be edited
+	 * @return float rating value for read-only display.
 	 */
-	public function setReadOnly($value)
-	{
-		$this->setViewState('ReadOnly',TPropertyValue::ensureBoolean($value),false);
-	}
-
 	public function getRating()
 	{
 		return $this->getViewState('Rating',0);
 	}
 
+	/**
+	 * @param float rating value for read-only display.
+	 */
 	public function setRating($value)
 	{
 		$this->setViewState('Rating', TPropertyValue::ensureFloat($value),0);
 	}
 
+	/**
+	 * @param int change the rating selection index
+	 */
 	public function setSelectedIndex($value)
 	{
 		$canUpdate = $this->getActiveControl()->getEnableUpdate();
@@ -54,6 +94,11 @@ class TActiveRatingList extends TActiveRadioButtonList
 			$this->callClientFunction('setRating',$value);
 	}
 
+	/**
+	 * Calls the client-side static method for this control class.
+	 * @param string static method name
+	 * @param mixed method parmaeter
+	 */
 	protected function callClientFunction($func,$value)
 	{
 		$client = $this->getPage()->getCallbackClient();
@@ -62,7 +107,7 @@ class TActiveRatingList extends TActiveRadioButtonList
 	}
 
 	/**
-	 * @return string caption text.
+	 * @return string control or html element ID for displaying a caption.
 	 */
 	public function getCaptionID()
 	{
@@ -70,13 +115,16 @@ class TActiveRatingList extends TActiveRadioButtonList
 	}
 
 	/**
-	 * @param string caption text
+	 * @param string control or html element ID for displaying a caption.
 	 */
 	public function setCaptionID($value)
 	{
 		$this->setViewState('CaptionID', $value, '');
 	}
 
+	/**
+	 * @param boolean true to enable the rating to be changed.
+	 */
 	public function setEnabled($value)
 	{
 		parent::setEnabled($value);
@@ -85,7 +133,7 @@ class TActiveRatingList extends TActiveRadioButtonList
 	}
 
 	/**
-	 * @param string set the rating style
+	 * @param string set the rating style, default is "default"
 	 */
 	public function setRatingStyle($value)
 	{
@@ -100,22 +148,36 @@ class TActiveRatingList extends TActiveRadioButtonList
 	   return $this->getViewState('RatingStyle', 'default');
 	}
 
-	public function setHalfRatingLimit($value)
+	/**
+	 * Sets the interval such that those rating values within the interval
+	 * will be considered as a half star rating.
+	 * @param array rating display half value interval, default is array(0.3, 0.7);
+	 */
+	public function setHalfRatingInterval($value)
 	{
 		$this->setViewState('HalfRating',
 				TPropertyValue::ensureArray($value), array(0.3, 0.7));
 	}
 
-	public function getHalfRatingLimit()
+	/**
+	 * @return array rating display half value interval, default is array(0.3, 0.7);
+	 */
+	public function getHalfRatingInterval()
 	{
 		return $this->getViewState('HalfRating', array(0.3, 0.7));
 	}
 
+	/**
+	 * @return string rating style css class name.
+	 */
 	protected function getRatingStyleCssClass()
 	{
 		return 'TRatingList_'.$this->getRatingStyle();
 	}
 
+	/**
+	 * @return array list of post back options.
+	 */
 	protected function getPostBackOptions()
 	{
 		$options = parent::getPostBackOptions();
@@ -126,7 +188,8 @@ class TActiveRatingList extends TActiveRadioButtonList
 	}
 
 	/**
-	 * Registers the javascript code for initializing the active control.
+	 * Registers the javascript code for initializing the active control
+	 * only if {@link setReadOnly ReadOnly} property is false.
 	 */
 	protected function renderClientControlScript($writer)
 	{
@@ -134,6 +197,9 @@ class TActiveRatingList extends TActiveRadioButtonList
 			parent::renderClientControlScript($writer);
 	}
 
+	/**
+	 * @return string find the client ID of the caption control.
+	 */
 	protected function getCaptionControl()
 	{
 		if(($id=$this->getCaptionID())!=='')
@@ -149,6 +215,10 @@ class TActiveRatingList extends TActiveRadioButtonList
 		return '';
 	}
 
+	/**
+	 * @param string rating style name
+	 * @return string URL of the css style file
+	 */
 	protected function publishRatingListStyle($style)
 	{
 		$cs = $this->getPage()->getClientScript();
@@ -161,7 +231,12 @@ class TActiveRatingList extends TActiveRadioButtonList
 		return $url;
 	}
 
-	protected function publishRatingListImages($style, $fileExt='.png')
+	/**
+	 * @param string rating style name
+	 * @param string rating image file extension, default is '.gif'
+	 * @return array URL of publish the rating images
+	 */
+	protected function publishRatingListImages($style, $fileExt='.gif')
 	{
 		$images['blank'] = "System.Web.Javascripts.ratings.{$style}_blank";
 		$images['selected'] = "System.Web.Javascripts.ratings.{$style}_selected";
@@ -177,18 +252,21 @@ class TActiveRatingList extends TActiveRadioButtonList
 		return $files;
 	}
 
+	/**
+	 * Add rating style class name to the class attribute
+	 * when {@link setReadOnly ReadOnly} property is true and when the
+	 * {@link setCssClass CssClass} property is empty.
+	 * @param THtmlWriter renderer
+	 */
 	public function render($writer)
 	{
 		if($this->getReadOnly())
-		{
 			$writer->addAttribute('class', $this->getRatingStyleCssClass());
-			$writer->addAttribute('title', $this->getRating());
-		}
 		parent::render($writer);
 	}
 
 	/**
-	 * @param THtmlWriter writer
+	 * Publish the the rating style css file and rating image files.
 	 */
 	public function onPreRender($param)
 	{
@@ -198,6 +276,10 @@ class TActiveRatingList extends TActiveRadioButtonList
 		$this->_ratingImages = $this->publishRatingListImages($this->getRatingStyle());
 	}
 
+	/**
+	 * Renders the rating images if {@link setReadOnly ReadOnly} is true
+	 * otherwise render the radio buttons.
+	 */
 	public function renderItem($writer,$repeatInfo,$itemType,$index)
 	{
 		if($this->getReadOnly())
@@ -206,6 +288,9 @@ class TActiveRatingList extends TActiveRadioButtonList
 			parent::renderItem($writer, $repeatInfo, $itemType, $index);
 	}
 
+	/**
+	 * Renders the static rating images.
+	 */
 	protected function renderStaticRating($writer, $repeatInfo, $itemType, $index)
 	{
 		$image = new TImage;
@@ -214,11 +299,15 @@ class TActiveRatingList extends TActiveRadioButtonList
 		$image->render($writer);
 	}
 
+	/**
+	 * @param integer rating image index
+	 * @return string the rating image corresponding to current index to be rendered.
+	 */
 	protected function getRatingImageType($index)
 	{
 		$rating = floatval($this->getRating());
 		$int = intval($rating);
-		$limit = $this->getHalfRatingLimit();
+		$limit = $this->getHalfRatingInterval();
 		if($index < $int || ($rating < $index+1 && $rating > $index+$limit[1]))
 			return 'selected';
 		if($rating >= $index+$limit[0] && $rating <= $index+$limit[1])

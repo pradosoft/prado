@@ -16,7 +16,7 @@
 
 .TRatingList_blocks td.rating
 {
-	background-image: url(blocks_combined.png);
+	background-image: url(blocks_combined.gif);
 	background-repeat: no-repeat;
 	cursor: pointer;
 	background-position: 1px 0px;
@@ -24,15 +24,6 @@
 .TRatingList_blocks td.rating_selected
 {
 	background-position: 1px -100px;
-}
-
-.TRatingList_blocks td.rating_hover
-{
-	background-position: 1px -200px;
-}
-.TRatingList_blocks td.rating_half
-{
-	background-position: 1px -300px;
 }
 
 .TRatingList_blocks td.rating_disabled

@@ -57,8 +57,9 @@ class TJavascriptLogger extends TWebControl
 	public function renderContents($writer)
 	{
 		$info = '(<a href="http://gleepglop.com/javascripts/logger/" target="_blank">more info</a>).';
-		$usage = 'Press ALT-D (Or CTRL-D on OS X) to toggle the javascript log console';
-		$writer->write("{$usage} {$info}");
+		$link = '<a href="javascript:if(logConsole)logConsole.toggle()">toggle the javascript log console.</a>';
+		$usage = 'Press ALT-D (Or CTRL-D on OS X) to';
+		$writer->write("{$usage} {$link} {$info}");
 	}
 }
 

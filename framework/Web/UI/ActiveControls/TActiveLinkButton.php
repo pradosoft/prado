@@ -50,6 +50,14 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 	}
 
 	/**
+	 * @return TCallbackClientSide client side request options.
+	 */
+	public function getClientSide()
+	{
+		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+	}
+
+	/**
 	 * Raises the callback event. This method is required by {@link
 	 * ICallbackEventHandler} interface. If {@link getCausesValidation
 	 * CausesValidation} is true, it will invoke the page's {@link TPage::

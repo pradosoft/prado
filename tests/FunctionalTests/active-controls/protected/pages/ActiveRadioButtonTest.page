@@ -6,7 +6,7 @@
 	<com:TActiveRadioButton ID="radio2"
 			GroupName="group1" Text="Radio Button 2"
 			OnCallback="radiobutton_requested">
-		<prop:ActiveControl.ClientSide OnLoading="$('status').show()" OnComplete="$('status').hide()" />
+		<prop:ClientSide OnLoading="$('status').show()" OnComplete="$('status').hide()" />
 	</com:TActiveRadioButton>
 	<com:TActiveRadioButton ID="radio3"
 			Text="Radio Button 3"

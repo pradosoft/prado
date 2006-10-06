@@ -60,8 +60,7 @@ public function button_callback($sender, $param)
 
 <p>With in the <tt>ActiveControl</tt> property is an instance of
 <a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a> available
-as a property <tt>ClientSide</tt> of <tt>ActiveControl</tt> or similarly
-as a sub-property <tt>ActiveControl.ClientSide</tt> of <tt>TActiveButton</tt>.
+as a property <tt>ClientSide</tt> of <tt>TActiveButton</tt>.
 The <tt>ClientSide</tt> property contains sub-properties, such as <tt>RequestTimeOut</tt>,
 and client-side javascript event handler, such as <tt>OnLoading</tt>,
 that are used by the client-side when making a callback request.
@@ -77,7 +76,7 @@ when the client-side is making a callback request.
 	Text="Click Me"
 	OnCallback="button_callback"
 	ActiveControl.CallbackParameter="value" &gt;
-	&lt;prop:ActiveControl.ClientSide
+	&lt;prop:ClientSide
 		OnLoading="Element.show('callback_status')"
 		OnComplete="Element.hide('callback_status')" /&gt;
 &lt;/com:TActiveButton&gt;
@@ -85,9 +84,9 @@ when the client-side is making a callback request.
 
 <p>The example loads the "effects" javascript library using the
 <a href="?page=Controls.ClientScript">TClientScript</a> component.
-The <tt>ActiveControl.ClientSide.OnLoading</tt> property value contains
+The <tt>ClientSide.OnLoading</tt> property value contains
 javascript statement that uses the "effects" library to show the "Loading..."
-span tag. Similarly, <tt>ActiveControl.ClientSide.OnComplete</tt> property
+span tag. Similarly, <tt>ClientSide.OnComplete</tt> property
 value contains the javascript statement that hides the "Loading..." span tag.
 See <a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a> for
 further details on client-side property details.

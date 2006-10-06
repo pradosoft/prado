@@ -1,6 +1,6 @@
 <com:TForm ID="form1">
 	<h1>TCallbackOptions Test</h1>
-	
+
 	<com:TCallbackOptions ID="options1">
 		<prop:ClientSide.OnLoading>
 			$("status").show();
@@ -12,23 +12,23 @@
 			Element.update("label1", "Button 1 has returned");
 		</prop:ClientSide.OnSuccess>
 	</com:TCallbackOptions>
-	
+
 	<com:TActiveButton id="button1" Text="Button 1" ActiveControl.CallbackOptions="options1" />
 	<com:TActiveButton id="button2" Text="Button 2" ActiveControl.CallbackOptions="options1">
-		<prop:ActiveControl.ClientSide.OnSuccess>
+		<prop:ClientSide.OnSuccess>
 			Element.update("label2", "Button 2 has returned");
-		</prop:ActiveControl.ClientSide.OnSuccess>
+		</prop:ClientSide.OnSuccess>
 	</com:TActiveButton>
 	<com:TActiveButton id="button3" Text="Button 3">
-		<prop:ActiveControl.ClientSide.OnSuccess>
+		<prop:ClientSide.OnSuccess>
 			Element.update("label3", "Button 3 has returned");
-		</prop:ActiveControl.ClientSide.OnSuccess>
+		</prop:ClientSide.OnSuccess>
 	</com:TActiveButton>
-	
+
 	<div id="label1">Label 1</div>
 	<div id="label2">Label 2</div>
 	<div id="label3">Label 3</div>
 	<div id="status" style="display:none; background-color: #c00; color:white; text-align:center; padding: 1em" >
-		Loading... 
+		Loading...
 	</div>
 </com:TForm>

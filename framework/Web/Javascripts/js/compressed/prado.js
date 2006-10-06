@@ -392,6 +392,6 @@ window.clipboardData.setData("Text",text);},hover:function(obj)
 {obj.parentNode.className="copycode copycode_hover";},out:function(obj)
 {obj.parentNode.className="copycode";}});Prado.WebUI.TCheckBoxList=Base.extend({constructor:function(options)
 {for(var i=0;i<options.ItemCount;i++)
-{var checkBoxOptions=Object.extend({ID:options.ListID+"_c"+i,EventTarget:options.ListName+"$c"+i},options);new Prado.WebUI.TCheckBox(checkBoxOptions);}}});Prado.WebUI.TRadioButtonList=Base.extend({constructor:function(options)
+{var checkBoxOptions=Object.extend({ID:options.ListID+"_c"+i,EventTarget:options.ListID+"$c"+i},options);new Prado.WebUI.TCheckBox(checkBoxOptions);}}});Prado.WebUI.TRadioButtonList=Base.extend({constructor:function(options)
 {for(var i=0;i<options.ItemCount;i++)
-{var radioButtonOptions=Object.extend({ID:options.ListID+"_c"+i,EventTarget:options.ListName+"$c"+i},options);new Prado.WebUI.TRadioButton(radioButtonOptions);}}});
+{var radioButtonOptions=Object.extend({ID:options.ListID+"_c"+i,EventTarget:options.ListID+"$c"+i},options);new Prado.WebUI.TRadioButton(radioButtonOptions);}}});

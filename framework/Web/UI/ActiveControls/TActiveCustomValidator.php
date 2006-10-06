@@ -10,6 +10,8 @@
  * @package System.Web.UI.ActiveControls
  */
 
+Prado::using('System.Web.UI.ActiveControls.TCallbackClientSide');
+
 /**
  * TActiveCustomValidator Class
  *
@@ -55,6 +57,7 @@ class TActiveCustomValidator extends TCustomValidator
 	{
 		parent::__construct();
 		$this->setAdapter(new TActiveControlAdapter($this));
+		$this->getActiveControl()->setClientSide(new TActiveCustomValidatorClientSide);
 	}
 
 	/**
@@ -63,6 +66,14 @@ class TActiveCustomValidator extends TCustomValidator
 	public function getActiveControl()
 	{
 		return $this->getAdapter()->getBaseActiveControl();
+	}
+
+	/**
+	 * @return TCallbackClientSide client side request options.
+	 */
+	public function getClientSide()
+	{
+		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
 	}
 
 	/**
@@ -131,4 +142,67 @@ class TActiveCustomValidator extends TCustomValidator
 	}
 }
 
+/**
+ * Custom Validator callback client side options class.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Web.UI.ActiveControls
+ * @since 3.1
+ */
+class TActiveCustomValidatorClientSide extends TCallbackClientSide
+{
+	/**
+	 * @return string javascript code for client-side OnValidate event.
+	 */
+	public function getOnValidate()
+	{
+		return $this->getOption('OnValidate');
+	}
+
+	/**
+	 * Client-side OnValidate validator event is raise before the validators
+	 * validation functions are called.
+	 * @param string javascript code for client-side OnValidate event.
+	 */
+	public function setOnValidate($javascript)
+	{
+		$this->setFunction('OnValidate', $javascript);
+	}
+
+	/**
+	 * Client-side OnError event is raised after validation failure.
+	 * This will override the default client-side validator behaviour.
+	 * @param string javascript code for client-side OnError event.
+	 */
+	public function setOnError($javascript)
+	{
+		$this->setFunction('OnError', $javascript);
+	}
+
+	/**
+	 * @return string javascript code for client-side OnError event.
+	 */
+	public function getOnError()
+	{
+		return $this->getOption('OnError');
+	}
+
+	/**
+	 * @param boolean true to revalidate when the control to validate changes value.
+	 */
+	public function setObserveChanges($value)
+	{
+		$this->setOption('ObserveChanges', TPropertyValue::ensureBoolean($value));
+	}
+
+	/**
+	 * @return boolean true to observe changes.
+	 */
+	public function getObserveChanges()
+	{
+		$changes = $this->getOption('ObserveChanges');
+		return is_null($changes) ? true : $changes;
+	}
+}
 ?>

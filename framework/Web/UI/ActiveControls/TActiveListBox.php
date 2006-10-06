@@ -43,6 +43,14 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 	}
 
 	/**
+	 * @return TCallbackClientSide client side request options.
+	 */
+	public function getClientSide()
+	{
+		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+	}
+
+	/**
 	 * Creates a collection object to hold list items. A specialized
 	 * TActiveListItemCollection is created to allow the drop down list options
 	 * to be added.

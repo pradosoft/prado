@@ -47,6 +47,14 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	}
 
 	/**
+	 * @return TCallbackClientSide client side request options.
+	 */
+	public function getClientSide()
+	{
+		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+	}
+
+	/**
 	 * Sets the alternative text to be displayed in the TImage when the image is unavailable.
 	 * @param string the alternative text
 	 */

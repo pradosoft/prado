@@ -15,7 +15,7 @@ class AutoCompleteTest extends TPage
 
 	public function callback_requested($sender, $param)
 	{
-		$this->label1->Text = "Label 1: ".$this->textbox3->Text;
+		$this->label1->Text = "Label 1: ".$sender->Text;
 	}
 
 	protected function matchCountries($token)

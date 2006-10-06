@@ -661,18 +661,6 @@ class TValidatorClientSide extends TClientSideOptions
 		$changes = $this->getOption('ObserveChanges');
 		return is_null($changes) ? true : $changes;
 	}
-
-	/**
-	 * Ensure the string is a valid javascript function. If the string begins
-	 * with "javascript:" valid javascript function is assumed, otherwise the
-	 * code block is enclosed with "function(validator, sender){ }" block.
-	 * @param string javascript code.
-	 * @return string javascript function code.
-	 */
-	protected function ensureFunction($javascript)
-	{
-		return "function(validator, sender){ {$javascript} }";
-	}
 }
 
 

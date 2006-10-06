@@ -52,6 +52,14 @@ class TActiveRadioButtonList extends TRadioButtonList implements IActiveControl,
 	}
 
 	/**
+	 * @return TCallbackClientSide client side request options.
+	 */
+	public function getClientSide()
+	{
+		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+	}
+
+	/**
 	 * @return string javascript client-side control class name.
 	 */
 	protected function getClientClassName()

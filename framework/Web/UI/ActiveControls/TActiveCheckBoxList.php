@@ -57,6 +57,14 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 	}
 
 	/**
+	 * @return TCallbackClientSide client side request options.
+	 */
+	public function getClientSide()
+	{
+		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+	}
+
+	/**
 	 * @return string javascript client-side control class name.
 	 */
 	protected function getClientClassName()

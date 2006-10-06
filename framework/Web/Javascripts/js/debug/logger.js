@@ -195,6 +195,8 @@ LogConsole.prototype = {
   commandHistory : [],
   commandIndex : 0,
 
+  hidden : true,
+
   // Methods
   // -------
 
@@ -207,7 +209,7 @@ LogConsole.prototype = {
     document.body.appendChild(this.logElement)
     Element.hide(this.logElement)
 
-		this.logElement.style.position = "absolute"
+	this.logElement.style.position = "absolute"
     this.logElement.style.left = '0px'
     this.logElement.style.width = '100%'
 
@@ -272,8 +274,15 @@ LogConsole.prototype = {
     Event.observe(this.inputElement, 'keyup', this.handleInput.bind(this))
     Event.observe(this.inputElement, 'click', function() {this.inputElement.select()}.bind(this))
 
+	if(document.all && !window.opera)
+	{
 		window.setInterval(this.repositionWindow.bind(this), 500)
-		this.repositionWindow()
+	}
+	else
+	{
+		this.logElement.style.position="fixed";
+		this.logElement.style.bottom="0px";
+	}
 
     // Listen to the logger....
     Logger.onupdate.addListener(this.logUpdate.bind(this))
@@ -310,11 +319,15 @@ LogConsole.prototype = {
 	show : function() {
 	  Element.show(this.logElement)
 	  this.outputElement.scrollTop = this.outputElement.scrollHeight // Scroll to bottom when toggled
+	  if(document.all && !window.opera)
+		  this.repositionWindow();
 	  Cookie.set('ConsoleVisible', 'true')
  	  this.inputElement.select()
+ 	  this.hidden = false;
 	},
 
 	hide : function() {
+	  this.hidden = true;
 	  Element.hide(this.logElement)
 	  Cookie.set('ConsoleVisible', 'false')
 	},

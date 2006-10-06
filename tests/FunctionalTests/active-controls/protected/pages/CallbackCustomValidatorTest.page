@@ -24,10 +24,9 @@
 		ErrorMessage="*"
 		ControlCssClass="required"
 		OnServerValidate="validate_text1">
-		<prop:ClientSide 
-			OnError="$('status').innerHTML='Error '+(new Date())" 
-			OnSuccess="$('status').innerHTML='Success '+(new Date())" />
-		<prop:ActiveControl.ClientSide
+		<prop:ClientSide
+			OnError="$('status').innerHTML='Error '+(new Date())"
+			OnSuccess="$('status').innerHTML='Success '+(new Date())"
 			OnLoading="Element.show('loader')"
 			OnComplete="Element.hide('loader')" />
 	</com:TActiveCustomValidator>

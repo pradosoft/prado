@@ -1,5 +1,5 @@
 <com:TForm ID="form1">
-	
+
 	<style>
 	.autocomplete
 	{
@@ -15,8 +15,8 @@
 		font-family: Tahoma, Arial, Helvetica, sans-serif;
 		color: #333;
 	}
-	
-	ul.different 
+
+	ul.different
 	{
 		background-color: pink;
 	}
@@ -31,31 +31,34 @@
 	  background-color: #ffc;
 	}
 	</style>
-	
+
 	<h1 id="heading">TAutoComplete Test</h1>
 	<div><strong>Manual Testing Required</strong></div>
-	
+
 		<com:TAutoComplete Style="width: 20em"
 			ID="textbox1"
 			OnSuggest="suggestCountries"
-			Separator=", " 
+			Separator=", "
 			ResultPanel.CssClass="autocomplete" />
 
 		<com:TAutoComplete Style="width: 30em; height: 20em" TextMode="MultiLine"
+				ID="textbox2"
 				OnSuggest="suggestCountries"
-				Separator=", \n" 
+			OnCallback="callback_requested"
+			AutoPostBack="true"
+				Separator=", \n"
 				ResultPanel.CssClass="autocomplete">
 			<prop:Suggestions.HeaderTemplate>
 				<ul class="different">
 			</prop:Suggestions.HeaderTemplate>
 		</com:TAutoComplete>
-				
+
 		<com:TAutoComplete Style="width: 20em"
 			id="textbox3"
 			OnSuggest="suggestCountries"
 			OnCallback="callback_requested"
 			Separator=", " AutoPostBack="true"
-			ResultPanel.CssClass="autocomplete" />				
+			ResultPanel.CssClass="autocomplete" />
 
 	<p><br /></p>
 	<com:TActiveLabel ID="label1" Text="Label 1" />
