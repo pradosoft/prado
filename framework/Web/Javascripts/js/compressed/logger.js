@@ -26,13 +26,21 @@ return cookieArray},clear:function(name){this.set(name,"",-1)},clearAll:function
 for(var i=0;i<cookies.length;i++){this.clear(cookies[i].name)}}}
 Logger={logEntries:[],onupdate:new CustomEvent(),onclear:new CustomEvent(),log:function(message,tag){var logEntry=new LogEntry(message,tag||"info")
 this.logEntries.push(logEntry)
-this.onupdate.dispatch(logEntry)},info:function(message){this.log(message,'info')},debug:function(message){this.log(message,'debug')},warn:function(message){this.log(message,'warning')},error:function(message,error){this.log(message+": \n"+error,'error')},clear:function(){this.logEntries=[]
+this.onupdate.dispatch(logEntry)},info:function(message){this.log(message,'info')
+if(typeof(console)!="undefined")
+console.info(message);},debug:function(message){this.log(message,'debug')
+if(typeof(console)!="undefined")
+console.debug(message);},warn:function(message){this.log(message,'warning')
+if(typeof(console)!="undefined")
+console.warn(message);},error:function(message,error){this.log(message+": \n"+error,'error')
+if(typeof(console)!="undefined")
+console.error(message);},clear:function(){this.logEntries=[]
 this.onclear.dispatch()}}
 LogEntry=Class.create()
 LogEntry.prototype={initialize:function(message,tag){this.message=message
 this.tag=tag}}
 LogConsole=Class.create()
-LogConsole.prototype={commandHistory:[],commandIndex:0,initialize:function(){this.outputCount=0
+LogConsole.prototype={commandHistory:[],commandIndex:0,hidden:true,initialize:function(){this.outputCount=0
 this.tagPattern=Cookie.get('tagPattern')||".*"
 this.logElement=document.createElement('div')
 document.body.appendChild(this.logElement)
@@ -85,8 +93,10 @@ this.inputElement.value='Type command here'
 this.inputElement.setAttribute('autocomplete','off')
 Event.observe(this.inputElement,'keyup',this.handleInput.bind(this))
 Event.observe(this.inputElement,'click',function(){this.inputElement.select()}.bind(this))
-window.setInterval(this.repositionWindow.bind(this),500)
-this.repositionWindow()
+if(document.all&&!window.opera)
+{window.setInterval(this.repositionWindow.bind(this),500)}
+else
+{this.logElement.style.position="fixed";this.logElement.style.bottom="0px";}
 Logger.onupdate.addListener(this.logUpdate.bind(this))
 Logger.onclear.addListener(this.clear.bind(this))
 for(var i=0;i<Logger.logEntries.length;i++){this.logUpdate(Logger.logEntries[i])}
@@ -97,8 +107,10 @@ document.body.appendChild(accessElement)
 if(Cookie.get('ConsoleVisible')=='true'){this.toggle()}},toggle:function(){if(this.logElement.style.display=='none'){this.show()}
 else{this.hide()}},show:function(){Element.show(this.logElement)
 this.outputElement.scrollTop=this.outputElement.scrollHeight
-Cookie.set('ConsoleVisible','true')
-this.inputElement.select()},hide:function(){Element.hide(this.logElement)
+if(document.all&&!window.opera)
+this.repositionWindow();Cookie.set('ConsoleVisible','true')
+this.inputElement.select()
+this.hidden=false;},hide:function(){this.hidden=true;Element.hide(this.logElement)
 Cookie.set('ConsoleVisible','false')},output:function(message,style){var shouldScroll=(this.outputElement.scrollTop+(2*this.outputElement.clientHeight))>=this.outputElement.scrollHeight
 this.outputCount++
 style=(style?style+=';':'')

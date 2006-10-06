@@ -46,7 +46,7 @@ CustomEvent.prototype = {
 	// ---------------
 	_findListenerIndexes : function(method) {
 		var indexes = []
-		for(var i = 0; i < this.listeners.length; i++) {			
+		for(var i = 0; i < this.listeners.length; i++) {
 			if (this.listeners[i] == method) {
 				indexes.push(i)
 			}
@@ -68,7 +68,7 @@ var Cookie = {
 			var date = new Date()
 			date.setDate(date.getDate() + expirationInDays)
 			cookie += "; expires=" + date.toGMTString()
-		} 
+		}
 
 		if (path) {
 			cookie += ";path=" + path
@@ -85,7 +85,7 @@ var Cookie = {
 		var pattern = "(^|;)\\s*" + escape(name) + "=([^;]+)"
 
 		var m = document.cookie.match(pattern)
-		if (m && m[2]) {			
+		if (m && m[2]) {
 			return unescape(m[2])
 		}
 		else return null
@@ -93,9 +93,9 @@ var Cookie = {
 
 	getAll : function() {
 		var cookies = document.cookie.split(';')
-		var cookieArray = []				
+		var cookieArray = []
 
-		for (var i = 0; i < cookies.length; i++) {			
+		for (var i = 0; i < cookies.length; i++) {
 			try {
 				var name = unescape(cookies[i].match(/^\s*([^=]+)/m)[1])
 				var value = unescape(cookies[i].match(/=(.*$)/m)[1])
@@ -108,7 +108,7 @@ var Cookie = {
 
 			if (cookieArray[name] != undefined) {
 				Logger.waring("Trying to retrieve cookie named(" + name + "). There appears to be another property with this name though.");
-			}			
+			}
 
 			cookieArray[name] = value
 		}
@@ -128,20 +128,20 @@ var Cookie = {
 		}
 
 	}
-}   
+}
 
 // ------
 // Logger
-// -----        
+// -----
 
 Logger = {
 	logEntries : [],
 
 	onupdate : new CustomEvent(),
 	onclear : new CustomEvent(),
-    
 
-	// Logger output    
+
+	// Logger output
   log : function(message, tag) {
 	  var logEntry = new LogEntry(message, tag || "info")
 		this.logEntries.push(logEntry)
@@ -150,28 +150,37 @@ Logger = {
 
 	info : function(message) {
 		this.log(message, 'info')
-	}, 
+		if(typeof(console) != "undefined")
+			console.info(message);
+	},
 
 	debug : function(message) {
 		this.log(message, 'debug')
-	},  
+		if(typeof(console) != "undefined")
+			console.debug(message);
+	},
 
 	warn : function(message) {
 	  this.log(message, 'warning')
+		if(typeof(console) != "undefined")
+			console.warn(message);
 	},
 
 	error : function(message, error) {
 	  this.log(message + ": \n" + error, 'error')
+		if(typeof(console) != "undefined")
+			console.error(message);
+
 	},
 
 	clear : function () {
 		this.logEntries = []
 		this.onclear.dispatch()
 	}
-}  
+}
 
 LogEntry = Class.create()
-LogEntry.prototype = {  
+LogEntry.prototype = {
     initialize : function(message, tag) {
       this.message = message
       this.tag = tag
@@ -179,12 +188,14 @@ LogEntry.prototype = {
 }
 
 LogConsole = Class.create()
-LogConsole.prototype = {  
+LogConsole.prototype = {
 
   // Properties
   // ----------
   commandHistory : [],
   commandIndex : 0,
+
+  hidden : true,
 
   // Methods
   // -------
@@ -192,94 +203,101 @@ LogConsole.prototype = {
   initialize : function() {
     this.outputCount = 0
     this.tagPattern = Cookie.get('tagPattern') || ".*"
-  
+
   	// I hate writing javascript in HTML... but what's a better alternative
     this.logElement = document.createElement('div')
     document.body.appendChild(this.logElement)
     Element.hide(this.logElement)
 
-		this.logElement.style.position = "absolute"
+	this.logElement.style.position = "absolute"
     this.logElement.style.left = '0px'
     this.logElement.style.width = '100%'
 
     this.logElement.style.textAlign = "left"
     this.logElement.style.fontFamily = "lucida console"
     this.logElement.style.fontSize = "100%"
-    this.logElement.style.backgroundColor = 'darkgray'      
-    this.logElement.style.opacity = 0.9 
-    this.logElement.style.zIndex = 2000 
+    this.logElement.style.backgroundColor = 'darkgray'
+    this.logElement.style.opacity = 0.9
+    this.logElement.style.zIndex = 2000
 
     // Add toolbarElement
     this.toolbarElement = document.createElement('div')
-    this.logElement.appendChild(this.toolbarElement)     
+    this.logElement.appendChild(this.toolbarElement)
     this.toolbarElement.style.padding = "0 0 0 2px"
 
-    // Add buttons        
+    // Add buttons
     this.buttonsContainerElement = document.createElement('span')
-    this.toolbarElement.appendChild(this.buttonsContainerElement) 
+    this.toolbarElement.appendChild(this.buttonsContainerElement)
 
 	this.buttonsContainerElement.innerHTML += '<button onclick="logConsole.toggle()" style="float:right;color:black">close</button>'
-    this.buttonsContainerElement.innerHTML += '<button onclick="Logger.clear()" style="float:right;color:black">clear</button>'        
+    this.buttonsContainerElement.innerHTML += '<button onclick="Logger.clear()" style="float:right;color:black">clear</button>'
 	if(!Prado.Inspector.disabled)
 		this.buttonsContainerElement.innerHTML += '<button onclick="Prado.Inspector.inspect()" style="float:right;color:black; margin-right:15px;">Object Tree</button>'
 
 
 		//Add Tag Filter
 		this.tagFilterContainerElement = document.createElement('span')
-    this.toolbarElement.appendChild(this.tagFilterContainerElement) 
+    this.toolbarElement.appendChild(this.tagFilterContainerElement)
     this.tagFilterContainerElement.style.cssFloat = 'left'
     this.tagFilterContainerElement.appendChild(document.createTextNode("Log Filter"))
-    
+
     this.tagFilterElement = document.createElement('input')
-    this.tagFilterContainerElement.appendChild(this.tagFilterElement)  
-    this.tagFilterElement.style.width = '200px'                    
-    this.tagFilterElement.value = this.tagPattern    
+    this.tagFilterContainerElement.appendChild(this.tagFilterElement)
+    this.tagFilterElement.style.width = '200px'
+    this.tagFilterElement.value = this.tagPattern
     this.tagFilterElement.setAttribute('autocomplete', 'off') // So Firefox doesn't flip out
-    
+
     Event.observe(this.tagFilterElement, 'keyup', this.updateTags.bind(this))
-    Event.observe(this.tagFilterElement, 'click', function() {this.tagFilterElement.select()}.bind(this))    
-    
+    Event.observe(this.tagFilterElement, 'click', function() {this.tagFilterElement.select()}.bind(this))
+
     // Add outputElement
     this.outputElement = document.createElement('div')
-    this.logElement.appendChild(this.outputElement)  
-    this.outputElement.style.overflow = "auto"              
+    this.logElement.appendChild(this.outputElement)
+    this.outputElement.style.overflow = "auto"
     this.outputElement.style.clear = "both"
     this.outputElement.style.height = "200px"
-    this.outputElement.style.backgroundColor = 'black' 
-          
+    this.outputElement.style.backgroundColor = 'black'
+
     this.inputContainerElement = document.createElement('div')
     this.inputContainerElement.style.width = "100%"
-    this.logElement.appendChild(this.inputContainerElement)      
-    
+    this.logElement.appendChild(this.inputContainerElement)
+
     this.inputElement = document.createElement('input')
-    this.inputContainerElement.appendChild(this.inputElement)  
-    this.inputElement.style.width = '100%'                    
+    this.inputContainerElement.appendChild(this.inputElement)
+    this.inputElement.style.width = '100%'
     this.inputElement.style.borderWidth = '0px' // Inputs with 100% width always seem to be too large (I HATE THEM) they only work if the border, margin and padding are 0
     this.inputElement.style.margin = '0px'
     this.inputElement.style.padding = '0px'
-    this.inputElement.value = 'Type command here' 
+    this.inputElement.value = 'Type command here'
     this.inputElement.setAttribute('autocomplete', 'off') // So Firefox doesn't flip out
 
     Event.observe(this.inputElement, 'keyup', this.handleInput.bind(this))
-    Event.observe(this.inputElement, 'click', function() {this.inputElement.select()}.bind(this))    
+    Event.observe(this.inputElement, 'click', function() {this.inputElement.select()}.bind(this))
 
+	if(document.all && !window.opera)
+	{
 		window.setInterval(this.repositionWindow.bind(this), 500)
-		this.repositionWindow()
-		
+	}
+	else
+	{
+		this.logElement.style.position="fixed";
+		this.logElement.style.bottom="0px";
+	}
+
     // Listen to the logger....
     Logger.onupdate.addListener(this.logUpdate.bind(this))
-    Logger.onclear.addListener(this.clear.bind(this))		
+    Logger.onclear.addListener(this.clear.bind(this))
 
     // Preload log element with the log entries that have been entered
 		for (var i = 0; i < Logger.logEntries.length; i++) {
   		this.logUpdate(Logger.logEntries[i])
-  	}   
-  	
+  	}
+
   	// Feed all errors into the logger (For some unknown reason I can only get this to work
   	// with an inline event declaration)
   	Event.observe(window, 'error', function(msg, url, lineNumber) {Logger.error("Error in (" + (url || location) + ") on line "+lineNumber+"", msg)})
 
-    // Allow acess key link          
+    // Allow acess key link
     var accessElement = document.createElement('span')
     accessElement.innerHTML = '<button style="position:absolute;top:-100px" onclick="javascript:logConsole.toggle()" accesskey="d"></button>'
   	document.body.appendChild(accessElement)
@@ -296,43 +314,47 @@ LogConsole.prototype = {
 		else {
 			this.hide()
 		}
-	}, 
-	
+	},
+
 	show : function() {
 	  Element.show(this.logElement)
 	  this.outputElement.scrollTop = this.outputElement.scrollHeight // Scroll to bottom when toggled
+	  if(document.all && !window.opera)
+		  this.repositionWindow();
 	  Cookie.set('ConsoleVisible', 'true')
  	  this.inputElement.select()
-	}, 
-	
+ 	  this.hidden = false;
+	},
+
 	hide : function() {
+	  this.hidden = true;
 	  Element.hide(this.logElement)
 	  Cookie.set('ConsoleVisible', 'false')
-	},  
-	
+	},
+
 	output : function(message, style) {
-			// If we are at the bottom of the window, then keep scrolling with the output			
+			// If we are at the bottom of the window, then keep scrolling with the output
 			var shouldScroll = (this.outputElement.scrollTop + (2 * this.outputElement.clientHeight)) >= this.outputElement.scrollHeight
-	
+
 			this.outputCount++
-	  	style = (style ? style += ';' : '')	  	
-	  	style += 'padding:1px;margin:0 0 5px 0'	     
-		  
+	  	style = (style ? style += ';' : '')
+	  	style += 'padding:1px;margin:0 0 5px 0'
+
 		  if (this.outputCount % 2 == 0) style += ";background-color:#101010"
-	  	
+
 	  	message = message || "undefined"
 	  	message = message.toString().escapeHTML()
-	  	
+
 	  	this.outputElement.innerHTML += "<pre style='" + style + "'>" + message + "</pre>"
-	  	
-	  	if (shouldScroll) {				
+
+	  	if (shouldScroll) {
 				this.outputElement.scrollTop = this.outputElement.scrollHeight
 			}
 	},
-	
+
 	updateTags : function() {
 		var pattern = this.tagFilterElement.value
-	
+
 		if (this.tagPattern == pattern) return
 
 		try {
@@ -341,19 +363,19 @@ LogConsole.prototype = {
 		catch (e) {
 			return
 		}
-		
+
 		this.tagPattern = pattern
 		Cookie.set('tagPattern', this.tagPattern)
 
 		this.outputElement.innerHTML = ""
-		
+
 		// Go through each log entry again
 		this.outputCount = 0;
 		for (var i = 0; i < Logger.logEntries.length; i++) {
   		this.logUpdate(Logger.logEntries[i])
-  	}  
+  	}
 	},
-	
+
 	repositionWindow : function() {
 		var offset = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
 		var pageHeight = self.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
@@ -380,35 +402,35 @@ LogConsole.prototype = {
 	},
 
 	handleInput : function(e) {
-		if (e.keyCode == Event.KEY_RETURN ) {      
+		if (e.keyCode == Event.KEY_RETURN ) {
 	  	var command = this.inputElement.value
-	  	
+
 	  	switch(command) {
 	    	case "clear":
-	      		Logger.clear()  
+	      		Logger.clear()
 	      		break
-		    	
-	    	default:        
-	      	var consoleOutput = "" 
-	      	
+
+	    	default:
+	      	var consoleOutput = ""
+
 	      	try {
-	        	consoleOutput = eval(this.inputElement.value)	        	
+	        	consoleOutput = eval(this.inputElement.value)
 	      	}
-	      	catch (e) {  
-	        	Logger.error("Problem parsing input <" + command + ">", e)	        	
+	      	catch (e) {
+	        	Logger.error("Problem parsing input <" + command + ">", e)
 	        	break
 					}
-					
-					Logger.log(consoleOutput)	      	
+
+					Logger.log(consoleOutput)
 	      	break
-			}        
-	
+			}
+
 	  	if (this.inputElement.value != "" && this.inputElement.value != this.commandHistory[0]) {
 	    	this.commandHistory.unshift(this.inputElement.value)
 	  	}
-	  
-	  	this.commandIndex = 0 
-	  	this.inputElement.value = ""                                                        
+
+	  	this.commandIndex = 0
+	  	this.inputElement.value = ""
 		}
     else if (e.keyCode == Event.KEY_UP && this.commandHistory.length > 0) {
     	this.inputElement.value = this.commandHistory[this.commandIndex]
@@ -416,23 +438,23 @@ LogConsole.prototype = {
 			if (this.commandIndex < this.commandHistory.length - 1) {
       	this.commandIndex += 1
       }
-    }     
+    }
     else if (e.keyCode == Event.KEY_DOWN && this.commandHistory.length > 0) {
-    	if (this.commandIndex > 0) {                                      
+    	if (this.commandIndex > 0) {
       	this.commandIndex -= 1
-	    }                       
+	    }
 
 			this.inputElement.value = this.commandHistory[this.commandIndex]
-	  } 
+	  }
  		else {
     		this.commandIndex = 0
     }
-	}  
-}         
+	}
+}
 
 // Load the Console when the window loads
 var logConsole;
-Event.OnLoad(function() { logConsole = new LogConsole()}); 
+Event.OnLoad(function() { logConsole = new LogConsole()});
 
 
 
@@ -440,7 +462,7 @@ Event.OnLoad(function() { logConsole = new LogConsole()});
 // -------------------------
 // Helper Functions And Junk
 // -------------------------
-function inspect(o) 
+function inspect(o)
 {
 	var objtype = typeof(o);
 	if (objtype == "undefined") {
@@ -457,7 +479,7 @@ function inspect(o)
             return "[" + typeof(o) + "]";
         }
 
-	if (typeof(o) == "function") 
+	if (typeof(o) == "function")
 	{
             o = ostring.replace(/^\s+/, "");
             var idx = o.indexOf("{");
@@ -466,9 +488,9 @@ function inspect(o)
             }
 			return o;
        }
-  
-	var reprString = function (o) 
-	{ 
+
+	var reprString = function (o)
+	{
 		return ('"' + o.replace(/(["\\])/g, '\\$1') + '"'
 			).replace(/[\f]/g, "\\f"
 			).replace(/[\b]/g, "\\b"
@@ -509,7 +531,7 @@ function inspect(o)
 		}
 		return "[" + res.join(", ") + "]";
 	}
-   
+
 	// generic object code path
 	res = [];
 	for (var k in o) {
@@ -530,7 +552,7 @@ function inspect(o)
 		res.push(useKey + ":" + val);
 	}
 	return "{" + res.join(", ") + "}";
-}   
+}
 
 Array.prototype.contains = function(object) {
 	for(var i = 0; i < this.length; i++) {
@@ -538,10 +560,10 @@ Array.prototype.contains = function(object) {
 	}
 
 	return false
-}  
+}
 
 // Helper Alias for simple logging
-var puts = function() {return Logger.log(arguments[0], arguments[1])}      
+var puts = function() {return Logger.log(arguments[0], arguments[1])}
 
 /*************************************
 
@@ -550,23 +572,23 @@ var puts = function() {return Logger.log(arguments[0], arguments[1])}
 	last revision:04.11.2004
 	steve@slayeroffice.com
 	http://slayeroffice.com
-	
+
 	(c)2004 S.G. Chipman
 
 	Please notify me of any modifications
-	you make to this code so that I can 
+	you make to this code so that I can
 	update the version hosted on slayeroffice.com
 
 
 ************************************/
 if(typeof Prado == "undefined")
 	var Prado = {};
-Prado.Inspector = 
+Prado.Inspector =
 {
-	d : document,	
+	d : document,
 	types : new Array(),
 	objs : new Array(),
-	hidden : new Array(),	
+	hidden : new Array(),
 	opera : window.opera,
 	displaying : '',
 	nameList : new Array(),
@@ -583,23 +605,23 @@ Prado.Inspector =
 		if(typeof obj == "string") {  name = obj; obj = eval(obj); }
 		win= typeof obj == 'undefined' ? window : obj;
 		this.displaying = name ? name : win.toString();
-		for(js in win) {			
+		for(js in win) {
 			try {
 				if(win[js] && js.toString().indexOf("Inspector")==-1 && (win[js]+"").indexOf("[native code]")==-1) {
-					
+
 					t=typeof(win[js]);
-					if(!this.objs[t.toString()]) {						
+					if(!this.objs[t.toString()]) {
 						this.types[this.types.length]=t;
 						this.objs[t]={};
 						this.nameList[t] = new Array();
 					}
 					this.nameList[t].push(js);
-					this.objs[t][js] = this.format(win[js]+"");					
+					this.objs[t][js] = this.format(win[js]+"");
 				}
 			} catch(err) { }
 		}
 
-		for(i=0;i<this.types.length;i++) 
+		for(i=0;i<this.types.length;i++)
 			this.nameList[this.types[i]].sort();
 	},
 
@@ -626,7 +648,7 @@ Prado.Inspector =
 		for(var i = 0; i < list.length; i++)
 		{
 			name += (name.length ? "." : "") + list[i];
-			links[i+1] = "<a href=\"javascript:var_dump('"+name+"')\">"+list[i]+"</a>"; 
+			links[i+1] = "<a href=\"javascript:var_dump('"+name+"')\">"+list[i]+"</a>";
 		}
 		return links.join(".");
 	},
@@ -636,11 +658,11 @@ Prado.Inspector =
 		mHTML +="<ul class=\"topLevel\">";
 		this.types.sort();
 		var so_objIndex=0;
-		for(i=0;i<this.types.length;i++) 
+		for(i=0;i<this.types.length;i++)
 		{
 			mHTML+="<li style=\"cursor:pointer;\" onclick=\"Prado.Inspector.show('ul"+i+"');Prado.Inspector.changeSpan('sp" + i + "')\"><span id=\"sp" + i + "\">[+]</span><b>" + this.types[i] + "</b> (" + this.nameList[this.types[i]].length + ")</li><ul style=\"display:none;\" id=\"ul"+i+"\">";
 			this.hidden["ul"+i]=0;
-			for(e=0;e<this.nameList[this.types[i]].length;e++) 
+			for(e=0;e<this.nameList[this.types[i]].length;e++)
 			{
 				var prop = this.nameList[this.types[i]][e];
 				var value = this.objs[this.types[i]][prop]
@@ -650,7 +672,7 @@ Prado.Inspector =
 					if(this.displaying.indexOf("[object ") < 0)
 						more = " <a href=\"javascript:var_dump('"+this.displaying+"."+prop+"')\"><b>more</b></a>";
 					else if(this.displaying.indexOf("[object Window]") >= 0)
-						more = " <a href=\"javascript:var_dump('"+prop+"')\"><b>more</b></a>";	
+						more = " <a href=\"javascript:var_dump('"+prop+"')\"><b>more</b></a>";
 				}
 				mHTML+="<li style=\"cursor:pointer;\" onclick=\"Prado.Inspector.show('mul" + so_objIndex + "');Prado.Inspector.changeSpan('sk" + so_objIndex + "')\"><span id=\"sk" + so_objIndex + "\">[+]</span>" + prop + "</li><ul id=\"mul" + so_objIndex + "\" style=\"display:none;\"><li style=\"list-style-type:none;\"><pre>" + value + more + "</pre></li></ul>";
 				this.hidden["mul"+so_objIndex]=0;
@@ -669,7 +691,7 @@ Prado.Inspector =
 		}
 	},
 
-	cleanUp : function() 
+	cleanUp : function()
 	{
 		if(this.d.getElementById("so_mContainer"))
 		{
@@ -685,7 +707,7 @@ Prado.Inspector =
 
 	disabled : document.all && !this.opera,
 
-	inspect : function(obj) 
+	inspect : function(obj)
 	{
 		if(this.disabled)return alert("Sorry, this only works in Mozilla and Firefox currently.");
 		this.cleanUp();
@@ -709,12 +731,12 @@ Prado.Inspector =
 		window.scrollTo(0,0);
 	},
 
-	style : "#so_mContainer { position:absolute; top:5px; left:5px; background-color:#E3EBED; text-align:left; font:9pt verdana; width:85%; border:2px solid #000; padding:5px; z-index:1000;  color:#000; } " + 
-			"#so_mContainer ul { padding-left:20px; } " + 
+	style : "#so_mContainer { position:absolute; top:5px; left:5px; background-color:#E3EBED; text-align:left; font:9pt verdana; width:85%; border:2px solid #000; padding:5px; z-index:1000;  color:#000; } " +
+			"#so_mContainer ul { padding-left:20px; } " +
 			"#so_mContainer ul li { display:block; list-style-type:none; list-style-image:url(); line-height:2em; -moz-border-radius:.75em; font:10px verdana; padding:0; margin:2px; color:#000; } " +
-			"#so_mContainer li:hover { background-color:#E3EBED; } " + 
+			"#so_mContainer li:hover { background-color:#E3EBED; } " +
 			"#so_mContainer ul li span { position:relative; width:15px; height:15px; margin-right:4px; } " +
-			"#so_mContainer pre { background-color:#F9FAFB; border:1px solid #638DA1; height:auto; padding:5px; font:9px verdana; color:#000; } " + 
+			"#so_mContainer pre { background-color:#F9FAFB; border:1px solid #638DA1; height:auto; padding:5px; font:9px verdana; color:#000; } " +
 			"#so_mContainer .topLevel { margin:0; padding:0; } " +
 			"#so_mContainer .credits { float:left; width:200px; font:6.5pt verdana; color:#000; padding:2px; margin-left:5px; text-align:left; border-top:1px solid #000; margin-top:15px; width:75%; } " +
 			"#so_mContainer .credits a { font:9px verdana; font-weight:bold; color:#004465; text-decoration:none; background-color:transparent; }"
@@ -728,3 +750,4 @@ function var_dump(obj)
 
 //similar function to print_r for PHP
 var print_r = inspect;
+
