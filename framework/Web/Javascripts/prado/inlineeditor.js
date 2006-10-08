@@ -13,7 +13,7 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 
 		}, options || {});
 		this.element = $(this.options.ID);
-
+		Prado.WebUI.TInPlaceTextBox.register(this);
 		this.initializeListeners();
 	},
 
@@ -34,8 +34,7 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 	 */
 	enterEditMode :  function(evt)
 	{
-	    if (this.isSaving) return;
-	    if (this.isEditing) return;
+	    if (this.isSaving || this.isEditing) return;
 	    this.isEditing = true;
 		this.onEnterEditMode();
 		this.createEditorInput();
@@ -47,6 +46,15 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 		if (evt)
 			Event.stop(evt);
     	return false;
+	},
+
+	exitEditMode : function(evt)
+	{
+		this.isEditing = false;
+		this.isSaving = false;
+		this.editField.disabled = false;
+		this.element.innerHTML = this.editField.value;
+		this.showLabel();
 	},
 
 	showTextBox : function()
@@ -224,5 +232,27 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 		this.editField.disabled = false;
 		this.isSaving = false;
 		this.isEditing = false;
+	}
+},
+{
+	textboxes : {},
+
+	register : function(obj)
+	{
+		Prado.WebUI.TInPlaceTextBox.textboxes[obj.options.TextBoxID] = obj;
+	},
+
+	setDisplayTextBox : function(id,value)
+	{
+		var textbox = Prado.WebUI.TInPlaceTextBox.textboxes[id];
+		if(textbox)
+		{
+			if(value)
+				textbox.enterEditMode(null);
+			else
+			{
+				textbox.exitEditMode(null);
+			}
+		}
 	}
 });

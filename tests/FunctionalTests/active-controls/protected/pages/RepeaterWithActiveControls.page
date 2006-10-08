@@ -1,0 +1,61 @@
+<com:TForm>
+<style>
+	.textbox
+	{
+		font-family: Arial, Helvetica, sans-serif;
+		font-size: 1.2em;
+		display: block;
+		width: 20em;
+	}
+
+	.textbox
+	{
+		padding: 2px 0px 4px 2px;
+		border:1px solid #eee;
+	}
+
+
+	input.textbox
+	{
+		background-color: #ffc;
+	}
+	.loader
+	{
+		 position:absolute;
+		 right:0px;
+		 top:0px;
+		 color:white;
+		 background-color:#900;
+		 padding: 0.5em 1em;
+	}
+	input.required
+	{
+		border: 1px solid red;
+		background-color: pink;
+	}
+</style>
+
+<h1>Repeater With Active Controls Tests</h1>
+
+<com:TRepeater ID="repeater1">
+<prop:ItemTemplate>
+	<com:TInplaceTextBox
+		id="edit_box"
+		Text=<%# $this->DataItem %>
+		OnTextChanged="Page.label_changed"
+		AutoHideTextBox="false"
+		CssClass="textbox" />
+	<com:TRequiredFieldValidator ControlToValidate="edit_box" ControlCssClass="required"/>
+</prop:ItemTemplate>
+</com:TRepeater>
+
+<br />
+
+<com:TActiveButton id="edit_button" Text="Display As textboxes" OnCallback="enable_edit"/>
+<com:TActiveButton id="update_button" Text="Display As Labels" Enabled="false" OnCallback="disable_edit"/>
+
+<com:TActiveLabel ID="label1" />
+
+<com:TJavascriptLogger />
+
+</com:TForm>

@@ -67,6 +67,37 @@ class TInPlaceTextBox extends TActiveTextBox
 	}
 
 	/**
+	 * @param boolean true to display the edit textbox
+	 */
+	public function setDisplayTextBox($value)
+	{
+		$value = TPropertyValue::ensureBoolean($value);
+		$this->setViewState('DisplayTextBox', $value,false);
+		if($this->getActiveControl()->canUpdateClientSide())
+			$this->callClientFunction('setDisplayTextBox',$value);
+	}
+
+	/**
+	 * @return boolean true to display the edit textbox
+	 */
+	public function getDisplayTextBox()
+	{
+		return $this->getViewState('DisplayTextBox', false);
+	}
+
+	/**
+	 * Calls the client-side static method for this control class.
+	 * @param string static method name
+	 * @param mixed method parmaeter
+	 */
+	protected function callClientFunction($func,$value)
+	{
+		$client = $this->getPage()->getCallbackClient();
+		$code = $this->getClientClassName().'.'.$func;
+		$client->callClientFunction($code,array($this,$value));
+	}
+
+	/**
 	 * @param string ID of the control that can trigger to edit the textbox
 	 */
 	public function setEditTriggerControlID($value)

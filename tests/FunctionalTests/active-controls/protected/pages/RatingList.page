@@ -15,13 +15,41 @@
 	{
 		background-position: 10px -90px;
 	}
+	.more td.rating_hover
+	{
+		background-position: 10px -290px;
+	}
 </style>
+
 <com:TLabel ID="label1" Text="Rate It:" />
-<com:TActiveRatingList ID="list1" CaptionID="label1" RatingStyle="blocks" OnCallback="list1_oncallback">
+<com:TActiveRatingList ID="list1"
+	Rating="3.7"
+	CaptionID="label1" OnCallback="list1_oncallback">
+	<com:TListItem Text="1 Star" />
+	<com:TListItem Text="2 Stars" />
+	<com:TListItem Text="3 Stars" />
+	<com:TListItem Text="4 Stars" />
+	<com:TListItem Text="5 Stars" />
+	<prop:ClientSide
+		OnLoading="Element.show('status')"
+		OnComplete="Element.hide('status')" />
+</com:TActiveRatingList>
+
+<hr />
+
+<com:TActiveButton ID="button1" Text="Enable" OnClick="button1_clicked" />
+<com:TActiveButton ID="button2" Text="Disable" OnClick="button2_clicked" />
+<com:TActiveButton ID="button5" Text="Index=3" OnClick="button5_clicked" />
+
+
+<hr />
+
+<com:TLabel ID="label2" Text="Rate It:" />
+<com:TActiveRatingList ID="list2" CaptionID="label2" RatingStyle="blocks" OnCallback="list2_oncallback">
 	<com:TListItem Text="1 Block" />
 	<com:TListItem Text="2 Blocks" />
 	<com:TListItem Text="3 Blocks" />
-	<com:TListItem Text="4 Blocks" />
+	<com:TListItem Text="4 Blocks" Selected="true" />
 	<com:TListItem Text="5 Blocks" />
 	<prop:ClientSide
 		OnLoading="Element.show('status')"
@@ -30,7 +58,7 @@
 
 <br />
 
-<com:TActiveRatingList ID="list2" Rating="3.5"
+<com:TActiveRatingList ID="list3" Rating="3.5"
 	Attributes.title="3.5 Blocks"  RatingStyle="blocks" ReadOnly="true">
 	<com:TListItem Text="1 Block" />
 	<com:TListItem Text="2 Blocks" />
@@ -58,7 +86,7 @@
 </com:TActiveRatingList>
 <br />
 
-<com:TActiveRatingList ID="list3" Rating="3.5" Attributes.title="3.5 Stars" ReadOnly="true">
+<com:TActiveRatingList ID="list4" Rating="3.5" Attributes.title="3.5 Stars" ReadOnly="true">
 	<com:TListItem Text="1 Star" />
 	<com:TListItem Text="2 Stars" />
 	<com:TListItem Text="3 Stars" />
@@ -75,10 +103,6 @@
 		position: absolute; right: 0; top: 0">
 		Loading...
 	</div>
-
-<com:TActiveButton ID="button1" Text="Enable" OnClick="button1_clicked" />
-<com:TActiveButton ID="button2" Text="Disable" OnClick="button2_clicked" />
-<com:TActiveButton ID="button5" Text="Index=3" OnClick="button5_clicked" />
 
 <com:TJavascriptLogger />
 

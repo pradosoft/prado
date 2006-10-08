@@ -1977,6 +1977,8 @@ tests/FunctionalTests/active-controls/protected/pages/PostLoadingTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/PostLoadingTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/RatingList.page -text
 tests/FunctionalTests/active-controls/protected/pages/RatingList.php -text
+tests/FunctionalTests/active-controls/protected/pages/RepeaterWithActiveControls.page -text
+tests/FunctionalTests/active-controls/protected/pages/RepeaterWithActiveControls.php -text
 tests/FunctionalTests/active-controls/protected/pages/ReplaceContentTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/ReplaceContentTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/TInPlaceTextBoxTest.page -text

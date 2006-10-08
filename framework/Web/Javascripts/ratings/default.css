@@ -27,6 +27,16 @@
 	background-position: 0px -100px;
 }
 
+.TRatingList_default td.rating_half
+{
+	background-position: 0px -200px;
+}
+
+.TRatingList_default td.rating_hover
+{
+	background-position: 0px -300px;
+}
+
 .TRatingList_default td.rating_disabled
 {
 	cursor: default !important;

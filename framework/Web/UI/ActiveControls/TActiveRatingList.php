@@ -66,19 +66,38 @@ class TActiveRatingList extends TActiveRadioButtonList
 	}
 
 	/**
-	 * @return float rating value for read-only display.
+	 * @return float rating value.
 	 */
 	public function getRating()
 	{
-		return $this->getViewState('Rating',0);
+		return $this->getViewState('Rating',0.0);
 	}
 
 	/**
-	 * @param float rating value for read-only display.
+	 * @param float rating value, also sets the selected Index
 	 */
 	public function setRating($value)
 	{
-		$this->setViewState('Rating', TPropertyValue::ensureFloat($value),0);
+		$rating = TPropertyValue::ensureFloat($value);
+		$this->setViewState('Rating', $rating);
+		$canUpdate = $this->getActiveControl()->getEnableUpdate();
+		$this->getActiveControl()->setEnableUpdate(false);
+		parent::setSelectedIndex($this->getRatingIndex($rating));
+		$this->getActiveControl()->setEnableUpdate($canUpdate);
+		if($this->getActiveControl()->canUpdateClientSide())
+			$this->callClientFunction('setRating',$rating);
+	}
+
+	/**
+	 * @param float rating value
+	 * @return int rating as integer
+	 */
+	protected function getRatingIndex($rating)
+	{
+		$interval = $this->getHalfRatingInterval();
+		$base = intval($rating)-1;
+		$remainder = $rating-$base-1;
+		return $remainder > $interval[1] ? $base+1 : $base;
 	}
 
 	/**
@@ -86,12 +105,13 @@ class TActiveRatingList extends TActiveRadioButtonList
 	 */
 	public function setSelectedIndex($value)
 	{
+		$value = TPropertyValue::ensureInteger($value);
 		$canUpdate = $this->getActiveControl()->getEnableUpdate();
 		$this->getActiveControl()->setEnableUpdate(false);
 		parent::setSelectedIndex($value);
 		$this->getActiveControl()->setEnableUpdate($canUpdate);
 		if($this->getActiveControl()->canUpdateClientSide())
-			$this->callClientFunction('setRating',$value);
+			$this->callClientFunction('setRating',$value+1);
 	}
 
 	/**
@@ -122,11 +142,35 @@ class TActiveRatingList extends TActiveRadioButtonList
 		$this->setViewState('CaptionID', $value, '');
 	}
 
+	protected function getCaptionControl()
+	{
+		if(($id=$this->getCaptionID())!=='')
+		{
+			if($control=$this->getParent()->findControl($id))
+				return $control;
+		}
+		throw new TInvalidDataValueException(
+			'ratinglist_invalid_caption_id',$id,$this->getID());
+	}
+
+	public function setCaption($value)
+	{
+		$this->getCaptionControl()->setText($value);
+		if($this->getActiveControl()->canUpdateClientSide())
+			$this->callClientFunction('setCaption',$value);
+	}
+
+	public function getCaption()
+	{
+		return $this->getCaptionControl()->getText();
+	}
+
 	/**
 	 * @param boolean true to enable the rating to be changed.
 	 */
 	public function setEnabled($value)
 	{
+		$value = TPropertyValue::ensureBoolean($value);
 		parent::setEnabled($value);
 		if($this->getActiveControl()->canUpdateClientSide())
 			$this->callClientFunction('setEnabled',$value);
@@ -182,8 +226,10 @@ class TActiveRatingList extends TActiveRadioButtonList
 	{
 		$options = parent::getPostBackOptions();
 		$options['Style'] = $this->getRatingStyleCssClass();
-		$options['CaptionID'] = $this->getCaptionControl();
+		$options['CaptionID'] = $this->getCaptionControlID();
 		$options['SelectedIndex'] = $this->getSelectedIndex();
+		$options['Rating'] = $this->getRating();
+		$options['HalfRating'] = $this->getHalfRatingInterval();
 		return $options;
 	}
 
@@ -200,7 +246,7 @@ class TActiveRatingList extends TActiveRadioButtonList
 	/**
 	 * @return string find the client ID of the caption control.
 	 */
-	protected function getCaptionControl()
+	protected function getCaptionControlID()
 	{
 		if(($id=$this->getCaptionID())!=='')
 		{
