@@ -29,6 +29,7 @@ exec $PHP -C -q -d output_buffering=1 $0 $@
 // Project	http://sourceforge.net/projects/phpdocu/
 //
 
+
 ob_end_clean(); // make output from autofind php code disapear
 
 /** 
@@ -44,6 +45,7 @@ ob_end_clean(); // make output from autofind php code disapear
 $test = @include("phpDocumentor/find_phpdoc.php");
 if ($test == 6) // find_phpdoc.php returns 6
 {
+	error_reporting(0);
     include("phpDocumentor/phpdoc.inc");
 } else
 {

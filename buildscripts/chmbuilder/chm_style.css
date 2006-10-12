@@ -1,0 +1,629 @@
+body {
+	font-family: 'Lucida Grande', Verdana, Geneva, Lucida, Helvetica, Arial, sans-serif;
+	font-weight:normal;
+	font-size:10pt;
+	color:black;
+}
+
+h1, h2, h3, h4
+{
+	color: #333;
+}
+
+h1, h2
+{
+	padding-bottom: 3px;
+	border-bottom: 1px solid #ccc;
+}
+
+h1 {
+	font-size:13pt;
+}
+
+h2 {
+	font-size:12pt;
+}
+
+h3 {
+	font-size:10pt;
+	font-weight:bold;
+}
+
+a
+{
+    color: #cc3333;
+}
+
+
+#content {
+	background:#fff;
+	padding: 1em 1em 1em 1em;
+	line-height: 135%;
+}
+
+#footer {
+	clear:both;
+	color: gray;
+	font-size:8pt;
+	text-align:center;
+	margin-top:25px;
+	padding:10px;
+}
+
+.topic {
+	font-size: 9pt;
+	padding: 0px 0px 0px 0px;
+}
+
+.topic div {
+    background-repeat: no-repeat;
+    background-position: left center;
+    margin: 0px;
+	font-size: 8pt;
+	font-weight:bold;
+	color:#2A480A;
+	padding: 5px;
+	padding-left: 15px;
+	border-top: 1px solid #fff;
+	border-bottom: 1px solid #E2E2E2;
+}
+
+.topic ul
+{
+    margin: 0px;
+    padding: 0px;
+}
+
+.topic ul li
+{
+    list-style: none;
+    margin: 0px;
+    padding: 5px;
+	padding-left: 15px;
+	border-bottom: 1px dotted #D8D8D8;
+}
+
+.topic a {
+	color:#4F811A;
+	font-size: 8pt;
+	text-decoration: none;
+}
+
+.topic a:hover {
+	color:#2A480A;
+}
+
+.source {
+	padding: 0.5em;
+	border-style:solid;
+	border-width:1px;
+	border-color:#eeeeee;
+	background-color:#ffffee;
+	font-family: "Courier New", Courier, mono;
+	margin: 0.2em;
+}
+
+.source pre {
+	font-family: "Courier New", Courier, mono;
+	margin: 0;
+}
+
+.runbar
+{
+	margin: 1em 0 1em 0;
+}
+
+.runbar a:link, .runbar a:visited {
+	background-color:#E2E2E2;
+	font-size: 12px;
+	font-weight: normal;
+	padding: 3px;
+	padding-left: 6px;
+	padding-right: 6px;
+	border-top: 1px solid white;
+	border-left: 1px solid white;
+	border-bottom: 1px solid #aaaaaa;
+	border-right: 1px solid #aaaaaa;
+	text-decoration: none;
+}
+
+.runbar a:link.active, .runbar a:visited.active, .runbar a:hover {
+	background-color:#E2E2E2;
+	font-size: 12px;
+	font-weight: normal;
+	padding: 3px;
+	padding-left: 6px;
+	padding-right: 6px;
+	border-top: 1px solid #aaaaaa;
+	border-left: 1px solid #aaaaaa;
+	border-bottom: 1px solid white;
+	border-right: 1px solid white;
+}
+
+#sourceList {
+	background-color:#E2E2E2;
+	margin:10px 10px 0px 10px;
+	padding:10px;
+	border:1px solid silver;
+}
+
+#sourceView {
+	font-family: "Courier New", Courier, mono;
+	background-color:#ffffee;
+	margin:5px 10px 10px 10px;
+	border:1px solid silver;
+}
+
+code {
+	font-family: "Courier New", Courier, mono;
+}
+
+tt {
+	font-family: "Courier New", Courier, mono;
+	border-bottom: 1px dotted silver;
+}
+
+.sampleheader {
+	font-size:30px;
+	font-weight:bold;
+	text-align: right;
+	color: #666;
+	height:100px;
+}
+
+.sampleheader div.title
+{
+   display: none;
+}
+
+.sampleheader div.image
+{
+    display: block;
+    float: right;
+    width: 900px;
+    height: 100px;
+}
+
+.samplemenu
+{
+    padding:10px;
+	padding-right:10px;
+	background:#EDEDED;
+	border-bottom: 1px solid #A6A6A6;
+	border-top: 1px solid #DCDCDC;
+	text-align:right;
+	font-size: 9pt;
+}
+
+.samplemenu a {
+	color:#737373;
+	text-decoration:none;
+}
+
+.samplemenu a:hover {
+	color: #FF0000;
+}
+
+.sampleheader a {
+	font-size:30px;
+	font-weight:bold;
+	color: #666;
+	text-decoration: none;
+}
+
+.samplepanel {
+	margin: 0px;
+	border: 1px solid silver;
+	padding: 10px;
+	margin-bottom:10px;
+}
+
+.sampletitle {
+	width: 100%;
+	border-bottom:1px solid silver;
+	font-weight:bold;
+	margin-bottom:5px;
+}
+
+.sampletable {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+td.samplenote {
+	width: 300px;
+	text-align: right;
+	background: #BFE4FF;
+	border: 1px solid silver;
+	padding: 5px;
+	vertical-align: top;
+}
+
+td.sampleaction {
+	background: #ffffee;
+	border: 1px solid silver;
+	padding: 5px;
+	vertical-align: top;
+}
+
+
+dl
+{
+	margin: 0 2em;
+}
+
+dt
+{
+	font-weight: bold;
+	margin-bottom: 0.15em;
+}
+
+dd
+{
+	margin-left: 2em;
+	margin-bottom: 0.75em;
+}
+
+.quicksearch .search .searchBox
+{
+	width: 25em;
+}
+
+.quicksearch .search
+{
+	text-align: center;
+	padding: 2em;
+}
+
+.searchItem
+{
+	margin-top: 20px;
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+.searchItemBody
+{
+	margin-top: 0em;
+	font-size: 0.9em;
+}
+
+.searchItemLink
+{
+	font-size: 1.05em;
+}
+
+.searchterm
+{
+	font-weight: bold;
+}
+
+.searchAPIItem
+{
+	margin-top: 5px;
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+.searchHeader, .emptyResult
+{
+	margin-top: 30px;
+}
+
+.empty_search_result
+{
+	text-align: center;
+	margin: 30px;
+}
+
+/** Comments **/
+#comments
+{
+	margin: 10px;
+}
+
+.comment_header
+{
+	border-bottom: 1px solid silver;
+}
+
+.comment_item
+{
+	padding: 10px;
+	border: 1px solid silver;
+	margin: 0 10px 10px 10px;
+}
+
+.comment_item .number
+{
+	float: right;
+	font-size: 1.5em;
+	font-weight: bold;
+	color: silver;
+}
+
+.comment_item1
+{
+	background-color: #EDEDED;
+}
+
+.comment_item .email
+{
+	font-weight: bold;
+	display: block;
+}
+
+.comment_item .date
+{
+	font-size: 0.85em;
+	display: block;
+	border-bottom: 1px dotted silver;
+}
+
+.comment_item .comment
+{
+	padding: 10px;
+}
+
+.add_comments
+{
+	margin-top: 2em;
+}
+
+.add_comments .comment_email
+{
+	margin-bottom: 5px;
+}
+
+.add_comments .comment_email input
+{
+	width: 25em;
+}
+
+.add_comments .comment_content textarea
+{
+	width: 75%;
+	height: 200px;
+	padding: 5px;
+}
+
+.add_comments .comment_email label, .add_comments .comment_content label
+{
+	width: 8em;
+	float: left;
+	text-align: right;
+	padding-right: 5px;
+}
+
+.add_comments .add_comment
+{
+	padding-left: 8.2em;
+	padding-top: 0.5em;
+}
+
+.add_comments .please_add
+{
+	padding-left: 8.2em;
+}
+
+.add_comments h3, .comment_added h3
+{
+	border-bottom: 1px solid silver;
+}
+
+.comment_preview
+{
+	margin: 10px;
+	padding: 10px;
+	border: 1px solid silver;
+}
+
+.comment_preview .comment
+{
+	padding: 10px;
+}
+
+.comment_added
+{
+	margin-top: 3em;
+	border-top: 1px dotted silver;
+	padding: 10px;
+}
+
+.comment_added .comment
+{
+	padding: 10px;
+	margin-top: 10px;
+}
+
+.comment_added .thank
+{
+	background-color: #ffffcc;
+	padding: 20px;
+}
+
+pre code
+{
+	display: block;
+	padding: 0.5em;
+	border-style:solid;
+	border-width:1px;
+	border-color:#eeeeee;
+	background-color:#ffffee;
+	font-family: "Courier New", Courier, mono;
+	margin: 0.2em;
+}
+
+div.tip, div.info, div.note
+{
+	border:1px solid #0cf;
+	padding:1em;
+	margin: 1em 2em;
+	background-color: #eff;
+}
+
+div.info
+{
+	border-color: #32CD32;
+	background-color: #EBFFCE;
+}
+
+div.note
+{
+	border-color: Orange;
+	background-color: #FFF5E1;
+}
+
+div b.tip
+{
+	font-size: 1em;
+	padding-right: 0.5em;
+}
+
+img.figure
+{
+	display: block;
+	margin: 1em auto;
+	background-color: White;
+	padding: 15px;
+	border: 1px solid #eee;
+}
+
+div.caption
+{
+	text-align: center;
+}
+
+table.tabular, table.tabular td, table.tabular th
+{
+	border: 1px solid #ccc;
+	border-collapse: collapse;
+	padding: 0.3em;
+}
+
+table.tabular
+{
+	margin: 1em auto;
+	width: 80%;
+}
+
+table.tabular td
+{
+	padding: 0.75em;
+}
+
+
+/** highlight */
+.php .de1, .php .de2 {font-family: 'Courier New', Courier, monospace; font-weight: normal;}
+.php .imp {font-weight: bold; color: red;}
+.php li {font-family: 'Courier New', Courier, monospace; color: black; font-weight: normal; font-style: normal;}
+.php .kw1 {color: #b1b100;}
+.php .kw2 {color: #000000; font-weight: bold;}
+.php .kw3 {color: #000066;}
+.php .co1 {color: #808080; font-style: italic;}
+.php .co2 {color: #808080; font-style: italic;}
+.php .coMULTI {color: #808080; font-style: italic;}
+.php .es0 {color: #000099; font-weight: bold;}
+.php .br0 {color: #66cc66;}
+.php .st0 {color: #ff0000;}
+.php .nu0 {color: #cc66cc;}
+.php .me1 {color: #006600;}
+.php .me2 {color: #006600;}
+.php .re0 {color: #0000ff;}
+
+.xml .de1, .xml .de2 {font-family: 'Courier New', Courier, monospace; font-weight: normal;}
+.xml .imp {font-weight: bold; color: red;}
+.xml li {font-family: 'Courier New', Courier, monospace; color: black; font-weight: normal; font-style: normal;}
+.xml .coMULTI {color: #808080; font-style: italic;}
+.xml .es0 {color: #000099; font-weight: bold;}
+.xml .br0 {color: #66cc66;}
+.xml .st0 {color: #ff0000;}
+.xml .nu0 {color: #cc66cc;}
+.xml .sc0 {color: #00bbdd;}
+.xml .sc1 {color: #ddbb00;}
+.xml .sc2 {color: #339933;}
+.xml .sc3 {color: #009900;}
+.xml .re0 {color: #000066;}
+.xml .re1 {font-weight: bold; color: black;}
+.xml .re2 {font-weight: bold; color: black;}
+
+
+.prado .de1, .prado .de2 {font-family: 'Courier New', Courier, monospace; font-weight: normal;}
+.prado .imp {font-weight: bold; color: red;}
+.prado li {font-family: 'Courier New', Courier, monospace; color: black; font-weight: normal; font-style: normal;}
+.prado .coMULTI {color: #808080; font-style: italic;}
+.prado .es0 {color: #000099; font-weight: bold;}
+.prado .br0 {color: #66cc66;}
+.prado .st0 {color: #ff0000;}
+.prado .nu0 {color: #cc66cc;}
+.prado .sc0 {color: #00bbdd;}
+.prado .sc1 {color: #ddbb00;}
+.prado .sc2 {color: #339933;}
+.prado .sc3 {color: #009900;}
+.prado .re0 {color: #006; font-weight: bold; } /* prado com:ComponentName tags */
+.prado .re0 a.api { color: #006; text-decoration: none; border-bottom: 1px dotted #33f; }
+.prado .re1 {color: #006; font-weight: bold; }  /* prado </com:TComponentName> tags */
+.prado .re2 {color: #c66; font-weight: bold; }  /* prado </com:TComponentName> tags */
+
+
+.html .de1, .html .de2 {font-family: 'Courier New', Courier, monospace; font-weight: normal;}
+.html .imp {font-weight: bold; color: red;}
+.html li {font-family: 'Courier New', Courier, monospace; color: black; font-weight: normal; font-style: normal;}
+.html .kw1 {color: #b1b100;}
+.html .kw2 {color: #000000; font-weight: bold;}
+.html .kw3 {color: #000066;}
+.html .coMULTI {color: #808080; font-style: italic;}
+.html .es0 {color: #000099; font-weight: bold;}
+.html .br0 {color: #66cc66;}
+.html .st0 {color: #ff0000;}
+.html .nu0 {color: #cc66cc;}
+.html .sc0 {color: #00bbdd;}
+.html .sc1 {color: #ddbb00;}
+.html .sc2 {color: #009900;}
+
+.css .de1, .css .de2 {font-family: 'Courier New', Courier, monospace; font-weight: normal;}
+.css .imp {font-weight: bold; color: red;}
+.css li {font-family: 'Courier New', Courier, monospace; color: black; font-weight: normal; font-style: normal;}
+.css .kw1 {color: #000000; font-weight: bold;}
+.css .kw2 {color: #993333;}
+.css .co1 {color: #a1a100;}
+.css .coMULTI {color: #808080; font-style: italic;}
+.css .es0 {color: #000099; font-weight: bold;}
+.css .br0 {color: #66cc66;}
+.css .st0 {color: #ff0000;}
+.css .nu0 {color: #cc66cc;}
+.css .re0 {color: #cc00cc;}
+.css .re1 {color: #6666ff;}
+.css .re2 {color: #3333ff;}
+
+.javascript .de1, .javascript .de2 {font-family: 'Courier New', Courier, monospace; font-weight: normal;}
+.javascript .imp {font-weight: bold; color: red;}
+.javascript li {font-family: 'Courier New', Courier, monospace; color: black; font-weight: normal; font-style: normal;}
+.javascript .kw1 {color: #000066; font-weight: bold;}
+.javascript .kw2 {color: #003366; font-weight: bold;}
+.javascript .kw3 {color: #000066;}
+.javascript .co1 {color: #009900; font-style: italic;}
+.javascript .coMULTI {color: #009900; font-style: italic;}
+.javascript .es0 {color: #000099; font-weight: bold;}
+.javascript .br0 {color: #66cc66;}
+.javascript .st0 {color: #3366CC;}
+.javascript .nu0 {color: #CC0000;}
+.javascript .me1 {color: #006600;}
+.javascript .re0 {color: #0066FF;}
+
+.source .copycode
+{
+	text-align: right;
+	float: right;
+}
+
+.source .copycode a
+{
+	cursor: pointer;
+	color: blue;
+}
+
+.source .copycode_hover a
+{
+	color: red;
+}

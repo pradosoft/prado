@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<application mode="Normal">
+  <paths>
+        <using namespace="Application.pages.*" />
+  </paths>
+  <services>
+    <service id="page" class="TPageService" BasePath="Application.pages">
+      <pages MasterClass="MainLayout" />
+    </service>
+  </services>
+</application>

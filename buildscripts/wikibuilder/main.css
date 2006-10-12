@@ -1,0 +1,501 @@
+/*
+-----------------------------------------------------
+FraternityManuals.org MediaWiki 'monobook' style sheet for CSS2-capable browsers
+FileName:   main.css
+Version:    2005.04.06
+Author:		jasonpearce.com
+-----------------------------------------------------
+*/
+
+/*
+-----------------------------------------------------
+FraternityManuals.org basic tags rules CSS file for screen media
+FileName:   browserdefaults_compact.css
+Version:    2005.04.06
+Author:		jasonpearce.com
+-----------------------------------------------------
+*/
+
+@namespace url(http://www.w3.org/1999/xhtml);/* set default namespace to HTML */
+
+/* zero padding and margins  */
+* {margin:0;padding:0;}
+
+/* set font size */
+
+/* blocks */
+address,blockquote,body,center,dd,dir,div,dl,dt,frameset,h1,h2,h3,h4,h5,h6,hr,html,isindex,listing,map,marquee,menu,multicol,ol,p,plaintext,pre,ul,xmp {display:block;}
+blockquote {margin:1em 40px;}
+blockquote[type=cite] {border-color:blue;border-left:solid;border-width:thin;margin:1em 0px;padding-left:1em;}
+listing {font-size:medium;margin:1em 0;white-space:pre;}
+p,dl,multicol {margin:1em 0;}
+plaintext,xmp,pre {margin:1em 0;white-space:pre;}
+
+/* headings */
+h1,h2,h3,h4,h5,h6 {font-weight:bold;}
+h1 {font-size:1.75em;}
+h2 {font-size:1.5em;}
+h3 {font-size:1.33em;}
+h4 {font-size:1.2em;}
+h5 {font-size:1em;}
+h6 {font-size:0.85em;}
+h1,h2,h3,h4,h5,h6 {margin:1.5em 0 0.25em 0;} 
+h1 {margin-top:0;}
+
+/* link pseudo-classes */
+a:link {text-decoration:none;}
+a:visited {text-decoration:none;}
+a:hover {text-decoration:underline;}
+a:active {text-decoration:none;}
+
+/* tables */
+table {border-collapse:separate;border-spacing:2px;display:table;margin-bottom:0;margin-top:0;text-indent:0;}
+table[align="left"] {float:left;}
+table[align="right"] {float:right;text-align:start;}
+table[rules] {border-collapse:collapse;}
+caption {display:table-caption;text-align:center;}
+table[align="center"] > caption {margin-left:auto;margin-right:auto;}
+table[align="center"] > caption[align="left"] {margin-right:0;}
+table[align="center"] > caption[align="right"] {margin-left:0;}
+tr {display:table-row;vertical-align:inherit;}
+col {display:table-column;}
+colgroup {display:table-column-group;}
+tbody {display:table-row-group;vertical-align:middle;}
+thead {display:table-header-group;vertical-align:middle;}
+tfoot {display:table-footer-group;vertical-align:middle;}
+
+/* for XHTML tables without tbody */
+table > tr {vertical-align:middle;}
+td { display:table-cell;padding:1px;text-align:inherit; vertical-align:inherit;}
+th {display:table-cell;font-weight:bold;padding:1px;vertical-align:inherit;}
+
+/* inlines */
+b,strong {font-weight:bolder;}
+big {font-size:larger;}
+blink {text-decoration:blink;}
+i,address,cite,dfn,em,var {font-style:italic;}
+nobr {white-space:nowrap;}
+q:after {content:close-quote;}
+q:before {content:open-quote;}
+s,strike,del {text-decoration:line-through;}
+small {font-size:smaller;}
+sub {font-size:smaller;line-height:normal;vertical-align:sub;}
+sup {font-size:smaller;line-height:normal;vertical-align:super;}
+u,ins {text-decoration:underline;}
+
+/* titles */
+abbr[title],acronym[title] {border-bottom:dotted 1px;}
+
+/* lists */
+ul,menu,dir {list-style-type:disc;margin:1em 2em;}
+ol {list-style-type:decimal;margin:1em 2em;}
+li {display:list-item;}
+
+/* nested lists have no top/bottom margins */
+ul ul,ul ol,ul dir,ul menu,ul dl,ol ul,ol ol,ol dir,ol menu,ol dl,dir ul, dir ol, dir dir, dir menu, dir dl,menu ul,menu ol,menu dir,menu menu,menu dl,dl ul,dl ol,dl dir,dl menu,dl dl {margin-top:0;margin-bottom:0;}
+
+/* 2 deep unordered lists use a circle */
+ol ul,ul ul,menu ul,dir ul,ol menu,ul menu,menu menu,dir menu,ol dir, ul dir, menu dir, dir dir {list-style-type:circle;}
+
+/* 3 deep (or more) unordered lists use a square */
+ol ol ul,  ol ul ul,  ol menu ul,  ol dir ul,ol ol menu,ol ul menu,ol menu menu,ol dir menu,ol ol dir, ol ul dir, ol menu dir, ol dir dir,ul ol ul,  ul ul ul,  ul menu ul,  ul dir ul,ul ol menu,ul ul menu,ul menu menu,ul dir menu,ul ol dir, ul ul dir, ul menu dir, ul dir dir,menu ol ul,menu ul ul,menu menu ul,menu dir ul,menu ol menu,menu ul menu,menu menu menu,menu dir menu,menu ol dir, menu ul dir, menu menu dir, menu dir dir,dir ol ul, dir ul ul, dir menu ul, dir dir ul,dir ol menu, dir ul menu, dir menu menu, dir dir menu,dir ol dir,dir ul dir,dir menu dir,dir dir dir {list-style-type:square;}
+
+/* leafs */
+hr {border:1px;height:2px;margin:0.5em auto 0.5em auto;}
+img[usemap],object[usemap] {color:blue;cursor:pointer;}
+iframe {border:2px inset;}
+
+/* hidden elements */
+area,base,basefont,head,meta,noembed,noframes,noscript,param,script,style,title { display:none;}
+
+/* bidirectionality elements */
+*[dir="ltr"] {direction:ltr;unicode-bidi:embed;}
+*[dir="rtl"] {direction:rtl;unicode-bidi:embed;}
+address,blockquote,body,dd,div,dl,dt,fieldset,form,frame,frameset,h1,h2,h3,h4,h5,h6,iframe,noscript,noframes,object,ol,p,ul,applet,center,dir,hr,menu,pre,li,table,tr,thead,tbody,tfoot,col,colgroup,td,th,caption {unicode-bidi:embed;}
+bdo[dir="ltr"] {direction:ltr;unicode-bidi:bidi-override;}
+bdo[dir="rtl"] {direction:rtl;unicode-bidi:bidi-override;}
+
+/* print settings */
+@media print {
+  @page {margin:10%;}
+  blockquote,fieldset,pre {page-break-inside:avoid;}
+  h1,h2,h3,h4,h5,h6 {page-break-after:avoid;page-break-inside:avoid;}
+  ul,ol,dl {page-break-before:avoid;}
+}
+
+/* speech settings */
+@media speech {
+  a:active {voice-family:betty,female;pitch-range:80;pitch:x-high;}
+  a:link {voice-family:harry,male;}
+  a:visited {voice-family:betty,female;}
+  b {pitch:medium;pitch-range:60;stress:90;richness:90;}
+  dfn {pitch:high;pitch-range:60;stress:60;}
+  dt {stress:80;}
+  em {pitch:medium;pitch-range:60;stress:60;richness:50;}
+  h1 {pitch:x-low;pitch-range:90;}
+  h1,h2,h3,h4,h5,h6 {voice-family:paul,male;stress:20;richness:90;}
+  h2 {pitch:x-low;pitch-range:80;}
+  h3 {pitch:low;pitch-range:70;}
+  h4 {pitch:medium;pitch-range:60;}
+  h5 {pitch:medium;pitch-range:50;}
+  h6 {pitch:medium;pitch-range:40;}
+  i {pitch:medium;pitch-range:60;stress:60;richness:50;}
+  li,dt,dd {pitch:medium;richness:60;}
+  pre,code,tt {pitch:medium;pitch-range:0;stress:0;richness:80;}
+  s,strike {richness:0;}
+  strong {pitch:medium;pitch-range:60;stress:90;richness:90;}
+  u {richness:0;}
+}
+
+
+/* Typography & Colors -----------------------------------------------*/
+body {
+	background-color: #ffffff; /* white */
+	color: #333; /* dark grey */
+	font-family: 'Lucida Grande', Verdana, Arial, Sans-Serif;
+	}
+img { border: 0px;}
+
+#titleBar {
+	border-bottom: 1px solid #DBDBDB; /* light grey */
+	}
+
+#content {
+	font-size: 10pt;
+	line-height: 1.5em;
+	}
+
+code {
+	font: 11pt 'Courier New', Courier, Fixed;
+	background-color: #f9f9f9; 
+}
+pre { 
+    padding: 0.5em;
+    color: Black;
+    background-color: #EEEEEE;
+    line-height: 1.1em; 
+    font-size: 11pt;
+} 
+
+acronym, abbr, span.caps {
+	font-size: 0.9em;
+	letter-spacing: .07em;
+	}
+
+#column-one {
+	font-size: 10pt;
+	line-height: 1.2em;
+	}
+
+#column-one {
+	color: #444444;
+	background-color: #F0F0F0;
+	}
+
+#toc { /* table of contents */
+	background: #FFF6EB; /* very light orange */
+	border: 1px solid #FEBA63; /* light orange */
+	}
+	
+#toctitle {
+	background: #FEBA63; /* light orange */
+	color: #3F290C; /* very dark orange */
+	}
+	
+#footer {
+	border-top: 1px solid silver;
+	color: #999999;
+	}
+	
+
+/* Links -------------------------------------------------------------*/
+a {color: #3366CC;} /* red */
+a:hover {color: #3366CC;} /* red */
+
+p a:visited {color: #3366CC;} /* red */
+#content a.new {color: #DE0000;} /* green */
+
+#column-one a {color: #2F7300;} /* green */
+#column-one a:hover {color: #183A00;} /* dark green */
+#column-one .selected a {
+	color: #183A00; /* dark green bold */
+	font-weight: bolder;
+	}
+
+#toc a {color: #2153B0;} /* blue */
+#toc a:hover {color: #173A7B;} /* dark blue */
+#toc p a:visited {color: #2153B0;} /* blue */
+
+#footer a {color: #999999;}
+#footer a:hover {color: #173A7B;} /* dark blue */
+
+/* LINK ICONS
+** keep the whitespace in front of the ^=, hides rule from konqueror
+** this is css3, the validator doesn't like it when validating as css2
+*/
+#bodyContent a[href ^="http://"], #bodyContent a[href ^="gopher://"] {
+    background: url("external.png") center right no-repeat;
+    padding-right: 13px;
+	}
+
+#bodyContent a[href ^="https://"], .link-https {
+    background: url("lock_icon.gif") center right no-repeat;
+    padding-right: 16px;
+	}
+
+#bodyContent a[href ^="mailto:"], .link-mailto {
+    background: url("mail_icon.gif") center right no-repeat;
+    padding-right: 18px;
+	}
+
+#bodyContent a[href ^="news://"] {
+    background: url("news_icon.png") center right no-repeat;
+    padding-right: 18px;
+	}
+
+#bodyContent a[href ^="ftp://"], .link-ftp {
+    background: url("file_icon.gif") center right no-repeat;
+    padding-right: 18px;
+	}
+
+#bodyContent a[href ^="irc://"], .link-irc {
+    background: url("discussionitem_icon.gif")  center right no-repeat;
+    padding-right: 18px;
+}
+
+
+
+
+/* Structure & Frame -------------------------------------------------*/
+body {
+	text-align: center;
+	font-size:10pt;
+	}
+
+#titleBar {
+	height: 100px;
+	text-align: left;
+	width: 100%;
+	}
+
+#globalWrapper {
+	margin: 20px;
+	text-align: left;
+	}
+
+
+/* Headers -----------------------------------------------------------*/
+h1, h2, h3, h4 {font-family: 'Trebuchet MS', 'Lucida Grande', Verdana, Arial, Sans-Serif;}
+h1, h2 {border-bottom: 1px solid silver;  line-height: 1.1em; padding-bottom: 0.2em;}
+
+.firstHeading {border-bottom-style: solid; font-size: 2em;}
+.editsection {margin-top: 1em;}
+
+.portlet h5 { /* blocks within #column-one */
+	border-top: 1px solid #eeeeee;
+	margin-top: 0;
+	padding-top: 0.25em;
+	}
+
+
+/* Images ------------------------------------------------------------*/
+#titleBar {
+	background-image: url('pradomantis.gif'); /* blue and white background */
+	background-repeat: no-repeat;
+	background-position: top right;
+	}
+	
+#titleBar img {
+	margin-left: 2.5%;
+	}
+
+#p-poweredby img {
+	border: 0;
+	clear: both;
+	float: right;
+	margin: 2px 0;
+	}	
+
+
+/* Lists -------------------------------------------------------------*/
+.portlet ul {
+	margin-bottom: 2em;
+	}
+
+.portlet li {
+	margin: 0.5em 0;
+	}
+
+/* Special stylized non-IE bullets
+   Does not work in Internet Explorer, which merely default to normal bullets. */
+html>body .portlet ul {
+	list-style: none;
+	margin-left: 0px;
+	padding: 0 0 0 30px;
+	padding-left: 10px;
+	text-indent: -10px;
+	} 
+
+html>body .portlet li {
+	margin-left: 10px;
+	}
+
+html>body .portlet ul li:before {
+	content: "\00BB \0020";
+	}
+
+
+/* Form Elements -----------------------------------------------------*/
+.portlet #searchform {
+	margin-left: 10px;
+	margin-bottom: 2em;
+	}
+
+.portlet #searchform input {
+	margin: 0.15em 0;
+	}
+
+
+/* Various Tags & Classes --------------------------------------------*/
+#siteSub, .urlexpansion, .printfooter {
+	display: none;
+	}
+
+.visualClear {
+	clear: both;
+	}
+
+/* BEGIN user notifications */
+.usermessage {
+    background-color: #ffce7b; /* yellow */
+    border: 1px solid #ffa500; /* orange */
+    color: Black;
+    font-weight: bold;
+    margin: 2em 0em 1em 0em;
+    padding: 0.5em 1em;
+    vertical-align: middle;
+	}
+
+#siteNotice {
+    font-size: 95%;
+    padding: 0 0.9em 0 0.9em;
+    text-align: center;
+	}
+
+#siteNotice p {margin: 0; padding: 0;}
+
+.error {color: red; font-size: larger;}
+
+#catlinks {
+    background-color: #F2F6FF; /* very light blue */
+    border: 1px solid #CBDDFF; /* light blue */
+    clear: both;
+    margin: 1em 0;
+	}
+
+#catlinks p {margin: 0.5em;}
+/* END user notifications */
+
+
+
+/* Content -----------------------------------------------------------*/
+/* BEGIN Table of Contents */
+#toc {
+	float: right;
+	margin: 0 0 1em 1em;
+	}
+#toc td {padding: 0.5em;}
+#toc .tocindent {margin-left: 1em;}
+#toc .tocline {margin-bottom: 0px;}
+#toc p {margin: 0}
+#toc .editsection {margin-top: 0.7em;}
+/* END Table of Contents */
+
+/* BEGIN Page history styling */
+.autocomment {color: gray;}
+#pagehistory span.user {margin-left: 1.4em; margin-right: 0.4em;}
+#pagehistory span.minor {font-weight: bold;}
+#pagehistory input {margin: 0.2em;}
+#pagehistory li {border: 1px solid #ffffff; margin-top: 1px; margin-bottom: 1px;}
+#pagehistory li.selected {
+	background-color: #CBDDFF; /* light blue */
+	border:1px dashed #FDA32F; /* orange */
+	}
+/* END Page history styling */
+
+/* BEGIN Diff rendering */
+table.diff {background: #FEFEFE; border: 1px solid #cccccc; padding: 0.5em}
+table.diff td {vertical-align: top;}
+td.diff-otitle a, td.diff-ntitle a, td.diff-otitle a:visited, td.diff-ntitle a:visited {color: #2153B0;}
+td.diff-otitle a:hover, td.diff-ntitle a:hover {text-decoration: underline;}
+td.diff-otitle {}
+td.diff-ntitle {}
+td.diff-addedline {background:#F2F6FF;}
+td.diff-addedline span.diffchange {
+	background: #CDDEFF;
+	border: 1px dashed #676F80;
+	color: green;
+	font-weight: bold;
+	}
+td.diff-deletedline {background:#FFF9F2;}
+td.diff-deletedline span.diffchange {
+	background: #FFE9CB;
+	border: 1px dashed #B3A38E;
+	color: red;
+	font-weight: bold;
+	text-decoration: line-through;
+	}
+td.diff-context {background:#eeeeee;}
+.newpage {color: green;	font-weight: bolder;}
+/* END Diff rendering */
+
+/* BEGIN forms */
+fieldset {
+	background: #FAFCFF;
+	border: 1px solid #CBDDFF;
+	margin: 1em;
+	padding: 0.5em 1em;
+	}
+
+fieldset div {
+	margin: 0.25em 0;
+	}
+
+fieldset input {
+	margin: 0 0.5em;
+	}
+
+legend {
+	color: #2153B0;
+	font-size: 1.25em;
+	font-weight: bolder;
+	padding: 0.2em 0.5em;
+	}
+/* END forms */
+
+
+
+
+/* Footer ------------------------------------------------------------*/
+#footer ul {
+	list-style: none;
+	margin: 0;
+	}
+
+#footer ul li {
+	margin: 0.1em;
+	margin-right: 1em;
+	}
+
+#f-lastmod {}
+#f-viewcount {display: none;}
+#f-copyright {}
+#f-about {float: left;}
+#f-disclaimer {float: left;}
+#f-developedby {float: left;}
+
+a.external
+{
+    background: url("external.png") center right no-repeat;
+    padding-right: 13px;
+}

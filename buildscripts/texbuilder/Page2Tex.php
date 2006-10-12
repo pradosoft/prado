@@ -19,6 +19,7 @@ class Page2Tex
 
 	function setCurrentPage($current)
 	{
+		self::$header_count = self::$header_count+1000;
 		$this->_current_page = $current;
 	}
 
@@ -260,9 +261,8 @@ class Page2Tex
 	}
 
 
-	function set_header_id($content, $count)
+	function set_header_id($content)
 	{
-		self::$header_count = $count*100;
 		$content = preg_replace_callback('/<h1>/', array($this,"h1"), $content);
 		$content = preg_replace_callback('/<h2>/', array($this,"h2"), $content);
 		$content = preg_replace_callback('/<h3>/', array($this,"h3"), $content);

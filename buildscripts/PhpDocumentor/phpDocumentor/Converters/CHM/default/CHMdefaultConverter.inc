@@ -158,7 +158,7 @@ class CHMdefaultConverter extends Converter
         $templ->assign("subdir",'../');
         $templ->register_outputfilter('CHMdefault_outputfilter');
         $this->setTargetDir($this->getFileSourcePath($this->base_dir));
-        $this->addSourceTOC($pathinfo['name'],$this->getFileSourceName($path),$pathinfo['package'],$pathinfo['subpackage'], true);
+        //$this->addSourceTOC($pathinfo['name'],$this->getFileSourceName($path),$pathinfo['package'],$pathinfo['subpackage'], true);
         phpDocumentor_out("\n");
         $this->setSourcePaths($path);
         $this->writefile($this->getFileSourceName($path).'.html',$templ->fetch('filesource.tpl'));
@@ -179,7 +179,7 @@ class CHMdefaultConverter extends Converter
         $templ->register_outputfilter('CHMdefault_outputfilter');
         $pathinfo = $this->proceduralpages->getPathInfo($path, $this);
         $this->setTargetDir($this->base_dir . PATH_DELIMITER . '__examplesource');
-        $this->addSourceTOC($title,'exsource_'.$path,$pathinfo['package'],$pathinfo['subpackage'], false);
+        //$this->addSourceTOC($title,'exsource_'.$path,$pathinfo['package'],$pathinfo['subpackage'], false);
         phpDocumentor_out("\n");
         $this->writefile('exsource_'.$path.'.html',$templ->fetch('examplesource.tpl'));
     }
@@ -328,7 +328,7 @@ class CHMdefaultConverter extends Converter
         $this->page_data->assign("package",$this->package);
         $this->page_data->assign("subdir",$a);
         $this->page_data->register_outputfilter('CHMdefault_outputfilter');
-        $this->addTOC($this->curpage->file,$this->page,$this->package,$this->subpackage);
+        //$this->addTOC($this->curpage->file,$this->page,$this->package,$this->subpackage);
         $this->writefile($this->page . '.html',$this->page_data->fetch('page.tpl'));
         unset($this->page_data);
     }
@@ -460,7 +460,7 @@ class CHMdefaultConverter extends Converter
         flush();
         $this->setTargetDir($this->base_dir);
     
-        $this->addTOC("$key Index","li_$key",$key,'');
+        //$this->addTOC("$key Index","li_$key",$key,'');
         $this->writefile("li_$key.html",$template->fetch('index.tpl'));
         unset($template);
     }
@@ -1568,17 +1568,18 @@ class CHMdefaultConverter extends Converter
         {
             $comp_subs = '';
             $comp_subs1 = false;
-            foreach($TOC1 as $subpackage => $types)
+            foreach($TOC1 as $subpackage => $files)
             {
                 $comp_types = '';
-                foreach($types as $type => $files)
-                {
                     $comp = '';
                     $templ1 = &$this->newSmarty();
                     $templ1->assign('entry', array());
+					$type = 'Classes';
+                //foreach($types as $type => $files)
+                //{
                     foreach($files as $file)
                     {
-					// use book icon for classes
+						//use book icon for classes
 						if ($type == 'Classes') {
 	                        $templ1->append('entry', array('paramname' => $file[0],'outputfile' => $file[1],'isclass' => 1));
 						} else {
@@ -1589,7 +1590,7 @@ class CHMdefaultConverter extends Converter
                     $templ->assign('tocsubentries',$templ1->fetch('tocentry.tpl'));
                     $templ->assign('entry', array(array('paramname' => $type)));
                     $comp_types .= $templ->fetch('tocentry.tpl');
-                }
+                //}
                 if (!empty($subpackage))
                 {
                     $templ = &$this->newSmarty();
@@ -1633,7 +1634,8 @@ class CHMdefaultConverter extends Converter
         $file = str_replace($this->base_dir . '\\', '', $file);
         $sub = $class ? 'Classes' : 'Files';
         if ($tutorial) $sub = 'Manual';
-        $this->TOC[$package][$subpackage][$sub][] = array($name,$file);
+		if($class)
+	        $this->TOC[$package][$subpackage][] = array($name,$file);
     }
     
     /**

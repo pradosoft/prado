@@ -160,7 +160,9 @@
   <target name="rebuild" depends="clean,build" />
 
   <target name="docs">
-    <echo>Building quickstart.pdf...</echo>
+	<echo>Build PDF + CHM + HTML Docs, it may take about 30 mins</echo>
+
+	<echo>Building quickstart.pdf...</echo>
     <delete>
       <fileset dir=".">
         <include name="buildscripts/texbuilder/*.aux" />
@@ -172,26 +174,33 @@
     <exec command="${pdflatex} quickstart.tex -interaction=nonstopmode -max-print-line=120" dir="buildscripts/texbuilder" passthru="true"/>
     <move file="buildscripts/texbuilder/quickstart.pdf" todir="${build.doc.dir}"/>
 
-    <echo>Building API manuals...</echo>
+	<echo>Building API manuals...</echo>
     <delete dir="${build.doc.dir}/manual"/>
     <mkdir dir="${build.doc.dir}/manual" />
     <prado-doc phpdoc="${php} buildscripts/PhpDocumentor/phpdoc"
                title="PRADO v${prado.version} API Manual"
                destdir="${build.doc.dir}/manual"
                sourcepath="framework"
-               ignorelist="*pradolite.php,*3rdParty/*,*Javascripts/*,*I18N/core/*"
-               output="HTML:frames:default,CHM:default:default,HTML:Smarty:PradoSoft" />
-    <!-- generate CHM file -->
-    <if>
-      <equals arg1="${prado.winbuild}" arg2="true"/>
-      <then>
-        <exec command="${hhc} ${build.doc.dir}/manual/CHMdefaultConverter/phpdoc.hhp" />
-      </then>
-    </if>
+               ignorelist="*pradolite.php,*prado-cli.php,*3rdParty/*,*Javascripts/*,*I18N/core/*"
+               output="CHM:default:default,HTML:Smarty:PradoSoft" />
 
     <echo>Indexing API manuals...</echo>
     <prado-api-index docdir="${build.doc.dir}/manual/HTMLSmartyConverter" todir="${build.doc.dir}/manual/HTMLSmartyConverter" />
+
     <copy file="buildscripts/index/search.php" todir="${build.doc.dir}/manual/HTMLSmartyConverter" />
+
+	<exec command="${php} build.php" dir="buildscripts/classtree" passthru="true"/>
+
+	<echo>Generating CHM Content (Quickstart + ClassDocs)</echo>
+	<exec command="${php} build.php" dir="buildscripts/chmbuilder" passthru="true"/>
+	<echo>Generating CHM Content (WIKI)</echo>
+	<exec command="${php} build.php" dir="buildscripts/wikibuilder" passthru="true"/>
+    <if>
+      <equals arg1="${prado.winbuild}" arg2="true"/>
+      <then>
+        <exec command="${hhc} ${build.doc.dir}/prado3_manual.hhp" />
+      </then>
+    </if>
   </target>
 
   <target name="dist" depends="rebuild,docs">

@@ -1,12 +1,8 @@
-{capture name="title"}Class Trees for Package {$package}{/capture}
-{include file="header.tpl" title=$smarty.capture.title}
-
-<!-- Start of Class Data -->
-<H2>
-	{$smarty.capture.title}
-</H2>
+{include file="header.tpl" noleftindex=true}
+<h1>{$title}</h1>
 {section name=classtrees loop=$classtrees}
-<SPAN class="code">Root class {$classtrees[classtrees].class}</SPAN>
-<code class="vardefaultsummary">{$classtrees[classtrees].class_tree}</code>
+<hr />
+<div class="classtree">Root class {$classtrees[classtrees].class}</div><br>
+{$classtrees[classtrees].class_tree}
 {/section}
 {include file="footer.tpl"}

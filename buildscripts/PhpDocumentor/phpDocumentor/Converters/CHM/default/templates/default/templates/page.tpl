@@ -1,34 +1,31 @@
-{include file="header.tpl" eltype="Procedural file"}
-<h3><SPAN class="type">File:</SPAN> {$source_location}<HR>
-</h3>
+{include file="header.tpl" eltype="Procedural file" class_name=$name hasel=true contents=$pagecontents}
+
+<br>
+<br>
+
+{if $classes}
+<div class="contents">
 {if $tutorial}
-<div class="maintutorial">Main Tutorial: {$tutorial}</div>
+<span class="maintutorial">Main Tutorial: {$tutorial}</span>
 {/if}
-{include file="docblock.tpl" desc=$desc sdesc=$sdesc tags=$tags}
-Classes in this file:
-<dl>
+<h2>Classes:</h2>
 {section name=classes loop=$classes}
 <dt>{$classes[classes].link}</dt>
 	<dd>{$classes[classes].sdesc}</dd>
 {/section}
-</dl>
-<hr>
-{include file="include.tpl" summary=true}
-<hr>
-{include file="global.tpl" summary=true}
-<hr>
-{include file="define.tpl" summary=true}
-<hr>
-{include file="function.tpl" summary=true}
-<hr>
+</div><br /><br />
+{/if}
+
+<h2>Page Details:</h2>
+{include file="docblock.tpl" type="page"}
+<br /><br />
 {include file="include.tpl"}
-<hr>
+<br /><br />
 {include file="global.tpl"}
-<hr>
+<br /><br />
 {include file="define.tpl"}
-<hr>
+<br />
 {include file="function.tpl"}
-<hr>
+
 {include file="footer.tpl"}
 
-</HTML>
