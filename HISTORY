@@ -1,6 +1,7 @@
 Version 3.0.5 October 8, 2006
 ===============================
-BUG: Ticket#409 - Multiple page services will mess up page caching
+BUG: Ticket#409 - Multiple page services will mess up page caching (Qiang)
+BUG: Ticket#417 - SelectedIndex in template incorrect caused by bug in TList (Qiang)
 CHG: Ticket#358 - TFileUpload::saveAs() now returns false instead of exception when error (Qiang)
 ENH: Ticket#361 - Introduced include template tag that supports including external templates (Qiang)
 ENH: Ticket#366 - white spaces are now allowed around attribute names in template (Qiang)
