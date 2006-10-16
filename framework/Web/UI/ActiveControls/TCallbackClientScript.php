@@ -286,8 +286,7 @@ class TCallbackClientScript extends TApplicationComponent
 	/**
 	 * Append a HTML fragement to the element.
 	 * @param TControl control element or element id
-	 * @param TControl HTML fragement, otherwise if TControl, its render
-	 * method will be called.
+	 * @param string HTML fragement or the control to be rendered
 	 */
 	public function appendContent($element, $content)
 	{
@@ -297,8 +296,7 @@ class TCallbackClientScript extends TApplicationComponent
 	/**
 	 * Prepend a HTML fragement to the element.
 	 * @param TControl control element or element id
-	 * @param TControl HTML fragement, otherwise if TControl, its render
-	 * method will be called.
+	 * @param string HTML fragement or the control to be rendered
 	 */
 	public function prependContent($element, $content)
 	{
@@ -308,8 +306,7 @@ class TCallbackClientScript extends TApplicationComponent
 	/**
 	 * Insert a HTML fragement after the element.
 	 * @param TControl control element or element id
-	 * @param TControl HTML fragement, otherwise if TControl, its render
-	 * method will be called.
+	 * @param string HTML fragement or the control to be rendered
 	 */
 	public function insertContentAfter($element, $content)
 	{
@@ -319,8 +316,7 @@ class TCallbackClientScript extends TApplicationComponent
 	/**
 	 * Insert a HTML fragement in before the element.
 	 * @param TControl control element or element id
-	 * @param TControl HTML fragement, otherwise if TControl, its render
-	 * method will be called.
+	 * @param string HTML fragement or the control to be rendered
 	 */
 	public function insertContentBefore($element, $content)
 	{
@@ -333,8 +329,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 * a TControl component, its rendered method will be called and its contents
 	 * will be used for replacement.
 	 * @param TControl control element or HTML element id.
-	 * @param TControl HTML fragement, otherwise it will TControl's
-	 * rendered content.
+	 * @param string HTML fragement or the control to be rendered
 	 * @param string replacement method, default is to replace the outter
 	 * html content.
 	 * @param string provide a custom boundary.
@@ -363,9 +358,9 @@ class TCallbackClientScript extends TApplicationComponent
 	/**
 	 * Replace the content of an element with new content contained in writer.
 	 * @param TControl control element or HTML element id.
-	 * @param THtmlWriter writer for the content.
+	 * @param string HTML fragement or the control to be rendered
 	 */
-	public function replaceContent($element,$writer)
+	public function replaceContent($element,$content)
 	{
 		$this->replace($element, $writer);
 	}
