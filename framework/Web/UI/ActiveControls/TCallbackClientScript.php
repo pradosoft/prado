@@ -362,7 +362,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function replaceContent($element,$content)
 	{
-		$this->replace($element, $writer);
+		$this->replace($element, $content);
 	}
 
 	/**
