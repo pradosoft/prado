@@ -59,6 +59,18 @@
 
 	<com:TActiveLabel ID="status" Text="Status:" />
 
+
+	<com:TInPlaceTextBox 
+		id="lblNewPackageTitle"
+		OnTextChanged="NewPackageSubject"
+		CssClass="textbox"
+		Text="عنوان باکس ...">
+	<prop:ClientSide
+		OnFailure="alert(10)"/>
+	</com:TInPlaceTextBox>
+
+	<com:TActiveButton Text="ad" OnCallback="NewPackageSubject" ClientSide.OnFailure="alert(10)"/>
+
 	<com:TJavascriptLogger />
 
 </com:TForm>

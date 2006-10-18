@@ -16,6 +16,11 @@ class TInPlaceTextBoxTest extends TPage
 	{
 		$this->label1->Text = "hahahaha";
 	}
+
+	function NewPackageSubject($sender, $param)
+	{
+		throw new TException('Exist');
+	}
 }
 
 ?>

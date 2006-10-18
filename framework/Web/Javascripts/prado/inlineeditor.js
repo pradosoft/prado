@@ -203,6 +203,8 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 		this.editField.disabled = false;
 		this.editField.value = this.getText();
 		Prado.Element.focus(this.editField);
+		if(typeof(this.options.onSuccess)=="function")
+			this.options.onSuccess(sender,parameter);
 	},
 
 	onloadExternalTextFailure : function(request, parameter)
@@ -210,6 +212,8 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 		this.isSaving = false;
 		this.isEditing = false;
 		this.showLabel();
+		if(typeof(this.options.onFailure)=="function")
+			this.options.onFailure(sender,parameter);
 	},
 
 	/**
@@ -225,6 +229,8 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 			this.showLabel();
 		this.element.innerHTML = parameter == null ? this.editField.value : parameter;
 		this.editField.disabled = false;
+		if(typeof(this.options.onSuccess)=="function")
+			this.options.onSuccess(sender,parameter);
 	},
 
 	onTextChangedFailure : function(sender, parameter)
@@ -232,6 +238,8 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 		this.editField.disabled = false;
 		this.isSaving = false;
 		this.isEditing = false;
+		if(typeof(this.options.onFailure)=="function")
+			this.options.onFailure(sender,parameter);
 	}
 },
 {
