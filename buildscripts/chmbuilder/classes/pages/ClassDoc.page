@@ -1,0 +1,30 @@
+<%@ Title="PRADO - Documentation" %>
+
+<com:TContent ID="main">
+
+<div class="doc-namespace">
+Namespace: <a href="../manual/CHMdefaultConverter/li_<%= $this->Class['Package'] %>.html"><%= $this->Class['Package'] %></a>
+</div>
+<%= $this->Ancestors %>
+
+<div class="doc-title">
+<a href="../manual/CHMdefaultConverter/<%= $this->Class['Package'].'/'.$this->Class['Name'] %>.html"><%= $this->Class['Name'] %></a>
+</div>
+
+<div class="doc-menu">
+<a href="#properties">Properties</a> | <a href="#events">Events</a> | <a href="#methods">Methods</a> | <a href="#child">Derived classes</a> | <a href="Classes.html">All classes</a>
+</div>
+
+<div class="doc-subtitle"><a name="properties"></a>Properties</div>
+<%= $this->Properties %>
+
+<div class="doc-subtitle"><a name="events"></a>Events</div>
+<%= $this->Events %>
+
+<div class="doc-subtitle"><a name="methods"></a>Methods</div>
+<%= $this->Methods %>
+
+<div class="doc-subtitle"><a name="child"></a>Derived classes</div>
+<%= $this->Derived %>
+
+</com:TContent>

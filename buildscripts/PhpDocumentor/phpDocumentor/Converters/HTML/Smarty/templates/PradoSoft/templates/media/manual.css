@@ -1,0 +1,260 @@
+/* thanks to symfony for a great base template for phpdoc  */
+/* symfony-project.com */
+
+#page
+{
+	width: 99%;
+}
+
+div.credit
+{
+    font-size: 10px;
+    color: #888;
+}
+
+.inherited-methods
+{
+  background-color: #ddd;
+  font-size:        1.0em;
+  margin-top:       10px;
+  width:            100%;
+}
+
+.inherited-methods td
+{
+  background-color: #FFFFFF;
+  font-family:      "courier new", courier;
+  font-size:        1.1em;
+  padding:          5px;
+}
+
+.inherited-methods th
+{
+  background-color: #F0F0F0;
+  font-weight:      bold;
+  padding:          5px;
+  text-align:       left;
+}
+
+.method-detail
+{
+  font-size: 1.0em;
+}
+
+.method-detail a
+{
+  font-weight: bold;
+}
+
+.method-detail td
+{
+  font-family:    "courier new", courier;
+  font-size:      1.1em;
+  padding-top:    10px;
+  vertical-align: top;
+}
+
+.method-details
+{
+  background-color: #ddd;
+  font-size:        1.0em;
+  width:            100%;
+}
+
+.method-details td
+{
+  background-color: #FFFFFF;
+}
+
+.method-details td.method-data
+{
+  padding: 5px;
+}
+
+.method-details h2
+{
+  color: #750000;
+}
+
+.method-details th
+{
+  background-color: #F0F0F0;
+  font-weight:      bold;
+  font-size:        1.2em;
+  padding:          5px;
+  text-align:       left;
+}
+
+.method-summary
+{
+  background-color: #aaa;
+  font-size:        1.0em;
+  width:            100%;
+}
+
+.method-summary td
+{
+  background-color: #FFFFFF;
+  padding:          5px;
+}
+
+.method-summary td a
+{
+  font-weight: bold;
+}
+
+.method-summary td.type
+{
+  font-family:    "courier new", courier;
+  font-size:      1.0em;
+  text-align:     right;
+  vertical-align: top;
+}
+
+.method-summary div.declaration
+{
+  font-family: "courier new", courier;
+  font-size:   1.1em;
+}
+
+.method-summary th
+{
+  background-color: #F0F0F0;
+  font-weight:      bold;
+  font-size:        1.2em;
+  padding:          5px;
+  text-align:       left;
+}
+
+.method-summary th.small
+{
+	font-size:  1.0em;
+}
+
+.method-summary tr.reference td {
+    background-color: #FFEDED;
+}
+
+
+.constant-details
+{
+  background-color: #ddd;
+  font-size:        1.0em;
+  width:            100%;
+}
+
+.constant-details h3
+{
+  color: #750000;
+}
+
+.constant-details td
+{
+  background-color: #FFFFFF;
+  padding:          5px;
+}
+
+.constant-details th
+{
+  background-color: #F0F0F0;
+  font-weight:      bold;
+  font-size:        1.2em;
+  padding:          5px;
+  text-align:       left;
+}
+
+.constant-summary
+{
+  background-color: #ddd;
+  font-size:        1.0em;
+  width:            100%;
+}
+
+.constant-summary td
+{
+  background-color: #FFFFFF;
+  padding:          5px;
+}
+
+.constant-summary td.name a
+{
+  font-family: "courier new", courier;
+  font-size:   1.0em;
+  font-weight: bold;
+}
+
+.constant-summary td.type
+{
+  font-family: "courier new", courier;
+  font-size:   1.0em;
+}
+
+.constant-summary th
+{
+  background-color: #F0F0F0;
+  font-weight:      bold;
+  font-size:        1.2em;
+  padding:          5px;
+  text-align:       left;
+}
+
+.inherited-constants
+{
+  background-color: #eee;
+  font-size:        1.0em;
+  margin-top:       10px;
+  width:            100%;
+}
+
+.inherited-constants td
+{
+  background-color: #FFFFFF;
+  font-family:      "courier new", courier;
+  font-size:        1.1em;
+  padding:          5px;
+}
+
+.inherited-constants th
+{
+  background-color: #F0F0F0;
+  font-weight:      bold;
+  padding:          5px;
+  text-align:       left;
+}
+
+.class-declaration
+{
+  font-family: "courier new", courier;
+  font-size:   1.1em;
+}
+
+.class-description
+{
+  background-color: #F0F0F0;
+  margin-top:       10px;
+  padding:          1px 8px 1px 8px;
+  margin-bottom:    5px;
+}
+
+.inheritence-tree pre
+{
+  margin-bottom: 0;
+}
+
+.sub-classes h4
+{
+  margin: 10px 0 0 0;
+}
+
+.sub-classes div
+{
+  font-family: "courier new", courier;
+  font-size:   1.1em;
+  margin:      5px 0 0 40px;
+}
+
+.sub-classes div small
+{
+  font-size: 1.0em;
+}
+

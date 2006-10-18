@@ -1,8 +1,9 @@
 {foreach key=subpackage item=files from=$classleftindex}
-	{if $subpackage != ""}<b>{$subpackage}</b><br>{/if}
+  <div class="package">
+	{if $subpackage != ""}{$subpackage}<br />{/if}
 	{section name=files loop=$files}
-		{if $files[files].link != ''}<a href="{ldelim}$subdir{rdelim}{$files[files].link}">{/if}
-		{$files[files].title}
-		{if $files[files].link != ''}</a>{/if}<br>
+    {if $subpackage != ""}&nbsp;&nbsp;{/if}
+		{if $files[files].link != ''}<a href="{$files[files].link}">{/if}{$files[files].title}{if $files[files].link != ''}</a>{/if}<br />
 	{/section}
+  </div>
 {/foreach}

@@ -27,6 +27,8 @@ class ViewSource extends TPage
 		$this->SourceList->dataBind();
 
 		$this->Highlighter->Language=$this->getFileLanguage($fileExt);
+		if($this->Request['lines']==='false')
+			$this->Highlighter->ShowLineNumbers=false;
 		$this->SourceView->Text=file_get_contents($this->_fullPath);
 	}
 

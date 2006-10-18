@@ -22,11 +22,18 @@ class PradoDocTask extends Task
 	
 	private $parseprivate = false;
 
+	private $quite = false;
+
 	function setPhpdoc($phpdoc)
 	{
 		$this->phpdoc=$phpdoc;
 	}
 	
+	function setQuite($quite)
+	{
+		$this->quite=$quite;
+	}
+
 	/**
 	 * Set the title for the generated documentation
 	 */
@@ -85,7 +92,7 @@ class PradoDocTask extends Task
 	function main()
 	{
 		$arguments = $this->constructArguments();
-		exec($this->phpdoc . " " . $arguments, $output, $retval);
+		passthru($this->phpdoc . " " . $arguments, $retval);
 	}
 	
 	/**
@@ -93,7 +100,12 @@ class PradoDocTask extends Task
 	 */
 	private function constructArguments()
 	{
-		$arguments = "-q \"on\" ";
+		$arguments = " ";
+
+		if($this->quite)
+		{
+			$arguments .= '-q "on" ';
+		}
 		
 		if ($this->title)
 		{

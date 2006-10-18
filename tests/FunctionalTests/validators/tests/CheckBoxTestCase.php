@@ -4,6 +4,9 @@ class CheckBoxTestCase extends SeleniumTestCase
 {
 	function test()
 	{
+		//problem with test runner clicking on radio buttons
+		$this->skipBrowsers(self::OPERA);
+
 		$this->open('validators/index.php?page=CheckBox');
 
 

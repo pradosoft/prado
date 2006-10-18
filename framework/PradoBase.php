@@ -340,6 +340,11 @@ class PradoBase
 		return isset(self::$_aliases[$alias])?self::$_aliases[$alias]:null;
 	}
 
+	protected static function getPathAliases()
+	{
+		return self::$_aliases;
+	}
+
 	/**
 	 * @param string alias to the path
 	 * @param string the path corresponding to the alias
