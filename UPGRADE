@@ -13,6 +13,15 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
+
+Upgrading from v3.0.x
+---------------------
+- Validators ClientSide.OnSuccess becomes ClientSide.OnValidationSuccess, 
+- Validators ClientSide.OnError becomes ClientSide.OnValidationError, 
+- Validator OnSuccess event becomes OnValidationSuccess. 
+- Validator OnError event becomes OnValidationError. 
+
+
 Upgrading from v3.0.4
 ---------------------
 - TFileUpload::saveAs() will return false instead of raising an exception

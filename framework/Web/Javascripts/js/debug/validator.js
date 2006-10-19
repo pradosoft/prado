@@ -571,8 +571,8 @@ Prado.WebUI.TBaseValidator.prototype =
 	 * options['ValidationGroup']	Validation group
 	 * options['ControlCssClass']	Css class to use on the input upon error
 	 * options['OnValidate']		Function to call immediately after validation
-	 * options['OnSuccess']			Function to call upon after successful validation
-	 * options['OnError']			Function to call upon after error in validation.
+	 * options['OnValidationSuccess']			Function to call upon after successful validation
+	 * options['OnValidationError']			Function to call upon after error in validation.
 	 * options['ObserveChanges'] 	True to observe changes in input
 	 * </code>
 	 */
@@ -685,12 +685,12 @@ Prado.WebUI.TBaseValidator.prototype =
 
 		if(this.isValid)
 		{
-			if(typeof(this.options.OnSuccess) == "function")
+			if(typeof(this.options.OnValidationSuccess) == "function")
 			{
 				if(this.requestDispatched == false)
 				{
 					this.refreshControlAndMessage();
-					this.options.OnSuccess(this, invoker);
+					this.options.OnValidationSuccess(this, invoker);
 				}
 			}
 			else
@@ -698,12 +698,12 @@ Prado.WebUI.TBaseValidator.prototype =
 		}
 		else
 		{
-			if(typeof(this.options.OnError) == "function")
+			if(typeof(this.options.OnValidationError) == "function")
 			{
 				if(this.requestDispatched == false)
 				{
 					this.refreshControlAndMessage();
-					this.options.OnError(this, invoker)
+					this.options.OnValidationError(this, invoker)
 				}
 			}
 			else
@@ -1143,9 +1143,9 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	{
 		this.isValid = data;
 		this.requestDispatched = false;
-		Prado.Validation.validate(this.options.FormID, this.group,null);
 		if(typeof(this.options.onSuccess) == "function")
 			this.options.onSuccess(request,data);
+		Prado.Validation.validate(this.options.FormID, this.group,null);
 	},
 
 	callbackOnFailure : function(request, data)

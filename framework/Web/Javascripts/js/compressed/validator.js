@@ -105,15 +105,15 @@ this.options.OnValidate(this,invoker);}
 if(this.enabled)
 this.isValid=this.evaluateIsValid();else
 this.isValid=true;if(this.isValid)
-{if(typeof(this.options.OnSuccess)=="function")
+{if(typeof(this.options.OnValidationSuccess)=="function")
 {if(this.requestDispatched==false)
-{this.refreshControlAndMessage();this.options.OnSuccess(this,invoker);}}
+{this.refreshControlAndMessage();this.options.OnValidationSuccess(this,invoker);}}
 else
 this.updateControl();}
 else
-{if(typeof(this.options.OnError)=="function")
+{if(typeof(this.options.OnValidationError)=="function")
 {if(this.requestDispatched==false)
-{this.refreshControlAndMessage();this.options.OnError(this,invoker)}}
+{this.refreshControlAndMessage();this.options.OnValidationError(this,invoker)}}
 else
 this.updateControl();}
 this.observeChanges(this.control);return this.isValid;},observeChanges:function(control)
@@ -189,8 +189,8 @@ return true;}});Prado.WebUI.TActiveCustomValidator=Class.extend(Prado.WebUI.TBas
 {value=this.getValidationValue();if(!this.requestDispatched&&value!=this.validatingValue)
 {this.validatingValue=value;request=new Prado.CallbackRequest(this.options.EventTarget,this.options);request.setCallbackParameter(value);request.setCausesValidation(false);request.options.onSuccess=this.callbackOnSuccess.bind(this);request.options.onFailure=this.callbackOnFailure.bind(this);request.dispatch();this.requestDispatched=true;return false;}
 return this.isValid;},callbackOnSuccess:function(request,data)
-{this.isValid=data;this.requestDispatched=false;Prado.Validation.validate(this.options.FormID,this.group,null);if(typeof(this.options.onSuccess)=="function")
-this.options.onSuccess(request,data);},callbackOnFailure:function(request,data)
+{this.isValid=data;this.requestDispatched=false;if(typeof(this.options.onSuccess)=="function")
+this.options.onSuccess(request,data);Prado.Validation.validate(this.options.FormID,this.group,null);},callbackOnFailure:function(request,data)
 {this.requestDispatched=false;if(typeof(this.options.onFailure)=="function")
 this.options.onFailure(request,data);}});Prado.WebUI.TRangeValidator=Class.extend(Prado.WebUI.TBaseValidator,{evaluateIsValid:function()
 {var value=this.getValidationValue();if(value.length<=0)

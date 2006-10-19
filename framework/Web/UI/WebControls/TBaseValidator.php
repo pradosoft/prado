@@ -490,12 +490,12 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			if($this->evaluateIsValid())
 			{
 				$this->setIsValid(true);
-				$this->onSuccess();
+				$this->onValidationSuccess();
 			}
 			else
 			{
 				$this->setIsValid(false);
-				$this->onError();
+				$this->onValidationError();
 			}
 		}
 		return $this->getIsValid();
@@ -527,17 +527,17 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	/**
 	 * This event is raised when the validator succeeds in validation.
 	 */
-	public function onSuccess()
+	public function onValidationSuccess()
 	{
-		$this->raiseEvent('OnSuccess',$this,null);
+		$this->raiseEvent('OnValidationSuccess',$this,null);
 	}
 
 	/**
 	 * This event is raised when the validator fails in validation.
 	 */
-	public function onError()
+	public function onValidationError()
 	{
-		$this->raiseEvent('OnError',$this,null);
+		$this->raiseEvent('OnValidationError',$this,null);
 	}
 
 	/**
@@ -616,7 +616,7 @@ class TValidatorClientSide extends TClientSideOptions
 	 */
 	public function setOnSuccess($javascript)
 	{
-		$this->setFunction('OnSuccess', $javascript);
+		$this->setFunction('OnValidationSuccess', $javascript);
 	}
 
 	/**
@@ -624,7 +624,7 @@ class TValidatorClientSide extends TClientSideOptions
 	 */
 	public function getOnSuccess()
 	{
-		return $this->getOption('OnSuccess');
+		return $this->getOption('OnValidationSuccess');
 	}
 
 	/**
@@ -634,7 +634,7 @@ class TValidatorClientSide extends TClientSideOptions
 	 */
 	public function setOnError($javascript)
 	{
-		$this->setFunction('OnError', $javascript);
+		$this->setFunction('OnValidationError', $javascript);
 	}
 
 	/**
@@ -642,7 +642,42 @@ class TValidatorClientSide extends TClientSideOptions
 	 */
 	public function getOnError()
 	{
-		return $this->getOption('OnError');
+		return $this->getOption('OnValidationError');
+	}
+
+
+	/**
+	 * Alias for OnSuccess
+	 * @param string javascript code for client-side OnSuccess event.
+	 */
+	public function setOnValidationSuccess($javascript)
+	{
+		$this->setOnSuccess($javascript);
+	}
+
+	/**
+	 * @return string javascript code for client-side OnSuccess event.
+	 */
+	public function getOnValidationSuccess()
+	{
+		return $this->getOnSuccess();
+	}
+
+	/**
+	 * Alias for OnError
+	 * @param string javascript code for client-side OnError event.
+	 */
+	public function setOnValidationError($javascript)
+	{
+		$this->setOnError($javascript);
+	}
+
+	/**
+	 * @return string javascript code for client-side OnError event.
+	 */
+	public function getOnValidationError()
+	{
+		return $this->getOnError();
 	}
 
 	/**

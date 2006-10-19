@@ -171,21 +171,39 @@ class TActiveCustomValidatorClientSide extends TCallbackClientSide
 	}
 
 	/**
+	 * Client-side OnSuccess event is raise after validation is successfull.
+	 * This will override the default client-side validator behaviour.
+	 * @param string javascript code for client-side OnSuccess event.
+	 */
+	public function setOnValidationSuccess($javascript)
+	{
+		$this->setFunction('OnValidationSuccess', $javascript);
+	}
+
+	/**
+	 * @return string javascript code for client-side OnSuccess event.
+	 */
+	public function getOnValidationSuccess()
+	{
+		return $this->getOption('OnValidationSuccess');
+	}
+
+	/**
 	 * Client-side OnError event is raised after validation failure.
 	 * This will override the default client-side validator behaviour.
 	 * @param string javascript code for client-side OnError event.
 	 */
-	public function setOnError($javascript)
+	public function setOnValidationError($javascript)
 	{
-		$this->setFunction('OnError', $javascript);
+		$this->setFunction('OnValidationError', $javascript);
 	}
 
 	/**
 	 * @return string javascript code for client-side OnError event.
 	 */
-	public function getOnError()
+	public function getOnValidationError()
 	{
-		return $this->getOption('OnError');
+		return $this->getOption('OnValidationError');
 	}
 
 	/**
