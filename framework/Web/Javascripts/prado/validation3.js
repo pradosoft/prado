@@ -1144,11 +1144,15 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 		this.isValid = data;
 		this.requestDispatched = false;
 		Prado.Validation.validate(this.options.FormID, this.group,null);
+		if(typeof(this.options.onSuccess) == "function")
+			this.options.onSuccess(request,data);
 	},
 
 	callbackOnFailure : function(request, data)
 	{
 		this.requestDispatched = false;
+		if(typeof(this.options.onFailure) == "function")
+			this.options.onFailure(request,data);
 	}
 });
 
