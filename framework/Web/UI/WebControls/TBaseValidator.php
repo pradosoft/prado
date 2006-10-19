@@ -614,7 +614,7 @@ class TValidatorClientSide extends TClientSideOptions
 	 * This will override the default client-side validator behaviour.
 	 * @param string javascript code for client-side OnSuccess event.
 	 */
-	public function setOnSuccess($javascript)
+	public function setOnValidationSuccess($javascript)
 	{
 		$this->setFunction('OnValidationSuccess', $javascript);
 	}
@@ -622,7 +622,7 @@ class TValidatorClientSide extends TClientSideOptions
 	/**
 	 * @return string javascript code for client-side OnSuccess event.
 	 */
-	public function getOnSuccess()
+	public function getOnValidationSuccess()
 	{
 		return $this->getOption('OnValidationSuccess');
 	}
@@ -632,7 +632,7 @@ class TValidatorClientSide extends TClientSideOptions
 	 * This will override the default client-side validator behaviour.
 	 * @param string javascript code for client-side OnError event.
 	 */
-	public function setOnError($javascript)
+	public function setOnValidationError($javascript)
 	{
 		$this->setFunction('OnValidationError', $javascript);
 	}
@@ -640,44 +640,9 @@ class TValidatorClientSide extends TClientSideOptions
 	/**
 	 * @return string javascript code for client-side OnError event.
 	 */
-	public function getOnError()
-	{
-		return $this->getOption('OnValidationError');
-	}
-
-
-	/**
-	 * Alias for OnSuccess
-	 * @param string javascript code for client-side OnSuccess event.
-	 */
-	public function setOnValidationSuccess($javascript)
-	{
-		$this->setOnSuccess($javascript);
-	}
-
-	/**
-	 * @return string javascript code for client-side OnSuccess event.
-	 */
-	public function getOnValidationSuccess()
-	{
-		return $this->getOnSuccess();
-	}
-
-	/**
-	 * Alias for OnError
-	 * @param string javascript code for client-side OnError event.
-	 */
-	public function setOnValidationError($javascript)
-	{
-		$this->setOnError($javascript);
-	}
-
-	/**
-	 * @return string javascript code for client-side OnError event.
-	 */
 	public function getOnValidationError()
 	{
-		return $this->getOnError();
+		return $this->getOption('OnValidationError');
 	}
 
 	/**
