@@ -1,0 +1,7 @@
+<com:TForm>
+<h1>Delayed Callback Test</h1>
+<com:TActiveButton ID="button1" Text="Delayed 4000" OnCallback="callback1" />
+<com:TActiveButton ID="button2" Text="Delayed 2000" OnCallback="callback2" />
+<com:TActiveLabel ID="status" />
+<com:TJavascriptLogger />
+</com:TForm>

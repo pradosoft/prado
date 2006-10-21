@@ -36,18 +36,18 @@ this.transport.onreadystatechange=Prototype.emptyFunction;},getHeaderData:functi
 {var json=this.header(name);return eval('('+json+')');}
 catch(e)
 {if(typeof(json)=="string")
-return Prado.CallbackRequest.decode(json);}}});Prado.CallbackRequest=Class.create();Object.extend(Prado.CallbackRequest,{FIELD_CALLBACK_TARGET:'PRADO_CALLBACK_TARGET',FIELD_CALLBACK_PARAMETER:'PRADO_CALLBACK_PARAMETER',FIELD_CALLBACK_PAGESTATE:'PRADO_PAGESTATE',FIELD_POSTBACK_TARGET:'PRADO_POSTBACK_TARGET',FIELD_POSTBACK_PARAMETER:'PRADO_POSTBACK_PARAMETER',PostDataLoaders:[],DATA_HEADER:'X-PRADO-DATA',ACTION_HEADER:'X-PRADO-ACTIONS',ERROR_HEADER:'X-PRADO-ERROR',PAGESTATE_HEADER:'X-PRADO-PAGESTATE',requestInProgress:null,addPostLoaders:function(ids)
-{this.PostDataLoaders=this.PostDataLoaders.concat(ids);list=[];this.PostDataLoaders.each(function(id)
+return Prado.CallbackRequest.decode(json);}}});Prado.CallbackRequest=Class.create();Object.extend(Prado.CallbackRequest,{FIELD_CALLBACK_TARGET:'PRADO_CALLBACK_TARGET',FIELD_CALLBACK_PARAMETER:'PRADO_CALLBACK_PARAMETER',FIELD_CALLBACK_PAGESTATE:'PRADO_PAGESTATE',FIELD_POSTBACK_TARGET:'PRADO_POSTBACK_TARGET',FIELD_POSTBACK_PARAMETER:'PRADO_POSTBACK_PARAMETER',PostDataLoaders:[],DATA_HEADER:'X-PRADO-DATA',ACTION_HEADER:'X-PRADO-ACTIONS',ERROR_HEADER:'X-PRADO-ERROR',PAGESTATE_HEADER:'X-PRADO-PAGESTATE',currentRequest:null,requestQueque:[],addPostLoaders:function(ids)
+{var self=Prado.CallbackRequest;self.PostDataLoaders=self.PostDataLoaders.concat(ids);var list=[];self.PostDataLoaders.each(function(id)
 {if(list.indexOf(id)<0)
-list.push(id);});this.PostDataLoaders=list;},dispatchActions:function(transport,actions)
-{if(actions&&actions.length>0)
-actions.each(this.__run.bind(this,transport));},__run:function(transport,command)
-{this.transport=transport;for(var method in command)
+list.push(id);});self.PostDataLoaders=list;},dispatchActions:function(transport,actions)
+{var self=Prado.CallbackRequest;if(actions&&actions.length>0)
+actions.each(self.__run.bind(self,transport));},__run:function(transport,command)
+{var self=Prado.CallbackRequest;self.transport=transport;for(var method in command)
 {try
-{method.toFunction().apply(this,command[method]);}
+{method.toFunction().apply(self,command[method]);}
 catch(e)
 {if(typeof(Logger)!="undefined")
-Prado.CallbackRequest.Exception.onException(null,e);}}},Exception:{"on500":function(request,transport,data)
+self.Exception.onException(null,e);}}},Exception:{"on500":function(request,transport,data)
 {var e=request.getHeaderData(Prado.CallbackRequest.ERROR_HEADER);Logger.error("Callback Server Error "+e.code,this.formatException(e));},'on200':function(request,transport,data)
 {if(transport.status<500)
 {var msg='HTTP '+transport.status+" with response : \n";if(transport.responseText.trim().length>0)
@@ -66,22 +66,34 @@ msg+=e.version+" "+e.time+"\n";return msg;}},encode:function(data)
 {if(typeof(data)=="string"&&data.trim().length>0)
 return Prado.JSON.parse(data);else
 return null;},dispatchPriorityRequest:function(callback)
-{this.abortRequestInProgress();callback.request=new Ajax.Request(callback.url,callback.options);callback.timeout=setTimeout(function()
-{Prado.CallbackRequest.abortRequestInProgress();},callback.options.RequestTimeOut);this.requestInProgress=callback;return true;},dispatchNormalRequest:function(callback)
-{new Ajax.Request(callback.url,callback.options);return true;},abortRequestInProgress:function()
-{inProgress=Prado.CallbackRequest.requestInProgress;if(inProgress)
-{if(inProgress.request.transport.readyState<4)
-inProgress.request.transport.abort();clearTimeout(inProgress.timeout);Prado.CallbackRequest.requestInProgress=null;return true;}
-return false;},updatePageState:function(request,transport)
-{pagestate=$(this.FIELD_CALLBACK_PAGESTATE);if(request.options.EnablePageStateUpdate&&request.options.HasPriority&&pagestate)
-{data=request.header(this.PAGESTATE_HEADER);if(typeof(data)=="string"&&data.length>0)
+{var self=Prado.CallbackRequest;callback.request=new Ajax.Request(callback.url,callback.options);callback.timeout=setTimeout(function()
+{self.abortCurrentRequest();},callback.options.RequestTimeOut);self.currentRequest=callback;return true;},dispatchNormalRequest:function(callback)
+{new Ajax.Request(callback.url,callback.options);return true;},abortCurrentRequest:function()
+{var self=Prado.CallbackRequest;var inProgress=self.currentRequest;if(inProgress)
+{clearTimeout(inProgress.timeout);self.currentRequest=null;if(inProgress.request.transport.readyState<4)
+inProgress.request.transport.abort();return self.dispatchQueque();}
+else
+return self.dispatchQueque();},updatePageState:function(request,transport)
+{var self=Prado.CallbackRequest;var pagestate=$(self.FIELD_CALLBACK_PAGESTATE);var enabled=request.options.EnablePageStateUpdate&&request.options.HasPriority;var aborted=self.currentRequest==null;if(enabled&&!aborted&&pagestate)
+{var data=request.header(self.PAGESTATE_HEADER);if(typeof(data)=="string"&&data.length>0)
 pagestate.value=data;else
 {if(typeof(Logger)!="undefined")
 Logger.warn("Missing page state:"+data);return false;}}
-return true;}})
+return true;},enqueque:function(callback)
+{var self=Prado.CallbackRequest;if(self.currentRequest==null)
+self.dispatchPriorityRequest(callback);else
+self.requestQueque.push(callback);},dispatchQueque:function()
+{var self=Prado.CallbackRequest;if(self.requestQueque.length>0)
+{var callback=self.requestQueque.shift();return self.dispatchPriorityRequest(callback);}
+return false;},abortRequest:function(id)
+{var self=Prado.CallbackRequest;if(self.currentRequest!=null&&self.currentRequest.id==id)
+self.abortCurrentRequest();else
+{var queque=[];self.requestQueque.each(function(callback)
+{if(callback.id!=id)
+queque.push(callback);});self.requestQueque=queque;}}})
 Ajax.Responders.register({onComplete:function(request)
 {if(request.options.HasPriority)
-Prado.CallbackRequest.abortRequestInProgress();}});Event.OnLoad(function()
+Prado.CallbackRequest.abortCurrentRequest();}});Event.OnLoad(function()
 {if(typeof Logger!="undefined")
 Ajax.Responders.register(Prado.CallbackRequest.Exception);});Prado.CallbackRequest.prototype={url:window.location.href,options:{},id:null,request:null,Enabled:true,initialize:function(id,options)
 {this.id=id;this.options=Object.extend({RequestTimeOut:30000,EnablePageStateUpdate:true,HasPriority:true,CausesValidation:true,ValidationGroup:null,PostInputs:true},options||{});},setCallbackParameter:function(value)
@@ -100,8 +112,10 @@ return false;}
 if(this.options.onPreDispatch)
 this.options.onPreDispatch(this,null);if(!this.Enabled)
 return;if(this.options.HasPriority)
-return Prado.CallbackRequest.dispatchPriorityRequest(this);else
-return Prado.CallbackRequest.dispatchNormalRequest(this);},_getPostData:function()
+{return Prado.CallbackRequest.enqueque(this);}
+else
+return Prado.CallbackRequest.dispatchNormalRequest(this);},abort:function()
+{return Prado.CallbackRequest.abortRequest(this.id);},_getPostData:function()
 {var data={};var callback=Prado.CallbackRequest;if(this.options.PostInputs!=false)
 {callback.PostDataLoaders.each(function(name)
 {$A(document.getElementsByName(name)).each(function(element)

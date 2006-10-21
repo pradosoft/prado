@@ -1,0 +1,45 @@
+<com:THead />
+<com:TForm>
+
+<com:TActiveButton ID="button1" Text="Click Me!" OnCallback="button1_oncallback" />
+<com:TActiveLabel ID="label1" />
+
+<com:TActiveRatingList RepeatColumns="2" RepeatDirection="Vertical">
+	<com:TListItem Text="1 Star" />
+	<com:TListItem Text="2 Stars" />
+	<com:TListItem Text="3 Stars" />
+	<com:TListItem Text="4 Stars" />
+	<com:TListItem Text="5 Stars" />
+	<com:TListItem Text="6 Stars" />
+	<com:TListItem Text="7 Stars" />
+	<com:TListItem Text="8 Stars" />
+	<com:TListItem Text="9 Stars" />
+	<com:TListItem Text="10 Stars" />
+	<prop:ClientSide
+		OnLoading="Element.show('status')"
+		OnComplete="Element.hide('status')" />
+</com:TActiveRatingList>
+<br />
+
+<com:TActiveRatingList ID="list4" Rating="3.5" Attributes.title="3.5 Stars" ReadOnly="true">
+	<com:TListItem Text="1 Star" />
+	<com:TListItem Text="2 Stars" />
+	<com:TListItem Text="3 Stars" />
+	<com:TListItem Text="4 Stars" />
+	<com:TListItem Text="5 Stars" />
+</com:TActiveRatingList>
+
+<br />
+
+	<div id="status" style="margin:1em; padding:0.5em;
+		text-align:center;
+		background-color:#900;
+		color:white; display: none;
+		position: absolute; right: 0; top: 0">
+		Loading...
+	</div>
+
+
+<com:TJavascriptLogger />
+
+</com:TForm>

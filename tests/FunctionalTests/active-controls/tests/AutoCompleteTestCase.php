@@ -4,6 +4,8 @@ class AutoCompleteTestCase extends SeleniumTestCase
 {
 	function test()
 	{
+		$this->skipBrowsers(self::INTERNET_EXPLORER);
+
 		$this->open("active-controls/index.php?page=AutoCompleteTest");
 		$this->verifyTextPresent("TAutoComplete Test");
 
@@ -16,7 +18,7 @@ class AutoCompleteTestCase extends SeleniumTestCase
 		$this->pause(1000);
 		$this->verifyTextPresent('Australia');
 		$this->click("heading"); //click somewhere else.
-		$this->waitForText("label1", "suggestion for au");
+		$this->pause(800);
 		$this->assertText("label1", "suggestion for au");
 		$this->click("css=#textbox3_result ul li");
 		$this->pause(800);

@@ -410,21 +410,24 @@ Object.extend(Prado.CallbackRequest,
 	/**
 	 * Current requests in progress.
 	 */
-	requestInProgress : null,
+	currentRequest : null,
+
+	requestQueque : [],
 
 	/**
 	 * Add ids of inputs element to post in the request.
 	 */
 	addPostLoaders : function(ids)
 	{
-		this.PostDataLoaders = this.PostDataLoaders.concat(ids);
-		list = [];
-		this.PostDataLoaders.each(function(id)
+		var self = Prado.CallbackRequest;
+		self.PostDataLoaders = self.PostDataLoaders.concat(ids);
+		var list = [];
+		self.PostDataLoaders.each(function(id)
 		{
 			if(list.indexOf(id) < 0)
 				list.push(id);
 		});
-		this.PostDataLoaders = list;
+		self.PostDataLoaders = list;
 	},
 
 	/**
@@ -432,8 +435,9 @@ Object.extend(Prado.CallbackRequest,
 	 */
 	dispatchActions : function(transport,actions)
 	{
+		var self = Prado.CallbackRequest;
 		if(actions && actions.length > 0)
-			actions.each(this.__run.bind(this,transport));
+			actions.each(self.__run.bind(self,transport));
 	},
 
 	/**
@@ -441,17 +445,18 @@ Object.extend(Prado.CallbackRequest,
 	 */
 	__run : function(transport, command)
 	{
-		this.transport = transport;
+		var self = Prado.CallbackRequest;
+		self.transport = transport;
 		for(var method in command)
 		{
 			try
 			{
-				method.toFunction().apply(this,command[method]);
+				method.toFunction().apply(self,command[method]);
 			}
 			catch(e)
 			{
 				if(typeof(Logger) != "undefined")
-					Prado.CallbackRequest.Exception.onException(null,e);
+					self.Exception.onException(null,e);
 			}
 		}
 	},
@@ -552,19 +557,18 @@ Object.extend(Prado.CallbackRequest,
 	 */
 	dispatchPriorityRequest : function(callback)
 	{
-		//Logger.info("priority request "+callback.id)
-		this.abortRequestInProgress();
+		var self = Prado.CallbackRequest;
 
 		callback.request = new Ajax.Request(callback.url, callback.options);
 		callback.timeout = setTimeout(function()
 		{
-		//	Logger.warn("priority timeout");
-			Prado.CallbackRequest.abortRequestInProgress();
+			//Logger.warn("priority timeout");
+			self.abortCurrentRequest();
 		},callback.options.RequestTimeOut);
 
-		this.requestInProgress = callback;
+		//Logger.info("dispatched "+this.currentRequest)
+		self.currentRequest = callback;
 		return true;
-		//Logger.info("dispatched "+this.requestInProgress)
 	},
 
 	/**
@@ -572,7 +576,7 @@ Object.extend(Prado.CallbackRequest,
 	 */
 	dispatchNormalRequest : function(callback)
 	{
-	//	Logger.info("dispatching normal request");
+		//Logger.info("dispatching normal request");
 		new Ajax.Request(callback.url, callback.options);
 		return true;
 	},
@@ -580,20 +584,23 @@ Object.extend(Prado.CallbackRequest,
 	/**
 	 * Abort the current priority request in progress.
 	 */
-	abortRequestInProgress : function()
+	abortCurrentRequest : function()
 	{
-		inProgress = Prado.CallbackRequest.requestInProgress;
+		var self = Prado.CallbackRequest;
+		var inProgress = self.currentRequest;
 		//Logger.info("aborting ... "+inProgress);
 		if(inProgress)
 		{
+			clearTimeout(inProgress.timeout);
+			self.currentRequest = null;
+			//Logger.info("aborted");
 			//abort if not ready.
 			if(inProgress.request.transport.readyState < 4)
 				inProgress.request.transport.abort();
-			clearTimeout(inProgress.timeout);
-			Prado.CallbackRequest.requestInProgress = null;
-			return true;
+			return self.dispatchQueque();
 		}
-		return false;
+		else
+			return self.dispatchQueque();
 	},
 
 	/**
@@ -602,10 +609,13 @@ Object.extend(Prado.CallbackRequest,
 	 */
 	updatePageState : function(request, transport)
 	{
-		pagestate = $(this.FIELD_CALLBACK_PAGESTATE);
-		if(request.options.EnablePageStateUpdate && request.options.HasPriority && pagestate)
+		var self = Prado.CallbackRequest;
+		var pagestate = $(self.FIELD_CALLBACK_PAGESTATE);
+		var enabled = request.options.EnablePageStateUpdate && request.options.HasPriority;
+		var aborted = self.currentRequest == null;
+		if(enabled && !aborted && pagestate)
 		{
-			data = request.header(this.PAGESTATE_HEADER);
+			var data = request.header(self.PAGESTATE_HEADER);
 			if(typeof(data) == "string" && data.length > 0)
 				pagestate.value = data;
 			else
@@ -616,6 +626,47 @@ Object.extend(Prado.CallbackRequest,
 			}
 		}
 		return true;
+	},
+
+	enqueque : function(callback)
+	{
+		var self = Prado.CallbackRequest;
+		if(self.currentRequest==null)
+			self.dispatchPriorityRequest(callback);
+		else
+			self.requestQueque.push(callback);
+		//Logger.info("current queque length="+self.requestQueque.length);
+	},
+
+	dispatchQueque : function()
+	{
+		var self = Prado.CallbackRequest;
+		//Logger.info("dispatching queque, length="+self.requestQueque.length+" request="+self.currentRequest);
+		if(self.requestQueque.length > 0)
+		{
+			var callback = self.requestQueque.shift();
+			//Logger.info("do dispatch request");
+			return self.dispatchPriorityRequest(callback);
+		}
+		return false;
+	},
+
+	abortRequest : function(id)
+	{
+		//Logger.info("abort id="+id);
+		var self = Prado.CallbackRequest;
+		if(self.currentRequest != null && self.currentRequest.id == id)
+			self.abortCurrentRequest();
+		else
+		{
+			var queque = [];
+			self.requestQueque.each(function(callback)
+			{
+				if(callback.id != id)
+					queque.push(callback);
+			});
+			self.requestQueque = queque;
+		}
 	}
 })
 
@@ -625,7 +676,7 @@ Object.extend(Prado.CallbackRequest,
 Ajax.Responders.register({onComplete : function(request)
 {
 	if(request.options.HasPriority)
-		Prado.CallbackRequest.abortRequestInProgress();
+		Prado.CallbackRequest.abortCurrentRequest();
 }});
 
 //Add HTTP exception respones when logger is enabled.
@@ -757,6 +808,7 @@ Prado.CallbackRequest.prototype =
 	 */
 	dispatch : function()
 	{
+		//Logger.info("dispatching request");
 		//trigger tinyMCE to save data.
 		if(typeof tinyMCE != "undefined")
 			tinyMCE.triggerSave();
@@ -782,9 +834,17 @@ Prado.CallbackRequest.prototype =
 			return;
 
 		if(this.options.HasPriority)
-			return Prado.CallbackRequest.dispatchPriorityRequest(this);
+		{
+			return Prado.CallbackRequest.enqueque(this);
+			//return Prado.CallbackRequest.dispatchPriorityRequest(this);
+		}
 		else
 			return Prado.CallbackRequest.dispatchNormalRequest(this);
+	},
+
+	abort : function()
+	{
+		return Prado.CallbackRequest.abortRequest(this.id);
 	},
 
 	/**

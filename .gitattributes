@@ -2009,6 +2009,8 @@ tests/FunctionalTests/active-controls/protected/pages/CustomTemplateComponent.ph
 tests/FunctionalTests/active-controls/protected/pages/CustomTemplateComponent.tpl -text
 tests/FunctionalTests/active-controls/protected/pages/CustomTemplateControlTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/CustomTemplateControlTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/DelayedCallback.page -text
+tests/FunctionalTests/active-controls/protected/pages/DelayedCallback.php -text
 tests/FunctionalTests/active-controls/protected/pages/EventTriggeredCallback.page -text
 tests/FunctionalTests/active-controls/protected/pages/EventTriggeredCallback.php -text
 tests/FunctionalTests/active-controls/protected/pages/LTemplate.php -text
@@ -2023,6 +2025,9 @@ tests/FunctionalTests/active-controls/protected/pages/RepeaterWithActiveControls
 tests/FunctionalTests/active-controls/protected/pages/RepeaterWithActiveControls.php -text
 tests/FunctionalTests/active-controls/protected/pages/ReplaceContentTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/ReplaceContentTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/Sessioned/PageStateTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/Sessioned/PageStateTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/Sessioned/config.xml -text
 tests/FunctionalTests/active-controls/protected/pages/TInPlaceTextBoxTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/TInPlaceTextBoxTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/TestMasterPage.php -text
@@ -2041,6 +2046,7 @@ tests/FunctionalTests/active-controls/tests/ActiveListBoxTestCase.php -text
 tests/FunctionalTests/active-controls/tests/ActiveRadioButtonListTestCase.php -text
 tests/FunctionalTests/active-controls/tests/ActiveRadioButtonTestCase.php -text
 tests/FunctionalTests/active-controls/tests/CustomTemplateTestCase.php -text
+tests/FunctionalTests/active-controls/tests/DelayedCallbackTestCase.php -text
 tests/FunctionalTests/active-controls/tests/EventTriggerTestCase.php -text
 tests/FunctionalTests/active-controls/tests/PopulateListTestCase.php -text
 tests/FunctionalTests/active-controls/tests/PostLoadingTestCase.php -text
