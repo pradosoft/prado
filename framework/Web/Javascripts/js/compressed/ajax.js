@@ -36,7 +36,7 @@ this.transport.onreadystatechange=Prototype.emptyFunction;},getHeaderData:functi
 {var json=this.header(name);return eval('('+json+')');}
 catch(e)
 {if(typeof(json)=="string")
-return Prado.CallbackRequest.decode(json);}}});Prado.CallbackRequest=Class.create();Object.extend(Prado.CallbackRequest,{FIELD_CALLBACK_TARGET:'PRADO_CALLBACK_TARGET',FIELD_CALLBACK_PARAMETER:'PRADO_CALLBACK_PARAMETER',FIELD_CALLBACK_PAGESTATE:'PRADO_PAGESTATE',FIELD_POSTBACK_TARGET:'PRADO_POSTBACK_TARGET',FIELD_POSTBACK_PARAMETER:'PRADO_POSTBACK_PARAMETER',PostDataLoaders:[],DATA_HEADER:'X-PRADO-DATA',ACTION_HEADER:'X-PRADO-ACTIONS',ERROR_HEADER:'X-PRADO-ERROR',PAGESTATE_HEADER:'X-PRADO-PAGESTATE',currentRequest:null,requestQueque:[],addPostLoaders:function(ids)
+return Prado.CallbackRequest.decode(json);}}});Prado.CallbackRequest=Class.create();Object.extend(Prado.CallbackRequest,{FIELD_CALLBACK_TARGET:'PRADO_CALLBACK_TARGET',FIELD_CALLBACK_PARAMETER:'PRADO_CALLBACK_PARAMETER',FIELD_CALLBACK_PAGESTATE:'PRADO_PAGESTATE',FIELD_POSTBACK_TARGET:'PRADO_POSTBACK_TARGET',FIELD_POSTBACK_PARAMETER:'PRADO_POSTBACK_PARAMETER',PostDataLoaders:[],DATA_HEADER:'X-PRADO-DATA',ACTION_HEADER:'X-PRADO-ACTIONS',ERROR_HEADER:'X-PRADO-ERROR',PAGESTATE_HEADER:'X-PRADO-PAGESTATE',currentRequest:null,requestQueue:[],addPostLoaders:function(ids)
 {var self=Prado.CallbackRequest;self.PostDataLoaders=self.PostDataLoaders.concat(ids);var list=[];self.PostDataLoaders.each(function(id)
 {if(list.indexOf(id)<0)
 list.push(id);});self.PostDataLoaders=list;},dispatchActions:function(transport,actions)
@@ -71,9 +71,9 @@ return null;},dispatchPriorityRequest:function(callback)
 {new Ajax.Request(callback.url,callback.options);return true;},abortCurrentRequest:function()
 {var self=Prado.CallbackRequest;var inProgress=self.currentRequest;if(inProgress)
 {clearTimeout(inProgress.timeout);self.currentRequest=null;if(inProgress.request.transport.readyState<4)
-inProgress.request.transport.abort();return self.dispatchQueque();}
+inProgress.request.transport.abort();return self.dispatchQueue();}
 else
-return self.dispatchQueque();},updatePageState:function(request,transport)
+return self.dispatchQueue();},updatePageState:function(request,transport)
 {var self=Prado.CallbackRequest;var pagestate=$(self.FIELD_CALLBACK_PAGESTATE);var enabled=request.options.EnablePageStateUpdate&&request.options.HasPriority;var aborted=self.currentRequest==null;if(enabled&&!aborted&&pagestate)
 {var data=request.header(self.PAGESTATE_HEADER);if(typeof(data)=="string"&&data.length>0)
 pagestate.value=data;else
@@ -82,15 +82,15 @@ Logger.warn("Missing page state:"+data);return false;}}
 return true;},enqueque:function(callback)
 {var self=Prado.CallbackRequest;if(self.currentRequest==null)
 self.dispatchPriorityRequest(callback);else
-self.requestQueque.push(callback);},dispatchQueque:function()
-{var self=Prado.CallbackRequest;if(self.requestQueque.length>0)
-{var callback=self.requestQueque.shift();return self.dispatchPriorityRequest(callback);}
+self.requestQueue.push(callback);},dispatchQueue:function()
+{var self=Prado.CallbackRequest;if(self.requestQueue.length>0)
+{var callback=self.requestQueue.shift();return self.dispatchPriorityRequest(callback);}
 return false;},abortRequest:function(id)
 {var self=Prado.CallbackRequest;if(self.currentRequest!=null&&self.currentRequest.id==id)
 self.abortCurrentRequest();else
-{var queque=[];self.requestQueque.each(function(callback)
+{var queque=[];self.requestQueue.each(function(callback)
 {if(callback.id!=id)
-queque.push(callback);});self.requestQueque=queque;}}})
+queque.push(callback);});self.requestQueue=queque;}}})
 Ajax.Responders.register({onComplete:function(request)
 {if(request.options.HasPriority)
 Prado.CallbackRequest.abortCurrentRequest();}});Event.OnLoad(function()
@@ -112,7 +112,7 @@ return false;}
 if(this.options.onPreDispatch)
 this.options.onPreDispatch(this,null);if(!this.Enabled)
 return;if(this.options.HasPriority)
-{return Prado.CallbackRequest.enqueque(this);}
+{return Prado.CallbackRequest.enqueue(this);}
 else
 return Prado.CallbackRequest.dispatchNormalRequest(this);},abort:function()
 {return Prado.CallbackRequest.abortRequest(this.id);},_getPostData:function()

@@ -124,7 +124,7 @@ Object.extend(Prado.CallbackRequest,
 	 */
 	currentRequest : null,
 
-	requestQueque : [],
+	requestQueue : [],
 
 	/**
 	 * Add ids of inputs element to post in the request.
@@ -309,10 +309,10 @@ Object.extend(Prado.CallbackRequest,
 			//abort if not ready.
 			if(inProgress.request.transport.readyState < 4)
 				inProgress.request.transport.abort();
-			return self.dispatchQueque();
+			return self.dispatchQueue();
 		}
 		else
-			return self.dispatchQueque();
+			return self.dispatchQueue();
 	},
 
 	/**
@@ -346,17 +346,17 @@ Object.extend(Prado.CallbackRequest,
 		if(self.currentRequest==null)
 			self.dispatchPriorityRequest(callback);
 		else
-			self.requestQueque.push(callback);
-		//Logger.info("current queque length="+self.requestQueque.length);
+			self.requestQueue.push(callback);
+		//Logger.info("current queque length="+self.requestQueue.length);
 	},
 
-	dispatchQueque : function()
+	dispatchQueue : function()
 	{
 		var self = Prado.CallbackRequest;
-		//Logger.info("dispatching queque, length="+self.requestQueque.length+" request="+self.currentRequest);
-		if(self.requestQueque.length > 0)
+		//Logger.info("dispatching queque, length="+self.requestQueue.length+" request="+self.currentRequest);
+		if(self.requestQueue.length > 0)
 		{
-			var callback = self.requestQueque.shift();
+			var callback = self.requestQueue.shift();
 			//Logger.info("do dispatch request");
 			return self.dispatchPriorityRequest(callback);
 		}
@@ -372,12 +372,12 @@ Object.extend(Prado.CallbackRequest,
 		else
 		{
 			var queque = [];
-			self.requestQueque.each(function(callback)
+			self.requestQueue.each(function(callback)
 			{
 				if(callback.id != id)
 					queque.push(callback);
 			});
-			self.requestQueque = queque;
+			self.requestQueue = queque;
 		}
 	}
 })
@@ -547,7 +547,7 @@ Prado.CallbackRequest.prototype =
 
 		if(this.options.HasPriority)
 		{
-			return Prado.CallbackRequest.enqueque(this);
+			return Prado.CallbackRequest.enqueue(this);
 			//return Prado.CallbackRequest.dispatchPriorityRequest(this);
 		}
 		else
