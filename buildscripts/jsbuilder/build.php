@@ -100,12 +100,12 @@ $libraries = array(
 	//active controls
 	'ajax.js' => array(
 		'prototype/ajax.js',
-		'prado/ajax.js',
-		'extra/json.js',
+//		'prado/ajax.js',
+//		'extra/json.js',
 		'effects/controls.js',
 		'effects/dragdrop.js',
 		'effects/slider.js',
-		'prado/activecontrols.js'
+//		'prado/activecontrols.js'
 	),
 	//logging
 	'logger.js' => array(

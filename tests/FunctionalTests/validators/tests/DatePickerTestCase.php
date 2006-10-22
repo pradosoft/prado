@@ -17,7 +17,10 @@ class DatePickerTestCase extends SeleniumTestCase
 		$this->click("{$base}submit1");
 		$this->assertVisible("{$base}validator1", "");
 		$this->assertNotVisible("{$base}validator2", "");
-		$this->assertNotVisible("{$base}validator4", "");
+
+		//the range validator is visible because the date is a drop down list
+		//thus has default value != ""
+		$this->assertVisible("{$base}validator4", "");
 		$this->assertVisible("{$base}validator5", "");
 		$this->assertNotVisible("{$base}validator6", "");
 		$this->assertVisible("{$base}validator8", "");
