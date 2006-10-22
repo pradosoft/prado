@@ -79,7 +79,7 @@ return self.dispatchQueue();},updatePageState:function(request,transport)
 pagestate.value=data;else
 {if(typeof(Logger)!="undefined")
 Logger.warn("Missing page state:"+data);return false;}}
-return true;},enqueque:function(callback)
+return true;},enqueue:function(callback)
 {var self=Prado.CallbackRequest;if(self.currentRequest==null)
 self.dispatchPriorityRequest(callback);else
 self.requestQueue.push(callback);},dispatchQueue:function()

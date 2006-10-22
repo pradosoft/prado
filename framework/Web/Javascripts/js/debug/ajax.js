@@ -628,7 +628,7 @@ Object.extend(Prado.CallbackRequest,
 		return true;
 	},
 
-	enqueque : function(callback)
+	enqueue : function(callback)
 	{
 		var self = Prado.CallbackRequest;
 		if(self.currentRequest==null)
