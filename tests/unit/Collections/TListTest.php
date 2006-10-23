@@ -185,7 +185,7 @@ class TListTest extends PHPUnit2_Framework_TestCase {
   }
 
   public function testArrayMisc() {
-    $this->assertEquals(1,count($this->list));
+    $this->assertEquals($this->list->Count,count($this->list));
     $this->assertTrue(isset($this->list[1]));
     $this->assertFalse(isset($this->list[2]));
   }

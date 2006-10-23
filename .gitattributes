@@ -1769,6 +1769,7 @@ framework/Web/Javascripts/extra/logger.js -text
 framework/Web/Javascripts/js/compressed/ajax.js -text
 framework/Web/Javascripts/js/compressed/clientscripts.php -text
 framework/Web/Javascripts/js/compressed/colorpicker.js -text
+framework/Web/Javascripts/js/compressed/containers.js -text
 framework/Web/Javascripts/js/compressed/datepicker.js -text
 framework/Web/Javascripts/js/compressed/effects.js -text
 framework/Web/Javascripts/js/compressed/logger.js -text
@@ -1778,6 +1779,7 @@ framework/Web/Javascripts/js/compressed/validator.js -text
 framework/Web/Javascripts/js/debug/ajax.js -text
 framework/Web/Javascripts/js/debug/clientscripts.php -text
 framework/Web/Javascripts/js/debug/colorpicker.js -text
+framework/Web/Javascripts/js/debug/containers.js -text
 framework/Web/Javascripts/js/debug/datepicker.js -text
 framework/Web/Javascripts/js/debug/effects.js -text
 framework/Web/Javascripts/js/debug/logger.js -text

@@ -146,7 +146,7 @@ class TMapTest extends PHPUnit2_Framework_TestCase {
 
 	public function testArrayMisc()
 	{
-		$this->assertEquals(1,count($this->map));
+		$this->assertEquals($this->map->Count,count($this->map));
 		$this->assertTrue(isset($this->map['key1']));
 		$this->assertFalse(isset($this->map['unknown key']));
 	}

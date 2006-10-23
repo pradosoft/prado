@@ -320,7 +320,7 @@ EOD;
 
 	protected function li_to_string($li)
 	{
-		$content = '';
+		$contents = '';
 		foreach($li['params'] as $param)
 		{
 			$contents .= "\t<LI>";
