@@ -12,7 +12,11 @@ this.managers[formID].addValidator(validator);else
 throw new Error("A validation manager for form '"+formID+"' needs to be created first.");return this.managers[formID];},addSummary:function(formID,validator)
 {if(this.managers[formID])
 this.managers[formID].addSummary(validator);else
-throw new Error("A validation manager for form '"+formID+"' needs to be created first.");return this.managers[formID];}});Prado.ValidationManager=Class.create();Prado.ValidationManager.prototype={validators:[],summaries:[],groups:[],options:{},initialize:function(options)
+throw new Error("A validation manager for form '"+formID+"' needs to be created first.");return this.managers[formID];},setErrorMessage:function(validatorID,message)
+{$H(Prado.Validation.managers).each(function(manager)
+{manager[1].validators.each(function(validator)
+{if(validator.options.ID==validatorID)
+{validator.options.ErrorMessage=message;$(validatorID).innerHTML=message;}});});}});Prado.ValidationManager=Class.create();Prado.ValidationManager.prototype={validators:[],summaries:[],groups:[],options:{},initialize:function(options)
 {this.options=options;Prado.Validation.managers[options.FormID]=this;},validate:function(group,invoker)
 {if(group)
 return this._validateGroup(group,invoker);else

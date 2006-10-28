@@ -140,6 +140,21 @@ Object.extend(Prado.Validation,
 		else
 			throw new Error("A validation manager for form '"+formID+"' needs to be created first.");
 		return this.managers[formID];
+	},
+
+	setErrorMessage : function(validatorID, message)
+	{
+		$H(Prado.Validation.managers).each(function(manager)
+		{
+			manager[1].validators.each(function(validator)
+			{
+				if(validator.options.ID == validatorID)
+				{
+					validator.options.ErrorMessage = message;
+					$(validatorID).innerHTML = message;
+				}
+			});
+		});
 	}
 });
 

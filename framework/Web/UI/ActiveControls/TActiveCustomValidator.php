@@ -125,6 +125,21 @@ class TActiveCustomValidator extends TCustomValidator
 	}
 
 	/**
+	 * Sets the text for the error message. Updates client-side erorr message.
+	 * @param string the error message
+	 */
+		public function setErrorMessage($value)
+	{
+		parent::setErrorMessage($value);
+		if($this->getActiveControl()->canUpdateClientSide())
+		{
+			$client = $this->getPage()->getCallbackClient();
+			$func = 'Prado.Validation.setErrorMessage';
+			$client->callClientFunction($func, array($this, $value));
+		}
+	}
+
+	/**
 	 * Register the javascript for the active custom validator.
 	 */
 	protected function registerClientScriptValidator()
