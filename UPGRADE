@@ -21,6 +21,10 @@ Upgrading from v3.0.x
 - Validator OnSuccess event becomes OnValidationSuccess. 
 - Validator OnError event becomes OnValidationError. 
 
+Upgrading from v3.0.5
+---------------------
+- constructUrl() now encodes & into &amp; by default.
+- TRepeater does not render <span> anymore for empty item template.
 
 Upgrading from v3.0.4
 ---------------------

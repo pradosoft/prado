@@ -364,10 +364,8 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 */
 	public function render($writer)
 	{
-		if($this->_items && $this->_items->getCount())
+		if($this->_items && $this->_items->getCount() || $this->_emptyTemplate!==null)
 			$this->renderContents($writer);
-		else if($this->_emptyTemplate!==null)
-			parent::render($writer);
 	}
 
 	/**

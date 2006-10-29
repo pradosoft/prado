@@ -13,9 +13,13 @@ NEW: TJsonService
 CHG: All validators ClientSide.OnSuccess becomes ClientSide.OnValidationSuccess, and OnSuccess event becomes OnValidationSuccess. (Wei)
 CHG: All validators ClientSide.OnError becomes ClientSide.OnValidationError, and OnError event becomes OnValidationError. (Wei)
 
+Version 3.0.6 December 4, 2006
+==============================
+CHG: constructUrl() now encodes & into &amp; by default (Qiang)
+CHG: TRepeater does not render <span> anymore for empty item template (Qiang)
 
-Version 3.0.5 October 8, 2006
-===============================
+Version 3.0.5 October 23, 2006
+==============================
 BUG: Ticket#409 - Multiple page services will mess up page caching (Qiang)
 BUG: Ticket#417 - SelectedIndex in template incorrect caused by bug in TList (Qiang)
 CHG: Ticket#358 - TFileUpload::saveAs() now returns false instead of exception when error (Qiang)
@@ -23,6 +27,7 @@ ENH: Ticket#361 - Introduced include template tag that supports including extern
 ENH: Ticket#366 - white spaces are now allowed around attribute names in template (Qiang)
 ENH: Ticket#378 - PRADO applications can now run in command line (Qiang)
 ENH: Ticket#379 - TAuthorizationRule performance enhancement (Qiang)
+ENH: Ticket#382 - Untranslated messages can be marked now (Wei)
 ENH: Ticket#394 - Enhancing TDropDownListColumn to allow specifying both text and value (Qiang)
 ENH: Easier to customize the TDatePicker using CssClass (Wei)
 ENH: Added an interactive PHP shell, usage: "prado-cli.php shell" (Wei)
