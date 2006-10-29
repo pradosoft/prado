@@ -1,5 +1,10 @@
+Version 3.0.6 December 4, 2006
+==============================
+CHG: constructUrl() now encodes & into &amp; by default (Qiang)
+CHG: TRepeater does not render <span> anymore for empty item template (Qiang)
+
 Version 3.0.5 October 23, 2006
-===============================
+==============================
 BUG: Ticket#409 - Multiple page services will mess up page caching (Qiang)
 BUG: Ticket#417 - SelectedIndex in template incorrect caused by bug in TList (Qiang)
 CHG: Ticket#358 - TFileUpload::saveAs() now returns false instead of exception when error (Qiang)
