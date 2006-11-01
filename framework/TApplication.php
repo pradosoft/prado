@@ -146,19 +146,19 @@ class TApplication extends TComponent
 	 * @var array list of events that define application lifecycles
 	 */
 	private static $_steps=array(
-	'onBeginRequest',
-	'onAuthentication',
-	'onAuthenticationComplete',
-	'onAuthorization',
-	'onAuthorizationComplete',
-	'onLoadState',
-	'onLoadStateComplete',
-	'onPreRunService',
-	'runService',
-	'onSaveState',
-	'onSaveStateComplete',
-	'onPreFlushOutput',
-	'flushOutput'
+		'onBeginRequest',
+		'onAuthentication',
+		'onAuthenticationComplete',
+		'onAuthorization',
+		'onAuthorizationComplete',
+		'onLoadState',
+		'onLoadStateComplete',
+		'onPreRunService',
+		'runService',
+		'onSaveState',
+		'onSaveStateComplete',
+		'onPreFlushOutput',
+		'flushOutput'
 	);
 
 	/**
@@ -291,16 +291,16 @@ class TApplication extends TComponent
 
 		// determine configuration path and file
 		if(($this->_basePath=realpath($basePath))===false)
-		throw new TConfigurationException('application_basepath_invalid',$basePath);
+			throw new TConfigurationException('application_basepath_invalid',$basePath);
 		if(is_file($this->_basePath))
 		{
 			$this->_configFile=$this->_basePath;
 			$this->_basePath=dirname($this->_basePath);
 		}
 		else if(is_file($this->_basePath.'/'.self::CONFIG_FILE))
-		$this->_configFile=$this->_basePath.'/'.self::CONFIG_FILE;
+			$this->_configFile=$this->_basePath.'/'.self::CONFIG_FILE;
 		else
-		$this->_configFile=null;
+			$this->_configFile=null;
 
 		// determine runtime path
 		$this->_runtimePath=$this->_basePath.'/'.self::RUNTIME_PATH;
@@ -313,13 +313,13 @@ class TApplication extends TComponent
 				if(!is_dir($this->_runtimePath))
 				{
 					if(@mkdir($this->_runtimePath)===false)
-					throw new TConfigurationException('application_runtimepath_failed',$this->_runtimePath);
+						throw new TConfigurationException('application_runtimepath_failed',$this->_runtimePath);
 					chmod($this->_runtimePath, 0777); //make it deletable
 				}
 			}
 		}
 		else
-		throw new TConfigurationException('application_runtimepath_invalid',$this->_runtimePath);
+			throw new TConfigurationException('application_runtimepath_invalid',$this->_runtimePath);
 
 		$this->_cacheFile=$cacheConfig ? $this->_runtimePath.'/'.self::CONFIGCACHE_FILE : null;
 
@@ -343,9 +343,9 @@ class TApplication extends TComponent
 			while($this->_step<$n)
 			{
 				if($this->_mode===self::STATE_OFF)
-				throw new THttpException(503,'application_service_unavailable');
+					throw new THttpException(503,'application_service_unavailable');
 				if($this->_requestCompleted)
-				break;
+					break;
 				$method=self::$_steps[$this->_step];
 				Prado::trace("Executing $method()",'System.TApplication');
 				$this->$method();
@@ -403,9 +403,9 @@ class TApplication extends TComponent
 	{
 		$this->_stateChanged=true;
 		if($value===$defaultValue)
-		unset($this->_globals[$key]);
+			unset($this->_globals[$key]);
 		else
-		$this->_globals[$key]=$value;
+			$this->_globals[$key]=$value;
 	}
 
 	/**
@@ -438,7 +438,7 @@ class TApplication extends TComponent
 	protected function saveGlobals()
 	{
 		if(!$this->_stateChanged)
-		return;
+			return;
 		$this->getApplicationStatePersister()->save($this->_globals);
 	}
 
@@ -524,9 +524,9 @@ class TApplication extends TComponent
 	public function setModule($id,IModule $module)
 	{
 		if(isset($this->_modules[$id]))
-		throw new TConfigurationException('application_moduleid_duplicated',$id);
+			throw new TConfigurationException('application_moduleid_duplicated',$id);
 		else
-		$this->_modules[$id]=$module;
+			$this->_modules[$id]=$module;
 	}
 
 	/**
@@ -765,7 +765,7 @@ class TApplication extends TComponent
 	public function getGlobalization($createIfNotExists=true)
 	{
 		if($this->_globalization===null && $createIfNotExists)
-		$this->_globalization=new TGlobalization;
+			$this->_globalization=new TGlobalization;
 		return $this->_globalization;
 	}
 
@@ -783,7 +783,7 @@ class TApplication extends TComponent
 	public function getAuthorizationRules()
 	{
 		if($this->_authRules===null)
-		$this->_authRules=new TAuthorizationRuleCollection;
+			$this->_authRules=new TAuthorizationRuleCollection;
 		return $this->_authRules;
 	}
 
@@ -821,7 +821,7 @@ class TApplication extends TComponent
 					fclose($fp);
 				}
 				else
-				syslog(LOG_WARNING, 'Prado application config cache file "'.$this->_cacheFile.'" cannot be created.');
+					syslog(LOG_WARNING, 'Prado application config cache file "'.$this->_cacheFile.'" cannot be created.');
 			}
 		}
 		else
@@ -831,13 +831,13 @@ class TApplication extends TComponent
 
 		// set path aliases and using namespaces
 		foreach($config->getAliases() as $alias=>$path)
-		Prado::setPathOfAlias($alias,$path);
+			Prado::setPathOfAlias($alias,$path);
 		foreach($config->getUsings() as $using)
-		Prado::using($using);
+			Prado::using($using);
 
 		// set application properties
 		foreach($config->getProperties() as $name=>$value)
-		$this->setSubProperty($name,$value);
+			$this->setSubProperty($name,$value);
 
 		// load parameters
 		$this->_parameters=new TMap;
@@ -847,11 +847,11 @@ class TApplication extends TComponent
 			{
 				$component=Prado::createComponent($parameter[0]);
 				foreach($parameter[1] as $name=>$value)
-				$component->setSubProperty($name,$value);
+					$component->setSubProperty($name,$value);
 				$this->_parameters->add($id,$component);
 			}
 			else
-			$this->_parameters->add($id,$parameter);
+				$this->_parameters->add($id,$parameter);
 		}
 
 		// load and init modules specified in app config
@@ -863,13 +863,13 @@ class TApplication extends TComponent
 
 			$module=Prado::createComponent($moduleConfig[0]);
 			if(is_string($id))
-			$this->setModule($id,$module);
+				$this->setModule($id,$module);
 			foreach($moduleConfig[1] as $name=>$value)
-			$module->setSubProperty($name,$value);
+				$module->setSubProperty($name,$value);
 			$modules[]=array($module,$moduleConfig[2]);
 		}
 		foreach($modules as $module)
-		$module[0]->init($module[1]);
+			$module[0]->init($module[1]);
 
 		// load service
 		$services=$config->getServices();
@@ -879,20 +879,20 @@ class TApplication extends TComponent
 		$request->setAvailableServices($serviceIDs);
 
 		if(($serviceID=$request->getServiceID())===null)
-		$serviceID=self::PAGE_SERVICE_ID;
+			$serviceID=self::PAGE_SERVICE_ID;
 		if(isset($services[$serviceID]))
 		{
 			$serviceConfig=$services[$serviceID];
 			$service=Prado::createComponent($serviceConfig[0]);
 			if(!($service instanceof IService))
-			throw new THttpException(500,'application_service_unknown',$serviceID);
+				throw new THttpException(500,'application_service_unknown',$serviceID);
 			$this->_service=$service;
 			foreach($serviceConfig[1] as $name=>$value)
-			$service->setSubProperty($name,$value);
+				$service->setSubProperty($name,$value);
 			$service->init($serviceConfig[2]);
 		}
 		else
-		$this->_service=$this->getPageService();
+			$this->_service=$this->getPageService();
 	}
 
 	/**
@@ -990,7 +990,7 @@ class TApplication extends TComponent
 	public function runService()
 	{
 		if($this->_service)
-		$this->_service->run();
+			$this->_service->run();
 	}
 
 	/**
@@ -1112,7 +1112,7 @@ class TApplicationConfiguration extends TComponent
 
 		// application properties
 		foreach($dom->getAttributes() as $name=>$value)
-		$this->_properties[$name]=$value;
+			$this->_properties[$name]=$value;
 
 		// paths
 		if(($pathsNode=$dom->getElementByTagName('paths'))!==null)
@@ -1123,24 +1123,24 @@ class TApplicationConfiguration extends TComponent
 				{
 					$path=str_replace('\\','/',$path);
 					if(preg_match('/^\\/|.:\\/|.:\\\\/',$path))	// if absolute path
-					$p=realpath($path);
+						$p=realpath($path);
 					else
-					$p=realpath($configPath.'/'.$path);
+						$p=realpath($configPath.'/'.$path);
 					if($p===false || !is_dir($p))
-					throw new TConfigurationException('appconfig_aliaspath_invalid',$id,$path);
+						throw new TConfigurationException('appconfig_aliaspath_invalid',$id,$path);
 					if(isset($this->_aliases[$id]))
-					throw new TConfigurationException('appconfig_alias_redefined',$id);
+						throw new TConfigurationException('appconfig_alias_redefined',$id);
 					$this->_aliases[$id]=$p;
 				}
 				else
-				throw new TConfigurationException('appconfig_alias_invalid');
+					throw new TConfigurationException('appconfig_alias_invalid');
 			}
 			foreach($pathsNode->getElementsByTagName('using') as $usingNode)
 			{
 				if(($namespace=$usingNode->getAttribute('namespace'))!==null)
-				$this->_usings[]=$namespace;
+					$this->_usings[]=$namespace;
 				else
-				throw new TConfigurationException('appconfig_using_invalid');
+					throw new TConfigurationException('appconfig_using_invalid');
 			}
 		}
 
@@ -1153,12 +1153,12 @@ class TApplicationConfiguration extends TComponent
 				$id=$properties->itemAt('id');
 				$type=$properties->remove('class');
 				if($type===null)
-				throw new TConfigurationException('appconfig_moduletype_required',$id);
+					throw new TConfigurationException('appconfig_moduletype_required',$id);
 				$node->setParent(null);
 				if($id===null)
-				$this->_modules[]=array($type,$properties->toArray(),$node);
+					$this->_modules[]=array($type,$properties->toArray(),$node);
 				else
-				$this->_modules[$id]=array($type,$properties->toArray(),$node);
+					$this->_modules[$id]=array($type,$properties->toArray(),$node);
 			}
 		}
 
@@ -1169,9 +1169,9 @@ class TApplicationConfiguration extends TComponent
 			{
 				$properties=$node->getAttributes();
 				if(($id=$properties->itemAt('id'))===null)
-				throw new TConfigurationException('appconfig_serviceid_required');
+					throw new TConfigurationException('appconfig_serviceid_required');
 				if(($type=$properties->remove('class'))===null)
-				throw new TConfigurationException('appconfig_servicetype_required',$id);
+					throw new TConfigurationException('appconfig_servicetype_required',$id);
 				$node->setParent(null);
 				$this->_services[$id]=array($type,$properties->toArray(),$node);
 			}
@@ -1184,67 +1184,67 @@ class TApplicationConfiguration extends TComponent
 			{
 				$properties=$node->getAttributes();
 				if(($id=$properties->remove('id'))===null)
-				throw new TConfigurationException('appconfig_parameterid_required');
+					throw new TConfigurationException('appconfig_parameterid_required');
 				if(($type=$properties->remove('class'))===null)
 				{
 					if(($value=$properties->remove('value'))===null)
-					$this->_parameters[$id]=$node;
+						$this->_parameters[$id]=$node;
 					else
-					$this->_parameters[$id]=$value;
+						$this->_parameters[$id]=$value;
 				}
 				else
-				$this->_parameters[$id]=array($type,$properties->toArray());
+					$this->_parameters[$id]=array($type,$properties->toArray());
 			}
 		}
-}
+	}
 
-/**
+	/**
 	 * @return array list of application initial property values, indexed by property names
 	 */
-public function getProperties()
-{
-	return $this->_properties;
-}
+	public function getProperties()
+	{
+		return $this->_properties;
+	}
 
-/**
+	/**
 	 * @return array list of path aliases, indexed by alias names
 	 */
-public function getAliases()
-{
-	return $this->_aliases;
-}
+	public function getAliases()
+	{
+		return $this->_aliases;
+	}
 
-/**
+	/**
 	 * @return array list of namespaces to be used
 	 */
-public function getUsings()
-{
-	return $this->_usings;
-}
+	public function getUsings()
+	{
+		return $this->_usings;
+	}
 
-/**
+	/**
 	 * @return array list of module configurations
 	 */
-public function getModules()
-{
-	return $this->_modules;
-}
+	public function getModules()
+	{
+		return $this->_modules;
+	}
 
-/**
+	/**
 	 * @return array list of service configurations
 	 */
-public function getServices()
-{
-	return $this->_services;
-}
+	public function getServices()
+	{
+		return $this->_services;
+	}
 
-/**
+	/**
 	 * @return array list of parameters
 	 */
-public function getParameters()
-{
-	return $this->_parameters;
-}
+	public function getParameters()
+	{
+		return $this->_parameters;
+	}
 }
 
 /**
@@ -1290,13 +1290,13 @@ class TApplicationStatePersister extends TModule implements IStatePersister
 	public function load()
 	{
 		if(($cache=$this->getApplication()->getCache())!==null && ($value=$cache->get(self::CACHE_NAME))!==false)
-		return unserialize($value);
+			return unserialize($value);
 		else
 		{
 			if(($content=@file_get_contents($this->getStateFilePath()))!==false)
-			return unserialize($content);
+				return unserialize($content);
 			else
-			return null;
+				return null;
 		}
 	}
 
@@ -1311,17 +1311,17 @@ class TApplicationStatePersister extends TModule implements IStatePersister
 		if(($cache=$this->getApplication()->getCache())!==null)
 		{
 			if($cache->get(self::CACHE_NAME)===$content)
-			$saveFile=false;
+				$saveFile=false;
 			else
-			$cache->set(self::CACHE_NAME,$content);
+				$cache->set(self::CACHE_NAME,$content);
 		}
 		if($saveFile)
 		{
 			$fileName=$this->getStateFilePath();
 			if(version_compare(phpversion(),'5.1.0','>='))
-			file_put_contents($fileName,$content,LOCK_EX);
+				file_put_contents($fileName,$content,LOCK_EX);
 			else
-			file_put_contents($fileName,$content);
+				file_put_contents($fileName,$content);
 		}
 	}
 
