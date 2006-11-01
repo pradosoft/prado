@@ -1,4 +1,4 @@
-<h1>Welcome to Prado!</h1>
+<h1>Provider Demo</h1>
 <com:TForm>
 	<com:TLogin ID="LoginCtrl" MembershipProvider="SqlMembershipProvider"/>
 </com:TForm>

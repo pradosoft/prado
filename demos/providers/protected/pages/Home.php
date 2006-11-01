@@ -6,22 +6,22 @@ class Home extends TPage
 		Prado::using('System.Util.TVarDumper');
 		Prado::using('System.Web.Security.TSqlMembershipProvider');
 		Prado::using('System.Configuration.TProtectedConfiguration');
-		//		TRoles::CreateRole('test');
-		//		TMembership::ValidateUser('test','test');
-		//		echo TVarDumper::dump(TProtectedConfiguration::getDefaultProvider(),10,true);
-		//		echo TVarDumper::dump($this->Application->getModule('ProtectedConfiguration'),10,true);
-
 
 		// Access by provider id
 		//		$MembershipProvider = $this->Application->getModule('MembershipProvider')->getProvider('SqlMembershipProvider');
-		// or just get the default provider
-		$MembershipProvider = $this->Application->getModule('MembershipProvider')->Provider;
-		//		$RoleProvider = $this->Application->getModule('RoleProvider')->Provider;
+
+
 		/* @VAR $MembershipProvider TSqlMembershipProvider */
+		//		$MembershipProvider = $this->Application->getModule('MembershipProvider')->Provider;
+		//		echo TVarDumper::dump($MembershipProvider,10,true);
+
 		/* @VAR $RoleProvider TSqlRoleProvider */
-		echo TVarDumper::dump($MembershipProvider,10,true);
-		echo TVarDumper::dump($MembershipProvider->getMembershipUser('testUser'),10,true);
+		//		$RoleProvider = $this->Application->getModule('RoleProvider')->Provider;
 		//		echo TVarDumper::dump($RoleProvider,10,true);
+
+		/* @VAR $FormsAuthentication TFormsAuthenticationModule */
+		$FormsAuthentication = $this->Application->getModule('FormsAuthentication');
+		//		echo TVarDumper::dump($FormsAuthentication,10,true);
 	}
 }
 ?>

@@ -117,7 +117,6 @@ abstract class TMembershipProvider extends TProviderBase
 				throw new TConfigurationException('membershipprovider_configfile_invalid',$this->_configFile);
 		}
 		$this->loadConfig($config);
-//		$this->getApplication()->attachEventHandler('OnEndRequest',array($this,'collectLogs'));
 	}
 	/**
 	 * Loads configuration from an XML element

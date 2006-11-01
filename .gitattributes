@@ -1719,7 +1719,6 @@ framework/PradoBase.php -text
 framework/Security/IUserManager.php -text
 framework/Security/TAuthManager.php -text
 framework/Security/TAuthorizationRule.php -text
-framework/Security/TMembershipManager.php -text
 framework/Security/TSecurityManager.php -text
 framework/Security/TUser.php -text
 framework/Security/TUserManager.php -text
@@ -1827,8 +1826,18 @@ framework/Web/Javascripts/ratings/ratings.js -text
 framework/Web/Javascripts/rico/colors.js -text
 framework/Web/Javascripts/rico/extension.js -text
 framework/Web/Javascripts/rico/rico.js -text
+framework/Web/Security/Principal/IIdentity.php -text
+framework/Web/Security/Principal/IPrincipal.php -text
+framework/Web/Security/Principal/TGenericIdentity.php -text
+framework/Web/Security/Principal/TGenericPrincipal.php -text
 framework/Web/Security/TAnonymousIdentificationModule.php -text
 framework/Web/Security/TAuthorizationStoreRoleProvider.php -text
+framework/Web/Security/TCookieProtection.php -text
+framework/Web/Security/TDefaultAuthenticationModule.php -text
+framework/Web/Security/TFormsAuthentication.php -text
+framework/Web/Security/TFormsAuthenticationModule.php -text
+framework/Web/Security/TFormsAuthenticationTicket.php -text
+framework/Web/Security/TFormsIdentity.php -text
 framework/Web/Security/TMembership.php -text
 framework/Web/Security/TMembershipCreateStatus.php -text
 framework/Web/Security/TMembershipCreateUserException.php -text
@@ -1936,6 +1945,7 @@ framework/Web/UI/WebControls/TLiteralColumn.php -text
 framework/Web/UI/WebControls/TLogin.php -text
 framework/Web/UI/WebControls/TLoginName.php -text
 framework/Web/UI/WebControls/TLoginStatus.php -text
+framework/Web/UI/WebControls/TLoginUtil.php -text
 framework/Web/UI/WebControls/TLoginView.php -text
 framework/Web/UI/WebControls/TMarkdown.php -text
 framework/Web/UI/WebControls/TMultiView.php -text

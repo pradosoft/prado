@@ -57,7 +57,7 @@ class TSqlMembershipProvider extends TMembershipProvider
 	public function getMembershipUser($username=null,$providerUserKey=null,$userIsOnline=false)
 	{
 		Prado::using('System.Web.Security.TMembershipUser');
-//		return new TMembershipUser($this->getID());
+		return new TMembershipUser($this->getID());
 	}
 	public function getUserNameByEmail($email)
 	{
