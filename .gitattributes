@@ -1949,6 +1949,7 @@ framework/Web/UI/WebControls/TLoginUtil.php -text
 framework/Web/UI/WebControls/TLoginView.php -text
 framework/Web/UI/WebControls/TMarkdown.php -text
 framework/Web/UI/WebControls/TMultiView.php -text
+framework/Web/UI/WebControls/TOrientation.php -text
 framework/Web/UI/WebControls/TOutputCache.php -text
 framework/Web/UI/WebControls/TPager.php -text
 framework/Web/UI/WebControls/TPanel.php -text

@@ -78,6 +78,8 @@
  * @package System.Web.UI.WebControls
  * @since 3.1
  */
+Prado::using('System.Web.UI.WebControls.TDataGridColumn');
+
 class TLogin extends TCompositeControl
 {
 	private $_borderPadding=1;
@@ -241,19 +243,19 @@ class TLogin extends TCompositeControl
 	}
 	public function getLoginButtonText()
 	{
-		return $this->getViewState('LoginButtonText','');
+		return $this->getViewState('LoginButtonText','Login');
 	}
 	public function setLoginButtonText($value)
 	{
-		$this->setViewState('LoginButtonText',TPropertyValue::ensureString($value),'');
+		$this->setViewState('LoginButtonText',TPropertyValue::ensureString($value),'Login');
 	}
 	public function getLoginButtonType()
 	{
-		return $this->getViewState('LoginButtonType','');
+		return $this->getViewState('LoginButtonType',TButtonColumnType::PushButton);
 	}
 	public function setLoginButtonType($value)
 	{
-		$this->setViewState('LoginButtonType',TPropertyValue::ensureString($value),'');
+		$this->setViewState('LoginButtonType',TPropertyValue::ensureEnum($value,'TButtonColumnType'),TButtonColumnType::PushButton);
 	}
 	public function getMembershipProvider()
 	{
@@ -265,13 +267,11 @@ class TLogin extends TCompositeControl
 	}
 	public function getOrientation()
 	{
-		return $this->getViewState('Orientation','');
+		return $this->getViewState('Orientation',TOrientation::Horizontal);
 	}
 	public function setOrientation($value)
 	{
-		$this->setViewState('Orientation',TPropertyValue::ensureString($value),'');
-		//		parent::ChildControlsCreated=false;
-		//Do we need TOrientation?
+		$this->setViewState('Orientation',TPropertyValue::ensureEnum($value,'TOrientation'),TOrientation::Horizontal);
 	}
 	public function getPassword()
 	{
@@ -283,11 +283,11 @@ class TLogin extends TCompositeControl
 	}
 	public function getPasswordLabelText()
 	{
-		return $this->getViewState('PasswordLabelText','LoginControls_DefaultPasswordLabelText');
+		return $this->getViewState('PasswordLabelText','Password:');
 	}
 	public function setPasswordLabelText($value)
 	{
-		$this->setViewState('PasswordLabelText',TPropertyValue::ensureString($value),'LoginControls_DefaultPasswordLabelText');
+		$this->setViewState('PasswordLabelText',TPropertyValue::ensureString($value),'Password:');
 	}
 	public function getPasswordRecoveryIconUrl()
 	{
@@ -315,11 +315,11 @@ class TLogin extends TCompositeControl
 	}
 	public function getPasswordRequiredErrorMessage()
 	{
-		return $this->getViewState('PasswordRequiredErrorMessage','Login_DefaultPasswordRequiredErrorMessage');
+		return $this->getViewState('PasswordRequiredErrorMessage','A Password Is Required');
 	}
 	public function setPasswordRequiredErrorMessage($value)
 	{
-		$this->setViewState('PasswordRequiredErrorMessage',TPropertyValue::ensureString($value),'Login_DefaultPasswordRequiredErrorMessage');
+		$this->setViewState('PasswordRequiredErrorMessage',TPropertyValue::ensureString($value),'A Password Is Required');
 	}
 	public function getRememberMeSet()
 	{
@@ -331,11 +331,11 @@ class TLogin extends TCompositeControl
 	}
 	public function getRememberMeText()
 	{
-		return $this->getViewState('RememberMeText','Login_DefaultRememberMeText');
+		return $this->getViewState('RememberMeText','Remember Me Next Time:');
 	}
 	public function setRememberMeText($value)
 	{
-		$this->setViewState('RememberMeText',TPropertyValue::ensureString($value),'Login_DefaultRememberMeText');
+		$this->setViewState('RememberMeText',TPropertyValue::ensureString($value),'Remember Me Next Time:');
 	}
 	public function getTagKey()
 	{
@@ -361,11 +361,11 @@ class TLogin extends TCompositeControl
 	}
 	public function getTitleText()
 	{
-		return $this->getViewState('TitleText','Login_DefaultTitleText');
+		return $this->getViewState('TitleText','Log In');
 	}
 	public function setTitleText($value)
 	{
-		$this->setViewState('TitleText',TPropertyValue::ensureString($value),'Login_DefaultTitleText');
+		$this->setViewState('TitleText',TPropertyValue::ensureString($value),'Log In');
 	}
 	public function getTitleTextStyle()
 	{
@@ -385,19 +385,19 @@ class TLogin extends TCompositeControl
 	}
 	public function getUserNameLabelText()
 	{
-		return $this->getViewState('UserNameLabelText','Login_DefaultUserNameLabelText');
+		return $this->getViewState('UserNameLabelText','User Name:');
 	}
 	public function setUserNameLabelText($value)
 	{
-		$this->setViewState('UserNameLabelText',TPropertyValue::ensureString($value),'Login_DefaultUserNameLabelText');
+		$this->setViewState('UserNameLabelText',TPropertyValue::ensureString($value),'User Name:');
 	}
 	public function getUserNameRequiredErrorMessage()
 	{
-		return $this->getViewState('UserNameRequiredErrorMessage','Login_DefaultUserNameRequiredErrorMessage');
+		return $this->getViewState('UserNameRequiredErrorMessage','A User Name Is Required');
 	}
 	public function setUserNameRequiredErrorMessage($value)
 	{
-		$this->setViewState('UserNameRequiredErrorMessage',TPropertyValue::ensureString($value),'Login_DefaultUserNameRequiredErrorMessage');
+		$this->setViewState('UserNameRequiredErrorMessage',TPropertyValue::ensureString($value),'A User Name Is Required');
 	}
 	public function getValidatorTextStyle()
 	{
@@ -413,22 +413,73 @@ class TLogin extends TCompositeControl
 	}
 	private function attemptLogin()
 	{
-
+		echo TVarDumper::dump(__METHOD__,10,true);
+		if (($this->getPage() === null) || $this->getPage()->getIsValid())
+		{
+			//			$args1 = new LoginCancelEventArgs();
+			$this->onLoggingIn($args1);
+			if (!$args1.Cancel)
+			{
+				//				$args2 = new AuthenticateEventArgs();
+				$this->onAuthenticate($args2);
+				if ($args2.Authenticated)
+				{
+					TFormsAuthentication::SetAuthCookie($this->getUserNameInternal(),$this->getRememberMeSet());
+					//					$this->onLoggedIn(EventArgs.Empty);
+					$this->getPage()->getResponse()->redirect($this->getRedirectUrl(),false);
+				}
+				else
+				{
+					//					$this->onLoginError(EventArgs.Empty);
+					if ($this->getFailureAction() === TLoginFailureAction::RedirectToLoginPage)
+					{
+						TFormsAuthentication::RedirectToLoginPage("loginfailure=1");
+					}
+					$control1 = $this->getTemplateContainer()->getFailureTextLabel();
+					if ($control1 !== null)
+					{
+						$control1->setText($this->getFailureText());
+					}
+				}
+			}
+		}
 	}
 	private function authenticateUsingMembershipProvider($param)
 	{
+		echo TVarDumper::dump(__METHOD__,10,true);
+		TLoginUtil::getProvider($this->getMembershipProvider())->validateUser($this->getUserNameInternal(),$this->getPasswordInternal());
 		//		e.Authenticated = LoginUtil.GetProvider(this.MembershipProvider).ValidateUser(this.UserNameInternal,this.PasswordInternal);
 	}
 	private function getRedirectUrl()
 	{
-
+		if ($this->onLoginPage())
+		{
+			$text1 = TFormsAuthentication::GetReturnUrl(false);
+			if ($text1!==null || strlen($text1) === 0)
+			{
+				return $text1;
+			}
+			$text2 = $this->getDestinationPageUrl();
+			if ($text2!==null || strlen($text2) === 0)
+			{
+				//				return base.ResolveClientUrl($text2);
+			}
+			return TFormsAuthentication::getDefaultUrl();
+		}
+		$text3 = $this->getDestinationPageUrl();
+		if ($text3!==null || strlen($text3) === 0)
+		{
+			//			return base.ResolveClientUrl($text3);
+		}
+		if (($this->getPage()->getForm() !== null))
+		{
+			return $this->getPage()->getRequest()->getPathInfo();
+		}
+		return $this->getPage()->getRequest()->getPathInfo();
 	}
-	//	protected function loadViewState($savedState)
-	//	{
-
-	//	}
 	public function onAuthenticate($param)
 	{
+		echo TVarDumper::dump(__METHOD__,10,true);
 		//		AuthenticateEventHandler handler1 = (AuthenticateEventHandler) base.Events[Login.EventAuthenticate];
 		$handler1;
 		if ($handler1!==null)
@@ -442,6 +493,7 @@ class TLogin extends TCompositeControl
 	}
 	public function onBubbleEvent($sender,$param)
 	{
+		echo TVarDumper::dump(__METHOD__,10,true);
 		//		bool flag1 = false;
 		//		if (e is CommandEventArgs)
 		//		{
@@ -456,27 +508,30 @@ class TLogin extends TCompositeControl
 	}
 	public function onLoggedIn($param)
 	{
+		echo TVarDumper::dump(__METHOD__,10,true);
 		//		EventHandler handler1 = (EventHandler) base.Events[Login.EventLoggedIn];
-		if ($handler1!==null)
-		{
-			$handler1($this,$param);
-		}
+		//		if ($handler1!==null)
+		//		{
+		//			$handler1($this,$param);
+		//		}
 	}
 	public function onLoggingIn($param)
 	{
+		echo TVarDumper::dump(__METHOD__,10,true);
 		//		LoginCancelEventHandler handler1 = (LoginCancelEventHandler) base.Events[Login.EventLoggingIn];
-		if ($handler1!==null)
-		{
-			$handler1($this,$param);
-		}
+		//		if ($handler1!==null)
+		//		{
+		//			$handler1($this,$param);
+		//		}
 	}
 	public function onLoginError($param)
 	{
+		echo TVarDumper::dump(__METHOD__,10,true);
 		//		EventHandler handler1 = (EventHandler) base.Events[Login.EventLoginError];
-		if ($handler1!==null)
-		{
-			$handler1($this,$param);
-		}
+		//		if ($handler1!==null)
+		//		{
+		//			$handler1($this,$param);
+		//		}
 	}
 	private function onLoginPage()
 	{
@@ -484,12 +539,9 @@ class TLogin extends TCompositeControl
 	}
 	public function onPreRender($param)
 	{
-		echo TVarDumper::dump(__METHOD__,10,true);
 		parent::onPreRender($param);
 		$this->setEditableChildProperties();
-		$this->_templateContainer->setVisible(true);
-		//		$this->getPage()->getRequest()->IsAuthenticated() is not created yet!
-		//		$this->_templateContainer->Visible = ($this->getVisibleWhenLoggedIn() || !$this->getPage()->getRequest()->IsAuthenticated()) || $this->onLoginPage();
+		$this->_templateContainer->setVisible(($this->getVisibleWhenLoggedIn() || !$this->getPage()->getRequest()->IsAuthenticated()) || $this->onLoginPage());
 	}
 	private function passwordTextChanged($sender,$param)
 	{
@@ -505,17 +557,16 @@ class TLogin extends TCompositeControl
 	}
 	public function render($writer)
 	{
-		echo TVarDumper::dump(__METHOD__,10,true);
+		//		echo TVarDumper::dump(__METHOD__,10,true);
 		if ($this->_templateContainer->getVisible())
 		{
 			$this->setChildProperties();
-			//			$this->renderControl($writer);
-			//			$this->render($writer);
+			$this->renderChildren($writer);
 		}
 	}
 	public function createChildControls()
 	{
-		echo TVarDumper::dump(__METHOD__,10,true);
+		//		echo TVarDumper::dump(__METHOD__,10,true);
 		$this->getControls()->clear();
 		$this->_templateContainer = new TLoginContainer($this);
 		$template1 = new TLoginTemplate($this);
@@ -530,7 +581,7 @@ class TLogin extends TCompositeControl
 	//	}
 	public function setChildProperties()
 	{
-		echo TVarDumper::dump(__METHOD__,10,true);
+		//		echo TVarDumper::dump(__METHOD__,10,true);
 		$this->setCommonChildProperties();
 		if ($this->_layoutTemplate === null)
 		{
@@ -539,33 +590,261 @@ class TLogin extends TCompositeControl
 	}
 	private function setCommonChildProperties()
 	{
-		echo TVarDumper::dump(__METHOD__,10,true);
+		//		echo TVarDumper::dump(__METHOD__,10,true);
 		/* @VAR $container1 TLoginContainer */
 		$container1 = $this->_templateContainer;
 
 	}
 	private function setDefaultTemplateChildProperties()
 	{
-		echo TVarDumper::dump(__METHOD__,10,true);
+		//		echo TVarDumper::dump(__METHOD__,10,true);
 		/* @VAR $container1 TLoginContainer */
 		$container1 = $this->_templateContainer;
-		$container1->getBorderTable()->setCellPadding = $this->getBorderPadding();
-		$container1->getBorderTable()->setCellSpacing = 0;
+		$container1->getBorderTable()->setCellPadding($this->getBorderPadding());
+		$container1->getBorderTable()->setCellSpacing(0);
+
 		$literal1 = $container1->getTitle();
 		$text1 = $this->getTitleText();
 		if (strlen($text1)>0)
 		{
 			$literal1->setText($text1);
+			if ($this->_titleTextStyle !== null)
+			{
+				TLoginUtil::setTableCellStyle($literal1,$this->_titleTextStyle);
+			}
+			TLoginUtil::setTableCellVisible($literal1,true);
+		}
+		else
+		{
+			TLoginUtil::setTableCellVisible($literal1,false);
+		}
+		$literal2 = $container1->getInstruction();
+		$text2 = $this->getInstructionText();
+		if (strlen($text2)>0)
+		{
+			$literal2->setText($text2);
+			if ($this->_instructionTextStyle !== null)
+			{
+				TLoginUtil::setTableCellStyle($literal2,$this->_instructionTextStyle);
+			}
+			TLoginUtil::setTableCellVisible($literal2,true);
+		}
+		else
+		{
+			TLoginUtil::setTableCellVisible($literal2,false);
+		}
+		$control1 = $container1->getUserNameLabel();
+		$text3 = $this->getUserNameLabelText();
+		if (strlen($text3)>0)
+		{
+			$control1->setText($text3);
+			if ($this->_instructionTextStyle !== null)
+			{
+				TLoginUtil::setTableCellStyle($control1,$this->_labelStyle);
+			}
+			TLoginUtil::setTableCellVisible($control1,true);
+		}
+		else
+		{
+			TLoginUtil::setTableCellVisible($control1,false);
+		}
+		$control2 = $container1->getUserNameTextBox();
+		if ($this->_textBoxStyle !== null)
+		{
+			//            $control2->ApplyStyle(this.TextBoxStyle);//This comes from WebControl
+		}
+		//		$control2->setTabIndex($this->getTabIndex());//This comes from WebControl
+		//		$control2->setAccessKey($this->getAccessKey());//This comes from WebControl
+		$flag1 = true;
+		/* @VAR $validator1 TRequiredFieldValidator */
+		$validator1 = $container1->getUserNameRequired();
+		$validator1->setErrorMessage($this->getUserNameRequiredErrorMessage());
+		$validator1->setToolTip($this->getUserNameRequiredErrorMessage());
+		$validator1->setEnabled($flag1);
+		$validator1->setVisible($flag1);
+		if ($this->_validatorTextStyle !== null)
+		{
+			//            validator1.ApplyStyle(this._validatorTextStyle);
+		}
+		$control3 = $container1->getPasswordLabel();
+		$text4 = $this->getPasswordLabelText();
+		if (strlen($text4) > 0)
+		{
+			$control3->setText($text4);
+			if ($this->_labelStyle !== null)
+			{
+				TLoginUtil::setTableCellStyle($control3,$this->_labelStyle);
+			}
+			$control3->setVisible(true);
+		}
+		else
+		{
+			$control3->setVisible(false);
+		}
+		$control4 = $container1->getPasswordTextBox();
+		if ($this->_textBoxStyle !== null)
+		{
+			//            control4.ApplyStyle(this.TextBoxStyle);
+		}
+		//		$control4.TabIndex = this.TabIndex;
+		$validator2 = $container1->getPasswordRequired();
+		$validator2->setErrorMessage($this->getPasswordRequiredErrorMessage());
+		$validator2->setToolTip($this->getPasswordRequiredErrorMessage());
+		$validator2->setEnabled($flag1);
+		$validator2->setVisible($flag1);
+		if ($this->_validatorTextStyle !== null)
+		{
+			//		            validator2.ApplyStyle(this._validatorTextStyle);
+		}
+		$box1 = $container1->getRememberMeCheckBox();
+		if ($this->getDisplayRememberMe())
+		{
+			$box1->setText($this->getRememberMeText());
+			if ($this->_checkBoxStyle !== null)
+			{
+				TLoginUtil::setTableCellStyle($box1,$this->getCheckBoxStyle());
+			}
+			TLoginUtil::setTableCellVisible($box1,true);
+		}
+		else
+		{
+			TLoginUtil::setTableCellVisible($box1,false);
+		}
+		//      box1.TabIndex = this.TabIndex;
+		$button1 = $container1->getLinkButton();
+		$button2 = $container1->getImageButton();
+		$button3 = $container1->getPushButton();
+		$control5 = null;
+		switch ($this->getLoginButtonType())
+		{
+			case TButtonColumnType::PushButton:
+				$button3->setText($this->getLoginButtonText());
+				$control5 = $button3;
+				break;
+			case TButtonColumnType::ImageButton:
+				$button2->setImageUrl($this->getLoginButtonImageUrl());
+				$button2->setAlternateText($this->getLoginButtonText());
+				$control5 = $button2;
+				break;
+
+			case TButtonColumnType::LinkButton:
+				$button1->setText($this->getLoginButtonText());
+				$control5 = $button1;
+				break;
+		}
+		$button1->setVisible(false);
+		$button2->setVisible(false);
+		$button3->setVisible(false);
+		$control5->setVisible(true);
+		//      control5.TabIndex = this.TabIndex;
+		if ($this->getLoginButtonStyle() !== null)
+		{
+			//            control5.ApplyStyle(this.LoginButtonStyle);
+		}
+		$image1 = $container1->getCreateUserIcon();
+		$link1 = $container1->getCreateUserLink();
+		$control6 = $container1->getCreateUserLinkSeparator();
+		$link2 = $container1->getPasswordRecoveryLink();
+		$image2 = $container1->getPasswordRecoveryIcon();
+		$link3 = $container1->getHelpPageLink();
+		$image3 = $container1->getHelpPageIcon();
+		$control7 = $container1->getPasswordRecoveryLinkSeparator();
+		$text5 = $this->getCreateUserText();
+		$text6 = $this->getCreateUserIconUrl();
+		$text7 = $this->getPasswordRecoveryText();
+		$text8 = $this->getPasswordRecoveryIconUrl();
+		$text9 = $this->getHelpPageText();
+		$text10 = $this->getHelpPageIconUrl();
+		$flag2 = strlen($text5) > 0;
+		$flag3 = strlen($text7) > 0;
+		$flag4 = strlen($text9) > 0;
+		$flag5 = strlen($text10) > 0;
+		$flag6 = strlen($text6) > 0;
+		$flag7 = strlen($text8) > 0;
+		$flag8 = $flag4 || $flag5;
+		$flag9 = $flag2 || $flag6;
+		$flag10 = $flag3 || $flag7;
+		$link3->setVisible($flag4);
+		$control7->setVisible($flag8 && ($flag10 || $flag9));
+		if ($flag4)
+		{
+			$link3->setText($text9);
+			$link3->setNavigateUrl($this->getHelpPageUrl());
+			//			$link3->setTabIndex($this.TabIndex);
+		}
+		$image3->setVisible($flag5);
+		if ($flag5)
+		{
+			$image3->setImageUrl($text10);
+			$image3->setAlternateText($this->getHelpPageText());
+		}
+		$link1->setVisible($flag2);
+		$control6->setVisible($flag9 && $flag10);
+		if ($flag2)
+		{
+			$link1->setText($text5);
+			$link1->setNavigateUrl($this->getCreateUserUrl());
+			//			$link1->setTabIndex($this.TabIndex);
+		}
+		$image1->setVisible($flag6);
+		if ($flag6)
+		{
+			$image1->setImageUrl($text6);
+			$image1->setAlternateText($this->getCreateUserText());
+		}
+		$link2->setVisible($flag3);
+		if ($flag3)
+		{
+			$link2->setText($text7);
+			$link2->setNavigateUrl($this->getPasswordRecoveryUrl());
+			//			$link2->setTabIndex($this.TabIndex);
+		}
+		$image2->setVisible($flag7);
+		if ($flag7)
+		{
+			$image2->setImageUrl($text8);
+			$image2->setAlternateText($this->getPasswordRecoveryText());
+		}
+		if (($flag9 || $flag10) || $flag8)
+		{
+			if ($this->getHyperLinkStyle() !== null)
+			{
+				$style1 = new TTableItemStyle();
+				//				$style1.CopyFrom($this->getHyperLinkStyle());
+				$style1->getFont()->reset();
+				TLoginUtil::setTableCellStyle($link1,$style1);
+				//				$link1.Font.CopyFrom(this.HyperLinkStyle.Font);
+				//				$link1.ForeColor = this.HyperLinkStyle.ForeColor;
+				//				$link2.Font.CopyFrom(this.HyperLinkStyle.Font);
+				//				$link2.ForeColor = this.HyperLinkStyle.ForeColor;
+				//				$link3.Font.CopyFrom(this.HyperLinkStyle.Font);
+				//				$link3.ForeColor = this.HyperLinkStyle.ForeColor;
+			}
+			TLoginUtil::setTableCellVisible($link3, true);
+		}
+		else
+		{
+			TLoginUtil::setTableCellVisible($link3, false);
+		}
+		$control8 = $container1->getFailureTextLabel();
+		if (strlen($control8->getText()) > 0)
+		{
+			TLoginUtil::setTableCellStyle($control8, $this->getFailureTextStyle());
+			TLoginUtil::setTableCellVisible($control8, true);
+		}
+		else
+		{
+			TLoginUtil::setTableCellVisible($control8, false);
 		}
 	}
 	private function setEditableChildProperties()
 	{
-
+		//		echo TVarDumper::dump(__METHOD__,10,true);
 	}
-	protected function trackViewState()
-	{
+	//	protected function trackViewState()
+	//	{
 
-	}
+	//	}
 	private function userNameTextChanged($sender,$param)
 	{
 		$this->_userName = $sender->Text;
@@ -578,13 +857,13 @@ class TLoginTemplate implements ITemplate
 
 	public function __construct($owner)
 	{
-		echo TVarDumper::dump(__METHOD__,10,true);
+		//		echo TVarDumper::dump(__METHOD__,10,true);
 		$this->_owner=$owner;
 	}
 
 	private function createControls(TLoginContainer $loginContainer)
 	{
-		echo TVarDumper::dump(__METHOD__,10,true);
+		//		echo TVarDumper::dump(__METHOD__,10,true);
 		$text1 = $this->_owner->getUniqueID();
 		$literal1 = new TLiteral();
 		$loginContainer->setTitle($literal1);
@@ -600,77 +879,438 @@ class TLoginTemplate implements ITemplate
 		$validator1->setID('UserNameRequired');
 		$validator1->setValidationGroup($text1);
 		$validator1->setControlToValidate($box1->getID());
-		$validator1->setDisplay(TValidatorDisplayStyle::Fixed);
-		$validator1->setText('LoginControls_DefaultRequiredFieldValidatorText');
+		$validator1->setDisplay(TValidatorDisplayStyle::Dynamic);
+		$validator1->setText('*');
 		$validator1->setEnabled($flag1);
 		$validator1->setVisible($flag1);
 		$loginContainer->setUserNameRequired($validator1);
+		$box2 = new TTextBox();
+		$box2->setID('Password');
+		$box2->setTextMode(TTextBoxMode::Password);
+		$loginContainer->setPasswordTextBox($box2);
+		$label2 = new TLabel();
+		$loginContainer->setPasswordLabel($label2);
+		$validator2 = new TRequiredFieldValidator();
+		$validator2->setID('PasswordRequired');
+		$validator2->setValidationGroup($text1);
+		$validator2->setControlToValidate($box2->getID());
+		$validator2->setDisplay(TValidatorDisplayStyle::Dynamic);
+		$validator2->setText('*');
+		$validator2->setEnabled($flag1);
+		$validator2->setVisible($flag1);
+		$loginContainer->setPasswordRequired($validator2);
+		$box3 = new TCheckBox();
+		$box3->setID('RememberMe');
+		$loginContainer->setRememberMeCheckBox($box3);
+		$button1 = new TLinkButton();
+		$button1->setID('LoginLinkButton');
+		$button1->setValidationGroup($text1);
+		//		$button1->setCommandName(TLogin::LoginButtonCommandName);
+		$loginContainer->setLinkButton($button1);
+		$button2 = new TImageButton();
+		$button2->setID('LoginImageButton');
+		$button2->setValidationGroup($text1);
+		//		$button2->setCommandName(TLogin::LoginButtonCommandName);
+		$loginContainer->setImageButton($button2);
+		$button3 = new TButton();
+		$button3->setID('LoginButton');
+		$button3->setValidationGroup($text1);
+		//		$button3->setCommandName(TLogin::LoginButtonCommandName);
+		$loginContainer->setPushButton($button3);
+		$link1 = new THyperLink();
+		$link1->setID('PasswordRecoveryLink');
+		$loginContainer->setPasswordRecoveryLink($link1);
+		$control1 = new TLiteral();
+		$loginContainer->setPasswordRecoveryLinkSeparator($control1);
+		$link2 = new THyperLink();
+		$link2->setID('CreateUserLink');
+		$loginContainer->setCreateUserLink($link2);
+		$control2 = new TLiteral();
+		$loginContainer->setCreateUserLinkSeparator($control2);
+		$link3 = new THyperLink();
+		$link3->setID('HelpLink');
+		$loginContainer->setHelpPageLink($link3);
+		$literal3 = new TLiteral();
+		$literal3->setID('FailureText');
+		$loginContainer->setFailureTextLabel($literal3);
+		$loginContainer->setPasswordRecoveryIcon(new TImage());
+		$loginContainer->setPasswordRecoveryIcon(new TImage());
+		$loginContainer->setHelpPageIcon(new TImage());
+		$loginContainer->setCreateUserIcon(new TImage());
 	}
 	private function layoutControls(TLoginContainer $loginContainer)
 	{
-		echo TVarDumper::dump(__METHOD__,10,true);
-		//		$orientation1 = $this->_owner->getOrientation();
-		//		$layout1 = new TLoginTextLayout();
-		//		if (($orientation1 === tl))
-		//		$test = new TLogin();
-		$this->layoutHorizontalTextOnLeft($loginContainer);
+		$orientation1 = $this->_owner->getOrientation();
+		$layout1 = $this->_owner->getTextLayout();
 
+		if (($orientation1 === TOrientation::Vertical) && ($layout1 === TLoginTextLayout::TextOnLeft))
+		{
+			$this->layoutVerticalTextOnLeft($loginContainer);
+		}
+		elseif (($orientation1 === TOrientation::Vertical) && ($layout1 === TLoginTextLayout::TextOnTop))
+		{
+			$this->layoutVerticalTextOnTop($loginContainer);
+		}
+		elseif (($orientation1 === TOrientation::Horizontal) && ($layout1 === TLoginTextLayout::TextOnLeft))
+		{
+			$this->layoutHorizontalTextOnLeft($loginContainer);
+		}
+		else
+		{
+			$this->layoutHorizontalTextOnTop($loginContainer);
+		}
 	}
 	private function layoutHorizontalTextOnLeft(TLoginContainer $loginContainer)
 	{
-		echo TVarDumper::dump(__METHOD__,10,true);
 		$table1 = new TTable();
 		$table1->setCellPadding(0);
-		$row1 = new TTableRow();
+		$row1 = new TDisappearingTableRow();
 		$cell1 = new TTableCell();
 		$cell1->setColumnSpan(6);
 		$cell1->setHorizontalAlign(THorizontalAlign::Center);
 		$cell1->getControls()->add($loginContainer->getTitle());
 		$row1->getCells()->add($cell1);
 		$table1->getRows()->add($row1);
-
-		$row1 = new TTableRow();//Disapperingtablerow
+		$row1 = new TDisappearingTableRow();
 		$cell1 = new TTableCell();
 		$cell1->setColumnSpan(6);
 		$cell1->setHorizontalAlign(THorizontalAlign::Center);
 		$cell1->getControls()->add($loginContainer->getInstruction());
 		$row1->getCells()->add($cell1);
 		$table1->getRows()->add($row1);
-
-		$row1 = new TTableRow();//Disapperingtablerow
+		$row1 = new TDisappearingTableRow();
 		$cell1 = new TTableCell();
-		//		if ($this->_owner->getConvertingToTemplate)
-		//		{
-		//			$loginContainer->getUserNameLabel()->RenderAsLabel = true;
-		//		}
+		if ($this->_owner->getConvertingToTemplate())
+		{
+			//			$loginContainer->getUserNameLabel()->RenderAsLabel = true;
+		}
 		$cell1->getControls()->add($loginContainer->getUserNameLabel());
 		$row1->getCells()->add($cell1);
-
 		$cell1 = new TTableCell();
 		$cell1->getControls()->add($loginContainer->getUserNameTextBox());
 		$cell1->getControls()->add($loginContainer->getUserNameRequired());
 		$row1->getCells()->add($cell1);
-
+		$cell1 = new TTableCell();
+		if ($this->_owner->getConvertingToTemplate())
+		{
+			//			$loginContainer->getPasswordLabel()->RenderAsLabel = true;
+		}
+		$cell1->getControls()->add($loginContainer->getPasswordLabel());
+		$row1->getCells()->add($cell1);
+		$cell1 = new TTableCell();
+		$cell1->getControls()->add($loginContainer->getPasswordTextBox());
+		$cell1->getControls()->add($loginContainer->getPasswordRequired());
+		$row1->getCells()->add($cell1);
+		$cell1 = new TTableCell();
+		$cell1->getControls()->add($loginContainer->getRememberMeCheckBox());
+		$row1->getCells()->add($cell1);
+		$cell1 = new TTableCell();
+		$cell1->getControls()->add($loginContainer->getLinkButton());
+		$cell1->getControls()->add($loginContainer->getImageButton());
+		$cell1->getControls()->add($loginContainer->getPushButton());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$cell1->setColumnSpan(6);
+		$cell1->getControls()->add($loginContainer->getFailureTextLabel());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$cell1->setColumnSpan(6);
+		$loginContainer->getCreateUserLinkSeparator()->setText('');
+		$loginContainer->getPasswordRecoveryLinkSeparator()->setText('');
+		$cell1->getControls()->add($loginContainer->getCreateUserIcon());
+		$cell1->getControls()->add($loginContainer->getCreateUserLink());
+		$cell1->getControls()->add($loginContainer->getCreateUserLinkSeparator());
+		$cell1->getControls()->add($loginContainer->getPasswordRecoveryIcon());
+		$cell1->getControls()->add($loginContainer->getPasswordRecoveryLink());
+		$cell1->getControls()->add($loginContainer->getPasswordRecoveryLinkSeparator());
+		$cell1->getControls()->add($loginContainer->getHelpPageIcon());
+		$cell1->getControls()->add($loginContainer->getHelpPageLink());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$table2 = TLoginUtil::createChildTable($this->_owner->getConvertingToTemplate());
+		$row1 = new TTableRow();
+		$cell1 = new TTableCell();
+		$cell1->getControls()->add($table1);
+		$row1->getCells()->add($cell1);
+		$table2->getRows()->add($row1);
 		$loginContainer->setLayoutTable($table1);
-		//		$loginContainer->setBorderTable($table2);
-		//		$loginContainer->getControls()->add($table2);
-		$loginContainer->getControls()->add($table1);
+		$loginContainer->setBorderTable($table2);
+		$loginContainer->getControls()->add($table2);
 	}
 	private function layoutHorizontalTextOnTop(TLoginContainer $loginContainer)
 	{
-		echo TVarDumper::dump(__METHOD__,10,true);
+		$table1 = new TTable();
+		$table1->setCellPadding(0);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$cell1->setColumnSpan(4);
+		$cell1->setHorizontalAlign(THorizontalAlign::Center);
+		$cell1->getControls()->add($loginContainer->getTitle());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$cell1->setColumnSpan(4);
+		$cell1->setHorizontalAlign(THorizontalAlign::Center);
+		$cell1->getControls()->add($loginContainer->getInstruction());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		if ($this->_owner->getConvertingToTemplate())
+		{
+			//			$loginContainer->getUserNameLabel()->RenderAsLabel = true;
+		}
+		$cell1->getControls()->add($loginContainer->getUserNameLabel());
+		$row1->getCells()->add($cell1);
+		$cell1 = new TTableCell();
+		if ($this->_owner->getConvertingToTemplate())
+		{
+			//			$loginContainer->getPasswordLabel()->RenderAsLabel = true;
+		}
+		$cell1->getControls()->add($loginContainer->getPasswordLabel());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$cell1->getControls()->add($loginContainer->getUserNameTextBox());
+		$cell1->getControls()->add($loginContainer->getUserNameRequired());
+		$row1->getCells()->add($cell1);
+		$cell1 = new TTableCell();
+		$cell1->getControls()->add($loginContainer->getPasswordTextBox());
+		$cell1->getControls()->add($loginContainer->getPasswordRequired());
+		$row1->getCells()->add($cell1);
+		$cell1 = new TTableCell();
+		$cell1->getControls()->add($loginContainer->getRememberMeCheckBox());
+		$row1->getCells()->add($cell1);
+		$cell1 = new TTableCell();
+		$cell1->setHorizontalAlign(THorizontalAlign::Right);
+		$cell1->getControls()->add($loginContainer->getLinkButton());
+		$cell1->getControls()->add($loginContainer->getImageButton());
+		$cell1->getControls()->add($loginContainer->getPushButton());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$cell1->setColumnSpan(4);
+		$cell1->getControls()->add($loginContainer->getFailureTextLabel());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$cell1->setColumnSpan(4);
+		$loginContainer->getCreateUserLinkSeparator()->setText('');
+		$loginContainer->getPasswordRecoveryLinkSeparator()->setText('');
+		$cell1->getControls()->add($loginContainer->getCreateUserIcon());
+		$cell1->getControls()->add($loginContainer->getCreateUserLink());
+		$cell1->getControls()->add($loginContainer->getCreateUserLinkSeparator());
+		$cell1->getControls()->add($loginContainer->getPasswordRecoveryIcon());
+		$cell1->getControls()->add($loginContainer->getPasswordRecoveryLink());
+		$cell1->getControls()->add($loginContainer->getPasswordRecoveryLinkSeparator());
+		$cell1->getControls()->add($loginContainer->getHelpPageIcon());
+		$cell1->getControls()->add($loginContainer->getHelpPageLink());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$table2 = TLoginUtil::createChildTable($this->_owner->getConvertingToTemplate());
+		$row1 = new TTableRow();
+		$cell1 = new TTableCell();
+		$cell1->getControls()->add($table1);
+		$row1->getCells()->add($cell1);
+		$table2->getRows()->add($row1);
+		$loginContainer->setLayoutTable($table1);
+		$loginContainer->setBorderTable($table2);
+		$loginContainer->getControls()->add($table2);
 	}
 	private function layoutVerticalTextOnLeft(TLoginContainer $loginContainer)
 	{
-		echo TVarDumper::dump(__METHOD__,10,true);
+		$table1 = new TTable();
+		$table1->setCellPadding(0);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$cell1->setColumnSpan(2);
+		$cell1->setHorizontalAlign(THorizontalAlign::Center);
+		$cell1->getControls()->add($loginContainer->getTitle());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$cell1->setColumnSpan(2);
+		$cell1->setHorizontalAlign(THorizontalAlign::Center);
+		$cell1->getControls()->add($loginContainer->getInstruction());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$cell1->setHorizontalAlign(THorizontalAlign::Right);
+		if ($this->_owner->getConvertingToTemplate())
+		{
+			//			$loginContainer->getUserNameLabel()->RenderAsLabel = true;
+		}
+		$cell1->getControls()->add($loginContainer->getUserNameLabel());
+		$row1->getCells()->add($cell1);
+		$cell1 = new TTableCell();
+		$cell1->getControls()->add($loginContainer->getUserNameTextBox());
+		$cell1->getControls()->add($loginContainer->getUserNameRequired());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$cell1->setHorizontalAlign(THorizontalAlign::Right);
+		if ($this->_owner->getConvertingToTemplate())
+		{
+			//			$loginContainer->getPasswordLabel()->RenderAsLabel = true;
+		}
+		$cell1->getControls()->add($loginContainer->getPasswordLabel());
+		$row1->getCells()->add($cell1);
+		$cell1 = new TTableCell();
+		$cell1->getControls()->add($loginContainer->getPasswordTextBox());
+		$cell1->getControls()->add($loginContainer->getPasswordRequired());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$cell1->setColumnSpan(2);
+		$cell1->getControls()->add($loginContainer->getRememberMeCheckBox());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$cell1->setColumnSpan(2);
+		$cell1->setHorizontalAlign(THorizontalAlign::Center);
+		$cell1->getControls()->add($loginContainer->getFailureTextLabel());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$cell1->setColumnSpan(2);
+		$cell1->setHorizontalAlign(THorizontalAlign::Right);
+		$cell1->getControls()->add($loginContainer->getLinkButton());
+		$cell1->getControls()->add($loginContainer->getImageButton());
+		$cell1->getControls()->add($loginContainer->getPushButton());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$cell1->setColumnSpan(2);
+		$loginContainer->getPasswordRecoveryLinkSeparator()->setText('<br />');
+		$loginContainer->getCreateUserLinkSeparator()->setText('<br />');
+		$cell1->getControls()->add($loginContainer->getCreateUserIcon());
+		$cell1->getControls()->add($loginContainer->getCreateUserLink());
+		$cell1->getControls()->add($loginContainer->getCreateUserLinkSeparator());
+		$cell1->getControls()->add($loginContainer->getPasswordRecoveryIcon());
+		$cell1->getControls()->add($loginContainer->getPasswordRecoveryLink());
+		$cell1->getControls()->add($loginContainer->getPasswordRecoveryLinkSeparator());
+		$cell1->getControls()->add($loginContainer->getHelpPageIcon());
+		$cell1->getControls()->add($loginContainer->getHelpPageLink());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$table2 = TLoginUtil::createChildTable($this->_owner->getConvertingToTemplate());
+		$row1 = new TTableRow();
+		$cell1 = new TTableCell();
+		$cell1->getControls()->add($table1);
+		$row1->getCells()->add($cell1);
+		$table2->getRows()->add($row1);
+		$loginContainer->setLayoutTable($table1);
+		$loginContainer->setBorderTable($table2);
+		$loginContainer->getControls()->add($table2);
 	}
 	private function layoutVerticalTextOnTop(TLoginContainer $loginContainer)
 	{
-		echo TVarDumper::dump(__METHOD__,10,true);
+		$table1 = new TTable();
+		$table1->setCellPadding(0);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$cell1->setColumnSpan(2);
+		$cell1->setHorizontalAlign(THorizontalAlign::Center);
+		$cell1->getControls()->add($loginContainer->getTitle());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$cell1->setHorizontalAlign(THorizontalAlign::Center);
+		$cell1->getControls()->add($loginContainer->getInstruction());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		if ($this->_owner->getConvertingToTemplate())
+		{
+			//			$loginContainer->getUserNameLabel()->RenderAsLabel = true;
+		}
+		$cell1->getControls()->add($loginContainer->getUserNameLabel());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$cell1->getControls()->add($loginContainer->getUserNameTextBox());
+		$cell1->getControls()->add($loginContainer->getUserNameRequired());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		if ($this->_owner->getConvertingToTemplate())
+		{
+			//			$loginContainer->getPasswordLabel()->RenderAsLabel = true;
+		}
+		$cell1->getControls()->add($loginContainer->getPasswordLabel());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$cell1->getControls()->add($loginContainer->getPasswordTextBox());
+		$cell1->getControls()->add($loginContainer->getPasswordRequired());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$cell1->getControls()->add($loginContainer->getRememberMeCheckBox());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$cell1->setHorizontalAlign(THorizontalAlign::Center);
+		$cell1->getControls()->add($loginContainer->getFailureTextLabel());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$cell1->setHorizontalAlign(THorizontalAlign::Right);
+		$cell1->getControls()->add($loginContainer->getLinkButton());
+		$cell1->getControls()->add($loginContainer->getImageButton());
+		$cell1->getControls()->add($loginContainer->getPushButton());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$row1 = new TDisappearingTableRow();
+		$cell1 = new TTableCell();
+		$loginContainer->getPasswordRecoveryLinkSeparator()->setText('<br />');
+		$loginContainer->getCreateUserLinkSeparator()->setText('<br />');
+		$cell1->getControls()->add($loginContainer->getCreateUserIcon());
+		$cell1->getControls()->add($loginContainer->getCreateUserLink());
+		$cell1->getControls()->add($loginContainer->getCreateUserLinkSeparator());
+		$cell1->getControls()->add($loginContainer->getPasswordRecoveryIcon());
+		$cell1->getControls()->add($loginContainer->getPasswordRecoveryLink());
+		$cell1->getControls()->add($loginContainer->getPasswordRecoveryLinkSeparator());
+		$cell1->getControls()->add($loginContainer->getHelpPageIcon());
+		$cell1->getControls()->add($loginContainer->getHelpPageLink());
+		$row1->getCells()->add($cell1);
+		$table1->getRows()->add($row1);
+		$table2 = TLoginUtil::createChildTable($this->_owner->getConvertingToTemplate());
+		$row1 = new TTableRow();
+		$cell1 = new TTableCell();
+		$cell1->getControls()->add($table1);
+		$row1->getCells()->add($cell1);
+		$table2->getRows()->add($row1);
+		$loginContainer->setLayoutTable($table1);
+		$loginContainer->setBorderTable($table2);
+		$loginContainer->getControls()->add($table2);
 	}
 	public function instantiateIn($parent)
 	{
-		echo TVarDumper::dump(__METHOD__,10,true);
+		//		echo TVarDumper::dump(__METHOD__,10,true);
 		$this->createControls($parent);
 		$this->layoutControls($parent);
 	}

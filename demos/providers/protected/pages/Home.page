@@ -1,4 +1,55 @@
 <h1>Provider Demo</h1>
 <com:TForm>
-	<com:TLogin ID="LoginCtrl" MembershipProvider="SqlMembershipProvider"/>
+<fieldset>
+<legend>Vertical - TextOnLeft</legend>
+	<com:TValidationSummary
+		HeaderText="Login Failed Because:"
+		Display="None"
+		ValidationGroup="LoginCtrlVerticalTextOnLeft"/>
+	<com:TLogin 
+		ID="LoginCtrlVerticalTextOnLeft" 
+		Orientation="Vertical"
+		TextLayout="TextOnLeft"
+		MembershipProvider="SqlMembershipProvider"/>
+</fieldset>
+
+<fieldset>
+<legend>Vertical - TextOnTop</legend>
+	<com:TValidationSummary
+		HeaderText="Login Failed Because:"
+		Display="None"
+		ValidationGroup="LoginCtrlVerticalTextOnTop"/>
+	<com:TLogin 
+		ID="LoginCtrlVerticalTextOnTop" 
+		Orientation="Vertical"
+		TextLayout="TextOnTop"
+		MembershipProvider="SqlMembershipProvider"/>
+</fieldset>
+
+<fieldset>
+<legend>Horizontal - TextOnLeft</legend>
+	<com:TValidationSummary
+		HeaderText="Login Failed Because:"
+		Display="None"
+		ValidationGroup="LoginCtrlHorizontalTextOnLeft"/>
+	<com:TLogin 
+		ID="LoginCtrlHorizontalTextOnLeft" 
+		Orientation="Horizontal"
+		TextLayout="TextOnLeft"
+		MembershipProvider="SqlMembershipProvider"/>
+</fieldset>
+
+<fieldset>
+<legend>Horizontal - TextOnTop</legend>
+	<com:TValidationSummary
+		HeaderText="Login Failed Because:"
+		Display="None"
+		ValidationGroup="LoginCtrlHorizontalTextOnTop"/>
+	<com:TLogin 
+		ID="LoginCtrlHorizontalTextOnTop" 
+		Orientation="Horizontal"
+		TextLayout="TextOnTop"
+		MembershipProvider="SqlMembershipProvider"/>
+</fieldset>
+
 </com:TForm>

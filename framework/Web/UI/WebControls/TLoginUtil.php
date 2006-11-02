@@ -3,7 +3,7 @@ class TLoginUtil
 {
 	const _passwordReplacementKey='<%\s*Password\s*%>';
 	const _userNameReplacementKey='<%\s*UserName\s*%>';
-	
+
 	//	public function onSendingMailDelegate($param)
 	//	{
 	//
@@ -12,9 +12,20 @@ class TLoginUtil
 	//	{
 	//
 	//	}
+	public static function createChildTable($convertingToTemplate)
+	{
+		if ($convertingToTemplate)
+		{
+			return new TTable();
+		}
+		else
+		return new TTable();
+		//		else
+		//		return new TChildTable(2);
+	}
 	public static function applyStyleToLiteral(TLiteral $literal,$text,$setTableCellVisible)
 	{
-		
+
 	}
 	public static function copyBorderStyles(TControl $control,$style)
 	{
@@ -37,7 +48,7 @@ class TLoginUtil
 	}
 	private static function createMailMessage($email,$userName,$password,$mailDefinition,$defaultSubject,$defaultBody,$owner)
 	{
-		
+
 	}
 	public static function getProvider($providerName)
 	{
@@ -54,15 +65,15 @@ class TLoginUtil
 	}
 	public static function getUser(TControl $c)
 	{
-		
+
 	}
 	public static function getUserName(TControl $c)
 	{
-		
+
 	}
 	public static function sendPasswordMail($email,$userName,$password,$mailDefinition,$defaultSubject,$defaultBody,$onSendmailDelegate,$onSendMailErrorDelegate,$owner)
 	{
-		
+
 	}
 	public static function setTableCellStyle(TControl $control,$style)
 	{
@@ -81,23 +92,23 @@ class TLoginUtil
 		}
 	}
 }
-class TDisappearingTableRow extends TTableRow 
+class TDisappearingTableRow extends TTableRow
 {
 	public function render($writer)
 	{
-		//		bool flag1 = false;
-		//		foreach (TableCell cell1 in this.Cells)
-		//		{
-		//			if (cell1.Visible)
-		//			{
-		//				flag1=true;
-		//				break;
-		//			}
-		//		}
-		//		if (flag1)
-		//		{
-		//			base.Render(writer);
-		//		}
+		$flag1 = false;
+		foreach ($this->getCells() as $cell1)
+		{
+			if ($cell1->getVisible())
+			{
+				$flag1 = true;
+				break;
+			}
+		}
+		if ($flag1)
+		{
+			parent::render($writer);
+		}
 	}
 }
 class TGenericContainer extends TWebControl
@@ -136,38 +147,37 @@ class TGenericContainer extends TWebControl
 	{
 		return $this->_usingDefaultTemplate;
 	}
-
 	public function __construct($owner)
 	{
 		$this->_owner=$owner;
 	}
-	public function findControl($id,$required,$errorResourceKey)
-	{
-		
-	}
-	protected function findOptionalControl($id)
-	{
-		
-	}
-	protected function findRequiredControl($id,$errorResourceKey)
-	{
-		
-	}
-	public function focus()
-	{
-		
-	}
-	public function render($writer)
-	{
-		
-	}
-	private function renderContentsInUnitTable($writer)
-	{
-		
-	}
-	protected function verifyControlNotPresent($id,$errorResourceKey)
-	{
-		
-	}
+	//	public function findControl($id,$required,$errorResourceKey)
+	//	{
+	//
+	//	}
+	//	protected function findOptionalControl($id)
+	//	{
+	//
+	//	}
+	//	protected function findRequiredControl($id,$errorResourceKey)
+	//	{
+	//
+	//	}
+	//	public function focus()
+	//	{
+	//
+	//	}
+	//	public function render($writer)
+	//	{
+	//
+	//	}
+	//	private function renderContentsInUnitTable($writer)
+	//	{
+	//
+	//	}
+	//	protected function verifyControlNotPresent($id,$errorResourceKey)
+	//	{
+	//
+	//	}
 }
 ?>
