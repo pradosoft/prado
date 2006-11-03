@@ -1,5 +1,6 @@
 Version 3.0.6 December 4, 2006
 ==============================
+BUG: TTableCell should render &nbsp; only when Text is not set and there's no child (Qiang)
 CHG: constructUrl() now encodes & into &amp; by default (Qiang)
 CHG: TRepeater does not render <span> anymore for empty item template (Qiang)
 

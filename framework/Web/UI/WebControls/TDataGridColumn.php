@@ -346,9 +346,8 @@ abstract class TDataGridColumn extends TApplicationComponent
 				}
 				break;
 			case TDataGrid::IT_FOOTER:
-				if(($text=$this->getFooterText())==='')
-					$text='&nbsp;';
-				$cell->setText($text);
+				if(($text=$this->getFooterText())!=='')
+					$cell->setText($text);
 				break;
 		}
 	}
