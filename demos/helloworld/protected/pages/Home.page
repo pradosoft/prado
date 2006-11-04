@@ -8,7 +8,7 @@
 
 <com:TForm>
 
-<com:TButton ID="Button1" Text="Click me" OnClick="buttonClicked" />
+<com:TButton Text="Click me" OnClick="buttonClicked" />
 
 </com:TForm>
 
