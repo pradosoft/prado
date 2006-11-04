@@ -7,7 +7,7 @@
  * available functionalities that enable PRADO component model and error handling mechanism.
  *
  * By including this file, the PHP error and exception handlers are set as
- * PRADO handlers, and an __autoload function is provided that automatiically
+ * PRADO handlers, and an __autoload function is provided that automatically
  * loads a class file if the class is not defined.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -34,15 +34,12 @@ if(!class_exists('Prado',false))
 }
 
 /**
- * Defines __autoload function if not defined.
+ * Registers the autoload function.
+ * Since Prado::autoload will report a fatal error if the class file
+ * cannot be found, if you have multiple autoloaders, Prado::autoload
+ * should be registered in the last.
  */
-if(!function_exists('__autoload'))
-{
-	function __autoload($className)
-	{
-		Prado::autoload($className);
-	}
-}
+spl_autoload_register(array('Prado','autoload'));
 
 /**
  * Initializes error and exception handlers
