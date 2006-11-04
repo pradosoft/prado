@@ -375,7 +375,7 @@ class TPageService extends TService
 	}
 
 	/**
-	 * @return string root directory (in namespace form) storing pages. Defaults to 'pages' directory under application base path.
+	 * @return string the root directory for storing pages. Defaults to the 'pages' directory under the application base path.
 	 */
 	public function getBasePath()
 	{

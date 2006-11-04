@@ -185,10 +185,12 @@ class TTableCell extends TWebControl
 	 */
 	public function renderContents($writer)
 	{
-		if(($text=$this->getText())==='')
+		if(($text=$this->getText())!=='')
+			$writer->write($text);
+		else if($this->getHasControls())
 			parent::renderContents($writer);
 		else
-			$writer->write($text);
+			$writer->write('&nbsp;');
 	}
 }
 

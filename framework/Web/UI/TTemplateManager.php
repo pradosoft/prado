@@ -746,7 +746,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 		}
 		catch(Exception $e)
 		{
-			if($e->getErrorCode()==='template_format_invalid' || $e->getErrorCode()==='template_format_invalid2')
+			if(($e instanceof TException) && ($e->getErrorCode()==='template_format_invalid' || $e->getErrorCode()==='template_format_invalid2'))
 				throw $e;
 			if($matchEnd===0)
 				$line=$this->_startingLine+1;
