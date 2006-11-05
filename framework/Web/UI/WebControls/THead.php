@@ -342,6 +342,36 @@ class TMetaTagCollection extends TList
 		else
 			throw new TInvalidDataTypeException('metatagcollection_metatag_invalid');
 	}
+
+	/**
+	 * Finds the lowest cardinal index of the meta tag whose id is the one being looked for.
+	 * @param string the ID of the meta tag to be looked for
+	 * @return integer the index of the meta tag found, -1 if not found.
+	 */
+	public function findIndexByID($id)
+	{
+		$index=0;
+		foreach($this as $item)
+		{
+			if($item->getID()===$id)
+				return $index;
+			$index++;
+		}
+		return -1;
+	}
+
+	/**
+	 * Finds the item whose value is the one being looked for.
+	 * @param string the id of the meta tag to be looked for
+	 * @return TMetaTag the meta tag found, null if not found.
+	 */
+	public function findMetaTagByID($id)
+	{
+		if(($index=$this->findIndexByID($id))>=0)
+			return $this->itemAt($index);
+		else
+			return null;
+	}
 }
 
 ?>
