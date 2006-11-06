@@ -31,7 +31,7 @@ class SearchPortlet extends Portlet
 	public function search($sender,$param)
 	{
 		$keyword=$this->Keyword->Text;
-		$url=$this->Service->constructUrl('SearchPost',array('keyword'=>$keyword));
+		$url=$this->Service->constructUrl('SearchPost',array('keyword'=>$keyword),false);
 		$this->Response->redirect($url);
 	}
 }
