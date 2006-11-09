@@ -229,7 +229,7 @@ function getPreferredLanguage()
 	{
 		$langs=getUserLanguages();
 		$lang=explode('-',$langs[0]);
-		if(empty($lang[0]) || !ctype_alpha($lang[0]))
+		if(empty($lang[0]) || !function_exists('ctype_alpha') || !ctype_alpha($lang[0]))
 			$language='en';
 		else
 			$language=$lang[0];
