@@ -1,3 +1,57 @@
-<com:TContent ID="main">
-main content
+<com:TContent ID="sidebar">
+
+<div class="login">
+  <h4>Login to Site</h4>
+  <com:TLabel ID="UserNameLabel" ForControl="UserName" Text="User Name" CssClass="label"/>
+  <com:TTextBox ID="UserName" AccessKey="u" CssClass="textbox"/>
+  <com:TRequiredFieldValidator ControlToValidate="UserName" ErrorMessage="User Name is required."/>
+
+  <com:TLabel ID="PasswordLabel" ForControl="Password" Text="Password" CssClass="label"/>
+  <com:TTextBox ID="Password" AccessKey="p" CssClass="textbox" TextMode="Password"/>
+  <com:TRequiredFieldValidator ControlToValidate="Password" ErrorMessage="Password is required."/>  
+  
+  <div>
+  <com:TCheckBox ID="RememberMe" Text="Remember me next time"/>
+  </div>
+
+  <com:TImageButton ID="LoginButton" ImageUrl="<%=$this->Page->Theme->BaseUrl.'/images/button-login.gif'%>" CssClass="button"/>
+  or
+  <a href="<%=$this->Service->constructUrl('Register')%>" class="button"><img src="<%=$this->Page->Theme->BaseUrl.'/images/button-create.gif'%>" alt="Create a new account"/></a>
+  <p></p>
+</div>
+<!--    <h4><span id="ctl00_Main_LoginArea_LoginName1">Welcome	Friend!</span></h4>-->
+<hr />
+<table cellspacing="0" cellpadding="0" border="0" id="ctl00_Main_FormView1" style="border-width:0px;border-collapse:collapse;"></table>
+<h4>My Latest Piece of Work</h4>
+<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut	laoreet	dolore magna aliquam erat volutpat.</p>
+</com:TContent>
+
+<com:TContent ID="content">
+
+<h3>Welcome	to My Site</h3>
+<p>This	is my personal site. In	it you will find lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam	nonummy	nibh euismod tincidunt ut laoreet dolore magna aliquam erat	volutpat. Ut wisi enim ad minim	veniam.	</p>
+<hr/>
+<div id="whatsnew">
+	<h4>What's New</h4>
+	<p>Lorem <a href="#">ipsum</a> dolor sit amet, consectetuer	adipiscing elit, sed diam nonummy nibh euismod.</p>
+	<p>Lorem <a href="#">ipsum</a> dolor sit amet, consectetuer	adipiscing elit, sed diam nonummy nibh euismod.</p>
+</div>
+<div id="coollinks">
+	<h4>Cool Links</h4>
+	<ul	class="link">
+		<li><a href="#">Lorem ipsum dolositionr</a></li>
+		<li><a href="#">Lorem ipsum dolositionr</a></li>
+		<li><a href="#">Lorem ipsum dolositionr</a></li>
+		<li><a href="#">Lorem ipsum dolositionr</a></li>
+		<li><a href="#">Lorem ipsum dolositionr</a></li>
+	</ul>
+</div>
+<hr/>
+<h4>What's Up Lately </h4>
+<p>Lorem ipsum dolor sit amet, <a href="#">consectetuer</a>adipiscing elit, sed diam nonummy nibh euismod tincidunt utlaoreetdolore magna aliquam erat volutpat.Ut wisienim adminim veniam, quis nostrud exercitationconsequat. Duisautem veleum iriuredolor in hendrerit in vulputatevelit esse molestieconsequat, vel willum.</p>
+<p>Lorem ipsum dolor sit amet, consectetueradipiscing elit, sed diam nonummy nibh <a href="#">euismod tincidunt ut</a>laoreetdolore magna aliquam erat volutpat.Ut wisienim adminim veniam, quis nostrud exercitationconsequat. Duisautem veleum iriuredolor in hendrerit in vulputatevelit esse molestieconsequat, vel willum.</p>
+<p>Lorem<a href="#"> ipsum dolor sit amet</a>, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt utlaoreetdolore magna aliquam erat volutpat.Ut wisienim adminim veniam, quis nostrud exercitationconsequat. Duisautem veleum iriuredolor in hendrerit in vulputatevelit esse molestieconsequat, vel willum.</p>
+<p>Lorem ipsum dolor sit amet, consectetueradipiscing elit, sed diam nonummy nibh euismod tincidunt utlaoreetdolore magna aliquam erat volutpat.Ut wisi	enim adminim veniam, quis nostrud exercitationconsequat. <a href="#">Duisautem veleum</a> iriuredolor in hendrerit in vulputatevelit esse molestieconsequat, vel willum.</p>
+<p>Lorem ipsum dolor sit amet, consectetueradipiscing elit, sed diam nonummy nibh euismod tincidunt utlaoreetdolore magna aliquam erat volutpat.Ut wisi	enim adminim veniam, quis nostrud exercitationconsequat. <a href="#">Duisautem veleum</a> iriuredolor in hendrerit in vulputatevelit esse molestieconsequat, vel willum.</p>				
+
 </com:TContent>

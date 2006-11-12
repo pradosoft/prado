@@ -1,0 +1,50 @@
+<com:TContent ID="sidebar">
+
+</com:TContent>
+
+<com:TContent ID="content">
+
+<h3>Request an Account</h3>
+            <p>Accounts will be activated pending the approval of the Administrator.</p>
+            <table cellspacing="0" cellpadding="0" border="0" id="ctl00_Main_CreateUserWizard1" style="border-collapse:collapse;">
+	<tr style="height:100%;">
+
+		<td><table cellspacing="0" cellpadding="0" border="0" style="height:100%;width:100%;border-collapse:collapse;">
+			<tr>
+				<td style="height:100%;width:100%;"><table border="0" style="height:100%;width:100%;">
+					<tr>
+						<td align="center" colspan="2">Sign Up for Your New Account</td>
+					</tr><tr>
+						<td align="right"><label for="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_UserName">User Name:</label></td><td><input name="ctl00$Main$CreateUserWizard1$CreateUserStepContainer$UserName" type="text" id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_UserName" /><span id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_UserNameRequired" title="User Name is required." style="color:Red;visibility:hidden;">*</span></td>
+
+					</tr><tr>
+						<td align="right"><label for="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_Password">Password:</label></td><td><input name="ctl00$Main$CreateUserWizard1$CreateUserStepContainer$Password" type="password" id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_Password" /><span id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_PasswordRequired" title="Password is required." style="color:Red;visibility:hidden;">*</span></td>
+					</tr><tr>
+						<td align="right"><label for="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_ConfirmPassword">Confirm Password:</label></td><td><input name="ctl00$Main$CreateUserWizard1$CreateUserStepContainer$ConfirmPassword" type="password" id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_ConfirmPassword" /><span id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_ConfirmPasswordRequired" title="Confirm Password is required." style="color:Red;visibility:hidden;">*</span></td>
+					</tr><tr>
+						<td align="right"><label for="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_Email">E-mail:</label></td><td><input name="ctl00$Main$CreateUserWizard1$CreateUserStepContainer$Email" type="text" id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_Email" /><span id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_EmailRequired" title="E-mail is required." style="color:Red;visibility:hidden;">*</span></td>
+
+					</tr><tr>
+						<td align="right"><label for="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_Question">Security Question:</label></td><td><input name="ctl00$Main$CreateUserWizard1$CreateUserStepContainer$Question" type="text" id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_Question" /><span id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_QuestionRequired" title="Security question is required." style="color:Red;visibility:hidden;">*</span></td>
+					</tr><tr>
+						<td align="right"><label for="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_Answer">Security Answer:</label></td><td><input name="ctl00$Main$CreateUserWizard1$CreateUserStepContainer$Answer" type="text" id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_Answer" /><span id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_AnswerRequired" title="Security answer is required." style="color:Red;visibility:hidden;">*</span></td>
+					</tr><tr>
+						<td align="center" colspan="2"><span id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_PasswordCompare" style="color:Red;display:none;">The Password and Confirmation Password must match.</span></td>
+
+					</tr><tr>
+						<td align="center" colspan="2"><span id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_EmailRegExp" style="color:Red;display:none;">The email format is invalid.</span></td>
+					</tr>
+				</table></td>
+			</tr>
+		</table></td>
+	</tr><tr>
+		<td align="right"><table cellspacing="5" cellpadding="5" border="0" style="height:100%;width:100%;">
+
+			<tr align="right">
+				<td align="right"><input type="submit" name="ctl00$Main$CreateUserWizard1$__CustomNav0$StepNextButtonButton" value="Create User" onclick="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$Main$CreateUserWizard1$__CustomNav0$StepNextButtonButton&quot;, &quot;&quot;, true, &quot;CreateUserWizard1&quot;, &quot;&quot;, false, false))" id="ctl00_Main_CreateUserWizard1___CustomNav0_StepNextButtonButton" /></td>
+			</tr>
+		</table></td>
+	</tr>
+</table>
+
+</com:TContent>

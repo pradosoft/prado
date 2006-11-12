@@ -4,5 +4,5 @@
   <authorization>
     <deny pages="Settings" users="?" />
   </authorization>
-  <pages MasterClass="Application.Pages.Layout" />
+  <pages MasterClass="Application.Pages.Layout" Theme="White" />
 </configuration>

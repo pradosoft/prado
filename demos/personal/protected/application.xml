@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<application id="personal" mode="Debug">
+<application id="personal" mode="Normal">
   <!-- modules configured and loaded for all services -->
   <modules>
     <!-- Remove this comment mark to enable caching
@@ -12,10 +12,10 @@
     <!--
     <module id="session" class="THttpSession" />
     -->
-    <module id="log" class="System.Util.TLogRouter">
+    <!--<module id="log" class="System.Util.TLogRouter">
       <route class="TBrowserLogRoute" Categories="System" />
       <route class="TFileLogRoute" Categories="System" Levels="Notice,Warning,Error,Alert,Fatal" />
-    </module>
+    </module>-->
   </modules>
   <services>
     <!-- page service -->

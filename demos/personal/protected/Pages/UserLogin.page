@@ -1,4 +1,4 @@
-<com:TContent ID="main" >
+<com:TContent ID="content" >
 Username:
 <com:TTextBox ID="Username" />
 <com:TRequiredFieldValidator
