@@ -124,7 +124,7 @@ class THtmlArea extends TTextBox
 	 */
 	public function __construct()
 	{
-		$this->setWidth('450px');
+		$this->setWidth('470px');
 		$this->setHeight('250px');
 	}
 
@@ -212,6 +212,22 @@ class THtmlArea extends TTextBox
 	}
 
 	/**
+	 * @param string path to custom plugins to be copied.
+	 */
+	public function setCustomPluginPath($value)
+	{
+		$this->setViewState('CustomPluginPath', $value);
+	}
+
+	/**
+	 * @return string path to custom plugins to be copied.
+	 */
+	public function getCustomPluginPath()
+	{
+		return $this->getViewState('CustomPluginPath');
+	}
+
+	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This method overrides the parent implementation by registering
 	 * additional javacript code.
@@ -258,7 +274,21 @@ class THtmlArea extends TTextBox
 		$md5sum = Prado::getPathOfNamespace('System.3rdParty.TinyMCE.tiny_mce', '.md5');
 		if($tarfile===null || $md5sum===null)
 			throw new TConfigurationException('htmlarea_tarfile_invalid');
-		return $this->getApplication()->getAssetManager()->publishTarFile($tarfile, $md5sum);
+		$url = $this->getApplication()->getAssetManager()->publishTarFile($tarfile, $md5sum);
+		$this->copyCustomPlugins($url);
+		return $url;
+	}
+
+	protected function copyCustomPlugins($url)
+	{
+		if($plugins = $this->getCustomPluginPath())
+		{
+			$assets = $this->getApplication()->getAssetManager();
+			$path = is_dir($plugins) ? $plugins : Prado::getPathOfNameSpace($plugins);
+			$dest = $assets->getBasePath().'/'.basename($url).'/tiny_mce/plugins/';
+			if(!is_dir($dest) || $this->getApplication()->getMode()!==TApplicationMode::Performance)
+				$assets->copyDirectory($path, $dest);
+		}
 	}
 
 	/**
@@ -295,10 +325,11 @@ class THtmlArea extends TTextBox
 	protected function parseEditorOptions($string)
 	{
 		$options = array();
-		$substrings = preg_split('/\n|,\n/', trim($string));
+		$substrings = preg_split('/,\s*\n|\n/', trim($string));
 		foreach($substrings as $bits)
 		{
-			$option = explode(":",$bits);
+			$option = explode(":",$bits,2);
+
 			if(count($option) == 2)
 				$options[trim($option[0])] = trim(preg_replace('/\'|"/','',  $option[1]));
 		}

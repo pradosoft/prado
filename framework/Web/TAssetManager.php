@@ -219,7 +219,7 @@ class TAssetManager extends TModule
 	 * @param string the destination directory
 	 * @todo a generic solution to ignore certain directories and files
 	 */
-	protected function copyDirectory($src,$dst)
+	public function copyDirectory($src,$dst)
 	{
 		if(!is_dir($dst))
 		{
