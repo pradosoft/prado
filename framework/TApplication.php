@@ -1317,10 +1317,7 @@ class TApplicationStatePersister extends TModule implements IStatePersister
 		if($saveFile)
 		{
 			$fileName=$this->getStateFilePath();
-			if(version_compare(phpversion(),'5.1.0','>='))
-				file_put_contents($fileName,$content,LOCK_EX);
-			else
-				file_put_contents($fileName,$content);
+			file_put_contents($fileName,$content,LOCK_EX);
 		}
 	}
 
