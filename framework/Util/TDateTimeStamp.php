@@ -194,6 +194,8 @@ class TDateTimeStamp
 		return $this->_getDateInternal($d);
 	}
 
+
+
 	/**
 	 * Low-level function that returns the getdate() array. We have a special
 	 * $fast flag, which if set to true, will return fewer array values,
