@@ -1398,6 +1398,10 @@ framework/Collections/TStack.php -text
 framework/Configuration/Provider/TProviderBase.php -text
 framework/Configuration/Provider/TProviderException.php -text
 framework/Configuration/TProtectedConfiguration.php -text
+framework/Data/TDbCommand.php -text
+framework/Data/TDbConnection.php -text
+framework/Data/TDbDataReader.php -text
+framework/Data/TDbTransaction.php -text
 framework/DataAccess/SQLMap/Configuration/TConfigDeserialize.php -text
 framework/DataAccess/SQLMap/Configuration/TDiscriminator.php -text
 framework/DataAccess/SQLMap/Configuration/TDomSqlMapBuilder.php -text
@@ -2309,6 +2313,10 @@ tests/test_tools/simpletest/simpletest.php -text
 tests/test_tools/simpletest/test_case.php -text
 tests/unit/Collections/TListTest.php -text
 tests/unit/Collections/TMapTest.php -text
+tests/unit/Data/TDbCommandTest.php -text
+tests/unit/Data/TDbConnectionTest.php -text
+tests/unit/Data/TDbDataReaderTest.php -text
+tests/unit/Data/TDbTransactionTest.php -text
 tests/unit/I18N/core/CultureInfoTest.php -text
 tests/unit/I18N/core/DateFormatTest.php -text
 tests/unit/I18N/core/DateTimeFormatInfoTest.php -text
