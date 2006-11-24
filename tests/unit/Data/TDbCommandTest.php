@@ -19,7 +19,8 @@ class TDbCommandTest extends PHPUnit2_Framework_TestCase
 		$this->_connection=new TDbConnection('sqlite:'.TEST_DB_FILE);
 		$this->_connection->Active=true;
 		$this->_connection->createCommand('CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(8))')->execute();
-		$this->_connection->createCommand('INSERT TABLE foo (name) VALUES (\'my name\')')->execute;
+		$this->_connection->createCommand('INSERT INTO foo (name) VALUES (\'my name\')')->execute();
+		$this->_connection->createCommand('INSERT INTO foo (name) VALUES (\'my name 2\')')->execute();
 	}
 
 	public function tearDown()
@@ -36,16 +37,54 @@ class TDbCommandTest extends PHPUnit2_Framework_TestCase
 
 	public function testSetText()
 	{
-		$sql='SELECT * FROM foo';
-		$newSql='SELECT id FROM foo';
+		$sql='SELECT name FROM foo';
 		$command=$this->_connection->createCommand($sql);
-		$command->query()->read();
+		$row=$command->query()->read();
+		$this->assertEquals($row['name'],'my name');
+
+		$newSql='SELECT id FROM foo';
 		$command->Text=$newSql;
 		$this->assertEquals($command->Text,$newSql);
 		$row=$command->query()->read();
-		$this->assertEquals($row['id'],1);
+
+		$this->assertEquals($row['id'],'1');
 	}
 
+	public function testConnection()
+	{
+		$sql='SELECT name FROM foo';
+		$command=$this->_connection->createCommand($sql);
+		$this->assertTrue($command->Connection instanceof TDbConnection);
+	}
+
+	public function testPrepare()
+	{
+		$sql='SELECT name FROM foo';
+		$command=$this->_connection->createCommand($sql);
+		$this->assertTrue($command->PdoStatement===null);
+		$command->prepare();
+		$this->assertTrue($command->PdoStatement instanceof PDOStatement);
+
+		try
+		{
+			$command->Text='Bad SQL';
+			$command->prepare();
+			$this->fail('Expected exception is not raised');
+		}
+		catch(TDbException $e)
+		{
+		}
+	}
+
+	public function testCancel()
+	{
+		$sql='SELECT name FROM foo';
+		$command=$this->_connection->createCommand($sql);
+		$command->prepare();
+		$this->assertTrue($command->PdoStatement instanceof PDOStatement);
+		$command->cancel();
+		$this->assertEquals($command->PdoStatement,null);
+	}
 /*
 	public function testActive()
 	{

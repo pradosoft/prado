@@ -22,6 +22,9 @@
  * (such as select), use {@link query} or its convenient versions {@link queryRow}
  * and {@link queryScalar}.
  *
+ * If an SQL statement returns results (such as a SELECT SQL), the results
+ * can be accessed via the returned {@link TDbDataReader}.
+ *
  * TDbCommand supports SQL statment preparation and parameter binding.
  * Call {@link bindParameter} to bind a PHP variable to a parameter in SQL.
  * Call {@link bindValue} to bind a value to an SQL parameter.
@@ -79,7 +82,7 @@ class TDbCommand extends TComponent
 
 	/**
 	 * @return PDOStatement the underlying PDOStatement for this command
-	 * It could be null if the statement is not created yet.
+	 * It could be null if the statement is not prepared yet.
 	 */
 	public function getPdoStatement()
 	{
@@ -99,7 +102,7 @@ class TDbCommand extends TComponent
 		{
 			try
 			{
-				$this->_statement=$this->getConnection()->getPdoInstance()->prepare($sql);
+				$this->_statement=$this->getConnection()->getPdoInstance()->prepare($this->getText());
 			}
 			catch(Exception $e)
 			{

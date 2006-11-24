@@ -38,12 +38,23 @@ class TDbConnectionTest extends PHPUnit2_Framework_TestCase
 	    $this->_connection2->Active=true;
 	    $this->assertTrue($this->_connection2->Active);
 	    $pdo=$this->_connection2->PdoInstance;
+	    $this->assertTrue($pdo instanceof PDO);
 	    // test setting Active repeatedly doesn't re-connect DB
 	    $this->_connection2->Active=true;
 	    $this->assertTrue($pdo===$this->_connection2->PdoInstance);
 
 		$this->_connection2->Active=false;
 	    $this->assertFalse($this->_connection2->Active);
+
+	    try
+	    {
+   			$connection=new TDbConnection('unknown:'.TEST_DB_FILE);
+   			$connection->Active=true;
+   			$this->fail('Expected exception is not raised');
+		}
+		catch(TDbException $e)
+		{
+		}
 	}
 
 	public function testCreateCommand()

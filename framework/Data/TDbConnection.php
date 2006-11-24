@@ -20,7 +20,7 @@ Prado::using('System.Data.TDbCommand');
  *
  * TDbConnection works together with {@link TDbCommand}, {@link TDbDataReader}
  * and {@link TDbTransaction} to provide data access to various DBMS
- * in a common set of APIs, thanks to the {@link http://www.php.net/manual/en/ref.pdo.php PDO}
+ * in a common set of APIs. They are a thin wrapper of the {@link http://www.php.net/manual/en/ref.pdo.php PDO}
  * PHP extension.
  *
  * To establish a connection, set {@link setActive Active} to true after
@@ -53,9 +53,9 @@ Prado::using('System.Data.TDbCommand');
  *
  * To use transaction, do like the following:
  * <code>
+ * $transaction=$connection->beginTransaction();
  * try
  * {
- *    $transaction=$connection->beginTransaction();
  *    $connection->createCommand($sql1)->execute();
  *    $connection->createCommand($sql2)->execute();
  *    //.... other SQL executions
@@ -136,8 +136,8 @@ class TDbConnection extends TComponent
 		{
 			try
 			{
-				$this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 				$this->_pdo=new PDO($this->getConnectionString(),$this->getUsername(),$this->getPassword(),$this->_attributes);
+				$this->_pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 				$this->_active=true;
 			}
 			catch(PDOException $e)
@@ -454,7 +454,7 @@ class TDbConnection extends TComponent
 	 */
 	public function setAttribute($name,$value)
 	{
-		if($this->getActive())
+		if($this->_pdo instanceof PDO)
 			$this->_pdo->setAttribute($name,$value);
 		else
 			$this->_attributes[$name]=$value;
