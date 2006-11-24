@@ -1275,6 +1275,8 @@ demos/time-tracker/themes/TimeTracker/tabs.png -text
 demos/time-tracker/themes/TimeTracker/time-entry.css -text
 demos/time-tracker/themes/TimeTracker/time.gif -text
 demos/time-tracker/themes/clock.png -text
+docs/Active[!!-~]Record[!!-~]Object[!!-~]States.png -text
+docs/Active[!!-~]Record[!!-~]Object[!!-~]States.vsd -text
 docs/application.xml -text
 docs/specs/application.dtd -text
 docs/specs/application.xsd -text
