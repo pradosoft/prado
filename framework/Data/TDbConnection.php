@@ -285,8 +285,6 @@ class TDbConnection extends TComponent
 				return TDbColumnCaseMode::LowerCase;
 			case PDO::CASE_UPPER:
 				return TDbColumnCaseMode::UpperCase;
-			default:
-				throw new TDbException('dbconnection_columncase_unknown');
 		}
 	}
 
@@ -323,8 +321,6 @@ class TDbConnection extends TComponent
 				return TDbNullConversionMode::EmptyStringToNull;
 			case PDO::NULL_TO_STRING:
 				return TDbNullConversionMode::NullToEmptyString;
-			default:
-				throw new TDbException('dbconnection_nullconversion_unknown');
 		}
 	}
 

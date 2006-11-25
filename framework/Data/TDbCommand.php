@@ -257,7 +257,7 @@ class TDbCommand extends TComponent
 		}
 		catch(Exception $e)
 		{
-			throw new TDbException('dbcommand_queryscalar_failed',$e->getMessage());
+			throw new TDbException('dbcommand_query_failed',$e->getMessage());
 		}
 	}
 }
