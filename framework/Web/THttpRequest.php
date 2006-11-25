@@ -487,7 +487,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 * @return string URL
 	 * @see parseUrl
 	 */
-	public function constructUrl($serviceID,$serviceParam,$getItems=null,$encodeAmpersand=false,$encodeGetItems=true)
+	public function constructUrl($serviceID,$serviceParam,$getItems=null,$encodeAmpersand=true,$encodeGetItems=true)
 	{
 		$url=$serviceID.'='.$serviceParam;
 		$amp=$encodeAmpersand?'&amp;':'&';

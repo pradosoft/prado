@@ -6,6 +6,7 @@ ENH: Ticket#446 - Added TMetaTagCollection.getMetaTagByID method (Qiang)
 CHG: Ticket#437 - __autoload is replaced by spl_autoload_register (Qiang)
 CHG: Ticket#454 - Redundant PHP Version Check
 CHG: TRepeater does not render <span> anymore for empty item template (Qiang)
+CHG: THttpRequest.constructUrl() now encodes ampersand by default (Qiang)
 
 Version 3.0.5 October 23, 2006
 ==============================
