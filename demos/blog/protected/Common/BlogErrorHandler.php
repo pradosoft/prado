@@ -36,7 +36,7 @@ class BlogErrorHandler extends TErrorHandler
 			$message=$exception->getMessage();
 			Prado::log($message,TLogger::ERROR,'BlogApplication');
 			$message=urldecode($this->getApplication()->getSecurityManager()->hashData($message));
-			$this->Response->redirect($this->Service->constructUrl('ErrorReport',array('msg'=>$message)));
+			$this->Response->redirect($this->Service->constructUrl('ErrorReport',array('msg'=>$message),false));
 		}
 		else
 			parent::handleExternalError($statusCode,$exception);

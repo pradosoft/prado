@@ -318,7 +318,7 @@ class THttpResponse extends TModule implements ITextWriter
 			$this->getApplication()->onEndRequest();
 		if($url[0]==='/')
 			$url=$this->getRequest()->getBaseUrl().$url;
-		header('Location: '.$url);
+		header('Location: '.str_replace('&amp;','&',$url));
 		exit();
 	}
 

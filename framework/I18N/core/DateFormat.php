@@ -110,13 +110,17 @@ class DateFormat
 	 */
 	public function format($time, $pattern='F', $charset='UTF-8')
 	{
-		if(is_string($time))
+		if (is_numeric($time)) //assumes unix epoch
+			$time = floatval($time);
+		else if(is_string($time))
 			$time = @strtotime($time);
 
 		if(is_null($pattern))
 			$pattern = 'F';
 
-		$date = @getdate($time);
+		$s = Prado::createComponent('System.Util.TDateTimeStamp');
+
+		$date = $s->getDate($time);
 
 		$pattern = $this->getPattern($pattern);
 

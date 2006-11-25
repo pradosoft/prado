@@ -1,0 +1,18 @@
+<com:TContent ID="Content">
+
+<com:TPanel DefaultButton="button1">
+Panel 1
+<com:TTextBox />
+<com:TButton ID="button1" Text="Button 1" OnClick="button_clicked" />
+</com:TPanel>
+
+<com:TPanel DefaultButton="button2">
+Panel 2
+<com:TTextBox />
+<com:TButton ID="button2" Text="Button 2" OnClick="button_clicked" />
+</com:TPanel>
+
+<com:TLabel ID="label1" />
+
+</com:TContent>
+

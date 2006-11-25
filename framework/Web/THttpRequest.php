@@ -483,7 +483,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 * @param string service parameter
 	 * @param array GET parameters, null if not needed
 	 * @param boolean whether to encode the ampersand in URL, defaults to true.
-	 * @param boolean whether to encode the GET parameters (their names and values), defaults to true.
+	 * @param boolean whether to encode the GET parameters (their names and values), defaults to false.
 	 * @return string URL
 	 * @see parseUrl
 	 */

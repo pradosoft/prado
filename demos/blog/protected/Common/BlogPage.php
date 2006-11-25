@@ -32,12 +32,12 @@ class BlogPage extends TPage
 
 	public function gotoDefaultPage()
 	{
-		$this->Response->redirect($this->Service->constructUrl($this->Service->DefaultPage));
+		$this->gotoPage($this->Service->DefaultPage);
 	}
 
 	public function gotoPage($pagePath,$getParameters=null)
 	{
-		$this->Response->redirect($this->Service->constructUrl($pagePath,$getParameters));
+		$this->Response->redirect($this->Service->constructUrl($pagePath,$getParameters,false));
 	}
 
 	public function reportError($errorCode)
