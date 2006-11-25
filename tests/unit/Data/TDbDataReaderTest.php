@@ -5,109 +5,174 @@ require_once(dirname(__FILE__).'/../phpunit2.php');
 Prado::using('System.Data.*');
 
 define('TEST_DB_FILE',dirname(__FILE__).'/db/test.db');
-define('TEST_DB_FILE2',dirname(__FILE__).'/db/test2.db');
+
+class FooRecord extends TComponent
+{
+	public $id;
+	private $_name;
+	public $param;
+
+	public function __construct($param)
+	{
+		$this->param=$param;
+	}
+
+	public function getName()
+	{
+		return $this->_name;
+	}
+
+	public function setName($value)
+	{
+		$this->_name=$value;
+	}
+}
 
 /**
  * @package System.Data.PDO
  */
-class TDbConnectionTest extends PHPUnit2_Framework_TestCase
+class TDbDataReaderTest extends PHPUnit2_Framework_TestCase
 {
-	private $_connection1;
-	private $_connection2;
+	private $_connection;
 
 	public function setUp()
 	{
 		@unlink(TEST_DB_FILE);
-		@unlink(TEST_DB_FILE2);
-		$this->_connection1=new TDbConnection('sqlite:'.TEST_DB_FILE);
-		$this->_connection1->Active=true;
-		$this->_connection1->createCommand('CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(8))')->execute();
-		$this->_connection2=new TDbConnection('sqlite:'.TEST_DB_FILE2);
+		$this->_connection=new TDbConnection('sqlite:'.TEST_DB_FILE);
+		$this->_connection->Active=true;
+		$this->_connection->createCommand('CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(8))')->execute();
+		$this->_connection->createCommand('INSERT INTO foo (name) VALUES (\'my name\')')->execute();
+		$this->_connection->createCommand('INSERT INTO foo (name) VALUES (\'my name 2\')')->execute();
 	}
 
 	public function tearDown()
 	{
-		$this->_connection1=null;
-		$this->_connection2=null;
+		$this->_connection=null;
 	}
 
-	public function testActive()
+	public function testRead()
 	{
-	    $this->assertFalse($this->_connection2->Active);
-
-	    $this->_connection2->Active=true;
-	    $this->assertTrue($this->_connection2->Active);
-	    $pdo=$this->_connection2->PdoInstance;
-	    // test setting Active repeatedly doesn't re-connect DB
-	    $this->_connection2->Active=true;
-	    $this->assertTrue($pdo===$this->_connection2->PdoInstance);
-
-		$this->_connection2->Active=false;
-	    $this->assertFalse($this->_connection2->Active);
+		$reader=$this->_connection->createCommand('SELECT * FROM foo')->query();
+		$row=$reader->read();
+		$this->assertTrue($row['id']==='1' && $row['name']==='my name');
+		$row=$reader->read();
+		$this->assertTrue($row['id']==='2' && $row['name']==='my name 2');
+		$row=$reader->read();
+		$this->assertFalse($row);
 	}
 
-	public function testCreateCommand()
+	public function testReadColumn()
 	{
-		$sql='CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(8))';
+		$reader=$this->_connection->createCommand('SELECT * FROM foo')->query();
+		$this->assertEquals($reader->readColumn(0),'1');
+		$this->assertEquals($reader->readColumn(1),'my name 2');
+		$this->assertFalse($reader->readColumn(0));
+	}
+
+	public function testReadObject()
+	{
+		$reader=$this->_connection->createCommand('SELECT * FROM foo')->query();
+		$object=$reader->readObject('FooRecord',array('object'));
+		$this->assertEquals($object->id,'1');
+		$this->assertEquals($object->Name,'my name');
+		$this->assertEquals($object->param,'object');
+	}
+
+	public function testReadAll()
+	{
+		$reader=$this->_connection->createCommand('SELECT * FROM foo')->query();
+		$rows=$reader->readAll();
+		$this->assertEquals(count($rows),2);
+		$row=$rows[0];
+		$this->assertTrue($row['id']==='1' && $row['name']==='my name');
+		$row=$rows[1];
+		$this->assertTrue($row['id']==='2' && $row['name']==='my name 2');
+
+		$reader=$this->_connection->createCommand('SELECT * FROM foo WHERE id=3')->query();
+		$rows=$reader->readAll();
+		$this->assertEquals($rows,array());
+	}
+
+	public function testClose()
+	{
+		$reader=$this->_connection->createCommand('SELECT * FROM foo')->query();
+		$row=$reader->read();
+		$this->assertFalse($reader->IsClosed);
+		$reader->close();
+		$this->assertTrue($reader->IsClosed);
 		try
 		{
-			$this->_connection2->createCommand($sql);
+			$reader->read();
+			$this->fail('Expected exception is not raised');
+		}
+		catch(Exception $e)
+		{
+		}
+	}
+
+	public function testRowCount()
+	{
+		// unable to test because SQLite doesn't support row count
+	}
+
+	public function testColumnCount()
+	{
+		$reader=$this->_connection->createCommand('SELECT * FROM foo')->query();
+		$this->assertEquals($reader->ColumnCount,2);
+
+		$reader=$this->_connection->createCommand('SELECT * FROM foo WHERE id=11')->query();
+		$this->assertEquals($reader->ColumnCount,2);
+	}
+
+	public function testForeach()
+	{
+		$ids=array();
+		$reader=$this->_connection->createCommand('SELECT * FROM foo')->query();
+		foreach($reader as $row)
+			$ids[]=$row['id'];
+		$this->assertEquals(count($ids),2);
+		$this->assertTrue($ids[0]==='1' && $ids[1]==='2');
+
+		try
+		{
+			foreach($reader as $row)
+				$ids[]=$row['id'];
 			$this->fail('Expected exception is not raised');
 		}
 		catch(TDbException $e)
 		{
 		}
-
-		$command=$this->_connection1->createCommand($sql);
-		$this->assertTrue($command instanceof TDbCommand);
 	}
 
-	public function testBeginTransaction()
+	public function testFetchMode()
 	{
-		$sql='INSERT INTO foo(id,name) VALUES (1,\'my name\')';
-		$transaction=$this->_connection1->beginTransaction();
-		try
-		{
-			$this->_connection1->createCommand($sql)->execute();
-			$this->_connection1->createCommand($sql)->execute();
-			$this->fail('Expected exception not raised');
-			$transaction->commit();
-		}
-		catch(Exception $e)
-		{
-			$transaction->rollBack();
-			$reader=$this->_connection1->createCommand('SELECT * FROM foo')->query();
-			$this->assertFalse($reader->read());
-		}
+		$reader=$this->_connection->createCommand('SELECT * FROM foo')->query();
+
+		$reader->FetchMode=PDO::FETCH_NUM;
+		$row=$reader->read();
+		$this->assertFalse(isset($row['id']));
+		$this->assertTrue(isset($row[0]));
+
+		$reader->FetchMode=PDO::FETCH_ASSOC;
+		$row=$reader->read();
+		$this->assertTrue(isset($row['id']));
+		$this->assertFalse(isset($row[0]));
 	}
 
-	public function testLastInsertID()
+	public function testBindColumn()
 	{
-		$sql='INSERT INTO foo(name) VALUES (\'my name\')';
-		$this->_connection1->createCommand($sql)->execute();
-		$value=$this->_connection1->LastInsertID;
-		$this->assertEquals($this->_connection1->LastInsertID,'1');
-	}
-
-	public function testQuoteString()
-	{
-		$str="this is 'my' name";
-		$expectedStr="'this is ''my'' name'";
-		$this->assertEquals($expectedStr,$this->_connection1->quoteString($str));
-	}
-
-	public function testColumnNameCase()
-	{
-		$this->assertEquals(TDbColumnCaseMode::Preserved,$this->_connection1->ColumnCase);
-		$this->_connection1->ColumnCase=TDbColumnCaseMode::LowerCase;
-		$this->assertEquals(TDbColumnCaseMode::LowerCase,$this->_connection1->ColumnCase);
-	}
-
-	public function testNullConversion()
-	{
-		$this->assertEquals(TDbNullConversionMode::Preserved,$this->_connection1->NullConversion);
-		$this->_connection1->NullConversion=TDbNullConversionMode::NullToEmptyString;
-		$this->assertEquals(TDbNullConversionMode::NullToEmptyString,$this->_connection1->NullConversion);
+		$reader=$this->_connection->createCommand('SELECT * FROM foo')->query();
+		$reader->bindColumn(1,$id);
+		$reader->bindColumn(2,$name);
+		$reader->read();
+		$this->assertEquals($id,'1');
+		$this->assertEquals($name,'my name');
+		$reader->read();
+		$this->assertEquals($id,'2');
+		$this->assertEquals($name,'my name 2');
+		$reader->read();
+		$this->assertEquals($id,'2');
+		$this->assertEquals($name,'my name 2');
 	}
 }
 

@@ -80,8 +80,8 @@ class TDbDataReader extends TComponent implements Iterator
 	}
 
 	/**
-	 * Advances the reader to the next record in a result set.
-	 * @return array|false the current record, false if no more row available
+	 * Advances the reader to the next row in a result set.
+	 * @return array|false the current row, false if no more row available
 	 */
 	public function read()
 	{
@@ -89,8 +89,30 @@ class TDbDataReader extends TComponent implements Iterator
 	}
 
 	/**
+	 * Returns a single column from the next row of a result set.
+	 * @param int zero-based column index
+	 * @return mixed|false the column of the current row, false if no more row available
+	 */
+	public function readColumn($columnIndex)
+	{
+		return $this->_statement->fetchColumn($columnIndex);
+	}
+
+	/**
+	 * Returns a single column from the next row of a result set.
+	 * @param string class name of the object to be created and populated
+	 * @param array list of column names whose values are to be passed as parameters in the constructor of the class being created
+	 * @return mixed|false the populated object, false if no more row of data available
+	 */
+	public function readObject($className,$fields)
+	{
+		return $this->_statement->fetchObject($className,$fields);
+	}
+
+	/**
 	 * Reads the whole result set into an array.
-	 * @return array|false the result set (each array element represents a row of data), false if no data is available.
+	 * @return array the result set (each array element represents a row of data).
+	 * An empty array will be returned if the result contains no row.
 	 */
 	public function readAll()
 	{
@@ -126,16 +148,9 @@ class TDbDataReader extends TComponent implements Iterator
 	}
 
 	/**
-	 * @return boolean whether the result contains any row of data
-	 */
-	public function getHasRows()
-	{
-		return $this->getRowCount()>0;
-	}
-
-	/**
 	 * @return int number of rows contained in the result.
-	 * Note, some DBMS may not give a meaningful count.
+	 * Note, most DBMS may not give a meaningful count.
+	 * In this case, use "SELECT COUNT(*) FROM tableName" to obtain the number of rows.
 	 */
 	public function getRowCount()
 	{
@@ -143,7 +158,8 @@ class TDbDataReader extends TComponent implements Iterator
 	}
 
 	/**
-	 * @return int the number of columns in the result set, 0 if the result is empty
+	 * @return int the number of columns in the result set.
+	 * Note, even there's no row in the reader, this still gives correct column number.
 	 */
 	public function getColumnCount()
 	{

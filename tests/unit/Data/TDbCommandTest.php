@@ -112,7 +112,8 @@ class TDbCommandTest extends PHPUnit2_Framework_TestCase
 		// test unprepared SQL execution
 		$sql='INSERT INTO foo (name) VALUES (\'new name\')';
 		$command=$this->_connection->createCommand($sql);
-		$command->execute();
+		$n=$command->execute();
+		$this->assertEquals($n,1);
 		$command->execute();
 		$count=$this->_connection->createCommand('SELECT COUNT(id) AS id_count FROM foo')->queryScalar();
 		$this->assertEquals('4',$count);
