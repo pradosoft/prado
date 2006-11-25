@@ -52,6 +52,13 @@
 </div>
 
 <div class="topic">
+<div>Working with Database</div>
+<ul>
+    <li><a href="?page=Database.DAO">Data Access Objects</a></li>
+</ul>
+</div>
+
+<div class="topic">
 <div>Module Reference</div>
 <ul>
 </ul>

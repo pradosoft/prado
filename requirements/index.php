@@ -79,6 +79,11 @@ $requirements = array(
         extension_loaded("pcre"),
         'PCRE extension check',
         'PCRE extension required'),
+    array(
+        true,
+        class_exists("PDO",false),
+        'PDO extension check',
+        'PDO extension optional'),
 	array(
 		false,
 		function_exists("iconv"),
