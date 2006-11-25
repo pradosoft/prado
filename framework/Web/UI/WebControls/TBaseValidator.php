@@ -200,9 +200,9 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * The client-side validator supports the following events.
 	 * # <tt>OnValidate</tt> -- raised before client-side validation is
 	 * executed.
-	 * # <tt>OnSuccess</tt> -- raised after client-side validation is completed
+	 * # <tt>OnValidationSuccess</tt> -- raised after client-side validation is completed
 	 * and is successfull, overrides default validator error messages updates.
-	 * # <tt>OnError</tt> -- raised after client-side validation is completed
+	 * # <tt>OnValidationError</tt> -- raised after client-side validation is completed
 	 * and failed, overrides default validator error message updates.
 	 *
 	 * You can attach custom javascript code to each of these events
@@ -577,10 +577,10 @@ abstract class TBaseValidator extends TLabel implements IValidator
  * The <tt>OnValidate</tt> event is raise before the validator validation
  * functions are called.
  *
- * The <tt>OnSuccess</tt> event is raised after the validator has successfully
+ * The <tt>OnValidationSuccess</tt> event is raised after the validator has successfully
  * validate the control.
  *
- * The <tt>OnError</tt> event is raised after the validator fails validation.
+ * The <tt>OnValidationError</tt> event is raised after the validator fails validation.
  *
  * See the quickstart documentation for further details.
  *
