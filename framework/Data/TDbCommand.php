@@ -222,7 +222,7 @@ class TDbCommand extends TComponent
 			if($this->_statement instanceof PDOStatement)
 				$this->_statement->execute();
 			else
-				$this->_statement=$this->getConnection()->getPdoInstance()->query($sql);
+				$this->_statement=$this->getConnection()->getPdoInstance()->query($this->getText());
 			$result=$this->_statement->fetch($fetchAssociative ? PDO::FETCH_ASSOC : PDO::FETCH_NUM);
 			$this->_statement->closeCursor();
 			return $result;
@@ -247,7 +247,7 @@ class TDbCommand extends TComponent
 			if($this->_statement instanceof PDOStatement)
 				$this->_statement->execute();
 			else
-				$this->_statement=$this->getConnection()->getPdoInstance()->query($sql);
+				$this->_statement=$this->getConnection()->getPdoInstance()->query($this->getText());
 			$result=$this->_statement->fetchColumn();
 			$this->_statement->closeCursor();
 			if($result!==false)

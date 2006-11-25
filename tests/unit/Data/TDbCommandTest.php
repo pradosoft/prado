@@ -85,86 +85,136 @@ class TDbCommandTest extends PHPUnit2_Framework_TestCase
 		$command->cancel();
 		$this->assertEquals($command->PdoStatement,null);
 	}
-/*
-	public function testActive()
+
+	public function testBindParameter()
 	{
-	    $this->assertFalse($this->_connection2->Active);
-
-	    $this->_connection2->Active=true;
-	    $this->assertTrue($this->_connection2->Active);
-	    $pdo=$this->_connection2->PdoInstance;
-	    // test setting Active repeatedly doesn't re-connect DB
-	    $this->_connection2->Active=true;
-	    $this->assertTrue($pdo===$this->_connection2->PdoInstance);
-
-		$this->_connection2->Active=false;
-	    $this->assertFalse($this->_connection2->Active);
+		$sql='INSERT INTO foo (id,name) VALUES (3,:name)';
+		$command=$this->_connection->createCommand($sql);
+		$name='new name';
+		$command->bindParameter(':name',$name);
+		$command->execute();
+		$insertedName=$this->_connection->createCommand('SELECT name FROM foo WHERE id=3')->queryScalar();
+		$this->assertEquals($name,$insertedName);
 	}
 
-	public function testCreateCommand()
+	public function testBindValue()
 	{
-		$sql='CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(8))';
+		$sql='INSERT INTO foo (id,name) VALUES (3,:name)';
+		$command=$this->_connection->createCommand($sql);
+		$command->bindValue(':name','new name');
+		$command->execute();
+		$insertedName=$this->_connection->createCommand('SELECT name FROM foo WHERE id=3')->queryScalar();
+		$this->assertEquals('new name',$insertedName);
+	}
+
+	public function testExecute()
+	{
+		// test unprepared SQL execution
+		$sql='INSERT INTO foo (name) VALUES (\'new name\')';
+		$command=$this->_connection->createCommand($sql);
+		$command->execute();
+		$command->execute();
+		$count=$this->_connection->createCommand('SELECT COUNT(id) AS id_count FROM foo')->queryScalar();
+		$this->assertEquals('4',$count);
+
+		// test prepared SQL execution
+		$sql='INSERT INTO foo (name) VALUES (\'new name\')';
+		$command=$this->_connection->createCommand($sql);
+		$command->prepare();
+		$command->execute();
+		$command->execute();
+		$count=$this->_connection->createCommand('SELECT COUNT(id) AS id_count FROM foo')->queryScalar();
+		$this->assertEquals('6',$count);
+
+		// test exception raising
 		try
 		{
-			$this->_connection2->createCommand($sql);
+			$command=$this->_connection->createCommand('bad SQL');
+			$command->execute();
 			$this->fail('Expected exception is not raised');
 		}
 		catch(TDbException $e)
 		{
 		}
-
-		$command=$this->_connection->createCommand($sql);
-		$this->assertTrue($command instanceof TDbCommand);
 	}
 
-	public function testBeginTransaction()
+	public function testQuery()
 	{
-		$sql='INSERT INTO foo(id,name) VALUES (1,\'my name\')';
-		$transaction=$this->_connection->beginTransaction();
+		// test unprepared SQL query
+		$sql='SELECT * FROM foo';
+		$reader=$this->_connection->createCommand($sql)->query();
+		$this->assertTrue($reader instanceof TDbDataReader);
+
+		// test unprepared SQL query
+		$sql='SELECT * FROM foo';
+		$command=$this->_connection->createCommand($sql);
+		$command->prepare();
+		$reader=$command->query();
+		$this->assertTrue($reader instanceof TDbDataReader);
+
+		// test exception raising
 		try
 		{
-			$this->_connection->createCommand($sql)->execute();
-			$this->_connection->createCommand($sql)->execute();
-			$this->fail('Expected exception not raised');
-			$transaction->commit();
+			$command=$this->_connection->createCommand('bad SQL');
+			$command->query();
+			$this->fail('Expected exception is not raised');
 		}
-		catch(Exception $e)
+		catch(TDbException $e)
 		{
-			$transaction->rollBack();
-			$reader=$this->_connection->createCommand('SELECT * FROM foo')->query();
-			$this->assertFalse($reader->read());
 		}
 	}
 
-	public function testLastInsertID()
+	public function testQueryRow()
 	{
-		$sql='INSERT INTO foo(name) VALUES (\'my name\')';
-		$this->_connection->createCommand($sql)->execute();
-		$value=$this->_connection->LastInsertID;
-		$this->assertEquals($this->_connection->LastInsertID,'1');
+		// test unprepared SQL query
+		$sql='SELECT * FROM foo';
+		$row=$this->_connection->createCommand($sql)->queryRow();
+		$this->assertTrue($row['id']==='1' && $row['name']==='my name');
+
+		// test unprepared SQL query
+		$sql='SELECT * FROM foo';
+		$command=$this->_connection->createCommand($sql);
+		$command->prepare();
+		$row=$command->queryRow();
+		$this->assertTrue($row['id']==='1' && $row['name']==='my name');
+
+		// test exception raising
+		try
+		{
+			$command=$this->_connection->createCommand('bad SQL');
+			$command->queryRow();
+			$this->fail('Expected exception is not raised');
+		}
+		catch(TDbException $e)
+		{
+		}
 	}
 
-	public function testQuoteString()
+	public function testQueryScalar()
 	{
-		$str="this is 'my' name";
-		$expectedStr="'this is ''my'' name'";
-		$this->assertEquals($expectedStr,$this->_connection->quoteString($str));
-	}
+		// test unprepared SQL query
+		$sql='SELECT * FROM foo';
+		$id=$this->_connection->createCommand($sql)->queryScalar();
+		$this->assertTrue($id==='1');
 
-	public function testColumnNameCase()
-	{
-		$this->assertEquals(TDbColumnCaseMode::Preserved,$this->_connection->ColumnCase);
-		$this->_connection->ColumnCase=TDbColumnCaseMode::LowerCase;
-		$this->assertEquals(TDbColumnCaseMode::LowerCase,$this->_connection->ColumnCase);
-	}
+		// test unprepared SQL query
+		$sql='SELECT * FROM foo';
+		$command=$this->_connection->createCommand($sql);
+		$command->prepare();
+		$row=$command->queryScalar();
+		$this->assertTrue($id==='1');
 
-	public function testNullConversion()
-	{
-		$this->assertEquals(TDbNullConversionMode::Preserved,$this->_connection->NullConversion);
-		$this->_connection->NullConversion=TDbNullConversionMode::NullToEmptyString;
-		$this->assertEquals(TDbNullConversionMode::NullToEmptyString,$this->_connection->NullConversion);
+		// test exception raising
+		try
+		{
+			$command=$this->_connection->createCommand('bad SQL');
+			$command->queryScalar();
+			$this->fail('Expected exception is not raised');
+		}
+		catch(TDbException $e)
+		{
+		}
 	}
-	*/
 }
 
 ?>
