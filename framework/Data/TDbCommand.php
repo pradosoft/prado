@@ -155,9 +155,9 @@ class TDbCommand extends TComponent
 	{
 		$this->prepare();
 		if($dataType===null)
-			$this->_statement->bindParam($name,$value);
+			$this->_statement->bindValue($name,$value);
 		else
-			$this->_statement->bindParam($name,$value,$dataType);
+			$this->_statement->bindValue($name,$value,$dataType);
 	}
 
 	/**
@@ -177,7 +177,11 @@ class TDbCommand extends TComponent
 				return $this->_statement->rowCount();
 			}
 			else
-				return $this->getConnection()->getPdoInstance()->exec($this->getText());
+			{
+				$int = $this->getConnection()->getPdoInstance()->exec($this->getText());
+				var_dump($int);
+				return $int;
+			}
 		}
 		catch(Exception $e)
 		{

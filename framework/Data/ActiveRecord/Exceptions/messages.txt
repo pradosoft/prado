@@ -1,0 +1,12 @@
+ar_readonly_exception						= Active Record '{0}' is read only.
+ar_object_must_be_retrieved_before_delete	= Active Record must be retrieved first before deletion.
+ar_object_must_not_be_null					= Active record object must not be null.
+ar_object_marked_for_removal				= Active record object already marked for removed.
+ar_column_meta_data_read_only				= Column meta is read only.
+ar_invalid_database_driver					= Active Record does not support database '{0}'.
+ar_invalid_finder_method					= Unsupported Active Record finder method '{0}'.
+ar_no_primary_key_found						= Table '{0}' does not contain any primary key fields.
+ar_primary_key_is_scalar					= Primary key '{1}' in table '{0}' is NOT a composite key, invalid value '{2} used.
+ar_invalid_db_connection					= Missing or invalid default database connection for ActiveRecord class '{0}', default connection is set by the DbConnection property of TActiveRecordManager.
+ar_mismatch_args_exception					= ActiveRecord finder method '{0}' expects {1} parameters but found only {2} parameters instead.
+ar_invalid_tablename_property				= ActiveRecord tablename property '{0}::${1}' must be static and not null.
