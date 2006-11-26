@@ -436,9 +436,11 @@ class TApplication extends TComponent
 	 */
 	protected function saveGlobals()
 	{
-		if(!$this->_stateChanged)
-			return;
-		$this->getApplicationStatePersister()->save($this->_globals);
+		if($this->_stateChanged)
+		{
+			$this->_stateChanged=false;
+			$this->getApplicationStatePersister()->save($this->_globals);
+		}
 	}
 
 	/**
@@ -1034,6 +1036,7 @@ class TApplication extends TComponent
 	 */
 	public function onEndRequest()
 	{
+		$this->saveGlobals();  // save global state
 		$this->raiseEvent('OnEndRequest',$this,null);
 	}
 }
