@@ -1462,7 +1462,6 @@ framework/DataAccess/SQLMap/Statements/TUpdateMappedStatement.php -text
 framework/DataAccess/SQLMap/TMapper.php -text
 framework/DataAccess/SQLMap/TSqlMapClient.php -text
 framework/DataAccess/SQLMap/TSqlMapper.php -text
-framework/DataAccess/TActiveRecord.php -text
 framework/DataAccess/TAdodb.php -text
 framework/DataAccess/TDatabaseProvider.php -text
 framework/DataAccess/TEzpdo.php -text
