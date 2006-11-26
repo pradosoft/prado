@@ -18,10 +18,13 @@ CHG: All validators ClientSide.OnError becomes ClientSide.OnValidationError, and
 Version 3.0.6 December 4, 2006
 ==============================
 BUG: Ticket#442 - TPageService getBasePath in namespace form (Qiang)
+BUG: Ticket#467 - typo in TUrlMapping.php (Qiang)
 BUG: TTableCell should render &nbsp; only when Text is not set and there's no child (Qiang)
+BUG: global state was not saved when redirect() is invoked (Qiang)
 ENH: Ticket#446 - Added TMetaTagCollection.getMetaTagByID method (Qiang)
 CHG: Ticket#437 - __autoload is replaced by spl_autoload_register (Qiang)
-CHG: Ticket#454 - Redundant PHP Version Check
+CHG: Ticket#454 - Redundant PHP Version Check (Qiang)
+CHG: Ticket#460 - Validators will not perform validation if parents are disabled (Qiang)
 CHG: TRepeater does not render <span> anymore for empty item template (Qiang)
 CHG: THttpRequest.constructUrl() now encodes ampersand by default (Qiang)
 
