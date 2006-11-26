@@ -51,6 +51,8 @@ class TPager extends TWebControl implements INamingContainer
 	const CMD_PAGE_FIRST='First';
 	const CMD_PAGE_LAST='Last';
 
+	private $_pageCount=0;
+
 	/**
 	 * Restores the pager state.
 	 * This method overrides the parent implementation and is invoked when
@@ -268,16 +270,28 @@ class TPager extends TWebControl implements INamingContainer
 		if(($targetControl=$this->getNamingContainer()->findControl($controlID))===null || !($targetControl instanceof TDataBoundControl))
 			throw new TConfigurationException('pager_controltopaginate_invalid',$controlID);
 
-		if($targetControl->getAllowPaging() && $targetControl->getPageCount()>1)
+		if($targetControl->getAllowPaging())
 		{
-			$this->setVisible(true);
+	 		$this->_pageCount=$targetControl->getPageCount();
 			$this->getControls()->clear();
 			$this->setPageCount($targetControl->getPageCount());
 			$this->setCurrentPageIndex($targetControl->getCurrentPageIndex());
 			$this->buildPager();
 		}
 		else
-			$this->setVisible(false);
+			$this->_pageCount=0;
+	}
+
+	/**
+	 * Renders the control.
+	 * The method overrides the parent implementation by rendering
+	 * the pager only when there are two or more pages.
+	 * @param THtmlWriter the writer
+	 */
+	public function render($writer)
+	{
+		if($this->_pageCount>1)
+			parent::render($writer);
 	}
 
 	/**
