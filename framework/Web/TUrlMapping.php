@@ -334,7 +334,7 @@ class TUrlMappingPattern extends TComponent
 	 */
 	public function setRegularExpression($value)
 	{
-		$this->_regexp;
+		$this->_regexp=$value;
 	}
 
 	/**
