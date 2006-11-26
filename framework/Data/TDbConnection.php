@@ -363,6 +363,24 @@ class TDbConnection extends TComponent
 	}
 
 	/**
+	 * @return boolean whether the connection is persistent or not
+	 * Some DBMS (such as sqlite) may not support this feature.
+	 */
+	public function getPersistent()
+	{
+		return $this->getAttribute(PDO::ATTR_PERSISTENT);
+	}
+
+	/**
+	 * @param boolean whether the connection is persistent or not
+	 * Some DBMS (such as sqlite) may not support this feature.
+	 */
+	public function setPersistent($value)
+	{
+		return $this->setAttribute(PDO::ATTR_PERSISTENT,TPropertyValue::ensureBoolean($value));
+	}
+
+	/**
 	 * @return string name of the DB driver
 	 */
 	public function getDriverName()
@@ -385,15 +403,6 @@ class TDbConnection extends TComponent
 	public function getConnectionStatus()
 	{
 		return $this->getAttribute(PDO::ATTR_CONNECTION_STATUS);
-	}
-
-	/**
-	 * @return boolean whether the connection is persistent or not
-	 * Some DBMS (such as sqlite) may not support this feature.
-	 */
-	public function getPersistent()
-	{
-		return $this->getAttribute(PDO::ATTR_PERSISTENT);
 	}
 
 	/**
