@@ -18,6 +18,8 @@ Upgrading from v3.0.5
 - TRepeater does not render <span> anymore for empty item template.
 - constructUrl() now encodes ampersand by default. This should have minimal
   impact on any existing PRADO applications, though.
+- TDataGrid does not generate default table styles. This may affect
+  the appearance of existing PRADO applications that use TDataGrid.
 
 Upgrading from v3.0.4
 ---------------------
