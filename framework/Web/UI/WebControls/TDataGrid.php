@@ -276,11 +276,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	 */
 	protected function createStyle()
 	{
-		$style=new TTableStyle;
-		$style->setGridLines('Both');
-		$style->setCellSpacing(0);
-		$style->setBorderCollapse(true);
-		return $style;
+		return new TTableStyle;
 	}
 
 	/**
