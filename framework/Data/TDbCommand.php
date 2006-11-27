@@ -177,11 +177,7 @@ class TDbCommand extends TComponent
 				return $this->_statement->rowCount();
 			}
 			else
-			{
-				$int = $this->getConnection()->getPdoInstance()->exec($this->getText());
-				var_dump($int);
-				return $int;
-			}
+				return $this->getConnection()->getPdoInstance()->exec($this->getText());
 		}
 		catch(Exception $e)
 		{
