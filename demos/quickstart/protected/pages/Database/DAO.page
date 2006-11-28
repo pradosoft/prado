@@ -7,6 +7,9 @@ Data Access Objects (DAO) separates a data resource's client interface from its 
 <p>
 Since version 3.1, PRADO starts to provide a DAO that is a thin wrap around <a href="http://www.php.net/manual/en/ref.pdo.php">PHP Data Objects (PDO)</a>. Although PDO has a nice feature set and good APIs, we choose to implement the PRADO DAO on top of PDO because the PRADO DAO classes are component classes and are thus configurable in a PRADO application. Users can use these DAO classes in a more PRADO-preferred way.
 </p>
+<div class="note"><b class="tip">Note:</b>
+Since the PRADO DAO is based on PDO, the PDO PHP extension needs to be installed. In addition, you need to install the corresponding PDO driver for the database to be used in your application. See more details in the <a href="http://www.php.net/manual/en/ref.pdo.php">PHP Manual</a>.
+</div>
 <p>
 The PRADO DAO mainly consists of the following four classes (in contrast to PDO which uses only two classes, <tt>PDO</tt> and <tt>PDOStatement</tt>):
 </p>
