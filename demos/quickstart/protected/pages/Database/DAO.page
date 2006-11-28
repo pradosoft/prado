@@ -150,7 +150,7 @@ $dataReader=$connection->createCommand($sql)->query();
 // bind the 1st column (username) with the $username variable
 $dataReader->bindColumn(1,$username);
 // bind the 2nd column (email) with the $email variable
-$dataReader->bindParameter(2,$email);
+$dataReader->bindColumn(2,$email);
 while($dataReader->read()!==false)
 {
     // $username and $email contain the username and email in the current row
