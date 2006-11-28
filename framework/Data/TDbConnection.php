@@ -102,6 +102,15 @@ class TDbConnection extends TComponent
 	}
 
 	/**
+	 * @return array list of available PDO drivers
+	 * @see http://www.php.net/manual/en/function.pdo-getavailabledrivers.php
+	 */
+	public static function getAvailableDrivers()
+	{
+		return PDO::getAvailableDrivers();
+	}
+
+	/**
 	 * @return boolean whether the DB connection is established
 	 */
 	public function getActive()
