@@ -31,7 +31,7 @@
          *    @static
          *    @access public
          */
-        function getVersion() {
+        static function getVersion() {
             $content = file(dirname(__FILE__) . '/VERSION');
             return trim($content[0]);
         }
@@ -45,7 +45,7 @@
          *    @static
          *    @access public
          */
-        function ignore($class) {
+        static function ignore($class) {
             $registry = &SimpleTest::_getRegistry();
             $registry['IgnoreList'][strtolower($class)] = true;
         }
@@ -65,7 +65,7 @@
          *    @static
          *    @access public
          */
-        function ignoreParentsIfIgnored($classes) {
+        static function ignoreParentsIfIgnored($classes) {
             $registry = &SimpleTest::_getRegistry();
             foreach ($classes as $class) {
                 if (SimpleTest::isIgnored($class)) {
@@ -88,7 +88,7 @@
          *    @access public
          *    @static
          */
-        function isIgnored($class) {
+        static function isIgnored($class) {
             $registry = &SimpleTest::_getRegistry();
             return isset($registry['IgnoreList'][strtolower($class)]);
         }
@@ -164,7 +164,7 @@
          *    @access public
          *    @static
          */
-        function setCurrent($test) {
+        static function setCurrent($test) {
             $registry = &SimpleTest::_getRegistry();
             $registry['CurrentTestCase'] = $test;
         }
@@ -175,7 +175,7 @@
          *    @access public
          *    @static
          */
-        function &getCurrent() {
+        static function &getCurrent() {
             $registry = &SimpleTest::_getRegistry();
             return $registry['CurrentTestCase'];
         }
@@ -186,7 +186,7 @@
          *    @access private
          *    @static
          */
-        function &_getRegistry() {
+        static function &_getRegistry() {
             static $registry = false;
             if (! $registry) {
                 $registry = SimpleTest::_getDefaults();
@@ -200,7 +200,7 @@
          *    @access private
          *    @static
          */
-        function _getDefaults() {
+        static function _getDefaults() {
             return array(
                     'StubBaseClass' => 'SimpleStub',
                     'MockBaseClass' => 'SimpleMock',
@@ -219,21 +219,21 @@
         /**
          *    @deprecated
          */
-        function getVersion() {
+        static function getVersion() {
             return Simpletest::getVersion();
         }
 
         /**
          *    @deprecated
          */
-        function ignore($class) {
+        static function ignore($class) {
             return Simpletest::ignore($class);
         }
 
         /**
          *    @deprecated
          */
-        function isIgnored($class) {
+        static function isIgnored($class) {
             return Simpletest::isIgnored($class);
         }
 

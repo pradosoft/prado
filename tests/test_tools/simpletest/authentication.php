@@ -9,7 +9,7 @@
      *	include http class
      */
     require_once(dirname(__FILE__) . '/http.php');
-    
+
     /**
      *    Represents a single security realm's identity.
 	 *    @package SimpleTest
@@ -20,7 +20,7 @@
         protected $_root;
         protected $_username;
         protected $_password;
-        
+
         /**
          *    Starts with the initial entry directory.
          *    @param string $type      Authentication type for this
@@ -35,7 +35,7 @@
             $this->_username = false;
             $this->_password = false;
         }
-        
+
         /**
          *    Adds another location to the realm.
          *    @param SimpleUrl $url    Somewhere in realm.
@@ -44,7 +44,7 @@
         function stretch($url) {
             $this->_root = $this->_getCommonPath($this->_root, $url->getPath());
         }
-        
+
         /**
          *    Finds the common starting path.
          *    @param string $first        Path to compare.
@@ -62,7 +62,7 @@
             }
             return implode('/', $first) . '/';
         }
-        
+
         /**
          *    Sets the identity to try within this realm.
          *    @param string $username    Username in authentication dialog.
@@ -73,7 +73,7 @@
             $this->_username = $username;
             $this->_password = $password;
         }
-        
+
         /**
          *    Accessor for current identity.
          *    @return string        Last succesful username.
@@ -82,7 +82,7 @@
         function getUsername() {
             return $this->_username;
         }
-        
+
         /**
          *    Accessor for current identity.
          *    @return string        Last succesful password.
@@ -91,7 +91,7 @@
         function getPassword() {
             return $this->_password;
         }
-        
+
         /**
          *    Test to see if the URL is within the directory
          *    tree of the realm.
@@ -108,7 +108,7 @@
             }
             return false;
         }
-        
+
         /**
          *    Tests to see if one string is a substring of
          *    another.
@@ -122,7 +122,7 @@
             return strpos($whole, $part) === 0;
         }
     }
-    
+
     /**
      *    Manages security realms.
 	 *    @package SimpleTest
@@ -130,7 +130,7 @@
      */
     class SimpleAuthenticator {
         protected $_realms;
-        
+
         /**
          *    Clears the realms.
          *    @access public
@@ -138,7 +138,7 @@
         function SimpleAuthenticator() {
             $this->restartSession();
         }
-        
+
         /**
          *    Starts with no realms set up.
          *    @access public
@@ -146,7 +146,7 @@
         function restartSession() {
             $this->_realms = array();
         }
-        
+
         /**
          *    Adds a new realm centered the current URL.
          *    Browsers vary wildly on their behaviour in this
@@ -166,7 +166,7 @@
         function addRealm($url, $type, $realm) {
             $this->_realms[$url->getHost()][$realm] = new SimpleRealm($type, $url);
         }
-        
+
         /**
          *    Sets the current identity to be presented
          *    against that realm.
@@ -181,7 +181,7 @@
                 $this->_realms[$host][$realm]->setIdentity($username, $password);
             }
         }
-        
+
         /**
          *    Finds the name of the realm by comparing URLs.
          *    @param SimpleUrl $url        URL to test.
@@ -199,7 +199,7 @@
             }
             return false;
         }
-        
+
         /**
          *    Presents the appropriate headers for this location.
          *    @param SimpleHttpRequest $request  Request to modify.
@@ -218,7 +218,7 @@
             }
             $this->addBasicHeaders($request, $username, $password);
         }
-        
+
         /**
          *    Presents the appropriate headers for this
          *    location for basic authentication.
@@ -228,7 +228,7 @@
          *    @access public
          *    @static
          */
-        function addBasicHeaders($request, $username, $password) {
+        static function addBasicHeaders($request, $username, $password) {
             if ($username && $password) {
                 $request->addHeaderLine(
                         'Authorization: Basic ' . base64_encode("$username:$password"));

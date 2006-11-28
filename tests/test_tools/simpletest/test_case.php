@@ -378,7 +378,7 @@
          *    @access public
          *    @static
          */
-        function getSize() {
+        static function getSize() {
             return 1;
         }
     }

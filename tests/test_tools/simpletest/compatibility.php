@@ -4,14 +4,14 @@
      *	@package	SimpleTest
      *	@version	$Id$
      */
-    
+
     /**
      *  Static methods for compatibility between different
      *  PHP versions.
      *  @package	SimpleTest
      */
     class SimpleTestCompatibility {
-    	
+
     	/**
     	 *	  Creates a copy whether in PHP5 or PHP4.
     	 *	  @param object $object		Thing to copy.
@@ -19,14 +19,14 @@
     	 *	  @access public
     	 *	  @static
     	 */
-    	function copy($object) {
+    	static function copy($object) {
             if (version_compare(phpversion(), '5') >= 0) {
             	eval('$copy = clone $object;');
             	return $copy;
             }
             return $object;
     	}
-        
+
         /**
          *    Identity test. Drops back to equality + types for PHP5
          *    objects as the === operator counts as the
@@ -37,7 +37,7 @@
          *    @access public
          *    @static
          */
-        function isIdentical($first, $second) {
+        static function isIdentical($first, $second) {
             if ($first != $second) {
                 return false;
             }
@@ -46,7 +46,7 @@
             }
             return ($first === $second);
         }
-        
+
         /**
          *    Recursive type test.
          *    @param mixed $first    Test subject.
@@ -55,7 +55,7 @@
          *    @access private
          *    @static
          */
-        function _isIdenticalType($first, $second) {
+        static function _isIdenticalType($first, $second) {
             if (gettype($first) != gettype($second)) {
                 return false;
             }
@@ -72,7 +72,7 @@
             }
             return true;
         }
-        
+
         /**
          *    Recursive type test for each element of an array.
          *    @param mixed $first    Test subject.
@@ -81,7 +81,7 @@
          *    @access private
          *    @static
          */
-        function _isArrayOfIdenticalTypes($first, $second) {
+        static function _isArrayOfIdenticalTypes($first, $second) {
             if (array_keys($first) != array_keys($second)) {
                 return false;
             }
@@ -95,7 +95,7 @@
             }
             return true;
         }
-        
+
         /**
          *    Test for two variables being aliases.
          *    @param mixed $first    Test subject.
@@ -104,7 +104,7 @@
          *    @access public
          *    @static
          */
-        function isReference($first, $second) {
+        static function isReference($first, $second) {
             if (version_compare(phpversion(), '5', '>=')
 	    	    && is_object($first)) {
 	    	    return ($first === $second);
@@ -122,7 +122,7 @@
             $first = $temp;
             return $is_ref;
         }
-        
+
         /**
          *    Test to see if an object is a member of a
          *    class hiearchy.
@@ -132,7 +132,7 @@
          *    @access public
          *    @static
          */
-        function isA($object, $class) {
+        static function isA($object, $class) {
             if (version_compare(phpversion(), '5') >= 0) {
                 if (! class_exists($class, false)) {
                     if (function_exists('interface_exists')) {
@@ -150,7 +150,7 @@
             return ((strtolower($class) == get_class($object))
                     or (is_subclass_of($object, $class)));
         }
-        
+
         /**
          *    Sets a socket timeout for each chunk.
          *    @param resource $handle    Socket handle.
@@ -158,7 +158,7 @@
          *    @access public
          *    @static
          */
-        function setTimeout($handle, $timeout) {
+        static function setTimeout($handle, $timeout) {
             if (function_exists('stream_set_timeout')) {
                 stream_set_timeout($handle, $timeout, 0);
             } elseif (function_exists('socket_set_timeout')) {
@@ -167,14 +167,14 @@
                 set_socket_timeout($handle, $timeout, 0);
             }
         }
-        
+
         /**
          *    Gets the current stack trace topmost first.
          *    @return array        List of stack frames.
          *    @access public
          *    @static
          */
-        function getStackTrace() {
+        static function getStackTrace() {
             if (function_exists('debug_backtrace')) {
                 return array_reverse(debug_backtrace());
             }
