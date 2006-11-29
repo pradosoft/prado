@@ -6,6 +6,7 @@ BUG: TTableCell should render &nbsp; only when Text is not set and there's no ch
 BUG: global state was not saved when redirect() is invoked (Qiang)
 BUG: TPager would not display if it was invisible previously (Qiang)
 ENH: Ticket#446 - Added TMetaTagCollection.getMetaTagByID method (Qiang)
+ENH: Ticket#471 - Added methods in TAssetManager to expose published path and URL (Qiang)
 CHG: Ticket#437 - __autoload is replaced by spl_autoload_register (Qiang)
 CHG: Ticket#454 - Redundant PHP Version Check (Qiang)
 CHG: Ticket#460 - Validators will not perform validation if parents are disabled (Qiang)

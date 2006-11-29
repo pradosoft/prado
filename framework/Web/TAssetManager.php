@@ -179,6 +179,38 @@ class TAssetManager extends TModule
 	}
 
 	/**
+	 * Returns the published path of a file path.
+	 * This method does not perform any publishing. It merely tells you
+	 * if the file path is published, where it will go.
+	 * @param string directory or file path being published
+	 * @return string the published file path
+	 */
+	public function getPublishedPath($path)
+	{
+		$path=realpath($path);
+		if(is_file($path))
+			return $this->_basePath.'/'.$this->hash(dirname($path)).'/'.basename($path);
+		else
+			return $this->_basePath.'/'.$this->hash($path);
+	}
+
+	/**
+	 * Returns the URL of a published file path.
+	 * This method does not perform any publishing. It merely tells you
+	 * if the file path is published, what the URL will be to access it.
+	 * @param string directory or file path being published
+	 * @return string the published URL for the file path
+	 */
+	public function getPublishedUrl($path)
+	{
+		$path=realpath($path);
+		if(is_file($path))
+			return $this->_baseUrl.'/'.$this->hash(dirname($path)).'/'.basename($path);
+		else
+			return $this->_baseUrl.'/'.$this->hash($path);
+	}
+
+	/**
 	 * Generate a CRC32 hash for the directory path. Collisions are higher
 	 * than MD5 but generates a much smaller hash string.
 	 * @param string string to be hashed.
