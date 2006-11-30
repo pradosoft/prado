@@ -201,10 +201,12 @@ class TCallbackClientScript extends TApplicationComponent
 	/**
 	 * Toggles the visibility of the element.
 	 * @param TControl control element or element id
+	 * @param string visual effect, such as, 'appear' or 'slide' or 'blind'.
+	 * @param array additional options.
 	 */
-	public function toggle($element)
+	public function toggle($element, $effect=null, $options=array())
 	{
-		$this->callClientFunction('Element.toggle', $element);
+		$this->callClientFunction('Element.toggle', array($element,$effect,$options));
 	}
 
 	/**
