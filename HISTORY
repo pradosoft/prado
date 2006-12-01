@@ -13,6 +13,7 @@ CHG: Ticket#460 - Validators will not perform validation if parents are disabled
 CHG: TDataGrid now does not set default table styles (Qiang)
 CHG: TRepeater does not render <span> anymore for empty item template (Qiang)
 CHG: THttpRequest.constructUrl() now encodes ampersand by default (Qiang)
+CHG: TDataBoundControl will not throw exception if CurrentPageIndex is out of range (Qiang)
 
 Version 3.0.5 October 23, 2006
 ==============================
