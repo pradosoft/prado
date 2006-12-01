@@ -301,11 +301,13 @@ class TTheme extends TApplicationComponent implements ITheme
 						unset($skin[2]['skinid']);
 						if(isset($this->_skins[$type][$id]))
 							throw new TConfigurationException('theme_skinid_duplicated',$type,$id,dirname($themePath));
+						/*
 						foreach($skin[2] as $name=>$value)
 						{
 							if(is_array($value) && ($value[0]===TTemplate::CONFIG_DATABIND || $value[0]===TTemplate::CONFIG_PARAMETER))
 								throw new TConfigurationException('theme_databind_forbidden',dirname($themePath),$type,$id);
 						}
+						*/
 						$this->_skins[$type][$id]=$skin[2];
 					}
 				}
@@ -363,28 +365,51 @@ class TTheme extends TApplicationComponent implements ITheme
 				Prado::trace("Applying skin $name to $type",'System.Web.UI.TThemeManager');
 				if(is_array($value))
 				{
-					if($value[0]===TTemplate::CONFIG_EXPRESSION)
-						$value=$this->evaluateExpression($value[1]);
-					else if($value[0]===TTemplate::CONFIG_ASSET)
-						$value=$this->_themeUrl.'/'.ltrim($value[1],'/');
-				}
-				if(strpos($name,'.')===false)	// is simple property or custom attribute
-				{
-					if($control->hasProperty($name))
+					switch($value[0])
 					{
-						if($control->canSetProperty($name))
+						case TTemplate::CONFIG_EXPRESSION:
+							$value=$this->evaluateExpression($value[1]);
+							break;
+						case TTemplate::CONFIG_ASSET:
+							$value=$this->_themeUrl.'/'.ltrim($value[1],'/');
+							break;
+						case TTemplate::CONFIG_DATABIND:
+							$control->bindProperty($name,$value[1]);
+							break;
+						case TTemplate::CONFIG_PARAMETER:
+							$control->setSubProperty($name,$this->getApplication()->getParameters()->itemAt($value[1]));
+							break;
+						case TTemplate::CONFIG_TEMPLATE:
+							$control->setSubProperty($name,$value[1]);
+							break;
+						case TTemplate::CONFIG_LOCALIZATION:
+							$control->setSubProperty($name,Prado::localize($value[1]));
+							break;
+						default:
+							throw new TConfigurationException('theme_tag_unexpected',$name,$value[0]);
+							break;
+					}
+				}
+				if(!is_array($value))
+				{
+					if(strpos($name,'.')===false)	// is simple property or custom attribute
+					{
+						if($control->hasProperty($name))
 						{
-							$setter='set'.$name;
-							$control->$setter($value);
+							if($control->canSetProperty($name))
+							{
+								$setter='set'.$name;
+								$control->$setter($value);
+							}
+							else
+								throw new TConfigurationException('theme_property_readonly',$type,$name);
 						}
 						else
-							throw new TConfigurationException('theme_property_readonly',$type,$name);
+							throw new TConfigurationException('theme_property_undefined',$type,$name);
 					}
-					else
-						throw new TConfigurationException('theme_property_undefined',$type,$name);
+					else	// complex property
+						$control->setSubProperty($name,$value);
 				}
-				else	// complex property
-					$control->setSubProperty($name,$value);
 			}
 			return true;
 		}

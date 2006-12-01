@@ -457,6 +457,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					$component->$setter(Prado::localize($value[1]));
 					break;
 				default:	// an error if reaching here
+					throw new TConfigurationException('template_tag_unexpected',$name,$value[1]);
 					break;
 			}
 		}
@@ -502,6 +503,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					$component->setSubProperty($name,Prado::localize($value[1]));
 					break;
 				default:	// an error if reaching here
+					throw new TConfigurationException('template_tag_unexpected',$name,$value[1]);
 					break;
 			}
 		}
