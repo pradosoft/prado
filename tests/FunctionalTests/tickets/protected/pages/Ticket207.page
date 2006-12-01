@@ -6,7 +6,7 @@
 		id="validator1"
 		ControlToValidate="text1" Text="Error"
 		ClientSide.ObserveChanges="false"
-	    ClientSide.OnError="alert('error on text1 fired')" />
+	    ClientSide.OnValidationError="alert('error on text1 fired')" />
 	  <br />
 	  <com:TTextBox ID="text2" /><br />
 	  <com:TRequiredFieldValidator id="validator2" ControlToValidate="text2" Text="Error" />

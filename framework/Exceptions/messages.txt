@@ -125,6 +125,7 @@ template_controlid_invalid				= {0}.ID can only accept a static text string.
 template_controlskinid_invalid			= {0}.SkinID can only accept a static text string.
 template_content_unexpected				= Unexpected content is encountered when instantiating template: {0}.
 template_include_invalid				= Invalid template inclusion. Make sure {0} is a valid namespace pointing to an existing template file whose extension is .tpl.
+template_tag_unexpected					= Initialization for property {0} contains an unknown tag type {1}.
 
 xmldocument_file_read_failed			= TXmlDocument is unable to read file '{0}'.
 xmldocument_file_write_failed			= TXmlDocument is unable to write file '{0}'.
@@ -157,6 +158,7 @@ theme_skinid_duplicated					= SkinID '{0}.{1}' is duplicated in theme '{2}'.
 theme_databind_forbidden				= Databind cannot be used in theme '{0}' for control skin '{1}.{2}' about property '{3}'.
 theme_property_readonly					= Skin is being applied to a read-only control property '{0}.{1}'.
 theme_property_undefined				= Skin is being applied to an inexistent control property '{0}.{1}'.
+theme_tag_unexpected					= Initialization for property {0} contains an unknown tag type {1}.
 
 control_object_reregistered				= Duplicated object ID '{0}' found.
 control_id_invalid						= {0}.ID '{1}' is invalid. Only alphanumeric and underline characters are allowed. The first character must be an alphabetic or underline character.

@@ -20,7 +20,7 @@
 		ControlCssClass="required"
 		OnServerValidate="customValidate"
 		ClientValidationFunction="clientSideCustomValidate"
-		ClientSide.OnError="alert('error')"
+		ClientSide.OnValidationError="alert('error')"
 		ErrorMessage="must equal to 'Prado'" />
 	<com:TButton ID="button1" Text="Submit!" />
 </com:TContent>
