@@ -280,7 +280,8 @@ class MessageSource_XLIFF extends MessageSource
 			throw new TIOException("Unable to save to file {$filename}, file must be writable.");
 
 		//create a new dom, import the existing xml
-		$dom = DOMDocument::load($filename);
+		$dom = new DOMDocument();
+		$dom->load($filename);
 
 		//find the body element
 		$xpath = new DomXPath($dom);

@@ -1234,8 +1234,6 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	{
 		if($this->_stage<self::CS_LOADED)
 		{
-			if(($context=$this->getTemplateControl())===null)
-				$context=$this;
 			if(isset($this->_rf[self::RF_ADAPTER]))
 				$this->_rf[self::RF_ADAPTER]->onLoad(null);
 			else

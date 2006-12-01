@@ -42,7 +42,7 @@ class TestFolder
 				if(!empty($folder->subFolders) || !empty($folder->testFiles))
 					$this->subFolders[]=$folder;
 			}
-			else if(is_file($fullpath) && (strncmp($entry,'ut',2)===0 
+			else if(is_file($fullpath) && (strncmp($entry,'ut',2)===0
 						|| preg_match('/test.*\.php/', strtolower($entry))))
 			{
 				$this->testFiles[$entry]="$rootUri/$script?target=".strtr(substr($fullpath,strlen($rootPath)+1),"\\",'/');
@@ -65,14 +65,15 @@ class TestFolder
 class PradoUnitTester
 {
 	private $_root;
-	
+
 	function __construct($root, $app_dir)
 	{
 		$this->_root = $root;
+		Prado::setPathOfAlias('Tests', $root);
 		$app = new TMockApplication($app_dir);
 		$app->run();
 	}
-	
+
 	function addTests($test,$path,$recursive)
 	{
 		$dir=opendir($path);
@@ -127,8 +128,8 @@ class PradoUnitTester
 			$root=new TestFolder($rootPath,$rootPath,$rootUri);
 			echo $root->getHtml();
 			echo "</body>\n</html>";
-		}		
-	}	
+		}
+	}
 }
 
 ?>

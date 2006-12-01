@@ -218,7 +218,7 @@ abstract class TDataBoundControl extends TWebControl
 	public function setCurrentPageIndex($value)
 	{
 		if(($value=TPropertyValue::ensureInteger($value))<0)
-			throw new TInvalidDataValueException('databoundcontrol_currentpageindex_invalid',get_class($this));
+			$value=0;
 		$this->setViewState('CurrentPageIndex',$value,0);
 	}
 
@@ -337,7 +337,7 @@ abstract class TDataBoundControl extends TWebControl
 				$ds->setDataSource($data);
 				$this->setViewState('PageCount',$ds->getPageCount());
 				if($ds->getCurrentPageIndex()>=$ds->getPageCount())
-					throw new TInvalidDataValueException('databoundcontrol_currentpageindex_invalid',get_class($this));
+					$ds->setCurrentPageIndex($ds->getPageCount()-1);
 				$this->performDataBinding($ds);
 			}
 			else

@@ -946,7 +946,7 @@
          *    @static
          *    @access public
          */
-        function generate($class, $mock_class = false, $methods = false) {
+        static function generate($class, $mock_class = false, $methods = false) {
             $generator = new MockGenerator($class, $mock_class);
             return $generator->generate($methods);
         }
@@ -963,7 +963,7 @@
          *    @static
          *    @access public
          */
-        function generatePartial($class, $mock_class, $methods) {
+        static function generatePartial($class, $mock_class, $methods) {
             $generator = new MockGenerator($class, $mock_class);
             return $generator->generatePartial($methods);
         }
@@ -978,7 +978,7 @@
          *    @access public
          *    @static
          */
-        function getExpectationLine($stack = false) {
+        static function getExpectationLine($stack = false) {
             if ($stack === false) {
                 $stack = SimpleTestCompatibility::getStackTrace();
             }

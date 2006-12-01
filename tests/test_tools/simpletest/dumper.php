@@ -11,14 +11,14 @@
     if (! defined('TYPE_MATTERS')) {
         define('TYPE_MATTERS', true);
     }
-    
+
     /**
      *    Displays variables as text and does diffs.
 	 *	  @package	SimpleTest
 	 *	  @subpackage	UnitTester
      */
     class SimpleDumper {
-        
+
         /**
          *    Renders a variable in a shorter form than print_r().
          *    @param mixed $value      Variable to render as a string.
@@ -43,7 +43,7 @@
             }
             return "Unknown";
         }
-        
+
         /**
          *    Gets the string representation of a type.
          *    @param mixed $value    Variable to check against.
@@ -95,7 +95,7 @@
             $method = '_describe' . $type . 'Difference';
             return $this->$method($first, $second, $identical);
         }
-        
+
         /**
          *    Tests to see if types match.
          *    @param mixed $first        First variable.
@@ -128,7 +128,7 @@
             $value = substr($value, $start, $size);
             return ($start > 0 ? "..." : "") . $value . ($start + $size < $length ? "..." : "");
         }
-        
+
         /**
          *    Creates a human readable description of the
          *    difference between two variables. The minimal
@@ -143,7 +143,7 @@
                     "] does not match [" .
                     $this->describeValue($second) . "]";
         }
-        
+
         /**
          *    Creates a human readable description of the
          *    difference between a null and another variable.
@@ -156,7 +156,7 @@
         function _describeNullDifference($first, $second, $identical) {
             return $this->_describeGenericDifference($first, $second);
         }
-        
+
         /**
          *    Creates a human readable description of the
          *    difference between a boolean and another variable.
@@ -169,7 +169,7 @@
         function _describeBooleanDifference($first, $second, $identical) {
             return $this->_describeGenericDifference($first, $second);
         }
-        
+
         /**
          *    Creates a human readable description of the
          *    difference between a string and another variable.
@@ -190,7 +190,7 @@
                     $this->clipString($second, 200, $position) . "]";
             return $message;
         }
-        
+
         /**
          *    Creates a human readable description of the
          *    difference between an integer and another variable.
@@ -209,7 +209,7 @@
                     $this->describeValue($second) . "] by " .
                     abs($first - $second);
         }
-        
+
         /**
          *    Creates a human readable description of the
          *    difference between two floating point numbers.
@@ -228,7 +228,7 @@
                     $this->describeValue($second) . "] by " .
                     abs($first - $second);
         }
-        
+
         /**
          *    Creates a human readable description of the
          *    difference between two arrays.
@@ -261,7 +261,7 @@
             }
             return "";
         }
-        
+
         /**
          *    Compares two arrays to see if their key lists match.
          *    For an identical match, the ordering and types of the keys
@@ -282,7 +282,7 @@
             sort($second_keys);
             return ($first_keys == $second_keys);
         }
-        
+
         /**
          *    Creates a human readable description of the
          *    difference between a resource and another variable.
@@ -295,7 +295,7 @@
         function _describeResourceDifference($first, $second, $identical) {
             return $this->_describeGenericDifference($first, $second);
         }
-        
+
         /**
          *    Creates a human readable description of the
          *    difference between two objects.
@@ -314,7 +314,7 @@
                     get_object_vars($second),
                     $identical);
         }
-        
+
         /**
          *    Find the first character position that differs
          *    in two strings by binary chop.
@@ -341,7 +341,7 @@
             }
             return $position;
         }
-        
+
         /**
          *    Sends a formatted dump of a variable to a string.
          *    @param mixed $variable    Variable to display.
@@ -349,7 +349,7 @@
          *    @access public
          *    @static
          */
-        function dump($variable) {
+        static function dump($variable) {
             ob_start();
             print_r($variable);
             $formatted = ob_get_contents();
@@ -364,7 +364,7 @@
          *    @access public
          *    @static
          */
-        function getFormattedAssertionLine($stack) {
+        static function getFormattedAssertionLine($stack) {
             foreach ($stack as $frame) {
                 if (isset($frame['file'])) {
                     if (strpos($frame['file'], SIMPLE_TEST) !== false) {
@@ -379,14 +379,14 @@
             }
             return '';
         }
-        
+
         /**
          *    Tries to determine if the method call is an assertion.
          *    @param array $frame     PHP stack frame.
          *    @access private
          *    @static
          */
-        function _stackFrameIsAnAssertion($frame) {
+        static function _stackFrameIsAnAssertion($frame) {
             if (($frame['function'] == 'fail') || ($frame['function'] == 'pass')) {
                 return true;
             }
