@@ -337,7 +337,10 @@ abstract class TDataBoundControl extends TWebControl
 				$ds->setDataSource($data);
 				$this->setViewState('PageCount',$ds->getPageCount());
 				if($ds->getCurrentPageIndex()>=$ds->getPageCount())
+				{
 					$ds->setCurrentPageIndex($ds->getPageCount()-1);
+					$this->setCurrentPageIndex($ds->getCurrentPageIndex());
+				}
 				$this->performDataBinding($ds);
 			}
 			else
