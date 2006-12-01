@@ -24,9 +24,7 @@ class DataGrid1TestCase extends SeleniumTestCase
 
 		// verify specific table tags
 		$this->verifyElementPresent("ctl0_body_DataGrid");
-		$this->verifyAttribute("ctl0_body_DataGrid@rules","all");
 		$this->verifyAttribute("ctl0_body_DataGrid@cellpadding","2");
-		$this->verifyAttribute("ctl0_body_DataGrid@cellspacing","0");
 	}
 }
 
