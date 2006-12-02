@@ -20,6 +20,8 @@ Upgrading from v3.0.5
   impact on any existing PRADO applications, though.
 - TDataGrid does not generate default table styles. This may affect
   the appearance of existing PRADO applications that use TDataGrid.
+- If TUrlMapping is used, you need to set the UrlManager property of
+  THttpRequest to the module ID of TUrlMapping.
 
 Upgrading from v3.0.4
 ---------------------
