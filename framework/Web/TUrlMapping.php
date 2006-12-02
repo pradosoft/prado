@@ -10,6 +10,8 @@
  * @package System.Web
  */
 
+Prado::using('System.Web.TUrlManager');
+
 /**
  * TUrlMapping Class
  *
@@ -17,14 +19,13 @@
  * particular service and page class. This module must be configured
  * before a service is initialized, thus this module should be configured
  * globally in the <tt>application.xml</tt> file and before any services.
- *
- * The mapping format is as follows.
  * <code>
  *  <module id="friendly-url" class="System.Web.TUrlMapping">
  *    <url ServiceParameter="Posts.ViewPost" pattern="post/{id}/?" parameters.id="\d+" />
  *    <url ServiceParameter="Posts.ListPost" pattern="archive/{time}/?" parameters.time="\d{6}" />
  *    <url ServiceParameter="Posts.ListPost" pattern="category/{cat}/?" parameters.cat="\d+" />
  *  </module>
+ *  <module id="request" class="THttpRequest" UrlManager="friendly-url" />
  * </code>
  *
  * See {@link TUrlMappingPattern} for details regarding the mapping patterns.
@@ -38,13 +39,21 @@
  * The mapping can be load from an external file by specifying a configuration
  * file using the {@link setConfigFile ConfigFile} property.
  *
+ * Since TUrlMapping is a URL manager extending from {@link TUrlManager},
+ * you may override {@link TUrlManager::constructUrl} to support your pattern-based
+ * URL scheme.
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
  * @package System.Web
  * @since 3.0.5
  */
-class TUrlMapping extends TModule
+class TUrlMapping extends TUrlManager
 {
+	/**
+	 * File extension of external configuration file
+	 */
+	const CONFIG_FILE_EXT='.xml';
 	/**
 	 * @var string default pattern class.
 	 */
@@ -58,10 +67,6 @@ class TUrlMapping extends TModule
 	 */
 	private $_matched;
 	/**
-	 * File extension of external configuration file
-	 */
-	const CONFIG_FILE_EXT='.xml';
-	/**
 	 * @var string external configuration file
 	 */
 	private $_configFile=null;
@@ -74,12 +79,12 @@ class TUrlMapping extends TModule
 	 */
 	public function init($xml)
 	{
+		parent::init($xml);
 		if($this->getRequest()->getRequestResolved())
 			throw new TConfigurationException('urlpath_dispatch_module_must_be_global');
 		if($this->_configFile!==null)
 			$this->loadConfigFile();
 		$this->loadUrlMappings($xml);
-		$this->resolveMappings();
 	}
 
 	/**
@@ -142,10 +147,14 @@ class TUrlMapping extends TModule
 	}
 
 	/**
-	 * Using the request URL path, find the first matching pattern. If found
-	 * the matched pattern parameters are used in the Request object.
+	 * Parses the request URL and returns an array of input parameters.
+	 * This method overrides the parent implementation.
+	 * The input parameters do not include GET and POST variables.
+	 * This method uses the request URL path to find the first matching pattern. If found
+	 * the matched pattern parameters are used to return as the input parameters.
+	 * @return array list of input parameters
 	 */
-	protected function resolveMappings()
+	public function parseUrl()
 	{
 		$url = $this->getRequest()->getUrl();
 		foreach($this->_patterns as $pattern)
@@ -153,12 +162,16 @@ class TUrlMapping extends TModule
 			$matches = $pattern->getPatternMatches($url);
 			if(count($matches) > 0)
 			{
-				$this->changeServiceParameters($pattern);
-				$this->initializeRequestParameters($matches);
 				$this->_matched=$pattern;
-				break;
+				$this->changeServiceParameters($pattern);
+				$params=array();
+				foreach($matches as $key=>$value)
+					if(is_string($key))
+						$params[$key]=$value;
+				return $params;
 			}
 		}
+		return array();
 	}
 
 	/**
@@ -167,19 +180,6 @@ class TUrlMapping extends TModule
 	public function getMatchingPattern()
 	{
 		return $this->_matched;
-	}
-
-	/**
-	 * @param array initialize the Request with matched parameters.
-	 */
-	protected function initializeRequestParameters($matches)
-	{
-		$request = $this->getRequest();
-		foreach($matches as $k => $v)
-		{
-			if(!is_int($k))
-				$request->add($k,$v);
-		}
 	}
 
 	/**

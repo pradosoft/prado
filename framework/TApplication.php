@@ -880,6 +880,8 @@ class TApplication extends TComponent
 		$request=$this->getRequest();
 		$request->setAvailableServices($serviceIDs);
 
+		$request->resolveRequest();
+
 		if(($serviceID=$request->getServiceID())===null)
 			$serviceID=self::PAGE_SERVICE_ID;
 		if(isset($services[$serviceID]))
