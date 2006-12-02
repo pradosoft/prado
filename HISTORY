@@ -7,6 +7,7 @@ BUG: TTableCell should render &nbsp; only when Text is not set and there's no ch
 BUG: global state was not saved when redirect() is invoked (Qiang)
 BUG: TPager would not display if it was invisible previously (Qiang)
 ENH: Ticket#446 - Added TMetaTagCollection.getMetaTagByID method (Qiang)
+ENH: Ticket#451 - Modified TUrlMapping to extend from TUrlManager (Qiang)
 ENH: Ticket#468 - Added support of using all property tags in skins (Qiang)
 ENH: Ticket#471 - Added methods in TAssetManager to expose published path and URL (Qiang)
 CHG: Ticket#437 - __autoload is replaced by spl_autoload_register (Qiang)
@@ -16,6 +17,7 @@ CHG: TDataGrid now does not set default table styles (Qiang)
 CHG: TRepeater does not render <span> anymore for empty item template (Qiang)
 CHG: THttpRequest.constructUrl() now encodes ampersand by default (Qiang)
 CHG: TDataBoundControl will not throw exception if CurrentPageIndex is out of range (Qiang)
+NEW: TUrlManager (Qiang)
 
 Version 3.0.5 October 23, 2006
 ==============================

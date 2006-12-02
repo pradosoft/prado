@@ -10,6 +10,8 @@
  * @package System.Web
  */
 
+Prado::using('System.Web.TUrlManager');
+
 /**
  * THttpRequest class
  *
@@ -38,16 +40,25 @@
  * takes precedence.
  *
  * To construct a URL that can be recognized by Prado, use {@link constructUrl()}.
+ * The format of the recognizable URLs is determined according to
+ * {@link setUrlManager UrlManager}. By default, the following two formats
+ * are recognized:
+ * <code>
+ * /index.php?ServiceID=ServiceParameter&Name1=Value1&Name2=Value2
+ * /index.php/ServiceID,ServiceParameter/Name1,Value1/Name2,Value2
+ * </code>
+ * The first format is called 'Get' while the second 'Path', which is specified
+ * via {@link setUrlFormat UrlFormat}. For advanced users who want to use
+ * their own URL formats, they can write customized URL management modules
+ * and install the managers as application modules and set {@link setUrlManager UrlManager}.
+ *
+ * The ServiceID in the above URLs is as defined in the application configuration
+ * (e.g. the default page service's service ID is 'page').
+ * As a consequence, your GET variable names should not conflict with the service
+ * IDs that your application supports.
+ *
  * THttpRequest also provides the cookies sent by the user, user information such
  * as his browser capabilities, accepted languages, etc.
- * Currently, THttpRequest recognizes the following URL format:
- * <code>
- * /index.php?ServiceID=ServiceParameter
- * </code>
- * where ServiceID is as defined in the application configuration (e.g.
- * the default page service's service ID is 'page').
- * Therefore, your GET variable names should not conflict with the service
- * IDs that your application supports.
  *
  * By default, THttpRequest is registered with {@link TApplication} as the
  * request module. It can be accessed via {@link TApplication::getRequest()}.
@@ -60,13 +71,17 @@
 class THttpRequest extends TApplicationComponent implements IteratorAggregate,ArrayAccess,Countable,IModule
 {
 	/**
-	 * Separator used to separate GET variable name and value when URL format is Path.
+	 * @var TUrlManager the URL manager module
+	 */
+	private $_urlManager=null;
+	/**
+	 * @var string the ID of the URL manager module
+	 */
+	private $_urlManagerID='';
+	/**
+	 * @var string Separator used to separate GET variable name and value when URL format is Path.
 	 */
 	private $_separator=',';
-	/**
-	 * @var boolean whether the module is initialized
-	 */
-	private $_initialized=false;
 	/**
 	 * @var string requested service ID
 	 */
@@ -87,7 +102,10 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 * @var string path info of URL
 	 */
 	private $_pathInfo;
-
+	/**
+	 * @var boolean whether the session ID should be kept in cookie only
+	 */
+	private $_cookieOnly=false;
 	private $_urlFormat=THttpRequestUrlFormat::Get;
 	private $_services;
 	private $_requestResolved=false;
@@ -130,6 +148,20 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function init($config)
 	{
+		if(empty($this->_urlManagerID))
+		{
+			$this->_urlManager=new TUrlManager;
+			$this->_urlManager->init(null);
+		}
+		else
+		{
+			$this->_urlManager=$this->getApplication()->getModule($this->_urlManagerID);
+			if($this->_urlManager===null)
+				throw new TConfigurationException('httprequest_urlmanager_inexist',$this->_urlManagerID);
+			if(!($this->_urlManager instanceof TUrlManager))
+				throw new TConfigurationException('httprequest_urlmanager_invalid',$this->_urlManagerID);
+		}
+
 		// Fill in default request info when the script is run in command line
 		if(php_sapi_name()==='cli')
 		{
@@ -139,6 +171,8 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 			$_SERVER['SERVER_PORT']=80;
 			$_SERVER['HTTP_USER_AGENT']='';
 		}
+
+		$this->_cookieOnly=(int)ini_get('session.use_cookies') && (int)ini_get('session.use_only_cookies');
 
 		// Info about server variables:
 		// PHP_SELF contains real URI (w/ path info, w/o query string)
@@ -170,12 +204,6 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 				$_COOKIE=$this->stripSlashes($_COOKIE);
 		}
 
-		if($this->getUrlFormat()===THttpRequestUrlFormat::Path && ($pathInfo=trim($this->_pathInfo,'/'))!=='')
-			$this->_items=array_merge($this->parseUrl(),$_POST);
-		else
-			$this->_items=array_merge($_GET,$_POST);
-
-		$this->_initialized=true;
 		$this->getApplication()->setRequest($this);
 	}
 
@@ -212,6 +240,35 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 			$this->_url=new TUri($url);
 		}
 		return $this->_url;
+	}
+
+	/**
+	 * @return string the ID of the URL manager module
+	 */
+	public function getUrlManager()
+	{
+		return $this->_urlManagerID;
+	}
+
+	/**
+	 * Sets the URL manager module.
+	 * By default, {@link TUrlManager} is used for managing URLs.
+	 * You may specify a different module for URL managing tasks
+	 * by loading it as an application module and setting this property
+	 * with the module ID.
+	 * @param string the ID of the URL manager module
+	 */
+	public function setUrlManager($value)
+	{
+		$this->_urlManagerID=$value;
+	}
+
+	/**
+	 * @return TUrlManager the URL manager module
+	 */
+	public function getUrlManagerModule()
+	{
+		return $this->_urlManager;
 	}
 
 	/**
@@ -472,105 +529,37 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	}
 
 	/**
-	 * Constructs a URL that is recognizable by Prado.
-	 * You may override this method to provide your own way of URL formatting.
-	 * If you do so, you may also need to override {@link parseUrl} so that the URL can be properly parsed.
-	 * The URL is constructed as the following format:
-	 * /entryscript.php?serviceID=serviceParameter&get1=value1&...
-	 * If {@link setUrlFormat UrlFormat} is Path, the following format is used instead:
-	 * /entryscript.php/serviceID/serviceParameter/get1,value1/get2,value2...
+	 * Constructs a URL that can be recognized by PRADO.
+	 * The actual construction work is done by the URL manager module.
+	 * This method may append session information to the generated URL if needed.
+	 * You may provide your own URL manager module by setting {@link setUrlManager UrlManager}
+	 * to provide your own URL scheme.
 	 * @param string service ID
 	 * @param string service parameter
 	 * @param array GET parameters, null if not needed
 	 * @param boolean whether to encode the ampersand in URL, defaults to true.
 	 * @param boolean whether to encode the GET parameters (their names and values), defaults to false.
 	 * @return string URL
-	 * @see parseUrl
+	 * @see TUrlManager::constructUrl
 	 */
 	public function constructUrl($serviceID,$serviceParam,$getItems=null,$encodeAmpersand=true,$encodeGetItems=true)
 	{
-		$url=$serviceID.'='.$serviceParam;
-		$amp=$encodeAmpersand?'&amp;':'&';
-		if(is_array($getItems) || $getItems instanceof Traversable)
-		{
-			if($encodeGetItems)
-			{
-				foreach($getItems as $name=>$value)
-				{
-					if(is_array($value))
-					{
-						$name=urlencode($name.'[]');
-						foreach($value as $v)
-							$url.=$amp.$name.'='.urlencode($v);
-					}
-					else
-						$url.=$amp.urlencode($name).'='.urlencode($value);
-				}
-			}
-			else
-			{
-				foreach($getItems as $name=>$value)
-				{
-					if(is_array($value))
-					{
-						foreach($value as $v)
-							$url.=$amp.$name.'[]='.$v;
-					}
-					else
-						$url.=$amp.$name.'='.$value;
-				}
-			}
-		}
-		if($this->getUrlFormat()===THttpRequestUrlFormat::Path)
-		{
-			$url=strtr($url,array($amp=>'/','?'=>'/','='=>$this->_separator));
-			if(defined('SID') && SID != '' && !((int)ini_get('session.use_cookies')===1 && ((int)ini_get('session.use_only_cookies')===1)))
-				$url.='?'.SID;
-			return $this->getApplicationUrl().'/'.$url;
-		}
+		$url=$this->_urlManager->constructUrl($serviceID,$serviceParam,$getItems,$encodeAmpersand,$encodeGetItems);
+		if(defined('SID') && SID != '' && !$this->_cookieOnly)
+			return $url . (strpos($url,'?')===false? '?' : ($encodeAmpersand?'&amp;':'&')) . SID;
 		else
-		{
-			if(defined('SID') && SID != '' && !((int)ini_get('session.use_cookies')===1 && ((int)ini_get('session.use_only_cookies')===1)))
-				$url.=$amp.SID;
-			return $this->getApplicationUrl().'?'.$url;
-		}
+			return $url;
 	}
 
 	/**
-	 * Parses the request URL and returns an array of input parameters (including GET variables).
-	 * This method is invoked when the URL format is Path.
+	 * Parses the request URL and returns an array of input parameters (excluding GET variables).
 	 * You may override this method to support customized URL format.
 	 * @return array list of input parameters, indexed by parameter names
-	 * @see constructUrl
+	 * @see TUrlManager::parseUrl
 	 */
 	protected function parseUrl()
 	{
-		if($this->_pathInfo!=='')
-		{
-			$paths=explode('/',$this->_pathInfo);
-			$getVariables=$_GET;
-			$serviceID=null;
-			foreach($paths as $path)
-			{
-				if(($path=trim($path))!=='')
-				{
-					if(($pos=strpos($path,$this->_separator))!==false)
-					{
-						$name=substr($path,0,$pos);
-						$value=substr($path,$pos+1);
-						if(($pos=strpos($name,'[]'))!==false)
-							$getVariables[substr($name,0,$pos)][]=$value;
-						else
-							$getVariables[$name]=$value;
-					}
-					else
-						$getVariables[$path]='';
-				}
-			}
-			return $getVariables;
-		}
-		else
-			return $_GET;
+		return $this->_urlManager->parseUrl();
 	}
 
 	/**
@@ -581,10 +570,11 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 * You may override this method to provide your own way of service resolution.
 	 * @see constructUrl
 	 */
-	protected function resolveRequest()
+	public function resolveRequest()
 	{
 		Prado::trace("Resolving request from ".$_SERVER['REMOTE_ADDR'],'System.Web.THttpRequest');
 		$this->_requestResolved=true;
+		$this->_items=array_merge($_GET,$this->parseUrl(),$_POST);
 		foreach($this->_services as $id)
 		{
 			if($this->contains($id))
@@ -625,8 +615,6 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function getServiceID()
 	{
-		if(!$this->_requestResolved)
-			$this->resolveRequest();
 		return $this->_serviceID;
 	}
 
@@ -644,8 +632,6 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function getServiceParameter()
 	{
-		if(!$this->_requestResolved)
-			$this->resolveRequest();
 		return $this->_serviceParam;
 	}
 

@@ -48,6 +48,10 @@ securitymanager_mcryptextension_required = Mcrypt PHP extension is required in o
 
 uri_format_invalid						= '{0}' is not a valid URI.
 
+httprequest_separator_invalid			= THttpRequest.UrlParamSeparator can only contain a single character.
+httprequest_urlmanager_inexist			= THttpRequest.UrlManager '{0}' does not point to an existing module.
+httprequest_urlmanager_invalid			= THttpRequest.UrlManager '{0}' must point to a module extending from TUrlManager.
+
 httpresponse_bufferoutput_unchangeable	= THttpResponse.BufferOutput cannot be modified after THttpResponse is initialized.
 httpresponse_file_inexistent			= THttpResponse cannot send file '{0}'. The file does not exist.
 
