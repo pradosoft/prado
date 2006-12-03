@@ -54,6 +54,15 @@ class TDbCommand extends TComponent
 	}
 
 	/**
+	 * Set the statement to null when serializing.
+	 */
+	public function __sleep()
+	{
+		$this->_statement=null;
+		return array_keys(get_object_vars($this));
+	}
+
+	/**
 	 * @return string the SQL statement to be executed
 	 */
 	public function getText()
@@ -193,6 +202,7 @@ class TDbCommand extends TComponent
 	 */
 	public function query()
 	{
+//		Prado::debug();
 		try
 		{
 			if($this->_statement instanceof PDOStatement)

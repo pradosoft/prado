@@ -102,6 +102,15 @@ class TDbConnection extends TComponent
 	}
 
 	/**
+	 * Close the connection when serializing.
+	 */
+	public function __sleep()
+	{
+		$this->close();
+		return array_keys(get_object_vars($this));
+	}
+
+	/**
 	 * @return array list of available PDO drivers
 	 * @see http://www.php.net/manual/en/function.pdo-getavailabledrivers.php
 	 */

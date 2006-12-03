@@ -3,6 +3,9 @@
  * TSqliteMetaData class file.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005-2007 PradoSoft
+ * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Data.ActiveRecord.Vendor
  */
@@ -64,9 +67,10 @@ class TSqliteMetaData extends TDbMetaDataCommon
 	 */
 	public function postQuery($rows)
 	{
+		$data = array();
 		foreach($rows as $k=>$v)
-			$rows[$k] = $this->postQueryRow($v);
-		return $rows;
+			$data[$k] = $this->postQueryRow($v);
+		return $data;
 	}
 }
 

@@ -3,6 +3,9 @@
  * TActiveRecord class file.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005-2007 PradoSoft
+ * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Data.ActiveRecord
  */
@@ -373,10 +376,10 @@ abstract class TActiveRecord extends TComponent
 	{
 		if($findOne = substr(strtolower($method),0,6)==='findby')
 			$condition = $method[6]==='_' ? substr($method,7) : substr($method,6);
-		else if(substr(strtolower($method,0,9)==='findallby'))
+		else if(substr(strtolower($method),0,9)==='findallby')
 			$condition = $method[9]==='_' ? substr($method,10) : substr($method,9);
 		else
-			throw new TActiveRecordException('ar_invalid_finder_method',$method);
+			return null;//throw new TActiveRecordException('ar_invalid_finder_method',$method);
 		$fields = array();
 		foreach(preg_split('/and|_and_/i',$condition) as $field)
 			$fields[] = $field.' = ?';
