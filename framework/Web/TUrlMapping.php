@@ -171,7 +171,7 @@ class TUrlMapping extends TUrlManager
 				return $params;
 			}
 		}
-		return array();
+		return parent::parseUrl();
 	}
 
 	/**
