@@ -25,21 +25,36 @@ This usually means delcaring the <tt>TUrlMapping</tt> module before any
 Specifying the mappings in the per directory <tt>config.xml</tt> is not supported.
 </div>
 
-<p>The mapping format is as follows.
+<p>
+To use <tt>TUrlMapping</tt>, one must set the <tt>UrlManager</tt> property of the <tt>THttpRequest</tt> module as the <tt>TUrlMapping</tt> module ID. See following for an example,
 <com:TTextHighlighter Language="xml" CssClass="source">
-<module id="friendly-url" class="System.Web.TUrlMapping">
-  <url serviceParameter="ClassName" pattern="pattern" parameters.id="subpattern" />
-</module>
+<modules>
+    <module id="request" class="THttpRequest" UrlManager="friendly-url" />
+    <module id="friendly-url" class="System.Web.TUrlMapping">
+        <url ServiceParameter="Posts.ViewPost" pattern="post/{id}/?" parameters.id="\d+" />
+        <url ServiceParameter="Posts.ListPost" pattern="archive/{time}/?" parameters.time="\d{6}" />
+        <url ServiceParameter="Posts.ListPost" pattern="category/{cat}/?" parameters.cat="\d+" />
+    </module>
+</modules>
 </com:TTextHighlighter>
 </p>
 
-<p>The <tt>ServiceParameter</tt> and <tt>ServiceID</tt>
- (the default ID is 'page') set the service parameter and service ID, respectively, of
- the <a href="?page=Fundamentals.Modules">Request module</a>.
- The service parameter for the <tt>TPageService</tt> service is the
- Page class name, e.g., for an URL "index.php?page=Home", "page" is the service ID and the service
- parameter is "Home". Other services may use the service parameter and ID differently.
-See <a href="?page=Fundamentals.Services">Services</a> for further details.
+<p>
+The above example is part of the application configuration of the <tt>blog</tt> demo in the PRADO release. It enables recognition of the following URL formats:
+</p>
+<ul>
+  <li><tt>/index.php/post/123</tt> is recognized as <tt>/index.php?page=Posts.ViewPost&id=123</tt></li>
+  <li><tt>/index.php/archive/200605</tt> is recognized as <tt>/index.php?page=Posts.ListPost&time=200605</tt></li>
+  <li><tt>/index.php/category/2</tt> is recognized as <tt>/index.php?page=Posts.ListPost&cat=2</tt></li>
+</ul>
+
+<p>
+The <tt>ServiceParameter</tt> and <tt>ServiceID</tt> (the default ID is 'page') set the service parameter and service ID, respectively, of the <a href="?page=Fundamentals.Modules">Request module</a>. The service parameter for the <tt>TPageService</tt> service is the Page class name, e.g., for an URL "index.php?page=Home", "page" is the service ID and the service parameter is "Home". Other services may use the service parameter and ID differently. See <a href="?page=Fundamentals.Services">Services</a> for further details.
+</p>
+
+<h2>Specifying URL Patterns</h2>
+<p>
+<tt>TUrlMapping</tt> enables recognition of customized URL formats based on a list prespecified of URL patterns. Each pattern is specified in a <tt>&lt;url&gt;</tt> tag.
 </p>
 
 <p>
@@ -95,6 +110,11 @@ object. For example, <tt>$this->Request['year']</tt>.
 <p>The URL mapping are evaluated in order they are place and only the first mapping that matches
  the URL will be used. Cascaded mapping can be achieved by placing the URL mappings
  in particular order. For example, placing the most specific mappings first.
- </p>
+</p>
+
+<h2>Constructing Customized URLs</h2>
+<p>
+Since version 3.0.6, <tt>TUrlMapping</tt> starts to support constructing customized URL formats. This is achieved by allowing users to extend <tt>TUrlMapping</tt> class and override the <tt>constructUrl</tt> method. In the applications, users can still use <tt>THttpRequest.constructUrl()</tt> or <tt>TPageService.constructUrl()</tt> to generate PRADO-recognizable URLS. The actual URL construction work is ultimately delegated to the <tt>TUrlMapping.constructUrl()</tt>, provided it is implemented.
+</p>
 
 </com:TContent>
