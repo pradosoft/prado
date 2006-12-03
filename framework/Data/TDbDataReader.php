@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2006 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id $
+ * @version $Id$
  * @package System.Data
  */
 
@@ -30,7 +30,7 @@
  * for more details.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id $
+ * @version $Id$
  * @package System.Data
  * @since 3.0
  */
