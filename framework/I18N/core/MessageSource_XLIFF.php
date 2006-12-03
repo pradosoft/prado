@@ -287,7 +287,11 @@ class MessageSource_XLIFF extends MessageSource
 		$xpath = new DomXPath($dom);
     	$body = $xpath->query('//body')->item(0);
 
-		$count = $xpath->query('//trans-unit')->length;
+		$lastNodes = $xpath->query('//trans-unit[last()]');
+		if(($last=$lastNodes->item(0))!==null)
+			$count = intval($last->getAttribute('id'));
+		else
+			$count = 0;
 
 		//for each message add it to the XML file using DOM
     	foreach($messages as $message)
