@@ -3,6 +3,7 @@ Version 3.0.6 December 4, 2006
 BUG: Ticket#442 - TPageService getBasePath in namespace form (Qiang)
 BUG: Ticket#443 - Template comment tag messed up with HTML comment tag (Qiang)
 BUG: Ticket#467 - typo in TUrlMapping.php (Qiang)
+BUG: Ticket#476 - Problem when adding a new text (translate) with MessageSource_XLIFF (Wei)
 BUG: TTableCell should render &nbsp; only when Text is not set and there's no child (Qiang)
 BUG: global state was not saved when redirect() is invoked (Qiang)
 BUG: TPager would not display if it was invisible previously (Qiang)
