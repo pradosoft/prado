@@ -229,6 +229,8 @@ interface ICache
  * This interface must be implemented by classes meant to be used as
  * cache dependencies.
  *
+ * Classes implementing this interface must support serialization and unserialization.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Id$
  * @package System
@@ -282,9 +284,9 @@ interface IBindable
 
 /**
  * IActiveControl interface.
- * 
+ *
  * Active controls must implement IActiveControl interface.
- * 
+ *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @version $Id$
  * @package System
@@ -295,15 +297,15 @@ interface IActiveControl
 	/**
 	 * @return TBaseActiveControl Active control properties.
 	 */
-	public function getActiveControl(); 	
+	public function getActiveControl();
 }
 
 /**
  * ICallbackEventHandler interface.
- * 
+ *
  * If a control wants to respond to callback event, it must implement this
  * interface.
- *  
+ *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @version $Id$
  * @package System

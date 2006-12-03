@@ -363,3 +363,6 @@ dbcommand_query_failed					= TDbCommand failed to execute the query SQL: {0}
 dbcommand_column_empty					= TDbCommand returned an empty result and could not obtain the scalar.
 dbdatareader_rewind_invalid				= TDbDataReader is a forward-only stream. It can only be traversed once.
 dbtransaction_transaction_inactive		= TDbTransaction is inactive.
+
+directorycachedependency_directory_invalid = TDirectoryCacheDependency.Directory {0} does not refer to a valid directory.
+cachedependencylist_cachedependency_required = Only objects implementing ICacheDependency can be added into TCacheDependencyList.
