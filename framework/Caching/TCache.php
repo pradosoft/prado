@@ -257,7 +257,7 @@ abstract class TCache extends TModule implements ICache
  * - {@link TChainedCacheDependency}: checks whether any of a list of dependencies is changed or not
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id $
+ * @version $Id$
  * @package System.Caching
  * @since 3.1.0
  */
@@ -310,7 +310,7 @@ abstract class TCacheDependency extends TComponent implements ICacheDependency
  * last modification time remains unchanged.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id $
+ * @version $Id$
  * @package System.Caching
  * @since 3.1.0
  */
@@ -379,7 +379,7 @@ class TFileCacheDependency extends TCacheDependency
  * to a certain depth of the subdirectories.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id $
+ * @version $Id$
  * @package System.Caching
  * @since 3.1.0
  */
@@ -535,7 +535,7 @@ class TDirectoryCacheDependency extends TCacheDependency
  * set {@link setStateName StateName} to the name of the global state.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id $
+ * @version $Id$
  * @package System.Caching
  * @since 3.1.0
  */
@@ -596,7 +596,7 @@ class TGlobalStateCacheDependency extends TCacheDependency
  * (see {@link TList} for more details}).
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id $
+ * @version $Id$
  * @package System.Caching
  * @since 3.1.0
  */
@@ -643,7 +643,7 @@ class TChainedCacheDependency extends TCacheDependency
  * for more details.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id $
+ * @version $Id$
  * @package System.Caching
  * @since 3.1.0
  */
