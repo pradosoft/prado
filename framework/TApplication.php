@@ -805,7 +805,9 @@ class TApplication extends TComponent
 
 		if($this->_configFile===null)
 		{
-			$this->getRequest()->setAvailableServices(array(self::PAGE_SERVICE_ID));
+			$request=$this->getRequest();
+			$request->setAvailableServices(array(self::PAGE_SERVICE_ID));
+			$request->resolveRequest();
 			$this->_service=$this->getPageService();
 			return;
 		}
