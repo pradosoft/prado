@@ -1,5 +1,5 @@
 <com:TContent ID="Content">
-	<h2>Validators ClientSide.OnError triggered twice</h2>
+	<h2>Validators ClientSide.OnValidationError triggered twice</h2>
 	<h3>Use ClientSide.ObseveChanges="false"</h3>
 	<com:TTextBox ID="text1" /><br />
 	  <com:TRequiredFieldValidator 

@@ -156,8 +156,8 @@ The summary can be displayed as a list, a bulleted list, or a single paragraph b
 	All validators contains the following events.
 	<ul>
 		<li>The <tt>OnValidate</tt> event is raise before the validator validation functions are called.</li>
-		<li>The <tt>OnSuccess</tt> event is raised after the validator has successfully validate the control.</li>
-		<li>The <tt>OnError</tt> event is raised after the validator fails validation.</li>
+		<li>The <tt>OnValidationSuccess</tt> event is raised after the validator has successfully validate the control.</li>
+		<li>The <tt>OnValidationError</tt> event is raised after the validator fails validation.</li>
 	</ul>
 	The corresponding events for the client side is available as sub-properties
 	of the <tt>ClientSide</tt> property of the validator.
@@ -165,9 +165,9 @@ The summary can be displayed as a list, a bulleted list, or a single paragraph b
 <p>The following example pop-up a message saying "hello" when the validator fails on the client-side.
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TRequiredFieldValidator ... &gt;
-	&lt;prop:ClientSide.OnError&gt;
+	&lt;prop:ClientSide.OnValidationError&gt;
 		alert("hello");
-	&lt;/prop:ClientSide.OnError&gt;
+	&lt;/prop:ClientSide.OnValidationError&gt;
 &lt;/com:TRequiredFieldValidator&gt;
 </com:TTextHighlighter>
 The resulting client-side event callback function is of the following form.

@@ -16,13 +16,13 @@
 		ControlCssClass="required"
 		Display="Dynamic"
 		ErrorMessage="a username is required.">
-	<prop:ClientSide.OnError>
+	<prop:ClientSide.OnValidationError>
 		Effect.Shake(sender.control);
 		Effect.Appear(sender.message);
-	</prop:ClientSide.OnError>
-	<prop:ClientSide.OnSuccess>
+	</prop:ClientSide.OnValidationError>
+	<prop:ClientSide.OnValidationSuccess>
 		Effect.Fade(sender.message);
-	</prop:ClientSide.OnSuccess>
+	</prop:ClientSide.OnValidationSuccess>
 	</com:TRequiredFieldValidator>
 </div>
 <div class="password">
@@ -37,8 +37,8 @@
 	ValidationGroup="registration"
 	ControlCssClass="required"
 	Display="Dynamic"
-	ClientSide.OnError="sender.message.visualEffect('appear')"
-	ClientSide.OnSuccess="sender.message.visualEffect('fade')"
+	ClientSide.OnValidationError="sender.message.visualEffect('appear')"
+	ClientSide.OnValidationSuccess="sender.message.visualEffect('fade')"
 	ErrorMessage="a password is required." />
 </div>
 <div class="create">

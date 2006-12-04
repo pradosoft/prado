@@ -2,8 +2,8 @@
 <com:TForm>
 
 <com:TActiveButton ID="button1"
-	ClientSide.RequestTimeOut="3000"
-	Text="Click Me!" OnCallback="button1_oncallback" />
+	CustomData="0"
+	Text="Click Me!" OnClick="button1_oncallback" />
 <com:TActiveLabel ID="label1" />
 
 <com:TActiveRatingList RepeatColumns="2" RepeatDirection="Vertical">
