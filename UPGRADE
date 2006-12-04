@@ -30,6 +30,8 @@ Upgrading from v3.0.5
   the appearance of existing PRADO applications that use TDataGrid.
 - If TUrlMapping is used, you need to set the UrlManager property of
   THttpRequest to the module ID of TUrlMapping.
+- TJavascriptLogger toggle key is changed from ALT-D to ALT-J. 
+   Use the ToggleKey property chanage to a different key.
 
 Upgrading from v3.0.4
 ---------------------

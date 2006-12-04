@@ -200,7 +200,7 @@ LogConsole.prototype = {
   // Methods
   // -------
 
-  initialize : function() {
+  initialize : function(toggleKey) {
     this.outputCount = 0
     this.tagPattern = Cookie.get('tagPattern') || ".*"
 
@@ -283,6 +283,12 @@ LogConsole.prototype = {
 		this.logElement.style.position="fixed";
 		this.logElement.style.bottom="0px";
 	}
+	var self=this;
+	Event.observe(document, 'keydown', function(e)
+	{ 
+		if((e.altKey==true) && Event.keyCode(e) == toggleKey ) //Alt+J | Ctrl+J
+			self.toggle();
+	});
 
     // Listen to the logger....
     Logger.onupdate.addListener(this.logUpdate.bind(this))
@@ -451,12 +457,6 @@ LogConsole.prototype = {
     }
 	}
 }
-
-// Load the Console when the window loads
-var logConsole;
-Event.OnLoad(function() { logConsole = new LogConsole()});
-
-
 
 
 // -------------------------

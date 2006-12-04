@@ -40,7 +40,7 @@ LogEntry=Class.create()
 LogEntry.prototype={initialize:function(message,tag){this.message=message
 this.tag=tag}}
 LogConsole=Class.create()
-LogConsole.prototype={commandHistory:[],commandIndex:0,hidden:true,initialize:function(){this.outputCount=0
+LogConsole.prototype={commandHistory:[],commandIndex:0,hidden:true,initialize:function(toggleKey){this.outputCount=0
 this.tagPattern=Cookie.get('tagPattern')||".*"
 this.logElement=document.createElement('div')
 document.body.appendChild(this.logElement)
@@ -97,7 +97,9 @@ if(document.all&&!window.opera)
 {window.setInterval(this.repositionWindow.bind(this),500)}
 else
 {this.logElement.style.position="fixed";this.logElement.style.bottom="0px";}
-Logger.onupdate.addListener(this.logUpdate.bind(this))
+var self=this;Event.observe(document,'keydown',function(e)
+{if((e.altKey==true)&&Event.keyCode(e)==toggleKey)
+self.toggle();});Logger.onupdate.addListener(this.logUpdate.bind(this))
 Logger.onclear.addListener(this.clear.bind(this))
 for(var i=0;i<Logger.logEntries.length;i++){this.logUpdate(Logger.logEntries[i])}
 Event.observe(window,'error',function(msg,url,lineNumber){Logger.error("Error in ("+(url||location)+") on line "+lineNumber+"",msg)})
@@ -152,7 +154,7 @@ if(this.commandIndex<this.commandHistory.length-1){this.commandIndex+=1}}
 else if(e.keyCode==Event.KEY_DOWN&&this.commandHistory.length>0){if(this.commandIndex>0){this.commandIndex-=1}
 this.inputElement.value=this.commandHistory[this.commandIndex]}
 else{this.commandIndex=0}}}
-var logConsole;Event.OnLoad(function(){logConsole=new LogConsole()});function inspect(o)
+function inspect(o)
 {var objtype=typeof(o);if(objtype=="undefined"){return"undefined";}else if(objtype=="number"||objtype=="boolean"){return o+"";}else if(o===null){return"null";}
 try{var ostring=(o+"");}catch(e){return"["+typeof(o)+"]";}
 if(typeof(o)=="function")

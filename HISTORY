@@ -18,9 +18,13 @@ NEW: TCacheDependency, TFileCacheDependency, TDirectoryCacheDependency, TGlobalS
 
 Version 3.0.6 December 4, 2006
 ==============================
+BUG: Ticket#400 - TJavascriptLogger incompatible with Firefox 2.0 RC1 (Wei)
 BUG: Ticket#442 - TPageService getBasePath in namespace form (Qiang)
 BUG: Ticket#443 - Template comment tag messed up with HTML comment tag (Qiang)
+BUG: Ticket#453 - I18N controls should accept UNIX timestamps (Wei)
+BUG: Ticket#463	- TPhpErrorException: Non-static method DateTimeFormatInfo::getInstance() (Wei)
 BUG: Ticket#467 - typo in TUrlMapping.php (Qiang)
+BUG: Ticket#476 - Problem when adding a new text (translate) with MessageSource_XLIFF (Wei)
 BUG: TTableCell should render &nbsp; only when Text is not set and there's no child (Qiang)
 BUG: global state was not saved when redirect() is invoked (Qiang)
 BUG: TPager would not display if it was invisible previously (Qiang)
@@ -28,6 +32,7 @@ ENH: Ticket#446 - Added TMetaTagCollection.getMetaTagByID method (Qiang)
 ENH: Ticket#451 - Modified TUrlMapping to extend from TUrlManager (Qiang)
 ENH: Ticket#468 - Added support of using all property tags in skins (Qiang)
 ENH: Ticket#471 - Added methods in TAssetManager to expose published path and URL (Qiang)
+ENH: Add ToggleKey for TJavascriptLogger (Wei)
 CHG: Ticket#437 - __autoload is replaced by spl_autoload_register (Qiang)
 CHG: Ticket#454 - Redundant PHP Version Check (Qiang)
 CHG: Ticket#460 - Validators will not perform validation if parents are disabled (Qiang)
@@ -36,6 +41,7 @@ CHG: TRepeater does not render <span> anymore for empty item template (Qiang)
 CHG: THttpRequest.constructUrl() now encodes ampersand by default (Qiang)
 CHG: TDataBoundControl will not throw exception if CurrentPageIndex is out of range (Qiang)
 NEW: TUrlManager (Qiang)
+
 
 Version 3.0.5 October 23, 2006
 ==============================
