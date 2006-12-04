@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<sqlMap namespace="Order">
+
+	<alias>
+		<typeAlias alias="Order" type="IBatisNet.DataMapper.Test.Domain.Order, IBatisNet.DataMapper.Test" />
+	</alias>
+
+		<!-- If the type is not specified, ADO.NET infers the 
+			  data provider Type of the Parameter from the Value property 
+			  of the Parameter object. -->
+
+	
+	<resultMap id="credit-card-result" class="string">
+		<result property="value" column="Order_CardNumber"/>
+	</resultMap>
+	<!--  -->
+	<resultMap id="order-with-lines-result" class="Order" 
+							extends="lite-order-result-by-name" >
+		<result property="LineItemsList" lazyLoad="true" type="TList" column="Order_Id" select="GetLineItemsForOrder" />
+	</resultMap>
+
+	<resultMap id="order-with-lines-result-no-lazy-load" class="Order" 
+							extends="lite-order-result-by-name" >
+		<result property="LineItemsList" type="TList" column="Order_Id" select="GetLineItemsForOrder" />
+	</resultMap>
+
+	<resultMap id="order-with-lines-result-statement-namespaces" class="Order" 
+							extends="lite-order-result-by-name" >
+		<result property="LineItemsList" lazyLoad="true" type="TList" column="Order_Id" select="LineItem.GetLineItemsForOrder" />
+	</resultMap>
+			
+	<resultMap id="order-with-lines-collection" class="Order"
+							extends="lite-order-result-by-name" >
+		<result property="LineItems" column="Order_Id" lazyLoad="true" 
+			select="GetLineItemsForOrderWithListClass" />
+	</resultMap>
+
+	<resultMap id="order-with-lines-collection-no-lazy-load" class="Order"
+							extends="lite-order-result-by-name" >
+		<result property="LineItems" column="Order_Id" 
+			select="GetLineItemsForOrderWithListClass" />
+	</resultMap>
+
+	<resultMap id="order-with-lines-array" class="Order"
+							extends="lite-order-result-by-name">
+		<result property="LineItemsArray" column="Order_Id" select="GetLineItemsForOrder"/>
+	</resultMap>
+
+	<resultMap id="lite-order-map-result" class="array">
+		<result property="Id"         type="Int" column="Order_Id"/>
+		<result property="Date"       type="date" column="Order_Date"/>
+		<result property="CardExpiry" type="string" column="Order_CardExpiry"/>
+		<result property="CardType"   type="string" column="Order_CardType"/>
+		<result property="CardNumber" type="string" column="Order_CardNumber"/>
+		<result property="Street"     type="string" column="Order_Street"/>
+		<result property="City"       type="string" column="Order_City"/>
+		<result property="Province"   type="string" column="Order_Province"/>
+		<result property="PostalCode" type="string" column="Order_PostalCode"/>
+	</resultMap>
+
+	<resultMap id="lite-order-result-by-name" class="Order">
+		<result property="Id"         column="Order_Id"/>
+		<result property="Date"       type="date" column="Order_Date" nullValue="0001-01-01 00:00:00"/>
+		<result property="CardExpiry" column="Order_CardExpiry"/>
+		<result property="CardType"   column="Order_CardType"/>
+		<result property="CardNumber" column="Order_CardNumber"/>
+		<result property="Street"     column="Order_Street"/>
+		<result property="City"       column="Order_City"/>
+		<result property="Province"   column="Order_Province"/>
+		<result property="PostalCode" column="Order_PostalCode"/>
+	</resultMap>
+	
+	<resultMap id="order-hash" class="array">
+		<result property="Date"       column="Order_Date" nullValue="0001-01-01 00:00:00"/>
+	</resultMap>		
+	
+	<resultMap id="order-with-types-result" class="Order">
+		<result property="Id"         column="Order_Id"			dbType="Int32"/>
+		<result property="Date"       column="Order_Date"		type="date" dbType="DateTime "/>
+		<result property="CardExpiry" column="Order_CardExpiry" dbType="VarChar"/>
+		<result property="CardType"   column="Order_CardType"	dbType="VarChar"/>
+		<result property="CardNumber" column="Order_CardNumber" dbType="VarChar"/>
+		<result property="Street"     column="Order_Street"		dbType="VarChar"/>
+		<result property="City"       column="Order_City"		dbType="VarChar"/>
+		<result property="Province"   column="Order_Province"	dbType="VarChar"/>
+		<result property="PostalCode" column="Order_PostalCode" dbType="VarChar"/>
+	</resultMap>
+	
+	<resultMap id="lite-order-result-by-index" class="Order">
+		<result property="Id"         column="Order_Id"			columnIndex="0"/>
+		<result property="Date"       column="Order_Date"		type="date" columnIndex="1" />
+		<result property="CardExpiry" column="Order_CardExpiry" columnIndex="2"/>
+		<result property="CardType"   column="Order_CardType"	columnIndex="3" />
+		<result property="CardNumber" column="Order_CardNumber" columnIndex="4" />
+		<result property="Street"     column="Order_Street"		columnIndex="5" />
+		<result property="City"       column="Order_City"		columnIndex="6" />
+		<result property="Province"   column="Order_Province"	columnIndex="7"/>
+		<result property="PostalCode" column="Order_PostalCode" columnIndex="8" />
+	</resultMap>
+	
+	<resultMap id="order-with-account-result" class="Order">
+		<result property="Id"         column="Order_Id"/>
+		<result property="Date"       type="date" column="Order_Date"/>
+		<result property="CardExpiry" column="Order_CardExpiry"/>
+		<result property="CardType"   column="Order_CardType"/>
+		<result property="CardNumber" column="Order_CardNumber"/>
+		<result property="Street"     column="Order_Street"/>
+		<result property="City"       column="Order_City"/>
+		<result property="Province"   column="Order_Province"/>
+		<result property="PostalCode" column="Order_PostalCode"/>
+		<result property="Account"    column="Account_Id" select="GetAccountViaColumnName" />
+	</resultMap>
+	
+	<resultMap id="order-with-collection-result" class="Order">
+		<result property="Id"				column="Order_Id"/>
+		<result property="Date"				type="date" column="Order_Date"/>
+		<result property="CardExpiry"		column="Order_CardExpiry"/>
+		<result property="CardType"			column="Order_CardType"/>
+		<result property="CardNumber"		column="Order_CardNumber"/>
+		<result property="Street"			column="Order_Street"/>
+		<result property="City"				column="Order_City"/>
+		<result property="Province"			column="Order_Province"/>
+		<result property="PostalCode"		column="Order_PostalCode"/>
+		<result property="LineItemsList"	column="Order_Id" select="GetLineItemsForOrder" />	
+		<result property="LineItems"		column="Order_Id" select="GetLineItemsForOrder" lazyLoad="false" />
+	</resultMap>
+	
+	<resultMap id="order-with-favourite-line-item" class="Order">
+		<result property="Id"					column="Order_Id"/>
+		<result property="Date"					column="Order_Date"/>
+		<result property="CardExpiry"			column="Order_CardExpiry"/>
+		<result property="CardType"				column="Order_CardType"/>
+		<result property="CardNumber"			column="Order_CardNumber"/>
+		<result property="Street"				column="Order_Street"/>
+		<result property="City"					column="Order_City"/>
+		<result property="Province"				column="Order_Province"/>
+		<result property="PostalCode"			column="Order_PostalCode"/>
+		<result property="FavouriteLineItem"	
+				column="Order_ID=Order_Id,LineItem_ID=Order_FavouriteLineItem" 
+				select="GetSpecificLineItem" />
+	</resultMap>
+	
+	<resultMap id="order-with-dyn-favourite-line-item" class="Order">
+		<result property="Id"					column="Order_Id"/>
+		<result property="Date"					column="Order_Date"/>
+		<result property="CardExpiry"			column="Order_CardExpiry"/>
+		<result property="CardType"				column="Order_CardType"/>
+		<result property="CardNumber"			column="Order_CardNumber"/>
+		<result property="Street"				column="Order_Street"/>
+		<result property="City"					column="Order_City"/>
+		<result property="Province"				column="Order_Province"/>
+		<result property="PostalCode"			column="Order_PostalCode"/>
+		<result property="FavouriteLineItem"	
+					column="Order_ID=Order_Id,LineItem_ID=Order_FavouriteLineItem" 
+					select="GetDynSpecificLineItem" />
+	</resultMap>
+	
+	<resultMap id="order-joined-favourite" class="Order">
+		<result property="Id"					column="Order_Id"/>
+		<result property="Date"					type="date" column="Order_Date"/>
+		<result property="CardExpiry"			column="Order_CardExpiry"/>
+		<result property="CardType"				column="Order_CardType"/>
+		<result property="CardNumber"			column="Order_CardNumber"/>
+		<result property="Street"				column="Order_Street"/>
+		<result property="City"					column="Order_City"/>
+		<result property="Province"				column="Order_Province"/>
+		<result property="PostalCode"			column="Order_PostalCode"/>
+		<result property="FavouriteLineItem"	resultMapping="LineItem" />
+	</resultMap>
+	
+	<resultMap id="order-joined-favourite2" class="Order">
+		<result property="Id"					column="Order_Id"/>
+		<result property="Date"					type="date" column="Order_Date"/>
+		<result property="CardExpiry"			column="Order_CardExpiry"/>
+		<result property="CardType"				column="Order_CardType"/>
+		<result property="CardNumber"			column="Order_CardNumber"/>
+		<result property="Street"				column="Order_Street"/>
+		<result property="City"					column="Order_City"/>
+		<result property="Province"				column="Order_Province"/>
+		<result property="PostalCode"			column="Order_PostalCode"/>
+		<result property="FavouriteLineItem.Id" column="LineItem_Id"/>
+		<result property="FavouriteLineItem.Code" column="LineItem_Code"/>
+		<result property="FavouriteLineItem.Quantity" column="LineItem_Quantity"/>
+		<result property="FavouriteLineItem.Price" column="LineItem_Price"/>			
+	</resultMap>
+			
+	<resultMap id="order-joined-with-account" class="Order">
+		<result property="Id"         column="Order_Id"/>
+		<result property="Date"       type="date" column="Order_Date" nullValue="0001-01-01 00:00:00"/>
+		<result property="CardExpiry" column="Order_CardExpiry"/>
+		<result property="CardType"   column="Order_CardType"/>
+		<result property="CardNumber" column="Order_CardNumber"/>
+		<result property="Street"     column="Order_Street"/>
+		<result property="City"       column="Order_City"/>
+		<result property="Province"   column="Order_Province"/>
+		<result property="PostalCode" column="Order_PostalCode"/>
+		<result property="Account"	resultMapping="account-result-nullable-email" />
+	</resultMap>		
+	
+	<statement id="GetOrderLiteByColumnName"
+				parameterClass="integer"
+				resultMap="lite-order-result-by-name" >
+		select * from Orders where Order_Id = #value#
+	</statement>
+	
+	<statement id="GetOrderByHashTable"
+				parameterClass="Int"
+				resultMap="order-hash" >
+		select Order_Date from Orders where Order_Id = #value#
+	</statement>		
+	
+	<statement id="GetOrderLiteByColumnIndex"
+				parameterClass="Int"
+				resultMap="lite-order-result-by-index" >
+		select
+		Order_Id,
+		Order_Date,
+		Order_CardExpiry,
+		Order_CardType,
+		Order_CardNumber,
+		Order_Street,
+		Order_City,
+		Order_Province,
+		Order_PostalCode
+		from Orders where Order_Id = #value#
+	</statement>
+	
+	<statement id="GetOrderWithTypes"
+				parameterClass="Int"
+				resultMap="order-with-types-result" >
+		select * from Orders where Order_Id = #value#
+	</statement>
+	
+	<statement id="GetOrderWithLineItems"
+				parameterClass="Integer"
+				ListClass="TList"
+				resultMap="order-with-lines-result" >
+		select * from Orders where Order_Id = #value#
+	</statement>
+
+
+	<statement id="GetOrderWithLineItemsNoLazyLoad"
+				parameterClass="Integer"
+				resultMap="order-with-lines-result-no-lazy-load" >
+		select * from Orders where Order_Id = #value#
+	</statement>
+
+	<statement id="GetOrderWithLineItemsUsingStatementNamespaces"
+				parameterClass="Integer"
+				resultMap="order-with-lines-result-statement-namespaces" >
+		select * from Orders where Order_Id = #value#
+	</statement>
+
+	<statement id="GetAllOrderWithLineItems"
+				resultMap="order-with-lines-result" >
+		select * from Orders
+	</statement>
+
+	<statement id="GetOrderCardExpiryViaResultClass"
+				parameterClass="int"
+				resultClass="date">
+		select
+		Order_Date as 'datetime'
+		from Orders where Order_Id = #value#
+	</statement>
+	
+	<statement id="GetOrderWithAccount"
+				parameterClass="int"
+				resultMap="order-with-account-result" >
+		select * from Orders where Order_Id = #value#
+	</statement>
+	
+	<statement id="GetOrderWithLineItemsCollection"
+				parameterClass="Integer"
+				resultMap="order-with-collection-result" >
+		select * from Orders where Order_Id = #value#
+	</statement>
+	
+	 <statement id="GetOrderJoinedFavourite"
+				parameterClass="Integer"
+				resultMap="order-joined-favourite" >
+		select * from Orders, LineItems
+		where Orders.Order_Id = LineItems.Order_Id
+		and Order_FavouriteLineItem = LineItems.LineItem_ID
+		and Orders.Order_Id = #value#
+	</statement>
+
+	<statement id="GetOrderJoinedFavourite2"
+				parameterClass="Integer"
+				resultMap="order-joined-favourite2" >
+		select * from Orders, LineItems
+		where Orders.Order_Id = LineItems.Order_Id
+		and Order_FavouriteLineItem = LineItems.LineItem_ID
+		and Orders.Order_Id = #value#
+	</statement>
+
+	<statement id="GetOrderJoinedFavourite3"
+				parameterClass="Integer"
+				resultClass="Order" >
+		select 
+			Orders.Order_Id as Id,
+			Order_Date as Date,
+			Order_CardExpiry as CardExpiry,
+			Order_CardType as CardType,
+			Order_CardNumber as CardNumber,
+			Order_Street as Street,
+			Order_City as City,
+			Order_Province as Province,
+			Order_PostalCode as PostalCode,
+			LineItem_ID as "FavouriteLineItem.Id",
+			LineItem_Code as "FavouriteLineItem.Code",
+			LineItem_Quantity as "FavouriteLineItem.Quantity",
+			LineItem_Price as "FavouriteLineItem.Price"
+		from Orders, LineItems
+		where Orders.Order_Id = LineItems.Order_Id
+		and Order_FavouriteLineItem = LineItems.LineItem_ID
+		and Orders.Order_Id = #value#
+	</statement>
+			
+	<statement id="GetOrderWithFavouriteLineItem"
+				parameterClass="int"
+				resultMap="order-with-favourite-line-item" >
+		select * from Orders where Order_Id = #value#
+	</statement>
+	
+	<statement id="GetOrderWithLineItemCollection"
+				parameterClass="int"
+				resultMap="order-with-lines-collection" >
+		select * from Orders where Order_Id = #value#
+	</statement>
+
+		<statement id="GetOrderWithLineItemCollectionNoLazy"
+				parameterClass="int"
+				resultMap="order-with-lines-collection-no-lazy-load" >
+		select * from Orders where Order_Id = #value#
+	</statement>
+
+	<statement id="GetOrderAsHastable"
+				parameterClass="Integer"
+				resultMap="lite-order-map-result" >
+		select * from Orders where Order_Id = #value#
+	</statement>
+	
+	<statement id="GetOrderWithLineItemArray"
+			parameterClass="int"
+			resultMap="order-with-lines-array">
+			select * from Orders where Order_Id = #value#
+	</statement>
+	
+	<statement id="GetAllCreditCardNumbersFromOrders"
+			resultMap="credit-card-result" >
+		select distinct Order_CardNumber from Orders
+		order by Order_CardNumber
+	</statement>
+	
+	<statement id="InsertOrderViaParameterMap"
+				parameterMap="order-insert-params-full" >
+		insert into Orders  
+			(Order_Id, Account_ID, Order_Date, Order_CardExpiry, Order_CardType, 
+				Order_CardNumber, Order_Street, Order_City, Order_Province, Order_PostalCode ) 
+		values 
+			(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	</statement>		
+	
+	<statement id="InsertOrderViaExtendParameterMap"
+				parameterMap="insert-extend" >
+		insert into Orders  
+			(Order_Id, Account_ID, Order_Date, Order_CardExpiry, Order_CardType, 
+				Order_CardNumber, Order_Street, Order_City, Order_Province, Order_PostalCode ) 
+		values 
+			(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	</statement>	
+
+	<statement id="InsertOrderViaPublicFields">
+		insert into Orders  
+			(Order_Id, Account_ID, Order_Date, Order_CardExpiry, Order_CardType, 
+				Order_CardNumber, Order_Street, Order_City, Order_Province, Order_PostalCode ) 
+		values 
+			(#Id#, #Account.Id#, #Date#, #CardExpiry#, #CardType#, #CardNumber#, #Street#, #City#, #Province#, #PostalCode#)
+	</statement>		
+			
+	<select id="GetOrderWithDynFavouriteLineItem"
+			parameterClass="Integer"
+			resultMap="order-with-dyn-favourite-line-item">
+		select * from Orders where Order_Id = #value#
+	</select>		
+	
+	<select id="SelectOrderByDate"
+			parameterClass="array"
+			resultMap="lite-order-result-by-name">
+		select * from Orders where Order_Date = #Foo#
+	</select>	
+	
+	<select id="SelectOrderByDateDynamic"
+			parameterClass="array"
+			resultMap="lite-order-result-by-name">
+		select * from Orders
+		where 1=1
+		<isNotEmpty prepend="AND" property="Foo"> 
+			(Order_Date = '$Foo$') 
+		</isNotEmpty> 
+	</select>				
+	
+	<select id="GetAccountJIRA45"
+			parameterClass="int"
+			resultMap="indexed-account-result">
+		select
+		Account_Id,
+		Account_FirstName,
+		Account_LastName,
+		Account_Email
+		from Accounts
+		where Account_ID = #value#
+	</select>
+
+	<select id="GetOrderJoinWithAccount"
+			parameterClass="Integer"
+			resultMap="order-joined-with-account">
+		select 
+			Order_Id, 
+			Order_Date, 
+			Order_CardExpiry, 
+			Order_CardType,
+			Order_CardNumber, 
+			Order_Street, 
+			Order_City, 
+			Order_Province, 
+			Order_PostalCode,
+			acc.Account_ID,
+			acc.Account_FirstName,
+			acc.Account_LastName,
+			acc.Account_Email 
+		from Orders as ord
+		LEFT OUTER JOIN Accounts as acc on acc.Account_ID = ord.Account_ID
+		where Order_Id = #value#
+	</select>					
+	
+	<parameterMap id="order-insert-params-full">
+		<parameter property="Id" dbType="Int32"/>
+		<parameter property="Account.Id"/>
+		<parameter property="Date" nullValue="0001-01-01 00:00:00" />
+		<parameter property="CardExpiry" />
+		<parameter property="CardType" />			
+		<parameter property="CardNumber" />
+		<parameter property="Street" />
+		<parameter property="City" />			
+		<parameter property="Province" />
+		<parameter property="PostalCode" />
+	</parameterMap>
+	
+	<parameterMap id="params-parent"> <!-- 1043181 support request -->
+		<parameter property="Id" dbType="Int32"/>	
+		<parameter property="Account.Id"/>
+		<parameter property="Date" nullValue="0001-01-01 00:00:00" />
+		<parameter property="CardExpiry" />
+		<parameter property="CardType" />			
+		<parameter property="CardNumber" />
+		<parameter property="Street" />
+		<parameter property="City" />			
+		<parameter property="Province" />
+		<parameter property="PostalCode" />		
+	</parameterMap>
+	
+	<parameterMap id="insert-extend" extends="params-parent">
+	</parameterMap>
+
+</sqlMap>

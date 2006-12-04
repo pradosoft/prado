@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sqlMapConfig>
+
+	<!-- properties that replaces instanceof $name$ in the sqlmap files -->
+	<properties>
+		<property name="selectKey" value="select @@IDENTITY as value" />
+		<property name="MyCategoryName" value="'Film'" />
+		<property name="accountName" value="'Joe'" />
+	</properties>
+
+	<!-- type handlers -->
+	<typeHandlers>
+		<typeHandler class="OuiNonBool" dbType="Varchar" />
+	</typeHandlers>
+
+	<!-- sqlmap configurations -->
+	<sqlMaps>
+		<sqlMap resource="maps/sqlite/Account.xml"/>
+		<sqlMap resource="maps/sqlite/DynamicAccount.xml"/>
+		<sqlMap resource="maps/sqlite/Order.xml"/>
+		<sqlMap resource="maps/sqlite/Category.xml"/>
+		<sqlMap resource="maps/sqlite/Complex.xml"/>
+		<sqlMap resource="maps/sqlite/LineItem.xml"/>
+		<sqlMap resource="maps/sqlite/Enumeration.xml"/>
+		<sqlMap resource="maps/sqlite/Other.xml"/>
+		<sqlMap resource="maps/sqlite/ResultClass.xml"/>
+		<sqlMap resource="maps/sqlite/Document.xml"/>
+		<sqlMap resource="maps/sqlite/ActiveRecord.xml"/>
+	</sqlMaps>
+
+</sqlMapConfig>

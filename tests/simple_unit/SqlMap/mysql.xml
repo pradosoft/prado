@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sqlMapConfig>
+
+	<properties resource="properties.config"/>
+	
+	<settings>
+		<setting useStatementNamespaces="false"/>
+		<setting cacheModelsEnabled="true"/>
+	</settings>
+	
+	<!-- ==== Database configuration =========	-->
+	<provider class="TAdodbProvider" >
+		<!-- connection string set in common.php -->
+		<datasource />
+	</provider>
+		
+	<typeHandlers>
+		<typeHandler type="bool" dbType="Varchar" callback="OuiNonBool"/>
+	</typeHandlers>
+	
+	<sqlMaps>
+		<sqlMap name="Account" resource="maps/MySql/Account.xml"/>
+		<sqlMap name="DynamicAccount" resource="maps/MySql/DynamicAccount.xml"/>
+		<sqlMap name="Order" resource="maps/MySql/Order.xml"/>
+		<sqlMap name="Category" resource="maps/MySql/Category.xml"/>
+		<sqlMap name="Complex" resource="maps/MySql/Complex.xml"/>
+		<sqlMap name="LineItem" resource="maps/MySql/LineItem.xml"/>
+		<sqlMap name="Enumeration" resource="maps/MySql/Enumeration.xml"/>
+		<sqlMap name="Other" resource="maps/MySql/Other.xml"/>
+		<sqlMap name="ResultClass" resource="maps/MySql/ResultClass.xml"/>
+		<sqlMap name="Document" resource="maps/MySql/Document.xml"/>
+	</sqlMaps>
+</sqlMapConfig>

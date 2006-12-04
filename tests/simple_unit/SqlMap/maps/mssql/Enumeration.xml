@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sqlMap namespace="Enumeration" >
+
+	<resultMap id="enumeration-result"  class="Enumeration" >
+		<result property="Id"           column="Enum_ID"/>
+		<result property="Day"    column="Enum_Day"/>
+		<result property="Color"     column="Enum_Color"/>
+		<result property="Month" column="Enum_Month" nullValue="All"/>
+	</resultMap>
+
+	<select id="GetEnumerationNullValue" 
+		parameterClass="Integer" 
+		resultMap="enumeration-result">
+		select
+			Enum_ID,
+			Enum_Day,
+			Enum_Color,
+			Enum_Month
+		from Enumerations  
+		where Enum_ID = #value# 
+	</select>
+	
+	<select id="GetEnumeration" parameterClass="Integer" resultClass="Enumeration">
+		select
+			Enum_ID as Id,
+			Enum_Day as Day,
+			Enum_Color as Color,
+			Enum_Month as Month
+		from Enumerations  
+		where Enum_ID = #value# 
+	</select>
+	
+	<insert id="InsertEnumViaParameterMap" parameterMap="enum-insert-params" >
+		insert into Enumerations  
+			(Enum_ID, Enum_Day, Enum_Color, Enum_Month) 
+		values 
+			(?, ?, ?, ?)
+	</insert>
+	
+	<parameterMap id="enum-insert-params">
+		<parameter property="Id" column="Enum_ID" />
+		<parameter property="Day" column="Enum_Day"/>
+		<parameter property="Color" column="Enum_Color" />
+		<parameter property="Month" column="Enum_Month" nullValue="All"/>
+	</parameterMap>
+
+</sqlMap>

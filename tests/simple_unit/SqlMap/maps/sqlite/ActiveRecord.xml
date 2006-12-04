@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlMap>
+
+	<select id="GetActiveRecordAccounts" resultClass="ActiveAccount">
+			select
+			Account_Id,
+			Account_FirstName,
+			Account_LastName,
+			Account_Email,
+			Account_Banner_Option,
+			Account_Cart_Option
+			from Accounts
+			order by Account_Id
+	</select>
+
+</sqlMap>
