@@ -10,7 +10,6 @@ BUG: Ticket#476 - Problem when adding a new text (translate) with MessageSource_
 BUG: TTableCell should render &nbsp; only when Text is not set and there's no child (Qiang)
 BUG: global state was not saved when redirect() is invoked (Qiang)
 BUG: TPager would not display if it was invisible previously (Qiang)
-BUG: Ticket#476 - Problem when adding a new text (translate) with MessageSource_XLIFF (Wei)
 ENH: Ticket#446 - Added TMetaTagCollection.getMetaTagByID method (Qiang)
 ENH: Ticket#451 - Modified TUrlMapping to extend from TUrlManager (Qiang)
 ENH: Ticket#468 - Added support of using all property tags in skins (Qiang)
