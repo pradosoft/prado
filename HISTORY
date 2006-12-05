@@ -14,7 +14,8 @@ NEW: TQueue (Qiang)
 NEW: TSessionPageStatePersister (Qiang)
 NEW: TFeedService, TRssFeedDocument (Knut, Qiang)
 NEW: TJsonService
-NEW: TCacheDependency, TFileCacheDependency, TDirectoryCacheDependency, TGlobalStateCacheDependency, TChainedCacheDependency
+NEW: TCacheDependency, TFileCacheDependency, TDirectoryCacheDependency (Qiang)
+NEW: TGlobalStateCacheDependency, TChainedCacheDependency, TApplicationStateCacheDependency (Qiang)
 
 Version 3.0.6 December 4, 2006
 ==============================
