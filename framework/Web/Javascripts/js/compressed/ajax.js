@@ -276,7 +276,7 @@ this.time=setTimeout(this.checkChanges.bind(this),parseInt(this.options.Interval
 {var request=new Prado.CallbackRequest(this.options.EventTarget,this.options);var param={'OldValue':oldValue,'NewValue':newValue};request.setCallbackParameter(param);request.dispatch();}},{timers:{},register:function(timer)
 {Prado.WebUI.TValueTriggeredCallback.timers[timer.options.ID]=timer;},stop:function(id)
 {Prado.WebUI.TValueTriggeredCallback.timers[id].stopObserving();}});Prado.WebUI.TInPlaceTextBox=Base.extend({isSaving:false,isEditing:false,editField:null,constructor:function(options)
-{this.options=Object.extend({LoadTextFromSource:false,TextMode:'SingleLine'},options||{});this.element=$(this.options.ID);Prado.WebUI.TInPlaceTextBox.register(this);this.initializeListeners();},initializeListeners:function()
+{this.options=Object.extend({LoadTextFromSource:false,TextMode:'SingleLine'},options||{});this.element=$(this.options.ID);Prado.WebUI.TInPlaceTextBox.register(this);this.createEditorInput();this.initializeListeners();},initializeListeners:function()
 {this.onclickListener=this.enterEditMode.bindAsEventListener(this);Event.observe(this.element,'click',this.onclickListener);if(this.options.ExternalControl)
 Event.observe($(this.options.ExternalControl),'click',this.onclickListener);},enterEditMode:function(evt)
 {if(this.isSaving||this.isEditing)return;this.isEditing=true;this.onEnterEditMode();this.createEditorInput();this.showTextBox();this.editField.disabled=false;if(this.options.LoadTextOnEdit)

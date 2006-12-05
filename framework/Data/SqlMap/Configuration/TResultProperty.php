@@ -282,10 +282,12 @@ class TResultProperty extends TComponent
 	{
 		if(class_exists($type = $this->getType(), false)) //NO force autoloading
 		{
+			if($type==='TList')
+				return self::LIST_TYPE;
 			$class = new ReflectionClass($type);
 			if($class->isSubclassOf('TList'))
 				return self::LIST_TYPE;
-			if($class->inmplementsInterface('ArrayAccess'))
+			if($class->implementsInterface('ArrayAccess'))
 				return self::ARRAY_TYPE;
 		}
 		if(strtolower($type) == 'array')

@@ -1,0 +1,10 @@
+<com:TForm>
+
+<h1>Null State Test</h1>
+
+<com:TActiveLabel ID="lblTest"/>
+<com:TActiveButton OnCallback="btnTest_OnCallback" Text="Clickme"/>
+
+<com:TJavascriptLogger />
+
+</com:TForm>

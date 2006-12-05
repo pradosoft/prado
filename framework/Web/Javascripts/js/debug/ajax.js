@@ -2457,6 +2457,7 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 		}, options || {});
 		this.element = $(this.options.ID);
 		Prado.WebUI.TInPlaceTextBox.register(this);
+		this.createEditorInput();
 		this.initializeListeners();
 	},
 

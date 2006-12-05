@@ -1,41 +1,54 @@
 <?php
+/**
+ * TPropertyAccess class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005-2007 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Id$
+ * @package System.Data.SqlMap.DataMapper
+ */
 
+/**
+ * TPropertyAccess class provides dot notation stype property access and setting.
+ *
+ * Access object's properties (and subproperties) using dot path notation.
+ * The following are equivalent.
+ * <code>
+ * echo $obj->property1;
+ * echo $obj->getProperty1();
+ * echo $obj['property1']; //$obj may be an array or object
+ * echo TPropertyAccess($obj, 'property1');
+ * </code>
+ *
+ * Setting a property value.
+ * <code>
+ * $obj1->propert1 = 'hello';
+ * $obj->setProperty('hello');
+ * $obj['property1'] = 'hello'; //$obj may be an array or object
+ * TPropertyAccess($obj, 'property1', 'hello');
+ * </code>
+ *
+ * Subproperties are supported using the dot notation. E.g.
+ * <code>
+ * echo $obj->property1->property2->property3
+ * echo TPropertyAccess::get($obj, 'property1.property2.property3');
+ * </code>
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.SqlMap.DataMapper
+ * @since 3.1
+ */
 class TPropertyAccess
 {
-	private $_obj;
-	private $_performance=false;
-
-	public function __construct($obj,$performance=false)
-	{
-		$this->_obj = $obj;
-		$this->_performance=$performance;
-	}
-
-	public function __get($name)
-	{
-		return self::get($this->_obj,$name,$this->_performance);
-	}
-
-	public function __set($name,$value)
-	{
-		self::set($this->_obj,$name,$value,$this->_performance);
-	}
-
 	/**
-	 * Evaluates the data value at the specified field.
-	 * - If the data is an array, then the field is treated as an array index
-	 *   and the corresponding element value is returned;
-	 * - If the data is a TMap or TList object, then the field is treated as a key
-	 *   into the map or list, and the corresponding value is returned.
-	 * - If the data is an object, the field is treated as a property or subproperty
-	 *   defined with getter methods. For example, if the object has a method called
-	 *   getMyValue(), then field 'MyValue' will retrive the result of this method call.
-	 *   If getMyValue() returns an object which contains a method getMySubValue(),
-	 *   then field 'MyValue.MySubValue' will return that method call result.
-	 * @param mixed data containing the field value, can be an array, TMap, TList or object.
-	 * @param mixed field value
-	 * @return mixed value at the specified field
-	 * @throw TInvalidDataValueException if field or data is invalid
+	 * Gets the property value.
+	 * @param mixed object or path.
+	 * @param string property path.
+	 * @return mixed property value.
+	 * @throws TInvalidDataValueException if property path is invalid.
 	 */
 	public static function get($object,$path)
 	{
@@ -67,6 +80,11 @@ class TPropertyAccess
 		return $object;
 	}
 
+	/**
+	 * @param mixed object or array
+	 * @param string property path.
+	 * @return boolean true if property path is valid
+	 */
 	public static function has($object, $path)
 	{
 		if(!is_array($object) && !is_object($object))
@@ -96,6 +114,13 @@ class TPropertyAccess
 		return true;
 	}
 
+	/**
+	 * Sets the property value.
+	 * @param mixed object or array
+	 * @param string property path.
+	 * @param mixed new property value.
+	 * @throws TInvalidDataValueException if property path is invalid.
+	 */
 	public static function set(&$originalObject, $path, $value)
 	{
 		$properties = explode('.', $path);
@@ -105,7 +130,6 @@ class TPropertyAccess
 		else
 			$object = &$originalObject;
 
-		//var_dump($object);
 		if(is_array($object) || $object instanceof ArrayAccess)
 		{
 			$object[$prop] = $value;

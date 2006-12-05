@@ -1,0 +1,16 @@
+<com:TForm>
+
+<com:TLabel ForControl="DDropTurno" Text="Turno:"/>
+<com:TActiveDropDownList ID="DDropTurno" 
+	onSelectedIndexChanged="trocaTurno" AutoPostBack="true"/>
+
+<com:TLabel Text="Código:" ForControl="Codigo"/>
+<com:TActiveTextBox ID="Codigo" MaxLength="10" Columns="2"/>
+
+<com:TLabel Text="Descrição:" ForControl="Descricao"/>
+<com:TActiveTextBox ID="Descricao" MaxLength="25" Columns="25"/>
+
+
+<com:TJavascriptLogger />
+
+</com:TForm>

@@ -1,0 +1,78 @@
+
+<style>
+	.textbox
+	{
+		font-family: Arial, Helvetica, sans-serif;
+		font-size: 1.2em;
+		display: block;
+		width: 20em;
+	}
+
+	.textbox
+	{
+		padding: 2px 0px 4px 2px;
+		border:1px solid #eee;
+	}
+
+
+	input.textbox
+	{
+		background-color: #ffc;
+	}
+	.loader
+	{
+		 position:absolute;
+		 right:0px;
+		 top:0px;
+		 color:white;
+		 background-color:#900;
+		 padding: 0.5em 1em;
+	}
+	input.required
+	{
+		border: 1px solid red;
+		background-color: pink;
+	}
+</style>
+
+<com:TForm>
+  <com:TInPlaceTextBox
+  	ID="Firstname"
+  	Text="firstname"
+	CssClass="textbox"
+	ValidationGroup="Group"
+  	/>
+  <com:TRequiredFieldValidator
+    ControlToValidate="Firstname"
+    ErrorMessage="Firstname required"
+    InitialValue="firstname"
+    ValidationGroup="Group"
+    />
+  <br />
+  <com:TTextBox
+  	ID="Lastname"
+  	Text="lastname"
+  	/>
+  <com:TRequiredFieldValidator
+    ControlToValidate="Lastname"
+    ErrorMessage="Lastname required"
+    InitialValue="lastname"
+    ValidationGroup="Group"
+    />
+  <br />
+  <com:TActiveButton ID="active_button" 
+    Text="Active Submit" 
+    ValidationGroup="Group"
+    CausesValidation="true"
+    OnCallback="button_valid"
+    />  
+  <com:TButton ID="passive_button" 
+    Text="Passive Submit" 
+    ValidationGroup="Group"
+    CausesValidation="true"
+    OnClick="button_valid"
+    />  
+  <br />
+  <com:TActiveLabel ID="status" Text="Status:" />
+  <com:TJavascriptLogger />
+</com:TForm>

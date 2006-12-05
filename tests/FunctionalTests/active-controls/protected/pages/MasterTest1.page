@@ -1,0 +1,14 @@
+<%@ MasterClass="Application.pages.Master1" %>
+<com:TContent ID="cphPnlMenu">
+men
+</com:TContent>
+
+<com:TContent ID="cphPnlLogin">
+<fieldset>
+	[color=red]<problem>[/color]
+</fieldset>
+</com:TContent>
+
+<com:TContent ID="cphPnlMain">
+ad
+</com:TContent>

@@ -7,19 +7,8 @@
  * @copyright Copyright &copy; 2005-2007 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
- * @package System.DataAccess.SQLMap
+ * @package System.Data.SqlMap.DataMapper
  */
-
-interface ISqLMapCache
-{
-	public function remove($key);
-
-	public function flush();
-
-	public function get($key);
-
-	public function set($key, $value);
-}
 
 /**
  * Allow different implementation of caching strategy. See <tt>TSqlMapFifoCache</tt>
@@ -28,10 +17,10 @@ interface ISqLMapCache
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
- * @package System.DataAccess.SQLMap
- * @since 3.0
+ * @package System.Data.SqlMap.DataMapper
+ * @since 3.1
  */
-abstract class TSqlMapCache implements ISqlMapCache
+abstract class TSqlMapCache implements ICache
 {
 	protected $_keyList;
 	protected $_cache;
@@ -48,11 +37,18 @@ abstract class TSqlMapCache implements ISqlMapCache
 		$this->_keyList = new TList;
 	}
 
+	/**
+	 * Maximum number of items to cache. Default size is 100.
+	 * @param int cache size.
+	 */
 	public function setCacheSize($value)
 	{
 		$this->_cacheSize=TPropertyValue::ensureInteger($value,100);
 	}
 
+	/**
+	 * @return int cache size.
+	 */
 	public function getCacheSize()
 	{
 		return $this->_cacheSize;
@@ -61,7 +57,7 @@ abstract class TSqlMapCache implements ISqlMapCache
 	/**
 	 * @return object the object removed if exists, null otherwise.
 	 */
-	public function remove($key)
+	public function delete($key)
 	{
 		$object = $this->get($key);
 		$this->_cache->remove($key);
@@ -78,6 +74,13 @@ abstract class TSqlMapCache implements ISqlMapCache
 		$this->_cache->clear();
 	}
 
+	/**
+	 * @throws TSqlMapException not implemented.
+	 */
+	public function add($id,$value,$expire=0,$dependency=null)
+	{
+		throw new TSqlMapException('sqlmap_use_set_to_store_cache');
+	}
 }
 
 /**
@@ -86,8 +89,8 @@ abstract class TSqlMapCache implements ISqlMapCache
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
- * @package System.DataAccess.SQLMap
- * @since 3.0
+ * @package System.Data.SqlMap.DataMapper
+ * @since 3.1
  */
 class TSqlMapFifoCache extends TSqlMapCache
 {
@@ -100,11 +103,12 @@ class TSqlMapFifoCache extends TSqlMapCache
 	}
 
 	/**
-	 * Adds an item with the specified key and value into cached data.
+	 * Stores a value identified by a key into cache.
+	 * The expire and dependency parameters are ignored.
 	 * @param string cache key
 	 * @param mixed value to cache.
 	 */
-	public function set($key, $value)
+	public function set($key, $value,$expire=0,$dependency=null)
 	{
 		$this->_cache->add($key, $value);
 		$this->_keyList->add($key);
@@ -122,8 +126,8 @@ class TSqlMapFifoCache extends TSqlMapCache
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
- * @package System.DataAccess.SQLMap
- * @since 3.0
+ * @package System.Data.SqlMap.DataMapper
+ * @since 3.1
  */
 class TSqlMapLruCache extends TSqlMapCache
 {
@@ -138,16 +142,15 @@ class TSqlMapLruCache extends TSqlMapCache
 			$this->_keyList->add($key);
 			return $this->_cache->itemAt($key);
 		}
-		else
-			return null;
 	}
 
 	/**
-	 * Adds an item with the specified key and value into cached data.
-	 * @param string cache key
-	 * @param mixed value to cache.
+	 * Stores a value identified by a key into cache.
+	 * The expire and dependency parameters are ignored.
+	 * @param string the key identifying the value to be cached
+	 * @param mixed the value to be cached
 	 */
-	public function set($key, $value)
+	public function set($key, $value,$expire=0,$dependency=null)
 	{
 		$this->_cache->add($key, $value);
 		$this->_keyList->add($key);
@@ -159,71 +162,66 @@ class TSqlMapLruCache extends TSqlMapCache
 	}
 }
 
-class TSqlMapApplicationCache implements ISqlMapCache
+/**
+ * TSqlMapApplicationCache uses the default Prado application cache for
+ * caching SqlMap results.
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.SqlMap.DataMapper
+ * @since 3.1
+ */
+class TSqlMapApplicationCache implements ICache
 {
-	private $_cache;
-	private $_expiry=0;
-	private $_property=array();
-	private $_cacheModelID;
-
-	public function __sleep()
-	{
-		$this->_cache = null;
-		return array_keys(get_object_vars($this));
-	}
-
-	public function remove($key)
+	/**
+	 * @param string item to be deleted.
+	 */
+	public function delete($key)
 	{
 		$this->getCache()->delete($key);
 	}
 
+	/**
+	 * Deletes all items in the cache.
+	 */
 	public function flush()
 	{
 		$this->getCache()->flush();
 	}
 
+	/**
+	 * @return mixed Gets a cached object with the specified key.
+	 */
 	public function get($key)
 	{
 		$result = $this->getCache()->get($key);
 		return $result === false ? null : $result;
 	}
 
-	public function set($key, $value)
+	/**
+	 * Stores a value identified by a key into cache.
+	 * @param string the key identifying the value to be cached
+	 * @param mixed the value to be cached
+	 */
+	public function set($key, $value,$expire=0,$dependency=null)
 	{
-		$this->getCache()->set($key, $value, $this->_expiry);
+		$this->getCache()->set($key, $value, $expire,$dependency);
 	}
 
-	public function configure($model, $properties)
-	{
-		$this->_property = $properties;
-		$this->_cacheModelID = $model->getID();
-	}
-
+	/**
+	 * @return ICache Application cache instance.
+	 */
 	protected function getCache()
 	{
-		if(is_null($this->_cache))
-			$this->initialize();
-		return $this->_cache;
+		return Prado::getApplication()->getCache();
 	}
 
-	protected function initialize()
+	/**
+	 * @throws TSqlMapException not implemented.
+	 */
+	public function add($id,$value,$expire=0,$dependency=null)
 	{
-		if(isset($this->_property['expiry']))
-			$this->_expiry = intval($this->_property['expiry']);
-
-		if(isset($this->_property['cacheModule']))
-		{
-			$id = $this->_property['cacheModule'];
-			$this->_cache = Prado::getApplication()->getModule($id);
-		}
-		else
-		{
-			$this->_cache = Prado::getApplication()->getCache();
-		}
-
-		if(!($this->_cache instanceof ICache))
-			throw new TSqlMapConfigurationException(
-				'sqlmap_invalid_prado_cache', $this->_cacheModelID);
+		throw new TSqlMapException('sqlmap_use_set_to_store_cache');
 	}
 }
 

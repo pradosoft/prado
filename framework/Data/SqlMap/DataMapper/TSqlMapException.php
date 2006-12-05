@@ -54,31 +54,6 @@ class TSqlMapConfigurationException extends TSqlMapException
 
 }
 
-class TUndefinedAttributeException extends TSqlMapConfigurationException
-{
-	public function __construct($attr, $node, $object, $file)
-	{
-		parent::__construct(
-			'sqlmap_undefined_attribute', get_class($object), $attr,
-			htmlentities($node->asXml()),$file);
-	}
-}
-
-class TSqlMapExecutionException extends TSqlMapException
-{
-}
-
-class TSqlMapQueryExecutionException extends TSqlMapExecutionException
-{
-	protected $parent;
-	public function __construct($statement, $exception)
-	{
-		$this->parent = $exception;
-		parent::__construct('sqlmap_query_execution_error',
-			$statement->getID(), $exception->getMessage());
-	}
-}
-
 class TSqlMapUndefinedException extends TSqlMapException
 {
 
@@ -88,12 +63,9 @@ class TSqlMapDuplicateException extends TSqlMapException
 {
 }
 
-class TSqlMapConnectionException extends TSqlMapException
-{
-}
 
 class TInvalidPropertyException extends TSqlMapException
 {
-
 }
+
 ?>

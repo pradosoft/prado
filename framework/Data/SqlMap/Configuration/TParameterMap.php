@@ -155,7 +155,7 @@ class TParameterMap extends TComponent
 	 * @param mixed object to obtain the property from.
 	 * @param TParameterProperty parameter property.
 	 * @return mixed property value.
-	 * @throws TSqlMapExecutionException if property access is invalid.
+	 * @throws TSqlMapException if property access is invalid.
 	 */
 	protected function getObjectValue($object,$property)
 	{
@@ -165,7 +165,7 @@ class TParameterMap extends TComponent
 		}
 		catch (TInvalidPropertyException $e)
 		{
-			throw new TSqlMapExecutionException(
+			throw new TSqlMapException(
 				'sqlmap_unable_to_get_property_for_parameter',
 					$this->getID(), $property->getProperty(), get_class($object));
 		}

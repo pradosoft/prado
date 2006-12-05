@@ -155,7 +155,7 @@ class TResultMap extends TComponent
 	 * Create a new instance of the class of this result map.
 	 * @param TSqlMapTypeHandlerRegistry type handler registry.
 	 * @return mixed new result object.
-	 * @throws TSqlMapExecutionException
+	 * @throws TSqlMapException
 	 */
 	public function createInstanceOfResult($registry)
 	{
@@ -169,7 +169,7 @@ class TResultMap extends TComponent
 		}
 		catch (TSqlMapException $e)
 		{
-			throw new TSqlMapExecutionException(
+			throw new TSqlMapException(
 				'sqlmap_unable_to_create_new_instance',
 					$this->getClass(), get_class($handler), $this->getID());
 		}

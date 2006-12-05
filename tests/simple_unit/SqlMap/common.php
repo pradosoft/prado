@@ -76,7 +76,7 @@ class SQLiteBaseTestConfig extends BaseTestConfig
 		$this->targetFile = realpath(SQLMAP_TESTS.'/sqlite/tests.db');
 		$this->baseFile = realpath(SQLMAP_TESTS.'/sqlite/backup.db');
 		$file = realpath($this->targetFile);
-		$this->_connection = new TDbConnection("sqlite2:{$file}");
+		$this->_connection = new TDbConnection("sqlite:{$file}");
 	}
 
 	public function getScriptRunner()
