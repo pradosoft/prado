@@ -236,7 +236,7 @@ abstract class TCache extends TModule implements ICache
  * TCacheDependency class.
  *
  * TCacheDependency is the base class implementing {@link ICacheDependency} interface.
- * Descendant classes must implement {@link checkChanges()} to provide
+ * Descendant classes must implement {@link getHasChanged()} to provide
  * actual dependency checking logic.
  *
  * The property value of {@link getHasChanged HasChanged} tells whether
@@ -263,41 +263,6 @@ abstract class TCache extends TModule implements ICache
  */
 abstract class TCacheDependency extends TComponent implements ICacheDependency
 {
-	private $_enabled=true;
-
-	/**
-	 * @return boolean whether this dependency is enabled. Default value is true.
-	 */
-	public function getEnabled()
-	{
-		return $this->_enabled;
-	}
-
-	/**
-	 * Sets a value indicating whether this cache dependency is enabled or not.
-	 * Cache dependency checking is only performed when it is enabled.
-	 * @param boolean whether this dependency is to be enabled.
-	 */
-	public function setEnabled($value)
-	{
-		$this->_enabled=TPropertyValue::ensureBoolean($value);
-	}
-
-	/**
-	 * @return boolean whether the dependency is changed or not.
-	 * If the dependency checking is disabled, it always returns false.
-	 */
-	public function getHasChanged()
-	{
-		return $this->_enabled ? $this->checkChanges() : false;
-	}
-
-	/**
-	 * Performs the actual dependency checking.
-	 * This method must be implemented by child classes.
-	 * @return boolean whether the dependency is changed or not.
-	 */
-	abstract protected function checkChanges();
 }
 
 
@@ -358,7 +323,7 @@ class TFileCacheDependency extends TCacheDependency
 	 * This method returns true if the last modification time of the file is changed.
 	 * @return boolean whether the dependency is changed or not.
 	 */
-	protected function checkChanges()
+	public function getHasChanged()
 	{
 		return @filemtime($this->_fileName)!==$this->_timestamp;
 	}
@@ -463,7 +428,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 * This method returns true if the directory is changed.
 	 * @return boolean whether the dependency is changed or not.
 	 */
-	protected function checkChanges()
+	public function getHasChanged()
 	{
 		return $this->generateTimestamps($this->_directory)!=$this->_timestamps;
 	}
@@ -576,7 +541,7 @@ class TGlobalStateCacheDependency extends TCacheDependency
 	 * This method returns true if the specified global state is changed.
 	 * @return boolean whether the dependency is changed or not.
 	 */
-	protected function checkChanges()
+	public function getHasChanged()
 	{
 		return $this->_stateValue!==Prado::getApplication()->getGlobalState($value);
 	}
@@ -620,7 +585,7 @@ class TChainedCacheDependency extends TCacheDependency
 	 * reports a dependency change.
 	 * @return boolean whether the dependency is changed or not.
 	 */
-	protected function checkChanges()
+	public function getHasChanged()
 	{
 		if($this->_dependencies!==null)
 		{
