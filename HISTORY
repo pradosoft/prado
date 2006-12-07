@@ -1,3 +1,7 @@
+Version 3.0.7 
+===================
+BUG: Ticket#481 - Unable to cancel navigation when handling OnSideBarButtonClickEvent (Qiang)
+
 Version 3.0.6 December 4, 2006
 ==============================
 BUG: Ticket#400 - TJavascriptLogger incompatible with Firefox 2.0 RC1 (Wei)
