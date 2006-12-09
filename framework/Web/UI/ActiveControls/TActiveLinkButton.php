@@ -93,7 +93,7 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 	{
 		parent::setText($value);
 		if($this->getActiveControl()->canUpdateClientSide())
-			$this->getPage()->getCallbackClient()->replaceContent($this, $value);
+			$this->getPage()->getCallbackClient()->update($this, $value);
 	}
 
 	/**

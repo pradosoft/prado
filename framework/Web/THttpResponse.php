@@ -81,7 +81,7 @@ class THttpResponse extends TModule implements ITextWriter
 	 * @var THttpResponseAdapter adapter.
 	 */
 	private $_adapter;
-	
+
 	/**
 	 * Destructor.
 	 * Flushes any existing content in buffer.
@@ -91,7 +91,7 @@ class THttpResponse extends TModule implements ITextWriter
 		//if($this->_bufferOutput)
 		//	@ob_end_flush();
 	}
-	
+
 	/**
 	 * @param THttpResponseAdapter response adapter
 	 */
@@ -99,7 +99,7 @@ class THttpResponse extends TModule implements ITextWriter
 	{
 		$this->_adapter=$adapter;
 	}
-	
+
 	/**
 	 * @return THttpResponseAdapter response adapter, null if not exist.
 	 */
@@ -107,7 +107,7 @@ class THttpResponse extends TModule implements ITextWriter
 	{
 		return $this->_adapter;
 	}
-	
+
 	/**
 	 * @return boolean true if adapter exists, false otherwise.
 	 */
@@ -250,7 +250,7 @@ class THttpResponse extends TModule implements ITextWriter
 	{
 		echo $str;
 	}
-	
+
 	/**
 	 * Sends a file back to user.
 	 * Make sure not to output anything else after calling this method.
@@ -314,6 +314,19 @@ class THttpResponse extends TModule implements ITextWriter
 	 */
 	public function redirect($url)
 	{
+		if($this->getHasAdapter())
+			$this->_adapter->httpRedirect($url);
+		else
+			$this->httpRedirect($url);
+	}
+
+	/**
+	 * Redirect the browser to another URL and exists the current application.
+	 * @param string URL to be redirected to. If the URL is a relative one, the base URL of
+	 * the current request will be inserted at the beginning.
+	 */
+	public function httpRedirect($url)
+	{
 		if(!$this->getApplication()->getRequestCompleted())
 			$this->getApplication()->onEndRequest();
 		if($url[0]==='/')
@@ -342,7 +355,7 @@ class THttpResponse extends TModule implements ITextWriter
 		else
 			$this->flushContent();
 	}
-	
+
 	/**
 	 * Outputs the buffered content, sends content-type and charset header.
 	 */
@@ -351,7 +364,7 @@ class THttpResponse extends TModule implements ITextWriter
 		Prado::trace("Flushing output",'System.Web.THttpResponse');
 		$this->sendContentTypeHeader();
 		if($this->_bufferOutput)
-			ob_flush();		
+			ob_flush();
 	}
 
 	/**
@@ -474,7 +487,7 @@ class THttpResponse extends TModule implements ITextWriter
 		else
 		 	return $this->createNewHtmlWriter($type, $this);
 	}
-	
+
 	/**
 	 * Create a new html writer intance.
 	 * @param string type of HTML writer to be created.

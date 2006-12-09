@@ -1,14 +1,31 @@
 <?php
+/**
+ * TSqlMapPagedList class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005-2007 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Id$
+ * @package System.Data.SqlMap
+ */
 
 Prado::using('System.Collections.TPagedList');
 
 /**
- * TSQLMapPagedList
+ * TSqlMapPagedList implements a list with paging functionality that retrieves
+ * data from a SqlMap statement.
+ *
+ * The maximum number of records fetched is 3 times the page size. It fetches
+ * the current, the previous and the next page at a time. This allows the paged
+ * list to determine if the page is a the begin, the middle or the end of the list.
+ *
+ * The paged list does not need to know about the total number of records.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
- * @package System.Web.UI.WebControls
- * @since 3.0
+ * @package System.Data.SqlMap
+ * @since 3.1
  */
 class TSqlMapPagedList extends TPagedList
 {
@@ -18,8 +35,14 @@ class TSqlMapPagedList extends TPagedList
 	private $_nextPageList;
 	private $_delegate=null;
 
-	public function __construct(IMappedStatement $statement,
-									$parameter, $pageSize, $delegate=null)
+	/**
+	 * Create a new SqlMap paged list.
+	 * @param IMappedStatement SqlMap statement.
+	 * @param mixed query parameters
+	 * @param int page size
+	 * @param mixed delegate for each data row retrieved.
+	 */
+	public function __construct(IMappedStatement $statement,$parameter, $pageSize, $delegate=null)
 	{
 		parent::__construct();
 		parent::setCustomPaging(true);
@@ -27,6 +50,12 @@ class TSqlMapPagedList extends TPagedList
 		$this->_delegate=$delegate;
 	}
 
+	/**
+	 * Initialize the paged list.
+	 * @param IMappedStatement SqlMap statement.
+	 * @param mixed query parameters
+	 * @param int page size.
+	 */
 	protected function initialize($statement, $parameter, $pageSize)
 	{
 		$this->_statement = $statement;
@@ -36,11 +65,19 @@ class TSqlMapPagedList extends TPagedList
 		$this->gotoPage(0);
 	}
 
+	/**
+	 * @throws TSqlMapException custom paging must be enabled.
+	 */
 	public function setCustomPaging($value)
 	{
-		throw new TDataMapperException('sqlmap_must_enable_custom_paging');
+		throw new TSqlMapException('sqlmap_must_enable_custom_paging');
 	}
 
+	/**
+	 * Fetch data by executing the SqlMap statement.
+	 * @param TPageList current object.
+	 * @param TPagedListFetchDataEventParameter fetch parameters
+	 */
 	protected function fetchDataFromStatement($sender, $param)
 	{
 		$limit = $this->getOffsetAndLimit($param);
@@ -50,22 +87,29 @@ class TSqlMapPagedList extends TPagedList
 		$this->populateData($param, $data);
 	}
 
+	/**
+	 * Switches to the next page.
+	 * @return integer|boolean the new page index, false if next page is not availabe.
+	 */
 	public function nextPage()
 	{
-		if($this->getIsNextPageAvailable())
-			return parent::nextPage();
-		else
-			return false;
+		return $this->getIsNextPageAvailable() ? parent::nextPage() : false;
 	}
 
+	/**
+	 * Switches to the previous page.
+	 * @return integer|boolean the new page index, false if previous page is not availabe.
+	 */
 	public function previousPage()
 	{
-		if($this->getIsPreviousPageAvailable())
-			return parent::previousPage();
-		else
-			return false;
+		return $this->getIsPreviousPageAvailable() ? parent::previousPage() : false;
 	}
 
+	/**
+	 * Populate the list with the fetched data.
+	 * @param TPagedListFetchDataEventParameter fetch parameters
+	 * @param array fetched data.
+	 */
 	protected function populateData($param, $data)
 	{
 		$total = $data instanceof TList ? $data->getCount() : count($data);
@@ -88,67 +132,72 @@ class TSqlMapPagedList extends TPagedList
 			}
 			else
 			{
-				$param->setData($this->sublist($data, 0, $pageSize));
-				$this->_nextPageList = $this->sublist($data, $pageSize,$total);
+				$param->setData(array_slice($data, 0, $pageSize));
+				$this->_nextPageList = array_slice($data, $pageSize-1,$total);
 			}
 		}
 		else
 		{
 			if($total <= $pageSize)
 			{
-				$this->_prevPageList = $this->sublist($data, 0, $total);
+				$this->_prevPageList = array_slice($data, 0, $total);
 				$param->setData(array());
 				$this->_nextPageList = null;
 			}
 			else if($total <= $pageSize*2)
 			{
-				$this->_prevPageList = $this->sublist($data, 0, $pageSize);
-				$param->setData($this->sublist($data, $pageSize, $total));
+				$this->_prevPageList = array_slice($data, 0, $pageSize);
+				$param->setData(array_slice($data, $pageSize, $total));
 				$this->_nextPageList = null;
 			}
 			else
 			{
-				$this->_prevPageList = $this->sublist($data, 0, $pageSize);
-				$param->setData($this->sublist($data, $pageSize, $pageSize*2));
-				$this->_nextPageList = $this->sublist($data, $pageSize*2, $total);
+				$this->_prevPageList = array_slice($data, 0, $pageSize);
+				$param->setData(array_slice($data, $pageSize, $pageSize));
+				$this->_nextPageList = array_slice($data, $pageSize*2, $total-$pageSize*2);
 			}
 		}
 	}
 
-	protected function sublist($data, $from, $to)
-	{
-		$array = array();
-		for($i = $from; $i<$to; $i++)
-			$array[] = $data[$i];
-		return $array;
-	}
-
+	/**
+	 * Calculate the data fetch offsets and limits.
+	 * @param TPagedListFetchDataEventParameter fetch parameters
+	 * @return array 1st element is the offset, 2nd element is the limit.
+	 */
 	protected function getOffsetAndLimit($param)
 	{
 		$index = $param->getNewPageIndex();
 		$pageSize = $this->getPageSize();
-		if($index < 1)
-			return array($index, $pageSize*2);
-		else
-			return array(($index-1)*$pageSize, $pageSize*3);
+		return $index < 1 ? array($index, $pageSize*2) : array(($index-1)*$pageSize, $pageSize*3);
 	}
 
+	/**
+	 * @return boolean true if the next page is available, false otherwise.
+	 */
 	public function getIsNextPageAvailable()
 	{
 		return !is_null($this->_nextPageList);
 	}
 
+	/**
+	 * @return boolean true if the previous page is available, false otherwise.
+	 */
 	public function getIsPreviousPageAvailable()
 	{
 		return !is_null($this->_prevPageList);
 	}
 
+	/**
+	 * @return boolean true if is the very last page, false otherwise.
+	 */
 	public function getIsLastPage()
 	{
-		return is_null($this->_nextPageList)
-				|| $this->_nextPageList->getCount() < 1;
+		return is_null($this->_nextPageList) || $this->_nextPageList->getCount() < 1;
 	}
 
+	/**
+	 * @return boolean true if is not first nor last page, false otherwise.
+	 */
 	public function getIsMiddlePage()
 	{
 		return !($this->getIsFirstPage() || $this->getIsLastPage());

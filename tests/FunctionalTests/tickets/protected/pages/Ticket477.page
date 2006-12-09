@@ -1,0 +1,29 @@
+<com:TContent ID="Content">
+
+<com:TCheckBoxList ID="list1" AutoPostBack="true" ValidationGroup="group1" >
+	<com:TListItem Text="Item 1" />
+	<com:TListItem Text="Item 2" />
+	<com:TListItem Text="Item 3" />
+</com:TCheckBoxList>
+
+<com:TCustomValidator
+	ID="validator1"
+	ControlToValidate="list1"
+	OnServerValidate="do_validate_1"
+	ValidationGroup="group1"
+	ErrorMessage="group1 error" />
+
+<com:TRadioButtonList ID="list2" AutoPostBack="true" ValidationGroup="group2" >
+	<com:TListItem Text="Item 1" />
+	<com:TListItem Text="Item 2" />
+	<com:TListItem Text="Item 3" />
+</com:TRadioButtonList>
+
+<com:TCustomValidator
+	ID="validator2"
+	ControlToValidate="list2"
+	OnServerValidate="do_validate_2"
+	ValidationGroup="group2"
+	ErrorMessage="group2 error" />
+
+</com:TContent>

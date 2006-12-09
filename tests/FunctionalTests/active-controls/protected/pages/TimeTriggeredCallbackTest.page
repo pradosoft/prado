@@ -5,7 +5,7 @@
 	<div style="margin:1em; padding:1em; border:1px solid #ccc;">
 		<com:TActiveLabel ID="label1" Text="ViewState Counter : " />
 	</div>
-	<com:TTimeTriggeredCallback ID="timer1" Interval="0.1" OnCallback="tick">
+	<com:TTimeTriggeredCallback ID="timer1" Interval="0.5" OnCallback="tick">
 		<prop:ClientSide
 			OnLoading="$('status').show()"
 			OnComplete="$('status').hide()" />

@@ -1,0 +1,40 @@
+<com:TContent ID="Content">
+<style>
+	.loader
+	{
+		 position:absolute;
+		 right:0px;
+		 top:0px;
+		 color:white;
+		 background-color:#900;
+		 padding: 0.5em 1em;
+	}
+	input.required
+	{
+		border: 1px solid red;
+		background-color: pink;
+	}
+</style>
+	<h1>Callback Custom Validator Test</h1>
+
+	<com:TTextBox ID="text1" />
+
+	<com:TActiveCustomValidator
+		ControlToValidate="text1"
+		ErrorMessage="*"
+		ControlCssClass="required"
+		OnServerValidate="validate_text1">
+		<prop:ClientSide
+			OnValidationError="$('status').innerHTML='Error '+(new Date())"
+			OnValidationSuccess="$('status').innerHTML='Success '+(new Date())"
+			OnLoading="Element.show('loader')"
+			OnComplete="Element.hide('loader')" />
+	</com:TActiveCustomValidator>
+
+	<span id="status"></span>
+
+	<com:TActiveButton Text="Submit" />
+
+	<span id="loader" style="display:none;" onfocus="alert('ok')" class="loader">Loading...</span>
+
+</com:TContent>

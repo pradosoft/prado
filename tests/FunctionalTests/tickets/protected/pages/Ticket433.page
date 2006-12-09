@@ -1,0 +1,6 @@
+<com:TContent ID="Content">
+	<com:TActiveLinkButton
+		ID="VoteClick" Text=""
+		OnClick="Page.onUpdateVoteClick"
+		OnCallback="Page.onUpdateVoteCallback" />
+</com:TContent>

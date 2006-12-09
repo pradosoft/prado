@@ -15,10 +15,8 @@
  *
  * Observes the value with {@link setPropertyName PropertyName} of a
  * control with {@link setControlID ControlID}. Changes to the observed
- * property value will trigger a new callback request. The values are
- * observed using a {@link setPollingInterval PollingInterval} (in seconds).
- * That is, the property is checked for changes every
- * {@link setPollingInterval PollingInterval} seconds.
+ * property value will trigger a new callback request. The property value is checked
+ * for changes every{@link setInterval Interval} seconds.
  *
  * A {@link setDecayRate DecayRate} can be set to increase the polling
  * interval linearly if no changes are observed. Once a change is
@@ -53,9 +51,17 @@ class TValueTriggeredCallback extends TTriggeredCallback
 	 * Default is 1 second.
 	 * @param float polling interval in seconds.
 	 */
-	public function setPollingInterval($value)
+	public function setInterval($value)
 	{
 		$this->setViewState('Interval', TPropertyValue::ensureFloat($value), 1);
+	}
+
+	/**
+	 * @return float polling interval, 1 second default.
+	 */
+	public function getInterval()
+	{
+		return $this->getViewState('Interval', 1);
 	}
 
 	/**
@@ -80,21 +86,13 @@ class TValueTriggeredCallback extends TTriggeredCallback
 	}
 
 	/**
-	 * @return float polling interval, 1 second default.
-	 */
-	public function getPollingInterval()
-	{
-		return $this->getViewState('Interval', 1);
-	}
-
-	/**
 	 * @return array list of timer options for client-side.
 	 */
 	protected function getTriggerOptions()
 	{
 		$options = parent::getTriggerOptions();
 		$options['PropertyName'] = $this->getPropertyName();
-		$options['Interval'] = $this->getPollingInterval();
+		$options['Interval'] = $this->getInterval();
 		$options['Decay'] = $this->getDecayRate();
 		return $options;
 	}

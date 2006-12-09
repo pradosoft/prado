@@ -9,7 +9,6 @@ class AutoCompleteTest extends TPage
 	{
 		$sender->setDataSource($this->matchCountries($param->getCallbackParameter()));
 		$sender->dataBind();
-		$sender->render($param->getNewWriter());
 		$this->label1->Text = "suggestion for ".$param->getCallbackParameter();
 	}
 

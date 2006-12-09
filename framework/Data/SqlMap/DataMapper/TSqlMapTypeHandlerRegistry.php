@@ -1,4 +1,14 @@
 <?php
+/**
+ * TSqlMapTypeHandlerRegistry, and abstract TSqlMapTypeHandler classes file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005-2007 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Id$
+ * @package System.Data.SqlMap
+ */
 
 /**
  * TTypeHandlerFactory provides type handler classes to convert database field type
@@ -6,7 +16,7 @@
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$
- * @package System.Data.SqlMap.DataMapper
+ * @package System.Data.SqlMap
  * @since 3.1
  */
 class TSqlMapTypeHandlerRegistry
@@ -112,7 +122,7 @@ class TSqlMapTypeHandlerRegistry
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$
- * @package System.Data.SqlMap.DataMapper
+ * @package System.Data.SqlMap
  * @since 3.1
  */
 abstract class TSqlMapTypeHandler extends TComponent

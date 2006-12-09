@@ -25,11 +25,6 @@ Prado::using('System.Web.UI.ActiveControls.TCallback');
  * {@link stopTimer()}. The timer can be automatically started when
  * {@link setStartTimerOnLoad StartTimerOnLoad} is true.
  *
- * The intervals between each request can be increased when the browser is inactive
- * by changing the {@link setDecayRate DecayRate} to a positive number. The
- * default decay rate, {@link setDecayType DecayType}, is linear and can be changed to
- * 'Exponential', 'Linear', 'Quadratic' or 'Cubic'.
- *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
  * @package System.Web.UI.ActiveControls
@@ -54,44 +49,6 @@ class TTimeTriggeredCallback extends TCallback
 		if($interval <= 0)
 			throw new TConfigurationException('callback_interval_be_positive', $this->getID());
 		$this->setViewState('Interval', $interval, 1);
-	}
-
-	/**
-	 * Gets the decay rate between callbacks. Default is 0;
-	 * @return float decay rate between callbacks.
-	 */
-	public function getDecayRate()
-	{
-		return $this->getViewState('Decay', 0);
-	}
-
-	/**
-	 * Sets the decay rate between callback. Default is 0;
-	 * @param float decay rate between callbacks.
-	 */
-	public function setDecayRate($value)
-	{
-		$decay = TPropertyValue::ensureFloat($value);
-		if($decay < 0)
-			throw new TConfigurationException('callback_decay_be_not_negative', $this->getID());
-		$this->setViewState('Decay', $decay);
-	}
-
-	/**
-	 * @param string Decay type, allows 'Exponential', 'Linear', 'Quadratic' and 'Cubic'. Default is 'Linear'.
-	 */
-	public function setDecayType($value)
-	{
-		$this->setViewState('DecayType', TPropertyValue::ensureEnum($value,
-			'Exponential', 'Linear', 'Quadratic', 'Cubic'), 'Linear');
-	}
-
-	/**
-	 * @return string decay type, default is 'Linear', valid types are 'Exponential', 'Linear', 'Quadratic' and 'Cubic'.
-	 */
-	public function getDecayType()
-	{
-		return $this->getViewState('DecayType', 'Linear');
 	}
 
 	/**
@@ -121,7 +78,7 @@ class TTimeTriggeredCallback extends TCallback
 	 */
 	public function setStartTimerOnLoad($value)
 	{
-		$this->setViewState('StartTimerOnLoad', 
+		$this->setViewState('StartTimerOnLoad',
 				TPropertyValue::ensureBoolean($value), false);
 	}
 
@@ -141,8 +98,6 @@ class TTimeTriggeredCallback extends TCallback
 		$options['ID'] = $this->getClientID();
 		$options['EventTarget']= $this->getUniqueID();
 		$options['Interval'] = $this->getInterval();
-		$options['DecayRate'] = $this->getDecayRate();
-		$options['DecayType'] = $this->getDecayType();
 		return $options;
 	}
 

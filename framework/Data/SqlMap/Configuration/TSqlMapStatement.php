@@ -8,7 +8,7 @@
  * @copyright Copyright &copy; 2005-2007 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
- * @package System.Data.SqlMap.Configuration.
+ * @package System.Data.SqlMap.Configuration
  */
 
 /**
@@ -343,7 +343,7 @@ class TSqlMapInsert extends TSqlMapStatement
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$
- * @package System.Data.SqlMap.Configuration.
+ * @package System.Data.SqlMap.Configuration
  * @since 3.1
  */
 class TSqlMapSelect extends TSqlMapStatement

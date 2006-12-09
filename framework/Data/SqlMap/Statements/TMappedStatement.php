@@ -7,7 +7,7 @@
  * @copyright Copyright &copy; 2005-2007 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
- * @package System.Data.SQLMap.Statements
+ * @package System.Data.SqlMap.Statements
  */
 
 /**
@@ -18,7 +18,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
- * @package System.DataAccess.SQLMap.Statements
+ * @package System.Data.SqlMap.Statements
  * @since 3.0
  */
 class TMappedStatement extends TComponent implements IMappedStatement
@@ -912,6 +912,14 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	}
 }
 
+/**
+ * TPostSelectBinding class.
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.SqlMap.Statements
+ * @since 3.1
+ */
 class TPostSelectBinding
 {
 	private $_statement=null;
@@ -945,7 +953,7 @@ class TPostSelectBinding
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
- * @package System.DataAccess.SQLMap.Statements
+ * @package System.Data.SqlMap.Statements
  * @since 3.1
  */
 class TSQLMapObjectCollectionTree
@@ -1119,6 +1127,14 @@ class TSQLMapObjectCollectionTree
 	}
 }
 
+/**
+ * TResultSetListItemParameter class
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.SqlMap.Statements
+ * @since 3.1
+ */
 class TResultSetListItemParameter extends TComponent
 {
 	private $_resultObject;
@@ -1148,6 +1164,14 @@ class TResultSetListItemParameter extends TComponent
 	}
 }
 
+/**
+ * TResultSetMapItemParameter class.
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.SqlMap.Statements
+ * @since 3.1
+ */
 class TResultSetMapItemParameter extends TComponent
 {
 	private $_key;

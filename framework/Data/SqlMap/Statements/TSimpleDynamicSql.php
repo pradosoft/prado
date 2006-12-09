@@ -1,9 +1,27 @@
 <?php
+/**
+ * TSimpleDynamicSql class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005-2007 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Id$
+ * @package System.Data.SqlMap.Statements
+ */
 
+/**
+ * TSimpleDynamicSql class.
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.SqlMap.Statements
+ * @since 3.1
+ */
 class TSimpleDynamicSql extends TStaticSql
 {
 	private $_mappings=array();
-	
+
 	public function __construct($mappings)
 	{
 		$this->_mappings = $mappings;
@@ -16,7 +34,7 @@ class TSimpleDynamicSql extends TStaticSql
 			$this->mapDynamicParameter($statement, $parameter);
 		return $statement;
 	}
-	
+
 	protected function mapDynamicParameter($statement, $parameter)
 	{
 		$sql = $statement->getPreparedSql();

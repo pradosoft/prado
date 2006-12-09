@@ -7,7 +7,7 @@
  * @copyright Copyright &copy; 2005-2007 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
- * @package System.Data.SqlMap.DataMapper
+ * @package System.Data.SqlMap
  */
 
 /**
@@ -17,7 +17,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
- * @package System.Data.SqlMap.DataMapper
+ * @package System.Data.SqlMap
  * @since 3.1
  */
 abstract class TSqlMapCache implements ICache
@@ -89,7 +89,7 @@ abstract class TSqlMapCache implements ICache
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
- * @package System.Data.SqlMap.DataMapper
+ * @package System.Data.SqlMap
  * @since 3.1
  */
 class TSqlMapFifoCache extends TSqlMapCache
@@ -126,7 +126,7 @@ class TSqlMapFifoCache extends TSqlMapCache
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
- * @package System.Data.SqlMap.DataMapper
+ * @package System.Data.SqlMap
  * @since 3.1
  */
 class TSqlMapLruCache extends TSqlMapCache
@@ -168,7 +168,7 @@ class TSqlMapLruCache extends TSqlMapCache
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$
- * @package System.Data.SqlMap.DataMapper
+ * @package System.Data.SqlMap
  * @since 3.1
  */
 class TSqlMapApplicationCache implements ICache

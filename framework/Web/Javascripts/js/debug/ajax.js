@@ -302,6 +302,9 @@ Object.extend(Ajax.Request.prototype,
 
 	    if (event == 'Complete')
 	    {
+	    	if(this.header('X-PRADO-REDIRECT'))
+	    		document.location.href = this.header('X-PRADO-REDIRECT');
+
 	      if ((this.header('Content-type') || '').match(/^text\/javascript/i))
 	      {
 	        try
@@ -407,10 +410,6 @@ Object.extend(Prado.CallbackRequest,
 	 * Page state header name.
 	 */
 	PAGESTATE_HEADER : 'X-PRADO-PAGESTATE',
-	/**
-	 * Current requests in progress.
-	 */
-	currentRequest : null,
 
 	requestQueue : [],
 
@@ -553,25 +552,6 @@ Object.extend(Prado.CallbackRequest,
 	},
 
 	/**
-	 * Dispatch a priority request, it will call abortRequestInProgress first.
-	 */
-	dispatchPriorityRequest : function(callback)
-	{
-		var self = Prado.CallbackRequest;
-
-		callback.request = new Ajax.Request(callback.url, callback.options);
-		callback.timeout = setTimeout(function()
-		{
-			//Logger.warn("priority timeout");
-			self.abortCurrentRequest();
-		},callback.options.RequestTimeOut);
-
-		//Logger.info("dispatched "+this.currentRequest)
-		self.currentRequest = callback;
-		return true;
-	},
-
-	/**
 	 * Dispatch a normal request, no timeouts or aborting of requests.
 	 */
 	dispatchNormalRequest : function(callback)
@@ -584,23 +564,19 @@ Object.extend(Prado.CallbackRequest,
 	/**
 	 * Abort the current priority request in progress.
 	 */
-	abortCurrentRequest : function()
+	tryNextRequest : function()
 	{
 		var self = Prado.CallbackRequest;
-		var inProgress = self.currentRequest;
-		//Logger.info("aborting ... "+inProgress);
-		if(inProgress)
+		//Logger.debug('trying next request');
+		if(typeof(self.currentRequest) == 'undefined' || self.currentRequest==null)
 		{
-			clearTimeout(inProgress.timeout);
-			self.currentRequest = null;
-			//Logger.info("aborted");
-			//abort if not ready.
-			if(inProgress.request.transport.readyState < 4)
-				inProgress.request.transport.abort();
-			return self.dispatchQueue();
+			if(self.requestQueue.length > 0)
+				return self.dispatchQueue();
+			//else
+				//Logger.warn('empty queque');
 		}
-		else
-			return self.dispatchQueue();
+//		else
+	//		Logger.warn('current request ' + self.currentRequest.id);
 	},
 
 	/**
@@ -622,51 +598,66 @@ Object.extend(Prado.CallbackRequest,
 			{
 				if(typeof(Logger) != "undefined")
 					Logger.warn("Missing page state:"+data);
+//				Logger.warn('## bad state: setting current request to null');
+				self.endCurrentRequest();
+				//self.tryNextRequest();
 				return false;
 			}
 		}
+		self.endCurrentRequest();
+	//	Logger.warn('## state updated: setting current request to null');
+	//	self.tryNextRequest();
 		return true;
 	},
 
 	enqueue : function(callback)
 	{
 		var self = Prado.CallbackRequest;
-		if(self.currentRequest==null)
-			self.dispatchPriorityRequest(callback);
-		else
-			self.requestQueue.push(callback);
-		//Logger.info("current queque length="+self.requestQueue.length);
+		self.requestQueue.push(callback);
+		//Logger.warn("equeued "+callback.id+", current queque length="+self.requestQueue.length);
+		self.tryNextRequest();
 	},
 
 	dispatchQueue : function()
 	{
 		var self = Prado.CallbackRequest;
-		//Logger.info("dispatching queque, length="+self.requestQueue.length+" request="+self.currentRequest);
-		if(self.requestQueue.length > 0)
+		//Logger.warn("dispatching queque, length="+self.requestQueue.length+" request="+self.currentRequest);
+		var callback = self.requestQueue.shift();
+		self.currentRequest = callback;
+
+		//get data
+		callback.options.postBody = callback._getPostData(),
+
+		callback.request = new Ajax.Request(callback.url, callback.options);
+		callback.timeout = setTimeout(function()
 		{
-			var callback = self.requestQueue.shift();
-			//Logger.info("do dispatch request");
-			return self.dispatchPriorityRequest(callback);
-		}
-		return false;
+			//Logger.warn("priority timeout");
+			self.abortRequest(callback.id);
+		},callback.options.RequestTimeOut);
+		//Logger.debug("dispatched "+self.currentRequest.id + " ...")
+	},
+
+	endCurrentRequest : function()
+	{
+		var self = Prado.CallbackRequest;
+		clearTimeout(self.currentRequest.timeout);
+		self.currentRequest=null;
 	},
 
 	abortRequest : function(id)
 	{
-		//Logger.info("abort id="+id);
+		//Logger.warn("abort id="+id);
 		var self = Prado.CallbackRequest;
-		if(self.currentRequest != null && self.currentRequest.id == id)
-			self.abortCurrentRequest();
-		else
+		if(typeof(self.currentRequest) != 'undefined'
+			&& self.currentRequest != null && self.currentRequest.id == id)
 		{
-			var queque = [];
-			self.requestQueue.each(function(callback)
-			{
-				if(callback.id != id)
-					queque.push(callback);
-			});
-			self.requestQueue = queque;
+			var request = self.currentRequest.request;
+			if(request.transport.readyState < 4)
+				request.transport.abort();
+			//Logger.warn('## aborted: setting current request to null');
+			self.endCurrentRequest();
 		}
+		self.tryNextRequest();
 	}
 })
 
@@ -676,7 +667,7 @@ Object.extend(Prado.CallbackRequest,
 Ajax.Responders.register({onComplete : function(request)
 {
 	if(request.options.HasPriority)
-		Prado.CallbackRequest.abortCurrentRequest();
+		Prado.CallbackRequest.tryNextRequest();
 }});
 
 //Add HTTP exception respones when logger is enabled.
@@ -816,7 +807,7 @@ Prado.CallbackRequest.prototype =
 		//override parameter and postBody options.
 		Object.extend(this.options,
 		{
-			postBody : this._getPostData(),
+//			postBody : this._getPostData(),
 			parameters : ''
 		});
 
@@ -2221,70 +2212,32 @@ Prado.WebUI.TAutoComplete = Class.extend(Prado.WebUI.TAutoComplete,
  */
 Prado.WebUI.TTimeTriggeredCallback = Base.extend(
 {
-	count : 0,
-	timeout : 0,
-
 	constructor : function(options)
 	{
-		this.options = Object.extend(
-		{
-			Interval : 1,
-			DecayRate : 0
-		}, options || {})
-
-		this.onComplete = this.options.onComplete;
+		this.options = Object.extend({ Interval : 1	}, options || {});
 		Prado.WebUI.TTimeTriggeredCallback.register(this);
 	},
 
 	startTimer : function()
 	{
-		this.options.onComplete = this.onRequestComplete.bind(this);
-		this.timer = setTimeout(this.onTimerEvent.bind(this), 200);
+		setTimeout(this.onTimerEvent.bind(this), 100);
+		if(typeof(this.timer) == 'undefined' || this.timer == null)
+			this.timer = setInterval(this.onTimerEvent.bind(this),this.options.Interval*1000);
 	},
 
 	stopTimer : function()
 	{
-		(this.onComplete || Prototype.emptyFunction).apply(this, arguments);
-		this.options.onComplete = undefined;
-		clearTimeout(this.timer);
-		this.timer = undefined;
-		this.count = 0;
+		if(typeof(this.timer) != 'undefined')
+		{
+			clearInterval(this.timer);
+			this.timer = null;
+		}
 	},
 
 	onTimerEvent : function()
 	{
-		this.options.params = this.timeout/1000;
 		var request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.dispatch();
-	},
-
-	onRequestComplete : function()
-	{
-		(this.onComplete || Prototype.emptyFunction).apply(this, arguments);
-		this.timer = setTimeout(this.onTimerEvent.bind(this), this.getNewTimeout())
-	},
-
-	getNewTimeout : function()
-	{
-		switch(this.options.DecayType)
-		{
-			case 'Exponential':
-				t = (Math.exp(this.options.DecayRate*this.count*this.options.Interval))-1;
-			break;
-			case 'Linear':
-				t = this.options.DecayRate*this.count*this.options.Interval;
-			break;
-			case 'Quadratic':
-				t = this.options.DecayRate*this.count*this.count*this.options.Interval;
-			break;
-			case 'Cubic':
-				t = this.options.DecayRate*this.count*this.count*this.count*this.options.Interval;
-			break;
-			default : t = 0;
-		}
-		this.timeout = (t + this.options.Interval)*1000;
-		this.count++;
-		return parseInt(this.timeout);
 	}
 },
 //class methods

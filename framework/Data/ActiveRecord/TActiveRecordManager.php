@@ -19,9 +19,9 @@ Prado::using('System.Data.ActiveRecord.TActiveRecordStateRegistry');
  * TActiveRecordManager provides the default DB connection, default object state
  * registry, default active record gateway, and table meta data inspector.
  *
- * You can provide a different registry by overriding the createObjectStateRegistry() method.
- * Similarly, override createRecordGateway() for default gateway and override
- * createMetaDataInspector() for meta data inspector.
+ * You can provide a different registry by overriding the {@link createObjectStateRegistry()} method.
+ * Similarly, override {@link createRecordGateway()} for default gateway and override
+ * {@link createMetaDataInspector() }for meta data inspector.
  *
  * The default connection can be set as follows:
  * <code>
@@ -30,8 +30,8 @@ Prado::using('System.Data.ActiveRecord.TActiveRecordStateRegistry');
  * All new active record created after setting the
  * {@link DbConnection setDbConnection()} will use that connection.
  *
- * The {@link OnInsert onInsert()}, {@link OnUpdate onUpdate()},
- * {@link OnDelete onDelete()} and {@link onSelect onSelect()} events are raised
+ * The {@link onInsert()}, {@link onUpdate()},
+ * {@link onDelete()} and {@link onSelect()} events are raised
  * <b>before</b> their respective command are executed.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>

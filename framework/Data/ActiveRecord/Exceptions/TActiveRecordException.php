@@ -7,7 +7,7 @@
  * @copyright Copyright &copy; 2005-2007 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
- * @package System.Data.ActiveRecord.Exceptions
+ * @package System.Data.ActiveRecord
  */
 
 /**
@@ -15,7 +15,7 @@
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$
- * @package System.Data.ActiveRecord.Exceptions
+ * @package System.Data.ActiveRecord
  * @since 3.1
  */
 class TActiveRecordException extends TException

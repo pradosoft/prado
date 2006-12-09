@@ -37,6 +37,8 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 	 */
 	private $_data;
 
+	private $_redirectUrl=null;
+
 	/**
 	 * Returns a new instance of THtmlWriter.
 	 * An instance of TCallbackResponseWriter is created to hold the content.
@@ -74,6 +76,25 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 	public function getResponseData()
 	{
 		return $this->_data;
+	}
+
+	/**
+	 * Delay the redirect until we process the rest of the page.
+	 * @param string new url to redirect to.
+	 */
+	public function httpRedirect($url)
+	{
+		if($url[0]==='/')
+			$url=$this->getRequest()->getBaseUrl().$url;
+		$this->_redirectUrl=str_replace('&amp;','&',$url);
+	}
+
+	/**
+	 * @return string new url for callback response to redirect to.
+	 */
+	public function getRedirectedUrl()
+	{
+		return $this->_redirectUrl;
 	}
 }
 

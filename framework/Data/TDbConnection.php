@@ -40,7 +40,9 @@ Prado::using('System.Data.TDbCommand');
  * $command->execute();   // a non-query SQL statement execution
  * // or execute an SQL query and fetch the result set
  * $reader=$command->query();
- * foreach($reader as $row) ...  // each $row is an array representing a row of data
+ *
+ * // each $row is an array representing a row of data
+ * foreach($reader as $row) ...
  * </code>
  *
  * One can do prepared SQL execution and bind parameters to the prepared SQL:
@@ -154,7 +156,8 @@ class TDbConnection extends TComponent
 		{
 			try
 			{
-				$this->_pdo=new PDO($this->getConnectionString(),$this->getUsername(),$this->getPassword(),$this->_attributes);
+				$this->_pdo=new PDO($this->getConnectionString(),$this->getUsername(),
+									$this->getPassword(),$this->_attributes);
 				$this->_pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 				$this->_active=true;
 			}

@@ -1,0 +1,6 @@
+<com:TContent ID="Content">
+	<com:TActiveLinkButton
+		ID="button1"
+		Text="Goto Test Home"
+		OnClick="button_clicked"/>
+</com:TContent>

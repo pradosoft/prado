@@ -3389,9 +3389,11 @@ Prado.WebUI.TTextBox = Class.extend(Prado.WebUI.PostBackControl,
 {
 	onInit : function(options)
 	{
+		this.options=options;
 		if(options['TextMode'] != 'MultiLine')
 			Event.observe(this.element, "keydown", this.handleReturnKey.bind(this));
-		Event.observe(this.element, "change", Prado.PostBack.bindEvent(this,options));
+		if(this.options['AutoPostBack']==true)
+			Event.observe(this.element, "change", Prado.PostBack.bindEvent(this,options));
 	},
 
 	handleReturnKey : function(e)
@@ -3401,8 +3403,19 @@ Prado.WebUI.TTextBox = Class.extend(Prado.WebUI.PostBackControl,
 			var target = Event.element(e);
 			if(target)
 			{
-				Event.fireEvent(target, "change");
-				Event.stop(e);
+				if(this.options['AutoPostBack']==true)
+				{
+					Event.fireEvent(target, "change");
+					Event.stop(e);
+				}
+				else
+				{
+					if(this.options['CausesValidation'] && typeof(Prado.Validation) != "undefined")
+					{
+						if(!Prado.Validation.validate(this.options['FormID'], this.options['ValidationGroup'], $(this.options['ID'])))
+							return Event.stop(e);
+					}
+				}
 			}
 		}
 	}
@@ -3504,7 +3517,7 @@ Prado.WebUI.TCheckBoxList = Base.extend(
 			var checkBoxOptions = Object.extend(
 			{
 				ID : options.ListID+"_c"+i,
-				EventTarget : options.ListID+"$c"+i
+				EventTarget : options.ListName+"$c"+i
 			}, options);
 			new Prado.WebUI.TCheckBox(checkBoxOptions);
 		}
@@ -3520,7 +3533,7 @@ Prado.WebUI.TRadioButtonList = Base.extend(
 			var radioButtonOptions = Object.extend(
 			{
 				ID : options.ListID+"_c"+i,
-				EventTarget : options.ListID+"$c"+i
+				EventTarget : options.ListName+"$c"+i
 			}, options);
 			new Prado.WebUI.TRadioButton(radioButtonOptions);
 		}

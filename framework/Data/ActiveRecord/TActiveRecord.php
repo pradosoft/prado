@@ -48,7 +48,8 @@ Prado::using('System.Data.ActiveRecord.TActiveRecordCriteria');
  * }
  *
  * //create a connection and give it to the ActiveRecord manager.
- * $conn = new TDbConnection('pgsql:host=localhost;dbname=test', 'dbuser','dbpass');
+ * $dsn = 'pgsql:host=localhost;dbname=test';
+ * $conn = new TDbConnection($dsn, 'dbuser','dbpass');
  * TActiveRecordManager::getInstance()->setDbConnection($conn);
  *
  * //load the user record with username (primary key) 'admin'.
@@ -190,12 +191,16 @@ abstract class TActiveRecord extends TComponent
 	 * For composite primary keys (determined from the table definitions):
 	 * <code>
 	 * $finder->deleteByPk(array($key1,$key2)); //delete 1 record
-	 * $finder->deleteByPk(array($key1,$key2), array($key3,$key4),...); //delete multiple records
-	 * $finder->deleteByPk(array( array($key1,$key2), array($key3,$key4), .. )); //delete multiple records
+	 *
+	 * //delete multiple records
+	 * $finder->deleteByPk(array($key1,$key2), array($key3,$key4),...);
+	 *
+	 * //delete multiple records
+	 * $finder->deleteByPk(array( array($key1,$key2), array($key3,$key4), .. ));
 	 * </code>
 	 *
-	 * @param unknown_type $keys
-	 * @return unknown
+	 * @param mixed primary key values.
+	 * @return int number of records deleted.
 	 */
 	public function deleteByPk($keys)
 	{
@@ -237,7 +242,8 @@ abstract class TActiveRecord extends TComponent
 	 *
 	 * Usage:
 	 * <code>
-	 * $finder->find('username = :name AND password = :pass', array(':name'=>$name, ':pass'=>$pass));
+	 * $finder->find('username = :name AND password = :pass',
+	 * 					array(':name'=>$name, ':pass'=>$pass));
 	 * $finder->find('username = ? AND password = ?', array($name, $pass));
 	 * $finder->find('username = ? AND password = ?', $name, $pass);
 	 * //$criteria is of TActiveRecordCriteria

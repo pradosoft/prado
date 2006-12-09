@@ -36,17 +36,19 @@ Prado::using('System.Web.UI.ActiveControls.TActiveTextBox');
  * other properties of the repeater can be access via the {@link getSuggestions Suggestions}
  * property (e.g. they can be set in the .page templates).
  *
- * To return the list of suggestions back to the browser, in your {@link onSuggestion OnSuggestion}
- * event handler, do
+ * To return the list of suggestions back to the browser, supply a non-empty data source
+ * and call databind. For example,
  * <code>
  * function autocomplete_suggestion($sender, $param)
  * {
  *   $token = $param->getCallbackParameter(); //the partial word to match
  *   $sender->setDataSource($this->getSuggestionsFor($token)); //set suggestions
  *   $sender->dataBind();
- *   $sender->render($param->getNewWriter()); //sends suggestion back to browser.
  * }
  * </code>
+ *
+ * The suggestion will be rendered when the {@link dataBind()} method is called
+ * <strong>during a callback request</strong>.
  *
  * TAutoComplete allows multiple suggestions within one textbox with each
  * word or phrase separated by any characters specified in the
@@ -169,6 +171,17 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	}
 
 	/**
+	 * Overrides parent implementation. Callback {@link renderSuggestions()} when
+	 * page's IsCallback property is true.
+	 */
+	public function dataBind()
+	{
+		parent::dataBind();
+		if($this->getPage()->getIsCallback())
+			$this->renderSuggestions($this->getResponse()->createHtmlWriter());
+	}
+
+	/**
 	 * @return TPanel suggestion results panel.
 	 */
 	public function getResultPanel()
@@ -232,24 +245,21 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	}
 
 	/**
-	 * Flush and returns the suggestions content back to the browser client.
+	 * Renders the suggestions during a callback respones.
 	 * @param THtmlWriter the renderer.
 	 */
-	public function render($writer)
+	public function renderCallback($writer)
 	{
-		if(!$this->getPage()->getIsCallback())
-			parent::render($writer);
-		if($this->getActiveControl()->canUpdateClientSide())
-				$this->renderSuggestions($writer);
+		$this->renderSuggestions($writer);
 	}
 
 	/**
 	 * Renders the suggestions repeater.
 	 * @param THtmlWriter the renderer.
 	 */
-	protected function renderSuggestions($writer)
+	public function renderSuggestions($writer)
 	{
-		if($this->getSuggestions()->getItems()->getCount() > 0)
+		if($this->getActiveControl()->canUpdateClientSide())
 		{
 			$this->getSuggestions()->render($writer);
 			$boundary = $writer->getWriter()->getBoundary();

@@ -145,70 +145,32 @@ Prado.WebUI.TAutoComplete = Class.extend(Prado.WebUI.TAutoComplete,
  */
 Prado.WebUI.TTimeTriggeredCallback = Base.extend(
 {
-	count : 0,
-	timeout : 0,
-
 	constructor : function(options)
 	{
-		this.options = Object.extend(
-		{
-			Interval : 1,
-			DecayRate : 0
-		}, options || {})
-
-		this.onComplete = this.options.onComplete;
+		this.options = Object.extend({ Interval : 1	}, options || {});
 		Prado.WebUI.TTimeTriggeredCallback.register(this);
 	},
 
 	startTimer : function()
 	{
-		this.options.onComplete = this.onRequestComplete.bind(this);
-		this.timer = setTimeout(this.onTimerEvent.bind(this), 200);
+		setTimeout(this.onTimerEvent.bind(this), 100);
+		if(typeof(this.timer) == 'undefined' || this.timer == null)
+			this.timer = setInterval(this.onTimerEvent.bind(this),this.options.Interval*1000);
 	},
 
 	stopTimer : function()
 	{
-		(this.onComplete || Prototype.emptyFunction).apply(this, arguments);
-		this.options.onComplete = undefined;
-		clearTimeout(this.timer);
-		this.timer = undefined;
-		this.count = 0;
+		if(typeof(this.timer) != 'undefined')
+		{
+			clearInterval(this.timer);
+			this.timer = null;
+		}
 	},
 
 	onTimerEvent : function()
 	{
-		this.options.params = this.timeout/1000;
 		var request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.dispatch();
-	},
-
-	onRequestComplete : function()
-	{
-		(this.onComplete || Prototype.emptyFunction).apply(this, arguments);
-		this.timer = setTimeout(this.onTimerEvent.bind(this), this.getNewTimeout())
-	},
-
-	getNewTimeout : function()
-	{
-		switch(this.options.DecayType)
-		{
-			case 'Exponential':
-				t = (Math.exp(this.options.DecayRate*this.count*this.options.Interval))-1;
-			break;
-			case 'Linear':
-				t = this.options.DecayRate*this.count*this.options.Interval;
-			break;
-			case 'Quadratic':
-				t = this.options.DecayRate*this.count*this.count*this.options.Interval;
-			break;
-			case 'Cubic':
-				t = this.options.DecayRate*this.count*this.count*this.count*this.options.Interval;
-			break;
-			default : t = 0;
-		}
-		this.timeout = (t + this.options.Interval)*1000;
-		this.count++;
-		return parseInt(this.timeout);
 	}
 },
 //class methods

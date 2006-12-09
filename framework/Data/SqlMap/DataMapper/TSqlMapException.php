@@ -1,13 +1,19 @@
 <?php
 
+/**
+ * TSqlMapException is the base exception class for all SqlMap exceptions.
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.SqlMap
+ * @since 3.1
+ */
 class TSqlMapException extends TException
 {
 	/**
-	 * Constructor.
-	 * @param string error message. This can be a string that is listed
-	 * in the message file. If so, the message in the preferred language
-	 * will be used as the error message. Any rest parameters will be used
-	 * to replace placeholders ({0}, {1}, {2}, etc.) in the message.
+	 * Constructor, similar to the parent constructor. For parameters that
+	 * are of SimpleXmlElement, the tag name and its attribute names and values
+	 * are expanded into a string.
 	 */
 	public function __construct($errorMessage)
 	{
@@ -27,6 +33,10 @@ class TSqlMapException extends TException
 		parent::__construct(strtr($errorMessage,$tokens));
 	}
 
+	/**
+	 * @param SimpleXmlElement node
+	 * @return string tag name and attribute names and values.
+	 */
 	protected function implodeNode($node)
 	{
 		$attributes=array();
@@ -49,21 +59,52 @@ class TSqlMapException extends TException
 	}
 }
 
+/**
+ * TSqlMapConfigurationException, raised during configuration file parsing.
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.SqlMap
+ * @since 3.1
+ */
 class TSqlMapConfigurationException extends TSqlMapException
 {
 
 }
 
+/**
+ * TSqlMapUndefinedException, raised when mapped statemented are undefined.
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.SqlMap
+ * @since 3.1
+ */
 class TSqlMapUndefinedException extends TSqlMapException
 {
 
 }
 
+/**
+ * TSqlMapDuplicateException, raised when a duplicate mapped statement is found.
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.SqlMap
+ * @since 3.1
+ */
 class TSqlMapDuplicateException extends TSqlMapException
 {
 }
 
-
+/**
+ * TInvalidPropertyException, raised when setting or getting an invalid property.
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.SqlMap
+ * @since 3.1
+ */
 class TInvalidPropertyException extends TSqlMapException
 {
 }

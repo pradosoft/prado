@@ -1,0 +1,51 @@
+<com:TContent ID="Content">
+<style>
+.autocomplete
+{
+	border:1px solid #919EA9;
+	background-color:white;
+}
+.autocomplete ul, .autocomplete li
+{
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-size: 12px;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	color: #333;
+}
+
+ul.different
+{
+	background-color: pink;
+}
+
+.autocomplete li
+{
+	padding: 4px;
+	border-top: 1px solid #ccc;
+}
+
+.autocomplete .selected
+{
+	background-color: #ffc;
+}
+
+</style>
+
+<h1>Dynamic TAutoComplete Functional Test</h1>
+<com:TActivePanel ID="AutoCompletePanel">
+	<com:TRepeater ID="AutoCompleteRepeater">
+		<prop:ItemTemplate>
+			<com:TAutoComplete
+				Style="width: 20em"
+				ID="textbox1"
+				OnSuggest="Page.suggestCountries"
+				Separator=", "
+				ResultPanel.CssClass="autocomplete" />
+		</prop:ItemTemplate>
+	</com:TRepeater>
+</com:TActivePanel>
+
+<com:TActiveButton Text="Submit" OnClick="submitCallback"/>
+</com:TContent>

@@ -46,6 +46,11 @@ class TActivePageAdapter extends TControlAdapter
 	const CALLBACK_PAGESTATE_HEADER = 'X-PRADO-PAGESTATE';
 
 	/**
+	 * Callback redirect url header name.
+	 */
+	const CALLBACK_REDIRECT = 'X-PRADO-REDIRECT';
+
+	/**
 	 * @var ICallbackEventHandler callback event handler.
 	 */
 	private $_callbackEventTarget;
@@ -112,7 +117,21 @@ class TActivePageAdapter extends TControlAdapter
 	public function renderCallbackResponse($writer)
 	{
 		Prado::trace("ActivePage renderCallbackResponse()",'System.Web.UI.ActiveControls.TActivePageAdapter');
-		$this->renderResponse($writer);
+		if(($url = $this->getResponse()->getAdapter()->getRedirectedUrl())===null)
+			$this->renderResponse($writer);
+		else
+			$this->redirect($url);
+	}
+
+	/**
+	 * Redirect url on the client-side using javascript.
+	 * @param string new url to load.
+	 */
+	protected function redirect($url)
+	{
+		if(!$this->getApplication()->getRequestCompleted())
+			$this->getApplication()->onEndRequest();
+		$this->getResponse()->appendHeader(self::CALLBACK_REDIRECT.': '.$url);
 	}
 
 	/**

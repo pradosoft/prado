@@ -12,7 +12,7 @@
 
 /**
  * THttpResponseAdapter class.
- * 
+ *
  * THttpResponseAdapter allows the base http response class to change behaviour
  * without change the class hierachy.
  *
@@ -27,7 +27,7 @@ class THttpResponseAdapter extends TApplicationComponent
 	 * @var THttpResponse the response object the adapter is attached.
 	 */
 	private $_response;
-	
+
 	/**
 	 * Constructor. Attach a response to be adapted.
 	 * @param THttpResponse the response object the adapter is to attach to.
@@ -36,7 +36,7 @@ class THttpResponseAdapter extends TApplicationComponent
 	{
 		$this->_response=$response;
 	}
-	
+
 	/**
 	 * @return THttpResponse the response object adapted.
 	 */
@@ -44,7 +44,7 @@ class THttpResponseAdapter extends TApplicationComponent
 	{
 		return $this->_response;
 	}
-	
+
 	/**
 	 * This method is invoked when the response flushes the content and headers.
 	 * Default implementation calls the attached response flushContent method.
@@ -53,7 +53,16 @@ class THttpResponseAdapter extends TApplicationComponent
 	{
 		$this->_response->flushContent();
 	}
-	
+
+	/**
+	 * This method is invoked when the response is to redirect to another page.
+	 * @param string new url to redirect to.
+	 */
+	public function httpRedirect($url)
+	{
+		$this->_response->httpRedirect($url);
+	}
+
 	/**
 	 * This method is invoked when a new HtmlWriter needs to be created.
 	 * Default implementation calls the attached response createNewHtmlWriter method.
