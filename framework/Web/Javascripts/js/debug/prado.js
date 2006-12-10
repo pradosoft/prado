@@ -3256,10 +3256,10 @@ Prado.WebUI.PostBackControl = Class.create();
 
 Prado.WebUI.PostBackControl.prototype =
 {
-	_elementOnClick : null, //capture the element's onclick function
-
 	initialize : function(options)
 	{
+		this._elementOnClick = null, //capture the element's onclick function
+
 		this.element = $(options.ID);
 		if(this.onInit)
 			this.onInit(options);

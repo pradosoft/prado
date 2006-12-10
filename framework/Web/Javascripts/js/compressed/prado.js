@@ -345,8 +345,8 @@ elements[i].checked=true;}},checkIndices:function(elements,indices)
 {new Insertion.Top(element,content);},after:function(element,content)
 {new Insertion.After(element,content);},before:function(element,content)
 {new Insertion.Before(element,content);}}
-Prado.WebUI=Class.create();Prado.WebUI.PostBackControl=Class.create();Prado.WebUI.PostBackControl.prototype={_elementOnClick:null,initialize:function(options)
-{this.element=$(options.ID);if(this.onInit)
+Prado.WebUI=Class.create();Prado.WebUI.PostBackControl=Class.create();Prado.WebUI.PostBackControl.prototype={initialize:function(options)
+{this._elementOnClick=null,this.element=$(options.ID);if(this.onInit)
 this.onInit(options);},onInit:function(options)
 {if(typeof(this.element.onclick)=="function")
 {this._elementOnClick=this.element.onclick;this.element.onclick=null;}

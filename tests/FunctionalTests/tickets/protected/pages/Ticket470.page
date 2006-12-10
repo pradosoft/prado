@@ -1,0 +1,27 @@
+<com:TContent ID="Content">
+		<com:TActivePanel ID="activePanelTest" >
+	<!-- RELOAD -->
+				nbReload : 
+				<com:TLabel ID="counter" Text="0" />
+				<com:TActiveLinkButton ID="reloadButton" OnCallback="Reload" > Reload </com:TActiveLinkButton>
+				<br/>
+				
+	<!-- TEST -->		
+				<com:TTextBox ID="TextBox" />
+				<com:TActiveLinkButton ID="button1" OnCallback="Valid" ValidationGroup="v1" > Valid </com:TActiveLinkButton>
+				<com:TRequiredFieldValidator 
+					ID="validator1"
+					ValidationGroup="v1"
+					ControlToValidate="TextBox" 
+					Text="ERROR, input 'TextBox' is empty" />
+	<!-- RESULTS -->
+	<div style="border:1px solid red">
+				<com:TActiveLabel ID="Results" />
+	</div>
+	</com:TActivePanel>
+	
+	
+	BUG : 
+	click on 'Reload' with no text in the TextBox at anytime, and then, clicking on 'Valid' won't work... 
+	
+</com:TContent>

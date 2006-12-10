@@ -168,11 +168,6 @@ Prado.ValidationManager = Class.create();
  */
 Prado.ValidationManager.prototype =
 {
-	validators : [], // list of validators
-	summaries : [], // validation summaries
-	groups : [], // validation groups
-	options : {},
-
 	/**
 	 * <code>
 	 * options['FormID']*	The ID of HTML form to manage.
@@ -180,6 +175,11 @@ Prado.ValidationManager.prototype =
 	 */
 	initialize : function(options)
 	{
+		this.validators = []; // list of validators
+		this.summaries = []; // validation summaries
+		this.groups = []; // validation groups
+		this.options = {};
+
 		this.options = options;
 		Prado.Validation.managers[options.FormID] = this;
 	},
@@ -357,11 +357,6 @@ Prado.ValidationManager.prototype =
 Prado.WebUI.TValidationSummary = Class.create();
 Prado.WebUI.TValidationSummary.prototype =
 {
-	group : null,
-	options : {},
-	visible : false,
-	messages : null,
-
 	/**
 	 * <code>
 	 * options['ID']*				Validation summary ID, i.e., an HTML element ID
@@ -564,16 +559,6 @@ Prado.WebUI.TValidationSummary.prototype =
 Prado.WebUI.TBaseValidator = Class.create();
 Prado.WebUI.TBaseValidator.prototype =
 {
-	enabled : true,
-	visible : false,
-	isValid : true,
-	options : {},
-	_isObserving : {},
-	group : null,
-	manager : null,
-	message : null,
-	requestDispatched : false,
-
 	/**
 	 * <code>
 	 * options['ID']*				Validator ID, e.g. span with message
@@ -597,6 +582,14 @@ Prado.WebUI.TBaseValidator.prototype =
 		options.OnSuccess = options.OnSuccess || Prototype.emptyFunction;
 		options.OnError = options.OnError || Prototype.emptyFunction;
 	*/
+
+		this.enabled = true;
+		this.visible = false;
+		this.isValid = true;
+		this._isObserving = {};
+		this.group = null;
+		this.requestDispatched = false;
+		
 		this.options = options;
 		this.control = $(options.ControlToValidate);
 		this.message = $(options.ID);

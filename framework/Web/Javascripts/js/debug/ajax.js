@@ -687,33 +687,24 @@ Event.OnLoad(function()
  */
 Prado.CallbackRequest.prototype =
 {
-	/**
-	 * Callback URL, same url as the current page.
-	 */
-	url : window.location.href,
-
-	/**
-	 * Callback options, including onXXX events.
-	 */
-	options : {	},
-
-	/**
-	 * Callback target ID. E.g. $control->getUniqueID();
-	 */
-	id : null,
-
-	/**
-	 * Current callback request.
-	 */
-	request : null,
-
-	Enabled : true,
 
 	/**
 	 * Prepare and inititate a callback request.
 	 */
 	initialize : function(id, options)
 	{
+	/**
+	 * Callback URL, same url as the current page.
+	 */
+		this.url = window.location.href;
+
+		/**
+		 * Current callback request.
+		 */
+		this.request = null;
+
+		this.Enabled = true;
+
 		this.id = id;
 		this.options = Object.extend(
 		{
