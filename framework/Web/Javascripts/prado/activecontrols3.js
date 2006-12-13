@@ -74,9 +74,11 @@ Prado.WebUI.TActiveTextBox = Class.extend(Prado.WebUI.TTextBox,
 {
 	onInit : function(options)
 	{
+		this.options=options;
 		if(options['TextMode'] != 'MultiLine')
 			Event.observe(this.element, "keydown", this.handleReturnKey.bind(this));
-		Event.observe(this.element, "change", this.doCallback.bindEvent(this,options));
+		if(this.options['AutoPostBack']==true)
+			Event.observe(this.element, "change", this.doCallback.bindEvent(this,options));
 	},
 
 	doCallback : function(event, options)

@@ -1,0 +1,37 @@
+<com:TForm>
+
+<h1>Custom Login</h1>
+
+<com:TActiveLinkButton ID="showLogin" Attributes.OnClick="new Effect.Appear('loginBox')" Text="Login" />
+<div id="loginBox" style="display: none;">
+
+	<div id="loginLoader" style="display: none;">Please Wait...</div>
+
+	<span>Username:</span><br />
+	<com:TActiveTextBox ID="Username" />
+	<com:TRequiredFieldValidator 
+		ID="validator1"
+		ControlToValidate="Username" 
+		ValidationGroup="login" 
+		Text="...is required" Display="Dynamic"/>
+
+	<br />
+
+	<span>Password:</span><br />
+	<com:TActiveTextBox TextMode="Password" ID="Password" />
+	<com:TActiveCustomValidator 
+		ID="validator2" 
+		ControlToValidate="Password" 
+		Text="*"
+		OnServerValidate="validateUser" ValidationGroup="login" />
+
+	<br />
+
+	<com:TActiveLinkButton ID="checkLogin" OnCallback="doLogin" Text="Login" ValidationGroup="login" />
+	<com:TActiveLinkButton Attributes.OnClick="new Effect.Fade('loginBox')" Text="Close" />
+
+</div>
+
+<com:TJavascriptLogger />
+
+</com:TForm>

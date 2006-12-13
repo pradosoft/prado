@@ -1,0 +1,41 @@
+<com:TForm ID="form1">
+
+<h1>My Tab Panel Test</h1>
+
+<div id="loading" style="display: none; z-index: 10; width: 16px; height: 16px; position: absolute; left: 5px; top: 5px;">
+	LLoading...
+</div>
+<ul>
+<li>
+  <com:TActiveLinkButton OnCallback="onShowPanelA" Text="Panel A">
+    <prop:ClientSide OnLoading="$('loading').show()" OnComplete="$('loading').hide()"/>
+  </com:TActiveLinkButton>
+</li>
+<li>
+  <com:TActiveLinkButton OnCallback="onShowPanelB" Text="Panel B">
+    <prop:ClientSide OnLoading="$('loading').show()" OnComplete="$('loading').hide()"/>
+  </com:TActiveLinkButton>
+</li>
+<li>
+  <com:TActiveLinkButton OnCallback="onShowPanelC" Text="Panel C">
+    <prop:ClientSide OnLoading="$('loading').show()" OnComplete="$('loading').hide()"/>
+  </com:TActiveLinkButton>
+</li>
+</ul>
+
+<com:TActivePanel ID="pnlContentsA" Attributes.style="display: none;">
+ This is the contents of panel A
+ <com:Application.pages.MyControl/>
+</com:TActivePanel>
+
+<com:TActivePanel ID="pnlContentsB" Attributes.style="display: none;">
+ This is the contents of panel B
+</com:TActivePanel>
+
+<com:TActivePanel ID="pnlContentsC" Attributes.style="display: none;">
+ This is the contents of panel C
+</com:TActivePanel>
+
+<com:TJavascriptLogger />
+
+</com:TForm>

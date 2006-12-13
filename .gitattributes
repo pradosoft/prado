@@ -2116,6 +2116,8 @@ tests/FunctionalTests/active-controls/protected/pages/CustomTemplateComponent.ph
 tests/FunctionalTests/active-controls/protected/pages/CustomTemplateComponent.tpl -text
 tests/FunctionalTests/active-controls/protected/pages/CustomTemplateControlTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/CustomTemplateControlTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/CustomValidatorByPass.page -text
+tests/FunctionalTests/active-controls/protected/pages/CustomValidatorByPass.php -text
 tests/FunctionalTests/active-controls/protected/pages/DelayedCallback.page -text
 tests/FunctionalTests/active-controls/protected/pages/DelayedCallback.php -text
 tests/FunctionalTests/active-controls/protected/pages/EventTriggeredCallback.page -text
@@ -2130,6 +2132,10 @@ tests/FunctionalTests/active-controls/protected/pages/LTemplate.tpl -text
 tests/FunctionalTests/active-controls/protected/pages/Master1.php -text
 tests/FunctionalTests/active-controls/protected/pages/Master1.tpl -text
 tests/FunctionalTests/active-controls/protected/pages/MasterTest1.page -text
+tests/FunctionalTests/active-controls/protected/pages/MyControl.php -text
+tests/FunctionalTests/active-controls/protected/pages/MyControl.tpl -text
+tests/FunctionalTests/active-controls/protected/pages/MyTabPanelTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/MyTabPanelTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/NullStateTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/NullStateTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/PopulateActiveList.page -text
@@ -2294,6 +2300,8 @@ tests/FunctionalTests/tickets/protected/pages/Ticket470.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket470.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket477.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket477.php -text
+tests/FunctionalTests/tickets/protected/pages/Ticket484.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket484.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket54.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket54Master.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket54Master.tpl -text
@@ -2321,6 +2329,7 @@ tests/FunctionalTests/tickets/tests/Ticket439TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket463TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket470TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket477TestCase.php -text
+tests/FunctionalTests/tickets/tests/Ticket488TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket54TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket72TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket93TestCase.php -text
