@@ -1,0 +1,65 @@
+<com:TContent ID="Content">
+
+<style>
+	.textbox
+	{
+		font-family: Arial, Helvetica, sans-serif;
+		font-size: 1.0em;
+		display: block;
+		width: 33em;
+	}
+
+	.textbox
+	{
+		padding: 2px 0px 4px 2px;
+		border:1px solid #eee;
+	}
+
+
+	input.textbox
+	{
+		background-color: #ffc;
+	}
+	.loader
+	{
+		 position:absolute;
+		 right:0px;
+		 top:0px;
+		 color:white;
+		 background-color:#900;
+		 padding: 0.5em 1em;
+	}
+	input.required
+	{
+		border: 1px solid red;
+		background-color: pink;
+	}
+</style>
+
+<span id="loader" style="display:none;" onfocus="alert('ok')" class="loader">Loading...</span>
+
+<br /><br />
+
+			
+<com:TDataGrid ID="locations_datagrid" AutoGenerateColumns="false">
+	<com:TTemplateColumn ID="PublisherColumn">
+		<prop:HeaderTemplate>
+			To edit an existing location name simply edit one of the fields below:
+		</prop:HeaderTemplate>
+		<prop:ItemTemplate>
+			<com:TInPlaceTextBox id="edit_id"
+				OnTextChanged="Page.bla"
+				CssClass="textbox"
+				Text="<%#$this->Parent->DataItem['name']%>">
+					<prop:ActiveControl.ClientSide
+						OnLoading="Element.show('loader')"
+						OnComplete="Element.hide('loader')" />
+			</com:TInPlaceTextBox>
+		</prop:ItemTemplate>
+	</com:TTemplateColumn>
+</com:TDataGrid>
+
+<br /><br />
+<com:TActiveLabel ID="status" Text="Status:" />
+
+</com:TContent>
