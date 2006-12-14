@@ -1,6 +1,7 @@
 Version 3.0.7 
 ===================
 BUG: Ticket#481 - Unable to cancel navigation when handling OnSideBarButtonClickEvent (Qiang)
+BUG: typo in THttpResponse.writeFile() about sending headers (Qiang)
 
 Version 3.0.6 December 4, 2006
 ==============================

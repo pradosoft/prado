@@ -261,7 +261,7 @@ class THttpResponse extends TModule implements ITextWriter
 		{
 			header('Pragma: public');
 			header('Expires: 0');
-			header('Cache-Component: must-revalidate, post-check=0, pre-check=0');
+			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 		}
 		header("Content-type: $mimeType");
 		header('Content-Length: '.($content===null?filesize($fileName):strlen($content)));
