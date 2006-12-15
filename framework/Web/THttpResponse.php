@@ -325,7 +325,7 @@ class THttpResponse extends TModule implements ITextWriter
 	 * @param string URL to be redirected to. If the URL is a relative one, the base URL of
 	 * the current request will be inserted at the beginning.
 	 */
-	public function httpRedirect($url)
+	protected function httpRedirect($url)
 	{
 		if(!$this->getApplication()->getRequestCompleted())
 			$this->getApplication()->onEndRequest();
@@ -359,7 +359,7 @@ class THttpResponse extends TModule implements ITextWriter
 	/**
 	 * Outputs the buffered content, sends content-type and charset header.
 	 */
-	public function flushContent()
+	protected function flushContent()
 	{
 		Prado::trace("Flushing output",'System.Web.THttpResponse');
 		$this->sendContentTypeHeader();
@@ -493,7 +493,7 @@ class THttpResponse extends TModule implements ITextWriter
 	 * @param string type of HTML writer to be created.
 	 * @param ITextWriter text writer holding the contents.
 	 */
-	public function createNewHtmlWriter($type, $writer)
+	protected function createNewHtmlWriter($type, $writer)
 	{
 		return Prado::createComponent($type, $writer);
 	}
