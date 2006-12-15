@@ -172,6 +172,10 @@ class TWizard extends TWebControl implements INamingContainer
 	 * @var TDataList side bar data list.
 	 */
 	private $_sideBarDataList;
+	/**
+	 * @var boolean whether navigation should be cancelled (a status set in OnSideBarButtonClick)
+	 */
+	private $_cancelNavigation=false;
 
 	/**
 	 * @return string tag name for the wizard
@@ -674,7 +678,7 @@ class TWizard extends TWebControl implements INamingContainer
 	 * Raises <b>OnCompleteButtonClick</b> event.
 	 * This event is raised when a finish navigation button is clicked in the
 	 * current active step.
-	 * @param TEventParameter event parameter
+	 * @param TWizardNavigationEventParameter event parameter
 	 */
 	public function onCompleteButtonClick($param)
 	{
@@ -687,7 +691,7 @@ class TWizard extends TWebControl implements INamingContainer
 	 * Raises <b>OnNextButtonClick</b> event.
 	 * This event is raised when a next navigation button is clicked in the
 	 * current active step.
-	 * @param TEventParameter event parameter
+	 * @param TWizardNavigationEventParameter event parameter
 	 */
 	public function onNextButtonClick($param)
 	{
@@ -698,7 +702,7 @@ class TWizard extends TWebControl implements INamingContainer
 	 * Raises <b>OnPreviousButtonClick</b> event.
 	 * This event is raised when a previous navigation button is clicked in the
 	 * current active step.
-	 * @param TEventParameter event parameter
+	 * @param TWizardNavigationEventParameter event parameter
 	 */
 	public function onPreviousButtonClick($param)
 	{
@@ -708,7 +712,7 @@ class TWizard extends TWebControl implements INamingContainer
 	/**
 	 * Raises <b>OnSideBarButtonClick</b> event.
 	 * This event is raised when a link button in the side bar is clicked.
-	 * @param TEventParameter event parameter
+	 * @param TWizardNavigationEventParameter event parameter
 	 */
 	public function onSideBarButtonClick($param)
 	{
@@ -1136,7 +1140,8 @@ class TWizard extends TWebControl implements INamingContainer
 
 			$this->_activeStepIndexSet=false;
 			$this->onSideBarButtonClick($navParam);
-			if(!$navParam->getCancelNavigation())
+			$this->_cancelNavigation=$navParam->getCancelNavigation();
+			if(!$this->_cancelNavigation)
 			{
 				if(!$this->_activeStepIndexSet && $this->allowNavigationToStep($newStepIndex))
 					$this->setActiveStepIndex($newStepIndex);
@@ -1384,6 +1389,8 @@ class TWizard extends TWebControl implements INamingContainer
 			}
 			else if(strcasecmp($command,self::CMD_MOVETO)===0)
 			{
+				if($this->_cancelNavigation)  // may be set in onSideBarButtonClick
+					$navParam->setCancelNavigation(true);
 				$navParam->setNextStepIndex(TPropertyValue::ensureInteger($param->getCommandParameter()));
 				$handled=true;
 			}
