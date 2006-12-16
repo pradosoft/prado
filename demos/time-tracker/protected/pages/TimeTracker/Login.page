@@ -31,9 +31,26 @@
 	OnServerValidate="validateUser" />
   <div class="signin">
   	<com:TButton Text="Log In" OnClick="doLogin" />
+		<prop:tests asd />
   </div>
   <div class="create">
   	<a href="?page=TimeTracker.UserCreate">Create New User</a>
   </div>
- </fieldset>
- </com:TContent>
+</fieldset>
+	<com:TButton ID="button1" Text="Button Text" OnClick="button1_Clicked">
+
+	</com:TButton>
+	<com:TButton ID="button1" 
+		Text=<%= print echo "asd" %> 
+		OnClick="button1_Clicked" />
+		<%= print echo "asd" %> 
+		<%# print echo "asd" %> 
+		<%[ asd ]%>
+		<%= as echo 
+		
+		"asd" %>
+		<%# as echo 
+		"asd" %>
+		<%= print echo "asd" %> 
+		<%# print echo "asd" %> 
+</com:TContent>
