@@ -1,0 +1,5 @@
+<com:TContent ID="Content">
+	<com:TActiveButton ID="button1" Text="Button 1" OnClick="button1_clicked" />
+	<com:TActiveLabel ID="label1" Text="Hello" />
+	
+</com:TContent>
