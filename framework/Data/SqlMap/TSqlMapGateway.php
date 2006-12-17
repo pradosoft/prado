@@ -56,14 +56,6 @@ class TSqlMapGateway extends TComponent
 	}
 
 	/**
-	 * @param TDbConnection new database connection.
-	 */
-	public function setDbConnection($conn)
-	{
-		$this->getSqlMapManager()->setDbConnection($conn);
-	}
-
-	/**
 	 * Executes a Sql SELECT statement that returns that returns data
 	 * to populate a single object instance.
 	 *

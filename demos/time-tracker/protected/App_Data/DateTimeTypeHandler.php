@@ -1,6 +1,6 @@
 <?php
 
-class DateTimeTypeHandler implements ITypeHandlerCallback
+class DateTimeTypeHandler extends TSqlMapTypeHandler
 {
 	/**
 	 * Not implemented.
@@ -15,7 +15,9 @@ class DateTimeTypeHandler implements ITypeHandlerCallback
 	 */
 	public function getResult($string)
 	{
-		return strtotime($string);		
+		if(intval($string) > 10000) //strtotime doesn't like unix epoc time.
+			return intval($string);
+		return strtotime($string);
 	}
 
 	/**
@@ -27,7 +29,7 @@ class DateTimeTypeHandler implements ITypeHandlerCallback
 	{
 		throw new TimeTrackerException('Not implemented');
 	}
-	
+
 }
 
 ?>

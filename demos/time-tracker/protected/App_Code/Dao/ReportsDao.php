@@ -6,12 +6,12 @@ class ProjectReport extends TComponent
 	public $EstimateHours = 0;
 	public $EstimateCompletion = 0;
 	public $Categories;
-	
+
 	public function __construct()
 	{
 		$this->Categories = new TList;
 	}
-	
+
 	public function getActualHours()
 	{
 		$total = 0;
@@ -26,21 +26,21 @@ class CategoryReport extends TComponent
 	public $CategoryName = '';
 	public $EstimateHours = 0;
 	public $members = array();
-	
+
 	public function getActualHours()
 	{
 		$total = 0;
 		foreach($this->members as $member)
 			$total += $member['hours'];
 		return $total;
-	}	
+	}
 }
 
 class UserReport extends TComponent
 {
 	public $Username;
 	public $Projects = array();
-	
+
 	public function getTotalHours()
 	{
 		$hours = 0;
@@ -64,24 +64,23 @@ class ReportsDao extends BaseDao
 	public function getTimeReportsByProjectIDs($projects)
 	{
 		$ids = implode(',', array_map('intval', $projects));
-		$sqlmap = $this->getConnection();
-		return $sqlmap->queryForList('GetTimeReportByProjectIDs', $ids);				
+		$sqlmap = $this->getSqlMap();
+		return $sqlmap->queryForList('GetTimeReportByProjectIDs', $ids);
 	}
-	
+
 	public function getUserProjectTimeReports($users, $projects, $startDate, $endDate)
 	{
-		$sqlmap = $this->getConnection();
-		$driver = $sqlmap->openConnection();
+		$sqlmap = $this->getSqlMap();
 		$ids = implode(',', array_map('intval', $projects));
-		$usernames = implode(',', array_map(array($driver, 'quote'), $users));
-		
+		$usernames = implode(',', array_map(array($sqlmap->getDbConnection(), 'quoteString'), $users));
+
 		$param['projects'] = $ids;
 		$param['members'] = $usernames;
 		$param['startDate'] = intval($startDate);
 		$param['endDate'] = intval($endDate);
-		
+
 		return $sqlmap->queryForList('GetTimeReportByUsername', $param);
-	}		
+	}
 }
 
 ?>

@@ -14,9 +14,11 @@ Prado::using('System.Data.SqlMap.TSqlMapGateway');
 Prado::using('System.Data.SqlMap.DataMapper.TSqlMapException');
 Prado::using('System.Data.SqlMap.DataMapper.TSqlMapTypeHandlerRegistry');
 Prado::using('System.Data.SqlMap.DataMapper.TSqlMapCache');
-Prado::using('System.Data.SqlMap.DataMapper.*');
+Prado::using('System.Data.SqlMap.Configuration.TSqlMapStatement');
 Prado::using('System.Data.SqlMap.Configuration.*');
+Prado::using('System.Data.SqlMap.DataMapper.*');
 Prado::using('System.Data.SqlMap.Statements.*');
+
 
 /**
  * TSqlMapManager class holds the sqlmap configuation result maps, statements
@@ -27,7 +29,8 @@ Prado::using('System.Data.SqlMap.Statements.*');
  *
  * <code>
  * $conn = new TDbConnection($dsn,$dbuser,$dbpass);
- * $manager = new TSqlMapManager($conn, 'mydb-sqlmap.xml');
+ * $manager = new TSqlMapManager($conn);
+ * $manager->configureXml('mydb-sqlmap.xml');
  * $sqlmap = $manager->getSqlMapGateway();
  * $result = $sqlmap->queryForObject('Products');
  * </code>
@@ -46,9 +49,6 @@ class TSqlMapManager extends TComponent
 	private $_cacheModels;
 
 	private $_connection;
-
-	private $_configFile;
-
 	private $_gateway;
 
 	/**
@@ -56,10 +56,9 @@ class TSqlMapManager extends TComponent
 	 * @param TDbConnection database connection
 	 * @param string configuration file.
 	 */
-	public function __construct($connection=null,$configFile=null)
+	public function __construct($connection=null)
 	{
 		$this->_connection=$connection;
-		$this->_configFile=$configFile;
 
 		$this->_mappedStatements=new TMap;
 		$this->_resultMaps=new TMap;
@@ -120,14 +119,22 @@ class TSqlMapManager extends TComponent
 	}
 
 	/**
+	 * Loads and parses the SqlMap configuration file.
+	 * @param string xml configuration file.
+	 */
+	public function configureXml($file)
+	{
+		$config = new TSqlMapXmlConfiguration($this);
+		$config->configure($file);
+	}
+
+	/**
 	 * Configures the current TSqlMapManager using the given xml configuration file
 	 * defined in {@link ConfigFile setConfigFile()}.
 	 * @return TSqlMapGateway create and configure a new TSqlMapGateway.
 	 */
 	protected function createSqlMapGateway()
 	{
-		$config = new TSqlMapXmlConfiguration($this);
-		$config->configure($this->getConfigFile());
 		return new TSqlMapGateway($this);
 	}
 

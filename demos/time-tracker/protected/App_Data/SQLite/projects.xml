@@ -21,8 +21,8 @@
 	INSERT INTO projects
 	(Name, Description, CreationDate, EstimateDuration, CompletionDate, CreatorID, ManagerID)
 	VALUES
-	(#Name#, #Description#, php('date', 'Y-m-d H:i:s'), #EstimateDuration#,
-		#CompletionDate, typeHandler=DateTime#, 
+	(#Name#, #Description#, strftime('%s', 'now'), #EstimateDuration#,
+		#CompletionDate, typeHandler=DateTime#,
 		#CreatorUserName#, #ManagerUserName#)
 	<selectKey property="ID" type="post" resultClass="int">
 		select LAST_INSERT_ROWID() as value
@@ -30,7 +30,7 @@
 </insert>
 
 <select id="GetProjectByID" parameterClass="integer" resultMap="project-result">
-	SELECT 
+	SELECT
 		projects.ProjectID as ProjectID,
 		projects.Name as Name,
 		projects.Description as Description,
@@ -43,8 +43,8 @@
 	FROM projects
 		LEFT JOIN categories ON projects.ProjectID = categories.ProjectID
 		LEFT JOIN time_entry ON categories.CategoryID = time_entry.CategoryID
-	WHERE 
-			projects.ProjectID = #value# 
+	WHERE
+			projects.ProjectID = #value#
 		AND Disabled = 0
 	GROUP BY
 		projects.ProjectID
@@ -53,7 +53,7 @@
 </select>
 
 <select id="GetAllProjects" resultMap="project-result">
-	SELECT 
+	SELECT
 		projects.ProjectID as ProjectID,
 		projects.Name as Name,
 		projects.Description as Description,
@@ -66,7 +66,7 @@
 	FROM projects
 		LEFT JOIN categories ON projects.ProjectID = categories.ProjectID
 		LEFT JOIN time_entry ON categories.CategoryID = time_entry.CategoryID
-	WHERE 
+	WHERE
 		Disabled = 0
 	GROUP BY
 		projects.ProjectID
@@ -79,7 +79,7 @@
 </select>
 
 <select id="GetProjectsByManagerName" resultMap="project-result">
-	SELECT 
+	SELECT
 		projects.ProjectID as ProjectID,
 		projects.Name as Name,
 		projects.Description as Description,
@@ -92,8 +92,8 @@
 	FROM projects
 		LEFT JOIN categories ON projects.ProjectID = categories.ProjectID
 		LEFT JOIN time_entry ON categories.CategoryID = time_entry.CategoryID
-	WHERE 
-			Disabled = 0 
+	WHERE
+			Disabled = 0
 		AND projects.ManagerID = #value#
 	GROUP BY
 		projects.ProjectID
@@ -102,7 +102,7 @@
 </select>
 
 <select id="GetProjectsByUserName" resultMap="project-result">
-	SELECT 
+	SELECT
 		projects.ProjectID as ProjectID,
 		projects.Name as Name,
 		projects.Description as Description,
@@ -116,7 +116,7 @@
 		LEFT JOIN categories ON projects.ProjectID = categories.ProjectID
 		LEFT JOIN time_entry ON categories.CategoryID = time_entry.CategoryID,
 		project_members
-	WHERE 
+	WHERE
 			project_members.ProjectID = projects.ProjectID
 		AND project_members.UserID = #value#
 		AND projects.Disabled = 0
@@ -146,13 +146,13 @@
 
 <update id="UpdateProject" parameterClass="ProjectRecord">
 	UPDATE projects
-	SET 
+	SET
 		CompletionDate = #CompletionDate, typeHandler=DateTime#,
 		Description = #Description#,
 		EstimateDuration = #EstimateDuration#,
 		ManagerId =#ManagerUserName#,
 		Name = #Name#
-	WHERE 
+	WHERE
 		ProjectID = #ID#
 </update>
 

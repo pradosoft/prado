@@ -55,9 +55,8 @@ class BaseCase extends UnitTestCase
 	 */
 	protected function initSqlMap()
 	{
-		$filename = $this->config->getSqlMapConfigFile();
-		$conn = $this->config->getConnection();
-		$manager = new TSqlMapManager($conn,$filename);
+		$manager = new TSqlMapManager($this->config->getConnection());
+		$manager->configureXml($this->config->getSqlMapConfigFile());
 		$this->sqlmap = $manager->getSqlMapGateway();
 		$manager->TypeHandlers->registerTypeHandler(new TDateTimeHandler);
 	}

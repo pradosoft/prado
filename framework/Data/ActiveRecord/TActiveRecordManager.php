@@ -11,6 +11,7 @@
  */
 
 Prado::using('System.Data.TDbConnection');
+Prado::using('System.Data.ActiveRecord.TActiveRecord');
 Prado::using('System.Data.ActiveRecord.Exceptions.TActiveRecordException');
 Prado::using('System.Data.ActiveRecord.TActiveRecordGateway');
 Prado::using('System.Data.ActiveRecord.TActiveRecordStateRegistry');
@@ -45,6 +46,24 @@ class TActiveRecordManager extends TComponent
 	private $_gateway;
 	private $_meta=array();
 	private $_connection;
+
+	private $_cache;
+
+	/**
+	 * @return ICache application cache.
+	 */
+	public function getCache()
+	{
+		return $this->_cache;
+	}
+
+	/**
+	 * @param ICache application cache
+	 */
+	public function setCache($value)
+	{
+		$this->_cache=$value;
+	}
 
 	/**
 	 * @param TDbConnection default database connection

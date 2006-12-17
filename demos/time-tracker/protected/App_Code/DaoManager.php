@@ -9,10 +9,12 @@
  * @version $Id$
  * @package Demos
  */
- 
+
+Prado::using('System.Data.SqlMap.TSqlMapConfig');
+
 /**
  * DaoManager class.
- * 
+ *
  * A Registry for Dao and an implementation of that type.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
@@ -20,57 +22,29 @@
  * @package Demos
  * @since 3.1
  */
-class DaoManager extends TModule
+class DaoManager extends TSqlMapConfig
 {
-	/**
-	 * @var TSqlMapper sqlmap client
-	 */
-	private $_connection;
-	/**
-	 * @var boolean if the module has been initialized
-	 */
-	private $_initialized=false;	
 	/**
 	 * @var array registered list of dao
 	 */
 	private $_dao=array();
+
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
 	 * It loads dao information from the module configuration.
 	 * @param TXmlElement module configuration
 	 */
-	public function init($config)
-	{ 	
-		if($this->_connection === null)
-			throw new TimeTrackerException('daomanager_connection_required');
-		$app = $this->getApplication();
-		if(is_string($this->_connection))
-		{
-			if(($conn=$app->getModule($this->_connection)->getClient())===null)
-				throw new TimeTrackerException('daomanager_undefined_connection',$this->_connection);
-			if(!($conn instanceof TSqlMapper))
-				throw new TimeTrackerException('daomanager_invalid_connection',	$this->_connection);
-			$this->_connection = $conn;
-		}
-		$this->includeDaoImplementation($config->getElementsByTagName('dao'));
-		$this->_initialized = true;
-	}
-	
-	/**
-	 * Register the dao type and implementation class names.
-	 * @param array list of TXmlDocument nodes.
-	 */
-	protected function includeDaoImplementation($nodes)
+	public function init($xml)
 	{
-		foreach($nodes as $node)
+		parent::init($xml);
+		foreach($xml->getElementsByTagName("dao") as $node)
 		{
-			$id = $node->getAttribute('id');
-			$class = $node->getAttribute('class');
-			$this->_dao[$id] = array('class' => $class);
+			$this->_dao[$node->getAttribute('id')] =
+				array('class' => $node->getAttribute('class'));
 		}
 	}
-	
+
 	/**
 	 * @return array list of registered Daos
 	 */
@@ -78,7 +52,7 @@ class DaoManager extends TModule
 	{
 		return $this->_dao;
 	}
-	
+
 	/**
 	 * Returns an implementation of a Dao type, implements the Registery
 	 * pattern. Multiple calls returns the same Dao instance.
@@ -92,34 +66,13 @@ class DaoManager extends TModule
 			if(!isset($this->_dao[$class]['instance']))
 			{
 				$dao = Prado::createComponent($this->_dao[$class]['class']);
-				$dao->setConnection($this->getConnection());
-				$this->_dao[$class]['instance'] = $dao;	
+				$dao->setSqlMap($this->getClient());
+				$this->_dao[$class]['instance'] = $dao;
 			}
 			return $this->_dao[$class]['instance'];
 		}
 		else
 			throw new TimeTrackerException('daomanager_undefined_dao', $class);
-	}
-	
-	/**
-	 * @return TSqlMapper sqlmap client instance
-	 */
-	public function getConnection()
-	{
-		return $this->_connection;
-	}
-	
-	/**
-	 * Sets the connection for all Daos registered.
-	 * @param string|TSqlMapper sqlmap client module id or TSqlMapper instance.
-	 */
-	public function setConnection($client)
-	{
-		if($this->_initialized)
-			throw new TimeTrackerException('daomanager_unchangeable');
-		if(!is_string($client) && !($client instanceof TSqlMapper))
-			throw new TConfigurationException('daomanager_invalid_connection',$client);
-		$this->_connection = $client;
 	}
 }
 

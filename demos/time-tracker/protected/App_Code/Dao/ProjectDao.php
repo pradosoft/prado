@@ -22,49 +22,49 @@ class ProjectDao extends BaseDao
 {
 	public function projectNameExists($projectName)
 	{
-		$sqlmap = $this->getConnection();
+		$sqlmap = $this->getSqlMap();
 		return $sqlmap->queryForObject('ProjectNameExists', $projectName);
 	}
-	
+
 	public function addNewProject($project)
 	{
-		$sqlmap = $this->getConnection();
+		$sqlmap = $this->getSqlMap();
 		$sqlmap->insert('CreateNewProject', $project);
 	}
-	
+
 	public function getProjectByID($projectID)
 	{
-		$sqlmap = $this->getConnection();
+		$sqlmap = $this->getSqlMap();
 		return $sqlmap->queryForObject('GetProjectByID', $projectID);
 	}
-	
+
 	public function deleteProject($projectID)
 	{
-		$sqlmap = $this->getConnection();
+		$sqlmap = $this->getSqlMap();
 		$sqlmap->update('DeleteProject',$projectID);
 	}
-	
+
 	public function addUserToProject($projectID, $username)
 	{
-		$sqlmap = $this->getConnection();
+		$sqlmap = $this->getSqlMap();
 		$members = $this->getProjectMembers($projectID);
 		if(!in_array($username, $members))
 		{
 			$param['username'] = $username;
 			$param['project'] = $projectID;
 			$sqlmap->insert('AddUserToProject',$param);
-		} 
+		}
 	}
-	
+
 	public function getProjectMembers($projectID)
 	{
-		$sqlmap = $this->getConnection();
+		$sqlmap = $this->getSqlMap();
 		return $sqlmap->queryForList('GetProjectMembers', $projectID);
 	}
-	
+
 	public function getAllProjects($sort='', $order='ASC')
 	{
-		$sqlmap = $this->getConnection();
+		$sqlmap = $this->getSqlMap();
 		if($sort === '')
 			return $sqlmap->queryForList('GetAllProjects');
 		else
@@ -72,32 +72,32 @@ class ProjectDao extends BaseDao
 			$param['sort'] = $sort;
 			$param['order'] = $order;
 			return $sqlmap->queryForList('GetAllProjectsOrdered', $param);
-		}		
+		}
 	}
-	
+
 	public function getProjectsByManagerName($manager)
 	{
-		$sqlmap = $this->getConnection();
+		$sqlmap = $this->getSqlMap();
 		return $sqlmap->queryForList('GetProjectsByManagerName', $manager);
 	}
-	
+
 	public function getProjectsByUserName($username)
 	{
-		$sqlmap = $this->getConnection();
+		$sqlmap = $this->getSqlMap();
 		return $sqlmap->queryForList('GetProjectsByUserName', $username);
 	}
-	
+
 	public function removeUserFromProject($projectID, $username)
 	{
-		$sqlmap = $this->getConnection();
+		$sqlmap = $this->getSqlMap();
 		$param['username'] = $username;
 		$param['project'] = $projectID;
 		$sqlmap->delete('RemoveUserFromProject', $param);
 	}
-	
+
 	public function updateProject($project)
 	{
-		$sqlmap = $this->getConnection();
+		$sqlmap = $this->getSqlMap();
 		$sqlmap->update('UpdateProject', $project);
 	}
 }

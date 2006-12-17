@@ -1125,7 +1125,6 @@ demos/sqlmap/index.php -text
 demos/sqlmap/protected/.htaccess -text
 demos/sqlmap/protected/APP_CODE/Person.php -text
 demos/sqlmap/protected/App_Data/person.xml -text
-demos/sqlmap/protected/App_Data/personHelper.xml -text
 demos/sqlmap/protected/App_Data/test.db -text
 demos/sqlmap/protected/application.xml -text
 demos/sqlmap/protected/pages/Manual/BigPicture.page -text
@@ -1164,8 +1163,6 @@ demos/sqlmap/protected/pages/Manual/WorkingWithDataMaps.page -text
 demos/sqlmap/protected/pages/Manual/config.xml -text
 demos/sqlmap/protected/pages/Manual/diagram.png -text
 demos/sqlmap/protected/pages/Sample/Home.page -text
-demos/sqlmap/protected/pages/Sample/ProductList.page -text
-demos/sqlmap/protected/pages/Sample/ProductList.php -text
 demos/sqlmap/protected/pages/Sample/crud1.page -text
 demos/sqlmap/protected/pages/Sample/crud1.php -text
 demos/sqlmap/protected/pages/Sample/crud2.page -text
@@ -1366,6 +1363,7 @@ framework/Configuration/TProtectedConfiguration.php -text
 framework/Data/ActiveRecord/Exceptions/TActiveRecordException.php -text
 framework/Data/ActiveRecord/Exceptions/messages.txt -text
 framework/Data/ActiveRecord/TActiveRecord.php -text
+framework/Data/ActiveRecord/TActiveRecordConfig.php -text
 framework/Data/ActiveRecord/TActiveRecordCriteria.php -text
 framework/Data/ActiveRecord/TActiveRecordGateway.php -text
 framework/Data/ActiveRecord/TActiveRecordManager.php -text
@@ -1409,11 +1407,12 @@ framework/Data/SqlMap/Statements/TPreparedStatement.php -text
 framework/Data/SqlMap/Statements/TPreparedStatementFactory.php -text
 framework/Data/SqlMap/Statements/TSelectMappedStatement.php -text
 framework/Data/SqlMap/Statements/TSimpleDynamicSql.php -text
-framework/Data/SqlMap/Statements/TSqlMapSelect.php -text
 framework/Data/SqlMap/Statements/TStaticSql.php -text
 framework/Data/SqlMap/Statements/TUpdateMappedStatement.php -text
+framework/Data/SqlMap/TSqlMapConfig.php -text
 framework/Data/SqlMap/TSqlMapGateway.php -text
 framework/Data/SqlMap/TSqlMapManager.php -text
+framework/Data/TDataSourceConfig.php -text
 framework/Data/TDbCommand.php -text
 framework/Data/TDbConnection.php -text
 framework/Data/TDbDataReader.php -text

@@ -22,7 +22,7 @@
 class TActiveRecordGateway extends TComponent
 {
 	private $_manager;
-	private $_tables=array();
+	private $_tables=array(); //meta data cache.
 
 	/**
 	 * Property name for optional table name in TActiveRecord.
@@ -68,35 +68,67 @@ class TActiveRecordGateway extends TComponent
 	}
 
 	/**
+	 * @param TActiveRecord active record.
+	 * @return TDbMetaData table meta data, null if not found.
+	 */
+	protected function getCachedMetaData($record)
+	{
+		$type=get_class($record);
+		if(isset($this->_tables[$type]))
+			return $this->_tables[$type];
+		if(($cache=$this->getManager()->getCache())!==null)
+		{
+			//force loading of the table inspector to load the required classes
+			// before unserializing cached meta data.
+			$this->getManager()->getTableInspector($record->getDbConnection());
+			$data = $cache->get($this->getMetaDataCacheKey($record));
+			if($data !== false && $data !== null)
+			{
+				$this->_tables[$type] = $data;
+				return $data;
+			}
+		}
+	}
+
+	/**
+	 * @param TActiveRecord active record.
+	 * @return string cache key, using connection string + record class name
+	 */
+	protected function getMetaDataCacheKey($record)
+	{
+		$conn = $record->getDbConnection()->getConnectionString();
+		return $conn.':'.get_class($record);
+	}
+
+	/**
+	 * Cache the meta data, tries the application cache if applicable.
+	 * @param TActiveRecord active record.
+	 * @param TDbMetaData table meta data
+	 * @return TDbMetaData table meta data.
+	 */
+	protected function cacheMetaData($record,$data)
+	{
+		$type = get_class($record);
+		if(($cache=$this->getManager()->getCache())!==null)
+			$cache->set($this->getMetaDataCacheKey($record), $data);
+		$this->_tables[$type] = $data;
+		return $data;
+	}
+
+	/**
 	 * Gets the meta data for given database and table.
 	 */
 	public function getMetaData(TActiveRecord $record)
 	{
 		$type=get_class($record);
-		if(!isset($this->_tables[$type]))
+		if(!($data = $this->getCachedMetaData($record)))
 		{
 			$conn = $record->getDbConnection();
 			$inspector = $this->getManager()->getTableInspector($conn);
 			$table = $this->getTableName($record);
-			$this->_tables[$type] = $inspector->getTableMetaData($table);
+			$data = $this->cacheMetaData($record,$inspector->getTableMetaData($table));
 		}
-		return $this->_tables[$type];
-	}
-
-	/**
-	 * @param array table meta data.
-	 */
-	public function setAllMetaData($data)
-	{
-		$this->_tables=$data;
-	}
-
-	/**
-	 * @return array all table meta data.
-	 */
-	public function getAllMetaData()
-	{
-		return $this->_tables;
+		return $data;
 	}
 
 	/**

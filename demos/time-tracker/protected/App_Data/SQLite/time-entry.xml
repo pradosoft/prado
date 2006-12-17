@@ -3,21 +3,21 @@
 
 <insert id="AddNewTimeEntry" parameterClass="TimeEntryRecord">
 	INSERT INTO time_entry(
-		EntryCreated, 
-		Duration, 
-		Description, 
+		EntryCreated,
+		Duration,
+		Description,
 		CategoryID,
-		EntryDate, 
-		CreatorID, 
+		EntryDate,
+		CreatorID,
 		UserID
 	)
 	VALUES(
-		php('date', 'Y-m-d H:i:s'), 
-		#Duration#, 
-		#Description#, 
+		strftime('%s', 'now'),
+		#Duration#,
+		#Description#,
 		#Category.ID#,
-		#ReportDate, typeHandler=DateTime#, 
-		#CreatorUserName#, 
+		#ReportDate, typeHandler=DateTime#,
+		#CreatorUserName#,
 		#Username#
 	)
   <selectKey property="ID" type="post" resultClass="int">
@@ -53,9 +53,9 @@
 </resultMap>
 
 <select id="GetTimeEntryByID" resultMap="time-entry-result">
-	SELECT 
+	SELECT
 		*
-	FROM 
+	FROM
 		time_entry
 	WHERE
 		EntryID = #value#
@@ -66,7 +66,7 @@
 </delete>
 
 <select id="GetAllTimeEntriesByProjectIdAndUser" resultMap="time-entry-category-result">
-	SELECT 
+	SELECT
 		time_entry.EntryID as EntryID,
 		time_entry.EntryCreated as EntryCreated,
 		time_entry.Duration as Duration,
@@ -82,7 +82,7 @@
 			time_entry.UserID = #username#
 		AND time_entry.CategoryID = categories.CategoryID
 		AND categories.ProjectID = #project#
-	ORDER BY 
+	ORDER BY
 		EntryID ASC
 </select>
 

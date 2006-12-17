@@ -6,18 +6,17 @@ class crud2 extends TPage
 {
 	private function sqlmap()
 	{
-		return $this->Application->Modules['person-sample'];
+		return $this->Application->Modules['person-sample']->Client;
 	}
 
 	private function loadData()
 	{
-		$this->personList->DataSource = 
-				$this->sqlmap()->queryForList('SelectAll');
+		$this->personList->DataSource =  $this->sqlmap()->queryForList('SelectAll');
 		$this->personList->dataBind();
 	}
 
 	public function onLoad($param)
-	{		
+	{
 		if(!$this->IsPostBack)
 			$this->loadData();
 	}
@@ -44,7 +43,7 @@ class crud2 extends TPage
 		$person->HeightInMeters = $this->getText($param, 2);
 		$person->WeightInKilograms = $this->getText($param, 3);
 		$person->ID = $this->getKey($sender, $param);
-		
+
 		$this->sqlmap()->update("Update", $person);
 		$this->refreshList($sender, $param);
 	}

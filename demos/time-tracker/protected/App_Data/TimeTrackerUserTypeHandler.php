@@ -19,7 +19,7 @@
  * @package Demos
  * @since 3.1
  */
-class TimeTrackerUserTypeHandler implements ITypeHandlerCallback
+class TimeTrackerUserTypeHandler extends TSqlMapTypeHandler
 {
 	/**
 	 * Not implemented.
@@ -34,7 +34,7 @@ class TimeTrackerUserTypeHandler implements ITypeHandlerCallback
 	 */
 	public function getResult($string)
 	{
-		throw new TimeTrackerException('Not implemented');		
+		throw new TimeTrackerException('Not implemented');
 	}
 
 	/**

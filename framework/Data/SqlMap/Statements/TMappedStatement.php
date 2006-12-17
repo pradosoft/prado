@@ -106,7 +106,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	 */
 	protected function initialGroupByResults()
 	{
-		$this->_groupBy = new TSQLMapObjectCollectionTree();
+		$this->_groupBy = new TSqlMapObjectCollectionTree();
 	}
 
 	/**
@@ -956,7 +956,7 @@ class TPostSelectBinding
  * @package System.Data.SqlMap.Statements
  * @since 3.1
  */
-class TSQLMapObjectCollectionTree
+class TSqlMapObjectCollectionTree
 {
 	/**
 	 * @var array object graph as tree

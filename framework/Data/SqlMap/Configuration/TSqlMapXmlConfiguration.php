@@ -180,6 +180,10 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 		foreach($document->xpath('//connection[last()]') as $conn)
 			$this->loadDatabaseConnection($conn);
 
+		//try to load configuration in the current config file.
+		$mapping = new TSqlMapXmlMappingConfiguration($this);
+		$mapping->configure($filename);
+
 		foreach($document->xpath('//sqlMap') as $sqlmap)
 			$this->loadSqlMappingFiles($sqlmap);
 
@@ -222,9 +226,12 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	 */
 	protected function loadSqlMappingFiles($node)
 	{
-		$mapping = new TSqlMapXmlMappingConfiguration($this);
-		$filename = $this->getAbsoluteFilePath($this->_configFile, (string)$node['resource']);
-		$mapping->configure($filename);
+		if(strlen($resource = (string)$node['resource']) > 0)
+		{
+			$mapping = new TSqlMapXmlMappingConfiguration($this);
+			$filename = $this->getAbsoluteFilePath($this->_configFile, $resource);
+			$mapping->configure($filename);
+		}
 	}
 
 	/**

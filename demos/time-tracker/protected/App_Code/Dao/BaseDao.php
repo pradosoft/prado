@@ -21,24 +21,24 @@
 class BaseDao
 {
 	/**
-	 * @var TSqlMapper sqlmap client.
+	 * @var TSqlMapGateway sqlmap client.
 	 */
-	private $_connection;
-	
+	private $_sqlmap;
+
 	/**
-	 * @param TSqlMapper sqlmap client.
+	 * @param TSqlMapGateway sqlmap client.
 	 */
-	public function setConnection($connection)
+	public function setSqlMap($sqlmap)
 	{
-		$this->_connection = $connection;
+		$this->_sqlmap = $sqlmap;
 	}
-	
+
 	/**
-	 * @return TSqlMapper sqlmap client.
+	 * @return TSqlMapGateway sqlmap client.
 	 */
-	protected function getConnection()
+	protected function getSqlMap()
 	{
-		return $this->_connection;
+		return $this->_sqlmap;
 	}
 }
 

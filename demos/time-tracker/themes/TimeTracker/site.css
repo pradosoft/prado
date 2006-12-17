@@ -88,7 +88,7 @@ a
 	color: #f61;
 }
 
-a:hover 
+a:hover
 {
 	color: red;
 }
@@ -125,7 +125,7 @@ ul.level1 li .menuitem
 	cursor: pointer;
 	background-image: url(tabs.png);
 	background-repeat: repeat-x;
-	color: #f71;	
+	color: #f71;
 	font-weight: bold;
 	letter-spacing: 2px;
 	text-decoration: none;
