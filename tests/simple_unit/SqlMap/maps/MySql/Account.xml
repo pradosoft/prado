@@ -70,7 +70,7 @@
 			<result property="FirstName"    column="Account_FirstName"/>
 			<result property="LastName"     column="Account_LastName"/>
 			<result property="EmailAddress" column="Account_Email" nullValue="no_email@provided.com"/>
-			<result property="BannerOptions" column="Account_Banner_Option" dbType="Varchar" typeHandler="OuiNonBool"/>
+			<result property="BannerOptions" column="Account_Banner_Option" typeHandler="OuiNonBool"/>
 			<result property="CartOptions"	column="Account_Cart_Option" typeHandler="HundredsBool"/>			
 		</resultMap>
 		<resultMap id="indexed-account-result" class="Account">
@@ -551,9 +551,9 @@
 		<!-- accounts and orders -->
 
 		<select id="getAccountWithOrders" resultMap="Account-with-Orders">
-			SELECT * FROM accounts 
-				LEFT JOIN orders ON
-					accounts.account_id = orders.account_id
+			SELECT * FROM Accounts 
+				LEFT JOIN Orders ON
+					Accounts.account_id = Orders.account_id
 		</select>
 
 		<resultMap id="Account-with-Orders" class="AccountWithOrders" groupBy="Account_Id">

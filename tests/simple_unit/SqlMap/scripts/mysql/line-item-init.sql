@@ -1,18 +1,5 @@
 
-use IBatisNet;
-
-drop table if exists LineItems;
-
-create table LineItems
-(
-   LineItem_Id                    int                            not null,
-   Order_Id                       int                            not null,
-   LineItem_Code                  varchar(32)                    not null,
-   LineItem_Quantity              int                            not null,
-   LineItem_Price                 decimal(18,2),
-   LineItem_Picture					blob,
-   primary key (Order_Id, LineItem_Id)
-) TYPE=INNODB;
+TRUNCATE `LineItems`;
 
 INSERT INTO LineItems VALUES (1, 10, 'ESM-34', 1, 45.43, null);
 INSERT INTO LineItems VALUES (2, 10, 'QSM-98', 8, 8.40, null);

@@ -42,7 +42,7 @@ class BaseTestCase extends UnitTestCase
 	function flushMySQLDatabase()
 	{
 		$conn = $this->sqlmap->getDbConnection();
-		$file = Prado::getPathOfNamespace('Application.App_Data.mysql-reset','.sql');
+		$file = Prado::getPathOfNamespace('Application.App_Data.MySQL4.mysql-reset','.sql');
 		if(is_file($file))
 			$this->runScript($conn, $file);
 		else
@@ -57,7 +57,7 @@ class BaseTestCase extends UnitTestCase
 		{
 			$line = trim($line);
 			if(strlen($line) > 0)
-				$connection->execute($line);
+				$connection->createCommand($line)->execute();
 		}
 	}
 }

@@ -86,6 +86,11 @@ $pages['Active Control Overview'] = array(
 $pages['Write New Controls'] = array(
 	'Controls/NewControl.page');
 
+$pages['Working with Databases'] = array(
+	'Database/DAO.page',
+	'Database/ActiveRecord.page',
+	'Database/SqlMap.page');
+
 $pages['Advanced Topics'] = array(
 	'Advanced/Collections.page',
 	'Advanced/Auth.page',

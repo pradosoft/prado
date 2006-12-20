@@ -14,7 +14,7 @@ class ActiveAccount extends TActiveRecord
 	public $Account_Banner_Option;
 	public $Account_Cart_Option;
 
-	private static $_tablename='accounts';
+	private static $_tablename='Accounts';
 
 	public static function finder()
 	{

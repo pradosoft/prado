@@ -72,6 +72,7 @@ class ReportsDao extends BaseDao
 	{
 		$sqlmap = $this->getSqlMap();
 		$ids = implode(',', array_map('intval', $projects));
+		$sqlmap->getDbConnection()->setActive(true); //db connection needs to be open for quoteString
 		$usernames = implode(',', array_map(array($sqlmap->getDbConnection(), 'quoteString'), $users));
 
 		$param['projects'] = $ids;

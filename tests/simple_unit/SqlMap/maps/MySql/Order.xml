@@ -76,15 +76,15 @@
 	</resultMap>		
 	
 	<resultMap id="order-with-types-result" class="Order">
-		<result property="Id"         column="Order_Id"			dbType="Int32"/>
-		<result property="Date"       column="Order_Date"		type="date" dbType="DateTime "/>
-		<result property="CardExpiry" column="Order_CardExpiry" dbType="VarChar"/>
-		<result property="CardType"   column="Order_CardType"	dbType="VarChar"/>
-		<result property="CardNumber" column="Order_CardNumber" dbType="VarChar"/>
-		<result property="Street"     column="Order_Street"		dbType="VarChar"/>
-		<result property="City"       column="Order_City"		dbType="VarChar"/>
-		<result property="Province"   column="Order_Province"	dbType="VarChar"/>
-		<result property="PostalCode" column="Order_PostalCode" dbType="VarChar"/>
+		<result property="Id"         column="Order_Id"	/>
+		<result property="Date"       column="Order_Date"		type="date" />
+		<result property="CardExpiry" column="Order_CardExpiry" />
+		<result property="CardType"   column="Order_CardType"	/>
+		<result property="CardNumber" column="Order_CardNumber" />
+		<result property="Street"     column="Order_Street"		/>
+		<result property="City"       column="Order_City"		/>
+		<result property="Province"   column="Order_Province"	/>
+		<result property="PostalCode" column="Order_PostalCode" />
 	</resultMap>
 	
 	<resultMap id="lite-order-result-by-index" class="Order">

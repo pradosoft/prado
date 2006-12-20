@@ -41,7 +41,7 @@ class DefaultScriptRunner
 		{
 			$line = trim($line);
 			if(strlen($line) > 0)
-				$connection->execute($line);
+				$connection->createCommand($line)->execute();
 		}
 	}
 }
@@ -84,15 +84,16 @@ class SQLiteBaseTestConfig extends BaseTestConfig
 		return new CopyFileScriptRunner($this->baseFile, $this->targetFile);
 	}
 }
-/*
+
 class MySQLBaseTestConfig extends BaseTestConfig
 {
 	public function __construct()
 	{
-		$this->_sqlmap = SQLMAP_TESTS.'/mysql.xml';
-		$this->_connectionString = 'mysql://root:weizhuo01@localhost/IBatisNet';
+		$this->_sqlmapConfigFile = SQLMAP_TESTS.'/mysql.xml';
 		$this->_scriptDir = SQLMAP_TESTS.'/scripts/mysql/';
 		$this->_features = array('insert_id');
+		$dsn = 'mysql:host=localhost;dbname=sqlmap_test';
+		$this->_connection = new TDbConnection($dsn, 'test', 'test111');
 	}
 }
 
@@ -106,7 +107,6 @@ class MSSQLBaseTestConfig extends BaseTestConfig
 		$this->_features = array('insert_id');
 	}
 }
-*/
 
 class BaseTestConfig
 {
@@ -143,9 +143,9 @@ class BaseTestConfig
 	{
 		//change this to connection to a different database
 
-		//return new MySQLBaseTestConfig();
+		return new MySQLBaseTestConfig();
 
-		return new SQLiteBaseTestConfig();
+		//return new SQLiteBaseTestConfig();
 
 		//return new MSSQLBaseTestConfig();
 	}

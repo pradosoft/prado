@@ -5,9 +5,9 @@
 	<result property="ID" column="ProjectID" type="integer"/>
 	<result property="Name" column="Name" />
 	<result property="Description" column="Description" />
-	<result property="DateCreated" column="CreationDate" typeHandler="DateTime" />
+	<result property="DateCreated" column="CreationDate" typeHandler="DateTimeTypeHandler" />
 	<result property="EstimateDuration" column="EstimateDuration" type="float" />
-	<result property="CompletionDate" column="CompletionDate" typeHandler="DateTime" />
+	<result property="CompletionDate" column="CompletionDate" typeHandler="DateTimeTypeHandler" />
 	<result property="CreatorUserName" column="CreatorID" />
 	<result property="ManagerUserName" column="ManagerID" />
 	<result property="ActualDuration" column="ActualDuration" type="float" />
@@ -22,7 +22,7 @@
 	(Name, Description, CreationDate, EstimateDuration, CompletionDate, CreatorID, ManagerID)
 	VALUES
 	(#Name#, #Description#, NOW(), #EstimateDuration#,
-		#CompletionDate, typeHandler=DateTime#, 
+		#CompletionDate, typeHandler=DateTimeTypeHandler#, 
 		#CreatorUserName#, #ManagerUserName#)
 	<selectKey property="ID" type="post" resultClass="int">
 		select LAST_INSERT_ID() as value
@@ -62,6 +62,7 @@
 		project.CompletionDate as CompletionDate,
 		project.CreatorID as CreatorID,
 		project.ManagerID as ManagerID,
+		project.ManagerID as ManagerUserName,
 		SUM(time_entry.Duration) as ActualDuration
 	FROM project
 		LEFT JOIN categories ON project.ProjectID = categories.ProjectID
@@ -144,7 +145,7 @@
 <update id="UpdateProject" parameterClass="ProjectRecord">
 	UPDATE project
 	SET 
-		CompletionDate = #CompletionDate, typeHandler=DateTime#,
+		CompletionDate = #CompletionDate, typeHandler=DateTimeTypeHandler#,
 		Description = #Description#,
 		EstimateDuration = #EstimateDuration#,
 		ManagerId =#ManagerUserName#,

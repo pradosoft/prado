@@ -52,12 +52,14 @@
 </div>
 
 <div class="topic">
-<div>Working with Database</div>
+<div>Working with Databases</div>
 <ul>
     <li><a href="?page=Database.DAO">Data Access Objects</a></li>
+    <li><a href="?page=Database.ActiveRecord">Active Record</a></li>
+    <li><a href="?page=Database.SqlMap">SqlMap Data Mapper</a></li>
 </ul>
 </div>
-
+<!--
 <div class="topic">
 <div>Module Reference</div>
 <ul>
@@ -69,7 +71,7 @@
 <ul>
 </ul>
 </div>
-
+-->
 <div class="topic">
 <div>Advanced Topics</div>
 <ul>

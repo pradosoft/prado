@@ -20,7 +20,7 @@ class InheritanceTest extends BaseCase
 	{
 		$list = $this->sqlmap->queryForList("GetAllDocument");
 
-		$this->assertIdentical(6, count($list));
+		$this->assertEqual(6, count($list));
 		$book = $list[0];
 		$this->assertBook($book, 1, "The World of Null-A", 55);
 
@@ -45,7 +45,7 @@ class InheritanceTest extends BaseCase
 	{
 		$list = $this->sqlmap->queryForList("GetTypedCollection");
 
-		$this->assertIdentical(6, $list->getCount());
+		$this->assertEqual(6, $list->getCount());
 
 		$book = $list[0];
 		$this->assertBook($book, 1, "The World of Null-A", 55);
@@ -75,7 +75,7 @@ class InheritanceTest extends BaseCase
 
 		$list = $this->sqlmap->queryForList("GetAllDocumentWithCustomTypeHandler");
 
-		$this->assertIdentical(6, count($list));
+		$this->assertEqual(6, count($list));
 		$book = $list[0];
 		$this->assertBook($book, 1, "The World of Null-A", 55);
 
@@ -97,22 +97,22 @@ class InheritanceTest extends BaseCase
 
 	function AssertDocument(Document $document, $id, $title)
 	{
-		$this->assertIdentical($id, $document->getID());
-		$this->assertIdentical($title, $document->getTitle());
+		$this->assertEqual($id, $document->getID());
+		$this->assertEqual($title, $document->getTitle());
 	}
 
 	function AssertBook(Book $book, $id, $title, $pageNumber)
 	{
-		$this->assertIdentical($id, $book->getId());
-		$this->assertIdentical($title, $book->getTitle());
-		$this->assertIdentical($pageNumber, (int)$book->getPageNumber());
+		$this->assertEqual($id, $book->getId());
+		$this->assertEqual($title, $book->getTitle());
+		$this->assertEqual($pageNumber, (int)$book->getPageNumber());
 	}
 
 	function AssertNewspaper(Newspaper $news, $id, $title, $city)
 	{
-		$this->assertIdentical($id, $news->getId());
-		$this->assertIdentical($title, $news->getTitle());
-		$this->assertIdentical($city, $news->getCity());
+		$this->assertEqual($id, $news->getId());
+		$this->assertEqual($title, $news->getTitle());
+		$this->assertEqual($city, $news->getCity());
 	}
 }
 

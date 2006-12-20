@@ -1,21 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <sqlMapConfig>
 
-	<properties resource="properties.config"/>
-	
-	<settings>
-		<setting useStatementNamespaces="false"/>
-		<setting cacheModelsEnabled="true"/>
-	</settings>
-	
-	<!-- ==== Database configuration =========	-->
-	<provider class="TAdodbProvider" >
-		<!-- connection string set in common.php -->
-		<datasource />
-	</provider>
-		
+	<properties>
+		<property name="selectKey" value="select @@IDENTITY as value" />
+		<property name="MyCategoryName" value="'Film'" />
+		<property name="accountName" value="'Joe'" />
+	</properties>
+			
 	<typeHandlers>
-		<typeHandler type="bool" dbType="Varchar" callback="OuiNonBool"/>
+		<typeHandler dbType="Varchar" class="OuiNonBool"/>
+		<typeHandler dbType="date" class="TDateTimeHandler" />
 	</typeHandlers>
 	
 	<sqlMaps>
@@ -29,5 +23,7 @@
 		<sqlMap name="Other" resource="maps/MySql/Other.xml"/>
 		<sqlMap name="ResultClass" resource="maps/MySql/ResultClass.xml"/>
 		<sqlMap name="Document" resource="maps/MySql/Document.xml"/>
+		<sqlMap resource="maps/MySql/ActiveRecord.xml"/>
 	</sqlMaps>
+	
 </sqlMapConfig>

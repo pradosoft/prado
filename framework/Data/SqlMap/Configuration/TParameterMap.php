@@ -140,7 +140,7 @@ class TParameterMap extends TComponent
 	{
 		$value = $this->getObjectValue($parameterValue,$property);
 
-		if(!is_null($handler=$registry->getTypeHandler($property->getType())))
+		if(!is_null($handler=$this->createTypeHandler($property, $registry)))
 			$value = $handler->getParameter($value);
 
 		$value = $this->nullifyDefaultValue($property,$value);
@@ -150,6 +150,23 @@ class TParameterMap extends TComponent
 
 		return $value;
 	}
+	
+	
+	/**
+	 * Create type handler from {@link Type setType()} or {@link TypeHandler setTypeHandler}.
+	 * @param TParameterProperty parameter property
+	 * @param TSqlMapTypeHandlerRegistry type handler registry
+	 * @return TSqlMapTypeHandler type handler.
+	 */
+	protected function createTypeHandler($property, $registry)
+	{
+		$type=$property->getTypeHandler() ? $property->getTypeHandler() : $property->getType();
+		$handler=$registry->getTypeHandler($type);
+		if($handler===null && $property->getTypeHandler())
+			$handler = Prado::createComponent($type);
+		return $handler;
+	}
+	
 
 	/**
 	 * @param mixed object to obtain the property from.

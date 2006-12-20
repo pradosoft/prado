@@ -1,0 +1,360 @@
+<com:TContent ID="body" >
+<!-- $Id $ -->
+<h1>Active Record</h1>
+<p>Active Records are objects that wrap a row in a database table or view,
+	encapsulates the database access and adds domain logic on that data.
+	The basics of an Active Record is a business object class, e.g., a 
+	<tt>Products</tt> class,  that match very closely the record structure
+	of an underlying database table. Each Active Record will be responsible for
+	saving and loading data to and from the database. </p>
+<div class="info"><b class="note">Info:</b>
+	The data structure of an Active Record should  match exactly that of a table 
+	in the database.
+	Each field in the class must correspond to one column in the table.
+</div>
+
+<h2>When to Use It</h2>
+<p>Active Record is a good choice for domain logic that isn't too complex, 
+	such as creates, reads, updates, and deletes. Derivations and validations
+	based on a single record work well in this structure. Active Record has the
+	primary advantage of simplicity. It's easy to build 
+	Active Records, and they are easy to understand.</p>
+
+	<p>However, as your business logic grows in complexity, you'll soon want 
+	to use your object's direct relationships, collections, inheritance, and so
+    forth. These don't map easily onto Active Record, and adding them piecemeal 
+	gets very messy.
+	Another argument against Active Record is the fact that it couples the object 
+	design to the database design. This makes it more difficult to refactor as a project goes forward.</p>
+	
+	<p>The alternative is to use a Data Mapper that separates the roles of the
+		business object and how these objects are stored. 		
+		Prado provides a complimentary choice between Active Record and 
+		<a href="?page=Database.SqlMap">SqlMap Data Mapper</a>. 
+	  	A SqlMap Data Mapper can be used to load Active Record objects, in turn, these
+		Active Record objects can be used to update the database. 
+		The "relationship" between Active Records and <a href="?page=Database.SqlMap">SqlMap</a> is illustrated in the
+	following diagram. More details regarding the SqlMap Data Mapper can be found in
+	the <a href="http://www.pradosoft.com/demos/sqlmap/">SqlMap Manual</a>.
+	<img src=<%~ sqlmap_active_record.png %> alt="Active Records and SqlMap DataMapper" id="fig:diagram.png" class="figure"/>
+	</p>
+	
+	<p>
+		The Active Record class has methods that do the following:
+	<ul>
+		<li>Construct an instance of the Active Record from a SQL result set row.</li>
+		<li>Construct a new instance for later insertion into the table.</li>
+		<li>Finder methods to wrap commonly used SQL queries and return Active Record objects.</li>
+		<li>Update existing records and insert new records into the database.</li>
+	</ul>
+	</p>
+The Active Record implementation utilizes the <a href="?page=Database.DAO">Prado DAO</a> classes for data access. 	
+The current Active Record implementation supports 
+<a href="http://www.mysql.com">MySQL</a>, 
+<a href="http://www.postgres.com">Postgres SQL</a> and 
+<a href="http://www.sqlite.org">SQLite</a> databases.
+Support for other databases can be provided when there are sufficient demand.
+<h2>Defining an Active Record</h2>
+<p>Let us
+	consider the following "users" table that contains two columns named "username" and "email", 
+	where "username" is also the primary key. 
+<com:TTextHighlighter Language="sql" CssClass="source">
+CREATE TABLE users
+(
+	username VARCHAR( 20 ) NOT NULL ,
+	email VARCHAR( 200 ) ,
+	PRIMARY KEY ( username )
+);
+</com:TTextHighlighter>
+</p>
+<p>Next we define our Active Record class that corresponds to the "users" table.
+<com:TTextHighlighter Language="php" CssClass="source">
+class UserRecord extends TActiveRecord
+{
+	public $username; //the column named "username" in the "users" table
+	public $email;
+	
+	private static $_tablename='users'; //table name 
+	
+	/**
+	 * @return TActiveRecord active record finder instance
+	 */
+	public static function finder()
+	{
+		return self::getRecordFinder('UserRecord');
+	}
+}
+</com:TTextHighlighter>
+</p>
+<p>Each property of the <tt>UserRecord</tt> class must correspond to a
+	column with the same name in the "users" table. The static class variable
+	<tt>$_tablename</tt> is optional when the class name is the same as
+	the table name in the database, otherwise <tt>$_tablename</tt> must
+	specify the table name that corresponds to your Active Record class.
+</p>
+
+<div class="tip"><b class="note">Tip:</b>
+	Since <tt>TActiveRecord</tt> extends <tt>TComponent</tt>, setter and
+	getter methods can be defined to allow control over how variables
+	are set and returned. For example, adding a <tt>$level</tt> property to the UserRecord class:
+<com:TTextHighlighter Language="php" CssClass="source">
+class UserRecord extends TActiveRecord {
+	... //existing definitions as above
+	
+	private $_level;
+	public function setLevel($value) {
+		$this->_level=TPropertyValue::ensureInteger($value,0);
+	}
+	public function getLevel($value){
+		return $this->_level;
+	}
+}
+</com:TTextHighlighter>
+</div>
+
+<p>
+	The static method <tt>finder()</tt> returns an <tt>UserRecord</tt> instance
+	that can be used to load records from the database. The loading of records
+	using the finer methods is discuss a little later. The <tt>TActiveRecord::getRecordFinder()</tt>
+	static method takes the name of the current Active Record class as parameter.
+</p>
+
+<h2>Setting up a database connection</h2>
+<p>
+	A default database connection for Active Record can be set as follows.
+	See <a href="?page=Database.DAO">Establishing Database Connection</a> for
+	futher details regarding creation of database connection in general.
+<com:TTextHighlighter Language="php" CssClass="source">
+//create a connection and give it to the ActiveRecord manager.
+$dsn = 'pgsql:host=localhost;dbname=test'; //Postgres SQL
+$conn = new TDbConnection($dsn, 'dbuser','dbpass');
+TActiveRecordManager::getInstance()->setDbConnection($conn);
+</com:TTextHighlighter>	
+</p>
+
+<p>
+	The default database connection can also be configured using a <tt>&lt;module&gt;</tt>
+	tag in the <a href="?page=Configurations.AppConfig">application.xml</a> 
+	or <a href="?page=Configurations.PageConfig">config.xml</a> as follows.
+<com:TTextHighlighter Language="xml" CssClass="source">
+<modules>
+  <module class="System.Data.ActiveRecord.TActiveRecordConfig" EnableCache="true">
+    <database ConnectionString="pgsql:host=localhost;dbname=test"
+        Username="dbuser" Password="dbpass" />
+  </module>
+</modules>	
+</com:TTextHighlighter>	
+<div class="tip"><b class="note">Tip:</b>
+	The <tt>EnableCache</tt> attribute when set to "true" will cache the table
+	meta data, that is, the table columns names, indexes and constraints are
+	saved in the cache and reused. You must clear or disable the cache if you
+	wish to see chanages made to your table definitions. A <a href="?page=Advanced.Performance#6402">cache
+	module</a> must also be defined for the cache to function.
+</div>
+</p>
+
+<p>A <tt>ConnectionID</tt> property can be specified with value corresponding
+	to another <tt>TDataSourceConfig</tt> module configuration's ID value. This allows
+	the same database connection to be used in other modules such as <a href="?page=Database.SqlMap">SqlMap</a>.
+<com:TTextHighlighter Language="xml" CssClass="source">
+<modules>
+  <module class="System.Data.TDataSourceConfig" ID="db1">
+    <database ConnectionString="pgsql:host=localhost;dbname=test"
+        Username="dbuser" Password="dbpass" />
+  </module>
+
+  <module class="System.Data.ActiveRecord.TActiveRecordConfig" 
+        ConnectionID="db1" EnableCache="true"  />
+
+  <module class="System.Data.SqlMap.TSqlMapConfig"
+        ConnectionID="db1"  ... />
+</modules>	
+</com:TTextHighlighter>		
+</p>
+
+<h2>Loading data from the database</h2>
+<p>
+	The <tt>TActiveRecord</tt> class provides many convenient methods to find
+	records from the database. The simplest is finding records by matching primary keys.
+	See the <com:DocLink ClassPath="System.Data.ActiveRecord.TActiveRecord" /> for
+	more details.
+</p>
+	<h3><tt>findByPk()</tt></h3>
+	<p>Finds one record using only the primary key or composite primary keys.
+<com:TTextHighlighter Language="php" CssClass="source">
+$finder = UserRecord::finder();
+$user = $finder->findByPk($primaryKey);
+
+//when the table uses composite keys
+$record = $finder->findByPk($key1, $key2, ...); //for composite keys
+$record = $finder->findByPk(array($key1, $key2,...)); //same as above
+</com:TTextHighlighter>
+</p>
+
+<h3><tt>find()</tt></h3>
+<p>Finds <b>one single record</b> that matches the criteria. The criteria
+	can be a partial SQL string or a <tt>TActiveRecordCriteria</tt> object.
+<com:TTextHighlighter Language="php" CssClass="source">
+$finder = UserRecord::finder();
+
+//:name and :pass are place holders for specific values of $name and $pass
+$finder->find('username = :name AND password = :pass',
+                          array(':name'=>$name, ':pass'=>$pass));
+
+//using position place holders
+$finder->find('username = ? AND password = ?', array($name, $pass));
+//same as above
+$finder->find('username = ? AND password = ?', $name, $pass);
+
+//$criteria is of TActiveRecordCriteria
+$finder->find($criteria); //the 2nd parameter for find() is ignored.
+</com:TTextHighlighter>
+</p>
+
+<p>The <tt>TActiveRecordCriteria</tt> class has the following properties:
+	<ul>
+		<li><tt>Parameters</tt> -- name value parameter pairs.</li>
+		<li><tt>OrderBy</tt> -- column name and ordering pairs.</li>
+		<li><tt>Condition</tt> -- parts of the WHERE SQL conditions.</li>
+		<li><tt>Limit</tt> -- maximum number of records to return.</li>
+		<li><tt>Offset</tt> -- record offset in the table.</li>
+	</ul>
+</p>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+$criteria = new TActiveRecordCriteria;
+$criteria->Condition = 'username = :name AND password = :pass';
+$criteria->Parameters[':name'] = 'admin';
+$criteria->Parameters[':pass'] = 'prado';
+$criteria->OrdersBy['level'] = 'desc';
+$criteria->OrdersBy['name'] = 'asc';
+$criteria->Limit = 10;
+$criteria->Offset = 20;
+</com:TTextHighlighter>
+
+<h3><tt>findAll()</tt></h3>
+<p>Same as <tt>find()</tt> but returns an array of objects.</p>
+
+<h3><tt>findBy*()</tt> and <tt>findAllBy*()</tt></h3>
+<p>Dynamic find method using parts of method name as search criteria.
+Method names starting with <tt>findBy</tt> return 1 record only.
+Method names starting with <tt>findAllBy</tt> return an array of records.
+The condition is taken as part of the method name after <tt>findBy</tt> or <tt>findAllBy</tt>.
+
+The following blocks of code are equivalent:
+
+<com:TTextHighlighter Language="php" CssClass="source">
+$finder->findByName($name)
+$finder->find('Name = ?', $name);
+</com:TTextHighlighter>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+$finder->findByUsernameAndPassword($name,$pass);
+$finder->findBy_Username_And_Password($name,$pass);
+$finder->find('Username = ? AND Password = ?', $name, $pass);
+</com:TTextHighlighter>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+$finder->findAllByAge($age);
+$finder->findAll('Age = ?', $age);
+</com:TTextHighlighter>
+</p>	
+	
+<h3><tt>findBySql()</tt></h3>
+<p>Finds records using full SQL, returns corresponding array of record objects.</p>
+
+<h3><tt>count()</tt></h3>
+<p>Find the number of matchings records.</p>
+
+<h2>Inserting and updating records</h2>
+<p>
+Add a new record using TActiveRecord is very simple, just create a new Active
+Record object and call the <tt>save()</tt> method. E.g.
+<com:TTextHighlighter Language="php" CssClass="source">
+$user1 = new UserRecord();
+$user1->username = "admin"
+$user1->email = "admin@example.com";
+$user1->save(); //insert a new record
+
+$data = array('username'=>'admin', 'email'=>'admin@example.com');
+$user2 = new UserRecord($data); //create by passing some existing data
+$user2->save(); //insert a new record
+</com:TTextHighlighter>
+<div class="tip"><b class="note">Tip:</b>
+The objects are update with the primary key of those the tables that contains 
+definitions that automatically creates a primary key for the newly insert records.
+For example, if you insert a new record into a MySQL table that has columns
+defined with "autoincrement", the Active Record objects will be updated with the new 
+incremented values.</div>
+</p>
+
+<p>
+To update a record in the database, just change one or more properties of 
+the Active Record object that has been loaded from the database and then
+call the <tt>save()</tt> method.	
+
+<com:TTextHighlighter Language="php" CssClass="source">
+$user = UserRecord::finder()->findByName('admin');
+$user->email="test@example.com"; //change property
+$user->save(); //update it.
+</com:TTextHighlighter>
+</p>
+
+<p>
+Active Record objects have a simple life-cycle illustrated in the following diagram.
+<img src=<%~ object_states.png %> alt="Active Records Life Cycle" id="fig:cycle.png" class="figure"/>
+</p>
+
+<h2>Deleting existing records</h2>
+<p>
+	To delete an existing record that is already loaded, just call the <tt>delete()</tt> method.
+	You can also delete records in the database by primary keys without
+	loading any records using the <tt>deleteByPk()</tt> method. 
+	For example, to delete one or records with tables having a scalar primary key.
+<com:TTextHighlighter Language="php" CssClass="source">
+$finder->deleteByPk($primaryKey); //delete 1 record
+$finder->deleteByPk($key1,$key2,...); //delete multiple records
+$finder->deleteByPk(array($key1,$key2,...)); //delete multiple records
+</com:TTextHighlighter>
+</p>
+
+<p>
+For composite primary keys (determined automatically from the table definitions):
+<com:TTextHighlighter Language="php" CssClass="source">
+$finder->deleteByPk(array($key1,$key2)); //delete 1 record
+
+//delete multiple records
+$finder->deleteByPk(array($key1,$key2), array($key3,$key4),...);
+
+//delete multiple records
+$finder->deleteByPk(array( array($key1,$key2), array($key3,$key4), .. ));
+</com:TTextHighlighter>
+</p>
+
+<h2>Transactions</h2>
+<p>All Active Record objects contains the property <tt>DbConnection</tt>
+	that can be used to obtain a transaction object.
+<com:TTextHighlighter Language="php" CssClass="source">
+$finder = UserRecord::finder();
+
+$transaction = $finder->DbConnection->beginTransaction();
+try
+{
+    $user = $finder->findByPk('admin');
+    $user->email = 'test@example.com'; //alter the $user object
+    $user->save();
+    $transaction->commit();
+}
+catch(Exception $e) // an exception is raised if a query fails will be raised
+{
+    $transaction->rollBack();
+}
+</com:TTextHighlighter>
+
+<h2>References</h2>
+<ul>
+	<li>Fowler et. al. <i>Patterns of Enterprise Application Architecture</i>,
+	Addison Wesley, 2002.</li>
+</ul>
+
+</com:TContent>

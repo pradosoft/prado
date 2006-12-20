@@ -113,11 +113,11 @@ class ProjectDaoTestCase extends BaseTestCase
 		try
 		{
 			$this->projectDao->addUserToProject($project->ID, 'asd');
-			$this->pass();
-		}
-		catch(TSqlMapQueryExecutionException $e)
-		{
 			$this->fail();
+		}
+		catch(TDbException $e)
+		{
+			$this->pass();
 		}
 	}
 

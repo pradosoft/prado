@@ -41,8 +41,7 @@ class StatementTest extends BaseCase
 	 */
 	function testOpenConnection()
 	{
-		$conn = $this->getConnection();
-		$this->sqlmap->setDbConnection($conn);
+		$conn = $this->sqlmap->getDbConnection();
 		$conn->setActive(true);
 		$account= $this->sqlmap->QueryForObject("SelectWithProperty");
 		$conn->setActive(false);
@@ -644,7 +643,7 @@ class StatementTest extends BaseCase
 	 */
 	function testExecuteQueryForWithComplexJoined()
 	{
-		$a = $this->sqlmap->QueryForObject("SelectComplexJoined",null);
+		$a = $this->sqlmap->QueryForObject("SelectComplexJoined");
 		$this->assertNotNull($a);
 		$this->assertNotNull($a->getB());
 		$this->assertNotNull($a->getB()->getC());

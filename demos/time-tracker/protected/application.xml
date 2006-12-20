@@ -17,7 +17,7 @@
 	<module id="cache" class="System.Caching.TMemCache" />
 -->
 	<module id="daos" class="DaoManager" EnableCache="true"
-  		configFile="Application.App_Data.sqlite-sqlmap">
+  		configFile="Application.App_Data.mysql4-sqlmap">
 		<dao id="UserDao" class="Application.App_Code.Dao.UserDao" />
 		<dao id="ProjectDao" class="Application.App_Code.Dao.ProjectDao" />
 		<dao id="TimeEntryDao" class="Application.App_Code.Dao.TimeEntryDao" />

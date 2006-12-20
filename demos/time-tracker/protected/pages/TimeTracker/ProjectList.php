@@ -9,7 +9,7 @@ class ProjectList extends TPage
 		$this->projectList->dataBind();
 	}
 	
-	protected function getSortOrder($sort)
+	protected function getSortOrdering($sort)
 	{
 		$ordering = $this->getViewState('SortOrder', array());
 		$order = isset($ordering[$sort]) ? $ordering[$sort] : 'DESC';
@@ -21,7 +21,7 @@ class ProjectList extends TPage
 	protected function sortProjects($sender, $param)
 	{
 		$sort = $param->SortExpression;
-		$this->showProjects($sort, $this->getSortOrder($sort));
+		$this->showProjects($sort, $this->getSortOrdering($sort));
 	}
 		
 	public function onLoad($param)

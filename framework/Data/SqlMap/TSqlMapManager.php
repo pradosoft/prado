@@ -93,22 +93,6 @@ class TSqlMapManager extends TComponent
 	}
 
 	/**
-	 * @param string configuration file.
-	 */
-	public function setConfigFile($file)
-	{
-		$this->_configFile=$file;
-	}
-
-	/**
-	 * @return string configuration file.
-	 */
-	public function getConfigFile()
-	{
-		return $this->_configFile;
-	}
-
-	/**
 	 * @return TSqlMapGateway SqlMap gateway.
 	 */
 	public function getSqlmapGateway()
