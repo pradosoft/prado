@@ -1,8 +1,8 @@
 <?php
-$frameworkPath='/Users/weizhuo/Sites/prado-trunk/framework/prado.php';
 
 /** The directory checks may be removed if performance is required **/
 $basePath=dirname(__FILE__);
+$frameworkPath=$basePath.'/../../framework/prado.php';
 $assetsPath=$basePath."/assets";
 $runtimePath=$basePath."/protected/runtime";
 
