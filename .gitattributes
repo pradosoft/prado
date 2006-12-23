@@ -724,17 +724,10 @@ demos/composer/themes/PradoSoft/pradoheader.gif -text
 demos/composer/themes/PradoSoft/propertydef.gif -text
 demos/composer/themes/PradoSoft/style.css -text
 demos/composer/themes/Simple/style.css -text
-demos/currency-converter/assets/2bffd82d/ajax.js -text
-demos/currency-converter/assets/2bffd82d/clientscripts.php -text
-demos/currency-converter/assets/2bffd82d/effects.js -text
-demos/currency-converter/assets/2bffd82d/logger.js -text
-demos/currency-converter/assets/2bffd82d/prado.js -text
-demos/currency-converter/assets/2bffd82d/validator.js -text
 demos/currency-converter/index.php -text
 demos/currency-converter/protected/.htaccess -text
 demos/currency-converter/protected/pages/Home.page -text
 demos/currency-converter/protected/pages/Home.php -text
-demos/currency-converter/protected/runtime/global.cache -text
 demos/currency-converter/themes/Basic/common.css -text
 demos/helloworld/index.php -text
 demos/helloworld/protected/.htaccess -text
