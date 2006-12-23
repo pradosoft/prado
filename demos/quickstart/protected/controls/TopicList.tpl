@@ -6,9 +6,16 @@
     <li><a href="?page=GettingStarted.Introduction">Introduction</a></li>
     <li><a href="?page=GettingStarted.AboutPrado">What is PRADO?</a></li>
     <li><a href="?page=GettingStarted.Installation">Installation</a></li>
-    <li><a href="?page=GettingStarted.HelloWorld">Creating First PRADO Application</a></li>
-    <li><a href="?page=GettingStarted.CommandLine">Command Line Tool</a></li>
     <li><a href="?page=GettingStarted.Upgrading">Upgrading from v2.x and v1.x</a></li>
+</ul>
+</div>
+
+<div class="topic">
+<div>Tutorials</div>
+<ul>
+    <li><a href="?page=GettingStarted.HelloWorld">Creating First PRADO Application</a></li>
+    <li><a href="?page=Tutorial.CurrencyConverter">Currency Converter</a></li>
+    <li><a href="?page=GettingStarted.CommandLine">Command Line Tool</a></li>
 </ul>
 </div>
 

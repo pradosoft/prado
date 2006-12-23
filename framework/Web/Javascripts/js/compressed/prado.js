@@ -281,9 +281,9 @@ setTimeout(function(){obj.focus();},100);return false;},replace:function(element
 content=result;}
 if(typeof(element)=="string")
 {if($(element))
-method.toFunction().apply(this,[element,content]);}
+method.toFunction().apply(this,[element,""+content]);}
 else
-{method.toFunction().apply(this,[content]);}},extractContent:function(text,boundary)
+{method.toFunction().apply(this,[""+content]);}},extractContent:function(text,boundary)
 {f=RegExp('(<!--'+boundary+'-->)([\\s\\S\\w\\W]*)(<!--//'+boundary+'-->)',"m");result=text.match(f);if(result&&result.length>=2)
 return result[2];else
 return null;},evaluateScript:function(content)

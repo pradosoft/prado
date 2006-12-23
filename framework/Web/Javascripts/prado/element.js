@@ -85,11 +85,11 @@ Prado.Element =
 		if(typeof(element) == "string")
 		{
 			if($(element))
-				method.toFunction().apply(this,[element,content]);
+				method.toFunction().apply(this,[element,""+content]);
 		}
 		else
 		{
-			method.toFunction().apply(this,[content]);
+			method.toFunction().apply(this,[""+content]);
 		}
 	},
 
