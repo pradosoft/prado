@@ -12,6 +12,7 @@ NEW: SQLMap (Wei)
 NEW: TOutputCache (Qiang)
 NEW: TQueue (Qiang)
 NEW: TSessionPageStatePersister (Qiang)
+NEW: TSoapService, TSoapServer (Knut, Qiang)
 NEW: TFeedService, TRssFeedDocument (Knut, Qiang)
 NEW: TJsonService
 NEW: TCacheDependency, TFileCacheDependency, TDirectoryCacheDependency (Qiang)

@@ -366,3 +366,10 @@ dbtransaction_transaction_inactive		= TDbTransaction is inactive.
 
 directorycachedependency_directory_invalid = TDirectoryCacheDependency.Directory {0} does not refer to a valid directory.
 cachedependencylist_cachedependency_required = Only objects implementing ICacheDependency can be added into TCacheDependencyList.
+
+soapservice_configfile_invalid			= TSoapService.ConfigFile '{0}' does not exist. Note, it has to be specified in a namespace format and the file extension must be '.xml'.
+soapservice_request_invalid				= SOAP server '{0}' not found.
+soapservice_serverid_required			= <soap> element must have 'id' attribute.
+soapservice_serverid_duplicated			= SOAP server ID '{0}' is duplicated.
+soapserver_id_invalid					= Invalid SOAP server ID '{0}'. It should not end with '.wsdl'.
+soapserver_version_invalid				= Invalid SOAP version '{0}'. It must be either '1.1' or '1.2'.

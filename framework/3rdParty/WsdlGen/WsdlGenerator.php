@@ -20,7 +20,7 @@ require_once(dirname(__FILE__).'/WsdlMessage.php');
 require_once(dirname(__FILE__).'/WsdlOperation.php');
 
 /**
- * Generator for the wsdl. 
+ * Generator for the wsdl.
  * Special thanks to Cristian Losada for implementing the Complex Types section of the WSDL.
  * @author 		Marcus Nyeholt		<tanus@users.sourceforge.net>
  * @author 		Cristian Losada		<cristian@teaxul.com>
@@ -33,37 +33,37 @@ class WsdlGenerator
 	 * var		WsdlGenerator
 	 */
 	private static $instance;
-	
+
 	/**
 	 * The name of this service (the classname)
 	 * @var 	string
 	 */
 	private $serviceName = '';
-	
+
 	/**
 	 * The complex types to use in the wsdl
 	 * @var 	Array
 	 */
 	private $types = array();
-	
+
 	/**
 	 * The operations available in this wsdl
 	 * @var 	ArrayObject
 	 */
 	private $operations;
-	
+
 	/**
 	 * The wsdl object.
 	 * @var 	object
 	 */
 	private $wsdlDocument;
-	
+
 	/**
 	 * The actual wsdl string
 	 * @var 	string
 	 */
 	private $wsdl = '';
-	
+
 	/**
 	 * The singleton instance for the generator
 	 */
@@ -74,7 +74,7 @@ class WsdlGenerator
 		}
 		return self::$instance;
 	}
-	
+
 	/**
 	 * Get the Wsdl generated
 	 * @return 	string		The Wsdl for this wsdl
@@ -83,10 +83,10 @@ class WsdlGenerator
 	{
 		return $this->wsdl;
 	}
-	
+
 	/**
 	 * Generates WSDL for a passed in class, and saves it in the current object. The
-	 * WSDL can then be retrieved by calling 
+	 * WSDL can then be retrieved by calling
 	 * @param 	string		$className		The name of the class to generate for
 	 * @param 	string		$serviceUri		The URI of the service that handles this WSDL
 	 * @return 	void
@@ -94,24 +94,24 @@ class WsdlGenerator
 	public function generateWsdl($className, $serviceUri='')
 	{
 		$this->wsdlDocument = new Wsdl($className, $serviceUri);
-					
-		$classReflect = new ReflectionClass($className);		
+
+		$classReflect = new ReflectionClass($className);
 		$methods = $classReflect->getMethods();
-		
+
 		foreach ($methods as $method) {
 			// Only process public methods
 			if ($method->isPublic()) {
 				$this->processMethod($method);
 			}
 		}
-		
+
 		foreach($this->types as $type => $elements) {
 			$this->wsdlDocument->addComplexType($type, $elements);
 		}
-				
+
 		$this->wsdl = $this->wsdlDocument->getWsdl();
 	}
-	
+
 	/**
 	 * Static method that generates and outputs the generated wsdl
 	 * @param 		string		$className		The name of the class to export
@@ -120,13 +120,13 @@ class WsdlGenerator
 	public static function generate($className, $serviceUri='')
 	{
 		$generator = WsdlGenerator::getInstance();
-		$generator->generateWsdl($className, $serviceUri);		
+		$generator->generateWsdl($className, $serviceUri);
 		//header('Content-type: text/xml');
 		return $generator->getWsdl();
 		//exit();
-		
+
 	}
-	
+
 	/**
 	 * Process a method found in the passed in class.
 	 * @param 		ReflectionMethod		$method		The method to process
@@ -134,7 +134,6 @@ class WsdlGenerator
 	protected function processMethod(ReflectionMethod $method)
 	{
 		$comment = $method->getDocComment();
-		
 		if (strpos($comment, '@soapmethod') === false) {
 			return;
 		}
@@ -147,25 +146,25 @@ class WsdlGenerator
 	    $comment = str_replace("\r", "", $comment);
 	    $comment = preg_replace("/([\\t])+/", "\t", $comment);
 	    $commentLines = explode("\n", $comment);
-	    
+
 		$methodDoc = '';
 		$params = array();
 		$return = array();
 		$gotDesc = false;
 		$gotParams = false;
-		
+
 		foreach ($commentLines as $line) {
 			if ($line == '') continue;
 			if ($line{0} == '@') {
 				$gotDesc = true;
 				if (preg_match('/^@param\s+([\w\[\]()]+)\s+\$([\w()]+)\s*(.*)/i', $line, $match)) {
 					$param = array();
-					$param['type'] = $this->convertType($match[1]);					
+					$param['type'] = $this->convertType($match[1]);
 					$param['name'] = $match[2];
-					$param['desc'] = $match[3];					
+					$param['desc'] = $match[3];
 					$params[] = $param;
 				}
-				else if (preg_match('/^@return\s+([\w\[\]()]+)\s*(.*)/i', $line, $match)) {			
+				else if (preg_match('/^@return\s+([\w\[\]()]+)\s*(.*)/i', $line, $match)) {
 					$gotParams = true;
 					$return['type'] = $this->convertType($match[1]);
 					$return['desc'] = $match[2];
@@ -185,19 +184,19 @@ class WsdlGenerator
 				}
 			}
 		}
-		
+
 		$methodName = $method->getName();
 		$operation = new WsdlOperation($methodName, $methodDoc);
-		
+
 		$operation->setInputMessage(new WsdlMessage($methodName.'Request', $params));
 		$operation->setOutputMessage(new WsdlMessage($methodName.'Response', array($return)));
-		
+
 		$this->wsdlDocument->addOperation($operation);
-		
+
 	}
-	
+
 	/**
-	 * Converts from a PHP type into a WSDL type. This is borrowed from 
+	 * Converts from a PHP type into a WSDL type. This is borrowed from
 	 * Cerebral Cortex (let me know and I'll remove asap).
 	 *
 	 * TODO: date and dateTime
@@ -234,55 +233,55 @@ class WsdlGenerator
                  break;
              case 'void':
                  return '';
-             default:    
+             default:
              	 if(strpos($type, '[]'))  // if it is an array
-             	 { 
+             	 {
              	 	$className = substr($type, 0, strlen($type) - 2);
              	 	$type = $className . 'Array';
              	 	$this->types[$type] = '';
              	 	$this->convertType($className);
-             	 } 
-             	 else 
+             	 }
+             	 else
              	 {
-             	 	 if(!isset($this->types[$type])) 
+             	 	 if(!isset($this->types[$type]))
 	             		$this->extractClassProperties($type);
-             	 }             	 
-                 return 'tns:' . $type;   
+             	 }
+                 return 'tns:' . $type;
          }
 	}
-	
+
 	/**
 	 * Extract the type and the name of all properties of the $className class and saves it in the $types array
 	 * This method extract properties from PHPDoc formatted comments for variables. Unfortunately the reflectionproperty
 	 * class doesn't have a getDocComment method to extract comments about it, so we have to extract the information
 	 * about the variables manually. Thanks heaps to Cristian Losada for implementing this.
-	 * @param string $className The name of the class  
+	 * @param string $className The name of the class
 	 */
-	private function extractClassProperties($className) 
+	private function extractClassProperties($className)
 	{
 		// Lets get the class' file so we can read the full contents of it.
 		$classReflect = new ReflectionClass($className);
-		
+
 		if (!file_exists($classReflect->getFileName())) {
 			throw new Exception('Could not find class file for '.$className);
 		}
-		
+
 		$file = file_get_contents($classReflect->getFileName());
 		if ($file == '') {
 			throw new Exception("File {$classReflect->getFileName()} could not be opened");
 		}
-		
+
 		$pos = strpos($file, 'class ' . $className);
 		$pos = strpos($file, '@var', $pos) + 5;
-		for($t = 0; $pos > 5; $t++) 
-		{	
+		for($t = 0; $pos > 5; $t++)
+		{
 			$type = $this->convertType(substr($file, $pos, strpos($file, ' ', $pos) - $pos));
 			$pos = strpos($file, '$', $pos) + 1;
-			$name = substr($file, $pos, strpos($file, ';', $pos) - $pos);			
-			$this->types[$className][$t] = array('type' => $type, 'name' => $name);  
+			$name = substr($file, $pos, strpos($file, ';', $pos) - $pos);
+			$this->types[$className][$t] = array('type' => $type, 'name' => $name);
 			$pos = strpos($file, '@var', $pos) + 5;
 		}
 	}
-	
+
 }
 ?>
