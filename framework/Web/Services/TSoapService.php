@@ -7,7 +7,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2006 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: $
+ * @version $Id$
  * @package System.Web.Services
  */
 
@@ -269,7 +269,7 @@ class TSoapService extends TService
  * It also manages the URI for the SOAP service and WSDL.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: $
+ * @version $Id$
  * @package System.Web.Services
  * @since 3.1
  */
