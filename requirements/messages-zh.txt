@@ -36,4 +36,6 @@ CType extension required = CType模块是必须的。
 PCRE extension check = PCRE模块检查
 PCRE extension required = PCRE模块是必须的。
 PDO extension check = PDO模块检查
-PDO extension required = PDO模块是可选的。如果它不存在，您将无法使用System.Data.*里的组件。
+PDO extension optional = PDO模块是可选的。如果它不存在，您将无法使用System.Data.*里的组件。
+SOAP extension check = SOAP模块检查
+SOAP extension optional = SOAP模块是可选的。如果它不存在，您将无法使用TSoapService。

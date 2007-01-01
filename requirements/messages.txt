@@ -36,4 +36,6 @@ CType extension required			= CType extension is required by PRADO.
 PCRE extension check				= PCRE extension check
 PCRE extension required				= PCRE extension is required by PRADO.
 PDO extension check					= PDO extension check
-PDO extension required				= PDO extension is optional. If it is absent, you will not be able to use System.Data.* components.
+PDO extension optional				= PDO extension is optional. If it is absent, you will not be able to use System.Data.* components.
+SOAP extension check				= SOAP extension check
+SOAP extension optional				= SOAP extension is optional. If it is absent, you will not be able to use TSoapService.
