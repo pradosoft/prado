@@ -515,9 +515,7 @@ class TPropertyValue
 	public static function ensureBoolean($value)
 	{
 		if (is_string($value))
-			return strcasecmp($value,'true')==0 || strcasecmp($value,'1')==0 || $value!=0;
-		if (is_int($value))
-			return $value === 1;
+			return strcasecmp($value,'true')==0 || $value!=0;
 		else
 			return (boolean)$value;
 	}
