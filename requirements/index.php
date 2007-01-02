@@ -123,7 +123,7 @@ $requirements = array(
 		false,
 		extension_loaded("soap"),
 		'SOAP extension check',
-		'SOAP extension optiona'),
+		'SOAP extension optional'),
 );
 
 $results = "<table class=\"result\">\n";
