@@ -1,8 +1,7 @@
 <?php
+
 class SimpleService
 {
-	private $errors = array();
-	
 	/**
 	 * Highlights a string as php code
 	 * @param string $input The php code to highlight
@@ -13,7 +12,7 @@ class SimpleService
 	{
 		return highlight_string($input, true);
 	}
-	
+
 	/**
 	 * Simply add two operands
 	 * @param int $a
@@ -21,8 +20,10 @@ class SimpleService
 	 * @return int The result
 	 * @soapmethod
 	 */
-	public function add($a, $b) {
-	  return $a + $b;
+	public function add($a, $b)
+	{
+		return $a + $b;
 	}
 }
+
 ?>
