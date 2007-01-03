@@ -10,12 +10,13 @@ Object.extend(Ajax.Request.prototype,
 	respondToReadyState : function(readyState)
 	{
 	    var event = Ajax.Request.Events[readyState];
-	    var transport = this.transport, json = this.getHeaderData(Prado.CallbackRequest.DATA_HEADER);
+	    var transport = this.transport, json = this.getBodyDataPart(Prado.CallbackRequest.DATA_HEADER);
 
 	    if (event == 'Complete')
 	    {
-	    	if(this.header('X-PRADO-REDIRECT'))
-	    		document.location.href = this.header('X-PRADO-REDIRECT');
+			var redirectUrl = this.getBodyContentPart(Prado.CallbackRequest.REDIRECT_HEADER);
+	    	if(redirectUrl)
+	    		document.location.href = redirectUrl;
 
 	      if ((this.header('Content-type') || '').match(/^text\/javascript/i))
 	      {
@@ -33,7 +34,7 @@ Object.extend(Ajax.Request.prototype,
 	      {
 	      	Prado.CallbackRequest.updatePageState(this,transport);
 			Ajax.Responders.dispatch('on' + transport.status, this, transport, json);
-			Prado.CallbackRequest.dispatchActions(transport,this.getHeaderData(Prado.CallbackRequest.ACTION_HEADER));
+			Prado.CallbackRequest.dispatchActions(transport,this.getBodyDataPart(Prado.CallbackRequest.ACTION_HEADER));
 
 	        (this.options['on' + this.transport.status]
 	         || this.options['on' + (this.responseIsSuccess() ? 'Success' : 'Failure')]
@@ -62,9 +63,19 @@ Object.extend(Ajax.Request.prototype,
 	 */
 	getHeaderData : function(name)
 	{
+		return this.getJsonData(this.header(name));
+	},
+
+	getBodyContentPart : function(name)
+	{
+		if(typeof(this.transport.responseText)=="string")
+			return Prado.Element.extractContent(this.transport.responseText, name);
+	},
+
+	getJsonData : function(json)
+	{
 		try
 		{
-			var json = this.header(name);
 			return eval('(' + json + ')');
 		}
 		catch (e)
@@ -72,6 +83,11 @@ Object.extend(Ajax.Request.prototype,
 			if(typeof(json) == "string")
 				return Prado.CallbackRequest.decode(json);
 		}
+	},
+
+	getBodyDataPart : function(name)
+	{
+		return this.getJsonData(this.getBodyContentPart(name));
 	}
 });
 
@@ -122,6 +138,8 @@ Object.extend(Prado.CallbackRequest,
 	 * Page state header name.
 	 */
 	PAGESTATE_HEADER : 'X-PRADO-PAGESTATE',
+
+	REDIRECT_HEADER : 'X-PRADO-REDIRECT',
 
 	requestQueue : [],
 
@@ -195,10 +213,13 @@ Object.extend(Prado.CallbackRequest,
 			{
 				var msg = 'HTTP '+transport.status+" with response : \n";
 				if(transport.responseText.trim().length >0)
-					msg += transport.responseText + "\n";
+				{
+					var f = RegExp('(<!--X-PRADO[^>]+-->)([\\s\\S\\w\\W]*)(<!--//X-PRADO[^>]+-->)',"m");
+					msg += transport.responseText.replace(f,'') + "\n";
+				}
 				if(typeof(data)!="undefined" && data != null)
 					msg += "Data : \n"+inspect(data)+"\n";
-				data = request.getHeaderData(Prado.CallbackRequest.ACTION_HEADER);
+				data = request.getBodyDataPart(Prado.CallbackRequest.ACTION_HEADER);
 				if(data && data.length > 0)
 				{
 					msg += "Actions : \n";
@@ -303,7 +324,7 @@ Object.extend(Prado.CallbackRequest,
 		var aborted = self.currentRequest == null;
 		if(enabled && !aborted && pagestate)
 		{
-			var data = request.header(self.PAGESTATE_HEADER);
+			var data = request.getBodyContentPart(self.PAGESTATE_HEADER);
 			if(typeof(data) == "string" && data.length > 0)
 				pagestate.value = data;
 			else

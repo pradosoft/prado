@@ -1,0 +1,8 @@
+<com:TForm>
+<h1>Redirection Test</h1>
+
+<com:TActiveButton Text="Redirect to Default Page" OnClick="button_clicked" />
+
+<com:TJavascriptLogger />
+
+</com:TForm>

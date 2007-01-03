@@ -14,7 +14,8 @@ of <a href="?page=ActiveControl.ClientSideJavascript">javascript classes</a>.
 </p>
 
 <p>For a quick demo of active controls, try the <a href="?page=ActiveControls.ActiveButton">
-TActiveButton</a> control.</p>
+TActiveButton</a> control. See also the later part of the <a href="?page=Tutorial.CurrencyConverter">Current Converter</a> tutorial for a more indepth example.
+</p>
 
 <p>* the tutorial for this control is not completed yet.</p>
 
@@ -158,146 +159,151 @@ TActiveButton</a> control.</p>
 </ul>
 
 <h2>Active Control Abilities</h2>
-
-<!-- tabular: align=|l|l|l|l|, width=(0.35 0.15 0.15 0.15) -->
+<p>The following table shows the Active Controls that can trigger a 
+callback event and whether the control will raise a PostBack event 
+if Javascript was disabled on the client's browser.</p>
+<!-- tabular: align=|l|l|l|, width=(0.35 0.25 0.25) -->
 <table class="tabular">
 	<tr>
 		<th>Control Name</th>
-		<th>Can Update</th>
 		<th>Triggers Callback</th>
-		<th>Can Degrade</th>
+		<th>Falls back to PostBack</th>
   </tr>
   <tr><td>
   		<a href="?page=ActiveControls.ActiveButton">TActiveButton</a>
   	</td>
-  	<td>Yes</td><td>Yes</td><td>Yes</td>
+  	<td>Yes</td>
+  	<td>Yes</td>
   </tr>
 
   <tr><td>
   	<a href="?page=ActiveControls.ActiveCheckBox">TActiveCheckBox</a>
   	</td>
-  	<td>Yes</td><td>Yes</td><td>Yes</td>
+  	<td>Yes</td>
+  	<td>Yes</td>
   </tr>
 
   <tr><td>
   	<a href="?page=ActiveControls.ActiveCustomValidator">TActiveCustomValidator</a>
   	</td>
-  	<td>No</td><td>Yes</td><td>No</td>
+  	<td>Yes</td>
+  	<td>Yes</td>
   </tr>
 
   <tr><td>
   	<a href="?page=ActiveControls.ActiveHyperLink">TActiveHyperLink</a>
   	</td>
-  	<td>Yes</td><td>No</td><td>Yes</td>
+  	<td>No</td><td>Yes</td>
   </tr>
 
   <tr><td>
   	<a href="?page=ActiveControls.ActiveImage">TActiveImage</a>
   </td>
-  <td>Yes</td><td>No</td><td>Yes</td>
+  <td>No</td><td>Yes</td>
   </tr>
 
   <tr><td>
   	<a href="?page=ActiveControls.ActiveImageButton">TActiveImageButton</a>
 	</td>
-	<td>Yes</td><td>Yes</td><td>Yes</td>
+	<td>Yes</td><td>Yes</td>
   </tr>
 
   <tr><td>
   <a href="?page=ActiveControls.ActiveLabel">TActiveLabel</a>
 	</td>
-	<td>Yes</td><td>No</td><td>Yes</td>
+	<td>No</td><td>Yes</td>
   </tr>
 
   <tr><td>
   <a href="?page=ActiveControls.ActiveLinkButton">TActiveLinkButton</a>
 	</td>
-	<td>Yes</td><td>Yes</td><td>No</td>
+	<td>Yes</td><td>No</td>
   </tr>
 
   <tr><td>
   <a href="?page=ActiveControls.ActivePanel">TActivePanel</a>
   </td>
-  <td>Yes</td><td>No</td><td>Yes</td>
+  <td>No</td><td>Yes</td>
   </tr>
 
   <tr><td>
   <a href="?page=ActiveControls.ActiveRadioButton">TActiveRadioButton</a>
   </td>
-  <td>Yes</td><td>Yes</td><td>Yes</td>
+  <td>Yes</td><td>Yes</td>
   </tr>
 
   <tr><td>
   <a href="?page=ActiveControls.ActiveTextBox">TActiveTextBox</a>
 	</td>
-	<td>Yes</td><td>Yes</td><td>Yes</td>
+	<td>Yes</td><td>Yes</td>
   </tr>
 
   <tr><td>
   <a href="?page=ActiveControls.CallbackOptions">TCallbackOptions</a>
 	</td>
-	<td>No</td><td>No</td><td>N/A</td>
+	<td>No</td><td>N/A</td>
   </tr>
 
 
   <tr><td>
   <a href="?page=ActiveControls.ActiveCheckBoxList">TActiveCheckBoxList</a>
   </td>
-  <td>Yes</td><td>Yes</td><td>Yes</td>
+  <td>Yes</td><td>Yes</td>
   </tr>
 
   <tr><td>
   <a href="?page=ActiveControls.ActiveDropDownList">TActiveDropDownList</a>
   </td>
-  <td>Yes</td><td>Yes</td><td>Yes</td>
+  <td>Yes</td><td>Yes</td>
   </tr>
 
   <tr><td>
   <a href="?page=ActiveControls.ActiveListBox">TActiveListBox</a>
   </td>
-  <td>Yes</td><td>Yes</td><td>Yes</td>
+  <td>Yes</td><td>Yes</td>
   </tr>
 
   <tr><td>
   <a href="?page=ActiveControls.ActiveRadioButtonList">TActiveRadioButtonList</a>
   </td>
-  <td>Yes</td><td>Yes</td><td>Yes</td>
+  <td>Yes</td><td>Yes</td>
   </tr>
 
   <tr><td>
 	<a href="?page=ActiveControls.AutoComplete">TAutoComplete</a>
   </td>
-  <td>Yes</td><td>Yes</td><td>Yes</td>
+  <td>Yes</td>
+  <td>No</td>
   </tr>
 
   <tr><td>
 	<a href="?page=ActiveControls.Callback">TCallback</a>
   </td>
-  <td>No</td><td>Yes</td><td>No</td>
+  <td>Yes</td><td>No</td>
   </tr>
 
   <tr><td>
 	<a href="?page=ActiveControls.EventTriggeredCallback">TEventTriggeredCallback</a>
   </td>
-  <td>No</td><td>Yes</td><td>No</td>
+  <td>Yes</td><td>No</td>
   </tr>
 
  <tr><td>
 	<a href="?page=ActiveControls.InPlaceTextBox">TInPlaceTextBox</a>
   </td>
-  <td>Yes</td><td>Yes</td><td>No</td>
+  <td>Yes</td><td>No</td>
   </tr>
 
  <tr><td>
 	<a href="?page=ActiveControls.TimeTriggeredCallback">TTimeTriggeredCallback</a>
 	</td>
-	<td>No</td><td>Yes</td><td>No</td>
+	<td>Yes</td><td>No</td>
   </tr>
 
   <tr><td>
 	<a href="?page=ActiveControls.ValueTriggeredCallback">TValueTriggeredCallback</a>
 	</td>
-	<td>No</td><td>Yes</td><td>No</td>
+	<td>Yes</td><td>No</td>
   </tr>
 </table>
 

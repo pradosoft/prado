@@ -2,7 +2,7 @@
 
 <h1>Custom Login</h1>
 
-<com:TActiveLinkButton ID="showLogin" Attributes.OnClick="new Effect.Appear('loginBox')" Text="Login" />
+<a href="#" onclick="new Effect.Appear('loginBox')">Login</a>
 <div id="loginBox" style="display: none;">
 
 	<div id="loginLoader" style="display: none;">Please Wait...</div>
@@ -28,7 +28,7 @@
 	<br />
 
 	<com:TActiveLinkButton ID="checkLogin" OnCallback="doLogin" Text="Login" ValidationGroup="login" />
-	<com:TActiveLinkButton Attributes.OnClick="new Effect.Fade('loginBox')" Text="Close" />
+	<a href="#" onclick="new Effect.Fade('loginBox')">Close</a>
 
 </div>
 

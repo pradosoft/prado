@@ -2039,6 +2039,8 @@ tests/FunctionalTests/active-controls/protected/pages/ActiveRadioButtonListTest.
 tests/FunctionalTests/active-controls/protected/pages/ActiveRadioButtonListTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveRadioButtonTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveRadioButtonTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveRedirectionTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveRedirectionTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/CallbackCustomValidatorTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/CallbackCustomValidatorTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/CustomTemplateComponent.php -text
@@ -2058,6 +2060,10 @@ tests/FunctionalTests/active-controls/protected/pages/InPlaceWithValidator.page 
 tests/FunctionalTests/active-controls/protected/pages/InPlaceWithValidator.php -text
 tests/FunctionalTests/active-controls/protected/pages/LTemplate.php -text
 tests/FunctionalTests/active-controls/protected/pages/LTemplate.tpl -text
+tests/FunctionalTests/active-controls/protected/pages/LargePageStateTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/LargePageStateTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/LargePageStateTest2.page -text
+tests/FunctionalTests/active-controls/protected/pages/LargePageStateTest2.php -text
 tests/FunctionalTests/active-controls/protected/pages/Master1.php -text
 tests/FunctionalTests/active-controls/protected/pages/Master1.tpl -text
 tests/FunctionalTests/active-controls/protected/pages/MasterTest1.page -text

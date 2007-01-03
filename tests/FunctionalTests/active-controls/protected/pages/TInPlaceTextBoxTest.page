@@ -1,3 +1,4 @@
+<%@ Application.Globalization.Charset="UTF-8" %>
 <com:TForm ID="form1">
 
 <style>
@@ -69,7 +70,7 @@
 		OnFailure="alert(10)"/>
 	</com:TInPlaceTextBox>
 
-	<com:TActiveButton Text="ad" OnCallback="NewPackageSubject" ClientSide.OnFailure="alert(10)"/>
+	<com:TActiveButton Text="ad" OnCallback="button_clicked" />
 
 	<com:TJavascriptLogger />
 

@@ -131,7 +131,8 @@ class TActivePageAdapter extends TControlAdapter
 	{
 		if(!$this->getApplication()->getRequestCompleted())
 			$this->getApplication()->onEndRequest();
-		$this->getResponse()->appendHeader(self::CALLBACK_REDIRECT.': '.$url);
+		$this->appendContentPart($this->getResponse(), self::CALLBACK_REDIRECT, $url);
+		//$this->getResponse()->appendHeader(self::CALLBACK_REDIRECT.': '.$url);
 	}
 
 	/**
@@ -154,7 +155,9 @@ class TActivePageAdapter extends TControlAdapter
 			if(!is_null($responseData))
 			{
 				$data = TJavascript::jsonEncode($responseData);
-				$response->appendHeader(self::CALLBACK_DATA_HEADER.': '.$data);
+				
+				$this->appendContentPart($response, self::CALLBACK_DATA_HEADER, $data);
+				//$response->appendHeader(self::CALLBACK_DATA_HEADER.': '.$data);
 			}
 		}
 
@@ -164,7 +167,8 @@ class TActivePageAdapter extends TControlAdapter
 			if($handler->getActiveControl()->getClientSide()->getEnablePageStateUpdate())
 			{
 				$pagestate = $this->getPage()->getClientState();
-				$response->appendHeader(self::CALLBACK_PAGESTATE_HEADER.': '.$pagestate);
+				$this->appendContentPart($response, self::CALLBACK_PAGESTATE_HEADER, $pagestate);
+				//$response->appendHeader(self::CALLBACK_PAGESTATE_HEADER.': '.$pagestate);
 			}
 		}
 
@@ -182,8 +186,18 @@ class TActivePageAdapter extends TControlAdapter
 		//output the actions
 		$executeJavascript = $this->getCallbackClientHandler()->getClientFunctionsToExecute();
 		$actions = TJavascript::jsonEncode($executeJavascript);
-		$response->appendHeader(self::CALLBACK_ACTION_HEADER.': '.$actions);
+		$this->appendContentPart($response, self::CALLBACK_ACTION_HEADER, $actions);
+		//$response->appendHeader(self::CALLBACK_ACTION_HEADER.': '.$actions);
+	}
 
+	/**
+	 * Appends data or javascript code to the body content surrounded with delimiters
+	 */ 
+	private function appendContentPart($response, $delimiter, $data)
+	{
+		$content = $response->createHtmlWriter();
+		$content->getWriter()->setBoundary($delimiter);
+		$content->write($data);
 	}
 
 	/**
