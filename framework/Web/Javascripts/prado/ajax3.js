@@ -143,6 +143,23 @@ Object.extend(Prado.CallbackRequest,
 
 	requestQueue : [],
 
+	//all request objects
+	requests : {},
+
+	getRequestById : function(id)
+	{
+		var requests = Prado.CallbackRequest.requests;
+		if(typeof(requests[id]) != "undefined")
+			return requests[id];
+	},
+
+	dispatch : function(id)
+	{
+		var requests = Prado.CallbackRequest.requests;
+		if(typeof(requests[id]) != "undefined")
+			requests[id].dispatch();
+	},
+
 	/**
 	 * Add ids of inputs element to post in the request.
 	 */
@@ -439,6 +456,9 @@ Prado.CallbackRequest.prototype =
 		this.Enabled = true;
 
 		this.id = id;
+		if(typeof(id)=="string")
+			Prado.CallbackRequest.requests[id] = this;
+
 		this.options = Object.extend(
 		{
 			RequestTimeOut : 30000, // 30 second timeout.
