@@ -259,29 +259,26 @@ class WsdlGenerator
 	 */
 	private function extractClassProperties($className)
 	{
-		// Lets get the class' file so we can read the full contents of it.
-		$classReflect = new ReflectionClass($className);
-
-		if (!file_exists($classReflect->getFileName())) {
-			throw new Exception('Could not find class file for '.$className);
-		}
-
-		$file = file_get_contents($classReflect->getFileName());
-		if ($file == '') {
-			throw new Exception("File {$classReflect->getFileName()} could not be opened");
-		}
-
-		$pos = strpos($file, 'class ' . $className);
-		$pos = strpos($file, '@var', $pos) + 5;
-		for($t = 0; $pos > 5; $t++)
+		/**
+		 * modified by Qiang Xue, Jan. 2, 2007
+		 * Using Reflection's DocComment to obtain property definitions
+		 * DocComment is available since PHP 5.1
+		 */
+		$reflection = new ReflectionClass($className);
+		$properties = $reflection->getProperties();
+		foreach($properties as $property)
 		{
-			$type = $this->convertType(substr($file, $pos, strpos($file, ' ', $pos) - $pos));
-			$pos = strpos($file, '$', $pos) + 1;
-			$name = substr($file, $pos, strpos($file, ';', $pos) - $pos);
-			$this->types[$className][$t] = array('type' => $type, 'name' => $name);
-			$pos = strpos($file, '@var', $pos) + 5;
+			$comment = $property->getDocComment();
+			if($property->isPublic() && strpos($comment, '@soapproperty') !== false)
+			{
+				if (preg_match('/@var\s+(\w+(\[\])?)\s+\$(\w+)/mi', $comment, $match)) {
+					$param = array();
+					$param['type'] = $this->convertType($match[1]);
+					$param['name'] = $match[3];
+					$this->types[$className][] = $param;
+				}
+			}
 		}
 	}
-
 }
 ?>
