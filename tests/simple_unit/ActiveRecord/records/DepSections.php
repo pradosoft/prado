@@ -6,7 +6,7 @@ class DepSections extends TActiveRecord
 	public $section_id;
 	public $order;
 
-	private static $_tablename='department_sections';
+	public static $_tablename='department_sections';
 
 	public static function finder()
 	{

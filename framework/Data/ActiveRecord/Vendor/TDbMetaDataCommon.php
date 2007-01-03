@@ -49,7 +49,7 @@ abstract class TDbMetaDataCommon extends TDbMetaData
 	public function getFindByCriteriaCommand($conn, $criteria=null)
 	{
 		$columns = $this->getSelectionColumns();
-		$conditions = $criteria!==null?$this->getSqlFromCriteria($criteria) : '';
+		$conditions = $criteria!==null?$this->getSqlFromCriteria($conn,$criteria) : '';
 		$table = $this->getTableName();
 		$sql = "SELECT {$columns} FROM {$table} {$conditions}";
 		return $this->createCriteriaBindedCommand($conn,$sql, $criteria);
@@ -64,13 +64,13 @@ abstract class TDbMetaDataCommon extends TDbMetaData
 	public function getCountRecordsCommand($conn, $criteria)
 	{
 		$columns = $this->getSelectionColumns();
-		$conditions = $this->getSqlFromCriteria($criteria);
+		$conditions = $this->getSqlFromCriteria($conn,$criteria);
 		$table = $this->getTableName();
 		$sql = "SELECT count(*) FROM {$table} {$conditions}";
 		return $this->createCriteriaBindedCommand($conn,$sql, $criteria);
 	}
 
-	abstract protected function getSqlFromCriteria(TActiveRecordCriteria $criteria);
+	abstract protected function getSqlFromCriteria($conn,TActiveRecordCriteria $criteria);
 
 	/**
 	 * Sql command with parameters binded.

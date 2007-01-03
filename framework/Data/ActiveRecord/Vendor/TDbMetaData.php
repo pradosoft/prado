@@ -21,6 +21,7 @@
  * @package System.Data.ActiveRecord.Vendor
  * @since 3.1
  */
+
 abstract class TDbMetaData extends TComponent
 {
 	private $_primaryKeys=array();

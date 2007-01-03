@@ -8,7 +8,7 @@ class DepartmentRecord extends TActiveRecord
 	public $active;
 	public $order;
 
-	private static $_tablename = 'departments';
+	public static $_tablename = 'departments';
 
 	public static function finder()
 	{

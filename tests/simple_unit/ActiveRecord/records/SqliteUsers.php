@@ -6,7 +6,7 @@ class SqliteUsers extends TActiveRecord
 	public $password;
 	public $email;
 
-	private static $_tablename='users';
+	public static $_tablename='users';
 
 	public static function finder()
 	{

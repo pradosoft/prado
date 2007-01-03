@@ -18,7 +18,7 @@ class UserRecord extends TActiveRecord
 
 	private $_level=-1;
 
-	protected static $_tablename='users';
+	public static $_tablename='users';
 
 	public function getLevel()
 	{

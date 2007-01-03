@@ -74,7 +74,7 @@ class UserRecord extends TActiveRecord
 	public $username; //the column named "username" in the "users" table
 	public $email;
 	
-	private static $_tablename='users'; //table name 
+	public static $_tablename='users'; //table name 
 	
 	/**
 	 * @return TActiveRecord active record finder instance
@@ -88,7 +88,7 @@ class UserRecord extends TActiveRecord
 </p>
 <p>Each property of the <tt>UserRecord</tt> class must correspond to a
 	column with the same name in the "users" table. The static class variable
-	<tt>$_tablename</tt> is optional when the class name is the same as
+	<tt>$_tablename</tt> (must be public) is optional when the class name is the same as
 	the table name in the database, otherwise <tt>$_tablename</tt> must
 	specify the table name that corresponds to your Active Record class.
 </p>
