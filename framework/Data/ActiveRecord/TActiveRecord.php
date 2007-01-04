@@ -210,6 +210,28 @@ abstract class TActiveRecord extends TComponent
 		return $gateway->deleteRecordsByPk($this,(array)$keys);
 	}
 
+
+	/**
+	 * Delete multiple records using a criteria. 
+	 * @param string|TActiveRecordCriteria SQL condition or criteria object.
+	 * @param mixed parameter values.
+	 * @return int number of records deleted.
+	 */
+	public function deleteAll($criteria, $parameters=array())
+	{
+		if(is_string($criteria))
+		{
+			if(!is_array($parameters) && func_num_args() > 1)
+			{
+				$parameters = func_get_args();
+				array_shift($parameters);
+			}
+			$criteria=new TActiveRecordCriteria($criteria,$parameters);
+		}
+		$gateway = $this->getRecordManager()->getRecordGateway();
+		return $gateway->deleteRecordsByCriteria($this, $criteria);
+	}
+
 	/**
 	 * Populate the record with data, registers the object as clean.
 	 * @param string new record name

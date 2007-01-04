@@ -1,0 +1,30 @@
+<com:TForm>
+
+ <com:TRequiredFieldValidator
+    ControlToValidate="rad_button_list"
+    Text="You must click one"
+    Display="Dynamic"
+    ValidationGroup="Group"
+    />
+  <br /> 
+  <com:TActiveRadioButtonList 
+    ID="rad_button_list"
+    OnCallback="radChange">
+    <com:TListItem Value="yes" Text="Yes" />
+    <com:TListItem Value="no" Text="No" />
+    <com:TListItem Value="whynot" Text="Why not?" />
+  </com:TActiveRadioButtonList>
+  <br />
+  <com:TActiveLabel
+    ID="label" 
+    Text="Choice : "  />
+  <br /><br /><br />
+  <com:TActiveButton
+    ID="action_button"
+    Text="action"
+    OnCallback="action"
+    ValidationGroup="Group"  />        		
+
+
+<com:TJavascriptLogger />
+</com:TForm>

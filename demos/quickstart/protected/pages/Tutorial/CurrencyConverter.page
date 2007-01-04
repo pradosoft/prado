@@ -11,12 +11,12 @@
 		relative to the dollar. The completed application is shown bellow.
 		<img src=<%~ example2.png %> class="figure" />
 		You can try the application <a href="../currency-converter/index.php">locally</a> or at  
-		<a href="http://www.pradosoft.com/demo/currency-converter/">Pradosoft.com</a>.
+		<a href="http://www.pradosoft.com/demos/currency-converter/">Pradosoft.com</a>.
 		Notice that the application still functions exactly the same if javascript
 		is not available on the user's browser.
 	</p>
 	
-	<h1>Downloading and Installing Prado</h1>
+	<h1 id="download">Downloading and Installing Prado</h1>
 	<p>To install Prado, simply download the latest version of Prado from
 		<a href="http://www.pradosoft.com/">http://www.pradosoft.com</a>
 		and unzip the file to a directory <b>not</b> accessible by your web server 

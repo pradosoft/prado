@@ -161,9 +161,9 @@ abstract class TDbMetaDataCommon extends TDbMetaData
 	{
 		$conn->setActive(true);
 		$numKeys = count($this->getPrimaryKeys());
-		if($numKeys===0)
-			throw new TActiveRecordException('ar_no_primary_key_found',$this->getTableName());
 		$table = $this->getTableName();
+		if($numKeys===0)
+			throw new TActiveRecordException('ar_no_primary_key_found',$table);
 		if($numKeys===1)
 			$criteria = $this->getDeleteInPkCriteria($conn,$keys);
 		else
@@ -172,6 +172,21 @@ abstract class TDbMetaDataCommon extends TDbMetaData
 		$command = $conn->createCommand($sql);
 		$command->prepare();
 		return $command;
+	}
+
+	
+	/**
+	 * SQL command to delete records by criteria
+	 * @param TDbConnection database connection.
+	 * @param TActiveRecordCriteria criteria object.
+	 * @return TDbCommand delete command.
+	 */
+	public function getDeleteByCriteriaCommand($conn, $criteria)
+	{
+		$conditions = $criteria!==null?$this->getSqlFromCriteria($conn,$criteria) : '';
+		$table = $this->getTableName();
+		$sql = "DELETE FROM {$table} {$conditions}";
+		return $this->createCriteriaBindedCommand($conn,$sql, $criteria);
 	}
 }
 

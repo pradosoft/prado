@@ -102,6 +102,15 @@ class TDataSourceConfig extends TModule
 	}
 
 	/**
+	 * Alias for getDbConnection().
+	 * @return TDbConnection database connection.
+	 */
+	public function getDatabase()
+	{
+		return $this->getDbConnection();
+	}
+
+	/**
 	 * @param string Database connection class name to be created.
 	 */
 	public function getConnectionClass()

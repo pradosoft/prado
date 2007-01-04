@@ -247,6 +247,20 @@ class TActiveRecordGateway extends TComponent
 	}
 
 	/**
+	 * Delete multiple records by criteria.
+	 * @param TActiveRecord active record finder instance.
+	 * @param TActiveRecordCriteria search criteria
+	 * @return int number of records.
+	 */
+	public function deleteRecordsByCriteria(TActiveRecord $record, $criteria)
+	{
+		$meta = $this->getMetaData($record);
+		$command = $meta->getDeleteByCriteriaCommand($record->getDBConnection(),$criteria);
+		$this->raiseCommandEvent(TActiveRecordStatementType::Delete,$command,$record,$criteria);
+		return $command->execute();
+	}
+
+	/**
 	 * Raise the corresponding command event, insert, update, delete or select.
 	 * @param string command type
 	 * @param TDbCommand sql command to be executed.

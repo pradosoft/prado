@@ -275,6 +275,15 @@ class TCallbackClientScript extends TApplicationComponent
 	}
 
 	/**
+	 * Focus on a particular element.
+	 * @param TControl control element or element id.
+	 */
+	public function focus($element)
+	{
+		$this->callClientFunction('Prado.Element.focus', $element);
+	}
+
+	/**
 	 * Sets the style of element. The style must be a key-value array where the
 	 * key is the style property and the value is the style value.
 	 * @param TControl control element or element id

@@ -340,7 +340,10 @@ class TPage extends TTemplateControl
 	 */
 	public function getCallbackClient()
 	{
-		return $this->getAdapter()->getCallbackClientHandler();
+		if($this->getAdapter() !== null)
+			return $this->getAdapter()->getCallbackClientHandler();
+		else
+			return new TCallbackClientScript();
 	}
 
 	/**

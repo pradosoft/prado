@@ -15,6 +15,7 @@
 <ul>
     <li><a href="?page=GettingStarted.HelloWorld">Creating First PRADO Application</a></li>
     <li><a href="?page=Tutorial.CurrencyConverter">Currency Converter</a></li>
+	<li><a href="?page=Tutorial.AjaxChat">AJAX Chat Client</a></li>
     <li><a href="?page=GettingStarted.CommandLine">Command Line Tool</a></li>
 </ul>
 </div>
