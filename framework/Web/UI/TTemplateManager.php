@@ -177,7 +177,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	 *	'<%[%#~\\$=\\[](.*?)%>'  - expressions
 	 *  '<prop:([\w\.]+)((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?"|\s*[\w\.]+=<%.*?%>)*)\s*\/>' - group subproperty tags
 	 */
-	const REGEX_RULES='/<!--.*?--!?>|<\/?com:([\w\.]+)((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?"|\s*[\w\.]+\s*=\s*<%.*?%>)*)\s*\/?>|<\/?prop:([\w\.]+)\s*>|<%@\s*((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?")*)\s*%>|<%[%#~\\$=\\[](.*?)%>|<prop:([\w\.]+)((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?"|\s*[\w\.]+\s*=\s*<%.*?%>)*)\s*\/>/msS';
+	const REGEX_RULES='/<!--.*?--!>|<\/?com:([\w\.]+)((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?"|\s*[\w\.]+\s*=\s*<%.*?%>)*)\s*\/?>|<\/?prop:([\w\.]+)\s*>|<%@\s*((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?")*)\s*%>|<%[%#~\\$=\\[](.*?)%>|<prop:([\w\.]+)((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?"|\s*[\w\.]+\s*=\s*<%.*?%>)*)\s*\/>/msS';
 
 	/**
 	 * Different configurations of component property/event/attribute
@@ -724,15 +724,11 @@ class TTemplate extends TApplicationComponent implements ITemplate
 				}
 				else if(strpos($str,'<!--')===0)	// comments
 				{
-					if(substr($str,-4,4)==='--!>')  // template comments
-					{
-						if($expectPropEnd)
-							throw new TConfigurationException('template_comments_forbidden');
-						if($matchStart>$textStart)
-							$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
-						$textStart=$matchEnd+1;
-					}
-					// else, HTML comments and we do nothing
+					if($expectPropEnd)
+						throw new TConfigurationException('template_comments_forbidden');
+					if($matchStart>$textStart)
+						$tpl[$c++]=array($container,substr($input,$textStart,$matchStart-$textStart));
+					$textStart=$matchEnd+1;
 				}
 				else
 					throw new TConfigurationException('template_matching_unexpected',$match);
