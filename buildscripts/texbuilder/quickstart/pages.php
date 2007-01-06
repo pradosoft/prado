@@ -8,8 +8,21 @@ $pages['Getting Started'] = array(
 	'GettingStarted/Introduction.page',
 	'GettingStarted/AboutPrado.page',
 	'GettingStarted/Installation.page',
-	'GettingStarted/HelloWorld.page',
 	'GettingStarted/Upgrading.page'
+	);
+
+$pages['Tutorials'] = array(
+	'GettingStarted/HelloWorld.page',
+	'Fundamentals/Hangman.page',
+	'GettingStarted/CommandLine.page'
+	);
+
+$pages['Tutorial: Currency Converter'] = array(
+	'Tutorial/CurrencyConverter.page'
+	);
+
+$pages['Tutorial: Building an AJAX Chat Application'] = array(
+	'Tutorial/AjaxChat.page'
 	);
 
 $pages['Fundamentals'] = array(
@@ -19,8 +32,8 @@ $pages['Fundamentals'] = array(
     'Fundamentals/Pages.page',
     'Fundamentals/Modules.page',
     'Fundamentals/Services.page',
-    'Fundamentals/Applications.page',
-    'Fundamentals/Hangman.page');
+    'Fundamentals/Applications.page'
+	);
 
 $pages['Configurations'] = array(
 	'Configurations/Overview.page',
@@ -28,7 +41,9 @@ $pages['Configurations'] = array(
 	'Configurations/Templates2.page',
 	'Configurations/Templates3.page',
 	'Configurations/AppConfig.page',
-	'Configurations/PageConfig.page');
+	'Configurations/PageConfig.page',
+	'Configurations/UrlMapping.page'
+	);
 
 $pages['Control Reference : Standard Controls'] = array(
 	'Controls/Button.page',

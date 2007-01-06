@@ -1,0 +1,7 @@
+<com:TForm>
+<h1>DatePicker in Callback</h1>
+
+<com:TDatePicker ID="datepicker" />
+<com:TActiveLinkButton OnCallback="testDatePicker" Text="testDatePicker" />
+<com:TActiveLabel ID="status" />
+</com:TForm>

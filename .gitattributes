@@ -2069,6 +2069,10 @@ tests/FunctionalTests/active-controls/protected/pages/CustomTemplateControlTest.
 tests/FunctionalTests/active-controls/protected/pages/CustomTemplateControlTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/CustomValidatorByPass.page -text
 tests/FunctionalTests/active-controls/protected/pages/CustomValidatorByPass.php -text
+tests/FunctionalTests/active-controls/protected/pages/DMessagesPanel.php -text
+tests/FunctionalTests/active-controls/protected/pages/DMessagesPanel.tpl -text
+tests/FunctionalTests/active-controls/protected/pages/DatePickerInCallback.page -text
+tests/FunctionalTests/active-controls/protected/pages/DatePickerInCallback.php -text
 tests/FunctionalTests/active-controls/protected/pages/DelayedCallback.page -text
 tests/FunctionalTests/active-controls/protected/pages/DelayedCallback.php -text
 tests/FunctionalTests/active-controls/protected/pages/EventTriggeredCallback.page -text
@@ -2087,6 +2091,8 @@ tests/FunctionalTests/active-controls/protected/pages/LargePageStateTest2.php -t
 tests/FunctionalTests/active-controls/protected/pages/Master1.php -text
 tests/FunctionalTests/active-controls/protected/pages/Master1.tpl -text
 tests/FunctionalTests/active-controls/protected/pages/MasterTest1.page -text
+tests/FunctionalTests/active-controls/protected/pages/MessagesPanelTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/MessagesPanelTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/MyControl.php -text
 tests/FunctionalTests/active-controls/protected/pages/MyControl.tpl -text
 tests/FunctionalTests/active-controls/protected/pages/MyTabPanelTest.page -text

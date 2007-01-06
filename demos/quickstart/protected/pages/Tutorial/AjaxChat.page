@@ -3,9 +3,9 @@
 	<p>This tutorial introduces the Prado web application framework's 
 	<a href="?page=Database.ActiveRecord">ActiveRecord</a>
 	and <a href="?page=ActiveControls.Home">Active Controls</a> to build a Chat 
-	web application . It is assumed that you 
+	web application. It is assumed that you 
 	are familiar with PHP and you have access to a web server that is able to serve PHP5 scripts.
-	This basic chat application will utilizing the following ideas/components in Prado.
+	This basic chat application will utilize the following ideas/components in Prado.
 	<ul>
 		<li>Building a custom User Manager class.</li>
 		<li>Authenticating and adding a new user to the database.</li>
@@ -39,19 +39,19 @@ php prado/framework/prado-cli.php -c chat
 
 	<p>The above command creates the necessary directory structure and minimal 
 		files (including "index.php" and "Home.page") to run a Prado  web application.
-		Now you can point your browser's url to the web server to serve up
+		Now you can point your browser's URL to the web server to serve up
 		the <tt>index.php</tt> script in the <tt>chat</tt> directory.
 		You should see the message "Welcome to Prado!" 
 	</p>
 
 	<h1>Authentication and Authorization</h1>
 	<p>The first task for this application is to ensure that each user
-	of the chat application is assigned with a unique (choosen by the user) 
+	of the chat application is assigned with a unique (chosen by the user) 
 	username. To achieve this, we can secure the main chat application
-	page to deny access to anonymouse users. First, let us create the <tt>Login</tt>
+	page to deny access to anonymous users. First, let us create the <tt>Login</tt>
 	page with the following code. We save the <tt>Login.php</tt> and <tt>Login.page</tt>
 	in the <tt>chat/protected/pages/</tt> directory (there should be a <tt>Home.page</tt>
-	file there create by the command line tool).
+	file created by the command line tool).
 	</p>
 <com:TTextHighlighter Language="php" CssClass="source">
 &lt;?php
@@ -88,7 +88,7 @@ class Login extends TPage
 </html>
 </com:TTextHighlighter>
 	<p>The login page contains 
-	a <com:DocLink ClassPath="System.Web.UI.WebControls.TForm" Text="TForm" />,
+	a <com:DocLink ClassPath="System.Web.UI.TForm" Text="TForm" />,
 	a <com:DocLink ClassPath="System.Web.UI.WebControls.TTextBox" Text="TTextBox" />,
 	a <com:DocLink ClassPath="System.Web.UI.WebControls.TRequiredFieldValidator" Text="TRequiredFieldValidator" />
 	and a <com:DocLink ClassPath="System.Web.UI.WebControls.TButton" Text="TButton" />. The resulting
@@ -133,8 +133,8 @@ secure the <tt>pages</tt> directory.
 </com:TTextHighlighter>
 We setup the authentication using the default classes as explained in the 
 <a href="?page=Advanced.Auth">authentication/authorization quickstart</a>.
-In the authorization definition, we allow anonymouse users to access the 
-<tt>Login</tt> page (anonymouse users is specified by the <tt>?</tt> question mark).
+In the authorization definition, we allow anonymous users to access the 
+<tt>Login</tt> page (anonymous users is specified by the <tt>?</tt> question mark).
 We allow any users with role equal to "normal" (to be defined later) 
 to access all the pages, that is, the <tt>Login</tt> and <tt>Home</tt> pages.
 Lastly, we deny all users without any roles to access any page. The authorization
@@ -204,7 +204,7 @@ we import classes from the <tt>App_Code</tt> directory and add an
 <h2>Custom User Manager class</h2>
 <p>To implement a custom user manager module class we just need
 to extends the <tt>TModule</tt> class and implement the <tt>IUserManager</tt>
-interface. The <tt>getGuestName()</tt>, <tt>getUser()</tt> and <tt>validateUser</tt>
+interface. The <tt>getGuestName()</tt>, <tt>getUser()</tt> and <tt>validateUser()</tt>
 methods are required by the <tt>IUserManager</tt> interface.
 We save the custom user manager class as <tt>App_Code/ChatUserManager.php</tt>.
 </p> 
@@ -273,7 +273,7 @@ configuration with <tt>id="users"</tt>.</p>
 <p>To perform authentication, we just want the user to enter a unique
 username. We add a 
 <com:DocLink ClassPath="System.Web.UI.WebControls.TCustomValidator" Text="TCustomValidator" />
-for validate the uniqueness of the username and add a <tt>OnClick</tt> event handler
+for validate the uniqueness of the username and add an <tt>OnClick</tt> event handler
 for the login button.</p>
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TCustomValidator
@@ -336,7 +336,7 @@ Finally, we redirect the client to the default <tt>Home</tt> page.
 <h2>Default Values for ActiveRecord</h2>
 <p>If you try to perform a login now, you will receive an error message like
 "<i>Property '<tt>ChatUserRecord::$last_activity</tt>' must not be null as defined 
-by column 'last_activity' in table 'chat_users'.</i>". This means that the <tt>$last_activity</tt>
+by column '<tt>last_activity</tt>' in table '<tt>chat_users</tt>'.</i>". This means that the <tt>$last_activity</tt>
 property value was null when we tried to insert a new record. We need to either
 define a default value in the corresponding column in the table and allow null values or set the default
 value in the <tt>ChatUserRecord</tt> class. We shall demonstrate the later by 
@@ -359,13 +359,13 @@ public function setLast_Activity($value)
 }
 </com:TTextHighlighter>
 Notice that we renamed <tt>$last_activity</tt> to <tt>$_last_activity</tt> (note
-the under score after the dollar sign).
+the underscore after the dollar sign).
 </p>
 
 <h1>Main Chat Application</h1>
 <p>Now we are ready to build the main chat application. We use a simple
 layout that consist of one panel holding the chat messages, one panel
-to hold the users list, a textare for the user to enter the text message
+to hold the users list, a textarea for the user to enter the text message
 and a button to send the message.
 <com:TTextHighlighter Language="prado" CssClass="source">
 <!doctype html public "-//W3C//DTD XHTML 1.0 Strict//EN" 
@@ -432,7 +432,7 @@ and a button to send the message.
 </body>
 </html>
 </com:TTextHighlighter>
-We have add two Active Control components: a
+We added two Active Control components: a
 <com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveTextBox" Text="TActiveTextBox" />
 and a
 <com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveButton" Text="TActiveButton" />.
@@ -442,14 +442,14 @@ that will be very useful for understanding how the Active Controls work.
 </p>
 
 <h2>Exploring the Active Controls</h2>
-<p>Lets have some fun before we proceed with setuping the chat buffering. We want
+<p>We should have some fun before we proceeding with setting up the chat buffering. We want
 to see how we can update the current page when we receive a message. First, we add
 an <tt>OnClick</tt> event handler for the <tt>Send</tt> button.
 
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TActiveButton ID="sendButton" CssClass="send-button" 
 	Text="Send" OnClick="processMessage"/&gt;
-</com:TTextHighlighter >
+</com:TTextHighlighter>
 And the corresponding event handler method in the <tt>Home.php</tt> class (we
 need to create this new file too).
 <com:TTextHighlighter Language="php" CssClass="source">
@@ -462,7 +462,7 @@ class Home extends TPage
 }
 </com:TTextHighlighter>
 If you now type something in the main application textbox and click the send button
-you should see what ever you have typed echoed in the <tt>TJavascriptLogger</tt> console.
+you should see whatever you have typed echoed in the <tt>TJavascriptLogger</tt> console.
 </p>
 
 <p>To append or add some content to the message list panel, we need to use
@@ -554,10 +554,10 @@ public function saveMessage()
 We first find all the current users using the <tt>ChatUserRecord</tt> finder
 methods. Then we duplicate the message and save it into the database. In addition,
 we update the message sender's last activity timestamp. The above piece of code
-demonstrates the simplicty and succintness of using ActiveRecords for simple database designs.
+demonstrates the simplicity and succinctness of using ActiveRecords for simple database designs.
 </p>
 
-<p>The next piece of the logic is to retreive the users messages from the buffer.
+<p>The next piece of the logic is to retrieve the users' messages from the buffer.
 We simply load all the messages for a particular username and format that message
 appropriately (remember to escape the output to prevent Cross-Site Scripting attacks).
 After we load the messages, we delete those loaded messages and any older
@@ -605,7 +605,7 @@ a TRepeater in the template or a custom component).
 </p>
 
 <h1>Putting It Together</h1>
-<p>Nows comes to put the application flow together. In the <tt>Home.php</tt> we update
+<p>Now comes to put the application flow together. In the <tt>Home.php</tt> we update
 the <tt>Send</tt> buttons <tt>OnClick</tt> event handler to use the application
 logic we just implemented.
 <com:TTextHighlighter Language="php" CssClass="source">
@@ -631,11 +631,11 @@ response (AJAX style).
 </p>
 
 <p>At this point the application is actually already functional, just not very
-user friendly. If you open two different browser, you should be able to communicate
-between the two users when ever the <tt>Send</tt> button is clicked.
+user friendly. If you open two different browsers, you should be able to communicate
+between the two users whenever the <tt>Send</tt> button is clicked.
 </p>
 
-<p>The next part is perphaps the more tricker and fiddly than the other tasks. We
+<p>The next part is perhaps the more tricker and fiddly than the other tasks. We
 need to improve the user experience. First, we want a list of current users
 as well. So we add the following method to <tt>Home.php</tt>, we can call
 this method when ever some callback event is raised, e.g. when the <tt>Send</tt>
@@ -709,7 +709,7 @@ public function onLoad($param)
 refresh the user list. We can accomplish this by polling the server using a
 <com:DocLink ClassPath="System.Web.UI.ActiveControls.TTimeTriggeredCallback" Text="TTimeTriggeredCallback" />
 control. We add a <tt>TTimeTriggeredCallback</tt> to the <tt>Home.page</tt>
-and call the <tt>refresh</tt> handler method to defined in <tt>Home.php</tt>.
+and call the <tt>refresh</tt> handler method defined in <tt>Home.php</tt>.
 We set the polling interval to 2 seconds.
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TTimeTriggeredCallback OnCallback="refresh" 

@@ -86,7 +86,7 @@ Copyright &copy; 2005-2006 <a href="http://www.pradosoft.com">PradoSoft</a>.</di
 		$html = preg_replace_callback('/(?<=RunButton" )href=".*\?page=([a-zA-Z0-9\.#]+)"/',
 			array($this, 'update_run_url'), $html);
 
-		$html = preg_replace('/(src|href)="\//', 'src="assets/',$html);
+		$html = preg_replace('/(src|href)=("?)\//', '$1=$2assets/',$html);
 		$html = str_replace('http://www.pradosoft.com/docs/manual', '../manual/CHMdefaultConverter', $html);
 		$html = str_replace('target="_blank">View Source', '>View Source', $html);
 		$html = preg_replace_callback('/href="\?page=ViewSource&(amp;){0,1}path=([a-zA-z0-9\.\/]+)"/',

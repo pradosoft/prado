@@ -1,0 +1,7 @@
+<com:TForm>
+
+<com:Application.pages.DMessagesPanel ID="panel1" PanelCssClass="one1" />
+<com:TActiveButton Text="Show" OnClick="show_clicked" />
+<com:TActiveButton Text="Hide" OnClick="hide_clicked" />
+<com:TJavascriptLogger />
+</com:TForm>

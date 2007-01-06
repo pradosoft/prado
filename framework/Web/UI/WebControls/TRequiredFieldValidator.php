@@ -116,7 +116,7 @@ class TRequiredFieldValidator extends TBaseValidator
 	{
 		$initial = trim($this->getInitialValue());
 		$value=$this->getValidationValue($control);
-		return trim($value)!==$initial || (is_bool($value) && $value);
+		return (is_bool($value) && $value) || trim($value)!==$initial;
 	}
 
 	/**

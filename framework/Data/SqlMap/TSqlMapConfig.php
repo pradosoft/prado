@@ -19,8 +19,8 @@ Prado::using('System.Data.TDataSourceConfig');
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$
- * @package System
- * @since version
+ * @package System.Data.SqlMap
+ * @since 3.1
  */
 class TSqlMapConfig extends TDataSourceConfig
 {

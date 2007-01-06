@@ -88,7 +88,9 @@ class Page2Tex
 
 	function texttt($matches)
 	{
-		return '\texttt{'.str_replace(array('#','_','&amp;'),array('\#','\_','\&'), $matches[1]).'}';
+		$text ='\texttt{'.str_replace(array('#','_','&amp;'),array('\#','\_','\&'), $matches[1]).'}';
+		//$text = preg_replace('/([^\\\\])&([^;]+)/', '$1\&$2', $text);
+		return $text;
 	}
 
 	function get_current_path()
@@ -105,8 +107,11 @@ class Page2Tex
 		{
 			if(strpos($matches[1],'?') ===false)
 			{
-				$target = $this->get_current_path().'/'.substr($matches[1],1);
-				return '\hyperlink{'.$target.'}{'.$matches[2].'}';
+				if(strpos($matches[1],'http://')===false)
+				{
+					$target = $this->get_current_path().'/'.substr($matches[1],1);
+					return '\hyperlink{'.$target.'}{'.$matches[2].'}';
+				}
 			}
 			else
 			{
@@ -121,7 +126,7 @@ class Page2Tex
 			$page = str_replace('?page=','',$matches[1]);
 			return '\hyperlink{'.$page.'}{'.$matches[2].'}';
 		}
-		return '\href{'.$matches[1].'}{'.$matches[2].'}';
+		return '\href{'.str_replace('#','\\#',$matches[1]).'}{'.$matches[2].'}';
 	}
 
 	function parse_html($page,$html)
@@ -144,7 +149,7 @@ class Page2Tex
 		//codes
 		$html = str_replace('$', '\$', $html);
 
-		$html = preg_replace_callback('/<com:TTextHighlighter[^>]*>((.|\n)*?)<\/com:TTextHighlighter>/', array($this,'escape_verbatim'), $html);
+		$html = preg_replace_callback('/<com:TTextHighlighter[^>]*>((.|\n)*?)<\/com:TTextHighlighter\s*>/', array($this,'escape_verbatim'), $html);
 //		$html = preg_replace('/<\/com:TTextHighlighter>/', '`2`', $html);
 //		$html = preg_replace_callback('/(`1`)([^`]*)(`2`)/m', array($this,'escape_verbatim'), $html);
 		$html = preg_replace_callback('/(<div class="source">)((.|\n)*?)(<\/div>)/', array($this,'escape_verbatim'), $html);
@@ -158,12 +163,15 @@ class Page2Tex
 				'\href{http://www.pradosoft.com/demos/quickstart/index.php?page=$1}{$1 Demo}', $html);
 
 		//DocLink
+		$html = preg_replace('/<com:DocLink\s+ClassPath="([^"]*)[.]([^."]*)"\s+Text="([^"]+)"\s*\/>/',
+	                        '\href{http://www.pradosoft.com/docs/manual/$1/$2.html}{$3}', $html);
+
 		$html = preg_replace('/<com:DocLink\s+ClassPath="([^"]*)[.]([^.]*)"\s+\/>/',
 	                        '\href{http://www.pradosoft.com/docs/manual/$1/$2.html}{$1.$2 API Reference}', $html);
 
 		//text modifiers
 		$html = preg_replace('/<(b|strong)[^>]*>([^<]*)<\/(b|strong)>/', '\textbf{$2}', $html);
-		$html = preg_replace('/<i[^>]*>([^<]*)<\/i>/', '\emph{$1}', $html);
+		$html = preg_replace('/<i[^>]*>([^<]*)+?<\/i>/', '\emph{$1}', $html);
 		$html = preg_replace_callback('/<tt>([^<]*)<\/tt>/', array($this,'texttt'), $html);
 
 		//links

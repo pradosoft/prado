@@ -5,6 +5,9 @@ $frameworkPath=realpath($basePath.'/../../framework');
 require_once($frameworkPath.'/prado.php');
 require_once($basePath.'/DWExtension.php');
 
+//the manager class sets up some dependency paths
+Prado::using('System.Data.SqlMap.TSqlMapManager');
+
 $exclusions=array(
 //	'prado.php',
 	'pradolite.php',
@@ -14,7 +17,7 @@ $exclusions=array(
 	'.svn',
 	'/I18N/core',
 	'/3rdParty',
-	'/DataAccess/SQLMap'
+	'/Web/Security'
 	);
 $a=new ClassTreeBuilder($frameworkPath,$exclusions);
 $a->buildTree();

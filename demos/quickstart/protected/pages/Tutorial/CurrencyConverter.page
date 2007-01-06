@@ -82,7 +82,7 @@ php prado/framework/prado-cli.php -c currency-converter
 	
 	<p>
 		The first component we add is a 
-		<com:DocLink ClassPath="System.Web.UI.WebControls.TForm" Text="TForm" />
+		<com:DocLink ClassPath="System.Web.UI.TForm" Text="TForm" />
 		that basically corresponds to the HTML <tt>&lt;form&gt;</tt> element.
 		In Prado, only <b>one</b> <tt>TForm</tt> element is allowed per page. 
 	</p>	
@@ -151,7 +151,7 @@ class Home extends TPage
 <com:TTextHighlighter Language="prado" CssClass="source">
 &lt;com:TButton Text="Convert" OnClick="convert_clicked" /&gt;
 </com:TTextHighlighter>	
-		The value of the <tt>OnClick</tt>, "convert_clicked", will be the method
+		The value of the <tt>OnClick</tt>, "<tt>convert_clicked</tt>", will be the method
 		name in the "Home.php" that will called when the user clicks on the 
 		"Convert" button.
 <com:TTextHighlighter Language="php" CssClass="source">
@@ -170,14 +170,14 @@ class Home extends TPage
 		to the "Amount in Other Currency" label.
 	</p>
 	
-	<p>In the "convert_clicked" method the first parameter, <tt>$sender</tt>,
+	<p>In the "<tt>convert_clicked</tt>" method the first parameter, <tt>$sender</tt>,
 		corresponds to the object that raised the event, in this case, 
 		the "Convert" button. The second parameter, <tt>$param</tt> contains
 		any additional data that the <tt>$sender</tt> object may wish to have added.
 	</p>
 	
 	<p>We shall now examine, the three lines that implements the simply currency
-		conversion in the "convert_clicked" method.
+		conversion in the "<tt>convert_clicked</tt>" method.
 <com:TTextHighlighter Language="php" CssClass="source">
 $rate = floatval($this->currencyRate->Text);	
 </com:TTextHighlighter>

@@ -23,24 +23,21 @@
  * - <b>onInteractive</b> executed when callback request is in progress.
  * - <b>onComplete</b>executed when callback response returns.
  *
- * The <tt>OnSuccess</tt> and <tt>OnFailure</tt> events are raised when the
+ * The OnSuccess and OnFailure events are raised when the
  * response is returned. A successful request/response will raise
- * <tt>OnSuccess</tt> event otherwise <tt>OnFailure</tt> will be raised.
+ * OnSuccess event otherwise OnFailure will be raised.
  *
  * - <b>onSuccess</b> executed when callback request returns and is successful.
  * - <b>onFailure</b> executed when callback request returns and fails.
- * - <b>onException</b> raised when callback request fails due to
- * request/response errors.
+ * - <b>onException</b> raised when callback request fails due to request/response errors.
  *
- * - <b>PostInputs</b> true to collect the form inputs and post them during
- * callback, default is true.
+ * - <b>PostInputs</b> true to collect the form inputs and post them during callback, default is true.
  * - <b>RequestTimeOut</b> The request timeout in milliseconds.
- * - <b>HasPriority</b> true to ensure that the callback request will be sent
- * immediately and will abort existing prioritized requests. It does not affect
- * callbacks that are not prioritized.
- * - <b>EnablePageStateUpdate</b> enable the callback response to enable the
- * viewstate update. This will automatically set HasPrority to true when
- * enabled.
+ * - <b>HasPriority</b> true to ensure that the callback request will be sent 
+ *   immediately and will abort existing prioritized requests. It does not affect 
+ *   callbacks that are not prioritized.
+ * - <b>EnablePageStateUpdate</b> enable the callback response to enable the 
+ *   viewstate update. This will automatically set HasPrority to true when enabled.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @version $Id$

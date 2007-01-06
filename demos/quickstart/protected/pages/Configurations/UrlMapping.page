@@ -43,9 +43,9 @@ To use <tt>TUrlMapping</tt>, one must set the <tt>UrlManager</tt> property of th
 The above example is part of the application configuration of the <tt>blog</tt> demo in the PRADO release. It enables recognition of the following URL formats:
 </p>
 <ul>
-  <li><tt>/index.php/post/123</tt> is recognized as <tt>/index.php?page=Posts.ViewPost&id=123</tt></li>
-  <li><tt>/index.php/archive/200605</tt> is recognized as <tt>/index.php?page=Posts.ListPost&time=200605</tt></li>
-  <li><tt>/index.php/category/2</tt> is recognized as <tt>/index.php?page=Posts.ListPost&cat=2</tt></li>
+  <li><tt>/index.php/post/123</tt> is recognized as <tt>/index.php?page=Posts.ViewPost&amp;id=123</tt></li>
+  <li><tt>/index.php/archive/200605</tt> is recognized as <tt>/index.php?page=Posts.ListPost&amp;time=200605</tt></li>
+  <li><tt>/index.php/category/2</tt> is recognized as <tt>/index.php?page=Posts.ListPost&amp;cat=2</tt></li>
 </ul>
 
 <p>
