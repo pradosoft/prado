@@ -284,7 +284,7 @@ if(typeof(element)=="string")
 method.toFunction().apply(this,[element,""+content]);}
 else
 {method.toFunction().apply(this,[""+content]);}},extractContent:function(text,boundary)
-{f=RegExp('(<!--'+boundary+'-->)([\\s\\S\\w\\W]*)(<!--//'+boundary+'-->)',"m");result=text.match(f);if(result&&result.length>=2)
+{var f=RegExp('(<!--'+boundary+'-->)([\\s\\S\\w\\W]*)(<!--//'+boundary+'-->)',"m");var result=text.match(f);if(result&&result.length>=2)
 return result[2];else
 return null;},evaluateScript:function(content)
 {content.evalScripts();}}

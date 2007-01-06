@@ -115,7 +115,7 @@ class TDbCommand extends TComponent
 			}
 			catch(Exception $e)
 			{
-				throw new TDbException('dbcommand_prepare_failed',$e->getMessage());
+				throw new TDbException('dbcommand_prepare_failed',$e->getMessage(),$this->getText());
 			}
 		}
 	}
@@ -190,8 +190,17 @@ class TDbCommand extends TComponent
 		}
 		catch(Exception $e)
 		{
-			throw new TDbException('dbcommand_execute_failed',$e->getMessage());
+			throw new TDbException('dbcommand_execute_failed',$e->getMessage(),$this->getDebugStatementText());
 		}
+	}
+
+	/**
+	 * @return String prepared SQL text for debugging purposes.
+	 */
+	protected function getDebugStatementText()
+	{
+		if(Prado::getApplication()->getMode() === TApplicationMode::Debug)
+			return $this->_statement instanceof PDOStatement ? $this->getConnection()->getPdoInstance().$this->_statement->queryString : $this->getText();
 	}
 
 	/**
@@ -202,7 +211,6 @@ class TDbCommand extends TComponent
 	 */
 	public function query()
 	{
-//		Prado::debug();
 		try
 		{
 			if($this->_statement instanceof PDOStatement)
@@ -213,7 +221,7 @@ class TDbCommand extends TComponent
 		}
 		catch(Exception $e)
 		{
-			throw new TDbException('dbcommand_query_failed',$e->getMessage());
+			throw new TDbException('dbcommand_query_failed',$e->getMessage(),$this->getDebugStatementText());
 		}
 	}
 
@@ -239,7 +247,7 @@ class TDbCommand extends TComponent
 		}
 		catch(Exception $e)
 		{
-			throw new TDbException('dbcommand_query_failed',$e->getMessage());
+			throw new TDbException('dbcommand_query_failed',$e->getMessage(),$this->getDebugStatementText());
 		}
 	}
 
@@ -267,7 +275,7 @@ class TDbCommand extends TComponent
 		}
 		catch(Exception $e)
 		{
-			throw new TDbException('dbcommand_query_failed',$e->getMessage());
+			throw new TDbException('dbcommand_query_failed',$e->getMessage(),$this->getDebugStatementText());
 		}
 	}
 }

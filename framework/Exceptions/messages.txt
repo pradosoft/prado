@@ -357,9 +357,9 @@ tactivecustomvalidator_clientfunction_unsupported = {0} does not support client 
 dbconnection_open_failed				= TDbConnection failed to establish DB connection: {0}
 dbconnection_connection_inactive		= TDbConnection is inactive.
 
-dbcommand_prepare_failed				= TDbCommand failed to prepare the SQL statement: {0}
-dbcommand_execute_failed				= TDbCommand failed to execute the SQL statement: {0}
-dbcommand_query_failed					= TDbCommand failed to execute the query SQL: {0}
+dbcommand_prepare_failed				= TDbCommand failed to prepare the SQL statement "{1}": {0}
+dbcommand_execute_failed				= TDbCommand failed to execute the SQL statement "{1}": {0}
+dbcommand_query_failed					= TDbCommand failed to execute the query SQL "{1}": {0}
 dbcommand_column_empty					= TDbCommand returned an empty result and could not obtain the scalar.
 dbdatareader_rewind_invalid				= TDbDataReader is a forward-only stream. It can only be traversed once.
 dbtransaction_transaction_inactive		= TDbTransaction is inactive.

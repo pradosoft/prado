@@ -446,7 +446,7 @@ Prado.CallbackRequest.prototype =
 	/**
 	 * Callback URL, same url as the current page.
 	 */
-		this.url = window.location.href;
+		this.url = this.getCallbackUrl();
 
 		/**
 		 * Current callback request.
@@ -468,6 +468,15 @@ Prado.CallbackRequest.prototype =
 			ValidationGroup : null,
 			PostInputs : true
 		}, options || {});
+	},
+
+	/**
+	 * Gets the url from the forms that contains the PRADO_PAGESTATE
+	 * @return {String} callback url.
+	 */
+	getCallbackUrl : function()
+	{
+		return $('PRADO_PAGESTATE').form.action;
 	},
 
 	/**
