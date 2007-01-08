@@ -10,6 +10,7 @@ CHG: Ticket#489 - Contents enclosed within HTML comment tags will now be parsed 
 NEW: Ajax support and active controls (Wei)
 NEW: Data abstraction layer based on PDO (Qiang)
 NEW: SQLMap (Wei)
+NEW: Added a new template comment tag <!-- ---> (Qiang)
 NEW: TOutputCache (Qiang)
 NEW: TQueue (Qiang)
 NEW: TSessionPageStatePersister (Qiang)
