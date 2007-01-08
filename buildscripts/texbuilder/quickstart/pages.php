@@ -66,6 +66,7 @@ $pages['Control Reference : Standard Controls'] = array(
 	'Controls/LinkButton.page',
 	'Controls/Literal.page',
 	'Controls/MultiView.page',
+	'Controls/OutputCache.page',
 	'Controls/Pager.page',
 	'Controls/Panel.page',
 	'Controls/PlaceHolder.page',
@@ -100,6 +101,9 @@ $pages['Active Control Overview'] = array(
 
 $pages['Write New Controls'] = array(
 	'Controls/NewControl.page');
+
+$pages['Service References'] = array(
+	'Services/SoapService.page');
 
 $pages['Working with Databases'] = array(
 	'Database/DAO.page',

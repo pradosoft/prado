@@ -60,6 +60,14 @@
 </div>
 
 <div class="topic">
+<div>Service Reference</div>
+<ul>
+    <li><a href="?page=Fundamentals.Services">Page Service</a></li>
+    <li><a href="?page=Services.SoapService">SOAP Service</a></li>
+</ul>
+</div>
+
+<div class="topic">
 <div>Working with Databases</div>
 <ul>
     <li><a href="?page=Database.DAO">Data Access Objects</a></li>

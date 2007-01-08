@@ -1132,6 +1132,7 @@ demos/quickstart/protected/pages/GettingStarted/sequence.gif -text
 demos/quickstart/protected/pages/GettingStarted/sequence.vsd -text
 demos/quickstart/protected/pages/Search.page -text
 demos/quickstart/protected/pages/Search.php -text
+demos/quickstart/protected/pages/Services/SoapService.page -text
 demos/quickstart/protected/pages/Tutorial/AjaxChat.page -text
 demos/quickstart/protected/pages/Tutorial/CurrencyConverter.page -text
 demos/quickstart/protected/pages/Tutorial/chat1.png -text

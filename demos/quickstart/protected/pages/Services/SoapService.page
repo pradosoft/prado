@@ -1,0 +1,74 @@
+<com:TContent ID="body" >
+
+<h1>SOAP Service</h1>
+
+<p>
+SOAP forms the foundation layer of the Web services stack. It provides a neat way for PHP applications to communicate with each other or with applications written in other languages. PRADO provides <tt>TSoapService</tt> that makes developing a SOAP server application an extremely easy task.
+</p>
+
+<p>
+To use <tt>TSoapService</tt>, configure it in the application specification like following:
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source">
+<services>
+  <service id="soap" class="System.Web.Services.TSoapService">
+    <soap id="stockquote" provider="path.to.StockQuote" />
+    <!--
+    <soap...other soap service... />
+    -->
+  </service>
+</services>
+</com:TTextHighlighter>
+<p>
+The example specifies a SOAP service provider named <tt>stockquote</tt> which implements the <tt>getPrice</tt> SOAP method in the provider class <tt>StockQuote</tt>,
+</p>
+<com:TTextHighlighter Language="php" CssClass="source">
+class StockQuote
+{
+	/**
+	 * @param string $symbol the symbol of the stock
+	 * @return float the stock price
+	 * @soapmethod
+	 */
+	public function getPrice($symbol)
+	{
+		....return stock price for $symbol
+	}
+}
+</com:TTextHighlighter>
+
+<div class="note"><b class="tip">Note:</b>
+<tt>TSoapService</tt> is based on <a href="http://www.php.net/manual/en/ref.soap.php">PHP SOAP extension</a> and thus requires the extension to be installed.
+</div>
+
+<p>
+With the above simple code, we already finish a simple SOAP service that allows other applications to query the price of a specific stock. For example, a typical SOAP client may be written as follows to query the stock price of IBM,
+</p>
+<com:TTextHighlighter Language="php" CssClass="source">
+$client=new SoapClient('http://path/to/index.php?soap=stockquote.wsdl');
+echo $client->getPrice('IBM');
+</com:TTextHighlighter>
+
+<p>
+Notice the URL used to construct <tt>SoapClient</tt> (a class provided by PHP SOAP extension). This is the URL for the <a href="http://en.wikipedia.org/wiki/WSDL">WSDL</a> that describes the communication protocol for the SOAP service we just implemented. WSDL is often too complex to be manually written. Fortunately, <tt>TSoapService</tt> can generate this for us using a WSDL generator. In general, the URL for the automatically generated WSDL in PRADO has the following format:
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source">
+http://path/to/index.php?SoapServiceID=SoapProviderID.wsdl
+</com:TTextHighlighter>
+
+<p>
+In order for the WSDL generator to generate WSDL for a SOAP service, the provider class needs to follow certain syntax. In particular, for methods to be exposed as SOAP methods, a keyword <tt>@soapmethod</tt> must appear in the phpdoc comment of the method with the following lines specifying method parameters and return value:
+</p>
+<ul>
+<li>parameter: <tt>@param parameter-type $parameter-name description</tt></li>
+<li>return value: <tt>@return value-type description</tt></li>
+</ul>
+<p>
+Valid parameter and return types include: <tt>string</tt>, <tt>int</tt>, <tt>boolean</tt>, <tt>float</tt>, <tt>array</tt>, <tt>mixed</tt>, etc. You may also specify a class name as the type, which translates into a complex SOAP type.
+</p>
+
+<p>
+<tt>TSoapService</tt> may be configured and customized in several ways. In the example above, the &lt;soap&gt; element actually specifies a SOAP service using the default <tt>TSoapServer</tt> implementation. Attributes in &lt;soap&gt; are passed to <tt>TSoapServer</tt> as its initial property values. For example, the <tt>provider</tt> attribute initializes the <tt>Provider</tt> property of <tt>TSoapServer</tt>. By setting <tt>SessionPersistent</tt> to be true in &lt;soap&gt; element, the provider instance will persist within the user session. You may develop your own SOAP server class and use it by specifying the <tt>class</tt> attribute of &lt;soap&gt;.
+</p>
+
+</com:TContent>
