@@ -83,6 +83,7 @@ class TOutputCache extends TControl implements INamingContainer
 	private $_varyByParam='';
 	private $_keyPrefix='';
 	private $_varyBySession=false;
+	private $_cachePostBack=false;
 
 	/**
 	 * Returns a value indicating whether body contents are allowed for this control.
@@ -101,7 +102,7 @@ class TOutputCache extends TControl implements INamingContainer
 		if(!$this->_cacheChecked)
 		{
 			$this->_cacheChecked=true;
-			if(!$this->getPage()->getIsPostBack() && $this->_duration>0)
+			if($this->_duration>0 && ($this->_cachePostBack || !$this->getPage()->getIsPostBack()))
 			{
 				if($this->_cacheModuleID!=='')
 				{
@@ -402,6 +403,26 @@ class TOutputCache extends TControl implements INamingContainer
 	public function setVaryBySession($value)
 	{
 		$this->_varyBySession=TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @return boolean whether cached output will be used on postback requests. Defaults to false.
+	 */
+	public function getCachingPostBack()
+	{
+		return $this->_cachePostBack;
+	}
+
+	/**
+	 * Sets a value indicating whether cached output will be used on postback requests.
+	 * By default, this is disabled. Be very cautious when enabling it.
+	 * If the cached content including interactive user controls such as
+	 * TTextBox, TDropDownList, your page may fail to render on postbacks.
+	 * @param boolean whether cached output will be used on postback requests.
+	 */
+	public function setCachingPostBack($value)
+	{
+		$this->_cachePostBack=TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
