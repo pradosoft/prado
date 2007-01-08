@@ -964,6 +964,7 @@ demos/quickstart/protected/pages/Controls/List.page -text
 demos/quickstart/protected/pages/Controls/Literal.page -text
 demos/quickstart/protected/pages/Controls/MultiView.page -text
 demos/quickstart/protected/pages/Controls/NewControl.page -text
+demos/quickstart/protected/pages/Controls/OutputCache.page -text
 demos/quickstart/protected/pages/Controls/Pager.page -text
 demos/quickstart/protected/pages/Controls/Panel.page -text
 demos/quickstart/protected/pages/Controls/PlaceHolder.page -text

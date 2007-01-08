@@ -84,6 +84,10 @@
   </li>
 
   <li>
+  <a href="?page=Controls.OutputCache">TOutputCache</a> enables caching portions of page output and may significantly improve page response time.
+  </li>
+
+  <li>
   <a href="?page=Controls.Pager">TPager</a> generates UI that allows users to interactively specify which page of data to be displayed in a data-bound control.
   </li>
 
