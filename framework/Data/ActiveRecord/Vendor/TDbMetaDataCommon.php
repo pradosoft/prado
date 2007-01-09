@@ -41,6 +41,24 @@ abstract class TDbMetaDataCommon extends TDbMetaData
 	}
 
 	/**
+	 * SQL database command for finding records by a list of primary keys.
+	 * @param TDbConnection database connection.
+	 * @param array list of primary keys to match.
+	 * @return TDbCommand find by list of primary keys command.
+	 */
+	public function getFindInPksCommand($conn, $keys)
+	{
+		$conn->setActive(true);
+		$columns = $this->getSelectionColumns();
+		$table = $this->getTableName();
+		$criteria = $this->getCompositeKeysCriteria($conn,$keys);
+		$sql = "SELECT {$columns} FROM {$table} WHERE {$criteria}";
+		$command = $conn->createCommand($sql);
+		$command->prepare();
+		return $command;
+	}
+
+	/**
 	 * SQL database command for finding records using a criteria object.
 	 * @param TDbConnection database connection.
 	 * @param TActiveRecordCriteria criteria object
@@ -160,14 +178,8 @@ abstract class TDbMetaDataCommon extends TDbMetaData
 	public function getDeleteByPkCommand($conn,$keys)
 	{
 		$conn->setActive(true);
-		$numKeys = count($this->getPrimaryKeys());
 		$table = $this->getTableName();
-		if($numKeys===0)
-			throw new TActiveRecordException('ar_no_primary_key_found',$table);
-		if($numKeys===1)
-			$criteria = $this->getDeleteInPkCriteria($conn,$keys);
-		else
-			$criteria = $this->getDeleteMultiplePkCriteria($conn,$keys);
+		$criteria = $this->getCompositeKeysCriteria($conn, $keys);
 		$sql = "DELETE FROM {$table} WHERE {$criteria}";
 		$command = $conn->createCommand($sql);
 		$command->prepare();

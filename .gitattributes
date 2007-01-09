@@ -2352,6 +2352,7 @@ tests/simple_unit/ActiveRecord/ActiveRecordRegistryTestCase.php -text
 tests/simple_unit/ActiveRecord/BaseActiveRecordTestCase.php -text
 tests/simple_unit/ActiveRecord/CountRecordsTestCase.php -text
 tests/simple_unit/ActiveRecord/DeleteByPkTestCase.php -text
+tests/simple_unit/ActiveRecord/FindByPksTestCase.php -text
 tests/simple_unit/ActiveRecord/FindBySqlTestCase.php -text
 tests/simple_unit/ActiveRecord/SqliteTestCase.php -text
 tests/simple_unit/ActiveRecord/UserRecordTestCase.php -text

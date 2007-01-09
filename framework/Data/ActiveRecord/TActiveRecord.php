@@ -38,7 +38,7 @@ Prado::using('System.Data.ActiveRecord.TActiveRecordCriteria');
  *     public $username; //corresponds to the fieldname in the table
  *     public $email;
  *
- *     private static final $_tablename='users'; //optional table name.
+ *     public static final $_tablename='users'; //optional table name.
  *
  *     //returns active record finder instance
  *     public static function finder()
@@ -332,11 +332,40 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function findByPk($keys)
 	{
-		if(func_num_args() > 1 && !is_array($keys))
+		if(func_num_args() > 1)
 			$keys = func_get_args();
 		$gateway = $this->getRecordManager()->getRecordGateway();
 		$data = $gateway->findRecordByPK($this,$keys);
 		return $this->populateObject(get_class($this), $data);
+	}
+
+	/**
+	 * Find multiple records matching a list of primary or composite keys.
+	 *
+	 * For scalar primary keys:
+	 * <code>
+	 * $finder->findAllByPk($key1, $key2, ...);
+	 * $finder->findAllByPk(array($key1, $key2, ...));
+	 * </code>
+	 *
+	 * For composite keys:
+	 * <code>
+	 * $finder->findAllByPk(array($key1, $key2), array($key3, $key4), ...);
+	 * $finder->findAllByPk(array(array($key1, $key2), array($key3, $key4), ...));
+	 * </code>
+	 * @param mixed primary keys
+	 * @return array matching ActiveRecords
+	 */
+	public function findAllByPks($keys)
+	{
+		if(func_num_args() > 1)
+			$keys = func_get_args();
+		$gateway = $this->getRecordManager()->getRecordGateway();
+		$results = array();
+		$class = get_class($this);
+		foreach($gateway->findRecordsByPks($this,(array)$keys) as $data)
+			$results[] = $this->populateObject($class,$data);
+		return $results;
 	}
 
 	/**

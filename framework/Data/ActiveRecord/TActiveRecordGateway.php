@@ -147,6 +147,21 @@ class TActiveRecordGateway extends TComponent
 	}
 
 	/**
+	 * Returns records matching the list of given primary keys. 
+	 * @param TActiveRecord active record instance.
+	 * @param array list of primary name value pairs
+	 * @return array matching data.
+	 */
+	public function findRecordsByPks(TActiveRecord $record, $keys)
+	{
+		$meta = $this->getMetaData($record);
+		$command = $meta->getFindInPksCommand($record->getDbConnection(), $keys);
+		$this->raiseCommandEvent(TActiveRecordStatementType::Select,$command,$record,$keys);
+		return $meta->postQuery($command->query());
+	}
+	
+
+	/**
 	 * Returns record data matching the given critera. If $iterator is true, it will
 	 * return multiple rows as TDbDataReader otherwise it returns the <b>first</b> row data.
 	 * @param TActiveRecord active record finder instance.

@@ -137,6 +137,43 @@ abstract class TDbMetaData extends TComponent
 	}
 
 	/**
+	 * Construct a "pk IN ('key1', 'key2', ...)" criteria.
+	 * @param TDbConnection database connection.
+	 * @param array values for IN predicate
+	 * @param string SQL string for primary keys IN a list.
+	 */
+	protected function getCompositeKeysCriteria($conn, $values)
+	{
+		$count = count($this->getPrimaryKeys());
+		if($count===0)
+			throw new TActiveRecordException('ar_no_primary_key_found',$this->getTableName());
+		if(!is_array($values) || count($values) === 0)
+			throw new TActiveRecordException('ar_missing_pk_values', $this->getTableName());
+		if($count>1 && !is_array($values[0]))
+			$values = array($values);
+		if($count > 1 && count($values[0]) !== $count)
+			throw new TActiveRecordException('ar_pk_value_count_mismatch', $this->getTableName());
+
+		$columns = array();
+		foreach($this->getPrimaryKeys() as $key)
+			$columns[] = $this->getColumn($key)->getName();
+		return '('.implode(', ',$columns).') IN '.$this->quoteTuple($conn, $values);
+	}
+
+	/**
+	 * @param TDbConnection database connection.
+	 * @param array values
+	 * @return string quoted recursive tuple values, e.g. "('val1', 'val2')".
+	 */
+	protected function quoteTuple($conn, $array)
+	{
+		$data = array();
+		foreach($array as $k=>$v)
+			$data[] = is_array($v) ? $this->quoteTuple($conn, $v) : $conn->quoteString($v);
+		return '('.implode(', ', $data).')';
+	}
+
+	/**
 	 * Bind a list of variables in the command. The named parameters is taken
 	 * from the values of the $keys parameter. The bind value is taken from the
 	 * $values parameter using the index taken from the each value of $keys array.
@@ -308,60 +345,5 @@ x	 * @param array name value pairs of columns for update.
 		return implode(', ', $fields);
 	}
 
-	/**
-	 * @param TDbConnection database connection
-	 * @param array primary key values.
-	 * @return string delete criteria for multiple scalar primary keys.
-	 */
-	protected function getDeleteInPkCriteria($conn, $keys)
-	{
-		$pk = $this->getPrimaryKeys();
-		$column = $this->getColumn($pk[0])->getName();
-		$values = array();
-		foreach($keys as $key)
-		{
-			if(is_array($key))
-			{
-				throw new TActiveRecordException('ar_primary_key_is_scalar',
-					$this->getTableName(),$column,'array('.implode(', ',$key).')');
-			}
-			$values[] = $conn->quoteString($key);
-		}
-		$pks = implode(', ', $values);
-		return "$column IN ($pks)";
-	}
-
-	/**
-	 * @param TDbConnection database connection
-	 * @param array primary key values.
-	 * @return string delete criteria for multiple composite primary keys.
-	 */
-	protected function getDeleteMultiplePkCriteria($conn,$pks)
-	{
-		//check for 1 set composite keys
-		if(count($pks)>0 && !is_array($pks[0]))
-			$pks = array($pks);
-		$conditions=array();
-		foreach($pks as $keys)
-			$conditions[] = $this->getDeleteCompositeKeyCondition($conn,$keys);
-		return implode(' OR ', $conditions);
-	}
-
-	/**
-	 * @return string delete criteria for 1 composite key.
-	 */
-	protected function getDeleteCompositeKeyCondition($conn,$keys)
-	{
-		$condition=array();
-		$index = 0;
-		foreach($this->getPrimarykeys() as $pk)
-		{
-			$name = $this->getColumn($pk)->getName();
-			$value = isset($keys[$pk]) ? $keys[$pk] : $keys[$index];
-			$condition[] = "$name = ".$conn->quoteString($value);
-			$index++;
-		}
-		return '('.implode(' AND ', $condition).')';
-	}
 }
 ?>
