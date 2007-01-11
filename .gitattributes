@@ -810,6 +810,7 @@ demos/quickstart/images/star5.gif -text
 demos/quickstart/index.php -text
 demos/quickstart/index2.php -text
 demos/quickstart/protected/.htaccess -text
+demos/quickstart/protected/QuickStartGlobalization.php -text
 demos/quickstart/protected/application.xml -text
 demos/quickstart/protected/controls/DocLink.php -text
 demos/quickstart/protected/controls/Layout.php -text
@@ -822,6 +823,7 @@ demos/quickstart/protected/controls/SearchBox.php -text
 demos/quickstart/protected/controls/SearchBox.tpl -text
 demos/quickstart/protected/controls/TopicList.php -text
 demos/quickstart/protected/controls/TopicList.tpl -text
+demos/quickstart/protected/controls/fr/TopicList.tpl -text
 demos/quickstart/protected/index/Zend/Exception.php -text
 demos/quickstart/protected/index/Zend/LICENSE.txt -text
 demos/quickstart/protected/index/Zend/Search/Exception.php -text
@@ -1128,6 +1130,7 @@ demos/quickstart/protected/pages/GettingStarted/Installation.page -text
 demos/quickstart/protected/pages/GettingStarted/Introduction.page -text
 demos/quickstart/protected/pages/GettingStarted/Upgrading.page -text
 demos/quickstart/protected/pages/GettingStarted/directory.gif -text
+demos/quickstart/protected/pages/GettingStarted/fr/Introduction.page -text
 demos/quickstart/protected/pages/GettingStarted/sequence.gif -text
 demos/quickstart/protected/pages/GettingStarted/sequence.vsd -text
 demos/quickstart/protected/pages/Search.page -text

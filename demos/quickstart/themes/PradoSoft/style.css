@@ -67,6 +67,24 @@ a
 }
 
 
+.languages 
+{
+	text-align: right;
+	margin: 0.5em 1em;
+}
+
+.languages ul, .languages li
+{
+	margin: 0; padding: 0;
+	list-style: none;
+	display: inline;
+}
+
+.languages a.active
+{
+	color: black;
+	text-decoration: none;
+}
 
 .mainmenu {
 	padding:10px;

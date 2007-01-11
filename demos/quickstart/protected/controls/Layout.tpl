@@ -29,6 +29,18 @@
 <com:TopicList ID="TopicPanel" />
 </td>
 <td valign="top">
+
+<com:TRepeater ID="languages" OnItemCreated="language_links">
+	<prop:HeaderTemplate>
+		<div class="languages">Available Languages: <ul>
+	</prop:HeaderTemplate>
+	<prop:ItemTemplate>
+		<li><com:THyperLink ID="link" Text=<%# $this->DataItem %> /></li>
+	</prop:ItemTemplate>
+	<prop:FooterTemplate>
+		</ul></div>
+	</prop:FooterTemplate>
+</com:TRepeater>
 <div id="content">
 <com:TContentPlaceHolder ID="body" />
 </div>

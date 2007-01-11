@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <application id="QuickStart" Mode="Debug">
+  <paths>
+    <using namespace="Application.controls.*" />
+	<using namespace="System.I18N.*" />
+  </paths>
+
   <modules>
     <!-- uncomment the following to enable caching
     <module id="cache" class="System.Caching.TSqliteCache" />
@@ -13,11 +18,17 @@
    <module id="quickstart_search" 
     	class="Application.index.ZendSearch"
     	IndexDataDirectory="Application.index.quickstart" />
+
+	<module id="globalization" class="Application.QuickStartGlobalization" Charset="UTF-8"/>
   </modules>
-  <paths>
-    <using namespace="Application.controls.*" />
-  </paths>
   <services>
     <service id="page" class="TPageService" DefaultPage="GettingStarted.Introduction" />
   </services>
+
+<!--
+  <parameters>
+		<parameter id="languages" value="('en'=>'English', 'fr'=>'Français', 'zh' => '中文（简体）')" />
+  </parameters>
+-->
+
 </application>
