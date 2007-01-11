@@ -62,6 +62,8 @@ class HTTPNegotiator
 		//$basedir = CultureInfo::dataDir();
 		//$ext = CultureInfo::fileExt();
 
+		$info = new CultureInfo();
+
 		foreach(explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']) as $lang) 
 		{
             // Cut off any q-value that might come after a semi-colon
@@ -91,7 +93,9 @@ class HTTPNegotiator
 				}
             }
 
-			if(CultureInfo::validCulture($lang))
+
+
+			if($info->validCulture($lang))
 				$this->languages[] = $lang;
         }
 		

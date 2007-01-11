@@ -107,7 +107,8 @@ class Wsdl
                      xmlns:xsd="http://www.w3.org/2001/XMLSchema"
                      xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/"></definitions>';
 
-		$dom = DOMDocument::loadXml($xml);
+		$dom = new DOMDocument();
+		$dom->loadXml($xml);
 		$this->definitions = $dom->documentElement;
 
 		$this->addTypes($dom);
