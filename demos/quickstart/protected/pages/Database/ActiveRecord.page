@@ -93,6 +93,11 @@ class UserRecord extends TActiveRecord
     specify the table name that corresponds to your Active Record class.
 </p>
 
+<div class="note"><b class="note">Note:</b>
+You may need to quote (specific to your database) the value of the <tt>$_tablename</tt>. 
+E.g. MySQL uses back-ticks, <tt>$_tablename = "`database1`.`table1`"</tt>
+</div>
+
 <div class="tip"><b class="note">Tip:</b>
     Since <tt>TActiveRecord</tt> extends <tt>TComponent</tt>, setter and
     getter methods can be defined to allow control over how variables
