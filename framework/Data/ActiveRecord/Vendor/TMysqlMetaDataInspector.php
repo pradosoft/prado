@@ -33,7 +33,7 @@ class TMysqlMetaDataInspector extends TDbMetaDataInspector
 	 */
 	protected function getColumnDefinitions($table)
 	{
-		$sql="SHOW FULL FIELDS FROM `{$table}`";
+		$sql="SHOW FULL FIELDS FROM {$table}";
 		$conn = $this->getDbConnection();
 		$conn->setActive(true);
 		$command = $conn->createCommand($sql);
