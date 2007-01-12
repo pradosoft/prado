@@ -289,15 +289,6 @@ class TSoapServer extends TApplicationComponent
 	private $_wsdlUri='';
 
 	/**
-	 * Constructor.
-	 * It creates the classmap object.
-	 */
-	public function __construct()
-	{
-		$this->_classMap=new TAttributeCollection;
-	}
-
-	/**
 	 * @return string the ID of the SOAP server
 	 */
 	public function getID()
@@ -368,9 +359,9 @@ class TSoapServer extends TApplicationComponent
 			$options['encoding']=$this->_encoding;
 		if(!empty($this->_uri))
 			$options['uri']=$this->_uri;
-		if($this->_classMap->getCount()>0)
+		if(is_string($this->_classMap))
 		{
-			foreach($this->_classMap as $className)
+			foreach(preg_split('/\s?,\s?/', $this->_classMap) as $className)
 				$options['classmap'][$className]=$className; //complex type uses the class name in the wsdl
 		}
 		return $options;
@@ -533,11 +524,19 @@ class TSoapServer extends TApplicationComponent
 	}
 
 	/**
-	 * @return TAttributeCollection the class map for the SOAP service
+	 * @return string comma delimit list of complex type classes.
 	 */
-	public function getClassMap()
+	public function getClassMaps()
 	{
 		return $this->_classMap;
+	}
+
+	/**
+	 * @return string comma delimit list of class names
+	 */	
+	public function setClassMaps($classes)
+	{
+		$this->_classMap = $classes;
 	}
 }
 

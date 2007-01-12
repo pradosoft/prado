@@ -129,7 +129,33 @@ The tool requires a MS .NET runtime to be installed.
 </div>
 
 <p>
-<tt>TSoapService</tt> may be configured and customized in several ways. In the example above, the &lt;soap&gt; element actually specifies a SOAP service using the default <tt>TSoapServer</tt> implementation. Attributes in &lt;soap&gt; are passed to <tt>TSoapServer</tt> as its initial property values. For example, the <tt>provider</tt> attribute initializes the <tt>Provider</tt> property of <tt>TSoapServer</tt>. By setting <tt>SessionPersistent</tt> to be true in &lt;soap&gt; element, the provider instance will persist within the user session. You may develop your own SOAP server class and use it by specifying the <tt>class</tt> attribute of &lt;soap&gt;.
+<tt>TSoapService</tt> may be configured and customized in several ways. In the example above, the <tt>&lt;soap&gt;</tt> element actually specifies a SOAP service using the default <tt>TSoapServer</tt> implementation. Attributes in <tt>&lt;soap&gt;</tt> are passed to <tt>TSoapServer</tt> as its initial property values. For example, the <tt>provider</tt> attribute initializes the <tt>Provider</tt> property of <tt>TSoapServer</tt>. By setting <tt>SessionPersistent</tt> to be true in <tt>&lt;soap&gt;</tt> element, the provider instance will persist within the user session. You may develop your own SOAP server class and use it by specifying the <tt>class</tt> attribute of <tt>&lt;soap&gt;</tt>.
+</p>
+
+<p>By default, PHP's soap server will create objects of the type <tt>StdClass</tt>
+when objects are received from the client. The soap server can be configured to
+automatically create objects of certain type objects are received as method
+parameters. For example, if we have a Soap method that accepts
+a <tt>Contact</tt> object as parameter.
+<com:TTextHighlighter Language="php" CssClass="source">
+/**
+ * @param Contact $contact
+ * @return boolean true if saved, false otherwise
+ * @soapmethod
+ */
+ function save(Contact $contact)
+ {
+	return true
+ }
+</com:TTextHighlighter>
+The do this, we need to set the <tt>ClassMaps</tt> property of
+the <tt>TSoapServer</tt> in the <tt>&lt;soap&gt;</tt> tags as
+a comma separated string of class names that we wish to be automatically
+converted.
+<com:TTextHighlighter Language="xml" CssClass="source">
+<soap id="contact-manager" provider="path.to.ContactManager"
+	ClassMaps="Contact, Address"/>
+</com:TTextHighlighter>
 </p>
 
 </com:TContent>
