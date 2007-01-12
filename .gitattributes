@@ -2367,6 +2367,7 @@ tests/simple_unit/ActiveRecord/records/DepartmentRecord.php -text
 tests/simple_unit/ActiveRecord/records/SimpleUser.php -text
 tests/simple_unit/ActiveRecord/records/SqliteUsers.php -text
 tests/simple_unit/ActiveRecord/records/UserRecord.php -text
+tests/simple_unit/Soap/ContactManager.php -text
 tests/simple_unit/SqlMap/ActiveRecordSqlMapTest.php -text
 tests/simple_unit/SqlMap/BaseCase.php -text
 tests/simple_unit/SqlMap/CacheTest.php -text
