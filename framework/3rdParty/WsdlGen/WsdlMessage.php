@@ -62,12 +62,12 @@ class WsdlMessage
 	 */
 	public function getMessageElement(DOMDocument $dom)
 	{
-		$message = $dom->createElement('message');
+		$message = $dom->createElementNS('http://schemas.xmlsoap.org/wsdl/', 'wsdl:message');
 		$message->setAttribute('name', $this->name);
 		
 		foreach ($this->parts as $part) {
 			if (isset($part['name'])) {
-				$partElement = $dom->createElement('part');
+				$partElement = $dom->createElementNS('http://schemas.xmlsoap.org/wsdl/', 'wsdl:part');
 				$partElement->setAttribute('name', $part['name']);
 				$partElement->setAttribute('type', $part['type']);
 				$message->appendChild($partElement);

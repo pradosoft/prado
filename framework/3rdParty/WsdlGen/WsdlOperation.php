@@ -81,13 +81,13 @@ class WsdlOperation
 	 */
 	public function getPortOperation(DomDocument $dom)
 	{
-		$operation = $dom->createElement('operation');
+		$operation = $dom->createElementNS('http://schemas.xmlsoap.org/wsdl/', 'wsdl:operation');
 		$operation->setAttribute('name', $this->operationName);
 		
-		$documentation = $dom->createElement('documentation', htmlentities($this->documentation));
-		$input = $dom->createElement('input');
+		$documentation = $dom->createElementNS('http://schemas.xmlsoap.org/wsdl/', 'wsdl:documentation', htmlentities($this->documentation));
+		$input = $dom->createElementNS('http://schemas.xmlsoap.org/wsdl/', 'wsdl:input');
 		$input->setAttribute('message', 'tns:'.$this->inputMessage->getName());
-		$output = $dom->createElement('output');
+		$output = $dom->createElementNS('http://schemas.xmlsoap.org/wsdl/', 'wsdl:output');
 		$output->setAttribute('message', 'tns:'.$this->outputMessage->getName());
 		
 		$operation->appendChild($documentation);
@@ -107,7 +107,7 @@ class WsdlOperation
 	 */
 	public function getBindingOperation(DomDocument $dom, $namespace, $style='rpc')
 	{
-		$operation = $dom->createElement('operation');
+		$operation = $dom->createElementNS('http://schemas.xmlsoap.org/wsdl/', 'wsdl:operation');
 		$operation->setAttribute('name', $this->operationName);
 		
 		$soapOperation = $dom->createElementNS('http://schemas.xmlsoap.org/wsdl/soap/', 'soap:operation');
@@ -115,8 +115,8 @@ class WsdlOperation
 		$soapOperation->setAttribute('soapAction', $namespace.'#'.$method);
 		$soapOperation->setAttribute('style', $style);
 		
-		$input = $dom->createElement('input');
-		$output = $dom->createElement('output');
+		$input = $dom->createElementNS('http://schemas.xmlsoap.org/wsdl/', 'wsdl:input');
+		$output = $dom->createElementNS('http://schemas.xmlsoap.org/wsdl/', 'wsdl:output');
 		
 		$soapBody = $dom->createElementNS('http://schemas.xmlsoap.org/wsdl/soap/', 'soap:body');
 		$soapBody->setAttribute('use', 'encoded');

@@ -294,7 +294,7 @@ class TSoapServer extends TApplicationComponent
 	 */
 	public function __construct()
 	{
-		$this->_classMap=new TAttributeCollection;
+		$this->_classMap=new TMap;//TAttributeCollection;
 	}
 
 	/**
@@ -332,7 +332,14 @@ class TSoapServer extends TApplicationComponent
 		}
 		else
 			$server=$this->createServer();
-		$server->handle();
+		try
+		{		
+			$server->handle();
+		}
+		catch (Exception $e)
+		{
+			$server->fault("SERVER", $e->getMessage(),"", $e->__toString(), '');
+		}
 	}
 
 	/**
@@ -340,6 +347,8 @@ class TSoapServer extends TApplicationComponent
 	 */
 	protected function createServer()
 	{
+		if($this->getApplication()->getMode()===TApplicationMode::Debug)
+			ini_set("soap.wsdl_cache_enabled",0);
 		return new SoapServer($this->getWsdlUri(),$this->getOptions());
 	}
 

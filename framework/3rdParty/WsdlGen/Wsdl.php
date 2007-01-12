@@ -105,6 +105,7 @@ class Wsdl
                      xmlns:tns="'.$this->targetNamespace.'"
                      xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
                      xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+					 xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
                      xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/"></definitions>';
 
 		$dom = new DOMDocument();
@@ -128,7 +129,7 @@ class Wsdl
 	public function addTypes(DomDocument $dom)
 	{
 		if (!count($this->types)) return;
-		$types = $dom->createElement('types');
+		$types = $dom->createElementNS('http://schemas.xmlsoap.org/wsdl/', 'wsdl:types');
 		$schema = $dom->createElementNS('http://www.w3.org/2001/XMLSchema', 'xsd:schema');
 		$schema->setAttribute('targetNamespace', $this->targetNamespace);
 		foreach($this->types as $type => $elements)
@@ -139,10 +140,10 @@ class Wsdl
 			{
 				$complexContent = $dom->createElementNS('http://www.w3.org/2001/XMLSchema', 'xsd:complexContent');
 				$restriction = $dom->createElementNS('http://www.w3.org/2001/XMLSchema', 'xsd:restriction');
-				$restriction->setAttribute('base', 'SOAP-ENC:Array');
+				$restriction->setAttribute('base', 'soap-enc:Array');
 				$attribute = $dom->createElementNS('http://www.w3.org/2001/XMLSchema', 'xsd:attribute');
-				$attribute->setAttribute('ref', "SOAP-ENC:arrayType");
-				$attribute->setAttribute('arrayType', 'tns:' . substr($type, 0, strlen($type) - 5) . '[]');
+				$attribute->setAttribute('ref', "soap-enc:arrayType");
+				$attribute->setAttribute('wsdl:arrayType', 'tns:' . substr($type, 0, strlen($type) - 5) . '[]');
 				$restriction->appendChild($attribute);
 				$complexContent->appendChild($restriction);
 				$complexType->appendChild($complexContent);
@@ -183,7 +184,7 @@ class Wsdl
 	 */
 	protected function addPortTypes(DOMDocument $dom)
 	{
-		$portType = $dom->createElement('portType');
+		$portType = $dom->createElementNS('http://schemas.xmlsoap.org/wsdl/', 'wsdl:portType');
 		$portType->setAttribute('name', $this->serviceName.'PortType');
 
 		$this->definitions->appendChild($portType);
@@ -199,7 +200,7 @@ class Wsdl
 	 */
 	protected function addBindings(DOMDocument $dom)
 	{
-		$binding = $dom->createElement('binding');
+		$binding = $dom->createElementNS('http://schemas.xmlsoap.org/wsdl/', 'wsdl:binding');
 		$binding->setAttribute('name', $this->serviceName.'Binding');
 		$binding->setAttribute('type', 'tns:'.$this->serviceName.'PortType');
 
@@ -222,10 +223,10 @@ class Wsdl
 	 */
 	protected function addService(DomDocument $dom)
 	{
-		$service = $dom->createElement('service');
+		$service = $dom->createElementNS('http://schemas.xmlsoap.org/wsdl/', 'wsdl:service');
 		$service->setAttribute('name', $this->serviceName.'Service');
 
-		$port = $dom->createElement('port');
+		$port = $dom->createElementNS('http://schemas.xmlsoap.org/wsdl/', 'wsdl:port');
 		$port->setAttribute('name', $this->serviceName.'Port');
 		$port->setAttribute('binding', 'tns:'.$this->serviceName.'Binding');
 

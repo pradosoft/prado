@@ -64,8 +64,69 @@ In order for the WSDL generator to generate WSDL for a SOAP service, the provide
 <li>return value: <tt>@return value-type description</tt></li>
 </ul>
 <p>
-Valid parameter and return types include: <tt>string</tt>, <tt>int</tt>, <tt>boolean</tt>, <tt>float</tt>, <tt>array</tt>, <tt>mixed</tt>, etc. You may also specify a class name as the type, which translates into a complex SOAP type.
+Valid parameter and return types include: <tt>string</tt>, <tt>int</tt>, <tt>boolean</tt>, <tt>float</tt>, <tt>array</tt>, <tt>mixed</tt>, etc. You may also specify a class name as the type, which translates into a complex SOAP type. For example, for a complex type <tt>Contact</tt>
 </p>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+class Contact
+{
+    /**
+     * @var string $name
+     * @soapproperty
+     */
+    public $name;
+
+    /**
+     * @var Address $address
+     * @soapproperty
+     */
+    public $address;
+}
+
+class Address
+{
+    /**
+     * @var string city
+     * @soapproperty
+     */
+    public $city;
+}
+
+class ContactManager
+{
+    /**
+     * @return Contact[] an array of contacts
+     * @soapmethod
+     */
+    function getAllContacts()
+    {
+        return array(new Contact);
+    }
+
+    /**
+     * @return Contact one contact
+     * @soapmethod
+     */
+    function getContact($name)
+    {
+        return new Contact;
+    }
+}
+</com:TTextHighlighter>
+<p>For a complex soap object, the properties of the object are specified with 
+<tt>@soapproperty</tt> keyword in the property phpdocs. Furthermore, the
+propert's type name must be specified as <tt>@var type $name</tt> where <tt>type
+</tt> is any valid type in mentioned earlier.
+An array of complex objects can also be returned by adding a pair of 
+enclosing square brackets after the type name. For example, to return an
+array of <tt>Contact</tt> type, we define <tt>@return Contact[] ...</tt>.
+</p>
+
+<div class="tip"><b class="note">Tip:</b>
+A very useful tool to test out your web services is the free tool 
+<a href="http://www.gotdotnet.com/Community/UserSamples/Details.aspx?SampleGuid=65a1d4ea-0f7a-41bd-8494-e916ebc4159c">WebServiceStudio 2.0</a>. It can invoke webmethods interactively. The user can provide a WSDL endpoint. On clicking button Get the tool fetches the WSDL, generates .NET proxy from the WSDL and displays the list of methods available. The user can choose any method and provide the required input parameters.
+The tool requires a MS .NET runtime to be installed.
+</div>
 
 <p>
 <tt>TSoapService</tt> may be configured and customized in several ways. In the example above, the &lt;soap&gt; element actually specifies a SOAP service using the default <tt>TSoapServer</tt> implementation. Attributes in &lt;soap&gt; are passed to <tt>TSoapServer</tt> as its initial property values. For example, the <tt>provider</tt> attribute initializes the <tt>Provider</tt> property of <tt>TSoapServer</tt>. By setting <tt>SessionPersistent</tt> to be true in &lt;soap&gt; element, the provider instance will persist within the user session. You may develop your own SOAP server class and use it by specifying the <tt>class</tt> attribute of &lt;soap&gt;.
