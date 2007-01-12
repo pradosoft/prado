@@ -11,6 +11,7 @@
  * This file is part of the PRADO framework from {@link http://www.xisc.com}
  *
  * @author Marcus Nyeholt		<tanus@users.sourceforge.net>
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
  * @package System.Web.Services.SOAP
  */
@@ -19,6 +20,7 @@
  * Represents a WSDL Operation. This is exported for the portTypes and bindings
  * section of the soap service
  * @author 		Marcus Nyeholt		<tanus@users.sourceforge.net>
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version 	$Revision$
  */
 class WsdlOperation
