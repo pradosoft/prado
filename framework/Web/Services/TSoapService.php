@@ -294,7 +294,7 @@ class TSoapServer extends TApplicationComponent
 	 */
 	public function __construct()
 	{
-		$this->_classMap=new TMap;//TAttributeCollection;
+		$this->_classMap=new TAttributeCollection;
 	}
 
 	/**
@@ -369,7 +369,10 @@ class TSoapServer extends TApplicationComponent
 		if(!empty($this->_uri))
 			$options['uri']=$this->_uri;
 		if($this->_classMap->getCount()>0)
-			$options['classmap']=$this->_classMap->toArray();
+		{
+			foreach($this->_classMap as $className)
+				$options['classmap'][$className]=$className; //complex type uses the class name in the wsdl
+		}
 		return $options;
 	}
 
