@@ -9,7 +9,7 @@
 
 
 //quickstart source and the index data target directories.
-$quickstart_source = realpath(dirname(__FILE__).'/../texbuilder/pages.php');
+$quickstart_source = realpath(dirname(__FILE__).'/../texbuilder/quickstart/pages.php');
 $quickstart_base = realpath(dirname(__FILE__).'/../../demos/quickstart/protected/pages/');
 $quickstart_target = realpath(dirname(__FILE__).'/../../demos/quickstart/protected/index/quickstart/');
 
@@ -46,7 +46,7 @@ if(isset($argv[1]))
 		echo "Found ".count($hits)." for ".$query." in quick start\n";
 		foreach($hits as $hit)
 			echo "   ".$hit->title."\n";
-			
+
 		$a = new Zend_Search_Lucene($api_target);
 		$query = $argv[1];
 		$hits = $a->find(strtolower($query));

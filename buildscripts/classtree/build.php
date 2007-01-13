@@ -17,7 +17,10 @@ $exclusions=array(
 	'.svn',
 	'/I18N/core',
 	'/3rdParty',
-	'/Web/Security'
+	'/Web/Security',
+	'/Configuration',
+	'/Web/Services/TFeedService.php',
+	'/Web/Services/IFeedContentProvider.php'
 	);
 $a=new ClassTreeBuilder($frameworkPath,$exclusions);
 $a->buildTree();

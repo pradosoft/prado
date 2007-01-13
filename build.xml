@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  PRADO 3.0 build file - Copyright (C) 2006 PradoSoft
+  PRADO 3.1 build file - Copyright (C) 2006 PradoSoft
 
   Requirements
   ============
@@ -42,8 +42,12 @@
     <exclude name="**/.svn"/>
     <exclude name="**/*.bak"/>
     <exclude name="**/*~"/>
-    <exclude name="**/pradolite.php" />
-    <exclude name="**/prado-cli.php" />
+    <exclude name="**/pradolite.php" /><!-- will be generated -->
+    <exclude name="**/prado-cli.php" /><!-- will be copied later -->
+    <exclude name="**/Configuration/**" /><!-- not ready yet -->
+    <exclude name="**/Web/Security/**" /><!-- not ready yet -->
+    <exclude name="**/TFeedService.php" /><!-- not ready yet -->
+    <exclude name="**/IFeedContentProvider.php" /><!-- not ready yet -->
     <include name="framework/**/*"/>
   </fileset>
 
@@ -62,13 +66,15 @@
   </fileset>
 
   <!--
-      Documentation
+      Documentation ????
   -->
   <fileset dir="." id="docs">
     <exclude name="**/.svn"/>
     <exclude name="**/*.bak"/>
     <exclude name="**/*~"/>
-    <include name="docs/**/*"/>
+    <exclude name="**/latex" />
+    <exclude name="**/sqlmap_tut.pdf" />
+    <include name="docs/specs/*"/>
   </fileset>
 
   <!--
@@ -83,9 +89,21 @@
     <exclude name="**/runtime/*/**"/>
     <exclude name="**/assets/*/**"/>
     <exclude name="demos/blog/protected/Data/Blog.db" />
-    <include name="demos/**/*"/>
+    <include name="demos/blog/**/*"/>
+    <include name="demos/chat/**/*"/>
+    <include name="demos/composer/**/*"/>
+    <include name="demos/currency-converter/**/*"/>
+    <include name="demos/helloworld/**/*"/>
+    <include name="demos/personal/**/*"/>
+    <include name="demos/quickstart/**/*"/>
+    <include name="demos/soap/**/*"/>
+    <include name="demos/sqlmap/**/*"/>
+    <include name="demos/time-tracker/**/*"/>
   </fileset>
 
+  <!--
+  		Test tools
+  	-->
   <fileset dir="." id="test-tools">
     <include name="tests/test_tools/**/*"/>
   </fileset>
