@@ -34,25 +34,24 @@ class TPgsqlMetaData extends TDbMetaDataCommon
 	{
 		$sql = '';
 		if(($condition = $criteria->getCondition())!==null)
-			$sql .= $condition;
+			$sql .= ' WHERE '.$condition;
 		$orders=array();
 		foreach($criteria->getOrdersBy() as $by=>$ordering)
-			$orders[] = $conn->quoteString($by).' '.$this->getOrdering($ordering);
+			$orders[] = $this->getOrdering($by, $ordering);
 		if(count($orders) > 0)
 			$sql .= ' ORDER BY '.implode(', ', $orders);
 		if(($limit = $criteria->getLimit())!==null)
 			$sql .= ' LIMIT '.intval($limit); //assumes integer limit?
 		if(($offset = $criteria->getOffset())!==null)
 			$sql .= ' OFFSET '.intval($offset); //assumes integer offset?
-		return strlen($sql) > 0 ? ' WHERE '.$sql : '';
+		return strlen($sql) > 0 ? $sql : '';
 	}
 
-	private function getOrdering($direction)
+	protected function getOrdering($by, $direction)
 	{
-		if(strtolower($direction) == 'desc')
-			return 'DESC';
-		else
-			return 'ASC';
+		$dir = strtolower($direction) == 'desc' ? 'DESC' : 'ASC';
+		return $this->getColumn($by)->getName(). ' '.$dir;
 	}
+
 }
 ?>
