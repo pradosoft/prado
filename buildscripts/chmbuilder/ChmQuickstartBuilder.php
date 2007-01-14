@@ -54,7 +54,7 @@ class ChmQuickstartBuilder
 
 		$html = $this->parseHtmlContent($this->getApplicationContent());
 		$file = str_replace(array('/','.page'), array('_','.html'),$page);
-		echo 'writing file '.$file."\n";
+//		echo 'writing file '.$file."\n";
 		file_put_contents($this->output_dir.'/'.$file, $html);
 	}
 
@@ -91,7 +91,7 @@ Copyright &copy; 2005-2006 <a href="http://www.pradosoft.com">PradoSoft</a>.</di
 		$html = str_replace('target="_blank">View Source', '>View Source', $html);
 		$html = preg_replace_callback('/href="\?page=ViewSource&(amp;){0,1}path=([a-zA-z0-9\.\/]+)"/',
 			array($this, 'update_source_url'), $html);
-		
+
 		return $html;
 	}
 
@@ -99,7 +99,7 @@ Copyright &copy; 2005-2006 <a href="http://www.pradosoft.com">PradoSoft</a>.</di
 	{
 		$page = $matches[2];
 		$file = str_replace('/', '_',$page).'.html';
-		
+
 		if(!isset($this->_viewed[$page]))
 		{
 			$this->_viewed[$page]=true;
@@ -116,10 +116,10 @@ Copyright &copy; 2005-2006 <a href="http://www.pradosoft.com">PradoSoft</a>.</di
 
 		$html = $this->parseHtmlContent($this->getApplicationContent());
 		$file = str_replace('/', '_',$page).'.html';
-		echo 'writing file '.$file."\n";
+//		echo 'writing file '.$file."\n";
 		file_put_contents($this->output_dir.'/'.$file, $html);
 	}
-	
+
 	protected function update_page_url($matches)
 	{
 		$bits = explode('#',str_replace('.','_',$matches[1]));
@@ -135,7 +135,7 @@ Copyright &copy; 2005-2006 <a href="http://www.pradosoft.com">PradoSoft</a>.</di
 
 class HTMLHelpTOCBuilder
 {
-	
+
 	public function buildToc($file,$output,$classes)
 	{
 		$contents = file_get_contents($file);
@@ -165,7 +165,7 @@ class HTMLHelpTOCBuilder
 		$ul['classes']['params'][] = array('Name' => "Prado {$version} Class Index");
 		foreach($classes as $class)
 		{
-			$ul['classes']['ul'][0]['params'][] = 
+			$ul['classes']['ul'][0]['params'][] =
 				array('Name'=>$class, 'Local'=>'classdoc/'.$class.'.html');
 		}
 		$ul['wiki']['params'][] = array('Name' => "Prado Wiki", 'Local'=>'wiki\\index.html');
@@ -189,7 +189,7 @@ class HTMLHelpTOCBuilder
 		$year = date('Y',time());
 $content = <<<EOD
 <!doctype html public "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-	
+
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<title>Prado Manual</title>
@@ -282,7 +282,7 @@ EOD;
 		}
 		$version = Prado::getVersion();
 		$ul['api']['params'][] = array('Name' => "Prado {$version} API Manual");
-		
+
 		return $ul;
 	}
 
@@ -396,7 +396,7 @@ class ClassDocBuilder
 
 		$html = $this->parseHtmlContent($this->getApplicationContent());
 		$file = 'Classes.html';
-		echo 'writing file '.$file."\n";
+//		echo 'writing file '.$file."\n";
 		file_put_contents($this->output.'/'.$file, $html);
 	}
 
@@ -407,7 +407,7 @@ class ClassDocBuilder
 
 		$html = $this->parseHtmlContent($this->getApplicationContent());
 		$file = $class.'.html';
-		echo 'writing file '.$file."\n";
+//		echo 'writing file '.$file."\n";
 		file_put_contents($this->output.'/'.$file, $html);
 	}
 

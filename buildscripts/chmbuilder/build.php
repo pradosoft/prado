@@ -53,8 +53,8 @@ else
 	$pages['Control Reference : Standard Controls'][] = 'Controls/Standard.page';
 
 
-//	$quickstart= new ChmQuickstartBuilder($base,$output_dir);
-//	$quickstart->buildDoc($pages);
+	$quickstart= new ChmQuickstartBuilder($base,$output_dir);
+	$quickstart->buildDoc($pages);
 
 	//move class data to protected data directory for prado app.
 	$classFile = $ROOT.'/classes/Data/classes.data';
@@ -65,12 +65,12 @@ else
 	$classBuilder = new ClassDocBuilder($classDocBase,$output_dir);
 
 	//use child process to build doc, otherwise it consumes too much memory
-/*	$child_builder = realpath($ROOT.'/build_child.php');
+	$child_builder = realpath($ROOT.'/build_child.php');
 	foreach($classes as $class =>$data)
 	{
 		passthru('php '.$child_builder.' '.$class);
 	}
-*/
+
 //	$classBuilder->parseBasePage();
 
 	$toc = new HTMLHelpTOCBuilder();

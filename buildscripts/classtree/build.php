@@ -9,9 +9,7 @@ require_once($basePath.'/DWExtension.php');
 Prado::using('System.Data.SqlMap.TSqlMapManager');
 
 $exclusions=array(
-//	'prado.php',
 	'pradolite.php',
-//	'PradoBase.php',
 	'prado-cli.php',
 	'clientscripts.php',
 	'.svn',

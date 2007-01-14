@@ -1,5 +1,5 @@
-Version 3.1.0 To be released
-============================
+Version 3.1.0 alpha January 15, 2007
+====================================
 BUG: Ticket#188 - Postback js caused controls not inheritable (Qiang)
 ENH: Ticket#99 - TXmlTransform control (Knut)
 ENH: Ticket#117 - added support to configure subproperties in a group. (Qiang)
@@ -20,8 +20,8 @@ NEW: TJsonService
 NEW: TCacheDependency, TFileCacheDependency, TDirectoryCacheDependency (Qiang)
 NEW: TGlobalStateCacheDependency, TChainedCacheDependency, TApplicationStateCacheDependency (Qiang)
 
-Version 3.0.7 
-===================
+Version 3.0.7 to be released 
+============================
 BUG: Ticket#481 - Unable to cancel navigation when handling OnSideBarButtonClickEvent (Qiang)
 BUG: typo in THttpResponse.writeFile() about sending headers (Qiang)
 
