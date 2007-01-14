@@ -56,7 +56,7 @@ class ContactManager{
 	  * @soapmethod
 	  */
 	public function saveContact(Contact $Contact) {
-		error_log(var_export($Contact,true));
+		//error_log(var_export($Contact,true));
 		//$Contact->save();
 		return true;
 	}
@@ -70,6 +70,14 @@ class ContactManager{
 		return array(array(1,2), array("12", 1.2));
 	}
 	
+	/**
+	 * @return array
+	 * @soapmethod
+	 */
+	public function getEmptyArray()
+	{
+		return array();
+	}
 
 }
 

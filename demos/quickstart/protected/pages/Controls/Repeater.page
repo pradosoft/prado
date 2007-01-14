@@ -1,23 +1,23 @@
 <com:TContent ID="body" >
 
 <h1 id="5301">TRepeater</h1>
-<p>
+<p id="600400" class="block-content">
 TRepeater displays its content defined in templates repeatedly based on the given data specified by the <tt>DataSource</tt> or <tt>DataSourceID</tt> property. The repeated contents can be retrieved from the <tt>Items</tt> property. Each item is created by instantiating a template and each is a child control of the repeater.
 </p>
-<p>
+<p id="600401" class="block-content">
 Like normal control templates, the repeater templates can contain static text, controls and special tags, which after instantiation, become child contents of the corresponding item. TRepeater defines five templates for different purposes,
 </p>
-<ul>
+<ul id="u1" class="block-content">
   <li><tt>HeaderTemplate</tt> - the template used for displaying content at the beginning of a repeater;</li>
   <li><tt>FooterTemplate</tt> - the template used for displaying content at the end of a repeater;</li>
   <li><tt>ItemTemplate</tt> - the template used for displaying every repeater item. If <tt>AlternatingItemTemplate</tt> is also defined, <tt>ItemTemplate</tt> will be used for displaying item 1, 3, 5, etc.</li>
   <li><tt>AlternatingItemTemplate</tt> - the template used for displaying every alternating repeater item (i.e., item 2, 4, 6, etc.)</li>
   <li><tt>SeparatorTemplate</tt> - the template used for displaying content between items.</li>
 </ul>
-<p>
+<p id="600402" class="block-content">
 To populate data into the repeater items, set <tt>DataSource</tt> to a valid data object, such as array, <tt>TList</tt>, <tt>TMap</tt>, or a database table, and then call <tt>dataBind()</tt> for the repeater. That is,
 </p>
-<com:TTextHighlighter Language="php" CssClass="source">
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_600125">
 class MyPage extends TPage {
     public function onLoad($param) {
         parent::onLoad($param);
@@ -28,32 +28,32 @@ class MyPage extends TPage {
     }
 }
 </com:TTextHighlighter>
-<p>
+<p id="600403" class="block-content">
 Normally, you only need to do this when the page containing the repeater is initially requested. In postbacks, TRepeater is smart enough to remember the previous state, i.e., contents populated with datasource information.The following sample displays tabular data using TRepeater.
 </p>
-<p>
+<p id="600404" class="block-content">
 TRepeater provides several events to facilitate manipulation of its items,
 </p>
-<ul>
+<ul id="u2" class="block-content">
   <li><tt>OnItemCreated</tt> - raised each time an item is newly created. When the event is raised, data and child controls are both available for the new item.</li>
   <li><tt>OnItemDataBound</tt> - raised each time an item just completes databinding. When the event is raised, data and child controls are both available for the item, and the item has finished databindings of itself and all its child controls.</li>
   <li><tt>OnItemCommand</tt> - raised when a child control of some item (such as a <tt>TButton</tt>) raises an <tt>OnCommand</tt> event.</li>
 </ul>
-<p>
+<p id="600405" class="block-content">
 The following example shows how to use TRepeater to display tabular data.
 </p>
 <com:RunBar PagePath="Controls.Samples.TRepeater.Sample1" />
-<p>
+<p id="600406" class="block-content">
 TRepeater can be used in more complex situations. As an example, we show in the following how to use nested repeaters, i.e., repeater in repeater. This is commonly seen in presenting master-detail data. To use a repeater within another repeater, for an item for the outer repeater is created, we need to set the detail data source for the inner repeater. This can be achieved by responding to the <tt>OnItemDataBound</tt> event of the outer repeater. An <tt>OnItemDataBound</tt> event is raised each time an outer repeater item completes databinding. In the following example, we exploit another event of repeater called <tt>OnItemCreated</tt>, which is raised each time a repeater item (and its content) is newly created. We respond to this event by setting different background colors for repeater items to achieve alternating item background display. This saves us from writing an <tt>AlternatingItemTemplate</tt> for the repeaters.
 </p>
 <com:RunBar PagePath="Controls.Samples.TRepeater.Sample2" />
-<p>
+<p id="600407" class="block-content">
 Besides displaying data, TRepeater can also be used to collect data from users. Validation controls can be placed in TRepeater templates to verify that user inputs are valid.
 </p>
-<p>
+<p id="600408" class="block-content">
 The <a href="../composer/index.php">PRADO component composer</a> demo is a good example of such usage. It uses a repeater to collect the component property and event definitions. Users can also delete or adjust the order of the properties and events, which is implemented by responding to the <tt>OnItemCommand</tt> event of repeater.
 </p>
-<p>
+<p id="600409" class="block-content">
 See in the following yet another example showing how to use repeater to collect user inputs.
 </p>
 <com:RunBar PagePath="Controls.Samples.TRepeater.Sample3" />

@@ -25,7 +25,7 @@ Weiter mit dem Thema kulturell angepasster Templates. Text kann unter Zuhilfenah
 <dd>Nachfolgender Prozess der Übersetzung und Anpassung eines Produktes an die kulturellen Konventionen eines gegebenen Marktes.</dd>
 </dl>
 <p> Die folgenden Merkmale werden von PRADO unterstützt: </p>
-<ul>
+<ul id="u1" class="block-content">
   <li>Textübersetzung </li>
   <li>Attributübersetzung (noch zu implementieren) </li>
   <li>Parameteraustausch (falls erforderlich mit Übersetzung) </li>

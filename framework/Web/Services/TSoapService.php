@@ -361,7 +361,7 @@ class TSoapServer extends TApplicationComponent
 			$options['uri']=$this->_uri;
 		if(is_string($this->_classMap))
 		{
-			foreach(preg_split('/\s?,\s?/', $this->_classMap) as $className)
+			foreach(preg_split('/\s*,\s*/', $this->_classMap) as $className)
 				$options['classmap'][$className]=$className; //complex type uses the class name in the wsdl
 		}
 		return $options;

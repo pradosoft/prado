@@ -45,7 +45,7 @@
 			<p>
 				PRADO offrent les fonctionnalités suivantes&nbsp; :
 			</p>
-			<ul>
+			<ul id="u1" class="block-content">
 				<li>
 				Traduction de contenu
 				<li>

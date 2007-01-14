@@ -348,6 +348,7 @@ buildscripts/chmbuilder/classes/pages/Classes.php -text
 buildscripts/chmbuilder/classes/pages/MainLayout.php -text
 buildscripts/chmbuilder/classes/pages/MainLayout.tpl -text
 buildscripts/chmbuilder/classes/pages/style.css -text
+buildscripts/chmbuilder/index.php -text
 buildscripts/classtree/DWExtension.php -text
 buildscripts/classtree/DWExtensionReadme.txt -text
 buildscripts/classtree/build.php -text
@@ -812,6 +813,13 @@ demos/quickstart/index2.php -text
 demos/quickstart/protected/.htaccess -text
 demos/quickstart/protected/QuickStartGlobalization.php -text
 demos/quickstart/protected/application.xml -text
+demos/quickstart/protected/controls/Comments/CommentBlock.php -text
+demos/quickstart/protected/controls/Comments/CommentBlock.tpl -text
+demos/quickstart/protected/controls/Comments/comments.css -text
+demos/quickstart/protected/controls/Comments/comments.js -text
+demos/quickstart/protected/controls/Comments/right_back.png -text
+demos/quickstart/protected/controls/Comments/right_tag.png -text
+demos/quickstart/protected/controls/Comments/tag.gif -text
 demos/quickstart/protected/controls/DocLink.php -text
 demos/quickstart/protected/controls/Layout.php -text
 demos/quickstart/protected/controls/Layout.tpl -text
@@ -2354,6 +2362,7 @@ tests/simple_unit/ActiveRecord/ActiveRecordMySql5TestCase.php -text
 tests/simple_unit/ActiveRecord/ActiveRecordRegistryTestCase.php -text
 tests/simple_unit/ActiveRecord/BaseActiveRecordTestCase.php -text
 tests/simple_unit/ActiveRecord/CountRecordsTestCase.php -text
+tests/simple_unit/ActiveRecord/CriteriaTestCase.php -text
 tests/simple_unit/ActiveRecord/DeleteByPkTestCase.php -text
 tests/simple_unit/ActiveRecord/FindByPksTestCase.php -text
 tests/simple_unit/ActiveRecord/FindBySqlTestCase.php -text
@@ -2368,6 +2377,7 @@ tests/simple_unit/ActiveRecord/records/SimpleUser.php -text
 tests/simple_unit/ActiveRecord/records/SqliteUsers.php -text
 tests/simple_unit/ActiveRecord/records/UserRecord.php -text
 tests/simple_unit/Soap/ContactManager.php -text
+tests/simple_unit/Soap/SoapTestCase.php -text
 tests/simple_unit/SqlMap/ActiveRecordSqlMapTest.php -text
 tests/simple_unit/SqlMap/BaseCase.php -text
 tests/simple_unit/SqlMap/CacheTest.php -text
@@ -2481,7 +2491,9 @@ tests/simple_unit/SqlMap/scripts/sqlite/database.sql -text
 tests/simple_unit/SqlMap/sqlite.xml -text
 tests/simple_unit/SqlMap/sqlite/backup.db -text
 tests/simple_unit/SqlMap/sqlite/tests.db -text
+tests/simple_unit/application.xml -text
 tests/simple_unit/unit.php -text
+tests/simple_unit/ws.php -text
 tests/test_tools/selenium/core/lib/cssQuery/cssQuery-p.js -text
 tests/test_tools/selenium/core/lib/cssQuery/src/cssQuery-level2.js -text
 tests/test_tools/selenium/core/lib/cssQuery/src/cssQuery-level3.js -text

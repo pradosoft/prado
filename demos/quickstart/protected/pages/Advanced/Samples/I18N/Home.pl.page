@@ -25,7 +25,7 @@ Twoim obecnym językiem jest: <%= $this->Page->CurrentCulture %>.
 <dd> To kolejny etap, jest to proces tłumaczenia i dostosowywania produktu do konkretnych wymagań językowo-kulturowych.</dd>
 </dl>
 <p>PRADO obsługuje następujące mechanizmy: </p>
-<ul>
+<ul id="u1" class="block-content">
   <li>Tłumaczenie tekstu </li>
   <li>Tłumaczenie atrybutów (todo) </li>
   <li>Podstawianie parametrów (wraz z koniecznym tłumaczeniem) </li>

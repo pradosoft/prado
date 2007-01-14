@@ -250,6 +250,14 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	}
 
 	/**
+	 * @return string  template file path if available, null otherwise.
+	 */
+	public function getTemplateFile()
+	{
+		return $this->_tplFile;
+	}
+
+	/**
 	 * @return boolean whether this template is a source template, i.e., this template is loaded from
 	 * some external storage rather than from within another template.
 	 */

@@ -3,10 +3,10 @@
 <h1 id="2701">THiddenField</h1>
 <com:DocLink ClassPath="System.Web.UI.WebControls.THiddenField" />
 
-<p>
+<p id="320262" class="block-content">
 <tt>THiddenField</tt> represents a hidden field on a Web page. The value of the hidden field can be accessed via its <tt>Value</tt> property.
 </p>
-<p>
+<p id="320263" class="block-content">
 <tt>THiddenField</tt> raises an <tt>OnValueChanged</tt> event if its value is changed during postback.
 </p>
 

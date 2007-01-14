@@ -1,3 +1,11 @@
+html
+{
+		background-image: url('mantisbg.jpg');
+	background-repeat: no-repeat;
+	background-position: top right;
+
+}
+
 body {
 	font-family: 'Lucida Grande', Verdana, Geneva, Lucida, Helvetica, Arial, sans-serif;
 	font-weight:normal;
@@ -5,14 +13,12 @@ body {
 	color:black;
 	margin:0px 0px 0px 0px;
 	padding:0px;
-	background-image: url('mantisbg.jpg');
-	background-repeat: no-repeat;
-	background-position: top right;
 }
 
 h1, h2, h3, h4
 {
 	color: #333;
+	margin-bottom: 0;
 }
 
 h1, h2
@@ -67,7 +73,7 @@ a
 }
 
 
-.languages 
+.languages
 {
 	text-align: right;
 	margin: 0.5em 1em;
@@ -113,7 +119,6 @@ a
 }
 
 #content {
-	background:#fff;
 	padding: 1em 1em 1em 1em;
 	line-height: 135%;
 }
@@ -563,7 +568,7 @@ div b.tip
 	padding-right: 0.5em;
 }
 
-img.figure
+#content img.figure, #content p img.figure
 {
 	display: block;
 	margin: 1em auto;

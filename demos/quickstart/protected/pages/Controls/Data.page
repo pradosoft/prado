@@ -2,7 +2,7 @@
 
 <h1 id="5001">Data Controls</h1>
 
-<ul>
+<ul id="u1" class="block-content">
   <li>
   <a href="?page=Controls.DataList">TDataList</a> is used to display or modify a list of data items.
   </li>

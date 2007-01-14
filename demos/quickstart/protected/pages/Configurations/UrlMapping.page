@@ -4,12 +4,12 @@
 
 <com:DocLink ClassPath="System.Web.TUrlMapping" />
 
-<p>Using the <tt>TUrlMapping</tt> module different URLs can be
+<p id="230222" class="block-content">Using the <tt>TUrlMapping</tt> module different URLs can be
 mapped into any existing Prado pages or services. This allows
 the application to use nice looking and friendly URLs.
 </p>
 
-<p>
+<p id="230223" class="block-content">
 The <tt>TUrlMapping</tt> module allows aributary URL path to be mapped to a
 particular service and page class. This module must be configured
 before a service is initialized, thus this module should be configured
@@ -25,9 +25,9 @@ This usually means delcaring the <tt>TUrlMapping</tt> module before any
 Specifying the mappings in the per directory <tt>config.xml</tt> is not supported.
 </div>
 
-<p>
+<p id="230224" class="block-content">
 To use <tt>TUrlMapping</tt>, one must set the <tt>UrlManager</tt> property of the <tt>THttpRequest</tt> module as the <tt>TUrlMapping</tt> module ID. See following for an example,
-<com:TTextHighlighter Language="xml" CssClass="source">
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_230098">
 <modules>
     <module id="request" class="THttpRequest" UrlManager="friendly-url" />
     <module id="friendly-url" class="System.Web.TUrlMapping">
@@ -39,25 +39,25 @@ To use <tt>TUrlMapping</tt>, one must set the <tt>UrlManager</tt> property of th
 </com:TTextHighlighter>
 </p>
 
-<p>
+<p id="230225" class="block-content">
 The above example is part of the application configuration of the <tt>blog</tt> demo in the PRADO release. It enables recognition of the following URL formats:
 </p>
-<ul>
+<ul id="u1" class="block-content">
   <li><tt>/index.php/post/123</tt> is recognized as <tt>/index.php?page=Posts.ViewPost&amp;id=123</tt></li>
   <li><tt>/index.php/archive/200605</tt> is recognized as <tt>/index.php?page=Posts.ListPost&amp;time=200605</tt></li>
   <li><tt>/index.php/category/2</tt> is recognized as <tt>/index.php?page=Posts.ListPost&amp;cat=2</tt></li>
 </ul>
 
-<p>
+<p id="230226" class="block-content">
 The <tt>ServiceParameter</tt> and <tt>ServiceID</tt> (the default ID is 'page') set the service parameter and service ID, respectively, of the <a href="?page=Fundamentals.Modules">Request module</a>. The service parameter for the <tt>TPageService</tt> service is the Page class name, e.g., for an URL "index.php?page=Home", "page" is the service ID and the service parameter is "Home". Other services may use the service parameter and ID differently. See <a href="?page=Fundamentals.Services">Services</a> for further details.
 </p>
 
-<h2>Specifying URL Patterns</h2>
-<p>
+<h2 id="46023">Specifying URL Patterns</h2>
+<p id="230227" class="block-content">
 <tt>TUrlMapping</tt> enables recognition of customized URL formats based on a list prespecified of URL patterns. Each pattern is specified in a <tt>&lt;url&gt;</tt> tag.
 </p>
 
-<p>
+<p id="230228" class="block-content">
 The <tt>Pattern</tt> and <tt>Parameters</tt> attribute
 values are regular expression patterns that
 determine the mapping criteria. The <tt>Pattern</tt> property takes
@@ -65,20 +65,20 @@ a regular expression with parameter names enclosed between a left brace '<tt>{</
 and a right brace '<tt>}</tt>'. The pattens for each parameter can be set
 using <tt>Parameters</tt>attribute collection.
 For example,
-<com:TTextHighlighter Language="xml" CssClass="source">
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_230099">
 <url ServiceParameter="ArticleView" pattern="articles/{year}/{month}/{day}"
      parameters.year="\d{4}" parameters.month="\d{2}" parameters.day="\d+" />
 </com:TTextHighlighter>
 </p>
 The example is equivalent to the following regular expression (it uses the "named group" feature in regular expressions available in PHP):
-<com:TTextHighlighter Language="xml" CssClass="source">
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_230100">
 <url ServiceParmaeter="ArticleView">
 <![CDATA[
 	/articles\/(?P<year>\d{4})\/(?P<month>\d{2})\/(?P<day>\d+)/u
 ]]>
 </url>
 </com:TTextHighlighter>
-<p>
+<p id="230229" class="block-content">
 In the above example, the pattern contains 3 parameters named "<tt>year</tt>",
 "<tt>month</tt>" and "<tt>day</tt>". The pattern for these parameters are,
 respectively, "<tt>\d{4}</tt>" (4 digits), "<tt>\d{2}</tt>" (2 digits)
@@ -92,7 +92,7 @@ to form a complete regular expression string.
 property you need to escape the slash in regular expressions.
 </div>
 
-<p>Following from the above pattern example,
+<p id="230230" class="block-content">Following from the above pattern example,
 an URL "<tt>http://example.com/index.php/articles/2006/07/21</tt>" will be matched
 and valid.  However, "<tt>http://example.com/index.php/articles/2006/07/hello</tt>" is not
  valid since the "<tt>day</tt>" parameter pattern is not satisfied.
@@ -101,19 +101,19 @@ and valid.  However, "<tt>http://example.com/index.php/articles/2006/07/hello</t
 "<tt>/index.php/articles/2006/07/21</tt>" portion of the URL is considered.
  </p>
 
-<p>
+<p id="230231" class="block-content">
 The mapped request URL is equivalent to <tt>index.php?page=ArticleView&amp;year=2006&amp;month=07&amp;day=21</tt>.
 The request parameter values are available through the standard <tt>Request</tt>
 object. For example, <tt>$this->Request['year']</tt>.
 </p>
 
-<p>The URL mapping are evaluated in order they are place and only the first mapping that matches
+<p id="230232" class="block-content">The URL mapping are evaluated in order they are place and only the first mapping that matches
  the URL will be used. Cascaded mapping can be achieved by placing the URL mappings
  in particular order. For example, placing the most specific mappings first.
 </p>
 
-<h2>Constructing Customized URLs</h2>
-<p>
+<h2 id="46024">Constructing Customized URLs</h2>
+<p id="230233" class="block-content">
 Since version 3.0.6, <tt>TUrlMapping</tt> starts to support constructing customized URL formats. This is achieved by allowing users to extend <tt>TUrlMapping</tt> class and override the <tt>constructUrl</tt> method. In the applications, users can still use <tt>THttpRequest.constructUrl()</tt> or <tt>TPageService.constructUrl()</tt> to generate PRADO-recognizable URLS. The actual URL construction work is ultimately delegated to the <tt>TUrlMapping.constructUrl()</tt>, provided it is implemented.
 </p>
 

@@ -1,7 +1,7 @@
 <com:TContent ID="body" >
 <!-- $Id$ -->
-<h1>Active Controls (AJAX enabled Controls)</h1>
-<p>See the <a href="?page=ActiveControls.Introduction">Introduction</a>
+<h1 id="128031">Active Controls (AJAX enabled Controls)</h1>
+<p id="640423" class="block-content">See the <a href="?page=ActiveControls.Introduction">Introduction</a>
 for a quick overview of the concept behind active controls (AJAX enabled controls).
 Most active controls have a property of
 <a href="?page=ActiveControls.BaseActiveControl">ActiveControl</a> and
@@ -13,14 +13,14 @@ during a callback request. Active controls is reliant on a collection
 of <a href="?page=ActiveControl.ClientSideJavascript">javascript classes</a>.
 </p>
 
-<p>For a quick demo of active controls, try the <a href="?page=ActiveControls.ActiveButton">
+<p id="640424" class="block-content">For a quick demo of active controls, try the <a href="?page=ActiveControls.ActiveButton">
 TActiveButton</a> control. See also the later part of the <a href="?page=Tutorial.CurrencyConverter">Current Converter</a> tutorial for a more indepth example.
 </p>
 
-<p>* the tutorial for this control is not completed yet.</p>
+<p id="640425" class="block-content">* the tutorial for this control is not completed yet.</p>
 
-<h2>Standard Active Controls</h2>
-<ul>
+<h2 id="128032">Standard Active Controls</h2>
+<ul id="u1" class="block-content">
   <li>
   <a href="?page=ActiveControls.ActiveButton">TActiveButton</a>
   represents a click button on a Web page. It can be used to trigger a callback request.
@@ -92,8 +92,8 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
 
 </ul>
 
-<h2>Active List Controls</h2>
-<ul>
+<h2 id="128033">Active List Controls</h2>
+<ul id="u2" class="block-content">
   <li>
   * <a href="?page=ActiveControls.ActiveCheckBoxList">TActiveCheckBoxList</a>
   displays a list of checkboxes on a Web page and each checkbox
@@ -121,10 +121,10 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   </li>
 </ul>
 
-<h2>Extended Active Controls</h2>
+<h2 id="128034">Extended Active Controls</h2>
 
 
-<ul>
+<ul id="u3" class="block-content">
 	<li>
 	* <a href="?page=ActiveControls.AutoComplete">TAutoComplete</a>
 	extends TActiveTextBox to offer text completion suggestions.
@@ -158,8 +158,8 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
 
 </ul>
 
-<h2>Active Control Abilities</h2>
-<p>The following table shows the Active Controls that can trigger a 
+<h2 id="128035">Active Control Abilities</h2>
+<p id="640426" class="block-content">The following table shows the Active Controls that can trigger a 
 callback event and whether the control will raise a PostBack event 
 if Javascript was disabled on the client's browser.</p>
 <!-- tabular: align=|l|l|l|, width=(0.35 0.25 0.25) -->
@@ -307,10 +307,10 @@ if Javascript was disabled on the client's browser.</p>
   </tr>
 </table>
 
-<h2>Active Control Infrastructure Classes</h2>
-<p>The following classes provide the basic infrastructure classes required to
+<h2 id="128036">Active Control Infrastructure Classes</h2>
+<p id="640427" class="block-content">The following classes provide the basic infrastructure classes required to
 realize the active controls.</p>
-<ul>
+<ul id="u4" class="block-content">
 	<li>
 	* <a href="?page=ActiveControls.ActiveControlAdapter">TActiveControlAdapter</a>
 	tracks the viewstate values of the control and update differences of the client-side HTML

@@ -36,9 +36,9 @@ foreach($pages as $chapter => $sections)
 		$current_path = $page;
 		$parser->setCurrentPage($current_path);
 
-		//add id to <h1>, <h2>, <3>
+		//add id to <h1>, <h2>, <h3> and <p>
 		$tmp_content = $parser->set_header_id(file_get_contents($page),$j++);
-//		file_put_contents($page, $tmp_content);
+		file_put_contents($page, $tmp_content);
 
 		$content .= $parser->get_section_label($section);
 		$file_content = file_get_contents($page);

@@ -25,7 +25,7 @@
 <dd> Proceso subsecuente de traducir y de adaptar un producto a las convenciones culturales de un mercado dado. </dd>
 </dl>
 <p> Las características siguientes son utilizadas por PRADO: </p>
-<ul>
+<ul id="u1" class="block-content">
   <li>Traducción del texto </li>
   <li>Traducción del atributo (todo) </li>
   <li>Substitución de parámetro (con la traducción si es necesario) </li>

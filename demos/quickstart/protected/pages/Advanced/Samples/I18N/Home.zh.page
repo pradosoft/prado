@@ -31,7 +31,7 @@ PRADO提供了gettext，XML，SQLite以及MySQL等手段用于存放消息的各
 <dd>国际化的一个细节步骤，它针对某个特定的市场文化对产品进行翻译和调整。</dd>
 </dl>
 <p>PRADO支持以下功能：</p>
-<ul>
+<ul id="u1" class="block-content">
   <li>文本翻译</li>
   <li>属性翻译（尚未完成）</li>
   <li>参数替换（如需要可进行翻译）</li>

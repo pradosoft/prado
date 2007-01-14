@@ -25,6 +25,8 @@ Prado::using('System.I18N.core.HTTPNegotiator');
  */
 class TGlobalizationAutoDetect extends TGlobalization
 {
+	private $_detectedLanguage;
+
 	public function init($xml)
 	{
 		parent::init($xml);
@@ -33,7 +35,15 @@ class TGlobalizationAutoDetect extends TGlobalization
 		$http = new HTTPNegotiator();		
 		$languages = $http->getLanguages();
 		if(count($languages) > 0)
+		{
+			$this->_detectedLanguage=$languages[0];
 			$this->setCulture($languages[0]);
+		}
+	}
+
+	public function getDetectedLanguage()
+	{
+		return $this->_detectedLanguage;
 	}
 }
 

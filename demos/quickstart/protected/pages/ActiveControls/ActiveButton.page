@@ -1,9 +1,9 @@
 <com:TContent ID="body">
 <!-- $Id$ -->
-<h1>TActiveButton</h1>
+<h1 id="122026">TActiveButton</h1>
 <com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveButton" />
 
-<p><tt>TActiveButton</tt> is the active control counter part to
+<p id="610410" class="block-content"><tt>TActiveButton</tt> is the active control counter part to
 <a href="?page=Controls.Button">TButton</a>.
 When a <tt>TActiveButton</tt> is clicked, rather than a normal post back request a
 callback request is initiated. The <tt>OnCallback</tt> event is raised
@@ -11,29 +11,29 @@ during a callback request and it is raise <strong>after</strong>
 the <tt>OnClick</tt> event.
 </p>
 
-<p>When the <tt>ActiveControl.EnableUpdate</tt> property is true,
+<p id="610411" class="block-content">When the <tt>ActiveControl.EnableUpdate</tt> property is true,
 changing the <tt>Text</tt> property during a callback request will update
 the button's caption on the client-side.</p>
 
-<p>Since the <tt>OnCallback</tt> event is raised only during a callback request,
+<p id="610412" class="block-content">Since the <tt>OnCallback</tt> event is raised only during a callback request,
 the <tt>OnCallback</tt> event handler can be used to handle logic specifically
 related to callback requests. The <tt>OnClick</tt> event handler is raised
 when ever the button is clicked, even if javascript is disabled.</p>
 
-<p>The following example the use of both the <tt>OnClick</tt> and <tt>OnCallback</tt>
+<p id="610413" class="block-content">The following example the use of both the <tt>OnClick</tt> and <tt>OnCallback</tt>
 events of an <tt>TActiveButton</tt>.</p>
 
 <com:RunBar PagePath="ActiveControls.Samples.TActiveButton.Home" />
 
-<h2>TActiveButton Class Diagram</h2>
-<p>The class diagram for <tt>TActiveButton</tt> is illustrated in the figure below.
+<h2 id="122027">TActiveButton Class Diagram</h2>
+<p id="610414" class="block-content">The class diagram for <tt>TActiveButton</tt> is illustrated in the figure below.
 Most active control that can perform callback request have a similar structure.
 </p>
 
 <img src=<%~ TActiveButtonClass.png %> class="figure"
 	alt="TActiveButton class diagram" title="TActiveButton class diagram" />
 
-<p><tt>TActiveButton</tt> is an extension of <a href="?page=Controls.Button">TButton</a>
+<p id="610415" class="block-content"><tt>TActiveButton</tt> is an extension of <a href="?page=Controls.Button">TButton</a>
 and implements two additional interfaces <tt>ICallbackEventHandler</tt> and
 <tt>IActiveControl</tt>. The <tt>TActiveButton</tt> contains an instance of
 <a href="?page=ActiveControls.BaseActiveControl">TBaseActiveCallbackControl</a>
@@ -41,24 +41,24 @@ available through the <tt>ActiveControl</tt> property of <tt>TActiveButton</tt>.
 The following example set the callback parameter of the <tt>TActiveButton</tt> when
 a callback request is dispatched.
 </p>
-<com:TTextHighlighter Language="prado" CssClass="source">
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code1">
 &lt;com:TActiveButton
 	Text="Click Me"
 	OnCallback="button_callback"
 	ActiveControl.CallbackParameter="value" /&gt;
 </com:TTextHighlighter>
-<p>In the <tt>OnCallback</tt> event handler method, the <tt>CallbackParameter</tt>
+<p id="610416" class="block-content">In the <tt>OnCallback</tt> event handler method, the <tt>CallbackParameter</tt>
 is available in the <tt>$param</tt> object.</p>
-<com:TTextHighlighter Language="php" CssClass="source">
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code2">
 public function button_callback($sender, $param)
 {
 	echo $param->CallbackParameter; //outputs "value"
 }
 </com:TTextHighlighter>
 
-<h2>Adding Client Side Behaviour</h2>
+<h2 id="122028">Adding Client Side Behaviour</h2>
 
-<p>With in the <tt>ActiveControl</tt> property is an instance of
+<p id="610417" class="block-content">With in the <tt>ActiveControl</tt> property is an instance of
 <a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a> available
 as a property <tt>ClientSide</tt> of <tt>TActiveButton</tt>.
 The <tt>ClientSide</tt> property contains sub-properties, such as <tt>RequestTimeOut</tt>,
@@ -68,7 +68,7 @@ The following example demonstrates the toggling of a "loading" indicator
 when the client-side is making a callback request.
 </p>
 
-<com:TTextHighlighter Language="prado" CssClass="source">
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code3">
 &lt;com:TClientSide PradoScripts="effects" /&gt;
 <span id="callback_status">Loading...</span>
 
@@ -82,7 +82,7 @@ when the client-side is making a callback request.
 &lt;/com:TActiveButton&gt;
 </com:TTextHighlighter>
 
-<p>The example loads the "effects" javascript library using the
+<p id="610418" class="block-content">The example loads the "effects" javascript library using the
 <a href="?page=Controls.ClientScript">TClientScript</a> component.
 The <tt>ClientSide.OnLoading</tt> property value contains
 javascript statement that uses the "effects" library to show the "Loading..."

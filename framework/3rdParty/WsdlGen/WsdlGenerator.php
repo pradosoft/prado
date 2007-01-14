@@ -269,7 +269,7 @@ class WsdlGenerator
 		foreach($properties as $property)
 		{
 			$comment = $property->getDocComment();
-			if($property->isPublic() && strpos($comment, '@soapproperty') !== false)
+			if(strpos($comment, '@soapproperty') !== false)
 			{
 				if (preg_match('/@var\s+(\w+(\[\])?)\s+\$(\w+)/mi', $comment, $match)) {
 					$param = array();

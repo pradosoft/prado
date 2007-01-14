@@ -4,6 +4,9 @@ class Page2Tex
 {
 	private $_current_page;
 	private static $header_count = 0;
+	private static $p_count=0;
+	private static $hil_count=0;
+	private $page_count=0;
 	private $_base;
 	private $_dir;
 
@@ -270,29 +273,66 @@ class Page2Tex
 	}
 
 
-	function set_header_id($content)
+	function set_header_id($content, $j)
 	{
+		$this->page_count=$j;
 		$content = preg_replace_callback('/<h1>/', array($this,"h1"), $content);
 		$content = preg_replace_callback('/<h2>/', array($this,"h2"), $content);
 		$content = preg_replace_callback('/<h3>/', array($this,"h3"), $content);
+		$content = $this->set_block_content_id($content);
 		return $content;
 	}
 
 	function h1($matches)
 	{
-		return "<h1 id=\"".(++self::$header_count)."\">";
+		$page = $this->page_count*1000;
+		return "<h1 id=\"".($page + (++self::$header_count))."\">";
 	}
 
 	function h2($matches)
 	{
-		return "<h2 id=\"".(++self::$header_count)."\">";
+		$page = $this->page_count*1000;
+		return "<h2 id=\"".($page + (++self::$header_count))."\">";
 	}
 
 	function h3($matches)
 	{
-		return "<h3 id=\"".(++self::$header_count)."\">";
+		$page = $this->page_count*1000;
+		return "<h3 id=\"".($page + (++self::$header_count))."\">";
+	}
+	
+	function set_block_content_id($content)
+	{
+		$content = preg_replace_callback('/<p>/',  array($this, 'add_p'), $content);
+		$content = preg_replace_callback('/<com:TTextHighlighter([^>]+)>/', array($this, 'hil'), $content);
+		return $content;
 	}
 
+	function hil($matches)
+	{
+		$id = ($this->page_count*10000) + (++self::$hil_count);
+		if(preg_match('/id="code-\d+"/i', $matches[1]))
+		{
+			$code = preg_replace('/id="code-(\d+)"/', 'id="code_$1"', $matches[0]);
+			//var_dump($code);
+			return $code;
+		}
+		else if(preg_match('/id="[^"]+"/i', $matches[1]))
+		{
+			return $matches[0];
+		}
+		else
+		{	
+			$changes = str_replace('"source"', '"source block-content" id="code-'.$id.'"', $matches[0]);
+			return $changes;
+		}
+	}
+
+	function add_p($matches)
+	{
+		 $page = $this->page_count*10000;
+		 return "<p id=\"".($page + (++self::$p_count))."\" class=\"block-content\">";
+	}
 }
 
 ?>
