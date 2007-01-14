@@ -44,7 +44,6 @@
 <div id="content">
 <p class="block-content" id="top-content" style="border-color: transparent; height:1px; margin: 0; padding: 0; background-color: transparent"></p>
 <com:TContentPlaceHolder ID="body" />
-<com:Application.controls.Comments.CommentBlock Visible="false" />
 </div>
 </td>
 </tr>
