@@ -46,6 +46,7 @@
 			<com:TLabel ForControl="content" Text="Comment:" />
 			<com:TRequiredFieldValidator
 				Style="font-weight: bold"
+				ValidationGroup="comment-group"
 				ControlToValidate="content"
 				ErrorMessage="*" />
 			</div>
