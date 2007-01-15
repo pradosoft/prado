@@ -27,7 +27,7 @@
 			<span class="hint">(must have 5 or more posts in <a href="http://www.pradosoft.com/forum/" title="Prado Forums">forum</a>)</span>
 			<com:TRequiredFieldValidator
 				Style="font-weight: bold"
-				ValiationGroup="comment-group"
+				ValidationGroup="comment-group"
 				ControlToValidate="username"
 				ErrorMessage="*" />
 			</div>
@@ -36,7 +36,7 @@
 			<com:TActiveCustomValidator
 				ID="credential_validator"
 				ControlToValidate="password"
-				ValiationGroup="comment-group"
+				ValidationGroup="comment-group"
 				OnServerValidate="validate_credential"
 				EnableClientScript="false"
 				ErrorMessage="Incorrect username/password" />
@@ -54,7 +54,7 @@
 		</div>
 
 		<div class="submit">
-			<com:TActiveButton ID="addComment" ValiationGroup="comment-group" Text="Add Comment" OnClick="add_comment">
+			<com:TActiveButton ID="addComment" ValidationGroup="comment-group" Text="Add Comment" OnClick="add_comment">
 				<prop:ClientSide OnLoading="show_posting_comment()" OnSuccess="on_posting_success()" />
 			</com:TActiveButton>
 			<img id="comment-loading" src=<%~ ajax-loader.gif %> style="border:0 none;display:none"/>
