@@ -36,6 +36,7 @@
 				ID="credential_validator"
 				ControlToValidate="password"
 				OnServerValidate="validate_credential"
+				EnableClientScript="false"
 				ErrorMessage="Incorrect username/password" />
 		</div>
 		<div class="content">
