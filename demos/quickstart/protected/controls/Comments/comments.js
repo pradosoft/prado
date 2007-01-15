@@ -118,9 +118,9 @@ function add_comment_tag(el)
 	var tag = "<div id='"+id+"' class='"+cssClass+"' style='"+style+"'><div style='"+innerStyle+"' title='"+title+"'>"+comments+"</div>&nbsp;</div>";
 	new Insertion.Before(el, tag);
 	var tag_div = $(id);
-	Event.observe(tag_div, "mouseover", function(e){ show_block(el); });
-	Event.observe(tag_div, "mouseout", function(e){ hide_block(el); });
-	Event.observe(tag_div, "click", function(e) { show_comments(el); Event.stop(e); });
+	Event.observe(tag_div, "mouseover", function(e){ if(show_block) show_block(el); });
+	Event.observe(tag_div, "mouseout", function(e){ if(hide_block) hide_block(el); });
+	Event.observe(tag_div, "click", function(e) { if(show_comments) show_comments(el); Event.stop(e); });
 }
 
 function increment_count_tag(id)
@@ -167,8 +167,8 @@ function get_comment_count(id)
 
 	$$('#content .block-content').each(function(el)
 	{
-		Event.observe(el, 'mouseover', function(e){ show_block(Event.element(e)); });
-		Event.observe(el, 'mouseout', function(e){ hide_block(Event.element(e)); });
+		Event.observe(el, 'mouseover', function(e){ if(show_block) show_block(Event.element(e)); });
+		Event.observe(el, 'mouseout', function(e){ if(hide_block) hide_block(Event.element(e)); });
 		add_comment_tag(el);
 	});
 
