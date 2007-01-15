@@ -74,9 +74,9 @@ function show_comments(block)
 
 function show_block(block)
 {
-	while(block && block.className && block.className.indexOf("block-content") < 0)
+	while(block && block.className.indexOf("block-content") < 0)
 		block = block.parentNode;
-	if(block && block.className && block.className.indexOf("block-content") >= 0)
+	if(block && block.className.indexOf("block-content") >= 0)
 	{
 		block.addClassName('block-hover');
 		var tag = $('tag-'+block.id);
@@ -87,9 +87,9 @@ function show_block(block)
 
 function hide_block(block)
 {
-	while(block && block.className && block.className.indexOf("block-hover") < 0)
+	while(block && block.className.indexOf("block-hover") < 0)
 		block = block.parentNode;
-	if(block && block.className && block.className.indexOf("block-hover") >= 0)
+	if(block && block.className.indexOf("block-hover") >= 0)
 	{
 		block.removeClassName('block-hover');
 		var tag = $('tag-'+block.id);
@@ -150,30 +150,33 @@ function get_comment_count(id)
 
 //initialize the comment js
 
-(function()
+if(!Prado.Browser.ie) //not IE 4,5,6
 {
-	var userComments = $('user-comments');
-	userComments.style.position="absolute";
-	userComments.style.marginRight="80px";
-	var commentList = $('comment-list');
-	commentList.style.height="320px";
-	$('add-comment').style.height="320px";
-	commentList.style.overflow="auto";
-	$('show-comment-link').style.display="";
-	$('to-top').hide();
-	$('close-comments').show();
-	userComments.hide();
-	$('comments-header').hide();
-
-	$$('#content .block-content').each(function(el)
+	(function()
 	{
-		Event.observe(el, 'mouseover', function(e){ if(typeof(show_block)!="undefined") show_block(Event.element(e)); });
-		Event.observe(el, 'mouseout', function(e){ if(typeof(hide_block)!="undefined") hide_block(Event.element(e)); });
-		add_comment_tag(el);
-	});
+		var userComments = $('user-comments');
+		userComments.style.position="absolute";
+		userComments.style.marginRight="80px";
+		var commentList = $('comment-list');
+		commentList.style.height="320px";
+		$('add-comment').style.height="320px";
+		commentList.style.overflow="auto";
+		$('show-comment-link').style.display="";
+		$('to-top').hide();
+		$('close-comments').show();
+		userComments.hide();
+		$('comments-header').hide();
 
-	Event.observe($('show-comment-link'), "click", function(e) { show_comment_list(); Event.stop(e); });
-	Event.observe($('add-comment-link'), "click", function(e) { show_add_comment();	Event.stop(e); });
-	Event.observe($('close-comments'), "click", function(e) { hide_add_comment(); Event.stop(e); });
+		$$('#content .block-content').each(function(el)
+		{
+			Event.observe(el, 'mouseover', function(e){ if(typeof(show_block)!="undefined") show_block(Event.element(e)); });
+			Event.observe(el, 'mouseout', function(e){ if(typeof(hide_block)!="undefined") hide_block(Event.element(e)); });
+			add_comment_tag(el);
+		});
 
-})();
+		Event.observe($('show-comment-link'), "click", function(e) { show_comment_list(); Event.stop(e); });
+		Event.observe($('add-comment-link'), "click", function(e) { show_add_comment();	Event.stop(e); });
+		Event.observe($('close-comments'), "click", function(e) { hide_add_comment(); Event.stop(e); });
+
+	})();
+}
