@@ -211,8 +211,10 @@
 
 	<echo>Generating CHM Content (Quickstart + ClassDocs)</echo>
 	<exec command="${php} build.php" dir="buildscripts/chmbuilder" passthru="true"/>
+	<!-- done on project website 
 	<echo>Generating CHM Content (WIKI)</echo>
 	<exec command="${php} build.php" dir="buildscripts/wikibuilder" passthru="true"/>
+	-->
     <if>
       <equals arg1="${prado.winbuild}" arg2="true"/>
       <then>
