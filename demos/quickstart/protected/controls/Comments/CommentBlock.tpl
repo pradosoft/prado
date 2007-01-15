@@ -24,7 +24,7 @@
 		<div class="username">
 			<div>
 			<com:TLabel ForControl="username" Text="Username/Password:" />
-			<span class="hint">(must have 5 or more posts in forum)</span>
+			<span class="hint">(must have 5 or more posts in <a href="http://www.pradosoft.com/forum/" title="Prado Forums">forum</a>)</span>
 			<com:TRequiredFieldValidator
 				Style="font-weight: bold"
 				ControlToValidate="username"
@@ -52,7 +52,10 @@
 		</div>
 
 		<div class="submit">
-			<com:TActiveButton Text="Add Comment" OnClick="add_comment" />
+			<com:TActiveButton ID="addComment" Text="Add Comment" OnClick="add_comment">
+				<prop:ClientSide OnLoading="show_posting_comment()" OnSuccess="on_posting_success()" />
+			</com:TActiveButton>
+			<img id="comment-loading" src=<%~ ajax-loader.gif %> style="border:0 none;display:none"/>
 		</div>
 	</div>
 </div>
@@ -61,4 +64,20 @@
 <com:TClientScript PradoScripts="prado" ScriptUrl=<%~ comments.js %> >
 	var hidden_block_id = '<%= $this->block_id->ClientID %>';
 	var content_textare_id = '<%= $this->content->ClientID %>';
+
+function show_posting_comment()
+{
+	var button = $('<%= $this->addComment->ClientID %>')
+	button.value="Posting ...";
+	button.disabled = true;
+	$('comment-loading').show();
+}
+
+function on_posting_success()
+{
+	var button = $('<%= $this->addComment->ClientID %>')
+	button.value="Add Comment";
+	button.disabled = false;
+	$('comment-loading').hide();	
+}
 </com:TClientScript>

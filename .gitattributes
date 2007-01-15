@@ -815,6 +815,7 @@ demos/quickstart/protected/QuickStartGlobalization.php -text
 demos/quickstart/protected/application.xml -text
 demos/quickstart/protected/controls/Comments/CommentBlock.php -text
 demos/quickstart/protected/controls/Comments/CommentBlock.tpl -text
+demos/quickstart/protected/controls/Comments/ajax-loader.gif -text
 demos/quickstart/protected/controls/Comments/comments.css -text
 demos/quickstart/protected/controls/Comments/comments.js -text
 demos/quickstart/protected/controls/Comments/right_back.png -text
