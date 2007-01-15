@@ -99,7 +99,7 @@ class CommentBlock extends TTemplateControl
 		$content=nl2br(htmlspecialchars($record->content));
 		return <<<EOD
 	<div class="comment c-{$record->block_id}">
-		<span><a href="#">{$username}</a> on {$record->date_added}.</span>
+		<span><strong>{$username}</strong> on {$record->date_added}.</span>
 		<div>{$content}</div>
 	</div>
 EOD;
