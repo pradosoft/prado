@@ -74,9 +74,9 @@ function show_comments(block)
 
 function show_block(block)
 {
-	while(block && block.className.indexOf("block-content") < 0)
+	while(block && block.className && block.className.indexOf("block-content") < 0)
 		block = block.parentNode;
-	if(block && block.className.indexOf("block-content") >= 0)
+	if(block && block.className && block.className.indexOf("block-content") >= 0)
 	{
 		block.addClassName('block-hover');
 		var tag = $('tag-'+block.id);
@@ -87,9 +87,9 @@ function show_block(block)
 
 function hide_block(block)
 {
-	while(block && block.className.indexOf("block-hover") < 0)
+	while(block && block.className && block.className.indexOf("block-hover") < 0)
 		block = block.parentNode;
-	if(block && block.className.indexOf("block-hover") >= 0)
+	if(block && block.className && block.className.indexOf("block-hover") >= 0)
 	{
 		block.removeClassName('block-hover');
 		var tag = $('tag-'+block.id);
@@ -118,9 +118,9 @@ function add_comment_tag(el)
 	var tag = "<div id='"+id+"' class='"+cssClass+"' style='"+style+"'><div style='"+innerStyle+"' title='"+title+"'>"+comments+"</div>&nbsp;</div>";
 	new Insertion.Before(el, tag);
 	var tag_div = $(id);
-	Event.observe(tag_div, "mouseover", function(e){ if(show_block) show_block(el); });
-	Event.observe(tag_div, "mouseout", function(e){ if(hide_block) hide_block(el); });
-	Event.observe(tag_div, "click", function(e) { if(show_comments) show_comments(el); Event.stop(e); });
+	Event.observe(tag_div, "mouseover", function(e){ if(typeof(show_block)!="undefined") show_block(el); });
+	Event.observe(tag_div, "mouseout", function(e){ if(typeof(hide_block) !="undefined") hide_block(el); });
+	Event.observe(tag_div, "click", function(e) { if(typeof(show_comments) !="undefined") show_comments(el); Event.stop(e); });
 }
 
 function increment_count_tag(id)
@@ -167,8 +167,8 @@ function get_comment_count(id)
 
 	$$('#content .block-content').each(function(el)
 	{
-		Event.observe(el, 'mouseover', function(e){ if(show_block) show_block(Event.element(e)); });
-		Event.observe(el, 'mouseout', function(e){ if(hide_block) hide_block(Event.element(e)); });
+		Event.observe(el, 'mouseover', function(e){ if(typeof(show_block)!="undefined") show_block(Event.element(e)); });
+		Event.observe(el, 'mouseout', function(e){ if(typeof(hide_block)!="undefined") hide_block(Event.element(e)); });
 		add_comment_tag(el);
 	});
 
