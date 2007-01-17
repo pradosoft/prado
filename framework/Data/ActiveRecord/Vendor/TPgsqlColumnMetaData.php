@@ -57,6 +57,21 @@ class TPgsqlColumnMetaData extends TComponent
 		return $this->_name;
 	}
 
+	public function getPHPType()
+	{
+		switch(strtolower($this->_type))
+		{
+			case 'bit': case 'bit varying': case 'real': case 'serial':
+				return 'integer';
+			case 'boolean':
+				return 'boolean';
+			case 'bigint': case 'bigserial': case 'double precision': case 'money': case 'numeric':
+				return 'float';
+			default:
+				return 'string';
+		}
+	}
+
 	/**
 	 * @return boolean true if column is a sequence, false otherwise.
 	 */

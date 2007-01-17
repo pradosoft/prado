@@ -56,6 +56,21 @@ class TMysqlColumnMetaData extends TComponent
 		return $this->_name;
 	}
 
+	public function getPHPType()
+	{
+		switch(strtolower($this->_type))
+		{
+			case 'tinyint': case 'smallint': case 'mediumint': case 'int': case 'year':
+				return 'integer';
+			case 'bool':
+				return 'boolean';
+			case 'bigint': case 'float': case 'double': case 'decimal':
+				return 'float';
+			default:
+				return 'string';
+		}
+	}
+
 	/**
 	 * @return boolean true if column is a sequence, false otherwise.
 	 */

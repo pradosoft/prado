@@ -39,6 +39,21 @@ class TSqliteColumnMetaData extends TComponent
 		$this->_primary=$primary;
 	}
 
+	public function getPHPType()
+	{
+		switch(strtolower($this->_type))
+		{
+			case 'int': case 'integer': case 'mediumint': case 'smallint': case 'tinyint': case 'year':
+				return 'integer';
+			case 'boolean':
+				return 'boolean';
+			case 'decimal': case 'double': case 'float': case 'bigint':
+				return 'float';
+			default:
+				return 'string';
+		}
+	}
+
 	/**
 	 * @return string quoted column name.
 	 */

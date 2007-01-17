@@ -97,10 +97,24 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function __construct($data=array(), $connection=null)
 	{
-		foreach($data as $name=>$value)
-			$this->$name = $value;
+		$this->copyFrom($data);
 		if($connection!==null)
 			$this->_connection=$connection;
+	}
+
+	/**
+	 * Copies data from an array or another object.
+	 * @throws TActiveRecordException if data is not array or not object.
+	 * @return TActiveRecord current instance.
+	 */
+	public function copyFrom($data)
+	{
+		$data = is_object($data) ? get_object_vars($data) : $data;
+		if(!is_array($data))
+			throw new TActiveRecordException('ar_must_copy_from_array_or_object', get_class($this));
+		foreach($data as $name=>$value)
+				$this->$name = $value;
+		return $this;
 	}
 
 	/**
@@ -212,7 +226,7 @@ abstract class TActiveRecord extends TComponent
 
 
 	/**
-	 * Delete multiple records using a criteria. 
+	 * Delete multiple records using a criteria.
 	 * @param string|TActiveRecordCriteria SQL condition or criteria object.
 	 * @param mixed parameter values.
 	 * @return int number of records deleted.

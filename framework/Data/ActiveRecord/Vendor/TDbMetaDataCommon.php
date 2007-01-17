@@ -67,7 +67,7 @@ abstract class TDbMetaDataCommon extends TDbMetaData
 	public function getFindByCriteriaCommand($conn, $criteria=null)
 	{
 		$columns = $this->getSelectionColumns();
-		$conditions = $criteria!==null?$this->getSqlFromCriteria($conn,$criteria) : '';
+		$conditions = $this->getSqlFromCriteria($conn,$criteria);
 		$table = $this->getTableName();
 		$sql = "SELECT {$columns} FROM {$table} {$conditions}";
 		return $this->createCriteriaBindedCommand($conn,$sql, $criteria);
@@ -88,7 +88,7 @@ abstract class TDbMetaDataCommon extends TDbMetaData
 		return $this->createCriteriaBindedCommand($conn,$sql, $criteria);
 	}
 
-	abstract protected function getSqlFromCriteria($conn,TActiveRecordCriteria $criteria);
+	abstract protected function getSqlFromCriteria($conn, $criteria);
 
 	/**
 	 * Sql command with parameters binded.

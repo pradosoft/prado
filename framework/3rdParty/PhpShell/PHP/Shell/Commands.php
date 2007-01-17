@@ -3,14 +3,14 @@
 /**
 * Commands for the PHP_Shell
 *
-* Extensions can register their own commands for the shell like the 
+* Extensions can register their own commands for the shell like the
 * InlineHelp Extension which provides inline help for all functions
 *
-* It uses the pattern '? <string>' to catch the cmdline strings. 
+* It uses the pattern '? <string>' to catch the cmdline strings.
 *
-* registerCommand() should be called by the extensions in the register() 
+* registerCommand() should be called by the extensions in the register()
 * method. Its parameters are
-* - the regex which matches the command 
+* - the regex which matches the command
 * - the object and the method to call if the command is matched
 * - the human readable command string and the description for the help
 */
@@ -23,7 +23,7 @@ class PHP_Shell_Commands {
     static protected $instance;
 
     /**
-    * registered commands 
+    * registered commands
     *
     * array('quit' => ... )
     *

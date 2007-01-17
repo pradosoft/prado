@@ -4,12 +4,12 @@ class PHP_Shell_Extensions_VerbosePrint implements PHP_Shell_Extension {
     protected $oneshot_verbose = false;
 
     public function register() {
-        $cmd = PHP_Shell_Commands::getInstance();
+/*        $cmd = PHP_Shell_Commands::getInstance();
         $cmd->registerCommand('#^p #', $this, 'cmdPrint', 'p <var>', 'print the variable verbosly');
 
         $opt = PHP_Shell_Options::getInstance();
         $opt->registerOption('verboseprint', $this, 'optSetVerbose');
-
+*/
     }
 
     /**
@@ -48,7 +48,7 @@ class PHP_Shell_Extensions_VerbosePrint implements PHP_Shell_Extension {
         $v = $this->opt_verbose || $this->oneshot_verbose;
 
         $this->oneshot_verbose = false;
-        
+
         return $v;
     }
 }

@@ -30,8 +30,9 @@ class TPgsqlMetaData extends TDbMetaDataCommon
 	 * @param TActiveRecordCriteria search criteria.
 	 * @return string SQL search.
 	 */
-	protected function getSqlFromCriteria($conn, TActiveRecordCriteria $criteria)
+	protected function getSqlFromCriteria($conn, $criteria)
 	{
+		if($criteria===null) return '';
 		$sql = '';
 		if(($condition = $criteria->getCondition())!==null)
 			$sql .= ' WHERE '.$condition;

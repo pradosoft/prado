@@ -1364,6 +1364,7 @@ framework/3rdParty/PhpShell/PHP/Shell/Extensions/VerbosePrint.php -text
 framework/3rdParty/PhpShell/PHP/Shell/Options.php -text
 framework/3rdParty/PhpShell/README -text
 framework/3rdParty/PhpShell/php-shell-cmd.php -text
+framework/3rdParty/PhpShell/php-shell-init.php -text
 framework/3rdParty/SafeHtml/HTMLSax3.php -text
 framework/3rdParty/SafeHtml/HTMLSax3/Decorators.php -text
 framework/3rdParty/SafeHtml/HTMLSax3/States.php -text

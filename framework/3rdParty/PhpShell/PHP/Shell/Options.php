@@ -1,7 +1,7 @@
 <?php
 
 require_once(dirname(__FILE__)."/Extensions.php"); /* for the PHP_Shell_Interface */
-  
+
 /**
 *
 */
@@ -28,10 +28,10 @@ class PHP_Shell_Options implements PHP_Shell_Extension {
     * @see registerOptionAlias
     */
     protected $option_aliases = array();
- 
+
     public function register() {
-        $cmd = PHP_Shell_Commands::getInstance();
-        $cmd->registerCommand('#^:set #', $this, 'cmdSet', ':set <var>', 'set a shell variable');
+//        $cmd = PHP_Shell_Commands::getInstance();
+ //       $cmd->registerCommand('#^:set #', $this, 'cmdSet', ':set <var>', 'set a shell variable');
     }
 
     /**
@@ -41,7 +41,7 @@ class PHP_Shell_Options implements PHP_Shell_Extension {
     * @param object a object handle
     * @param string method-name of the setor in the object
     * @param string (unused)
-    */ 
+    */
     public function registerOption($option, $obj, $setor, $getor = null) {
         if (!method_exists($obj, $setor)) {
             throw new Exception(sprintf("setor %s doesn't exist on class %s", $setor, get_class($obj)));
@@ -88,15 +88,15 @@ class PHP_Shell_Options implements PHP_Shell_Extension {
         }
 
         $this->option_aliases[trim($alias)] = trim($option);
-    
+
     }
 
     /**
     * execute a :set command
     *
     * calls the setor for the :set <option>
-    * 
-    * 
+    *
+    *
     */
     private function execute($key, $value) {
         /* did we hit a alias (bg for backgroud) ? */
@@ -110,7 +110,7 @@ class PHP_Shell_Options implements PHP_Shell_Extension {
             print (':set '.$key.' failed: unknown key');
             return;
         }
-        
+
         if (!isset($this->options[$opt_key]["setor"])) {
             return;
         }
