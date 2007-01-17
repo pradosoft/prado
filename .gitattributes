@@ -2117,6 +2117,8 @@ tests/FunctionalTests/active-controls/protected/pages/DatePickerInCallback.page 
 tests/FunctionalTests/active-controls/protected/pages/DatePickerInCallback.php -text
 tests/FunctionalTests/active-controls/protected/pages/DelayedCallback.page -text
 tests/FunctionalTests/active-controls/protected/pages/DelayedCallback.php -text
+tests/FunctionalTests/active-controls/protected/pages/DynamicRepeaterDataTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/DynamicRepeaterDataTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/EventTriggeredCallback.page -text
 tests/FunctionalTests/active-controls/protected/pages/EventTriggeredCallback.php -text
 tests/FunctionalTests/active-controls/protected/pages/GerTurno2.page -text

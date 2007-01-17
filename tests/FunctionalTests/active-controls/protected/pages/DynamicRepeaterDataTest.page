@@ -1,0 +1,16 @@
+<com:TForm>
+<h1>Dynamic Repeater Data Test</h1>
+<com:TActiveButton Text="Click Me!" OnClick="button_clicked" OnCallback="button_callback"/>
+
+<com:TActivePanel ID="panel1" ActiveControl.EnableUpdate="true">
+<com:TRepeater id="_repeater">
+	<prop:ItemTemplate>
+		<com:TActiveButton Text="Button <%# $this->DataItem %>" OnClick="Page.rpt_button_clicked" />
+		<com:TActiveLabel ID="label1" />
+	</prop:ItemTemplate>
+</com:TRepeater>
+</com:TActivePanel>
+
+<com:TJavascriptLogger />
+
+</com:TForm>

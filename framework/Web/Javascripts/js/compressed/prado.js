@@ -259,11 +259,11 @@ $('PRADO_POSTBACK_TARGET').value=options['EventTarget'];$('PRADO_POSTBACK_PARAME
 Prado.Element={setValue:function(element,value)
 {var el=$(element);if(el&&typeof(el.value)!="undefined")
 el.value=value;},select:function(element,method,value,total)
-{var el=$(element);var selection=Prado.Element.Selection;if(typeof(selection[method])=="function")
+{var el=$(element);if(!el)return;var selection=Prado.Element.Selection;if(typeof(selection[method])=="function")
 {control=selection.isSelectable(el)?[el]:selection.getListElements(element,total);selection[method](control,value);}},click:function(element)
 {var el=$(element);if(el)
 Event.fireEvent(el,'click');},setAttribute:function(element,attribute,value)
-{var el=$(element);if((attribute=="disabled"||attribute=="multiple")&&value==false)
+{var el=$(element);if(!el)return;if((attribute=="disabled"||attribute=="multiple")&&value==false)
 el.removeAttribute(attribute);else if(attribute.match(/^on/i))
 {try
 {eval("(func = function(event){"+value+"})");el[attribute]=func;}
@@ -271,7 +271,7 @@ catch(e)
 {throw"Error in evaluating '"+value+"' for attribute "+attribute+" for element "+element.id;}}
 else
 el.setAttribute(attribute,value);},setOptions:function(element,options)
-{var el=$(element);if(el&&el.tagName.toLowerCase()=="select")
+{var el=$(element);if(!el)return;if(el&&el.tagName.toLowerCase()=="select")
 {el.options.length=options.length;for(var i=0;i<options.length;i++)
 el.options[i]=new Option(options[i][0],options[i][1]);}},focus:function(element)
 {var obj=$(element);if(typeof(obj)!="undefined"&&typeof(obj.focus)!="undefined")

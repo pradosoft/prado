@@ -2943,6 +2943,7 @@ Prado.Element =
 	select : function(element, method, value, total)
 	{
 		var el = $(element);
+		if(!el) return;
 		var selection = Prado.Element.Selection;
 		if(typeof(selection[method]) == "function")
 		{
@@ -2961,6 +2962,7 @@ Prado.Element =
 	setAttribute : function(element, attribute, value)
 	{
 		var el = $(element);
+		if(!el) return;
 		if((attribute == "disabled" || attribute == "multiple") && value==false)
 			el.removeAttribute(attribute);
 		else if(attribute.match(/^on/i)) //event methods
@@ -2982,6 +2984,7 @@ Prado.Element =
 	setOptions : function(element, options)
 	{
 		var el = $(element);
+		if(!el) return;
 		if(el && el.tagName.toLowerCase() == "select")
 		{
 			el.options.length = options.length;
