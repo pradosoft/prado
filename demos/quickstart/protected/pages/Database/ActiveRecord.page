@@ -248,7 +248,7 @@ $finder->find($criteria); //the 2nd parameter for find() is ignored.
 </p>
     <ul id="u2" class="block-content">
         <li><tt>Parameters</tt> -- name value parameter pairs.</li>
-        <li><tt>OrderBy</tt> -- column name and ordering pairs.</li>
+        <li><tt>OrdersBy</tt> -- column name and ordering pairs.</li>
         <li><tt>Condition</tt> -- parts of the WHERE SQL conditions.</li>
         <li><tt>Limit</tt> -- maximum number of records to return.</li>
         <li><tt>Offset</tt> -- record offset in the table.</li>
