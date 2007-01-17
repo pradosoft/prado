@@ -16,7 +16,7 @@
  * @package System.I18N.core
  */
 
- 
+
 // +----------------------------------------------------------------------+
 // | PEAR :: File :: Gettext :: MO                                        |
 // +----------------------------------------------------------------------+
@@ -33,43 +33,43 @@
 
 /**
  * File::Gettext::MO
- * 
+ *
  * @author      Michael Wallner <mike@php.net>
  * @license     PHP License
  */
 
 require_once dirname(__FILE__).'/TGettext.php';
 
-/** 
+/**
  * File_Gettext_MO
- * 
+ *
  * GNU MO file reader and writer.
  *
  * @author      Michael Wallner <mike@php.net>
  * @version     $Revision: 1.3 $
  * @access      public
- * @package System.I18N.core 
+ * @package System.I18N.core
  */
 class TGettext_MO extends TGettext
 {
     /**
      * file handle
-     * 
+     *
      * @access  private
      * @var     resource
      */
     protected $_handle = null;
-    
+
     /**
      * big endianess
-     * 
+     *
      * Whether to write with big endian byte order.
-     * 
+     *
      * @access  public
      * @var     bool
      */
     protected $writeBigEndian = false;
-    
+
     /**
      * Constructor
      *
@@ -96,7 +96,7 @@ class TGettext_MO extends TGettext
         }
         return null;
     }
-    
+
     /**
      * _readInt
      *
@@ -110,7 +110,7 @@ class TGettext_MO extends TGettext
 		$unpacked = unpack($bigendian ? 'N' : 'V', $this->_read(4));
         return array_shift($unpacked);
     }
-    
+
     /**
      * _writeInt
      *
@@ -122,7 +122,7 @@ class TGettext_MO extends TGettext
     {
         return $this->_write(pack($this->writeBigEndian ? 'N' : 'V', (int) $int));
     }
-    
+
     /**
      * _write
      *
@@ -134,7 +134,7 @@ class TGettext_MO extends TGettext
     {
         return fwrite($this->_handle, $data);
     }
-    
+
     /**
      * _writeStr
      *
@@ -146,13 +146,13 @@ class TGettext_MO extends TGettext
     {
         return $this->_write($string . "\0");
     }
-    
+
     /**
      * _readStr
      *
      * @access  private
      * @return  string
-     * @param   array   $params     associative array with offset and length 
+     * @param   array   $params     associative array with offset and length
      *                              of the string
      */
     function _readStr($params)
@@ -160,7 +160,7 @@ class TGettext_MO extends TGettext
         fseek($this->_handle, $params['offset']);
         return $this->_read($params['length']);
     }
-    
+
     /**
      * Load MO file
      *
@@ -173,7 +173,7 @@ class TGettext_MO extends TGettext
         if (!isset($file)) {
             $file = $this->file;
         }
-        
+
         // open MO file
         if (!is_resource($this->_handle = @fopen($file, 'rb'))) {
             return false;
@@ -183,7 +183,7 @@ class TGettext_MO extends TGettext
             @fclose($this->_handle);
             return false;
         }
-        
+
         // read (part of) magic number from MO file header and define endianess
 
 		//unpack returns a reference????
@@ -193,11 +193,11 @@ class TGettext_MO extends TGettext
             case -34:
                 $be = false;
             break;
-            
+
             case -107:
                 $be = true;
             break;
-            
+
             default:
                 return false;
         }
@@ -206,15 +206,15 @@ class TGettext_MO extends TGettext
         if (0 !== ($_rev = $this->_readInt($be))) {
             return false;
         }
-       
+
         // count of strings in this file
         $count = $this->_readInt($be);
-        
+
         // offset of hashing table of the msgids
         $offset_original = $this->_readInt($be);
         // offset of hashing table of the msgstrs
         $offset_translat = $this->_readInt($be);
-        
+
         // move to msgid hash table
         fseek($this->_handle, $offset_original);
         // read lengths and offsets of msgids
@@ -225,7 +225,7 @@ class TGettext_MO extends TGettext
                 'offset' => $this->_readInt($be)
             );
         }
-        
+
         // move to msgstr hash table
         fseek($this->_handle, $offset_translat);
         // read lengths and offsets of msgstrs
@@ -236,27 +236,27 @@ class TGettext_MO extends TGettext
                 'offset' => $this->_readInt($be)
             );
         }
-        
+
         // read all
         for ($i = 0; $i < $count; $i++) {
-            $this->strings[$this->_readStr($original[$i])] = 
+            $this->strings[$this->_readStr($original[$i])] =
                 $this->_readStr($translat[$i]);
         }
-        
+
         // done
         @flock($this->_handle, LOCK_UN);
         @fclose($this->_handle);
         $this->_handle = null;
-        
+
         // check for meta info
         if (isset($this->strings[''])) {
             $this->meta = parent::meta2array($this->strings['']);
             unset($this->strings['']);
         }
-        
+
         return true;
     }
-    
+
     /**
      * Save MO file
      *
@@ -269,7 +269,7 @@ class TGettext_MO extends TGettext
         if (!isset($file)) {
             $file = $this->file;
         }
-        
+
         // open MO file
         if (!is_resource($this->_handle = @fopen($file, 'wb'))) {
             return false;
@@ -279,36 +279,36 @@ class TGettext_MO extends TGettext
             @fclose($this->_handle);
             return false;
         }
-        
+
         // write magic number
         if ($this->writeBigEndian) {
             $this->_write(pack('c*', 0x95, 0x04, 0x12, 0xde));
         } else {
             $this->_write(pack('c*', 0xde, 0x12, 0x04, 0x95));
         }
-        
+
         // write file format revision
         $this->_writeInt(0);
-        
+
         $count = count($this->strings) + ($meta = (count($this->meta) ? 1 : 0));
         // write count of strings
         $this->_writeInt($count);
-        
+
         $offset = 28;
         // write offset of orig. strings hash table
         $this->_writeInt($offset);
-        
+
         $offset += ($count * 8);
         // write offset transl. strings hash table
         $this->_writeInt($offset);
-        
+
         // write size of hash table (we currently ommit the hash table)
         $this->_writeInt(0);
-        
+
         $offset += ($count * 8);
         // write offset of hash table
         $this->_writeInt($offset);
-        
+
         // unshift meta info
         if ($this->meta) {
             $meta = '';
@@ -319,7 +319,7 @@ class TGettext_MO extends TGettext
         } else {
             $strings = $this->strings;
         }
-        
+
         // write offsets for original strings
         foreach (array_keys($strings) as $o) {
             $len = strlen($o);
@@ -327,7 +327,7 @@ class TGettext_MO extends TGettext
             $this->_writeInt($offset);
             $offset += $len + 1;
         }
-        
+
         // write offsets for translated strings
         foreach ($strings as $t) {
             $len = strlen($t);
@@ -345,11 +345,11 @@ class TGettext_MO extends TGettext
         foreach ($strings as $t) {
             $this->_writeStr($t);
         }
-        
+
         // done
         @flock($this->_handle, LOCK_UN);
         @fclose($this->_handle);
-        chmod($file,0777);
+        chmod($file,PRADO_CHMOD);
         return true;
     }
 }

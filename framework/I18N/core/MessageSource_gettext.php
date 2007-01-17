@@ -432,9 +432,9 @@ class MessageSource_gettext extends MessageSource
 
 		$dir = dirname($mo_file);
 		if(!is_dir($dir))
-		{ 
+		{
 			@mkdir($dir);
-			@chmod($dir,0777);
+			@chmod($dir,PRADO_CHMOD);
 		}
 		if(!is_dir($dir))
 			throw new TException("Unable to create directory $dir");

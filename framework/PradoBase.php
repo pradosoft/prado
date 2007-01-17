@@ -18,6 +18,11 @@
  */
 if(!defined('PRADO_DIR'))
 	define('PRADO_DIR',dirname(__FILE__));
+/**
+ * Defines the default permission for writable directories and files
+ */
+if(!defined('PRADO_CHMOD'))
+	define('PRADO_CHMOD',0777);
 
 /**
  * Includes the classes essential for PradoBase class
@@ -68,7 +73,7 @@ class PradoBase
 	 */
 	public static function getVersion()
 	{
-		return '3.1.0a';
+		return '3.1.0b';
 	}
 
 	/**

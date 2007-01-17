@@ -455,12 +455,12 @@ class TTarFileExtractor
         if ($v_extract_file) {
           if ($v_header['typeflag'] == "5") {
             if (!@file_exists($v_header['filename'])) {
-                if (!@mkdir($v_header['filename'], 0777)) {
+                if (!@mkdir($v_header['filename'], PRADO_CHMOD)) {
                     $this->_error('Unable to create directory {'
 					              .$v_header['filename'].'}');
                     return false;
                 }
-                chmod($v_header['filename'], 0777);
+                chmod($v_header['filename'], PRADO_CHMOD);
             }
           } else {
               if (($v_dest_file = @fopen($v_header['filename'], "wb")) == 0) {
@@ -546,11 +546,11 @@ class TTarFileExtractor
             (!$this->_dirCheck($p_parent_dir)))
              return false;
 
-        if (!@mkdir($p_dir, 0777)) {
+        if (!@mkdir($p_dir, PRADO_CHMOD)) {
             $this->_error("Unable to create directory '$p_dir'");
             return false;
         }
-        chmod($p_dir,0777);
+        chmod($p_dir,PRADO_CHMOD);
 
         return true;
     }

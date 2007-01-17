@@ -177,7 +177,7 @@ class TGlobalization extends TModule
 					if(@mkdir($config['source'])===false)
 					throw new TConfigurationException('globalization_source_path_failed',
 						$config['source']);
-					chmod($config['source'], 0777); //make it deletable
+					chmod($config['source'], PRADO_CHMOD); //make it deletable
 				}
 			}
 			else
@@ -193,7 +193,7 @@ class TGlobalization extends TModule
 				if(@mkdir($config['cache'])===false)
 					throw new TConfigurationException('globalization_cache_path_failed',
 						$config['cache']);
-				chmod($config['cache'], 0777); //make it deletable
+				chmod($config['cache'], PRADO_CHMOD); //make it deletable
 			}
 		}
 		$this->_translation = $config;
