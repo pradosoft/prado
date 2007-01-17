@@ -105,7 +105,7 @@ class PradoBase
 	 */
 	public static function poweredByPrado()
 	{
-		return '<a title="Powered by PRADO" href="http://www.pradosoft.com/"><img src="http://www.pradosoft.com/images/powered.gif" style="border-width:0px;" alt="Powered by PRADO" /></a>';
+		return '<a title="Powered by PRADO" href="http://www.pradosoft.com/"><img src="http://www.pradosoft.com/images/powered.gif" style="border-width:0px;" alt="Powered by PRADO" target="_blank" /></a>';
 	}
 
 	/**

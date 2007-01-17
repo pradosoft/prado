@@ -200,7 +200,7 @@
                destdir="${build.doc.dir}/manual"
                sourcepath="${build.src.dir}/framework"
                ignorelist="*pradolite.php,*prado-cli.php,*3rdParty/*,*Javascripts/*,*I18N/core/*"
-               output="CHM:default:default,HTML:Smarty:PradoSoft" />
+               output="HTML:frames:default,CHM:default:default,HTML:Smarty:PradoSoft" />
 
     <echo>Indexing API manuals...</echo>
     <prado-api-index docdir="${build.doc.dir}/manual/HTMLSmartyConverter" todir="${build.doc.dir}/manual/HTMLSmartyConverter" />
@@ -235,7 +235,7 @@
     <if>
       <equals arg1="${prado.winbuild}" arg2="true"/>
       <then>
-        <move file="${build.doc.dir}/manual/CHMdefaultConverter/documentation.chm" tofile="${build.src.dir}/docs/manual.chm" />
+        <move file="${build.doc.dir}/prado3_manual.chm" tofile="${build.src.dir}/docs/prado3_manual.chm" />
       </then>
     </if>
 
