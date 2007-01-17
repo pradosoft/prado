@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application id="address-book" mode="Debug">
+
+<paths>
+	<using namespace="System.Data.*" />
+	<using namespace="System.Data.ActiveRecord.*" />
+	<using namespace="System.Web.Services.TSoapService" />
+</paths>
+
+<modules>
+	<!-- database configuration for Active Record -->
+	<module id="sqlite-db" class="TActiveRecordConfig">
+		<database ConnectionString="sqlite:./protected/pages/sqlite.db" />
+	</module>
+</modules>
+
+<services>
+	<!-- soap entry point definition for address book service -->
+	<service id="soap" class="TSoapService">
+		<soap id="address-book"
+			provider="Application.pages.AddressProvider"
+			ClassMaps="AddressRecord" />
+	</service>
+</services>
+
+</application>

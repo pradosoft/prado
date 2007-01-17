@@ -204,7 +204,11 @@ EOD;
 			return Prado::getApplication();
 		}
 		else
+		{
+			echo '+'.str_repeat('-',77)."+\n";
 			echo '** Unable to load Prado application in directory "'.$directory."\".\n";
+			echo '+'.str_repeat('-',77)."+\n";
+		}
 		return false;
 	}
 
@@ -684,13 +688,12 @@ if(class_exists('PHP_Shell_Commands', false))
 			$args = explode(" ", trim($l));
 			if(count($args) > 2)
 			{
+				$app_dir = '.';
+				if(Prado::getApplication()!==null)
+					$app_dir = dirname(Prado::getApplication()->getBasePath());
+				$args = array($args[0],$args[1], $args[2],$app_dir);
 				if(count($args)>3)
-				{
-					$app_dir = '.';
-					if(Prado::getApplication()!==null)
-						$app_dir = dirname(Prado::getApplication()->getBasePath());
 					$args = array($args[0],$args[1], $args[2],$app_dir,'soap');
-				}
 				$cmd = new PradoCommandLineActiveRecordGen;
 				$cmd->performAction($args);
 			}
