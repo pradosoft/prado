@@ -233,7 +233,7 @@ class TAssetManager extends TModule
 		if(!is_dir($dst))
 		{
 			@mkdir($dst);
-			@chmod($dst, 0777);
+			@chmod($dst, PRADO_CHMOD);
 		}
 		$dstFile=$dst.'/'.basename($src);
 		if(@filemtime($dstFile)<@filemtime($src))
@@ -256,7 +256,7 @@ class TAssetManager extends TModule
 		if(!is_dir($dst))
 		{
 			@mkdir($dst);
-			@chmod($dst, 0777);
+			@chmod($dst, PRADO_CHMOD);
 		}
 		$folder=@opendir($src);
 		while($file=@readdir($folder))

@@ -314,7 +314,7 @@ class TApplication extends TComponent
 				{
 					if(@mkdir($this->_runtimePath)===false)
 						throw new TConfigurationException('application_runtimepath_failed',$this->_runtimePath);
-					chmod($this->_runtimePath, 0777); //make it deletable
+					chmod($this->_runtimePath, PRADO_CHMOD); //make it deletable
 				}
 			}
 		}
