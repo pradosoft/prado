@@ -10,10 +10,27 @@
 	backgroundGradientColors="0" 
 	layout="vertical" creationComplete="initApp()">
 	<mx:states>
-		<mx:State name="details">
+		<mx:State name="grid">
+			<mx:RemoveChild target="{form1}"/>
+			<mx:AddChild relativeTo="{panel1}" position="lastChild">
+				<mx:HBox id="hbox1">
+					<mx:DataGrid id="list1" dataProvider="{addrSrv.getAllAddress.lastResult}" 
+							width="350" click="currentState='details'">
+						<mx:columns>
+							<mx:DataGridColumn headerText="Name" width="175" dataField="username"/>
+							<mx:DataGridColumn headerText="Phone" dataField="phone"/>
+						</mx:columns>
+					</mx:DataGrid>
+				</mx:HBox>
+			</mx:AddChild>
+			<mx:SetProperty target="{button2}" name="visible" value="true"/>
+			<mx:SetProperty target="{button3}" name="visible" value="true"/>
+			<mx:SetProperty target="{controlbar1}" name="height"/>
+		</mx:State>
+		<mx:State name="details" basedOn="grid">
 			<mx:AddChild relativeTo="{hbox1}" position="lastChild">
 				<mx:Form>
-					<mx:FormItem label="Username:">
+					<mx:FormItem label="Name:">
 						<mx:TextInput id="_username" text="{list1.selectedItem.username}"/>
 					</mx:FormItem>
 					<mx:FormItem label="Phone:">
@@ -28,10 +45,15 @@
 	<mx:PhoneNumberValidator id="val1" source="{_phone}" property="text" />
 	<mx:StringValidator id="val2" source="{_username}" property="text"
 		minLength="3" maxLength="20" />
+	
+	<mx:Validator id="val3" source="{login_name}" property="text" />
+	<mx:Validator id="val4" source="{login_pass}" property="text" />
+	<mx:Validator id="val5" requiredFieldError="Username and password did not match!" />	
 
 	<mx:WebService id="addrSrv" fault="dataError(event)">
 		<mx:operation name="saveAddress" result="addrSrv.getAllAddress()" />
 		<mx:operation name="deleteAddress" result="addrSrv.getAllAddress()" />
+		<mx:operation name="login" result="loginReturned(event)" />
 	</mx:WebService>
 
 	<mx:Script>
@@ -49,7 +71,6 @@
 			private function initApp():void
 			{
 				addrSrv.loadWSDL(getAddressBookWsdl());
-				addrSrv.getAllAddress();
 			}
 			
 			private function getAddressBookWsdl():String
@@ -75,31 +96,62 @@
 					data.username = _username.text;
 					data.phone = _phone.text;
 					addrSrv.saveAddress(data);
-					currentState='';
+					currentState='grid';
 				}
 			}
 			
 			private function doDelete():void
 			{
 				addrSrv.deleteAddress(list1.selectedItem.id);
-				currentState='';
+				currentState='grid';
+			}
+			
+			private function doLogin():void
+			{
+				if(Validator.validateAll([val3, val4]).length == 0)
+				{
+					addrSrv.login(login_name.text, login_pass.text);
+					login_name.enabled=false;
+					login_pass.enabled=false;
+					progress1.visible=true;
+				}	
+			}
+			
+			private function loginReturned(event:ResultEvent):void
+			{
+				if(!event.result)
+				{
+					login_name.enabled=true;
+					login_pass.enabled=true;
+					progress1.visible=false;
+					Alert.show("Username and password did not match!", "Login Error");
+				}
+				else
+				{
+					addrSrv.getAllAddress();
+					currentState='grid';
+				}
 			}
 		]]>
 	</mx:Script>
-
-	
+		
 	<mx:Panel layout="vertical" title="Prado Address Book" id="panel1" resizeEffect="Resize">
-		<mx:HBox id="hbox1">
-			<mx:DataGrid id="list1" dataProvider="{addrSrv.getAllAddress.lastResult}" width="350" click="currentState='details'">
-				<mx:columns>
-					<mx:DataGridColumn headerText="Name" width="150" dataField="username"/>
-					<mx:DataGridColumn headerText="Phone" dataField="phone"/>
-				</mx:columns>
-			</mx:DataGrid>
-		</mx:HBox>
-		<mx:ControlBar id="controlbar1">
-			<mx:Button label="New" click="list1.selectedIndex=-1; currentState='details'"/>
-			<mx:Button label="Delete" enabled="{list1.selectedIndex >= 0}" click="doDelete()"/>
+		<mx:Form id="form1">
+			<mx:FormItem label="Username:">
+				<mx:TextInput id="login_name" />
+			</mx:FormItem>
+			<mx:FormItem label="Password:">
+				<mx:TextInput id="login_pass"/>
+			</mx:FormItem>
+			<mx:FormItem>
+				<mx:Button label="Login" click="doLogin()" id="button1"/>
+			</mx:FormItem>
+		<mx:ProgressBar width="100%" indeterminate="true" id="progress1" showEffect="Fade" hideEffect="Fade"
+				labelPlacement="center" label="Verifying..." color="#ffffff" visible="false"/>
+		</mx:Form>
+		<mx:ControlBar id="controlbar1" height="10">
+			<mx:Button label="New" click="list1.selectedIndex=-1; currentState='details'" visible="false" id="button2"/>
+			<mx:Button label="Delete" enabled="{list1.selectedIndex >= 0}" click="doDelete()" visible="false" id="button3"/>
 		</mx:ControlBar>
 	</mx:Panel>
 	

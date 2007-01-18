@@ -2,24 +2,15 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<title>Prado Address Book</title>
-	<style type="text/css">
-	/*<![CDATA[*/
-		body
-		{
-			margin:0; padding: 0;
-		}
-	/*]]>*/
-	</style>
 </head>
 <body>
-
-<div style="margin: 5em auto">
+<h1>Prado + Flex + Soap Demo</h1>
+<h3>Flash player version 9 or greater is required.</h3>
+<p>Username/password: demo/demo </p>
 <com:Application.pages.FlexApp
 	BinDirectory=<%~ flex/bin %>
 	AppName="flex_address_book"
 	Parameters.wsdl="<%= $this->Request->constructUrl('soap', 'address-book.wsdl') %>"
 	Width="100%" Height="300"/>
-</div>
-
 </body>
 </html>

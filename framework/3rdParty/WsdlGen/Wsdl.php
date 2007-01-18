@@ -85,7 +85,7 @@ class Wsdl
 	{
 		$this->serviceName = $name;
 		if ($serviceUri == '') $serviceUri = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'];
-		$this->serviceUri = $serviceUri;
+		$this->serviceUri = str_replace('&amp;', '&', $serviceUri);
 		$this->types = new ArrayObject();
 		$this->targetNamespace = 'urn:'.$name.'wsdl';
 	}

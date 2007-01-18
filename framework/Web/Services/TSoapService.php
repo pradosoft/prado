@@ -288,6 +288,10 @@ class TSoapServer extends TApplicationComponent
 	private $_persistent=false;
 	private $_wsdlUri='';
 
+	private $_requestedMethod;
+
+	private $_server;
+
 	/**
 	 * @return string the ID of the SOAP server
 	 */
@@ -316,31 +320,81 @@ class TSoapServer extends TApplicationComponent
 		{
 			Prado::using($provider);
 			$providerClass=($pos=strrpos($provider,'.'))!==false?substr($provider,$pos+1):$provider;
+			$this->guessMethodCallRequested($providerClass);
 			$server=$this->createServer();
-			$server->setClass($providerClass);
+			$server->setClass($providerClass, $this);
 			if($this->_persistent)
 				$server->setPersistence(SOAP_PERSISTENCE_SESSION);
 		}
 		else
 			$server=$this->createServer();
 		try
-		{		
+		{
 			$server->handle();
 		}
 		catch (Exception $e)
 		{
-			$server->fault("SERVER", $e->getMessage(),"", $e->__toString(), '');
+			if($this->getApplication()->getMode()===TApplicationMode::Debug)
+				$this->fault($e->getMessage(), $e->__toString());
+			else
+				$this->fault($e->getMessage());
 		}
 	}
 
 	/**
+	 * Generate a SOAP fault message.
+	 * @param string message title
+	 * @param mixed message details
+	 * @param string message code, defalt is 'SERVER'.
+	 * @param string actors
+	 * @param string message name
+	 */
+	public function fault($title, $details='', $code='SERVER', $actor='', $name='')
+	{
+		$this->_server->fault($code, $title, $actor, $details, $name);
+	}
+
+	/**
+	 * Guess the SOAP method request from the actual SOAP message
+	 *
+	 * @param string $class current handler class.
+	 */
+	protected function guessMethodCallRequested($class)
+	{
+		$namespace = $class.'wsdl';
+		$message = file_get_contents("php://input");
+		$matches= array();
+		if(preg_match('/xmlns:([^=]+)="urn:'.$namespace.'"/', $message, $matches))
+		{
+			if(preg_match('/<'.$matches[1].':([a-zA-Z_]+[a-zA-Z0-9_]+)/', $message, $method))
+			{
+				$this->_requestedMethod = $method[1];
+			}
+		}
+	}
+
+	/**
+	 * Soap method guessed from the SOAP message received.
+	 * @return string soap method request, null if not found.
+	 */
+	public function getRequestedMethod()
+	{
+		return $this->_requestedMethod;
+	}
+
+	/**
 	 * Creates the SoapServer instance.
+	 * @return SoapServer
 	 */
 	protected function createServer()
 	{
-		if($this->getApplication()->getMode()===TApplicationMode::Debug)
-			ini_set("soap.wsdl_cache_enabled",0);
-		return new SoapServer($this->getWsdlUri(),$this->getOptions());
+		if($this->_server===null)
+		{
+			if($this->getApplication()->getMode()===TApplicationMode::Debug)
+				ini_set("soap.wsdl_cache_enabled",0);
+			$this->_server = new SoapServer($this->getWsdlUri(),$this->getOptions());
+		}
+		return $this->_server;
 	}
 
 	/**
@@ -533,7 +587,7 @@ class TSoapServer extends TApplicationComponent
 
 	/**
 	 * @return string comma delimit list of class names
-	 */	
+	 */
 	public function setClassMaps($classes)
 	{
 		$this->_classMap = $classes;
