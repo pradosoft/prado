@@ -76,13 +76,17 @@ class Wsdl
 	 */
 	private $bindingTransport = 'http://schemas.xmlsoap.org/soap/http';
 
+	private $_encoding='';
+
 	/**
 	 * Creates a new Wsdl thing
 	 * @param 	string		$name the name of the service.
 	 * @param 	string		$serviceUri		The URI of the service that handles this WSDL
+	 * @param string character encoding
 	 */
-	public function __construct($name, $serviceUri='')
+	public function __construct($name, $serviceUri='', $encoding='')
 	{
+		$this->_encoding = $encoding;
 		$this->serviceName = $name;
 		if ($serviceUri == '') $serviceUri = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'];
 		$this->serviceUri = str_replace('&amp;', '&', $serviceUri);
@@ -101,7 +105,9 @@ class Wsdl
 	 */
 	protected function buildWsdl()
 	{
-		$xml = '<?xml version="1.0" ?>
+		$encoding = $this->_encoding==='' ? '' : 'encoding="'.$this->_encoding.'"';
+
+		$xml = '<?xml version="1.0" '.$encoding.'?>
                  <definitions name="'.$this->serviceName.'" targetNamespace="'.$this->targetNamespace.'"
                      xmlns="http://schemas.xmlsoap.org/wsdl/"
                      xmlns:tns="'.$this->targetNamespace.'"

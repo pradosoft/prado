@@ -89,11 +89,12 @@ class WsdlGenerator
 	 * WSDL can then be retrieved by calling
 	 * @param 	string		$className		The name of the class to generate for
 	 * @param 	string		$serviceUri		The URI of the service that handles this WSDL
+	 * @param string $encoding character encoding.
 	 * @return 	void
 	 */
-	public function generateWsdl($className, $serviceUri='')
+	public function generateWsdl($className, $serviceUri='',$encoding='')
 	{
-		$this->wsdlDocument = new Wsdl($className, $serviceUri);
+		$this->wsdlDocument = new Wsdl($className, $serviceUri, $encoding);
 
 		$classReflect = new ReflectionClass($className);
 		$methods = $classReflect->getMethods();
@@ -116,11 +117,12 @@ class WsdlGenerator
 	 * Static method that generates and outputs the generated wsdl
 	 * @param 		string		$className		The name of the class to export
 	 * @param 		string		$serviceUri		The URI of the service that handles this WSDL
+	 * @param string $encoding character encoding.
 	 */
-	public static function generate($className, $serviceUri='')
+	public static function generate($className, $serviceUri='', $encoding='')
 	{
 		$generator = WsdlGenerator::getInstance();
-		$generator->generateWsdl($className, $serviceUri);
+		$generator->generateWsdl($className, $serviceUri,$encoding);
 		//header('Content-type: text/xml');
 		return $generator->getWsdl();
 		//exit();

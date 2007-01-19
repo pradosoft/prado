@@ -244,11 +244,12 @@ class TSoapService extends TService
 	{
 		Prado::trace("Running SOAP service",'System.Web.Services.TSoapService');
 		$server=$this->createServer();
+		$this->getResponse()->setContentType('text/xml');
+		$this->getResponse()->setCharset($server->getEncoding());
 		if($this->getIsWsdlRequest())
 		{
 			// server WSDL file
 			Prado::trace("Generating WSDL",'System.Web.Services.TSoapService');
-			$this->getResponse()->setContentType('text/xml');
 			$this->getResponse()->write($server->getWsdl());
 		}
 		else
@@ -441,14 +442,14 @@ class TSoapServer extends TApplicationComponent
 				if(is_string($wsdl))
 					return $wsdl;
 				Prado::using('System.3rdParty.WsdlGen.WsdlGenerator');
-				$wsdl=WsdlGenerator::generate($providerClass, $this->getUri());
+				$wsdl=WsdlGenerator::generate($providerClass, $this->getUri(), $this->getEncoding());
 				$cache->set(self::WSDL_CACHE_PREFIX.$providerClass,$wsdl);
 				return $wsdl;
 			}
 			else
 			{
 				Prado::using('System.3rdParty.WsdlGen.WsdlGenerator');
-				return WsdlGenerator::generate($providerClass, $this->getUri());
+				return WsdlGenerator::generate($providerClass, $this->getUri(), $this->getEncoding());
 			}
 		}
 		else
