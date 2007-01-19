@@ -44,7 +44,8 @@
     <exclude name="**/*~"/>
     <exclude name="**/pradolite.php" /><!-- will be generated -->
     <exclude name="**/prado-cli.php" /><!-- will be copied later -->
-    <exclude name="**/Configuration/**" /><!-- not ready yet -->
+    <exclude name="framework/Configuration/**" /><!-- not ready yet -->
+    <exclude name="framework/Web/UI/WebControls/Login*.*" /><!-- not ready yet -->
     <exclude name="**/Web/Security/**" /><!-- not ready yet -->
     <exclude name="**/TFeedService.php" /><!-- not ready yet -->
     <exclude name="**/IFeedContentProvider.php" /><!-- not ready yet -->
