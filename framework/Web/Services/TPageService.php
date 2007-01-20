@@ -428,34 +428,56 @@ class TPageService extends TService
 	public function run()
 	{
 		Prado::trace("Running page service",'System.Web.Services.TPageService');
-		$path=$this->getBasePath().'/'.strtr($this->getRequestedPagePath(),'.','/');
-		if(is_file($path.self::PAGE_FILE_EXT))
+		$this->_page=$this->createPage($this->getRequestedPagePath());
+		$this->runPage($this->_page,$this->_properties);
+	}
+
+	/**
+	 * Creates a page instance based on requested page path.
+	 * @param string requested page path
+	 * @return TPage the requested page instance
+	 * @throws THttpException if requested page path is invalid
+	 * @throws TConfigurationException if the page class cannot be found
+	 */
+	protected function createPage($pagePath)
+	{
+		$path=$this->getBasePath().'/'.strtr($pagePath,'.','/');
+		$hasTemplateFile=is_file($path.self::PAGE_FILE_EXT);
+		$hasClassFile=is_file($path.Prado::CLASS_FILE_EXT);
+
+		if(!$hasTemplateFile && !$hasClassFile)
+			throw new THttpException(404,'pageservice_page_unknown',$pagePath);
+
+		if($hasClassFile)
 		{
-			if(is_file($path.Prado::CLASS_FILE_EXT))
-			{
-				$className=basename($path);
-				if(!class_exists($className,false))
-					include_once($path.Prado::CLASS_FILE_EXT);
-				if(!class_exists($className,false))
-					throw new TConfigurationException('pageservice_pageclass_unknown',$className);
-			}
-			else
-				$className=$this->getBasePageClass();
-
-			$this->_page=Prado::createComponent($className);
-
-			$this->_page->setPagePath($this->getRequestedPagePath());
-			// initialize page properties with those set in configurations
-			foreach($this->_properties as $name=>$value)
-				$this->_page->setSubProperty($name,$value);
-
-			// set page template
-			$this->_page->setTemplate($this->getTemplateManager()->getTemplateByFileName($path.self::PAGE_FILE_EXT));
+			$className=basename($path);
+			if(!class_exists($className,false))
+				include_once($path.Prado::CLASS_FILE_EXT);
+			if(!class_exists($className,false) || !is_subclass_of($className,'TPage'))
+				throw new TConfigurationException('pageservice_pageclass_unknown',$className);
 		}
 		else
-			throw new THttpException(404,'pageservice_page_unknown',$this->getRequestedPagePath());
+			$className=$this->getBasePageClass();
 
-		$this->_page->run($this->getResponse()->createHtmlWriter());
+		$page=Prado::createComponent($className);
+		$page->setPagePath($pagePath);
+
+		if($hasTemplateFile)
+			$page->setTemplate($this->getTemplateManager()->getTemplateByFileName($path.self::PAGE_FILE_EXT));
+
+		return $page;
+	}
+
+	/**
+	 * Executes a page.
+	 * @param TPage the page instance to be run
+	 * @param array list of initial page properties
+	 */
+	protected function runPage($page,$properties)
+	{
+		foreach($properties as $name=>$value)
+			$page->setSubProperty($name,$value);
+		$page->run($this->getResponse()->createHtmlWriter());
 	}
 
 	/**
