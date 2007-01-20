@@ -54,9 +54,12 @@ class TAPCCache extends TCache
     */
 	public function init($config)
 	{
-		if(!extension_loaded('apc'))
-			throw new TConfigurationException('apccache_extension_required');
-		parent::init($config);
+		if(substr(php_sapi_name(), 0, 3) !== 'cli') //APC is usually disabled in CLI mode.
+		{
+			if(!extension_loaded('apc'))
+				throw new TConfigurationException('apccache_extension_required');
+			parent::init($config);
+		}
 	}
 
 	/**

@@ -109,4 +109,8 @@ class TInvalidPropertyException extends TSqlMapException
 {
 }
 
+class TSqlMapExecutionException extends TSqlMapException
+{
+}
+
 ?>

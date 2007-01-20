@@ -80,6 +80,16 @@ EOD;
 	 */
 	protected function getColumnDefinitions($table)
 	{
+		if(count($parts= explode('.', $table)) > 1)
+		{
+			$tablename = $parts[1];
+			$schema = $parts[0];
+		}
+		else
+		{
+			$tablename = $parts[0];
+			$schema = $this->getDefaultSchema();
+		}
 		// This query is made much more complex by the addition of the 'attisserial' field.
 		// The subquery to get that field checks to see if there is an internally dependent
 		// sequence on the field.
@@ -116,8 +126,8 @@ EOD;
 		$conn = $this->getDbConnection();
 		$conn->setActive(true);
 		$command = $conn->createCommand($sql);
-		$command->bindValue(':table', $table);
-		$command->bindValue(':schema', $this->getDefaultSchema());
+		$command->bindValue(':table', $tablename);
+		$command->bindValue(':schema', $schema);
 		$cols = array();
 		foreach($command->query() as $col)
 			$cols[$col['attname']] = $this->getColumnMetaData($col);
