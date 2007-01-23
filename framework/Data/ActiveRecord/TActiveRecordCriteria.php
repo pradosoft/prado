@@ -40,9 +40,16 @@ class TActiveRecordCriteria extends TComponent
 
 	/**
 	 * Creates a new criteria with given condition;
+	 * @param string sql string after the WHERE stanza
+	 * @param mixed named or indexed parameters, accepts as multiple arguments.
 	 */
 	public function __construct($condition=null,$parameters=array())
 	{
+		if(!is_array($parameters) && func_num_args() > 2)
+		{
+			$parameters = func_get_args();
+			array_shift($parameters);
+		}
 		$this->setCondition($condition);
 		$this->_parameters=new TAttributeCollection((array)$parameters);
 		$this->_ordersBy=new TAttributeCollection;
@@ -140,6 +147,11 @@ class TActiveRecordCriteria extends TComponent
 	public function setOffset($value)
 	{
 		$this->_offset=$value;
+	}
+
+	public function __toString()
+	{
+		return $this->getCondition();
 	}
 }
 

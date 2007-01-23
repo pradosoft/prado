@@ -130,16 +130,17 @@ EOD;
 		$command->bindValue(':schema', $schema);
 		$cols = array();
 		foreach($command->query() as $col)
-			$cols[$col['attname']] = $this->getColumnMetaData($col);
+			$cols[$col['attname']] = $this->getColumnMetaData($schema,$col);
 		return $cols;
 	}
 
 	/**
 	 * Returns the column details.
+	 * @param string schema name.
 	 * @param array column details.
 	 * @return TPgsqlColumnMetaData column meta data.
 	 */
-	protected function getColumnMetaData($col)
+	protected function getColumnMetaData($schema, $col)
 	{
 		$name = '"'.$col['attname'].'"'; //quote the column names!
 		$type = $col['type'];
@@ -147,7 +148,7 @@ EOD;
 		// A specific constant in the 7.0 source, the length is offset by 4.
 		$length = $col['atttypmod'] > 0 ? $col['atttypmod'] - 4 : -1;
 		$notNull = $col['attnotnull'];
-		$serial = $col['attisserial'] ? $this->getSerialName($col['adsrc']) : null;
+		$serial = $col['attisserial'] ? $schema.'.'.$this->getSerialName($col['adsrc']) : null;
 		$default = $serial === null && $col['atthasdef'] ? $col['adsrc'] : null;
 		return new TPgsqlColumnMetaData($name,$type,$length,$notNull,$serial,$default);
 	}
@@ -169,6 +170,17 @@ EOD;
 	 */
 	protected function getConstraintKeys($table)
 	{
+		if(count($parts= explode('.', $table)) > 1)
+		{
+			$tablename = $parts[1];
+			$schema = $parts[0];
+		}
+		else
+		{
+			$tablename = $parts[0];
+			$schema = $this->getDefaultSchema();
+		}
+
 		$sql = 'SELECT
 				pg_catalog.pg_get_constraintdef(pc.oid, true) AS consrc,
 				pc.contype
@@ -181,8 +193,8 @@ EOD;
 		';
 		$this->getDbConnection()->setActive(true);
 		$command = $this->getDbConnection()->createCommand($sql);
-		$command->bindValue(':table', $table);
-		$command->bindValue(':schema', $this->getDefaultSchema());
+		$command->bindValue(':table', $tablename);
+		$command->bindValue(':schema', $schema);
 		$keys['primary'] = array();
 		$keys['foreign'] = array();
 		foreach($command->query() as $row)

@@ -61,7 +61,7 @@ class TPgsqlColumnMetaData extends TComponent
 	{
 		switch(strtolower($this->_type))
 		{
-			case 'bit': case 'bit varying': case 'real': case 'serial':
+			case 'bit': case 'bit varying': case 'real': case 'serial': case 'int': case 'integer':
 				return 'integer';
 			case 'boolean':
 				return 'boolean';
