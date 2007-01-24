@@ -195,7 +195,7 @@ abstract class TDbMetaDataCommon extends TDbMetaData
 	 */
 	public function getDeleteByCriteriaCommand($conn, $criteria)
 	{
-		$conditions = $criteria!==null?$this->getSqlFromCriteria($conn,$criteria) : '';
+		$conditions = $this->getSqlFromCriteria($conn,$criteria);
 		$table = $this->getTableName();
 		$sql = "DELETE FROM {$table} {$conditions}";
 		return $this->createCriteriaBindedCommand($conn,$sql, $criteria);

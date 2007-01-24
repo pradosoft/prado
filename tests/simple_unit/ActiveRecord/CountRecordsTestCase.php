@@ -24,6 +24,12 @@ class CountRecordsTestCase extends UnitTestCase
 		$count = $finder->count('"order" > ?', 11);
 		$this->assertEqual($count,0);
 	}
+
+	function test_count_without_parameter()
+	{
+		$finder = DepartmentRecord::finder();
+		$this->assertEqual($finder->count(), 8);
+	}
 }
 
 ?>
