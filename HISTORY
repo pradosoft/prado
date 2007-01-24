@@ -1,7 +1,9 @@
-Version 3.0.7 
+Version 3.0.7 To be released
 ===================
 BUG: Ticket#481 - Unable to cancel navigation when handling OnSideBarButtonClickEvent (Qiang)
 BUG: typo in THttpResponse.writeFile() about sending headers (Qiang)
+BUG: Ticket#505 - cultureInfo::getEnglishName does not return an arrary (Wei)
+BUG: Ticket#508 - CultureInfo class: PHP Notice because of missing static declaration (Wei)
 
 Version 3.0.6 December 4, 2006
 ==============================
