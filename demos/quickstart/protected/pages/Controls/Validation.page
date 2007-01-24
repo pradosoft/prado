@@ -187,4 +187,4 @@ demonstrates conditional validation.
 <com:RunBar PagePath="Controls.Samples.TClientSideValidator.Home" />
 </p>
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

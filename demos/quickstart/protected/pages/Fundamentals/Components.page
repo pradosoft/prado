@@ -125,4 +125,4 @@ Static component instantiation is about creating components via <a href="?page=C
 </com:TTextHighlighter>
 </p>
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

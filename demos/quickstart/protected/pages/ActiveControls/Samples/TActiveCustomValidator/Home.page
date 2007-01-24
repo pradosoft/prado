@@ -1,5 +1,5 @@
 <com:TContent ID="body">
-<!-- $Id: Home.page 1405 2006-09-10 01:03:56Z wei $ -->
+<!-- $Id$ -->
 <h1>TActiveCustomValidator Samples (AJAX)</h1>
 
 <table class="sampletable">
@@ -19,4 +19,4 @@ Custom validator using callbacks:
 
 <com:TJavascriptLogger />
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

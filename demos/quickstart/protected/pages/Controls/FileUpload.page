@@ -24,4 +24,4 @@ If the file upload is unsuccessful, the property <tt>ErrorCode</tt> gives the er
 
 <com:RunBar PagePath="Controls.Samples.TFileUpload.Home" />
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

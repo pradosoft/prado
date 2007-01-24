@@ -43,4 +43,4 @@ This is a label with empty Text property and <b>nonempty body</b>.
 
 </div>
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

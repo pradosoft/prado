@@ -149,4 +149,4 @@ If a control wants to be able to load post data, such as <tt>TTextBox</tt>, it h
 <p id="660449" class="block-content">
 If a control wants to get data from some external data source, it can extend <tt>TDataBoundControl</tt>. <tt>TDataBoundControl</tt> implements the basic properties and methods that are needed for populating data via databinding. In fact, controls like <tt>TListControl</tt>, <tt>TRepeater</tt> are <tt>TDataGrid</tt> are all derived from it.
 </p>
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

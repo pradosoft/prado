@@ -1,5 +1,5 @@
 <com:TContent ID="body">
-<!-- $Id: ActiveCheckBox.page 1405 2006-09-10 01:03:56Z wei $ -->
+<!-- $Id$ -->
 <h1 id="126030">TActiveCustomValidator</h1>
 <com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveCustomValidator" />
 
@@ -20,4 +20,4 @@ will be true when validation is made during a callback request.
 
 <com:RunBar PagePath="ActiveControls.Samples.TActiveCustomValidator.Home" />
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

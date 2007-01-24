@@ -96,4 +96,4 @@ Localization tags represent localized texts. They are in the following format,
 where <tt>string</tt> will be translated to different languages according to the end-user's language preference. Localization tags are in fact shortcuts to the function call <tt>Prado::localize(string)</tt>.
 </p>
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

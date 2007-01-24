@@ -22,4 +22,4 @@ Hotspots can be added to <tt>TImageMap</tt> via its <tt>HotSpots</tt> property o
 
 <com:RunBar PagePath="Controls.Samples.TImageMap.Home" />
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

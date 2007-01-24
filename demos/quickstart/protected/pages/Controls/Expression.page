@@ -20,4 +20,4 @@ Be aware, since <tt>TExpression</tt> allows execution of arbitrary PHP code, in 
 
 <com:RunBar PagePath="Controls.Samples.TExpression.Home" />
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

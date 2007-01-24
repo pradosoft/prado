@@ -10,4 +10,4 @@ PRADO is primarily a presentational framework, although it is not limited to be 
 When a PRADO application is processing a page request, its static object diagram can be shown as follows,
 </p>
 <img src="<%~objectdiagram.gif%>" />
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

@@ -20,4 +20,4 @@
 
 <com:RunBar PagePath="ActiveControls.Samples.TActiveCheckBox.Home" />
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

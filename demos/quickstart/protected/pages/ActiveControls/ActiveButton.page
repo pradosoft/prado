@@ -91,4 +91,4 @@ value contains the javascript statement that hides the "Loading..." span tag.
 See <a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a> for
 further details on client-side property details.
 </p>
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

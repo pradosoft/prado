@@ -20,4 +20,4 @@ Understanding the page lifecycles is crucial to grasp PRADO programming. Page li
 <img src="<%~lifecycles.gif %>" />
 </p>
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

@@ -58,4 +58,4 @@ Message categories are hierarchical. A category whose name is the prefix of anot
 By convention, the messages logged in the core code of PRADO are categorized according to the namespace of the corresponding classes. For example, messages logged in <tt>TPage</tt> will be of category <tt>System.Web.UI.TPage</tt>.
 </p>
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

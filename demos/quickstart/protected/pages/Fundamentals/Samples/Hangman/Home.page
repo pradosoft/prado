@@ -67,4 +67,4 @@ out of a maximum of <%= $this->Page->Level %>.</p>
 
 </com:TMultiView>
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

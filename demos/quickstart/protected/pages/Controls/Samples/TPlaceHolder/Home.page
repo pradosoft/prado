@@ -8,4 +8,4 @@ at a place that is reserved on a template. The dynamic content can be
 either static texts or controls.
 </p>
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

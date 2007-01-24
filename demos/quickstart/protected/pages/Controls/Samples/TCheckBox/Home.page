@@ -90,4 +90,4 @@ A checkbox validated by a required field validator using AutoPostBack:
 
 </table>
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

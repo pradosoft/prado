@@ -39,4 +39,4 @@ THtmlArea with visual editting disabled:
 
 </table>
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

@@ -1,5 +1,5 @@
 <com:TContent ID="body">
-<!-- $Id: ActiveCheckBox.page 1405 2006-09-10 01:03:56Z wei $ -->
+<!-- $Id$ -->
 <h1 id="ActiveHyperLink">TActiveHyperLink</h1>
 <com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveHyperLink" />
 
@@ -12,4 +12,4 @@ change the corresponding attributes and content on the client-side.
 
 <com:RunBar PagePath="ActiveControls.Samples.TActiveHyperLink.Home" />
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

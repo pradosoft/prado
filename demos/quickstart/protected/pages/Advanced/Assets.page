@@ -66,4 +66,4 @@ In the above, the call <tt>$this->getAsset('up.gif')</tt> will publish the <tt>u
 <p id="740586" class="block-content">
 To redistribute <tt>ToggleButton</tt>, simply pack together the class file and the image files. Users of <tt>ToggleButton</tt> merely need to unpack the file, and they can use it right away, without worrying about where to copy the image files to.
 </p>
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

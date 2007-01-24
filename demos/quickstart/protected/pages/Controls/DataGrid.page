@@ -182,4 +182,4 @@ class ImageColumn extends TDataGridColumn {
 In <tt>initializeCell()</tt>, remember to call the parent implementation, as it initializes cells in items of <tt>Header</tt> and <tt>Footer</tt> types.
 </p>
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

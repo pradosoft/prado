@@ -23,4 +23,4 @@ print_r(explode('|', $str, 2)); // will output an array
 
 <com:RunBar PagePath="Controls.Samples.TTextHighlighter.Home" />
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

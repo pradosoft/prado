@@ -93,4 +93,4 @@ $listbox->dataBind();
 
 <com:RunBar PagePath="Controls.Samples.TBulletedList.Home" />
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

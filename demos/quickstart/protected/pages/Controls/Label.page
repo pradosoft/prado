@@ -8,4 +8,4 @@
 </p>
 <com:RunBar PagePath="Controls.Samples.TLabel.Home" />
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

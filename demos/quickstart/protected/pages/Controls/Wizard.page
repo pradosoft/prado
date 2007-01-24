@@ -97,4 +97,4 @@ Wizard steps can also be templated. By using <tt>TTemplatedWizardStep</tt>, one 
 </p>
 <com:RunBar PagePath="Controls.Samples.TWizard.Sample5" />
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

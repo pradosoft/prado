@@ -149,4 +149,4 @@ Weiter mit dem Thema kulturell angepasster Templates. Text kann unter Zuhilfenah
 	<com:TTranslateParameter Key="time" Value="<%= Time() %>" />
 </com:TTranslate>
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

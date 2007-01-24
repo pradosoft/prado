@@ -7,4 +7,4 @@ PRADO uses configurations to glue together components into pages and application
 Application and page configurations are optional if default values are used. Templates are mainly used by pages and template controls. They are optional, too.
 </p>
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

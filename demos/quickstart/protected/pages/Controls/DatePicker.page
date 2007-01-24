@@ -78,4 +78,4 @@ for details.</p>
 
 <com:RunBar PagePath="Controls.Samples.TDatePicker.Home" />
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

@@ -68,4 +68,4 @@ will be clicked because it is set as the default button of the panel.
 </td></tr>
 </table>
 <com:TJavascriptLogger />
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

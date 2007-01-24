@@ -32,4 +32,4 @@ and its dependencies will be automatically included on the page.</p>
 <p id="850762" class="block-content">See <a href="?page=Controls.ClientScript">TClientScript</a> for options of adding
 	your custom Javascript code to the page.</p>
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

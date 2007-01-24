@@ -37,4 +37,4 @@
 
 <com:TLabel ID="Result" />
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

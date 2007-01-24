@@ -58,4 +58,4 @@ See in the following yet another example showing how to use repeater to collect 
 </p>
 <com:RunBar PagePath="Controls.Samples.TRepeater.Sample3" />
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

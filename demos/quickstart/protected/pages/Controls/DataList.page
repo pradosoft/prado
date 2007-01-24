@@ -60,4 +60,4 @@ Be aware, for simplicity, this application does not do any input validation. In 
 </p>
 <com:RunBar PagePath="Controls.Samples.TDataList.Sample2" />
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

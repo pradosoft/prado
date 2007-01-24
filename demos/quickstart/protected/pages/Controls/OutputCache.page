@@ -43,4 +43,4 @@ Output caches can be nested. An outer cache takes precedence over an inner cache
 By default, <tt>TOutputCache</tt> is effective only for non-postback page requests and when a cache module is enabled. Do not attempt to address child controls of <tt>TOutputCache</tt> when the cached content is currently being used. Use <tt>ContentCached</tt> property to determine whether the content is cached or not.
 </p>
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

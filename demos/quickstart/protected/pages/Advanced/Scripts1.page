@@ -93,4 +93,4 @@ function test3()
 </script>
 </com:TTextHighlighter>
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

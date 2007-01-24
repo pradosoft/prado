@@ -22,4 +22,4 @@ Be aware, if <tt>Encode</tt> is false, make sure <tt>Text</tt> does not contain 
 
 <com:RunBar PagePath="Controls.Samples.TLiteral.Home" />
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

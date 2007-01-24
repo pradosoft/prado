@@ -61,4 +61,4 @@ Expression and statement tags are also changed similarly. For more details, see 
 Themes in v3.0 are defined like control templates with a few restrictions.
 </p>
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

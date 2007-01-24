@@ -74,4 +74,4 @@ A checkbox validated by a required field validator:
 
 <com:TJavascriptLogger />
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

@@ -417,4 +417,4 @@ catch(Exception $e) // an exception is raised if a query fails
     Addison Wesley, 2002.</li>
 </ul>
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

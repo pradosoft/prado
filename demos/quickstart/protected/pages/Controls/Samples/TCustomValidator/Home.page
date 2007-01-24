@@ -67,4 +67,4 @@ Custom validator with focus-on-error enabled and dynamic display:
 
 </table>
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

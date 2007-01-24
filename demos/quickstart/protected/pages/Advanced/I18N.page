@@ -357,4 +357,4 @@ is "One Apple". If the <tt>Value</tt> was "2", then it will show "Two Apples".</
 The string chosen for display depends on the <tt>Value</tt> property. The <tt>Value</tt> is evaluated for each set until the <tt>Value</tt> is found to belong to a particular set.</p>
 
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

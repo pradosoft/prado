@@ -67,4 +67,4 @@ Body contents
 
 </table>
 <com:TJavascriptLogger />
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

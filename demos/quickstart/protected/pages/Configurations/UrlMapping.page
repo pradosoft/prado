@@ -117,4 +117,4 @@ object. For example, <tt>$this->Request['year']</tt>.
 Since version 3.0.6, <tt>TUrlMapping</tt> starts to support constructing customized URL formats. This is achieved by allowing users to extend <tt>TUrlMapping</tt> class and override the <tt>constructUrl</tt> method. In the applications, users can still use <tt>THttpRequest.constructUrl()</tt> or <tt>TPageService.constructUrl()</tt> to generate PRADO-recognizable URLS. The actual URL construction work is ultimately delegated to the <tt>TUrlMapping.constructUrl()</tt>, provided it is implemented.
 </p>
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

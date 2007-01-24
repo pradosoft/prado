@@ -89,4 +89,4 @@ We have seen in the above example that two users are specified in the applicatio
 <p id="720562" class="block-content">
 where the <tt>roles</tt> attribute in <tt>user</tt> element is optional. User roles can be specified in either the <tt>user</tt> element or in a separate <tt>role</tt> element.
 </p>
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

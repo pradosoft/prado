@@ -8,4 +8,4 @@
 <com:TRequiredFieldValidator
 	ControlToValidate="Input.TextBox"
 	ErrorMessage="You must enter a value"/>
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

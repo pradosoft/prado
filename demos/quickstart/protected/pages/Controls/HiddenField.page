@@ -10,4 +10,4 @@
 <tt>THiddenField</tt> raises an <tt>OnValueChanged</tt> event if its value is changed during postback.
 </p>
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>

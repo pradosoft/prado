@@ -262,4 +262,4 @@ $user->save(); //save it using Active Record
     <a href="http://www.apache.org/ibatis">http://www.apache.org/ibatis</a>.</li>
 </ul>
 
-</com:TContent>
+<div class="last-modified">$Id$</div></com:TContent>
