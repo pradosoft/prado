@@ -424,7 +424,9 @@ abstract class TActiveRecord extends TComponent
 	 * Dynamic find method using parts of method name as search criteria.
 	 * Method name starting with "findBy" only returns 1 record.
 	 * Method name starting with "findAllBy" returns 0 or more records.
-	 * The condition is taken as part of the method name after "findBy" or "findAllBy".
+	 * Method name starting with "deleteBy" deletes records by the trail criteria.
+	 * The condition is taken as part of the method name after "findBy", "findAllBy"
+	 * or "deleteBy".
 	 *
 	 * The following are equivalent:
 	 * <code>
@@ -440,25 +442,47 @@ abstract class TActiveRecord extends TComponent
 	 * $finder->findAllByAge($age);
 	 * $finder->findAll('Age = ?', $age);
 	 * </code>
+	 * <code>
+	 * $finder->deleteAll('Name = ?', $name);
+	 * $finder->deleteByName($name);
+	 * </code>
 	 * @return mixed single record if method name starts with "findBy", 0 or more records
 	 * if method name starts with "findAllBy"
 	 */
 	public function __call($method,$args)
 	{
+		$delete =false;
 		if($findOne = substr(strtolower($method),0,6)==='findby')
 			$condition = $method[6]==='_' ? substr($method,7) : substr($method,6);
 		else if(substr(strtolower($method),0,9)==='findallby')
 			$condition = $method[9]==='_' ? substr($method,10) : substr($method,9);
+		else if($delete = substr(strtolower($method),0,8)==='deleteby')
+			$condition = $method[8]==='_' ? substr($method,9) : substr($method,8);
 		else
 			return null;//throw new TActiveRecordException('ar_invalid_finder_method',$method);
+
+		$criteria = $this->createCriteriaFromString($method, $condition, $args);
+		if($delete)
+			return $this->deleteAll($criteria);
+		else
+			return $findOne ? $this->find($criteria) : $this->findAll($criteria);
+	}
+
+	/**
+	 * @param string __call method name
+	 * @param string criteria conditions
+	 * @param array method arguments
+	 * @return TActiveRecordCriteria criteria created from the method name and its arguments.
+	 */
+	private function createCriteriaFromString($method, $condition, $args)
+	{
 		$fields = array();
 		foreach(preg_split('/and|_and_/i',$condition) as $field)
 			$fields[] = $field.' = ?';
 		$args=count($args) === 1 && is_array($args[0]) ? $args[0] : $args;
 		if(count($fields)>count($args))
 			throw new TActiveRecordException('ar_mismatch_args_exception',$method,count($fields),count($args));
-		$criteria = new TActiveRecordCriteria(implode(' AND ',$fields),$args);
-		return $findOne ? $this->find($criteria) : $this->findAll($criteria);
+		return new TActiveRecordCriteria(implode(' AND ',$fields),$args);
 	}
 }
 ?>

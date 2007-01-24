@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 
 <configuration>
 	<paths>
@@ -8,7 +8,7 @@
 	</paths>
 
   <modules>
-  		<module id="globalization" class="TGlobalizationAutoDetect">
+  		<module id="globalization2" class="TGlobalizationAutoDetect">
 			<translation  type="XLIFF" source="I18NSample.messages" />
 		</module>
   </modules>

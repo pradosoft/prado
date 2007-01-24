@@ -346,8 +346,9 @@ elements[i].checked=true;}},checkIndices:function(elements,indices)
 {new Insertion.After(element,content);},before:function(element,content)
 {new Insertion.Before(element,content);}}
 Prado.WebUI=Class.create();Prado.WebUI.PostBackControl=Class.create();Prado.WebUI.PostBackControl.prototype={initialize:function(options)
-{this._elementOnClick=null,this.element=$(options.ID);if(this.onInit)
-this.onInit(options);},onInit:function(options)
+{this._elementOnClick=null,this.element=$(options.ID);if(this.element)
+{if(this.onInit)
+this.onInit(options);}},onInit:function(options)
 {if(typeof(this.element.onclick)=="function")
 {this._elementOnClick=this.element.onclick;this.element.onclick=null;}
 Event.observe(this.element,"click",this.elementClicked.bindEvent(this,options));},elementClicked:function(event,options)
@@ -369,8 +370,9 @@ if(y_input)
 {y_input.value=y;}
 else
 {y_input=INPUT({type:'hidden',name:id+'_y','id':id+'_y',value:y});this.element.parentNode.appendChild(y_input);}}});Prado.WebUI.TRadioButton=Class.extend(Prado.WebUI.PostBackControl);Prado.WebUI.TRadioButton.prototype.onRadioButtonInitialize=Prado.WebUI.TRadioButton.prototype.initialize;Object.extend(Prado.WebUI.TRadioButton.prototype,{initialize:function(options)
-{this.element=$(options['ID']);if(!this.element.checked)
-this.onRadioButtonInitialize(options);}});Prado.WebUI.TTextBox=Class.extend(Prado.WebUI.PostBackControl,{onInit:function(options)
+{this.element=$(options['ID']);if(this.element)
+{if(!this.element.checked)
+this.onRadioButtonInitialize(options);}}});Prado.WebUI.TTextBox=Class.extend(Prado.WebUI.PostBackControl,{onInit:function(options)
 {this.options=options;if(options['TextMode']!='MultiLine')
 Event.observe(this.element,"keydown",this.handleReturnKey.bind(this));if(this.options['AutoPostBack']==true)
 Event.observe(this.element,"change",Prado.PostBack.bindEvent(this,options));},handleReturnKey:function(e)

@@ -3264,8 +3264,11 @@ Prado.WebUI.PostBackControl.prototype =
 		this._elementOnClick = null, //capture the element's onclick function
 
 		this.element = $(options.ID);
-		if(this.onInit)
-			this.onInit(options);
+		if(this.element)
+		{
+			if(this.onInit)
+				this.onInit(options);
+		}
 	},
 
 	onInit : function(options)
@@ -3382,8 +3385,11 @@ Object.extend(Prado.WebUI.TRadioButton.prototype,
 	initialize : function(options)
 	{
 		this.element = $(options['ID']);
-		if(!this.element.checked)
-			this.onRadioButtonInitialize(options);
+		if(this.element)
+		{
+			if(!this.element.checked)
+				this.onRadioButtonInitialize(options);
+		}
 	}
 });
 

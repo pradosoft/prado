@@ -51,8 +51,9 @@ this.groups.push(validator.group);},addSummary:function(summary)
 {var inGroup=group&&summary.group==group;var noGroup=!group&&!summary.group;if(inGroup||noGroup)
 summary.updateSummary(validators,refresh);else
 summary.hideSummary(true);});}};Prado.WebUI.TValidationSummary=Class.create();Prado.WebUI.TValidationSummary.prototype={initialize:function(options)
-{this.options=options;this.group=options.ValidationGroup;this.messages=$(options.ID);this.visible=this.messages.style.visibility!="hidden"
-this.visible=this.visible&&this.messages.style.display!="none";Prado.Validation.addSummary(options.FormID,this);},updateSummary:function(validators,update)
+{this.options=options;this.group=options.ValidationGroup;this.messages=$(options.ID);if(this.messages)
+{this.visible=this.messages.style.visibility!="hidden"
+this.visible=this.visible&&this.messages.style.display!="none";Prado.Validation.addSummary(options.FormID,this);}},updateSummary:function(validators,update)
 {if(validators.length<=0)
 {if(update||this.options.Refresh!=false)
 {return this.hideSummary(validators);}
@@ -86,7 +87,8 @@ this.messages.show();this.visible=true;},formats:function(type)
 {switch(this.options.DisplayMode)
 {case"List":output+=messages[i]+"\n";break;case"BulletList":default:output+="  - "+messages[i]+"\n";break;case"SingleParagraph":output+=messages[i]+" ";break;}}
 return output;}};Prado.WebUI.TBaseValidator=Class.create();Prado.WebUI.TBaseValidator.prototype={initialize:function(options)
-{this.enabled=true;this.visible=false;this.isValid=true;this._isObserving={};this.group=null;this.requestDispatched=false;this.options=options;this.control=$(options.ControlToValidate);this.message=$(options.ID);this.group=options.ValidationGroup;this.manager=Prado.Validation.addValidator(options.FormID,this);},getErrorMessage:function()
+{this.enabled=true;this.visible=false;this.isValid=true;this._isObserving={};this.group=null;this.requestDispatched=false;this.options=options;this.control=$(options.ControlToValidate);this.message=$(options.ID);if(this.control&&this.message)
+{this.group=options.ValidationGroup;this.manager=Prado.Validation.addValidator(options.FormID,this);}},getErrorMessage:function()
 {return this.options.ErrorMessage;},updateControl:function(focus)
 {this.refreshControlAndMessage();if(this.options.FocusOnError&&!this.isValid)
 Prado.Element.focus(this.options.FocusElementID);this.visible=true;},refreshControlAndMessage:function()

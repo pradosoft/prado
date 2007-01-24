@@ -15,6 +15,7 @@
  * Load callback response adapter class.
  */
 Prado::using('System.Web.UI.ActiveControls.TCallbackResponseAdapter');
+Prado::using('System.Web.UI.ActiveControls.TCallbackClientScript');
 
 /**
  * TActivePageAdapter class.
@@ -155,7 +156,7 @@ class TActivePageAdapter extends TControlAdapter
 			if(!is_null($responseData))
 			{
 				$data = TJavascript::jsonEncode($responseData);
-				
+
 				$this->appendContentPart($response, self::CALLBACK_DATA_HEADER, $data);
 				//$response->appendHeader(self::CALLBACK_DATA_HEADER.': '.$data);
 			}
@@ -192,7 +193,7 @@ class TActivePageAdapter extends TControlAdapter
 
 	/**
 	 * Appends data or javascript code to the body content surrounded with delimiters
-	 */ 
+	 */
 	private function appendContentPart($response, $delimiter, $data)
 	{
 		$content = $response->createHtmlWriter();

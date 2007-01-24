@@ -373,6 +373,24 @@ $finder->deleteByPk(array( array($key1,$key2), array($key3,$key4), .. ));
 </com:TTextHighlighter>
 </p>
 
+<h3 id="138052a"><tt>deleteAll()</tt> and <tt>deleteBy*()</tt></h3>
+<p id="690502a" class="block-content">
+To delete by a criteria, use <tt>deleteAll($criteria)</tt> and <tt>deleteBy*()</tt>
+with similar synatx to <tt>findAll($criteria)</tt> and <tt>findAllBy*()</tt> as
+described above.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690163a">
+//delete all records with matching Name
+$finder->deleteAll('Name = ?', $name);
+$finder->deleteByName($name);
+
+//delete by username and password
+$finder->deleteBy_Username_And_Password($name,$pass);
+</com:TTextHighlighter>
+</p>
+
+
+
 <h2 id="138053">Transactions</h2>
 <p id="690504" class="block-content">All Active Record objects contains the property <tt>DbConnection</tt>
     that can be used to obtain a transaction object.

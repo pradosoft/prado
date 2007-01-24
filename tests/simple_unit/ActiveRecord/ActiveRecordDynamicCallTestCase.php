@@ -1,5 +1,4 @@
 <?php
-
 Prado::using('System.Data.ActiveRecord.TActiveRecord');
 require_once(dirname(__FILE__).'/records/DepartmentRecord.php');
 require_once(dirname(__FILE__).'/records/DepSections.php');
@@ -45,6 +44,18 @@ class ActiveRecordDynamicCallTestCase extends UnitTestCase
 		$finder = DepartmentRecord::finder();
 		$rs = $finder->findByNameAndActive('Marketing',true,true);
 		$this->assertNotNull($rs);
+	}
+
+	function test_dynamic_delete_by()
+	{
+		$finder = DepartmentRecord::finder();
+		//$finder->RecordManager->OnDelete[] = array($this, 'assertDeleteSql');
+		$this->assertEqual($finder->deleteByName('tasds'), 0);
+	}
+
+	function assertDeleteSql($sender, $param)
+	{
+		var_dump($param);
 	}
 
 }

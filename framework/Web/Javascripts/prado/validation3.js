@@ -376,9 +376,12 @@ Prado.WebUI.TValidationSummary.prototype =
 		this.options = options;
 		this.group = options.ValidationGroup;
 		this.messages = $(options.ID);
-		this.visible = this.messages.style.visibility != "hidden"
-		this.visible = this.visible && this.messages.style.display != "none";
-		Prado.Validation.addSummary(options.FormID, this);
+		if(this.messages)
+		{
+			this.visible = this.messages.style.visibility != "hidden"
+			this.visible = this.visible && this.messages.style.display != "none";
+			Prado.Validation.addSummary(options.FormID, this);
+		}
 	},
 
 	/**
@@ -589,13 +592,16 @@ Prado.WebUI.TBaseValidator.prototype =
 		this._isObserving = {};
 		this.group = null;
 		this.requestDispatched = false;
-		
+
 		this.options = options;
 		this.control = $(options.ControlToValidate);
 		this.message = $(options.ID);
-		this.group = options.ValidationGroup;
+		if(this.control && this.message)
+		{
+			this.group = options.ValidationGroup;
 
-		this.manager = Prado.Validation.addValidator(options.FormID, this);
+			this.manager = Prado.Validation.addValidator(options.FormID, this);
+		}
 	},
 
 	/**

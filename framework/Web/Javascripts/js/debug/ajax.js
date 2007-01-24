@@ -2308,8 +2308,11 @@ Prado.WebUI.ActiveListControl = Base.extend(
 	constructor : function(options)
 	{
 		this.element = $(options.ID);
-		this.options = options;
-		Event.observe(this.element, "change", this.doCallback.bind(this));
+		if(this.element)
+		{
+			this.options = options;
+			Event.observe(this.element, "change", this.doCallback.bind(this));
+		}
 	},
 
 	doCallback : function(event)

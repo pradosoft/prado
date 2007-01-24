@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 class Home extends TPage
 {
@@ -9,7 +9,8 @@ class Home extends TPage
 	{
 		parent::__construct();
 		$lang = $this->Request['lang'];
-		if(CultureInfo::validCulture($lang)) //only valid lang is permitted
+		$info = new CultureInfo();
+		if($info->validCulture($lang)) //only valid lang is permitted
 			$this->getApplication()->getGlobalization()->setCulture($lang);
 	}
 
