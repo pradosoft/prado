@@ -599,3 +599,12 @@ table.tabular td
 {
 	padding: 0.75em;
 }
+
+
+div.last-modified
+{
+	font-size: 0.8em;
+	color: #999;
+	margin-top: 5em;
+	margin-bottom: -3em;
+}
