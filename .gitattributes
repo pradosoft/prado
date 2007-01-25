@@ -1075,7 +1075,6 @@ framework/3rdParty/SafeHtml/TSafeHtmlParser.php -text
 framework/3rdParty/SafeHtml/license.txt -text
 framework/3rdParty/SafeHtml/readme.txt -text
 framework/3rdParty/TinyMCE/license.txt -text
-framework/3rdParty/TinyMCE/readme.txt -text
 framework/3rdParty/TinyMCE/tiny_mce.md5 -text
 framework/3rdParty/TinyMCE/tiny_mce.tar -text
 framework/3rdParty/geshi/docs/COPYING -text
