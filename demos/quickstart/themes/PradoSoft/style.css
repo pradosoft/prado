@@ -1,9 +1,9 @@
 html
 {
-		background-image: url('mantisbg.jpg');
+	background-image: url('mantisbg.jpg');
 	background-repeat: no-repeat;
 	background-position: top right;
-
+	background-color: white;
 }
 
 body {

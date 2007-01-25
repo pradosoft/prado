@@ -1,0 +1,10 @@
+<com:TContent ID="Content">
+<h2 class="defect">Problem loading TListItemCollection</h2>
+
+<com:System.Web.UI.ActiveControls.TActiveDropDownList>
+	<com:TListItem Text="One" />
+	<com:TListItem Text="Two" />
+</com:System.Web.UI.ActiveControls.TActiveDropDownList>
+
+
+</com:TContent>

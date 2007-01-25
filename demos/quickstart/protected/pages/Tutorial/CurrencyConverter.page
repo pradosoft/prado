@@ -299,7 +299,7 @@ public function convert_clicked($sender, $param)
 
 	<h1 id="16006">Improve User Experience With Active Controls</h1>
 	<p id="80073" class="block-content">In this simple application we may further improve the user experience
-		by decreasing the responsiveness of the application. One way to achieve
+		by increasing the responsiveness of the application. One way to achieve
 		a faster response is calculate and present the results without reloading
 		the whole page.
 	</p>

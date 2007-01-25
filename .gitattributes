@@ -2315,6 +2315,7 @@ tests/FunctionalTests/tickets/protected/pages/Ticket477.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket477.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket484.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket484.php -text
+tests/FunctionalTests/tickets/protected/pages/Ticket511.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket518.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket521.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket521.php -text

@@ -258,8 +258,8 @@ $user->save(); //save it using Active Record
 <ul id="u1" class="block-content">
     <li>Fowler et. al. <i>Patterns of Enterprise Application Architecture</i>,
     Addison Wesley, 2002.</li>
-    <li>xxxx. <i>iBatis Data Mapper</i>, 
-    <a href="http://www.apache.org/ibatis">http://www.apache.org/ibatis</a>.</li>
+    <li>iBatis Team. <i>iBatis Data Mapper</i>, 
+    <a href="http://ibatis.apache.org">http://ibatis.apache.org</a>.</li>
 </ul>
 
 <div class="last-modified">$Id$</div></com:TContent>
