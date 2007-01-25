@@ -98,17 +98,21 @@ class THtmlArea extends TTextBox
 			'hu' => 'hu',
 			'is' => 'is',
 			'it' => 'it',
-			'ja' => 'ja',
+			'ja' => 'ja_utf-8',
 			'ko' => 'ko',
 			'nb' => 'nb',
 			'nl' => 'nl',
+			'nn' => 'nn',
 			'pl' => 'pl',
 			'pt' => 'pt',
 			'pt_BR' => 'pt_br',
-			'ru' => 'ru_UTF-8',
+			'ro' => 'ro',
+			'ru' => 'ru',
 			'si' => 'si',
 			'sk' => 'sk',
-			'sv' => 'sv',
+			'sq' => 'sq',
+			'sr' => 'sr',
+			'sv' => 'sv_utf8',
 			'th' => 'th',
 			'tr' => 'tr',
 			'vi' => 'vi',
@@ -117,6 +121,42 @@ class THtmlArea extends TTextBox
 			'zh_HK' => 'zh_tw_utf8',
 			'zh_TW' => 'zh_tw_utf8'
 		);
+
+	/**
+	 * @var array list of default plugins to load, override using getAvailablePlugins();
+	 */
+	private static $_plugins = array(
+		'style',
+		'layer',
+		'table',
+		'save',
+		'advhr',
+//		'advimage',
+//		'advlink',
+		'emotions',
+		'iespell',
+		'insertdatetime',
+		'preview',
+		'media',
+		'searchreplace',
+		'print',
+		'contextmenu',
+		'paste',
+		'directionality',
+		'fullscreen',
+		'noneditable',
+		'visualchars',
+		'nonbreaking',
+		'xhtmlxtras'
+	);
+
+	/**
+	 * @var array default themes to load
+	 */
+	private static $_themes = array(
+		'simple',
+		'advanced'
+	);
 
 	/**
 	 * Constructor.
@@ -227,6 +267,11 @@ class THtmlArea extends TTextBox
 		return $this->getViewState('CustomPluginPath');
 	}
 
+	public function onPreRender($param)
+	{
+		$this->preLoadCompressedScript();
+	}
+
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This method overrides the parent implementation by registering
@@ -244,15 +289,50 @@ class THtmlArea extends TTextBox
 	}
 
 	/**
+	 * Returns a list of plugins to be loaded.
+	 * Override this method to customize.
+	 * @return array list of plugins to be loaded
+	 */
+	public function getAvailablePlugins()
+	{
+		return self::$_plugins;
+	}
+
+	/**
+	 * @return array list of available themese
+	 */
+	public function getAvailableThemes()
+	{
+		return self::$_themes;
+	}
+
+	protected function preLoadCompressedScript()
+	{
+		$scripts = $this->getPage()->getClientScript();
+		if(!$scripts->isScriptFileRegistered('prado:THtmlArea'))
+			$scripts->registerScriptFile('prado:THtmlArea', $this->getScriptUrl());
+		$key = 'prado:THtmlArea:compressed';
+		if(!$scripts->isBeginScriptRegistered($key))
+		{
+			$options['plugins'] = implode(',', $this->getAvailablePlugins());
+			$options['themes'] = implode(',', $this->getAvailableThemes());
+			$options['languages'] = $this->getLanguageSuffix($this->getCulture());
+			$options['disk_cache'] = true;
+			$options['debug'] = false;
+			$js = TJavaScript::encode($options);
+			$script = "if(typeof(tinyMCE_GZ)!='undefined'){ tinyMCE_GZ.init({$js}); }";
+			$scripts->registerBeginScript($key, $script);
+		}
+	}
+
+	/**
 	 * Registers the editor javascript file and code to initialize the editor.
 	 */
 	protected function registerEditorClientScript($writer)
 	{
 		$scripts = $this->getPage()->getClientScript();
-		if(!$scripts->isScriptFileRegistered('prado:THtmlArea'))
-			$scripts->registerScriptFile('prado:THtmlArea', $this->getScriptUrl());
 		$options = TJavaScript::encode($this->getEditorOptions());
-		$script = "if(tinyMCE){ tinyMCE.init($options); }";
+		$script = "if(typeof(tinyMCE)!='undefined'){ tinyMCE.init($options); }";
 		$scripts->registerEndScript('prado:THtmlArea'.$this->ClientID,$script);
 	}
 
@@ -261,7 +341,7 @@ class THtmlArea extends TTextBox
 	 */
 	protected function getScriptUrl()
 	{
-		return $this->getScriptDeploymentPath().'/tiny_mce/tiny_mce_gzip.php';
+		return $this->getScriptDeploymentPath().'/tiny_mce/tiny_mce_gzip.js';
 	}
 
 	/**
