@@ -1,10 +1,11 @@
 Version 3.1.0 beta to be released
 =================================
-ENH: Added PRADO_CHMOD constant so that users can specify the permission of PRADO-created directories (Qiang)
-ENH: Ticket#519 - Update TActiveRecord implementation (Wei)
-ENH: Add Display property to TWebControl (Wei)
 BUG: Ticket#517 - Quickstart I18N sample: conflicting module ID (Wei)
 BUG: Ticket#521 - comment tag on TActiveButton stop callback (Wei)
+ENH: Ticket#513 - Display last modified / revision in quickstart (Wei)
+ENH: Ticket#519 - Update TActiveRecord implementation (Wei)
+ENH: Added PRADO_CHMOD constant so that users can specify the permission of PRADO-created directories (Qiang)
+ENH: Add Display property to TWebControl (Wei)
 
 Version 3.1.0 alpha January 15, 2007
 ====================================
@@ -12,9 +13,9 @@ BUG: Ticket#188 - Postback js caused controls not inheritable (Qiang)
 ENH: Ticket#99 - TXmlTransform control (Knut)
 ENH: Ticket#117 - added support to configure subproperties in a group. (Qiang)
 ENH: Ticket#180, #222 - Prado js files are not rendered at the beginning of the form (Qiang)
+CHG: Ticket#489 - Contents enclosed within HTML comment tags will now be parsed also (Qiang)
 CHG: All validators ClientSide.OnSuccess becomes ClientSide.OnValidationSuccess, and OnSuccess event becomes OnValidationSuccess. (Wei)
 CHG: All validators ClientSide.OnError becomes ClientSide.OnValidationError, and OnError event becomes OnValidationError. (Wei)
-CHG: Ticket#489 - Contents enclosed within HTML comment tags will now be parsed also (Qiang)
 NEW: Ajax support and active controls (Wei)
 NEW: Data abstraction layer based on PDO (Qiang)
 NEW: SQLMap (Wei)
@@ -31,6 +32,7 @@ NEW: TGlobalStateCacheDependency, TChainedCacheDependency, TApplicationStateCach
 Version 3.0.7 to be released 
 ============================
 BUG: Ticket#481 - Unable to cancel navigation when handling OnSideBarButtonClickEvent (Qiang)
+BUG: Ticket#505,#508 (Wei)
 BUG: typo in THttpResponse.writeFile() about sending headers (Qiang)
 
 Version 3.0.6 December 4, 2006
