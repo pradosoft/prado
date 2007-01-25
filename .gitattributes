@@ -2117,6 +2117,8 @@ tests/FunctionalTests/active-controls/protected/pages/DatePickerInCallback.page 
 tests/FunctionalTests/active-controls/protected/pages/DatePickerInCallback.php -text
 tests/FunctionalTests/active-controls/protected/pages/DelayedCallback.page -text
 tests/FunctionalTests/active-controls/protected/pages/DelayedCallback.php -text
+tests/FunctionalTests/active-controls/protected/pages/DisplayStyleTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/DisplayStyleTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/DynamicRepeaterDataTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/DynamicRepeaterDataTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/EventTriggeredCallback.page -text
@@ -2411,6 +2413,7 @@ tests/simple_unit/ActiveRecord/records/DepartmentRecord.php -text
 tests/simple_unit/ActiveRecord/records/SimpleUser.php -text
 tests/simple_unit/ActiveRecord/records/SqliteUsers.php -text
 tests/simple_unit/ActiveRecord/records/UserRecord.php -text
+tests/simple_unit/I18N/CultureInfoTest.php -text
 tests/simple_unit/Soap/ContactManager.php -text
 tests/simple_unit/Soap/SoapTestCase.php -text
 tests/simple_unit/SqlMap/ActiveRecordSqlMapTest.php -text

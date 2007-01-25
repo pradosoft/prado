@@ -211,6 +211,7 @@ class Page2Tex
 						array($this, 'tabular'), $html);
 
 		$html = preg_replace('/<!--(.*)-->/', '', $html);
+		$html = preg_replace('/<div class="last-modified">((.|\n)*?)<\/div>/', '', $html);
 
 
 		$html = html_entity_decode($html);
@@ -300,7 +301,7 @@ class Page2Tex
 		$page = $this->page_count*1000;
 		return "<h3 id=\"".($page + (++self::$header_count))."\">";
 	}
-	
+
 	function set_block_content_id($content)
 	{
 		$content = preg_replace_callback('/<p>/',  array($this, 'add_p'), $content);
@@ -322,7 +323,7 @@ class Page2Tex
 			return $matches[0];
 		}
 		else
-		{	
+		{
 			$changes = str_replace('"source"', '"source block-content" id="code-'.$id.'"', $matches[0]);
 			return $changes;
 		}

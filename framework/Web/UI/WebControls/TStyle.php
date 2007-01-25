@@ -43,6 +43,10 @@ class TStyle extends TComponent
 	 * @var string CSS style string (those not represented by specific fields of TStyle)
 	 */
 	private $_customStyle=null;
+	/**
+	 * @var string display style
+	 */
+	private $_displayStyle='Fixed';
 
 	/**
 	 * Constructor.
@@ -173,13 +177,44 @@ class TStyle extends TComponent
 			$this->_font=new TFont;
 		return $this->_font;
 	}
-	
+
 	/**
 	 * @return boolean true if font is set.
 	 */
 	public function hasFont()
 	{
 		return $this->_font !== null;
+	}
+
+	/**
+	 * @param TDisplayStyle control display style, default is TDisplayStyle::Fixed
+	 */
+	public function setDisplayStyle($value)
+	{
+		$this->_displayStyle = TPropertyValue::ensureEnum($value, 'TDisplayStyle');
+		switch($this->_displayStyle)
+		{
+			case TDisplayStyle::None:
+				$this->_fields['display'] = 'none';
+				break;
+			case TDisplayStyle::Dynamic:
+				$this->_fields['display'] = ''; //remove the display property
+				break;
+			case TDisplayStyle::Fixed:
+				$this->_fields['visibility'] = 'visible';
+				break;
+			case TDisplayStyle::Hidden:
+				$this->_fields['visibility'] = 'hidden';
+				break;
+		}
+	}
+
+	/**
+	 * @return TDisplayStyle display style
+	 */
+	public function getDisplayStyle()
+	{
+		return $this->_displayStyle;
 	}
 
 	/**
@@ -362,7 +397,7 @@ class TStyle extends TComponent
 		if($this->_class!==null)
 			$writer->addAttribute('class',$this->_class);
 	}
-	
+
 	/**
 	 * @return array list of style fields.
 	 */
@@ -370,6 +405,29 @@ class TStyle extends TComponent
 	{
 		return $this->_fields;
 	}
+}
+
+/**
+ * TDisplayStyle defines the enumerable type for the possible styles
+ * that a web control can display.
+ *
+ * The following enumerable values are defined:
+ * - None: the control is not displayed and not included in the layout.
+ * - Dynamic: the control is displayed and included in the layout, the layout flow is dependent on the control (equivalent to display:'' in css).
+ * - Fixed: Similar to Dynamic with CSS "visibility" set "shown".
+ * - Hidden: the control is not displayed and is included in the layout.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Web.UI.WebControls
+ * @since 3.1
+ */
+class TDisplayStyle extends TEnumerable
+{
+	const None='None';
+	const Dynamic='Dynamic';
+	const Fixed='Fixed';
+	const Hidden='Hidden';
 }
 
 /**

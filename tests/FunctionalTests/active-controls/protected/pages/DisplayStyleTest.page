@@ -1,0 +1,22 @@
+<com:TForm>
+<h1>Display Style Test</h1>
+
+<div>
+Some test
+<com:TActiveButton ID="button1" Display="None" Text="Button 1" />
+buttons
+<com:TActiveButton ID="button2" Display="Hidden" Text="Button 2" />
+here.
+</div>
+
+<com:TActiveButton Text="Display Button 1" OnClick="display_button1" />
+<com:TActiveButton Text="Hide Button 1" OnClick="hide_button1" />
+
+<com:TActiveButton Text="Show Button 2" OnClick="show_button2" />
+<com:TActiveButton Text="Hide Button 2" OnClick="hide_button2" />
+
+<com:TActiveLabel ID="status" />
+
+<com:TJavascriptLogger />
+
+</com:TForm>

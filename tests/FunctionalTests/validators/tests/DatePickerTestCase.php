@@ -29,6 +29,7 @@ class DatePickerTestCase extends SeleniumTestCase
 		$this->type("{$base}picker1", "13/4/2006");
 		$this->select("{$base}picker2_month", "label=9");
 		$this->select("{$base}picker2_day", "label=10");
+		$this->select("{$base}picker2_year", "label=2006");
 		$this->type("{$base}picker3", "14/4/2006");
 		$this->type("{$base}picker4", "7/4/2006");
 		$this->select("{$base}picker5_day", "label=6");

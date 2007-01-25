@@ -414,7 +414,7 @@ class CultureInfo
 	 * Gets the culture name in English.
 	 * Returns <code>array('Language','Country');</code>
 	 * 'Country' is omitted if the culture is neutral.
-	 * @return array array with language and country as elements.
+	 * @return string language (country), it may locale code string if english name does not exist.
 	 */
 	function getEnglishName()
 	{
@@ -423,6 +423,9 @@ class CultureInfo
 		$culture = $this->getInvariantCulture();
 
 		$language = $culture->findInfo("Languages/{$lang}");
+		if(count($language) == 0)
+			return $this->culture;
+
 		$region = $culture->findInfo("Countries/{$reg}");
 		if($region)
 			return $language[0].' ('.$region[0].')';

@@ -194,6 +194,22 @@ class TWebControl extends TControl
 	}
 
 	/**
+	 * @param TDisplayStyle display style of the control, default is TDisplayStyle::Fixed
+	 */
+	public function setDisplay($value)
+	{
+		$this->getStyle()->setDisplayStyle($value);
+	}
+
+	/**
+	 * @return TDisplayStyle display style of the control, default is TDisplayStyle::Fixed
+	 */
+	public function getDisplay()
+	{
+		return $this->getStyle()->getDisplayStyle();
+	}
+
+	/**
 	 * @param string the css class of the control
 	 */
 	public function setCssClass($value)
