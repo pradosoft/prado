@@ -1182,6 +1182,12 @@ demos/quickstart/protected/pages/ViewSource.page -text
 demos/quickstart/protected/pages/ViewSource.php -text
 demos/quickstart/protected/pages/config.xml -text
 demos/quickstart/themes/PradoSoft/arrowdown.gif -text
+demos/quickstart/themes/PradoSoft/comment.gif -text
+demos/quickstart/themes/PradoSoft/comment_add.gif -text
+demos/quickstart/themes/PradoSoft/comments.gif -text
+demos/quickstart/themes/PradoSoft/error.gif -text
+demos/quickstart/themes/PradoSoft/information.gif -text
+demos/quickstart/themes/PradoSoft/lightbulb.gif -text
 demos/quickstart/themes/PradoSoft/mantis.jpg -text
 demos/quickstart/themes/PradoSoft/mantisbg.jpg -text
 demos/quickstart/themes/PradoSoft/mantissample.jpg -text

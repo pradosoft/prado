@@ -9,6 +9,7 @@
 	<ul id="comment-nav">
 		<li><a href="#comment-list" style="display:none" id="show-comment-link" >View Comments</a></li>
 		<li><a href="#add-comment" class="active" id="add-comment-link">Add New Comment</a></li>
+		<li><a href="#comment-list" style="display:none" id="all-comments-link">View All Comments</a></li>
 	</ul>
 	<a href="javascript:;" class="right-tab" style="display:none" id="close-comments">Close</a>
 	<a href="#" class="right-tab" id="to-top">Top</a>
@@ -50,7 +51,7 @@
 				ControlToValidate="content"
 				ErrorMessage="*" />
 			</div>
-			<com:TTextBox TextMode="MultiLine" ID="content" />
+			<com:TActiveTextBox TextMode="MultiLine" ID="content" />
 			<com:THiddenField ID="block_id" Value="top-content"/>
 		</div>
 

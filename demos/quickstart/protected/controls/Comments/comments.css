@@ -158,12 +158,12 @@ div.block-hover
 	margin-top: -1.95em;
 }
 
-#comment-list .comment
+#comment-list .comment, #comment-list-edit .comment
 {
 	margin-bottom: 2em;
 }
 
-#comment-list .comment span
+#comment-list .comment span, #comment-list-edit .comment span
 {
 	font-size: 0.85em;
 	border-bottom: 1px dotted #ccc;
@@ -171,7 +171,7 @@ div.block-hover
 	display: block;
 }
 
-#comment-list .comment div
+#comment-list .comment div, #comment-list-edit .comment div
 {
 
 	padding: 0.5em;
@@ -223,4 +223,10 @@ div.block-hover
 	position: absolute;
 	z-index: 0;
 	filter: Alpha(Opacity=50);
+}
+
+#comment-list .source-link, #comment-list-edit .source-link
+{
+	float: right;
+	margin-top: -1.5em;
 }

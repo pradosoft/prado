@@ -544,22 +544,29 @@ pre code
 
 div.tip, div.info, div.note
 {
-	border:1px solid #0cf;
-	padding:1em;
+	border-top:2px solid #0cf;
+	border-bottom:2px solid #0cf;
+	padding:1em 1em 1em 40px;
 	margin: 1em 2em;
-	background-color: #eff;
+	border-color: #32CD32;
+	background-color: #EBFFCE;
+	background-repeat: no-repeat;
+	background-position: 10px 50%;
+	background-image: url(lightbulb.gif);
 }
 
 div.info
 {
-	border-color: #32CD32;
-	background-color: #EBFFCE;
+	border-color: #87CEFA;
+	background-color: #EEF9FD;
+	background-image: url(information.gif);
 }
 
 div.note
 {
-	border-color: Orange;
+	border-color: #FFD700;
 	background-color: #FFF5E1;
+	background-image: url(error.gif);
 }
 
 div b.tip
@@ -607,4 +614,24 @@ div.last-modified
 	color: #999;
 	margin-top: 5em;
 	margin-bottom: -3em;
+}
+
+#comment-nav li a#show-comment-link,
+#comment-nav li a#add-comment-link,
+#comment-nav li a#all-comments-link
+{
+	background-image: url(comment.gif);
+	background-repeat: no-repeat;
+	background-position: 7px 50%;
+	padding-left: 30px;
+}
+
+#comment-nav li a#add-comment-link
+{
+	background-image: url(comment_add.gif);
+}
+
+#comment-nav li a#all-comments-link
+{
+	background-image: url(comments.gif);
 }

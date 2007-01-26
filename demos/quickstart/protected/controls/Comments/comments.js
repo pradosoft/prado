@@ -6,7 +6,20 @@ function show_comment_list()
 	$('add-comment').hide();
 	$('show-comment-link').addClassName("active");
 	$('add-comment-link').removeClassName("active");
+	$('all-comments-link').removeClassName("active");
+	show_comments_in_list(currentCommentID);
 }
+
+function show_all_comments()
+{
+	$('comment-list').show();
+	$('add-comment').hide();
+	$('show-comment-link').removeClassName("active");
+	$('add-comment-link').removeClassName("active");
+	$('all-comments-link').addClassName("active");
+	show_comments_in_list();
+}
+
 
 function show_add_comment()
 {
@@ -14,6 +27,7 @@ function show_add_comment()
 	$('add-comment').show();
 	$('show-comment-link').removeClassName("active");
 	$('add-comment-link').addClassName("active");
+	$('all-comments-link').removeClassName("active");
 }
 
 function hide_add_comment()
@@ -22,6 +36,27 @@ function hide_add_comment()
 	$('modal-background').hide();
 	$(content_textare_id).value = '';
 	$(currentCommentID).style.zIndex = 0;
+}
+
+function show_comments_in_list(id)
+{
+	var list = $('comment-list');
+	var count=0;
+	for(var i=0, k=list.childNodes.length; i < k; i++)
+	{
+		var node = list.childNodes[i];
+		if(node.nodeType == 1) //an element node
+		{
+			if(typeof(id) == "undefined" || node.className.indexOf(id) >= 0)
+			{
+				node.style.display="block"
+				count++;
+			}
+			else
+				node.style.display="none";
+		}
+	}
+	return count;
 }
 
 function show_comments(block)
@@ -36,24 +71,10 @@ function show_comments(block)
 	commentBlock.style.width = (block.offsetWidth-22)+"px";
 
 	commentBlock.show();
-	var list = $('comment-list');
-	var count=0;
-	for(var i=0, k=list.childNodes.length; i < k; i++)
-	{
-		var node = list.childNodes[i];
-		if(node.nodeType == 1) //an element node
-		{
-			if(node.className.indexOf(id) >= 0)
-			{
-				node.style.display="block"
-				count++;
-			}
-			else
-				node.style.display="none";
-		}
-	}
 
-	list.show();
+	var count = show_comments_in_list(id);
+
+	$('comment-list').show();
 	if(count > 0)
 		show_comment_list();
 	else
@@ -164,8 +185,11 @@ if(!Prado.Browser.ie) //not IE 4,5,6
 		$('show-comment-link').style.display="";
 		$('to-top').hide();
 		$('close-comments').show();
+		$('all-comments-link').show();
 		userComments.hide();
 		$('comments-header').hide();
+
+		$$('#comment-list .source-link').each(function(el){ el.hide(); });
 
 		$$('#content .block-content').each(function(el)
 		{
@@ -176,6 +200,7 @@ if(!Prado.Browser.ie) //not IE 4,5,6
 
 		Event.observe($('show-comment-link'), "click", function(e) { show_comment_list(); Event.stop(e); });
 		Event.observe($('add-comment-link'), "click", function(e) { show_add_comment();	Event.stop(e); });
+		Event.observe($('all-comments-link'), "click", function(e) { show_all_comments();	Event.stop(e); });
 		Event.observe($('close-comments'), "click", function(e) { hide_add_comment(); Event.stop(e); });
 
 	})();
