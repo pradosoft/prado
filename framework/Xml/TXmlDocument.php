@@ -200,7 +200,10 @@ class TXmlElement extends TComponent
 		if($this->_attributes!==null)
 		{
 			foreach($this->_attributes as $name=>$value)
+			{
+				$value=$this->xmlEncode($value);
 				$attr.=" $name=\"$value\"";
+			}
 		}
 		$prefix=str_repeat(' ',$indent*4);
 		if($this->getHasElement())
@@ -211,12 +214,25 @@ class TXmlElement extends TComponent
 			$str.=$prefix."</{$this->_tagName}>";
 			return $str;
 		}
-		else if($this->getValue()!=='')
+		else if(($value=$this->getValue())!=='')
 		{
-			return $prefix."<{$this->_tagName}$attr>{$this->_value}</{$this->_tagName}>";
+			$value=$this->xmlEncode($value);
+			return $prefix."<{$this->_tagName}$attr>$value</{$this->_tagName}>";
 		}
 		else
 			return $prefix."<{$this->_tagName}$attr />";
+	}
+
+	private function xmlEncode($str)
+	{
+		return strtr($str,array(
+			'>'=>'&gt;',
+			'<'=>'&lt;',
+			'&'=>'&amp;',
+			'"'=>'&quot;',
+			"\r"=>'&#xA;',
+			"\t"=>'&#x9;',
+			"\n"=>'&#xD;'));
 	}
 }
 
