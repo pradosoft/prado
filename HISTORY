@@ -1,11 +1,12 @@
 Version 3.1.0 beta to be released
 =================================
 BUG: Ticket#517 - Quickstart I18N sample: conflicting module ID (Wei)
+BUG: Ticket#521 - comment tag on TActiveButton stop callback (Wei)
 ENH: Ticket#513 - Display last modified / revision in quickstart (Wei)
 ENH: Ticket#519 - Update TActiveRecord implementation (Wei)
-BUG: Ticket#521 - comment tag on TActiveButton stop callback (Wei)
 ENH: Added PRADO_CHMOD constant so that users can specify the permission of PRADO-created directories (Qiang)
-ENH: Add Display property to TWebControl (Wei)
+ENH: Added Display property to TWebControl (Wei)
+ENH: Added TUser.getState() and setState() for storing user session data (Qiang)
 
 Version 3.1.0 alpha January 15, 2007
 ====================================
