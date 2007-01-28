@@ -360,9 +360,16 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 * request for this control call the <tt>dispatch()</tt> method on the
 	 * request instance. Example code in javascript
 	 * <code>
-	 *   request = <%= $this->mycallback->ActiveControl->Javascript %>;
+	 *   var request = <%= $this->mycallback->ActiveControl->Javascript %>;
 	 *   request.setParameter('hello');
 	 *   request.dispatch(); //make the callback request.
+	 * </code>
+	 *
+	 * Alternatively,
+	 * <code>
+	 * //dispatches immediately
+	 * Prado.Callback("<%= $this->mycallback->UniqueID %>",
+	 *    $this->mycallback->ActiveControl->JsCallbackOptions);
 	 * </code>
 	 * @return string javascript client-side callback request object (javascript
 	 * code)
@@ -371,6 +378,14 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	{
 		$client = $this->getPage()->getClientScript();
 		return $client->getCallbackReference($this->getControl(),$this->getClientSideOptions());
+	}
+
+	/**
+	 * @param string callback requestion options as javascript code.
+	 */
+	public function getJsCallbackOptions()
+	{
+		return TJavascript::encode($this->getClientSideOptions());
 	}
 }
 

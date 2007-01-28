@@ -150,7 +150,7 @@ EOD;
 		$notNull = $col['attnotnull'];
 		$serial = $col['attisserial'] ? $schema.'.'.$this->getSerialName($col['adsrc']) : null;
 		$default = $serial === null && $col['atthasdef'] ? $col['adsrc'] : null;
-		return new TPgsqlColumnMetaData($name,$type,$length,$notNull,$serial,$default);
+		return new TPgsqlColumnMetaData($col['attname'],$name,$type,$length,$notNull,$serial,$default);
 	}
 
 	/**

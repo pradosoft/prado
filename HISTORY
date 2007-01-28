@@ -3,6 +3,7 @@ Version 3.1.0 beta to be released
 BUG: Ticket#517 - Quickstart I18N sample: conflicting module ID (Wei)
 BUG: Ticket#521 - comment tag on TActiveButton stop callback (Wei)
 BUG: TXmlElement did not encode attribute and text values when being saved as a string (Qiang)
+BUG: SelectedIndices not return expected result for ActiveListBox (Wei)
 ENH: Ticket#513 - Display last modified / revision in quickstart (Wei)
 ENH: Ticket#519 - Update TActiveRecord implementation (Wei)
 ENH: Added PRADO_CHMOD constant so that users can specify the permission of PRADO-created directories (Qiang)

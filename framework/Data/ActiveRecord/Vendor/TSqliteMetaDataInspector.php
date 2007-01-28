@@ -73,7 +73,7 @@ class TSqliteMetaDataInspector extends TDbMetaDataInspector
 		$primary = $col['pk']==='1';
 		$autoIncrement = strtolower($type)==='integer' && $primary;
 		$default = $col['dflt_value'];
-		return new TSqliteColumnMetaData($name,$type,$notNull,$autoIncrement,$default,$primary);
+		return new TSqliteColumnMetaData($col['name'],$name,$type,$notNull,$autoIncrement,$default,$primary);
 	}
 
 	/**

@@ -29,7 +29,8 @@ Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
  *  <script type="text/javascript">
  * 		function do_callback1()
  *      {
- *           <%= $this->callback1->ActiveControl->Javascript %>
+ *           var request = <%= $this->callback1->ActiveControl->Javascript %>;
+ *			 request.dispatch();
  *      }
  *  </script>
  *  <div onclick="do_callback1()">Click Me!</div>

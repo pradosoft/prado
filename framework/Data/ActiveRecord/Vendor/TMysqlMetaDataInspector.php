@@ -51,7 +51,7 @@ class TMysqlMetaDataInspector extends TDbMetaDataInspector
 		$autoIncrement=is_int(strpos(strtolower($col['Extra']), 'auto_increment'));
 		$default = $col['Default'];
 		$primaryKey = $col['Key']==='PRI';
-		return new TMysqlColumnMetaData($name,$type,$notNull,$autoIncrement,$default,$primaryKey);
+		return new TMysqlColumnMetaData($col['Field'],$name,$type,$notNull,$autoIncrement,$default,$primaryKey);
 	}
 
 	/**

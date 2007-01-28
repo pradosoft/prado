@@ -127,6 +127,10 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 	{
 		parent::onPreRender($param);
 		$this->getAdapter()->updateListItems();
+		$multiple = $this->getIsMultiSelect();
+		$id = $this->getUniqueID(); $multi_id = $id.'[]';
+		if($multiple)
+			$this->getPage()->registerPostDataLoader($multi_id);
 	}
 }
 

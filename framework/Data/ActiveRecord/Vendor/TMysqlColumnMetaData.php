@@ -25,6 +25,7 @@ class TMysqlColumnMetaData extends TComponent
 	private $_autoIncrement;
 	private $_default;
 	private $_notNull=true;
+	private $_property;
 
 	private $_isPrimary=null;
 
@@ -38,8 +39,9 @@ class TMysqlColumnMetaData extends TComponent
 	 * @param string serial name.
 	 * @param string default value.
 	 */
-	public function __construct($name,$type,$notNull,$autoIncrement,$default,$primary)
+	public function __construct($property, $name,$type,$notNull,$autoIncrement,$default,$primary)
 	{
+		$this->_property=$property;
 		$this->_name=$name;
 		$this->_type=$type;
 		$this->_notNull=$notNull;
@@ -54,6 +56,14 @@ class TMysqlColumnMetaData extends TComponent
 	public function getName()
 	{
 		return $this->_name;
+	}
+
+	/**
+	 * @return string column name, used as active record property name
+	 */
+	public function getProperty()
+	{
+		return $this->_property;
 	}
 
 	public function getPHPType()

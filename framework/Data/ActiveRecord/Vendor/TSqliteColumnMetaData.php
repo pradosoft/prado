@@ -28,9 +28,11 @@ class TSqliteColumnMetaData extends TComponent
 	private $_autoIncrement;
 	private $_default;
 	private $_primary=false;
+	private $_property;
 
-	public function __construct($name,$type,$notNull,$autoIncrement,$default,$primary)
+	public function __construct($property,$name,$type,$notNull,$autoIncrement,$default,$primary)
 	{
+		$this->_property=$property;
 		$this->_name=$name;
 		$this->_type=$type;
 		$this->_notNull=$notNull;
@@ -52,6 +54,14 @@ class TSqliteColumnMetaData extends TComponent
 			default:
 				return 'string';
 		}
+	}
+
+	/**
+	 * @return string column name, used as active record property name
+	 */
+	public function getProperty()
+	{
+		return $this->_property;
 	}
 
 	/**
