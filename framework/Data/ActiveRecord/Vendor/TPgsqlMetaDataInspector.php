@@ -146,7 +146,7 @@ EOD;
 		$type = $col['type'];
 
 		// A specific constant in the 7.0 source, the length is offset by 4.
-		$length = $col['atttypmod'] > 0 ? $col['atttypmod'] - 4 : -1;
+		$length = $col['atttypmod'] > 0 ? $col['atttypmod'] - 4 : null;
 		$notNull = $col['attnotnull'];
 		$serial = $col['attisserial'] ? $schema.'.'.$this->getSerialName($col['adsrc']) : null;
 		$default = $serial === null && $col['atthasdef'] ? $col['adsrc'] : null;

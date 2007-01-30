@@ -1,0 +1,99 @@
+<com:TContent ID="body" >
+<!-- $Id$ -->
+<h1>Active Record Scaffold Views</h1>
+<p><a href="?page=Database.ActiveRecord">Active Record</a> classes can be used together with 
+<com:DocLink ClassPath="System.Data.ActiveRecord.Scaffold.TScaffoldListView" Text="TScaffoldListView"/>
+and
+<com:DocLink ClassPath="System.Data.ActiveRecord.Scaffold.TScaffoldEditView" Text="TScaffoldEditView"/>
+( <com:DocLink ClassPath="System.Data.ActiveRecord.Scaffold.TScaffoldView" Text="TScaffoldView"/>
+links both <tt>TScaffoldListView</tt> and <tt>TScaffoldEditView</tt>) to create 
+<i>simple</i> Create/Read/Update/Delete (CRUD) web applications.</p>
+
+<p>The scaffold views are intended to assist in prototyping web application, 
+they are not designed to be as customiziable as more complex components such as
+<a href="?page=Controls.DataGrid">TDataGrid</a>. The scaffold views provide
+the following builtin functionality:
+</p>
+
+<ul>
+	<li>Listing of all active record items.</li>
+	<li>Paging and sorting.</li>
+	<li>Deleting an item.</li>
+	<li>Inserting a new item.</li>
+	<li>Updating an existing item.</li>
+	<li>Validates required fields and basic data types.</li>
+	<li>Presents specialized controls such as date pickers.</li>
+</ul>
+
+<p>Scaffold views are dependent on Active Records and currently supports
+the following databases: Mysql, Sqlite and Postgres SQL. Support for other databases
+can be considered when there are sufficient demand.</p>
+
+<h2>Setting up a Scaffold View</h2>
+<p>To use the scaffold view, we first define an <a href="?page=Database.ActiveRecord">Active Record</a> 
+class that represents a table or view in the database. Consider the following
+Active Record class that corresponds to the <tt>users</tt>
+table as defined in the <a href="?page=Database.ActiveRecord">Active Record</a> quickstart page.
+</p>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+class UserRecord extends TActiveRecord
+{
+    public $username;
+    public $email;
+    
+    public static $_tablename='users';
+}
+</com:TTextHighlighter>
+
+<p>The scaffold view classes are in the <tt>System.Data.ActiveRecord.Scaffold.*</tt>
+<a href="?page=Fundamentals.Components#704">namespace</a>. 
+This <a href="?page=Fundamentals.Components#704">namespace</a> can be "imported" in the 
+<a href="?page=Configurations.AppConfig">Application Configuration</a>
+using the <tt>application.xml</tt> file or through the php code using the <tt>Prado::using()</tt>
+method. The simplest way to provide CRUD functional is to use the 
+<com:DocLink ClassPath="System.Data.ActiveRecord.Scaffold.TScaffoldView" Text="TScaffoldView"/>
+where the <tt>RecordClass</tt> property value equals to an Active Record
+class name.
+</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TScaffoldView RecordClass="UserRecord" /&gt;
+</com:TTextHighlighter>
+
+<h2>Todo...</h2>
+
+<p>Other views... list view</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TScaffoldListView RecordClass="UserRecord" /&gt;
+</com:TTextHighlighter>
+
+<p>edit view...</p>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TScaffoldEditView RecordPk="user1" RecordClass="UserRecord" /&gt;
+</com:TTextHighlighter>
+
+<p>Combining list + edit views</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TScaffoldEditView ID="edit_view" RecordClass="UserRecord" /&gt;
+&lt;com:TScaffoldListView EditViewID="edit_view" RecordClass="UserRecord" /&gt;
+</com:TTextHighlighter>
+
+<p>custom list view...</p>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TScaffoldView RecordClass="UserRecord" &gt;
+    &lt;prop:ListView.List.ItemTemplate&gt;
+        &lt;%# $this->DataItem->username %&gt;
+        &lt;com:TLinkButton Text="Edit" CommandName="edit" /&gt;
+    &lt;/prop:ListView.List.ItemTemplate&gt;
+&lt;/com:TScaffoldView/&gt;
+</com:TTextHighlighter>
+<p>To be completed...</p>
+
+<p>Address book example...</p>
+
+<com:RunBar PagePath="Database.Samples.Scaffold.Home" />
+
+<div class="last-modified">$Id$</div></com:TContent>

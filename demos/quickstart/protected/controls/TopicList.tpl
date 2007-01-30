@@ -72,6 +72,7 @@
 <ul>
     <li><a href="?page=Database.DAO">Data Access Objects</a></li>
     <li><a href="?page=Database.ActiveRecord">Active Record</a></li>
+    <li><a href="?page=Database.Scaffold">Active Record Scaffold</a></li>
     <li><a href="?page=Database.SqlMap">SqlMap Data Mapper</a></li>
 </ul>
 </div>
