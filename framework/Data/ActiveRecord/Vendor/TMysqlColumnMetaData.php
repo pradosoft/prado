@@ -26,6 +26,9 @@ class TMysqlColumnMetaData extends TComponent
 	private $_default;
 	private $_notNull=true;
 	private $_property;
+	private $_length;
+
+	private $_typeValues;
 
 	private $_isPrimary=null;
 
@@ -43,11 +46,47 @@ class TMysqlColumnMetaData extends TComponent
 	{
 		$this->_property=$property;
 		$this->_name=$name;
-		$this->_type=$type;
+		//$this->_type=$type;
 		$this->_notNull=$notNull;
 		$this->_autoIncrement=$autoIncrement;
 		$this->_default=$default;
 		$this->_isPrimary=$primary;
+		$this->processType($type);
+	}
+
+	protected function processType($type)
+	{
+		if(is_int($pos=strpos($type, '(')))
+		{
+			$match=array();
+			if(preg_match('/\((.*)\)/', $type, $match))
+			{
+				$this->_type = substr($type,0,$pos);
+				switch(strtolower($this->_type))
+				{
+					case 'set':
+					case 'enum':
+						$this->_typeValues = preg_split('/\s*,\s*|\s+/', preg_replace('/\'|"/', '', $match[1]));
+						break;
+					default:
+						$this->_length=floatval($match[1]);
+				}
+			}
+			else
+				$this->_type = $type;
+		}
+		else
+			$this->_type = $type;
+	}
+
+	public function getTypeValues()
+	{
+		return $this->_typeValues;
+	}
+
+	public function getLength()
+	{
+		return $this->_length;
 	}
 
 	/**

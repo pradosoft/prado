@@ -1,5 +1,4 @@
 <?php
-
 Prado::using('System.Data.ActiveRecord.TActiveRecord');
 require_once(dirname(__FILE__).'/records/DepartmentRecord.php');
 require_once(dirname(__FILE__).'/records/DepSections.php');
@@ -15,6 +14,13 @@ class FindByPksTestCase extends UnitTestCase
 	function test_find_by_1pk()
 	{
 		$dep = DepartmentRecord::finder()->findByPk(1);
+		$this->assertNotNull($dep);
+		$this->assertEqual($dep->department_id, 1);
+	}
+
+	function test_find_by_1pk_array()
+	{
+		$dep = DepartmentRecord::finder()->findByPk(array(1));
 		$this->assertNotNull($dep);
 		$this->assertEqual($dep->department_id, 1);
 	}

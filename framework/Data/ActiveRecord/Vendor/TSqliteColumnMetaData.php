@@ -29,16 +29,39 @@ class TSqliteColumnMetaData extends TComponent
 	private $_default;
 	private $_primary=false;
 	private $_property;
+	private $_length;
 
 	public function __construct($property,$name,$type,$notNull,$autoIncrement,$default,$primary)
 	{
 		$this->_property=$property;
 		$this->_name=$name;
-		$this->_type=$type;
 		$this->_notNull=$notNull;
 		$this->_autoIncrement=$autoIncrement;
 		$this->_default=$default;
 		$this->_primary=$primary;
+		$this->processType($type);
+	}
+
+	protected function processType($type)
+	{
+		if(is_int($pos=strpos($type, '(')))
+		{
+			$match=array();
+			if(preg_match('/\((.*)\)/', $type, $match))
+			{
+				$this->_length=floatval($match[1]);
+				$this->_type = substr($type,0,$pos);
+			}
+			else
+				$this->_type = $type;
+		}
+		else
+			$this->_type = $type;
+	}
+
+	public function getLength()
+	{
+		return $this->_length;
 	}
 
 	public function getPHPType()
