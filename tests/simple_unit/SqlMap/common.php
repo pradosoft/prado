@@ -143,9 +143,9 @@ class BaseTestConfig
 	{
 		//change this to connection to a different database
 
-		return new MySQLBaseTestConfig();
+		//return new MySQLBaseTestConfig();
 
-		//return new SQLiteBaseTestConfig();
+		return new SQLiteBaseTestConfig();
 
 		//return new MSSQLBaseTestConfig();
 	}

@@ -2454,6 +2454,7 @@ tests/simple_unit/SqlMap/ResultClassTest.php -text
 tests/simple_unit/SqlMap/ResultMapTest.php -text
 tests/simple_unit/SqlMap/SelectKeyTest.php -text
 tests/simple_unit/SqlMap/SqlMapCacheTest.php -text
+tests/simple_unit/SqlMap/StatementExtendsTest.php -text
 tests/simple_unit/SqlMap/StatementTest.php -text
 tests/simple_unit/SqlMap/common.php -text
 tests/simple_unit/SqlMap/domain/A.php -text
@@ -2511,6 +2512,7 @@ tests/simple_unit/SqlMap/maps/sqlite/LineItem.xml -text
 tests/simple_unit/SqlMap/maps/sqlite/Order.xml -text
 tests/simple_unit/SqlMap/maps/sqlite/Other.xml -text
 tests/simple_unit/SqlMap/maps/sqlite/ResultClass.xml -text
+tests/simple_unit/SqlMap/maps/tests.xml -text
 tests/simple_unit/SqlMap/mssql.xml -text
 tests/simple_unit/SqlMap/mysql.xml -text
 tests/simple_unit/SqlMap/properties.config -text

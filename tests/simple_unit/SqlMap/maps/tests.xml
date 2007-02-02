@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlmap>
+
+<statement id="test" parameterClass="array" >
+	<![CDATA[
+		SELECT a.*, b.*
+		FROM img_request a
+			left join hello_mst b on a.img_pat_id=b.pat_id
+		WHERE (img_requested_ap_dt >= #fromdt# and img_requested_ap_dt <= #todt#)
+	]]>
+</statement>
+
+<select id="GetAllProgress" parameterClass="array" extends="test">
+	<![CDATA[
+	AND img_progress =#status#
+	]]>	
+</select>
+
+</sqlmap>

@@ -122,6 +122,11 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		$this->initialGroupByResults();
 	}
 
+	public function getSqlString()
+	{
+		return $this->getStatement()->getSqlText()->getPreparedStatement()->getPreparedSql();
+	}
+
 	/**
 	 * Execute SQL Query.
 	 * @param IDbConnection database connection
