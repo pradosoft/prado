@@ -6,6 +6,7 @@
     <li><a href="?page=GettingStarted.Introduction">Introduction</a></li>
     <li><a href="?page=GettingStarted.AboutPrado">What is PRADO?</a></li>
     <li><a href="?page=GettingStarted.Installation">Installation</a></li>
+    <li><a href="?page=GettingStarted.NewFeatures">New Features</a></li>
     <li><a href="?page=GettingStarted.Upgrading">Upgrading from v2.x and v1.x</a></li>
 </ul>
 </div>

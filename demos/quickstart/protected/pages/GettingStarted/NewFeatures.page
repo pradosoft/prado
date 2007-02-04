@@ -1,0 +1,22 @@
+<com:TContent ID="body" >
+
+<h1>New Features</h1>
+
+<p>
+This page summarizes the main new features that are introduced in each PRADO release.
+</p>
+
+<h2>Version 3.1.0</h2>
+<ul>
+
+<li>Seamless AJAX support - A whole array of AJAX-enabled controls, called active controls, are introduced. The usage of these active controls is very similar to their non-AJAX counterparts. For more details, see the tutorial about <a href="?page=ActiveControls.Home">active controls</a>.</li>
+
+<li>Layered database support - </li>
+<li>New controls, modules and services - TSoapService, TOutputCache, TSessionPageStatePersister, TFeedService, TJsonService, cache dependency classes, TXmlTransform
+</li>
+<li>Configure subproperties in a group</li>
+<li>Item renderer feature for <tt>TRepeater</tt>, <tt>TDataList</tt> and <tt>TDataGrid</tt></li>
+</ul>
+
+<div class="last-modified">$Id$</div>
+</com:TContent>

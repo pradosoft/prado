@@ -1169,6 +1169,7 @@ demos/quickstart/protected/pages/GettingStarted/CommandLine.page -text
 demos/quickstart/protected/pages/GettingStarted/HelloWorld.page -text
 demos/quickstart/protected/pages/GettingStarted/Installation.page -text
 demos/quickstart/protected/pages/GettingStarted/Introduction.page -text
+demos/quickstart/protected/pages/GettingStarted/NewFeatures.page -text
 demos/quickstart/protected/pages/GettingStarted/Upgrading.page -text
 demos/quickstart/protected/pages/GettingStarted/directory.gif -text
 demos/quickstart/protected/pages/GettingStarted/fr/Introduction.page -text
