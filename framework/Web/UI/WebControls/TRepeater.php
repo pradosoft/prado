@@ -30,12 +30,12 @@ Prado::using('System.Util.TDataFieldAccessor');
  * Repeater items, header, footer, etc. are being instantiated with the corresponding
  * templates when data is being bound to the repeater.
  *
- * Since v3.1.0, the layout can also be by renderers. A renderer is a control class
+ * Since v3.1.0, the layout can also be specified by renderers. A renderer is a control class
  * that can be instantiated as repeater items, header, etc. A renderer can thus be viewed
  * as an external template (in fact, it can also be non-templated controls).
  *
  * A renderer can be any control class.
- * -If the class implements {@link IDataRenderer}, the <b>Data</b>
+ * - If the class implements {@link IDataRenderer}, the <b>Data</b>
  * property will be set as the data row during databinding. Many PRADO controls
  * implement this interface, such as {@link TLabel}, {@link TTextBox}, etc.
  * - If the class implements {@link IItemDataRenderer}, the <b>ItemIndex</b> property will be set

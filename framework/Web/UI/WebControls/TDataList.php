@@ -24,86 +24,126 @@ Prado::using('System.Web.UI.WebControls.TRepeatInfo');
  *
  * TDataList represents a data bound and updatable list control.
  *
- * The {@link setHeaderTemplate HeaderTemplate} property specifies the content
- * template that will be displayed at the beginning, while
- * {@link setFooterTemplate FooterTemplate} at the end.
- * If present, these two templates will only be rendered when the data list is
- * given non-empty data. In this case, for each data item the content defined
- * by {@link setItemTemplate ItemTemplate} will be generated and displayed once.
- * If {@link setAlternatingItemTemplate AlternatingItemTemplate} is not empty,
- * then the corresponding content will be displayed alternatively with that
- * in {@link setItemTemplate ItemTemplate}. The content in
- * {@link setSeparatorTemplate SeparatorTemplate}, if not empty, will be
- * displayed between items. Besides the above templates, there are two additional
- * templates, {@link setEditItemTemplate EditItemTemplate} and
- * {@link setSelectedItemTemplate SelectedItemTemplate}, which are used to display
- * items that are in edit and selected mode, respectively.
+ * Like {@link TRepeater}, TDataList displays its content repeatedly based on
+ * the data fetched from {@link setDataSource DataSource}.
+ * The repeated contents in TDataList are called items, which are controls and
+ * can be accessed through {@link getItems Items}. When {@link dataBind()} is
+ * invoked, TDataList creates an item for each row of data and binds the data
+ * row to the item. Optionally, a TDataList can have a header, a footer and/or
+ * separators between items.
  *
- * All these templates are associated with styles that may be applied to
- * the corresponding generated items. For example,
- * {@link getAlternatingItemStyle AlternatingItemStyle} will be applied to
- * every alternating item in the data list.
+ * TDataList differs from {@link TRepeater} in that it supports tiling the items
+ * in different manners and it maintains status of items to handle data update.
  *
- * Item styles are applied in a hierarchical way. Style in higher hierarchy
+ * The layout of the repeated contents are specified by inline templates.
+ * TDataList items, header, footer, etc. are being instantiated with the corresponding
+ * templates when data is being bound to the repeater.
+ *
+ * Since v3.1.0, the layout can also be by renderers. A renderer is a control class
+ * that can be instantiated as datalist items, header, etc. A renderer can thus be viewed
+ * as an external template (in fact, it can also be non-templated controls).
+ *
+ * A renderer can be any control class.
+ * - If the class implements {@link IDataRenderer}, the <b>Data</b>
+ * property will be set as the data row during databinding. Many PRADO controls
+ * implement this interface, such as {@link TLabel}, {@link TTextBox}, etc.
+ * - If the class implements {@link IItemDataRenderer}, the <b>ItemIndex</b> property will be set
+ * as the zero-based index of the item in the datalist item collection, and
+ * the <b>ItemType</b> property as the item's type (such as TListItemType::Item).
+ * {@link TDataListItemRenderer} may be used as the convenient base class which
+ * already implements {@link IDataItemRenderer}.
+ *
+ * The following properties are used to specify different types of template and renderer
+ * for a datalist:
+ * - {@link setItemTemplate ItemTemplate}, {@link setItemRenderer ItemRenderer}:
+ * for each repeated row of data
+ * - {@link setAlternatingItemTemplate AlternatingItemTemplate}, {@link setAlternatingItemRenderer AlternatingItemRenderer}:
+ * for each alternating row of data. If not set, {@link setItemTemplate ItemTemplate} or {@link setItemRenderer ItemRenderer}
+ * will be used instead.
+ * - {@link setHeaderTemplate HeaderTemplate}, {@link setHeaderRenderer HeaderRenderer}:
+ * for the datalist header.
+ * - {@link setFooterTemplate FooterTemplate}, {@link setFooterRenderer FooterRenderer}:
+ * for the datalist footer.
+ * - {@link setSeparatorTemplate SeparatorTemplate}, {@link setSeparatorRenderer SeparatorRenderer}:
+ * for content to be displayed between items.
+ * - {@link setEmptyTemplate EmptyTemplate}, {@link setEmptyRenderer EmptyRenderer}:
+ * used when data bound to the datalist is empty.
+ * - {@link setEditItemTemplate EditItemTemplate}, {@link setEditItemRenderer EditItemRenderer}:
+ * for the row being editted.
+ * - {@link setSelectedItemTemplate SelectedItemTemplate}, {@link setSelectedItemRenderer SelectedItemRenderer}:
+ * for the row being selected.
+ *
+ * If a content type is defined with both a template and a renderer, the latter takes precedence.
+ *
+ * When {@link dataBind()} is being called, TDataList undergoes the following lifecycles for each row of data:
+ * - create item based on templates or renderers
+ * - set the row of data to the item
+ * - raise {@link onItemCreated OnItemCreated}:
+ * - add the item as a child control
+ * - call dataBind() of the item
+ * - raise {@link onItemDataBound OnItemDataBound}:
+ *
+ * TDataList raises an {@link onItemCommand OnItemCommand} whenever a button control
+ * within some datalist item raises a <b>OnCommand</b> event. Therefore,
+ * you can handle all sorts of <b>OnCommand</b> event in a central place by
+ * writing an event handler for {@link onItemCommand OnItemCommand}.
+ *
+ * An additional event is raised if the <b>OnCommand</b> event has one of the following
+ * command names:
+ * - edit: user wants to edit an item. <b>OnEditCommand</b> event will be raised.
+ * - update: user wants to save the change to an item. <b>OnUpdateCommand</b> event will be raised.
+ * - select: user selects an item. <b>OnSelectedIndexChanged</b> event will be raised.
+ * - delete: user deletes an item. <b>OnDeleteCommand</b> event will be raised.
+ * - cancel: user cancels previously editting action. <b>OnCancelCommand</b> event will be raised.
+ *
+ * TDataList provides a few properties to support tiling the items.
+ * The number of columns used to display the data items is specified via
+ * {@link setRepeatColumns RepeatColumns} property, while the {@link setRepeatDirection RepeatDirection}
+ * governs the order of the items being rendered.
+ * The layout of the data items in the list is specified via {@link setRepeatLayout RepeatLayout},
+ * which can take one of the following values:
+ * - Table (default): items are organized using HTML table and cells.
+ * When using this layout, one can set {@link setCellPadding CellPadding} and
+ * {@link setCellSpacing CellSpacing} to adjust the cellpadding and cellpadding
+ * of the table, and {@link setCaption Caption} and {@link setCaptionAlign CaptionAlign}
+ * to add a table caption with the specified alignment.
+ * - Flow: items are organized using HTML spans and breaks.
+ * - Raw: TDataList does not generate any HTML tags to do the tiling.
+ *
+ * Items in TDataList can be in one of the three status: normal browsing,
+ * being editted and being selected. To change the status of a particular
+ * item, set {@link setSelectedItemIndex SelectedItemIndex} or
+ * {@link setEditItemIndex EditItemIndex}. The former will change
+ * the indicated item to selected mode, which will cause the item to
+ * use {@link setSelectedItemTemplate SelectedItemTemplate} or
+ * {@link setSelectedItemRenderer SelectedItemRenderer} for presentation.
+ * The latter will change the indicated item to edit mode and to use corresponding
+ * template or renderer.
+ * Note, if an item is in edit mode, then selecting this item will have no effect.
+ *
+ * Different styles may be applied to items in different status. The style
+ * application is performed in a hierarchical way: Style in higher hierarchy
  * will inherit from styles in lower hierarchy.
  * Starting from the lowest hierarchy, the item styles include
- * item's own style, {@link getItemStyle ItemStyle}, {@link getAlternatingItemStyle AlternatingItemStyle},
- * {@link getSelectedItemStyle SelectedItemStyle}, and {@link getEditItemStyle EditItemStyle}.
+ * - item's own style
+ * - {@link getItemStyle ItemStyle}
+ * - {@link getAlternatingItemStyle AlternatingItemStyle}
+ * - {@link getSelectedItemStyle SelectedItemStyle}
+ * - {@link getEditItemStyle EditItemStyle}.
  * Therefore, if background color is set as red in {@link getItemStyle ItemStyle},
  * {@link getEditItemStyle EditItemStyle} will also have red background color
  * unless it is set to a different value explicitly.
  *
- * To change the status of a particular item, set {@link setSelectedItemIndex SelectedItemIndex}
- * or {@link setEditItemIndex EditItemIndex}. The former will change the indicated
- * item to selected mode, which will cause the item to use {@link setSelectedItemTemplate SelectedItemTemplate}
- * for presentation. The latter will change the indicated item to edit mode.
- * Note, if an item is in edit mode, then selecting this item will have no effect.
- *
- * The layout of the data items in the list is specified via
- * {@link setRepeatLayout RepeatLayout}, which can be either 'Table' (default) or 'Flow'.
- * A table layout uses HTML table cells to organize the data items while
- * a flow layout uses line breaks to organize the data items.
- * When the layout is using 'Table', {@link setCellPadding CellPadding} and
- * {@link setCellSpacing CellSpacing} can be used to adjust the cellpadding and
- * cellpadding of the table, and {@link setCaption Caption} and {@link setCaptionAlign CaptionAlign}
- * can be used to add a table caption with the specified alignment.
- *
- * The number of columns used to display the data items is specified via
- * {@link setRepeatColumns RepeatColumns} property, while the {@link setRepeatDirection RepeatDirection}
- * governs the order of the items being rendered.
- *
- * You can retrive the repeated contents by the {@link getItems Items} property.
- * The header and footer items can be accessed by {@link getHeader Header}
- * and {@link getFooter Footer} properties, respectively.
- *
- * When TDataList creates an item, it will raise an {@link onItemCreated OnItemCreated}
- * so that you may customize the newly created item.
- * When databinding is performed by TDataList, for each item once it has finished
- * databinding, an {@link onItemDataBound OnItemDataBound} event will be raised.
- *
- * When an item is selected by an end-user, a {@link onSelectedIndexChanged OnSelectedIndexChanged}
- * event will be raised. Note, the selected index may not be actually changed.
- * The event mainly informs the server side that the end-user has made a selection.
- *
- * Each datalist item has a {@link TDataListItem::getItemType type}
- * which tells the position and state of the item in the datalist. An item in the header
- * of the repeater is of type Header. A body item may be of either
- * Item, AlternatingItem, SelectedItem or EditItem, depending whether the item
- * index is odd or even, whether it is being selected or edited.
- *
- * TDataList raises an {@link onItemCommand OnItemCommand} whenever a button control
- * within some TDataList item raises a <b>OnCommand</b> event. If the command name
- * is one of the followings: 'edit', 'update', 'select', 'delete', 'cancel' (case-insensitive),
- * another event will also be raised. For example, if the command name is 'edit',
- * then the new event is {@link onEditCommand OnEditCommand}.
- *
- * Note, the data bound to the datalist are reset to null after databinding.
- * There are several ways to access the data associated with a datalist item:
- * - Access the data in {@link onItemDataBound OnItemDataBound} event
+ * When a page containing a datalist is post back, the datalist will restore automatically
+ * all its contents, including items, header, footer and separators.
+ * However, the data row associated with each item will not be recovered and become null.
+ * To access the data, use one of the following ways:
  * - Use {@link getDataKeys DataKeys} to obtain the data key associated with
  * the specified datalist item and use the key to fetch the corresponding data
  * from some persistent storage such as DB.
- * - Save the data in viewstate and get it back during postbacks.
+ * - Save the whole dataset in viewstate, which will restore the dataset automatically upon postback.
+ * Be aware though, if the size of your dataset is big, your page size will become big. Some
+ * complex data may also have serializing problem if saved in viewstate.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Id$
