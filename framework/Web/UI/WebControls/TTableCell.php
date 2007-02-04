@@ -32,7 +32,7 @@
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TTableCell extends TWebControl
+class TTableCell extends TWebControl implements IDataRenderer
 {
 	/**
 	 * @return string tag name for the table cell
@@ -164,6 +164,32 @@ class TTableCell extends TWebControl
 	public function setText($value)
 	{
 		$this->setViewState('Text',$value,'');
+	}
+
+	/**
+	 * Returns the text content of the table cell.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link getText()}.
+	 * @return string the text content of the table cell.
+	 * @see getText
+	 * @since 3.1.0
+	 */
+	public function getData()
+	{
+		return $this->getText();
+	}
+
+	/**
+	 * Sets the text content of the table cell.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link setText()}.
+	 * @param string the text content of the table cell.
+	 * @see setText
+	 * @since 3.1.0
+	 */
+	public function setData($value)
+	{
+		$this->setText($value);
 	}
 
 	/**

@@ -250,26 +250,23 @@ comparevalidator_controltocompare_invalid = TCompareValidator.ControlToCompare c
 listcontrolvalidator_invalid_control	= {0}.ControlToValidate contains an invalid TListControl ID path, "{1}" is a {2}.
 
 repeater_template_required				= TRepeater.{0} requires a template instance implementing ITemplate interface.
+repeater_itemtype_unknown				= Unknow repeater item type {0}.
+repeateritemcollection_item_invalid		= TRepeaterItemCollection can only accept objects that are instance of TControl or its descendant class.
+
 datalist_template_required				= TDataList.{0} requires a template instance implementing ITemplate interface.
+datalistitemcollection_datalistitem_required = TDataListItemCollection can only accept TDataListItem objects.
+
 datagrid_template_required				= TDataGrid.{0} requires a template instance implementing ITemplate interface.
 templatecolumn_template_required		= TTemplateColumn.{0} requires a template instance implementing ITemplate interface.
-
 datagrid_currentpageindex_invalid		= TDataGrid.CurrentPageIndex must be no less than 0.
 datagrid_pagesize_invalid				= TDataGrid.PageSize must be greater than 0.
 datagrid_virtualitemcount_invalid		= TDataGrid.VirtualItemCount must be no less than 0.
-
+datagriditemcollection_datagriditem_required = TDataGridItemCollection can only accept TDataGridItem objects.
+datagridcolumncollection_datagridcolumn_required = TDataGridColumnCollection can only accept TDataGridColumn objects.
 datagridpagerstyle_pagebuttoncount_invalid = TDataGridPagerStyle.PageButtonCount must be greater than 0.
 
 datafieldaccessor_data_invalid			= TDataFieldAccessor is trying to evaluate a field value of an invalid data. Make sure the data is an array, TMap, TList, or object that contains the specified field '{0}'.
 datafieldaccessor_datafield_invalid		= TDataFieldAccessor is trying to evaluate data value of an unknown field '{0}'.
-
-repeateritemcollection_repeateritem_required = TRepeaterItemCollection can only accept TRepeaterItem objects.
-
-datagriditemcollection_datagriditem_required = TDataGridItemCollection can only accept TDataGridItem objects.
-
-datagridcolumncollection_datagridcolumn_required = TDataGridColumnCollection can only accept TDataGridColumn objects.
-
-datalistitemcollection_datalistitem_required = TDataListItemCollection can only accept TDataListItem objects.
 
 tablerowcollection_tablerow_required	= TTableRowCollection can only accept TTableRow objects.
 

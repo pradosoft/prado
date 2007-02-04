@@ -30,7 +30,7 @@
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TLabel extends TWebControl
+class TLabel extends TWebControl implements IDataRenderer
 {
 	private $_forControl='';
 
@@ -105,6 +105,32 @@ class TLabel extends TWebControl
 	public function setText($value)
 	{
 		$this->setViewState('Text',$value,'');
+	}
+
+	/**
+	 * Returns the text value of the label.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link getText()}.
+	 * @return string the text value of the label
+	 * @see getText
+	 * @since 3.1.0
+	 */
+	public function getData()
+	{
+		return $this->getText();
+	}
+
+	/**
+	 * Sets the text value of the label.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link setText()}.
+	 * @param string the text value of the label
+	 * @see setText
+	 * @since 3.1.0
+	 */
+	public function setData($value)
+	{
+		$this->setText($value);
 	}
 
 	/**

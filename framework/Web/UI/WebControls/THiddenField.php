@@ -23,7 +23,7 @@
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class THiddenField extends TControl implements IPostBackDataHandler, IValidatable
+class THiddenField extends TControl implements IPostBackDataHandler, IValidatable, IDataRenderer
 {
 	/**
 	 * @return string tag name of the hidden field.
@@ -130,6 +130,33 @@ class THiddenField extends TControl implements IPostBackDataHandler, IValidatabl
 	{
 		$this->setViewState('Value',$value,'');
 	}
+
+	/**
+	 * Returns the value of the hidden field.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link getValue()}.
+	 * @return string value of the hidden field
+	 * @see getValue
+	 * @since 3.1.0
+	 */
+	public function getData()
+	{
+		return $this->getValue();
+	}
+
+	/**
+	 * Sets the value of the hidden field.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link setValue()}.
+	 * @param string value of the hidden field
+	 * @see setValue
+	 * @since 3.1.0
+	 */
+	public function setData($value)
+	{
+		$this->setValue($value);
+	}
+
 
 	/**
 	 * @return boolean whether theming is enabled for this control. Defaults to false.

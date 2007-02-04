@@ -40,7 +40,7 @@
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatable
+class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatable, IDataRenderer
 {
 	/**
 	 * @return string tag name of the button
@@ -177,6 +177,32 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	public function setChecked($value)
 	{
 		$this->setViewState('Checked',TPropertyValue::ensureBoolean($value),false);
+	}
+
+	/**
+	 * Returns the value indicating whether the checkbox is checked.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link getChecked()}.
+	 * @return boolean whether the checkbox is checked.
+	 * @see getChecked
+	 * @since 3.1.0
+	 */
+	public function getData()
+	{
+		return $this->getChecked();
+	}
+
+	/**
+	 * Sets the value indicating whether the checkbox is to be checked or not.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link setChecked()}.
+	 * @param boolean whether the checkbox is to be checked
+	 * @see setChecked
+	 * @since 3.1.0
+	 */
+	public function setData($value)
+	{
+		$this->setChecked($value);
 	}
 
 	/**

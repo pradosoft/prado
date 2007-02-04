@@ -31,7 +31,7 @@
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TInlineFrame extends TWebControl
+class TInlineFrame extends TWebControl implements IDataRenderer
 {
 	/**
 	 * @return string tag name of the iframe.
@@ -103,6 +103,32 @@ class TInlineFrame extends TWebControl
 	public function setFrameUrl($value)
 	{
 		$this->setViewState('FrameUrl',$value,'');
+	}
+
+	/**
+	 * Returns the URL that this iframe will load content from
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link getFrameUrl()}.
+	 * @return string the URL that this iframe will load content from
+	 * @see getFrameUrl
+	 * @since 3.1.0
+	 */
+	public function getData()
+	{
+		return $this->getFrameUrl();
+	}
+
+	/**
+	 * Sets the URL that this iframe will load content from.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link setFrameUrl()}.
+	 * @param string the URL that this iframe will load content from
+	 * @see setFrameUrl
+	 * @since 3.1.0
+	 */
+	public function setData($value)
+	{
+		$this->setFrameUrl($value);
 	}
 
 	/**

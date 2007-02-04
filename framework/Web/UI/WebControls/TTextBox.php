@@ -48,7 +48,7 @@
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
+class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable, IDataRenderer
 {
 	/**
 	 * Default number of rows (for MultiLine text box)
@@ -421,6 +421,32 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	{
 		$this->setViewState('Text',$value,'');
 		$this->_safeText = null;
+	}
+
+	/**
+	 * Returns the text content of the TTextBox control.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link getText()}.
+	 * @return string the text content of the TTextBox control.
+	 * @see getText
+	 * @since 3.1.0
+	 */
+	public function getData()
+	{
+		return $this->getText();
+	}
+
+	/**
+	 * Sets the text content of the TTextBox control.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link setText()}.
+	 * @param string the text content of the TTextBox control.
+	 * @see setText
+	 * @since 3.1.0
+	 */
+	public function setData($value)
+	{
+		$this->setText($value);
 	}
 
 	/**

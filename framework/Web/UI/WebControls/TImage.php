@@ -25,7 +25,7 @@
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TImage extends TWebControl
+class TImage extends TWebControl implements IDataRenderer
 {
 	/**
 	 * @return string tag name of image control
@@ -112,6 +112,32 @@ class TImage extends TWebControl
 	public function setImageUrl($value)
 	{
 		$this->setViewState('ImageUrl',$value,'');
+	}
+
+	/**
+	 * Returns the URL of the image file.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link getImageUrl()}.
+	 * @return string the URL of the image file.
+	 * @see getImageUrl
+	 * @since 3.1.0
+	 */
+	public function getData()
+	{
+		return $this->getImageUrl();
+	}
+
+	/**
+	 * Sets the URL of the image.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link setImageUrl()}.
+	 * @param string the URL of the image file.
+	 * @see setImageUrl
+	 * @since 3.1.0
+	 */
+	public function setData($value)
+	{
+		$this->setImageUrl($value);
 	}
 
 	/**
