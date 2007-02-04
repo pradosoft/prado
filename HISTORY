@@ -9,7 +9,7 @@ ENH: Ticket#519 - Update TActiveRecord implementation (Wei)
 ENH: Added PRADO_CHMOD constant so that users can specify the permission of PRADO-created directories (Qiang)
 ENH: Added Display property to TWebControl (Wei)
 ENH: Added TUser.getState() and setState() for storing user session data (Qiang)
-ENH: Added renderer feature to TRepeater (Qiang)
+ENH: Added renderer feature to TRepeater and TDataList (Qiang)
 
 Version 3.1.0 alpha January 15, 2007
 ====================================

@@ -453,7 +453,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 * Creates a repeater item.
 	 * This method invokes {@link createItem} to create a new repeater item.
 	 * @param integer zero-based item index.
-	 * @param string item type, may be 'Header', 'Footer', 'Empty', 'Item', 'Separator', 'AlternatingItem'.
+	 * @param TListItemType item type
 	 * @return TControl the created item, null if item is not created
 	 */
 	private function createItemInternal($itemIndex,$itemType)
@@ -473,7 +473,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 * Creates a repeater item and performs databinding.
 	 * This method invokes {@link createItem} to create a new repeater item.
 	 * @param integer zero-based item index.
-	 * @param string item type, may be 'Header', 'Footer', 'Empty', 'Item', 'Separator', 'AlternatingItem'.
+	 * @param TListItemType item type
 	 * @param mixed data to be associated with the item
 	 * @return TControl the created item, null if item is not created
 	 */
@@ -497,7 +497,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	/**
 	 * Creates a repeater item instance based on the item type and index.
 	 * @param integer zero-based item index
-	 * @param string item type, may be 'Header', 'Footer', 'Empty', 'Item', 'Separator', 'AlternatingItem'.
+	 * @param TListItemType item type
 	 * @return TControl created repeater item
 	 */
 	protected function createItem($itemIndex,$itemType)
@@ -571,7 +571,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 */
 	public function render($writer)
 	{
-		if($this->_items && $this->_items->getCount() || $this->_emptyTemplate!==null)
+		if($this->_items && $this->_items->getCount() || $this->_emptyTemplate!==null || $this->getEmptyRenderer()!=='')
 			$this->renderContents($writer);
 	}
 
@@ -670,7 +670,10 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 		if($itemIndex>0)
 			$this->_footer=$this->createItemWithDataInternal(-1,TListItemType::Footer,null);
 		else
+		{
 			$this->createEmptyContent();
+			$this->dataBindChildren();
+		}
 		$this->setViewState('ItemCount',$itemIndex,0);
 	}
 
@@ -981,7 +984,6 @@ class TRepeaterItem extends TControl implements INamingContainer, IItemDataRende
  *
  * TRepeaterItemRenderer can be used as a convenient base class to
  * define an item renderer class for {@link TRepeater}.
- * that implements
  *
  * Because TRepeaterItemRenderer extends from {@link TTemplateControl}, derived child classes
  * can have templates to define their presentational layout.

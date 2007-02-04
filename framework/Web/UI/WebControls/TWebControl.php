@@ -247,6 +247,7 @@ class TWebControl extends TControl
 	/**
 	 * Creates a style object to be used by the control.
 	 * This method may be overriden by controls to provide customized style.
+	 * @return TStyle the default style created for TWebControl
 	 */
 	protected function createStyle()
 	{
