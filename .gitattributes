@@ -2021,6 +2021,7 @@ framework/Web/UI/WebControls/TDataBoundControl.php -text
 framework/Web/UI/WebControls/TDataGrid.php -text
 framework/Web/UI/WebControls/TDataGridColumn.php -text
 framework/Web/UI/WebControls/TDataList.php -text
+framework/Web/UI/WebControls/TDataListItemRenderer.php -text
 framework/Web/UI/WebControls/TDataSourceControl.php -text
 framework/Web/UI/WebControls/TDataSourceView.php -text
 framework/Web/UI/WebControls/TDataTypeValidator.php -text
@@ -2070,6 +2071,7 @@ framework/Web/UI/WebControls/TRatingList.php -text
 framework/Web/UI/WebControls/TRegularExpressionValidator.php -text
 framework/Web/UI/WebControls/TRepeatInfo.php -text
 framework/Web/UI/WebControls/TRepeater.php -text
+framework/Web/UI/WebControls/TRepeaterItemRenderer.php -text
 framework/Web/UI/WebControls/TRequiredFieldValidator.php -text
 framework/Web/UI/WebControls/TSafeHtml.php -text
 framework/Web/UI/WebControls/TStatements.php -text

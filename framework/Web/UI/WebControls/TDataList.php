@@ -675,13 +675,13 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 			if($current>=0 && $current<$itemCount)
 			{
 				$item=$items->itemAt($current);
-				if($item->getItemType()!==TListItemType::EditItem)
+				if(($item instanceof IItemDataRenderer) && $item->getItemType()!==TListItemType::EditItem)
 					$item->setItemType($current%2?TListItemType::AlternatingItem : TListItemType::Item);
 			}
 			if($value>=0 && $value<$itemCount)
 			{
 				$item=$items->itemAt($value);
-				if($item->getItemType()!==TListItemType::EditItem)
+				if(($item instanceof IItemDataRenderer) && $item->getItemType()!==TListItemType::EditItem)
 					$item->setItemType(TListItemType::SelectedItem);
 			}
 		}
@@ -906,7 +906,8 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 			$command=$param->getCommandName();
 			if(strcasecmp($command,self::CMD_SELECT)===0)
 			{
-				$this->setSelectedItemIndex($param->getItem()->getItemIndex());
+				if(($item=$param->getItem()) instanceof IItemDataRenderer)
+					$this->setSelectedItemIndex($item->getItemIndex());
 				$this->onSelectedIndexChanged($param);
 				return true;
 			}
@@ -1022,21 +1023,21 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	/**
 	 * Returns a value indicating whether this control contains header item.
 	 * This method is required by {@link IRepeatInfoUser} interface.
-	 * @return boolean always false.
+	 * @return boolean whether the datalist has header
 	 */
 	public function getHasHeader()
 	{
-		return ($this->getShowHeader() && $this->_headerTemplate!==null);
+		return ($this->getShowHeader() && ($this->_headerTemplate!==null || $this->getHeaderRenderer()!==''));
 	}
 
 	/**
 	 * Returns a value indicating whether this control contains footer item.
 	 * This method is required by {@link IRepeatInfoUser} interface.
-	 * @return boolean always false.
+	 * @return boolean whether the datalist has footer
 	 */
 	public function getHasFooter()
 	{
-		return ($this->getShowFooter() && $this->_footerTemplate!==null);
+		return ($this->getShowFooter() && ($this->_footerTemplate!==null || $this->getFooterRenderer()!==''));
 	}
 
 	/**
@@ -1046,7 +1047,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 */
 	public function getHasSeparators()
 	{
-		return $this->_separatorTemplate!==null;
+		return $this->_separatorTemplate!==null || $this->getSeparatorRenderer()!=='';
 	}
 
 	/**
@@ -1058,8 +1059,12 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 */
 	public function generateItemStyle($itemType,$index)
 	{
-		if(($item=$this->getItem($itemType,$index))!==null && $item->getHasStyle())
-			return $item->getStyle();
+		if(($item=$this->getItem($itemType,$index))!==null && ($item instanceof IStyleable) && $item->getHasStyle())
+		{
+			$style=$item->getStyle();
+			$item->clearStyle();
+			return $style;
+		}
 		else
 			return null;
 	}
@@ -1076,10 +1081,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	{
 		$item=$this->getItem($itemType,$index);
 		$layout=$repeatInfo->getRepeatLayout();
-		if($layout==='Table' || $layout==='Raw')
-			$item->renderContents($writer);
-		else
-			$item->renderControl($writer);
+		$item->renderControl($writer);
 	}
 
 	/**
@@ -1102,7 +1104,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 				return $this->getControls()->itemAt($this->getControls()->getCount()-1);
 			case TListItemType::Separator:
 				$i=$index+$index+1;
-				if($this->_headerTemplate!==null)
+				if($this->_headerTemplate!==null || $this->getHeaderRenderer()!=='')
 					$i++;
 				return $this->getControls()->itemAt($i);
 		}
@@ -1284,66 +1286,47 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 				$editItemStyle->mergeWith($selectedItemStyle);
 		}
 
-		$headerStyle=$this->getViewState('HeaderStyle',null);
-		$footerStyle=$this->getViewState('FooterStyle',null);
-		$separatorStyle=$this->getViewState('SeparatorStyle',null);
-
-		foreach($this->getControls() as $index=>$item)
+		// apply header style if any
+		if($this->_header!==null && $this->_header instanceof IStyleable)
 		{
-			if(!($item instanceof IItemDataRenderer) || !$item->hasProperty('Style'))
-				continue;
-			switch($item->getItemType())
+			if($headerStyle=$this->getViewState('HeaderStyle',null))
+				$this->_header->getStyle()->mergeWith($headerStyle);
+		}
+
+		// apply footer style if any
+		if($this->_footer!==null && $this->_footer instanceof IStyleable)
+		{
+			if($footerStyle=$this->getViewState('FooterStyle',null))
+				$this->_footer->getStyle()->mergeWith($headerStyle);
+		}
+
+		$selectedIndex=$this->getSelectedItemIndex();
+		$editIndex=$this->getEditItemIndex();
+
+		// apply item styles if any
+		foreach($this->getItems() as $index=>$item)
+		{
+			if($index===$editIndex)
+				$style=$editItemStyle;
+			else if($index===$selectedIndex)
+				$style=$selectedItemStyle;
+			else if($index%2===0)
+				$style=$itemStyle;
+			else
+				$style=$alternatingItemStyle;
+			if($style && $item instanceof IStyleable)
+				$item->getStyle()->mergeWith($style);
+		}
+
+		// apply separator style if any
+		if(($separatorStyle=$this->getViewState('SeparatorStyle',null))!==null && $this->getHasSeparators())
+		{
+			$controls=$this->getControls();
+			$count=$controls->getCount();
+			for($i=$this->_header?2:1;$i<$count;$i+=2)
 			{
-				case TListItemType::Header:
-					if($headerStyle)
-						$item->getStyle()->mergeWith($headerStyle);
-					break;
-				case TListItemType::Footer:
-					if($footerStyle)
-						$item->getStyle()->mergeWith($footerStyle);
-					break;
-				case TListItemType::Separator:
-					if($separatorStyle)
-						$item->getStyle()->mergeWith($separatorStyle);
-					break;
-				case TListItemType::Item:
-					if($itemStyle)
-						$item->getStyle()->mergeWith($itemStyle);
-					break;
-				case TListItemType::AlternatingItem:
-					if($alternatingItemStyle)
-						$item->getStyle()->mergeWith($alternatingItemStyle);
-					break;
-				case TListItemType::SelectedItem:
-					if($selectedItemStyle)
-						$item->getStyle()->mergeWith($selectedItemStyle);
-					if($index % 2==1)
-					{
-						if($itemStyle)
-							$item->getStyle()->mergeWith($itemStyle);
-					}
-					else
-					{
-						if($alternatingItemStyle)
-							$item->getStyle()->mergeWith($alternatingItemStyle);
-					}
-					break;
-				case TListItemType::EditItem:
-					if($editItemStyle)
-						$item->getStyle()->mergeWith($editItemStyle);
-					if($index % 2==1)
-					{
-						if($itemStyle)
-							$item->getStyle()->mergeWith($itemStyle);
-					}
-					else
-					{
-						if($alternatingItemStyle)
-							$item->getStyle()->mergeWith($alternatingItemStyle);
-					}
-					break;
-				default:
-					break;
+				if(($separator=$controls->itemAt($i)) instanceof IStyleable)
+					$separator->getStyle()->mergeWith($separatorStyle);
 			}
 		}
 	}
@@ -1705,226 +1688,6 @@ class TDataListItem extends TWebControl implements INamingContainer, IItemDataRe
 		}
 		else
 			return false;
-	}
-}
-
-
-
-/**
- * TDataListItemRenderer class
- *
- * TDataListItemRenderer can be used as a convenient base class to
- * define an item renderer class for {@link TDataList}.
- *
- * Because TDataListItemRenderer extends from {@link TTemplateControl}, derived child classes
- * can have templates to define their presentational layout.
- *
- * TDataListItemRenderer implements {@link IItemDataRenderer} interface,
- * which enables the following properties that are related with data-bound controls:
- * - {@link getItemIndex ItemIndex}: zero-based index of this control in the datalist item collection.
- * - {@link getItemType ItemType}: item type of this control, such as TListItemType::AlternatingItem
- * - {@link getData Data}: data associated with this control
-
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
- * @package System.Web.UI.WebControls
- * @since 3.1.0
- */
-class TDataListItemRenderer extends TTemplateControl implements IItemDataRenderer
-{
-	/**
-	 * index of the data item in the Items collection of TDataList
-	 * @var integer
-	 */
-	private $_itemIndex;
-	/**
-	 * type of the TDataListItem
-	 * @var TListItemType
-	 */
-	private $_itemType;
-	/**
-	 * value of the data associated with this item
-	 * @var mixed
-	 */
-	private $_data;
-
-	/**
-	 * @return boolean whether the control has defined any style information
-	 */
-	public function getHasStyle()
-	{
-		return $this->getViewState('Style',null)!==null;
-	}
-
-	/**
-	 * Creates a style object to be used by the control.
-	 * This method may be overriden by controls to provide customized style.
-	 * @return TStyle
-	 */
-	protected function createStyle()
-	{
-		return new TStyle;
-	}
-
-	/**
-	 * @return TStyle the object representing the css style of the control
-	 */
-	public function getStyle()
-	{
-		if($style=$this->getViewState('Style',null))
-			return $style;
-		else
-		{
-			$style=$this->createStyle();
-			$this->setViewState('Style',$style,null);
-			return $style;
-		}
-	}
-
-	/**
-	 * @return TListItemType item type
-	 */
-	public function getItemType()
-	{
-		return $this->_itemType;
-	}
-
-	/**
-	 * @param TListItemType item type.
-	 */
-	public function setItemType($value)
-	{
-		$this->_itemType=TPropertyValue::ensureEnum($value,'TListItemType');
-	}
-
-	/**
-	 * @return integer zero-based index of the item in the item collection of datalist
-	 */
-	public function getItemIndex()
-	{
-		return $this->_itemIndex;
-	}
-
-	/**
-	 * Sets the zero-based index for the item.
-	 * If the item is not in the item collection (e.g. it is a header item), -1 should be used.
-	 * @param integer zero-based index of the item.
-	 */
-	public function setItemIndex($value)
-	{
-		$this->_itemIndex=TPropertyValue::ensureInteger($value);
-	}
-
-	/**
-	 * @return mixed data associated with the item
-	 */
-	public function getData()
-	{
-		return $this->_data;
-	}
-
-	/**
-	 * @param mixed data to be associated with the item
-	 */
-	public function setData($value)
-	{
-		$this->_data=$value;
-	}
-
-	/**
-	 * This method overrides parent's implementation by wrapping event parameter
-	 * for <b>OnCommand</b> event with item information.
-	 * @param TControl the sender of the event
-	 * @param TEventParameter event parameter
-	 * @return boolean whether the event bubbling should stop here.
-	 */
-	public function bubbleEvent($sender,$param)
-	{
-		if($param instanceof TCommandEventParameter)
-		{
-			$this->raiseBubbleEvent($this,new TDataListCommandEventParameter($this,$sender,$param));
-			return true;
-		}
-		else
-			return false;
-	}
-
-	/**
-	 * Returns the tag name used for this control.
-	 * By default, the tag name is 'span'.
-	 * You can override this method to provide customized tag names.
-	 * If the tag name is empty, the opening and closing tag will NOT be rendered.
-	 * @return string tag name of the control to be rendered
-	 */
-	protected function getTagName()
-	{
-		return 'span';
-	}
-
-	/**
-	 * Adds attribute name-value pairs to renderer.
-	 * By default, this method renders the style string.
-	 * The method can be overriden to provide customized attribute rendering.
-	 * @param THtmlWriter the writer used for the rendering purpose
-	 */
-	protected function addAttributesToRender($writer)
-	{
-		if($style=$this->getViewState('Style',null))
-			$style->addAttributesToRender($writer);
-	}
-
-	/**
-	 * Renders the control.
-	 * This method overrides the parent implementation by replacing it with
-	 * the following sequence:
-	 * - {@link renderBeginTag}
-	 * - {@link renderContents}
-	 * - {@link renderEndTag}
-	 * If the {@link getTagName TagName} is empty, only {@link renderContents} is invoked.
-	 * @param THtmlWriter the writer used for the rendering purpose
-	 */
-	public function render($writer)
-	{
-		if($this->getTagName()!=='')
-		{
-			$this->renderBeginTag($writer);
-			$this->renderContents($writer);
-			$this->renderEndTag($writer);
-		}
-		else
-			$this->renderContents();
-	}
-
-	/**
-	 * Renders the openning tag for the control (including attributes)
-	 * This method is invoked when {@link getTagName TagName} is not empty.
-	 * @param THtmlWriter the writer used for the rendering purpose
-	 */
-	public function renderBeginTag($writer)
-	{
-		$this->addAttributesToRender($writer);
-		$writer->renderBeginTag($this->getTagName());
-	}
-
-	/**
-	 * Renders the body content enclosed between the control tag.
-	 * By default, child controls and text strings will be rendered.
-	 * You can override this method to provide customized content rendering.
-	 * @param THtmlWriter the writer used for the rendering purpose
-	 */
-	public function renderContents($writer)
-	{
-		parent::renderChildren($writer);
-	}
-
-	/**
-	 * Renders the closing tag for the control
-	 * This method is invoked when {@link getTagName TagName} is not empty.
-	 * @param THtmlWriter the writer used for the rendering purpose
-	 */
-	public function renderEndTag($writer)
-	{
-		$writer->renderEndTag();
 	}
 }
 
