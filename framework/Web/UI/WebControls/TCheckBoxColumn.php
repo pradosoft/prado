@@ -88,7 +88,6 @@ class TCheckBoxColumn extends TDataGridColumn
 	 */
 	public function initializeCell($cell,$columnIndex,$itemType)
 	{
-		parent::initializeCell($cell,$columnIndex,$itemType);
 		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem || $itemType===TListItemType::EditItem)
 		{
 			$checkBox=new TCheckBox;
@@ -100,6 +99,8 @@ class TCheckBoxColumn extends TDataGridColumn
 			if($this->getDataField()!=='')
 				$checkBox->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
 		}
+		else
+			parent::initializeCell($cell,$columnIndex,$itemType);
 	}
 
 	/**
@@ -110,7 +111,7 @@ class TCheckBoxColumn extends TDataGridColumn
 	public function dataBindColumn($sender,$param)
 	{
 		$item=$sender->getNamingContainer();
-		$data=$item->getDataItem();
+		$data=$item->getData();
 		if(($field=$this->getDataField())!=='')
 			$value=TPropertyValue::ensureBoolean($this->getDataFieldValue($data,$field));
 		else

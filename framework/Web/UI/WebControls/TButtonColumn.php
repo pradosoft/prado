@@ -226,7 +226,6 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function initializeCell($cell,$columnIndex,$itemType)
 	{
-		parent::initializeCell($cell,$columnIndex,$itemType);
 		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem || $itemType===TListItemType::EditItem)
 		{
 			$buttonType=$this->getButtonType();
@@ -248,6 +247,8 @@ class TButtonColumn extends TDataGridColumn
 			$cell->getControls()->add($button);
 			$cell->registerObject('Button',$button);
 		}
+		else
+			parent::initializeCell($cell,$columnIndex,$itemType);
 	}
 
 	/**
@@ -261,13 +262,13 @@ class TButtonColumn extends TDataGridColumn
 		{
 			if(($field=$this->getDataTextField())!=='')
 			{
-				$value=$this->getDataFieldValue($sender->getNamingContainer()->getDataItem(),$field);
+				$value=$this->getDataFieldValue($sender->getNamingContainer()->getData(),$field);
 				$text=$this->formatDataValue($this->getDataTextFormatString(),$value);
 				$sender->setText($text);
 			}
 			if(($sender instanceof TImageButton) && ($field=$this->getDataImageUrlField())!=='')
 			{
-				$value=$this->getDataFieldValue($sender->getNamingContainer()->getDataItem(),$field);
+				$value=$this->getDataFieldValue($sender->getNamingContainer()->getData(),$field);
 				$url=$this->formatDataValue($this->getDataImageUrlFormatString(),$value);
 				$sender->setImageUrl($url);
 			}

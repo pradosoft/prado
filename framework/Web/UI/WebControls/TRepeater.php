@@ -143,6 +143,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 
 	/**
 	 * @return string the class name for repeater items. Defaults to empty, meaning not set.
+	 * @since 3.1.0
 	 */
 	public function getItemRenderer()
 	{
@@ -157,6 +158,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 *
 	 * @param string the renderer class name in namespace format.
 	 * @see setItemTemplate
+	 * @since 3.1.0
 	 */
 	public function setItemRenderer($value)
 	{
@@ -165,6 +167,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 
 	/**
 	 * @return string the class name for alternative repeater items. Defaults to empty, meaning not set.
+	 * @since 3.1.0
 	 */
 	public function getAlternatingItemRenderer()
 	{
@@ -179,6 +182,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 *
 	 * @param string the renderer class name in namespace format.
 	 * @see setAlternatingItemTemplate
+	 * @since 3.1.0
 	 */
 	public function setAlternatingItemRenderer($value)
 	{
@@ -187,6 +191,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 
 	/**
 	 * @return string the class name for repeater item separators. Defaults to empty, meaning not set.
+	 * @since 3.1.0
 	 */
 	public function getSeparatorRenderer()
 	{
@@ -201,6 +206,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 *
 	 * @param string the renderer class name in namespace format.
 	 * @see setSeparatorTemplate
+	 * @since 3.1.0
 	 */
 	public function setSeparatorRenderer($value)
 	{
@@ -209,6 +215,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 
 	/**
 	 * @return string the class name for repeater header item. Defaults to empty, meaning not set.
+	 * @since 3.1.0
 	 */
 	public function getHeaderRenderer()
 	{
@@ -223,6 +230,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 *
 	 * @param string the renderer class name in namespace format.
 	 * @see setHeaderTemplate
+	 * @since 3.1.0
 	 */
 	public function setHeaderRenderer($value)
 	{
@@ -231,6 +239,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 
 	/**
 	 * @return string the class name for repeater footer item. Defaults to empty, meaning not set.
+	 * @since 3.1.0
 	 */
 	public function getFooterRenderer()
 	{
@@ -245,6 +254,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 *
 	 * @param string the renderer class name in namespace format.
 	 * @see setFooterTemplate
+	 * @since 3.1.0
 	 */
 	public function setFooterRenderer($value)
 	{
@@ -253,6 +263,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 
 	/**
 	 * @return string the class name for empty repeater item. Defaults to empty, meaning not set.
+	 * @since 3.1.0
 	 */
 	public function getEmptyRenderer()
 	{
@@ -268,6 +279,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 *
 	 * @param string the renderer class name in namespace format.
 	 * @see setEmptyTemplate
+	 * @since 3.1.0
 	 */
 	public function setEmptyRenderer($value)
 	{
@@ -925,6 +937,7 @@ class TRepeaterItem extends TControl implements INamingContainer, IItemDataRende
 
 	/**
 	 * @return mixed data associated with the item
+	 * @since 3.1.0
 	 */
 	public function getData()
 	{
@@ -933,6 +946,7 @@ class TRepeaterItem extends TControl implements INamingContainer, IItemDataRende
 
 	/**
 	 * @param mixed data to be associated with the item
+	 * @since 3.1.0
 	 */
 	public function setData($value)
 	{

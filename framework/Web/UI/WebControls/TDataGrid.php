@@ -1073,8 +1073,8 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 				$cell=new TTableCell;
 			if(($id=$column->getID())!=='')
 				$item->registerObject($id,$cell);
-			$column->initializeCell($cell,$index,$itemType);
 			$cells->add($cell);
+			$column->initializeCell($cell,$index,$itemType);
 			$index++;
 		}
 	}
@@ -1777,7 +1777,7 @@ class TDataGridItem extends TTableRow implements INamingContainer
 	 * value of the data item
 	 * @var mixed
 	 */
-	private $_dataItem=null;
+	private $_data=null;
 
 	/**
 	 * Constructor.
@@ -1829,18 +1829,40 @@ class TDataGridItem extends TTableRow implements INamingContainer
 
 	/**
 	 * @return mixed data associated with the item
+	 * @since 3.1.0
 	 */
-	public function getDataItem()
+	public function getData()
 	{
-		return $this->_dataItem;
+		return $this->_data;
 	}
 
 	/**
 	 * @param mixed data to be associated with the item
+	 * @since 3.1.0
+	 */
+	public function setData($value)
+	{
+		$this->_data=$value;
+	}
+
+	/**
+	 * This property is deprecated since v3.1.0.
+	 * @return mixed data associated with the item
+	 * @deprecated deprecated since v3.1.0. Use {@link getData} instead.
+	 */
+	public function getDataItem()
+	{
+		return $this->getData();
+	}
+
+	/**
+	 * This property is deprecated since v3.1.0.
+	 * @param mixed data to be associated with the item
+	 * @deprecated deprecated since version 3.1.0. Use {@link setData} instead.
 	 */
 	public function setDataItem($value)
 	{
-		$this->_dataItem=$value;
+		return $this->setData($value);
 	}
 
 	/**

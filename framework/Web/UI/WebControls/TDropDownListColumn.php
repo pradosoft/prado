@@ -255,7 +255,6 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function initializeCell($cell,$columnIndex,$itemType)
 	{
-		parent::initializeCell($cell,$columnIndex,$itemType);
 		if(!$this->_dataBound && $this->_listControl->getDataSource()!==null)
 		{
 			$this->_listControl->setDataTextField($this->getListTextField());
@@ -284,6 +283,9 @@ class TDropDownListColumn extends TDataGridColumn
 				if($this->getDataTextField()!=='' || $this->getDataValueField()!=='')
 					$cell->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
 				break;
+			default:
+				parent::initializeCell($cell,$columnIndex,$itemType);
+				break;
 		}
 	}
 
@@ -295,7 +297,7 @@ class TDropDownListColumn extends TDataGridColumn
 	public function dataBindColumn($sender,$param)
 	{
 		$item=$sender->getNamingContainer();
-		$data=$item->getDataItem();
+		$data=$item->getData();
 		if(($valueField=$this->getDataValueField())!=='')
 			$value=$this->getDataFieldValue($data,$valueField);
 		else

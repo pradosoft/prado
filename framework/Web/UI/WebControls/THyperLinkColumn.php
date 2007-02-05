@@ -176,7 +176,6 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function initializeCell($cell,$columnIndex,$itemType)
 	{
-		parent::initializeCell($cell,$columnIndex,$itemType);
 		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem || $itemType===TListItemType::EditItem)
 		{
 			$link=new THyperLink;
@@ -188,6 +187,8 @@ class THyperLinkColumn extends TDataGridColumn
 			$cell->getControls()->add($link);
 			$cell->registerObject('HyperLink',$link);
 		}
+		else
+			parent::initializeCell($cell,$columnIndex,$itemType);
 	}
 
 	/**
@@ -198,7 +199,7 @@ class THyperLinkColumn extends TDataGridColumn
 	public function dataBindColumn($sender,$param)
 	{
 		$item=$sender->getNamingContainer();
-		$data=$item->getDataItem();
+		$data=$item->getData();
 		if(($field=$this->getDataTextField())!=='')
 		{
 			$value=$this->getDataFieldValue($data,$field);

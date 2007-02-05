@@ -108,7 +108,6 @@ class TLiteralColumn extends TDataGridColumn
 	 */
 	public function initializeCell($cell,$columnIndex,$itemType)
 	{
-		parent::initializeCell($cell,$columnIndex,$itemType);
 		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::EditItem || $itemType===TListItemType::SelectedItem)
 		{
 			if($this->getDataField()!=='')
@@ -126,6 +125,8 @@ class TLiteralColumn extends TDataGridColumn
 				}
 			}
 		}
+		else
+			parent::initializeCell($cell,$columnIndex,$itemType);
 	}
 
 	/**
@@ -136,7 +137,7 @@ class TLiteralColumn extends TDataGridColumn
 	public function dataBindColumn($sender,$param)
 	{
 		$item=$sender->getNamingContainer();
-		$data=$item->getDataItem();
+		$data=$item->getData();
 		$formatString=$this->getDataFormatString();
 		if(($field=$this->getDataField())!=='')
 			$value=$this->formatDataValue($formatString,$this->getDataFieldValue($data,$field));

@@ -10,10 +10,8 @@
  * @package System.Web.UI.WebControls
  */
 
-/**
- * Includes TDataFieldAccessor and TDataValueFormatter classes
- */
 Prado::using('System.Util.TDataFieldAccessor');
+Prado::using('System.Web.UI.WebControls.TDataGrid');
 
 /**
  * TDataGridColumn class
@@ -110,6 +108,28 @@ abstract class TDataGridColumn extends TApplicationComponent
 	}
 
 	/**
+	 * @return string the class name for the column header cell renderer. Defaults to empty, meaning not set.
+	 * @since 3.1.0
+	 */
+	public function getHeaderRenderer()
+	{
+		return $this->getViewState('HeaderRenderer','');
+	}
+
+	/**
+	 * Sets the column header cell renderer class.
+	 *
+	 * If not empty, the class will be used to instantiate as a child control in the column header cell.
+	 *
+	 * @param string the renderer class name in namespace format.
+	 * @since 3.1.0
+	 */
+	public function setHeaderRenderer($value)
+	{
+		$this->setViewState('HeaderRenderer',$value,'');
+	}
+
+	/**
 	 * @param boolean whether to create a style if previously not existing
 	 * @return TTableItemStyle the style for header
 	 */
@@ -137,6 +157,28 @@ abstract class TDataGridColumn extends TApplicationComponent
 	public function setFooterText($value)
 	{
 		$this->setViewState('FooterText',$value,'');
+	}
+
+	/**
+	 * @return string the class name for the column footer cell renderer. Defaults to empty, meaning not set.
+	 * @since 3.1.0
+	 */
+	public function getFooterRenderer()
+	{
+		return $this->getViewState('FooterRenderer','');
+	}
+
+	/**
+	 * Sets the column footer cell renderer class.
+	 *
+	 * If not empty, the class will be used to instantiate as a child control in the column footer cell.
+	 *
+	 * @param string the renderer class name in namespace format.
+	 * @since 3.1.0
+	 */
+	public function setFooterRenderer($value)
+	{
+		$this->setViewState('FooterRenderer',$value,'');
 	}
 
 	/**
@@ -301,55 +343,131 @@ abstract class TDataGridColumn extends TApplicationComponent
 	 */
 	public function initializeCell($cell,$columnIndex,$itemType)
 	{
-		switch($itemType)
+		if($itemType===TListItemType::Header)
+			$this->initializeHeaderCell($cell,$columnIndex);
+		else if($itemType===TListItemType::Footer)
+			$this->initializeFooterCell($cell,$columnIndex);
+	}
+
+	/**
+	 * Returns a value indicating whether this column allows sorting.
+	 * The column allows sorting only when {@link getSortExpression SortExpression}
+	 * is not empty and the datagrid allows sorting.
+	 * @return boolean whether this column allows sorting
+	 */
+	public function getAllowSorting()
+	{
+		return $this->getSortExpression()!=='' && (!$this->_owner || $this->_owner->getAllowSorting());
+	}
+
+	/**
+	 * Initializes the header cell.
+	 *
+	 * This method attempts to use {@link getHeaderRenderer HeaderRenderer} to
+	 * instantiate the header cell. If that is not available, it will populate
+	 * the cell with an image or a text string, depending on {@link getHeaderImageUrl HeaderImageUrl}
+	 * and {@link getHeaderText HeaderText} property values.
+	 *
+	 * If the column allows sorting, image or text will be created as
+	 * a button which issues <b>Sort</b> command upon user click.
+	 *
+	 * @param TTableCell the cell to be initialized
+	 * @param integer the index to the Columns property that the cell resides in.
+	 */
+	protected function initializeHeaderCell($cell,$columnIndex)
+	{
+		$text=$this->getHeaderText();
+
+		if(($classPath=$this->getHeaderRenderer())!=='')
 		{
-			case TDataGrid::IT_HEADER:
-				$sortExpression=$this->getSortExpression();
-				$allowSorting=$sortExpression!=='' && (!$this->_owner || $this->_owner->getAllowSorting());
-				if($allowSorting)
+			$control=Prado::createComponent($classPath);
+			if($control instanceof IDataRenderer)
+			{
+				if($control instanceof IItemDataRenderer)
 				{
-					if(($url=$this->getHeaderImageUrl())!=='')
-					{
-						$button=Prado::createComponent('System.Web.UI.WebControls.TImageButton');
-						$button->setImageUrl($url);
-						$button->setCommandName('Sort');
-						$button->setCommandParameter($sortExpression);
-						$button->setCausesValidation(false);
-						$cell->getControls()->add($button);
-					}
-					else if(($text=$this->getHeaderText())!=='')
-					{
-						$button=Prado::createComponent('System.Web.UI.WebControls.TLinkButton');
-						$button->setText($text);
-						$button->setCommandName('Sort');
-						$button->setCommandParameter($sortExpression);
-						$button->setCausesValidation(false);
-						$cell->getControls()->add($button);
-					}
-					else
-						$cell->setText('&nbsp;');
+					$item=$cell->getParent();
+					$control->setItemIndex($item->getItemIndex());
+					$control->setItemType($item->getItemType());
 				}
-				else
-				{
-					if(($url=$this->getHeaderImageUrl())!=='')
-					{
-						$image=Prado::createComponent('System.Web.UI.WebControls.TImage');
-						$image->setImageUrl($url);
-						$cell->getControls()->add($image);
-					}
-					else
-					{
-						if(($text=$this->getHeaderText())==='')
-							$text='&nbsp;';
-						$cell->setText($text);
-					}
-				}
-				break;
-			case TDataGrid::IT_FOOTER:
-				if(($text=$this->getFooterText())!=='')
-					$cell->setText($text);
-				break;
+				$control->setData($text);
+			}
+			$cell->getControls()->add($control);
 		}
+		else if($this->getAllowSorting())
+		{
+			$sortExpression=$this->getSortExpression();
+			if(($url=$this->getHeaderImageUrl())!=='')
+			{
+				$button=Prado::createComponent('System.Web.UI.WebControls.TImageButton');
+				$button->setImageUrl($url);
+				$button->setCommandName(TDataGrid::CMD_SORT);
+				$button->setCommandParameter($sortExpression);
+				if($text!=='')
+					$button->setAlternateText($text);
+				$button->setCausesValidation(false);
+				$cell->getControls()->add($button);
+			}
+			else if($text!=='')
+			{
+				$button=Prado::createComponent('System.Web.UI.WebControls.TLinkButton');
+				$button->setText($text);
+				$button->setCommandName(TDataGrid::CMD_SORT);
+				$button->setCommandParameter($sortExpression);
+				$button->setCausesValidation(false);
+				$cell->getControls()->add($button);
+			}
+			else
+				$cell->setText('&nbsp;');
+		}
+		else
+		{
+			if(($url=$this->getHeaderImageUrl())!=='')
+			{
+				$image=Prado::createComponent('System.Web.UI.WebControls.TImage');
+				$image->setImageUrl($url);
+				if($text!=='')
+					$image->setAlternateText($text);
+				$cell->getControls()->add($image);
+			}
+			else if($text!=='')
+				$cell->setText($text);
+			else
+				$cell->setText('&nbsp;');
+		}
+	}
+
+	/**
+	 * Initializes the footer cell.
+	 *
+	 * This method attempts to use {@link getFooterRenderer FooterRenderer} to
+	 * instantiate the footer cell. If that is not available, it will populate
+	 * the cell with a text string specified by {@link getFooterImageUrl FooterImageUrl}
+	 *
+	 * @param TTableCell the cell to be initialized
+	 * @param integer the index to the Columns property that the cell resides in.
+	 */
+	protected function initializeFooterCell($cell,$columnIndex)
+	{
+		$text=$this->getFooterText();
+		if(($classPath=$this->getFooterRenderer())!=='')
+		{
+			$control=Prado::createComponent($classPath);
+			if($control instanceof IDataRenderer)
+			{
+				if($control instanceof IItemDataRenderer)
+				{
+					$item=$cell->getParent();
+					$control->setItemIndex($item->getItemIndex());
+					$control->setItemType($item->getItemType());
+				}
+				$control->setData($text);
+			}
+			$cell->getControls()->add($control);
+		}
+		else if($text!=='')
+			$cell->setText($text);
+		else
+			$cell->setText('&nbsp;');
 	}
 
 	/**

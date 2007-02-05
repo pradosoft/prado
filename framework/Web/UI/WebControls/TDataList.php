@@ -205,6 +205,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 
 	/**
 	 * @return string the class name for datalist items. Defaults to empty, meaning not set.
+	 * @since 3.1.0
 	 */
 	public function getItemRenderer()
 	{
@@ -219,6 +220,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 *
 	 * @param string the renderer class name in namespace format.
 	 * @see setItemTemplate
+	 * @since 3.1.0
 	 */
 	public function setItemRenderer($value)
 	{
@@ -227,6 +229,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 
 	/**
 	 * @return string the class name for alternative datalist items. Defaults to empty, meaning not set.
+	 * @since 3.1.0
 	 */
 	public function getAlternatingItemRenderer()
 	{
@@ -241,6 +244,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 *
 	 * @param string the renderer class name in namespace format.
 	 * @see setAlternatingItemTemplate
+	 * @since 3.1.0
 	 */
 	public function setAlternatingItemRenderer($value)
 	{
@@ -249,6 +253,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 
 	/**
 	 * @return string the class name for the datalist item being editted. Defaults to empty, meaning not set.
+	 * @since 3.1.0
 	 */
 	public function getEditItemRenderer()
 	{
@@ -263,6 +268,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 *
 	 * @param string the renderer class name in namespace format.
 	 * @see setEditItemTemplate
+	 * @since 3.1.0
 	 */
 	public function setEditItemRenderer($value)
 	{
@@ -271,6 +277,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 
 	/**
 	 * @return string the class name for the datalist item being selected. Defaults to empty, meaning not set.
+	 * @since 3.1.0
 	 */
 	public function getSelectedItemRenderer()
 	{
@@ -285,6 +292,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 *
 	 * @param string the renderer class name in namespace format.
 	 * @see setSelectedItemTemplate
+	 * @since 3.1.0
 	 */
 	public function setSelectedItemRenderer($value)
 	{
@@ -293,6 +301,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 
 	/**
 	 * @return string the class name for datalist item separators. Defaults to empty, meaning not set.
+	 * @since 3.1.0
 	 */
 	public function getSeparatorRenderer()
 	{
@@ -307,6 +316,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 *
 	 * @param string the renderer class name in namespace format.
 	 * @see setSeparatorTemplate
+	 * @since 3.1.0
 	 */
 	public function setSeparatorRenderer($value)
 	{
@@ -315,6 +325,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 
 	/**
 	 * @return string the class name for datalist header item. Defaults to empty, meaning not set.
+	 * @since 3.1.0
 	 */
 	public function getHeaderRenderer()
 	{
@@ -329,6 +340,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 *
 	 * @param string the renderer class name in namespace format.
 	 * @see setHeaderTemplate
+	 * @since 3.1.0
 	 */
 	public function setHeaderRenderer($value)
 	{
@@ -337,6 +349,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 
 	/**
 	 * @return string the class name for datalist footer item. Defaults to empty, meaning not set.
+	 * @since 3.1.0
 	 */
 	public function getFooterRenderer()
 	{
@@ -351,6 +364,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 *
 	 * @param string the renderer class name in namespace format.
 	 * @see setFooterTemplate
+	 * @since 3.1.0
 	 */
 	public function setFooterRenderer($value)
 	{
@@ -359,6 +373,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 
 	/**
 	 * @return string the class name for empty datalist item. Defaults to empty, meaning not set.
+	 * @since 3.1.0
 	 */
 	public function getEmptyRenderer()
 	{
@@ -374,6 +389,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	 *
 	 * @param string the renderer class name in namespace format.
 	 * @see setEmptyTemplate
+	 * @since 3.1.0
 	 */
 	public function setEmptyRenderer($value)
 	{
@@ -1638,6 +1654,7 @@ class TDataListItem extends TWebControl implements INamingContainer, IItemDataRe
 
 	/**
 	 * @return mixed data associated with the item
+	 * @since 3.1.0
 	 */
 	public function getData()
 	{
@@ -1646,6 +1663,7 @@ class TDataListItem extends TWebControl implements INamingContainer, IItemDataRe
 
 	/**
 	 * @param mixed data to be associated with the item
+	 * @since 3.1.0
 	 */
 	public function setData($value)
 	{

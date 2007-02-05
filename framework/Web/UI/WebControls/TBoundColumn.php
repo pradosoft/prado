@@ -43,6 +43,50 @@ Prado::using('System.Web.UI.WebControls.TDataGridColumn');
 class TBoundColumn extends TDataGridColumn
 {
 	/**
+	 * @return string the class name for the item cell renderer. Defaults to empty, meaning not set.
+	 * @since 3.1.0
+	 */
+	public function getItemRenderer()
+	{
+		return $this->getViewState('ItemRenderer','');
+	}
+
+	/**
+	 * Sets the item cell renderer class.
+	 *
+	 * If not empty, the class will be used to instantiate as a child control in the item cells of the column.
+	 *
+	 * @param string the renderer class name in namespace format.
+	 * @since 3.1.0
+	 */
+	public function setItemRenderer($value)
+	{
+		$this->setViewState('ItemRenderer',$value,'');
+	}
+
+	/**
+	 * @return string the class name for the edit item cell renderer. Defaults to empty, meaning not set.
+	 * @since 3.1.0
+	 */
+	public function getEditItemRenderer()
+	{
+		return $this->getViewState('EditItemRenderer','');
+	}
+
+	/**
+	 * Sets the edit item cell renderer class.
+	 *
+	 * If not empty, the class will be used to instantiate as a child control in the item cell that is in edit mode.
+	 *
+	 * @param string the renderer class name in namespace format.
+	 * @since 3.1.0
+	 */
+	public function setEditItemRenderer($value)
+	{
+		$this->setViewState('EditItemRenderer',$value,'');
+	}
+
+	/**
 	 * @return string the field name from the data source to bind to the column
 	 */
 	public function getDataField()
@@ -103,26 +147,52 @@ class TBoundColumn extends TDataGridColumn
 	 */
 	public function initializeCell($cell,$columnIndex,$itemType)
 	{
-		parent::initializeCell($cell,$columnIndex,$itemType);
+		$item=$cell->getParent();
 		switch($itemType)
 		{
-			case TListItemType::EditItem:
-				$control=$cell;
-				if(!$this->getReadOnly())
-				{
-					$textBox=Prado::createComponent('System.Web.UI.WebControls.TTextBox');
-					$cell->getControls()->add($textBox);
-					$cell->registerObject('TextBox',$textBox);
-					$control=$textBox;
-				}
-				if(($dataField=$this->getDataField())!=='')
-					$control->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
-				break;
 			case TListItemType::Item:
 			case TListItemType::AlternatingItem:
 			case TListItemType::SelectedItem:
-				if($this->getDataField()!=='')
-					$cell->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
+				if(($classPath=$this->getItemRenderer())!=='')
+				{
+					$control=Prado::createComponent($classPath);
+					if($control instanceof IItemDataRenderer)
+					{
+						$control->setItemIndex($item->getItemIndex());
+						$control->setItemType($item->getItemType());
+					}
+					$cell->getControls()->add($control);
+				}
+				else
+					$control=$cell;
+				$control->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
+				break;
+			case TListItemType::EditItem:
+				if(!$this->getReadOnly())
+				{
+					if(($classPath=$this->getItemRenderer())!=='')
+					{
+						$control=Prado::createComponent($classPath);
+						if($control instanceof IItemDataRenderer)
+						{
+							$control->setItemIndex($item->getItemIndex());
+							$control->setItemType($item->getItemType());
+						}
+						$cell->getControls()->add($control);
+					}
+					else
+					{
+						$control=Prado::createComponent('System.Web.UI.WebControls.TTextBox');
+						$cell->getControls()->add($control);
+						$cell->registerObject('TextBox',$control);
+					}
+				}
+				else
+					$control=$cell;
+				$control->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
+				break;
+			default:
+				parent::initializeCell($cell,$columnIndex,$itemType);
 				break;
 		}
 	}
@@ -135,14 +205,16 @@ class TBoundColumn extends TDataGridColumn
 	public function dataBindColumn($sender,$param)
 	{
 		$item=$sender->getNamingContainer();
-		$data=$item->getDataItem();
+		$data=$item->getData();
 		$formatString=$this->getDataFormatString();
 		if(($field=$this->getDataField())!=='')
 			$value=$this->formatDataValue($formatString,$this->getDataFieldValue($data,$field));
 		else
 			$value=$this->formatDataValue($formatString,$data);
-		if(($sender instanceof TTableCell) || ($sender instanceof TTextBox))
-			$sender->setText($value);
+		if($sender instanceof IItemDataRenderer)
+			$sender->setData($data);
+		else if($sender instanceof IDataRenderer)
+			$sender->setData($value);
 	}
 }
 

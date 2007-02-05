@@ -44,6 +44,50 @@ class TTemplateColumn extends TDataGridColumn
 	private $_footerTemplate=null;
 
 	/**
+	 * @return string the class name for the item cell renderer. Defaults to empty, meaning not set.
+	 * @since 3.1.0
+	 */
+	public function getItemRenderer()
+	{
+		return $this->getViewState('ItemRenderer','');
+	}
+
+	/**
+	 * Sets the item cell renderer class.
+	 *
+	 * If not empty, the class will be used to instantiate as a child control in the item cells of the column.
+	 *
+	 * @param string the renderer class name in namespace format.
+	 * @since 3.1.0
+	 */
+	public function setItemRenderer($value)
+	{
+		$this->setViewState('ItemRenderer',$value,'');
+	}
+
+	/**
+	 * @return string the class name for the edit item cell renderer. Defaults to empty, meaning not set.
+	 * @since 3.1.0
+	 */
+	public function getEditItemRenderer()
+	{
+		return $this->getViewState('EditItemRenderer','');
+	}
+
+	/**
+	 * Sets the edit item cell renderer class.
+	 *
+	 * If not empty, the class will be used to instantiate as a child control in the item cell that is in edit mode.
+	 *
+	 * @param string the renderer class name in namespace format.
+	 * @since 3.1.0
+	 */
+	public function setEditItemRenderer($value)
+	{
+		$this->setViewState('EditItemRenderer',$value,'');
+	}
+
+	/**
 	 * @return ITemplate the edit item template
 	 */
 	public function getEditItemTemplate()
@@ -134,33 +178,65 @@ class TTemplateColumn extends TDataGridColumn
 	 */
 	public function initializeCell($cell,$columnIndex,$itemType)
 	{
-		parent::initializeCell($cell,$columnIndex,$itemType);
-		$template=null;
-		switch($itemType)
+		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem || $itemType===TListItemType::EditItem)
 		{
-			case TListItemType::Header:
-				$template=$this->_headerTemplate;
-				break;
-			case TListItemType::Footer:
-				$template=$this->_footerTemplate;
-				break;
-			case TListItemType::Item:
-			case TListItemType::AlternatingItem:
-			case TListItemType::SelectedItem:
-				$template=$this->_itemTemplate;
-				break;
-			case TListItemType::EditItem:
+			if($itemType===TListItemType::EditItem)
+			{
 				$template=$this->_editItemTemplate===null?$this->_itemTemplate:$this->_editItemTemplate;
-				break;
+				if(($classPath=$this->getEditItemRenderer())==='')
+					$classPath=$this->getItemRenderer();
+			}
+			else
+			{
+				$template=$this->_itemTemplate;
+				$classPath=$this->getItemRenderer();
+			}
+			if($classPath!=='')
+			{
+				$control=Prado::createComponent($classPath);
+				$cell->getControls()->add($control);
+				if($control instanceof IItemDataRenderer)
+				{
+					$control->setItemIndex($cell->getParent()->getItemIndex());
+					$control->setItemType($itemType);
+				}
+				if($control instanceof IDataRenderer)
+					$control->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
+			}
+			else if($template!==null)
+				$template->instantiateIn($cell);
+			else if($itemType!==TListItemType::EditItem)
+				$cell->setText('&nbsp;');
 		}
-		if($template!==null)
+		else if($itemType===TListItemType::Header)
 		{
-			$cell->setText('');
-			$cell->getControls()->clear();
-			$template->instantiateIn($cell);
+			if(($classPath=$this->getHeaderRenderer())!=='')
+				$this->initializeHeaderCell($cell,$columnIndex);
+			else if($this->_headerTemplate!==null)
+				$this->_headerTemplate->instantiateIn($cell);
+			else
+				$this->initializeHeaderCell($cell,$columnIndex);
 		}
-		else if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem || $itemType===TListItemType::EditItem)
-			$cell->setText('&nbsp;');
+		else if($itemType===TListItemType::Footer)
+		{
+			if(($classPath=$this->getFooterRenderer())!=='')
+				$this->initializeFooterCell($cell,$columnIndex);
+			else if($this->_footerTemplate!==null)
+				$this->_footerTemplate->instantiateIn($cell);
+			else
+				$this->initializeHeaderCell($cell,$columnIndex);
+		}
+	}
+
+	/**
+	 * Databinds a cell in the column.
+	 * This method is invoked when datagrid performs databinding.
+	 * It populates the content of the cell with the relevant data from data source.
+	 */
+	public function dataBindColumn($sender,$param)
+	{
+		$item=$sender->getNamingContainer();
+		$sender->setData($item->getData());
 	}
 }
 

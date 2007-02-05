@@ -208,7 +208,6 @@ class TEditCommandColumn extends TDataGridColumn
 	 */
 	public function initializeCell($cell,$columnIndex,$itemType)
 	{
-		parent::initializeCell($cell,$columnIndex,$itemType);
 		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem)
 		{
 			$button=$this->createButton('Edit',$this->getEditText(),false,'');
@@ -226,6 +225,8 @@ class TEditCommandColumn extends TDataGridColumn
 			$controls->add($button);
 			$cell->registerObject('CancelButton',$button);
 		}
+		else
+			parent::initializeCell($cell,$columnIndex,$itemType);
 	}
 
 	/**
