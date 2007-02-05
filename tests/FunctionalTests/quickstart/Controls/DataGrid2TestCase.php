@@ -26,11 +26,11 @@ class DataGrid2TestCase extends SeleniumTestCase
 		$this->verifyTextPresent("\$38.49",'');
 
 		// verify in-stock
-		$this->verifyAttribute('ctl0_body_DataGrid_ctl1_ctl6@checked','regexp:true|checked');
-		$this->verifyAttribute('ctl0_body_DataGrid_ctl1_ctl6@disabled','regexp:true|disabled');
-		$this->verifyAttribute('ctl0_body_DataGrid_ctl2_ctl6@checked','regexp:true|checked');
-		$this->verifyAttribute('ctl0_body_DataGrid_ctl6_ctl6@checked','regexp:false|null');
-		$this->verifyAttribute('ctl0_body_DataGrid_ctl6_ctl6@disabled','regexp:true|disabled');
+		$this->verifyAttribute('ctl0_body_DataGrid_ctl1_ctl5@checked','regexp:true|checked');
+		$this->verifyAttribute('ctl0_body_DataGrid_ctl1_ctl5@disabled','regexp:true|disabled');
+		$this->verifyAttribute('ctl0_body_DataGrid_ctl2_ctl5@checked','regexp:true|checked');
+		$this->verifyAttribute('ctl0_body_DataGrid_ctl6_ctl5@checked','regexp:false|null');
+		$this->verifyAttribute('ctl0_body_DataGrid_ctl6_ctl5@disabled','regexp:true|disabled');
 
 		// verify ratings
 		//$this->verifyElementPresent("//img[@src='images/star5.gif']",'');
@@ -40,9 +40,9 @@ class DataGrid2TestCase extends SeleniumTestCase
 		$this->clickAndWait("//input[@name='ctl0\$body\$ctl1\$c0' and @value='Book Title']", "");
 		$this->verifyTextNotPresent('Head First Design Patterns','');
 		$this->clickAndWait("//input[@name='ctl0\$body\$ctl1\$c3' and @value='In-stock']", "");
-		$this->verifyElementNotPresent('ctl0_body_DataGrid_ctl1_ctl6','');
+		$this->verifyElementNotPresent('ctl0_body_DataGrid_ctl1_ctl5','');
 		$this->clickAndWait("//input[@name='ctl0\$body\$ctl1\$c3' and @value='In-stock']", "");
-		$this->verifyElementPresent('ctl0_body_DataGrid_ctl1_ctl6','');
+		$this->verifyElementPresent('ctl0_body_DataGrid_ctl1_ctl5','');
 		$this->clickAndWait("//input[@name='ctl0\$body\$ctl1\$c0' and @value='Book Title']", "");
 		$this->verifyTextPresent('Head First Design Patterns','');
 	}
