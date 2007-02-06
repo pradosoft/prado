@@ -29,7 +29,7 @@ class Layout extends TTemplateControl
 		$this->languages->dataBind();
 	}
 
-	public function language_links($sender, $param)
+	public function languageLinkCreated($sender, $param)
 	{
 		$item = $param->Item;
 		if($item->ItemType == TListItemType::Item || $item->ItemType == TListItemType::AlternatingItem)

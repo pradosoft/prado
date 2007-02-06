@@ -30,7 +30,7 @@
 </td>
 <td valign="top">
 
-<com:TRepeater ID="languages" OnItemCreated="language_links">
+<com:TRepeater ID="languages" OnItemCreated="languageLinkCreated">
 	<prop:HeaderTemplate>
 		<div class="languages">Available Languages: <ul>
 	</prop:HeaderTemplate>

@@ -25,10 +25,8 @@
     <service id="page" class="TPageService" DefaultPage="GettingStarted.Introduction" />
   </services>
 
-<!--
   <parameters>
 		<parameter id="languages" value="('en'=>'English', 'fr'=>'Français', 'zh' => '中文（简体）')" />
   </parameters>
--->
 
 </application>
