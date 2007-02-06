@@ -27,6 +27,12 @@ Prado::using('System.Web.UI.WebControls.TDataGrid');
  * The {@link getItemStyle ItemStyle} is applied to cells that belong to
  * non-header and -footer datagrid items.
  *
+ * Since v3.1.0, TDataGridColumn has introduced two new properties {@link setHeaderRenderer HeaderRenderer}
+ * and {@link setFooterRenderer FooterRenderer} which can be used to specify
+ * the layout of header and footer column cells.
+ * A renderer refers to a control class that is to be instantiated as a control.
+ * For more details, see {@link TRepeater} and {@link TDataList}.
+ *
  * When the datagrid enables sorting, if the {@link setSortExpression SortExpression}
  * is not empty, the header cell will display a button (linkbutton or imagebutton)
  * that will bubble the sort command event to the datagrid.
@@ -34,6 +40,7 @@ Prado::using('System.Web.UI.WebControls.TDataGrid');
  * The following datagrid column types are provided by the framework currently,
  * - {@link TBoundColumn}, associated with a specific field in datasource and displays the corresponding data.
  * - {@link TEditCommandColumn}, displaying edit/update/cancel command buttons
+ * - {@link TDropDownListColumn}, displaying a dropdown list when the item is in edit state
  * - {@link TButtonColumn}, displaying generic command buttons that may be bound to specific field in datasource.
  * - {@link THyperLinkColumn}, displaying a hyperlink that may be bound to specific field in datasource.
  * - {@link TCheckBoxColumn}, displaying a checkbox that may be bound to specific field in datasource.
@@ -120,6 +127,8 @@ abstract class TDataGridColumn extends TApplicationComponent
 	 * Sets the column header cell renderer class.
 	 *
 	 * If not empty, the class will be used to instantiate as a child control in the column header cell.
+	 * If the class implements {@link IDataRenderer}, the <b>Data</b> property
+	 * will be set as the {@link getFooterText FooterText}.
 	 *
 	 * @param string the renderer class name in namespace format.
 	 * @since 3.1.0
@@ -172,6 +181,8 @@ abstract class TDataGridColumn extends TApplicationComponent
 	 * Sets the column footer cell renderer class.
 	 *
 	 * If not empty, the class will be used to instantiate as a child control in the column footer cell.
+	 * If the class implements {@link IDataRenderer}, the <b>Data</b> property
+	 * will be set as the {@link getFooterText FooterText}.
 	 *
 	 * @param string the renderer class name in namespace format.
 	 * @since 3.1.0

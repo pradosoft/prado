@@ -56,6 +56,7 @@ Prado::using('System.Web.UI.WebControls.TPanel');
  * - {@link TBoundColumn}, associated with a specific field in datasource and displays the corresponding data.
  * - {@link TEditCommandColumn}, displaying edit/update/cancel command buttons
  * - {@link TButtonColumn}, displaying generic command buttons that may be bound to specific field in datasource.
+ * - {@link TDropDownListColumn}, displaying a dropdown list when the item is in edit state
  * - {@link THyperLinkColumn}, displaying a hyperlink that may be bound to specific field in datasource.
  * - {@link TCheckBoxColumn}, displaying a checkbox that may be bound to specific field in datasource.
  * - {@link TTemplateColumn}, displaying content based on templates.

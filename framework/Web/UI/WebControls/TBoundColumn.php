@@ -35,6 +35,12 @@ Prado::using('System.Web.UI.WebControls.TDataGridColumn');
  * The second method is possible because the textbox control created within the
  * datagrid cell is the first child.
  *
+ * Since v3.1.0, TBoundColumn has introduced two new properties {@link setItemRenderer ItemRenderer}
+ * and {@link setEditItemRenderer EditItemRenderer} which can be used to specify
+ * the layout of the datagrid cells in browsing and editing mode.
+ * A renderer refers to a control class that is to be instantiated as a control.
+ * For more details, see {@link TRepeater} and {@link TDataList}.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Id$
  * @package System.Web.UI.WebControls
@@ -55,6 +61,12 @@ class TBoundColumn extends TDataGridColumn
 	 * Sets the item cell renderer class.
 	 *
 	 * If not empty, the class will be used to instantiate as a child control in the item cells of the column.
+	 *
+	 * If the class implements {@link IDataRenderer}, the <b>Data</b> property
+	 * will be set as the data associated with the datagrid cell during databinding.
+	 * The data can be either the whole data row or a field of the row if
+	 * {@link getDataField DataField} is not empty. If {@link getDataFormatString DataFormatString}
+	 * is not empty, the data will be formatted first before passing to the renderer.
 	 *
 	 * @param string the renderer class name in namespace format.
 	 * @since 3.1.0
@@ -77,6 +89,12 @@ class TBoundColumn extends TDataGridColumn
 	 * Sets the edit item cell renderer class.
 	 *
 	 * If not empty, the class will be used to instantiate as a child control in the item cell that is in edit mode.
+	 *
+	 * If the class implements {@link IDataRenderer}, the <b>Data</b> property
+	 * will be set as the data associated with the datagrid cell during databinding.
+	 * The data can be either the whole data row or a field of the row if
+	 * {@link getDataField DataField} is not empty. If {@link getDataFormatString DataFormatString}
+	 * is not empty, the data will be formatted first before passing to the renderer.
 	 *
 	 * @param string the renderer class name in namespace format.
 	 * @since 3.1.0
@@ -211,10 +229,7 @@ class TBoundColumn extends TDataGridColumn
 			$value=$this->formatDataValue($formatString,$this->getDataFieldValue($data,$field));
 		else
 			$value=$this->formatDataValue($formatString,$data);
-		if($sender instanceof IItemDataRenderer)
-			$sender->setData($data);
-		else if($sender instanceof IDataRenderer)
-			$sender->setData($value);
+		$sender->setData($value);
 	}
 }
 
