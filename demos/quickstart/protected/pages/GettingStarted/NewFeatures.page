@@ -14,8 +14,10 @@ This page summarizes the main new features that are introduced in each PRADO rel
 <li>Layered database support - </li>
 <li>New controls, modules and services - TSoapService, TOutputCache, TSessionPageStatePersister, TFeedService, TJsonService, cache dependency classes, TXmlTransform
 </li>
-<li>Configure subproperties in a group</li>
-<li>Item renderer feature for <tt>TRepeater</tt>, <tt>TDataList</tt> and <tt>TDataGrid</tt></li>
+
+<li>New template syntax facilitating <a href="?page=Configurations.Templates1">subproperty configuration</a>.</li>
+
+<li>Introduction of renderer concept - renderer enables reusing item templates that are commonly found in <tt>TRepeater</tt>, <tt>TDataList</tt> and <tt>TDataGrid</tt>, and makes the configuration on these controls much cleaner. For more details about renders, see the updated tutorials on <a href="?page=Controls.Repeater"><tt>TRepeater</tt></a>, <a href="?page=Controls.DataList"><tt>TDataList</tt></a> and <a href="?page=Controls.DataGrid"><tt>TDataGrid</tt></a>.</li>
 </ul>
 
 <div class="last-modified">$Id$</div>
