@@ -390,6 +390,11 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function findBySql($sql,$parameters=array())
 	{
+		if(!is_array($parameters) && func_num_args() > 1)
+		{
+			$parameters = func_get_args();
+			array_shift($parameters);
+		}
 		$gateway = $this->getRecordManager()->getRecordGateway();
 		$data = $gateway->findRecordsBySql($this,$sql,$parameters);
 		$results = array();
