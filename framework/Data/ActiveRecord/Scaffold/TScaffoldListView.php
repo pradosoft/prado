@@ -14,7 +14,7 @@ class TScaffoldListView extends TScaffoldBase
 	protected function initializeSort()
 	{
 		$table = $this->getTableMetaData();
-		$sorts = array('Sorty By', str_repeat('-',15));
+		$sorts = array('Sort By', str_repeat('-',15));
 		$headers = array();
 		foreach($table->getColumns() as $name=>$colum)
 		{
@@ -97,19 +97,21 @@ class TScaffoldListView extends TScaffoldBase
 
 	protected function listItemCreated($sender, $param)
 	{
-		$type = $param->getItem()->getItemType();
-		if($type==TListItemType::Item || $type==TListItemType::AlternatingItem)
-			$this->populateField($sender, $param);
+		$item = $param->getItem();
+		if($item instanceof IItemDataRenderer)
+		{
+			$type = $item->getItemType();
+			if($type==TListItemType::Item || $type==TListItemType::AlternatingItem)
+				$this->populateField($sender, $param);
+		}
 	}
 
 	protected function populateField($sender, $param)
 	{
 		$item = $param->getItem();
-		$data = $item->getDataItem();
-		if($data !== null)
+		if(($data = $item->getData()) !== null)
 		{
 			$item->setCustomData($this->getRecordObjectPk($data));
-
 			if(($prop = $item->findControl('_properties'))!==null)
 			{
 				$item->_properties->setDataSource($this->getRecordProperties($data));

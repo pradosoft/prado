@@ -1,7 +1,8 @@
 <div class="edit-inputs">
 <com:TRepeater ID="_repeater" onItemCreated="repeaterItemCreated">
 	<prop:ItemTemplate>
-	<div class="edit-item item_<%# $this->ItemIndex % 2 %> input_<%# $this->ItemIndex %>">
+	<div class="edit-item item_<%# $this->ItemIndex % 2 %> 
+		input_<%# $this->ItemIndex %> property_<%# $this->DataItem->Property %>">
 		<com:TLabel ID="_label" CssClass="item-label"/>
 		<span class="item-input">
 			<com:TPlaceHolder ID="_input" />

@@ -6,10 +6,22 @@ Prado::using('System.Data.ActiveRecord.Scaffold.InputBuilder.TScaffoldInputBase'
 class TScaffoldEditView extends TScaffoldBase
 {
 	private static $_builders=array();
+	private $_editRenderer;
 
 	public function onLoad($param)
 	{
-		$this->initializeEditForm();
+		if($this->getVisible())
+			$this->initializeEditForm();
+	}
+
+	public function getEditRenderer()
+	{
+		return $this->getViewState('EditRenderer', '');
+	}
+
+	public function setEditRenderer($value)
+	{
+		$this->setViewState('EditRenderer', $value, '');
 	}
 
 	public function setRecordPk($value)
@@ -31,13 +43,40 @@ class TScaffoldEditView extends TScaffoldBase
 
 	public function initializeEditForm()
 	{
-		$this->getCurrentRecord();
-		$columns = $this->getTableMetaData()->getColumns();
-		$this->_repeater->setDataSource($columns);
-		$this->_repeater->dataBind();
+		$record = $this->getCurrentRecord();
+		$classPath = $this->getEditRenderer();
+		if($classPath === '')
+		{
+			$columns = $this->getTableMetaData()->getColumns();
+			$this->getInputRepeater()->setDataSource($columns);
+			$this->getInputRepeater()->dataBind();
+		}
+		else
+		{
+			if($this->_editRenderer===null)
+				$this->createEditRenderer($record, $classPath);
+			else
+				$this->_editRenderer->setData($record);
+		}
 	}
 
-	public function repeaterItemCreated($sender, $param)
+	protected function createEditRenderer($record, $classPath)
+	{
+		$this->_editRenderer = Prado::createComponent($classPath);
+		if($this->_editRenderer instanceof IScaffoldEditRenderer)
+		{
+			$index = $this->getControls()->remove($this->getInputRepeater());
+			$this->getControls()->insertAt($index,$this->_editRenderer);
+			$this->_editRenderer->setData($record);
+		}
+		else
+		{
+			throw new TConfigurationException(
+				'scaffold_invalid_edit_renderer', $this->getID(), get_class($record));
+		}
+	}
+
+	protected function repeaterItemCreated($sender, $param)
 	{
 		$type = $param->getItem()->getItemType();
 		if($type==TListItemType::Item || $type==TListItemType::AlternatingItem)
@@ -73,15 +112,29 @@ class TScaffoldEditView extends TScaffoldBase
 	protected function doSave()
 	{
 		$record = $this->getCurrentRecord();
-		$table = $this->getTableMetaData();
-		$builder = $this->getScaffoldInputBuilder($record);
-		foreach($this->_repeater->getItems() as $item)
+		if($this->_editRenderer===null)
 		{
-			$column = $table->getColumn($item->getCustomData());
-			$builder->loadScaffoldInput($this, $item, $column, $record);
+			$table = $this->getTableMetaData();
+			$builder = $this->getScaffoldInputBuilder($record);
+			foreach($this->getInputRepeater()->getItems() as $item)
+			{
+				$column = $table->getColumn($item->getCustomData());
+				$builder->loadScaffoldInput($this, $item, $column, $record);
+			}
 		}
+		else
+		{
+			$this->_editRenderer->updateRecord($record);
+		}
+
 		$record->save();
 		return true;
+	}
+
+	protected function getInputRepeater()
+	{
+		$this->ensureChildControls();
+		return $this->getRegisteredObject('_repeater');
 	}
 
 	public function getSaveButton()
@@ -114,6 +167,11 @@ class TScaffoldEditView extends TScaffoldBase
 	{
 		return 'group_'.$this->getUniqueID();
 	}
+}
+
+interface IScaffoldEditRenderer extends IDataRenderer
+{
+	public function updateRecord($record);
 }
 
 ?>
