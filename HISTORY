@@ -10,6 +10,7 @@ ENH: Added PRADO_CHMOD constant so that users can specify the permission of PRAD
 ENH: Added Display property to TWebControl (Wei)
 ENH: Added TUser.getState() and setState() for storing user session data (Qiang)
 ENH: Added renderer feature to TRepeater, TDataList and TDataGrid (Qiang)
+NEW: TShellApplication (Qiang)
 
 Version 3.1.0 alpha January 15, 2007
 ====================================

@@ -1836,6 +1836,7 @@ framework/TApplicationComponent.php -text
 framework/TComponent.php -text
 framework/TModule.php -text
 framework/TService.php -text
+framework/TShellApplication.php -text
 framework/Util/TDataFieldAccessor.php -text
 framework/Util/TDateTimeStamp.php -text
 framework/Util/TLogRouter.php -text
