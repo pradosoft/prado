@@ -298,7 +298,7 @@ class THttpResponse extends TModule implements ITextWriter
 		}
 		header("Content-type: $mimeType");
 		header('Content-Length: '.($content===null?filesize($fileName):strlen($content)));
-		header("Content-Disposition: attachment; filename=\"$displayName\"");
+		header("Content-Disposition: attachment; filename=\"$fn\"");
 		header('Content-Transfer-Encoding: binary');
 		if($content===null)
 			readfile($fileName);
