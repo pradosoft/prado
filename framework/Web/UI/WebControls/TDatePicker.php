@@ -619,7 +619,7 @@ class TDatePicker extends TTextBox
 	{
 		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',
 						$this->getDateFormat());
-		$days = array(); 
+		$days = array();
 		$requiresPadding = $formatter->getDayPattern() === 'dd';
 		for($i=1;$i<=31;$i++)
 		{
@@ -726,6 +726,7 @@ class TDatePicker extends TTextBox
 		$url = empty($url) ? $this->publishDefaultButtonImage() : $url;
 		$writer->addAttribute('id', $this->getDatePickerButtonID());
 		$writer->addAttribute('src', $url);
+		$writer->addAttribute('alt', ' ');
 		$writer->addAttribute('class', $this->getCssClass().' TDatePickerImageButton');
 		$writer->renderBeginTag('img');
 		$writer->renderEndTag();
