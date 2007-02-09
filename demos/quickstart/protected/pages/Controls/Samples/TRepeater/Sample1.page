@@ -17,21 +17,21 @@
 
 <prop:ItemTemplate>
 <tr style="background-color:#BFCFFF">
-<td><%#$this->DataItem['id']%></td>
-<td><%#$this->DataItem['name']%></td>
-<td><%#$this->DataItem['quantity']%></td>
-<td><%#$this->DataItem['price']%></td>
-<td><%#$this->DataItem['imported']?'Yes':'No'%></td>
+<td><%#$this->Data['id']%></td>
+<td><%#$this->Data['name']%></td>
+<td><%#$this->Data['quantity']%></td>
+<td><%#$this->Data['price']%></td>
+<td><%#$this->Data['imported']?'Yes':'No'%></td>
 </tr>
 </prop:ItemTemplate>
 
 <prop:AlternatingItemTemplate>
 <tr style="background-color:#E6ECFF">
-<td><%#$this->DataItem['id']%></td>
-<td><%#$this->DataItem['name']%></td>
-<td><%#$this->DataItem['quantity']%></td>
-<td><%#$this->DataItem['price']%></td>
-<td><%#$this->DataItem['imported']?'Yes':'No'%></td>
+<td><%#$this->Data['id']%></td>
+<td><%#$this->Data['name']%></td>
+<td><%#$this->Data['quantity']%></td>
+<td><%#$this->Data['price']%></td>
+<td><%#$this->Data['imported']?'Yes':'No'%></td>
 </tr>
 </prop:AlternatingItemTemplate>
 

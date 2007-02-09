@@ -19,7 +19,7 @@ The following example allows users to modify the existing tabular data using a <
   <td>
   <com:TTextBox
        ID="ProductName"
-       Text=<%#$this->DataItem['name']%> />
+       Text=<%#$this->Data['name']%> />
   </td>
   <td>
   <com:TDropDownList
@@ -29,12 +29,12 @@ The following example allows users to modify the existing tabular data using a <
   <com:TTextBox
        ID="ProductPrice"
        Columns="7"
-       Text=<%#$this->DataItem['price']%> />
+       Text=<%#$this->Data['price']%> />
   </td>
   <td>
   <com:TCheckBox
        ID="ProductImported"
-       Checked=<%#$this->DataItem['imported']%> />
+       Checked=<%#$this->Data['imported']%> />
   <com:TRequiredFieldValidator
        ControlToValidate="ProductName"
        ErrorMessage="Product name cannot be empty."
@@ -70,11 +70,11 @@ The following example allows users to modify the existing tabular data using a <
 
 <prop:ItemTemplate>
 <tr style="<%# 'background-color:' . ($this->ItemIndex%2 ? '#BFCFFF' : '#E6ECFF') %>">
-<td><%#$this->DataItem['id']%></td>
-<td><%#$this->DataItem['name']%></td>
-<td><%#$this->DataItem['category']%></td>
-<td><%#$this->DataItem['price']%></td>
-<td><%#$this->DataItem['imported']?'Yes':'No'%></td>
+<td><%#$this->Data['id']%></td>
+<td><%#$this->Data['name']%></td>
+<td><%#$this->Data['category']%></td>
+<td><%#$this->Data['price']%></td>
+<td><%#$this->Data['imported']?'Yes':'No'%></td>
 </tr>
 </prop:ItemTemplate>
 

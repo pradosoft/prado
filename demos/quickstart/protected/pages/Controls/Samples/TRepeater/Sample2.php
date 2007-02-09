@@ -60,8 +60,8 @@ class Sample2 extends TPage
 		{
 			$item->Cell->BackColor=$itemIndex%2 ? "#6078BF" : "#809FFF";
 			$item->Cell->ForeColor='white';
+			$itemIndex++;
 		}
-		$itemIndex++;
 	}
 
 	public function repeater2ItemCreated($sender,$param)
@@ -69,8 +69,10 @@ class Sample2 extends TPage
 		static $itemIndex=0;
 		$item=$param->Item;
 		if($item->ItemType==='Item' || $item->ItemType==='AlternatingItem')
+		{
 			$item->Row->BackColor=$itemIndex%2 ? "#BFCFFF" : "#E6ECFF";
-		$itemIndex++;
+			$itemIndex++;
+		}
 	}
 }
 

@@ -27,7 +27,7 @@
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class THyperLink extends TWebControl
+class THyperLink extends TWebControl implements IDataRenderer
 {
 	/**
 	 * @return string tag name of the hyperlink
@@ -63,16 +63,18 @@ class THyperLink extends TWebControl
 		{
 			if(($text=$this->getText())!=='')
 				$writer->write(THttpUtility::htmlEncode($text));
-			else
+			else if($this->getHasControls())
 				parent::renderContents($writer);
+			else
+				$writer->write(THttpUtility::htmlEncode($this->getNavigateUrl()));
 		}
 		else
 		{
 			$this->createImage($imageUrl)->renderControl($writer);
 		}
 	}
-	
-	/** 
+
+	/**
 	 * Gets the TImage for rendering the ImageUrl property. This is not for
 	 * creating dynamic images.
 	 * @param string image url.
@@ -138,6 +140,32 @@ class THyperLink extends TWebControl
 	public function setNavigateUrl($value)
 	{
 		$this->setViewState('NavigateUrl',$value,'');
+	}
+
+	/**
+	 * Returns the URL to link to when the THyperLink component is clicked.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link getNavigateUrl()}.
+	 * @return string the URL to link to when the THyperLink component is clicked
+	 * @see getNavigateUrl
+	 * @since 3.1.0
+	 */
+	public function getData()
+	{
+		return $this->getNavigateUrl();
+	}
+
+	/**
+	 * Sets the URL to link to when the THyperLink component is clicked.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link setNavigateUrl()}.
+	 * @param string the URL to link to when the THyperLink component is clicked
+	 * @see setNavigateUrl
+	 * @since 3.1.0
+	 */
+	public function setData($value)
+	{
+		$this->setNavigateUrl($value);
 	}
 
 	/**

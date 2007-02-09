@@ -14,7 +14,7 @@
 <prop:ItemTemplate>
 <tr>
 <com:TTableCell ID="Cell">
-  <%#$this->DataItem %>
+  <%#$this->Data %>
 </com:TTableCell>
 <td>
     <com:TRepeater
@@ -29,13 +29,13 @@
     <prop:ItemTemplate>
     <com:TTableRow ID="Row">
       <com:TTableCell Width="70px">
-        <%#$this->DataItem['name'] %>
+        <%#$this->Data['name'] %>
       </com:TTableCell>
       <com:TTableCell Width="20">
-        <%#$this->DataItem['age'] %>
+        <%#$this->Data['age'] %>
       </com:TTableCell>
       <com:TTableCell Width="150px">
-        <%#$this->DataItem['position'] %>
+        <%#$this->Data['position'] %>
       </com:TTableCell>
     </com:TTableRow>
     </prop:ItemTemplate>

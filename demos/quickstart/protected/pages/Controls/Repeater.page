@@ -11,7 +11,7 @@ The layout of the repeated contents are specified by inline templates. In partic
 </p>
 
 <p id="600402" class="block-content">
-Since v3.1.0, the layout can also be specified by <i>renderers</i>. A renderer is a control class that can be instantiated as repeater items, header, etc. A renderer can thus be viewed as an external template (in fact, it can also be non-templated controls). A renderer can be any control class. If implemented with one of the following interfaces, a renderer will be initialized with additional properties relevant to the repeater items:
+Since v3.1.0, the layout can also be specified by <i>renderers</i>. A renderer is a control class that can be instantiated as repeater items, header, etc. A renderer can thus be viewed as an external template (in fact, it can also be non-templated controls). A renderer can be any control class. By using item renderers, one can avoid writing long and messy templates. Since a renderer is a class, it also helps reusing templates that previously might be embedded within other templates. If implemented with one of the following interfaces, a renderer will be initialized with additional properties relevant to the repeater items:
 </p>
 
 <ul id="u1" class="block-content">
@@ -98,5 +98,16 @@ The <a href="../composer/index.php">PRADO component composer</a> demo is a good 
 See in the following yet another example showing how to use repeater to collect user inputs.
 </p>
 <com:RunBar PagePath="Controls.Samples.TRepeater.Sample3" />
+
+<p id="600414" class="block-content">
+This sample shows how to use "drop-in" item renderers, available since v3.1.0. These renderers come in the PRADO release. They are essentially controls implementing the <tt>IDataRenderer</tt> interface. Common Web controls, such as <tt>TTextBox</tt>, <tt>TLabel</tt>, all implement this interface. When such controls are used item renderers, their <tt>Data</tt> property is assigned with the row of the data being bound to the repeater item.
+</p>
+<com:RunBar PagePath="Controls.Samples.TRepeater.Sample4" />
+
+<p id="600415" class="block-content">
+More often, one needs to customize the layout of repeater items. The sample above relies on <tt>OnItemCreated</tt> to adjust the appearance of the renderer. Templated item renderers are perferred in this situation, as they allow us to put in more complex layout and content in a repeater item. The following sample reimplements the nested repeater sample using a templated item renderer called <tt>RegionDisplay</tt>. As we can see, the new code is much easier to understand and maintain.
+</p>
+<com:RunBar PagePath="Controls.Samples.TRepeater.Sample5" />
+
 
 <div class="last-modified">$Id$</div></com:TContent>
