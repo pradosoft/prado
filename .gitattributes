@@ -784,7 +784,6 @@ demos/personal/protected/Common/MainMenu.php -text
 demos/personal/protected/Common/MainMenu.tpl -text
 demos/personal/protected/Pages/Albums.page -text
 demos/personal/protected/Pages/Home.page -text
-demos/personal/protected/Pages/Home.php -text
 demos/personal/protected/Pages/Layout.php -text
 demos/personal/protected/Pages/Layout.tpl -text
 demos/personal/protected/Pages/Links.page -text
@@ -793,7 +792,6 @@ demos/personal/protected/Pages/Register.php -text
 demos/personal/protected/Pages/Resume.page -text
 demos/personal/protected/Pages/Settings.page -text
 demos/personal/protected/Pages/UserLogin.page -text
-demos/personal/protected/Pages/UserLogin.php -text
 demos/personal/protected/Pages/config.xml -text
 demos/personal/protected/application.xml -text
 demos/personal/themes/BlueTheme/buttons.skin -text
