@@ -1,27 +1,9 @@
 <com:TContent ID="sidebar">
 
-<div class="login">
-  <h4>Login to Site</h4>
-  <com:TLabel ID="UserNameLabel" ForControl="UserName" Text="User Name" CssClass="label"/>
-  <com:TTextBox ID="UserName" AccessKey="u" CssClass="textbox"/>
-  <com:TRequiredFieldValidator ControlToValidate="UserName" ErrorMessage="User Name is required."/>
+<com:LoginPortlet Visible="<%= $this->User->IsGuest %>" />
 
-  <com:TLabel ID="PasswordLabel" ForControl="Password" Text="Password" CssClass="label"/>
-  <com:TTextBox ID="Password" AccessKey="p" CssClass="textbox" TextMode="Password"/>
-  <com:TRequiredFieldValidator ControlToValidate="Password" ErrorMessage="Password is required."/>  
-  
-  <div>
-  <com:TCheckBox ID="RememberMe" Text="Remember me next time"/>
-  </div>
-
-  <com:TImageButton ID="LoginButton" ImageUrl="<%=$this->Page->Theme->BaseUrl.'/images/button-login.gif'%>" CssClass="button"/>
-  or
-  <a href="<%=$this->Service->constructUrl('Register')%>" class="button"><img src="<%=$this->Page->Theme->BaseUrl.'/images/button-create.gif'%>" alt="Create a new account"/></a>
-  <p></p>
-</div>
-<!--    <h4><span id="ctl00_Main_LoginArea_LoginName1">Welcome	Friend!</span></h4>-->
 <hr />
-<table cellspacing="0" cellpadding="0" border="0" id="ctl00_Main_FormView1" style="border-width:0px;border-collapse:collapse;"></table>
+
 <h4>My Latest Piece of Work</h4>
 <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut	laoreet	dolore magna aliquam erat volutpat.</p>
 </com:TContent>

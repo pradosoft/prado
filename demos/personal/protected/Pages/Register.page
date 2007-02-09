@@ -5,46 +5,113 @@
 <com:TContent ID="content">
 
 <h3>Request an Account</h3>
-            <p>Accounts will be activated pending the approval of the Administrator.</p>
-            <table cellspacing="0" cellpadding="0" border="0" id="ctl00_Main_CreateUserWizard1" style="border-collapse:collapse;">
-	<tr style="height:100%;">
 
-		<td><table cellspacing="0" cellpadding="0" border="0" style="height:100%;width:100%;border-collapse:collapse;">
-			<tr>
-				<td style="height:100%;width:100%;"><table border="0" style="height:100%;width:100%;">
-					<tr>
-						<td align="center" colspan="2">Sign Up for Your New Account</td>
-					</tr><tr>
-						<td align="right"><label for="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_UserName">User Name:</label></td><td><input name="ctl00$Main$CreateUserWizard1$CreateUserStepContainer$UserName" type="text" id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_UserName" /><span id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_UserNameRequired" title="User Name is required." style="color:Red;visibility:hidden;">*</span></td>
+<p>Accounts will be activated pending the approval of the Administrator.</p>
 
-					</tr><tr>
-						<td align="right"><label for="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_Password">Password:</label></td><td><input name="ctl00$Main$CreateUserWizard1$CreateUserStepContainer$Password" type="password" id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_Password" /><span id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_PasswordRequired" title="Password is required." style="color:Red;visibility:hidden;">*</span></td>
-					</tr><tr>
-						<td align="right"><label for="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_ConfirmPassword">Confirm Password:</label></td><td><input name="ctl00$Main$CreateUserWizard1$CreateUserStepContainer$ConfirmPassword" type="password" id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_ConfirmPassword" /><span id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_ConfirmPasswordRequired" title="Confirm Password is required." style="color:Red;visibility:hidden;">*</span></td>
-					</tr><tr>
-						<td align="right"><label for="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_Email">E-mail:</label></td><td><input name="ctl00$Main$CreateUserWizard1$CreateUserStepContainer$Email" type="text" id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_Email" /><span id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_EmailRequired" title="E-mail is required." style="color:Red;visibility:hidden;">*</span></td>
+<com:TValidationSummary
+	Display="Dynamic"
+	ValidationGroup="user" />
 
-					</tr><tr>
-						<td align="right"><label for="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_Question">Security Question:</label></td><td><input name="ctl00$Main$CreateUserWizard1$CreateUserStepContainer$Question" type="text" id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_Question" /><span id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_QuestionRequired" title="Security question is required." style="color:Red;visibility:hidden;">*</span></td>
-					</tr><tr>
-						<td align="right"><label for="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_Answer">Security Answer:</label></td><td><input name="ctl00$Main$CreateUserWizard1$CreateUserStepContainer$Answer" type="text" id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_Answer" /><span id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_AnswerRequired" title="Security answer is required." style="color:Red;visibility:hidden;">*</span></td>
-					</tr><tr>
-						<td align="center" colspan="2"><span id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_PasswordCompare" style="color:Red;display:none;">The Password and Confirmation Password must match.</span></td>
+<span class="input-label">Username</span>
+<br/>
+<com:TTextBox ID="Username" />
+<com:TRequiredFieldValidator
+	ControlToValidate="Username"
+	ValidationGroup="user"
+	Display="Dynamic"
+	Text="*"
+	ErrorMessage="Please choose a username."
+	ControlCssClass="input-error1" />
+<com:TRegularExpressionValidator
+	ControlToValidate="Username"
+	ValidationGroup="user"
+	Display="Dynamic"
+	RegularExpression="[\w]{3,16}"
+	Text="*"
+	ErrorMessage="Your username must contain only letters, digits and underscores, and it must contain at least 3 and at most 16 characters."
+	ControlCssClass="input-error2" />
+<com:TCustomValidator
+	ControlToValidate="Username"
+	ValidationGroup="user"
+	Display="Dynamic"
+	OnServerValidate="checkUsername"
+	Text="*"
+	ErrorMessage="Sorry, your username is taken by someone else. Please choose another username."
+	ControlCssClass="input-error3" />
 
-					</tr><tr>
-						<td align="center" colspan="2"><span id="ctl00_Main_CreateUserWizard1_CreateUserStepContainer_EmailRegExp" style="color:Red;display:none;">The email format is invalid.</span></td>
-					</tr>
-				</table></td>
-			</tr>
-		</table></td>
-	</tr><tr>
-		<td align="right"><table cellspacing="5" cellpadding="5" border="0" style="height:100%;width:100%;">
+<br/>
 
-			<tr align="right">
-				<td align="right"><input type="submit" name="ctl00$Main$CreateUserWizard1$__CustomNav0$StepNextButtonButton" value="Create User" onclick="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$Main$CreateUserWizard1$__CustomNav0$StepNextButtonButton&quot;, &quot;&quot;, true, &quot;CreateUserWizard1&quot;, &quot;&quot;, false, false))" id="ctl00_Main_CreateUserWizard1___CustomNav0_StepNextButtonButton" /></td>
-			</tr>
-		</table></td>
-	</tr>
-</table>
+<span class="input-label">Full name</span>
+<br/>
+<com:TTextBox ID="FullName" />
+
+<br/>
+
+<span class="input-label">Password</span>
+<br/>
+<com:TTextBox ID="Password" TextMode="Password" />
+<com:TRequiredFieldValidator
+	ControlToValidate="Password"
+	ValidationGroup="user"
+	Display="Dynamic"
+	Text="*"
+	ErrorMessage="Please choose a password."
+	ControlCssClass="input-error1" />
+<com:TRegularExpressionValidator
+	ControlToValidate="Password"
+	ValidationGroup="user"
+	Display="Dynamic"
+	RegularExpression="[\w\.]{6,16}"
+	Text="*"
+	ErrorMessage="Your password must contain only letters, digits and underscores, and it must contain at least 6 and at most 16 characters."
+	ControlCssClass="input-error2" />
+
+<br/>
+
+<span class="input-label">Re-type Password</span>
+<br/>
+<com:TTextBox ID="Password2" TextMode="Password" />
+<com:TCompareValidator
+	ControlToValidate="Password"
+	ControlToCompare="Password2"
+	ValidationGroup="user"
+	Display="Dynamic"
+	Text="*"
+	ErrorMessage="Your password entries did not match."
+	ControlCssClass="input-error3" />
+
+<br/>
+
+<span class="input-label">Email Address</span>
+<br/>
+<com:TTextBox ID="Email" />
+<com:TRequiredFieldValidator
+	ControlToValidate="Email"
+	ValidationGroup="user"
+	Text="*"
+	ErrorMessage="Please provide your email address."
+	ControlCssClass="input-error1" />
+<com:TEmailAddressValidator
+	ControlToValidate="Email"
+	ValidationGroup="user"
+	Display="Dynamic"
+	Text="*"
+	ErrorMessage="You entered an invalid email address."
+	ControlCssClass="input-error2" />
+
+<br/>
+
+<span class="input-label">Personal Website</span>
+<br/>
+<com:TTextBox ID="Website" AutoTrim="true" Columns="40"/>
+
+<br/>
+<br/>
+
+<com:TButton
+	Text="Register"
+	ValidationGroup="user"
+	CssClass="link-button"
+	OnClick="createUser" />
 
 </com:TContent>
