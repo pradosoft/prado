@@ -180,11 +180,11 @@ class TApplication extends TComponent
 	/**
 	 * @var IService current service instance
 	 */
-	private $_service=null;
+	private $_service;
 	/**
 	 * @var TPageService page service
 	 */
-	private $_pageService=null;
+	private $_pageService;
 	/**
 	 * @var array list of application modules
 	 */
@@ -220,47 +220,47 @@ class TApplication extends TComponent
 	/**
 	 * @var TErrorHandler error handler module
 	 */
-	private $_errorHandler=null;
+	private $_errorHandler;
 	/**
 	 * @var THttpRequest request module
 	 */
-	private $_request=null;
+	private $_request;
 	/**
 	 * @var THttpResponse response module
 	 */
-	private $_response=null;
+	private $_response;
 	/**
 	 * @var THttpSession session module, could be null
 	 */
-	private $_session=null;
+	private $_session;
 	/**
 	 * @var ICache cache module, could be null
 	 */
-	private $_cache=null;
+	private $_cache;
 	/**
 	 * @var IStatePersister application state persister
 	 */
-	private $_statePersister=null;
+	private $_statePersister;
 	/**
 	 * @var IUser user instance, could be null
 	 */
-	private $_user=null;
+	private $_user;
 	/**
 	 * @var TGlobalization module, could be null
 	 */
-	private $_globalization=null;
+	private $_globalization;
 	/**
 	 * @var TSecurityManager security manager module
 	 */
-	private $_security=null;
+	private $_security;
 	/**
 	 * @var TAssetManager asset manager module
 	 */
-	private $_assetManager=null;
+	private $_assetManager;
 	/**
 	 * @var TAuthorizationRuleCollection collection of authorization rules
 	 */
-	private $_authRules=null;
+	private $_authRules;
 	/**
 	 * @var TApplicationMode application mode
 	 */
@@ -289,42 +289,61 @@ class TApplication extends TComponent
 		// register application as a singleton
 		Prado::setApplication($this);
 
-		// determine configuration path and file
-		if(($this->_basePath=realpath($basePath))===false)
-			throw new TConfigurationException('application_basepath_invalid',$basePath);
-		if(is_file($this->_basePath))
-		{
-			$this->_configFile=$this->_basePath;
-			$this->_basePath=dirname($this->_basePath);
-		}
-		else if(is_file($this->_basePath.'/'.self::CONFIG_FILE))
-			$this->_configFile=$this->_basePath.'/'.self::CONFIG_FILE;
-		else
-			$this->_configFile=null;
+		$this->resolvePaths($basePath);
 
-		// determine runtime path
-		$this->_runtimePath=$this->_basePath.'/'.self::RUNTIME_PATH;
-		if(is_writable($this->_runtimePath))
-		{
-			if($this->_configFile!==null)
-			{
-				$subdir=basename($this->_configFile);
-				$this->_runtimePath.='/'.$subdir;
-				if(!is_dir($this->_runtimePath))
-				{
-					if(@mkdir($this->_runtimePath)===false)
-						throw new TConfigurationException('application_runtimepath_failed',$this->_runtimePath);
-					chmod($this->_runtimePath, PRADO_CHMOD); //make it deletable
-				}
-			}
-		}
-		else
-			throw new TConfigurationException('application_runtimepath_invalid',$this->_runtimePath);
-
-		$this->_cacheFile=$cacheConfig ? $this->_runtimePath.'/'.self::CONFIGCACHE_FILE : null;
+		if($cacheConfig)
+			$this->_cacheFile=$this->_runtimePath.DIRECTORY_SEPARATOR.self::CONFIGCACHE_FILE;
 
 		// generates unique ID by hashing the runtime path
 		$this->_uniqueID=md5($this->_runtimePath);
+	}
+
+	/**
+	 * Resolves application-relevant paths.
+	 * This method is invoked by the application constructor
+	 * to determine the application configuration file,
+	 * application root path and the runtime path.
+	 * @param string the application root path or the application configuration file
+	 * @see setBasePath
+	 * @see setRuntimePath
+	 * @see setConfigurationFile
+	 */
+	protected function resolvePaths($basePath)
+	{
+		// determine configuration path and file
+		if(empty($basePath) || ($basePath=realpath($basePath))===false)
+			throw new TConfigurationException('application_basepath_invalid',$basePath);
+		if(is_file($basePath))
+		{
+			$configFile=$basePath;
+			$basePath=dirname($configFile);
+		}
+		else if(is_file($basePath.DIRECTORY_SEPARATOR.self::CONFIG_FILE))
+			$configFile=$basePath.DIRECTORY_SEPARATOR.self::CONFIG_FILE;
+		else
+			$configFile=null;
+
+		// determine runtime path
+		$runtimePath=$basePath.DIRECTORY_SEPARATOR.self::RUNTIME_PATH;
+		if(is_writable($runtimePath))
+		{
+			if($configFile!==null)
+			{
+				$runtimePath.=DIRECTORY_SEPARATOR.basename($configFile);
+				if(!is_dir($runtimePath))
+				{
+					if(@mkdir($runtimePath)===false)
+						throw new TConfigurationException('application_runtimepath_failed',$runtimePath);
+					@chmod($runtimePath, PRADO_CHMOD); //make it deletable
+				}
+				$this->setConfigurationFile($configFile);
+			}
+			$this->setBasePath($basePath);
+			$this->setRuntimePath($runtimePath);
+		}
+		else
+			throw new TConfigurationException('application_runtimepath_invalid',$runtimePath);
+
 	}
 
 	/**
@@ -485,7 +504,7 @@ class TApplication extends TComponent
 	}
 
 	/**
-	 * @return string configuration path
+	 * @return string the directory containing the application configuration file (absolute path)
 	 */
 	public function getBasePath()
 	{
@@ -493,7 +512,15 @@ class TApplication extends TComponent
 	}
 
 	/**
-	 * @return string configuration file path
+	 * @param string the directory containing the application configuration file
+	 */
+	public function setBasePath($value)
+	{
+		$this->_basePath=$value;
+	}
+
+	/**
+	 * @return string the application configuration file (absolute path)
 	 */
 	public function getConfigurationFile()
 	{
@@ -501,12 +528,27 @@ class TApplication extends TComponent
 	}
 
 	/**
-	 * Gets the directory storing application-level persistent data.
-	 * @return string application state path
+	 * @param string the application configuration file (absolute path)
+	 */
+	public function setConfigurationFile($value)
+	{
+		$this->_configFile=$value;
+	}
+
+	/**
+	 * @return string the directory storing cache data and application-level persistent data. (absolute path)
 	 */
 	public function getRuntimePath()
 	{
 		return $this->_runtimePath;
+	}
+
+	/**
+	 * @param string the directory storing cache data and application-level persistent data. (absolute path)
+	 */
+	public function setRuntimePath($value)
+	{
+		$this->_runtimePath=$value;
 	}
 
 	/**
