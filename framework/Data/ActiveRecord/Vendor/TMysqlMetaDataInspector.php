@@ -39,7 +39,7 @@ class TMysqlMetaDataInspector extends TDbMetaDataInspector
 		$command = $conn->createCommand($sql);
 		$command->prepare();
 		foreach($command->query() as $col)
-			$cols[$col['Field']] = $this->getColumnMetaData($col);
+			$cols[strtolower($col['Field'])] = $this->getColumnMetaData($col);
 		return $cols;
 	}
 
@@ -51,7 +51,8 @@ class TMysqlMetaDataInspector extends TDbMetaDataInspector
 		$autoIncrement=is_int(strpos(strtolower($col['Extra']), 'auto_increment'));
 		$default = $col['Default'];
 		$primaryKey = $col['Key']==='PRI';
-		return new TMysqlColumnMetaData($col['Field'],$name,$type,$notNull,$autoIncrement,$default,$primaryKey);
+		return new TMysqlColumnMetaData(strtolower($col['Field']),$name,$type,
+						$notNull,$autoIncrement,$default,$primaryKey);
 	}
 
 	/**

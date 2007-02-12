@@ -1,3 +1,4 @@
+/* $Id$ */
 body
 {
 	font-family: Cambria, Georgia, "Times New Roman", Times, serif;
@@ -116,7 +117,7 @@ body
 	font-weight: bold;
 	padding: 0.2em;
 }
-.edit-inputs .required-input
+.edit-inputs .required-input, .edit-inputs .required-input2
 {
 	border: 1px solid red;
 	background-color: #FFF5EE;

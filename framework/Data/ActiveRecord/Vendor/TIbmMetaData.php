@@ -1,29 +1,33 @@
 <?php
+
 /**
- * TSqliteMetaData class file.
+ * TIbmMetaData class file.
  *
- * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @author Cesar Ramos <cramos[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2007 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Data.ActiveRecord.Vendor
  */
-
 Prado::using('System.Data.ActiveRecord.Vendor.TDbMetaDataCommon');
 
 /**
- * TSqliteMetaData specialized command builder for SQLite database.
+ * TIbmMetaData class.
  *
- * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * Column details for IBM DB2 database. Using php_pdo_ibm.dll extension.
+ *
+ * Does not support LIMIT and OFFSET criterias.
+ *
+ * @author Cesar Ramos <cramos[at]gmail[dot]com>
  * @version $Id$
  * @package System.Data.ActiveRecord.Vendor
  * @since 3.1
  */
-class TSqliteMetaData extends TDbMetaDataCommon
+class TIbmMetaData extends TDbMetaDataCommon
 {
 	/**
-	 * Build the SQL search string from the criteria object for Postgress database.
+	 * Build the SQL search string from the criteria object for IBM DB2 database.
 	 * @param TDbConnection database connection.
 	 * @param TActiveRecordCriteria search criteria.
 	 * @return string SQL search.
@@ -39,36 +43,15 @@ class TSqliteMetaData extends TDbMetaDataCommon
 			$orders[] = $this->getOrdering($by, $ordering);
 		if(count($orders) > 0)
 			$sql .= ' ORDER BY '.implode(', ', $orders);
-		if(($limit = $criteria->getLimit())!==null)
-		{
-			$offset = $criteria->getOffset();
-			$offset = $offset===null?0:intval($offset); //assume integer offset?
-			$sql .= ' LIMIT '.$offset.', '.intval($limit); //assume integer limit?
-		}
+		//if(($limit = $criteria->getLimit())!==null)
+		//{
+		//	$sql .= ' FETCH FIRST '.intval($limit).' ROWS ONLY';
+		//}
 		return strlen($sql) > 0 ? $sql : '';
 	}
 
-	public function getSearchRegExpCriteria($fields, $keywords)
-	{
-		if(strlen(trim($keywords)) == 0) return '';
-		$words = array();
-		preg_match_all('/([a-zA-Z0-9-+]+)/', $keywords, $words);
-		$result = array();
-		foreach($fields as $field)
-			$result[] = $this->getLikeCriteriaStr($this->getColumn($field)->getName(), $words[0]);
-		return '('.implode(' OR ', $result).')';
-	}
-
-	protected function getLikeCriteriaStr($column, $words)
-	{
-		$result=array();
-		foreach($words as $word)
-			$result[] = "({$column} LIKE \"%{$word}%\")";
-		return '('.implode(' AND ', $result).')';
-	}
-
 	/**
-	 * Remove quote from the keys in the data.
+	 * Lowercase the data keys, IBM DB2 returns uppercase column names
 	 * @param mixed record row
 	 * @return array record row
 	 */
@@ -77,12 +60,12 @@ class TSqliteMetaData extends TDbMetaDataCommon
 		if(!is_array($row)) return $row;
 		$result=array();
 		foreach($row as $k=>$v)
-			$result[str_replace('"','',$k)]=$v;
+			$result[strtolower($k)]=$v;
 		return $result;
 	}
 
 	/**
-	 * Remove quote from the keys in the data.
+	 * Lowercase the data keys, IBM DB2 returns uppercase column names
 	 * @param mixed record row
 	 * @return array record row
 	 */
@@ -94,5 +77,4 @@ class TSqliteMetaData extends TDbMetaDataCommon
 		return $data;
 	}
 }
-
 ?>

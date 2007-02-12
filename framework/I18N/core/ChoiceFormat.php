@@ -20,18 +20,18 @@
 
 /**
  * ChoiceFormat class.
- * 
- * ChoiceFormat converts between ranges of numeric values and string 
+ *
+ * ChoiceFormat converts between ranges of numeric values and string
  * names for those ranges.
  *
- * A ChoiceFormat splits the real number line -Inf to +Inf into two or 
- * more contiguous ranges. Each range is mapped to a string. 
- * ChoiceFormat is generally used in a MessageFormat for displaying 
+ * A ChoiceFormat splits the real number line -Inf to +Inf into two or
+ * more contiguous ranges. Each range is mapped to a string.
+ * ChoiceFormat is generally used in a MessageFormat for displaying
  * grammatically correct plurals such as "There are 2 files."
  *
  * <code>
  *	$string = '[0] are no files |[1] is one file |(1,Inf] are {number} files';
- *  
+ *
  *  $formatter = new MessageFormat(...); //init for a source
  *	$translated = $formatter->format($string);
  *
@@ -44,7 +44,7 @@
  *  # <t>[1,2]</t> -- accepts values between 1 and 2, inclusive.
  *  # <t>(1,2)</t> -- accepts values between 1 and 2, excluding 1 and 2.
  *  # <t>{1,2,3,4}</t> -- only values defined in the set are accepted.
- *  # <t>[-Inf,0)</t> -- accepts value greater or equal to negative infinity 
+ *  # <t>[-Inf,0)</t> -- accepts value greater or equal to negative infinity
  *                       and strictly less than 0
  * Any non-empty combinations of the delimiters of square and round brackets
  * are acceptable.
@@ -57,26 +57,26 @@ class ChoiceFormat
 {
 	/**
 	 * The pattern to validate a set notation
-	 * @var string 
+	 * @var string
 	 */
-	protected $validate = '/[\(\[\{]|[-Inf\d]+|,|[\+Inf\d]+|[\)\]\}]/ms';
+	protected $validate = '/[\(\[\{]|[-Inf\d:\s]+|,|[\+Inf\d\s:\?\-=!><%\|&\(\)]+|[\)\]\}]/ms';
 
 	/**
 	 * The pattern to parse the formatting string.
-	 * @var string 
+	 * @var string
 	 */
-	protected $parse = '/\s?\|?([\(\[\{]([-Inf\d]+,?[\+Inf\d]*)+[\)\]\}])\s?/';
+	protected $parse = '/\s*\|?([\(\[\{]([-Inf\d:\s]+,?[\+Inf\d\s:\?\-=!><%\|&\(\)]*)+[\)\]\}])\s*/';
 
 	/**
 	 * The value for positive infinity.
-	 * @var float 
+	 * @var float
 	 */
 	protected $inf;
 
 
 	/**
 	 * Constructor.
-	 */	
+	 */
 	function __construct()
 	{
 		$this->inf = -log(0);
@@ -88,19 +88,23 @@ class ChoiceFormat
 	 * @param float the number to test.
 	 * @param string the set, in set notation.
 	 * @return boolean true if number is in the set, false otherwise.
-	 */	
+	 */
 	function isValid($number, $set)
 	{
 		$n = preg_match_all($this->validate,$set,$matches,PREG_SET_ORDER);
-		
+
 		if($n < 3) throw new Exception("Invalid set \"{$set}\"");
-		
+
+		if(preg_match('/\{\s*n:([^\}]+)\}/', $set, $def))
+		{
+			return $this->isValidSetNotation($number, $def[1]);
+		}
+
 		$leftBracket = $matches[0][0];
 		$rightBracket = $matches[$n-1][0];
 
 		$i = 0;
 		$elements = array();
-		
 		foreach($matches as $match)
 		{
 			$string = $match[0];
@@ -132,19 +136,32 @@ class ChoiceFormat
 			$right = $number <= $elements[$total-1];
 		else if($rightBracket == ')')
 			$right = $number < $elements[$total-1];
-		
-		if($left && $right) return true;	
+
+		if($left && $right) return true;
 
 		return false;
-	}	
+	}
 
+	protected function isValidSetNotation($number, $set)
+	{
+		$str = '$result = '.str_replace('n', '$number', $set).';';
+		try
+		{
+			eval($str);
+			return $result;
+		}
+		catch(Exception $e)
+		{
+			return false;
+		}
+	}
 
 	/**
-	 * Parse a choice string and get a list of sets and a list of strings 
+	 * Parse a choice string and get a list of sets and a list of strings
 	 * corresponding to the sets.
 	 * @param string the string containing the choices
 	 * @return array array($sets, $strings)
-	 */	
+	 */
 	function parse($string)
 	{
 		$n = preg_match_all($this->parse,$string,$matches, PREG_OFFSET_CAPTURE);
@@ -157,19 +174,19 @@ class ChoiceFormat
 		{
 			$len = strlen($offset[$i][0]);
 			$begin = $i == 0? $len : $offset[$i][1] + $len;
-			$end = $i == $n-1 ? strlen($string) : $offset[$i+1][1];	
+			$end = $i == $n-1 ? strlen($string) : $offset[$i+1][1];
 			$strings[] = substr($string, $begin, $end - $begin);
 		}
 		return array($sets, $strings);
 	}
 
 	/**
-	 * For the choice string, and a number, find and return the 
+	 * For the choice string, and a number, find and return the
 	 * string that satisfied the set within the choices.
 	 * @param string the choices string.
 	 * @param float the number to test.
 	 * @return string the choosen string.
-	 */		
+	 */
 	public function format($string, $number)
 	{
 		list($sets, $strings) = $this->parse($string);

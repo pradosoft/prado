@@ -11,6 +11,13 @@ class ActiveRecordDynamicCallTestCase extends UnitTestCase
 		TActiveRecordManager::getInstance()->setDbConnection($conn);
 	}
 
+	function test_multiple_field_and_or()
+	{
+		$finder = DepartmentRecord::finder();
+		$r2 = $finder->findAllByName_And_Description_Or_Active_Or_Order('Facilities', null, false, 1);
+		$this->assertNotNull($r2);
+	}
+
 	function test_dynamic_call()
 	{
 		$finder = DepartmentRecord::finder();
@@ -57,7 +64,6 @@ class ActiveRecordDynamicCallTestCase extends UnitTestCase
 	{
 		var_dump($param);
 	}
-
 }
 
 ?>

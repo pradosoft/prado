@@ -186,7 +186,7 @@ abstract class TDbMetaDataCommon extends TDbMetaData
 		return $command;
 	}
 
-	
+
 	/**
 	 * SQL command to delete records by criteria
 	 * @param TDbConnection database connection.

@@ -3,6 +3,7 @@
 Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldBase');
 Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldListView');
 Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldEditView');
+Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldSearch');
 
 class TScaffoldView extends TScaffoldBase
 {
@@ -11,6 +12,7 @@ class TScaffoldView extends TScaffoldBase
 		parent::onLoad($param);
 		$this->getListView()->copyFrom($this);
 		$this->getEditView()->copyFrom($this);
+		$this->getSearchControl()->copyFrom($this);
 	}
 
 	public function getListView()
@@ -23,6 +25,12 @@ class TScaffoldView extends TScaffoldBase
 	{
 		$this->ensureChildControls();
 		return $this->getRegisteredObject('_editView');
+	}
+
+	public function getSearchControl()
+	{
+		$this->ensureChildControls();
+		return $this->getRegisteredObject('_search');
 	}
 
 	public function getAddButton()
@@ -50,6 +58,7 @@ class TScaffoldView extends TScaffoldBase
 		$this->getListView()->setVisible(false);
 		$this->getEditView()->setVisible(true);
 		$this->getAddButton()->setVisible(false);
+		$this->getSearchControl()->setVisible(false);
 		$this->getEditView()->getCancelButton()->setVisible(true);
 		$this->getEditView()->getClearButton()->setVisible(false);
 	}
@@ -59,6 +68,7 @@ class TScaffoldView extends TScaffoldBase
 		$this->getListView()->setVisible(true);
 		$this->getEditView()->setVisible(false);
 		$this->getAddButton()->setVisible(true);
+		$this->getSearchControl()->setVisible(true);
 	}
 
 	protected function showAddView($sender, $param)

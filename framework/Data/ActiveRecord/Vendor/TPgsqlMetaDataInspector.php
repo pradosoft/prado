@@ -130,7 +130,7 @@ EOD;
 		$command->bindValue(':schema', $schema);
 		$cols = array();
 		foreach($command->query() as $col)
-			$cols[$col['attname']] = $this->getColumnMetaData($schema,$col);
+			$cols[strtolower($col['attname'])] = $this->getColumnMetaData($schema,$col);
 		return $cols;
 	}
 
@@ -148,19 +148,26 @@ EOD;
 		// A specific constant in the 7.0 source, the length is offset by 4.
 		$length = $col['atttypmod'] > 0 ? $col['atttypmod'] - 4 : null;
 		$notNull = $col['attnotnull'];
-		$serial = $col['attisserial'] ? $schema.'.'.$this->getSerialName($col['adsrc']) : null;
+		$nextval_serial = substr($col['adsrc'],0,8) === 'nextval(';
+		$serial = $col['attisserial'] || $nextval_serial ? $this->getSerialName($schema,$col['adsrc']) : null;
 		$default = $serial === null && $col['atthasdef'] ? $col['adsrc'] : null;
-		return new TPgsqlColumnMetaData($col['attname'],$name,$type,$length,$notNull,$serial,$default);
+		return new TPgsqlColumnMetaData(strtolower($col['attname']),$name,
+						$type,$length,$notNull,$serial,$default);
 	}
 
 	/**
 	 * @return string serial name if found, null otherwise.
 	 */
-	protected function getSerialName($src)
+	protected function getSerialName($schema,$src)
 	{
 		$matches = array();
-		if(preg_match('/nextval\(\'([^\']+)\'::regclass\)/i',$src,$matches))
-			return $matches[1];
+		if(preg_match('/nextval\([^\']*\'([^\']+)\'[^\)]*\)/i',$src,$matches))
+		{
+			if(is_int(strpos($matches[1], '.')))
+				return $matches[1];
+			else
+				return $schema.'.'.$matches[1];
+		}
 	}
 
 	/**

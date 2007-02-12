@@ -30,13 +30,13 @@ class WsdlMessage
 	 * @var 	string
 	 */
 	private $name;
-	
+
 	/**
 	 * Represents the parameters for this message
 	 * @var 	array
 	 */
 	private $parts;
-	
+
 	/**
 	 * Creates a new message
 	 * @param 	string		$messageName	The name of the message
@@ -46,9 +46,9 @@ class WsdlMessage
 	{
 		$this->name = $messageName;
 		$this->parts = $parts;
-		
+
 	}
-	
+
 	/**
 	 * Gets the name of this message
 	 * @return 		string		The name
@@ -57,7 +57,7 @@ class WsdlMessage
 	{
 		return $this->name;
 	}
-	
+
 	/**
 	 * Return the message as a DOM element
 	 * @param 		DOMDocument		$wsdl		The wsdl document the messages will be children of
@@ -66,7 +66,7 @@ class WsdlMessage
 	{
 		$message = $dom->createElementNS('http://schemas.xmlsoap.org/wsdl/', 'wsdl:message');
 		$message->setAttribute('name', $this->name);
-		
+
 		foreach ($this->parts as $part) {
 			if (isset($part['name'])) {
 				$partElement = $dom->createElementNS('http://schemas.xmlsoap.org/wsdl/', 'wsdl:part');
@@ -75,7 +75,7 @@ class WsdlMessage
 				$message->appendChild($partElement);
 			}
 		}
-		
+
 		return $message;
 	}
 }

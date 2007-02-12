@@ -2,7 +2,7 @@
 
 Prado::using('System.Data.ActiveRecord.Scaffold.InputBuilder.TScaffoldInputCommon');
 
-class MysqlScaffoldInput extends TScaffoldInputCommon
+class TMysqlScaffoldInput extends TScaffoldInputCommon
 {
 	protected function createControl($container, $column, $record)
 	{

@@ -1468,6 +1468,8 @@ framework/Data/ActiveRecord/Scaffold/TScaffoldEditView.php -text
 framework/Data/ActiveRecord/Scaffold/TScaffoldEditView.tpl -text
 framework/Data/ActiveRecord/Scaffold/TScaffoldListView.php -text
 framework/Data/ActiveRecord/Scaffold/TScaffoldListView.tpl -text
+framework/Data/ActiveRecord/Scaffold/TScaffoldSearch.php -text
+framework/Data/ActiveRecord/Scaffold/TScaffoldSearch.tpl -text
 framework/Data/ActiveRecord/Scaffold/TScaffoldView.php -text
 framework/Data/ActiveRecord/Scaffold/TScaffoldView.tpl -text
 framework/Data/ActiveRecord/Scaffold/style.css -text
@@ -1480,6 +1482,9 @@ framework/Data/ActiveRecord/TActiveRecordStateRegistry.php -text
 framework/Data/ActiveRecord/Vendor/TDbMetaData.php -text
 framework/Data/ActiveRecord/Vendor/TDbMetaDataCommon.php -text
 framework/Data/ActiveRecord/Vendor/TDbMetaDataInspector.php -text
+framework/Data/ActiveRecord/Vendor/TIbmColumnMetaData.php -text
+framework/Data/ActiveRecord/Vendor/TIbmMetaData.php -text
+framework/Data/ActiveRecord/Vendor/TIbmMetaDataInspector.php -text
 framework/Data/ActiveRecord/Vendor/TMysqlColumnMetaData.php -text
 framework/Data/ActiveRecord/Vendor/TMysqlMetaData.php -text
 framework/Data/ActiveRecord/Vendor/TMysqlMetaDataInspector.php -text
@@ -2454,6 +2459,7 @@ tests/simple_unit/ActiveRecord/records/DepartmentRecord.php -text
 tests/simple_unit/ActiveRecord/records/SimpleUser.php -text
 tests/simple_unit/ActiveRecord/records/SqliteUsers.php -text
 tests/simple_unit/ActiveRecord/records/UserRecord.php -text
+tests/simple_unit/I18N/ChoiceFormatTest.php -text
 tests/simple_unit/I18N/CultureInfoTest.php -text
 tests/simple_unit/Soap/ContactManager.php -text
 tests/simple_unit/Soap/SoapTestCase.php -text

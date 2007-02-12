@@ -100,10 +100,11 @@ You may need to quote (specific to your database) the value of the <tt>$_tablena
 E.g. MySQL uses back-ticks, <tt>$_tablename = "`database1`.`table1`"</tt>
 </div>
 
-<div class="tip"><b class="note">Tip:</b>
+<p class="block-content" id="ar_as_component">
     Since <tt>TActiveRecord</tt> extends <tt>TComponent</tt>, setter and
     getter methods can be defined to allow control over how variables
     are set and returned. For example, adding a <tt>$level</tt> property to the UserRecord class:
+</p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690149">
 class UserRecord extends TActiveRecord {
     ... //existing definitions as above
@@ -117,9 +118,8 @@ class UserRecord extends TActiveRecord {
     }
 }
 </com:TTextHighlighter>
-</div>
 
-<div class="note"><b class="note">Note:</b>
+<div class="info"><b class="note">Info:</b>
 <tt>TActiveRecord</tt> can also work with database views by specifying the value <tt>$_tablename</tt>
 corresponding to the view name. However, objects returned
 from views are read-only, calling the <tt>save()</tt> or <tt>delete()</tt> method
@@ -275,7 +275,7 @@ Method names starting with <tt>findAllBy</tt> return an array of records.
 The condition is taken as part of the method name after <tt>findBy</tt> or <tt>findAllBy</tt>.
 
 The following blocks of code are equivalent:
-
+</p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690158">
 $finder->findByName($name)
 $finder->find('Name = ?', $name);
@@ -291,7 +291,10 @@ $finder->find('Username = ? AND Password = ?', $name, $pass);
 $finder->findAllByAge($age);
 $finder->findAll('Age = ?', $age);
 </com:TTextHighlighter>
-</p>    
+    
+<div class="tip"><b class="note">Tip:</b>
+You may also use <tt>OR</tt> as a condition in the dynamic methods.
+</div>
     
 <h3 id="138060"><tt>findBySql()</tt></h3>
 <p id="690497" class="block-content">Finds records using full SQL, returns corresponding array of record objects.</p>
@@ -303,6 +306,7 @@ $finder->findAll('Age = ?', $age);
 <p id="690499" class="block-content">
 Add a new record using TActiveRecord is very simple, just create a new Active
 Record object and call the <tt>save()</tt> method. E.g.
+</p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690161">
 $user1 = new UserRecord();
 $user1->username = "admin"
@@ -319,7 +323,6 @@ definitions that automatically creates a primary key for the newly insert record
 For example, if you insert a new record into a MySQL table that has columns
 defined with "autoincrement", the Active Record objects will be updated with the new 
 incremented values.</div>
-</p>
 
 <p id="690500" class="block-content">
 To update a record in the database, just change one or more properties of 
@@ -353,15 +356,16 @@ ends the object life-cycle, no futher actions can be performed on the object.
     You can also delete records in the database by primary keys without
     loading any records using the <tt>deleteByPk()</tt> method. 
     For example, to delete one or records with tables having a scalar primary key.
+</p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690163">
 $finder->deleteByPk($primaryKey); //delete 1 record
 $finder->deleteByPk($key1,$key2,...); //delete multiple records
 $finder->deleteByPk(array($key1,$key2,...)); //delete multiple records
 </com:TTextHighlighter>
-</p>
 
 <p id="690503" class="block-content">
 For composite primary keys (determined automatically from the table definitions):
+</p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690164">
 $finder->deleteByPk(array($key1,$key2)); //delete 1 record
 
@@ -371,7 +375,6 @@ $finder->deleteByPk(array($key1,$key2), array($key3,$key4),...);
 //delete multiple records
 $finder->deleteByPk(array( array($key1,$key2), array($key3,$key4), .. ));
 </com:TTextHighlighter>
-</p>
 
 <h3 id="138052a"><tt>deleteAll()</tt> and <tt>deleteBy*()</tt></h3>
 <p id="690502a" class="block-content">
@@ -387,16 +390,13 @@ $finder->deleteByName($name);
 //delete by username and password
 $finder->deleteBy_Username_And_Password($name,$pass);
 </com:TTextHighlighter>
-</p>
-
-
 
 <h2 id="138053">Transactions</h2>
 <p id="690504" class="block-content">All Active Record objects contains the property <tt>DbConnection</tt>
     that can be used to obtain a transaction object.
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690165">
 $finder = UserRecord::finder();
-
+$finder->DbConnection->Active=true; //open if necessary
 $transaction = $finder->DbConnection->beginTransaction();
 try
 {

@@ -164,6 +164,9 @@ class TActiveRecordManager extends TComponent
 			case 'sqlite2': //sqlite 2
 				Prado::using('System.Data.ActiveRecord.Vendor.TSqliteMetaDataInspector');
 				return new TSqliteMetaDataInspector($conn);
+			case 'ibm':
+				Prado::using('System.Data.ActiveRecord.Vendor.TIbmMetaDataInspector');
+				return new TIbmMetaDataInspector($conn);
 			default:
 				throw new TActiveRecordConfigurationException(
 					'ar_invalid_database_driver',$driver);

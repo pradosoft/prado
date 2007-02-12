@@ -384,6 +384,8 @@ abstract class TActiveRecord extends TComponent
 
 	/**
 	 * Find records using full SQL, returns corresponding record object.
+	 * The names of the column retrieved must be defined in your Active Record
+	 * class.
 	 * @param string select SQL
 	 * @param array $parameters
 	 * @return array matching active records.
@@ -439,8 +441,8 @@ abstract class TActiveRecord extends TComponent
 	 * $finder->find('Name = ?', $name);
 	 * </code>
 	 * <code>
-	 * $finder->findByUsernameAndPassword($name,$pass);
-	 * $finder->findBy_Username_And_Password($name,$pass);
+	 * $finder->findByUsernameAndPassword($name,$pass); // OR may be used
+	 * $finder->findBy_Username_And_Password($name,$pass); // _OR_ may be used
 	 * $finder->find('Username = ? AND Password = ?', $name, $pass);
 	 * </code>
 	 * <code>
@@ -481,13 +483,43 @@ abstract class TActiveRecord extends TComponent
 	 */
 	private function createCriteriaFromString($method, $condition, $args)
 	{
-		$fields = array();
-		foreach(preg_split('/and|_and_/i',$condition) as $field)
-			$fields[] = $field.' = ?';
+		$fields = $this->extractMatchingConditions($method, $condition);
 		$args=count($args) === 1 && is_array($args[0]) ? $args[0] : $args;
 		if(count($fields)>count($args))
-			throw new TActiveRecordException('ar_mismatch_args_exception',$method,count($fields),count($args));
-		return new TActiveRecordCriteria(implode(' AND ',$fields),$args);
+		{
+			throw new TActiveRecordException('ar_mismatch_args_exception',
+				$method,count($fields),count($args));
+		}
+		return new TActiveRecordCriteria(implode(' ',$fields),$args);
+	}
+
+	/**
+	 * Calculates the AND/OR condition from dynamic method substrings using
+	 * table meta data, allows for any AND-OR combinations.
+	 * @param string dynamic method name
+	 * @param string dynamic method search criteria
+	 * @return array search condition substrings
+	 */
+	private function extractMatchingConditions($method, $condition)
+	{
+		$meta = $this->getRecordManager()->getRecordGateway()->getMetaData($this);
+		$search = implode('|', $meta->getColumnNames());
+		$regexp = '/('.$search.')(and|_and_|or|_or_)?/i';
+		$matches = array();
+		if(!preg_match_all($regexp, strtolower($condition), $matches,PREG_SET_ORDER))
+		{
+			throw new TActiveRecordException('ar_mismatch_column_names',
+				$method, implode(', ', $meta->getColumnNames()), $meta->getTableName());
+		}
+		$fields = array();
+		foreach($matches as $match)
+		{
+			$sql = $meta->getColumn($match[1])->getName() . ' = ? ';
+			if(count($match) > 2)
+				$sql .= strtoupper(str_replace('_', '', $match[2]));
+			$fields[] = $sql;
+		}
+		return $fields;
 	}
 }
 ?>

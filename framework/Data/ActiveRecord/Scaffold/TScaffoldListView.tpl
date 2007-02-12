@@ -1,4 +1,4 @@
-
+<div class="scaffold_list_view">
 <div class="item-header">
 <com:TRepeater ID="_header">
 	<prop:ItemTemplate>
@@ -21,7 +21,7 @@
 	 PageSize="10">
 	<prop:ItemTemplate>
 	<div class="item item_<%# $this->ItemIndex % 2 %>">
-	
+
 	<com:TRepeater ID="_properties">
 		<prop:ItemTemplate>
 		<span class="field field_<%# $this->ItemIndex %>">
@@ -29,20 +29,20 @@
 		</span>
 		</prop:ItemTemplate>
 	</com:TRepeater>
-	
+
 	<span class="edit-delete-buttons">
-		<com:TButton Text="Edit" 
+		<com:TButton Text="Edit"
 			Visible=<%# $this->NamingContainer->Parent->EditViewID !== Null %>
-			CommandName="edit" 
+			CommandName="edit"
 			CssClass="edit-button"
 			CausesValidation="false" />
-		<com:TButton Text="Delete" 
-			CommandName="delete" 
+		<com:TButton Text="Delete"
+			CommandName="delete"
 			CssClass="delete-button"
 			CausesValidation="false"
 			Attributes.onclick="if(!confirm('Are you sure?')) return false;"  />
 	</span>
-	
+
 	</div>
 	</prop:ItemTemplate>
 </com:TRepeater>
@@ -54,3 +54,4 @@
 	PageButtonCount="10"
 	Mode="Numeric"
 	OnPageIndexChanged="pageChanged" />
+</div>

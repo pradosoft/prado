@@ -1,7 +1,28 @@
 <?php
+/**
+ * TScaffoldListView class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005-2007 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Id$
+ * @package System.Data.ActiveRecord.Scaffold
+ */
 
+/**
+ * Load the scaffold base class.
+ */
 Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldBase');
 
+/**
+ * TScaffoldListView displays instance of Active Record class.
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.ActiveRecord.Scaffold
+ * @since 3.1
+ */
 class TScaffoldListView extends TScaffoldBase
 {
 	public function onLoad($param)
@@ -32,37 +53,52 @@ class TScaffoldListView extends TScaffoldBase
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		$this->initializeItemCount();
 		$this->loadRecordData();
-	}
-
-	protected function initializeItemCount()
-	{
-		$this->_list->setVirtualItemCount($this->getRecordFinder()->count());
 	}
 
 	protected function loadRecordData()
 	{
+		$this->_list->setVirtualItemCount($this->getRecordFinder()->count());
 		$finder = $this->getRecordFinder();
-		$criteria = $this->getPagingCriteria();
+		$criteria = $this->getRecordCriteria();
 		$this->_list->setDataSource($finder->findAll($criteria));
 		$this->_list->dataBind();
 	}
 
-	protected function getPagingCriteria()
+	protected function getRecordCriteria()
 	{
 		$total = $this->_list->getVirtualItemCount();
 		$limit = $this->_list->getPageSize();
 		$offset = $this->_list->getCurrentPageIndex()*$limit;
 		if($offset + $limit > $total)
 			$limit = $total - $offset;
-		$criteria = new TActiveRecordCriteria;
+		$criteria = new TActiveRecordCriteria($this->getSearchCondition(), $this->getSearchParameters());
 		$criteria->setLimit($limit);
 		$criteria->setOffset($offset);
 		$order = explode(' ',$this->_sort->getSelectedValue(), 2);
 		if(is_array($order) && count($order) === 2)
 			$criteria->OrdersBy[$order[0]] = $order[1];
 		return $criteria;
+	}
+
+	public function setSearchCondition($value)
+	{
+		$this->setViewState('SearchCondition', $value);
+	}
+
+	public function getSearchCondition()
+	{
+		return $this->getViewState('SearchCondition');
+	}
+
+	public function setSearchParameters($value)
+	{
+		$this->setViewState('SearchParameters', TPropertyValue::ensureArray($value),array());
+	}
+
+	public function getSearchParameters()
+	{
+		return $this->getViewState('SearchParameters', array());
 	}
 
 	public function bubbleEvent($sender, $param)
@@ -72,21 +108,26 @@ class TScaffoldListView extends TScaffoldBase
 			case 'delete':
 				return $this->deleteRecord($sender, $param);
 			case 'edit':
-				if(($ctrl=$this->getEditViewControl())!==null)
-				{
-					if($param instanceof TRepeaterCommandEventParameter)
-					{
-						$pk = $param->getItem()->getCustomData();
-						$ctrl->setRecordPk($pk);
-						$ctrl->initializeEditForm();
-					}
-				}
+				$this->initializeEdit($sender, $param);
 		}
 		$this->raiseBubbleEvent($this, $param);
 		return true;
 	}
 
-	public function deleteRecord($sender, $param)
+	protected function initializeEdit($sender, $param)
+	{
+		if(($ctrl=$this->getEditViewControl())!==null)
+		{
+			if($param instanceof TRepeaterCommandEventParameter)
+			{
+				$pk = $param->getItem()->getCustomData();
+				$ctrl->setRecordPk($pk);
+				$ctrl->initializeEditForm();
+			}
+		}
+	}
+
+	protected function deleteRecord($sender, $param)
 	{
 		if($param instanceof TRepeaterCommandEventParameter)
 		{
@@ -111,10 +152,10 @@ class TScaffoldListView extends TScaffoldBase
 		$item = $param->getItem();
 		if(($data = $item->getData()) !== null)
 		{
-			$item->setCustomData($this->getRecordObjectPk($data));
+			$item->setCustomData($this->getRecordPkValues($data));
 			if(($prop = $item->findControl('_properties'))!==null)
 			{
-				$item->_properties->setDataSource($this->getRecordProperties($data));
+				$item->_properties->setDataSource($this->getRecordPropertyValues($data));
 				$item->_properties->dataBind();
 			}
 		}

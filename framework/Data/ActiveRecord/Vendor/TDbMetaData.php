@@ -21,7 +21,6 @@
  * @package System.Data.ActiveRecord.Vendor
  * @since 3.1
  */
-
 abstract class TDbMetaData extends TComponent
 {
 	private $_primaryKeys=array();
@@ -89,6 +88,11 @@ abstract class TDbMetaData extends TComponent
 	public function getColumn($name)
 	{
 		return $this->_columns[$name];
+	}
+
+	public function getColumnNames()
+	{
+		return array_keys($this->_columns);
 	}
 
 	/**
@@ -187,7 +191,7 @@ abstract class TDbMetaData extends TComponent
 		foreach($keys as $i => $key)
 		{
 			$value = isset($values[$i]) ? $values[$i] : $values[$key];
-			$command->bindValue(':'.$key, $value);
+			$this->bindValue($command, ':'.$key, $value);
 		}
 		$command->prepare();
 	}
@@ -249,7 +253,7 @@ abstract class TDbMetaData extends TComponent
 
 	/**
 	 * Gets a comma delimited string of name parameters for update.
-x	 * @param array name value pairs of columns for update.
+	 * @param array name value pairs of columns for update.
 	 * @return string update named parameter string.
 	 */
 	protected function getUpdateBindings($columns)
@@ -294,17 +298,25 @@ x	 * @param array name value pairs of columns for update.
 			if($criteria->getIsNamedParameters())
 			{
 				foreach($criteria->getParameters() as $name=>$value)
-					$command->bindValue($name,$value);
+					$this->bindValue($command, $name, $value);
 			}
 			else
 			{
 				$index=1;
 				foreach($criteria->getParameters() as $value)
-					$command->bindValue($index++,$value);
+					$this->bindValue($command, $index++,$value);
 			}
 		}
 		$command->prepare();
 		return $command;
+	}
+
+	protected function bindValue($command, $name, $value)
+	{
+		if(is_bool($value))
+			$command->bindValue($name,$value, PDO::PARAM_BOOL);
+		else
+			$command->bindValue($name,$value);
 	}
 
 	/**
@@ -316,9 +328,9 @@ x	 * @param array name value pairs of columns for update.
 		foreach($parameters as $key=>$value)
 		{
 			if(is_string($key))
-				$command->bindValue($key,$value);
+				$this->bindValue($command,$key,$value);
 			else
-				$command->bindValue($index++,$value);
+				$this->bindValue($command, $index++,$value);
 		}
 		$command->prepare();
 	}
@@ -345,5 +357,15 @@ x	 * @param array name value pairs of columns for update.
 		return implode(', ', $fields);
 	}
 
+	/**
+	 * @param string ordering column name
+	 * @param string ordering direction
+	 * @return string DESC or ASC
+	 */
+	protected function getOrdering($by, $direction)
+	{
+		$dir = strtolower($direction) == 'desc' ? 'DESC' : 'ASC';
+		return $this->getColumn($by)->getName(). ' '.$dir;
+	}
 }
 ?>

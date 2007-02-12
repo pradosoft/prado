@@ -2,7 +2,7 @@
 
 Prado::using('System.Data.ActiveRecord.Scaffold.InputBuilder.TScaffoldInputCommon');
 
-class PgsqlScaffoldInput extends ScaffoldInputCommon
+class TPgsqlScaffoldInput extends TScaffoldInputCommon
 {
 	protected function createControl($container, $column, $record)
 	{

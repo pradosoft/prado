@@ -18,7 +18,12 @@ $exclusions=array(
 	'/Web/Security',
 	'/Configuration',
 	'/Web/Services/TFeedService.php',
-	'/Web/Services/IFeedContentProvider.php'
+	'/Web/Services/IFeedContentProvider.php',
+	'/Data/ActiveRecord/Vendor',
+	'/Data/ActiveRecord/Scaffold/InputBuilder',
+	'/Data/SqlMap/Configuration',
+	'/Data/SqlMap/DataMapper',
+	'/Data/SqlMap/Statements'
 	);
 $a=new ClassTreeBuilder($frameworkPath,$exclusions);
 $a->buildTree();

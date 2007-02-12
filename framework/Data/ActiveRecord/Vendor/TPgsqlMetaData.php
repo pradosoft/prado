@@ -48,11 +48,31 @@ class TPgsqlMetaData extends TDbMetaDataCommon
 		return strlen($sql) > 0 ? $sql : '';
 	}
 
-	protected function getOrdering($by, $direction)
+	public function getSearchRegExpCriteria($fields, $keywords)
 	{
-		$dir = strtolower($direction) == 'desc' ? 'DESC' : 'ASC';
-		return $this->getColumn($by)->getName(). ' '.$dir;
+		if(strlen(trim($keywords)) == 0) return '';
+		$words = preg_split('/\s/', preg_quote($keywords, '\''));
+		$result = array();
+		foreach($fields as $field)
+		{
+			$column = $this->getColumn($field);
+			if($this->isSearchableColumn($column))
+				$result[] = $this->getRegexpCriteriaStr($column->getName(), $words);
+		}
+		return '('.implode(' OR ', $result).')';
 	}
 
+
+	protected function isSearchableColumn($column)
+	{
+		$type = strtolower($column->getType());
+		return $type === 'character varying' || $type === 'varchar' ||
+				$type === 'character' || $type === 'char' || $type === 'text';
+	}
+	protected function getRegexpCriteriaStr($column, $words)
+	{
+		$regexp = implode('|', $words);
+		return "({$column} ~ '{$regexp}')";
+	}
 }
 ?>
