@@ -218,7 +218,7 @@ class TAssetManager extends TModule
 	 */
 	protected function hash($dir)
 	{
-		return sprintf('%x',crc32($dir));
+		return sprintf('%x',crc32($dir.Prado::getVersion()));
 	}
 
 	/**
