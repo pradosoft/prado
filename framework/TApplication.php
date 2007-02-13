@@ -324,13 +324,13 @@ class TApplication extends TComponent
 		// determine configuration path and file
 		if(empty($basePath) || ($basePath=realpath($basePath))===false)
 			throw new TConfigurationException('application_basepath_invalid',$basePath);
-		if(is_file($basePath))
+		if(is_file($basePath.DIRECTORY_SEPARATOR.self::CONFIG_FILE))
+			$configFile=$basePath.DIRECTORY_SEPARATOR.self::CONFIG_FILE;
+		else if(is_file($basePath))
 		{
 			$configFile=$basePath;
 			$basePath=dirname($configFile);
 		}
-		else if(is_file($basePath.DIRECTORY_SEPARATOR.self::CONFIG_FILE))
-			$configFile=$basePath.DIRECTORY_SEPARATOR.self::CONFIG_FILE;
 		else
 			$configFile=null;
 

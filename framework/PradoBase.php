@@ -271,36 +271,26 @@ class PradoBase
 			$className=substr($namespace,$pos+1);
 			if($className==='*')  // a directory
 			{
-				if((self::$_application && self::$_application->getMode()===TApplication::STATE_PERFORMANCE) || is_dir($path))
-				{
-					self::$_usings[$namespace]=$path;
-					set_include_path(get_include_path().PATH_SEPARATOR.$path);
-				}
-				else
-					throw new TInvalidDataValueException('prado_using_invalid',$namespace);
+				self::$_usings[$namespace]=$path;
+				set_include_path(get_include_path().PATH_SEPARATOR.$path);
 			}
 			else  // a file
 			{
-				if((self::$_application && self::$_application->getMode()===TApplication::STATE_PERFORMANCE) || is_file($path))
+				self::$_usings[$namespace]=$path;
+				if(!class_exists($className,false))
 				{
-					self::$_usings[$namespace]=$path;
-					if(!class_exists($className,false))
+					try
 					{
-						try
-						{
-							include_once($path);
-						}
-						catch(Exception $e)
-						{
-							if(!class_exists($className,false))
-								throw new TInvalidOperationException('prado_component_unknown',$className);
-							else
-								throw $e;
-						}
+						include_once($path);
+					}
+					catch(Exception $e)
+					{
+						if(!class_exists($className,false))
+							throw new TInvalidOperationException('prado_component_unknown',$className);
+						else
+							throw $e;
 					}
 				}
-				else
-					throw new TInvalidDataValueException('prado_using_invalid',$namespace);
 			}
 		}
 		else
