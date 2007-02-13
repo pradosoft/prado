@@ -27,6 +27,10 @@ abstract class TService extends TApplicationComponent implements IService
 	 * @var string service id
 	 */
 	private $_id;
+	/**
+	 * @var boolean whether the service is enabled
+	 */
+	private $_enabled=true;
 
 	/**
 	 * Initializes the service and attaches {@link run} to the RunService event of application.
@@ -51,6 +55,22 @@ abstract class TService extends TApplicationComponent implements IService
 	public function setID($value)
 	{
 		$this->_id=$value;
+	}
+
+	/**
+	 * @return boolean whether the service is enabled
+	 */
+	public function getEnabled()
+	{
+		return $this->_enabled;
+	}
+
+	/**
+	 * @param boolean whether the service is enabled
+	 */
+	public function setEnabled($value)
+	{
+		$this->_enabled=TPropertyValue::ensureBoolean($value);
 	}
 
 	/**

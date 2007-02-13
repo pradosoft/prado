@@ -129,15 +129,6 @@ class TPageService extends TService
 	private $_templateManager=null;
 
 	/**
-	 * Constructor.
-	 * Sets default service ID to 'page'.
-	 */
-	public function __construct()
-	{
-		$this->setID('page');
-	}
-
-	/**
 	 * Initializes the service.
 	 * This method is required by IService interface and is invoked by application.
 	 * @param TXmlElement service configuration
@@ -145,8 +136,6 @@ class TPageService extends TService
 	public function init($config)
 	{
 		Prado::trace("Initializing TPageService",'System.Web.Services.TPageService');
-
-		$this->getApplication()->setPageService($this);
 
 		$pageConfig=$this->loadPageConfig($this->getRequestedPagePath(),$config);
 
@@ -166,44 +155,11 @@ class TPageService extends TService
 	{
 		$application=$this->getApplication();
 
-		// set path aliases and using namespaces
-		foreach($pageConfig->getAliases() as $alias=>$path)
-			Prado::setPathOfAlias($alias,$path);
-		foreach($pageConfig->getUsings() as $using)
-			Prado::using($using);
+		foreach($pageConfig->getApplicationConfigurations() as $appConfig)
+			$application->applyConfiguration($appConfig);
 
 		// initial page properties (to be set when page runs)
 		$this->_properties=$pageConfig->getProperties();
-
-		// load parameters
-		$parameters=$application->getParameters();
-		foreach($pageConfig->getParameters() as $id=>$parameter)
-		{
-			if(is_array($parameter))
-			{
-				$component=Prado::createComponent($parameter[0]);
-				foreach($parameter[1] as $name=>$value)
-					$component->setSubProperty($name,$value);
-				$parameters->add($id,$component);
-			}
-			else
-				$parameters->add($id,$parameter);
-		}
-
-		// load modules specified in page directory config
-		$modules=array();
-		foreach($pageConfig->getModules() as $id=>$moduleConfig)
-		{
-			Prado::trace("Loading module $id ({$moduleConfig[0]})",'System.Web.Services.TPageService');
-			$module=Prado::createComponent($moduleConfig[0]);
-			if(is_string($id))
-				$application->setModule($id,$module);
-			foreach($moduleConfig[1] as $name=>$value)
-				$module->setSubProperty($name,$value);
-			$modules[]=array($module,$moduleConfig[2]);
-		}
-		foreach($modules as $module)
-			$module[0]->init($module[1]);
 
 		$application->getAuthorizationRules()->mergeWith($pageConfig->getRules());
 	}
@@ -233,8 +189,8 @@ class TPageService extends TService
 		{
 			$pageConfig=new TPageConfiguration;
 			if($config!==null)
-				$pageConfig->loadXmlElement($config,$application->getBasePath(),null);
-			$pageConfig->loadConfigurationFiles($pagePath,$this->getBasePath());
+				$pageConfig->loadFromXml($config,$application->getBasePath());
+			$pageConfig->loadFromFiles($pagePath,$this->getBasePath());
 		}
 		else
 		{
@@ -282,8 +238,8 @@ class TPageService extends TService
 			{
 				$pageConfig=new TPageConfiguration;
 				if($config!==null)
-					$pageConfig->loadXmlElement($config,$application->getBasePath(),null);
-				$pageConfig->loadConfigurationFiles($pagePath,$this->getBasePath());
+					$pageConfig->loadFromXml($config,$application->getBasePath());
+				$pageConfig->loadFromFiles($pagePath,$this->getBasePath());
 				$cache->set(self::CONFIG_CACHE_PREFIX.$this->getID().$pagePath,array($pageConfig,$currentTimestamp));
 			}
 		}
@@ -510,25 +466,13 @@ class TPageService extends TService
 class TPageConfiguration extends TComponent
 {
 	/**
+	 * @var array list of application configurations
+	 */
+	private $_appConfigs=array();
+	/**
 	 * @var array list of page initial property values
 	 */
 	private $_properties=array();
-	/**
-	 * @var array list of namespaces to be used
-	 */
-	private $_usings=array();
-	/**
-	 * @var array list of path aliases
-	 */
-	private $_aliases=array();
-	/**
-	 * @var array list of module configurations
-	 */
-	private $_modules=array();
-	/**
-	 * @var array list of parameters
-	 */
-	private $_parameters=array();
 	/**
 	 * @var TAuthorizationRuleCollection list of authorization rules
 	 */
@@ -546,66 +490,6 @@ class TPageConfiguration extends TComponent
 	}
 
 	/**
-	 * Returns list of path alias definitions.
-	 * The definitions are aggregated (top-down) from configuration files along the path
-	 * to the specified page. Each array element represents a single alias definition,
-	 * with the key being the alias name and the value the absolute path.
-	 * @return array list of path alias definitions
-	 */
-	public function getAliases()
-	{
-		return $this->_aliases;
-	}
-
-	/**
-	 * Returns list of namespaces to be used.
-	 * The namespaces are aggregated (top-down) from configuration files along the path
-	 * to the specified page. Each array element represents a single namespace usage,
-	 * with the value being the namespace to be used.
-	 * @return array list of namespaces to be used
-	 */
-	public function getUsings()
-	{
-		return $this->_usings;
-	}
-
-	/**
-	 * Returns list of module configurations.
-	 * The module configurations are aggregated (top-down) from configuration files
-	 * along the path to the specified page. Each array element represents
-	 * a single module configuration, with the key being the module ID and
-	 * the value the module configuration. Each module configuration is
-	 * stored in terms of an array with the following content
-	 * ([0]=>module type, [1]=>module properties, [2]=>complete module configuration)
-	 * The module properties are an array of property values indexed by property names.
-	 * The complete module configuration is a TXmlElement object representing
-	 * the raw module configuration which may contain contents enclosed within
-	 * module tags.
-	 * @return array list of module configurations to be used
-	 */
-	public function getModules()
-	{
-		return $this->_modules;
-	}
-
-	/**
-	 * Returns list of parameter definitions.
-	 * The parameter definitions are aggregated (top-down) from configuration files
-	 * along the path to the specified page. Each array element represents
-	 * a single parameter definition, with the key being the parameter ID and
-	 * the value the parameter definition. A parameter definition can be either
-	 * a string representing a string-typed parameter, or an array.
-	 * The latter defines a component-typed parameter whose format is as follows,
-	 * ([0]=>component type, [1]=>component properties)
-	 * The component properties are an array of property values indexed by property names.
-	 * @return array list of parameter definitions to be used
-	 */
-	public function getParameters()
-	{
-		return $this->_parameters;
-	}
-
-	/**
 	 * Returns list of authorization rules.
 	 * The authorization rules are aggregated (bottom-up) from configuration files
 	 * along the path to the specified page.
@@ -617,11 +501,19 @@ class TPageConfiguration extends TComponent
 	}
 
 	/**
+	 * @return array list of application configurations specified along page path
+	 */
+	public function getApplicationConfigurations()
+	{
+		return $this->_appConfigs;
+	}
+
+	/**
 	 * Loads configuration for a page specified in a path format.
 	 * @param string path to the page (dot-connected format)
 	 * @param string root path for pages
 	 */
-	public function loadConfigurationFiles($pagePath,$basePath)
+	public function loadFromFiles($pagePath,$basePath)
 	{
 		$paths=explode('.',$pagePath);
 		$page=array_pop($paths);
@@ -647,7 +539,7 @@ class TPageConfiguration extends TComponent
 			return;
 		$dom=new TXmlDocument;
 		if($dom->loadFromFile($fname))
-			$this->loadXmlElement($dom,dirname($fname),$page);
+			$this->loadFromXml($dom,dirname($fname),$page);
 		else
 			throw new TConfigurationException('pageserviceconf_file_invalid',$fname);
 	}
@@ -658,73 +550,14 @@ class TPageConfiguration extends TComponent
 	 * @param string base path corresponding to this xml element
 	 * @param string page name, null if page is not required
 	 */
-	public function loadXmlElement($dom,$configPath,$page)
+	public function loadFromXml($dom,$configPath,$page=null)
 	{
-		// paths
-		if(($pathsNode=$dom->getElementByTagName('paths'))!==null)
+		if($page!==null) // config.xml
 		{
-			foreach($pathsNode->getElementsByTagName('alias') as $aliasNode)
-			{
-				if(($id=$aliasNode->getAttribute('id'))!==null && ($p=$aliasNode->getAttribute('path'))!==null)
-				{
-					$p=str_replace('\\','/',$p);
-					$path=realpath(preg_match('/^\\/|.:\\//',$p)?$p:$configPath.'/'.$p);
-					if($path===false || !is_dir($path))
-						throw new TConfigurationException('pageserviceconf_aliaspath_invalid',$id,$p,$configPath);
-					if(isset($this->_aliases[$id]))
-						throw new TConfigurationException('pageserviceconf_alias_redefined',$id,$configPath);
-					$this->_aliases[$id]=$path;
-				}
-				else
-					throw new TConfigurationException('pageserviceconf_alias_invalid',$configPath);
-			}
-			foreach($pathsNode->getElementsByTagName('using') as $usingNode)
-			{
-				if(($namespace=$usingNode->getAttribute('namespace'))!==null)
-					$this->_usings[]=$namespace;
-				else
-					throw new TConfigurationException('pageserviceconf_using_invalid',$configPath);
-			}
+			$appConfig=new TApplicationConfiguration;
+			$appConfig->loadFromXml($dom,$configPath);
+			$this->_appConfigs[]=$appConfig;
 		}
-
-		// modules
-		if(($modulesNode=$dom->getElementByTagName('modules'))!==null)
-		{
-			foreach($modulesNode->getElementsByTagName('module') as $node)
-			{
-				$properties=$node->getAttributes();
-				$type=$properties->remove('class');
-				$id=$properties->itemAt('id');
-				if($type===null)
-					throw new TConfigurationException('pageserviceconf_moduletype_required',$id,$configPath);
-				$node->setParent(null);
-				if($id===null)
-					$this->_modules[]=array($type,$properties->toArray(),$node);
-				else
-					$this->_modules[$id]=array($type,$properties->toArray(),$node);
-			}
-		}
-
-		// parameters
-		if(($parametersNode=$dom->getElementByTagName('parameters'))!==null)
-		{
-			foreach($parametersNode->getElementsByTagName('parameter') as $node)
-			{
-				$properties=$node->getAttributes();
-				if(($id=$properties->remove('id'))===null)
-					throw new TConfigurationException('pageserviceconf_parameter_invalid',$configPath);
-				if(($type=$properties->remove('class'))===null)
-				{
-					if(($value=$properties->remove('value'))===null)
-						$this->_parameters[$id]=$node;
-					else
-						$this->_parameters[$id]=$value;
-				}
-				else
-					$this->_parameters[$id]=array($type,$properties->toArray());
-			}
-		}
-
 		// authorization
 		if(($authorizationNode=$dom->getElementByTagName('authorization'))!==null)
 		{

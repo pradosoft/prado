@@ -24,11 +24,13 @@ map_item_unremovable					= The item cannot be removed from the map.
 map_data_not_iterable					= Data must be either an array or an object implementing Traversable interface.
 map_readonly							= {0} is read-only.
 
+application_includefile_invalid			= Unable to find application configuration {0}. Make sure it is in namespace format and the file ends with ".xml".
 application_basepath_invalid			= Application base path '{0}' does not exist or is not a directory.
 application_runtimepath_invalid			= Application runtime path '{0}' does not exist or is not writable by Web server process.
 application_service_invalid				= Service '{0}' must implement IService interface.
 application_service_unknown				= Requested service '{0}' is not defined.
-application_service_unavailable			= Service Unavailable.
+application_unavailable					= Application is unavailable at this time.
+application_service_unavailable			= Service '{0}' is unavailable at this time.
 application_moduleid_duplicated			= Application module ID '{0}' is not unique.
 application_runtimepath_failed			= Unable to create runtime path '{0}'. Make sure the parent directory exists and is writable by the Web process.
 
@@ -41,6 +43,7 @@ appconfig_moduletype_required			= Application configuration <module id="{0}"> mu
 appconfig_serviceid_required			= Application configuration <service> element must have an "id" attribute.
 appconfig_servicetype_required			= Application configuration <service id="{0}"> must have a "class" attribute.
 appconfig_parameterid_required			= Application configuration <parameter> element must have an "id" attribute.
+appconfig_includefile_required			= Application configuration <include> element must have a "file" attribute.
 
 securitymanager_validationkey_invalid	= TSecurityManager.ValidationKey must not be empty.
 securitymanager_encryptionkey_invalid	= TSecurityManager.EncryptionKey must not be empty.

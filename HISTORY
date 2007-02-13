@@ -10,6 +10,7 @@ ENH: Added PRADO_CHMOD constant so that users can specify the permission of PRAD
 ENH: Added Display property to TWebControl (Wei)
 ENH: Added TUser.getState() and setState() for storing user session data (Qiang)
 ENH: Added renderer feature to TRepeater, TDataList and TDataGrid (Qiang)
+ENH: Added support to include external application configuration files (Qiang)
 NEW: TShellApplication (Qiang)
 NEW: Active Record driver for IBM DB2 (Cesar Ramos)
 

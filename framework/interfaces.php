@@ -63,6 +63,14 @@ interface IService
 	 */
 	public function setID($id);
 	/**
+	 * @return boolean whether the service is enabled
+	 */
+	public function getEnabled();
+	/**
+	 * @param boolean whether the service is enabled
+	 */
+	public function setEnabled($value);
+	/**
 	 * Runs the service.
 	 */
 	public function run();

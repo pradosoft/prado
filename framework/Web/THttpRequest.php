@@ -568,22 +568,25 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 * A URL in the format of /index.php?sp=serviceID.serviceParameter
 	 * will be resolved with the serviceID and the serviceParameter.
 	 * You may override this method to provide your own way of service resolution.
+	 * @param array list of valid service IDs
+	 * @return string the currently requested service ID, null if no service ID is found
 	 * @see constructUrl
 	 */
-	public function resolveRequest()
+	public function resolveRequest($serviceIDs)
 	{
 		Prado::trace("Resolving request from ".$_SERVER['REMOTE_ADDR'],'System.Web.THttpRequest');
-		$this->_requestResolved=true;
 		$this->_items=array_merge($_GET,$this->parseUrl(),$_POST);
-		foreach($this->_services as $id)
+		$this->_requestResolved=true;
+		foreach($serviceIDs as $serviceID)
 		{
-			if($this->contains($id))
+			if($this->contains($serviceID))
 			{
-				$this->setServiceID($id);
-				$this->setServiceParameter($this->itemAt($id));
-				break;
+				$this->setServiceID($serviceID);
+				$this->setServiceParameter($this->itemAt($serviceID));
+				return $serviceID;
 			}
 		}
+		return null;
 	}
 
 	/**
@@ -592,22 +595,6 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	public function getRequestResolved()
 	{
 		return $this->_requestResolved;
-	}
-
-	/**
-	 * @return array IDs of the available services
-	 */
-	public function getAvailableServices()
-	{
-		return $this->_services;
-	}
-
-	/**
-	 * @param array IDs of the available services
-	 */
-	public function setAvailableServices($services)
-	{
-		$this->_services=$services;
 	}
 
 	/**
