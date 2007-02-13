@@ -19,6 +19,10 @@ The format of a page configuration file is as follows,
   <modules>
     <module id="ModuleID" class="ModuleClass"  PropertyName="PropertyValue" ... />
   </modules>
+  <parameters>
+    <parameter id="ParameterID" class="ParameterClass" PropertyName="PropertyValue" ... />
+  </parameters>
+  <include file="path.to.extconfig" when="PHP expression" />
   <authorization>
     <allow pages="PageID1,PageID2" users="User1,User2" roles="Role1,Role2" verb="get" />
     <deny pages="PageID1,PageID2" users="User1,User2" roles="Role1,Role2" verb="post" />
@@ -26,13 +30,10 @@ The format of a page configuration file is as follows,
   <pages PropertyName="PropertyValue" ...>
     <page id="PageID" PropertyName="PropertyValue" ... />
   </pages>
-  <parameters>
-    <parameter id="ParameterID" class="ParameterClass" PropertyName="PropertyValue" ... />
-  </parameters>
 </configuration>
 </com:TTextHighlighter>
 <p id="220220" class="block-content">
-The <tt>&lt;paths&gt;</tt>, <tt>&lt;modules&gt;</tt> and <tt>&lt;parameters&gt;</tt> are similar to those in an application configuration. The <tt>&lt;authorization&gt;</tt> specifies the authorization rules that apply to the current page directory and all its subdirectories. It will be explained in more detail in future sections. The <tt>&lt;pages&gt;</tt> element specifies the initial values for the properties of pages. Each <tt>&lt;page&gt;</tt> element specifies the initial property values for a particular page identified by the <tt>id</tt> attribute. Initial property values given in the <tt>&lt;pages&gt;</tt> element apply to all pages in the current directory and all its subdirectories.
+The <tt>&lt;paths&gt;</tt>, <tt>&lt;modules&gt;</tt>, <tt>&lt;parameters&gt;</tt> and <tt>&lt;include&gt;</tt> are similar to those in an application configuration. The <tt>&lt;authorization&gt;</tt> element specifies the authorization rules that apply to the current page directory and all its subdirectories. For more details, see <a href="?page=Advanced.Auth">authentication and authorization</a> section. The <tt>&lt;pages&gt;</tt> element specifies the initial values for the properties of pages. Each <tt>&lt;page&gt;</tt> element specifies the initial property values for a particular page identified by the <tt>id</tt> attribute. Initial property values given in the <tt>&lt;pages&gt;</tt> element apply to all pages in the current directory and all its subdirectories.
 </p>
 <p id="220221" class="block-content">
 Complete specification of page configurations can be found in the <a href="<%~../../../../../docs/specs/config.dtd%>">DTD</a> and <a href="<%~../../../../../docs/specs/config.xsd%>">XSD</a> files.

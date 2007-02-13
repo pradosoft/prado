@@ -33,6 +33,10 @@ if($application->Cache) {
 where <tt>$keyName</tt> should be a string that uniquely identifies the data item stored in cache.
 </p>
 
+<p>
+Since v3.1.0, a new control called <a href="?page=Controls.OutputCache">TOutputCache</a> has been introduced. This control allows users to selectively cache parts of a page's output. When used appropriately, this technique can significant improve pages' performance because the underlying controls are not created at all if the cached versions are hit.
+</p>
+
 <h2 id="6403">Using <tt>pradolite.php</tt></h2>
 <p id="810683" class="block-content">
 Including many PHP script files may impact application performance significantly. PRADO classes are stored in different files and when  processing a page request, it may require including tens of class files.To alleviate this problem, in each PRADO release, a file named <tt>pradolite.php</tt> is also included. The file is a merge of all core PRADO class files with comments being stripped off and message logging removed.

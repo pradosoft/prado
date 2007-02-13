@@ -827,6 +827,11 @@ class TApplication extends TComponent
 		return $this->_authRules;
 	}
 
+	/**
+	 * Applies an application configuration.
+	 * @param TApplicationConfiguration the configuration
+	 * @param boolean whether the configuration is specified within a service.
+	 */
 	public function applyConfiguration($config,$withinService=false)
 	{
 		if($config->getIsEmpty())
