@@ -460,6 +460,7 @@ Signal = {
 
  */
 
+
 Object.extend(String.prototype, {
   gsub: function(pattern, replacement) {
     var result = '', source = this, match;
@@ -3318,10 +3319,10 @@ Prado.WebUI.TImageMap = Class.extend(Prado.WebUI.PostBackControl);
 Prado.WebUI.TImageButton = Class.extend(Prado.WebUI.PostBackControl);
 Object.extend(Prado.WebUI.TImageButton.prototype,
 {
-	/**
-	 * Only add the hidden inputs once.
-	 */
-	hasXYInput : false,
+	onInit : function(options)
+	{
+		this.hasXYInput = false;
+	},
 
 	/**
 	 * Override parent onPostBack function, tried to add hidden forms
