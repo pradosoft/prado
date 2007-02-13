@@ -46,7 +46,7 @@ PRADO comes with a complete set of caching techniques which help accelerate PRAD
 PRADO is often quoted as a unique framework. Its uniqueness mainly lies in the component-based and event-driven programming paradigm that it tries to promote. Although this programming paradigm is not new in desktop application programming and not new in a few Web programming languages, PRADO is perhaps the first PHP framework enabling it.
 </p>
 <p id="20013" class="block-content">
-Most PHP frameworks mainly focuses on separating presentation and logic and promotes the MVC (model-view-controller) design pattern. PRADO achieves the same goal naturally by requiring logic be stored in classes and presentation in templates. PRADO does much more on aspects other than MCVC. It fills lot of blank area in PHP Web programming with its component-based programming paradigm, its rich set of Web controls, its powerful database support, its flexible error handling and logging feature, and many others.
+Most PHP frameworks mainly focuses on separating presentation and logic and promotes the MVC (model-view-controller) design pattern. PRADO achieves the same goal naturally by requiring logic be stored in classes and presentation in templates. PRADO does much more on aspects other than MVC. It fills lot of blank area in PHP Web programming with its component-based programming paradigm, its rich set of Web controls, its powerful database support, its flexible error handling and logging feature, and many others.
 </p>
 
 <h2>Is PRADO Stable Enough?</h2>
