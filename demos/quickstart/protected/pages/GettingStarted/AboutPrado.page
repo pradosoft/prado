@@ -51,7 +51,7 @@ Most PHP frameworks mainly focuses on separating presentation and logic and prom
 
 <h2>Is PRADO Stable Enough?</h2>
 <p>
-Yes. PRADO was initially released in Aguest 2004. Many test suites have been written and conducted frequently to ensure its quality. It has been used by thousands of developers and many Web applications have been developed based on it. Bugs and feature requests are managed through TRAC system and we have a great user community and development team to ensure all questions are answered in a timely fashion.
+Yes. PRADO was initially released in August 2004. Many test suites have been written and conducted frequently to ensure its quality. It has been used by thousands of developers and many Web applications have been developed based on it. Bugs and feature requests are managed through TRAC system and we have a great user community and development team to ensure all questions are answered in a timely fashion.
 </p>
 
 <h2 id="205">History of PRADO</h2>
