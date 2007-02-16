@@ -2,7 +2,7 @@
 
 <h1>Custom Login</h1>
 
-<a href="#" onclick="new Effect.Appear('loginBox')">Login</a>
+<a id="showLogin" href="#" onclick="new Effect.Appear('loginBox')">Login</a>
 <div id="loginBox" style="display: none;">
 
 	<div id="loginLoader" style="display: none;">Please Wait...</div>
