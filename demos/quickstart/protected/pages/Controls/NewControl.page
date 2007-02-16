@@ -57,7 +57,7 @@ Complete code for <tt>LabeledTextBox</tt> is shown as follows,
 class LabeledTextBox extends TCompositeControl {
     private $_label;
     private $_textbox;
-    protected function createChildControls() {
+    public function createChildControls() {
         $this->_label=new TLabel;
         $this->_label->setID('Label');
         // add the label as a child of LabeledTextBox
