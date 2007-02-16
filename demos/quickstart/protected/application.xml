@@ -26,7 +26,7 @@
   </services>
 
   <parameters>
-		<parameter id="languages" value="('en'=>'English', 'fr'=>'Français', 'zh' => '中文（简体）')" />
+		<parameter id="languages" value="('en'=>'English', 'fr'=>'Français', 'zh' => '中文（简体）', 'pl'=>'Polski')" />
   </parameters>
 
 </application>

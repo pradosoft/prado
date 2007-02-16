@@ -232,7 +232,7 @@ class TDbCommand extends TComponent
 	 * This is a convenient method of {@link query} when only the first row of data is needed.
 	 * @param boolean whether the row should be returned as an associated array with
 	 * column names as the keys or the array keys are column indexes (0-based).
-	 * @return array the first row of the query result, false if not result.
+	 * @return array the first row of the query result, false if no result.
 	 * @throws TDbException execution failed
 	 */
 	public function queryRow($fetchAssociative=true)
