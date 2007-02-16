@@ -1,0 +1,25 @@
+<com:TContent ID="body" >
+
+<h1>New Features</h1>
+
+<p>
+This page summarizes the main new features that are introduced in each PRADO release.
+</p>
+
+<h2>Version 3.1.0</h2>
+<ul>
+
+<li>Added seamless AJAX support. A whole array of AJAX-enabled controls, called active controls, are introduced. The usage of these active controls is very similar to their non-AJAX counterparts, i.e., plug in and use. For more details, see the tutorial about <a href="?page=ActiveControls.Home">active controls</a>.</li>
+
+<li>Added complete database support. </li>
+<li>Added new controls, modules and services, including <a href="?page=Services.SoapService">TSoapService</a>, <a href="?page=Controls.OutputCache">TOutputCache</a>, TSessionPageStatePersister, TFeedService, TJsonService, cache dependency classes, TXmlTransform.
+</li>
+
+<li>Enhanced some data controls with renderers. Renderer enables reusing item templates that are commonly found in <tt>TRepeater</tt>, <tt>TDataList</tt> and <tt>TDataGrid</tt>, and makes the configuration on these controls much cleaner. For more details about renders, see the updated tutorials on <a href="?page=Controls.Repeater"><tt>TRepeater</tt></a>, <a href="?page=Controls.DataList"><tt>TDataList</tt></a> and <a href="?page=Controls.DataGrid"><tt>TDataGrid</tt></a>.</li>
+
+<li>Added support to allow <a href="?page=Configurations.AppConfig">including external application configurations</a>. Enhanced template syntax to facilitate <a href="?page=Configurations.Templates1">subproperty configuration</a>.</li>
+
+</ul>
+
+<div class="last-modified">$Id: NewFeatures.page 1695 2007-02-13 14:16:09Z xue $</div>
+</com:TContent>

@@ -1,0 +1,19 @@
+<com:TContent ID="body" >
+<h1 id="101">Welcome to the PRADO Quickstart Tutorial</h1>
+<div id="intro" class="block-content">
+<p id="10001">
+This Quickstart tutorial is provided to help you quickly start building your own Web applications based on PRADO version 3.x.
+</p>
+<p id="10002">
+You may refer to the following resources if you find this tutorial does not fulfill all your needs.
+</p>
+</div>
+<ul class="block-content" id="intro-links">
+  <li><a href="http://www.pradosoft.com/docs/classdoc/">PRADO Classes</a></li>
+  <li><a href="http://www.pradosoft.com/docs/manual/">PRADO API Documentation</a></li>
+  <li><a href="http://www.pradosoft.com/forum/">PRADO Forum</a></li>
+  <li><a href="http://www.pradosoft.com/wiki/">PRADO Wiki</a></li>
+  <li><a href="http://trac.pradosoft.com/prado/">PRADO Trac</a></li>
+</ul>
+
+<div class="last-modified">$Id: Introduction.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
