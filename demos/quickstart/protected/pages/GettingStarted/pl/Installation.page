@@ -1,29 +1,29 @@
 <com:TContent ID="body" >
-<h1 id="301">Installing PRADO</h1>
+<h1 id="301">Instalacja PRADO</h1>
 <div id="install-info" class="block-content">
 <p id="30018">
-If you are viewing this page from your own Web server, you are already done with the installation.
+Jeśli widzisz tą stronę z poziomu własnego serwera, zakończyłeś właśnie instalację.
 </p>
 <p id="30019">
-The minimum requirement by PRADO is that the Web server support PHP 5. PRADO has been tested with Apache Web server on Windows and Linux. Highly possibly it may also run on other platforms with other Web servers, as long as PHP 5 is supported.
+Minimalne wymagania PRADO to serwer internetowy wspierający PHP5. PRADO zostało przetestowane na serwerze Apache na Windowsie oraz Linuxie. Jest wielce prawdopodobne, że może również działać na innych platformach z innymi serwerami internetowymi dopóki wspierają one PHP5.
 </p>
 </div>
 
 <div id="install-steps" class="block-content">
 <p id="30020">
-Installation of PRADO mainly involves downloading and unpacking.
+Instalacja PRADO składa się głównie z jego pobrania oraz rozpakowania.
 </p>
 <ol>
-<li>Go to <a href="http://www.pradosoft.com/">pradosoft.com</a> to grab the latest version of PRADO.</li>
-<li>Unpack the PRADO release file to a Web-accessible directory.
+<li>Przejdź do strony <a href="http://www.pradosoft.com/">pradosoft.com</a> aby pobrać ostatnią wersję PRADO.</li>
+<li>Rozpakuj plik PRADO zawierający jego ostatnie wydanie do katalogu znajdującego się na serwerze.
 </ol>
 </div>
 <div id="install-after" class="block-content">
 <p id="30021">
-Your installation of PRADO is done and you can start to play with the demo applications included in the PRADO release via URL <tt>http://web-server-address/prado/demos/</tt>. Here we assume PRADO is unpacked to the <tt>prado</tt> subdirectory under the <tt>DocumentRoot</tt> of the Web server.
+Twoja instalacja PRADO jest zakończona i możesz zacząć zabawę z aplikacjami demo zawartymi w PRADO znajdującymi się pod adresem <tt>http://adres-serwera/prado/demos/</tt>. Tutaj zakładamy, że PRADO jest rozpakowane do  katalogu <tt>prado</tt> w <tt>katalogu głównym</tt> serwera.
 </p>
 <p id="30022">
-If you encounter any problems with the demo applications, please use the PRADO requirement checker script, accessible via <tt>http://web-server-address/prado/requirements/index.php</tt>, to check first if your server configuration fulfills the conditions required by PRADO.
+Jeśli spotkasz się z jakimkolwiek problemem w aplikacjach demo, proszę użyj skryptu sprawdzającego wymagania do korzystania z PRADO dostępnego poprzez <tt>http://adres-serwera/prado/requirements/index.php</tt>, aby najpierw sprawdzić czy Twoja konfiguracja serwera spełnia wszystkie warunki wymagane przez PRADO.
 </p>
 </div>
-<div class="last-modified">$Id: Installation.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+<div class="last-modified">$Id: Installation.page 170, 2007-02-17 14:58:00Z aztech $</div></com:TContent>

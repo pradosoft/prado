@@ -1191,6 +1191,8 @@ demos/quickstart/protected/pages/GettingStarted/pl/Installation.page -text
 demos/quickstart/protected/pages/GettingStarted/pl/Introduction.page -text
 demos/quickstart/protected/pages/GettingStarted/pl/NewFeatures.page -text
 demos/quickstart/protected/pages/GettingStarted/pl/Upgrading.page -text
+demos/quickstart/protected/pages/GettingStarted/pl/directory.gif -text
+demos/quickstart/protected/pages/GettingStarted/pl/sequence.gif -text
 demos/quickstart/protected/pages/GettingStarted/sequence.gif -text
 demos/quickstart/protected/pages/GettingStarted/sequence.vsd -text
 demos/quickstart/protected/pages/GettingStarted/zh/Introduction.page -text

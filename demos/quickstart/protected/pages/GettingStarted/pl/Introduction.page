@@ -1,19 +1,19 @@
 <com:TContent ID="body" >
-<h1 id="101">Welcome to the PRADO Quickstart Tutorial</h1>
+<h1 id="101">Witamy w przewodniku SzybkiStart z PRADO</h1>
 <div id="intro" class="block-content">
 <p id="10001">
-This Quickstart tutorial is provided to help you quickly start building your own Web applications based on PRADO version 3.x.
+Niniejszy przewodnik powstał by pomóc Tobie w szybkim rozpoczęciu budowania Twojej własnej aplikacji internetowej bazującej na PRADO w wersji 3.x
 </p>
 <p id="10002">
-You may refer to the following resources if you find this tutorial does not fulfill all your needs.
+Możesz odwoływać się do następujących zasobów jeśli czujesz, że ten przewodnik nie spełnia wszystkich twoich oczekiwań.
 </p>
 </div>
 <ul class="block-content" id="intro-links">
-  <li><a href="http://www.pradosoft.com/docs/classdoc/">PRADO Classes</a></li>
-  <li><a href="http://www.pradosoft.com/docs/manual/">PRADO API Documentation</a></li>
-  <li><a href="http://www.pradosoft.com/forum/">PRADO Forum</a></li>
+  <li><a href="http://www.pradosoft.com/docs/classdoc/">Klasy PRADO</a></li>
+  <li><a href="http://www.pradosoft.com/docs/manual/">Dokumentacja API PRADO</a></li>
+  <li><a href="http://www.pradosoft.com/forum/">Forum PRADO</a></li>
   <li><a href="http://www.pradosoft.com/wiki/">PRADO Wiki</a></li>
   <li><a href="http://trac.pradosoft.com/prado/">PRADO Trac</a></li>
 </ul>
 
-<div class="last-modified">$Id: Introduction.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+<div class="last-modified">$Id: Introduction.page 1703 2007-02-17 14:45:00Z aztech $</div></com:TContent>
