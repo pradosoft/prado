@@ -1183,6 +1183,7 @@ demos/quickstart/protected/pages/GettingStarted/Introduction.page -text
 demos/quickstart/protected/pages/GettingStarted/NewFeatures.page -text
 demos/quickstart/protected/pages/GettingStarted/Upgrading.page -text
 demos/quickstart/protected/pages/GettingStarted/directory.gif -text
+demos/quickstart/protected/pages/GettingStarted/fr/AboutPrado.page -text
 demos/quickstart/protected/pages/GettingStarted/fr/Introduction.page -text
 demos/quickstart/protected/pages/GettingStarted/fr/NewFeatures.page -text
 demos/quickstart/protected/pages/GettingStarted/fr/directory.gif -text
