@@ -863,6 +863,7 @@ demos/quickstart/protected/controls/SearchBox.tpl -text
 demos/quickstart/protected/controls/TopicList.php -text
 demos/quickstart/protected/controls/TopicList.tpl -text
 demos/quickstart/protected/controls/fr/TopicList.tpl -text
+demos/quickstart/protected/controls/pl/TopicList.tpl -text
 demos/quickstart/protected/controls/zh/TopicList.tpl -text
 demos/quickstart/protected/index/Zend/Exception.php -text
 demos/quickstart/protected/index/Zend/LICENSE.txt -text
