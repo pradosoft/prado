@@ -1217,6 +1217,12 @@ demos/quickstart/protected/pages/Tutorial/chat1.png -text
 demos/quickstart/protected/pages/Tutorial/chat2.png -text
 demos/quickstart/protected/pages/Tutorial/example1.png -text
 demos/quickstart/protected/pages/Tutorial/example2.png -text
+demos/quickstart/protected/pages/Tutorial/fr/AjaxChat.page -text
+demos/quickstart/protected/pages/Tutorial/fr/CurrencyConverter.page -text
+demos/quickstart/protected/pages/Tutorial/fr/chat1.png -text
+demos/quickstart/protected/pages/Tutorial/fr/chat2.png -text
+demos/quickstart/protected/pages/Tutorial/fr/example1.png -text
+demos/quickstart/protected/pages/Tutorial/fr/example2.png -text
 demos/quickstart/protected/pages/ViewSource.page -text
 demos/quickstart/protected/pages/ViewSource.php -text
 demos/quickstart/protected/pages/config.xml -text
