@@ -862,6 +862,10 @@ demos/quickstart/protected/controls/SearchBox.php -text
 demos/quickstart/protected/controls/SearchBox.tpl -text
 demos/quickstart/protected/controls/TopicList.php -text
 demos/quickstart/protected/controls/TopicList.tpl -text
+demos/quickstart/protected/controls/fr/Layout.tpl -text
+demos/quickstart/protected/controls/fr/RunBar.tpl -text
+demos/quickstart/protected/controls/fr/SampleLayout.tpl -text
+demos/quickstart/protected/controls/fr/SearchBox.tpl -text
 demos/quickstart/protected/controls/fr/TopicList.tpl -text
 demos/quickstart/protected/controls/pl/TopicList.tpl -text
 demos/quickstart/protected/controls/zh/TopicList.tpl -text
