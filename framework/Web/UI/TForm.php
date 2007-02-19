@@ -80,9 +80,9 @@ class TForm extends TControl
 		$this->addAttributesToRender($writer);
 		$writer->renderBeginTag('form');
 
+		$cs=$page->getClientScript();
 		if($page->getClientSupportsJavaScript())
 		{
-			$cs=$page->getClientScript();
 			$cs->renderHiddenFields($writer);
 			$cs->renderScriptFiles($writer);
 			$cs->renderBeginScripts($writer);
