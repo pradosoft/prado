@@ -172,6 +172,16 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function save()
 	{
+		$this->commitChanges();
+	}
+
+	/**
+	 * Commit changes to the record, may insert, update or delete depending
+	 * on the record state given in TObjectStateRegistery.
+	 * @return boolean true if changes were made.
+	 */
+	protected function commitChanges()
+	{
 		$registry = $this->getRecordManager()->getObjectStateRegistry();
 		$gateway = $this->getRecordManager()->getRecordGateway();
 		if(!$this->_readOnly)
@@ -190,7 +200,7 @@ abstract class TActiveRecord extends TComponent
 	{
 		$registry = $this->getRecordManager()->getObjectStateRegistry();
 		$registry->registerRemoved($this);
-		return $this->save();
+		return $this->commitChanges();
 	}
 
 	/**

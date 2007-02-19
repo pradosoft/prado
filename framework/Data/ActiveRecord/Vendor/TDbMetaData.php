@@ -212,15 +212,26 @@ abstract class TDbMetaData extends TComponent
 
 	/**
 	 * Gets the columns that can be inserted into the database.
+	 * Missing properties are assumed to be null.
 	 * @param TActiveRecord record object to be inserted.
 	 * @return array name value pairs of fields to be added.
+	 * @throws TActiveRecordException if property is null and table column is
+	 * defined as not null unless primary key column.
 	 */
 	protected function getInsertableColumns($record)
 	{
 		$columns = array();
 		foreach($this->getColumns() as $name=>$column)
 		{
-			$value = $record->{$name};
+			try
+			{
+				$value = $record->{$name};
+			}
+			catch (TInvalidOperationException $e) //ignore missing properties
+			{
+				$value = null;
+			}
+
 			if($column->getNotNull() && $value===null && !$column->getIsPrimaryKey())
 			{
 				throw new TActiveRecordException(

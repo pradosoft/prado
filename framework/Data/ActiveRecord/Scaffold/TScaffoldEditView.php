@@ -17,9 +17,11 @@ Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldBase');
 
 /**
  * Template control for editing an Active Record instance.
+ * The <b>RecordClass</b> determines the Active Record class to be edited.
+ * A particular record can be edited by specifying the {@link setRecordPk RecordPk}
+ * value (may be an array for composite keys).
  *
  * The default editor input controls are created based on the column types.
- *
  * The editor layout can be specified by a renderer. A renderer is an external
  * template control that implements IScaffoldEditRenderer.
  *
@@ -33,9 +35,10 @@ Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldBase');
  * (the edit view instance is the <b>Parent</b> of the IScaffoldEditRenderer in most
  * cases.
  *
- * The <b>RecordClass</b> determines the Active Record class to be edited.
- * A particular record can be edited by specifying the {@link setRecordPk RecordPk}
- * value (may be an array for composite keys).
+ * Cosmetic changes to the default editor should be done using Cascading Stylesheets.
+ * For example, a particular field/property can be hidden by specifying "display:none" for
+ * the corresponding style (each field/property has unique Css class name as "property_xxx", where
+ * xxx is the property name).
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$

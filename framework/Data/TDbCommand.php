@@ -180,6 +180,7 @@ class TDbCommand extends TComponent
 	{
 		try
 		{
+			Prado::trace('Execute Command: '.$this->getDebugStatementText(), 'System.Data');
 			if($this->_statement instanceof PDOStatement)
 			{
 				$this->_statement->execute();
@@ -197,7 +198,7 @@ class TDbCommand extends TComponent
 	/**
 	 * @return String prepared SQL text for debugging purposes.
 	 */
-	protected function getDebugStatementText()
+	public function getDebugStatementText()
 	{
 		if(Prado::getApplication()->getMode() === TApplicationMode::Debug)
 			return $this->_statement instanceof PDOStatement ?
@@ -215,6 +216,7 @@ class TDbCommand extends TComponent
 	{
 		try
 		{
+			Prado::trace('Query: '.$this->getDebugStatementText(), 'System.Data');
 			if($this->_statement instanceof PDOStatement)
 				$this->_statement->execute();
 			else
@@ -239,6 +241,7 @@ class TDbCommand extends TComponent
 	{
 		try
 		{
+			Prado::trace('Query Row: '.$this->getDebugStatementText(), 'System.Data');
 			if($this->_statement instanceof PDOStatement)
 				$this->_statement->execute();
 			else
@@ -264,6 +267,7 @@ class TDbCommand extends TComponent
 	{
 		try
 		{
+			Prado::trace('Query Scalar: '.$this->getDebugStatementText(), 'System.Data');
 			if($this->_statement instanceof PDOStatement)
 				$this->_statement->execute();
 			else

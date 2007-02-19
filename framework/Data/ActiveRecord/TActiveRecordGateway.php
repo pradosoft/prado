@@ -143,11 +143,12 @@ class TActiveRecordGateway extends TComponent
 		$meta = $this->getMetaData($record);
 		$command = $meta->getFindByPkCommand($record->getDbConnection(),$keys);
 		$this->raiseCommandEvent(TActiveRecordStatementType::Select,$command,$record,$keys);
+		Prado::trace(get_class($record).'::FindRecordByPk('.var_export($keys,true).')', 'System.Data.ActiveRecord');
 		return $meta->postQueryRow($command->queryRow());
 	}
 
 	/**
-	 * Returns records matching the list of given primary keys. 
+	 * Returns records matching the list of given primary keys.
 	 * @param TActiveRecord active record instance.
 	 * @param array list of primary name value pairs
 	 * @return array matching data.
@@ -157,9 +158,10 @@ class TActiveRecordGateway extends TComponent
 		$meta = $this->getMetaData($record);
 		$command = $meta->getFindInPksCommand($record->getDbConnection(), $keys);
 		$this->raiseCommandEvent(TActiveRecordStatementType::Select,$command,$record,$keys);
+		Prado::trace(get_class($record).'::FindRecordsByPks('.var_export($keys,true).')', 'System.Data.ActiveRecord');
 		return $meta->postQuery($command->query());
 	}
-	
+
 
 	/**
 	 * Returns record data matching the given critera. If $iterator is true, it will
@@ -174,6 +176,7 @@ class TActiveRecordGateway extends TComponent
 		$meta = $this->getMetaData($record);
 		$command = $meta->getFindByCriteriaCommand($record->getDbConnection(),$criteria);
 		$this->raiseCommandEvent(TActiveRecordStatementType::Select,$command,$record,$criteria);
+		Prado::trace(get_class($record).'::FindRecordsByCriteria('.is_string($criteria) ? $criteria : $criteria->repr().')', 'System.Data.ActiveRecord');
 		return $iterator ? $meta->postQuery($command->query()) : $meta->postQueryRow($command->queryRow());
 	}
 
@@ -189,6 +192,7 @@ class TActiveRecordGateway extends TComponent
 		$meta = $this->getMetaData($record);
 		$command = $meta->getFindBySqlCommand($record->getDbConnection(),$sql,$parameters);
 		$this->raiseCommandEvent(TActiveRecordStatementType::Select,$command,$record,$parameters);
+		Prado::trace(get_class($record).'::FindRecordsBySql('.var_export($parameters,true).')', 'System.Data.ActiveRecord');
 		return $meta->postQuery($command->query());
 	}
 
@@ -203,6 +207,7 @@ class TActiveRecordGateway extends TComponent
 		$meta = $this->getMetaData($record);
 		$command = $meta->getCountRecordsCommand($record->getDbConnection(),$criteria);
 		$this->raiseCommandEvent(TActiveRecordStatementType::Select,$command,$record,$criteria);
+		Prado::trace(get_class($record).'::CountRecords('.is_string($criteria) ? $criteria : $criteria->repr().')', 'System.Data.ActiveRecord');
 		return intval($command->queryScalar());
 	}
 
@@ -216,6 +221,7 @@ class TActiveRecordGateway extends TComponent
 		$meta = $this->getMetaData($record);
 		$command = $meta->getInsertCommand($record->getDbConnection(),$record);
 		$this->raiseCommandEvent(TActiveRecordStatementType::Insert,$command,$record);
+		Prado::trace(get_class($record).'::Insert()', 'System.Data.ActiveRecord');
 		$rowsAffected = $command->execute();
 		if($rowsAffected===1)
 			$meta->updatePostInsert($record->getDbConnection(),$record);
@@ -232,6 +238,7 @@ class TActiveRecordGateway extends TComponent
 		$meta = $this->getMetaData($record);
 		$command = $meta->getUpdateCommand($record->getDbConnection(),$record);
 		$this->raiseCommandEvent(TActiveRecordStatementType::Update,$command,$record);
+		Prado::trace(get_class($record).'::Update()', 'System.Data.ActiveRecord');
 		return $command->execute();
 	}
 
@@ -245,6 +252,7 @@ class TActiveRecordGateway extends TComponent
 		$meta = $this->getMetaData($record);
 		$command = $meta->getDeleteCommand($record->getDbConnection(),$record);
 		$this->raiseCommandEvent(TActiveRecordStatementType::Delete,$command,$record);
+		Prado::trace(get_class($record).'::Delete()', 'System.Data.ActiveRecord');
 		return $command->execute();
 	}
 
@@ -258,6 +266,7 @@ class TActiveRecordGateway extends TComponent
 		$meta = $this->getMetaData($record);
 		$command = $meta->getDeleteByPkCommand($record->getDBConnection(),$keys);
 		$this->raiseCommandEvent(TActiveRecordStatementType::Delete,$command,$record,$keys);
+		Prado::trace(get_class($record).'::DeleteRecordsByPk('.var_export($keys,true).')', 'System.Data.ActiveRecord');
 		return $command->execute();
 	}
 
@@ -272,6 +281,7 @@ class TActiveRecordGateway extends TComponent
 		$meta = $this->getMetaData($record);
 		$command = $meta->getDeleteByCriteriaCommand($record->getDBConnection(),$criteria);
 		$this->raiseCommandEvent(TActiveRecordStatementType::Delete,$command,$record,$criteria);
+		Prado::trace(get_class($record).'::DeleteRecordsByCriteria('.is_string($criteria) ? $criteria : $criteria->repr().')', 'System.Data.ActiveRecord');
 		return $command->execute();
 	}
 

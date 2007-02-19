@@ -69,7 +69,7 @@ function __shell_default_error_handler($errno, $errstr, $errfile, $errline, $err
     throw new Exception(sprintf("%s:%d\r\n%s", $errfile, $errline, $errstr));
 }
 
-set_error_handler("__shell_default_error_handler");
+//set_error_handler("__shell_default_error_handler");
 
 $__shell = new PHP_Shell();
 $__shell_exts = PHP_Shell_Extensions::getInstance();

@@ -631,6 +631,8 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 		if($this->_soap)
 		{
 			$prop .= <<<EOD
+
+
 	/**
 	 * @var $type $name
 	 * @soapproperty
@@ -657,6 +659,7 @@ class $class extends TActiveRecord
 	public static $table;
 
 $props
+
 	public static function finder()
 	{
 		return self::getRecordFinder('$class');
@@ -685,15 +688,15 @@ if(class_exists('PHP_Shell_Commands', false))
 
 	    public function generate($l)
 	    {
-			$args = explode(" ", trim($l));
-			if(count($args) > 2)
+			$input = explode(" ", trim($l));
+			if(count($input) > 2)
 			{
 				$app_dir = '.';
 				if(Prado::getApplication()!==null)
 					$app_dir = dirname(Prado::getApplication()->getBasePath());
-				$args = array($args[0],$args[1], $args[2],$app_dir);
-				if(count($args)>3)
-					$args = array($args[0],$args[1], $args[2],$app_dir,'soap');
+				$args = array($input[0],$input[1], $input[2],$app_dir);
+				if(count($input)>3)
+					$args = array($input[0],$input[1], $input[2],$app_dir,'soap');
 				$cmd = new PradoCommandLineActiveRecordGen;
 				$cmd->performAction($args);
 			}

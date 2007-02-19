@@ -153,6 +153,11 @@ class TActiveRecordCriteria extends TComponent
 	{
 		return $this->getCondition();
 	}
+
+	public function repr()
+	{
+		return var_export($this->getParameters()->toArray(),true);
+	}
 }
 
 ?>
