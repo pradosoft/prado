@@ -25,11 +25,11 @@
  	</paths>
  	
  	<parameters>
+ 		<parameter id ="SiteName" value="Prado Active Blog"/>
+ 		<parameter id="SiteOwner" value="Your Name Here"/>
  		<parameter id="SiteOffline" value="False"/>
- 		
  		<!-- Are we allowing signups -->
 		<parameter id="AllowRegister" value="True"/>
-		
 		<!-- Email Controls -->
 		<parameter id="DisableEmails" value="False"/>
  	</parameters>
@@ -96,7 +96,7 @@
     				BaseUrl="/App_Themes" />
 			</modules>
 			
-<!--			<pages MasterClass="Application.App_Layouts.DefaultLayout" />-->
+			<pages MasterClass="Application.App_Layouts.MainLayout" />
 		</service>
   	</services>
 </application>

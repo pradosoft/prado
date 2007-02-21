@@ -645,7 +645,10 @@ buildscripts/wikibuilder/external.png -text
 buildscripts/wikibuilder/main.css -text
 demos/activeblog/index.php -text
 demos/activeblog/protected/.htaccess -text
+demos/activeblog/protected/App_Layouts/MainLayout.php -text
+demos/activeblog/protected/App_Layouts/MainLayout.tpl -text
 demos/activeblog/protected/App_Pages/Home.page -text
+demos/activeblog/protected/App_Pages/Home.php -text
 demos/activeblog/protected/application.xml -text
 demos/activeblog/protected/urlmaps.xml -text
 demos/address-book/index.php -text

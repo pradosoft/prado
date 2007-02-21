@@ -1,1 +1,11 @@
-<h1>Welcome to Prado!</h1>
+<com:TContent ID="Main">
+	<h1>Welcome to Prado!</h1>
+	
+	<ul>
+		<li>Login Module</li>
+		<li>Search Module</li>
+		<li>Rss Feed Service</li>
+		<li>Active Controls</li>
+		<li>Active Record interface</li>
+	</ul>
+</com:TContent>
