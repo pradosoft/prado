@@ -89,14 +89,10 @@
 				</module>
 				
 				<!-- Theme manager module -->
-    			<module 
-    				id="themes" 
-    				class="System.Web.UI.TThemeManager" 
-    				BasePath="WebRoot.App_Themes" 
-    				BaseUrl="/App_Themes" />
+    			<module id="themes" class="System.Web.UI.TThemeManager" />
 			</modules>
 			
-			<pages MasterClass="Application.App_Layouts.MainLayout" />
+			<pages MasterClass="Application.App_Layouts.MainLayout" Theme="Default" />
 		</service>
   	</services>
 </application>
