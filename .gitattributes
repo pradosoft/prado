@@ -2074,6 +2074,7 @@ framework/Web/UI/WebControls/TDataBoundControl.php -text
 framework/Web/UI/WebControls/TDataGrid.php -text
 framework/Web/UI/WebControls/TDataGridColumn.php -text
 framework/Web/UI/WebControls/TDataGridItemRenderer.php -text
+framework/Web/UI/WebControls/TDataGridPagerStyle.php -text
 framework/Web/UI/WebControls/TDataList.php -text
 framework/Web/UI/WebControls/TDataListItemRenderer.php -text
 framework/Web/UI/WebControls/TDataSourceControl.php -text
