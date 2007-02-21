@@ -643,6 +643,11 @@ buildscripts/wikibuilder/dumpHTML.inc -text
 buildscripts/wikibuilder/dumpHTML.php -text
 buildscripts/wikibuilder/external.png -text
 buildscripts/wikibuilder/main.css -text
+demos/activeblog/index.php -text
+demos/activeblog/protected/.htaccess -text
+demos/activeblog/protected/App_Pages/Home.page -text
+demos/activeblog/protected/application.xml -text
+demos/activeblog/protected/urlmaps.xml -text
 demos/address-book/index.php -text
 demos/address-book/protected/application.xml -text
 demos/address-book/protected/pages/AddressProvider.php -text

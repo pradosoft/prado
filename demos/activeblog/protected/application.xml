@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--<application id="activeblog" Mode="Off">-->
+<application id="activeblog" Mode="Debug">
+<!--<application id="activeblog" Mode="Normal">-->
+<!--<application id="activeblog" Mode="Performance">-->
+ 	<paths>
+ 		<!-- Alias back to the WebRoot -->
+ 		<alias id="WebRoot" path=".." />
+ 		
+ 		<!-- System Namespaces -->
+ 		<using namespace="System.Util.TVarDumper" />
+<!-- 		<using namespace="System.Security.IUserManager" />-->
+<!-- 		<using namespace="System.Security.TUser" />-->
+ 		<using namespace="System.Web.UI.ActiveControls.*" />
+ 		
+ 		<!-- Application Namespaces -->
+ 		<using namespace="Application.App_Controls.*"/>
+ 		<using namespace="Application.App_Modules.*"/>
+ 		<using namespace="Application.App_Portlets.*"/>
+ 		<using namespace="Application.App_Services.*"/>
+ 		
+ 		<!-- DAO Namespaces -->
+<!-- 		<using namespace="Application.App_Data.classes.*"/>-->
+ 	</paths>
+ 	
+ 	<parameters>
+ 		<parameter id="SiteOffline" value="False"/>
+ 		
+ 		<!-- Are we allowing signups -->
+		<parameter id="AllowRegister" value="True"/>
+		
+		<!-- Email Controls -->
+		<parameter id="DisableEmails" value="False"/>
+ 	</parameters>
+ 	
+ 	<!-- modules configured and loaded for all services -->
+  	<modules>
+  		<!-- use TUrlMapping to map URL patterns to particular requests -->
+    	<module id="friendly-url" class="System.Web.TUrlMapping" ConfigFile="Application.urlmaps"/>
+  		<module 
+  			id="request" 
+  			class="System.Web.THttpRequest" 
+  			UrlFormat="Path" 
+  			EnableCookieValidation="True"
+  			UrlManager="friendly-url"/>
+		
+		<module id="ErrorHandler" class="System.Exceptions.TErrorHandler" />
+		
+		<!-- Custom Session Module -->
+    	<module 
+    		id="session" 
+    		class="System.Web.THttpSession" 
+    		AutoStart="True"
+    		UseCustomStorage="True" />
+  			
+  		<!-- user manager module -->
+<!--    	<module id="users" class="Application.App_Modules.JUserManager"/>-->
+    			
+    	<!-- auth manager module -->
+<!-- 		<module 
+ 			id="auth" 
+ 			class="Application.App_Modules.JAuthManager" 
+ 			UserManager="users" 
+ 			LoginPage="/Home"/>-->
+  			
+  		<!-- Modules for caching -->
+<!--    	<module id="SqliteCache" PrimaryCache="True" class="System.Caching.TSqliteCache"/>-->
+  	</modules>
+  	
+  	<services>
+  		<!-- Our main page service -->
+    	<service id="page" class="System.Web.Services.TPageService" BasePath="Application.App_Pages">
+    		<modules>
+    			<!-- Log module -->
+    			<module id="log" class="System.Util.TLogRouter">
+<!--      				<route class="TBrowserLogRoute"/>-->
+<!--      				<route class="TBrowserLogRoute" Categories="System.Web.UI.TPage"/>-->
+      				<route 
+      					class="TFileLogRoute" 
+      					LogFile="System.log" 
+      					Categories="System" 
+      					Levels="Notice,Warning,Error,Alert,Fatal"/>
+      				<route 
+      					class="TFileLogRoute" 
+      					LogFile="Application.log" 
+      					Categories="Application" 
+      					Levels="Info,Notice,Warning,Error,Alert,Fatal"/>
+				</module>
+				
+				<!-- Theme manager module -->
+    			<module 
+    				id="themes" 
+    				class="System.Web.UI.TThemeManager" 
+    				BasePath="WebRoot.App_Themes" 
+    				BaseUrl="/App_Themes" />
+			</modules>
+			
+<!--			<pages MasterClass="Application.App_Layouts.DefaultLayout" />-->
+		</service>
+  	</services>
+</application>
