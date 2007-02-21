@@ -5,34 +5,20 @@
 <!--<application id="activeblog" Mode="Normal">-->
 <!--<application id="activeblog" Mode="Performance">-->
  	<paths>
- 		<!-- Alias back to the WebRoot -->
- 		<alias id="WebRoot" path=".." />
- 		
  		<!-- System Namespaces -->
  		<using namespace="System.Util.TVarDumper" />
-<!-- 		<using namespace="System.Security.IUserManager" />-->
-<!-- 		<using namespace="System.Security.TUser" />-->
  		<using namespace="System.Web.UI.ActiveControls.*" />
+ 		<using namespace="System.Data.ActiveRecord.*" />
  		
  		<!-- Application Namespaces -->
+ 		<using namespace="Application.App_Controls.BlogException"/>
  		<using namespace="Application.App_Controls.*"/>
  		<using namespace="Application.App_Modules.*"/>
  		<using namespace="Application.App_Portlets.*"/>
  		<using namespace="Application.App_Services.*"/>
- 		
- 		<!-- DAO Namespaces -->
-<!-- 		<using namespace="Application.App_Data.classes.*"/>-->
  	</paths>
- 	
- 	<parameters>
- 		<parameter id ="SiteName" value="Prado Active Blog"/>
- 		<parameter id="SiteOwner" value="Your Name Here"/>
- 		<parameter id="SiteOffline" value="False"/>
- 		<!-- Are we allowing signups -->
-		<parameter id="AllowRegister" value="True"/>
-		<!-- Email Controls -->
-		<parameter id="DisableEmails" value="False"/>
- 	</parameters>
+
+ 	<module class="System.Util.TParameterModule" ParameterFile="Application.Data.Settings" />
  	
  	<!-- modules configured and loaded for all services -->
   	<modules>
@@ -44,8 +30,8 @@
   			UrlFormat="Path" 
   			EnableCookieValidation="True"
   			UrlManager="friendly-url"/>
-		
-		<module id="ErrorHandler" class="System.Exceptions.TErrorHandler" />
+
+		<module id="ErrorHandler" class="Application.App_Modules.BlogErrorHandler" />
 		
 		<!-- Custom Session Module -->
     	<module 
@@ -55,17 +41,12 @@
     		UseCustomStorage="True" />
   			
   		<!-- user manager module -->
-<!--    	<module id="users" class="Application.App_Modules.JUserManager"/>-->
-    			
+		
     	<!-- auth manager module -->
-<!-- 		<module 
- 			id="auth" 
- 			class="Application.App_Modules.JAuthManager" 
- 			UserManager="users" 
- 			LoginPage="/Home"/>-->
   			
   		<!-- Modules for caching -->
 <!--    	<module id="SqliteCache" PrimaryCache="True" class="System.Caching.TSqliteCache"/>-->
+
   	</modules>
   	
   	<services>
@@ -86,10 +67,17 @@
       					LogFile="Application.log" 
       					Categories="Application" 
       					Levels="Info,Notice,Warning,Error,Alert,Fatal"/>
+      				<route 
+      					class="TFileLogRoute" 
+      					LogFile="BlogApplication.log" 
+      					Categories="BlogApplication" />
 				</module>
 				
 				<!-- Theme manager module -->
     			<module id="themes" class="System.Web.UI.TThemeManager" />
+    			
+    			<!-- Data Module -->
+    			<module id="data" class="Application.App_Modules.BlogDataModule" />
 			</modules>
 			
 			<pages MasterClass="Application.App_Layouts.MainLayout" Theme="Default" />

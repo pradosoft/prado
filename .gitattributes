@@ -645,8 +645,18 @@ buildscripts/wikibuilder/external.png -text
 buildscripts/wikibuilder/main.css -text
 demos/activeblog/index.php -text
 demos/activeblog/protected/.htaccess -text
+demos/activeblog/protected/App_Controls/BlogException.php -text
+demos/activeblog/protected/App_Controls/BlogPage.php -text
+demos/activeblog/protected/App_Controls/messages.txt -text
+demos/activeblog/protected/App_Data/Settings.xml -text
+demos/activeblog/protected/App_Data/blog.db -text svneol=unset#unset
 demos/activeblog/protected/App_Layouts/MainLayout.php -text
 demos/activeblog/protected/App_Layouts/MainLayout.tpl -text
+demos/activeblog/protected/App_Modules/BlogDataModule.php -text
+demos/activeblog/protected/App_Modules/BlogErrorHandler.php -text
+demos/activeblog/protected/App_Modules/BlogUser.php -text
+demos/activeblog/protected/App_Modules/BlogUserManager.php -text
+demos/activeblog/protected/App_Modules/schema.sql -text
 demos/activeblog/protected/App_Pages/Home.page -text
 demos/activeblog/protected/App_Pages/Home.php -text
 demos/activeblog/protected/application.xml -text
