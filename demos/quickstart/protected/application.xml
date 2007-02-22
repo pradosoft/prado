@@ -3,7 +3,8 @@
 <application id="QuickStart" Mode="Debug">
   <paths>
     <using namespace="Application.controls.*" />
-	<using namespace="System.I18N.*" />
+    <using namespace="System.I18N.*" />
+    <using namespace="System.Web.UI.ActiveControls.*"/>
   </paths>
 
   <modules>
