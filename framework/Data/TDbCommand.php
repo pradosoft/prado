@@ -180,7 +180,9 @@ class TDbCommand extends TComponent
 	{
 		try
 		{
-			Prado::trace('Execute Command: '.$this->getDebugStatementText(), 'System.Data');
+			// Do not trace because it will remain even in
+			// Performance mode or when pradolite.php is used
+			// Prado::trace('Execute Command: '.$this->getDebugStatementText(), 'System.Data');
 			if($this->_statement instanceof PDOStatement)
 			{
 				$this->_statement->execute();
@@ -216,7 +218,7 @@ class TDbCommand extends TComponent
 	{
 		try
 		{
-			Prado::trace('Query: '.$this->getDebugStatementText(), 'System.Data');
+			// Prado::trace('Query: '.$this->getDebugStatementText(), 'System.Data');
 			if($this->_statement instanceof PDOStatement)
 				$this->_statement->execute();
 			else
@@ -241,7 +243,7 @@ class TDbCommand extends TComponent
 	{
 		try
 		{
-			Prado::trace('Query Row: '.$this->getDebugStatementText(), 'System.Data');
+			// Prado::trace('Query Row: '.$this->getDebugStatementText(), 'System.Data');
 			if($this->_statement instanceof PDOStatement)
 				$this->_statement->execute();
 			else
@@ -260,24 +262,21 @@ class TDbCommand extends TComponent
 	 * Executes the SQL statement and returns the value of the first column in the first row of data.
 	 * This is a convenient method of {@link query} when only a single scalar
 	 * value is needed (e.g. obtaining the count of the records).
-	 * @return mixed the value of the first column in the first row of the query result.
+	 * @return mixed the value of the first column in the first row of the query result. False is returned if there is no value.
 	 * @throws TDbException execution failed or there is no data
 	 */
 	public function queryScalar()
 	{
 		try
 		{
-			Prado::trace('Query Scalar: '.$this->getDebugStatementText(), 'System.Data');
+			// Prado::trace('Query Scalar: '.$this->getDebugStatementText(), 'System.Data');
 			if($this->_statement instanceof PDOStatement)
 				$this->_statement->execute();
 			else
 				$this->_statement=$this->getConnection()->getPdoInstance()->query($this->getText());
 			$result=$this->_statement->fetchColumn();
 			$this->_statement->closeCursor();
-			if($result!==false)
-				return $result;
-			else
-				throw new TDbException('dbcommand_column_empty');
+			return $result;
 		}
 		catch(Exception $e)
 		{

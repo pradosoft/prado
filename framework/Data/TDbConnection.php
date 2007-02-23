@@ -79,9 +79,9 @@ Prado::using('System.Data.TDbCommand');
  */
 class TDbConnection extends TComponent
 {
-	private $_dsn;
-	private $_username;
-	private $_password;
+	private $_dsn='';
+	private $_username='';
+	private $_password='';
 	private $_attributes=array();
 	private $_active=false;
 	private $_pdo=null;

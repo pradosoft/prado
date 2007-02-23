@@ -15,6 +15,14 @@
  *
  * TSqliteCache implements a cache application module based on SQLite database.
  *
+ * To use this module, the sqlite PHP extension must be loaded. Note, Sqlite extension
+ * is no longer loaded by default since PHP 5.1.
+ *
+ * Sine PRADO v3.1.0, a new DB-based cache module called {@link TDbCache}
+ * is provided. If you have PDO extension installed, you may consider using
+ * the new cache module instead as it allows you to use different database
+ * to store the cached data.
+ *
  * The database file is specified by the {@link setDbFile DbFile} property.
  * If not set, the database file will be created under the system state path.
  * If the specified database file does not exist, it will be created automatically.
@@ -37,9 +45,6 @@
  *
  * Do not use the same database file for multiple applications using TSqliteCache.
  * Also note, cache is shared by all user sessions of an application.
- *
- * To use this module, the sqlite PHP extension must be loaded. Note, Sqlite extension
- * is no longer loaded by default since PHP 5.1.
  *
  * Some usage examples of TSqliteCache are as follows,
  * <code>
@@ -117,17 +122,11 @@ class TSqliteCache extends TCache
 		$error='';
 		if(($this->_db=new SQLiteDatabase($this->_file,0666,$error))===false)
 			throw new TConfigurationException('sqlitecache_connection_failed',$error);
-		if(($res=$this->_db->query('SELECT * FROM sqlite_master WHERE tbl_name=\''.self::CACHE_TABLE.'\' AND type=\'table\' LIMIT 1'))!=false)
+		if(@$this->_db->query('DELETE FROM '.self::CACHE_TABLE.' WHERE expire<>0 AND expire<'.time())===false)
 		{
-			if($res->numRows()===0)
-			{
-				if($this->_db->query('CREATE TABLE '.self::CACHE_TABLE.' (key CHAR(128) PRIMARY KEY, value BLOB, expire INT)')===false)
-					throw new TConfigurationException('sqlitecache_table_creation_failed',sqlite_error_string(sqlite_last_error()));
-			}
+			if($this->_db->query('CREATE TABLE '.self::CACHE_TABLE.' (key CHAR(128) PRIMARY KEY, value BLOB, expire INT)')===false)
+				throw new TConfigurationException('sqlitecache_table_creation_failed',sqlite_error_string(sqlite_last_error()));
 		}
-		else
-			throw new TConfigurationException('sqlitecache_table_creation_failed',sqlite_error_string(sqlite_last_error()));
-		$this->_db->query('DELETE FROM '.self::CACHE_TABLE.' WHERE expire<>0 AND expire<'.time());
 		$this->_initialized=true;
 		parent::init($config);
 	}

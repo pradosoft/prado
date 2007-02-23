@@ -14,6 +14,7 @@ ENH: Added renderer feature to TRepeater, TDataList and TDataGrid (Qiang)
 ENH: Added support to include external application configuration files (Qiang)
 ENH: Added PRADO version info in PRADO-generated directories to avoid upgrading issue (Qiang)
 NEW: TShellApplication (Qiang)
+NEW: TDbCache (Qiang)
 NEW: Active Record driver for IBM DB2 (Cesar Ramos)
 
 Version 3.1.0 alpha January 15, 2007

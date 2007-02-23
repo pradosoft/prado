@@ -1491,6 +1491,7 @@ framework/3rdParty/readme.html -text
 framework/Caching/TAPCCache.php -text
 framework/Caching/TCache.php -text
 framework/Caching/TMemCache.php -text
+framework/Caching/TPdoCache.php -text
 framework/Caching/TSqliteCache.php -text
 framework/Collections/TAttributeCollection.php -text
 framework/Collections/TDummyDataSource.php -text
