@@ -22,9 +22,9 @@ class ChatBufferRecord extends TActiveRecord
 		$this->_created_on = $value;
 	}
 
-	public static function finder()
+	public static function finder($className=__CLASS__)
 	{
-		return parent::getRecordFinder('ChatBufferRecord');
+		return parent::finder($className);
 	}
 
 	public function saveMessage()

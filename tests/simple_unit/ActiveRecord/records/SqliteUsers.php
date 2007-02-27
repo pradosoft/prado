@@ -1,5 +1,4 @@
 <?php
-
 class SqliteUsers extends TActiveRecord
 {
 	public $username;
@@ -8,9 +7,9 @@ class SqliteUsers extends TActiveRecord
 
 	public static $_tablename='users';
 
-	public static function finder()
+	public static function finder($className=__CLASS__)
 	{
-		return self::getRecordFinder('SqliteUsers');
+		return parent::finder($className);
 	}
 }
 

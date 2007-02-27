@@ -19,9 +19,9 @@ class ChatUserRecord extends TActiveRecord
 		$this->_last_activity = $value;
 	}
 
-	public static function finder()
+	public static function finder($className=__CLASS__)
 	{
-		return parent::getRecordFinder('ChatUserRecord');
+		return parent::finder($className);
 	}
 
 	public function getUserList()

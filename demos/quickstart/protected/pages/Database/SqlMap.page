@@ -221,9 +221,9 @@ class UserRecord extends TActiveRecord
     /**
      * @return TActiveRecord active record finder instance
      */
-    public static function finder()
+    public static function finder($className=__CLASS__)
     {
-        return self::getRecordFinder('UserRecord');
+        return parent::finder($className);
     }
 }
 </com:TTextHighlighter>

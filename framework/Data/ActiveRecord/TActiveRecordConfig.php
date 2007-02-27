@@ -45,9 +45,9 @@ Prado::using('System.Data.TDataSourceConfig');
  *	public $blog_name;
  *	public $blog_author;
  *
- *	public static function finder()
+ *	public static function finder($className=__CLASS__)
  *	{
- *		return self::getRecordFinder('Blogs');
+ *		return parent::finder($className);
  *	}
  * }
  * </code>

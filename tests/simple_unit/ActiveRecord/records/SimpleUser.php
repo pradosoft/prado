@@ -1,14 +1,13 @@
 <?php
-
 class SimpleUser extends TActiveRecord
 {
 	public $username;
 
 	public static $_tablename='simple_users';
 
-	public static function finder()
+	public static function finder($className=__CLASS__)
 	{
-		return self::getRecordFinder('SimpleUser');
+		return parent::finder($className);
 	}
 }
 

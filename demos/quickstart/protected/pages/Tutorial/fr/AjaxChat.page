@@ -173,9 +173,9 @@ class ChatUserRecord extends TActiveRecord
 
     public static $_tablename='chat_users';
 
-    public static function finder()
+    public static function finder($className=__CLASS__)
     {
-        return parent::getRecordFinder('ChatUserRecord');
+        return parent::finder($className);
     }
 }
 </com:TTextHighlighter>
@@ -522,9 +522,9 @@ class ChatBufferRecord extends TActiveRecord
         $this->_created_on = $value;
     }
 
-    public static function finder()
+    public static function finder($className=__CLASS__)
     {
-        return parent::getRecordFinder('ChatBufferRecord');
+        return parent::finder($className);
     }
 }
 </com:TTextHighlighter>

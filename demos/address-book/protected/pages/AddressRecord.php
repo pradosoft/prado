@@ -12,29 +12,24 @@ class AddressRecord extends TActiveRecord
 	 */
 	public $id;
 
-	
-	
 	/**
 	 * @var string $username
 	 * @soapproperty
 	 */
 	public $username;
 
-	
-	
 	/**
 	 * @var string $phone
 	 * @soapproperty
 	 */
 	public $phone;
 
-	
 	/**
 	 * @return AddressRecord
 	 */
-	public static function finder()
+	public static function finder($className==__CLASS__)
 	{
-		return self::getRecordFinder('AddressRecord');
+		return parent::finder($className);
 	}
 }
 ?>

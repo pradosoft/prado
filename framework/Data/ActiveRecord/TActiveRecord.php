@@ -41,9 +41,9 @@ Prado::using('System.Data.ActiveRecord.TActiveRecordCriteria');
  *     public static final $_tablename='users'; //optional table name.
  *
  *     //returns active record finder instance
- *     public static function finder()
+ *     public static function finder($className=__CLASS__)
  *     {
- *         return self::getRecordFinder('UserRecord');
+ *         return parent::finder($className);
  *     }
  * }
  *
@@ -143,9 +143,13 @@ abstract class TActiveRecord extends TComponent
 	 * Returns the instance of a active record finder for a particular class.
 	 * @param string active record class name.
 	 * @return TActiveRecord active record finder instance.
+	 * @throws TActiveRecordException if class name equals 'TActiveRecord'.
 	 */
-	public static function getRecordFinder($class)
+	public static function finder($className=__CLASS__)
 	{
+		if($class==='TActiveRecord')
+			throw new TActiveRecordException('ar_invalid_finder_class_name');
+
 		static $finders = array();
 		if(!isset($finders[$class]))
 		{
@@ -154,6 +158,11 @@ abstract class TActiveRecord extends TComponent
 			$finders[$class]=$f;
 		}
 		return $finders[$class];
+	}
+
+	public static function getRecordFinder($className)
+	{
+		throw new TActiveRecordException('Deprecated method, use TActiveRecord::finder()');
 	}
 
 	/**

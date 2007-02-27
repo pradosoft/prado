@@ -660,9 +660,9 @@ class $class extends TActiveRecord
 
 $props
 
-	public static function finder()
+	public static function finder($className=__CLASS__)
 	{
-		return self::getRecordFinder('$class');
+		return parent::finder($className);
 	}
 }
 ?>

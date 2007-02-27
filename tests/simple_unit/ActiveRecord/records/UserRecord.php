@@ -1,5 +1,4 @@
 <?php
-
 class UserRecord extends TActiveRecord
 {
 	public $username;
@@ -30,9 +29,9 @@ class UserRecord extends TActiveRecord
 		$this->_level=TPropertyValue::ensureInteger($level);
 	}
 
-	public static function finder()
+	public static function finder($className=__CLASS__)
 	{
-		return self::getRecordFinder('UserRecord');
+		return parent::finder($className);
 	}
 }
 

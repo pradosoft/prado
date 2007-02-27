@@ -16,9 +16,9 @@ class ActiveAccount extends TActiveRecord
 
 	private static $_tablename='Accounts';
 
-	public static function finder()
+	public static function finder($className=__CLASS__)
 	{
-		return self::getRecordFinder('ActiveAccount');
+		return parent::finder($className);
 	}
 }
 

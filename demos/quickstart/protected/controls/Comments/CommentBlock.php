@@ -19,9 +19,9 @@ class CommentRecord extends TActiveRecord
 
 	public static $_tablename='qs_comments';
 
-	public static function finder()
+	public static function finder($className=__CLASS__)
 	{
-		return self::getRecordFinder('CommentRecord');
+		return parent::finder($className);
 	}
 }
 

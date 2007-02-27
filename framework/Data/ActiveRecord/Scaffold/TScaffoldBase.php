@@ -165,7 +165,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	 */
 	protected function getRecordFinder()
 	{
-		return TActiveRecord::getRecordFinder($this->getRecordClass());
+		return TActiveRecord::finder($this->getRecordClass());
 	}
 
 	/**
