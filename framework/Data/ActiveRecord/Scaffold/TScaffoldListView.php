@@ -21,10 +21,27 @@ Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldBase');
  * The {@link getHeader Header} property is a TRepeater displaying the
  * Active Record property/field names. The {@link getSort Sort} property
  * is a drop down list displaying the combination of properties and its possible
- * ordering. The {@link getPager Pager} property is a TPager control that
- * determines the number of records display in one page (e.g. Page..
+ * ordering. The {@link getPager Pager} property is a TPager control displaying
+ * the links and/or buttons that navigate to different pages in the Active Record data.
+ * The {@link getList List} property is a TRepeater that renders a row of
+ * Active Record data.
  *
+ * Custom rendering of the each Active Record can be achieved by specifying
+ * the ItemTemplate or AlternatingItemTemplate property of the main {@linnk getList List}
+ * repeater.
  *
+ * The TScaffoldListView will listen for two command events named "delete" and
+ * "edit". A "delete" command will delete a the record for the row where the
+ * "delete" command is originates. An "edit" command will push
+ * the record data to be edited by a TScaffoldEditView with ID specified by the
+ * {@link setEditViewID EditViewID}.
+ *
+ * Additional {@link setSearchCondition SearchCondition} and
+ * {@link setSearchParameters SearchParameters} (takes array values) can be
+ * specified to customize the records to be shown. The {@link setSearchCondition SearchCondition}
+ * will be used as the Condition property of TActiveRecordCriteria, and similarly
+ * the {@link setSearchParameters SearchParameters} will be the corresponding
+ * Parameters property of TActiveRecordCriteria.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$

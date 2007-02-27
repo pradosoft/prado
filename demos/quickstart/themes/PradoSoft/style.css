@@ -635,3 +635,26 @@ div.last-modified
 {
 	background-image: url(comments.gif);
 }
+
+
+
+.start-page
+{
+	clear: both;
+	height: 300px;
+}
+
+.start-block
+{
+	width: 230px;
+	height: 250px;
+	float: left;
+	padding: 0 15px;
+	margin-bottom: 20px;
+}
+
+.start-page .examples
+{
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+}

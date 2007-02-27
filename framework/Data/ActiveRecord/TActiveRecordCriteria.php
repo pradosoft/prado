@@ -149,14 +149,29 @@ class TActiveRecordCriteria extends TComponent
 		$this->_offset=$value;
 	}
 
+	/**
+	 * @return string string representation of the criteria. Useful for debugging.
+	 */
 	public function __toString()
 	{
-		return $this->getCondition();
-	}
-
-	public function repr()
-	{
-		return var_export($this->getParameters()->toArray(),true);
+		$str = '';
+		if(strlen((string)$this->getCondition()) > 0)
+			$str .= '"'.(string)$this->getCondition().'"';
+		$params = array();
+		foreach($this->getParameters() as $k=>$v)
+			$params[] = "{$k} => ${v}";
+		if(count($params) > 0)
+			$str .= ', "'.implode(', ',$params).'"';
+		$orders = array();
+		foreach($this->getOrdersBy() as $k=>$v)
+			$orders[] = "{$k} => ${v}";
+		if(count($orders) > 0)
+			$str .= ', "'.implode(', ',$orders).'"';
+		if($this->_limit !==null)
+			$str .= ', '.$this->_limit;
+		if($this->_offset !== null)
+			$str .= ', '.$this->_offset;
+		return $str;
 	}
 }
 

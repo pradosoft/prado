@@ -1,12 +1,49 @@
 <?php
+/**
+ * TScaffoldView class.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Id$
+ * @package System.Data.ActiveRecord.Scaffold
+ */
 
+/**
+ * Import scaffold base, list, edit and search controls.
+ */
 Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldBase');
 Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldListView');
 Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldEditView');
 Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldSearch');
 
+/**
+ * TScaffoldView is a composite control consisting of TScaffoldListView
+ * with a TScaffoldSearch. In addition, it will display a TScaffoldEditView
+ * when an "edit" command is raised from the TScaffoldListView (when the
+ * edit button is clicked). Futher more, the "add" button can be clicked
+ * that shows an empty data TScaffoldListView for creating new records.
+ *
+ * The {@link getListView ListView} property gives a TScaffoldListView for
+ * display the record data. The {@link getEditView EditView} is the
+ * TScaffoldEditView that renders the
+ * inputs for editing and adding records. The {@link getSearchControl SearchControl}
+ * is a TScaffoldSearch responsible to the search user interface.
+ *
+ * Set the {@link setRecordClass RecordClass} property to the name of
+ * the Active Record class to be displayed/edited/added.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.ActiveRecord.Scaffold
+ * @since 3.0
+ */
 class TScaffoldView extends TScaffoldBase
 {
+	/**
+	 * Copy basic record details to the list/edit/search controls.
+	 */
 	public function onLoad($param)
 	{
 		parent::onLoad($param);
@@ -15,30 +52,46 @@ class TScaffoldView extends TScaffoldBase
 		$this->getSearchControl()->copyFrom($this);
 	}
 
+	/**
+	 * @return TScaffoldListView scaffold list view.
+	 */
 	public function getListView()
 	{
 		$this->ensureChildControls();
 		return $this->getRegisteredObject('_listView');
 	}
 
+	/**
+	 * @return TScaffoldEditView scaffold edit view.
+	 */
 	public function getEditView()
 	{
 		$this->ensureChildControls();
 		return $this->getRegisteredObject('_editView');
 	}
 
+	/**
+	 * @return TScaffoldSearch scaffold search textbox and button.
+	 */
 	public function getSearchControl()
 	{
 		$this->ensureChildControls();
 		return $this->getRegisteredObject('_search');
 	}
 
+	/**
+	 * @return TButton "Add new record" button.
+	 */
 	public function getAddButton()
 	{
 		$this->ensureChildControls();
 		return $this->getRegisteredObject('_newButton');
 	}
 
+	/**
+	 * Handle the "edit" and "new" commands by displaying the edit view.
+	 * Default command shows the list view.
+	 */
 	public function bubbleEvent($sender,$param)
 	{
 		switch(strtolower($param->getCommandName()))
@@ -53,6 +106,9 @@ class TScaffoldView extends TScaffoldBase
 		return false;
 	}
 
+	/**
+	 * Shows the edit record view.
+	 */
 	protected function showEditView($sender, $param)
 	{
 		$this->getListView()->setVisible(false);
@@ -63,6 +119,9 @@ class TScaffoldView extends TScaffoldBase
 		$this->getEditView()->getClearButton()->setVisible(false);
 	}
 
+	/**
+	 * Shows the view for listing the records.
+	 */
 	protected function showListView($sender, $param)
 	{
 		$this->getListView()->setVisible(true);
@@ -71,6 +130,9 @@ class TScaffoldView extends TScaffoldBase
 		$this->getSearchControl()->setVisible(true);
 	}
 
+	/**
+	 * Shows the add record view.
+	 */
 	protected function showAddView($sender, $param)
 	{
 		$this->getEditView()->setRecordPk(null);

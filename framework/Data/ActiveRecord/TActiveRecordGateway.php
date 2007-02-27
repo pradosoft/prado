@@ -126,7 +126,10 @@ class TActiveRecordGateway extends TComponent
 			$conn = $record->getDbConnection();
 			$inspector = $this->getManager()->getTableInspector($conn);
 			$table = $this->getTableName($record);
-			$data = $this->cacheMetaData($record,$inspector->getTableMetaData($table));
+			$meta = $inspector->getTableMetaData($table);
+			if(count($meta->getColumns()) == 0)
+				throw new TActiveRecordException('ar_invalid_table', $table);
+			$data = $this->cacheMetaData($record,$meta);
 		}
 		return $data;
 	}
@@ -176,7 +179,7 @@ class TActiveRecordGateway extends TComponent
 		$meta = $this->getMetaData($record);
 		$command = $meta->getFindByCriteriaCommand($record->getDbConnection(),$criteria);
 		$this->raiseCommandEvent(TActiveRecordStatementType::Select,$command,$record,$criteria);
-		Prado::trace(get_class($record).'::FindRecordsByCriteria('.is_string($criteria) ? $criteria : $criteria->repr().')', 'System.Data.ActiveRecord');
+		Prado::trace(get_class($record).'::FindRecordsByCriteria('.((string)$criteria).')', 'System.Data.ActiveRecord');
 		return $iterator ? $meta->postQuery($command->query()) : $meta->postQueryRow($command->queryRow());
 	}
 
@@ -207,7 +210,7 @@ class TActiveRecordGateway extends TComponent
 		$meta = $this->getMetaData($record);
 		$command = $meta->getCountRecordsCommand($record->getDbConnection(),$criteria);
 		$this->raiseCommandEvent(TActiveRecordStatementType::Select,$command,$record,$criteria);
-		Prado::trace(get_class($record).'::CountRecords('.is_string($criteria) ? $criteria : $criteria->repr().')', 'System.Data.ActiveRecord');
+		Prado::trace(get_class($record).'::CountRecords('.((string)$criteria).')', 'System.Data.ActiveRecord');
 		return intval($command->queryScalar());
 	}
 
@@ -281,7 +284,7 @@ class TActiveRecordGateway extends TComponent
 		$meta = $this->getMetaData($record);
 		$command = $meta->getDeleteByCriteriaCommand($record->getDBConnection(),$criteria);
 		$this->raiseCommandEvent(TActiveRecordStatementType::Delete,$command,$record,$criteria);
-		Prado::trace(get_class($record).'::DeleteRecordsByCriteria('.is_string($criteria) ? $criteria : $criteria->repr().')', 'System.Data.ActiveRecord');
+		Prado::trace(get_class($record).'::DeleteRecordsByCriteria('.((string)$criteria).')', 'System.Data.ActiveRecord');
 		return $command->execute();
 	}
 

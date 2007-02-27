@@ -172,7 +172,7 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function save()
 	{
-		$this->commitChanges();
+		return $this->commitChanges();
 	}
 
 	/**
@@ -524,7 +524,8 @@ abstract class TActiveRecord extends TComponent
 		$fields = array();
 		foreach($matches as $match)
 		{
-			$sql = $meta->getColumn($match[1])->getName() . ' = ? ';
+			$column = $meta->getColumn($match[1]);
+			$sql = $column->getName() . ' = ? ';
 			if(count($match) > 2)
 				$sql .= strtoupper(str_replace('_', '', $match[2]));
 			$fields[] = $sql;
