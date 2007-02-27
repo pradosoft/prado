@@ -12,14 +12,6 @@ require_once($TEST_TOOLS.'/simpletest/reporter.php');
 
 require_once(PRADO_FRAMEWORK.'/prado.php');
 
-class TMockApplication extends TApplication
-{
-	public function run()
-	{
-		$this->initApplication();
-	}
-}
-
 class TestFolder
 {
 	public $name='';
@@ -66,11 +58,12 @@ class PradoUnitTester
 {
 	private $_root;
 
-	function __construct($root, $app_dir)
+	function __construct($root, $app_dir='.')
 	{
 		$this->_root = $root;
 		Prado::setPathOfAlias('Tests', $root);
-		$app = new TMockApplication($app_dir);
+		if($app_dir===null) $app_dir='.';
+		$app = new TShellApplication($app_dir);
 		$app->run();
 	}
 
