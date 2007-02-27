@@ -147,17 +147,17 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public static function finder($className=__CLASS__)
 	{
-		if($class==='TActiveRecord')
+		if($className==='TActiveRecord')
 			throw new TActiveRecordException('ar_invalid_finder_class_name');
 
 		static $finders = array();
-		if(!isset($finders[$class]))
+		if(!isset($finders[$className]))
 		{
-			$f = Prado::createComponent($class);
+			$f = Prado::createComponent($className);
 			$f->_readOnly=true;
-			$finders[$class]=$f;
+			$finders[$className]=$f;
 		}
-		return $finders[$class];
+		return $finders[$className];
 	}
 
 	public static function getRecordFinder($className)
