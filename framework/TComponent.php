@@ -389,10 +389,7 @@ class TComponent
 		}
 		catch(Exception $e)
 		{
-			if($e instanceof TException)
-				throw $e;
-			else
-				throw new TInvalidOperationException('component_expression_invalid',get_class($this),$expression,$e->getMessage());
+			throw new TInvalidOperationException('component_expression_invalid',get_class($this),$expression,$e->getMessage());
 		}
 	}
 
@@ -415,10 +412,7 @@ class TComponent
 		}
 		catch(Exception $e)
 		{
-			if($e instanceof TException)
-				throw $e;
-			else
-				throw new TInvalidOperationException('component_statements_invalid',get_class($this),$statements,$e->getMessage());
+			throw new TInvalidOperationException('component_statements_invalid',get_class($this),$statements,$e->getMessage());
 		}
 	}
 

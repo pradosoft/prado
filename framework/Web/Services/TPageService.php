@@ -397,7 +397,7 @@ class TPageService extends TService
 	 */
 	protected function createPage($pagePath)
 	{
-		$path=$this->getBasePath().'/'.strtr($pagePath,'.','/');
+		$path=$this->getBasePath().DIRECTORY_SEPARATOR.strtr($pagePath,'.','/');
 		$hasTemplateFile=is_file($path.self::PAGE_FILE_EXT);
 		$hasClassFile=is_file($path.Prado::CLASS_FILE_EXT);
 

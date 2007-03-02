@@ -65,7 +65,7 @@ class TTemplateManager extends TModule
 	public function getTemplateByClassName($className)
 	{
 		$class=new ReflectionClass($className);
-		$tplFile=dirname($class->getFileName()).'/'.$className.self::TEMPLATE_FILE_EXT;
+		$tplFile=dirname($class->getFileName()).DIRECTORY_SEPARATOR.$className.self::TEMPLATE_FILE_EXT;
 		return $this->getTemplateByFileName($tplFile);
 	}
 
@@ -752,7 +752,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 		}
 		catch(Exception $e)
 		{
-			if(($e instanceof TException) && ($e->getErrorCode()==='template_format_invalid' || $e->getErrorCode()==='template_format_invalid2'))
+			if(($e instanceof TException) && ($e instanceof TTemplateException))
 				throw $e;
 			if($matchEnd===0)
 				$line=$this->_startingLine+1;
@@ -992,6 +992,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	protected function handleException($e,$line,$input=null)
 	{
 		$srcFile=$this->_tplFile;
+
 		if(($n=count($this->_includedFiles))>0) // need to adjust error row number and file name
 		{
 			for($i=$n-1;$i>=0;--$i)
@@ -1009,10 +1010,13 @@ class TTemplate extends TApplicationComponent implements ITemplate
 				}
 			}
 		}
-		if(empty($srcFile))
-			throw new TConfigurationException('template_format_invalid2',$line,$e->getMessage(),$input);
+		$exception=new TTemplateException('template_format_invalid',$e->getMessage());
+		$exception->setLineNumber($line);
+		if(!empty($srcFile))
+			$exception->setTemplateFile($srcFile);
 		else
-			throw new TConfigurationException('template_format_invalid',$srcFile,$line,$e->getMessage());
+			$exception->setTemplateSource($input);
+		throw $exception;
 	}
 
 	/**
