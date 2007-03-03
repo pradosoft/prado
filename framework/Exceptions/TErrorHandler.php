@@ -197,7 +197,6 @@ class TErrorHandler extends TModule
 		}
 	}
 
-
 	/**
 	 * Displays exception information.
 	 * Exceptions are displayed with rich context information, including
@@ -207,6 +206,11 @@ class TErrorHandler extends TModule
 	 */
 	protected function displayException($exception)
 	{
+		if(php_sapi_name()==='cli')
+		{
+			echo $exception->getTraceAsString();
+			return;
+		}
 
 		if($exception instanceof TTemplateException)
 		{
