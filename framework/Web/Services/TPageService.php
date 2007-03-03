@@ -189,7 +189,7 @@ class TPageService extends TService
 		{
 			$pageConfig=new TPageConfiguration;
 			if($config!==null)
-				$pageConfig->loadFromXml($config,$application->getBasePath());
+				$pageConfig->loadPageConfigurationFromXml($config,$application->getBasePath());
 			$pageConfig->loadFromFiles($pagePath,$this->getBasePath());
 		}
 		else
@@ -545,19 +545,39 @@ class TPageConfiguration extends TComponent
 	}
 
 	/**
-	 * Loads a specific configuration xml element.
+	 * Loads a page configuration.
+	 * The configuration includes information for both application
+	 * and page service.
 	 * @param TXmlElement config xml element
 	 * @param string base path corresponding to this xml element
 	 * @param string page name, null if page is not required
 	 */
 	public function loadFromXml($dom,$configPath,$page=null)
 	{
-		if($page!==null) // config.xml
-		{
-			$appConfig=new TApplicationConfiguration;
-			$appConfig->loadFromXml($dom,$configPath);
-			$this->_appConfigs[]=$appConfig;
-		}
+		$this->loadApplicationConfigurationFromXml($dom,$configPath);
+		$this->loadPageConfigurationFromXml($dom,$configPath,$page);
+	}
+
+	/**
+	 * Loads the configuration specific for application part
+	 * @param TXmlElement config xml element
+	 * @param string base path corresponding to this xml element
+	 */
+	public function loadApplicationConfigurationFromXml($dom,$configPath)
+	{
+		$appConfig=new TApplicationConfiguration;
+		$appConfig->loadFromXml($dom,$configPath);
+		$this->_appConfigs[]=$appConfig;
+	}
+
+	/**
+	 * Loads the configuration specific for page service.
+	 * @param TXmlElement config xml element
+	 * @param string base path corresponding to this xml element
+	 * @param string page name, null if page is not required
+	 */
+	public function loadPageConfigurationFromXml($dom,$configPath,$page=null)
+	{
 		// authorization
 		if(($authorizationNode=$dom->getElementByTagName('authorization'))!==null)
 		{
