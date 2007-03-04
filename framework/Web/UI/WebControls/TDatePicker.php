@@ -260,11 +260,14 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @return integer current selected date from the date picker as timestamp.
+	 * @return integer current selected date from the date picker as timestamp, NULL if timestamp is not set previously.
 	 */
 	public function getTimeStamp()
 	{
-		return $this->getTimeStampFromText();
+		if(trim($this->getText())==='')
+			return null;
+		else
+			return $this->getTimeStampFromText();
 	}
 
 	/**
@@ -273,11 +276,14 @@ class TDatePicker extends TTextBox
 	 */
 	public function setTimeStamp($value)
 	{
-		$date = TPropertyValue::ensureFloat($value);
-		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',
-						$this->getDateFormat());
-						$d =$formatter->format($date);
-		$this->setText($d);
+		if($value===null || (is_string($value) && trim($value)==='')
+			$this->setText('');
+		else
+		{
+			$date = TPropertyValue::ensureFloat($value);
+			$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',$this->getDateFormat());
+			$this->setText($formatter->format($date));
+		}
 	}
 
 	/**
