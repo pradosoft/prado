@@ -276,7 +276,7 @@ class TDatePicker extends TTextBox
 	 */
 	public function setTimeStamp($value)
 	{
-		if($value===null || (is_string($value) && trim($value)==='')
+		if($value===null || (is_string($value) && trim($value)===''))
 			$this->setText('');
 		else
 		{
