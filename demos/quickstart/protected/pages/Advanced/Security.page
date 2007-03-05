@@ -47,7 +47,7 @@ There are several countermeasures to prevent cookies from being attacked.
 <ul id="u1" class="block-content">
   <li>An application can use SSL to create a secure communication channel and only pass the authentication cookie over an HTTPS connection. Attackers are thus unable to decipher the contents in the transferred cookies.</li>
   <li>Expire sessions appropriately, including all cookies and session tokens, to reduce the likelihood of being attacked.</li>
-  <li>Prevent <a href="?page=Security.XSS">cross-site scripting (XSS)</a> which causes arbitrary code to run in a user's browser and expose his cookies.</li>
+  <li>Prevent cross-site scripting (XSS) which causes arbitrary code to run in a user's browser and expose his cookies.</li>
   <li>Validate cookie data and detect if they are altered.</li>
 </ul>
 <p id="730573" class="block-content">

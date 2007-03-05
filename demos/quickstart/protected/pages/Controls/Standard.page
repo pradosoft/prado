@@ -104,7 +104,7 @@
   </li>
 
   <li>
-  <a href="?page=Controls.SafeHtml">TSafeHtml</a> displays its body content with assurance that the content contain no harmful code (such as <a href="?page=Security.XSS">XSS</a>).
+  <a href="?page=Controls.SafeHtml">TSafeHtml</a> displays its body content with assurance that the content contain no harmful code (such as <a href="?page=Advanced.Security">XSS</a>).
   </li>
 
   <li>
