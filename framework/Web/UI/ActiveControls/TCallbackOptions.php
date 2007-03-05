@@ -47,7 +47,7 @@ class TCallbackOptions extends TControl
 	 */
 	protected function createClientSide()
 	{
-		return new TCallbackClientSide;
+		return Prado::createComponent('System.Web.UI.ActiveControls.TCallbackClientSide');
 	}
 }
 
