@@ -1,6 +1,7 @@
 <com:TContent ID="Main">
 
 <com:TPanel ID="CategoryPanel" Visible="false" CssClass="category">
+
 <div class="category-name">
 <%= $this->Category->Name %>
 <com:THyperLink

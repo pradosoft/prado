@@ -854,7 +854,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	 */
 	protected function parseAttribute($value)
 	{
-		if(($n=preg_match_all('/<%[#=\\$].*?%>|<%\\[.*?\\]%>/msS',$value,$matches,PREG_OFFSET_CAPTURE))>0)
+		if(($n=preg_match_all('/<%[#=].*?%>/msS',$value,$matches,PREG_OFFSET_CAPTURE))>0)
 		{
 			$isDataBind=false;
 			$textStart=0;
@@ -869,12 +869,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					$isDataBind=true;
 				if($offset>$textStart)
 					$expr.=".'".strtr(substr($value,$textStart,$offset-$textStart),array("'"=>"\\'","\\"=>"\\\\"))."'";
-				if($token[2]==='[') // localize
-					$expr.='.(Prado::localize(\''.strtr(trim(substr($token,3,$length-6)),array("'"=>"\\'","\\"=>"\\\\")).'\'))';
-				else if($token[2]==='$') // parameter
-					$expr.='.(Prado::getApplication()->getParameters()->itemAt(\''.strtr(trim(substr($token,3,$length-5)),array("'"=>"\\'","\\"=>"\\\\")).'\'))';
-				else // expression
-					$expr.='.('.substr($token,3,$length-5).')';
+				$expr.='.('.substr($token,3,$length-5).')';
 				$textStart=$offset+$length;
 			}
 			$length=strlen($value);
