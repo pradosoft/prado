@@ -2,10 +2,10 @@
 
 class ChatUserRecord extends TActiveRecord
 {
+	const TABLE='chat_users';
+
 	public $username;
 	private $_last_activity;
-
-	public static $_tablename='chat_users';
 
 	public function getLast_Activity()
 	{

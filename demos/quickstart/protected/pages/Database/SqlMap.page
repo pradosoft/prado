@@ -213,11 +213,11 @@ $user = $sqlmap->queryForObject("SelectUsers");
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_700173">
 class UserRecord extends TActiveRecord
 {
+	const TABLE='users'; //table name 
+
     public $username; //the column named "username" in the "users" table
     public $email;
-    
-    private static $_tablename='users'; //table name 
-    
+        
     /**
      * @return TActiveRecord active record finder instance
      */

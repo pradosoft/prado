@@ -39,10 +39,10 @@ table as defined in the <a href="?page=Database.ActiveRecord">Active Record</a> 
 <com:TTextHighlighter Language="php" CssClass="source">
 class UserRecord extends TActiveRecord
 {
+	const TABLE='users';
+	
     public $username;
     public $email;
-    
-    public static $_tablename='users';
 }
 </com:TTextHighlighter>
 

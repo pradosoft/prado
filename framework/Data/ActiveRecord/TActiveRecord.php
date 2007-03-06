@@ -35,10 +35,10 @@ Prado::using('System.Data.ActiveRecord.TActiveRecordCriteria');
  * <code>
  * class UserRecord extends TActiveRecord
  * {
+ *     const TABLE='users'; //optional table name.
+ *
  *     public $username; //corresponds to the fieldname in the table
  *     public $email;
- *
- *     public static final $_tablename='users'; //optional table name.
  *
  *     //returns active record finder instance
  *     public static function finder($className=__CLASS__)

@@ -73,10 +73,10 @@ CREATE TABLE users
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690148">
 class UserRecord extends TActiveRecord
 {
+    const TABLE='users'; //table name 
+
     public $username; //the column named "username" in the "users" table
     public $email;
-    
-    public static $_tablename='users'; //table name 
     
     /**
      * @return TActiveRecord active record finder instance
@@ -89,15 +89,15 @@ class UserRecord extends TActiveRecord
 </com:TTextHighlighter>
 </p>
 <p id="690485" class="block-content">Each property of the <tt>UserRecord</tt> class must correspond to a
-    column with the same name in the "users" table. The static class variable
-    <tt>$_tablename</tt> (must be public) is optional when the class name is the same as
-    the table name in the database, otherwise <tt>$_tablename</tt> must
+    column with the same name in the "users" table. The class constant
+    <tt>TABLE</tt> is optional when the class name is the same as
+    the table name in the database, otherwise <tt>TABLE</tt> must
     specify the table name that corresponds to your Active Record class.
 </p>
 
 <div class="note"><b class="note">Note:</b>
-You may need to quote (specific to your database) the value of the <tt>$_tablename</tt>. 
-E.g. MySQL uses back-ticks, <tt>$_tablename = "`database1`.`table1`"</tt>
+You may need to quote (specific to your database) the value of the <tt>TABLE</tt>. 
+E.g. MySQL uses back-ticks, <tt>TABLE = "`database1`.`table1`"</tt>
 </div>
 
 <p class="block-content" id="ar_as_component">
@@ -120,7 +120,7 @@ class UserRecord extends TActiveRecord {
 </com:TTextHighlighter>
 
 <div class="info"><b class="note">Info:</b>
-<tt>TActiveRecord</tt> can also work with database views by specifying the value <tt>$_tablename</tt>
+<tt>TActiveRecord</tt> can also work with database views by specifying the constant <tt>TABLE</tt>
 corresponding to the view name. However, objects returned
 from views are read-only, calling the <tt>save()</tt> or <tt>delete()</tt> method
 will raise an exception. 

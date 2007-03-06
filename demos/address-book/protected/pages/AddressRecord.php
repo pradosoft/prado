@@ -4,7 +4,7 @@
  */
 class AddressRecord extends TActiveRecord
 {
-	public static $_tablename='addresses';
+	const TABLE='addresses';
 
 	/**
 	 * @var integer $id

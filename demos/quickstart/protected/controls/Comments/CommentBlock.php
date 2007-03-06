@@ -10,14 +10,14 @@ $manager->setDbConnection($db);
 
 class CommentRecord extends TActiveRecord
 {
+	const TABLE='qs_comments';
+
 	public $id;
 	public $username;
 	public $date_added;
 	public $page;
 	public $block_id;
 	public $content;
-
-	public static $_tablename='qs_comments';
 
 	public static function finder($className=__CLASS__)
 	{

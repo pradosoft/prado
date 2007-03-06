@@ -647,7 +647,6 @@ EOD;
 	protected function generateClass($properties, $tablename, $class)
 	{
 		$props = implode("\n", $properties);
-		$table = '$_tablename=\''.$tablename.'\'';
 		$date = date('Y-m-d h:i:s');
 return <<<EOD
 <?php
@@ -656,7 +655,7 @@ return <<<EOD
  */
 class $class extends TActiveRecord
 {
-	public static $table;
+	const TABLE='$tablename';
 
 $props
 

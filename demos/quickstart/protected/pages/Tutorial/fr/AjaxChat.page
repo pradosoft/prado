@@ -168,10 +168,10 @@ as <tt>App_Code/chat.db</tt>.
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_90033">
 class ChatUserRecord extends TActiveRecord
 {
+	const TABLE='chat_users';
+
     public $username;
     public $last_activity;
-
-    public static $_tablename='chat_users';
 
     public static function finder($className=__CLASS__)
     {
@@ -502,13 +502,13 @@ The corresponding <tt>ChatBufferRecord</tt> class is saved as
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_90045">
 class ChatBufferRecord extends TActiveRecord
 {
+	const TABLE='chat_buffer';
+
     public $id;
     public $for_user;
     public $from_user;
     public $message;
     private $_created_on;
-
-    public static $_tablename='chat_buffer';
 
     public function getCreated_On()
     {

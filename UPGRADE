@@ -11,13 +11,21 @@ for both A and B.
 
 Upgrading from v3.1a
 ---------------------
-- The signature of TActiveRecord::finder() is changed. All TActiveRecord-descendant
-  classes that override this method will be affected. Please use the
-  following code to override the method:	
+- The signature of TActiveRecord::finder() is changed. This affects
+  all TActiveRecord-descendant classes that override this method.
+  Please use the following code to override the method:	
 	public static function finder($className=__CLASS__)
 	{
 		return parent::finder($className);
 	}
+
+- The way to specify the table name for an active record class is changed.
+  Previously, it used the static class member '_tablename'. 
+  Now it uses class constant as follows:
+    class UserRecord extends TActiveRecord
+    {
+        const TABLE='users_table';
+    }
 
 Upgrading from v3.0.x
 ---------------------

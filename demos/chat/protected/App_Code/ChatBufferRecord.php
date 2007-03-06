@@ -2,13 +2,13 @@
 
 class ChatBufferRecord extends TActiveRecord
 {
+	const TABLE='chat_buffer';
+
 	public $id;
 	public $for_user;
 	public $from_user;
 	public $message;
 	private $_created_on;
-
-	public static $_tablename='chat_buffer';
 
 	public function getCreated_On()
 	{

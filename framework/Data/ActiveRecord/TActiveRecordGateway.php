@@ -25,9 +25,9 @@ class TActiveRecordGateway extends TComponent
 	private $_tables=array(); //meta data cache.
 
 	/**
-	 * Property name for optional table name in TActiveRecord.
+	 * Constant name for specifying optional table name in TActiveRecord.
 	 */
-	const PROPERTY_TABLE_NAME='_tablename';
+	const TABLE_CONST='TABLE';
 
 	/**
 	 * Record gateway constructor.
@@ -47,7 +47,7 @@ class TActiveRecordGateway extends TComponent
 	}
 
 	/**
-	 * Gets the table name from the $_tablename property of the active record
+	 * Gets the table name from the 'TABLE' constant of the active record
 	 * class if defined, otherwise use the class name as table name.
 	 * @param TActiveRecord active record instance
 	 * @return string table name for the given record class.
@@ -55,12 +55,12 @@ class TActiveRecordGateway extends TComponent
 	public function getTableName(TActiveRecord $record)
 	{
 		$class = new ReflectionClass($record);
-		if($class->hasProperty(self::PROPERTY_TABLE_NAME))
+		if($class->hasConstant(self::TABLE_CONST))
 		{
-			$value = $class->getProperty(self::PROPERTY_TABLE_NAME)->getValue();
-			if($value===null)
+			$value = $class->getConstant(self::TABLE_CONST);
+			if(empty($value))
 				throw new TActiveRecordException('ar_invalid_tablename_property',
-					get_class($record),self::PROPERTY_TABLE_NAME);
+					get_class($record),self::TABLE_CONST);
 			return $value;
 		}
 		else

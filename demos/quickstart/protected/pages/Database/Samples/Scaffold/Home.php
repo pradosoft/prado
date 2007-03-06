@@ -5,11 +5,11 @@ Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldView');
 
 class AddressRecord extends TActiveRecord
 {
+	const TABLE='addresses';
+
 	public $id;
 	public $username;
 	public $phone;
-
-	public static $_tablename='addresses';
 
 	//for demo, we use static db here
 	//otherwise we should use TActiveRecordConfig in application.xml

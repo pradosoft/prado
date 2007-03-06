@@ -7,7 +7,7 @@ class DepartmentRecord extends TActiveRecord
 	public $active;
 	public $order;
 
-	public static $_tablename = 'departments';
+	const TABLE = 'departments';
 
 	public static function finder($className=__CLASS__)
 	{
