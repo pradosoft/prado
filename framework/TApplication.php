@@ -18,27 +18,26 @@ require_once(PRADO_DIR.'/interfaces.php');
 /**
  * Includes core classes essential for TApplication class
  */
-require_once(PRADO_DIR.'/TApplicationComponent.php');
-require_once(PRADO_DIR.'/TModule.php');
-require_once(PRADO_DIR.'/TService.php');
-require_once(PRADO_DIR.'/Exceptions/TErrorHandler.php');
-require_once(PRADO_DIR.'/Caching/TCache.php');
-require_once(PRADO_DIR.'/IO/TTextWriter.php');
-require_once(PRADO_DIR.'/Collections/TList.php');
-require_once(PRADO_DIR.'/Collections/TMap.php');
-require_once(PRADO_DIR.'/Collections/TStack.php');
-require_once(PRADO_DIR.'/Xml/TXmlDocument.php');
-require_once(PRADO_DIR.'/Security/TAuthorizationRule.php');
-require_once(PRADO_DIR.'/Security/TSecurityManager.php');
-require_once(PRADO_DIR.'/Web/THttpUtility.php');
-require_once(PRADO_DIR.'/Web/Javascripts/TJavaScript.php');
-require_once(PRADO_DIR.'/Web/THttpRequest.php');
-require_once(PRADO_DIR.'/Web/THttpResponse.php');
-require_once(PRADO_DIR.'/Web/THttpSession.php');
-require_once(PRADO_DIR.'/Web/Services/TPageService.php');
-require_once(PRADO_DIR.'/Web/TAssetManager.php');
-require_once(PRADO_DIR.'/I18N/TGlobalization.php');
-
+Prado::using('System.TApplicationComponent');
+Prado::using('System.TModule');
+Prado::using('System.TService');
+Prado::using('System.Exceptions.TErrorHandler');
+Prado::using('System.Caching.TCache');
+Prado::using('System.IO.TTextWriter');
+Prado::using('System.Collections.TList');
+Prado::using('System.Collections.TMap');
+Prado::using('System.Collections.TStack');
+Prado::using('System.Xml.TXmlDocument');
+Prado::using('System.Security.TAuthorizationRule');
+Prado::using('System.Security.TSecurityManager');
+Prado::using('System.Web.THttpUtility');
+Prado::using('System.Web.Javascripts.TJavaScript');
+Prado::using('System.Web.THttpRequest');
+Prado::using('System.Web.THttpResponse');
+Prado::using('System.Web.THttpSession');
+Prado::using('System.Web.Services.TPageService');
+Prado::using('System.Web.TAssetManager');
+Prado::using('System.I18N.TGlobalization');
 
 /**
  * TApplication class.

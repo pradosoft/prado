@@ -238,7 +238,7 @@ class TPageService extends TService
 			{
 				$pageConfig=new TPageConfiguration;
 				if($config!==null)
-					$pageConfig->loadFromXml($config,$application->getBasePath());
+					$pageConfig->loadPageConfigurationFromXml($config,$application->getBasePath());
 				$pageConfig->loadFromFiles($pagePath,$this->getBasePath());
 				$cache->set(self::CONFIG_CACHE_PREFIX.$this->getID().$pagePath,array($pageConfig,$currentTimestamp));
 			}

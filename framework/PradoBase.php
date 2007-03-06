@@ -25,13 +25,6 @@ if(!defined('PRADO_CHMOD'))
 	define('PRADO_CHMOD',0777);
 
 /**
- * Includes the classes essential for PradoBase class
- */
-require_once(PRADO_DIR.'/TComponent.php');
-require_once(PRADO_DIR.'/Exceptions/TException.php');
-require_once(PRADO_DIR.'/Util/TLogger.php');
-
-/**
  * PradoBase class.
  *
  * PradoBase implements a few fundamental static methods.
@@ -600,5 +593,12 @@ class PradoBase
 class TReflectionClass extends ReflectionClass
 {
 }
+
+/**
+ * Includes the classes essential for PradoBase class
+ */
+PradoBase::using('System.TComponent');
+PradoBase::using('System.Exceptions.TException');
+PradoBase::using('System.Util.TLogger');
 
 ?>
