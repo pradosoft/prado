@@ -103,6 +103,7 @@ pageservice_basepath_invalid			= TPageService.BasePath '{0}' is not a valid dire
 pageservice_page_required				= Page Name Required
 pageservice_defaultpage_unchangeable	= TPageService.DefaultPage cannot be modified after the service is initialized.
 pageservice_basepath_unchangeable		= TPageService.BasePath cannot be modified after the service is initialized.
+pageservice_pageclass_invalid			= Page class {0} is invalid. It should be TPage or extend from TPage.
 
 pageserviceconf_file_invalid			= Unable to open page directory configuration file '{0}'.
 pageserviceconf_aliaspath_invalid		= <alias id="{0}"> uses an invalid file path "{1}" in page directory configuration file '{2}'.
