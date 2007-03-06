@@ -849,7 +849,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 			$this->_flags |= self::IS_CHILD_CREATED;
 		else
 		{
-			if($this->hasControl() && ($this->_flags & self::IS_CHILD_CREATED))
+			if($this->getHasControls() && ($this->_flags & self::IS_CHILD_CREATED))
 				$this->getControls()->clear();
 			$this->_flags &= ~self::IS_CHILD_CREATED;
 		}
