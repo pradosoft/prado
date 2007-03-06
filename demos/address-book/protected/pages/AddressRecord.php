@@ -27,7 +27,7 @@ class AddressRecord extends TActiveRecord
 	/**
 	 * @return AddressRecord
 	 */
-	public static function finder($className==__CLASS__)
+	public static function finder($className=__CLASS__)
 	{
 		return parent::finder($className);
 	}
