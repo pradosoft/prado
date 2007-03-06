@@ -263,7 +263,7 @@ class TValidationSummary extends TWebControl
 
 		if(!is_null($this->_clientSide))
 			$options = array_merge($options,$this->_clientSide->getOptions()->toArray());
-					
+
 		return $options;
 	}
 
@@ -412,7 +412,7 @@ class TClientSideValidationSummaryOptions extends TClientSideOptions
 	 */
 	public function getOnHideSummary()
 	{
-		return $this->getOption('OnHideSummary');	
+		return $this->getOption('OnHideSummary');
 	}
 
 	/**
@@ -444,7 +444,7 @@ class TClientSideValidationSummaryOptions extends TClientSideOptions
 	{
 		return $this->getOption('OnShowSummary');
 	}
-	
+
 	/**
 	 * Ensure the string is a valid javascript function. If the string begins
 	 * with "javascript:" valid javascript function is assumed, otherwise the
@@ -455,7 +455,7 @@ class TClientSideValidationSummaryOptions extends TClientSideOptions
 	protected function ensureFunction($javascript)
 	{
 		return "function(summary, validators){ {$javascript} }";
-	}	
+	}
 }
 
 

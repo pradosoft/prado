@@ -161,7 +161,7 @@ class TXmlTransform extends TControl {
       return null;
     }
   }
-  
+
   /**
    * Performs XSL transformation and render the output.
    * @param THtmlWriter The writer used for the rendering purpose
@@ -174,20 +174,21 @@ class TXmlTransform extends TControl {
       $document->loadXML($textWriter->flush());
     }
     $stylesheet = $this->getTransformXmlDocument();
-    
+
     // Perform XSL transformation
     $xslt = new XSLTProcessor();
     $xslt->importStyleSheet($stylesheet);
-    
+
     // Check for parameters
     $parameters = $this->getParameters();
     foreach($parameters as $name => $value) {
       $xslt->setParameter('', $name, $value);
     }
     $output = $xslt->transformToXML($document);
-    
+
     // Write output
     $writer->write($output);
   }
 }
+
 ?>

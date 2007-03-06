@@ -28,7 +28,7 @@
 	 http://lists.debian.org/debian-glibc/2002/debian-glibc-200205/msg00010.html
 */
 
-if (!defined('ADODB_ALLOW_NEGATIVE_TS') 
+if (!defined('ADODB_ALLOW_NEGATIVE_TS')
 	&& !defined('ADODB_NO_NEGATIVE_TS')) define('ADODB_NO_NEGATIVE_TS',1);
 
 /**

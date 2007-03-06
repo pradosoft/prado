@@ -3,16 +3,16 @@
 #
 # Markdown  -  A text-to-HTML conversion tool for web writers
 #
-# Copyright (c) 2004-2005 John Gruber  
+# Copyright (c) 2004-2005 John Gruber
 # <http://daringfireball.net/projects/markdown/>
 #
-# Copyright (c) 2004-2005 Michel Fortin - PHP Port  
+# Copyright (c) 2004-2005 Michel Fortin - PHP Port
 # <http://www.michelf.com/projects/php-markdown/>
 #
 
 /**
  * PHP5 version of the markdown parser.
- * Usage: 
+ * Usage:
  * <code>
  * $markdown = new MarkdownParser;
  * echo $markdown->parse($text);
@@ -24,10 +24,10 @@ class MarkdownParser
 	private static $md_escape_table = array();
 	private static $md_backslash_escape_table = array();
 	private static $md_nested_brackets_depth = 6;
-	
+
 	protected $md_empty_element_suffix = " />";     # Change to ">" for HTML output
 	protected $md_tab_width = 4;
-	
+
 	private $md_list_level = 0;
 	private $md_urls = array();
 	private $md_titles = array();
@@ -41,7 +41,7 @@ class MarkdownParser
 
 	private function initialize()
 	{
-		self::$md_nested_brackets = 
+		self::$md_nested_brackets =
 			str_repeat('(?>[^\[\]]+|\[', self::$md_nested_brackets_depth).
 			str_repeat('\])*', self::$md_nested_brackets_depth);
 
@@ -70,7 +70,7 @@ class MarkdownParser
 			self::$md_backslash_escape_table["\\$key"] = $char;
 	}
 
-	public function parse($text) 
+	public function parse($text)
 	{
 	#
 	# Main function. The order in which other subs are called here is
@@ -224,7 +224,7 @@ class MarkdownParser
 						[ ]{0,'.$less_than_tab.'}
 						<(hr)				# start tag = $2
 						\b					# word break
-						([^<>])*?			# 
+						([^<>])*?			#
 						/?>					# the matching end tag
 						[ \t]*
 						(?=\n{2,}|\Z)		# followed by a blank line or end of document
@@ -276,7 +276,7 @@ class MarkdownParser
 			array('{^[ ]{0,2}([ ]?\*[ ]?){3,}[ \t]*$}mx',
 				  '{^[ ]{0,2}([ ]? -[ ]?){3,}[ \t]*$}mx',
 				  '{^[ ]{0,2}([ ]? _[ ]?){3,}[ \t]*$}mx'),
-			"\n<hr{$this->md_empty_element_suffix}\n", 
+			"\n<hr{$this->md_empty_element_suffix}\n",
 			$text);
 
 		$text = $this->_DoLists($text);
@@ -419,7 +419,7 @@ class MarkdownParser
 			if ( isset( $this->md_titles[$link_id] ) ) {
 				$title = $this->md_titles[$link_id];
 				$title = str_replace(array('*',     '_'),
-									 array(self::$md_escape_table['*'], 
+									 array(self::$md_escape_table['*'],
 										   self::$md_escape_table['_']), $title);
 				$result .=  " title=\"$title\"";
 			}
@@ -438,7 +438,7 @@ class MarkdownParser
 
 		# We've got to encode these to avoid conflicting with italics/bold.
 		$url = str_replace(array('*', '_'),
-						   array(self::$md_escape_table['*'], self::$md_escape_table['_']), 
+						   array(self::$md_escape_table['*'], self::$md_escape_table['_']),
 						   $url);
 		$result = "<a href=\"$url\"";
 		if (isset($title)) {
@@ -448,7 +448,7 @@ class MarkdownParser
 								 $title);
 			$result .=  " title=\"$title\"";
 		}
-		
+
 		$result .= ">$link_text</a>";
 
 		return $result;
@@ -476,7 +476,7 @@ class MarkdownParser
 			  \]
 
 			)
-			}xs', 
+			}xs',
 			array($this,'_DoImages_reference_callback'), $text);
 
 		#
@@ -525,7 +525,7 @@ class MarkdownParser
 			if (isset($this->md_titles[$link_id])) {
 				$title = $this->md_titles[$link_id];
 				$title = str_replace(array('*', '_'),
-									 array(self::$md_escape_table['*'], 
+									 array(self::$md_escape_table['*'],
 										   self::$md_escape_table['_']), $title);
 				$result .=  " title=\"$title\"";
 			}
@@ -570,7 +570,7 @@ class MarkdownParser
 		# Setext-style headers:
 		#	  Header 1
 		#	  ========
-		#  
+		#
 		#	  Header 2
 		#	  --------
 		#
@@ -638,10 +638,10 @@ class MarkdownParser
 				  )
 				)
 			'; // mx
-			
+
 			# We use a different prefix before nested lists than top-level lists.
 			# See extended comment in _ProcessListItems().
-		
+
 			if ($this->md_list_level) {
 				$text = preg_replace_callback('{
 						^
@@ -665,17 +665,17 @@ class MarkdownParser
 		$marker_ul  = '[*+-]';
 		$marker_ol  = '\d+[.]';
 		$marker_any = "(?:$marker_ul|$marker_ol)";
-		
+
 		$list = $matches[1];
 		$list_type = preg_match("/$marker_ul/", $matches[3]) ? "ul" : "ol";
-		
+
 		$marker_any = ( $list_type == "ul" ? $marker_ul : $marker_ol );
-		
+
 		# Turn double returns into triple returns, so that we can make a
 		# paragraph for the last item in a list, if necessary:
 		$list = preg_replace("/\n{2,}/", "\n\n\n", $list);
 		$result = $this->_ProcessListItems($list, $marker_any);
-		
+
 		# Trim any trailing whitespace, to put the closing `</$list_type>`
 		# up on the preceding line, to get it past the current stupid
 		# HTML block parser. This is a hack to work around the terrible
@@ -689,12 +689,12 @@ class MarkdownParser
 		$marker_ul  = '[*+-]';
 		$marker_ol  = '\d+[.]';
 		$marker_any = "(?:$marker_ul|$marker_ol)";
-		
+
 		$list = $matches[1];
 		$list_type = preg_match("/$marker_ul/", $matches[3]) ? "ul" : "ol";
-		
+
 		$marker_any = ( $list_type == "ul" ? $marker_ul : $marker_ol );
-		
+
 		# Turn double returns into triple returns, so that we can make a
 		# paragraph for the last item in a list, if necessary:
 		$list = preg_replace("/\n{2,}/", "\n\n\n", $list);
@@ -730,7 +730,7 @@ class MarkdownParser
 		# without resorting to mind-reading. Perhaps the solution is to
 		# change the syntax rules such that sub-lists must start with a
 		# starting cardinal number; e.g. "1." or "a.".
-		
+
 		$this->md_list_level++;
 
 		# trim trailing blank lines:
@@ -857,11 +857,11 @@ class MarkdownParser
 		$_ = str_replace('&', '&amp;', $_);
 
 		# Do the angle bracket song and dance:
-		$_ = str_replace(array('<',    '>'), 
+		$_ = str_replace(array('<',    '>'),
 						 array('&lt;', '&gt;'), $_);
 
 		# Now, escape characters that are magic in Markdown:
-		$_ = str_replace(array_keys(self::$md_escape_table), 
+		$_ = str_replace(array_keys(self::$md_escape_table),
 						 array_values(self::$md_escape_table), $_);
 
 		return $_;
@@ -874,8 +874,8 @@ class MarkdownParser
 				(						# $1: Marker
 					(?<!\*\*) \*\* |	#     (not preceded by two chars of
 					(?<!__)   __		#      the same marker)
-				)						
-				(?=\S) 					# Not followed by whitespace 
+				)
+				(?=\S) 					# Not followed by whitespace
 				(?!\1)					#   or two others marker chars.
 				(						# $2: Content
 					(?:
@@ -922,7 +922,7 @@ class MarkdownParser
 
 		$bq = preg_replace('/^/m', "  ", $bq);
 		# These leading spaces screw with <pre> content, so we need to fix that:
-		$bq = preg_replace_callback('{(\s*<pre>.+?</pre>)}sx', 
+		$bq = preg_replace_callback('{(\s*<pre>.+?</pre>)}sx',
 									array($this,'_DoBlockQuotes_callback2'), $bq);
 
 		return "<blockquote>\n$bq\n</blockquote>\n\n";
@@ -974,7 +974,7 @@ class MarkdownParser
 
 		# Ampersand-encoding based entirely on Nat Irons's Amputator MT plugin:
 		#   http://bumppo.net/projects/amputator/
-		$text = preg_replace('/&(?!#?[xX]?(?:[0-9a-fA-F]+|\w+);)/', 
+		$text = preg_replace('/&(?!#?[xX]?(?:[0-9a-fA-F]+|\w+);)/',
 							 '&amp;', $text);;
 
 		# Encode naked <'s
@@ -997,7 +997,7 @@ class MarkdownParser
 
 
 	private function _DoAutoLinks($text) {
-		$text = preg_replace("!<((https?|ftp):[^'\">\\s]+)>!", 
+		$text = preg_replace("!<((https?|ftp):[^'\">\\s]+)>!",
 							 '<a href="\1">\1</a>', $text);
 
 		# Email addresses: <address@domain.foo>
@@ -1037,7 +1037,7 @@ class MarkdownParser
 		$length = strlen($addr);
 
 		# leave ':' alone (to spot mailto: later)
-		$addr = preg_replace_callback('/([^\:])/', 
+		$addr = preg_replace_callback('/([^\:])/',
 									  array($this,'_EncodeEmailAddress_callback'), $addr);
 
 		$addr = "<a href=\"$addr\">$addr</a>";
@@ -1061,14 +1061,14 @@ class MarkdownParser
 	#
 	# Swap back in all the special characters we've hidden.
 	#
-		return str_replace(array_values(self::$md_escape_table), 
+		return str_replace(array_values(self::$md_escape_table),
 						   array_keys(self::$md_escape_table), $text);
 	}
 
 
 	# _TokenizeHTML is shared between PHP Markdown and PHP SmartyPants.
 	# We only define it if it is not already defined.
-	
+
 	private function _TokenizeHTML($str) {
 	#
 	#   Parameter:  String containing HTML markup.
@@ -1080,7 +1080,7 @@ class MarkdownParser
 	#               the second is the actual value.
 	#
 	#
-	#   Regular expression derived from the _tokenize() subroutine in 
+	#   Regular expression derived from the _tokenize() subroutine in
 	#   Brad Choate's MTRegex plugin.
 	#   <http://www.bradchoate.com/past/mtregex.php>
 	#
@@ -1090,12 +1090,12 @@ class MarkdownParser
 		$match = '(?s:<!(?:--.*?--\s*)+>)|'.	# comment
 				 '(?s:<\?.*?\?>)|'.				# processing instruction
 												# regular tags
-				 '(?:<[/!$]?[-a-zA-Z0-9:]+\b(?>[^"\'>]+|"[^"]*"|\'[^\']*\')*>)'; 
+				 '(?:<[/!$]?[-a-zA-Z0-9:]+\b(?>[^"\'>]+|"[^"]*"|\'[^\']*\')*>)';
 
 		$parts = preg_split("{($match)}", $str, -1, PREG_SPLIT_DELIM_CAPTURE);
 
 		foreach ($parts as $part) {
-			if (++$index % 2 && $part != '') 
+			if (++$index % 2 && $part != '')
 				$tokens[] = array('text', $part);
 			else
 				$tokens[] = array('tag', $part);
@@ -1117,12 +1117,12 @@ class MarkdownParser
 	# Replace tabs with the appropriate amount of space.
 	#
 		# For each line we separate the line in blocks delemited by
-		# tab characters. Then we reconstruct every line by adding the 
+		# tab characters. Then we reconstruct every line by adding the
 		# appropriate number of space between each blocks.
-		
+
 		$lines = explode("\n", $text);
 		$text = "";
-		
+
 		foreach ($lines as $line) {
 			# Split in blocks.
 			$blocks = explode("\t", $line);
@@ -1190,7 +1190,7 @@ expected; (3) the output Markdown actually produced.
 
 
 Version History
---------------- 
+---------------
 
 See the readme file for detailed release notes for this version.
 
@@ -1208,22 +1208,22 @@ See the readme file for detailed release notes for this version.
 Author & Contributors
 ---------------------
 
-Original Perl version by John Gruber  
+Original Perl version by John Gruber
 <http://daringfireball.net/>
 
-PHP port and other contributions by Michel Fortin  
+PHP port and other contributions by Michel Fortin
 <http://www.michelf.com/>
 
 
 Copyright and License
 ---------------------
 
-Copyright (c) 2004-2005 Michel Fortin  
-<http://www.michelf.com/>  
+Copyright (c) 2004-2005 Michel Fortin
+<http://www.michelf.com/>
 All rights reserved.
 
-Copyright (c) 2003-2004 John Gruber   
-<http://daringfireball.net/>   
+Copyright (c) 2003-2004 John Gruber
+<http://daringfireball.net/>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

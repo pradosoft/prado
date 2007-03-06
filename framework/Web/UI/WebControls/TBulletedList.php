@@ -393,14 +393,14 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 	{
 		throw new TNotSupportedException('bulletedlist_selectedvalue_unsupported');
 	}
-	
+
 	/**
 	 * @throws TNotSupportedException if this method is invoked
 	 */
 	public function setSelectedValues($values)
 	{
 		throw new TNotSupportedException('bulletedlist_selectedvalue_unsupported');
-	}	
+	}
 }
 
 /**
