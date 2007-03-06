@@ -4,10 +4,6 @@
 
 !!!IMPORTANT!!!
 
-After installing the framework, remember to delete everything under
-your PRADO application's assets and runtime directories.
-
-
 The following upgrading instructions are cumulative. That is,
 if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
@@ -15,8 +11,13 @@ for both A and B.
 
 Upgrading from v3.1a
 ---------------------
-- TActiveRecord::getRecordFinder() is deprecated in favour of TActiveRecord::finder().
-
+- The signature of TActiveRecord::finder() is changed. All TActiveRecord-descendant
+  classes that override this method will be affected. Please use the
+  following code to override the method:	
+	public static function finder($className=__CLASS__)
+	{
+		return parent::finder($className);
+	}
 
 Upgrading from v3.0.x
 ---------------------

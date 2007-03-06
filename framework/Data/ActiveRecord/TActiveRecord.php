@@ -160,11 +160,6 @@ abstract class TActiveRecord extends TComponent
 		return $finders[$className];
 	}
 
-	public static function getRecordFinder($className)
-	{
-		throw new TActiveRecordException('Deprecated method, use TActiveRecord::finder()');
-	}
-
 	/**
 	 * Gets the record manager for this object, the default is to call
 	 * TActiveRecordManager::getInstance().
