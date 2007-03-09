@@ -4,6 +4,7 @@ BUG: Ticket#481 - Unable to cancel navigation when handling OnSideBarButtonClick
 BUG: typo in THttpResponse.writeFile() about sending headers (Qiang)
 BUG: Ticket#505 - cultureInfo::getEnglishName does not return an arrary (Wei)
 BUG: Ticket#508 - CultureInfo class: PHP Notice because of missing static declaration (Wei)
+BUG: Ticket#558 - TRadionButtonList generates a empty onclick attribute (Qiang)
 
 Version 3.0.6 December 4, 2006
 ==============================
