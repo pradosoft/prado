@@ -176,7 +176,7 @@ class TDbUserManager extends TModule implements IUserManager
 				throw new TConfigurationException('dbusermanager_connectionid_invalid',$connectionID);
 		}
 		else
-			throw new TConfigurationException('dbusermanager_connectionid_empty');
+			throw new TConfigurationException('dbusermanager_connectionid_required');
 	}
 }
 

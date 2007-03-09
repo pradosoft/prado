@@ -373,3 +373,8 @@ soapservice_serverid_required			= <soap> element must have 'id' attribute.
 soapservice_serverid_duplicated			= SOAP server ID '{0}' is duplicated.
 soapserver_id_invalid					= Invalid SOAP server ID '{0}'. It should not end with '.wsdl'.
 soapserver_version_invalid				= Invalid SOAP version '{0}'. It must be either '1.1' or '1.2'.
+
+dbusermanager_userclass_required		= TDbUserManager.UserClass is required.
+dbusermanager_userclass_invalid			= TDbUserManager.UserClass '{0}' is not a valid user class. The class must extend TDbUser.
+dbusermanager_connectionid_invalid		= TDbUserManager.ConnectionID '{0}' does not point to a valid TDataSourceConfig module.
+dbusermanager_connectionid_required		= TDbUserManager.ConnectionID is required.
