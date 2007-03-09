@@ -280,7 +280,8 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 			$attributes=$this->getAttributes();
 			$value=$attributes->remove('value');
 			// onclick js should only be added to input tag
-			$onclick=$attributes->remove('onclick');
+			if(($onclick=$attributes->remove('onclick'))===null)
+				$onclick='';
 			if($attributes->getCount())
 			{
 				$writer->addAttributes($attributes);

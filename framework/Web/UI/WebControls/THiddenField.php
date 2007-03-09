@@ -59,6 +59,13 @@ class THiddenField extends TControl implements IPostBackDataHandler, IValidatabl
 			$writer->addAttribute('id',$this->getClientID());
 		if(($value=$this->getValue())!=='')
 			$writer->addAttribute('value',$value);
+
+		if($this->getHasAttributes())
+		{
+			foreach($this->getAttributes() as $name=>$value)
+				$writer->addAttribute($name,$value);
+		}
+
 		$writer->renderBeginTag('input');
 		$writer->renderEndTag();
 	}
