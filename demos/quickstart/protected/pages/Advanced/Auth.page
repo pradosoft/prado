@@ -89,4 +89,32 @@ We have seen in the above example that two users are specified in the applicatio
 <p id="720562" class="block-content">
 where the <tt>roles</tt> attribute in <tt>user</tt> element is optional. User roles can be specified in either the <tt>user</tt> element or in a separate <tt>role</tt> element.
 </p>
+
+<h2 id="5505">Using <tt>TDbUserManager</tt></h2>
+<p id="720563" class="block-content">
+<tt>TDbUserManager</tt> is introduced in v3.1.0. Its main purpose is to simplify the task of managing user accounts that are stored in a database. It requires developers to write a user class that represents the necessary information for a user account. The user class must extend from <tt>TDbUser</tt>.
+</p>
+<p id="720564" class="block-content">
+To use <tt>TDbUserManager</tt>, configure it in the application configuration like following:
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code4">
+<module id="db"
+     class="System.Data.TDataSourceConfig" ..../>
+<module id="users"
+     class="System.Security.TDbUserManager"
+     UserClass="Path.To.MyUserClass"
+     ConnectionID="db" />
+<module id="auth"
+     class="System.Security.TAuthManager"
+     UserManager="users" LoginPage="Path.To.LoginPage" />
+</com:TTextHighlighter>
+
+</p>
+<p id="720565" class="block-content">
+In the above, <tt>UserClass</tt> specifies what class will be used to create user instance. The class must extend from <tt>TDbUser</tt>. <tt>ConnectionID</tt> refers to the ID of a <tt>TDataSourceConfig</tt> module which specifies how to establish database connection to retrieve user information.
+</p>
+<p id="720566" class="block-content">
+The user class has to implement the two abstract methods in <tt>TDbUser</tt>: <tt>validateUser()</tt> and <tt>createUser()</tt>. Since user account information is stored in a database, the user class may make use of its <tt>DbConnection</tt> property to reach the database.
+</p>
+
 <div class="last-modified">$Id$</div></com:TContent>

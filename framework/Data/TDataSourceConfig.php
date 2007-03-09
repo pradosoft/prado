@@ -10,6 +10,8 @@
  * @package System.Data
  */
 
+Prado::using('System.Data.TDbConnection');
+
 /**
  * TDataSourceConfig module class provides <module> configuration for database connections.
  *
@@ -46,7 +48,7 @@
  */
 class TDataSourceConfig extends TModule
 {
-	private $_connID;
+	private $_connID='';
 	private $_conn;
 	private $_connClass='System.Data.TDbConnection';
 
@@ -91,9 +93,9 @@ class TDataSourceConfig extends TModule
 	 */
 	public function getDbConnection()
 	{
-		if(is_null($this->_conn))
+		if($this->_conn===null)
 		{
-			if(!is_null($this->_connID))
+			if($this->_connID!=='')
 				$this->_conn = $this->findConnectionByID($this->getConnectionID());
 			else
 				$this->_conn = Prado::createComponent($this->getConnectionClass());

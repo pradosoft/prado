@@ -4,12 +4,15 @@
 <p id="10001">
 This Quickstart tutorial is provided to help you quickly start building your own Web applications based on PRADO version 3.x.
 </p>
+<p>
+If you are an existing PRADO 3.x user and would like to learn what enhancements are available for each new version, please check out the <a href="?page=GettingStarted.NewFeatures">new features</a> page. Otherwise, the following sections are helpful for newbies.
+</p>
 <div class="start-page">
 	<div class="concepts start-block">
-	<h2>How Prado Works</h2>
+	<h2>How PRADO Works</h2>
 	<p>Concepts and fundamentals</p>
 	<ol>
-		<li><a href="#">Building web applications with Prado</a></li>
+		<li><a href="#">Building web applications with PRADO</a></li>
 		<li><a href="#">Web controls and events</a></li>
 		<li><a href="#">Validating user input</a></li>
 		<li><a href="#">Connecting to your database</a></li>

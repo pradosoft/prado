@@ -1890,6 +1890,7 @@ framework/PradoBase.php -text
 framework/Security/IUserManager.php -text
 framework/Security/TAuthManager.php -text
 framework/Security/TAuthorizationRule.php -text
+framework/Security/TDbUserManager.php -text
 framework/Security/TSecurityManager.php -text
 framework/Security/TUser.php -text
 framework/Security/TUserManager.php -text
