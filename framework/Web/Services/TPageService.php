@@ -409,16 +409,19 @@ class TPageService extends TService
 			$className=basename($path);
 			if(!class_exists($className,false))
 				include_once($path.Prado::CLASS_FILE_EXT);
-			if(!class_exists($className,false))
-				throw new TConfigurationException('pageservice_pageclass_unknown',$className);
 		}
 		else
+		{
 			$className=$this->getBasePageClass();
+			Prado::using($className);
+			if(($pos=strrpos($className,'.'))!==false)
+				$className=substr($className,$pos+1);
+		}
 
- 		if($className!=='TPage' && !is_subclass_of($className,'TPage'))
- 			throw new TConfigurationException('pageservice_pageclass_invalid',$className);
+ 		if(!class_exists($className,false) || ($className!=='TPage' && !is_subclass_of($className,'TPage')))
+			throw new THttpException(404,'pageservice_page_unknown',$pagePath);
 
-		$page=Prado::createComponent($className);
+		$page=new $className;
 		$page->setPagePath($pagePath);
 
 		if($hasTemplateFile)
