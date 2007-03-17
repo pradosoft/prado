@@ -245,6 +245,7 @@ class PradoCommandLineCreateProject extends PradoCommandLineAction
 		$rootPath = realpath(dirname(trim($dir)));
 
 		$basePath = $rootPath.'/'.basename($dir);
+		$appName = basename($basePath);
 		$assetPath = $basePath.'/assets';
 		$protectedPath  = $basePath.'/protected';
 		$runtimePath = $basePath.'/protected/runtime';
@@ -252,6 +253,7 @@ class PradoCommandLineCreateProject extends PradoCommandLineAction
 
 		$indexFile = $basePath.'/index.php';
 		$htaccessFile = $protectedPath.'/.htaccess';
+		$configFile = $protectedPath.'/application.xml';
 		$defaultPageFile = $pagesPath.'/Home.page';
 
 		$this->createDirectory($basePath, 0755);
@@ -261,6 +263,7 @@ class PradoCommandLineCreateProject extends PradoCommandLineAction
 		$this->createDirectory($pagesPath,0755);
 
 		$this->createFile($indexFile, $this->renderIndexFile());
+		$this->createFile($configFile, $this->renderConfigFile($appName));
 		$this->createFile($htaccessFile, $this->renderHtaccessFile());
 		$this->createFile($defaultPageFile, $this->renderDefaultPage());
 	}
@@ -292,6 +295,51 @@ $application->run();
 ?>';
 	}
 
+	protected function renderConfigFile($appName)
+	{
+		return <<<EOD
+<?xml version="1.0" encoding="utf-8"?>
+
+<application id="$appName" mode="Debug">
+  <!-- alias definitions and namespace usings
+  <paths>
+    <alias id="myalias" path="./lib" />
+    <using namespace="Application.common.*" />
+  </paths>
+  -->
+
+  <!-- configurations for modules -->
+  <modules>
+    <!-- Remove this comment mark to enable caching
+    <module id="cache" class="System.Caching.TDbCache" />
+    -->
+
+    <!-- Remove this comment mark to enable PATH url format
+    <module id="request" class="THttpRequest" UrlFormat="Path" />
+    -->
+
+    <!-- Remove this comment mark to enable logging
+    <module id="log" class="System.Util.TLogRouter">
+      <route class="TBrowserLogRoute" Categories="System" />
+    </module>
+    -->
+  </modules>
+
+  <!-- configuration for available services -->
+  <services>
+    <service id="page" class="TPageService" DefaultPage="Home" />
+  </services>
+
+  <!-- application parameters
+  <parameters>
+    <parameter id="param1" value="value1" />
+    <parameter id="param2" value="value2" />
+  </parameters>
+  -->
+</application>
+EOD;
+	}
+
 	protected function renderHtaccessFile()
 	{
 		return 'deny from all';
@@ -301,7 +349,14 @@ $application->run();
 	protected function renderDefaultPage()
 	{
 return <<<EOD
-<h1>Welcome to Prado!</h1>
+<html>
+<head>
+  <title>Welcome to PRADO</title>
+</head>
+<body>
+<h1>Welcome to PRADO!</h1>
+</body>
+</html>
 EOD;
 	}
 }
