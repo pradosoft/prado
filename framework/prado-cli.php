@@ -244,17 +244,20 @@ class PradoCommandLineCreateProject extends PradoCommandLineAction
 
 		$rootPath = realpath(dirname(trim($dir)));
 
-		$basePath = $rootPath.'/'.basename($dir);
+		if(basename($dir)!=='.')
+			$basePath = $rootPath.DIRECTORY_SEPARATOR.basename($dir);
+		else
+			$basePath = $rootPath;
 		$appName = basename($basePath);
-		$assetPath = $basePath.'/assets';
-		$protectedPath  = $basePath.'/protected';
-		$runtimePath = $basePath.'/protected/runtime';
-		$pagesPath = $protectedPath.'/pages';
+		$assetPath = $basePath.DIRECTORY_SEPARATOR.'assets';
+		$protectedPath  = $basePath.DIRECTORY_SEPARATOR.'protected';
+		$runtimePath = $basePath.DIRECTORY_SEPARATOR.'protected'.DIRECTORY_SEPARATOR.'runtime';
+		$pagesPath = $protectedPath.DIRECTORY_SEPARATOR.'pages';
 
-		$indexFile = $basePath.'/index.php';
-		$htaccessFile = $protectedPath.'/.htaccess';
-		$configFile = $protectedPath.'/application.xml';
-		$defaultPageFile = $pagesPath.'/Home.page';
+		$indexFile = $basePath.DIRECTORY_SEPARATOR.'index.php';
+		$htaccessFile = $protectedPath.DIRECTORY_SEPARATOR.'.htaccess';
+		$configFile = $protectedPath.DIRECTORY_SEPARATOR.'application.xml';
+		$defaultPageFile = $pagesPath.DIRECTORY_SEPARATOR.'Home.page';
 
 		$this->createDirectory($basePath, 0755);
 		$this->createDirectory($assetPath,0777);
@@ -270,14 +273,15 @@ class PradoCommandLineCreateProject extends PradoCommandLineAction
 
 	protected function renderIndexFile()
 	{
-		$framework = realpath(dirname(__FILE__)).'/prado.php';
+		$framework = realpath(dirname(__FILE__)).DIRECTORY_SEPARATOR.'prado.php';
 return '<?php
+
 $frameworkPath=\''.$framework.'\';
 
-/** The directory checks may be removed if performance is required **/
+// The following directory checks may be removed if performance is required
 $basePath=dirname(__FILE__);
-$assetsPath=$basePath."/assets";
-$runtimePath=$basePath."/protected/runtime";
+$assetsPath=$basePath.\'/assets\';
+$runtimePath=$basePath.\'/protected/runtime\';
 
 if(!is_file($frameworkPath))
 	die("Unable to find prado framework path $frameworkPath.");
