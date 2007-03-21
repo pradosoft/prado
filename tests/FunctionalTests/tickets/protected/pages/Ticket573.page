@@ -1,0 +1,6 @@
+<com:TContent ID="Content">
+<h2 class="defect">NumberFormat Bug</h2>
+
+<span id="test1"><com:TNumberFormat Value="9.999" Pattern="#.00" /></span>
+
+</com:TContent>
