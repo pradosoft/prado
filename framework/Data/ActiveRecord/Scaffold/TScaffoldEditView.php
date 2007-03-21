@@ -22,7 +22,9 @@ Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldBase');
  * value (may be an array for composite keys).
  *
  * The default editor input controls are created based on the column types.
- * The editor layout can be specified by a renderer. A renderer is an external
+ * The editor layout can be specified by a renderer by set the value
+ * of the {@link setEditRenderer EditRenderer} property to the class name of a
+ * class that implements TScaffoldEditRenderer. A renderer is an external
  * template control that implements IScaffoldEditRenderer.
  *
  * The <b>Data</b> of the IScaffoldEditRenderer will be set as the current Active

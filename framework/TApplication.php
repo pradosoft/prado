@@ -189,10 +189,6 @@ class TApplication extends TComponent
 	 */
 	private $_service;
 	/**
-	 * @var TPageService page service
-	 */
-	private $_pageService;
-	/**
 	 * @var array list of application modules
 	 */
 	private $_modules=array();

@@ -7,6 +7,7 @@ BUG: Ticket#549 - set/get Timestamp on TDatePicker shound handle "null" values (
 BUG: Ticket#550 - explicitly include TCallbackClientSide in TCallbackOptions (Qiang)
 BUG: Ticket#553 - I18N quickstart sample does not work (Qiang)
 BUG: Ticket#555 - TNumberFormat throws exception (Qiang)
+BUG: Ticket#573 - NumberFormat Bug (Wei)
 BUG: TXmlElement did not encode attribute and text values when being saved as a string (Qiang)
 BUG: SelectedIndices not return expected result for ActiveListBox (Wei)
 ENH: Ticket#503 - Localization and parameter tags can now appear as a substring in a property initial value (Qiang)
@@ -53,6 +54,7 @@ BUG: Ticket#481 - Unable to cancel navigation when handling OnSideBarButtonClick
 BUG: Ticket#505 - cultureInfo::getEnglishName does not return an arrary (Wei)
 BUG: Ticket#508 - CultureInfo class: PHP Notice because of missing static declaration (Wei)
 BUG: Ticket#558 - TRadionButtonList generates a empty onclick attribute (Qiang)
+BUG: Ticket#573 - NumberFormat Bug (Wei)
 BUG: typo in THttpResponse.writeFile() about sending headers (Qiang)
 
 Version 3.0.6 December 4, 2006

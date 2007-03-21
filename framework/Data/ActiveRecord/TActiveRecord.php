@@ -1,6 +1,6 @@
 <?php
 /**
- * TActiveRecord class file.
+ * TActiveRecord and TActiveRecordEventParameter class file.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
@@ -537,4 +537,20 @@ abstract class TActiveRecord extends TComponent
 		return $fields;
 	}
 }
+
+/**
+ * TActiveRecordEventParameter class.
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.ActiveRecord
+ * @since 3.1
+ */
+class TActiveRecordEventParameter extends TEventParameter
+{
+
+}
+
+
+
 ?>
