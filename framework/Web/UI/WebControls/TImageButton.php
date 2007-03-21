@@ -350,12 +350,12 @@ class TImageClickEventParameter extends TEventParameter
 	 * the X coordinate of the clicking point
 	 * @var integer
 	 */
-	public $_x=0;
+	private $_x=0;
 	/**
 	 * the Y coordinate of the clicking point
 	 * @var integer
 	 */
-	public $_y=0;
+	private $_y=0;
 
 	/**
 	 * Constructor.

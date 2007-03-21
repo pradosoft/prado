@@ -3319,11 +3319,6 @@ Prado.WebUI.TImageMap = Class.extend(Prado.WebUI.PostBackControl);
 Prado.WebUI.TImageButton = Class.extend(Prado.WebUI.PostBackControl);
 Object.extend(Prado.WebUI.TImageButton.prototype,
 {
-	onInit : function(options)
-	{
-		this.hasXYInput = false;
-	},
-
 	/**
 	 * Override parent onPostBack function, tried to add hidden forms
 	 * inputs to capture x,y clicked point.

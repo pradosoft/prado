@@ -358,8 +358,7 @@ doPostBack=onclicked;}
 if(doPostBack)
 this.onPostBack(event,options);if(typeof(onclicked)=="boolean"&&!onclicked)
 Event.stop(event);},onPostBack:function(event,options)
-{Prado.PostBack(event,options);}};Prado.WebUI.TButton=Class.extend(Prado.WebUI.PostBackControl);Prado.WebUI.TLinkButton=Class.extend(Prado.WebUI.PostBackControl);Prado.WebUI.TCheckBox=Class.extend(Prado.WebUI.PostBackControl);Prado.WebUI.TBulletedList=Class.extend(Prado.WebUI.PostBackControl);Prado.WebUI.TImageMap=Class.extend(Prado.WebUI.PostBackControl);Prado.WebUI.TImageButton=Class.extend(Prado.WebUI.PostBackControl);Object.extend(Prado.WebUI.TImageButton.prototype,{onInit:function(options)
-{this.hasXYInput=false;},onPostBack:function(event,options)
+{Prado.PostBack(event,options);}};Prado.WebUI.TButton=Class.extend(Prado.WebUI.PostBackControl);Prado.WebUI.TLinkButton=Class.extend(Prado.WebUI.PostBackControl);Prado.WebUI.TCheckBox=Class.extend(Prado.WebUI.PostBackControl);Prado.WebUI.TBulletedList=Class.extend(Prado.WebUI.PostBackControl);Prado.WebUI.TImageMap=Class.extend(Prado.WebUI.PostBackControl);Prado.WebUI.TImageButton=Class.extend(Prado.WebUI.PostBackControl);Object.extend(Prado.WebUI.TImageButton.prototype,{onPostBack:function(event,options)
 {if(!this.hasXYInput)
 {this.addXYInput(event,options);this.hasXYInput=true;}
 Prado.PostBack(event,options);},addXYInput:function(event,options)
