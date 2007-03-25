@@ -38,6 +38,10 @@ class TUser extends TComponent implements IUser
 	 */
 	private $_state;
 	/**
+	 * @var boolean whether user state is changed
+	 */
+	private $_stateChanged=false;
+	/**
 	 * @var IUserManager user manager
 	 */
 	private $_manager;
@@ -196,6 +200,23 @@ class TUser extends TComponent implements IUser
 			unset($this->_state[$key]);
 		else
 			$this->_state[$key]=$value;
+		$this->_stateChanged=true;
+	}
+
+	/**
+	 * @return boolean whether user session state is changed (i.e., setState() is called)
+	 */
+	public function getStateChanged()
+	{
+		return $this->_stateChanged;
+	}
+
+	/**
+	 * @param boolean whether user session state is changed
+	 */
+	public function setStateChanged($value)
+	{
+		$this->_stateChanged=TPropertyValue::ensureBoolean($value);
 	}
 }
 
