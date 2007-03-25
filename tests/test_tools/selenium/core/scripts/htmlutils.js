@@ -18,6 +18,93 @@
 // This script contains a badly-organised collection of miscellaneous
 // functions that really better homes.
 
+function classCreate() {
+    return function() {
+      this.initialize.apply(this, arguments);
+    }
+}
+
+function objectExtend(destination, source) {
+  for (var property in source) {
+    destination[property] = source[property];
+  }
+  return destination;
+}
+
+function $() {
+  var results = [], element;
+  for (var i = 0; i < arguments.length; i++) {
+    element = arguments[i];
+    if (typeof element == 'string')
+      element = document.getElementById(element);
+    results[results.length] = element;
+  }
+  return results.length < 2 ? results[0] : results;
+}
+
+function $A(iterable) {
+  if (!iterable) return [];
+  if (iterable.toArray) {
+    return iterable.toArray();
+  } else {
+    var results = [];
+    for (var i = 0; i < iterable.length; i++)
+      results.push(iterable[i]);
+    return results;
+  }
+}
+
+function fnBind() {
+  var args = $A(arguments), __method = args.shift(), object = args.shift();
+  var retval = function() {
+    return __method.apply(object, args.concat($A(arguments)));
+  }
+  retval.__method = __method;
+  return retval;
+}
+
+function fnBindAsEventListener(fn, object) {
+  var __method = fn;
+  return function(event) {
+    return __method.call(object, event || window.event);
+  }
+}
+
+function removeClassName(element, name) {
+    var re = new RegExp("\\b" + name + "\\b", "g");
+    element.className = element.className.replace(re, "");
+}
+
+function addClassName(element, name) {
+    element.className = element.className + ' ' + name;
+}
+
+function elementSetStyle(element, style) {
+    for (var name in style) {
+      var value = style[name];
+      if (value == null) value = "";
+      element.style[name] = value;
+    }
+}
+
+function elementGetStyle(element, style) {
+    var value = element.style[style];
+    if (!value) {
+      if (document.defaultView && document.defaultView.getComputedStyle) {
+        var css = document.defaultView.getComputedStyle(element, null);
+        value = css ? css.getPropertyValue(style) : null;
+      } else if (element.currentStyle) {
+        value = element.currentStyle[style];
+      }
+    }
+
+    /** DGF necessary? 
+    if (window.opera && ['left', 'top', 'right', 'bottom'].include(style))
+      if (Element.getStyle(element, 'position') == 'static') value = 'auto'; */
+
+    return value == 'auto' ? null : value;
+  }
+
 String.prototype.trim = function() {
     var result = this.replace(/^\s+/g, "");
     // strip leading
@@ -134,31 +221,49 @@ function xmlDecode(text) {
 
 // Sets the text in this element
 function setText(element, text) {
-    if (element.textContent) {
+    if (element.textContent != null) {
         element.textContent = text;
-    } else if (element.innerText) {
+    } else if (element.innerText != null) {
         element.innerText = text;
     }
 }
 
 // Get the value of an <input> element
 function getInputValue(inputElement) {
-    if (inputElement.type.toUpperCase() == 'CHECKBOX' ||
-        inputElement.type.toUpperCase() == 'RADIO')
-    {
-        return (inputElement.checked ? 'on' : 'off');
+    if (inputElement.type) {
+        if (inputElement.type.toUpperCase() == 'CHECKBOX' ||
+            inputElement.type.toUpperCase() == 'RADIO')
+        {
+            return (inputElement.checked ? 'on' : 'off');
+        }
+    }
+    if (inputElement.value == null) {
+        throw new SeleniumError("This element has no value; is it really a form field?");
     }
     return inputElement.value;
 }
 
 /* Fire an event in a browser-compatible manner */
-function triggerEvent(element, eventType, canBubble) {
+function triggerEvent(element, eventType, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
     canBubble = (typeof(canBubble) == undefined) ? true : canBubble;
     if (element.fireEvent) {
-        element.fireEvent('on' + eventType);
+        var evt = createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown);        
+        element.fireEvent('on' + eventType, evt);
     }
     else {
         var evt = document.createEvent('HTMLEvents');
+        
+        try {
+            evt.shiftKey = shiftKeyDown;
+            evt.metaKey = metaKeyDown;
+            evt.altKey = altKeyDown;
+            evt.ctrlKey = controlKeyDown;
+        } catch (e) {
+            // On Firefox 1.0, you can only set these during initMouseEvent or initKeyEvent
+            // we'll have to ignore them here
+            LOG.exception(e);
+        }
+        
         evt.initEvent(eventType, canBubble, true);
         element.dispatchEvent(evt);
     }
@@ -179,14 +284,23 @@ function getKeyCodeFromKeySequence(keySequence) {
     if (match != null) {
         return match[0];
     }
-    throw SeleniumError("invalid keySequence");
+    throw new SeleniumError("invalid keySequence");
 }
 
-function triggerKeyEvent(element, eventType, keySequence, canBubble) {
+function createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
+     var evt = element.ownerDocument.createEventObject();
+     evt.shiftKey = shiftKeyDown;
+     evt.metaKey = metaKeyDown;
+     evt.altKey = altKeyDown;
+     evt.ctrlKey = controlKeyDown;
+     return evt;
+}
+
+function triggerKeyEvent(element, eventType, keySequence, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
     var keycode = getKeyCodeFromKeySequence(keySequence);
     canBubble = (typeof(canBubble) == undefined) ? true : canBubble;
     if (element.fireEvent) {
-        keyEvent = element.ownerDocument.createEventObject();
+        var keyEvent = createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown);
         keyEvent.keyCode = keycode;
         element.fireEvent('on' + eventType, keyEvent);
     }
@@ -194,78 +308,20 @@ function triggerKeyEvent(element, eventType, keySequence, canBubble) {
         var evt;
         if (window.KeyEvent) {
             evt = document.createEvent('KeyEvents');
-            evt.initKeyEvent(eventType, true, true, window, false, false, false, false, keycode, keycode);
+            evt.initKeyEvent(eventType, true, true, window, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown, keycode, keycode);
         } else {
             evt = document.createEvent('UIEvents');
+            
+            evt.shiftKey = shiftKeyDown;
+            evt.metaKey = metaKeyDown;
+            evt.altKey = altKeyDown;
+            evt.ctrlKey = controlKeyDown;
+
             evt.initUIEvent(eventType, true, true, window, 1);
             evt.keyCode = keycode;
+            evt.which = keycode;
         }
 
-        element.dispatchEvent(evt);
-    }
-}
-
-/* Fire a mouse event in a browser-compatible manner */
-function triggerMouseEvent(element, eventType, canBubble, clientX, clientY) {
-    clientX = clientX ? clientX : 0;
-    clientY = clientY ? clientY : 0;
-
-    // TODO: set these attributes -- they don't seem to be needed by the initial test cases, but that could change...
-    var screenX = 0;
-    var screenY = 0;
-
-    canBubble = (typeof(canBubble) == undefined) ? true : canBubble;
-    if (element.fireEvent) {
-        LOG.error("element has fireEvent");
-        if (!screenX && !screenY && !clientX && !clientY) {
-            element.fireEvent('on' + eventType);
-        }
-        else {
-            var ieEvent = element.ownerDocument.createEventObject();
-            ieEvent.detail = 0;
-            ieEvent.screenX = screenX;
-            ieEvent.screenY = screenY;
-            ieEvent.clientX = clientX;
-            ieEvent.clientY = clientY;
-            ieEvent.ctrlKey = false;
-            ieEvent.altKey = false;
-            ieEvent.shiftKey = false;
-            ieEvent.metaKey = false;
-            ieEvent.button = 1;
-            ieEvent.relatedTarget = null;
-
-            // when we go this route, window.event is never set to contain the event we have just created.
-            // ideally we could just slide it in as follows in the try-block below, but this normally
-            // doesn't work.  This is why I try to avoid this code path, which is only required if we need to
-            // set attributes on the event (e.g., clientX).
-            try {
-                window.event = ieEvent;
-            }
-            catch(e) {
-                // getting an "Object does not support this action or property" error.  Save the event away
-                // for future reference.
-                // TODO: is there a way to update window.event?
-
-                // work around for http://jira.openqa.org/browse/SEL-280 -- make the event available somewhere:
-                selenium.browserbot.getCurrentWindow().selenium_event = ieEvent;
-            }
-            element.fireEvent('on' + eventType, ieEvent);
-        }
-    }
-    else {
-        LOG.error("element doesn't have fireEvent");
-        var evt = document.createEvent('MouseEvents');
-        if (evt.initMouseEvent)
-        {
-            LOG.error("element has initMouseEvent");
-            //Safari
-            evt.initMouseEvent(eventType, canBubble, true, document.defaultView, 1, screenX, screenY, clientX, clientY, false, false, false, false, 0, null)
-        }
-        else {
-            LOG.error("element doesen't has initMouseEvent");
-            // TODO we should be initialising other mouse-event related attributes here
-            evt.initEvent(eventType, canBubble, true);
-        }
         element.dispatchEvent(evt);
     }
 }
@@ -280,10 +336,13 @@ function removeLoadListener(element, command) {
 
 function addLoadListener(element, command) {
     LOG.info('Adding loadListenter for ' + element + ', ' + command);
+    var augmentedCommand = function() {
+        command.call(this, element);
+    }
     if (window.addEventListener && !browserVersion.isOpera)
-        element.addEventListener("load", command, true);
+        element.addEventListener("load", augmentedCommand, true);
     else if (window.attachEvent)
-        element.attachEvent("onload", command);
+        element.attachEvent("onload", augmentedCommand);
 }
 
 /**
@@ -306,10 +365,160 @@ function getDocumentBase(doc) {
     return "";
 }
 
+function getTagName(element) {
+    var tagName;
+    if (element && element.tagName && element.tagName.toLowerCase) {
+        tagName = element.tagName.toLowerCase();
+    }
+    return tagName;
+}
+
+function absolutify(url, baseUrl) {
+    /** returns a relative url in its absolute form, given by baseUrl.
+    * 
+    * This function is a little odd, because it can take baseUrls that
+    * aren't necessarily directories.  It uses the same rules as the HTML 
+    * &lt;base&gt; tag; if the baseUrl doesn't end with "/", we'll assume
+    * that it points to a file, and strip the filename off to find its
+    * base directory.
+    *
+    * So absolutify("foo", "http://x/bar") will return "http://x/foo" (stripping off bar),
+    * whereas absolutify("foo", "http://x/bar/") will return "http://x/bar/foo" (preserving bar).
+    * Naturally absolutify("foo", "http://x") will return "http://x/foo", appropriately.
+    * 
+    * @param url the url to make absolute; if this url is already absolute, we'll just return that, unchanged
+    * @param baseUrl the baseUrl from which we'll absolutify, following the rules above.
+    * @return 'url' if it was already absolute, or the absolutized version of url if it was not absolute.
+    */
+    
+    // DGF isn't there some library we could use for this?
+        
+    if (/^\w+:/.test(url)) {
+        // it's already absolute
+        return url;
+    }
+    
+    var loc;
+    try {
+        loc = parseUrl(baseUrl);
+    } catch (e) {
+        // is it an absolute windows file path? let's play the hero in that case
+        if (/^\w:\\/.test(baseUrl)) {
+            baseUrl = "file:///" + baseUrl.replace(/\\/g, "/");
+            loc = parseUrl(baseUrl);
+        } else {
+            throw new SeleniumError("baseUrl wasn't absolute: " + baseUrl);
+        }
+    }
+    loc.search = null;
+    loc.hash = null;
+    
+    // if url begins with /, then that's the whole pathname
+    if (/^\//.test(url)) {
+        loc.pathname = url;
+        var result = reassembleLocation(loc);
+        return result;
+    }
+    
+    // if pathname is null, then we'll just append "/" + the url
+    if (!loc.pathname) {
+        loc.pathname = "/" + url;
+        var result = reassembleLocation(loc);
+        return result;
+    }
+    
+    // if pathname ends with /, just append url
+    if (/\/$/.test(loc.pathname)) {
+        loc.pathname += url;
+        var result = reassembleLocation(loc);
+        return result;
+    }
+    
+    // if we're here, then the baseUrl has a pathname, but it doesn't end with /
+    // in that case, we replace everything after the final / with the relative url
+    loc.pathname = loc.pathname.replace(/[^\/\\]+$/, url);
+    var result = reassembleLocation(loc);
+    return result;
+    
+}
+
+var URL_REGEX = /^((\w+):\/\/)(([^:]+):?([^@]+)?@)?([^\/\?:]*):?(\d+)?(\/?[^\?#]+)?\??([^#]+)?#?(.+)?/;
+
+function parseUrl(url) {
+    var fields = ['url', null, 'protocol', null, 'username', 'password', 'host', 'port', 'pathname', 'search', 'hash'];
+    var result = URL_REGEX.exec(url);
+    if (!result) {
+        throw new SeleniumError("Invalid URL: " + url);
+    }
+    var loc = new Object();
+    for (var i = 0; i < fields.length; i++) {
+        var field = fields[i];
+        if (field == null) {
+            continue;
+        }
+        loc[field] = result[i];
+    }
+    return loc;
+}
+
+function reassembleLocation(loc) {
+    if (!loc.protocol) {
+        throw new Error("Not a valid location object: " + o2s(loc));
+    }
+    var protocol = loc.protocol;
+    protocol = protocol.replace(/:$/, "");
+    var url = protocol + "://";
+    if (loc.username) {
+        url += loc.username;
+        if (loc.password) {
+            url += ":" + loc.password;
+        }
+        url += "@";
+    }
+    if (loc.host) {
+        url += loc.host;
+    }
+    
+    if (loc.port) {
+        url += ":" + loc.port;
+    }
+    
+    if (loc.pathname) {
+        url += loc.pathname;
+    }
+    
+    if (loc.search) {
+        url += "?" + loc.search;
+    }
+    if (loc.hash) {
+        var hash = loc.hash;
+        hash = loc.hash.replace(/^#/, "");
+        url += "#" + hash;
+    }
+    return url;
+}
+
+function canonicalize(url) {
+    var tempLink = window.document.createElement("link");
+    tempLink.href = url; // this will canonicalize the href
+    return tempLink.href;
+}
+
+function extractExceptionMessage(ex) {
+    if (ex == null) return "null exception";
+    if (ex.message != null) return ex.message;
+    if (ex.toString && ex.toString() != null) return ex.toString();
+}
+    
+
 function describe(object, delimiter) {
     var props = new Array();
     for (var prop in object) {
-        props.push(prop + " -> " + object[prop]);
+        try {
+            props.push(prop + " -> " + object[prop]);
+        } catch (e) {
+            props.push(prop + " -> [htmlutils: ack! couldn't read this property! (Permission Denied?)]");
+        }
     }
     return props.join(delimiter || '\n');
 }
@@ -502,28 +711,27 @@ function SeleniumError(message) {
     return error;
 }
 
-var Effect = new Object();
-
-Object.extend(Effect, {
-    highlight : function(element) {
-        var highLightColor = "yellow";
-        if (element.originalColor == undefined) { // avoid picking up highlight
-            element.originalColor = Element.getStyle(element, "background-color");
-        }
-        Element.setStyle(element, {"background-color" : highLightColor});
-        window.setTimeout(function() {
+function highlight(element) {
+    var highLightColor = "yellow";
+    if (element.originalColor == undefined) { // avoid picking up highlight
+        element.originalColor = elementGetStyle(element, "background-color");
+    }
+    elementSetStyle(element, {"backgroundColor" : highLightColor});
+    window.setTimeout(function() {
+        try {
             //if element is orphan, probably page of it has already gone, so ignore
             if (!element.parentNode) {
                 return;
             }
-            Element.setStyle(element, {"background-color" : element.originalColor});
-        }, 200);
-    }
-});
+            elementSetStyle(element, {"backgroundColor" : element.originalColor});
+        } catch (e) {} // DGF unhighlighting is very dangerous and low priority
+    }, 200);
+}
+
 
 
 // for use from vs.2003 debugger
-function objToString(obj) {
+function o2s(obj) {
     var s = "";
     for (key in obj) {
         var line = key + "->" + obj[key];
@@ -535,7 +743,7 @@ function objToString(obj) {
 
 var seenReadyStateWarning = false;
 
-function openSeparateApplicationWindow(url) {
+function openSeparateApplicationWindow(url, suppressMozillaWarning) {
     // resize the Selenium window itself
     window.resizeTo(1200, 500);
     window.moveTo(window.screenX, 0);
@@ -560,7 +768,7 @@ function openSeparateApplicationWindow(url) {
     }
 
 
-    if (window.document.readyState == null && !seenReadyStateWarning) {
+    if (!suppressMozillaWarning && window.document.readyState == null && !seenReadyStateWarning) {
         alert("Beware!  Mozilla bug 300992 means that we can't always reliably detect when a new page has loaded.  Install the Selenium IDE extension or the readyState extension available from selenium.openqa.org to make page load detection more reliable.");
         seenReadyStateWarning = true;
     }
@@ -568,8 +776,8 @@ function openSeparateApplicationWindow(url) {
     return appWindow;
 }
 
-var URLConfiguration = Class.create();
-Object.extend(URLConfiguration.prototype, {
+var URLConfiguration = classCreate();
+objectExtend(URLConfiguration.prototype, {
     initialize: function() {
     },
     _isQueryParameterTrue: function (name) {
@@ -615,6 +823,11 @@ Object.extend(URLConfiguration.prototype, {
 
     isMultiWindowMode:function() {
         return this._isQueryParameterTrue('multiWindow');
+    },
+    
+    getBaseUrl:function() {
+        return this._getQueryParameter('baseUrl');
+            
     }
 });
 
