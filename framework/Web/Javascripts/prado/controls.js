@@ -7,12 +7,12 @@ Prado.WebUI.PostBackControl.prototype =
 	initialize : function(options)
 	{
 		this.element = $(options['ID']);
-		
+
 /*		if(options.CausesValidation && typeof(Prado.Validation) != 'undefined')
 		{
 			Prado.Validation.registerTarget(options);
 		}
-		
+
 		//TODO: what do the following options do?
 		//options['PostBackUrl']
 		//options['ClientSubmit']
@@ -35,7 +35,7 @@ Prado.WebUI.TButton = Prado.WebUI.createPostBackComponent();
 */
 Prado.WebUI.PostBackControl = Class.create();
 
-Prado.WebUI.PostBackControl.prototype = 
+Prado.WebUI.PostBackControl.prototype =
 {
 	_elementOnClick : null, //capture the element's onclick function
 
@@ -45,7 +45,7 @@ Prado.WebUI.PostBackControl.prototype =
 		if(this.onInit)
 			this.onInit(options);
 	},
-	
+
 	onInit : function(options)
 	{
 		if(typeof(this.element.onclick)=="function")
@@ -53,7 +53,7 @@ Prado.WebUI.PostBackControl.prototype =
 			this._elementOnClick = this.element.onclick;
 			this.element.onclick = null;
 		}
-		Event.observe(this.element, "click", this.onClick.bindEvent(this,options));		
+		Event.observe(this.element, "click", this.onClick.bindEvent(this,options));
 	},
 
 	onClick : function(event, options)
@@ -87,17 +87,12 @@ Prado.WebUI.TBulletedList = Class.extend(Prado.WebUI.PostBackControl);
 Prado.WebUI.TImageMap = Class.extend(Prado.WebUI.PostBackControl);
 
 /**
- * TImageButton client-side behaviour. With validation, Firefox needs 
+ * TImageButton client-side behaviour. With validation, Firefox needs
  * to capture the x,y point of the clicked image in hidden form fields.
  */
 Prado.WebUI.TImageButton = Class.extend(Prado.WebUI.PostBackControl);
 Object.extend(Prado.WebUI.TImageButton.prototype,
 {
-	/**
-	 * Only add the hidden inputs once.
-	 */
-	hasXYInput : false,
-	
 	/**
 	 * Override parent onPostBack function, tried to add hidden forms
 	 * inputs to capture x,y clicked point.
@@ -111,7 +106,7 @@ Object.extend(Prado.WebUI.TImageButton.prototype,
 		}
 		Prado.PostBack(event, options);
 	},
-	
+
 	/**
 	 * Add hidden inputs to capture the x,y point clicked on the image.
 	 * @param event DOM click event.
@@ -127,7 +122,7 @@ Object.extend(Prado.WebUI.TImageButton.prototype,
 		var x_input = INPUT({type:'hidden',name:id+'_x',value:x});
 		var y_input = INPUT({type:'hidden',name:id+'_y',value:y});
 		this.element.parentNode.appendChild(x_input);
-		this.element.parentNode.appendChild(y_input);		
+		this.element.parentNode.appendChild(y_input);
 	}
 });
 
@@ -183,7 +178,7 @@ Prado.WebUI.TListBox = Class.extend(Prado.WebUI.TListControl);
 Prado.WebUI.TDropDownList = Class.extend(Prado.WebUI.TListControl);
 
 Prado.WebUI.DefaultButton = Class.create();
-Prado.WebUI.DefaultButton.prototype = 
+Prado.WebUI.DefaultButton.prototype =
 {
 	initialize : function(options)
 	{
@@ -202,7 +197,7 @@ Prado.WebUI.DefaultButton.prototype =
 			if(defaultButton)
 			{
 				this.triggered = true;
-				$('PRADO_POSTBACK_TARGET').value = this.options.EventTarget;				
+				$('PRADO_POSTBACK_TARGET').value = this.options.EventTarget;
 				Event.fireEvent(defaultButton, this.options['Event']);
 				Event.stop(ev);
 			}

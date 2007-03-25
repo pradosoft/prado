@@ -85,6 +85,7 @@ class THtmlArea extends TTextBox
 			'ar' => 'ar',
 			'ca' => 'ca',
 			'cs' => 'cs',
+			'cy' => 'cy', //available since 3.0.7
 			'da' => 'da',
 			'de' => 'de',
 			'el' => 'el',
@@ -118,7 +119,7 @@ class THtmlArea extends TTextBox
 			'vi' => 'vi',
 			'zh' => 'zh_cn_utf8',
 			'zh_CN' => 'zh_cn_utf8',
-			'zh_HK' => 'zh_tw_utf8',
+			//'zh_HK' => 'zh_tw_utf8', removed from 3.0.7
 			'zh_TW' => 'zh_tw_utf8'
 		);
 

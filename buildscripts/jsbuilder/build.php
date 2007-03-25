@@ -40,6 +40,8 @@ define('DOC_OUTPUT_DIR', realpath(dirname(__FILE__).'/../../docs/Javascript'));
  */
 define('BUILD_DOC', sprintf('perl "%s" --no-sources -d "%s" ', JS_DOC, DOC_OUTPUT_DIR).'%s');
 
+define('JSMIN_AS_LIB',true);
+
 include(dirname(__FILE__).'/jsmin.php');
 
 if(SOURCE_DIR===false || TARGET_DIR===false)
@@ -55,33 +57,14 @@ $libraries = array(
 
 		//base javascript functions
 		'prototype/prototype.js',
-		'prototype/base.js',
-		'extended/base.js',
-		'prototype/string.js',
-		'extended/string.js',
-		'prototype/enumerable.js',
-		'prototype/array.js',
-		'prototype/hash.js',
-		'prototype/range.js',
-
-		//dom functions
-		'prototype/dom.js',
-		'prototype/form.js',
-		'prototype/event.js',
-		'extended/event.js',
-		'prototype/position.js',
-
-		//element selectors
-		'prototype/selector.js',
-
-		//build dom elements with DIV, A, UL, etc functions
 		'effects/builder.js',
+
+		'extended/base.js',
+		'extended/string.js',
+		'extended/event.js',
+		'extended/date.js',
 		'extended/builder.js',
 
-//		'extra/getElementsBySelector.js',
-//		'extra/behaviour.js',
-
-		'extended/date.js',
 
 		//prado core
 		'prado/prado.js',
@@ -97,25 +80,10 @@ $libraries = array(
 	'effects.js' => array(
 		'effects/effects.js'
 	),
-	//active controls
-	'ajax.js' => array(
-		'prototype/ajax.js',
-//		'prado/ajax.js',
-//		'extra/json.js',
-		'effects/controls.js',
-		'effects/dragdrop.js',
-		'effects/slider.js',
-//		'prado/activecontrols.js'
-	),
+
 	//logging
 	'logger.js' => array(
 		'extra/logger.js',
-	),
-
-	//rico
-	'rico.js' => array(
-		'rico/rico.js',
-		'rico/extension.js'
 	),
 
 	//validator
