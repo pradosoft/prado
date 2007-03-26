@@ -610,7 +610,7 @@ Prado.CallbackRequest.prototype =
 					if(element.type && element.name == name)
 					{
 						value = $F(element);
-						if(typeof(value) != "undefined")
+						if(typeof(value) != "undefined" && value != null)
 							data[name] = value;
 					}
 				})

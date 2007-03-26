@@ -95,6 +95,7 @@ class TActiveRadioButtonList extends TRadioButtonList implements IActiveControl,
 	 */
  	public function raiseCallbackEvent($param)
 	{
+		var_dump($_POST);
 		$this->onCallback($param);
 	}
 

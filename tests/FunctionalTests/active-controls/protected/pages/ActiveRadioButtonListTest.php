@@ -5,6 +5,7 @@ class ActiveRadioButtonListTest extends TPage
 	function list1_callback($sender, $param)
 	{
 		$values = $sender->getSelectedValues();
+		var_dump($values);
 		$this->label1->setText("Selection: ".implode(', ', $values));
 	}
 
