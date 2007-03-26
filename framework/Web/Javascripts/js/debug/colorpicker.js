@@ -96,7 +96,7 @@ Rico.Color.createFromHex = function(hexCode) {
 
    if ( hexCode.indexOf('#') == 0 )
       hexCode = hexCode.substring(1);
-   
+
    var red = "ff", green = "ff", blue="ff";
    if(hexCode.length > 4)
 	{
@@ -242,11 +242,12 @@ Rico.Color.RGBtoHSB = function(r, g, b) {
 }
 
 
+
 Prado.WebUI.TColorPicker = Class.create();
 
 Object.extend(Prado.WebUI.TColorPicker,
 {
-	palettes: 
+	palettes:
 	{
 		Small : [["fff", "fcc", "fc9", "ff9", "ffc", "9f9", "9ff", "cff", "ccf", "fcf"],
 				["ccc", "f66", "f96", "ff6", "ff3", "6f9", "3ff", "6ff", "99f", "f9f"],
@@ -261,7 +262,7 @@ Object.extend(Prado.WebUI.TColorPicker,
 				["808080"/*gray*/, "ff0000"/*red*/, "800080"/*purple*/, "000000"/*black*/]]
 	},
 
-	UIImages : 
+	UIImages :
 	{
 		'button.gif' : 'button.gif',
 //		'target_black.gif' : 'target_black.gif',
@@ -272,11 +273,11 @@ Object.extend(Prado.WebUI.TColorPicker,
 	}
 });
 
-Object.extend(Prado.WebUI.TColorPicker.prototype, 
+Object.extend(Prado.WebUI.TColorPicker.prototype,
 {
 	initialize : function(options)
 	{
-		var basics = 
+		var basics =
 		{
 			Palette : 'Small',
 			ClassName : 'TColorPicker',
@@ -285,7 +286,7 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 			CancelButtonText : 'Cancel',
 			ShowColorPicker : true
 		}
-		
+
 		this.element = null;
 		this.showing = false;
 
@@ -301,10 +302,10 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 
 	updatePicker : function(e)
 	{
-		var color = Rico.Color.createFromHex(this.input.value);	
+		var color = Rico.Color.createFromHex(this.input.value);
 		this.button.style.backgroundColor = color.toString();
 	},
-	
+
 	buttonOnClick : function(event)
 	{
 		var mode = this.options['Mode'];
@@ -328,7 +329,7 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 				this.initializeFullPicker();
 		}
 		this.show(mode);
-	},		
+	},
 
 	show : function(type)
 	{
@@ -340,14 +341,14 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 			this.element.style.top = (pos[1]-1) + "px";
 			this.element.style.left = pos[0] + "px";
 			this.element.style.display = "block";
-			
+
 			this.ieHack(type);
 
 			//observe for clicks on the document body
 			this._documentClickEvent = this.hideOnClick.bindEvent(this, type);
 			this._documentKeyDownEvent = this.keyPressed.bindEvent(this, type);
 			Event.observe(document.body, "click", this._documentClickEvent);
-			Event.observe(document,"keydown", this._documentKeyDownEvent); 
+			Event.observe(document,"keydown", this._documentKeyDownEvent);
 			this.showing = true;
 
 			if(type == "Full")
@@ -359,7 +360,7 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 			}
 		}
 	},
-	
+
 	hide : function(event)
 	{
 		if(this.showing)
@@ -370,11 +371,11 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 			this.element.style.display = "none";
 			this.showing = false;
 			Event.stopObserving(document.body, "click", this._documentClickEvent);
-			Event.stopObserving(document,"keydown", this._documentKeyDownEvent); 
-			
+			Event.stopObserving(document,"keydown", this._documentKeyDownEvent);
+
 			if(this._observingMouseMove)
-			{			
-				Event.stopObserving(document.body, "mousemove", this._onMouseMove);	
+			{
+				Event.stopObserving(document.body, "mousemove", this._onMouseMove);
 				this._observingMouseMove = false;
 			}
 		}
@@ -396,16 +397,16 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 			within = within || el == this.button;
 			within = within || el == this.input;
 			if(within) break;
-			el = el.parentNode;			
+			el = el.parentNode;
 		}
 		while(el);
 		if(!within) this.hide(ev);
 	},
 
-	ieHack : function() 
+	ieHack : function()
 	{
 		// IE hack
-		if(this.iePopUp) 
+		if(this.iePopUp)
 		{
 			this.iePopUp.style.display = "block";
 			this.iePopUp.style.top = (this.element.offsetTop) + "px";
@@ -448,7 +449,7 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 
 	cellOnClick : function(e)
 	{
-		var el = Event.element(e); 
+		var el = Event.element(e);
 		if(el.tagName.toLowerCase() != "img")
 			return;
 		var color = Rico.Color.createColorFromBackground(el);
@@ -464,15 +465,15 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 	},
 
 	getFullPickerContainer : function(pickerID)
-	{			
+	{
 		//create the 3 buttons
-		this.buttons = 
+		this.buttons =
 		{
 			//Less   : INPUT({value:'Less Colors', className:'button', type:'button'}),
 			OK	   : INPUT({value:this.options.OKButtonText, className:'button', type:'button'}),
 			Cancel : INPUT({value:this.options.CancelButtonText, className:'button', type:'button'})
 		};
-		
+
 		//create the 6 inputs
 		var inputs = {};
 		['H','S','V','R','G','B'].each(function(type)
@@ -483,13 +484,13 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 		//create the HEX input
 		inputs['HEX'] = INPUT({className:'hex',type:'text',size:'6',maxlength:'6'});
 		this.inputs = inputs;
-		
+
 		var images = Prado.WebUI.TColorPicker.UIImages;
 
 		this.inputs['currentColor'] = SPAN({className:'currentColor'});
 		this.inputs['oldColor'] = SPAN({className:'oldColor'});
 
-		var inputsTable = 
+		var inputsTable =
 			TABLE({className:'inputs'}, TBODY(null,
 				TR(null,
 					TD({className:'currentcolor',colSpan:2},
@@ -502,30 +503,30 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 				TR(null,
 					TD(null,'S:'),
 					TD(null,this.inputs['S'], '%')),
-				
-				TR(null, 
+
+				TR(null,
 					TD(null,'V:'),
 					TD(null,this.inputs['V'], '%')),
-				
-				TR(null, 
+
+				TR(null,
 					TD({className:'gap'},'R:'),
 					TD({className:'gap'},this.inputs['R'])),
-				
-				TR(null, 
+
+				TR(null,
 					TD(null,'G:'),
 					TD(null, this.inputs['G'])),
 
-				TR(null, 
+				TR(null,
 					TD(null,'B:'),
 					TD(null, this.inputs['B'])),
 
-				TR(null, 
+				TR(null,
 					TD({className:'gap'},'#'),
 					TD({className:'gap'},this.inputs['HEX']))
 			));
 
-		var UIimages = 
-		{		
+		var UIimages =
+		{
 			selector : SPAN({className:'selector'}),
 			background : SPAN({className:'colorpanel'}),
 			slider : SPAN({className:'slider'}),
@@ -538,23 +539,23 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 			var filter = "filter:progid:DXImageTransform.Microsoft.AlphaImageLoader";
 			UIimages['background'] = SPAN({className:'colorpanel',style:filter+"(src='"+images['background.png']+"' sizingMethod=scale);"})
 		}
-		
+
 		this.inputs = Object.extend(this.inputs, UIimages);
 
-		var pickerTable = 
+		var pickerTable =
 			TABLE(null,TBODY(null,
 				TR({className:'selection'},
 					TD({className:'colors'},UIimages['selector'],UIimages['background']),
 					TD({className:'hue'},UIimages['slider'],UIimages['hue']),
 					TD({className:'inputs'}, inputsTable)
 				),
-				TR({className:'options'}, 
-					TD({colSpan:3}, 
-						this.buttons['OK'], 
+				TR({className:'options'},
+					TD({colSpan:3},
+						this.buttons['OK'],
 						this.buttons['Cancel'])
 				)
 			));
-		
+
 		return DIV({className:this.options['ClassName']+" FullColorPicker",
 						id:pickerID+"_picker"},pickerTable);
 	},
@@ -565,16 +566,16 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 		this.inputs.oldColor.style.backgroundColor = color.asHex();
 		this.setColor(color,true);
 
-		var i = 0; 
+		var i = 0;
 		for(var type in this.inputs)
 		{
-			Event.observe(this.inputs[type], "change", 
+			Event.observe(this.inputs[type], "change",
 				this.onInputChanged.bindEvent(this,type));
 			i++;
 
 			if(i > 6) break;
 		}
-	
+
 		this.isMouseDownOnColor = false;
 		this.isMouseDownOnHue = false;
 
@@ -587,9 +588,9 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 		Event.observe(this.inputs.selector, "mousedown", this._onColorMouseDown);
 		Event.observe(this.inputs.hue, "mousedown", this._onHueMouseDown);
 		Event.observe(this.inputs.slider, "mousedown", this._onHueMouseDown);
-		
+
 		Event.observe(document.body, "mouseup", this._onMouseUp);
-		
+
 		this.observeMouseMovement();
 
 		Event.observe(this.buttons.Cancel, "click", this.hide.bindEvent(this,this.options['Mode']));
@@ -602,7 +603,7 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 		{
 			Event.observe(document.body, "mousemove", this._onMouseMove);
 			this._observingMouseMove = true;
-		}		
+		}
 	},
 
 	onColorMouseDown : function(ev)
@@ -633,15 +634,15 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 		if(this.isMouseDownOnHue)
 			this.changeH(ev);
 		Event.stop(ev);
-	},	
+	},
 
 	changeSV : function(ev)
 	{
 		var px = Event.pointerX(ev);
 		var py = Event.pointerY(ev);
 		var pos = Position.cumulativeOffset(this.inputs.background);
-		
-		var x = this.truncate(px - pos[0],0,255); 
+
+		var x = this.truncate(px - pos[0],0,255);
 		var y = this.truncate(py - pos[1],0,255);
 
 
@@ -650,7 +651,7 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 
 		var current_s = parseInt(this.inputs.S.value);
 		var current_b = parseInt(this.inputs.V.value);
-		
+
 		if(current_s == parseInt(s*100) && current_b == parseInt(b*100)) return;
 
 		var h = this.truncate(this.inputs.H.value,0,360)/360;
@@ -661,7 +662,7 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 
 		this.inputs.selector.style.left = x+"px";
 		this.inputs.selector.style.top = y+"px";
-		
+
 		this.inputs.currentColor.style.backgroundColor = color.asHex();
 
 		return this.setColor(color);
@@ -672,7 +673,7 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 		var py = Event.pointerY(ev);
 		var pos = Position.cumulativeOffset(this.inputs.background);
 		var y = this.truncate(py - pos[1],0,255);
-		
+
 		var h = (255-y)/255;
 		var current_h = this.truncate(this.inputs.H.value,0,360);
 		current_h = current_h == 0 ? 360 : current_h;
@@ -743,12 +744,12 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 		this.inputs.G.value = color.rgb.g;
 		this.inputs.B.value = color.rgb.b;
 		this.inputs.HEX.value = color.asHex().substring(1).toUpperCase();
-		
+
 		var images = Prado.WebUI.TColorPicker.UIImages;
 
 		var changeCss = color.isBright() ? 'removeClassName' : 'addClassName';
 		Element[changeCss](this.inputs.selector, 'target_white');
-		
+
 		if(update)
 			this.updateSelectors(color);
 	},
@@ -757,11 +758,11 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 	{
 		var hsb = color.asHSB();
 		var pos = [hsb.s*255, hsb.b*255, hsb.h*255];
-		
+
 		this.inputs.selector.style.left = this.truncate(pos[0],0,255)+"px";
 		this.inputs.selector.style.top = this.truncate(255-pos[1],0,255)+"px";
 		this.inputs.slider.style.top = this.truncate(255-pos[2],0,255)+"px";
-		
+
 		var hue = new Rico.Color(color.rgb.r,color.rgb.g,color.rgb.b);
 		hue.setSaturation(1); hue.setBrightness(1);
 		this.inputs.background.style.backgroundColor = hue.asHex();

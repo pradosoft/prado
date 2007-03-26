@@ -3349,6 +3349,63 @@ var Builder = {
 
 
 
+var Prado =
+{
+	Version: '3.0.0',
+
+	/**
+	 * Returns browser information. Example
+	 * <code>
+	 * var browser = Prado.Browser();
+	 * alert(browser.ie); //should ouput true if IE, false otherwise
+	 * </code>
+	 * @param ${parameter}
+	 * @return ${return}
+	 */
+	Browser : function()
+	{
+		var info = { Version : "1.0" };
+		var is_major = parseInt( navigator.appVersion );
+		info.nver = is_major;
+		info.ver = navigator.appVersion;
+		info.agent = navigator.userAgent;
+		info.dom = document.getElementById ? 1 : 0;
+		info.opera = window.opera ? 1 : 0;
+		info.ie5 = ( info.ver.indexOf( "MSIE 5" ) > -1 && info.dom && !info.opera ) ? 1 : 0;
+		info.ie6 = ( info.ver.indexOf( "MSIE 6" ) > -1 && info.dom && !info.opera ) ? 1 : 0;
+		info.ie4 = ( document.all && !info.dom && !info.opera ) ? 1 : 0;
+		info.ie = info.ie4 || info.ie5 || info.ie6;
+		info.mac = info.agent.indexOf( "Mac" ) > -1;
+		info.ns6 = ( info.dom && parseInt( info.ver ) >= 5 ) ? 1 : 0;
+		info.ie3 = ( info.ver.indexOf( "MSIE" ) && ( is_major < 4 ) );
+		info.hotjava = ( info.agent.toLowerCase().indexOf( 'hotjava' ) != -1 ) ? 1 : 0;
+		info.ns4 = ( document.layers && !info.dom && !info.hotjava ) ? 1 : 0;
+		info.bw = ( info.ie6 || info.ie5 || info.ie4 || info.ns4 || info.ns6 || info.opera );
+		info.ver3 = ( info.hotjava || info.ie3 );
+		info.opera7 = ( ( info.agent.toLowerCase().indexOf( 'opera 7' ) > -1 ) || ( info.agent.toLowerCase().indexOf( 'opera/7' ) > -1 ) );
+		info.operaOld = info.opera && !info.opera7;
+		return info;
+	},
+
+	ImportCss : function(doc, css_file)
+	{
+		if (Prado.Browser().ie)
+			var styleSheet = doc.createStyleSheet(css_file);
+		else
+		{
+			var elm = doc.createElement("link");
+
+			elm.rel = "stylesheet";
+			elm.href = css_file;
+
+			if (headArr = doc.getElementsByTagName("head"))
+				headArr[0].appendChild(elm);
+		}
+	}
+};
+
+
+
 /**
  * Similar to bindAsEventLister, but takes additional arguments.
  */
@@ -3485,626 +3542,10 @@ Base.implement = function(_interface) {
 	this.prototype.extend(_interface);
 };
 
-
 /**
- * @class String extensions
+ * Performs a post-back using javascript
+ *
  */
-Object.extend(String.prototype, {
-	/**
-	 * @param {String} "left" to pad the string on the left, "right" to pad right.
-	 * @param {Number} minimum string length.
-	 * @param {String} character(s) to pad 
-	 * @return {String} padded character(s) on the left or right to satisfy minimum string length
-	 */
-
-	pad : function(side, len, chr) {
-		if (!chr) chr = ' ';
-		var s = this;
-		var left = side.toLowerCase()=='left';
-		while (s.length<len) s = left? chr + s : s + chr;
-		return s;
-	},
-
-	/**
-	 * @param {Number} minimum string length.
-	 * @param {String} character(s) to pad 
-	 * @return {String} padded character(s) on the left to satisfy minimum string length
-	 */
-	padLeft : function(len, chr) {
-		return this.pad('left',len,chr);
-	},
-
-	/**
-	 * @param {Number} minimum string length.
-	 * @param {String} character(s) to pad 
-	 * @return {String} padded character(s) on the right to satisfy minimum string length
-	 */
-	padRight : function(len, chr) {
-		return this.pad('right',len,chr);
-	},
-
-	/**
-	 * @param {Number} minimum string length.
-	 * @return {String} append zeros to the left to satisfy minimum string length.
-	 */
-	zerofill : function(len) { 
-		return this.padLeft(len,'0');
-	},
-
-	/**
-	 * @return {String} removed white spaces from both ends.
-	 */
-	trim : function() { 
-		return this.replace(/^\s+|\s+$/g,'');
-	},
-
-	/**
-	 * @return {String} removed white spaces from the left end.
-	 */
-	trimLeft : function() { 
-		return this.replace(/^\s+/,''); 
-	},
-
-	/**
-	 * @return {String} removed white spaces from the right end.
-	 */
-	trimRight : function() { 
-		return this.replace(/\s+$/,'');
-	},
-
-	/**
-	 * Convert period separated function names into a function reference.
-	 * e.g. "Prado.AJAX.Callback.Action.setValue".toFunction() will return
-	 * the actual function Prado.AJAX.Callback.Action.setValue()
-	 * @return {Function} the corresponding function represented by the string.
-	 */
-	toFunction : function()
-	{
-		var commands = this.split(/\./);
-		var command = window;
-		commands.each(function(action)
-		{ 
-			if(command[new String(action)]) 
-				command=command[new String(action)]; 
-		});
-		if(typeof(command) == "function")
-			return command;
-		else
-		{
-			if(typeof Logger != "undefined")
-				Logger.error("Missing function", this);
-				
-			throw new Error	("Missing function '"+this+"'");
-		}
-	},
-
-	/** 
-	 * Convert a string into integer, returns null if not integer.
-	 * @return {Number} null if string does not represent an integer.
-	 */
-	toInteger : function()
-	{
-		var exp = /^\s*[-\+]?\d+\s*$/;
-		if (this.match(exp) == null)
-			return null;
-		var num = parseInt(this, 10);
-		return (isNaN(num) ? null : num);
-	},
-
-	/** 
-	 * Convert a string into a double/float value. <b>Internationalization 
-	 * is not supported</b>
-	 * @param {String} the decimal character
-	 * @return {Double} null if string does not represent a float value
-	 */
-	toDouble : function(decimalchar)
-	{
-		if(this.length <= 0) return null;
-		decimalchar = decimalchar || ".";
-		var exp = new RegExp("^\\s*([-\\+])?(\\d+)?(\\" + decimalchar + "(\\d+))?\\s*$");
-		var m = this.match(exp);
-		
-		if (m == null)	
-			return null;
-		m[1] = m[1] || "";
-		m[2] = m[2] || "0";
-		m[4] = m[4] || "0";
-				
-		var cleanInput = m[1] + (m[2].length>0 ? m[2] : "0") + "." + m[4];
-		var num = parseFloat(cleanInput);
-		return (isNaN(num) ? null : num);
-	},
-
-	/**
-	 * Convert strings that represent a currency value (e.g. a float with grouping 
-	 * characters) to float. E.g. "10,000.50" will become "10000.50". The number 
-	 * of dicimal digits, grouping and decimal characters can be specified.
-	 * <i>The currency input format is <b>very</b> strict, null will be returned if
-	 * the pattern does not match</i>.
-	 * @param {String} the grouping character, default is ","
-	 * @param {Number} number of decimal digits
-	 * @param {String} the decimal character, default is "."
-	 * @type {Double} the currency value as float.
-	 */
-	toCurrency : function(groupchar, digits, decimalchar)
-	{
-		groupchar = groupchar || ",";
-		decimalchar = decimalchar || ".";
-		digits = typeof(digits) == "undefined" ? 2 : digits;
-
-		var exp = new RegExp("^\\s*([-\\+])?(((\\d+)\\" + groupchar + ")*)(\\d+)"
-			+ ((digits > 0) ? "(\\" + decimalchar + "(\\d{1," + digits + "}))?" : "")
-			+ "\\s*$");
-		var m = this.match(exp);
-		if (m == null)
-			return null;
-		var intermed = m[2] + m[5] ;
-		var cleanInput = m[1] + intermed.replace(
-				new RegExp("(\\" + groupchar + ")", "g"), "") 
-								+ ((digits > 0) ? "." + m[7] : "");
-		var num = parseFloat(cleanInput);
-		return (isNaN(num) ? null : num);
-	},
-
-	/**
-	 * Converts the string to a date by finding values that matches the 
-	 * date format pattern.
-	 * @param string date format pattern, e.g. MM-dd-yyyy
-	 * @return {Date} the date extracted from the string
-	 */
-	toDate : function(format)
-	{
-		return Date.SimpleParse(this, format);
-	}
-});
-
-/**
- * @class Event extensions.
- */
-Object.extend(Event, 
-{
-	/**
-	 * Register a function to be executed when the page is loaded. 
-	 * Note that the page is only loaded if all resources (e.g. images) 
-	 * are loaded.
-	 * 
-	 * Example: Show an alert box with message "Page Loaded!" when the 
-	 * page finished loading.
-	 * <code>
-	 * Event.OnLoad(function(){ alert("Page Loaded!"); });
-	 * </code>
-	 *
-	 * @param {Function} function to execute when page is loaded.
-	 */
-	OnLoad : function (fn) 
-	{
-		// opera onload is in document, not window
-		var w = document.addEventListener && 
-					!window.addEventListener ? document : window;
-		Event.observe(w,'load',fn);
-	},
-
-	/**
-	 * @param {Event} a keyboard event
-	 * @return {Number} the Unicode character code generated by the key 
-	 * that was struck. 
-	 */
-	keyCode : function(e)
-	{
-	   return e.keyCode != null ? e.keyCode : e.charCode
-	},
-
-	/**
-	 * @param {String} event type or event name.
-	 * @return {Boolean} true if event type is of HTMLEvent, false 
-	 * otherwise
-	 */
-	isHTMLEvent : function(type)
-	{
-		var events = ['abort', 'blur', 'change', 'error', 'focus', 
-					'load', 'reset', 'resize', 'scroll', 'select', 
-					'submit', 'unload'];
-		return events.include(type);
-	},
-
-	/**
-	 * @param {String} event type or event name
-	 * @return {Boolean} true if event type is of MouseEvent, 
-	 * false otherwise
-	 */
-	isMouseEvent : function(type)
-	{
-		var events = ['click', 'mousedown', 'mousemove', 'mouseout', 
-					'mouseover', 'mouseup'];
-		return events.include(type);
-	},
-
-	/**
-	 * Dispatch the DOM event of a given <tt>type</tt> on a DOM 
-	 * <tt>element</tt>. Only HTMLEvent and MouseEvent can be 
-	 * dispatched, keyboard events or UIEvent can not be dispatch 
-	 * via javascript consistently.
-	 * For the "submit" event the submit() method is called.
-	 * @param {Object} element id string or a DOM element.
-	 * @param {String} event type to dispatch.
-	 */
-	fireEvent : function(element,type)
-	{
-		element = $(element);
-		if(type == "submit")
-			return element.submit();
-		if(document.createEvent)
-        {            
-			if(Event.isHTMLEvent(type))
-			{
-				var event = document.createEvent('HTMLEvents');
-	            event.initEvent(type, true, true);
-			}
-			else if(Event.isMouseEvent(type))
-			{
-				var event = document.createEvent('MouseEvents');				
-				if (event.initMouseEvent)
-		        {
-					event.initMouseEvent(type,true,true,
-						document.defaultView, 1, 0, 0, 0, 0, false, 
-								false, false, false, 0, null);
-		        }
-		        else
-		        {
-		            // Safari
-		            // TODO we should be initialising other mouse-event related attributes here
-		            event.initEvent(type, true, true);
-		        }
-			}
-            element.dispatchEvent(event);
-        }
-        else if(document.createEventObject)
-        {
-        	var evObj = document.createEventObject();
-            element.fireEvent('on'+type, evObj);
-        }
-        else if(typeof(element['on'+type]) == "function")
-            element['on'+type]();
-	}
-});
-
-
-Object.extend(Date.prototype,
-{	
-	SimpleFormat: function(format, data)
-	{
-		data = data || {};
-		var bits = new Array();
-		bits['d'] = this.getDate();
-		bits['dd'] = String(this.getDate()).zerofill(2);
-		
-		bits['M'] = this.getMonth()+1;
-		bits['MM'] = String(this.getMonth()+1).zerofill(2);
-		if(data.AbbreviatedMonthNames)
-			bits['MMM'] = data.AbbreviatedMonthNames[this.getMonth()];
-		if(data.MonthNames)
-			bits['MMMM'] = data.MonthNames[this.getMonth()];
-		var yearStr = "" + this.getFullYear();
-		yearStr = (yearStr.length == 2) ? '19' + yearStr: yearStr;
-		bits['yyyy'] = yearStr;
-		bits['yy'] = bits['yyyy'].toString().substr(2,2);
-		
-		// do some funky regexs to replace the format string
-		// with the real values
-		var frm = new String(format);
-		for (var sect in bits) 
-		{
-			var reg = new RegExp("\\b"+sect+"\\b" ,"g");
-			frm = frm.replace(reg, bits[sect]);
-		}
-		return frm;
-	},
-
-	toISODate : function()
-	{
-		var y = this.getFullYear();
-		var m = String(this.getMonth() + 1).zerofill(2);
-		var d = String(this.getDate()).zerofill(2);
-		return String(y) + String(m) + String(d);
-	}
-});
-
-Object.extend(Date, 
-{
-	SimpleParse: function(value, format)
-	{	
-		val=String(value);
-		format=String(format);
-		
-		if(val.length <= 0) return null;
-		
-		if(format.length <= 0) return new Date(value);
-			
-		var isInteger = function (val) 
-		{
-			var digits="1234567890";
-			for (var i=0; i < val.length; i++) 
-			{
-				if (digits.indexOf(val.charAt(i))==-1) { return false; }
-			}
-			return true;
-		};
-		
-		var getInt = function(str,i,minlength,maxlength) 
-		{
-			for (var x=maxlength; x>=minlength; x--) 
-			{
-				var token=str.substring(i,i+x);
-				if (token.length < minlength) { return null; }
-				if (isInteger(token)) { return token; }
-			}
-			return null;
-		};
-	
-		var i_val=0;
-		var i_format=0;
-		var c="";
-		var token="";
-		var token2="";
-		var x,y;
-		var now=new Date();
-		var year=now.getFullYear();
-		var month=now.getMonth()+1;
-		var date=1;
-	
-		while (i_format < format.length) 
-		{
-			// Get next token from format string
-			c=format.charAt(i_format);
-			token="";
-			while ((format.charAt(i_format)==c) && (i_format < format.length)) 
-			{
-				token += format.charAt(i_format++);
-			}
-		
-			// Extract contents of value based on format token
-			if (token=="yyyy" || token=="yy" || token=="y") 
-			{
-				if (token=="yyyy") { x=4;y=4; }
-				if (token=="yy")   { x=2;y=2; }
-				if (token=="y")    { x=2;y=4; }
-				year=getInt(val,i_val,x,y);
-				if (year==null) { return null; }
-				i_val += year.length;
-				if (year.length==2) 
-				{
-					if (year > 70) { year=1900+(year-0); }
-					else { year=2000+(year-0); }
-				}
-			}
-
-			else if (token=="MM"||token=="M") 
-			{
-				month=getInt(val,i_val,token.length,2);
-				if(month==null||(month<1)||(month>12)){return null;}
-				i_val+=month.length;
-			}
-			else if (token=="dd"||token=="d") 
-			{
-				date=getInt(val,i_val,token.length,2);
-				if(date==null||(date<1)||(date>31)){return null;}
-				i_val+=date.length;
-			}
-			else 
-			{
-				if (val.substring(i_val,i_val+token.length)!=token) {return null;}
-				else {i_val+=token.length;}
-			}
-		}
-	
-		// If there are any trailing characters left in the value, it doesn't match
-		if (i_val != val.length) { return null; }
-		
-		// Is date valid for month?
-		if (month==2) 
-		{
-			// Check for leap year
-			if ( ( (year%4==0)&&(year%100 != 0) ) || (year%400==0) ) { // leap year
-				if (date > 29){ return null; }
-			}
-			else { if (date > 28) { return null; } }
-		}
-	
-		if ((month==4)||(month==6)||(month==9)||(month==11)) 
-		{
-			if (date > 30) { return null; }
-		}
-		
-		var newdate=new Date(year,month-1,date, 0, 0, 0);
-		return newdate;
-	}
-});
-
-
-Object.extend(Builder,
-{
-	exportTags:function()
-	{
-		var tags=["BUTTON","TT","PRE","H1","H2","H3","BR","CANVAS","HR","LABEL","TEXTAREA","FORM","STRONG","SELECT","OPTION","OPTGROUP","LEGEND","FIELDSET","P","UL","OL","LI","TD","TR","THEAD","TBODY","TFOOT","TABLE","TH","INPUT","SPAN","A","DIV","IMG", "CAPTION"];
-		tags.each(function(tag)
-		{
-			window[tag]=function()
-			{
-				var args=$A(arguments);
-				if(args.length==0)
-					return Builder.node(tag,null);
-				if(args.length==1)
-					return Builder.node(tag,args[0]);
-				if(args.length>1)
-					return Builder.node(tag,args.shift(),args);
-
-			};
-		});
-	}
-});
-
-Builder.exportTags();
-
-
-
-var Prado =
-{
-	Version: '3.0.0',
-
-	/**
-	 * Returns browser information. Example
-	 * <code>
-	 * var browser = Prado.Browser();
-	 * alert(browser.ie); //should ouput true if IE, false otherwise
-	 * </code>
-	 * @param ${parameter}
-	 * @return ${return}
-	 */
-	Browser : function()
-	{
-		var info = { Version : "1.0" };
-		var is_major = parseInt( navigator.appVersion );
-		info.nver = is_major;
-		info.ver = navigator.appVersion;
-		info.agent = navigator.userAgent;
-		info.dom = document.getElementById ? 1 : 0;
-		info.opera = window.opera ? 1 : 0;
-		info.ie5 = ( info.ver.indexOf( "MSIE 5" ) > -1 && info.dom && !info.opera ) ? 1 : 0;
-		info.ie6 = ( info.ver.indexOf( "MSIE 6" ) > -1 && info.dom && !info.opera ) ? 1 : 0;
-		info.ie4 = ( document.all && !info.dom && !info.opera ) ? 1 : 0;
-		info.ie = info.ie4 || info.ie5 || info.ie6;
-		info.mac = info.agent.indexOf( "Mac" ) > -1;
-		info.ns6 = ( info.dom && parseInt( info.ver ) >= 5 ) ? 1 : 0;
-		info.ie3 = ( info.ver.indexOf( "MSIE" ) && ( is_major < 4 ) );
-		info.hotjava = ( info.agent.toLowerCase().indexOf( 'hotjava' ) != -1 ) ? 1 : 0;
-		info.ns4 = ( document.layers && !info.dom && !info.hotjava ) ? 1 : 0;
-		info.bw = ( info.ie6 || info.ie5 || info.ie4 || info.ns4 || info.ns6 || info.opera );
-		info.ver3 = ( info.hotjava || info.ie3 );
-		info.opera7 = ( ( info.agent.toLowerCase().indexOf( 'opera 7' ) > -1 ) || ( info.agent.toLowerCase().indexOf( 'opera/7' ) > -1 ) );
-		info.operaOld = info.opera && !info.opera7;
-		return info;
-	},
-
-	ImportCss : function(doc, css_file)
-	{
-		if (Prado.Browser().ie)
-			var styleSheet = doc.createStyleSheet(css_file);
-		else
-		{
-			var elm = doc.createElement("link");
-
-			elm.rel = "stylesheet";
-			elm.href = css_file;
-
-			if (headArr = doc.getElementsByTagName("head"))
-				headArr[0].appendChild(elm);
-		}
-	}
-};
-
-
-/*Prado.Focus = Class.create();
-
-Prado.Focus.setFocus = function(id)
-{
-	var target = document.getElementById ? document.getElementById(id) : document.all[id];
-	if(target && !Prado.Focus.canFocusOn(target))
-	{
-		target = Prado.Focus.findTarget(target);
-	}
-	if(target)
-	{
-        try
-		{
-            target.focus();
-			target.scrollIntoView(false);
-            if (window.__smartNav)
-			{
-				window.__smartNav.ae = target.id;
-			}
-		}
-        catch (e)
-		{
-		}
-	}
-}
-
-Prado.Focus.canFocusOn = function(element)
-{
-	if(!element || !(element.tagName))
-		return false;
-	var tagName = element.tagName.toLowerCase();
-	return !element.disabled && (!element.type || element.type.toLowerCase() != "hidden") && Prado.Focus.isFocusableTag(tagName) && Prado.Focus.isVisible(element);
-}
-
-Prado.Focus.isFocusableTag = function(tagName)
-{
-	return (tagName == "input" || tagName == "textarea" || tagName == "select" || tagName == "button" || tagName == "a");
-}
-
-
-Prado.Focus.findTarget = function(element)
-{
-	if(!element || !(element.tagName))
-	{
-		return null;
-	}
-	var tagName = element.tagName.toLowerCase();
-	if (tagName == "undefined")
-	{
-		return null;
-	}
-	var children = element.childNodes;
-	if (children)
-	{
-		for(var i=0;i<children.length;i++)
-		{
-			try
-			{
-				if(Prado.Focus.canFocusOn(children[i]))
-				{
-					return children[i];
-				}
-				else
-				{
-					var target = Prado.Focus.findTarget(children[i]);
-					if(target)
-					{
-						return target;
-					}
-				}
-			}
-			catch (e)
-			{
-			}
-		}
-	}
-	return null;
-}
-
-Prado.Focus.isVisible = function(element)
-{
-	var current = element;
-	while((typeof(current) != "undefined") && (current != null))
-	{
-		if(current.disabled || (typeof(current.style) != "undefined" && ((typeof(current.style.display) != "undefined" && current.style.display == "none") || (typeof(current.style.visibility) != "undefined" && current.style.visibility == "hidden") )))
-		{
-			return false;
-		}
-		if(typeof(current.parentNode) != "undefined" &&	current.parentNode != null && current.parentNode != current && current.parentNode.tagName.toLowerCase() != "body")
-		{
-			current = current.parentNode;
-		}
-		else
-		{
-			return true;
-		}
-	}
-    return true;
-}
-*/
-
-
 Prado.PostBack = function(event,options)
 {
 	var form = $(options['FormID']);
@@ -4143,77 +3584,10 @@ Prado.PostBack = function(event,options)
 	Event.fireEvent(form,"submit");
 }
 
-/*
-
-Prado.doPostBack = function(formID, eventTarget, eventParameter, performValidation, validationGroup, actionUrl, trackFocus, clientSubmit)
-{
-	if (typeof(performValidation) == 'undefined')
-	{
-		var performValidation = false;
-		var validationGroup = '';
-		var actionUrl = null;
-		var trackFocus = false;
-		var clientSubmit = true;
-	}
-	var theForm = document.getElementById ? document.getElementById(formID) : document.forms[formID];
-	var canSubmit = true;
-    if (performValidation)
-	{
-		//canSubmit = Prado.Validation.validate(validationGroup);
-	*	Prado.Validation.ActiveTarget = theForm;
-		Prado.Validation.CurrentTargetGroup = null;
-		Prado.Validation.IsGroupValidation = false;
-		canSubmit = Prado.Validation.IsValid(theForm);
-		Logger.debug(canSubmit);*
-		canSubmit = Prado.Validation.IsValid(theForm);
-	}
-	if (canSubmit)
-	{
-		if (actionUrl != null && (actionUrl.length > 0))
-		{
-			theForm.action = actionUrl;
-		}
-		if (trackFocus)
-		{
-			var lastFocus = theForm.elements['PRADO_LASTFOCUS'];
-			if ((typeof(lastFocus) != 'undefined') && (lastFocus != null))
-			{
-				var active = document.activeElement;
-				if (typeof(active) == 'undefined')
-				{
-					lastFocus.value = eventTarget;
-				}
-				else
-				{
-					if ((active != null) && (typeof(active.id) != 'undefined'))
-					{
-						if (active.id.length > 0)
-						{
-							lastFocus.value = active.id;
-						}
-						else if (typeof(active.name) != 'undefined')
-						{
-							lastFocus.value = active.name;
-						}
-					}
-				}
-			}
-		}
-		if (!clientSubmit)
-		{
-			canSubmit = false;
-		}
-	}
-	if (canSubmit && (!theForm.onsubmit || theForm.onsubmit()))
-	{
-		theForm.PRADO_POSTBACK_TARGET.value = eventTarget;
-		theForm.PRADO_POSTBACK_PARAMETER.value = eventParameter;
-		theForm.submit();
-	}
-}
-*/
-
-Prado.Element = 
+/**
+ * Additional element utilities.
+ */
+Prado.Element =
 {
 	/**
 	 * Set the value of a particular element.
@@ -4234,17 +3608,17 @@ Prado.Element =
 		if(!el && !isList) return;
 		method = isList ? 'check'+method : el.tagName.toLowerCase()+method;
 		var selection = Prado.Element.Selection;
-		if(isFunction(selection[method])) 
+		if(isFunction(selection[method]))
 			selection[method](isList ? element : el,value);
 	},
 
 	click : function(element)
 	{
 		var el = $(element);
-		if(el) 
+		if(el)
 			Event.fireEvent(el,'click');
 	},
-	
+
 	setAttribute : function(element, attribute, value)
 	{
 		var el = $(element);
@@ -4279,13 +3653,16 @@ Prado.Element =
 	}
 }
 
-Prado.Element.Selection = 
+/**
+ * Selectable element utilities
+ */
+Prado.Element.Selection =
 {
 	inputValue : function(el, value)
 	{
-		switch(el.type.toLowerCase()) 
+		switch(el.type.toLowerCase())
 		{
-			case 'checkbox':  
+			case 'checkbox':
 			case 'radio':
 			return el.checked = value;
 		}
@@ -4377,52 +3754,485 @@ Prado.Element.Selection =
 	}
 };
 
-Prado.WebUI = Class.create();
 
-//base postback-able controls
-/*Prado.WebUI.PostBackControl = Class.create();
-Prado.WebUI.PostBackControl.prototype =
+/**
+ * Export scripaculous builder utilities as window[functions]
+ */
+Object.extend(Builder,
 {
-	initialize : function(options)
+	exportTags:function()
 	{
-		this.element = $(options['ID']);
-
-/*		if(options.CausesValidation && typeof(Prado.Validation) != 'undefined')
+		var tags=["BUTTON","TT","PRE","H1","H2","H3","BR","CANVAS","HR","LABEL","TEXTAREA","FORM","STRONG","SELECT","OPTION","OPTGROUP","LEGEND","FIELDSET","P","UL","OL","LI","TD","TR","THEAD","TBODY","TFOOT","TABLE","TH","INPUT","SPAN","A","DIV","IMG", "CAPTION"];
+		tags.each(function(tag)
 		{
-			Prado.Validation.registerTarget(options);
+			window[tag]=function()
+			{
+				var args=$A(arguments);
+				if(args.length==0)
+					return Builder.node(tag,null);
+				if(args.length==1)
+					return Builder.node(tag,args[0]);
+				if(args.length>1)
+					return Builder.node(tag,args.shift(),args);
+
+			};
+		});
+	}
+});
+
+Builder.exportTags();
+
+/**
+ * @class String extensions
+ */
+Object.extend(String.prototype, {
+	/**
+	 * @param {String} "left" to pad the string on the left, "right" to pad right.
+	 * @param {Number} minimum string length.
+	 * @param {String} character(s) to pad
+	 * @return {String} padded character(s) on the left or right to satisfy minimum string length
+	 */
+
+	pad : function(side, len, chr) {
+		if (!chr) chr = ' ';
+		var s = this;
+		var left = side.toLowerCase()=='left';
+		while (s.length<len) s = left? chr + s : s + chr;
+		return s;
+	},
+
+	/**
+	 * @param {Number} minimum string length.
+	 * @param {String} character(s) to pad
+	 * @return {String} padded character(s) on the left to satisfy minimum string length
+	 */
+	padLeft : function(len, chr) {
+		return this.pad('left',len,chr);
+	},
+
+	/**
+	 * @param {Number} minimum string length.
+	 * @param {String} character(s) to pad
+	 * @return {String} padded character(s) on the right to satisfy minimum string length
+	 */
+	padRight : function(len, chr) {
+		return this.pad('right',len,chr);
+	},
+
+	/**
+	 * @param {Number} minimum string length.
+	 * @return {String} append zeros to the left to satisfy minimum string length.
+	 */
+	zerofill : function(len) {
+		return this.padLeft(len,'0');
+	},
+
+	/**
+	 * @return {String} removed white spaces from both ends.
+	 */
+	trim : function() {
+		return this.replace(/^\s+|\s+$/g,'');
+	},
+
+	/**
+	 * @return {String} removed white spaces from the left end.
+	 */
+	trimLeft : function() {
+		return this.replace(/^\s+/,'');
+	},
+
+	/**
+	 * @return {String} removed white spaces from the right end.
+	 */
+	trimRight : function() {
+		return this.replace(/\s+$/,'');
+	},
+
+	/**
+	 * Convert period separated function names into a function reference.
+	 * e.g. "Prado.AJAX.Callback.Action.setValue".toFunction() will return
+	 * the actual function Prado.AJAX.Callback.Action.setValue()
+	 * @return {Function} the corresponding function represented by the string.
+	 */
+	toFunction : function()
+	{
+		var commands = this.split(/\./);
+		var command = window;
+		commands.each(function(action)
+		{
+			if(command[new String(action)])
+				command=command[new String(action)];
+		});
+		if(typeof(command) == "function")
+			return command;
+		else
+		{
+			if(typeof Logger != "undefined")
+				Logger.error("Missing function", this);
+
+			throw new Error	("Missing function '"+this+"'");
+		}
+	},
+
+	/**
+	 * Convert a string into integer, returns null if not integer.
+	 * @return {Number} null if string does not represent an integer.
+	 */
+	toInteger : function()
+	{
+		var exp = /^\s*[-\+]?\d+\s*$/;
+		if (this.match(exp) == null)
+			return null;
+		var num = parseInt(this, 10);
+		return (isNaN(num) ? null : num);
+	},
+
+	/**
+	 * Convert a string into a double/float value. <b>Internationalization
+	 * is not supported</b>
+	 * @param {String} the decimal character
+	 * @return {Double} null if string does not represent a float value
+	 */
+	toDouble : function(decimalchar)
+	{
+		if(this.length <= 0) return null;
+		decimalchar = decimalchar || ".";
+		var exp = new RegExp("^\\s*([-\\+])?(\\d+)?(\\" + decimalchar + "(\\d+))?\\s*$");
+		var m = this.match(exp);
+
+		if (m == null)
+			return null;
+		m[1] = m[1] || "";
+		m[2] = m[2] || "0";
+		m[4] = m[4] || "0";
+
+		var cleanInput = m[1] + (m[2].length>0 ? m[2] : "0") + "." + m[4];
+		var num = parseFloat(cleanInput);
+		return (isNaN(num) ? null : num);
+	},
+
+	/**
+	 * Convert strings that represent a currency value (e.g. a float with grouping
+	 * characters) to float. E.g. "10,000.50" will become "10000.50". The number
+	 * of dicimal digits, grouping and decimal characters can be specified.
+	 * <i>The currency input format is <b>very</b> strict, null will be returned if
+	 * the pattern does not match</i>.
+	 * @param {String} the grouping character, default is ","
+	 * @param {Number} number of decimal digits
+	 * @param {String} the decimal character, default is "."
+	 * @type {Double} the currency value as float.
+	 */
+	toCurrency : function(groupchar, digits, decimalchar)
+	{
+		groupchar = groupchar || ",";
+		decimalchar = decimalchar || ".";
+		digits = typeof(digits) == "undefined" ? 2 : digits;
+
+		var exp = new RegExp("^\\s*([-\\+])?(((\\d+)\\" + groupchar + ")*)(\\d+)"
+			+ ((digits > 0) ? "(\\" + decimalchar + "(\\d{1," + digits + "}))?" : "")
+			+ "\\s*$");
+		var m = this.match(exp);
+		if (m == null)
+			return null;
+		var intermed = m[2] + m[5] ;
+		var cleanInput = m[1] + intermed.replace(
+				new RegExp("(\\" + groupchar + ")", "g"), "")
+								+ ((digits > 0) ? "." + m[7] : "");
+		var num = parseFloat(cleanInput);
+		return (isNaN(num) ? null : num);
+	},
+
+	/**
+	 * Converts the string to a date by finding values that matches the
+	 * date format pattern.
+	 * @param string date format pattern, e.g. MM-dd-yyyy
+	 * @return {Date} the date extracted from the string
+	 */
+	toDate : function(format)
+	{
+		return Date.SimpleParse(this, format);
+	}
+});
+
+/**
+ * @class Event extensions.
+ */
+Object.extend(Event,
+{
+	/**
+	 * Register a function to be executed when the page is loaded.
+	 * Note that the page is only loaded if all resources (e.g. images)
+	 * are loaded.
+	 *
+	 * Example: Show an alert box with message "Page Loaded!" when the
+	 * page finished loading.
+	 * <code>
+	 * Event.OnLoad(function(){ alert("Page Loaded!"); });
+	 * </code>
+	 *
+	 * @param {Function} function to execute when page is loaded.
+	 */
+	OnLoad : function (fn)
+	{
+		// opera onload is in document, not window
+		var w = document.addEventListener &&
+					!window.addEventListener ? document : window;
+		Event.observe(w,'load',fn);
+	},
+
+	/**
+	 * @param {Event} a keyboard event
+	 * @return {Number} the Unicode character code generated by the key
+	 * that was struck.
+	 */
+	keyCode : function(e)
+	{
+	   return e.keyCode != null ? e.keyCode : e.charCode
+	},
+
+	/**
+	 * @param {String} event type or event name.
+	 * @return {Boolean} true if event type is of HTMLEvent, false
+	 * otherwise
+	 */
+	isHTMLEvent : function(type)
+	{
+		var events = ['abort', 'blur', 'change', 'error', 'focus',
+					'load', 'reset', 'resize', 'scroll', 'select',
+					'submit', 'unload'];
+		return events.include(type);
+	},
+
+	/**
+	 * @param {String} event type or event name
+	 * @return {Boolean} true if event type is of MouseEvent,
+	 * false otherwise
+	 */
+	isMouseEvent : function(type)
+	{
+		var events = ['click', 'mousedown', 'mousemove', 'mouseout',
+					'mouseover', 'mouseup'];
+		return events.include(type);
+	},
+
+	/**
+	 * Dispatch the DOM event of a given <tt>type</tt> on a DOM
+	 * <tt>element</tt>. Only HTMLEvent and MouseEvent can be
+	 * dispatched, keyboard events or UIEvent can not be dispatch
+	 * via javascript consistently.
+	 * For the "submit" event the submit() method is called.
+	 * @param {Object} element id string or a DOM element.
+	 * @param {String} event type to dispatch.
+	 */
+	fireEvent : function(element,type)
+	{
+		element = $(element);
+		if(type == "submit")
+			return element.submit();
+		if(document.createEvent)
+        {
+			if(Event.isHTMLEvent(type))
+			{
+				var event = document.createEvent('HTMLEvents');
+	            event.initEvent(type, true, true);
+			}
+			else if(Event.isMouseEvent(type))
+			{
+				var event = document.createEvent('MouseEvents');
+				if (event.initMouseEvent)
+		        {
+					event.initMouseEvent(type,true,true,
+						document.defaultView, 1, 0, 0, 0, 0, false,
+								false, false, false, 0, null);
+		        }
+		        else
+		        {
+		            // Safari
+		            // TODO we should be initialising other mouse-event related attributes here
+		            event.initEvent(type, true, true);
+		        }
+			}
+            element.dispatchEvent(event);
+        }
+        else if(document.createEventObject)
+        {
+        	var evObj = document.createEventObject();
+            element.fireEvent('on'+type, evObj);
+        }
+        else if(typeof(element['on'+type]) == "function")
+            element['on'+type]();
+	}
+});
+
+
+
+Object.extend(Date.prototype,
+{
+	SimpleFormat: function(format, data)
+	{
+		data = data || {};
+		var bits = new Array();
+		bits['d'] = this.getDate();
+		bits['dd'] = String(this.getDate()).zerofill(2);
+
+		bits['M'] = this.getMonth()+1;
+		bits['MM'] = String(this.getMonth()+1).zerofill(2);
+		if(data.AbbreviatedMonthNames)
+			bits['MMM'] = data.AbbreviatedMonthNames[this.getMonth()];
+		if(data.MonthNames)
+			bits['MMMM'] = data.MonthNames[this.getMonth()];
+		var yearStr = "" + this.getFullYear();
+		yearStr = (yearStr.length == 2) ? '19' + yearStr: yearStr;
+		bits['yyyy'] = yearStr;
+		bits['yy'] = bits['yyyy'].toString().substr(2,2);
+
+		// do some funky regexs to replace the format string
+		// with the real values
+		var frm = new String(format);
+		for (var sect in bits)
+		{
+			var reg = new RegExp("\\b"+sect+"\\b" ,"g");
+			frm = frm.replace(reg, bits[sect]);
+		}
+		return frm;
+	},
+
+	toISODate : function()
+	{
+		var y = this.getFullYear();
+		var m = String(this.getMonth() + 1).zerofill(2);
+		var d = String(this.getDate()).zerofill(2);
+		return String(y) + String(m) + String(d);
+	}
+});
+
+Object.extend(Date,
+{
+	SimpleParse: function(value, format)
+	{
+		val=String(value);
+		format=String(format);
+
+		if(val.length <= 0) return null;
+
+		if(format.length <= 0) return new Date(value);
+
+		var isInteger = function (val)
+		{
+			var digits="1234567890";
+			for (var i=0; i < val.length; i++)
+			{
+				if (digits.indexOf(val.charAt(i))==-1) { return false; }
+			}
+			return true;
+		};
+
+		var getInt = function(str,i,minlength,maxlength)
+		{
+			for (var x=maxlength; x>=minlength; x--)
+			{
+				var token=str.substring(i,i+x);
+				if (token.length < minlength) { return null; }
+				if (isInteger(token)) { return token; }
+			}
+			return null;
+		};
+
+		var i_val=0;
+		var i_format=0;
+		var c="";
+		var token="";
+		var token2="";
+		var x,y;
+		var now=new Date();
+		var year=now.getFullYear();
+		var month=now.getMonth()+1;
+		var date=1;
+
+		while (i_format < format.length)
+		{
+			// Get next token from format string
+			c=format.charAt(i_format);
+			token="";
+			while ((format.charAt(i_format)==c) && (i_format < format.length))
+			{
+				token += format.charAt(i_format++);
+			}
+
+			// Extract contents of value based on format token
+			if (token=="yyyy" || token=="yy" || token=="y")
+			{
+				if (token=="yyyy") { x=4;y=4; }
+				if (token=="yy")   { x=2;y=2; }
+				if (token=="y")    { x=2;y=4; }
+				year=getInt(val,i_val,x,y);
+				if (year==null) { return null; }
+				i_val += year.length;
+				if (year.length==2)
+				{
+					if (year > 70) { year=1900+(year-0); }
+					else { year=2000+(year-0); }
+				}
+			}
+
+			else if (token=="MM"||token=="M")
+			{
+				month=getInt(val,i_val,token.length,2);
+				if(month==null||(month<1)||(month>12)){return null;}
+				i_val+=month.length;
+			}
+			else if (token=="dd"||token=="d")
+			{
+				date=getInt(val,i_val,token.length,2);
+				if(date==null||(date<1)||(date>31)){return null;}
+				i_val+=date.length;
+			}
+			else
+			{
+				if (val.substring(i_val,i_val+token.length)!=token) {return null;}
+				else {i_val+=token.length;}
+			}
 		}
 
-		//TODO: what do the following options do?
-		//options['PostBackUrl']
-		//options['ClientSubmit']
+		// If there are any trailing characters left in the value, it doesn't match
+		if (i_val != val.length) { return null; }
 
-		if(this.onInit)
-			this.onInit(options);
+		// Is date valid for month?
+		if (month==2)
+		{
+			// Check for leap year
+			if ( ( (year%4==0)&&(year%100 != 0) ) || (year%400==0) ) { // leap year
+				if (date > 29){ return null; }
+			}
+			else { if (date > 28) { return null; } }
+		}
+
+		if ((month==4)||(month==6)||(month==9)||(month==11))
+		{
+			if (date > 30) { return null; }
+		}
+
+		var newdate=new Date(year,month-1,date, 0, 0, 0);
+		return newdate;
 	}
-};
+});
 
-//short cut to create postback components
-Prado.WebUI.createPostBackComponent = function(definition)
-{
-	var component = Class.create();
-	Object.extend(component.prototype, Prado.WebUI.PostBackControl.prototype);
-	if(definition) Object.extend(component.prototype, definition);
-	return component;
-}
+Prado.WebUI = Class.create();
 
-Prado.WebUI.TButton = Prado.WebUI.createPostBackComponent();
-*/
 Prado.WebUI.PostBackControl = Class.create();
 
 Prado.WebUI.PostBackControl.prototype =
 {
-	_elementOnClick : null, //capture the element's onclick function
-
 	initialize : function(options)
 	{
+		this._elementOnClick = null, //capture the element's onclick function
+
 		this.element = $(options.ID);
-		if(this.onInit)
-			this.onInit(options);
+		if(this.element)
+		{
+			if(this.onInit)
+				this.onInit(options);
+		}
 	},
 
 	onInit : function(options)
@@ -4432,10 +4242,10 @@ Prado.WebUI.PostBackControl.prototype =
 			this._elementOnClick = this.element.onclick;
 			this.element.onclick = null;
 		}
-		Event.observe(this.element, "click", this.onClick.bindEvent(this,options));
+		Event.observe(this.element, "click", this.elementClicked.bindEvent(this,options));
 	},
 
-	onClick : function(event, options)
+	elementClicked : function(event, options)
 	{
 		var src = Event.element(event);
 		var doPostBack = true;
@@ -4493,15 +4303,33 @@ Object.extend(Prado.WebUI.TImageButton.prototype,
 	 */
 	addXYInput : function(event,options)
 	{
-		var imagePos = Position.cumulativeOffset(this.element);
-		var clickedPos = [event.clientX, event.clientY];
-		var x = clickedPos[0]-imagePos[0]+1;
-		var y = clickedPos[1]-imagePos[1]+1;
-		var id = options['EventTarget'];
-		var x_input = INPUT({type:'hidden',name:id+'_x',value:x});
-		var y_input = INPUT({type:'hidden',name:id+'_y',value:y});
-		this.element.parentNode.appendChild(x_input);
-		this.element.parentNode.appendChild(y_input);
+		imagePos = Position.cumulativeOffset(this.element);
+		clickedPos = [event.clientX, event.clientY];
+		x = clickedPos[0]-imagePos[0]+1;
+		y = clickedPos[1]-imagePos[1]+1;
+		x = x < 0 ? 0 : x;
+		y = y < 0 ? 0 : y;
+		id = options['EventTarget'];
+		x_input = $(id+"_x");
+		y_input = $(id+"_y");
+		if(x_input)
+		{
+			x_input.value = x;
+		}
+		else
+		{
+			x_input = INPUT({type:'hidden',name:id+'_x','id':id+'_x',value:x});
+			this.element.parentNode.appendChild(x_input);
+		}
+		if(y_input)
+		{
+			y_input.value = y;
+		}
+		else
+		{
+			y_input = INPUT({type:'hidden',name:id+'_y','id':id+'_y',value:y});
+			this.element.parentNode.appendChild(y_input);
+		}
 	}
 });
 
@@ -4516,8 +4344,11 @@ Object.extend(Prado.WebUI.TRadioButton.prototype,
 	initialize : function(options)
 	{
 		this.element = $(options['ID']);
-		if(!this.element.checked)
-			this.onRadioButtonInitialize(options);
+		if(this.element)
+		{
+			if(!this.element.checked)
+				this.onRadioButtonInitialize(options);
+		}
 	}
 });
 
@@ -4526,9 +4357,11 @@ Prado.WebUI.TTextBox = Class.extend(Prado.WebUI.PostBackControl,
 {
 	onInit : function(options)
 	{
+		this.options=options;
 		if(options['TextMode'] != 'MultiLine')
 			Event.observe(this.element, "keydown", this.handleReturnKey.bind(this));
-		Event.observe(this.element, "change", Prado.PostBack.bindEvent(this,options));
+		if(this.options['AutoPostBack']==true)
+			Event.observe(this.element, "change", Prado.PostBack.bindEvent(this,options));
 	},
 
 	handleReturnKey : function(e)
@@ -4538,8 +4371,19 @@ Prado.WebUI.TTextBox = Class.extend(Prado.WebUI.PostBackControl,
 			var target = Event.element(e);
 			if(target)
 			{
-				Event.fireEvent(target, "change");
-				Event.stop(e);
+				if(this.options['AutoPostBack']==true)
+				{
+					Event.fireEvent(target, "change");
+					Event.stop(e);
+				}
+				else
+				{
+					if(this.options['CausesValidation'] && typeof(Prado.Validation) != "undefined")
+					{
+						if(!Prado.Validation.validate(this.options['FormID'], this.options['ValidationGroup'], $(this.options['ID'])))
+							return Event.stop(e);
+					}
+				}
 			}
 		}
 	}
@@ -4632,64 +4476,35 @@ Object.extend(Prado.WebUI.TTextHighlighter,
 });
 
 
-Prado.WebUI.TRatingList = Class.create();	
-Prado.WebUI.TRatingList.prototype = 
+Prado.WebUI.TCheckBoxList = Base.extend(
 {
-	selectedIndex : -1,
-
-	initialize : function(options)
+	constructor : function(options)
 	{
-		this.options = options;
-		this.element = $(options['ID']);
-		Element.addClassName(this.element,options.cssClass);
-		this.radios = document.getElementsByName(options.field);
-		for(var i = 0; i<this.radios.length; i++)
+		for(var i = 0; i<options.ItemCount; i++)
 		{
-			Event.observe(this.radios[i].parentNode, "mouseover", this.hover.bindEvent(this,i));
-			Event.observe(this.radios[i].parentNode, "mouseout", this.recover.bindEvent(this,i));
-			Event.observe(this.radios[i].parentNode, "click", this.click.bindEvent(this, i));
-		}		
-		this.caption = CAPTION();
-		this.element.appendChild(this.caption);
-		this.selectedIndex = options.selectedIndex;
-		this.setRating(this.selectedIndex);
-	},
-	
-	hover : function(ev,index)
-	{
-		for(var i = 0; i<this.radios.length; i++)
-			this.radios[i].parentNode.className = (i<=index) ? "rating_hover" : "";
-		this.setCaption(index);
-	},
-	
-	recover : function(ev,index)
-	{
-		for(var i = 0; i<=index; i++)
-			Element.removeClassName(this.radios[i].parentNode, "rating_hover");
-		this.setRating(this.selectedIndex);
-	},
-	
-	click : function(ev, index)
-	{
-		for(var i = 0; i<this.radios.length; i++)
-			this.radios[i].checked = (i == index);
-		this.selectedIndex = index;
-		this.setRating(index);
-		if(isFunction(this.options.onChange))
-			this.options.onChange(this,index);		
-	},
-	
-	setRating: function(index)
-	{
-		for(var i = 0; i<=index; i++)
-			this.radios[i].parentNode.className = "rating_selected";
-		this.setCaption(index);
-	},
-	
-	setCaption : function(index)
-	{
-		this.caption.innerHTML = index > -1 ? 
-			this.radios[index].value : this.options.caption;	
+			var checkBoxOptions = Object.extend(
+			{
+				ID : options.ListID+"_c"+i,
+				EventTarget : options.ListName+"$c"+i
+			}, options);
+			new Prado.WebUI.TCheckBox(checkBoxOptions);
+		}
 	}
-}
+});
+
+Prado.WebUI.TRadioButtonList = Base.extend(
+{
+	constructor : function(options)
+	{
+		for(var i = 0; i<options.ItemCount; i++)
+		{
+			var radioButtonOptions = Object.extend(
+			{
+				ID : options.ListID+"_c"+i,
+				EventTarget : options.ListName+"$c"+i
+			}, options);
+			new Prado.WebUI.TRadioButton(radioButtonOptions);
+		}
+	}
+});
 

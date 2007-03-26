@@ -1,49 +1,19 @@
 Prado.WebUI = Class.create();
 
-//base postback-able controls
-/*Prado.WebUI.PostBackControl = Class.create();
-Prado.WebUI.PostBackControl.prototype =
-{
-	initialize : function(options)
-	{
-		this.element = $(options['ID']);
-
-/*		if(options.CausesValidation && typeof(Prado.Validation) != 'undefined')
-		{
-			Prado.Validation.registerTarget(options);
-		}
-
-		//TODO: what do the following options do?
-		//options['PostBackUrl']
-		//options['ClientSubmit']
-
-		if(this.onInit)
-			this.onInit(options);
-	}
-};
-
-//short cut to create postback components
-Prado.WebUI.createPostBackComponent = function(definition)
-{
-	var component = Class.create();
-	Object.extend(component.prototype, Prado.WebUI.PostBackControl.prototype);
-	if(definition) Object.extend(component.prototype, definition);
-	return component;
-}
-
-Prado.WebUI.TButton = Prado.WebUI.createPostBackComponent();
-*/
 Prado.WebUI.PostBackControl = Class.create();
 
 Prado.WebUI.PostBackControl.prototype =
 {
-	_elementOnClick : null, //capture the element's onclick function
-
 	initialize : function(options)
 	{
+		this._elementOnClick = null, //capture the element's onclick function
+
 		this.element = $(options.ID);
-		if(this.onInit)
-			this.onInit(options);
+		if(this.element)
+		{
+			if(this.onInit)
+				this.onInit(options);
+		}
 	},
 
 	onInit : function(options)
@@ -53,10 +23,10 @@ Prado.WebUI.PostBackControl.prototype =
 			this._elementOnClick = this.element.onclick;
 			this.element.onclick = null;
 		}
-		Event.observe(this.element, "click", this.onClick.bindEvent(this,options));
+		Event.observe(this.element, "click", this.elementClicked.bindEvent(this,options));
 	},
 
-	onClick : function(event, options)
+	elementClicked : function(event, options)
 	{
 		var src = Event.element(event);
 		var doPostBack = true;
@@ -114,15 +84,33 @@ Object.extend(Prado.WebUI.TImageButton.prototype,
 	 */
 	addXYInput : function(event,options)
 	{
-		var imagePos = Position.cumulativeOffset(this.element);
-		var clickedPos = [event.clientX, event.clientY];
-		var x = clickedPos[0]-imagePos[0]+1;
-		var y = clickedPos[1]-imagePos[1]+1;
-		var id = options['EventTarget'];
-		var x_input = INPUT({type:'hidden',name:id+'_x',value:x});
-		var y_input = INPUT({type:'hidden',name:id+'_y',value:y});
-		this.element.parentNode.appendChild(x_input);
-		this.element.parentNode.appendChild(y_input);
+		imagePos = Position.cumulativeOffset(this.element);
+		clickedPos = [event.clientX, event.clientY];
+		x = clickedPos[0]-imagePos[0]+1;
+		y = clickedPos[1]-imagePos[1]+1;
+		x = x < 0 ? 0 : x;
+		y = y < 0 ? 0 : y;
+		id = options['EventTarget'];
+		x_input = $(id+"_x");
+		y_input = $(id+"_y");
+		if(x_input)
+		{
+			x_input.value = x;
+		}
+		else
+		{
+			x_input = INPUT({type:'hidden',name:id+'_x','id':id+'_x',value:x});
+			this.element.parentNode.appendChild(x_input);
+		}
+		if(y_input)
+		{
+			y_input.value = y;
+		}
+		else
+		{
+			y_input = INPUT({type:'hidden',name:id+'_y','id':id+'_y',value:y});
+			this.element.parentNode.appendChild(y_input);
+		}
 	}
 });
 
@@ -137,8 +125,11 @@ Object.extend(Prado.WebUI.TRadioButton.prototype,
 	initialize : function(options)
 	{
 		this.element = $(options['ID']);
-		if(!this.element.checked)
-			this.onRadioButtonInitialize(options);
+		if(this.element)
+		{
+			if(!this.element.checked)
+				this.onRadioButtonInitialize(options);
+		}
 	}
 });
 
@@ -147,9 +138,11 @@ Prado.WebUI.TTextBox = Class.extend(Prado.WebUI.PostBackControl,
 {
 	onInit : function(options)
 	{
+		this.options=options;
 		if(options['TextMode'] != 'MultiLine')
 			Event.observe(this.element, "keydown", this.handleReturnKey.bind(this));
-		Event.observe(this.element, "change", Prado.PostBack.bindEvent(this,options));
+		if(this.options['AutoPostBack']==true)
+			Event.observe(this.element, "change", Prado.PostBack.bindEvent(this,options));
 	},
 
 	handleReturnKey : function(e)
@@ -159,8 +152,19 @@ Prado.WebUI.TTextBox = Class.extend(Prado.WebUI.PostBackControl,
 			var target = Event.element(e);
 			if(target)
 			{
-				Event.fireEvent(target, "change");
-				Event.stop(e);
+				if(this.options['AutoPostBack']==true)
+				{
+					Event.fireEvent(target, "change");
+					Event.stop(e);
+				}
+				else
+				{
+					if(this.options['CausesValidation'] && typeof(Prado.Validation) != "undefined")
+					{
+						if(!Prado.Validation.validate(this.options['FormID'], this.options['ValidationGroup'], $(this.options['ID'])))
+							return Event.stop(e);
+					}
+				}
 			}
 		}
 	}
@@ -249,5 +253,38 @@ Object.extend(Prado.WebUI.TTextHighlighter,
 	out : function(obj)
 	{
 		obj.parentNode.className = "copycode";
+	}
+});
+
+
+Prado.WebUI.TCheckBoxList = Base.extend(
+{
+	constructor : function(options)
+	{
+		for(var i = 0; i<options.ItemCount; i++)
+		{
+			var checkBoxOptions = Object.extend(
+			{
+				ID : options.ListID+"_c"+i,
+				EventTarget : options.ListName+"$c"+i
+			}, options);
+			new Prado.WebUI.TCheckBox(checkBoxOptions);
+		}
+	}
+});
+
+Prado.WebUI.TRadioButtonList = Base.extend(
+{
+	constructor : function(options)
+	{
+		for(var i = 0; i<options.ItemCount; i++)
+		{
+			var radioButtonOptions = Object.extend(
+			{
+				ID : options.ListID+"_c"+i,
+				EventTarget : options.ListName+"$c"+i
+			}, options);
+			new Prado.WebUI.TRadioButton(radioButtonOptions);
+		}
 	}
 });
