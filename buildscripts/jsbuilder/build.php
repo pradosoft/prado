@@ -27,18 +27,6 @@ define('SOURCE_DIR',realpath(dirname(__FILE__).'/../../framework/Web/Javascripts
  * The directory for storing compressed js files
  */
 define('TARGET_DIR',realpath(dirname(__FILE__).'/../../framework/Web/Javascripts/js'));
-/**
- * Location of the perl JS doc generator.
- */
-define('JS_DOC', realpath(dirname(__FILE__).'/JSDoc/jsdoc.pl'));
-/**
- * Javascript documentation output directory.
- */
-define('DOC_OUTPUT_DIR', realpath(dirname(__FILE__).'/../../docs/Javascript'));
-/**
- * Javascript documentation build command
- */
-define('BUILD_DOC', sprintf('perl "%s" --no-sources -d "%s" ', JS_DOC, DOC_OUTPUT_DIR).'%s');
 
 define('JSMIN_AS_LIB',true);
 
@@ -54,53 +42,31 @@ if(!is_writable(TARGET_DIR))
  */
 $libraries = array(
 	'prado.js' => array(
-
-		//base javascript functions
 		'prototype/prototype.js',
-		'effects/builder.js',
-
-		'extended/base.js',
-		'extended/string.js',
-		'extended/event.js',
-		'extended/date.js',
-		'extended/builder.js',
-
-
-		//prado core
+		'scriptaculous/builder.js',
 		'prado/prado.js',
-		'prado/form.js',
-		'prado/element.js',
-
-		//controls
-		'prado/controls.js',
-		'ratings/ratings.js'
+		'prado/scriptaculous-adapter.js',
+		'prado/controls/controls.js'
 	),
 
-	//effects
 	'effects.js' => array(
-		'effects/effects.js'
+		'scriptaculous/effects.js'
 	),
 
-	//logging
 	'logger.js' => array(
-		'extra/logger.js',
+		'prado/logger/logger.js',
 	),
 
-	//validator
 	'validator.js' => array(
-		'prado/validation3.js'
-		//'prado/validators.js'
+		'prado/validator/validation3.js'
 	),
 
-	//date picker
 	'datepicker.js' => array(
-		'datepicker/datepicker.js'
+		'prado/datepicker/datepicker.js'
 	),
 
-	//color picker
 	'colorpicker.js' => array(
-		'rico/colors.js',
-		'colorpicker/colorpicker.js'
+		'prado/colorpicker/colorpicker.js'
 	)
 );
 
@@ -141,21 +107,5 @@ foreach($libraries as $jsFile => $sourceFiles)
 	echo "Saving file {$jsFile}\n";
 	$builds++;
 }
-
-if(isset($argv[1]) && preg_match('/(doc)+/', $argv[1]))
-{
-	$files = "";
-	foreach($libraries as $lib)
-	{
-		foreach($lib as $source)
-			$files .= sprintf(' "%s/%s"', SOURCE_DIR, $source);
-	}
-	$command = sprintf(BUILD_DOC, $files);
-	system($command);
-}
-else if($builds > 0)
-	echo "\nJavascript build complete, {$builds} file(s) compressed.";
-else
-	echo "No files to build.";
 
 ?>

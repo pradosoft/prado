@@ -82,11 +82,9 @@ class TClientScriptManager extends TApplicationComponent
 	private static $_pradoScripts=array(
 		'prado'			=> array('prado'),
 		'effects'		=> array('prado', 'effects'),
-		'ajax'			=> array('prado', 'effects', 'ajax'),
 		'validator'		=> array('prado', 'validator'),
 		'logger'		=> array('prado', 'logger'),
 		'datepicker'	=> array('prado', 'datepicker'),
-		'rico'			=> array('prado', 'effects', 'ajax', 'rico'),
 		'colorpicker'	=> array('prado', 'colorpicker')
 		);
 

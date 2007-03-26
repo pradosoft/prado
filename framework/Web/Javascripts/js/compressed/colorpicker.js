@@ -1,30 +1,4 @@
 
-if(typeof(Rico)=="undefined")Rico={};Rico.Color=Class.create();Rico.Color.prototype={initialize:function(red,green,blue){this.rgb={r:red,g:green,b:blue};},setRed:function(r){this.rgb.r=r;},setGreen:function(g){this.rgb.g=g;},setBlue:function(b){this.rgb.b=b;},setHue:function(h){var hsb=this.asHSB();hsb.h=h;this.rgb=Rico.Color.HSBtoRGB(hsb.h,hsb.s,hsb.b);},setSaturation:function(s){var hsb=this.asHSB();hsb.s=s;this.rgb=Rico.Color.HSBtoRGB(hsb.h,hsb.s,hsb.b);},setBrightness:function(b){var hsb=this.asHSB();hsb.b=b;this.rgb=Rico.Color.HSBtoRGB(hsb.h,hsb.s,hsb.b);},darken:function(percent){var hsb=this.asHSB();this.rgb=Rico.Color.HSBtoRGB(hsb.h,hsb.s,Math.max(hsb.b-percent,0));},brighten:function(percent){var hsb=this.asHSB();this.rgb=Rico.Color.HSBtoRGB(hsb.h,hsb.s,Math.min(hsb.b+percent,1));},blend:function(other){this.rgb.r=Math.floor((this.rgb.r+other.rgb.r)/2);this.rgb.g=Math.floor((this.rgb.g+other.rgb.g)/2);this.rgb.b=Math.floor((this.rgb.b+other.rgb.b)/2);},isBright:function(){var hsb=this.asHSB();return this.asHSB().b>0.5;},isDark:function(){return!this.isBright();},asRGB:function(){return"rgb("+this.rgb.r+","+this.rgb.g+","+this.rgb.b+")";},asHex:function(){return"#"+this.rgb.r.toColorPart()+this.rgb.g.toColorPart()+this.rgb.b.toColorPart();},asHSB:function(){return Rico.Color.RGBtoHSB(this.rgb.r,this.rgb.g,this.rgb.b);},toString:function(){return this.asHex();}};Rico.Color.createFromHex=function(hexCode){if(hexCode.indexOf('#')==0)
-hexCode=hexCode.substring(1);var red="ff",green="ff",blue="ff";if(hexCode.length>4)
-{red=hexCode.substring(0,2);green=hexCode.substring(2,4);blue=hexCode.substring(4,6);}
-else if(hexCode.length>0&hexCode.length<4)
-{var r=hexCode.substring(0,1);var g=hexCode.substring(1,2);var b=hexCode.substring(2);red=r+r;green=g+g;blue=b+b;}
-return new Rico.Color(parseInt(red,16),parseInt(green,16),parseInt(blue,16));}
-Rico.Color.createColorFromBackground=function(elem){var actualColor=Element.getStyle($(elem),"background-color");if(actualColor=="transparent"&&elem.parent)
-return Rico.Color.createColorFromBackground(elem.parent);if(actualColor==null)
-return new Rico.Color(255,255,255);if(actualColor.indexOf("rgb(")==0){var colors=actualColor.substring(4,actualColor.length-1);var colorArray=colors.split(",");return new Rico.Color(parseInt(colorArray[0]),parseInt(colorArray[1]),parseInt(colorArray[2]));}
-else if(actualColor.indexOf("#")==0){return Rico.Color.createFromHex(actualColor);}
-else
-return new Rico.Color(255,255,255);}
-Rico.Color.HSBtoRGB=function(hue,saturation,brightness){var red=0;var green=0;var blue=0;if(saturation==0){red=parseInt(brightness*255.0+0.5);green=red;blue=red;}
-else{var h=(hue-Math.floor(hue))*6.0;var f=h-Math.floor(h);var p=brightness*(1.0-saturation);var q=brightness*(1.0-saturation*f);var t=brightness*(1.0-(saturation*(1.0-f)));switch(parseInt(h)){case 0:red=(brightness*255.0+0.5);green=(t*255.0+0.5);blue=(p*255.0+0.5);break;case 1:red=(q*255.0+0.5);green=(brightness*255.0+0.5);blue=(p*255.0+0.5);break;case 2:red=(p*255.0+0.5);green=(brightness*255.0+0.5);blue=(t*255.0+0.5);break;case 3:red=(p*255.0+0.5);green=(q*255.0+0.5);blue=(brightness*255.0+0.5);break;case 4:red=(t*255.0+0.5);green=(p*255.0+0.5);blue=(brightness*255.0+0.5);break;case 5:red=(brightness*255.0+0.5);green=(p*255.0+0.5);blue=(q*255.0+0.5);break;}}
-return{r:parseInt(red),g:parseInt(green),b:parseInt(blue)};}
-Rico.Color.RGBtoHSB=function(r,g,b){var hue;var saturaton;var brightness;var cmax=(r>g)?r:g;if(b>cmax)
-cmax=b;var cmin=(r<g)?r:g;if(b<cmin)
-cmin=b;brightness=cmax/255.0;if(cmax!=0)
-saturation=(cmax-cmin)/cmax;else
-saturation=0;if(saturation==0)
-hue=0;else{var redc=(cmax-r)/(cmax-cmin);var greenc=(cmax-g)/(cmax-cmin);var bluec=(cmax-b)/(cmax-cmin);if(r==cmax)
-hue=bluec-greenc;else if(g==cmax)
-hue=2.0+redc-bluec;else
-hue=4.0+greenc-redc;hue=hue/6.0;if(hue<0)
-hue=hue+1.0;}
-return{h:hue,s:saturation,b:brightness};}
 Prado.WebUI.TColorPicker=Class.create();Object.extend(Prado.WebUI.TColorPicker,{palettes:{Small:[["fff","fcc","fc9","ff9","ffc","9f9","9ff","cff","ccf","fcf"],["ccc","f66","f96","ff6","ff3","6f9","3ff","6ff","99f","f9f"],["c0c0c0","f00","f90","fc6","ff0","3f3","6cc","3cf","66c","c6c"],["999","c00","f60","fc3","fc0","3c0","0cc","36f","63f","c3c"],["666","900","c60","c93","990","090","399","33f","60c","939"],["333","600","930","963","660","060","366","009","339","636"],["000","300","630","633","330","030","033","006","309","303"]],Tiny:[["ffffff","00ff00","008000","0000ff"],["c0c0c0","ffff00","ff00ff","000080"],["808080","ff0000","800080","000000"]]},UIImages:{'button.gif':'button.gif','background.png':'background.png'}});Object.extend(Prado.WebUI.TColorPicker.prototype,{initialize:function(options)
 {var basics={Palette:'Small',ClassName:'TColorPicker',Mode:'Basic',OKButtonText:'OK',CancelButtonText:'Cancel',ShowColorPicker:true}
 this.element=null;this.showing=false;options=Object.extend(basics,options);this.options=options;this.input=$(options['ID']);this.button=$(options['ID']+'_button');this._buttonOnClick=this.buttonOnClick.bind(this);if(options['ShowColorPicker'])

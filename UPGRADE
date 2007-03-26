@@ -24,6 +24,7 @@ Upgrading from v3.0.5
   THttpRequest to the module ID of TUrlMapping.
 - TJavascriptLogger toggle key is changed from ALT-D to ALT-J. 
    Use the ToggleKey property chanage to a different key.
+- Javascript Library rico was REMOVED.
 
 Upgrading from v3.0.4
 ---------------------
