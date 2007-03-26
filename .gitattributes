@@ -2637,6 +2637,7 @@ tests/test_tools/selenium/core/scripts/narcissus-defs.js -text
 tests/test_tools/selenium/core/scripts/narcissus-exec.js -text
 tests/test_tools/selenium/core/scripts/narcissus-parse.js -text
 tests/test_tools/selenium/core/scripts/se2html.js -text
+tests/test_tools/selenium/core/selenium-test.css -text
 tests/test_tools/selenium/php/TestSuiteHeader.php -text
 tests/test_tools/selenium/reference.html -text
 tests/test_tools/simpletest/collector.php -text
