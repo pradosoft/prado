@@ -12,141 +12,165 @@
 *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
-*
 */
-function CommandHandlerFactory() {
 
-    var self = this;
+// A naming convention used in this file:
+//
+//
+//   - a "seleniumApi" is an instance of the Selenium object, defined in selenium-api.js.
+//
+//   - a "Method" is an unbound function whose target must be supplied when it's called, ie.
+//     it should be invoked using Function.call() or Function.apply()
+//
+//   - a "Block" is a function that has been bound to a target object, so can be called invoked directly
+//     (or with a null target)
+//
+//   - "CommandHandler" is effectively an abstract base for
+//     various handlers including ActionHandler, AccessorHandler and AssertHandler.
+//     Subclasses need to implement an execute(seleniumApi, command) function,
+//     where seleniumApi is the Selenium object, and command a SeleniumCommand object.
+//
+//   - Handlers will return a "result" object (ActionResult, AccessorResult, AssertResult).
+//     ActionResults may contain a .terminationCondition function which is run by 
+//     -executionloop.js after the command is run; we'll run it over and over again
+//     until it returns true or the .terminationCondition throws an exception.
+//     AccessorResults will contain the results of running getter (e.g. getTitle returns
+//     the title as a string).
 
-    this.handlers = {};
+var CommandHandlerFactory = classCreate();
+objectExtend(CommandHandlerFactory.prototype, {
 
-    this.registerAction = function(name, action, wait, dontCheckAlertsAndConfirms) {
-        var handler = new ActionHandler(action, wait, dontCheckAlertsAndConfirms);
-        this.handlers[name] = handler;
-    };
+    initialize: function() {
+        this.handlers = {};
+    },
 
-    this.registerAccessor = function(name, accessor) {
-        var handler = new AccessorHandler(accessor);
-        this.handlers[name] = handler;
-    };
+    registerAction: function(name, actionBlock, wait, dontCheckAlertsAndConfirms) {
+        this.handlers[name] = new ActionHandler(actionBlock, wait, dontCheckAlertsAndConfirms);
+    },
 
-    this.registerAssert = function(name, assertion, haltOnFailure) {
-        var handler = new AssertHandler(assertion, haltOnFailure);
-        this.handlers[name] = handler;
-    };
+    registerAccessor: function(name, accessBlock) {
+        this.handlers[name] = new AccessorHandler(accessBlock);
+    },
 
-    this.getCommandHandler = function(name) {
-        return this.handlers[name] ||  null; // todo: why null, and not undefined?
-    };
+    registerAssert: function(name, assertBlock, haltOnFailure) {
+        this.handlers[name] = new AssertHandler(assertBlock, haltOnFailure);
+    },
 
-    // Methods of the form getFoo(target) result in commands:
-    // getFoo, assertFoo, verifyFoo, assertNotFoo, verifyNotFoo
-    // storeFoo, waitForFoo, and waitForNotFoo.
-    var _registerAllAccessors = function(commandObject) {
-        for (var functionName in commandObject) {
-            var matchForGetter = /^get([A-Z].+)$/.exec(functionName);
-            if (matchForGetter != null) {
-                var accessor = commandObject[functionName];
-                var baseName = matchForGetter[1];
-                self.registerAccessor(functionName, accessor);
-                self.registerAssertionsBasedOnAccessor(accessor, baseName);
-                self.registerStoreCommandBasedOnAccessor(accessor, baseName);
-                self.registerWaitForCommandsBasedOnAccessor(accessor, baseName);
-            }
-            var matchForIs = /^is([A-Z].+)$/.exec(functionName);
-            if (matchForIs != null) {
-                var accessor = commandObject[functionName];
-                var baseName = matchForIs[1];
-                var predicate = self.createPredicateFromBooleanAccessor(accessor);
-                self.registerAccessor(functionName, accessor);
-                self.registerAssertionsBasedOnAccessor(accessor, baseName, predicate);
-                self.registerStoreCommandBasedOnAccessor(accessor, baseName);
-                self.registerWaitForCommandsBasedOnAccessor(accessor, baseName, predicate);
+    getCommandHandler: function(name) {
+        return this.handlers[name];
+    },
+
+    _registerAllAccessors: function(seleniumApi) {
+        // Methods of the form getFoo(target) result in commands:
+        // getFoo, assertFoo, verifyFoo, assertNotFoo, verifyNotFoo
+        // storeFoo, waitForFoo, and waitForNotFoo.
+        for (var functionName in seleniumApi) {
+            var match = /^(get|is)([A-Z].+)$/.exec(functionName);
+            if (match) {
+                var accessMethod = seleniumApi[functionName];
+                var accessBlock = fnBind(accessMethod, seleniumApi);
+                var baseName = match[2];
+                var isBoolean = (match[1] == "is");
+                var requiresTarget = (accessMethod.length == 1);
+
+                this.registerAccessor(functionName, accessBlock);
+                this._registerStoreCommandForAccessor(baseName, accessBlock, requiresTarget);
+
+                var predicateBlock = this._predicateForAccessor(accessBlock, requiresTarget, isBoolean);
+                this._registerAssertionsForPredicate(baseName, predicateBlock);
+                this._registerWaitForCommandsForPredicate(seleniumApi, baseName, predicateBlock);
             }
         }
-    };
+    },
 
-    var _registerAllActions = function(commandObject) {
-        for (var functionName in commandObject) {
-            var result = /^do([A-Z].+)$/.exec(functionName);
-            if (result != null) {
-                var actionName = result[1].lcfirst();
-
-                // Register the action without the wait flag.
-                var action = commandObject[functionName];
-                self.registerAction(actionName, action, false, action.dontCheckAlertsAndConfirms);
-
-                // Register actionName + "AndWait" with the wait flag;
-                var waitActionName = actionName + "AndWait";
-                self.registerAction(waitActionName, action, true, action.dontCheckAlertsAndConfirms);
+    _registerAllActions: function(seleniumApi) {
+        for (var functionName in seleniumApi) {
+            var match = /^do([A-Z].+)$/.exec(functionName);
+            if (match) {
+                var actionName = match[1].lcfirst();
+                var actionMethod = seleniumApi[functionName];
+                var dontCheckPopups = actionMethod.dontCheckAlertsAndConfirms;
+                var actionBlock = fnBind(actionMethod, seleniumApi);
+                this.registerAction(actionName, actionBlock, false, dontCheckPopups);
+                this.registerAction(actionName + "AndWait", actionBlock, true, dontCheckPopups);
             }
         }
-    };
+    },
 
-    var _registerAllAsserts = function(commandObject) {
-        for (var functionName in commandObject) {
-            var result = /^assert([A-Z].+)$/.exec(functionName);
-            if (result != null) {
-                var assert = commandObject[functionName];
+    _registerAllAsserts: function(seleniumApi) {
+        for (var functionName in seleniumApi) {
+            var match = /^assert([A-Z].+)$/.exec(functionName);
+            if (match) {
+                var assertBlock = fnBind(seleniumApi[functionName], seleniumApi);
 
                 // Register the assert with the "assert" prefix, and halt on failure.
                 var assertName = functionName;
-                self.registerAssert(assertName, assert, true);
+                this.registerAssert(assertName, assertBlock, true);
 
                 // Register the assert with the "verify" prefix, and do not halt on failure.
-                var verifyName = "verify" + result[1];
-                self.registerAssert(verifyName, assert, false);
+                var verifyName = "verify" + match[1];
+                this.registerAssert(verifyName, assertBlock, false);
             }
         }
-    };
+    },
 
-    this.registerAll = function(commandObject) {
-        _registerAllAccessors(commandObject);
-        _registerAllActions(commandObject);
-        _registerAllAsserts(commandObject);
-    };
+    registerAll: function(seleniumApi) {
+        this._registerAllAccessors(seleniumApi);
+        this._registerAllActions(seleniumApi);
+        this._registerAllAsserts(seleniumApi);
+    },
 
-    // Given an accessor function getBlah(target),
-    // return a "predicate" equivalient to isBlah(target, value) that
-    // is true when the value returned by the accessor matches the specified value.
-    this.createPredicateFromSingleArgAccessor = function(accessor) {
+    _predicateForAccessor: function(accessBlock, requiresTarget, isBoolean) {
+        if (isBoolean) {
+            return this._predicateForBooleanAccessor(accessBlock);
+        }
+        if (requiresTarget) {
+            return this._predicateForSingleArgAccessor(accessBlock);
+        }
+        return this._predicateForNoArgAccessor(accessBlock);
+    },
+
+    _predicateForSingleArgAccessor: function(accessBlock) {
+        // Given an accessor function getBlah(target),
+        // return a "predicate" equivalient to isBlah(target, value) that
+        // is true when the value returned by the accessor matches the specified value.
         return function(target, value) {
-            var accessorResult = accessor.call(this, target);
+            var accessorResult = accessBlock(target);
             if (PatternMatcher.matches(value, accessorResult)) {
                 return new PredicateResult(true, "Actual value '" + accessorResult + "' did match '" + value + "'");
             } else {
                 return new PredicateResult(false, "Actual value '" + accessorResult + "' did not match '" + value + "'");
             }
         };
-    };
+    },
 
-    // Given a (no-arg) accessor function getBlah(),
-    // return a "predicate" equivalient to isBlah(value) that
-    // is true when the value returned by the accessor matches the specified value.
-    this.createPredicateFromNoArgAccessor = function(accessor) {
+    _predicateForNoArgAccessor: function(accessBlock) {
+        // Given a (no-arg) accessor function getBlah(),
+        // return a "predicate" equivalient to isBlah(value) that
+        // is true when the value returned by the accessor matches the specified value.
         return function(value) {
-            var accessorResult = accessor.call(this);
+            var accessorResult = accessBlock();
             if (PatternMatcher.matches(value, accessorResult)) {
                 return new PredicateResult(true, "Actual value '" + accessorResult + "' did match '" + value + "'");
             } else {
                 return new PredicateResult(false, "Actual value '" + accessorResult + "' did not match '" + value + "'");
             }
         };
-    };
+    },
 
-    // Given a boolean accessor function isBlah(),
-    // return a "predicate" equivalient to isBlah() that
-    // returns an appropriate PredicateResult value.
-    this.createPredicateFromBooleanAccessor = function(accessor) {
+    _predicateForBooleanAccessor: function(accessBlock) {
+        // Given a boolean accessor function isBlah(),
+        // return a "predicate" equivalient to isBlah() that
+        // returns an appropriate PredicateResult value.
         return function() {
             var accessorResult;
             if (arguments.length > 2) throw new SeleniumError("Too many arguments! " + arguments.length);
             if (arguments.length == 2) {
-                accessorResult = accessor.call(this, arguments[0], arguments[1]);
+                accessorResult = accessBlock(arguments[0], arguments[1]);
             } else if (arguments.length == 1) {
-                accessorResult = accessor.call(this, arguments[0]);
+                accessorResult = accessBlock(arguments[0]);
             } else {
-                accessorResult = accessor.call(this);
+                accessorResult = accessBlock();
             }
             if (accessorResult) {
                 return new PredicateResult(true, "true");
@@ -154,71 +178,56 @@ function CommandHandlerFactory() {
                 return new PredicateResult(false, "false");
             }
         };
-    };
+    },
 
-    // Given an accessor fuction getBlah([target])  (target is optional)
-    // return a predicate equivalent to isBlah([target,] value) that
-    // is true when the value returned by the accessor matches the specified value.
-    this.createPredicateFromAccessor = function(accessor) {
-        if (accessor.length == 0) {
-            return self.createPredicateFromNoArgAccessor(accessor);
-        }
-        return self.createPredicateFromSingleArgAccessor(accessor);
-    };
-
-    // Given a predicate, return the negation of that predicate.
-    // Leaves the message unchanged.
-    // Used to create assertNot, verifyNot, and waitForNot commands.
-    this.invertPredicate = function(predicate) {
+    _invertPredicate: function(predicateBlock) {
+        // Given a predicate, return the negation of that predicate.
+        // Leaves the message unchanged.
+        // Used to create assertNot, verifyNot, and waitForNot commands.
         return function(target, value) {
-            var result = predicate.call(this, target, value);
-            result.isTrue = ! result.isTrue;
+            var result = predicateBlock(target, value);
+            result.isTrue = !result.isTrue;
             return result;
         };
-    };
+    },
 
-    // Convert an isBlahBlah(target, value) function into an assertBlahBlah(target, value) function.
-    this.createAssertionFromPredicate = function(predicate) {
+    createAssertionFromPredicate: function(predicateBlock) {
+        // Convert an isBlahBlah(target, value) function into an assertBlahBlah(target, value) function.
         return function(target, value) {
-            var result = predicate.call(this, target, value);
+            var result = predicateBlock(target, value);
             if (!result.isTrue) {
                 Assert.fail(result.message);
             }
         };
-    };
+    },
 
-
-    var _negtiveName = function(baseName) {
+    _invertPredicateName: function(baseName) {
         var matchResult = /^(.*)Present$/.exec(baseName);
         if (matchResult != null) {
             return matchResult[1] + "NotPresent";
         }
         return "Not" + baseName;
-    };
+    },
 
-    // Register an assertion, a verification, a negative assertion,
-    // and a negative verification based on the specified accessor.
-    this.registerAssertionsBasedOnAccessor = function(accessor, baseName, predicate) {
-        if (predicate == null) {
-            predicate = self.createPredicateFromAccessor(accessor);
-        }
-        var assertion = self.createAssertionFromPredicate(predicate);
-        self.registerAssert("assert" + baseName, assertion, true);
-        self.registerAssert("verify" + baseName, assertion, false);
+    _registerAssertionsForPredicate: function(baseName, predicateBlock) {
+        // Register an assertion, a verification, a negative assertion,
+        // and a negative verification based on the specified accessor.
+        var assertBlock = this.createAssertionFromPredicate(predicateBlock);
+        this.registerAssert("assert" + baseName, assertBlock, true);
+        this.registerAssert("verify" + baseName, assertBlock, false);
 
-        var invertedPredicate = self.invertPredicate(predicate);
-        var negativeAssertion = self.createAssertionFromPredicate(invertedPredicate);
-        self.registerAssert("assert" + _negtiveName(baseName), negativeAssertion, true);
-        self.registerAssert("verify" + _negtiveName(baseName), negativeAssertion, false);
-    };
+        var invertedPredicateBlock = this._invertPredicate(predicateBlock);
+        var negativeassertBlock = this.createAssertionFromPredicate(invertedPredicateBlock);
+        this.registerAssert("assert" + this._invertPredicateName(baseName), negativeassertBlock, true);
+        this.registerAssert("verify" + this._invertPredicateName(baseName), negativeassertBlock, false);
+    },
 
-    // Convert an isBlahBlah(target, value) function into a waitForBlahBlah(target, value) function.
-    this.createWaitForActionFromPredicate = function(predicate) {
+    _waitForActionForPredicate: function(predicateBlock) {
+        // Convert an isBlahBlah(target, value) function into a waitForBlahBlah(target, value) function.
         return function(target, value) {
-            var seleniumApi = this;
-            return function () {
+            var terminationCondition = function () {
                 try {
-                    return predicate.call(seleniumApi, target, value).isTrue;
+                    return predicateBlock(target, value).isTrue;
                 } catch (e) {
                     // Treat exceptions as meaning the condition is not yet met.
                     // Useful, for example, for waitForValue when the element has
@@ -227,40 +236,41 @@ function CommandHandlerFactory() {
                     return false;
                 }
             };
+            return Selenium.decorateFunctionWithTimeout(terminationCondition, this.defaultTimeout);
         };
-    };
+    },
 
-    // Register a waitForBlahBlah and waitForNotBlahBlah based on the specified accessor.
-    this.registerWaitForCommandsBasedOnAccessor = function(accessor, baseName, predicate) {
-        if (predicate==null) {
-            predicate = self.createPredicateFromAccessor(accessor);
-        }
-        var waitForAction = self.createWaitForActionFromPredicate(predicate);
-        self.registerAction("waitFor"+baseName, waitForAction, false, true);
-        var invertedPredicate = self.invertPredicate(predicate);
-        var waitForNotAction = self.createWaitForActionFromPredicate(invertedPredicate);
-        self.registerAction("waitFor"+_negtiveName(baseName), waitForNotAction, false, true);
+    _registerWaitForCommandsForPredicate: function(seleniumApi, baseName, predicateBlock) {
+        // Register a waitForBlahBlah and waitForNotBlahBlah based on the specified accessor.
+        var waitForActionMethod = this._waitForActionForPredicate(predicateBlock);
+        var waitForActionBlock = fnBind(waitForActionMethod, seleniumApi);
+        
+        var invertedPredicateBlock = this._invertPredicate(predicateBlock);
+        var waitForNotActionMethod = this._waitForActionForPredicate(invertedPredicateBlock);
+        var waitForNotActionBlock = fnBind(waitForNotActionMethod, seleniumApi);
+        
+        this.registerAction("waitFor" + baseName, waitForActionBlock, false, true);
+        this.registerAction("waitFor" + this._invertPredicateName(baseName), waitForNotActionBlock, false, true);
         //TODO decide remove "waitForNot.*Present" action name or not
         //for the back compatiblity issues we still make waitForNot.*Present availble
-        self.registerAction("waitForNot"+baseName, waitForNotAction, false, true);
-    }
+        this.registerAction("waitForNot" + baseName, waitForNotActionBlock, false, true);
+    },
 
-    // Register a storeBlahBlah based on the specified accessor.
-    this.registerStoreCommandBasedOnAccessor = function(accessor, baseName) {
+    _registerStoreCommandForAccessor: function(baseName, accessBlock, requiresTarget) {
         var action;
-        if (accessor.length == 1) {
+        if (requiresTarget) {
             action = function(target, varName) {
-                storedVars[varName] = accessor.call(this, target);
+                storedVars[varName] = accessBlock(target);
             };
         } else {
             action = function(varName) {
-                storedVars[varName] = accessor.call(this);
+                storedVars[varName] = accessBlock();
             };
         }
-        self.registerAction("store"+baseName, action, false, accessor.dontCheckAlertsAndConfirms);
-    };
+        this.registerAction("store" + baseName, action, false, true);
+    }
 
-}
+});
 
 function PredicateResult(isTrue, message) {
     this.isTrue = isTrue;
@@ -271,17 +281,17 @@ function PredicateResult(isTrue, message) {
 // various handlers including ActionHandler, AccessorHandler and AssertHandler.
 // Subclasses need to implement an execute(seleniumApi, command) function,
 // where seleniumApi is the Selenium object, and command a SeleniumCommand object.
-function CommandHandler(type, haltOnFailure, executor) {
+function CommandHandler(type, haltOnFailure) {
     this.type = type;
     this.haltOnFailure = haltOnFailure;
-    this.executor = executor;
 }
 
 // An ActionHandler is a command handler that executes the sepcified action,
 // possibly checking for alerts and confirmations (if checkAlerts is set), and
 // possibly waiting for a page load if wait is set.
-function ActionHandler(action, wait, dontCheckAlerts) {
-    CommandHandler.call(this, "action", true, action);
+function ActionHandler(actionBlock, wait, dontCheckAlerts) {
+    this.actionBlock = actionBlock;
+    CommandHandler.call(this, "action", true);
     if (wait) {
         this.wait = true;
     }
@@ -290,10 +300,11 @@ function ActionHandler(action, wait, dontCheckAlerts) {
 }
 ActionHandler.prototype = new CommandHandler;
 ActionHandler.prototype.execute = function(seleniumApi, command) {
-    if (this.checkAlerts && (null==/(Alert|Confirmation)(Not)?Present/.exec(command.command))) {
+    if (this.checkAlerts && (null == /(Alert|Confirmation)(Not)?Present/.exec(command.command))) {
+        // todo: this conditional logic is ugly
         seleniumApi.ensureNoUnhandledPopups();
     }
-    var terminationCondition = this.executor.call(seleniumApi, command.target, command.value);
+    var terminationCondition = this.actionBlock(command.target, command.value);
     // If the handler didn't return a wait flag, check to see if the
     // handler was registered with the wait flag.
     if (terminationCondition == undefined && this.wait) {
@@ -306,12 +317,13 @@ function ActionResult(terminationCondition) {
     this.terminationCondition = terminationCondition;
 }
 
-function AccessorHandler(accessor) {
-    CommandHandler.call(this, "accessor", true, accessor);
+function AccessorHandler(accessBlock) {
+    this.accessBlock = accessBlock;
+    CommandHandler.call(this, "accessor", true);
 }
 AccessorHandler.prototype = new CommandHandler;
 AccessorHandler.prototype.execute = function(seleniumApi, command) {
-    var returnValue = this.executor.call(seleniumApi, command.target, command.value);
+    var returnValue = this.accessBlock(command.target, command.value);
     return new AccessorResult(returnValue);
 };
 
@@ -322,14 +334,15 @@ function AccessorResult(result) {
 /**
  * Handler for assertions and verifications.
  */
-function AssertHandler(assertion, haltOnFailure) {
-    CommandHandler.call(this, "assert", haltOnFailure || false, assertion);
+function AssertHandler(assertBlock, haltOnFailure) {
+    this.assertBlock = assertBlock;
+    CommandHandler.call(this, "assert", haltOnFailure || false);
 }
 AssertHandler.prototype = new CommandHandler;
 AssertHandler.prototype.execute = function(seleniumApi, command) {
     var result = new AssertResult();
     try {
-        this.executor.call(seleniumApi, command.target, command.value);
+        this.assertBlock(command.target, command.value);
     } catch (e) {
         // If this is not a AssertionFailedError, or we should haltOnFailure, rethrow.
         if (!e.isAssertionFailedError) {

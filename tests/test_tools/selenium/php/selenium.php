@@ -142,7 +142,7 @@ class SeleneseInterpreter
 		$command = array($func, $ID, $value);
 
 		if(is_int(strpos(strtolower($func), 'visible')))
-			$this->addCommand(array('pause','500',''),$trace);
+			$this->addCommand(array('pause','250',''),$trace);
 
 		return $this->addCommand($command, $trace);
 	}

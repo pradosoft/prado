@@ -40,7 +40,9 @@ define('DOC_OUTPUT_DIR', realpath(dirname(__FILE__).'/../../docs/Javascript'));
  */
 define('BUILD_DOC', sprintf('perl "%s" --no-sources -d "%s" ', JS_DOC, DOC_OUTPUT_DIR).'%s');
 
-include_once(dirname(__FILE__).'/jsmin.php');
+define('JSMIN_AS_LIB',true);
+
+include(dirname(__FILE__).'/jsmin.php');
 
 if(SOURCE_DIR===false || TARGET_DIR===false)
 	die('Unable to determine the build path.');
@@ -55,33 +57,14 @@ $libraries = array(
 
 		//base javascript functions
 		'prototype/prototype.js',
-		'prototype/base.js',
-		'extended/base.js',
-		'prototype/string.js',
-		'extended/string.js',
-		'prototype/enumerable.js',
-		'prototype/array.js',
-		'prototype/hash.js',
-		'prototype/range.js',
-
-		//dom functions
-		'prototype/dom.js',
-		'prototype/form.js',
-		'prototype/event.js',
-		'extended/event.js',
-		'prototype/position.js',
-
-		//element selectors
-		'prototype/selector.js',
-
-		//build dom elements with DIV, A, UL, etc functions
 		'effects/builder.js',
+
+		'extended/base.js',
+		'extended/string.js',
+		'extended/event.js',
+		'extended/date.js',
 		'extended/builder.js',
 
-//		'extra/getElementsBySelector.js',
-//		'extra/behaviour.js',
-
-		'extended/date.js',
 
 		//prado core
 		'prado/prado.js',
@@ -89,40 +72,18 @@ $libraries = array(
 		'prado/element.js',
 
 		//controls
-		'prado/controls.js'
+		'prado/controls.js',
+		'ratings/ratings.js'
 	),
 
 	//effects
 	'effects.js' => array(
-		'effects/effects.js',
-		'extended/effects.js'
+		'effects/effects.js'
 	),
-	//active controls
-	'ajax.js' => array(
-		'prototype/ajax.js',
-		'prado/ajax3.js',
-		'extra/json.js',
-		'effects/controls.js',
-		'prado/activecontrols3.js',
-		'prado/inlineeditor.js',
-		'ratings/ratings.js'
-//		'effects/dragdrop.js',
-//		'effects/slider.js',
-//		'prado/activecontrols.js'
-	),
+
 	//logging
 	'logger.js' => array(
 		'extra/logger.js',
-	),
-
-	'containers.js' => array(
-		'effects/dragdrop.js',
-	),
-
-	//rico
-	'rico.js' => array(
-		'rico/rico.js',
-		'rico/extension.js'
 	),
 
 	//validator
@@ -176,7 +137,7 @@ foreach($libraries as $jsFile => $sourceFiles)
 	$jsMin = new JSMin($debugFile, $compressFile);
 	$jsMin -> minify();
 	unset($jsMin);
-	@unlink($tempFile);
+	//@unlink($tempFile);
 	echo "Saving file {$jsFile}\n";
 	$builds++;
 }

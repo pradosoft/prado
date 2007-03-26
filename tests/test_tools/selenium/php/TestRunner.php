@@ -29,13 +29,13 @@ to work-around a bug in IE on Win2K whereby the HTA application doesn't function
         <script type="text/javascript" src="<?php echo $base_dir; ?>core/scripts/narcissus-defs.js"></script>
         <script type="text/javascript" src="<?php echo $base_dir; ?>core/scripts/narcissus-parse.js"></script>
         <script type="text/javascript" src="<?php echo $base_dir; ?>core/scripts/narcissus-exec.js"></script>
+        <script language="JavaScript" type="text/javascript" src="<?php echo $base_dir; ?>core/scripts/htmlutils.js"></script>
         <script language="JavaScript" type="text/javascript" src="<?php echo $base_dir; ?>core/lib/prototype.js"></script>
         <script language="JavaScript" type="text/javascript" src="<?php echo $base_dir; ?>core/lib/scriptaculous/scriptaculous.js"></script>
         <script language="JavaScript" type="text/javascript" src="<?php echo $base_dir; ?>core/lib/cssQuery/cssQuery-p.js"></script>
         <script language="JavaScript" type="text/javascript" src="<?php echo $base_dir; ?>core/scripts/selenium-browserdetect.js"></script>
         <script language="JavaScript" type="text/javascript" src="<?php echo $base_dir; ?>core/scripts/selenium-browserbot.js"></script>
         <script language="JavaScript" type="text/javascript" src="<?php echo $base_dir; ?>core/scripts/find_matching_child.js"></script>
-        <script language="JavaScript" type="text/javascript" src="<?php echo $base_dir; ?>core/scripts/htmlutils.js"></script>
         <script language="JavaScript" type="text/javascript" src="<?php echo $base_dir; ?>core/scripts/selenium-api.js"></script>
         <script language="JavaScript" type="text/javascript" src="<?php echo $base_dir; ?>core/scripts/selenium-commandhandlers.js"></script>
         <script language="JavaScript" type="text/javascript" src="<?php echo $base_dir; ?>core/scripts/selenium-executionloop.js"></script>
@@ -49,6 +49,7 @@ to work-around a bug in IE on Win2K whereby the HTA application doesn't function
 
         <script language="JavaScript" type="text/javascript">
 			var post_results_to = "<?php echo $driver; ?>";
+			var script_base_url = "<?php echo $base_dir; ?>";
         </script>
 </head>
 

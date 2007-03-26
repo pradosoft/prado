@@ -20,36 +20,55 @@ var currentTest = null; // TODO: get rid of this global, which mirrors the htmlT
 var selenium = null;
 
 var htmlTestRunner;
-var HtmlTestRunner = Class.create();
-Object.extend(HtmlTestRunner.prototype, {
+var HtmlTestRunner = classCreate();
+objectExtend(HtmlTestRunner.prototype, {
     initialize: function() {
         this.metrics = new Metrics();
         this.controlPanel = new HtmlTestRunnerControlPanel();
-        this.htmlTestSuite = null;
         this.testFailed = false;
         this.currentTest = null;
         this.runAllTests = false;
         this.appWindow = null;
         // we use a timeout here to make sure the LOG has loaded first, so we can see _every_ error
-        setTimeout(function() {
+        setTimeout(fnBind(function() {
             this.loadSuiteFrame();
-        }.bind(this), 500);
+        }, this), 500);
+    },
+
+    getTestSuite: function() {
+        return suiteFrame.getCurrentTestSuite();
     },
 
     markFailed: function() {
         this.testFailed = true;
-        this.htmlTestSuite.markFailed();
+        this.getTestSuite().markFailed();
     },
 
     loadSuiteFrame: function() {
         if (selenium == null) {
-            selenium = Selenium.createForWindow(this._getApplicationWindow());
+            var appWindow = this._getApplicationWindow();
+            try { appWindow.location; }
+            catch (e) {
+                // when reloading, we may be pointing at an old window (Perm Denied)
+                setTimeout(fnBind(function() {
+                    this.loadSuiteFrame();
+                }, this), 50);
+                return;
+            }
+            selenium = Selenium.createForWindow(appWindow);
             this._registerCommandHandlers();
         }
         this.controlPanel.setHighlightOption();
         var testSuiteName = this.controlPanel.getTestSuiteName();
+        var self = this;
         if (testSuiteName) {
-            suiteFrame.load(testSuiteName, this._onloadTestSuite.bind(this));
+            suiteFrame.load(testSuiteName, function() {setTimeout(fnBind(self._onloadTestSuite, self), 50)} );
+            selenium.browserbot.baseUrl = absolutify(testSuiteName, window.location.href);
+        }
+        // DGF or should we use the old default?
+        // selenium.browserbot.baseUrl = window.location.href;
+        if (this.controlPanel.getBaseUrl()) {
+            selenium.browserbot.baseUrl = this.controlPanel.getBaseUrl();
         }
     },
 
@@ -62,31 +81,30 @@ Object.extend(HtmlTestRunner.prototype, {
 
     _getSeparateApplicationWindow: function () {
         if (this.appWindow == null) {
-            this.appWindow = openSeparateApplicationWindow('TestRunner-splash.html');
+            this.appWindow = openSeparateApplicationWindow('TestRunner-splash.html', this.controlPanel.isAutomatedRun());
         }
         return this.appWindow;
     },
 
     _onloadTestSuite:function () {
-        this.htmlTestSuite = new HtmlTestSuite(suiteFrame.getDocument());
-        if (! this.htmlTestSuite.isAvailable()) {
+        if (! this.getTestSuite().isAvailable()) {
             return;
         }
         if (this.controlPanel.isAutomatedRun()) {
-            htmlTestRunner.startTestSuite();
+            this.startTestSuite();
         } else if (this.controlPanel.getAutoUrl()) {
             //todo what is the autourl doing, left to check it out
-            addLoadListener(this._getApplicationWindow(), this._startSingleTest.bind(this));
+            addLoadListener(this._getApplicationWindow(), fnBind(this._startSingleTest, this));
             this._getApplicationWindow().src = this.controlPanel.getAutoUrl();
         } else {
-            this.htmlTestSuite.getSuiteRows()[0].loadTestCase();
+            this.getTestSuite().getSuiteRows()[0].loadTestCase();
         }
     },
 
     _startSingleTest:function () {
-        removeLoadListener(getApplicationWindow(), this._startSingleTest.bind(this));
+        removeLoadListener(getApplicationWindow(), fnBind(this._startSingleTest, this));
         var singleTestName = this.controlPanel.getSingleTestName();
-        testFrame.load(singleTestName, this.startTest.bind(this));
+        testFrame.load(singleTestName, fnBind(this.startTest, this));
     },
 
     _registerCommandHandlers: function () {
@@ -97,16 +115,17 @@ Object.extend(HtmlTestRunner.prototype, {
     startTestSuite: function() {
         this.controlPanel.reset();
         this.metrics.resetMetrics();
-        this.htmlTestSuite.reset();
+        this.getTestSuite().reset();
         this.runAllTests = true;
         this.runNextTest();
     },
 
     runNextTest: function () {
+        this.getTestSuite().updateSuiteWithResultOfPreviousTest();
         if (!this.runAllTests) {
             return;
         }
-        this.htmlTestSuite.runNextTestInSuite();
+        this.getTestSuite().runNextTestInSuite();
     },
 
     startTest: function () {
@@ -127,26 +146,15 @@ Object.extend(HtmlTestRunner.prototype, {
     }
 });
 
-var FeedbackColors = Class.create();
-Object.extend(FeedbackColors, {
-    passColor : "#ccffcc",
-    doneColor : "#eeffee",
-    failColor : "#ffcccc",
-    workingColor : "#ffffcc",
-    breakpointColor : "#cccccc"
-});
-
-
 var runInterval = 0;
 
-
 /** SeleniumFrame encapsulates an iframe element */
-var SeleniumFrame = Class.create();
-Object.extend(SeleniumFrame.prototype, {
+var SeleniumFrame = classCreate();
+objectExtend(SeleniumFrame.prototype, {
 
     initialize : function(frame) {
         this.frame = frame;
-        addLoadListener(this.frame, this._handleLoad.bind(this));
+        addLoadListener(this.frame, fnBind(this._handleLoad, this));
     },
 
     getDocument : function() {
@@ -154,11 +162,36 @@ Object.extend(SeleniumFrame.prototype, {
     },
 
     _handleLoad: function() {
-		this._onLoad();
+        this._attachStylesheet();
+        this._onLoad();
         if (this.loadCallback) {
             this.loadCallback();
             this.loadCallback = null;
         }
+    },
+
+    _attachStylesheet: function() {
+        var d = this.getDocument();
+        var head = d.getElementsByTagName('head').item(0);
+        var styleLink = d.createElement("link");
+        styleLink.rel = "stylesheet";
+        styleLink.type = "text/css";
+        if (browserVersion && browserVersion.isChrome) {
+            // DGF We have to play a clever trick to get the right absolute path.
+            // This trick works on most browsers, (not IE), but is only needed in
+            // chrome
+            var tempLink = window.document.createElement("link");
+            tempLink.href = "selenium-test.css"; // this will become an absolute href
+            styleLink.href = tempLink.href;
+        } else {
+            // this works in every browser (except Firefox in chrome mode)
+            var styleSheetPath = window.location.pathname.replace(/[^\/\\]+$/, "selenium-test.css");
+            if (browserVersion.isIE && window.location.protocol == "file:") {
+                styleSheetPath = "file://" + styleSheetPath;
+            }
+            styleLink.href = styleSheetPath;
+        }
+        head.appendChild(styleLink);
     },
 
     _onLoad: function() {
@@ -169,10 +202,14 @@ Object.extend(SeleniumFrame.prototype, {
     },
 
     _setLocation: function(location) {
+        var isChrome = browserVersion.isChrome || false;
+        var isHTA = browserVersion.isHTA || false;
+        // DGF TODO multiWindow
+        location += "?thisIsChrome=" + isChrome + "&thisIsHTA=" + isHTA;
         if (browserVersion.isSafari) {
-			// safari doesn't reload the page when the location equals to current location.
-			// hence, set the location to blank so that the page will reload automatically.
-			this.frame.src = "about:blank";
+            // safari doesn't reload the page when the location equals to current location.
+            // hence, set the location to blank so that the page will reload automatically.
+            this.frame.src = "about:blank";
             this.frame.src = location;
         } else {
             this.frame.contentWindow.location.replace(location);
@@ -189,18 +226,27 @@ Object.extend(SeleniumFrame.prototype, {
 
 });
 
+/** HtmlTestSuiteFrame - encapsulates the suite iframe element */
+var HtmlTestSuiteFrame = classCreate();
+objectExtend(HtmlTestSuiteFrame.prototype, SeleniumFrame.prototype);
+objectExtend(HtmlTestSuiteFrame.prototype, {
+
+    getCurrentTestSuite: function() {
+        if (!this.currentTestSuite) {
+            this.currentTestSuite = new HtmlTestSuite(this.getDocument());
+        }
+        return this.currentTestSuite;
+    }
+
+});
+
 /** HtmlTestFrame - encapsulates the test-case iframe element */
-var HtmlTestFrame = Class.create();
-Object.extend(HtmlTestFrame.prototype, SeleniumFrame.prototype);
-Object.extend(HtmlTestFrame.prototype, {
+var HtmlTestFrame = classCreate();
+objectExtend(HtmlTestFrame.prototype, SeleniumFrame.prototype);
+objectExtend(HtmlTestFrame.prototype, {
 
     _onLoad: function() {
-        this.setCurrentTestCase();
-    },
-
-    setCurrentTestCase: function() {
-        //todo: this is not good looking
-        this.currentTestCase = new HtmlTestCase(this.getDocument(), htmlTestRunner.htmlTestSuite.getCurrentRow());
+        this.currentTestCase = new HtmlTestCase(this.getDocument(), htmlTestRunner.getTestSuite().getCurrentRow());
     },
 
     getCurrentTestCase: function() {
@@ -210,14 +256,14 @@ Object.extend(HtmlTestFrame.prototype, {
 });
 
 function onSeleniumLoad() {
-    suiteFrame = new SeleniumFrame(getSuiteFrame());
+    suiteFrame = new HtmlTestSuiteFrame(getSuiteFrame());
     testFrame = new HtmlTestFrame(getTestFrame());
     htmlTestRunner = new HtmlTestRunner();
 }
 
-
 var suiteFrame;
 var testFrame;
+
 function getSuiteFrame() {
     var f = $('testSuiteFrame');
     if (f == null) {
@@ -236,9 +282,9 @@ function getTestFrame() {
     return f;
 }
 
-var HtmlTestRunnerControlPanel = Class.create();
-Object.extend(HtmlTestRunnerControlPanel.prototype, URLConfiguration.prototype);
-Object.extend(HtmlTestRunnerControlPanel.prototype, {
+var HtmlTestRunnerControlPanel = classCreate();
+objectExtend(HtmlTestRunnerControlPanel.prototype, URLConfiguration.prototype);
+objectExtend(HtmlTestRunnerControlPanel.prototype, {
     initialize: function() {
         this._acquireQueryString();
 
@@ -248,16 +294,17 @@ Object.extend(HtmlTestRunnerControlPanel.prototype, {
         this.pauseButton = $('pauseTest');
         this.stepButton = $('stepTest');
 
-        this.highlightOption.onclick = (function() {
+        this.highlightOption.onclick = fnBindAsEventListener((function() {
             this.setHighlightOption();
-        }).bindAsEventListener(this);
-        this.pauseButton.onclick = this.pauseCurrentTest.bindAsEventListener(this);
-        this.stepButton.onclick = this.stepCurrentTest.bindAsEventListener(this);
+        }), this);
+        this.pauseButton.onclick = fnBindAsEventListener(this.pauseCurrentTest, this);
+        this.stepButton.onclick = fnBindAsEventListener(this.stepCurrentTest, this);
+
 
         this.speedController = new Control.Slider('speedHandle', 'speedTrack', {
             range: $R(0, 1000),
-            onSlide: this.setRunInterval.bindAsEventListener(this),
-            onChange: this.setRunInterval.bindAsEventListener(this)
+            onSlide: fnBindAsEventListener(this.setRunInterval, this),
+            onChange: fnBindAsEventListener(this.setRunInterval, this)
         });
 
         this._parseQueryParameter();
@@ -265,7 +312,7 @@ Object.extend(HtmlTestRunnerControlPanel.prototype, {
 
     setHighlightOption: function () {
         var isHighlight = this.highlightOption.checked;
-        selenium.browserbot.getCurrentPage().setHighlightElement(isHighlight);
+        selenium.browserbot.setShouldHighlightElement(isHighlight);
     },
 
     _parseQueryParameter: function() {
@@ -295,19 +342,19 @@ Object.extend(HtmlTestRunnerControlPanel.prototype, {
     },
 
     reset: function() {
-        this.runInterval = this.speedController.value;
+        // this.runInterval = this.speedController.value;
         this._switchContinueButtonToPause();
     },
 
     _switchContinueButtonToPause: function() {
-        this.pauseButton.innerHTML = "Pause";
-        this.pauseButton.onclick = this.pauseCurrentTest.bindAsEventListener(this);
+        this.pauseButton.className = "cssPauseTest";
+        this.pauseButton.onclick = fnBindAsEventListener(this.pauseCurrentTest, this);
     },
 
     _switchPauseButtonToContinue: function() {
         $('stepTest').disabled = false;
-        this.pauseButton.innerHTML = "Continue";
-        this.pauseButton.onclick = this.continueCurrentTest.bindAsEventListener(this);
+        this.pauseButton.className = "cssContinueTest";
+        this.pauseButton.onclick = fnBindAsEventListener(this.continueCurrentTest, this);
     },
 
     stepCurrentTest: function () {
@@ -356,36 +403,58 @@ Object.extend(HtmlTestRunnerControlPanel.prototype, {
 
 });
 
-
-var AbstractResultAwareRow = Class.create();
-Object.extend(AbstractResultAwareRow.prototype, {
+var AbstractResultAwareRow = classCreate();
+objectExtend(AbstractResultAwareRow.prototype, {
 
     initialize: function(trElement) {
         this.trElement = trElement;
     },
 
-    markWorking: function() {
-        this.trElement.bgColor = FeedbackColors.workingColor;
+    setStatus: function(status) {
+        this.unselect();
+        this.trElement.className = this.trElement.className.replace(/status_[a-z]+/, "");
+        if (status) {
+            addClassName(this.trElement, "status_" + status);
+        }
+    },
+
+    select: function() {
+        addClassName(this.trElement, "selected");
         safeScrollIntoView(this.trElement);
     },
 
+    unselect: function() {
+        removeClassName(this.trElement, "selected");
+    },
+
     markPassed: function() {
-        this.trElement.bgColor = FeedbackColors.passColor;
+        this.setStatus("passed");
     },
 
     markDone: function() {
-        this.trElement.bgColor = FeedbackColors.doneColor;
+        this.setStatus("done");
     },
 
     markFailed: function() {
-        this.trElement.bgColor = FeedbackColors.failColor;
+        this.setStatus("failed");
     }
 
 });
 
-var HtmlTestCaseRow = Class.create();
-Object.extend(HtmlTestCaseRow.prototype, AbstractResultAwareRow.prototype);
-Object.extend(HtmlTestCaseRow.prototype, {
+var TitleRow = classCreate();
+objectExtend(TitleRow.prototype, AbstractResultAwareRow.prototype);
+objectExtend(TitleRow.prototype, {
+
+    initialize: function(trElement) {
+        this.trElement = trElement;
+        trElement.className = "title";
+    }
+
+});
+
+var HtmlTestCaseRow = classCreate();
+objectExtend(HtmlTestCaseRow.prototype, AbstractResultAwareRow.prototype);
+objectExtend(HtmlTestCaseRow.prototype, {
 
     getCommand: function () {
         return new SeleniumCommand(getText(this.trElement.cells[0]),
@@ -395,16 +464,16 @@ Object.extend(HtmlTestCaseRow.prototype, {
     },
 
     markFailed: function(errorMsg) {
-        this.trElement.bgColor = FeedbackColors.failColor;
+        AbstractResultAwareRow.prototype.markFailed.call(this, errorMsg);
         this.setMessage(errorMsg);
     },
 
     setMessage: function(message) {
-        this.trElement.cells[2].innerHTML = message;
+        setText(this.trElement.cells[2], message);
     },
 
     reset: function() {
-        this.trElement.bgColor = '';
+        this.setStatus(null);
         var thirdCell = this.trElement.cells[2];
         if (thirdCell) {
             if (thirdCell.originalHTML) {
@@ -418,19 +487,18 @@ Object.extend(HtmlTestCaseRow.prototype, {
     onClick: function() {
         if (this.trElement.isBreakpoint == undefined) {
             this.trElement.isBreakpoint = true;
-            this.trElement.beforeBackgroundColor = Element.getStyle(this.trElement, "backgroundColor");
-            Element.setStyle(this.trElement, {"background-color" : FeedbackColors.breakpointColor});
+            addClassName(this.trElement, "breakpoint");
         } else {
             this.trElement.isBreakpoint = undefined;
-            Element.setStyle(this.trElement, {"background-color" : this.trElement.beforeBackgroundColor});
+            removeClassName(this.trElement, "breakpoint");
         }
     },
 
     addBreakpointSupport: function() {
-        Element.setStyle(this.trElement, {"cursor" : "pointer"});
-        this.trElement.onclick = function() {
+        elementSetStyle(this.trElement, {"cursor" : "pointer"});
+        this.trElement.onclick = fnBindAsEventListener(function() {
             this.onClick();
-        }.bindAsEventListener(this);
+        }, this);
     },
 
     isBreakpoint: function() {
@@ -441,42 +509,44 @@ Object.extend(HtmlTestCaseRow.prototype, {
     }
 });
 
-var HtmlTestSuiteRow = Class.create();
-Object.extend(HtmlTestSuiteRow.prototype, AbstractResultAwareRow.prototype);
-Object.extend(HtmlTestSuiteRow.prototype, {
+var HtmlTestSuiteRow = classCreate();
+objectExtend(HtmlTestSuiteRow.prototype, AbstractResultAwareRow.prototype);
+objectExtend(HtmlTestSuiteRow.prototype, {
 
     initialize: function(trElement, testFrame, htmlTestSuite) {
         this.trElement = trElement;
         this.testFrame = testFrame;
         this.htmlTestSuite = htmlTestSuite;
         this.link = trElement.getElementsByTagName("a")[0];
-        this.link.onclick = this._onClick.bindAsEventListener(this);
+        this.link.onclick = fnBindAsEventListener(this._onClick, this);
     },
 
     reset: function() {
-        this.trElement.bgColor = '';
+        this.setStatus(null);
     },
 
     _onClick: function() {
-        // todo: just send a message to the testSuite
         this.loadTestCase(null);
         return false;
     },
 
     loadTestCase: function(onloadFunction) {
+        this.htmlTestSuite.unselectCurrentRow();
+        this.select();
         this.htmlTestSuite.currentRowInSuite = this.trElement.rowIndex - 1;
         // If the row has a stored results table, use that
         var resultsFromPreviousRun = this.trElement.cells[1];
         if (resultsFromPreviousRun) {
-            // this.testFrame.restoreTestCase(resultsFromPreviousRun.innerHTML);
+            // todo: delegate to TestFrame, e.g.
+            //   this.testFrame.restoreTestCase(resultsFromPreviousRun.innerHTML);
             var testBody = this.testFrame.getDocument().body;
             testBody.innerHTML = resultsFromPreviousRun.innerHTML;
-            testFrame.setCurrentTestCase();
+            this.testFrame._onLoad();
             if (onloadFunction) {
                 onloadFunction();
             }
         } else {
-			this.testFrame.load(this.link.href, onloadFunction);
+            this.testFrame.load(this.link.href, onloadFunction);
         }
     },
 
@@ -498,28 +568,24 @@ Object.extend(HtmlTestSuiteRow.prototype, {
 
 });
 
-var HtmlTestSuite = Class.create();
-Object.extend(HtmlTestSuite.prototype, {
+var HtmlTestSuite = classCreate();
+objectExtend(HtmlTestSuite.prototype, {
 
     initialize: function(suiteDocument) {
         this.suiteDocument = suiteDocument;
         this.suiteRows = this._collectSuiteRows();
-        this.titleRow = this.getTestTable().rows[0];
-        this.title = this.titleRow.cells[0].innerHTML;
+        this.titleRow = new TitleRow(this.getTestTable().rows[0]);
         this.reset();
     },
 
     reset: function() {
         this.failed = false;
         this.currentRowInSuite = -1;
-        this.titleRow.bgColor = '';
-        this.suiteRows.each(function(row) {
+        this.titleRow.setStatus(null);
+        for (var i = 0; i < this.suiteRows.length; i++) {
+            var row = this.suiteRows[i];
             row.reset();
-        });
-    },
-
-    getTitle: function() {
-        return this.title;
+        }
     },
 
     getSuiteRows: function() {
@@ -537,31 +603,51 @@ Object.extend(HtmlTestSuite.prototype, {
 
     _collectSuiteRows: function () {
         var result = [];
-        for (rowNum = 1; rowNum < this.getTestTable().rows.length; rowNum++) {
-            var rowElement = this.getTestTable().rows[rowNum];
+        var tables = $A(this.suiteDocument.getElementsByTagName("table"));
+        var testTable = tables[0];
+        for (rowNum = 1; rowNum < testTable.rows.length; rowNum++) {
+            var rowElement = testTable.rows[rowNum];
             result.push(new HtmlTestSuiteRow(rowElement, testFrame, this));
+        }
+
+        // process the unsuited rows as well
+        for (var tableNum = 1; tableNum < $A(this.suiteDocument.getElementsByTagName("table")).length; tableNum++) {
+            testTable = tables[tableNum];
+            for (rowNum = 1; rowNum < testTable.rows.length; rowNum++) {
+                var rowElement = testTable.rows[rowNum];
+                new HtmlTestSuiteRow(rowElement, testFrame, this);
+            }
         }
         return result;
     },
 
     getCurrentRow: function() {
+        if (this.currentRowInSuite == -1) {
+            return null;
+        }
         return this.suiteRows[this.currentRowInSuite];
+    },
+
+    unselectCurrentRow: function() {
+        var currentRow = this.getCurrentRow()
+        if (currentRow) {
+            currentRow.unselect();
+        }
     },
 
     markFailed: function() {
         this.failed = true;
-        this.titleRow.bgColor = FeedbackColors.failColor;
+        this.titleRow.markFailed();
     },
 
     markDone: function() {
         if (!this.failed) {
-            this.titleRow.bgColor = FeedbackColors.passColor;
+            this.titleRow.markPassed();
         }
     },
 
     _startCurrentTestCase: function() {
-        this.getCurrentRow().markWorking();
-        this.getCurrentRow().loadTestCase(htmlTestRunner.startTest.bind(htmlTestRunner));
+        this.getCurrentRow().loadTestCase(fnBind(htmlTestRunner.startTest, htmlTestRunner));
     },
 
     _onTestSuiteComplete: function() {
@@ -569,14 +655,13 @@ Object.extend(HtmlTestSuite.prototype, {
         new TestResult(this.failed, this.getTestTable()).post();
     },
 
-    _updateSuiteWithResultOfPreviousTest: function() {
+    updateSuiteWithResultOfPreviousTest: function() {
         if (this.currentRowInSuite >= 0) {
             this.getCurrentRow().saveTestResults();
         }
     },
 
     runNextTestInSuite: function() {
-        this._updateSuiteWithResultOfPreviousTest();
         this.currentRowInSuite++;
 
         // If we are done with all of the tests, set the title bar as pass or fail
@@ -591,8 +676,8 @@ Object.extend(HtmlTestSuite.prototype, {
 
 });
 
-var TestResult = Class.create();
-Object.extend(TestResult.prototype, {
+var TestResult = classCreate();
+objectExtend(TestResult.prototype, {
 
 // Post the results to a servlet, CGI-script, etc.  The URL of the
 // results-handler defaults to "/postResults", but an alternative location
@@ -724,8 +809,8 @@ Object.extend(TestResult.prototype, {
 });
 
 /** HtmlTestCase encapsulates an HTML test document */
-var HtmlTestCase = Class.create();
-Object.extend(HtmlTestCase.prototype, {
+var HtmlTestCase = classCreate();
+objectExtend(HtmlTestCase.prototype, {
 
     initialize: function(testDocument, htmlTestSuiteRow) {
         if (testDocument == null) {
@@ -736,6 +821,7 @@ Object.extend(HtmlTestCase.prototype, {
         }
         this.testDocument = testDocument;
         this.htmlTestSuiteRow = htmlTestSuiteRow;
+        this.headerRow = new TitleRow(this.testDocument.getElementsByTagName("tr")[0]);
         this.commandRows = this._collectCommandRows();
         this.nextCommandRowIndex = 0;
         this._addBreakpointSupport();
@@ -745,13 +831,16 @@ Object.extend(HtmlTestCase.prototype, {
         var commandRows = [];
         var tables = $A(this.testDocument.getElementsByTagName("table"));
         var self = this;
-        tables.each(function (table) {
-            $A(table.rows).each(function(candidateRow) {
+        for (var i = 0; i < tables.length; i++) {
+            var table = tables[i];
+            var tableRows = $A(table.rows);
+            for (var j = 0; j < tableRows.length; j++) {
+                var candidateRow = tableRows[j];
                 if (self.isCommandRow(candidateRow)) {
                     commandRows.push(new HtmlTestCaseRow(candidateRow));
                 }
-            }.bind(this));
-        });
+            }
+        }
         return commandRows;
     },
 
@@ -765,15 +854,16 @@ Object.extend(HtmlTestCase.prototype, {
          */
         this.nextCommandRowIndex = 0;
 
-        this._setTitleColor('');
-        this.commandRows.each(function(row) {
+        this.setStatus('');
+        for (var i = 0; i < this.commandRows.length; i++) {
+            var row = this.commandRows[i];
             row.reset();
-        });
+        }
 
         // remove any additional fake "error" row added to the end of the document
         var errorElement = this.testDocument.getElementById('error');
         if (errorElement) {
-            Element.remove(errorElement);
+            errorElement.parentNode.removeChild(errorElement);
         }
     },
 
@@ -781,39 +871,38 @@ Object.extend(HtmlTestCase.prototype, {
         return this.commandRows;
     },
 
-    _setTitleColor: function(color) {
-        var headerRow = this.testDocument.getElementsByTagName("tr")[0];
-        if (headerRow) {
-            headerRow.bgColor = color;
-        }
+    setStatus: function(status) {
+        this.headerRow.setStatus(status);
     },
 
     markFailed: function() {
-        this._setTitleColor(FeedbackColors.failColor);
+        this.setStatus("failed");
         this.htmlTestSuiteRow.markFailed();
     },
 
     markPassed: function() {
-        this._setTitleColor(FeedbackColors.passColor);
+        this.setStatus("passed");
         this.htmlTestSuiteRow.markPassed();
     },
 
     addErrorMessage: function(errorMsg, currentRow) {
+        errorMsg = errorMsg.replace(/ /g, String.fromCharCode(160)).replace("\n", '\\n');
         if (currentRow) {
             currentRow.markFailed(errorMsg);
         } else {
             var errorElement = this.testDocument.createElement("p");
             errorElement.id = "error";
-            errorElement.innerHTML = errorMsg;
+            setText(errorElement, errorMsg);
             this.testDocument.body.appendChild(errorElement);
-            Element.setStyle(errorElement, {'backgroundColor': FeedbackColors.failColor});
+            errorElement.className = "status_failed";
         }
     },
 
     _addBreakpointSupport: function() {
-        this.commandRows.each(function(row) {
+        for (var i = 0; i < this.commandRows.length; i++) {
+            var row = this.commandRows[i];
             row.addBreakpointSupport();
-        });
+        }
     },
 
     hasMoreCommandRows: function() {
@@ -850,8 +939,8 @@ var get_new_rows = function() {
 };
 
 
-var Metrics = Class.create();
-Object.extend(Metrics.prototype, {
+var Metrics = classCreate();
+objectExtend(Metrics.prototype, {
     initialize: function() {
         // The number of tests run
         this.numTestPasses = 0;
@@ -903,20 +992,13 @@ Object.extend(Metrics.prototype, {
 
 });
 
-var HtmlRunnerCommandFactory = Class.create();
-Object.extend(HtmlRunnerCommandFactory.prototype, {
+var HtmlRunnerCommandFactory = classCreate();
+objectExtend(HtmlRunnerCommandFactory.prototype, {
 
     initialize: function(seleniumCommandFactory, testLoop) {
         this.seleniumCommandFactory = seleniumCommandFactory;
         this.testLoop = testLoop;
-        this.handlers = {
-            pause: {
-                execute: function(selenium, command) {
-                    testLoop.pauseInterval = command.target;
-                    return {};
-                }
-            }
-        };
+        this.handlers = {};
         //todo: register commands
     },
 
@@ -929,9 +1011,9 @@ Object.extend(HtmlRunnerCommandFactory.prototype, {
 
 });
 
-var HtmlRunnerTestLoop = Class.create();
-Object.extend(HtmlRunnerTestLoop.prototype, new TestLoop());
-Object.extend(HtmlRunnerTestLoop.prototype, {
+var HtmlRunnerTestLoop = classCreate();
+objectExtend(HtmlRunnerTestLoop.prototype, new TestLoop());
+objectExtend(HtmlRunnerTestLoop.prototype, {
     initialize: function(htmlTestCase, metrics, seleniumCommandFactory) {
 
         this.commandFactory = new HtmlRunnerCommandFactory(seleniumCommandFactory, this);
@@ -948,6 +1030,8 @@ Object.extend(HtmlRunnerTestLoop.prototype, {
         // used for selenium tests in javascript
         this.currentItem = null;
         this.commandAgenda = new Array();
+        this.expectedFailure = null;
+        this.expectedFailureType = null;
 
         this.htmlTestCase.reset();
 
@@ -986,11 +1070,12 @@ Object.extend(HtmlRunnerTestLoop.prototype, {
 
     commandStarted : function() {
         $('pauseTest').disabled = false;
-        this.currentRow.markWorking();
+        this.currentRow.select();
         this.metrics.printMetrics();
     },
 
     commandComplete : function(result) {
+        this._checkExpectedFailure(result);
         if (result.failed) {
             this.metrics.numCommandFailures += 1;
             this._recordFailure(result.failureMessage);
@@ -1002,7 +1087,49 @@ Object.extend(HtmlRunnerTestLoop.prototype, {
         }
     },
 
+    _checkExpectedFailure : function(result) {
+        if (this.expectedFailure != null) {
+            if (this.expectedFailureJustSet) {
+                this.expectedFailureJustSet = false;
+                return;
+            }
+            if (!result.failed) {
+                result.passed = false;
+                result.failed = true;
+                result.failureMessage = "Expected " + this.expectedFailureType + " did not occur.";
+            } else {
+                if (PatternMatcher.matches(this.expectedFailure, result.failureMessage)) {
+                    var failureType = result.error ? "error" : "failure";
+                    if (failureType == this.expectedFailureType) {
+                        result.failed = false;
+                        result.passed = true;
+                    } else {
+                        result.failed = true;
+                        result.failureMessage = "Expected "+this.expectedFailureType+", but "+failureType+" occurred instead";
+                    }
+                } else {
+                    result.failed = true;
+                    result.failureMessage = "Expected " + this.expectedFailureType + " message '" + this.expectedFailure
+                                            + "' but was '" + result.failureMessage + "'";
+                }
+            }
+            this.expectedFailure = null;
+            this.expectedFailureType = null;
+        }
+    },
+
     commandError : function(errorMessage) {
+        var tempResult = {};
+        tempResult.passed = false;
+        tempResult.failed = true;
+        tempResult.error = true;
+        tempResult.failureMessage = errorMessage;
+        this._checkExpectedFailure(tempResult);
+        if (tempResult.passed) {
+            this.currentRow.markDone();
+            return true;
+        }
+        errorMessage = tempResult.failureMessage;
         this.metrics.numCommandErrors += 1;
         this._recordFailure(errorMessage);
     },
@@ -1062,6 +1189,13 @@ Object.extend(HtmlRunnerTestLoop.prototype, {
 
 });
 
+Selenium.prototype.doPause = function(waitTime) {
+    /** Wait for the specified amount of time (in milliseconds)
+     * @param waitTime the amount of time to sleep (in milliseconds)
+     */
+    // todo: should not refer to currentTest directly
+    currentTest.pauseInterval = waitTime;
+};
 
 Selenium.prototype.doBreak = function() {
     /** Halt the currently running test, and wait for the user to press the Continue button.
@@ -1115,81 +1249,33 @@ Selenium.prototype.assertSelected = function(selectLocator, optionLocator) {
     locator.assertSelected(element);
 };
 
-/**
- * Tell Selenium to expect a failure on the next command execution. This
- * command temporarily installs a CommandFactory that generates
- * CommandHandlers that expect a failure.
- */
 Selenium.prototype.assertFailureOnNext = function(message) {
+    /**
+     * Tell Selenium to expect a failure on the next command execution.
+     * @param message The failure message we should expect.  This command will fail if the wrong failure message appears.
+     */
     if (!message) {
-        throw new Error("Message must be provided");
+        throw new SeleniumError("Message must be provided");
     }
 
-    var expectFailureCommandFactory =
-        new ExpectFailureCommandFactory(currentTest.commandFactory, message, "failure", executeCommandAndReturnFailureMessage);
-    currentTest.commandFactory = expectFailureCommandFactory;
+    currentTest.expectedFailure = message;
+    currentTest.expectedFailureType = "failure";
+    currentTest.expectedFailureJustSet = true;
 };
 
-/**
- * Tell Selenium to expect an error on the next command execution. This
- * command temporarily installs a CommandFactory that generates
- * CommandHandlers that expect a failure.
- */
 Selenium.prototype.assertErrorOnNext = function(message) {
+    /**
+     * Tell Selenium to expect an error on the next command execution.
+     * @param message The error message we should expect.  This command will fail if the wrong error message appears.
+     */
+     // This command temporarily installs a CommandFactory that generates
+     // CommandHandlers that expect an error.
     if (!message) {
-        throw new Error("Message must be provided");
+        throw new SeleniumError("Message must be provided");
     }
 
-    var expectFailureCommandFactory =
-        new ExpectFailureCommandFactory(currentTest.commandFactory, message, "error", executeCommandAndReturnErrorMessage);
-    currentTest.commandFactory = expectFailureCommandFactory;
+    currentTest.expectedFailure = message;
+    currentTest.expectedFailureType = "error";
+    currentTest.expectedFailureJustSet = true;
 };
 
-function executeCommandAndReturnFailureMessage(baseHandler, originalArguments) {
-    var baseResult = baseHandler.execute.apply(baseHandler, originalArguments);
-    if (baseResult.passed) {
-        return null;
-    }
-    return baseResult.failureMessage;
-};
-
-function executeCommandAndReturnErrorMessage(baseHandler, originalArguments) {
-    try {
-        baseHandler.execute.apply(baseHandler, originalArguments);
-        return null;
-    }
-    catch (expected) {
-        return expected.message;
-    }
-};
-
-function ExpectFailureCommandHandler(baseHandler, originalCommandFactory, expectedErrorMessage, errorType, decoratedExecutor) {
-    this.execute = function() {
-        var baseFailureMessage = decoratedExecutor(baseHandler, arguments);
-        var result = {};
-        if (!baseFailureMessage) {
-            result.failed = true;
-            result.failureMessage = "Expected " + errorType + " did not occur.";
-        }
-        else {
-            if (! PatternMatcher.matches(expectedErrorMessage, baseFailureMessage)) {
-                result.failed = true;
-                result.failureMessage = "Expected " + errorType + " message '" + expectedErrorMessage
-                                        + "' but was '" + baseFailureMessage + "'";
-            }
-            else {
-                result.passed = true;
-                result.result = baseFailureMessage;
-            }
-        }
-        currentTest.commandFactory = originalCommandFactory;
-        return result;
-    };
-}
-
-function ExpectFailureCommandFactory(originalCommandFactory, expectedErrorMessage, errorType, decoratedExecutor) {
-    this.getCommandHandler = function(name) {
-        var baseHandler = originalCommandFactory.getCommandHandler(name);
-        return new ExpectFailureCommandHandler(baseHandler, originalCommandFactory, expectedErrorMessage, errorType, decoratedExecutor);
-    };
-};

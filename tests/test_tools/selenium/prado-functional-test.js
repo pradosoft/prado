@@ -1,19 +1,45 @@
-Object.extend(HtmlTestRunner.prototype, {
-    loadSuiteFrame: function() {
-        if (selenium == null) {
-            selenium = Selenium.createForWindow(this._getApplicationWindow());
-            this._registerCommandHandlers();
-        }
-        this.controlPanel.setHighlightOption();
-        //var testSuiteName = this.controlPanel.getTestSuiteName();
-        var testSuiteName = document.location+'?testSuites';
-		if (testSuiteName) {
-            suiteFrame.load(testSuiteName, this._onloadTestSuite.bind(this));
-        }
+
+objectExtend(HtmlTestRunnerControlPanel.prototype, {
+	getTestSuiteName: function() {
+        return document.location+'?testSuites'; //this._getQueryParameter("test");
     }
 });
 
-Object.extend(HtmlTestRunnerControlPanel.prototype, {
+SeleniumFrame.prototype._setLocation = function(location) {
+       /* var isChrome = browserVersion.isChrome || false;
+        var isHTA = browserVersion.isHTA || false;
+        // DGF TODO multiWindow
+        location += "?thisIsChrome=" + isChrome + "&thisIsHTA=" + isHTA;*/
+        if (browserVersion.isSafari) {
+            // safari doesn't reload the page when the location equals to current location.
+            // hence, set the location to blank so that the page will reload automatically.
+            this.frame.src = "about:blank";
+            this.frame.src = location;
+        } else {
+            this.frame.contentWindow.location.replace(location);
+        }
+    };
+
+SeleniumFrame.prototype._attachStylesheet = function()
+{
+	    var base_url = script_base_url;
+        var d = this.getDocument();
+        var head = d.getElementsByTagName('head').item(0);
+        var styleLink = d.createElement("link");
+        styleLink.rel = "stylesheet";
+        styleLink.type = "text/css";
+         styleLink.href = base_url + "core/selenium-test.css";
+        head.appendChild(styleLink);
+};
+
+HtmlTestFrame.prototype._setLocation = SeleniumFrame.prototype._setLocation;
+HtmlTestSuiteFrame.prototype._setLocation = SeleniumFrame.prototype._setLocation;
+
+HtmlTestFrame.prototype._attachStylesheet = SeleniumFrame.prototype._attachStylesheet;
+HtmlTestSuiteFrame.prototype._attachStylesheet = SeleniumFrame.prototype._attachStylesheet;
+
+
+objectExtend(HtmlTestRunnerControlPanel.prototype, {
     _parseQueryParameter: function() {
         var tempRunInterval = this._getQueryParameter("runInterval");
         if (tempRunInterval) {
@@ -37,7 +63,7 @@ Selenium.prototype.getAttribute = function(target) {
  */
 Selenium.prototype.isVisible = function(locator) {
     var element;
-    element = this.page().findElement(locator); 
+    element = this.page().findElement(locator);
 
 	if(/Konqueror|Safari|KHTML/.test(navigator.userAgent))
 		var visibility = element.style["visibility"];
@@ -64,13 +90,13 @@ Selenium.prototype._isDisplayed = function(element) {
     return true;
 };
 
-Selenium.prototype.assertEmptySelection = function(selectLocator, optionLocator) 
+Selenium.prototype.assertEmptySelection = function(selectLocator, optionLocator)
 {
 	/**
    * Verifies that the selected option of a drop-down satisfies the optionSpecifier.
-   * 
+   *
    * <p>See the select command for more information about option locators.</p>
-   * 
+   *
    * @param selectLocator an <a href="#locators">element locator</a> identifying a drop-down menu
    * @param optionLocator an option locator, typically just an option label (e.g. "John Smith")
    */
@@ -78,9 +104,9 @@ Selenium.prototype.assertEmptySelection = function(selectLocator, optionLocator)
     var locator = this.optionLocatorFactory.fromLocatorString(optionLocator);
    return element.selectedIndex == -1;
 }
-	
 
-Object.extend(HtmlTestSuite.prototype, {
+
+objectExtend(HtmlTestSuite.prototype, {
 	_onTestSuiteComplete: function() {
         this.markDone();
         var result = new TestResult(this.failed, this.getTestTable());
@@ -89,7 +115,7 @@ Object.extend(HtmlTestSuite.prototype, {
 });
 
 
- 
+
 
 // Post the results to a servlet, CGI-script, etc.  The URL of the
 // results-handler defaults to "/postResults", but an alternative location
@@ -208,10 +234,10 @@ function parse_resultCell(resultCell,rowNum,form)
 
 function get_color_status(element)
 {
-	var color = element.getAttribute("bgcolor");
-	if(color == FeedbackColors.passColor) return "passed";
-	if(color == FeedbackColors.failColor) return "failed";
-	if(color == FeedbackColors.doneColor) return "done";
+	var color = element.className
+	if(color == 'status_passed') return "passed";
+	if(color == 'status_failed') return "failed";
+	if(color == 'status_done') return "done";
 	return "";
 }
 
