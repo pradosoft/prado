@@ -1,5 +1,6 @@
 Version 3.1.0 beta to be released
 =================================
+BUG: Ticket#278 - client-side validator enable/disable (conditional) (Wei)
 BUG: Ticket#492 - TDataGridPagerStyle not found error (Qiang)
 BUG: Ticket#517 - Quickstart I18N sample: conflicting module ID (Wei)
 BUG: Ticket#521 - comment tag on TActiveButton stop callback (Wei)
@@ -7,9 +8,13 @@ BUG: Ticket#549 - set/get Timestamp on TDatePicker shound handle "null" values (
 BUG: Ticket#550 - explicitly include TCallbackClientSide in TCallbackOptions (Qiang)
 BUG: Ticket#553 - I18N quickstart sample does not work (Qiang)
 BUG: Ticket#555 - TNumberFormat throws exception (Qiang)
+BUG: Ticket#560 - TActiveImageButton broken (Postback instead of Callback) (Wei)
 BUG: Ticket#573 - NumberFormat Bug (Wei)
 BUG: TXmlElement did not encode attribute and text values when being saved as a string (Qiang)
 BUG: SelectedIndices not return expected result for ActiveListBox (Wei)
+ENH: Ticket#430 - clearing the validator errors (Wei)
+ENH: Ticket#436 - update script.aculo.us to 1.6.4 (Wei, updated to v 1.7.1beta)
+ENH: Ticket#482 - ADD TinyMCE 2.0.8 (Wei, TinyMCE 2.1 added)
 ENH: Ticket#503 - Localization and parameter tags can now appear as a substring in a property initial value (Qiang)
 ENH: Ticket#513 - Display last modified / revision in quickstart (Wei)
 ENH: Ticket#519 - Update TActiveRecord implementation (Wei)
@@ -26,6 +31,7 @@ NEW: TShellApplication (Qiang)
 NEW: TDbCache (Qiang)
 NEW: TDbUserManager and TDbUser (Qiang)
 NEW: Active Record driver for IBM DB2 (Cesar Ramos)
+NEW: TActiveRecord Scaffold support (Wei)
 
 Version 3.1.0 alpha January 15, 2007
 ====================================
