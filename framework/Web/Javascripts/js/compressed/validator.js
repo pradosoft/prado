@@ -1,12 +1,14 @@
 
 Prado.Validation=Class.create();Object.extend(Prado.Validation,{managers:{},validate:function(formID,groupID,invoker)
-{if(this.managers[formID])
+{formID=formID||this.getForm();if(this.managers[formID])
 {return this.managers[formID].validate(groupID,invoker);}
 else
 {throw new Error("Form '"+form+"' is not registered with Prado.Validation");}},getForm:function()
 {var keys=$H(this.managers).keys();return keys[0];},isValid:function(formID,groupID)
-{if(this.managers[formID])
-return this.managers[formID].isValid(groupID);return true;},addValidator:function(formID,validator)
+{formID=formID||this.getForm();if(this.managers[formID])
+return this.managers[formID].isValid(groupID);return true;},reset:function(groupID)
+{var formID=this.getForm();if(this.managers[formID])
+this.managers[formID].reset(groupID);},addValidator:function(formID,validator)
 {if(this.managers[formID])
 this.managers[formID].addValidator(validator);else
 throw new Error("A validation manager for form '"+formID+"' needs to be created first.");return this.managers[formID];},addSummary:function(formID,validator)
@@ -17,36 +19,23 @@ throw new Error("A validation manager for form '"+formID+"' needs to be created 
 {manager[1].validators.each(function(validator)
 {if(validator.options.ID==validatorID)
 {validator.options.ErrorMessage=message;$(validatorID).innerHTML=message;}});});}});Prado.ValidationManager=Class.create();Prado.ValidationManager.prototype={initialize:function(options)
-{this.validators=[];this.summaries=[];this.groups=[];this.options={};this.options=options;Prado.Validation.managers[options.FormID]=this;},validate:function(group,invoker)
-{if(group)
-return this._validateGroup(group,invoker);else
-return this._validateNonGroup(invoker);},_validateGroup:function(groupID,invoker)
-{var valid=true;if(this.groups.include(groupID))
-{this.validators.each(function(validator)
-{if(validator.group==groupID)
-valid=valid&validator.validate(invoker);else
-validator.hide();});}
-this.updateSummary(groupID,true);return valid;},_validateNonGroup:function(invoker)
-{var valid=true;this.validators.each(function(validator)
-{if(!validator.group)
-valid=valid&validator.validate(invoker);else
-validator.hide();});this.updateSummary(null,true);return valid;},isValid:function(group)
-{if(group)
-return this._isValidGroup(group);else
-return this._isValidNonGroup();},_isValidNonGroup:function()
-{var valid=true;this.validators.each(function(validator)
-{if(!validator.group)
-valid=valid&validator.isValid;});return valid;},_isValidGroup:function(groupID)
-{var valid=true;if(this.groups.include(groupID))
-{this.validators.each(function(validator)
-{if(validator.group==groupID)
-valid=valid&validator.isValid;});}
-return valid;},addValidator:function(validator)
+{this.validators=[];this.summaries=[];this.groups=[];this.options={};this.options=options;Prado.Validation.managers[options.FormID]=this;},reset:function(group)
+{this.validatorPartition(group)[0].invoke('reset');this.updateSummary(group,true);},validate:function(group,source)
+{var partition=this.validatorPartition(group);var valid=partition[0].invoke('validate',source).all();partition[1].invoke('hide');this.updateSummary(group,true);return valid;},validatorPartition:function(group)
+{return group?this.validatorsInGroup(group):this.validatorsWithoutGroup();},validatorsInGroup:function(groupID)
+{if(this.groups.include(groupID))
+{return this.validators.partition(function(val)
+{return val.group==groupID;});}
+else
+return[[],[]];},validatorsWithoutGroup:function()
+{return this.validators.partition(function(val)
+{return!val.group;});},isValid:function(group)
+{return this.validatorPartition(group)[0].pluck('isValid').all();},addValidator:function(validator)
 {this.validators.push(validator);if(validator.group&&!this.groups.include(validator.group))
 this.groups.push(validator.group);},addSummary:function(summary)
 {this.summaries.push(summary);},getValidatorsWithError:function(group)
-{var validators=this.validators.findAll(function(validator)
-{var notValid=!validator.isValid;var inGroup=group&&validator.group==group;var noGroup=validator.group==null;return notValid&&(inGroup||noGroup);});return validators;},updateSummary:function(group,refresh)
+{return this.validatorPartition(group)[0].findAll(function(validator)
+{return!validator.isValid;});},updateSummary:function(group,refresh)
 {var validators=this.getValidatorsWithError(group);this.summaries.each(function(summary)
 {var inGroup=group&&summary.group==group;var noGroup=!group&&!summary.group;if(inGroup||noGroup)
 summary.updateSummary(validators,refresh);else
@@ -101,7 +90,8 @@ this.updateControlCssClass(this.control,this.isValid);},updateControlCssClass:fu
 {if(valid)
 control.removeClassName(CssClass);else
 control.addClassName(CssClass);}},hide:function()
-{this.isValid=true;this.updateControl();this.visible=false;},validate:function(invoker)
+{this.reset();this.visible=false;},reset:function()
+{this.isValid=true;this.updateControl();},validate:function(invoker)
 {if(!this.control)
 this.control=$(this.options.ControlToValidate);if(!this.control)
 {this.isValid=true;return this.isValid;}

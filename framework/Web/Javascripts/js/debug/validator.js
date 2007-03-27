@@ -78,6 +78,7 @@ Object.extend(Prado.Validation,
 	 */
 	validate : function(formID, groupID, invoker)
 	{
+		formID = formID || this.getForm();
 		if(this.managers[formID])
 		{
 			return this.managers[formID].validate(groupID, invoker);
@@ -106,9 +107,20 @@ Object.extend(Prado.Validation,
 	 */
 	isValid : function(formID, groupID)
 	{
+		formID = formID || this.getForm();
 		if(this.managers[formID])
 			return this.managers[formID].isValid(groupID);
 		return true;
+	},
+
+	/**
+	 * Reset the validators for a given group.
+	 */
+	reset : function(groupID)
+	{
+		var formID = this.getForm();
+		if(this.managers[formID])
+			this.managers[formID].reset(groupID);
 	},
 
 	/**
@@ -184,59 +196,66 @@ Prado.ValidationManager.prototype =
 	},
 
 	/**
+	 * Reset all validators in the given group (if group is null, validators without a group are used).
+	 */
+	reset : function(group)
+	{
+		this.validatorPartition(group)[0].invoke('reset');
+		this.updateSummary(group, true);
+	},
+
+	/**
 	 * Validate the validators managed by this validation manager.
 	 * @param string only validate validators belonging to a group (optional)
 	 * @param HTMLElement element that calls for validation
 	 * @return boolean true if all validators are valid, false otherwise.
 	 */
-	validate : function(group, invoker)
+	validate : function(group, source)
 	{
-		if(group)
-			return this._validateGroup(group, invoker);
-		else
-			return this._validateNonGroup(invoker);
+		var partition = this.validatorPartition(group);
+		var valid = partition[0].invoke('validate', source).all();
+		partition[1].invoke('hide');
+		this.updateSummary(group, true);
+		return valid;
+	},
+
+
+	/**
+	 * @return array[0] validators belong to a group if group is given, otherwise validators
+	 * not belongining to any group. array[1] the opposite of array[0].
+	 */
+	validatorPartition : function(group)
+	{
+		return group ? this.validatorsInGroup(group) : this.validatorsWithoutGroup();
 	},
 
 	/**
-	 * Validate a particular group of validators.
-	 * @param string ID of the form
-	 * @param HTMLElement element that calls for validation
-	 * @return boolean false if group is not valid, true otherwise.
+	 * @return array validatiors in a given group in first array and
+	 * validators not belonging to the group in 2nd array.
 	 */
-	_validateGroup: function(groupID, invoker)
+	validatorsInGroup : function(groupID)
 	{
-		var valid = true;
 		if(this.groups.include(groupID))
 		{
-			this.validators.each(function(validator)
+			return this.validators.partition(function(val)
 			{
-				if(validator.group == groupID)
-					valid = valid & validator.validate(invoker);
-				else
-					validator.hide();
+				return val.group == groupID;
 			});
 		}
-		this.updateSummary(groupID, true);
-		return valid;
+		else
+			return [[],[]];
 	},
 
 	/**
-	 * Validate validators that doesn't belong to any group.
-	 * @return boolean false if not valid, true otherwise.
-	 * @param HTMLElement element that calls for validation
+	 * @return array validators without any group in first array, and those
+	 * with groups in 2nd array.
 	 */
-	_validateNonGroup : function(invoker)
+	validatorsWithoutGroup : function()
 	{
-		var valid = true;
-		this.validators.each(function(validator)
+		return this.validators.partition(function(val)
 		{
-			if(!validator.group)
-				valid = valid & validator.validate(invoker);
-			else
-				validator.hide();
+			return !val.group;
 		});
-		this.updateSummary(null, true);
-		return valid;
 	},
 
 	/**
@@ -245,41 +264,7 @@ Prado.ValidationManager.prototype =
 	 */
 	isValid : function(group)
 	{
-		if(group)
-			return this._isValidGroup(group);
-		else
-			return this._isValidNonGroup();
-	},
-
-	/**
-	 * @return boolean true if all validators not belonging to a group are valid.
-	 */
-	_isValidNonGroup : function()
-	{
-		var valid = true;
-		this.validators.each(function(validator)
-		{
-			if(!validator.group)
-				valid = valid & validator.isValid;
-		});
-		return valid;
-	},
-
-	/**
-	 * @return boolean true if all validators belonging to the group are valid.
-	 */
-	_isValidGroup : function(groupID)
-	{
-		var valid = true;
-		if(this.groups.include(groupID))
-		{
-			this.validators.each(function(validator)
-			{
-				if(validator.group == groupID)
-					valid = valid & validator.isValid;
-			});
-		}
-		return valid;
+		return this.validatorPartition(group)[0].pluck('isValid').all();
 	},
 
 	/**
@@ -309,14 +294,10 @@ Prado.ValidationManager.prototype =
 	 */
 	getValidatorsWithError : function(group)
 	{
-		var validators = this.validators.findAll(function(validator)
+		return this.validatorPartition(group)[0].findAll(function(validator)
 		{
-			var notValid = !validator.isValid;
-			var inGroup = group && validator.group == group;
-			var noGroup = validator.group == null;
-			return notValid && (inGroup || noGroup);
+			return !validator.isValid;
 		});
-		return validators;
 	},
 
 	/**
@@ -662,9 +643,17 @@ Prado.WebUI.TBaseValidator.prototype =
 	 */
 	hide : function()
 	{
+		this.reset();
+		this.visible = false;
+	},
+
+	/**
+	 * Sets isValid = true and updates the validator display.
+	 */
+	reset : function()
+	{
 		this.isValid = true;
 		this.updateControl();
-		this.visible = false;
 	},
 
 	/**

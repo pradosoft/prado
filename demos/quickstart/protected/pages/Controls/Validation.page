@@ -31,6 +31,14 @@ Validators share a common set of properties, which are defined in the base class
 <li><tt>FocusElementID</tt> - the ID of the HTML element that will receive focus if validation fails and <tt>FocusOnError</tt> is true.</li>
 </ul>
 
+<h1 id="123123">Interacting the Validators with Javascript</h1>
+<h2>Resetting or Clearing of Validators</h2>
+<p id="1212323">
+Validators can be reset on the client-side using javascript by calling the
+<tt>Prado.Validation.reset(groupID)</tt> where <tt>groupID</tt> is the validator
+grouping name. If <tt>groupID</tt> is null, then validators without grouping are used.
+</p>
+
 <a name="TRequiredFieldValidator"></a>
 <h2 id="4902">TRequiredFieldValidator</h2>
 <p id="560340" class="block-content">
