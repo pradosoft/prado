@@ -1043,6 +1043,8 @@ demos/quickstart/protected/pages/Controls/Samples/LabeledTextBox1/LabeledTextBox
 demos/quickstart/protected/pages/Controls/Samples/LabeledTextBox2/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/LabeledTextBox2/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/LabeledTextBox2/LabeledTextBox.php -text
+demos/quickstart/protected/pages/Controls/Samples/ResetValidation/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/ResetValidation/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TBulletedList/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TBulletedList/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TBulletedList/bullet.gif -text
@@ -2428,6 +2430,8 @@ tests/FunctionalTests/validators/protected/pages/CausesValidation.page -text
 tests/FunctionalTests/validators/protected/pages/CheckBox.page -text
 tests/FunctionalTests/validators/protected/pages/CheckBox.php -text
 tests/FunctionalTests/validators/protected/pages/CompareValidator.page -text
+tests/FunctionalTests/validators/protected/pages/ConditionalValidation.page -text
+tests/FunctionalTests/validators/protected/pages/ConditionalValidation.php -text
 tests/FunctionalTests/validators/protected/pages/CustomValidator.page -text
 tests/FunctionalTests/validators/protected/pages/CustomValidator.php -text
 tests/FunctionalTests/validators/protected/pages/DataTypeValidator.page -text
@@ -2452,6 +2456,7 @@ tests/FunctionalTests/validators/protected/pages/config.xml -text
 tests/FunctionalTests/validators/tests/ButtonTestCase.php -text
 tests/FunctionalTests/validators/tests/CheckBoxTestCase.php -text
 tests/FunctionalTests/validators/tests/CompareValidatorTestCase.php -text
+tests/FunctionalTests/validators/tests/ConditionalValidationTestCase.php -text
 tests/FunctionalTests/validators/tests/CustomValidatorTestCase.php -text
 tests/FunctionalTests/validators/tests/DataTypeValidatorTestCase.php -text
 tests/FunctionalTests/validators/tests/DatePickerTestCase.php -text

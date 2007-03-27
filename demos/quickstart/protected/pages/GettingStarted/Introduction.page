@@ -7,6 +7,7 @@ This Quickstart tutorial is provided to help you quickly start building your own
 <p>
 If you are an existing PRADO 3.x user and would like to learn what enhancements are available for each new version, please check out the <a href="?page=GettingStarted.NewFeatures">new features</a> page. Otherwise, the following sections are helpful for newbies.
 </p>
+<!--
 <div class="start-page">
 	<div class="concepts start-block">
 	<h2>How PRADO Works</h2>
@@ -44,7 +45,7 @@ If you are an existing PRADO 3.x user and would like to learn what enhancements 
 	</ul>
 	</div>
 </div>
-
+-->
 
 <p id="10002">
 You may refer to the following resources if you find this tutorial does not fulfill all your needs.

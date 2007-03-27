@@ -1,13 +1,7 @@
-<com:TContent ID="body">
-<h1>Conditional Validation (client-side + server side)</h1>
-
-<table class="sampletable">
-<tr>
-<td class="samplenote">
-Validator with default settings:<br />
-Check "optional" to validate both textboxes
-</td>
-<td class="sampleaction">
+<com:TContent ID="Content">
+<h1>Conditional Validation (clientside + server side)</h1>
+<div>
+	<div>
 		<com:TTextBox ID="text1" />
 		<com:TRequiredFieldValidator
 			ID="validator1"
@@ -26,11 +20,11 @@ Check "optional" to validate both textboxes
 		</prop:ClientSide.OnValidate>
 
 		</com:TRequiredFieldValidator>
-		<com:TCheckBox ID="check1" Text="Optional" />
+		<com:TCheckBox ID="check1" />
+	</div>
 	<com:TButton ID="submit1" Text="Submit" />
-</td>
-</tr>
+</div>
 
-</table>
 
-<div class="last-modified">$Id$</div></com:TContent>
+
+</com:TContent>

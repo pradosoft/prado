@@ -31,14 +31,7 @@ Validators share a common set of properties, which are defined in the base class
 <li><tt>FocusElementID</tt> - the ID of the HTML element that will receive focus if validation fails and <tt>FocusOnError</tt> is true.</li>
 </ul>
 
-<h1 id="123123">Interacting the Validators with Javascript</h1>
-<h2>Resetting or Clearing of Validators</h2>
-<p id="1212323">
-Validators can be reset on the client-side using javascript by calling the
-<tt>Prado.Validation.reset(groupID)</tt> where <tt>groupID</tt> is the validator
-grouping name. If <tt>groupID</tt> is null, then validators without grouping are used.
-</p>
-
+<h1>Prado Validation Controls</h1>
 <a name="TRequiredFieldValidator"></a>
 <h2 id="4902">TRequiredFieldValidator</h2>
 <p id="560340" class="block-content">
@@ -159,6 +152,24 @@ The summary can be displayed as a list, a bulleted list, or a single paragraph b
 </p>
 <com:RunBar PagePath="Controls.Samples.TValidationSummary.Home" />
 
+<h1 id="123123">Interacting the Validators</h1>
+<h2>Resetting or Clearing of Validators</h2>
+<p id="1212323">
+Validators can be reset on the client-side using javascript by calling the
+<tt>Prado.Validation.reset(groupID)</tt> where <tt>groupID</tt> is the validator
+grouping name. If <tt>groupID</tt> is null, then validators without grouping are used.
+</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_560118a">
+<script type="text/javascript">
+function reset_validator()
+{
+    Prado.Validation.reset("group1");
+}
+</script>
+</com:TTextHighlighter>
+<com:RunBar PagePath="Controls.Samples.ResetValidation.Home" />
+
 <h2 id="5301">Client and Server Side Conditional Validation</h2>
 <p id="560359" class="block-content">
 	All validators contains the following events. 
@@ -191,7 +202,9 @@ is the control that invoked the validator.
 <h3 id="5302">Conditional Validation Example</h3>
 <p id="560361" class="block-content">
 The following example show the use of client-side and server side validator events. The example
-demonstrates conditional validation.
+demonstrates conditional validation. Notice that, we need to write code for both the
+server side and client-side. Moreover, on the server side, we need to re-enable the conditional
+validator so that its javascript code are produced no matter what (otherwise, the client-side validator is not available).
 <com:RunBar PagePath="Controls.Samples.TClientSideValidator.Home" />
 </p>
 

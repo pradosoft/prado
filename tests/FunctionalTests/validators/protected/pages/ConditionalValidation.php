@@ -1,6 +1,9 @@
 <?php
+/*
+ * Created on 27/03/2007
+ */
 
-class Home extends TPage
+class ConditionalValidation extends TPage
 {
 	function check_validate($sender, $params)
 	{
