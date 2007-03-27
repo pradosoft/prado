@@ -12,7 +12,7 @@ $debugMode=(isset($_GET['mode']) && $_GET['mode']==='debug');
 $expiresOffset = $debugMode ? -10000 : 3600 * 24 * 10; //no cache
 
 //allowed libraries
-$library = array('prado', 'effects', 'validator', 'logger', 'datepicker', 'colorpicker');
+$library = array('prado', 'effects', 'validator', 'logger', 'datepicker', 'colorpicker', 'ajax');
 
 $param = isset($_GET['js']) ? $_GET['js'] : '';
 

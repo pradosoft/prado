@@ -67,6 +67,14 @@ $libraries = array(
 
 	'colorpicker.js' => array(
 		'prado/colorpicker/colorpicker.js'
+	),
+
+	'ajax.js' => array(
+		'scriptaculous/controls.js',
+		'prado/activecontrols/json.js',
+		'prado/activecontrols/ajax3.js',
+		'prado/activecontrols/activecontrols3.js',
+		'prado/activecontrols/inlineeditor.js'
 	)
 );
 

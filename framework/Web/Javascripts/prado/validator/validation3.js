@@ -1,4 +1,3 @@
-
 /**
  * Prado client-side javascript validation fascade.
  *
@@ -90,6 +89,15 @@ Object.extend(Prado.Validation,
 	},
 
 	/**
+	 * @return string first form ID.
+	 */
+	getForm : function()
+	{
+		var keys = $H(this.managers).keys();
+		return keys[0];
+	},
+
+	/**
 	 * Check if the validators are valid for a particular form (and group).
 	 * The validators states will not be changed.
 	 * The <tt>validate</tt> function should be called first.
@@ -131,6 +139,21 @@ Object.extend(Prado.Validation,
 		else
 			throw new Error("A validation manager for form '"+formID+"' needs to be created first.");
 		return this.managers[formID];
+	},
+
+	setErrorMessage : function(validatorID, message)
+	{
+		$H(Prado.Validation.managers).each(function(manager)
+		{
+			manager[1].validators.each(function(validator)
+			{
+				if(validator.options.ID == validatorID)
+				{
+					validator.options.ErrorMessage = message;
+					$(validatorID).innerHTML = message;
+				}
+			});
+		});
 	}
 });
 
@@ -144,11 +167,6 @@ Prado.ValidationManager = Class.create();
  */
 Prado.ValidationManager.prototype =
 {
-	validators : [], // list of validators
-	summaries : [], // validation summaries
-	groups : [], // validation groups
-	options : {},
-
 	/**
 	 * <code>
 	 * options['FormID']*	The ID of HTML form to manage.
@@ -156,6 +174,11 @@ Prado.ValidationManager.prototype =
 	 */
 	initialize : function(options)
 	{
+		this.validators = []; // list of validators
+		this.summaries = []; // validation summaries
+		this.groups = []; // validation groups
+		this.options = {};
+
 		this.options = options;
 		Prado.Validation.managers[options.FormID] = this;
 	},
@@ -333,11 +356,6 @@ Prado.ValidationManager.prototype =
 Prado.WebUI.TValidationSummary = Class.create();
 Prado.WebUI.TValidationSummary.prototype =
 {
-	group : null,
-	options : {},
-	visible : false,
-	messages : null,
-
 	/**
 	 * <code>
 	 * options['ID']*				Validation summary ID, i.e., an HTML element ID
@@ -357,9 +375,12 @@ Prado.WebUI.TValidationSummary.prototype =
 		this.options = options;
 		this.group = options.ValidationGroup;
 		this.messages = $(options.ID);
-		this.visible = this.messages.style.visibility != "hidden"
-		this.visible = this.visible && this.messages.style.display != "none";
-		Prado.Validation.addSummary(options.FormID, this);
+		if(this.messages)
+		{
+			this.visible = this.messages.style.visibility != "hidden"
+			this.visible = this.visible && this.messages.style.display != "none";
+			Prado.Validation.addSummary(options.FormID, this);
+		}
 	},
 
 	/**
@@ -540,15 +561,6 @@ Prado.WebUI.TValidationSummary.prototype =
 Prado.WebUI.TBaseValidator = Class.create();
 Prado.WebUI.TBaseValidator.prototype =
 {
-	enabled : true,
-	visible : false,
-	isValid : true,
-	options : {},
-	_isObserving : {},
-	group : null,
-	manager : null,
-	message : null,
-
 	/**
 	 * <code>
 	 * options['ID']*				Validator ID, e.g. span with message
@@ -561,8 +573,8 @@ Prado.WebUI.TBaseValidator.prototype =
 	 * options['ValidationGroup']	Validation group
 	 * options['ControlCssClass']	Css class to use on the input upon error
 	 * options['OnValidate']		Function to call immediately after validation
-	 * options['OnSuccess']			Function to call upon after successful validation
-	 * options['OnError']			Function to call upon after error in validation.
+	 * options['OnValidationSuccess']			Function to call upon after successful validation
+	 * options['OnValidationError']			Function to call upon after error in validation.
 	 * options['ObserveChanges'] 	True to observe changes in input
 	 * </code>
 	 */
@@ -572,12 +584,23 @@ Prado.WebUI.TBaseValidator.prototype =
 		options.OnSuccess = options.OnSuccess || Prototype.emptyFunction;
 		options.OnError = options.OnError || Prototype.emptyFunction;
 	*/
+
+		this.enabled = true;
+		this.visible = false;
+		this.isValid = true;
+		this._isObserving = {};
+		this.group = null;
+		this.requestDispatched = false;
+
 		this.options = options;
 		this.control = $(options.ControlToValidate);
 		this.message = $(options.ID);
-		this.group = options.ValidationGroup;
+		if(this.control && this.message)
+		{
+			this.group = options.ValidationGroup;
 
-		this.manager = Prado.Validation.addValidator(options.FormID, this);
+			this.manager = Prado.Validation.addValidator(options.FormID, this);
+		}
 	},
 
 	/**
@@ -599,6 +622,8 @@ Prado.WebUI.TBaseValidator.prototype =
 
 		if(this.options.FocusOnError && !this.isValid )
 			Prado.Element.focus(this.options.FocusElementID);
+
+		this.visible = true;
 	},
 
 	refreshControlAndMessage : function()
@@ -650,8 +675,21 @@ Prado.WebUI.TBaseValidator.prototype =
 	 */
 	validate : function(invoker)
 	{
+		//try to find the control.
+		if(!this.control)
+			this.control = $(this.options.ControlToValidate);
+
+		if(!this.control)
+		{
+			this.isValid = true;
+			return this.isValid;
+		}
+
 		if(typeof(this.options.OnValidate) == "function")
-			this.options.OnValidate(this, invoker);
+		{
+			if(this.requestDispatched == false)
+				this.options.OnValidate(this, invoker);
+		}
 
 		if(this.enabled)
 			this.isValid = this.evaluateIsValid();
@@ -660,20 +698,26 @@ Prado.WebUI.TBaseValidator.prototype =
 
 		if(this.isValid)
 		{
-			if(typeof(this.options.OnSuccess) == "function")
+			if(typeof(this.options.OnValidationSuccess) == "function")
 			{
-				this.refreshControlAndMessage();
-				this.options.OnSuccess(this, invoker);
+				if(this.requestDispatched == false)
+				{
+					this.refreshControlAndMessage();
+					this.options.OnValidationSuccess(this, invoker);
+				}
 			}
 			else
 				this.updateControl();
 		}
 		else
 		{
-			if(typeof(this.options.OnError) == "function")
+			if(typeof(this.options.OnValidationError) == "function")
 			{
-				this.refreshControlAndMessage();
-				this.options.OnError(this, invoker);
+				if(this.requestDispatched == false)
+				{
+					this.refreshControlAndMessage();
+					this.options.OnValidationError(this, invoker)
+				}
 			}
 			else
 				this.updateControl();
@@ -1081,6 +1125,51 @@ Prado.WebUI.TCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 });
 
 /**
+ * Uses callback request to perform validation.
+ */
+Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
+{
+	validatingValue : null,
+
+	/**
+	 * Calls custom validation function.
+	 */
+	evaluateIsValid : function()
+	{
+		value = this.getValidationValue();
+		if(!this.requestDispatched && value != this.validatingValue)
+		{
+			this.validatingValue = value;
+			request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
+			request.setCallbackParameter(value);
+			request.setCausesValidation(false);
+			request.options.onSuccess = this.callbackOnSuccess.bind(this);
+			request.options.onFailure = this.callbackOnFailure.bind(this);
+			request.dispatch();
+			this.requestDispatched = true;
+			return false;
+		}
+		return this.isValid;
+	},
+
+	callbackOnSuccess : function(request, data)
+	{
+		this.isValid = data;
+		this.requestDispatched = false;
+		if(typeof(this.options.onSuccess) == "function")
+			this.options.onSuccess(request,data);
+		Prado.Validation.validate(this.options.FormID, this.group,null);
+	},
+
+	callbackOnFailure : function(request, data)
+	{
+		this.requestDispatched = false;
+		if(typeof(this.options.onFailure) == "function")
+			this.options.onFailure(request,data);
+	}
+});
+
+/**
  * TRangeValidator tests whether an input value is within a specified range.
  *
  * TRangeValidator uses three key properties to perform its validation.
@@ -1273,4 +1362,3 @@ Prado.WebUI.TDataTypeValidator = Class.extend(Prado.WebUI.TBaseValidator,
             return this.convert(this.options.DataType, value) != null;
         }
 });
-

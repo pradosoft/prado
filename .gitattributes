@@ -1909,6 +1909,7 @@ framework/Util/TSimpleDateFormatter.php -text
 framework/Util/TVarDumper.php -text
 framework/Web/Javascripts/TJSON.php -text
 framework/Web/Javascripts/TJavaScript.php -text
+framework/Web/Javascripts/js/compressed/ajax.js -text
 framework/Web/Javascripts/js/compressed/clientscripts.php -text
 framework/Web/Javascripts/js/compressed/colorpicker.js -text
 framework/Web/Javascripts/js/compressed/containers.js -text
@@ -1917,6 +1918,7 @@ framework/Web/Javascripts/js/compressed/effects.js -text
 framework/Web/Javascripts/js/compressed/logger.js -text
 framework/Web/Javascripts/js/compressed/prado.js -text
 framework/Web/Javascripts/js/compressed/validator.js -text
+framework/Web/Javascripts/js/debug/ajax.js -text
 framework/Web/Javascripts/js/debug/clientscripts.php -text
 framework/Web/Javascripts/js/debug/colorpicker.js -text
 framework/Web/Javascripts/js/debug/containers.js -text
@@ -1925,8 +1927,10 @@ framework/Web/Javascripts/js/debug/effects.js -text
 framework/Web/Javascripts/js/debug/logger.js -text
 framework/Web/Javascripts/js/debug/prado.js -text
 framework/Web/Javascripts/js/debug/validator.js -text
-framework/Web/Javascripts/prado/activecontrols3.js -text
-framework/Web/Javascripts/prado/ajax3.js -text
+framework/Web/Javascripts/prado/activecontrols/activecontrols3.js -text
+framework/Web/Javascripts/prado/activecontrols/ajax3.js -text
+framework/Web/Javascripts/prado/activecontrols/inlineeditor.js -text
+framework/Web/Javascripts/prado/activecontrols/json.js -text
 framework/Web/Javascripts/prado/colorpicker/background.png -text
 framework/Web/Javascripts/prado/colorpicker/button.gif -text
 framework/Web/Javascripts/prado/colorpicker/colorpicker.js -text
@@ -1941,7 +1945,6 @@ framework/Web/Javascripts/prado/datepicker/calendar.png -text
 framework/Web/Javascripts/prado/datepicker/datepicker.js -text
 framework/Web/Javascripts/prado/datepicker/default.css -text
 framework/Web/Javascripts/prado/datepicker/spacer.gif -text
-framework/Web/Javascripts/prado/inlineeditor.js -text
 framework/Web/Javascripts/prado/logger/logger.js -text
 framework/Web/Javascripts/prado/prado.js -text
 framework/Web/Javascripts/prado/ratings/blocks.css -text

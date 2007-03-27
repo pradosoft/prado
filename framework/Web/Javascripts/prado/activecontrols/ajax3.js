@@ -1,7 +1,12 @@
+
+Prado.AjaxRequest = Class.create();
+Prado.AjaxRequest.prototype = Ajax.Request.prototype;
+
+
 /**
  * Override Prototype's response implementation.
  */
-Object.extend(Ajax.Request.prototype,
+Object.extend(Prado.AjaxRequest.prototype,
 {
 	/**
 	 * Customize the response, dispatch onXXX response code events, and
@@ -18,7 +23,7 @@ Object.extend(Ajax.Request.prototype,
 	    	if(redirectUrl)
 	    		document.location.href = redirectUrl;
 
-	      if ((this.header('Content-type') || '').match(/^text\/javascript/i))
+	      if ((this.getHeader('Content-type') || '').match(/^text\/javascript/i))
 	      {
 	        try
 			{
@@ -37,7 +42,7 @@ Object.extend(Ajax.Request.prototype,
 			Prado.CallbackRequest.dispatchActions(transport,this.getBodyDataPart(Prado.CallbackRequest.ACTION_HEADER));
 
 	        (this.options['on' + this.transport.status]
-	         || this.options['on' + (this.responseIsSuccess() ? 'Success' : 'Failure')]
+	         || this.options['on' + (this.success() ? 'Success' : 'Failure')]
 	         || Prototype.emptyFunction)(this, json);
 	  	      } catch (e) {
 	        this.dispatchException(e);
@@ -63,7 +68,7 @@ Object.extend(Ajax.Request.prototype,
 	 */
 	getHeaderData : function(name)
 	{
-		return this.getJsonData(this.header(name));
+		return this.getJsonData(this.getHeader(name));
 	},
 
 	getBodyContentPart : function(name)
@@ -307,7 +312,7 @@ Object.extend(Prado.CallbackRequest,
 	dispatchNormalRequest : function(callback)
 	{
 		//Logger.info("dispatching normal request");
-		new Ajax.Request(callback.url, callback.options);
+		new Prado.AjaxRequest(callback.url, callback.options);
 		return true;
 	},
 
@@ -378,7 +383,7 @@ Object.extend(Prado.CallbackRequest,
 		//get data
 		callback.options.postBody = callback._getPostData(),
 
-		callback.request = new Ajax.Request(callback.url, callback.options);
+		callback.request = new Prado.AjaxRequest(callback.url, callback.options);
 		callback.timeout = setTimeout(function()
 		{
 			//Logger.warn("priority timeout");

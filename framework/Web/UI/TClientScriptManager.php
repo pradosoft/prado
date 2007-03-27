@@ -85,7 +85,8 @@ class TClientScriptManager extends TApplicationComponent
 		'validator'		=> array('prado', 'validator'),
 		'logger'		=> array('prado', 'logger'),
 		'datepicker'	=> array('prado', 'datepicker'),
-		'colorpicker'	=> array('prado', 'colorpicker')
+		'colorpicker'	=> array('prado', 'colorpicker'),
+		'ajax'			=> array('prado', 'effects', 'ajax')
 		);
 
 	/**
@@ -107,7 +108,6 @@ class TClientScriptManager extends TApplicationComponent
 	 * - validator : validator js
 	 * - logger : js logger
 	 * - datepicker : datepicker js
-	 * - rico :
 	 * - colorpicker : colorpicker js
 	 * The script files registered will be published.
 	 * @param string script library name.
