@@ -154,6 +154,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	{
 		$options['ID'] = $this->getClientID();
 		$options['EventTarget'] = $this->getUniqueID();
+		$options['AutoPostBack'] = $this->getAutoPostBack();
 		$options['CausesValidation'] = $this->getCausesValidation();
 		$options['ValidationGroup'] = $this->getValidationGroup();
 		$options['TextMode'] = $this->getTextMode();
