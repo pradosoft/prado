@@ -744,7 +744,7 @@ class TDatePicker extends TTextBox
 	 */
 	protected function publishDefaultButtonImage()
 	{
-		$image = 'System.Web.Javascripts.datepicker.calendar';
+		$image = 'System.Web.Javascripts.prado.datepicker.calendar';
 		if(($file =  Prado::getPathOfNamespace($image, '.png'))!==null)
 			return $this->publishFilePath($file);
 		else
@@ -758,7 +758,7 @@ class TDatePicker extends TTextBox
 	protected function publishCalendarStyle()
 	{
 		$cs = $this->getPage()->getClientScript();
-		$style = 'System.Web.Javascripts.datepicker.'.$this->getCalendarStyle();
+		$style = 'System.Web.Javascripts.prado.datepicker.'.$this->getCalendarStyle();
 		if(($cssFile=Prado::getPathOfNamespace($style,'.css'))!==null)
 		{
 			$url = $this->publishFilePath($cssFile);
@@ -777,7 +777,7 @@ class TDatePicker extends TTextBox
 	protected function publishIFrameSpacer()
 	{
 		$cs = $this->getPage()->getClientScript();
-		$spacer = 'System.Web.Javascripts.datepicker.spacer';
+		$spacer = 'System.Web.Javascripts.prado.datepicker.spacer';
 		if(($file = Prado::getPathOfNamespace($spacer,'.gif')) != null)
 			return $this->publishFilePath($file);
 	}

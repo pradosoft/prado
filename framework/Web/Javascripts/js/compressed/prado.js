@@ -250,7 +250,12 @@ if(Builder._isStringOrNumber(e))
 element.appendChild(Builder._text(e));});}else
 if(Builder._isStringOrNumber(children))
 element.appendChild(Builder._text(children));},_isStringOrNumber:function(param){return(typeof param=='string'||typeof param=='number');},build:function(html){var element=this.node('div');$(element).update(html.strip());return element.down();},dump:function(scope){if(typeof scope!='object'&&typeof scope!='function')scope=window;var tags=("A ABBR ACRONYM ADDRESS APPLET AREA B BASE BASEFONT BDO BIG BLOCKQUOTE BODY "+"BR BUTTON CAPTION CENTER CITE CODE COL COLGROUP DD DEL DFN DIR DIV DL DT EM FIELDSET "+"FONT FORM FRAME FRAMESET H1 H2 H3 H4 H5 H6 HEAD HR HTML I IFRAME IMG INPUT INS ISINDEX "+"KBD LABEL LEGEND LI LINK MAP MENU META NOFRAMES NOSCRIPT OBJECT OL OPTGROUP OPTION P "+"PARAM PRE Q S SAMP SCRIPT SELECT SMALL SPAN STRIKE STRONG STYLE SUB SUP TABLE TBODY TD "+"TEXTAREA TFOOT TH THEAD TITLE TR TT U UL VAR").split(/\s+/);tags.each(function(tag){scope[tag]=function(){return Builder.node.apply(Builder,[tag].concat($A(arguments)));}});}}
-Function.prototype.bindEvent=function()
+var Prado={Version:'3.1',Browser:function()
+{var info={Version:"1.0"};var is_major=parseInt(navigator.appVersion);info.nver=is_major;info.ver=navigator.appVersion;info.agent=navigator.userAgent;info.dom=document.getElementById?1:0;info.opera=window.opera?1:0;info.ie5=(info.ver.indexOf("MSIE 5")>-1&&info.dom&&!info.opera)?1:0;info.ie6=(info.ver.indexOf("MSIE 6")>-1&&info.dom&&!info.opera)?1:0;info.ie4=(document.all&&!info.dom&&!info.opera)?1:0;info.ie=info.ie4||info.ie5||info.ie6;info.mac=info.agent.indexOf("Mac")>-1;info.ns6=(info.dom&&parseInt(info.ver)>=5)?1:0;info.ie3=(info.ver.indexOf("MSIE")&&(is_major<4));info.hotjava=(info.agent.toLowerCase().indexOf('hotjava')!=-1)?1:0;info.ns4=(document.layers&&!info.dom&&!info.hotjava)?1:0;info.bw=(info.ie6||info.ie5||info.ie4||info.ns4||info.ns6||info.opera);info.ver3=(info.hotjava||info.ie3);info.opera7=((info.agent.toLowerCase().indexOf('opera 7')>-1)||(info.agent.toLowerCase().indexOf('opera/7')>-1));info.operaOld=info.opera&&!info.opera7;return info;},ImportCss:function(doc,css_file)
+{if(Prado.Browser().ie)
+var styleSheet=doc.createStyleSheet(css_file);else
+{var elm=doc.createElement("link");elm.rel="stylesheet";elm.href=css_file;if(headArr=doc.getElementsByTagName("head"))
+headArr[0].appendChild(elm);}}};Function.prototype.bindEvent=function()
 {var __method=this,args=$A(arguments),object=args.shift();return function(event)
 {return __method.apply(object,[event||window.event].concat(args));}}
 Class.extend=function(base,definition)
@@ -259,7 +264,65 @@ Object.extend(component.prototype,definition);return component;}
 var Base=function(){if(arguments.length){if(this==window){Base.prototype.extend.call(arguments[0],arguments.callee.prototype);}else{this.extend(arguments[0]);}}};Base.version="1.0.2";Base.prototype={extend:function(source,value){var extend=Base.prototype.extend;if(arguments.length==2){var ancestor=this[source];if((ancestor instanceof Function)&&(value instanceof Function)&&ancestor.valueOf()!=value.valueOf()&&/\bbase\b/.test(value)){var method=value;value=function(){var previous=this.base;this.base=ancestor;var returnValue=method.apply(this,arguments);this.base=previous;return returnValue;};value.valueOf=function(){return method;};value.toString=function(){return String(method);};}
 return this[source]=value;}else if(source){var _prototype={toSource:null};var _protected=["toString","valueOf"];if(Base._prototyping)_protected[2]="constructor";for(var i=0;(name=_protected[i]);i++){if(source[name]!=_prototype[name]){extend.call(this,name,source[name]);}}
 for(var name in source){if(!_prototype[name]){extend.call(this,name,source[name]);}}}
-return this;},base:function(){}};Base.extend=function(_instance,_static){var extend=Base.prototype.extend;if(!_instance)_instance={};Base._prototyping=true;var _prototype=new this;extend.call(_prototype,_instance);var constructor=_prototype.constructor;_prototype.constructor=this;delete Base._prototyping;var klass=function(){if(!Base._prototyping)constructor.apply(this,arguments);this.constructor=klass;};klass.prototype=_prototype;klass.extend=this.extend;klass.implement=this.implement;klass.toString=function(){return String(constructor);};extend.call(klass,_static);var object=constructor?klass:_prototype;if(object.init instanceof Function)object.init();return object;};Base.implement=function(_interface){if(_interface instanceof Function)_interface=_interface.prototype;this.prototype.extend(_interface);};Object.extend(String.prototype,{pad:function(side,len,chr){if(!chr)chr=' ';var s=this;var left=side.toLowerCase()=='left';while(s.length<len)s=left?chr+s:s+chr;return s;},padLeft:function(len,chr){return this.pad('left',len,chr);},padRight:function(len,chr){return this.pad('right',len,chr);},zerofill:function(len){return this.padLeft(len,'0');},trim:function(){return this.replace(/^\s+|\s+$/g,'');},trimLeft:function(){return this.replace(/^\s+/,'');},trimRight:function(){return this.replace(/\s+$/,'');},toFunction:function()
+return this;},base:function(){}};Base.extend=function(_instance,_static){var extend=Base.prototype.extend;if(!_instance)_instance={};Base._prototyping=true;var _prototype=new this;extend.call(_prototype,_instance);var constructor=_prototype.constructor;_prototype.constructor=this;delete Base._prototyping;var klass=function(){if(!Base._prototyping)constructor.apply(this,arguments);this.constructor=klass;};klass.prototype=_prototype;klass.extend=this.extend;klass.implement=this.implement;klass.toString=function(){return String(constructor);};extend.call(klass,_static);var object=constructor?klass:_prototype;if(object.init instanceof Function)object.init();return object;};Base.implement=function(_interface){if(_interface instanceof Function)_interface=_interface.prototype;this.prototype.extend(_interface);};Prado.PostBack=function(event,options)
+{var form=$(options['FormID']);var canSubmit=true;if(options['CausesValidation']&&typeof(Prado.Validation)!="undefined")
+{if(!Prado.Validation.validate(options['FormID'],options['ValidationGroup'],$(options['ID'])))
+return Event.stop(event);}
+if(options['PostBackUrl']&&options['PostBackUrl'].length>0)
+form.action=options['PostBackUrl'];if(options['TrackFocus'])
+{var lastFocus=$('PRADO_LASTFOCUS');if(lastFocus)
+{var active=document.activeElement;if(active)
+lastFocus.value=active.id;else
+lastFocus.value=options['EventTarget'];}}
+$('PRADO_POSTBACK_TARGET').value=options['EventTarget'];$('PRADO_POSTBACK_PARAMETER').value=options['EventParameter'];Event.stop(event);Event.fireEvent(form,"submit");}
+Prado.Element={setValue:function(element,value)
+{var el=$(element);if(el&&typeof(el.value)!="undefined")
+el.value=value;},select:function(element,method,value)
+{var el=$(element);var isList=element.indexOf('[]')>-1;if(!el&&!isList)return;method=isList?'check'+method:el.tagName.toLowerCase()+method;var selection=Prado.Element.Selection;if(isFunction(selection[method]))
+selection[method](isList?element:el,value);},click:function(element)
+{var el=$(element);if(el)
+Event.fireEvent(el,'click');},setAttribute:function(element,attribute,value)
+{var el=$(element);if(attribute=="disabled"&&value==false)
+el.removeAttribute(attribute);else
+el.setAttribute(attribute,value);},setOptions:function(element,options)
+{var el=$(element);if(el&&el.tagName.toLowerCase()=="select")
+{while(el.length>0)
+el.remove(0);for(var i=0;i<options.length;i++)
+el.options[el.options.length]=new Option(options[i][0],options[i][1]);}},focus:function(element)
+{var obj=$(element);if(typeof(obj)!="undefined"&&typeof(obj.focus)!="undefined")
+setTimeout(function(){obj.focus();},100);return false;}}
+Prado.Element.Selection={inputValue:function(el,value)
+{switch(el.type.toLowerCase())
+{case'checkbox':case'radio':return el.checked=value;}},selectValue:function(el,value)
+{$A(el.options).each(function(option)
+{option.selected=option.value==value;});},selectIndex:function(el,index)
+{if(el.type=='select-one')
+el.selectedIndex=index;else
+{for(var i=0;i<el.length;i++)
+{if(i==index)
+el.options[i].selected=true;}}},selectClear:function(el)
+{el.selectedIndex=-1;},selectAll:function(el)
+{$A(el.options).each(function(option)
+{option.selected=true;Logger.warn(option.value);});},selectInvert:function(el)
+{$A(el.options).each(function(option)
+{option.selected=!option.selected;});},checkValue:function(name,value)
+{$A(document.getElementsByName(name)).each(function(el)
+{el.checked=el.value==value});},checkIndex:function(name,index)
+{var elements=$A(document.getElementsByName(name));for(var i=0;i<elements.length;i++)
+{if(i==index)
+elements[i].checked=true;}},checkClear:function(name)
+{$A(document.getElementsByName(name)).each(function(el)
+{el.checked=false;});},checkAll:function(name)
+{$A(document.getElementsByName(name)).each(function(el)
+{el.checked=true;});},checkInvert:function(name)
+{$A(document.getElementsByName(name)).each(function(el)
+{el.checked=!el.checked;});}};Object.extend(Builder,{exportTags:function()
+{var tags=["BUTTON","TT","PRE","H1","H2","H3","BR","CANVAS","HR","LABEL","TEXTAREA","FORM","STRONG","SELECT","OPTION","OPTGROUP","LEGEND","FIELDSET","P","UL","OL","LI","TD","TR","THEAD","TBODY","TFOOT","TABLE","TH","INPUT","SPAN","A","DIV","IMG","CAPTION"];tags.each(function(tag)
+{window[tag]=function()
+{var args=$A(arguments);if(args.length==0)
+return Builder.node(tag,null);if(args.length==1)
+return Builder.node(tag,args[0]);if(args.length>1)
+return Builder.node(tag,args.shift(),args);};});}});Builder.exportTags();Object.extend(String.prototype,{pad:function(side,len,chr){if(!chr)chr=' ';var s=this;var left=side.toLowerCase()=='left';while(s.length<len)s=left?chr+s:s+chr;return s;},padLeft:function(len,chr){return this.pad('left',len,chr);},padRight:function(len,chr){return this.pad('right',len,chr);},zerofill:function(len){return this.padLeft(len,'0');},trim:function(){return this.replace(/^\s+|\s+$/g,'');},trimLeft:function(){return this.replace(/^\s+/,'');},trimRight:function(){return this.replace(/\s+$/,'');},toFunction:function()
 {var commands=this.split(/\./);var command=window;commands.each(function(action)
 {if(command[new String(action)])
 command=command[new String(action)];});if(typeof(command)=="function")
@@ -279,16 +342,16 @@ return null;var intermed=m[2]+m[5];var cleanInput=m[1]+intermed.replace(new RegE
 {var w=document.addEventListener&&!window.addEventListener?document:window;Event.observe(w,'load',fn);},keyCode:function(e)
 {return e.keyCode!=null?e.keyCode:e.charCode},isHTMLEvent:function(type)
 {var events=['abort','blur','change','error','focus','load','reset','resize','scroll','select','submit','unload'];return events.include(type);},isMouseEvent:function(type)
-{var events=['click','mousedown','mousemove','mouseout','mouseover','mouseup'];return events.include(type);},fireEvent:function(element,type,canBubble)
-{canBubble=(typeof(canBubble)==undefined)?true:canBubble;element=$(element);if(type=="submit")
+{var events=['click','mousedown','mousemove','mouseout','mouseover','mouseup'];return events.include(type);},fireEvent:function(element,type)
+{element=$(element);if(type=="submit")
 return element.submit();if(document.createEvent)
 {if(Event.isHTMLEvent(type))
-{var event=document.createEvent('HTMLEvents');event.initEvent(type,canBubble,true);}
+{var event=document.createEvent('HTMLEvents');event.initEvent(type,true,true);}
 else if(Event.isMouseEvent(type))
 {var event=document.createEvent('MouseEvents');if(event.initMouseEvent)
-{event.initMouseEvent(type,canBubble,true,document.defaultView,1,0,0,0,0,false,false,false,false,0,null);}
+{event.initMouseEvent(type,true,true,document.defaultView,1,0,0,0,0,false,false,false,false,0,null);}
 else
-{event.initEvent(type,canBubble,true);}}
+{event.initEvent(type,true,true);}}
 element.dispatchEvent(event);}
 else if(document.createEventObject)
 {var evObj=document.createEventObject();element.fireEvent('on'+type,evObj);}
@@ -333,118 +396,7 @@ if(month==2)
 else{if(date>28){return null;}}}
 if((month==4)||(month==6)||(month==9)||(month==11))
 {if(date>30){return null;}}
-var newdate=new Date(year,month-1,date,0,0,0);return newdate;}});Object.extend(Builder,{exportTags:function()
-{var tags=["BUTTON","TT","PRE","H1","H2","H3","BR","CANVAS","HR","LABEL","TEXTAREA","FORM","STRONG","SELECT","OPTION","OPTGROUP","LEGEND","FIELDSET","P","UL","OL","LI","TD","TR","THEAD","TBODY","TFOOT","TABLE","TH","INPUT","SPAN","A","DIV","IMG","CAPTION"];tags.each(function(tag)
-{window[tag]=function()
-{var args=$A(arguments);if(args.length==0)
-return Builder.node(tag,null);if(args.length==1)
-return Builder.node(tag,args[0]);if(args.length>1)
-return Builder.node(tag,args.shift(),args);};});}});Builder.exportTags();var Prado={Version:'3.1',Browser:function()
-{var info={Version:"1.0"};var is_major=parseInt(navigator.appVersion);info.nver=is_major;info.ver=navigator.appVersion;info.agent=navigator.userAgent;info.dom=document.getElementById?1:0;info.opera=window.opera?1:0;info.ie5=(info.ver.indexOf("MSIE 5")>-1&&info.dom&&!info.opera)?1:0;info.ie6=(info.ver.indexOf("MSIE 6")>-1&&info.dom&&!info.opera)?1:0;info.ie4=(document.all&&!info.dom&&!info.opera)?1:0;info.ie=info.ie4||info.ie5||info.ie6;info.mac=info.agent.indexOf("Mac")>-1;info.ns6=(info.dom&&parseInt(info.ver)>=5)?1:0;info.ie3=(info.ver.indexOf("MSIE")&&(is_major<4));info.hotjava=(info.agent.toLowerCase().indexOf('hotjava')!=-1)?1:0;info.ns4=(document.layers&&!info.dom&&!info.hotjava)?1:0;info.bw=(info.ie6||info.ie5||info.ie4||info.ns4||info.ns6||info.opera);info.ver3=(info.hotjava||info.ie3);info.opera7=((info.agent.toLowerCase().indexOf('opera 7')>-1)||(info.agent.toLowerCase().indexOf('opera/7')>-1));info.operaOld=info.opera&&!info.opera7;return info;},ImportCss:function(doc,css_file)
-{if(Prado.Browser().ie)
-var styleSheet=doc.createStyleSheet(css_file);else
-{var elm=doc.createElement("link");elm.rel="stylesheet";elm.href=css_file;if(headArr=doc.getElementsByTagName("head"))
-headArr[0].appendChild(elm);}}};Prado.PostBack=function(event,options)
-{var form=$(options['FormID']);var canSubmit=true;if(options['CausesValidation']&&typeof(Prado.Validation)!="undefined")
-{if(!Prado.Validation.validate(options['FormID'],options['ValidationGroup'],$(options['ID'])))
-return Event.stop(event);}
-if(options['PostBackUrl']&&options['PostBackUrl'].length>0)
-form.action=options['PostBackUrl'];if(options['TrackFocus'])
-{var lastFocus=$('PRADO_LASTFOCUS');if(lastFocus)
-{var active=document.activeElement;if(active)
-lastFocus.value=active.id;else
-lastFocus.value=options['EventTarget'];}}
-$('PRADO_POSTBACK_TARGET').value=options['EventTarget'];$('PRADO_POSTBACK_PARAMETER').value=options['EventParameter'];Event.stop(event);Event.fireEvent(form,"submit");}
-Prado.Element={setValue:function(element,value)
-{var el=$(element);if(el&&typeof(el.value)!="undefined")
-el.value=value;},select:function(element,method,value,total)
-{var el=$(element);if(!el)return;var selection=Prado.Element.Selection;if(typeof(selection[method])=="function")
-{control=selection.isSelectable(el)?[el]:selection.getListElements(element,total);selection[method](control,value);}},click:function(element)
-{var el=$(element);if(el)
-Event.fireEvent(el,'click');},setAttribute:function(element,attribute,value)
-{var el=$(element);if(!el)return;if((attribute=="disabled"||attribute=="multiple")&&value==false)
-el.removeAttribute(attribute);else if(attribute.match(/^on/i))
-{try
-{eval("(func = function(event){"+value+"})");el[attribute]=func;}
-catch(e)
-{throw"Error in evaluating '"+value+"' for attribute "+attribute+" for element "+element.id;}}
-else
-el.setAttribute(attribute,value);},setOptions:function(element,options)
-{var el=$(element);if(!el)return;if(el&&el.tagName.toLowerCase()=="select")
-{el.options.length=options.length;for(var i=0;i<options.length;i++)
-el.options[i]=new Option(options[i][0],options[i][1]);}},focus:function(element)
-{var obj=$(element);if(typeof(obj)!="undefined"&&typeof(obj.focus)!="undefined")
-setTimeout(function(){obj.focus();},100);return false;},replace:function(element,method,content,boundary)
-{if(boundary)
-{result=Prado.Element.extractContent(this.transport.responseText,boundary);if(result!=null)
-content=result;}
-if(typeof(element)=="string")
-{if($(element))
-method.toFunction().apply(this,[element,""+content]);}
-else
-{method.toFunction().apply(this,[""+content]);}},extractContent:function(text,boundary)
-{var f=RegExp('(<!--'+boundary+'-->)([\\s\\S\\w\\W]*)(<!--//'+boundary+'-->)',"m");var result=text.match(f);if(result&&result.length>=2)
-return result[2];else
-return null;},evaluateScript:function(content)
-{content.evalScripts();}}
-Prado.Element.Selection={isSelectable:function(el)
-{if(el&&el.type)
-{switch(el.type.toLowerCase())
-{case'checkbox':case'radio':case'select':case'select-multiple':case'select-one':return true;}}
-return false;},inputValue:function(el,value)
-{switch(el.type.toLowerCase())
-{case'checkbox':case'radio':return el.checked=value;}},selectValue:function(elements,value)
-{elements.each(function(el)
-{$A(el.options).each(function(option)
-{if(typeof(value)=="boolean")
-options.selected=value;else if(option.value==value)
-option.selected=true;});})},selectValues:function(elements,values)
-{selection=this;values.each(function(value)
-{selection.selectValue(elements,value);})},selectIndex:function(elements,index)
-{elements.each(function(el)
-{if(el.type.toLowerCase()=='select-one')
-el.selectedIndex=index;else
-{for(var i=0;i<el.length;i++)
-{if(i==index)
-el.options[i].selected=true;}}})},selectAll:function(elements)
-{elements.each(function(el)
-{if(el.type.toLowerCase()!='select-one')
-{$A(el.options).each(function(option)
-{option.selected=true;})}})},selectInvert:function(elements)
-{elements.each(function(el)
-{if(el.type.toLowerCase()!='select-one')
-{$A(el.options).each(function(option)
-{option.selected=!options.selected;})}})},selectIndices:function(elements,indices)
-{selection=this;indices.each(function(index)
-{selection.selectIndex(elements,index);})},selectClear:function(elements)
-{elements.each(function(el)
-{el.selectedIndex=-1;})},getListElements:function(element,total)
-{elements=new Array();for(i=0;i<total;i++)
-{el=$(element+"_c"+i);if(el)
-elements.push(el);}
-return elements;},checkValue:function(elements,value)
-{elements.each(function(el)
-{if(typeof(value)=="boolean")
-el.checked=value;else if(el.value==value)
-el.checked=true;});},checkValues:function(elements,values)
-{selection=this;values.each(function(value)
-{selection.checkValue(elements,value);})},checkIndex:function(elements,index)
-{for(var i=0;i<elements.length;i++)
-{if(i==index)
-elements[i].checked=true;}},checkIndices:function(elements,indices)
-{selection=this;indices.each(function(index)
-{selection.checkIndex(elements,index);})},checkClear:function(elements)
-{elements.each(function(el)
-{el.checked=false;});},checkAll:function(elements)
-{elements.each(function(el)
-{el.checked=true;})},checkInvert:function(elements)
-{elements.each(function(el)
-{el.checked!=el.checked;})}};Prado.Element.Insert={append:function(element,content)
-{new Insertion.Bottom(element,content);},prepend:function(element,content)
-{new Insertion.Top(element,content);},after:function(element,content)
-{new Insertion.After(element,content);},before:function(element,content)
-{new Insertion.Before(element,content);}}
-Prado.WebUI=Class.create();Prado.WebUI.PostBackControl=Class.create();Prado.WebUI.PostBackControl.prototype={initialize:function(options)
+var newdate=new Date(year,month-1,date,0,0,0);return newdate;}});Prado.WebUI=Class.create();Prado.WebUI.PostBackControl=Class.create();Prado.WebUI.PostBackControl.prototype={initialize:function(options)
 {this._elementOnClick=null,this.element=$(options.ID);if(this.element)
 {if(this.onInit)
 this.onInit(options);}},onInit:function(options)
@@ -501,34 +453,4 @@ window.clipboardData.setData("Text",text);},hover:function(obj)
 {for(var i=0;i<options.ItemCount;i++)
 {var checkBoxOptions=Object.extend({ID:options.ListID+"_c"+i,EventTarget:options.ListName+"$c"+i},options);new Prado.WebUI.TCheckBox(checkBoxOptions);}}});Prado.WebUI.TRadioButtonList=Base.extend({constructor:function(options)
 {for(var i=0;i<options.ItemCount;i++)
-{var radioButtonOptions=Object.extend({ID:options.ListID+"_c"+i,EventTarget:options.ListName+"$c"+i},options);new Prado.WebUI.TRadioButton(radioButtonOptions);}}});Prado.WebUI.TRatingList=Base.extend({selectedIndex:-1,rating:-1,enabled:true,readOnly:false,constructor:function(options)
-{var cap=$(options.CaptionID);this.options=Object.extend({caption:cap?cap.innerHTML:''},options||{});Prado.WebUI.TRatingList.register(this);this._init();this.selectedIndex=options.SelectedIndex;this.rating=options.Rating;if(options.Rating<=0&&options.SelectedIndex>=0)
-this.rating=options.SelectedIndex+1;this.showRating(this.rating);},_init:function(options)
-{Element.addClassName($(this.options.ListID),this.options.Style);this.radios=new Array();var index=0;for(var i=0;i<this.options.ItemCount;i++)
-{var radio=$(this.options.ListID+'_c'+i);var td=radio.parentNode;if(radio&&td.tagName.toLowerCase()=='td')
-{this.radios.push(radio);Event.observe(td,"mouseover",this.hover.bindEvent(this,index));Event.observe(td,"mouseout",this.recover.bindEvent(this,index));Event.observe(td,"click",this.click.bindEvent(this,index));index++;Element.addClassName(td,"rating");}}},hover:function(ev,index)
-{if(this.enabled==false)return;for(var i=0;i<this.radios.length;i++)
-{var node=this.radios[i].parentNode;var action=i<=index?'addClassName':'removeClassName'
-Element[action](node,"rating_hover");Element.removeClassName(node,"rating_selected");Element.removeClassName(node,"rating_half");}
-this.showCaption(this.getIndexCaption(index));},recover:function(ev,index)
-{if(this.enabled==false)return;this.showRating(this.rating);this.showCaption(this.options.caption);},click:function(ev,index)
-{if(this.enabled==false)return;for(var i=0;i<this.radios.length;i++)
-this.radios[i].checked=(i==index);this.selectedIndex=index;this.setRating(index+1);this.dispatchRequest(ev);},dispatchRequest:function(ev)
-{var requestOptions=Object.extend({ID:this.options.ListID+"_c"+this.selectedIndex,EventTarget:this.options.ListName+"$c"+this.selectedIndex},this.options);var request=new Prado.CallbackRequest(requestOptions.EventTarget,requestOptions);if(request.dispatch()==false)
-Event.stop(ev);},setRating:function(value)
-{this.rating=value;var base=Math.floor(value-1);var remainder=value-base-1;var halfMax=this.options.HalfRating["1"];var index=remainder>halfMax?base+1:base;for(var i=0;i<this.radios.length;i++)
-this.radios[i].checked=(i==index);var caption=this.getIndexCaption(index);this.setCaption(caption);this.showCaption(caption);this.showRating(value);},showRating:function(value)
-{var base=Math.floor(value-1);var remainder=value-base-1;var halfMin=this.options.HalfRating["0"];var halfMax=this.options.HalfRating["1"];var index=remainder>halfMax?base+1:base;var hasHalf=remainder>=halfMin&&remainder<=halfMax;for(var i=0;i<this.radios.length;i++)
-{var node=this.radios[i].parentNode;var action=i>index?'removeClassName':'addClassName';Element[action](node,"rating_selected");if(i==index+1&&hasHalf)
-Element.addClassName(node,"rating_half");else
-Element.removeClassName(node,"rating_half");Element.removeClassName(node,"rating_hover");}},getIndexCaption:function(index)
-{return index>-1?this.radios[index].value:this.options.caption;},showCaption:function(value)
-{var caption=$(this.options.CaptionID);if(caption)caption.innerHTML=value;$(this.options.ListID).title=value;},setCaption:function(value)
-{this.options.caption=value;this.showCaption(value);},setEnabled:function(value)
-{this.enabled=value;for(var i=0;i<this.radios.length;i++)
-{var action=value?'removeClassName':'addClassName'
-Element[action](this.radios[i].parentNode,"rating_disabled");}}},{ratings:{},register:function(rating)
-{Prado.WebUI.TRatingList.ratings[rating.options.ListID]=rating;},setEnabled:function(id,value)
-{Prado.WebUI.TRatingList.ratings[id].setEnabled(value);},setRating:function(id,value)
-{Prado.WebUI.TRatingList.ratings[id].setRating(value);},setCaption:function(id,value)
-{Prado.WebUI.TRatingList.ratings[id].setCaption(value);}});
+{var radioButtonOptions=Object.extend({ID:options.ListID+"_c"+i,EventTarget:options.ListName+"$c"+i},options);new Prado.WebUI.TRadioButton(radioButtonOptions);}}});

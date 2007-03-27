@@ -3349,6 +3349,63 @@ var Builder = {
 
 
 
+var Prado =
+{
+	Version: '3.1',
+
+	/**
+	 * Returns browser information. Example
+	 * <code>
+	 * var browser = Prado.Browser();
+	 * alert(browser.ie); //should ouput true if IE, false otherwise
+	 * </code>
+	 * @param ${parameter}
+	 * @return ${return}
+	 */
+	Browser : function()
+	{
+		var info = { Version : "1.0" };
+		var is_major = parseInt( navigator.appVersion );
+		info.nver = is_major;
+		info.ver = navigator.appVersion;
+		info.agent = navigator.userAgent;
+		info.dom = document.getElementById ? 1 : 0;
+		info.opera = window.opera ? 1 : 0;
+		info.ie5 = ( info.ver.indexOf( "MSIE 5" ) > -1 && info.dom && !info.opera ) ? 1 : 0;
+		info.ie6 = ( info.ver.indexOf( "MSIE 6" ) > -1 && info.dom && !info.opera ) ? 1 : 0;
+		info.ie4 = ( document.all && !info.dom && !info.opera ) ? 1 : 0;
+		info.ie = info.ie4 || info.ie5 || info.ie6;
+		info.mac = info.agent.indexOf( "Mac" ) > -1;
+		info.ns6 = ( info.dom && parseInt( info.ver ) >= 5 ) ? 1 : 0;
+		info.ie3 = ( info.ver.indexOf( "MSIE" ) && ( is_major < 4 ) );
+		info.hotjava = ( info.agent.toLowerCase().indexOf( 'hotjava' ) != -1 ) ? 1 : 0;
+		info.ns4 = ( document.layers && !info.dom && !info.hotjava ) ? 1 : 0;
+		info.bw = ( info.ie6 || info.ie5 || info.ie4 || info.ns4 || info.ns6 || info.opera );
+		info.ver3 = ( info.hotjava || info.ie3 );
+		info.opera7 = ( ( info.agent.toLowerCase().indexOf( 'opera 7' ) > -1 ) || ( info.agent.toLowerCase().indexOf( 'opera/7' ) > -1 ) );
+		info.operaOld = info.opera && !info.opera7;
+		return info;
+	},
+
+	ImportCss : function(doc, css_file)
+	{
+		if (Prado.Browser().ie)
+			var styleSheet = doc.createStyleSheet(css_file);
+		else
+		{
+			var elm = doc.createElement("link");
+
+			elm.rel = "stylesheet";
+			elm.href = css_file;
+
+			if (headArr = doc.getElementsByTagName("head"))
+				headArr[0].appendChild(elm);
+		}
+	}
+};
+
+
+
 /**
  * Similar to bindAsEventLister, but takes additional arguments.
  */
@@ -3485,212 +3542,254 @@ Base.implement = function(_interface) {
 	this.prototype.extend(_interface);
 };
 
-/*
- * Signals and Slots for Prototype: Easy custom javascript events
- * http://tetlaw.id.au/view/blog/signals-and-slots-for-prototype-easy-custom-javascript-events
- * Andrew Tetlaw
- * Version 1.2 (2006-06-19)
+/**
+ * Performs a post-back using javascript
  *
- * http://creativecommons.org/licenses/by-sa/2.5/
- *
-Signal = {
-	throwErrors : true,
-	MT : function(){ return true },
-	connect : function(obj1, func1, obj2, func2, options) {
-		var options = Object.extend({
-			connectOnce : false,
-			before : false,
-			mutate : function() {return arguments;}
-		}, options || {});
-		if(typeof func1 != 'string' || typeof func2 != 'string') return;
+ */
+Prado.PostBack = function(event,options)
+{
+	var form = $(options['FormID']);
+	var canSubmit = true;
 
-		var sigObj = obj1 || window;
-		var slotObj = obj2 || window;
-		var signame = func1+'__signal_';
-		var slotsname = func1+'__slots_';
-		if(!sigObj[signame]) {
-			// having the slotFunc in a var and setting it by using an anonymous function in this way
-			// is apparently a good way to prevent memory leaks in IE if the objects are DOM nodes.
-			var slotFunc = function() {
-				var args = [];
-				for(var x = 0; x < arguments.length; x++){
-					args.push(arguments[x]);
-				}
-				args = options.mutate.apply(null,args)
-				var result;
-				if(!options.before) result = sigObj[signame].apply(sigObj,arguments); //default: call sign before slot
-				sigObj[slotsname].each(function(slot){
-					try {
-						if(slot && slot[0]) { // testing for null, a disconnect may have nulled this slot
-							slot[0][slot[1]].apply(slot[0],args); //[0] = obj, [1] = func name
-						}
-					} catch(e) {
-						if(Signal.throwErrors) throw e;
-					}
-				});
-				if(options.before) result = sigObj[signame].apply(sigObj,arguments); //call slot before sig
-				return result; //return sig result
-			};
-			(function() {
-				sigObj[slotsname] = $A([]);
-				sigObj[signame] = sigObj[func1] || Signal.MT;
-				sigObj[func1] = slotFunc;
-			})();
+	if(options['CausesValidation'] && typeof(Prado.Validation) != "undefined")
+	{
+		if(!Prado.Validation.validate(options['FormID'], options['ValidationGroup'], $(options['ID'])))
+			return Event.stop(event);
+	}
+
+	if(options['PostBackUrl'] && options['PostBackUrl'].length > 0)
+		form.action = options['PostBackUrl'];
+
+	if(options['TrackFocus'])
+	{
+		var lastFocus = $('PRADO_LASTFOCUS');
+		if(lastFocus)
+		{
+			var active = document.activeElement; //where did this come from
+			if(active)
+				lastFocus.value = active.id;
+			else
+				lastFocus.value = options['EventTarget'];
 		}
-		var con = (sigObj[slotsname].length > 0) ?
-					(options.connectOnce ? !sigObj[slotsname].any(function(slot) { return (slot[0] == slotObj && slot[1] == func2) }) : true) :
-					true;
-		if(con) {
-			sigObj[slotsname].push([slotObj,func2]);
+	}
+
+	$('PRADO_POSTBACK_TARGET').value = options['EventTarget'];
+	$('PRADO_POSTBACK_PARAMETER').value = options['EventParameter'];
+	/**
+	 * Since google toolbar prevents browser default action,
+	 * we will always disable default client-side browser action
+	 */
+	/*if(options['StopEvent']) */
+		Event.stop(event);
+	Event.fireEvent(form,"submit");
+}
+
+/**
+ * Additional element utilities.
+ */
+Prado.Element =
+{
+	/**
+	 * Set the value of a particular element.
+	 * @param string element id
+	 * @param string new element value.
+	 */
+	setValue : function(element, value)
+	{
+		var el = $(element);
+		if(el && typeof(el.value) != "undefined")
+			el.value = value;
+	},
+
+	select : function(element, method, value)
+	{
+		var el = $(element);
+		var isList = element.indexOf('[]') > -1;
+		if(!el && !isList) return;
+		method = isList ? 'check'+method : el.tagName.toLowerCase()+method;
+		var selection = Prado.Element.Selection;
+		if(isFunction(selection[method]))
+			selection[method](isList ? element : el,value);
+	},
+
+	click : function(element)
+	{
+		var el = $(element);
+		if(el)
+			Event.fireEvent(el,'click');
+	},
+
+	setAttribute : function(element, attribute, value)
+	{
+		var el = $(element);
+		if(attribute == "disabled" && value==false)
+			el.removeAttribute(attribute);
+		else
+			el.setAttribute(attribute, value);
+	},
+
+	setOptions : function(element, options)
+	{
+		var el = $(element);
+		if(el && el.tagName.toLowerCase() == "select")
+		{
+			while(el.length > 0)
+				el.remove(0);
+			for(var i = 0; i<options.length; i++)
+				el.options[el.options.length] = new Option(options[i][0],options[i][1]);
 		}
 	},
-	connectOnce : function(obj1, func1, obj2, func2, options) {
-		Signal.connect(obj1, func1, obj2, func2, Object.extend(options || {}, {connectOnce : true}))
+
+	/**
+	 * A delayed focus on a particular element
+	 * @param {element} element to apply focus()
+	 */
+	focus : function(element)
+	{
+		var obj = $(element);
+		if(typeof(obj) != "undefined" && typeof(obj.focus) != "undefined")
+			setTimeout(function(){ obj.focus(); }, 100);
+		return false;
+	}
+}
+
+/**
+ * Selectable element utilities
+ */
+Prado.Element.Selection =
+{
+	inputValue : function(el, value)
+	{
+		switch(el.type.toLowerCase())
+		{
+			case 'checkbox':
+			case 'radio':
+			return el.checked = value;
+		}
 	},
-	disconnect : function(obj1, func1, obj2, func2, options) {
-		var options = Object.extend({
-			disconnectAll : false
-		}, options || {});
-		if(typeof func1 != 'string' || typeof func2 != 'string') return;
 
-		var sigObj = obj1 || window;
-		var slotObj = obj2 || window;
-		var signame = func1+'__signal_';
-		var slotsname = func1+'__slots_';
+	selectValue : function(el, value)
+	{
+		$A(el.options).each(function(option)
+		{
+			option.selected = option.value == value;
+		});
+	},
 
-		// I null them in this way so that any currectly active signal will read a null slot,
-		// otherwise the slot will be applied even though it's been disconnected
-		if(sigObj[slotsname]) {
-			if(options.disconnectAll) {
-				sigObj[slotsname] = sigObj[slotsname].collect(function(slot) {
-					if(slot[0] == slotObj && slot[1] == func2) {
-						slot[0] = null;
-						return null;
-					} else {
-						return slot;
-					}
-				}).compact();
-			} else {
-				var idx = -1;
-				sigObj[slotsname] = sigObj[slotsname].collect(function(slot, index) {
-					if(slot[0] == slotObj && slot[1] == func2 && idx < 0) {  //disconnect first match
-						idx = index;
-						slot[0] = null;
-						return null;
-					} else {
-						return slot;
-					}
-				}).compact();
+	selectIndex : function(el, index)
+	{
+		if(el.type == 'select-one')
+			el.selectedIndex = index;
+		else
+		{
+			for(var i = 0; i<el.length; i++)
+			{
+				if(i == index)
+					el.options[i].selected = true;
 			}
 		}
 	},
-	disconnectAll : function(obj1, func1, obj2, func2, options) {
-		Signal.disconnect(obj1, func1, obj2, func2, Object.extend(options || {}, {disconnectAll : true}))
+
+	selectClear : function(el)
+	{
+		el.selectedIndex = -1;
+	},
+
+	selectAll : function(el)
+	{
+		$A(el.options).each(function(option)
+		{
+			option.selected = true;
+			Logger.warn(option.value);
+		});
+	},
+
+	selectInvert : function(el)
+	{
+		$A(el.options).each(function(option)
+		{
+			option.selected = !option.selected;
+		});
+	},
+
+	checkValue : function(name, value)
+	{
+		$A(document.getElementsByName(name)).each(function(el)
+		{
+			el.checked = el.value == value
+		});
+	},
+
+	checkIndex : function(name, index)
+	{
+		var elements = $A(document.getElementsByName(name));
+		for(var i = 0; i<elements.length; i++)
+		{
+			if(i == index)
+				elements[i].checked = true;
+		}
+	},
+
+	checkClear : function(name)
+	{
+		$A(document.getElementsByName(name)).each(function(el)
+		{
+			el.checked = false;
+		});
+	},
+
+	checkAll : function(name)
+	{
+		$A(document.getElementsByName(name)).each(function(el)
+		{
+			el.checked = true;
+		});
+	},
+	checkInvert : function(name)
+	{
+		$A(document.getElementsByName(name)).each(function(el)
+		{
+			el.checked = !el.checked;
+		});
 	}
-}
-*/
-
-/*
- Tests
-
-//   1. Simple Test 1 "hello Fred" should trigger "Fred is a stupid head"
+};
 
 
-      sayHello = function(n) {
-      	alert("Hello! " + n);
-      }
-      moron = function(n) {
-      	alert(n + " is a stupid head");
-      }
-      Signal.connect(null,'sayHello',null,'moron');
-
-      onclick="sayHello('Fred')"
-
-
-//   2. Simple Test 2 repeated insults about Fred
-
-
-      Signal.connect(null,'sayHello2',null,'moron2');
-      Signal.connect(null,'sayHello2',null,'moron2');
-      Signal.connect(null,'sayHello2',null,'moron2');
-
-
-//   3. Simple Test 3 multiple insults about Fred
-
-
-      Signal.connect(null,'sayHello3',null,'moron3');
-      Signal.connect(null,'sayHello3',null,'bonehead3');
-      Signal.connect(null,'sayHello3',null,'idiot3');
-
-
-//   4. Simple Test 4 3 insults about Fred first - 3 then none
-
-
-      Signal.connect(null,'sayHello4',null,'moron4');
-      Signal.connect(null,'sayHello4',null,'moron4');
-      Signal.connect(null,'sayHello4',null,'moron4');
-      Signal.disconnect(null,'sayHello4',null,'moron4');
-      Signal.disconnect(null,'sayHello4',null,'moron4');
-      Signal.disconnect(null,'sayHello4',null,'moron4');
-
-
-//   5. Simple Test 5 connect 3 insults about Fred first - only one, then none
-
-
-      Signal.connect(null,'sayHello5',null,'moron5');
-      Signal.connect(null,'sayHello5',null,'moron5');
-      Signal.connect(null,'sayHello5',null,'moron5');
-      Signal.disconnectAll(null,'sayHello5',null,'moron5');
-
-
-//   6. Simple Test 6 connect 3 insults but only one comes out
-
-
-      Signal.connectOnce(null,'sayHello6',null,'moron6');
-      Signal.connectOnce(null,'sayHello6',null,'moron6');
-      Signal.connectOnce(null,'sayHello6',null,'moron6');
-
-
-//   7. Simple Test 7 connect via objects
-
-
-      var o = {};
-      o.sayHello = function(n) {
-      	alert("Hello! " + n + " (from object o)");
-      }
-      var m = {};
-      m.moron = function(n) {
-      	alert(n + " is a stupid head (from object m)");
-      }
-
-      Signal.connect(o,'sayHello',m,'moron');
-
-      onclick="o.sayHello('Fred')"
-
-
-//   8. Simple Test 8 connect but the insult comes first using {before:true}
-
-
-      Signal.connect(null,'sayHello8',null,'moron8', {before:true});
-
-
-//   9. Simple Test 9 connect but the insult is mutated
-
-
-      Signal.connect(null,'sayHello9',null,'moron9', {mutate:function() { return ['smelly ' + arguments[0]] }});
-
+/**
+ * Export scripaculous builder utilities as window[functions]
  */
+Object.extend(Builder,
+{
+	exportTags:function()
+	{
+		var tags=["BUTTON","TT","PRE","H1","H2","H3","BR","CANVAS","HR","LABEL","TEXTAREA","FORM","STRONG","SELECT","OPTION","OPTGROUP","LEGEND","FIELDSET","P","UL","OL","LI","TD","TR","THEAD","TBODY","TFOOT","TABLE","TH","INPUT","SPAN","A","DIV","IMG", "CAPTION"];
+		tags.each(function(tag)
+		{
+			window[tag]=function()
+			{
+				var args=$A(arguments);
+				if(args.length==0)
+					return Builder.node(tag,null);
+				if(args.length==1)
+					return Builder.node(tag,args[0]);
+				if(args.length>1)
+					return Builder.node(tag,args.shift(),args);
 
+			};
+		});
+	}
+});
+
+Builder.exportTags();
 
 /**
  * @class String extensions
  */
-Object.extend(String.prototype, 
-{
+Object.extend(String.prototype, {
 	/**
 	 * @param {String} "left" to pad the string on the left, "right" to pad right.
 	 * @param {Number} minimum string length.
-	 * @param {String} character(s) to pad 
+	 * @param {String} character(s) to pad
 	 * @return {String} padded character(s) on the left or right to satisfy minimum string length
 	 */
 
@@ -3704,7 +3803,7 @@ Object.extend(String.prototype,
 
 	/**
 	 * @param {Number} minimum string length.
-	 * @param {String} character(s) to pad 
+	 * @param {String} character(s) to pad
 	 * @return {String} padded character(s) on the left to satisfy minimum string length
 	 */
 	padLeft : function(len, chr) {
@@ -3713,7 +3812,7 @@ Object.extend(String.prototype,
 
 	/**
 	 * @param {Number} minimum string length.
-	 * @param {String} character(s) to pad 
+	 * @param {String} character(s) to pad
 	 * @return {String} padded character(s) on the right to satisfy minimum string length
 	 */
 	padRight : function(len, chr) {
@@ -3724,28 +3823,28 @@ Object.extend(String.prototype,
 	 * @param {Number} minimum string length.
 	 * @return {String} append zeros to the left to satisfy minimum string length.
 	 */
-	zerofill : function(len) { 
+	zerofill : function(len) {
 		return this.padLeft(len,'0');
 	},
 
 	/**
 	 * @return {String} removed white spaces from both ends.
 	 */
-	trim : function() { 
+	trim : function() {
 		return this.replace(/^\s+|\s+$/g,'');
 	},
 
 	/**
 	 * @return {String} removed white spaces from the left end.
 	 */
-	trimLeft : function() { 
-		return this.replace(/^\s+/,''); 
+	trimLeft : function() {
+		return this.replace(/^\s+/,'');
 	},
 
 	/**
 	 * @return {String} removed white spaces from the right end.
 	 */
-	trimRight : function() { 
+	trimRight : function() {
 		return this.replace(/\s+$/,'');
 	},
 
@@ -3760,9 +3859,9 @@ Object.extend(String.prototype,
 		var commands = this.split(/\./);
 		var command = window;
 		commands.each(function(action)
-		{ 
-			if(command[new String(action)]) 
-				command=command[new String(action)]; 
+		{
+			if(command[new String(action)])
+				command=command[new String(action)];
 		});
 		if(typeof(command) == "function")
 			return command;
@@ -3770,12 +3869,12 @@ Object.extend(String.prototype,
 		{
 			if(typeof Logger != "undefined")
 				Logger.error("Missing function", this);
-				
+
 			throw new Error	("Missing function '"+this+"'");
 		}
 	},
 
-	/** 
+	/**
 	 * Convert a string into integer, returns null if not integer.
 	 * @return {Number} null if string does not represent an integer.
 	 */
@@ -3788,8 +3887,8 @@ Object.extend(String.prototype,
 		return (isNaN(num) ? null : num);
 	},
 
-	/** 
-	 * Convert a string into a double/float value. <b>Internationalization 
+	/**
+	 * Convert a string into a double/float value. <b>Internationalization
 	 * is not supported</b>
 	 * @param {String} the decimal character
 	 * @return {Double} null if string does not represent a float value
@@ -3800,21 +3899,21 @@ Object.extend(String.prototype,
 		decimalchar = decimalchar || ".";
 		var exp = new RegExp("^\\s*([-\\+])?(\\d+)?(\\" + decimalchar + "(\\d+))?\\s*$");
 		var m = this.match(exp);
-		
-		if (m == null)	
+
+		if (m == null)
 			return null;
 		m[1] = m[1] || "";
 		m[2] = m[2] || "0";
 		m[4] = m[4] || "0";
-				
+
 		var cleanInput = m[1] + (m[2].length>0 ? m[2] : "0") + "." + m[4];
 		var num = parseFloat(cleanInput);
 		return (isNaN(num) ? null : num);
 	},
 
 	/**
-	 * Convert strings that represent a currency value (e.g. a float with grouping 
-	 * characters) to float. E.g. "10,000.50" will become "10000.50". The number 
+	 * Convert strings that represent a currency value (e.g. a float with grouping
+	 * characters) to float. E.g. "10,000.50" will become "10000.50". The number
 	 * of dicimal digits, grouping and decimal characters can be specified.
 	 * <i>The currency input format is <b>very</b> strict, null will be returned if
 	 * the pattern does not match</i>.
@@ -3837,14 +3936,14 @@ Object.extend(String.prototype,
 			return null;
 		var intermed = m[2] + m[5] ;
 		var cleanInput = m[1] + intermed.replace(
-				new RegExp("(\\" + groupchar + ")", "g"), "") 
+				new RegExp("(\\" + groupchar + ")", "g"), "")
 								+ ((digits > 0) ? "." + m[7] : "");
 		var num = parseFloat(cleanInput);
 		return (isNaN(num) ? null : num);
 	},
 
 	/**
-	 * Converts the string to a date by finding values that matches the 
+	 * Converts the string to a date by finding values that matches the
 	 * date format pattern.
 	 * @param string date format pattern, e.g. MM-dd-yyyy
 	 * @return {Date} the date extracted from the string
@@ -3925,9 +4024,8 @@ Object.extend(Event,
 	 * @param {Object} element id string or a DOM element.
 	 * @param {String} event type to dispatch.
 	 */
-	fireEvent : function(element,type,canBubble)
+	fireEvent : function(element,type)
 	{
-		canBubble = (typeof(canBubble) == undefined) ? true : canBubble;
 		element = $(element);
 		if(type == "submit")
 			return element.submit();
@@ -3936,14 +4034,14 @@ Object.extend(Event,
 			if(Event.isHTMLEvent(type))
 			{
 				var event = document.createEvent('HTMLEvents');
-	            event.initEvent(type, canBubble, true);
+	            event.initEvent(type, true, true);
 			}
 			else if(Event.isMouseEvent(type))
 			{
 				var event = document.createEvent('MouseEvents');
 				if (event.initMouseEvent)
 		        {
-					event.initMouseEvent(type,canBubble,true,
+					event.initMouseEvent(type,true,true,
 						document.defaultView, 1, 0, 0, 0, 0, false,
 								false, false, false, 0, null);
 		        }
@@ -3951,7 +4049,7 @@ Object.extend(Event,
 		        {
 		            // Safari
 		            // TODO we should be initialising other mouse-event related attributes here
-		            event.initEvent(type, canBubble, true);
+		            event.initEvent(type, true, true);
 		        }
 			}
             element.dispatchEvent(event);
@@ -3967,15 +4065,16 @@ Object.extend(Event,
 });
 
 
+
 Object.extend(Date.prototype,
-{	
+{
 	SimpleFormat: function(format, data)
 	{
 		data = data || {};
 		var bits = new Array();
 		bits['d'] = this.getDate();
 		bits['dd'] = String(this.getDate()).zerofill(2);
-		
+
 		bits['M'] = this.getMonth()+1;
 		bits['MM'] = String(this.getMonth()+1).zerofill(2);
 		if(data.AbbreviatedMonthNames)
@@ -3986,11 +4085,11 @@ Object.extend(Date.prototype,
 		yearStr = (yearStr.length == 2) ? '19' + yearStr: yearStr;
 		bits['yyyy'] = yearStr;
 		bits['yy'] = bits['yyyy'].toString().substr(2,2);
-		
+
 		// do some funky regexs to replace the format string
 		// with the real values
 		var frm = new String(format);
-		for (var sect in bits) 
+		for (var sect in bits)
 		{
 			var reg = new RegExp("\\b"+sect+"\\b" ,"g");
 			frm = frm.replace(reg, bits[sect]);
@@ -4007,30 +4106,30 @@ Object.extend(Date.prototype,
 	}
 });
 
-Object.extend(Date, 
+Object.extend(Date,
 {
 	SimpleParse: function(value, format)
-	{	
+	{
 		val=String(value);
 		format=String(format);
-		
+
 		if(val.length <= 0) return null;
-		
+
 		if(format.length <= 0) return new Date(value);
-			
-		var isInteger = function (val) 
+
+		var isInteger = function (val)
 		{
 			var digits="1234567890";
-			for (var i=0; i < val.length; i++) 
+			for (var i=0; i < val.length; i++)
 			{
 				if (digits.indexOf(val.charAt(i))==-1) { return false; }
 			}
 			return true;
 		};
-		
-		var getInt = function(str,i,minlength,maxlength) 
+
+		var getInt = function(str,i,minlength,maxlength)
 		{
-			for (var x=maxlength; x>=minlength; x--) 
+			for (var x=maxlength; x>=minlength; x--)
 			{
 				var token=str.substring(i,i+x);
 				if (token.length < minlength) { return null; }
@@ -4038,7 +4137,7 @@ Object.extend(Date,
 			}
 			return null;
 		};
-	
+
 		var i_val=0;
 		var i_format=0;
 		var c="";
@@ -4049,19 +4148,19 @@ Object.extend(Date,
 		var year=now.getFullYear();
 		var month=now.getMonth()+1;
 		var date=1;
-	
-		while (i_format < format.length) 
+
+		while (i_format < format.length)
 		{
 			// Get next token from format string
 			c=format.charAt(i_format);
 			token="";
-			while ((format.charAt(i_format)==c) && (i_format < format.length)) 
+			while ((format.charAt(i_format)==c) && (i_format < format.length))
 			{
 				token += format.charAt(i_format++);
 			}
-		
+
 			// Extract contents of value based on format token
-			if (token=="yyyy" || token=="yy" || token=="y") 
+			if (token=="yyyy" || token=="yy" || token=="y")
 			{
 				if (token=="yyyy") { x=4;y=4; }
 				if (token=="yy")   { x=2;y=2; }
@@ -4069,37 +4168,37 @@ Object.extend(Date,
 				year=getInt(val,i_val,x,y);
 				if (year==null) { return null; }
 				i_val += year.length;
-				if (year.length==2) 
+				if (year.length==2)
 				{
 					if (year > 70) { year=1900+(year-0); }
 					else { year=2000+(year-0); }
 				}
 			}
 
-			else if (token=="MM"||token=="M") 
+			else if (token=="MM"||token=="M")
 			{
 				month=getInt(val,i_val,token.length,2);
 				if(month==null||(month<1)||(month>12)){return null;}
 				i_val+=month.length;
 			}
-			else if (token=="dd"||token=="d") 
+			else if (token=="dd"||token=="d")
 			{
 				date=getInt(val,i_val,token.length,2);
 				if(date==null||(date<1)||(date>31)){return null;}
 				i_val+=date.length;
 			}
-			else 
+			else
 			{
 				if (val.substring(i_val,i_val+token.length)!=token) {return null;}
 				else {i_val+=token.length;}
 			}
 		}
-	
+
 		// If there are any trailing characters left in the value, it doesn't match
 		if (i_val != val.length) { return null; }
-		
+
 		// Is date valid for month?
-		if (month==2) 
+		if (month==2)
 		{
 			// Check for leap year
 			if ( ( (year%4==0)&&(year%100 != 0) ) || (year%400==0) ) { // leap year
@@ -4107,636 +4206,16 @@ Object.extend(Date,
 			}
 			else { if (date > 28) { return null; } }
 		}
-	
-		if ((month==4)||(month==6)||(month==9)||(month==11)) 
+
+		if ((month==4)||(month==6)||(month==9)||(month==11))
 		{
 			if (date > 30) { return null; }
 		}
-		
+
 		var newdate=new Date(year,month-1,date, 0, 0, 0);
 		return newdate;
 	}
 });
-
-
-Object.extend(Builder,
-{
-	exportTags:function()
-	{
-		var tags=["BUTTON","TT","PRE","H1","H2","H3","BR","CANVAS","HR","LABEL","TEXTAREA","FORM","STRONG","SELECT","OPTION","OPTGROUP","LEGEND","FIELDSET","P","UL","OL","LI","TD","TR","THEAD","TBODY","TFOOT","TABLE","TH","INPUT","SPAN","A","DIV","IMG", "CAPTION"];
-		tags.each(function(tag)
-		{
-			window[tag]=function()
-			{
-				var args=$A(arguments);
-				if(args.length==0)
-					return Builder.node(tag,null);
-				if(args.length==1)
-					return Builder.node(tag,args[0]);
-				if(args.length>1)
-					return Builder.node(tag,args.shift(),args);
-
-			};
-		});
-	}
-});
-
-Builder.exportTags();
-
-
-
-var Prado =
-{
-	Version: '3.1',
-
-	/**
-	 * Returns browser information. Example
-	 * <code>
-	 * var browser = Prado.Browser();
-	 * alert(browser.ie); //should ouput true if IE, false otherwise
-	 * </code>
-	 * @param ${parameter}
-	 * @return ${return}
-	 */
-	Browser : function()
-	{
-		var info = { Version : "1.0" };
-		var is_major = parseInt( navigator.appVersion );
-		info.nver = is_major;
-		info.ver = navigator.appVersion;
-		info.agent = navigator.userAgent;
-		info.dom = document.getElementById ? 1 : 0;
-		info.opera = window.opera ? 1 : 0;
-		info.ie5 = ( info.ver.indexOf( "MSIE 5" ) > -1 && info.dom && !info.opera ) ? 1 : 0;
-		info.ie6 = ( info.ver.indexOf( "MSIE 6" ) > -1 && info.dom && !info.opera ) ? 1 : 0;
-		info.ie4 = ( document.all && !info.dom && !info.opera ) ? 1 : 0;
-		info.ie = info.ie4 || info.ie5 || info.ie6;
-		info.mac = info.agent.indexOf( "Mac" ) > -1;
-		info.ns6 = ( info.dom && parseInt( info.ver ) >= 5 ) ? 1 : 0;
-		info.ie3 = ( info.ver.indexOf( "MSIE" ) && ( is_major < 4 ) );
-		info.hotjava = ( info.agent.toLowerCase().indexOf( 'hotjava' ) != -1 ) ? 1 : 0;
-		info.ns4 = ( document.layers && !info.dom && !info.hotjava ) ? 1 : 0;
-		info.bw = ( info.ie6 || info.ie5 || info.ie4 || info.ns4 || info.ns6 || info.opera );
-		info.ver3 = ( info.hotjava || info.ie3 );
-		info.opera7 = ( ( info.agent.toLowerCase().indexOf( 'opera 7' ) > -1 ) || ( info.agent.toLowerCase().indexOf( 'opera/7' ) > -1 ) );
-		info.operaOld = info.opera && !info.opera7;
-		return info;
-	},
-
-	ImportCss : function(doc, css_file)
-	{
-		if (Prado.Browser().ie)
-			var styleSheet = doc.createStyleSheet(css_file);
-		else
-		{
-			var elm = doc.createElement("link");
-
-			elm.rel = "stylesheet";
-			elm.href = css_file;
-
-			if (headArr = doc.getElementsByTagName("head"))
-				headArr[0].appendChild(elm);
-		}
-	}
-};
-
-
-/*Prado.Focus = Class.create();
-
-Prado.Focus.setFocus = function(id)
-{
-	var target = document.getElementById ? document.getElementById(id) : document.all[id];
-	if(target && !Prado.Focus.canFocusOn(target))
-	{
-		target = Prado.Focus.findTarget(target);
-	}
-	if(target)
-	{
-        try
-		{
-            target.focus();
-			target.scrollIntoView(false);
-            if (window.__smartNav)
-			{
-				window.__smartNav.ae = target.id;
-			}
-		}
-        catch (e)
-		{
-		}
-	}
-}
-
-Prado.Focus.canFocusOn = function(element)
-{
-	if(!element || !(element.tagName))
-		return false;
-	var tagName = element.tagName.toLowerCase();
-	return !element.disabled && (!element.type || element.type.toLowerCase() != "hidden") && Prado.Focus.isFocusableTag(tagName) && Prado.Focus.isVisible(element);
-}
-
-Prado.Focus.isFocusableTag = function(tagName)
-{
-	return (tagName == "input" || tagName == "textarea" || tagName == "select" || tagName == "button" || tagName == "a");
-}
-
-
-Prado.Focus.findTarget = function(element)
-{
-	if(!element || !(element.tagName))
-	{
-		return null;
-	}
-	var tagName = element.tagName.toLowerCase();
-	if (tagName == "undefined")
-	{
-		return null;
-	}
-	var children = element.childNodes;
-	if (children)
-	{
-		for(var i=0;i<children.length;i++)
-		{
-			try
-			{
-				if(Prado.Focus.canFocusOn(children[i]))
-				{
-					return children[i];
-				}
-				else
-				{
-					var target = Prado.Focus.findTarget(children[i]);
-					if(target)
-					{
-						return target;
-					}
-				}
-			}
-			catch (e)
-			{
-			}
-		}
-	}
-	return null;
-}
-
-Prado.Focus.isVisible = function(element)
-{
-	var current = element;
-	while((typeof(current) != "undefined") && (current != null))
-	{
-		if(current.disabled || (typeof(current.style) != "undefined" && ((typeof(current.style.display) != "undefined" && current.style.display == "none") || (typeof(current.style.visibility) != "undefined" && current.style.visibility == "hidden") )))
-		{
-			return false;
-		}
-		if(typeof(current.parentNode) != "undefined" &&	current.parentNode != null && current.parentNode != current && current.parentNode.tagName.toLowerCase() != "body")
-		{
-			current = current.parentNode;
-		}
-		else
-		{
-			return true;
-		}
-	}
-    return true;
-}
-*/
-
-
-Prado.PostBack = function(event,options)
-{
-	var form = $(options['FormID']);
-	var canSubmit = true;
-
-	if(options['CausesValidation'] && typeof(Prado.Validation) != "undefined")
-	{
-		if(!Prado.Validation.validate(options['FormID'], options['ValidationGroup'], $(options['ID'])))
-			return Event.stop(event);
-	}
-
-	if(options['PostBackUrl'] && options['PostBackUrl'].length > 0)
-		form.action = options['PostBackUrl'];
-
-	if(options['TrackFocus'])
-	{
-		var lastFocus = $('PRADO_LASTFOCUS');
-		if(lastFocus)
-		{
-			var active = document.activeElement; //where did this come from
-			if(active)
-				lastFocus.value = active.id;
-			else
-				lastFocus.value = options['EventTarget'];
-		}
-	}
-
-	$('PRADO_POSTBACK_TARGET').value = options['EventTarget'];
-	$('PRADO_POSTBACK_PARAMETER').value = options['EventParameter'];
-	/**
-	 * Since google toolbar prevents browser default action,
-	 * we will always disable default client-side browser action
-	 */
-	/*if(options['StopEvent']) */
-		Event.stop(event);
-	Event.fireEvent(form,"submit");
-}
-
-/*
-
-Prado.doPostBack = function(formID, eventTarget, eventParameter, performValidation, validationGroup, actionUrl, trackFocus, clientSubmit)
-{
-	if (typeof(performValidation) == 'undefined')
-	{
-		var performValidation = false;
-		var validationGroup = '';
-		var actionUrl = null;
-		var trackFocus = false;
-		var clientSubmit = true;
-	}
-	var theForm = document.getElementById ? document.getElementById(formID) : document.forms[formID];
-	var canSubmit = true;
-    if (performValidation)
-	{
-		//canSubmit = Prado.Validation.validate(validationGroup);
-	*	Prado.Validation.ActiveTarget = theForm;
-		Prado.Validation.CurrentTargetGroup = null;
-		Prado.Validation.IsGroupValidation = false;
-		canSubmit = Prado.Validation.IsValid(theForm);
-		Logger.debug(canSubmit);*
-		canSubmit = Prado.Validation.IsValid(theForm);
-	}
-	if (canSubmit)
-	{
-		if (actionUrl != null && (actionUrl.length > 0))
-		{
-			theForm.action = actionUrl;
-		}
-		if (trackFocus)
-		{
-			var lastFocus = theForm.elements['PRADO_LASTFOCUS'];
-			if ((typeof(lastFocus) != 'undefined') && (lastFocus != null))
-			{
-				var active = document.activeElement;
-				if (typeof(active) == 'undefined')
-				{
-					lastFocus.value = eventTarget;
-				}
-				else
-				{
-					if ((active != null) && (typeof(active.id) != 'undefined'))
-					{
-						if (active.id.length > 0)
-						{
-							lastFocus.value = active.id;
-						}
-						else if (typeof(active.name) != 'undefined')
-						{
-							lastFocus.value = active.name;
-						}
-					}
-				}
-			}
-		}
-		if (!clientSubmit)
-		{
-			canSubmit = false;
-		}
-	}
-	if (canSubmit && (!theForm.onsubmit || theForm.onsubmit()))
-	{
-		theForm.PRADO_POSTBACK_TARGET.value = eventTarget;
-		theForm.PRADO_POSTBACK_PARAMETER.value = eventParameter;
-		theForm.submit();
-	}
-}
-*/
-
-Prado.Element =
-{
-	/**
-	 * Set the value of a particular element.
-	 * @param string element id
-	 * @param string new element value.
-	 */
-	setValue : function(element, value)
-	{
-		var el = $(element);
-		if(el && typeof(el.value) != "undefined")
-			el.value = value;
-	},
-
-	select : function(element, method, value, total)
-	{
-		var el = $(element);
-		if(!el) return;
-		var selection = Prado.Element.Selection;
-		if(typeof(selection[method]) == "function")
-		{
-			control = selection.isSelectable(el) ? [el] : selection.getListElements(element,total);
-			selection[method](control, value);
-		}
-	},
-
-	click : function(element)
-	{
-		var el = $(element);
-		if(el)
-			Event.fireEvent(el,'click');
-	},
-
-	setAttribute : function(element, attribute, value)
-	{
-		var el = $(element);
-		if(!el) return;
-		if((attribute == "disabled" || attribute == "multiple") && value==false)
-			el.removeAttribute(attribute);
-		else if(attribute.match(/^on/i)) //event methods
-		{
-			try
-			{
-				eval("(func = function(event){"+value+"})");
-				el[attribute] = func;
-			}
-			catch(e)
-			{
-				throw "Error in evaluating '"+value+"' for attribute "+attribute+" for element "+element.id;
-			}
-		}
-		else
-			el.setAttribute(attribute, value);
-	},
-
-	setOptions : function(element, options)
-	{
-		var el = $(element);
-		if(!el) return;
-		if(el && el.tagName.toLowerCase() == "select")
-		{
-			el.options.length = options.length;
-			for(var i = 0; i<options.length; i++)
-				el.options[i] = new Option(options[i][0],options[i][1]);
-		}
-	},
-
-	/**
-	 * A delayed focus on a particular element
-	 * @param {element} element to apply focus()
-	 */
-	focus : function(element)
-	{
-		var obj = $(element);
-		if(typeof(obj) != "undefined" && typeof(obj.focus) != "undefined")
-			setTimeout(function(){ obj.focus(); }, 100);
-		return false;
-	},
-
-	replace : function(element, method, content, boundary)
-	{
-		if(boundary)
-		{
-			result = Prado.Element.extractContent(this.transport.responseText, boundary);
-			if(result != null)
-				content = result;
-		}
-		if(typeof(element) == "string")
-		{
-			if($(element))
-				method.toFunction().apply(this,[element,""+content]);
-		}
-		else
-		{
-			method.toFunction().apply(this,[""+content]);
-		}
-	},
-
-	extractContent : function(text, boundary)
-	{
-		var f = RegExp('(<!--'+boundary+'-->)([\\s\\S\\w\\W]*)(<!--//'+boundary+'-->)',"m");
-		var result = text.match(f);
-		if(result && result.length >= 2)
-			return result[2];
-		else
-			return null;
-	},
-
-	evaluateScript : function(content)
-	{
-		content.evalScripts();
-	}
-}
-
-Prado.Element.Selection =
-{
-	isSelectable : function(el)
-	{
-		if(el && el.type)
-		{
-			switch(el.type.toLowerCase())
-			{
-				case 'checkbox':
-				case 'radio':
-				case 'select':
-				case 'select-multiple':
-				case 'select-one':
-				return true;
-			}
-		}
-		return false;
-	},
-
-	inputValue : function(el, value)
-	{
-		switch(el.type.toLowerCase())
-		{
-			case 'checkbox':
-			case 'radio':
-			return el.checked = value;
-		}
-	},
-
-	selectValue : function(elements, value)
-	{
-		elements.each(function(el)
-		{
-			$A(el.options).each(function(option)
-			{
-				if(typeof(value) == "boolean")
-					options.selected = value;
-				else if(option.value == value)
-					option.selected = true;
-			});
-		})
-	},
-
-	selectValues : function(elements, values)
-	{
-		selection = this;
-		values.each(function(value)
-		{
-			selection.selectValue(elements,value);
-		})
-	},
-
-	selectIndex : function(elements, index)
-	{
-		elements.each(function(el)
-		{
-			if(el.type.toLowerCase() == 'select-one')
-				el.selectedIndex = index;
-			else
-			{
-				for(var i = 0; i<el.length; i++)
-				{
-					if(i == index)
-						el.options[i].selected = true;
-				}
-			}
-		})
-	},
-
-	selectAll : function(elements)
-	{
-		elements.each(function(el)
-		{
-			if(el.type.toLowerCase() != 'select-one')
-			{
-				$A(el.options).each(function(option)
-				{
-					option.selected = true;
-				})
-			}
-		})
-	},
-
-	selectInvert : function(elements)
-	{
-		elements.each(function(el)
-		{
-			if(el.type.toLowerCase() != 'select-one')
-			{
-				$A(el.options).each(function(option)
-				{
-					option.selected = !options.selected;
-				})
-			}
-		})
-	},
-
-	selectIndices : function(elements, indices)
-	{
-		selection = this;
-		indices.each(function(index)
-		{
-			selection.selectIndex(elements,index);
-		})
-	},
-
-	selectClear : function(elements)
-	{
-		elements.each(function(el)
-		{
-			el.selectedIndex = -1;
-		})
-	},
-
-	getListElements : function(element, total)
-	{
-		elements = new Array();
-		for(i = 0; i < total; i++)
-		{
-			el = $(element+"_c"+i);
-			if(el)
-				elements.push(el);
-		}
-		return elements;
-	},
-
-	checkValue : function(elements, value)
-	{
-		elements.each(function(el)
-		{
-			if(typeof(value) == "boolean")
-				el.checked = value;
-			else if(el.value == value)
-				el.checked = true;
-		});
-	},
-
-	checkValues : function(elements, values)
-	{
-		selection = this;
-		values.each(function(value)
-		{
-			selection.checkValue(elements, value);
-		})
-	},
-
-	checkIndex : function(elements, index)
-	{
-		for(var i = 0; i<elements.length; i++)
-		{
-			if(i == index)
-				elements[i].checked = true;
-		}
-	},
-
-	checkIndices : function(elements, indices)
-	{
-		selection = this;
-		indices.each(function(index)
-		{
-			selection.checkIndex(elements, index);
-		})
-	},
-
-	checkClear : function(elements)
-	{
-		elements.each(function(el)
-		{
-			el.checked = false;
-		});
-	},
-
-	checkAll : function(elements)
-	{
-		elements.each(function(el)
-		{
-			el.checked = true;
-		})
-	},
-
-	checkInvert : function(elements)
-	{
-		elements.each(function(el)
-		{
-			el.checked != el.checked;
-		})
-	}
-};
-
-
-Prado.Element.Insert =
-{
-	append: function(element, content)
-	{
-		new Insertion.Bottom(element, content);
-	},
-
-	prepend: function(element, content)
-	{
-		new Insertion.Top(element, content);
-	},
-
-	after: function(element, content)
-	{
-		new Insertion.After(element, content);
-	},
-
-	before: function(element, content)
-	{
-		new Insertion.Before(element, content);
-	}
-}
 
 Prado.WebUI = Class.create();
 
@@ -5027,184 +4506,5 @@ Prado.WebUI.TRadioButtonList = Base.extend(
 			new Prado.WebUI.TRadioButton(radioButtonOptions);
 		}
 	}
-});
-
-Prado.WebUI.TRatingList = Base.extend(
-{
-	selectedIndex : -1,
-	rating: -1,
-	enabled : true,
-	readOnly : false,
-
-	constructor : function(options)
-	{
-		var cap = $(options.CaptionID);
-		this.options = Object.extend(
-		{
-			caption : cap ? cap.innerHTML : ''
-		}, options || {});
-
-		Prado.WebUI.TRatingList.register(this);
-		this._init();
-		this.selectedIndex = options.SelectedIndex;
-		this.rating = options.Rating;
-		if(options.Rating <= 0 && options.SelectedIndex >= 0)
-			this.rating = options.SelectedIndex+1;
-		this.showRating(this.rating);
-	},
-
-	_init: function(options)
-	{
-		Element.addClassName($(this.options.ListID),this.options.Style);
-		this.radios = new Array();
-		var index=0;
-		for(var i = 0; i<this.options.ItemCount; i++)
-		{
-			var radio = $(this.options.ListID+'_c'+i);
-			var td = radio.parentNode;
-			if(radio && td.tagName.toLowerCase()=='td')
-			{
-				this.radios.push(radio);
-				Event.observe(td, "mouseover", this.hover.bindEvent(this,index));
-				Event.observe(td, "mouseout", this.recover.bindEvent(this,index));
-				Event.observe(td, "click", this.click.bindEvent(this, index));
-				index++;
-				Element.addClassName(td,"rating");
-			}
-		}
-	},
-
-	hover : function(ev,index)
-	{
-		if(this.enabled==false) return;
-		for(var i = 0; i<this.radios.length; i++)
-		{
-			var node = this.radios[i].parentNode;
-			var action = i <= index ? 'addClassName' : 'removeClassName'
-			Element[action](node,"rating_hover");
-			Element.removeClassName(node,"rating_selected");
-			Element.removeClassName(node,"rating_half");
-		}
-		this.showCaption(this.getIndexCaption(index));
-	},
-
-	recover : function(ev,index)
-	{
-		if(this.enabled==false) return;
-		this.showRating(this.rating);
-		this.showCaption(this.options.caption);
-	},
-
-	click : function(ev, index)
-	{
-		if(this.enabled==false) return;
-		for(var i = 0; i<this.radios.length; i++)
-			this.radios[i].checked = (i == index);
-
-		this.selectedIndex = index;
-		this.setRating(index+1);
-
-		this.dispatchRequest(ev);
-	},
-
-	dispatchRequest : function(ev)
-	{
-		var requestOptions = Object.extend(
-		{
-			ID : this.options.ListID+"_c"+this.selectedIndex,
-			EventTarget : this.options.ListName+"$c"+this.selectedIndex
-		},this.options);
-		var request = new Prado.CallbackRequest(requestOptions.EventTarget, requestOptions);
-		if(request.dispatch()==false)
-			Event.stop(ev);
-	},
-
-	setRating : function(value)
-	{
-		this.rating = value;
-		var base = Math.floor(value-1);
-		var remainder = value - base-1;
-		var halfMax = this.options.HalfRating["1"];
-		var index = remainder > halfMax ? base+1 : base;
-		for(var i = 0; i<this.radios.length; i++)
-			this.radios[i].checked = (i == index);
-
-		var caption = this.getIndexCaption(index);
-		this.setCaption(caption);
-		this.showCaption(caption);
-
-		this.showRating(value);
-	},
-
-	showRating: function(value)
-	{
-		var base = Math.floor(value-1);
-		var remainder = value - base-1;
-		var halfMin = this.options.HalfRating["0"];
-		var halfMax = this.options.HalfRating["1"];
-		var index = remainder > halfMax ? base+1 : base;
-		var hasHalf = remainder >= halfMin && remainder <= halfMax;
-		for(var i = 0; i<this.radios.length; i++)
-		{
-			var node = this.radios[i].parentNode;
-			var action = i > index ? 'removeClassName' : 'addClassName';
-			Element[action](node, "rating_selected");
-			if(i==index+1 && hasHalf)
-				Element.addClassName(node, "rating_half");
-			else
-				Element.removeClassName(node, "rating_half");
-			Element.removeClassName(node,"rating_hover");
-		}
-	},
-
-	getIndexCaption : function(index)
-	{
-		return index > -1 ? this.radios[index].value : this.options.caption;
-	},
-
-	showCaption : function(value)
-	{
-		var caption = $(this.options.CaptionID);
-		if(caption) caption.innerHTML = value;
-		$(this.options.ListID).title = value;
-	},
-
-	setCaption : function(value)
-	{
-		this.options.caption = value;
-		this.showCaption(value);
-	},
-
-	setEnabled : function(value)
-	{
-		this.enabled = value;
-		for(var i = 0; i<this.radios.length; i++)
-		{
-			var action = value ? 'removeClassName' : 'addClassName'
-			Element[action](this.radios[i].parentNode, "rating_disabled");
-		}
-	}
-},
-{
-ratings : {},
-register : function(rating)
-{
-	Prado.WebUI.TRatingList.ratings[rating.options.ListID] = rating;
-},
-
-setEnabled : function(id,value)
-{
-	Prado.WebUI.TRatingList.ratings[id].setEnabled(value);
-},
-
-setRating : function(id,value)
-{
-	Prado.WebUI.TRatingList.ratings[id].setRating(value);
-},
-
-setCaption : function(id,value)
-{
-	Prado.WebUI.TRatingList.ratings[id].setCaption(value);
-}
 });
 
