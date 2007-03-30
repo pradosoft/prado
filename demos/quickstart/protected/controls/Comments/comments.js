@@ -95,7 +95,7 @@ function show_comments(block)
 
 function show_block(block)
 {
-	while(block && block.className.indexOf("block-content") < 0)
+	while(block && (!block.className || block.className.indexOf("block-content") < 0))
 		block = block.parentNode;
 	if(block && block.className.indexOf("block-content") >= 0)
 	{
@@ -108,7 +108,7 @@ function show_block(block)
 
 function hide_block(block)
 {
-	while(block && block.className.indexOf("block-hover") < 0)
+	while(block && (!block.className || block.className.indexOf("block-content") < 0))
 		block = block.parentNode;
 	if(block && block.className.indexOf("block-hover") >= 0)
 	{
@@ -191,19 +191,17 @@ if(!Prado.Browser.ie) //not IE 4,5,6
 
 		$$('#comment-list .source-link').each(function(el){ el.hide(); });
 
-		Event.OnLoad(function() //delay the event registration of mouse
+		$$('#content .block-content').each(function(el)
 		{
-			$$('#content .block-content').each(function(el)
-			{
-				Event.observe(el, 'mouseover', function(e){ if(typeof(show_block)!="undefined") show_block(Event.element(e)); });
-				Event.observe(el, 'mouseout', function(e){ if(typeof(hide_block)!="undefined") hide_block(Event.element(e)); });
-				add_comment_tag(el);
-			});
-
-			Event.observe($('show-comment-link'), "click", function(e) { show_comment_list(); Event.stop(e); });
-			Event.observe($('add-comment-link'), "click", function(e) { show_add_comment();	Event.stop(e); });
-			Event.observe($('all-comments-link'), "click", function(e) { show_all_comments();	Event.stop(e); });
-			Event.observe($('close-comments'), "click", function(e) { hide_add_comment(); Event.stop(e); });
+			Event.observe(el, 'mouseover', function(e){ if(typeof(show_block)!="undefined") show_block(Event.element(e)); });
+			Event.observe(el, 'mouseout', function(e){ if(typeof(hide_block)!="undefined") hide_block(Event.element(e)); });
+			add_comment_tag(el);
 		});
+
+		Event.observe($('show-comment-link'), "click", function(e) { show_comment_list(); Event.stop(e); });
+		Event.observe($('add-comment-link'), "click", function(e) { show_add_comment();	Event.stop(e); });
+		Event.observe($('all-comments-link'), "click", function(e) { show_all_comments();	Event.stop(e); });
+		Event.observe($('close-comments'), "click", function(e) { hide_add_comment(); Event.stop(e); });
+
 	})();
 }
