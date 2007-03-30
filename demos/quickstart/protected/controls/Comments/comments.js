@@ -95,9 +95,9 @@ function show_comments(block)
 
 function show_block(block)
 {
-	while(block && block.className.indexOf("block-content") < 0)
+	while(block && block.className && block.className.indexOf("block-content") < 0)
 		block = block.parentNode;
-	if(block && block.className.indexOf("block-content") >= 0)
+	if(block && block.className && block.className.indexOf("block-content") >= 0)
 	{
 		block.addClassName('block-hover');
 		var tag = $('tag-'+block.id);
@@ -108,9 +108,9 @@ function show_block(block)
 
 function hide_block(block)
 {
-	while(block && block.className.indexOf("block-hover") < 0)
+	while(block && block.className && block.className.indexOf("block-hover") < 0)
 		block = block.parentNode;
-	if(block && block.className.indexOf("block-hover") >= 0)
+	if(block && block.className && block.className.indexOf("block-hover") >= 0)
 	{
 		block.removeClassName('block-hover');
 		var tag = $('tag-'+block.id);
