@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<xliff version="1.0">
+ <file source-language="EN" target-language="en" datatype="plaintext" original="messages" date="2007-03-30T10:10:48Z" product-name="messages">
+  <body>
+  
+<trans-unit id="1">
+<source>Hello World!</source>
+<target>Cool Earth?</target>
+</trans-unit>
+
+</body>
+ </file>
+</xliff>

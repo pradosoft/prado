@@ -1,0 +1,12 @@
+<com:TContent ID="Content">
+<h2 class="defect">TTranslate Control ignores property Catalogue</h2>
+
+<span id="text1">
+<com:TTranslate>Hello World!</com:TTranslate>
+</span>
+
+<span id="text2">
+<com:TTranslate Catalogue="menu">Hello World!</com:TTranslate>
+</span>
+
+</com:TContent>

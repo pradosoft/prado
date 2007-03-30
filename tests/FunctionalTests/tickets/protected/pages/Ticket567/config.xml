@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<configuration>
+  <paths>
+	<using namespace="System.I18N.*" />
+  </paths>
+  <modules>
+	<module id="globalization" class="TGlobalization">
+    	<translation type="XLIFF"
+        	source="Application.pages.Ticket567" 
+			catalogue="messages"
+			/>
+	</module>
+  </modules>	
+
+  <pages MasterClass="Application.pages.Layout" />
+</configuration>
