@@ -156,6 +156,16 @@ class TRadioButton extends TCheckBox
 	}
 
 	/**
+	 * Add the group name as post data loader if group name is set.
+	 */
+	protected function addToPostDataLoader()
+	{
+		parent::addToPostDataLoader();
+		$group = $this->getGroupName();
+		if(!empty($group))
+			$this->getPage()->registerPostDataLoader($this->getUniqueGroupName());
+	}
+	/**
 	 * @return string the name used to fetch radiobutton post data
 	 */
 	public function getUniqueGroupName()

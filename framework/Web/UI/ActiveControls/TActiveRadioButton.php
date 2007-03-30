@@ -110,17 +110,6 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	}
 
 	/**
-	 * Add the group name as post data loader if group name is set.
-	 */
-	protected function addToPostDataLoader()
-	{
-		parent::addToPostDataLoader();
-		$group = $this->getGroupName();
-		if(!empty($group))
-			$this->getPage()->registerPostDataLoader($group);
-	}
-
-	/**
 	 * Override parent implementation, no javascript is rendered here instead
 	 * the javascript required for active control is registered in {@link addAttributesToRender}.
 	 */
