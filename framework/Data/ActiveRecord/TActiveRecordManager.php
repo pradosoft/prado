@@ -121,6 +121,17 @@ class TActiveRecordManager extends TComponent
 	}
 
 	/**
+	 * @param string|TActiveRecord active record class name or instance
+	 * @return TDbMetaData record specific meta data
+	 */
+	public function getMetaData($record)
+	{
+		if(is_string($record))
+			$record = TActiveRecord::finder($record);
+		return $this->getRecordGateway()->getMetaData($record);
+	}
+
+	/**
 	 * @return TActiveRecordGateway default record gateway.
 	 */
 	protected function createRecordGateway()

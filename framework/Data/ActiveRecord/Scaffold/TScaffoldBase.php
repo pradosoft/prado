@@ -73,7 +73,6 @@ abstract class TScaffoldBase extends TTemplateControl
 	 */
 	protected function getRecordPkValues($record)
 	{
-		$pk = array();
 		foreach($this->getTableMetaData()->getColumns() as $name=>$column)
 		{
 			if($column->getIsPrimaryKey())

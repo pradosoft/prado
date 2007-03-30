@@ -25,7 +25,12 @@ abstract class TDbMetaData extends TComponent
 {
 	private $_primaryKeys=array();
 	private $_foreignKeys=array();
-	private $_columns=array();
+
+	/**
+	 * @var TMap column meta data.
+	 */
+	private $_columns;
+
 	private $_table;
 	private $_isView=false;
 
@@ -39,7 +44,7 @@ abstract class TDbMetaData extends TComponent
 	public function __construct($table, $cols, $pk, $fk=array(),$view=false)
 	{
 		$this->_table=$table;
-		$this->_columns=$cols;
+		$this->_columns=new TMap($cols);
 		$this->_primaryKeys=$pk;
 		$this->_foreignKeys=$fk;
 		$this->_isView=$view;
@@ -92,7 +97,7 @@ abstract class TDbMetaData extends TComponent
 
 	public function getColumnNames()
 	{
-		return array_keys($this->_columns);
+		return $this->_columns->getKeys();
 	}
 
 	/**
