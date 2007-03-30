@@ -89,8 +89,8 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 		request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.setCausesValidation(false);
 		request.setCallbackParameter(options);
-		request.options.onSuccess = this.onloadExternalTextSuccess.bind(this);
-		request.options.onFailure = this.onloadExternalTextFailure.bind(this);
+		request.ActiveControl.onSuccess = this.onloadExternalTextSuccess.bind(this);
+		request.ActiveControl.onFailure = this.onloadExternalTextFailure.bind(this);
 		request.dispatch();
 	},
 
@@ -181,8 +181,8 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 	{
 		request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.setCallbackParameter(text);
-		request.options.onSuccess = this.onTextChangedSuccess.bind(this);
-		request.options.onFailure = this.onTextChangedFailure.bind(this);
+		request.ActiveControl.onSuccess = this.onTextChangedSuccess.bind(this);
+		request.ActiveControl.onFailure = this.onTextChangedFailure.bind(this);
 		if(request.dispatch())
 		{
 			this.isSaving = true;

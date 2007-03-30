@@ -1,0 +1,67 @@
+<com:TContent ID="Content">
+
+<com:TCallback ID="loadData" OnCallback="loadData_Callback"/>
+
+<div style="height:1em">
+<div id="loading" style="display:none"> loading...</div>
+</div>
+<div id="status"></div>
+
+<com:TCallbackOptions ID="LoadDataOptions">
+	<prop:ClientSide.OnSuccess>
+			$('status').innerHTML = sender.ActiveControl.CallbackParameter + " updated";
+	</prop:ClientSide.OnSuccess>
+
+	<prop:ClientSide.OnLoading>
+			$('loading').show();
+	</prop:ClientSide.OnLoading>
+
+	<prop:ClientSide.OnComplete>
+			$('loading').hide();
+	</prop:ClientSide.OnComplete>
+</com:TCallbackOptions>
+
+
+		
+<com:TActiveLinkButton 
+	Text="Tab A"
+	OnCallback="changePanel"
+	ActiveControl.CallbackOptions="LoadDataOptions"
+	ActiveControl.CallbackParameter="panelA"
+	/> 
+<com:TActiveLinkButton
+	Text="Tab B"
+	OnCallback="changePanel"
+	ActiveControl.CallbackOptions="LoadDataOptions"
+	ActiveControl.CallbackParameter="panelB"
+	/> 
+<com:TActiveLinkButton
+	Text="Tab C"
+	OnCallback="changePanel"
+	ActiveControl.CallbackOptions="LoadDataOptions"
+	ActiveControl.CallbackParameter="panelC"
+	/> 
+<com:TActiveLinkButton
+	Text="Tab D"
+	OnCallback="changePanel"
+	ActiveControl.CallbackOptions="LoadDataOptions"
+	ActiveControl.CallbackParameter="panelD"
+	/> 
+
+<com:TActivePanel ID="panelA">
+	<h1>Panel A</h1>
+</com:TActivePanel>
+
+<com:TActivePanel ID="panelB">
+	<h1>Panel B</h1>
+</com:TActivePanel>
+
+<com:TActivePanel ID="panelC">
+	<h1>Panel C</h1>
+</com:TActivePanel>
+
+<com:TActivePanel ID="panelD">
+	<h1>Panel D</h1>
+</com:TActivePanel>
+
+</com:TContent>

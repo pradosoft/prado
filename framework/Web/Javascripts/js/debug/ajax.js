@@ -1219,6 +1219,14 @@ Prado.AjaxRequest.prototype = Ajax.Request.prototype;
  */
 Object.extend(Prado.AjaxRequest.prototype,
 {
+	/*initialize: function(request)
+	{
+		this.CallbackRequest = request;
+		this.transport = Ajax.getTransport();
+		this.setOptions(request.options);
+		this.request(request.url);
+	},*/
+
 	/**
 	 * Customize the response, dispatch onXXX response code events, and
 	 * tries to execute response actions (javascript statements).
@@ -1523,7 +1531,8 @@ Object.extend(Prado.CallbackRequest,
 	dispatchNormalRequest : function(callback)
 	{
 		//Logger.info("dispatching normal request");
-		new Prado.AjaxRequest(callback.url, callback.options);
+		//new Prado.AjaxRequest(callback);
+		callback.request(callback.url);
 		return true;
 	},
 
@@ -1553,7 +1562,7 @@ Object.extend(Prado.CallbackRequest,
 	{
 		var self = Prado.CallbackRequest;
 		var pagestate = $(self.FIELD_CALLBACK_PAGESTATE);
-		var enabled = request.options.EnablePageStateUpdate && request.options.HasPriority;
+		var enabled = request.ActiveControl.EnablePageStateUpdate && request.ActiveControl.HasPriority;
 		var aborted = self.currentRequest == null;
 		if(enabled && !aborted && pagestate)
 		{
@@ -1594,12 +1603,13 @@ Object.extend(Prado.CallbackRequest,
 		//get data
 		callback.options.postBody = callback._getPostData(),
 
-		callback.request = new Prado.AjaxRequest(callback.url, callback.options);
+		//callback.request = new Prado.AjaxRequest(callback);
+		callback.request(callback.url);
 		callback.timeout = setTimeout(function()
 		{
 			//Logger.warn("priority timeout");
 			self.abortRequest(callback.id);
-		},callback.options.RequestTimeOut);
+		},callback.ActiveControl.RequestTimeOut);
 		//Logger.debug("dispatched "+self.currentRequest.id + " ...")
 	},
 
@@ -1617,7 +1627,7 @@ Object.extend(Prado.CallbackRequest,
 		if(typeof(self.currentRequest) != 'undefined'
 			&& self.currentRequest != null && self.currentRequest.id == id)
 		{
-			var request = self.currentRequest.request;
+			var request = self.currentRequest;
 			if(request.transport.readyState < 4)
 				request.transport.abort();
 			//Logger.warn('## aborted: setting current request to null');
@@ -1632,7 +1642,7 @@ Object.extend(Prado.CallbackRequest,
  */
 Ajax.Responders.register({onComplete : function(request)
 {
-	if(request.options.HasPriority)
+	if(request.ActiveControl.HasPriority)
 		Prado.CallbackRequest.tryNextRequest();
 }});
 
@@ -1651,7 +1661,7 @@ Event.OnLoad(function()
  * request.dispatch();
  * </code>
  */
-Prado.CallbackRequest.prototype =
+Prado.CallbackRequest.prototype = Object.extend(Prado.AjaxRequest.prototype,
 {
 
 	/**
@@ -1664,10 +1674,13 @@ Prado.CallbackRequest.prototype =
 	 */
 		this.url = this.getCallbackUrl();
 
+		this.transport = Ajax.getTransport();
+//		this.setOptions(request.options);
+//		this.request(request.url);
 		/**
 		 * Current callback request.
 		 */
-		this.request = null;
+		//this.request = null;
 
 		this.Enabled = true;
 
@@ -1675,7 +1688,7 @@ Prado.CallbackRequest.prototype =
 		if(typeof(id)=="string")
 			Prado.CallbackRequest.requests[id] = this;
 
-		this.options = Object.extend(
+		this.setOptions(Object.extend(
 		{
 			RequestTimeOut : 30000, // 30 second timeout.
 			EnablePageStateUpdate : true,
@@ -1683,7 +1696,9 @@ Prado.CallbackRequest.prototype =
 			CausesValidation : true,
 			ValidationGroup : null,
 			PostInputs : true
-		}, options || {});
+		}, options || {}));
+
+		this.ActiveControl = this.options;
 	},
 
 	/**
@@ -1701,7 +1716,7 @@ Prado.CallbackRequest.prototype =
 	 */
 	setCallbackParameter : function(value)
 	{
-		this.options['params'] = value;
+		this.ActiveControl['CallbackParameter'] = value;
 	},
 
 	/**
@@ -1709,7 +1724,7 @@ Prado.CallbackRequest.prototype =
 	 */
 	getCallbackParameter : function()
 	{
-		return this.options['params'];
+		return this.ActiveControl['CallbackParameter'];
 	},
 
 	/**
@@ -1718,7 +1733,7 @@ Prado.CallbackRequest.prototype =
 	 */
 	setRequestTimeOut : function(timeout)
 	{
-		this.options['RequestTimeOut'] = timeout;
+		this.ActiveControl['RequestTimeOut'] = timeout;
 	},
 
 	/**
@@ -1726,7 +1741,7 @@ Prado.CallbackRequest.prototype =
 	 */
 	getRequestTimeOut : function()
 	{
-		return this.options['RequestTimeOut'];
+		return this.ActiveControl['RequestTimeOut'];
 	},
 
 	/**
@@ -1735,7 +1750,7 @@ Prado.CallbackRequest.prototype =
 	 */
 	setCausesValidation : function(validate)
 	{
-		this.options['CausesValidation'] = validate;
+		this.ActiveControl['CausesValidation'] = validate;
 	},
 
 	/**
@@ -1743,7 +1758,7 @@ Prado.CallbackRequest.prototype =
 	 */
 	getCausesValidation : function()
 	{
-		return this.options['CausesValidation'];
+		return this.ActiveControl['CausesValidation'];
 	},
 
 	/**
@@ -1752,7 +1767,7 @@ Prado.CallbackRequest.prototype =
 	 */
 	setValidationGroup : function(group)
 	{
-		this.options['ValidationGroup'] = group;
+		this.ActiveControl['ValidationGroup'] = group;
 	},
 
 	/**
@@ -1760,7 +1775,7 @@ Prado.CallbackRequest.prototype =
 	 */
 	getValidationGroup : function()
 	{
-		return this.options['ValidationGroup'];
+		return this.ActiveControl['ValidationGroup'];
 	},
 
 	/**
@@ -1773,27 +1788,20 @@ Prado.CallbackRequest.prototype =
 		if(typeof tinyMCE != "undefined")
 			tinyMCE.triggerSave();
 
-		//override parameter and postBody options.
-		Object.extend(this.options,
+		if(this.ActiveControl.CausesValidation && typeof(Prado.Validation) != "undefined")
 		{
-//			postBody : this._getPostData(),
-			parameters : ''
-		});
-
-		if(this.options.CausesValidation && typeof(Prado.Validation) != "undefined")
-		{
-			var form =  this.options.Form || Prado.Validation.getForm();
-			if(Prado.Validation.validate(form,this.options.ValidationGroup,this) == false)
+			var form =  this.ActiveControl.Form || Prado.Validation.getForm();
+			if(Prado.Validation.validate(form,this.ActiveControl.ValidationGroup,this) == false)
 				return false;
 		}
 
-		if(this.options.onPreDispatch)
-			this.options.onPreDispatch(this,null);
+		if(this.ActiveControl.onPreDispatch)
+			this.ActiveControl.onPreDispatch(this,null);
 
 		if(!this.Enabled)
 			return;
 
-		if(this.options.HasPriority)
+		if(this.ActiveControl.HasPriority)
 		{
 			return Prado.CallbackRequest.enqueue(this);
 			//return Prado.CallbackRequest.dispatchPriorityRequest(this);
@@ -1816,7 +1824,7 @@ Prado.CallbackRequest.prototype =
 	{
 		var data = {};
 		var callback = Prado.CallbackRequest;
-		if(this.options.PostInputs != false)
+		if(this.ActiveControl.PostInputs != false)
 		{
 			callback.PostDataLoaders.each(function(name)
 			{
@@ -1832,19 +1840,19 @@ Prado.CallbackRequest.prototype =
 				})
 			})
 		}
-		if(typeof(this.options.params) != "undefined")
-			data[callback.FIELD_CALLBACK_PARAMETER] = callback.encode(this.options.params);
+		if(typeof(this.ActiveControl.CallbackParameter) != "undefined")
+			data[callback.FIELD_CALLBACK_PARAMETER] = callback.encode(this.ActiveControl.CallbackParameter);
 		var pageState = $F(callback.FIELD_CALLBACK_PAGESTATE);
 		if(typeof(pageState) != "undefined")
 			data[callback.FIELD_CALLBACK_PAGESTATE] = pageState;
 		data[callback.FIELD_CALLBACK_TARGET] = this.id;
-		if(this.options.EventTarget)
-			data[callback.FIELD_POSTBACK_TARGET] = this.options.EventTarget;
-		if(this.options.EventParameter)
-			data[callback.FIELD_POSTBACK_PARAMETER] = this.options.EventParameter;
+		if(this.ActiveControl.EventTarget)
+			data[callback.FIELD_POSTBACK_TARGET] = this.ActiveControl.EventTarget;
+		if(this.ActiveControl.EventParameter)
+			data[callback.FIELD_POSTBACK_PARAMETER] = this.ActiveControl.EventParameter;
 		return $H(data).toQueryString();
 	}
-}
+});
 
 /**
  * Create a new callback request using default settings.
@@ -1858,7 +1866,7 @@ Prado.Callback = function(UniqueID, parameter, onSuccess, options)
 {
 	var callback =
 	{
-		'params' : parameter || '',
+		'CallbackParameter' : parameter || '',
 		'onSuccess' : onSuccess || Prototype.emptyFunction
 	};
 
@@ -2295,8 +2303,8 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 		request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.setCausesValidation(false);
 		request.setCallbackParameter(options);
-		request.options.onSuccess = this.onloadExternalTextSuccess.bind(this);
-		request.options.onFailure = this.onloadExternalTextFailure.bind(this);
+		request.ActiveControl.onSuccess = this.onloadExternalTextSuccess.bind(this);
+		request.ActiveControl.onFailure = this.onloadExternalTextFailure.bind(this);
 		request.dispatch();
 	},
 
@@ -2387,8 +2395,8 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 	{
 		request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.setCallbackParameter(text);
-		request.options.onSuccess = this.onTextChangedSuccess.bind(this);
-		request.options.onFailure = this.onTextChangedFailure.bind(this);
+		request.ActiveControl.onSuccess = this.onTextChangedSuccess.bind(this);
+		request.ActiveControl.onFailure = this.onTextChangedFailure.bind(this);
 		if(request.dispatch())
 		{
 			this.isSaving = true;
