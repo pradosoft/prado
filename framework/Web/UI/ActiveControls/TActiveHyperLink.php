@@ -81,7 +81,10 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 	{
 		parent::setNavigateUrl($value);
 		if($this->getActiveControl()->canUpdateClientSide())
-			$this->getPage()->getCallbackClient()->setAttribute($this, 'href', $value);
+		{
+			$url = str_replace('&amp;', '&', $value); //for placing url, we need to strip out the &amp;
+			$this->getPage()->getCallbackClient()->setAttribute($this, 'href', $url);
+		}
 	}
 
 	/**
