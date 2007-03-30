@@ -2344,6 +2344,7 @@ tests/FunctionalTests/quickstart/Fundamentals/HangmanTestCase.php -text
 tests/FunctionalTests/tickets.php -text
 tests/FunctionalTests/tickets/index.php -text
 tests/FunctionalTests/tickets/protected/messages/en/messages.xml -text
+tests/FunctionalTests/tickets/protected/pages/DActiveDropDownList2.php -text
 tests/FunctionalTests/tickets/protected/pages/Layout.php -text
 tests/FunctionalTests/tickets/protected/pages/Layout.tpl -text
 tests/FunctionalTests/tickets/protected/pages/TestHtmlArea.php -text
@@ -2397,6 +2398,8 @@ tests/FunctionalTests/tickets/protected/pages/Ticket477.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket477.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket484.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket484.php -text
+tests/FunctionalTests/tickets/protected/pages/Ticket500.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket500.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket504.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket504.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket507.page -text
@@ -2407,6 +2410,8 @@ tests/FunctionalTests/tickets/protected/pages/Ticket521.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket521.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket526.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket526.php -text
+tests/FunctionalTests/tickets/protected/pages/Ticket528.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket528.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket538.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket538.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket54.page -text
@@ -2446,6 +2451,7 @@ tests/FunctionalTests/tickets/tests/Ticket504TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket507TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket521TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket526TestCase.php -text
+tests/FunctionalTests/tickets/tests/Ticket528TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket538TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket54TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket573TestCase.php -text

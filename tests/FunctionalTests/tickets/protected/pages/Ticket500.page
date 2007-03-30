@@ -1,0 +1,7 @@
+<com:TContent ID="Content">
+
+<com:TActiveHyperLink ID="link1" Text="link 1"/>
+
+<com:TActiveButton ID="button1" Text="set url" onclick="set_url"/>
+
+</com:TContent>

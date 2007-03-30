@@ -1,0 +1,13 @@
+<com:TContent ID="Content">
+
+<com:TLabel ForControl="DDropTurno" Text="Turno:"/>
+<com:Application.pages.DActiveDropDownList2 
+	ID="DDropTurno" onSelectedIndexChanged="trocaTurno" opcoes='turnos' />
+
+<com:TLabel Text="Código:" ForControl="Codigo"/>
+<com:TActiveTextBox ID="Codigo" MaxLength="1" Columns="2" />
+
+<com:TLabel Text="Descrição:" ForControl="Descricao"/>
+<com:TActiveTextBox ID="Descricao" MaxLength="25" Columns="25" />
+
+</com:TContent>
