@@ -10,8 +10,10 @@ BUG: Ticket#553 - I18N quickstart sample does not work (Qiang)
 BUG: Ticket#555 - TNumberFormat throws exception (Qiang)
 BUG: Ticket#560 - TActiveImageButton broken (Postback instead of Callback) (Wei)
 BUG: Ticket#573 - NumberFormat Bug (Wei)
+BUG: Ticket#579 - The rating list lost its Javascript in changeset [1775] (Wei).
 BUG: TXmlElement did not encode attribute and text values when being saved as a string (Qiang)
 BUG: SelectedIndices not return expected result for ActiveListBox (Wei)
+ENH: Ticket#367 - Change default extension for XLIFF files (Wei, changed to support .xlf extension).
 ENH: Ticket#430 - clearing the validator errors (Wei)
 ENH: Ticket#436 - update script.aculo.us to 1.6.4 (Wei, updated to v 1.7.1beta)
 ENH: Ticket#482 - ADD TinyMCE 2.0.8 (Wei, TinyMCE 2.1 added)

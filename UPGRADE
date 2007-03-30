@@ -27,6 +27,9 @@ Upgrading from v3.1a
         const TABLE='users_table';
     }
 
+- Changed TActiveRatingList's javascript control class 
+  name from "Prado.WebUI.TRatingList" to "Prado.WebUI.TActiveRatingList".
+
 Upgrading from v3.0.x
 ---------------------
 - Validators ClientSide.OnSuccess becomes ClientSide.OnValidationSuccess, 

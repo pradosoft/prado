@@ -150,7 +150,13 @@ class MessageSource_XLIFF extends MessageSource
 
 		$byDir = $this->getCatalogueByDir($catalogue);
 		$catalogues = array_merge($byDir,array_reverse($catalogues));
-		return $catalogues;
+		$files = array();
+		foreach($catalogues as $file)
+		{
+			$files[] = $file;
+			$files[] = preg_replace('/\.xml$/', '.xlf', $file);
+		}
+		return $files;
 	}
 
 	/**

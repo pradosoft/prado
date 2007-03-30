@@ -1,0 +1,43 @@
+.TActiveRatingList_default
+{
+	border-collapse: collapse;
+}
+.TActiveRatingList_default input, .TActiveRatingList_default label
+{
+	display: none;
+}
+
+.TActiveRatingList_default td
+{
+	width: 18px;
+	height: 18px;
+	padding: 0;
+}
+
+.TActiveRatingList_default td.rating
+{
+	background-image: url(default_combined.gif);
+	background-repeat: no-repeat;
+	cursor: pointer;
+	background-position: 0px 0px;
+}
+
+.TActiveRatingList_default td.rating_selected
+{
+	background-position: 0px -100px;
+}
+
+.TActiveRatingList_default td.rating_half
+{
+	background-position: 0px -200px;
+}
+
+.TActiveRatingList_default td.rating_hover
+{
+	background-position: 0px -300px;
+}
+
+.TActiveRatingList_default td.rating_disabled
+{
+	cursor: default !important;
+}
