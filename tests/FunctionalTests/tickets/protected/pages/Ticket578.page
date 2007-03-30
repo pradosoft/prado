@@ -1,0 +1,11 @@
+<com:TContent ID="Content">
+<h2 class="defect">ActiveControls broken by presence of THtmlArea in the .page</h2>
+
+	<com:TActiveButton ID="button1" Text="Button 1"
+		OnClick="button2_onclick"/>
+
+	<com:TActiveLabel ID="label1" Text="Label 1" />
+
+	<com:THtmlArea ID="text1" />
+
+</com:TContent>
