@@ -132,6 +132,26 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 		if($multiple)
 			$this->getPage()->registerPostDataLoader($multi_id);
 	}
+
+	/**
+	 * Override parent implementation, no javascript is rendered here instead
+	 * the javascript required for active control is registered in {@link addAttributesToRender}.
+	 */
+	protected function renderClientControlScript($writer)
+	{
+	}
+
+	/**
+	 * Ensure that the ID attribute is rendered and registers the javascript code
+	 * for initializing the active control.
+	 */
+	protected function addAttributesToRender($writer)
+	{
+		parent::addAttributesToRender($writer);
+		$writer->addAttribute('id',$this->getClientID());
+		$this->getActiveControl()->registerCallbackClientScript(
+			$this->getClientClassName(), $this->getPostBackOptions());
+	}
 }
 
 ?>

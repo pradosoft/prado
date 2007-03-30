@@ -1,0 +1,29 @@
+<com:TContent ID="Content">
+
+    <com:TActiveListBox ID="list1" 
+		Enabled="false"
+		OnCallback="list1_callback">
+		<com:TListItem Value="value 1" Text="item 1" /> 
+		<com:TListItem Value="value 2" Text="item 2" /> 
+		<com:TListItem Value="value 3" Text="item 3" /> 
+		<com:TListItem Value="value 4" Text="item 4" /> 
+		<com:TListItem Value="value 5" Text="item 5" /> 
+	</com:TActiveListBox>
+
+	<com:TActiveLabel ID="label1" Text="Label 1" /> 
+
+	<com:TActiveButton Text="Enable it" id="button1" onClick="enable_list" />
+
+<div>
+<pre>
+	SelectionMode="Multiple"
+	--&gt; this doesn't work Enabled="false" 
+	--&gt; enable selection in code but
+	--&gt; getSelectedValues returns Null 
+	--&gt; enabled and disbaled dynamically doesn't solved the 
+	--&gt; problem either.
+</pre>
+</div>
+
+</com:TContent>
+

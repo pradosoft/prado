@@ -172,8 +172,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		if($control instanceof TDatePicker)
 			$options['DateFormat'] = $control->getDateFormat();
 
-		if(!is_null($this->_clientSide))
-			$options = array_merge($options,$this->_clientSide->getOptions()->toArray());
+		$options = array_merge($options,$this->getClientSide()->getOptions()->toArray());
 
 		return $options;
 	}
@@ -242,7 +241,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			$scripts->registerPradoScript('validator');
 			$scripts->registerEndScript($scriptKey, "new Prado.ValidationManager({$options});");
 		}
-		if($this->getEnableClientScript())
+		if($this->getEnableClientScript() & $this->getEnabled(true))
 			$this->registerClientScriptValidator();
 		$this->updateControlCssClass();
 	}
@@ -272,9 +271,9 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	protected function registerClientScriptValidator()
 	{
-		if($this->getEnabled(true))
+		$key = 'prado:'.$this->getClientID();
+		if(!$this->getPage()->getClientScript()->isEndScriptRegistered($key))
 		{
-			$key = 'prado:'.$this->getClientID();
 			$options = TJavaScript::encode($this->getClientScriptOptions());
 			$script = 'new '.$this->getClientClassName().'('.$options.');';
 			$this->getPage()->getClientScript()->registerEndScript($key, $script);

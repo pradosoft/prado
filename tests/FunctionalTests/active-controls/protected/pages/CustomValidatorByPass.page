@@ -5,8 +5,9 @@
 <a id="showLogin" href="#" onclick="new Effect.Appear('loginBox')">Login</a>
 <div id="loginBox" style="display: none;">
 
+	<div style="height:1em">
 	<div id="loginLoader" style="display: none;">Please Wait...</div>
-
+	</div>
 	<span>Username:</span><br />
 	<com:TActiveTextBox ID="Username" />
 	<com:TRequiredFieldValidator 

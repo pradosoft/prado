@@ -270,7 +270,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	/**
 	 * @return array list of callback options.
 	 */
-	protected function getAutoCompleteOptions()
+	protected function getPostBackOptions()
 	{
 		$this->getActiveControl()->getClientSide()->setEnablePageStateUpdate(false);
 		$options = array();
@@ -282,7 +282,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 		}
 		if($this->getAutoPostBack())
 		{
-			$options = array_merge($options,$this->getPostBackOptions());
+			$options = array_merge($options,parent::getPostBackOptions());
 			$options['AutoPostBack'] = true;
 		}
 		$options['ResultPanel'] = $this->getResultPanel()->getClientID();
@@ -297,19 +297,6 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	 */
 	protected function renderClientControlScript($writer)
 	{
-	}
-
-	/**
-	 * Ensure that the ID attribute is rendered and registers the javascript code
-	 * for initializing the active control.
-	 */
-
-	public function addAttributesToRender($writer)
-	{
-		parent::addAttributesToRender($writer);
-		$writer->addAttribute('id',$this->getClientID());
-		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getAutoCompleteOptions());
 	}
 
 	/**

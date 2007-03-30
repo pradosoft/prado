@@ -111,10 +111,24 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 	}
 
 	/**
-	 * Registers the javascript code for initializing the active control.
+	 * Override parent implementation, no javascript is rendered here instead
+	 * the javascript required for active control is registered in {@link addAttributesToRender}.
 	 */
 	protected function renderClientControlScript($writer)
 	{
+	}
+
+	/**
+	 * Ensure that the ID attribute is rendered and registers the javascript code
+	 * for initializing the active control.
+	 * @param THtmlWriter the writer for the rendering purpose
+	 * @param string checkbox id
+	 * @param string onclick js
+	 */
+	protected function renderInputTag($writer,$clientID,$onclick)
+	{
+		parent::renderInputTag($writer,$clientID,$onclick);
+		$writer->addAttribute('id',$this->getClientID());
 		$this->getActiveControl()->registerCallbackClientScript(
 			$this->getClientClassName(), $this->getPostBackOptions());
 	}

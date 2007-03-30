@@ -65,20 +65,11 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 	}
 
 	/**
-	 * @return string javascript client-side control class name.
-	 */
-	protected function getClientClassName()
-	{
-		return 'Prado.WebUI.TActiveCheckBoxList';
-	}
-
-	/**
-	 * Registers the javascript code for initializing the active control.
+	 * Override parent implementation, no javascript is rendered here instead
+	 * the javascript required for active control is registered in {@link addAttributesToRender}.
 	 */
 	protected function renderClientControlScript($writer)
 	{
-		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());
 	}
 
 	/**

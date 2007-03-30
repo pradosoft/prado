@@ -93,16 +93,6 @@ class TActiveTextBox extends TTextBox implements ICallbackEventHandler, IActiveC
 	}
 
 	/**
-	 * Renders the javascript for textbox.
-	 */
-	protected function renderClientControlScript($writer)
-	{
-		$writer->addAttribute('id',$this->getClientID());
-		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());
-	}
-
-	/**
 	 * Gets the name of the javascript class responsible for performing postback for this control.
 	 * This method overrides the parent implementation.
 	 * @return string the javascript class name
@@ -110,6 +100,26 @@ class TActiveTextBox extends TTextBox implements ICallbackEventHandler, IActiveC
 	protected function getClientClassName()
 	{
 		return 'Prado.WebUI.TActiveTextBox';
+	}
+
+	/**
+	 * Override parent implementation, no javascript is rendered here instead
+	 * the javascript required for active control is registered in {@link addAttributesToRender}.
+	 */
+	protected function renderClientControlScript($writer)
+	{
+	}
+
+	/**
+	 * Ensure that the ID attribute is rendered and registers the javascript code
+	 * for initializing the active control.
+	 */
+	protected function addAttributesToRender($writer)
+	{
+		parent::addAttributesToRender($writer);
+		$writer->addAttribute('id',$this->getClientID());
+		$this->getActiveControl()->registerCallbackClientScript(
+			$this->getClientClassName(), $this->getPostBackOptions());
 	}
 }
 

@@ -128,7 +128,7 @@ class TActiveCustomValidator extends TCustomValidator
 	 * Sets the text for the error message. Updates client-side erorr message.
 	 * @param string the error message
 	 */
-		public function setErrorMessage($value)
+	public function setErrorMessage($value)
 	{
 		parent::setErrorMessage($value);
 		if($this->getActiveControl()->canUpdateClientSide())
@@ -139,13 +139,14 @@ class TActiveCustomValidator extends TCustomValidator
 		}
 	}
 
-	/**
-	 * Register the javascript for the active custom validator.
+		/**
+	 * Ensure that the ID attribute is rendered and registers the javascript code
+	 * for initializing the active control.
 	 */
-	protected function registerClientScriptValidator()
+	protected function addAttributesToRender($writer)
 	{
-		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getClientScriptOptions());
+		parent::addAttributesToRender($writer);
+		TBaseValidator::registerClientScriptValidator();
 	}
 
 	/**

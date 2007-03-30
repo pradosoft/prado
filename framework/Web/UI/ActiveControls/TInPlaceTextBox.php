@@ -150,21 +150,6 @@ class TInPlaceTextBox extends TActiveTextBox
 	}
 
 	/**
-	 * Adds attributes to renderer.
-	 * @param THtmlWriter the renderer
-	 * @throws TInvalidDataValueException if associated control cannot be found using the ID
-	 */
-	protected function addAttributesToRender($writer)
-	{
-		TWebControl::addAttributesToRender($writer);
-		$page=$this->getPage();
-		$page->ensureRenderInForm($this);
-		$writer->addAttribute('id', $this->getLabelClientID());
-		if(!$this->getReadOnly())
-			$this->renderClientControlScript($writer);
-	}
-
-	/**
 	 * Renders the body content of the label.
 	 * @param THtmlWriter the writer for rendering
 	 */
@@ -238,15 +223,6 @@ class TInPlaceTextBox extends TActiveTextBox
 	public function onLoadingText($param)
 	{
 		$this->raiseEvent('OnLoadingText',$this,$param);
-	}
-
-	/**
-	 * Registers the javascript code for initializing the active control.
-	 */
-	protected function renderClientControlScript($writer)
-	{
-		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());
 	}
 
 	/**
