@@ -1,0 +1,16 @@
+<com:TContent ID="Content">		
+			<com:TActivePanel ID="TheBox" Attributes.style="width: 600px; border: solid 1px #000000; position: relative; padding: 5px;">
+			<div>
+				Some content
+				Test
+				123
+				456
+			</div>
+			</com:TActivePanel>
+			
+			<com:TActiveButton OnCallback="blindDown" Text="Blind Down" />
+			<com:TActiveButton OnCallback="blindUp" Text="Blind Up" />
+			<com:TActiveButton OnCallback="slideDown" Text="Slide Down" />
+			<com:TActiveButton OnCallback="slideUp" Text="Slide Up" />
+		
+</com:TContent>

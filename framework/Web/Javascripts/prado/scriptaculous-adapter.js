@@ -236,12 +236,58 @@ Prado.Element =
 	{
 		var el = $(element);
 		if(!el) return;
+		var previousGroup = null;
+		var optGroup=null;
 		if(el && el.tagName.toLowerCase() == "select")
 		{
-			el.options.length = options.length;
-			for(var i = 0; i<options.length; i++)
-				el.options[i] = new Option(options[i][0],options[i][1]);
+			while(el.childNodes.length > 0)
+				el.removeChild(el.lastChild);
+
+			var optDom = Prado.Element.createOptions(options);
+			for(var i = 0; i < optDom.length; i++)
+				el.appendChild(optDom[i]);
 		}
+	},
+
+	/**
+	 * Create opt-group options from an array of options[0]=text, options[1]=value, options[2]=group
+	 */
+	createOptions : function(options)
+	{
+		var previousGroup = null;
+		var optgroup=null;
+		var result = [];
+		for(var i = 0; i<options.length; i++)
+		{
+			var option = options[i];
+			if(option.length > 2)
+			{
+				var group = option[2];
+				if(group!=previousGroup)
+				{
+					if(previousGroup!=null && optgroup!=null)
+					{
+						result.push(optgroup);
+						previousGroup=null;
+						optgroup=null;
+					}
+					optgroup = document.createElement('optgroup');
+					optgroup.label = group;
+					previousGroup = group;
+				}
+			}
+			var opt = document.createElement('option');
+			opt.text = option[0];
+			opt.innerText = option[0];
+			opt.value = option[1];
+			if(optgroup!=null)
+				optgroup.appendChild(opt);
+			else
+				result.push(opt);
+		}
+		if(optgroup!=null)
+			result.push(optgroup);
+		return result;
 	},
 
 	/**

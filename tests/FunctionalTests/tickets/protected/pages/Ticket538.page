@@ -1,0 +1,25 @@
+<com:TContent ID="Content">
+<!-- $Id: Home.page 1650 2007-01-24 06:55:32Z wei $ -->
+
+  <com:TActiveListBox ID="DataSelector" OnSelectedIndexChanged="dataSelector_Clicked" >
+    <com:TListItem Value="1" Text="select data set 1" Attributes.Group="group1" />
+    <com:TListItem Value="2" Text="select data set 2" />
+    <com:TListItem Value="3" Text="select data set 3" />
+    <com:TListItem Value="4" Text="select data set 4" />
+  </com:TActiveListBox>
+  <com:TActiveListBox
+    ID="DataViewer"
+    SelectionMode="Multiple"
+    Rows="5"
+	Style="background-color: #0cf"
+    Width="400px">
+    <com:TListItem Value="0" Text="empty :(" />
+  </com:TActiveListBox>
+  <com:TActiveButton
+    ID="selectBtn"
+    Text="view more..."
+    OnClick="selectBtn_Clicked"/>
+ <br />
+<com:TActiveLabel ID="ALLog" Text="waiting for response..." />
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
