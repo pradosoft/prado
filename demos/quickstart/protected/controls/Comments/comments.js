@@ -95,9 +95,9 @@ function show_comments(block)
 
 function show_block(block)
 {
-	while(block && block.className && block.className.indexOf("block-content") < 0)
+	while(block && block.className.indexOf("block-content") < 0)
 		block = block.parentNode;
-	if(block && block.className && block.className.indexOf("block-content") >= 0)
+	if(block && block.className.indexOf("block-content") >= 0)
 	{
 		block.addClassName('block-hover');
 		var tag = $('tag-'+block.id);
@@ -108,9 +108,9 @@ function show_block(block)
 
 function hide_block(block)
 {
-	while(block && block.className && block.className.indexOf("block-hover") < 0)
+	while(block && block.className.indexOf("block-hover") < 0)
 		block = block.parentNode;
-	if(block && block.className && block.className.indexOf("block-hover") >= 0)
+	if(block && block.className.indexOf("block-hover") >= 0)
 	{
 		block.removeClassName('block-hover');
 		var tag = $('tag-'+block.id);
@@ -173,7 +173,7 @@ function get_comment_count(id)
 
 if(!Prado.Browser.ie) //not IE 4,5,6
 {
-	(function()
+	Event.OnLoad(function()
 	{
 		var userComments = $('user-comments');
 		userComments.style.position="absolute";
@@ -203,5 +203,5 @@ if(!Prado.Browser.ie) //not IE 4,5,6
 		Event.observe($('all-comments-link'), "click", function(e) { show_all_comments();	Event.stop(e); });
 		Event.observe($('close-comments'), "click", function(e) { hide_add_comment(); Event.stop(e); });
 
-	})();
+	});
 }
