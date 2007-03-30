@@ -1978,6 +1978,7 @@ Prado.WebUI.TAutoComplete = Class.extend(Prado.WebUI.TAutoComplete,
 	initialize : function(options)
 	{
 		this.options = options;
+		this.hasResults = false;
 		this.baseInitialize(options.ID, options.ResultPanel, options);
 		Object.extend(this.options,
 		{
@@ -2014,12 +2015,38 @@ Prado.WebUI.TAutoComplete = Class.extend(Prado.WebUI.TAutoComplete,
 		Prado.Callback(this.options.EventTarget, options, null, this.options);
 	},
 
-  	onComplete : function(request, boundary)
+	/**
+	 * Overrides parent implements, don't update if no results.
+	 */
+	selectEntry: function()
+	{
+		if(this.hasResults)
+		{
+			this.active = false;
+			this.updateElement(this.getCurrentEntry());
+		}
+	},
+
+	onComplete : function(request, boundary)
   	{
   		var result = Prado.Element.extractContent(request.transport.responseText, boundary);
-  		if(typeof(result) == "string" && result.length > 0)
-			this.updateChoices(result);
-	}
+  		if(typeof(result) == "string")
+		{
+			if(result.length > 0)
+			{
+				this.hasResults = true;
+				this.updateChoices(result);
+			}
+			else
+			{
+				this.active = false;
+				this.hasResults = false;
+				this.hide();
+			}
+		}
+	},
+
+
 });
 
 /**
