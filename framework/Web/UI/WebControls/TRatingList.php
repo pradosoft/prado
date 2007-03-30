@@ -118,7 +118,7 @@ class TRatingList extends TRadioButtonList
 	protected function publishRatingListStyle($style)
 	{
 		$cs = $this->getPage()->getClientScript();
-		$stylesheet = 'System.Web.Javascripts.ratings.'.$style;
+		$stylesheet = 'System.Web.Javascripts.prado.ratings.'.$style;
 		if(($cssFile=Prado::getPathOfNamespace($stylesheet,'.css'))===null)
 			throw new TConfigurationException('ratinglist_stylesheet_not_found',$style);
 		$url = $this->publishFilePath($cssFile);
@@ -129,10 +129,10 @@ class TRatingList extends TRadioButtonList
 
 	protected function publishRatingListImages($style, $fileExt='.gif')
 	{
-		$images['blank'] = "System.Web.Javascripts.ratings.{$style}_blank";
-		$images['hover'] = "System.Web.Javascripts.ratings.{$style}_hover";
-		$images['selected'] = "System.Web.Javascripts.ratings.{$style}_selected";
-		$images['half'] = "System.Web.Javascripts.ratings.{$style}_half";
+		$images['blank'] = "System.Web.Javascripts.prado.ratings.{$style}_blank";
+		$images['hover'] = "System.Web.Javascripts.prado.ratings.{$style}_hover";
+		$images['selected'] = "System.Web.Javascripts.prado.ratings.{$style}_selected";
+		$images['half'] = "System.Web.Javascripts.prado.ratings.{$style}_half";
 		$files = array();
 		foreach($images as $type => $image)
 		{

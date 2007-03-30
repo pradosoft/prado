@@ -46,7 +46,8 @@ $libraries = array(
 		'scriptaculous/builder.js',
 		'prado/prado.js',
 		'prado/scriptaculous-adapter.js',
-		'prado/controls/controls.js'
+		'prado/controls/controls.js',
+		'prado/ratings/ratings.js',
 	),
 
 	'effects.js' => array(
