@@ -25,24 +25,28 @@
 		
 <com:TActiveLinkButton 
 	Text="Tab A"
+	ID="linka"
 	OnCallback="changePanel"
 	ActiveControl.CallbackOptions="LoadDataOptions"
 	ActiveControl.CallbackParameter="panelA"
 	/> 
 <com:TActiveLinkButton
 	Text="Tab B"
+	ID="linkb"
 	OnCallback="changePanel"
 	ActiveControl.CallbackOptions="LoadDataOptions"
 	ActiveControl.CallbackParameter="panelB"
 	/> 
 <com:TActiveLinkButton
 	Text="Tab C"
+	ID="linkc"
 	OnCallback="changePanel"
 	ActiveControl.CallbackOptions="LoadDataOptions"
 	ActiveControl.CallbackParameter="panelC"
 	/> 
 <com:TActiveLinkButton
 	Text="Tab D"
+	ID="linkd"
 	OnCallback="changePanel"
 	ActiveControl.CallbackOptions="LoadDataOptions"
 	ActiveControl.CallbackParameter="panelD"

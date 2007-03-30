@@ -1,0 +1,8 @@
+<com:TContent ID="Content">
+<com:TActivePanel ID="activePanel">
+	<com:TDatePicker ID="dp"/>
+	<com:TActiveTextbox ID="textbox" Text="text" />
+	<com:TActiveButton ID="btn" Text="Btn" OnCallback="callback"/>
+</com:TActivePanel>
+
+</com:TContent>

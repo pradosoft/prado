@@ -378,12 +378,16 @@ class TDatePicker extends TTextBox
 	 */
 	protected function renderDatePickerButtons($writer)
 	{
-		if($this->getShowCalendar() && $this->getEnabled(true))
+		if($this->getShowCalendar())
 		{
 			switch ($this->getMode())
 			{
-				case TDatePickerMode::Button: $this->renderButtonDatePicker($writer); break;
-				case TDatePickerMode::ImageButton : $this->renderImageButtonDatePicker($writer); break;
+				case TDatePickerMode::Button:
+					$this->renderButtonDatePicker($writer);
+					break;
+				case TDatePickerMode::ImageButton :
+					$this->renderImageButtonDatePicker($writer);
+					break;
 			}
 		}
 	}
@@ -718,6 +722,8 @@ class TDatePicker extends TTextBox
 		$writer->addAttribute('type', 'button');
 		$writer->addAttribute('class', $this->getCssClass().' TDatePickerButton');
 		$writer->addAttribute('value',$this->getButtonText());
+		if(!$this->getEnabled(true))
+			$writer->addAttribute('disabled', 'disabled');
 		$writer->renderBeginTag("input");
 		$writer->renderEndTag();
 	}
@@ -734,6 +740,8 @@ class TDatePicker extends TTextBox
 		$writer->addAttribute('src', $url);
 		$writer->addAttribute('alt', ' ');
 		$writer->addAttribute('class', $this->getCssClass().' TDatePickerImageButton');
+		if(!$this->getEnabled(true))
+			$writer->addAttribute('disabled', 'disabled');
 		$writer->renderBeginTag('img');
 		$writer->renderEndTag();
 	}
