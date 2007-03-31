@@ -14,6 +14,7 @@ BUG: Ticket#553 - I18N quickstart sample does not work (Qiang)
 BUG: Ticket#555 - TNumberFormat throws exception (Qiang)
 BUG: Ticket#557 - TAutoComplete is not fool-proof (Wei)
 BUG: Ticket#560 - TActiveImageButton broken (Postback instead of Callback) (Wei)
+BUG: Ticket#566 - <%[ tags (localize tags) missing escaping (Qiang)
 BUG: Ticket#573 - NumberFormat Bug (Wei)
 BUG: Ticket#579 - The rating list lost its Javascript in changeset [1775] (Wei).
 BUG: TXmlElement did not encode attribute and text values when being saved as a string (Qiang)
