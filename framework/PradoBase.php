@@ -103,7 +103,14 @@ class PradoBase
 	 */
 	public static function poweredByPrado()
 	{
-		return '<a title="Powered by PRADO" href="http://www.pradosoft.com/" target="_blank"><img src="http://www.pradosoft.com/images/powered.gif" style="border-width:0px;" alt="Powered by PRADO" /></a>';
+		if(self::$_application!==null)
+		{
+			$am=self::$_application->getAssetManager();
+			$url=$am->publishFilePath(self::getPathOfNamespace('System.powered','.gif'));
+		}
+		else
+			$url='http://www.pradosoft.com/images/powered.gif';
+		return '<a title="Powered by PRADO" href="http://www.pradosoft.com/" target="_blank"><img src="'.$url.'" style="border-width:0px;" alt="Powered by PRADO" /></a>';
 	}
 
 	/**

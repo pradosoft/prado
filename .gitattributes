@@ -2152,6 +2152,7 @@ framework/Xml/TFeedDocument.php -text
 framework/Xml/TRssFeedDocument.php -text
 framework/Xml/TXmlDocument.php -text
 framework/interfaces.php -text
+framework/powered.gif -text
 framework/prado.php -text
 /index.html -text
 /phing -text

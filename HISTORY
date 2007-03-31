@@ -26,6 +26,7 @@ ENH: Ticket#503 - Localization and parameter tags can now appear as a substring 
 ENH: Ticket#513 - Display last modified / revision in quickstart (Wei)
 ENH: Ticket#519 - Update TActiveRecord implementation (Wei)
 ENH: Ticket#537 - TActiveRecord Pk info ENH [usage: http://trac.pradosoft.com/prado/ticket/537] (Wei)
+ENH: Ticket#561 - Powered by PRADO image to become an asset (Qiang)
 ENH: Ticket#569 - Added TTextBox.PersistPassword property (Qiang)
 ENH: Added PRADO_CHMOD constant so that users can specify the permission of PRADO-created directories (Qiang)
 ENH: Added Display property to TWebControl (Wei)
