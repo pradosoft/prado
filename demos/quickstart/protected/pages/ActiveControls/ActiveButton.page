@@ -69,7 +69,7 @@ when the client-side is making a callback request.
 </p>
 
 <com:TTextHighlighter Language="prado" CssClass="source block-content" id="code3">
-&lt;com:TClientSide PradoScripts="effects" /&gt;
+&lt;com:TClientScript PradoScripts="effects" /&gt;
 <span id="callback_status">Loading...</span>
 
 &lt;com:TActiveButton
