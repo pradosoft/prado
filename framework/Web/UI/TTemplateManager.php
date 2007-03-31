@@ -620,7 +620,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 						$tpl[$c++]=array($container,array(TCompositeLiteral::TYPE_EXPRESSION,"\$this->publishFilePath('$this->_contextPath/$literal')"));
 					else if($str[2]==='[')
 					{
-						$literal=trim(substr($literal,0,strlen($literal)-1));
+						$literal=strtr(trim(substr($literal,0,strlen($literal)-1)),array("'"=>"\'","\\"=>"\\\\"));
 						$tpl[$c++]=array($container,array(TCompositeLiteral::TYPE_EXPRESSION,"Prado::localize('$literal')"));
 					}
 				}
