@@ -272,7 +272,7 @@ class TRadioButton extends TCheckBox
 		$writer->addAttribute('type','radio');
 		$writer->addAttribute('name',$this->getUniqueGroupName());
 		$writer->addAttribute('value',$this->getValueAttribute());
-		if($onclick!=='')
+		if(!empty($onclick))
 			$writer->addAttribute('onclick',$onclick);
 		if($this->getChecked())
 			$writer->addAttribute('checked','checked');

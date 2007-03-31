@@ -41,6 +41,12 @@ class ActiveDropDownList extends TPage
 		$this->list1_changed($this->list1);
 		$this->list2->setSelectedValue("value 3 - item 3");
 	}
+
+	function do_postback()
+	{
+		$value = 'List 1: '.$this->list1->selectedValue. ', List 2: '. $this->list2->selectedValue;
+		$this->label1->Text = $value;
+	}
 }
 
 ?>
