@@ -750,7 +750,7 @@ class TJSON
 	protected function utf16be_to_utf8(&$str)
 	{
 		$uni = unpack('n*',$str);
-		return unicode_to_utf8($uni);
+		return $this->unicode_to_utf8($uni);
 	}
 
 }
