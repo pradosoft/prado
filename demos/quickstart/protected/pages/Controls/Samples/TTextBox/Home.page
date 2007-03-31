@@ -96,7 +96,23 @@ Safety feature (cross-site scripting prevention):
 
 <h2>Password Text Boxes</h2>
 
-Password: <com:TTextBox TextMode="Password" />
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Password with default setting
+</td>
+<td class="sampleaction">
+<com:TTextBox TextMode="Password" /> <com:TButton ID="PassButton1" Text="submit" />
+</td></tr>
+
+<tr><td class="samplenote">
+Password with PersistPasswor set true
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="Password2" TextMode="Password" PersistPassword="true" /> 
+<com:TButton ID="PassButton2" Text="submit" />
+</td></tr>
+</table>
 
 
 <h2>MultiLine Text Boxes</h2>

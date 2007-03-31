@@ -142,6 +142,8 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 			}
 			else
 			{
+				if($this->getPersistPassword() && ($text=$this->getText())!=='')
+					$writer->addAttribute('value',$text);
 				$writer->addAttribute('type','password');
 			}
 			if(($cols=$this->getColumns())>0)
@@ -403,6 +405,22 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	public function setRows($value)
 	{
 		$this->setViewState('Rows',TPropertyValue::ensureInteger($value),self::DEFAULT_ROWS);
+	}
+
+	/**
+	 * @return boolean whether password should be displayed in the textbox during postback. Defaults to false. This property only applies when TextMode='Password'.
+	 */
+	public function getPersistPassword()
+	{
+		return $this->getViewState('PersistPassword',false);
+	}
+
+	/**
+	 * @param boolean whether password should be displayed in the textbox during postback. This property only applies when TextMode='Password'.
+	 */
+	public function setPersistPassword($value)
+	{
+		$this->setViewState('PersistPassword',TPropertyValue::ensureBoolean($value),false);
 	}
 
 	/**
