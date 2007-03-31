@@ -157,6 +157,10 @@ class TPage extends TTemplateControl
 	 * @var boolean true if loading post data.
 	 */
 	private $_isLoadingPostData=false;
+	/**
+	 * @var boolean whether client supports javascript
+	 */
+	private $_enableJavaScript=true;
 
 	/**
 	 * Constructor.
@@ -953,14 +957,19 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return boolean whether client supports javascript. Currently, this
-	 * method always returns true. If future, we may add some browser capability
-	 * detection functionality.
+	 * @return boolean whether client supports javascript. Defaults to true.
 	 */
 	public function getClientSupportsJavaScript()
 	{
-		// todo
-		return true;
+		return $this->_enableJavaScript;
+	}
+
+	/**
+	 * @param boolean whether client supports javascript. If false, javascript will not be generated for controls.
+	 */
+	public function setClientSupportsJavaScript($value)
+	{
+		$this->_enableJavaScript=TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
