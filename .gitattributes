@@ -1508,6 +1508,7 @@ framework/Configuration/Provider/TProviderException.php -text
 framework/Configuration/TProtectedConfiguration.php -text
 framework/Data/ActiveRecord/Exceptions/TActiveRecordException.php -text
 framework/Data/ActiveRecord/Exceptions/messages.txt -text
+framework/Data/ActiveRecord/Scaffold/InputBuilder/TIbmScaffoldInput.php -text
 framework/Data/ActiveRecord/Scaffold/InputBuilder/TMysqlScaffoldInput.php -text
 framework/Data/ActiveRecord/Scaffold/InputBuilder/TPgsqlScaffoldInput.php -text
 framework/Data/ActiveRecord/Scaffold/InputBuilder/TScaffoldInputBase.php -text

@@ -45,7 +45,7 @@ class TIbmColumnMetaData extends TComponent
 	 */
 	public function __construct($name,$type,$length,$notNull,$autoIncrement,$default,$primary)
 	{
-		$this->_property = $name;
+		$this->_property=$name;
 		$this->_name=$name;
 		$this->_type=$type;
 		$this->_length=$length;
@@ -61,6 +61,14 @@ class TIbmColumnMetaData extends TComponent
 	public function getName()
 	{
 		return $this->_name;
+	}
+
+	/**
+	 * @return integer length.
+	 */
+	public function getLength()
+	{
+		return $this->_length;
 	}
 
 	/**

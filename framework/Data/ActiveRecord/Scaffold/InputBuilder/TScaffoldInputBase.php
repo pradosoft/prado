@@ -27,6 +27,9 @@ class TScaffoldInputBase
 			case 'pgsql':
 				require_once(dirname(__FILE__).'/TPgsqlScaffoldInput.php');
 				return new TPgsqlScaffoldInput($conn);
+			case 'ibm':
+				require_once(dirname(__FILE__).'/TIbmScaffoldInput.php');
+				return new TIbmScaffoldInput($conn);
 			default:
 				throw new TConfigurationException(
 					'scaffold_invalid_database_driver',$driver);

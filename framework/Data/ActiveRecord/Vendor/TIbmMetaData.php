@@ -76,5 +76,38 @@ class TIbmMetaData extends TDbMetaDataCommon
 			$data[$k] = $this->postQueryRow($v);
 		return $data;
 	}
+	
+	public function getSearchRegExpCriteria($fields, $keywords)
+	{
+		if(strlen(trim($keywords)) == 0) return '';
+		$words = array();
+		preg_match_all('/([a-zA-Z0-9-+]+)/', $keywords, $words);
+		$result = array();
+		foreach($fields as $field)
+		{
+			$column = $this->getColumn($field);
+			if($this->isSearchableColumn($column))
+				$result[] = $this->getLikeCriteriaStr($column->getName(), $words[0]);
+		}
+			$a = '('.implode(' OR ', $result).')';
+			error_log($a);
+		return '('.implode(' OR ', $result).')';
+	}
+
+	protected function isSearchableColumn($column)
+	{
+		$type = strtolower($column->getType());
+		return $type === 'char' || $type === 'varchar';
+	}
+
+	protected function getLikeCriteriaStr($column, $words)
+	{
+		$result=array();
+		foreach($words as $word)
+			$result[] = "{$column} LIKE '%{$word}%'";
+		return '('.implode(' AND ', $result).')';
+	}
+
+	
 }
 ?>

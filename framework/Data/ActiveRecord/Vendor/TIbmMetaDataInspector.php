@@ -78,8 +78,8 @@ class TIbmMetaDataInspector extends TDbMetaDataInspector
 		$name = strtolower($col['COLNAME']);
 		$type = $col['TYPENAME'];
 		$length = $col['LENGTH'];
-		$notNull = $col['NULLS']==='N';
-		$autoIncrement=$col['IDENTITY']==='N';
+		$notNull = $col['NULLS']==='N'?1:0;
+		$autoIncrement=$col['IDENTITY']==='Y'?1:0;
 		$default = $col['DEFAULT'];
 		$primaryKey = $col['KEYSEQ']?1:0;
 		return new TIbmColumnMetaData($name,$type,$length,$notNull,$autoIncrement,$default,$primaryKey);
