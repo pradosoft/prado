@@ -78,6 +78,8 @@ class Wsdl
 
 	private $_encoding='';
 
+	private static $_primitiveTypes = array('string', 'int', 'float', 'boolean');
+
 	/**
 	 * Creates a new Wsdl thing
 	 * @param 	string		$name the name of the service.
@@ -151,7 +153,7 @@ class Wsdl
 				$restriction->setAttribute('base', 'soap-enc:Array');
 				$attribute = $dom->createElementNS('http://www.w3.org/2001/XMLSchema', 'xsd:attribute');
 				$attribute->setAttribute('ref', "soap-enc:arrayType");
-				$attribute->setAttribute('wsdl:arrayType', 'tns:' . substr($type, 0, strlen($type) - 5) . '[]');
+				$attribute->setAttribute('wsdl:arrayType', $this->getArrayTypePrefix($type) . substr($type, 0, strlen($type) - 5) . '[]');
 				$restriction->appendChild($attribute);
 				$complexContent->appendChild($restriction);
 				$complexType->appendChild($complexContent);
@@ -173,6 +175,15 @@ class Wsdl
 		}
 
 		$this->definitions->appendChild($types);
+	}
+
+	/**
+	 * @return string prefix 'xsd:' for primitive array types, otherwise, 'tns:'
+	 */
+	protected function getArrayTypePrefix($type)
+	{
+		$elementType = substr($type, 0, strlen($type) - 5);
+		return in_array($elementType, self::$_primitiveTypes) ? 'xsd:' : 'tns:';
 	}
 
 	/**
