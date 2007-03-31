@@ -1,0 +1,6 @@
+<com:TContent ID="Content">
+
+<li><a href="index.php/en/test">English</a></li>
+<li><a href="index.php/fr/test">Français</a></li>
+
+</com:TContent>

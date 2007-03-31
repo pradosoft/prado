@@ -14,6 +14,7 @@
  * Load active text box.
  */
 Prado::using('System.Web.UI.ActiveControls.TActiveTextBox');
+Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');
 
 /**
  * TAutoComplete class.
@@ -34,14 +35,20 @@ Prado::using('System.Web.UI.ActiveControls.TActiveTextBox');
  * method. This sets the datasource for the suggestions repeater, available through
  * the {@link getSuggestions Suggestions} property. Header, footer templates and
  * other properties of the repeater can be access via the {@link getSuggestions Suggestions}
- * property (e.g. they can be set in the .page templates).
+ * property and its sub-properties.
+ *
+ * The {@link setTextCssClass TextCssClass} property if set is used to find
+ * the element within the Suggestions.ItemTemplate and Suggestions.AlternatingItemTemplate
+ * that contains the actual text for the suggestion selected. That is,
+ * only text inside elements with CSS class name equal to {@link setTextCssClass TextCssClass}
+ * will be used as suggestions.
  *
  * To return the list of suggestions back to the browser, supply a non-empty data source
  * and call databind. For example,
  * <code>
  * function autocomplete_suggestion($sender, $param)
  * {
- *   $token = $param->getCallbackParameter(); //the partial word to match
+ *   $token = $param->getToken(); //the partial word to match
  *   $sender->setDataSource($this->getSuggestionsFor($token)); //set suggestions
  *   $sender->dataBind();
  * }
@@ -49,6 +56,12 @@ Prado::using('System.Web.UI.ActiveControls.TActiveTextBox');
  *
  * The suggestion will be rendered when the {@link dataBind()} method is called
  * <strong>during a callback request</strong>.
+ *
+ * When an suggestion is selected, that is, when the use has clicked, pressed
+ * the "Enter" key, or pressed the "Tab" key, the {@link onSuggestionSelected OnSuggestionSelected}
+ * event is raised. The
+ * {@link TCallbackEventParameter::getCallbackParameter TCallbackEventParameter::CallbackParameter}
+ * property contains the index of the selected suggestion.
  *
  * TAutoComplete allows multiple suggestions within one textbox with each
  * word or phrase separated by any characters specified in the
@@ -129,6 +142,22 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	}
 
 	/**
+	 * @param string Css class name of the element to use for suggestion.
+	 */
+	public function setTextCssClass($value)
+	{
+		$this->setViewState('TextCssClass', $value);
+	}
+
+	/**
+	 * @return string Css class name of the element to use for suggestion.
+	 */
+	public function getTextCssClass()
+	{
+		return $this->getViewState('TextCssClass');
+	}
+
+	/**
 	 * Raises the callback event. This method is overrides the parent implementation.
 	 * If {@link setAutoPostBack AutoPostBack} is enabled it will raise
 	 * {@link onTextChanged OnTextChanged} event event and then the
@@ -141,17 +170,25 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
  	public function raiseCallbackEvent($param)
 	{
 		$token = $param->getCallbackParameter();
-		if(is_array($token) && count($token) == 2 && $token[1] === '__TAutoComplete_onSuggest__')
+		if(is_array($token) && count($token) == 2)
 		{
-			$parameter = new TCallbackEventParameter($this->getResponse(), $token[0]);
-			$this->onSuggest($parameter);
+			if($token[1] === '__TAutoComplete_onSuggest__')
+			{
+				$parameter = new TAutoCompleteEventParameter($this->getResponse(), $token[0]);
+				$this->onSuggest($parameter);
+			}
+			else if($token[1] === '__TAutoComplete_onSuggestionSelected__')
+			{
+				$parameter = new TAutoCompleteEventParameter($this->getResponse(), null, $token[0]);
+				$this->onSuggestionSelected($parameter);
+			}
 		}
 		else if($this->getAutoPostBack())
 			parent::raiseCallbackEvent($param);
 	}
 
 	/**
-	 * This method is invoked when a autocomplete suggestion is requested.
+	 * This method is invoked when an autocomplete suggestion is requested.
 	 * The method raises 'OnSuggest' event. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
@@ -160,6 +197,18 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	public function onSuggest($param)
 	{
 		$this->raiseEvent('OnSuggest', $this, $param);
+	}
+
+	/**
+	 * This method is invoked when an autocomplete suggestion is selected.
+	 * The method raises 'OnSuggestionSelected' event. If you override this
+	 * method, be sure to call the parent implementation so that the event
+	 * handler can be invoked.
+	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 */
+	public function onSuggestionSelected($param)
+	{
+		$this->raiseEvent('OnSuggestionSelected', $this, $param);
 	}
 
 	/**
@@ -285,6 +334,8 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 			$options = array_merge($options,parent::getPostBackOptions());
 			$options['AutoPostBack'] = true;
 		}
+		if(strlen($select = $this->getTextCssClass()))
+			$options['select'] = $select;
 		$options['ResultPanel'] = $this->getResultPanel()->getClientID();
 		$options['ID'] = $this->getClientID();
 		$options['EventTarget'] = $this->getUniqueID();
@@ -305,6 +356,48 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	protected function getClientClassName()
 	{
 		return 'Prado.WebUI.TAutoComplete';
+	}
+}
+
+/**
+ * TAutCompleteEventParameter contains the {@link getToken Token} requested by
+ * the user for a partial match of the suggestions.
+ *
+ * The {@link getSelectedIndex SelectedIndex} is a zero-based index of the
+ * suggestion selected by the user, -1 if not suggestion is selected.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Web.UI.ActiveControls
+ * @since 3.1
+ */
+class TAutoCompleteEventParameter extends TCallbackEventParameter
+{
+	private $_selectedIndex=-1;
+
+	/**
+	 * Creates a new TCallbackEventParameter.
+	 */
+	public function __construct($response, $parameter, $index=-1)
+	{
+		parent::__construct($response, $parameter);
+		$this->_selectedIndex=$index;
+	}
+
+	/**
+	 * @int selected suggestion zero-based index, -1 if not selected.
+	 */
+	public function getSelectedIndex()
+	{
+		return $this->_selectedIndex;
+	}
+
+	/**
+	 * @return string token for matching a list of suggestions.
+	 */
+	public function getToken()
+	{
+		return $this->getCallbackParameter();
 	}
 }
 

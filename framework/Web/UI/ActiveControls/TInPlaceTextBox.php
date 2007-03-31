@@ -232,5 +232,18 @@ class TInPlaceTextBox extends TActiveTextBox
 	{
 		return 'Prado.WebUI.TInPlaceTextBox';
 	}
+
+	/**
+	 * Ensure that the ID attribute is rendered and registers the javascript code
+	 * for initializing the active control.
+	 */
+	protected function addAttributesToRender($writer)
+	{
+		TTextBox::addAttributesToRender($writer);
+		$writer->addAttribute('id',$this->getLabelClientID());
+		$this->getActiveControl()->registerCallbackClientScript(
+			$this->getClientClassName(), $this->getPostBackOptions());
+	}
+
 }
 ?>

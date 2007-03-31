@@ -7,9 +7,9 @@ class AutoCompleteTest extends TPage
 {
 	public function suggestCountries($sender, $param)
 	{
-		$sender->setDataSource($this->matchCountries($param->getCallbackParameter()));
+		$sender->setDataSource($this->matchCountries($param->Token));
 		$sender->dataBind();
-		$this->label1->Text = "suggestion for ".$param->getCallbackParameter();
+		$this->label1->Text = "suggestion for ".$param->Token;
 	}
 
 	public function callback_requested($sender, $param)
@@ -33,6 +33,11 @@ class AutoCompleteTest extends TPage
 			}
 		}
 		return $list;
+	}
+
+	function suggestion_selected($sender, $param)
+	{
+		var_dump($param->selectedIndex);
 	}
 }
 

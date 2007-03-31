@@ -144,6 +144,8 @@ Prado.WebUI.TAutoComplete = Class.extend(Prado.WebUI.TAutoComplete,
 		{
 			this.active = false;
 			this.updateElement(this.getCurrentEntry());
+			var options = [this.index, "__TAutoComplete_onSuggestionSelected__"];
+			Prado.Callback(this.options.EventTarget, options, null, this.options);
 		}
 	},
 

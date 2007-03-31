@@ -39,24 +39,35 @@
 			ID="textbox1"
 			OnSuggest="suggestCountries"
 			Separator=", "
+			OnSuggestionSelected="suggestion_selected"
 			ResultPanel.CssClass="autocomplete" />
 
 		<com:TAutoComplete Style="width: 30em; height: 20em" TextMode="MultiLine"
 				ID="textbox2"
 				OnSuggest="suggestCountries"
 			OnCallback="callback_requested"
+			OnSuggestionSelected="suggestion_selected"
+			TextCssClass="select"
 			AutoPostBack="true"
 				Separator=", \n"
 				ResultPanel.CssClass="autocomplete">
 			<prop:Suggestions.HeaderTemplate>
 				<ul class="different">
 			</prop:Suggestions.HeaderTemplate>
+			<prop:Suggestions.ItemTemplate>
+				<li>
+					&lt;&lt;
+					<span class="select"><%# $this->Data %></span>
+					 &gt;&gt; 
+				</li>
+			</prop:Suggestions.ItemTemplate>
 		</com:TAutoComplete>
 
 		<com:TAutoComplete Style="width: 20em"
 			id="textbox3"
 			OnSuggest="suggestCountries"
 			OnCallback="callback_requested"
+			OnSuggestionSelected="suggestion_selected"
 			Separator=", " AutoPostBack="true"
 			ResultPanel.CssClass="autocomplete" />
 

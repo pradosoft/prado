@@ -1,11 +1,12 @@
 Prado.WebUI.TInPlaceTextBox = Base.extend(
 {
-	isSaving : false,
-	isEditing : false,
-	editField : null,
-
 	constructor : function(options)
 	{
+
+		this.isSaving = false;
+		this.isEditing = false;
+		this.editField = null;
+
 		this.options = Object.extend(
 		{
 			LoadTextFromSource : false,
@@ -140,6 +141,7 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 		}
 
 		Event.observe(this.editField, "blur", this.onTextBoxBlur.bind(this));
+		Event.observe(this.editField, "keypress", this.onKeyPressed.bind(this));
 	},
 
 	/**
@@ -163,7 +165,10 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 	{
 		text = this.element.innerHTML;
 		if(this.options.AutoPostBack && text != this.editField.value)
-			this.onTextChanged(text);
+		{
+			if(this.isEditing)
+				this.onTextChanged(text);
+		}
 		else
 		{
 			this.element.innerHTML = this.editField.value;
@@ -171,6 +176,19 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 			if(this.options.AutoHide)
 				this.showLabel();
 		}
+	},
+
+	onKeyPressed : function(e)
+	{
+		if (Event.keyCode(e) == Event.KEY_ESC)
+		{
+			this.editField.value = this.getText();
+			this.isEditing = false;
+			if(this.options.AutoHide)
+				this.showLabel();
+		}
+		else if (Event.keyCode(e) == Event.KEY_RETURN)
+			Event.stop(e);
 	},
 
 	/**

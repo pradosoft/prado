@@ -181,6 +181,11 @@ function reset_validator()
 		<li>The <tt>OnValidationSuccess</tt> event is raised after the validator has successfully validate the control.</li>
 		<li>The <tt>OnValidationError</tt> event is raised after the validator fails validation.</li>
 	</ul>
+
+<div class="note"><b class="tip">Note:</b>
+For Prado versions earlier than 3.1 the property names were <tt>OnError</tt> and <tt>OnSuccess</tt>. For Prado version 3.1 or later they are <tt>OnValidationError</tt> and <tt>OnValidationSuccess</tt>, respectively. 
+</div>
+
 <p id="560360" class="block-content">The following example pop-up a message saying "hello" when the validator fails on the client-side.
 <com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_560119">
 &lt;com:TRequiredFieldValidator ... &gt;
