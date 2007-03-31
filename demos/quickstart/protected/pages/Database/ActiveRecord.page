@@ -172,7 +172,7 @@ TActiveRecordManager::getInstance()->setDbConnection($conn);
     the same database connection to be used in other modules such as <a href="?page=Database.SqlMap">SqlMap</a>.
 <com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_690152">
 <modules>
-  <module class="System.Data.TDataSourceConfig" ID="db1">
+  <module class="System.Data.TDataSourceConfig" id="db1">
     <database ConnectionString="pgsql:host=localhost;dbname=test"
         Username="dbuser" Password="dbpass" />
   </module>
