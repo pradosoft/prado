@@ -164,9 +164,7 @@ Prado.WebUI.TAutoComplete = Class.extend(Prado.WebUI.TAutoComplete,
 				this.hide();
 			}
 		}
-	},
-
-
+	}
 });
 
 /**

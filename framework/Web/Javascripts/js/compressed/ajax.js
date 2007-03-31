@@ -236,7 +236,7 @@ this.onInit(options);},doCallback:function(event,options)
 {if(result.length>0)
 {this.hasResults=true;this.updateChoices(result);}
 else
-{this.active=false;this.hasResults=false;this.hide();}}},});Prado.WebUI.TTimeTriggeredCallback=Base.extend({constructor:function(options)
+{this.active=false;this.hasResults=false;this.hide();}}}});Prado.WebUI.TTimeTriggeredCallback=Base.extend({constructor:function(options)
 {this.options=Object.extend({Interval:1},options||{});Prado.WebUI.TTimeTriggeredCallback.register(this);},startTimer:function()
 {setTimeout(this.onTimerEvent.bind(this),100);if(typeof(this.timer)=='undefined'||this.timer==null)
 this.timer=setInterval(this.onTimerEvent.bind(this),this.options.Interval*1000);},stopTimer:function()
