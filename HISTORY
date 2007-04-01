@@ -17,6 +17,7 @@ BUG: Ticket#560 - TActiveImageButton broken (Postback instead of Callback) (Wei)
 BUG: Ticket#566 - <%[ tags (localize tags) missing escaping (Qiang)
 BUG: Ticket#573 - NumberFormat Bug (Wei)
 BUG: Ticket#579 - The rating list lost its Javascript in changeset [1775] (Wei).
+BUG: Ticket#584 - Parameter names in TTranslate are case-insensitive (Qiang)
 BUG: TXmlElement did not encode attribute and text values when being saved as a string (Qiang)
 BUG: SelectedIndices not return expected result for ActiveListBox (Wei)
 ENH: Ticket#367 - Change default extension for XLIFF files (Wei, changed to support .xlf extension).

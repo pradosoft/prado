@@ -44,6 +44,8 @@ Prado::using('System.Collections.TMap');
  */
 class TAttributeCollection extends TMap
 {
+	private $_caseSensitive=false;
+
 	/**
 	 * Returns a property value or an event handler list by property or event name.
 	 * This method overrides the parent implementation by returning
@@ -71,48 +73,64 @@ class TAttributeCollection extends TMap
 	}
 
 	/**
+	 * @return boolean whether the keys are case-sensitive. Defaults to false.
+	 */
+	public function getCaseSensitive()
+	{
+		return $this->_caseSensitive;
+	}
+
+	/**
+	 * @param boolean whether the keys are case-sensitive.
+	 */
+	public function setCaseSensitive($value)
+	{
+		$this->_caseSensitive=TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
 	 * Returns the item with the specified key.
-	 * This overrides the parent implementation by converting the key to lower case first.
+	 * This overrides the parent implementation by converting the key to lower case first if CaseSensitive is false.
 	 * @param mixed the key
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
 	public function itemAt($key)
 	{
-		return parent::itemAt(strtolower($key));
+		return parent::itemAt($this->_caseSensitive?$key:strtolower($key));
 	}
 
 
 	/**
 	 * Adds an item into the map.
-	 * This overrides the parent implementation by converting the key to lower case first.
+	 * This overrides the parent implementation by converting the key to lower case first if CaseSensitive is false.
 	 * @param mixed key
 	 * @param mixed value
 	 */
 	public function add($key,$value)
 	{
-		parent::add(strtolower($key),$value);
+		parent::add($this->_caseSensitive?$key:strtolower($key),$value);
 	}
 
 	/**
 	 * Removes an item from the map by its key.
-	 * This overrides the parent implementation by converting the key to lower case first.
+	 * This overrides the parent implementation by converting the key to lower case first if CaseSensitive is false.
 	 * @param mixed the key of the item to be removed
 	 * @return mixed the removed value, null if no such key exists.
 	 */
 	public function remove($key)
 	{
-		return parent::remove(strtolower($key));
+		return parent::remove($this->_caseSensitive?$key:strtolower($key));
 	}
 
 	/**
 	 * Returns whether the specified is in the map.
-	 * This overrides the parent implementation by converting the key to lower case first.
+	 * This overrides the parent implementation by converting the key to lower case first if CaseSensitive is false.
 	 * @param mixed the key
 	 * @return boolean whether the map contains an item with the specified key
 	 */
 	public function contains($key)
 	{
-		return parent::contains(strtolower($key));
+		return parent::contains($this->_caseSensitive?$key:strtolower($key));
 	}
 
 	/**
