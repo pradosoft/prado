@@ -88,7 +88,7 @@ class TButton extends TWebControl implements IPostBackEventHandler, IButtonContr
 		$writer->addAttribute('value',$this->getText());
 		if($this->getEnabled(true))
 		{
-			if($this->needPostBackScript() && $this->getEnableClientScript())
+			if($this->getEnableClientScript() && $this->needPostBackScript())
 				$this->renderClientControlScript($writer);
 		}
 		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
@@ -135,8 +135,8 @@ class TButton extends TWebControl implements IPostBackEventHandler, IButtonContr
 	 */
 	protected function needPostBackScript()
 	{
-		return $this->canCauseValidation() || ($this->getButtonType()!==TButtonType::Submit &&
-			($this->hasEventHandler('OnClick') || $this->hasEventHandler('OnCommand')));
+		//IE needs JS to be rendered for default button to work if no validators are assigned to this button
+		return $this->canCauseValidation() || $this->hasEventHandler('OnClick') || $this->hasEventHandler('OnCommand');
 	}
 
 	/**

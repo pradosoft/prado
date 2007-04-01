@@ -105,7 +105,7 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 			$writer->addAttribute('name',$uniqueID);
 		if($this->getEnabled(true))
 		{
-			if($this->getEnableClientScript() && $this->canCauseValidation())
+			if($this->getEnableClientScript() && $this->needPostBackScript())
 				$this->renderClientControlScript($writer);
 		}
 		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
@@ -145,6 +145,15 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 		}
 		else
 			return false;
+	}
+
+	/**
+	 * @return boolean whether the button needs javascript to do postback
+	 */
+	protected function needPostBackScript()
+	{
+		//IE needs JS to be rendered for default button to work if no validators are assigned to this button
+		return $this->canCauseValidation() || $this->hasEventHandler('OnClick') || $this->hasEventHandler('OnCommand');
 	}
 
 	/**
