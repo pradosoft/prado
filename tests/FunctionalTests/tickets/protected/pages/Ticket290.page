@@ -1,0 +1,21 @@
+<com:TContent ID="Content">
+	<com:TPanel ID="panel1" DefaultButton="button2"
+		Style="border:1px solid #ccc; padding:2em">
+		<com:TTextBox ID="textbox1" />
+		
+		<com:TCustomValidator
+			ControlToValidate="textbox1"
+			OnServerValidate="customValidate"
+			ValidationGroup="group1"
+			ErrorMessage="required" />
+		
+		<com:TButton ID="button1" Text="Button 1" 
+			ValidationGroup="group1" OnClick="button_clicked" />
+		<com:TButton ID="button2" Text="Button 2 (default)" 
+			ValidationGroup="group1" OnClick="button_clicked" />
+
+		<com:TLabel ID="label1" Text="Label 1" />
+		<com:TLabel ID="label2" Text="Label 2" />
+
+	</com:TPanel>
+</com:TContent>
