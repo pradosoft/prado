@@ -22,6 +22,7 @@ BUG: Ticket#585 - Can't validate TDatePicker with TActiveCustomValidator (Wei)
 BUG: Ticket#586 - Default TPanel Button not working without validator (Wei)
 BUG: TXmlElement did not encode attribute and text values when being saved as a string (Qiang)
 BUG: SelectedIndices not return expected result for ActiveListBox (Wei)
+ENH: Ticket#339 - TAutoComplete ID field [handled by the OnSuggestionSelected event] (Wei)
 ENH: Ticket#367 - Change default extension for XLIFF files (Wei, changed to support .xlf extension).
 ENH: Ticket#430 - clearing the validator errors (Wei)
 ENH: Ticket#436 - update script.aculo.us to 1.6.4 (Wei, updated to v 1.7.1beta)
