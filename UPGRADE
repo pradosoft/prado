@@ -39,6 +39,12 @@ Upgrading from v3.0.x
 - Content enclosed in <!-- --> is now parsed as normal template content.
   Previously, it was not parsed and was rendered as is.
 
+Upgrading from v3.0.7
+---------------------
+
+Upgrading from v3.0.6
+---------------------
+
 Upgrading from v3.0.5
 ---------------------
 - TRepeater does not render <span> anymore for empty item template.

@@ -76,7 +76,7 @@ $html = str_replace('<div id="header">
 <div class="image"></div>
 </div>', '', $html);
 $html = preg_replace('/<div id="footer">.*?<\/div>/ms', '<div id="footer">
-Copyright &copy; 2005-2006 <a href="http://www.pradosoft.com">PradoSoft</a>.</div>', $html);
+Copyright &copy; 2005-2007 <a href="http://www.pradosoft.com">PradoSoft</a>.</div>', $html);
 
 
 		$html = str_replace('</head>', '<link rel="stylesheet" type="text/css" href="'.self::CSS_URL.'" /></head>', $html);

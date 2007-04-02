@@ -68,8 +68,8 @@ NEW: TJsonService
 NEW: TCacheDependency, TFileCacheDependency, TDirectoryCacheDependency (Qiang)
 NEW: TGlobalStateCacheDependency, TChainedCacheDependency, TApplicationStateCacheDependency (Qiang)
 
-Version 3.0.7 to be released 
-============================
+Version 3.0.7 April 2, 2007 
+===========================
 BUG: Ticket#481 - Unable to cancel navigation when handling OnSideBarButtonClickEvent (Qiang)
 BUG: typo in THttpResponse.writeFile() about sending headers (Qiang)
 BUG: Ticket#505 - cultureInfo::getEnglishName does not return an arrary (Wei)
