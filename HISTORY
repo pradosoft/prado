@@ -18,7 +18,6 @@ BUG: Ticket#566 - <%[ tags (localize tags) missing escaping (Qiang)
 BUG: Ticket#573 - NumberFormat Bug (Wei)
 BUG: Ticket#579 - The rating list lost its Javascript in changeset [1775] (Wei).
 BUG: Ticket#584 - Parameter names in TTranslate are case-insensitive (Qiang)
-BUG: Event handler specified via subproperty in template does not work (Qiang)
 BUG: TXmlElement did not encode attribute and text values when being saved as a string (Qiang)
 BUG: SelectedIndices not return expected result for ActiveListBox (Wei)
 ENH: Ticket#367 - Change default extension for XLIFF files (Wei, changed to support .xlf extension).
@@ -72,11 +71,16 @@ NEW: TGlobalStateCacheDependency, TChainedCacheDependency, TApplicationStateCach
 Version 3.0.7 to be released 
 ============================
 BUG: Ticket#481 - Unable to cancel navigation when handling OnSideBarButtonClickEvent (Qiang)
+BUG: typo in THttpResponse.writeFile() about sending headers (Qiang)
 BUG: Ticket#505 - cultureInfo::getEnglishName does not return an arrary (Wei)
 BUG: Ticket#508 - CultureInfo class: PHP Notice because of missing static declaration (Wei)
 BUG: Ticket#558 - TRadionButtonList generates a empty onclick attribute (Qiang)
 BUG: Ticket#573 - NumberFormat Bug (Wei)
-BUG: typo in THttpResponse.writeFile() about sending headers (Qiang)
+BUG: Event handler specified via subproperty in template does not work (Qiang)
+ENH: Ticket#367 - Change default extension for XLIFF files (Wei, changed to support .xlf extension).
+ENH: Upgraded javascript library Prototype to version 1.5.0 (Wei)
+ENH: Upgraded javascript library Scriptaculous to version 1.7.0 (Wei)
+ENH: Upgraded TinyMCE editor to version 2.1 (Wei)
 
 Version 3.0.6 December 4, 2006
 ==============================
