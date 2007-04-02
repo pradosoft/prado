@@ -1,10 +1,10 @@
 <com:TContent ID="body">
 <h1>Prado Time Tracker Implementation Guide</h1>
 <ul>
-	<li><a href="?page=Introduction">Introduction</a></li>
-	<li><a href="?page=GettingStarted">Getting Started</a></li>
-	<li><a href="?page=WritingUnitTest">Writing a Unit Test</a></li>
-	<li><a href="?page=WritingFunctionalTest">Writing a Functional Web Test</a></li>
-	<li><a href="?page=CreateBusinessCode ">Create Business Code</a></li>
+	<li><a href="?page=Docs.Introduction">Introduction</a></li>
+	<li><a href="?page=Docs.GettingStarted">Getting Started</a></li>
+	<li><a href="?page=Docs.WritingUnitTest">Writing a Unit Test</a></li>
+	<li><a href="?page=Docs.WritingFunctionalTest">Writing a Functional Web Test</a></li>
+	<li><a href="?page=Docs.CreateBusinessCode">Create Business Code</a></li>
 </ul>
 </com:TContent>
