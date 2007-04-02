@@ -116,6 +116,22 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler, IButtonC
 	}
 
 	/**
+	 * @param boolean set by a panel to register this button as the default button for the panel.
+	 */
+	public function setIsDefaultButton($value)
+	{
+		$this->setViewState('IsDefaultButton', TPropertyValue::ensureBoolean($value),false);
+	}
+
+	/**
+	 * @return boolean true if this button is registered as a default button for a panel.
+	 */
+	public function getIsDefaultButton()
+	{
+		return $this->getViewState('IsDefaultButton', false);
+	}
+
+	/**
 	 * Renders the Href for link button.
 	 * @param THtmlWriter renderer
 	 */

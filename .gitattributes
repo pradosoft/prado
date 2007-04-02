@@ -2186,6 +2186,8 @@ tests/FunctionalTests/active-controls/protected/pages/ActiveRadioButtonTest.page
 tests/FunctionalTests/active-controls/protected/pages/ActiveRadioButtonTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveRedirectionTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveRedirectionTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/Callback.page -text
+tests/FunctionalTests/active-controls/protected/pages/Callback.php -text
 tests/FunctionalTests/active-controls/protected/pages/CallbackCustomValidatorTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/CallbackCustomValidatorTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/ClientSideDispatch.page -text
@@ -2428,6 +2430,10 @@ tests/FunctionalTests/tickets/protected/pages/Ticket573.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket578.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket578.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket583/Home.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket585.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket585.php -text
+tests/FunctionalTests/tickets/protected/pages/Ticket586.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket586.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket68.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket72.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket72.php -text
@@ -2463,6 +2469,8 @@ tests/FunctionalTests/tickets/tests/Ticket538TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket54TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket573TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket578TestCase.php -text
+tests/FunctionalTests/tickets/tests/Ticket585TestCase.php -text
+tests/FunctionalTests/tickets/tests/Ticket586TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket72TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket93TestCase.php -text
 tests/FunctionalTests/validators.php -text

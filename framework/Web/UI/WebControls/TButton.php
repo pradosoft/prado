@@ -131,12 +131,29 @@ class TButton extends TWebControl implements IPostBackEventHandler, IButtonContr
 	}
 
 	/**
+	 * @param boolean set by a panel to register this button as the default button for the panel.
+	 */
+	public function setIsDefaultButton($value)
+	{
+		$this->setViewState('IsDefaultButton', TPropertyValue::ensureBoolean($value),false);
+	}
+
+	/**
+	 * @return boolean true if this button is registered as a default button for a panel.
+	 */
+	public function getIsDefaultButton()
+	{
+		return $this->getViewState('IsDefaultButton', false);
+	}
+
+	/**
 	 * @return boolean whether the button needs javascript to do postback
 	 */
 	protected function needPostBackScript()
 	{
-		//IE needs JS to be rendered for default button to work if no validators are assigned to this button
-		return $this->canCauseValidation() || $this->hasEventHandler('OnClick') || $this->hasEventHandler('OnCommand');
+		return $this->canCauseValidation() || ($this->getButtonType()!==TButtonType::Submit &&
+			($this->hasEventHandler('OnClick') || $this->hasEventHandler('OnCommand')))
+			|| $this->getIsDefaultButton();
 	}
 
 	/**

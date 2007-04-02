@@ -1,0 +1,15 @@
+<com:TForm>
+
+	<com:TCallback ID="callback1" OnCallback="callback1_Requested" />
+	 <script type="text/javascript">              
+	function do_callback1()
+	{               
+		 var callback =  <%= $this->callback1->ActiveControl->Javascript %>;
+		 callback.dispatch();
+	}       
+	</script>       
+	<div onclick="do_callback1()">Click Me!</div>
+
+	<com:TJavascriptLogger />
+
+</com:TForm>

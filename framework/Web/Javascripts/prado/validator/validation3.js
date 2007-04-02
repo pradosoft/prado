@@ -571,7 +571,7 @@ Prado.WebUI.TBaseValidator.prototype =
 		this.isValid = true;
 		this._isObserving = {};
 		this.group = null;
-		this.requestDispatched = false;
+		//this.requestDispatched = false;
 
 		this.options = options;
 		this.control = $(options.ControlToValidate);
@@ -676,7 +676,7 @@ Prado.WebUI.TBaseValidator.prototype =
 
 		if(typeof(this.options.OnValidate) == "function")
 		{
-			if(this.requestDispatched == false)
+			//if(this.requestDispatched == false)
 				this.options.OnValidate(this, invoker);
 		}
 
@@ -685,15 +685,26 @@ Prado.WebUI.TBaseValidator.prototype =
 		else
 			this.isValid = true;
 
+		this.updateValidationDisplay(invoker);
+		this.observeChanges(this.control);
+
+		return this.isValid;
+	},
+
+	/**
+	 * Updates the validation messages, update the control to be validated.
+	 */
+	updateValidationDisplay : function(invoker)
+	{
 		if(this.isValid)
 		{
 			if(typeof(this.options.OnValidationSuccess) == "function")
 			{
-				if(this.requestDispatched == false)
-				{
+				//if(this.requestDispatched == false)
+				//{
 					this.refreshControlAndMessage();
 					this.options.OnValidationSuccess(this, invoker);
-				}
+				//}
 			}
 			else
 				this.updateControl();
@@ -702,19 +713,15 @@ Prado.WebUI.TBaseValidator.prototype =
 		{
 			if(typeof(this.options.OnValidationError) == "function")
 			{
-				if(this.requestDispatched == false)
-				{
+				//if(this.requestDispatched == false)
+				//{
 					this.refreshControlAndMessage();
 					this.options.OnValidationError(this, invoker)
-				}
+				//}
 			}
 			else
 				this.updateControl();
 		}
-
-		this.observeChanges(this.control);
-
-		return this.isValid;
 	},
 
 	/**
@@ -816,7 +823,7 @@ Prado.WebUI.TBaseValidator.prototype =
 	 			{
 	 				this.observeDatePickerChanges();
 
-	 				return Prado.WebUI.TDatePicker.getDropDownDate(control).getTime();
+	 				return Prado.WebUI.TDatePicker.getDropDownDate(control);//.getTime();
 	 			}
 	 		case 'THtmlArea':
 	 			if(typeof tinyMCE != "undefined")
@@ -1126,16 +1133,19 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	evaluateIsValid : function()
 	{
 		value = this.getValidationValue();
-		if(!this.requestDispatched && value != this.validatingValue)
+		//if(!this.requestDispatched && (""+value) != (""+this.validatingValue))
+		if((""+value) != (""+this.validatingValue))
 		{
 			this.validatingValue = value;
 			request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
+			if(this.options.DateFormat && value instanceof Date) //change date to string with formatting.
+				value = value.SimpleFormat(this.options.DateFormat);
 			request.setCallbackParameter(value);
 			request.setCausesValidation(false);
 			request.options.onSuccess = this.callbackOnSuccess.bind(this);
 			request.options.onFailure = this.callbackOnFailure.bind(this);
 			request.dispatch();
-			this.requestDispatched = true;
+//			this.requestDispatched = true;
 			return false;
 		}
 		return this.isValid;
@@ -1144,15 +1154,15 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	callbackOnSuccess : function(request, data)
 	{
 		this.isValid = data;
-		this.requestDispatched = false;
+//		this.requestDispatched = false;
 		if(typeof(this.options.onSuccess) == "function")
 			this.options.onSuccess(request,data);
-		Prado.Validation.validate(this.options.FormID, this.group,null);
+		this.updateValidationDisplay();
 	},
 
 	callbackOnFailure : function(request, data)
 	{
-		this.requestDispatched = false;
+//		this.requestDispatched = false;
 		if(typeof(this.options.onFailure) == "function")
 			this.options.onFailure(request,data);
 	}

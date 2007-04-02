@@ -1,0 +1,13 @@
+<com:TContent ID="Content">
+
+<com:TPanel DefaultButton="button2" Style="border:1px solid #ccc; padding:2em;">
+
+<com:TTextBox ID="text1" />
+<com:TButton ID="button1" Text="Button 1" OnClick="button_clicked"/>
+<com:TButton ID="button2" Text="Button 2 (default)" OnClick="button_clicked"/>
+<com:TButton ID="button3" Text="Button 3" OnClick="button_clicked" />
+
+<com:TLabel ID="label1" Text="Status" />
+</com:TPanel>
+
+</com:TContent>

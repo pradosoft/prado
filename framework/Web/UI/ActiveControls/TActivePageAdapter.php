@@ -15,6 +15,7 @@
  */
 Prado::using('System.Web.UI.ActiveControls.TCallbackResponseAdapter');
 Prado::using('System.Web.UI.ActiveControls.TCallbackClientScript');
+Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');
 
 /**
  * TActivePageAdapter class.

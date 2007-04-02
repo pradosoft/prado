@@ -2089,6 +2089,16 @@ interface IButtonControl
 	 * @param TCommandEventParameter event parameter to be passed to the event handlers
 	 */
 	public function onCommand($param);
+
+	/**
+	 * @param boolean set by a panel to register this button as the default button for the panel.
+	 */
+	public function setIsDefaultButton($value);
+
+	/**
+	 * @return boolean true if this button is registered as a default button for a panel.
+	 */
+	public function getIsDefaultButton();
 }
 
 /**

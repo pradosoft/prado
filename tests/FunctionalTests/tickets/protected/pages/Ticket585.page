@@ -1,0 +1,19 @@
+<com:TContent ID="Content">
+
+<com:TDatePicker id="test" />
+<com:TActiveCustomValidator
+	ID="validator1"
+	ControlToValidate="test"
+	OnServerValidate="ChkDate"
+	ErrorMessage="*">		
+	<prop:ClientSide
+		OnValidationError="$('error').innerHTML='Error'"
+		OnValidationSuccess="$('error').innerHTML='Success'"
+		ObserveChanges="false"
+		
+	 />
+</com:TActiveCustomValidator>
+<span id="error"></span>
+<com:TButton ID="button1" Text="ok"/>
+
+</com:TContent>
