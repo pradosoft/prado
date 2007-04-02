@@ -345,7 +345,17 @@ class TComponent
 			{
 				if(is_string($handler))
 				{
-					call_user_func($handler,$sender,$param);
+					if(($pos=strrpos($handler,'.'))!==false)
+					{
+						$object=$this->getSubProperty(substr($handler,0,$pos));
+						$method=substr($handler,$pos+1);
+						if(method_exists($object,$method))
+							$object->$method($sender,$param);
+						else
+							throw new TInvalidDataValueException('component_eventhandler_invalid',get_class($this),$name);
+					}
+					else
+						call_user_func($handler,$sender,$param);
 				}
 				else if(is_callable($handler,true))
 				{
