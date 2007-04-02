@@ -342,10 +342,15 @@ class TTemplate extends TApplicationComponent implements ITemplate
 							$component->setSkinID($properties['skinid']);
 						unset($properties['skinid']);
 					}
+
+					$component->trackViewState(false);
+
 					$component->applyStyleSheetSkin($page);
-					// apply attributes
 					foreach($properties as $name=>$value)
 						$this->configureControl($component,$name,$value);
+
+					$component->trackViewState(true);
+
 					if($parent===$tplControl)
 						$directChildren[]=$component;
 					else

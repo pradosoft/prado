@@ -131,27 +131,35 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	/**
 	 * @var string control unique ID
 	 */
-	private $_uid=null;
+	private $_uid;
 	/**
 	 * @var TControl parent of the control
 	 */
-	private $_parent=null;
+	private $_parent;
 	/**
 	 * @var TPage page that the control resides in
 	 */
-	private $_page=null;
+	private $_page;
 	/**
 	 * @var TControl naming container of the control
 	 */
-	private $_namingContainer=null;
+	private $_namingContainer;
 	/**
 	 * @var TTemplateControl control whose template contains the control
 	 */
-	private $_tplControl=null;
+	private $_tplControl;
 	/**
-	 * @var TMap viewstate data
+	 * @var array viewstate data
 	 */
 	private $_viewState=array();
+	/**
+	 * @var array temporary state (usually set in template)
+	 */
+	private $_tempState=array();
+	/**
+	 * @var boolean whether we should keep state in viewstate
+	 */
+	private $_trackViewState=true;
 	/**
 	 * @var integer the current stage of the control lifecycles
 	 */
@@ -704,6 +712,17 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	}
 
 	/**
+	 * Sets a value indicating whether we should keep data in viewstate.
+	 * When it is false, data saved via setViewState() will not be persisted.
+	 * By default, it is true, meaning data will be persisted across postbacks.
+	 * @param boolean whether data should be persisted
+	 */
+	public function trackViewState($enabled)
+	{
+		$this->_trackViewState=TPropertyValue::ensureBoolean($enabled);
+	}
+
+	/**
 	 * Returns a viewstate value.
 	 *
 	 * This function is very useful in defining getter functions for component properties
@@ -714,7 +733,16 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 */
 	public function getViewState($key,$defaultValue=null)
 	{
-		return isset($this->_viewState[$key])?$this->_viewState[$key]:$defaultValue;
+		if(isset($this->_viewState[$key]))
+			return $this->_viewState[$key]!==null?$this->_viewState[$key]:$defaultValue;
+		else if(isset($this->_tempState[$key]))
+		{
+			if(is_object($this->_tempState[$key]) && $this->_trackViewState)
+				$this->_viewState[$key]=$this->_tempState[$key];
+			return $this->_tempState[$key];
+		}
+		else
+			return $defaultValue;
 	}
 
 	/**
@@ -729,10 +757,16 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 */
 	public function setViewState($key,$value,$defaultValue=null)
 	{
-		if($value===$defaultValue)
-			unset($this->_viewState[$key]);
-		else
+		if($this->_trackViewState)
+		{
 			$this->_viewState[$key]=$value;
+			unset($this->_tempState[$key]);
+		}
+		else
+		{
+			unset($this->_viewState[$key]);
+			$this->_tempState[$key]=$value;
+		}
 	}
 
 	/**
@@ -742,6 +776,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	public function clearViewState($key)
 	{
 		unset($this->_viewState[$key]);
+		unset($this->_tempState[$key]);
 	}
 
 	/**
