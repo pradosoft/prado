@@ -39,7 +39,7 @@
 
 <com:TRepeater ID="repeater1">
 <prop:ItemTemplate>
-	<com:TInplaceTextBox
+	<com:TInPlaceTextBox
 		id="edit_box"
 		Text=<%# $this->DataItem %>
 		OnTextChanged="Page.label_changed"
