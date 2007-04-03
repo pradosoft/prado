@@ -1,0 +1,46 @@
+<com:TContent ID="Main">
+
+<h1>Creating Database</h1>
+
+<p>
+Most Web applications use database to keep data. Our blog system is not an exception. In this section, we will describe how to write database-driven pages for our blog system. We will use techniques including <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.DAO">database access object (DAO)</a> and <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">active record</a>.
+</p>
+
+<p>
+For tutorial purpose, we have simplified the requirements of our blog system so that it only needs to deal with user and post data. We thus create two database tables, <tt>users</tt> and <tt>posts</tt>, as shown in the following entity-relationship (ER) diagram.
+</p>
+
+<img src="<%~ ER.gif %>" />
+
+<p>
+The corresponding SQL statements for creating the tables are as follows,
+</p>
+
+<com:TTextHighlighter CssClass="source">
+CREATE TABLE users (
+  username      VARCHAR(128) NOT NULL PRIMARY KEY,
+  email         VARCHAR(128) NOT NULL UNIQUE,
+  password      VARCHAR(128) NOT NULL,
+  first_name    VARCHAR(128),
+  last_name     VARCHAR(128)
+);
+
+CREATE TABLE posts (
+  post_id       INTEGER NOT NULL PRIMARY KEY,
+  author        VARCHAR(128) NOT NULL,
+  create_time   INTEGER NOT NULL,
+  title         VARCHAR(256) NOT NULL,
+  content       TEXT NOT NULL,
+  CONSTRAINT "posts_fk" FOREIGN KEY ("author")
+    REFERENCES users ("username")
+    ON DELETE CASCADE
+    ON UPDATE CASCADE  
+);
+</com:TTextHighlighter>
+
+<p>
+We use a SQLite 3 database to keep our data.
+</p>
+
+
+</com:TContent>
