@@ -300,6 +300,8 @@ class TActiveRecordGateway extends TComponent
 		$param = new TActiveRecordGatewayEventParameter($type,$command,$record,$data);
 		$manager = $record->getRecordManager();
 		$event = 'on'.$type;
+		if($data instanceof TActiveRecordCriteria)
+			$data->{$event}($param);
 		$manager->{$event}($param);
 	}
 }

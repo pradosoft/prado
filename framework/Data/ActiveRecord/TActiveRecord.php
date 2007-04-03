@@ -520,7 +520,7 @@ abstract class TActiveRecord extends TComponent
 		$search = implode('|', $meta->getColumnNames());
 		$regexp = '/('.$search.')(and|_and_|or|_or_)?/i';
 		$matches = array();
-		if(!preg_match_all($regexp, strtolower($condition), $matches,PREG_SET_ORDER))
+		if(!preg_match_all($regexp, $condition, $matches,PREG_SET_ORDER))
 		{
 			throw new TActiveRecordException('ar_mismatch_column_names',
 				$method, implode(', ', $meta->getColumnNames()), $meta->getTableName());

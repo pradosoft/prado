@@ -4447,7 +4447,7 @@ Prado.WebUI.PostBackControl.prototype =
 	{
 		if(typeof(this.element.onclick)=="function")
 		{
-			this._elementOnClick = this.element.onclick;
+			this._elementOnClick = this.element.onclick.bind(this.element);;
 			this.element.onclick = null;
 		}
 		Event.observe(this.element, "click", this.elementClicked.bindEvent(this,options));

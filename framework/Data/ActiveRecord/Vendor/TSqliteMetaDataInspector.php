@@ -55,7 +55,7 @@ class TSqliteMetaDataInspector extends TDbMetaDataInspector
 		$command->prepare();
 		$cols = array();
 		foreach($command->query() as $col)
-			$cols[strtolower($col['name'])] = $this->getColumnMetaData($col);
+			$cols[$col['name']] = $this->getColumnMetaData($col);
 		return $cols;
 	}
 
@@ -73,7 +73,7 @@ class TSqliteMetaDataInspector extends TDbMetaDataInspector
 		$primary = $col['pk']==='1';
 		$autoIncrement = strtolower($type)==='integer' && $primary;
 		$default = $col['dflt_value'];
-		return new TSqliteColumnMetaData(strtolower($col['name']),$name,$type,
+		return new TSqliteColumnMetaData($col['name'],$name,$type,
 						$notNull,$autoIncrement,$default,$primary);
 	}
 

@@ -150,6 +150,30 @@ class TActiveRecordCriteria extends TComponent
 	}
 
 	/**
+	 * This method is invoked before the object is deleted from the database.
+	 * The method raises 'OnDelete' event.
+	 * If you override this method, be sure to call the parent implementation
+	 * so that the event handlers can be invoked.
+	 * @param TActiveRecordEventParameter event parameter to be passed to the event handlers
+	 */
+	public function onDelete($param)
+	{
+		$this->raiseEvent('OnDelete', $this, $param);
+	}
+
+	/**
+	 * This method is invoked before any select query is executed on the database.
+	 * The method raises 'OnSelect' event.
+	 * If you override this method, be sure to call the parent implementation
+	 * so that the event handlers can be invoked.
+	 * @param TActiveRecordEventParameter event parameter to be passed to the event handlers
+	 */
+	public function onSelect($param)
+	{
+		$this->raiseEvent('OnSelect', $this, $param);
+	}
+
+	/**
 	 * @return string string representation of the criteria. Useful for debugging.
 	 */
 	public function __toString()

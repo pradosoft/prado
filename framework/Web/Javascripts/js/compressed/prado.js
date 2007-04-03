@@ -462,7 +462,7 @@ var newdate=new Date(year,month-1,date,0,0,0);return newdate;}});Prado.WebUI=Cla
 {if(this.onInit)
 this.onInit(options);}},onInit:function(options)
 {if(typeof(this.element.onclick)=="function")
-{this._elementOnClick=this.element.onclick;this.element.onclick=null;}
+{this._elementOnClick=this.element.onclick.bind(this.element);;this.element.onclick=null;}
 Event.observe(this.element,"click",this.elementClicked.bindEvent(this,options));},elementClicked:function(event,options)
 {var src=Event.element(event);var doPostBack=true;var onclicked=null;if(this._elementOnClick)
 {var onclicked=this._elementOnClick(event);if(typeof(onclicked)=="boolean")

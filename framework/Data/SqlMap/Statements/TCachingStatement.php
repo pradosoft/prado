@@ -45,7 +45,7 @@ class TCachingStatement implements IMappedStatement
 	public function executeQueryForMap($connection, $parameter,$keyProperty, $valueProperty=null, $delegate=null)
 	{
 		$sql = $this->createCommand($connection, $parameter);
-		$key = $this->getCacheKey(array($sql, $keyProperty, $valueProperty));
+		$key = $this->getCacheKey(array(clone($sql), $keyProperty, $valueProperty));
 		$map = $this->getStatement()->getCache()->get($key);
 		if(is_null($map))
 		{
@@ -69,7 +69,7 @@ class TCachingStatement implements IMappedStatement
 	public function executeQueryForList($connection, $parameter, $result=null, $skip=-1, $max=-1, $delegate=null)
 	{
 		$sql = $this->createCommand($connection, $parameter);
-		$key = $this->getCacheKey(array($sql, $skip, $max));
+		$key = $this->getCacheKey(array(clone($sql), $parameter, $skip, $max));
 		$list = $this->getStatement()->getCache()->get($key);
 		if(is_null($list))
 		{
@@ -83,7 +83,7 @@ class TCachingStatement implements IMappedStatement
 	public function executeQueryForObject($connection, $parameter, $result=null)
 	{
 		$sql = $this->createCommand($connection, $parameter);
-		$key = $this->getCacheKey($sql);
+		$key = $this->getCacheKey(array(clone($sql), $parameter));
 		$object = $this->getStatement()->getCache()->get($key);
 		if(is_null($object))
 		{
