@@ -1955,6 +1955,7 @@ framework/Util/TSimpleDateFormatter.php -text
 framework/Util/TVarDumper.php -text
 framework/Web/Javascripts/TJSON.php -text
 framework/Web/Javascripts/TJavaScript.php -text
+framework/Web/Javascripts/clientscripts.php -text
 framework/Web/Javascripts/js/compressed/ajax.js -text
 framework/Web/Javascripts/js/compressed/clientscripts.php -text
 framework/Web/Javascripts/js/compressed/colorpicker.js -text
@@ -1973,6 +1974,7 @@ framework/Web/Javascripts/js/debug/effects.js -text
 framework/Web/Javascripts/js/debug/logger.js -text
 framework/Web/Javascripts/js/debug/prado.js -text
 framework/Web/Javascripts/js/debug/validator.js -text
+framework/Web/Javascripts/packages.php -text
 framework/Web/Javascripts/prado/activecontrols/activecontrols3.js -text
 framework/Web/Javascripts/prado/activecontrols/ajax3.js -text
 framework/Web/Javascripts/prado/activecontrols/inlineeditor.js -text
