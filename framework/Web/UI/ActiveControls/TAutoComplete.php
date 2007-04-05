@@ -339,6 +339,10 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 		$options['ResultPanel'] = $this->getResultPanel()->getClientID();
 		$options['ID'] = $this->getClientID();
 		$options['EventTarget'] = $this->getUniqueID();
+		if(($minchars=$this->getMinChars())!=='')
+			$options['minchars'] = $minchars;
+		if(($frequency=$this->getFrequency())!=='')
+			$options['frequency'] = $frequency;
 		return $options;
 	}
 
