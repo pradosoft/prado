@@ -49,6 +49,7 @@ NEW: TDbCache (Qiang)
 NEW: TDbUserManager and TDbUser (Qiang)
 NEW: Active Record driver for IBM DB2 (Cesar Ramos)
 NEW: TActiveRecord Scaffold support (Wei)
+NEW: TClientScriptLoader combines and loads javascript libraries (Wei)
 
 Version 3.1.0 alpha January 15, 2007
 ====================================

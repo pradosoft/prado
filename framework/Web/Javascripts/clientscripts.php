@@ -74,7 +74,7 @@ function get_script_requests($max=25)
  */
 function get_package_files($package_file, $request)
 {
-	list($packages, $dependencies) = @include($package_file);
+	list($packages, $dependencies) = include($package_file);
 	if(!(is_array($packages) && is_array($dependencies)))
 	{
 		error_log('Prado client script: invalid package file '.$package_file);
@@ -240,6 +240,9 @@ function print_headers()
  */
 function supports_gzip_encoding()
 {
+	if(isset($_GET['gzip']) && $_GET['gzip']==='false')
+		return false;
+
 	if (isset($_SERVER['HTTP_ACCEPT_ENCODING']))
 	{
 		$encodings = explode(',', strtolower(preg_replace("/\s+/", "", $_SERVER['HTTP_ACCEPT_ENCODING'])));
