@@ -709,6 +709,7 @@ demos/blog-tutorial/protected/pages/Day2/ConnectDB.page -text
 demos/blog-tutorial/protected/pages/Day2/CreateDB.page -text
 demos/blog-tutorial/protected/pages/Day2/ER.gif -text
 demos/blog-tutorial/protected/pages/Day2/ER.vsd -text
+demos/blog-tutorial/protected/pages/Day2/directories.gif -text
 demos/blog-tutorial/protected/pages/Overview.page -text
 demos/blog-tutorial/protected/pages/Requirements.page -text
 demos/blog-tutorial/samples/day1/blog/index.php -text
