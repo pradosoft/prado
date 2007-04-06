@@ -198,7 +198,7 @@ EOD;
 				$app->run();
 				$dir = substr(str_replace(realpath('./'),'',$app_dir),1);
 				$initialized=true;
-				echo '** Loaded Prado appplication in directory "'.$dir."\".\n";
+				echo '** Loaded PRADO appplication in directory "'.$dir."\".\n";
 			}
 
 			return Prado::getApplication();
@@ -206,7 +206,7 @@ EOD;
 		else
 		{
 			echo '+'.str_repeat('-',77)."+\n";
-			echo '** Unable to load Prado application in directory "'.$directory."\".\n";
+			echo '** Unable to load PRADO application in directory "'.$directory."\".\n";
 			echo '+'.str_repeat('-',77)."+\n";
 		}
 		return false;
@@ -718,9 +718,9 @@ class $class extends TActiveRecord
 
 $props
 
-	public static function finder($className=__CLASS__)
+	public static function finder(\$className=__CLASS__)
 	{
-		return parent::finder($className);
+		return parent::finder(\$className);
 	}
 }
 ?>

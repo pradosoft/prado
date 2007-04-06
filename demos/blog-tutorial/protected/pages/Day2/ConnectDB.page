@@ -19,7 +19,7 @@ extension=php_pdo_sqlite.dll
 </com:NoteBox>
 
 <p>
-To further reduce the dependency on the actual database tables, we will also use the <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">Active Record</a> feature which is based on PDO. Each data record will be represented as an Active Record object, which saves us from writing repetitive SQL statements.
+To further abstract the actual database tables, we will also use the <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">Active Record</a> (AR) feature. Each data record will be represented as an Active Record object which is capable of performing query, saving and deletion without writing SQL statements.
 </p>
 
 <p>

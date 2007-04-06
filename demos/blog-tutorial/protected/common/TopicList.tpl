@@ -18,18 +18,24 @@
 </div>
 
 <div class="topic">
-<div>Day 2: Using Database</div>
+<div>Day 2: Working with Database - Part I</div>
 <ul>
     <li><a href="?page=Day2.CreateDB">Creating Database</a></li>
     <li><a href="?page=Day2.ConnectDB">Establishing DB Connection</a></li>
-    <li><a href="?page=Day2.CreateDAO">Creating DAOs</a></li>
+    <li><a href="?page=Day2.CreateAR">Creating AR Classes</a></li>
+</ul>
+</div>
+
+<div class="topic">
+<div>Day 3: Working with Database - Part II</div>
+<ul>
     <li><a href="?page=">Creating NewPost Page</a></li>
     <li><a href="?page=">Creating ListPost Page</a></li>
 </ul>
 </div>
 
 <div class="topic">
-<div>Day 3: Authentication and Authorization</div>
+<div>Day 4: Authentication and Authorization</div>
 <ul>
     <li><a href="?page=">Creating Login Page</a></li>
     <li><a href="?page=">Using PRADO Auth Framework</a></li>
@@ -38,13 +44,13 @@
 </div>
 
 <div class="topic">
-<div>Day 4: Developing and Using Components</div>
+<div>Day 5: Developing and Using Components</div>
 <ul>
 </ul>
 </div>
 
 <div class="topic">
-<div>Day 5: Customization and Refactoring</div>
+<div>Day 6: Customization and Refactoring</div>
 <ul>
     <li><a href="?page=">Using Themes and Skins</a></li>
     <li><a href="?page=">Customizing Error Handling</a></li>
@@ -53,7 +59,7 @@
 </div>
 
 <div class="topic">
-<div>Day 6: Performance Tuneup and Deployment</div>
+<div>Day 7: Performance Tuneup and Deployment</div>
 <ul>
     <li><a href="?page=">Caching</a></li>
 </ul>

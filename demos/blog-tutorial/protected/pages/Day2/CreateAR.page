@@ -1,0 +1,78 @@
+<com:TContent ID="Main">
+
+<h1>Creating Active Record Classes</h1>
+
+<p>
+We need to create two <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">Active Record</a> classes, <tt>UserRecord</tt> and <tt>PostRecord</tt>, to represent data records in the <tt>users</tt> and <tt>posts</tt> tables, respectively. Active Record classes must extend from the base class <tt>ActiveRecord</tt>, and their properties must match exactly to the fields of the corresponding tables. To better organize our directories, we create a new directory <tt>protected/database</tt> to hold the class files.
+</p>
+
+<p>
+Instead of writing the classes manually, we will use the <a href="http://www.pradosoft.com/demos/quickstart/?page=GettingStarted.CommandLine">PRADO command line tool</a> again to generate the classes for us.
+</p>
+
+<p>
+Under the <tt>blog</tt> directory, run the following command to enter into the interactive mode of the command line tool:
+</p>
+
+<com:TTextHighlighter CssClass="source">
+php path/to/prado-cli.php shell .
+</com:TTextHighlighter>
+
+<p>
+We should see
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="text">
+Command line tools for Prado 3.1.0.
+** Loaded PRADO appplication in directory "protected".
+PHP-Shell - Version 0.3.1
+(c) 2006, Jan Kneschke <jan@kneschke.de>
+
+>> use '?' to open the inline help
+
+>>
+</com:TTextHighlighter>
+
+<p>
+At the prompt, enter the following two commands to create <tt>UserRecord</tt> and <tt>PostRecord</tt> classes:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="text">
+>> generate users Application.database.UserRecord
+
+>> generate posts Application.database.PostRecord
+</com:TTextHighlighter>
+
+<p>
+Here we used the <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Components">namespace format</a> again to specify the classes to be created. The path <tt>Application.database.UserRecord</tt> indicates that we want the <tt>UserRecord</tt> class file to be <tt>protected/database/UserRecord.php</tt>.
+</p>
+
+<p>
+We should see the following directory structure with two new files under <tt>protected/database</tt>:
+</p>
+
+<img src="<%~ directories2.gif %>" />
+
+<p>
+If we check the <tt>UserRecord</tt> class file, we should see the following content. As we see, for each field in the <tt>users</tt> table, the class has a corresponding data member. The constant <tt>TABLE</tt> specifies the table name for the <tt>UserRecord</tt>. The static method <tt>finder()</tt> allows us to perform query and retrieve users data in terms of <tt>UserRecord</tt> objects, as we will see in later sections.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class UserRecord extends TActiveRecord
+{
+	const TABLE='users';
+	public $username;
+	public $email;
+	public $password;
+	public $role;
+	public $first_name;
+	public $last_name;
+
+	public static function finder($className=__CLASS__)
+	{
+		return parent::finder($className);
+	}
+}
+</com:TTextHighlighter>
+
+</com:TContent>
