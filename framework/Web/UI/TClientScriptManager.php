@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005 PradoSoft
+ * @copyright Copyright &copy; 2005-2007 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Web.UI
@@ -25,11 +25,11 @@ class TClientScriptManager extends TApplicationComponent
 	/**
 	 * directory containing Prado javascript files
 	 */
-	const SCRIPT_PATH='Web/Javascripts/js';
+	const SCRIPT_PATH='Web/Javascripts/source';
 	/**
 	 * the PHP script for loading Prado javascript files
 	 */
-	const SCRIPT_LOADER='clientscripts.php';
+	const SCRIPT_LOADER='Web/Javascripts/clientscripts.php';
 
 	/**
 	 * @var TPage page who owns this manager
@@ -72,22 +72,10 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	private $_registeredPradoScripts=array();
 	/**
-	 * @var array published PRADO script files
-	 */
-	private $_publishedPradoFiles=array();
-	/**
-	 * Client-side javascript library dependencies
+	 * Client-side javascript library dependencies, loads from SCRIPT_PATH.'/packages.php';
 	 * @var array
 	 */
-	private static $_pradoScripts=array(
-		'prado'			=> array('prado'),
-		'effects'		=> array('prado', 'effects'),
-		'validator'		=> array('prado', 'validator'),
-		'logger'		=> array('prado', 'logger'),
-		'datepicker'	=> array('prado', 'datepicker'),
-		'colorpicker'	=> array('prado', 'colorpicker'),
-		'ajax'			=> array('prado', 'effects', 'ajax')
-		);
+	private static $_pradoScripts;
 
 	/**
 	 * Constructor.
@@ -99,23 +87,13 @@ class TClientScriptManager extends TApplicationComponent
 	}
 
 	/**
-	 * Registers Prado scripts by library name.
-	 * Each library may include one or several script files.
-	 * Currently, the following libraries are available:
-	 * - prado : basic prado js framework
-	 * - effects :
-	 * - ajax : ajax related js
-	 * - validator : validator js
-	 * - logger : js logger
-	 * - datepicker : datepicker js
-	 * - colorpicker : colorpicker js
-	 * The script files registered will be published.
+	 * Registers Prado javascript by library name. See "Web/Javascripts/source/packages.php"
+	 * for library names.
 	 * @param string script library name.
 	 */
 	public function registerPradoScript($name)
 	{
 		$this->registerPradoScriptInternal($name);
-
 		$params=func_get_args();
 		$this->_page->registerCachingAction('Page.ClientScript','registerPradoScript',$params);
 	}
@@ -127,32 +105,28 @@ class TClientScriptManager extends TApplicationComponent
 	{
 		if(!isset($this->_registeredPradoScripts[$name]))
 		{
+			if(is_null(self::$_pradoScripts))
+			{
+				$packageFile = Prado::getFrameworkPath().'/'.self::SCRIPT_PATH.'/packages.php';
+				list($packages,$deps)= include($packageFile);
+				self::$_pradoScripts = $deps;
+			}
+
 			if(isset(self::$_pradoScripts[$name]))
 				$this->_registeredPradoScripts[$name]=true;
 			else
 				throw new TInvalidOperationException('csmanager_pradoscript_invalid',$name);
-			$basePath=$this->getPradoScriptBasePath();
-			foreach(self::$_pradoScripts[$name] as $script)
-			{
-				if(!isset($this->_publishedPradoFiles[$script]))
-				{
-					$this->publishFilePath($basePath.'/'.$script.'.js');
-					$this->_publishedPradoFiles[$script]=true;
-				}
-			}
 		}
 	}
 
 	/**
-	 * @return string the directory containing the PRADO js script files
+	 * @return string Prado javascript library base asset url.
 	 */
-	protected function getPradoScriptBasePath()
+	public function getPradoScriptAssetUrl()
 	{
-		$basePath = Prado::getFrameworkPath().'/'.self::SCRIPT_PATH;
-		if($this->getApplication()->getMode()===TApplicationMode::Debug)
-			return $basePath.'/debug';
-		else
-			return $basePath.'/compressed';
+		$base = Prado::getFrameworkPath().'/'.self::SCRIPT_PATH;
+		$assets = Prado::getApplication()->getAssetManager();
+		return $assets->getPublishedUrl($base);
 	}
 
 	/**
@@ -161,15 +135,76 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	protected function renderPradoScripts($writer)
 	{
-		$files=implode(',',array_keys($this->_publishedPradoFiles));
-		if($files!=='')
+		$files=array_keys($this->_registeredPradoScripts);
+		if(count($files) > 0)
 		{
-			$basePath=$this->getPradoScriptBasePath();
-			$scriptLoader=$basePath.'/'.self::SCRIPT_LOADER;
-			$url=$this->publishFilePath($scriptLoader).'?js='.trim($files,',');
-			if($this->getApplication()->getMode()===TApplicationMode::Debug)
-				$url.='&amp;mode=debug';
+			$base = Prado::getFrameworkPath().'/'.self::SCRIPT_PATH;
+			$url = $this->registerJavascriptPackages($base, $files);
 			$writer->write(TJavaScript::renderScriptFile($url));
+		}
+	}
+
+	/**
+	 * Publishes a javascript library path and register packages to be loaded.
+	 * See TClientScriptLoader for component that enables users to register custom javascript libraries.
+	 * @param string javascript library base path
+	 * @param array list of packages or javascript files (without .js extension) to be loaded.
+	 * @param boolean true to enable keep comments in javascript files loaded, null to use application configuration.
+	 * @param boolean true to gzip the javascript code if browsers and php supports it.
+	 * @return string javascript src url
+	 * @since 3.1
+	 */
+	public function registerJavascriptPackages($base, $packages, $debug=null, $gzip=true)
+	{
+		list($path,$url) = $this->getPackagePathUrl($base);
+		$scriptLoaderPath = $path.'/'.basename(self::SCRIPT_LOADER);
+		$scriptLoaderSrc = Prado::getFrameworkPath().'/'.self::SCRIPT_LOADER;
+		if(!is_file($scriptLoaderPath))
+			copy($scriptLoaderSrc, $scriptLoaderPath);
+		$url .= '/'.basename(self::SCRIPT_LOADER).'?js='.implode(',', $packages);
+		if($debug!==false && $this->getApplication()->getMode()===TApplicationMode::Debug)
+		{
+			$this->verifyJavascriptPackages($base,$path,$packages);
+			$url.='&amp;mode=debug';
+		}
+		if($gzip===false)
+			$url.='&amp;gzip=false';
+		return $url;
+	}
+
+	/**
+	 * @throws TConfigurationException when javascript packages mismatch.
+	 */
+	protected function verifyJavascriptPackages($base,$path,$scripts)
+	{
+		$file = $path.'/packages.php';
+		if(is_file($file))
+		{
+			list($packs,$deps) = include($file);
+			if(count($missing = array_diff($scripts, array_keys($deps))) > 0)
+			{
+				throw new TConfigurationException('csmanager_invalid_packages',
+					$base.'/packages.php',implode(', ', $missing), implode(', ', array_keys($deps)));
+			}
+		}
+	}
+
+	/**
+	 * @param string javascript package path.
+	 * @return array tuple($path,$url).
+	 */
+	protected function getPackagePathUrl($base)
+	{
+		$assets = Prado::getApplication()->getAssetManager();
+		if(strpos($base, $assets->getBaseUrl())===false)
+		{
+			if(!is_null($dir = Prado::getPathOfNameSpace($base)))
+				$base = $dir;
+			return array($assets->getPublishedPath($base), $assets->publishFilePath($base));
+		}
+		else
+		{
+			return array($assets->getBasePath().str_replace($assets->getBaseUrl(),'',$base), $base);
 		}
 	}
 

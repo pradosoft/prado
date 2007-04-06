@@ -1,0 +1,15 @@
+<com:TContent ID="Content">
+
+<com:TTimeTriggeredCallback ID="Trigger" 
+	ActiveControl.CausesValidation="false"
+	OnCallback="Page.onTriggerCallback" Interval="2" />
+Count: <com:TActiveLabel ID="count" Text="0" />
+<com:TTextBox ID="testBox" />
+
+<com:TRequiredFieldValidator
+			        ControlToValidate="testBox"
+			        Display="Dynamic"
+			        ErrorMessage="Please insert a Text." />
+
+<com:TCheckBox Text="Test2" Attributes.OnClick="console.log(this.checked)" AutoPostBack="True" />
+</com:TContent>

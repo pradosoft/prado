@@ -11,7 +11,7 @@
  */
 
 /**
- * The TClientScriptLoader publish a collection of javascript files as assets. 
+ * The TClientScriptLoader publish a collection of javascript files as assets.
  * The {@link PackagePath setPackagePath} property can be an existing asset directory
  * or a namespace path to the directory containing javascript files. E.g.
  * <code>
@@ -20,7 +20,7 @@
  * </code>
  *
  * When the files in the {@link PackagePath setPackagePath} are published as assets, a script loader
- * php file corresponding to TClientScriptLoader::SCRIPT_LOADER is also copied to that asset directory.
+ * php file corresponding to TClientScriptManager::SCRIPT_LOADER is also copied to that asset directory.
  *
  * The script loader, combines multiple javascript files and serve up as gzip if possible.
  * Allowable scripts and script dependencies can be specified in a "packages.php" file
@@ -54,12 +54,12 @@
  * removes comments and whitespaces from the published javascript files. If
  * the DebugMode property is not set, the debug mode is determined from the application mode.
  *
- * The {@link setEnableGzip EnableGzip} property (default is true) enables the 
- * published javascripts to be served as zipped if the browser and php server allows it. 
-  
+ * The {@link setEnableGzip EnableGzip} property (default is true) enables the
+ * published javascripts to be served as zipped if the browser and php server allows it.
+
  * If the DebugMode is false either explicitly or when the application mode is non-debug,
  * then cache headers are also sent to inform the browser and proxies to cache the file.
- * Moreover, the post-processed (comments removed and zipped) are saved in the assets 
+ * Moreover, the post-processed (comments removed and zipped) are saved in the assets
  * directory for the next requests. That is, in non-debug mode the scripts are cached
  * in the assets directory until they are deleted.
  *
@@ -70,8 +70,6 @@
  */
 class TClientScriptLoader extends TWebControl
 {
-	const SCRIPT_LOADER = 'Web/Javascripts/clientscripts.php';
-
 	/**
 	 * @return string tag name of the script element
 	 */
@@ -79,7 +77,7 @@ class TClientScriptLoader extends TWebControl
 	{
 		return 'script';
 	}
-	
+
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This overrides the parent implementation with additional button specific attributes.
@@ -97,57 +95,12 @@ class TClientScriptLoader extends TWebControl
 	 */
 	protected function getClientScriptUrl()
 	{
-		$baseUrl = $this->publishScriptLoader();
-		$scripts = split('/\s*[, ]+\s*/', $this->getPackageScripts());
-		$url = $baseUrl . '?js=' . implode(',', $scripts);
-		if($this->getDebugMode()!==false && $this->getApplication()->getMode()===TApplicationMode::Debug)
-			$url.='&amp;mode=debug';
-		if($this->getEnableGzip()===false)
-			$url.='&amp;gzip=false';
-		return $url;
+		$scripts = split('\s*[, ]+\s*', $this->getPackageScripts());
+		$cs = $this->getPage()->getClientScript();
+		return $cs->registerJavascriptPackages($this->getPackagePath(),
+				$scripts, $this->getDebugMode(), $this->getEnableGzip());
 	}
 
-	/**
-	 * Copies the client script loader php file to the asset directory if appropriate.
-	 * @return string clientscript.php url
-	 * @throws TConfigurationException if error in publishing the package path.
-	 */
-	protected function publishScriptLoader()
-	{
-		list($path, $url) = $this->getPublishedPackagePath();
-		if(is_dir($path))
-		{
-			$scriptLoader = Prado::getFrameworkPath().'/'.self::SCRIPT_LOADER;
-			$scriptLoaderFile = basename($scriptLoader);
-			$dest = $path.'/'.$scriptLoaderFile;
-			if(!is_file($dest))
-				copy($scriptLoader,$dest);
-			return $url.'/'.$scriptLoaderFile;
-		}
-		else
-			throw new TConfigurationException('clientscript_invalid_package_path',
-				$this->getPackagePath(), $this->getUniqueID());
-	}
-
-	/**
-	 * Publishes the package path assets, tries path as namespace first.
-	 * @return array tuple ($path, $url).
-	 */
-	protected function getPublishedPackagePath()
-	{
-		$assets = $this->getApplication()->getAssetManager();
-		//assumes dot path first
-		$dir = Prado::getPathOfNameSpace($this->getPackagePath());
-		if(!is_null($dir))
-		{
-			$url = $assets->publishFilePath($dir); //show throw an excemption if invalid
-			return array($dir, $url);
-		}
-		$url = $this->getPackagePath();
-		$packageDir = str_replace($assets->getBaseUrl(), '', $url);
-		return array($assets->getBasePath().$packageDir,$url);
-	}
-	
 	/**
 	 * @param string custom javascript library directory.
 	 */
@@ -165,7 +118,7 @@ class TClientScriptLoader extends TWebControl
 	}
 
 	/**
-	 * @param string load specific packages from the javascript library in the PackagePath, 
+	 * @param string load specific packages from the javascript library in the PackagePath,
 	 * comma delimited package names. A maximum of 25 packages is allowed.
 	 */
 	public function setPackageScripts($value)
@@ -198,7 +151,7 @@ class TClientScriptLoader extends TWebControl
 	}
 
 	/**
-	 * @return boolean javascript comments stripped in non-debug mode. 
+	 * @return boolean javascript comments stripped in non-debug mode.
 	 * Debug mode will depend on the application mode if null.
 	 */
 	public function getDebugMode()

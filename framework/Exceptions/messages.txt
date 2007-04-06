@@ -189,6 +189,7 @@ page_head_duplicated					= A page can contain at most one THead.
 page_statepersister_invalid				= Page state persister must implement IPageStatePersister interface.
 
 csmanager_pradoscript_invalid			= Unknown Prado script library name '{0}'.
+csmanager_invalid_packages				= Unkownn packages '{1}' for javascript packages defined in '{0}'. Valid packages are '{2}'.
 
 contentplaceholder_id_required			= TContentPlaceHolder must have an ID.
 

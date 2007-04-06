@@ -27,6 +27,8 @@ Prado::using('System.Web.UI.WebControls.TRadioButtonList');
  */
 class TRatingList extends TRadioButtonList
 {
+	const SCRIPT_PATH='prado/ratings';
+
 	private $_ratingImages = array();
 
 	public function __construct()
@@ -105,6 +107,16 @@ class TRatingList extends TRadioButtonList
 		return $this->getViewState('HalfRating', array(0.3, 0.7));
 	}
 
+	/**
+	 * @param string asset file in the self::SCRIPT_PATH directory.
+	 * @return string asset file url.
+	 */
+	protected function getAssetUrl($file='')
+	{
+		$base = $this->getPage()->getClientScript()->getPradoScriptAssetUrl();
+		return $base.'/'.self::SCRIPT_PATH.'/'.$file;
+	}
+
 	public function getRatingClientOptions()
 	{
 		$options['cssClass'] = 'TRatingList_'.$this->getRatingStyle();
@@ -118,28 +130,18 @@ class TRatingList extends TRadioButtonList
 	protected function publishRatingListStyle($style)
 	{
 		$cs = $this->getPage()->getClientScript();
-		$stylesheet = 'System.Web.Javascripts.ratings.'.$style;
-		if(($cssFile=Prado::getPathOfNamespace($stylesheet,'.css'))===null)
-			throw new TConfigurationException('ratinglist_stylesheet_not_found',$style);
-		$url = $this->publishFilePath($cssFile);
-		if(!$cs->isStyleSheetFileRegistered($style))
-			$cs->registerStyleSheetFile($style, $url);
+		$url = $this->getAssetUrl($style.'.css');
+		if(!$cs->isStyleSheetFileRegistered($url))
+			$cs->registerStyleSheetFile($url, $url);
 		return $url;
 	}
 
 	protected function publishRatingListImages($style, $fileExt='.gif')
 	{
-		$images['blank'] = "System.Web.Javascripts.ratings.{$style}_blank";
-		$images['hover'] = "System.Web.Javascripts.ratings.{$style}_hover";
-		$images['selected'] = "System.Web.Javascripts.ratings.{$style}_selected";
-		$images['half'] = "System.Web.Javascripts.ratings.{$style}_half";
+		$images = array('blank', 'hover', 'selected', 'half');
 		$files = array();
-		foreach($images as $type => $image)
-		{
-			if(($file=Prado::getPathOfNamespace($image, $fileExt))===null)
-				throw TConfigurationException('ratinglist_image_not_found',$image);
-			$files[$type] = $this->publishFilePath($file);
-		}
+		foreach($images as $type)
+			$files[$type] = $this->getAssetUrl("{$style}_{$type}{$fileExt}");
 		return $files;
 	}
 

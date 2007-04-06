@@ -22,6 +22,8 @@
  */
 class TColorPicker extends TTextBox
 {
+	const SCRIPT_PATH = 'prado/colorpicker';
+
 	/**
 	 * @return boolean whether the color picker should pop up when the button is clicked.
 	 */
@@ -128,6 +130,16 @@ class TColorPicker extends TTextBox
 	}
 
 	/**
+	 * @param string asset file in the self::SCRIPT_PATH directory.
+	 * @return string asset file url.
+	 */
+	protected function getAssetUrl($file='')
+	{
+		$base = $this->getPage()->getClientScript()->getPradoScriptAssetUrl();
+		return $base.'/'.self::SCRIPT_PATH.'/'.$file;
+	}
+
+	/**
 	 * Publish the color picker Css asset files.
 	 */
 	public function onPreRender($param)
@@ -143,47 +155,24 @@ class TColorPicker extends TTextBox
 	protected function publishColorPickerStyle()
 	{
 		$cs = $this->getPage()->getClientScript();
-		$style = 'System.Web.Javascripts.prado.colorpicker.'.$this->getColorPickerStyle();
-		if(($cssFile=Prado::getPathOfNamespace($style,'.css'))!==null)
-		{
-			$url = $this->publishFilePath($cssFile);
-			if(!$cs->isStyleSheetFileRegistered($style))
-				$cs->registerStyleSheetFile($style, $url);
-			return $url;
-		}
-		else
-			throw new TConfigurationException('colorpicker_style_invalid',$style);
+		$url = $this->getAssetUrl($this->getColorPickerStyle().'.css');
+		if(!$cs->isStyleSheetFileRegistered($url))
+			$cs->registerStyleSheetFile($url, $url);
+		return $url;
 	}
 
 	/**
 	 * Publish the color picker image assets.
-	 * @return array list of  image URLs
 	 */
 	protected function publishColorPickerImageAssets()
 	{
 		$cs = $this->getPage()->getClientScript();
 		$key = "prado:".get_class($this);
-
-		$images = array('button' => '.gif', 'target_black' => '.gif',
-						'target_white' => '.gif', 'background' => '.png',
-						'slider' => '.gif', 'hue' => '.gif');
-
-		$list = array();
-
-		foreach($images as $filename => $ext)
-		{
-			$image = 'System.Web.Javascripts.prado.colorpicker.'.$filename;
-			if(($file =  Prado::getPathOfNamespace($image, $ext))!==null)
-				$list[$filename.$ext] = $this->publishFilePath($file);
-			else
-				throw new TConfigurationException('colorpicker_image_invalid',$image);
-		}
-		$imgs['button.gif'] = $list['button.gif'];
-		$imgs['background.png'] = $list['background.png'];
+		$imgs['button.gif'] = $this->getAssetUrl('button.gif');
+		$imgs['background.png'] = $this->getAssetUrl('background.png');
 		$options = TJavaScript::encode($imgs);
 		$code = "Prado.WebUI.TColorPicker.UIImages = {$options};";
 		$cs->registerEndScript($key, $code);
-		return $list;
 	}
 
 	/**
@@ -214,14 +203,14 @@ class TColorPicker extends TTextBox
 	{
 		parent::render($writer);
 
-		$images = $this->publishColorPickerImageAssets();
 		$color = $this->getText();
 
+		$this->publishColorPickerImageAssets();
 		$writer->addAttribute('class', 'TColorPicker_button');
 		$writer->renderBeginTag('span');
 
 		$writer->addAttribute('id', $this->getClientID().'_button');
-		$writer->addAttribute('src', $images['button.gif']);
+		$writer->addAttribute('src', $this->getAssetUrl('button.gif'));
 		if($color !== '')
 			$writer->addAttribute('style', "background-color:{$color};");
 		$writer->addAttribute('width', '20');

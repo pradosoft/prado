@@ -22,6 +22,8 @@
  */
 class TActiveRatingList extends TActiveRadioButtonList
 {
+	const SCRIPT_PATH = 'prado/activeratings';
+
 	/**
 	 * @var array list of published rating images.
 	 */
@@ -262,18 +264,25 @@ class TActiveRatingList extends TActiveRadioButtonList
 	}
 
 	/**
+	 * @param string asset file in the self::SCRIPT_PATH directory.
+	 * @return string asset file url.
+	 */
+	protected function getAssetUrl($file='')
+	{
+		$base = $this->getPage()->getClientScript()->getPradoScriptAssetUrl();
+		return $base.'/'.self::SCRIPT_PATH.'/'.$file;
+	}
+
+	/**
 	 * @param string rating style name
 	 * @return string URL of the css style file
 	 */
 	protected function publishRatingListStyle($style)
 	{
 		$cs = $this->getPage()->getClientScript();
-		$stylesheet = 'System.Web.Javascripts.prado.activeratings.'.$style;
-		if(($cssFile=Prado::getPathOfNamespace($stylesheet,'.css'))===null)
-			throw new TConfigurationException('ratinglist_stylesheet_not_found',$style);
-		$url = $this->publishFilePath($cssFile);
-		if(!$cs->isStyleSheetFileRegistered($style))
-			$cs->registerStyleSheetFile($style, $url);
+		$url = $this->getAssetUrl($style.'.css');
+		if(!$cs->isStyleSheetFileRegistered($url))
+			$cs->registerStyleSheetFile($url, $url);
 		return $url;
 	}
 
@@ -284,17 +293,10 @@ class TActiveRatingList extends TActiveRadioButtonList
 	 */
 	protected function publishRatingListImages($style, $fileExt='.gif')
 	{
-		$images['blank'] = "System.Web.Javascripts.prado.activeratings.{$style}_blank";
-		$images['selected'] = "System.Web.Javascripts.prado.activeratings.{$style}_selected";
-		$images['half'] = "System.Web.Javascripts.prado.activeratings.{$style}_half";
-		$images['combined'] = "System.Web.Javascripts.prado.activeratings.{$style}_combined";
+		$types = array('blank', 'selected', 'half', 'combined');
 		$files = array();
-		foreach($images as $type => $image)
-		{
-			if(($file=Prado::getPathOfNamespace($image, $fileExt))===null)
-				throw TConfigurationException('ratinglist_image_not_found',$image);
-			$files[$type] = $this->publishFilePath($file);
-		}
+		foreach($types as $type)
+			$files[$type] = $this->getAssetUrl("{$style}_{$type}{$fileExt}");
 		return $files;
 	}
 
@@ -308,6 +310,12 @@ class TActiveRatingList extends TActiveRadioButtonList
 	{
 		if($this->getReadOnly())
 			$writer->addAttribute('class', $this->getRatingStyleCssClass());
+		else
+		{
+			$writer->addAttribute('id',$this->getClientID());
+			$this->getActiveControl()->registerCallbackClientScript(
+				$this->getClientClassName(), $this->getPostBackOptions());
+		}
 		parent::render($writer);
 	}
 

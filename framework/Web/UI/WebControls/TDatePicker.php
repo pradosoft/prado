@@ -67,6 +67,11 @@ Prado::using('System.Web.UI.WebControls.TTextBox');
 class TDatePicker extends TTextBox
 {
 	/**
+	 * Script path relative to the TClientScriptManager::SCRIPT_PATH
+	 */
+	const SCRIPT_PATH = 'prado/datepicker';
+
+	/**
 	 * @var TDatePickerClientScript validator client-script options.
 	 */
 	private $_clientScript;
@@ -735,7 +740,7 @@ class TDatePicker extends TTextBox
 	 protected function renderImageButtonDatePicker($writer)
 	{
 		$url = $this->getButtonImageUrl();
-		$url = empty($url) ? $this->publishDefaultButtonImage() : $url;
+		$url = empty($url) ? $this->getAssetUrl('calendar.png') : $url;
 		$writer->addAttribute('id', $this->getDatePickerButtonID());
 		$writer->addAttribute('src', $url);
 		$writer->addAttribute('alt', ' ');
@@ -747,16 +752,13 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * Publish the default button image asset file.
-	 * @return string image file url.
+	 * @param string date picker asset file in the self::SCRIPT_PATH directory.
+	 * @return string date picker asset url.
 	 */
-	protected function publishDefaultButtonImage()
+	protected function getAssetUrl($file='')
 	{
-		$image = 'System.Web.Javascripts.prado.datepicker.calendar';
-		if(($file =  Prado::getPathOfNamespace($image, '.png'))!==null)
-			return $this->publishFilePath($file);
-		else
-			throw new TConfigurationException('datepicker_defaultbuttonimage_invalid',$image);
+		$base = $this->getPage()->getClientScript()->getPradoScriptAssetUrl();
+		return $base.'/'.self::SCRIPT_PATH.'/'.$file;
 	}
 
 	/**
@@ -765,29 +767,11 @@ class TDatePicker extends TTextBox
 	 */
 	protected function publishCalendarStyle()
 	{
+		$url = $this->getAssetUrl($this->getCalendarStyle().'.css');
 		$cs = $this->getPage()->getClientScript();
-		$style = 'System.Web.Javascripts.prado.datepicker.'.$this->getCalendarStyle();
-		if(($cssFile=Prado::getPathOfNamespace($style,'.css'))!==null)
-		{
-			$url = $this->publishFilePath($cssFile);
-			if(!$cs->isStyleSheetFileRegistered($style))
-				$cs->registerStyleSheetFile($style, $url);
-			return $url;
-		}
-		else
-			throw new TConfigurationException('datepicker_calendarstyle_invalid',$style);
-	}
-
-	/**
-	 * Publish the spacer.gif for IE iframe source.
-	 * @return string the URL for the spacer.gif.
-	 */
-	protected function publishIFrameSpacer()
-	{
-		$cs = $this->getPage()->getClientScript();
-		$spacer = 'System.Web.Javascripts.prado.datepicker.spacer';
-		if(($file = Prado::getPathOfNamespace($spacer,'.gif')) != null)
-			return $this->publishFilePath($file);
+		if(!$cs->isStyleSheetFileRegistered($url))
+			$cs->registerStyleSheetFile($url, $url);
+		return $url;
 	}
 
 	/**
@@ -814,7 +798,7 @@ class TDatePicker extends TTextBox
 
 			if(!$cs->isEndScriptRegistered('TDatePicker.spacer'))
 			{
-				$spacer = $this->publishIFrameSpacer();
+				$spacer = $this->getAssetUrl('spacer.gif');
 				$code = "Prado.WebUI.TDatePicker.spacer = '$spacer';";
 				$cs->registerEndScript('TDatePicker.spacer', $code);
 			}

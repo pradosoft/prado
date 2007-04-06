@@ -30,6 +30,8 @@ Upgrading from v3.1a
 - Changed TActiveRatingList's javascript control class 
   name from "Prado.WebUI.TRatingList" to "Prado.WebUI.TActiveRatingList".
 
+- Prado's javascript library locations moved from Web/Javascripts/xxx to Web/Javascripts/source/xxx
+
 Upgrading from v3.0.x
 ---------------------
 - Validators ClientSide.OnSuccess becomes ClientSide.OnValidationSuccess, 
