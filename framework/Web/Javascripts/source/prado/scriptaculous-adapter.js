@@ -323,12 +323,23 @@ Prado.Element =
 
 	extractContent : function(text, boundary)
 	{
-		var f = RegExp('(<!--'+boundary+'-->)([\\s\\S\\w\\W]*)(<!--//'+boundary+'-->)',"m");
+		var tagStart = '<!--'+boundary+'-->';
+		var tagEnd = '<!--//'+boundary+'-->';
+		var start = text.indexOf(tagStart);
+		if(start > -1)
+		{
+			start += tagStart.length;
+			var end = text.indexOf(tagEnd,start);
+			if(end > -1)
+				return text.substring(start,end);
+		}
+		return null;
+		/*var f = RegExp('(?:<!--'+boundary+'-->)((?:.|\n|\r)+?)(?:<!--//'+boundary+'-->)',"m");
 		var result = text.match(f);
 		if(result && result.length >= 2)
-			return result[2];
+			return result[1];
 		else
-			return null;
+			return null;*/
 	},
 
 	evaluateScript : function(content)

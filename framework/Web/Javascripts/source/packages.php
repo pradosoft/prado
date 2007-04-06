@@ -1,5 +1,7 @@
 <?php
 
+//$Id$
+
 $packages = array(
 	'prado' => array(
 		'prototype/prototype.js',
