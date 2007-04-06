@@ -866,8 +866,12 @@ class TApplication extends TComponent
 			Prado::trace("Loading module $id ({$moduleConfig[0]})",'System.TApplication');
 			list($moduleClass, $initProperties, $configElement)=$moduleConfig;
 			$module=Prado::createComponent($moduleClass);
-			if(is_string($id))
-				$this->setModule($id,$module);
+			if(!is_string($id))
+			{
+				$id='_module'.count($this->_modules);
+				$initProperties['id']=$id;
+			}
+			$this->setModule($id,$module);
 			foreach($initProperties as $name=>$value)
 				$module->setSubProperty($name,$value);
 			$modules[]=array($module,$configElement);

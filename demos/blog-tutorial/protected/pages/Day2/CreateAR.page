@@ -3,8 +3,18 @@
 <h1>Creating Active Record Classes</h1>
 
 <p>
-We need to create two <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">Active Record</a> classes, <tt>UserRecord</tt> and <tt>PostRecord</tt>, to represent data records in the <tt>users</tt> and <tt>posts</tt> tables, respectively. Active Record classes must extend from the base class <tt>ActiveRecord</tt>, and their properties must match exactly to the fields of the corresponding tables. To better organize our directories, we create a new directory <tt>protected/database</tt> to hold the class files.
+We need to create two <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">Active Record</a> classes, <tt>UserRecord</tt> and <tt>PostRecord</tt>, to represent data records in the <tt>users</tt> and <tt>posts</tt> tables, respectively. Active Record classes must extend from the base class <tt>ActiveRecord</tt>, and their properties must match exactly to the fields of the corresponding tables.
 </p>
+
+<p>
+To better organize our directories, we create a new directory <tt>protected/database</tt> to hold the class files. We also modify our application configuration by inserting the following lines. It is equivalent to adding the directory <tt>protected/database</tt> to PHP include_path, which allows us to use the classes without explicitly including them.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+  <paths>
+    <using namespace="Application.database.*" />
+  </paths>
+</com:TTextHighlighter>
 
 <p>
 Instead of writing the classes manually, we will use the <a href="http://www.pradosoft.com/demos/quickstart/?page=GettingStarted.CommandLine">PRADO command line tool</a> again to generate the classes for us.
@@ -54,25 +64,50 @@ We should see the following directory structure with two new files under <tt>pro
 <img src="<%~ directories2.gif %>" />
 
 <p>
-If we check the <tt>UserRecord</tt> class file, we should see the following content. As we see, for each field in the <tt>users</tt> table, the class has a corresponding data member. The constant <tt>TABLE</tt> specifies the table name for the <tt>UserRecord</tt>. The static method <tt>finder()</tt> allows us to perform query and retrieve users data in terms of <tt>UserRecord</tt> objects, as we will see in later sections.
+If we check the <tt>PostRecord</tt> class file, we should see the following content.
 </p>
 
 <com:TTextHighlighter CssClass="source" Language="php">
-class UserRecord extends TActiveRecord
+class PostRecord extends TActiveRecord
 {
-	const TABLE='users';
-	public $username;
-	public $email;
-	public $password;
-	public $role;
-	public $first_name;
-	public $last_name;
+	const TABLE='posts';
+	public $post_id;
+	public $author;
+	public $create_time;
+	public $title;
+	public $content;
 
 	public static function finder($className=__CLASS__)
 	{
 		return parent::finder($className);
 	}
 }
+</com:TTextHighlighter>
+
+<p>
+As we see, for each field in the <tt>posts</tt> table, the class has a corresponding data member. The constant <tt>TABLE</tt> specifies the table name for the <tt>PostRecord</tt>. The static method <tt>finder()</tt> allows us to perform query and retrieve post data in terms of <tt>PostRecord</tt> objects.
+</p>
+
+<p>
+We can use the command line tool to do some testing with our newly created Active Record classes. Still in the interactive mode of the command line tool, we enter a PHP statement and should see the following. Interested readers may try some other PHP statements, such as <tt>UserRecord::finder()->findAll()</tt>.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="text">
+>> PostRecord::finder()->findAll()
+array
+(
+    [0] => PostRecord#1
+    (
+        [post_id] => '1'
+        [author] => 'admin'
+        [create_time] => '1175708482'
+        [title] => 'first post'
+        [content] => 'this is my first post'
+        [TActiveRecord:_readOnly] => false
+        [TActiveRecord:_connection] => null
+        [TComponent:_e] => array()
+    )
+)
 </com:TTextHighlighter>
 
 </com:TContent>

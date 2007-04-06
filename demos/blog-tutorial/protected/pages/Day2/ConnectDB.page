@@ -28,18 +28,19 @@ We modify our application configuration file <tt>protected/application.xml</tt> 
 
 <com:TTextHighlighter CssClass="source" Language="xml">
 <modules>
-  <module class="System.Data.ActiveRecord.TActiveRecordConfig">
+  <module id="db" class="System.Data.TDataSourceConfig">
     <database ConnectionString="sqlite:protected/data/blog.db" />
   </module>
+  <module class="System.Data.ActiveRecord.TActiveRecordConfig" ConnectionID="db" />
 </modules>
 </com:TTextHighlighter>
 
 <p>
-The configuration above shows that we are adding to our application a <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Modules">module</a> whose class is specified in the <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Components">namespace</a> format as <tt>System.Data.ActiveRecord.TActiveRecordConfig</tt>. Through this module, Active Record will automatically establish a DB connection by using the connection information given in <tt>ConnectionString</tt>.
+The configuration above shows that we are adding two <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Modules">modules</a> to our application. The <tt>TDataSourceConfig</tt> module is configured with the connection string <tt>sqlite:protected/data/blog.db</tt> which points to our SQLite database. This connection is used by the <tt>TActiveRecordConfig</tt> module which is required by Active Record.
 </p>
 
 <com:InfoBox>
-One may set up two or more DB connections in the application configuration. For more details, see the <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">Active Record Documentation</a>. And of course, one may also explicitly create a DB connection in PHP code using the <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.DAO">TDbConnection</a> component in PDO.
+One may set up two or more DB connections in the application configuration. For more details, see the <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">Active Record documentation</a>. And of course, one may also explicitly create a DB connection in PHP code using the <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.DAO">TDbConnection</a> component in PDO.
 </com:InfoBox>
 
 </com:TContent>
