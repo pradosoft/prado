@@ -1,6 +1,7 @@
 <com:TContent ID="body" >
 <!-- $Id$ -->
 <h1>Active Record Scaffold Views</h1>
+<com:SinceVersion Version="3.1b" />
 <p><a href="?page=Database.ActiveRecord">Active Record</a> classes can be used together with 
 <com:DocLink ClassPath="System.Data.ActiveRecord.Scaffold.TScaffoldListView" Text="TScaffoldListView"/>
 and

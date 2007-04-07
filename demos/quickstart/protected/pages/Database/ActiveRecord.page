@@ -1,6 +1,7 @@
 <com:TContent ID="body" >
 <!-- $Id $ -->
 <h1 id="138046">Active Record</h1>
+<com:SinceVersion Version="3.1a" />
 <p id="690478" class="block-content">Active Records are objects that wrap a row in a database table or view,
     encapsulates the database access and adds domain logic on that data.
     The basics of an Active Record is a business object class, e.g., a 

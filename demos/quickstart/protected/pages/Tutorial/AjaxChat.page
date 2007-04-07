@@ -1,5 +1,6 @@
 <com:TContent ID="body">
 	<h1 id="18008">Building an AJAX Chat Application</h1>
+	<com:RequiresVersion Version="3.1a" />
 	<p id="90081" class="block-content">This tutorial introduces the Prado web application framework's
 	<a href="?page=Database.ActiveRecord">ActiveRecord</a>
 	and <a href="?page=ActiveControls.Home">Active Controls</a> to build a Chat

@@ -2,6 +2,7 @@
 <!-- $Id $ -->
 
 <h1 id="140062">Data Mapper</h1>
+<com:SinceVersion Version="3.1a" />
 <p id="700505" class="block-content">Data Mappers moves data between objects and a database while keeping them 
     independent of each other and the mapper itself. If you started with
     <a href="?page=Database.ActiveRecord">Active Records</a>, you may eventually

@@ -25,10 +25,15 @@ to include on the page. For following example will include the "ajax" and "effec
 	    <li><tt>validator</tt> : validation</li>
 	    <li><tt>logger</tt> : javascript logger and object browser</li>
 	    <li><tt>datepicker</tt> : datepicker</li>
-	    <li><tt>rico</tt> : Rico library</li>
 	    <li><tt>colorpicker</tt> : colorpicker</li>
 	</ul>
-<p id="260240" class="block-content">The dependencies for each library are automatically resolved. That is,
+<p id="260240" class="block-content">
+Many of the libraries, such as <tt>validator</tt> and <tt>datepicker</tt> will automatically
+when controls that uses these libraries are visible on the page. For example, all the 
+<a href="?page=Controls.Validation">validators</a>
+if they have their <tt>EnableClientScript</tt> set to true will include both the <tt>prado</tt> 
+and <tt>validator</tt> javascript libraries. 
+The dependencies for each library are automatically resolved. That is,
 	specifying, say the "ajax", will also include the "prado" library.</p>
 
 <h2 id="2203">Including Custom Javascript Files</h2>

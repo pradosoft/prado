@@ -658,3 +658,20 @@ div.last-modified
 	border-left: 1px solid #ccc;
 	border-right: 1px solid #ccc;
 }
+
+p.since-version, p.requires-version
+{
+	border: 1px solid #ccf;
+	padding: 0.8em 0.8em 0.8em 35px;
+	background-repeat: no-repeat;
+	background-position: 10px 50%;
+	background-image: url(sitemap_color.gif);
+	background-color: #efe;
+}
+
+p.requires-version
+{
+	background-image: url(flag_red.gif);
+	border-color: pink;
+	background-color: #ffe9e9;
+}

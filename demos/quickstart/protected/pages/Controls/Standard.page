@@ -15,6 +15,10 @@
   <a href="?page=Controls.ClientScript">TClientScript</a> adds javascript code to the page.
   </li>
 
+  <li>
+  <a href="?page=Controls.ClientScriptLoader">TClientScriptLoader</a> loads custom javascript libraries.
+  </li>
+
   <li>*
   <a href="?page=Controls.ColorPicker">TColorPicker</a> represents an input field taking color values via a color dialog.
   </li>
