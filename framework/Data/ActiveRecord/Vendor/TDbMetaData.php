@@ -195,7 +195,7 @@ abstract class TDbMetaData extends TComponent
 		if(!is_array($values)) $values = array($values);
 		foreach($keys as $i => $key)
 		{
-			$value = isset($values[$i]) ? $values[$i] : $values[$key];
+			$value = array_key_exists($i,$values) ? $values[$i] : $values[$key];
 			$this->bindValue($command, ':'.$key, $value);
 		}
 		$command->prepare();
