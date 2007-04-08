@@ -10,7 +10,7 @@ Most Web applications use database to keep data. Our blog system is not an excep
 For tutorial purpose, we have simplified the requirements of our blog system so that it only needs to deal with user and post data. We thus create two database tables, <tt>users</tt> and <tt>posts</tt>, as shown in the following entity-relationship (ER) diagram.
 </p>
 
-<img src="<%~ ER.gif %>" />
+<img src="<%~ ER.gif %>" class="output" />
 
 <p>
 We use a SQLite 3 database to keep our data. We first convert the ER diagram into the following SQL statements and save them in the file <tt>protected/schema.sql</tt>.
@@ -20,8 +20,8 @@ We use a SQLite 3 database to keep our data. We first convert the ER diagram int
 /* create users table */
 CREATE TABLE users (
   username      VARCHAR(128) NOT NULL PRIMARY KEY,
-  email         VARCHAR(128) NOT NULL UNIQUE,
-  password      VARCHAR(128) NOT NULL,  /* plain text password */
+  email         VARCHAR(128) NOT NULL,
+  password      VARCHAR(128) NOT NULL,  /* in plain text */
   role          INTEGER NOT NULL,       /* 0: normal user, 1: administrator */
   first_name    VARCHAR(128),
   last_name     VARCHAR(128)
@@ -33,13 +33,13 @@ CREATE TABLE posts (
   author        VARCHAR(128) NOT NULL,  /* references users.username */
   create_time   INTEGER NOT NULL,       /* UNIX timestamp */
   title         VARCHAR(256) NOT NULL,  /* title of the post */
-  content       TEXT NOT NULL           /* content of the post */
+  status        INTEGER NOT NULL        /* 0: published; 1: draft; 2: pending; 2: denied */
 );
 
 /* insert some initial data records for testing */
 INSERT INTO users VALUES ('admin', 'admin@example.com', 'demo', 1, 'Qiang', 'Xue');
 INSERT INTO users VALUES ('demo', 'demo@example.com', 'demo', 0, 'Wei', 'Zhuo');
-INSERT INTO posts VALUES (NULL, 'admin', 1175708482, 'first post', 'this is my first post');
+INSERT INTO posts VALUES (NULL, 'admin', 1175708482, 'first post', 'this is my first post', 0);
 </com:TTextHighlighter>
 
 <com:NoteBox>
@@ -58,7 +58,7 @@ sqlite3 blog.db < ../schema.sql
 The database has been created as <tt>protected/data/blog.db</tt> and we shall see the following directories and files:
 </p>
 
-<img src="<%~ directories.gif %>" />
+<img src="<%~ directories.gif %>" class="output" />
 
 <com:NoteBox>
 It is required by SQLite that both the directory <tt>protected/data</tt> and the database file <tt>protected/data/blog.db</tt> be set writable by the Web server process.

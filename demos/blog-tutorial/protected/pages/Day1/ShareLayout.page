@@ -17,7 +17,7 @@ It is also possible to share common layout via <a href="http://www.pradosoft.com
 We now create the master control <tt>MainLayout</tt> to represent the common layout shared by our blog pages. The <tt>MainLayout</tt> control is a template control extending from <tt>TTemplateControl</tt>. It requires a template file <tt>MainLayout.tpl</tt> and a class file <tt>MainLayout.php</tt> located under the same directory. To facilitate maintenance, we create a new directory <tt>protected/layouts</tt> to hold them.
 </p>
 
-<img src="<%~ directories3.gif %>" />
+<img src="<%~ directories3.gif %>" class="output" />
 
 <p>
 For the moment, <tt>MainLayout</tt> only contains a simple header and a footer, as shown in the following. In future, we will add a side-bar to it. Readers are also encouraged to enhance the layout with other features.
@@ -38,7 +38,7 @@ For the moment, <tt>MainLayout</tt> only contains a simple header and a footer, 
 </div>
 
 <div id="footer">
-Powered by &lt;%= PRADO::poweredByPrado() %>
+&lt;%= PRADO::poweredByPrado() %>
 </div>
 
 &lt;/com:TForm>

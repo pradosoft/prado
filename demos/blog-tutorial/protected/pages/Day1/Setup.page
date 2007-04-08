@@ -21,7 +21,7 @@ php path/to/prado-cli.php -c .
 Running the above command creates the following directories and files:
 </p>
 
-<img src="<%~ directories.gif %>" />
+<img src="<%~ directories.gif %>" class="output" />
 
 <p>
 We now have a skeleton PRADO application accessible via the URL <tt>http://hostname/blog/index.php</tt> which brings up a Web page showing "Welcome to PRADO".
@@ -145,13 +145,16 @@ To change the location of the root page directory and change the name of homepag
 </p>
 
 <com:TTextHighlighter CssClass="source" Language="xml">
-<services>
-  <service id="page" 
+<?xml version="1.0" encoding="utf-8"?>
+<application id="blog" mode="Debug">
+  <services>
+    <service id="page" 
            class="TPageService" 
            BasePath="path.to.pages"
            DefaultPage="NewHome"
            />
-</services>
+  </services>
+</application>
 </com:TTextHighlighter>
 
 <p>

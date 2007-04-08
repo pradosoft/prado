@@ -18,7 +18,7 @@
 </div>
 
 <div class="topic">
-<div>Day 2: Working with Database - Part I</div>
+<div>Day 2: Setting Up Database</div>
 <ul>
     <li><a href="?page=Day2.CreateDB">Creating Database</a></li>
     <li><a href="?page=Day2.ConnectDB">Establishing DB Connection</a></li>
@@ -27,26 +27,34 @@
 </div>
 
 <div class="topic">
-<div>Day 3: Working with Database - Part II</div>
+<div>Day 3: Implementing User Management</div>
 <ul>
-    <li><a href="?page=">Creating NewPost Page</a></li>
-    <li><a href="?page=">Creating ListPost Page</a></li>
+    <li><a href="?page=Day3.Overview">Overview</a></li>
+    <li><a href="?page=Day3.Auth">Authentication and Authorization</a></li>
+    <li><a href="?page=Day3.CreateLoginUser">Creating LoginUser Page</a></li>
+    <li><a href="?page=Day3.CreateNewUser">Creating NewUser Page</a></li>
+    <li><a href="?page=Day3.CreateEditUser">Creating EditUser Page</a></li>
+    <li><a href="?page=Day3.CreateAdminUser">Creating AdminUser Page</a></li>
 </ul>
 </div>
 
 <div class="topic">
-<div>Day 4: Authentication and Authorization</div>
+<div>Day 4: Implementing Post Management</div>
 <ul>
-    <li><a href="?page=">Creating Login Page</a></li>
-    <li><a href="?page=">Using PRADO Auth Framework</a></li>
-    <li><a href="?page=">Database-Driven Authentication</a></li>
+    <li><a href="?page=Day4.Overview">Overview</a></li>
+    <li><a href="?page=Day4.CreateReadPost">Creating ReadPost Page</a></li>
+    <li><a href="?page=Day4.CreateListPost">Creating ListPost Page</a></li>
+    <li><a href="?page=Day4.CreateNewPost">Creating NewPost Page</a></li>
+    <li><a href="?page=Day4.CreateEditPost">Creating EditPost Page</a></li>
+    <li><a href="?page=Day4.CreateAdminPost">Creating AdminPost Page</a></li>
 </ul>
 </div>
 
 <div class="topic">
-<div>Day 5: Developing and Using Components</div>
+<div>Day 5: Creating Portlets</div>
 <ul>
-</ul>
+    <li><a href="?page=Day5.Create">Overview</a></li>
+    <li><a href="?page=Day4.CreateReadPost">Creating ReadPost Page</a></li>
 </div>
 
 <div class="topic">

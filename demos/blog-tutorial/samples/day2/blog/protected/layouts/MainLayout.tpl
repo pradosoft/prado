@@ -12,7 +12,7 @@
 </div>
  
 <div id="footer">
-Powered by <%= PRADO::poweredByPrado() %>
+<%= PRADO::poweredByPrado() %>
 </div>
  
 </com:TForm>

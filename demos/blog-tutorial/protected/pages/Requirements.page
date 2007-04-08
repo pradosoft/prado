@@ -30,7 +30,7 @@ In general, the blog system should allow users to read blogs and authenticated u
 
 <h2>System Maintenance</h2>
 <ul>
-<li>The system shall provide a mechanism to collect users' feedback.</li>
+<li>The system shall be able to collect users' feedback.</li>
 <li>The system shall be flexible enough to allow adding new portlets in future.</li>
 <li>The system shall provide ease of using a different theme which changes the styles of the UI elements.</li>
 </ul>

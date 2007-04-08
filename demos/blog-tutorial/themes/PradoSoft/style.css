@@ -21,14 +21,14 @@ h1, h2, h3, h4
 	margin-bottom: 0;
 }
 
-h1, h2
+h1
 {
 	padding-bottom: 3px;
 	border-bottom: 1px solid #ccc;
 }
 
 h1 {
-	font-size:13pt;
+	font-size:14pt;
 }
 
 h2 {
@@ -657,4 +657,14 @@ div.last-modified
 {
 	border-left: 1px solid #ccc;
 	border-right: 1px solid #ccc;
+}
+
+img.output
+{
+	padding: 0.5em;
+	border-style:solid;
+	border-width:1px;
+	border-color:#eeeeee;
+	background-color:#ffffee;
+	margin: 0.2em;
 }

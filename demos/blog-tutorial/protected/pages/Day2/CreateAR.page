@@ -61,7 +61,7 @@ Here we used the <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundam
 We should see the following directory structure with two new files under <tt>protected/database</tt>:
 </p>
 
-<img src="<%~ directories2.gif %>" />
+<img src="<%~ directories2.gif %>" class="output" />
 
 <p>
 If we check the <tt>PostRecord</tt> class file, we should see the following content.
