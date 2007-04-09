@@ -58,6 +58,7 @@ class TFileUpload extends TWebControl implements IPostBackDataHandler, IValidata
 	 * @var integer error code of the current file upload
 	 */
 	private $_errorCode=UPLOAD_ERR_NO_FILE;
+	private $_dataChanged=false;
 
 	/**
 	 * @return string tag name of the file upload control
@@ -207,7 +208,7 @@ class TFileUpload extends TWebControl implements IPostBackDataHandler, IValidata
 			$this->_fileType=$_FILES[$key]['type'];
 			$this->_errorCode=$_FILES[$key]['error'];
 			$this->_localName=$_FILES[$key]['tmp_name'];
-			return true;
+			return $this->_dataChanged=true;
 		}
 		else
 			return false;
@@ -233,6 +234,16 @@ class TFileUpload extends TWebControl implements IPostBackDataHandler, IValidata
 	public function onFileUpload($param)
 	{
 		$this->raiseEvent('OnFileUpload',$this,$param);
+	}
+
+	/**
+	 * Returns a value indicating whether postback has caused the control data change.
+	 * This method is required by the IPostBackDataHandler interface.
+	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
+	 */
+	public function getDataChanged()
+	{
+		return $this->_dataChanged;
 	}
 
 	/**

@@ -66,6 +66,7 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	 * @var integer y coordinate that the image is being clicked at
 	 */
 	private $_y=0;
+	private $_dataChanged=false;
 
 	/**
 	 * @return string tag name of the button
@@ -202,6 +203,7 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 			$this->_y=intval($values["{$uid}_y"]);
 			if($this->getPage()->getPostBackEventTarget()===null)
 				$this->getPage()->setPostBackEventTarget($this);
+			$this->_dataChanged=true;
 		}
 		return false;
 	}
@@ -254,6 +256,16 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 			$this->getPage()->validate($this->getValidationGroup());
 		$this->onClick(new TImageClickEventParameter($this->_x,$this->_y));
 		$this->onCommand(new TCommandEventParameter($this->getCommandName(),$this->getCommandParameter()));
+	}
+
+	/**
+	 * Returns a value indicating whether postback has caused the control data change.
+	 * This method is required by the IPostBackDataHandler interface.
+	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
+	 */
+	public function getDataChanged()
+	{
+		return $this->_dataChanged;
 	}
 
 	/**

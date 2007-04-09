@@ -25,6 +25,8 @@
  */
 class THiddenField extends TControl implements IPostBackDataHandler, IValidatable, IDataRenderer
 {
+	private $_dataChanged=false;
+
 	/**
 	 * @return string tag name of the hidden field.
 	 */
@@ -85,8 +87,18 @@ class THiddenField extends TControl implements IPostBackDataHandler, IValidatabl
 		else
 		{
 			$this->setValue($value);
-			return true;
+			return $this->_dataChanged=true;
 		}
+	}
+
+	/**
+	 * Returns a value indicating whether postback has caused the control data change.
+	 * This method is required by the IPostBackDataHandler interface.
+	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
+	 */
+	public function getDataChanged()
+	{
+		return $this->_dataChanged;
 	}
 
 	/**

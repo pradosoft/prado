@@ -42,6 +42,8 @@
  */
 class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatable, IDataRenderer
 {
+	private $_dataChanged=false;
+
 	/**
 	 * @return string tag name of the button
 	 */
@@ -63,7 +65,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 		if($newChecked=isset($values[$key]))
 			$this->setValue($values[$key]);
 		$this->setChecked($newChecked);
-		return $newChecked!==$checked;
+		return $this->_dataChanged=($newChecked!==$checked);
 	}
 
 	/**
@@ -102,6 +104,16 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 		parent::onPreRender($param);
 		if($this->getEnabled(true))
 			$this->getPage()->registerRequiresPostData($this);
+	}
+
+	/**
+	 * Returns a value indicating whether postback has caused the control data change.
+	 * This method is required by the IPostBackDataHandler interface.
+	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
+	 */
+	public function getDataChanged()
+	{
+		return $this->_dataChanged;
 	}
 
 	/**

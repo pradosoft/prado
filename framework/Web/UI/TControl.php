@@ -1925,6 +1925,10 @@ interface IPostBackDataHandler
 	 * indicating the control data is changed.
 	 */
 	public function raisePostDataChangedEvent();
+	/**
+	 * @return boolean whether postback causes the data change. Defaults to false for non-postback state.
+	 */
+	public function getDataChanged();
 }
 
 

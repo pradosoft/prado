@@ -38,6 +38,8 @@ Prado::using('System.Web.UI.WebControls.TListControl');
  */
 class TListBox extends TListControl implements IPostBackDataHandler, IValidatable
 {
+	private $_dataChanged=false;
+
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This method overrides the parent implementation with additional list box specific attributes.
@@ -99,7 +101,7 @@ class TListBox extends TListControl implements IPostBackDataHandler, IValidatabl
 				if($this->getSelectedIndex()!==$index)
 				{
 					$this->setSelectedIndex($index);
-					return true;
+					return $this->_dataChanged=true;
 				}
 				else
 					return false;
@@ -127,13 +129,16 @@ class TListBox extends TListControl implements IPostBackDataHandler, IValidatabl
 			else
 				$flag=true;
 			if($flag)
+			{
 				$this->setSelectedIndices($list);
+				$this->_dataChanged=true;
+			}
 			return $flag;
 		}
 		else if($this->getSelectedIndex()!==-1)
 		{
 			$this->clearSelection();
-			return true;
+			return $this->_dataChanged=true;
 		}
 		else
 			return false;
@@ -151,6 +156,16 @@ class TListBox extends TListControl implements IPostBackDataHandler, IValidatabl
 		if($this->getAutoPostBack() && $this->getCausesValidation())
 			$this->getPage()->validate($this->getValidationGroup());
 		$this->onSelectedIndexChanged(null);
+	}
+
+	/**
+	 * Returns a value indicating whether postback has caused the control data change.
+	 * This method is required by the IPostBackDataHandler interface.
+	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
+	 */
+	public function getDataChanged()
+	{
+		return $this->_dataChanged;
 	}
 
 	/**

@@ -52,6 +52,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	private $_repeatedControl;
 	private $_isEnabled;
 	private $_changedEventRaised=false;
+	private $_dataChanged=false;
 
 	/**
 	 * Constructor.
@@ -315,7 +316,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 						if(!$this->_changedEventRaised)
 						{
 							$this->_changedEventRaised=true;
-							return true;
+							return $this->_dataChanged=true;
 						}
 					}
 				}
@@ -388,6 +389,16 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 		{
 			$this->renderClientControlScript($writer);
 		}
+	}
+
+	/**
+	 * Returns a value indicating whether postback has caused the control data change.
+	 * This method is required by the IPostBackDataHandler interface.
+	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
+	 */
+	public function getDataChanged()
+	{
+		return $this->_dataChanged;
 	}
 
 	/**

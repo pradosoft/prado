@@ -66,6 +66,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	 * @var string safe textbox content with javascript stripped off
 	 */
 	private $_safeText;
+	private $_dataChanged=false;
 
 	/**
 	 * @return string tag name of the textbox
@@ -216,10 +217,20 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 		if(!$this->getReadOnly() && $this->getText()!==$value)
 		{
 			$this->setText($value);
-			return true;
+			return $this->_dataChanged=true;
 		}
 		else
 			return false;
+	}
+
+	/**
+	 * Returns a value indicating whether postback has caused the control data change.
+	 * This method is required by the IPostBackDataHandler interface.
+	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
+	 */
+	public function getDataChanged()
+	{
+		return $this->_dataChanged;
 	}
 
 	/**
