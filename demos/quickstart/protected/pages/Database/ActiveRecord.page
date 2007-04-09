@@ -310,7 +310,7 @@ Record object and call the <tt>save()</tt> method. E.g.
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690161">
 $user1 = new UserRecord();
-$user1->username = "admin"
+$user1->username = "admin";
 $user1->email = "admin@example.com";
 $user1->save(); //insert a new record
 

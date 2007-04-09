@@ -26,6 +26,14 @@ $pages['Tutorial: Building an AJAX Chat Application'] = array(
 	'Tutorial/AjaxChat.page'
 	);
 
+$pages['Tutorial: Addressbook'] = array(
+	'Tutorial/AddressBook.page'
+	);
+
+$pages['Tutorial: Addressbook'] = array(
+	'Tutorial/AddressBook.page'
+	);
+
 $pages['Fundamentals'] = array(
 	'Fundamentals/Architecture.page',
     'Fundamentals/Components.page',
@@ -109,6 +117,7 @@ $pages['Service References'] = array(
 $pages['Working with Databases'] = array(
 	'Database/DAO.page',
 	'Database/ActiveRecord.page',
+	'Database/Scaffold.page',
 	'Database/SqlMap.page');
 
 $pages['Advanced Topics'] = array(
