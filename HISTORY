@@ -1,5 +1,5 @@
-Version 3.1.0 beta to be released
-=================================
+Version 3.1.0 beta April 9, 2007
+================================
 BUG: Ticket#278 - client-side validator enable/disable (conditional) (Wei)
 BUG: Ticket#492 - TDataGridPagerStyle not found error (Qiang)
 BUG: Ticket#500 - URL encode in callback (Wei)

@@ -328,7 +328,12 @@ abstract class TDataBoundControl extends TWebControl
 		$this->setRequiresDataBinding(false);
 		$this->dataBindProperties();
 		$this->onDataBinding(null);
-		$data=$this->getData();
+
+		if(($view=$this->getDataSourceView())!==null)
+			$data=$view->select($this->getSelectParameters());
+		else
+			$data=null;
+
 		if($data instanceof Traversable)
 		{
 			if($this->getAllowPaging())
@@ -357,14 +362,6 @@ abstract class TDataBoundControl extends TWebControl
 	{
 		if(!$this->_ignoreDataSourceViewChanged)
 			$this->setRequiresDataBinding(true);
-	}
-
-	protected function getData()
-	{
-		if(($view=$this->getDataSourceView())!==null)
-			return $view->select($this->getSelectParameters());
-		else
-			return null;
 	}
 
 	protected function getDataSourceView()

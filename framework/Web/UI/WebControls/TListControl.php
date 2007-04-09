@@ -78,7 +78,7 @@ Prado::using('System.Util.TDataFieldAccessor');
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-abstract class TListControl extends TDataBoundControl
+abstract class TListControl extends TDataBoundControl implements IDataRenderer
 {
 	/**
 	 * @var TListItemCollection item list
@@ -546,6 +546,32 @@ abstract class TListControl extends TDataBoundControl
 			return $this->_items->itemAt($index);
 		else
 			return null;
+	}
+
+	/**
+	 * Returns the value of the selected item with the lowest cardinal index.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link getSelectedValue()}.
+	 * @return string the value of the selected item with the lowest cardinal index, empty if no selection.
+	 * @see getSelectedValue
+	 * @since 3.1.0
+	 */
+	public function getData()
+	{
+		return $this->getSelectedValue();
+	}
+
+	/**
+	 * Selects an item by the specified value.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link setSelectedValue()}.
+	 * @param string the value of the item to be selected.
+	 * @see setSelectedValue
+	 * @since 3.1.0
+	 */
+	public function setData($value)
+	{
+		$this->setSelectedValue($value);
 	}
 
 	/**
