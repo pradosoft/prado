@@ -22,7 +22,7 @@
 /**
  * The root directory for storing all source js files
  */
-define('SOURCE_DIR',realpath(dirname(__FILE__).'/../../framework/Web/Javascripts'));
+define('SOURCE_DIR',realpath(dirname(__FILE__).'/../../framework/Web/Javascripts/source'));
 /**
  * The directory for storing compressed js files
  */
