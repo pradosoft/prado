@@ -30,7 +30,10 @@ Upgrading from v3.1a
 - Changed TActiveRatingList's javascript control class 
   name from "Prado.WebUI.TRatingList" to "Prado.WebUI.TActiveRatingList".
 
-- Prado's javascript library locations moved from Web/Javascripts/xxx to Web/Javascripts/source/xxx
+- PRADO's javascript library locations moved from Web/Javascripts/xxx to Web/Javascripts/source/xxx
+
+- IPostBackDataHandler added a new method getDataChanged(). Any control
+  implementing this interface will be required to implement this new method.
 
 Upgrading from v3.0.x
 ---------------------
