@@ -7,7 +7,7 @@
 	<com:TRepeater id="quickstart_results">
 	<prop:HeaderTemplate>
 	<div class="searchHeader">
-		Found <%# $this->Parent->Data->Count %> results in the Quickstart Tutorial.
+		Found <%# $this->Parent->DataSource->Count %> results in the Quickstart Tutorial.
 	</div>
 	</prop:HeaderTemplate>
 	<prop:ItemTemplate>
