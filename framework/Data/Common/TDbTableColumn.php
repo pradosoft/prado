@@ -62,7 +62,7 @@ class TDbTableColumn extends TComponent
 	}
 
 	/**
-	 * @param integer PDO bind param/value types.
+	 * @param integer PDO bind param/value types, default returns string.
 	 */
 	public function getPdoType()
 	{
@@ -72,6 +72,7 @@ class TDbTableColumn extends TComponent
 			case 'integer': return PDO::PARAM_INT;
 			case 'string' : return PDO::PARAM_STR;
 		}
+		return PDO::PARAM_STR;
 	}
 
 	/**
@@ -152,14 +153,6 @@ class TDbTableColumn extends TComponent
 	public function getIsForeignKey()
 	{
 		return $this->getInfo('IsForeignKey',false);
-	}
-
-	/**
-	 * @return boolean whether a unique constraint applies to this column, default is false.
-	 */
-	public function getIsUnique()
-	{
-		return $this->getInfo('IsUnique', false);
 	}
 
 	/**

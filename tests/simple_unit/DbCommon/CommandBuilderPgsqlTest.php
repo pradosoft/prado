@@ -1,5 +1,4 @@
 <?php
-
 Prado::using('System.Data.*');
 Prado::using('System.Data.Common.Pgsql.TPgsqlMetaData');
 
@@ -60,15 +59,15 @@ class CommandBuilderPgsqlTest extends UnitTestCase
 		$builder = $meta->createCommandBuilder('address');
 		$query = 'SELECT * FROM '.$meta->getTableInfo('address')->getTableFullName();
 
-		$limit = $builder->createLimitCondition($query, 1);
+		$limit = $builder->applyLimitOffset($query, 1);
 		$expect = $query.' LIMIT 1';
 		$this->assertEqual($expect, $limit);
 
-		$limit = $builder->createLimitCondition($query, -1, 10);
+		$limit = $builder->applyLimitOffset($query, -1, 10);
 		$expect = $query.' OFFSET 10';
 		$this->assertEqual($expect, $limit);
 
-		$limit = $builder->createLimitCondition($query, 2, 3);
+		$limit = $builder->applyLimitOffset($query, 2, 3);
 		$expect = $query.' LIMIT 2 OFFSET 3';
 		$this->assertEqual($expect, $limit);
 	}

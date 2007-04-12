@@ -1,13 +1,13 @@
 <?php
 /**
- * TMysqlTableColumn class file.
+ * TSqliteTableColumn class file.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2007 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id$
- * @package System.Data.Common.Mysql
+ * @version $Id: TSqliteTableColumn.php 1861 2007-04-12 08:05:03Z wei $
+ * @package System.Data.Common.Sqlite
  */
 
 /**
@@ -16,20 +16,16 @@
 Prado::using('System.Data.Common.TDbTableColumn');
 
 /**
- * Describes the column metadata of the schema for a Mysql database table.
+ * Describes the column metadata of the schema for a PostgreSQL database table.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id$
- * @package System.Data.Common.Mysql
+ * @version $Id: TSqliteTableColumn.php 1861 2007-04-12 08:05:03Z wei $
+ * @package System.Data.Common.Sqlite
  * @since 3.1
  */
-class TMysqlTableColumn extends TDbTableColumn
+class TSqliteTableColumn extends TDbTableColumn
 {
-	private static $types = array(
-		'integer' => array('bit', 'tinyint', 'smallint', 'mediumint', 'int', 'integer', 'bigint'),
-		'boolean' => array('boolean', 'bool'),
-		'float' => array('float', 'double', 'double precision', 'decimal', 'dec', 'numeric', 'fixed')
-		);
+	private static $types = array();
 
 	/**
 	 * Overrides parent implementation, returns PHP type from the db type.
@@ -37,9 +33,7 @@ class TMysqlTableColumn extends TDbTableColumn
 	 */
 	public function getPHPType()
 	{
-		$dbtype = trim(str_replace(array('unsigned', 'zerofill'),array('','',),strtolower($this->getDbType())));
-		if($dbtype==='tinyint' && $this->getColumnSize()===1)
-			return 'boolean';
+		$dbtype = strtolower($this->getDbType());
 		foreach(self::$types as $type => $dbtypes)
 		{
 			if(in_array($dbtype, $dbtypes))
@@ -62,11 +56,6 @@ class TMysqlTableColumn extends TDbTableColumn
 	public function getHasSequence()
 	{
 		return $this->getAutoIncrement();
-	}
-
-	public function getDbTypeValues()
-	{
-		return $this->getInfo('DbTypeValues');
 	}
 }
 

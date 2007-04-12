@@ -119,12 +119,27 @@ EOD;
 	 */
 	protected function createNewTableInfo($schemaName,$tableName)
 	{
-		$info['SchemaName'] = $schemaName;
-		$info['TableName'] = $tableName;
+		$info['SchemaName'] = $this->assertIdentifier($schemaName);
+		$info['TableName'] = $this->assertIdentifier($tableName);
 		if($this->getIsView($schemaName,$tableName))
 			$info['IsView'] = true;
-		list($primary, $foreign, $unique) = $this->getConstraintKeys($schemaName, $tableName);
-		return new TPgsqlTableInfo($info,$primary,$foreign, $unique);
+		list($primary, $foreign) = $this->getConstraintKeys($schemaName, $tableName);
+		return new TPgsqlTableInfo($info,$primary,$foreign);
+	}
+
+	/**
+	 * @param string table name, schema name or column name.
+	 * @return string a valid identifier.
+	 * @throws TDbException when table name contains a double quote (").
+	 */
+	protected function assertIdentifier($name)
+	{
+		if(strpos($name, '"')!==false)
+		{
+			$ref = 'http://www.postgresql.org/docs/7.4/static/sql-syntax.html#SQL-SYNTAX-IDENTIFIERS';
+			throw new TDbException('dbcommon_invalid_identifier_name', $name, $ref);
+		}
+		return $name;
 	}
 
 	/**
@@ -163,8 +178,6 @@ EOD;
 			$info['IsPrimaryKey'] = true;
 		if($this->isForeignKeyColumn($columnId, $tableInfo))
 			$info['IsForeignKey'] = true;
-		if(in_array($columnId, $tableInfo->getUniqueKeys()))
-			$info['IsUnique'] = true;
 
 		if($col['atttypmod'] > 0)
 			$info['ColumnSize'] =  $col['atttypmod'] - 4;
@@ -222,10 +235,10 @@ EOD;
 	}
 
 	/**
-	 * Gets the primary, foreign key, and unique column details for the given table.
+	 * Gets the primary and foreign key column details for the given table.
 	 * @param string schema name
 	 * @param string table name.
-	 * @return array tuple ($primary, $foreign, $unique)
+	 * @return array tuple ($primary, $foreign)
 	 */
 	protected function getConstraintKeys($schemaName, $tableName)
 	{
@@ -245,7 +258,6 @@ EOD;
 		$command->bindValue(':schema', $schemaName);
 		$primary = array();
 		$foreign = array();
-		$unique = array();
 		foreach($command->query() as $row)
 		{
 			switch($row['contype'])
@@ -257,13 +269,9 @@ EOD;
 					if(($fkey = $this->getForeignKeys($row['consrc']))!==null)
 						$foreign[] = $fkey;
 					break;
-				case 'u':
-					if(($ukey = $this->getUniqueKey($row['consrc']))!==null)
-						$unique[] = $ukey;
-					break;
 			}
 		}
-		return array($primary,$foreign,$unique);
+		return array($primary,$foreign);
 	}
 
 	/**
@@ -277,17 +285,6 @@ EOD;
 		if(preg_match('/PRIMARY\s+KEY\s+\(([^\)]+)\)/i', $src, $matches))
 			return preg_split('/,\s+/',$matches[1]);
 		return array();
-	}
-
-	/**
-	 * @param string pgsql unique constraint definition
-	 * @return string column id if found, null otherwise.
-	 */
-	protected function getUniqueKey($src)
-	{
-		$matches=array();
-		if(preg_match('/UNIQUE\s+\(([^\)]+)\)/i', $src, $matches))
-			return $matches[1];
 	}
 
 	/**

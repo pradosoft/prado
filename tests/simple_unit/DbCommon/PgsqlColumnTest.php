@@ -26,7 +26,6 @@ class PgsqlColumnTest extends UnitTestCase
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => true,
 			'IsForeignKey'     => false,
-			'IsUnique'         => false,
 			'SequenceName'     => 'public.address_id_seq',
 		);
 
@@ -41,7 +40,6 @@ class PgsqlColumnTest extends UnitTestCase
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,
 			'IsForeignKey'     => false,
-			'IsUnique'         => true,
 			'SequenceName'     => null,
 		);
 
@@ -56,7 +54,6 @@ class PgsqlColumnTest extends UnitTestCase
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,
 			'IsForeignKey'     => false,
-			'IsUnique'         => true,
 			'SequenceName'     => null,
 		);
 
@@ -71,7 +68,6 @@ class PgsqlColumnTest extends UnitTestCase
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,
 			'IsForeignKey'     => false,
-			'IsUnique'         => false,
 			'SequenceName'     => null,
 		);
 
@@ -86,7 +82,6 @@ class PgsqlColumnTest extends UnitTestCase
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,
 			'IsForeignKey'     => true,
-			'IsUnique'         => false,
 			'SequenceName'     => null,
 		);
 
@@ -101,7 +96,6 @@ class PgsqlColumnTest extends UnitTestCase
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,
 			'IsForeignKey'     => false,
-			'IsUnique'         => false,
 			'SequenceName'     => null,
 		);
 
@@ -116,7 +110,6 @@ class PgsqlColumnTest extends UnitTestCase
 			'NumericScale'     => 4,
 			'IsPrimaryKey'     => false,
 			'IsForeignKey'     => false,
-			'IsUnique'         => false,
 			'SequenceName'     => null,
 		);
 		$this->assertColumn($columns, $table);
@@ -124,7 +117,6 @@ class PgsqlColumnTest extends UnitTestCase
 		$this->assertEqual('public', $table->getSchemaName());
 		$this->assertEqual('address', $table->getTableName());
 		$this->assertEqual(array('id'), $table->getPrimaryKeys());
-		$this->assertEqual(array('username', 'phone'), $table->getUniqueKeys());
 	}
 
 	function assertColumn($columns, $table)

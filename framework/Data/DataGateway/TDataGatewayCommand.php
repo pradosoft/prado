@@ -228,6 +228,8 @@ class TDataGatewayCommand extends TComponent
 	 */
 	protected function getFindCommand($criteria)
 	{
+		if($criteria===null)
+			return $this->getBuilder()->createFindCommand();
 		$where = $criteria->getCondition();
 		$parameters = $criteria->getParameters()->toArray();
 		$ordering = $criteria->getOrdersBy();

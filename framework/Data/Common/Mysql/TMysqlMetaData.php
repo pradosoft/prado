@@ -49,8 +49,6 @@ class TMysqlMetaData extends TDbMetaData
 			$info['IsPrimaryKey'] = true;
 		if($this->isForeignKeyColumn($columnId, $tableInfo))
 			$info['IsForeignKey'] = true;
-		if(in_array($columnId, $tableInfo->getUniqueKeys()))
-			$info['IsUnique'] = true;
 
 		$info['DbType'] = $col['Type'];
 		$match=array();
@@ -142,8 +140,8 @@ class TMysqlMetaData extends TDbMetaData
 		$info['SchemaName'] = $schemaName;
 		$info['TableName'] = $tableName;
 		$info['IsView'] = $this->getIsView($schemaName,$tableName);
-		list($primary, $foreign, $unique) = $this->getConstraintKeys($schemaName, $tableName);
-		return new TMysqlTableInfo($info,$primary,$foreign, $unique);
+		list($primary, $foreign) = $this->getConstraintKeys($schemaName, $tableName);
+		return new TMysqlTableInfo($info,$primary,$foreign);
 	}
 
 	/**
@@ -173,10 +171,10 @@ class TMysqlMetaData extends TDbMetaData
 	}
 
 	/**
-	 * Gets the primary, foreign key, and unique column details for the given table.
+	 * Gets the primary and foreign key column details for the given table.
 	 * @param string schema name
 	 * @param string table name.
-	 * @return array tuple ($primary, $foreign, $unique)
+	 * @return array tuple ($primary, $foreign)
 	 */
 	protected function getConstraintKeys($schemaName, $tableName)
 	{
@@ -185,15 +183,12 @@ class TMysqlMetaData extends TDbMetaData
 		$command = $this->getDbConnection()->createCommand($sql);
 		$primary = array();
 		$foreign = $this->getForeignConstraints($schemaName,$tableName);
-		$unique = array();
 		foreach($command->query() as $row)
 		{
 			if($row['Key_name']==='PRIMARY')
 				$primary[] = $row['Column_name'];
-			else if(intval($row['Non_unique'])===0)
-				$unique[] = $row['Column_name'];
 		}
-		return array($primary,$foreign,$unique);
+		return array($primary,$foreign);
 	}
 
 	/**
@@ -229,7 +224,7 @@ EOD;
 			$fkeys[$col['con']]['keys'][$col['col']] = $col['fkcol'];
 			$fkeys[$col['con']]['table'] = "`{$col['fkschema']}`.`{$col['fktable']}`";
 		}
-		return array_values($fkeys);
+		return count($fkeys) > 0 ? array_values($fkeys) : $fkeys;
 	}
 
 	/**

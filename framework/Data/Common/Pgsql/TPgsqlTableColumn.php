@@ -25,23 +25,25 @@ Prado::using('System.Data.Common.TDbTableColumn');
  */
 class TPgsqlTableColumn extends TDbTableColumn
 {
+	private static $types=array(
+		'integer' => array('bit', 'bit varying', 'real', 'serial', 'int', 'integer'),
+		'boolean' => array('boolean'),
+		'float' => array('bigint', 'bigserial', 'double precision', 'money', 'numeric')
+	);
+
 	/**
 	 * Overrides parent implementation, returns PHP type from the db type.
 	 * @return boolean derived PHP primitive type from the column db type.
 	 */
 	public function getPHPType()
 	{
-		switch(strtolower($this->getDbType()))
+		$dbtype = strtolower($this->getDbType());
+		foreach(self::$types as $type => $dbtypes)
 		{
-			case 'bit': case 'bit varying': case 'real': case 'serial': case 'int': case 'integer':
-				return 'integer';
-			case 'boolean':
-				return 'boolean';
-			case 'bigint': case 'bigserial': case 'double precision': case 'money': case 'numeric':
-				return 'float';
-			default:
-				return 'string';
+			if(in_array($dbtype, $dbtypes))
+				return $type;
 		}
+		return 'string';
 	}
 }
 

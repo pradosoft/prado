@@ -27,7 +27,6 @@ class MysqlColumnTest extends UnitTestCase
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => true,
 			'IsForeignKey'     => false,
-			'IsUnique'         => false,
 			'SequenceName'     => null,
 			'AutoIncrement'    => true,
 		);
@@ -43,7 +42,6 @@ class MysqlColumnTest extends UnitTestCase
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => true,
 			'IsForeignKey'     => false,
-			'IsUnique'         => false,
 			'SequenceName'     => null,
 			'AutoIncrement'    => false,
 		);
@@ -59,7 +57,6 @@ class MysqlColumnTest extends UnitTestCase
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,
 			'IsForeignKey'     => false,
-			'IsUnique'         => false,
 			'SequenceName'     => null,
 			'AutoIncrement'    => false,
 		);
@@ -75,7 +72,6 @@ class MysqlColumnTest extends UnitTestCase
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,
 			'IsForeignKey'     => false,
-			'IsUnique'         => false,
 			'SequenceName'     => null,
 			'AutoIncrement'    => false,
 		);
@@ -91,7 +87,6 @@ class MysqlColumnTest extends UnitTestCase
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,
 			'IsForeignKey'     => false,
-			'IsUnique'         => false,
 			'SequenceName'     => null,
 			'AutoIncrement'    => false,
 		);
@@ -107,7 +102,6 @@ class MysqlColumnTest extends UnitTestCase
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,
 			'IsForeignKey'     => false,
-			'IsUnique'         => false,
 			'SequenceName'     => null,
 			'AutoIncrement'    => false,
 		);
@@ -123,7 +117,6 @@ class MysqlColumnTest extends UnitTestCase
 			'NumericScale'     => 4,
 			'IsPrimaryKey'     => false,
 			'IsForeignKey'     => false,
-			'IsUnique'         => false,
 			'SequenceName'     => null,
 			'AutoIncrement'    => false,
 		);
@@ -139,7 +132,6 @@ class MysqlColumnTest extends UnitTestCase
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,
 			'IsForeignKey'     => false,
-			'IsUnique'         => false,
 			'SequenceName'     => null,
 			'AutoIncrement'    => false,
 		);
@@ -155,7 +147,6 @@ class MysqlColumnTest extends UnitTestCase
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,
 			'IsForeignKey'     => false,
-			'IsUnique'         => false,
 			'SequenceName'     => null,
 			'AutoIncrement'    => false,
 		);
@@ -171,7 +162,6 @@ class MysqlColumnTest extends UnitTestCase
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,
 			'IsForeignKey'     => false,
-			'IsUnique'         => false,
 			'SequenceName'     => null,
 			'AutoIncrement'    => false,
 		);
@@ -187,7 +177,6 @@ class MysqlColumnTest extends UnitTestCase
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,
 			'IsForeignKey'     => false,
-			'IsUnique'         => false,
 			'SequenceName'     => null,
 			'AutoIncrement'    => false,
 		);
@@ -203,7 +192,6 @@ class MysqlColumnTest extends UnitTestCase
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,
 			'IsForeignKey'     => false,
-			'IsUnique'         => false,
 			'SequenceName'     => null,
 			'AutoIncrement'    => false,
 		);
@@ -219,7 +207,6 @@ class MysqlColumnTest extends UnitTestCase
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,
 			'IsForeignKey'     => false,
-			'IsUnique'         => false,
 			'SequenceName'     => null,
 			'AutoIncrement'    => false,
 			'DbTypeValues'     => array('one', 'two', 'three'),
@@ -236,7 +223,6 @@ class MysqlColumnTest extends UnitTestCase
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,
 			'IsForeignKey'     => false,
-			'IsUnique'         => false,
 			'SequenceName'     => null,
 			'AutoIncrement'    => false,
 			'DbTypeValues'     => array('blue', 'red', 'green'),
@@ -247,7 +233,6 @@ class MysqlColumnTest extends UnitTestCase
 		$this->assertNull($table->getSchemaName());
 		$this->assertEqual('table1', $table->getTableName());
 		$this->assertEqual(array('id', 'name'), $table->getPrimaryKeys());
-		$this->assertEqual(array('fk3'), $table->getUniqueKeys());
 	}
 
 	function assertColumn($columns, $table)

@@ -78,10 +78,11 @@ class TTableGateway extends TComponent
 	 * @param mixed parameter values.
 	 * @return TDbDataReader matching records.
 	 */
-	public function findAll($criteria, $parameters=array())
+	public function findAll($criteria=null, $parameters=array())
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
-		$criteria = $this->getCriteria($criteria,$parameters, $args);
+		if($criteria!==null)
+			$criteria = $this->getCriteria($criteria,$parameters, $args);
 		return $this->getCommand()->findAll($criteria);
 	}
 

@@ -1648,6 +1648,9 @@ framework/Data/Common/Mysql/TMysqlTableInfo.php -text
 framework/Data/Common/Pgsql/TPgsqlMetaData.php -text
 framework/Data/Common/Pgsql/TPgsqlTableColumn.php -text
 framework/Data/Common/Pgsql/TPgsqlTableInfo.php -text
+framework/Data/Common/Sqlite/TSqliteMetaData.php -text
+framework/Data/Common/Sqlite/TSqliteTableColumn.php -text
+framework/Data/Common/Sqlite/TSqliteTableInfo.php -text
 framework/Data/Common/TDbCommandBuilder.php -text
 framework/Data/Common/TDbMetaData.php -text
 framework/Data/Common/TDbTableColumn.php -text
@@ -2666,6 +2669,7 @@ tests/simple_unit/DbCommon/CommandBuilderMysqlTest.php -text
 tests/simple_unit/DbCommon/CommandBuilderPgsqlTest.php -text
 tests/simple_unit/DbCommon/MysqlColumnTest.php -text
 tests/simple_unit/DbCommon/PgsqlColumnTest.php -text
+tests/simple_unit/DbCommon/SqliteColumnTest.php -text
 tests/simple_unit/I18N/ChoiceFormatTest.php -text
 tests/simple_unit/I18N/CultureInfoTest.php -text
 tests/simple_unit/I18N/MysqlMessageSourceTestCase.php -text

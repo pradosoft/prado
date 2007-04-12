@@ -24,7 +24,6 @@ class TDbTableInfo extends TComponent
 
 	private $_primaryKeys;
 	private $_foreignKeys;
-	private $_uniqueKeys;
 
 	private $_columns;
 
@@ -34,12 +33,11 @@ class TDbTableInfo extends TComponent
 	 * Sets the database table meta data information.
 	 * @param array table column information.
 	 */
-	public function __construct($tableInfo,$primary=array(),$foreign=array(), $unique=array())
+	public function __construct($tableInfo,$primary=array(),$foreign=array())
 	{
 		$this->_info=$tableInfo;
 		$this->_primaryKeys=$primary;
 		$this->_foreignKeys=$foreign;
-		$this->_uniqueKeys=$unique;
 		$this->_columns=new TMap;
 	}
 
@@ -110,7 +108,9 @@ class TDbTableInfo extends TComponent
 	 */
 	public function getColumn($name)
 	{
-		return $this->_columns->itemAt($name);
+		if(($column = $this->_columns->itemAt($name))!==null)
+			return $column;
+		throw new TDbException('dbtableinfo_invalid_column_name', $name, $this->getTableFullName());
 	}
 
 	/**
@@ -139,14 +139,6 @@ class TDbTableInfo extends TComponent
 	public function getForeignKeys()
 	{
 		return $this->_foreignKeys;
-	}
-
-	/**
-	 * @return array unique column ids.
-	 */
-	public function getUniqueKeys()
-	{
-		return $this->_uniqueKeys;
 	}
 
 	/**

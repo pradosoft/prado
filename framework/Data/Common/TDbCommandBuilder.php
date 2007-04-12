@@ -120,7 +120,7 @@ class TDbCommandBuilder extends TComponent
 	 * @param array condition parameters.
 	 * @return TDbCommand query command.
 	 */
-	public function createFindCommand($where, $parameters=array(), $ordering=array(), $limit=-1, $offset=-1)
+	public function createFindCommand($where='1=1', $parameters=array(), $ordering=array(), $limit=-1, $offset=-1)
 	{
 		$table = $this->getTableInfo()->getTableFullName();
 		$sql = "SELECT * FROM {$table} WHERE {$where}";
@@ -139,7 +139,7 @@ class TDbCommandBuilder extends TComponent
 	 * @param array binding parameters.
 	 * @return TDbCommand count command.
 	 */
-	public function createCountCommand($where='true', $parameters=array(),$ordering=array(), $limit=-1, $offset=-1)
+	public function createCountCommand($where='1=1', $parameters=array(),$ordering=array(), $limit=-1, $offset=-1)
 	{
 		$table = $this->getTableInfo()->getTableFullName();
 		$sql = "SELECT COUNT(*) FROM {$table} WHERE {$where}";

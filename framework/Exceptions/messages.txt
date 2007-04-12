@@ -370,6 +370,7 @@ dbcommandbuilder_value_must_not_be_null	= Property {0} must not be null as defin
 
 dbcommon_invalid_table_name				= Database table '{0}' not found. Error Msg: {1}.
 dbcommon_invalid_identifier_name        = Invalid database identifier name '{0}', see {1} for details.
+dbtableinfo_invalid_column_name			= Invalid column name '{0}' for database table '{1}'.
 dbtablegateway_invalid_criteria			= Invalid criteria object, must be a string or instance of TSqlCriteria.
 dbtablegateway_no_primary_key_found		= Table '{0}' does not contain any primary key fields.
 dbtablegateway_missing_pk_values		= Missing primary key values in forming IN(key1, key2, ...) for table '{0}'.
