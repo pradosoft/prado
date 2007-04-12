@@ -250,10 +250,7 @@ abstract class TActiveRecord extends TComponent
 		if(is_string($criteria))
 		{
 			if(!is_array($parameters) && func_num_args() > 1)
-			{
-				$parameters = func_get_args();
-				array_shift($parameters);
-			}
+				$parameters = array_slice(func_get_args(),1);
 			$criteria=new TActiveRecordCriteria($criteria,$parameters);
 		}
 		$gateway = $this->getRecordManager()->getRecordGateway();
@@ -309,10 +306,7 @@ abstract class TActiveRecord extends TComponent
 		if(is_string($criteria))
 		{
 			if(!is_array($parameters) && func_num_args() > 1)
-			{
-				$parameters = func_get_args();
-				array_shift($parameters);
-			}
+				$parameters = array_slice(func_get_args(),1);
 			$criteria=new TActiveRecordCriteria($criteria,$parameters);
 		}
 		$gateway = $this->getRecordManager()->getRecordGateway();
@@ -332,10 +326,7 @@ abstract class TActiveRecord extends TComponent
 		if(is_string($criteria))
 		{
 			if(!is_array($parameters) && func_num_args() > 1)
-			{
-				$parameters = func_get_args();
-				array_shift($parameters);
-			}
+				$parameters = array_slice(func_get_args(),1);
 			$criteria=new TActiveRecordCriteria($criteria,$parameters);
 		}
 		$gateway = $this->getRecordManager()->getRecordGateway();
@@ -407,10 +398,7 @@ abstract class TActiveRecord extends TComponent
 	public function findBySql($sql,$parameters=array())
 	{
 		if(!is_array($parameters) && func_num_args() > 1)
-		{
-			$parameters = func_get_args();
-			array_shift($parameters);
-		}
+			$parameters = array_slice(func_get_args(),1);
 		$gateway = $this->getRecordManager()->getRecordGateway();
 		$data = $gateway->findRecordsBySql($this,$sql,$parameters);
 		$results = array();
@@ -431,10 +419,7 @@ abstract class TActiveRecord extends TComponent
 		if(is_string($criteria))
 		{
 			if(!is_array($parameters) && func_num_args() > 1)
-			{
-				$parameters = func_get_args();
-				array_shift($parameters);
-			}
+				$parameters = array_slice(func_get_args(),1);
 			$criteria=new TActiveRecordCriteria($criteria,$parameters);
 		}
 		$gateway = $this->getRecordManager()->getRecordGateway();

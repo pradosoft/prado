@@ -366,6 +366,17 @@ dbcommand_column_empty					= TDbCommand returned an empty result and could not o
 dbdatareader_rewind_invalid				= TDbDataReader is a forward-only stream. It can only be traversed once.
 dbtransaction_transaction_inactive		= TDbTransaction is inactive.
 
+dbcommandbuilder_value_must_not_be_null	= Property {0} must not be null as defined by column '{2}' in table '{1}'.
+
+dbcommon_invalid_table_name				= Database table '{0}' not found. Error Msg: {1}.
+dbcommon_invalid_identifier_name        = Invalid database identifier name '{0}', see {1} for details.
+dbtablegateway_invalid_criteria			= Invalid criteria object, must be a string or instance of TSqlCriteria.
+dbtablegateway_no_primary_key_found		= Table '{0}' does not contain any primary key fields.
+dbtablegateway_missing_pk_values		= Missing primary key values in forming IN(key1, key2, ...) for table '{0}'.
+dbtablegateway_pk_value_count_mismatch	= Composite key value count mismatch in forming IN( (key1, key2, ..), (key3, key4, ..)) for table '{0}'.
+dbtablegateway_mismatch_args_exception	= TTableGateway finder method '{0}' expects {1} parameters but found only {2} parameters instead.
+dbtablegateway_mismatch_column_name		= In dynamic __call() method '{0}', no matching columns were found, valid columns for table '{2}' are '{1}'.
+
 directorycachedependency_directory_invalid = TDirectoryCacheDependency.Directory {0} does not refer to a valid directory.
 cachedependencylist_cachedependency_required = Only objects implementing ICacheDependency can be added into TCacheDependencyList.
 

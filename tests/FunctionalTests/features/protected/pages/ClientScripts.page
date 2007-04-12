@@ -1,0 +1,6 @@
+<com:TContent ID="Content">
+
+<com:Application.pages.TestComp Class="test"/>
+<com:Application.pages.TestComp Class="test"/>
+
+</com:TContent>
