@@ -1652,6 +1652,9 @@ framework/Data/Common/TDbCommandBuilder.php -text
 framework/Data/Common/TDbMetaData.php -text
 framework/Data/Common/TDbTableColumn.php -text
 framework/Data/Common/TDbTableInfo.php -text
+framework/Data/DataGateway/TDataGatewayCommand.php -text
+framework/Data/DataGateway/TSqlCriteria.php -text
+framework/Data/DataGateway/TTableGateway.php -text
 framework/Data/SqlMap/Configuration/TDiscriminator.php -text
 framework/Data/SqlMap/Configuration/TInlineParameterMapParser.php -text
 framework/Data/SqlMap/Configuration/TParameterMap.php -text
