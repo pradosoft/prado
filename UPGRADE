@@ -15,6 +15,9 @@ Upgrading from v3.1b
   for header, footer and items. If your existing code rely on the span tags,
   you may use 'Flow' layout and set RepeatColumns as 1.
 
+- Comment tag <!-- ... ---> (introduced in v3.1a) is changed to <!--- ... --->
+
+
 Upgrading from v3.1a
 ---------------------
 - The signature of TActiveRecord::finder() is changed. This affects

@@ -78,12 +78,12 @@ Template control tag is optional in a template. Each template can contain at mos
 Comment tags are used to put in a template developer comments that will not display to end-users. Contents enclosed within a comment tag will be treated as raw text strings and PRADO will not attempt to parse them. Comment tags cannot be used within property values. The format of comment tags is as follows,
 </p>
 <com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_180078">
-&lt;!--
+&lt;!---
 Comments INVISIBLE to end-users
 ---&gt;
 </com:TTextHighlighter>
 <div class="note"><b class="tip">Note:</b>
-The new comment tag <tt>&lt;!-- ... ---&gt;</tt> has been introduced since PRADO version 3.1. Previously, it was <tt>&lt;!-- ... --!&gt;</tt> which was deprecated because some editors have problems in syntax-highlighting such tags. </div>
+The new comment tag <tt>&lt;!--- ... ---&gt;</tt> has been introduced since PRADO version 3.1. Previously, it was <tt>&lt;!-- ... --!&gt;</tt> which was deprecated because some editors have problems in syntax-highlighting such tags. </div>
 
 <h2 id="1601">Include Tags</h2>
 <p id="180178" class="block-content">
