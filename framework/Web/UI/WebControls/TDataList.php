@@ -1097,7 +1097,10 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	{
 		$item=$this->getItem($itemType,$index);
 		$layout=$repeatInfo->getRepeatLayout();
-		$item->renderControl($writer);
+		if($layout===TRepeatLayout::Raw)
+			$item->renderContents($writer);
+		else
+			$item->renderControl($writer);
 	}
 
 	/**

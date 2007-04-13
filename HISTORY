@@ -1,6 +1,6 @@
 Version 3.1.0 RC To be released
 ===============================
-
+CHG: removed <span> tags when TDataList.RepeatLayout is Raw (Qiang)
 
 Version 3.1.0 beta April 9, 2007
 ================================
