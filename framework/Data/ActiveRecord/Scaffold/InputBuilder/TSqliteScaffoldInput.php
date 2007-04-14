@@ -6,7 +6,7 @@ class TSqliteScaffoldInput extends TScaffoldInputCommon
 {
 	protected function createControl($container, $column, $record)
 	{
-		switch(strtolower($column->getType()))
+		switch(strtolower($column->getDbType()))
 		{
 			case 'boolean':
 				return $this->createBooleanControl($container, $column, $record);
@@ -32,7 +32,7 @@ class TSqliteScaffoldInput extends TScaffoldInputCommon
 
 	protected function getControlValue($container, $column, $record)
 	{
-		switch(strtolower($column->getType()))
+		switch(strtolower($column->getDbType()))
 		{
 			case 'boolean':
 				return $container->findControl(self::DEFAULT_ID)->getChecked();
@@ -53,7 +53,7 @@ class TSqliteScaffoldInput extends TScaffoldInputCommon
 	{
 		$control = parent::createDateControl($container, $column, $record);
 		$value = $this->getRecordPropertyValue($column, $record);
-		if(!empty($value) && preg_match('/timestamp/i', $column->getType()))
+		if(!empty($value) && preg_match('/timestamp/i', $column->getDbType()))
 			$control->setTimestamp(intval($value));
 		return $control;
 	}
@@ -62,7 +62,7 @@ class TSqliteScaffoldInput extends TScaffoldInputCommon
 	{
 		$value = $this->getRecordPropertyValue($column, $record);
 		$time = parent::createDateTimeControl($container, $column, $record);
-		if(!empty($value) && preg_match('/timestamp/i', $column->getType()))
+		if(!empty($value) && preg_match('/timestamp/i', $column->getDbType()))
 		{
 			$s = Prado::createComponent('System.Util.TDateTimeStamp');
 			$date = $s->getDate(intval($value));
@@ -75,7 +75,7 @@ class TSqliteScaffoldInput extends TScaffoldInputCommon
 
 	protected function getDateTimeValue($container, $column, $record)
 	{
-		if(preg_match('/timestamp/i', $column->getType()))
+		if(preg_match('/timestamp/i', $column->getDbType()))
 		{
 			$time = $container->findControl(self::DEFAULT_ID)->getTimestamp();
 			$s = Prado::createComponent('System.Util.TDateTimeStamp');

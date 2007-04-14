@@ -39,7 +39,10 @@ class TMysqlTableInfo extends TDbTableInfo
 	 */
 	public function getTableFullName()
 	{
-		return '`'.$this->getSchemaName().'`.`'.$this->getTableName().'`';
+		if(($schema=$this->getSchemaName())!==null)
+			return '`'.$schema.'`.`'.$this->getTableName();
+		else
+			return '`'.$this->getTableName().'`';
 	}
 }
 

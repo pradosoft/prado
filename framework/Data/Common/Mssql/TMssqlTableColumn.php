@@ -1,13 +1,13 @@
 <?php
 /**
- * TSqliteTableColumn class file.
+ * TMssqlTableColumn class file.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2007 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TSqliteTableColumn.php 1861 2007-04-12 08:05:03Z wei $
- * @package System.Data.Common.Sqlite
+ * @version $Id: TMssqlTableColumn.php 1863 2007-04-12 12:43:49Z wei $
+ * @package System.Data.Common.Mssql
  */
 
 /**
@@ -16,14 +16,14 @@
 Prado::using('System.Data.Common.TDbTableColumn');
 
 /**
- * Describes the column metadata of the schema for a PostgreSQL database table.
+ * Describes the column metadata of the schema for a Mssql database table.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TSqliteTableColumn.php 1861 2007-04-12 08:05:03Z wei $
- * @package System.Data.Common.Sqlite
+ * @version $Id: TMssqlTableColumn.php 1863 2007-04-12 12:43:49Z wei $
+ * @package System.Data.Common.Mssql
  * @since 3.1
  */
-class TSqliteTableColumn extends TDbTableColumn
+class TMssqlTableColumn extends TDbTableColumn
 {
 	private static $types = array();
 
@@ -33,29 +33,23 @@ class TSqliteTableColumn extends TDbTableColumn
 	 */
 	public function getPHPType()
 	{
-		$dbtype = strtolower($this->getDbType());
-		foreach(self::$types as $type => $dbtypes)
-		{
-			if(in_array($dbtype, $dbtypes))
-				return $type;
-		}
+
 		return 'string';
 	}
 
-	/**
-	 * @return boolean true if column will auto-increment when the column value is inserted as null.
-	 */
 	public function getAutoIncrement()
 	{
-		return $this->getInfo('AutoIncrement', false);
+		return $this->getInfo('AutoIncrement',false);
 	}
 
-	/**
-	 * @return boolean true if auto increment is true.
-	 */
 	public function hasSequence()
 	{
 		return $this->getAutoIncrement();
+	}
+
+	public function getIsExcluded()
+	{
+		return strtolower($this->getDbType())==='timestamp';
 	}
 }
 

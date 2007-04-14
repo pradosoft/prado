@@ -12,7 +12,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 	protected function setNotNullProperty($container, $control, $column, $record)
 	{
 		$this->setDefaultProperty($container, $control, $column, $record);
-		if($column->getNotNull() && !$column->hasSequence())
+		if(!$column->getAllowNull() && !$column->hasSequence())
 			$this->createRequiredValidator($container, $column, $record);
 	}
 
@@ -32,7 +32,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		$control = new TTextBox();
 		$control->setText($value);
 		$control->setCssClass('default-textbox scaffold_input');
-		if(($len=$column->getLength())!==null)
+		if(($len=$column->getColumnSize())!==null)
 			$control->setMaxLength($len);
 		$this->setNotNullProperty($container, $control, $column, $record);
 		return $control;
@@ -89,6 +89,14 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		$val = $this->createTypeValidator($container, $column, $record);
 		$val->setDataType(TValidationDataType::Float);
 		$val->setErrorMessage('Please entery a decimal number.');
+		if(($max= $column->getMaxiumNumericConstraint())!==null)
+		{
+			$val = $this->createRangeValidator($container,$column,$record);
+			$val->setDataType(TValidationDataType::Float);
+			$val->setMaxValue($max);
+			$val->setStrictComparison(true);
+			$val->setErrorMessage('Please entery a decimal number strictly less than '.$max.'.');
+		}
 		return $control;
 	}
 
@@ -109,6 +117,18 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 	{
 		$val = new TDataTypeValidator();
 		$val->setControlCssClass('required-input2');
+		$val->setCssClass('required');
+		$val->setControlToValidate(self::DEFAULT_ID);
+		$val->setValidationGroup($this->getParent()->getValidationGroup());
+		$val->setDisplay(TValidatorDisplayStyle::Dynamic);
+		$container->Controls[] = $val;
+		return $val;
+	}
+
+	protected function createRangeValidator($container, $column, $record)
+	{
+		$val = new TRangeValidator();
+		$val->setControlCssClass('required-input3');
 		$val->setCssClass('required');
 		$val->setControlToValidate(self::DEFAULT_ID);
 		$val->setValidationGroup($this->getParent()->getValidationGroup());
@@ -222,10 +242,10 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		$value = $this->getRecordPropertyValue($column, $record);
 		$selectedValues = preg_split('/\s*,\s*/', $value);
 		$control = new TCheckBoxList();
-		$values = $column->getTypeValues();
+		$values = $column->getDbTypeValues();
 		$control->setDataSource($values);
 		$control->dataBind();
-		$control->setSelectedIndices($this->getMatchingIndices($selectedValues, $values));
+		$control->setSelectedIndices($this->getMatchingIndices($values,$selectedValues));
 		$control->setID(self::DEFAULT_ID);
 		$control->setCssClass('set-checkboxes');
 		$this->setNotNullProperty($container, $control, $column, $record);
@@ -248,10 +268,10 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		$value = $this->getRecordPropertyValue($column, $record);
 		$selectedValues = preg_split('/\s*,\s*/', $value);
 		$control = new TRadioButtonList();
-		$values = $column->getTypeValues();
+		$values = $column->getDbTypeValues();
 		$control->setDataSource($values);
 		$control->dataBind();
-		$index = $this->getMatchingIndices($selectedValues, $values);
+		$index = $this->getMatchingIndices($values,$selectedValues);
 		if(count($index) > 0)
 			$control->setSelectedIndex($index[0]);
 		$control->setID(self::DEFAULT_ID);

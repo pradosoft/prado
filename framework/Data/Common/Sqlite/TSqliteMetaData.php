@@ -80,6 +80,7 @@ class TSqliteMetaData extends TDbMetaData
 		$columnId = $col['name']; //use column name as column Id
 
 		$info['ColumnName'] = '"'.$columnId.'"'; //quote the column names!
+		$info['ColumnId'] = $columnId;
 		$info['ColumnIndex'] = $col['index'];
 
 		if($col['notnull']!=='99')
@@ -115,6 +116,8 @@ class TSqliteMetaData extends TDbMetaData
 	}
 
 	/**
+	 *
+	 *
 	 * @param string quoted table name.
 	 * @return array foreign key details.
 	 */
@@ -145,6 +148,23 @@ class TSqliteMetaData extends TDbMetaData
 		}
 		return false;
 	}
-
 }
+
+/**
+
+CREATE TABLE foo
+(
+	id INTEGER NOT NULL PRIMARY KEY,
+	id2 CHAR(2)
+);
+
+CREATE TABLE bar
+(
+	id INTEGER NOT NULL PRIMARY KEY,
+	foo_id INTEGER NOT NULL CONSTRAINT fk_foo_id REFERENCES foo(id) ON DELETE CASCADE,
+	foo_id2 CHAR(2) CONSTRAINT fk_foo_id REFERENCES foo(id2) ON DELETE CASCADE,
+	bar_id INTEGER NOT NULL CONSTRAINT fk_bar_id REFERENCES bar(id)
+);
+*/
+
 ?>

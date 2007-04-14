@@ -27,6 +27,9 @@ class TScaffoldInputBase
 			case 'pgsql':
 				require_once(dirname(__FILE__).'/TPgsqlScaffoldInput.php');
 				return new TPgsqlScaffoldInput($conn);
+			case 'mssql':
+				require_once(dirname(__FILE__).'/TMssqlScaffoldInput.php');
+				return new TMssqlScaffoldInput($conn);
 			case 'ibm':
 				require_once(dirname(__FILE__).'/TIbmScaffoldInput.php');
 				return new TIbmScaffoldInput($conn);
@@ -39,7 +42,7 @@ class TScaffoldInputBase
 	public function createScaffoldInput($parent, $item, $column, $record)
 	{
 		$this->_parent=$parent;
-		$item->setCustomData($column->getProperty());
+		$item->setCustomData($column->getColumnId());
 		$this->createControl($item->_input, $column, $record);
 		if($item->_input->findControl(self::DEFAULT_ID))
 			$this->createControlLabel($item->_label, $column, $record);
@@ -47,7 +50,7 @@ class TScaffoldInputBase
 
 	protected function createControlLabel($label, $column, $record)
 	{
-		$fieldname = ucwords(str_replace('_', ' ', $column->getProperty())).':';
+		$fieldname = ucwords(str_replace('_', ' ', $column->getColumnId())).':';
 		$label->setText($fieldname);
 		$label->setForControl(self::DEFAULT_ID);
 	}
@@ -57,7 +60,7 @@ class TScaffoldInputBase
 		$this->_parent=$parent;
 		if($this->getIsEnabled($column, $record))
 		{
-			$prop = $column->getProperty();
+			$prop = $column->getColumnId();
 			$record->{$prop} = $this->getControlValue($item->_input, $column, $record);
 		}
 	}
@@ -70,7 +73,11 @@ class TScaffoldInputBase
 
 	protected function getRecordPropertyValue($column, $record)
 	{
-		return $record->{$column->getProperty()};
+		$value = $record->{$column->getColumnId()};
+		if($column->getDefaultValue()!==TDbTableColumn::UNDEFINED_VALUE && $value===null)
+			return $column->getDefaultValue();
+		else
+			return $value;
 	}
 
 	protected function setRecordPropertyValue($item, $record, $input)

@@ -121,67 +121,11 @@ class TActiveRecordManager extends TComponent
 	}
 
 	/**
-	 * @param string|TActiveRecord active record class name or instance
-	 * @return TDbMetaData record specific meta data
-	 */
-	public function getMetaData($record)
-	{
-		if(is_string($record))
-			$record = TActiveRecord::finder($record);
-		return $this->getRecordGateway()->getMetaData($record);
-	}
-
-	/**
 	 * @return TActiveRecordGateway default record gateway.
 	 */
 	protected function createRecordGateway()
 	{
 		return new TActiveRecordGateway($this);
-	}
-
-	/**
-	 * Get table meta data for particular database and table.
-	 * @param TDbConnection database connection.
-	 * @return TDbMetaDataInspector table meta inspector
-	 */
-	public function getTableInspector(TDbConnection $conn)
-	{
-		$database = $conn->getConnectionString();
-		if(!isset($this->_meta[$database]))
-			$this->_meta[$database] = $this->createMetaDataInspector($conn);
-		return $this->_meta[$database];
-	}
-
-	/**
-	 * Create an instance of a database meta inspector corresponding to the
-	 * given database vendor specified by the $driver parameter.
-	 * @param TDbConnection database connection
-	 * @return TDbMetaDataInspector table meta inspector
-	 */
-	protected function createMetaDataInspector($conn)
-	{
-		$conn->setActive(true); //must be connected before retrieving driver name!
-		$driver = $conn->getDriverName();
-		switch(strtolower($driver))
-		{
-			case 'pgsql':
-				Prado::using('System.Data.ActiveRecord.Vendor.TPgsqlMetaDataInspector');
-				return new TPgsqlMetaDataInspector($conn);
-			case 'mysqli':
-			case 'mysql':
-				Prado::using('System.Data.ActiveRecord.Vendor.TMysqlMetaDataInspector');
-				return new TMysqlMetaDataInspector($conn);
-			case 'sqlite': //sqlite 3
-			case 'sqlite2': //sqlite 2
-				Prado::using('System.Data.ActiveRecord.Vendor.TSqliteMetaDataInspector');
-				return new TSqliteMetaDataInspector($conn);
-			case 'ibm':
-				Prado::using('System.Data.ActiveRecord.Vendor.TIbmMetaDataInspector');
-				return new TIbmMetaDataInspector($conn);
-			default:
-				throw new TActiveRecordConfigurationException(
-					'ar_invalid_database_driver',$driver);
-		}
 	}
 
 	/**

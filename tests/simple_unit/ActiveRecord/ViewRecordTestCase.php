@@ -54,7 +54,7 @@ class ViewRecordTestCase extends UnitTestCase
 			$user = SimpleUser::finder()->findByPk('admin');
 			$this->fail();
 		}
-		catch(TActiveRecordException $e)
+		catch(TDbException $e)
 		{
 			$this->pass();
 		}
@@ -67,7 +67,7 @@ class ViewRecordTestCase extends UnitTestCase
 			SimpleUser::finder()->deleteByPk('admin');
 			$this->fail();
 		}
-		catch(TActiveRecordException $e)
+		catch(TDbException $e)
 		{
 			$this->pass();
 		}

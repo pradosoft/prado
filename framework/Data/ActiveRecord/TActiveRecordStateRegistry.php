@@ -240,12 +240,12 @@ class TActiveRecordStateRegistry
 	 */
 	public function commit($record,$gateway)
 	{
-		$rowsAffected=0;
+		$rowsAffected=false;
 
 		if($this->getIsRemovedObject($record))
 		{
 			$rowsAffected = $gateway->delete($record);
-			if($rowsAffected===1)
+			if($rowsAffected)
 				$this->removeRemovedObject($record);
 		}
 		else
@@ -255,10 +255,10 @@ class TActiveRecordStateRegistry
 			else if($this->getIsNewObject($record))
 				$rowsAffected = $gateway->insert($record);
 
-			if($rowsAffected===1)
+			if($rowsAffected)
 				$this->registerClean($record);
 		}
-		return $rowsAffected===1;
+		return (boolean)$rowsAffected;
 	}
 }
 

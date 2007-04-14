@@ -67,6 +67,20 @@ class TDbCommandBuilder extends TComponent
 	}
 
 	/**
+	 * Iterate through all the columns and returns the last insert id of the
+	 * first column that has a sequence or serial.
+	 * @return mixed last insert id, null if none is found.
+	 */
+	public function getLastInsertID()
+	{
+		foreach($this->getTableInfo()->getColumns() as $column)
+		{
+			if($column->hasSequence())
+				return $this->getDbConnection()->getLastInsertID($column->getSequenceName());
+		}
+	}
+
+	/**
 	 * Alters the sql to apply $limit and $offset. Default implementation is applicable
 	 * for PostgreSQL, MySQL and SQLite.
 	 * @param string SQL query string.
@@ -122,6 +136,8 @@ class TDbCommandBuilder extends TComponent
 	 */
 	public function createFindCommand($where='1=1', $parameters=array(), $ordering=array(), $limit=-1, $offset=-1)
 	{
+		if($where===null)
+			$where='1=1';
 		$table = $this->getTableInfo()->getTableFullName();
 		$sql = "SELECT * FROM {$table} WHERE {$where}";
 		if(count($ordering) > 0)
@@ -141,6 +157,8 @@ class TDbCommandBuilder extends TComponent
 	 */
 	public function createCountCommand($where='1=1', $parameters=array(),$ordering=array(), $limit=-1, $offset=-1)
 	{
+		if($where===null)
+			$where='1=1';
 		$table = $this->getTableInfo()->getTableFullName();
 		$sql = "SELECT COUNT(*) FROM {$table} WHERE {$where}";
 		if(count($ordering) > 0)

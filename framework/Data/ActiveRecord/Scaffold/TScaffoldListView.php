@@ -65,7 +65,7 @@ class TScaffoldListView extends TScaffoldBase
 	 */
 	protected function initializeSort()
 	{
-		$table = $this->getTableMetaData();
+		$table = $this->getTableInfo();
 		$sorts = array('Sort By', str_repeat('-',15));
 		$headers = array();
 		foreach($table->getColumns() as $name=>$colum)

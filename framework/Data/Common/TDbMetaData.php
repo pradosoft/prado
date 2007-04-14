@@ -64,9 +64,12 @@ abstract class TDbMetaData extends TComponent
 			case 'sqlite2': //sqlite 2
 				Prado::using('System.Data.Common.Sqlite.TSqliteMetaData');
 				return new TSqliteMetaData($conn);
-			case 'ibm':
-				Prado::using('System.Data.Common.IbmDb2.TIbmDb2MetaData');
-				return new TIbmDb2MetaData($conn);
+			case 'mssql':
+				Prado::using('System.Data.Common.Mssql.TMssqlMetaData');
+				return new TMssqlMetaData($conn);
+//			case 'ibm':
+//				Prado::using('System.Data.Common.IbmDb2.TIbmDb2MetaData');
+//				return new TIbmDb2MetaData($conn);
 			default:
 				throw new TDbException('ar_invalid_database_driver',$driver);
 		}

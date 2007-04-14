@@ -15,7 +15,7 @@ class TDataGatewayCommand extends TComponent
 	/**
 	 * @return TDbTableInfo
 	 */
-	protected function getTableInfo()
+	public function getTableInfo()
 	{
 		return $this->_builder->getTableInfo();
 	}
@@ -23,7 +23,7 @@ class TDataGatewayCommand extends TComponent
 	/**
 	 * @return TDbConnection
 	 */
-	protected function getDbConnection()
+	public function getDbConnection()
 	{
 		return $this->_builder->getDbConnection();
 	}
@@ -31,7 +31,7 @@ class TDataGatewayCommand extends TComponent
 	/**
 	 * @return TDbCommandBuilder
 	 */
-	protected function getBuilder()
+	public function getBuilder()
 	{
 		return $this->_builder;
 	}
@@ -63,6 +63,17 @@ class TDataGatewayCommand extends TComponent
 		$command = $this->getBuilder()->createUpdateCommand($data,$where, $parameters);
 		$command->prepare();
 		return $command->execute();
+	}
+
+	/**
+	 * @param array update for update
+	 * @param array primary key-value name pairs.
+	 * @return integer number of records affected.
+	 */
+	public function updateByPk($data, $keys)
+	{
+		list($where, $parameters) = $this->getPrimaryKeyCondition((array)$keys);
+		return $this->update($data, new TSqlCriteria($where, $parameters));
 	}
 
 	/**
@@ -281,11 +292,7 @@ class TDataGatewayCommand extends TComponent
 	 */
 	public function getLastInsertID()
 	{
-		foreach($this->getTableInfo()->getColumns() as $column)
-		{
-			if($column->hasSequence())
-				return $this->getDbConnection()->getLastInsertID($column->getSequenceName());
-		}
+		return $this->getBuilder()->getLastInsertID();
 	}
 
 	/**

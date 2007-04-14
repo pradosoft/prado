@@ -84,6 +84,14 @@ class TDbTableColumn extends TComponent
 	}
 
 	/**
+	 * @return string name of the column with quoted identifier.
+	 */
+	public function getColumnId()
+	{
+		return $this->getInfo('ColumnId');
+	}
+
+	/**
 	 * @return string size of the column.
 	 */
 	public function getColumnSize()
@@ -92,7 +100,7 @@ class TDbTableColumn extends TComponent
 	}
 
 	/**
-	 * @return integer zero-based ordinal position of the column in the table.
+	 * @return integer one-based ordinal position of the column in the table.
 	 */
 	public function getColumnIndex()
 	{
@@ -139,6 +147,15 @@ class TDbTableColumn extends TComponent
 		return $this->getInfo('NumericScale');
 	}
 
+	public function getMaxiumNumericConstraint()
+	{
+		if(($precision=$this->getNumericPrecision())!==null)
+		{
+			$scale=$this->getNumericScale();
+			return $scale===null ? pow(10,$precision) : pow(10,$precision-$scale);
+		}
+	}
+
 	/**
 	 * @return boolean whether this column is a primary key for the table, default is false.
 	 */
@@ -169,6 +186,14 @@ class TDbTableColumn extends TComponent
 	public function hasSequence()
 	{
 		return $this->getSequenceName()!==null;
+	}
+
+	/**
+	 * @return boolean whether this column is excluded from insert and update.
+	 */
+	public function getIsExcluded()
+	{
+		return false;
 	}
 }
 

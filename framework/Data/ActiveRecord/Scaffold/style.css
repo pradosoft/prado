@@ -117,7 +117,7 @@ body
 	font-weight: bold;
 	padding: 0.2em;
 }
-.edit-inputs .required-input, .edit-inputs .required-input2
+.edit-inputs .required-input, .edit-inputs .required-input2 .required-input3 .required-input4
 {
 	border: 1px solid red;
 	background-color: #FFF5EE;

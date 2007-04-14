@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Load the base TDbMetaData class.
  */
@@ -15,8 +14,10 @@ class TMysqlMetaData extends TDbMetaData
 	 */
 	protected function createTableInfo($table)
 	{
+		list($schemaName,$tableName) = $this->getSchemaTableName($table);
+		$find = $schemaName===null ? "`{$tableName}`" : "`{$schemaName}`.`{$tableName}`";
 		$this->getDbConnection()->setActive(true);
-		$sql = "SHOW FULL FIELDS FROM {$table}";
+		$sql = "SHOW FULL FIELDS FROM {$find}";
 		$command = $this->getDbConnection()->createCommand($sql);
 		$tableInfo = $this->createNewTableInfo($table);
 		$index=0;
@@ -37,6 +38,7 @@ class TMysqlMetaData extends TDbMetaData
 		$columnId = $col['Field'];
 
 		$info['ColumnName'] = "`$columnId`"; //quote the column names!
+		$info['ColumnId'] = $columnId;
 		$info['ColumnIndex'] = $col['index'];
 		if($col['Null']!=='NO')
 			$info['AllowNull'] = true;
@@ -122,7 +124,8 @@ class TMysqlMetaData extends TDbMetaData
 
 	/**
 	 * http://dev.mysql.com/doc/refman/5.0/en/identifiers.html
-	 * @param unknown_type $name
+	 * @param string identifier name
+	 * @param boolean true if valid identifier.
 	 */
 	protected function isValidIdentifier($name)
 	{
@@ -139,7 +142,8 @@ class TMysqlMetaData extends TDbMetaData
 		list($schemaName,$tableName) = $this->getSchemaTableName($table);
 		$info['SchemaName'] = $schemaName;
 		$info['TableName'] = $tableName;
-		$info['IsView'] = $this->getIsView($schemaName,$tableName);
+		if($this->getIsView($schemaName,$tableName))
+			$info['IsView'] = true;
 		list($primary, $foreign) = $this->getConstraintKeys($schemaName, $tableName);
 		return new TMysqlTableInfo($info,$primary,$foreign);
 	}

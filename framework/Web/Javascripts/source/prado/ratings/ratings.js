@@ -57,4 +57,4 @@ Prado.WebUI.TRatingList.prototype =
 		this.caption.innerHTML = index > -1 ?
 			this.radios[index].value : this.options.caption;
 	}
-}
+};

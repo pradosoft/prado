@@ -13,7 +13,7 @@ class TIbmScaffoldInput extends TScaffoldInputCommon
 {
 	protected function createControl($container, $column, $record)
 	{
-		switch(strtolower($column->getType()))
+		switch(strtolower($column->getDbType()))
 		{
 			case 'date':
 				return $this->createDateControl($container, $column, $record);
@@ -34,7 +34,7 @@ class TIbmScaffoldInput extends TScaffoldInputCommon
 
 	protected function getControlValue($container, $column, $record)
 	{
-		switch(strtolower($column->getType()))
+		switch(strtolower($column->getDbType()))
 		{
 			case 'date':
 				return $container->findControl(self::DEFAULT_ID)->getDate();
@@ -43,7 +43,7 @@ class TIbmScaffoldInput extends TScaffoldInputCommon
 			case 'timestamp':
 				return $this->getDateTimeValue($container, $column, $record);
 			default:
-				return $this->getDefaultControlValue($container,$column, $record);				
+				return $this->getDefaultControlValue($container,$column, $record);
 		}
 	}
 }

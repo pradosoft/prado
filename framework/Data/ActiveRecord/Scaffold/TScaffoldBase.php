@@ -36,23 +36,15 @@ abstract class TScaffoldBase extends TTemplateControl
 	 * @var TActiveRecord record instance (may be new or retrieved from db)
 	 */
 	private $_record;
-	/**
-	 * @var TDbMetaData table/view information.
-	 */
-	private $_meta;
 
 	/**
 	 * @return TDbMetaData table/view information
 	 */
-	protected function getTableMetaData()
+	protected function getTableInfo()
 	{
-		if($this->_meta===null)
-		{
-			$finder = $this->getRecordFinder();
-			$gateway = $finder->getRecordManager()->getRecordGateWay();
-			$this->_meta = $gateway->getMetaData($finder);
-		}
-		return $this->_meta;
+		$finder = $this->getRecordFinder();
+		$gateway = $finder->getRecordManager()->getRecordGateWay();
+		return $gateway->getRecordTableInfo($finder);
 	}
 
 	/**
@@ -62,7 +54,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	protected function getRecordPropertyValues($record)
 	{
 		$data = array();
-		foreach($this->getTableMetaData()->getColumns() as $name=>$column)
+		foreach($this->getTableInfo()->getColumns() as $name=>$column)
 			$data[] = $record->{$name};
 		return $data;
 	}
@@ -73,7 +65,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	 */
 	protected function getRecordPkValues($record)
 	{
-		foreach($this->getTableMetaData()->getColumns() as $name=>$column)
+		foreach($this->getTableInfo()->getColumns() as $name=>$column)
 		{
 			if($column->getIsPrimaryKey())
 				$data[] = $record->{$name};
@@ -106,7 +98,6 @@ abstract class TScaffoldBase extends TTemplateControl
 	protected function copyFrom(TScaffoldBase $obj)
 	{
 		$this->_record = $obj->_record;
-		$this->_meta = $obj->_meta;
 		$this->setRecordClass($obj->getRecordClass());
 	}
 
@@ -116,7 +107,6 @@ abstract class TScaffoldBase extends TTemplateControl
 	protected function clearRecordObject()
 	{
 		$this->_record=null;
-		$this->_meta=null;
 	}
 
 	/**

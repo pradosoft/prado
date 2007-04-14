@@ -36,6 +36,9 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  * - <b>String</b> A string data type.
  * - <b>StringLength</b> check for string length.
  *
+ * If {@link setStrictComparison StrictComparison} is true, then the ranges
+ * are compared as strictly less than the max value and/or strictly greater than the min value.
+ *
  * The TRangeValidator allows a special DataType "StringLength" that
  * can be used to verify minimum and maximum string length. The
  * {@link setCharset Charset} property can be used to force a particular
@@ -91,6 +94,22 @@ class TRangeValidator extends TBaseValidator
 	public function setMaxValue($value)
 	{
 		$this->setViewState('MaxValue',$value,'');
+	}
+
+	/**
+	 * @param boolean true to perform strict comparison (i.e. strictly less than max and/or strictly greater than min).
+	 */
+	public function setStrictComparison($value)
+	{
+		$this->setViewState('StrictComparison', TPropertyValue::ensureBoolean($value),false);
+	}
+
+	/**
+	 * @return boolean true to perform strict comparison.
+	 */
+	public function getStrictComparison()
+	{
+		return $this->getViewState('StrictComparison', false);
 	}
 
 	/**
@@ -184,10 +203,20 @@ class TRangeValidator extends TBaseValidator
 		$value=intval($value);
 		$valid=true;
 		if($minValue!=='')
-			$valid=$valid && ($value>=intval($minValue));
+			$valid=$valid && $this->isGreaterThan($value, intval($minValue));
 		if($maxValue!=='')
-			$valid=$valid && ($value<=intval($maxValue));
+			$valid=$valid && $this->isLessThan($value,intval($maxValue));
 		return $valid;
+	}
+
+	protected function isLessThan($left,$right)
+	{
+		return $this->getStrictComparison() ? $left < $right : $left <= $right;
+	}
+
+	protected function isGreaterThan($left, $right)
+	{
+		return $this->getStrictComparison() ? $left > $right : $left >= $right;
 	}
 
 	/**
@@ -203,9 +232,9 @@ class TRangeValidator extends TBaseValidator
 		$value=floatval($value);
 		$valid=true;
 		if($minValue!=='')
-			$valid=$valid && ($value>=floatval($minValue));
+			$valid=$valid && $this->isGreaterThan($value,floatval($minValue));
 		if($maxValue!=='')
-			$valid=$valid && ($value<=floatval($maxValue));
+			$valid=$valid && $this->isLessThan($value,floatval($maxValue));
 		return $valid;
 	}
 
@@ -228,18 +257,18 @@ class TRangeValidator extends TBaseValidator
 			$formatter=Prado::createComponent('System.Util.TSimpleDateFormatter', $dateFormat);
 			$value = $formatter->parse($value, $dateFormat);
 			if($minValue!=='')
-				$valid=$valid && ($value>=$formatter->parse($minValue));
+				$valid=$valid && $this->isGreaterThan($value,$formatter->parse($minValue));
 			if($maxValue!=='')
-				$valid=$valid && ($value<=$formatter->parse($maxValue));
+				$valid=$valid && $this->isLessThan($value,$formatter->parse($maxValue));
 			return $valid;
 		}
 		else
 		{
 			$value=strtotime($value);
 			if($minValue!=='')
-				$valid=$valid && ($value>=strtotime($minValue));
+				$valid=$valid && $this->isGreaterThan($value,strtotime($minValue));
 			if($maxValue!=='')
-				$valid=$valid && ($value<=strtotime($maxValue));
+				$valid=$valid && $this->isLessThan($value,strtotime($maxValue));
 			return $valid;
 		}
 	}
@@ -257,9 +286,9 @@ class TRangeValidator extends TBaseValidator
 
 		$valid=true;
 		if($minValue!=='')
-			$valid=$valid && (strcmp($value,$minValue)>=0);
+			$valid=$valid && $this->isGreaterThan(strcmp($value,$minValue),0);
 		if($maxValue!=='')
-			$valid=$valid && (strcmp($value,$maxValue)<=0);
+			$valid=$valid && $this->isLessThan(strcmp($value,$maxValue),0);
 		return $valid;
 	}
 
@@ -284,9 +313,9 @@ class TRangeValidator extends TBaseValidator
 
 		$length = iconv_strlen($value, $charset);
 		if($minValue!=='')
-			$valid = $valid && $length >= intval($minValue);
+			$valid = $valid && $this->isGreaterThan($length,intval($minValue));
 		if($maxValue!=='')
-			$valid = $valid && $length <= intval($maxValue);
+			$valid = $valid && $this->isLessThan($length,intval($maxValue));
 		return $valid;
 	}
 
@@ -300,6 +329,7 @@ class TRangeValidator extends TBaseValidator
 		$options['MinValue']=$this->getMinValue();
 		$options['MaxValue']=$this->getMaxValue();
 		$options['DataType']=$this->getDataType();
+		$options['StrictComparison']=$this->getStrictComparison();
 		if(($dateFormat=$this->getDateFormat())!=='')
 			$options['DateFormat']=$dateFormat;
 		return $options;

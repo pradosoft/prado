@@ -114,7 +114,7 @@ class TScaffoldEditView extends TScaffoldBase
 		$classPath = $this->getEditRenderer();
 		if($classPath === '')
 		{
-			$columns = $this->getTableMetaData()->getColumns();
+			$columns = $this->getTableInfo()->getColumns();
 			$this->getInputRepeater()->setDataSource($columns);
 			$this->getInputRepeater()->dataBind();
 		}
@@ -199,7 +199,7 @@ class TScaffoldEditView extends TScaffoldBase
 			$record = $this->getCurrentRecord();
 			if($this->_editRenderer===null)
 			{
-				$table = $this->getTableMetaData();
+				$table = $this->getTableInfo();
 				$builder = $this->getScaffoldInputBuilder($record);
 				foreach($this->getInputRepeater()->getItems() as $item)
 				{

@@ -50,7 +50,7 @@ class TPgsqlMetaData extends TDbMetaData
 	 */
 	protected function getSchemaTableName($table)
 	{
-		if(count($parts= explode('.', $table)) > 1)
+		if(count($parts= explode('.', str_replace('"','',$table))) > 1)
 			return array($parts[0], $parts[1]);
 		else
 			return array($this->getDefaultSchema(),$parts[0]);
@@ -171,6 +171,7 @@ EOD;
 		$columnId = $col['attname']; //use column name as column Id
 
 		$info['ColumnName'] = '"'.$columnId.'"'; //quote the column names!
+		$info['ColumnId'] = $columnId;
 		$info['ColumnIndex'] = $col['index'];
 		if(!$col['attnotnull'])
 			$info['AllowNull'] = true;

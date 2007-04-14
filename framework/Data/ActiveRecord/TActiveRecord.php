@@ -189,7 +189,7 @@ abstract class TActiveRecord extends TComponent
 		$registry = $this->getRecordManager()->getObjectStateRegistry();
 		$gateway = $this->getRecordManager()->getRecordGateway();
 		if(!$this->_readOnly)
-			$this->_readOnly = $gateway->getMetaData($this)->getIsView();
+			$this->_readOnly = $gateway->getRecordTableInfo($this)->getIsView();
 		if($this->_readOnly)
 			throw new TActiveRecordException('ar_readonly_exception',get_class($this));
 		return $registry->commit($this,$gateway);
@@ -247,12 +247,8 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function deleteAll($criteria, $parameters=array())
 	{
-		if(is_string($criteria))
-		{
-			if(!is_array($parameters) && func_num_args() > 1)
-				$parameters = array_slice(func_get_args(),1);
-			$criteria=new TActiveRecordCriteria($criteria,$parameters);
-		}
+		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
+		$criteria = $this->getCriteria($criteria,$parameters, $args);
 		$gateway = $this->getRecordManager()->getRecordGateway();
 		return $gateway->deleteRecordsByCriteria($this, $criteria);
 	}
@@ -278,10 +274,22 @@ abstract class TActiveRecord extends TComponent
 			$obj->{$name} = $value;
 
 		$gateway = $this->getRecordManager()->getRecordGateway();
-		$obj->_readOnly = $gateway->getMetaData($this)->getIsView();
+		$obj->_readOnly = $gateway->getRecordTableInfo($this)->getIsView();
 
 		//cache it
 		return $registry->addCachedInstance($data,$obj);
+	}
+
+	/**
+	 * @param TDbDataReader data reader
+	 */
+	protected function collectObjects($reader)
+	{
+		$result=array();
+		$class = get_class($this);
+		foreach($reader as $data)
+			$result[] = $this->populateObject($class, $data);
+		return $result;
 	}
 
 	/**
@@ -303,12 +311,8 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function find($criteria,$parameters=array())
 	{
-		if(is_string($criteria))
-		{
-			if(!is_array($parameters) && func_num_args() > 1)
-				$parameters = array_slice(func_get_args(),1);
-			$criteria=new TActiveRecordCriteria($criteria,$parameters);
-		}
+		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
+		$criteria = $this->getCriteria($criteria,$parameters, $args);
 		$gateway = $this->getRecordManager()->getRecordGateway();
 		$data = $gateway->findRecordsByCriteria($this,$criteria);
 		return $this->populateObject(get_class($this), $data);
@@ -323,18 +327,12 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function findAll($criteria=null,$parameters=array())
 	{
-		if(is_string($criteria))
-		{
-			if(!is_array($parameters) && func_num_args() > 1)
-				$parameters = array_slice(func_get_args(),1);
-			$criteria=new TActiveRecordCriteria($criteria,$parameters);
-		}
+		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
+		if($criteria!==null)
+			$criteria = $this->getCriteria($criteria,$parameters, $args);
 		$gateway = $this->getRecordManager()->getRecordGateway();
-		$results = array();
-		$class = get_class($this);
-		foreach($gateway->findRecordsByCriteria($this,$criteria,true)  as $data)
-			$results[] = $this->populateObject($class,$data);
-		return $results;
+		$result = $gateway->findRecordsByCriteria($this,$criteria,true);
+		return $this->collectObjects($result);
 	}
 
 	/**
@@ -380,11 +378,8 @@ abstract class TActiveRecord extends TComponent
 		if(func_num_args() > 1)
 			$keys = func_get_args();
 		$gateway = $this->getRecordManager()->getRecordGateway();
-		$results = array();
-		$class = get_class($this);
-		foreach($gateway->findRecordsByPks($this,(array)$keys) as $data)
-			$results[] = $this->populateObject($class,$data);
-		return $results;
+		$result = $gateway->findRecordsByPks($this,(array)$keys);
+		return $this->collectObjects($result);
 	}
 
 	/**
@@ -397,15 +392,11 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function findBySql($sql,$parameters=array())
 	{
-		if(!is_array($parameters) && func_num_args() > 1)
-			$parameters = array_slice(func_get_args(),1);
+		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
+		$criteria = $this->getCriteria($sql,$parameters, $args);
 		$gateway = $this->getRecordManager()->getRecordGateway();
-		$data = $gateway->findRecordsBySql($this,$sql,$parameters);
-		$results = array();
-		$class = get_class($this);
-		foreach($gateway->findRecordsBySql($this,$sql,$parameters) as $data)
-			$results[] = $this->populateObject($class,$data);
-		return $results;
+		$result = $gateway->findRecordsBySql($this,$criteria);
+		return $this->collectObjects($result);
 	}
 
 	/**
@@ -416,12 +407,9 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function count($criteria=null,$parameters=array())
 	{
-		if(is_string($criteria))
-		{
-			if(!is_array($parameters) && func_num_args() > 1)
-				$parameters = array_slice(func_get_args(),1);
-			$criteria=new TActiveRecordCriteria($criteria,$parameters);
-		}
+		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
+		if($criteria!==null)
+			$criteria = $this->getCriteria($criteria,$parameters, $args);
 		$gateway = $this->getRecordManager()->getRecordGateway();
 		return $gateway->countRecords($this,$criteria);
 	}
@@ -467,7 +455,8 @@ abstract class TActiveRecord extends TComponent
 		else
 			return null;//throw new TActiveRecordException('ar_invalid_finder_method',$method);
 
-		$criteria = $this->createCriteriaFromString($method, $condition, $args);
+		$gateway = $this->getRecordManager()->getRecordGateway();
+		$criteria = $gateway->getCommand($this)->createCriteriaFromString($method, $condition, $args);
 		if($delete)
 			return $this->deleteAll($criteria);
 		else
@@ -475,51 +464,25 @@ abstract class TActiveRecord extends TComponent
 	}
 
 	/**
-	 * @param string __call method name
-	 * @param string criteria conditions
-	 * @param array method arguments
-	 * @return TActiveRecordCriteria criteria created from the method name and its arguments.
+	 * Create a new TSqlCriteria object from a string $criteria. The $args
+	 * are additional parameters and are used in place of the $parameters
+	 * if $parameters is not an array and $args is an arrary.
+	 * @param string|TSqlCriteria sql criteria
+	 * @param mixed parameters passed by the user.
+	 * @param array additional parameters obtained from function_get_args().
+	 * @return TSqlCriteria criteria object.
 	 */
-	private function createCriteriaFromString($method, $condition, $args)
+	protected function getCriteria($criteria, $parameters, $args)
 	{
-		$fields = $this->extractMatchingConditions($method, $condition);
-		$args=count($args) === 1 && is_array($args[0]) ? $args[0] : $args;
-		if(count($fields)>count($args))
+		if(is_string($criteria))
 		{
-			throw new TActiveRecordException('ar_mismatch_args_exception',
-				$method,count($fields),count($args));
+			$useArgs = !is_array($parameters) && is_array($args);
+			return new TActiveRecordCriteria($criteria,$useArgs ? $args : $parameters);
 		}
-		return new TActiveRecordCriteria(implode(' ',$fields),$args);
-	}
-
-	/**
-	 * Calculates the AND/OR condition from dynamic method substrings using
-	 * table meta data, allows for any AND-OR combinations.
-	 * @param string dynamic method name
-	 * @param string dynamic method search criteria
-	 * @return array search condition substrings
-	 */
-	private function extractMatchingConditions($method, $condition)
-	{
-		$meta = $this->getRecordManager()->getRecordGateway()->getMetaData($this);
-		$search = implode('|', $meta->getColumnNames());
-		$regexp = '/('.$search.')(and|_and_|or|_or_)?/i';
-		$matches = array();
-		if(!preg_match_all($regexp, strtolower($condition), $matches,PREG_SET_ORDER))
-		{
-			throw new TActiveRecordException('ar_mismatch_column_names',
-				$method, implode(', ', $meta->getColumnNames()), $meta->getTableName());
-		}
-		$fields = array();
-		foreach($matches as $match)
-		{
-			$column = $meta->getColumn($match[1]);
-			$sql = $column->getName() . ' = ? ';
-			if(count($match) > 2)
-				$sql .= strtoupper(str_replace('_', '', $match[2]));
-			$fields[] = $sql;
-		}
-		return $fields;
+		else if($criteria instanceof TSqlCriteria)
+			return $criteria;
+		else
+			throw new TActiveRecordException('ar_invalid_criteria');
 	}
 }
 

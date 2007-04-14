@@ -3,7 +3,7 @@
 <com:TRepeater ID="_repeater" onItemCreated="createRepeaterEditItem">
 	<prop:ItemTemplate>
 	<div class="edit-item item_<%# $this->ItemIndex % 2 %>
-		input_<%# $this->ItemIndex %> property_<%# $this->DataItem->Property %>">
+		input_<%# $this->ItemIndex %> property_<%# $this->DataItem->ColumnId %>">
 		<com:TLabel ID="_label" CssClass="item-label"/>
 		<span class="item-input">
 			<com:TPlaceHolder ID="_input" />

@@ -18,7 +18,7 @@
  * @package System.Data.ActiveRecord
  * @since 3.1
  */
-class TActiveRecordException extends TException
+class TActiveRecordException extends TDbException
 {
 	/**
 	 * @return string path to the error message file

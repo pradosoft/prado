@@ -22,8 +22,9 @@
 class TActiveRecordGateway extends TComponent
 {
 	private $_manager;
-	private $_tables=array(); //meta data cache.
-
+	private $_tables=array(); //table cache
+	private $_meta=array(); //meta data cache.
+	private $_commandBuilders=array();
 	/**
 	 * Constant name for specifying optional table name in TActiveRecord.
 	 */
@@ -52,7 +53,7 @@ class TActiveRecordGateway extends TComponent
 	 * @param TActiveRecord active record instance
 	 * @return string table name for the given record class.
 	 */
-	public function getTableName(TActiveRecord $record)
+	protected function getRecordTableName(TActiveRecord $record)
 	{
 		$class = new ReflectionClass($record);
 		if($class->hasConstant(self::TABLE_CONST))
@@ -68,70 +69,65 @@ class TActiveRecordGateway extends TComponent
 	}
 
 	/**
-	 * @param TActiveRecord active record.
-	 * @return TDbMetaData table meta data, null if not found.
+	 * Returns table information, trys the application cache first.
+	 * @param TActiveRecord $record
+	 * @return TDbTableInfo table information.
 	 */
-	protected function getCachedMetaData($record)
+	public function getRecordTableInfo(TActiveRecord $record)
 	{
-		$type=get_class($record);
-		if(isset($this->_tables[$type]))
-			return $this->_tables[$type];
-		if(($cache=$this->getManager()->getCache())!==null)
+		$tableName = $this->getRecordTableName($record);
+		return $this->getTableInfo($record->getDbConnection(), $tableName);
+	}
+
+	/**
+	 * Returns table information for table in the database connection.
+	 * @param TDbConnection database connection
+	 * @param string table name
+	 * @return TDbTableInfo table details.
+	 */
+	public function getTableInfo($connection, $tableName)
+	{
+		$connStr = $connection->getConnectionString();
+		$key = $connStr.$tableName;
+		if(!isset($this->_tables[$key]))
 		{
-			//force loading of the table inspector to load the required classes
-			// before unserializing cached meta data.
-			$this->getManager()->getTableInspector($record->getDbConnection());
-			$data = $cache->get($this->getMetaDataCacheKey($record));
-			if($data !== false && $data !== null)
+			$tableInfo = null;
+			if(($cache=$this->getManager()->getCache())!==null)
+				$tableInfo = $cache->get($key);
+			if($tableInfo===null)
 			{
-				$this->_tables[$type] = $data;
-				return $data;
+				if(!isset($this->_meta[$connStr]))
+				{
+					Prado::using('System.Data.Common.TDbMetaData');
+					$this->_meta[$connStr] = TDbMetaData::getMetaData($connection);
+				}
+				$tableInfo = $this->_meta[$connStr]->getTableInfo($tableName);
 			}
+			$this->_tables[$key] = $tableInfo;
+			if($cache!==null)
+				$cache->set($key, $tableInfo);
 		}
+		return $this->_tables[$key];
 	}
 
 	/**
-	 * @param TActiveRecord active record.
-	 * @return string cache key, using connection string + record class name
+	 * @param TActiveRecord $record
+	 * @return TDataGatewayCommand
 	 */
-	protected function getMetaDataCacheKey($record)
+	public function getCommand(TActiveRecord $record)
 	{
-		$conn = $record->getDbConnection()->getConnectionString();
-		return $conn.':'.get_class($record);
-	}
-
-	/**
-	 * Cache the meta data, tries the application cache if applicable.
-	 * @param TActiveRecord active record.
-	 * @param TDbMetaData table meta data
-	 * @return TDbMetaData table meta data.
-	 */
-	protected function cacheMetaData($record,$data)
-	{
-		$type = get_class($record);
-		if(($cache=$this->getManager()->getCache())!==null)
-			$cache->set($this->getMetaDataCacheKey($record), $data);
-		$this->_tables[$type] = $data;
-		return $data;
-	}
-
-	/**
-	 * Gets the meta data for given database and table.
-	 */
-	public function getMetaData(TActiveRecord $record)
-	{
-		$type=get_class($record);
-		if(!($data = $this->getCachedMetaData($record)))
+		$conn = $record->getDbConnection();
+		$connStr = $conn->getConnectionString();
+		$tableInfo = $this->getRecordTableInfo($record);
+		if(!isset($this->_commandBuilders[$connStr]))
 		{
-			$conn = $record->getDbConnection();
-			$inspector = $this->getManager()->getTableInspector($conn);
-			$table = $this->getTableName($record);
-			$meta = $inspector->getTableMetaData($table);
-			if(count($meta->getColumns()) == 0)
-				throw new TActiveRecordException('ar_invalid_table', $table);
-			$data = $this->cacheMetaData($record,$meta);
+			$builder = $tableInfo->createCommandBuilder($record->getDbConnection());
+			Prado::using('System.Data.DataGateway.TDataGatewayCommand');
+			$this->_commandBuilders[$connStr] = new TDataGatewayCommand($builder);
 		}
-		return $data;
+		$this->_commandBuilders[$connStr]->getBuilder()->setTableInfo($tableInfo);
+
+		return $this->_commandBuilders[$connStr];
 	}
 
 	/**
@@ -143,11 +139,7 @@ class TActiveRecordGateway extends TComponent
 	 */
 	public function findRecordByPK(TActiveRecord $record,$keys)
 	{
-		$meta = $this->getMetaData($record);
-		$command = $meta->getFindByPkCommand($record->getDbConnection(),$keys);
-		$this->raiseCommandEvent(TActiveRecordStatementType::Select,$command,$record,$keys);
-		Prado::trace(get_class($record).'::FindRecordByPk('.var_export($keys,true).')', 'System.Data.ActiveRecord');
-		return $meta->postQueryRow($command->queryRow());
+		return $this->getCommand($record)->findByPk($keys);
 	}
 
 	/**
@@ -158,11 +150,7 @@ class TActiveRecordGateway extends TComponent
 	 */
 	public function findRecordsByPks(TActiveRecord $record, $keys)
 	{
-		$meta = $this->getMetaData($record);
-		$command = $meta->getFindInPksCommand($record->getDbConnection(), $keys);
-		$this->raiseCommandEvent(TActiveRecordStatementType::Select,$command,$record,$keys);
-		Prado::trace(get_class($record).'::FindRecordsByPks('.var_export($keys,true).')', 'System.Data.ActiveRecord');
-		return $meta->postQuery($command->query());
+		return $this->getCommand($record)->findAllByPk($keys);
 	}
 
 
@@ -176,27 +164,21 @@ class TActiveRecordGateway extends TComponent
 	 */
 	public function findRecordsByCriteria(TActiveRecord $record, $criteria, $iterator=false)
 	{
-		$meta = $this->getMetaData($record);
-		$command = $meta->getFindByCriteriaCommand($record->getDbConnection(),$criteria);
-		$this->raiseCommandEvent(TActiveRecordStatementType::Select,$command,$record,$criteria);
-		Prado::trace(get_class($record).'::FindRecordsByCriteria('.((string)$criteria).')', 'System.Data.ActiveRecord');
-		return $iterator ? $meta->postQuery($command->query()) : $meta->postQueryRow($command->queryRow());
+		if($iterator)
+			return $this->getCommand($record)->findAll($criteria);
+		else
+			return $this->getCommand($record)->find($criteria);
 	}
 
 	/**
 	 * Return record data from sql query.
 	 * @param TActiveRecord active record finder instance.
-	 * @param string SQL string
-	 * @param array query parameters.
+	 * @param TActiveRecordCriteria sql query
 	 * @return TDbDataReader result iterator.
 	 */
-	public function findRecordsBySql(TActiveRecord $record, $sql,$parameters=array())
+	public function findRecordsBySql(TActiveRecord $record, $criteria)
 	{
-		$meta = $this->getMetaData($record);
-		$command = $meta->getFindBySqlCommand($record->getDbConnection(),$sql,$parameters);
-		$this->raiseCommandEvent(TActiveRecordStatementType::Select,$command,$record,$parameters);
-		Prado::trace(get_class($record).'::FindRecordsBySql('.var_export($parameters,true).')', 'System.Data.ActiveRecord');
-		return $meta->postQuery($command->query());
+		return $this->getCommand($record)->findBySql($criteria);
 	}
 
 	/**
@@ -207,11 +189,7 @@ class TActiveRecordGateway extends TComponent
 	 */
 	public function countRecords(TActiveRecord $record, $criteria)
 	{
-		$meta = $this->getMetaData($record);
-		$command = $meta->getCountRecordsCommand($record->getDbConnection(),$criteria);
-		$this->raiseCommandEvent(TActiveRecordStatementType::Select,$command,$record,$criteria);
-		Prado::trace(get_class($record).'::CountRecords('.((string)$criteria).')', 'System.Data.ActiveRecord');
-		return intval($command->queryScalar());
+		return $this->getCommand($record)->count($criteria);
 	}
 
 	/**
@@ -221,14 +199,46 @@ class TActiveRecordGateway extends TComponent
 	 */
 	public function insert(TActiveRecord $record)
 	{
-		$meta = $this->getMetaData($record);
-		$command = $meta->getInsertCommand($record->getDbConnection(),$record);
-		$this->raiseCommandEvent(TActiveRecordStatementType::Insert,$command,$record);
-		Prado::trace(get_class($record).'::Insert()', 'System.Data.ActiveRecord');
-		$rowsAffected = $command->execute();
-		if($rowsAffected===1)
-			$meta->updatePostInsert($record->getDbConnection(),$record);
-		return $rowsAffected;
+		$result = $this->getCommand($record)->insert($this->getInsertValues($record));
+		if($result)
+			$this->updatePostInsert($record);
+		return $result;
+	}
+
+	protected function updatePostInsert($record)
+	{
+		$command = $this->getCommand($record);
+		$tableInfo = $command->getTableInfo();
+		foreach($tableInfo->getColumns() as $name => $column)
+		{
+			if($column->hasSequence())
+				$record->{$name} = $command->getLastInsertID($column->getSequenceName());
+		}
+	}
+
+	/**
+	 * @param TActiveRecord record
+	 * @return array insert values.
+	 */
+	protected function getInsertValues(TActiveRecord $record)
+	{
+		$values=array();
+		$tableInfo = $this->getCommand($record)->getTableInfo();
+		foreach($tableInfo->getColumns() as $name=>$column)
+		{
+			if($column->getIsExcluded())
+				continue;
+			$value = $record->{$name};
+			if(!$column->getAllowNull() && $value===null && !$column->hasSequence())
+			{
+				throw new TActiveRecordException(
+					'ar_value_must_not_be_null', get_class($record),
+					$tableInfo->getTableFullName(), $name);
+			}
+			if($value!==null)
+				$values[$name] = $value;
+		}
+		return $values;
 	}
 
 	/**
@@ -238,11 +248,32 @@ class TActiveRecordGateway extends TComponent
 	 */
 	public function update(TActiveRecord $record)
 	{
-		$meta = $this->getMetaData($record);
-		$command = $meta->getUpdateCommand($record->getDbConnection(),$record);
-		$this->raiseCommandEvent(TActiveRecordStatementType::Update,$command,$record);
-		Prado::trace(get_class($record).'::Update()', 'System.Data.ActiveRecord');
-		return $command->execute();
+		list($data, $keys) = $this->getUpdateValues($record);
+		return $this->getCommand($record)->updateByPk($data, $keys);
+	}
+
+	protected function getUpdateValues(TActiveRecord $record)
+	{
+		$values=array();
+		$tableInfo = $this->getCommand($record)->getTableInfo();
+		$primary=array();
+		foreach($tableInfo->getColumns() as $name=>$column)
+		{
+			if($column->getIsExcluded())
+				continue;
+			$value = $record->{$name};
+			if(!$column->getAllowNull() && $value===null)
+			{
+				throw new TActiveRecordException(
+					'ar_value_must_not_be_null', get_class($record),
+					$tableInfo->getTableFullName(), $name);
+			}
+			if($column->getIsPrimaryKey())
+				$primary[] = $value;
+			else
+				$values[$name] = $value;
+		}
+		return array($values,$primary);
 	}
 
 	/**
@@ -252,11 +283,19 @@ class TActiveRecordGateway extends TComponent
 	 */
 	public function delete(TActiveRecord $record)
 	{
-		$meta = $this->getMetaData($record);
-		$command = $meta->getDeleteCommand($record->getDbConnection(),$record);
-		$this->raiseCommandEvent(TActiveRecordStatementType::Delete,$command,$record);
-		Prado::trace(get_class($record).'::Delete()', 'System.Data.ActiveRecord');
-		return $command->execute();
+		return $this->getCommand($record)->deleteByPk($this->getPrimaryKeyValues($record));
+	}
+
+	protected function getPrimaryKeyValues(TActiveRecord $record)
+	{
+		$tableInfo = $this->getCommand($record)->getTableInfo();
+		$primary=array();
+		foreach($tableInfo->getColumns() as $name=>$column)
+		{
+			if($column->getIsPrimaryKey())
+				$primary[$name] = $record->{$name};
+		}
+		return $primary;
 	}
 
 	/**
@@ -266,11 +305,7 @@ class TActiveRecordGateway extends TComponent
 	 */
 	public function deleteRecordsByPk(TActiveRecord $record, $keys)
 	{
-		$meta = $this->getMetaData($record);
-		$command = $meta->getDeleteByPkCommand($record->getDBConnection(),$keys);
-		$this->raiseCommandEvent(TActiveRecordStatementType::Delete,$command,$record,$keys);
-		Prado::trace(get_class($record).'::DeleteRecordsByPk('.var_export($keys,true).')', 'System.Data.ActiveRecord');
-		return $command->execute();
+		return $this->getCommand($record)->deleteByPk($keys);
 	}
 
 	/**
@@ -281,11 +316,7 @@ class TActiveRecordGateway extends TComponent
 	 */
 	public function deleteRecordsByCriteria(TActiveRecord $record, $criteria)
 	{
-		$meta = $this->getMetaData($record);
-		$command = $meta->getDeleteByCriteriaCommand($record->getDBConnection(),$criteria);
-		$this->raiseCommandEvent(TActiveRecordStatementType::Delete,$command,$record,$criteria);
-		Prado::trace(get_class($record).'::DeleteRecordsByCriteria('.((string)$criteria).')', 'System.Data.ActiveRecord');
-		return $command->execute();
+		return $this->getCommand($record)->delete($criteria);
 	}
 
 	/**

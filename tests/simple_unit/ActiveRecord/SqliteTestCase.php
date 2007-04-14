@@ -16,12 +16,6 @@ class SqliteTestCase extends UnitTestCase
 		$user = $finder->findByPk('test');
 		$this->assertNotNull($user);
 	}
-
-	function test_get_pk()
-	{
-		$meta = TActiveRecordManager::getInstance()->getMetaData('SqliteUsers');
-		$this->assertEqual(array('username'), $meta->PrimaryKeys);
-	}
 }
 
 ?>

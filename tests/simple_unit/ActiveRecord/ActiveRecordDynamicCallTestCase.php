@@ -40,7 +40,7 @@ class ActiveRecordDynamicCallTestCase extends UnitTestCase
 			$rs = $finder->findByNameAndActive('Marketing');
 			$this->fail();
 		}
-		catch(TActiveRecordException $e)
+		catch(TDbException $e)
 		{
 			$this->pass();
 		}

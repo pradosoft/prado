@@ -93,7 +93,7 @@ class TScaffoldSearch extends TScaffoldBase
 	 */
 	protected function createSearchCondition()
 	{
-		$table = $this->getTableMetaData();
+		$table = $this->getTableInfo();
 		if(strlen($str=$this->getSearchText()->getText()) > 0)
 			return $table->getSearchRegExpCriteria($this->getFields(), $str);
 	}
@@ -106,7 +106,7 @@ class TScaffoldSearch extends TScaffoldBase
 		if(strlen(trim($str=$this->getSearchableFields()))>0)
 			$fields = preg_split('/\s*,\s*/', $str);
 		else
-			$fields = array_keys($this->getTableMetaData()->getColumns());
+			$fields = array_keys($this->getTableInfo()->getColumns());
 		return $fields;
 	}
 

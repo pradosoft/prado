@@ -59,7 +59,7 @@ class TMysqlTableColumn extends TDbTableColumn
 	/**
 	 * @return boolean true if auto increment is true.
 	 */
-	public function getHasSequence()
+	public function hasSequence()
 	{
 		return $this->getAutoIncrement();
 	}

@@ -662,9 +662,9 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 	protected function generateActiveRecord($config, $tablename, $output)
 	{
 		$manager = TActiveRecordManager::getInstance();
-		$inspector = $manager->getTableInspector($manager->getDbConnection());
-		$meta = $inspector->getTableMetaData($tablename);
-		if(count($meta->getColumns()) === 0)
+		$gateway = $manager->getRecordGateway();
+		$tableInfo = $gateway->getTableInfo($manager->getDbConnection(), $tablename);
+		if(count($tableInfo->getColumns()) === 0)
 		{
 			echo '** Unable to find table or view "'.$tablename.'" in "'.$manager->getDbConnection()->getConnectionString()."\".\n";
 			return false;
@@ -672,7 +672,7 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 		else
 		{
 			$properties = array();
-			foreach($meta->getColumns() as $field=>$column)
+			foreach($tableInfo->getColumns() as $field=>$column)
 				$properties[] = $this->generateProperty($field,$column);
 		}
 

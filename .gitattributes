@@ -617,6 +617,7 @@ buildscripts/phing/tasks/BuildPradoPEARPackageTask.php -text
 buildscripts/phing/tasks/ManualIndexTask.php -text
 buildscripts/phing/tasks/PhpLintTask.php -text
 buildscripts/phing/tasks/PradoDocTask.php -text
+buildscripts/phing/tasks/PradoPackageTask.php -text
 buildscripts/phing/tasks/PradoPearTask.php -text
 buildscripts/phing/tasks/PradoTestTask.php -text
 buildscripts/phing/tasks/PradoVersionTask.php -text
@@ -1606,6 +1607,7 @@ framework/Configuration/TProtectedConfiguration.php -text
 framework/Data/ActiveRecord/Exceptions/TActiveRecordException.php -text
 framework/Data/ActiveRecord/Exceptions/messages.txt -text
 framework/Data/ActiveRecord/Scaffold/InputBuilder/TIbmScaffoldInput.php -text
+framework/Data/ActiveRecord/Scaffold/InputBuilder/TMssqlScaffoldInput.php -text
 framework/Data/ActiveRecord/Scaffold/InputBuilder/TMysqlScaffoldInput.php -text
 framework/Data/ActiveRecord/Scaffold/InputBuilder/TPgsqlScaffoldInput.php -text
 framework/Data/ActiveRecord/Scaffold/InputBuilder/TScaffoldInputBase.php -text
@@ -1642,6 +1644,13 @@ framework/Data/ActiveRecord/Vendor/TPgsqlMetaDataInspector.php -text
 framework/Data/ActiveRecord/Vendor/TSqliteColumnMetaData.php -text
 framework/Data/ActiveRecord/Vendor/TSqliteMetaData.php -text
 framework/Data/ActiveRecord/Vendor/TSqliteMetaDataInspector.php -text
+framework/Data/Common/IbmDb2/TIbmColumnMetaData.php -text
+framework/Data/Common/IbmDb2/TIbmMetaData.php -text
+framework/Data/Common/IbmDb2/TIbmMetaDataInspector.php -text
+framework/Data/Common/Mssql/TMssqlCommandBuilder.php -text
+framework/Data/Common/Mssql/TMssqlMetaData.php -text
+framework/Data/Common/Mssql/TMssqlTableColumn.php -text
+framework/Data/Common/Mssql/TMssqlTableInfo.php -text
 framework/Data/Common/Mysql/TMysqlMetaData.php -text
 framework/Data/Common/Mysql/TMysqlTableColumn.php -text
 framework/Data/Common/Mysql/TMysqlTableInfo.php -text
@@ -2665,8 +2674,10 @@ tests/simple_unit/ActiveRecord/records/DepartmentRecord.php -text
 tests/simple_unit/ActiveRecord/records/SimpleUser.php -text
 tests/simple_unit/ActiveRecord/records/SqliteUsers.php -text
 tests/simple_unit/ActiveRecord/records/UserRecord.php -text
+tests/simple_unit/DbCommon/CommandBuilderMssqlTest.php -text
 tests/simple_unit/DbCommon/CommandBuilderMysqlTest.php -text
 tests/simple_unit/DbCommon/CommandBuilderPgsqlTest.php -text
+tests/simple_unit/DbCommon/MssqlColumnTest.php -text
 tests/simple_unit/DbCommon/MysqlColumnTest.php -text
 tests/simple_unit/DbCommon/PgsqlColumnTest.php -text
 tests/simple_unit/DbCommon/SqliteColumnTest.php -text
