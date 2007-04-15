@@ -195,8 +195,8 @@ else
 {var min=this.options.MinValue||0;var max=this.options.MaxValue||Number.POSITIVE_INFINITY;value=value.length;}
 if(value==null)
 return false;var valid=true;if(min!=null)
-valid=valid&&value>=min;if(max!=null)
-valid=valid&&value<=max;return valid;}});Prado.WebUI.TRegularExpressionValidator=Class.extend(Prado.WebUI.TBaseValidator,{evaluateIsValid:function()
+valid=valid&&(this.options.StrictComparison?value>min:value>=min);if(max!=null)
+valid=valid&&(this.options.StrictComparison?value<max:value<=max);return valid;}});Prado.WebUI.TRegularExpressionValidator=Class.extend(Prado.WebUI.TBaseValidator,{evaluateIsValid:function()
 {var value=this.getValidationValue();if(value.length<=0)
 return true;var rx=new RegExp(this.options.ValidationExpression);var matches=rx.exec(value);return(matches!=null&&value==matches[0]);}});Prado.WebUI.TEmailAddressValidator=Prado.WebUI.TRegularExpressionValidator;Prado.WebUI.TListControlValidator=Class.extend(Prado.WebUI.TBaseValidator,{evaluateIsValid:function()
 {var elements=this.getListElements();if(elements&&elements.length<=0)

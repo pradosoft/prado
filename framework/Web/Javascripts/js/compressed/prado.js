@@ -316,8 +316,9 @@ if(typeof(element)=="string")
 method.toFunction().apply(this,[element,""+content]);}
 else
 {method.toFunction().apply(this,[""+content]);}},extractContent:function(text,boundary)
-{var f=RegExp('(<!--'+boundary+'-->)([\\s\\S\\w\\W]*)(<!--//'+boundary+'-->)',"m");var result=text.match(f);if(result&&result.length>=2)
-return result[2];else
+{var tagStart='<!--'+boundary+'-->';var tagEnd='<!--//'+boundary+'-->';var start=text.indexOf(tagStart);if(start>-1)
+{start+=tagStart.length;var end=text.indexOf(tagEnd,start);if(end>-1)
+return text.substring(start,end);}
 return null;},evaluateScript:function(content)
 {content.evalScripts();}}
 Prado.Element.Selection={isSelectable:function(el)
@@ -462,7 +463,7 @@ var newdate=new Date(year,month-1,date,0,0,0);return newdate;}});Prado.WebUI=Cla
 {if(this.onInit)
 this.onInit(options);}},onInit:function(options)
 {if(typeof(this.element.onclick)=="function")
-{this._elementOnClick=this.element.onclick.bind(this.element);;this.element.onclick=null;}
+{this._elementOnClick=this.element.onclick.bind(this.element);this.element.onclick=null;}
 Event.observe(this.element,"click",this.elementClicked.bindEvent(this,options));},elementClicked:function(event,options)
 {var src=Event.element(event);var doPostBack=true;var onclicked=null;if(this._elementOnClick)
 {var onclicked=this._elementOnClick(event);if(typeof(onclicked)=="boolean")
@@ -523,8 +524,8 @@ this.radios[i].parentNode.className=(i<=index)?"rating_hover":"";this.setCaption
 {for(var i=0;i<=index;i++)
 Element.removeClassName(this.radios[i].parentNode,"rating_hover");this.setRating(this.selectedIndex);},click:function(ev,index)
 {for(var i=0;i<this.radios.length;i++)
-this.radios[i].checked=(i==index);this.selectedIndex=index;this.setRating(index);if(isFunction(this.options.onChange))
+this.radios[i].checked=(i==index);this.selectedIndex=index;this.setRating(index);if(typeof(this.options.onChange)=="function")
 this.options.onChange(this,index);},setRating:function(index)
 {for(var i=0;i<=index;i++)
 this.radios[i].parentNode.className="rating_selected";this.setCaption(index);},setCaption:function(index)
-{this.caption.innerHTML=index>-1?this.radios[index].value:this.options.caption;}}
+{this.caption.innerHTML=index>-1?this.radios[index].value:this.options.caption;}};

@@ -1223,9 +1223,9 @@ Prado.WebUI.TRangeValidator = Class.extend(Prado.WebUI.TBaseValidator,
 		var valid = true;
 
 		if(min != null)
-			valid = valid && value >= min;
+			valid = valid && (this.options.StrictComparison ? value > min : value >= min);
 		if(max != null)
-			valid = valid && value <= max;
+			valid = valid && (this.options.StrictComparison ? value < max : value <= max);
 		return valid;
 	}
 });

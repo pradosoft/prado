@@ -1120,7 +1120,7 @@ class TApplication extends TComponent
  * In particular, the following modes are defined
  * - Off: the application is not running. Any request to the application will obtain an error.
  * - Debug: the application is running in debug mode.
- * - Debug: the application is running in normal production mode.
+ * - Normal: the application is running in normal production mode.
  * - Performance: the application is running in performance mode.
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Id$
