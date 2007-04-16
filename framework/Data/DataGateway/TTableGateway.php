@@ -1,27 +1,163 @@
 <?php
+/**
+ * TTableGateway class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005-2007 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Id$
+ * @package System.Data.DataGateway
+ */
 
+/**
+ * Loads the data gateway command builder and sql criteria.
+ */
 Prado::using('System.Data.DataGateway.TSqlCriteria');
 Prado::using('System.Data.DataGateway.TDataGatewayCommand');
 
+/**
+ * TTableGateway class provides several find methods to get data from the database
+ * and update, insert, and delete methods.
+ *
+ * Each method maps the input parameters into a SQL call and executes the SQL
+ * against a database connection. The TTableGateway is stateless
+ * (with respect to the data and data objects), as its role is to push data back and forth.
+ *
+ * Example usage:
+ * <code>
+ * //create a connection
+ * $dsn = 'pgsql:host=localhost;dbname=test';
+ * $conn = new TDbConnection($dsn, 'dbuser','dbpass');
+ *
+ * //create a table gateway for table/view named 'address'
+ * $table = new TTableGateway('address', $conn);
+ *
+ * //insert a new row, returns last insert id (if applicable)
+ * $id = $table->insert(array('name'=>'wei', 'phone'=>'111111'));
+ *
+ * $record1 = $table->findByPk($id); //find inserted record
+ *
+ * //finds all records, returns an iterator
+ * $records = $table->findAll();
+ * print_r($records->readAll());
+ *
+ * //update the row
+ * $table->updateByPk($record1, $id);
+ * </code>
+ *
+ * All methods that may return more than one row of data will return an
+ * TDbDataReader iterator.
+ *
+ * The OnCreateCommand event is raised when a command is prepared and parameter
+ * binding is completed. The parameter object is a TDataGatewayEventParameter of which the
+ * {@link TDataGatewayEventParameter::getCommand Command} property can be
+ * inspected to obtain the sql query to be executed.
+ *
+ * The OnExecuteCommand	event is raised when a command is executed and the result
+ * from the database was returned. The parameter object is a
+ * TDataGatewayResultEventParameter of which the
+ * {@link TDataGatewayEventParameter::getResult Result} property contains
+ * the data return from the database. The data returned can be changed
+ * by setting the {@link TDataGatewayEventParameter::setResult Result} property.
+ *
+ * <code>
+ * $table->OnCreateCommand[] = 'log_it'; //any valid PHP callback statement
+ * $table->OnExecuteCommand[] = array($obj, 'method_name'); // calls 'method_name' on $obj
+ *
+ * function log_it($sender, $param)
+ * {
+ *     var_dump($param); //TDataGatewayEventParameter object.
+ * }
+ * </code>
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.DataGateway
+ * @since 3.1
+ */
 class TTableGateway extends TComponent
 {
 	private $_command;
 	private $_connection;
 
-	public function __construct($tableName,$connection)
+	/**
+	 * Creates a new generic table gateway for a given table or view name
+	 * and a database connection.
+	 * @param string|TDbTableInfo table or view name or table information.
+	 * @param TDbConnection database connection.
+	 */
+	public function __construct($table,$connection)
 	{
 		$this->_connection=$connection;
-		$this->setTableName($tableName);
+		if(is_string($table))
+			$this->setTableName($table);
+		else if($table instanceof TDbTableInfo)
+			$this->setTableInfo($table);
+		else
+			throw new TDbException('dbtablegateway_invalid_table_info');
 	}
 
+	/**
+	 * @param TDbTableInfo table or view information.
+	 */
+	protected function setTableInfo($tableInfo)
+	{
+		$builder = $tableInfo->createCommandBuilder($this->getDbConnection());
+		$this->initCommandBuilder($builder);
+	}
+
+	/**
+	 * Sets up the command builder for the given table.
+	 * @param string table or view name.
+	 */
 	protected function setTableName($tableName)
 	{
 		Prado::using('System.Data.Common.TDbMetaData');
-		$meta = TDbMetaData::getMetaData($this->getDbConnection());
-		$builder = $meta->createCommandBuilder($tableName);
-		$this->_command = new TDataGatewayCommand($builder);
+		$meta = TDbMetaData::getInstance($this->getDbConnection());
+		$this->initCommandBuilder($meta->createCommandBuilder($tableName));
 	}
 
+	/**
+	 * @param TDbCommandBuilder database specific command builder.
+	 */
+	protected function initCommandBuilder($builder)
+	{
+		$this->_command = new TDataGatewayCommand($builder);
+		$this->_command->OnCreateCommand[] = array($this, 'onCreateCommand');
+		$this->_command->OnExecuteCommand[] = array($this, 'onExecuteCommand');
+	}
+
+	/**
+	 * Raised when a command is prepared and parameter binding is completed.
+	 * The parameter object is TDataGatewayEventParameter of which the
+	 * {@link TDataGatewayEventParameter::getCommand Command} property can be
+	 * inspected to obtain the sql query to be executed.
+	 * @param TDataGatewayCommand originator $sender
+	 * @param TDataGatewayEventParameter
+	 */
+	public function onCreateCommand($sender, $param)
+	{
+		$this->raiseEvent('OnCreateCommand', $this, $param);
+	}
+
+	/**
+	 * Raised when a command is executed and the result from the database was returned.
+	 * The parameter object is TDataGatewayResultEventParameter of which the
+	 * {@link TDataGatewayEventParameter::getResult Result} property contains
+	 * the data return from the database. The data returned can be changed
+	 * by setting the {@link TDataGatewayEventParameter::setResult Result} property.
+	 * @param TDataGatewayCommand originator $sender
+	 * @param TDataGatewayResultEventParameter
+	 */
+	public function onExecuteCommand($sender, $param)
+	{
+		$this->raiseEvent('OnExecuteCommand', $this, $param);
+	}
+
+	/**
+	 * @return TDataGatewayCommand command builder and executor.
+	 */
 	protected function getCommand()
 	{
 		return $this->_command;

@@ -37,16 +37,25 @@ class TMssqlTableColumn extends TDbTableColumn
 		return 'string';
 	}
 
+	/**
+	 * @return boolean true if the column has identity (auto-increment)
+	 */
 	public function getAutoIncrement()
 	{
 		return $this->getInfo('AutoIncrement',false);
 	}
 
+	/**
+	 * @return boolean true if auto increments.
+	 */
 	public function hasSequence()
 	{
 		return $this->getAutoIncrement();
 	}
 
+	/**
+	 * @return boolean true if db type is 'timestamp'.
+	 */
 	public function getIsExcluded()
 	{
 		return strtolower($this->getDbType())==='timestamp';

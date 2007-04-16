@@ -356,8 +356,6 @@ buildscripts/index/api_index.php -text
 buildscripts/index/build.php -text
 buildscripts/index/quickstart_index.php -text
 buildscripts/index/search.php -text
-buildscripts/jsbuilder/build.php -text
-buildscripts/jsbuilder/jsmin.php -text
 buildscripts/phing/CREDITS -text
 buildscripts/phing/LICENSE -text
 buildscripts/phing/README -text
@@ -2792,6 +2790,7 @@ tests/simple_unit/TableGateway/CountTest.php -text
 tests/simple_unit/TableGateway/DeleteByPkTest.php -text
 tests/simple_unit/TableGateway/MagicCallTest.php -text
 tests/simple_unit/TableGateway/TableGatewayPgsqlTest.php -text
+tests/simple_unit/TableGateway/TableInfoGatewayTest.php -text
 tests/simple_unit/TableGateway/TestFindByPk.php -text
 tests/simple_unit/application.xml -text
 tests/simple_unit/unit.php -text

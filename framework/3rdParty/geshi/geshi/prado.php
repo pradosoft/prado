@@ -140,7 +140,7 @@ $language_data = array (
 			'<![CDATA[' => ']]>'
 			),
 		3 => array(
-			'<' => '>'
+			'<' => '/>'
 			)
 	),
 	'HIGHLIGHT_STRICT_BLOCK' => array(

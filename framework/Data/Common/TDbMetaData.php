@@ -47,7 +47,7 @@ abstract class TDbMetaData extends TComponent
 	 * @param TDbConnection database connection.
 	 * @return TDbMetaData database specific TDbMetaData.
 	 */
-	public static function getMetaData($conn)
+	public static function getInstance($conn)
 	{
 		$conn->setActive(true); //must be connected before retrieving driver name
 		$driver = $conn->getDriverName();

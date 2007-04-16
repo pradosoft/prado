@@ -20,20 +20,16 @@ Prado::using('System.Data.ActiveRecord.TActiveRecordStateRegistry');
  * TActiveRecordManager provides the default DB connection, default object state
  * registry, default active record gateway, and table meta data inspector.
  *
- * You can provide a different registry by overriding the {@link createObjectStateRegistry()} method.
- * Similarly, override {@link createRecordGateway()} for default gateway and override
- * {@link createMetaDataInspector() }for meta data inspector.
- *
  * The default connection can be set as follows:
  * <code>
  * TActiveRecordManager::getInstance()->setDbConnection($conn);
  * </code>
  * All new active record created after setting the
- * {@link DbConnection setDbConnection()} will use that connection.
+ * {@link DbConnection setDbConnection()} will use that connection unless
+ * the custom ActiveRecord class overrides the ActiveRecord::getDbConnection().
  *
- * The {@link onInsert()}, {@link onUpdate()},
- * {@link onDelete()} and {@link onSelect()} events are raised
- * <b>before</b> their respective command are executed.
+ * Set the {@link setCache Cache} property to an ICache object to allow
+ * the active record gateway to cache the table meta data information.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$
@@ -84,10 +80,12 @@ class TActiveRecordManager extends TComponent
 	/**
 	 * @return TActiveRecordManager static instance of record manager.
 	 */
-	public static function getInstance()
+	public static function getInstance($self=null)
 	{
 		static $instance;
-		if($instance===null)
+		if($self!==null)
+			$instance=$self;
+		else if($instance===null)
 			$instance = new self;
 		return $instance;
 	}
@@ -126,54 +124,6 @@ class TActiveRecordManager extends TComponent
 	protected function createRecordGateway()
 	{
 		return new TActiveRecordGateway($this);
-	}
-
-	/**
-	 * This method is invoked before the object is inserted into the database.
-	 * The method raises 'OnInsert' event.
-	 * If you override this method, be sure to call the parent implementation
-	 * so that the event handlers can be invoked.
-	 * @param TActiveRecordEventParameter event parameter to be passed to the event handlers
-	 */
-	public function onInsert($param)
-	{
-		$this->raiseEvent('OnInsert', $this, $param);
-	}
-
-	/**
-	 * This method is invoked before the object is deleted from the database.
-	 * The method raises 'OnDelete' event.
-	 * If you override this method, be sure to call the parent implementation
-	 * so that the event handlers can be invoked.
-	 * @param TActiveRecordEventParameter event parameter to be passed to the event handlers
-	 */
-	public function onDelete($param)
-	{
-		$this->raiseEvent('OnDelete', $this, $param);
-	}
-
-	/**
-	 * This method is invoked before the object data is updated in the database.
-	 * The method raises 'OnUpdate' event.
-	 * If you override this method, be sure to call the parent implementation
-	 * so that the event handlers can be invoked.
-	 * @param TActiveRecordEventParameter event parameter to be passed to the event handlers
-	 */
-	public function onUpdate($param)
-	{
-		$this->raiseEvent('OnUpdate', $this, $param);
-	}
-
-	/**
-	 * This method is invoked before any select query is executed on the database.
-	 * The method raises 'OnSelect' event.
-	 * If you override this method, be sure to call the parent implementation
-	 * so that the event handlers can be invoked.
-	 * @param TActiveRecordEventParameter event parameter to be passed to the event handlers
-	 */
-	public function onSelect($param)
-	{
-		$this->raiseEvent('OnSelect', $this, $param);
 	}
 }
 

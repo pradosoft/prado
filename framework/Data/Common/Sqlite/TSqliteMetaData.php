@@ -52,6 +52,8 @@ class TSqliteMetaData extends TDbMetaData
 		$info['TableName'] = $table;
 		if($this->getIsView($tableName))
 			$info['IsView'] = true;
+		if(count($columns)===0)
+			throw new TDbException('dbmetadata_invalid_table_view', $tableName);
 		$tableInfo = new TSqliteTableInfo($info,$primary,$foreign);
 		$tableInfo->getColumns()->copyFrom($columns);
 		return $tableInfo;

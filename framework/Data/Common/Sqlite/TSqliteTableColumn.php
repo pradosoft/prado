@@ -25,6 +25,9 @@ Prado::using('System.Data.Common.TDbTableColumn');
  */
 class TSqliteTableColumn extends TDbTableColumn
 {
+	/**
+	 * @TODO add sqlite types.
+	 */
 	private static $types = array();
 
 	/**

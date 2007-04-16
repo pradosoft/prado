@@ -7,7 +7,7 @@
  * @copyright Copyright &copy; 2005-2007 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TDbSqlCriteria.php 1835 2007-04-03 01:38:15Z wei $
- * @package System.Data.Common
+ * @package System.Data.DataGateway
  */
 
 /**
@@ -26,7 +26,7 @@
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id: TDbSqlCriteria.php 1835 2007-04-03 01:38:15Z wei $
- * @package System.Data.Common
+ * @package System.Data.DataGateway
  * @since 3.1
  */
 class TSqlCriteria extends TComponent

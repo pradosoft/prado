@@ -19,6 +19,9 @@ Prado::using('System.Data.ActiveRecord.TActiveRecordCriteria');
  * An active record creates an object that wraps a row in a database table
  * or view, encapsulates the database access, and adds domain logic on that data.
  *
+ * Active record objects are stateful, this is main difference between the
+ * TActiveRecord implementation and the TTableGateway implementation.
+ *
  * The essence of an Active Record is an object model of the
  * domain (e.g. products, items) that incorporates both behavior and
  * data in which the classes match very closely the record structure of an
@@ -141,6 +144,10 @@ abstract class TActiveRecord extends TComponent
 
 	/**
 	 * Returns the instance of a active record finder for a particular class.
+	 * The finder objects are static instances for each ActiveRecord class.
+	 * This means that event handlers bound to these finder instances are class wide.
+	 * Create a new instance of the ActiveRecord class if you wish to bound the
+	 * event handlers to object instance.
 	 * @param string active record class name.
 	 * @return TActiveRecord active record finder instance.
 	 * @throws TActiveRecordException if class name equals 'TActiveRecord'.
@@ -168,6 +175,14 @@ abstract class TActiveRecord extends TComponent
 	public function getRecordManager()
 	{
 		return TActiveRecordManager::getInstance();
+	}
+
+	/**
+	 * @return TActiveRecordGateway record table gateway.
+	 */
+	public function getRecordGateway()
+	{
+		return $this->getRecordManager()->getRecordGateway();
 	}
 
 	/**
@@ -268,13 +283,18 @@ abstract class TActiveRecord extends TComponent
 		if(!is_null($obj = $registry->getCachedInstance($data)))
 			return $obj;
 
+		$gateway = $this->getRecordManager()->getRecordGateway();
+
 		//create and populate the object
 		$obj = Prado::createComponent($type);
-		foreach($data as $name => $value)
-			$obj->{$name} = $value;
+		$tableInfo = $gateway->getRecordTableInfo($obj);
+		foreach($tableInfo->getColumns()->getKeys() as $name)
+		{
+			if(isset($data[$name]))
+				$obj->{$name} = $data[$name];
+		}
 
-		$gateway = $this->getRecordManager()->getRecordGateway();
-		$obj->_readOnly = $gateway->getRecordTableInfo($this)->getIsView();
+		$obj->_readOnly = $tableInfo->getIsView();
 
 		//cache it
 		return $registry->addCachedInstance($data,$obj);
@@ -484,21 +504,38 @@ abstract class TActiveRecord extends TComponent
 		else
 			throw new TActiveRecordException('ar_invalid_criteria');
 	}
+
+	/**
+	 * Raised when a command is prepared and parameter binding is completed.
+	 * The parameter object is TDataGatewayEventParameter of which the
+	 * {@link TDataGatewayEventParameter::getCommand Command} property can be
+	 * inspected to obtain the sql query to be executed.
+	 *
+	 * Note well that the finder objects obtained from ActiveRecord::finder()
+	 * method are static objects. This means that the event handlers are
+	 * bound to a static finder object and not to each distinct active record object.
+	 * @param TDataGatewayEventParameter
+	 */
+	public function onCreateCommand($param)
+	{
+		$this->raiseEvent('OnCreateCommand', $this, $param);
+	}
+
+	/**
+	 * Raised when a command is executed and the result from the database was returned.
+	 * The parameter object is TDataGatewayResultEventParameter of which the
+	 * {@link TDataGatewayEventParameter::getResult Result} property contains
+	 * the data return from the database. The data returned can be changed
+	 * by setting the {@link TDataGatewayEventParameter::setResult Result} property.
+	 *
+	 * Note well that the finder objects obtained from ActiveRecord::finder()
+	 * method are static objects. This means that the event handlers are
+	 * bound to a static finder object and not to each distinct active record object.
+	 * @param TDataGatewayResultEventParameter
+	 */
+	public function onExecuteCommand($param)
+	{
+		$this->raiseEvent('OnExecuteCommand', $this, $param);
+	}
 }
-
-/**
- * TActiveRecordEventParameter class.
- *
- * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id$
- * @package System.Data.ActiveRecord
- * @since 3.1
- */
-class TActiveRecordEventParameter extends TEventParameter
-{
-
-}
-
-
-
 ?>

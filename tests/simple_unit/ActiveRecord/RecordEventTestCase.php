@@ -9,24 +9,28 @@ class RecordEventTestCase extends UnitTestCase
 		$conn = new TDbConnection('pgsql:host=localhost;dbname=test', 'test','test');
 		TActiveRecordManager::getInstance()->setDbConnection($conn);
 	}
-
+/*
 	function testFindByPk()
 	{
 		$user1 = UserRecord::finder()->findByPk('admin');
 		$this->assertNotNull($user1);
 	}
-
+*/
 	function test_same_data_returns_same_object()
 	{
 		$criteria = new TActiveRecordCriteria('username = ?', 'admin');
-		$criteria->OnSelect = array($this, 'logger');
-		$user1 = UserRecord::finder()->find($criteria);
-		//var_dump($user1);
+		$finder = new UserRecord();
+		$finder->OnCreateCommand[] = array($this, 'logger');
+		$finder->OnExecuteCommand[] = array($this, 'logger');
+		$user1 = $finder->find($criteria);
+		var_dump($user1);
+
+		var_dump(UserRecord::finder()->find($criteria));
 	}
 
 	function logger($sender, $param)
 	{
-		var_dump($param->Command->Text);
+		var_dump($param);
 	}
 }
 

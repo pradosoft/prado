@@ -9,10 +9,11 @@
 <project name="prado" basedir="." default="help">
   <taskdef name="prado-version-check" classname="PradoVersionTask" classpath="buildscripts/phing/tasks"/>
   <taskdef name="prado-doc" classname="PradoDocTask" classpath="buildscripts/phing/tasks"/>
-  <taskdef name="prado-pear" classname="PradoPearTask" classpath="buildscripts/phing/tasks"/>
+<!--  <taskdef name="prado-pear" classname="PradoPearTask" classpath="buildscripts/phing/tasks"/>-->
   <taskdef name="prado-quickstart-index" classname="QuickstartIndexTask" classpath="buildscripts/phing/tasks"/>
   <taskdef name="prado-api-index" classname="ManualIndexTask" classpath="buildscripts/phing/tasks"/>
-  <taskdef name="prado-test" classname="PradoTestTask" classpath="buildscripts/phing/tasks"/>
+<!--  <taskdef name="prado-test" classname="PradoTestTask" classpath="buildscripts/phing/tasks"/>-->
+  <taskdef name="compact-package" classname="PradoPackageTask" classpath="buildscripts/phing/tasks"/>
 
   <!-- generates ${prado.version} and ${prado.revision} -->
   <prado-version-check />
@@ -36,7 +37,7 @@
   <property name="build.test.dir" value="${build.base.dir}/test-reports"/>
   <property name="build.coverage.dir" value="${build.base.dir}/code-coverage"/>
   <property name="build.snapshot.dir" value="${build.base.dir}/snapshot"/>
-  <property name="build.compact.dir" value="${build.base.dir}/compact/${pkgname}" />
+  <property name="build.compact.dir" value="${build.base.dir}/${pkgname}/compact" />
 
   <!--
       All Source Files in framework
@@ -134,7 +135,6 @@
 
     For all PRADO developers:
     - test    : run unit tests (results are under /build/test-reports);
-    - js      : generate Javascript distribution files;
 
     For PRADO release manager:
     - dist    : create release files;
@@ -152,8 +152,8 @@
   <target name="compact-collections" description="Collections">
     <mkdir dir="${build.compact.dir}" />
     <compact-package output="${build.compact.dir}/collections.php" strip="${compact-strip-comments}">
-      <filelist dir="framework" files="PradoBase.php,TComponent.php,Exceptions/TException.php" />
-      <filelist dir="framework/Collections" files="TList.php,TMap.php,TAttributeCollection.php" />
+      <filelist dir="framework" files="PradoBase.php,TComponent.php,Exceptions/TException.php,interfaces.php" />
+      <filelist dir="framework/Collections" files="TList.php,TMap.php,TAttributeCollection.php,TPagedList.php,TPagedDataSource.php" />
     </compact-package>
     <delete file="${build.compact.dir}/messages.txt" />
     <copy file="framework/Exceptions/messages.txt" tofile="${build.compact.dir}/messages.txt" />
@@ -220,9 +220,25 @@
       destfile="${build.compact.dir}/messages.txt" />
   </target>
 
+  <target name="compact-sqlmap" description="Package Active Record" depends="compact-db-all">
+    <compact-package output="${build.compact.dir}/sqlmap.php" strip="${compact-strip-comments}">
+      <filelist dir="framework/Data/SqlMap" files="TSqlMapManager.php,TSqlMapGateway.php" />
+      <filelist dir="framework/Data/SqlMap/DataMapper"
+        files="TSqlMapException.php,TSqlMapTypeHandlerRegistry.php,TSqlMapCache.php,TPropertyAccess.php,TLazyLoadList.php,TSqlMapPagedList.php"/>
+      <filelist dir="framework/Data/SqlMap/Configuration"
+        files="TSqlMapStatement.php,TDiscriminator.php,TInlineParameterMapParser.php,TParameterMap.php,TParameterProperty.php,TResultMap.php,TResultProperty.php,TSimpleDynamicParser.php,TSqlMapCacheModel.php,TSqlMapXmlConfiguration.php" />
+      <filelist dir="framework/Data/SqlMap/Statements"
+        files="IMappedStatement.php,TMappedStatement.php,TCachingStatement.php,TUpdateMappedStatement.php,TDeleteMappedStatement.php,TInsertMappedStatement.php,TPreparedCommand.php,TPreparedStatement.php,TPreparedStatementFactory.php,TSelectMappedStatement.php,TSimpleDynamicSql.php,TStaticSql.php"/>
+    </compact-package>
+    <append file="framework/Data/SqlMap/DataMapper/messages.txt"
+      destfile="${build.compact.dir}/messages.txt" />
+  </target>
+
+  <target name="compact-all" description="All packages" depends="compact-active-record,compact-sqlmap" />
+
 <!-- end compact packaging -->
 
-  <target name="build" depends="js" description="Building standard PRADO package v${prado.version}.${prado.revision}">
+  <target name="build" description="Building standard PRADO package v${prado.version}.${prado.revision}">
     <echo>Building pradolite.php...</echo>
     <delete file="framework/pradolite.php"/>
     <exec command="${php} build.php" dir="buildscripts/phpbuilder" passthru="true"/>
@@ -234,7 +250,7 @@
       <fileset refid="framework"/>
       <fileset refid="misc"/>
 	  <fileset refid="test-tools" />
-    </copy> 
+    </copy>
 
     <copy file="buildscripts/classtree/DWExtensionReadme.txt" tofile="${build.src.dir}/editors/Dreamweaver/readme.txt" />
     <copy file="framework/pradolite.php" tofile="${build.src.dir}/framework/pradolite.php" />
@@ -290,7 +306,7 @@
 
 	<echo>Generating CHM Content (Quickstart + ClassDocs)</echo>
 	<exec command="${php} build.php" dir="buildscripts/chmbuilder" passthru="true"/>
-	<!-- done on project website 
+	<!-- done on project website
 	<echo>Generating CHM Content (WIKI)</echo>
 	<exec command="${php} build.php" dir="buildscripts/wikibuilder" passthru="true"/>
 	-->
@@ -366,11 +382,6 @@ the PRADO distribution:
     </echo>
   </target>
 
-  <target name="js" description="Compiling Javascript distribution files">
-    <delete file="framework/Web/Javascripts/js/*.js" />
-    <exec command="${php} build.php" dir="buildscripts/jsbuilder" passthru="true"/>
-  </target>
-
   <target name="test" description="Running unit tests">
     <delete dir="${build.test.dir}"/>
     <mkdir dir="${build.test.dir}"/>
@@ -425,7 +436,7 @@ the PRADO distribution:
     <mkdir dir="${reports.dir}"/>
     <delete dir="${reports.unit.dir}"/>
     <delete dir="${reports.codecoverage.dir}"/>
- 
+
     <if>
       <equals arg1="${codecoverage}" arg2="true"/>
       <then>

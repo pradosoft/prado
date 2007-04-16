@@ -34,6 +34,9 @@ class TMssqlTableInfo extends TDbTableInfo
 		return $this->getInfo('SchemaName');
 	}
 
+	/**
+	 * @return string catalog name (database name)
+	 */
 	public function getCatalogName()
 	{
 		return $this->getInfo('CatalogName');
@@ -44,6 +47,7 @@ class TMssqlTableInfo extends TDbTableInfo
 	 */
 	public function getTableFullName()
 	{
+		//MSSQL alway returns the catalog, schem and table names.
 		return '['.$this->getCatalogName().'].['.$this->getSchemaName().'].['.$this->getTableName().']';
 	}
 

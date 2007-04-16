@@ -88,7 +88,7 @@ class BaseGatewayTest extends UnitTestCase
 	}
 	function delete_all()
 	{
-		$this->getGateway()->deleteAll('true');
+		$this->getGateway()->deleteAll('1=1');
 	}
 }
 ?>

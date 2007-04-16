@@ -100,7 +100,7 @@ class TDbTableColumn extends TComponent
 	}
 
 	/**
-	 * @return integer one-based ordinal position of the column in the table.
+	 * @return integer zero-based ordinal position of the column in the table.
 	 */
 	public function getColumnIndex()
 	{

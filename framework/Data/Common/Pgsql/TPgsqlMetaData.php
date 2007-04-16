@@ -109,6 +109,8 @@ EOD;
 			$col['index'] = $index++;
 			$this->processColumn($tableInfo, $col);
 		}
+		if($index===0)
+			throw new TDbException('dbmetadata_invalid_table_view', $table);
 		return $tableInfo;
 	}
 

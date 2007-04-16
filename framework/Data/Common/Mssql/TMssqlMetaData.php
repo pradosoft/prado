@@ -1,4 +1,14 @@
 <?php
+/**
+ * TMssqlMetaData class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005-2007 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Id: TPgsqlMetaData.php 1866 2007-04-14 05:02:29Z wei $
+ * @package System.Data.Common.Pgsql
+ */
 
 /**
  * Load the base TDbMetaData class.
@@ -6,6 +16,14 @@
 Prado::using('System.Data.Common.TDbMetaData');
 Prado::using('System.Data.Common.Mssql.TMssqlTableInfo');
 
+/**
+ * TMssqlMetaData loads MSSQL database table and column information.
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id: TPgsqlMetaData.php 1866 2007-04-14 05:02:29Z wei $
+ * @package System.Data.Commom.Pgsql
+ * @since 3.1
+ */
 class TMssqlMetaData extends TDbMetaData
 {
 	/**
@@ -45,9 +63,15 @@ EOD;
 				$tableInfo = $this->createNewTableInfo($col);
 			$this->processColumn($tableInfo,$col);
 		}
+		if($tableInfo===null)
+			throw new TDbException('dbmetadata_invalid_table_view', $table);
 		return $tableInfo;
 	}
 
+	/**
+	 * @param string table name
+	 * @return array tuple($catalogName,$schemaName,$tableName)
+	 */
 	protected function getCatalogSchemaTableName($table)
 	{
 		//remove possible delimiters

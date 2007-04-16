@@ -1,5 +1,39 @@
 <?php
+/**
+ * TDataGatewayCommand, TDataGatewayEventParameter and TDataGatewayResultEventParameter class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005-2007 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Id$
+ * @package System.Data.DataGateway
+ */
 
+/**
+ * TDataGatewayCommand is command builder and executor class for
+ * TTableGateway and TActiveRecordGateway.
+ *
+ * TDataGatewayCommand builds the TDbCommand for TTableGateway
+ * and TActiveRecordGateway commands such as find(), update(), insert(), etc,
+ * using the TDbCommandBuilder classes (database specific TDbCommandBuilder
+ * classes are used).
+ *
+ * Once the command is built and the query parameters are binded, the
+ * {@link OnCreateCommand} event is raised. Event handlers for the OnCreateCommand
+ * event should not alter the Command property nor the Criteria property of the
+ * TDataGatewayEventParameter.
+ *
+ * TDataGatewayCommand excutes the TDbCommands and returns the result obtained from the
+ * database (returned value depends on the method executed). The
+ * {@link OnExecuteCommand} event is raised after the command is executed and resulting
+ * data is set in the TDataGatewayResultEventParameter object's Result property.
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.DataGateway
+ * @since 3.1
+ */
 class TDataGatewayCommand extends TComponent
 {
 	private $_builder;
@@ -46,6 +80,7 @@ class TDataGatewayCommand extends TComponent
 		$where = $criteria->getCondition();
 		$parameters = $criteria->getParameters()->toArray();
 		$command = $this->getBuilder()->createDeleteCommand($where, $parameters);
+		$this->onCreateCommand($command,$criteria);
 		$command->prepare();
 		return $command->execute();
 	}
@@ -61,8 +96,9 @@ class TDataGatewayCommand extends TComponent
 		$where = $criteria->getCondition();
 		$parameters = $criteria->getParameters()->toArray();
 		$command = $this->getBuilder()->createUpdateCommand($data,$where, $parameters);
+		$this->onCreateCommand($command,$criteria);
 		$command->prepare();
-		return $command->execute();
+		return $this->onExecuteCommand($command, $command->execute());
 	}
 
 	/**
@@ -83,7 +119,8 @@ class TDataGatewayCommand extends TComponent
 	 */
 	public function find($criteria)
 	{
-		return $this->getFindCommand($criteria)->queryRow();
+		$command = $this->getFindCommand($criteria);
+		return $this->onExecuteCommand($command, $command->queryRow());
 	}
 
 	/**
@@ -93,7 +130,27 @@ class TDataGatewayCommand extends TComponent
 	 */
 	public function findAll($criteria)
 	{
-		return $this->getFindCommand($criteria)->query();
+		$command = $this->getFindCommand($criteria);
+		return $this->onExecuteCommand($command, $command->query());
+	}
+
+	/**
+	 * Build the find command from the criteria. Limit, Offset and Ordering are applied if applicable.
+	 * @param TSqlCriteria $criteria
+	 * @return TDbCommand.
+	 */
+	protected function getFindCommand($criteria)
+	{
+		if($criteria===null)
+			return $this->getBuilder()->createFindCommand();
+		$where = $criteria->getCondition();
+		$parameters = $criteria->getParameters()->toArray();
+		$ordering = $criteria->getOrdersBy();
+		$limit = $criteria->getLimit();
+		$offset = $criteria->getOffset();
+		$command = $this->getBuilder()->createFindCommand($where,$parameters,$ordering,$limit,$offset);
+		$this->onCreateCommand($command, $criteria);
+		return $command;
 	}
 
 	/**
@@ -104,7 +161,8 @@ class TDataGatewayCommand extends TComponent
 	{
 		list($where, $parameters) = $this->getPrimaryKeyCondition((array)$keys);
 		$command = $this->getBuilder()->createFindCommand($where, $parameters);
-		return $command->queryRow();
+		$this->onCreateCommand($command, new TSqlCriteria($where,$parameters));
+		return $this->onExecuteCommand($command, $command->queryRow());
 	}
 
 	/**
@@ -115,7 +173,8 @@ class TDataGatewayCommand extends TComponent
 	{
 		$where = $this->getCompositeKeyCondition((array)$keys);
 		$command = $this->getBuilder()->createFindCommand($where);
-		return $command->query();
+		$this->onCreateCommand($command, new TSqlCriteria($where,$keys));
+		return $this->onExecuteCommand($command,$command->query());
 	}
 
 	/**
@@ -126,8 +185,9 @@ class TDataGatewayCommand extends TComponent
 	{
 		$where = $this->getCompositeKeyCondition((array)$keys);
 		$command = $this->getBuilder()->createDeleteCommand($where);
+		$this->onCreateCommand($command, new TSqlCriteria($where,$keys));
 		$command->prepare();
-		return $command->execute();
+		return $this->onExecuteCommand($command,$command->execute());
 	}
 
 	/**
@@ -209,7 +269,8 @@ class TDataGatewayCommand extends TComponent
 	 */
 	public function findBySql($criteria)
 	{
-		return $this->getSqlCommand($criteria)->query();
+		$command = $this->getSqlCommand($criteria);
+		return $this->onExecuteCommand($command, $command->query());
 	}
 
 	/**
@@ -229,24 +290,8 @@ class TDataGatewayCommand extends TComponent
 			$sql = $this->getBuilder()->applyLimitOffset($sql, $limit, $offset);
 		$command = $this->getBuilder()->createCommand($sql);
 		$this->getBuilder()->bindArrayValues($command, $criteria->getParameters()->toArray());
+		$this->onCreateCommand($command, $criteria);
 		return $command;
-	}
-
-	/**
-	 * Build the find command from the criteria. Limit, Offset and Ordering are applied if applicable.
-	 * @param TSqlCriteria $criteria
-	 * @return TDbCommand.
-	 */
-	protected function getFindCommand($criteria)
-	{
-		if($criteria===null)
-			return $this->getBuilder()->createFindCommand();
-		$where = $criteria->getCondition();
-		$parameters = $criteria->getParameters()->toArray();
-		$ordering = $criteria->getOrdersBy();
-		$limit = $criteria->getLimit();
-		$offset = $criteria->getOffset();
-		return $this->getBuilder()->createFindCommand($where,$parameters,$ordering,$limit,$offset);
 	}
 
 	/**
@@ -263,7 +308,8 @@ class TDataGatewayCommand extends TComponent
 		$limit = $criteria->getLimit();
 		$offset = $criteria->getOffset();
 		$command = $this->getBuilder()->createCountCommand($where,$parameters,$ordering,$limit,$offset);
-		return intval($command->queryScalar());
+		$this->onCreateCommand($command, $criteria);
+		return $this->onExecuteCommand($command, intval($command->queryScalar()));
 	}
 
 	/**
@@ -276,8 +322,9 @@ class TDataGatewayCommand extends TComponent
 	public function insert($data)
 	{
 		$command=$this->getBuilder()->createInsertCommand($data);
+		$this->onCreateCommand($command, new TSqlCriteria(null,$data));
 		$command->prepare();
-		if($command->execute() > 0)
+		if($this->onExecuteCommand($command, $command->execute()) > 0)
 		{
 			$value = $this->getLastInsertId();
 			return $value !== null ? $value : true;
@@ -343,6 +390,120 @@ class TDataGatewayCommand extends TComponent
 			$fields[] = $sql;
 		}
 		return $fields;
+	}
+
+	/**
+	 * Raised when a command is prepared and parameter binding is completed.
+	 * The parameter object is TDataGatewayEventParameter of which the
+	 * {@link TDataGatewayEventParameter::getCommand Command} property can be
+	 * inspected to obtain the sql query to be executed.
+	 * @param TDataGatewayCommand originator $sender
+	 * @param TDataGatewayEventParameter
+	 */
+	public function onCreateCommand($command, $criteria)
+	{
+		$this->raiseEvent('OnCreateCommand', $this, new TDataGatewayEventParameter($command,$criteria));
+	}
+
+	/**
+	 * Raised when a command is executed and the result from the database was returned.
+	 * The parameter object is TDataGatewayResultEventParameter of which the
+	 * {@link TDataGatewayEventParameter::getResult Result} property contains
+	 * the data return from the database. The data returned can be changed
+	 * by setting the {@link TDataGatewayEventParameter::setResult Result} property.
+	 * @param TDataGatewayCommand originator $sender
+	 * @param TDataGatewayResultEventParameter
+	 */
+	public function onExecuteCommand($command, $result)
+	{
+		$parameter = new TDataGatewayResultEventParameter($command, $result);
+		$this->raiseEvent('OnExecuteCommand', $this, $parameter);
+		return $parameter->getResult();
+	}
+}
+
+/**
+ * TDataGatewayEventParameter class contains the TDbCommand to be executed as
+ * well as the criteria object.
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.DataGateway
+ * @since 3.1
+ */
+class TDataGatewayEventParameter extends TEventParameter
+{
+	private $_command;
+	private $_criteria;
+
+	public function __construct($command,$criteria)
+	{
+		$this->_command=$command;
+		$this->_criteria=$criteria;
+	}
+
+	/**
+	 * The database command to be executed. Do not rebind the parameters or change
+	 * the sql query string.
+	 * @return TDbCommand command to be executed.
+	 */
+	public function getCommand()
+	{
+		return $this->_command;
+	}
+
+	/**
+	 * @return TSqlCriteria criteria used to bind the sql query parameters.
+	 */
+	public function getCriteria()
+	{
+		return $this->_criteria;
+	}
+}
+
+/**
+ * TDataGatewayResultEventParameter contains the TDbCommand executed and the resulting
+ * data returned from the database. The data can be changed by changing the
+ * {@link setResult Result} property.
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.DataGateway
+ * @since 3.1
+ */
+class TDataGatewayResultEventParameter extends TEventParameter
+{
+	private $_command;
+	private $_result;
+
+	public function __construct($command,$result)
+	{
+		$this->_command=$command;
+		$this->_result=$result;
+	}
+
+	/**
+	 * @return TDbCommand database command executed.
+	 */
+	public function getCommand()
+	{
+		return $this->_command;
+	}
+
+	/**
+	 * @return mixed result returned from executing the command.
+	 */
+	public function getResult()
+	{
+		return $this->_result;
+	}
+
+	/**
+	 * @param mixed change the result returned by the gateway.
+	 */
+	public function setResult($value)
+	{
+		$this->_result=$value;
 	}
 }
 

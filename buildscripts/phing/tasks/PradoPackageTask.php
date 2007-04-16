@@ -57,6 +57,9 @@ class PradoPackageTask extends Task
 		$content = preg_replace('/^\s*Prado::trace.*\s*;\s*$/mu','',$content);
 		$content = preg_replace('/(PradoBase::using|Prado::using|require_once|include_once)\s*\(.*?\);/mu','',$content);
 		$content = str_replace('Prado::', 'PradoBase::', $content);
+		$content = str_replace('PradoBase::getApplication()->getMode()', 'true', $content);
+		$content = str_replace('TApplicationMode::Debug', 'true', $content);
+		$content = str_replace('/Exceptions/messages', '/messages', $content);
 		if($this->strip)
 			$content=$this->strip_comments($content);
 		$content=$this->strip_empty_lines($content);

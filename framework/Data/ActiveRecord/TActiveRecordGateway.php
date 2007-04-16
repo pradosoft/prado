@@ -1,6 +1,6 @@
 <?php
 /**
- * TActiveRecordGateway, TActiveRecordStatementType, TActiveRecordGatewayEventParameter classes file.
+ * TActiveRecordGateway, TActiveRecordStatementType, TActiveRecordEventParameter classes file.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
@@ -25,6 +25,8 @@ class TActiveRecordGateway extends TComponent
 	private $_tables=array(); //table cache
 	private $_meta=array(); //meta data cache.
 	private $_commandBuilders=array();
+	private $_currentRecord;
+
 	/**
 	 * Constant name for specifying optional table name in TActiveRecord.
 	 */
@@ -99,7 +101,7 @@ class TActiveRecordGateway extends TComponent
 				if(!isset($this->_meta[$connStr]))
 				{
 					Prado::using('System.Data.Common.TDbMetaData');
-					$this->_meta[$connStr] = TDbMetaData::getMetaData($connection);
+					$this->_meta[$connStr] = TDbMetaData::getInstance($connection);
 				}
 				$tableInfo = $this->_meta[$connStr]->getTableInfo($tableName);
 			}
@@ -123,11 +125,50 @@ class TActiveRecordGateway extends TComponent
 		{
 			$builder = $tableInfo->createCommandBuilder($record->getDbConnection());
 			Prado::using('System.Data.DataGateway.TDataGatewayCommand');
-			$this->_commandBuilders[$connStr] = new TDataGatewayCommand($builder);
+			$command = new TDataGatewayCommand($builder);
+			$command->OnCreateCommand[] = array($this, 'onCreateCommand');
+			$command->OnExecuteCommand[] = array($this, 'onExecuteCommand');
+			$this->_commandBuilders[$connStr] = $command;
+
 		}
 		$this->_commandBuilders[$connStr]->getBuilder()->setTableInfo($tableInfo);
-
+		$this->_currentRecord=$record;
 		return $this->_commandBuilders[$connStr];
+	}
+
+	/**
+	 * Raised when a command is prepared and parameter binding is completed.
+	 * The parameter object is TDataGatewayEventParameter of which the
+	 * {@link TDataGatewayEventParameter::getCommand Command} property can be
+	 * inspected to obtain the sql query to be executed.
+	 * This method also raises the OnCreateCommand event on the ActiveRecord
+	 * object calling this gateway.
+	 * @param TDataGatewayCommand originator $sender
+	 * @param TDataGatewayEventParameter
+	 */
+	public function onCreateCommand($sender, $param)
+	{
+		$this->raiseEvent('OnCreateCommand', $this, $param);
+		if($this->_currentRecord!==null)
+			$this->_currentRecord->onCreateCommand($param);
+	}
+
+	/**
+	 * Raised when a command is executed and the result from the database was returned.
+	 * The parameter object is TDataGatewayResultEventParameter of which the
+	 * {@link TDataGatewayEventParameter::getResult Result} property contains
+	 * the data return from the database. The data returned can be changed
+	 * by setting the {@link TDataGatewayEventParameter::setResult Result} property.
+	 * This method also raises the OnCreateCommand event on the ActiveRecord
+	 * object calling this gateway.
+	 * @param TDataGatewayCommand originator $sender
+	 * @param TDataGatewayResultEventParameter
+	 */
+	public function onExecuteCommand($sender, $param)
+	{
+		$this->raiseEvent('OnExecuteCommand', $this, $param);
+		if($this->_currentRecord!==null)
+			$this->_currentRecord->onExecuteCommand($param);
 	}
 
 	/**
@@ -139,7 +180,8 @@ class TActiveRecordGateway extends TComponent
 	 */
 	public function findRecordByPK(TActiveRecord $record,$keys)
 	{
-		return $this->getCommand($record)->findByPk($keys);
+		$command = $this->getCommand($record);
+		return $command->findByPk($keys);
 	}
 
 	/**
@@ -164,10 +206,8 @@ class TActiveRecordGateway extends TComponent
 	 */
 	public function findRecordsByCriteria(TActiveRecord $record, $criteria, $iterator=false)
 	{
-		if($iterator)
-			return $this->getCommand($record)->findAll($criteria);
-		else
-			return $this->getCommand($record)->find($criteria);
+		$command = $this->getCommand($record);
+		return $iterator ? $command->findAll($criteria) : $command->find($criteria);
 	}
 
 	/**
@@ -205,6 +245,10 @@ class TActiveRecordGateway extends TComponent
 		return $result;
 	}
 
+	/**
+	 * Sets the last insert ID to the corresponding property of the record if available.
+	 * @param TActiveRecord record for insertion
+	 */
 	protected function updatePostInsert($record)
 	{
 		$command = $this->getCommand($record);
@@ -324,91 +368,16 @@ class TActiveRecordGateway extends TComponent
 	 * @param string command type
 	 * @param TDbCommand sql command to be executed.
 	 * @param TActiveRecord active record
-	 * @param mixed data for the command.
+	 * @param TActiveRecordCriteria data for the command.
 	 */
-	protected function raiseCommandEvent($type,$command,$record=null,$data=null)
+	protected function raiseCommandEvent($event,$command,$record,$criteria)
 	{
-		$param = new TActiveRecordGatewayEventParameter($type,$command,$record,$data);
+		if(!($criteria instanceof TSqlCriteria))
+			$criteria = new TActiveRecordCriteria(null,$criteria);
+		$param = new TActiveRecordEventParameter($command,$record,$criteria);
 		$manager = $record->getRecordManager();
-		$event = 'on'.$type;
-		if($data instanceof TActiveRecordCriteria)
-			$data->{$event}($param);
 		$manager->{$event}($param);
-	}
-}
-
-/**
- * Command statement types.
- *
- * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id$
- * @package System.Data.ActiveRecord
- * @since 3.1
- */
-class TActiveRecordStatementType
-{
-	const Insert='Insert';
-	const Update='Update';
-	const Delete='Delete';
-	const Select='Select';
-}
-
-/**
- * Active Record command event parameter.
- *
- * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id$
- * @package System.Data.ActiveRecord
- * @since 3.1
- */
-class TActiveRecordGatewayEventParameter extends TActiveRecordEventParameter
-{
-	private $_type;
-	private $_command;
-	private $_record;
-	private $_data;
-
-	/**
-	 * New gateway command event parameter.
-	 */
-	public function __construct($type,$command,$record=null,$data=null)
-	{
-		$this->_type=$type;
-		$this->_command=$command;
-		$this->_data=$data;
-		$this->_record=$record;
-	}
-
-	/**
-	 * @return string TActiveRecordStateType
-	 */
-	public function getType()
-	{
-		return $this->_type;
-	}
-
-	/**
-	 * @return TDbCommand command to be executed.
-	 */
-	public function getCommand()
-	{
-		return $this->_command;
-	}
-
-	/**
-	 * @return TActiveRecord active record.
-	 */
-	public function getRecord()
-	{
-		return $this->_record;
-	}
-
-	/**
-	 * @return mixed command data.
-	 */
-	public function getData()
-	{
-		return $this->_data;
+		$record->{$event}($param);
 	}
 }
 
