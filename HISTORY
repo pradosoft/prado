@@ -1,6 +1,6 @@
 Version 3.1.0 RC To be released
 ===============================
-CHG: removed <span> tags when TDataList.RepeatLayout is Raw (Qiang)
+CHG: <div> tags are used instead of <span> when TDataList.RepeatLayout is Raw (Qiang)
 CHG: changed comment tag to <!--- ... ---> (Qiang)
 
 Version 3.1.0 beta April 9, 2007

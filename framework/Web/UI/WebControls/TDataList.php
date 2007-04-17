@@ -1096,11 +1096,9 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 	public function renderItem($writer,$repeatInfo,$itemType,$index)
 	{
 		$item=$this->getItem($itemType,$index);
-		$layout=$repeatInfo->getRepeatLayout();
-		if($layout===TRepeatLayout::Raw)
-			$item->renderContents($writer);
-		else
-			$item->renderControl($writer);
+		if($repeatInfo->getRepeatLayout()===TRepeatLayout::Raw && get_class($item)==='TDataListItem')
+			$item->setTagName('div');
+		$item->renderControl($writer);
 	}
 
 	/**
@@ -1610,6 +1608,25 @@ class TDataListItem extends TWebControl implements INamingContainer, IItemDataRe
 	 * @var mixed
 	 */
 	private $_data;
+
+	private $_tagName='span';
+
+	/**
+	 * Returns the tag name used for this control.
+	 * @return string tag name of the control to be rendered
+	 */
+	protected function getTagName()
+	{
+		return $this->_tagName;
+	}
+
+	/**
+	 * @param string tag name of the control to be rendered
+	 */
+	public function setTagName($value)
+	{
+		$this->_tagName=$value;
+	}
 
 	/**
 	 * Creates a style object for the control.

@@ -16,6 +16,7 @@ Upgrading from v3.1b
   you may use 'Flow' layout and set RepeatColumns as 1.
 
 - Comment tag <!-- ... ---> (introduced in v3.1a) is changed to <!--- ... --->
+- When TDataList.RepeatLayout is Raw, the items will render <div> instead of <span>
 
 
 Upgrading from v3.1a
