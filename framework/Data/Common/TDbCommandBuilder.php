@@ -293,7 +293,7 @@ class TDbCommandBuilder extends TComponent
 		{
 			$values = array_values($values);
 			for($i = 0, $max=count($values); $i<$max; $i++)
-				$command->bindValue($i+1, $values[$i], $this->getPdoType($value));
+				$command->bindValue($i+1, $values[$i], $this->getPdoType($values[$i]));
 		}
 		else
 		{
