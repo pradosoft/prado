@@ -151,6 +151,10 @@ class TMysqlMetaData extends TDbMetaData
 	}
 
 	/**
+	 * For MySQL version 5.0.1 or later we can use SHOW FULL TABLES
+	 * http://dev.mysql.com/doc/refman/5.0/en/show-tables.html
+	 *
+	 * For MySQL version 5.0.0 or ealier, this always return false.
 	 * @param string database name, null to use default connection database.
 	 * @param string table or view name.
 	 * @return boolean true if is view, false otherwise.
@@ -158,6 +162,8 @@ class TMysqlMetaData extends TDbMetaData
 	 */
 	protected function getIsView($schemaName,$tableName)
 	{
+		if(intval($this->getDbConnection()->getAttribute(PDO::ATTR_SERVER_VERSION))<5)
+			return false;
 		if($schemaName!==null)
 			$sql = "SHOW FULL TABLES FROM `{$schemaName}` LIKE :table";
 		else
