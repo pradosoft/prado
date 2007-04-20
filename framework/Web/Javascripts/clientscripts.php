@@ -124,7 +124,7 @@ function combine_javascript($files)
 	{
 		$filename = $base.'/'.$file;
 		if(is_file($filename)) //relies on get_client_script_files() for security
-			$content .= file_get_contents($filename);
+			$content .= "\x0D\x0A".file_get_contents($filename); //add CR+LF
 		else
 			error_log('Prado client script: missing file '.$filename);
 	}

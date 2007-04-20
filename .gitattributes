@@ -2533,6 +2533,7 @@ tests/FunctionalTests/tickets/protected/pages/Ticket586.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket587.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket587.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket605.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket606.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket68.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket72.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket72.php -text

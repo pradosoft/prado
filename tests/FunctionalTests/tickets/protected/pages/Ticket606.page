@@ -1,0 +1,5 @@
+<com:TContent ID="Content">
+
+<com:TColorPicker Mode="Full" />
+
+</com:TContent>

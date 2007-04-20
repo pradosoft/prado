@@ -109,19 +109,16 @@ class TColorPicker extends TTextBox
 	 * Get javascript color picker options.
 	 * @return array color picker client-side options
 	 */
-	protected function getColorPickerOptions()
+	protected function getPostBackOptions()
 	{
-		$options['ID'] = $this->getClientID();
+		$options = parent::getPostBackOptions();
 		$options['ClassName'] = $this->getCssClass();
 		$options['ShowColorPicker'] = $this->getShowColorPicker();
-
 		if($options['ShowColorPicker'])
 		{
 			$mode = $this->getMode();
-
 			if($mode == TColorPickerMode::Full) $options['Mode'] = $mode;
 			else if($mode == TColorPickerMode::Simple) $options['Palette'] = 'Tiny';
-
 			$options['OKButtonText'] = $this->getOKButtonText();
 			$options['CancelButtonText'] = $this->getCancelButtonText();
 		}
@@ -145,26 +142,13 @@ class TColorPicker extends TTextBox
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		$this->publishColorPickerStyle();
+		$this->publishColorPickerAssets();
 	}
 
 	/**
-	 * Publish the color picker style Css asset file.
-	 * @return string Css file url.
+	 * Publish the color picker assets.
 	 */
-	protected function publishColorPickerStyle()
-	{
-		$cs = $this->getPage()->getClientScript();
-		$url = $this->getAssetUrl($this->getColorPickerStyle().'.css');
-		if(!$cs->isStyleSheetFileRegistered($url))
-			$cs->registerStyleSheetFile($url, $url);
-		return $url;
-	}
-
-	/**
-	 * Publish the color picker image assets.
-	 */
-	protected function publishColorPickerImageAssets()
+	protected function publishColorPickerAssets()
 	{
 		$cs = $this->getPage()->getClientScript();
 		$key = "prado:".get_class($this);
@@ -173,39 +157,23 @@ class TColorPicker extends TTextBox
 		$options = TJavaScript::encode($imgs);
 		$code = "Prado.WebUI.TColorPicker.UIImages = {$options};";
 		$cs->registerEndScript($key, $code);
+		$cs->registerPradoScript("colorpicker");
+		$url = $this->getAssetUrl($this->getColorPickerStyle().'.css');
+		if(!$cs->isStyleSheetFileRegistered($url))
+			$cs->registerStyleSheetFile($url, $url);
 	}
 
 	/**
-	 * Registers the javascript code to initialize the color picker.
-	 * Must use "Event.OnLoad" to initialize the color picker when the
-	 * full page is loaded, otherwise IE will throw an error.
-	 * @param THtmlWriter writer
-	 */
-	protected function addAttributesToRender($writer)
-	{
-		parent::addAttributesToRender($writer);
-		$writer->addAttribute('id',$this->getClientID());
-		$scripts = $this->getPage()->getClientScript();
-		$scripts->registerPradoScript("colorpicker");
-		$options = TJavaScript::encode($this->getColorPickerOptions());
-		$id = $this->getClientID();
-		$code = "Event.OnLoad(function(){ new Prado.WebUI.TColorPicker($options); });";
-		$scripts->registerEndScript("prado:$id", $code);
-	}
-
-	/**
-	 * Renders body content.
+	 * Renders additional body content.
 	 * This method overrides parent implementation by adding
 	 * additional color picker button.
 	 * @param THtmlWriter writer
 	 */
-	public function render($writer)
+	public function renderEndTag($writer)
 	{
-		parent::render($writer);
+		parent::renderEndTag($writer);
 
 		$color = $this->getText();
-
-		$this->publishColorPickerImageAssets();
 		$writer->addAttribute('class', 'TColorPicker_button');
 		$writer->renderBeginTag('span');
 
