@@ -1,5 +1,8 @@
 Version 3.1.0 RC To be released
 ===============================
+BUG: Ticket#605 - TDatePicker don't works in 3.1.b on linux server (Wei)
+BUG: Ticket#606 - TColorPicker bug in Full mode (Wei)
+ENH: Add javascript references for "slider" and "dragdrop" for TClientScript::PradoScripts (Wei)
 CHG: <div> tags are used instead of <span> when TDataList.RepeatLayout is Raw (Qiang)
 CHG: changed comment tag to <!--- ... ---> (Qiang)
 

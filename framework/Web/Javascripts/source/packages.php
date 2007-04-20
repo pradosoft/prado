@@ -2,6 +2,7 @@
 
 //$Id$
 
+//package names and its contents (files relative to the current directory)
 $packages = array(
 	'prado' => array(
 		'prototype/prototype.js',
@@ -39,9 +40,19 @@ $packages = array(
 		'prado/activecontrols/activecontrols3.js',
 		'prado/activecontrols/inlineeditor.js',
 		'prado/activeratings/ratings.js'
-	)
+	),
+
+	'dragdrop'=>array(
+		'scriptaculous/dragdrop.js'
+	),
+
+	'slider'=>array(
+		'scriptaculous/slider.js'
+	),
 );
 
+
+//package names and their dependencies
 $dependencies = array(
 		'prado'			=> array('prado'),
 		'effects'		=> array('prado', 'effects'),
@@ -49,7 +60,9 @@ $dependencies = array(
 		'logger'		=> array('prado', 'logger'),
 		'datepicker'	=> array('prado', 'datepicker'),
 		'colorpicker'	=> array('prado', 'colorpicker'),
-		'ajax'			=> array('prado', 'effects', 'ajax')
+		'ajax'			=> array('prado', 'effects', 'ajax'),
+		'dragdrop'		=> array('prado', 'effects', 'dragdrop'),
+		'slider'		=> array('prado', 'slider'),
 );
 
 return array($packages, $dependencies);
