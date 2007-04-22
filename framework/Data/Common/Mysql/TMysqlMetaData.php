@@ -5,6 +5,11 @@
 Prado::using('System.Data.Common.TDbMetaData');
 Prado::using('System.Data.Common.Mysql.TMysqlTableInfo');
 
+/**
+ * Requires PHP 5.1.3 due to problem with mysql and PDO.
+ * See http://netevil.org/node.php?nid=795&SC=1
+ *
+ */
 class TMysqlMetaData extends TDbMetaData
 {
 	private $_serverVersion=0;
@@ -266,6 +271,8 @@ EOD;
 	 */
 	protected function getShowCreateTable($schemaName, $tableName)
 	{
+		//See http://netevil.org/node.php?nid=795&SC=1
+		$this->getDbConnection()->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
 		if($schemaName!==null)
 			$sql = "SHOW CREATE TABLE `{$schemaName}`.`{$tableName}`";
 		else
