@@ -1310,7 +1310,10 @@ class TApplicationConfiguration extends TComponent
 				$when=true;
 			if(($filePath=$node->getAttribute('file'))===null)
 				throw new TConfigurationException('appconfig_includefile_required');
-			$this->_includes[$filePath]=$when;
+			if(isset($this->_includes[$filePath]))
+				$this->_includes[$filePath]='('.$this->_includes[$filePath].') || ('.$when.')';
+			else
+				$this->_includes[$filePath]=$when;
 		}
 	}
 
