@@ -525,7 +525,7 @@ class TPage extends TTemplateControl
 	 */
 	public function setTheme($value)
 	{
-		$this->_theme=$value;
+		$this->_theme=empty($value)?null:$value;
 	}
 
 
@@ -545,7 +545,7 @@ class TPage extends TTemplateControl
 	 */
 	public function setStyleSheetTheme($value)
 	{
-		$this->_styleSheet=$value;
+		$this->_styleSheet=empty($value)?null:$value;
 	}
 
 	/**
