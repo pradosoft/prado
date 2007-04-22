@@ -221,6 +221,11 @@ class TActiveRecordGateway extends TComponent
 		return $this->getCommand($record)->findBySql($criteria);
 	}
 
+	public function findRecordsByIndex(TActiveRecord $record, $criteria, $fields, $values)
+	{
+		return $this->getCommand($record)->findAllByIndex($criteria,$fields,$values);
+	}
+
 	/**
 	 * Returns the number of records that match the given criteria.
 	 * @param TActiveRecord active record finder instance.

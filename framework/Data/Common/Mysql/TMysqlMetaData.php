@@ -7,6 +7,8 @@ Prado::using('System.Data.Common.Mysql.TMysqlTableInfo');
 
 class TMysqlMetaData extends TDbMetaData
 {
+	private $_serverVersion=0;
+
 	/**
 	 * Get the column definitions for given table.
 	 * @param string table name.
@@ -32,6 +34,21 @@ class TMysqlMetaData extends TDbMetaData
 	}
 
 	/**
+	 * @return float server version.
+	 */
+	protected function getServerVersion()
+	{
+		if(!$this->_serverVersion)
+		{
+			$version = $this->getDbConnection()->getAttribute(PDO::ATTR_SERVER_VERSION);
+			$digits=array();
+			preg_match('/(\d+)\.(\d+)\.(\d+)/', $version, $digits);
+			$this->_serverVersion=floatval($digits[1].'.'.$digits[2].$digits[3]);
+		}
+		return $this->_serverVersion;
+	}
+
+	/**
 	 * @param TMysqlTableInfo table information.
 	 * @param array column information.
 	 */
@@ -42,7 +59,7 @@ class TMysqlMetaData extends TDbMetaData
 		$info['ColumnName'] = "`$columnId`"; //quote the column names!
 		$info['ColumnId'] = $columnId;
 		$info['ColumnIndex'] = $col['index'];
-		if($col['Null']!=='NO')
+		if($col['Null']==='YES')
 			$info['AllowNull'] = true;
 		if(is_int(strpos(strtolower($col['Extra']), 'auto_increment')))
 			$info['AutoIncrement']=true;
@@ -154,7 +171,7 @@ class TMysqlMetaData extends TDbMetaData
 	 * For MySQL version 5.0.1 or later we can use SHOW FULL TABLES
 	 * http://dev.mysql.com/doc/refman/5.0/en/show-tables.html
 	 *
-	 * For MySQL version 5.0.0 or ealier, this always return false.
+	 * For MySQL version 5.0.1 or ealier, this always return false.
 	 * @param string database name, null to use default connection database.
 	 * @param string table or view name.
 	 * @return boolean true if is view, false otherwise.
@@ -162,7 +179,7 @@ class TMysqlMetaData extends TDbMetaData
 	 */
 	protected function getIsView($schemaName,$tableName)
 	{
-		if(intval($this->getDbConnection()->getAttribute(PDO::ATTR_SERVER_VERSION))<5)
+		if($this->getServerVersion()<5.01)
 			return false;
 		if($schemaName!==null)
 			$sql = "SHOW FULL TABLES FROM `{$schemaName}` LIKE :table";
@@ -194,12 +211,15 @@ class TMysqlMetaData extends TDbMetaData
 		$sql = "SHOW INDEX FROM {$table}";
 		$command = $this->getDbConnection()->createCommand($sql);
 		$primary = array();
-		$foreign = $this->getForeignConstraints($schemaName,$tableName);
 		foreach($command->query() as $row)
 		{
 			if($row['Key_name']==='PRIMARY')
 				$primary[] = $row['Column_name'];
 		}
+		if($this->getServerVersion() > 5)
+			$foreign = $this->getForeignConstraints($schemaName,$tableName);
+		else
+			$foreign = $this->findForeignConstraints($schemaName,$tableName);
 		return array($primary,$foreign);
 	}
 
@@ -234,9 +254,50 @@ EOD;
 		foreach($command->query() as $col)
 		{
 			$fkeys[$col['con']]['keys'][$col['col']] = $col['fkcol'];
-			$fkeys[$col['con']]['table'] = "`{$col['fkschema']}`.`{$col['fktable']}`";
+			$fkeys[$col['con']]['table'] = $col['fktable'];
 		}
 		return count($fkeys) > 0 ? array_values($fkeys) : $fkeys;
+	}
+
+	/**
+	 * @param string database name
+	 * @param string table name
+	 * @return string SQL command to create the table.
+	 */
+	protected function getShowCreateTable($schemaName, $tableName)
+	{
+		if($schemaName!==null)
+			$sql = "SHOW CREATE TABLE `{$schemaName}`.`{$tableName}`";
+		else
+			$sql = "SHOW CREATE TABLE `{$tableName}`";
+		$command = $this->getDbConnection()->createCommand($sql);
+		$result = $command->queryRow();
+		return $result['Create Table'];
+	}
+
+	/**
+	 * Extract foreign key constraints by extracting the contraints from SHOW CREATE TABLE result.
+	 * @param string database name
+	 * @param string table name
+	 * @return array foreign relationship table name and keys.
+	 */
+	protected function findForeignConstraints($schemaName, $tableName)
+	{
+		$sql = $this->getShowCreateTable($schemaName, $tableName);
+		$matches =array();
+		$regexp = '/FOREIGN KEY\s+\(([^\)]+)\)\s+REFERENCES\s+`?([^`]+)`?\s\(([^\)]+)\)/mi';
+		preg_match_all($regexp,$sql,$matches,PREG_SET_ORDER);
+		$foreign = array();
+		foreach($matches as $match)
+		{
+			$fields = array_map('trim',explode(',',str_replace('`','',$match[1])));
+			$fk_fields = array_map('trim',explode(',',str_replace('`','',$match[3])));
+			$keys=array();
+			foreach($fields as $k=>$v)
+				$keys[$v] = $fk_fields[$k];
+			$foreign[] = array('keys' => $keys, 'table' => trim($match[2]));
+		}
+		return $foreign;
 	}
 
 	/**

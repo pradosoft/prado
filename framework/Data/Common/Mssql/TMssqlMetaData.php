@@ -202,7 +202,7 @@ EOD;
 		foreach($command->query() as $info)
 		{
 			$fkeys[$info['FK_CONSTRAINT_NAME']]['keys'][$info['FK_COLUMN_NAME']] = $info['UQ_COLUMN_NAME'];
-			$fkeys[$info['FK_CONSTRAINT_NAME']]['table'] = "{$catalogSchema}.[{$info['UQ_TABLE_NAME']}]";
+			$fkeys[$info['FK_CONSTRAINT_NAME']]['table'] = $info['UQ_TABLE_NAME'];
 		}
 		return count($fkeys) > 0 ? array_values($fkeys) : $fkeys;
 	}

@@ -12,6 +12,7 @@
 
 Prado::using('System.Data.ActiveRecord.TActiveRecordManager');
 Prado::using('System.Data.ActiveRecord.TActiveRecordCriteria');
+Prado::using('System.Data.ActiveRecord.TActiveRecordRelation');
 
 /**
  * Base class for active records.
@@ -68,6 +69,10 @@ Prado::using('System.Data.ActiveRecord.TActiveRecordCriteria');
  */
 abstract class TActiveRecord extends TComponent
 {
+	const HAS_MANY='HAS_MANY';
+	const BELONGS_TO='BELONGS_TO';
+	const HAS_ONE='HAS_ONE';
+
 	/**
 	 * @var boolean true if this class is read only.
 	 */
@@ -420,6 +425,17 @@ abstract class TActiveRecord extends TComponent
 	}
 
 	/**
+	 *
+	 *
+	 */
+	public function findAllByIndex($criteria,$fields,$values)
+	{
+		$gateway = $this->getRecordManager()->getRecordGateway();
+		$result = $gateway->findRecordsByIndex($this,$criteria,$fields,$values);
+		return $this->collectObjects($result);
+	}
+
+	/**
 	 * Find the number of records.
 	 * @param string|TActiveRecordCriteria SQL condition or criteria object.
 	 * @param mixed parameter values.
@@ -432,6 +448,24 @@ abstract class TActiveRecord extends TComponent
 			$criteria = $this->getCriteria($criteria,$parameters, $args);
 		$gateway = $this->getRecordManager()->getRecordGateway();
 		return $gateway->countRecords($this,$criteria);
+	}
+
+	/**
+	 *
+	 * @return TActiveRecordRelation
+	 */
+	protected function getRecordRelation($property,$args)
+	{
+		$criteria = $this->getCriteria(count($args)>0 ? $args[0] : null, array_slice($args,1));
+		$relation = $this->{$property};
+		switch($relation[0])
+		{
+			case self::HAS_MANY:
+				$finder = self::finder($relation[1]);
+				return new TActiveRecordHasMany($this, $criteria, $finder, $property);
+			default:
+				throw new TException('Not done yet');
+		}
 	}
 
 	/**
@@ -466,7 +500,12 @@ abstract class TActiveRecord extends TComponent
 	public function __call($method,$args)
 	{
 		$delete =false;
-		if($findOne = substr(strtolower($method),0,6)==='findby')
+		if(substr(strtolower($method),0,4)==='with')
+		{
+			$property= $method[4]==='_' ? substr($method,5) : substr($method,4);
+			return $this->getRecordRelation($property, $args);
+		}
+		else if($findOne = substr(strtolower($method),0,6)==='findby')
 			$condition = $method[6]==='_' ? substr($method,7) : substr($method,6);
 		else if(substr(strtolower($method),0,9)==='findallby')
 			$condition = $method[9]==='_' ? substr($method,10) : substr($method,9);
@@ -492,7 +531,7 @@ abstract class TActiveRecord extends TComponent
 	 * @param array additional parameters obtained from function_get_args().
 	 * @return TSqlCriteria criteria object.
 	 */
-	protected function getCriteria($criteria, $parameters, $args)
+	protected function getCriteria($criteria, $parameters, $args=array())
 	{
 		if(is_string($criteria))
 		{
@@ -502,7 +541,8 @@ abstract class TActiveRecord extends TComponent
 		else if($criteria instanceof TSqlCriteria)
 			return $criteria;
 		else
-			throw new TActiveRecordException('ar_invalid_criteria');
+			return new TActiveRecordCriteria();
+			//throw new TActiveRecordException('ar_invalid_criteria');
 	}
 
 	/**

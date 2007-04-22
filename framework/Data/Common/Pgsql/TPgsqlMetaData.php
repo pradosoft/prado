@@ -306,7 +306,7 @@ EOD;
 			$fkeys = array();
 			foreach(preg_split('/,\s+/', $matches[3]) as $i => $fkey)
 				$fkeys[$keys[$i]] = $fkey;
-			return array('table' => $matches[2], 'keys' => $fkeys);
+			return array('table' => str_replace('"','',$matches[2]), 'keys' => $fkeys);
 		}
 	}
 

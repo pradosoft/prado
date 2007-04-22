@@ -1,5 +1,4 @@
 <?php
-
 Prado::using('System.Data.ActiveRecord.TActiveRecord');
 require_once(dirname(__FILE__).'/records/Blogs.php');
 
@@ -7,7 +6,7 @@ class ActiveRecordMySql5TestCase extends UnitTestCase
 {
 	function setup()
 	{
-		$conn = new TDbConnection('mysql:host=localhost;dbname=ar_test', 'test','test');
+		$conn = new TDbConnection('mysql:host=localhost;dbname=ar_test;port=3307', 'test5','test5');
 		TActiveRecordManager::getInstance()->setDbConnection($conn);
 	}
 

@@ -2,11 +2,11 @@
 Prado::using('System.Data.*');
 Prado::using('System.Data.Common.Mysql.TMysqlMetaData');
 
-class MysqlColumnTest extends UnitTestCase
+class Mysql4ColumnTest extends UnitTestCase
 {
 	function create_meta_data()
 	{
-		$conn = new TDbConnection('mysql:host=localhost;dbname=tests;port=3307', 'test5','test5');
+		$conn = new TDbConnection('mysql:host=localhost;dbname=tests;port=3306', 'test4','test4');
 		return new TMysqlMetaData($conn);
 	}
 
@@ -51,7 +51,7 @@ class MysqlColumnTest extends UnitTestCase
 			'ColumnIndex'      => 2,
 			'DbType'           => 'tinyint',
 			'AllowNull'        => false,
-			'DefaultValue'     => TDbTableColumn::UNDEFINED_VALUE,
+			'DefaultValue'     => '0',
 			'NumericPrecision' => null,
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,
@@ -111,7 +111,7 @@ class MysqlColumnTest extends UnitTestCase
 			'ColumnIndex'      => 6,
 			'DbType'           => 'float',
 			'AllowNull'        => false,
-			'DefaultValue'     => TDbTableColumn::UNDEFINED_VALUE,
+			'DefaultValue'     => '0.0000',
 			'NumericPrecision' => 5,
 			'NumericScale'     => 4,
 			'IsPrimaryKey'     => false,
@@ -126,7 +126,7 @@ class MysqlColumnTest extends UnitTestCase
 			'ColumnIndex'      => 7,
 			'DbType'           => 'double',
 			'AllowNull'        => false,
-			'DefaultValue'     => TDbTableColumn::UNDEFINED_VALUE,
+			'DefaultValue'     => '0',
 			'NumericPrecision' => null,
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,
@@ -141,7 +141,7 @@ class MysqlColumnTest extends UnitTestCase
 			'ColumnIndex'      => 8,
 			'DbType'           => 'datetime',
 			'AllowNull'        => false,
-			'DefaultValue'     => TDbTableColumn::UNDEFINED_VALUE,
+			'DefaultValue'     => '0000-00-00 00:00:00',
 			'NumericPrecision' => null,
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,
@@ -171,7 +171,7 @@ class MysqlColumnTest extends UnitTestCase
 			'ColumnIndex'      => 10,
 			'DbType'           => 'time',
 			'AllowNull'        => false,
-			'DefaultValue'     => TDbTableColumn::UNDEFINED_VALUE,
+			'DefaultValue'     => '00:00:00',
 			'NumericPrecision' => null,
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,
@@ -186,7 +186,7 @@ class MysqlColumnTest extends UnitTestCase
 			'ColumnIndex'      => 11,
 			'DbType'           => 'year',
 			'AllowNull'        => false,
-			'DefaultValue'     => TDbTableColumn::UNDEFINED_VALUE,
+			'DefaultValue'     => '0000',
 			'NumericPrecision' => null,
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,

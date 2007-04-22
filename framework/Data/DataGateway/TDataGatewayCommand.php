@@ -177,6 +177,18 @@ class TDataGatewayCommand extends TComponent
 		return $this->onExecuteCommand($command,$command->query());
 	}
 
+	public function findAllByIndex($criteria,$fields,$values)
+	{
+		$index = $this->getIndexKeyCondition($fields,$values);
+		if(strlen($where = $criteria->getCondition())>0)
+			$criteria->setCondition("({$index}) AND ({$where})");
+		else
+			$criteria->setCondition($index);
+		$command = $this->getFindCommand($criteria);
+		$this->onCreateCommand($command, $criteria);
+		return $this->onExecuteCommand($command,$command->query());
+	}
+
 	/**
 	 * @param array multiple primary key values or composite value arrays
 	 * @return integer number of rows affected.
@@ -188,6 +200,14 @@ class TDataGatewayCommand extends TComponent
 		$this->onCreateCommand($command, new TSqlCriteria($where,$keys));
 		$command->prepare();
 		return $this->onExecuteCommand($command,$command->execute());
+	}
+
+	protected function getIndexKeyCondition($fields,$values)
+	{
+		$columns = array();
+		foreach($fields as $field)
+			$columns[] = $this->getTableInfo()->getColumn($field)->getColumnName();
+		return '('.implode(', ',$columns).') IN '.$this->quoteTuple($values);
 	}
 
 	/**
@@ -216,11 +236,7 @@ class TDataGatewayCommand extends TComponent
 			throw new TDbException('dbtablegateway_pk_value_count_mismatch',
 				$this->getTableInfo()->getTableFullName());
 		}
-
-		$columns = array();
-		foreach($primary as $key)
-			$columns[] = $this->getTableInfo()->getColumn($key)->getColumnName();
-		return '('.implode(', ',$columns).') IN '.$this->quoteTuple($values);
+		return $this->getIndexKeyCondition($primary, $values);
 	}
 
 	/**
