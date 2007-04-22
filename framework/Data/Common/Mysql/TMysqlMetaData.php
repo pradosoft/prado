@@ -270,6 +270,7 @@ EOD;
 			$sql = "SHOW CREATE TABLE `{$schemaName}`.`{$tableName}`";
 		else
 			$sql = "SHOW CREATE TABLE `{$tableName}`";
+		$this->getDbConnection()->cancel(); //remove any existing prepared statement
 		$command = $this->getDbConnection()->createCommand($sql);
 		$result = $command->queryRow();
 		return $result['Create Table'];

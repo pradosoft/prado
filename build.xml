@@ -214,7 +214,7 @@
   <target name="compact-active-record" description="Package Active Record" depends="compact-table-gateway">
     <compact-package output="${build.compact.dir}/active-record.php" strip="${compact-strip-comments}">
       <filelist dir="framework/Data/ActiveRecord"
-        files="TActiveRecord.php,TActiveRecordManager.php,Exceptions/TActiveRecordException.php,TActiveRecordCriteria.php,TActiveRecordGateway.php,TActiveRecordStateRegistry.php" />
+        files="TActiveRecord.php,TActiveRecordManager.php,Exceptions/TActiveRecordException.php,TActiveRecordCriteria.php,TActiveRecordGateway.php,TActiveRecordStateRegistry.php,TActiveRecordRelation.php" />
     </compact-package>
     <append file="framework/Data/ActiveRecord/Exceptions/messages.txt"
       destfile="${build.compact.dir}/messages.txt" />
