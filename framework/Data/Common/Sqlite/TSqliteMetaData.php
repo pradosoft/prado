@@ -17,7 +17,7 @@ Prado::using('System.Data.Common.TDbMetaData');
 Prado::using('System.Data.Common.Sqlite.TSqliteTableInfo');
 
 /**
- * TSqliteMetaData loads PostgreSQL database table and column information.
+ * TSqliteMetaData loads SQLite database table and column information.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id: TSqliteMetaData.php 1861 2007-04-12 08:05:03Z wei $

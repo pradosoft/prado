@@ -73,6 +73,15 @@
 
 	<p><br /></p>
 	<com:TActiveLabel ID="label1" Text="Label 1" />
+
+		<com:TAutoComplete Style="width: 10em"
+			id="textbox4"
+			OnSuggest="suggestCountries"
+			OnCallback="callback_requested"
+			OnSuggestionSelected="suggestion_selected"
+			ResultPanel.CssClass="autocomplete" 
+			MinChars="4" Frequency="2" />
+
 	<p><br /></p>
 	<p><br /></p>
 	<p><br /></p>

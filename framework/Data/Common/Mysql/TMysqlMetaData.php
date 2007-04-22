@@ -1,14 +1,31 @@
 <?php
 /**
+ * TMysqlMetaData class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005-2007 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Id$
+ * @package System.Data.Common.Mysql
+ */
+
+/**
  * Load the base TDbMetaData class.
  */
 Prado::using('System.Data.Common.TDbMetaData');
 Prado::using('System.Data.Common.Mysql.TMysqlTableInfo');
 
 /**
- * Requires PHP 5.1.3 due to problem with mysql and PDO.
+ * TMysqlMetaData loads Mysql version 4.1.x and 5.x database table and column information.
+ *
+ * For Mysql version 4.1.x, PHP 5.1.3 or later is required.
  * See http://netevil.org/node.php?nid=795&SC=1
  *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.Commom.Sqlite
+ * @since 3.1
  */
 class TMysqlMetaData extends TDbMetaData
 {
@@ -124,7 +141,6 @@ class TMysqlMetaData extends TDbMetaData
 		$type = strtolower(trim($type));
 		return $type==='set' || $type==='enum';
 	}
-
 
 	/**
 	 * @param string table name, may be quoted with back-ticks and may contain database name.
@@ -268,9 +284,13 @@ EOD;
 	 * @param string database name
 	 * @param string table name
 	 * @return string SQL command to create the table.
+	 * @throws TDbException if PHP version is less than 5.1.3
 	 */
 	protected function getShowCreateTable($schemaName, $tableName)
 	{
+		if(version_compare(PHP_VERSION,'5.1.3','<'))
+			throw new TDbException('dbmetadata_requires_php_version', 'Mysql 4.1.x', '5.1.3');
+
 		//See http://netevil.org/node.php?nid=795&SC=1
 		$this->getDbConnection()->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
 		if($schemaName!==null)
