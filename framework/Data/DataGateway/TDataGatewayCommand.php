@@ -179,7 +179,7 @@ class TDataGatewayCommand extends TComponent
 
 	public function findAllByIndex($criteria,$fields,$values)
 	{
-		$index = $this->getIndexKeyCondition($fields,$values);
+		$index = $this->getIndexKeyCondition($this->getTableInfo(),$fields,$values);
 		if(strlen($where = $criteria->getCondition())>0)
 			$criteria->setCondition("({$index}) AND ({$where})");
 		else
@@ -202,11 +202,12 @@ class TDataGatewayCommand extends TComponent
 		return $this->onExecuteCommand($command,$command->execute());
 	}
 
-	protected function getIndexKeyCondition($fields,$values)
+	public function getIndexKeyCondition($table,$fields,$values)
 	{
 		$columns = array();
+		$tableName = $table->getTableFullName();
 		foreach($fields as $field)
-			$columns[] = $this->getTableInfo()->getColumn($field)->getColumnName();
+			$columns[] = $tableName.'.'.$table->getColumn($field)->getColumnName();
 		return '('.implode(', ',$columns).') IN '.$this->quoteTuple($values);
 	}
 
@@ -236,7 +237,7 @@ class TDataGatewayCommand extends TComponent
 			throw new TDbException('dbtablegateway_pk_value_count_mismatch',
 				$this->getTableInfo()->getTableFullName());
 		}
-		return $this->getIndexKeyCondition($primary, $values);
+		return $this->getIndexKeyCondition($this->getTableInfo(),$primary, $values);
 	}
 
 	/**

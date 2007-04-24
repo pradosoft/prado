@@ -18,3 +18,5 @@ ar_mismatch_column_names					= In dynamic __call() method '{0}', no matching col
 ar_invalid_table							= Missing, invalid or no permission for table/view '{0}'.
 ar_invalid_finder_class_name				= Class name for finder($className) method must not be 'TActiveRecord', you should override the finder() method in your record class or pass in a valid record class name.
 ar_invalid_criteria							= Invalid criteria object, must be a string or instance of TSqlCriteria.
+ar_relations_undefined						= Unable to determine Active Record relationships because static array property {0}::${1} is not defined.
+ar_undefined_relation_prop					= Unable to find {1}::${2}['{0}'], Active Record relationship definition for property "{0}" not found in entries of {1}::${2}.

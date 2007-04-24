@@ -1604,6 +1604,12 @@ framework/Configuration/Provider/TProviderException.php -text
 framework/Configuration/TProtectedConfiguration.php -text
 framework/Data/ActiveRecord/Exceptions/TActiveRecordException.php -text
 framework/Data/ActiveRecord/Exceptions/messages.txt -text
+framework/Data/ActiveRecord/Relations/TActiveRecordBelongsTo.php -text
+framework/Data/ActiveRecord/Relations/TActiveRecordHasMany.php -text
+framework/Data/ActiveRecord/Relations/TActiveRecordHasManyAssociation.php -text
+framework/Data/ActiveRecord/Relations/TActiveRecordHasOne.php -text
+framework/Data/ActiveRecord/Relations/TActiveRecordRelation.php -text
+framework/Data/ActiveRecord/Relations/TActiveRecordRelationContext.php -text
 framework/Data/ActiveRecord/Scaffold/InputBuilder/TIbmScaffoldInput.php -text
 framework/Data/ActiveRecord/Scaffold/InputBuilder/TMssqlScaffoldInput.php -text
 framework/Data/ActiveRecord/Scaffold/InputBuilder/TMysqlScaffoldInput.php -text
@@ -1626,7 +1632,6 @@ framework/Data/ActiveRecord/TActiveRecordConfig.php -text
 framework/Data/ActiveRecord/TActiveRecordCriteria.php -text
 framework/Data/ActiveRecord/TActiveRecordGateway.php -text
 framework/Data/ActiveRecord/TActiveRecordManager.php -text
-framework/Data/ActiveRecord/TActiveRecordRelation.php -text
 framework/Data/ActiveRecord/TActiveRecordStateRegistry.php -text
 framework/Data/Common/IbmDb2/TIbmColumnMetaData.php -text
 framework/Data/Common/IbmDb2/TIbmMetaData.php -text
@@ -2638,6 +2643,7 @@ tests/simple_unit/ActiveRecord/UserRecordTestCase.php -text
 tests/simple_unit/ActiveRecord/ViewRecordTestCase.php -text
 tests/simple_unit/ActiveRecord/ar_test.db -text
 tests/simple_unit/ActiveRecord/blog.db -text
+tests/simple_unit/ActiveRecord/fk_tests.db -text
 tests/simple_unit/ActiveRecord/mysql4text.sql -text
 tests/simple_unit/ActiveRecord/records/Blogs.php -text
 tests/simple_unit/ActiveRecord/records/DepSections.php -text
@@ -2645,6 +2651,7 @@ tests/simple_unit/ActiveRecord/records/DepartmentRecord.php -text
 tests/simple_unit/ActiveRecord/records/SimpleUser.php -text
 tests/simple_unit/ActiveRecord/records/SqliteUsers.php -text
 tests/simple_unit/ActiveRecord/records/UserRecord.php -text
+tests/simple_unit/ActiveRecord/sqlite.sql -text
 tests/simple_unit/DbCommon/CommandBuilderMssqlTest.php -text
 tests/simple_unit/DbCommon/CommandBuilderMysqlTest.php -text
 tests/simple_unit/DbCommon/CommandBuilderPgsqlTest.php -text

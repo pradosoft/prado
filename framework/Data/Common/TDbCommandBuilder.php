@@ -140,6 +140,11 @@ class TDbCommandBuilder extends TComponent
 			$where='1=1';
 		$table = $this->getTableInfo()->getTableFullName();
 		$sql = "SELECT * FROM {$table} WHERE {$where}";
+		return $this->applyCriterias($sql, $parameters, $ordering, $limit, $offset);
+	}
+
+	public function applyCriterias($sql, $parameters=array(),$ordering=array(), $limit=-1, $offset=-1)
+	{
 		if(count($ordering) > 0)
 			$sql = $this->applyOrdering($sql, $ordering);
 		if($limit>=0 || $offset>=0)
@@ -161,13 +166,7 @@ class TDbCommandBuilder extends TComponent
 			$where='1=1';
 		$table = $this->getTableInfo()->getTableFullName();
 		$sql = "SELECT COUNT(*) FROM {$table} WHERE {$where}";
-		if(count($ordering) > 0)
-			$sql = $this->applyOrdering($sql, $ordering);
-		if($limit>=0 || $offset>=0)
-			$sql = $this->applyLimitOffset($sql, $limit, $offset);
-		$command = $this->createCommand($sql);
-		$this->bindArrayValues($command, $parameters);
-		return $command;
+		return $this->applyCriterias($sql, $parameters, $ordering, $limit, $offset);
 	}
 
 	/**

@@ -6,7 +6,7 @@ class CommandBuilderMysqlTest extends UnitTestCase
 {
 	function mysql_meta_data()
 	{
-		$conn = new TDbConnection('mysql:host=localhost;dbname=tests', 'test','test');
+		$conn = new TDbConnection('mysql:host=localhost;dbname=tests;port=3307', 'test5','test5');
 		return new TMysqlMetaData($conn);
 	}
 

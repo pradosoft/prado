@@ -10,9 +10,12 @@
  * @package System.Data.ActiveRecord
  */
 
+/**
+ * Load record manager, criteria and relations.
+ */
 Prado::using('System.Data.ActiveRecord.TActiveRecordManager');
 Prado::using('System.Data.ActiveRecord.TActiveRecordCriteria');
-Prado::using('System.Data.ActiveRecord.TActiveRecordRelation');
+Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationContext');
 
 /**
  * Base class for active records.
@@ -279,7 +282,7 @@ abstract class TActiveRecord extends TComponent
 	 * @param array name value pair record data
 	 * @return TActiveRecord object record, null if data is empty.
 	 */
-	protected function populateObject($type, $data)
+	public function populateObject($type, $data)
 	{
 		if(empty($data)) return null;
 		$registry = $this->getRecordManager()->getObjectStateRegistry();
@@ -308,7 +311,7 @@ abstract class TActiveRecord extends TComponent
 	/**
 	 * @param TDbDataReader data reader
 	 */
-	protected function collectObjects($reader)
+	public function collectObjects($reader)
 	{
 		$result=array();
 		$class = get_class($this);
@@ -425,8 +428,16 @@ abstract class TActiveRecord extends TComponent
 	}
 
 	/**
+	 * Fetches records using the sql clause "(fields) IN (values)", where
+	 * fields is an array of column names and values is an array of values that
+	 * the columns must have.
 	 *
+	 * This method is to be used by the relationship handler.
 	 *
+	 * @param TActiveRecordCriteria additional criteria
+	 * @param array field names to match with "(fields) IN (values)" sql clause.
+	 * @param array matching field values.
+	 * @return array matching active records.
 	 */
 	public function findAllByIndex($criteria,$fields,$values)
 	{
@@ -451,21 +462,17 @@ abstract class TActiveRecord extends TComponent
 	}
 
 	/**
-	 *
+	 * Returns the active record relationship handler for $RELATION with key
+	 * value equal to the $property value.
+	 * @param string relationship property name.
+	 * @param array method call arguments.
 	 * @return TActiveRecordRelation
 	 */
-	protected function getRecordRelation($property,$args)
+	protected function getRelationHandler($property,$args)
 	{
 		$criteria = $this->getCriteria(count($args)>0 ? $args[0] : null, array_slice($args,1));
-		$relation = $this->{$property};
-		switch($relation[0])
-		{
-			case self::HAS_MANY:
-				$finder = self::finder($relation[1]);
-				return new TActiveRecordHasMany($this, $criteria, $finder, $property);
-			default:
-				throw new TException('Not done yet');
-		}
+		$context = new TActiveRecordRelationContext($this, $property, $criteria);
+		return $context->getRelationHandler();
 	}
 
 	/**
@@ -503,7 +510,7 @@ abstract class TActiveRecord extends TComponent
 		if(substr(strtolower($method),0,4)==='with')
 		{
 			$property= $method[4]==='_' ? substr($method,5) : substr($method,4);
-			return $this->getRecordRelation($property, $args);
+			return $this->getRelationHandler($property, $args);
 		}
 		else if($findOne = substr(strtolower($method),0,6)==='findby')
 			$condition = $method[6]==='_' ? substr($method,7) : substr($method,6);
