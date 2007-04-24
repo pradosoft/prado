@@ -117,6 +117,28 @@ class TDbCommandBuilder extends TComponent
 	}
 
 	/**
+	 * NOT SAFE YET!
+	 */
+	public function getSearchExpression($fields, $keywords)
+	{
+		if(strlen(trim($keywords)) == 0) return '';
+		$words = preg_split('/\s/', preg_quote($keywords, '\''));
+		$result = array();
+		foreach($fields as $field)
+		{
+			$column = $this->getTableInfo()->getColumn($field)->getColumnName();
+			$result[] = $this->getRegexpCriteriaStr($column, $words);
+		}
+		return '('.implode(' OR ', $result).')';
+	}
+
+	protected function getRegexpCriteriaStr($column, $words)
+	{
+		$regexp = implode('|', $words);
+		return "({$column} REGEXP  '{$regexp}')";
+	}
+
+	/**
 	 * Computes the SQL condition for search a set of column using regular expression
 	 * to match a string of keywords. The implementation should only uses columns
 	 * that permit regular expression matching. This method should be implemented in

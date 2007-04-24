@@ -95,7 +95,10 @@ class TScaffoldSearch extends TScaffoldBase
 	{
 		$table = $this->getTableInfo();
 		if(strlen($str=$this->getSearchText()->getText()) > 0)
-			return $table->getSearchRegExpCriteria($this->getFields(), $str);
+		{
+			$builder = $table->createCommandBuilder($this->getRecordFinder()->getDbConnection());
+			return $builder->getSearchExpression($this->getFields(), $str);
+		}
 	}
 
 	/**
@@ -106,7 +109,7 @@ class TScaffoldSearch extends TScaffoldBase
 		if(strlen(trim($str=$this->getSearchableFields()))>0)
 			$fields = preg_split('/\s*,\s*/', $str);
 		else
-			$fields = array_keys($this->getTableInfo()->getColumns());
+			$fields = $this->getTableInfo()->getColumns()->getKeys();
 		return $fields;
 	}
 
