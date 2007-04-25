@@ -208,6 +208,7 @@ class TErrorHandler extends TModule
 	{
 		if(php_sapi_name()==='cli')
 		{
+			echo $exception->getMessage()."\n";
 			echo $exception->getTraceAsString();
 			return;
 		}
