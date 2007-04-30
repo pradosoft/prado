@@ -54,13 +54,13 @@ class TActiveRecordStateRegistry
 	 * @param mixed row data fetched
 	 * @return TActiveRecord cached object if found, null otherwise.
 	 */
-	public function getCachedInstance($data)
+	public function getCachedInstance($data,$mustBeClean=true)
 	{
 		$key = $this->getObjectDataKey($data);
 		if(isset($this->_cachedObjects[$key]))
 		{
 			$obj = $this->_cachedObjects[$key];
-			if($this->getIsCleanObject($obj))
+			if(!($mustBeClean && !$this->getIsCleanObject($obj)))
 				return $obj;
 		}
 	}

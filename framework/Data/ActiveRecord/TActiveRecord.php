@@ -282,7 +282,7 @@ abstract class TActiveRecord extends TComponent
 	 * @param array name value pair record data
 	 * @return TActiveRecord object record, null if data is empty.
 	 */
-	public function populateObject($type, $data)
+	protected function populateObject($type, $data)
 	{
 		if(empty($data)) return null;
 		$registry = $this->getRecordManager()->getObjectStateRegistry();
@@ -311,7 +311,7 @@ abstract class TActiveRecord extends TComponent
 	/**
 	 * @param TDbDataReader data reader
 	 */
-	public function collectObjects($reader)
+	protected function collectObjects($reader)
 	{
 		$result=array();
 		$class = get_class($this);

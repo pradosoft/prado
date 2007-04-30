@@ -1,6 +1,33 @@
 <?php
+/**
+ * TActiveRecordHasOne class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005-2007 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Id$
+ * @package System.Data.ActiveRecord.Relations
+ */
+
+/**
+ * Loads base active record relationship class.
+ */
 Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
 
+/**
+ * TActiveRecordHasOne models the object relationship that a record (the source object)
+ * property is an instance of foreign record object having a foreign key
+ * related to the source object. 
+ *
+ *
+ * 
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.ActiveRecord.Relations
+ * @since 3.1
+ */
 class TActiveRecordHasOne extends TActiveRecordRelation
 {
 	/**

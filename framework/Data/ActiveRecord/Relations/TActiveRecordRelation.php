@@ -1,6 +1,30 @@
 <?php
+/**
+ * TActiveRecordRelation class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005-2007 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Id$
+ * @package System.Data.ActiveRecord.Relations
+ */
+
+/**
+ * Load active record relationship context.
+ */
 Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationContext');
 
+/**
+ * Base class for active record relationships.
+ *
+ * description
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.ActiveRecord.Relations
+ * @since 3.1
+ */
 abstract class TActiveRecordRelation
 {
 	private $_context;
@@ -28,11 +52,10 @@ abstract class TActiveRecordRelation
 
 	/**
 	 * Dispatch the method calls to the source record finder object. When
-	 * the results are returned as array or is an instance of TActiveRecord we
-	 * will fetch the corresponding foreign objects with an sql query and populate
-	 * the results obtained earlier.
+	 * an instance of TActiveRecord or an array of TActiveRecord is returned
+	 * the corresponding foreign objects are also fetched and assigned.
 	 *
-	 * Allows chaining multiple relation handlers.
+	 * Multiple relationship calls can be chain together.
 	 *
 	 * @param string method name called
 	 * @param array method arguments
@@ -106,7 +129,7 @@ abstract class TActiveRecordRelation
 	/**
 	 * Obtain the foreign key index values from the results.
 	 * @param array property names
-	 * @param array|TActiveRecord TActiveRecord results
+	 * @param array TActiveRecord results
 	 * @return array foreign key index values.
 	 */
 	protected function getIndexValues($keys, $results)
@@ -134,14 +157,16 @@ abstract class TActiveRecordRelation
 	{
 		$collections=array();
 		foreach($fkObjects as $fkObject)
-		{
-			$hash = $this->getObjectHash($fkObject, $fields);
-			$collections[$hash][]=$fkObject;
-		}
-
+			$collections[$this->getObjectHash($fkObject, $fields)][]=$fkObject;
 		$this->setResultCollection($results, $collections, $properties);
 	}
 
+	/**
+	 * Populates the result array with foreign objects (matched using foreign key hashed property values).
+	 * @param array $results
+	 * @param array $collections
+	 * @param array property names
+	 */
 	protected function setResultCollection(&$results, &$collections, $properties)
 	{
 		if(is_array($results))
@@ -150,9 +175,7 @@ abstract class TActiveRecordRelation
 				$this->setObjectProperty($results[$i], $properties, $collections);
 		}
 		else
-		{
 			$this->setObjectProperty($results, $properties, $collections);
-		}
 	}
 
 	/**

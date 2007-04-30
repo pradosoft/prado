@@ -1,7 +1,71 @@
 <?php
+/**
+ * TActiveRecordBelongsTo class file.	
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005-2007 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Id$
+ * @package System.Data.ActiveRecord.Relations
+ */
 
+/**
+ * Loads base active record relationship class.
+ */
 Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
 
+/**
+ * Implements the foreign key relationship (TActiveRecord::BELONGS_TO) between 
+ * the source objects and the related foreign object. Consider the 
+ * <b>entity</b> relationship between a Team and a Player.
+ * <code>
+ * +------+            +--------+
+ * | Team | 1 <----- * | Player |
+ * +------+            +--------+
+ * </code>
+ * Where one team may have 0 or more players and each player belongs to only
+ * one team. We may model Team-Player <b>object</b> relationship as active record as follows.
+ * <code>
+ * class TeamRecord extends TActiveRecord
+ * {
+ *     // see TActiveRecordHasMany for detailed definition.
+ * }
+ * class PlayerRecord extends TActiveRecord
+ * {
+ *     const TABLE='player';
+ *     public $player_id; //primary key
+ *     public $team_name; //foreign key player.team_name <-> team.name
+ * 	   public $age;
+ *     public $team; //foreign object TeamRecord
+ * 
+ *     protected static $RELATIONS = array(
+ *			'team' => array(self::BELONGS_TO, 'TeamRecord'));
+ * 
+ *	   public static function finder($className=__CLASS__)
+ *	   {
+ *		   return parent::finder($className);
+ *	   }
+ * }
+ * </code>
+ * The <tt>$RELATIONS</tt> static property of PlayerRecord defines that the
+ * property <tt>$team</tt> belongs to (or is a) <tt>TeamRecord</tt>s.
+ *
+ * The team object may be fetched as follows.
+ * <code>
+ * $players = PlayerRecord::finder()->with_team()->findAll();
+ * </code>
+ * The method <tt>with_xxx()</tt> (where <tt>xxx</tt> is the relationship property
+ * name, in this case, <tt>team</tt>) fetchs the corresponding TeamRecords using
+ * a second query (not by using a join). The <tt>with_xxx()</tt> accepts the same
+ * arguments as other finder methods of TActiveRecord, e.g. 
+ * <tt>with_team('location = ?', 'Madrid')</tt>.
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.ActiveRecord.Relations
+ * @since 3.1
+ */
 class TActiveRecordBelongsTo extends TActiveRecordRelation
 {
 	/**

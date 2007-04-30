@@ -17,14 +17,14 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
 
 /**
  * Implements TActiveRecord::HAS_MANY relationship between the source object having zero or
- * more foreign objects. Consider the relationship between a Team and a Player.
+ * more foreign objects. Consider the <b>entity</b> relationship between a Team and a Player.
  * <code>
  * +------+            +--------+
- * | Team | 1 -----> * | Player |
+ * | Team | 1 <----- * | Player |
  * +------+            +--------+
  * </code>
  * Where one team may have 0 or more players and each player belongs to only
- * one team. We may model Team-Player relationship as active record as follows.
+ * one team. We may model Team-Player <b>object</b> relationship as active record as follows.
  * <code>
  * class TeamRecord extends TActiveRecord
  * {
@@ -44,15 +44,7 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
  * }
  * class PlayerRecord extends TActiveRecord
  * {
- *     const TABLE='player';
- *     public $player_id; //primary key
- *     public $team_name; //foreign key player.team_name <-> team.name
- * 	   public $age;
- *
- *	   public static function finder($className=__CLASS__)
- *	   {
- *		   return parent::finder($className);
- *	   }
+ *     // see TActiveRecordBelongsTo for detailed definition
  * }
  * </code>
  * The <tt>$RELATIONS</tt> static property of TeamRecord defines that the
