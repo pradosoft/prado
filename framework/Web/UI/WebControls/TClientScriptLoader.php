@@ -95,7 +95,7 @@ class TClientScriptLoader extends TWebControl
 	 */
 	protected function getClientScriptUrl()
 	{
-		$scripts = split('\s*[, ]+\s*', $this->getPackageScripts());
+		$scripts = preg_split('/\s*[, ]+\s*/', $this->getPackageScripts());
 		$cs = $this->getPage()->getClientScript();
 		return $cs->registerJavascriptPackages($this->getPackagePath(),
 				$scripts, $this->getDebugMode(), $this->getEnableGzip());
