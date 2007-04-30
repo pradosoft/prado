@@ -192,7 +192,8 @@ Prado.ValidationManager.prototype =
 		this.options = {};
 
 		this.options = options;
-		Prado.Validation.managers[options.FormID] = this;
+		if(!Prado.Validation.managers[options.FormID])
+			Prado.Validation.managers[options.FormID] = this;
 	},
 
 	/**
