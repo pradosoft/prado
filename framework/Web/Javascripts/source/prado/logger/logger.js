@@ -13,7 +13,7 @@ Use it all you want. Just remember to give me some credit :)
 // Custom Event
 // ------------
 
-CustomEvent = Class.create()
+CustomEvent = Class.create();
 CustomEvent.prototype = {
   initialize : function() {
   	this.listeners = []
@@ -54,7 +54,7 @@ CustomEvent.prototype = {
 
 		return indexes
 	}
-}
+};
 
 // ------
 // Cookie
@@ -128,7 +128,7 @@ var Cookie = {
 		}
 
 	}
-}
+};
 
 // ------
 // Logger
@@ -177,7 +177,7 @@ Logger = {
 		this.logEntries = []
 		this.onclear.dispatch()
 	}
-}
+};
 
 LogEntry = Class.create()
 LogEntry.prototype = {
@@ -185,9 +185,9 @@ LogEntry.prototype = {
       this.message = message
       this.tag = tag
     }
-}
+};
 
-LogConsole = Class.create()
+LogConsole = Class.create();
 LogConsole.prototype = {
 
   // Properties
@@ -285,7 +285,7 @@ LogConsole.prototype = {
 	}
 	var self=this;
 	Event.observe(document, 'keydown', function(e)
-	{ 
+	{
 		if((e.altKey==true) && Event.keyCode(e) == toggleKey ) //Alt+J | Ctrl+J
 			self.toggle();
 	});
@@ -456,7 +456,7 @@ LogConsole.prototype = {
     		this.commandIndex = 0
     }
 	}
-}
+};
 
 
 // -------------------------
@@ -552,7 +552,7 @@ function inspect(o)
 		res.push(useKey + ":" + val);
 	}
 	return "{" + res.join(", ") + "}";
-}
+};
 
 Array.prototype.contains = function(object) {
 	for(var i = 0; i < this.length; i++) {
@@ -560,10 +560,10 @@ Array.prototype.contains = function(object) {
 	}
 
 	return false
-}
+};
 
 // Helper Alias for simple logging
-var puts = function() {return Logger.log(arguments[0], arguments[1])}
+var puts = function() {return Logger.log(arguments[0], arguments[1])};
 
 /*************************************
 
@@ -740,7 +740,7 @@ Prado.Inspector =
 			"#so_mContainer .topLevel { margin:0; padding:0; } " +
 			"#so_mContainer .credits { float:left; width:200px; font:6.5pt verdana; color:#000; padding:2px; margin-left:5px; text-align:left; border-top:1px solid #000; margin-top:15px; width:75%; } " +
 			"#so_mContainer .credits a { font:9px verdana; font-weight:bold; color:#004465; text-decoration:none; background-color:transparent; }"
-}
+};
 
 //similar function to var_dump in PHP, brings up the javascript object tree UI.
 function var_dump(obj)

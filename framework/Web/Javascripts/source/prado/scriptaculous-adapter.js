@@ -9,7 +9,7 @@ Function.prototype.bindEvent = function()
 	{
 		return __method.apply(object, [event || window.event].concat(args));
 	}
-}
+};
 
 /**
  * Creates a new function by copying function definition from
@@ -26,7 +26,7 @@ Class.extend = function(base, definition)
 		if(definition)
 			Object.extend(component.prototype, definition);
 		return component;
-}
+};
 
 /*
 	Base, version 1.0.2
@@ -175,7 +175,7 @@ Prado.PostBack = function(event,options)
 	/*if(options['StopEvent']) */
 		Event.stop(event);
 	Event.fireEvent(form,"submit");
-}
+};
 
 Prado.Element =
 {
@@ -346,7 +346,7 @@ Prado.Element =
 	{
 		content.evalScripts();
 	}
-}
+};
 
 Prado.Element.Selection =
 {
@@ -559,7 +559,7 @@ Prado.Element.Insert =
 	{
 		new Insertion.Before(element, content);
 	}
-}
+};
 
 
 /**

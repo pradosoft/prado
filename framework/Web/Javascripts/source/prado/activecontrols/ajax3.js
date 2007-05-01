@@ -424,7 +424,7 @@ Object.extend(Prado.CallbackRequest,
 		}
 		self.tryNextRequest();
 	}
-})
+});
 
 /**
  * Automatically aborts the current request when a priority request has returned.
@@ -664,4 +664,4 @@ Prado.Callback = function(UniqueID, parameter, onSuccess, options)
 	request = new Prado.CallbackRequest(UniqueID, callback);
 	request.dispatch();
 	return false;
-}
+};

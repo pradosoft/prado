@@ -691,6 +691,4 @@ Prado.WebUI.TDatePicker.prototype =
 		}
 
 	}
-
-
 };

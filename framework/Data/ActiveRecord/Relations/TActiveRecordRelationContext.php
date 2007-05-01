@@ -156,7 +156,7 @@ class TActiveRecordRelationContext
 				Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordBelongsTo');
 				return new TActiveRecordBelongsTo($this);
 			default:
-				throw new TException('Not done yet');
+				throw new TActiveRecordException('ar_invalid_relationship');
 		}
 	}
 }

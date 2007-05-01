@@ -18,10 +18,63 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
 /**
  * TActiveRecordHasOne models the object relationship that a record (the source object)
  * property is an instance of foreign record object having a foreign key
- * related to the source object. 
+ * related to the source object. The HAS_ONE relation is very similar to the
+ * HAS_MANY relationship (in fact, it is equivalent in the entities relationship point of view).
  *
+ * The difference of HAS_ONE from HAS_MANY is that the foreign object is singular. 
+ * That is, HAS_MANY will return a collection of records while HAS_ONE returns the
+ * corresponding record.
  *
+ * Consider the <b>entity</b> relationship between a Car and a Engine.
+ * <code>
+ * +-----+            +--------+
+ * | Car | 1 <----- 1 | Engine |
+ * +-----+            +--------+
+ * </code>
+ * Where each engine belongs to only one car, that is, the Engine entity has
+ * a foreign key to the Car's primary key. We may model 
+ * Engine-Car <b>object</b> relationship as active record as follows.
+ * <code>
+ * class CarRecord extends TActiveRecord
+ * {
+ *     const TABLE='car';
+ *     public $car_id; //primary key
+ *     public $colour;
+ *
+ *     public $engine; //engine foreign object
+ *
+ *     protected static $RELATIONS=array(
+ *         'engine' => array(self::HAS_ONE, 'EngineRecord'));
+ *
+ *	   public static function finder($className=__CLASS__)
+ *	   {
+ *		   return parent::finder($className);
+ *	   }
+ * }
+ * class EngineRecord extends TActiveRecord
+ * {
+ *     const TABLE='engine';
+ *     public $engine_id;
+ *     public $capacity;
+ *     public $car_id; //foreign key to cars
  * 
+ *	   public static function finder($className=__CLASS__)
+ *	   {
+ *		   return parent::finder($className);
+ *	   }
+ * }
+ * </code>
+ * The <tt>$RELATIONS</tt> static property of CarRecord defines that the
+ * property <tt>$engine</tt> that will reference an <tt>EngineRecord</tt> instance.
+ *
+ * The car record with engine property list may be fetched as follows.
+ * <code>
+ * $cars = CarRecord::finder()->with_engine()->findAll();
+ * </code>
+ * The method <tt>with_xxx()</tt> (where <tt>xxx</tt> is the relationship property
+ * name, in this case, <tt>engine</tt>) fetchs the corresponding EngineRecords using
+ * a second query (not by using a join). The <tt>with_xxx()</tt> accepts the same
+ * arguments as other finder methods of TActiveRecord, e.g. <tt>with_engine('capacity < ?', 3.8)</tt>.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$

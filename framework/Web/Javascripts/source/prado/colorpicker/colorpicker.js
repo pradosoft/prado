@@ -114,7 +114,7 @@ Rico.Color.createFromHex = function(hexCode) {
 	  blue = b+b;
 	}
    return new Rico.Color( parseInt(red,16), parseInt(green,16), parseInt(blue,16) );
-}
+};
 
 /**
  * Factory method for creating a color from the background of
@@ -142,7 +142,7 @@ Rico.Color.createColorFromBackground = function(elem) {
    }
    else
       return new Rico.Color(255,255,255);
-}
+};
 
 Rico.Color.HSBtoRGB = function(hue, saturation, brightness) {
 
@@ -197,7 +197,7 @@ Rico.Color.HSBtoRGB = function(hue, saturation, brightness) {
 	}
 
    return { r : parseInt(red), g : parseInt(green) , b : parseInt(blue) };
-}
+};
 
 Rico.Color.RGBtoHSB = function(r, g, b) {
 
@@ -239,7 +239,7 @@ Rico.Color.RGBtoHSB = function(r, g, b) {
    }
 
    return { h : hue, s : saturation, b : brightness };
-}
+};
 
 
 Prado.WebUI.TColorPicker = Class.create();

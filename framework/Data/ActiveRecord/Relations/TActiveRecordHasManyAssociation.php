@@ -75,17 +75,27 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		$finder = $this->getContext()->getForeignRecordFinder();
 		$command = $this->createCommand($criteria, $foreignKeys,$indexValues,$sourceKeys);
 		$srcProps = array_keys($sourceKeys);
-		$type = get_class($finder);
 		$collections=array();
 		foreach($command->query() as $row)
 		{
 			$hash = $this->getObjectHash($row, $srcProps);
 			foreach($srcProps as $column)
 				unset($row[$column]);
-			$collections[$hash][] = $finder->populateObject($type,$row);
+			$collections[$hash][] = $this->populateObject($finder, $row);
 		}
 
 		$this->setResultCollection($results, $collections, array_values($sourceKeys));
+	}
+	
+	protected function populateObject($finder, $data)
+	{
+		$registry = $finder->getRecordManager()->getObjectStateRegistry();
+		if(!is_null($obj = $registry->getCachedInstance($data, false)))
+			return $obj;
+		$gateway = $finder->getRecordManager()->getRecordGateway();
+		$type = get_class($finder);
+		$obj = new $type($data);
+		return $registry->addCachedInstance($data,$obj);
 	}
 
 	/**
