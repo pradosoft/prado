@@ -151,6 +151,35 @@ abstract class TActiveRecord extends TComponent
 	}
 
 	/**
+	 * Compare two records using their primary key values (all column values if
+	 * table does not defined primary keys). The default uses simple == for
+	 * comparison of their values. Set $strict=true for identity comparison.
+	 * @param TActiveRecord another record to compare with.
+	 * @param boolean true to perform strict identity comparison
+	 * @return boolean true if $record equals, false otherwise.
+	 */
+	public function equals(TActiveRecord $record, $strict=false)
+	{
+		$thisClass=__CLASS__;
+		if(!($record instanceof $thisClass))
+			return false;
+		$tableInfo = $this->getRecordGateway()->getRecordTableInfo($this);
+		$pks = $tableInfo->getPrimaryKeys();
+		$properties = count($pks) > 0 ? $pks : $tableInfo->getColumns()->getKeys();
+		$equals=true;
+		foreach($properties as $prop)
+		{
+			if($strict)
+				$equals = $equals && $this->{$prop} === $record->{$prop};
+			else
+				$equals = $equals && $this->{$prop} == $record->{$prop};
+			if(!$equals)
+				return false;
+		}
+		return $equals;
+	}
+
+	/**
 	 * Returns the instance of a active record finder for a particular class.
 	 * The finder objects are static instances for each ActiveRecord class.
 	 * This means that event handlers bound to these finder instances are class wide.
@@ -210,7 +239,7 @@ abstract class TActiveRecord extends TComponent
 	protected function commitChanges()
 	{
 		$registry = $this->getRecordManager()->getObjectStateRegistry();
-		$gateway = $this->getRecordManager()->getRecordGateway();
+		$gateway = $this->getRecordGateway();
 		if(!$this->_readOnly)
 			$this->_readOnly = $gateway->getRecordTableInfo($this)->getIsView();
 		if($this->_readOnly)
@@ -257,8 +286,7 @@ abstract class TActiveRecord extends TComponent
 	{
 		if(func_num_args() > 1)
 			$keys = func_get_args();
-		$gateway = $this->getRecordManager()->getRecordGateway();
-		return $gateway->deleteRecordsByPk($this,(array)$keys);
+		return $this->getRecordGateway()->deleteRecordsByPk($this,(array)$keys);
 	}
 
 
@@ -272,8 +300,7 @@ abstract class TActiveRecord extends TComponent
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		$criteria = $this->getCriteria($criteria,$parameters, $args);
-		$gateway = $this->getRecordManager()->getRecordGateway();
-		return $gateway->deleteRecordsByCriteria($this, $criteria);
+		return $this->getRecordGateway()->deleteRecordsByCriteria($this, $criteria);
 	}
 
 	/**
@@ -284,28 +311,19 @@ abstract class TActiveRecord extends TComponent
 	 */
 	protected function populateObject($type, $data)
 	{
-		if(empty($data)) return null;
-		$registry = $this->getRecordManager()->getObjectStateRegistry();
-
-		//try the cache (the cache object must be clean)
-		if(!is_null($obj = $registry->getCachedInstance($data)))
-			return $obj;
-
-		$gateway = $this->getRecordManager()->getRecordGateway();
-
+		if(empty($data))
+			return null;
 		//create and populate the object
 		$obj = Prado::createComponent($type);
-		$tableInfo = $gateway->getRecordTableInfo($obj);
+		$tableInfo = $this->getRecordGateway()->getRecordTableInfo($obj);
 		foreach($tableInfo->getColumns()->getKeys() as $name)
 		{
 			if(isset($data[$name]))
 				$obj->{$name} = $data[$name];
 		}
-
 		$obj->_readOnly = $tableInfo->getIsView();
-
-		//cache it
-		return $registry->addCachedInstance($data,$obj);
+		$this->getRecordManager()->getObjectStateRegistry()->registerClean($obj);
+		return $obj;
 	}
 
 	/**
@@ -341,8 +359,7 @@ abstract class TActiveRecord extends TComponent
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		$criteria = $this->getCriteria($criteria,$parameters, $args);
-		$gateway = $this->getRecordManager()->getRecordGateway();
-		$data = $gateway->findRecordsByCriteria($this,$criteria);
+		$data = $this->getRecordGateway()->findRecordsByCriteria($this,$criteria);
 		return $this->populateObject(get_class($this), $data);
 	}
 
@@ -358,8 +375,7 @@ abstract class TActiveRecord extends TComponent
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		if($criteria!==null)
 			$criteria = $this->getCriteria($criteria,$parameters, $args);
-		$gateway = $this->getRecordManager()->getRecordGateway();
-		$result = $gateway->findRecordsByCriteria($this,$criteria,true);
+		$result = $this->getRecordGateway()->findRecordsByCriteria($this,$criteria,true);
 		return $this->collectObjects($result);
 	}
 
@@ -379,8 +395,7 @@ abstract class TActiveRecord extends TComponent
 	{
 		if(func_num_args() > 1)
 			$keys = func_get_args();
-		$gateway = $this->getRecordManager()->getRecordGateway();
-		$data = $gateway->findRecordByPK($this,$keys);
+		$data = $this->getRecordGateway()->findRecordByPK($this,$keys);
 		return $this->populateObject(get_class($this), $data);
 	}
 
@@ -405,8 +420,7 @@ abstract class TActiveRecord extends TComponent
 	{
 		if(func_num_args() > 1)
 			$keys = func_get_args();
-		$gateway = $this->getRecordManager()->getRecordGateway();
-		$result = $gateway->findRecordsByPks($this,(array)$keys);
+		$result = $this->getRecordGateway()->findRecordsByPks($this,(array)$keys);
 		return $this->collectObjects($result);
 	}
 
@@ -422,8 +436,7 @@ abstract class TActiveRecord extends TComponent
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		$criteria = $this->getCriteria($sql,$parameters, $args);
-		$gateway = $this->getRecordManager()->getRecordGateway();
-		$result = $gateway->findRecordsBySql($this,$criteria);
+		$result = $this->getRecordGateway()->findRecordsBySql($this,$criteria);
 		return $this->collectObjects($result);
 	}
 
@@ -441,8 +454,7 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function findAllByIndex($criteria,$fields,$values)
 	{
-		$gateway = $this->getRecordManager()->getRecordGateway();
-		$result = $gateway->findRecordsByIndex($this,$criteria,$fields,$values);
+		$result = $this->getRecordGateway()->findRecordsByIndex($this,$criteria,$fields,$values);
 		return $this->collectObjects($result);
 	}
 
@@ -457,8 +469,7 @@ abstract class TActiveRecord extends TComponent
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		if($criteria!==null)
 			$criteria = $this->getCriteria($criteria,$parameters, $args);
-		$gateway = $this->getRecordManager()->getRecordGateway();
-		return $gateway->countRecords($this,$criteria);
+		return $this->getRecordGateway()->countRecords($this,$criteria);
 	}
 
 	/**
@@ -521,8 +532,7 @@ abstract class TActiveRecord extends TComponent
 		else
 			return null;//throw new TActiveRecordException('ar_invalid_finder_method',$method);
 
-		$gateway = $this->getRecordManager()->getRecordGateway();
-		$criteria = $gateway->getCommand($this)->createCriteriaFromString($method, $condition, $args);
+		$criteria = $this->getRecordGateway()->getCommand($this)->createCriteriaFromString($method, $condition, $args);
 		if($delete)
 			return $this->deleteAll($criteria);
 		else

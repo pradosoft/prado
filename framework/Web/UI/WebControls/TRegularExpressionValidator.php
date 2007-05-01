@@ -87,9 +87,29 @@ class TRegularExpressionValidator extends TBaseValidator
 		if(($value=$this->getValidationValue($this->getValidationTarget()))==='')
 			return true;
 		if(($expression=$this->getRegularExpression())!=='')
-			return preg_match("/^$expression\$/",$value);
+		{
+			$mods = $this->getPatternModifiers();
+			return preg_match("/^$expression\$/{$mods}",$value);
+		}
 		else
 			return true;
+	}
+
+	/**
+	 * @param string pattern modifiers,
+	 * see http://www.php.net/manual/en/reference.pcre.pattern.modifiers.php
+	 */
+	public function setPatternModifiers($value)
+	{
+		$this->setViewState('PatternModifiers', $value);
+	}
+
+	/**
+	 * @return string pattern modifiers, no modifiers by default.
+	 */
+	public function getPatternModifiers()
+	{
+		return $this->getViewState('PatternModifiers', '');
 	}
 
 	/**

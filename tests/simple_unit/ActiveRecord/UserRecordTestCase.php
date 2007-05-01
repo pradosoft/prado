@@ -1,5 +1,4 @@
 <?php
-
 Prado::using('System.Data.ActiveRecord.TActiveRecord');
 require_once(dirname(__FILE__).'/records/UserRecord.php');
 
@@ -17,13 +16,13 @@ class UserRecordTestCase extends UnitTestCase
 		$this->assertNotNull($user1);
 	}
 
-	function test_same_data_returns_same_object()
+	function test_same_data_returns_different_instance()
 	{
 		$user1 = UserRecord::finder()->findByPk('admin');
 		$this->assertNotNull($user1);
 
 		$user2 = UserRecord::finder()->findByPk('admin');
-		$this->assertTrue($user1===$user2);
+		$this->assertFalse($user1===$user2);
 	}
 
 	function testFindByPk_returns_null()

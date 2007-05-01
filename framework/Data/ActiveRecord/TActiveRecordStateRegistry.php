@@ -39,44 +39,13 @@ class TActiveRecordStateRegistry
 {
 	private $_cleanObjects=array();
 	private $_removedObjects;
-	private $_cachedObjects=array();
+	//private $_cachedObjects=array();
 	/**
 	 * Initialize the registry.
 	 */
 	public function __construct()
 	{
 		$this->_removedObjects = new TList;
-	}
-
-	/**
-	 * Get the cached object for given type and row data. The cached object
-	 * must also be clean.
-	 * @param mixed row data fetched
-	 * @return TActiveRecord cached object if found, null otherwise.
-	 */
-	public function getCachedInstance($data,$mustBeClean=true)
-	{
-		$key = $this->getObjectDataKey($data);
-		if(isset($this->_cachedObjects[$key]))
-		{
-			$obj = $this->_cachedObjects[$key];
-			if(!($mustBeClean && !$this->getIsCleanObject($obj)))
-				return $obj;
-		}
-	}
-
-	/**
-	 * Cache the object that corresponding to the fetched row data.
-	 * @param mixed row data fetched.
-	 * @param TActiveRecord object to be cached.
-	 * @return TActiveRecord cached object.
-	 */
-	public function addCachedInstance($data,$obj)
-	{
-		$key = $this->getObjectDataKey($data);
-		$this->registerClean($obj);
-		$this->_cachedObjects[$key]=$obj;
-		return $obj;
 	}
 
 	/**
