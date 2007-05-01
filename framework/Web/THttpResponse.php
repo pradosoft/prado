@@ -257,7 +257,7 @@ class THttpResponse extends TModule implements ITextWriter
 	 * @param string file name
 	 * @param string content to be set. If null, the content will be read from the server file pointed to by $fileName.
 	 * @param string mime type of the content.
-	 * @param array list of headers to be sent
+	 * @param array list of headers to be sent. Each array element represents a header string (e.g. 'Content-Type: text/plain').
 	 * @throws TInvalidDataValueException if the file cannot be found
 	 */
 	public function writeFile($fileName,$content=null,$mimeType=null,$headers=null)
