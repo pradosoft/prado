@@ -44,6 +44,16 @@ class TMysqlTableInfo extends TDbTableInfo
 		else
 			return '`'.$this->getTableName().'`';
 	}
+
+	/**
+	 * @param TDbConnection database connection.
+	 * @return TDbCommandBuilder new command builder
+	 */
+	public function createCommandBuilder($connection)
+	{
+		Prado::using('System.Data.Common.Mysql.TMysqlCommandBuilder');
+		return new TMysqlCommandBuilder($connection,$this);
+	}
 }
 
 ?>

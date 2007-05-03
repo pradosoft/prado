@@ -44,6 +44,16 @@ class TPgsqlTableInfo extends TDbTableInfo
 		else
 			$this->getTableName();
 	}
+
+	/**
+	 * @param TDbConnection database connection.
+	 * @return TDbCommandBuilder new command builder
+	 */
+	public function createCommandBuilder($connection)
+	{
+		Prado::using('System.Data.Common.Pgsql.TPgsqlCommandBuilder');
+		return new TPgsqlCommandBuilder($connection,$this);
+	}
 }
 
 ?>

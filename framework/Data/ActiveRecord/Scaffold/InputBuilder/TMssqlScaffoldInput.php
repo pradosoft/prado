@@ -35,7 +35,11 @@ class TMssqlScaffoldInput extends TScaffoldInputCommon
 			case 'datetime': case 'smalldatetime':
 				return $this->getDateTimeValue($container,$column, $record);
 			default:
-				return $this->getDefaultControlValue($container,$column, $record);
+				$value = $this->getDefaultControlValue($container,$column, $record);
+				if(trim($value)==='' && $column->getAllowNull())
+					return null;
+				else
+					return $value;
 		}
 	}
 }

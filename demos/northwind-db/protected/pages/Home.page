@@ -1,0 +1,12 @@
+<html>
+<com:THead Title="Welcome to Prado" />
+<body>
+<h1>Welcome to PRADO!</h1>
+<com:TForm>
+	
+	<com:TDropDownList ID="class_list" AutoPostBack="true"/>
+	<com:TScaffoldView ID="scaffold1" RecordClass="<%= $this->class_list->selectedItem->Text %>" />
+
+</com:TForm>
+</body>
+</html>
