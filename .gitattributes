@@ -1268,6 +1268,10 @@ demos/quickstart/protected/pages/Database/Samples/Scaffold/sqlite.db -text
 demos/quickstart/protected/pages/Database/Samples/config.xml -text
 demos/quickstart/protected/pages/Database/Scaffold.page -text
 demos/quickstart/protected/pages/Database/SqlMap.page -text
+demos/quickstart/protected/pages/Database/ar_objects.png -text
+demos/quickstart/protected/pages/Database/ar_objects.vsd -text
+demos/quickstart/protected/pages/Database/ar_relations.png -text
+demos/quickstart/protected/pages/Database/ar_relations.vsd -text
 demos/quickstart/protected/pages/Database/diagram.png -text
 demos/quickstart/protected/pages/Database/object_states.png -text
 demos/quickstart/protected/pages/Database/sqlmap_active_record.png -text
@@ -1646,6 +1650,7 @@ framework/Data/Common/Mysql/TMysqlTableInfo.php -text
 framework/Data/Common/Pgsql/TPgsqlMetaData.php -text
 framework/Data/Common/Pgsql/TPgsqlTableColumn.php -text
 framework/Data/Common/Pgsql/TPgsqlTableInfo.php -text
+framework/Data/Common/Sqlite/TSqliteCommandBuilder.php -text
 framework/Data/Common/Sqlite/TSqliteMetaData.php -text
 framework/Data/Common/Sqlite/TSqliteTableColumn.php -text
 framework/Data/Common/Sqlite/TSqliteTableInfo.php -text
@@ -2540,6 +2545,7 @@ tests/FunctionalTests/tickets/protected/pages/Ticket587.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket587.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket605.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket606.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket614.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket68.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket72.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket72.php -text

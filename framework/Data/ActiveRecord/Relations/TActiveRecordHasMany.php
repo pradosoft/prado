@@ -34,8 +34,10 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
  *
  *     public $players=array(); //list of players
  *
- *     protected static $RELATIONS=array(
- *         'players' => array(self::HAS_MANY, 'PlayerRecord'));
+ *     protected static $RELATIONS=array
+ *     (
+ *         'players' => array(self::HAS_MANY, 'PlayerRecord')
+ *     );
  *
  *	   public static function finder($className=__CLASS__)
  *	   {
@@ -47,7 +49,7 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
  *     // see TActiveRecordBelongsTo for detailed definition
  * }
  * </code>
- * The <tt>$RELATIONS</tt> static property of TeamRecord defines that the
+ * The static <tt>$RELATIONS</tt> property of TeamRecord defines that the
  * property <tt>$players</tt> has many <tt>PlayerRecord</tt>s.
  *
  * The players list may be fetched as follows.

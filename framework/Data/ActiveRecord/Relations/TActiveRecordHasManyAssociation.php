@@ -1,16 +1,98 @@
 <?php
+/**
+ * TActiveRecordHasManyAssociation class file.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005-2007 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Id$
+ * @package System.Data.ActiveRecord.Relations
+ */
 
 /**
  * Loads base active record relations class.
  */
 Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
 
+/**
+ * Implements the M-N (many to many) relationship via association table.
+ * Consider the <b>entity</b> relationship between Articles and Categories
+ * via the association table <tt>Article_Category</tt>.
+ * <code>
+ * +---------+            +------------------+            +----------+
+ * | Article | * -----> * | Article_Category | * <----- * | Category |
+ * +---------+            +------------------+            +----------+
+ * </code>
+ * Where one article may have 0 or more categories and each category may have 0
+ * or more articles. We may model Article-Category <b>object</b> relationship
+ * as active record as follows.
+ * <code>
+ * class ArticleRecord
+ * {
+ *     const TABLE='Article';
+ *     public $article_id;
+ *
+ *     public $Categories=array(); //foreign object collection.
+ *
+ *     protected static $RELATIONS = array
+ *     (
+ *         'Categories' => array(self::HAS_MANY, 'CategoryRecord', 'Article_Category')
+ *     );
+ *
+ *     public static function finder($className=__CLASS__)
+ *     {
+ *         return parent::finder($className);
+ *     }
+ * }
+ * class CategoryRecord
+ * {
+ *     const TABLE='Category';
+ *     public $category_id;
+ *
+ *     public $Articles=array();
+ *
+ *     protected static $RELATIONS = array
+ *     (
+ *         'Articles' => array(self::HAS_MANY, 'ArticleRecord', 'Article_Category')
+ *     );
+ *
+ *     public static function finder($className=__CLASS__)
+ *     {
+ *         return parent::finder($className);
+ *     }
+ * }
+ * </code>
+ *
+ * The static <tt>$RELATIONS</tt> property of ArticleRecord defines that the
+ * property <tt>$Categories</tt> has many <tt>CategoryRecord</tt>s. Similar, the
+ * static <tt>$RELATIONS</tt> property of CategoryRecord defines many ArticleRecords.
+ *
+ * The articles with categories list may be fetched as follows.
+ * <code>
+ * $articles = TeamRecord::finder()->withCategories()->findAll();
+ * </code>
+ * The method <tt>with_xxx()</tt> (where <tt>xxx</tt> is the relationship property
+ * name, in this case, <tt>Categories</tt>) fetchs the corresponding CategoryRecords using
+ * a second query (not by using a join). The <tt>with_xxx()</tt> accepts the same
+ * arguments as other finder methods of TActiveRecord.
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.ActiveRecord.Relations
+ * @since 3.1
+ */
 class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 {
 	private $_association;
 	private $_sourceTable;
 	private $_foreignTable;
 
+	/**
+	* Get the foreign key index values from the results and make calls to the
+	* database to find the corresponding foreign objects using association table.
+	* @param array original results.
+	*/
 	protected function collectForeignObjects(&$results)
 	{
 		$association = $this->getAssociationTable();
@@ -26,6 +108,9 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		$this->fetchForeignObjects($results, $foreignKeys,$indexValues,$sourceKeys);
 	}
 
+	/**
+	 * @return TDbTableInfo association table information.
+	 */
 	protected function getAssociationTable()
 	{
 		if($this->_association===null)
@@ -38,6 +123,9 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		return $this->_association;
 	}
 
+	/**
+	 * @return TDbTableInfo source table information.
+	 */
 	protected function getSourceTable()
 	{
 		if($this->_sourceTable===null)
@@ -48,6 +136,9 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		return $this->_sourceTable;
 	}
 
+	/**
+	 * @return TDbTableInfo foreign table information.
+	 */
 	protected function getForeignTable()
 	{
 		if($this->_foreignTable===null)
@@ -59,6 +150,9 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		return $this->_foreignTable;
 	}
 
+	/**
+	 * @return TDbCommandBuilder
+	 */
 	protected function getCommandBuilder()
 	{
 		return $this->getSourceRecord()->getRecordGateway()->getCommand($this->getSourceRecord());
@@ -117,6 +211,10 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		return $command;
 	}
 
+	/**
+	 * @param array source table column names.
+	 * @return string comma separated source column names.
+	 */
 	protected function getSourceColumns($sourceKeys)
 	{
 		$columns=array();
@@ -127,6 +225,13 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		return implode(', ', $columns);
 	}
 
+	/**
+	 * SQL inner join for M-N relationship via association table.
+	 * @param array foreign table column key names.
+	 * @param array source table index values.
+	 * @param array source table column names.
+	 * @return string inner join condition for M-N relationship via association table.
+	 */
 	protected function getAssociationJoin($foreignKeys,$indexValues,$sourceKeys)
 	{
 		$refInfo= $this->getAssociationTable();
@@ -143,9 +248,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 			$joins[] = "{$fkTable}.{$fkField} = {$refTable}.{$refField}";
 		}
 		$joinCondition = implode(' AND ', $joins);
-
 		$index = $this->getCommandBuilder()->getIndexKeyCondition($refInfo,array_keys($sourceKeys), $indexValues);
-
 		return "INNER JOIN {$refTable} ON ({$joinCondition}) AND {$index}";
 	}
 }

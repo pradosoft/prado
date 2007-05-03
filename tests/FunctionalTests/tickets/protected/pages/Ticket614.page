@@ -1,0 +1,13 @@
+<com:TContent ID="Content">
+
+<com:TTextBox ID="text1" />
+<com:TRegularExpressionValidator
+	ID="validator1"
+	ControlToValidate="text1"
+	ErrorMessage="*"
+	PatternModifiers="u"
+	RegularExpression="[\x0400-\x04FF ]{2,60}" />
+
+<com:TButton ID="button1" Text="Submit!"/>
+
+</com:TContent>

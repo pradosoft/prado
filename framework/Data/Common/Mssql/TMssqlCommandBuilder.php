@@ -1,6 +1,6 @@
 <?php
 /**
- * TDbCommandBuilder class file.
+ * TMsssqlCommandBuilder class file.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
@@ -13,8 +13,8 @@
 Prado::using('System.Data.Common.TDbCommandBuilder');
 
 /**
- * TDbCommandBuilder provides basic methods to create query commands for tables
- * giving by {@link setTableInfo TableInfo} the property.
+ * TMssqlCommandBuilder provides specifics methods to create limit/offset query commands
+ * for MSSQL servers.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id: TDbCommandBuilder.php 1863 2007-04-12 12:43:49Z wei $

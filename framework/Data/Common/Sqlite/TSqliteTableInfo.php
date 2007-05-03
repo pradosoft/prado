@@ -26,6 +26,15 @@ Prado::using('System.Data.Common.Sqlite.TSqliteTableColumn');
  */
 class TSqliteTableInfo extends TDbTableInfo
 {
+	/**
+	 * @param TDbConnection database connection.
+	 * @return TDbCommandBuilder new command builder
+	 */
+	public function createCommandBuilder($connection)
+	{
+		Prado::using('System.Data.Common.Sqlite.TSqliteCommandBuilder');
+		return new TSqliteCommandBuilder($connection,$this);
+	}
 }
 
 ?>

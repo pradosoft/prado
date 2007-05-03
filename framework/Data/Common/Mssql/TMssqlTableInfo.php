@@ -60,7 +60,6 @@ class TMssqlTableInfo extends TDbTableInfo
 		Prado::using('System.Data.Common.Mssql.TMssqlCommandBuilder');
 		return new TMssqlCommandBuilder($connection,$this);
 	}
-
 }
 
 ?>

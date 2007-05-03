@@ -21,7 +21,7 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
  * related to the source object. The HAS_ONE relation is very similar to the
  * HAS_MANY relationship (in fact, it is equivalent in the entities relationship point of view).
  *
- * The difference of HAS_ONE from HAS_MANY is that the foreign object is singular. 
+ * The difference of HAS_ONE from HAS_MANY is that the foreign object is singular.
  * That is, HAS_MANY will return a collection of records while HAS_ONE returns the
  * corresponding record.
  *
@@ -32,7 +32,7 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
  * +-----+            +--------+
  * </code>
  * Where each engine belongs to only one car, that is, the Engine entity has
- * a foreign key to the Car's primary key. We may model 
+ * a foreign key to the Car's primary key. We may model
  * Engine-Car <b>object</b> relationship as active record as follows.
  * <code>
  * class CarRecord extends TActiveRecord
@@ -43,8 +43,10 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
  *
  *     public $engine; //engine foreign object
  *
- *     protected static $RELATIONS=array(
- *         'engine' => array(self::HAS_ONE, 'EngineRecord'));
+ *     protected static $RELATIONS=array
+ *     (
+ *         'engine' => array(self::HAS_ONE, 'EngineRecord')
+ *     );
  *
  *	   public static function finder($className=__CLASS__)
  *	   {
@@ -57,14 +59,14 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
  *     public $engine_id;
  *     public $capacity;
  *     public $car_id; //foreign key to cars
- * 
+ *
  *	   public static function finder($className=__CLASS__)
  *	   {
  *		   return parent::finder($className);
  *	   }
  * }
  * </code>
- * The <tt>$RELATIONS</tt> static property of CarRecord defines that the
+ * The static <tt>$RELATIONS</tt> property of CarRecord defines that the
  * property <tt>$engine</tt> that will reference an <tt>EngineRecord</tt> instance.
  *
  * The car record with engine property list may be fetched as follows.

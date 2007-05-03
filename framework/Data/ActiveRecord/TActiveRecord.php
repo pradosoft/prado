@@ -328,6 +328,7 @@ abstract class TActiveRecord extends TComponent
 
 	/**
 	 * @param TDbDataReader data reader
+	 * @return array
 	 */
 	protected function collectObjects($reader)
 	{

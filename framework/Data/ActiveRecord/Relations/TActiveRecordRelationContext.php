@@ -57,11 +57,14 @@ class TActiveRecordRelationContext
 		if(!isset($statics[self::RELATIONS_CONST]))
 			throw new TActiveRecordException('ar_relations_undefined',
 				get_class($this->_sourceRecord), self::RELATIONS_CONST);
-		if(isset($statics[self::RELATIONS_CONST][$property]))
-			return $statics[self::RELATIONS_CONST][$property];
-		else
-			throw new TActiveRecordException('ar_undefined_relation_prop',
-				$property, get_class($this->_sourceRecord), self::RELATIONS_CONST);
+		$property = strtolower($property);
+		foreach($statics[self::RELATIONS_CONST] as $name => $relation)
+		{
+			if(strtolower($name)===$property)
+				return $relation;
+		}
+		throw new TActiveRecordException('ar_undefined_relation_prop',
+			$property, get_class($this->_sourceRecord), self::RELATIONS_CONST);
 	}
 
 	/**

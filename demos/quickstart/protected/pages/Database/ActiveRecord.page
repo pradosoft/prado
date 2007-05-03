@@ -49,15 +49,20 @@
         <li>Finder methods to wrap commonly used SQL queries and return Active Record objects.</li>
         <li>Update existing records and insert new records into the database.</li>
     </ul>
+<h2>Database Supported</h2>
 <p id="p1" class="block-content">
 The Active Record implementation utilizes the <a href="?page=Database.DAO">Prado DAO</a> classes for data access.   
-The current Active Record implementation supports 
-<a href="http://www.mysql.com">MySQL</a>, 
-<a href="http://www.postgres.com">Postgres SQL</a> and 
-<a href="http://www.sqlite.org">SQLite</a> databases.
-Support for other databases can be provided when there are sufficient demand.
+The current Active Record implementation supports the following database. 
 </p>
-<h2 id="138048">Defining an Active Record</h2>
+<ul>
+	<li><a href="http://www.mysql.com">MySQL 4.1 or later</a></li>
+	<li><a href="http://www.postgres.com">Postgres SQL 7.3 or later</a></li>
+	<li><a href="http://www.sqlite.org">SQLite 2 and 3</a></li>
+	<li><a href="#">MS SQL 2000 or later</a></li>
+</ul>
+<p>Support for other databases can be provided when there are sufficient demand.</p>
+
+<h1 id="138048">Defining an Active Record</h1>
 <p id="690483" class="block-content">Let us
     consider the following "users" table that contains two columns named "username" and "email", 
     where "username" is also the primary key. 
@@ -411,6 +416,18 @@ catch(Exception $e) // an exception is raised if a query fails
     $transaction->rollBack();
 }
 </com:TTextHighlighter>
+
+<h1 id="ar_relations">Active Record Relationships</h1>
+<p id="690504a" class="block-content">
+The Prado ActiveRecord implementation supports the foreign key mappings for database
+that supports foreign key contraints. For ActiveRecord relationships to function the
+underlying database must support foreign key constraints (e.g. MySQL with InnoDB).
+</p>
+
+<h2>Foreign Key Mapping</h2>
+
+
+<h2>Association Table Mapping</h2>
 
 <h2 id="138054">References</h2>
 <ul id="u3" class="block-content">

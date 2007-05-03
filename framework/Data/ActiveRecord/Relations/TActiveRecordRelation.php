@@ -18,8 +18,6 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationContext');
 /**
  * Base class for active record relationships.
  *
- * description
- *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$
  * @package System.Data.ActiveRecord.Relations
@@ -66,7 +64,7 @@ abstract class TActiveRecordRelation
 		static $stack=array();
 
 		$results = call_user_func_array(array($this->getSourceRecord(),$method),$args);
-		if(is_array($results) || $results instanceof TActiveRecord)
+		if(is_array($results) || $results instanceof ArrayAccess || $results instanceof TActiveRecord)
 		{
 			$this->collectForeignObjects($results);
 			while($obj = array_pop($stack))
@@ -134,8 +132,9 @@ abstract class TActiveRecordRelation
 	 */
 	protected function getIndexValues($keys, $results)
 	{
-		if(!is_array($results))
+		if(!is_array($results) && !$results instanceof ArrayAccess)
 			$results = array($results);
+		$values=array();
 		foreach($results as $result)
 		{
 			$value = array();
@@ -169,7 +168,7 @@ abstract class TActiveRecordRelation
 	 */
 	protected function setResultCollection(&$results, &$collections, $properties)
 	{
-		if(is_array($results))
+		if(is_array($results) || $results instanceof ArrayAccess)
 		{
 			for($i=0,$k=count($results);$i<$k;$i++)
 				$this->setObjectProperty($results[$i], $properties, $collections);

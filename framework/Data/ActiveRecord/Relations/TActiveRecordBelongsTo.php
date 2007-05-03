@@ -1,6 +1,6 @@
 <?php
 /**
- * TActiveRecordBelongsTo class file.	
+ * TActiveRecordBelongsTo class file.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
@@ -16,8 +16,8 @@
 Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
 
 /**
- * Implements the foreign key relationship (TActiveRecord::BELONGS_TO) between 
- * the source objects and the related foreign object. Consider the 
+ * Implements the foreign key relationship (TActiveRecord::BELONGS_TO) between
+ * the source objects and the related foreign object. Consider the
  * <b>entity</b> relationship between a Team and a Player.
  * <code>
  * +------+            +--------+
@@ -38,17 +38,19 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
  *     public $team_name; //foreign key player.team_name <-> team.name
  * 	   public $age;
  *     public $team; //foreign object TeamRecord
- * 
- *     protected static $RELATIONS = array(
- *			'team' => array(self::BELONGS_TO, 'TeamRecord'));
- * 
+ *
+ *     protected static $RELATIONS = array
+ *     (
+ *			'team' => array(self::BELONGS_TO, 'TeamRecord')
+ *     );
+ *
  *	   public static function finder($className=__CLASS__)
  *	   {
  *		   return parent::finder($className);
  *	   }
  * }
  * </code>
- * The <tt>$RELATIONS</tt> static property of PlayerRecord defines that the
+ * The static <tt>$RELATIONS</tt> property of PlayerRecord defines that the
  * property <tt>$team</tt> belongs to (or is a) <tt>TeamRecord</tt>s.
  *
  * The team object may be fetched as follows.
@@ -58,7 +60,7 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
  * The method <tt>with_xxx()</tt> (where <tt>xxx</tt> is the relationship property
  * name, in this case, <tt>team</tt>) fetchs the corresponding TeamRecords using
  * a second query (not by using a join). The <tt>with_xxx()</tt> accepts the same
- * arguments as other finder methods of TActiveRecord, e.g. 
+ * arguments as other finder methods of TActiveRecord, e.g.
  * <tt>with_team('location = ?', 'Madrid')</tt>.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>

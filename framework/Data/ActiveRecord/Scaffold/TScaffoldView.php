@@ -44,9 +44,9 @@ class TScaffoldView extends TScaffoldBase
 	/**
 	 * Copy basic record details to the list/edit/search controls.
 	 */
-	public function onLoad($param)
+	public function onPreRender($param)
 	{
-		parent::onLoad($param);
+		parent::onPreRender($param);
 		$this->getListView()->copyFrom($this);
 		$this->getEditView()->copyFrom($this);
 		$this->getSearchControl()->copyFrom($this);

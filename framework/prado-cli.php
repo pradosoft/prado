@@ -691,7 +691,6 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 		{
 			$prop .= <<<EOD
 
-
 	/**
 	 * @var $type $name
 	 * @soapproperty
@@ -699,13 +698,13 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 
 EOD;
 		}
-		$prop .= "\tpublic $name;\n";
+		$prop .= "\tpublic $name;";
 		return $prop;
 	}
 
 	protected function generateClass($properties, $tablename, $class)
 	{
-		$props = implode("\n", $properties);
+		$props = implode("\x0D\x0A", $properties);
 		$date = date('Y-m-d h:i:s');
 return <<<EOD
 <?php

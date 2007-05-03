@@ -117,37 +117,38 @@ class TDbCommandBuilder extends TComponent
 	}
 
 	/**
-	 * NOT SAFE YET!
+	 * Computes the SQL condition for search a set of column using regular expression
+	 * (or LIKE, depending on database implementation) to match a string of
+	 * keywords (default matches all keywords).
+	 * @param array list of column id for potential search condition.
+	 * @param string string of keywords
+	 * @return string SQL search condition matching on a set of columns.
 	 */
 	public function getSearchExpression($fields, $keywords)
 	{
 		if(strlen(trim($keywords)) == 0) return '';
-		$words = preg_split('/\s/', preg_quote($keywords, '\''));
-		$result = array();
+		$words = preg_split('/\s/u', $keywords);
+		$conditions = array();
 		foreach($fields as $field)
 		{
 			$column = $this->getTableInfo()->getColumn($field)->getColumnName();
-			$result[] = $this->getRegexpCriteriaStr($column, $words);
+			$conditions[] = $this->getSearchCondition($column, $words);
 		}
-		return '('.implode(' OR ', $result).')';
-	}
-
-	protected function getRegexpCriteriaStr($column, $words)
-	{
-		$regexp = implode('|', $words);
-		return "({$column} REGEXP  '{$regexp}')";
+		return '('.implode(' OR ', $conditions).')';
 	}
 
 	/**
-	 * Computes the SQL condition for search a set of column using regular expression
-	 * to match a string of keywords. The implementation should only uses columns
-	 * that permit regular expression matching. This method should be implemented in
-	 * database specific command builder classes.
-	 * @param array list of column id for potential search condition.
-	 * @param string string of keywords
-	 * @return string SQL condition for regular expression matching on a set of columns.
+	 * @param string column name.
+	 * @param array keywords
+	 * @return string search condition for all words in one column.
 	 */
-	//abstract public function createRegExpSearch($columnIds, $keywords);
+	protected function getSearchCondition($column, $words)
+	{
+		$conditions=array();
+		foreach($words as $word)
+			$conditions[] = $column.' LIKE '.$this->getDbConnection()->quoteString('%'.$word.'%');
+		return '('.implode(' AND ', $conditions).')';
+	}
 
 	/**
 	 * Appends the $where condition to the string "SELECT * FROM tableName WHERE ".

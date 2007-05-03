@@ -51,16 +51,6 @@ Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldBase');
 class TScaffoldListView extends TScaffoldBase
 {
 	/**
-	 * Initialize the sort drop down list in non post back mode (i.e. GET requests).
-	 */
-	public function onLoad($param)
-	{
-		parent::onLoad($param);
-		if(!$this->getPage()->getIsPostBack())
-			$this->initializeSort();
-	}
-
-	/**
 	 * Initialize the sort drop down list and the column names repeater.
 	 */
 	protected function initializeSort()
@@ -87,6 +77,8 @@ class TScaffoldListView extends TScaffoldBase
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
+		if(!$this->getPage()->getIsPostBack())
+			$this->initializeSort();
 		$this->loadRecordData();
 	}
 
@@ -113,8 +105,10 @@ class TScaffoldListView extends TScaffoldBase
 		if($offset + $limit > $total)
 			$limit = $total - $offset;
 		$criteria = new TActiveRecordCriteria($this->getSearchCondition(), $this->getSearchParameters());
-		$criteria->setLimit($limit);
-		$criteria->setOffset($offset);
+		if($limit > 0)
+			$criteria->setLimit($limit);
+		if($offset <= $total)
+			$criteria->setOffset($offset);
 		$order = explode(' ',$this->_sort->getSelectedValue(), 2);
 		if(is_array($order) && count($order) === 2)
 			$criteria->OrdersBy[$order[0]] = $order[1];
