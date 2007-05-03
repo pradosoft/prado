@@ -424,6 +424,19 @@ that supports foreign key contraints. For ActiveRecord relationships to function
 underlying database must support foreign key constraints (e.g. MySQL with InnoDB).
 </p>
 
+<p>
+In the following sections we shall consider the following entity relationship between
+<tt>Teams</tt>, <tt>Players</tt>, <tt>Skills</tt> and <tt>Profiles</tt>.
+</p>
+<img src="<%~ ar_relations.png %>" class="figure" />
+
+
+<p>The goal is to obtain object models that represents to some degree the entity
+relationships in the above figure. 
+</p>
+
+<img src="<%~ ar_objects.png %>" class="figure">
+
 <h2>Foreign Key Mapping</h2>
 
 
