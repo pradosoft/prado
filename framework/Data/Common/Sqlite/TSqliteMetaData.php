@@ -33,6 +33,7 @@ class TSqliteMetaData extends TDbMetaData
 	 */
 	protected function createTableInfo($tableName)
 	{
+		$tableName = str_replace("'",'',$tableName);
 		$this->getDbConnection()->setActive(true);
 		$table = $this->getDbConnection()->quoteString($tableName);
 		$sql = "PRAGMA table_info({$table})";
@@ -49,7 +50,7 @@ class TSqliteMetaData extends TDbMetaData
 			if($column->getIsPrimaryKey())
 				$primary[] = $col['name'];
 		}
-		$info['TableName'] = $table;
+		$info['TableName'] = $tableName;
 		if($this->getIsView($tableName))
 			$info['IsView'] = true;
 		if(count($columns)===0)

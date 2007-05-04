@@ -21,3 +21,4 @@ ar_invalid_criteria							= Invalid criteria object, must be a string or instanc
 ar_relations_undefined						= Unable to determine Active Record relationships because static array property {0}::${1} is not defined.
 ar_undefined_relation_prop					= Unable to find {1}::${2}['{0}'], Active Record relationship definition for property "{0}" not found in entries of {1}::${2}.
 ar_invalid_relationship						= Invalid active record relationship.
+ar_relations_missing_fk						= Unable to find foreign key relationships in table '{0}' that corresponds to table '{1}'.

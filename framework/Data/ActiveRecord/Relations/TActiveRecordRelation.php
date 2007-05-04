@@ -95,7 +95,9 @@ abstract class TActiveRecordRelation
 			if($fkeys['table']===$matchingTableName)
 				return $fkeys['keys'];
 		}
-		throw new TActiveRecordException('no fk defined for '.$tableInfo->getTableFullName());
+		$matching = $gateway->getRecordTableInfo($matchesRecord)->getTableFullName();
+		throw new TActiveRecordException('ar_relations_missing_fk',
+			$tableInfo->getTableFullName(), $matching);
 	}
 
 	/**
@@ -188,6 +190,10 @@ abstract class TActiveRecordRelation
 		$hash = $this->getObjectHash($source, $properties);
 		$prop = $this->getContext()->getProperty();
 		$source->{$prop} = isset($collections[$hash]) ? $collections[$hash] : array();
+	}
+
+	public function updateAssociatedRecords()
+	{
 	}
 }
 

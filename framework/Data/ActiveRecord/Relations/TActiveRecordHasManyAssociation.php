@@ -87,6 +87,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	private $_association;
 	private $_sourceTable;
 	private $_foreignTable;
+	private $_association_columns=array();
 
 	/**
 	* Get the foreign key index values from the results and make calls to the
@@ -117,8 +118,14 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		{
 			$gateway = $this->getSourceRecord()->getRecordGateway();
 			$conn = $this->getSourceRecord()->getDbConnection();
-			$table = $this->getContext()->getAssociationTable();
-			$this->_association = $gateway->getTableInfo($conn, $table);
+			//table name may include the fk column name separated with a dot.
+			$table = explode('.', $this->getContext()->getAssociationTable());
+			if(count($table)>1)
+			{
+				$columns = preg_replace('/^\((.*)\)/', '\1', $table[1]);
+				$this->_association_columns = preg_split('/\s*[, ]\*/',$columns);
+			}
+			$this->_association = $gateway->getTableInfo($conn, $table[0]);
 		}
 		return $this->_association;
 	}
@@ -158,6 +165,13 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		return $this->getSourceRecord()->getRecordGateway()->getCommand($this->getSourceRecord());
 	}
 
+	protected function getForeignCommandBuilder()
+	{
+		$obj = $this->getContext()->getForeignRecordFinder();
+		return $this->getSourceRecord()->getRecordGateway()->getCommand($obj);
+	}
+
+
 	/**
 	 * Fetches the foreign objects using TActiveRecord::findAllByIndex()
 	 * @param array field names
@@ -172,17 +186,35 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		$command = $this->createCommand($criteria, $foreignKeys,$indexValues,$sourceKeys);
 		$srcProps = array_keys($sourceKeys);
 		$collections=array();
-		foreach($command->query() as $row)
+		foreach($this->getCommandBuilder()->onExecuteCommand($command, $command->query()) as $row)
 		{
 			$hash = $this->getObjectHash($row, $srcProps);
 			foreach($srcProps as $column)
 				unset($row[$column]);
-			$obj = new $type($row);
+			$obj = $this->createFkObject($type,$row,$foreignKeys);
 			$collections[$hash][] = $obj;
 			$registry->registerClean($obj);
 		}
 
 		$this->setResultCollection($results, $collections, array_values($sourceKeys));
+	}
+
+	/**
+	 * @param string active record class name.
+	 * @param array row data
+	 * @param array foreign key column names
+	 * @return TActiveRecord
+	 */
+	protected function createFkObject($type,$row,$foreignKeys)
+	{
+		$obj = new $type($row);
+		if(count($this->_association_columns) > 0)
+		{
+			$i=0;
+			foreach($foreignKeys as $ref=>$fk)
+				$obj->{$ref} = $row[$this->_association_columns[$i++]];
+		}
+		return $obj;
 	}
 
 	/**
@@ -205,7 +237,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		$limit = $criteria->getLimit();
 		$offset = $criteria->getOffset();
 
-		$builder = $this->getCommandBuilder()->getBuilder();
+		$builder = $this->getForeignCommandBuilder()->getBuilder();
 		$command = $builder->applyCriterias($sql,$parameters,$ordering,$limit,$offset);
 		$this->getCommandBuilder()->onCreateCommand($command, $criteria);
 		return $command;
@@ -220,7 +252,8 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		$columns=array();
 		$table = $this->getAssociationTable();
 		$tableName = $table->getTableFullName();
-		foreach($sourceKeys as $name=>$fkName)
+		$columnNames = array_merge(array_keys($sourceKeys),$this->_association_columns);
+		foreach($columnNames as $name)
 			$columns[] = $tableName.'.'.$table->getColumn($name)->getColumnName();
 		return implode(', ', $columns);
 	}
@@ -241,15 +274,100 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		$fkTable = $fkInfo->getTableFullName();
 
 		$joins = array();
+		$hasAssociationColumns = count($this->_association_columns) > 0;
+		$i=0;
 		foreach($foreignKeys as $ref=>$fk)
 		{
-			$refField = $refInfo->getColumn($ref)->getColumnName();
+			if($hasAssociationColumns)
+				$refField = $refInfo->getColumn($this->_association_columns[$i++])->getColumnName();
+			else
+				$refField = $refInfo->getColumn($ref)->getColumnName();
 			$fkField = $fkInfo->getColumn($fk)->getColumnName();
 			$joins[] = "{$fkTable}.{$fkField} = {$refTable}.{$refField}";
 		}
 		$joinCondition = implode(' AND ', $joins);
 		$index = $this->getCommandBuilder()->getIndexKeyCondition($refInfo,array_keys($sourceKeys), $indexValues);
 		return "INNER JOIN {$refTable} ON ({$joinCondition}) AND {$index}";
+	}
+
+	/**
+	 * Updates the associated foreign objects.
+	 * @return boolean true if all update are success (including if no update was required), false otherwise .
+	 */
+	public function updateAssociatedRecords()
+	{
+		$obj = $this->getContext()->getSourceRecord();
+		$fkObjects = &$obj->{$this->getContext()->getProperty()};
+		$success=true;
+		if(($total = count($fkObjects))> 0)
+		{
+			$source = $this->getSourceRecord();
+			$registry = $source->getRecordManager()->getObjectStateRegistry();
+			$builder = $this->getAssociationTableCommandBuilder();
+			for($i=0;$i<$total;$i++)
+			{
+				if($registry->shouldPersistObject($fkObjects[$i]))
+					$success = $success && $fkObjects[$i]->save();
+			}
+			return $this->updateAssociationTable($obj, $fkObjects, $builder) && $success;
+		}
+		return $success;
+	}
+
+	protected function getAssociationTableCommandBuilder()
+	{
+		$conn = $this->getContext()->getSourceRecord()->getDbConnection();
+		return $this->getAssociationTable()->createCommandBuilder($conn);
+	}
+
+	protected function hasAssociationData($builder,$data)
+	{
+		$condition=array();
+		$table = $this->getAssociationTable();
+		foreach($data as $name=>$value)
+			$condition[] = $table->getColumn($name)->getColumnName().' = ?';
+		$command = $builder->createCountCommand(implode(' AND ', $condition),array_values($data));
+		$result = $this->getCommandBuilder()->onExecuteCommand($command, intval($command->queryScalar()));
+		return intval($result) > 0;
+	}
+
+	protected function addAssociationData($builder,$data)
+	{
+		$command = $builder->createInsertCommand($data);
+		return $this->getCommandBuilder()->onExecuteCommand($command, $command->execute()) > 0;
+	}
+
+	protected function updateAssociationTable($obj,$fkObjects, $builder)
+	{
+		$source = $this->getSourceRecordValues($obj);
+		$foreignKeys = $this->findForeignKeys($this->getAssociationTable(), $fkObjects[0]);
+		$success=true;
+		foreach($fkObjects as $fkObject)
+		{
+			$data = array_merge($source, $this->getForeignObjectValues($foreignKeys,$fkObject));
+			if(!$this->hasAssociationData($builder,$data))
+				$success = $this->addAssociationData($builder,$data) && $success;
+		}
+		return $success;
+	}
+
+	protected function getSourceRecordValues($obj)
+	{
+		$sourceKeys = $this->findForeignKeys($this->getAssociationTable(), $obj);
+		$indexValues = $this->getIndexValues(array_values($sourceKeys), $obj);
+		$data = array();
+		$i=0;
+		foreach($sourceKeys as $name=>$srcKey)
+			$data[$name] = $indexValues[0][$i++];
+		return $data;
+	}
+
+	protected function getForeignObjectValues($foreignKeys,$fkObject)
+	{
+		$data=array();
+		foreach($foreignKeys as $name=>$fKey)
+			$data[$name] = $fkObject->{$fKey};
+		return $data;
 	}
 }
 ?>

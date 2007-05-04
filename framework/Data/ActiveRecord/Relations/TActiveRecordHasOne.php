@@ -119,6 +119,25 @@ class TActiveRecordHasOne extends TActiveRecordRelation
 			$source->{$prop} = $collections[$hash][0];
 		}
 	}
+
+	/**
+	 * Updates the associated foreign objects.
+	 * @return boolean true if all update are success (including if no update was required), false otherwise .
+	 */
+	public function updateAssociatedRecords()
+	{
+		$fkObject = $this->getContext()->getPropertyValue();
+		$registry = $fkObject->getRecordManager()->getObjectStateRegistry();
+		if($registry->shouldPersistObject($fkObject))
+		{
+			$source = $this->getSourceRecord();
+			$fkeys = $this->findForeignKeys($fkObject, $source);
+			foreach($fkeys as $fKey => $srcKey)
+				$fkObject->{$fKey} = $source->{$srcKey};
+			return $fkObject->save();
+		}
+		return true;
+	}
 }
 
 ?>

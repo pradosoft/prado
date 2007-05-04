@@ -85,6 +85,33 @@ class TActiveRecordHasMany extends TActiveRecordRelation
 		$fkObjects = $this->findForeignObjects($fields,$indexValues);
 		$this->populateResult($results,$properties,$fkObjects,$fields);
 	}
+
+	/**
+	 * Updates the associated foreign objects.
+	 * @return boolean true if all update are success (including if no update was required), false otherwise .
+	 */
+	public function updateAssociatedRecords()
+	{
+		$obj = $this->getContext()->getSourceRecord();
+		$fkObjects = &$obj->{$this->getContext()->getProperty()};
+		$success=true;
+		if(($total = count($fkObjects))> 0)
+		{
+			$source = $this->getSourceRecord();
+			$registry = $source->getRecordManager()->getObjectStateRegistry();
+			$fkeys = $this->findForeignKeys($fkObjects[0], $source);
+			for($i=0;$i<$total;$i++)
+			{
+				if($registry->shouldPersistObject($fkObjects[$i]))
+				{
+					foreach($fkeys as $fKey => $srcKey)
+						$fkObjects[$i]->{$fKey} = $source->{$srcKey};
+					$success = $success && $fkObjects[$i]->save();
+				}
+			}
+		}
+		return $success;
+	}
 }
 
 ?>

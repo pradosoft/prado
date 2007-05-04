@@ -40,7 +40,7 @@ class ActiveRecordSqlMapTest extends BaseCase
 		foreach($records as $record)
 		{
 			$this->assertEqual(get_class($record), 'ActiveAccount');
-			$this->assertTrue($registry->getIsCleanObject($record));
+			$this->assertTrue($registry->isCleanObject($record));
 		}
 	}
 
@@ -51,7 +51,7 @@ class ActiveRecordSqlMapTest extends BaseCase
 		foreach($records as $record)
 		{
 			$this->assertEqual(get_class($record), 'ActiveAccount');
-			$this->assertTrue($registry->getIsCleanObject($record));
+			$this->assertTrue($registry->isCleanObject($record));
 		}
 	}
 
@@ -60,7 +60,7 @@ class ActiveRecordSqlMapTest extends BaseCase
 		$record = $this->sqlmap->queryForObject('GetActiveRecordAccounts');
 		$registry=TActiveRecordManager::getInstance()->getObjectStateRegistry();
 		$record->Account_FirstName = "Testing 123";
-		$this->assertTrue($registry->getIsDirtyObject($record));
+		$this->assertTrue($registry->isDirtyObject($record));
 
 		$this->assertTrue($record->save());
 

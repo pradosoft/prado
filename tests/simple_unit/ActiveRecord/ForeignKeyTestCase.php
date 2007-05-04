@@ -1,6 +1,7 @@
 <?php
 
 Prado::using('System.Data.ActiveRecord.TActiveRecord');
+require_once(dirname(__FILE__).'/records/ItemRecord.php');
 
 abstract class SqliteRecord extends TActiveRecord
 {
@@ -152,6 +153,20 @@ class ForeignKeyTestCase extends UnitTestCase
 		$this->assertEqual($album->Tracks[2]->song_name, 'Song 3');
 
 		$this->assertEqual($album->cover->content, 'lalala');
+	}
+
+	function test_self_reference_fk()
+	{
+		$item = ItemRecord::finder()->withRelated_Items()->findByPk(1);
+		$this->assertNotNull($item);
+		$this->assertEqual($item->name, "Professional Work Attire");
+
+		$this->assertEqual(count($item->related_items),2);
+		$this->assertEqual($item->related_items[0]->name, "Nametags");
+		$this->assertEqual($item->related_items[0]->item_id, 2);
+
+		$this->assertEqual($item->related_items[1]->name, "Grooming and Hygiene");
+		$this->assertEqual($item->related_items[1]->item_id, 3);
 	}
 }
 

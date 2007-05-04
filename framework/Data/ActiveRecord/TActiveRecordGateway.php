@@ -244,9 +244,11 @@ class TActiveRecordGateway extends TComponent
 	 */
 	public function insert(TActiveRecord $record)
 	{
+		$this->updateAssociatedRecords($record,true);
 		$result = $this->getCommand($record)->insert($this->getInsertValues($record));
 		if($result)
 			$this->updatePostInsert($record);
+		$this->updateAssociatedRecords($record);
 		return $result;
 	}
 
@@ -297,8 +299,11 @@ class TActiveRecordGateway extends TComponent
 	 */
 	public function update(TActiveRecord $record)
 	{
+		$this->updateAssociatedRecords($record,true);
 		list($data, $keys) = $this->getUpdateValues($record);
-		return $this->getCommand($record)->updateByPk($data, $keys);
+		$result = $this->getCommand($record)->updateByPk($data, $keys);
+		$this->updateAssociatedRecords($record);
+		return $result;
 	}
 
 	protected function getUpdateValues(TActiveRecord $record)
@@ -323,6 +328,12 @@ class TActiveRecordGateway extends TComponent
 				$values[$name] = $value;
 		}
 		return array($values,$primary);
+	}
+
+	protected function updateAssociatedRecords(TActiveRecord $record,$updateBelongsTo=false)
+	{
+		$context = new TActiveRecordRelationContext($record);
+		return $context->updateAssociatedRecords($updateBelongsTo);
 	}
 
 	/**

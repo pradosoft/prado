@@ -2662,6 +2662,7 @@ tests/simple_unit/ActiveRecord/DeleteByPkTestCase.php -text
 tests/simple_unit/ActiveRecord/FindByPksTestCase.php -text
 tests/simple_unit/ActiveRecord/FindBySqlTestCase.php -text
 tests/simple_unit/ActiveRecord/ForeignKeyTestCase.php -text
+tests/simple_unit/ActiveRecord/ForeignObjectUpdateTest.php -text
 tests/simple_unit/ActiveRecord/RecordEventTestCase.php -text
 tests/simple_unit/ActiveRecord/SqliteTestCase.php -text
 tests/simple_unit/ActiveRecord/UserRecordTestCase.php -text
@@ -2673,6 +2674,7 @@ tests/simple_unit/ActiveRecord/mysql4text.sql -text
 tests/simple_unit/ActiveRecord/records/Blogs.php -text
 tests/simple_unit/ActiveRecord/records/DepSections.php -text
 tests/simple_unit/ActiveRecord/records/DepartmentRecord.php -text
+tests/simple_unit/ActiveRecord/records/ItemRecord.php -text
 tests/simple_unit/ActiveRecord/records/SimpleUser.php -text
 tests/simple_unit/ActiveRecord/records/SqliteUsers.php -text
 tests/simple_unit/ActiveRecord/records/UserRecord.php -text

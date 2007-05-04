@@ -104,6 +104,30 @@ class TActiveRecordBelongsTo extends TActiveRecordRelation
 			$source->{$prop} = $collections[$hash][0];
 		}
 	}
+
+	/**
+	 * Updates the source object first.
+	 * @return boolean true if all update are success (including if no update was required), false otherwise .
+	 */
+	public function updateAssociatedRecords()
+	{
+		$obj = $this->getContext()->getSourceRecord();
+		$fkObject = $obj->{$this->getContext()->getProperty()};
+		$registry = $fkObject->getRecordManager()->getObjectStateRegistry();
+		if($registry->shouldPersistObject($fkObject))
+		{
+			if($fkObject!==null)
+			{
+				$fkObject->save();
+				$source = $this->getSourceRecord();
+				$fkeys = $this->findForeignKeys($source, $fkObject);
+				foreach($fkeys as $srcKey => $fKey)
+					$source->{$srcKey} = $fkObject->{$fKey};
+				return true;
+			}
+		}
+		return true;
+	}
 }
 
 ?>

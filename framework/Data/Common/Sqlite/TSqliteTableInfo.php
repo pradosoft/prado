@@ -35,6 +35,14 @@ class TSqliteTableInfo extends TDbTableInfo
 		Prado::using('System.Data.Common.Sqlite.TSqliteCommandBuilder');
 		return new TSqliteCommandBuilder($connection,$this);
 	}
+
+	/**
+	 * @return string full name of the table, database dependent.
+	 */
+	public function getTableFullName()
+	{
+		return "'".$this->getTableName()."'";
+	}
 }
 
 ?>

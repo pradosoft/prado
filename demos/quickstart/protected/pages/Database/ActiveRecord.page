@@ -547,9 +547,9 @@ class PlayerRecord extends TActiveRecord
 
     protected static $RELATIONS=array
     (
-        'team' => array(SELF::BELONGS_TO, 'TeamRecord'),
-        'skills' => array(SELF::HAS_MANY, 'SkillRecord', 'Player_Skills'),
-        'profile' => array(SELF::HAS_ONE, 'ProfileRecord'),
+        'team' => array(self::BELONGS_TO, 'TeamRecord'),
+        'skills' => array(self::HAS_MANY, 'SkillRecord', 'Player_Skills'),
+        'profile' => array(self::HAS_ONE, 'ProfileRecord'),
     );
 
     public static function finder($className=__CLASS__)
@@ -572,7 +572,7 @@ class ProfileRecord extends TActiveRecord
 
     protected static $RELATIONS=array
     (
-        'player' => array(SELF::BELONGS_TO, 'PlayerRecord'),
+        'player' => array(self::BELONGS_TO, 'PlayerRecord'),
     );
 
     public static function finder($className=__CLASS__)
@@ -589,14 +589,14 @@ class ProfileRecord extends TActiveRecord
 class SkillRecord extends TActiveRecord
 {
     const TABLE='Skills';
-    public $player_id;
-    public $salary;
+    public $skill_id;
+    public $name;
 
     public $players=array();
 
     protected static $RELATIONS=array
     (
-        'players' => array(SELF::HAS_MANY, 'PlayerRecord', 'Player_Skills'),
+        'players' => array(self::HAS_MANY, 'PlayerRecord', 'Player_Skills'),
     );
 
     public static function finder($className=__CLASS__)

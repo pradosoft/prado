@@ -35,36 +35,50 @@ class TActiveRecordRelationContext
 	private $_criteria;
 	private $_relation;
 
-	public function __construct($source, $property, $criteria)
+	public function __construct($source, $property=null, $criteria=null)
 	{
 		$this->_sourceRecord=$source;
-		$this->_property=$property;
 		$this->_criteria=$criteria;
-		$this->_relation = $this->getSourceRecordRelation($property);
+		if($property!==null)
+			list($this->_property, $this->_relation) = $this->getSourceRecordRelation($property);
 	}
 
 	/**
 	 * Uses ReflectionClass to obtain the relation details array of a given
 	 * property from the $RELATIONS static property in TActiveRecord.
 	 * @param string relation property name
-	 * @return array relation definition.
+	 * @return array array($propertyName, $relation) relation definition.
 	 * @throws TActiveRecordException if property is not defined or missing.
 	 */
 	protected function getSourceRecordRelation($property)
 	{
-		$class = new ReflectionClass($this->_sourceRecord);
-		$statics = $class->getStaticProperties();
-		if(!isset($statics[self::RELATIONS_CONST]))
-			throw new TActiveRecordException('ar_relations_undefined',
-				get_class($this->_sourceRecord), self::RELATIONS_CONST);
 		$property = strtolower($property);
-		foreach($statics[self::RELATIONS_CONST] as $name => $relation)
+		foreach($this->getRecordRelationships() as $name => $relation)
 		{
 			if(strtolower($name)===$property)
-				return $relation;
+				return array($name, $relation);
 		}
 		throw new TActiveRecordException('ar_undefined_relation_prop',
 			$property, get_class($this->_sourceRecord), self::RELATIONS_CONST);
+	}
+
+	/**
+	 * @return array the key and values of TActiveRecord::$RELATIONS
+	 */
+	public function getRecordRelationships()
+	{
+		$class = new ReflectionClass($this->_sourceRecord);
+		$statics = $class->getStaticProperties();
+		if(isset($statics[self::RELATIONS_CONST]))
+			return $statics[self::RELATIONS_CONST];
+		else
+			return array();
+	}
+
+	public function getPropertyValue()
+	{
+		$obj = $this->getSourceRecord();
+		return $obj->{$this->getProperty()};
 	}
 
 	/**
@@ -161,6 +175,29 @@ class TActiveRecordRelationContext
 			default:
 				throw new TActiveRecordException('ar_invalid_relationship');
 		}
+	}
+
+	/**
+	 * @return TActiveRecordRelationCommand
+	 */
+	public function updateAssociatedRecords($updateBelongsTo=false)
+	{
+		Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationCommand');
+		$success=true;
+		foreach($this->getRecordRelationships() as $property=>$relation)
+		{
+			$belongsTo = $relation[0]==TActiveRecord::BELONGS_TO;
+			if(($updateBelongsTo && $belongsTo) || (!$updateBelongsTo && !$belongsTo))
+			{
+				$obj = $this->getSourceRecord();
+				if(!empty($obj->{$property}))
+				{
+					$context = new self($this->getSourceRecord(),$property);
+					$success = $success && $context->getRelationHandler()->updateAssociatedRecords();
+				}
+			}
+		}
+		return $success;
 	}
 }
 

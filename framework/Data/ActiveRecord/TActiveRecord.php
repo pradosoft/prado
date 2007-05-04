@@ -316,11 +316,14 @@ abstract class TActiveRecord extends TComponent
 		//create and populate the object
 		$obj = Prado::createComponent($type);
 		$tableInfo = $this->getRecordGateway()->getRecordTableInfo($obj);
+		foreach($data as $name=>$value)
+			$obj->{$name} = $value;
+		/*
 		foreach($tableInfo->getColumns()->getKeys() as $name)
 		{
 			if(isset($data[$name]))
 				$obj->{$name} = $data[$name];
-		}
+		}*/
 		$obj->_readOnly = $tableInfo->getIsView();
 		$this->getRecordManager()->getObjectStateRegistry()->registerClean($obj);
 		return $obj;

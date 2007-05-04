@@ -97,7 +97,7 @@ class TActiveRecordStateRegistry
 	public function registerClean($obj)
 	{
 		$this->removeCleanOrDirty($obj);
-		if($this->getIsRemovedObject($obj))
+		if($this->isRemovedObject($obj))
 			throw new TActiveRecordException('ar_object_marked_for_removal');
 		$this->_cleanObjects[] = array($obj, clone($obj));
 	}
@@ -152,7 +152,7 @@ class TActiveRecordStateRegistry
 	 * @param TActiveRecord object to test.
 	 * @return boolean true if the object is dirty, false otherwise.
 	 */
-	public function getIsDirtyObject($obj)
+	public function isDirtyObject($obj)
 	{
 		foreach($this->_cleanObjects as $cache)
 			if($cache[0] === $obj)
@@ -165,7 +165,7 @@ class TActiveRecordStateRegistry
 	 * @param TActiveRecord object to test.
 	 * @return boolean true if object is clean, false otherwise.
 	 */
-	public function getIsCleanObject($obj)
+	public function isCleanObject($obj)
 	{
 		foreach($this->_cleanObjects as $cache)
 			if($cache[0] === $obj)
@@ -178,9 +178,9 @@ class TActiveRecordStateRegistry
 	 * @param TActiveRecord object to test.
 	 * @return boolean true if object is newly created, false otherwise.
 	 */
-	public function getIsNewObject($obj)
+	public function isNewObject($obj)
 	{
-		if($this->getIsRemovedObject($obj)) return false;
+		if($this->isRemovedObject($obj)) return false;
 		foreach($this->_cleanObjects as $cache)
 			if($cache[0] === $obj)
 				return false;
@@ -188,11 +188,20 @@ class TActiveRecordStateRegistry
 	}
 
 	/**
+	 * @param TActiveRecord object to test.
+	 * @return boolean true if object is dirty or is new.
+	 */
+	public function shouldPersistObject($obj)
+	{
+		return $this->isDirtyObject($obj) || $this->isNewObject($obj);
+	}
+
+	/**
 	 * Test whether an object is marked for deletion.
 	 * @param TActiveRecord object to test.
 	 * @return boolean true if object is marked for deletion, false otherwise.
 	 */
-	public function getIsRemovedObject($obj)
+	public function isRemovedObject($obj)
 	{
 		return $this->_removedObjects->contains($obj);
 	}
@@ -211,7 +220,7 @@ class TActiveRecordStateRegistry
 	{
 		$rowsAffected=false;
 
-		if($this->getIsRemovedObject($record))
+		if($this->isRemovedObject($record))
 		{
 			$rowsAffected = $gateway->delete($record);
 			if($rowsAffected)
@@ -219,9 +228,9 @@ class TActiveRecordStateRegistry
 		}
 		else
 		{
-			if($this->getIsDirtyObject($record))
+			if($this->isDirtyObject($record))
 				$rowsAffected = $gateway->update($record);
-			else if($this->getIsNewObject($record))
+			else if($this->isNewObject($record))
 				$rowsAffected = $gateway->insert($record);
 
 			if($rowsAffected)

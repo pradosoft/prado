@@ -1,5 +1,4 @@
 <?php
-
 Prado::using('System.Data.ActiveRecord.TActiveRecordStateRegistry');
 Prado::using('System.Data.ActiveRecord.Exceptions.*');
 
@@ -16,10 +15,10 @@ class ActiveRecordRegistryTestCase extends UnitTestCase
 		$obj = new StateTestObject();
 		$registry = new TActiveRecordStateRegistry();
 
-		$this->assertTrue($registry->getIsNewObject($obj));
-		$this->assertFalse($registry->getIsDirtyObject($obj));
-		$this->assertFalse($registry->getIsRemovedObject($obj));
-		$this->assertFalse($registry->getIsCleanObject($obj));
+		$this->assertTrue($registry->isNewObject($obj));
+		$this->assertFalse($registry->isDirtyObject($obj));
+		$this->assertFalse($registry->isRemovedObject($obj));
+		$this->assertFalse($registry->isCleanObject($obj));
 	}
 
 	function test_clean_object_registers_without_error()
@@ -28,10 +27,10 @@ class ActiveRecordRegistryTestCase extends UnitTestCase
 		$registry = new TActiveRecordStateRegistry();
 		$registry->registerClean($obj);
 
-		$this->assertFalse($registry->getIsNewObject($obj));
-		$this->assertFalse($registry->getIsDirtyObject($obj));
-		$this->assertFalse($registry->getIsRemovedObject($obj));
-		$this->assertTrue($registry->getIsCleanObject($obj));
+		$this->assertFalse($registry->isNewObject($obj));
+		$this->assertFalse($registry->isDirtyObject($obj));
+		$this->assertFalse($registry->isRemovedObject($obj));
+		$this->assertTrue($registry->isCleanObject($obj));
 	}
 
 	function test_clean_object_becomes_dirty_when_changed()
@@ -43,10 +42,10 @@ class ActiveRecordRegistryTestCase extends UnitTestCase
 
 		$obj->propB='b';
 
-		$this->assertFalse($registry->getIsNewObject($obj));
-		$this->assertTrue($registry->getIsDirtyObject($obj));
-		$this->assertFalse($registry->getIsRemovedObject($obj));
-		$this->assertFalse($registry->getIsCleanObject($obj));
+		$this->assertFalse($registry->isNewObject($obj));
+		$this->assertTrue($registry->isDirtyObject($obj));
+		$this->assertFalse($registry->isRemovedObject($obj));
+		$this->assertFalse($registry->isCleanObject($obj));
 	}
 
 	function test_removed_object_must_register_as_clean_first()
@@ -73,10 +72,10 @@ class ActiveRecordRegistryTestCase extends UnitTestCase
 
 		$registry->registerRemoved($obj);
 
-		$this->assertFalse($registry->getIsNewObject($obj));
-		$this->assertFalse($registry->getIsDirtyObject($obj));
-		$this->assertTrue($registry->getIsRemovedObject($obj));
-		$this->assertFalse($registry->getIsCleanObject($obj));
+		$this->assertFalse($registry->isNewObject($obj));
+		$this->assertFalse($registry->isDirtyObject($obj));
+		$this->assertTrue($registry->isRemovedObject($obj));
+		$this->assertFalse($registry->isCleanObject($obj));
 	}
 
 
@@ -98,10 +97,10 @@ class ActiveRecordRegistryTestCase extends UnitTestCase
 			$this->pass();
 		}
 
-		$this->assertFalse($registry->getIsNewObject($obj));
-		$this->assertFalse($registry->getIsDirtyObject($obj));
-		$this->assertTrue($registry->getIsRemovedObject($obj));
-		$this->assertFalse($registry->getIsCleanObject($obj));
+		$this->assertFalse($registry->isNewObject($obj));
+		$this->assertFalse($registry->isDirtyObject($obj));
+		$this->assertTrue($registry->isRemovedObject($obj));
+		$this->assertFalse($registry->isCleanObject($obj));
 	}
 
 	function test_remove_dirty_object()
@@ -113,17 +112,17 @@ class ActiveRecordRegistryTestCase extends UnitTestCase
 
 		$obj->propB='b';
 
-		$this->assertFalse($registry->getIsNewObject($obj));
-		$this->assertTrue($registry->getIsDirtyObject($obj));
-		$this->assertFalse($registry->getIsRemovedObject($obj));
-		$this->assertFalse($registry->getIsCleanObject($obj));
+		$this->assertFalse($registry->isNewObject($obj));
+		$this->assertTrue($registry->isDirtyObject($obj));
+		$this->assertFalse($registry->isRemovedObject($obj));
+		$this->assertFalse($registry->isCleanObject($obj));
 
 		$registry->registerRemoved($obj);
 
-		$this->assertFalse($registry->getIsNewObject($obj));
-		$this->assertFalse($registry->getIsDirtyObject($obj));
-		$this->assertTrue($registry->getIsRemovedObject($obj));
-		$this->assertFalse($registry->getIsCleanObject($obj));
+		$this->assertFalse($registry->isNewObject($obj));
+		$this->assertFalse($registry->isDirtyObject($obj));
+		$this->assertTrue($registry->isRemovedObject($obj));
+		$this->assertFalse($registry->isCleanObject($obj));
 
 		try
 		{
@@ -143,24 +142,24 @@ class ActiveRecordRegistryTestCase extends UnitTestCase
 
 		$registry->registerClean($obj);
 
-		$this->assertFalse($registry->getIsNewObject($obj));
-		$this->assertFalse($registry->getIsDirtyObject($obj));
-		$this->assertFalse($registry->getIsRemovedObject($obj));
-		$this->assertTrue($registry->getIsCleanObject($obj));
+		$this->assertFalse($registry->isNewObject($obj));
+		$this->assertFalse($registry->isDirtyObject($obj));
+		$this->assertFalse($registry->isRemovedObject($obj));
+		$this->assertTrue($registry->isCleanObject($obj));
 
 		$obj->propB='b';
 
-		$this->assertFalse($registry->getIsNewObject($obj));
-		$this->assertTrue($registry->getIsDirtyObject($obj));
-		$this->assertFalse($registry->getIsRemovedObject($obj));
-		$this->assertFalse($registry->getIsCleanObject($obj));
+		$this->assertFalse($registry->isNewObject($obj));
+		$this->assertTrue($registry->isDirtyObject($obj));
+		$this->assertFalse($registry->isRemovedObject($obj));
+		$this->assertFalse($registry->isCleanObject($obj));
 
 		$registry->registerClean($obj);
 
-		$this->assertFalse($registry->getIsNewObject($obj));
-		$this->assertFalse($registry->getIsDirtyObject($obj));
-		$this->assertFalse($registry->getIsRemovedObject($obj));
-		$this->assertTrue($registry->getIsCleanObject($obj));
+		$this->assertFalse($registry->isNewObject($obj));
+		$this->assertFalse($registry->isDirtyObject($obj));
+		$this->assertFalse($registry->isRemovedObject($obj));
+		$this->assertTrue($registry->isCleanObject($obj));
 	}
 
 }
