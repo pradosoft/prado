@@ -59,7 +59,7 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
  * The method <tt>with_xxx()</tt> (where <tt>xxx</tt> is the relationship property
  * name, in this case, <tt>players</tt>) fetchs the corresponding PlayerRecords using
  * a second query (not by using a join). The <tt>with_xxx()</tt> accepts the same
- * arguments as other finder methods of TActiveRecord, e.g. <tt>with_player('age < ?', 35)</tt>.
+ * arguments as other finder methods of TActiveRecord, e.g. <tt>with_players('age < ?', 35)</tt>.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$

@@ -42,7 +42,7 @@
     
     <p id="690482" class="block-content">
         The Active Record class has methods that do the following:
-	</p>
+    </p>
     <ul id="u1" class="block-content">
         <li>Construct an instance of the Active Record from a SQL result set row.</li>
         <li>Construct a new instance for later insertion into the table.</li>
@@ -55,10 +55,10 @@ The Active Record implementation utilizes the <a href="?page=Database.DAO">Prado
 The current Active Record implementation supports the following database. 
 </p>
 <ul>
-	<li><a href="http://www.mysql.com">MySQL 4.1 or later</a></li>
-	<li><a href="http://www.postgres.com">Postgres SQL 7.3 or later</a></li>
-	<li><a href="http://www.sqlite.org">SQLite 2 and 3</a></li>
-	<li><a href="#">MS SQL 2000 or later</a></li>
+    <li><a href="http://www.mysql.com">MySQL 4.1 or later</a></li>
+    <li><a href="http://www.postgres.com">Postgres SQL 7.3 or later</a></li>
+    <li><a href="http://www.sqlite.org">SQLite 2 and 3</a></li>
+    <li><a href="#">MS SQL 2000 or later</a></li>
 </ul>
 <p>Support for other databases can be provided when there are sufficient demand.</p>
 
@@ -101,9 +101,8 @@ class UserRecord extends TActiveRecord
     specify the table name that corresponds to your Active Record class.
 </p>
 
-<div class="note"><b class="note">Note:</b>
-You may need to quote (specific to your database) the value of the <tt>TABLE</tt>. 
-E.g. MySQL uses back-ticks, <tt>TABLE = "`database1`.`table1`"</tt>
+<div class="tip"><b class="note">Tip:</b>
+You may specify qualified table names. E.g. for MySQL, <tt>TABLE = "`database1`.`table1`"</tt>.
 </div>
 
 <p class="block-content" id="ar_as_component">
@@ -145,7 +144,7 @@ will raise an exception.
     See <a href="?page=Database.DAO">Establishing Database Connection</a> for
     futher details regarding creation of database connection in general.
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690150">
-//create a connection and give it to the ActiveRecord manager.
+//create a connection and give it to the Active Record manager.
 $dsn = 'pgsql:host=localhost;dbname=test'; //Postgres SQL
 $conn = new TDbConnection($dsn, 'dbuser','dbpass');
 TActiveRecordManager::getInstance()->setDbConnection($conn);
@@ -342,15 +341,17 @@ $user->save(); //update it.
 </com:TTextHighlighter>
 </p>
 
-<p id="690501" class="block-content">
+<p>
 Active Record objects have a simple life-cycle illustrated in the following diagram.
+</p>
 <img src=<%~ object_states.png %> alt="Active Records Life Cycle" id="fig:cycle.png" class="figure"/>
-We see that new ActiveRecord objects are created by either using one of the <tt>find*()</tt>
+<p id="690501" class="block-content">
+We see that new TActiveRecord objects are created by either using one of the <tt>find*()</tt>
 methods or using creating a new instance by using PHP's <tt>new</tt> keyword. Objects
 created by a <tt>find*()</tt> method starts with <tt>clean</tt> state. New instance of 
-ActiveRecords created other than by a <tt>find*()</tt> method starts with <tt>new</tt> state.
+TActiveRecord created other than by a <tt>find*()</tt> method starts with <tt>new</tt> state.
 When ever you 
-call the <tt>save()</tt> method on the ActiveRecord object, the object enters the <tt>clean</tt>
+call the <tt>save()</tt> method on the TActiveRecord object, the object enters the <tt>clean</tt>
 state. Objects in the <tt>clean</tt> becomes <tt>dirty</tt> whenever one of more of its
 internal states are changed. Calling the <tt>delete()</tt> method on the object
 ends the object life-cycle, no futher actions can be performed on the object.
@@ -419,13 +420,13 @@ catch(Exception $e) // an exception is raised if a query fails
 
 <h1 id="ar_relations">Active Record Relationships</h1>
 <p id="690504a" class="block-content">
-The Prado ActiveRecord implementation supports the foreign key mappings for database
+The Prado Active Record implementation supports the foreign key mappings for database
 that supports foreign key contraints. For ActiveRecord relationships to function the
 underlying database must support foreign key constraints (e.g. MySQL with InnoDB).
 </p>
 
 <p>
-In the following sections we shall consider the following entity relationship between
+In the following sections we shall consider the following table relationships between
 <tt>Teams</tt>, <tt>Players</tt>, <tt>Skills</tt> and <tt>Profiles</tt>.
 </p>
 <img src="<%~ ar_relations.png %>" class="figure" />
@@ -437,10 +438,173 @@ relationships in the above figure.
 
 <img src="<%~ ar_objects.png %>" class="figure">
 
+<p class="block-content">
+There is a mismatch between relationships with objects and table relationships. 
+First there's a difference in representation. Objects handle links by storing references 
+that are held by the runtime memory-managed environment. Relational databases handle 
+links by forming a key into another table. Second, objects can easily use collections 
+to handle multiple references from a single field, while normalization forces 
+all entity relation links to be single valued. This leads to reversals of the data 
+structure between objects and tables. The approach taken in the Prado Active Record 
+design is to use the table foreign key constraints to derive object relationships. This implies
+that the underlying database must support foreign key constraints.
+</p>
 <h2>Foreign Key Mapping</h2>
+<p class="block-content">The entity relationship between the <tt>Teams</tt> and <tt>Players</tt> table is what is known
+as an 1-M relationship. That is, one Team may contain 0 or more Players. In terms of 
+object relationships, we say that the <tt>Team</tt> object <b>has many</b> <tt>Player</tt> objects. 
+(Notice the reversal of the reversal of the direction of relationships between tables and objects.)
+<p>
+<h3>Has Many Relationship</h3>
+<p>
+We model the <tt>Team</tt> object as the following Active Record classes.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class TeamRecord extends TActiveRecord
+{
+    const TABLE='Teams';
+    public $name;
+    public $location;
+    
+    public $players=array();
+
+    //define the $player member having has many relationship with PlayerRecord
+    protected static $RELATIONS=array
+    (
+        'players' => array(self::HAS_MANY, 'PlayerRecord'),
+    );
+
+    public static function finder($className=__CLASS__)
+    {
+        return parent::finder($className);
+    }
+}
+</com:TTextHighlighter>
+<p>
+The static <tt>$RELATIONS</tt> property of <tt>TeamRecord</tt> defines that the
+property <tt>$players</tt> has many <tt>PlayerRecord</tt>s. Multiple relationships
+is permitted by defining each relationship with an entry in the <tt>$RELATIONS</tt>
+array where array key for the entry corresponds to the property name.
+In <tt>array(self::HAS_MANY, 'PlayerRecord')</tt>, the first element defines the
+relationship type, the valid types are <strong><tt>self::HAS_MANY</tt></strong>,
+<strong><tt>self::HAS_ONE</tt></strong> and <strong><tt>self::BELONGS_TO</tt></strong>.
+The second element is a string <tt>'PlayerRecord'</tt> that corresponds to the
+class name of the <tt>PlayerRecord</tt> class.
+</p>
+
+<p>
+The foreign key constraint of the <tt>Players</tt> table is used to determine the corresponding
+<tt>Teams</tt> table's corresponding key names. This is done automatically handled
+in Active Record by inspecting the <tt>Players</tt> and <tt>Teams</tt> table definitions.
+</p>
+
+<div class="info"><b class="note">Info:</b>
+Active Record supports multiple table foreign key relationships with the restiction
+that each relationship correponds to a unique table. For example, the <tt>Players</tt>
+table may only have one set of foreign key relationship with table <tt>Teams</tt>, it may
+have other relationships that corresponds to other tables (including the <tt>Players</tt> table itself).
+</div>
+
+<p>The has many relationship is not fetched automatically when you use any of the Active Record finder methods.
+You will need to explicitly fetch the related objects as follows. In the code below, both lines 
+are equivalent and the method names are case insensitive.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+$team = TeamRecord::finder()->withPlayers()->findAll();
+$team = TeamRecord::finder()->with_players()->findAll(); //equivalent
+</com:TTextHighlighter Language="php">
+<p>
+The method <tt>with_xxx()</tt> (where <tt>xxx</tt> is the relationship property
+name, in this case, <tt>players</tt>) fetchs the corresponding PlayerRecords using
+a second query (not by using a join). The <tt>with_xxx()</tt> accepts the same
+arguments as other finder methods of TActiveRecord, e.g. <tt>with_players('age < ?', 35)</tt>.
+</p>
+
+<div class="note"><b class="note">Note:</b>
+It is essential to understand that the related objects are fetched using additional
+queries. The first query fetches the source object, .e.g the <tt>TeamRecord</tt> in the above example code.
+A second query is used to fetche the corresponding related <tt>PlayerRecord</tt> objects. 
+The usage of the two query is similar to a single query using Left-Outer join with the 
+exception that null results on the right table
+are not returned. The consequence of using two or more queries is that the aggregates
+and other join conditions are not feasible using Active Records. For queries outside the
+scope of Active Record the <a href="?page=Database.SqlMap">SqlMap Data Mapper</a> may be considered.
+</div>
+
+<h3>Belongs To Relationship</h3>
+
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class PlayerRecord extends TActiveRecord
+{
+    const TABLE='Players';
+    public $player_id;
+    public $age;
+    public $team_name;
+
+    public $team;
+    public $skills=array();
+    public $profile;
+
+    protected static $RELATIONS=array
+    (
+        'team' => array(SELF::BELONGS_TO, 'TeamRecord'),
+        'skills' => array(SELF::HAS_MANY, 'SkillRecord', 'Player_Skills'),
+        'profile' => array(SELF::HAS_ONE, 'ProfileRecord'),
+    );
+
+    public static function finder($className=__CLASS__)
+    {
+        return parent::finder($className);
+    }
+}
+</com:TTextHighlighter>
+
+<h3>Has One Relationship</h3>
+
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class ProfileRecord extends TActiveRecord
+{
+    const TABLE='Profiles';
+    public $player_id;
+    public $salary;
+
+    public $player;
+
+    protected static $RELATIONS=array
+    (
+        'player' => array(SELF::BELONGS_TO, 'PlayerRecord'),
+    );
+
+    public static function finder($className=__CLASS__)
+    {
+        return parent::finder($className);
+    }
+}
+</com:TTextHighlighter>
 
 
 <h2>Association Table Mapping</h2>
+
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class SkillRecord extends TActiveRecord
+{
+    const TABLE='Skills';
+    public $player_id;
+    public $salary;
+
+    public $players=array();
+
+    protected static $RELATIONS=array
+    (
+        'players' => array(SELF::HAS_MANY, 'PlayerRecord', 'Player_Skills'),
+    );
+
+    public static function finder($className=__CLASS__)
+    {
+        return parent::finder($className);
+    }
+}
+</com:TTextHighlighter>
 
 <h2 id="138054">References</h2>
 <ul id="u3" class="block-content">
