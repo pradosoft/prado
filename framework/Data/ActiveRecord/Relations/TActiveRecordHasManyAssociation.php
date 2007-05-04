@@ -307,7 +307,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 			for($i=0;$i<$total;$i++)
 			{
 				if($registry->shouldPersistObject($fkObjects[$i]))
-					$success = $success && $fkObjects[$i]->save();
+					$success = $fkObjects[$i]->save() && $success;
 			}
 			return $this->updateAssociationTable($obj, $fkObjects, $builder) && $success;
 		}

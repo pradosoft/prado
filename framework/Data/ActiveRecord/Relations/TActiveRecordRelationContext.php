@@ -193,7 +193,7 @@ class TActiveRecordRelationContext
 				if(!empty($obj->{$property}))
 				{
 					$context = new self($this->getSourceRecord(),$property);
-					$success = $success && $context->getRelationHandler()->updateAssociatedRecords();
+					$success = $context->getRelationHandler()->updateAssociatedRecords() && $success;
 				}
 			}
 		}

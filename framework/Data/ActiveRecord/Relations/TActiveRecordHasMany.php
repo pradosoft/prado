@@ -106,7 +106,7 @@ class TActiveRecordHasMany extends TActiveRecordRelation
 				{
 					foreach($fkeys as $fKey => $srcKey)
 						$fkObjects[$i]->{$fKey} = $source->{$srcKey};
-					$success = $success && $fkObjects[$i]->save();
+					$success = $fkObjects[$i]->save() && $success;
 				}
 			}
 		}
