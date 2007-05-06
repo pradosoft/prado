@@ -94,11 +94,14 @@
     <exclude name="**/runtime/*/**"/>
     <exclude name="**/assets/*/**"/>
     <exclude name="demos/blog/protected/Data/Blog.db" />
+    <include name="demos/address-book/**/*"/>
     <include name="demos/blog/**/*"/>
+    <include name="demos/blog-tutorial/**/*"/>
     <include name="demos/chat/**/*"/>
     <include name="demos/composer/**/*"/>
     <include name="demos/currency-converter/**/*"/>
     <include name="demos/helloworld/**/*"/>
+    <include name="demos/northwind-db/**/*"/>
     <include name="demos/personal/**/*"/>
     <include name="demos/quickstart/**/*"/>
     <include name="demos/soap/**/*"/>
