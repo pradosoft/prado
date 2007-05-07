@@ -289,7 +289,15 @@ abstract class TActiveRecord extends TComponent
 		return $this->getRecordGateway()->deleteRecordsByPk($this,(array)$keys);
 	}
 
-
+	/**
+	 * Alias for deleteByPk()
+	 */
+	public function deleteAllByPks($keys)
+	{
+		if(func_num_args() > 1)
+			$keys = func_get_args();
+		return $this->deleteByPk($keys);
+	}
 	/**
 	 * Delete multiple records using a criteria.
 	 * @param string|TActiveRecordCriteria SQL condition or criteria object.
@@ -434,9 +442,25 @@ abstract class TActiveRecord extends TComponent
 	 * class.
 	 * @param string select SQL
 	 * @param array $parameters
-	 * @return array matching active records.
+	 * @return TActiveRecord
 	 */
 	public function findBySql($sql,$parameters=array())
+	{
+		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
+		$criteria = $this->getCriteria($sql,$parameters, $args);
+		$data = $this->getRecordGateway()->findRecordBySql($this,$criteria);
+		return $this->populateObject(get_class($this), $data);
+	}
+
+	/**
+	 * Find records using full SQL, returns corresponding record object.
+	 * The names of the column retrieved must be defined in your Active Record
+	 * class.
+	 * @param string select SQL
+	 * @param array $parameters
+	 * @return array matching active records.
+	 */
+	public function findAllBySql($sql,$parameters=array())
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		$criteria = $this->getCriteria($sql,$parameters, $args);
@@ -533,6 +557,8 @@ abstract class TActiveRecord extends TComponent
 			$condition = $method[9]==='_' ? substr($method,10) : substr($method,9);
 		else if($delete = substr(strtolower($method),0,8)==='deleteby')
 			$condition = $method[8]==='_' ? substr($method,9) : substr($method,8);
+		else if($delete = substr(strtolower($method),0,11)==='deleteallby')
+			$condition = $method[11]==='_' ? substr($method,12) : substr($method,11);
 		else
 			return null;//throw new TActiveRecordException('ar_invalid_finder_method',$method);
 

@@ -175,13 +175,26 @@ class TTableGateway extends TComponent
 	 * Execute arbituary sql command with binding parameters.
 	 * @param string SQL query string.
 	 * @param array binding parameters, positional or named.
-	 * @return TDbDataReader query results.
+	 * @return array query results.
 	 */
 	public function findBySql($sql, $parameters=array())
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		$criteria = $this->getCriteria($sql,$parameters, $args);
 		return $this->getCommand()->findBySql($criteria);
+	}
+
+	/**
+	 * Execute arbituary sql command with binding parameters.
+	 * @param string SQL query string.
+	 * @param array binding parameters, positional or named.
+	 * @return TDbDataReader query results.
+	 */
+	public function findAllBySql($sql, $parameters=array())
+	{
+		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
+		$criteria = $this->getCriteria($sql,$parameters, $args);
+		return $this->getCommand()->findAllBySql($criteria);
 	}
 
 	/**
@@ -314,6 +327,16 @@ class TTableGateway extends TComponent
 	}
 
 	/**
+	 * Alias for deleteByPk()
+	 */
+	public function deleteAllByPks($keys)
+	{
+		if(func_num_args() > 1)
+			$keys = func_get_args();
+		return $this->deleteByPk($keys);
+	}
+
+	/**
 	 * Find the number of records.
 	 * @param string|TSqlCriteria SQL condition or criteria object.
 	 * @param mixed parameter values.
@@ -428,6 +451,8 @@ class TTableGateway extends TComponent
 			$condition = $method[9]==='_' ? substr($method,10) : substr($method,9);
 		else if($delete = substr(strtolower($method),0,8)==='deleteby')
 			$condition = $method[8]==='_' ? substr($method,9) : substr($method,8);
+		else if($delete = substr(strtolower($method),0,11)==='deleteallby')
+			$condition = $method[11]==='_' ? substr($method,12) : substr($method,11);
 		else
 			return null;
 

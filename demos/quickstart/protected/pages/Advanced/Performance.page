@@ -33,7 +33,7 @@ if($application->Cache) {
 where <tt>$keyName</tt> should be a string that uniquely identifies the data item stored in cache.
 </p>
 
-<p>
+<p id="840059" class="block-content">
 Since v3.1.0, a new control called <a href="?page=Controls.OutputCache">TOutputCache</a> has been introduced. This control allows users to selectively cache parts of a page's output. When used appropriately, this technique can significant improve pages' performance because the underlying controls are not created at all if the cached versions are hit.
 </p>
 

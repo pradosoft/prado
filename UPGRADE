@@ -17,7 +17,10 @@ Upgrading from v3.1b
 
 - Comment tag <!-- ... ---> (introduced in v3.1a) is changed to <!--- ... --->
 - When TDataList.RepeatLayout is Raw, the items will render <div> instead of <span>
+
 - TActiveRecord finder methods will always return a new object instance (identity mapping was removed).
+- TActiveRecord::findBySql() will return an object rather than an array
+- TActiveRecord::findAllBySql() will return an array of objects.
 
 Upgrading from v3.1a
 ---------------------

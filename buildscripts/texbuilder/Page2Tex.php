@@ -174,7 +174,7 @@ class Page2Tex
 
 		//text modifiers
 		$html = preg_replace('/<(b|strong)[^>]*>([^<]*)<\/(b|strong)>/', '\textbf{$2}', $html);
-		$html = preg_replace('/<i[^>]*>([^<]*)+?<\/i>/', '\emph{$1}', $html);
+		$html = preg_replace('/<i [^>]*>([^<]*)+?<\/i>/', '\emph{$1}', $html);
 		$html = preg_replace_callback('/<tt>([^<]*)<\/tt>/', array($this,'texttt'), $html);
 
 		//links
@@ -213,6 +213,8 @@ class Page2Tex
 		$html = preg_replace('/<!--(.*)-->/', '', $html);
 		$html = preg_replace('/<div class="last-modified">((.|\n)*?)<\/div>/', '', $html);
 
+		//since
+		$html = preg_replace('/<com:SinceVersion[^>]+>/', '', $html);
 
 		$html = html_entity_decode($html);
 

@@ -139,7 +139,7 @@ A very useful tool to test out your web services is the free tool
 <a href="http://www.gotdotnet.com/Community/UserSamples/Details.aspx?SampleGuid=65a1d4ea-0f7a-41bd-8494-e916ebc4159c">WebServiceStudio 2.0</a>. It can invoke webmethods interactively. The user can provide a WSDL endpoint. On clicking button Get the tool fetches the WSDL, generates .NET proxy from the WSDL and displays the list of methods available. The user can choose any method and provide the required input parameters.
 The tool requires a MS .NET runtime to be installed.
 
-<p>A similar tool is available for Mac OS X Tiger from 
+<p id="690008" class="block-content">A similar tool is available for Mac OS X Tiger from 
 <a href="http://www.ditchnet.org/soapclient/">http://www.ditchnet.org/soapclient/</a>
 </p>
 </div>

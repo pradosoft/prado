@@ -49,8 +49,8 @@ PRADO is often quoted as a unique framework. Its uniqueness mainly lies in the c
 Most PHP frameworks mainly focuses on separating presentation and logic and promotes the MVC (model-view-controller) design pattern. PRADO achieves the same goal naturally by requiring logic be stored in classes and presentation in templates. PRADO does much more on aspects other than MVC. It fills lot of blank area in PHP Web programming with its component-based programming paradigm, its rich set of Web controls, its powerful database support, its flexible error handling and logging feature, and many others.
 </p>
 
-<h2>Is PRADO Stable Enough?</h2>
-<p>
+<h2 id="4004">Is PRADO Stable Enough?</h2>
+<p id="20004" class="block-content">
 Yes. PRADO was initially released in August 2004. Many test suites have been written and conducted frequently to ensure its quality. It has been used by thousands of developers and many Web applications have been developed based on it. Bugs and feature requests are managed through TRAC system and we have a great user community and development team to ensure all questions are answered in a timely fashion.
 </p>
 

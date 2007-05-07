@@ -627,3 +627,21 @@ table.tabular td
 {
 	color: red;
 }
+
+div.last-modified
+{
+	font-size: 0.8em;
+	color: #999;
+	margin-top: 5em;
+	margin-bottom: -3em;
+}
+
+p.since-version, p.requires-version
+{
+	display: none;
+}
+
+div.languages
+{
+	display: none;
+}

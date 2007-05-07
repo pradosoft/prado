@@ -280,11 +280,22 @@ class TDataGatewayCommand extends TComponent
 	}
 
 	/**
-	 * Find one or more matching records for arbituary SQL.
+	 * Find one matching records for arbituary SQL.
 	 * @param TSqlCriteria $criteria
 	 * @return TDbDataReader record reader.
 	 */
 	public function findBySql($criteria)
+	{
+		$command = $this->getSqlCommand($criteria);
+		return $this->onExecuteCommand($command, $command->queryRow());
+	}
+
+	/**
+	 * Find zero or more matching records for arbituary SQL.
+	 * @param TSqlCriteria $criteria
+	 * @return TDbDataReader record reader.
+	 */
+	public function findAllBySql($criteria)
 	{
 		$command = $this->getSqlCommand($criteria);
 		return $this->onExecuteCommand($command, $command->query());

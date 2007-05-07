@@ -214,11 +214,22 @@ class TActiveRecordGateway extends TComponent
 	 * Return record data from sql query.
 	 * @param TActiveRecord active record finder instance.
 	 * @param TActiveRecordCriteria sql query
+	 * @return array result.
+	 */
+	public function findRecordBySql(TActiveRecord $record, $criteria)
+	{
+		return $this->getCommand($record)->findBySql($criteria);
+	}
+
+	/**
+	 * Return record data from sql query.
+	 * @param TActiveRecord active record finder instance.
+	 * @param TActiveRecordCriteria sql query
 	 * @return TDbDataReader result iterator.
 	 */
 	public function findRecordsBySql(TActiveRecord $record, $criteria)
 	{
-		return $this->getCommand($record)->findBySql($criteria);
+		return $this->getCommand($record)->findAllBySql($criteria);
 	}
 
 	public function findRecordsByIndex(TActiveRecord $record, $criteria, $fields, $values)

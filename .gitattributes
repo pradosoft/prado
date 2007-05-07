@@ -617,6 +617,7 @@ buildscripts/phing/tasks/PhpLintTask.php -text
 buildscripts/phing/tasks/PradoDocTask.php -text
 buildscripts/phing/tasks/PradoPackageTask.php -text
 buildscripts/phing/tasks/PradoPearTask.php -text
+buildscripts/phing/tasks/PradoQuickStartDocs.php -text
 buildscripts/phing/tasks/PradoTestTask.php -text
 buildscripts/phing/tasks/PradoVersionTask.php -text
 buildscripts/phing/tasks/QuickstartIndexTask.php -text

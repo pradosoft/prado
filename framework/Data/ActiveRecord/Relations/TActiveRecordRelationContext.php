@@ -182,7 +182,6 @@ class TActiveRecordRelationContext
 	 */
 	public function updateAssociatedRecords($updateBelongsTo=false)
 	{
-		Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationCommand');
 		$success=true;
 		foreach($this->getRecordRelationships() as $property=>$relation)
 		{
@@ -190,7 +189,7 @@ class TActiveRecordRelationContext
 			if(($updateBelongsTo && $belongsTo) || (!$updateBelongsTo && !$belongsTo))
 			{
 				$obj = $this->getSourceRecord();
-				if(!empty($obj->{$property}))
+				if(!$this->isEmptyFkObject($obj->{$property}))
 				{
 					$context = new self($this->getSourceRecord(),$property);
 					$success = $context->getRelationHandler()->updateAssociatedRecords() && $success;
@@ -198,6 +197,16 @@ class TActiveRecordRelationContext
 			}
 		}
 		return $success;
+	}
+
+	protected function isEmptyFkObject($obj)
+	{
+		if(is_object($obj))
+			return $obj instanceof TList ? $obj->count() === 0 : false;
+		else if(is_array($obj))
+			return count($obj)===0;
+		else
+			return empty($obj);
 	}
 }
 

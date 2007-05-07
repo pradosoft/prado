@@ -51,7 +51,7 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
  * }
  * </code>
  * The static <tt>$RELATIONS</tt> property of PlayerRecord defines that the
- * property <tt>$team</tt> belongs to (or is a) <tt>TeamRecord</tt>s.
+ * property <tt>$team</tt> belongs to a <tt>TeamRecord</tt>.
  *
  * The team object may be fetched as follows.
  * <code>

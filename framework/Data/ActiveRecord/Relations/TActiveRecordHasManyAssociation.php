@@ -158,13 +158,16 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	}
 
 	/**
-	 * @return TDbCommandBuilder
+	 * @return TDataGatewayCommand
 	 */
 	protected function getCommandBuilder()
 	{
 		return $this->getSourceRecord()->getRecordGateway()->getCommand($this->getSourceRecord());
 	}
 
+	/**
+	 * @return TDataGatewayCommand
+	 */
 	protected function getForeignCommandBuilder()
 	{
 		$obj = $this->getContext()->getForeignRecordFinder();
@@ -314,13 +317,16 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		return $success;
 	}
 
+	/**
+	 * @return TDbCommandBuilder
+	 */
 	protected function getAssociationTableCommandBuilder()
 	{
 		$conn = $this->getContext()->getSourceRecord()->getDbConnection();
 		return $this->getAssociationTable()->createCommandBuilder($conn);
 	}
 
-	protected function hasAssociationData($builder,$data)
+	private function hasAssociationData($builder,$data)
 	{
 		$condition=array();
 		$table = $this->getAssociationTable();
@@ -331,13 +337,13 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		return intval($result) > 0;
 	}
 
-	protected function addAssociationData($builder,$data)
+	private function addAssociationData($builder,$data)
 	{
 		$command = $builder->createInsertCommand($data);
 		return $this->getCommandBuilder()->onExecuteCommand($command, $command->execute()) > 0;
 	}
 
-	protected function updateAssociationTable($obj,$fkObjects, $builder)
+	private function updateAssociationTable($obj,$fkObjects, $builder)
 	{
 		$source = $this->getSourceRecordValues($obj);
 		$foreignKeys = $this->findForeignKeys($this->getAssociationTable(), $fkObjects[0]);
@@ -351,7 +357,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		return $success;
 	}
 
-	protected function getSourceRecordValues($obj)
+	private function getSourceRecordValues($obj)
 	{
 		$sourceKeys = $this->findForeignKeys($this->getAssociationTable(), $obj);
 		$indexValues = $this->getIndexValues(array_values($sourceKeys), $obj);
@@ -362,7 +368,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		return $data;
 	}
 
-	protected function getForeignObjectValues($foreignKeys,$fkObject)
+	private function getForeignObjectValues($foreignKeys,$fkObject)
 	{
 		$data=array();
 		foreach($foreignKeys as $name=>$fKey)

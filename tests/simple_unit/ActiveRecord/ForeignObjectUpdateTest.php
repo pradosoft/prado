@@ -47,7 +47,7 @@ class PlayerRecord extends BaseFkRecord
     public $team_name;
 
     public $team;
-    public $skills=array();
+    private $_skills;
     public $profile;
 
     protected static $RELATIONS=array
@@ -61,6 +61,26 @@ class PlayerRecord extends BaseFkRecord
     {
         return parent::finder($className);
     }
+
+	public function getSkills()
+	{
+		if($this->_skills===null && $this->player_id !==null)
+		{
+			//lazy load the skill records
+			$this->setSkills($this->withSkills()->findByPk($this->player_id)->skills);
+		}
+		else if($this->_skills===null)
+		{
+			//create new TList;
+			$this->setSkills(new TList());
+		}
+		return $this->_skills;
+	}
+
+	public function setSkills($value)
+	{
+		$this->_skills = $value instanceof TList ? $value : new TList($value);
+	}
 }
 
 class ProfileRecord extends BaseFkRecord
@@ -99,6 +119,8 @@ class SkillRecord extends BaseFkRecord
     {
         return parent::finder($className);
     }
+
+
 }
 
 class ForeignObjectUpdateTest extends UnitTestCase
@@ -205,6 +227,14 @@ class ForeignObjectUpdateTest extends UnitTestCase
 		$this->assertEqual($player3->skills[0]->name, 'Bash');
 		$this->assertEqual($player3->skills[1]->name, 'Push');
 		$this->assertEqual($player3->skills[2]->name, 'Skip');
+
+		//test lazy load
+		$player4 = PlayerRecord::finder()->findByAge(37);
+		$this->assertEqual(count($player4->skills), 3);
+
+		$this->assertEqual($player4->skills[0]->name, 'Bash');
+		$this->assertEqual($player4->skills[1]->name, 'Skip');
+		$this->assertEqual($player4->skills[2]->name, 'Push');
 	}
 }
 

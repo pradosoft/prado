@@ -13,12 +13,12 @@ class ChmQuickstartBuilder
 	public function __construct($base,$output)
 	{
 		$this->base = $base;
-		$this->output_dir = $output.'/quickstart';
+		$this->output_dir = $output;
 
-		if(!is_dir($this->output_dir))
+		if(!is_dir($this->output_dir) || !is_dir($this->output_dir.'/assets'))
 		{
-			mkdir($this->output_dir);
-			mkdir($this->output_dir.'/assets/');
+			@mkdir($this->output_dir);
+			@mkdir($this->output_dir.'/assets/');
 			copy(dirname(__FILE__).'/chm_style.css', $this->output_dir.'/assets/chm_style.css');
 		}
 
@@ -58,7 +58,7 @@ class ChmQuickstartBuilder
 		file_put_contents($this->output_dir.'/'.$file, $html);
 	}
 
-	protected function getApplicationContent()
+	public function getApplicationContent()
 	{
 		ob_start();
 		$this->initApp();
@@ -68,7 +68,7 @@ class ChmQuickstartBuilder
 		return $content;
 	}
 
-	protected function parseHtmlContent($content)
+	public function parseHtmlContent($content)
 	{
 		$html = preg_replace('/<input.*name="PRADO_PAGESTATE" [^>]+\/>/m', '', $content);
 $html = str_replace('<div id="header">
@@ -89,6 +89,10 @@ Copyright &copy; 2005-2007 <a href="http://www.pradosoft.com">PradoSoft</a>.</di
 		$html = preg_replace('/(src|href)=("?)\//', '$1=$2assets/',$html);
 		$html = str_replace('http://www.pradosoft.com/docs/manual', '../manual/CHMdefaultConverter', $html);
 		$html = str_replace('target="_blank">View Source', '>View Source', $html);
+		$html = preg_replace('/action="[^"]+"/', '', $html);
+		$html = preg_replace('/<script[^>]+><\/script>/', '', $html); //remove js
+		$html = preg_replace('/href="C:[^"]+"/', 'href="#"', $html);
+
 		$html = preg_replace_callback('/href="\?page=ViewSource&(amp;){0,1}path=([a-zA-z0-9\.\/]+)"/',
 			array($this, 'update_source_url'), $html);
 

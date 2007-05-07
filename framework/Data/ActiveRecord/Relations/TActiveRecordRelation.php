@@ -191,10 +191,6 @@ abstract class TActiveRecordRelation
 		$prop = $this->getContext()->getProperty();
 		$source->{$prop} = isset($collections[$hash]) ? $collections[$hash] : array();
 	}
-
-	public function updateAssociatedRecords()
-	{
-	}
 }
 
 ?>

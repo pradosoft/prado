@@ -48,7 +48,7 @@ class TableGatewayPgsqlTest extends BaseGatewayTest
 		$results = $this->getGateway()->findAll('true')->readAll();
 		$this->assertEqual(count($results), 2);
 
-		$result = $this->getGateway()->findBySql('SELECT username FROM address WHERE phone = ?', '45233')->read();
+		$result = $this->getGateway()->findAllBySql('SELECT username FROM address WHERE phone = ?', '45233')->read();
 		$this->assertEqual($result['username'], 'record2');
 	}
 

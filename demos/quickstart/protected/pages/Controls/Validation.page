@@ -31,7 +31,7 @@ Validators share a common set of properties, which are defined in the base class
 <li><tt>FocusElementID</tt> - the ID of the HTML element that will receive focus if validation fails and <tt>FocusOnError</tt> is true.</li>
 </ul>
 
-<h1>Prado Validation Controls</h1>
+<h1 id="116008">Prado Validation Controls</h1>
 <a name="TRequiredFieldValidator"></a>
 <h2 id="4902">TRequiredFieldValidator</h2>
 <p id="560340" class="block-content">
@@ -160,7 +160,7 @@ The summary can be displayed as a list, a bulleted list, or a single paragraph b
 <com:RunBar PagePath="Controls.Samples.TValidationSummary.Home" />
 
 <h1 id="123123">Interacting the Validators</h1>
-<h2>Resetting or Clearing of Validators</h2>
+<h2 id="116009">Resetting or Clearing of Validators</h2>
 <p id="1212323">
 Validators can be reset on the client-side using javascript by calling the
 <tt>Prado.Validation.reset(groupID)</tt> where <tt>groupID</tt> is the validator

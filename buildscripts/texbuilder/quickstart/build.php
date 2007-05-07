@@ -42,7 +42,7 @@ foreach($pages as $chapter => $sections)
 
 		$content .= $parser->get_section_label($section);
 		$file_content = file_get_contents($page);
-		$tex =
+		//$tex =
 		$content .= $parser->parse_html($page,$file_content);
 	}
 

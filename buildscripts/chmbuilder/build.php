@@ -53,7 +53,7 @@ else
 	$pages['Control Reference : Standard Controls'][] = 'Controls/Standard.page';
 
 
-	$quickstart= new ChmQuickstartBuilder($base,$output_dir);
+	$quickstart= new ChmQuickstartBuilder($base,$output_dir.'/quickstart');
 	$quickstart->buildDoc($pages);
 
 	//move class data to protected data directory for prado app.

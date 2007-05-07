@@ -4,14 +4,14 @@
 <p id="10001">
 This Quickstart tutorial is provided to help you quickly start building your own Web applications based on PRADO version 3.x.
 </p>
-<p>
+<p id="10001" class="block-content">
 If you are an existing PRADO 3.x user and would like to learn what enhancements are available for each new version, please check out the <a href="?page=GettingStarted.NewFeatures">new features</a> page. Otherwise, the following sections are helpful for newbies.
 </p>
 <!--
 <div class="start-page">
 	<div class="concepts start-block">
-	<h2>How PRADO Works</h2>
-	<p>Concepts and fundamentals</p>
+	<h2 id="2001">How PRADO Works</h2>
+	<p id="10002" class="block-content">Concepts and fundamentals</p>
 	<ol>
 		<li><a href="#">Building web applications with PRADO</a></li>
 		<li><a href="#">Web controls and events</a></li>
@@ -21,7 +21,7 @@ If you are an existing PRADO 3.x user and would like to learn what enhancements 
 	</ol>
 	</div>
 	<div class="examples start-block">
-	<h2>Examples and Demos</h2>
+	<h2 id="2002">Examples and Demos</h2>
 	<ul>
 		<li><a href="../helloworld/">Hello World</a></li>
 		<li><a href="../currency-convert/">Currency Converter</a></li>
@@ -30,13 +30,13 @@ If you are an existing PRADO 3.x user and would like to learn what enhancements 
 		<li><a href="../chat/">AJAX Chat</a></li>
 		<li><a href="../time-tracker/">Project Time Tracker</a></li>
 	</ul>
-	<p>More examples in <a href="?page=Controls.Standard">Standard Controls</a>,
+	<p id="10003" class="block-content">More examples in <a href="?page=Controls.Standard">Standard Controls</a>,
 	<a href="?page=Controls.Validation">Validation Controls</a> and
 	<a href="?page=Controls.Data">Data Controls</a>.
 	</div>
 
 	<div class="tutorials start-block">
-	<h2>Tutorials and Help</h2>
+	<h2 id="2003">Tutorials and Help</h2>
 	<ul>
 		<li><a href="?page=GettingStarted.HelloWorld">Hello World in detail</a></li>
 		<li><a href="?page=Tutorial.CurrencyConverter">Currency Converter Tutorial</a></li>

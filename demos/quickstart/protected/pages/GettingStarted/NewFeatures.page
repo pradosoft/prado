@@ -1,12 +1,12 @@
 <com:TContent ID="body" >
 
-<h1>New Features</h1>
+<h1 id="8005">New Features</h1>
 
-<p>
+<p id="40005" class="block-content">
 This page summarizes the main new features that are introduced in each PRADO release.
 </p>
 
-<h2>Version 3.1.0</h2>
+<h2 id="8006">Version 3.1.0</h2>
 <ul>
 
 <li>Added seamless AJAX support. A whole array of AJAX-enabled controls, called active controls, are introduced. The usage of these active controls is very similar to their non-AJAX counterparts, i.e., plug in and use. For more details, see the tutorial about <a href="?page=ActiveControls.Home">active controls</a>.</li>

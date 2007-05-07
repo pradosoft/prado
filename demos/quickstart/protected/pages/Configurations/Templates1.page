@@ -41,7 +41,7 @@ To facilitate initializing properties with big trunk of data, the following prop
 PropertyValue
 &lt;/prop:PropertyName&gt;
 </com:TTextHighlighter>
-<p>
+<p id="200007" class="block-content">
 Since version 3.1.0, the property initialization tag can also be used to initialize a set of subproperties who share the same parent property. For example, the following is equivalent to <tt>HeaderStyle.BackColor="black"</tt> and <tt>HeaderStyle.ForeColor="red"</tt>.
 </p>
 <com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_180075">
