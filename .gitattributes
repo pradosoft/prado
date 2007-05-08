@@ -662,6 +662,7 @@ demos/activeblog/protected/application.xml -text
 demos/activeblog/protected/urlmaps.xml -text
 demos/activeblog/themes/Default/style.css -text
 demos/address-book/index.php -text
+demos/address-book/protected/.htaccess -text
 demos/address-book/protected/application.xml -text
 demos/address-book/protected/pages/AddressProvider.php -text
 demos/address-book/protected/pages/AddressRecord.php -text

@@ -489,6 +489,80 @@ abstract class THotSpot extends TComponent
 	}
 
 	/**
+	 * @return boolean whether the hotspot has custom attributes
+	 */
+	public function getHasAttributes()
+	{
+		if($attributes=$this->getViewState('Attributes',null))
+			return $attributes->getCount()>0;
+		else
+			return false;
+	}
+
+	/**
+	 * Returns the list of custom attributes.
+	 * Custom attributes are name-value pairs that may be rendered
+	 * as HTML tags' attributes.
+	 * @return TAttributeCollection the list of custom attributes
+	 */
+	public function getAttributes()
+	{
+		if($attributes=$this->getViewState('Attributes',null))
+			return $attributes;
+		else
+		{
+			$attributes=new TAttributeCollection;
+			$this->setViewState('Attributes',$attributes,null);
+			return $attributes;
+		}
+	}
+
+	/**
+	 * @return boolean whether the named attribute exists
+	 */
+	public function hasAttribute($name)
+	{
+		if($attributes=$this->getViewState('Attributes',null))
+			return $attributes->contains($name);
+		else
+			return false;
+	}
+
+	/**
+	 * @return string attribute value, null if attribute does not exist
+	 */
+	public function getAttribute($name)
+	{
+		if($attributes=$this->getViewState('Attributes',null))
+			return $attributes->itemAt($name);
+		else
+			return null;
+	}
+
+	/**
+	 * Sets a custom hotspot attribute.
+	 * @param string attribute name
+	 * @param string value of the attribute
+	 */
+	public function setAttribute($name,$value)
+	{
+		$this->getAttributes()->add($name,$value);
+	}
+
+	/**
+	 * Removes the named attribute.
+	 * @param string the name of the attribute to be removed.
+	 * @return string attribute value removed, null if attribute does not exist.
+	 */
+	public function removeAttribute($name)
+	{
+		if($attributes=$this->getViewState('Attributes',null))
+			return $attributes->remove($name);
+		else
+			return null;
+	}
+
+	/**
 	 * Renders this hotspot.
 	 * @param THtmlWriter
 	 */
@@ -513,6 +587,11 @@ abstract class THotSpot extends TComponent
 			$writer->addAttribute('accesskey',$accessKey);
 		if(($tabIndex=$this->getTabIndex())!==0)
 			$writer->addAttribute('tabindex',"$tabIndex");
+		if($this->getHasAttributes())
+		{
+			foreach($this->getAttributes() as $name=>$value)
+				$writer->addAttribute($name,$value);
+		}
 		$writer->renderBeginTag('area');
 		$writer->renderEndTag();
 	}
