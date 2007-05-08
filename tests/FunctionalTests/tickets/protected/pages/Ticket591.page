@@ -1,0 +1,11 @@
+<com:TContent ID="Content">
+
+<com:TActiveRatingList Rating="3" ReadOnly="false">
+<com:TListItem Value="1" Text="1" />
+<com:TListItem Value="2" Text="2" />
+<com:TListItem Value="3" Text="3" />
+<com:TListItem Value="4" Text="4" />
+<com:TListItem Value="5" Text="5" />
+</com:TActiveRatingList>
+
+</com:TContent>
