@@ -72,7 +72,7 @@ class PradoUnitTester
 		$dir=opendir($path);
 		while(($entry=readdir($dir))!==false)
 		{
-			if(is_file($path.'/'.$entry) && (strncmp($entry,'ut',2)===0||preg_match('/test.*\.php/', strtolower($entry))))
+			if(is_file($path.'/'.$entry) && (strncmp($entry,'ut',2)===0||preg_match('/test.*\.php$/i', $entry)))
 				$test->addTestFile($path.'/'.$entry);
 			else if($entry!=='.' && $entry!=='..' && $entry!=='.svn' && is_dir($path.'/'.$entry) && $recursive)
 				$this->addTests($test,$path.'/'.$entry,$recursive);
