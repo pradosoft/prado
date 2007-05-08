@@ -321,7 +321,8 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	 */
 	protected function getPostBackOptions()
 	{
-		$this->getActiveControl()->getClientSide()->setEnablePageStateUpdate(false);
+		//disallow page state update ?
+		//$this->getActiveControl()->getClientSide()->setEnablePageStateUpdate(false);
 		$options = array();
 		if(strlen($string = $this->getSeparator()))
 		{
