@@ -92,8 +92,8 @@ class MySQLBaseTestConfig extends BaseTestConfig
 		$this->_sqlmapConfigFile = SQLMAP_TESTS.'/mysql.xml';
 		$this->_scriptDir = SQLMAP_TESTS.'/scripts/mysql/';
 		$this->_features = array('insert_id');
-		$dsn = 'mysql:host=localhost;dbname=sqlmap_test';
-		$this->_connection = new TDbConnection($dsn, 'test', 'test111');
+		$dsn = 'mysql:host=localhost;dbname=sqlmap_test;port=3307';
+		$this->_connection = new TDbConnection($dsn, 'test5', 'test5');
 	}
 }
 

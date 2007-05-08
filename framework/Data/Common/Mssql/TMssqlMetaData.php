@@ -27,6 +27,14 @@ Prado::using('System.Data.Common.Mssql.TMssqlTableInfo');
 class TMssqlMetaData extends TDbMetaData
 {
 	/**
+	 * @return string TDbTableInfo class name.
+	 */
+	protected function getTableInfoClass()
+	{
+		return 'TMssqlTableInfo';
+	}
+
+	/**
 	 * Get the column definitions for given table.
 	 * @param string table name.
 	 * @return TMssqlTableInfo table information.
@@ -130,7 +138,8 @@ EOD;
 		if($col['TABLE_TYPE']==='VIEW')
 			$info['IsView'] = true;
 		list($primary, $foreign) = $this->getConstraintKeys($col);
-		return new TMssqlTableInfo($info,$primary,$foreign);
+		$class = $this->getTableInfoClass();
+		return new $class($info,$primary,$foreign);
 	}
 
 	/**

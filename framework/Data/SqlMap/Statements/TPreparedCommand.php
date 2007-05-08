@@ -10,6 +10,8 @@
  * @package System.Data.SqlMap.Statements
  */
 
+Prado::using('System.Data.Common.TDbMetaData');
+
 /**
  * TPreparedCommand class.
  *
@@ -20,11 +22,17 @@
  */
 class TPreparedCommand
 {
-	public function create(TSqlMapManager $manager, $connection, $statement, $parameterObject)
+	public function create(TSqlMapManager $manager, $connection, $statement, $parameterObject,$skip=null,$max=null)
 	{
 		$prepared = $statement->getSQLText()->getPreparedStatement($parameterObject);
 		$connection->setActive(true);
-		$command = $connection->createCommand($prepared->getPreparedSql());
+		$sql = $prepared->getPreparedSql();
+		if($max!==null || $skip!==null)
+		{
+			$builder = TDbMetaData::getInstance($connection)->createCommandBuilder();
+			$sql = $builder->applyLimitOffset($sql,$max,$skip);
+		}
+		$command = $connection->createCommand($sql);
 		$this->applyParameterMap($manager, $command, $prepared, $statement, $parameterObject);
 		return $command;
 	}

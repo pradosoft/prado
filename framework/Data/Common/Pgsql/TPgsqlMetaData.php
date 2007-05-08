@@ -29,6 +29,14 @@ class TPgsqlMetaData extends TDbMetaData
 	private $_defaultSchema = 'public';
 
 	/**
+	 * @return string TDbTableInfo class name.
+	 */
+	protected function getTableInfoClass()
+	{
+		return 'TPgsqlTableInfo';
+	}
+
+	/**
 	 * @param string default schema.
 	 */
 	public function setDefaultSchema($schema)
@@ -126,7 +134,8 @@ EOD;
 		if($this->getIsView($schemaName,$tableName))
 			$info['IsView'] = true;
 		list($primary, $foreign) = $this->getConstraintKeys($schemaName, $tableName);
-		return new TPgsqlTableInfo($info,$primary,$foreign);
+		$class = $this->getTableInfoClass();
+		return new $class($info,$primary,$foreign);
 	}
 
 	/**

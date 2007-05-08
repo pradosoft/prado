@@ -203,7 +203,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	 */
 	public function executeQueryForList($connection, $parameter, $result=null, $skip=-1, $max=-1, $delegate=null)
 	{
-		$sql = $this->_command->create($this->_manager, $connection, $this->_statement, $parameter);
+		$sql = $this->_command->create($this->_manager, $connection, $this->_statement, $parameter,$skip,$max);
 		return $this->runQueryForList($connection, $parameter, $sql, $result, $skip, $max, $delegate);
 	}
 
@@ -228,7 +228,9 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		$registry=$this->getManager()->getTypeHandlers();
 		$list = $result instanceof ArrayAccess ? $result :
 							$this->_statement->createInstanceOfListClass($registry);
-		$reader = $this->executeSQLQueryLimit($connection, $sql, $max, $skip);
+		$connection->setActive(true);
+		$reader = $sql->query();
+		//$reader = $this->executeSQLQueryLimit($connection, $sql, $max, $skip);
 		if(!is_null($delegate))
 		{
 			foreach($reader as $row)

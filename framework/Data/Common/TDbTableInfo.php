@@ -33,7 +33,7 @@ class TDbTableInfo extends TComponent
 	 * Sets the database table meta data information.
 	 * @param array table column information.
 	 */
-	public function __construct($tableInfo,$primary=array(),$foreign=array())
+	public function __construct($tableInfo=array(),$primary=array(),$foreign=array())
 	{
 		$this->_info=$tableInfo;
 		$this->_primaryKeys=$primary;

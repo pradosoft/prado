@@ -80,11 +80,16 @@ abstract class TDbMetaData extends TComponent
 	 * @param string table or view name
 	 * @return TDbTableInfo table information.
 	 */
-	public function getTableInfo($tableName)
+	public function getTableInfo($tableName=null)
 	{
-		if(!isset($this->_tableInfoCache[$tableName]))
-			$this->_tableInfoCache[$tableName] = $this->createTableInfo($tableName);
-		return $this->_tableInfoCache[$tableName];
+		$key = $tableName===null?$this->getDbConnection()->getConnectionString():$tableName;
+		if(!isset($this->_tableInfoCache[$key]))
+		{
+			$class = $this->getTableInfoClass();
+			$tableInfo = $tableName===null ? new $class : $this->createTableInfo($tableName);
+			$this->_tableInfoCache[$key] = $tableInfo;
+		}
+		return $this->_tableInfoCache[$key];
 	}
 
 	/**
@@ -92,7 +97,7 @@ abstract class TDbMetaData extends TComponent
 	 * @param string table name.
 	 * @return TDbCommandBuilder command builder instance for the given table.
 	 */
-	public function createCommandBuilder($tableName)
+	public function createCommandBuilder($tableName=null)
 	{
 		return $this->getTableInfo($tableName)->createCommandBuilder($this->getDbConnection());
 	}
@@ -102,6 +107,14 @@ abstract class TDbMetaData extends TComponent
 	 * @return TDbTableInfo driver dependent create builder.
 	 */
 	abstract protected function createTableInfo($tableName);
+
+	/**
+	 * @return string TDbTableInfo class name.
+	 */
+	protected function getTableInfoClass()
+	{
+		return 'TDbTableInfo';
+	}
 }
 
 ?>

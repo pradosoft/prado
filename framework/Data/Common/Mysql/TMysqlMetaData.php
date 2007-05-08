@@ -32,6 +32,14 @@ class TMysqlMetaData extends TDbMetaData
 	private $_serverVersion=0;
 
 	/**
+	 * @return string TDbTableInfo class name.
+	 */
+	protected function getTableInfoClass()
+	{
+		return 'TMysqlTableInfo';
+	}
+
+	/**
 	 * Get the column definitions for given table.
 	 * @param string table name.
 	 * @return TMysqlTableInfo table information.
@@ -185,7 +193,8 @@ class TMysqlMetaData extends TDbMetaData
 		if($this->getIsView($schemaName,$tableName))
 			$info['IsView'] = true;
 		list($primary, $foreign) = $this->getConstraintKeys($schemaName, $tableName);
-		return new TMysqlTableInfo($info,$primary,$foreign);
+		$class = $this->getTableInfoClass();
+		return new $class($info,$primary,$foreign);
 	}
 
 	/**

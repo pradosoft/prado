@@ -311,18 +311,6 @@ class TSqlMapSelect extends TSqlMapStatement
 }
 
 /**
- * TSqlMapDelete class corresponds to the <delete> element.
- *
- * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id$
- * @package System.Data.SqlMap.Configuration
- * @since 3.1
- */
-class TSqlMapDelete extends TSqlMapUpdate
-{
-}
-
-/**
  * TSqlMapInsert class corresponds to the <insert> element.
  *
  * The <insert> element allows <selectKey> child elements that can be used
@@ -363,6 +351,18 @@ class TSqlMapInsert extends TSqlMapStatement
  * @since 3.1
  */
 class TSqlMapUpdate extends TSqlMapStatement
+{
+}
+
+/**
+ * TSqlMapDelete class corresponds to the <delete> element.
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.SqlMap.Configuration
+ * @since 3.1
+ */
+class TSqlMapDelete extends TSqlMapUpdate
 {
 }
 

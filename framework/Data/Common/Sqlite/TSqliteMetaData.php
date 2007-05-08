@@ -27,6 +27,14 @@ Prado::using('System.Data.Common.Sqlite.TSqliteTableInfo');
 class TSqliteMetaData extends TDbMetaData
 {
 	/**
+	 * @return string TDbTableInfo class name.
+	 */
+	protected function getTableInfoClass()
+	{
+		return 'TSqliteTableInfo';
+	}
+
+	/**
 	 * Get the column definitions for given table.
 	 * @param string table name.
 	 * @return TPgsqlTableInfo table information.
@@ -55,7 +63,8 @@ class TSqliteMetaData extends TDbMetaData
 			$info['IsView'] = true;
 		if(count($columns)===0)
 			throw new TDbException('dbmetadata_invalid_table_view', $tableName);
-		$tableInfo = new TSqliteTableInfo($info,$primary,$foreign);
+		$class = $this->getTableInfoClass();
+		$tableInfo = new $class($info,$primary,$foreign);
 		$tableInfo->getColumns()->copyFrom($columns);
 		return $tableInfo;
 	}
