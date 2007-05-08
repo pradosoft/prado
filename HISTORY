@@ -3,6 +3,7 @@ Version 3.1.0 RC To be released
 BUG: Ticket#605 - TDatePicker don't works in 3.1.b on linux server (Wei)
 BUG: Ticket#606 - TColorPicker bug in Full mode (Wei)
 ENH: Ticket#601 - TRectangleHotSpot and javascript onclick handler (Qiang)
+ENH: Ticket#613 - clientscripts.php is made PHP4-compliant (Qiang)
 ENH: Add javascript references for "slider" and "dragdrop" for TClientScript::PradoScripts (Wei)
 ENH: Added PatternModifiers property to TRegularExpressionValidator (Wei)
 CHG: <div> tags are used instead of <span> when TDataList.RepeatLayout is Raw (Qiang)
