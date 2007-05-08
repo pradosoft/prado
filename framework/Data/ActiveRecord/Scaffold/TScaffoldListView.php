@@ -77,8 +77,8 @@ class TScaffoldListView extends TScaffoldBase
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		if(!$this->getPage()->getIsPostBack())
-			$this->initializeSort();
+		//if(!$this->getPage()->getIsPostBack())
+		$this->initializeSort();
 		$this->loadRecordData();
 	}
 

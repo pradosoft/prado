@@ -185,21 +185,21 @@
   <target name="compact-db-sqlite" description="Sqlite Database" depends="compact-db">
     <compact-package output="${build.compact.dir}/db-sqlite.php"  strip="${compact-strip-comments}">
       <filelist dir="framework/Data/Common/Sqlite"
-        files="TSqliteMetaData.php,TSqliteTableColumn.php,TSqliteTableInfo.php" />
+        files="TSqliteCommandBuilder.php,TSqliteMetaData.php,TSqliteTableColumn.php,TSqliteTableInfo.php" />
     </compact-package>
   </target>
 
   <target name="compact-db-mysql" description="Mysql Database" depends="compact-db">
     <compact-package output="${build.compact.dir}/db-mysql.php"  strip="${compact-strip-comments}">
       <filelist dir="framework/Data/Common/Mysql"
-        files="TMysqlMetaData.php,TMysqlTableColumn.php,TMysqlTableInfo.php" />
+        files="TMysqlCommandBuilder.php,TMysqlMetaData.php,TMysqlTableColumn.php,TMysqlTableInfo.php" />
     </compact-package>
   </target>
 
   <target name="compact-db-pgsql" description="Pgsql Database" depends="compact-db">
     <compact-package output="${build.compact.dir}/db-pgsql.php" strip="${compact-strip-comments}">
       <filelist dir="framework/Data/Common/Pgsql"
-        files="TPgsqlMetaData.php,TPgsqlTableColumn.php,TPgsqlTableInfo.php" />
+        files="TPgsqlCommandBuilder.php,TPgsqlMetaData.php,TPgsqlTableColumn.php,TPgsqlTableInfo.php" />
     </compact-package>
   </target>
 

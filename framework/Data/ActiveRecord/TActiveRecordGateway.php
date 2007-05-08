@@ -93,21 +93,24 @@ class TActiveRecordGateway extends TComponent
 		$key = $connStr.$tableName;
 		if(!isset($this->_tables[$key]))
 		{
+			//call this first to ensure that unserializing the cache
+			//will find the correct driver dependent classes.
+			if(!isset($this->_meta[$connStr]))
+			{
+				Prado::using('System.Data.Common.TDbMetaData');
+				$this->_meta[$connStr] = TDbMetaData::getInstance($connection);
+			}
+
 			$tableInfo = null;
 			if(($cache=$this->getManager()->getCache())!==null)
 				$tableInfo = $cache->get($key);
-			if($tableInfo===null)
+			if(empty($tableInfo))
 			{
-				if(!isset($this->_meta[$connStr]))
-				{
-					Prado::using('System.Data.Common.TDbMetaData');
-					$this->_meta[$connStr] = TDbMetaData::getInstance($connection);
-				}
 				$tableInfo = $this->_meta[$connStr]->getTableInfo($tableName);
+				if($cache!==null)
+					$cache->set($key, $tableInfo);
 			}
 			$this->_tables[$key] = $tableInfo;
-			if($cache!==null)
-				$cache->set($key, $tableInfo);
 		}
 		return $this->_tables[$key];
 	}
