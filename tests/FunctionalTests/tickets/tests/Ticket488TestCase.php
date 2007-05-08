@@ -32,6 +32,11 @@ class Ticket488TestCase extends SeleniumTestCase
 		$this->assertNotVisible('loginBox');
 	}
 
+	function test_more()
+	{
+		$this->open('tickets/index.php?page=Ticket488');
+		//add test assertions here.
+	}
 }
 
 ?>
