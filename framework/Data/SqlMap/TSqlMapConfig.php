@@ -61,7 +61,7 @@ class TSqlMapConfig extends TDataSourceConfig
 		{
 			$cache = $this->getApplication()->getCache();
 			if(!is_null($cache))
-				return $cache->add($this->getCacheKey(), $manager);
+				return $cache->set($this->getCacheKey(), $manager);
 		}
 		return false;
 	}

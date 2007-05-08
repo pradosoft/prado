@@ -1,0 +1,27 @@
+<com:TContent ID="Content">
+
+<com:TTextBox ID="Password" />
+
+<com:TActiveCustomValidator
+	   ID="LoginValidate" 
+       ControlToValidate="Password"
+       Text="Login failed."
+       Display="Dynamic"
+       OnServerValidate="login" 
+       ValidationGroup="UserAccountLogin"
+       ClientSide.ObserveChanges="false">
+		<prop:ClientSide.OnValidationError>
+			console.log('OnValidationError')
+		</prop:ClientSide.OnValidationError>
+		<prop:ClientSide.OnValidate>
+			console.log('OnValidate');
+		</prop:ClientSide.OnValidate>
+		<prop:ActiveControl.ClientSide
+			OnLoading="console.log('loading')"
+			OnComplete="console.log('completing')"
+	   />
+</com:TActiveCustomValidator>
+
+<com:TActiveButton Text="Click" ValidationGroup="UserAccountLogin" />
+
+</com:TContent>

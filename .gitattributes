@@ -2530,6 +2530,8 @@ tests/FunctionalTests/tickets/protected/pages/Ticket477.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket477.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket484.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket484.php -text
+tests/FunctionalTests/tickets/protected/pages/Ticket488.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket488.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket500.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket500.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket504.page -text
