@@ -87,12 +87,12 @@ abstract class TSqlMapXmlConfigBuilder
 	 * @param string filename.
 	 * @return SimpleXmlElement xml document.
 	 */
-	protected function loadXmlDocument($filename)
+	protected function loadXmlDocument($filename,TSqlMapXmlConfiguration $config)
 	{
 		if(!is_file($filename))
 			throw new TSqlMapConfigurationException(
 				'sqlmap_unable_to_find_config', $filename);
-		return simplexml_load_file($filename);
+		return simplexml_load_string($config->replaceProperties(file_get_contents($filename)));
 	}
 
 	/**
@@ -169,7 +169,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	public function configure($filename=null)
 	{
 		$this->_configFile=$filename;
-		$document = $this->loadXmlDocument($filename);
+		$document = $this->loadXmlDocument($filename,$this);
 
 		foreach($document->xpath('//property') as $property)
 			$this->loadGlobalProperty($property);
@@ -330,7 +330,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	public function configure($filename)
 	{
 		$this->_configFile=$filename;
-		$document = $this->loadXmlDocument($filename);
+		$document = $this->loadXmlDocument($filename,$this->_xmlConfig);
 		$this->_document=$document;
 
 		foreach($document->xpath('//resultMap') as $node)
@@ -516,7 +516,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 				throw new TSqlMapConfigurationException(
 						'sqlmap_unable_to_find_parent_sql', $extend, $this->_configFile,$node);
 		}
-		$commandText = $this->_xmlConfig->replaceProperties($commandText);
+		//$commandText = $this->_xmlConfig->replaceProperties($commandText);
 		$statement->initialize($this->_manager);
 		$this->applyInlineParameterMap($statement, $commandText, $node);
 	}
