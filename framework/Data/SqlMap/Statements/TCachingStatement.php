@@ -42,15 +42,15 @@ class TCachingStatement implements IMappedStatement
 		return $this->_mappedStatement->getManager();
 	}
 
-	public function executeQueryForMap($connection, $parameter,$keyProperty, $valueProperty=null, $delegate=null)
+	public function executeQueryForMap($connection, $parameter,$keyProperty, $valueProperty=null,  $skip=-1, $max=-1,$delegate=null)
 	{
-		$sql = $this->createCommand($connection, $parameter);
-		$key = $this->getCacheKey(array(clone($sql), $keyProperty, $valueProperty));
+		$sql = $this->createCommand($connection, $parameter, $skip, $max);
+		$key = $this->getCacheKey(array(clone($sql), $keyProperty, $valueProperty,$skip, $max));
 		$map = $this->getStatement()->getCache()->get($key);
 		if(is_null($map))
 		{
 			$map = $this->_mappedStatement->runQueryForMap(
-				$connection, $parameter, $sql, $keyProperty, $valueProperty, $delegate);
+				$connection, $parameter, $sql, $keyProperty, $valueProperty,  $delegate);
 			$this->getStatement()->getCache()->set($key, $map);
 		}
 		return $map;
@@ -68,13 +68,13 @@ class TCachingStatement implements IMappedStatement
 
 	public function executeQueryForList($connection, $parameter, $result=null, $skip=-1, $max=-1, $delegate=null)
 	{
-		$sql = $this->createCommand($connection, $parameter);
+		$sql = $this->createCommand($connection, $parameter, $skip, $max);
 		$key = $this->getCacheKey(array(clone($sql), $parameter, $skip, $max));
 		$list = $this->getStatement()->getCache()->get($key);
 		if(is_null($list))
 		{
 			$list = $this->_mappedStatement->runQueryForList(
-				$connection, $parameter, $sql, $result, $skip, $max, $delegate);
+				$connection, $parameter, $sql, $result, $delegate);
 			$this->getStatement()->getCache()->set($key, $list);
 		}
 		return $list;
@@ -99,10 +99,10 @@ class TCachingStatement implements IMappedStatement
 		return $cacheKey->getHash();
 	}
 
-	protected function createCommand($connection, $parameter)
+	protected function createCommand($connection, $parameter, $skip=null, $max=null)
 	{
 		return $this->_mappedStatement->getCommand()->create($this->getManager(),
-					$connection, $this->getStatement(), $parameter);
+					$connection, $this->getStatement(), $parameter, $skip, $max);
 	}
 }
 

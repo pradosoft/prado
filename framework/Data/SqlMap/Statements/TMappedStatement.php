@@ -204,7 +204,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	public function executeQueryForList($connection, $parameter, $result=null, $skip=-1, $max=-1, $delegate=null)
 	{
 		$sql = $this->_command->create($this->_manager, $connection, $this->_statement, $parameter,$skip,$max);
-		return $this->runQueryForList($connection, $parameter, $sql, $result, $skip, $max, $delegate);
+		return $this->runQueryForList($connection, $parameter, $sql, $result, $delegate);
 	}
 
 	/**
@@ -223,7 +223,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	 * @return array a list of result objects
 	 * @see executeQueryForList()
 	 */
-	public function runQueryForList($connection, $parameter, $sql, $result, $skip=-1, $max=-1, $delegate=null)
+	public function runQueryForList($connection, $parameter, $sql, $result, $delegate=null)
 	{
 		$registry=$this->getManager()->getTypeHandlers();
 		$list = $result instanceof ArrayAccess ? $result :
@@ -274,9 +274,9 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	 * @param callback row delegate handler
 	 * @return array An array of object containing the rows keyed by keyProperty.
 	 */
-	public function executeQueryForMap($connection, $parameter, $keyProperty, $valueProperty=null, $delegate=null)
+	public function executeQueryForMap($connection, $parameter, $keyProperty, $valueProperty=null,  $skip=-1, $max=-1, $delegate=null)
 	{
-		$sql = $this->_command->create($this->_manager, $connection, $this->_statement, $parameter);
+		$sql = $this->_command->create($this->_manager, $connection, $this->_statement, $parameter, $skip, $max);
 		return $this->runQueryForMap($connection, $parameter, $sql, $keyProperty, $valueProperty, $delegate);
 	}
 

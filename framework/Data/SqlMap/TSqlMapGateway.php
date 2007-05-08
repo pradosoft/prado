@@ -163,10 +163,10 @@ class TSqlMapGateway extends TComponent
 	 * @param string The property of the result object to be used as the value.
 	 * @return TMap Array object containing the rows keyed by keyProperty.
 	 */
-	public function queryForMap($statementName, $parameter=null, $keyProperty=null, $valueProperty=null)
+	public function queryForMap($statementName, $parameter=null, $keyProperty=null, $valueProperty=null, $skip=-1, $max=-1)
 	{
 		$statement = $this->getSqlMapManager()->getMappedStatement($statementName);
-		return $statement->executeQueryForMap($this->getDbConnection(), $parameter, $keyProperty, $valueProperty);
+		return $statement->executeQueryForMap($this->getDbConnection(), $parameter, $keyProperty, $valueProperty, $skip, $max);
 	}
 
 	/**
@@ -182,10 +182,10 @@ class TSqlMapGateway extends TComponent
 	 * @param string The property of the result object to be used as the value.
 	 * @return TMap Array object containing the rows keyed by keyProperty.
 	 */
-	public function queryForMapWithRowDelegate($statementName, $delegate, $parameter=null, $keyProperty=null, $valueProperty=null)
+	public function queryForMapWithRowDelegate($statementName, $delegate, $parameter=null, $keyProperty=null, $valueProperty=null, $skip=-1, $max=-1)
 	{
 		$statement = $this->getSqlMapManager()->getMappedStatement($statementName);
-		return $statement->executeQueryForMap($this->getDbConnection(), $parameter, $keyProperty, $valueProperty, $delegate);
+		return $statement->executeQueryForMap($this->getDbConnection(), $parameter, $keyProperty, $valueProperty, $skip, $max, $delegate);
 	}
 
 	/**

@@ -2716,6 +2716,7 @@ tests/simple_unit/SqlMap/SelectKeyTest.php -text
 tests/simple_unit/SqlMap/SqlMapCacheTest.php -text
 tests/simple_unit/SqlMap/StatementExtendsTest.php -text
 tests/simple_unit/SqlMap/StatementTest.php -text
+tests/simple_unit/SqlMap/TestQueryForMap.php -text
 tests/simple_unit/SqlMap/common.php -text
 tests/simple_unit/SqlMap/domain/A.php -text
 tests/simple_unit/SqlMap/domain/Account.php -text
