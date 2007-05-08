@@ -1,0 +1,5 @@
+<com:TContent ID="Content">
+
+<com:System.Web.UI.ActiveControls.TInplaceTextBox maxlength="10" Text="Hello" />
+
+</com:TContent>

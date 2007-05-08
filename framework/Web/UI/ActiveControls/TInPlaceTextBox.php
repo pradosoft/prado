@@ -10,6 +10,8 @@
  * @package System.Web.UI.ActiveControls
  */
 
+Prado::using('System.Web.UI.ActiveControls.TActiveTextBox');
+
 /**
  * TInPlaceTextBox Class
  * *
@@ -239,7 +241,8 @@ class TInPlaceTextBox extends TActiveTextBox
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		TTextBox::addAttributesToRender($writer);
+		//calls the TWebControl to avoid rendering other attribute normally render for a textbox.
+		TWebControl::addAttributesToRender($writer);
 		$writer->addAttribute('id',$this->getLabelClientID());
 		$this->getActiveControl()->registerCallbackClientScript(
 			$this->getClientClassName(), $this->getPostBackOptions());
