@@ -87,9 +87,9 @@ class TScaffoldListView extends TScaffoldBase
 	 */
 	protected function loadRecordData()
 	{
-		$this->_list->setVirtualItemCount($this->getRecordFinder()->count());
 		$finder = $this->getRecordFinder();
 		$criteria = $this->getRecordCriteria();
+		$this->_list->setVirtualItemCount($this->getRecordFinder()->count($criteria));
 		$this->_list->setDataSource($finder->findAll($criteria));
 		$this->_list->dataBind();
 	}
