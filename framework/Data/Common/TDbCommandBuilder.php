@@ -331,7 +331,7 @@ class TDbCommandBuilder extends TComponent
 	 * @param mixed PHP value
 	 * @return integer PDO parameter types.
 	 */
-	protected function getPdoType($value)
+	public static function getPdoType($value)
 	{
 		switch(gettype($value))
 		{
