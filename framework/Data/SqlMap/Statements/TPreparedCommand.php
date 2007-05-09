@@ -46,10 +46,10 @@ class TPreparedCommand
 		{
 			$property = $statement->parameterMap()->getProperty($i);
 			$value = $statement->parameterMap()->getPropertyValue($registry,$property, $parameterObject);
-			if(!empty($property->getDbType()))
-				$command->bindValue($i+1,$value, constant($property->getDbType())); //assumes PDO types, e.g. PDO::PARAM_INT
+			if($property->getDbType()=='')
+				$command->bindValue($i+1,$value, TDbCommandBuilder::getPdoType($value));			
 			else
-				$command->bindValue($i+1,$value, TDbCommandBuilder::getPdoType($value));
+				$command->bindValue($i+1,$value, constant($property->getDbType())); //assumes PDO types, e.g. PDO::PARAM_INT
 		}
 	}
 }
