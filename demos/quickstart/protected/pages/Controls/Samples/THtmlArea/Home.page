@@ -19,7 +19,7 @@ Full featured THtmlArea example
 <com:THtmlArea ID="HtmlArea2" Width="670px" Height="300px">
   <prop:Options>
 		theme : "advanced",
-		plugins : "devkit,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras",
+		plugins : "devkit,style,layer,table,save,advhr,advlink,emotions,iespell,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras",
 		theme_advanced_buttons1_add_before : "save,newdocument,separator,styleselect",
 		theme_advanced_buttons1_add : "separator,insertdate,inserttime,preview,separator,advsearchreplace",
 		theme_advanced_buttons2_add_before: "cut,copy,paste,pastetext,pasteword,separator,search,replace,separator",
