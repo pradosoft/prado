@@ -289,6 +289,7 @@ class THtmlArea extends TTextBox
 		$this->loadJavascriptLibrary();
 		if($this->getEnableCompression())
 			$this->preLoadCompressedScript();
+		$this->applyJavascriptFixes();
 	}
 
 	/**
@@ -347,6 +348,27 @@ class THtmlArea extends TTextBox
 		$scripts = $this->getPage()->getClientScript();
 		if(!$scripts->isScriptFileRegistered('prado:THtmlArea'))
 			$scripts->registerScriptFile('prado:THtmlArea', $this->getScriptUrl());
+	}
+
+	/**
+	 * Changes the TinyMCE triggerSave() function to allow for missing textareas.
+	 */
+	protected function applyJavascriptFixes()
+	{
+		$scripts = $this->getPage()->getClientScript();
+		$js = <<<EOD
+if(typeof(tinyMCE)!='undefined')
+{
+	TinyMCE_Control.prototype.triggerSave_old = TinyMCE_Control.prototype.triggerSave;
+	TinyMCE_Control.prototype.triggerSave = function(skip_cleanup, skip_callback)
+	{
+		if(this.getDoc()!=null)
+			this.triggerSave_old(skip_cleanup, skip_callback);
+	}
+}
+EOD;
+		if(!$scripts->isEndScriptRegistered('prado:THtmlArea:fix'))
+			$scripts->registerEndScript('prado:THtmlArea:fix', $js);
 	}
 
 	/**
