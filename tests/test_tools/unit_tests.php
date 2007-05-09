@@ -35,7 +35,7 @@ class TestFolder
 					$this->subFolders[]=$folder;
 			}
 			else if(is_file($fullpath) && (strncmp($entry,'ut',2)===0
-						|| preg_match('/test.*\.php/', strtolower($entry))))
+						|| preg_match('/test.*\.php$/i', $entry)))
 			{
 				$this->testFiles[$entry]="$rootUri/$script?target=".strtr(substr($fullpath,strlen($rootPath)+1),"\\",'/');
 			}
