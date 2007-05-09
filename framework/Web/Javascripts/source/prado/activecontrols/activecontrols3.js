@@ -213,12 +213,14 @@ Prado.WebUI.TTimeTriggeredCallback = Base.extend(
 
 	start : function(id)
 	{
-		Prado.WebUI.TTimeTriggeredCallback.timers[id].startTimer();
+		if(Prado.WebUI.TTimeTriggeredCallback.timers[id])
+			Prado.WebUI.TTimeTriggeredCallback.timers[id].startTimer();
 	},
 
 	stop : function(id)
 	{
-		Prado.WebUI.TTimeTriggeredCallback.timers[id].stopTimer();
+		if(Prado.WebUI.TTimeTriggeredCallback.timers[id])
+			Prado.WebUI.TTimeTriggeredCallback.timers[id].stopTimer();
 	}
 });
 

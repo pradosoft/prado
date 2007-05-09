@@ -1,0 +1,17 @@
+<com:TContent ID="Content">
+
+Time : <com:TActiveLabel id="Lbl"/><br/>
+
+<com:TActiveButton OnCallback="startBigTask" Text="Start Big Task" ClientSide.HasPriority="false">
+	<prop:ClientSide.OnLoading>
+		Prado.WebUI.TTimeTriggeredCallback.start('<%= $this->Timer->ClientID %>')
+	</prop:ClientSide.OnLoading>
+	<prop:ClientSide.OnComplete>
+		Prado.WebUI.TTimeTriggeredCallback.stop('<%= $this->Timer->ClientID %>')
+	</prop:ClientSide.OnComplete>
+</com:TActiveButton>
+	
+<com:TTimeTriggeredCallback Id="Timer" Interval="0.5" OnCallback="updateLbl" StartTimerOnLoad="false"/>
+
+
+</com:TContent>

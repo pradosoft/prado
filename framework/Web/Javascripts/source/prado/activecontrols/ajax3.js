@@ -319,8 +319,7 @@ Object.extend(Prado.CallbackRequest,
 	 */
 	dispatchNormalRequest : function(callback)
 	{
-		//Logger.info("dispatching normal request");
-		//new Prado.AjaxRequest(callback);
+		callback.options.postBody = callback._getPostData(),
 		callback.request(callback.url);
 		return true;
 	},
@@ -352,7 +351,7 @@ Object.extend(Prado.CallbackRequest,
 		var self = Prado.CallbackRequest;
 		var pagestate = $(self.FIELD_CALLBACK_PAGESTATE);
 		var enabled = request.ActiveControl.EnablePageStateUpdate && request.ActiveControl.HasPriority;
-		var aborted = self.currentRequest == null;
+		var aborted = typeof(self.currentRequest) == 'undefined' || self.currentRequest == null;
 		if(enabled && !aborted && pagestate)
 		{
 			var data = request.getBodyContentPart(self.PAGESTATE_HEADER);
@@ -393,19 +392,20 @@ Object.extend(Prado.CallbackRequest,
 		callback.options.postBody = callback._getPostData(),
 
 		//callback.request = new Prado.AjaxRequest(callback);
-		callback.request(callback.url);
 		callback.timeout = setTimeout(function()
 		{
 			//Logger.warn("priority timeout");
 			self.abortRequest(callback.id);
 		},callback.ActiveControl.RequestTimeOut);
+		callback.request(callback.url);
 		//Logger.debug("dispatched "+self.currentRequest.id + " ...")
 	},
 
 	endCurrentRequest : function()
 	{
 		var self = Prado.CallbackRequest;
-		clearTimeout(self.currentRequest.timeout);
+		if(typeof(self.currentRequest) != 'undefined' && self.currentRequest != null)
+			clearTimeout(self.currentRequest.timeout);
 		self.currentRequest=null;
 	},
 
