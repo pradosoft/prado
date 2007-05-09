@@ -77,8 +77,11 @@ class TScaffoldListView extends TScaffoldBase
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		//if(!$this->getPage()->getIsPostBack())
-		$this->initializeSort();
+		if(!$this->getPage()->getIsPostBack() || $this->getViewState('CurrentClass')!=$this->getRecordClass())
+		{
+			$this->initializeSort();
+			$this->setViewState('CurrentClass', $this->getRecordClass());
+		}
 		$this->loadRecordData();
 	}
 
@@ -87,9 +90,10 @@ class TScaffoldListView extends TScaffoldBase
 	 */
 	protected function loadRecordData()
 	{
+		$search = new TActiveRecordCriteria($this->getSearchCondition(), $this->getSearchParameters());
+		$this->_list->setVirtualItemCount($this->getRecordFinder()->count($search));
 		$finder = $this->getRecordFinder();
 		$criteria = $this->getRecordCriteria();
-		$this->_list->setVirtualItemCount($this->getRecordFinder()->count($criteria));
 		$this->_list->setDataSource($finder->findAll($criteria));
 		$this->_list->dataBind();
 	}

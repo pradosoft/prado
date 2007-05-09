@@ -901,7 +901,8 @@ demos/northwind-db/protected/database/Supplier.php -text
 demos/northwind-db/protected/database/Territory.php -text
 demos/northwind-db/protected/database/sqlmap.xml -text
 demos/northwind-db/protected/pages/Home.page -text
-demos/northwind-db/protected/pages/Home.php -text
+demos/northwind-db/protected/pages/NorthwindCrud.page -text
+demos/northwind-db/protected/pages/NorthwindCrud.php -text
 demos/northwind-db/protected/pages/northwind.gif -text
 demos/personal/index.php -text
 demos/personal/protected/.htaccess -text

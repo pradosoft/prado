@@ -1,6 +1,6 @@
 <?php
 
-class Home extends TPage
+class NorthwindCrud extends TPage
 {
 	function onInit($param)
 	{
@@ -17,7 +17,7 @@ class Home extends TPage
 		{
 			if($entry[0]==='.')
 				continue;
-			else if(is_file($directory.'/'.$entry))
+			else if(is_file($directory.'/'.$entry) && strpos($entry,'.php'))
 				$list[] = str_replace('.php', '', $entry);
 		}
 		closedir($folder);

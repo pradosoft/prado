@@ -1,12 +1,13 @@
 <html>
-<com:THead Title="Welcome to Prado" />
+<com:THead Title="Northwind Database Sample" />
 <body>
-<h1>Welcome to PRADO!</h1>
-<com:TForm>
-	
-	<com:TDropDownList ID="class_list" AutoPostBack="true"/>
-	<com:TScaffoldView ID="scaffold1" RecordClass="<%= $this->class_list->selectedItem->Text %>" />
-
-</com:TForm>
+<h1>Northwind Database Sample</h1>
+<p>
+The Northwind Traders sample database contains the sales data for a fictitious 
+company called Northwind Traders, which imports and exports specialty foods from around the world.
+The database contains information about customers, suppliers, products, orders and employees (as well as a few other bits of miscellaneous information). 
+<a href="?page=NorthwindCrud">View database</a>
+</p>
+<img src=<%~ northwind.gif %> />
 </body>
 </html>
