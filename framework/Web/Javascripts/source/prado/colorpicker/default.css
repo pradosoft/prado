@@ -3,8 +3,6 @@
 
 .TColorPicker_button
 {
-	border: 1px solid #919EA9;
-	background-color: #fff;
 }
 
 .TColorPicker
@@ -49,23 +47,16 @@
 }
 
 /** UI **/
-.TColorPicker_button
-{
-	position: absolute;	
-	font-size: 0;
-	padding: 1px;
-	margin-left: 1px;
-}
-
 .TColorPicker_button img
 {
-	width: 18px; 
-	height: 18px;
-}
-
-* html .TColorPicker_button
-{
-	margin-top: 1px;
+	border: 2px ridge ActiveBorder;
+	background-color: #fff;
+	padding: 1px;
+	height: 16px;
+	width: 16px;
+	margin: 1px;
+	margin-bottom: -6px;
+	margin-bottom: expression(-4); /** IE hack **/
 }
 
 .TColorPicker

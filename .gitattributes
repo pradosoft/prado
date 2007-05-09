@@ -899,6 +899,7 @@ demos/northwind-db/protected/database/Region.php -text
 demos/northwind-db/protected/database/Shipper.php -text
 demos/northwind-db/protected/database/Supplier.php -text
 demos/northwind-db/protected/database/Territory.php -text
+demos/northwind-db/protected/database/sqlmap.xml -text
 demos/northwind-db/protected/pages/Home.page -text
 demos/northwind-db/protected/pages/Home.php -text
 demos/northwind-db/protected/pages/northwind.gif -text
@@ -2573,6 +2574,7 @@ tests/FunctionalTests/tickets/protected/pages/Ticket591.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket593.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket605.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket606.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket609.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket614.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket68.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket72.page -text

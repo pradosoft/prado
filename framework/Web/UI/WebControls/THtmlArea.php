@@ -268,9 +268,27 @@ class THtmlArea extends TTextBox
 		return $this->getViewState('CustomPluginPath');
 	}
 
+	/**
+	 * @return boolean enable compression of the javascript files, default is true.
+	 */
+	public function getEnableCompression()
+	{
+		return $this->getViewState('EnableCompression', true);
+	}
+
+	/**
+	 * @param boolean enable compression of the javascript files, default is true.
+	 */
+	public function setEnableCompression($value)
+	{
+		$this->setViewState('EnableCompression', TPropertyValue::ensureBoolean($value));
+	}
+
 	public function onPreRender($param)
 	{
-		$this->preLoadCompressedScript();
+		$this->loadJavascriptLibrary();
+		if($this->getEnableCompression())
+			$this->preLoadCompressedScript();
 	}
 
 	/**
@@ -310,8 +328,6 @@ class THtmlArea extends TTextBox
 	protected function preLoadCompressedScript()
 	{
 		$scripts = $this->getPage()->getClientScript();
-		if(!$scripts->isScriptFileRegistered('prado:THtmlArea'))
-			$scripts->registerScriptFile('prado:THtmlArea', $this->getScriptUrl());
 		$key = 'prado:THtmlArea:compressed';
 		if(!$scripts->isBeginScriptRegistered($key))
 		{
@@ -324,6 +340,13 @@ class THtmlArea extends TTextBox
 			$script = "if(typeof(tinyMCE_GZ)!='undefined'){ tinyMCE_GZ.init({$js}); }";
 			$scripts->registerBeginScript($key, $script);
 		}
+	}
+
+	protected function loadJavascriptLibrary()
+	{
+		$scripts = $this->getPage()->getClientScript();
+		if(!$scripts->isScriptFileRegistered('prado:THtmlArea'))
+			$scripts->registerScriptFile('prado:THtmlArea', $this->getScriptUrl());
 	}
 
 	/**
@@ -342,7 +365,10 @@ class THtmlArea extends TTextBox
 	 */
 	protected function getScriptUrl()
 	{
-		return $this->getScriptDeploymentPath().'/tiny_mce/tiny_mce_gzip.js';
+		if($this->getEnableCompression())
+			return $this->getScriptDeploymentPath().'/tiny_mce/tiny_mce_gzip.js';
+		else
+			return $this->getScriptDeploymentPath().'/tiny_mce/tiny_mce.js';
 	}
 
 	/**

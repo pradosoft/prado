@@ -461,6 +461,8 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 		this.button.style.backgroundColor = color.toString();
 		if(typeof(this.onChange) == "function")
 			this.onChange(color);
+		if(this.options.OnColorSelected)
+			this.options.OnColorSelected(this,color);
 	},
 
 	getFullPickerContainer : function(pickerID)

@@ -24,6 +24,8 @@ class TColorPicker extends TTextBox
 {
 	const SCRIPT_PATH = 'prado/colorpicker';
 
+	private $_clientSide;
+
 	/**
 	 * @return boolean whether the color picker should pop up when the button is clicked.
 	 */
@@ -106,6 +108,24 @@ class TColorPicker extends TTextBox
 	}
 
 	/**
+	 * @return TColorPickerClientSide javascript event options.
+	 */
+	public function getClientSide()
+	{
+		if(is_null($this->_clientSide))
+			$this->_clientSide = $this->createClientSide();
+		return $this->_clientSide;
+	}
+
+	/**
+	 * @return TColorPickerClientSide javascript validator event options.
+	 */
+	protected function createClientSide()
+	{
+		return new TColorPickerClientSide;
+	}
+
+	/**
 	 * Get javascript color picker options.
 	 * @return array color picker client-side options
 	 */
@@ -122,7 +142,7 @@ class TColorPicker extends TTextBox
 			$options['OKButtonText'] = $this->getOKButtonText();
 			$options['CancelButtonText'] = $this->getCancelButtonText();
 		}
-
+		$options = array_merge($options,$this->getClientSide()->getOptions()->toArray());
 		return $options;
 	}
 
@@ -219,6 +239,35 @@ class TColorPickerMode extends TEnumerable
 	const Simple='Simple';
 	const Basic='Basic';
 	const Full='Full';
+}
+
+/**
+ * TColorPickerClientSide class.
+ *
+ * Client-side javascript code options.
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Web.UI.WebControls
+ * @since 3.1
+ */
+class TColorPickerClientSide extends TClientSideOptions
+{
+	/**
+	 * @return string javascript code for when a color is selected.
+	 */
+	public function getOnColorSelected()
+	{
+		return $this->getOption('OnColorSelected');
+	}
+
+	/**
+	 * @param string javascript code for when a color is selected.
+	 */
+	public function setOnColorSelected($javascript)
+	{
+		$this->setFunction('OnColorSelected', $javascript);
+	}
 }
 
 ?>

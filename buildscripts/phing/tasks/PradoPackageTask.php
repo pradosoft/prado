@@ -1,5 +1,4 @@
 <?php
-
 require_once 'phing/Task.php';
 
 /**
@@ -55,7 +54,7 @@ class PradoPackageTask extends Task
 	function processPhp($content,$files)
 	{
 		$content = preg_replace('/^\s*Prado::trace.*\s*;\s*$/mu','',$content);
-		$content = preg_replace('/(PradoBase::using|Prado::using|require_once|include_once)\s*\(.*?\);/mu','',$content);
+		$content = preg_replace('/(PradoBase::using|Prado::using|require_once|include_once)\s*\([^\$].*?\);/mu','',$content);
 		$content = str_replace('Prado::', 'PradoBase::', $content);
 		$content = str_replace('PradoBase::getApplication()->getMode()', 'true', $content);
 		$content = str_replace('TApplicationMode::Debug', 'true', $content);

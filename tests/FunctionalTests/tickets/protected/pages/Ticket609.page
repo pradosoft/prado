@@ -1,0 +1,11 @@
+<com:TContent ID="Content">
+
+<com:TLabel ForControl="foo" Text="Choose Color:" /> 
+<com:TColorPicker ID="foo">
+	<prop:ClientSide.OnColorSelected>
+		alert(parameter);
+	</prop:ClientSide.OnColorSelected>
+</com:TColorPicker>
+Description
+
+</com:TContent>
