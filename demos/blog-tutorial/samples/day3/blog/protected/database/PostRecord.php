@@ -7,17 +7,18 @@ class PostRecord extends TActiveRecord
 	const TABLE='posts';
 
 	public $post_id;
+	public $author_id;
+	public $create_time;
+	public $title;
+	public $content;
+	public $status;
 
 	public $author;
 
-	public $create_time;
-
-	public $title;
-
-	public $content;
-
-	public $status;
-
+	protected static $RELATIONS=array
+	(
+		'author' => array(self::BELONGS_TO, 'UserRecord'),
+	);
 
 	public static function finder($className=__CLASS__)
 	{

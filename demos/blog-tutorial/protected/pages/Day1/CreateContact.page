@@ -47,37 +47,34 @@ We use template to organize the presentational layout of the feedback form. In t
 
 &lt;com:TForm> 
 
-<h1>Contact</h1>
-<p>Please fill out the following form to let me know your feedback on my blog. Thanks!</p>
-
 <span>Your Name:</span>
 &lt;com:TRequiredFieldValidator ControlToValidate="Name"
-	ErrorMessage="Please provide your name." 
-	Display="Dynamic" />
+    ErrorMessage="Please provide your name." 
+    Display="Dynamic" />
 <br/>
 &lt;com:TTextBox ID="Name" />
 
 <br/>
 <span>Your Email:</span>
 &lt;com:TRequiredFieldValidator ControlToValidate="Email"
-	ErrorMessage="Please provide your email address." 
-	Display="Dynamic" />
+    ErrorMessage="Please provide your email address." 
+    Display="Dynamic" />
 &lt;com:TEmailAddressValidator ControlToValidate="Email"
-	ErrorMessage="You entered an invalid email address." 
-	Display="Dynamic" />
+    ErrorMessage="You entered an invalid email address." 
+    Display="Dynamic" />
 <br/>
 &lt;com:TTextBox ID="Email" />
 
 <br/>
 <span>Feedback:</span>
 &lt;com:TRequiredFieldValidator ControlToValidate="Feedback"
-	ErrorMessage="Please provide your feedback." 
-	Display="Dynamic" />
+    ErrorMessage="Please provide your feedback." 
+    Display="Dynamic" />
 <br/>
 &lt;com:TTextBox ID="Feedback" 
-	TextMode="MultiLine" 
-	Rows="10"
-	Columns="40" />
+    TextMode="MultiLine" 
+    Rows="10"
+    Columns="40" />
 
 <br/>
 &lt;com:TButton Text="Submit" OnClick="submitButtonClicked" />
@@ -103,13 +100,13 @@ Besides <tt>TTextBox</tt> controls, the template also uses many validator contro
 <com:TTextHighlighter CssClass="source" Language="prado">
 <span>Your Email:</span>
 &lt;com:TRequiredFieldValidator 
-	ControlToValidate="Email"
-	ErrorMessage="Please provide your email address." 
-	Display="Dynamic" />
+    ControlToValidate="Email"
+    ErrorMessage="Please provide your email address." 
+    Display="Dynamic" />
 &lt;com:TEmailAddressValidator 
-	ControlToValidate="Email"
-	ErrorMessage="You entered an invalid email address." 
-	Display="Dynamic" />
+    ControlToValidate="Email"
+    ErrorMessage="You entered an invalid email address." 
+    Display="Dynamic" />
 <br/>
 &lt;com:TTextBox ID="Email" />
 <br/>
@@ -152,29 +149,29 @@ We thus write down the page class as follows:
 <?php
 class Contact extends TPage
 {
-	/**
-	 * Event handler for the OnClick event of the submit button.
-	 * @param TButton the button triggering the event
-	 * @param TEventParameter event parameter (null here)	 
-	 */
-	public function submitButtonClicked($sender, $param)
-	{
-		if ($this->IsValid)  // check if input validation is successful
-		{
-			// obtain the user name, email, feedback from the textboxes
-			$name = $this->Name->Text;  
-			$email = $this->Email->Text;
-			$feedback = $this->Feedback->Text;
-			
-			// send an email to administrator with the above information
-			$this->mailFeedback($name, $email, $feedback);
-		}
-	}
-	
-	protected function mailFeedback($name, $email, $feedback)
-	{
-		// implementation of sending the feedback email
-	}
+    /**
+     * Event handler for the OnClick event of the submit button.
+     * @param TButton the button triggering the event
+     * @param TEventParameter event parameter (null here)    
+     */
+    public function submitButtonClicked($sender, $param)
+    {
+        if ($this->IsValid)  // check if input validation is successful
+        {
+            // obtain the user name, email, feedback from the textboxes
+            $name = $this->Name->Text;  
+            $email = $this->Email->Text;
+            $feedback = $this->Feedback->Text;
+            
+            // send an email to administrator with the above information
+            $this->mailFeedback($name, $email, $feedback);
+        }
+    }
+    
+    protected function mailFeedback($name, $email, $feedback)
+    {
+        // implementation of sending the feedback email
+    }
 }
 ?>
 </com:TTextHighlighter>

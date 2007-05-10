@@ -135,13 +135,13 @@ We can specify master in code like the following to enable dynamic change of lay
 <?php
 class Contact extends TPage
 {
-	public function onPreInit($param)
-	{
-		parent::onPreInit($param);
-		$this->MasterClass='Path.To.NewLayout';
-	}
-	
-	// ...
+    public function onPreInit($param)
+    {
+        parent::onPreInit($param);
+        $this->MasterClass='Path.To.NewLayout';
+    }
+    
+    // ...
 }
 ?>
 </com:TTextHighlighter>

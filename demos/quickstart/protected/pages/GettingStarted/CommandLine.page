@@ -18,7 +18,7 @@ If you type <tt>php path/to/framework/prado-cli.php</tt>, you should see
 the following information. Alternatively, if you are not on Windows, 
 you may try to change the <tt>prado-cli.php</tt> into an executable
 and execute it as a script</p>
-<com:TTextHighlighter Language="cli" CssClass="source block-content" id="code_70006">
+<com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70006">
 Command line tools for Prado 3.0.5.
 usage: php prado-cli.php action <parameter> [optional]
 example: php prado-cli.php -c mysite
@@ -57,11 +57,11 @@ Prado project. For example, let us load the blog demo project. Assume that your
 command line is in the <tt>prado</tt> distribution directory and you type.
 </p>
 <p id="70052" class="block-content">
-<com:TTextHighlighter Language="cli" CssClass="source block-content" id="code_70007">
+<com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70007">
 $: php framework/prado-cli.php shell demos/blog
 </com:TTextHighlighter>
 The output should be
-<com:TTextHighlighter Language="cli" CssClass="source block-content" id="code_70008">
+<com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70008">
 Command line tools for Prado 3.0.5.
 ** Loaded Prado application in directory "demos\blog\protected".
 PHP-Shell - Version 0.3.1
@@ -75,18 +75,18 @@ Then we will get an instance of the Prado blog application, and from
 that instance we want an instance of the <tt>'data'</tt> module. Notice that
 a <b>semicolon</b> at the end of the line <b>suppresses the output</b>.
 
-<com:TTextHighlighter Language="cli" CssClass="source block-content" id="code_70009">
+<com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70009">
 >> $app = Prado::getApplication();
 
 >> $db = $app->getModule('data');
 </com:TTextHighlighter>
 Lastly, we want to use the data module to query for a post with <tt>ID=1</tt>. Notice that
 we <b>leave out the semicolon</b> to show the results.
-<com:TTextHighlighter Language="cli" CssClass="source block-content" id="code_70010">
+<com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70010">
 >> $db->queryPostByID(1)
 </com:TTextHighlighter>
 There should not be any errors and you should see the following. 
-<com:TTextHighlighter Language="cli" CssClass="source block-content" id="code_70011">
+<com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70011">
 PostRecord#1
 (
     [ID] => 1

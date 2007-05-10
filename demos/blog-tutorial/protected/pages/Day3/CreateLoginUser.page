@@ -31,19 +31,19 @@ Below we show the template for <tt>LoginPage</tt>. As we see, the page mainly co
 
 <span>Username:</span>
 &lt;com:TRequiredFieldValidator 
-	ControlToValidate="Username"
-	ErrorMessage="Please provide your username." 
-	Display="Dynamic" />
+    ControlToValidate="Username"
+    ErrorMessage="Please provide your username." 
+    Display="Dynamic" />
 <br/>
 &lt;com:TTextBox ID="Username" />
 
 <br/>
 <span>Password:</span>
 &lt;com:TCustomValidator
-	ControlToValidate="Password"
-	ErrorMessage="Your entered an invalid password."
-	Display="Dynamic"
-	OnServerValidate="validateUser" />
+    ControlToValidate="Password"
+    ErrorMessage="Your entered an invalid password."
+    Display="Dynamic"
+    OnServerValidate="validateUser" />
 <br/>
 &lt;com:TTextBox ID="Password" TextMode="Password" />
 
@@ -62,36 +62,36 @@ Like the <a href="?page=Day1.CreateContact">Contact</a> page, the <tt>LoginUser<
 <com:TTextHighlighter CssClass="source" Language="php">
 class LoginUser extends TPage
 {
-	/**
-	 * Validates whether the username and password are correct.
-	 * This method responds to the TCustomValidator's OnServerValidate event.
-	 * @param mixed event sender
-	 * @param mixed event parameter
-	 */
-	public function validateUser($sender,$param)
-	{
-		$authManager=$this->Application->getModule('auth');
-		if(!$authManager->login($this->Username->Text,$this->Password->Text))
-			$param->IsValid=false;  // tell the validator that validation fails
-	}
+    /**
+     * Validates whether the username and password are correct.
+     * This method responds to the TCustomValidator's OnServerValidate event.
+     * @param mixed event sender
+     * @param mixed event parameter
+     */
+    public function validateUser($sender,$param)
+    {
+        $authManager=$this->Application->getModule('auth');
+        if(!$authManager->login($this->Username->Text,$this->Password->Text))
+            $param->IsValid=false;  // tell the validator that validation fails
+    }
 
-	/**
-	 * Redirects the user's browser to appropriate URL if login succeeds.
-	 * This method responds to the login button's OnClick event.
-	 * @param mixed event sender
-	 * @param mixed event parameter
-	 */
-	public function loginButtonClicked($sender,$param)
-	{
-		if($this->Page->IsValid)  // all validations succeed
-		{
-			// obtain the URL of the privileged page that the user wanted to visit originally
-			$url=$this->Application->getModule('auth')->ReturnUrl;
-			if(empty($url))  // the user accesses the login page directly
-				$url=$this->Service->constructUrl($this->Service->DefaultPage);
-			$this->Response->redirect($url);
-		}
-	}
+    /**
+     * Redirects the user's browser to appropriate URL if login succeeds.
+     * This method responds to the login button's OnClick event.
+     * @param mixed event sender
+     * @param mixed event parameter
+     */
+    public function loginButtonClicked($sender,$param)
+    {
+        if($this->Page->IsValid)  // all validations succeed
+        {
+            // obtain the URL of the privileged page that the user wanted to visit originally
+            $url=$this->Application->getModule('auth')->ReturnUrl;
+            if(empty($url))  // the user accesses the login page directly
+                $url=$this->Service->constructUrl($this->Service->DefaultPage);
+            $this->Response->redirect($url);
+        }
+    }
 }
 </com:TTextHighlighter>
 
@@ -117,12 +117,12 @@ We modify the footer section of the <tt>MainLayout</tt>'s template as follows. T
 <com:TTextHighlighter CssClass="source" Language="prado">
 <div id="footer">
 &lt;com:THyperLink Text="Login" 
-	NavigateUrl="&lt;%= $this->Service->constructUrl('users.LoginUser') %>"
-	Visible="&lt;%= $this->User->IsGuest %>" />
+    NavigateUrl="&lt;%= $this->Service->constructUrl('users.LoginUser') %>"
+    Visible="&lt;%= $this->User->IsGuest %>" />
 
 &lt;com:TLinkButton Text="Logout" 
-	OnClick="logoutButtonClicked"
-	Visible="&lt;%= !$this->User->IsGuest %>" />
+    OnClick="logoutButtonClicked"
+    Visible="&lt;%= !$this->User->IsGuest %>" />
 
 <br/>
 &lt;%= PRADO::poweredByPrado() %>
@@ -136,18 +136,18 @@ Since the "logout" button attaches its <tt>OnClick</tt> event with a method call
 <com:TTextHighlighter CssClass="source" Language="php">
 class MainLayout extends TTemplateControl
 {
-	/**
-	 * Logs out a user.
-	 * This method responds to the "logout" button's OnClick event.
-	 * @param mixed event sender
-	 * @param mixed event parameter
-	 */
-	public function logoutButtonClicked($sender,$param)
-	{
-		$this->Application->getModule('auth')->logout();
-		$url=$this->Service->constructUrl($this->Service->DefaultPage);
-		$this->Response->redirect($url);
-	}
+    /**
+     * Logs out a user.
+     * This method responds to the "logout" button's OnClick event.
+     * @param mixed event sender
+     * @param mixed event parameter
+     */
+    public function logoutButtonClicked($sender,$param)
+    {
+        $this->Application->getModule('auth')->logout();
+        $url=$this->Service->constructUrl($this->Service->DefaultPage);
+        $this->Response->redirect($url);
+    }
 }
 </com:TTextHighlighter>
 

@@ -11,11 +11,12 @@ CREATE TABLE users (
 /* create posts table */
 CREATE TABLE posts (
   post_id       INTEGER NOT NULL PRIMARY KEY,
-  author        VARCHAR(128) NOT NULL,  /* references users.username */
+  author_id     VARCHAR(128) NOT NULL   
+                    CONSTRAINT fk_author REFERENCES users(username),
   create_time   INTEGER NOT NULL,       /* UNIX timestamp */
   title         VARCHAR(256) NOT NULL,  /* title of the post */
-  content       TEXT NOT NULL,          /* content of the post */
-  status		INTEGER NOT NULL		/* 0: published; 1: draft; 2: pending; 2: denied */
+  content       TEXT,                   /* post body */
+  status        INTEGER NOT NULL        /* 0: published; 1: draft; 2: pending; 2: denied */
 );
 
 /* insert some initial data records for testing */

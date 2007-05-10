@@ -13,7 +13,7 @@ Assume <tt>blog</tt> is the name of the directory to hold the whole blog system,
 <p>
 Under the <tt>blog</tt> directory, we run the <a href="http://www.pradosoft.com/demos/quickstart/?page=GettingStarted.CommandLine">PRADO command line tool</a> with the following command (replace <tt>path/to</tt> with the actual path to the PRADO framework installation):
 </p>
-<com:TTextHighlighter CssClass="source">
+<com:TTextHighlighter CssClass="source cli">
 php path/to/prado-cli.php -c .
 </com:TTextHighlighter>
 

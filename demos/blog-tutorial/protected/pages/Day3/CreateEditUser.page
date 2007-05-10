@@ -44,23 +44,23 @@ As you may have guessed, the page template <tt>EditUser</tt> is largely the same
 <br/>
 <span>Re-type Password:</span>
 &lt;com:TCompareValidator
-	ControlToValidate="Password"
-	ControlToCompare="Password2"
-	ErrorMessage="Your password entries did not match."
-	Display="Dynamic" />
+    ControlToValidate="Password"
+    ControlToCompare="Password2"
+    ErrorMessage="Your password entries did not match."
+    Display="Dynamic" />
 <br/>
 &lt;com:TTextBox ID="Password2" TextMode="Password" />
 
 <br/>
 <span>Email Address:</span>
 &lt;com:TRequiredFieldValidator
-	ControlToValidate="Email"
-	ErrorMessage="Please provide your email address."
-	Display="Dynamic" />
+    ControlToValidate="Email"
+    ErrorMessage="Please provide your email address."
+    Display="Dynamic" />
 &lt;com:TEmailAddressValidator
-	ControlToValidate="Email"
-	ErrorMessage="You entered an invalid email address."
-	Display="Dynamic" />
+    ControlToValidate="Email"
+    ErrorMessage="You entered an invalid email address."
+    Display="Dynamic" />
 <br/>
 &lt;com:TTextBox ID="Email" />
 
@@ -69,8 +69,8 @@ As you may have guessed, the page template <tt>EditUser</tt> is largely the same
 <span>Role:</span>
 <br/>
 &lt;com:TDropDownList ID="Role">
-	&lt;com:TListItem Text="Normal User" Value="0" />
-	&lt;com:TListItem Text="Administrator" Value="1" />
+    &lt;com:TListItem Text="Normal User" Value="0" />
+    &lt;com:TListItem Text="Administrator" Value="1" />
 &lt;/com:TDropDownList>
 &lt;/com:TControl>
 
@@ -100,82 +100,83 @@ Based on the above description and template, we need to write a page class that 
 <com:TTextHighlighter CssClass="source" Language="php">
 class EditUser extends TPage
 {
-	/**
-	 * Initializes the inputs with existing user data.
-	 * This method is invoked by the framework when the page is being initialized.
-	 * @param mixed event parameter
-	 */
-	public function onInit($param)
-	{
-		parent::onInit($param);
-		if(!$this->IsPostBack)  // if the page is initially requested
-		{
-			// Retrieves the existing user data. This is equivalent to:
-			// $userRecord=$this->getUserRecord();
-			$userRecord=$this->UserRecord;
+    /**
+     * Initializes the inputs with existing user data.
+     * This method is invoked by the framework when the page is being initialized.
+     * @param mixed event parameter
+     */
+    public function onInit($param)
+    {
+        parent::onInit($param);
+        if(!$this->IsPostBack)  // if the page is initially requested
+        {
+            // Retrieves the existing user data. This is equivalent to:
+            // $userRecord=$this->getUserRecord();
+            $userRecord=$this->UserRecord;
 
-			// Populates the input controls with the existing user data
-			$this->Username->Text=$userRecord->username;
-			$this->Email->Text=$userRecord->email;
-			$this->Role->SelectedValue=$userRecord->role;
-			$this->FirstName->Text=$userRecord->first_name;
-			$this->LastName->Text=$userRecord->last_name;
-		}
-	}
+            // Populates the input controls with the existing user data
+            $this->Username->Text=$userRecord->username;
+            $this->Email->Text=$userRecord->email;
+            $this->Role->SelectedValue=$userRecord->role;
+            $this->FirstName->Text=$userRecord->first_name;
+            $this->LastName->Text=$userRecord->last_name;
+        }
+    }
 
-	/**
-	 * Saves the user account if all inputs are valid.
-	 * This method responds to the OnClick event of the "save" button.
-	 * @param mixed event sender
-	 * @param mixed event parameter
-	 */
-	public function saveButtonClicked($sender,$param)
-	{
-		if($this->IsValid)  // when all validations succeed
-		{
-			// Retrieves the existing user data. This is equivalent to:
-			$userRecord=$this->UserRecord;
+    /**
+     * Saves the user account if all inputs are valid.
+     * This method responds to the OnClick event of the "save" button.
+     * @param mixed event sender
+     * @param mixed event parameter
+     */
+    public function saveButtonClicked($sender,$param)
+    {
+        if($this->IsValid)  // when all validations succeed
+        {
+            // Retrieves the existing user data. This is equivalent to:
+            $userRecord=$this->UserRecord;
 
-			// Fetches the input data
-			$userRecord->username=$this->Username->Text;
-			// update password when the input is not empty
-			if(!empty($this->Password->Text))
-				$userRecord->password=$this->Password->Text;
-			$userRecord->email=$this->Email->Text;
-			// update the role if the current user is an administrator
-			if($this->User->IsAdmin)
-				$userRecord->role=(int)$this->Role->SelectedValue;
-			$userRecord->first_name=$this->FirstName->Text;
-			$userRecord->last_name=$this->LastName->Text;
+            // Fetches the input data
+            $userRecord->username=$this->Username->Text;
+            // update password when the input is not empty
+            if(!empty($this->Password->Text))
+                $userRecord->password=$this->Password->Text;
+            $userRecord->email=$this->Email->Text;
+            // update the role if the current user is an administrator
+            if($this->User->IsAdmin)
+                $userRecord->role=(int)$this->Role->SelectedValue;
+            $userRecord->first_name=$this->FirstName->Text;
+            $userRecord->last_name=$this->LastName->Text;
 
-			// saves to the database via Active Record mechanism
-			$userRecord->save();
+            // saves to the database via Active Record mechanism
+            $userRecord->save();
 
-			// redirects the browser to the homepage
-			$this->Response->redirect($this->Service->constructUrl($this->Service->DefaultPage));
-		}
-	}
+            // redirects the browser to the homepage
+            $url=$this->Service->constructUrl($this->Service->DefaultPage);
+            $this->Response->redirect($url);
+        }
+    }
 
-	/**
-	 * Returns the user data to be editted.
-	 * @return UserRecord the user data to be editted.
-	 * @throws THttpException if the user data is not found.
-	 */
-	protected function getUserRecord()
-	{
-		// the user to be editted is the currently logged-in user
-		$username=$this->User->Name;
-		// if the 'username' GET var is not empty and the current user
-		// is an administrator, we use the GET var value instead.
-		if($this->User->IsAdmin && $this->Request['username']!==null)
-			$username=$this->Request['username'];
+    /**
+     * Returns the user data to be editted.
+     * @return UserRecord the user data to be editted.
+     * @throws THttpException if the user data is not found.
+     */
+    protected function getUserRecord()
+    {
+        // the user to be editted is the currently logged-in user
+        $username=$this->User->Name;
+        // if the 'username' GET var is not empty and the current user
+        // is an administrator, we use the GET var value instead.
+        if($this->User->IsAdmin && $this->Request['username']!==null)
+            $username=$this->Request['username'];
 
-		// use Active Record to look for the specified username
-		$userRecord=UserRecord::finder()->findByPk($username);
-		if(!($userRecord instanceof UserRecord))
-			throw new THttpException(500,'Username is invalid.');
-		return $userRecord;
-	}
+        // use Active Record to look for the specified username
+        $userRecord=UserRecord::finder()->findByPk($username);
+        if(!($userRecord instanceof UserRecord))
+            throw new THttpException(500,'Username is invalid.');
+        return $userRecord;
+    }
 }
 </com:TTextHighlighter>
 

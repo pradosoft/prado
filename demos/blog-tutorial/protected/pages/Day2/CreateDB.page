@@ -30,9 +30,11 @@ CREATE TABLE users (
 /* create posts table */
 CREATE TABLE posts (
   post_id       INTEGER NOT NULL PRIMARY KEY,
-  author        VARCHAR(128) NOT NULL,  /* references users.username */
+  author_id     VARCHAR(128) NOT NULL   
+                    CONSTRAINT fk_author REFERENCES users(username),
   create_time   INTEGER NOT NULL,       /* UNIX timestamp */
   title         VARCHAR(256) NOT NULL,  /* title of the post */
+  content       TEXT,                   /* post body */
   status        INTEGER NOT NULL        /* 0: published; 1: draft; 2: pending; 2: denied */
 );
 
@@ -43,14 +45,17 @@ INSERT INTO posts VALUES (NULL, 'admin', 1175708482, 'first post', 'this is my f
 </com:TTextHighlighter>
 
 <com:NoteBox>
-SQLite does not support <a href="http://www.sqlite.org/omitted.html">foreign key constraint</a>. Therefore, we will write PHP code to ensure that the <tt>posts.author</tt> field contains valid data. Also, we are exploiting the fact that the <tt>posts.post_id</tt> field is <a href="http://www.sqlite.org/autoinc.html">auto-incremental</a> if we assign NULL to it.
+SQLite does not support <a href="http://www.sqlite.org/omitted.html">foreign key constraint</a> such that
+the constraints can still be defined but will be ignored by SQLite.
+Therefore, we will write PHP code to ensure that the <tt>posts.author_id</tt> field contains valid data. 
+Also, we are exploiting the fact that the <tt>posts.post_id</tt> field is <a href="http://www.sqlite.org/autoinc.html">auto-incremental</a> if we assign NULL to it.
 </com:NoteBox>
 
 <p>
 We then use the <a href="http://www.sqlite.org/download.html">SQLite command line tool</a> to create the SQLite database. We create a directory <tt>protected/data</tt> to hold the SQLite database file. We now execute the following command under the directory <tt>protected/data</tt>:
 </p>
 
-<com:TTextHighlighter CssClass="source">
+<com:TTextHighlighter CssClass="source cli">
 sqlite3 blog.db < ../schema.sql
 </com:TTextHighlighter>
 

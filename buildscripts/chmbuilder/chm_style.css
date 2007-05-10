@@ -108,6 +108,12 @@ a
 	margin: 0;
 }
 
+.cli
+{
+	color: white;
+	background-color: #555;
+}
+
 .runbar
 {
 	margin: 1em 0 1em 0;

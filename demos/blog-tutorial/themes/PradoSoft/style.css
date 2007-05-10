@@ -186,6 +186,12 @@ a
 	margin: 0.2em;
 }
 
+.cli
+{
+	color: white;
+	background-color: #555;
+}
+
 .source pre {
 	font-family: "Courier New", Courier, mono;
 	margin: 0;

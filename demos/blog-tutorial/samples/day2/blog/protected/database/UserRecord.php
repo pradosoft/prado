@@ -7,17 +7,18 @@ class UserRecord extends TActiveRecord
 	const TABLE='users';
 
 	public $username;
-
 	public $email;
-
 	public $password;
-
 	public $role;
-
 	public $first_name;
-
 	public $last_name;
 
+	public $posts=array();
+
+	protected static $RELATIONS=array
+	(
+		'posts' => array(self::HAS_MANY, 'PostRecord'),
+	);
 
 	public static function finder($className=__CLASS__)
 	{
