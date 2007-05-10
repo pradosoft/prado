@@ -1,0 +1,77 @@
+<com:TContent ID="Content">
+<com:TTextBox ID="t1" />
+<com:TRequiredFieldValidator 	Display="Dynamic"
+										ControlToValidate="t1"
+										FocusOnError="true"
+										ErrorMessage="Error t1" />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+
+<com:TTextBox ID="t2" />
+<com:TRequiredFieldValidator 	Display="Dynamic"
+										ControlToValidate="t2"
+										FocusOnError="true"
+										ErrorMessage="Error t2" />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+
+<com:TButton Text="Submit !" />
+</com:TContent>

@@ -215,11 +215,23 @@ Prado.ValidationManager.prototype =
 	{
 		var partition = this.validatorPartition(group);
 		var valid = partition[0].invoke('validate', source).all();
+		this.focusOnError(partition[0]);
 		partition[1].invoke('hide');
 		this.updateSummary(group, true);
 		return valid;
 	},
 
+	/**
+	 * Focus on the first validator that is invalid and options.FocusOnError is true.
+	 */
+	focusOnError : function(validators)
+	{
+		for(var i = 0; i < validators.length; i++)
+		{
+			if(!validators[i].isValid && validators[i].options.FocusOnError)
+				return Prado.Element.focus(validators[i].options.FocusElementID);
+		}
+	},
 
 	/**
 	 * @return array[0] validators belong to a group if group is given, otherwise validators
@@ -602,8 +614,8 @@ Prado.WebUI.TBaseValidator.prototype =
 	{
 		this.refreshControlAndMessage();
 
-		if(this.options.FocusOnError && !this.isValid )
-			Prado.Element.focus(this.options.FocusElementID);
+		//if(this.options.FocusOnError && !this.isValid )
+		//	Prado.Element.focus(this.options.FocusElementID);
 
 		this.visible = true;
 	},
