@@ -2834,6 +2834,8 @@ tests/simple_unit/TableGateway/MagicCallTest.php -text
 tests/simple_unit/TableGateway/TableGatewayPgsqlTest.php -text
 tests/simple_unit/TableGateway/TableInfoGatewayTest.php -text
 tests/simple_unit/TableGateway/TestFindByPk.php -text
+tests/simple_unit/Tickets/Ticket589Test.php -text
+tests/simple_unit/Tickets/sqlmap.xml -text
 tests/simple_unit/application.xml -text
 tests/simple_unit/unit.php -text
 tests/simple_unit/ws.php -text
