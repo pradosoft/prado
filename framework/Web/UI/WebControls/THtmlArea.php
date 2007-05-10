@@ -284,14 +284,6 @@ class THtmlArea extends TTextBox
 		$this->setViewState('EnableCompression', TPropertyValue::ensureBoolean($value));
 	}
 
-	public function onPreRender($param)
-	{
-		$this->loadJavascriptLibrary();
-		if($this->getEnableCompression())
-			$this->preLoadCompressedScript();
-		$this->applyJavascriptFixes();
-	}
-
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This method overrides the parent implementation by registering
@@ -305,6 +297,12 @@ class THtmlArea extends TTextBox
 			$writer->addAttribute('id',$this->getClientID());
 			$this->registerEditorClientScript($writer);
 		}
+
+		$this->loadJavascriptLibrary();
+		if($this->getEnableCompression())
+			$this->preLoadCompressedScript();
+		$this->applyJavascriptFixes();
+
 		parent::addAttributesToRender($writer);
 	}
 
