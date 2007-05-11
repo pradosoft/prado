@@ -1,35 +1,12 @@
 <?php
-
 Prado::using('Application.pages.AddressRecord');
 /**
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$
  * @since 3.1
  */
-class AddressProvider extends TApplicationComponent
+class AddressProvider
 {
-	/**
-	 * @throws exception if not logged in
-	 */ 
-	public function __construct($server)
-	{
-		$authMethods = $server->getRequestedMethod()!=='login';
-		$guestUser = $this->User ? $this->User->IsGuest : true;
-		if($authMethods && $guestUser)
-			throw new TException('authentication required');
-	}
-
-	/**
-	 * @param string $username
-	 * @param string $password
-	 * @return boolean
-	 * @soapmethod
-	 */
-	public function login($username, $password)
-	{
-		return $this->Application->Modules['auth']->login($username, $password);
-	}
-
 	/**
 	 * @return AddressRecord[]
 	 * @soapmethod
