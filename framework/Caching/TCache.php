@@ -122,6 +122,8 @@ abstract class TCache extends TModule implements ICache
 		if(($value=$this->getValue($this->generateUniqueKey($id)))!==false)
 		{
 			$data=unserialize($value);
+			if(!is_array($value))
+				return false;
 			if(!($data[1] instanceof ICacheDependency) || !$data[1]->getHasChanged())
 				return $data[0];
 		}
