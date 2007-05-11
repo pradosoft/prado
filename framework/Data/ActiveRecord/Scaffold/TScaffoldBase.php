@@ -99,6 +99,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	{
 		$this->_record = $obj->_record;
 		$this->setRecordClass($obj->getRecordClass());
+		$this->setEnableDefaultStyle($obj->getEnableDefaultStyle());
 	}
 
 	/**
@@ -174,13 +175,32 @@ abstract class TScaffoldBase extends TTemplateControl
 	}
 
 	/**
+	 * @return boolean enable default stylesheet, default is true.
+	 */
+	public function getEnableDefaultStyle()
+	{
+		return $this->getViewState('EnableDefaultStyle', true);
+	}
+
+	/**
+	 * @param boolean enable default stylesheet, default is true.
+	 */
+	public function setEnableDefaultStyle($value)
+	{
+		return $this->setViewState('EnableDefaultStyle', TPropertyValue::ensureBoolean($value), true);
+	}
+
+	/**
 	 * Publish the default stylesheet file.
 	 */
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		$url = $this->publishAsset($this->getDefaultStyle().'.css');
-		$this->getPage()->getClientScript()->registerStyleSheetFile($url,$url);
+		if($this->getEnableDefaultStyle())
+		{
+			$url = $this->publishAsset($this->getDefaultStyle().'.css');
+			$this->getPage()->getClientScript()->registerStyleSheetFile($url,$url);
+		}
 	}
 }
 
