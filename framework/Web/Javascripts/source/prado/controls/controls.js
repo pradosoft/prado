@@ -38,7 +38,7 @@ Prado.WebUI.PostBackControl.prototype =
 			if(typeof(onclicked) == "boolean")
 				doPostBack = onclicked;
 		}
-		if(doPostBack)
+		if(doPostBack && !src.attributes['disabled'])
 			this.onPostBack(event,options);
 		if(typeof(onclicked) == "boolean" && !onclicked)
 			Event.stop(event);
