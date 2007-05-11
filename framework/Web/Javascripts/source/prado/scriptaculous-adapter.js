@@ -210,6 +210,17 @@ Prado.Element =
 			Event.fireEvent(el,'click');
 	},
 
+	isDisabled : function(element)
+	{
+		if(!element.attributes['disabled']) //FF
+			return false;
+		var value = element.attributes['disabled'].nodeValue;
+		if(typeof(value)=="string")
+			return value.toLowerCase() == "disabled";
+		else
+			return value == true;
+	},
+
 	setAttribute : function(element, attribute, value)
 	{
 		var el = $(element);
