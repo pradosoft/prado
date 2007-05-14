@@ -7,13 +7,13 @@
 
 <body>
 <h1>PRADO Framework for PHP 5 </h1>
-<p>Version 3.1.0 beta, April 8, 2007<br>
+<p>Version 3.1.0 RC, May 14, 2007<br>
 Copyright&copy; 2004-2007 by <a href="http://www.pradosoft.com/">PradoSoft</a><br>
 All Rights Reserved.
 </p>
 
 <p>
-PRADO is a component-based and event-driven framework for Web application   development in PHP 5. 
+PRADO is a component-based and event-driven framework for Web application   development in PHP 5.
 </p>
 <p>
 PRADO is best suitable for creating Web applications that are highly user-interactive. It can be used to develop systems as simple as a blog system to those as complex as a content management system (CMS) or a complete e-commerce solution. Because PRADO promotes object-oriented programming (OOP) through its component-based methodology, it fits extremely well for team work and enterprise development. Its event-driven programming pattern helps developers gain better focus on business logic rather than distracted by various tedious and repetitive low-level coding handling.
@@ -52,13 +52,13 @@ After downloading the latest PRADO release file, unpack it to a Web-accessible d
   <li><a href="demos/blog-tutorial/index.php">PRADO Blog Tutorial</a> (incomplete)</li>
   <li><a href="demos/quickstart/index.php">PRADO QuickStart Tutorial</a> (contains many small demos)</li>
   <li><a href="demos/blog/index.php">PRADO Blog</a> (requires php_sqlite extension)</li>
-  <li><a href="demos/time-tracker/index.php">Time Tracker</a> (requires php_pdo and php_pdo_mysql extensions)</li>  
+  <li><a href="demos/time-tracker/index.php">Time Tracker</a> (requires php_pdo and php_pdo_mysql extensions)</li>
   <li><a href="demos/composer/index.php">PRADO Component Writer</a></li>
   <li><a href="demos/chat/index.php">Chat</a> (requires php_pdo and php_pdo_sqlite extensions)</li>
   <li><a href="demos/currency-converter/index.php">Currency Converter</a></li>
-  <li><a href="demos/soap/index.php">SOAP</a> (requires php_soap extension)</li>  
+  <li><a href="demos/soap/index.php">SOAP</a> (requires php_soap extension)</li>
   <li><a href="demos/personal/index.php">Personal Website</a></li>
-  <li><a href="demos/address-book/index.php">Addressbook</a> (requires php_soap, php_pdo and php_pdo_sqlite extensions)</li>
+  <li><a href="demos/address-book/index.php">Flex Addressbook</a> (requires php_soap, php_pdo and php_pdo_sqlite extensions)</li>
   <!--<li><a href="demos/sqlmap/index.php">SqlMap Tutorial</a> (not completed yet)</li> -->
   <li><a href="demos/northwind-db/index.php">Northwind database</a> (requires php_pdo and php_pdo_sqlite extensions)</li>
 </ul>
@@ -66,7 +66,7 @@ After downloading the latest PRADO release file, unpack it to a Web-accessible d
 <h2>Editor Support</h2>
 <p>
 A Macromedia Dreamweaver extension can be found under <b>editors/Dreamweaver</b>.
-This extension contains a tag library that enables Dreamweaver to auto-complete 
+This extension contains a tag library that enables Dreamweaver to auto-complete
 PRADO component tags when you use it to edit PRADO templates.
 </p>
 
@@ -84,9 +84,7 @@ PRADO component tags when you use it to edit PRADO templates.
 <li><a href="mailto:qiang.xue@gmail.com">Qiang Xue</a></li>
 <li><a href="mailto:weizhuo@gmail.com">Xiang Wei Zhuo</a></li>
 <li><a href="mailto:jrags@jasrags.net">Jason Ragsdale</a></li>
-<li><a href="mailto:alex@linium.net">Alex Flint</a></li>
 <li><a href="mailto:nyeholt@optushome.com.au">Marcus Nyeholt</a></li>
-<li><a href="mailto:luftyluft@gmail.com">Brian Luft</a></li>
 <li><a href="mailto:carl@decart.no">Carl Mathisen</a></li>
 <li><a href="mailto:compte_messagerie@hotmail.com">Alban Hanry</a></li>
 <li><a href="mailto:knut.urdalen@gmail.com">Knut Urdalen</a></li>
@@ -101,6 +99,8 @@ PRADO component tags when you use it to edit PRADO templates.
 
 <h3>Past Team Members</h3>
 <ul>
+<li><a href="mailto:alex@linium.net">Alex Flint</a></li>
+<li><a href="mailto:luftyluft@gmail.com">Brian Luft</a></li>
 <li><a href="mailto:j.todd.patrick@gmail.com">Todd Patrick</a></li>
 <li><a href="mailto:pimvanderzwet@gmail.com">Pim van der Zwet</a></li>
 <li><a href="mailto:tim.evans@gmail.com">Tim Evans</a></li>
@@ -111,7 +111,7 @@ PRADO component tags when you use it to edit PRADO templates.
 <ul>
 <li>Stever for providing an Apple G3 notebook for testing safari browser issues.</li>
 <li>Stanislav Yordanov - the script of generating Dreameweaver extension for PRADO</li>
-<li>Andrés Adolfo Testi - original concept and naming for Active Controls.</li>
+<li>AndrÃ©s Adolfo Testi - original concept and naming for Active Controls.</li>
 <li><a href="http://www.jackslocum.com/">Jack Slocum</a> - inspiration for the quickstart commenting system.</li>
 <li>Cesar Ramos - Active Record driver for IBM DB2.</li>
 <li>All PRADO users - great suggestions, feedback and support</li>
@@ -122,7 +122,7 @@ PRADO component tags when you use it to edit PRADO templates.
 
 <h2>License</h2>
 <p>
-The PRADO framework and the included demos are freeware. They are released under 
+The PRADO framework and the included demos are freeware. They are released under
 the terms of the following BSD License.
 </p>
 <p>
@@ -130,29 +130,29 @@ Copyright 2004-2007 by The PRADO Group (http://www.pradosoft.com)<br/>
 All rights reserved.
 </p>
 <p>
-Redistribution and use in source and binary forms, with or without modification, 
+Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
 </p>
 <ul>
-<li>Redistributions of source code must retain the above copyright notice, this 
+<li>Redistributions of source code must retain the above copyright notice, this
 list of conditions and the following disclaimer. </li>
-<li>Redistributions in binary form must reproduce the above copyright notice, 
-this list of conditions and the following disclaimer in the documentation and/or 
+<li>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation and/or
 other materials provided with the distribution.</li>
-<li>Neither the name of the PRADO Group nor the names of its contributors may be 
-used to endorse or promote products derived from this software without specific 
+<li>Neither the name of the PRADO Group nor the names of its contributors may be
+used to endorse or promote products derived from this software without specific
 prior written permission.</li>
 </ul>
 <p>
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
 INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
-OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
-WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
 OF SUCH DAMAGE.
 </p>
 </body>
