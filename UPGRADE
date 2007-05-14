@@ -11,13 +11,8 @@ for both A and B.
 
 Upgrading from v3.1b
 --------------------
-- When TDataList.RepeatLayout is 'Raw', no <span> tags will be generated
-  for header, footer and items. If your existing code rely on the span tags,
-  you may use 'Flow' layout and set RepeatColumns as 1.
-
 - Comment tag <!-- ... ---> (introduced in v3.1a) is changed to <!--- ... --->
 - When TDataList.RepeatLayout is Raw, the items will render <div> instead of <span>
-
 - TActiveRecord finder methods will always return a new object instance (identity mapping was removed).
 - TActiveRecord::findBySql() will return an object rather than an array
 - TActiveRecord::findAllBySql() will return an array of objects.
@@ -26,21 +21,21 @@ Upgrading from v3.1a
 ---------------------
 - The signature of TActiveRecord::finder() is changed. This affects
   all TActiveRecord-descendant classes that override this method.
-  Please use the following code to override the method:	
+  Please use the following code to override the method:
 	public static function finder($className=__CLASS__)
 	{
 		return parent::finder($className);
 	}
 
 - The way to specify the table name for an active record class is changed.
-  Previously, it used the static class member '_tablename'. 
+  Previously, it used the static class member '_tablename'.
   Now it uses class constant as follows:
     class UserRecord extends TActiveRecord
     {
         const TABLE='users_table';
     }
 
-- Changed TActiveRatingList's javascript control class 
+- Changed TActiveRatingList's javascript control class
   name from "Prado.WebUI.TRatingList" to "Prado.WebUI.TActiveRatingList".
 
 - PRADO's javascript library locations moved from Web/Javascripts/xxx to Web/Javascripts/source/xxx
@@ -50,10 +45,10 @@ Upgrading from v3.1a
 
 Upgrading from v3.0.x
 ---------------------
-- Validators ClientSide.OnSuccess becomes ClientSide.OnValidationSuccess, 
-- Validators ClientSide.OnError becomes ClientSide.OnValidationError, 
-- Validator OnSuccess event becomes OnValidationSuccess. 
-- Validator OnError event becomes OnValidationError. 
+- Validators ClientSide.OnSuccess becomes ClientSide.OnValidationSuccess,
+- Validators ClientSide.OnError becomes ClientSide.OnValidationError,
+- Validator OnSuccess event becomes OnValidationSuccess.
+- Validator OnError event becomes OnValidationError.
 - Content enclosed in <!-- --> is now parsed as normal template content.
   Previously, it was not parsed and was rendered as is.
 
@@ -72,7 +67,7 @@ Upgrading from v3.0.5
   the appearance of existing PRADO applications that use TDataGrid.
 - If TUrlMapping is used, you need to set the UrlManager property of
   THttpRequest to the module ID of TUrlMapping.
-- TJavascriptLogger toggle key is changed from ALT-D to ALT-J. 
+- TJavascriptLogger toggle key is changed from ALT-D to ALT-J.
    Use the ToggleKey property chanage to a different key.
 - Javascript Library rico was REMOVED.
 
@@ -86,7 +81,7 @@ Upgrading from v3.0.4
 
 Upgrading from v3.0.3
 ---------------------
-- The 'Static' value is changed to 'Fixed' for the Display property of 
+- The 'Static' value is changed to 'Fixed' for the Display property of
   all validators as well as TValidationSummary, due to conflict with PHP keywords.
 - The 'List' value is changed to 'SimpleList' for TValidationSummary.DisplayMode.
 - The 'List' value is changed to 'DropDownList' for TPager.Mode

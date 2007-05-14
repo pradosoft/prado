@@ -1,5 +1,5 @@
-Version 3.1.0 RC To be released
-===============================
+Version 3.1.0 RC May 14, 2007
+=============================
 BUG: Ticket#525 - SQLMap->queryForList error with offset/limit parameters (Wei)
 BUG: Ticket#547 - SQLMap problem with PDO::DBLIB (Wei)
 BUG: Ticket#578 - ActiveControls broken by presence of THtmlArea in the .page (Wei)
@@ -101,7 +101,7 @@ NEW: TJsonService
 NEW: TCacheDependency, TFileCacheDependency, TDirectoryCacheDependency (Qiang)
 NEW: TGlobalStateCacheDependency, TChainedCacheDependency, TApplicationStateCacheDependency (Qiang)
 
-Version 3.0.7 April 2, 2007 
+Version 3.0.7 April 2, 2007
 ===========================
 BUG: Ticket#481 - Unable to cancel navigation when handling OnSideBarButtonClickEvent (Qiang)
 BUG: typo in THttpResponse.writeFile() about sending headers (Qiang)
