@@ -216,6 +216,9 @@ class Page2Tex
 		//since
 		$html = preg_replace('/<com:SinceVersion[^>]+>/', '', $html);
 
+		//requiresversion
+		$html = preg_replace('/<com:RequiresVersion[^>]+>/', '', $html);
+
 		$html = html_entity_decode($html);
 
 		return $html;
