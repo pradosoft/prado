@@ -17,6 +17,7 @@ class MysqlMessageSourceTestCase extends UnitTestCase
 		return $this->_source;
 	}
 
+/*
 	function test_source()
 	{
 		$source = $this->get_source();
@@ -38,6 +39,7 @@ class MysqlMessageSourceTestCase extends UnitTestCase
 
 		//$this->assertEqual($formatter->format('Goodbye'), 'Goodbye');
 	}
+*/
 }
 
 ?>
