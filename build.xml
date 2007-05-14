@@ -49,11 +49,6 @@
     <exclude name="**/*~"/>
     <exclude name="**/pradolite.php" /><!-- will be generated -->
     <exclude name="**/prado-cli.php" /><!-- will be copied later -->
-    <exclude name="framework/Configuration/**" /><!-- not ready yet -->
-    <exclude name="framework/Web/UI/WebControls/Login*.*" /><!-- not ready yet -->
-    <exclude name="**/Web/Security/**" /><!-- not ready yet -->
-    <exclude name="**/TFeedService.php" /><!-- not ready yet -->
-    <exclude name="**/IFeedContentProvider.php" /><!-- not ready yet -->
     <include name="framework/**/*"/>
   </fileset>
 
@@ -150,13 +145,13 @@
     - snapshot: generate nightly snapshot;
     </echo>
   </target>
-  
+
 <!-- bulid compact prado package definitions -->
 
   <target name="compact-collections" description="Collections">
     <mkdir dir="${build.compact.dir}" />
 	<mkdir dir="${build.compact.dir}/docs" />
-	<mkdir dir="${build.compact.dir}/prado-db" />	
+	<mkdir dir="${build.compact.dir}/prado-db" />
     <compact-package output="${build.compact.dir}/prado-db/collections.php" strip="${compact-strip-comments}">
       <filelist dir="framework" files="PradoBase.php,TComponent.php,Exceptions/TException.php,interfaces.php" />
       <filelist dir="framework/Collections" files="TList.php,TMap.php,TAttributeCollection.php,TPagedList.php,TPagedDataSource.php" />
@@ -168,8 +163,8 @@
     <delete file="${build.compact.dir}/readme.txt" />
     <append destFile="${build.compact.dir}/readme.txt">PRADO Framework for PHP 5, version ${prado.version}. See docs/ directory for documentation.</append>
 
-	<prado-quickstart-docs output="${build.compact.dir}/docs" 
-		pages="Advanced/Collections.page,Fundamentals/Components.page"/>  
+	<prado-quickstart-docs output="${build.compact.dir}/docs"
+		pages="Advanced/Collections.page,Fundamentals/Components.page"/>
   </target>
 
   <target name="compact-db" description="Database" depends="compact-collections">
