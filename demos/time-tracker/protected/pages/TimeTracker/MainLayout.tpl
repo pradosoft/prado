@@ -24,7 +24,6 @@
 		Visible=<%= !$this->User->getIsGuest() %> />
 </h2>
 <h2 class="help"><a href="?page=Welcome">Help</a></h2>
-<h2 class="guide"><a href="?page=Docs.Home">Implementation Guide</a></h2>
 </div>
 
 <com:Application.pages.TimeTracker.SiteMap

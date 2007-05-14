@@ -89,8 +89,7 @@
 		Visitors can register by clicking the <strong>Create new </strong>user link on the home page.
 		New members are activated automatically, and are assigned to a role as specified in the <tt>application.xml</tt> file.
 		You can manage users (for example, assign them to a role) when login as administrator.
-		For details, see <a href="#AppendixA">Appendix A</a>.</p>
-		
+	</p>		
 	<hr />
 	
 	<h2>Projects and Time Entries</h2>
@@ -132,37 +131,6 @@
 		<li>Click <strong>Generate Report</strong>.</li>
 	</ol>
 	
-	<hr />
 	
-	<a name="AppendixA" />
-	<h2>Appendix A - Manually Managing Members and Roles</h2>
-	<p>
-		Your Time Tracker Web site allows visitors to register as members.
-		Members have specific privileges defined by a role you assign to them.
-		A special administrative role has rights to perform all functions in the site.</p>
-	<p>
-		To create a user (member):</p>
-	<ol>
-		<li>Login as administrator, click <strong>Create New User</strong>.
-		</li>
-		<li>...</li>
-	</ol>
-	<p>
-		To modify an existing member's role:</p>
-	<ol>
-		<li>Login as administrator, click <strong>List Users</strong>.
-		</li>
-		<li>...</li>
-	</ol>
-
-	<hr />
-	
-	<h2>Appendix B - Publishing Your Site</h2>
-	<p>
-		When you are ready to share the Web site with others, you can copy it to your Web server.
-		You need to know the File Transfer Protocol (FTP) address of your server, and if required, the user name and password assigned to you.</p>
-	<ol>
-		<li>...</li>
-	</ol>
 </body>
 </html>
