@@ -5,8 +5,9 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Knut Urdalen <knut.urdalen@gmail.com>
  * @link http://www.pradosoft.com
- * @copyright Copyright &copy; 2006 PradoSoft
+ * @copyright Copyright &copy; 2006-2007 PradoSoft
  * @license http://www.pradosoft.com/license/
+ * @version $Id$
  * @package System.Web.Services
  */
 
@@ -15,23 +16,25 @@
  *
  * TFeedService provides to end-users feed content.
  *
- * TFeedService manages a set of {@link TFeed}, each representing specific feed content.
- * The service parameter, referring to the ID of the feed, specifies
- * which feed content to be provided to end-users.
+ * TFeedService manages a set of feeds. The service parameter, referring
+ * to the ID of the feed, specifies which feed content to be provided to end-users.
  *
  * To use TFeedService, configure it in application configuration as follows,
  * <code>
- *  <service id="feed" class="System.Services.TFeedService">
+ *  <service id="feed" class="System.Web.Services.TFeedService">
  *    <feed id="ch1" class="Path.To.FeedClass1" .../>
  *    <feed id="ch2" class="Path.To.FeedClass2" .../>
  *    <feed id="ch3" class="Path.To.FeedClass3" .../>
  *  </service>
  * </code>
- * where each feed is specified via a &lt;feed&gt; element. Initial property
- * values can be configured in a &lt;feed&gt; element.
+ * where each &lt;feed&gt; element specifies a feed identified by its "id" value (case-sensitive).
+ * The class attribute indicates which PHP class will provide the actual feed
+ * content. Note, the class must implement {@link IFeedContentProvider} interface.
+ * Other initial properties for the feed class may also be specified in the
+ * corresponding &lt;feed&gt; element.
  *
- * To retrieve the feed content provided by "ch2", use the URL
- * <code>index.php?feed=ch2</code>
+ * To retrieve the feed content identified by "ch2", use the URL
+ * <code>/path/to/index.php?feed=ch2</code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Knut Urdalen <knut.urdalen@gmail.com>
@@ -51,7 +54,7 @@ class TFeedService extends TService
 	{
 		foreach($config->getElementsByTagName('feed') as $feed)
 		{
-			if(($id=$feed->getAttribute('id'))!==null)
+			if(($id=$feed->getAttributes()->removeAttribute('id'))!==null)
 				$this->_feeds[$id]=$feed;
 			else
 				throw new TConfigurationException('feedservice_id_required');
@@ -80,7 +83,7 @@ class TFeedService extends TService
 			if(($class=$properties->remove('class'))!==null)
 			{
 				$feed=Prado::createComponent($class);
-				if($feed instanceof TFeed)
+				if($feed instanceof IFeedContentProvider)
 				{
 					// init feed properties
 					foreach($properties as $name=>$value)
@@ -104,53 +107,30 @@ class TFeedService extends TService
 }
 
 /**
- * TFeed class.
+ * IFeedContentProvider interface.
  *
- * TFeed is the base class for all feed provider classes.
- *
- * Derived classes should override {@link getFeedContent()} to return
- * an XML string that represents the feed content.
+ * IFeedContentProvider interface must be implemented by a feed class who
+ * provides feed content.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
- * @package System.Services
+ * @author Knut Urdalen <knut.urdalen@gmail.com>
+ * @package System.Web.Services
  * @since 3.1
  */
-abstract class TFeed extends TApplicationComponent
+interface IFeedContentProvider
 {
-	private $_id='';
-
 	/**
-	 * Initializes the feed.
-	 * @param TXmlElement configurations specified in {@link TFeedService}.
+	 * Initializes the feed content provider.
+	 * This method is invoked (before {@link getFeedContent})
+	 * when the feed provider is requested by a user.
+	 * @param TXmlElement configurations specified within the &lt;feed&gt; element
+	 * corresponding to this feed provider when configuring {@link TFeedService}.
 	 */
-	public function init($config)
-	{
-	}
-
+	public function init($config);
 	/**
-	 * @return string ID of this feed
+	 * @return string feed content in proper XML format
 	 */
-	public function getID()
-	{
-		return $this->_id;
-	}
-
-	/**
-	 * @param string ID of this feed
-	 */
-	public function setID($value)
-	{
-		$this->_id=$value;
-	}
-
-	/**
-	 * @return string an XML string representing the feed content
-	 */
-	public function getFeedContent()
-	{
-		return '';
-	}
+	public function getFeedContent();
 }
 
 ?>

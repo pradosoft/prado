@@ -2137,7 +2137,6 @@ framework/Web/Security/TRoles.php -text
 framework/Web/Security/TSqlMembershipProvider.php -text
 framework/Web/Security/TSqlRoleProvider.php -text
 framework/Web/Security/TUrlAuthorizationModule.php -text
-framework/Web/Services/IFeedContentProvider.php -text
 framework/Web/Services/TFeedService.php -text
 framework/Web/Services/TJsonService.php -text
 framework/Web/Services/TPageService.php -text
