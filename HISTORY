@@ -24,6 +24,9 @@ ENH: Add javascript references for "slider" and "dragdrop" for TClientScript::Pr
 ENH: Added PatternModifiers property to TRegularExpressionValidator (Wei)
 CHG: <div> tags are used instead of <span> when TDataList.RepeatLayout is Raw (Qiang)
 CHG: changed comment tag to <!--- ... ---> (Qiang)
+NEW: Active Record relationships (Wei)
+NEW: New demos including "address-book", "blog-tutorial", "northwind-db", "chat", "currency-converter", "time-tracker". (Qiang, Wei)
+
 
 Version 3.1.0 beta April 9, 2007
 ================================
