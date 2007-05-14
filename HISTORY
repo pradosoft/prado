@@ -1,3 +1,6 @@
+Version 3.1.0 To Be Released
+============================
+
 Version 3.1.0 RC May 14, 2007
 =============================
 BUG: Ticket#525 - SQLMap->queryForList error with offset/limit parameters (Wei)
