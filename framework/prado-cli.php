@@ -704,7 +704,7 @@ EOD;
 
 	protected function generateClass($properties, $tablename, $class)
 	{
-		$props = implode("\x0D", $properties);
+		$props = implode("\n", $properties);
 		$date = date('Y-m-d h:i:s');
 return <<<EOD
 <?php
