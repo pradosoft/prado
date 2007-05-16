@@ -1158,7 +1158,7 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 			request.options.onSuccess = this.callbackOnSuccess.bind(this);
 			request.options.onFailure = this.callbackOnFailure.bind(this);
 			request.dispatch();
-//			this.requestDispatched = true;
+			this.requestDispatched = true;
 			return false;
 		}
 		return this.isValid;
@@ -1167,7 +1167,7 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	callbackOnSuccess : function(request, data)
 	{
 		this.isValid = data;
-//		this.requestDispatched = false;
+		this.requestDispatched = false;
 		if(typeof(this.options.onSuccess) == "function")
 			this.options.onSuccess(request,data);
 		this.updateValidationDisplay();
@@ -1175,7 +1175,7 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 
 	callbackOnFailure : function(request, data)
 	{
-//		this.requestDispatched = false;
+		this.requestDispatched = false;
 		if(typeof(this.options.onFailure) == "function")
 			this.options.onFailure(request,data);
 	}
