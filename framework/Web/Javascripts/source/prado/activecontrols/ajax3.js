@@ -1,7 +1,6 @@
 
 Prado.AjaxRequest = Class.create();
-Prado.AjaxRequest.prototype = Ajax.Request.prototype;
-
+Prado.AjaxRequest.prototype = Object.clone(Ajax.Request.prototype);
 
 /**
  * Override Prototype's response implementation.
