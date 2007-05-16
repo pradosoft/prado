@@ -32,12 +32,12 @@ require_once 'phing/tasks/ext/simpletest/SimpleTestResultFormatter.php';
 class SimpleTestPlainResultFormatter extends SimpleTestResultFormatter
 {
 	private $inner = "";
-	
+
 	function getExtension()
 	{
 		return ".txt";
 	}
-	
+
 	function getPreferredOutfile()
 	{
 		return "testresults";
@@ -46,18 +46,18 @@ class SimpleTestPlainResultFormatter extends SimpleTestResultFormatter
 	function paintCaseStart($test_name)
 	{
 		parent::paintCaseStart($test_name);
-		
+
 		$this->inner = "";
 	}
-	
+
 	function paintCaseEnd($test_name)
 	{
 		parent::paintCaseEnd($test_name);
-		
+
 		/* Only count suites where more than one test was run */
 		if ($this->getRunCount())
 		{
-			$sb.= "Testsuite: $test_name\n";
+			$sb = "Testsuite: $test_name\n";
 			$sb.= "Tests run: " . $this->getRunCount();
 			$sb.= ", Failures: " . $this->getFailureCount();
 			$sb.= ", Errors: " . $this->getErrorCount();
@@ -75,21 +75,21 @@ class SimpleTestPlainResultFormatter extends SimpleTestResultFormatter
 	function paintError($message)
 	{
 		parent::paintError($message);
-		
+
 		$this->formatError("ERROR", $message);
 	}
 
 	function paintFail($message)
 	{
 		parent::paintFail($message);
-		
+
 		$this->formatError("FAILED", $message);
 	}
 
 	private function formatError($type, $message)
 	{
 		$this->inner.= $this->getTestName() . " " . $type . "\n";
-		$this->inner.= $message . "\n";	
+		$this->inner.= $message . "\n";
 	}
 }
 ?>

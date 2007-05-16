@@ -34,11 +34,11 @@ class SimpleTestSummaryResultFormatter extends SimpleTestResultFormatter
 	function paintCaseEnd($test_name)
 	{
 		parent::paintCaseEnd($test_name);
-		
+
 		/* Only count suites where more than one test was run */
 		if ($this->getRunCount())
 		{
-			$sb.= "Tests run: " . $this->getRunCount();
+			$sb= "Tests run: " . $this->getRunCount();
 			$sb.= ", Failures: " . $this->getFailureCount();
 			$sb.= ", Errors: " . $this->getErrorCount();
 			$sb.= ", Time elapsed: " . $this->getElapsedTime();

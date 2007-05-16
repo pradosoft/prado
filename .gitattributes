@@ -494,6 +494,7 @@ buildscripts/phing/classes/phing/tasks/ext/simpletest/SimpleTestPlainResultForma
 buildscripts/phing/classes/phing/tasks/ext/simpletest/SimpleTestResultFormatter.php -text
 buildscripts/phing/classes/phing/tasks/ext/simpletest/SimpleTestSummaryResultFormatter.php -text
 buildscripts/phing/classes/phing/tasks/ext/simpletest/SimpleTestTask.php -text
+buildscripts/phing/classes/phing/tasks/ext/simpletest/SimpleTestXmlResultFormatter.php -text
 buildscripts/phing/classes/phing/tasks/ext/svn/SvnBaseTask.php -text
 buildscripts/phing/classes/phing/tasks/ext/svn/SvnExportTask.php -text
 buildscripts/phing/classes/phing/tasks/ext/svn/SvnLastRevisionTask.php -text
@@ -618,6 +619,7 @@ buildscripts/phing/tasks/PradoDocTask.php -text
 buildscripts/phing/tasks/PradoPackageTask.php -text
 buildscripts/phing/tasks/PradoPearTask.php -text
 buildscripts/phing/tasks/PradoQuickStartDocs.php -text
+buildscripts/phing/tasks/PradoSimpleTestTask.php -text
 buildscripts/phing/tasks/PradoTestTask.php -text
 buildscripts/phing/tasks/PradoVersionTask.php -text
 buildscripts/phing/tasks/QuickstartIndexTask.php -text
@@ -2195,6 +2197,8 @@ framework/prado.php -text
 /index.html -text
 /phing -text
 /phing.bat -text
+/prado-cli -text
+/prado-cli.bat -text
 requirements/index.php -text
 requirements/messages-bg.txt -text
 requirements/messages-zh.txt -text

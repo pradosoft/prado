@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php
 
 /**
@@ -190,7 +189,7 @@ EOD;
 	protected function initializePradoApplication($directory)
 	{
 		$app_dir = realpath($directory.'/protected/');
-		if($app_dir !== false)
+		if($app_dir !== false && is_dir($app_dir))
 		{
 			if(Prado::getApplication()===null)
 			{
@@ -482,7 +481,7 @@ class PradoCommandLineUnitTest extends PradoCommandLineAction
 	public function performAction($args)
 	{
 		$dir = realpath($args[1]);
-		if($dir !== false)
+		if($dir !== false && is_dir($dir))
 			$this->runUnitTests($dir,$args);
 		else
 			echo '** Unable to find directory "'.$args[1]."\".\n";
@@ -524,7 +523,7 @@ class PradoCommandLineUnitTest extends PradoCommandLineAction
 	protected function getAppDir($dir)
 	{
 		$app_dir = realpath($dir.'/protected');
-		if($app_dir !== false)
+		if($app_dir !== false && is_dir($app_dir))
 			return $app_dir;
 		return realpath($dir.'/../protected');
 	}
@@ -532,7 +531,7 @@ class PradoCommandLineUnitTest extends PradoCommandLineAction
 	protected function getTestDir($dir)
 	{
 		$test_dir = realpath($dir.'/unit');
-		if($test_dir !== false)
+		if($test_dir !== false && is_dir($test_dir))
 			return $test_dir;
 		return realpath($dir.'/tests/unit/');
 	}
@@ -614,7 +613,7 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 	{
 		if(is_dir($dir))
 			return realpath($dir);
-		if(false !== ($app_dir = realpath($dir.'/protected/')))
+		if(false !== ($app_dir = realpath($dir.'/protected/')) && is_dir($app_dir))
 			return $app_dir;
 		echo '** Unable to find directory "'.$dir."\".\n";
 		return false;
@@ -622,9 +621,9 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 
 	protected function getXmlFile($app_dir)
 	{
-		if(false !== ($xml = realpath($app_dir.'/application.xml')))
+		if(false !== ($xml = realpath($app_dir.'/application.xml')) && is_file($xml))
 			return $xml;
-		if(false !== ($xml = realpath($app_dir.'/protected/application.xml')))
+		if(false !== ($xml = realpath($app_dir.'/protected/application.xml')) && is_file($xml))
 			return $xml;
 		echo '** Unable to find application.xml in '.$app_dir."\n";
 		return false;
@@ -650,7 +649,7 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 		if(is_file($namespace) && strpos($namespace, $app_dir)===0)
 				return $namespace;
 		$file = Prado::getPathOfNamespace($namespace, ".php");
-		if($file !== null && false !== ($path = realpath(dirname($file))))
+		if($file !== null && false !== ($path = realpath(dirname($file))) && is_dir($path))
 		{
 			if(strpos($path, $app_dir)===0)
 				return $file;

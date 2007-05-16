@@ -21,7 +21,7 @@
 
 require_once 'phing/tasks/ext/simpletest/SimpleTestPlainResultFormatter.php';
 require_once 'phing/tasks/ext/simpletest/SimpleTestSummaryResultFormatter.php';
-require_once 'phing/tasks/ext/phpunit2/FormatterElement.php';
+require_once 'phing/tasks/ext/simpletest/SimpleTestXmlResultFormatter.php';
 
 /**
  * Child class of "FormatterElement", overrides setType to provide other
@@ -32,16 +32,26 @@ require_once 'phing/tasks/ext/phpunit2/FormatterElement.php';
  * @package phing.tasks.ext.simpletest
  * @since 2.2.0
  */
-class SimpleTestFormatterElement extends FormatterElement
+class SimpleTestFormatterElement
 {
+	protected $formatter = NULL;
+
+	protected $type = "";
+
+	protected $useFile = true;
+
+	protected $toDir = ".";
+
+	protected $outfile = "";
+
 	function setType($type)
 	{
 		$this->type = $type;
 
 		if ($this->type == "xml")
 		{
-			$destFile = new PhingFile($this->toDir, 'testsuites.xml');
-			//$this->formatter = new SimpleTestXmlResultFormatter();
+			//$destFile = new PhingFile($this->toDir, 'testsuites.xml');
+			$this->formatter = new SimpleTestXmlResultFormatter();
 		}
 		else
 		if ($this->type == "plain")
@@ -57,6 +67,60 @@ class SimpleTestFormatterElement extends FormatterElement
 		{
 			throw new BuildException("Formatter '" . $this->type . "' not implemented");
 		}
+	}
+
+	function setClassName($className)
+	{
+		$classNameNoDot = Phing::import($className);
+
+		$this->formatter = new $classNameNoDot();
+	}
+
+	function setUseFile($useFile)
+	{
+		$this->useFile = $useFile;
+	}
+
+	function getUseFile()
+	{
+		return $this->useFile;
+	}
+
+	function setToDir($toDir)
+	{
+		$this->toDir = $toDir;
+	}
+
+	function getToDir()
+	{
+		return $this->toDir;
+	}
+
+	function setOutfile($outfile)
+	{
+		$this->outfile = $outfile;
+	}
+
+	function getOutfile()
+	{
+		if ($this->outfile)
+		{
+			return $this->outfile;
+		}
+		else
+		{
+			return $this->formatter->getPreferredOutfile() . $this->getExtension();
+		}
+	}
+
+	function getExtension()
+	{
+		return $this->formatter->getExtension();
+	}
+
+	function getFormatter()
+	{
+		return $this->formatter;
 	}
 }
 ?>

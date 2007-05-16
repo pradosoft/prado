@@ -19,7 +19,7 @@
  * <http://phing.info>.
  */
 
-require_once 'simpletest/scorer.php';
+//require_once 'simpletest/scorer.php';
 
 require_once 'phing/system/io/Writer.php';
 
@@ -34,25 +34,25 @@ require_once 'phing/system/io/Writer.php';
 abstract class SimpleTestResultFormatter extends SimpleReporter
 {
 	protected $out = NULL;
-	
+
 	protected $project = NULL;
-	
+
 	private $timer = NULL;
 
 	private $runCount = 0;
-	
+
 	private $failureCount = 0;
-	
-	private $errorCount = 0;	
+
+	private $errorCount = 0;
 
 	private $currentTest = "";
-	
+
 	/**
 	 * Sets the writer the formatter is supposed to write its results to.
    	 */
 	function setOutput(Writer $out)
 	{
-		$this->out = $out;	
+		$this->out = $out;
 	}
 
 	/**
@@ -74,56 +74,56 @@ abstract class SimpleTestResultFormatter extends SimpleReporter
 	{
 		$this->project = $project;
 	}
-	
+
 	function getPreferredOutfile()
 	{
 		return "";
 	}
-	
+
 	function paintMethodStart($test_name)
 	{
 		parent::paintMethodStart($test_name);
-		
+
 		$this->currentTest = $test_name;
 	}
-	
+
 	function paintMethodEnd($test_name)
 	{
 		parent::paintMethodEnd($test_name);
-		
+
 		$this->runCount++;
 	}
-	
+
 	function paintCaseStart($test_name)
 	{
 		parent::paintCaseStart($test_name);
-		
+
 		$this->runCount = 0;
 		$this->failureCount = 0;
 		$this->errorCount = 0;
-		
+
 		$this->timer = new Timer();
 		$this->timer->start();
 	}
-		
+
 	function paintCaseEnd($test_name)
 	{
 		parent::paintCaseEnd($test_name);
-		
+
 		$this->timer->stop();
 	}
 
 	function paintError($message)
 	{
 		parent::paintError($message);
-		
+
 		$this->errorCount++;
 	}
 
 	function paintFail($message)
 	{
 		parent::paintFail($message);
-		
+
 		$this->failureCount++;
 	}
 
@@ -131,22 +131,22 @@ abstract class SimpleTestResultFormatter extends SimpleReporter
 	{
 		return $this->runCount;
 	}
-	
+
 	function getFailureCount()
 	{
 		return $this->failureCount;
 	}
-	
+
 	function getErrorCount()
 	{
 		return $this->errorCount;
 	}
-	
+
 	function getTestName()
 	{
 		return $this->currentTest;
 	}
-	
+
 	function getElapsedTime()
 	{
 		if ($this->timer)
