@@ -54,7 +54,7 @@ class TFeedService extends TService
 	{
 		foreach($config->getElementsByTagName('feed') as $feed)
 		{
-			if(($id=$feed->getAttributes()->removeAttribute('id'))!==null)
+			if(($id=$feed->getAttributes()->remove('id'))!==null)
 				$this->_feeds[$id]=$feed;
 			else
 				throw new TConfigurationException('feedservice_id_required');
