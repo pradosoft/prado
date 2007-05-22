@@ -10,15 +10,6 @@ This page lists the requirements for the blog system that we are going to develo
 In general, the blog system should allow users to read blogs and authenticated users to publish blogs. It should separate presentation and logic, and it should support changing themes.
 </p>
 
-<h2>Post Management</h2>
-<ul>
-<li>The system shall allow listing posts by their creaing time in descending order with paging.</li>
-<li>The system shall allow viewing the detail of a selected post.</li>
-<li>The system shall allow creating a new post by an authenticated user.</li>
-<li>The system shall allow updating an existing post by its author or administrator.</li>
-<li>The system shall allow deleting an existing post by its author or administrator.</li>
-</ul>
-
 <h2>User Management</h2>
 <ul>
 <li>The system shall allow authenticating and authorizing users.</li>
@@ -28,11 +19,20 @@ In general, the blog system should allow users to read blogs and authenticated u
 <li>The system shall allow the administrator to delete a user account.</li>
 </ul>
 
+<h2>Post Management</h2>
+<ul>
+<li>The system shall allow listing posts by their creaing time in descending order with paging.</li>
+<li>The system shall allow viewing the detail of a selected post.</li>
+<li>The system shall allow creating a new post by an authenticated user.</li>
+<li>The system shall allow updating an existing post by its author or administrator.</li>
+<li>The system shall allow deleting an existing post by its author or administrator.</li>
+</ul>
+
 <h2>System Maintenance</h2>
 <ul>
 <li>The system shall be able to collect users' feedback.</li>
 <li>The system shall be flexible enough to allow adding new portlets in future.</li>
-<li>The system shall provide ease of using a different theme which changes the styles of the UI elements.</li>
+<li>The system shall allow switching themes which define styles of the common UI elements.</li>
 </ul>
 
 </com:TContent>
