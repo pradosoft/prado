@@ -25,7 +25,7 @@ Prado::using('System.Web.UI.WebControls.TStyle');
  * Otherwise, {@link setButtonText ButtonText} will be displayed as the button caption.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TWizard.php 1574 2006-12-15 16:09:53Z xue $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
