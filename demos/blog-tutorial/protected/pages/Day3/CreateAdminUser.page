@@ -16,6 +16,9 @@ We will display the user list in a table. Each row of the table represents a sin
 <li>Command - displays a column of "Delete" buttons. Clicking on any of them will lead to deletion of the corresponding user account.</li>
 </ul>
 
+<p>
+We create two files <tt>protected/pages/users/AdminUser.page</tt> and <tt>protected/pages/users/AdminUser.php</tt> to save the page template and page class, respectively.
+</p>
 
 <h2>Creating Page Template</h2>
 <p>
@@ -28,13 +31,13 @@ We use <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.DataGri
 <li><a href="http://www.pradosoft.com/docs/classdoc/TButtonColumn">TButtonColumn</a> displays a column of "Delete" buttons.</li>
 </ul>
 
-<p>Complete page template is shown as follows:</p>
+<p>The complete page template is shown as follows:</p>
 
 <com:TTextHighlighter CssClass="source" Language="prado">
 &lt;%@ Title="My Blog - Manage User Accounts" %>
 
 &lt;com:TContent ID="Main">
- 
+
 <h1>Manage User Accounts</h1>
 
 <a href="&lt;%= $this->Service->constructUrl('users.NewUser')%>">Create New User</a>
@@ -57,14 +60,14 @@ We use <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.DataGri
     &lt;com:TBoundColumn
         HeaderText="Email"
         DataField="email" />
-    
+
     &lt;com:TCheckBoxColumn
         HeaderText="Administrator"
         DataField="role" />
-    
+
     &lt;com:TButtonColumn
         HeaderText="Command"
-        Text="Delete" 
+        Text="Delete"
         ButtonType="PushButton"
         CommandName="delete" />
 

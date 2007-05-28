@@ -29,7 +29,7 @@
 <div class="topic">
 <div>Day 3: Implementing User Management</div>
 <ul>
-    <li><a href="?page=Day3.Overview">User Management Overview</a></li>
+    <li><a href="?page=Day3.Overview">Overview</a></li>
     <li><a href="?page=Day3.Auth">Authentication and Authorization</a></li>
     <li><a href="?page=Day3.CreateLoginUser">Creating LoginUser Page</a></li>
     <li><a href="?page=Day3.CreateNewUser">Creating NewUser Page</a></li>
@@ -41,9 +41,9 @@
 <div class="topic">
 <div>Day 4: Implementing Post Management</div>
 <ul>
-    <li><a href="?page=Day4.Overview">Post Management Overview</a></li>
-    <li><a href="?page=Day4.CreateReadPost">Creating ReadPost Page</a></li>
+    <li><a href="?page=Day4.Overview">Overview</a></li>
     <li><a href="?page=Day4.CreateListPost">Creating ListPost Page</a></li>
+    <li><a href="?page=Day4.CreateReadPost">Creating ReadPost Page</a></li>
     <li><a href="?page=Day4.CreateNewPost">Creating NewPost Page</a></li>
     <li><a href="?page=Day4.CreateEditPost">Creating EditPost Page</a></li>
     <li><a href="?page=Day4.CreateAdminPost">Creating AdminPost Page</a></li>
@@ -53,8 +53,7 @@
 <div class="topic">
 <div>Day 5: Creating Portlets</div>
 <ul>
-    <li><a href="?page=Day5.Create">Overview</a></li>
-    <li><a href="?page=Day4.CreateReadPost">Creating ReadPost Page</a></li>
+    <li><a href="?page=">Overview</a></li>
 </div>
 
 <div class="topic">

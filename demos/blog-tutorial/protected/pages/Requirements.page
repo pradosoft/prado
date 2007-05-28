@@ -21,7 +21,7 @@ In general, the blog system should allow users to read blogs and authenticated u
 
 <h2>Post Management</h2>
 <ul>
-<li>The system shall allow listing posts by their creaing time in descending order with paging.</li>
+<li>The system shall allow listing posts by their creation time in descending order with paging.</li>
 <li>The system shall allow viewing the detail of a selected post.</li>
 <li>The system shall allow creating a new post by an authenticated user.</li>
 <li>The system shall allow updating an existing post by its author or administrator.</li>

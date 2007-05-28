@@ -30,8 +30,8 @@ CREATE TABLE users (
 /* create posts table */
 CREATE TABLE posts (
   post_id       INTEGER NOT NULL PRIMARY KEY,
-  author_id     VARCHAR(128) NOT NULL   
-                    CONSTRAINT fk_author REFERENCES users(username),
+  author_id     VARCHAR(128) NOT NULL
+                CONSTRAINT fk_author REFERENCES users(username),
   create_time   INTEGER NOT NULL,       /* UNIX timestamp */
   title         VARCHAR(256) NOT NULL,  /* title of the post */
   content       TEXT,                   /* post body */
@@ -45,10 +45,7 @@ INSERT INTO posts VALUES (NULL, 'admin', 1175708482, 'first post', 'this is my f
 </com:TTextHighlighter>
 
 <com:NoteBox>
-SQLite does not support <a href="http://www.sqlite.org/omitted.html">foreign key constraint</a> such that
-the constraints can still be defined but will be ignored by SQLite.
-Therefore, we will write PHP code to ensure that the <tt>posts.author_id</tt> field contains valid data. 
-Also, we are exploiting the fact that the <tt>posts.post_id</tt> field is <a href="http://www.sqlite.org/autoinc.html">auto-incremental</a> if we assign NULL to it.
+The <tt>fk_author</tt> constraint is ignored by SQLite because SQLite does not support <a href="http://www.sqlite.org/omitted.html">foreign key constraint</a>. Nevertheless, we still keep the constraint there for the capability of porting our blog system to different DBMS. Also, in the above we are exploiting the fact that the <tt>posts.post_id</tt> field is <a href="http://www.sqlite.org/autoinc.html">auto-incremental</a> if we assign NULL to it.
 </com:NoteBox>
 
 <p>

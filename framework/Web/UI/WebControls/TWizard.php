@@ -1167,7 +1167,7 @@ class TWizard extends TWebControl implements INamingContainer
 		{
 			if(($button=$item->findControl(self::ID_SIDEBAR_BUTTON))!==null)
 			{
-				$step=$item->getDataItem();
+				$step=$item->getData();
 				if(($this->getStepType($step)===TWizardStepType::Complete))
 					$button->setEnabled(false);
 				if(($title=$step->getTitle())!=='')

@@ -15,6 +15,10 @@ The <tt>NewUser</tt> page is provided to the administrator user to create new a 
 <li><tt>last_name</tt> - string, optional</li>
 </ul>
 
+<p>
+We create two files <tt>protected/pages/users/NewUser.page</tt> and <tt>protected/pages/users/NewUser.php</tt> to save the page template and page class, respectively.
+</p>
+
 <h2>Creating Page Template</h2>
 <p>
 Based on the above analysis, we write the page template as follows:
@@ -24,13 +28,13 @@ Based on the above analysis, we write the page template as follows:
 &lt;%@ Title="My Blog - New User" %>
 
 &lt;com:TContent ID="Main">
- 
+
 <h1>Create New User</h1>
 
 <span>Username:</span>
-&lt;com:TRequiredFieldValidator 
+&lt;com:TRequiredFieldValidator
     ControlToValidate="Username"
-    ErrorMessage="Please provide a username." 
+    ErrorMessage="Please provide a username."
     Display="Dynamic" />
 &lt;com:TCustomValidator
     ControlToValidate="Username"
@@ -42,9 +46,9 @@ Based on the above analysis, we write the page template as follows:
 
 <br/>
 <span>Password:</span>
-&lt;com:TRequiredFieldValidator 
+&lt;com:TRequiredFieldValidator
     ControlToValidate="Password"
-    ErrorMessage="Please provide a password." 
+    ErrorMessage="Please provide a password."
     Display="Dynamic" />
 <br/>
 &lt;com:TTextBox ID="Password" TextMode="Password" />

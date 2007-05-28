@@ -15,6 +15,10 @@ To determine which user account is to be editted, we use the following policy:
 <li>If the current user is a normal user, he can only edit his own account information, and he cannot modify his role data.</li>
 </ul>
 
+<p>
+We create two files <tt>protected/pages/users/EditUser.page</tt> and <tt>protected/pages/users/EditUser.php</tt> to save the page template and page class, respectively.
+</p>
+
 <h2>Creating Page Template</h2>
 <p>
 As you may have guessed, the page template <tt>EditUser</tt> is largely the same as that of <tt>NewUser</tt>. Besides the difference in page title and the caption of the submit button, there are three main differences.
@@ -30,7 +34,7 @@ As you may have guessed, the page template <tt>EditUser</tt> is largely the same
 &lt;%@ Title="My Blog - Edit User" %>
 
 &lt;com:TContent ID="Main">
- 
+
 <h1>Edit User</h1>
 
 <span>Username:</span>
