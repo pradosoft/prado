@@ -36,6 +36,13 @@ class TMapTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(2,$map2->getCount());
   }
 
+	public function testGetReadOnly() {
+		$map = new TMap(null, true);
+		self::assertEquals(true, $map->getReadOnly(), 'List is not read-only');
+		$map = new TList(null, false);
+		self::assertEquals(false, $map->getReadOnly(), 'List is read-only');
+	}
+
   public function testGetCount() {
     $this->assertEquals(2,$this->map->getCount());
   }
@@ -51,11 +58,31 @@ class TMapTest extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($this->map->getCount()==3 && $this->map->contains('key3'));
 	}
 
+	public function testCanNotAddWhenReadOnly() {
+		$map = new TMap(array(), true);
+		try {
+			$map->add('key', 'value');
+		} catch(TInvalidOperationException $e) {
+			return;
+		}
+		self::fail('An expected TInvalidOperationException was not raised');
+	}
+
 	public function testRemove()
 	{
 		$this->map->remove('key1');
 		$this->assertTrue($this->map->getCount()==1 && !$this->map->contains('key1'));
 		$this->assertTrue($this->map->remove('unknown key')===null);
+	}
+
+	public function testCanNotRemoveWhenReadOnly() {
+		$map = new TMap(array('key' => 'value'), true);
+		try {
+			$map->remove('key');
+		} catch(TInvalidOperationException $e) {
+			return;
+		}
+		self::fail('An expected TInvalidOperationException was not raised');
 	}
 
 	public function testClear()
@@ -149,6 +176,11 @@ class TMapTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals($this->map->Count,count($this->map));
 		$this->assertTrue(isset($this->map['key1']));
 		$this->assertFalse(isset($this->map['unknown key']));
+	}
+	
+	public function testToArray() {
+		$map = new TMap(array('key' => 'value'));
+		self::assertEquals(array('key' => 'value'), $map->toArray());
 	}
 }
 

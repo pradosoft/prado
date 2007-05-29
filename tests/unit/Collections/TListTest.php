@@ -1,8 +1,7 @@
 <?php
 require_once dirname(__FILE__).'/../phpunit.php';
 
-class ListItem
-{
+class ListItem {
 	public $data='data';
 }
 
@@ -10,8 +9,9 @@ class ListItem
  * @package System.Collections
  */
 class TListTest extends PHPUnit_Framework_TestCase {
-  protected $list;
-  protected $item1,$item2,$item3;
+	
+	protected $list;
+	protected $item1, $item2, $item3;
 
   public function setUp() {
     $this->list=new TList;
@@ -36,6 +36,13 @@ class TListTest extends PHPUnit_Framework_TestCase {
     $list2=new TList($this->list);
     $this->assertEquals(2,$list2->getCount());
   }
+
+	public function testGetReadOnly() {
+		$list = new TList(null, true);
+		self::assertEquals(true, $list->getReadOnly(), 'List is not read-only');
+		$list = new TList(null, false);
+		self::assertEquals(false, $list->getReadOnly(), 'List is read-only');
+	}
 
   public function testGetCount() {
     $this->assertEquals(2,$this->list->getCount());
@@ -63,6 +70,16 @@ class TListTest extends PHPUnit_Framework_TestCase {
     }
   }
 
+	public function testCanNotInsertWhenReadOnly() {
+		$list = new TList(array(), true);
+		try {
+			$list->insertAt(1, 2);
+		} catch(TInvalidOperationException $e) {
+			return;
+		}
+		self::fail('An expected TInvalidOperationException was not raised');
+	}
+
   public function testRemove() {
     $this->list->remove($this->item1);
     $this->assertEquals(1,$this->list->getCount());
@@ -89,6 +106,16 @@ class TListTest extends PHPUnit_Framework_TestCase {
 
     }
   }
+
+	public function testCanNotRemoveWhenReadOnly() {
+		$list = new TList(array(1, 2, 3), true);
+		try {
+			$list->removeAt(2);
+		} catch(TInvalidOperationException $e) {
+			return;
+		}
+		self::fail('An expected TInvalidOperationException was not raised');
+	}
 
   public function testClear() {
     $this->list->clear();
@@ -149,27 +176,6 @@ class TListTest extends PHPUnit_Framework_TestCase {
     }
   }
 
-  /*public function testArrayWrite() {
-    $this->list[]=$this->item3;
-    $this->assertTrue($this->list[2]===$this->item3 && $this->list->getCount()===3);
-    $this->list[0]=$this->item3;
-    $this->assertTrue($this->list[0]===$this->item3 && $this->list->getCount()===3 && $this->list->indexOf($this->item1)===-1);
-    unset($this->list[1]);
-    $this->assertTrue($this->list->getCount()===2 && $this->list->indexOf($this->item2)===-1);
-    try {
-      $this->list[5]=$this->item3;
-      $this->fail('exception not raised when setting item at an out-of-range index');
-    } catch(TInvalidDataValueException $e) {
-
-    }
-    try {
-      unset($this->list[5]);
-      $this->fail('exception not raised when unsetting item at an out-of-range index');
-    } catch(TInvalidDataValueException $e) {
-
-    }
-  }*/
-
   public function testGetIterator() {
     $n=0;
     $found=0;
@@ -189,6 +195,24 @@ class TListTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue(isset($this->list[1]));
     $this->assertFalse(isset($this->list[2]));
   }
+
+	public function testOffsetSetAdd() {
+		$list = new TList(array(1, 2, 3));
+		$list->offsetSet(null, 4);
+		self::assertEquals(array(1, 2, 3, 4), $list->toArray());
+	}
+
+	public function testOffsetSetReplace() {
+		$list = new TList(array(1, 2, 3));
+		$list->offsetSet(1, 4);
+		self::assertEquals(array(1, 4, 3), $list->toArray());
+	}
+	
+	public function testOffsetUnset() {
+		$list = new TList(array(1, 2, 3));
+		$list->offsetUnset(1);
+		self::assertEquals(array(1, 3), $list->toArray());
+	}
 }
 
 
