@@ -95,7 +95,7 @@ class TUrlManager extends TModule
 
 	/**
 	 * Parses the request URL and returns an array of input parameters.
-	 * This mehtod is automatically invoked by {@link THttpRequest} when
+	 * This method is automatically invoked by {@link THttpRequest} when
 	 * handling a user request.
 	 *
 	 * In general, this method should parse the path info part of the requesting URL
