@@ -6,6 +6,7 @@ if(!defined('PHPUnit_MAIN_METHOD')) {
 }
 
 require_once 'Xml/AllTests.php';
+require_once 'IO/AllTests.php';
 require_once 'Collections/AllTests.php';
 require_once 'I18N/core/AllTests.php';
 require_once 'Web/AllTests.php';
@@ -22,6 +23,7 @@ class AllTests {
     $suite = new PHPUnit_Framework_TestSuite('PRADO PHP Framework');
     
 	$suite->addTest(Xml_AllTests::suite());
+	$suite->addTest(IO_AllTests::suite());
 	$suite->addTest(Collections_AllTests::suite());
 	$suite->addTest(I18N_core_AllTests::suite());
 	$suite->addTest(Web_AllTests::suite());

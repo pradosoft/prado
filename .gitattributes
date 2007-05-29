@@ -2808,6 +2808,8 @@ tests/unit/I18N/core/DateFormatTest.php -text
 tests/unit/I18N/core/DateTimeFormatInfoTest.php -text
 tests/unit/I18N/core/NumberFormatInfoTest.php -text
 tests/unit/I18N/core/NumberFormatTest.php -text
+tests/unit/IO/AllTests.php -text
+tests/unit/IO/TTextWriterTest.php -text
 tests/unit/SQLMap/BaseTest.php -text
 tests/unit/SQLMap/CacheTest.php -text
 tests/unit/SQLMap/ConfigureTest.php -text
