@@ -211,7 +211,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 * Strips slashes from input data.
 	 * This method is applied when magic quotes is enabled.
 	 * @param mixed input data to be processed
-	 * @param mixed processed data
+	 * @return mixed processed data
 	 */
 	public function stripSlashes(&$data)
 	{
