@@ -29,7 +29,7 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
 		$_SERVER['REMOTE_HOST'] = 'localhost';
 		
 		if(self::$app === null) {
-			self::$app = new TApplication('app');
+			self::$app = new TApplication(dirname(__FILE__).'/app');
 		}
 	}
 	
