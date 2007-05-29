@@ -1,12 +1,12 @@
 <?php
-require_once dirname(__FILE__).'/../../phpunit2.php';
+require_once dirname(__FILE__).'/../../phpunit.php';
 
 Prado::using('System.I18N.core.CultureInfo');
 
 /**
  * @package System.I18N.core
  */
-class CultureInfoTest extends PHPUnit2_Framework_TestCase {
+class CultureInfoTest extends PHPUnit_Framework_TestCase {
   protected $culture;
  
   function setUp() {

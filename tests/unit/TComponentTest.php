@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__FILE__).'/phpunit2.php';
+require_once dirname(__FILE__).'/phpunit.php';
 
 class NewComponent extends TComponent {
   private $_object = null;
@@ -38,7 +38,7 @@ class NewComponent extends TComponent {
 /**
  * @package System
  */
-class TComponentTest extends PHPUnit2_Framework_TestCase {
+class TComponentTest extends PHPUnit_Framework_TestCase {
   
   protected $component;
 

@@ -1,12 +1,12 @@
 <?php
-require_once dirname(__FILE__).'/../../../phpunit2.php';
+require_once dirname(__FILE__).'/../../../phpunit.php';
 
 Prado::using('System.Web.UI.WebControls.TDropDownList');
 
 /**
  * @package System.Web.UI.WebControls
  */
-class TDropDownListTest extends PHPUnit2_Framework_TestCase {
+class TDropDownListTest extends PHPUnit_Framework_TestCase {
 
   public function testSetDataSource() {
     $list = new TDropDownList();

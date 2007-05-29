@@ -1,12 +1,12 @@
 <?php
-require_once dirname(__FILE__).'/../phpunit2.php';
+require_once dirname(__FILE__).'/../phpunit.php';
 
 Prado::using('System.Xml.TRssFeedDocument');
 
 /**
  * @package System.Xml.TRssFeedDocument
  */
-class TRssFeedDocumentTest extends PHPUnit2_Framework_TestCase {
+class TRssFeedDocumentTest extends PHPUnit_Framework_TestCase {
 
   public function testConstruct() {
     $feed = new TRssFeedDocument();

@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__FILE__).'/../../phpunit2.php';
+require_once dirname(__FILE__).'/../../phpunit.php';
 
 //NOTE: This page require UTF-8 aware editors
 Prado::using('System.I18N.core.NumberFormatInfo');
@@ -7,7 +7,7 @@ Prado::using('System.I18N.core.NumberFormatInfo');
 /**
  * @package System.I18N.core
  */
-class NumberFormatInfoTest extends PHPUnit2_Framework_TestCase {
+class NumberFormatInfoTest extends PHPUnit_Framework_TestCase {
   
   function testCurrencyPatterns() {
     $numberInfo = NumberFormatInfo::getCurrencyInstance();

@@ -1,6 +1,6 @@
 <?php
 
-require_once(dirname(__FILE__).'/../phpunit2.php');
+require_once(dirname(__FILE__).'/../phpunit.php');
 
 Prado::using('System.Data.*');
 
@@ -9,7 +9,7 @@ define('TEST_DB_FILE',dirname(__FILE__).'/db/test.db');
 /**
  * @package System.Data.PDO
  */
-class TDbTransactionTest extends PHPUnit2_Framework_TestCase
+class TDbTransactionTest extends PHPUnit_Framework_TestCase
 {
 	private $_connection;
 

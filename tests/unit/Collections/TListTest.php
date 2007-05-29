@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__FILE__).'/../phpunit2.php';
+require_once dirname(__FILE__).'/../phpunit.php';
 
 class ListItem
 {
@@ -9,7 +9,7 @@ class ListItem
 /**
  * @package System.Collections
  */
-class TListTest extends PHPUnit2_Framework_TestCase {
+class TListTest extends PHPUnit_Framework_TestCase {
   protected $list;
   protected $item1,$item2,$item3;
 

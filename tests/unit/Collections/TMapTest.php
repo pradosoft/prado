@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__FILE__).'/../phpunit2.php';
+require_once dirname(__FILE__).'/../phpunit.php';
 
 class MapItem {
   public $data='data';
@@ -8,7 +8,7 @@ class MapItem {
 /**
  * @package System.Collections
  */
-class TMapTest extends PHPUnit2_Framework_TestCase {
+class TMapTest extends PHPUnit_Framework_TestCase {
   protected $map;
   protected $item1,$item2,$item3;
 

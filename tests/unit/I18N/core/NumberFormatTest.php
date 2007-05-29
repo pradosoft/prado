@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__FILE__).'/../../phpunit2.php';
+require_once dirname(__FILE__).'/../../phpunit.php';
 
 //NOTE: This page require UTF-8 aware editors
 Prado::using('System.I18N.core.NumberFormat');
@@ -7,7 +7,7 @@ Prado::using('System.I18N.core.NumberFormat');
 /**
  * @package System.I18N.core
  */
-class NumberFormatTest extends PHPUnit2_Framework_TestCase {
+class NumberFormatTest extends PHPUnit_Framework_TestCase {
   function testDefaultFormats() {
     $formatter = new NumberFormat();
     $number = '123456789.125156';

@@ -1,12 +1,12 @@
 <?php
-require_once dirname(__FILE__).'/../../phpunit2.php';
+require_once dirname(__FILE__).'/../../phpunit.php';
 
 Prado::using('System.I18N.core.DateTimeFormatInfo');
 
 /**
  * @package System.I18N.core
  */
-class DateTimeFormatInfoTest extends PHPUnit2_Framework_TestCase {
+class DateTimeFormatInfoTest extends PHPUnit_Framework_TestCase {
 
   protected $format;
   
