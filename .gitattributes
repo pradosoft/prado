@@ -2799,6 +2799,7 @@ tests/unit/Collections/AllTests.php -text
 tests/unit/Collections/TAttributeCollectionTest.php -text
 tests/unit/Collections/TListTest.php -text
 tests/unit/Collections/TMapTest.php -text
+tests/unit/Collections/TPagedListTest.php -text
 tests/unit/Collections/TQueueTest.php -text
 tests/unit/Collections/TStackTest.php -text
 tests/unit/Data/TDbCommandTest.php -text
