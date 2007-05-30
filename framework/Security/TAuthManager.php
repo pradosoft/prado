@@ -91,7 +91,7 @@ class TAuthManager extends TModule
 	}
 
 	/**
-	 * @param string|IUserManager the user manager module ID or the user mananger object
+	 * @param string|IUserManager the user manager module ID or the user manager object
 	 * @throws TInvalidOperationException if the module has been initialized or the user manager object is not IUserManager
 	 */
 	public function setUserManager($provider)

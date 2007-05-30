@@ -200,7 +200,7 @@ class TDateTimeStamp
 	 * Low-level function that returns the getdate() array. We have a special
 	 * $fast flag, which if set to true, will return fewer array values,
 	 * and is much faster as it does not calculate dow, etc.
-	 * @param float orginal date
+	 * @param float original date
 	 * @param boolean false to compute the day of the week, default is true
 	 * @param boolean true to calculate the GMT dates
 	 * @return array an array with date info.

@@ -205,7 +205,7 @@ class TUrlMapping extends TUrlManager
  *
  * The {@link setPattern Pattern} property takes an string expression with
  * parameter names enclosed between a left brace '{' and a right brace '}'.
- * The pattens for each parameter can be set using {@link getParameters Parameters}
+ * The patterns for each parameter can be set using {@link getParameters Parameters}
  * attribute collection. For example
  * <code>
  * <url ... pattern="articles/{year}/{month}/{day}"
@@ -301,7 +301,7 @@ class TUrlMappingPattern extends TComponent
 	}
 
 	/**
-	 * Subsitutue the parameter key value pairs as named groupings
+	 * Substitute the parameter key value pairs as named groupings
 	 * in the regular expression matching pattern.
 	 * @return string regular expression pattern with parameter subsitution
 	 */
@@ -330,7 +330,7 @@ class TUrlMappingPattern extends TComponent
 	}
 
 	/**
-	 * @param string full regular expression mapping patern.
+	 * @param string full regular expression mapping pattern.
 	 */
 	public function setRegularExpression($value)
 	{

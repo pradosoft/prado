@@ -491,7 +491,7 @@ class THttpResponse extends TModule implements ITextWriter
 	}
 
 	/**
-	 * Create a new html writer intance.
+	 * Create a new html writer instance.
 	 * This method is used internally. Please use {@link createHtmlWriter} instead.
 	 * @param string type of HTML writer to be created.
 	 * @param ITextWriter text writer holding the contents.

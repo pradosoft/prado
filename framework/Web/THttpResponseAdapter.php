@@ -13,8 +13,8 @@
 /**
  * THttpResponseAdapter class.
  *
- * THttpResponseAdapter allows the base http response class to change behaviour
- * without change the class hierachy.
+ * THttpResponseAdapter allows the base http response class to change behavior
+ * without change the class hierarchy.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$

@@ -431,7 +431,7 @@ class TComponent
 	 * When this method is invoked, the component's properties have been initialized.
 	 * The default implementation of this method will invoke
 	 * the potential parent component's {@link addParsedObject}.
-	 * This method can be overriden.
+	 * This method can be overridden.
 	 * @param TComponent potential parent of this control
 	 * @see addParsedObject
 	 */
@@ -443,7 +443,7 @@ class TComponent
 	/**
 	 * Processes an object that is created during parsing template.
 	 * The object can be either a component or a static text string.
-	 * This method can be overriden to customize the handling of newly created objects in template.
+	 * This method can be overridden to customize the handling of newly created objects in template.
 	 * Only framework developers and control developers should use this method.
 	 * @param string|TComponent text string or component parsed and instantiated in template
 	 * @see createdOnTemplate

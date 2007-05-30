@@ -19,9 +19,9 @@
  *   and the corresponding element value is returned;
  * - If the data is a TMap or TList object, then the field is treated as a key
  *   into the map or list, and the corresponding value is returned.
- * - If the data is an object, the field is treated as a property or subproperty
+ * - If the data is an object, the field is treated as a property or sub-property
  *   defined with getter methods. For example, if the object has a method called
- *   getMyValue(), then field 'MyValue' will retrive the result of this method call.
+ *   getMyValue(), then field 'MyValue' will retrieve the result of this method call.
  *   If getMyValue() returns an object which contains a method getMySubValue(),
  *   then field 'MyValue.MySubValue' will return that method call result.
  *
@@ -38,9 +38,9 @@ class TDataFieldAccessor
 	 *   and the corresponding element value is returned;
 	 * - If the data is a TMap or TList object, then the field is treated as a key
 	 *   into the map or list, and the corresponding value is returned.
-	 * - If the data is an object, the field is treated as a property or subproperty
+	 * - If the data is an object, the field is treated as a property or sub-property
 	 *   defined with getter methods. For example, if the object has a method called
-	 *   getMyValue(), then field 'MyValue' will retrive the result of this method call.
+	 *   getMyValue(), then field 'MyValue' will retrieve the result of this method call.
 	 *   If getMyValue() returns an object which contains a method getMySubValue(),
 	 *   then field 'MyValue.MySubValue' will return that method call result.
 	 * @param mixed data containing the field value, can be an array, TMap, TList or object.

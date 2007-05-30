@@ -76,7 +76,7 @@ class TPagedList extends TList
 
 	/**
 	 * Constructor.
-	 * @param array|Iterator the intial data. Default is null, meaning no initialization.
+	 * @param array|Iterator the initial data. Default is null, meaning no initialization.
 	 * @param boolean whether the list is read-only. Always true for paged list.
 	 */
 	public function __construct($data=null,$readOnly=false)
@@ -205,7 +205,7 @@ class TPagedList extends TList
 
 	/**
 	 * Switches to the next page.
-	 * @return integer|boolean the new page index, false if next page is not availabe.
+	 * @return integer|boolean the new page index, false if next page is not available.
 	 */
 	public function nextPage()
 	{
@@ -214,7 +214,7 @@ class TPagedList extends TList
 
 	/**
 	 * Switches to the previous page.
-	 * @return integer|boolean the new page index, false if previous page is not availabe.
+	 * @return integer|boolean the new page index, false if previous page is not available.
 	 */
 	public function previousPage()
 	{

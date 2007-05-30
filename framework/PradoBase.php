@@ -216,8 +216,8 @@ class PradoBase
 	 * For example, 'TButton', 'System.Web.UI.WebControls.TButton' are both
 	 * valid component type.
 	 * This method can also pass parameters to component constructors.
-	 * All paramters passed to this method except the first one (the component type)
-	 * will be supplied as component constructor paramters.
+	 * All parameters passed to this method except the first one (the component type)
+	 * will be supplied as component constructor parameters.
 	 * @param string component type
 	 * @return TComponent component instance of the specified type
 	 * @throws TInvalidDataValueException if the component type is unknown

@@ -56,7 +56,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 	/**
 	 * Constructor.
 	 * Initializes the list with an array or an iterable object.
-	 * @param array|Iterator the intial data. Default is null, meaning no initialization.
+	 * @param array|Iterator the initial data. Default is null, meaning no initialization.
 	 * @param boolean whether the list is read-only
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
@@ -141,7 +141,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 	 * Inserts an item at the specified position.
 	 * Original item at the position and the next items
 	 * will be moved one step towards the end.
-	 * @param integer the speicified position.
+	 * @param integer the specified position.
 	 * @param mixed new item
 	 * @throws TInvalidDataValueException If the index specified exceeds the bound
 	 * @throws TInvalidOperationException if the list is read-only

@@ -27,6 +27,7 @@
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Knut Urdalen <knut.urdalen@gmail.com>
  * @version $Id$
  * @package System.Collections
  * @since 3.1

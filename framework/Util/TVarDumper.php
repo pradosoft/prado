@@ -15,7 +15,7 @@
  *
  * TVarDumper is intended to replace the buggy PHP function var_dump and print_r.
  * It can correctly identify the recursively referenced objects in a complex
- * object structure. It also has a recurisve depth control to avoid indefinite
+ * object structure. It also has a recursive depth control to avoid indefinite
  * recursive display of some peculiar variables.
  *
  * TVarDumper can be used as follows,

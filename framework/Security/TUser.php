@@ -18,7 +18,7 @@ Prado::using('System.Security.IUserManager');
 /**
  * TUser class
  *
- * TUser implements basic user functionality for a prado application.
+ * TUser implements basic user functionality for a Prado application.
  * To get the name of the user, use {@link getName Name} property.
  * The property {@link getIsGuest IsGuest} tells if the user a guest/anonymous user.
  * To obtain or test the roles that the user is in, use property

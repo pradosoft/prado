@@ -52,11 +52,11 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	private $_scriptFiles=array();
 	/**
-	 * @var array javascript files to be renderd in page head section
+	 * @var array javascript files to be rendered in page head section
 	 */
 	private $_headScriptFiles=array();
 	/**
-	 * @var array javascript blocks to be renderd in page head section
+	 * @var array javascript blocks to be rendered in page head section
 	 */
 	private $_headScripts=array();
 	/**
@@ -99,7 +99,7 @@ class TClientScriptManager extends TApplicationComponent
 	}
 
 	/**
-	 * Registers a prado javascript library to be loaded.
+	 * Registers a Prado javascript library to be loaded.
 	 */
 	private function registerPradoScriptInternal($name)
 	{

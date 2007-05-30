@@ -678,7 +678,7 @@ class TApplication extends TComponent
 	}
 
 	/**
-	 * @return TErrorHandler the error hanlder module
+	 * @return TErrorHandler the error handler module
 	 */
 	public function getErrorHandler()
 	{
@@ -691,7 +691,7 @@ class TApplication extends TComponent
 	}
 
 	/**
-	 * @param TErrorHandler the error hanlder module
+	 * @param TErrorHandler the error handler module
 	 */
 	public function setErrorHandler(TErrorHandler $handler)
 	{

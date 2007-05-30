@@ -563,7 +563,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	}
 
 	/**
-	 * Resolves the requested servie.
+	 * Resolves the requested service.
 	 * This method implements a URL-based service resolution.
 	 * A URL in the format of /index.php?sp=serviceID.serviceParameter
 	 * will be resolved with the serviceID and the serviceParameter.
@@ -815,7 +815,7 @@ class THttpCookieCollection extends TList
 	 * Inserts an item at the specified position.
 	 * This overrides the parent implementation by performing additional
 	 * operations for each newly added THttpCookie object.
-	 * @param integer the speicified position.
+	 * @param integer the specified position.
 	 * @param mixed new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a THttpCookie object.
 	 */

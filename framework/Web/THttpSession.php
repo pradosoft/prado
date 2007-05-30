@@ -400,7 +400,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 
 	/**
 	 * Session open handler.
-	 * This method should be overriden if {@link setUseCustomStorage UseCustomStorage} is set true.
+	 * This method should be overridden if {@link setUseCustomStorage UseCustomStorage} is set true.
 	 * @param string session save path
 	 * @param string session name
 	 * @return boolean whether session is opened successfully
@@ -412,7 +412,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 
 	/**
 	 * Session close handler.
-	 * This method should be overriden if {@link setUseCustomStorage UseCustomStorage} is set true.
+	 * This method should be overridden if {@link setUseCustomStorage UseCustomStorage} is set true.
 	 * @return boolean whether session is closed successfully
 	 */
 	public function _close()
@@ -422,7 +422,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 
 	/**
 	 * Session read handler.
-	 * This method should be overriden if {@link setUseCustomStorage UseCustomStorage} is set true.
+	 * This method should be overridden if {@link setUseCustomStorage UseCustomStorage} is set true.
 	 * @param string session ID
 	 * @return string the session data
 	 */
@@ -433,7 +433,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 
 	/**
 	 * Session write handler.
-	 * This method should be overriden if {@link setUseCustomStorage UseCustomStorage} is set true.
+	 * This method should be overridden if {@link setUseCustomStorage UseCustomStorage} is set true.
 	 * @param string session ID
 	 * @param string session data
 	 * @return boolean whether session write is successful
@@ -445,7 +445,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 
 	/**
 	 * Session destroy handler.
-	 * This method should be overriden if {@link setUseCustomStorage UseCustomStorage} is set true.
+	 * This method should be overridden if {@link setUseCustomStorage UseCustomStorage} is set true.
 	 * @param string session ID
 	 * @return boolean whether session is destroyed successfully
 	 */
@@ -456,7 +456,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 
 	/**
 	 * Session GC (garbage collection) handler.
-	 * This method should be overriden if {@link setUseCustomStorage UseCustomStorage} is set true.
+	 * This method should be overridden if {@link setUseCustomStorage UseCustomStorage} is set true.
 	 * @param integer the number of seconds after which data will be seen as 'garbage' and cleaned up.
 	 * @return boolean whether session is GCed successfully
 	 */
