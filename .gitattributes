@@ -2798,6 +2798,7 @@ tests/unit/Caching/TFileCacheDependencyTest.php -text
 tests/unit/Collections/AllTests.php -text
 tests/unit/Collections/TListTest.php -text
 tests/unit/Collections/TMapTest.php -text
+tests/unit/Collections/TQueueTest.php -text
 tests/unit/Data/TDbCommandTest.php -text
 tests/unit/Data/TDbConnectionTest.php -text
 tests/unit/Data/TDbDataReaderTest.php -text
