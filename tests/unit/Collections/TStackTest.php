@@ -121,9 +121,9 @@ class TStackTest extends PHPUnit_Framework_TestCase {
 	
 	public function testCount() {
 		$stack = new TStack();
-		self::assertEquals(0, $stack->count());
+		self::assertEquals(0, count($stack));
 		$stack = new TStack(array(1, 2, 3));
-		self::assertEquals(3, $stack->count());
+		self::assertEquals(3, count($stack));
 	}
 
 }
