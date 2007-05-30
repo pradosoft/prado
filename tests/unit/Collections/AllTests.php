@@ -8,6 +8,7 @@ if(!defined('PHPUnit_MAIN_METHOD')) {
 require_once 'TListTest.php';
 require_once 'TMapTest.php';
 require_once 'TQueueTest.php';
+require_once 'TStackTest.php';
 
 class Collections_AllTests {
   public static function main() {
@@ -20,6 +21,7 @@ class Collections_AllTests {
     $suite->addTestSuite('TListTest');
 	$suite->addTestSuite('TMapTest');
 	$suite->addTestSuite('TQueueTest');
+	$suite->addTestSuite('TStackTest');
     
     return $suite;
   }
