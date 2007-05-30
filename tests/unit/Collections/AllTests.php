@@ -9,6 +9,7 @@ require_once 'TListTest.php';
 require_once 'TMapTest.php';
 require_once 'TQueueTest.php';
 require_once 'TStackTest.php';
+require_once 'TAttributeCollectionTest.php';
 
 class Collections_AllTests {
   public static function main() {
@@ -22,6 +23,7 @@ class Collections_AllTests {
 	$suite->addTestSuite('TMapTest');
 	$suite->addTestSuite('TQueueTest');
 	$suite->addTestSuite('TStackTest');
+	$suite->addTestSuite('TAttributeCollectionTest');
     
     return $suite;
   }
