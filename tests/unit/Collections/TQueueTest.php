@@ -118,6 +118,13 @@ class TQueueTest extends PHPUnit_Framework_TestCase {
 		$queue = new TQueue(array(1, 2, 3));
 		self::assertEquals(3, $queue->getCount());
 	}
+	
+	public function testCountable() {
+		$queue = new TQueue();
+		self::assertEquals(0, count($queue));
+		$queue = new TQueue(array(1, 2, 3));
+		self::assertEquals(3, count($queue));
+	}
 
 }
 

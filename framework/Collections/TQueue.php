@@ -31,7 +31,7 @@
  * @package System.Collections
  * @since 3.1
  */
-class TQueue extends TComponent implements IteratorAggregate
+class TQueue extends TComponent implements IteratorAggregate,Countable
 {
 	/**
 	 * internal data storage
@@ -159,6 +159,16 @@ class TQueue extends TComponent implements IteratorAggregate
 	public function getCount()
 	{
 		return $this->_c;
+	}
+	
+	/**
+	 * Returns the number of items in the queue.
+	 * This method is required by Countable interface.
+	 * @return integer number of items in the queue.
+	 */
+	public function count()
+	{
+		return $this->getCount();
 	}
 }
 
