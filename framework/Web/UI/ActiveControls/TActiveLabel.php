@@ -52,7 +52,7 @@ class TActiveLabel extends TLabel implements IActiveControl
 	}
 
 	/**
-	 * On callback response, the inner HTMl of the label is updated.
+	 * On callback response, the inner HTML of the label is updated.
 	 * @param string the text value of the label
 	 */
 	public function setText($value)
