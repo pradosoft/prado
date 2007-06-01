@@ -8,16 +8,16 @@ Prado::using('System.Xml.TXmlDocument');
  */
 class TXmlElementListTest extends PHPUnit_Framework_TestCase {
 
-  public function testConstruct() {
-    throw new PHPUnit_Framework_IncompleteTestError();
-  }
+	public function testConstruct() {
+		throw new PHPUnit_Framework_IncompleteTestError();
+	}
 
-  public function testInsertAt() {
-    throw new PHPUnit_Framework_IncompleteTestError();
-  }
+	public function testInsertAt() {
+		throw new PHPUnit_Framework_IncompleteTestError();
+	}
 
-  public function testRemoveAt() {
-    throw new PHPUnit_Framework_IncompleteTestError();
-  }
+	public function testRemoveAt() {
+		throw new PHPUnit_Framework_IncompleteTestError();
+	}
 }
 ?>

@@ -14,7 +14,7 @@
  * TXmlElement class.
  *
  * TXmlElement represents an XML element node.
- * You can obtain its tagname, attributes, text between the openning and closing
+ * You can obtain its tag-name, attributes, text between the opening and closing
  * tags via the TagName, Attributes, and Value properties, respectively.
  * You can also retrieve its parent and child elements by Parent and Elements
  * properties, respectively.
@@ -33,11 +33,11 @@ class TXmlElement extends TComponent
 	 */
 	private $_parent=null;
 	/**
-	 * @var string tagname of this element
+	 * @var string tag-name of this element
 	 */
 	private $_tagName='unknown';
 	/**
-	 * @var string text enclosed between openning and closing tags of this element
+	 * @var string text enclosed between opening and closing tags of this element
 	 */
 	private $_value='';
 	/**
@@ -51,7 +51,7 @@ class TXmlElement extends TComponent
 
 	/**
 	 * Constructor.
-	 * @param string tagname for this element
+	 * @param string tag-name for this element
 	 */
 	public function __construct($tagName)
 	{
@@ -75,7 +75,7 @@ class TXmlElement extends TComponent
 	}
 
 	/**
-	 * @return string tagname of this element
+	 * @return string tag-name of this element
 	 */
 	public function getTagName()
 	{
@@ -83,7 +83,7 @@ class TXmlElement extends TComponent
 	}
 
 	/**
-	 * @param string tagname of this element
+	 * @param string tag-name of this element
 	 */
 	public function setTagName($tagName)
 	{
@@ -163,7 +163,7 @@ class TXmlElement extends TComponent
 	}
 
 	/**
-	 * @return TXmlElement the first child element that has the specified tagname, null if not found
+	 * @return TXmlElement the first child element that has the specified tag-name, null if not found
 	 */
 	public function getElementByTagName($tagName)
 	{
@@ -177,7 +177,7 @@ class TXmlElement extends TComponent
 	}
 
 	/**
-	 * @return TList list of all child elements that have the specified tagname
+	 * @return TList list of all child elements that have the specified tag-name
 	 */
 	public function getElementsByTagName($tagName)
 	{
@@ -221,6 +221,24 @@ class TXmlElement extends TComponent
 		}
 		else
 			return $prefix."<{$this->_tagName}$attr />";
+	}
+	
+	/**
+	 * Magic-method override. Called whenever this element is used as a string.
+	 * <code>
+	 * $element = new TXmlElement('tag');
+	 * echo $element;
+	 * </code>
+	 * or
+	 * <code>
+	 * $element = new TXmlElement('tag');
+	 * $xml = (string)$element;
+	 * </code>
+	 * @return string string representation of this element
+	 */
+	public function __toString()
+	{
+		return $this->toString();
 	}
 
 	private function xmlEncode($str)
@@ -414,6 +432,26 @@ class TXmlDocument extends TXmlElement
 		$version=empty($this->_version)?' version="1.0"':' version="'.$this->_version.'"';
 		$encoding=empty($this->_encoding)?'':' encoding="'.$this->_encoding.'"';
 		return "<?xml{$version}{$encoding}?>\n".$this->toString(0);
+	}
+	
+	/**
+	 * Magic-method override. Called whenever this document is used as a string.
+	 * <code>
+	 * $document = new TXmlDocument();
+	 * $document->TagName = 'root';
+	 * echo $document;
+	 * </code>
+	 * or
+	 * <code>
+	 * $document = new TXmlDocument();
+	 * $document->TagName = 'root';
+	 * $xml = (string)$document;
+	 * </code>
+	 * @return string string representation of this document
+	 */
+	public function __toString()
+	{
+		return $this->saveToString();
 	}
 
 	/**

@@ -5,9 +5,9 @@ if(!defined('PHPUnit_MAIN_METHOD')) {
   define('PHPUnit_MAIN_METHOD', 'Xml_AllTests::main');
 }
 
-require_once 'Xml/TXmlDocumentTest.php';
-require_once 'Xml/TXmlElementTest.php';
-require_once 'Xml/TXmlElementListTest.php';
+require_once 'TXmlDocumentTest.php';
+require_once 'TXmlElementTest.php';
+require_once 'TXmlElementListTest.php';
 
 class Xml_AllTests {
   public static function main() {
