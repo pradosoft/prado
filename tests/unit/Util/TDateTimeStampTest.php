@@ -1,13 +1,12 @@
 <?php
 
-require_once dirname(__FILE__).'/../phpunit2.php';
+require_once dirname(__FILE__).'/../phpunit.php';
 
 Prado::using('System.Util.TDateTimeStamp');
 
-class DateTimeStampTestCase extends PHPUnit2_Framework_TestCase
-{
-	function testGetTimeStampAndFormat()
-	{
+class TDateTimeStampTest extends PHPUnit_Framework_TestCase {
+	
+	public function testGetTimeStampAndFormat() {
 		$s = new TDateTimeStamp;
 		$t = $s->getTimeStamp(0,0,0);
 		$this->assertEquals($s->formatDate('Y-m-d'), date('Y-m-d'));
@@ -19,8 +18,7 @@ class DateTimeStampTestCase extends PHPUnit2_Framework_TestCase
 		$this->assertEquals($s->formatDate('Y-m-d',$t), '2102-02-01');
 	}
 
-	function testGregorianToJulianConversion()
-	{
+	public function testGregorianToJulianConversion() {
 		$s = new TDateTimeStamp;
 		$t = $s->getTimeStamp(0,0,0,10,11,1492);
 
@@ -35,8 +33,7 @@ class DateTimeStampTestCase extends PHPUnit2_Framework_TestCase
 
 	}
 
-	function testGregorianCorrection()
-	{
+	public function testGregorianCorrection() {
 		$s = new TDateTimeStamp;
 		$diff = $s->getTimeStamp(0,0,0,10,15,1582) - $s->getTimeStamp(0,0,0,10,4,1582);
 
@@ -48,8 +45,7 @@ class DateTimeStampTestCase extends PHPUnit2_Framework_TestCase
 		$this->assertEquals($s->getDayOfWeek(1582,10,4), 4.0);
 	}
 
-	function testOverFlow()
-	{
+	public function testOverFlow() {
 		$s = new TDateTimeStamp;
 		$t = $s->getTimeStamp(0,0,0,3,33,1965);
 		$this->assertEquals($s->formatDate('Y-m-d',$t), '1965-04-02', 'Error in day overflow 1');
@@ -66,8 +62,7 @@ class DateTimeStampTestCase extends PHPUnit2_Framework_TestCase
 		$this->assertEquals($s->formatDate('Y-m-d',$t), '1966-01-03', 'Error in mth overflow 1');
 	}
 
-	function test2DigitTo4DigitYearConversion()
-	{
+	public function test2DigitTo4DigitYearConversion() {
 		$s = new TDateTimeStamp;
 		$this->assertEquals($s->get4DigitYear(00), 2000, "Err 2-digit 2000");
 		$this->assertEquals($s->get4DigitYear(10), 2010, "Err 2-digit 2010");
@@ -78,16 +73,14 @@ class DateTimeStampTestCase extends PHPUnit2_Framework_TestCase
 		$this->assertEquals($s->get4DigitYear(90), 1990, "Err 2-digit 1990");
 	}
 
-	function testStringFormating()
-	{
+	public function testStringFormating() {
 		$s = new TDateTimeStamp;
 		$fmt = '\d\a\t\e T Y-m-d H:i:s a A d D F g G h H i j l L m M n O \R\F\C2822 r s t U w y Y z Z 2003';
 		$s1 = date($fmt,0);
 		$s2 = $s->formatDate($fmt,0);
 		$this->assertEquals($s1, $s2);//, " date() 0 failed \n $s1 \n $s2");
 
-		for ($i=100; --$i > 0; )
-		{
+		for ($i=10; --$i > 0; ) {
 				$ts = 3600.0*((rand()%60000)+(rand()%60000))+(rand()%60000);
 				$s1 = date($fmt,$ts);
 				$s2 = $s->formatDate($fmt,$ts);
@@ -100,12 +93,10 @@ class DateTimeStampTestCase extends PHPUnit2_Framework_TestCase
 		}
 	}
 
-	function testRandomDatesBetween100And4000()
-	{
+	public function testRandomDatesBetween100And4000() {
 		$this->assertIsValidDate(100,1);
 		//echo "Testing year ";
-		for ($i=100; --$i >= 0;)
-		{
+		for ($i=10; --$i >= 0;) {
 			$y1 = 100+rand(0,1970-100);
 			//echo $y1." ";
 			$m = rand(1,12);
@@ -117,8 +108,7 @@ class DateTimeStampTestCase extends PHPUnit2_Framework_TestCase
 		}
 	}
 
-	function assertIsValidDate($y1,$m,$d=13)
-	{
+	public function assertIsValidDate($y1,$m,$d=13) {
 		$s = new TDateTimeStamp;
 		$t = $s->getTimeStamp(0,0,0,$m,$d,$y1);
 		$rez = $s->formatDate('Y-n-j H:i:s',$t);
@@ -126,8 +116,7 @@ class DateTimeStampTestCase extends PHPUnit2_Framework_TestCase
 		$this->assertEquals("$y1-$m-$d 00:00:00", $rez);
 	}
 
-	function testRandomDates()
-	{
+	function testRandomDates() {
 		$start = 1960+rand(0,10);
 		$yrs = 12;
 		$i = 365.25*86400*($start-1970);
@@ -140,16 +129,14 @@ class DateTimeStampTestCase extends PHPUnit2_Framework_TestCase
 		// and check if the roundtrip broke the original timestamp value.
 		//print "Testing $start to ".($start+$yrs).", or $max seconds, offset=$offset: ";
 		$fails = 0;
-		for ($max += $i; $i < $max; $i += $offset)
-		{
+		for ($max += $i; $i < $max; $i += $offset) {
 			$ret = $s->formatDate('m,d,Y,H,i,s',$i);
 			$arr = explode(',',$ret);
 			if ($lastyear != $arr[2])
 				$lastyear = $arr[2];
 
 			$newi = $s->getTimestamp($arr[3],$arr[4],$arr[5],$arr[0],$arr[1],$arr[2]);
-			if ($i != $newi)
-			{
+			if ($i != $newi) {
 				$fails++;
 				//$j = mktime($arr[3],$arr[4],$arr[5],$arr[0],$arr[1],$arr[2]);
 				//print "Error at $i, $j, getTimestamp() returned $newi ($ret)\n";

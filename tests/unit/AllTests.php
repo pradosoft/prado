@@ -11,6 +11,9 @@ require_once 'Collections/AllTests.php';
 require_once 'I18N/core/AllTests.php';
 require_once 'Web/AllTests.php';
 require_once 'Web/UI/WebControls/AllTests.php';
+require_once 'Security/AllTests.php';
+require_once 'Caching/AllTests.php';
+require_once 'Util/AllTests.php';
 
 require_once 'TComponentTest.php';
 
@@ -28,6 +31,9 @@ class AllTests {
 	$suite->addTest(I18N_core_AllTests::suite());
 	$suite->addTest(Web_AllTests::suite());
 	$suite->addTest(Web_UI_WebControls_AllTests::suite());
+	$suite->addTest(Security_AllTests::suite());
+	$suite->addTest(Caching_AllTests::suite());
+	$suite->addTest(Util_AllTests::suite());
 	
 	$suite->addTestSuite('TComponentTest');
 
