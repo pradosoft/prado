@@ -56,7 +56,7 @@
  *
  * The {@link setEnableGzip EnableGzip} property (default is true) enables the
  * published javascripts to be served as zipped if the browser and php server allows it.
-
+ *
  * If the DebugMode is false either explicitly or when the application mode is non-debug,
  * then cache headers are also sent to inform the browser and proxies to cache the file.
  * Moreover, the post-processed (comments removed and zipped) are saved in the assets
@@ -65,7 +65,7 @@
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
  * @version $Id$
- * @package System.Web.WebControls
+ * @package System.Web.UI.WebControls
  * @since 3.1
  */
 class TClientScriptLoader extends TWebControl
