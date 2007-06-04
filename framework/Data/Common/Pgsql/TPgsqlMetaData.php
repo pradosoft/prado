@@ -21,7 +21,7 @@ Prado::using('System.Data.Common.Pgsql.TPgsqlTableInfo');
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$
- * @package System.Data.Commom.Pgsql
+ * @package System.Data.Common.Pgsql
  * @since 3.1
  */
 class TPgsqlMetaData extends TDbMetaData

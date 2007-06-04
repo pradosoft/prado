@@ -21,7 +21,7 @@ Prado::using('System.Data.Common.Mssql.TMssqlTableInfo');
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id: TPgsqlMetaData.php 1866 2007-04-14 05:02:29Z wei $
- * @package System.Data.Commom.Pgsql
+ * @package System.Data.Common.Mssql
  * @since 3.1
  */
 class TMssqlMetaData extends TDbMetaData
