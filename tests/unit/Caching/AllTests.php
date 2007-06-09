@@ -5,7 +5,8 @@ if(!defined('PHPUnit_MAIN_METHOD')) {
   define('PHPUnit_MAIN_METHOD', 'Caching_AllTests::main');
 }
 
-require_once 'TCacheTest.php';
+require_once 'TSqliteCacheTest.php';
+require_once 'TAPCCacheTest.php';
 
 class Caching_AllTests {
   public static function main() {
@@ -15,7 +16,8 @@ class Caching_AllTests {
   public static function suite() {
     $suite = new PHPUnit_Framework_TestSuite('System.Caching');
     
-    $suite->addTestSuite('TCacheTest');
+	$suite->addTestSuite('TSqliteCacheTest');
+	$suite->addTestSuite('TAPCCacheTest');
 	
     return $suite;
   }

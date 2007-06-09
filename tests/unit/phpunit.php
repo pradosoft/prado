@@ -12,6 +12,8 @@
  */
 define('PRADO_FRAMEWORK_DIR', dirname(__FILE__).'/../../framework');
 set_include_path(PRADO_FRAMEWORK_DIR.':'.get_include_path());
+
+require_once dirname(__FILE__).'/Prado.php';
 require_once PRADO_FRAMEWORK_DIR.'/prado.php';
 require_once 'PHPUnit/Framework/TestCase.php';
 require_once 'PHPUnit/Framework/IncompleteTestError.php';
