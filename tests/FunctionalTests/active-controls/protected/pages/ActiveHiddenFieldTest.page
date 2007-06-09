@@ -1,0 +1,16 @@
+<com:TForm ID="form1">
+    <h1>Active HiddenField Test Case</h1>
+    
+    <com:TActiveHiddenField ID="HiddenFieldEmpty" />
+    <com:TActiveHiddenField ID="HiddenFieldUsed" Value="My value" />
+    
+    <div>
+        <com:TActiveButton ID="Button1" Text="Set value to HiddenFieldEmpty" OnClick="onSetValue" />
+        <com:TActiveButton ID="Button2" Text="Get value from HiddenFieldUsed" OnClick="onGetValue" />
+        <com:TActiveButton ID="Button3" Text="Get values from both fields" OnClick="onGetBothValues" />
+    </div>
+    <div>
+        <com:TActiveLabel ID="ResponseLabel" Text="Value of current hidden field" />
+    </div>
+    <com:TJavascriptLogger />
+</com:TForm>

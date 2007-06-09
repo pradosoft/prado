@@ -2240,6 +2240,8 @@ tests/FunctionalTests/active-controls/protected/pages/ActiveControlExpressionTag
 tests/FunctionalTests/active-controls/protected/pages/ActiveControlExpressionTag.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveControlWithTinyMce.page -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveControlWithTinyMce.php -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveHiddenFieldTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveHiddenFieldTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveImageButtonTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveImageButtonTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveLinkButtonTest.page -text
@@ -2328,6 +2330,7 @@ tests/FunctionalTests/active-controls/protected/pages/ValueTriggerCallbackTest.p
 tests/FunctionalTests/active-controls/protected/pages/group.gif -text
 tests/FunctionalTests/active-controls/protected/pages/report.gif -text
 tests/FunctionalTests/active-controls/tests/ActiveControlExpressTagTestCase.php -text
+tests/FunctionalTests/active-controls/tests/ActiveHiddenFieldTestCase.php -text
 tests/FunctionalTests/active-controls/tests/ActiveImageButtonTestCase.php -text
 tests/FunctionalTests/active-controls/tests/ActiveLinkButtonTestCase.php -text
 tests/FunctionalTests/active-controls/tests/ActiveListBoxMasterTestCase.php -text
