@@ -2102,6 +2102,7 @@ framework/Web/TUrlMapping.php -text
 framework/Web/UI/ActiveControls/TActiveButton.php -text
 framework/Web/UI/ActiveControls/TActiveControlAdapter.php -text
 framework/Web/UI/ActiveControls/TActiveCustomValidator.php -text
+framework/Web/UI/ActiveControls/TActiveHiddenField.php -text
 framework/Web/UI/ActiveControls/TActiveLabel.php -text
 framework/Web/UI/ActiveControls/TActivePageAdapter.php -text
 framework/Web/UI/ActiveControls/TActivePanel.php -text
