@@ -2974,6 +2974,8 @@ tests/unit/Web/THttpResponseTest.php -text
 tests/unit/Web/THttpSessionTest.php -text
 tests/unit/Web/THttpUtilityTest.php -text
 tests/unit/Web/TUriTest.php -text
+tests/unit/Web/UI/ActiveControls/AllTests.php -text
+tests/unit/Web/UI/ActiveControls/TActiveHiddenFieldTest.php -text
 tests/unit/Web/UI/WebControls/AllTests.php -text
 tests/unit/Web/UI/WebControls/TDropDownListTest.php -text
 tests/unit/Web/UI/WebControls/TLabelTest.php -text
