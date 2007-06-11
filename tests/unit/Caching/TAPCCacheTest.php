@@ -53,8 +53,8 @@ class TAPCCacheTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function testAdd() {
-		self::$cache->add('key', 'value');
-		self::assertEquals('value', self::$cache->get('key'));
+		self::$cache->add('anotherkey', 'value');	
+		self::assertEquals('value', self::$cache->get('anotherkey'));
 	}
 	
 	public function testDelete() {
@@ -63,7 +63,7 @@ class TAPCCacheTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function testFlush() {
-		$this->testAdd();
+		$this->testSetAndGet();
 		self::assertEquals(true, self::$cache->flush());
 	}
 

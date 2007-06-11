@@ -14,6 +14,8 @@ require_once 'THttpSessionTest.php';
 require_once 'THttpUtilityTest.php';
 require_once 'TUriTest.php';
 
+require_once 'UI/AllTests.php';
+
 class Web_AllTests {
   public static function main() {
     PHPUnit_TextUI_TestRunner::run(self::suite());
@@ -30,6 +32,8 @@ class Web_AllTests {
 	$suite->addTestSuite('THttpSessionTest');
 	$suite->addTestSuite('THttpUtilityTest');
 	$suite->addTestSuite('TUriTest');
+	
+	$suite->addTest(Web_UI_AllTests::suite());
 	
     return $suite;
   }
