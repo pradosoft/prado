@@ -4,6 +4,7 @@ BUG: Ticket#621 - TWizardNavigationButtonStyle could not be found (Qiang)
 BUG: TWizard Sidebar using TDataListItemRenderer has error (Qiang)
 ENH: Ticket#631 - Make TQueue implement Countable as the other collection classes (Knut)
 ENH: Ticket#634 - Override __toString for TXmlElement and TXmlDocument (Knut)
+NEW: Ticket#646 - Implement TAPCCache::add() (Knut)
 
 Version 3.1.0 RC May 14, 2007
 =============================

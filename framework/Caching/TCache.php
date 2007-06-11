@@ -138,7 +138,7 @@ abstract class TCache extends TModule implements ICache
 	 * @param string the key identifying the value to be cached
 	 * @param mixed the value to be cached
 	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
-	 * @param ICacheDependency dependency of the cached item. If the dependency changes, the item is labelled invalid.
+	 * @param ICacheDependency dependency of the cached item. If the dependency changes, the item is labeled invalid.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
 	public function set($id,$value,$expire=0,$dependency=null)
@@ -154,7 +154,7 @@ abstract class TCache extends TModule implements ICache
 	 * @param string the key identifying the value to be cached
 	 * @param mixed the value to be cached
 	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
-	 * @param ICacheDependency dependency of the cached item. If the dependency changes, the item is labelled invalid.
+	 * @param ICacheDependency dependency of the cached item. If the dependency changes, the item is labeled invalid.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
 	public function add($id,$value,$expire=0,$dependency=null)
@@ -178,7 +178,7 @@ abstract class TCache extends TModule implements ICache
 	 * Deletes all values from cache.
 	 * Be careful of performing this operation if the cache is shared by multiple applications.
 	 * Child classes may implement this method to realize the flush operation.
-	 * @throws TNotSupportedException if this method is not overriden by child classes
+	 * @throws TNotSupportedException if this method is not overridden by child classes
 	 */
 	public function flush()
 	{
@@ -463,7 +463,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 
 	/**
 	 * Determines the last modification time for files under the directory.
-	 * This method may go recurisvely into subdirectories if
+	 * This method may go recursively into subdirectories if
 	 * {@link setRecursiveCheck RecursiveCheck} is set true.
 	 * @param string the directory name
 	 * @param int level of the recursion
@@ -650,7 +650,7 @@ class TCacheDependencyList extends TList
 	 * Inserts an item at the specified position.
 	 * This overrides the parent implementation by performing additional type checking
 	 * for each newly added item.
-	 * @param integer the speicified position.
+	 * @param integer the specified position.
 	 * @param mixed new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a dependency instance
 	 */
