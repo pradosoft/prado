@@ -94,6 +94,8 @@ memcache_port_unchangeable				= TMemCache.Port cannot be modified after the modu
 apccache_extension_required				= TAPCCache requires APC PHP extension.
 apccache_add_unsupported				= TAPCCache.add() is not supported.
 apccache_replace_unsupported			= TAPCCache.replace() is not supported.
+apccache_extension_not_enabled			= TAPCCache need apc.enabled = 1 in php.ini in order to work.
+apccache_extension_not_enabled_cli		= TAPCCache need apc.enable_cli = 1 in php.ini in order to work with PHP from the command line.
 
 errorhandler_errortemplatepath_invalid	= TErrorHandler.ErrorTemplatePath '{0}' is invalid. Make sure it is in namespace form and points to a valid directory containing error template files.
 
@@ -368,7 +370,7 @@ dbtransaction_transaction_inactive		= TDbTransaction is inactive.
 
 dbcommandbuilder_value_must_not_be_null	= Property {0} must not be null as defined by column '{2}' in table '{1}'.
 
-dbcommon_invalid_table_name				= Database table '{0}' not found. Error Msg: {1}.
+dbcommon_invalid_table_name				= Database table '{0}' not found. Error message: {1}.
 dbcommon_invalid_identifier_name        = Invalid database identifier name '{0}', see {1} for details.
 dbtableinfo_invalid_column_name			= Invalid column name '{0}' for database table '{1}'.
 dbmetadata_invalid_table_view			= Invalid table/view name '{0}', or that table/view '{0}' contains no accessible column/field definitions.
