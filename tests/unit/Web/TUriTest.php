@@ -7,45 +7,65 @@ Prado::using('System.Web.THttpRequest');
  * @package System.Web
  */
 class TUriTest extends PHPUnit_Framework_TestCase {
-
+  
+  const URISTR='http://login:p@ssw0rd:compl3x@www.pradosoft.com:80/demos/quickstart/index.php?page=test&param1=test2#anchor';
+			
+  public function setUp () {
+    $this->uri=new TUri(self::URISTR);
+  }
+  
+  public function tearDown() {
+    $this->uri=null;
+  }
+  
   public function testConstruct() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    $url="http://www.pradosoft.com/";
+    $uri=new TUri ($url);
+    self::assertEquals($url, $uri->getUri() );
+    // Bad uri test
+	$url="http://www.pradosoft.com:badport/test";
+	try {
+	  $url=new TUri($url);
+	  self::fail ('exception not raised with an invalid URL');
+	} catch (TInvalidDataValueException $e) {
+	  
+	}
   }
 
   public function testGetUri() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    self::assertEquals(self::URISTR, $this->uri->getUri());
   }
 
   public function testGetScheme() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    self::assertEquals('http', $this->uri->getScheme());
   }
 
   public function testGetHost() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    self::assertEquals('www.pradosoft.com', $this->uri->getHost());
   }
 
   public function testGetPort() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    self::assertEquals(80, $this->uri->getPort());
   }
 
   public function testGetUser() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    self::assertEquals('login', $this->uri->getUser());
   }
 
   public function testGetPassword() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    self::assertEquals('p@ssw0rd:compl3x', $this->uri->getPassword());
   }
 
   public function testGetPath() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    self::assertEquals('/demos/quickstart/index.php', $this->uri->getPath());
   }
 
   public function testGetQuery() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    self::assertEquals('page=test&param1=test2', $this->uri->getQuery());
   }
 
   public function testGetFragment() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    self::assertEquals('anchor', $this->uri->getFragment());
   }
 }
 ?>
