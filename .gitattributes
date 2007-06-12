@@ -2982,6 +2982,7 @@ tests/unit/Web/TUriTest.php -text
 tests/unit/Web/UI/ActiveControls/AllTests.php -text
 tests/unit/Web/UI/ActiveControls/TActiveHiddenFieldTest.php -text
 tests/unit/Web/UI/AllTests.php -text
+tests/unit/Web/UI/TClientScriptManagerTest.php -text
 tests/unit/Web/UI/TControlAdapterTest.php -text
 tests/unit/Web/UI/TControlTest.php -text
 tests/unit/Web/UI/TFormTest.php -text
