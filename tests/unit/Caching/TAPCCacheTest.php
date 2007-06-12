@@ -53,7 +53,12 @@ class TAPCCacheTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function testAdd() {
-		self::$cache->add('anotherkey', 'value');	
+		try {
+			self::$cache->add('anotherkey', 'value');
+		} catch(TNotSupportedException $e) {
+			self::markTestSkipped('apc_add is not supported');
+			return;
+		}
 		self::assertEquals('value', self::$cache->get('anotherkey'));
 	}
 	
