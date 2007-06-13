@@ -24,10 +24,10 @@ class Web_AllTests {
   public static function suite() {
     $suite = new PHPUnit_Framework_TestSuite('System.Web');
     
+    $suite->addTestSuite('THttpRequestTest');
 	$suite->addTestSuite('TAssetManagerTest');
 	$suite->addTestSuite('THttpCookieCollectionTest');
 	$suite->addTestSuite('THttpCookieTest');
-    $suite->addTestSuite('THttpRequestTest');
 	$suite->addTestSuite('THttpResponseTest');
 	$suite->addTestSuite('THttpSessionTest');
 	$suite->addTestSuite('THttpUtilityTest');
