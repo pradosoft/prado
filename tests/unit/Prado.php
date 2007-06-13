@@ -117,7 +117,34 @@ class Prado extends PradoBase {
 		} else {
 			throw new TInvalidDataValueException('prado_alias_invalid', $alias, $path);
 		}	
-	}*/
+	}*/	
+	
+
+	public static function getUserLanguages()
+	{
+		$languages=null;
+		// Recompute $languages each times it's called for unit tests
+		/*if($languages===null)
+		{*/
+			if(!isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
+				$languages[0]='en';
+			else
+			{
+				$languages=array();
+				foreach(explode(',',$_SERVER['HTTP_ACCEPT_LANGUAGE']) as $language)
+				{
+					$array=split(';q=',trim($language));
+					$languages[trim($array[0])]=isset($array[1])?(float)$array[1]:1.0;
+				}
+				arsort($languages);
+				$languages=array_keys($languages);
+				if(empty($languages))
+					$languages[0]='en';
+			}
+		/*}*/
+		return $languages;
+	}
+
 }
 
 ?>
