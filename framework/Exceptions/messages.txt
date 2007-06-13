@@ -55,6 +55,8 @@ httprequest_separator_invalid			= THttpRequest.UrlParamSeparator can only contai
 httprequest_urlmanager_inexist			= THttpRequest.UrlManager '{0}' does not point to an existing module.
 httprequest_urlmanager_invalid			= THttpRequest.UrlManager '{0}' must point to a module extending from TUrlManager.
 
+httpcookiecollection_httpcookie_required = THttpCookieCollection can only accept THttpCookie objects.
+
 httpresponse_bufferoutput_unchangeable	= THttpResponse.BufferOutput cannot be modified after THttpResponse is initialized.
 httpresponse_file_inexistent			= THttpResponse cannot send file '{0}'. The file does not exist.
 

@@ -112,7 +112,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 * Indexes for the rare fields.
 	 * In order to save memory, rare fields will only be created if they are needed.
 	 */
-	const RF_CONTROLS=0;			// cihld controls
+	const RF_CONTROLS=0;			// child controls
 	const RF_CHILD_STATE=1;			// child state field
 	const RF_NAMED_CONTROLS=2;		// list of controls whose namingcontainer is this control
 	const RF_NAMED_CONTROLS_ID=3;	// counter for automatic id

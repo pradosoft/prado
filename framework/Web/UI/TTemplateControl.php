@@ -124,7 +124,7 @@ class TTemplateControl extends TCompositeControl
 
 	/**
 	 * Creates child controls.
-	 * This method is overriden to load and instantiate control template.
+	 * This method is overridden to load and instantiate control template.
 	 * This method should only be used by framework and control developers.
 	 */
 	public function createChildControls()

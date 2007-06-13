@@ -828,7 +828,7 @@ class THttpCookieCollection extends TList
 				$this->_o->addCookie($item);
 		}
 		else
-			throw new TInvalidDataTypeException('authorizationrulecollection_authorizationrule_required');
+			throw new TInvalidDataTypeException('httpcookiecollection_httpcookie_required');
 	}
 
 	/**
