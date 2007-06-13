@@ -9,23 +9,43 @@ Prado::using('System.Web.THttpRequest');
 class THttpCookieCollectionTest extends PHPUnit_Framework_TestCase {
 
   public function testConstruct() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    $coll=new THttpCookieCollection();
+    self::assertType('THttpCookieCollection', $coll);
   }
 
   public function testInsertAt() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    $coll=new THttpCookieCollection();
+    $coll->insertAt(0, new THttpCookie('name','value'));
+    self::assertEquals('value',$coll->itemAt(0)->getValue());
+    try {
+    	$coll->insertAt(1, "bad parameter");
+    	self::fail ('Invalid data type exception not raised');
+    } catch (TInvalidDataTypeException $e) {}
   }
 
   public function testRemoveAt() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    $coll=new THttpCookieCollection();
+    try {
+    	$coll->removeAt(0);
+    	self::fail('Invalid Value exception not raised');
+    } catch (TInvalidDataValueException $e) {}
+    
+    $coll->insertAt(0, new THttpCookie('name','value'));
+    self::assertEquals('value',$coll->removeAt(0)->getValue());
   }
 
   public function testItemAt() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    $coll=new THttpCookieCollection();
+    $coll->insertAt(0, new THttpCookie('name','value'));
+    self::assertEquals('value',$coll->itemAt(0)->getValue());
+    self::assertEquals('value',$coll->itemAt('name')->getValue());
   }
 
   public function testFindCookieByName() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    $coll=new THttpCookieCollection();
+    $coll->insertAt(0, new THttpCookie('name','value'));
+    self::assertEquals ('value', $coll->findCookieByName('name')->getValue());
+    self::assertNull ($coll->findCookieByName('invalid'));
   }
 }
 ?>

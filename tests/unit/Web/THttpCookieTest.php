@@ -9,31 +9,46 @@ Prado::using('System.Web.THttpRequest');
 class THttpCookieTest extends PHPUnit_Framework_TestCase {
 
   public function testConstruct() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    $cookie=new THttpCookie('name','value');
+    self::assertEquals('name',$cookie->getName());
+    self::assertEquals('value',$cookie->getValue());
   }
 
   public function testSetDomain() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    $cookie=new THttpCookie('name','value');
+    $cookie->setDomain('pradosoft.com');
+    self::assertEquals('pradosoft.com',$cookie->getdomain());
   }
 
   public function testSetExpire() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    $cookie=new THttpCookie('name','value');
+    $exp=time()+3600;
+    $cookie->setExpire($exp);
+    self::assertEquals($exp,$cookie->getExpire());
   }
 
   public function testSetName() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+     $cookie=new THttpCookie('name','value');
+     $cookie->setName('newName');
+     self::assertEquals('newName', $cookie->getName());
   }
 
   public function testSetValue() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    $cookie=new THttpCookie('name','value');
+    $cookie->setValue('newValue');
+    self::assertEquals('newValue', $cookie->getValue());
   }
 
   public function testSetPath() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    $cookie=new THttpCookie('name','value');
+    $cookie->setPath('/admin');
+    self::assertEquals('/admin', $cookie->getPath());
   }
 
   public function testSetSecure() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    $cookie=new THttpCookie('name','value');
+    $cookie->setSecure(true);
+    self::assertTrue($cookie->getSecure());
   }
 }
 ?>
