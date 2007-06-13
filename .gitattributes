@@ -2994,6 +2994,9 @@ tests/unit/Web/UI/WebControls/TRequiredFieldValidatorTest.php -text
 tests/unit/Web/UI/WebControls/TXmlTransformTest.php -text
 tests/unit/Web/UI/WebControls/data/hello.xml -text
 tests/unit/Web/UI/WebControls/data/hello.xsl -text
+tests/unit/Web/data/aTarFile.md5 -text
+tests/unit/Web/data/aTarFile.tar -text
+tests/unit/Web/data/pradoheader.gif -text
 tests/unit/Xml/AllTests.php -text
 tests/unit/Xml/TRssFeedDocumentTest.php -text
 tests/unit/Xml/TXmlDocumentTest.php -text
