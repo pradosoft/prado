@@ -34,16 +34,39 @@ class TAssetManagerTest extends PHPUnit_Framework_TestCase {
 		
 		if (self::$assetDir===null) self::$assetDir= dirname(__FILE__).'/assets';
 		// Make asset directory if not exists 
-		// this will fail test if current directory not writable.
-		@mkdir (self::$assetDir);
+	    if (!file_exists (self::$assetDir)) {
+    		if (is_writable(dirname(self::$assetDir))) 
+    		  mkdir (self::$assetDir) ;
+    		else 
+    		  throw new Exception ('Directory '.dirname(self::$assetDir).' is not writable');
+	    } elseif (!is_dir (self::$assetDir)) {
+	       throw new Exception (self::$assetDir.' exists and is not a directory');
+	    }
 		// Define an alias to asset directory
 		prado::setPathofAlias('AssetAlias', self::$assetDir);
 		
 	}
 	
+	private function removeDirectory ($dir) {
+	  // Let's be sure $dir is a directory to avoir any error. Clear the cache !
+	  clearstatcache();
+	  if (is_dir($dir)) {
+	    foreach (scandir($dir) as $content) {
+	      if ($content==='.' or $content==='..') continue; // skip . and ..
+	      $content=$dir.'/'.$content;
+	      if (is_dir($content)) 
+	        $this->removeDirectory ($content); // Recursivly remove directories
+	      else
+	        unlink ($content); // Remove file
+	    }
+	    // Now, directory should be empty, remove it
+	    rmdir ($dir);
+	  }
+	}
+	
 	public function tearDown () {
 		// Make some cleaning :)
-		@rmdir (self::$assetDir);
+	    $this->removeDirectory(self::$assetDir); 
 	}
 	
 	public function testInit() {
@@ -56,7 +79,7 @@ class TAssetManagerTest extends PHPUnit_Framework_TestCase {
 		self::assertEquals($manager, self::$app->getAssetManager());
 		
 		// No, remove asset directory, and catch the exception
-		if (is_dir(self::$assetDir)) rmdir (self::$assetDir);
+		if (is_dir(self::$assetDir)) $this->removeDirectory (self::$assetDir);
 		try {
 			$manager->init (null);
 			self::fail ('Expected TConfigurationException not thrown');
@@ -110,8 +133,18 @@ class TAssetManagerTest extends PHPUnit_Framework_TestCase {
 		self::assertEquals($publishedFile, $manager->getPublishedPath($fileToPublish));
 		self::assertEquals($publishedUrl, $manager->getPublishedUrl($fileToPublish));
 		self::assertTrue(is_file($publishedFile));
-		@unlink ($publishedFile);
-		@rmdir (dirname($publishedFile));
+		
+	    //  try to publish invalid file
+	    try {
+	      $manager->publishFilePath('invalid_file');
+	      self::fail('Expected TInvalidDataValueException not thrown');
+	    } catch (TInvalidDataValueException $e) {}
+	}
+	
+	public function testPublishFilePathWithDirectory () {
+	    $manager=new TAssetManager();
+		$manager->setBaseUrl('/');
+		$manager->init (null);
 		
 		// Try to publish a directory
 	    $dirToPublish=dirname(__FILE__).'/data';
@@ -121,17 +154,7 @@ class TAssetManagerTest extends PHPUnit_Framework_TestCase {
 		self::assertEquals($publishedUrl, $manager->getPublishedUrl($dirToPublish));
 		self::assertTrue(is_dir($publishedDir));
 		self::assertTrue(is_file($publishedDir.'/pradoheader.gif'));
-		@unlink ($publishedDir.'/pradoheader.gif');
-		@rmdir ($publishedDir.'/aDirectory');
-		@unlink ($publishedDir.'/aTarFile.tar');
-		@unlink ($publishedDir.'/aTarFile.md5');
-		@rmdir ($publishedDir);
 		
-		// Finally, try to publish invalid file
-	    try {
-	      $manager->publishFilePath('invalid_file');
-	      self::fail('Expected TInvalidDataValueException not thrown');
-	    } catch (TInvalidDataValueException $e) {}
 	}
 
 	public function testPublishTarFile() {
@@ -154,10 +177,7 @@ class TAssetManagerTest extends PHPUnit_Framework_TestCase {
 	    self::assertTrue(is_dir($publishedDir));
 	    self::assertTrue(is_file($publishedDir.'/pradoheader.gif'));
 	    self::assertTrue(is_file($publishedDir.'/aTarFile.md5'));
-	    @unlink ($publishedDir.'/pradoheader.gif');
-	    @unlink ($publishedDir.'/aTarFile.md5');
-	    @rmdir ($publishedDir.'/aDirectory');
-	    @rmdir ($publishedDir);
+
 	}
 }
 ?>
