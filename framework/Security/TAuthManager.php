@@ -292,7 +292,7 @@ class TAuthManager extends TModule
 			throw new TConfigurationException('authmanager_session_required');
 		else
 		{
-			$this->getUser()->setIsGuest(true);
+			$this->getApplication()->getUser()->setIsGuest(true);
 			$session->destroy();
 		}
 	}

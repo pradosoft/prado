@@ -1,6 +1,7 @@
 Version 3.1.0 To Be Released
 ============================
 BUG: Ticket#621 - TWizardNavigationButtonStyle could not be found (Qiang)
+BUG: Ticket#627 - Logout did not set correct status to the user object (Qiang)
 BUG: Ticket#650 - Fixed TMysqlMetaData bug about SHOW FULL TABLES (Qiang)
 BUG: TWizard Sidebar using TDataListItemRenderer has error (Qiang)
 ENH: Ticket#631 - Make TQueue implement Countable as the other collection classes (Knut)
