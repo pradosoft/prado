@@ -212,9 +212,9 @@ class TMysqlMetaData extends TDbMetaData
 		if($this->getServerVersion()<5.01)
 			return false;
 		if($schemaName!==null)
-			$sql = "SHOW FULL TABLES FROM `{$schemaName}` LIKE :table";
+			$sql = "SHOW FULL TABLES FROM `{$schemaName}` LIKE ':table'";
 		else
-			$sql = 'SHOW FULL TABLES LIKE :table';
+			$sql = "SHOW FULL TABLES LIKE ':table'";
 
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':table', $tableName);
