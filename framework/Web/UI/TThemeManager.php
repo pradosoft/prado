@@ -328,6 +328,14 @@ class TTheme extends TApplicationComponent implements ITheme
 		return $this->_name;
 	}
 
+ 	/**
+	 * @param string theme name
+	 */
+	protected function setName($value)
+	{
+		$this->_name = $value;
+	}
+
 	/**
 	 * @return string the URL to the theme folder (without ending slash)
 	 */
@@ -336,12 +344,28 @@ class TTheme extends TApplicationComponent implements ITheme
 		return $this->_themeUrl;
 	}
 
+ 	/**
+	 * @param string the URL to the theme folder
+	 */
+	protected function setBaseUrl($value)
+	{
+		$this->_themeUrl=rtrim($value,'/');
+	}
+
 	/**
 	 * @return string the file path to the theme folder
 	 */
 	public function getBasePath()
 	{
 		return $this->_themePath;
+	}
+
+ 	/**
+	 * @param string tthe file path to the theme folder
+	 */
+	protected function setBasePath($value)
+	{
+		$this->_themePath=$value;
 	}
 
 	/**
@@ -425,12 +449,28 @@ class TTheme extends TApplicationComponent implements ITheme
 		return $this->_cssFiles;
 	}
 
+ 	/**
+	 * @param array list of CSS files (URL) in the theme
+	 */
+	protected function setStyleSheetFiles($value)
+	{
+		$this->_cssFiles=$value;
+	}
+
 	/**
 	 * @return array list of Javascript files (URL) in the theme
 	 */
 	public function getJavaScriptFiles()
 	{
 		return $this->_jsFiles;
+	}
+
+	/**
+	 * @param array list of Javascript files (URL) in the theme
+	 */
+	protected function setJavaScriptFiles($value)
+	{
+		$this->_jsFiles=$value;
 	}
 }
 
