@@ -5,6 +5,7 @@ BUG: Ticket#650 - Fixed TMysqlMetaData bug about SHOW FULL TABLES (Qiang)
 BUG: TWizard Sidebar using TDataListItemRenderer has error (Qiang)
 ENH: Ticket#631 - Make TQueue implement Countable as the other collection classes (Knut)
 ENH: Ticket#634 - Override __toString for TXmlElement and TXmlDocument (Knut)
+ENH: Ticket#641 - Added support to find out controls of specified class or parent classes (Qiang)
 CHG: Ticket#649 - Wrong error message in THttpCookieCollection::itemAt() (Knut)
 NEW: Ticket#646 - Implement TAPCCache::add() (Knut)
 

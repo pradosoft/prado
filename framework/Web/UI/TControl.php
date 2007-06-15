@@ -966,19 +966,20 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	/**
 	 * Finds all child and grand-child controls that are of the specified type.
 	 * @param string the class name
+	 * @param boolean whether the type comparison is strict or not. If false, controls of the parent classes of the specified class will also be returned.
 	 * @return array list of controls found
 	 */
-	public function findControlsByType($type)
+	public function findControlsByType($type,$strict=true)
 	{
 		$controls=array();
 		if($this->getHasControls())
 		{
 			foreach($this->_rf[self::RF_CONTROLS] as $control)
 			{
-				if(is_object($control) && get_class($control)===$type)
+				if(is_object($control) && (get_class($control)===$type || (!$strict && ($control instanceof $type))))
 					$controls[]=$control;
 				if(($control instanceof TControl) && $control->getHasControls())
-					$controls=array_merge($controls,$control->findControlsByType($type));
+					$controls=array_merge($controls,$control->findControlsByType($type,$strict));
 			}
 		}
 		return $controls;
