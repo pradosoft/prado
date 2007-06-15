@@ -110,9 +110,11 @@ class TScaffoldListView extends TScaffoldBase
 			$limit = $total - $offset;
 		$criteria = new TActiveRecordCriteria($this->getSearchCondition(), $this->getSearchParameters());
 		if($limit > 0)
+		{
 			$criteria->setLimit($limit);
-		if($offset <= $total)
-			$criteria->setOffset($offset);
+			if($offset <= $total)
+				$criteria->setOffset($offset);
+		}
 		$order = explode(' ',$this->_sort->getSelectedValue(), 2);
 		if(is_array($order) && count($order) === 2)
 			$criteria->OrdersBy[$order[0]] = $order[1];
