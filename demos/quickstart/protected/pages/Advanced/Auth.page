@@ -57,7 +57,7 @@ An authorization rule can be either an <tt>allow</tt> rule or a <tt>deny</tt> ru
 </p>
 <ul id="u1" class="block-content">
 <li><tt>pages</tt> - list of comma-separated page names that this rule applies to. If empty or not set, this rule will apply to all pages under the current directory and all its subdirectories recursively.</li>
-<li><tt>users</tt> - list of comma-separated user names that this rule applies to. A character * refers to all users including anonymous/guest user. And a character ? refers to anonymous/guest user.</li>
+<li><tt>users</tt> - list of comma-separated user names that this rule applies to. A character * refers to all users including anonymous/guest user. A character ? refers to anonymous/guest user. And a character @ refers to authenticated users (available since v3.1).</li>
 <li><tt>roles</tt> - list of comma-separated user roles that this rule applies to.</li>
 <li><tt>verb</tt> - page access method that this rule applies to. It can be either <tt>get</tt> or <tt>post</tt>. If empty or not set, the rule applies to both methods.</li>
 </ul>

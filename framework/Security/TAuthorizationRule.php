@@ -18,6 +18,7 @@
  * Action can be either 'allow' or 'deny'.
  * Guest (anonymous, unauthenticated) users are represented by question mark '?'.
  * All users (including guest users) are represented by asterisk '*'.
+ * Authenticated users are represented by '@'.
  * Users/roles are case-insensitive.
  * Different users/roles are separated by comma ','.
  * Verb can be either 'get' or 'post'. If it is absent, it means both.
@@ -53,6 +54,10 @@ class TAuthorizationRule extends TComponent
 	 * @var boolean if this rule applies to guest user
 	 */
 	private $_guest;
+	/**
+	 * @var boolean if this rule applies to authenticated users
+	 */
+	private $_authenticated;
 
 	/**
 	 * Constructor.
@@ -72,6 +77,7 @@ class TAuthorizationRule extends TComponent
 		$this->_roles=array();
 		$this->_everyone=false;
 		$this->_guest=false;
+		$this->_authenticated=false;
 		foreach(explode(',',$users) as $user)
 		{
 			if(($user=trim(strtolower($user)))!=='')
@@ -83,6 +89,8 @@ class TAuthorizationRule extends TComponent
 				}
 				else if($user==='?')
 					$this->_guest=true;
+				else if($user==='@')
+					$this->_authenticated=true;
 				else
 					$this->_users[]=$user;
 			}
@@ -136,7 +144,7 @@ class TAuthorizationRule extends TComponent
 	 */
 	public function getGuestApplied()
 	{
-		return $this->_guest;
+		return $this->_guest || $this->_everyone;
 	}
 
 	/**
@@ -148,6 +156,14 @@ class TAuthorizationRule extends TComponent
 	}
 
 	/**
+	 * @return boolean if this rule applies to authenticated users
+	 */
+	public function getAuthenticatedApplied()
+	{
+		return $this->_authenticated || $this->_everyone;
+	}
+
+	/**
 	 * @return integer 1 if the user is allowed, -1 if the user is denied, 0 if the rule does not apply to the user
 	 */
 	public function isUserAllowed(IUser $user,$verb)
@@ -155,7 +171,7 @@ class TAuthorizationRule extends TComponent
 		$decision=($this->_action==='allow')?1:-1;
 		if($this->_verb==='' || strcasecmp($verb,$this->_verb)===0)
 		{
-			if($this->_everyone || ($this->_guest && $user->getIsGuest()))
+			if($this->_everyone || ($this->_guest && $user->getIsGuest()) || ($this->_authenticated && !$user->getIsGuest()))
 				return $decision;
 			if(in_array(strtolower($user->getName()),$this->_users))
 				return $decision;
