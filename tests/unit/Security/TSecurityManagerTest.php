@@ -11,7 +11,7 @@ class TSecurityManagerTest extends PHPUnit_Framework_TestCase {
 
 	public function setUp() {
 		if (self::$app === null) {
-			self::$app = new TApplication (dirname(__FILE).'/app');
+			self::$app = new TApplication (dirname(__FILE__).'/app');
 		}
 	}
 
