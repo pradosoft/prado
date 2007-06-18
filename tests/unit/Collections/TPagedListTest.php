@@ -97,7 +97,7 @@ class TPagedListTest extends PHPUnit_Framework_TestCase {
 		$myList = new MyPagedList();
 		$list->attachEventHandler('OnFetchData', array($myList, 'fetchData'));
 		self::assertEquals(false, $myList->hasFetchedData());		
-		$list->onFetchData(new TPagedListFetchDataEventParameter($list->CurrentPageIndex, $this->PageSize*$this->CurrentPageIndex, $list->PageSize));
+		$list->onFetchData(new TPagedListFetchDataEventParameter($list->CurrentPageIndex, $list->PageSize*$list->CurrentPageIndex, $list->PageSize));
 		self::assertEquals(true, $myList->hasFetchedData());
 	}
 	
