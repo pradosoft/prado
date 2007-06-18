@@ -79,6 +79,7 @@ assetmanager_baseurl_unchangeable		= TAssetManager.BaseUrl cannot be modified af
 assetmanager_filepath_invalid			= TAssetManager is publishing an invalid file '{0}'.
 assetmanager_tarchecksum_invalid		= TAssetManager is publishing a tar file with invalid checksum '{0}'.
 assetmanager_tarfile_invalid			= TAssetManager is publishing an invalid tar file '{0}'.
+assetmanager_source_directory_invalid	= TAssetManager is copying an invalid directory '{0}'.
 
 cache_primary_duplicated				= At most one primary cache module is allowed. {0} is trying to register as another primary cache.
 sqlitecache_extension_required			= TSqliteCache requires SQLite PHP extension.

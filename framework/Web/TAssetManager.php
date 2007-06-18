@@ -258,20 +258,24 @@ class TAssetManager extends TModule
 			@mkdir($dst);
 			@chmod($dst, PRADO_CHMOD);
 		}
-		$folder=@opendir($src);
-		while($file=@readdir($folder))
+		if($folder=@opendir($src))
 		{
-			if($file==='.' || $file==='..' || $file==='.svn')
-				continue;
-			else if(is_file($src.'/'.$file))
+			while($file=@readdir($folder))
 			{
-				if(@filemtime($dst.'/'.$file)<@filemtime($src.'/'.$file))
-					@copy($src.'/'.$file,$dst.'/'.$file);
+				if($file==='.' || $file==='..' || $file==='.svn')
+					continue;
+				else if(is_file($src.'/'.$file))
+				{
+					if(@filemtime($dst.'/'.$file)<@filemtime($src.'/'.$file))
+						@copy($src.'/'.$file,$dst.'/'.$file);
+				}
+				else
+					$this->copyDirectory($src.'/'.$file,$dst.'/'.$file);
 			}
-			else
-				$this->copyDirectory($src.'/'.$file,$dst.'/'.$file);
+			closedir($folder);
+		} else {
+			throw new TInvalidDataValueException('assetmanager_source_directory_invalid', $src);
 		}
-		closedir($folder);
 	}
 
 	/**
