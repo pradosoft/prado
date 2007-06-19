@@ -10,12 +10,14 @@ require_once 'TControlAdapterTest.php';
 require_once 'TControlTest.php';
 require_once 'TFormTest.php';
 require_once 'TPageTest.php';
-/*require_once 'TTemplateControlTest.php';
+require_once 'TTemplateControlTest.php';
 require_once 'TTemplateManagerTest.php';
+require_once 'TTemplateTest.php';
 require_once 'TThemeManagerTest.php';
+require_once 'TThemeTest.php';
 require_once 'THtmlWriterTest.php';
 require_once 'TPageStatePersisterTest.php';
-require_once 'TSessionPageStatePersisterTest.php';*/
+require_once 'TSessionPageStatePersisterTest.php';
 
 class Web_UI_AllTests {
   public static function main() {
@@ -30,12 +32,14 @@ class Web_UI_AllTests {
     $suite->addTestSuite('TControlTest');
 	$suite->addTestSuite('TFormTest');
 	$suite->addTestSuite('TPageTest');
-	/*$suite->addTestSuite('TTemplateControlTest');
+	$suite->addTestSuite('TTemplateControlTest');
 	$suite->addTestSuite('TTemplateManagerTest');
+	$suite->addTestSuite('TTemplateTest');
 	$suite->addTestSuite('TThemeManagerTest');
+	$suite->addTestSuite('TThemeTest');
 	$suite->addTestSuite('THtmlWriterTest');
 	$suite->addTestSuite('TPageStatePersisterTest');
-	$suite->addTestSuite('TSessionPageStatePersisterTest');*/
+	$suite->addTestSuite('TSessionPageStatePersisterTest');
 	
     return $suite;
   }

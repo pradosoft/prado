@@ -5,6 +5,7 @@ if(!defined('PHPUnit_MAIN_METHOD')) {
 	define('PHPUnit_MAIN_METHOD', 'IO_AllTests::main');
 }
 
+require_once 'TTarFileExtractorTest.php';
 require_once 'TTextWriterTest.php';
 
 class IO_AllTests {
@@ -15,6 +16,7 @@ class IO_AllTests {
 	public static function suite() {
 		$suite = new PHPUnit_Framework_TestSuite('System.IO');
     
+		$suite->addTestSuite('TTarFileExtractorTest');
 		$suite->addTestSuite('TTextWriterTest');
     
 		return $suite;

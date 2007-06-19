@@ -2847,6 +2847,7 @@ tests/unit/I18N/core/DateTimeFormatInfoTest.php -text
 tests/unit/I18N/core/NumberFormatInfoTest.php -text
 tests/unit/I18N/core/NumberFormatTest.php -text
 tests/unit/IO/AllTests.php -text
+tests/unit/IO/TTarFileExtractorTest.php -text
 tests/unit/IO/TTextWriterTest.php -text
 tests/unit/Prado.php -text
 tests/unit/SQLMap/BaseTest.php -text
@@ -2986,7 +2987,15 @@ tests/unit/Web/UI/TClientScriptManagerTest.php -text
 tests/unit/Web/UI/TControlAdapterTest.php -text
 tests/unit/Web/UI/TControlTest.php -text
 tests/unit/Web/UI/TFormTest.php -text
+tests/unit/Web/UI/THtmlWriterTest.php -text
+tests/unit/Web/UI/TPageStatePersisterTest.php -text
 tests/unit/Web/UI/TPageTest.php -text
+tests/unit/Web/UI/TSessionPageStatePersisterTest.php -text
+tests/unit/Web/UI/TTemplateControlTest.php -text
+tests/unit/Web/UI/TTemplateManagerTest.php -text
+tests/unit/Web/UI/TTemplateTest.php -text
+tests/unit/Web/UI/TThemeManagerTest.php -text
+tests/unit/Web/UI/TThemeTest.php -text
 tests/unit/Web/UI/WebControls/AllTests.php -text
 tests/unit/Web/UI/WebControls/TDropDownListTest.php -text
 tests/unit/Web/UI/WebControls/TLabelTest.php -text
