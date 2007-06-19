@@ -7,6 +7,7 @@ BUG: Ticket#651 - TUserManager Roles names (from config) should be trimmed (Qian
 BUG: Ticket#652 - OFFSET must be specified together with LIMIT for TScaffoldView (Qiang)
 BUG: TWizard Sidebar using TDataListItemRenderer has error (Qiang)
 BUG: Ticket#654 - TAssetManager::copyDirectory() do not run closedir on an invalid resource (Knut)
+BUG: Ticket#655 - TAssetManager::publishTarFile() exception for 'assetmanager_tarchecksum_invalid' is not thrown on BSD systems (Knut)
 ENH: Ticket#625 - Added @ to represent authenticated users in auth rules (Qiang)
 ENH: Ticket#631 - Make TQueue implement Countable as the other collection classes (Knut)
 ENH: Ticket#634 - Override __toString for TXmlElement and TXmlDocument (Knut)

@@ -168,7 +168,7 @@ class TAssetManagerTest extends PHPUnit_Framework_TestCase {
 		// First, try with bad md5
 	    try {
 	      $manager->publishTarFile($tarFile, 'badMd5File');
-	      self::fail('Expected Expected TInvalidDataValueException not thrown');
+	      self::fail('Expected TInvalidDataValueException not thrown');
 	    } catch (TInvalidDataValueException $e) {}
 	    
 	    // Then, try with real md5 file

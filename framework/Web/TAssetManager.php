@@ -286,13 +286,14 @@ class TAssetManager extends TModule
 	 * as published asset assumes that the tar file has already been extracted.
 	 * @param string tar filename
 	 * @param string MD5 checksum for the corresponding tar file.
+	 * @param boolean Wether or not to check the time stamp of the file for publishing. Defaults to false.
 	 * @return string URL path to the directory where the tar file was extracted.
 	 */
 	public function publishTarFile($tarfile, $md5sum, $checkTimestamp=false)
-	{
+	{		
 		if(isset($this->_published[$md5sum]))
 			return $this->_published[$md5sum];
-		else if(($fullpath=realpath($md5sum))===false)
+		else if(($fullpath=realpath($md5sum))===false || !is_file($fullpath))
 			throw new TInvalidDataValueException('assetmanager_tarchecksum_invalid',$md5sum);
 		else
 		{
@@ -320,7 +321,7 @@ class TAssetManager extends TModule
 	 */
 	protected function deployTarFile($path,$destination)
 	{
-		if(($fullpath=realpath($path))===false)
+		if(($fullpath=realpath($path))===false || !is_file($fullpath))
 			throw new TIOException('assetmanager_tarfile_invalid',$path);
 		else
 		{
