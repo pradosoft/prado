@@ -52,11 +52,11 @@ class TPage extends TTemplateControl
 	/**
 	 * @var TForm form instance
 	 */
-	private $_form=null;
+	private $_form;
 	/**
 	 * @var THead head instance
 	 */
-	private $_head=null;
+	private $_head;
 	/**
 	 * @var array list of registered validators
 	 */
@@ -68,19 +68,19 @@ class TPage extends TTemplateControl
 	/**
 	 * @var TTheme page theme
 	 */
-	private $_theme=null;
+	private $_theme;
 	/**
 	 * @var string page title set when Head is not in page yet
 	 */
-	private $_title=null;
+	private $_title;
 	/**
 	 * @var TTheme page stylesheet theme
 	 */
-	private $_styleSheet=null;
+	private $_styleSheet;
 	/**
 	 * @var TClientScriptManager client script manager
 	 */
-	private $_clientScript=null;
+	private $_clientScript;
 	/**
 	 * @var TMap data post back by user
 	 */
@@ -104,11 +104,11 @@ class TPage extends TTemplateControl
 	/**
 	 * @var TControl control that needs to raise postback event
 	 */
-	private $_postBackEventTarget=null;
+	private $_postBackEventTarget;
 	/**
 	 * @var string postback event parameter
 	 */
-	private $_postBackEventParameter=null;
+	private $_postBackEventParameter;
 	/**
 	 * @var boolean whether the form has been rendered
 	 */
@@ -120,7 +120,7 @@ class TPage extends TTemplateControl
 	/**
 	 * @var TControl|string the control or the ID of the element on the page to be focused when the page is sent back to user
 	 */
-	private $_focus=null;
+	private $_focus;
 	/**
 	 * @var string page path to this page
 	 */
@@ -140,11 +140,11 @@ class TPage extends TTemplateControl
 	/**
 	 * @var mixed page state persister
 	 */
-	private $_statePersister=null;
+	private $_statePersister;
 	/**
 	 * @var TStack stack used to store currently active caching controls
 	 */
-	private $_cachingStack=null;
+	private $_cachingStack;
 	/**
 	 * @var string state string to be stored on the client side
 	 */
@@ -790,7 +790,7 @@ class TPage extends TTemplateControl
 	 */
 	public function getPostBackEventTarget()
 	{
-		if($this->_postBackEventTarget===null)
+		if($this->_postBackEventTarget===null && $this->_postData!==null)
 		{
 			$eventTarget=$this->_postData->itemAt(self::FIELD_POSTBACK_TARGET);
 			if(!empty($eventTarget))
@@ -813,7 +813,7 @@ class TPage extends TTemplateControl
 	 */
 	public function getPostBackEventParameter()
 	{
-		if($this->_postBackEventParameter===null)
+		if($this->_postBackEventParameter===null && $this->_postData!==null)
 		{
 			if(($this->_postBackEventParameter=$this->_postData->itemAt(self::FIELD_POSTBACK_PARAMETER))===null)
 				$this->_postBackEventParameter='';
