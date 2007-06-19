@@ -8,6 +8,7 @@ BUG: Ticket#652 - OFFSET must be specified together with LIMIT for TScaffoldView
 BUG: Ticket#653 - TUrlMapping: ServiceId irgnored in URL-Map (Qiang)
 BUG: TWizard Sidebar using TDataListItemRenderer has error (Qiang)
 BUG: TOutputCache crashes when a default button is set (Qiang)
+BUG: Fix the bug that <include> tag was ignored in page configurations (Qiang)
 BUG: Ticket#654 - TAssetManager::copyDirectory() do not run closedir on an invalid resource (Knut)
 BUG: Ticket#655 - TAssetManager::publishTarFile() exception for 'assetmanager_tarchecksum_invalid' is not thrown on BSD systems (Knut)
 ENH: Ticket#625 - Added @ to represent authenticated users in auth rules (Qiang)

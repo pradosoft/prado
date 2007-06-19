@@ -1314,6 +1314,7 @@ class TApplicationConfiguration extends TComponent
 				$this->_includes[$filePath]='('.$this->_includes[$filePath].') || ('.$when.')';
 			else
 				$this->_includes[$filePath]=$when;
+			$this->_empty=false;
 		}
 	}
 

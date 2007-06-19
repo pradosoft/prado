@@ -154,14 +154,36 @@ class TPageService extends TService
 	protected function initPageContext($pageConfig)
 	{
 		$application=$this->getApplication();
-
 		foreach($pageConfig->getApplicationConfigurations() as $appConfig)
 			$application->applyConfiguration($appConfig);
 
-		// initial page properties (to be set when page runs)
-		$this->_properties=$pageConfig->getProperties();
+		$this->applyConfiguration($pageConfig);
+	}
 
-		$application->getAuthorizationRules()->mergeWith($pageConfig->getRules());
+	/**
+	 * Applies a page configuration.
+	 * @param TPageConfiguration the configuration
+	 */
+	protected function applyConfiguration($config)
+	{
+		// initial page properties (to be set when page runs)
+		$this->_properties=$config->getProperties();
+		$this->getApplication()->getAuthorizationRules()->mergeWith($config->getRules());
+		// external configurations
+		foreach($config->getExternalConfigurations() as $filePath=>$condition)
+		{
+			if($condition!==true)
+				$condition=$this->evaluateExpression($condition);
+			if($condition)
+			{
+				if(($path=Prado::getPathOfNamespace($filePath,TApplication::CONFIG_FILE_EXT))===null || !is_file($path))
+					throw new TConfigurationException('pageservice_includefile_invalid',$filePath);
+				$c=new TPageConfiguration;
+				$c->loadFromFile($path,null);
+				$this->applyConfiguration($c);
+			}
+		}
+
 	}
 
 	/**
@@ -483,6 +505,18 @@ class TPageConfiguration extends TComponent
 	 * @var TAuthorizationRuleCollection list of authorization rules
 	 */
 	private $_rules=array();
+	/**
+	 * @var array list of included configurations
+	 */
+	private $_includes=array();
+
+	/**
+	 * @return array list of external configuration files. Each element is like $filePath=>$condition
+	 */
+	public function getExternalConfigurations()
+	{
+		return $this->_includes;
+	}
 
 	/**
 	 * Returns list of page initial property values.
@@ -538,7 +572,7 @@ class TPageConfiguration extends TComponent
 	 * @param string config file name
 	 * @param string page name, null if page is not required
 	 */
-	private function loadFromFile($fname,$page)
+	public function loadFromFile($fname,$page)
 	{
 		Prado::trace("Loading $page with file $fname",'System.Web.Services.TPageService');
 		if(empty($fname) || !is_file($fname))
@@ -627,6 +661,19 @@ class TPageConfiguration extends TComponent
 						$this->_properties=array_merge($this->_properties,$properties->toArray());
 				}
 			}
+		}
+
+		// external configurations
+		foreach($dom->getElementsByTagName('include') as $node)
+		{
+			if(($when=$node->getAttribute('when'))===null)
+				$when=true;
+			if(($filePath=$node->getAttribute('file'))===null)
+				throw new TConfigurationException('pageserviceconf_includefile_required');
+			if(isset($this->_includes[$filePath]))
+				$this->_includes[$filePath]='('.$this->_includes[$filePath].') || ('.$when.')';
+			else
+				$this->_includes[$filePath]=$when;
 		}
 	}
 }

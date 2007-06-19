@@ -109,6 +109,7 @@ pageservice_page_required				= Page Name Required
 pageservice_defaultpage_unchangeable	= TPageService.DefaultPage cannot be modified after the service is initialized.
 pageservice_basepath_unchangeable		= TPageService.BasePath cannot be modified after the service is initialized.
 pageservice_pageclass_invalid			= Page class {0} is invalid. It should be TPage or extend from TPage.
+pageservice_includefile_invalid			= Unable to find page service configuration {0}. Make sure it is in namespace format and the file ends with ".xml".
 
 pageserviceconf_file_invalid			= Unable to open page directory configuration file '{0}'.
 pageserviceconf_aliaspath_invalid		= <alias id="{0}"> uses an invalid file path "{1}" in page directory configuration file '{2}'.
@@ -118,6 +119,7 @@ pageserviceconf_module_invalid			= <module> element must have an "id" attribute 
 pageserviceconf_moduletype_required		= <module id="{0}"> must have a "class" attribute in page directory configuration file '{1}'.
 pageserviceconf_parameter_invalid		= <parameter> element must have an "id" attribute in page directory configuration file '{0}'.
 pageserviceconf_page_invalid			= <page> element must have an "id" attribute in page directory configuration file '{0}'.
+pageserviceconf_includefile_required	= Page configuration <include> element must have a "file" attribute.
 
 template_closingtag_unexpected			= Unexpected closing tag '{0}' is found.
 template_closingtag_expected			= Closing tag '{0}' is expected.
