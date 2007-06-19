@@ -268,21 +268,43 @@ class TClientScriptManager extends TApplicationComponent
 	/**
 	 * Register a default button to panel. When the $panel is in focus and
 	 * the 'enter' key is pressed, the $button will be clicked.
-	 * @param TControl panel to register the default button action
-	 * @param TControl button to trigger a postback
+	 * @param TControl|string panel (or its unique ID) to register the default button action
+	 * @param TControl|string button (or its unique ID) to trigger a postback
 	 */
 	public function registerDefaultButton($panel, $button)
 	{
-		$button->setIsDefaultButton(true);
-		$options = TJavaScript::encode($this->getDefaultButtonOptions($panel, $button));
+		$panelID=is_string($panel)?$panel:$panel->getUniqueID();
+
+		if(is_string($button))
+			$buttonID=$button;
+		else
+		{
+			$button->setIsDefaultButton(true);
+			$buttonID=$button->getUniqueID();
+		}
+		$options = TJavaScript::encode($this->getDefaultButtonOptions($panelID, $buttonID));
 		$code = "new Prado.WebUI.DefaultButton($options);";
 
-		$this->_endScripts['prado:'.$panel->getClientID()]=$code;
+		$this->_endScripts['prado:'.$panelID]=$code;
 		$this->_hiddenFields[TPage::FIELD_POSTBACK_TARGET]='';
 		$this->registerPradoScriptInternal('prado');
 
-		$params=func_get_args();
+		$params=array($panelID,$buttonID);
 		$this->_page->registerCachingAction('Page.ClientScript','registerDefaultButton',$params);
+	}
+
+	/**
+	 * @param string the unique ID of the container control
+	 * @param string the unique ID of the button control
+	 * @return array default button options.
+	 */
+	protected function getDefaultButtonOptions($panelID, $buttonID)
+	{
+		$options['Panel'] = TControl::convertUniqueIdToClientId($panelID);
+		$options['Target'] = TControl::convertUniqueIdToClientId($buttonID);
+		$options['EventTarget'] = $buttonID;
+		$options['Event'] = 'click';
+		return $options;
 	}
 
 	/**
@@ -299,20 +321,6 @@ class TClientScriptManager extends TApplicationComponent
 
 		$params=func_get_args();
 		$this->_page->registerCachingAction('Page.ClientScript','registerFocusControl',$params);
-	}
-
-	/**
-	 * @param TControl container control
-	 * @param IButtonControl button control
-	 * @return array default button options.
-	 */
-	protected function getDefaultButtonOptions($panel, $button)
-	{
-		$options['Panel'] = $panel->getClientID();
-		$options['Target'] = $button->getClientID();
-		$options['EventTarget'] = $button->getUniqueID();
-		$options['Event'] = 'click';
-		return $options;
 	}
 
 	/**

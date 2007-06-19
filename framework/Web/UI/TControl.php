@@ -415,6 +415,16 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	}
 
 	/**
+	 * Converts a unique ID to a client ID.
+	 * @param string the unique ID of a control
+	 * @return string the client ID of the control
+	 */
+	public static function convertUniqueIdToClientId($uniqueID)
+	{
+		return strtr($uniqueID,self::ID_SEPARATOR,self::CLIENT_ID_SEPARATOR);
+	}
+
+	/**
 	 * @return string the skin ID of this control, '' if not set
 	 */
 	public function getSkinID()
