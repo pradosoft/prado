@@ -163,11 +163,11 @@ class TUrlMapping extends TUrlManager
 			if(count($matches) > 0)
 			{
 				$this->_matched=$pattern;
-				$this->changeServiceParameters($pattern);
 				$params=array();
 				foreach($matches as $key=>$value)
 					if(is_string($key))
 						$params[$key]=$value;
+				$params[$pattern->getServiceID()]=$pattern->getServiceParameter();
 				return $params;
 			}
 		}
@@ -180,19 +180,6 @@ class TUrlMapping extends TUrlManager
 	public function getMatchingPattern()
 	{
 		return $this->_matched;
-	}
-
-	/**
-	 * @param TUrlMappingPattern change the Request service ID and page class.
-	 */
-	protected function changeServiceParameters($pattern)
-	{
-		$request = $this->getRequest();
-		$id = $pattern->getServiceID();
-		$param = $pattern->getServiceParameter();
-		$request->setServiceID($id);
-		$request->setServiceParameter($param);
-		$request->add($id,$param);
 	}
 }
 
