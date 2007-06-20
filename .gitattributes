@@ -2425,6 +2425,7 @@ tests/FunctionalTests/quickstart/Controls/Wizard5TestCase.php -text
 tests/FunctionalTests/quickstart/Fundamentals/HangmanTestCase.php -text
 tests/FunctionalTests/tickets.php -text
 tests/FunctionalTests/tickets/index.php -text
+tests/FunctionalTests/tickets/protected/application.xml -text
 tests/FunctionalTests/tickets/protected/messages/en/messages.xml -text
 tests/FunctionalTests/tickets/protected/pages/DActiveDropDownList2.php -text
 tests/FunctionalTests/tickets/protected/pages/Layout.php -text
@@ -2531,6 +2532,8 @@ tests/FunctionalTests/tickets/protected/pages/Ticket606.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket609.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket614.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket617.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket653/Layout.tpl -text
+tests/FunctionalTests/tickets/protected/pages/Ticket653/ticket653.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket68.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket72.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket72.php -text
@@ -2570,6 +2573,7 @@ tests/FunctionalTests/tickets/tests/Ticket578TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket585TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket586TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket587TestCase.php -text
+tests/FunctionalTests/tickets/tests/Ticket653TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket72TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket93TestCase.php -text
 tests/FunctionalTests/validators.php -text
