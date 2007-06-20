@@ -470,5 +470,23 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
 	self::assertTrue($request->getRequestResolved());	
   }
   
+  public function testRequestWithUrlMapping () {
+  	Prado::Using ('System.Web.TUrlMapping');
+  	$confstr='<config><url ServiceId="testService" ServiceParameter="testServiceParam" pattern="test/{param}/?" parameters.param="\w+"/></config>';
+	$config=new TXmlDocument('1.0','utf8');
+	$config->loadFromString($confstr);
+  	$module=new TUrlMapping ();  
+	self::$app->setModule('friendly-url',$module);
+	if (isset ($_GET['page'])) unset ($_GET['page']); // Remove service from a previous test !
+	$_SERVER['REQUEST_URI'] = '/index.php/test/value2';
+	$_SERVER['SCRIPT_NAME'] = '/index.php';
+	$_SERVER['PHP_SELF'] = '/index.php';
+	$_SERVER['QUERY_STRING'] = '';
+	$request = new THttpRequest();
+	$request->setUrlManager('friendly-url');
+	$request->init(null);
+	$module->init ($config);
+	self::assertEquals('testService', $request->resolveRequest(array ('page', 'testService')));
+  }
 }
 ?>
