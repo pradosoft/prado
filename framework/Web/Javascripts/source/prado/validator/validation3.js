@@ -584,7 +584,7 @@ Prado.WebUI.TBaseValidator.prototype =
 		this.isValid = true;
 		this._isObserving = {};
 		this.group = null;
-		//this.requestDispatched = false;
+		this.requestDispatched = false;
 
 		this.options = options;
 		this.control = $(options.ControlToValidate);
@@ -689,7 +689,7 @@ Prado.WebUI.TBaseValidator.prototype =
 
 		if(typeof(this.options.OnValidate) == "function")
 		{
-			//if(this.requestDispatched == false)
+			if(this.requestDispatched == false)
 				this.options.OnValidate(this, invoker);
 		}
 
@@ -713,11 +713,11 @@ Prado.WebUI.TBaseValidator.prototype =
 		{
 			if(typeof(this.options.OnValidationSuccess) == "function")
 			{
-				//if(this.requestDispatched == false)
-				//{
+				if(this.requestDispatched == false)
+				{
 					this.refreshControlAndMessage();
 					this.options.OnValidationSuccess(this, invoker);
-				//}
+				}
 			}
 			else
 				this.updateControl();
@@ -726,11 +726,11 @@ Prado.WebUI.TBaseValidator.prototype =
 		{
 			if(typeof(this.options.OnValidationError) == "function")
 			{
-				//if(this.requestDispatched == false)
-				//{
+				if(this.requestDispatched == false)
+				{
 					this.refreshControlAndMessage();
 					this.options.OnValidationError(this, invoker)
-				//}
+				}
 			}
 			else
 				this.updateControl();
@@ -1146,8 +1146,8 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	evaluateIsValid : function()
 	{
 		value = this.getValidationValue();
-		//if(!this.requestDispatched && (""+value) != (""+this.validatingValue))
-		if((""+value) != (""+this.validatingValue))
+		if(!this.requestDispatched && (""+value) != (""+this.validatingValue))
+		//if((""+value) != (""+this.validatingValue))
 		{
 			this.validatingValue = value;
 			request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
