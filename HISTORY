@@ -20,6 +20,7 @@ ENH: Ticket#634 - Override __toString for TXmlElement and TXmlDocument (Knut)
 ENH: Ticket#639 - Added setters for certain properties of TTheme (Qiang)
 ENH: Ticket#641 - Added support to find out controls of specified class or parent classes (Qiang)
 ENH: Ticket#646 - Implement TAPCCache::add() (Knut)
+NEW: TActiveHiddenField (Carl)
 
 Version 3.1.0 RC May 14, 2007
 =============================
