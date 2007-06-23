@@ -135,7 +135,7 @@ class TDbCache extends TCache
 			// DB table not exists
 			if($this->_autoCreate)
 			{
-				$sql='CREATE TABLE '.$this->_cacheTable.' (key CHAR(128) PRIMARY KEY, value BLOB, expire INT)';
+				$sql='CREATE TABLE '.$this->_cacheTable.' (itemkey CHAR(128) PRIMARY KEY, value BLOB, expire INT)';
 				$db->createCommand($sql)->execute();
 			}
 			else
@@ -169,7 +169,7 @@ class TDbCache extends TCache
 	 */
 	public function setConnectionString($value)
 	{
-		$this->getDbConnection()->getConnectionString($value);
+		$this->getDbConnection()->setConnectionString($value);
 	}
 
 	/**
@@ -253,7 +253,7 @@ class TDbCache extends TCache
 	 */
 	protected function getValue($key)
 	{
-		$sql='SELECT value FROM '.$this->_cacheTable.' WHERE key=\''.$key.'\' AND (expire=0 OR expire>'.time().')';
+		$sql='SELECT value FROM '.$this->_cacheTable.' WHERE itemkey=\''.$key.'\' AND (expire=0 OR expire>'.time().')';
 		return $this->_db->createCommand($sql)->queryScalar();
 	}
 
@@ -283,10 +283,11 @@ class TDbCache extends TCache
 	 */
 	protected function addValue($key,$value,$expire)
 	{
-		$sql="INSERT INTO {$this->_cacheTable} (key,value,expire) VALUES('$key',:value,$expire)";
+		$sql="INSERT INTO {$this->_cacheTable} (itemkey,value,expire) VALUES(:key,:value,$expire)";
 		try
 		{
 			$command=$this->_db->createCommand($sql);
+			$command->bindValue(':key',$key,PDO::PARAM_STR);
 			$command->bindValue(':value',$value,PDO::PARAM_LOB);
 			$command->execute();
 			return true;
@@ -305,7 +306,9 @@ class TDbCache extends TCache
 	 */
 	protected function deleteValue($key)
 	{
-		$this->_db->createCommand("DELETE FROM {$this->_cacheTable} WHERE key='$key'")->execute();
+		$command=$this->_db->createCommand("DELETE FROM {$this->_cacheTable} WHERE itemkey=:key");
+		$command->bindValue(':key',$key,PDO::PARAM_STR);
+		$command->execute();
 		return true;
 	}
 
