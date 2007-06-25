@@ -47,15 +47,19 @@ class TAuthManager extends TModule
 	/**
 	 * @var IUserManager user manager instance
 	 */
-	private $_userManager=null;
+	private $_userManager;
 	/**
 	 * @var string login page
 	 */
-	private $_loginPage=null;
+	private $_loginPage;
 	/**
 	 * @var boolean whether authorization should be skipped
 	 */
 	private $_skipAuthorization=false;
+	/**
+	 * @var string the session var name for storing return URL
+	 */
+	private $_returnUrlVarName;
 
 	/**
 	 * Initializes this module.
@@ -67,6 +71,8 @@ class TAuthManager extends TModule
 	{
 		if($this->_userManager===null)
 			throw new TConfigurationException('authmanager_usermanager_required');
+		if($this->_returnUrlVarName===null)
+			$this->_returnUrlVarName=$this->getApplication()->getID().':'.self::RETURN_URL_VAR;
 		$application=$this->getApplication();
 		if(is_string($this->_userManager))
 		{
@@ -177,11 +183,27 @@ class TAuthManager extends TModule
 	}
 
 	/**
+	 * @return string the name of the session variable storing return URL. It defaults to 'AppID:ReturnUrl'
+	 */
+	public function getReturnUrlVarName()
+	{
+		return $this->_returnUrlVarName;
+	}
+
+	/**
+	 * @param string the name of the session variable storing return URL.
+	 */
+	public function setReturnUrlVarName($value)
+	{
+		$this->_returnUrlVarName=$value;
+	}
+
+	/**
 	 * @return string URL that the browser should be redirected to when login succeeds.
 	 */
 	public function getReturnUrl()
 	{
-		return $this->getSession()->itemAt(self::RETURN_URL_VAR);
+		return $this->getSession()->itemAt($this->getReturnUrlVarName());
 	}
 
 	/**
@@ -190,7 +212,7 @@ class TAuthManager extends TModule
 	 */
 	public function setReturnUrl($value)
 	{
-		$this->getSession()->add(self::RETURN_URL_VAR,$value);
+		$this->getSession()->add($this->getReturnUrlVarName(),$value);
 	}
 
 	/**

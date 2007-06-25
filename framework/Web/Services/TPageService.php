@@ -353,6 +353,14 @@ class TPageService extends TService
 	}
 
 	/**
+	 * @return string the URL for the default page
+	 */
+	public function getDefaultPageUrl()
+	{
+		return $this->constructUrl($this->getDefaultPage());
+	}
+
+	/**
 	 * @return string the root directory for storing pages. Defaults to the 'pages' directory under the application base path.
 	 */
 	public function getBasePath()
