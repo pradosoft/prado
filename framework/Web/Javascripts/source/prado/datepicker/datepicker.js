@@ -508,6 +508,7 @@ Prado.WebUI.TDatePicker.prototype =
 	setMonth : function (month)
 	{
 		var d = this.newDate(this.selectedDate);
+		d.setDate(Math.min(d.getDate(), this.getDaysPerMonth(month,d.getFullYear())));
 		d.setMonth(month);
 		this.setSelectedDate(d);
 	},
@@ -520,6 +521,16 @@ Prado.WebUI.TDatePicker.prototype =
 	prevMonth : function ()
 	{
 		this.setMonth(this.selectedDate.getMonth()-1);
+	},
+
+	getDaysPerMonth : function (month, year)
+	{
+		month = (Number(month)+12) % 12;
+        var days = [31,28,31,30,31,30,31,31,30,31,30,31];
+		var res = days[month];
+		if (month == 1 && ((!(year % 4) && (year % 100)) || !(year % 400))) //feburary, leap years has 29
+            res++;
+        return res;
 	},
 
 	getDatePickerOffsetHeight : function()
