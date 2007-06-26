@@ -50,7 +50,7 @@ Since v3.0.2, expression tags and databind tags can be embedded within static st
 <com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_200091">
 &lt;com:TLabel&gt;
   &lt;prop:Text&gt;
-  Today is &lt;%= date('F d, Y',time()) &gt;.
+  Today is &lt;%= date('F d, Y',time()) %&gt;.
   The page class is &lt;%= get_class($this) %&gt;.
   &lt;/prop:Text&gt;
 &lt;/com:TLabel&gt;
