@@ -46,7 +46,6 @@
     <li><a href="?page=Day4.CreateReadPost">Creating ReadPost Page</a></li>
     <li><a href="?page=Day4.CreateNewPost">Creating NewPost Page</a></li>
     <li><a href="?page=Day4.CreateEditPost">Creating EditPost Page</a></li>
-    <li><a href="?page=Day4.CreateAdminPost">Creating AdminPost Page</a></li>
 </ul>
 </div>
 
