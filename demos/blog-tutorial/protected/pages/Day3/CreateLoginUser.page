@@ -92,7 +92,7 @@ class LoginUser extends TPage
             // obtain the URL of the privileged page that the user wanted to visit originally
             $url=$this->Application->getModule('auth')->ReturnUrl;
             if(empty($url))  // the user accesses the login page directly
-                $url=$this->Service->constructUrl($this->Service->DefaultPage);
+                $url=$this->Service->DefaultPageUrl;
             $this->Response->redirect($url);
         }
     }

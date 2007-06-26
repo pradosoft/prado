@@ -149,7 +149,7 @@ class NewUser extends TPage
             $userRecord->save();
 
             // redirects the browser to the homepage
-            $this->Response->redirect($this->Service->constructUrl($this->Service->DefaultPage));
+			$this->Response->redirect($this->Service->DefaultPageUrl);
         }
     }
 }

@@ -156,8 +156,7 @@ class EditUser extends TPage
             $userRecord->save();
 
             // redirects the browser to the homepage
-            $url=$this->Service->constructUrl($this->Service->DefaultPage);
-            $this->Response->redirect($url);
+			$this->Response->redirect($this->Service->DefaultPageUrl);
         }
     }
 
