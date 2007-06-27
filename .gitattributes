@@ -3057,4 +3057,5 @@ tests/unit/Xml/TRssFeedDocumentTest.php -text
 tests/unit/Xml/TXmlDocumentTest.php -text
 tests/unit/Xml/TXmlElementListTest.php -text
 tests/unit/Xml/TXmlElementTest.php -text
+tests/unit/Xml/data/test.xml -text
 tests/unit/phpunit.php -text

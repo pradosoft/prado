@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rootNode attr1="test1">
+	<node id="node1" attr1="attribute1" attr2="attribute2" attr3="attribute3"/>
+	<node id="node2">
+		<attr name="attribute1">Value1</attr>
+		<attr name="attribute2">Value2</attr>
+	</node>
+</rootNode>
