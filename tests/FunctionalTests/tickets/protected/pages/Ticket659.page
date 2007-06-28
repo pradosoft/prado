@@ -1,0 +1,4 @@
+<com:TContent ID="Content">
+<com:ExtendedToggleImageButton id="btn" OnClick="clickToggleButton" State="Down"/>
+<com:TLabel id="lbl" Text="Down"/>
+</com:TContent>
