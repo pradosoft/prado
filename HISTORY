@@ -1,5 +1,5 @@
-Version 3.1.0 To Be Released
-============================
+Version 3.1.0 July 2, 2007
+==========================
 BUG: Ticket#621 - TWizardNavigationButtonStyle could not be found (Qiang)
 BUG: Ticket#627 - Logout did not set correct status to the user object (Qiang)
 BUG: Ticket#650 - Fixed TMysqlMetaData bug about SHOW FULL TABLES (Qiang)
