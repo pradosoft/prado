@@ -77,6 +77,8 @@ class TErrorHandler extends TModule
 	public function init($config)
 	{
 		$this->getApplication()->setErrorHandler($this);
+		if($this->_templatePath===null)
+			$this->_templatePath=Prado::getFrameworkPath().'/Exceptions/templates';
 	}
 
 	/**
@@ -148,20 +150,8 @@ class TErrorHandler extends TModule
 	{
 		if(!($exception instanceof THttpException))
 			error_log($exception->__toString());
-		if($this->_templatePath===null)
-			$this->_templatePath=Prado::getFrameworkPath().'/Exceptions/templates';
-		$base=$this->_templatePath.'/'.self::ERROR_FILE_NAME;
-		$lang=Prado::getPreferredLanguage();
-		if(is_file("$base$statusCode-$lang.html"))
-			$errorFile="$base$statusCode-$lang.html";
-		else if(is_file("$base$statusCode.html"))
-			$errorFile="$base$statusCode.html";
-		else if(is_file("$base-$lang.html"))
-			$errorFile="$base-$lang.html";
-		else
-			$errorFile="$base.html";
-		if(($content=@file_get_contents($errorFile))===false)
-			die("Unable to open error template file '$errorFile'.");
+
+		$content=$this->getErrorTemplate($statusCode,$exception);
 
 		$serverAdmin=isset($_SERVER['SERVER_ADMIN'])?$_SERVER['SERVER_ADMIN']:'';
 		$tokens=array(
@@ -246,13 +236,61 @@ class TErrorHandler extends TModule
 			'%%Version%%' => $_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion(),
 			'%%Time%%' => @strftime('%Y-%m-%d %H:%M',time())
 		);
+
+		$content=$this->getExceptionTemplate($exception);
+
+		echo strtr($content,$tokens);
+	}
+
+	/**
+	 * Retrieves the template used for displaying internal exceptions.
+	 * Internal exceptions will be displayed with source code causing the exception.
+	 * This occurs when the application is in debug mode.
+	 * @param Exception the exception to be displayed
+	 * @return string the template content
+	 */
+	protected function getExceptionTemplate($exception)
+	{
 		$lang=Prado::getPreferredLanguage();
 		$exceptionFile=Prado::getFrameworkPath().'/Exceptions/templates/'.self::EXCEPTION_FILE_NAME.'-'.$lang.'.html';
 		if(!is_file($exceptionFile))
 			$exceptionFile=Prado::getFrameworkPath().'/Exceptions/templates/'.self::EXCEPTION_FILE_NAME.'.html';
 		if(($content=@file_get_contents($exceptionFile))===false)
 			die("Unable to open exception template file '$exceptionFile'.");
-		echo strtr($content,$tokens);
+		return $content;
+	}
+
+	/**
+	 * Retrieves the template used for displaying external exceptions.
+	 * External exceptions are those displayed to end-users. They do not contain
+	 * error source code. Therefore, you might want to override this method
+	 * to provide your own error template for displaying certain external exceptions.
+	 * The following tokens in the template will be replaced with corresponding content:
+	 * %%StatusCode%% : the status code of the exception
+	 * %%ErrorMessage%% : the error message (HTML encoded).
+	 * %%ServerAdmin%% : the server admin information (retrieved from Web server configuration)
+	 * %%Version%% : the version information of the Web server.
+	 * %%Time%% : the time the exception occurs at
+	 *
+	 * @param integer status code (such as 404, 500, etc.)
+	 * @param Exception the exception to be displayed
+	 * @return string the template content
+	 */
+	protected function getErrorTemplate($statusCode,$exception)
+	{
+		$base=$this->getErrorTemplatePath().'/'.self::ERROR_FILE_NAME;
+		$lang=Prado::getPreferredLanguage();
+		if(is_file("$base$statusCode-$lang.html"))
+			$errorFile="$base$statusCode-$lang.html";
+		else if(is_file("$base$statusCode.html"))
+			$errorFile="$base$statusCode.html";
+		else if(is_file("$base-$lang.html"))
+			$errorFile="$base-$lang.html";
+		else
+			$errorFile="$base.html";
+		if(($content=@file_get_contents($errorFile))===false)
+			die("Unable to open error template file '$errorFile'.");
+		return $content;
 	}
 
 	private function getExactTrace($exception)
