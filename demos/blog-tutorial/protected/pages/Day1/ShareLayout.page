@@ -28,6 +28,7 @@ For the moment, <tt>MainLayout</tt> only contains a simple header and a footer, 
 &lt;com:THead />
 <body>
 &lt;com:TForm>
+<div id="page">
 
 <div id="header">
 <h1>My PRADO Blog</h1>
@@ -41,6 +42,7 @@ For the moment, <tt>MainLayout</tt> only contains a simple header and a footer, 
 &lt;%= PRADO::poweredByPrado() %>
 </div>
 
+</div>
 &lt;/com:TForm>
 </body>
 </html>
@@ -113,7 +115,7 @@ Besides <tt>&lt;com:TContent&gt;</tt>, we also see another new tag <tt>&lt;%@ %&
 </p>
 
 <p>
-By setting <tt>MasterClass</tt> property as <tt>Application.layouts.MainLayout</tt>, we instruct the <tt>Contact</tt> page to use <tt>MainLayout</tt> as its master. Here, we are using the <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Components">namespace format</a> to refer to the <tt>MainLayout</tt> class. 
+By setting <tt>MasterClass</tt> property as <tt>Application.layouts.MainLayout</tt>, we instruct the <tt>Contact</tt> page to use <tt>MainLayout</tt> as its master. Here, we are using the <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Components">namespace format</a> to refer to the <tt>MainLayout</tt> class.
 </p>
 
 <com:InfoBox>
@@ -140,7 +142,7 @@ class Contact extends TPage
         parent::onPreInit($param);
         $this->MasterClass='Path.To.NewLayout';
     }
-    
+
     // ...
 }
 ?>

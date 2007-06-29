@@ -146,6 +146,7 @@ The expression <tt>$this->Data</tt> refers to the data item passed to the repeat
 </p>
 
 <com:TTextHighlighter CssClass="source" Language="prado">
+<div class="post-box">
 <h3>
 &lt;com:THyperLink Text="&lt;%# $this->Data->title %>"
 	NavigateUrl="&lt;%# $this->Service->constructUrl('posts.ReadPost',array('id'=>$this->Data->post_id)) %>" />
@@ -161,6 +162,7 @@ Time:
 <p>
 &lt;com:TLiteral Text="&lt;%# $this->Data->content %>" />
 </p>
+</div>
 </com:TTextHighlighter>
 
 <h3>Creating Renderer Class</h3>

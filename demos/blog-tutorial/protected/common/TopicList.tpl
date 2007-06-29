@@ -50,32 +50,12 @@
 </div>
 
 <div class="topic">
-<div>Day 5: Creating Portlets</div>
+<div>Day 5: Refactoring and Deployment</div>
 <ul>
-    <li><a href="?page=">Overview</a></li>
-</div>
-
-<div class="topic">
-<div>Day 6: Customization and Refactoring</div>
-<ul>
-    <li><a href="?page=">Using Themes and Skins</a></li>
-    <li><a href="?page=">Customizing Error Handling</a></li>
-    <li><a href="?page=">Logging</a></li>
-</ul>
-</div>
-
-<div class="topic">
-<div>Day 7: Performance Tuneup and Deployment</div>
-<ul>
-    <li><a href="?page=">Caching</a></li>
-</ul>
-</div>
-
-<div class="topic">
-<div>Summary</div>
-<ul>
-    <li><a href="?page=">Development Process</a></li>
-    <li><a href="?page=">Future Work</a></li>
+    <li><a href="?page=Day5.UseTheme">Using Themes and Skins</a></li>
+    <li><a href="?page=Day5.ErrorLogging">Error Handling and Logging</a></li>
+    <li><a href="?page=Day5.Performance">Performance Tuneup</a></li>
+    <li><a href="?page=Day5.Summary">Summary</a></li>
 </ul>
 </div>
 

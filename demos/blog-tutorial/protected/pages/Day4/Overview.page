@@ -21,6 +21,6 @@ According to the requirements, we need to create the following pages organized u
 After finishing this section, we shall expect to see the following directories and files:
 </p>
 
-<img src="%~ directories.gif %>" class="output" />
+<img src="<%~ directories.gif %>" class="output" />
 
 </com:TContent>

@@ -2,16 +2,12 @@
 
 <h1>Welcome to the PRADO Blog Tutorial</h1>
 
-<com:NoteBox>
-This tutorial is NOT completed yet. Please let us know you suggestions about this tutorial on <a href="http://www.pradosoft.com/forum/index.php?board=5.0">our forum</a>. Thanks!
-</com:NoteBox>
-
 <p>
 The purpose of this tutorial is to provide new PRADO users a step-by-step guidance on how to develop a blog system using PRADO. Readers of this tutorial are not required to have prior knowledge about PRADO. However, readers should have basic knowledge of object-oriented programming (OOP) and database programming. For a more definitive guidance about PRADO, readers may refer to the <a href="http://www.pradosoft.com/demos/quickstart/">Quickstart Tutorial</a>.
 </p>
 
 <p>
-This tutorial is organized in a day-by-day fashion. Each day new PRADO concepts and techniques are introduced, and new features are added to the blog system. At the end, we will complete a simple blog application that meets a list of <a href="?page=Requirements">initial requirements</a>.
+This tutorial is organized in a day-by-day fashion. Each day new PRADO concepts and techniques are introduced, and new features of the blog system are implemented. At the end, we will complete a simple blog application that meets a list of <a href="?page=Requirements">initial requirements</a>.
 </p>
 
 <p>

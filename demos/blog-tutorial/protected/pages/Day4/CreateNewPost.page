@@ -25,7 +25,8 @@ As the number of our pages expands, we would like to modify <tt>MainLayout</tt> 
 
 <com:TTextHighlighter CssClass="source" Language="prado">
 <div id="footer">
-<a href="&lt;%= $this->Service->DefaultPageUrl %>">Home</a>
+&lt;com:THyperLink Text="Home"
+	NavigateUrl="&lt;%= $this->Service->DefaultPageUrl %>" />
 
 &lt;com:THyperLink Text="New Post"
 	NavigateUrl="&lt;%= $this->Service->constructUrl('posts.NewPost') %>"
