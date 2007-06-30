@@ -76,6 +76,7 @@
     <exclude name="**/latex" />
     <exclude name="**/sqlmap_tut.pdf" />
     <include name="docs/specs/*"/>
+    <include name="docs/sqlmap/sqlmap.pdf" />
   </fileset>
 
   <!--
