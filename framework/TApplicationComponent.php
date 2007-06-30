@@ -87,12 +87,20 @@ class TApplicationComponent extends TComponent
 	 * This method will publish a private asset (file or directory)
 	 * and gets the URL to the asset. Note, if the asset refers to
 	 * a directory, all contents under that directory will be published.
-	 * @param string path of the asset that is relative to the directory containing the control class file.
+	 * Also note, it is recommended that you supply a class name as the second
+	 * parameter to the method (e.g. publishAsset($assetPath,__CLASS__) ).
+	 * By doing so, you avoid the issue that child classes may not work properly
+	 * because the asset path will be relative to the directory containing the child class file.
+	 *
+	 * @param string path of the asset that is relative to the directory containing the specified class file.
+	 * @param string name of the class whose containing directory will be prepend to the asset path. If null, it means get_class($this).
 	 * @return string URL to the asset path.
 	 */
-	public function publishAsset($assetPath)
+	public function publishAsset($assetPath,$className=null)
 	{
-		$class=new ReflectionClass(get_class($this));
+		if($className===null)
+			$className=get_class($this);
+		$class=new ReflectionClass($className);
 		$fullPath=dirname($class->getFileName()).'/'.$assetPath;
 		return $this->publishFilePath($fullPath);
 	}
