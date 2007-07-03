@@ -711,6 +711,7 @@ demos/blog-tutorial/protected/pages/Day4/CreateListPost.page -text
 demos/blog-tutorial/protected/pages/Day4/CreateNewPost.page -text
 demos/blog-tutorial/protected/pages/Day4/CreateReadPost.page -text
 demos/blog-tutorial/protected/pages/Day4/Overview.page -text
+demos/blog-tutorial/protected/pages/Day4/directories.gif -text
 demos/blog-tutorial/protected/pages/Day4/output.gif -text
 demos/blog-tutorial/protected/pages/Day4/output2.gif -text
 demos/blog-tutorial/protected/pages/Day4/output3.gif -text
