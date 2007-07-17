@@ -473,7 +473,7 @@ Prado.WebUI.TDatePicker.prototype =
 			date = new Date();
 		if(typeof(date) == "string" || typeof(date) == "number")
 			date = new Date(date);
-		return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0,0,0);
+		return new Date(Math.min(Math.max(date.getFullYear(),this.FromYear),this.UpToYear), date.getMonth(), date.getDate(), 0,0,0);
 	},
 
 	setSelectedDate : function(date)
