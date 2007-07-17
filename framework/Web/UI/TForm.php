@@ -47,7 +47,8 @@ class TForm extends TControl
 	{
 		$writer->addAttribute('id',$this->getClientID());
 		$writer->addAttribute('method',$this->getMethod());
-		$writer->addAttribute('action',$this->getRequest()->getRequestURI());
+		$uri=$this->getRequest()->getRequestURI();
+		$writer->addAttribute('action',str_replace('&','&amp;',str_replace('&amp;','&',$uri)));
 		if(($enctype=$this->getEnctype())!=='')
 			$writer->addAttribute('enctype',$enctype);
 
