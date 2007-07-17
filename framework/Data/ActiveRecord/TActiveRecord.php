@@ -304,7 +304,7 @@ abstract class TActiveRecord extends TComponent
 	 * @param mixed parameter values.
 	 * @return int number of records deleted.
 	 */
-	public function deleteAll($criteria, $parameters=array())
+	public function deleteAll($criteria=null, $parameters=array())
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		$criteria = $this->getCriteria($criteria,$parameters, $args);

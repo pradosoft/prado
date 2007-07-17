@@ -203,7 +203,9 @@ class TDbCommandBuilder extends TComponent
 	public function createDeleteCommand($where,$parameters=array())
 	{
 		$table = $this->getTableInfo()->getTableFullName();
-		$command = $this->createCommand("DELETE FROM {$table} WHERE {$where}");
+		if (!empty($where))
+			$where = 'WHERE '.$where;
+		$command = $this->createCommand("DELETE FROM {$table} ".$where);
 		$this->bindArrayValues($command, $parameters);
 		return $command;
 	}
