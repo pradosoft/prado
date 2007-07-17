@@ -1,0 +1,6 @@
+<com:TContent ID="Content">
+
+<com:TDatePicker Id="datePicker" InputMode="TextBox" Mode="Button" FromYear="2007" UpToYear="2009"/>
+<com:TLabel id="lbl" />
+<com:TButton id="ok" Text="Ok" onClick="clickOk"/>
+</com:TContent>
