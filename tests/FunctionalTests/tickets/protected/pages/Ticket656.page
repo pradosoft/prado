@@ -1,0 +1,7 @@
+<com:TContent ID="Content">
+
+<com:TDatePicker Id="datePicker" InputMode="DropDownList"/>
+
+<com:System.Web.UI.ActiveControls.TActiveLabel id="lblStatus"/>
+<com:System.Web.UI.ActiveControls.TActiveButton id="btnUpdate" Text="Update" OnClick="updateLbl"/>
+</com:TContent>
