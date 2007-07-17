@@ -44,7 +44,6 @@
 class TFeedService extends TService
 {
 	private $_feeds=array();
-	private $_contentType='text/xml';
 
 	/**
 	 * Initializes this module.
@@ -93,7 +92,7 @@ class TFeedService extends TService
 
 					$content=$feed->getFeedContent();
 				    //$this->getResponse()->setContentType('application/rss+xml');
-				    $this->getResponse()->setContentType($this->getContentType());
+				    $this->getResponse()->setContentType($feed->getContentType());
 				    $this->getResponse()->write($content);
 				}
 				else
@@ -104,27 +103,6 @@ class TFeedService extends TService
 		}
 		else
 			throw new THttpException(404,'feedservice_feed_unknown',$id);
-	}
-
-	/**
-	 * @return string the content type for the feed content. Defaults to 'text/xml'.
-	 */
-	public function getContentType()
-	{
-		return $this->_contentType;
-	}
-
-	/**
-	 * Sets the content type of the feed content to be sent.
-	 * Some examples are:
-	 * RSS 1.0 feed: application/rdf+xml
-	 * RSS 2.0 feed: application/rss+xml or application/xml or text/xml
-	 * ATOM feed: application/atom+xml
-	 * @param string the content type for the feed content.
-	 */
-	public function setContentType($type)
-	{
-		$this->_contentType=$type;
 	}
 }
 
@@ -153,6 +131,16 @@ interface IFeedContentProvider
 	 * @return string feed content in proper XML format
 	 */
 	public function getFeedContent();
+	/**
+	 * Sets the content type of the feed content to be sent.
+	 * Some examples are:
+	 * RSS 1.0 feed: application/rdf+xml
+	 * RSS 2.0 feed: application/rss+xml or application/xml or text/xml
+	 * ATOM feed: application/atom+xml
+	 * @return string the content type for the feed content.
+	 * @since 3.1.1
+	 */
+	public function getContentType();
 }
 
 ?>

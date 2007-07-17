@@ -1,5 +1,5 @@
 
-         Upgrading Instructions for PRADO Framework v3.1.0
+         Upgrading Instructions for PRADO Framework v3.1.1
          =================================================
 
 !!!IMPORTANT!!!
@@ -8,6 +8,11 @@ The following upgrading instructions are cumulative. That is,
 if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
+
+Upgrading from v3.1.0
+---------------------
+- IFeedContentProvider adds a new method getContentType(). This affects any
+  class implementing this interface.
 
 Upgrading from v3.1b
 --------------------
