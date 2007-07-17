@@ -87,6 +87,16 @@ class TClientScriptManager extends TApplicationComponent
 	}
 
 	/**
+	 * @return boolean whether THead is required in order to render CSS and js within head
+	 * @since 3.1.1
+	 */
+	public function getRequiresHead()
+	{
+		return count($this->_styleSheetFiles) || count($this->_styleSheets)
+			|| count($this->_headScriptFiles) || count($this->_headScripts);
+	}
+
+	/**
 	 * Registers Prado javascript by library name. See "Web/Javascripts/source/packages.php"
 	 * for library names.
 	 * @param string script library name.

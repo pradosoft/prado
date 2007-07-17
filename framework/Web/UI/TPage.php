@@ -659,6 +659,9 @@ class TPage extends TTemplateControl
 			foreach($this->_styleSheet->getJavaScriptFiles() as $url)
 				$cs->registerHeadScriptFile($url,$url);
 		}
+
+		if($cs->getRequiresHead() && $this->getHead()===null)
+			throw new TConfigurationException('page_head_required');
 	}
 
 	/**

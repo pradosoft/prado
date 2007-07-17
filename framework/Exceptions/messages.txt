@@ -193,6 +193,7 @@ page_isvalid_unknown					= TPage.IsValid has not been evaluated yet.
 page_postbackcontrol_invalid			= Unable to determine postback control '{0}'.
 page_control_outofform					= {0} '{1}' must be enclosed within TForm.
 page_head_duplicated					= A page can contain at most one THead.
+page_head_required						= A THead control is needed in page template in order to render CSS and js in the HTML head section.
 page_statepersister_invalid				= Page state persister must implement IPageStatePersister interface.
 
 csmanager_pradoscript_invalid			= Unknown Prado script library name '{0}'.
