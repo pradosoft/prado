@@ -617,8 +617,8 @@ class TDatePicker extends TTextBox
 	protected function renderCalendarDayOptions($writer, $selected=null)
 	{
 		$days = $this->getDropDownDayOptions();
-		$writer->addAttribute('id', $this->getClientID().'_day');
-		$writer->addAttribute('name', $this->getUniqueID().'$day');
+		$writer->addAttribute('id', $this->getClientID().TControl::CLIENT_ID_SEPARATOR.'day');
+		$writer->addAttribute('name', $this->getUniqueID().TControl::ID_SEPARATOR.'day');
 		$writer->addAttribute('class', 'datepicker_day_options');
 		if($this->getReadOnly() || !$this->getEnabled(true))
 			$writer->addAttribute('disabled', 'disabled');
@@ -651,8 +651,8 @@ class TDatePicker extends TTextBox
 	protected function renderCalendarMonthOptions($writer, $selected=null)
 	{
 		$info = $this->getLocalizedCalendarInfo();
-		$writer->addAttribute('id', $this->getClientID().'_month');
-		$writer->addAttribute('name', $this->getUniqueID().'$month');
+		$writer->addAttribute('id', $this->getClientID().TControl::CLIENT_ID_SEPARATOR.'month');
+		$writer->addAttribute('name', $this->getUniqueID().TControl::ID_SEPARATOR.'month');
 		$writer->addAttribute('class', 'datepicker_month_options');
 		if($this->getReadOnly() || !$this->getEnabled(true))
 			$writer->addAttribute('disabled', 'disabled');
@@ -698,8 +698,8 @@ class TDatePicker extends TTextBox
 		$years = array();
 		for($i = $this->getFromYear(); $i <= $this->getUpToYear(); $i++)
 			$years[$i] = $i;
-		$writer->addAttribute('id', $this->getClientID().'_year');
-		$writer->addAttribute('name', $this->getUniqueID().'$year');
+		$writer->addAttribute('id', $this->getClientID().TControl::CLIENT_ID_SEPARATOR.'year');
+		$writer->addAttribute('name', $this->getUniqueID().TControl::ID_SEPARATOR.'year');
 		if($this->getReadOnly() || !$this->getEnabled(true))
 			$writer->addAttribute('disabled', 'disabled');
 		$writer->renderBeginTag('select');
@@ -767,6 +767,14 @@ class TDatePicker extends TTextBox
 	 */
 	protected function publishCalendarStyle()
 	{
+		if($this->getInputMode() === TDatePickerInputMode::DropDownList)
+		{
+			$page = $this->getPage();
+			$uniqueID = $this->getUniqueID();
+			$page->registerPostDataLoader($uniqueID.TControl::ID_SEPARATOR.'day');
+			$page->registerPostDataLoader($uniqueID.TControl::ID_SEPARATOR.'month');
+			$page->registerPostDataLoader($uniqueID.TControl::ID_SEPARATOR.'year');
+		}
 		$url = $this->getAssetUrl($this->getCalendarStyle().'.css');
 		$cs = $this->getPage()->getClientScript();
 		if(!$cs->isStyleSheetFileRegistered($url))
