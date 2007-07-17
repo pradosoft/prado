@@ -351,6 +351,14 @@ class TDatePicker extends TTextBox
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
+		if($this->getInputMode() === TDatePickerInputMode::DropDownList)
+		{
+			$page = $this->getPage();
+			$uniqueID = $this->getUniqueID();
+			$page->registerPostDataLoader($uniqueID.TControl::ID_SEPARATOR.'day');
+			$page->registerPostDataLoader($uniqueID.TControl::ID_SEPARATOR.'month');
+			$page->registerPostDataLoader($uniqueID.TControl::ID_SEPARATOR.'year');
+		}
 		$this->publishCalendarStyle();
 	}
 
@@ -767,14 +775,6 @@ class TDatePicker extends TTextBox
 	 */
 	protected function publishCalendarStyle()
 	{
-		if($this->getInputMode() === TDatePickerInputMode::DropDownList)
-		{
-			$page = $this->getPage();
-			$uniqueID = $this->getUniqueID();
-			$page->registerPostDataLoader($uniqueID.TControl::ID_SEPARATOR.'day');
-			$page->registerPostDataLoader($uniqueID.TControl::ID_SEPARATOR.'month');
-			$page->registerPostDataLoader($uniqueID.TControl::ID_SEPARATOR.'year');
-		}
 		$url = $this->getAssetUrl($this->getCalendarStyle().'.css');
 		$cs = $this->getPage()->getClientScript();
 		if(!$cs->isStyleSheetFileRegistered($url))
