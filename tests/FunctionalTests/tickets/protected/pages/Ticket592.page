@@ -1,0 +1,20 @@
+<com:TContent ID="Content">
+
+<h2><strong>Without</strong> GroupName it is OK</h2>
+   <com:TRadioButton ID="radio1"  Text="Radio Button 1" /><br/>
+   <com:TRadioButton ID="radio2"  Text="Radio Button 2" /><br/>
+      <com:TActiveButton id="button1" OnCallback="noGroup" Text="test without GroupName" />
+<br/><br/>
+<h2>But with the same...</h2>
+   <com:TRadioButton ID="bad_radio1" GroupName="bad" Text="Bad Radio Button 1" /><br/>
+   <com:TRadioButton ID="bad_radio2" GroupName="bad" Text="Bad Radio Button 2" /><br/>
+      <com:TActiveButton id="button2" OnCallback="group" Text="test with a GroupName" />
+<br/><br/>
+<h2>With UniqueGroupName...</h2>
+   <com:TRadioButton ID="bad_radio3" UniqueGroupName="bad" Text="Bad Radio Button 3" /><br/>
+   <com:TRadioButton ID="bad_radio4" UniqueGroupName="bad" Text="Bad Radio Button 4" /><br/>
+      <com:TActiveButton id="button3" OnCallback="uniquegroup" Text="test with a UniqueGroupName" />
+      
+<com:TActiveLabel ID="label1" Text="Label 1"/>
+
+</com:TContent>

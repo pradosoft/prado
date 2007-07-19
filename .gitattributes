@@ -2612,6 +2612,8 @@ tests/FunctionalTests/tickets/protected/pages/Ticket587_reopened.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket587_reopened.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket591.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket591.php -text
+tests/FunctionalTests/tickets/protected/pages/Ticket592.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket592.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket593.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket598.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket598.php -text
@@ -2667,6 +2669,7 @@ tests/FunctionalTests/tickets/tests/Ticket578TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket585TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket586TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket587TestCase.php -text
+tests/FunctionalTests/tickets/tests/Ticket592TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket653TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket659TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket72TestCase.php -text
