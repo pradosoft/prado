@@ -6,9 +6,9 @@ The following sample displays three different pagers associated with a single TD
 </p>
 
 <div>
-Go to page: 
-<com:TPager ID="Pager" 
-	ControlToPaginate="DataList" 
+Go to page:
+<com:TPager ID="Pager"
+	ControlToPaginate="DataList"
 	PageButtonCount="3"
 	Mode="Numeric"
 	OnPageIndexChanged="pageChanged"
@@ -56,8 +56,8 @@ Total <%# $this->Parent->PageCount %> pages.
 
 </com:TDataList>
 
-<com:TPager ID="Pager2" 
-	ControlToPaginate="DataList" 
+<com:TPager ID="Pager2"
+	ControlToPaginate="DataList"
 	FirstPageText="9"
 	LastPageText=":"
 	Mode="NextPrev"
@@ -68,8 +68,8 @@ Total <%# $this->Parent->PageCount %> pages.
 	/>
 <br/>
 Choose page:
-<com:TPager ID="Pager3" 
-	ControlToPaginate="DataList" 
+<com:TPager ID="Pager3"
+	ControlToPaginate="DataList"
 	Mode="DropDownList"
 	OnPageIndexChanged="pageChanged"
 	/>

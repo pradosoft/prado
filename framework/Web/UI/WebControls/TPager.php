@@ -26,6 +26,12 @@
  * - Numeric: a list of page index buttons are rendered.
  * - List: a dropdown list of page indices are rendered.
  *
+ * When the pager mode is either NextPrev or Numeric, the paging buttons may be displayed
+ * in three types by setting {@link setButtonType ButtonType}:
+ * - LinkButton: a hyperlink button
+ * - PushButton: a normal button
+ * - ImageButton: an image button (please set XXXPageImageUrl properties accordingly to specify the button images.)
+ *
  * TPager raises an {@link onPageIndexChanged OnPageIndexChanged} event when
  * the end-user interacts with it and specifies a new page (e.g. clicking
  * on a page button that leads to a new page.) The new page index may be obtained
@@ -184,6 +190,102 @@ class TPager extends TWebControl implements INamingContainer
 	}
 
 	/**
+	 * @return string the image URL for the first page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
+	 * @since 3.1.1
+	 */
+	public function getFirstPageImageUrl()
+	{
+		return $this->getViewState('FirstPageImageUrl','');
+	}
+
+	/**
+	 * @param string the image URL for the first page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
+	 * @since 3.1.1
+	 */
+	public function setFirstPageImageUrl($value)
+	{
+		$this->setViewState('FirstPageImageUrl',$value);
+	}
+
+	/**
+	 * @return string the image URL for the last page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
+	 * @since 3.1.1
+	 */
+	public function getLastPageImageUrl()
+	{
+		return $this->getViewState('LastPageImageUrl','');
+	}
+
+	/**
+	 * @param string the image URL for the last page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
+	 * @since 3.1.1
+	 */
+	public function setLastPageImageUrl($value)
+	{
+		$this->setViewState('LastPageImageUrl',$value);
+	}
+
+	/**
+	 * @return string the image URL for the next page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
+	 * @since 3.1.1
+	 */
+	public function getNextPageImageUrl()
+	{
+		return $this->getViewState('NextPageImageUrl','');
+	}
+
+	/**
+	 * @param string the image URL for the next page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
+	 * @since 3.1.1
+	 */
+	public function setNextPageImageUrl($value)
+	{
+		$this->setViewState('NextPageImageUrl',$value);
+	}
+
+	/**
+	 * @return string the image URL for the previous page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
+	 * @since 3.1.1
+	 */
+	public function getPrevPageImageUrl()
+	{
+		return $this->getViewState('PrevPageImageUrl','');
+	}
+
+	/**
+	 * @param string the image URL for the previous page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
+	 * @since 3.1.1
+	 */
+	public function setPrevPageImageUrl($value)
+	{
+		$this->setViewState('PrevPageImageUrl',$value);
+	}
+
+	/**
+	 * @return string the image URL for the numeric page buttons. This is only used when {@link getButtonType ButtonType} is 'ImageButton' and {@link getMode Mode} is 'Numeric'.
+	 * @see setNumericPageImageUrl
+	 * @since 3.1.1
+	 */
+	public function getNumericPageImageUrl()
+	{
+		return $this->getViewState('NumericPageImageUrl','');
+	}
+
+	/**
+	 * Sets the image URL for the numeric page buttons.
+	 * This is actually a template for generating a set of URLs corresponding to numeric button 1, 2, 3, .., etc.
+	 * Use [0] as the placeholder for the numbers.
+	 * For example, the image URL http://example.com/images/button[0].gif
+	 * will be replaced as http://example.com/images/button1.gif, http://example.com/images/button2.gif, etc.
+	 * @param string the image URL for the numeric page buttons. This is only used when {@link getButtonType ButtonType} is 'ImageButton' and {@link getMode Mode} is 'Numeric'.
+	 * @since 3.1.1
+	 */
+	public function setNumericPageImageUrl($value)
+	{
+		$this->setViewState('NumericPageImageUrl',$value);
+	}
+
+	/**
 	 * @return integer maximum number of pager buttons to be displayed. Defaults to 10.
 	 */
 	public function getPageButtonCount()
@@ -322,8 +424,8 @@ class TPager extends TWebControl implements INamingContainer
 	 * Derived classes may override this method to create additional types of buttons, such as TImageButton.
 	 * @param string button type, either LinkButton or PushButton
 	 * @param boolean whether the button should be enabled
-	 * @param string caption of the button
-	 * @param string CommandName corresponding to the OnCommand event of the button
+	 * @param string caption of the button.
+	 * @param string CommandName corresponding to the OnCommand event of the button.
 	 * @param string CommandParameter corresponding to the OnCommand event of the button
 	 * @return mixed the button instance
 	 */
@@ -342,7 +444,13 @@ class TPager extends TWebControl implements INamingContainer
 		}
 		else
 		{
-			$button=new TButton;
+			if($buttonType===TPagerButtonType::ImageButton)
+			{
+				$button=new TImageButton;
+				$button->setImageUrl($this->getPageImageUrl($text,$commandName));
+			}
+			else
+				$button=new TButton;
 			if(!$enabled)
 				$button->setEnabled(false);
 		}
@@ -351,6 +459,31 @@ class TPager extends TWebControl implements INamingContainer
 		$button->setCommandParameter($commandParameter);
 		$button->setCausesValidation(false);
 		return $button;
+	}
+
+	/**
+	 * @param string the caption of the image button
+	 * @param string the command name associated with the image button
+	 * @since 3.1.1
+	 */
+	protected function getPageImageUrl($text,$commandName)
+	{
+		switch($commandName)
+		{
+			case self::CMD_PAGE:
+				$url=$this->getNumericPageImageUrl();
+				return str_replace('[0]',$text,$url);
+			case self::CMD_PAGE_NEXT:
+				return $this->getNextPageImageUrl();
+			case self::CMD_PAGE_PREV:
+				return $this->getPrevPageImageUrl();
+			case self::CMD_PAGE_FIRST:
+				return $this->getFirstPageImageUrl();
+			case self::CMD_PAGE_LAST:
+				return $this->getLastPageImageUrl();
+			default:
+				return '';
+		}
 	}
 
 	/**
@@ -364,11 +497,11 @@ class TPager extends TWebControl implements INamingContainer
 		{
 			if(($text=$this->getFirstPageText())!=='')
 			{
-				$label=$this->createPagerButton($buttonType,false,$text,'','');
+				$label=$this->createPagerButton($buttonType,false,$text,self::CMD_PAGE_FIRST,'');
 				$controls->add($label);
 				$controls->add("\n");
 			}
-			$label=$this->createPagerButton($buttonType,false,$this->getPrevPageText(),'','');
+			$label=$this->createPagerButton($buttonType,false,$this->getPrevPageText(),self::CMD_PAGE_PREV,'');
 			$controls->add($label);
 		}
 		else
@@ -385,12 +518,12 @@ class TPager extends TWebControl implements INamingContainer
 		$controls->add("\n");
 		if($this->getIsLastPage())
 		{
-			$label=$this->createPagerButton($buttonType,false,$this->getNextPageText(),'','');
+			$label=$this->createPagerButton($buttonType,false,$this->getNextPageText(),self::CMD_PAGE_NEXT,'');
 			$controls->add($label);
 			if(($text=$this->getLastPageText())!=='')
 			{
 				$controls->add("\n");
-				$label=$this->createPagerButton($buttonType,false,$text,'','');
+				$label=$this->createPagerButton($buttonType,false,$text,self::CMD_PAGE_LAST,'');
 				$controls->add($label);
 			}
 		}
@@ -450,7 +583,7 @@ class TPager extends TWebControl implements INamingContainer
 		{
 			if($i===$pageIndex)
 			{
-				$label=$this->createPagerButton($buttonType,false,"$i",'','');
+				$label=$this->createPagerButton($buttonType,false,"$i",self::CMD_PAGE,'');
 				$controls->add($label);
 			}
 			else
@@ -654,6 +787,7 @@ class TPagerButtonType extends TEnumerable
 {
 	const LinkButton='LinkButton';
 	const PushButton='PushButton';
+	const ImageButton='ImageButton';
 }
 
 ?>
