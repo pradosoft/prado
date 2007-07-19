@@ -162,7 +162,7 @@ class TRadioButton extends TCheckBox
 	{
 		parent::addToPostDataLoader();
 		$group = $this->getGroupName();
-		if(!empty($group))
+		if(!empty($group) || $this->getViewState('UniqueGroupName','') !== '')
 			$this->getPage()->registerPostDataLoader($this->getUniqueGroupName());
 	}
 	/**

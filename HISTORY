@@ -1,5 +1,6 @@
 Version 3.1.1 To be released
 ============================
+BUG: Ticket#592 - TRadioButton with UniqueGroupName always return false to getChecked (Christophe)
 BUG: Ticket#656 - TDatePicker does not return correct value when in callback mode (Christophe)
 BUG: Ticket#662 - Ensure TForm to properly encode the ampersand in action URL (Qiang)
 BUG: Ticket#666 - TActiveRecord::deleteAll() method always requires a criteria or null parameter (Qiang)
