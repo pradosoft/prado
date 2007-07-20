@@ -22,8 +22,9 @@ Prado::using('System.Web.UI.WebControls.TTextProcessor');
  * static text and rendering results of child controls.
  * You can set {@link setLanguage Language} to specify what kind of syntax
  * the body content is. Currently, TTextHighlighter supports the following
- * languages: 'php','prado','css','html','javascript' and 'xml', where 'prado'
- * refers to PRADO template syntax. By setting {@link setShowLineNumbers ShowLineNumbers}
+ * languages: ABAP, CPP, CSS, DIFF, DTD, HTML, JAVA, JAVASCRIPT, MYSQL, PERL,
+ * PHP, PYTHON, RUBY, SQL, XML and PRADO, where PRADO refers to PRADO template
+ * syntax. By setting {@link setShowLineNumbers ShowLineNumbers}
  * to true, the highlighted result may be shown with line numbers.
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>

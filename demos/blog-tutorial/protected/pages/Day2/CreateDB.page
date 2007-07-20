@@ -16,7 +16,7 @@ For tutorial purpose, we have simplified the requirements of our blog system so 
 We use a SQLite 3 database to keep our data. We first convert the ER diagram into the following SQL statements and save them in the file <tt>protected/schema.sql</tt>.
 </p>
 
-<com:TTextHighlighter CssClass="source">
+<com:TTextHighlighter CssClass="source" Language="sql">
 /* create users table */
 CREATE TABLE users (
   username      VARCHAR(128) NOT NULL PRIMARY KEY,
