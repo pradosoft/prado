@@ -1,5 +1,5 @@
 prado_application_singleton_required	= Prado.Application must only be set once.
-prado_component_unknown					= Unknown component type '{0}'.
+prado_component_unknown					= Unknown component type '{0}'. This may be caused by following parsing error in the {0} class file: {1}
 prado_using_invalid						= '{0}' is not a valid namespace to be used. Make sure '.*' is appended if you want to use a namespace referring to a directory.
 prado_alias_redefined					= Alias '{0}' cannot be redefined.
 prado_alias_invalid						= Alias '{0}' refers to an invalid path '{1}'. Only existing directories can be aliased.

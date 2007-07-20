@@ -10,11 +10,10 @@
  * @package System.Web.UI.WebControls
  */
 
-/**
- * Using GeSHi and TTextProcessor classes
- */
-Prado::using('System.3rdParty.geshi.geshi');
+Prado::using('System.3rdParty.TextHighlighter.Text.Highlighter',false);
+Prado::using('System.3rdParty.TextHighlighter.Text.Highlighter.Renderer.Html',false);
 Prado::using('System.Web.UI.WebControls.TTextProcessor');
+
 
 /**
  * TTextHighlighter class.
@@ -34,6 +33,8 @@ Prado::using('System.Web.UI.WebControls.TTextProcessor');
  */
 class TTextHighlighter extends TTextProcessor
 {
+	private static $_lineNumberStyle=array(TTextHighlighterLineNumberStyle::Li => HL_NUMBERS_LI, TTextHighlighterLineNumberStyle::Table => HL_NUMBERS_TABLE);
+
 	/**
 	 * @return string tag name of the panel
 	 */
@@ -51,10 +52,12 @@ class TTextHighlighter extends TTextProcessor
 	}
 
 	/**
-	 * @param string language whose syntax is to be used for highlighting.
+	 * @param string language (case-insensitive) whose syntax is to be used for highlighting.
 	 * Valid values are those file names (without suffix) that are contained
-	 * in '3rdParty/geshi/geshi' (e.g. 'php','prado','css','html','javascript',
-	 * 'xml'.)
+	 * in '3rdParty/TextHighlighter/Text/Highlighter'. Currently, the following languages are supported:
+	 * ABAP, CPP, CSS, DIFF, DTD, HTML, JAVA, JAVASCRIPT,
+	 * MYSQL, PERL, PHP, PRADO, PYTHON, RUBY, SQL, XML
+	 * If a language is not supported, it will be displayed as plain text.
 	 */
 	public function setLanguage($value)
 	{
@@ -94,6 +97,38 @@ class TTextHighlighter extends TTextProcessor
 	}
 
 	/**
+	 * @return TTextHighlighterLineNumberStyle style of row number, Table by default
+	 */
+	public function getLineNumberStyle()
+	{
+		return $this->getViewState('LineNumberStyle', TTextHighlighterLineNumberStyle::Table);
+	}
+
+	/**
+	 * @param TTextHighlighterLineNumberStyle style of row number
+	 */
+	public function setLineNumberStyle($value)
+	{
+		$this->setViewState('LineNumberStyle', TPropertyValue::ensureEnum($value,'TTextHighlighterLineNumberStyle'));
+	}
+
+	/**
+	 * @return integer tab size. Defaults to 4.
+	 */
+	public function getTabSize()
+	{
+		return $this->getViewState('TabSize', 4);
+	}
+
+	/**
+	 * @param integer tab size
+	 */
+	public function setTabSize($value)
+	{
+		$this->setViewState('TabSize', TPropertyValue::ensureInteger($value));
+	}
+
+	/**
 	 * Registers css style for the highlighted result.
 	 * This method overrides parent implementation.
 	 * @param THtmlWriter writer
@@ -101,25 +136,20 @@ class TTextHighlighter extends TTextProcessor
 	public function onPreRender($writer)
 	{
 		parent::onPreRender($writer);
-		$this->registerHighlightScripts();
+		$this->registerStyleSheet();
+		$this->getPage()->getClientScript()->registerPradoScript('prado');
 	}
 
 	/**
-	 * Register CSS stylesheet file and javascript file.
-	 * @throws TConfigurationException if highlight.css file cannot be found
+	 * Registers the stylesheet for presentation.
 	 */
-	protected function registerHighlightScripts()
+	protected function registerStyleSheet()
 	{
 		$cs=$this->getPage()->getClientScript();
-		$cssKey='prado:TTextHighlighter';
+		$cssFile=Prado::getPathOfNamespace('System.3rdParty.TextHighlighter.highlight','.css');
+		$cssKey='prado:TTextHighlighter:'.$cssFile;
 		if(!$cs->isStyleSheetFileRegistered($cssKey))
-		{
-			if(($cssFile=Prado::getPathOfNamespace('System.3rdParty.geshi.highlight','.css'))===null)
-				throw new TConfigurationException('texthighlighter_stylesheet_invalid');
-			$styleSheet = $this->publishFilePath($cssFile);
-			$cs->registerStyleSheetFile($cssKey, $styleSheet);
-		}
-		$cs->registerPradoScript('prado');
+			$cs->registerStyleSheetFile($cssKey, $this->publishFilePath($cssFile));
 	}
 
 	/**
@@ -130,14 +160,15 @@ class TTextHighlighter extends TTextProcessor
 	 */
 	public function processText($text)
 	{
-		$geshi = new GeSHi(trim($text), $this->getLanguage());
-		if($this->getShowLineNumbers())
-			$geshi->enable_line_numbers(GESHI_NORMAL_LINE_NUMBERS);
-		$geshi->enable_classes();
-		if($this->getEnableCopyCode())
-			$geshi->set_header_content($this->getHeaderTemplate());
-		
-		return $geshi->parse_code();
+		if(($highlighter=Text_Highlighter::factory($this->getLanguage()))===false)
+			return ('<pre>'.htmlentities(trim($text)).'</pre>');
+
+		$options["use_language"]=true;
+		$options["tabsize"] = $this->getTabSize();
+		if ($this->getShowLineNumbers())
+			$options["numbers"] = self::$_lineNumberStyle[$this->getLineNumberStyle()];
+		$highlighter->setRenderer(new Text_Highlighter_Renderer_Html($options));
+		return $highlighter->highlight(trim($text));
 	}
 
 	/**
@@ -148,5 +179,11 @@ class TTextHighlighter extends TTextProcessor
 		$id = $this->getClientID();
 		return TJavaScript::renderScriptBlock("new Prado.WebUI.TTextHighlighter('{$id}');");
 	}
+}
+
+class TTextHighlighterLineNumberStyle extends TEnumerable
+{
+	const Li='Li';
+	const Table='Table';
 }
 ?>

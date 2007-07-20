@@ -246,9 +246,10 @@ class PradoBase
 	 * If the namespace corresponds to a directory, the directory will be appended
 	 * to the include path. If the namespace corresponds to a file, it will be included (include_once).
 	 * @param string namespace to be used
+	 * @param boolean whether to check the existence of the class after the class file is included
 	 * @throws TInvalidDataValueException if the namespace is invalid
 	 */
-	public static function using($namespace)
+	public static function using($namespace,$checkClassExistence=true)
 	{
 		if(isset(self::$_usings[$namespace]) || class_exists($namespace,false))
 			return;
@@ -260,8 +261,8 @@ class PradoBase
 			}
 			catch(Exception $e)
 			{
-				if(!class_exists($namespace,false))
-					throw new TInvalidOperationException('prado_component_unknown',$namespace);
+				if($checkClassExistence && !class_exists($namespace,false))
+					throw new TInvalidOperationException('prado_component_unknown',$namespace,$e->getMessage());
 				else
 					throw $e;
 			}
@@ -277,7 +278,7 @@ class PradoBase
 			else  // a file
 			{
 				self::$_usings[$namespace]=$path;
-				if(!class_exists($className,false))
+				if(!$checkClassExistence || !class_exists($className,false))
 				{
 					try
 					{
@@ -285,8 +286,8 @@ class PradoBase
 					}
 					catch(Exception $e)
 					{
-						if(!class_exists($className,false))
-							throw new TInvalidOperationException('prado_component_unknown',$className);
+						if($checkClassExistence && !class_exists($className,false))
+							throw new TInvalidOperationException('prado_component_unknown',$className,$e->getMessage());
 						else
 							throw $e;
 					}
