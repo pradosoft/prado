@@ -27,6 +27,9 @@ Prado::using('System.Web.UI.WebControls.TTextProcessor');
  * syntax. By setting {@link setShowLineNumbers ShowLineNumbers}
  * to true, the highlighted result may be shown with line numbers.
  *
+ * Note, TTextHighlighter requires {@link THead} to be placed on the page template
+ * because it needs to insert some CSS styles.
+ *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
  * @version $Id$
  * @package System.Web.UI.WebControls

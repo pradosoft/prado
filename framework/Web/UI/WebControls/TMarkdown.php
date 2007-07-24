@@ -67,14 +67,9 @@ class TMarkdown extends TTextHighlighter
 	 */
 	protected function highlightCode($matches)
 	{
-		$geshi=new GeSHi(html_entity_decode($matches[2],ENT_QUOTES,'UTF-8'), $matches[1]);
-		if($this->getShowLineNumbers())
-			$geshi->enable_line_numbers(GESHI_NORMAL_LINE_NUMBERS);
-		$geshi->enable_classes();
-		if($this->getEnableCopyCode())
-			$geshi->set_header_content($this->getHeaderTemplate());
-
-		return $geshi->parse_code();
+		$text = html_entity_decode($matches[2],ENT_QUOTES,'UTF-8');
+		$this->setLanguage($matches[1]);
+		return parent::processText($text);
 	}
 }
 

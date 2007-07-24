@@ -50,9 +50,8 @@ class TVarDumper
 		self::dumpInternal($var,0);
 		if($highlight)
 		{
-			Prado::using('System.3rdParty.geshi.geshi');
-			$geshi = new GeSHi(self::$_output, 'vardump');
-			return $geshi->parse_code();
+			$result=highlight_string("<?php\n".self::$_output,true);
+			return preg_replace('/&lt;\\?php<br \\/>/','',$result,1);
 		}
 		else
 			return self::$_output;
