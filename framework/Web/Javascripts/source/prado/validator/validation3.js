@@ -625,8 +625,11 @@ Prado.WebUI.TBaseValidator.prototype =
 		this.visible = true;
 		if(this.message)
 		{
-			if(this.options.Display == "Dynamic")
-				this.isValid ? this.message.hide() : this.message.show();
+			if(this.options.Display == "Dynamic") 
+			{
+				var msg=this.message;
+				this.isValid ? setTimeout(function() { msg.hide(); }, 250) : msg.show();
+			}
 			this.message.style.visibility = this.isValid ? "hidden" : "visible";
 		}
 		if(this.control)
