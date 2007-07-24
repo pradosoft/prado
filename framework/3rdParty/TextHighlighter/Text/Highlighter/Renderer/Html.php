@@ -289,6 +289,8 @@ class Text_Highlighter_Renderer_Html extends Text_Highlighter_Renderer_Array
         // get parent's output
         parent::finalize();
         $output = parent::getOutput();
+        if(empty($output))
+        	return;
 
 		$html_output = '';
         // loop through each class=>content pair
