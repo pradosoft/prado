@@ -2327,6 +2327,8 @@ framework/Web/UI/WebControls/TRequiredFieldValidator.php -text
 framework/Web/UI/WebControls/TSafeHtml.php -text
 framework/Web/UI/WebControls/TStatements.php -text
 framework/Web/UI/WebControls/TStyle.php -text
+framework/Web/UI/WebControls/TTabPanel.css -text
+framework/Web/UI/WebControls/TTabPanel.php -text
 framework/Web/UI/WebControls/TTable.php -text
 framework/Web/UI/WebControls/TTableCell.php -text
 framework/Web/UI/WebControls/TTableFooterRow.php -text
