@@ -204,6 +204,8 @@ class TDataGatewayCommand extends TComponent
 
 	public function getIndexKeyCondition($table,$fields,$values)
 	{
+		if (!count($values))
+			return 'FALSE';
 		$columns = array();
 		$tableName = $table->getTableFullName();
 		foreach($fields as $field)
