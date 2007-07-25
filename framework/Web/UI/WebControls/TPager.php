@@ -274,8 +274,8 @@ class TPager extends TWebControl implements INamingContainer
 	/**
 	 * Sets the image URL for the numeric page buttons.
 	 * This is actually a template for generating a set of URLs corresponding to numeric button 1, 2, 3, .., etc.
-	 * Use [0] as the placeholder for the numbers.
-	 * For example, the image URL http://example.com/images/button[0].gif
+	 * Use {0} as the placeholder for the numbers.
+	 * For example, the image URL http://example.com/images/button{0}.gif
 	 * will be replaced as http://example.com/images/button1.gif, http://example.com/images/button2.gif, etc.
 	 * @param string the image URL for the numeric page buttons. This is only used when {@link getButtonType ButtonType} is 'ImageButton' and {@link getMode Mode} is 'Numeric'.
 	 * @since 3.1.1
@@ -472,7 +472,7 @@ class TPager extends TWebControl implements INamingContainer
 		{
 			case self::CMD_PAGE:
 				$url=$this->getNumericPageImageUrl();
-				return str_replace('[0]',$text,$url);
+				return str_replace('{0}',$text,$url);
 			case self::CMD_PAGE_NEXT:
 				return $this->getNextPageImageUrl();
 			case self::CMD_PAGE_PREV:
