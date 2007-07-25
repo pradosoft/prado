@@ -200,7 +200,7 @@ class TTabPanel extends TWebControl implements IPostBackDataHandler
      */
     public function getViewCssClass()
     {
-        return $this->getViewState('ViewCssClass','tab-view');
+        return $this->getViewStyle()->getCssClass();
     }
 
     /**
@@ -208,15 +208,29 @@ class TTabPanel extends TWebControl implements IPostBackDataHandler
      */
     public function setViewCssClass($value)
     {
-        $this->setViewState('ViewCssClass',TPropertyValue::ensureString($value),'tab-view');
+        $this->getViewStyle()->setCssClass($value);
     }
+
+	/**
+	 * @return TStyle the style for all the view div
+	 */
+	public function getViewStyle()
+	{
+		if(($style=$this->getViewState('ViewStyle',null))===null)
+		{
+			$style=new TStyle;
+			$style->setCssClass('tab-view');
+			$this->setViewState('ViewStyle',$style,null);
+		}
+		return $style;
+	}
 
     /**
      * @return string CSS class for non-active tabs. Defaults to 'tab-normal'.
      */
     public function getTabCssClass()
     {
-        return $this->getViewState('TabCssClass','tab-normal');
+        return $this->getTabStyle()->getCssClass();
     }
 
     /**
@@ -224,15 +238,29 @@ class TTabPanel extends TWebControl implements IPostBackDataHandler
      */
     public function setTabCssClass($value)
     {
-        $this->setViewState('TabCssClass',TPropertyValue::ensureString($value),'tab-normal');
+        $this->getTabStyle()->setCssClass($value);
     }
+
+	/**
+	 * @return TStyle the style for all the inactive tab div
+	 */
+	public function getTabStyle()
+	{
+		if(($style=$this->getViewState('TabStyle',null))===null)
+		{
+			$style=new TStyle;
+			$style->setCssClass('tab-normal');
+			$this->setViewState('TabStyle',$style,null);
+		}
+		return $style;
+	}
 
     /**
      * @return string CSS class for the active tab. Defaults to 'tab-active'.
      */
     public function getActiveTabCssClass()
     {
-        return $this->getViewState('ActiveTabCssClass','tab-active');
+        return $this->getActiveTabStyle()->getCssClass();
     }
 
     /**
@@ -240,8 +268,22 @@ class TTabPanel extends TWebControl implements IPostBackDataHandler
      */
     public function setActiveTabCssClass($value)
     {
-        $this->setViewState('ActiveTabCssClass',TPropertyValue::ensureString($value),'tab-active');
+        $this->getActiveTabStyle()->setCssClass($value);
     }
+
+	/**
+	 * @return TStyle the style for the active tab div
+	 */
+	public function getActiveTabStyle()
+	{
+		if(($style=$this->getViewState('ActiveTabStyle',null))===null)
+		{
+			$style=new TStyle;
+			$style->setCssClass('tab-active');
+			$this->setViewState('ActiveTabStyle',$style,null);
+		}
+		return $style;
+	}
 
 	/**
 	 * Activates the specified view.
@@ -474,14 +516,11 @@ class TTabView extends TWebControl
 		if(!$this->getActive() && $this->getPage()->getClientSupportsJavaScript())
 			$this->getStyle()->setStyleField('display','none');
 
+		$this->getStyle()->mergeWith($this->getParent()->getViewStyle());
+
 		parent::addAttributesToRender($writer);
 
 		$writer->addAttribute('id',$this->getClientID());
-
-		if(($cssClass=$this->getCssClass())==='')
-			$cssClass=$this->getParent()->getViewCssClass();
-		if($cssClass!=='')
-			$writer->addAttribute('class',$cssClass);
 	}
 
 	/**
@@ -570,18 +609,30 @@ class TTabView extends TWebControl
 	 */
 	public function renderTab($writer)
 	{
-		$parent=$this->getParent();
-		$cssClass=$this->getActive()?$parent->getActiveTabCssClass():$parent->getTabCssClass();
-		$clientID=$this->getClientID();
+		$writer->addAttribute('id',$this->getClientID().'_0');
+
+		$style=$this->getActive()?$this->getParent()->getActiveTabStyle():$this->getParent()->getTabStyle();
+		$style->addAttributesToRender($writer);
+
+		$writer->renderBeginTag($this->getTagName());
+
+		$this->renderTabContent($writer);
+
+		$writer->renderEndTag();
+	}
+
+	/**
+	 * Renders the content in the tab.
+	 * By default, a hyperlink is displayed.
+	 * @param THtmlWriter the HTML writer
+	 */
+	protected function renderTabContent($writer)
+	{
 		if(($url=$this->getNavigateUrl())==='')
-			$url='javascript://'.$clientID;
+			$url='javascript://';
 		if(($caption=$this->getCaption())==='')
 			$caption='&nbsp;';
-		$html="<div id=\"{$clientID}_0\"";
-		if($cssClass!=='')
-			$html.=" class=\"$cssClass\"";
-		$html.="><a href=\"{$url}\">{$caption}</a></div>";
-		$writer->write($html);
+		$writer->write("<a href=\"{$url}\">{$caption}</a>");
 	}
 }
 

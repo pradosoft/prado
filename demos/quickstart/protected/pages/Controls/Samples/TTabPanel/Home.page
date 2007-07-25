@@ -9,7 +9,11 @@
     This shows a nested tab panel. To ensure the proper display, we explicitly
     set the height of the outer view to be 200px.
     </p>
-	<com:TTabPanel ActiveViewIndex="1" Width="50%">
+	<com:TTabPanel ActiveViewIndex="1"
+			Width="50%"
+			TabStyle.BorderColor="red"
+			ActiveTabStyle.BorderColor="red"
+			ViewStyle.BorderColor="red">
 	  <com:TTabView ID="View11" Caption="View 11">
 	   This is view 11.
 	  </com:TTabView>
