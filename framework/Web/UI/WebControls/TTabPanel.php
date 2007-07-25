@@ -471,7 +471,7 @@ class TTabView extends TWebControl
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		if(!$this->getActive())
+		if(!$this->getActive() && $this->getPage()->getClientSupportsJavaScript())
 			$this->getStyle()->setStyleField('display','none');
 
 		parent::addAttributesToRender($writer);
