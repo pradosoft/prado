@@ -2545,6 +2545,7 @@ tests/FunctionalTests/quickstart/Controls/Repeater1TestCase.php -text
 tests/FunctionalTests/quickstart/Controls/Repeater2TestCase.php -text
 tests/FunctionalTests/quickstart/Controls/Repeater3TestCase.php -text
 tests/FunctionalTests/quickstart/Controls/StatementsTestCase.php -text
+tests/FunctionalTests/quickstart/Controls/TabPanelTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/TableTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/TextBoxTestCase.php -text
 tests/FunctionalTests/quickstart/Controls/Wizard1TestCase.php -text
