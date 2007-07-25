@@ -164,7 +164,15 @@ class TTextHighlighter extends TTextProcessor
 	 */
 	public function processText($text)
 	{
-		if(($highlighter=Text_Highlighter::factory($this->getLanguage()))===false)
+		try
+		{
+			$highlighter=Text_Highlighter::factory($this->getLanguage());
+		}
+		catch(Exception $e)
+		{
+			$highlighter=false;
+		}
+		if($highlighter===false)
 			return ('<pre>'.htmlentities(trim($text)).'</pre>');
 
 		$options["use_language"]=true;
