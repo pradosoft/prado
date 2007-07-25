@@ -24,7 +24,7 @@ Instead of writing the classes manually, we will use the <a href="http://www.pra
 Under the <tt>blog</tt> directory, run the following command to enter into the interactive mode of the command line tool:
 </p>
 
-<com:TTextHighlighter CssClass="source cli">
+<com:TTextHighlighter CssClass="source cli" Language="text">
 php path/to/prado-cli.php shell .
 </com:TTextHighlighter>
 

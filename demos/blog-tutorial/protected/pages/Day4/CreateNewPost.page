@@ -14,7 +14,7 @@ Because <tt>NewPost</tt> can only be accessed by authenticated users, we add a p
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <authorization>
-    <deny pages="NewPost,EditPost" roles="?" />
+    <deny pages="NewPost,EditPost" users="?" />
   </authorization>
 </configuration>
 </com:TTextHighlighter>
