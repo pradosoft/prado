@@ -10,6 +10,7 @@ ENH: Ticket#667 - Added TFeedService.ContentType property (Qiang)
 ENH: Ticket#577 - Added image button support for TPager (Qiang)
 ENH: Added THead requirement check (Qiang)
 CHG: GeSHi is replaced with Text_Highlighter (Christophe)
+NEW: Added TTabPanel (Qiang)
 
 Version 3.1.0 July 2, 2007
 ==========================

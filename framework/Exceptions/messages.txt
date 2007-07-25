@@ -409,3 +409,8 @@ feedservice_id_required					= TFeedService requires 'id' attribute in its feed e
 feedservice_feedtype_invalid			= The class feed '{0}' must implement IFeedContentProvider interface.
 feedservice_class_required				= TFeedService requires 'class' attribute in its feed elements.
 feedservice_feed_unknown				= Unknown feed '{0}' requested.
+
+tabviewcollection_tabview_required		= TTabPanel can only accept TTabView as child.
+tabpanel_activeviewid_invalid			= TTabPanel.ActiveViewID has an invalid ID '{0}'.
+tabpanel_activeviewindex_invalid		= TTabPanel.ActiveViewIndex has an invalid Index '{0}'.
+tabpanel_view_inexistent				= TTabPanel cannot find the specified view.

@@ -605,14 +605,15 @@ class TClientScriptManager extends TApplicationComponent
 		$str='';
 		foreach($this->_hiddenFields as $name=>$value)
 		{
+			$id=strtr($name,':','_');
 			if(is_array($value))
 			{
 				foreach($value as $v)
-					$str.='<input type="hidden" name="'.$name.'[]" id="'.$name.'" value="'.THttpUtility::htmlEncode($value)."\" />\n";
+					$str.='<input type="hidden" name="'.$name.'[]" id="'.$id.'" value="'.THttpUtility::htmlEncode($value)."\" />\n";
 			}
 			else
 			{
-				$str.='<input type="hidden" name="'.$name.'" id="'.$name.'" value="'.THttpUtility::htmlEncode($value)."\" />\n";
+				$str.='<input type="hidden" name="'.$name.'" id="'.$id.'" value="'.THttpUtility::htmlEncode($value)."\" />\n";
 			}
 		}
 		if($str!=='')
