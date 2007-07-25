@@ -609,16 +609,19 @@ class TTabView extends TWebControl
 	 */
 	public function renderTab($writer)
 	{
-		$writer->addAttribute('id',$this->getClientID().'_0');
+		if($this->getVisible(false) && $this->getPage()->getClientSupportsJavaScript())
+		{
+			$writer->addAttribute('id',$this->getClientID().'_0');
 
-		$style=$this->getActive()?$this->getParent()->getActiveTabStyle():$this->getParent()->getTabStyle();
-		$style->addAttributesToRender($writer);
+			$style=$this->getActive()?$this->getParent()->getActiveTabStyle():$this->getParent()->getTabStyle();
+			$style->addAttributesToRender($writer);
 
-		$writer->renderBeginTag($this->getTagName());
+			$writer->renderBeginTag($this->getTagName());
 
-		$this->renderTabContent($writer);
+			$this->renderTabContent($writer);
 
-		$writer->renderEndTag();
+			$writer->renderEndTag();
+		}
 	}
 
 	/**
