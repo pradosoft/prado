@@ -6,7 +6,7 @@
   <com:TTabView ID="View1" Caption="View 1" Height="200px">
     <h2>View 1</h2>
     <p>
-    This shows a nested tab panel. To ensure the property display, we explicitly
+    This shows a nested tab panel. To ensure the proper display, we explicitly
     set the height of the outer view to be 200px.
     </p>
 	<com:TTabPanel ActiveViewIndex="1" Width="50%">
