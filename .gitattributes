@@ -1324,6 +1324,8 @@ demos/quickstart/protected/pages/Controls/Samples/TRequiredFieldValidator/Home.p
 demos/quickstart/protected/pages/Controls/Samples/TRequiredFieldValidator/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TSafeHtml/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TStatements/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TTabPanel/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TTabPanel/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TTable/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TTable/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TTable/backimage.gif -text
@@ -1345,6 +1347,7 @@ demos/quickstart/protected/pages/Controls/Samples/TWizard/Sample5.php -text
 demos/quickstart/protected/pages/Controls/Samples/config.xml -text
 demos/quickstart/protected/pages/Controls/Standard.page -text
 demos/quickstart/protected/pages/Controls/Statements.page -text
+demos/quickstart/protected/pages/Controls/TabPanel.page -text
 demos/quickstart/protected/pages/Controls/Table.page -text
 demos/quickstart/protected/pages/Controls/TextBox.page -text
 demos/quickstart/protected/pages/Controls/TextHighlighter.page -text

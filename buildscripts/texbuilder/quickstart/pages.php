@@ -82,6 +82,7 @@ $pages['Control Reference : Standard Controls'] = array(
 	'Controls/RadioButton.page',
 	'Controls/SafeHtml.page',
 	'Controls/Statements.page',
+	'Controls/TabPanel.page',
 	'Controls/Table.page',
 	'Controls/TextBox.page',
 	'Controls/TextHighlighter.page',

@@ -120,6 +120,9 @@
   </li>
 
   <li>
+  <a href="?page=Controls.TabPanel">TTabPanel</a> displays a tabbed panel consisting of multiple tab views. At any time, only one tab view is visible.
+  </li>
+  <li>
   <a href="?page=Controls.TextBox">TTextBox</a> represents a text input field on a Web page. It can collect single-line, multi-line or password text input from users.
   </li>
 
