@@ -13,6 +13,8 @@ ENH: Added THead requirement check (Qiang)
 CHG: GeSHi is replaced with Text_Highlighter (Christophe)
 NEW: Added TTabPanel (Qiang)
 NEW: Ticket#676 - Added primilary Oracle support (Christophe)
+ENH: Ticket#623 - TMemCache to support multiple servers (Carl)
+NEW: Ticket#680 - Added TMemCacheSession (Carl)
 
 Version 3.1.0 July 2, 2007
 ==========================
