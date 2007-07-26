@@ -7,6 +7,7 @@ if(!defined('PHPUnit_MAIN_METHOD')) {
 
 require_once 'TSqliteCacheTest.php';
 require_once 'TAPCCacheTest.php';
+require_once 'TMemCacheTest.php';
 
 class Caching_AllTests {
   public static function main() {
@@ -18,6 +19,7 @@ class Caching_AllTests {
     
 	$suite->addTestSuite('TSqliteCacheTest');
 	$suite->addTestSuite('TAPCCacheTest');
+	$suite->addTestSuite('TMemCacheTest');
 	
     return $suite;
   }

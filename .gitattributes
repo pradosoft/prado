@@ -2973,6 +2973,7 @@ tests/unit/Caching/AllTests.php -text
 tests/unit/Caching/TAPCCacheTest.php -text
 tests/unit/Caching/TDirectoryCacheDependencyTest.php -text
 tests/unit/Caching/TFileCacheDependencyTest.php -text
+tests/unit/Caching/TMemCacheTest.php -text
 tests/unit/Caching/TSqliteCacheTest.php -text
 tests/unit/Collections/AllTests.php -text
 tests/unit/Collections/TAttributeCollectionTest.php -text

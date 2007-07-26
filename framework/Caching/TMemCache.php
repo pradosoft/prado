@@ -3,6 +3,7 @@
  * TMemCache class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Carl G. Mathisen <carlgmathisen@gmail.com>
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
@@ -48,6 +49,20 @@
  * $object2=$cache->get('object');
  * </code>
  *
+ * You can configure TMemCache two different ways. If you only need one memcache server
+ * you may use the method as follows.
+ * <code>
+ * <module id="cache" class="System.Caching.TMemCache" Host="localhost" Port="11211" />
+ * </code>
+ *
+ * If you want a more complex configuration, you may use the method as follows.
+ * <code>
+ * <module id="cache" classs="System.Caching.TMemCache">
+ *     <server Host="localhost" Port="11211" Weight="1" Timeout="300" RetryInterval="15" />
+ *     <server Host="anotherhost" Port="11211" Weight="1" Timeout="300" RetryInterval="15" />
+ * </module>
+ * </code>
+ *
  * If loaded, TMemCache will register itself with {@link TApplication} as the
  * cache module. It can be accessed via {@link TApplication::getCache()}.
  *
@@ -85,6 +100,29 @@ class TMemCache extends TCache
 	 * @var integer the port number of the memcache server
 	 */
 	private $_port=11211;
+	/**
+	 * @var boolean controls the use of a persistent connection. Default to true.
+	 */
+    private $_persistence = true;
+    /**
+     * @var integer number of buckets to create for this server which in turn control its
+     * probability of it being selected. The probability is relative to the total weight 
+     * of all servers.
+     */
+    private $_weight = 1;
+    
+    private $_timeout = 360;
+
+    private $_retryInterval = 15;
+    
+    private $_status = true;
+    
+    private $_failureCallback = null;
+
+	/**
+	 * @var array list of servers available
+	 */
+	private $_servers=array();
 
 	/**
 	 * Destructor.
@@ -110,10 +148,65 @@ class TMemCache extends TCache
 		if(!extension_loaded('memcache'))
 			throw new TConfigurationException('memcache_extension_required');
 		$this->_cache=new Memcache;
-		if($this->_cache->connect($this->_host,$this->_port)===false)
-			throw new TConfigurationException('memcache_connection_failed',$this->_host,$this->_port);
+		$this->loadConfig($config);
+		if(count($this->_servers))
+        {
+            foreach($this->_servers as $server)
+            {
+                Prado::trace('Adding server '.$server['Host'].' from serverlist', 'System.Caching.TMemCache');
+                if($this->_cache->addServer($server['Host'],$server['Port'],$server['Persistent'],
+                    $server['Weight'],$server['Timeout'],$server['RetryInterval'])===false)
+                    throw new TConfigurationException('memcache_connection_failed',$server['Host'],$server['Port']);
+            }
+        }
+        else
+        {
+            Prado::trace('Adding server '.$this->_host, 'System.Caching.TMemCache');
+            if($this->_cache->addServer($this->_host,$this->_port)===false)
+                throw new TConfigurationException('memcache_connection_failed',$this->_host,$this->_port);
+        }	
+		//if($this->_cache->connect($this->_host,$this->_port)===false)
+		//	throw new TConfigurationException('memcache_connection_failed',$this->_host,$this->_port);
 		$this->_initialized=true;
 		parent::init($config);
+	}
+	
+    /**
+	 * Loads configuration from an XML element
+	 * @param TXmlElement configuration node
+	 * @throws TConfigurationException if log route class or type is not specified
+	 */
+	private function loadConfig($xml)
+	{
+	    if($xml instanceof TXmlElement)
+		{
+    		foreach($xml->getElementsByTagName('server') as $serverConfig)
+    		{
+    			$properties=$serverConfig->getAttributes();
+    			if(($host=$properties->remove('Host'))===null)
+    				throw new TConfigurationException('memcache_serverhost_required');
+    			if(($port=$properties->remove('Port'))===null)
+        			throw new TConfigurationException('memcache_serverport_required');
+        		if(!is_numeric($port))
+        		    throw new TConfigurationException('memcache_serverport_invalid');
+        		$server = array('Host'=>$host,'Port'=>$port,'Weight'=>1,'Timeout'=>1800,'RetryInterval'=>15,'Persistent'=>true);
+        		$checks = array(
+        		    'Weight'=>'memcache_serverweight_invalid',
+        		    'Timeout'=>'memcache_servertimeout_invalid',
+        		    'RetryInterval'=>'memcach_serverretryinterval_invalid'
+        		);
+        		foreach($checks as $property=>$exception)
+        		{
+        		    $value=$properties->remove($property); 
+        		    if($value!==null && is_numeric($value))
+        		        $server[$property]=$value;
+        		    else if($value!==null)
+        		        throw new TConfigurationException($exception);
+        		}
+        		$server['Persistent']= TPropertyValue::ensureBoolean($properties->remove('Persistent'));
+    			$this->_servers[]=$server;
+    		}
+	    }
 	}
 
 	/**
