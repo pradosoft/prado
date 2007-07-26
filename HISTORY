@@ -7,14 +7,14 @@ BUG: Ticket#666 - TActiveRecord::deleteAll() method always requires a criteria o
 BUG: Ticket#670 - TDatePicker: Year Issue (Christophe)
 BUG: Ticket#648 - Validation: onClick and onBlur events order (Christophe)
 ENH: Ticket#577 - Added image button support for TPager (Qiang)
+ENH: Ticket#623 - TMemCache to support multiple servers (Carl)
 ENH: Ticket#667 - Added TFeedService.ContentType property (Qiang)
 ENH: Ticket#678 - Improved DateTimeFormatInfo performance (Stever)
 ENH: Added THead requirement check (Qiang)
 CHG: GeSHi is replaced with Text_Highlighter (Christophe)
 NEW: Added TTabPanel (Qiang)
 NEW: Ticket#676 - Added primilary Oracle support (Christophe)
-ENH: Ticket#623 - TMemCache to support multiple servers (Carl)
-NEW: Ticket#680 - Added TMemCacheSession (Carl)
+NEW: Ticket#680 - Added TCacheHttpSession (Carl, Qiang)
 
 Version 3.1.0 July 2, 2007
 ==========================

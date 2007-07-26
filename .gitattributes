@@ -2221,6 +2221,7 @@ framework/Web/Services/TJsonService.php -text
 framework/Web/Services/TPageService.php -text
 framework/Web/Services/TSoapService.php -text
 framework/Web/TAssetManager.php -text
+framework/Web/TCacheHttpSession.php -text
 framework/Web/THttpRequest.php -text
 framework/Web/THttpResponse.php -text
 framework/Web/THttpSession.php -text
