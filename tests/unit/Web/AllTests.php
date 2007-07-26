@@ -12,6 +12,7 @@ require_once 'THttpRequestTest.php';
 require_once 'THttpResponseTest.php';
 require_once 'THttpSessionTest.php';
 require_once 'THttpUtilityTest.php';
+require_once 'TMemCacheSessionTest.php';
 require_once 'TUriTest.php';
 
 require_once 'UI/AllTests.php';
@@ -31,6 +32,7 @@ class Web_AllTests {
 	$suite->addTestSuite('THttpResponseTest');
 	$suite->addTestSuite('THttpSessionTest');
 	$suite->addTestSuite('THttpUtilityTest');
+	$suite->addTestSuite('TMemCacheSessionTest');
 	$suite->addTestSuite('TUriTest');
 	
 	$suite->addTest(Web_UI_AllTests::suite());
