@@ -67,6 +67,9 @@ abstract class TDbMetaData extends TComponent
 			case 'mssql':
 				Prado::using('System.Data.Common.Mssql.TMssqlMetaData');
 				return new TMssqlMetaData($conn);
+			case 'oci':
+				Prado::using('System.Data.Common.Oracle.TOracleMetaData');
+				return new TOracleMetaData($conn);
 //			case 'ibm':
 //				Prado::using('System.Data.Common.IbmDb2.TIbmDb2MetaData');
 //				return new TIbmDb2MetaData($conn);

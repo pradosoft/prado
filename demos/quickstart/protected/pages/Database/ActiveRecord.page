@@ -60,6 +60,7 @@ The current Active Record implementation supports the following database.
     <li><a href="http://www.postgres.com">Postgres SQL 7.3 or later</a></li>
     <li><a href="http://www.sqlite.org">SQLite 2 and 3</a></li>
     <li><a href="#">MS SQL 2000 or later</a></li>
+    <li><a href="http://www.oracle.com">Oracle Database (alpha)</a></li>
 </ul>
 <p id="710009" class="block-content">Support for other databases can be provided when there are sufficient demands.</p>
 

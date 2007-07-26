@@ -12,6 +12,7 @@ ENH: Ticket#678 - Improved DateTimeFormatInfo performance (Stever)
 ENH: Added THead requirement check (Qiang)
 CHG: GeSHi is replaced with Text_Highlighter (Christophe)
 NEW: Added TTabPanel (Qiang)
+NEW: Ticket#676 - Added primilary Oracle support (Christophe)
 
 Version 3.1.0 July 2, 2007
 ==========================
