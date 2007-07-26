@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * TScaffoldInputCommon class file.
+ *
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005-2007 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @package System.Data.ActiveReecord.Scaffold.InputBuilder
+ */
 class TScaffoldInputCommon extends TScaffoldInputBase
 {
 	protected function setDefaultProperty($container, $control, $column, $record)

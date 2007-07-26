@@ -6,6 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2007 PradoSoft
  * @license http://www.pradosoft.com/license/
+ * @package System.Data.ActiveReecord.Scaffold.InputBuilder
  */
 Prado::using('System.Data.ActiveRecord.Scaffold.InputBuilder.TScaffoldInputCommon');
 

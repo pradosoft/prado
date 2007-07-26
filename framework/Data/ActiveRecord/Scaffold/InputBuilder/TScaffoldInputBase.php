@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * TScaffoldInputBase class file.
+ *
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005-2007 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @package System.Data.ActiveReecord.Scaffold.InputBuilder
+ */
 class TScaffoldInputBase
 {
 	const DEFAULT_ID = 'scaffold_input';
