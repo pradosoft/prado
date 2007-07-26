@@ -80,7 +80,7 @@ $requirements = array(
         'PCRE extension check',
         'PCRE extension required'),
     array(
-        true,
+        false,
         class_exists("PDO",false),
         'PDO extension check',
         'PDO extension optional'),
