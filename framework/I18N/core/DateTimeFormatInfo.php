@@ -173,7 +173,7 @@ class DateTimeFormatInfo
             return $culture->getDateTimeFormat();
        	else if(is_string($culture))
        	{
-       		$cultureInfo = new CultureInfo($culture);
+       		$cultureInfo = CultureInfo::getInstance($culture);
        		return $cultureInfo->getDateTimeFormat();
        	}
        	else

@@ -201,6 +201,18 @@ class CultureInfo
 	}
 
 	/**
+	* Gets the CultureInfo that for this culture string
+	* @return CultureInfo invariant culture info is "en".
+	*/
+	public static function getInstance($culture)
+	{
+		static $instances = array();
+		if(!isset($instances[$culture]))
+			$instances[$culture] = new CultureInfo($culture);
+		return $instances[$culture];
+	}
+
+	/**
 	 * Determine if a given culture is valid. Simply checks that the
 	 * culture data exists.
 	 * @param string a culture
