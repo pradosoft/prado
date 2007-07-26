@@ -16,7 +16,6 @@
 Prado::using('System.Web.UI.ActiveControls.TActiveListControlAdapter');
 
 /**
-/**
  * TActiveDropDownList class.
  *
  * The active control counter part to drop down list control.
