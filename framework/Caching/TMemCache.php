@@ -165,8 +165,6 @@ class TMemCache extends TCache
             if($this->_cache->addServer($this->_host,$this->_port)===false)
                 throw new TConfigurationException('memcache_connection_failed',$this->_host,$this->_port);
         }	
-		//if($this->_cache->connect($this->_host,$this->_port)===false)
-		//	throw new TConfigurationException('memcache_connection_failed',$this->_host,$this->_port);
 		$this->_initialized=true;
 		parent::init($config);
 	}
