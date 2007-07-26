@@ -4,7 +4,7 @@ class DataGrid5TestCase extends SeleniumTestCase
 {
 	function test()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TDataGrid.Sample5&amp;notheme=true", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TDataGrid.Sample5&amp;notheme=true&amp;lang=en", "");
 
 		// verify if all required texts are present
 		// verify column headers

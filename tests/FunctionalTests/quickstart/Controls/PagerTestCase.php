@@ -4,7 +4,7 @@ class PagerTestCase extends SeleniumTestCase
 {
 	function test()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TPager.Sample1&amp;notheme=true", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TPager.Sample1&amp;notheme=true&amp;lang=en", "");
 
 		// verify datalist content
 		$this->verifyTextPresent('ITN001','');

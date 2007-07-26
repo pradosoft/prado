@@ -4,7 +4,7 @@ class DataGrid4TestCase extends SeleniumTestCase
 {
 	function test()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TDataGrid.Sample4&amp;notheme=true", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TDataGrid.Sample4&amp;notheme=true&amp;lang=en", "");
 
 		// verify the 2nd row of data
 		$this->verifyTextPresent("Design Patterns: Elements of Reusable Object-Oriented Software", "");

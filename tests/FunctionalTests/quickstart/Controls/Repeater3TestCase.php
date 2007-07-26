@@ -4,7 +4,7 @@ class Repeater3TestCase extends SeleniumTestCase
 {
 	function test()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TRepeater.Sample3&amp;notheme=true", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TRepeater.Sample3&amp;notheme=true&amp;lang=en", "");
 
 		// verify product name is required
 		$this->verifyNotVisible('ctl0_body_Repeater_ctl0_ctl0');

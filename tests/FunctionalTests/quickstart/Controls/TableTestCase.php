@@ -4,7 +4,7 @@ class TableTestCase extends SeleniumTestCase
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TTable.Home&amp;notheme=true", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TTable.Home&amp;notheme=true&amp;lang=en", "");
 
 		$this->verifyElementPresent("//table[@rules='all' and @border='1']");
 		$this->verifyElementPresent("//table/caption[@align='bottom' and text()='This is table caption']");

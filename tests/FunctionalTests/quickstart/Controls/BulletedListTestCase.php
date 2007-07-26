@@ -4,7 +4,7 @@ class BulletedListTestCase extends SeleniumTestCase
 {
 	function test()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TBulletedList.Home&amp;notheme=true", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TBulletedList.Home&amp;notheme=true&amp;lang=en", "");
 
 		// verify if all required texts are present
 		$this->verifyTextPresent('item 1','');

@@ -4,7 +4,7 @@ class DataGrid1TestCase extends SeleniumTestCase
 {
 	function test()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TDataGrid.Sample1&amp;notheme=true", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TDataGrid.Sample1&amp;notheme=true&amp;lang=en", "");
 
 		// verify if all required texts are present
 		$this->verifyTextPresent('id','');

@@ -4,7 +4,7 @@ class DataList2TestCase extends SeleniumTestCase
 {
 	function test()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TDataList.Sample2&amp;notheme=true", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TDataList.Sample2&amp;notheme=true&amp;lang=en", "");
 
 		// verify initial presentation
 		$this->verifyTextPresent("Motherboard ", "");

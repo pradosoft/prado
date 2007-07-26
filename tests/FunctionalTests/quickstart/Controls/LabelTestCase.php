@@ -5,7 +5,7 @@ class LabelTestCase extends SeleniumTestCase
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TLabel.Home&amp;notheme=true", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TLabel.Home&amp;notheme=true&amp;lang=en", "");
 		$this->verifyTitle("PRADO QuickStart Sample", "");
 		$this->verifyTextPresent("This is a label with customized color and font.", "");
 		$this->verifyTextPresent("This is a form label associated with the TTextBox control below", "");

@@ -4,7 +4,7 @@ class DataGrid6TestCase extends SeleniumTestCase
 {
 	function test()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TDataGrid.Sample6&amp;notheme=true", "");
+		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TDataGrid.Sample6&amp;notheme=true&amp;lang=en", "");
 
 		// verify column headers
 		$this->verifyTextPresent('id','');
