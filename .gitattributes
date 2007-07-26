@@ -2225,6 +2225,7 @@ framework/Web/THttpRequest.php -text
 framework/Web/THttpResponse.php -text
 framework/Web/THttpSession.php -text
 framework/Web/THttpUtility.php -text
+framework/Web/TMemCacheSession.php -text
 framework/Web/TUrlManager.php -text
 framework/Web/TUrlMapping.php -text
 framework/Web/UI/ActiveControls/TActiveButton.php -text
@@ -3124,6 +3125,7 @@ tests/unit/Web/THttpRequestTest.php -text
 tests/unit/Web/THttpResponseTest.php -text
 tests/unit/Web/THttpSessionTest.php -text
 tests/unit/Web/THttpUtilityTest.php -text
+tests/unit/Web/TMemCacheSessionTest.php -text
 tests/unit/Web/TUriTest.php -text
 tests/unit/Web/UI/ActiveControls/AllTests.php -text
 tests/unit/Web/UI/ActiveControls/TActiveHiddenFieldTest.php -text
