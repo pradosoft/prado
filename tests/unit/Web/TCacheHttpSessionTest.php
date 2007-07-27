@@ -90,14 +90,14 @@ class TCacheHttpSessionTest extends PHPUnit_Framework_TestCase
     public function testCacheModuleID()
     {
         $id = 'value';
-        self::$session->setCacheModuleID('value');
+        self::$session->setCacheModuleID($id);
         self::assertEquals($id, self::$session->getCacheModuleID());
     }
     
     public function testKeyPrefix()
     {
         $id = 'value';
-        self::$session->setKeyPrefix('value');
+        self::$session->setKeyPrefix($id);
         self::assertEquals($id, self::$session->getKeyPrefix());
     }
     
