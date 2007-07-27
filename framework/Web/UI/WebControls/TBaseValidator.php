@@ -485,7 +485,8 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		$this->onValidate();
 		if($this->getVisible(true) && $this->getEnabled(true))
 		{
-			if($this->getValidationTarget())
+			// if the target is not a disabled web control
+			if(($target=$this->getValidationTarget())!==null && !($target instanceof TWebControl && !$target->getEnabled(true)))
 			{
 				if($this->evaluateIsValid())
 				{

@@ -625,7 +625,7 @@ Prado.WebUI.TBaseValidator.prototype =
 		this.visible = true;
 		if(this.message)
 		{
-			if(this.options.Display == "Dynamic") 
+			if(this.options.Display == "Dynamic")
 			{
 				var msg=this.message;
 				this.isValid ? setTimeout(function() { msg.hide(); }, 250) : msg.show();
@@ -684,7 +684,7 @@ Prado.WebUI.TBaseValidator.prototype =
 		if(!this.control)
 			this.control = $(this.options.ControlToValidate);
 
-		if(!this.control)
+		if(!this.control || this.control.disabled)
 		{
 			this.isValid = true;
 			return this.isValid;
