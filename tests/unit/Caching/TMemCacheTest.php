@@ -18,7 +18,7 @@ class TMemCacheTest extends PHPUnit_Framework_TestCase {
 				$basePath = dirname(__FILE__).'/mockapp';
 				$runtimePath = $basePath.'/runtime';
 				if(!is_writable($runtimePath)) {
-					self::markTestSkipped("'$runtimePath' is writable");
+					self::markTestSkipped("'$runtimePath' is not writable");
 				}
 				$this->app = new TApplication($basePath);
 				self::$cache = new TMemCache();

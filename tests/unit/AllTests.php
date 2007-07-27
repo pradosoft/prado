@@ -31,7 +31,7 @@ class AllTests {
 	$suite->addTest(Collections_AllTests::suite());
 	$suite->addTest(I18N_core_AllTests::suite());
 	$suite->addTest(Web_AllTests::suite());
-	$suite->addTest(Web_UI_WebControls_AllTests::suite());
+	//$suite->addTest(Web_UI_WebControls_AllTests::suite());
 	$suite->addTest(Web_UI_ActiveControls_AllTests::suite());
 	$suite->addTest(Security_AllTests::suite());
 	$suite->addTest(Caching_AllTests::suite());

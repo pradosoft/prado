@@ -6,13 +6,13 @@ if(!defined('PHPUnit_MAIN_METHOD')) {
 }
 
 require_once 'TAssetManagerTest.php';
+require_once 'TCacheHttpSessionTest.php';
 require_once 'THttpCookieCollectionTest.php';
 require_once 'THttpCookieTest.php';
 require_once 'THttpRequestTest.php';
 require_once 'THttpResponseTest.php';
 require_once 'THttpSessionTest.php';
 require_once 'THttpUtilityTest.php';
-require_once 'TMemCacheSessionTest.php';
 require_once 'TUriTest.php';
 
 require_once 'UI/AllTests.php';
@@ -26,13 +26,13 @@ class Web_AllTests {
     $suite = new PHPUnit_Framework_TestSuite('System.Web');
     
 	$suite->addTestSuite('TAssetManagerTest');
+	$suite->addTestSuite('TCacheHttpSessionTest');
 	$suite->addTestSuite('THttpCookieCollectionTest');
 	$suite->addTestSuite('THttpCookieTest');
     $suite->addTestSuite('THttpRequestTest');
 	$suite->addTestSuite('THttpResponseTest');
 	$suite->addTestSuite('THttpSessionTest');
 	$suite->addTestSuite('THttpUtilityTest');
-	$suite->addTestSuite('TMemCacheSessionTest');
 	$suite->addTestSuite('TUriTest');
 	
 	$suite->addTest(Web_UI_AllTests::suite());
