@@ -11,6 +11,7 @@
  */
 
 Prado::using('System.Web.TUrlManager');
+Prado::using('System.Collections.TAttributeCollection');
 
 /**
  * TUrlMapping Class
@@ -20,12 +21,12 @@ Prado::using('System.Web.TUrlManager');
  * before a service is initialized, thus this module should be configured
  * globally in the <tt>application.xml</tt> file and before any services.
  * <code>
+ *  <module id="request" class="THttpRequest" UrlManager="friendly-url" />
  *  <module id="friendly-url" class="System.Web.TUrlMapping">
  *    <url ServiceParameter="Posts.ViewPost" pattern="post/{id}/?" parameters.id="\d+" />
  *    <url ServiceParameter="Posts.ListPost" pattern="archive/{time}/?" parameters.time="\d{6}" />
  *    <url ServiceParameter="Posts.ListPost" pattern="category/{cat}/?" parameters.cat="\d+" />
  *  </module>
- *  <module id="request" class="THttpRequest" UrlManager="friendly-url" />
  * </code>
  *
  * See {@link TUrlMappingPattern} for details regarding the mapping patterns.
@@ -36,12 +37,21 @@ Prado::using('System.Web.TUrlManager');
  * the URL will be used. Cascaded mapping can be achieved by placing the URL mappings
  * in particular order. For example, placing the most specific mappings first.
  *
- * The mapping can be load from an external file by specifying a configuration
+ * The mapping can be loaded from an external file by specifying a configuration
  * file using the {@link setConfigFile ConfigFile} property.
  *
  * Since TUrlMapping is a URL manager extending from {@link TUrlManager},
  * you may override {@link TUrlManager::constructUrl} to support your pattern-based
  * URL scheme.
+ *
+ * From PRADO v3.1.1, TUrlMapping also provides support to construct URLs according to
+ * the specified the pattern. You may enable this functionality by setting {@link setEnableCustomUrl EnableCustomUrl} to true.
+ * When you call THttpRequest::constructUrl() (or via TPageService::constructUrl()),
+ * TUrlMapping will examine the available URL mapping patterns using their {@link getServiceParameter ServiceParameter}
+ * and {@link getPattern Pattern} properties. A pattern is applied if its
+ * {@link getServiceParameter ServiceParameter} matches the service parameter passed
+ * to constructUrl() and every parameter in the {@link getPattern Pattern} is found
+ * in the GET variables.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
@@ -55,10 +65,6 @@ class TUrlMapping extends TUrlManager
 	 */
 	const CONFIG_FILE_EXT='.xml';
 	/**
-	 * @var string default pattern class.
-	 */
-	private $_defaultPatternClass='TUrlMappingPattern';
-	/**
 	 * @var TUrlMappingPattern[] list of patterns.
 	 */
 	private $_patterns=array();
@@ -70,6 +76,16 @@ class TUrlMapping extends TUrlManager
 	 * @var string external configuration file
 	 */
 	private $_configFile=null;
+	/**
+	 * @var boolean whether to enable custom contructUrl
+	 */
+	private $_customUrl=false;
+	/**
+	 * @var array rules for constructing URLs
+	 */
+	private $_constructRules=array();
+
+	private $_urlPrefix='';
 
 	/**
 	 * Initializes this module.
@@ -85,6 +101,9 @@ class TUrlMapping extends TUrlManager
 		if($this->_configFile!==null)
 			$this->loadConfigFile();
 		$this->loadUrlMappings($xml);
+		if($this->_urlPrefix==='')
+			$this->_urlPrefix=$this->getRequest()->getApplicationUrl();
+		$this->_urlPrefix=rtrim($this->_urlPrefix,'/');
 	}
 
 	/**
@@ -102,6 +121,45 @@ class TUrlMapping extends TUrlManager
 		else
 			throw new TConfigurationException(
 				'urlpath_dispatch_configfile_invalid',$this->_configFile);
+	}
+
+	/**
+	 * Returns a value indicating whether to enable custom constructUrl.
+	 * If true, constructUrl() will make use of the URL mapping rules to
+	 * construct valid URLs.
+	 * @return boolean whether to enable custom constructUrl. Defaults to false.
+	 */
+	public function getEnableCustomUrl()
+	{
+		return $this->_customUrl;
+	}
+
+	/**
+	 * Sets a value indicating whether to enable custom constructUrl.
+	 * If true, constructUrl() will make use of the URL mapping rules to
+	 * construct valid URLs.
+	 * @param boolean whether to enable custom constructUrl.
+	 */
+	public function setEnableCustomUrl($value)
+	{
+		$this->_customUrl=TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @return string the part that will be prefixed to the constructed URLs. Defaults to the requested script path (e.g. /path/to/index.php for a URL http://hostname/path/to/index.php)
+	 */
+	public function getUrlPrefix()
+	{
+		return $this->_urlPrefix;
+	}
+
+	/**
+	 * @param string the part that will be prefixed to the constructed URLs. This is used by constructUrl() when EnableCustomUrl is set true.
+	 * @see getUrlPrefix
+	 */
+	public function setUrlPrefix($value)
+	{
+		$this->_urlPrefix=$value;
 	}
 
 	/**
@@ -133,16 +191,18 @@ class TUrlMapping extends TUrlManager
 		foreach($xml->getElementsByTagName('url') as $url)
 		{
 			$properties=$url->getAttributes();
-			$class=$properties->remove('class');
-			if($class===null)
-				$class = $this->_defaultPatternClass;
-			$pattern = Prado::createComponent($class);
+			if(($class=$properties->remove('class'))===null)
+				$class='TUrlMappingPattern';
+			$pattern = Prado::createComponent($class,$this);
 			if(!($pattern instanceof TUrlMappingPattern))
-				throw new TConfigurationException('urlpath_dispatch_invalid_pattern_class');
+				throw new TConfigurationException('urlmapping_urlmappingpattern_required');
 			foreach($properties as $name=>$value)
 				$pattern->setSubproperty($name,$value);
 			$this->_patterns[] = $pattern;
 			$pattern->init($url);
+
+			$key=$pattern->getServiceID().':'.$pattern->getServiceParameter();
+			$this->_constructRules[$key][]=$pattern;
 		}
 	}
 
@@ -172,6 +232,44 @@ class TUrlMapping extends TUrlManager
 			}
 		}
 		return parent::parseUrl();
+	}
+
+	/**
+	 * Constructs a URL that can be recognized by PRADO.
+	 *
+	 * This method provides the actual implementation used by {@link THttpRequest::constructUrl}.
+	 * Override this method if you want to provide your own way of URL formatting.
+	 * If you do so, you may also need to override {@link parseUrl} so that the URL can be properly parsed.
+	 *
+	 * The URL is constructed as the following format:
+	 * /entryscript.php?serviceID=serviceParameter&get1=value1&...
+	 * If {@link THttpRequest::setUrlFormat THttpRequest.UrlFormat} is 'Path',
+	 * the following format is used instead:
+	 * /entryscript.php/serviceID/serviceParameter/get1,value1/get2,value2...
+	 * @param string service ID
+	 * @param string service parameter
+	 * @param array GET parameters, null if not provided
+	 * @param boolean whether to encode the ampersand in URL
+	 * @param boolean whether to encode the GET parameters (their names and values)
+	 * @return string URL
+	 * @see parseUrl
+	 * @since 3.1.1
+	 */
+	public function constructUrl($serviceID,$serviceParam,$getItems,$encodeAmpersand,$encodeGetItems)
+	{
+		if(!$this->_customUrl || !(is_array($getItems) || ($getItems instanceof Traversable)))
+			return parent::constructUrl($serviceID,$serviceParam,$getItems,$encodeAmpersand,$encodeGetItems);
+
+		$key=$serviceID.':'.$serviceParam;
+		if(isset($this->_constructRules[$key]))
+		{
+			foreach($this->_constructRules[$key] as $rule)
+			{
+				if($rule->supportCustomUrl($getItems))
+					return $rule->constructUrl($getItems,$encodeAmpersand,$encodeGetItems);
+			}
+		}
+		return parent::constructUrl($serviceID,$serviceParam,$getItems,$encodeAmpersand,$encodeGetItems);
 	}
 
 	/**
@@ -251,7 +349,7 @@ class TUrlMappingPattern extends TComponent
 	/**
 	 * @var string url pattern to match.
 	 */
-	private $_pattern;
+	private $_pattern='';
 	/**
 	 * @var TMap parameter regular expressions.
 	 */
@@ -259,15 +357,26 @@ class TUrlMappingPattern extends TComponent
 	/**
 	 * @var string regular expression pattern.
 	 */
-	private $_regexp;
+	private $_regexp='';
 	/**
 	 * @var boolean case sensitive matching, default is true
 	 */
 	private $_caseSensitive=true;
 
-	public function __construct()
+	private $_customUrl=true;
+
+	private $_manager;
+
+	public function __construct(TUrlManager $manager)
 	{
-		$this->_parameters = Prado::createComponent('System.Collections.TAttributeCollection');
+		$this->_manager=$manager;
+		$this->_parameters=new TAttributeCollection;
+		$this->_parameters->setCaseSensitive(true);
+	}
+
+	public function getManager()
+	{
+		return $this->_manager;
 	}
 
 	/**
@@ -277,14 +386,10 @@ class TUrlMappingPattern extends TComponent
 	 */
 	public function init($config)
 	{
-		$body = trim($config->getValue());
-		if(strlen($body)>0)
+		if(($body=trim($config->getValue()))!=='')
 			$this->setRegularExpression($body);
-		if(is_null($this->_serviceParameter))
-		{
-			throw new TConfigurationException(
-				'dispatcher_url_service_parameter_missing', $this->getPattern());
-		}
+		if($this->_serviceParameter===null)
+			throw new TConfigurationException('urlmappingpattern_serviceparameter_required', $this->getPattern());
 	}
 
 	/**
@@ -357,7 +462,7 @@ class TUrlMappingPattern extends TComponent
 	}
 
 	/**
-	 * @return string url pattern to match.
+	 * @return string url pattern to match. Defaults to ''.
 	 */
 	public function getPattern()
 	{
@@ -412,12 +517,10 @@ class TUrlMappingPattern extends TComponent
 	 */
 	public function getPatternMatches($url)
 	{
-		$path = $url->getPath();
 		$matches=array();
-		$pattern = $this->getRegularExpression();
-		if($pattern === null)
-			$pattern = $this->getParameterizedPattern();
-		preg_match($pattern, $path, $matches);
+		if(($pattern=$this->getRegularExpression())==='')
+			$pattern=$this->getParameterizedPattern();
+		preg_match($pattern,$url->getPath(),$matches);
 		return $matches;
 	}
 
@@ -430,6 +533,103 @@ class TUrlMappingPattern extends TComponent
 		if(!$this->getCaseSensitive())
 			$modifiers .= 'i';
 		return $modifiers;
+	}
+
+	/**
+	 * Returns a value indicating whether to use this pattern to construct URL.
+	 * @return boolean whether to enable custom constructUrl. Defaults to true.
+	 * @since 3.1.1
+	 */
+	public function getEnableCustomUrl()
+	{
+		return $this->_customUrl;
+	}
+
+	/**
+	 * Sets a value indicating whether to enable custom constructUrl using this pattern
+	 * @param boolean whether to enable custom constructUrl.
+	 */
+	public function setEnableCustomUrl($value)
+	{
+		$this->_customUrl=TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @param array list of GET items to be put in the constructed URL
+	 * @return boolean whether this pattern IS the one for constructing the URL with the specified GET items.
+	 * @since 3.1.1
+	 */
+	public function supportCustomUrl($getItems)
+	{
+		if(!$this->_customUrl || $this->getPattern()==='')
+			return false;
+		foreach($this->_parameters as $key=>$value)
+			if(!isset($getItems[$key]))
+				return false;
+
+		return true;
+	}
+
+	/**
+	 * Constructs a URL using this pattern.
+	 * @param array list of GET variables
+	 * @param boolean whether the ampersand should be encoded in the constructed URL
+	 * @param boolean whether the GET variables should be encoded in the constructed URL
+	 * @return string the constructed URL
+	 * @since 3.1.1
+	 */
+	public function constructUrl($getItems,$encodeAmpersand,$encodeGetItems)
+	{
+		$extra=array();
+		$replace=array();
+		// for the GET variables matching the pattern, put them in the URL path
+		foreach($getItems as $key=>$value)
+		{
+			if($encodeGetItems)
+				$value=urlencode($value);
+			if($this->_parameters->contains($key))
+				$replace['{'.$key.'}']=$value;
+			else
+				$extra[$key]=$value;
+		}
+
+		$url=$this->_manager->getUrlPrefix().'/'.trim(strtr($this->getPattern(),$replace),'/');
+
+		// for the rest of the GET variables, put them in the query string
+		if(count($extra)>0)
+		{
+			$url2='';
+			$amp=$encodeAmpersand?'&amp;':'&';
+			if($encodeGetItems)
+			{
+				foreach($extra as $name=>$value)
+				{
+					if(is_array($value))
+					{
+						$name=urlencode($name.'[]');
+						foreach($value as $v)
+							$url2.=$amp.$name.'='.urlencode($v);
+					}
+					else
+						$url2.=$amp.urlencode($name).'='.urlencode($value);
+				}
+			}
+			else
+			{
+				foreach($extra as $name=>$value)
+				{
+					if(is_array($value))
+					{
+						foreach($value as $v)
+							$url2.=$amp.$name.'[]='.$v;
+					}
+					else
+						$url2.=$amp.$name.'='.$value;
+				}
+			}
+			$url=$url.'?'.substr($url2,strlen($amp));
+		}
+		return $url;
 	}
 }
 

@@ -418,3 +418,6 @@ tabpanel_view_inexistent				= TTabPanel cannot find the specified view.
 cachesession_cachemoduleid_required		= TCacheHttpSession.CacheModuleID is required.
 cachesession_cachemodule_inexistent		= TCacheHttpSession.CacheModuleID '{0}' points to a non-existent module.
 cachesession_cachemodule_invalid		= TCacheHttpSession.CacheModuleID '{0}' points to a module that does not implement ICache interface.
+
+urlmapping_urlmappingpattern_required	= TUrlMapping can only contain TUrlMappingPattern or its child classes.
+urlmappingpattern_serviceparameter_required = TUrlMappingPattern.ServiceParameter is required for pattern '{0}'.
