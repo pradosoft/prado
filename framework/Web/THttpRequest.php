@@ -110,6 +110,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	private $_services;
 	private $_requestResolved=false;
 	private $_enableCookieValidation=false;
+	private $_forceSecureConnection=null;
 	/**
 	 * @var string request URL
 	 */
@@ -320,12 +321,22 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 		return $_SERVER['REQUEST_METHOD'];
 	}
 
+    public function setForceSecureConnection($value)
+    {
+        $this->_forceSecureConnection=TPropertyValue::ensureBoolean($value);
+    }
+    
+    public function getForceSecureConnection()
+    {
+        return $this->_forceSecureConnection;
+    }
+
 	/**
 	 * @return boolean if the request is sent via secure channel (https)
 	 */
 	public function getIsSecureConnection()
 	{
-		return isset($_SERVER['HTTPS']) && strcasecmp($_SERVER['HTTPS'],'off');
+	    return isset($_SERVER['HTTPS']) && strcasecmp($_SERVER['HTTPS'],'off');
 	}
 
 	/**
@@ -357,7 +368,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function getBaseUrl()
 	{
-		return ($this->getIsSecureConnection() ? "https://" : "http://") . $_SERVER ['HTTP_HOST'];
+		return ($this->getIsSecureConnection() || $this->getForceSecureConnection() ? "https://" : "http://") . $_SERVER ['HTTP_HOST'];
 	}
 
 	/**
@@ -545,6 +556,8 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	public function constructUrl($serviceID,$serviceParam,$getItems=null,$encodeAmpersand=true,$encodeGetItems=true)
 	{
 		$url=$this->_urlManager->constructUrl($serviceID,$serviceParam,$getItems,$encodeAmpersand,$encodeGetItems);
+		if($this->getForceSecureConnection()!==null)
+		    $url = $this->getBaseUrl().$url;
 		if(defined('SID') && SID != '' && !$this->_cookieOnly)
 			return $url . (strpos($url,'?')===false? '?' : ($encodeAmpersand?'&amp;':'&')) . SID;
 		else
