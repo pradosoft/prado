@@ -321,11 +321,17 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 		return $_SERVER['REQUEST_METHOD'];
 	}
 
+    /**
+     * @param boolean forces http or https on a uri
+     */
     public function setForceSecureConnection($value)
     {
         $this->_forceSecureConnection=TPropertyValue::ensureBoolean($value);
     }
     
+    /**
+     * @return boolean if https is forced on a uri
+     */
     public function getForceSecureConnection()
     {
         return $this->_forceSecureConnection;
@@ -425,7 +431,14 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function getBrowser()
 	{
-		return get_browser();
+	    try
+	    {
+		    return get_browser();
+	    }
+	    catch(TPhpErrorException $e)
+	    {
+	        throw new TConfigurationException('httprequest_browscap_required');
+	    }
 	}
 
 	/**
