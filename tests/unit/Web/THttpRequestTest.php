@@ -131,11 +131,6 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
 		self::assertEquals('GET', $request->getRequestType());
 	}
 
-    public function testGetForceSecureConnection() {
-        $request = new THttpRequest();
-        self::assertEquals(null,$request->getForceSecureConnection());
-    }
-
 	public function testGetIsSecureConnection() {
 		$request = new THttpRequest();
 		self::assertEquals(false, $request->getIsSecureConnection());
@@ -299,15 +294,6 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
   	$request->init (null);
   	self::assertEquals($_ENV, $request->getEnvironmentVariables());
   }
-  
-  public function testSetForceSecureConnection() {
-      $request = new THttpRequest();
-      $request->init(null);
-      $request->setForceSecureConnection(false);
-      self::assertEquals(false,$request->getForceSecureConnection());
-      $request->setForceSecureConnection(true);
-      self::assertEquals(true,$request->getForceSecureConnection());
-  }
 
   public function testConstructUrl() {
     $request = new THttpRequest ();
@@ -318,14 +304,9 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
   	// Try without encode &
 	$url=$request->constructURL('page','Home',array('param1'=>'value1','param2'=>'value2'), false);	
 	self::assertEquals('/demos/personal/index.php?page=Home&param1=value1&param2=value2', $url);
-    // Try with ForceSecureConnection = true
-    $request->setForceSecureConnection(true);
-    $url=$request->constructURL('page','Home',array('param1'=>'value1','param2'=>'value2'), false);
+    // Try to use HTTPS even if the current request is sent via HTTP
+    $url=$request->constructURL('page','Home',array('param1'=>'value1','param2'=>'value2'), false, false, true);
     self::assertEquals('https', substr($url,0,5));
-    // Try with ForceSecureConnection = false
-    $request->setForceSecureConnection(false);
-    $url=$request->constructURL('page','Home',array('param1'=>'value1','param2'=>'value2'), false);
-    self::assertEquals('http',substr($url,0,4));
   }
 
   public function testSetServiceID() {
