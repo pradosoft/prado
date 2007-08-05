@@ -110,7 +110,6 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	private $_services;
 	private $_requestResolved=false;
 	private $_enableCookieValidation=false;
-	private $_forceSecureConnection=null;
 	/**
 	 * @var string request URL
 	 */
@@ -321,22 +320,6 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 		return $_SERVER['REQUEST_METHOD'];
 	}
 
-    /**
-     * @param boolean forces http or https on a uri
-     */
-    public function setForceSecureConnection($value)
-    {
-        $this->_forceSecureConnection=TPropertyValue::ensureBoolean($value);
-    }
-    
-    /**
-     * @return boolean if https is forced on a uri
-     */
-    public function getForceSecureConnection()
-    {
-        return $this->_forceSecureConnection;
-    }
-
 	/**
 	 * @return boolean if the request is sent via secure channel (https)
 	 */
@@ -370,11 +353,12 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	}
 
 	/**
+	 * @param boolean whether to use HTTPS instead of HTTP even if the current request is sent via HTTP
 	 * @return string schema and hostname of the requested URL
 	 */
-	public function getBaseUrl()
+	public function getBaseUrl($forceSecureConnection=false)
 	{
-		return ($this->getIsSecureConnection() || $this->getForceSecureConnection() ? "https://" : "http://") . $_SERVER ['HTTP_HOST'];
+		return ($this->getIsSecureConnection() || $forceSecureConnection ? "https://" : "http://") . $_SERVER ['HTTP_HOST'];
 	}
 
 	/**
@@ -386,11 +370,12 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	}
 
 	/**
+	 * @param boolean whether to use HTTPS instead of HTTP even if the current request is sent via HTTP
 	 * @return string entry script URL (w/ host part)
 	 */
-	public function getAbsoluteApplicationUrl()
+	public function getAbsoluteApplicationUrl($forceSecureConnection=false)
 	{
-		return $this->getBaseUrl() . $this->getApplicationUrl();
+		return $this->getBaseUrl($forceSecureConnection) . $this->getApplicationUrl();
 	}
 
 	/**
@@ -558,19 +543,21 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 * This method may append session information to the generated URL if needed.
 	 * You may provide your own URL manager module by setting {@link setUrlManager UrlManager}
 	 * to provide your own URL scheme.
+	 *
+	 * Note, the constructed URL does not contain the protocol and hostname part.
+	 * You may obtain an absolute URL by prepending the constructed URL with {@link getBaseUrl BaseUrl}.
 	 * @param string service ID
 	 * @param string service parameter
 	 * @param array GET parameters, null if not needed
 	 * @param boolean whether to encode the ampersand in URL, defaults to true.
 	 * @param boolean whether to encode the GET parameters (their names and values), defaults to false.
+	 * @param boolean whether to use HTTPS even if the current request is sent via HTTP
 	 * @return string URL
 	 * @see TUrlManager::constructUrl
 	 */
 	public function constructUrl($serviceID,$serviceParam,$getItems=null,$encodeAmpersand=true,$encodeGetItems=true)
 	{
 		$url=$this->_urlManager->constructUrl($serviceID,$serviceParam,$getItems,$encodeAmpersand,$encodeGetItems);
-		if($this->getForceSecureConnection()!==null)
-		    $url = $this->getBaseUrl().$url;
 		if(defined('SID') && SID != '' && !$this->_cookieOnly)
 			return $url . (strpos($url,'?')===false? '?' : ($encodeAmpersand?'&amp;':'&')) . SID;
 		else
