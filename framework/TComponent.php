@@ -352,7 +352,7 @@ class TComponent
 						if(method_exists($object,$method))
 							$object->$method($sender,$param);
 						else
-							throw new TInvalidDataValueException('component_eventhandler_invalid',get_class($this),$name,get_class($object).'::'.$method.'()');
+							throw new TInvalidDataValueException('component_eventhandler_invalid',get_class($this),$name,$handler);
 					}
 					else
 						call_user_func($handler,$sender,$param);
@@ -373,11 +373,11 @@ class TComponent
 						if(method_exists($object,$method))
 							$object->$method($sender,$param);
 						else
-							throw new TInvalidDataValueException('component_eventhandler_invalid',get_class($this),$name,get_class($object).'::'.$method.'()');
+							throw new TInvalidDataValueException('component_eventhandler_invalid',get_class($this),$name,$handler[1]);
 					}
 				}
 				else
-					throw new TInvalidDataValueException('component_eventhandler_invalid',get_class($this),$name,get_class($object).'::'.$method.'()');
+					throw new TInvalidDataValueException('component_eventhandler_invalid',get_class($this),$name,gettype($handler));
 			}
 		}
 		else if(!$this->hasEvent($name))
