@@ -551,7 +551,6 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 * @param array GET parameters, null if not needed
 	 * @param boolean whether to encode the ampersand in URL, defaults to true.
 	 * @param boolean whether to encode the GET parameters (their names and values), defaults to false.
-	 * @param boolean whether to use HTTPS even if the current request is sent via HTTP
 	 * @return string URL
 	 * @see TUrlManager::constructUrl
 	 */
