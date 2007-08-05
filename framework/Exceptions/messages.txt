@@ -8,7 +8,7 @@ prado_aliasname_invalid					= Alias '{0}' contains invalid character '.'.
 component_property_undefined			= Component property '{0}.{1}' is not defined.
 component_property_readonly				= Component property '{0}.{1}' is read-only.
 component_event_undefined				= Component event '{0}.{1}' is not defined.
-component_eventhandler_invalid			= Component event '{0}.{1}' is attached with an invalid event handler.
+component_eventhandler_invalid			= Component event '{0}.{1}' is attached with an invalid event handler '{2}'.
 component_expression_invalid			= Component '{0}' is evaluating an invalid expression '{1}' : {2}.
 component_statements_invalid			= Component '{0}' is evaluating invalid PHP statements '{1}' : {2}.
 
