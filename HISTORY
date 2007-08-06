@@ -14,11 +14,12 @@ ENH: Ticket#672 - ForceSecureConnection to THttpRequest (Carl)
 ENH: Ticket#678 - Improved DateTimeFormatInfo performance (Stever)
 ENH: Ticket#681 - TUrlMapping can construct custom URLs now (Qiang)
 ENH: Added THead requirement check (Qiang)
+CHG: Ticket#685 - Slashes and backslashes mixup in PradoBase (Qiang)
 CHG: GeSHi is replaced with Text_Highlighter (Christophe)
 CHG: Validators will not validate disabled controls (Qiang)
-NEW: Added TTabPanel (Qiang)
 NEW: Ticket#676 - Added primilary Oracle support (Christophe)
 NEW: Ticket#680 - Added TCacheHttpSession (Carl, Qiang)
+NEW: Added TTabPanel (Qiang)
 
 Version 3.1.0 July 2, 2007
 ==========================
