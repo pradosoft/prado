@@ -278,7 +278,7 @@ class TErrorHandler extends TModule
 	 */
 	protected function getErrorTemplate($statusCode,$exception)
 	{
-		$base=$this->getErrorTemplatePath().'/'.self::ERROR_FILE_NAME;
+		$base=$this->getErrorTemplatePath().DIRECTORY_SEPARATOR.self::ERROR_FILE_NAME;
 		$lang=Prado::getPreferredLanguage();
 		if(is_file("$base$statusCode-$lang.html"))
 			$errorFile="$base$statusCode-$lang.html";

@@ -82,7 +82,7 @@ class TAssetManager extends TModule
 	{
 		$application=$this->getApplication();
 		if($this->_basePath===null)
-			$this->_basePath=dirname($application->getRequest()->getApplicationFilePath()).'/'.self::DEFAULT_BASEPATH;
+			$this->_basePath=dirname($application->getRequest()->getApplicationFilePath()).DIRECTORY_SEPARATOR.self::DEFAULT_BASEPATH;
 		if(!is_writable($this->_basePath) || !is_dir($this->_basePath))
 			throw new TConfigurationException('assetmanager_basepath_invalid',$this->_basePath);
 		if($this->_baseUrl===null)
@@ -161,18 +161,18 @@ class TAssetManager extends TModule
 		{
 			$dir=$this->hash(dirname($fullpath));
 			$fileName=basename($fullpath);
-			$dst=$this->_basePath.'/'.$dir;
-			if(!is_file($dst.'/'.$fileName) || $checkTimestamp || $this->getApplication()->getMode()!==TApplicationMode::Performance)
+			$dst=$this->_basePath.DIRECTORY_SEPARATOR.$dir;
+			if(!is_file($dst.DIRECTORY_SEPARATOR.$fileName) || $checkTimestamp || $this->getApplication()->getMode()!==TApplicationMode::Performance)
 				$this->copyFile($fullpath,$dst);
 			return $this->_published[$path]=$this->_baseUrl.'/'.$dir.'/'.$fileName;
 		}
 		else
 		{
 			$dir=$this->hash($fullpath);
-			if(!is_dir($this->_basePath.'/'.$dir) || $checkTimestamp || $this->getApplication()->getMode()!==TApplicationMode::Performance)
+			if(!is_dir($this->_basePath.DIRECTORY_SEPARATOR.$dir) || $checkTimestamp || $this->getApplication()->getMode()!==TApplicationMode::Performance)
 			{
 				Prado::trace("Publishing directory $fullpath",'System.Web.UI.TAssetManager');
-				$this->copyDirectory($fullpath,$this->_basePath.'/'.$dir);
+				$this->copyDirectory($fullpath,$this->_basePath.DIRECTORY_SEPARATOR.$dir);
 			}
 			return $this->_published[$path]=$this->_baseUrl.'/'.$dir;
 		}
@@ -189,9 +189,9 @@ class TAssetManager extends TModule
 	{
 		$path=realpath($path);
 		if(is_file($path))
-			return $this->_basePath.'/'.$this->hash(dirname($path)).'/'.basename($path);
+			return $this->_basePath.DIRECTORY_SEPARATOR.$this->hash(dirname($path)).DIRECTORY_SEPARATOR.basename($path);
 		else
-			return $this->_basePath.'/'.$this->hash($path);
+			return $this->_basePath.DIRECTORY_SEPARATOR.$this->hash($path);
 	}
 
 	/**
@@ -235,7 +235,7 @@ class TAssetManager extends TModule
 			@mkdir($dst);
 			@chmod($dst, PRADO_CHMOD);
 		}
-		$dstFile=$dst.'/'.basename($src);
+		$dstFile=$dst.DIRECTORY_SEPARATOR.basename($src);
 		if(@filemtime($dstFile)<@filemtime($src))
 		{
 			Prado::trace("Publishing file $src to $dstFile",'System.Web.TAssetManager');
@@ -264,13 +264,13 @@ class TAssetManager extends TModule
 			{
 				if($file==='.' || $file==='..' || $file==='.svn')
 					continue;
-				else if(is_file($src.'/'.$file))
+				else if(is_file($src.DIRECTORY_SEPARATOR.$file))
 				{
-					if(@filemtime($dst.'/'.$file)<@filemtime($src.'/'.$file))
-						@copy($src.'/'.$file,$dst.'/'.$file);
+					if(@filemtime($dst.DIRECTORY_SEPARATOR.$file)<@filemtime($src.DIRECTORY_SEPARATOR.$file))
+						@copy($src.DIRECTORY_SEPARATOR.$file,$dst.DIRECTORY_SEPARATOR.$file);
 				}
 				else
-					$this->copyDirectory($src.'/'.$file,$dst.'/'.$file);
+					$this->copyDirectory($src.DIRECTORY_SEPARATOR.$file,$dst.DIRECTORY_SEPARATOR.$file);
 			}
 			closedir($folder);
 		} else {
@@ -290,7 +290,7 @@ class TAssetManager extends TModule
 	 * @return string URL path to the directory where the tar file was extracted.
 	 */
 	public function publishTarFile($tarfile, $md5sum, $checkTimestamp=false)
-	{		
+	{
 		if(isset($this->_published[$md5sum]))
 			return $this->_published[$md5sum];
 		else if(($fullpath=realpath($md5sum))===false || !is_file($fullpath))
@@ -299,10 +299,10 @@ class TAssetManager extends TModule
 		{
 			$dir=$this->hash(dirname($fullpath));
 			$fileName=basename($fullpath);
-			$dst=$this->_basePath.'/'.$dir;
-			if(!is_file($dst.'/'.$fileName) || $checkTimestamp || $this->getApplication()->getMode()!==TApplicationMode::Performance)
+			$dst=$this->_basePath.DIRECTORY_SEPARATOR.$dir;
+			if(!is_file($dst.DIRECTORY_SEPARATOR.$fileName) || $checkTimestamp || $this->getApplication()->getMode()!==TApplicationMode::Performance)
 			{
-				if(@filemtime($dst.'/'.$fileName)<@filemtime($fullpath))
+				if(@filemtime($dst.DIRECTORY_SEPARATOR.$fileName)<@filemtime($fullpath))
 				{
 					$this->copyFile($fullpath,$dst);
 					$this->deployTarFile($tarfile,$dst);

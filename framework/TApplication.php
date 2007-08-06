@@ -1226,7 +1226,7 @@ class TApplicationConfiguration extends TComponent
 					if(preg_match('/^\\/|.:\\/|.:\\\\/',$path))	// if absolute path
 						$p=realpath($path);
 					else
-						$p=realpath($configPath.'/'.$path);
+						$p=realpath($configPath.DIRECTORY_SEPARATOR.$path);
 					if($p===false || !is_dir($p))
 						throw new TConfigurationException('appconfig_aliaspath_invalid',$id,$path);
 					if(isset($this->_aliases[$id]))

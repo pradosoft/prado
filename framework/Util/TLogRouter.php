@@ -418,7 +418,7 @@ class TFileLogRoute extends TLogRoute
 	 */
 	protected function processLogs($logs)
 	{
-		$logFile=$this->getLogPath().'/'.$this->getLogFile();
+		$logFile=$this->getLogPath().DIRECTORY_SEPARATOR.$this->getLogFile();
 		if(@filesize($logFile)>$this->_maxFileSize*1024)
 			$this->rotateFiles();
 		foreach($logs as $log)
@@ -430,7 +430,7 @@ class TFileLogRoute extends TLogRoute
 	 */
 	protected function rotateFiles()
 	{
-		$file=$this->getLogPath().'/'.$this->getLogFile();
+		$file=$this->getLogPath().DIRECTORY_SEPARATOR.$this->getLogFile();
 		for($i=$this->_maxLogFiles;$i>0;--$i)
 		{
 			$rotateFile=$file.'.'.$i;

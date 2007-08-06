@@ -485,7 +485,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					break;
 				case self::CONFIG_ASSET:		// asset URL
 					$setter='set'.$name;
-					$url=$this->publishFilePath($this->_contextPath.'/'.$value[1]);
+					$url=$this->publishFilePath($this->_contextPath.DIRECTORY_SEPARATOR.$value[1]);
 					$component->$setter($url);
 					break;
 				case self::CONFIG_PARAMETER:		// application parameter
@@ -533,7 +533,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					$component->setSubProperty($name,$value[1]);
 					break;
 				case self::CONFIG_ASSET:		// asset URL
-					$url=$this->publishFilePath($this->_contextPath.'/'.$value[1]);
+					$url=$this->publishFilePath($this->_contextPath.DIRECTORY_SEPARATOR.$value[1]);
 					$component->setSubProperty($name,$url);
 					break;
 				case self::CONFIG_PARAMETER:		// application parameter

@@ -78,7 +78,7 @@ class TThemeManager extends TModule
 	 */
 	public function getTheme($name)
 	{
-		$themePath=$this->getBasePath().'/'.$name;
+		$themePath=$this->getBasePath().DIRECTORY_SEPARATOR.$name;
 		$themeUrl=rtrim($this->getBaseUrl(),'/').'/'.$name;
 		return new TTheme($themePath,$themeUrl);
 
@@ -94,7 +94,7 @@ class TThemeManager extends TModule
 		$folder=@opendir($basePath);
 		while($file=@readdir($folder))
 		{
-			if($file!=='.' && $file!=='..' && $file!=='.svn' && is_dir($basePath.'/'.$file))
+			if($file!=='.' && $file!=='..' && $file!=='.svn' && is_dir($basePath.DIRECTORY_SEPARATOR.$file))
 				$themes[]=$file;
 		}
 		closedir($folder);
@@ -109,7 +109,7 @@ class TThemeManager extends TModule
 	{
 		if($this->_basePath===null)
 		{
-			$this->_basePath=dirname($this->getRequest()->getApplicationFilePath()).'/'.self::DEFAULT_BASEPATH;
+			$this->_basePath=dirname($this->getRequest()->getApplicationFilePath()).DIRECTORY_SEPARATOR.self::DEFAULT_BASEPATH;
 			if(($basePath=realpath($this->_basePath))===false || !is_dir($basePath))
 				throw new TConfigurationException('thememanager_basepath_invalid2',$this->_basePath);
 			$this->_basePath=$basePath;
@@ -253,7 +253,7 @@ class TTheme extends TApplicationComponent implements ITheme
 							$this->_cssFiles[]=$themeUrl.'/'.$file;
 						else if(basename($file,'.js')!==$file)
 							$this->_jsFiles[]=$themeUrl.'/'.$file;
-						else if(basename($file,self::SKIN_FILE_EXT)!==$file && filemtime($themePath.'/'.$file)>$timestamp)
+						else if(basename($file,self::SKIN_FILE_EXT)!==$file && filemtime($themePath.DIRECTORY_SEPARATOR.$file)>$timestamp)
 						{
 							$cacheValid=false;
 							break;

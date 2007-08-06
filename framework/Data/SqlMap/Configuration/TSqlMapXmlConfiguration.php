@@ -72,7 +72,7 @@ abstract class TSqlMapXmlConfigBuilder
 	protected function getAbsoluteFilePath($basefile,$resource)
 	{
 		$basedir = dirname($basefile);
-		$file = realpath($basedir.'/'.$resource);
+		$file = realpath($basedir.DIRECTORY_SEPARATOR.$resource);
 		if(!is_string($file) || !is_file($file))
 			$file = realpath($resource);
 		if(is_string($file) && is_file($file))

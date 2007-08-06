@@ -256,10 +256,10 @@ class TGlobalization extends TModule
 		$variants = $this->getCultureVariants($culture);
 		$path = pathinfo($file);
 		foreach($variants as $variant)
-			$files[] = $path['dirname'].'/'.$variant.'/'.$path['basename'];
+			$files[] = $path['dirname'].DIRECTORY_SEPARATOR.$variant.DIRECTORY_SEPARATOR.$path['basename'];
 		$filename = substr($path['basename'],0,strrpos($path['basename'],'.'));
 		foreach($variants as $variant)
-			$files[] = $path['dirname'].'/'.$filename.'.'.$variant.'.'.$path['extension'];
+			$files[] = $path['dirname'].DIRECTORY_SEPARATOR.$filename.'.'.$variant.'.'.$path['extension'];
 		$files[] = $file;
 		return $files;
 	}

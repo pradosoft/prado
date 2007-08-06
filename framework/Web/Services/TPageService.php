@@ -249,9 +249,9 @@ class TPageService extends TService
 				$configPath=$this->getBasePath();
 				foreach($paths as $path)
 				{
-					$configFile=$configPath.'/'.self::CONFIG_FILE;
+					$configFile=$configPath.DIRECTORY_SEPARATOR.self::CONFIG_FILE;
 					$currentTimestamp[$configFile]=@filemtime($configFile);
-					$configPath.='/'.$path;
+					$configPath.=DIRECTORY_SEPARATOR.$path;
 				}
 				$appConfigFile=$application->getConfigurationFile();
 				$currentTimestamp[0]=$appConfigFile===null?0:@filemtime($appConfigFile);
@@ -367,7 +367,7 @@ class TPageService extends TService
 	{
 		if($this->_basePath===null)
 		{
-			$basePath=$this->getApplication()->getBasePath().'/'.self::DEFAULT_BASEPATH;
+			$basePath=$this->getApplication()->getBasePath().DIRECTORY_SEPARATOR.self::DEFAULT_BASEPATH;
 			if(($this->_basePath=realpath($basePath))===false || !is_dir($this->_basePath))
 				throw new TConfigurationException('pageservice_basepath_invalid',$basePath);
 		}
@@ -427,7 +427,7 @@ class TPageService extends TService
 	 */
 	protected function createPage($pagePath)
 	{
-		$path=$this->getBasePath().DIRECTORY_SEPARATOR.strtr($pagePath,'.','/');
+		$path=$this->getBasePath().DIRECTORY_SEPARATOR.strtr($pagePath,'.',DIRECTORY_SEPARATOR);
 		$hasTemplateFile=is_file($path.self::PAGE_FILE_EXT);
 		$hasClassFile=is_file($path.Prado::CLASS_FILE_EXT);
 
@@ -568,10 +568,10 @@ class TPageConfiguration extends TComponent
 		$path=$basePath;
 		foreach($paths as $p)
 		{
-			$this->loadFromFile($path.'/'.TPageService::CONFIG_FILE,null);
-			$path.='/'.$p;
+			$this->loadFromFile($path.DIRECTORY_SEPARATOR.TPageService::CONFIG_FILE,null);
+			$path.=DIRECTORY_SEPARATOR.$p;
 		}
-		$this->loadFromFile($path.'/'.TPageService::CONFIG_FILE,$page);
+		$this->loadFromFile($path.DIRECTORY_SEPARATOR.TPageService::CONFIG_FILE,$page);
 		$this->_rules=new TAuthorizationRuleCollection($this->_rules);
 	}
 

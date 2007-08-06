@@ -101,7 +101,7 @@ class TApplicationComponent extends TComponent
 		if($className===null)
 			$className=get_class($this);
 		$class=new ReflectionClass($className);
-		$fullPath=dirname($class->getFileName()).'/'.$assetPath;
+		$fullPath=dirname($class->getFileName()).DIRECTORY_SEPARATOR.$assetPath;
 		return $this->publishFilePath($fullPath);
 	}
 

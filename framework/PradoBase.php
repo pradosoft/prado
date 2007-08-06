@@ -321,7 +321,7 @@ class PradoBase
 			$segs=explode('.',$namespace);
 			$alias=array_shift($segs);
 			if(($file=array_pop($segs))!==null && ($root=self::getPathOfAlias($alias))!==null)
-				return rtrim($root.'/'.implode('/',$segs),'/').(($file==='*')?'':'/'.$file.$ext);
+				return rtrim($root.DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR ,$segs),'/\\').(($file==='*')?'':DIRECTORY_SEPARATOR.$file.$ext);
 			else
 				return null;
 		}

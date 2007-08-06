@@ -117,7 +117,7 @@ class TClientScriptManager extends TApplicationComponent
 		{
 			if(is_null(self::$_pradoScripts))
 			{
-				$packageFile = Prado::getFrameworkPath().'/'.self::SCRIPT_PATH.'/packages.php';
+				$packageFile = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH.'/packages.php';
 				list($packages,$deps)= include($packageFile);
 				self::$_pradoScripts = $deps;
 			}
@@ -134,7 +134,7 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function getPradoScriptAssetUrl()
 	{
-		$base = Prado::getFrameworkPath().'/'.self::SCRIPT_PATH;
+		$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
 		$assets = Prado::getApplication()->getAssetManager();
 		return $assets->getPublishedUrl($base);
 	}
@@ -148,7 +148,7 @@ class TClientScriptManager extends TApplicationComponent
 		$files=array_keys($this->_registeredPradoScripts);
 		if(count($files) > 0)
 		{
-			$base = Prado::getFrameworkPath().'/'.self::SCRIPT_PATH;
+			$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
 			$url = $this->registerJavascriptPackages($base, $files);
 			$writer->write(TJavaScript::renderScriptFile($url));
 		}
@@ -168,7 +168,7 @@ class TClientScriptManager extends TApplicationComponent
 	{
 		list($path,$url) = $this->getPackagePathUrl($base);
 		$scriptLoaderPath = $path.'/'.basename(self::SCRIPT_LOADER);
-		$scriptLoaderSrc = Prado::getFrameworkPath().'/'.self::SCRIPT_LOADER;
+		$scriptLoaderSrc = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_LOADER;
 		if(!is_file($scriptLoaderPath))
 			copy($scriptLoaderSrc, $scriptLoaderPath);
 		$url .= '/'.basename(self::SCRIPT_LOADER).'?js='.implode(',', $packages);
