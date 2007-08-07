@@ -87,6 +87,8 @@ class TUrlMapping extends TUrlManager
 
 	private $_urlPrefix='';
 
+	private $_defaultMappingClass='TUrlMappingPattern';
+
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
@@ -182,6 +184,25 @@ class TUrlMapping extends TUrlManager
 	}
 
 	/**
+	 * @return string the default class of URL mapping patterns. Defaults to TUrlMappingPattern.
+	 */
+	public function getDefaultMappingClass()
+	{
+		return $this->_defaultMappingClass;
+	}
+
+	/**
+	 * Sets the default class of URL mapping patterns.
+	 * When a URL matching pattern does not specify "class" attribute, it will default to the class
+	 * specified by this property. You may use either a class name or a namespace format of class (if the class needs to be included first.)
+	 * @param string the default class of URL mapping patterns.
+	 */
+	public function setDefaultMappingClass($value)
+	{
+		$this->_defaultMappingClass=$value;
+	}
+
+	/**
 	 * Load and configure each url mapping pattern.
 	 * @param TXmlElement configuration node
 	 * @throws TConfigurationException if specific pattern class is invalid
@@ -192,7 +213,7 @@ class TUrlMapping extends TUrlManager
 		{
 			$properties=$url->getAttributes();
 			if(($class=$properties->remove('class'))===null)
-				$class='TUrlMappingPattern';
+				$class=$this->getDefaultMappingClass();
 			$pattern = Prado::createComponent($class,$this);
 			if(!($pattern instanceof TUrlMappingPattern))
 				throw new TConfigurationException('urlmapping_urlmappingpattern_required');
