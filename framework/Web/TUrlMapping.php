@@ -185,6 +185,7 @@ class TUrlMapping extends TUrlManager
 
 	/**
 	 * @return string the default class of URL mapping patterns. Defaults to TUrlMappingPattern.
+	 * @since 3.1.1
 	 */
 	public function getDefaultMappingClass()
 	{
@@ -196,6 +197,7 @@ class TUrlMapping extends TUrlManager
 	 * When a URL matching pattern does not specify "class" attribute, it will default to the class
 	 * specified by this property. You may use either a class name or a namespace format of class (if the class needs to be included first.)
 	 * @param string the default class of URL mapping patterns.
+	 * @since 3.1.1
 	 */
 	public function setDefaultMappingClass($value)
 	{
