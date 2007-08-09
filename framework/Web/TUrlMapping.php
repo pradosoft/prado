@@ -280,9 +280,10 @@ class TUrlMapping extends TUrlManager
 	 */
 	public function constructUrl($serviceID,$serviceParam,$getItems,$encodeAmpersand,$encodeGetItems)
 	{
-		if(!$this->_customUrl || !(is_array($getItems) || ($getItems instanceof Traversable)))
+		if(!$this->_customUrl)
 			return parent::constructUrl($serviceID,$serviceParam,$getItems,$encodeAmpersand,$encodeGetItems);
-
+ 		if(!(is_array($getItems) || ($getItems instanceof Traversable)))
+ 			$getItems=array();
 		$key=$serviceID.':'.$serviceParam;
 		if(isset($this->_constructRules[$key]))
 		{
