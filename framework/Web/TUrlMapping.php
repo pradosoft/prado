@@ -384,7 +384,7 @@ class TUrlMappingPattern extends TComponent
 	/**
 	 * @var string url pattern to match.
 	 */
-	private $_pattern='';
+	private $_pattern;
 	/**
 	 * @var TMap parameter regular expressions.
 	 */
@@ -570,7 +570,7 @@ class TUrlMappingPattern extends TComponent
 	 */
 	public function supportCustomUrl($getItems)
 	{
-		if(!$this->_customUrl || $this->getPattern()==='')
+		if(!$this->_customUrl || $this->getPattern()===null)
 			return false;
 		foreach($this->_parameters as $key=>$value)
 		{
