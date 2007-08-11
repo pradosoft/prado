@@ -187,7 +187,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 
 		if(isset($_SERVER['PATH_INFO']))
 			$this->_pathInfo=$_SERVER['PATH_INFO'];
-		else if(strpos($_SERVER['PHP_SELF'],$_SERVER['SCRIPT_NAME'])===0)
+		else if(strpos($_SERVER['PHP_SELF'],$_SERVER['SCRIPT_NAME'])===0 && $_SERVER['PHP_SELF']!==$_SERVER['SCRIPT_NAME'])
 			$this->_pathInfo=substr($_SERVER['PHP_SELF'],strlen($_SERVER['SCRIPT_NAME']));
 		else
 			$this->_pathInfo='';
