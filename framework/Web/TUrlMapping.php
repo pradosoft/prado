@@ -16,40 +16,49 @@ Prado::using('System.Collections.TAttributeCollection');
 /**
  * TUrlMapping Class
  *
- * The TUrlMapping module allows aributary URL path to be mapped to a
- * particular service and page class. This module must be configured
- * before a service is initialized, thus this module should be configured
- * globally in the <tt>application.xml</tt> file and before any services.
+ * The TUrlMapping module allows PRADO to construct and recognize URLs
+ * based on specific patterns.
+ *
+ * TUrlMapping consists of a list of URL patterns which are used to match
+ * against the currently requested URL. The first matching pattern will then
+ * be used to decompose the URL into request parameters (accessible through
+ * <code>$this->Request['paramname']</code>).
+ *
+ * The patterns can also be used to construct customized URLs. In this case,
+ * the parameters in an applied pattern will be replaced with the corresponding
+ * GET variable values.
+ *
+ * Since it is derived from {@link TUrlManager}, it should be configured globally
+ * in the application configuration like the following,
  * <code>
  *  <module id="request" class="THttpRequest" UrlManager="friendly-url" />
- *  <module id="friendly-url" class="System.Web.TUrlMapping">
- *    <url ServiceParameter="Posts.ViewPost" pattern="post/{id}/?" parameters.id="\d+" />
- *    <url ServiceParameter="Posts.ListPost" pattern="archive/{time}/?" parameters.time="\d{6}" />
- *    <url ServiceParameter="Posts.ListPost" pattern="category/{cat}/?" parameters.cat="\d+" />
+ *  <module id="friendly-url" class="System.Web.TUrlMapping" EnableCustomUrl="true">
+ *    <url ServiceParameter="Posts.ViewPost" pattern="post/{id}/" parameters.id="\d+" />
+ *    <url ServiceParameter="Posts.ListPost" pattern="archive/{time}/" parameters.time="\d{6}" />
+ *    <url ServiceParameter="Posts.ListPost" pattern="category/{cat}/" parameters.cat="\d+" />
  *  </module>
  * </code>
  *
- * See {@link TUrlMappingPattern} for details regarding the mapping patterns.
- * Similar to other modules, the <tt>&lt;url /&gt;</tt> configuration class
- * can be customised using the <tt>class</tt> property.
+ * In the above, each <tt>&lt;url&gt;</tt> element specifies a URL pattern represented
+ * as a {@link TUrlMappingPattern} internally. You may create your own pattern classes
+ * by extending {@link TUrlMappingPattern} and specifying the <tt>&lt;class&gt;</tt> attribute
+ * in the element.
+ *
+ * The patterns can be also be specified in an external file using the {@link setConfigFile ConfigFile} property.
  *
  * The URL mapping are evaluated in order, only the first mapping that matches
  * the URL will be used. Cascaded mapping can be achieved by placing the URL mappings
  * in particular order. For example, placing the most specific mappings first.
  *
- * The mapping can be loaded from an external file by specifying a configuration
- * file using the {@link setConfigFile ConfigFile} property.
+ * Only the PATH_INFO part of the URL is used to match the available patterns. The matching
+ * is strict in the sense that the whole pattern must match the whole PATH_INFO of the URL.
  *
- * Since TUrlMapping is a URL manager extending from {@link TUrlManager},
- * you may override {@link TUrlManager::constructUrl} to support your pattern-based
- * URL scheme.
- *
- * From PRADO v3.1.1, TUrlMapping also provides support to construct URLs according to
- * the specified the pattern. You may enable this functionality by setting {@link setEnableCustomUrl EnableCustomUrl} to true.
+ * From PRADO v3.1.1, TUrlMapping also provides support for constructing URLs according to
+ * the specified pattern. You may enable this functionality by setting {@link setEnableCustomUrl EnableCustomUrl} to true.
  * When you call THttpRequest::constructUrl() (or via TPageService::constructUrl()),
- * TUrlMapping will examine the available URL mapping patterns using their {@link getServiceParameter ServiceParameter}
- * and {@link getPattern Pattern} properties. A pattern is applied if its
- * {@link getServiceParameter ServiceParameter} matches the service parameter passed
+ * TUrlMapping will examine the available URL mapping patterns using their {@link TUrlMappingPattern::getServiceParameter ServiceParameter}
+ * and {@link TUrlMappingPattern::getPattern Pattern} properties. A pattern is applied if its
+ * {@link TUrlMappingPattern::getServiceParameter ServiceParameter} matches the service parameter passed
  * to constructUrl() and every parameter in the {@link getPattern Pattern} is found
  * in the GET variables.
  *
@@ -99,7 +108,7 @@ class TUrlMapping extends TUrlManager
 	{
 		parent::init($xml);
 		if($this->getRequest()->getRequestResolved())
-			throw new TConfigurationException('urlpath_dispatch_module_must_be_global');
+			throw new TConfigurationException('urlmapping_global_required');
 		if($this->_configFile!==null)
 			$this->loadConfigFile();
 		$this->loadUrlMappings($xml);
@@ -121,8 +130,7 @@ class TUrlMapping extends TUrlManager
 			$this->loadUrlMappings($dom);
 		}
 		else
-			throw new TConfigurationException(
-				'urlpath_dispatch_configfile_invalid',$this->_configFile);
+			throw new TConfigurationException('urlmapping_configfile_inexistent',$this->_configFile);
 	}
 
 	/**
@@ -130,6 +138,7 @@ class TUrlMapping extends TUrlManager
 	 * If true, constructUrl() will make use of the URL mapping rules to
 	 * construct valid URLs.
 	 * @return boolean whether to enable custom constructUrl. Defaults to false.
+	 * @since 3.1.1
 	 */
 	public function getEnableCustomUrl()
 	{
@@ -141,6 +150,7 @@ class TUrlMapping extends TUrlManager
 	 * If true, constructUrl() will make use of the URL mapping rules to
 	 * construct valid URLs.
 	 * @param boolean whether to enable custom constructUrl.
+	 * @since 3.1.1
 	 */
 	public function setEnableCustomUrl($value)
 	{
@@ -149,6 +159,7 @@ class TUrlMapping extends TUrlManager
 
 	/**
 	 * @return string the part that will be prefixed to the constructed URLs. Defaults to the requested script path (e.g. /path/to/index.php for a URL http://hostname/path/to/index.php)
+	 * @since 3.1.1
 	 */
 	public function getUrlPrefix()
 	{
@@ -158,6 +169,7 @@ class TUrlMapping extends TUrlManager
 	/**
 	 * @param string the part that will be prefixed to the constructed URLs. This is used by constructUrl() when EnableCustomUrl is set true.
 	 * @see getUrlPrefix
+	 * @since 3.1.1
 	 */
 	public function setUrlPrefix($value)
 	{
@@ -180,7 +192,7 @@ class TUrlMapping extends TUrlManager
 	public function setConfigFile($value)
 	{
 		if(($this->_configFile=Prado::getPathOfNamespace($value,self::CONFIG_FILE_EXT))===null)
-			throw new TConfigurationException('urlpath_configfile_invalid',$value);
+			throw new TConfigurationException('urlmapping_configfile_invalid',$value);
 	}
 
 	/**
@@ -216,12 +228,12 @@ class TUrlMapping extends TUrlManager
 			$properties=$url->getAttributes();
 			if(($class=$properties->remove('class'))===null)
 				$class=$this->getDefaultMappingClass();
-			$pattern = Prado::createComponent($class,$this);
+			$pattern=Prado::createComponent($class,$this);
 			if(!($pattern instanceof TUrlMappingPattern))
 				throw new TConfigurationException('urlmapping_urlmappingpattern_required');
 			foreach($properties as $name=>$value)
 				$pattern->setSubproperty($name,$value);
-			$this->_patterns[] = $pattern;
+			$this->_patterns[]=$pattern;
 			$pattern->init($url);
 
 			$key=$pattern->getServiceID().':'.$pattern->getServiceParameter();
@@ -239,17 +251,19 @@ class TUrlMapping extends TUrlManager
 	 */
 	public function parseUrl()
 	{
-		$url = $this->getRequest()->getUrl();
+		$request=$this->getRequest();
 		foreach($this->_patterns as $pattern)
 		{
-			$matches = $pattern->getPatternMatches($url);
-			if(count($matches) > 0)
+			$matches=$pattern->getPatternMatches($request);
+			if(count($matches)>0)
 			{
 				$this->_matched=$pattern;
 				$params=array();
 				foreach($matches as $key=>$value)
+				{
 					if(is_string($key))
 						$params[$key]=$value;
+				}
 				$params[$pattern->getServiceID()]=$pattern->getServiceParameter();
 				return $params;
 			}
@@ -280,17 +294,18 @@ class TUrlMapping extends TUrlManager
 	 */
 	public function constructUrl($serviceID,$serviceParam,$getItems,$encodeAmpersand,$encodeGetItems)
 	{
-		if(!$this->_customUrl)
-			return parent::constructUrl($serviceID,$serviceParam,$getItems,$encodeAmpersand,$encodeGetItems);
- 		if(!(is_array($getItems) || ($getItems instanceof Traversable)))
- 			$getItems=array();
-		$key=$serviceID.':'.$serviceParam;
-		if(isset($this->_constructRules[$key]))
+		if($this->_customUrl)
 		{
-			foreach($this->_constructRules[$key] as $rule)
+	 		if(!(is_array($getItems) || ($getItems instanceof Traversable)))
+	 			$getItems=array();
+			$key=$serviceID.':'.$serviceParam;
+			if(isset($this->_constructRules[$key]))
 			{
-				if($rule->supportCustomUrl($getItems))
-					return $rule->constructUrl($getItems,$encodeAmpersand,$encodeGetItems);
+				foreach($this->_constructRules[$key] as $rule)
+				{
+					if($rule->supportCustomUrl($getItems))
+						return $rule->constructUrl($getItems,$encodeAmpersand,$encodeGetItems);
+				}
 			}
 		}
 		return parent::constructUrl($serviceID,$serviceParam,$getItems,$encodeAmpersand,$encodeGetItems);
@@ -306,13 +321,16 @@ class TUrlMapping extends TUrlManager
 }
 
 /**
- * URL Mapping Pattern Class
+ * TUrlMappingPattern class.
  *
- * Describes an URL mapping pattern, if a given URL matches the pattern, the
- * TUrlMapping class will alter the THttpRequest parameters. The
- * url matching is done using patterns and regular expressions.
+ * TUrlMappingPattern represents a pattern used to parse and construct URLs.
+ * If the currently requested URL matches the pattern, it will alter
+ * the THttpRequest parameters. If a constructUrl() call matches the pattern
+ * parameters, the pattern will generate a valid URL. In both case, only the PATH_INFO
+ * part of a URL is parsed/constructed using the pattern.
  *
- * The {@link setPattern Pattern} property takes an string expression with
+ * To specify the pattern, set the {@link setPattern Pattern} property.
+ * {@link setPattern Pattern} takes a string expression with
  * parameter names enclosed between a left brace '{' and a right brace '}'.
  * The patterns for each parameter can be set using {@link getParameters Parameters}
  * attribute collection. For example
@@ -326,34 +344,27 @@ class TUrlMapping extends TUrlManager
  * "\d{4}" (4 digits), "\d{2}" (2 digits) and "\d+" (1 or more digits).
  * Essentially, the <tt>Parameters</tt> attribute name and values are used
  * as substrings in replacing the placeholders in the <tt>Pattern</tt> string
- * to form a complete regular expression string. A full regular expression
- * may be expressed using the <tt>RegularExpression</tt> attribute or
- * as the body content of the &lt;module&gt; tag. The above pattern is equivalent
- * to the following regular expression pattern.
+ * to form a complete regular expression string.
+ *
+ * For more complicated patterns, one may specify the pattern using a regular expression
+ * by {@link setRegularExpression RegularExpression}. For example, the above pattern
+ * is equivalent to the following regular expression-based pattern:
  * <code>
- * /articles\/(?P<year>\d{4})\/(?P<month>\d{2})\/(?P<day>\d+)/u
+ * /^articles\/(?P<year>\d{4})\/(?P<month>\d{2})\/(?P<day>\d+)$/u
  * </code>
  * The above regular expression used the "named group" feature available in PHP.
  * Notice that you need to escape the slash in regular expressions.
  *
- * In the TUrlMappingPattern class, the pattern is matched against the
- * <b>path</b> property of the url only.
- *
  * Thus, only an url that matches the pattern will be valid. For example,
- * an url "<tt>http://example.com/articles/2006/07/21</tt>" will matches and is valid.
- * However, "<tt>http://example.com/articles/2006/07/hello</tt>" is not
- * valid since the "day" parameter pattern is not satisfied.
+ * a URL <tt>http://example.com/index.php/articles/2006/07/21</tt> will match the above pattern,
+ * while <tt>http://example.com/index.php/articles/2006/07/hello</tt> will not
+ * since the "day" parameter pattern is not satisfied.
  *
- * The parameter values are available through the standard <tt>Request</tt>
- * object. For example, <tt>$this->Request['year']</tt>.
+ * The parameter values are available through the <tt>THttpRequest</tt> instance (e.g.
+ * <tt>$this->Request['year']</tt>).
  *
  * The {@link setServiceParameter ServiceParameter} and {@link setServiceID ServiceID}
  * (the default ID is 'page') set the service parameter and service id respectively.
- * The service parameter for the TPageService is the Page class name, other service
- * may use the service parameter differently.
- *
- * For more complicated mappings, the body of the <tt>&lt;url&gt;</tt>
- * can be used to specify the mapping pattern.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
@@ -382,15 +393,15 @@ class TUrlMappingPattern extends TComponent
 	 * @var string regular expression pattern.
 	 */
 	private $_regexp='';
-	/**
-	 * @var boolean case sensitive matching, default is true
-	 */
-	private $_caseSensitive=true;
 
 	private $_customUrl=true;
 
 	private $_manager;
 
+	/**
+	 * Constructor.
+	 * @param TUrlManager the URL manager instance
+	 */
 	public function __construct(TUrlManager $manager)
 	{
 		$this->_manager=$manager;
@@ -398,20 +409,21 @@ class TUrlMappingPattern extends TComponent
 		$this->_parameters->setCaseSensitive(true);
 	}
 
+	/**
+	 * @return TUrlManager the URL manager instance
+	 */
 	public function getManager()
 	{
 		return $this->_manager;
 	}
 
 	/**
-	 * Initialize the pattern, uses the body content as pattern is available.
+	 * Initializes the pattern.
 	 * @param TXmlElement configuration for this module.
-	 * @throws TConfigurationException if page class is not specified.
+	 * @throws TConfigurationException if service parameter is not specified
 	 */
 	public function init($config)
 	{
-		if(($body=trim($config->getValue()))!=='')
-			$this->setRegularExpression($body);
 		if($this->_serviceParameter===null)
 			throw new TConfigurationException('urlmappingpattern_serviceparameter_required', $this->getPattern());
 	}
@@ -423,18 +435,17 @@ class TUrlMappingPattern extends TComponent
 	 */
 	protected function getParameterizedPattern()
 	{
-		$params= array();
-		$values = array();
-		foreach($this->parameters as $key => $value)
+		$params=array();
+		$values=array();
+		foreach($this->_parameters as $key=>$value)
 		{
-			$params[] = '{'.$key.'}';
-			$values[] = '(?P<'.$key.'>'.$value.')';
+			$params[]='{'.$key.'}';
+			$values[]='(?P<'.$key.'>'.$value.')';
 		}
-		$params[] = '/';
-		$values[] = '\\/';
-		$regexp = str_replace($params,$values,$this->getPattern());
-		$modifiers = $this->getModifiers();
-		return '/'.$regexp.'/'.$modifiers;
+		$params[]='/';
+		$values[]='\\/';
+		$regexp=str_replace($params,$values,trim($this->getPattern(),'/'));
+		return '/^'.$regexp.'$/u';
 	}
 
 	/**
@@ -502,22 +513,6 @@ class TUrlMappingPattern extends TComponent
 	}
 
 	/**
-	 * @param boolean case sensitive pattern matching, default is true.
-	 */
-	public function setCaseSensitive($value)
-	{
-		$this->_caseSensitive=TPropertyValue::ensureBoolean($value);
-	}
-
-	/**
-	 * @return boolean case sensitive pattern matching, default is true.
-	 */
-	public function getCaseSensitive()
-	{
-		return $this->_caseSensitive;
-	}
-
-	/**
 	 * @return TAttributeCollection parameter key value pairs.
 	 */
 	public function getParameters()
@@ -536,27 +531,17 @@ class TUrlMappingPattern extends TComponent
 	/**
 	 * Uses URL pattern (or full regular expression if available) to
 	 * match the given url path.
-	 * @param TUri url to match against
+	 * @param THttpRequest the request module
 	 * @return array matched parameters, empty if no matches.
 	 */
-	public function getPatternMatches($url)
+	public function getPatternMatches($request)
 	{
 		$matches=array();
-		if(($pattern=$this->getRegularExpression())==='')
-			$pattern=$this->getParameterizedPattern();
-		preg_match($pattern,$url->getPath(),$matches);
+		if(($pattern=$this->getRegularExpression())!=='')
+			preg_match($pattern,$request->getPathInfo(),$matches);
+		else
+			preg_match($this->getParameterizedPattern(),trim($request->getPathInfo(),'/'),$matches);
 		return $matches;
-	}
-
-	/**
-	 * @return string regular expression matching modifiers.
-	 */
-	protected function getModifiers()
-	{
-		$modifiers = 'u';
-		if(!$this->getCaseSensitive())
-			$modifiers .= 'i';
-		return $modifiers;
 	}
 
 	/**
@@ -588,9 +573,10 @@ class TUrlMappingPattern extends TComponent
 		if(!$this->_customUrl || $this->getPattern()==='')
 			return false;
 		foreach($this->_parameters as $key=>$value)
+		{
 			if(!isset($getItems[$key]))
 				return false;
-
+		}
 		return true;
 	}
 
@@ -617,7 +603,7 @@ class TUrlMappingPattern extends TComponent
 				$extra[$key]=$value;
 		}
 
-		$url=$this->_manager->getUrlPrefix().'/'.trim(strtr($this->getPattern(),$replace),'/');
+		$url=$this->_manager->getUrlPrefix().'/'.ltrim(strtr($this->getPattern(),$replace),'/');
 
 		// for the rest of the GET variables, put them in the query string
 		if(count($extra)>0)

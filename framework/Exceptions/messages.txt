@@ -420,4 +420,8 @@ cachesession_cachemodule_inexistent		= TCacheHttpSession.CacheModuleID '{0}' poi
 cachesession_cachemodule_invalid		= TCacheHttpSession.CacheModuleID '{0}' points to a module that does not implement ICache interface.
 
 urlmapping_urlmappingpattern_required	= TUrlMapping can only contain TUrlMappingPattern or its child classes.
+urlmapping_global_required				= TUrlMapping must be configured as a global module.
+urlmapping_configfile_inexistent		= TUrlMapping.ConfigFile '{0}' is not a file.
+urlmapping_configfile_invalid			= TUrlMapping.ConfigFile '{0}' must point to an XML file in namespace format.
+
 urlmappingpattern_serviceparameter_required = TUrlMappingPattern.ServiceParameter is required for pattern '{0}'.

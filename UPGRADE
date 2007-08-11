@@ -13,6 +13,8 @@ Upgrading from v3.1.0
 ---------------------
 - IFeedContentProvider adds a new method getContentType(). This affects any
   class implementing this interface.
+- TUrlMapping now only uses the PATH_INFO part of URL for matching, and the matching
+  is for the whole PATH_INFO.
 
 Upgrading from v3.1b
 --------------------
