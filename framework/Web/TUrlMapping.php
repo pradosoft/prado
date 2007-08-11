@@ -398,6 +398,8 @@ class TUrlMappingPattern extends TComponent
 
 	private $_manager;
 
+	private $_caseSensitive=true;
+
 	/**
 	 * Constructor.
 	 * @param TUrlManager the URL manager instance
@@ -444,8 +446,11 @@ class TUrlMappingPattern extends TComponent
 		}
 		$params[]='/';
 		$values[]='\\/';
-		$regexp=str_replace($params,$values,trim($this->getPattern(),'/'));
-		return '/^'.$regexp.'$/u';
+		$regexp=str_replace($params,$values,trim($this->getPattern(),'/').'/');
+		$regexp='/^'.$regexp.'$/u';
+		if(!$this->getCaseSensitive())
+			$regexp.='i';
+		return $regexp;
 	}
 
 	/**
@@ -462,6 +467,22 @@ class TUrlMappingPattern extends TComponent
 	public function setRegularExpression($value)
 	{
 		$this->_regexp=$value;
+	}
+
+	/**
+	 * @return boolean whether the {@link getPattern Pattern} should be treated as case sensititve. Defaults to true.
+	 */
+	public function getCaseSensitive()
+	{
+		return $this->_caseSensitive;
+	}
+
+	/**
+	 * @param boolean whether the {@link getPattern Pattern} should be treated as case sensititve.
+	 */
+	public function setCaseSensitive($value)
+	{
+		$this->_caseSensitive=TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -540,7 +561,7 @@ class TUrlMappingPattern extends TComponent
 		if(($pattern=$this->getRegularExpression())!=='')
 			preg_match($pattern,$request->getPathInfo(),$matches);
 		else
-			preg_match($this->getParameterizedPattern(),trim($request->getPathInfo(),'/'),$matches);
+			preg_match($this->getParameterizedPattern(),trim($request->getPathInfo(),'/').'/',$matches);
 		return $matches;
 	}
 
