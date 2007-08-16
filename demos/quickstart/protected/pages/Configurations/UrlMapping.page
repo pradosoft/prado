@@ -64,7 +64,7 @@ The <tt>Pattern</tt> and <tt>Parameters</tt> attribute
 values are regular expression patterns that
 determine the mapping criteria. The <tt>Pattern</tt> property takes
 a regular expression with parameter names enclosed between a left brace '<tt>{</tt>'
-and a right brace '<tt>}</tt>'. The pattens for each parameter can be set
+and a right brace '<tt>}</tt>'. The patterns for each parameter can be set
 using <tt>Parameters</tt> attribute collection.
 For example,
 <com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_230099">
