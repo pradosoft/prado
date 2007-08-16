@@ -1602,7 +1602,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 */
 	protected function loadStateRecursive(&$state,$needViewState=true)
 	{
-		if($state!==null)
+		if(is_array($state))
 		{
 			// A null state means the stateful properties all take default values.
 			// So if the state is enabled, we have to assign the null value.
