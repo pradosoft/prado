@@ -84,6 +84,7 @@ class TOutputCache extends TControl implements INamingContainer
 	private $_keyPrefix='';
 	private $_varyBySession=false;
 	private $_cachePostBack=false;
+	private $_cacheTime=0;
 
 	/**
 	 * Returns a value indicating whether body contents are allowed for this control.
@@ -116,11 +117,17 @@ class TOutputCache extends TControl implements INamingContainer
 				{
 					$this->_cacheAvailable=true;
 					$data=$this->_cache->get($this->getCacheKey());
-					$param=new TOutputCacheCheckDependencyEventParameter;
-					$this->onCheckDependency($param);
-					$this->_dataCached=($data!==false && $param->getIsValid());
+					if(is_array($data))
+					{
+						$param=new TOutputCacheCheckDependencyEventParameter;
+						$param->setCacheTime(isset($data[3])?$data[3]:0);
+						$this->onCheckDependency($param);
+						$this->_dataCached=$param->getIsValid();
+					}
+					else
+						$this->_dataCached=false;
 					if($this->_dataCached)
-						list($this->_contents,$this->_state,$this->_actions)=$data;
+						list($this->_contents,$this->_state,$this->_actions,$this->_cacheTime)=$data;
 				}
 			}
 		}
@@ -329,6 +336,15 @@ class TOutputCache extends TControl implements INamingContainer
 	}
 
 	/**
+	 * @return integer the timestamp of the cached content. This is only valid if the content is being cached.
+	 * @since 3.1.1
+	 */
+	public function getCacheTime()
+	{
+		return $this->_cacheTime;
+	}
+
+	/**
 	 * Returns the dependency of the data to be cached.
 	 * The default implementation simply returns null, meaning no specific dependency.
 	 * This method may be overriden to associate the data to be cached
@@ -470,7 +486,7 @@ class TOutputCache extends TControl implements INamingContainer
 			$stack->pop();
 
 			$content=$textWriter->flush();
-			$data=array($content,$this->_state,$this->_actions);
+			$data=array($content,$this->_state,$this->_actions,time());
 			$this->_cache->set($this->getCacheKey(),$data,$this->getDuration(),$this->getCacheDependency());
 			$writer->write($content);
 		}
@@ -492,10 +508,8 @@ class TOutputCache extends TControl implements INamingContainer
  */
 class TOutputCacheCheckDependencyEventParameter extends TEventParameter
 {
-	/**
-	 * @var boolean whether the dependency remains valid
-	 */
 	private $_isValid=true;
+	private $_cacheTime=0;
 
 	/**
 	 * @return boolean whether the dependency remains valid. Defaults to true.
@@ -511,6 +525,24 @@ class TOutputCacheCheckDependencyEventParameter extends TEventParameter
 	public function setIsValid($value)
 	{
 		$this->_isValid=TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @return integer the timestamp of the cached result. You may use this to help determine any dependency is changed.
+	 * @since 3.1.1
+	 */
+	public function getCacheTime()
+	{
+		return $this->_cacheTime;
+	}
+
+	/**
+	 * @param integer the timestamp of the cached result. This is used internally.
+	 * @since 3.1.1
+	 */
+	public function setCacheTime($value)
+	{
+		$this->_cacheTime=TPropertyValue::ensureInteger($value);
 	}
 }
 
