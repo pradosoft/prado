@@ -1458,6 +1458,13 @@ demos/quickstart/protected/pages/Tutorial/fr/chat1.png -text
 demos/quickstart/protected/pages/Tutorial/fr/chat2.png -text
 demos/quickstart/protected/pages/Tutorial/fr/example1.png -text
 demos/quickstart/protected/pages/Tutorial/fr/example2.png -text
+demos/quickstart/protected/pages/Tutorial/id/AddressBook.page -text
+demos/quickstart/protected/pages/Tutorial/id/AjaxChat.page -text
+demos/quickstart/protected/pages/Tutorial/id/CurrencyConverter.page -text
+demos/quickstart/protected/pages/Tutorial/id/chat1.png -text
+demos/quickstart/protected/pages/Tutorial/id/chat2.png -text
+demos/quickstart/protected/pages/Tutorial/id/example1.png -text
+demos/quickstart/protected/pages/Tutorial/id/example2.png -text
 demos/quickstart/protected/pages/ViewSource.page -text
 demos/quickstart/protected/pages/ViewSource.php -text
 demos/quickstart/protected/pages/config.xml -text
