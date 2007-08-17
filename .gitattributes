@@ -1445,6 +1445,7 @@ demos/quickstart/protected/pages/GettingStarted/zh/Introduction.page -text
 demos/quickstart/protected/pages/Search.page -text
 demos/quickstart/protected/pages/Search.php -text
 demos/quickstart/protected/pages/Services/SoapService.page -text
+demos/quickstart/protected/pages/Services/id/SoapService.page -text
 demos/quickstart/protected/pages/Tutorial/AddressBook.page -text
 demos/quickstart/protected/pages/Tutorial/AjaxChat.page -text
 demos/quickstart/protected/pages/Tutorial/CurrencyConverter.page -text
