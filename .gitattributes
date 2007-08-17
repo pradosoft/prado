@@ -1421,6 +1421,16 @@ demos/quickstart/protected/pages/GettingStarted/fr/NewFeatures.page -text
 demos/quickstart/protected/pages/GettingStarted/fr/Upgrading.page -text
 demos/quickstart/protected/pages/GettingStarted/fr/directory.gif -text
 demos/quickstart/protected/pages/GettingStarted/fr/sequence.gif -text
+demos/quickstart/protected/pages/GettingStarted/id/AboutPrado.page -text
+demos/quickstart/protected/pages/GettingStarted/id/CommandLine.page -text
+demos/quickstart/protected/pages/GettingStarted/id/HelloWorld.page -text
+demos/quickstart/protected/pages/GettingStarted/id/Installation.page -text
+demos/quickstart/protected/pages/GettingStarted/id/Introduction.page -text
+demos/quickstart/protected/pages/GettingStarted/id/NewFeatures.page -text
+demos/quickstart/protected/pages/GettingStarted/id/Upgrading.page -text
+demos/quickstart/protected/pages/GettingStarted/id/directory.gif -text
+demos/quickstart/protected/pages/GettingStarted/id/sequence.gif -text
+demos/quickstart/protected/pages/GettingStarted/id/sequence.vsd -text
 demos/quickstart/protected/pages/GettingStarted/ja/AboutPrado.page -text
 demos/quickstart/protected/pages/GettingStarted/ja/CommandLine.page -text
 demos/quickstart/protected/pages/GettingStarted/ja/HelloWorld.page -text

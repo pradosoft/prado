@@ -1,0 +1,33 @@
+<com:TContent ID="body" >
+
+<h1 id="8005">Fitur Baru</h1>
+
+<p id="40005" class="block-content">
+Halaman ini meringkas fitur utama baru yang diperkenalkan dalam setiap rilis PRADO.
+</p>
+
+<h2>Version 3.1.1</h2>
+<ul>
+<li>Ditambahkan kontrol baru <a href="?page=Controls.TabPanel">TTabPanel</a> yang menampilkan tampilan tab.</li>
+<li>Ditambahkan modul baru TCacheHttpSession yang menyimpan data sesi menggunakan modul cache guna meningkatkan performansi sesi.</li>
+<li>Ditambahkan dukungan Oracle DB ke Rekaman Aktif</li>
+</ul>
+
+<h2 id="8006">Versi 3.1.0</h2>
+<ul>
+<li>Ditambahkan dukungan AJAX. Seluruh array dari kontrol AJAX-enabled, disebut kontrol aktif, diperkenalkan. Penggunaan dari kontrol aktif ini sangat mirip dengan kontrol non-AJAX lainnya, misalnya masukkan dan gunakan. Untuk lebih jelasnya, lihat tutorial mengenai <a href="?page=ActiveControls.Home">kontrol aktif</a>.</li>
+
+<li>Ditambahkan dukungan lengkap database. </li>
+<li>Ditambahkan kontrol, modul dan layanan baru, termasuk <a href="?page=Services.SoapService">TSoapService</a>, <a href="?page=Controls.OutputCache">TOutputCache</a>, TSessionPageStatePersister, TFeedService, TJsonService, cache dependency classes, TXmlTransform.
+</li>
+
+<li>Ditingkatkan beberapa kontrol data dengan penyaji. Penyaji mendhidupkan penggunaan kembali item template yang umumnya ditemukan dalam <tt>TRepeater</tt>, <tt>TDataList</tt> dan <tt>TDataGrid</tt>, dan menjadikan konfigurasi pada kontrol-kontrol ini jauh lebih mudah. Untuk lebih jelasnya mengenai penyaji, lihat tutorial yang dimutakhirkan pada <a href="?page=Controls.Repeater"><tt>TRepeater</tt></a>, <a href="?page=Controls.DataList"><tt>TDataList</tt></a> dan <a href="?page=Controls.DataGrid"><tt>TDataGrid</tt></a>.</li>
+
+<li>Ditambahkan dukungan untuk membolehkan <a href="?page=Configurations.AppConfig">menyertakan konfigurasi aplikasi eksternal</a>. Sintaks template ditingkatkan untuk menjembatani <a href="?page=Configurations.Templates1">konfigurasi subproperti</a>.</li>
+
+<li>Ditambahkan TDbUserManager dan TDbUser untuk menyederhanakan <a href="?page=Advanced.Auth">otentikasi dan otorisasi</a> dengan akun pengguna yang disimpan dalam sebuah database.</li>
+
+</ul>
+
+<div class="last-modified">$Id: NewFeatures.page 1902 2007-05-07 04:17:37Z wei $</div>
+</com:TContent>
