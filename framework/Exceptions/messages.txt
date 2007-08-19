@@ -44,6 +44,11 @@ appconfig_serviceid_required			= Application configuration <service> element mus
 appconfig_servicetype_required			= Application configuration <service id="{0}"> must have a "class" attribute.
 appconfig_parameterid_required			= Application configuration <parameter> element must have an "id" attribute.
 appconfig_includefile_required			= Application configuration <include> element must have a "file" attribute.
+appconfig_paths_invalid					= Application configuration <paths> cannot contain element <{0}>.
+appconfig_modules_invalid				= Application configuration <modules> cannot contain element <{0}>.
+appconfig_services_invalid				= Application configuration <services> cannot contain element <{0}>.
+appconfig_parameters_invalid			= Application configuration <parameters> cannot contain element <{0}>.
+appconfig_tag_invalid					= Application configuration cannot contain element <{0}>.
 
 securitymanager_validationkey_invalid	= TSecurityManager.ValidationKey must not be empty.
 securitymanager_encryptionkey_invalid	= TSecurityManager.EncryptionKey must not be empty.

@@ -1215,85 +1215,149 @@ class TApplicationConfiguration extends TComponent
 			$this->_empty=false;
 		}
 
-		// paths
-		if(($pathsNode=$dom->getElementByTagName('paths'))!==null)
+		foreach($dom->getElements() as $element)
 		{
-			foreach($pathsNode->getElementsByTagName('alias') as $aliasNode)
+			switch($element->getTagName())
 			{
-				if(($id=$aliasNode->getAttribute('id'))!==null && ($path=$aliasNode->getAttribute('path'))!==null)
-				{
-					$path=str_replace('\\','/',$path);
-					if(preg_match('/^\\/|.:\\/|.:\\\\/',$path))	// if absolute path
-						$p=realpath($path);
-					else
-						$p=realpath($configPath.DIRECTORY_SEPARATOR.$path);
-					if($p===false || !is_dir($p))
-						throw new TConfigurationException('appconfig_aliaspath_invalid',$id,$path);
-					if(isset($this->_aliases[$id]))
-						throw new TConfigurationException('appconfig_alias_redefined',$id);
-					$this->_aliases[$id]=$p;
-				}
-				else
-					throw new TConfigurationException('appconfig_alias_invalid');
-				$this->_empty=false;
-			}
-			foreach($pathsNode->getElementsByTagName('using') as $usingNode)
-			{
-				if(($namespace=$usingNode->getAttribute('namespace'))!==null)
-					$this->_usings[]=$namespace;
-				else
-					throw new TConfigurationException('appconfig_using_invalid');
-				$this->_empty=false;
+				case 'paths':
+					$this->loadPathsXml($element,$configPath);
+					break;
+				case 'modules':
+					$this->loadModulesXml($element,$configPath);
+					break;
+				case 'services':
+					$this->loadServicesXml($element,$configPath);
+					break;
+				case 'parameters':
+					$this->loadParametersXml($element,$configPath);
+					break;
+				case 'include':
+					$this->loadExternalXml($element,$configPath);
+					break;
+				default:
+					//throw new TConfigurationException('appconfig_tag_invalid',$element->getTagName());
+					break;
 			}
 		}
+	}
 
-		// application modules
-		if(($modulesNode=$dom->getElementByTagName('modules'))!==null)
+	/**
+	 * Loads the paths XML node.
+	 * @param TXmlElement the paths XML node
+	 * @param string the context path (for specifying relative paths)
+	 */
+	protected function loadPathsXml($pathsNode,$configPath)
+	{
+		foreach($pathsNode->getElements() as $element)
 		{
-			foreach($modulesNode->getElementsByTagName('module') as $node)
+			switch($element->getTagName())
 			{
-				$properties=$node->getAttributes();
+				case 'alias':
+				{
+					if(($id=$element->getAttribute('id'))!==null && ($path=$element->getAttribute('path'))!==null)
+					{
+						$path=str_replace('\\','/',$path);
+						if(preg_match('/^\\/|.:\\/|.:\\\\/',$path))	// if absolute path
+							$p=realpath($path);
+						else
+							$p=realpath($configPath.DIRECTORY_SEPARATOR.$path);
+						if($p===false || !is_dir($p))
+							throw new TConfigurationException('appconfig_aliaspath_invalid',$id,$path);
+						if(isset($this->_aliases[$id]))
+							throw new TConfigurationException('appconfig_alias_redefined',$id);
+						$this->_aliases[$id]=$p;
+					}
+					else
+						throw new TConfigurationException('appconfig_alias_invalid');
+					$this->_empty=false;
+					break;
+				}
+				case 'using':
+				{
+					if(($namespace=$element->getAttribute('namespace'))!==null)
+						$this->_usings[]=$namespace;
+					else
+						throw new TConfigurationException('appconfig_using_invalid');
+					$this->_empty=false;
+					break;
+				}
+				default:
+					throw new TConfigurationException('appconfig_paths_invalid',$tagName);
+			}
+		}
+	}
+
+	/**
+	 * Loads the modules XML node.
+	 * @param TXmlElement the modules XML node
+	 * @param string the context path (for specifying relative paths)
+	 */
+	protected function loadModulesXml($modulesNode,$configPath)
+	{
+		foreach($modulesNode->getElements() as $element)
+		{
+			if($element->getTagName()==='module')
+			{
+				$properties=$element->getAttributes();
 				$id=$properties->itemAt('id');
 				$type=$properties->remove('class');
 				if($type===null)
 					throw new TConfigurationException('appconfig_moduletype_required',$id);
-				$node->setParent(null);
+				$element->setParent(null);
 				if($id===null)
-					$this->_modules[]=array($type,$properties->toArray(),$node);
+					$this->_modules[]=array($type,$properties->toArray(),$element);
 				else
-					$this->_modules[$id]=array($type,$properties->toArray(),$node);
+					$this->_modules[$id]=array($type,$properties->toArray(),$element);
 				$this->_empty=false;
 			}
+			else
+				throw new TConfigurationException('appconfig_modules_invalid',$element->getTagName());
 		}
+	}
 
-		// services
-		if(($servicesNode=$dom->getElementByTagName('services'))!==null)
+	/**
+	 * Loads the services XML node.
+	 * @param TXmlElement the services XML node
+	 * @param string the context path (for specifying relative paths)
+	 */
+	protected function loadServicesXml($servicesNode,$configPath)
+	{
+		foreach($servicesNode->getElements() as $element)
 		{
-			foreach($servicesNode->getElementsByTagName('service') as $node)
+			if($element->getTagName()==='service')
 			{
-				$properties=$node->getAttributes();
+				$properties=$element->getAttributes();
 				if(($id=$properties->itemAt('id'))===null)
 					throw new TConfigurationException('appconfig_serviceid_required');
 				if(($type=$properties->remove('class'))===null)
 					throw new TConfigurationException('appconfig_servicetype_required',$id);
-				$node->setParent(null);
-				$this->_services[$id]=array($type,$properties->toArray(),$node);
+				$element->setParent(null);
+				$this->_services[$id]=array($type,$properties->toArray(),$element);
 				$this->_empty=false;
 			}
+			else
+				throw new TConfigurationException('appconfig_services_invalid',$element->getTagName());
 		}
+	}
 
-		// parameters
-		if(($parametersNode=$dom->getElementByTagName('parameters'))!==null)
+	/**
+	 * Loads the parameters XML node.
+	 * @param TXmlElement the parameters XML node
+	 * @param string the context path (for specifying relative paths)
+	 */
+	protected function loadParametersXml($parametersNode,$configPath)
+	{
+		foreach($parametersNode->getElements() as $element)
 		{
-			foreach($parametersNode->getElementsByTagName('parameter') as $node)
+			if($element->getTagName()==='parameters')
 			{
-				$properties=$node->getAttributes();
+				$properties=$element->getAttributes();
 				if(($id=$properties->remove('id'))===null)
 					throw new TConfigurationException('appconfig_parameterid_required');
 				if(($type=$properties->remove('class'))===null)
 				{
 					if(($value=$properties->remove('value'))===null)
-						$this->_parameters[$id]=$node;
+						$this->_parameters[$id]=$element;
 					else
 						$this->_parameters[$id]=$value;
 				}
@@ -1301,21 +1365,27 @@ class TApplicationConfiguration extends TComponent
 					$this->_parameters[$id]=array($type,$properties->toArray());
 				$this->_empty=false;
 			}
-		}
-
-		// external configurations
-		foreach($dom->getElementsByTagName('include') as $node)
-		{
-			if(($when=$node->getAttribute('when'))===null)
-				$when=true;
-			if(($filePath=$node->getAttribute('file'))===null)
-				throw new TConfigurationException('appconfig_includefile_required');
-			if(isset($this->_includes[$filePath]))
-				$this->_includes[$filePath]='('.$this->_includes[$filePath].') || ('.$when.')';
 			else
-				$this->_includes[$filePath]=$when;
-			$this->_empty=false;
+				throw new TConfigurationException('appconfig_parameters_invalid',$element->getTagName());
 		}
+	}
+
+	/**
+	 * Loads the external XML configurations.
+	 * @param TXmlElement the application DOM element
+	 * @param string the context path (for specifying relative paths)
+	 */
+	protected function loadExternalXml($includeNode,$configPath)
+	{
+		if(($when=$includeNode->getAttribute('when'))===null)
+			$when=true;
+		if(($filePath=$includeNode->getAttribute('file'))===null)
+			throw new TConfigurationException('appconfig_includefile_required');
+		if(isset($this->_includes[$filePath]))
+			$this->_includes[$filePath]='('.$this->_includes[$filePath].') || ('.$when.')';
+		else
+			$this->_includes[$filePath]=$when;
+		$this->_empty=false;
 	}
 
 	/**
