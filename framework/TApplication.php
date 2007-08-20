@@ -1349,7 +1349,7 @@ class TApplicationConfiguration extends TComponent
 	{
 		foreach($parametersNode->getElements() as $element)
 		{
-			if($element->getTagName()==='parameters')
+			if($element->getTagName()==='parameter')
 			{
 				$properties=$element->getAttributes();
 				if(($id=$properties->remove('id'))===null)
