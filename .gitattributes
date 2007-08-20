@@ -1065,6 +1065,13 @@ demos/quickstart/protected/controls/fr/RunBar.tpl -text
 demos/quickstart/protected/controls/fr/SampleLayout.tpl -text
 demos/quickstart/protected/controls/fr/SearchBox.tpl -text
 demos/quickstart/protected/controls/fr/TopicList.tpl -text
+demos/quickstart/protected/controls/id/Layout.tpl -text
+demos/quickstart/protected/controls/id/RequiresVersion.tpl -text
+demos/quickstart/protected/controls/id/RunBar.tpl -text
+demos/quickstart/protected/controls/id/SampleLayout.tpl -text
+demos/quickstart/protected/controls/id/SearchBox.tpl -text
+demos/quickstart/protected/controls/id/SinceVersion.tpl -text
+demos/quickstart/protected/controls/id/TopicList.tpl -text
 demos/quickstart/protected/controls/ja/Layout.tpl -text
 demos/quickstart/protected/controls/ja/RunBar.tpl -text
 demos/quickstart/protected/controls/ja/SearchBox.tpl -text
