@@ -4,43 +4,43 @@
 <com:SinceVersion Version="3.1a" />
 <p id="690478" class="block-content">Active Records are objects that wrap a row in a database table or view,
     encapsulate the database access and add domain logic on that data.
-    The basics of an Active Record are business classes, e.g., a 
+    The basics of an Active Record are business classes, e.g., a
     <tt>Products</tt> class,  that match very closely the record structure
     of an underlying database table. Each Active Record will be responsible for
     saving and loading data to and from the database. </p>
 <div class="info"><b class="note">Info:</b>
-    The data structure of an Active Record should  match that of a table 
+    The data structure of an Active Record should  match that of a table
     in the database.
     Each column of a table should have a corresponding member variable or property in the
     Active Record class the represents the table.
 </div>
 
 <h2 id="138047">When to Use It</h2>
-<p id="690479" class="block-content">Active Record is a good choice for domain logic that isn't too complex, 
+<p id="690479" class="block-content">Active Record is a good choice for domain logic that isn't too complex,
     such as creates, reads, updates, and deletes. Derivations and validations
     based on a single record work well in this structure. Active Record has the
-    primary advantage of simplicity. It's easy to build 
+    primary advantage of simplicity. It's easy to build
     Active Records, and they are easy to understand.</p>
 
-    <p id="690480" class="block-content">However, as your business logic grows in complexity, you'll soon want 
+    <p id="690480" class="block-content">However, as your business logic grows in complexity, you'll soon want
     to use your object's direct relationships, collections, inheritance, and so
-    forth. These don't map easily onto Active Record, and adding them piecemeal 
+    forth. These don't map easily onto Active Record, and adding them piecemeal
     gets very messy.
-    Another argument against Active Record is the fact that it couples the object 
+    Another argument against Active Record is the fact that it couples the object
     design to the database design. This makes it more difficult to refactor as a project goes forward.</p>
-    
+
     <p id="690481" class="block-content">The alternative is to use a Data Mapper that separates the roles of the
-        business object and how these objects are stored.       
-        Prado provides a complimentary choice between Active Record and 
-        <a href="?page=Database.SqlMap">SqlMap Data Mapper</a>. 
+        business object and how these objects are stored.
+        Prado provides a complimentary choice between Active Record and
+        <a href="?page=Database.SqlMap">SqlMap Data Mapper</a>.
         A SqlMap Data Mapper can be used to load Active Record objects, in turn; these
-        Active Record objects can be used to update the database. 
+        Active Record objects can be used to update the database.
         The "relationship" between Active Records and <a href="?page=Database.SqlMap">SqlMap</a> is illustrated in the
     following diagram. More details regarding the SqlMap Data Mapper can be found in
     the <a href="http://www.pradosoft.com/demos/sqlmap/">SqlMap Manual</a>.
     <img src=<%~ sqlmap_active_record.png %> alt="Active Records and SqlMap DataMapper" id="fig:diagram.png" class="figure"/>
     </p>
-    
+
     <p id="690482" class="block-content">
         The Active Record class has functionality to perform the following tasks.
     </p>
@@ -52,8 +52,8 @@
     </ul>
 <h2 id="142010">Database Supported</h2>
 <p id="p1" class="block-content">
-The Active Record implementation utilizes the <a href="?page=Database.DAO">Prado DAO</a> classes for data access.   
-The current Active Record implementation supports the following database. 
+The Active Record implementation utilizes the <a href="?page=Database.DAO">Prado DAO</a> classes for data access.
+The current Active Record implementation supports the following database.
 </p>
 <ul>
     <li><a href="http://www.mysql.com">MySQL 4.1 or later</a></li>
@@ -66,8 +66,8 @@ The current Active Record implementation supports the following database.
 
 <h1 id="138048">Defining an Active Record</h1>
 <p id="690483" class="block-content">Let us
-    consider the following "<tt>users</tt>" table that contains two columns named "<tt>username</tt>" and "<tt>email</tt>", 
-    where "<tt>username</tt>" is also the primary key. 
+    consider the following "<tt>users</tt>" table that contains two columns named "<tt>username</tt>" and "<tt>email</tt>",
+    where "<tt>username</tt>" is also the primary key.
 <com:TTextHighlighter Language="sql" CssClass="source block-content" id="code_690147">
 CREATE TABLE users
 (
@@ -81,11 +81,11 @@ CREATE TABLE users
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690148">
 class UserRecord extends TActiveRecord
 {
-    const TABLE='users'; //table name 
+    const TABLE='users'; //table name
 
     public $username; //the column named "username" in the "users" table
     public $email;
-    
+
     /**
      * @return TActiveRecord active record finder instance
      */
@@ -96,7 +96,7 @@ class UserRecord extends TActiveRecord
 }
 </com:TTextHighlighter>
 </p>
-<p id="690485" class="block-content">Each column of the "<tt>users</tt>" table must have corresponding 
+<p id="690485" class="block-content">Each column of the "<tt>users</tt>" table must have corresponding
     property of the same name as the column name in the <tt>UserRecord</tt> class.
     Of course, you also define additional member variables or properties that does not exist in the table structure.
     The class constant
@@ -117,7 +117,7 @@ You may specify qualified table names. E.g. for MySQL, <tt>TABLE = "`database1`.
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690149">
 class UserRecord extends TActiveRecord {
     ... //existing definitions as above
-    
+
     private $_level;
     public function setLevel($value) {
         $this->_level=TPropertyValue::ensureInteger($value,0);
@@ -135,13 +135,13 @@ Later we shall use the getter/setters to allow for lazy loading of relationship 
 <tt>TActiveRecord</tt> can also work with database views by specifying the constant <tt>TABLE</tt>
 corresponding to the view name. However, objects returned
 from views are read-only, calling the <tt>save()</tt> or <tt>delete()</tt> method
-will raise an exception. 
+will raise an exception.
 </div>
 
 <p id="690486" class="block-content">
     The static method <tt>finder()</tt> returns an <tt>UserRecord</tt> instance
     that can be used to load records from the database. The loading of records
-    using the finer methods is discussed a little later. The <tt>TActiveRecord::finder()</tt>
+    using the finder methods is discussed a little later. The <tt>TActiveRecord::finder()</tt>
     static method takes the name of an Active Record class as parameter.
 </p>
 
@@ -156,11 +156,11 @@ will raise an exception.
 $dsn = 'pgsql:host=localhost;dbname=test'; //Postgres SQL
 $conn = new TDbConnection($dsn, 'dbuser','dbpass');
 TActiveRecordManager::getInstance()->setDbConnection($conn);
-</com:TTextHighlighter> 
+</com:TTextHighlighter>
 
 <p id="710011" class="block-content">Alternatively, you can create a base class and override the <tt>getDbConnection()</tt>
 method to return a database connection. This is a simple way to permit multiple
-connections and multiple databases. The following code demonstrates defining 
+connections and multiple databases. The following code demonstrates defining
 the database connection in a base class (not need to set the DB connection anywhere else).
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content">
@@ -184,14 +184,14 @@ class MyDb2Record extends TActiveRecord
         return $conn;
     }
 }
-</com:TTextHighlighter> 
+</com:TTextHighlighter>
 
 
 <h3 class="prado-specific">Using <tt>application.xml</tt> within the Prado Framework</h3>
 <div class="prado-specific">
 <p id="690488" class="block-content">
     The default database connection can also be configured using a <tt>&lt;module&gt;</tt>
-    tag in the <a href="?page=Configurations.AppConfig">application.xml</a> 
+    tag in the <a href="?page=Configurations.AppConfig">application.xml</a>
     or <a href="?page=Configurations.PageConfig">config.xml</a> as follows.
 <com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_690151">
 <modules>
@@ -199,8 +199,8 @@ class MyDb2Record extends TActiveRecord
     <database ConnectionString="pgsql:host=localhost;dbname=test"
         Username="dbuser" Password="dbpass" />
   </module>
-</modules>  
-</com:TTextHighlighter> 
+</modules>
+</com:TTextHighlighter>
 <div class="tip"><b class="note">Tip:</b>
     The <tt>EnableCache</tt> attribute when set to "true" will cache the table
     meta data, that is, the table columns names, indexes and constraints are
@@ -220,20 +220,20 @@ class MyDb2Record extends TActiveRecord
         Username="dbuser" Password="dbpass" />
   </module>
 
-  <module class="System.Data.ActiveRecord.TActiveRecordConfig" 
+  <module class="System.Data.ActiveRecord.TActiveRecordConfig"
         ConnectionID="db1" EnableCache="true"  />
 
   <module class="System.Data.SqlMap.TSqlMapConfig"
         ConnectionID="db1"  ... />
-</modules>  
-</com:TTextHighlighter>     
+</modules>
+</com:TTextHighlighter>
 </p>
 </div>
 
 <h2 id="138050">Loading data from the database</h2>
 <p id="690490" class="block-content">
     The <tt>TActiveRecord</tt> class provides many convenient methods to find
-    records from the database. The simplest is finding one record by matching a primary key or a 
+    records from the database. The simplest is finding one record by matching a primary key or a
     composite key (primary keys that consists of multiple columns).
     See the <com:DocLink ClassPath="System.Data.ActiveRecord.TActiveRecord" /> for
     more details.
@@ -317,12 +317,12 @@ $criteria->Offset = 20;
 </com:TTextHighlighter>
 
 <div class="note"><b class="note">Note:</b>
-For MSSQL and when <tt>Limit</tt> and <tt>Offset</tt> are positive integer values. The 
-actual query to be executed is modified by the 
-<com:DocLink ClassPath="System.Data.ActiveRecord.Common.Mssql.TMssqlCommandBuilder" 
+For MSSQL and when <tt>Limit</tt> and <tt>Offset</tt> are positive integer values. The
+actual query to be executed is modified by the
+<com:DocLink ClassPath="System.Data.ActiveRecord.Common.Mssql.TMssqlCommandBuilder"
 Text="TMssqlCommandBuilder"
 />
-class according to 
+class according to
 <a href="http://troels.arvin.dk/db/rdbms/#select-limit-offset">http://troels.arvin.dk/db/rdbms/</a>
 to emulate the <tt>Limit</tt> and <tt>Offset</tt> conditions.
 </div>
@@ -353,11 +353,11 @@ $finder->find('Username = ? AND Password = ?', $name, $pass);
 $finder->findAllByAge($age);
 $finder->findAll('Age = ?', $age);
 </com:TTextHighlighter>
-    
+
 <div class="tip"><b class="note">Tip:</b>
 You may also use a combination of <tt>AND</tt> and <tt>OR</tt> as a condition in the dynamic methods.
 </div>
-    
+
 <h3 id="138060"><tt>findBySql()</tt> and <tt>findAllBySql()</tt></h3>
 <p id="690497" class="block-content">Finds records using full SQL where <tt>findBySql()</tt>
 return an Active Record and <tt>findAllBySql()</tt>returns an array of record objects.
@@ -391,16 +391,16 @@ $user2 = new UserRecord($data); //create by passing some existing data
 $user2->save(); //insert a new record
 </com:TTextHighlighter>
 <div class="tip"><b class="note">Tip:</b>
-The objects are update with the primary key of those the tables that contains 
+The objects are update with the primary key of those the tables that contains
 definitions that automatically creates a primary key for the newly insert records.
 For example, if you insert a new record into a MySQL table that has columns
-defined with "autoincrement", the Active Record objects will be updated with the new 
+defined with "autoincrement", the Active Record objects will be updated with the new
 incremented value.</div>
 
 <p id="690500" class="block-content">
-To update a record in the database, just change one or more properties of 
+To update a record in the database, just change one or more properties of
 the Active Record object that has been loaded from the database and then
-call the <tt>save()</tt> method.    
+call the <tt>save()</tt> method.
 
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690162">
 $user = UserRecord::finder()->findByName('admin');
@@ -416,9 +416,9 @@ Active Record objects have a simple life-cycle illustrated in the following diag
 <p id="690501" class="block-content">
 We see that new TActiveRecord objects are created by either using one of the <tt>find*()</tt>
 methods or using creating a new instance by using PHP's <tt>new</tt> keyword. Objects
-created by a <tt>find*()</tt> method starts with <tt>clean</tt> state. New instance of 
+created by a <tt>find*()</tt> method starts with <tt>clean</tt> state. New instance of
 TActiveRecord created other than by a <tt>find*()</tt> method starts with <tt>new</tt> state.
-Whenever you 
+Whenever you
 call the <tt>save()</tt> method on the TActiveRecord object, the object enters the <tt>clean</tt>
 state. Objects in the <tt>clean</tt> becomes <tt>dirty</tt> whenever one of more of its
 internal states are changed. Calling the <tt>delete()</tt> method on the object
@@ -429,8 +429,8 @@ ends the object life-cycle, no further actions can be performed on the object.
 <p id="690502" class="block-content">
     To delete an existing record that is already loaded, just call the <tt>delete()</tt> method.
     You can also delete records in the database by primary keys without
-    loading any records using the <tt>deleteByPk()</tt> method (and equivalently the <tt>deleteAllByPks()</tt> method). 
-    For example, to delete one or records with tables using one or more primary keys.
+    loading any records using the <tt>deleteByPk()</tt> method (and equivalently the <tt>deleteAllByPks()</tt> method).
+    For example, to delete one or several records with tables using one or more primary keys.
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690163">
 $finder->deleteByPk($primaryKey); //delete 1 record
@@ -491,20 +491,20 @@ catch(Exception $e) // an exception is raised if a query fails
 The TActiveRecord offers two events, <tt>OnCreateCommand</tt> and <tt>OnExecuteCommand</tt>.
 </p>
 
-<p id="710014" class="block-content">The <tt>OnCreateCommand</tt> event is raised when a command is prepared and 
+<p id="710014" class="block-content">The <tt>OnCreateCommand</tt> event is raised when a command is prepared and
 parameter binding is completed. The parameter object is <tt>TDataGatewayEventParameter</tt> of which the
 <tt>Command</tt> property can be inspected to obtain the SQL query to be executed.
 </p>
 
 <p id="710015" class="block-content">
-The <tt>OnExecuteCommand</tt> event is raised when a command is executed and the 
-result from the database was returned. The parameter object is <tt>TDataGatewayResultEventParameter</tt> 
-of which the <tt>Result</tt> property contains the data return from the database. 
+The <tt>OnExecuteCommand</tt> event is raised when a command is executed and the
+result from the database was returned. The parameter object is <tt>TDataGatewayResultEventParameter</tt>
+of which the <tt>Result</tt> property contains the data return from the database.
 The data returned can be changed by setting the <tt>Result</tt> property.
 </p>
 
 <h3 id="142016">Logging Example</h3>
-<p id="710016" class="block-content">Using the <tt>OnExecuteCommand</tt> we can attach an event handler to log 
+<p id="710016" class="block-content">Using the <tt>OnExecuteCommand</tt> we can attach an event handler to log
 the entire SQL query executed for a given TActiveRecord class or instance. For example, we define
 a base class and override either the <tt>getDbConnection()</tt> or the constructor.
 </p>
@@ -534,7 +534,7 @@ function logger($sender,$param)
 }
 TActiveRecord::finder('MyRecord')->OnExecuteCommand[] = 'logger';
 $obj->OnExecuteCommand[] = array($logger, 'log'); //any valid PHP callback.
-</com:TTextHighlighter> 
+</com:TTextHighlighter>
 
 <h1 id="ar_relations">Active Record Relationships</h1>
 <com:SinceVersion Version="3.1rc1" />
@@ -545,26 +545,26 @@ underlying database must support foreign key constraints (e.g. MySQL using InnoD
 </p>
 
 <p id="710017" class="block-content">
-In the following sections we shall consider the following table relationships between
+In the following sections we will consider the following table relationships between
 <tt>Teams</tt>, <tt>Players</tt>, <tt>Skills</tt> and <tt>Profiles</tt>.
 </p>
 <img src=<%~ ar_relations.png %> class="figure" />
 
 
 <p id="710018" class="block-content">The goal is to obtain object models that represent to some degree the entity
-relationships in the above figure. 
+relationships in the above figure.
 </p>
 
 <img src=<%~ ar_objects.png %> class="figure" />
 
 <p class="block-content">
-There is a mismatch between relationships with objects and table relationships. 
-First there's a difference in representation. Objects handle links by storing references 
-that are held by the runtime memory-managed environment. Relational databases handle 
-links by forming a key into another table. Second, objects can easily use collections 
-to handle multiple references from a single field, while normalization forces 
-all entity relation links to be single valued. This leads to reversals of the data 
-structure between objects and tables. The approach taken in the Prado Active Record 
+There is a mismatch between relationships with objects and table relationships.
+First there's a difference in representation. Objects handle links by storing references
+that are held by the runtime memory-managed environment. Relational databases handle
+links by forming a key into another table. Second, objects can easily use collections
+to handle multiple references from a single field, while normalization forces
+all entity relation links to be single valued. This leads to reversals of the data
+structure between objects and tables. The approach taken in the Prado Active Record
 design is to use the table foreign key constraints to derive object relationships. This implies
 that the underlying database must support foreign key constraints.
 </p>
@@ -589,9 +589,9 @@ CREATE TABLE bar
 
 <h2 id="142012">Foreign Key Mapping</h2>
 <p class="block-content">The entity relationship between the <tt>Teams</tt> and <tt>Players</tt> table is what is known
-as an 1-M relationship. That is, one Team may contain 0 or more Players. In terms of 
-object relationships, we say that a <tt>TeamRecord</tt> object <b>has many</b> <tt>PlayerRecord</tt> objects. 
-(Notice the reversal of the reversal of the direction of relationships between tables and objects.)
+as an 1-M relationship. That is, one Team may contain 0 or more Players. In terms of
+object relationships, we say that a <tt>TeamRecord</tt> object <b>has many</b> <tt>PlayerRecord</tt> objects.
+(Notice the reversal of the direction of relationships between tables and objects.)
 <p id="710019" class="block-content">
 <h3 id="142017">Has Many Relationship</h3>
 <p id="710020" class="block-content">
@@ -603,7 +603,7 @@ class TeamRecord extends TActiveRecord
     const TABLE='Teams';
     public $name;
     public $location;
-    
+
     public $players=array();
 
     //define the $player member having has many relationship with PlayerRecord
@@ -644,7 +644,7 @@ have other relationships that corresponds to other tables (including the <tt>Pla
 </div>
 
 <p id="710023" class="block-content">The "has many" relationship is not fetched automatically when you use any of the Active Record finder methods.
-You will need to explicitly fetch the related objects as follows. In the code below, both lines 
+You will need to explicitly fetch the related objects as follows. In the code below, both lines
 are equivalent and the method names are case insensitive.
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content">
@@ -661,8 +661,8 @@ arguments as other finder methods of TActiveRecord, e.g. <tt>with_players('age =
 <div class="note"><b class="note">Note:</b>
 It is essential to understand that the related objects are fetched using additional
 queries. The first query fetches the source object, e.g. the <tt>TeamRecord</tt> in the above example code.
-A second query is used to fetch the corresponding related <tt>PlayerRecord</tt> objects. 
-The usage of the two query is similar to a single query using Left-Outer join with the 
+A second query is used to fetch the corresponding related <tt>PlayerRecord</tt> objects.
+The usage of the two query is similar to a single query using Left-Outer join with the
 exception that null results on the right table
 are not returned. The consequence of using two or more queries is that the aggregates
 and other join conditions are not feasible using Active Records. For queries outside the
@@ -673,7 +673,7 @@ scope of Active Record the <a href="?page=Database.SqlMap">SqlMap Data Mapper</a
 <p id="710025" class="block-content">The "has many" relationship in the above section defines a collection of foreign
 objects. In particular, we have that a <tt>TeamRecord</tt> has many (zero or more)
 <tt>PlayerRecord</tt> objects. We can also add a back pointer by adding a property
-in the <tt>PlayerRecord</tt> class that links back to the <tt>TeamRecord</tt> object, 
+in the <tt>PlayerRecord</tt> class that links back to the <tt>TeamRecord</tt> object,
 effectively making the association bidirectional.
 We say that the <tt>$team</tt> property in <tt>PlayerRecord</tt> class <tt>belongs to</tt> a <tt>TeamRecord</tt> object.
 The following code defines the complete <tt>PlayerRecord</tt> class with 3 relationships.
@@ -705,11 +705,11 @@ class PlayerRecord extends TActiveRecord
 </com:TTextHighlighter>
 <p id="710026" class="block-content">
 The static <tt>$RELATIONS</tt> property of <tt>PlayerRecord</tt> defines that the
-property <tt>$team</tt> <b>belongs to</b> a <tt>TeamRecord</tt>. 
+property <tt>$team</tt> <b>belongs to</b> a <tt>TeamRecord</tt>.
 The <tt>$RELATIONS</tt> array also defines two other relationships that we
-shall examine in later sections below. 
+shall examine in later sections below.
 In <tt>array(self::BELONGS_TO, 'TeamRecord')</tt>, the first element defines the
-relationship type, in this case <strong><tt>self::BELONGS_TO</tt></strong> and 
+relationship type, in this case <strong><tt>self::BELONGS_TO</tt></strong> and
 the second element is a string <tt>'TeamRecord'</tt> that corresponds to the
 class name of the <tt>TeamRecord</tt> class.
 A player object with the corresponding team object may be fetched as follows.
@@ -732,7 +732,7 @@ example demonstrates.
 <com:TTextHighlighter Language="php" CssClass="source block-content">
 $players = PlayerRecord::finder()->with_team()->with_skills()->findAll();
 </com:TTextHighlighter>
-Each <tt>with_xxx()</tt> method will execute an additional SQL query. Every 
+Each <tt>with_xxx()</tt> method will execute an additional SQL query. Every
 <tt>with_xxx()</tt> accepts arguments similar to those in the <tt>findAll()</tt> method and is only
 applied to that particular relationship query.
 </div>
@@ -765,7 +765,7 @@ the <tt>Profiles</tt> table has a foreign key constraint on the column <tt>playe
 that relates to the <tt>Players</tt> table's <tt>player_id</tt> column. Thus, the <tt>ProfileRecord</tt>
 object has a property (<tt>$player</tt>) that <b>belongs to</b> a <tt>PlayerRecord</tt> object.
 Similarly, the <tt>Players</tt> table has a foreign key constraint on the column <tt>team_name</tt> that relates to the
-<tt>Teams</tt> table's <tt>name</tt> column. 
+<tt>Teams</tt> table's <tt>name</tt> column.
 Thus, the <tt>PlayerRecord</tt> object has a property (<tt>$team</tt>) that <b>belongs to</b> a
 <tt>TeamRecord</tt> object.
 </p>
@@ -804,32 +804,32 @@ class Category extends TActiveRecord
 
 <h2 id="142013">Association Table Mapping</h2>
 <p id="710032" class="block-content">
-Objects can handle multivalued fields quite easily by using collections as field values. 
-Relational databases don't have this feature and are constrained to single-valued fields only. 
-When you're mapping a one-to-many association you can handle this using <b>has many</b> relationships, 
-essentially using a foreign key for the single-valued end of the association. 
-But a many-to-many association can't do this because there is no single-valued end to 
+Objects can handle multivalued fields quite easily by using collections as field values.
+Relational databases don't have this feature and are constrained to single-valued fields only.
+When you're mapping a one-to-many association you can handle this using <b>has many</b> relationships,
+essentially using a foreign key for the single-valued end of the association.
+But a many-to-many association can't do this because there is no single-valued end to
 hold the foreign key.
 </p>
 <p id="710033" class="block-content">
-The answer is the classic resolution that's been used by relational data people 
-for decades: create an extra table (an association table) to record the relationship. 
-The basic idea is using an association table to store the association. This table 
-has only the foreign key IDs for the two tables that are linked together, it has one 
+The answer is the classic resolution that's been used by relational data people
+for decades: create an extra table (an association table) to record the relationship.
+The basic idea is using an association table to store the association. This table
+has only the foreign key IDs for the two tables that are linked together, it has one
 row for each pair of associated objects.
 </p>
 <p id="710034" class="block-content">
-The association table has no corresponding in-memory object and its primary key is the 
+The association table has no corresponding in-memory object and its primary key is the
 compound of the two primary keys of the tables that are associated.
-In simple terms, to load data from the association table you perform two queries (in general, it may also be achieved using one query consisting of joins). 
-Consider loading the <tt>SkillRecord</tt> collection for a list <tt>PlayerRecord</tt> objects. 
-In this case, you do queries in two stages. 
-The first stage queries the <tt>Players</tt> table to find all the rows of the players you want. 
-The second stage finds the <tt>SkillRecord</tt> object for the related player ID for each row 
+In simple terms, to load data from the association table you perform two queries (in general, it may also be achieved using one query consisting of joins).
+Consider loading the <tt>SkillRecord</tt> collection for a list <tt>PlayerRecord</tt> objects.
+In this case, you do queries in two stages.
+The first stage queries the <tt>Players</tt> table to find all the rows of the players you want.
+The second stage finds the <tt>SkillRecord</tt> object for the related player ID for each row
 in the <tt>Player_Skills</tt> association table using an inner join.
 </p>
 
-<p id="710035" class="block-content">The Prado Active Record design implements the two stage approach. For the 
+<p id="710035" class="block-content">The Prado Active Record design implements the two stage approach. For the
 <tt>Players</tt>-<tt>Skills</tt> M-N (many-to-many) entity relationship, we need
 to define a <b>has many</b> relationship in the <tt>PlayerRecord</tt> class and
 in addition define a <b>has many</b> relationship in the <tt>SkillRecord</tt> class as well.
@@ -866,7 +866,7 @@ In <tt>array(self::HAS_MANY, 'PlayerRecord', 'Player_Skills')</tt>, the first el
 relationship type, in this case <strong><tt>self::HAS_MANY</tt></strong>,
 the second element is a string <tt>'PlayerRecord'</tt> that corresponds to the
 class name of the <tt>PlayerRecord</tt> class, and the third element is the name
-of the association table name. 
+of the association table name.
 </p>
 <p id="710037" class="block-content">
 A list of player objects with the corresponding collection of skill objects may be fetched as follows.
@@ -889,22 +889,22 @@ item via the <tt>related_items</tt> association table. The syntax in the followi
 example is valid for a PostgreSQL database. For other database, consult their respective documentation for
 defining the foreign key constraints.
 <com:TTextHighlighter Language="sql" CssClass="source block-content">
-CREATE TABLE items 
+CREATE TABLE items
 (
-  "item_id" SERIAL, 
+  "item_id" SERIAL,
   "name" VARCHAR(128) NOT NULL,
   PRIMARY KEY("item_id")
 );
-CREATE TABLE "related_items" 
+CREATE TABLE "related_items"
 (
-  "item_id" INTEGER NOT NULL, 
-  "related_item_id" INTEGER NOT NULL, 
-  CONSTRAINT "related_items_pkey" PRIMARY KEY("item_id", "related_item_id"), 
+  "item_id" INTEGER NOT NULL,
+  "related_item_id" INTEGER NOT NULL,
+  CONSTRAINT "related_items_pkey" PRIMARY KEY("item_id", "related_item_id"),
   CONSTRAINT "related_items_item_id_fkey" FOREIGN KEY ("item_id")
     REFERENCES "items"("item_id")
     ON DELETE CASCADE
     ON UPDATE NO ACTION
-    NOT DEFERRABLE, 
+    NOT DEFERRABLE,
   CONSTRAINT "related_items_related_item_id_fkey" FOREIGN KEY ("related_item_id")
     REFERENCES "items"("item_id")
     ON DELETE CASCADE
@@ -916,7 +916,7 @@ CREATE TABLE "related_items"
 <p id="710040" class="block-content">The association table name in third element of the relationship array may
 contain the foreign table column names. The columns defined in the association
 table must also be defined in the record class (e.g. the <tt>$related_item_id</tt> property
-corresponds to the <tt>related_item_id</tt> column in the <tt>related_items</tt> table). 
+corresponds to the <tt>related_item_id</tt> column in the <tt>related_items</tt> table).
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content">
 class Item extends TActiveRecord
@@ -926,20 +926,20 @@ class Item extends TActiveRecord
     public $details;
 
     //additional foreign item id defined in the association table
-    public $related_item_id; 
+    public $related_item_id;
     public $related_items=array();
 
     protected static $RELATIONS=array
     (
-        'related_items' => array(self::HAS_MANY, 
+        'related_items' => array(self::HAS_MANY,
             'Item', 'related_items.related_item_id'),
     );
 }
 </com:TTextHighlighter>
 <div class="tip"><b class="note">Tip:</b>
-Compound keys in the foreign table can 
+Compound keys in the foreign table can
 be specified as comma separated values between brackets. E.g.
-<tt>'related_items.(id1,id2)'</tt>. 
+<tt>'related_items.(id1,id2)'</tt>.
 </div>
 
 <h2 id="142014">Adding/Removing/Updating Related Objects</h2>
@@ -959,7 +959,7 @@ $team->save();
 </com:TTextHighlighter>
 <p id="710042" class="block-content">
 Since the <tt>TeamRecord</tt> class contains a <b>has many</b> relationship with the <tt>PlayerRecord</tt>,
-then saving a <tt>TeamRecord</tt> object will also update the corresponding foreign objects in <tt>$players</tt> array. 
+then saving a <tt>TeamRecord</tt> object will also update the corresponding foreign objects in <tt>$players</tt> array.
 That is, the objects in <tt>$players</tt> are inserted/updated in the database and the
 <tt>$team_name</tt> property of those objects will contain the foreign key value that corresponds to the <tt>$team</tt> object's primary key value.
 </p>
@@ -969,7 +969,7 @@ the object's <tt>delete()</tt> method. You may setup the database table's foreig
 when deleting a particular data in the database it will delete the referenced data as well (it may also be achieved using database
 triggers). E.g. such as having a "<tt>ON DELETE CASCADE</tt>" constraint.
 Deleting foreign objects by either setting the property value to null or removing the object from an array will <b>NOT</b>
-remove the corresponding data in the database. 
+remove the corresponding data in the database.
 </p>
 
 <p id="710044" class="block-content">To remove associations for the many-to-many relationships via an association table, an Active Record
@@ -983,7 +983,7 @@ PlayerSkillAssocation::finder()->deleteByPk(array('fk1','fk2'));
 
 <h2 id="142015">Lazy Loading Related Objects</h2>
 <p id="710045" class="block-content">Using the <tt>with_xxx()</tt> methods will load the relationship record on demand. Retrieving the
-related record using lazy loading (that is, only when those related objects are accessed) can be 
+related record using lazy loading (that is, only when those related objects are accessed) can be
 achieved by using a feature of the <tt>TComponent</tt> that provides accessor methods. In particular,
 we define a pair of getter and setter methods where the getter method will retrieve the relationship
 conditionally. The following example illustrates that the <tt>PlayerRecord</tt> can retrieve its
@@ -995,7 +995,7 @@ class PlayerRecord extends BaseFkRecord
     //... other properties and methods as before
 
     private $_skills; //change to private and default as null
-    
+
     public function getSkills()
     {
         if($this->_skills===null && $this->player_id !==null)
@@ -1018,12 +1018,12 @@ class PlayerRecord extends BaseFkRecord
     }
 }
 </com:TTextHighlighter>
-<p id="710046" class="block-content">We first need to change the <tt>$skills=array()</tt> declaration to a private property 
+<p id="710046" class="block-content">We first need to change the <tt>$skills=array()</tt> declaration to a private property
 <tt>$_skills</tt> (notice the underscore) and set it to null instead. This allows us
-to define the <tt>skills</tt> property using getter/setter methods 
+to define the <tt>skills</tt> property using getter/setter methods
 (see <a href="?page=Fundamentals.Components">Components</a> for details). The <tt>getSkills()</tt>
 getter method for the <tt>skills</tt> property will lazy load the corresponding skills foreign record
-when it is used as follows. Notice that we only do a lazy load when its <tt>$player_id</tt> is 
+when it is used as follows. Notice that we only do a lazy load when its <tt>$player_id</tt> is
 not null (that is, when the record is already fetched from the database or player id was already set).
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content">
@@ -1036,7 +1036,7 @@ $player->skills[] = new SkillRecord(); //add skill
 <p id="710047" class="block-content">The <tt>setSkills()</tt> ensures that the <tt>skills</tt> property will always be a TList.
 Using a TList allows us to set the elements of the <tt>skills</tt> property as if they were
 arrays. E.g. <tt>$player->skills[] = new SkillRecord()</tt>. If <tt>array</tt> was used, a PHP error
-will be thrown. 
+will be thrown.
 </p>
 
 <h2 id="138054">References</h2>
