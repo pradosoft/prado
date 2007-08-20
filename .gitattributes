@@ -1374,6 +1374,15 @@ demos/quickstart/protected/pages/Database/ar_objects.vsd -text
 demos/quickstart/protected/pages/Database/ar_relations.png -text
 demos/quickstart/protected/pages/Database/ar_relations.vsd -text
 demos/quickstart/protected/pages/Database/diagram.png -text
+demos/quickstart/protected/pages/Database/id/ActiveRecord.page -text
+demos/quickstart/protected/pages/Database/id/DAO.page -text
+demos/quickstart/protected/pages/Database/id/Scaffold.page -text
+demos/quickstart/protected/pages/Database/id/SqlMap.page -text
+demos/quickstart/protected/pages/Database/id/ar_objects.png -text
+demos/quickstart/protected/pages/Database/id/ar_relations.png -text
+demos/quickstart/protected/pages/Database/id/diagram.png -text
+demos/quickstart/protected/pages/Database/id/object_states.png -text
+demos/quickstart/protected/pages/Database/id/sqlmap_active_record.png -text
 demos/quickstart/protected/pages/Database/object_states.png -text
 demos/quickstart/protected/pages/Database/sqlmap_active_record.png -text
 demos/quickstart/protected/pages/Fundamentals/Applications.page -text
