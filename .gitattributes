@@ -1887,6 +1887,7 @@ framework/Data/TDbDataReader.php -text
 framework/Data/TDbTransaction.php -text
 framework/Exceptions/TErrorHandler.php -text
 framework/Exceptions/TException.php -text
+framework/Exceptions/messages-zh.txt -text
 framework/Exceptions/messages.txt -text
 framework/Exceptions/templates/error-fr.html -text
 framework/Exceptions/templates/error-zh.html -text
