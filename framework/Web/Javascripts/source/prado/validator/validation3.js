@@ -696,7 +696,7 @@ Prado.WebUI.TBaseValidator.prototype =
 				this.options.OnValidate(this, invoker);
 		}
 
-		if(this.enabled)
+		if(this.enabled && !this.control.getAttribute('disabled'))
 			this.isValid = this.evaluateIsValid();
 		else
 			this.isValid = true;
