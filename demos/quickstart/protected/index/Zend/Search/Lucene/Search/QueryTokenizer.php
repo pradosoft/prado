@@ -89,6 +89,9 @@ class Zend_Search_Lucene_Search_QueryTokenizer implements Iterator
         if (strlen($currentToken)) {
             $this->_tokens[] = new Zend_Search_Lucene_Search_QueryToken(Zend_Search_Lucene_Search_QueryToken::TOKTYPE_WORD, $currentToken);
         }
+
+        if (empty($this->_tokens))
+        	$this->_tokens[] = $inputString;
     }
 
 
