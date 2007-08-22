@@ -267,7 +267,7 @@ comparevalidator_controltocompare_invalid = TCompareValidator.ControlToCompare c
 listcontrolvalidator_invalid_control	= {0}.ControlToValidate contains an invalid TListControl ID path, "{1}" is a {2}.
 
 repeater_template_required				= TRepeater.{0} requires a template instance implementing ITemplate interface.
-repeater_itemtype_unknown				= Unknow repeater item type {0}.
+repeater_itemtype_unknown				= Unknown repeater item type {0}.
 repeateritemcollection_item_invalid		= TRepeaterItemCollection can only accept objects that are instance of TControl or its descendant class.
 
 datalist_template_required				= TDataList.{0} requires a template instance implementing ITemplate interface.
@@ -393,7 +393,7 @@ dbtablegateway_missing_pk_values		= Missing primary key values in forming IN(key
 dbtablegateway_pk_value_count_mismatch	= Composite key value count mismatch in forming IN( (key1, key2, ..), (key3, key4, ..)) for table '{0}'.
 dbtablegateway_mismatch_args_exception	= TTableGateway finder method '{0}' expects {1} parameters but found only {2} parameters instead.
 dbtablegateway_mismatch_column_name		= In dynamic __call() method '{0}', no matching columns were found, valid columns for table '{2}' are '{1}'.
-dbtablegateway_invalid_table_info		= Table must be a string or an instanceof TDbTableInfo.
+dbtablegateway_invalid_table_info		= Table must be a string or an instance of TDbTableInfo.
 
 directorycachedependency_directory_invalid = TDirectoryCacheDependency.Directory {0} does not refer to a valid directory.
 cachedependencylist_cachedependency_required = Only objects implementing ICacheDependency can be added into TCacheDependencyList.
