@@ -1,54 +1,54 @@
 prado_application_singleton_required	= Prado.Application只能被设置一次。
-prado_component_unknown					= 未知组件类型{0}。这有可能是因为{0}类文件里有如下错误：{1}
-prado_using_invalid						= {0}不是一个合法的命名空间。如果命名空间指向一个目录，请确认命名空间以“.*”结尾。
-prado_alias_redefined					= 路径别名{0}不能被重定义。
-prado_alias_invalid						= 路径别名{0}所指的文件目录{1}不存在。
-prado_aliasname_invalid					= 路径别名{0}不允许包含“.”字符。
+prado_component_unknown					= 未知组件类型“{0}”。这有可能是因为{0}类文件里有如下错误：{1}
+prado_using_invalid						= “{0}”不是一个合法的命名空间。如果命名空间指向一个目录，请确认命名空间以“.*”结尾。
+prado_alias_redefined					= 路径别名“{0}”不能被重定义。
+prado_alias_invalid						= 路径别名“{0}”所指的文件目录{1}不存在。
+prado_aliasname_invalid					= 路径别名“{0}”不允许包含“.”字符。
 
-component_property_undefined			= 组件属性{0}.{1}未定义。
-component_property_readonly				= 组件属性{0}.{1}是只读的。
-component_event_undefined				= 组件事件{0}.{1}未定义。
-component_eventhandler_invalid			= 组件事件{0}.{1}所指事件响应函数{2}非法。
-component_expression_invalid			= 组件{0}正在执行一个非法的表达式{1}：{2}
-component_statements_invalid			= 组件{0}正在执行一段非法的PHP代码{1}：{2}
+component_property_undefined			= 组件属性“{0}.{1}”未定义。
+component_property_readonly				= 组件属性“{0}.{1}”是只读的。
+component_event_undefined				= 组件事件“{0}.{1}”未定义。
+component_eventhandler_invalid			= 组件事件“{0}.{1}”所指事件响应函数“{2}”非法。
+component_expression_invalid			= 组件{0}执行了一个非法的表达式“{1}”：{2}
+component_statements_invalid			= 组件{0}执行了一段非法的PHP代码“{1}”：{2}
 
-propertyvalue_enumvalue_invalid			= 枚举类型{1}不存在枚举值{0}。
+propertyvalue_enumvalue_invalid			= 枚举类型“{1}”不存在枚举值“{0}”。
 
-list_index_invalid						= 列表地址{0}越界。
+list_index_invalid						= 列表下标“{0}”越界。
 list_item_inexistent					= 无法在列表里找到要找的项目。
 list_data_not_iterable					= 所传参数必须是一个数组或是一个实现Traversable接口的对象。
-list_readonly							= 列表{0}是只读的。
+list_readonly							= 列表“{0}”是只读的。
 
-map_addition_disallowed					= The new item cannot be added to the map.
-map_item_unremovable					= The item cannot be removed from the map.
-map_data_not_iterable					= Data must be either an array or an object implementing Traversable interface.
-map_readonly							= {0} is read-only.
+map_addition_disallowed					= Map无法添加新项目。
+map_item_unremovable					= Map无法删除项目。
+map_data_not_iterable					= Map数据必须是个数组或是实现Traversable接口的对象。
+map_readonly							= Map类型“{0}”是只读的。
 
-application_includefile_invalid			= Unable to find application configuration {0}. Make sure it is in namespace format and the file ends with ".xml".
-application_basepath_invalid			= Application base path '{0}' does not exist or is not a directory.
-application_runtimepath_invalid			= Application runtime path '{0}' does not exist or is not writable by Web server process.
-application_service_invalid				= Service '{0}' must implement IService interface.
-application_service_unknown				= Requested service '{0}' is not defined.
-application_unavailable					= Application is unavailable at this time.
-application_service_unavailable			= Service '{0}' is unavailable at this time.
-application_moduleid_duplicated			= Application module ID '{0}' is not unique.
-application_runtimepath_failed			= Unable to create runtime path '{0}'. Make sure the parent directory exists and is writable by the Web process.
+application_includefile_invalid			= 无法找到应用配置文件“{0}”。注意，配置文件应该以命名空间的形式指定；文件名必须以.xml结尾。
+application_basepath_invalid			= 应用的基本路径“{0}”不存在或不是一个目录。
+application_runtimepath_invalid			= 应用的runtime路径“{0}”不存在，或Web服务进程无法写入该目录。
+application_service_invalid				= 服务“{0}”必须实现IService接口。
+application_service_unknown				= 请求的服务“{0}”未定义。
+application_unavailable					= 应用暂时不可用。
+application_service_unavailable			= 服务“{0}”暂时不可用。
+application_moduleid_duplicated			= 应用模块的ID “{0}”不唯一。
+application_runtimepath_failed			= 无法创建runtime路径“{0}”。请确认父目录是否存在，是否可被Web服务进程写入。
 
-appconfig_aliaspath_invalid				= Application configuration <alias id="{0}"> uses an invalid file path "{1}".
-appconfig_alias_invalid					= Application configuration <alias> element must have an "id" attribute and a "path" attribute.
-appconfig_alias_redefined				= Application configuration <alias id="{0}"> cannot be redefined.
-appconfig_using_invalid					= Application configuration <using> element must have a "namespace" attribute.
-appconfig_moduleid_required				= Application configuration <module> element must have an "id" attribute.
-appconfig_moduletype_required			= Application configuration <module id="{0}"> must have a "class" attribute.
-appconfig_serviceid_required			= Application configuration <service> element must have an "id" attribute.
-appconfig_servicetype_required			= Application configuration <service id="{0}"> must have a "class" attribute.
-appconfig_parameterid_required			= Application configuration <parameter> element must have an "id" attribute.
-appconfig_includefile_required			= Application configuration <include> element must have a "file" attribute.
-appconfig_paths_invalid					= Application configuration <paths> cannot contain element <{0}>.
-appconfig_modules_invalid				= Application configuration <modules> cannot contain element <{0}>.
-appconfig_services_invalid				= Application configuration <services> cannot contain element <{0}>.
-appconfig_parameters_invalid			= Application configuration <parameters> cannot contain element <{0}>.
-appconfig_tag_invalid					= Application configuration cannot contain element <{0}>.
+appconfig_aliaspath_invalid				= 应用配置<alias id="{0}">使用了一个非法的文件目录“{1}”。
+appconfig_alias_invalid					= 应用配置<alias>元素必须指定“id”和“path”属性。
+appconfig_alias_redefined				= 应用配置<alias id="{0}">不允许重复定义。
+appconfig_using_invalid					= 应用配置<using>元素必须指定“namespace”属性。
+appconfig_moduleid_required				= 应用配置<module>元素必须指定“id”属性。
+appconfig_moduletype_required			= 应用配置<module id="{0}">元素必须指定“class”属性。
+appconfig_serviceid_required			= 应用配置<service>元素必须指定“id”属性。
+appconfig_servicetype_required			= 应用配置<service id="{0}">元素必须指定“class”属性。
+appconfig_parameterid_required			= 应用配置<parameter>元素必须指定“id”属性。
+appconfig_includefile_required			= 应用配置<include>元素必须指定“file”属性。
+appconfig_paths_invalid					= 应用配置<paths>不允许包含<{0}>元素。
+appconfig_modules_invalid				= 应用配置<modules>不允许包含<{0}>元素。
+appconfig_services_invalid				= 应用配置<services>不允许包含<{0}>元素。
+appconfig_parameters_invalid			= 应用配置<parameters>不允许包含<{0}>元素。
+appconfig_tag_invalid					= 应用配置不允许包含<{0}>元素。
 
 securitymanager_validationkey_invalid	= TSecurityManager.ValidationKey must not be empty.
 securitymanager_encryptionkey_invalid	= TSecurityManager.EncryptionKey must not be empty.
