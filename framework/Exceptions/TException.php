@@ -84,9 +84,9 @@ class TException extends Exception
 	protected function getErrorMessageFile()
 	{
 		$lang=Prado::getPreferredLanguage();
-		$msgFile=Prado::getFrameworkPath().'/Exceptions/messages-'.$lang.'.txt';
+		$msgFile=Prado::getFrameworkPath().'/Exceptions/messages/messages-'.$lang.'.txt';
 		if(!is_file($msgFile))
-			$msgFile=Prado::getFrameworkPath().'/Exceptions/messages.txt';
+			$msgFile=Prado::getFrameworkPath().'/Exceptions/messages/messages.txt';
 		return $msgFile;
 	}
 
