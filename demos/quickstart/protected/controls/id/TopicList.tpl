@@ -87,7 +87,7 @@
     <li><a href="?page=Advanced.Security">Keamanan</a></li>
     <li><a href="?page=Advanced.Assets">Asset</a></li>
     <li><a href="?page=Advanced.MasterContent">Master dan Konten</a></li>
-    <li><a href="?page=Advanced.Themes">Tema dan Lapisan</a></li>
+    <li><a href="?page=Advanced.Themes">Tema dan Skin</a></li>
     <li><a href="?page=Advanced.State">Kondisi Persisten</a></li>
     <li><a href="?page=Advanced.Logging">Pencatatan</a></li>
     <li><a href="?page=Advanced.Error">Penanganan Kesalahan dan Laporan</a></li>
@@ -100,8 +100,8 @@
 <div>Penaskahan sisi-Klien</div>
 <ul>
     <li><a href="?page=Advanced.Scripts">Pengenalan Javascript</a></li>
-    <li><a href="?page=Advanced.Scripts1">Prototipe Librari Bagian I</a></li>
-    <li><a href="?page=Advanced.Scripts2">Prototipe Librari Bagian II</a></li>
+    <li><a href="?page=Advanced.Scripts1">Librari Prototipe Bagian I</a></li>
+    <li><a href="?page=Advanced.Scripts2">Librari Prototipe Bagian II</a></li>
     <li><a href="?page=Advanced.Scripts3">Buku Lengkap Javascript</a></li>
 </ul>
 </div>
