@@ -62,7 +62,7 @@ TDataList provides a few properties to support tiling the items. The number of c
 </p>
 
 <ul id="u8" class="block-content">
-<li><tt>Table</tt> (default) - items are organized using HTML table and cells. When using this layout, one can set <tt>CellPadding</tt> and <tt>CellSpacing</tt> to adjust the cellpadding and cellpadding of the table, and <tt>Caption</tt> and  <tt>CaptionAlign</tt> to add a table caption with the specified alignment.</li>
+<li><tt>Table</tt> (default) - items are organized using HTML table and cells. When using this layout, one can set <tt>CellPadding</tt> and <tt>CellSpacing</tt> to adjust the cellpadding and cellspacing of the table, and <tt>Caption</tt> and  <tt>CaptionAlign</tt> to add a table caption with the specified alignment.</li>
 <li><tt>Flow</tt> - items are organized using HTML spans and breaks.</li>
 <li><tt>Raw</tt> - TDataList does not generate any HTML tags to do the tiling.</li>
 </ul>

@@ -66,7 +66,7 @@ TDataGrid provides several events to facilitate manipulation of its items,
 TDataGrid by default will create a list of columns based on the structure of the bound data. TDataGrid will read the first row of the data, extract the field names of the row, and construct a column for each field. Each column is of type <tt>TBoundColumn</tt>.
 </p>
 <p id="590382" class="block-content">
-The following example displays a list of computer product information using a TDataGrid. Columns are automatically generated. Pay attention to how item styles are specified and inherited. The data are populated into the datagrid using the follow code, which is common among most datagrid applications,
+The following example displays a list of computer product information using a TDataGrid. Columns are automatically generated. Pay attention to how item styles are specified and inherited. The data are populated into the datagrid using the following code, which is common among most datagrid applications,
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_590121">
 public function onLoad($param) {

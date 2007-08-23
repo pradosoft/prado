@@ -53,7 +53,7 @@ In the above, <tt>StepType</tt> refers to the type of a wizard step, which can a
 
 <h3 id="4704">A Single-Step Wizard Sample</h3>
 <p id="540324" class="block-content">
-In this sample, we use wizard to collect user's preference of color. In the first step, the user is presented with a dropdown list from which he can choose hist favorite color. In the second step, the complete step, his choice in the previous step is displayed. In real application, at this step the choice may be stored in database in the backend.
+In this sample, we use wizard to collect user's preference of color. In the first step, the user is presented with a dropdown list from which he can choose his favorite color. In the second step, the complete step, his choice in the previous step is displayed. In real application, at this step the choice may be stored in database in the backend.
 </p>
 <com:RunBar PagePath="Controls.Samples.TWizard.Sample1" />
 
