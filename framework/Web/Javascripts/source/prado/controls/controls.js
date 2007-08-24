@@ -322,16 +322,19 @@ Prado.WebUI.TTabPanel.prototype =
 		for(var i = 0; i<length; i++)
 		{
 			var item = this.views[i];
-			if(item == viewID)
+			if ($(item))
 			{
-				$(item+'_0').className=this.activeCssClass;
-				$(item).show();
-				this.hiddenField.value=i;
-			}
-			else
-			{
-				$(item+'_0').className=this.normalCssClass;
-				$(item).hide();
+				if(item == viewID)
+				{
+					$(item+'_0').className=this.activeCssClass;
+					$(item).show();
+					this.hiddenField.value=i;
+				}
+				else
+				{
+					$(item+'_0').className=this.normalCssClass;
+					$(item).hide();
+				}
 			}
 		}
 	}
