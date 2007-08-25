@@ -37,14 +37,14 @@
 </div>
 
 <div class="topic">
-<div>内部構造</div>
+<div>設定</div>
 <ul>
     <li><a href="?page=Configurations.Overview">概観</a></li>
     <li><a href="?page=Configurations.Templates1">テンプレート: パート I</a></li>
     <li><a href="?page=Configurations.Templates2">テンプレート: パート II</a></li>
     <li><a href="?page=Configurations.Templates3">テンプレート: パート III</a></li>
-    <li><a href="?page=Configurations.AppConfig">アプリケーション構造</a></li>
-    <li><a href="?page=Configurations.PageConfig">ページ構造</a></li>
+    <li><a href="?page=Configurations.AppConfig">アプリケーション設定</a></li>
+    <li><a href="?page=Configurations.PageConfig">ページ設定</a></li>
     <li><a href="?page=Configurations.UrlMapping">URL マッピング (Friendly URLs)</a></li>
 </ul>
 </div>
@@ -72,21 +72,21 @@
 <div class="topic">
 <div>データベース連携</div>
 <ul>
-    <li><a href="?page=Database.DAO">Data Access Objects</a></li>
-    <li><a href="?page=Database.ActiveRecord">Active Record</a></li>
-    <li><a href="?page=Database.Scaffold">Active Record Scaffold</a></li>
-    <li><a href="?page=Database.SqlMap">SqlMap Data Mapper</a></li>
+    <li><a href="?page=Database.DAO">データアクセスオブジェクト</a></li>
+    <li><a href="?page=Database.ActiveRecord">アクティブレコード</a></li>
+    <li><a href="?page=Database.Scaffold">アクティブレコードScaffold</a></li>
+    <li><a href="?page=Database.SqlMap">SqlMapデータマッパー</a></li>
 </ul>
 </div>
 
 <div class="topic">
 <div>上級者向けトピック</div>
 <ul>
-	<li><a href="?page=Advanced.Collections">Collections</a></li>
+	<li><a href="?page=Advanced.Collections">コレクション</a></li>
     <li><a href="?page=Advanced.Auth">認証と承認</a></li>
     <li><a href="?page=Advanced.Security">セキュリティ</a></li>
-    <li><a href="?page=Advanced.Assets">Assets</a></li>
-    <li><a href="?page=Advanced.MasterContent">Master/Content</a></li>
+    <li><a href="?page=Advanced.Assets">アセット</a></li>
+    <li><a href="?page=Advanced.MasterContent">マスター/コンテンツ</a></li>
     <li><a href="?page=Advanced.Themes">テーマとスキン</a></li>
     <li><a href="?page=Advanced.State">状態の保存</a></li>
     <li><a href="?page=Advanced.Logging">ロギング</a></li>
