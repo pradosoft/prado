@@ -2491,9 +2491,11 @@ framework/prado.php -text
 /prado-cli.bat -text
 requirements/index.php -text
 requirements/messages-bg.txt -text
+requirements/messages-id.txt -text
 requirements/messages-zh.txt -text
 requirements/messages.txt -text
 requirements/template-bg.html -text
+requirements/template-id.html -text
 requirements/template-zh.html -text
 requirements/template.html -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveBricksTest.page -text

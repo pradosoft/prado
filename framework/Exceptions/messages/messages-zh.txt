@@ -50,33 +50,33 @@ appconfig_services_invalid				= 应用配置<services>不允许包含<{0}>元素
 appconfig_parameters_invalid			= 应用配置<parameters>不允许包含<{0}>元素。
 appconfig_tag_invalid					= 应用配置不允许包含<{0}>元素。
 
-securitymanager_validationkey_invalid	= TSecurityManager.ValidationKey must not be empty.
-securitymanager_encryptionkey_invalid	= TSecurityManager.EncryptionKey must not be empty.
-securitymanager_mcryptextension_required = Mcrypt PHP extension is required in order to use TSecurityManager's encryption feature.
+securitymanager_validationkey_invalid	= TSecurityManager.ValidationKey不能为空。
+securitymanager_encryptionkey_invalid	= TSecurityManager.EncryptionKey不能为空。
+securitymanager_mcryptextension_required = TSecurityManager的加密功能需要使用Mcrypt的PHP扩展模块。
 
-uri_format_invalid						= '{0}' is not a valid URI.
+uri_format_invalid						= “{0}”不是一个合法的URI。
 
-httprequest_separator_invalid			= THttpRequest.UrlParamSeparator can only contain a single character.
-httprequest_urlmanager_inexist			= THttpRequest.UrlManager '{0}' does not point to an existing module.
-httprequest_urlmanager_invalid			= THttpRequest.UrlManager '{0}' must point to a module extending from TUrlManager.
+httprequest_separator_invalid			= THttpRequest.UrlParamSeparator只能包含一个字符。
+httprequest_urlmanager_inexist			= THttpRequest.UrlManager “{0}”所指的模块不存在。
+httprequest_urlmanager_invalid			= THttpRequest.UrlManager “{0}”所指的模块必须继承TUrlManager。
 
-httpcookiecollection_httpcookie_required = THttpCookieCollection can only accept THttpCookie objects.
+httpcookiecollection_httpcookie_required = THttpCookieCollection只能包含THttpCookie对象。
 
-httpresponse_bufferoutput_unchangeable	= THttpResponse.BufferOutput cannot be modified after THttpResponse is initialized.
-httpresponse_file_inexistent			= THttpResponse cannot send file '{0}'. The file does not exist.
+httpresponse_bufferoutput_unchangeable	= THttpResponse.BufferOutput无法被修改，因为THttpResponse已经初始化完毕。
+httpresponse_file_inexistent			= THttpResponse无法发送文件“{0}”。该文件不存在。
 
-httpsession_sessionid_unchangeable		= THttpSession.SessionID cannot be modified after the session is started.
-httpsession_sessionname_unchangeable	= THttpSession.SessionName cannot be modified after the session is started.
-httpsession_sessionname_invalid			= THttpSession.SessionName must contain alphanumeric characters only.
-httpsession_savepath_unchangeable		= THttpSession.SavePath cannot be modified after the session is started.
-httpsession_savepath_invalid			= THttpSession.SavePath '{0}' is invalid.
-httpsession_storage_unchangeable		= THttpSession.Storage cannot be modified after the session is started.
-httpsession_cookiemode_unchangeable		= THttpSession.CookieMode cannot be modified after the session is started.
-httpsession_autostart_unchangeable		= THttpSession.AutoStart cannot be modified after the session module is initialized.
-httpsession_gcprobability_unchangeable	= THttpSession.GCProbability cannot be modified after the session is started.
-httpsession_gcprobability_invalid		= THttpSession.GCProbability must be an integer between 0 and 100.
-httpsession_transid_unchangeable		= THttpSession.UseTransparentSessionID cannot be modified after the session is started.
-httpsession_maxlifetime_unchangeable	= THttpSession.Timeout cannot be modified after the session is started.
+httpsession_sessionid_unchangeable		= THttpSession.SessionID无法被修改，因为session已经启动了。
+httpsession_sessionname_unchangeable	= THttpSession.SessionName无法被修改，因为session已经启动了。
+httpsession_sessionname_invalid			= THttpSession.SessionName只能包含字母或数字字符。
+httpsession_savepath_unchangeable		= THttpSession.SavePath无法被修改，因为session已经启动了。
+httpsession_savepath_invalid			= THttpSession.SavePath所指目录“{0}”不存在。
+httpsession_storage_unchangeable		= THttpSession.Storage无法被修改，因为session已经启动了。
+httpsession_cookiemode_unchangeable		= THttpSession.CookieMode无法被修改，因为session已经启动了。
+httpsession_autostart_unchangeable		= THttpSession.AutoStart无法被修改，因为session已经启动了。
+httpsession_gcprobability_unchangeable	= THttpSession.GCProbability无法被修改，因为session已经启动了。
+httpsession_gcprobability_invalid		= THttpSession.GCProbability必须是个0到100之间的整数。
+httpsession_transid_unchangeable		= THttpSession.UseTransparentSessionID无法被修改，因为session已经启动了。
+httpsession_maxlifetime_unchangeable	= THttpSession.Timeout无法被修改，因为session已经启动了。
 
 assetmanager_basepath_invalid			= TAssetManager.BasePath '{0}' is invalid. Make sure it is in namespace form and points to a directory writable by the Web server process.
 assetmanager_basepath_unchangeable		= TAssetManager.BasePath cannot be modified after the module is initialized.

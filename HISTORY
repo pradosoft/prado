@@ -7,7 +7,6 @@ BUG: Ticket#656 - TDatePicker does not return correct value when in callback mod
 BUG: Ticket#662 - Ensure TForm to properly encode the ampersand in action URL (Qiang)
 BUG: Ticket#666 - TActiveRecord::deleteAll() method always requires a criteria or null parameter (Qiang)
 BUG: Ticket#670 - TDatePicker: Year Issue (Christophe)
-BUG: Ticket#696 - TTabPanel: JS error when one of the tabs is invisible (Qiang,Christophe)
 ENH: Ticket#577 - Added image button support for TPager (Qiang)
 ENH: Ticket#623 - TMemCache to support multiple servers (Carl)
 ENH: Ticket#667 - Added TFeedService.ContentType property (Qiang)
@@ -22,7 +21,7 @@ CHG: Validators will not validate disabled controls (Qiang)
 NEW: Ticket#676 - Added primilary Oracle support (Christophe)
 NEW: Ticket#680 - Added TCacheHttpSession (Carl, Qiang)
 NEW: Added TTabPanel (Qiang)
-NEW: Added Indonesian translation to QuickStart and error messages (Zaenal Mutaqin)
+NEW: Added Indonesian translation to QuickStart, requirements and error messages (Zaenal Mutaqin)
 
 Version 3.1.0 July 2, 2007
 ==========================
