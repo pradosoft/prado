@@ -725,6 +725,7 @@ demos/blog-tutorial/protected/pages/Day5/output2.gif -text
 demos/blog-tutorial/protected/pages/Day5/output3.gif -text
 demos/blog-tutorial/protected/pages/Overview.page -text
 demos/blog-tutorial/protected/pages/Requirements.page -text
+demos/blog-tutorial/protected/pages/fr/Overview.page -text
 demos/blog-tutorial/samples/day1/blog/index.php -text
 demos/blog-tutorial/samples/day1/blog/protected/.htaccess -text
 demos/blog-tutorial/samples/day1/blog/protected/application.xml -text
