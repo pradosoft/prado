@@ -78,45 +78,45 @@ httpsession_gcprobability_invalid		= THttpSession.GCProbability必须是个0到1
 httpsession_transid_unchangeable		= THttpSession.UseTransparentSessionID无法被修改，因为session已经启动了。
 httpsession_maxlifetime_unchangeable	= THttpSession.Timeout无法被修改，因为session已经启动了。
 
-assetmanager_basepath_invalid			= TAssetManager.BasePath '{0}' is invalid. Make sure it is in namespace form and points to a directory writable by the Web server process.
-assetmanager_basepath_unchangeable		= TAssetManager.BasePath cannot be modified after the module is initialized.
-assetmanager_baseurl_unchangeable		= TAssetManager.BaseUrl cannot be modified after the module is initialized.
-assetmanager_filepath_invalid			= TAssetManager is publishing an invalid file '{0}'.
-assetmanager_tarchecksum_invalid		= TAssetManager is publishing a tar file with invalid checksum '{0}'.
-assetmanager_tarfile_invalid			= TAssetManager is publishing an invalid tar file '{0}'.
-assetmanager_source_directory_invalid	= TAssetManager is copying an invalid directory '{0}'.
+assetmanager_basepath_invalid			= TAssetManager.BasePath所指路径“{0}”非法。请确认它以命名空间方式指定，并且它所对应的文件目录可以被Web服务器进程写入。
+assetmanager_basepath_unchangeable		= TAssetManager.BasePath无法被修改，因为该模块已经初始化完毕。
+assetmanager_baseurl_unchangeable		= TAssetManager.BaseUrl无法被修改，因为该模块已经初始化完毕。
+assetmanager_filepath_invalid			= TAssetManager试图发布一个不存在的文件“{0}”。
+assetmanager_tarchecksum_invalid		= TAssetManager试图发布一个校验值不正确的tar文件。
+assetmanager_tarfile_invalid			= TAssetManager试图发布一个不存在的tar文件“{0}”。
+assetmanager_source_directory_invalid	= TAssetManager试图复制一个不存在的文件目录“{0}”。
 
-cache_primary_duplicated				= At most one primary cache module is allowed. {0} is trying to register as another primary cache.
-sqlitecache_extension_required			= TSqliteCache requires SQLite PHP extension.
-sqlitecache_dbfile_required				= TSqliteCache.DbFile is required.
-sqlitecache_connection_failed			= TSqliteCache database connection failed. {0}.
-sqlitecache_table_creation_failed		= TSqliteCache failed to create cache database. {0}.
-sqlitecache_dbfile_unchangeable			= TSqliteCache.DbFile cannot be modified after the module is initialized.
-sqlitecache_dbfile_invalid				= TSqliteCache.DbFile is invalid. Make sure it is in a proper namespace format.
+cache_primary_duplicated				= 一个应用最多只能指定一个主缓存模块。模块“{0}”正在被注册为第二个主缓存模块。
+sqlitecache_extension_required			= TSqliteCache需要SQLite PHP扩展模块。
+sqlitecache_dbfile_required				= TSqliteCache.DbFile必须指定一个值。
+sqlitecache_connection_failed			= TSqliteCache连接数据库失败：{0}
+sqlitecache_table_creation_failed		= TSqliteCache无法创建缓存数据库：{0}
+sqlitecache_dbfile_unchangeable			= TSqliteCache.DbFile无法被修改，因为该模块已经初始化完毕。
+sqlitecache_dbfile_invalid				= TSqliteCache.DbFile所指文件不存在。请确认它以命名空间方式指定。
 
-memcache_extension_required				= TMemCache requires memcache PHP extension.
-memcache_connection_failed				= TMemCache failed to connect to memcache server {0}:{1}.
-memcache_host_unchangeable				= TMemCache.Host cannot be modified after the module is initialized.
-memcache_port_unchangeable				= TMemCache.Port cannot be modified after the module is initialized.
+memcache_extension_required				= TMemCache需要memcache PHP扩展模块。
+memcache_connection_failed				= TMemCache连接memcache服务器“{0}”失败：{1}
+memcache_host_unchangeable				= TMemCache.Host无法被修改，因为该模块已经初始化完毕。
+memcache_port_unchangeable				= TMemCache.Port无法被修改，因为该模块已经初始化完毕。
 
-apccache_extension_required				= TAPCCache requires APC PHP extension.
-apccache_add_unsupported				= TAPCCache.add() is not supported.
-apccache_replace_unsupported			= TAPCCache.replace() is not supported.
-apccache_extension_not_enabled			= TAPCCache need apc.enabled = 1 in php.ini in order to work.
-apccache_extension_not_enabled_cli		= TAPCCache need apc.enable_cli = 1 in php.ini in order to work with PHP from the command line.
+apccache_extension_required				= TAPCCache需要APC PHP扩展模块。
+apccache_add_unsupported				= TAPCCache不支持add()函数。
+apccache_replace_unsupported			= TAPCCache不支持replace()函数。
+apccache_extension_not_enabled			= TAPCCache需要在php.ini里指定apc.enabled = 1。
+apccache_extension_not_enabled_cli		= TAPCCache需要在php.ini里指定apc.enable_cli = 1。
 
-errorhandler_errortemplatepath_invalid	= TErrorHandler.ErrorTemplatePath '{0}' is invalid. Make sure it is in namespace form and points to a valid directory containing error template files.
+errorhandler_errortemplatepath_invalid	= TErrorHandler.ErrorTemplatePath所指路径“{0}”不存在。请确认它以命名空间的方式指定，并且它指向一个包含错误信息模板的文件目录。
 
-pageservice_page_unknown				= Page '{0}' Not Found
-pageservice_pageclass_unknown			= Page class '{0}' is unknown.
-pageservice_basepath_invalid			= TPageService.BasePath '{0}' is not a valid directory.
-pageservice_page_required				= Page Name Required
-pageservice_defaultpage_unchangeable	= TPageService.DefaultPage cannot be modified after the service is initialized.
-pageservice_basepath_unchangeable		= TPageService.BasePath cannot be modified after the service is initialized.
-pageservice_pageclass_invalid			= Page class {0} is invalid. It should be TPage or extend from TPage.
-pageservice_includefile_invalid			= Unable to find page service configuration {0}. Make sure it is in namespace format and the file ends with ".xml".
+pageservice_page_unknown				= 无法找到页面“{0}”。
+pageservice_pageclass_unknown			= 未知页面类“{0}”。
+pageservice_basepath_invalid			= TPageService.BasePath所指路径“{0}”不存在。
+pageservice_page_required				= 请提供页面名字。
+pageservice_defaultpage_unchangeable	= TPageService.DefaultPage无法被修改，因为页面服务已经初始化完毕。
+pageservice_basepath_unchangeable		= TPageService.BasePath无法被修改，因为页面服务已经初始化完毕。
+pageservice_pageclass_invalid			= 页面类“{0}”必须继承TPage。
+pageservice_includefile_invalid			= 无法找到页面服务配置“{0}”。请确认它以命名空间方式指定，并且文件名以“.xml”结尾。
 
-pageserviceconf_file_invalid			= Unable to open page directory configuration file '{0}'.
+pageserviceconf_file_invalid			= 无法打开页面配置文件“{0}”。
 pageserviceconf_aliaspath_invalid		= <alias id="{0}"> uses an invalid file path "{1}" in page directory configuration file '{2}'.
 pageserviceconf_alias_invalid			= <alias> element must have an "id" attribute and a "path" attribute in page directory configuration file '{0}'.
 pageserviceconf_using_invalid			= <using> element must have a "namespace" attribute in page directory configuration file '{0}'.
