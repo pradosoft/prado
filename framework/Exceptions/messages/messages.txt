@@ -430,3 +430,6 @@ urlmapping_configfile_inexistent		= TUrlMapping.ConfigFile '{0}' is not a file.
 urlmapping_configfile_invalid			= TUrlMapping.ConfigFile '{0}' must point to an XML file in namespace format.
 
 urlmappingpattern_serviceparameter_required = TUrlMappingPattern.ServiceParameter is required for pattern '{0}'.
+
+keyboard_forcontrol_required			= TKeyboard.ForControl cannot be empty.
+keyboard_forcontrol_invalid				= TKeyboard.ForControl '{0}' is invalid.
