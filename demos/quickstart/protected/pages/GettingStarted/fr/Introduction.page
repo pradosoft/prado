@@ -1,11 +1,11 @@
 <com:TContent ID="body" >
-<h1 id="101">Bienvenue sur le tutorial de démarrage rapide de PRADO</h1>
+<h1 id="101">Bienvenue sur le tutorial de dÃ©marrage rapide de PRADO</h1>
 <div id="intro" class="block-content">
 <p id="10001">
-Ce tutorial est destiné à vous aider rapidement à créer votre propre application Web basée sur PRADO version 3.X.
+Ce tutorial est destinÃ© Ã  vous aider rapidement Ã  crÃ©er votre propre application Web basÃ©e sur PRADO version 3.X.
 </p>
 <p id="10002">
-Vous pouvez vous réferrer aux ressouces suivantes si vous trouvez que ce tutorial ne correspond pas à vos besoins.
+Vous pouvez vous rÃ©ferrer aux ressouces suivantes si vous trouvez que ce tutorial ne correspond pas Ã  vos besoins.
 </p>
 </div>
 <ul class="block-content" id="intro-links">
