@@ -72,6 +72,10 @@
   </li>
 
   <li>
+  <a href="?page=Controls.Keyboard">TKeyboard</a> displays a virtual keyboard for users to enter input into a text box.
+  </li>
+
+  <li>
   <a href="?page=Controls.Label">TLabel</a> represents a label on a Web page. The label can be customized via various CSS attributes.
   </li>
 
