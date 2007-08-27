@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2007 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: $
+ * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.1.1
  */
@@ -33,7 +33,7 @@
  * also be changed by specifying {@link setKeyboardCssClass KeyboardCssClass}.
  *
  * @author Sergey Morkovkin <sergeymorkovkin@mail.ru> and Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: $
+ * @version $Id$
  * @since 3.1.1
  */
 class TKeyboard extends TWebControl

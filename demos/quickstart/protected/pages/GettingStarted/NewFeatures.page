@@ -9,6 +9,7 @@ This page summarizes the main new features that are introduced in each PRADO rel
 <h2>Version 3.1.1</h2>
 <ul>
 <li>Added a new control <a href="?page=Controls.TabPanel">TTabPanel</a> that displays tabbed views.</li>
+<li>Added a new control <a href="?page=Controls.Keyboard">TKeyboard</a> that displays a virtual keyboard for text input.</li>
 <li>Added a new module TCacheHttpSession that stores session data using a cache module to improve the session performance.</li>
 <li>Added Oracle DB support to Active Record</li>
 </ul>

@@ -457,7 +457,6 @@ Prado.WebUI.TKeyboard.prototype =
 
     type : function(key)
     {
-
         var input = this.forControl;
         var command = key.toLowerCase();
 
@@ -474,7 +473,6 @@ Prado.WebUI.TKeyboard.prototype =
         }
 
         if (command != 'exit') input.focus();
-
     },
 
     saveSelection : function()
@@ -493,7 +491,6 @@ Prado.WebUI.TKeyboard.prototype =
             if (value == 'bksp') {this.selection.moveStart("character", -1); this.selection.text = '';}
             else if (value == 'del') {this.selection.moveEnd("character", 1); this.selection.text = '';}
             else {this.selection.text = value;}
-
             this.selection.select();
         }
         else
