@@ -159,11 +159,17 @@ class TKeyboard extends TWebControl
 		$cs->registerEndScript('prado:'.$this->getClientID(), "new $className($options);");
 	}
 
+	/**
+	 * @return string the Javascript class name for this control
+	 */
 	protected function getClientClassName()
 	{
 		return 'Prado.WebUI.TKeyboard';
 	}
 
+	/**
+	 * @return array the JavaScript options for this control
+	 */
 	protected function getClientOptions()
 	{
 		if(($forControl=$this->getForControl())==='')
