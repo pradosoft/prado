@@ -19,10 +19,11 @@ Prado::using('System.Data.Common.TDbCommandBuilder');
  * @author Marcos Nobre <marconobre[at]gmail[dot]com>
  * @version $Id$
  * @package System.Data.Common
- * @since 3.1.1
+ * @since 3.1
  */
 class TOracleCommandBuilder extends TDbCommandBuilder
 {
+
 	/**
 	 * Overrides parent implementation. Only column of type text or character (and its variants)
 	 * accepts the LIKE criteria.
@@ -40,6 +41,7 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 		}
 		return parent::getSearchExpression($columns, $keywords);
 	}
+
 	/**
 	 *
 	 * @return boolean true if column can be used for LIKE searching.
@@ -52,18 +54,107 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 	}
 
 	/**
-	 * Overrides parent implementation to use PostgreSQL's ILIKE instead of LIKE (case-sensitive).
-	 * @param string column name.
-	 * @param array keywords
-	 * @return string search condition for all words in one column.
+	 * Overrides parent implementation to use Oracle way of get paginated RecordSet instead of using LIMIT sql clause.
+	 * @param string SQL query string.
+	 * @param integer maximum number of rows, -1 to ignore limit.
+	 * @param integer row offset, -1 to ignore offset.
+	 * @return string SQL with limit and offset in Oracle way.
 	 */
-	protected function getSearchCondition($column, $words)
+	public function applyLimitOffset($sql, $limit=-1, $offset=-1)
 	{
-		$conditions=array();
-		foreach($words as $word)
-			$conditions[] = $column.' LIKE '.$this->getDbConnection()->quoteString('%'.$word.'%');
-		return '('.implode(' AND ', $conditions).')';
+		if( (int)$limit <= 0 && (int)$offset <= 0 )
+			return $sql;
+
+		$pradoNUMLIN = 'pradoNUMLIN';
+		$fieldsALIAS = 'xyz';
+
+		$nfimDaSQL	 = strlen($sql);
+		$nfimDoWhere = ( strpos($sql,'ORDER') !== false ? strpos($sql,'ORDER') : $nfimDaSQL );
+		$niniDoSelect= strpos($sql,'SELECT')+6;
+		$nfimDoSelect= ( strpos($sql,'FROM') !== false ? strpos($sql,'FROM') : $nfimDaSQL );
+
+
+		$niniDoWhere= strpos($sql,'WHERE')+5;
+
+		$WhereConstraint=substr( $sql, $niniDoWhere, $nfimDoWhere-$niniDoWhere );
+
+		$WhereInSubSelect="";
+		$WhereMainSelect="";
+		if(trim($WhereConstraint)!=="")
+		{
+			$WhereInSubSelect="WHERE ".$WhereConstraint;
+			$WhereMainSelect="AND ".$WhereConstraint;
+		}
+
+		$sORDERBY	 = '';
+		if( stripos($sql,'ORDER') !== false ) {
+			$p = stripos($sql,'ORDER');
+			$sORDERBY = substr( $sql, $p+8, 10000 );
+		}
+
+		$fields		 	= substr( $sql, 0, $nfimDoSelect );
+		$fields		 	= trim( substr( $fields, $niniDoSelect ) );
+		$aliasedFields	= ', ';
+
+		if( trim($fields) == '*' ) {
+			$aliasedFields	= ", {$fieldsALIAS}.{$fields}";
+			$fields			= '';
+			$arr 			= $this->getTableInfo()->getColumns();
+			foreach( $arr as $field )
+			{
+				$fields .= strtolower( $field->getColumnName() ).', ';
+			}
+			$fields = str_replace( '"', '', $fields );
+			$fields = trim($fields);
+			$fields = substr( $fields, 0, strlen($fields)-1 );
+		} else {
+			if( strpos( $fields, ',' ) !== false )
+			{
+				$arr= $this->getTableInfo()->getColumns();
+				foreach( $arr as $field )
+				{
+					$field = strtolower( $field );
+					$existAS = str_ireplace( ' as ', '-as-', $field );
+					if( strpos( $existAS, '-as-' ) === false )
+						$aliasedFields .= "{$fieldsALIAS}.".trim($field).", ";
+					else
+						$aliasedFields .= "{$field}, ";
+				}
+				$aliasedFields = trim($aliasedFields);
+				$aliasedFields = substr( $aliasedFields, 0, strlen($aliasedFields)-1 );
+			}
+		}
+
+		/* ************************
+		$newSql = " SELECT $fields FROM ".
+				  "(					".
+				  "		SELECT rownum as {$pradoNUMLIN} {$aliasedFields} FROM ".
+				  " ($sql) {$fieldsALIAS} WHERE rownum <= {$limit} ".
+				  ") WHERE {$pradoNUMLIN} >= {$offset} ";
+
+		************************* */
+		$toReg = $offset + $limit-1;
+		$fullTableName = $this->getTableInfo()->getTableFullName();
+		if( empty($sORDERBY) )
+		{
+			$newSql = " SELECT $fields FROM " .
+					  "(					" .
+					  "		SELECT ROW_NUMBER() OVER ( ORDER BY ROWNUM ) as {$pradoNUMLIN} {$aliasedFields} " .
+					  "		FROM {$fullTableName} {$fieldsALIAS}" .
+					  ") nn					" .
+					  " WHERE nn.{$pradoNUMLIN} >= {$offset} AND nn.{$pradoNUMLIN} <= {$toReg} " ;
+		} else {
+			$newSql = " SELECT $fields FROM " .
+					  "(					" .
+					  "		SELECT ROW_NUMBER() OVER ( ORDER BY {$sORDERBY} ) as {$pradoNUMLIN} {$aliasedFields} " .
+					  "		FROM {$fullTableName} {$fieldsALIAS} $WhereInSubSelect" .
+					  ") nn					" .
+					  " WHERE nn.{$pradoNUMLIN} >= {$offset} AND nn.{$pradoNUMLIN} <= {$toReg} $WhereMainSelect" ;
+		}
+
+		return $newSql;
 	}
+
 
 }
 
