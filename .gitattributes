@@ -2418,6 +2418,8 @@ framework/Web/UI/WebControls/TBoundColumn.php -text
 framework/Web/UI/WebControls/TBulletedList.php -text
 framework/Web/UI/WebControls/TButton.php -text
 framework/Web/UI/WebControls/TButtonColumn.php -text
+framework/Web/UI/WebControls/TCaptcha.php -text
+framework/Web/UI/WebControls/TCaptchaValidator.php -text
 framework/Web/UI/WebControls/TCheckBox.php -text
 framework/Web/UI/WebControls/TCheckBoxColumn.php -text
 framework/Web/UI/WebControls/TCheckBoxList.php -text
@@ -2501,6 +2503,7 @@ framework/Web/UI/WebControls/TWebControlAdapter.php -text
 framework/Web/UI/WebControls/TWizard.php -text
 framework/Web/UI/WebControls/TWizardNavigationButtonStyle.php -text
 framework/Web/UI/WebControls/TXmlTransform.php -text
+framework/Web/UI/WebControls/assets/captcha.php -text
 framework/Web/UI/WebControls/assets/keyboard.css -text
 framework/Web/UI/WebControls/assets/tabpanel.css -text
 framework/Xml/TXmlDocument.php -text
