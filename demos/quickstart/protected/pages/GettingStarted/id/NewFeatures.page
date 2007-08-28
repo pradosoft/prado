@@ -9,6 +9,7 @@ Halaman ini meringkas fitur utama baru yang diperkenalkan dalam setiap rilis PRA
 <h2>Version 3.1.1</h2>
 <ul>
 <li>Ditambahkan kontrol baru <a href="?page=Controls.TabPanel">TTabPanel</a> yang menampilkan tampilan tab.</li>
+<li>Ditambahkan kontrol baru <a href="?page=Controls.Keyboard">TKeyboard</a> yang menampilkan keyboard virtual untuk input teks.</li>
 <li>Ditambahkan modul baru TCacheHttpSession yang menyimpan data sesi menggunakan modul cache guna meningkatkan performansi sesi.</li>
 <li>Ditambahkan dukungan Oracle DB ke Rekaman Aktif</li>
 </ul>
