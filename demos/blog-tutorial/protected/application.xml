@@ -14,6 +14,6 @@
     </service>
   </services>
   <parameters>
-	<parameter id="languages" value="('en'=>'English', 'fr'=>'Français')" />
+	<parameter id="languages" value="('en'=>'English', 'fr'=>'Français', 'id'=>'Indonesian')" />
   </parameters>
 </application>

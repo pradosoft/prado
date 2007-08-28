@@ -680,8 +680,10 @@ demos/blog-tutorial/protected/common/NoteBox.php -text
 demos/blog-tutorial/protected/common/TipBox.php -text
 demos/blog-tutorial/protected/common/TopicList.php -text
 demos/blog-tutorial/protected/common/TopicList.tpl -text
+demos/blog-tutorial/protected/common/id/TopicList.tpl -text
 demos/blog-tutorial/protected/layout/MainLayout.php -text
 demos/blog-tutorial/protected/layout/MainLayout.tpl -text
+demos/blog-tutorial/protected/layout/id/MainLayout.tpl -text
 demos/blog-tutorial/protected/pages/Day1/CreateContact.page -text
 demos/blog-tutorial/protected/pages/Day1/Setup.page -text
 demos/blog-tutorial/protected/pages/Day1/ShareLayout.page -text
@@ -726,6 +728,8 @@ demos/blog-tutorial/protected/pages/Day5/output3.gif -text
 demos/blog-tutorial/protected/pages/Overview.page -text
 demos/blog-tutorial/protected/pages/Requirements.page -text
 demos/blog-tutorial/protected/pages/fr/Overview.page -text
+demos/blog-tutorial/protected/pages/id/Overview.page -text
+demos/blog-tutorial/protected/pages/id/Requirements.page -text
 demos/blog-tutorial/samples/day1/blog/index.php -text
 demos/blog-tutorial/samples/day1/blog/protected/.htaccess -text
 demos/blog-tutorial/samples/day1/blog/protected/application.xml -text
