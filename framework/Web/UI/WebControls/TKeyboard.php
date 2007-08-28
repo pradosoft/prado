@@ -143,7 +143,7 @@ class TKeyboard extends TWebControl
 	protected function registerStyleSheet()
 	{
 		if(($url=$this->getCssUrl())==='')
-			$url=$this->publishAsset('keyboard.css',__CLASS__);
+			$url=$this->getApplication()->getAssetManager()->publishFilePath(dirname(__FILE__).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'keyboard.css');
 		$this->getPage()->getClientScript()->registerStyleSheetFile($url,$url);
 	}
 

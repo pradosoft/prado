@@ -384,7 +384,7 @@ class TTabPanel extends TWebControl implements IPostBackDataHandler
 	protected function registerStyleSheet()
 	{
 		if(($url=$this->getCssUrl())==='')
-			$url=$this->publishAsset('TTabPanel.css',__CLASS__);
+			$url=$this->getApplication()->getAssetManager()->publishFilePath(dirname(__FILE__).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'tabpanel.css');
 		$this->getPage()->getClientScript()->registerStyleSheetFile($url,$url);
 	}
 
