@@ -690,6 +690,13 @@ demos/blog-tutorial/protected/pages/Day1/ShareLayout.page -text
 demos/blog-tutorial/protected/pages/Day1/directories.gif -text
 demos/blog-tutorial/protected/pages/Day1/directories2.gif -text
 demos/blog-tutorial/protected/pages/Day1/directories3.gif -text
+demos/blog-tutorial/protected/pages/Day1/id/CreateContact.page -text
+demos/blog-tutorial/protected/pages/Day1/id/Setup.page -text
+demos/blog-tutorial/protected/pages/Day1/id/ShareLayout.page -text
+demos/blog-tutorial/protected/pages/Day1/id/directories.gif -text
+demos/blog-tutorial/protected/pages/Day1/id/directories2.gif -text
+demos/blog-tutorial/protected/pages/Day1/id/directories3.gif -text
+demos/blog-tutorial/protected/pages/Day1/id/output.gif -text
 demos/blog-tutorial/protected/pages/Day1/output.gif -text
 demos/blog-tutorial/protected/pages/Day2/ConnectDB.page -text
 demos/blog-tutorial/protected/pages/Day2/CreateAR.page -text
@@ -698,6 +705,12 @@ demos/blog-tutorial/protected/pages/Day2/ER.gif -text
 demos/blog-tutorial/protected/pages/Day2/ER.vsd -text
 demos/blog-tutorial/protected/pages/Day2/directories.gif -text
 demos/blog-tutorial/protected/pages/Day2/directories2.gif -text
+demos/blog-tutorial/protected/pages/Day2/id/ConnectDB.page -text
+demos/blog-tutorial/protected/pages/Day2/id/CreateAR.page -text
+demos/blog-tutorial/protected/pages/Day2/id/CreateDB.page -text
+demos/blog-tutorial/protected/pages/Day2/id/ER.gif -text
+demos/blog-tutorial/protected/pages/Day2/id/directories.gif -text
+demos/blog-tutorial/protected/pages/Day2/id/directories2.gif -text
 demos/blog-tutorial/protected/pages/Day3/Auth.page -text
 demos/blog-tutorial/protected/pages/Day3/CreateAdminUser.page -text
 demos/blog-tutorial/protected/pages/Day3/CreateEditUser.page -text
