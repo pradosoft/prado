@@ -7,10 +7,7 @@
 <body>
 
 <com:TForm>
-<com:TCaptcha ID="Captcha" CaseSensitive="true" MaxTokenLength="5" />
-<com:TTextBox ID="Input" />
 <com:TButton Text="Click me" OnClick="buttonClicked" />
-<com:TCaptchaValidator EnableClientScript="true" ControlToValidate="Input" CaptchaControl="Captcha" Text="invalid" />
 </com:TForm>
 
 </body>
