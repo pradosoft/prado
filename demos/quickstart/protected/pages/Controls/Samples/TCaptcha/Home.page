@@ -18,7 +18,7 @@
   <prop:ItemTemplate>
 <tr>
   <td>
-  <%# $this->Data %>
+  <com:TLiteral Text="<%# $this->Data %>" />
   </td>
   <td>
   <com:TCaptcha TokenImageTheme="<%# $this->Data %>" MaxTokenLength="5"/>
