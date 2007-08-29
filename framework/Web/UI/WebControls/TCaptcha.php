@@ -20,8 +20,8 @@ Prado::using('System.Web.UI.WebControls.TImage');
  *
  * The token (a string consisting of alphanumeric characters) displayed is automatically
  * generated and can be configured in several ways. To specify the length of characters
- * in the token, set {@link setTokenLength TokenLength}. To use case-insensitive
- * comparison and generate upper-case-only token, set {@link setCaseSensitive CaseSensitive}
+ * in the token, set {@link setMinTokenLength MinTokenLength} and {@link setMaxTokenLength MaxTokenLength}.
+ * To use case-insensitive comparison and generate upper-case-only token, set {@link setCaseSensitive CaseSensitive}
  * to false.
  *
  * Upon postback, user input can be validated by calling {@link validate()}.
@@ -41,23 +41,43 @@ class TCaptcha extends TImage
 	const MAX_TOKEN_LENGTH=40;
 
 	/**
-	 * @return integer the length of the token. Defaults to 6.
+	 * @return integer the minimum length of the token. Defaults to 5.
 	 */
-	public function getTokenLength()
+	public function getMinTokenLength()
 	{
-		return $this->getViewState('TokenLength',6);
+		return $this->getViewState('MinTokenLength',5);
 	}
 
 	/**
-	 * @param integer the length of the token. It must be between 2 and 40.
+	 * @param integer the minimum length of the token. It must be between 2 and 40.
 	 */
-	public function setTokenLength($value)
+	public function setMinTokenLength($value)
 	{
 		$length=TPropertyValue::ensureInteger($value);
 		if($length>=self::MIN_TOKEN_LENGTH && $length<=self::MAX_TOKEN_LENGTH)
-			$this->setViewState('TokenLength',$length,6);
+			$this->setViewState('MinTokenLength',$length,5);
 		else
-			throw new TConfigurationException('captcha_TokenLength_invalid',self::MIN_TOKEN_LENGTH,self::MAX_TOKEN_LENGTH);
+			throw new TConfigurationException('captcha_mintokenlength_invalid',self::MIN_TOKEN_LENGTH,self::MAX_TOKEN_LENGTH);
+	}
+
+	/**
+	 * @return integer the maximum length of the token. Defaults to 8.
+	 */
+	public function getMaxTokenLength()
+	{
+		return $this->getViewState('MaxTokenLength',8);
+	}
+
+	/**
+	 * @param integer the maximum length of the token. It must be between 2 and 40.
+	 */
+	public function setMaxTokenLength($value)
+	{
+		$length=TPropertyValue::ensureInteger($value);
+		if($length>=self::MIN_TOKEN_LENGTH && $length<=self::MAX_TOKEN_LENGTH)
+			$this->setViewState('MaxTokenLength',$length,8);
+		else
+			throw new TConfigurationException('captcha_maxtokenlength_invalid',self::MIN_TOKEN_LENGTH,self::MAX_TOKEN_LENGTH);
 	}
 
 	/**
@@ -77,7 +97,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @return string the public key used for generating the token. A random one will be generated if this is not set.
+	 * @return string the public key used for generating the token. A random one will be generated and returned if this is not set.
 	 */
 	public function getPublicKey()
 	{
@@ -102,7 +122,24 @@ class TCaptcha extends TImage
 	 */
 	public function getToken()
 	{
-		return $this->generateToken($this->getPublicKey(),$this->getPrivateKey(),$this->getTokenLength(),$this->getCaseSensitive());		return $this->generateToken();
+		return $this->generateToken($this->getPublicKey(),$this->getPrivateKey(),$this->getTokenLength(),$this->getCaseSensitive());
+	}
+
+	protected function getTokenLength()
+	{
+		if(($tokenLength=$this->getViewState('TokenLength'))===null)
+		{
+			$minLength=$this->getMinTokenLength();
+			$maxLength=$this->getMaxTokenLength();
+			if($minLength>$maxLength)
+				$tokenLength=rand($maxLength,$minLength);
+			else if($minLength<$maxLength)
+				$tokenLength=rand($minLength,$maxLength);
+			else
+				$tokenLength=$minLength;
+			$this->setViewState('TokenLength',$tokenLength);
+		}
+		return $tokenLength;
 	}
 
 	/**
@@ -136,8 +173,9 @@ class TCaptcha extends TImage
 	 */
 	public function regenerateToken()
 	{
-		$this->clearViewState('RegenerateToken');
+		$this->clearViewState('TokenLength');
 		$this->setPublicKey('');
+		$this->clearViewState('TokenGenerated');
 	}
 
 	/**
@@ -147,17 +185,18 @@ class TCaptcha extends TImage
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		if($this->getViewState('RegenerateToken',true))
+		if(!$this->getViewState('TokenGenerated',false))
 		{
-			$this->getToken(); // call to ensure the token is regenerated
+			$token=$this->getToken();
+			$tokenLength=strlen($token);
 			$url=$this->getApplication()->getAssetManager()->publishFilePath($this->getCaptchaScriptFile());
 			$url.='?pk='.urlencode($this->getPublicKey());
-			$url.='&amp;length='.$this->getTokenLength();
+			$url.='&amp;length='.$tokenLength;
 			$url.='&amp;case='.($this->getCaseSensitive()?'1':'0');
 			$this->setImageUrl($url);
 			$this->generatePrivateKeyFile();
 
-			$this->setViewState('RegenerateToken',false);
+			$this->setViewState('TokenGenerated',true);
 		}
 	}
 
