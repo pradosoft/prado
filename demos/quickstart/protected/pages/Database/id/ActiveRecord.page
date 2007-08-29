@@ -98,7 +98,7 @@ Anda dapat menetapkan nama-nama tabel yang memenuhi syarat. Contohnya untuk MySQ
 </div>
 
 <p class="block-content" id="ar_as_component">
-    Karena <tt>TActiveRecord</tt> memerluas <tt>TComponent</tt>, metode penentu dan pengambil dapat didefinisikan guna membolehkan kontrol melalui bagaimana variabel disetel dan dikembalikan. Sebagai contoh, menambah properti <tt>$level</tt> untuk menggunakan kelas UserRecord:
+    Karena <tt>TActiveRecord</tt> memperluas <tt>TComponent</tt>, metode penentu dan pengambil dapat didefinisikan guna membolehkan kontrol melalui bagaimana variabel disetel dan dikembalikan. Sebagai contoh, menambah properti <tt>$level</tt> untuk menggunakan kelas UserRecord:
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690149">
 class UserRecord extends TActiveRecord {
@@ -120,7 +120,7 @@ Nantinya kita harus dapat menggunakan pengambil/penentu guna membolehkan pengamb
 <div class="info"><b class="note">Info:</b>
 <tt>TActiveRecord</tt> juga dapat bekerja dengan view database dengan menetapkan konstan <tt>TABLE</tt> terkait ke nama view. Akan tetapi,
 obyek yang dikembalikan dari view hanya-baca, memanggil metode
-<tt>save()</tt> atau <tt>delete()</tt> akan memunculkan kekecualian. 
+<tt>save()</tt> atau <tt>delete()</tt> akan memunculkan eksepsi. 
 </div>
 
 <p id="690486" class="block-content">
@@ -428,7 +428,7 @@ try
     $user->save();
     $transaction->commit();
 }
-catch(Exception $e) // kekecualian dimunculkan jika query gagal
+catch(Exception $e) // eksepsi dimunculkan jika query gagal
 {
     $transaction->rollBack();
 }
@@ -561,7 +561,7 @@ Batasan kunci asing tabel <tt>Players</tt> dipakai untuk menentukan nama kunci t
 </p>
 
 <div class="info"><b class="note">Info:</b>
-Rekaman Aktif mendukung hubungan kunci asing multipel tabel dengan batasan bahwa setiap hubungan menunjukan tabel yang unik. Sebagai contoh, tabel <tt>Players</tt> hanya dapat memiliki sastu set hubungan kunci asing dengan tabel <tt>Teams</tt>, ia boleh mempunyai hubungan lain yang menunjuk ke tabel lainnya (termasuk tabel <tt>Players</tt> itu sendiri).
+Rekaman Aktif mendukung hubungan kunci asing multipel tabel dengan batasan bahwa setiap hubungan menunjukan tabel yang unik. Sebagai contoh, tabel <tt>Players</tt> hanya dapat memiliki satu set hubungan kunci asing dengan tabel <tt>Teams</tt>, ia boleh mempunyai hubungan lain yang menunjuk ke tabel lainnya (termasuk tabel <tt>Players</tt> itu sendiri).
 </div>
 
 <p id="710023" class="block-content">Hubungan "has many" tidak diambil secara otomatis ketika anda menggunakan salah satu metode finder Rekaman Aktif.
@@ -578,7 +578,7 @@ Metode <tt>with_xxx()</tt> (di mana <tt>xxx</tt> adalah nama properti hubungan, 
 <div class="note"><b class="note">Catatan:</b>
 Penting untuk dimengerti bahwa obyek terkait diambil menggunakan query tambahan. Query pertama mengambil obyek sumber, misalnya <tt>TeamRecord</tt> dalam contoh kode di atas.
 Query kedua dipakai untuk mengambil obyek <tt>PlayerRecord</tt> terkait. 
-Penggunaan dua query mirip dengan query tunggal menggunakan Left-Outer join dengan kekecualian bahwa hasil null pada tabel kanan tidak dikembalikan. Konsekuensi pemakaian dua tau lebih query adalah kondisi agregat dan join tidak layak menggunakan Rekaman Aktif. Untuk query di luar lingkup Rekaman Aktif, <a href="?page=Database.SqlMap">Pemeta Data SqlMap</a> diapat dupertimbangkan.
+Penggunaan dua query mirip dengan query tunggal menggunakan Left-Outer join dengan eksepsi bahwa hasil null pada tabel kanan tidak dikembalikan. Konsekuensi pemakaian dua tau lebih query adalah kondisi agregat dan join tidak layak menggunakan Rekaman Aktif. Untuk query di luar lingkup Rekaman Aktif, <a href="?page=Database.SqlMap">Pemeta Data SqlMap</a> diapat dupertimbangkan.
 </div>
 
 <h3 id="142018">Hubungan Belongs To</h3>
@@ -666,7 +666,7 @@ Kemudian, obyek <tt>PlayerRecord</tt> mempunyai properti (<tt>$team</tt>) yang a
 <h3 id="142019">Hubungan Has One</h3>
 <p id="710030" class="block-content">Hubungan entitas antara <tt>Players</tt> dan <tt>Profiles</tt> adalah satu ke satu. Yaitu, setiap obyek
 <tt>PlayerRecord</tt> <b>has one</b> obyek <tt>ProfileRecord</tt> (mungkin tidak ada atau null).
-Hubungan <b>has one</b> hampir identik ke hubungan <b>has many</b> dengan kekecualian bahwa obyek terkait hanya satu obyek (bukan koleksi obyek).
+Hubungan <b>has one</b> hampir identik ke hubungan <b>has many</b> dengan eksepsi bahwa obyek terkait hanya satu obyek (bukan koleksi obyek).
 </p>
 
 <h3 id="142020">Hubungan Leluhur Anak</h3>

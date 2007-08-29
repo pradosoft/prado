@@ -1269,6 +1269,13 @@ demos/quickstart/protected/pages/Configurations/Templates1.page -text
 demos/quickstart/protected/pages/Configurations/Templates2.page -text
 demos/quickstart/protected/pages/Configurations/Templates3.page -text
 demos/quickstart/protected/pages/Configurations/UrlMapping.page -text
+demos/quickstart/protected/pages/Configurations/id/AppConfig.page -text
+demos/quickstart/protected/pages/Configurations/id/Overview.page -text
+demos/quickstart/protected/pages/Configurations/id/PageConfig.page -text
+demos/quickstart/protected/pages/Configurations/id/Templates1.page -text
+demos/quickstart/protected/pages/Configurations/id/Templates2.page -text
+demos/quickstart/protected/pages/Configurations/id/Templates3.page -text
+demos/quickstart/protected/pages/Configurations/id/UrlMapping.page -text
 demos/quickstart/protected/pages/Construction.page -text
 demos/quickstart/protected/pages/Controls/Button.page -text
 demos/quickstart/protected/pages/Controls/Captcha.page -text
@@ -1442,6 +1449,7 @@ demos/quickstart/protected/pages/Controls/TextHighlighter.page -text
 demos/quickstart/protected/pages/Controls/Validation.page -text
 demos/quickstart/protected/pages/Controls/Wizard.page -text
 demos/quickstart/protected/pages/Controls/id/Button.page -text
+demos/quickstart/protected/pages/Controls/id/Captcha.page -text
 demos/quickstart/protected/pages/Controls/id/CheckBox.page -text
 demos/quickstart/protected/pages/Controls/id/ClientScript.page -text
 demos/quickstart/protected/pages/Controls/id/ClientScriptLoader.page -text

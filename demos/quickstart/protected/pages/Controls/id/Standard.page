@@ -8,6 +8,10 @@
   </li>
 
   <li>
+  <a href="?page=Controls.Captcha">TCaptcha</a> menampilkan CAPTCHA untuk menjaga spammers dari pendaftaran untuk akun online tertentu.
+  </li>
+
+  <li>
   <a href="?page=Controls.CheckBox">TCheckBox</a> mewakili kotak centang pada halaman Web, bisa digunakan untuk mengumpulkan dua-kondisi input pengguna.
   </li>
 
