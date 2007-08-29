@@ -1271,6 +1271,7 @@ demos/quickstart/protected/pages/Configurations/Templates3.page -text
 demos/quickstart/protected/pages/Configurations/UrlMapping.page -text
 demos/quickstart/protected/pages/Construction.page -text
 demos/quickstart/protected/pages/Controls/Button.page -text
+demos/quickstart/protected/pages/Controls/Captcha.page -text
 demos/quickstart/protected/pages/Controls/CheckBox.page -text
 demos/quickstart/protected/pages/Controls/ClientScript.page -text
 demos/quickstart/protected/pages/Controls/ClientScriptLoader.page -text
@@ -1318,6 +1319,8 @@ demos/quickstart/protected/pages/Controls/Samples/TBulletedList/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TBulletedList/bullet.gif -text
 demos/quickstart/protected/pages/Controls/Samples/TButton/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TButton/Home.php -text
+demos/quickstart/protected/pages/Controls/Samples/TCaptcha/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TCaptcha/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TCheckBox/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TCheckBox/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TCheckBoxList/Home.page -text

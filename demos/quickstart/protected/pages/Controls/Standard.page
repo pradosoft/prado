@@ -8,6 +8,10 @@
   </li>
 
   <li>
+  <a href="?page=Controls.Captcha">TCaptcha</a> displays a CAPTCHA to keep spammers from signing up for certain accounts online.
+  </li>
+
+  <li>
   <a href="?page=Controls.CheckBox">TCheckBox</a> represents a checkbox on a Web page. It can be used to collect two-state user input.
   </li>
 

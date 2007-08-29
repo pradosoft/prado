@@ -433,3 +433,13 @@ urlmappingpattern_serviceparameter_required = TUrlMappingPattern.ServiceParamete
 
 keyboard_forcontrol_required			= TKeyboard.ForControl cannot be empty.
 keyboard_forcontrol_invalid				= TKeyboard.ForControl '{0}' is invalid.
+
+captcha_tokenimagetheme_invalid			= TCaptcha.TokenImageTheme must be an integer between {0} and {1}.
+captcha_tokenfontsize_invalid			= TCaptcha.TokenFontSize must be an integer between {0} and {1}.
+captcha_mintokenlength_invalid			= TCaptcha.MinTokenLength must be an integer between {0} and {1}.
+captcha_maxtokenlength_invalid			= TCaptcha.MaxTokenLength must be an integer between {0} and {1}.
+captcha_tokenalphabet_invalid			= TCaptcha.TokenAlphabet must be a string consisting of at least 2 characters.
+captcha_privatekey_unknown				= TCaptcha.PrivateKey is unknown. Please make sure that your assets directory is writable by the Web server process.
+captcha_gd2_required					= TCaptcha requires PHP GD2 extension.
+captcha_imagettftext_required			= TCaptcha requires PHP GD2 extension with TrueType font support.
+captcha_imagepng_required				= TCaptcha requires PHP GD2 extension with PNG image format support.
