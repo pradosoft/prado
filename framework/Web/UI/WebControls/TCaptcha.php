@@ -39,7 +39,6 @@ class TCaptcha extends TImage
 {
 	const MIN_TOKEN_LENGTH=4;
 	const MAX_TOKEN_LENGTH=40;
-	const MIN_PUBLIC_KEY=6;
 
 	public function onInit($param)
 	{
@@ -121,8 +120,6 @@ class TCaptcha extends TImage
 	 */
 	public function setPublicKey($value)
 	{
-		if(strlen($value)<self::MIN_PUBLIC_KEY)
-			throw new TConfigurationException('captcha_publickey_invalid',self::MIN_PUBLIC_KEY);
 		$this->setViewState('PublicKey',$value,'');
 	}
 

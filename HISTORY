@@ -22,6 +22,7 @@ NEW: Ticket#676 - Added primilary Oracle support (Christophe)
 NEW: Ticket#680 - Added TCacheHttpSession (Carl, Qiang)
 NEW: Added TTabPanel (Qiang)
 NEW: Added TKeyboard (Qiang)
+NEW: Added TCaptcha and TCaptchaValidator (Qiang)
 NEW: Added Indonesian translation to QuickStart, requirements and error messages (Zaenal Mutaqin)
 
 Version 3.1.0 July 2, 2007
