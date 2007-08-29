@@ -39,6 +39,7 @@ class TCaptcha extends TImage
 {
 	const MIN_TOKEN_LENGTH=4;
 	const MAX_TOKEN_LENGTH=40;
+	private $_privateKey;
 
 	public function onInit($param)
 	{
@@ -103,6 +104,24 @@ class TCaptcha extends TImage
 	}
 
 	/**
+	 * @return string the characters that may appear in the token. Defaults to '234578adefhijmnrtABDEFGHJLMNQRT'.
+	 */
+	public function getTokenAlphabet()
+	{
+		return $this->getViewState('TokenAlphabet','234578adefhijmnrtABDEFGHJLMNQRT');
+	}
+
+	/**
+	 * @param string the characters that may appear in the token. At least 2 characters must be specified.
+	 */
+	public function setTokenAlphabet($value)
+	{
+		if(strlen($value)<2)
+			throw new TConfigurationException('captcha_tokenalphabet_invalid');
+		$this->setViewState('TokenAlphabet',$value,'234578adefhijmnrtABDEFGHJLMNQRT');
+	}
+
+	/**
 	 * @return string the public key used for generating the token. A random one will be generated and returned if this is not set.
 	 */
 	public function getPublicKey()
@@ -128,9 +147,12 @@ class TCaptcha extends TImage
 	 */
 	public function getToken()
 	{
-		return $this->generateToken($this->getPublicKey(),$this->getPrivateKey(),$this->getTokenLength(),$this->getCaseSensitive());
+		return $this->generateToken($this->getPublicKey(),$this->getPrivateKey(),$this->getTokenAlphabet(),$this->getTokenLength(),$this->getCaseSensitive());
 	}
 
+	/**
+	 * @return integer the length of the token to be generated.
+	 */
 	protected function getTokenLength()
 	{
 		if(($tokenLength=$this->getViewState('TokenLength'))===null)
@@ -153,13 +175,17 @@ class TCaptcha extends TImage
 	 */
 	public function getPrivateKey()
 	{
-		$fileName=$this->generatePrivateKeyFile();
-		$content=file_get_contents($fileName);
-		$matches=array();
-		if(preg_match("/privateKey='(.*?)'/ms",$content,$matches)>0)
-			return $matches[1];
-		else
-			throw new TConfigurationException('captcha_private_unknown');
+		if($this->_privateKey===null)
+		{
+			$fileName=$this->generatePrivateKeyFile();
+			$content=file_get_contents($fileName);
+			$matches=array();
+			if(preg_match("/privateKey='(.*?)'/ms",$content,$matches)>0)
+				$this->_privateKey=$matches[1];
+			else
+				throw new TConfigurationException('captcha_privatekey_unknown');
+		}
+		return $this->_privateKey;
 	}
 
 	/**
@@ -193,19 +219,30 @@ class TCaptcha extends TImage
 		parent::onPreRender($param);
 		if(!$this->getViewState('TokenGenerated',false))
 		{
-			$token=$this->getToken();
-			$tokenLength=strlen($token);
 			$manager=$this->getApplication()->getAssetManager();
 			$manager->publishFilePath($this->getFontFile());
 			$url=$manager->publishFilePath($this->getCaptchaScriptFile());
-			$url.='?pk='.urlencode($this->getPublicKey());
-			$url.='&amp;length='.$tokenLength;
-			$url.='&amp;case='.($this->getCaseSensitive()?'1':'0');
+			$url.='?options='.urlencode($this->getTokenImageOptions());
 			$this->setImageUrl($url);
-			$this->generatePrivateKeyFile();
 
 			$this->setViewState('TokenGenerated',true);
 		}
+	}
+
+	/**
+	 * @return string the options to be passed to the token image generator
+	 */
+	protected function getTokenImageOptions()
+	{
+		$privateKey=$this->getPrivateKey();  // call this method to ensure private key is generated
+		$token=$this->getToken();
+		$options=array();
+		$options['publicKey']=$this->getPublicKey();
+		$options['tokenLength']=strlen($token);
+		$options['caseSensitive']=$this->getCaseSensitive();
+		$options['alphabet']=$this->getTokenAlphabet();
+		$str=serialize($options);
+		return base64_encode(md5($privateKey.$str).$str);
 	}
 
 	/**
@@ -258,9 +295,9 @@ class TCaptcha extends TImage
 	 * @param boolean whether the token is case sensitive
 	 * @return string the token generated.
 	 */
-	protected function generateToken($publicKey,$privateKey,$tokenLength,$caseSensitive)
+	protected function generateToken($publicKey,$privateKey,$alphabet,$tokenLength,$caseSensitive)
 	{
-		$token=substr($this->hash2string(md5($publicKey.$privateKey)).$this->hash2string(md5($privateKey.$publicKey)),0,$tokenLength);
+		$token=substr($this->hash2string(md5($publicKey.$privateKey),$alphabet).$this->hash2string(md5($privateKey.$publicKey),$alphabet),0,$tokenLength);
 		return $caseSensitive?$token:strtoupper($token);
 	}
 
@@ -289,6 +326,9 @@ class TCaptcha extends TImage
 		return $result;
 	}
 
+	/**
+	 * Checks the requirements needed for generating CAPTCHA images.
+	 */
 	protected function checkRequirements()
 	{
 		if(!extension_loaded('gd'))

@@ -1,21 +1,42 @@
 <?php
+/**
+ * CAPTCHA generator script.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005-2007 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Id: $
+ * @package System.Web.UI.WebControls.assets
+ */
 
-if(isset($_GET['pk']) && strlen($_GET['pk'])>=6 && isset($_GET['length']) && (int)$_GET['length']>=4 && isset($_GET['case']))
+require_once(dirname(__FILE__).'/captcha_key.php');
+
+$token='error';
+if(isset($_GET['options']))
 {
-	require_once(dirname(__FILE__).'/captcha_key.php');
-	$publicKey=$_GET['pk'];
-	$tokenLength=(int)$_GET['length'];
-	$caseSensitive=!empty($_GET['case']);
-	$token=generateToken($publicKey,$privateKey,$tokenLength,$caseSensitive);
+	$str=base64_decode($_GET['options']);
+	if(strlen($str)>32)
+	{
+		$hash=substr($str,0,32);
+		$str=substr($str,32);
+		if(md5($privateKey.$str)===$hash)
+		{
+			$options=unserialize($str);
+			$publicKey=$options['publicKey'];
+			$tokenLength=$options['tokenLength'];
+			$caseSensitive=$options['caseSensitive'];
+			$alphabet=$options['alphabet'];
+			$token=generateToken($publicKey,$privateKey,$alphabet,$tokenLength,$caseSensitive);
+		}
+	}
 }
-else
-	$token='error';
 
 displayToken($token);
 
-function generateToken($publicKey,$privateKey,$tokenLength,$caseSensitive)
+function generateToken($publicKey,$privateKey,$alphabet,$tokenLength,$caseSensitive)
 {
-	$token=substr(hash2string(md5($publicKey.$privateKey)).hash2string(md5($privateKey.$publicKey)),0,$tokenLength);
+	$token=substr(hash2string(md5($publicKey.$privateKey),$alphabet).hash2string(md5($privateKey.$publicKey),$alphabet),0,$tokenLength);
 	return $caseSensitive?$token:strtoupper($token);
 }
 
@@ -76,6 +97,7 @@ function displayToken($token)
         imagecolordeallocate($image, $col);
     }
     imagefilter($image,IMG_FILTER_GAUSSIAN_BLUR);
+
 	imagepng($image);
 	imagedestroy($image);
 }
