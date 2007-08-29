@@ -37,8 +37,15 @@ Prado::using('System.Web.UI.WebControls.TImage');
  */
 class TCaptcha extends TImage
 {
-	const MIN_TOKEN_LENGTH=2;
+	const MIN_TOKEN_LENGTH=4;
 	const MAX_TOKEN_LENGTH=40;
+	const MIN_PUBLIC_KEY=6;
+
+	public function onInit($param)
+	{
+		parent::onInit($param);
+		$this->checkRequirements();
+	}
 
 	/**
 	 * @return integer the minimum length of the token. Defaults to 5.
@@ -114,6 +121,8 @@ class TCaptcha extends TImage
 	 */
 	public function setPublicKey($value)
 	{
+		if(strlen($value)<self::MIN_PUBLIC_KEY)
+			throw new TConfigurationException('captcha_publickey_invalid',self::MIN_PUBLIC_KEY);
 		$this->setViewState('PublicKey',$value,'');
 	}
 
@@ -189,7 +198,9 @@ class TCaptcha extends TImage
 		{
 			$token=$this->getToken();
 			$tokenLength=strlen($token);
-			$url=$this->getApplication()->getAssetManager()->publishFilePath($this->getCaptchaScriptFile());
+			$manager=$this->getApplication()->getAssetManager();
+			$manager->publishFilePath($this->getFontFile());
+			$url=$manager->publishFilePath($this->getCaptchaScriptFile());
 			$url.='?pk='.urlencode($this->getPublicKey());
 			$url.='&amp;length='.$tokenLength;
 			$url.='&amp;case='.($this->getCaseSensitive()?'1':'0');
@@ -206,6 +217,11 @@ class TCaptcha extends TImage
 	protected function getCaptchaScriptFile()
 	{
 		return dirname(__FILE__).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'captcha.php';
+	}
+
+	protected function getFontFile()
+	{
+		return dirname(__FILE__).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'verase.ttf';
 	}
 
 	/**
@@ -254,13 +270,13 @@ class TCaptcha extends TImage
 	/**
 	 * Converts a hash string into a string with characters consisting of alphanumeric characters.
 	 * @param string the hexadecimal representation of the hash string
-	 * @param string the alphabet used to represent the converted string. If empty, it means 0-9, a-z and A-Z.
+	 * @param string the alphabet used to represent the converted string. If empty, it means '234578adefhijmnrtwyABDEFGHIJLMNQRTWY', which excludes those confusing characters.
 	 * @return string the converted string
 	 */
 	protected function hash2string($hex,$alphabet='')
 	{
 		if(strlen($alphabet)<2)
-			$alphabet='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+			$alphabet='234578adefhijmnrtABDEFGHJLMNQRT';
 		$hexLength=strlen($hex);
 		$base=strlen($alphabet);
 		$result='';
@@ -274,6 +290,16 @@ class TCaptcha extends TImage
 			}
 		}
 		return $result;
+	}
+
+	protected function checkRequirements()
+	{
+		if(!extension_loaded('gd'))
+			throw new TConfigurationException('captcha_gd2_required');
+		if(!function_exists('imagettftext'))
+			throw new TConfigurationException('captcha_imagettftext_required');
+		if(!function_exists('imagepng'))
+			throw new TConfigurationException('captcha_imagepng_required');
 	}
 }
 

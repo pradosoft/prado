@@ -2506,6 +2506,7 @@ framework/Web/UI/WebControls/TXmlTransform.php -text
 framework/Web/UI/WebControls/assets/captcha.php -text
 framework/Web/UI/WebControls/assets/keyboard.css -text
 framework/Web/UI/WebControls/assets/tabpanel.css -text
+framework/Web/UI/WebControls/assets/verase.ttf -text
 framework/Xml/TXmlDocument.php -text
 framework/interfaces.php -text
 framework/powered.gif -text
