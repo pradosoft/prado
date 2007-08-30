@@ -1469,6 +1469,7 @@ demos/quickstart/protected/pages/Controls/id/ImageButton.page -text
 demos/quickstart/protected/pages/Controls/id/ImageMap.page -text
 demos/quickstart/protected/pages/Controls/id/InlineFrame.page -text
 demos/quickstart/protected/pages/Controls/id/JavascriptLogger.page -text
+demos/quickstart/protected/pages/Controls/id/Keyboard.page -text
 demos/quickstart/protected/pages/Controls/id/Label.page -text
 demos/quickstart/protected/pages/Controls/id/LinkButton.page -text
 demos/quickstart/protected/pages/Controls/id/List.page -text
