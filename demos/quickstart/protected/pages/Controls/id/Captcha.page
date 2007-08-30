@@ -16,6 +16,10 @@ Token yang dibuat oleh <tt>TCaptcha</tt> dapat dikonfigurasi dalam beberapa cara
 </p>
 
 <p>
+Validasi token terkait dengan dua properti: <tt>TestLimit</tt> (standarnya 5 kali) dan <tt>TokenExpiry</tt> (standarnya 600 detik). Pembentuk menetapkan berapa kali token bisa diuji pada sisi-server, dan yang terakhir mengatakan kapan token yang dibuat akan berakhir. Jika validasi gagal dalam salah satu dari dua skenario, token baru akan secara otomatis dibuat.
+</p>
+
+<p>
 Untuk menetapkan tampilan dari gambar token yang dibuat, setel <tt>TokenImageTheme</tt> ke integer antara 0 dan 31. Ada bisa mencoba contoh berikut untuk melihat bagaimana nilai ini mempengaruhi gambar token yang dihasilkan. Ukuran gambar token ditentukan oleh <tt>TokenFontSize</tt>. Dalam keadaan tertentu, panjang gambar adalah proporsional bagi ukuran font. Anda juga bisa menyetel <tt>Width</tt> untuk mengubah gambar yang dihasilkan ke ukuran yang anda inginkan, gambar yang diskala mungkin tidak terlihat baik.
 </p>
 
