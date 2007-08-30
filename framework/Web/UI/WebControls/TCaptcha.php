@@ -24,12 +24,18 @@ Prado::using('System.Web.UI.WebControls.TImage');
  * generated and can be configured in several ways. To specify the length of characters
  * in the token, set {@link setMinTokenLength MinTokenLength} and {@link setMaxTokenLength MaxTokenLength}.
  * To use case-insensitive comparison and generate upper-case-only token, set {@link setCaseSensitive CaseSensitive}
- * to false. More advanced users can try to set {@link setTokenAlphabet TokenAlphabet}, which
+ * to false. Advanced users can try to set {@link setTokenAlphabet TokenAlphabet}, which
  * specifies what characters can appear in tokens.
+ *
+ * The validation of the token is related with two properties: {@link setTestLimit TestLimit}
+ * and {@link setTokenExpiry TokenExpiry}. The former specifies how many times a token can
+ * be tested with on the server side, and the latter says when a generated token will expire.
  *
  * To specify the appearance of the generated token image, set {@link setTokenImageTheme TokenImageTheme}
  * to be an integer between 0 and 31. And to adjust the generated image size, set {@link setTokenFontSize TokenFontSize}
  * (you may also set {@link TWebControl::setWidth Width}, but the scaled image may not look good.)
+ * By setting {@link setChangingTokenBackground ChangingTokenBackground} to true, the image background
+ * of the token will be variating even though the token is the same during postbacks.
  *
  * Upon postback, user input can be validated by calling {@link validate()}.
  * The {@link TCaptchaValidator} control can also be used to do validation, which provides
@@ -53,9 +59,10 @@ Prado::using('System.Web.UI.WebControls.TImage');
  */
 class TCaptcha extends TImage
 {
-	const MIN_TOKEN_LENGTH=4;
+	const MIN_TOKEN_LENGTH=2;
 	const MAX_TOKEN_LENGTH=40;
 	private $_privateKey;
+	private $_validated=false;
 
 	/**
 	 * Checks the requirements needed for using TCaptcha.
@@ -119,11 +126,11 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @return integer the minimum length of the token. Defaults to 5.
+	 * @return integer the minimum length of the token. Defaults to 4.
 	 */
 	public function getMinTokenLength()
 	{
-		return $this->getViewState('MinTokenLength',5);
+		return $this->getViewState('MinTokenLength',4);
 	}
 
 	/**
@@ -133,17 +140,17 @@ class TCaptcha extends TImage
 	{
 		$length=TPropertyValue::ensureInteger($value);
 		if($length>=self::MIN_TOKEN_LENGTH && $length<=self::MAX_TOKEN_LENGTH)
-			$this->setViewState('MinTokenLength',$length,5);
+			$this->setViewState('MinTokenLength',$length,4);
 		else
 			throw new TConfigurationException('captcha_mintokenlength_invalid',self::MIN_TOKEN_LENGTH,self::MAX_TOKEN_LENGTH);
 	}
 
 	/**
-	 * @return integer the maximum length of the token. Defaults to 8.
+	 * @return integer the maximum length of the token. Defaults to 6.
 	 */
 	public function getMaxTokenLength()
 	{
-		return $this->getViewState('MaxTokenLength',8);
+		return $this->getViewState('MaxTokenLength',6);
 	}
 
 	/**
@@ -153,7 +160,7 @@ class TCaptcha extends TImage
 	{
 		$length=TPropertyValue::ensureInteger($value);
 		if($length>=self::MIN_TOKEN_LENGTH && $length<=self::MAX_TOKEN_LENGTH)
-			$this->setViewState('MaxTokenLength',$length,8);
+			$this->setViewState('MaxTokenLength',$length,6);
 		else
 			throw new TConfigurationException('captcha_maxtokenlength_invalid',self::MIN_TOKEN_LENGTH,self::MAX_TOKEN_LENGTH);
 	}
@@ -190,6 +197,65 @@ class TCaptcha extends TImage
 		if(strlen($value)<2)
 			throw new TConfigurationException('captcha_tokenalphabet_invalid');
 		$this->setViewState('TokenAlphabet',$value,'234578adefhijmnrtABDEFGHJLMNRT');
+	}
+
+	/**
+	 * @return integer the number of seconds that a generated token will remain valid. Defaults to 600 seconds (10 minutes).
+	 */
+	public function getTokenExpiry()
+	{
+		return $this->getViewState('TokenExpiry',600);
+	}
+
+	/**
+	 * @param integer the number of seconds that a generated token will remain valid. A value smaller than 1 means the token will not expire.
+	 */
+	public function setTokenExpiry($value)
+	{
+		$this->setViewState('TokenExpiry',TPropertyValue::ensureInteger($value),600);
+	}
+
+	/**
+	 * @return boolean whether the background of the token image should be variated during postbacks. Defaults to false.
+	 */
+	public function getChangingTokenBackground()
+	{
+		return $this->getViewState('ChangingTokenBackground',false);
+	}
+
+	/**
+	 * @param boolean whether the background of the token image should be variated during postbacks.
+	 */
+	public function setChangingTokenBackground($value)
+	{
+		$this->setViewState('ChangingTokenBackground',TPropertyValue::ensureBoolean($value),false);
+	}
+
+	/**
+	 * @return integer how many times a generated token can be tested. Defaults to 5.
+	 */
+	public function getTestLimit()
+	{
+		return $this->getViewState('TestLimit',5);
+	}
+
+	/**
+	 * @param integer how many times a generated token can be tested. For unlimited tests, set it to 0.
+	 */
+	public function setTestLimit($value)
+	{
+		$this->setViewState('TestLimit',TPropertyValue::ensureInteger($value),5);
+	}
+
+	/**
+	 * @return boolean whether the currently generated token has expired.
+	 */
+	public function getIsTokenExpired()
+	{
+		if(($expiry=$this->getTokenExpiry())>0 && ($start=$this->getViewState('TokenGenerated',0))>0)
+			return $expiry+$start<time();
+		else
+			return false;
 	}
 
 	/**
@@ -266,7 +332,18 @@ class TCaptcha extends TImage
 	 */
 	public function validate($input)
 	{
-		return $this->getToken()===($this->getCaseSensitive()?$input:strtoupper($input));
+		$number=$this->getViewState('TestNumber',0);
+		if(!$this->_validated)
+		{
+			$this->setViewState('TestNumber',++$number);
+			$this->_validated=true;
+		}
+		if($this->getIsTokenExpired() || (($limit=$this->getTestLimit())>0 && $number>$limit))
+		{
+			$this->regenerateToken();
+			return false;
+		}
+		return ($this->getToken()===($this->getCaseSensitive()?$input:strtoupper($input)));
 	}
 
 	/**
@@ -279,6 +356,8 @@ class TCaptcha extends TImage
 		$this->clearViewState('TokenLength');
 		$this->setPublicKey('');
 		$this->clearViewState('TokenGenerated');
+		$this->clearViewState('RandomSeed');
+		$this->clearViewState('TestNumber',0);
 	}
 
 	/**
@@ -288,7 +367,7 @@ class TCaptcha extends TImage
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		if(!$this->getViewState('TokenGenerated',false))
+		if(!$this->getViewState('TokenGenerated',0))
 		{
 			$manager=$this->getApplication()->getAssetManager();
 			$manager->publishFilePath($this->getFontFile());
@@ -296,7 +375,7 @@ class TCaptcha extends TImage
 			$url.='?options='.urlencode($this->getTokenImageOptions());
 			$this->setImageUrl($url);
 
-			$this->setViewState('TokenGenerated',true);
+			$this->setViewState('TokenGenerated',time());
 		}
 	}
 
@@ -314,6 +393,12 @@ class TCaptcha extends TImage
 		$options['alphabet']=$this->getTokenAlphabet();
 		$options['fontSize']=$this->getTokenFontSize();
 		$options['theme']=$this->getTokenImageTheme();
+		if(($randomSeed=$this->getViewState('RandomSeed',0))===0)
+		{
+			$randomSeed=(int)(microtime()*1000000);
+			$this->setViewState('RandomSeed',$randomSeed);
+		}
+		$options['randomSeed']=$this->getChangingTokenBackground()?0:$randomSeed;
 		$str=serialize($options);
 		return base64_encode(md5($privateKey.$str).$str);
 	}

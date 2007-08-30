@@ -37,6 +37,10 @@ if(isset($_GET['options']))
 			$alphabet=$options['alphabet'];
 			$fontSize=$options['fontSize'];
 			$theme=$options['theme'];
+			if(($randomSeed=$options['randomSeed'])>0)
+				srand($randomSeed);
+			else
+				srand((int)(microtime()*1000000));
 			$token=generateToken($publicKey,$privateKey,$alphabet,$tokenLength,$caseSensitive);
 		}
 	}

@@ -102,15 +102,22 @@ class TCaptchaValidator extends TBaseValidator
 		$control=$this->findCaptchaControl();
 		if($control->getCaseSensitive())
 		{
-			$options['TokenHash']=crc32($control->getToken());
+			$options['TokenHash']=$this->generateTokenHash($control->getToken());
 			$options['CaseSensitive']=true;
 		}
 		else
 		{
-			$options['TokenHash']=crc32(strtoupper($control->getToken()));
+			$options['TokenHash']=$this->generateTokenHash(strtoupper($control->getToken()));
 			$options['CaseSensitive']=false;
 		}
 		return $options;
+	}
+
+	private function generateTokenHash($token)
+	{
+		for($h=0,$i=strlen($token)-1;$i>=0;--$i)
+			$h+=ord($token[$i]);
+		return $h;
 	}
 }
 

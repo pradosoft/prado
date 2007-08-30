@@ -2,11 +2,11 @@
 <h1>TCaptcha Samples</h1>
 
 <h2>Validating CAPTCHA</h2>
-<com:TCaptcha ID="Captcha" TokenImageTheme="5"/>
+<com:TCaptcha ID="Captcha" TokenImageTheme="5" />
 <com:TTextBox ID="Input" />
 <com:TButton Text="Regenerate" OnClick="regenerateToken" CausesValidation="false" />
 <com:TButton Id="SubmitButton" Text="Submit" OnClick="buttonClicked" />
-<com:TCaptchaValidator CaptchaControl="Captcha" ControlToValidate="Input" Text="error" />
+<com:TCaptchaValidator CaptchaControl="Captcha" ControlToValidate="Input" Text="You are challenged!" />
 
 <h2>Different Themes of TCaptcha</h2>
 
