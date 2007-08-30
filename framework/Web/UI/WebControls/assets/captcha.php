@@ -15,6 +15,7 @@ define('THEME_NOISY_BACKGROUND',0x0002);
 define('THEME_HAS_GRID',0x0004);
 define('THEME_HAS_SCRIBBLE',0x0008);
 define('THEME_MORPH_BACKGROUND',0x0010);
+define('THEME_SHADOWED_TEXT',0x0020);
 
 require_once(dirname(__FILE__).'/captcha_key.php');
 
@@ -102,10 +103,17 @@ function displayToken($token,$fontSize,$theme)
 	if(function_exists('imagefilter'))
     	imagefilter($image,IMG_FILTER_GAUSSIAN_BLUR);
 
+	$hasShadow=($theme&THEME_SHADOWED_TEXT);
     for($i=0;$i<$length;$i++)
 	{
         $color=imagecolorallocate($image,rand(150,220),rand(150,220),rand(150,220));
-        imagettftext($image,rand($fontWidth-10,$fontWidth),rand(-30, 30),$padding+$i*$fontWidth,rand($fontHeight-15,$fontHeight-10),$color,$font,$token[$i]);
+        $size=rand($fontWidth-10,$fontWidth);
+        $angle=rand(-30,30);
+        $x=$padding+$i*$fontWidth;
+        $y=rand($fontHeight-15,$fontHeight-10);
+        imagettftext($image,$size,$angle,$x,$y,$color,$font,$token[$i]);
+        if($hasShadow)
+        	imagettftext($image,$size,$angle,$x+2,$y+2,$color,$font,$token[$i]);
         imagecolordeallocate($image,$color);
     }
 

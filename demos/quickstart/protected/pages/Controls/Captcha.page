@@ -20,7 +20,7 @@ The validation of the token is related with two properties: <tt>TestLimit</tt> (
 </p>
 
 <p>
-To specify the appearance of the generated token image, set <tt>TokenImageTheme</tt> to be an integer between 0 and 31. You may try the following example to see how this value affects the generated token image. The size of the generated token image is determined by <tt>TokenFontSize</tt>. In particular, the image width is proportional to the font size. You may also set <tt>Width</tt> to scale the generated image to your desired size, but the scaled image may not look good. By setting <tt>ChangingTokenBackground</tt> to true, the image background of the token will be variating even though the token is the same during postbacks.
+To specify the appearance of the generated token image, set <tt>TokenImageTheme</tt> to be an integer between 0 and 63. You may try the following example to see how this value affects the generated token image. The size of the generated token image is determined by <tt>TokenFontSize</tt>. In particular, the image width is proportional to the font size. You may also set <tt>Width</tt> to scale the generated image to your desired size, but the scaled image may not look good. By setting <tt>ChangingTokenBackground</tt> to true, the image background of the token will be variating even though the token is the same during postbacks.
 </p>
 
 <p>

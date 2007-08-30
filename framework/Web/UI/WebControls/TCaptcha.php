@@ -32,7 +32,7 @@ Prado::using('System.Web.UI.WebControls.TImage');
  * be tested with on the server side, and the latter says when a generated token will expire.
  *
  * To specify the appearance of the generated token image, set {@link setTokenImageTheme TokenImageTheme}
- * to be an integer between 0 and 31. And to adjust the generated image size, set {@link setTokenFontSize TokenFontSize}
+ * to be an integer between 0 and 63. And to adjust the generated image size, set {@link setTokenFontSize TokenFontSize}
  * (you may also set {@link TWebControl::setWidth Width}, but the scaled image may not look good.)
  * By setting {@link setChangingTokenBackground ChangingTokenBackground} to true, the image background
  * of the token will be variating even though the token is the same during postbacks.
@@ -91,15 +91,16 @@ class TCaptcha extends TImage
 	 * Bit 2: whether we should add a grid to  the image (1) or not (0).
 	 * Bit 3: whether we should add some scribbles to the image (1) or not (0).
 	 * Bit 4: whether the image background should be morphed (1) or not (0).
-	 * @param integer the theme of the token image. It must be an integer between 0 and 31.
+	 * Bit 5: whether the token text should cast a shadow (1) or not (0).
+	 * @param integer the theme of the token image. It must be an integer between 0 and 63.
 	 */
 	public function setTokenImageTheme($value)
 	{
 		$value=TPropertyValue::ensureInteger($value);
-		if($value>=0 && $value<=31)
+		if($value>=0 && $value<=63)
 			$this->setViewState('TokenImageTheme',$value,0);
 		else
-			throw new TConfigurationException('captcha_tokenimagetheme_invalid',0,31);
+			throw new TConfigurationException('captcha_tokenimagetheme_invalid',0,63);
 	}
 
 	/**

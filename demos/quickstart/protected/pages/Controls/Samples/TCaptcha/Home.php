@@ -6,7 +6,7 @@ class Home extends TPage
 	{
 		if(!$this->IsPostBack)
 		{
-			$this->CaptchaList->DataSource=range(0,31);
+			$this->CaptchaList->DataSource=range(0,63);
 			$this->CaptchaList->dataBind();
 		}
 	}
