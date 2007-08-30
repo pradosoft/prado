@@ -50,6 +50,26 @@
         <li>Fetch relationships (related foreign objects) such as "has many", "has one", "belongs to" and "has many" via association table.</li>
         <li>Lazy loading of relationships.</li>
     </ul>
+<h2>Design Implications</h2>
+<p>
+Prado's implementation of Active Record does not maintain referential identity. Each object obtained using 
+Active Record is a copy of the data in the database. For example, If you ask for 
+a particular customer and get back a <tt>Customer</tt> object, the next time you ask for 
+that customer you get back another instance of a <tt>Customer</tt> object. This implies that a strict
+comparison (i.e., using <tt>===</tt>) will return false, while loose comparison (i.e., using <tt>==</tt>) will
+return true if the object values are equal by loose comparison. 
+<p>
+<p>
+This is design implication related to the following question.
+<i>"Do you think of the customer as an object, of which there's only one, 
+or do you think of the objects you operate on as <b>copies</b> of the database?"</i>
+Other O/R mappings will imply that there is only one Customer object with custID 100, and it literally is that customer. 
+If you get the customer and change a field on it, then you have now changed that customer. 
+<i>"That constrasts with: you have changed this copy of the customer, but not that copy. 
+And if two people update the customer on two copies of the object, whoever updates first, 
+or maybe last, wins."</i> [A. Hejlsberg 2003]
+</p>
+
 <h2 id="142010">Database Supported</h2>
 <p id="p1" class="block-content">
 The Active Record implementation utilizes the <a href="?page=Database.DAO">Prado DAO</a> classes for data access.
@@ -1043,6 +1063,10 @@ will be thrown.
 <ul id="u3" class="block-content">
     <li>Fowler et. al. <i>Patterns of Enterprise Application Architecture</i>,
     Addison Wesley, 2002.</li>
+	<li>B. Venners with B. Eckel. <i><a href="http://www.artima.com/intv/abstract3.html">Inappropriate Abstractions - A Conversation with Anders Hejlsberg, Part VI.</a></i>
+	Artima Developer, 2003.
+	</li>
+
 </ul>
 
 <div class="last-modified">$Id$</div></com:TContent>
