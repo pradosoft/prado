@@ -40,6 +40,20 @@
         <li>Mengambil hubungan (terkait dengan obyek asing) seperti "has many", "has one", "belongs to" dan "has many" melalui asosiasi tabel.</li>
         <li>Pengambilan lazy atas hubungan.</li>
     </ul>
+<h2>Implikasi Desain</h2>
+<p>
+Implementasi Prado terhadap Rekaman Aktif tida memelihara identitas referensial. Setiap obyek diperoleh menggunakan Rekaman Aktif pada data dalam database. Sebagai contoh, jika anda meminta kustomer tertentu dan mendapaptkan kembali obyek <tt>Customer</tt>, kali berikutnya anda meminta kustomer itu anda akan kembali mendapatkan turunan lain dari obyek <tt>Customer</tt>. Ini berarti bahwa perbandingan tepat (misalnya menggunakan <tt>===</tt>) akan mengembalikan false, sementara perbandingan bebas (misalnya menggunakan <tt>==</tt>) akan mengembalikan true jika nilai obyek sama menurut perbandingan bebas. 
+<p>
+<p>
+Implikasi desain ini terkait dengan pertanyaan berikut.
+<i>"Anda pikir kustomer sebagai obyek, di mana hanya satu, 
+atau anda pikir obyek yang anda operasikan sebagai <b>duplikat</b> dari database?"</i>
+Pemetaan O/R lain akan mengartikan bahwa hanya ada satu obyek Kustomer dengan custID 100, dan secara literal ia adalah kustomer. 
+Jika anda mendapatkan kustomer dan mengubah field-nya, maka anda sekarang telah mengubah kustomer itu. 
+<i>"Itu berbatasan dengan: anda telah mengubah duplikat kustomer ini, tapi bukan pada duplikat itu. 
+Dan jika dua orang memutakhirkan kustomer pada dua duplikat obyek, siapapun yang memutakhirkan pertama kali, atau mungkin yang terakhir yang menang."</i> [A. Hejlsberg 2003]
+</p>
+
 <h2 id="142010">Database yang Didukung</h2>
 <p id="p1" class="block-content">
 Implementasi Rekaman Aktif memanfaatkan kelas <a href="?page=Database.DAO">Prado DAO</a> untuk akses data.   
@@ -380,7 +394,7 @@ Kapan saja anda memanggil metode <tt>save()</tt> pada obyek TActiveRecord, obyek
 <p id="690502" class="block-content">
     Untuk menghapus rekaman yang sudah ada dan diambil, cukup panggil metode <tt>delete()</tt>.
     Anda juga dapat menghapus rekaman dalam database dengan kunci primer tanpa mengambil rekaman apapun menggunakan metode <tt>deleteByPk()</tt> (dan metode yang sama <tt>deleteAllByPks()</tt>). 
-    Sebagai contoh, untuk menghapus satu atau lebih rekaman dengan menggunakan satu atau lebih kunci primer.
+    Sebagai contoh, untuk menghapus satu atau beberapa rekaman dengan menggunakan satu atau lebih kunci primer.
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690163">
 $finder->deleteByPk($primaryKey); //hapus 1 rekaman
@@ -862,7 +876,7 @@ class PlayerRecord extends BaseFkRecord
 }
 </com:TTextHighlighter>
 <p id="710046" class="block-content">Pertama kita perlu mengubah deklarasi <tt>$skills=array()</tt> ke properti privat <tt>$_skills</tt> (perhatikan garis bawah) dan sebaliknya setel ke null. Ini membolehkan kita untuk mendifinisikan properti <tt>skills</tt> menggunakan metode pengambil/penentu
-(lihat <a href="?page=Fundamentals.Components">Components</a> untuk lebih jelasnya). Metode pengambil <tt>getSkills()</tt> untuk properti <tt>skills</tt> akan mengambil lambat rekaman skill terkait saat ia dipakai sebagai berikut. Catatan bahwa kita hanya melakukan pengambilan lambat ketika  <tt>$player_id</tt> tidak null (ykni, ketika rekaman sudah diambil dari database ataau id player sudah disetel).
+(lihat <a href="?page=Fundamentals.Components">Komponen</a> untuk lebih jelasnya). Metode pengambil <tt>getSkills()</tt> untuk properti <tt>skills</tt> akan mengambil lambat rekaman skill terkait saat ia dipakai sebagai berikut. Catatan bahwa kita hanya melakukan pengambilan lambat ketika  <tt>$player_id</tt> tidak null (ykni, ketika rekaman sudah diambil dari database ataau id player sudah disetel).
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content">
 $player = PlayerRecord::finder()->findByPk(1);
@@ -881,6 +895,9 @@ akan dikeluarkan.
 <ul id="u3" class="block-content">
     <li>Fowler et. al. <i>Patterns of Enterprise Application Architecture</i>,
     Addison Wesley, 2002.</li>
+	<li>B. Venners with B. Eckel. <i><a href="http://www.artima.com/intv/abstract3.html">Inappropriate Abstractions - A Conversation with Anders Hejlsberg, Part VI.</a></i>
+	Artima Developer, 2003.
+	</li>
 </ul>
 
-<div class="last-modified">$Id: ActiveRecord.page 2087 2007-07-26 13:00:36Z tof $</div></com:TContent>
+<div class="last-modified">$Id: ActiveRecord.page 2179 2007-08-30 02:17:55Z wei $</div></com:TContent>
