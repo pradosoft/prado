@@ -398,7 +398,7 @@ class TTabPanel extends TWebControl implements IPostBackDataHandler
 		$className=$this->getClientClassName();
 		$page=$this->getPage();
 		$cs=$page->getClientScript();
-		$cs->registerPradoScript('prado');
+		$cs->registerPradoScript('tabpanel');
 		$code="new $className($options);";
 		$cs->registerEndScript("prado:$id", $code);
 		$cs->registerHiddenField($id.'_1',$this->getActiveViewIndex());

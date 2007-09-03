@@ -2421,6 +2421,8 @@ framework/Web/Javascripts/source/prado/colorpicker/spacer.gif -text
 framework/Web/Javascripts/source/prado/colorpicker/target_black.gif -text
 framework/Web/Javascripts/source/prado/colorpicker/target_white.gif -text
 framework/Web/Javascripts/source/prado/controls/controls.js -text
+framework/Web/Javascripts/source/prado/controls/keyboard.js -text
+framework/Web/Javascripts/source/prado/controls/tabpanel.js -text
 framework/Web/Javascripts/source/prado/datepicker/calendar.png -text
 framework/Web/Javascripts/source/prado/datepicker/datepicker.js -text
 framework/Web/Javascripts/source/prado/datepicker/default.css -text

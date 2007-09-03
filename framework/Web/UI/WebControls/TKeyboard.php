@@ -155,7 +155,7 @@ class TKeyboard extends TWebControl
 		$options=TJavaScript::encode($this->getClientOptions());
 		$className=$this->getClientClassName();
 		$cs=$this->getPage()->getClientScript();
-		$cs->registerPradoScript('prado');
+		$cs->registerPradoScript('keyboard');
 		$cs->registerEndScript('prado:'.$this->getClientID(), "new $className($options);");
 	}
 

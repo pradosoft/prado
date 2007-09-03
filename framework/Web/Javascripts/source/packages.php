@@ -49,6 +49,14 @@ $packages = array(
 	'slider'=>array(
 		'scriptaculous/slider.js'
 	),
+
+	'keyboard'=>array(
+		'prado/controls/keyboard.js'
+	),
+
+	'tabpanel'=>array(
+		'prado/controls/tabpanel.js'
+	),
 );
 
 
@@ -63,6 +71,8 @@ $dependencies = array(
 		'ajax'			=> array('prado', 'effects', 'ajax'),
 		'dragdrop'		=> array('prado', 'effects', 'dragdrop'),
 		'slider'		=> array('prado', 'slider'),
+		'keyboard'		=> array('prado', 'keyboard'),
+		'tabpanel'		=> array('prado', 'tabpanel'),
 );
 
 return array($packages, $dependencies);
