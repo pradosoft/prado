@@ -1530,6 +1530,7 @@ demos/quickstart/protected/pages/Controls/id/PlaceHolder.page -text
 demos/quickstart/protected/pages/Controls/id/RadioButton.page -text
 demos/quickstart/protected/pages/Controls/id/Repeater.page -text
 demos/quickstart/protected/pages/Controls/id/SafeHtml.page -text
+demos/quickstart/protected/pages/Controls/id/Slider.page -text
 demos/quickstart/protected/pages/Controls/id/Standard.page -text
 demos/quickstart/protected/pages/Controls/id/Statements.page -text
 demos/quickstart/protected/pages/Controls/id/TabPanel.page -text
