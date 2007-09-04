@@ -389,6 +389,48 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
+	 * @return TStyle the style for thead element, if any
+	 * @since 3.1.1
+	 */
+	public function getTableHeadStyle()
+	{
+		if(($style=$this->getViewState('TableHeadStyle',null))===null)
+		{
+			$style=new TStyle;
+			$this->setViewState('TableHeadStyle',$style,null);
+		}
+		return $style;
+	}
+
+	/**
+	 * @return TStyle the style for tbody element, if any
+	 * @since 3.1.1
+	 */
+	public function getTableBodyStyle()
+	{
+		if(($style=$this->getViewState('TableBodyStyle',null))===null)
+		{
+			$style=new TStyle;
+			$this->setViewState('TableBodyStyle',$style,null);
+		}
+		return $style;
+	}
+
+	/**
+	 * @return TStyle the style for tfoot element, if any
+	 * @since 3.1.1
+	 */
+	public function getTableFootStyle()
+	{
+		if(($style=$this->getViewState('TableFootStyle',null))===null)
+		{
+			$style=new TStyle;
+			$this->setViewState('TableFootStyle',$style,null);
+		}
+		return $style;
+	}
+
+	/**
 	 * @return string caption for the datagrid
 	 */
 	public function getCaption()
@@ -1482,11 +1524,15 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		if($this->_header && $this->_header->getVisible())
 		{
 			$writer->writeLine();
+			if($style=$this->getViewState('TableHeadStyle',null))
+				$style->addAttributesToRender($writer);
 			$writer->renderBeginTag('thead');
 			$this->_header->render($writer);
 			$writer->renderEndTag();
 		}
 		$writer->writeLine();
+		if($style=$this->getViewState('TableBodyStyle',null))
+			$style->addAttributesToRender($writer);
 		$writer->renderBeginTag('tbody');
 		foreach($this->getItems() as $item)
 			$item->renderControl($writer);
@@ -1495,6 +1541,8 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		if($this->_footer && $this->_footer->getVisible())
 		{
 			$writer->writeLine();
+			if($style=$this->getViewState('TableFootStyle',null))
+				$style->addAttributesToRender($writer);
 			$writer->renderBeginTag('tfoot');
 			$this->_footer->render($writer);
 			$writer->renderEndTag();

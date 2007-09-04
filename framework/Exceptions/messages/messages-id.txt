@@ -433,3 +433,14 @@ urlmappingpattern_serviceparameter_required = TUrlMappingPattern.ServiceParamete
 
 keyboard_forcontrol_required			= TKeyboard.ForControl tidak boleh kosong.
 keyboard_forcontrol_invalid			= TKeyboard.ForControl '{0}' tidak benar.
+captcha_tokenimagetheme_invalid			= TCaptcha.TokenImageTheme harus integer antara {0} dan {1}.
+captcha_tokenfontsize_invalid			= TCaptcha.TokenFontSize harus integer antara {0} dan {1}.
+captcha_mintokenlength_invalid			= TCaptcha.MinTokenLength harus integer antara {0} dan {1}.
+captcha_maxtokenlength_invalid			= TCaptcha.MaxTokenLength harus integer antara {0} dan {1}.
+captcha_tokenalphabet_invalid			= TCaptcha.TokenAlphabet harus berupa string yang terdiri dari setidaknya 2 karakter.
+captcha_privatekey_unknown				= TCaptcha.PrivateKey tidak dikenal. Pastikan bahwa direktori assets anda bisa ditulisi oleh proses server Web.
+captcha_gd2_required					= TCaptcha memerlukan ekstensi GD2 PHP.
+captcha_imagettftext_required			= TCaptcha memerlukan ekstensi GD2 PHP dengan dukungan font TrueType.
+captcha_imagepng_required				= TCaptcha memerlukan ekstensi GD2 PHP dengan dukungan format gambar PNG.
+
+slider_handle_class_invalid				= TSlider.HandleClass '{0}' bukan kelas pengguna yang benar. Kelas harus memperluas TSliderHandle.
