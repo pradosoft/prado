@@ -41,7 +41,6 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 		}
 		return parent::getSearchExpression($columns, $keywords);
 	}
-
 	/**
 	 *
 	 * @return boolean true if column can be used for LIKE searching.
@@ -54,6 +53,26 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 	}
 
 	/**
+	 * Overrides parent implementation to use PostgreSQL's ILIKE instead of LIKE (case-sensitive).
+	 * @param string column name.
+	 * @param array keywords
+	 * @return string search condition for all words in one column.
+	 */
+	 /*
+	 *
+	 *	how Oracle don't implements ILIKE, this method won't be overrided
+	 *
+	protected function getSearchCondition($column, $words)
+	{
+		$conditions=array();
+		foreach($words as $word)
+			$conditions[] = $column.' LIKE '.$this->getDbConnection()->quoteString('%'.$word.'%');
+		return '('.implode(' AND ', $conditions).')';
+	}
+	*/
+
+
+	/**
 	 * Overrides parent implementation to use Oracle way of get paginated RecordSet instead of using LIMIT sql clause.
 	 * @param string SQL query string.
 	 * @param integer maximum number of rows, -1 to ignore limit.
@@ -64,7 +83,7 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 	{
 		if( (int)$limit <= 0 && (int)$offset <= 0 )
 			return $sql;
-
+	
 		$pradoNUMLIN = 'pradoNUMLIN';
 		$fieldsALIAS = 'xyz';
 
@@ -72,19 +91,6 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 		$nfimDoWhere = ( strpos($sql,'ORDER') !== false ? strpos($sql,'ORDER') : $nfimDaSQL );
 		$niniDoSelect= strpos($sql,'SELECT')+6;
 		$nfimDoSelect= ( strpos($sql,'FROM') !== false ? strpos($sql,'FROM') : $nfimDaSQL );
-
-
-		$niniDoWhere= strpos($sql,'WHERE')+5;
-
-		$WhereConstraint=substr( $sql, $niniDoWhere, $nfimDoWhere-$niniDoWhere );
-
-		$WhereInSubSelect="";
-		$WhereMainSelect="";
-		if(trim($WhereConstraint)!=="")
-		{
-			$WhereInSubSelect="WHERE ".$WhereConstraint;
-			$WhereMainSelect="AND ".$WhereConstraint;
-		}
 
 		$sORDERBY	 = '';
 		if( stripos($sql,'ORDER') !== false ) {
@@ -110,7 +116,6 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 		} else {
 			if( strpos( $fields, ',' ) !== false )
 			{
-				$arr= $this->getTableInfo()->getColumns();
 				foreach( $arr as $field )
 				{
 					$field = strtolower( $field );
@@ -133,7 +138,7 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 				  ") WHERE {$pradoNUMLIN} >= {$offset} ";
 
 		************************* */
-		$toReg = $offset + $limit-1;
+		$toReg = $offset + $limit;
 		$fullTableName = $this->getTableInfo()->getTableFullName();
 		if( empty($sORDERBY) )
 		{
@@ -147,11 +152,10 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 			$newSql = " SELECT $fields FROM " .
 					  "(					" .
 					  "		SELECT ROW_NUMBER() OVER ( ORDER BY {$sORDERBY} ) as {$pradoNUMLIN} {$aliasedFields} " .
-					  "		FROM {$fullTableName} {$fieldsALIAS} $WhereInSubSelect" .
+					  "		FROM {$fullTableName} {$fieldsALIAS}" .
 					  ") nn					" .
-					  " WHERE nn.{$pradoNUMLIN} >= {$offset} AND nn.{$pradoNUMLIN} <= {$toReg} $WhereMainSelect" ;
+					  " WHERE nn.{$pradoNUMLIN} >= {$offset} AND nn.{$pradoNUMLIN} <= {$toReg} " ;
 		}
-
 		return $newSql;
 	}
 

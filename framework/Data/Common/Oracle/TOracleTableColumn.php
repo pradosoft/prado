@@ -21,7 +21,7 @@ Prado::using('System.Data.Common.TDbTableColumn');
  * @author Marcos Nobre <marconobre[at]gmail[dot]com>
  * @version $Id$
  * @package System.Data.Common.Oracle
- * @since 3.1.1
+ * @since 3.1
  */
 class TOracleTableColumn extends TDbTableColumn
 {

@@ -10,11 +10,9 @@
  * @package System.Data.Common.Oracle
  */
 
-/**
- * Load the base TDbMetaData class.
- */
-Prado::using('System.Data.Common.TDbMetaData');
+
 Prado::using('System.Data.Common.Oracle.TOracleTableInfo');
+Prado::using('System.Data.Common.Oracle.TOracleTableColumn');
 
 /**
  * TOracleMetaData loads Oracle database table and column information.
@@ -22,11 +20,29 @@ Prado::using('System.Data.Common.Oracle.TOracleTableInfo');
  * @author Marcos Nobre <marconobre[at]gmail[dot]com>
  * @version $Id$
  * @package System.Data.Common.Oracle
- * @since 3.1.1
+ * @since 3.1
  */
-class TOracleMetaData extends TDbMetaData
+class TOracleMetaData extends TComponent
 {
-	private $_defaultSchema = 'public';
+	private $_tableInfoCache=array();
+	private $_connection;
+	private $_defaultSchema = 'system';
+
+	/**
+	 * @param TDbConnection database connection.
+	 */
+	public function __construct($conn)
+	{
+		$this->_connection=$conn;
+	}
+
+	/**
+	 * @return TDbConnection database connection.
+	 */
+	public function getDbConnection()
+	{
+		return $this->_connection;
+	}
 
 	/**
 	 * @return string TDbTableInfo class name.
@@ -53,15 +69,32 @@ class TOracleMetaData extends TDbMetaData
 	}
 
 	/**
+	 * Obtains table meta data information for the current connection and given table name.
+	 * @param string table or view name
+	 * @return TDbTableInfo table information.
+	 */
+	public function getTableInfo($tableName=null)
+	{
+		$key = $tableName===null?$this->getDbConnection()->getConnectionString():$tableName;
+		if(!isset($this->_tableInfoCache[$key]))
+		{
+			$class = $this->getTableInfoClass();
+			$tableInfo = $tableName===null ? new $class : $this->createTableInfo($tableName);
+			$this->_tableInfoCache[$key] = $tableInfo;
+		}
+		return $this->_tableInfoCache[$key];
+	}
+
+	/**
 	 * @param string table name with optional schema name prefix, uses default schema name prefix is not provided.
 	 * @return array tuple as ($schemaName,$tableName)
 	 */
 	protected function getSchemaTableName($table)
 	{
 		if(count($parts= explode('.', str_replace('"','',$table))) > 1)
-		return array($parts[0], $parts[1]);
+			return array($parts[0], $parts[1]);
 		else
-		return array($this->getDefaultSchema(),$parts[0]);
+			return array($this->getDefaultSchema(),$parts[0]);
 	}
 
 	/**
@@ -77,24 +110,25 @@ class TOracleMetaData extends TDbMetaData
 		// The subquery to get that field checks to see if there is an internally dependent
 		// sequence on the field.
 		$sql =
-		<<<EOD
+<<<EOD
 		SELECT
 			a.COLUMN_ID,
-			a.COLUMN_NAME as attname,
+			LOWER(a.COLUMN_NAME) as attname,
 			a.DATA_TYPE || DECODE( a.DATA_TYPE, 'NUMBER', '('||a.DATA_PRECISION||','||DATA_SCALE||')' , '') as type,
 			a.DATA_LENGTH as atttypmod,
-			DECODE(a.NULLABLE, 'Y', '1', '0') as attnotnull, 
-			DECODE(a.DEFAULT_LENGTH, NULL, '0', '1') as atthasdef, 
+			DECODE(a.NULLABLE, 'Y', '1', '0') as attnotnull,
+			DECODE(a.DEFAULT_LENGTH, NULL, '0', '1') as atthasdef,
 			DATA_DEFAULT as adsrc,
 			'0' AS attisserial
 		FROM
-			ALL_TAB_COLUMNS a 
+			ALL_TAB_COLUMNS a
 		WHERE
-			TABLE_NAME = '{$tableName}' 
+			TABLE_NAME = '{$tableName}'
 			AND OWNER = '{$schemaName}'
 		ORDER BY a.COLUMN_ID
 EOD;
 		$this->getDbConnection()->setActive(true);
+		$this->getDbConnection()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 		$command = $this->getDbConnection()->createCommand($sql);
 		//$command->bindValue(':table', $tableName);
 		//$command->bindValue(':schema', $schemaName);
@@ -106,7 +140,7 @@ EOD;
 			$this->processColumn($tableInfo, $col);
 		}
 		if($index===0)
-		throw new TDbException('dbmetadata_invalid_table_view', $table);
+			throw new TDbException('dbmetadata_invalid_table_view', $table);
 		return $tableInfo;
 	}
 
@@ -118,7 +152,8 @@ EOD;
 	protected function createNewTableInfo($schemaName,$tableName)
 	{
 		$info['SchemaName'] = $this->assertIdentifier($schemaName);
-		$info['TableName'] = $this->assertIdentifier($tableName);
+		$info['TableName']	= $this->assertIdentifier($tableName);
+		$info['IsView'] 	= false;
 		if($this->getIsView($schemaName,$tableName)) $info['IsView'] = true;
 		list($primary, $foreign) = $this->getConstraintKeys($schemaName, $tableName);
 		$class = $this->getTableInfoClass();
@@ -134,7 +169,7 @@ EOD;
 	{
 		if(strpos($name, '"')!==false)
 		{
-			$ref = 'http://www.postgresql.org/docs/7.4/static/sql-syntax.html#SQL-SYNTAX-IDENTIFIERS';
+			$ref = 'http://www.oracle.com';
 			throw new TDbException('dbcommon_invalid_identifier_name', $name, $ref);
 		}
 		return $name;
@@ -147,9 +182,10 @@ EOD;
 	 */
 	protected function getIsView($schemaName,$tableName)
 	{
+		$this->getDbConnection()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 		$sql =
-		<<<EOD
-		select	OBJECT_TYPE 
+<<<EOD
+		select	OBJECT_TYPE
 		from 	ALL_OBJECTS
 		where	OBJECT_NAME = '{$tableName}'
 		and 	OWNER = '{$schemaName}'
@@ -167,9 +203,10 @@ EOD;
 	 */
 	protected function processColumn($tableInfo, $col)
 	{
-		$columnId = $col['attname']; //use column name as column Id
+		$columnId = strtolower($col['attname']); //use column name as column Id
 
-		$info['ColumnName'] 	= '"'.$columnId.'"'; //quote the column names!
+		//$info['ColumnName'] 	= '"'.$columnId.'"'; //quote the column names!
+		$info['ColumnName'] 	= $columnId; //NOT quote the column names!
 		$info['ColumnId'] 		= $columnId;
 		$info['ColumnIndex'] 	= $col['index'];
 		if(! (bool)$col['attnotnull'] ) $info['AllowNull'] = true;
@@ -177,7 +214,19 @@ EOD;
 		if($this->isForeignKeyColumn($columnId, $tableInfo)) $info['IsForeignKey'] = true;
 		if( (int)$col['atttypmod'] > 0 ) $info['ColumnSize'] =  $col['atttypmod']; // - 4;
 		if( (bool)$col['atthasdef'] ) $info['DefaultValue'] = $col['adsrc'];
-		
+		//
+		// For a while Oracle Tables has no  associated AutoIncrement Triggers
+		//
+		/*
+		if( $col['attisserial'] )
+		{
+			if(($sequence = $this->getSequenceName($tableInfo, $col['adsrc']))!==null)
+			{
+				$info['SequenceName'] = $sequence;
+				unset($info['DefaultValue']);
+			}
+		}
+		*/
 		$matches = array();
 		if(preg_match('/\((\d+)(?:,(\d+))?+\)/', $col['type'], $matches))
 		{
@@ -186,14 +235,13 @@ EOD;
 			{
 				$info['NumericPrecision'] = intval($matches[1]);
 				if(count($matches) > 2)
-				$info['NumericScale'] = intval($matches[2]);
+					$info['NumericScale'] = intval($matches[2]);
 			}
 			else
-			$info['ColumnSize'] = intval($matches[1]);
+				$info['ColumnSize'] = intval($matches[1]);
 		}
 		else
-		$info['DbType'] = $col['type'];
-
+			$info['DbType'] = $col['type'];
 		$tableInfo->Columns[$columnId] = new TOracleTableColumn($info);
 	}
 
@@ -206,9 +254,9 @@ EOD;
 		if(preg_match('/nextval\([^\']*\'([^\']+)\'[^\)]*\)/i',$src,$matches))
 		{
 			if(is_int(strpos($matches[1], '.')))
-			return $matches[1];
+				return $matches[1];
 			else
-			return $tableInfo->getSchemaName().'.'.$matches[1];
+				return $tableInfo->getSchemaName().'.'.$matches[1];
 		}
 	}
 
@@ -218,7 +266,7 @@ EOD;
 	protected function isPrecisionType($type)
 	{
 		$type = strtolower(trim($type));
-		return $type==='number'; 
+		return $type==='number'; // || $type==='interval' || strpos($type, 'time')===0;
 	}
 
 	/**
@@ -229,17 +277,18 @@ EOD;
 	 */
 	protected function getConstraintKeys($schemaName, $tableName)
 	{
+		$this->getDbConnection()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+//		select decode( a.CONSTRAINT_TYPE, 'P', 'PRIMARY KEY (', 'FOREIGN KEY (' )||b.COLUMN_NAME||')' as consrc,
 		$sql =
-		<<<EOD
-				select decode( a.CONSTRAINT_TYPE, 'P', 'PRIMARY KEY (', 'FOREIGN KEY (' )||b.COLUMN_NAME||')' as consrc, 
-					   a.CONSTRAINT_TYPE as contype
-				from ALL_CONSTRAINTS a, ALL_CONS_COLUMNS b
-				where ( a.constraint_name = b.constraint_name )
-				and	  a.TABLE_NAME = '{$tableName}' 
-				and   a.OWNER = '{$schemaName}'
-				and   a.CONSTRAINT_TYPE in ('P','R')
+<<<EOD
+		select b.COLUMN_NAME as consrc,
+			   a.CONSTRAINT_TYPE as contype
+		from ALL_CONSTRAINTS a, ALL_CONS_COLUMNS b
+ 		where (a.constraint_name = b.constraint_name AND a.table_name = b.table_name AND a.owner = b.owner)
+		and	  a.TABLE_NAME = '{$tableName}'
+		and   a.OWNER = '{$schemaName}'
+		and   a.CONSTRAINT_TYPE in ('P','R')
 EOD;
-		
 		$this->getDbConnection()->setActive(true);
 		$command = $this->getDbConnection()->createCommand($sql);
 		//$command->bindValue(':table', $tableName);
@@ -251,11 +300,19 @@ EOD;
 			switch( strtolower( $row['contype'] ) )
 			{
 				case 'p':
-					$primary = $this->getPrimaryKeys($row['consrc']);
+					$primary = array_merge( $primary, array(strtolower( $row['consrc'] )) );
+					/*
+					$arr = $this->getPrimaryKeys($row['consrc']);
+					$primary = array_merge( $primary, array(strtolower( $arr[0] )) );
+					*/
 					break;
-				case 'f':
-					if(($fkey = $this->getForeignKeys($row['consrc']))!==null)
-					$foreign[] = $fkey;
+				case 'r':
+					$foreign = array_merge( $foreign, array(strtolower( $row['consrc'] )) );
+					/*
+					// if(($fkey = $this->getForeignKeys($row['consrc']))!==null)
+					$fkey = $this->getForeignKeys( $row['consrc'] );
+					$foreign = array_merge( $foreign, array(strtolower( $fkey )) );
+					*/
 					break;
 			}
 		}
@@ -271,7 +328,7 @@ EOD;
 	{
 		$matches = array();
 		if(preg_match('/PRIMARY\s+KEY\s+\(([^\)]+)\)/i', $src, $matches))
-		return preg_split('/,\s+/',$matches[1]);
+			return preg_split('/,\s+/',$matches[1]);
 		return array();
 	}
 
@@ -290,7 +347,7 @@ EOD;
 			$keys = preg_split('/,\s+/', $matches[1]);
 			$fkeys = array();
 			foreach(preg_split('/,\s+/', $matches[3]) as $i => $fkey)
-			$fkeys[$keys[$i]] = $fkey;
+				$fkeys[$keys[$i]] = $fkey;
 			return array('table' => str_replace('"','',$matches[2]), 'keys' => $fkeys);
 		}
 	}
@@ -304,8 +361,9 @@ EOD;
 	{
 		foreach($tableInfo->getForeignKeys() as $fk)
 		{
-			if(in_array($columnId, array_keys($fk['keys'])))
-			return true;
+			if( $fk==$columnId )
+			//if(in_array($columnId, array_keys($fk['keys'])))
+				return true;
 		}
 		return false;
 	}
