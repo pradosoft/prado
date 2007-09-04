@@ -47,7 +47,8 @@ $packages = array(
 	),
 
 	'slider'=>array(
-		'scriptaculous/slider.js'
+		'scriptaculous/slider.js',
+		'prado/controls/slider.js'
 	),
 
 	'keyboard'=>array(

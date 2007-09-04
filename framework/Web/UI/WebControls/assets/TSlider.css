@@ -1,0 +1,55 @@
+/* Css class for an Horizontal Slider */
+.hslider
+{
+	background-color: rgb(170,170,170);
+	width: 200px;
+	height: 5px;
+}
+
+/* Css class for a Vertical Slider */
+.vslider
+{
+	background-color: rgb(170,170,170);
+	width: 5px;
+	height: 200px;
+}
+
+/* Css class for a block cursor as handle */
+.handle
+{
+	background-color: red;
+	cursor: move;
+}
+
+/* Dimensions of cursor depend on Direction */
+.hslider .handle
+{
+	width: 5px;
+	height: 10px;
+}
+
+.vslider .handle
+{
+	width: 10px;
+	height: 5px;
+}
+
+/* Css class for an image as handle */
+.handle-image
+{
+	width: 14px;
+	height: 15px;
+	cursor: move;
+	background: url("TSliderHandle.png") no-repeat;
+}
+
+/* Center the image on the track */
+.hslider .handle-image
+{
+	top: -5px;
+}
+
+.vslider .handle-image
+{
+	left: -5px;
+}

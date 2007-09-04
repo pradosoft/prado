@@ -1462,6 +1462,8 @@ demos/quickstart/protected/pages/Controls/Samples/TRepeater/Sample5.php -text
 demos/quickstart/protected/pages/Controls/Samples/TRequiredFieldValidator/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TRequiredFieldValidator/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TSafeHtml/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TSlider/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TSlider/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TStatements/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TTabPanel/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TTabPanel/Home.php -text
@@ -1484,6 +1486,7 @@ demos/quickstart/protected/pages/Controls/Samples/TWizard/Sample4.php -text
 demos/quickstart/protected/pages/Controls/Samples/TWizard/Sample5.page -text
 demos/quickstart/protected/pages/Controls/Samples/TWizard/Sample5.php -text
 demos/quickstart/protected/pages/Controls/Samples/config.xml -text
+demos/quickstart/protected/pages/Controls/Slider.page -text
 demos/quickstart/protected/pages/Controls/Standard.page -text
 demos/quickstart/protected/pages/Controls/Statements.page -text
 demos/quickstart/protected/pages/Controls/TabPanel.page -text
@@ -2422,6 +2425,7 @@ framework/Web/Javascripts/source/prado/colorpicker/target_black.gif -text
 framework/Web/Javascripts/source/prado/colorpicker/target_white.gif -text
 framework/Web/Javascripts/source/prado/controls/controls.js -text
 framework/Web/Javascripts/source/prado/controls/keyboard.js -text
+framework/Web/Javascripts/source/prado/controls/slider.js -text
 framework/Web/Javascripts/source/prado/controls/tabpanel.js -text
 framework/Web/Javascripts/source/prado/datepicker/calendar.png -text
 framework/Web/Javascripts/source/prado/datepicker/datepicker.js -text
@@ -2569,6 +2573,7 @@ framework/Web/UI/WebControls/TRepeater.php -text
 framework/Web/UI/WebControls/TRepeaterItemRenderer.php -text
 framework/Web/UI/WebControls/TRequiredFieldValidator.php -text
 framework/Web/UI/WebControls/TSafeHtml.php -text
+framework/Web/UI/WebControls/TSlider.php -text
 framework/Web/UI/WebControls/TStatements.php -text
 framework/Web/UI/WebControls/TStyle.php -text
 framework/Web/UI/WebControls/TTabPanel.php -text
@@ -2588,6 +2593,8 @@ framework/Web/UI/WebControls/TWebControlAdapter.php -text
 framework/Web/UI/WebControls/TWizard.php -text
 framework/Web/UI/WebControls/TWizardNavigationButtonStyle.php -text
 framework/Web/UI/WebControls/TXmlTransform.php -text
+framework/Web/UI/WebControls/assets/TSlider.css -text
+framework/Web/UI/WebControls/assets/TSliderHandle.png -text svneol=unset#image/png
 framework/Web/UI/WebControls/assets/captcha.php -text
 framework/Web/UI/WebControls/assets/keyboard.css -text
 framework/Web/UI/WebControls/assets/tabpanel.css -text

@@ -120,6 +120,10 @@
   </li>
 
   <li>
+  <a href="?page=Controls.Slider">TSlider</a> represents a Slider control
+  </li>
+  
+  <li>
   <a href="?page=Controls.Statements">TStatements</a> accepts a few PHP statements and displays their standard output on the Web page.
   </li>
 
