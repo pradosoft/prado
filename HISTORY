@@ -4,6 +4,7 @@ BUG: Ticket#533 - HttpRequest::getBrowser() throws an error if browsercap.ini is
 BUG: Ticket#592 - TRadioButton with UniqueGroupName always return false to getChecked (Christophe)
 BUG: Ticket#648 - Validation: onClick and onBlur events order (Christophe)
 BUG: Ticket#656 - TDatePicker does not return correct value when in callback mode (Christophe)
+BUG: Ticket#661 - ActiveRecord PostgreSQL 7.3.2 Support doesn't work (Qiang)
 BUG: Ticket#662 - Ensure TForm to properly encode the ampersand in action URL (Qiang)
 BUG: Ticket#666 - TActiveRecord::deleteAll() method always requires a criteria or null parameter (Qiang)
 BUG: Ticket#670 - TDatePicker: Year Issue (Christophe)

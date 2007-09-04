@@ -254,16 +254,53 @@ EOD;
 	 */
 	protected function getConstraintKeys($schemaName, $tableName)
 	{
-		$sql = 'SELECT
-				pg_catalog.pg_get_constraintdef(pc.oid, true) AS consrc,
-				pc.contype
+		$sql =
+<<<EOD
+	SELECT conname, consrc, contype, indkey, indisclustered FROM (
+			SELECT
+					conname,
+					CASE WHEN contype='f' THEN
+							pg_catalog.pg_get_constraintdef(oid)
+					ELSE
+							'CHECK (' || consrc || ')'
+					END AS consrc,
+					contype,
+					conrelid AS relid,
+					NULL AS indkey,
+					FALSE AS indisclustered
 			FROM
-				pg_catalog.pg_constraint pc
+					pg_catalog.pg_constraint
 			WHERE
-				pc.conrelid = (SELECT oid FROM pg_catalog.pg_class WHERE relname=:table
+					contype IN ('f', 'c')
+			UNION ALL
+			SELECT
+					pc.relname,
+					NULL,
+					CASE WHEN indisprimary THEN
+							'p'
+					ELSE
+							'u'
+					END,
+					pi.indrelid,
+					indkey,
+					pi.indisclustered
+			FROM
+					pg_catalog.pg_class pc,
+					pg_catalog.pg_index pi
+			WHERE
+					pc.oid=pi.indexrelid
+					AND EXISTS (
+							SELECT 1 FROM pg_catalog.pg_depend d JOIN pg_catalog.pg_constraint c
+							ON (d.refclassid = c.tableoid AND d.refobjid = c.oid)
+							WHERE d.classid = pc.tableoid AND d.objid = pc.oid AND d.deptype = 'i' AND c.contype IN ('u', 'p')
+			)
+	) AS sub
+	WHERE relid = (SELECT oid FROM pg_catalog.pg_class WHERE relname=:table
 					AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace
 					WHERE nspname=:schema))
-		';
+	ORDER BY
+			1
+EOD;
 		$this->getDbConnection()->setActive(true);
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':table', $tableName);
@@ -275,7 +312,7 @@ EOD;
 			switch($row['contype'])
 			{
 				case 'p':
-					$primary = $this->getPrimaryKeys($row['consrc']);
+					$primary = $this->getPrimaryKeys($tableName, $schemaName, $row['indkey']);
 					break;
 				case 'f':
 					if(($fkey = $this->getForeignKeys($row['consrc']))!==null)
@@ -291,12 +328,30 @@ EOD;
 	 * @param string pgsql primary key definition
 	 * @return array primary key field names.
 	 */
-	protected function getPrimaryKeys($src)
+	protected function getPrimaryKeys($tableName, $schemaName, $columnIndex)
 	{
-		$matches = array();
-		if(preg_match('/PRIMARY\s+KEY\s+\(([^\)]+)\)/i', $src, $matches))
-			return preg_split('/,\s+/',$matches[1]);
-		return array();
+		$sql =
+<<<EOD
+    SELECT attnum, attname FROM pg_catalog.pg_attribute WHERE
+		attrelid=(
+			SELECT oid FROM pg_catalog.pg_class WHERE relname=:table AND relnamespace=(
+				SELECT oid FROM pg_catalog.pg_namespace WHERE nspname=:schema
+			)
+		)
+        AND attnum IN (:columnIndex)
+EOD;
+		$command = $this->getDbConnection()->createCommand($sql);
+		$command->bindValue(':table', $tableName);
+		$command->bindValue(':schema', $schemaName);
+		$command->bindValue(':columnIndex', join('\',\'', split(' ', $columnIndex)));
+
+		$primary = array();
+		foreach($command->query() as $row)
+		{
+            $primary[] = $row['attname'];
+		}
+
+		return $primary;
 	}
 
 	/**
