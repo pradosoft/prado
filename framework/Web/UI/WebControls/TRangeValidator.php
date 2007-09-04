@@ -76,7 +76,7 @@ class TRangeValidator extends TBaseValidator
 	 */
 	public function setMinValue($value)
 	{
-		$this->setViewState('MinValue',$value,'');
+		$this->setViewState('MinValue',TPropertyValue::ensureString($value),'');
 	}
 
 	/**
@@ -93,7 +93,7 @@ class TRangeValidator extends TBaseValidator
 	 */
 	public function setMaxValue($value)
 	{
-		$this->setViewState('MaxValue',$value,'');
+		$this->setViewState('MaxValue',TPropertyValue::ensureString($value),'');
 	}
 
 	/**
