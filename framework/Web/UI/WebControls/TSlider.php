@@ -168,27 +168,27 @@ class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
 	}
 
 	/**
-	 * Returns the text content of the TTextBox control.
+	 * Returns the value of the TSlider control.
 	 * This method is required by {@link IDataRenderer}.
-	 * It is the same as {@link getText()}.
-	 * @return string the text content of the TTextBox control.
+	 * It is the same as {@link getValue()}.
+	 * @return string the value of the TSlider control.
 	 * @see getValue
 	 */
 	public function getData()
 	{
-		return $this->getText();
+		return $this->getValue();
 	}
 
 	/**
-	 * Sets the text content of the TTextBox control.
+	 * Sets the value of the TSlider control.
 	 * This method is required by {@link IDataRenderer}.
-	 * It is the same as {@link setText()}.
-	 * @param string the text content of the TTextBox control.
+	 * It is the same as {@link setValue()}.
+	 * @param string the value of the TSlider control.
 	 * @see setValue
 	 */
 	public function setData($value)
 	{
-		$this->setText($value);
+		$this->setValue($value);
 	}
 
 	/**
