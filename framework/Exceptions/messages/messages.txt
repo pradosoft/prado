@@ -445,4 +445,3 @@ captcha_imagettftext_required			= TCaptcha requires PHP GD2 extension with TrueT
 captcha_imagepng_required				= TCaptcha requires PHP GD2 extension with PNG image format support.
 
 slider_handle_class_invalid				= TSlider.HandleClass '{0}' is not a valid user class. The class must extends TSliderHandle.
-slider_track_class_invalid				= TSliderHandle track class '{0}' must be a TSlider instance.

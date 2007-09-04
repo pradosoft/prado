@@ -8,51 +8,52 @@
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Web.UI.WebControls
+ * @since 3.1.1
  */
 
 /**
  * TSlider class
  *
- * TSlider displays a slider for numeric input purpose. A slider consists of a 'track', 
- * which define the range of possible value, and a 'handle' which can slide on the track, to select 
+ * TSlider displays a slider for numeric input purpose. A slider consists of a 'track',
+ * which define the range of possible value, and a 'handle' which can slide on the track, to select
  * a value in the range. The track can be either Horizontal or Vertical, depending of the {@link SetDirection Direction}
  * property. By default, it's horizontal.
  *
- * The range boundaries are defined by {@link SetMinValue MinValue} and {@link SetMaxValue MaxValue} properties. 
- * The default range is from 0 to 100. 
+ * The range boundaries are defined by {@link SetMinValue MinValue} and {@link SetMaxValue MaxValue} properties.
+ * The default range is from 0 to 100.
  * The {@link SetStepSize StepSize} property can be used to define the <b>step</b> between 2 values inside the range.
  * Notice that this step will be recomputed if there is more than 200 values between the range boundaries.
  * You can also provide the allowed values by setting the {@link SetValues Values} array.
- * 
+ *
  * The handle sub-properties can be accessed by {@link GetHandle Handle} property. You can also provide your own control
- * for the handle, using {@link SetHandleClass HandleClass} property. Note that this class must be a subclass of 
+ * for the handle, using {@link SetHandleClass HandleClass} property. Note that this class must be a subclass of
  * {@link TSliderHandle}
- * 
- * The TSlider control can be easily customized using CssClasses. You can provide your own css file, using the 
+ *
+ * The TSlider control can be easily customized using CssClasses. You can provide your own css file, using the
  * {@link SetCssUrl CssUrl} property.
  * The css class for TSlider can be set by the {@link setCssClass CssClass} property. Defaults values are "hslider" for
- * an Horizontal slider, or "vslider" for a Vertical one. 
+ * an Horizontal slider, or "vslider" for a Vertical one.
  * The css class for the Handle can be set by the <b>Handle.CssClass</b> subproperty. Defaults is "handle", which just
  * draw a red block as a cursor. 'handle-image' css class is also provided for your convenience, which display an image
  * as the handle.
- * 
+ *
  * If {@link SetAutoPostBack AutoPostBack} property is true, postback is sent as soon as the value changed.
- * 
+ *
  * TSlider raises the {@link onValueChanged} event when the value of the slider has changed during postback.
- * 
+ *
  * You can also attach ClientSide javascript events handler to the slider :
  * - ClientSide.onSlide is called when the handle is slided on the track. You can get the current value in the <b>value</b>
  * javascript variable. You can use this event to update on client side a label with the current value
- * - ClientSide.onChange is called when the slider value has changed (at the end of a move). 
+ * - ClientSide.onChange is called when the slider value has changed (at the end of a move).
  *
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.1.1
  */
-class TSlider extends TWebControl implements IPostBackDataHandler
+class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
 {
-
+	const MAX_STEPS=200;
 	/**
 	 * @var TSliderHandle handle component
 	 */
@@ -67,7 +68,7 @@ class TSlider extends TWebControl implements IPostBackDataHandler
 	private $_clientScript=null;
 
 	/**
-	 * @return TSliderDirection Direction of slider (Horizontal or Vertical)
+	 * @return TSliderDirection Direction of slider (Horizontal or Vertical). Defaults to Horizontal.
 	 */
 	public function getDirection()
 	{
@@ -79,11 +80,11 @@ class TSlider extends TWebControl implements IPostBackDataHandler
 	 */
 	public function setDirection($value)
 	{
-		$this->setViewState('Direction', TPropertyValue::ensureEnum($value,'TSliderDirection'));
+		$this->setViewState('Direction', TPropertyValue::ensureEnum($value,'TSliderDirection'),TSliderDirection::Horizontal);
 	}
 
 	/**
-	 * @return string URL for the CSS file including all relevant CSS class definitions. Defaults to ''.
+	 * @return string URL for the CSS file including all relevant CSS class definitions. Defaults to '' (a default CSS file will be applied in this case.)
 	 */
 	public function getCssUrl()
 	{
@@ -99,11 +100,11 @@ class TSlider extends TWebControl implements IPostBackDataHandler
 	}
 
 	/**
-	 * @return float Maximum value for the slider
+	 * @return float Maximum value for the slider. Defaults to 100.0.
 	 */
 	public function getMaxValue()
 	{
-		return $this->getViewState('MaxValue',100);
+		return $this->getViewState('MaxValue',100.0);
 	}
 
 	/**
@@ -111,15 +112,15 @@ class TSlider extends TWebControl implements IPostBackDataHandler
 	 */
 	public function setMaxValue($value)
 	{
-		$this->setViewState('MaxValue', TPropertyValue::ensureFloat($value),100);
+		$this->setViewState('MaxValue', TPropertyValue::ensureFloat($value),100.0);
 	}
 
 	/**
-	 * @return float Minimum value for slider
+	 * @return float Minimum value for slider. Defaults to 0.0.
 	 */
 	public function getMinValue()
 	{
-		return $this->getViewState('MinValue',0);
+		return $this->getViewState('MinValue',0.0);
 	}
 
 	/**
@@ -127,25 +128,29 @@ class TSlider extends TWebControl implements IPostBackDataHandler
 	 */
 	public function setMinValue($value)
 	{
-		$this->setViewState('MinValue', TPropertyValue::ensureFloat($value),0);
+		$this->setViewState('MinValue', TPropertyValue::ensureFloat($value),0.0);
 	}
 
 	/**
-	 * @return float Step size. Defaults to 1
+	 * @return float Step size. Defaults to 1.0.
 	 */
 	public function getStepSize()
 	{
-		return $this->getViewState('StepSize', 1);
+		return $this->getViewState('StepSize', 1.0);
 	}
-	
+
 	/**
-	 * @param float Step size. Defaults to 1.
+	 * Sets the step size used to determine the places where the slider handle can stop at.
+	 * An evenly distributed stop marks will be generated according to
+	 * {@link getMinValue MinValue}, {@link getMaxValue MaxValue} and StepSize.
+	 * To use uneven stop marks, set {@link setValues Values}.
+	 * @param float Step size.
 	 */
 	public function setStepSize($value)
 	{
-		$this->setViewState('StepSize', $value, 1);
+		$this->setViewState('StepSize', $value, 1.0);
 	}
-	
+
 	/**
 	 * @return float current value of slider
 	 */
@@ -163,26 +168,50 @@ class TSlider extends TWebControl implements IPostBackDataHandler
 	}
 
 	/**
-	 * @return array list of allowed values the slider can take
+	 * Returns the text content of the TTextBox control.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link getText()}.
+	 * @return string the text content of the TTextBox control.
+	 * @see getValue
 	 */
-	public function getValues()
+	public function getData()
 	{
-		return $this->getViewState('Values', null);
+		return $this->getText();
 	}
 
 	/**
+	 * Sets the text content of the TTextBox control.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link setText()}.
+	 * @param string the text content of the TTextBox control.
+	 * @see setValue
+	 */
+	public function setData($value)
+	{
+		$this->setText($value);
+	}
+
+	/**
+	 * @return array list of allowed values the slider can take. Defaults to an empty array.
+	 */
+	public function getValues()
+	{
+		return $this->getViewState('Values', array());
+	}
+
+	/**
+	 * Sets the possible values that the slider can take.
+	 * If this is set, {@link setStepSize StepSize} will be ignored. The latter
+	 * generates a set of evenly distributed candidate values.
 	 * @param array list of allowed values the slider can take
 	 */
 	public function setValues($value)
 	{
-		$value=TPropertyValue::ensureArray($value);
-		$this->setViewState('Values', $value, null);
+		$this->setViewState('Values', TPropertyValue::ensureArray($value), array());
 	}
 
-
 	/**
-	 * This method will return the handle control.
-	 * @return TSliderHandle the control for the slider's handle (must inherit from TSliderHandle}
+	 * @return TSliderHandle the control for the slider's handle.
 	 */
 	public function getHandle ()
 	{
@@ -197,7 +226,6 @@ class TSlider extends TWebControl implements IPostBackDataHandler
 		return $this->_handle;
 	}
 
-
 	/**
 	 * @return string Custom handle class. Defaults to TSliderHandle;
 	 */
@@ -207,20 +235,11 @@ class TSlider extends TWebControl implements IPostBackDataHandler
 	}
 
 	/**
-	 * Set custom handle class. This class must exists, and be an instance of TSliderHandle
-	 *
 	 * @param string Custom Handle Class
 	 */
 	public function setHandleClass ($value)
 	{
-		$handle=prado::createComponent($value, $this);
-		if ($handle instanceof TSliderHandle)
-		{
-			$this->setViewState('HandleClass', $value);
-			$this->_handle=$handle;
-		} else {
-			throw new TInvalidDataTypeException('slider_handle_class_invalid', get_class($this->_handle));
-		}
+		$this->setViewState('HandleClass', $value, 'TSliderHandle');
 	}
 
 	/**
@@ -243,7 +262,6 @@ class TSlider extends TWebControl implements IPostBackDataHandler
 		$this->setViewState('AutoPostBack',TPropertyValue::ensureBoolean($value),false);
 	}
 
-
 	/**
 	 * Gets the name of the javascript class responsible for performing postback for this control.
 	 * This method overrides the parent implementation.
@@ -253,7 +271,6 @@ class TSlider extends TWebControl implements IPostBackDataHandler
 	{
 		return 'Prado.WebUI.TSlider';
 	}
-
 
 	/**
 	 * Returns a value indicating whether postback has caused the control data change.
@@ -287,7 +304,7 @@ class TSlider extends TWebControl implements IPostBackDataHandler
 	 */
 	public function onValueChanged($param)
 	{
-		if ($this->getDataChanged()) $this->raiseEvent('OnValueChanged',$this,$param);
+		$this->raiseEvent('OnValueChanged',$this,$param);
 	}
 
 	/**
@@ -306,7 +323,7 @@ class TSlider extends TWebControl implements IPostBackDataHandler
 			return $this->_dataChanged=true;
 		}
 		else
-		return false;
+			return false;
 	}
 
 	/**
@@ -322,8 +339,8 @@ class TSlider extends TWebControl implements IPostBackDataHandler
 	 */
 	public function getClientSide()
 	{
-		if(is_null($this->_clientScript))
-		$this->_clientScript = $this->createClientScript();
+		if($this->_clientScript===null)
+			$this->_clientScript = $this->createClientScript();
 		return $this->_clientScript;
 	}
 
@@ -335,6 +352,9 @@ class TSlider extends TWebControl implements IPostBackDataHandler
 		return new TSliderClientScript;
 	}
 
+	/**
+	 * @return string the HTML tag name for slider. Defaults to div.
+	 */
 	public function getTagName ()
 	{
 		return "div";
@@ -350,7 +370,6 @@ class TSlider extends TWebControl implements IPostBackDataHandler
 	{
 		// Render the handle
 		$this->getHandle()->render ($writer);
-
 	}
 
 	/**
@@ -361,7 +380,7 @@ class TSlider extends TWebControl implements IPostBackDataHandler
 	{
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id',$this->getClientID());
-		if ($this->getCssClass()==='') 
+		if ($this->getCssClass()==='')
 			$writer->addAttribute('class', $this->getDirection()===TSliderDirection::Horizontal?'hslider':'vslider');
 	}
 
@@ -387,11 +406,11 @@ class TSlider extends TWebControl implements IPostBackDataHandler
 	{
 		if(($url=$this->getCssUrl())==='')
 		{
+			$manager=$this->getApplication()->getAssetManager();
 			// publish the handle image
-			$this->getApplication()->getAssetManager()->publishFilePath(dirname(__FILE__).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'TSliderHandle.png');
+			$manager->publishFilePath(dirname(__FILE__).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'TSliderHandle.png');
 			// publish the css file
-			$url=$this->getApplication()->getAssetManager()->publishFilePath(dirname(__FILE__).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'TSlider.css');
-			
+			$url=$manager->publishFilePath(dirname(__FILE__).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'TSlider.css');
 		}
 		$this->getPage()->getClientScript()->registerStyleSheetFile($url,$url);
 	}
@@ -401,11 +420,10 @@ class TSlider extends TWebControl implements IPostBackDataHandler
 	 */
 	protected function registerSliderClientScript()
 	{
-
-		$cs = $this->getPage()->getClientScript();
+		$page=$this->getPage();
+		$cs = $page->getClientScript();
 		$cs->registerPradoScript("slider");
 		$id=$this->getClientID();
-		$page=$this->getPage();
 		$cs->registerHiddenField($id.'_1',$this->getValue());
 		$page->registerRequiresPostData($this);
 		$cs->registerPostBackControl($this->getClientClassName(),$this->getSliderOptions());
@@ -431,7 +449,8 @@ class TSlider extends TWebControl implements IPostBackDataHandler
 		$options['range'] = 'javascript:$R('.$minValue.",".$maxValue.")";
 		$options['sliderValue'] = $this->getValue();
 		$options['disabled'] = !$this->getEnabled();
-		if (($values=$this->getValues()))
+		$values=$this->getValues();
+		if (!empty($values))
 		{
 			// Values are provided. Check if min/max are present in them
 			if (!in_array($minValue, $values)) $values[]=$minValue;
@@ -442,24 +461,24 @@ class TSlider extends TWebControl implements IPostBackDataHandler
 				if ($value < $minValue) unset ($values[$idx]);
 				if ($value > $maxValue) unset ($values[$idx]);
 			}
-		} 
+		}
 		else
 		{
 			// Values are not provided, generate automatically using stepsize
 			$step=$this->getStepSize();
-			// We want at most 200 values, so, change the step if necessary
-			if (($maxValue-$minValue)/$step > 200)
+			// We want at most self::MAX_STEPS values, so, change the step if necessary
+			if (($maxValue-$minValue)/$step > self::MAX_STEPS)
 			{
-				$step=($maxValue-$minValue)/200;
+				$step=($maxValue-$minValue)/self::MAX_STEPS;
 			}
 			$values=array();
 			for ($i=$minValue;$i<=$maxValue;$i+=$step)
 				$values[]=$i;
 			// Add max if it's not in the array because of step
 			if (!in_array($maxValue, $values)) $values[]=$maxValue;
-		} 
+		}
 		$options['values'] = TJavascript::Encode($values,false);
-		if(!is_null($this->_clientScript))
+		if($this->_clientScript!==null)
 			$options = array_merge($options,$this->_clientScript->getOptions()->toArray());
 		return $options;
 	}
@@ -523,13 +542,13 @@ class TSliderClientScript extends TClientSideOptions
 
 /**
  * TSliderDirection class.
- * 
+ *
  * TSliderDirection defines the enumerable type for the possible direction that can be used in a {@link TSlider}
- * 
+ *
  * The following enumerable values are defined :
  * - Horizontal : Horizontal slider
  * - Vertical : Vertical slider
- * 
+ *
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @version $Id$
  * @package System.Web.UI.WebControls
@@ -548,11 +567,11 @@ class TSliderDirection extends TEnumerable
  * TSliderHandle is responsible of rendering the 'handle' control on a {@link TSlider}
  * Users can override this class to personalize the handle.
  * Default class renders a 'div' tag, and apply the css class provided by {@link setCssClass CssClass} property.
- * 
- * Two css classes are provided by default : 
+ *
+ * Two css classes are provided by default :
  * - handle : render a simple red cursor
  * - handle-image : render an image as handle
- * 
+ *
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @version $Id$
  * @package System.Web.UI.WebControls
@@ -567,20 +586,16 @@ class TSliderHandle extends TWebControl
 	 *
 	 * @param TSlider track control
 	 */
-	public function __construct ($track)
+	public function __construct (TSlider $track)
 	{
-		if ($track instanceof TSlider)
-		{
-			$this->_track=$track;
-		} else {
-			throw new TInvalidDataTypeException ('slider_track_class_invalid', get_class($this));
-		}
+		$this->_track=$track;
 	}
 
 	/**
 	 * @return TSlider track control
 	 */
-	public function getTrack() {
+	public function getTrack()
+	{
 		return $this->_track;
 	}
 
@@ -590,15 +605,6 @@ class TSliderHandle extends TWebControl
 	}
 
 	/**
-	 * @return string CssClass for the handle of the slider control. Defaults to 'handle'
-	 */
-	public function getCssClass ()
-	{
-		$class=parent::getCssClass();
-		return ($class=='')?'handle':$class;
-	}
-	
-	/**
 	 * Add the specified css classes to the handle
 	 * @param THtmlWriter writer
 	 */
@@ -606,11 +612,9 @@ class TSliderHandle extends TWebControl
 	{
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id', $this->getTrack()->getClientID()."_handle");
-		$writer->addAttribute('class', $this->getCssClass());
+		if($this->getCssClass()==='')
+			$writer->addAttribute('class', 'handle');
 	}
-
-
 }
-
 
 ?>
