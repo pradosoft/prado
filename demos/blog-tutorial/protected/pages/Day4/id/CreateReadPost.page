@@ -23,7 +23,7 @@ Template halaman <tt>ReadPost</tt> sangat mirip dengan template <tt>PostRenderer
 </h2>
 
 &lt;com:TControl Visible="&lt;%= $this->canEdit() %>">
-	<a href="&lt;%= $this->Service->constructUrl('EditPost',array('id'=>$this->Post->post_id))%>">Edit</a> |
+	<a href="&lt;%= $this->Service->constructUrl('posts.EditPost',array('id'=>$this->Post->post_id))%>">Edit</a> |
 	&lt;com:TLinkButton Text="Delete"
 		OnClick="deletePost"
 		Attributes.onclick="javascript:if(!confirm('Are you sure?')) return false;" />

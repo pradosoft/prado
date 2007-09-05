@@ -214,6 +214,12 @@ class TScaffoldEditView extends TScaffoldBase
 			$record->save();
 			return true;
 		}
+		else if($this->_editRenderer!==null)
+		{
+			//preserve the form data.
+			$this->_editRenderer->updateRecord($this->getCurrentRecord());
+		}
+
 		return false;
 	}
 

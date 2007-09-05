@@ -64,7 +64,8 @@ abstract class TActiveRecordRelation
 		static $stack=array();
 
 		$results = call_user_func_array(array($this->getSourceRecord(),$method),$args);
-		if(is_array($results) || $results instanceof ArrayAccess || $results instanceof TActiveRecord)
+		$validArray = is_array($results) && count($results) > 0;
+		if($validArray || $results instanceof ArrayAccess || $results instanceof TActiveRecord)
 		{
 			$this->collectForeignObjects($results);
 			while($obj = array_pop($stack))
