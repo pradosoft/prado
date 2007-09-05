@@ -11,11 +11,9 @@ Nous créons deux fichiers <tt>protected/pages/posts/ReadPost.page</tt> et <tt>p
 </p>
 
 <h2>Création du gabarit</h2>
-
 <p>
 Le gabarit de <tt>ReadPost</tt> est très proche du gabarit de <tt>PostRenderer</tt>, chacun d'eux affiche le détail d'un message. La différence est que la page <tt>ReadPost</tt> doit afficher deux boutons, permettant aux utilisateurs autorisés de modifier ou supprimer le message.
 </p>
-
 
 <com:TTextHighlighter CssClass="source" Language="prado">
 &lt;com:TContent ID="Main">
@@ -25,7 +23,7 @@ Le gabarit de <tt>ReadPost</tt> est très proche du gabarit de <tt>PostRenderer<
 </h2>
 
 &lt;com:TControl Visible="&lt;%= $this->canEdit() %>">
-	<a href="&lt;%= $this->Service->constructUrl('EditPost',array('id'=>$this->Post->post_id))%>">Modifier</a> |
+	<a href="&lt;%= $this->Service->constructUrl('posts.EditPost',array('id'=>$this->Post->post_id))%>">Modifier</a> |
 	&lt;com:TLinkButton Text="Supprimer"
 		OnClick="deletePost"
 		Attributes.onclick="javascript:if(!confirm('Etes vous sûr ?')) return false;" />
@@ -49,11 +47,9 @@ Heure:
 Plusieurs expressions PHP sont utilisées dans le gabarit. L'expression <tt>$this->Post</tt> fait référence à la propriété définie dans la classe de <tt>ReadPost</tt>. Elle représente l'objet <tt>PostRecord</tt> correspondant au message actuel.
 </p>
 
-
 <com:InfoBox>
 Même si nous utilisons régulièrement des expressions dans nos gabarits, nous n'en abusons pas. Une des règles principales pour savoir si l'on doit utiliser une expression est <i>l'expression doit être une propriété ou une simple mise en forme d'une propriété</i>. En suivant cette ligne de conduite, nous nous assurons d'une bonne séparation entre le contenu et la présentation, sans perdre en flexibilité.
 </com:InfoBox>
-
 
 <p>
 Nous pouvons aussi remarquer dans le gabarit précédent, que, nos deux boutons sont entourés d'un <tt>TControl</tt> dont la propriété 'visible' est déterminée par l'expression <tt>$this->canEdit()</tt>. Pour le bouton <tt>Supprimer</tt>, nous utilisons une boite de dialogue javascript pour confirmer la suppression du message.
@@ -64,19 +60,14 @@ Nous pouvons aussi remarquer dans le gabarit précédent, que, nos deux boutons 
 Tous les contrôles PRADO, ont une propriété très utile <tt>Attributes</tt> qui accepte n'importe quelle paire de valeurs (nom-valeur). La plupart des contrôles PRADO répercutent directement ces informations dans la balise HTML. Par exemple, dans le bouton <tt>Supprimer</tt> nous définissons <tt>onclick</tt> qui est directement reporté dans la balise <tt>&lt;a&gt;</tt> sous forme d'un attribut <tt>onclick</tt>.
 </com:InfoBox>
 
-
-
 <h2>Création du fichier de classe</h2>
 
 <p>
-Dans le gabarit précédent, nous voyons que notre classe doit implémenter le gestionnaire d'évènement <tt>deletePost()</tt> (attaché à l'évènement <tt>Onclick</tt> de notre bouton <tt>Supprimer</tt>). Nous devons aussi lire les données du message dont l'ID est passé par un paramètre GET.
-</p>
-
+Dans le gabarit précédent, nous voyons que notre classe doit implémenter le gestionnaire d'évènement <tt>deletePost()</tt> (attaché à l'évènement <tt>Onclick</tt> de notre bouton <tt>Supprimer</tt>). Nous devons aussi lire les données du message dont l'ID est passé par un paramètre GET.</p>
 
 <com:InfoBox>
 Nous implémentons la fonctionnalité suppression dans le classe <tt>ReadPost</tt> parce qu'il est classique de faire ainsi. Quand l'utilisateur clique sur le bouton <tt>Supprimer</tt>, une boite de dialogue demande confirmation de la suppression. Si l'utilisateur confirme, l'évènement <tt>OnClick</tt> du bouton <tt>Supprimer</tt> est déclenché.
 </com:InfoBox>
-
 
 <com:TTextHighlighter CssClass="source" Language="php">
 class ReadPost extends TPage
