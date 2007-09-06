@@ -209,22 +209,31 @@ class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
 	{
 		$this->setViewState('Values', TPropertyValue::ensureArray($value), array());
 	}
-
+	
 	/**
-	 * @return TSliderHandle the control for the slider's handle.
+	 * Create the child controls
+	 * Override parent implementation to create the handle control
+	 */
+	public function createChildControls()
+	{
+		$this->_handle=prado::createComponent($this->getHandleClass(), $this);
+		if (!$this->_handle instanceof TSliderHandle)
+		{
+				throw new TInvalidDataTypeException('slider_handle_class_invalid', get_class($this->_handle));
+		}
+		$this->getControls()->add($this->_handle);
+	}
+	
+	/**
+	 * This method will return the handle control.
+	 * @return TSliderHandle the control for the slider's handle (must inherit from TSliderHandle}
 	 */
 	public function getHandle ()
 	{
-		if ($this->_handle==null)
-		{
-			$this->_handle=prado::createComponent($this->getHandleClass(), $this);
-			if (!$this->_handle instanceof TSliderHandle)
-			{
-				throw new TInvalidDataTypeException('slider_handle_class_invalid', get_class($this->_handle));
-			}
-		}
+		$this->ensureChildControls();
 		return $this->_handle;
 	}
+	
 
 	/**
 	 * @return string Custom handle class. Defaults to TSliderHandle;
@@ -358,18 +367,6 @@ class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
 	public function getTagName ()
 	{
 		return "div";
-	}
-
-	/**
-	 * Renders body content.
-	 * This method renders the handle of slider
-	 * This method overrides parent implementation
-	 * @param THtmlWriter writer
-	 */
-	public function renderContents($writer)
-	{
-		// Render the handle
-		$this->getHandle()->render ($writer);
 	}
 
 	/**
