@@ -13,6 +13,7 @@ Halaman ini meringkas fitur utama baru yang diperkenalkan dalam setiap rilis PRA
 <li>Ditambahkan kontrol baru <a href="?page=Controls.Captcha">TCaptcha</a> yang menampilkan CAPTCHA untuk menjaga spammers dari pendaftaran untuk akun online tertentu. Validator <tt>TCaptchaValidator</tt> terkait juga diimplementasikan.</li>
 <li>Ditambahkan kontrol baru <a href="?page=Controls.Slider">TSlider</a> yang menampilkan sebuah slider yang dapat dipakai untuk input numerik.</li>
 <li>Ditambahkan dukungan Oracle DB ke Rekaman Aktif</li>
+<li>Ditambahkan dukungan TDataGrid untuk membolehkan pengelompokan sel yang berurutan dengan isi yang sama.</li>
 </ul>
 
 <h2 id="8006">Versi 3.1.0</h2>
