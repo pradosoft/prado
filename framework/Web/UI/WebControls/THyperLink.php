@@ -145,27 +145,27 @@ class THyperLink extends TWebControl implements IDataRenderer
 	/**
 	 * Returns the URL to link to when the THyperLink component is clicked.
 	 * This method is required by {@link IDataRenderer}.
-	 * It is the same as {@link getNavigateUrl()}.
-	 * @return string the URL to link to when the THyperLink component is clicked
-	 * @see getNavigateUrl
+	 * It is the same as {@link getText()}.
+	 * @return string the text caption
+	 * @see getText
 	 * @since 3.1.0
 	 */
 	public function getData()
 	{
-		return $this->getNavigateUrl();
+		return $this->getText();
 	}
 
 	/**
 	 * Sets the URL to link to when the THyperLink component is clicked.
 	 * This method is required by {@link IDataRenderer}.
-	 * It is the same as {@link setNavigateUrl()}.
-	 * @param string the URL to link to when the THyperLink component is clicked
-	 * @see setNavigateUrl
+	 * It is the same as {@link setText()}.
+	 * @param string the text caption to be set
+	 * @see setText
 	 * @since 3.1.0
 	 */
 	public function setData($value)
 	{
-		$this->setNavigateUrl($value);
+		$this->setText($value);
 	}
 
 	/**

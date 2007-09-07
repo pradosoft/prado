@@ -27,15 +27,23 @@ Prado::using('System.Web.UI.WebControls.TDataGrid');
  * The {@link getItemStyle ItemStyle} is applied to cells that belong to
  * non-header and -footer datagrid items.
  *
+ * When the datagrid enables sorting, if the {@link setSortExpression SortExpression}
+ * is not empty, the header cell will display a button (linkbutton or imagebutton)
+ * that will bubble the sort command event to the datagrid.
+ *
  * Since v3.1.0, TDataGridColumn has introduced two new properties {@link setHeaderRenderer HeaderRenderer}
  * and {@link setFooterRenderer FooterRenderer} which can be used to specify
  * the layout of header and footer column cells.
  * A renderer refers to a control class that is to be instantiated as a control.
  * For more details, see {@link TRepeater} and {@link TDataList}.
  *
- * When the datagrid enables sorting, if the {@link setSortExpression SortExpression}
- * is not empty, the header cell will display a button (linkbutton or imagebutton)
- * that will bubble the sort command event to the datagrid.
+ * Since v3.1.1, TDataGridColumn has introduced {@link setEnableCellGrouping EnableCellGrouping}.
+ * If a column has this property set true, consecutive cells having the same content in this
+ * column will be grouped into one cell.
+ * Note, there are some limitations to cell grouping. We determine the cell content according to
+ * the cell's {@link TTableCell::getText Text} property. If the text is empty and the cell has
+ * some child controls, we will pick up the first control who implements {@link IDataRenderer}
+ * and obtain its {@link IDataRenderer::getData Data} property.
  *
  * The following datagrid column types are provided by the framework currently,
  * - {@link TBoundColumn}, associated with a specific field in datasource and displays the corresponding data.
@@ -234,6 +242,24 @@ abstract class TDataGridColumn extends TApplicationComponent
 	public function setSortExpression($value)
 	{
 		$this->setViewState('SortExpression',$value,'');
+	}
+
+	/**
+	 * @return boolean whether cells having the same content should be grouped together. Defaults to false.
+	 * @since 3.1.1
+	 */
+	public function getEnableCellGrouping()
+	{
+		return $this->getViewState('EnableCellGrouping',false);
+	}
+
+	/**
+	 * @param boolean whether cells having the same content should be grouped together.
+	 * @since 3.1.1
+	 */
+	public function setEnableCellGrouping($value)
+	{
+		$this->setViewState('EnableCellGrouping',TPropertyValue::ensureBoolean($value),false);
 	}
 
 	/**

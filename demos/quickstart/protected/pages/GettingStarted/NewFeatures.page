@@ -12,7 +12,8 @@ This page summarizes the main new features that are introduced in each PRADO rel
 <li>Added a new control <a href="?page=Controls.Keyboard">TKeyboard</a> that displays a virtual keyboard for text input.</li>
 <li>Added a new control <a href="?page=Controls.Captcha">TCaptcha</a> that displays a CAPTCHA to keep spammers from signing up for certain accounts online. A related validator <tt>TCaptchaValidator</tt> is also implemented.</li>
 <li>Added a new control <a href="?page=Controls.Slider">TSlider</a> that displays a slider which can be used for numeric input.</li>
-<li>Added Oracle DB support to Active Record</li>
+<li>Added Oracle DB support to Active Record.</li>
+<li>Added support of TDataGrid to allow grouping consecutive cells with the same content.</li>
 </ul>
 
 <h2 id="8006">Version 3.1.0</h2>

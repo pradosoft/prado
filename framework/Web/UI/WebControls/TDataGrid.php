@@ -186,6 +186,10 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	 */
 	private $_autoColumns=null;
 	/**
+	 * @var TList all columns including both manually and automatically created columns
+	 */
+	private $_allColumns=null;
+	/**
 	 * @var TDataGridItemCollection datagrid item collection
 	 */
 	private $_items=null;
@@ -948,6 +952,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 
 		$columns=new TList($this->getColumns());
 		$columns->mergeWith($this->_autoColumns);
+		$this->_allColumns=$columns;
 
 		$items=$this->getItems();
 
@@ -1012,6 +1017,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		}
 		else
 			$columns=$this->getColumns();
+		$this->_allColumns=$columns;
 
 		$items=$this->getItems();
 
@@ -1067,6 +1073,66 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
+	 * Merges consecutive cells who have the same text.
+	 * @since 3.1.1
+	 */
+	private function groupCells()
+	{
+		if(($columns=$this->_allColumns)===null)
+			return;
+		$items=$this->getItems();
+		foreach($columns as $id=>$column)
+		{
+			if(!$column->getEnableCellGrouping())
+				continue;
+			$prevCell=null;
+			$prevCellText=null;
+			foreach($items as $item)
+			{
+				$itemType=$item->getItemType();
+				$cell=$item->getCells()->itemAt($id);
+				if(!$cell->getVisible())
+					continue;
+				if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem)
+				{
+					if(($cellText=$this->getCellText($cell))==='')
+					{
+						$prevCell=null;
+						$prevCellText=null;
+						continue;
+					}
+					if($prevCell===null || $prevCellText!==$cellText)
+					{
+						$prevCell=$cell;
+						$prevCellText=$cellText;
+					}
+					else
+					{
+						if(($rowSpan=$prevCell->getRowSpan())===0)
+							$rowSpan=1;
+						$prevCell->setRowSpan($rowSpan+1);
+						$cell->setVisible(false);
+					}
+				}
+			}
+		}
+	}
+
+	private function getCellText($cell)
+	{
+		if(($data=$cell->getText())==='' && $cell->getHasControls())
+		{
+			$controls=$cell->getControls();
+			foreach($controls as $control)
+			{
+				if($control instanceof IDataRenderer)
+					return $control->getData();
+			}
+		}
+		return $data;
+	}
+
+	/**
 	 * Creates a datagrid item instance based on the item type and index.
 	 * @param integer zero-based item index
 	 * @param TListItemType item type
@@ -1089,7 +1155,6 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			$this->getControls()->add($item);
 			$item->dataBind();
 			$this->onItemDataBound($param);
-			$item->setDataItem(null);
 		}
 		else
 		{
@@ -1485,6 +1550,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	{
 		if($this->getHasControls())
 		{
+			$this->groupCells();
 			if($this->_useEmptyTemplate)
 			{
 				$control=new TWebControl;
