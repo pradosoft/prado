@@ -74,6 +74,14 @@ When a page request is being processed, a list of authorization rules may be ava
 <p id="720559" class="block-content">
 In the above example, anonymous users will be denied from posting to <tt>PageID1</tt> and <tt>PageID2</tt>, while <tt>User1</tt> and <tt>User2</tt> and all users of role <tt>Role1</tt> can access the two pages (in both <tt>get</tt> and <tt>post</tt> methods).
 </p>
+<com:SinceVersion Version="3.1.1" />
+<p class="block-content">
+Since version 3.1.1, the <tt>pages</tt> attribute in the authorization rules can take relative page paths with wildcard '*'. For example, <tt>pages="admin.Home"</tt> refers to the <tt>Home</tt> page under the <tt>admin</tt> directory, and <tt>pages="admin.*"</tt> would refer to all pages under the <tt>admin</tt> directory and subdirectories.
+</p>
+
+<p class="block-content">
+Also introduced in version 3.1.1 are IP rules. They are specified by a new attribute <tt>ip</tt> in authorization rules. The IP rules are used to determine if an authorization rule aplies to an end-user according to his IP address. One can list a few IPs together, separated by comma ','. Wildcard '*' can be used in the rules. For example, <tt>ip="192.168.0.2, 192.168.1.*"</tt> means the rule applies to users whose IP address is 192.168.0.2 or 192.168.1.*. The latter matches any host in the subnet 192.168.1.
+</p>
 
 <h2 id="5504">Using <tt>TUserManager</tt></h2>
 <p id="720560" class="block-content">

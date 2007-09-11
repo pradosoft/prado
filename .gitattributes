@@ -2810,6 +2810,7 @@ tests/FunctionalTests/quickstart/Controls/Wizard5TestCase.php -text
 tests/FunctionalTests/quickstart/Fundamentals/HangmanTestCase.php -text
 tests/FunctionalTests/tickets.php -text
 tests/FunctionalTests/tickets/index.php -text
+tests/FunctionalTests/tickets/index700.php -text
 tests/FunctionalTests/tickets/protected/application.xml -text
 tests/FunctionalTests/tickets/protected/controls/down.gif -text
 tests/FunctionalTests/tickets/protected/controls/up.gif -text
@@ -2934,6 +2935,21 @@ tests/FunctionalTests/tickets/protected/pages/Ticket93.php -text
 tests/FunctionalTests/tickets/protected/pages/ToggleTest.page -text
 tests/FunctionalTests/tickets/protected/pages/config.xml -text
 tests/FunctionalTests/tickets/protected/pages/hotspot.jpg -text
+tests/FunctionalTests/tickets/protected700/application.xml -text
+tests/FunctionalTests/tickets/protected700/common/BasePage.php -text
+tests/FunctionalTests/tickets/protected700/layout/MainLayout.php -text
+tests/FunctionalTests/tickets/protected700/layout/MainLayout.tpl -text
+tests/FunctionalTests/tickets/protected700/pages/Home.page -text
+tests/FunctionalTests/tickets/protected700/pages/UserLogin.page -text
+tests/FunctionalTests/tickets/protected700/pages/UserLogin.php -text
+tests/FunctionalTests/tickets/protected700/pages/admin/Home.page -text
+tests/FunctionalTests/tickets/protected700/pages/admin/Home2.page -text
+tests/FunctionalTests/tickets/protected700/pages/admin/config.xml -text
+tests/FunctionalTests/tickets/protected700/pages/admin/users/Home.page -text
+tests/FunctionalTests/tickets/protected700/pages/admin/users/Home2.page -text
+tests/FunctionalTests/tickets/protected700/pages/admin/users/config.xml -text
+tests/FunctionalTests/tickets/protected700/pages/config.xml -text
+tests/FunctionalTests/tickets/protected700/pages/content/Home.page -text
 tests/FunctionalTests/tickets/tests/Ticket121TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket163TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket169TestCase.php -text
@@ -2969,6 +2985,7 @@ tests/FunctionalTests/tickets/tests/Ticket587TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket592TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket653TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket659TestCase.php -text
+tests/FunctionalTests/tickets/tests/Ticket700TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket72TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket93TestCase.php -text
 tests/FunctionalTests/validators.php -text

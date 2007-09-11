@@ -1,0 +1,28 @@
+<com:TContent ID="Main" >
+
+	<com:TLabel
+		ForControl="Username"
+		Text="User Name"
+		CssClass="label"/>
+	<com:TTextBox ID="Username"
+		AccessKey="u"
+		ValidationGroup="login"
+		CssClass="textbox"/>
+<br/>
+	<com:TLabel
+		ForControl="Password"
+		Text="Password"
+		CssClass="label"/>
+	<com:TTextBox ID="Password"
+		AccessKey="p"
+		CssClass="textbox"
+		ValidationGroup="login"
+		TextMode="Password"/>
+<br/>
+	<com:TButton ID="LoginButton"
+		OnClick="loginButtonClicked"
+		Text="Login"
+		ValidationGroup="login"
+		CssClass="button"/>
+
+</com:TContent>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<authorization>
+		<allow pages="content.*" users="*" />
+	</authorization>
+	<pages Param2="Set at root">
+		<page id="users.Home" Param1="Set at admin" Param4="Set at admin" />
+		<page id="Home" Param5="Set at root" />
+	</pages>
+</configuration>

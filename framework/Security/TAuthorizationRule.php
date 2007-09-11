@@ -14,7 +14,7 @@
  *
  * TAuthorizationRule represents a single authorization rule.
  * A rule is specified by an action (required), a list of users (optional),
- * a list of roles (optional), and a verb (optional).
+ * a list of roles (optional), a verb (optional), and a list of IP rules (optional).
  * Action can be either 'allow' or 'deny'.
  * Guest (anonymous, unauthenticated) users are represented by question mark '?'.
  * All users (including guest users) are represented by asterisk '*'.
@@ -22,6 +22,7 @@
  * Users/roles are case-insensitive.
  * Different users/roles are separated by comma ','.
  * Verb can be either 'get' or 'post'. If it is absent, it means both.
+ * IP rules are separated by comma ',' and can contain wild card in the rules (e.g. '192.132.23.33, 192.122.*.*')
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Id$
@@ -47,6 +48,10 @@ class TAuthorizationRule extends TComponent
 	 */
 	private $_verb;
 	/**
+	 * @var string IP patterns
+	 */
+	private $_ipRules;
+	/**
 	 * @var boolean if this rule applies to everyone
 	 */
 	private $_everyone;
@@ -65,8 +70,9 @@ class TAuthorizationRule extends TComponent
 	 * @param string a comma separated user list
 	 * @param string a comma separated role list
 	 * @param string verb, can be empty, 'get', or 'post'
+	 * @param string IP rules (separated by comma, can contain wild card *)
 	 */
-	public function __construct($action,$users,$roles,$verb='')
+	public function __construct($action,$users,$roles,$verb='',$ipRules='')
 	{
 		$action=strtolower(trim($action));
 		if($action==='allow' || $action==='deny')
@@ -75,6 +81,7 @@ class TAuthorizationRule extends TComponent
 			throw new TInvalidDataValueException('authorizationrule_action_invalid',$action);
 		$this->_users=array();
 		$this->_roles=array();
+		$this->_ipRules=array();
 		$this->_everyone=false;
 		$this->_guest=false;
 		$this->_authenticated=false;
@@ -105,6 +112,11 @@ class TAuthorizationRule extends TComponent
 			$this->_verb=$verb;
 		else
 			throw new TInvalidDataValueException('authorizationrule_verb_invalid',$verb);
+		foreach(explode(',',$ipRules) as $ipRule)
+		{
+			if(($ipRule=trim($ipRule))!=='')
+				$this->_ipRules[]=$ipRule;
+		}
 	}
 
 	/**
@@ -140,6 +152,15 @@ class TAuthorizationRule extends TComponent
 	}
 
 	/**
+	 * @return array list of IP rules.
+	 * @since 3.1.1
+	 */
+	public function getIPRules()
+	{
+		return $this->_ipRules;
+	}
+
+	/**
 	 * @return boolean if this rule applies to everyone
 	 */
 	public function getGuestApplied()
@@ -171,6 +192,8 @@ class TAuthorizationRule extends TComponent
 		$decision=($this->_action==='allow')?1:-1;
 		if($this->_verb==='' || strcasecmp($verb,$this->_verb)===0)
 		{
+			if(!$this->isHostAddressMatched())
+				return 0;
 			if($this->_everyone || ($this->_guest && $user->getIsGuest()) || ($this->_authenticated && !$user->getIsGuest()))
 				return $decision;
 			if(in_array(strtolower($user->getName()),$this->_users))
@@ -178,6 +201,38 @@ class TAuthorizationRule extends TComponent
 			foreach($this->_roles as $role)
 				if($user->isInRole($role))
 					return $decision;
+		}
+		return 0;
+	}
+
+	private function isHostAddressMatched()
+	{
+		if(empty($this->_ipRules))
+			return 1;
+		$ip=Prado::getApplication()->getRequest()->getUserHostAddress();
+		foreach($this->_ipRules as $rule)
+		{
+			if($rule===$ip)
+				return 1;
+			if(strpos($rule,'*')!==false)
+			{
+				$a=explode('.',$rule);
+				$b=explode('.',$ip);
+				if(isset($a[3]) && isset($b[3]))
+				{
+					$matched=true;
+					for($i=0;$i<4;++$i)
+					{
+						if($a[$i]!==$b[i] && $a[$i]!=='*')
+						{
+							$matched=false;
+							break;
+						}
+					}
+					if($matched)
+						return 1;
+				}
+			}
 		}
 		return 0;
 	}

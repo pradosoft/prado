@@ -39,4 +39,9 @@ The <tt>&lt;paths&gt;</tt>, <tt>&lt;modules&gt;</tt>, <tt>&lt;parameters&gt;</tt
 Complete specification of page configurations can be found in the <a href="<%~../../../../../docs/specs/config.dtd%>">DTD</a> and <a href="<%~../../../../../docs/specs/config.xsd%>">XSD</a> files.
 </p>
 
+<com:SinceVersion Version="3.1.1" />
+<p class="block-content">
+Since version 3.1.1, the <tt>id</tt> attribute in the &lt;page&gt; element can be a relative page path pointing to a page in the subdirectory of the directory containing the page configuration. For example, <tt>id="admin.Home"</tt> refers to the <tt>Home</tt> page under the <tt>admin</tt> directory. This enhancement allows developers to centralize their page configurations (e.g. put all page initializations in the aplication configuration or the root page configuration.)
+</p>
+
 <div class="last-modified">$Id$</div></com:TContent>

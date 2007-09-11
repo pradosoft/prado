@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application id="Ticket700Tests" Mode="Debug">
+<paths>
+	<using namespace="Application.common.*" />
+</paths>
+
+<services>
+	<service id="page" class="TPageService" BasePageClass="Application.common.BasePage">
+		<modules>
+			<module id="users" class="System.Security.TUserManager" PasswordMode="Clear">
+				<user name="AdminUser" password="demo" />
+				<user name="NormalUser" password="demo" />
+				<role name="admin" users="AdminUser" />
+				<role name="user" users="NormalUser" />
+			</module>
+			<module id="auth" class="System.Security.TAuthManager" UserManager="users" LoginPage="UserLogin" />
+		</modules>
+
+		<authorization>
+			<allow pages="Home" users="*" />
+			<deny pages="admin.*" users="?" />
+			<deny pages="content.*" users="*" />
+			<allow users="*" />
+		</authorization>
+
+		<pages MasterClass="Application.layout.MainLayout" Param1="Set at app config" Param5="Set at app config">
+			<page id="Home" Param2="Set at app config" />
+			<page id="admin.Home" Param3="Set at app config" Param4="Set at app config" />
+		</pages>
+	</service>
+</services>
+</application>

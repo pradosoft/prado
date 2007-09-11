@@ -137,7 +137,7 @@ class TPageService extends TService
 	{
 		Prado::trace("Initializing TPageService",'System.Web.Services.TPageService');
 
-		$pageConfig=$this->loadPageConfig($this->getRequestedPagePath(),$config);
+		$pageConfig=$this->loadPageConfig($config);
 
 		$this->initPageContext($pageConfig);
 
@@ -169,17 +169,19 @@ class TPageService extends TService
 		// initial page properties (to be set when page runs)
 		$this->_properties=$config->getProperties();
 		$this->getApplication()->getAuthorizationRules()->mergeWith($config->getRules());
+		$pagePath=$this->getRequestedPagePath();
 		// external configurations
-		foreach($config->getExternalConfigurations() as $filePath=>$condition)
+		foreach($config->getExternalConfigurations() as $filePath=>$params)
 		{
+			list($configPagePath,$condition)=$params;
 			if($condition!==true)
 				$condition=$this->evaluateExpression($condition);
 			if($condition)
 			{
 				if(($path=Prado::getPathOfNamespace($filePath,TApplication::CONFIG_FILE_EXT))===null || !is_file($path))
 					throw new TConfigurationException('pageservice_includefile_invalid',$filePath);
-				$c=new TPageConfiguration;
-				$c->loadFromFile($path,null);
+				$c=new TPageConfiguration($pagePath);
+				$c->loadFromFile($path,$configPagePath);
 				$this->applyConfiguration($c);
 			}
 		}
@@ -200,19 +202,19 @@ class TPageService extends TService
 
 	/**
 	 * Collects configuration for a page.
-	 * @param string page path in the format of Path.To.Page
-	 * @param TXmlElement additional configuration
+	 * @param TXmlElement additional configuration specified in the application configuration
 	 * @return TPageConfiguration
 	 */
-	protected function loadPageConfig($pagePath,$config=null)
+	protected function loadPageConfig($config)
 	{
 		$application=$this->getApplication();
+		$pagePath=$this->getRequestedPagePath();
 		if(($cache=$application->getCache())===null)
 		{
-			$pageConfig=new TPageConfiguration;
+			$pageConfig=new TPageConfiguration($pagePath);
 			if($config!==null)
-				$pageConfig->loadPageConfigurationFromXml($config,$application->getBasePath());
-			$pageConfig->loadFromFiles($pagePath,$this->getBasePath());
+				$pageConfig->loadPageConfigurationFromXml($config,$application->getBasePath(),'');
+			$pageConfig->loadFromFiles($this->getBasePath());
 		}
 		else
 		{
@@ -258,10 +260,10 @@ class TPageService extends TService
 			}
 			if(!$configCached)
 			{
-				$pageConfig=new TPageConfiguration;
+				$pageConfig=new TPageConfiguration($pagePath);
 				if($config!==null)
-					$pageConfig->loadPageConfigurationFromXml($config,$application->getBasePath());
-				$pageConfig->loadFromFiles($pagePath,$this->getBasePath());
+					$pageConfig->loadPageConfigurationFromXml($config,$application->getBasePath(),'');
+				$pageConfig->loadFromFiles($this->getBasePath());
 				$cache->set(self::CONFIG_CACHE_PREFIX.$this->getID().$pagePath,array($pageConfig,$currentTimestamp));
 			}
 		}
@@ -517,6 +519,19 @@ class TPageConfiguration extends TComponent
 	 * @var array list of included configurations
 	 */
 	private $_includes=array();
+	/**
+	 * @var string the currently request page in the format of Path.To.PageName
+	 */
+	private $_pagePath='';
+
+	/**
+	 * Constructor.
+	 * @param string the currently request page in the format of Path.To.PageName
+	 */
+	public function __construct($pagePath)
+	{
+		$this->_pagePath=$pagePath;
+	}
 
 	/**
 	 * @return array list of external configuration files. Each element is like $filePath=>$condition
@@ -558,36 +573,40 @@ class TPageConfiguration extends TComponent
 
 	/**
 	 * Loads configuration for a page specified in a path format.
-	 * @param string path to the page (dot-connected format)
 	 * @param string root path for pages
 	 */
-	public function loadFromFiles($pagePath,$basePath)
+	public function loadFromFiles($basePath)
 	{
-		$paths=explode('.',$pagePath);
+		$paths=explode('.',$this->_pagePath);
 		$page=array_pop($paths);
 		$path=$basePath;
+		$configPagePath='';
 		foreach($paths as $p)
 		{
-			$this->loadFromFile($path.DIRECTORY_SEPARATOR.TPageService::CONFIG_FILE,null);
+			$this->loadFromFile($path.DIRECTORY_SEPARATOR.TPageService::CONFIG_FILE,$configPagePath);
 			$path.=DIRECTORY_SEPARATOR.$p;
+			if($configPagePath==='')
+				$configPagePath=$p;
+			else
+				$configPagePath.='.'.$p;
 		}
-		$this->loadFromFile($path.DIRECTORY_SEPARATOR.TPageService::CONFIG_FILE,$page);
+		$this->loadFromFile($path.DIRECTORY_SEPARATOR.TPageService::CONFIG_FILE,$configPagePath);
 		$this->_rules=new TAuthorizationRuleCollection($this->_rules);
 	}
 
 	/**
 	 * Loads a specific config file.
 	 * @param string config file name
-	 * @param string page name, null if page is not required
+	 * @param string the page path that the config file is associated with. The page path doesn't include the page name.
 	 */
-	public function loadFromFile($fname,$page)
+	public function loadFromFile($fname,$configPagePath)
 	{
-		Prado::trace("Loading $page with file $fname",'System.Web.Services.TPageService');
+		Prado::trace("Loading page configuration file $fname",'System.Web.Services.TPageService');
 		if(empty($fname) || !is_file($fname))
 			return;
 		$dom=new TXmlDocument;
 		if($dom->loadFromFile($fname))
-			$this->loadFromXml($dom,dirname($fname),$page);
+			$this->loadFromXml($dom,dirname($fname),$configPagePath);
 		else
 			throw new TConfigurationException('pageserviceconf_file_invalid',$fname);
 	}
@@ -597,13 +616,13 @@ class TPageConfiguration extends TComponent
 	 * The configuration includes information for both application
 	 * and page service.
 	 * @param TXmlElement config xml element
-	 * @param string base path corresponding to this xml element
-	 * @param string page name, null if page is not required
+	 * @param string the directory containing this configuration
+	 * @param string the page path that the config XML is associated with. The page path doesn't include the page name.
 	 */
-	public function loadFromXml($dom,$configPath,$page=null)
+	public function loadFromXml($dom,$configPath,$configPagePath)
 	{
 		$this->loadApplicationConfigurationFromXml($dom,$configPath);
-		$this->loadPageConfigurationFromXml($dom,$configPath,$page);
+		$this->loadPageConfigurationFromXml($dom,$configPath,$configPagePath);
 	}
 
 	/**
@@ -622,9 +641,9 @@ class TPageConfiguration extends TComponent
 	 * Loads the configuration specific for page service.
 	 * @param TXmlElement config xml element
 	 * @param string base path corresponding to this xml element
-	 * @param string page name, null if page is not required
+	 * @param string the page path that the config XML is associated with. The page path doesn't include the page name.
 	 */
-	public function loadPageConfigurationFromXml($dom,$configPath,$page=null)
+	public function loadPageConfigurationFromXml($dom,$configPath,$configPagePath)
 	{
 		// authorization
 		if(($authorizationNode=$dom->getElementByTagName('authorization'))!==null)
@@ -632,24 +651,38 @@ class TPageConfiguration extends TComponent
 			$rules=array();
 			foreach($authorizationNode->getElements() as $node)
 			{
-				$pages=$node->getAttribute('pages');
+				$patterns=$node->getAttribute('pages');
 				$ruleApplies=false;
-				if(empty($pages))
+				if(empty($patterns)) // null or empty string
 					$ruleApplies=true;
-				else if($page!==null)
+				else
 				{
-					$ps=explode(',',$pages);
-					foreach($ps as $p)
+					foreach(explode(',',$patterns) as $pattern)
 					{
-						if(strcasecmp($page,trim($p))===0)
+						if(($pattern=trim($pattern))!=='')
 						{
-							$ruleApplies=true;
-							break;
+							// we know $configPagePath and $this->_pagePath
+							if($configPagePath!=='')  // prepend the pattern with ConfigPagePath
+								$pattern=$configPagePath.'.'.$pattern;
+							if(strcasecmp($pattern,$this->_pagePath)===0)
+							{
+								$ruleApplies=true;
+								break;
+							}
+							if($pattern[strlen($pattern)-1]==='*') // try wildcard matching
+							{
+								$pattern=strtolower(substr($pattern,0,strlen($pattern)-1));
+								if(strpos(strtolower($this->_pagePath),$pattern)===0)
+								{
+									$ruleApplies=true;
+									break;
+								}
+							}
 						}
 					}
 				}
 				if($ruleApplies)
-					$rules[]=new TAuthorizationRule($node->getTagName(),$node->getAttribute('users'),$node->getAttribute('roles'),$node->getAttribute('verb'));
+					$rules[]=new TAuthorizationRule($node->getTagName(),$node->getAttribute('users'),$node->getAttribute('roles'),$node->getAttribute('verb'),$node->getAttribute('ip'));
 			}
 			$this->_rules=array_merge($rules,$this->_rules);
 		}
@@ -658,16 +691,14 @@ class TPageConfiguration extends TComponent
 		if(($pagesNode=$dom->getElementByTagName('pages'))!==null)
 		{
 			$this->_properties=array_merge($this->_properties,$pagesNode->getAttributes()->toArray());
-			if($page!==null)   // at the page folder
+			// at the page folder
+			foreach($pagesNode->getElementsByTagName('page') as $node)
 			{
-				foreach($pagesNode->getElementsByTagName('page') as $node)
-				{
-					$properties=$node->getAttributes();
-					if(($id=$properties->itemAt('id'))===null)
-						throw new TConfigurationException('pageserviceconf_page_invalid',$configPath);
-					if(strcasecmp($id,$page)===0)
-						$this->_properties=array_merge($this->_properties,$properties->toArray());
-				}
+				$properties=$node->getAttributes();
+				if(($id=$properties->remove('id'))===null)
+					throw new TConfigurationException('pageserviceconf_page_invalid',$configPath);
+				if(($configPagePath==='' && strcasecmp($id,$this->_pagePath)===0) || ($configPath!=='' && strcasecmp($configPagePath.'.'.$id,$this->_pagePath)===0))
+					$this->_properties=array_merge($this->_properties,$properties->toArray());
 			}
 		}
 
@@ -679,9 +710,9 @@ class TPageConfiguration extends TComponent
 			if(($filePath=$node->getAttribute('file'))===null)
 				throw new TConfigurationException('pageserviceconf_includefile_required');
 			if(isset($this->_includes[$filePath]))
-				$this->_includes[$filePath]='('.$this->_includes[$filePath].') || ('.$when.')';
+				$this->_includes[$filePath]=array($configPagePath,'('.$this->_includes[$filePath][1].') || ('.$when.')');
 			else
-				$this->_includes[$filePath]=$when;
+				$this->_includes[$filePath]=array($configPagePath,$when);
 		}
 	}
 }

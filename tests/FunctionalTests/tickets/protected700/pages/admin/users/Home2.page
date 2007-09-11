@@ -1,0 +1,14 @@
+<com:TContent ID="Main">
+
+|Param1: <%= $this->Param1 %>|
+<br/>
+|Param2: <%= $this->Param2 %>|
+<br/>
+|Param3: <%= $this->Param3 %>|
+<br/>
+|Param4: <%= $this->Param4 %>|
+<br/>
+|Param5: <%= $this->Param5 %>|
+<br/>
+
+</com:TContent>
