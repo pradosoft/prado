@@ -74,6 +74,14 @@ Ketika permintaan halaman sedang diproses, daftar aturan otorisassi menjadi ters
 <p id="720559" class="block-content">
 Dalam contoh di atas, pengguna anonim akan ditolak atas penulisan ke <tt>PageID1</tt> dan <tt>PageID2</tt>, sementara <tt>User1</tt> dan <tt>User2</tt> dan semua pengguna aturan <tt>Role1</tt> bisa mengakses dua halaman (baik metode <tt>get</tt> maupun <tt>post</tt>).
 </p>
+<com:SinceVersion Version="3.1.1" />
+<p class="block-content">
+Sejak versi 3.1.1, atribut <tt>pages</tt> dalam aturan otorisasi dapat mengambil path halaman relatif dengan '*'. Sebagai contoh, <tt>pages="admin.Home"</tt> merujuk ke halaman <tt>Home</tt> di bawah direktori <tt>admin</tt>, dan <tt>pages="admin.*"</tt> akan merujuk ke seluruh halaman di bawah direktori <tt>admin</tt> dan subdirektorinya.
+</p>
+
+<p class="block-content">
+Juga diperkenalkan dalam versi 3.1.1 adalah aturan IP. Ini ditetapkan oleh atribut baru <tt>ip</tt> dalam aturan otorisasi. Aturan IP dipakai untuk menentukan apakah aturan otorisasi berlaku ke pengguna-akhir berdasarkan alamat IP-nya. Seseorang dapat mendaftar beberapa IP sekaligus, dipisahkan dengan koma ','. Wildcard '*' dapat dipakai dalam aturan. Sebagai contoh, <tt>ip="192.168.0.2, 192.168.1.*"</tt> berarti aturan berlaku untuk para pengguna yang alamat IP-nya 192.168.0.2 atau 192.168.1.*. Yang kedua sama dengan setiap host dalam subnet 192.168.1.
+</p>
 
 <h2 id="5504">Menggunakan <tt>TUserManager</tt></h2>
 <p id="720560" class="block-content">

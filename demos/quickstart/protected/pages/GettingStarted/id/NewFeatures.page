@@ -14,6 +14,7 @@ Halaman ini meringkas fitur utama baru yang diperkenalkan dalam setiap rilis PRA
 <li>Ditambahkan kontrol baru <a href="?page=Controls.Slider">TSlider</a> yang menampilkan sebuah slider yang dapat dipakai untuk input numerik.</li>
 <li>Ditambahkan dukungan Oracle DB ke Rekaman Aktif</li>
 <li>Ditambahkan dukungan TDataGrid untuk membolehkan pengelompokan sel yang berurutan dengan isi yang sama.</li>
+<li>Ditambahkan dukungan untuk mengkonfigurasi properti halaman dan aturan otorisasi menggunakan <a href="?page=Configurations.PageConfig">relative page paths</a> in application and page configurations. Added support to allow <a href="?page=Advanced.Auth">otorisasi</a> berdasarkan pada alamat remote host.</li>
 </ul>
 
 <h2 id="8006">Versi 3.1.0</h2>
