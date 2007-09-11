@@ -695,9 +695,19 @@ class TPageConfiguration extends TComponent
 			foreach($pagesNode->getElementsByTagName('page') as $node)
 			{
 				$properties=$node->getAttributes();
-				if(($id=$properties->remove('id'))===null)
+				$id=$properties->remove('id');
+				if(empty($id))
 					throw new TConfigurationException('pageserviceconf_page_invalid',$configPath);
-				if(($configPagePath==='' && strcasecmp($id,$this->_pagePath)===0) || ($configPath!=='' && strcasecmp($configPagePath.'.'.$id,$this->_pagePath)===0))
+				$matching=false;
+				$id=($configPagePath==='')?$id:$configPagePath.'.'.$id;
+				if(strcasecmp($id,$this->_pagePath)===0)
+					$matching=true;
+				else if($id[strlen($id)-1]==='*') // try wildcard matching
+				{
+					$id=strtolower(substr($id,0,strlen($id)-1));
+					$matching=(strpos(strtolower($this->_pagePath),$pattern)===0);
+				}
+				if($matching)
 					$this->_properties=array_merge($this->_properties,$properties->toArray());
 			}
 		}
