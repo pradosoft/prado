@@ -1149,6 +1149,13 @@ demos/quickstart/protected/controls/SinceVersion.php -text
 demos/quickstart/protected/controls/SinceVersion.tpl -text
 demos/quickstart/protected/controls/TopicList.php -text
 demos/quickstart/protected/controls/TopicList.tpl -text
+demos/quickstart/protected/controls/es/Layout.tpl -text
+demos/quickstart/protected/controls/es/RequiresVersion.tpl -text
+demos/quickstart/protected/controls/es/RunBar.tpl -text
+demos/quickstart/protected/controls/es/SampleLayout.tpl -text
+demos/quickstart/protected/controls/es/SearchBox.tpl -text
+demos/quickstart/protected/controls/es/SinceVersion.tpl -text
+demos/quickstart/protected/controls/es/TopicList.tpl -text
 demos/quickstart/protected/controls/fr/Layout.tpl -text
 demos/quickstart/protected/controls/fr/RunBar.tpl -text
 demos/quickstart/protected/controls/fr/SampleLayout.tpl -text
