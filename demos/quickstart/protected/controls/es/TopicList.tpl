@@ -1,7 +1,7 @@
 <div id="toc">
 
 <div class="topic">
-<div>Comenzar</div>
+<div>Comenzar</div> 
 <ul>
     <li><a href="?page=GettingStarted.Introduction">Introducci&oacute;n</a></li>
     <li><a href="?page=GettingStarted.AboutPrado">¿Que es PRADO?</a></li>
