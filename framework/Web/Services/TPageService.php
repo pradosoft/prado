@@ -671,8 +671,7 @@ class TPageConfiguration extends TComponent
 							}
 							if($pattern[strlen($pattern)-1]==='*') // try wildcard matching
 							{
-								$pattern=strtolower(substr($pattern,0,strlen($pattern)-1));
-								if(strpos(strtolower($this->_pagePath),$pattern)===0)
+								if(strncasecmp($this->_pagePath,$pattern,strlen($pattern)-1)===0)
 								{
 									$ruleApplies=true;
 									break;
@@ -703,10 +702,7 @@ class TPageConfiguration extends TComponent
 				if(strcasecmp($id,$this->_pagePath)===0)
 					$matching=true;
 				else if($id[strlen($id)-1]==='*') // try wildcard matching
-				{
-					$id=strtolower(substr($id,0,strlen($id)-1));
-					$matching=(strpos(strtolower($this->_pagePath),$pattern)===0);
-				}
+					$matching=strncasecmp($this->_pagePath,$id,strlen($id)-1)===0;
 				if($matching)
 					$this->_properties=array_merge($this->_properties,$properties->toArray());
 			}
