@@ -212,27 +212,8 @@ class TAuthorizationRule extends TComponent
 		$ip=Prado::getApplication()->getRequest()->getUserHostAddress();
 		foreach($this->_ipRules as $rule)
 		{
-			if($rule===$ip)
+			if($rule===$ip || (($pos=strpos($rule,'*'))!==false && strncmp($ip,$rule,$pos)===0))
 				return 1;
-			if(strpos($rule,'*')!==false)
-			{
-				$a=explode('.',$rule);
-				$b=explode('.',$ip);
-				if(isset($a[3]) && isset($b[3]))
-				{
-					$matched=true;
-					for($i=0;$i<4;++$i)
-					{
-						if($a[$i]!==$b[i] && $a[$i]!=='*')
-						{
-							$matched=false;
-							break;
-						}
-					}
-					if($matched)
-						return 1;
-				}
-			}
 		}
 		return 0;
 	}
