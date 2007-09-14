@@ -76,7 +76,7 @@ Homepage (juga disebut halaman standar) <tt>Home.page</tt> adalah satu-satunya <
 </p>
 
 <p>
-Content in the file <tt>Home.page</tt> uses the <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1">PRADO template format</a>, which is mostly like HTML enhanced with a few PRADO-specific tags. For example, in <tt>Home.page</tt> we see the following pure HTML content:
+Konen dalam file <tt>Home.page</tt> menggunakan <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1">format template PRADO</a>, yang kebanyakan mirip HTML dengan beberapa tag spesifik-PRADO. Sebagai contoh, dalam <tt>Home.page</tt> kita melihat konten murni HTML berikut:
 </p>
 
 <com:TTextHighlighter CssClass="source" Language="prado">

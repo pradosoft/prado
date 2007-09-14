@@ -134,7 +134,7 @@ Menulis template dengan editor teks biasa dapat membosankan dan tidak intuitif u
 Sekarang kita membuat kelas halaman <tt>Contact.php</tt>. Alasan kita membutuhkan kelas halaman adalah karena kita perlu merespon umpan balik yang dikirimkan oleh pengguna.
 
 <p>
-Notice in the template we have the following line. The template essentially states that when a user clicks on the button, it should call the <tt>submitButtonClicked()</tt> method. Here <tt>OnClick</tt> is the name of the user click event, and the method must be defined in the page class.
+Perhatikan dalam template kita mempunyai baris berikut. Template secara esensi menyatakan bahwa saat pengguna mengklik tombol, ia harus memanggil metode <tt>submitButtonClicked()</tt>. Di sini <tt>OnClick</tt> adalah nama dari event yang diklik pengguna, dan metode harus didefinisikan dalam kelas halaman.
 </p>
 
 <com:TTextHighlighter CssClass="source" Language="prado">

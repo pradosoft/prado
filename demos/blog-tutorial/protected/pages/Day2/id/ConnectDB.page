@@ -40,7 +40,7 @@ Konfigurasi di atas memperlihatkan bahwa kita menambahkan dua <a href="http://ww
 </p>
 
 <com:InfoBox>
-Seseorang dapat menyiapkan dua atau lebih koneksi DB dalam konfigurasi aplikasi. Untuk lebih jelasnya, lihat <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">DOkumentasi Rekaman Aktif</a>. Dan tentunya, seseorang juga bisa secara eksplisit membuat koneksi DB dalam kode PHP menggunakan komponen <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.DAO">TDbConnection</a> dalam PDO.
+Seseorang dapat menyiapkan dua atau lebih koneksi DB dalam konfigurasi aplikasi. Untuk lebih jelasnya, lihat <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">Dokumentasi Rekaman Aktif</a>. Dan tentunya, seseorang juga bisa secara eksplisit membuat koneksi DB dalam kode PHP menggunakan komponen <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.DAO">TDbConnection</a> dalam PDO.
 </com:InfoBox>
 
 </com:TContent>
