@@ -85,6 +85,9 @@ class TAuthorizationRule extends TComponent
 		$this->_everyone=false;
 		$this->_guest=false;
 		$this->_authenticated=false;
+
+		if(trim($users)==='')
+			$users='*';
 		foreach(explode(',',$users) as $user)
 		{
 			if(($user=trim(strtolower($user)))!=='')
@@ -102,16 +105,24 @@ class TAuthorizationRule extends TComponent
 					$this->_users[]=$user;
 			}
 		}
+
+		if(trim($roles)==='')
+			$roles='*';
 		foreach(explode(',',$roles) as $role)
 		{
 			if(($role=trim(strtolower($role)))!=='')
 				$this->_roles[]=$role;
 		}
-		$verb=trim(strtolower($verb));
-		if($verb==='' || $verb==='get' || $verb==='post')
+
+		if(($verb=trim(strtolower($verb)))==='')
+			$verb='*';
+		if($verb==='*' || $verb==='get' || $verb==='post')
 			$this->_verb=$verb;
 		else
 			throw new TInvalidDataValueException('authorizationrule_verb_invalid',$verb);
+
+		if(trim($ipRules)==='')
+			$ipRules='*';
 		foreach(explode(',',$ipRules) as $ipRule)
 		{
 			if(($ipRule=trim($ipRule))!=='')
@@ -185,37 +196,49 @@ class TAuthorizationRule extends TComponent
 	}
 
 	/**
+	 * @param IUser the user object
+	 * @param string the request verb (GET, PUT)
+	 * @param string the request IP address
 	 * @return integer 1 if the user is allowed, -1 if the user is denied, 0 if the rule does not apply to the user
 	 */
-	public function isUserAllowed(IUser $user,$verb)
+	public function isUserAllowed(IUser $user,$verb,$ip)
 	{
-		$decision=($this->_action==='allow')?1:-1;
-		if($this->_verb==='' || strcasecmp($verb,$this->_verb)===0)
+		if($this->isVerbMatched($verb) && $this->isIpMatched($ip) && $this->isUserMatched($user) && $this->isRoleMatched($user))
+			return ($this->_action==='allow')?1:-1;
+		else
+			return 0;
+	}
+
+	private function isIpMatched($ip)
+	{
+		if(empty($this->_ipRules))
+			return 1;
+		foreach($this->_ipRules as $rule)
 		{
-			if(!$this->isHostAddressMatched())
-				return 0;
-			if($this->_everyone || ($this->_guest && $user->getIsGuest()) || ($this->_authenticated && !$user->getIsGuest()))
-				return $decision;
-			if(in_array(strtolower($user->getName()),$this->_users))
-				return $decision;
-			foreach($this->_roles as $role)
-				if($user->isInRole($role))
-					return $decision;
+			if($rule==='*' || $rule===$ip || (($pos=strpos($rule,'*'))!==false && strncmp($ip,$rule,$pos)===0))
+				return 1;
 		}
 		return 0;
 	}
 
-	private function isHostAddressMatched()
+	private function isUserMatched($user)
 	{
-		if(empty($this->_ipRules))
-			return 1;
-		$ip=Prado::getApplication()->getRequest()->getUserHostAddress();
-		foreach($this->_ipRules as $rule)
+		return ($this->_everyone || ($this->_guest && $user->getIsGuest()) || ($this->_authenticated && !$user->getIsGuest()));
+	}
+
+	private function isRoleMatched($user)
+	{
+		foreach($this->_roles as $role)
 		{
-			if($rule===$ip || (($pos=strpos($rule,'*'))!==false && strncmp($ip,$rule,$pos)===0))
-				return 1;
+			if($role==='*' || $user->isInRole($role))
+				return true;
 		}
-		return 0;
+		return false;
+	}
+
+	private function isVerbMatched($verb)
+	{
+		return ($this->_verb==='*' || strcasecmp($verb,$this->_verb)===0);
 	}
 }
 
@@ -235,16 +258,17 @@ class TAuthorizationRuleCollection extends TList
 	/**
 	 * @param IUser the user to be authorized
 	 * @param string verb, can be empty, 'post' or 'get'.
+	 * @param string the request IP address
 	 * @return boolean whether the user is allowed
 	 */
-	public function isUserAllowed($user,$verb)
+	public function isUserAllowed($user,$verb,$ip)
 	{
 		if($user instanceof IUser)
 		{
 			$verb=strtolower(trim($verb));
 			foreach($this as $rule)
 			{
-				if(($decision=$rule->isUserAllowed($user,$verb))!==0)
+				if(($decision=$rule->isUserAllowed($user,$verb,$ip))!==0)
 					return ($decision>0);
 			}
 			return true;

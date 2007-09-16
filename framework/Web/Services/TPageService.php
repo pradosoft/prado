@@ -653,7 +653,7 @@ class TPageConfiguration extends TComponent
 			{
 				$patterns=$node->getAttribute('pages');
 				$ruleApplies=false;
-				if(empty($patterns)) // null or empty string
+				if(empty($patterns) || trim($patterns)==='*') // null or empty string
 					$ruleApplies=true;
 				else
 				{
@@ -681,7 +681,7 @@ class TPageConfiguration extends TComponent
 					}
 				}
 				if($ruleApplies)
-					$rules[]=new TAuthorizationRule($node->getTagName(),$node->getAttribute('users'),$node->getAttribute('roles'),$node->getAttribute('verb'),$node->getAttribute('ip'));
+					$rules[]=new TAuthorizationRule($node->getTagName(),$node->getAttribute('users'),$node->getAttribute('roles'),$node->getAttribute('verb'),$node->getAttribute('ips'));
 			}
 			$this->_rules=array_merge($rules,$this->_rules);
 		}

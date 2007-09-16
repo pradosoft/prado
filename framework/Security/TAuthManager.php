@@ -251,7 +251,7 @@ class TAuthManager extends TModule
 		$application=$this->getApplication();
 		if($this->hasEventHandler('OnAuthorize'))
 			$this->raiseEvent('OnAuthorize',$this,$application);
-		if(!$application->getAuthorizationRules()->isUserAllowed($application->getUser(),$application->getRequest()->getRequestType()))
+		if(!$application->getAuthorizationRules()->isUserAllowed($application->getUser(),$application->getRequest()->getRequestType(),$application->getRequest()->getUserHostAddress()))
 		{
 			$application->getResponse()->setStatusCode(401);
 			$application->completeRequest();

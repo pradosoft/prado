@@ -56,10 +56,10 @@ Authorization rules for pages are specified in <a href="?page=Configurations.Pag
 An authorization rule can be either an <tt>allow</tt> rule or a <tt>deny</tt> rule. Each rule consists of four optional properties:
 </p>
 <ul id="u1" class="block-content">
-<li><tt>pages</tt> - list of comma-separated page names that this rule applies to. If empty or not set, this rule will apply to all pages under the current directory and all its subdirectories recursively.</li>
-<li><tt>users</tt> - list of comma-separated user names that this rule applies to. A character * refers to all users including anonymous/guest user. A character ? refers to anonymous/guest user. And a character @ refers to authenticated users (available since v3.1).</li>
-<li><tt>roles</tt> - list of comma-separated user roles that this rule applies to.</li>
-<li><tt>verb</tt> - page access method that this rule applies to. It can be either <tt>get</tt> or <tt>post</tt>. If empty or not set, the rule applies to both methods.</li>
+<li><tt>pages</tt> - list of comma-separated page names that this rule applies to. If empty, not set or wildcard '*', this rule will apply to all pages under the current directory and all its subdirectories recursively.</li>
+<li><tt>users</tt> - list of comma-separated user names that this rule applies to. If empty, not set or wildcard '*', this rule will apply to all users including anonymous/guest user. A character ? refers to anonymous/guest user. And a character @ refers to authenticated users (available since v3.1).</li>
+<li><tt>roles</tt> - list of comma-separated user roles that this rule applies to. If empty, not set or wildcard '*', this rule will apply to all user roles.</li>
+<li><tt>verb</tt> - page access method that this rule applies to. It can be either <tt>get</tt> or <tt>post</tt>. If empty, not set or wildcard '*', the rule will apply to both methods.</li>
 </ul>
 
 <p id="720558" class="block-content">
@@ -80,7 +80,7 @@ Since version 3.1.1, the <tt>pages</tt> attribute in the authorization rules can
 </p>
 
 <p class="block-content">
-Also introduced in version 3.1.1 are IP rules. They are specified by a new attribute <tt>ip</tt> in authorization rules. The IP rules are used to determine if an authorization rule aplies to an end-user according to his IP address. One can list a few IPs together, separated by comma ','. Wildcard '*' can be used in the rules. For example, <tt>ip="192.168.0.2, 192.168.1.*"</tt> means the rule applies to users whose IP address is 192.168.0.2 or 192.168.1.*. The latter matches any host in the subnet 192.168.1.
+Also introduced in version 3.1.1 are IP rules. They are specified by a new attribute <tt>ips</tt> in authorization rules. The IP rules are used to determine if an authorization rule aplies to an end-user according to his IP address. One can list a few IPs together, separated by comma ','. Wildcard '*' can be used in the rules. For example, <tt>ips="192.168.0.2, 192.168.1.*"</tt> means the rule applies to users whose IP address is 192.168.0.2 or 192.168.1.*. The latter matches any host in the subnet 192.168.1. If the attribute 'ips' is empty, not set or wildcard '*', the corresponding rule will apply to requests coming from any host address.
 </p>
 
 <h2 id="5504">Using <tt>TUserManager</tt></h2>
