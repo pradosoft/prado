@@ -87,7 +87,7 @@ class TSessionPageStatePersister extends TComponent implements IPageStatePersist
 			throw new TInvalidDataValueException('sessionpagestatepersister_historysize_invalid');
 	}
 	/**
-	 * Saves state in hidden fields.
+	 * Saves state in session.
 	 * @param mixed state to be stored
 	 */
 	public function save($state)
@@ -111,7 +111,7 @@ class TSessionPageStatePersister extends TComponent implements IPageStatePersist
 	}
 
 	/**
-	 * Loads page state from hidden fields.
+	 * Loads page state from session.
 	 * @return mixed the restored state
 	 * @throws THttpException if page state is corrupted
 	 */

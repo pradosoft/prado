@@ -2498,6 +2498,7 @@ framework/Web/UI/ActiveControls/TEventTriggeredCallback.php -text
 framework/Web/UI/ActiveControls/TInPlaceTextBox.php -text
 framework/Web/UI/ActiveControls/TTriggeredCallback.php -text
 framework/Web/UI/ActiveControls/TValueTriggeredCallback.php -text
+framework/Web/UI/TCachePageStatePersister.php -text
 framework/Web/UI/TClientScriptManager.php -text
 framework/Web/UI/TCompositeControl.php -text
 framework/Web/UI/TControl.php -text

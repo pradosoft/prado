@@ -67,7 +67,7 @@ class TCacheHttpSession extends THttpSession
     }
 
 	/**
-	 * @return string host name of the memcache server
+	 * @return string the ID of the cache module.
 	 */
 	public function getCacheModuleID()
 	{

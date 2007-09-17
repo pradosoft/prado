@@ -445,3 +445,8 @@ captcha_imagettftext_required			= TCaptcha requires PHP GD2 extension with TrueT
 captcha_imagepng_required				= TCaptcha requires PHP GD2 extension with PNG image format support.
 
 slider_handle_class_invalid				= TSlider.HandleClass '{0}' is not a valid user class. The class must extends TSliderHandle.
+
+cachepagestatepersister_cachemoduleid_invalid = TCachePageStatePersister.CacheModuleID '{0}' does not point to a valid cache module.
+cachepagestatepersister_cache_required  = TCachePageStatePersister requires a cache module to be loaded.
+cachepagestatepersister_timeout_invalid = TCachePageStatePersister.Timeout must be an integer no less than zero.
+cachepagestatepersister_pagestate_corrupted = Page state is corrupted.
