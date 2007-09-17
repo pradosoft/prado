@@ -523,9 +523,11 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 				$template=$this->_itemTemplate;
 				break;
 			case TListItemType::AlternatingItem :
-				if(($classPath=$this->getAlternatingItemRenderer())==='')
+				if(($classPath=$this->getAlternatingItemRenderer())==='' && ($template=$this->_alternatingItemTemplate)===null)
+				{
 					$classPath=$this->getItemRenderer();
-				$template=$this->_alternatingItemTemplate===null ? $this->_itemTemplate : $this->_alternatingItemTemplate;
+					$template=$this->_itemTemplate;
+				}
 				break;
 			case TListItemType::Header :
 				$classPath=$this->getHeaderRenderer();

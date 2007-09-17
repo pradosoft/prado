@@ -1173,6 +1173,35 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 			return null;
 	}
 
+	private function getAlternatingItemDisplay()
+	{
+		if(($classPath=$this->getAlternatingItemRenderer())==='' && ($template=$this->_alternatingItemTemplate)===null)
+			return array($this->getItemRenderer(),$this->_itemTemplate);
+		else
+			return array($classPath,$template);
+	}
+
+	private function getSelectedItemDisplay($itemIndex)
+	{
+		if(($classPath=$this->getSelectedItemRenderer())==='' && ($template=$this->_selectedItemTemplate)===null)
+		{
+			if($itemIndex%2===0)
+				return array($this->getItemRenderer(),$this->_itemTemplate);
+			else
+				return $this->getAlternatingItemDisplay();
+		}
+		else
+			return array($classPath,$template);
+	}
+
+	private function getEditItemDisplay($itemIndex)
+	{
+		if(($classPath=$this->getEditItemRenderer())==='' && ($template=$this->_editItemTemplate)===null)
+			return $this->getSelectedItemDisplay($itemIndex);
+		else
+			return array($classPath,$template);
+	}
+
 	/**
 	 * Creates a datalist item instance based on the item type and index.
 	 * @param integer zero-based item index
@@ -1190,35 +1219,13 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 				$template=$this->_itemTemplate;
 				break;
 			case TListItemType::AlternatingItem :
-				if(($classPath=$this->getAlternatingItemRenderer())==='')
-					$classPath=$this->getItemRenderer();
-				$template=$this->_alternatingItemTemplate===null ? $this->_itemTemplate : $this->_alternatingItemTemplate;
+				list($classPath,$template)=$this->getAlternatingItemDisplay();
 				break;
 			case TListItemType::SelectedItem:
-				if(($classPath=$this->getSelectedItemRenderer())==='')
-				{
-					if(!($itemIndex%2) || ($classPath=$this->getAlternatingItemRenderer())==='')
-						$classPath=$this->getItemRenderer();
-				}
-				if(($template=$this->_selectedItemTemplate)===null)
-				{
-					if(!($itemIndex%2) || ($template=$this->_alternatingItemTemplate)===null)
-						$template=$this->_itemTemplate;
-				}
+				list($classPath,$template)=$this->getSelectedItemDisplay($itemIndex);
 				break;
 			case TListItemType::EditItem:
-				if(($classPath=$this->getEditItemRenderer())==='')
-				{
-					if($itemIndex!==$this->getSelectedItemIndex() || ($classPath=$this->getSelectedItemRenderer())==='')
-						if(!($itemIndex%2) || ($classPath=$this->getAlternatingItemRenderer())==='')
-							$classPath=$this->getItemRenderer();
-				}
-				if(($template=$this->_editItemTemplate)===null)
-				{
-					if($itemIndex!==$this->getSelectedItemIndex() || ($template=$this->_selectedItemTemplate)===null)
-						if(!($itemIndex%2) || ($template=$this->_alternatingItemTemplate)===null)
-							$template=$this->_itemTemplate;
-				}
+				list($classPath,$template)=$this->getEditItemDisplay($itemIndex);
 				break;
 			case TListItemType::Header :
 				$classPath=$this->getHeaderRenderer();

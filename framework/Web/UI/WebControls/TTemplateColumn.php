@@ -194,9 +194,11 @@ class TTemplateColumn extends TDataGridColumn
 		{
 			if($itemType===TListItemType::EditItem)
 			{
-				$template=$this->_editItemTemplate===null?$this->_itemTemplate:$this->_editItemTemplate;
-				if(($classPath=$this->getEditItemRenderer())==='')
+				if(($classPath=$this->getEditItemRenderer())==='' && ($template=$this->_editItemTemplate)===null)
+				{
 					$classPath=$this->getItemRenderer();
+					$template=$this->_itemTemplate;
+				}
 			}
 			else
 			{
@@ -236,7 +238,7 @@ class TTemplateColumn extends TDataGridColumn
 			else if($this->_footerTemplate!==null)
 				$this->_footerTemplate->instantiateIn($cell);
 			else
-				$this->initializeHeaderCell($cell,$columnIndex);
+				$this->initializeFooterCell($cell,$columnIndex);
 		}
 	}
 
