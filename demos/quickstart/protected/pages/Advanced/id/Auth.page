@@ -5,7 +5,7 @@
 Otentikasi adalah proses verifikasi apakah seseorang yang mengaku siapa dirinya. Biasanya menyangkut nama pengguna dan kata sandi, tapi bisa menyertakan metode lain dari mendemonstrasikan identitas, seperti kartu pintar, sidik jari, dll.
 </p>
 <p id="720550" class="block-content">
-Otorisasi adalah mendapatkan keterangan jika orang yang sekali teridentifikasi, diijinkan untuk memanipulasi sumber daya tertentu. Ini biasanya ditentukan dengan menyelidiki apakah orang itu memiliki aturan akses tertentu  terhadap sumber daya atau tidak.
+Otorisasi adalah mendapatkan keterangan jika orang yang sekali teridentifikasi, diijinkan untuk memanipulasi sumber daya tertentu. Ini biasanya ditentukan dengan menyelidiki apakah orang itu memiliki aturan akses tertentu terhadap sumber daya atau tidak.
 </p>
 
 <h2 id="5502">Bagaimana Kerangka Kerja Otentikasi PRADO Bekerja</h2>
@@ -125,4 +125,4 @@ Dalam contoh di atas, <tt>UserClass</tt> menetapkan bahwa kelas akan dipakai unt
 Kelas pengguna harus menerapkan dua metode abstrak dalam <tt>TDbUser</tt>: <tt>validateUser()</tt> dan <tt>createUser()</tt>. Karena informasi akun pengguna disimpan dalam sebuah database, kelas pengguna dapat menggunakan properti <tt>DbConnection</tt>-nya untuk menjangkau database.
 </p>
 
-<div class="last-modified">$Id: Auth.page 2012 2007-06-15 16:09:57Z xue $</div></com:TContent>
+<div class="last-modified">$Id: Auth.page 2226 2007-09-16 19:32:58Z xue $</div></com:TContent>

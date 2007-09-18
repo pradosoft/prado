@@ -3,7 +3,7 @@
 <h1 id="8005">Fitur Baru</h1>
 
 <p id="40005" class="block-content">
-Halaman ini meringkas fitur utama baru yang diperkenalkan dalam setiap rilis PRADO.
+Halaman ini meringkas fitur-fitur utama baru yang diperkenalkan dalam setiap rilis PRADO.
 </p>
 
 <h2>Version 3.1.1</h2>
@@ -14,7 +14,8 @@ Halaman ini meringkas fitur utama baru yang diperkenalkan dalam setiap rilis PRA
 <li>Ditambahkan kontrol baru <a href="?page=Controls.Slider">TSlider</a> yang menampilkan sebuah slider yang dapat dipakai untuk input numerik.</li>
 <li>Ditambahkan dukungan Oracle DB ke Rekaman Aktif</li>
 <li>Ditambahkan dukungan TDataGrid untuk membolehkan pengelompokan sel yang berurutan dengan isi yang sama.</li>
-<li>Ditambahkan dukungan untuk mengkonfigurasi properti halaman dan aturan otorisasi menggunakan <a href="?page=Configurations.PageConfig">relative page paths</a> in application and page configurations. Added support to allow <a href="?page=Advanced.Auth">otorisasi</a> berdasarkan pada alamat remote host.</li>
+<li>Ditambahkan dukungan untuk mengkonfigurasi properti halaman dan aturan otorisasi menggunakan <a href="?page=Configurations.PageConfig">relative page paths</a> dalam konfigurasi aplikasi dan halaman. Ditambahkan dukungan untuk membolehkan <a href="?page=Advanced.Auth">otorisasi</a> didasarkan pada alamat remote host.</li>
+<li>Ditamahkan persister kondisi halaman baru <tt>TCachePageStatePersister</tt>. Ia membolehkan kondisi halaman untuk disimpan menggunakan modul cache (misalnya TMemCache, TDbCache, dll.)
 </ul>
 
 <h2 id="8006">Versi 3.1.0</h2>
