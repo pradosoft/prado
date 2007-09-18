@@ -22,6 +22,7 @@ ENH: Ticket#692,700 - Added support to wildcard in pages configuration; added IP
 ENH: Added THead requirement check (Qiang)
 ENH: Added TOutputCache.CacheTime (Qiang)
 CHG: Ticket#685 - Slashes and backslashes mixup in PradoBase (Qiang)
+CHG: Ticket#705 - TImage will not set border style by default (Qiang)
 CHG: GeSHi is replaced with Text_Highlighter (Christophe)
 CHG: Validators will not validate disabled controls (Qiang)
 NEW: Ticket#676 - Added primilary Oracle support (Christophe)

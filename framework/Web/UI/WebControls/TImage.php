@@ -47,8 +47,6 @@ class TImage extends TWebControl implements IDataRenderer
 			$writer->addAttribute('longdesc',$desc);
 		if(($align=$this->getImageAlign())!=='')
 			$writer->addAttribute('align',$align);
-		if($this->getBorderWidth()==='')
-			$writer->addStyleAttribute('border-width','0px');
 		parent::addAttributesToRender($writer);
 	}
 
