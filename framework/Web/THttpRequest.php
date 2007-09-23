@@ -587,7 +587,10 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	public function resolveRequest($serviceIDs)
 	{
 		Prado::trace("Resolving request from ".$_SERVER['REMOTE_ADDR'],'System.Web.THttpRequest');
-		$this->_items=array_merge($_GET,$this->parseUrl(),$_POST);
+		$getParams=$this->parseUrl();
+		foreach($getParams as $name=>$value)
+			$_GET[$name]=$value;
+		$this->_items=array_merge($_GET,$_POST);
 		$this->_requestResolved=true;
 		foreach($serviceIDs as $serviceID)
 		{
