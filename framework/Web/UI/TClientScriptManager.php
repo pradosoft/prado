@@ -145,11 +145,10 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	protected function renderPradoScripts($writer)
 	{
-		$files=array_keys($this->_registeredPradoScripts);
-		if(count($files) > 0)
+		if(($packages=array_keys($this->_registeredPradoScripts))!==array())
 		{
 			$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
-			$url = $this->registerJavascriptPackages($base, $files);
+			$url = $this->registerJavascriptPackages($base, $packages);
 			$writer->write(TJavaScript::renderScriptFile($url));
 		}
 	}
@@ -206,16 +205,7 @@ class TClientScriptManager extends TApplicationComponent
 	protected function getPackagePathUrl($base)
 	{
 		$assets = Prado::getApplication()->getAssetManager();
-		if(strpos($base, $assets->getBaseUrl())===false)
-		{
-			if(!is_null($dir = Prado::getPathOfNameSpace($base)))
-				$base = $dir;
-			return array($assets->getPublishedPath($base), $assets->publishFilePath($base));
-		}
-		else
-		{
-			return array($assets->getBasePath().str_replace($assets->getBaseUrl(),'',$base), $base);
-		}
+		return array($assets->getPublishedPath($base), $assets->publishFilePath($base));
 	}
 
 	/**
