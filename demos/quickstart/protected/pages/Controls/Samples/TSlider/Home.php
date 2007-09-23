@@ -1,6 +1,10 @@
 <?php
 class Home extends TPage 
 {
+	public function onInit ($param)
+	{
+		parent::onInit($param);
+	}
 	public function submit1 ($sender, $param)
 	{
 		$this->slider1Result->setText('Slider Value : '.$this->slider1->getValue());	

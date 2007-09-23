@@ -2603,8 +2603,9 @@ framework/Web/UI/WebControls/TWebControlAdapter.php -text
 framework/Web/UI/WebControls/TWizard.php -text
 framework/Web/UI/WebControls/TWizardNavigationButtonStyle.php -text
 framework/Web/UI/WebControls/TXmlTransform.php -text
-framework/Web/UI/WebControls/assets/TSlider.css -text
-framework/Web/UI/WebControls/assets/TSliderHandle.png -text svneol=unset#image/png
+framework/Web/UI/WebControls/assets/TSlider/TSlider.css -text
+framework/Web/UI/WebControls/assets/TSlider/TSliderHandleHorizontal.png -text
+framework/Web/UI/WebControls/assets/TSlider/TSliderHandleVertical.png -text
 framework/Web/UI/WebControls/assets/captcha.php -text
 framework/Web/UI/WebControls/assets/keyboard.css -text
 framework/Web/UI/WebControls/assets/tabpanel.css -text

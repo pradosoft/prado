@@ -25,17 +25,12 @@
  * Notice that this step will be recomputed if there is more than 200 values between the range boundaries.
  * You can also provide the allowed values by setting the {@link SetValues Values} array.
  *
- * The handle sub-properties can be accessed by {@link GetHandle Handle} property. You can also provide your own control
- * for the handle, using {@link SetHandleClass HandleClass} property. Note that this class must be a subclass of
- * {@link TSliderHandle}
- *
+ * A 'Progress Indicator' can be displayed within the track with the {@link SetProgressIndicator ProgressIndicator} property.
+ * 
  * The TSlider control can be easily customized using CssClasses. You can provide your own css file, using the
  * {@link SetCssUrl CssUrl} property.
- * The css class for TSlider can be set by the {@link setCssClass CssClass} property. Defaults values are "hslider" for
- * an Horizontal slider, or "vslider" for a Vertical one.
- * The css class for the Handle can be set by the <b>Handle.CssClass</b> subproperty. Defaults is "handle", which just
- * draw a red block as a cursor. 'handle-image' css class is also provided for your convenience, which display an image
- * as the handle.
+ * The css class for TSlider can be set by the {@link setCssClass CssClass} property. Default value is "Slider HorizontalSlider" 
+ * for an horizontal slider, and "Slider VerticalSlider" for a vertical one.
  *
  * If {@link SetAutoPostBack AutoPostBack} property is true, postback is sent as soon as the value changed.
  *
@@ -150,7 +145,22 @@ class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
 	{
 		$this->setViewState('StepSize', $value, 1.0);
 	}
+	
+	/**
+	 * @return boolean wether to display a progress indicator or not. Defaults to true.
+	 */
+	public function getProgressIndicator ()
+	{
+		return $this->getViewState('ProgressIndicator', true);
+	}
 
+	/**
+	 * @param boolean wether to display a progress indicator or not. Defaults to true.
+	 */
+	public function setProgressIndicator ($value)
+	{
+		$this->setViewState('ProgressIndicator', TPropertyValue::ensureBoolean($value), true);
+	}
 	/**
 	 * @return float current value of slider
 	 */
@@ -210,47 +220,6 @@ class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
 		$this->setViewState('Values', TPropertyValue::ensureArray($value), array());
 	}
 	
-	/**
-	 * Create the child controls
-	 * Override parent implementation to create the handle control
-	 */
-	public function createChildControls()
-	{
-		$this->_handle=prado::createComponent($this->getHandleClass(), $this);
-		if (!$this->_handle instanceof TSliderHandle)
-		{
-				throw new TInvalidDataTypeException('slider_handle_class_invalid', get_class($this->_handle));
-		}
-		$this->getControls()->add($this->_handle);
-	}
-	
-	/**
-	 * This method will return the handle control.
-	 * @return TSliderHandle the control for the slider's handle (must inherit from TSliderHandle}
-	 */
-	public function getHandle ()
-	{
-		$this->ensureChildControls();
-		return $this->_handle;
-	}
-	
-
-	/**
-	 * @return string Custom handle class. Defaults to TSliderHandle;
-	 */
-	public function getHandleClass ()
-	{
-		return $this->getViewState('HandleClass', 'TSliderHandle');
-	}
-
-	/**
-	 * @param string Custom Handle Class
-	 */
-	public function setHandleClass ($value)
-	{
-		$this->setViewState('HandleClass', $value, 'TSliderHandle');
-	}
-
 	/**
 	 * @return boolean a value indicating whether an automatic postback to the server
 	 * will occur whenever the user modifies the slider value. Defaults to false.
@@ -378,9 +347,55 @@ class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id',$this->getClientID());
 		if ($this->getCssClass()==='')
-			$writer->addAttribute('class', $this->getDirection()===TSliderDirection::Horizontal?'hslider':'vslider');
+		{
+			$class=($this->getDirection()==TSliderDirection::Horizontal)?'HorizontalSlider':'VerticalSlider';
+			$writer->addAttribute('class', 'Slider '.$class);
+		}
+		
 	}
 
+	/**
+	 * Render the body content
+	 */
+	public function renderContents($writer)
+	{
+		// Render the 'Track'
+		$writer->addAttribute('class', 'Track');
+		$writer->addAttribute('id', $this->getClientID().'_track');
+		$writer->renderBeginTag('div');
+		// Render the 'Progress Indicator'
+		if ($this->getProgressIndicator())
+		{
+			$writer->addAttribute('class', 'Progress');
+			$writer->addAttribute('id', $this->getClientID().'_progress');
+			$writer->renderBeginTag('div');
+			$writer->renderEndTag();
+		}
+		// Render the 'Ruler'
+		/*
+		 * Removing for now
+		$writer->addAttribute('class', 'RuleContainer');
+		$writer->addAttribute('id', $this->getClientID()."_rule");
+		$writer->renderBeginTag('div');
+		for ($i=0;$i<=100;$i+=10)
+		{
+			$writer->addAttribute('class', 'RuleMark');
+			$attr=($this->getDirection()===TSliderDirection::Horizontal)?"left":"top";
+			$writer->addStyleAttribute($attr, $i.'%');
+			$writer->renderBeginTag('div');
+			$writer->renderEndTag();
+		}
+		$writer->renderEndTag();
+		*/
+		
+		$writer->renderEndTag();
+		
+		// Render the 'Handle'
+		$writer->addAttribute('class', 'Handle');
+		$writer->addAttribute('id', $this->getClientID().'_handle');
+		$writer->renderBeginTag('div');
+		$writer->renderEndTag();
+	}
 	/**
 	 * Registers CSS and JS.
 	 * This method is invoked right before the control rendering, if the control is visible.
@@ -404,10 +419,9 @@ class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
 		if(($url=$this->getCssUrl())==='')
 		{
 			$manager=$this->getApplication()->getAssetManager();
-			// publish the handle image
-			$manager->publishFilePath(dirname(__FILE__).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'TSliderHandle.png');
-			// publish the css file
-			$url=$manager->publishFilePath(dirname(__FILE__).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'TSlider.css');
+			// publish the assets
+			$url=$manager->publishFilePath(dirname(__FILE__).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'TSlider');
+			$url.='/TSlider.css';
 		}
 		$this->getPage()->getClientScript()->registerStyleSheetFile($url,$url);
 	}
@@ -557,61 +571,5 @@ class TSliderDirection extends TEnumerable
 	const Vertical='Vertical';
 }
 
-
-/**
- * TSliderHandle class
- *
- * TSliderHandle is responsible of rendering the 'handle' control on a {@link TSlider}
- * Users can override this class to personalize the handle.
- * Default class renders a 'div' tag, and apply the css class provided by {@link setCssClass CssClass} property.
- *
- * Two css classes are provided by default :
- * - handle : render a simple red cursor
- * - handle-image : render an image as handle
- *
- * @author Christophe Boulain <Christophe.Boulain@gmail.com>
- * @version $Id$
- * @package System.Web.UI.WebControls
- * @since 3.1.1
- */
-class TSliderHandle extends TWebControl
-{
-	private $_track;
-
-	/**
-	 * Override parent constructor to get the track control as parameter
-	 *
-	 * @param TSlider track control
-	 */
-	public function __construct (TSlider $track)
-	{
-		$this->_track=$track;
-	}
-
-	/**
-	 * @return TSlider track control
-	 */
-	public function getTrack()
-	{
-		return $this->_track;
-	}
-
-	public function getTagName()
-	{
-		return 'div';
-	}
-
-	/**
-	 * Add the specified css classes to the handle
-	 * @param THtmlWriter writer
-	 */
-	public function addAttributesToRender($writer)
-	{
-		parent::addAttributesToRender($writer);
-		$writer->addAttribute('id', $this->getTrack()->getClientID()."_handle");
-		if($this->getCssClass()==='')
-			$writer->addAttribute('class', 'handle');
-	}
-}
 
 ?>
