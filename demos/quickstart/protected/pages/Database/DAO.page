@@ -140,7 +140,7 @@ $command->execute();
 The methods <tt>bindParameter()</tt> and <tt>bindValue()</tt> are very similar. The only difference is that the former binds a parameter with a PHP variable reference while the latter with a value. For parameters that represent large block of data memory, the former is preferred for performance consideration.
 </p>
 <p id="680476" class="block-content">
-For more details about binding parameters, see the <a href="http://www.php.net/manual/en/function.pdostatement-bindparam.php">relevant PHP documentation</a>.
+For more details about binding parameters, see the <a href="http://www.php.net/manual/en/function.PDOStatement-bindParam.php">relevant PHP documentation</a>.
 </p>
 
 
