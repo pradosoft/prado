@@ -28,6 +28,10 @@
   </li>
 
   <li>
+  <a href="?page=Controls.Conditional">TConditional</a> menampilkan konten terkaiit ke hasil true atau false dari sebuah ekspresi PHP.
+  </li>
+
+  <li>
   <a href="?page=Controls.DatePicker">TDatePicker</a> mewakili field input yang mengambil nilai tanggal via dialog kalender.
   </li>
 

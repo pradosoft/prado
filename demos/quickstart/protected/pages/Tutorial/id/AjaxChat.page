@@ -3,13 +3,13 @@
 	<com:RequiresVersion Version="3.1a" />
 	<p id="90081" class="block-content">Tutorial ini memperkenalkan kerangka kerja aplikasi web Prado
 	<a href="?page=Database.ActiveRecord">ActiveRecord</a>
-	dan <a href="?page=ActiveControls.Home">Active Controls</a> untuk membangun aplikasi web Chat. Diasumsikan bahwa anda sudah terbiasa dengan PHP dan akan telah mengakses server web yang dapat melayani naskah PHP5.
+	dan <a href="?page=ActiveControls.Home">Kontrol Aktif</a> untuk membangun aplikasi web Chat. Diasumsikan bahwa anda sudah terbiasa dengan PHP dan akan telah mengakses server web yang dapat melayani naskah PHP5.
 	Aplikasi chat dasar ini akan memanfaatkan ide/komponen berikut dalam Prado.
 	</p>
 	<ul id="u1" class="block-content">
 		<li>Membangun kelas kustom Manajer Pengguna.</li>
 		<li>Mengotentikasi dan menambahkan pengguna ke database.</li>
-		<li>Menggunakan ActiveRecord untu berinteraksi dengan database.</li>
+		<li>Menggunakan ActiveRecord untuk berinteraksi dengan database.</li>
 		<li>Menggunakan Kontrol Aktif dan callbacks untuk menerapkan antarmuka pengguna.</li>
 		<li>Memisahkan logika aplikasi dan alur aplikasi.</li>
 	</ul>
@@ -88,7 +88,7 @@ class Login extends TPage
 	a <com:DocLink ClassPath="System.Web.UI.TForm" Text="TForm" />,
 	a <com:DocLink ClassPath="System.Web.UI.WebControls.TTextBox" Text="TTextBox" />,
 	a <com:DocLink ClassPath="System.Web.UI.WebControls.TRequiredFieldValidator" Text="TRequiredFieldValidator" />
-	dan <com:DocLink ClassPath="System.Web.UI.WebControls.TButton" Text="TButton" />. Halam yang dihasilkan terlihat seperti berikut (setelah menerapkan beberapa style sheet).
+	dan <com:DocLink ClassPath="System.Web.UI.WebControls.TButton" Text="TButton" />. Halaman yang dihasilkan terlihat seperti berikut (setelah menerapkan beberapa style sheet).
 	<img src=<%~ chat2.png %> class="figure" />
 	Jika anda mengklik pada tombol <tt>Login</tt> tanpa memasukan teks
 	apapun dalam kotak teks nama pengguna, pesan kesalahan ditampilkan. Ini dikarenakan <com:DocLink ClassPath="System.Web.UI.WebControls.TRequiredFieldValidator" Text="TRequiredFieldValidator" />
@@ -123,10 +123,10 @@ Selanjutnya, kita menambahkan file konfigurasi <tt>chat/protected/pages/config.x
 </configuration>
 </com:TTextHighlighter>
 Kita menyiapkan otentikasi menggunakan kelas standar seperti dijelaskan dalam
-<a href="?page=Advanced.Auth">otentikasi/otorisasi quickstart</a>.
+<a href="?page=Advanced.Auth">tutorial cepat otentikasi/otorisasi</a>.
 Dalam definisi otorisasi, kita membolehkan pengguna anonim untuk mengakses halaman <tt>Login</tt> (pengguna anonim dietapkan dengan the <tt>?</tt> tanda tanya).
 Kita membolehkan setiap pengguna dengan aturan yang sama dengan "normal" (didefinisikan nanti) untuk mengakses semua halaman, yakni halaman <tt>Login</tt> dan <tt>Home</tt>.
-Terakhir, kita menolak semua pengguna tanpa aturan apapun untuk mengakses setiap halaman. Aturan otorisasi dijalamkan pada basis sama pertama.
+Terakhir, kita menolak semua pengguna tanpa aturan apapun untuk mengakses setiap halaman. Aturan otorisasi dijalankan pada basis sama pertama kali.
 </p>
 
 <p id="90088" class="block-content">Jika anda mencoba untuk mengakses halaman <tt>Home</tt> dengan mengarahkan browser anda ke
@@ -547,7 +547,7 @@ Untuk kemudahan kita membentuk pesan dalam kelas Rekaman Aktif. Untuk aplikasi b
 </p>
 
 <h1 id="18017">Menyatukan Semuanya</h1>
-<p id="90103" class="block-content">Sekarang waktunya untuk menyatukan alur aplikasi secara keseluruhan. Dalam <tt>Home.php</tt> kita memutakhirkan tombol <tt>Send</tt> pengendali event <tt>OnClick</tt> untuk menggunakan logika aplikas yang baru saja kita implementasikan.
+<p id="90103" class="block-content">Sekarang waktunya untuk menyatukan alur aplikasi secara keseluruhan. Dalam <tt>Home.php</tt> kita memutakhirkan tombol <tt>Send</tt> pengendali event <tt>OnClick</tt> untuk menggunakan logika aplikasi yang baru saja kita implementasikan.
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_90049">
 function processMessage($sender, $param)
 {
@@ -572,7 +572,7 @@ Kita cukup menyimpan pesan ke bufer chat dan kemudian meminta semua pesan untuk 
 <p id="90104" class="block-content">Pada titik ini aplikasi sebenarnya sudah berfungsi, cuma tidak bersahabat. Jika anda membuka dua browser berbeda, anda seharusnya bisa berkomunikasi diantara dua pengguna kapan saja tombol <tt>Send</tt> diklik.
 </p>
 
-<p id="90105" class="block-content">Bagian berikutnya barangkali lebih rumit dan mengakali daripada tugas lainnya. Kita perlu untuk meningkatkan pengalaman pengguna. Pertama, kita menginginkan daftar pengguna saat ini juga. Maka kita menambahkan metode berikut ke <tt>Home.php</tt>, kita dapat memanggil metode ini kapansaja beberapa event callback dimunculkan, misalnya saat tombol  <tt>Send</tt> diklik.
+<p id="90105" class="block-content">Bagian berikutnya barangkali lebih rumit dan mengakali daripada tugas lainnya. Kita perlu untuk meningkatkan pengalaman pengguna. Pertama, kita menginginkan daftar pengguna saat ini juga. Maka kita menambahkan metode berikut ke <tt>Home.php</tt>, kita dapat memanggil metode ini kapan saja beberapa event callback dimunculkan, misalnya saat tombol  <tt>Send</tt> diklik.
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_90050">
 protected function refreshUserList()
 {
@@ -616,7 +616,7 @@ protected function refreshMessageList()
 </com:TTextHighlighter>
 Jangkar menggunakan <tt>time()</tt> sebagai ID untuk titik fokus agar saat daftar
 pesan pada sisi klien diperoleh sangat lama, metode fokus akan menggulung daftar
-pesan ke pesan terbaru (ini bekerja baik pada umumnya browsers).
+pesan ke pesan terbaru (ini bekerja baik pada umumnya browser).
 </p>
 
 <p id="90107" class="block-content">Selanjutnya, kita perlu mengalihkan pengguna
@@ -660,7 +660,7 @@ function refresh($sender, $param)
 </com:TTextHighlighter>
 </p>
 
-<p id="90109" class="block-content">Langkah terakhir kita memerlukan kita untuk menggunakan beberapa javascript. Kita menginginkan bahwa saat pengguna mengetikan beberapa teks dalam area teks dan menekan tombol <tt>Enter</tt>, kita menginginkannya untuk mengirimkan pesan tanpa mengklik tombol <tt>Send</tt>. Kita menambahkan beberapa javascript ke
+<p id="90109" class="block-content">Langkah terakhir memerlukan kita untuk menggunakan beberapa javascript. Kita menginginkan bahwa saat pengguna mengetikan beberapa teks dalam area teks dan menekan tombol <tt>Enter</tt>, kita menginginkannya untuk mengirimkan pesan tanpa mengklik tombol <tt>Send</tt>. Kita menambahkan beberapa javascript ke
 <tt>Home.page</tt>.
 
 <com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_90055">
@@ -677,7 +677,7 @@ Event.observe($("&lt;%= $this->userinput->ClientID %&gt;"), "keypress", function
 &lt;/com:TClientScript&gt;
 </com:TTextHighlighter>
 Rincian sehubungan dengan javascript bisa dilihat dalam seksi
-<a href="?page=Advanced.Scripts">Pengenalan Javascript</a> pada quickstart.
+<a href="?page=Advanced.Scripts">Pengenalan Javascript</a> pada tutorial cepat.
 </p>
 
 <p id="90110" class="block-content">Ini melengkapi tutorial untuk membuat aplikasi chat web menggunakan kerangka kerja Prado. Diharapkan anda menikmatinya.

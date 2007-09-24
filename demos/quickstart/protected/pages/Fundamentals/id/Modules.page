@@ -32,7 +32,7 @@ Modul sesi melapisi fungsionalitas terkait dengan penanganan sesi pengguna. Modu
 <a name="error"></a>
 <h2 id="1005">Modul Pengendali Kesalahan</h2>
 <p id="140147" class="block-content">
-Modul pengendali kesalahan dipakai untuk menangkap dan memproses semua kondisi kesalahan dalam sebuah aplikasi. PRADO menggunakan <tt>TErrorHandler</tt> sebagai modul pengendali kesalahan. Ia menangkap semua peringatan PHP, perhatian dan kekecualian, dan ditampilkan dalam bentuk yang tepat bagi pengguna-akhir. Modul pengendali kesalahan dapat diakses melalui properti <tt>ErrorHandler</tt> dari turunan aplikasi.
+Modul pengendali kesalahan dipakai untuk menangkap dan memproses semua kondisi kesalahan dalam sebuah aplikasi. PRADO menggunakan <tt>TErrorHandler</tt> sebagai modul pengendali kesalahan. Ia menangkap semua peringatan PHP, perhatian dan eksepsi, dan ditampilkan dalam bentuk yang tepat bagi pengguna-akhir. Modul pengendali kesalahan dapat diakses melalui properti <tt>ErrorHandler</tt> dari turunan aplikasi.
 </p>
 
 <a name="custom"></a>

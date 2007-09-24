@@ -38,7 +38,7 @@ Konfigurasi untuk aplikasi disimpan dalam sebuah file XML bernama <tt>applicatio
 <com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_210096">
 <parameter id="ParameterID" value="ParameterValue" />
 </com:TTextHighlighter>
-Catatan, jika atribut <tt>value</tt> tidak ditetapkan, seluruh parameter XML node (dari tipe <tt>TXmlElement</tt>) akan dikembalikan sebagai nilai parameter. Sebagai tambahan, modul <tt>System.Util.TParameterModule</tt> menydiakan satu cara untuk mengambil parameter dari file XML eksternal. Lihat lebih jelasnya dalam dokumentasi API.
+Catatan, jika atribut <tt>value</tt> tidak ditetapkan, seluruh parameter XML node (dari tipe <tt>TXmlElement</tt>) akan dikembalikan sebagai nilai parameter. Sebagai tambahan, modul <tt>System.Util.TParameterModule</tt> menyediakan satu cara untuk mengambil parameter dari file XML eksternal. Lihat lebih jelasnya dalam dokumentasi API.
 </li>
 
 <li>Elemen <tt>&lt;include&gt;</tt> membolehkan seseorang menyertakan file konfigurasi eksternal. Ia sudah diperkenalkan sejak v3.1.0. Atribut <tt>file</tt> menetapkan file konfigurasi eksternal dalam format namespace. Nama ekstensi dari file harus <tt>.xml</tt>. Atribut <tt>when</tt> berisi ekspresi PHP dan opsional (standarnya true). Hanya ketika ekspresi mengevaluasi true, file konfigurasi eksternal akan disertakan. Konteks ekspresi adalah aplikasi, misalnya <tt>$this</tt> dalam ekspresi akan merujuk ke obyek aplikasi.
@@ -53,7 +53,7 @@ File konfigurasi eksternal mempunyai format yang sama seperti dijelaskan di atas
 </p>
 
 <p id="210216" class="block-content">
-Standarnya tanpa konfigurasi eksplisit, aplikasi PRADO akan mengambil beberapa modul inti, seperti <tt>THttpRequest</tt>, <tt>THttpResponse</tt>, dll. Ia juga akan menyediakan <tt>TPageService</tt> sebagai layanan standar. Konfigurasi dan penggunaan modul serta layanan ini tercakup dalam seksi individual pada  tutorial ini. Catatan, jika aplikasi anda mengambil setelan standar untuk modul dan layanan ini, anda tidak perlu menyediakan konfigurasi aplikasi. Akan tetapi, jika modul atau layanan ini tidak mencukupi, atau anda ingin menghubah tingkah lakunya dengan mengkonfigurasi nilai propertinya, anda memerlukan konfigurasi aplikasi.
+Standarnya tanpa konfigurasi eksplisit, aplikasi PRADO akan mengambil beberapa modul inti, seperti <tt>THttpRequest</tt>, <tt>THttpResponse</tt>, dll. Ia juga akan menyediakan <tt>TPageService</tt> sebagai layanan standar. Konfigurasi dan penggunaan modul serta layanan ini tercakup dalam seksi individual pada  tutorial ini. Catatan, jika aplikasi anda mengambil setelan standar untuk modul dan layanan ini, anda tidak perlu menyediakan konfigurasi aplikasi. Akan tetapi, jika modul atau layanan ini tidak mencukupi, atau anda ingin menghubah perilakunya dengan mengkonfigurasi nilai propertinya, anda memerlukan konfigurasi aplikasi.
 </p>
 
 <div class="last-modified">$Id: AppConfig.page 1695 2007-02-13 14:16:09Z xue $</div></com:TContent>

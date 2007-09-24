@@ -64,7 +64,7 @@ function test2()
     Hal baik lainnya dari fungsi ini adalah bahwa anda bisa mengirimkan baik string <tt>id</tt> ataupun elemen obyek itu sendiri, yang menjadikan fungsi ini sangat berguna ketika membuat fungsi lain yang juga mengambil bentuk argumen.
 </p>
 
-<h2 id="6605">Using the <tt>$F()</tt> function</h2>
+<h2 id="6605">Menggunakan fungsi <tt>$F()</tt></h2>
 
 <p id="830734" class="block-content">
     Fungsi <tt>$F()</tt> adalah jalan pintas penyambutan lainnya. Ia mengembalikan nilai dari setiap kontrol input field, seperti kotak teks atau daftar drop-down. Fungsi bisa diambil sebagai argumen baik elemen <tt>id</tt> ataupun elemen obyek itu sendiri.

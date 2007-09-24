@@ -84,7 +84,7 @@ php prado/framework/prado-cli.php -c currency-converter
 		untuk memasukan nilai pertukaran kurs.
 		Nilai properti <tt>ForControl</tt> property menentukan komponen mana label 
 		diperuntukan. Ini membolehkan pengguna aplikasi mengklik pada label
-		untuk memfokuskan pada field (hal yang baik). Anda mungkin telah menggunakan eleman
+		untuk memfokuskan pada field (hal yang baik). Anda mungkin telah menggunakan elemen
 		biasa HTML <tt>&lt;label&gt;</tt> untuk melakukan hal yang sama, tapi
 		anda harus mencari <tt>ID</tt> yang benar pada kotak teks (atau
 		<tt>&lt;input&gt;</tt> dalam HTML) karena komponen Prado dapat/mungkin menyajikan
@@ -164,7 +164,7 @@ class Home extends TPage
 	<p id="80066">Dalam metode "<tt>convert_clicked</tt>" parameter pertama, <tt>$sender</tt>,
 		berhubungan dengan obyek yang memunculkan event, dalam hal ini, tombol
 		"Convert". Parameter kedua, <tt>$param</tt> berisi data tambahan lain
-		di mana obyek <tt>$sender</tt> yang ingi ditambahkan.
+		di mana obyek <tt>$sender</tt> yang ingin ditambahkan.
 	</p>
 
 	<p id="80067">Sekarang kita akan memeriksa, tiga baris yang mengimplementasikan konversi
@@ -212,8 +212,8 @@ $this->total->Text = $rate * $dollars;
 			<li>kurs mata uang adalah positif.</li>
 		</ol>
 	<p id="666" class="block-content">
-	 Untuk memastikan 1 kita menambahkan satu
-	<com:DocLink ClassPath="System.Web.UI.WebControls.TRequiredFieldValidator" Text="TRequiredFieldValidator" />. Untuk memastikan 2 dan 3, kita menambahkan satu <com:DocLink ClassPath="System.Web.UI.WebControls.TCompareValidator" Text="TCompareValidator" />. Kita dapat menambahkan validator ini di mana saja di dalam template "Home.page". Perincian selanjutnya mengenai validator ini dan validator lainnya dapat ditemukan dalam halaman
+	 Untuk memastikan poin 1 kita menambahkan satu
+	<com:DocLink ClassPath="System.Web.UI.WebControls.TRequiredFieldValidator" Text="TRequiredFieldValidator" />. Untuk memastikan poin 2 dan 3, kita menambahkan satu <com:DocLink ClassPath="System.Web.UI.WebControls.TCompareValidator" Text="TCompareValidator" />. Kita dapat menambahkan validator ini di mana saja di dalam template "Home.page". Perincian selanjutnya mengenai validator ini dan validator lainnya dapat ditemukan dalam halaman
 	<a href="?page=Controls.Validation">Validation Controls</a>.
 	</p>
 <com:TTextHighlighter Language="prado" CssClass="source block-content" id="code9">
@@ -320,7 +320,7 @@ Prado::using('System.Web.UI.ActiveControls.*');
 	</p>
 
 	<p id="80079" class="block-content">Untuk membuat dan menggunakan tema dengan aplikasi Prado, kita membuat direktori baru "themes/Basic" dalam direktori <tt>currency-converter</tt>.
-		Anda mungkinperlu untuk membuat direktori <tt>themes</tt> lebih dahulu. Direktori apapun di dalam <tt>themes</tt> dianggap sebagai tema dengan nama temanya adalah nama direktori. Lihat
+		Anda mungkin perlu untuk membuat direktori <tt>themes</tt> lebih dahulu. Direktori apapun di dalam <tt>themes</tt> dianggap sebagai tema dengan nama temanya adalah nama direktori. Lihat
 		<a href="?page=Advanced.Themes">Tema dan Skin</a> untuk lebih jelasnya.
 	</p>
 
@@ -342,7 +342,7 @@ Prado::using('System.Web.UI.ActiveControls.*');
 		merujuk ke elemen HTML <tt>&lt;head&gt;</tt>. Sebagai tambahan terhadap
 		tampilan properti <tt>Title</tt> pada <tt>THead</tt>, semua file CSS
 		dalam direktori <tt>themes/Basic</tt> juga disajikan/dikaitkan untuk
-		halaman saat ini. Aplikasi web pengubah kurs final kita terlihat seper
+		halaman saat ini. Aplikasi web pengubah kurs final kita terlihat seperti
 		berikut.
 		<img src=<%~ example2.png %> class="figure" />
 		Tutorial pengenalan lengkap terhadap kerangka kerja aplikasi web Prado.

@@ -4,7 +4,7 @@
 PRADO adalah kerangka pemrograman berbasis-komponen dan kendali-event untuk mengembangkan aplikasi Web dalam PHP 5. PRADO singkatan dari <b>P</b>HP <b>R</b>apid <b>A</b>pplication <b>D</b>evelopment <b>O</b>bject-oriented.
 </p>
 <p id="20004" class="block-content">
-Tujuan utama dari PRADO adalah menghidupkan usabilitas secara maksimumdalam pemrograman Web. Dengan usabilitas, kami artikan tidak hanya menggunakan ulang kode yang dimiliki seseorang, tapi juga menggunakan ulang kode orang lain dalam cara yang mudah. Yang terakhir lebih penting karena menghemat usaha penciptaan roda dan menghemat waktu pengembangan secara dramatis. Pengenalan atas konsep komponen adalah untuk tujuan ini.
+Tujuan utama dari PRADO adalah menghidupkan usabilitas secara maksimum dalam pemrograman Web. Dengan usabilitas, kami artikan tidak hanya menggunakan ulang kode yang dimiliki seseorang, tapi juga menggunakan ulang kode orang lain dalam cara yang mudah. Yang terakhir lebih penting karena menghemat usaha penciptaan roda dan menghemat waktu pengembangan secara dramatis. Pengenalan atas konsep komponen adalah untuk tujuan ini.
 </p>
 <p id="20005" class="block-content">
 Untuk mencapai tujuan di atas, PRADO menetapkan sebuah protokol atas penulisan dan pemakaian komponen untuk membentuk aplikasi Web. Komponen adalah unit  software yang mengandung-dirinya sendiri dan dapat dipakai ulang dengan kustomisasi mudah. Komponen baru dapat dibuat dengan komposisi sederhana terhadap komponen-komponen yang sudah ada.
@@ -35,7 +35,7 @@ PRADO banyak dikutip sebagai kerangka kerja yang unik. Kenyataannya, ia begitu u
 
 <h2 id="203">Untuk Apa PRADO Paling Cocok?</h2>
 <p id="20009" class="block-content">
-PRADO paling cocok untuk membuat aplikasi Web yang tingkat interaksif-penggunanya cukup tinggi. Ia dapat dipakai untuk mengembangkan sistem sesederhana sistem blog sampai serumit sistem manajemen konten (CMS) atau solusi e-cmmerce lengkap. Karena PRADO mempromosikan pemrograman terorientasi-obyek melalui metodologi basis-komponennya, ia sangat cocok untuk kerjasama tim dan pengembangan enterprise.
+PRADO paling cocok untuk membuat aplikasi Web yang tingkat interaksif-penggunanya cukup tinggi. Ia dapat dipakai untuk mengembangkan sistem sesederhana sistem blog sampai serumit sistem manajemen konten (CMS) atau solusi e-commerce lengkap. Karena PRADO mempromosikan pemrograman terorientasi-obyek melalui metodologi basis-komponennya, ia sangat cocok untuk kerjasama tim dan pengembangan enterprise.
 </p>
 <p id="20011" class="block-content">
 PRADO hadir dengan set lengkap atas teknik cache yang membantu mempercepat aplikasi Web PRADO untuk mengakomodasi kebutuhan lalu lintas tinggi. Arsitektur modularnya membolehkan para pengembang menyertakan modul cache berbeda untuk keperluan yang berbeda pula. Cache output membebaskan seseorang untuk memilih secara selektif bagian halaman Web yang akan di-cache.
@@ -59,7 +59,7 @@ Ya. PRADO awalnya dirilis pada bulan Agustus 2004. Banyak rangkaian pengujian su
 Inspirasi orisinil PRADO berasal dari Apache Tapestry. Selama desain dan implementasi, Saya meminjam ide dari Borland Delphi dan Microsoft ASP.NET. Versi pertama PRADO keluar dalam bulan Juni 2004 dan ditulis dalam PHP 4. Karena adanya kontes kode Zend PHP 5, Saya menulis ulang PRADO dalam PHP 5, yang membuktikan menjadi perpindahan yang bijaksana, terima kasih pada model obyek baru yang disediakan PHP 5. PRADO memenangkan hadiah utama dalam kontes Zend, memperoleh pilihan tertinggi baik dari umum dan panelis juri.
 </p>
 <p id="20015" class="block-content">
-Dalam bulan Agustus 2004, PRADO mulai di tampung pada SourceForge sebagai proyek sumber terbuka. Segera setelah itu, situs proyek <a href="http://www.xisc.com/">xisc.com</a> diumumkan kepada publik. Dengan dukungan fantastis dari tim pengembang PRADO dan pengguna PRADO, PRADO berkembang ke versi 2.0 di pertengahan 2005. Dalam versi ini, Wei Zhuo berkontribusi ke PRADO dengan dukungan I18N dan L10N yang istimewa.
+Dalam bulan Agustus 2004, PRADO mulai ditampung pada SourceForge sebagai proyek sumber terbuka. Segera setelah itu, situs proyek <a href="http://www.xisc.com/">xisc.com</a> diumumkan kepada publik. Dengan dukungan fantastis dari tim pengembang PRADO dan pengguna PRADO, PRADO berkembang ke versi 2.0 di pertengahan 2005. Dalam versi ini, Wei Zhuo berkontribusi ke PRADO dengan dukungan I18N dan L10N yang istimewa.
 </p>
 <p id="20016" class="block-content">
 Dalam bulan Mei 2005, kami memutuskan untuk menulis ulang sepenuhnya kerangka kerja PRADO untuk memecahkan beberapa isu dasar dalam versi 2.0 dan untuk menangkap dengan beberapa fitur bagus dalam Microsoft ASP.NET 2.0. Setelah hampir setahun kerja keras dengan lebih dari 50,000 baris kode baru, versi 3.0 akhirnya tersedia pada bulan April 2006.

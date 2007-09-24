@@ -12,10 +12,11 @@ Halaman ini meringkas fitur-fitur utama baru yang diperkenalkan dalam setiap ril
 <li>Ditambahkan kontrol baru <a href="?page=Controls.Keyboard">TKeyboard</a> yang menampilkan keyboard virtual untuk input teks.</li>
 <li>Ditambahkan kontrol baru <a href="?page=Controls.Captcha">TCaptcha</a> yang menampilkan CAPTCHA untuk menjaga spammers dari pendaftaran untuk akun online tertentu. Validator <tt>TCaptchaValidator</tt> terkait juga diimplementasikan.</li>
 <li>Ditambahkan kontrol baru <a href="?page=Controls.Slider">TSlider</a> yang menampilkan sebuah slider yang dapat dipakai untuk input numerik.</li>
+<li>Ditambahkan kontrol baru <a href="?page=Controls.Conditional">TConditional</a> yang menampilkan salah satu dari dua konten secara kondisional.</li>
 <li>Ditambahkan dukungan Oracle DB ke Rekaman Aktif</li>
 <li>Ditambahkan dukungan TDataGrid untuk membolehkan pengelompokan sel yang berurutan dengan isi yang sama.</li>
-<li>Ditambahkan dukungan untuk mengkonfigurasi properti halaman dan aturan otorisasi menggunakan <a href="?page=Configurations.PageConfig">relative page paths</a> dalam konfigurasi aplikasi dan halaman. Ditambahkan dukungan untuk membolehkan <a href="?page=Advanced.Auth">otorisasi</a> didasarkan pada alamat remote host.</li>
-<li>Ditamahkan persister kondisi halaman baru <tt>TCachePageStatePersister</tt>. Ia membolehkan kondisi halaman untuk disimpan menggunakan modul cache (misalnya TMemCache, TDbCache, dll.)
+<li>Ditambahkan dukungan untuk mengkonfigurasi properti halaman dan aturan otorisasi menggunakan <a href="?page=Configurations.PageConfig">path halaman relatif</a> dalam konfigurasi aplikasi dan halaman. Ditambahkan dukungan untuk membolehkan <a href="?page=Advanced.Auth">otorisasi</a> didasarkan pada alamat remote host.</li>
+<li>Ditambahkan persister kondisi halaman baru <tt>TCachePageStatePersister</tt>. Ia membolehkan kondisi halaman untuk disimpan menggunakan modul cache (misalnya TMemCache, TDbCache, dll.)
 </ul>
 
 <h2 id="8006">Versi 3.1.0</h2>

@@ -34,7 +34,7 @@ Dalam ekspresi, <tt>$this</tt> merujuk ke kontrol yang memiliki template. Contoh
 </com:TTextHighlighter>
 
 <a name="dt"></a>
-<h3 id="1704">Databind Tags</h3>
+<h3 id="1704">Tag Databind</h3>
 <p id="200201" class="block-content">
 Tag databind mirip dengan tag ekspresi, kecuali bahwa ekspresi dievaluasi hanya ketika panggilan <tt>dataBind()</tt> diterapkan pada kontrol yang mewakili tag databind. Konteks (yaitu <tt>$this</tt>) dari ekspresi databind adalah kontrol yang memiliki template. Tag databind tidak berlaku bagi seluruh komponen. Ia hanya digunakan untuk kontrol.
 </p>
@@ -60,7 +60,7 @@ Sebelumnya, anda harus menggunakan ekspresi tunggal dengan penggabungan string u
 </p>
 
 <a name="pt"></a>
-<h3 id="1705">Parameter Tags</h3>
+<h3 id="1705">Tag Parameter</h3>
 <p id="200205" class="block-content">
 Tag parameter dipakai untuk menyisipkan parameter aplikasi di tempat di mana ia muncul dalam template. Format tag parameter adalah sebagai berikut,
 </p>

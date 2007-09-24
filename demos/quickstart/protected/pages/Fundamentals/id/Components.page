@@ -6,7 +6,7 @@ Komponen adalah turunan dari <tt>TComponent</tt> atau kelas anaknya. Basis kelas
 
 <h2 id="702">Properti Komponen</h2>
 <p id="110114" class="block-content">
-Properti komponen dapat dilihat sebagai variabel public yang menjelaskan aspek tertentu dari komponen seperti warna latar belakang, besar font, dll. Properti didefinisikan dengan keberadaan metode penentu dan/atau pengambil dalam kelas komponen. Sebagai contoh, dalam <tt>TControl</tt>, kami mendefinisikan properti <tt>ID</tt> menggunakan metode pengambil dan penentu berikut,
+Properti komponen dapat dilihat sebagai variabel public yang menjelaskan aspek tertentu dari komponen seperti warna latar belakang, besar font, dll. Properti didefinisikan dengan keberadaan metode penyetel dan/atau pengambil dalam kelas komponen. Sebagai contoh, dalam <tt>TControl</tt>, kami mendefinisikan properti <tt>ID</tt> menggunakan metode pengambil dan penyetel berikut,
 <com:TTextHighlighter CssClass="source block-content" id="code_110056">
 class TControl extends TComponent {
     public function getID() {
@@ -31,7 +31,7 @@ $component->setID( $id );
 </com:TTextHighlighter>
 </p>
 <p id="110116" class="block-content">
-Properti hanya-baca jika metode pengambil tetapi tidak untuk metode penentu. Karena nama metode PHP adalah sensitif-huruf, nama properti juga sensitif-huruf. Kelas komponen mewariskan seluruh properti kelas leluhurnya.
+Properti hanya-baca jika metode pengambil tetapi tidak untuk metode penyetel. Karena nama metode PHP adalah sensitif-huruf, nama properti juga sensitif-huruf. Kelas komponen mewariskan seluruh properti kelas leluhurnya.
 </p>
 
 <h3 id="706">Subproperti</h3>
@@ -55,10 +55,10 @@ $component-&gt;getFont()-&gt;setName( $name );
 
 <h2 id="703">Event Komponen</h2>
 <p id="110119" class="block-content">
-Component events are special properties that take method names as their values. Attaching (setting) a method to an event will hook up the method to the places at which the event is raised. Therefore, the behavior of a component can be modified in a way that may not be foreseen during the development of the component.
+Event komponen adalah properti khusus yang mengambil nama metode sebagai nilainya. Melampirkan (setelan) metode ke sebuah event akan menancapkan metode ke tempat di mana event dimunculkan. Oleh karena itu, perilaku komponen bisa diubah dalam cara yang tidak terlihat selama pengembangan komponen.
 </p>
 <p id="110120" class="block-content">
-A component event is defined by the existence of a method whose name starts with the word <tt>on</tt>. The event name is the method name and is thus case-insensitve. For example, in <tt>TButton</tt>, we have
+Event komponen didefinisikan dengan keberadaan metode yang namanya dimulai dengan kata <tt>on</tt>. Nama event adalah nama metode dan sensitif-huruf. Sebagai contoh, dalam <tt>TButton</tt>, kita mempunyai
 <com:TTextHighlighter CssClass="source block-content" id="code_110061">
 class TButton extends TWebControl {
     public function onClick( $param ) {
@@ -66,14 +66,14 @@ class TButton extends TWebControl {
     }
 }
 </com:TTextHighlighter>
-This defines an event named <tt>OnClick</tt>, and a handler can be attached to the event using one of the following ways,
+Ini mendefinisikan event bernama <tt>OnClick</tt>, dan pengendali dapat dilampirkan ke event menggunakan salah satu cara berikut,
 <com:TTextHighlighter CssClass="source block-content" id="code_110062">
 $button->OnClick = $callback;
 $button->OnClick->add( $callback );
 $button->OnClick[] = $callback;
 $button->attachEventHandler( 'OnClick' , $callback );
 </com:TTextHighlighter>
-where <tt>$callback</tt> refers to a valid PHP callback (e.g. a function name, a class method <tt>array($object,'method')</tt>, etc.)
+di mana <tt>$callback</tt> merujuk ke callback PHP yang benar (misalnya nama fungsi, metode kelas <tt>array($object,'method')</tt>, dll).
 </p>
 
 <h2 id="704">Namespace</h2>

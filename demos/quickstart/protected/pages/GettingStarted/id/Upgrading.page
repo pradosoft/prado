@@ -16,7 +16,7 @@ Kami meringkas perubahan paling berarti dalam v3.0 guna membantu para pengembang
 
 <h2 id="502">Definisi Komponen</h2>
 <p id="40026" class="block-content">
-Versi 3.0 sepenuhnya telah mengabaikan kebutuhan file spesifikasi komponen. Ia banyak bergantung pada konvensi untuk mendefinisikan properti dan event komponen. Dalam keadaan tertentu, properti didefinisikan oleh keberadaan dari metode pengambil dan/atau metode penentu, sementara event didefinisikan dengan keberadaan <tt>pada</tt>-metode. Nama properti dan event dalam v3.0 keduanya sensitif-huruf. Sebagai konsekuensinya, para pengembang diperlukan untuk memelihara pengubahan tipe saat properti komponen sedang disetel. Sebagai contoh, kode berikut dipakai untuk mendefinisikan metode penentu untuk properti yang <tt>Dihidupkan</tt> dari <tt>TControl</tt>, yang merupakan tipe <tt>boolean</tt>,
+Versi 3.0 sepenuhnya telah mengabaikan kebutuhan file spesifikasi komponen. Ia banyak bergantung pada konvensi untuk mendefinisikan properti dan event komponen. Dalam keadaan tertentu, properti didefinisikan oleh keberadaan dari metode pengambil dan/atau metode penyetel, sementara event didefinisikan dengan keberadaan <tt>pada</tt>-metode. Nama properti dan event dalam v3.0 keduanya sensitif-huruf. Sebagai konsekuensinya, para pengembang diperlukan untuk memelihara perubahan tipe saat properti komponen sedang disetel. Sebagai contoh, kode berikut dipakai untuk mendefinisikan metode penyetel untuk properti yang <tt>Dihidupkan</tt> dari <tt>TControl</tt>, yang merupakan tipe <tt>boolean</tt>,
 </p>
 <com:TTextHighlighter Language="php" CssClass="block-content source" ID="code1">
 public function setEnabled($value)
@@ -26,7 +26,7 @@ public function setEnabled($value)
 }
 </com:TTextHighlighter>
 <p id="40027" class="block-content">
-di mana <tt>TPropertyValue::ensureBoolean()</tt> dipakaikan untuk memastikan bahwa nilai input adalah boolean. Ini adalah karena ketika properti dikonfigurasi dalam template, nilai string dikirimkan ke penentu. Dalam versi sebelumnya, PRADO mengetahui tipe properti berdasarkan file spesifikasi  komponen dan melakukan konversi tipe bagi anda.
+di mana <tt>TPropertyValue::ensureBoolean()</tt> dipakai untuk memastikan bahwa nilai input adalah boolean. Ini adalah karena ketika properti dikonfigurasi dalam template, nilai string dikirimkan ke penyetel. Dalam versi sebelumnya, PRADO mengetahui tipe properti berdasarkan file spesifikasi  komponen dan melakukan konversi tipe bagi anda.
 </p>
 
 <h2 id="503">Pengontrol Aplikasi</h2>
@@ -36,7 +36,7 @@ Pengontrol aplikasi sekarang menerapkan sebuah arsitektur modular. Modul bisa di
 
 <h2 id="504">Halaman</h2>
 <p id="40029" class="block-content">
-Halaman pada v3.0 diatur dalam direktori yang bisa dibandingkan ke konsep modul pada v2.x. Halaman diminta menggunakan path kepadanya. Sebagai contoh, URL <tt>index.php?page=Controls.Samples.Sample1</tt> akan dipakai untuk meminta halaman bernama <tt>Sample1</tt> yang disimpan di bawah direktorithe <tt>[BasePath]/Controls/Samples</tt>, di mana <tt>[BasePath]</tt> merujuk ke akar path halaman. Nama file dari template halaman harus diakhiri dengan <tt>.page</tt>, terutama untuk membedakan template halaman dari template kontrol non-halaman yang nama filenya sama harus diakhiri dengan <tt>.tpl</tt>.
+Halaman pada v3.0 diatur dalam direktori yang bisa dibandingkan ke konsep modul pada v2.x. Halaman diminta menggunakan path kepadanya. Sebagai contoh, URL <tt>index.php?page=Controls.Samples.Sample1</tt> akan dipakai untuk meminta halaman bernama <tt>Sample1</tt> yang disimpan di bawah direktori <tt>[BasePath]/Controls/Samples</tt>, di mana <tt>[BasePath]</tt> merujuk ke akar path halaman. Nama file dari template halaman harus diakhiri dengan <tt>.page</tt>, terutama untuk membedakan template halaman dari template kontrol non-halaman yang nama filenya sama harus diakhiri dengan <tt>.tpl</tt>.
 </p>
 
 <h2 id="505">Hubungan Kontrol</h2>
@@ -47,7 +47,7 @@ Versi 3.0 mendefinsikan kembali hubungan diantara kontrol. Dalam keadaan tertent
 <h2 id="506">Sintaks Template</h2>
 <div id="template-syntax" class="block-content">
 <p id="40031">
-Sintaks template kontrol dalam v3.0 tetap mirip dengan versi sebelumnya, dengan banyak peningkatan. Perubahan utama adalah mengenai ekspresi databinding. Dalam v3.0, ini dikerjakan dengan mengikuti,
+Sintaks template kontrol dalam v3.0 tetap mirip dengan versi sebelumnya, dengan banyak peningkatan. Perubahan utama adalah mengenai ekspresi penyatuan data. Dalam v3.0, ini dikerjakan dengan mengikuti,
 </p>
 <com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_40002">
 &lt;com:MyComponent PropertyName=&lt;%# PHP expression %&gt; .../&gt;

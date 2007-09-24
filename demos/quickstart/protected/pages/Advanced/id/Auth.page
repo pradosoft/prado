@@ -66,7 +66,7 @@ Aturan otorisasi bisa berupa aturan <tt>mengijinkan</tt> atau aturan <tt>menolak
 Ketika permintaan halaman sedang diproses, daftar aturan otorisassi menjadi tersedia. Akan tetapi, hanya aturan <i>efektif yang pertama</i> <i>menyamai</i> pengguna saat ini akan menyajikan hasil otorisasi.
 </p>
 <ul id="u2" class="block-content">
-<li>Aturan diurut dari bawak-ke atas, misalnya aturan yang berisi dalam konfigurasi dari folder halaman saat ini menjadi yang pertama. Aturan dalam konfigurasi dari folder halaman leluhurnya menjadi yang berikutnya.</li>
+<li>Aturan diurut dari bawah-ke atas, misalnya aturan yang berisi dalam konfigurasi dari folder halaman saat ini menjadi yang pertama. Aturan dalam konfigurasi dari folder halaman leluhurnya menjadi yang berikutnya.</li>
 <li>Sebuah aturan efektif jika halaman saat ini dalam halaman yang didaftarkan pada aturan DAN aksi pengguna saat ini (<tt>get</tt> ata <tt>post</tt>) dalam aksi terdaftar.</li>
 <li>Sebuah aturan sama terjadi jika nama pengguna saat ini ada dalam daftar nama pengguna pada aturan <i>efektif</i> ATAU jika aturan pengguna ada dalam aturan terdaftar yang mengaturnya.</li>
 <li>Jika tidak ada aturan yang sama, pengguna diotorisasi.</li>

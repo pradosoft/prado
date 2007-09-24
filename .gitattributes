@@ -1511,6 +1511,7 @@ demos/quickstart/protected/pages/Controls/id/CheckBox.page -text
 demos/quickstart/protected/pages/Controls/id/ClientScript.page -text
 demos/quickstart/protected/pages/Controls/id/ClientScriptLoader.page -text
 demos/quickstart/protected/pages/Controls/id/ColorPicker.page -text
+demos/quickstart/protected/pages/Controls/id/Conditional.page -text
 demos/quickstart/protected/pages/Controls/id/Data.page -text
 demos/quickstart/protected/pages/Controls/id/DataGrid.page -text
 demos/quickstart/protected/pages/Controls/id/DataList.page -text

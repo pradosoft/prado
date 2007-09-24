@@ -19,7 +19,7 @@ Para pengembang dapat menerapkan layanan tambahan untuk aplikasinya. Untuk menja
 PRADO menerapkan <tt>TPageService</tt> untuk melayani permintaan halaman pengguna. Halam disimpan di bawah direktori yang ditetapkan oleh properti <tt>BasePath</tt> dari layanan halaman. Properti standarnya ke direktori  <tt>pages</tt> di bawah path basis aplikasi. Anda boleh mengubah standar ini dengan mengkonfigurasi layanan dalam konfigurasi aplikasi.
 </p>
 <p id="150155" class="block-content">
-Halaman disusun ke dalam direktori di bawah <tt>BasePath</tt>. Dalams setiap direktori, di sana ada file konfigurasi bernama <tt>config.xml</tt>, yang berisi konfigurasi yang hanya efektif ketika halaman di bawah direktori atau sub direktori itu diminta. Untuk lebih jelasnya, lihat seksi <a href="?page=Configurations.PageConfig">konfigurasi halaman</a>.
+Halaman disusun ke dalam direktori di bawah <tt>BasePath</tt>. Dalam setiap direktori, di sana ada file konfigurasi bernama <tt>config.xml</tt>, yang berisi konfigurasi yang hanya efektif ketika halaman di bawah direktori atau sub direktori itu diminta. Untuk lebih jelasnya, lihat seksi <a href="?page=Configurations.PageConfig">konfigurasi halaman</a>.
 </p>
 <p id="150156" class="block-content">
 Parameter layanan untuk layanan halaman merujuk pada halaman yang sedang diminta. Parameter seperti <tt>Fundamentals.Services</tt> merujuk pada halaman <tt>Services</tt> di bawah direktori <tt>&lt;BasePath&gt;/Fundamentals</tt>. Jika parameter tersebut tidak ada dalam permintaan, dianggap sebagai halaman standar bernama <tt>Home</tt>. Menggunakan <tt>THttpRequest</tt> sebagai modul permintaan (default), URL berikut masing-masing akan meminta halaman  <tt>Home</tt>, <tt>About</tt> dan <tt>Register</tt>,

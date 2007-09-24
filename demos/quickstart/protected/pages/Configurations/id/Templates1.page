@@ -1,7 +1,7 @@
 <com:TContent ID="body" >
 <h1 id="1501">Template: Bagian I</h1>
 <p id="180166" class="block-content">
-Template dipakai untuk menetapkan penyajian tata letak kontrol. Sebuah template dapat berisi teks statis, komponen, atau kontrol yang membantu penyajian kontrol terkait. Standarnya, turunan <tt>TTemplateControl</tt> atau subkelasnya secara otomatis mengambil dan menrurunkan template dari sebuah file yang namanya sama dengan nama kelas kontrol. Untuk template halaman, nama file harus berakhiran <tt>.page</tt>; untuk kontrol template reguler lainnya, akhirannya adalah <tt>.tpl</tt>.
+Template dipakai untuk menetapkan penyajian tata letak kontrol. Sebuah template dapat berisi teks statis, komponen, atau kontrol yang membantu penyajian kontrol terkait. Standarnya, turunan <tt>TTemplateControl</tt> atau subkelasnya secara otomatis mengambil dan menurunkan template dari sebuah file yang namanya sama dengan nama kelas kontrol. Untuk template halaman, nama file harus berakhiran <tt>.page</tt>; untuk kontrol template reguler lainnya, akhirannya adalah <tt>.tpl</tt>.
 </p>
 <p id="180167" class="block-content">Format template mirrip HTML, dengan beberapa tag spesifik-PRADO, termasuk <a href="#ct">tag komponen</a>, <a href="#tct">tag kontrol template</a>, <a href="#cot">tag komentar</a>, <a href="?page=Configurations.Templates2#dct">tag konten dinamis</a>, and <a href="?page=Configurations.Templates3#dpt">tag properti dinamis</a>. .
 </p>

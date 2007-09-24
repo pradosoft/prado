@@ -22,9 +22,9 @@ Aplikasi PRADO kita terdiri dari tiga file, <tt>index.php</tt>, <tt>Home.page</t
 di mana setiap direktori dijelaskan sebagai berikut. Catatan, struktur direktori di atas bisa dikustomisasi. Sebagai contoh, seseorang dapat memindahkan direktori <tt>protected</tt> ke luar direktori Web. Anda akan mengetahui bagaimana melakukan ini setelah anda melewati tutorial ini.
 </p>
 <ul id="dir-struct" class="block-content">
-<li><tt>assets</tt> - direktori yang menyimpan file pribadi yang dipublikasikan. Lihat seksi <a href="?page=Advanced.Assets">assets</a> untuk lebih jelasnya. Direktori ini harus bisas ditulisi oleh proses server Web.</li>
+<li><tt>assets</tt> - direktori yang menyimpan file pribadi yang dipublikasikan. Lihat seksi <a href="?page=Advanced.Assets">assets</a> untuk lebih jelasnya. Direktori ini harus bisa ditulisi oleh proses server Web.</li>
 <li><tt>protected</tt> - path basis aplikasi yang menyimpan data aplikasi dan file naskah pribadi. Direktori ini harus dikonfigurasi tidak bisa diakses terhadap pengguna-akhir.</li>
-<li><tt>runtime</tt> - path penyimpan runtime aplikasi. Direktori ini dipakai oleh PRADO untuk menyimpan informasi runtime aplikasi, seperti kondisi aplikasi, data di-cache, dll. Direktori ini harus bisas ditulisi oleh proses server Web.</li>
+<li><tt>runtime</tt> - path penyimpan runtime aplikasi. Direktori ini dipakai oleh PRADO untuk menyimpan informasi runtime aplikasi, seperti kondisi aplikasi, data di-cache, dll. Direktori ini harus bisa ditulisi oleh proses server Web.</li>
 <li><tt>pages</tt> - path basis yang menyimpan semua halaman PRADO.</li>
 </ul>
 
