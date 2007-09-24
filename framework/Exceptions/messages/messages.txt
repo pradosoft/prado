@@ -450,3 +450,5 @@ cachepagestatepersister_cachemoduleid_invalid = TCachePageStatePersister.CacheMo
 cachepagestatepersister_cache_required  = TCachePageStatePersister requires a cache module to be loaded.
 cachepagestatepersister_timeout_invalid = TCachePageStatePersister.Timeout must be an integer no less than zero.
 cachepagestatepersister_pagestate_corrupted = Page state is corrupted.
+
+conditional_condition_invalid			= TConditional.Condition '{0}' is not a valid PHP expression: {1}

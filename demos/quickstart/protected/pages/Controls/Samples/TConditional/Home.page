@@ -1,0 +1,14 @@
+<com:TContent ID="body">
+<h1>TConditional Samples</h1>
+
+<com:TConditional Condition="Prado::getVersion()==='3.1.1'">
+<prop:TrueTemplate>
+  <com:TLabel Text="You are using PRADO 3.1.1" />
+</prop:TrueTemplate>
+<prop:FalseTemplate>
+  <com:TLabel Text="You are using PRADO <%= Prado::getVersion() %>" />
+</prop:FalseTemplate>
+</com:TConditional>
+
+<div class="last-modified">$Id$</div>
+</com:TContent>

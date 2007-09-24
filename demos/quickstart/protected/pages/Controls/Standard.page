@@ -28,6 +28,10 @@
   </li>
 
   <li>
+  <a href="?page=Controls.Conditional">TConditional</a> displays content corresponding to true or false result of a PHP expression.
+  </li>
+
+  <li>
   <a href="?page=Controls.DatePicker">TDatePicker</a> represents an input field taking date values via a calendar dialog.
   </li>
 
@@ -122,7 +126,7 @@
   <li>
   <a href="?page=Controls.Slider">TSlider</a> represents a Slider control
   </li>
-  
+
   <li>
   <a href="?page=Controls.Statements">TStatements</a> accepts a few PHP statements and displays their standard output on the Web page.
   </li>

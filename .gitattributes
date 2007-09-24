@@ -1334,6 +1334,7 @@ demos/quickstart/protected/pages/Controls/CheckBox.page -text
 demos/quickstart/protected/pages/Controls/ClientScript.page -text
 demos/quickstart/protected/pages/Controls/ClientScriptLoader.page -text
 demos/quickstart/protected/pages/Controls/ColorPicker.page -text
+demos/quickstart/protected/pages/Controls/Conditional.page -text
 demos/quickstart/protected/pages/Controls/Data.page -text
 demos/quickstart/protected/pages/Controls/DataGrid.page -text
 demos/quickstart/protected/pages/Controls/DataList.page -text
@@ -1387,6 +1388,8 @@ demos/quickstart/protected/pages/Controls/Samples/TClientSideValidator/Home.page
 demos/quickstart/protected/pages/Controls/Samples/TClientSideValidator/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TCompareValidator/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TCompareValidator/Home.php -text
+demos/quickstart/protected/pages/Controls/Samples/TConditional/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TConditional/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TCustomValidator/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TCustomValidator/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TDataGrid/Sample1.page -text
@@ -2526,6 +2529,7 @@ framework/Web/UI/WebControls/TClientScript.php -text
 framework/Web/UI/WebControls/TClientScriptLoader.php -text
 framework/Web/UI/WebControls/TColorPicker.php -text
 framework/Web/UI/WebControls/TCompareValidator.php -text
+framework/Web/UI/WebControls/TConditional.php -text
 framework/Web/UI/WebControls/TContent.php -text
 framework/Web/UI/WebControls/TContentPlaceHolder.php -text
 framework/Web/UI/WebControls/TCustomValidator.php -text
