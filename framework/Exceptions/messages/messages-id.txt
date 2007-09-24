@@ -450,3 +450,5 @@ cachepagestatepersister_cachemoduleid_invalid = TCachePageStatePersister.CacheMo
 cachepagestatepersister_cache_required  = TCachePageStatePersister memerlukan modul cache untuk diambil.
 cachepagestatepersister_timeout_invalid = TCachePageStatePersister.Timeout harus berupa integer tidak kurang dari nol.
 cachepagestatepersister_pagestate_corrupted = Kondisi halaman rusak.
+
+conditional_condition_invalid			= TConditional.Condition '{0}' bukan ekspresi PHP yang benar: {1}
