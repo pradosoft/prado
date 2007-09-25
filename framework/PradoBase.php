@@ -99,17 +99,19 @@ class PradoBase
 	}
 
 	/**
+	 * @param integer the type of "powered logo". Valid values include 0 and 1.
 	 * @return string a string that can be displayed on your Web page showing powered-by-PRADO information
 	 */
-	public static function poweredByPrado()
+	public static function poweredByPrado($logoType=0)
 	{
+		$logoName=$logoType==1?'powered2':'powered';
 		if(self::$_application!==null)
 		{
 			$am=self::$_application->getAssetManager();
-			$url=$am->publishFilePath(self::getPathOfNamespace('System.powered','.gif'));
+			$url=$am->publishFilePath(self::getPathOfNamespace('System.'.$logoName,'.gif'));
 		}
 		else
-			$url='http://www.pradosoft.com/images/powered.gif';
+			$url='http://www.pradosoft.com/images/'.$logoName.'.gif';
 		return '<a title="Powered by PRADO" href="http://www.pradosoft.com/" target="_blank"><img src="'.$url.'" style="border-width:0px;" alt="Powered by PRADO" /></a>';
 	}
 
