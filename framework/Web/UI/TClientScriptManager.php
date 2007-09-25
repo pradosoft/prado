@@ -607,7 +607,7 @@ class TClientScriptManager extends TApplicationComponent
 			}
 		}
 		if($str!=='')
-			$writer->write("<div>\n".$str."</div>\n");
+			$writer->write("<div style=\"visibility:none\">\n".$str."</div>\n");
 	}
 }
 
