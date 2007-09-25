@@ -1,0 +1,26 @@
+<com:TContent ID="Content">
+
+repeater bug<br/>
+   <com:TActiveLabel ID="myLabel" Text="Some Text" Display="None" />
+<com:TRepeater ID="Repeater" EnableViewState="true" >
+ <prop:ItemTemplate>
+        <com:TActiveButton Text="inside" OnCallback="Page.changeText" />
+</prop:ItemTemplate>
+</com:TRepeater>  
+
+<com:TActiveButton Text="outside" OnCallback="Page.changeText" />
+
+
+
+
+<br/><br/>
+
+radiobutton bug<br>
+
+<com:TActiveRadioButton ID="myRadioButton"/>
+
+<com:TActiveButton Text="check RadioButton" OnCallback="Page.checkRadioButton" />
+<com:TActiveButton Text="uncheck RadioButton" OnCallback="Page.uncheckRadioButton" />
+
+
+</com:TContent>
