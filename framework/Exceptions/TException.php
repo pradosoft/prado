@@ -64,9 +64,7 @@ class TException extends Exception
 	protected function translateErrorMessage($key)
 	{
 		$msgFile=$this->getErrorMessageFile();
-		if(($entries=@file($msgFile))===false)
-			return $key;
-		else
+		if(($entries=@file($msgFile))!==false)
 		{
 			foreach($entries as $entry)
 			{
@@ -74,8 +72,8 @@ class TException extends Exception
 				if(trim($code)===$key)
 					return trim($message);
 			}
-			return $key;
 		}
+		return $key;
 	}
 
 	/**
