@@ -1244,7 +1244,7 @@ class TPageStateFormatter
 		if($str==='')
 			return null;
 		if(extension_loaded('zlib'))
-			$str=gzuncompress($str);
+			$str=@gzuncompress($str);
 		if($str!==false)
 		{
 			$sm=$page->getApplication()->getSecurityManager();
