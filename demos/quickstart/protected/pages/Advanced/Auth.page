@@ -126,7 +126,7 @@ The user class has to implement the two abstract methods in <tt>TDbUser</tt>: <t
 </p>
 <com:SinceVersion Version="3.1.1" />
 <p id="720567" class="block-content">
-Since 3.1.1, <tt>TAuthManager</tt> provides support to allow remembering login. Accordingly, <tt>TDbUser</tt> adds two methods to facilitate the implementation of this feature. In particular, two new methods are introduced: <tt>createUserFromCookie()</tt> and <tt>saveUserToCookie()</tt>. Developers should implement these two methods if remembering login is needed. Below is a sample implementation:
+Since 3.1.1, <tt>TAuthManager</tt> provides support to allow remembering login by setting <tt>AllowAutoLogin</tt> to true. Accordingly, <tt>TDbUser</tt> adds two methods to facilitate the implementation of this feature. In particular, two new methods are introduced: <tt>createUserFromCookie()</tt> and <tt>saveUserToCookie()</tt>. Developers should implement these two methods if remembering login is needed. Below is a sample implementation:
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code5">
 public function createUserFromCookie($cookie)
