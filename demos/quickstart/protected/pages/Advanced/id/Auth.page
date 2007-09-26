@@ -124,5 +124,47 @@ Dalam contoh di atas, <tt>UserClass</tt> menetapkan bahwa kelas akan dipakai unt
 <p id="720566" class="block-content">
 Kelas pengguna harus menerapkan dua metode abstrak dalam <tt>TDbUser</tt>: <tt>validateUser()</tt> dan <tt>createUser()</tt>. Karena informasi akun pengguna disimpan dalam sebuah database, kelas pengguna dapat menggunakan properti <tt>DbConnection</tt>-nya untuk menjangkau database.
 </p>
+<com:SinceVersion Version="3.1.1" />
+<p id="720567" class="block-content">
+Sejak versi 3.1.1, <tt>TAuthManager</tt> menyediakan dukungan guna membolehkan mengingat yang masuk dengan menyetel <tt>AllowAutoLogin</tt> menjadi true. Oleh karena itu, <tt>TDbUser</tt> menambahkan dua metode untuk memfasilitasi implementasi fitur ini. Dalam keadaan tertentu, dua metode baru diperkenalkan: <tt>createUserFromCookie()</tt> dan <tt>saveUserToCookie()</tt>. Para pengembang harus mengimplementasikan dua metode ini jika mengingat yang sudah masuk diperlukan. Di bawah ini adalah contoh implementasi:
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code5">
+public function createUserFromCookie($cookie)
+{
+	if(($data=$cookie->Value)!=='')
+	{
+		$application=Prado::getApplication();
+		if(($data=$application->SecurityManager->validateData($data))!==false)
+		{
+			$data=unserialize($data);
+			if(is_array($data) && count($data)===3)
+			{
+				list($username,$address,$token)=$data;
+				$sql='SELECT passcode FROM user WHERE LOWER(username)=:username';
+				$command=$this->DbConnection->createCommand($sql);
+				$command->bindValue(':username',strtolower($username));
+				if($token===$command->queryScalar() && $token!==false && $address=$application->Request->UserHostAddress)
+					return $this->createUser($username);
+			}
+		}
+	}
+	return null;
+}
 
-<div class="last-modified">$Id: Auth.page 2226 2007-09-16 19:32:58Z xue $</div></com:TContent>
+public function saveUserToCookie($cookie)
+{
+	$application=Prado::getApplication();
+	$username=strtolower($this->Name);
+	$address=$application->Request->UserHostAddress;
+	$sql='SELECT passcode FROM user WHERE LOWER(username)=:username';
+	$command=$this->DbConnection->createCommand($sql);
+	$command->bindValue(':username',strtolower($username));
+	$token=$command->queryScalar();
+	$data=array($username,$address,$token);
+	$data=serialize($data);
+	$data=$application->SecurityManager->hashData($data);
+	$cookie->setValue($data);
+}
+</com:TTextHighlighter>
+
+<div class="last-modified">$Id: Auth.page 2245 2007-09-26 13:22:02Z xue $</div></com:TContent>
