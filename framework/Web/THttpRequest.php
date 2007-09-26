@@ -911,7 +911,7 @@ class THttpCookie extends TComponent
 	/**
 	 * @var string value of the cookie
 	 */
-	private $_value=0;
+	private $_value='';
 	/**
 	 * @var integer expire of the cookie
 	 */

@@ -17,6 +17,7 @@ This page summarizes the main new features that are introduced in each PRADO rel
 <li>Added support to TDataGrid to allow grouping consecutive cells with the same content.</li>
 <li>Added support to allow configuring page properties and authorization rules using <a href="?page=Configurations.PageConfig">relative page paths</a> in application and page configurations. Added support to allow <a href="?page=Advanced.Auth">authorization</a> based on remote host address.</li>
 <li>Added a new page state persister <tt>TCachePageStatePersister</tt>. It allows page state to be stored using a cache module (e.g. TMemCache, TDbCache, etc.)
+<li>Added support to the <a href="?page=Advanced.Auth">auth framework</a> to allow remembering login.</li>
 </ul>
 
 <h2 id="8006">Version 3.1.0</h2>

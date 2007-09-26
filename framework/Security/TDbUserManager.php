@@ -155,7 +155,10 @@ class TDbUserManager extends TModule implements IUserManager
 	public function getDbConnection()
 	{
 		if($this->_conn===null)
+		{
 			$this->_conn=$this->createDbConnection($this->_connID);
+			$this->_conn->setActive(true);
+		}
 		return $this->_conn;
 	}
 
@@ -177,6 +180,29 @@ class TDbUserManager extends TModule implements IUserManager
 		}
 		else
 			throw new TConfigurationException('dbusermanager_connectionid_required');
+	}
+
+	/**
+	 * Returns a user instance according to auth data stored in a cookie.
+	 * @param THttpCookie the cookie storing user authentication information
+	 * @return TDbUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
+	 * @since 3.1.1
+	 */
+	public function getUserFromCookie($cookie)
+	{
+		return $this->_userFactory->createUserFromCookie($cookie);
+	}
+
+	/**
+	 * Saves user auth data into a cookie.
+	 * @param THttpCookie the cookie to receive the user auth data.
+	 * @since 3.1.1
+	 */
+	public function saveUserToCookie($cookie)
+	{
+		$user=$this->getApplication()->getUser();
+		if($user instanceof TDbUser)
+			$user->saveUserToCookie($cookie);
 	}
 }
 
@@ -250,6 +276,46 @@ abstract class TDbUser extends TUser
 	 * @return TDbUser the newly created and initialized user instance
 	 */
 	abstract public function createUser($username);
+
+	/**
+	 * Creates a new user instance given the cookie containing auth data.
+	 *
+	 * This method is invoked when {@link TAuthManager::setAllowAutoLogin AllowAutoLogin} is set true.
+	 * The default implementation simply returns null, meaning no user instance can be created
+	 * from the given cookie.
+	 *
+	 * If you want to support automatic login (remember login), you should override this method.
+	 * Typically, you obtain the username and a unique token from the cookie's value.
+	 * You then verify the token is valid and use the username to create a user instance.
+	 *
+	 * @param THttpCookie the cookie storing user authentication information
+	 * @return TDbUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
+	 * @see saveUserToCookie
+	 * @since 3.1.1
+	 */
+	public function createUserFromCookie($cookie)
+	{
+		return null;
+	}
+
+	/**
+	 * Saves necessary auth data into a cookie.
+	 * This method is invoked when {@link TAuthManager::rememberLogin} is invoked.
+	 * The default implementation does nothing, meaning auth data is not stored in the cookie
+	 * (and thus automatic login is not supported.)
+	 *
+	 * If you want to support automatic login (remember login), you should override this method.
+	 * Typically, you generate a unique token according to the current login information
+	 * and save it together with the username in the cookie's value.
+	 * You should avoid revealing the password in the generated token.
+	 *
+	 * @param THttpCookie the cookie to store the user auth information
+	 * @see createUserFromCookie
+	 * @since 3.1.1
+	 */
+	public function saveUserToCookie($cookie)
+	{
+	}
 }
 
 ?>

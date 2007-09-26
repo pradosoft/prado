@@ -150,12 +150,12 @@ class TApplication extends TComponent
 	 */
 	private static $_steps=array(
 		'onBeginRequest',
+		'onLoadState',
+		'onLoadStateComplete',
 		'onAuthentication',
 		'onAuthenticationComplete',
 		'onAuthorization',
 		'onAuthorizationComplete',
-		'onLoadState',
-		'onLoadStateComplete',
 		'onPreRunService',
 		'runService',
 		'onSaveState',

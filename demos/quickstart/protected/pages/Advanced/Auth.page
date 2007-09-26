@@ -124,5 +124,47 @@ In the above, <tt>UserClass</tt> specifies what class will be used to create use
 <p id="720566" class="block-content">
 The user class has to implement the two abstract methods in <tt>TDbUser</tt>: <tt>validateUser()</tt> and <tt>createUser()</tt>. Since user account information is stored in a database, the user class may make use of its <tt>DbConnection</tt> property to reach the database.
 </p>
+<com:SinceVersion Version="3.1.1" />
+<p id="720567" class="block-content">
+Since 3.1.1, <tt>TAuthManager</tt> provides support to allow remembering login. Accordingly, <tt>TDbUser</tt> adds two methods to facilitate the implementation of this feature. In particular, two new methods are introduced: <tt>createUserFromCookie()</tt> and <tt>saveUserToCookie()</tt>. Developers should implement these two methods if remembering login is needed. Below is a sample implementation:
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code5">
+public function createUserFromCookie($cookie)
+{
+	if(($data=$cookie->Value)!=='')
+	{
+		$application=Prado::getApplication();
+		if(($data=$application->SecurityManager->validateData($data))!==false)
+		{
+			$data=unserialize($data);
+			if(is_array($data) && count($data)===3)
+			{
+				list($username,$address,$token)=$data;
+				$sql='SELECT passcode FROM user WHERE LOWER(username)=:username';
+				$command=$this->DbConnection->createCommand($sql);
+				$command->bindValue(':username',strtolower($username));
+				if($token===$command->queryScalar() && $token!==false && $address=$application->Request->UserHostAddress)
+					return $this->createUser($username);
+			}
+		}
+	}
+	return null;
+}
+
+public function saveUserToCookie($cookie)
+{
+	$application=Prado::getApplication();
+	$username=strtolower($this->Name);
+	$address=$application->Request->UserHostAddress;
+	$sql='SELECT passcode FROM user WHERE LOWER(username)=:username';
+	$command=$this->DbConnection->createCommand($sql);
+	$command->bindValue(':username',strtolower($username));
+	$token=$command->queryScalar();
+	$data=array($username,$address,$token);
+	$data=serialize($data);
+	$data=$application->SecurityManager->hashData($data);
+	$cookie->setValue($data);
+}
+</com:TTextHighlighter>
 
 <div class="last-modified">$Id$</div></com:TContent>

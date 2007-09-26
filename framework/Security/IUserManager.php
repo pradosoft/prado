@@ -35,6 +35,19 @@ interface IUserManager
 	 */
 	public function getUser($username=null);
 	/**
+	 * Returns a user instance according to auth data stored in a cookie.
+	 * @param THttpCookie the cookie storing user authentication information
+	 * @return TUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
+	 * @since 3.1.1
+	 */
+	public function getUserFromCookie($cookie);
+	/**
+	 * Saves user auth data into a cookie.
+	 * @param THttpCookie the cookie to receive the user auth data.
+	 * @since 3.1.1
+	 */
+	public function saveUserToCookie($cookie);
+	/**
 	 * Validates if the username and password are correct.
 	 * @param string user name
 	 * @param string password

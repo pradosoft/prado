@@ -60,6 +60,14 @@ class TAuthManager extends TModule
 	 * @var string the session var name for storing return URL
 	 */
 	private $_returnUrlVarName;
+	/**
+	 * @var boolean whether to allow auto login (using cookie)
+	 */
+	private $_allowAutoLogin=false;
+	/**
+	 * @var string variable name used to store user session or cookie
+	 */
+	private $_userKey;
 
 	/**
 	 * Initializes this module.
@@ -216,6 +224,24 @@ class TAuthManager extends TModule
 	}
 
 	/**
+	 * @return boolean whether to allow remembering login so that the user logs on automatically next time. Defaults to false.
+	 * @since 3.1.1
+	 */
+	public function getAllowAutoLogin()
+	{
+		return $this->_allowAutoLogin;
+	}
+
+	/**
+	 * @param boolean whether to allow remembering login so that the user logs on automatically next time. Users have to enable cookie to make use of this feature.
+	 * @since 3.1.1
+	 */
+	public function setAllowAutoLogin($value)
+	{
+		$this->_allowAutoLogin=TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
 	 * Performs the real authentication work.
 	 * An OnAuthenticate event will be raised if there is any handler attached to it.
 	 * If the application already has a non-null user, it will return without further authentication.
@@ -227,11 +253,27 @@ class TAuthManager extends TModule
 	{
 		$application=$this->getApplication();
 
+		// restoring user info from session
 		if(($session=$application->getSession())===null)
 			throw new TConfigurationException('authmanager_session_required');
 		$session->open();
-		$sessionInfo=$session->itemAt($this->generateUserSessionKey());
+		$sessionInfo=$session->itemAt($this->getUserKey());
 		$user=$this->_userManager->getUser(null)->loadFromString($sessionInfo);
+
+		// try authenticating through cookie if possible
+		if($this->getAllowAutoLogin() && $user->getIsGuest())
+		{
+			$cookie=$this->getRequest()->getCookies()->itemAt($this->getUserKey());
+			if($cookie instanceof THttpCookie)
+			{
+				if(($user2=$this->_userManager->getUserFromCookie($cookie))!==null)
+				{
+					$user=$user2;
+					$this->updateSessionUser($user);
+				}
+			}
+		}
+
 		$application->setUser($user);
 
 		// event handler gets a chance to do further auth work
@@ -259,9 +301,21 @@ class TAuthManager extends TModule
 	}
 
 	/**
-	 * @return string a key used to store user information in session
+	 * @return string a unique variable name for storing user session/cookie data
+	 * @since 3.1.1
 	 */
-	protected function generateUserSessionKey()
+	public function getUserKey()
+	{
+		if($this->_userKey===null)
+			$this->_userKey=$this->generateUserKey();
+		return $this->_userKey;
+	}
+
+	/**
+	 * @return string a key used to store user information in session
+	 * @since 3.1.1
+	 */
+	protected function generateUserKey()
 	{
 		return md5($this->getApplication()->getUniqueID().'prado:user');
 	}
@@ -278,7 +332,7 @@ class TAuthManager extends TModule
 			if(($session=$this->getSession())===null)
 				throw new TConfigurationException('authmanager_session_required');
 			else
-				$session->add($this->generateUserSessionKey(),$user->saveToString());
+				$session->add($this->getUserKey(),$user->saveToString());
 		}
 	}
 
@@ -288,15 +342,24 @@ class TAuthManager extends TModule
 	 * If yes, a user object will be created for the application.
 	 * @param string username
 	 * @param string password
+	 * @param integer number of seconds that automatic login will remain effective. If 0, it means user logs out when session ends. This parameter is added since 3.1.1.
 	 * @return boolean if login is successful
 	 */
-	public function login($username,$password)
+	public function login($username,$password,$expire=0)
 	{
 		if($this->_userManager->validateUser($username,$password))
 		{
 			$user=$this->_userManager->getUser($username);
 			$this->updateSessionUser($user);
 			$this->getApplication()->setUser($user);
+
+			if($expire>0)
+			{
+				$cookie=new THttpCookie($this->getUserKey(),'');
+				$cookie->setExpire(time()+$expire);
+				$this->_userManager->saveUserToCookie($cookie);
+				$this->getResponse()->getCookies()->add($cookie);
+			}
 			return true;
 		}
 		else
@@ -312,10 +375,12 @@ class TAuthManager extends TModule
 	{
 		if(($session=$this->getSession())===null)
 			throw new TConfigurationException('authmanager_session_required');
-		else
+		$this->getApplication()->getUser()->setIsGuest(true);
+		$session->destroy();
+		if($this->getAllowAutoLogin())
 		{
-			$this->getApplication()->getUser()->setIsGuest(true);
-			$session->destroy();
+			$cookie=new THttpCookie($this->getUserKey(),'');
+			$this->getResponse()->getCookies()->add($cookie);
 		}
 	}
 }

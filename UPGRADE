@@ -11,10 +11,15 @@ for both A and B.
 
 Upgrading from v3.1.0
 ---------------------
-- IFeedContentProvider adds a new method getContentType(). This affects any
+- IFeedContentProvider adds a new method: getContentType(). This affects any
   class implementing this interface.
 - TUrlMapping now only uses the PATH_INFO part of URL for matching, and the matching
   is for the whole PATH_INFO.
+- IUserManager adds two new methods: getUserFromCookie() and saveUserToCookie().
+  This affects classes that implements this interface and does not extend from
+  TUserManager.
+- The order of application lifecycles is changed. The loadState and loadStateComplete
+  are moved to right after onBeginRequest.
 
 Upgrading from v3.1b
 --------------------

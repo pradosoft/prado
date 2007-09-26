@@ -251,6 +251,43 @@ class TUserManager extends TModule implements IUserManager
 	}
 
 	/**
+	 * Returns a user instance according to auth data stored in a cookie.
+	 * @param THttpCookie the cookie storing user authentication information
+	 * @return TUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
+	 * @since 3.1.1
+	 */
+	public function getUserFromCookie($cookie)
+	{
+		if(($data=$cookie->getValue())!=='')
+		{
+			$data=unserialize($data);
+			if(is_array($data) && count($data)===2)
+			{
+				list($username,$token)=$data;
+				if(isset($this->_users[$username]) && $token===md5($username.$this->_users[$username]))
+					return $this->getUser($username);
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Saves user auth data into a cookie.
+	 * @param THttpCookie the cookie to receive the user auth data.
+	 * @since 3.1.1
+	 */
+	public function saveUserToCookie($cookie)
+	{
+		$user=$this->getApplication()->getUser();
+		$username=strtolower($user->getName());
+		if(isset($this->_users[$username]))
+		{
+			$data=array($username,md5($username.$this->_users[$username]));
+			$cookie->setValue(serialize($data));
+		}
+	}
+
+	/**
 	 * Sets a user as a guest.
 	 * User name is changed as guest name, and roles are emptied.
 	 * @param TUser the user to be changed to a guest.
