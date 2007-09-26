@@ -2943,6 +2943,7 @@ tests/FunctionalTests/tickets/protected/pages/Ticket653/ticket653.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket656.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket659.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket670.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket671.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket679.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket679.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket68.page -text

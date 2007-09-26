@@ -1,0 +1,34 @@
+<com:TContent ID="Content">
+
+<com:TActiveDropDownList id="addl" OnSelectedIndexChanged="SelectItem" ValidationGroup="Test1">
+	<com:TListItem Value="1" Text="Test 1"/>
+	<com:TListItem Value="2" Text="Test 2"/>
+	<com:TListItem Value="3" Text="Test 3"/>
+</com:TActiveDropDownList>
+<com:TActiveCustomValidator 
+	ControlToValidate="addl" 
+	ValidationGroup="Test1" 
+	OnServerValidate="validateSelection" 
+	Display="Dynamic"
+	ErrorMessage="Please Select Test 3"/>
+<com:TActiveLinkButton 
+	Text="Submit" 
+	OnClick="submit" 
+	ValidationGroup="Test1" />
+<com:TActiveLabel id="lblResult"/>
+<br/><br/>
+<com:TActiveTextBox ID="testTextBox" ValidationGroup="Test2" />
+<com:TActiveCustomValidator
+		ControlToValidate="testTextBox"
+		ValidationGroup="Test2"
+		OnServerValidate="validateTextBox"
+		ErrorMessage="Please enter 'Prado' !"
+		Display="Dynamic"
+		/>   
+<com:TActiveLinkButton
+		Text="Validate"
+		ValidationGroup="Test2"
+		OnClick="submit2" />
+<com:TActiveLabel id="lblResult2"/>
+
+</com:TContent>
