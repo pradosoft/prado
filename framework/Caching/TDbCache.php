@@ -25,9 +25,8 @@ Prado::using('System.Data.TDbConnection');
  * By default, TDbCache creates and uses an SQLite database under the application
  * runtime directory. You may change this default setting by specifying the following
  * properties:
- * - {@link setConnectionString ConnectionString}
- * - {@link setUsername Username}
- * - {@link setPassword Pasword}
+ * - {@link setConnectionID ConnectionID} or
+ * - {@link setConnectionString ConnectionString}, {@link setUsername Username} and {@link setPassword Pasword}.
  *
  * The cached data is stored in a table in the specified database.
  * By default, the name of the table is called 'pradocache'. If the table does not
@@ -54,9 +53,6 @@ Prado::using('System.Data.TDbConnection');
  * Do not use the same database file for multiple applications using TDbCache.
  * Also note, cache is shared by all user sessions of an application.
  *
- * To use this module, the sqlite PHP extension must be loaded. Note, Sqlite extension
- * is no longer loaded by default since PHP 5.1.
- *
  * Some usage examples of TDbCache are as follows,
  * <code>
  * $cache=new TDbCache;  // TDbCache may also be loaded as a Prado application module
@@ -81,6 +77,10 @@ Prado::using('System.Data.TDbConnection');
 class TDbCache extends TCache
 {
 	/**
+	 * @var string the ID of TDataSourceConfig module
+	 */
+	private $_connID='';
+	/**
 	 * @var TDbConnection the DB connection instance
 	 */
 	private $_db;
@@ -92,6 +92,9 @@ class TDbCache extends TCache
 	 * @var boolean whether the cache DB table should be created automatically
 	 */
 	private $_autoCreate=true;
+	private $_username='';
+	private $_password='';
+	private $_connectionString='';
 
 	/**
 	 * Destructor.
@@ -116,13 +119,6 @@ class TDbCache extends TCache
 	public function init($config)
 	{
 		$db=$this->getDbConnection();
-		if($db->getConnectionString()==='')
-		{
-			// default to SQLite3 database
-			$dbFile=$this->getApplication()->getRuntimePath().'/sqlite3.cache';
-			$db->setConnectionString('sqlite:'.$dbFile);
-		}
-
 		$db->setActive(true);
 
 		$sql='DELETE FROM '.$this->_cacheTable.' WHERE expire<>0 AND expire<'.time();
@@ -139,10 +135,47 @@ class TDbCache extends TCache
 				$db->createCommand($sql)->execute();
 			}
 			else
-				throw TConfigurationException('pdocache_cachetable_inexistent',$this->_cacheTable);
+				throw TConfigurationException('db_cachetable_inexistent',$this->_cacheTable);
 		}
 
 		parent::init($config);
+	}
+
+	/**
+	 * Creates the DB connection.
+	 * @param string the module ID for TDataSourceConfig
+	 * @return TDbConnection the created DB connection
+	 * @throws TConfigurationException if module ID is invalid or empty
+	 */
+	protected function createDbConnection()
+	{
+		if($this->_connID!=='')
+		{
+			$config=$this->getApplication()->getModule($connectionID);
+			if($config instanceof TDataSourceConfig)
+				return $config->getDbConnection();
+			else
+				throw new TConfigurationException('dbcache_connectionid_invalid',$this->_connID);
+		}
+		else
+		{
+			$db=new TDbConnection;
+			if($this->_connectionString!=='')
+			{
+				$db->setConnectionString($this->_connectionString);
+				if($this->_username!=='')
+					$db->setUsername($this->_username);
+				if($this->_password!=='')
+					$db->setPassword($this->_password);
+			}
+			else
+			{
+				// default to SQLite3 database
+				$dbFile=$this->getApplication()->getRuntimePath().'/sqlite3.cache';
+				$db->setConnectionString('sqlite:'.$dbFile);
+			}
+			return $db;
+		}
 	}
 
 	/**
@@ -151,8 +184,30 @@ class TDbCache extends TCache
 	public function getDbConnection()
 	{
 		if($this->_db===null)
-			$this->_db=new TDbConnection;
+			$this->_db=$this->createDbConnection();
 		return $this->_db;
+	}
+
+	/**
+	 * @return string the ID of a {@link TDataSourceConfig} module. Defaults to empty string, meaning not set.
+	 * @since 3.1.1
+	 */
+	public function getConnectionID()
+	{
+		return $this->_connID;
+	}
+
+	/**
+	 * Sets the ID of a TDataSourceConfig module.
+	 * The datasource module will be used to establish the DB connection for this cache module.
+	 * The database connection can also be specified via {@link setConnectionString ConnectionString}.
+	 * When both ConnectionID and ConnectionString are specified, the former takes precedence.
+	 * @param string ID of the {@link TDataSourceConfig} module
+	 * @since 3.1.1
+	 */
+	public function setConnectionID($value)
+	{
+		$this->_connID=$value;
 	}
 
 	/**
@@ -160,7 +215,7 @@ class TDbCache extends TCache
 	 */
 	public function getConnectionString()
 	{
-		return $this->getDbConnection()->getConnectionString();
+		return $this->_connectionString;
 	}
 
 	/**
@@ -169,7 +224,7 @@ class TDbCache extends TCache
 	 */
 	public function setConnectionString($value)
 	{
-		$this->getDbConnection()->setConnectionString($value);
+		$this->_connectionString=$value;
 	}
 
 	/**
@@ -177,7 +232,7 @@ class TDbCache extends TCache
 	 */
 	public function getUsername()
 	{
-		return $this->getDbConnection()->getUsername();
+		return $this->_username;
 	}
 
 	/**
@@ -185,7 +240,7 @@ class TDbCache extends TCache
 	 */
 	public function setUsername($value)
 	{
-		$this->getDbConnection()->setUsername($value);
+		$this->_username=$value;
 	}
 
 	/**
@@ -193,7 +248,7 @@ class TDbCache extends TCache
 	 */
 	public function getPassword()
 	{
-		return $this->getDbConnection()->getPassword();
+		return $this->_password;
 	}
 
 	/**
@@ -201,7 +256,7 @@ class TDbCache extends TCache
 	 */
 	public function setPassword($value)
 	{
-		$this->getDbConnection()->setPassword($value);
+		$this->_password=$value;
 	}
 
 	/**

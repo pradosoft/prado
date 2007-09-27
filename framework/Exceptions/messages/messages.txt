@@ -452,3 +452,5 @@ cachepagestatepersister_timeout_invalid = TCachePageStatePersister.Timeout must 
 cachepagestatepersister_pagestate_corrupted = Page state is corrupted.
 
 conditional_condition_invalid			= TConditional.Condition '{0}' is not a valid PHP expression: {1}
+
+db_cachetable_inexistent				= TDbCache cannot find DB table '{0}' to store cached data.
