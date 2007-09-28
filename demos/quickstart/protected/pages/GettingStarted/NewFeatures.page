@@ -19,6 +19,7 @@ This page summarizes the main new features that are introduced in each PRADO rel
 <li>Added a new page state persister <tt>TCachePageStatePersister</tt>. It allows page state to be stored using a cache module (e.g. TMemCache, TDbCache, etc.)
 <li>Added support to the <a href="?page=Advanced.Auth">auth framework</a> to allow remembering login.</li>
 <li>Added support to display a prompt item in TDropDownList and TListBox (something like 'Please select:' as the first list item.)</li>
+<li>Added support to <a href="?page=Database.ActiveRecord">column mapping in Active Record</a>.</li>
 </ul>
 
 <h2 id="8006">Version 3.1.0</h2>

@@ -277,7 +277,7 @@ class TActiveRecordGateway extends TComponent
 		foreach($tableInfo->getColumns() as $name => $column)
 		{
 			if($column->hasSequence())
-				$record->{$name} = $command->getLastInsertID($column->getSequenceName());
+				$record->setColumnValue($name,$command->getLastInsertID($column->getSequenceName()));
 		}
 	}
 
@@ -293,7 +293,7 @@ class TActiveRecordGateway extends TComponent
 		{
 			if($column->getIsExcluded())
 				continue;
-			$value = $record->{$name};
+			$value = $record->getColumnValue($name);
 			if(!$column->getAllowNull() && $value===null && !$column->hasSequence())
 			{
 				throw new TActiveRecordException(
@@ -329,7 +329,7 @@ class TActiveRecordGateway extends TComponent
 		{
 			if($column->getIsExcluded())
 				continue;
-			$value = $record->{$name};
+			$value = $record->getColumnValue($name);
 			if(!$column->getAllowNull() && $value===null)
 			{
 				throw new TActiveRecordException(
@@ -367,7 +367,7 @@ class TActiveRecordGateway extends TComponent
 		foreach($tableInfo->getColumns() as $name=>$column)
 		{
 			if($column->getIsPrimaryKey())
-				$primary[$name] = $record->{$name};
+				$primary[$name] = $record->getColumnValue($name);
 		}
 		return $primary;
 	}

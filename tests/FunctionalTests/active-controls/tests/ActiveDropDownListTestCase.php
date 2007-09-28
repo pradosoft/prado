@@ -29,13 +29,13 @@ class ActiveDropDownListTestCase extends SeleniumTestCase
 		$this->pause(800);
 		$this->select("list2", "value 1 - item 4");
 		$this->pause(800);
-		$this->assertText("label1", "Selection 2: value 1 - item 4");
+		$this->assertText("label2", "Selection 2: value 1 - item 4");
 
 		$this->select("list1", "item 3");
 		$this->pause(800);
 		$this->select("list2", "value 3 - item 5");
 		$this->pause(800);
-		$this->assertText("label1", "Selection 2: value 3 - item 5");
+		$this->assertText("label2", "Selection 2: value 3 - item 5");
 
 		$this->click('button4');
 		$this->pause(800);

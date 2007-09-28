@@ -65,6 +65,28 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationContext');
  * $user->save(); //update the 'admin' record.
  * </code>
  *
+ * Since v3.1.1, TActiveRecord starts to support column mapping. The physical
+ * column names (defined in database) can be mapped to logical column names
+ * (defined in active classes as public properties.) To use this feature, declare
+ * a static class variable COLUMN_MAPPING like the following:
+ * <code>
+ * class UserRecord extends TActiveRecord
+ * {
+ *     const TABLE='users';
+ *     protected static $COLUMN_MAPPING=array
+ *     (
+ *         'user_id'=>'username',
+ *         'email_address'=>'email',
+ *     );
+ *     public $username;
+ *     pulbic $email;
+ * }
+ * </code>
+ * In the above, the 'users' table consists of 'user_id' and 'email_address' columns,
+ * while the UserRecord class declares 'username' and 'email' properties.
+ * By using column mapping, we can regularize the naming convention of column names
+ * in active record.
+ *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$
  * @package System.Data.ActiveRecord
@@ -86,6 +108,17 @@ abstract class TActiveRecord extends TComponent
 	 */
 	private $_connection;
 
+	private static $_columnMapping=array();
+
+	/**
+	 * This static variable defines the column mapping.
+	 * The keys are physical column names as defined in database,
+	 * and the values are logical column names as defined as public variable/property names
+	 * for the corresponding active record class.
+	 * @var array column mapping. Keys: physical column names, values: logical column names.
+	 */
+	protected static $COLUMN_MAPPING=array();
+
 	/**
 	 * Prevent __call() method creating __sleep() when serializing.
 	 */
@@ -97,7 +130,10 @@ abstract class TActiveRecord extends TComponent
 	/**
 	 * Prevent __call() method creating __wake() when unserializing.
 	 */
-	public function __wake(){}
+	public function __wake()
+	{
+		$this->setupColumnMapping();
+	}
 
 	/**
 	 * Create a new instance of an active record with given $data. The record
@@ -111,6 +147,20 @@ abstract class TActiveRecord extends TComponent
 		$this->copyFrom($data);
 		if($connection!==null)
 			$this->_connection=$connection;
+		$this->setupColumnMapping();
+	}
+
+	/**
+	 * @since 3.1.1
+	 */
+	private function setupColumnMapping()
+	{
+		$className=get_class($this);
+		if(!isset(self::$_columnMapping[$className]))
+		{
+			$class=new ReflectionClass($className);
+			self::$_columnMapping[$className]=$class->getStaticPropertyValue('COLUMN_MAPPING');
+		}
 	}
 
 	/**
@@ -170,9 +220,9 @@ abstract class TActiveRecord extends TComponent
 		foreach($properties as $prop)
 		{
 			if($strict)
-				$equals = $equals && $this->{$prop} === $record->{$prop};
+				$equals = $equals && $this->getColumnValue($prop) === $record->getColumnValue($prop);
 			else
-				$equals = $equals && $this->{$prop} == $record->{$prop};
+				$equals = $equals && $this->getColumnValue($prop) == $record->getColumnValue($prop);
 			if(!$equals)
 				return false;
 		}
@@ -325,12 +375,12 @@ abstract class TActiveRecord extends TComponent
 		$obj = Prado::createComponent($type);
 		$tableInfo = $this->getRecordGateway()->getRecordTableInfo($obj);
 		foreach($data as $name=>$value)
-			$obj->{$name} = $value;
+			$obj->setColumnValue($name,$value);
 		/*
 		foreach($tableInfo->getColumns()->getKeys() as $name)
 		{
 			if(isset($data[$name]))
-				$obj->{$name} = $data[$name];
+				$obj->setColumnValue($name,$data[$name]);
 		}*/
 		$obj->_readOnly = $tableInfo->getIsView();
 		$this->getRecordManager()->getObjectStateRegistry()->registerClean($obj);
@@ -623,6 +673,36 @@ abstract class TActiveRecord extends TComponent
 	public function onExecuteCommand($param)
 	{
 		$this->raiseEvent('OnExecuteCommand', $this, $param);
+	}
+
+	/**
+	 * Retrieves the column value according to column name.
+	 * This method is used internally.
+	 * @param string the column name (as defined in database schema)
+	 * @return mixed the corresponding column value
+	 * @since 3.1.1
+	 */
+	public function getColumnValue($columnName)
+	{
+		$className=get_class($this);
+		if(isset(self::$_columnMapping[$className][$columnName]))
+			$columnName=self::$_columnMapping[$className][$columnName];
+		return $this->$columnName;
+	}
+
+	/**
+	 * Sets the column value according to column name.
+	 * This method is used internally.
+	 * @param string the column name (as defined in database schema)
+	 * @param mixed the corresponding column value
+	 * @since 3.1.1
+	 */
+	public function setColumnValue($columnName,$value)
+	{
+		$className=get_class($this);
+		if(isset(self::$_columnMapping[$className][$columnName]))
+			$columnName=self::$_columnMapping[$className][$columnName];
+		$this->$columnName=$value;
 	}
 }
 ?>

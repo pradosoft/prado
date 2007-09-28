@@ -52,21 +52,21 @@
     </ul>
 <h2>Design Implications</h2>
 <p>
-Prado's implementation of Active Record does not maintain referential identity. Each object obtained using 
-Active Record is a copy of the data in the database. For example, If you ask for 
-a particular customer and get back a <tt>Customer</tt> object, the next time you ask for 
+Prado's implementation of Active Record does not maintain referential identity. Each object obtained using
+Active Record is a copy of the data in the database. For example, If you ask for
+a particular customer and get back a <tt>Customer</tt> object, the next time you ask for
 that customer you get back another instance of a <tt>Customer</tt> object. This implies that a strict
 comparison (i.e., using <tt>===</tt>) will return false, while loose comparison (i.e., using <tt>==</tt>) will
-return true if the object values are equal by loose comparison. 
+return true if the object values are equal by loose comparison.
 <p>
 <p>
 This is design implication related to the following question.
-<i>"Do you think of the customer as an object, of which there's only one, 
+<i>"Do you think of the customer as an object, of which there's only one,
 or do you think of the objects you operate on as <b>copies</b> of the database?"</i>
-Other O/R mappings will imply that there is only one Customer object with custID 100, and it literally is that customer. 
-If you get the customer and change a field on it, then you have now changed that customer. 
-<i>"That constrasts with: you have changed this copy of the customer, but not that copy. 
-And if two people update the customer on two copies of the object, whoever updates first, 
+Other O/R mappings will imply that there is only one Customer object with custID 100, and it literally is that customer.
+If you get the customer and change a field on it, then you have now changed that customer.
+<i>"That constrasts with: you have changed this copy of the customer, but not that copy.
+And if two people update the customer on two copies of the object, whoever updates first,
 or maybe last, wins."</i> [A. Hejlsberg 2003]
 </p>
 
@@ -1057,6 +1057,45 @@ $player->skills[] = new SkillRecord(); //add skill
 Using a TList allows us to set the elements of the <tt>skills</tt> property as if they were
 arrays. E.g. <tt>$player->skills[] = new SkillRecord()</tt>. If <tt>array</tt> was used, a PHP error
 will be thrown.
+</p>
+
+<h2>Column Mapping</h2>
+<p>
+Since v3.1.1, Active Record starts to support column mapping. Column mapping allows developers
+to address columns in Active Record using a more consistent naming convention. In particular,
+using column mapping, one can access a column using whatever name he likes, rather than limited by
+the name defined in the database schema.
+</p>
+<p>
+To use column mapping, declare a static array named <tt>COLUMN_MAPPING</tt> in the Active Record class.
+The keys of the array are column names (called <i>physical column names</i>) as defined in the database
+schema, while the values are corresponding property names (called <i>logical column names</i>) defined
+in the Active Record class. The property names can be either public class member variable names or
+component property names defined via getters/setters. If a physical column name happens to be the same
+as the logical column name, they do not need to be listed in <tt>COLUMN_MAPPING</tt>.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class UserRecord extends TActiveRecord
+{
+	const TABLE='users';
+	protected static $COLUMN_MAPPING=array
+	(
+		'user_id'=>'id',
+		'email_address'=>'email',
+		'first_name'=>'firstName',
+		'last_name'=>'lastName',
+	);
+	public $id;
+	public $username; // the physical and logical column names are the same
+	public $email;
+	public $firstName;
+	public $lastName;
+	//....
+}
+</com:TTextHighlighter>
+<p>
+With the above column mapping, we can address <tt>first_name</tt> using <tt>$userRecord->firstName</tt>
+instead of <tt>$userRecord->first_name</tt>. This helps separation of logic and model.
 </p>
 
 <h2 id="138054">References</h2>
