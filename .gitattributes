@@ -2947,6 +2947,7 @@ tests/FunctionalTests/tickets/protected/pages/Ticket671.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket679.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket679.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket68.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket691.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket72.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket72.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket93.page -text
