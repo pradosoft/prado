@@ -9,10 +9,10 @@
 <com:TActiveLabel ID="Title" Text="Cast your vote:" />
 <com:TActiveRatingList ID="List" ActiveControl.CallbackOptions="RatingOption"
 			OnCallback="list_oncallback" ActiveControl.EnableUpdate="true">
-			<com:TListItem Value="1" Text="[One star" />
-			<com:TListItem Value="2" Text="[Two stars" />
-			<com:TListItem Value="3" Text="[Three stars" />
-			<com:TListItem Value="4" Text="[Four stars" />
+			<com:TListItem Value="1" Text="One star" />
+			<com:TListItem Value="2" Text="Two stars" />
+			<com:TListItem Value="3" Text="Three stars" />
+			<com:TListItem Value="4" Text="Four stars" />
 			<com:TListItem Value="5" Text="Five stars" />
 			<com:TListItem Value="6" Text="Six stars" />
 </com:TActiveRatingList>
