@@ -17,7 +17,7 @@ class ActiveDropDownList extends TPage
 
 	function list2_changed($sender)
 	{
-		$this->label1->setText("Selection 2: ".$sender->getSelectedValue());
+		$this->label2->setText("Selection 2: ".$sender->getSelectedValue());
 	}
 
 	function select_index_3()
