@@ -107,23 +107,6 @@ class TDropDownList extends TListControl implements IPostBackDataHandler, IValid
 	}
 
 	/**
-	 * @return integer the index (zero-based) of the item being selected.
-	 * If none is selected, the return value is 0 meaning the first item is selected.
-	 * If there is no items, it returns -1.
-	 */
-	public function getSelectedIndex()
-	{
-		$index=parent::getSelectedIndex();
-		if($index<0 && $this->getHasItems())
-		{
-			$this->setSelectedIndex(0);
-			return 0;
-		}
-		else
-			return $index;
-	}
-
-	/**
 	 * @throws TNotSupportedException if this method is invoked
 	 */
 	public function setSelectedIndices($indices)
