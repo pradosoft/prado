@@ -1078,7 +1078,7 @@ as the logical column name, they do not need to be listed in <tt>COLUMN_MAPPING<
 class UserRecord extends TActiveRecord
 {
 	const TABLE='users';
-	protected static $COLUMN_MAPPING=array
+	public static $COLUMN_MAPPING=array
 	(
 		'user_id'=>'id',
 		'email_address'=>'email',

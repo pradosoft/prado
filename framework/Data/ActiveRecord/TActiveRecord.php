@@ -73,7 +73,7 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationContext');
  * class UserRecord extends TActiveRecord
  * {
  *     const TABLE='users';
- *     protected static $COLUMN_MAPPING=array
+ *     public static $COLUMN_MAPPING=array
  *     (
  *         'user_id'=>'username',
  *         'email_address'=>'email',
@@ -98,16 +98,6 @@ abstract class TActiveRecord extends TComponent
 	const BELONGS_TO='BELONGS_TO';
 	const HAS_ONE='HAS_ONE';
 
-	/**
-	 * @var boolean true if this class is read only.
-	 */
-	private $_readOnly=false;
-
-	/**
-	 * @var TDbConnection database connection object.
-	 */
-	private $_connection;
-
 	private static $_columnMapping=array();
 
 	/**
@@ -117,7 +107,17 @@ abstract class TActiveRecord extends TComponent
 	 * for the corresponding active record class.
 	 * @var array column mapping. Keys: physical column names, values: logical column names.
 	 */
-	protected static $COLUMN_MAPPING=array();
+	public static $COLUMN_MAPPING=array();
+
+	/**
+	 * @var boolean true if this class is read only.
+	 */
+	private $_readOnly=false;
+
+	/**
+	 * @var TDbConnection database connection object.
+	 */
+	private $_connection;
 
 	/**
 	 * Prevent __call() method creating __sleep() when serializing.
