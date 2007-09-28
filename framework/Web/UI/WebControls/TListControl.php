@@ -704,7 +704,7 @@ abstract class TListControl extends TDataBoundControl implements IDataRenderer
 	}
 
 	/**
-	 * @return string the prompt text which is to be displayed as the first list item. Defaults to empty, meaning no prompt.
+	 * @return string the prompt text which is to be displayed as the first list item.
 	 * @since 3.1.1
 	 */
 	public function getPromptText()
@@ -713,7 +713,7 @@ abstract class TListControl extends TDataBoundControl implements IDataRenderer
 	}
 
 	/**
-	 * @param string the prompt text which is to be displayed as the first list item. If empty, {@link getPromptValue PromptValue} will be displayed.
+	 * @param string the prompt text which is to be displayed as the first list item.
 	 * @since 3.1.1
 	 */
 	public function setPromptText($value)
@@ -722,7 +722,7 @@ abstract class TListControl extends TDataBoundControl implements IDataRenderer
 	}
 
 	/**
-	 * @return string the prompt selection value. Defaults to empty, meaning no prompt.
+	 * @return string the prompt selection value.
 	 * @see getPromptText
 	 * @since 3.1.1
 	 */
@@ -773,11 +773,9 @@ abstract class TListControl extends TDataBoundControl implements IDataRenderer
 	{
 		$text=$this->getPromptText();
 		$value=$this->getPromptValue();
-		if($text==='')
-			$text=$value;
 		if($value==='')
 			$value=$text;
-		if($text!=='')
+		if($value!=='')
 		{
 			$writer->addAttribute('value',$value);
 			$writer->renderBeginTag('option');
