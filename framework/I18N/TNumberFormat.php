@@ -33,11 +33,11 @@ Prado::using('System.I18N.TI18NControl');
   * If someone from US want to see sales figures from a store in
   * Germany (say using the EURO currency), formatted using the german
   * currency, you would need to use the attribute Culture="de_DE" to get
-  * the currency right, e.g. 100,00 â‚?. The decimal and grouping separator is
+  * the currency right, e.g. 100,00. The decimal and grouping separator is
   * then also from the de_DE locale. This may lead to some confusion because
   * people from US know the "," as thousand separator. Therefore a "Currency"
   * attribute is available, so that the output from the following example
-  * results in â‚?100.00
+  * results in 100.00.
   * <code>
   * <com:TNumberFormat Type="currency" Culture="en_US" Currency="EUR" Value="100" />
   * </code>
