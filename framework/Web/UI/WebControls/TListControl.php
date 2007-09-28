@@ -704,6 +704,44 @@ abstract class TListControl extends TDataBoundControl implements IDataRenderer
 	}
 
 	/**
+	 * @return string the prompt text which is to be displayed as the first list item. Defaults to empty, meaning no prompt.
+	 * @since 3.1.1
+	 */
+	public function getPromptText()
+	{
+		return $this->getViewState('PromptText','');
+	}
+
+	/**
+	 * @param string the prompt text which is to be displayed as the first list item. If empty, {@link getPromptValue PromptValue} will be displayed.
+	 * @since 3.1.1
+	 */
+	public function setPromptText($value)
+	{
+		$this->setViewState('PromptText',$value,'');
+	}
+
+	/**
+	 * @return string the prompt selection value. Defaults to empty, meaning no prompt.
+	 * @see getPromptText
+	 * @since 3.1.1
+	 */
+	public function getPromptValue()
+	{
+		return $this->getViewState('PromptValue','');
+	}
+
+	/**
+	 * @param string the prompt selection value. If empty, {@link getPromptText PromptText} will be used as the value.
+	 * @see setPromptText
+	 * @since 3.1.1
+	 */
+	public function setPromptValue($value)
+	{
+		$this->setViewState('PromptValue',(string)$value,'');
+	}
+
+	/**
 	 * Raises OnSelectedIndexChanged event when selection is changed.
 	 * This method is invoked when the list control has its selection changed
 	 * by end-users.
@@ -727,6 +765,29 @@ abstract class TListControl extends TDataBoundControl implements IDataRenderer
 	}
 
 	/**
+	 * Renders the prompt text, if any.
+	 * @param THtmlWriter writer
+	 * @since 3.1.1
+	 */
+	protected function renderPrompt($writer)
+	{
+		$text=$this->getPromptText();
+		$value=$this->getPromptValue();
+		if($text==='')
+			$text=$value;
+		if($value==='')
+			$value=$text;
+		if($text!=='')
+		{
+			$writer->addAttribute('value',$value);
+			$writer->renderBeginTag('option');
+			$writer->write(THttpUtility::htmlEncode($text));
+			$writer->renderEndTag();
+			$writer->writeLine();
+		}
+	}
+
+	/**
 	 * Renders body content of the list control.
 	 * This method renders items contained in the list control as the body content.
 	 * @param THtmlWriter writer
@@ -736,6 +797,8 @@ abstract class TListControl extends TDataBoundControl implements IDataRenderer
 		if($this->_items)
 		{
 			$writer->writeLine();
+			if($this->_items->getCount())
+				$this->renderPrompt($writer);
 			$previousGroup=null;
 			foreach($this->_items as $item)
 			{

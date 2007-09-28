@@ -28,6 +28,10 @@ Prado::using('System.Web.UI.WebControls.TListControl');
  *  // or <com:TListItem Attributes.Group="Group Name" .../> in template
  * </code>
  *
+ * Since v3.1.1, TDropDownList starts to support prompt text. That is, a prompt item can be
+ * displayed as the first list item by specifying {@link setPromptText PromptText}. Choosing
+ * the prompt item will unselect the TDropDownList.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Id$
  * @package System.Web.UI.WebControls
