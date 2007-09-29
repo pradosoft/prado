@@ -1,0 +1,13 @@
+<com:TContent id="Content">
+<p>
+Type some content which will be logged :
+<com:TActiveTextBox id="logMessage"/>
+<com:TActiveButton Text="Add to logfile" OnClick="addLog"/>
+</p>
+<p>
+<com:TActiveTextBox TextMode="MultiLine" id="logBox" ReadOnly="true" Rows="5" Columns="80"/>
+</pre>
+</p>
+<com:TActiveButton Text="Refresh" OnClick="refreshLog"/>
+<com:TActiveButton Text="Clear" OnClick="clearLog"/>
+</com:TContent>
