@@ -74,7 +74,7 @@ class TConditional extends TControl
 		$result=true;
 		try
 		{
-			$result=$this->evaluateExpression($this->_condition);
+			$result=$this->getTemplateControl()->evaluateExpression($this->_condition);
 		}
 		catch(Exception $e)
 		{
@@ -99,6 +99,8 @@ class TConditional extends TControl
 	}
 
 	/**
+	 * Sets the PHP expression to be evaluated for conditionally displaying content.
+	 * The context of the expression is the template control containing TConditional.
 	 * @param string the PHP expression used for determining which template to use.
 	 */
 	public function setCondition($value)
