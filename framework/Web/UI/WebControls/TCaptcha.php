@@ -65,15 +65,6 @@ class TCaptcha extends TImage
 	private $_validated=false;
 
 	/**
-	 * Checks the requirements needed for using TCaptcha.
-	 */
-	public function onInit($param)
-	{
-		parent::onInit($param);
-		$this->checkRequirements();
-	}
-
-	/**
 	 * @return integer the theme of the token image. Defaults to 0.
 	 */
 	public function getTokenImageTheme()
@@ -368,6 +359,8 @@ class TCaptcha extends TImage
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
+		if(!self::checkRequirements())
+			throw new TConfigurationException('captcha_imagettftext_required');
 		if(!$this->getViewState('TokenGenerated',0))
 		{
 			$manager=$this->getApplication()->getAssetManager();
@@ -487,15 +480,12 @@ class TCaptcha extends TImage
 
 	/**
 	 * Checks the requirements needed for generating CAPTCHA images.
+	 * TCaptach requires GD2 with TrueType font support and PNG image support.
+	 * @return boolean whether the requirements are satisfied.
 	 */
-	protected function checkRequirements()
+	public static function checkRequirements()
 	{
-		if(!extension_loaded('gd'))
-			throw new TConfigurationException('captcha_gd2_required');
-		if(!function_exists('imagettftext'))
-			throw new TConfigurationException('captcha_imagettftext_required');
-		if(!function_exists('imagepng'))
-			throw new TConfigurationException('captcha_imagepng_required');
+		return extension_loaded('gd') && function_exists('imagettftext') && function_exists('imagepng');
 	}
 }
 
