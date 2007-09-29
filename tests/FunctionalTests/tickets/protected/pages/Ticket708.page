@@ -1,0 +1,18 @@
+<com:TContent id="Content">
+<com:TDataGrid AutoGenerateColumns="false" id="grid">
+	<com:TTemplateColumn HeaderText="Radio">
+		<prop:ItemTemplate>
+			<com:TActiveRadioButton
+				id="RadioButton"
+				UniqueGroupName="RadioGroup"
+				AutoPostBack="true"
+				Value=<%#$this->Parent->Data['RadioValue']%>
+				OnCheckedChanged="Page.ChangeRadio"/>
+		</prop:ItemTemplate>
+	</com:TTemplateColumn>
+	<com:TBoundColumn HeaderText="Value" DataField="Text"/>
+</com:TDataGrid>
+<p>
+<com:TActiveLabel id="Result"/>
+</p>
+</com:TContent>
