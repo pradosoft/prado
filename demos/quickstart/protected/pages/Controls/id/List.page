@@ -58,6 +58,9 @@ $listbox->dataBind();
 <p id="550332" class="block-content">
 <tt>TDropDownList</tt> menampilkan kotak daftar dropdown yang membolehkan pengguna untuk memilih opsi tunggal dari beberapa yang telah ditetapkan.
 </p>
+<p class="block-content">
+Sejak v3.1.1, <tt>TDropDownList</tt> mulai mendukung teks pertanyaan (seperti 'Please select:' sebagai item list pertama). Untuk menggunakan fitur ini, setel baik <tt>PromptText</tt> ataupun <tt>PromptValue</tt>, atau keduanya. Jika pengguna memilih item pertanyaan, dropdown list tidak akan dipilih.
+</p>
 <com:RunBar PagePath="Controls.Samples.TDropDownList.Home" />
 
 <h2 id="4804">TCheckBoxList</h2>
@@ -93,4 +96,4 @@ $listbox->dataBind();
 
 <com:RunBar PagePath="Controls.Samples.TBulletedList.Home" />
 
-<div class="last-modified">$Id: List.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+<div class="last-modified">$Id: List.page 2256 2007-09-28 02:04:47Z xue $</div></com:TContent>

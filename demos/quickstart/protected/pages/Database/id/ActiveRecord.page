@@ -891,13 +891,54 @@ sebuah array. Contohnya <tt>$player->skills[] = new SkillRecord()</tt>. Jika <tt
 akan dikeluarkan. 
 </p>
 
-<h2 id="138054">Referensi</h2>
+<h2>Pemetaan Kolom</h2>
+<p>
+Sejak v3.1.1, Rekaman Aktif mulai mendukung pemetaan kolom. Pemetaan kolom membolehkan para 
+pengembang untuk mengalamatkan kolom dalam Rekaman Aktif menggunakan konvensi penamaan lebih
+konsisten. Dalam keadaan tertentu, menggunakan pemetaan kolom, seseorang dapat mengakses kolom
+menggunakan apapun namanya yang disukainya, daripada nama terbatas yang didefinisikan dalam
+skema database.
+</p>
+<p>
+Untuk menggunakan pemetaan kolom, deklarasikan array statis bernama <tt>COLUMN_MAPPING</tt> dalam kelas Rekaman Aktif.
+Kunci dari array adalah nama kolom (disebut <i>nama kolom fisik</i>) yang didefinisikan dalam skema database,
+sementara nilai terkait dengan nama properti (disebut <i>nama kolom logika</i>) didefinisikan dalam
+kelas Rekaman Aktif. Nama properti dapat nama variabel anggota kelas public atau nama properti komponen
+yang didefinisikan via pengambil/penyetel. Jika nama kolom fisik terjadi sama seperti nama kolom logika,
+keduanya tidak perlu didaftarkan dalam <tt>COLUMN_MAPPING</tt>.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class UserRecord extends TActiveRecord
+{
+	const TABLE='users';
+	public static $COLUMN_MAPPING=array
+	(
+		'user_id'=>'id',
+		'email_address'=>'email',
+		'first_name'=>'firstName',
+		'last_name'=>'lastName',
+	);
+	public $id;
+	public $username; // nama kolom fisik dan logika sama
+	public $email;
+	public $firstName;
+	public $lastName;
+	//....
+}
+</com:TTextHighlighter>
+<p>
+Dengan pemetaan kolom di atas, kita menambahkan alamat <tt>first_name</tt> menggunakan <tt>$userRecord->firstName</tt>
+daripada <tt>$userRecord->first_name</tt>. Ini membantu pemisahan dari logika dan model.
+</p>
+
+<h2 id="138054">References</h2>
 <ul id="u3" class="block-content">
     <li>Fowler et. al. <i>Patterns of Enterprise Application Architecture</i>,
     Addison Wesley, 2002.</li>
 	<li>B. Venners with B. Eckel. <i><a href="http://www.artima.com/intv/abstract3.html">Inappropriate Abstractions - A Conversation with Anders Hejlsberg, Part VI.</a></i>
 	Artima Developer, 2003.
 	</li>
+
 </ul>
 
-<div class="last-modified">$Id: ActiveRecord.page 2179 2007-08-30 02:17:55Z wei $</div></com:TContent>
+<div class="last-modified">$Id: ActiveRecord.page 2262 2007-09-28 18:26:03Z xue $</div></com:TContent>
