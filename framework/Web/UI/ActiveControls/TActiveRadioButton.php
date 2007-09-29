@@ -124,7 +124,6 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	protected function renderInputTag($writer,$clientID,$onclick)
 	{
 		parent::renderInputTag($writer,$clientID,$onclick);
-		$writer->addAttribute('id',$this->getClientID());
 		$this->getActiveControl()->registerCallbackClientScript(
 			$this->getClientClassName(), $this->getPostBackOptions());
 	}

@@ -128,7 +128,6 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 	protected function renderInputTag($writer,$clientID,$onclick)
 	{
 		parent::renderInputTag($writer,$clientID,$onclick);
-		$writer->addAttribute('id',$this->getClientID());
 		$this->getActiveControl()->registerCallbackClientScript(
 			$this->getClientClassName(), $this->getPostBackOptions());
 	}
