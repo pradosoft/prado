@@ -3012,6 +3012,7 @@ tests/FunctionalTests/tickets/tests/Ticket653TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket659TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket700TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket703TestCase.php -text
+tests/FunctionalTests/tickets/tests/Ticket708TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket72TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket93TestCase.php -text
 tests/FunctionalTests/validators.php -text
