@@ -11,6 +11,8 @@ for both A and B.
 
 Upgrading from v3.1.0
 ---------------------
+- The RELATIONS declaration in Acive Record classes is changed from
+  "protected static $RELATIONS" to "public static $RELATIONS".
 - IFeedContentProvider adds a new method: getContentType(). This affects any
   class implementing this interface.
 - TUrlMapping now only uses the PATH_INFO part of URL for matching, and the matching

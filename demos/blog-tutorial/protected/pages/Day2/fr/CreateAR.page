@@ -133,7 +133,7 @@ class PostRecord extends TActiveRecord
 
     public $author; //contient un objet UserRecord
 
-    protected static $RELATIONS=array
+    public static $RELATIONS=array
     (
         'author' => array(self::BELONGS_TO, 'UserRecord'),
     );
@@ -151,7 +151,7 @@ class UserRecord extends TActiveRecord
 
     public $posts=array(); //contient un tableau de PostRecord
 
-    protected static $RELATIONS=array
+    public static $RELATIONS=array
     (
         'posts' => array(self::HAS_MANY, 'PostRecord'),
     );

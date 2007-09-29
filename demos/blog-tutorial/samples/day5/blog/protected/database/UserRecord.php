@@ -15,7 +15,7 @@ class UserRecord extends TActiveRecord
 
 	public $posts=array();
 
-	protected static $RELATIONS=array
+	public static $RELATIONS=array
 	(
 		'posts' => array(self::HAS_MANY, 'PostRecord'),
 	);

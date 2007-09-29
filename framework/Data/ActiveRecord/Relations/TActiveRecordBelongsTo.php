@@ -39,7 +39,7 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
  * 	   public $age;
  *     public $team; //foreign object TeamRecord
  *
- *     protected static $RELATIONS = array
+ *     public static $RELATIONS = array
  *     (
  *			'team' => array(self::BELONGS_TO, 'TeamRecord')
  *     );

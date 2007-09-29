@@ -15,7 +15,7 @@ class PostRecord extends TActiveRecord
 
 	public $author;
 
-	protected static $RELATIONS=array
+	public static $RELATIONS=array
 	(
 		'author' => array(self::BELONGS_TO, 'UserRecord'),
 	);

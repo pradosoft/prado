@@ -34,7 +34,7 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
  *
  *     public $players=array(); //list of players
  *
- *     protected static $RELATIONS=array
+ *     public static $RELATIONS=array
  *     (
  *         'players' => array(self::HAS_MANY, 'PlayerRecord')
  *     );

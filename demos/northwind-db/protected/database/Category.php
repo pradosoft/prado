@@ -13,7 +13,7 @@ class Category extends TActiveRecord
 
 	public $Products=array();
 
-	protected static $RELATIONS=array
+	public static $RELATIONS=array
 	(
 		'Products' => array(self::HAS_MANY, 'Product'),
 	);

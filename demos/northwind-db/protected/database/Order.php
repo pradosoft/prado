@@ -26,7 +26,7 @@ class Order extends TActiveRecord
 	public $Shipper;
 	public $Employee;
 
-	protected static $RELATIONS = array
+	public static $RELATIONS = array
 	(
 		'OrderDetails' => array(self::HAS_MANY, 'OrderDetail'),
 		'Customer' => array(self::BELONGS_TO, 'Customer'),

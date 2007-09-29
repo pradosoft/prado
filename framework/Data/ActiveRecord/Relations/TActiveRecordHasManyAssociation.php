@@ -35,7 +35,7 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
  *
  *     public $Categories=array(); //foreign object collection.
  *
- *     protected static $RELATIONS = array
+ *     public static $RELATIONS = array
  *     (
  *         'Categories' => array(self::HAS_MANY, 'CategoryRecord', 'Article_Category')
  *     );
@@ -52,7 +52,7 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
  *
  *     public $Articles=array();
  *
- *     protected static $RELATIONS = array
+ *     public static $RELATIONS = array
  *     (
  *         'Articles' => array(self::HAS_MANY, 'ArticleRecord', 'Article_Category')
  *     );

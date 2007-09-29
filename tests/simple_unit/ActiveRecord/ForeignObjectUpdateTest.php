@@ -28,7 +28,7 @@ class TeamRecord extends BaseFkRecord
     public $players=array();
 
     //define the $player member having has many relationship with PlayerRecord
-    protected static $RELATIONS=array
+    public static $RELATIONS=array
     (
         'players' => array(self::HAS_MANY, 'PlayerRecord'),
     );
@@ -50,7 +50,7 @@ class PlayerRecord extends BaseFkRecord
     private $_skills;
     public $profile;
 
-    protected static $RELATIONS=array
+    public static $RELATIONS=array
     (
         'skills' => array(self::HAS_MANY, 'SkillRecord', 'player_skills'),
         'team' => array(self::BELONGS_TO, 'TeamRecord'),
@@ -91,7 +91,7 @@ class ProfileRecord extends BaseFkRecord
 
     public $player;
 
-    protected static $RELATIONS=array
+    public static $RELATIONS=array
     (
         'player' => array(self::BELONGS_TO, 'PlayerRecord'),
     );
@@ -110,7 +110,7 @@ class SkillRecord extends BaseFkRecord
 
     public $players=array();
 
-    protected static $RELATIONS=array
+    public static $RELATIONS=array
     (
         'players' => array(self::HAS_MANY, 'PlayerRecord', 'player_skills'),
     );

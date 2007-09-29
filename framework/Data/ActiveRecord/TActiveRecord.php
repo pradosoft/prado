@@ -106,8 +106,18 @@ abstract class TActiveRecord extends TComponent
 	 * and the values are logical column names as defined as public variable/property names
 	 * for the corresponding active record class.
 	 * @var array column mapping. Keys: physical column names, values: logical column names.
+	 * @since 3.1.1
 	 */
 	public static $COLUMN_MAPPING=array();
+
+	/**
+	 * This static variable defines the relationships.
+	 * The keys are public variable/property names defined in the AR class.
+	 * Each value is an array, e.g. array(self::HAS_MANY, 'PlayerRecord').
+	 * @var array relationship.
+	 * @since 3.1.1
+	 */
+	public static $RELATIONS=array();
 
 	/**
 	 * @var boolean true if this class is read only.

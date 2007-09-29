@@ -12,7 +12,7 @@ class Shipper extends TActiveRecord
 
 	public $Orders = array();
 
-	protected static $RELATIONS = array
+	public static $RELATIONS = array
 	(
 		'Orders' => array(self::HAS_MANY, 'Order'),
 	);

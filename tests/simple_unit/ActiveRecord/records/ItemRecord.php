@@ -19,7 +19,7 @@ class ItemRecord extends TActiveRecord
 	public $related_items = array();
 	public $related_item_id;
 
-	protected static $RELATIONS=array
+	public static $RELATIONS=array
 	(
 		'related_items' => array(self::HAS_MANY, 'ItemRecord', 'related_items.(related_item_id)'),
 	);

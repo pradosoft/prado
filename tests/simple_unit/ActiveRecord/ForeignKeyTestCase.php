@@ -24,7 +24,7 @@ class Album extends SqliteRecord
 
 	public $cover;
 
-	protected static $RELATIONS = array(
+	public static $RELATIONS = array(
 		'Tracks' => array(self::HAS_MANY, 'Track'),
 		'Artists' => array(self::HAS_MANY, 'Artist', 'album_artists'),
 		'cover' => array(self::HAS_ONE, 'Cover')
@@ -42,7 +42,7 @@ class Artist extends SqliteRecord
 
 	public $Albums = array();
 
-	protected static $RELATIONS=array(
+	public static $RELATIONS=array(
 		'Albums' => array(self::HAS_MANY, 'Album', 'album_artists')
 	);
 
@@ -60,7 +60,7 @@ class Track extends SqliteRecord
 
 	public $Album;
 
-	protected static $RELATIONS = array(
+	public static $RELATIONS = array(
 		'Album' => array(self::BELONGS_TO, 'Album'),
 	);
 

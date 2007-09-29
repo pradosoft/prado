@@ -13,7 +13,7 @@ class Territory extends TActiveRecord
 	private $_region;
 	private $_employees;
 
-	protected static $RELATIONS = array
+	public static $RELATIONS = array
 	(
 		'Region' => array(self::BELONGS_TO, 'Region'),
 		'Employees' => array(self::HAS_MANY, 'Employee', 'EmployeeTerritories')

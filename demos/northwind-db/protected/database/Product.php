@@ -21,7 +21,7 @@ class Product extends TActiveRecord
 	public $Category;
 	public $OrderDetails=array();
 
-	protected static $RELATIONS = array
+	public static $RELATIONS = array
 	(
 		'Supplier' => array(self::BELONGS_TO, 'Supplier'),
 		'Category' => array(self::BELONGS_TO, 'Category'),

@@ -43,7 +43,7 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
  *
  *     public $engine; //engine foreign object
  *
- *     protected static $RELATIONS=array
+ *     public static $RELATIONS=array
  *     (
  *         'engine' => array(self::HAS_ONE, 'EngineRecord')
  *     );

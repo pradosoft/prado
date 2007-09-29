@@ -552,7 +552,7 @@ class TeamRecord extends TActiveRecord
     public $players=array();
 
     //mendefinisikan anggota $player yang memiliki hubungan banyak dengan PlayerRecord
-    protected static $RELATIONS=array
+    public static $RELATIONS=array
     (
         'players' => array(self::HAS_MANY, 'PlayerRecord'),
     );
@@ -612,7 +612,7 @@ class PlayerRecord extends TActiveRecord
     public $skills=array();
     public $profile;
 
-    protected static $RELATIONS=array
+    public static $RELATIONS=array
     (
         'team' => array(self::BELONGS_TO, 'TeamRecord'),
         'skills' => array(self::HAS_MANY, 'SkillRecord', 'Player_Skills'),
@@ -658,7 +658,7 @@ class ProfileRecord extends TActiveRecord
 
     public $player;
 
-    protected static $RELATIONS=array
+    public static $RELATIONS=array
     (
         'player' => array(self::BELONGS_TO, 'PlayerRecord'),
     );
@@ -698,7 +698,7 @@ class Category extends TActiveRecord
     public $parent_category;
     public $child_categories=array();
 
-    protected static $RELATIONS=array
+    public static $RELATIONS=array
     (
         'parent_category' => array(self::BELONGS_TO, 'Category'),
         'child_categories' => array(self::HAS_MANY, 'Category'),
@@ -735,7 +735,7 @@ class SkillRecord extends TActiveRecord
 
     public $players=array();
 
-    protected static $RELATIONS=array
+    public static $RELATIONS=array
     (
         'players' => array(self::HAS_MANY, 'PlayerRecord', 'Player_Skills'),
     );
@@ -803,7 +803,7 @@ class Item extends TActiveRecord
     public $related_item_id; 
     public $related_items=array();
 
-    protected static $RELATIONS=array
+    public static $RELATIONS=array
     (
         'related_items' => array(self::HAS_MANY, 
             'Item', 'related_items.related_item_id'),

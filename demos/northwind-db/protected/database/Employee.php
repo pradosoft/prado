@@ -30,7 +30,7 @@ class Employee extends TActiveRecord
 	public $Subordinates=array();
 	public $Superior;
 
-	protected static $RELATIONS = array
+	public static $RELATIONS = array
 	(
 		'Territories' => array(self::HAS_MANY, 'Territory', 'EmployeeTerritories'),
 		'Orders' => array(self::HAS_MANY, 'Order'),

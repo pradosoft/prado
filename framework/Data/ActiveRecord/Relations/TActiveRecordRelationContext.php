@@ -68,11 +68,7 @@ class TActiveRecordRelationContext
 	public function getRecordRelationships()
 	{
 		$class = new ReflectionClass($this->_sourceRecord);
-		$statics = $class->getStaticProperties();
-		if(isset($statics[self::RELATIONS_CONST]))
-			return $statics[self::RELATIONS_CONST];
-		else
-			return array();
+		return $class->getStaticPropertyValue(self::RELATIONS_CONST);
 	}
 
 	public function getPropertyValue()

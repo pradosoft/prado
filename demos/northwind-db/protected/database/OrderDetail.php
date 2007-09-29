@@ -13,7 +13,7 @@ class OrderDetail extends TActiveRecord
 	public $Product;
 	public $Order;
 
-	protected static $RELATIONS = array
+	public static $RELATIONS = array
 	(
 		'Product' => array(self::BELONGS_TO, 'Product'),
 		'Order' => array(self::BELONGS_TO, 'Order'),

@@ -11,7 +11,7 @@ class Region extends TActiveRecord
 
 	public $Territories=array();
 
-	protected static $RELATIONS = array
+	public static $RELATIONS = array
 	(
 		'Territories' => array(self::HAS_MANY, 'Territory')
 	);
