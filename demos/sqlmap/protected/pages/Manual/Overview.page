@@ -12,7 +12,7 @@ power of both SQL and stored procedures at your fingertips.
 
 <p>The SQLMap for PHP is based on iBATIS.NET - DataMapper Application Framework
 from <a href="http://ibatis.apache.org/">http://ibatis.apache.org</a>.
-The PHP version support most of the features found in 
+The PHP version support most of the features found in
 iBATIS.NET exception the following:
 <ol>
 	<li>Dynamic SQL</li>
@@ -30,18 +30,20 @@ This Guide covers the PHP implementations of SQLMap DataMapper. The Java and
 material applies to both implementations.
 </p>
 
-<p>For installation instructions, see the section called the 
+<p>For installation instructions, see the section called the
 SQLMap PHP Developer Guide.</p>
 
 <p>A Tutorial is also available. We recommend reviewing the Tutorial for your
 platform before reading this Guide.
 
-<a href="?page=Tutorial.TestFirst">SQLMap Tutorial</a>
+<a href="?page=Manual.Tutorial.TestFirst">SQLMap Tutorial</a>
+<!--- quoted out because none of them is working
 <ul>
 	<li><a href="index.php?page=Sample.crud1">Tutorial 1 Sample</a></li>
 	<li><a href="index.php?page=Sample.crud2">Tutorial 2 Sample</a></li>
 	<li><a href="index.php?page=Sample.ProductList">Product List Sample</a></li>
-</ul>	
+</ul>
+--->
 </p>
 
 <h1>Support</h1>
