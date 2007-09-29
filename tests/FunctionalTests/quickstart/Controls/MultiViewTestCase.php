@@ -12,7 +12,8 @@ class MultiViewTestCase extends SeleniumTestCase
 		$this->verifyElementNotPresent('ctl0_body_Result1');
 		$this->verifyElementNotPresent('ctl0_body_Result2');
 		$this->type('ctl0_body_Memo','test');
-		$this->clickAndWait('ctl0$body$ctl1');
+		$this->clickAndWait('ctl0$body$ctl0'); // view 2 to select the dropdown
+		$this->clickAndWait('ctl0$body$ctl4');
 
 		// view 3 : check if the output is updated
 		$this->verifyTextPresent('Your text input is: test');

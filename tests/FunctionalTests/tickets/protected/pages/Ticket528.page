@@ -1,8 +1,8 @@
 <com:TContent ID="Content">
 
 <com:TLabel ForControl="DDropTurno" Text="Turno:"/>
-<com:Application.pages.DActiveDropDownList2 
-	ID="DDropTurno" onSelectedIndexChanged="trocaTurno" opcoes='turnos' />
+<com:Application.pages.DActiveDropDownList2
+	ID="DDropTurno" SelectedIndex="0" onSelectedIndexChanged="trocaTurno" opcoes='turnos' />
 
 <com:TLabel Text="Código:" ForControl="Codigo"/>
 <com:TActiveTextBox ID="Codigo" MaxLength="1" Columns="2" />

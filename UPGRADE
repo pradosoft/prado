@@ -20,6 +20,8 @@ Upgrading from v3.1.0
   TUserManager.
 - The order of application lifecycles is changed. The loadState and loadStateComplete
   are moved to right after onBeginRequest.
+- TDropDownList will be in an unselected state if no initial selection is specified.
+  That is, its SelectedIndex will be -1. Previously, the first item will be considered as selected.
 
 Upgrading from v3.1b
 --------------------
