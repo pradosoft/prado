@@ -110,7 +110,7 @@ abstract class TActiveRecordRelation
 	{
 		$ids=array();
 		foreach($properties as $property)
-			$ids[] = is_object($obj) ? $obj->{$property} : $obj[$property];
+			$ids[] = is_object($obj) ? $obj->getColumnValue($property) : $obj[$property];
 		return sprintf('%x',crc32(serialize($ids)));
 	}
 
@@ -142,7 +142,7 @@ abstract class TActiveRecordRelation
 		{
 			$value = array();
 			foreach($keys as $name)
-				$value[] = $result->{$name};
+				$value[] = $result->getColumnValue($name);
 			$values[] = $value;
 		}
 		return $values;
@@ -190,7 +190,7 @@ abstract class TActiveRecordRelation
 	{
 		$hash = $this->getObjectHash($source, $properties);
 		$prop = $this->getContext()->getProperty();
-		$source->{$prop} = isset($collections[$hash]) ? $collections[$hash] : array();
+		$source->setColumnValue($prop, isset($collections[$hash]) ? $collections[$hash] : array());
 	}
 }
 

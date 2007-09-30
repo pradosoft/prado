@@ -55,7 +55,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	{
 		$data = array();
 		foreach($this->getTableInfo()->getColumns() as $name=>$column)
-			$data[] = $record->{$name};
+			$data[] = $record->getColumnValue($name);
 		return $data;
 	}
 
@@ -68,7 +68,7 @@ abstract class TScaffoldBase extends TTemplateControl
 		foreach($this->getTableInfo()->getColumns() as $name=>$column)
 		{
 			if($column->getIsPrimaryKey())
-				$data[] = $record->{$name};
+				$data[] = $record->getColumnValue($name);
 		}
 		return $data;
 	}

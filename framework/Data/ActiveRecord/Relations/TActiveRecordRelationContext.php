@@ -74,7 +74,7 @@ class TActiveRecordRelationContext
 	public function getPropertyValue()
 	{
 		$obj = $this->getSourceRecord();
-		return $obj->{$this->getProperty()};
+		return $obj->getColumnValue($this->getProperty());
 	}
 
 	/**
@@ -185,7 +185,7 @@ class TActiveRecordRelationContext
 			if(($updateBelongsTo && $belongsTo) || (!$updateBelongsTo && !$belongsTo))
 			{
 				$obj = $this->getSourceRecord();
-				if(!$this->isEmptyFkObject($obj->{$property}))
+				if(!$this->isEmptyFkObject($obj->getColumnValue($property)))
 				{
 					$context = new self($this->getSourceRecord(),$property);
 					$success = $context->getRelationHandler()->updateAssociatedRecords() && $success;

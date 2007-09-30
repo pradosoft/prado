@@ -215,7 +215,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		{
 			$i=0;
 			foreach($foreignKeys as $ref=>$fk)
-				$obj->{$ref} = $row[$this->_association_columns[$i++]];
+				$obj->setColumnValue($ref, $row[$this->_association_columns[$i++]]);
 		}
 		return $obj;
 	}
@@ -372,7 +372,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	{
 		$data=array();
 		foreach($foreignKeys as $name=>$fKey)
-			$data[$name] = $fkObject->{$fKey};
+			$data[$name] = $fkObject->getColumnValue($fKey);
 		return $data;
 	}
 }

@@ -116,7 +116,7 @@ class TActiveRecordHasOne extends TActiveRecordRelation
 		{
 			if(count($collections[$hash]) > 1)
 				throw new TActiveRecordException('ar_belongs_to_multiple_result');
-			$source->{$prop} = $collections[$hash][0];
+			$source->setColumnValue($prop, $collections[$hash][0]);
 		}
 	}
 
@@ -133,7 +133,7 @@ class TActiveRecordHasOne extends TActiveRecordRelation
 			$source = $this->getSourceRecord();
 			$fkeys = $this->findForeignKeys($fkObject, $source);
 			foreach($fkeys as $fKey => $srcKey)
-				$fkObject->{$fKey} = $source->{$srcKey};
+				$fkObject->setColumnValue($fKey, $source->getColumnValue($srcKey));
 			return $fkObject->save();
 		}
 		return true;

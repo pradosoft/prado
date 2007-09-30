@@ -68,7 +68,7 @@ class TScaffoldInputBase
 		if($this->getIsEnabled($column, $record))
 		{
 			$prop = $column->getColumnId();
-			$record->{$prop} = $this->getControlValue($item->_input, $column, $record);
+			$record->setColumnValue($prop, $this->getControlValue($item->_input, $column, $record));
 		}
 	}
 
@@ -80,7 +80,7 @@ class TScaffoldInputBase
 
 	protected function getRecordPropertyValue($column, $record)
 	{
-		$value = $record->{$column->getColumnId()};
+		$value = $record->getColumnValue($column->getColumnId());
 		if($column->getDefaultValue()!==TDbTableColumn::UNDEFINED_VALUE && $value===null)
 			return $column->getDefaultValue();
 		else
@@ -89,7 +89,7 @@ class TScaffoldInputBase
 
 	protected function setRecordPropertyValue($item, $record, $input)
 	{
-		$record->{$item->getCustomData()} = $input->getText();
+		$record->setColumnValue($item->getCustomData(), $input->getText());
 	}
 
 	protected function createControl($container, $column, $record)

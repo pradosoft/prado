@@ -101,7 +101,7 @@ class TActiveRecordBelongsTo extends TActiveRecordRelation
 		{
 			if(count($collections[$hash]) > 1)
 				throw new TActiveRecordException('ar_belongs_to_multiple_result');
-			$source->{$prop} = $collections[$hash][0];
+			$source->setColumnValue($prop, $collections[$hash][0]);
 		}
 	}
 
@@ -112,7 +112,7 @@ class TActiveRecordBelongsTo extends TActiveRecordRelation
 	public function updateAssociatedRecords()
 	{
 		$obj = $this->getContext()->getSourceRecord();
-		$fkObject = $obj->{$this->getContext()->getProperty()};
+		$fkObject = $obj->getColumnValue($this->getContext()->getProperty());
 		$registry = $fkObject->getRecordManager()->getObjectStateRegistry();
 		if($registry->shouldPersistObject($fkObject))
 		{
@@ -122,7 +122,7 @@ class TActiveRecordBelongsTo extends TActiveRecordRelation
 				$source = $this->getSourceRecord();
 				$fkeys = $this->findForeignKeys($source, $fkObject);
 				foreach($fkeys as $srcKey => $fKey)
-					$source->{$srcKey} = $fkObject->{$fKey};
+					$source->setColumnValue($srcKey, $fkObject->getColumnValue($fKey));
 				return true;
 			}
 		}

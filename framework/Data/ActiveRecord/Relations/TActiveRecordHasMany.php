@@ -105,7 +105,7 @@ class TActiveRecordHasMany extends TActiveRecordRelation
 				if($registry->shouldPersistObject($fkObjects[$i]))
 				{
 					foreach($fkeys as $fKey => $srcKey)
-						$fkObjects[$i]->{$fKey} = $source->{$srcKey};
+						$fkObjects[$i]->setColumnValue($fKey, $source->getColumnValue($srcKey));
 					$success = $fkObjects[$i]->save() && $success;
 				}
 			}
