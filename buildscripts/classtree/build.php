@@ -15,11 +15,7 @@ $exclusions=array(
 	'.svn',
 	'/I18N/core',
 	'/3rdParty',
-	'/Data/ActiveRecord/Vendor',
-	'/Data/ActiveRecord/Scaffold/InputBuilder',
-	'/Data/SqlMap/Configuration',
-	'/Data/SqlMap/DataMapper',
-	'/Data/SqlMap/Statements'
+	'/Web/UI/WebControls/assets',
 	);
 $a=new ClassTreeBuilder($frameworkPath,$exclusions);
 $a->buildTree();

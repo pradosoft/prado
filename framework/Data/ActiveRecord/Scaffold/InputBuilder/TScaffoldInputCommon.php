@@ -7,6 +7,8 @@
  * @license http://www.pradosoft.com/license/
  * @package System.Data.ActiveReecord.Scaffold.InputBuilder
  */
+Prado::using('System.Data.ActiveRecord.Scaffold.InputBuilder.TScaffoldInputBase');
+
 class TScaffoldInputCommon extends TScaffoldInputBase
 {
 	protected function setDefaultProperty($container, $control, $column, $record)
