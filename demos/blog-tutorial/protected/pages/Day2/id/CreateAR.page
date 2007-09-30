@@ -24,7 +24,7 @@ Daripada menulis kelas secara manual, kita akan menggunakan <a href="http://www.
 Di bawah direktori <tt>blog</tt>, jalankan perintah berikut untuk masuk ke dalam mode interaktif pada piranti baris perintah:
 </p>
 
-<com:TTextHighlighter CssClass="source cli">
+<com:TTextHighlighter CssClass="source cli" Language="text">
 php path/ke/prado-cli.php shell .
 </com:TTextHighlighter>
 
@@ -32,7 +32,7 @@ php path/ke/prado-cli.php shell .
 Kita akan melihat
 </p>
 
-<com:TTextHighlighter CssClass="source cli">
+<com:TTextHighlighter CssClass="source cli" Language="text">
 Command line tools for Prado 3.1.0.
 ** Loaded PRADO appplication in directory "protected".
 PHP-Shell - Version 0.3.1
@@ -64,7 +64,7 @@ Kita akan melihat struktur direktori berikut dengan dua file baru di bawah <tt>p
 <img src="<%~ directories2.gif %>" class="output" />
 
 <p>
-Jika kita memeriksa file kelas <tt>PostRecord</tt> , kita akan melihat konten berikut.
+Jika kita memeriksa file kelas <tt>PostRecord</tt>, kita akan melihat konten berikut.
 </p>
 
 <com:TTextHighlighter CssClass="source" Language="php">
@@ -130,7 +130,7 @@ Kita dapat membuat model hubungan antara tabel <tt>posts</tt> dan <tt>users</tt>
 <com:TTextHighlighter CssClass="source" Language="php">
 class PostRecord extends TActiveRecord
 {
-    //... properti dan metode seperti seblumnya
+    //... properti dan metode seperti sebelumnya
 
     public $author; //menampung array UserRecord
 
