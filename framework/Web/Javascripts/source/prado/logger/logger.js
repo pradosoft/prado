@@ -169,7 +169,7 @@ Logger = {
 	error : function(message, error) {
 	  this.log(message + ": \n" + error, 'error')
 		if(typeof(console) != "undefined")
-			console.error(message);
+			console.error(message + ": \n" + error);
 
 	},
 
