@@ -80,15 +80,15 @@ class BlogUserManager extends TModule implements IUserManager
 	}
 
 	/**
-	 * Validates if the username and password are correct.
-	 * @param string user name
-	 * @param string password
-	 * @return boolean true if validation is successful, false otherwise.
+	 * Returns a user instance according to auth data stored in a cookie.
+	 * @param THttpCookie the cookie storing user authentication information
+	 * @return TUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
+	 * @since 3.1.1
 	 */
-	public function validateUser($username,$password)
+	public function getUserFromCookie($cookie);
 	{
 		// do nothing since we don't support cookie-based auth in this example
-		return false;
+		return null;
 	}
 }
 
