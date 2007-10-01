@@ -1,5 +1,5 @@
-Version 3.1.1 To be released
-============================
+Version 3.1.1 October 1, 2007
+=============================
 BUG: Ticket#340 - Callbacks and Firebug compatibility problem (Christophe)
 BUG: Ticket#533 - HttpRequest::getBrowser() throws an error if browsercap.ini is invalid (Carl)
 BUG: Ticket#592 - TRadioButton with UniqueGroupName always return false to getChecked (Christophe)

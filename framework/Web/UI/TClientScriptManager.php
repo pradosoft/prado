@@ -205,7 +205,16 @@ class TClientScriptManager extends TApplicationComponent
 	protected function getPackagePathUrl($base)
 	{
 		$assets = Prado::getApplication()->getAssetManager();
-		return array($assets->getPublishedPath($base), $assets->publishFilePath($base));
+		if(strpos($base, $assets->getBaseUrl())===false)
+		{
+			if(!is_null($dir = Prado::getPathOfNameSpace($base)))
+				$base = $dir;
+			return array($assets->getPublishedPath($base), $assets->publishFilePath($base));
+		}
+		else
+		{
+			return array($assets->getBasePath().str_replace($assets->getBaseUrl(),'',$base), $base);
+		}
 	}
 
 	/**
