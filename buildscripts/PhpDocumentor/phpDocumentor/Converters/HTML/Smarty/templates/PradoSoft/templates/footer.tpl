@@ -9,8 +9,8 @@
   <a href="/tos/">Terms of Service</a> |
   <a href="/support/">Contact Us</a>
   <br/>
-  Copyright &copy; 2006 by Prado Software Group.<br/>
-  <a title="Powered by PRADO" href="http://www.pradosoft.com/"><img src="http://www.pradosoft.com/images/powered.gif" style="border-width:0px;" alt="Powered by PRADO" /></a>
+  Copyright &copy; 2006-2007 by the PRADO Group.<br/>
+  <a title="Powered by PRADO" href="http://www.pradosoft.com/"><img src="http://www.pradosoft.com/images/powered2.gif" style="border-width:0px;" alt="Powered by PRADO" /></a>
 </div>
 
 </div><!-- page -->
