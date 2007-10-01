@@ -85,7 +85,7 @@ class BlogUserManager extends TModule implements IUserManager
 	 * @return TUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
 	 * @since 3.1.1
 	 */
-	public function getUserFromCookie($cookie);
+	public function getUserFromCookie($cookie)
 	{
 		// do nothing since we don't support cookie-based auth in this example
 		return null;
