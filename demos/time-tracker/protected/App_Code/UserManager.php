@@ -27,7 +27,7 @@ class UserManager extends TModule implements IUserManager
 	{
 		return 'Guest';
 	}
-	
+
 	/**
 	 * Returns a user instance given the user name.
 	 * @param string user name, null if it is a guest.
@@ -50,7 +50,7 @@ class UserManager extends TModule implements IUserManager
 			return $user;
 		}
 	}
-	
+
 	/**
 	 * Validates if the username and password are correct.
 	 * @param string user name
@@ -62,6 +62,28 @@ class UserManager extends TModule implements IUserManager
 		$daos = $this->getApplication()->getModule('daos');
 		$userDao = $daos->getDao('UserDao');
 		return $userDao->validateUser($username, $password);
+	}
+
+	/**
+	 * Saves user auth data into a cookie.
+	 * @param THttpCookie the cookie to receive the user auth data.
+	 * @since 3.1.1
+	 */
+	public function saveUserToCookie($cookie)
+	{
+		// do nothing since we don't support cookie-based auth in this example
+	}
+
+	/**
+	 * Validates if the username and password are correct.
+	 * @param string user name
+	 * @param string password
+	 * @return boolean true if validation is successful, false otherwise.
+	 */
+	public function validateUser($username,$password)
+	{
+		// do nothing since we don't support cookie-based auth in this example
+		return false;
 	}
 }
 

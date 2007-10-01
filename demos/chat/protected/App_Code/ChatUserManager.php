@@ -9,7 +9,7 @@ class ChatUserManager extends TModule implements IUserManager
 	{
 		return 'Guest';
 	}
-	
+
 	/**
 	 * Returns a user instance given the user name.
 	 * @param string user name, null if it is a guest.
@@ -18,7 +18,7 @@ class ChatUserManager extends TModule implements IUserManager
 	public function getUser($username=null)
 	{
 		$user=new TUser($this);
-		$user->setIsGuest(true);		
+		$user->setIsGuest(true);
 		if($username !== null)
 		{
 			$user->setIsGuest(false);
@@ -27,7 +27,7 @@ class ChatUserManager extends TModule implements IUserManager
 		}
 		return $user;
 	}
-	
+
 	/**
 	 * Add a new user to the database.
 	 * @param string username.
@@ -56,6 +56,28 @@ class ChatUserManager extends TModule implements IUserManager
 	public function validateUser($username,$password)
 	{
 		return $this->usernameExists($username);
+	}
+
+	/**
+	 * Saves user auth data into a cookie.
+	 * @param THttpCookie the cookie to receive the user auth data.
+	 * @since 3.1.1
+	 */
+	public function saveUserToCookie($cookie)
+	{
+		// do nothing since we don't support cookie-based auth in this example
+	}
+
+	/**
+	 * Validates if the username and password are correct.
+	 * @param string user name
+	 * @param string password
+	 * @return boolean true if validation is successful, false otherwise.
+	 */
+	public function validateUser($username,$password)
+	{
+		// do nothing since we don't support cookie-based auth in this example
+		return false;
 	}
 }
 
