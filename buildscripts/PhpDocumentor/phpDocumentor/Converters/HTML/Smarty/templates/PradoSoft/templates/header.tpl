@@ -36,7 +36,8 @@
           <li><a href="/demos/" >Demos</a></li>
           <li><a href="/download/" >Download</a></li>
           <li><a href="/documentation/" class="active">Documentation</a></li>
-          <li><a href="/community/" >Community</a></li>
+          <li><a href="http://planet.pradosoft.com/" >Blogs</a></li>
+          <li><a href="/forum/" >Forum</a></li>
           <li><a href="/support/" >Support</a></li>
         </ul>
       </div><!-- mainmenu -->
@@ -47,9 +48,9 @@
 <div id="navbar">
 <ul>
 <li><a href="/tutorials/">Tutorials</a></li>
+<li><a href="/docs/classdoc/">Class Docs</a></li>
+<li><a href="/docs/manual/" class="active">API Manual</a></li>
 <li><a href="/wiki/">Wiki</a></li>
-<li><a href="/docs/classdoc/">Classes</a></li>
-<li><a href="/docs/manual/" class="active">Manual</a></li>
 </ul>
 </div>
 
