@@ -151,7 +151,7 @@ class TDbCache extends TCache
 	{
 		if($this->_connID!=='')
 		{
-			$config=$this->getApplication()->getModule($connectionID);
+			$config=$this->getApplication()->getModule($this->_connID);
 			if($config instanceof TDataSourceConfig)
 				return $config->getDbConnection();
 			else
