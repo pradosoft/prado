@@ -223,7 +223,7 @@ class TAuthorizationRule extends TComponent
 
 	private function isUserMatched($user)
 	{
-		return ($this->_everyone || ($this->_guest && $user->getIsGuest()) || ($this->_authenticated && !$user->getIsGuest()));
+		return ($this->_everyone || ($this->_guest && $user->getIsGuest()) || ($this->_authenticated && !$user->getIsGuest()) || in_array(strtolower($user->getName()),$this->_users));
 	}
 
 	private function isRoleMatched($user)
