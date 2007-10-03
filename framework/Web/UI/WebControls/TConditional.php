@@ -64,18 +64,6 @@ class TConditional extends TControl
 	}
 
 	/**
-	 * Registers an object defined in the template.
-	 * This method is overriden so that the objects are actually
-	 * registered to the template containing the TConditional control.
-	 * @param string name of the object
-	 * @param mixed the object to be registered
-	 */
-	public function registerObject($name,$object)
-	{
-		$this->getTemplateControl()->registerObject($name,$object);
-	}
-
-	/**
 	 * Creates child controls.
 	 * This method overrides the parent implementation. It evaluates {@link getCondition Condition}
 	 * and instantiate the corresponding template.
@@ -95,10 +83,10 @@ class TConditional extends TControl
 		if($result)
 		{
 			if($this->_trueTemplate)
-				$this->_trueTemplate->instantiateIn($this);
+				$this->_trueTemplate->instantiateIn($this->getParent(),$this->getTemplateControl());
 		}
 		else if($this->_falseTemplate)
-			$this->_falseTemplate->instantiateIn($this);
+			$this->_falseTemplate->instantiateIn($this->getParent(),$this->getTemplateControl());
 		$this->_creatingChildren=false;
 	}
 

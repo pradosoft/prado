@@ -303,10 +303,13 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	 * Content in the template will be instantiated as components and text strings
 	 * and passed to the specified parent control.
 	 * @param TControl the parent control
+	 * @param TControl the control with which explicitly named controls are registered. If null, it uses the parent control.
 	 */
-	public function instantiateIn($tplControl)
+	public function instantiateIn($tplControl,$namingControl=null)
 	{
 		$this->_tplControl=$tplControl;
+		if($namingControl===null)
+			$namingControl=$tplControl;
 		if(($page=$tplControl->getPage())===null)
 			$page=$this->getService()->getRequestedPage();
 		$controls=array();
@@ -332,7 +335,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					{
 						if(is_array($properties['id']))
 							$properties['id']=$component->evaluateExpression($properties['id'][1]);
-						$tplControl->registerObject($properties['id'],$component);
+						$namingControl->registerObject($properties['id'],$component);
 					}
 					if(isset($properties['skinid']))
 					{
@@ -365,7 +368,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					{
 						if(is_array($properties['id']))
 							$properties['id']=$component->evaluateExpression($properties['id'][1]);
-						$tplControl->registerObject($properties['id'],$component);
+						$namingControl->registerObject($properties['id'],$component);
 						if(!$component->hasProperty('id'))
 							unset($properties['id']);
 					}
