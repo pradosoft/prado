@@ -302,14 +302,14 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	 * Instantiates the template.
 	 * Content in the template will be instantiated as components and text strings
 	 * and passed to the specified parent control.
-	 * @param TControl the parent control
-	 * @param TControl the control with which explicitly named controls are registered. If null, it uses the parent control.
+	 * @param TControl the control who owns the template
+	 * @param TControl the control who will become the root parent of the controls on the template. If null, it uses the template control.
 	 */
-	public function instantiateIn($tplControl,$namingControl=null)
+	public function instantiateIn($tplControl,$parentControl=null)
 	{
 		$this->_tplControl=$tplControl;
-		if($namingControl===null)
-			$namingControl=$tplControl;
+		if($parentControl===null)
+			$parentControl=$tplControl;
 		if(($page=$tplControl->getPage())===null)
 			$page=$this->getService()->getRequestedPage();
 		$controls=array();
@@ -317,7 +317,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 		foreach($this->_tpl as $key=>$object)
 		{
 			if($object[0]===-1)
-				$parent=$tplControl;
+				$parent=$parentControl;
 			else if(isset($controls[$object[0]]))
 				$parent=$controls[$object[0]];
 			else
@@ -335,7 +335,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					{
 						if(is_array($properties['id']))
 							$properties['id']=$component->evaluateExpression($properties['id'][1]);
-						$namingControl->registerObject($properties['id'],$component);
+						$tplControl->registerObject($properties['id'],$component);
 					}
 					if(isset($properties['skinid']))
 					{
@@ -354,7 +354,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 
 					$component->trackViewState(true);
 
-					if($parent===$tplControl)
+					if($parent===$parentControl)
 						$directChildren[]=$component;
 					else
 						$component->createdOnTemplate($parent);
@@ -368,13 +368,13 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					{
 						if(is_array($properties['id']))
 							$properties['id']=$component->evaluateExpression($properties['id'][1]);
-						$namingControl->registerObject($properties['id'],$component);
+						$tplControl->registerObject($properties['id'],$component);
 						if(!$component->hasProperty('id'))
 							unset($properties['id']);
 					}
 					foreach($properties as $name=>$value)
 						$this->configureComponent($component,$name,$value);
-					if($parent===$tplControl)
+					if($parent===$parentControl)
 						$directChildren[]=$component;
 					else
 						$component->createdOnTemplate($parent);
@@ -387,14 +387,14 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					// need to clone a new object because the one in template is reused
 					$o=clone $object[1];
 					$o->setContainer($tplControl);
-					if($parent===$tplControl)
+					if($parent===$parentControl)
 						$directChildren[]=$o;
 					else
 						$parent->addParsedObject($o);
 				}
 				else
 				{
-					if($parent===$tplControl)
+					if($parent===$parentControl)
 						$directChildren[]=$object[1];
 					else
 						$parent->addParsedObject($object[1]);
@@ -407,9 +407,9 @@ class TTemplate extends TApplicationComponent implements ITemplate
 		foreach($directChildren as $control)
 		{
 			if($control instanceof TComponent)
-				$control->createdOnTemplate($tplControl);
+				$control->createdOnTemplate($parentControl);
 			else
-				$tplControl->addParsedObject($control);
+				$parentControl->addParsedObject($control);
 		}
 	}
 

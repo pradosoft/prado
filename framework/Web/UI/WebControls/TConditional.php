@@ -83,10 +83,10 @@ class TConditional extends TControl
 		if($result)
 		{
 			if($this->_trueTemplate)
-				$this->_trueTemplate->instantiateIn($this->getParent(),$this->getTemplateControl());
+				$this->_trueTemplate->instantiateIn($this->getTemplateControl(),$this->getParent());
 		}
 		else if($this->_falseTemplate)
-			$this->_falseTemplate->instantiateIn($this->getParent(),$this->getTemplateControl());
+			$this->_falseTemplate->instantiateIn($this->getTemplateControl(),$this->getParent());
 		$this->_creatingChildren=false;
 	}
 
