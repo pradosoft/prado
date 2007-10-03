@@ -220,8 +220,7 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function equals(TActiveRecord $record, $strict=false)
 	{
-		$thisClass=__CLASS__;
-		if(!($record instanceof $thisClass))
+		if($record===null)
 			return false;
 		$tableInfo = $this->getRecordGateway()->getRecordTableInfo($this);
 		$pks = $tableInfo->getPrimaryKeys();
@@ -251,7 +250,7 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public static function finder($className=__CLASS__)
 	{
-		if($className==='TActiveRecord')
+		if($className===__CLASS__)
 			throw new TActiveRecordException('ar_invalid_finder_class_name');
 
 		static $finders = array();
@@ -425,7 +424,7 @@ abstract class TActiveRecord extends TComponent
 	 *
 	 * @param string|TActiveRecordCriteria SQL condition or criteria object.
 	 * @param mixed parameter values.
-	 * @return TActiveRecord matching record object.
+	 * @return TActiveRecord matching record object. Null if no result is found.
 	 */
 	public function find($criteria,$parameters=array())
 	{
@@ -440,7 +439,7 @@ abstract class TActiveRecord extends TComponent
 	 *
 	 * @param string|TActiveRecordCriteria SQL condition or criteria object.
 	 * @param mixed parameter values.
-	 * @return array matching record objects
+	 * @return array matching record objects. Empty array if no result is found.
 	 */
 	public function findAll($criteria=null,$parameters=array())
 	{
@@ -461,7 +460,7 @@ abstract class TActiveRecord extends TComponent
 	 * </code>
 	 *
 	 * @param mixed primary keys
-	 * @return TActiveRecord
+	 * @return TActiveRecord. Null if no result is found.
 	 */
 	public function findByPk($keys)
 	{
@@ -486,7 +485,7 @@ abstract class TActiveRecord extends TComponent
 	 * $finder->findAllByPk(array(array($key1, $key2), array($key3, $key4), ...));
 	 * </code>
 	 * @param mixed primary keys
-	 * @return array matching ActiveRecords
+	 * @return array matching ActiveRecords. Empty array is returned if no result is found.
 	 */
 	public function findAllByPks($keys)
 	{
@@ -502,7 +501,7 @@ abstract class TActiveRecord extends TComponent
 	 * class.
 	 * @param string select SQL
 	 * @param array $parameters
-	 * @return TActiveRecord
+	 * @return TActiveRecord, null if no result is returned.
 	 */
 	public function findBySql($sql,$parameters=array())
 	{
@@ -518,7 +517,7 @@ abstract class TActiveRecord extends TComponent
 	 * class.
 	 * @param string select SQL
 	 * @param array $parameters
-	 * @return array matching active records.
+	 * @return array matching active records. Empty array is returned if no result is found.
 	 */
 	public function findAllBySql($sql,$parameters=array())
 	{
@@ -538,7 +537,7 @@ abstract class TActiveRecord extends TComponent
 	 * @param TActiveRecordCriteria additional criteria
 	 * @param array field names to match with "(fields) IN (values)" sql clause.
 	 * @param array matching field values.
-	 * @return array matching active records.
+	 * @return array matching active records. Empty array is returned if no result is found.
 	 */
 	public function findAllByIndex($criteria,$fields,$values)
 	{
