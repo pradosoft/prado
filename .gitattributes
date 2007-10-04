@@ -1637,6 +1637,7 @@ demos/quickstart/protected/pages/GettingStarted/NewFeatures.page -text
 demos/quickstart/protected/pages/GettingStarted/Upgrading.page -text
 demos/quickstart/protected/pages/GettingStarted/directory.gif -text
 demos/quickstart/protected/pages/GettingStarted/es/AboutPrado.page -text
+demos/quickstart/protected/pages/GettingStarted/es/Installation.page -text
 demos/quickstart/protected/pages/GettingStarted/fr/AboutPrado.page -text
 demos/quickstart/protected/pages/GettingStarted/fr/CommandLine.page -text
 demos/quickstart/protected/pages/GettingStarted/fr/HelloWorld.page -text
