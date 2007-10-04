@@ -1,5 +1,5 @@
 <com:TContent ID="body" >
-<h1 id="201">¿Que es PRADO?</h1>
+<h1 id="201">&iquest;Que es PRADO?</h1>
 <p id="20003" class="block-content">
 PRADO es una capa de programaci&oacute;n (framework) que se basada componentes y programaci&oacute;n dirigida por eventos, para desarrollos de aplicaciones Web en PHP 5. Las siglas PRADO significan en espa&ntilde;ol Desarrollo Rapido de Aplicaciones con Programaci&oacute;n Orientada a Objetos en PHP  (<b>P</b>HP <b>R</b>apid <b>A</b>pplication <b>D</b>evelopment <b>O</b>bject-oriented).
 </p>
@@ -19,7 +19,7 @@ Metodos o funciones deben ser enlazadas a dichos eventos de tal manera que cuand
 En resumen, desarrollar aplicaciones Web con PRADO principalmente involucra instant&aacute;neamente tipos de componentes predesarrollados, configurarlos mediante sus propiedades, responder a sus eventos escribiendo funciones manipuladoras de los mismos , y agrup&aacute;ndolos (composing them) dentro de paginas para la aplicaci&oacute;n. Es muy similar a las Herramientas Kit de herramientas RAD de Borland Delphi y Microsoft Visual Basic, que son utilizadas para desarrollar aplicaciones (Interfaces Graficas  de Usuarios, GUI) de escritorio.
 </p>
 
-<h2 id="202">Why PRADO?</h2>
+<h2 id="202">&iquest;Proque PRADO?</h2>
 <p id="20008" class="block-content">
 PRADO es com&uacute;nmente citado como una plataforma de progragacion (framework) &uacute;nica. En realidad es tan &uacute;nico que puede convertir una tediosa y aburrida programaci&oacute;n en PHP en una tarea divertida (fun task). La siguiente lista es un resumen corto de las características principales de PRADO,
 </p>
