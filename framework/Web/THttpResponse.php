@@ -269,7 +269,9 @@ class THttpResponse extends TModule implements ITextWriter
 			'jpeg'=>'image/jpeg',
 			'htm'=>'text/html',
 			'html'=>'text/html',
-			'js'=>'javascript/js'
+			'js'=>'javascript/js',
+			'pdf'=>'application/pdf',
+			'xls'=>'application/vnd.ms-excel',
 		);
 
 		if($mimeType===null)
