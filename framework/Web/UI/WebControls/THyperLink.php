@@ -88,6 +88,7 @@ class THyperLink extends TWebControl implements IDataRenderer
 			$image->setToolTip($toolTip);
 		if(($text=$this->getText())!=='')
 			$image->setAlternateText($text);
+		$image->setBorderWidth('0');
 		return $image;
 	}
 
