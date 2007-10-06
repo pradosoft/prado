@@ -283,6 +283,23 @@ class TDbCommand extends TComponent
 			throw new TDbException('dbcommand_query_failed',$e->getMessage(),$this->getDebugStatementText());
 		}
 	}
+
+	/**
+	 * Executes the SQL statement and returns the first column of the result.
+	 * This is a convenient method of {@link query} when only the first column of data is needed.
+	 * Note, the column returned will contain the first element in each row of result.
+	 * @return array the first column of the query result. Empty array if no result.
+	 * @throws TDbException execution failed
+	 * @since 3.1.2
+	 */
+	public function queryColumn()
+	{
+		$rows=$this->query()->readAll();
+		$column=array();
+		foreach($rows as $row)
+			$column[]=current($row);
+		return $column;
+	}
 }
 
 ?>
