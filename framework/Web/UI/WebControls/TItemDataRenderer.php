@@ -12,6 +12,7 @@
  */
 
 Prado::using('System.Web.UI.WebControls.TDataBoundControl');
+Prado::using('System.Web.UI.WebControls.TDataRenderer');
 
 /**
  * TItemDataRenderer class

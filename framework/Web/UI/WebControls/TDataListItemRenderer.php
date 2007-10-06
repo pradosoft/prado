@@ -11,6 +11,7 @@
  */
 
 Prado::using('System.Web.UI.WebControls.TDataList');
+Prado::using('System.Web.UI.WebControls.TItemDataRenderer');
 
 /**
  * TDataListItemRenderer class
