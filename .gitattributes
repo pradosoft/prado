@@ -2542,6 +2542,7 @@ framework/Web/UI/WebControls/TDataGridItemRenderer.php -text
 framework/Web/UI/WebControls/TDataGridPagerStyle.php -text
 framework/Web/UI/WebControls/TDataList.php -text
 framework/Web/UI/WebControls/TDataListItemRenderer.php -text
+framework/Web/UI/WebControls/TDataRenderer.php -text
 framework/Web/UI/WebControls/TDataSourceControl.php -text
 framework/Web/UI/WebControls/TDataSourceView.php -text
 framework/Web/UI/WebControls/TDataTypeValidator.php -text
@@ -2562,6 +2563,7 @@ framework/Web/UI/WebControls/TImage.php -text
 framework/Web/UI/WebControls/TImageButton.php -text
 framework/Web/UI/WebControls/TImageMap.php -text
 framework/Web/UI/WebControls/TInlineFrame.php -text
+framework/Web/UI/WebControls/TItemDataRenderer.php -text
 framework/Web/UI/WebControls/TJavascriptLogger.php -text
 framework/Web/UI/WebControls/TKeyboard.php -text
 framework/Web/UI/WebControls/TLabel.php -text

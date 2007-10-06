@@ -2,6 +2,7 @@ Version 3.1.2 To be released
 ============================
 CHG: Changed TConditional so that the controls in its template behave like they are in its parent (Qiang)
 NEW: Added TDbLogRoute (Qiang)
+NEW: Added TDataRenderer and TItemDataRenderer (Qiang)
 
 Version 3.1.1 October 1, 2007
 =============================

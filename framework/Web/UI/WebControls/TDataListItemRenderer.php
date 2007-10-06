@@ -16,40 +16,21 @@ Prado::using('System.Web.UI.WebControls.TDataList');
  * TDataListItemRenderer class
  *
  * TDataListItemRenderer can be used as a convenient base class to
- * define an item renderer class for {@link TDataList}.
+ * define an item renderer class specific for {@link TDataList}.
  *
- * Because TDataListItemRenderer extends from {@link TTemplateControl}, derived child classes
- * can have templates to define their presentational layout.
+ * TDataListItemRenderer extends {@link TItemDataRenderer} and implements
+ * the bubbling scheme for the OnCommand event of data list items.
  *
- * TDataListItemRenderer implements {@link IItemDataRenderer} interface,
- * which enables the following properties that are related with data-bound controls:
- * - {@link getItemIndex ItemIndex}: zero-based index of this control in the datalist item collection.
- * - {@link getItemType ItemType}: item type of this control, such as TListItemType::AlternatingItem
- * - {@link getData Data}: data associated with this control
-
+ * TDataListItemRenderer also implements the {@link IStyleable} interface,
+ * which allows TDataList to apply CSS styles to the renders.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.1.0
  */
-class TDataListItemRenderer extends TTemplateControl implements IItemDataRenderer, IStyleable
+class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 {
-	/**
-	 * index of the data item in the Items collection of TDataList
-	 * @var integer
-	 */
-	private $_itemIndex;
-	/**
-	 * type of the TDataListItem
-	 * @var TListItemType
-	 */
-	private $_itemType;
-	/**
-	 * value of the data associated with this item
-	 * @var mixed
-	 */
-	private $_data;
-
 	/**
 	 * Creates a style object to be used by the control.
 	 * This method may be overriden by controls to provide customized style.
@@ -89,56 +70,6 @@ class TDataListItemRenderer extends TTemplateControl implements IItemDataRendere
 	public function clearStyle()
 	{
 		$this->clearViewState('Style');
-	}
-
-	/**
-	 * @return TListItemType item type
-	 */
-	public function getItemType()
-	{
-		return $this->_itemType;
-	}
-
-	/**
-	 * @param TListItemType item type.
-	 */
-	public function setItemType($value)
-	{
-		$this->_itemType=TPropertyValue::ensureEnum($value,'TListItemType');
-	}
-
-	/**
-	 * @return integer zero-based index of the item in the item collection of datalist
-	 */
-	public function getItemIndex()
-	{
-		return $this->_itemIndex;
-	}
-
-	/**
-	 * Sets the zero-based index for the item.
-	 * If the item is not in the item collection (e.g. it is a header item), -1 should be used.
-	 * @param integer zero-based index of the item.
-	 */
-	public function setItemIndex($value)
-	{
-		$this->_itemIndex=TPropertyValue::ensureInteger($value);
-	}
-
-	/**
-	 * @return mixed data associated with the item
-	 */
-	public function getData()
-	{
-		return $this->_data;
-	}
-
-	/**
-	 * @param mixed data to be associated with the item
-	 */
-	public function setData($value)
-	{
-		$this->_data=$value;
 	}
 
 	/**
