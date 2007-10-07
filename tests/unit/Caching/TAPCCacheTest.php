@@ -20,9 +20,14 @@ class TAPCCacheTest extends PHPUnit_Framework_TestCase {
 				if(!is_writable($runtimePath)) {
 					self::markTestSkipped("'$runtimePath' is writable");
 				}
-				$this->app = new TApplication($basePath);
-				self::$cache = new TAPCCache();
-				self::$cache->init(null);
+				try {
+					$this->app = new TApplication($basePath);
+					self::$cache = new TAPCCache();
+					self::$cache->init(null);
+				} catch(TConfigurationException $e) {
+					self::markTestSkipped($e->getMessage());
+				}
+				
 		}
 	}
 
