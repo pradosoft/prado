@@ -1,9 +1,12 @@
 Version 3.1.2 To be released
 ============================
 CHG: Changed TConditional so that the controls in its template behave like they are in its parent (Qiang)
+CHG: Active Record many-to-many relationship change from self::HAS_MANY to self::MANY_TO_MANY (Wei)
+ENH: Active Record supports multiple foreign references of the same table (Wei)
 ENH: Added TDbCommand.queryColumn() (Qiang)
 NEW: Added TDbLogRoute (Qiang)
 NEW: Added TDataRenderer and TItemDataRenderer (Qiang)
+NEW: Ticket#544 - Added TXCache (Wei)
 
 Version 3.1.1 October 1, 2007
 =============================
