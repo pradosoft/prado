@@ -430,8 +430,11 @@ Object.extend(Prado.CallbackRequest,
  */
 Ajax.Responders.register({onComplete : function(request)
 {
-	if(request.ActiveControl.HasPriority)
-		Prado.CallbackRequest.tryNextRequest();
+	if(request && request instanceof Prado.AjaxRequest)
+	{
+		if(request.ActiveControl.HasPriority)
+			Prado.CallbackRequest.tryNextRequest();
+	}
 }});
 
 //Add HTTP exception respones when logger is enabled.
