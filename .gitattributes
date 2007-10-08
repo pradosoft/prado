@@ -1969,6 +1969,7 @@ framework/Caching/TCache.php -text
 framework/Caching/TDbCache.php -text
 framework/Caching/TMemCache.php -text
 framework/Caching/TSqliteCache.php -text
+framework/Caching/TXCache.php -text
 framework/Collections/TAttributeCollection.php -text
 framework/Collections/TDummyDataSource.php -text
 framework/Collections/TList.php -text
@@ -3077,6 +3078,7 @@ tests/simple_unit/ActiveRecord/FindByPksTestCase.php -text
 tests/simple_unit/ActiveRecord/FindBySqlTestCase.php -text
 tests/simple_unit/ActiveRecord/ForeignKeyTestCase.php -text
 tests/simple_unit/ActiveRecord/ForeignObjectUpdateTest.php -text
+tests/simple_unit/ActiveRecord/MultipleForeignKeyTestCase.php -text
 tests/simple_unit/ActiveRecord/RecordEventTestCase.php -text
 tests/simple_unit/ActiveRecord/SqliteTestCase.php -text
 tests/simple_unit/ActiveRecord/UserRecordTestCase.php -text
@@ -3093,6 +3095,7 @@ tests/simple_unit/ActiveRecord/records/SimpleUser.php -text
 tests/simple_unit/ActiveRecord/records/SqliteUsers.php -text
 tests/simple_unit/ActiveRecord/records/UserRecord.php -text
 tests/simple_unit/ActiveRecord/sqlite.sql -text
+tests/simple_unit/ActiveRecord/test1.sqlite -text
 tests/simple_unit/DbCommon/CommandBuilderMssqlTest.php -text
 tests/simple_unit/DbCommon/CommandBuilderMysqlTest.php -text
 tests/simple_unit/DbCommon/CommandBuilderPgsqlTest.php -text

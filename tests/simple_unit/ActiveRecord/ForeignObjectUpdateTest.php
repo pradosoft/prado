@@ -52,7 +52,7 @@ class PlayerRecord extends BaseFkRecord
 
     public static $RELATIONS=array
     (
-        'skills' => array(self::HAS_MANY, 'SkillRecord', 'player_skills'),
+        'skills' => array(self::MANY_TO_MANY, 'SkillRecord', 'player_skills'),
         'team' => array(self::BELONGS_TO, 'TeamRecord'),
         'profile' => array(self::HAS_ONE, 'ProfileRecord'),
     );
@@ -112,7 +112,7 @@ class SkillRecord extends BaseFkRecord
 
     public static $RELATIONS=array
     (
-        'players' => array(self::HAS_MANY, 'PlayerRecord', 'player_skills'),
+        'players' => array(self::MANY_TO_MANY, 'PlayerRecord', 'player_skills'),
     );
 
     public static function finder($className=__CLASS__)
@@ -236,6 +236,7 @@ class ForeignObjectUpdateTest extends UnitTestCase
 		$this->assertEqual($player4->skills[1]->name, 'Skip');
 		$this->assertEqual($player4->skills[2]->name, 'Push');
 	}
+//*/
 }
 
 ?>

@@ -37,7 +37,7 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
  *
  *     public static $RELATIONS = array
  *     (
- *         'Categories' => array(self::HAS_MANY, 'CategoryRecord', 'Article_Category')
+ *         'Categories' => array(self::MANY_TO_MANY, 'CategoryRecord', 'Article_Category')
  *     );
  *
  *     public static function finder($className=__CLASS__)
@@ -54,7 +54,7 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
  *
  *     public static $RELATIONS = array
  *     (
- *         'Articles' => array(self::HAS_MANY, 'ArticleRecord', 'Article_Category')
+ *         'Articles' => array(self::MANY_TO_MANY, 'ArticleRecord', 'Article_Category')
  *     );
  *
  *     public static function finder($className=__CLASS__)
@@ -96,17 +96,22 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	*/
 	protected function collectForeignObjects(&$results)
 	{
-		$association = $this->getAssociationTable();
-		$sourceKeys = $this->findForeignKeys($association, $this->getSourceRecord());
-
+		list($sourceKeys, $foreignKeys) = $this->getRelationForeignKeys();
 		$properties = array_values($sourceKeys);
-
 		$indexValues = $this->getIndexValues($properties, $results);
+		$this->fetchForeignObjects($results, $foreignKeys,$indexValues,$sourceKeys);
+	}
 
+	/**
+	 * @return array 2 arrays of source keys and foreign keys from the association table.
+	 */
+	public function getRelationForeignKeys()
+	{
+		$association = $this->getAssociationTable();
+		$sourceKeys = $this->findForeignKeys($association, $this->getSourceRecord(), true);
 		$fkObject = $this->getContext()->getForeignRecordFinder();
 		$foreignKeys = $this->findForeignKeys($association, $fkObject);
-
-		$this->fetchForeignObjects($results, $foreignKeys,$indexValues,$sourceKeys);
+		return array($sourceKeys, $foreignKeys);
 	}
 
 	/**
@@ -182,7 +187,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	 */
 	protected function fetchForeignObjects(&$results,$foreignKeys,$indexValues,$sourceKeys)
 	{
-		$criteria = $this->getContext()->getCriteria();
+		$criteria = $this->getCriteria();
 		$finder = $this->getContext()->getForeignRecordFinder();
 		$registry = $finder->getRecordManager()->getObjectStateRegistry();
 		$type = get_class($finder);
@@ -198,7 +203,6 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 			$collections[$hash][] = $obj;
 			$registry->registerClean($obj);
 		}
-
 		$this->setResultCollection($results, $collections, array_values($sourceKeys));
 	}
 

@@ -94,9 +94,10 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationContext');
  */
 abstract class TActiveRecord extends TComponent
 {
-	const HAS_MANY='HAS_MANY';
 	const BELONGS_TO='BELONGS_TO';
 	const HAS_ONE='HAS_ONE';
+	const HAS_MANY='HAS_MANY';
+	const MANY_TO_MANY='MANY_TO_MANY';
 
 	private static $_columnMapping=array();
 
@@ -109,6 +110,8 @@ abstract class TActiveRecord extends TComponent
 	 * @since 3.1.1
 	 */
 	public static $COLUMN_MAPPING=array();
+
+	private static $_relations=array();
 
 	/**
 	 * This static variable defines the relationships.
@@ -562,15 +565,77 @@ abstract class TActiveRecord extends TComponent
 	/**
 	 * Returns the active record relationship handler for $RELATION with key
 	 * value equal to the $property value.
-	 * @param string relationship property name.
+	 * @param string relationship/property name corresponding to keys in $RELATION array.
 	 * @param array method call arguments.
 	 * @return TActiveRecordRelation
 	 */
-	protected function getRelationHandler($property,$args)
+	protected function getRelationHandler($property,$args=array())
 	{
 		$criteria = $this->getCriteria(count($args)>0 ? $args[0] : null, array_slice($args,1));
-		$context = new TActiveRecordRelationContext($this, $property, $criteria);
-		return $context->getRelationHandler();
+		return $this->getRelationContext($property)->getRelationHandler($criteria);
+	}
+
+	/**
+	 * Gets a static copy of the relationship context for given property (a key
+	 * in $RELATION), returns null if invalid relationship. Keeps a null
+	 * reference to all invalid relations called.
+	 * @param string relationship/property name corresponding to keys in $RELATION array.
+	 * @return TActiveRecordRelationContext object containing information on
+	 * the active record relationships for given property, null if invalid relationship
+	 * @since 3.1.2
+	 */
+	protected function getRelationContext($property)
+	{
+		$prop = get_class($this).':'.$property;
+		if(!isset(self::$_relations[$prop]))
+		{
+			$context = new TActiveRecordRelationContext($this, $property);
+			//keep a null reference to all non-existing relations called?
+			self::$_relations[$prop] = $context->hasRecordRelation() ? $context : null;
+		}
+		return self::$_relations[$prop];
+	}
+
+	/**
+	 * Tries to load the relationship results for the given property. The $property
+	 * value should correspond to an entry key in the $RELATION array.
+	 * This method can be used to lazy load relationships.
+	 * <code>
+	 * class TeamRecord extends TActiveRecord
+	 * {
+	 *     ...
+	 *
+	 *     private $_players;
+	 *     public static $RELATION=array
+	 *     (
+	 *         'players' => array(self::HAS_MANY, 'PlayerRecord'),
+	 *     );
+	 *
+	 *     public function setPlayers($array)
+	 *     {
+	 *         $this->_players=$array;
+	 *     }
+	 *
+	 *     public function getPlayers()
+	 *     {
+	 *         if($this->_players===null)
+	 *             $this->fetchResultsFor('players');
+	 *         return $this->_players;
+	 *     }
+	 * }
+	 * Usage example:
+	 * $team = TeamRecord::finder()->findByPk(1);
+	 * var_dump($team->players); //uses lazy load to fetch 'players' relation
+	 * </code>
+	 * @param string relationship/property name corresponding to keys in $RELATION array.
+	 * @return boolean true if relationship exists, false otherwise.
+	 * @since 3.1.2
+	 */
+	protected function fetchResultsFor($property)
+	{
+		if( ($context=$this->getRelationContext($property)) !== null)
+			return $context->getRelationHandler()->fetchResultsInto($this);
+		return false;
 	}
 
 	/**

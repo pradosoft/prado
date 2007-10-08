@@ -240,7 +240,8 @@
                     'Unexpected exception of type [' . get_class($exception) .
                     '] with message ['. $exception->getMessage() .
                     '] in ['. $exception->getFile() .
-                    '] line [' . $exception->getLine() . ']');
+                    '] line [' . $exception->getLine() .
+					'] stack [' . $exception->getTraceAsString() .']');
         }
 
         /**

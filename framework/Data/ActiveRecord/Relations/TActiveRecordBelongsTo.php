@@ -77,8 +77,7 @@ class TActiveRecordBelongsTo extends TActiveRecordRelation
 	 */
 	protected function collectForeignObjects(&$results)
 	{
-		$fkObject = $this->getContext()->getForeignRecordFinder();
-		$fkeys = $this->findForeignKeys($this->getSourceRecord(),$fkObject);
+		$fkeys = $this->getRelationForeignKeys();
 
 		$properties = array_keys($fkeys);
 		$fields = array_values($fkeys);
@@ -86,6 +85,16 @@ class TActiveRecordBelongsTo extends TActiveRecordRelation
 		$indexValues = $this->getIndexValues($properties, $results);
 		$fkObjects = $this->findForeignObjects($fields, $indexValues);
 		$this->populateResult($results,$properties,$fkObjects,$fields);
+	}
+	
+	/**
+	 * @return array foreign key field names as key and object properties as value.
+	 * @since 3.1.2
+	 */
+	public function getRelationForeignKeys()
+	{
+		$fkObject = $this->getContext()->getForeignRecordFinder();
+		return $this->findForeignKeys($this->getSourceRecord(),$fkObject);		
 	}
 
 	/**

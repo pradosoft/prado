@@ -92,15 +92,23 @@ class TActiveRecordHasOne extends TActiveRecordRelation
 	 */
 	protected function collectForeignObjects(&$results)
 	{
-		$fkObject = $this->getContext()->getForeignRecordFinder();
-		$fkeys = $this->findForeignKeys($fkObject, $this->getSourceRecord());
-
+		$fkeys = $this->getRelationForeignKeys();
 		$properties = array_values($fkeys);
 		$fields = array_keys($fkeys);
 
 		$indexValues = $this->getIndexValues($properties, $results);
 		$fkObjects = $this->findForeignObjects($fields,$indexValues);
 		$this->populateResult($results,$properties,$fkObjects,$fields);
+	}
+	
+	/**
+	 * @return array foreign key field names as key and object properties as value.
+	 * @since 3.1.2
+	 */
+	public function getRelationForeignKeys()
+	{
+		$fkObject = $this->getContext()->getForeignRecordFinder();
+		return $this->findForeignKeys($fkObject, $this->getSourceRecord());
 	}
 
 	/**

@@ -26,7 +26,7 @@ class Album extends SqliteRecord
 
 	public static $RELATIONS = array(
 		'Tracks' => array(self::HAS_MANY, 'Track'),
-		'Artists' => array(self::HAS_MANY, 'Artist', 'album_artists'),
+		'Artists' => array(self::MANY_TO_MANY, 'Artist', 'album_artists'),
 		'cover' => array(self::HAS_ONE, 'Cover')
 	);
 
@@ -42,8 +42,9 @@ class Artist extends SqliteRecord
 
 	public $Albums = array();
 
-	public static $RELATIONS=array(
-		'Albums' => array(self::HAS_MANY, 'Album', 'album_artists')
+	public static $RELATIONS=array
+	(
+		'Albums' => array(self::MANY_TO_MANY, 'Album', 'album_artists')
 	);
 
 	public static function finder($class=__CLASS__)
@@ -158,6 +159,7 @@ class ForeignKeyTestCase extends UnitTestCase
 	function test_self_reference_fk()
 	{
 		$item = ItemRecord::finder()->withRelated_Items()->findByPk(1);
+
 		$this->assertNotNull($item);
 		$this->assertEqual($item->name, "Professional Work Attire");
 
@@ -168,6 +170,7 @@ class ForeignKeyTestCase extends UnitTestCase
 		$this->assertEqual($item->related_items[1]->name, "Grooming and Hygiene");
 		$this->assertEqual($item->related_items[1]->item_id, 3);
 	}
+
 }
 
 ?>

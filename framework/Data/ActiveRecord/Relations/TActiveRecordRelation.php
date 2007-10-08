@@ -26,10 +26,12 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationContext');
 abstract class TActiveRecordRelation
 {
 	private $_context;
+	private $_criteria;
 
-	public function __construct(TActiveRecordRelationContext $context)
+	public function __construct(TActiveRecordRelationContext $context, $criteria)
 	{
 		$this->_context = $context;
+		$this->_criteria = $criteria;
 	}
 
 	/**
@@ -38,6 +40,14 @@ abstract class TActiveRecordRelation
 	protected function getContext()
 	{
 		return $this->_context;
+	}
+	
+	/**
+	 * @return TActiveRecordCriteria
+	 */
+	protected function getCriteria()
+	{
+		return $this->_criteria;
 	}
 
 	/**
@@ -75,6 +85,16 @@ abstract class TActiveRecordRelation
 			array_push($stack,$this); //call it later
 		return $results;
 	}
+	
+	/**
+	 * Fetch results for current relationship.
+	 * @return boolean always true.
+	 */
+	public function fetchResultsInto($obj)
+	{
+		$this->collectForeignObjects($obj);
+		return true;
+	}
 
 	/**
 	 * Returns foreign keys in $fromRecord with source column names as key
@@ -84,7 +104,7 @@ abstract class TActiveRecordRelation
 	 * @param TActiveRecord $matchesRecord
 	 * @return array foreign keys with source column names as key and foreign column names as value.
 	 */
-	protected function findForeignKeys($from, $matchesRecord)
+	protected function findForeignKeys($from, $matchesRecord, $loose=false)
 	{
 		$gateway = $matchesRecord->getRecordGateway();
 		$matchingTableName = $gateway->getRecordTableInfo($matchesRecord)->getTableName();
@@ -93,12 +113,41 @@ abstract class TActiveRecordRelation
 			$tableInfo = $gateway->getRecordTableInfo($from);
 		foreach($tableInfo->getForeignKeys() as $fkeys)
 		{
-			if($fkeys['table']===$matchingTableName)
-				return $fkeys['keys'];
+			if(strtolower($fkeys['table'])===strtolower($matchingTableName))
+			{
+				if(!$loose && $this->getContext()->hasFkField())
+					return $this->getFkFields($fkeys['keys']);
+				else
+					return $fkeys['keys'];
+			}
 		}
 		$matching = $gateway->getRecordTableInfo($matchesRecord)->getTableFullName();
 		throw new TActiveRecordException('ar_relations_missing_fk',
 			$tableInfo->getTableFullName(), $matching);
+	}
+	
+	/**
+	 * @return array foreign key field names as key and object properties as value.
+	 * @since 3.1.2	 
+	 */
+	abstract public function getRelationForeignKeys();
+	
+	/**
+	 * Find matching foreign key fields from the 3rd element of an entry in TActiveRecord::$RELATION.
+	 * Assume field names consist of [\w-] character sets. Prefix to the field names ending with a dot
+	 * are ignored.
+	 */
+	private function getFkFields($fkeys)
+	{
+		$matching = array();
+		preg_match_all('/\s*(\S+\.)?([\w-]+)\s*/', $this->getContext()->getFkField(), $matching);
+		$fields = array();
+		foreach($fkeys as $fkName => $field)
+		{
+			if(in_array($fkName, $matching[2]))
+				$fields[$fkName] = $field;
+		}
+		return $fields;
 	}
 
 	/**
@@ -122,9 +171,8 @@ abstract class TActiveRecordRelation
 	 */
 	protected function findForeignObjects($fields, $indexValues)
 	{
-		$criteria = $this->getContext()->getCriteria();
 		$finder = $this->getContext()->getForeignRecordFinder();
-		return $finder->findAllByIndex($criteria, $fields, $indexValues);
+		return $finder->findAllByIndex($this->_criteria, $fields, $indexValues);
 	}
 
 	/**

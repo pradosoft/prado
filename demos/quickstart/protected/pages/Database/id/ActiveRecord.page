@@ -615,7 +615,7 @@ class PlayerRecord extends TActiveRecord
     public static $RELATIONS=array
     (
         'team' => array(self::BELONGS_TO, 'TeamRecord'),
-        'skills' => array(self::HAS_MANY, 'SkillRecord', 'Player_Skills'),
+        'skills' => array(self::MANY_TO_MANY, 'SkillRecord', 'Player_Skills'),
         'profile' => array(self::HAS_ONE, 'ProfileRecord'),
     );
 
@@ -737,7 +737,7 @@ class SkillRecord extends TActiveRecord
 
     public static $RELATIONS=array
     (
-        'players' => array(self::HAS_MANY, 'PlayerRecord', 'Player_Skills'),
+        'players' => array(self::MANY_TO_MANY, 'PlayerRecord', 'Player_Skills'),
     );
 
     public static function finder($className=__CLASS__)
@@ -749,7 +749,7 @@ class SkillRecord extends TActiveRecord
 
 <p id="710036" class="block-content">
 Properti statis <tt>$RELATIONS</tt> dari SkillRecord mendefinisikan bahwa properti <tt>$players</tt> memiliki banyak <tt>PlayerRecord</tt>s melalui tabel asosiasi '<tt>Player_Skills</tt>'.
-Dalam <tt>array(self::HAS_MANY, 'PlayerRecord', 'Player_Skills')</tt>, elemen pertama mendefinisikan tipe hubungan, dalam hal ini <strong><tt>self::HAS_MANY</tt></strong>,
+Dalam <tt>array(self::MANY_TO_MANY, 'PlayerRecord', 'Player_Skills')</tt>, elemen pertama mendefinisikan tipe hubungan, dalam hal ini <strong><tt>self::HAS_MANY</tt></strong>,
 elemen kedua adalah string <tt>'PlayerRecord'</tt> yang terkait ke nama kelas dari kelas <tt>PlayerRecord</tt>, dan elemen ketiga adalah nama dari nama tabel asosiasi. 
 </p>
 <p id="710037" class="block-content">
@@ -805,7 +805,7 @@ class Item extends TActiveRecord
 
     public static $RELATIONS=array
     (
-        'related_items' => array(self::HAS_MANY, 
+        'related_items' => array(self::MANY_TO_MANY, 
             'Item', 'related_items.related_item_id'),
     );
 }

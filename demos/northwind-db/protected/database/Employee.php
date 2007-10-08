@@ -32,7 +32,7 @@ class Employee extends TActiveRecord
 
 	public static $RELATIONS = array
 	(
-		'Territories' => array(self::HAS_MANY, 'Territory', 'EmployeeTerritories'),
+		'Territories' => array(self::MANY_TO_MANY, 'Territory', 'EmployeeTerritories'),
 		'Orders' => array(self::HAS_MANY, 'Order'),
 
 		//parent children relationship

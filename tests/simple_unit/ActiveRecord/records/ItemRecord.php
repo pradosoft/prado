@@ -21,7 +21,7 @@ class ItemRecord extends TActiveRecord
 
 	public static $RELATIONS=array
 	(
-		'related_items' => array(self::HAS_MANY, 'ItemRecord', 'related_items.(related_item_id)'),
+		'related_items' => array(self::MANY_TO_MANY, 'ItemRecord', 'related_items.related_item_id'),
 	);
 
 	public function getDbConnection()

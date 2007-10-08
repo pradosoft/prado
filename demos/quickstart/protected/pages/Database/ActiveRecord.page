@@ -657,10 +657,30 @@ in Active Record by inspecting the <tt>Players</tt> and <tt>Teams</tt> table def
 </p>
 
 <div class="info"><b class="note">Info:</b>
-Active Record supports multiple table foreign key relationships with the restriction
-that each relationship corresponds to a unique table. For example, the <tt>Players</tt>
-table may only have one set of foreign key relationship with table <tt>Teams</tt>, it may
-have other relationships that corresponds to other tables (including the <tt>Players</tt> table itself).
+Since version <b>3.1.2</b>, Active Record supports multiple foreign key 
+references of the same table. Ambiguity between multiple foreign key references to the same table is
+resolved by providing the foreign key column name as the 3rd parameter in the relationship array. 
+For example, both the following foreign keys <tt>owner_id</tt> and <tt>reporter_id</tt>
+references the same table defined in <tt>UserRecord</tt>.
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class TicketRecord extends TActiveRecord
+{
+     public $owner_id;
+	 public $reporter_id;
+
+     public $owner;
+	 public $reporter;
+
+	 public static $RELATION=array
+	 (
+	     'owner' => array(self::BELONGS_TO, 'UserRecord', 'owner_id'),
+		 'reporter' => array(self::BELONGS_TO, 'UserRecord', 'reporter_id'),
+	 );
+}
+</com:TTextHighlighter>
+This is applicable to relationships including <tt>BELONGS_TO</tt>, <tt>HAS_ONE</tt> and
+<tt>HAS_MANY</tt>. See section <a href="#142021">Self Referenced Association Tables</a> for solving ambiguity of <tt>MANY_TO_MANY</tt> 
+relationships.
 </div>
 
 <p id="710023" class="block-content">The "has many" relationship is not fetched automatically when you use any of the Active Record finder methods.
@@ -713,7 +733,7 @@ class PlayerRecord extends TActiveRecord
     public static $RELATIONS=array
     (
         'team' => array(self::BELONGS_TO, 'TeamRecord'),
-        'skills' => array(self::HAS_MANY, 'SkillRecord', 'Player_Skills'),
+        'skills' => array(self::MANY_TO_MANY, 'SkillRecord', 'Player_Skills'),
         'profile' => array(self::HAS_ONE, 'ProfileRecord'),
     );
 
@@ -850,9 +870,9 @@ in the <tt>Player_Skills</tt> association table using an inner join.
 </p>
 
 <p id="710035" class="block-content">The Prado Active Record design implements the two stage approach. For the
-<tt>Players</tt>-<tt>Skills</tt> M-N (many-to-many) entity relationship, we need
-to define a <b>has many</b> relationship in the <tt>PlayerRecord</tt> class and
-in addition define a <b>has many</b> relationship in the <tt>SkillRecord</tt> class as well.
+<tt>Players</tt>-<tt>Skills</tt> M-N (many-to-many) entity relationship, we 
+define a <b>many-to-many</b> relationship in the <tt>PlayerRecord</tt> class and
+in addition we may define a <b>many-to-many</b> relationship in the <tt>SkillRecord</tt> class as well.
 The following sample code defines the complete <tt>SkillRecord</tt> class with a
 many-to-many relationship with the <tt>PlayerRecord</tt> class. (See the <tt>PlayerRecord</tt>
 class definition above to the corresponding many-to-many relationship with the <tt>SkillRecord</tt> class.)
@@ -869,7 +889,7 @@ class SkillRecord extends TActiveRecord
 
     public static $RELATIONS=array
     (
-        'players' => array(self::HAS_MANY, 'PlayerRecord', 'Player_Skills'),
+        'players' => array(self::MANY_TO_MANY, 'PlayerRecord', 'Player_Skills'),
     );
 
     public static function finder($className=__CLASS__)
@@ -882,12 +902,20 @@ class SkillRecord extends TActiveRecord
 <p id="710036" class="block-content">
 The static <tt>$RELATIONS</tt> property of SkillRecord defines that the
 property <tt>$players</tt> has many <tt>PlayerRecord</tt>s via an association table '<tt>Player_Skills</tt>'.
-In <tt>array(self::HAS_MANY, 'PlayerRecord', 'Player_Skills')</tt>, the first element defines the
-relationship type, in this case <strong><tt>self::HAS_MANY</tt></strong>,
+In <tt>array(self::MANY_TO_MANY, 'PlayerRecord', 'Player_Skills')</tt>, the first element defines the
+relationship type, in this case <strong><tt>self::MANY_TO_MANY</tt></strong>,
 the second element is a string <tt>'PlayerRecord'</tt> that corresponds to the
 class name of the <tt>PlayerRecord</tt> class, and the third element is the name
 of the association table name.
 </p>
+
+<div class="note"><b class="note">Note:</b>
+Prior to version <b>3.1.2</b> (versions up to 3.1.1), the many-to-many relationship was 
+defined using <tt>self::HAS_MANY</tt>. For version <b>3.1.2</b> onwards, this must be changed
+to <tt>self::MANY_TO_MANY</tt>. This can be done by searching for the <tt>HAS_MANY</tt> in your
+source code and carfully changing the appropriate definitions. 
+</div>
+
 <p id="710037" class="block-content">
 A list of player objects with the corresponding collection of skill objects may be fetched as follows.
 </p>
@@ -951,7 +979,7 @@ class Item extends TActiveRecord
 
     public static $RELATIONS=array
     (
-        'related_items' => array(self::HAS_MANY,
+        'related_items' => array(self::MANY_TO_MANY,
             'Item', 'related_items.related_item_id'),
     );
 }

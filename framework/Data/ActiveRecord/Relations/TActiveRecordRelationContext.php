@@ -32,13 +32,12 @@ class TActiveRecordRelationContext
 
 	private $_property;
 	private $_sourceRecord;
-	private $_criteria;
-	private $_relation;
+	private $_relation; //data from an entry of TActiveRecord::$RELATION
+	private $_fkeys;
 
-	public function __construct($source, $property=null, $criteria=null)
+	public function __construct($source, $property=null)
 	{
 		$this->_sourceRecord=$source;
-		$this->_criteria=$criteria;
 		if($property!==null)
 			list($this->_property, $this->_relation) = $this->getSourceRecordRelation($property);
 	}
@@ -48,7 +47,6 @@ class TActiveRecordRelationContext
 	 * property from the $RELATIONS static property in TActiveRecord.
 	 * @param string relation property name
 	 * @return array array($propertyName, $relation) relation definition.
-	 * @throws TActiveRecordException if property is not defined or missing.
 	 */
 	protected function getSourceRecordRelation($property)
 	{
@@ -58,8 +56,6 @@ class TActiveRecordRelationContext
 			if(strtolower($name)===$property)
 				return array($name, $relation);
 		}
-		throw new TActiveRecordException('ar_undefined_relation_prop',
-			$property, get_class($this->_sourceRecord), self::RELATIONS_CONST);
 	}
 
 	/**
@@ -69,6 +65,15 @@ class TActiveRecordRelationContext
 	{
 		$class = new ReflectionClass($this->_sourceRecord);
 		return $class->getStaticPropertyValue(self::RELATIONS_CONST);
+	}
+
+	/**
+	 * @return boolean true if the relation is defined in TActiveRecord::$RELATIONS
+	 * @since 3.1.2
+	 */
+	public function hasRecordRelation()
+	{
+		return $this->_relation!==null;
 	}
 
 	public function getPropertyValue()
@@ -83,14 +88,6 @@ class TActiveRecordRelationContext
 	public function getProperty()
 	{
 		return $this->_property;
-	}
-
-	/**
-	 * @return TActiveRecordCriteria sql query criteria for fetching the related record.
-	 */
-	public function getCriteria()
-	{
-		return $this->_criteria;
 	}
 
 	/**
@@ -110,11 +107,42 @@ class TActiveRecordRelationContext
 	}
 
 	/**
+	 * @return array foreign key of this relations, the keys is dependent on the
+	 * relationship type.
+	 * @since 3.1.2
+	 */
+	public function getRelationForeignKeys()
+	{
+		if($this->_fkeys===null)
+			$this->_fkeys=$this->getRelationHandler()->getRelationForeignKeys();
+		return $this->_fkeys;
+	}
+
+	/**
 	 * @return string HAS_MANY, HAS_ONE, or BELONGS_TO
 	 */
 	public function getRelationType()
 	{
 		return $this->_relation[0];
+	}
+
+	/**
+	 * @return string foreign key field names, comma delimited.
+	 * @since 3.1.2
+	 */
+	public function getFkField()
+	{
+		return $this->_relation[2];
+	}
+
+	/**
+	 * @return boolean true if the 3rd element of an TActiveRecord::$RELATION entry is set.
+	 * @since 3.1.2
+	 */
+	public function hasFkField()
+	{
+		$notManyToMany = $this->getRelationType() !== TActiveRecord::MANY_TO_MANY;
+		return $notManyToMany && isset($this->_relation[2]) && !empty($this->_relation[2]);
 	}
 
 	/**
@@ -130,7 +158,8 @@ class TActiveRecordRelationContext
 	 */
 	public function hasAssociationTable()
 	{
-		return isset($this->_relation[2]);
+		$isManyToMany = $this->getRelationType() === TActiveRecord::MANY_TO_MANY;
+		return $isManyToMany && isset($this->_relation[2]) && !empty($this->_relation[2]);
 	}
 
 	/**
@@ -145,29 +174,33 @@ class TActiveRecordRelationContext
 	 * Creates and return the TActiveRecordRelation handler for specific relationships.
 	 * An instance of TActiveRecordHasOne, TActiveRecordBelongsTo, TActiveRecordHasMany,
 	 * or TActiveRecordHasManyAssocation will be returned.
+	 * @param TActiveRecordCriteria search criteria
 	 * @return TActiveRecordRelation record relationship handler instnace.
+	 * @throws TActiveRecordException if property is not defined or missing.
 	 */
-	public function getRelationHandler()
+	public function getRelationHandler($criteria=null)
 	{
+		if(!$this->hasRecordRelation())
+		{
+			throw new TActiveRecordException('ar_undefined_relation_prop',
+				$property, get_class($this->_sourceRecord), self::RELATIONS_CONST);
+		}
+		if($criteria===null)
+			$criteria = new TActiveRecordCriteria;
 		switch($this->getRelationType())
 		{
 			case TActiveRecord::HAS_MANY:
-				if(!$this->hasAssociationTable())
-				{
-					Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordHasMany');
-					return new TActiveRecordHasMany($this);
-				}
-				else
-				{
-					Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordHasManyAssociation');
-					return new TActiveRecordHasManyAssociation($this);
-				}
+				Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordHasMany');
+				return new TActiveRecordHasMany($this, $criteria);
+			case TActiveRecord::MANY_TO_MANY:
+				Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordHasManyAssociation');
+				return new TActiveRecordHasManyAssociation($this, $criteria);
 			case TActiveRecord::HAS_ONE:
 				Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordHasOne');
-				return new TActiveRecordHasOne($this);
+				return new TActiveRecordHasOne($this, $criteria);
 			case TActiveRecord::BELONGS_TO:
 				Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordBelongsTo');
-				return new TActiveRecordBelongsTo($this);
+				return new TActiveRecordBelongsTo($this, $criteria);
 			default:
 				throw new TActiveRecordException('ar_invalid_relationship');
 		}
