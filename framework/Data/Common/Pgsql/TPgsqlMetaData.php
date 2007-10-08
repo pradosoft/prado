@@ -330,6 +330,7 @@ EOD;
 	 */
 	protected function getPrimaryKeys($tableName, $schemaName, $columnIndex)
 	{
+		$index = join(', ', split(' ', $columnIndex));
 		$sql =
 <<<EOD
     SELECT attnum, attname FROM pg_catalog.pg_attribute WHERE
@@ -338,13 +339,12 @@ EOD;
 				SELECT oid FROM pg_catalog.pg_namespace WHERE nspname=:schema
 			)
 		)
-        AND attnum IN (:columnIndex)
+        AND attnum IN ({$index})
 EOD;
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':table', $tableName);
 		$command->bindValue(':schema', $schemaName);
-		$command->bindValue(':columnIndex', join('\',\'', split(' ', $columnIndex)));
-
+//		$command->bindValue(':columnIndex', join(', ', split(' ', $columnIndex)));
 		$primary = array();
 		foreach($command->query() as $row)
 		{
