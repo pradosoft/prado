@@ -154,11 +154,15 @@ class TErrorHandler extends TModule
 		$content=$this->getErrorTemplate($statusCode,$exception);
 
 		$serverAdmin=isset($_SERVER['SERVER_ADMIN'])?$_SERVER['SERVER_ADMIN']:'';
+		if($this->getApplication()->getMode()===TApplicationMode::Debug)
+			$version=$_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion();
+		else
+			$version='';
 		$tokens=array(
 			'%%StatusCode%%' => "$statusCode",
 			'%%ErrorMessage%%' => htmlspecialchars($exception->getMessage()),
 			'%%ServerAdmin%%' => $serverAdmin,
-			'%%Version%%' => $_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion(),
+			'%%Version%%' => $version,
 			'%%Time%%' => @strftime('%Y-%m-%d %H:%M',time())
 		);
 		echo strtr($content,$tokens);
@@ -227,13 +231,18 @@ class TErrorHandler extends TModule
 			$source=$this->getSourceCode(@file($fileName),$errorLine);
 		}
 
+		if($this->getApplication()->getMode()===TApplicationMode::Debug)
+			$version=$_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion();
+		else
+			$version='';
+
 		$tokens=array(
 			'%%ErrorType%%' => get_class($exception),
 			'%%ErrorMessage%%' => $this->addLink(htmlspecialchars($exception->getMessage())),
 			'%%SourceFile%%' => htmlspecialchars($fileName).' ('.$errorLine.')',
 			'%%SourceCode%%' => $source,
 			'%%StackTrace%%' => htmlspecialchars($exception->getTraceAsString()),
-			'%%Version%%' => $_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion(),
+			'%%Version%%' => $version,
 			'%%Time%%' => @strftime('%Y-%m-%d %H:%M',time())
 		);
 
