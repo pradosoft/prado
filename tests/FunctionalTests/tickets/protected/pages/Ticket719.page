@@ -1,0 +1,53 @@
+<com:TContent id="Content">
+<style>
+.autocomplete
+{
+	border:1px solid #919EA9;
+	background-color:white;
+	width: 20px;
+}
+.autocomplete ul, .autocomplete li
+{
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-size: 12px;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	color: #333;
+}
+
+ul.different
+{
+	background-color: pink;
+}
+
+.autocomplete li
+{
+	padding: 4px;
+	border-top: 1px solid #ccc;
+}
+.autocomplete .selected
+{
+	background-color: #ffc;
+}
+</style>
+
+<p>
+	<com:TRequiredFieldValidator ControlToValidate="textbox"
+		ErrorMessage="Required" Display="Dynamic" />
+	<com:TTextBox id="textbox" />
+</p>
+<p>
+<com:TRequiredFieldValidator ControlToValidate="autocomplete"
+		ErrorMessage="Required"Display="Dynamic" />
+	<com:TAutoComplete Style="width: 20em" ID="autocomplete"
+		OnSuggest="suggestCountries" Separator=", "
+		OnSuggestionSelected="suggestion_selected"
+		ResultPanel.CssClass="autocomplete" CausesValidation="false" />
+	
+</p>
+<p>
+	<com:TButton OnClick="validForm" Text="Validate Form" /><br/>
+	<com:TLabel id="Result" />
+</p>
+</com:TContent>

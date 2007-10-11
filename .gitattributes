@@ -2978,6 +2978,7 @@ tests/FunctionalTests/tickets/protected/pages/Ticket703/Ticket703.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket703/config.xml -text
 tests/FunctionalTests/tickets/protected/pages/Ticket708.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket708.php -text
+tests/FunctionalTests/tickets/protected/pages/Ticket719.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket72.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket72.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket93.page -text
