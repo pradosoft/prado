@@ -344,6 +344,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 			$options['minChars'] = $minchars;
 		if(($frequency=$this->getFrequency())!=='')
 			$options['frequency'] = $frequency;
+		$options['CausesValidation'] = $this->getCausesValidation();
 		return $options;
 	}
 
