@@ -199,9 +199,11 @@ abstract class TActiveRecord extends TComponent
 	public function getDbConnection()
 	{
 		if($this->_connection===null)
-			$this->_connection=self::getRecordManager()->getDbConnection();
-		if($this->_connection===null) //check it
-			throw new TActiveRecordException('ar_invalid_db_connection',get_class($this));
+		{
+			$this->setDbConnection(self::getRecordManager()->getDbConnection());
+			if($this->_connection===null) //check it
+				throw new TActiveRecordException('ar_invalid_db_connection',get_class($this));
+		}
 		return $this->_connection;
 	}
 
