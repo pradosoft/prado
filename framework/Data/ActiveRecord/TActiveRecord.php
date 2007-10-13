@@ -679,7 +679,7 @@ abstract class TActiveRecord extends TComponent
 	protected function getRelationContext($property)
 	{
 		if(($relation=$this->getRelation($property))!==null)
-			return new TActiveRecordRelationContext($this,$property,$relation);
+			return new TActiveRecordRelationContext($this,strtolower($property),$relation);
 		else
 			return null;
 	}
@@ -759,18 +759,18 @@ abstract class TActiveRecord extends TComponent
 	public function __call($method,$args)
 	{
 		$delete =false;
-		if(substr(strtolower($method),0,4)==='with')
+		if(strncasecmp($method,'with',4)===0)
 		{
 			$property= $method[4]==='_' ? substr($method,5) : substr($method,4);
 			return $this->getRelationHandler($property, $args);
 		}
-		else if($findOne = substr(strtolower($method),0,6)==='findby')
+		else if($findOne=strncasecmp($method,'findby',6)===0)
 			$condition = $method[6]==='_' ? substr($method,7) : substr($method,6);
-		else if(substr(strtolower($method),0,9)==='findallby')
+		else if(strncasecmp($method,'findallby',9)===0)
 			$condition = $method[9]==='_' ? substr($method,10) : substr($method,9);
-		else if($delete = substr(strtolower($method),0,8)==='deleteby')
+		else if($delete=strncasecmp($method,'deleteby',8)===0)
 			$condition = $method[8]==='_' ? substr($method,9) : substr($method,8);
-		else if($delete = substr(strtolower($method),0,11)==='deleteallby')
+		else if($delete=strncasecmp($method,'deleteallby',11)===0)
 			$condition = $method[11]==='_' ? substr($method,12) : substr($method,11);
 		else
 			return null;//throw new TActiveRecordException('ar_invalid_finder_method',$method);
