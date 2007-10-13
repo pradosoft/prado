@@ -205,13 +205,7 @@ abstract class TActiveRecord extends TComponent
 			$name2=strtolower($name);
 			if(!isset($this->_foreignObjects[$name2]))
 				$this->fetchResultsFor($name2);
-			if(isset($this->_foreignObjects[$name2]))
-				return $this->_foreignObjects[$name2]===false?null:$this->_foreignObjects[$name2];
-			else
-			{
-				$this->_foreignObjects[$name2]=false;
-				return null;
-			}
+			return $this->_foreignObjects[$name2]===false?null:$this->_foreignObjects[$name2];
 		}
 		return parent::__get($name);
 	}

@@ -111,6 +111,8 @@ class TActiveRecordBelongsTo extends TActiveRecordRelation
 				throw new TActiveRecordException('ar_belongs_to_multiple_result');
 			$source->$prop=$collections[$hash][0];
 		}
+		else
+			$source->$prop=null;
 	}
 
 	/**
