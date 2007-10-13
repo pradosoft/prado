@@ -25,46 +25,16 @@
  */
 class TActiveRecordRelationContext
 {
-	/**
-	 * static property name in TActiveRecord that defines the record relationships.
-	 */
-	const RELATIONS_CONST = 'RELATIONS';
-
 	private $_property;
-	private $_sourceRecord;
+	private $_record;
 	private $_relation; //data from an entry of TActiveRecord::$RELATION
 	private $_fkeys;
 
-	public function __construct($source, $property=null)
+	public function __construct($record, $property=null, $relation=null)
 	{
-		$this->_sourceRecord=$source;
-		if($property!==null)
-			list($this->_property, $this->_relation) = $this->getSourceRecordRelation($property);
-	}
-
-	/**
-	 * Uses ReflectionClass to obtain the relation details array of a given
-	 * property from the $RELATIONS static property in TActiveRecord.
-	 * @param string relation property name
-	 * @return array array($propertyName, $relation) relation definition.
-	 */
-	protected function getSourceRecordRelation($property)
-	{
-		$property = strtolower($property);
-		foreach($this->getRecordRelationships() as $name => $relation)
-		{
-			if(strtolower($name)===$property)
-				return array($name, $relation);
-		}
-	}
-
-	/**
-	 * @return array the key and values of TActiveRecord::$RELATIONS
-	 */
-	public function getRecordRelationships()
-	{
-		$class = new ReflectionClass($this->_sourceRecord);
-		return $class->getStaticPropertyValue(self::RELATIONS_CONST);
+		$this->_record=$record;
+		$this->_property=$property;
+		$this->_relation=$relation;
 	}
 
 	/**
@@ -95,7 +65,7 @@ class TActiveRecordRelationContext
 	 */
 	public function getSourceRecord()
 	{
-		return $this->_sourceRecord;
+		return $this->_record;
 	}
 
 	/**
@@ -183,7 +153,7 @@ class TActiveRecordRelationContext
 		if(!$this->hasRecordRelation())
 		{
 			throw new TActiveRecordException('ar_undefined_relation_prop',
-				$property, get_class($this->_sourceRecord), self::RELATIONS_CONST);
+				$this->_property, get_class($this->_record), 'RELATIONS');
 		}
 		if($criteria===null)
 			$criteria = new TActiveRecordCriteria;
@@ -212,7 +182,7 @@ class TActiveRecordRelationContext
 	public function updateAssociatedRecords($updateBelongsTo=false)
 	{
 		$success=true;
-		foreach($this->getRecordRelationships() as $property=>$relation)
+		foreach($this->_record->getRelations() as $property=>$relation)
 		{
 			$belongsTo = $relation[0]==TActiveRecord::BELONGS_TO;
 			if(($updateBelongsTo && $belongsTo) || (!$updateBelongsTo && !$belongsTo))
@@ -220,7 +190,7 @@ class TActiveRecordRelationContext
 				$obj = $this->getSourceRecord();
 				if(!$this->isEmptyFkObject($obj->getColumnValue($property)))
 				{
-					$context = new self($this->getSourceRecord(),$property);
+					$context = new TActiveRecordRelationContext($this->getSourceRecord(),$property,$relation);
 					$success = $context->getRelationHandler()->updateAssociatedRecords() && $success;
 				}
 			}

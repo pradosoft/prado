@@ -41,7 +41,7 @@ abstract class TActiveRecordRelation
 	{
 		return $this->_context;
 	}
-	
+
 	/**
 	 * @return TActiveRecordCriteria
 	 */
@@ -57,6 +57,8 @@ abstract class TActiveRecordRelation
 	{
 		return $this->getContext()->getSourceRecord();
 	}
+
+	abstract protected function collectForeignObjects(&$results);
 
 	/**
 	 * Dispatch the method calls to the source record finder object. When
@@ -85,7 +87,7 @@ abstract class TActiveRecordRelation
 			array_push($stack,$this); //call it later
 		return $results;
 	}
-	
+
 	/**
 	 * Fetch results for current relationship.
 	 * @return boolean always true.
@@ -125,13 +127,13 @@ abstract class TActiveRecordRelation
 		throw new TActiveRecordException('ar_relations_missing_fk',
 			$tableInfo->getTableFullName(), $matching);
 	}
-	
+
 	/**
 	 * @return array foreign key field names as key and object properties as value.
-	 * @since 3.1.2	 
+	 * @since 3.1.2
 	 */
 	abstract public function getRelationForeignKeys();
-	
+
 	/**
 	 * Find matching foreign key fields from the 3rd element of an entry in TActiveRecord::$RELATION.
 	 * Assume field names consist of [\w-] character sets. Prefix to the field names ending with a dot
@@ -238,7 +240,7 @@ abstract class TActiveRecordRelation
 	{
 		$hash = $this->getObjectHash($source, $properties);
 		$prop = $this->getContext()->getProperty();
-		$source->setColumnValue($prop, isset($collections[$hash]) ? $collections[$hash] : array());
+		$source->$prop=isset($collections[$hash]) ? $collections[$hash] : array();
 	}
 }
 

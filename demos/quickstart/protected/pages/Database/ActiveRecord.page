@@ -624,7 +624,7 @@ class TeamRecord extends TActiveRecord
     public $name;
     public $location;
 
-    public $players=array();
+    public $players=array();  // this declaration is no longer needed since v3.1.2
 
     //define the $player member having has many relationship with PlayerRecord
     public static $RELATIONS=array
@@ -650,6 +650,16 @@ The second element is a string <tt>'PlayerRecord'</tt> that corresponds to the
 class name of the <tt>PlayerRecord</tt> class.
 </p>
 
+<div class="note"><b class="note">Note:</b>
+As described in the code comment above, since version <b>3.1.2</b>, related properties no longer
+need to be explicitly declared. By default, they will be implicitly declared according to
+keys of the <tt>$RELATIONS</tt> array. A major benefit of declared related properties implicitly
+is that related objects can be automatically loaded in a lazy way. For example, assume we have
+a <tt>TeamRecord</tt> instance <tt>$team</tt>. We can access the players via <tt>$team->players</tt>,
+even if we have never issued fetch command for players. If <tt>$players</tt> is explicitly declared,
+we will have to use the <tt>with</tt> approach described in the following to fetch the player records.
+</div>
+
 <p id="710022" class="block-content">
 The foreign key constraint of the <tt>Players</tt> table is used to determine the corresponding
 <tt>Teams</tt> table's corresponding key names. This is done automatically handled
@@ -657,9 +667,9 @@ in Active Record by inspecting the <tt>Players</tt> and <tt>Teams</tt> table def
 </p>
 
 <div class="info"><b class="note">Info:</b>
-Since version <b>3.1.2</b>, Active Record supports multiple foreign key 
+Since version <b>3.1.2</b>, Active Record supports multiple foreign key
 references of the same table. Ambiguity between multiple foreign key references to the same table is
-resolved by providing the foreign key column name as the 3rd parameter in the relationship array. 
+resolved by providing the foreign key column name as the 3rd parameter in the relationship array.
 For example, both the following foreign keys <tt>owner_id</tt> and <tt>reporter_id</tt>
 references the same table defined in <tt>UserRecord</tt>.
 <com:TTextHighlighter Language="php" CssClass="source block-content">
@@ -668,8 +678,8 @@ class TicketRecord extends TActiveRecord
      public $owner_id;
 	 public $reporter_id;
 
-     public $owner;
-	 public $reporter;
+     public $owner;     // this declaration is no longer needed since v3.1.2
+	 public $reporter;  // this declaration is no longer needed since v3.1.2
 
 	 public static $RELATION=array
 	 (
@@ -679,7 +689,7 @@ class TicketRecord extends TActiveRecord
 }
 </com:TTextHighlighter>
 This is applicable to relationships including <tt>BELONGS_TO</tt>, <tt>HAS_ONE</tt> and
-<tt>HAS_MANY</tt>. See section <a href="#142021">Self Referenced Association Tables</a> for solving ambiguity of <tt>MANY_TO_MANY</tt> 
+<tt>HAS_MANY</tt>. See section <a href="#142021">Self Referenced Association Tables</a> for solving ambiguity of <tt>MANY_TO_MANY</tt>
 relationships.
 </div>
 
@@ -709,6 +719,16 @@ and other join conditions are not feasible using Active Records. For queries out
 scope of Active Record the <a href="?page=Database.SqlMap">SqlMap Data Mapper</a> may be considered.
 </div>
 
+<div class="info"><b class="info">Info:</b>
+The above <tt>with</tt> approach also works with implicitly declared related properties (introduced
+in version 3.1.2). So what is the difference between the <tt>with</tt> approach and the lazy loading
+approach? Lazy loading means we issue an SQL query if a related object is initially accessed and not ready,
+while the <tt>with</tt> approach queries for the related objects once for all, no matter the related objects
+are accessed or not. The lazy loading approach is very convenient since we do not need to explictly
+load the related objects, while the <tt>with</tt> approach is more efficient if multiple records are
+returned, each with some related objects.
+</div>
+
 <h3 id="142018">Belongs To Relationship</h3>
 <p id="710025" class="block-content">The "has many" relationship in the above section defines a collection of foreign
 objects. In particular, we have that a <tt>TeamRecord</tt> has many (zero or more)
@@ -726,9 +746,9 @@ class PlayerRecord extends TActiveRecord
     public $age;
     public $team_name;
 
-    public $team;
-    public $skills=array();
-    public $profile;
+    public $team;              // this declaration is no longer needed since v3.1.2
+    public $skills=array();    // this declaration is no longer needed since v3.1.2
+    public $profile;           // this declaration is no longer needed since v3.1.2
 
     public static $RELATIONS=array
     (
@@ -785,7 +805,7 @@ class ProfileRecord extends TActiveRecord
     public $player_id;
     public $salary;
 
-    public $player;
+    public $player;  // this declaration is no longer needed since v3.1.2
 
     public static $RELATIONS=array
     (
@@ -830,8 +850,8 @@ class Category extends TActiveRecord
     public $category_name;
     public $parent_cat_id;
 
-    public $parent_category;
-    public $child_categories=array();
+    public $parent_category;            // this declaration is no longer needed since v3.1.2
+    public $child_categories=array();   // this declaration is no longer needed since v3.1.2
 
     public static $RELATIONS=array
     (
@@ -870,7 +890,7 @@ in the <tt>Player_Skills</tt> association table using an inner join.
 </p>
 
 <p id="710035" class="block-content">The Prado Active Record design implements the two stage approach. For the
-<tt>Players</tt>-<tt>Skills</tt> M-N (many-to-many) entity relationship, we 
+<tt>Players</tt>-<tt>Skills</tt> M-N (many-to-many) entity relationship, we
 define a <b>many-to-many</b> relationship in the <tt>PlayerRecord</tt> class and
 in addition we may define a <b>many-to-many</b> relationship in the <tt>SkillRecord</tt> class as well.
 The following sample code defines the complete <tt>SkillRecord</tt> class with a
@@ -885,7 +905,7 @@ class SkillRecord extends TActiveRecord
     public $skill_id;
     public $name;
 
-    public $players=array();
+    public $players=array();    // this declaration is no longer needed since v3.1.2
 
     public static $RELATIONS=array
     (
@@ -910,10 +930,10 @@ of the association table name.
 </p>
 
 <div class="note"><b class="note">Note:</b>
-Prior to version <b>3.1.2</b> (versions up to 3.1.1), the many-to-many relationship was 
+Prior to version <b>3.1.2</b> (versions up to 3.1.1), the many-to-many relationship was
 defined using <tt>self::HAS_MANY</tt>. For version <b>3.1.2</b> onwards, this must be changed
 to <tt>self::MANY_TO_MANY</tt>. This can be done by searching for the <tt>HAS_MANY</tt> in your
-source code and carfully changing the appropriate definitions. 
+source code and carfully changing the appropriate definitions.
 </div>
 
 <p id="710037" class="block-content">
@@ -975,7 +995,7 @@ class Item extends TActiveRecord
 
     //additional foreign item id defined in the association table
     public $related_item_id;
-    public $related_items=array();
+    public $related_items=array();    // this declaration is no longer needed since v3.1.2
 
     public static $RELATIONS=array
     (
@@ -1030,6 +1050,13 @@ PlayerSkillAssocation::finder()->deleteByPk(array('fk1','fk2'));
 </com:TTextHighlighter>
 
 <h2 id="142015">Lazy Loading Related Objects</h2>
+
+<div class="note"><b class="note">Note:</b>
+Implicitly declared related properties introduced in version 3.1.2 automatically have lazy
+loading feature. Therefore, the lazy loading technique described in the following is no longer
+needed in most of the cases, unless you want to manipulate the related objects through getter/setter.
+</div>
+
 <p id="710045" class="block-content">Using the <tt>with_xxx()</tt> methods will load the relationship record on demand. Retrieving the
 related record using lazy loading (that is, only when those related objects are accessed) can be
 achieved by using a feature of the <tt>TComponent</tt> that provides accessor methods. In particular,

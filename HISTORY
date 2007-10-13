@@ -5,6 +5,7 @@ CHG: Changed TConditional so that the controls in its template behave like they 
 CHG: Active Record many-to-many relationship change from self::HAS_MANY to self::MANY_TO_MANY (Wei)
 ENH: Active Record supports multiple foreign references of the same table (Wei)
 ENH: Added TDbCommand.queryColumn() (Qiang)
+ENH: Active Record now supports implicitly declared related properties (Qiang)
 NEW: Added TDbLogRoute (Qiang)
 NEW: Added TDataRenderer and TItemDataRenderer (Qiang)
 NEW: Ticket#544 - Added TXCache (Wei)

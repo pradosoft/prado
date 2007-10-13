@@ -87,6 +87,27 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationContext');
  * By using column mapping, we can regularize the naming convention of column names
  * in active record.
  *
+ * Since v3.1.2, TActiveRecord enhanced its support to access of foreign objects.
+ * By declaring a public static variable RELATIONS like the following, one can access
+ * the corresponding foreign objects easily:
+ * <code>
+ * class UserRecord extends TActiveRecord
+ * {
+ *     const TABLE='users';
+ *     public static $RELATIONS=array
+ *     (
+ *         'department'=>array(self::BELONGS_TO, 'DepartmentRecord', 'department_id'),
+ *         'contacts'=>array(self::HAS_MANY, 'ContactRecord', 'user_id'),
+ *     );
+ * }
+ * </code>
+ * In the above, the users table is related with departments table (represented by
+ * DepartmentRecord) and contacts table (represented by ContactRecord). Now, given a UserRecord
+ * instance $user, one can access its department and contacts simply by: $user->department and
+ * $user->contacts. No explicit data fetching is needed. Internally, the foreign objects are
+ * fetched in a lazy way, which avoids unnecessary overhead if the foreign objects are not accessed
+ * at all.
+ *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$
  * @package System.Data.ActiveRecord
@@ -99,8 +120,6 @@ abstract class TActiveRecord extends TComponent
 	const HAS_MANY='HAS_MANY';
 	const MANY_TO_MANY='MANY_TO_MANY';
 
-	private static $_columnMapping=array();
-
 	/**
 	 * This static variable defines the column mapping.
 	 * The keys are physical column names as defined in database,
@@ -110,8 +129,7 @@ abstract class TActiveRecord extends TComponent
 	 * @since 3.1.1
 	 */
 	public static $COLUMN_MAPPING=array();
-
-	private static $_relations=array();
+	private static $_columnMapping=array();
 
 	/**
 	 * This static variable defines the relationships.
@@ -121,6 +139,7 @@ abstract class TActiveRecord extends TComponent
 	 * @since 3.1.1
 	 */
 	public static $RELATIONS=array();
+	private static $_relations=array();
 
 	/**
 	 * @var boolean true if this class is read only.
@@ -131,6 +150,12 @@ abstract class TActiveRecord extends TComponent
 	 * @var TDbConnection database connection object.
 	 */
 	private $_connection;
+
+	/**
+	 * @var array list of foreign objects.
+	 * @since 3.1.2
+	 */
+	private $_foreignObjects=array();
 
 	/**
 	 * Prevent __call() method creating __sleep() when serializing.
@@ -146,6 +171,7 @@ abstract class TActiveRecord extends TComponent
 	public function __wake()
 	{
 		$this->setupColumnMapping();
+		$this->setupRelations();
 	}
 
 	/**
@@ -161,6 +187,49 @@ abstract class TActiveRecord extends TComponent
 		if($connection!==null)
 			$this->_connection=$connection;
 		$this->setupColumnMapping();
+		$this->setupRelations();
+	}
+
+	/**
+	 * Magic method for reading properties.
+	 * This method is overriden to provide read access to the foreign objects via
+	 * the key names declared in the RELATIONS array.
+	 * @param string property name
+	 * @return mixed property value.
+	 * @since 3.1.2
+	 */
+	public function __get($name)
+	{
+		if($this->hasRelation($name) && !$this->canGetProperty($name))
+		{
+			$name2=strtolower($name);
+			if(!isset($this->_foreignObjects[$name2]))
+				$this->fetchResultsFor($name2);
+			if(isset($this->_foreignObjects[$name2]))
+				return $this->_foreignObjects[$name2]===false?null:$this->_foreignObjects[$name2];
+			else
+			{
+				$this->_foreignObjects[$name2]=false;
+				return null;
+			}
+		}
+		return parent::__get($name);
+	}
+
+	/**
+	 * Magic method for writing properties.
+	 * This method is overriden to provide write access to the foreign objects via
+	 * the key names declared in the RELATIONS array.
+	 * @param string property name
+	 * @param mixed property value.
+	 * @since 3.1.2
+	 */
+	public function __set($name,$value)
+	{
+		if($this->hasRelation($name) && !$this->canSetProperty($name))
+			$this->_foreignObjects[strtolower($name)]=$value===null?false:$value;
+		else
+			parent::__set($name,$value);
 	}
 
 	/**
@@ -173,6 +242,22 @@ abstract class TActiveRecord extends TComponent
 		{
 			$class=new ReflectionClass($className);
 			self::$_columnMapping[$className]=$class->getStaticPropertyValue('COLUMN_MAPPING');
+		}
+	}
+
+	/**
+	 * @since 3.1.2
+	 */
+	private function setupRelations()
+	{
+		$className=get_class($this);
+		if(!isset(self::$_relations[$className]))
+		{
+			$class=new ReflectionClass($className);
+			$relations=array();
+			foreach($class->getStaticPropertyValue('RELATIONS') as $key=>$value)
+				$relations[strtolower($key)]=$value;
+			self::$_relations[$className]=$relations;
 		}
 	}
 
@@ -569,17 +654,22 @@ abstract class TActiveRecord extends TComponent
 	 * value equal to the $property value.
 	 * @param string relationship/property name corresponding to keys in $RELATION array.
 	 * @param array method call arguments.
-	 * @return TActiveRecordRelation
+	 * @return TActiveRecordRelation, null if the context or the handler doesn't exist
 	 */
 	protected function getRelationHandler($property,$args=array())
 	{
-		$criteria = $this->getCriteria(count($args)>0 ? $args[0] : null, array_slice($args,1));
-		return $this->getRelationContext($property)->getRelationHandler($criteria);
+		if(($context=$this->getRelationContext($property)) !== null)
+		{
+			$criteria = $this->getCriteria(count($args)>0 ? $args[0] : null, array_slice($args,1));
+			return $context->getRelationHandler($criteria);
+		}
+		else
+			return null;
 	}
 
 	/**
 	 * Gets a static copy of the relationship context for given property (a key
-	 * in $RELATION), returns null if invalid relationship. Keeps a null
+	 * in $RELATIONS), returns null if invalid relationship. Keeps a null
 	 * reference to all invalid relations called.
 	 * @param string relationship/property name corresponding to keys in $RELATION array.
 	 * @return TActiveRecordRelationContext object containing information on
@@ -588,14 +678,10 @@ abstract class TActiveRecord extends TComponent
 	 */
 	protected function getRelationContext($property)
 	{
-		$prop = get_class($this).':'.$property;
-		if(!isset(self::$_relations[$prop]))
-		{
-			$context = new TActiveRecordRelationContext($this, $property);
-			//keep a null reference to all non-existing relations called?
-			self::$_relations[$prop] = $context->hasRecordRelation() ? $context : null;
-		}
-		return self::$_relations[$prop];
+		if(($relation=$this->getRelation($property))!==null)
+			return new TActiveRecordRelationContext($this,$property,$relation);
+		else
+			return null;
 	}
 
 	/**
@@ -637,7 +723,8 @@ abstract class TActiveRecord extends TComponent
 	{
 		if( ($context=$this->getRelationContext($property)) !== null)
 			return $context->getRelationHandler()->fetchResultsInto($this);
-		return false;
+		else
+			return false;
 	}
 
 	/**
@@ -779,6 +866,37 @@ abstract class TActiveRecord extends TComponent
 		if(isset(self::$_columnMapping[$className][$columnName]))
 			$columnName=self::$_columnMapping[$className][$columnName];
 		$this->$columnName=$value;
+	}
+
+	/**
+	 * @param string relation property name
+	 * @return array relation definition for the specified property
+	 * @since 3.1.2
+	 */
+	public function getRelation($property)
+	{
+		$className=get_class($this);
+		$property=strtolower($property);
+		return isset(self::$_relations[$className][$property])?self::$_relations[$className][$property]:null;
+	}
+
+	/**
+	 * @return array all relation definitions declared in the AR class
+	 * @since 3.1.2
+	 */
+	public function getRelations()
+	{
+		return self::$_relations[get_class($this)];
+	}
+
+	/**
+	 * @param string AR property name
+	 * @return boolean whether a relation is declared for the specified AR property
+	 * @since 3.1.2
+	 */
+	public function hasRelation($property)
+	{
+		return isset(self::$_relations[get_class($this)][strtolower($property)]);
 	}
 }
 ?>
