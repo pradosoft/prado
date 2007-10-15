@@ -152,12 +152,6 @@ abstract class TActiveRecord extends TComponent
 	private $_connection;
 
 	/**
-	 * @var array list of foreign objects.
-	 * @since 3.1.2
-	 */
-	private $_foreignObjects=array();
-
-	/**
 	 * Prevent __call() method creating __sleep() when serializing.
 	 */
 	public function __sleep()
