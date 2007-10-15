@@ -202,10 +202,8 @@ abstract class TActiveRecord extends TComponent
 	{
 		if($this->hasRelation($name) && !$this->canGetProperty($name))
 		{
-			$name2=strtolower($name);
-			if(!isset($this->_foreignObjects[$name2]))
-				$this->fetchResultsFor($name2);
-			return $this->_foreignObjects[$name2]===false?null:$this->_foreignObjects[$name2];
+			$this->fetchResultsFor($name);
+			return $this->$name;
 		}
 		return parent::__get($name);
 	}
@@ -221,7 +219,7 @@ abstract class TActiveRecord extends TComponent
 	public function __set($name,$value)
 	{
 		if($this->hasRelation($name) && !$this->canSetProperty($name))
-			$this->_foreignObjects[strtolower($name)]=$value===null?false:$value;
+			$this->$name=$value;
 		else
 			parent::__set($name,$value);
 	}
