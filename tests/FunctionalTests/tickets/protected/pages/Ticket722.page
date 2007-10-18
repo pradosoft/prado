@@ -1,0 +1,6 @@
+<com:TContent ID="Content">
+<span id="label">Click to edit ==></span>
+<com:TInPlaceTextBox id="InPlaceTextBox" Text="Editable Text" ReadOnly="false" onTextChanged="onTextChanged"/>
+<com:TActiveButton Text="Change to Read Only" OnClick="ChangeState"/>
+
+</com:TContent>

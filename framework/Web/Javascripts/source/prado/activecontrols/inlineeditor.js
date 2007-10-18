@@ -6,6 +6,7 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 		this.isSaving = false;
 		this.isEditing = false;
 		this.editField = null;
+		this.readOnly = options.ReadOnly;
 
 		this.options = Object.extend(
 		{
@@ -36,7 +37,7 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 	 */
 	enterEditMode :  function(evt)
 	{
-	    if (this.isSaving || this.isEditing) return;
+	    if (this.isSaving || this.isEditing || this.readOnly) return;
 	    this.isEditing = true;
 		this.onEnterEditMode();
 		this.createEditorInput();
@@ -281,5 +282,14 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 				textbox.exitEditMode(null);
 			}
 		}
-	}
+	},
+	
+	setReadOnly : function(id, value)
+	{
+		var textbox = Prado.WebUI.TInPlaceTextBox.textboxes[id];
+		if (textbox)
+		{
+			textbox.readOnly=value;
+		}
+	},
 });

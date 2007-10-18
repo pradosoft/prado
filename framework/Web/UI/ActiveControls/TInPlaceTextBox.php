@@ -36,6 +36,9 @@ Prado::using('System.Web.UI.ActiveControls.TActiveTextBox');
  * If the {@link setAutoHideTextBox AutoHideTextBox} property is true, then
  * the textbox will be hidden and the label is then shown.
  *
+ * Since 3.1.2, you can set the {@link setReadOnly ReadOnly} property to make
+ * the control not editable. This property can be also changed on callback
+ * 
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
  * @package System.Web.UI.ActiveControls
@@ -142,6 +145,21 @@ class TInPlaceTextBox extends TActiveTextBox
 			$client->setValue($this, $value);
 		}
 	}
+	
+	/**
+	 * Update ClientSide Readonly property
+	 * @param boolean value
+	 * @since 3.1.2
+	 */
+	public function setReadOnly ($value)
+	{
+		$value=TPropertyValue::ensureBoolean($value);
+		TTextBox::setReadOnly($value);
+		if ($this->getActiveControl()->canUpdateClientSide())
+		{
+			$this->callClientFunction('setReadOnly', $value);
+		}
+	}
 
 	/**
 	 * @return string tag name of the label.
@@ -214,6 +232,8 @@ class TInPlaceTextBox extends TActiveTextBox
 
 		if($this->hasEventHandler('OnLoadingText'))
 			$options['LoadTextOnEdit'] = true;
+			
+		$options['ReadOnly']=$this->getReadOnly();
 		return $options;
 	}
 
