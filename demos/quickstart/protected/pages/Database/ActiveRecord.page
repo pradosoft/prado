@@ -1010,6 +1010,7 @@ be specified as comma separated values between brackets. E.g.
 <tt>'related_items.(id1,id2)'</tt>.
 </div>
 
+<!---
 <h2 id="142014">Adding/Removing/Updating Related Objects</h2>
 
 <p id="710041" class="block-content">Related objects can be simply inserted/updated by first adding those related objects to
@@ -1048,6 +1049,7 @@ PlayerSkillAssocation::finder()->deleteByPk(array('fk1','fk2'));
 //where 'fk1' is the primary key value of a player
 // and 'fk2' is the primary key value of a skill
 </com:TTextHighlighter>
+--->
 
 <h2 id="142015">Lazy Loading Related Objects</h2>
 

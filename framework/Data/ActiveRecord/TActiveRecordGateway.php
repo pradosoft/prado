@@ -258,11 +258,11 @@ class TActiveRecordGateway extends TComponent
 	 */
 	public function insert(TActiveRecord $record)
 	{
-		$this->updateAssociatedRecords($record,true);
+		//$this->updateAssociatedRecords($record,true);
 		$result = $this->getCommand($record)->insert($this->getInsertValues($record));
 		if($result)
 			$this->updatePostInsert($record);
-		$this->updateAssociatedRecords($record);
+		//$this->updateAssociatedRecords($record);
 		return $result;
 	}
 
@@ -313,10 +313,10 @@ class TActiveRecordGateway extends TComponent
 	 */
 	public function update(TActiveRecord $record)
 	{
-		$this->updateAssociatedRecords($record,true);
+		//$this->updateAssociatedRecords($record,true);
 		list($data, $keys) = $this->getUpdateValues($record);
 		$result = $this->getCommand($record)->updateByPk($data, $keys);
-		$this->updateAssociatedRecords($record);
+		//$this->updateAssociatedRecords($record);
 		return $result;
 	}
 
