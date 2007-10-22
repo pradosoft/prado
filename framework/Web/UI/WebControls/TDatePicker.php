@@ -292,6 +292,32 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
+	 * Returns the timestamp selected by the user.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link getTimeStamp()}.
+	 * @return integer the timestamp of the TDatePicker control.
+	 * @see getTimeStamp
+	 * @since 3.1.2
+	 */
+	public function getData()
+	{
+		return $this->getTimeStamp();
+	}
+
+	/**
+	 * Sets the timestamp represented by this control.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link setTimeStamp()}.
+	 * @param integer the timestamp of the TDatePicker control.
+	 * @see setTimeStamp
+	 * @since 3.1.2
+	 */
+	public function setData($value)
+	{
+		$this->setTimeStamp($value);
+	}
+
+	/**
 	 * @return string the date string.
 	 */
 	public function getDate()
