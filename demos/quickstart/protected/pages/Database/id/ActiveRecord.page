@@ -5,7 +5,7 @@
 <p id="690478" class="block-content">Rekaman Aktif adalah obyek yang melapisi baris dalam tabel atau view database,
     melindungi akses database dan menambahkan logika domain pada data tersebut.
     Dasar dari Rekaman Aktif adalah kelas bisnis, sebagai contoh, kelas 
-    <tt>Products</tt>,  yang hampir menyamai struktur rekaman dari tabel database
+    <tt>Products</tt>, yang hampir menyamai struktur rekaman dari tabel database
     dibawahnya. Setiap Rekaman Aktif akan bertanggung jawab atas
     penyimpanan dan pengambilan data ke dan dari database. </p>
 <div class="info"><b class="note">Info:</b>
@@ -42,7 +42,7 @@
     </ul>
 <h2>Implikasi Desain</h2>
 <p>
-Implementasi Prado terhadap Rekaman Aktif tida memelihara identitas referensial. Setiap obyek diperoleh menggunakan Rekaman Aktif pada data dalam database. Sebagai contoh, jika anda meminta kustomer tertentu dan mendapaptkan kembali obyek <tt>Customer</tt>, kali berikutnya anda meminta kustomer itu anda akan kembali mendapatkan turunan lain dari obyek <tt>Customer</tt>. Ini berarti bahwa perbandingan tepat (misalnya menggunakan <tt>===</tt>) akan mengembalikan false, sementara perbandingan bebas (misalnya menggunakan <tt>==</tt>) akan mengembalikan true jika nilai obyek sama menurut perbandingan bebas. 
+Implementasi Prado terhadap Rekaman Aktif tidak memelihara identitas referensial. Setiap obyek diperoleh menggunakan Rekaman Aktif pada data dalam database. Sebagai contoh, jika anda meminta kustomer tertentu dan mendapatkan kembali obyek <tt>Customer</tt>, kali berikutnya anda meminta kustomer itu, anda akan kembali mendapatkan turunan lain dari obyek <tt>Customer</tt>. Ini berarti bahwa perbandingan tepat (misalnya menggunakan <tt>===</tt>) akan mengembalikan false, sementara perbandingan bebas (misalnya menggunakan <tt>==</tt>) akan mengembalikan true jika nilai obyek sama menurut perbandingan bebas. 
 <p>
 <p>
 Implikasi desain ini terkait dengan pertanyaan berikut.
@@ -128,7 +128,7 @@ class UserRecord extends TActiveRecord {
 }
 </com:TTextHighlighter>
 <p id="710010" class="block-content">Lebih jelas mengenai TComponent dapat ditemukan dalam <a href="?page=Fundamentals.Components">Dokumentasi komponen</a>.
-Nantinya kita harus dapat menggunakan pengambil/penentu guna membolehkan pengambilan lazy dari obyek yang berhubungan.
+Nantinya kita harus dapat menggunakan pengambil/penyetel guna membolehkan pengambilan malas atas obyek yang berhubungan.
 </p>
 
 <div class="info"><b class="note">Info:</b>
@@ -549,7 +549,7 @@ class TeamRecord extends TActiveRecord
     public $name;
     public $location;
     
-    public $players=array();
+    public $players=array();  // deklarasi ini tidak diperlukan lagi sejak v3.1.2
 
     //mendefinisikan anggota $player yang memiliki hubungan banyak dengan PlayerRecord
     public static $RELATIONS=array
@@ -570,12 +570,37 @@ Dalam <tt>array(self::HAS_MANY, 'PlayerRecord')</tt>, elemen pertama mendefinisi
 Elemen kedua adalah string <tt>'PlayerRecord'</tt> yang menunjukan nama kelas dari kelas <tt>PlayerRecord</tt>.
 </p>
 
+<div class="note"><b class="note">Catatan:</b>
+Seperti dijelaska dalam komentar kode di atas, sejak versi <b>3.1.2</b>, properti terkait tidak tidak lagi perlu dideklarasikan secara eksplisit. Standarnya, akan secara implisit dideklarasikan berdasarkan pada kunci array <tt>$RELATIONS</tt>. Keuntungan utama atas properti terkait yang dideklarasikan secara implisit adalah obyek terkait dapat diambil secara otomatis dengan cara malas. Sebagai contoh, anggap kita mempunyai <tt>TeamRecord</tt> turunan <tt>$team</tt>. Kita dapat mengakses players via <tt>$team->players</tt>,
+meskipun kita tidak pernah menerbitkan perintah mengambil untuk players. Jika <tt>$players</tt> dideklarasikan secara eksplisit, kita harus menggunakan pendekatan <tt>with</tt> seperti dijelaskan dalam contoh berikut untuk mengambil rekaman player.
+</div>
+
 <p id="710022" class="block-content">
 Batasan kunci asing tabel <tt>Players</tt> dipakai untuk menentukan nama kunci tabel <tt>Teams</tt> terkait. Ini dikerjakan secara otomatis, ditangani dalam Rekaman Aktif dengan memeriksa definisi tabel <tt>Players</tt> dan <tt>Teams</tt>.
 </p>
 
 <div class="info"><b class="note">Info:</b>
-Rekaman Aktif mendukung hubungan kunci asing multipel tabel dengan batasan bahwa setiap hubungan menunjukan tabel yang unik. Sebagai contoh, tabel <tt>Players</tt> hanya dapat memiliki satu set hubungan kunci asing dengan tabel <tt>Teams</tt>, ia boleh mempunyai hubungan lain yang menunjuk ke tabel lainnya (termasuk tabel <tt>Players</tt> itu sendiri).
+Sejak versi <b>3.1.2</b>, Rekaman Aktif mendukung multipel referensi kunci asing pada tabel yang sama. Kerancuan diantara multipel referensi kunci asing dipecahkan dengan penyediaan nama kolom kunci asing sebagai parameter ke-3 dalam array relationship.
+Sebagai contoh, kedua kunci asing <tt>owner_id</tt> dan <tt>reporter_id</tt>
+merujuk tabel yang sama, didefinisikan dalam <tt>UserRecord</tt>.
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class TicketRecord extends TActiveRecord
+{
+     public $owner_id;
+	 public $reporter_id;
+
+     public $owner;     // deklarasi ini tidak diperlukan lagi sejak v3.1.2
+	 public $reporter;  // deklarasi ini tidak diperlukan lagi sejak v3.1.2
+
+	 public static $RELATION=array
+	 (
+	     'owner' => array(self::BELONGS_TO, 'UserRecord', 'owner_id'),
+		 'reporter' => array(self::BELONGS_TO, 'UserRecord', 'reporter_id'),
+	 );
+}
+</com:TTextHighlighter>
+Ini berlaku untuk hubungan termasuk <tt>BELONGS_TO</tt>, <tt>HAS_ONE</tt> dan
+<tt>HAS_MANY</tt>. Lihat seksi <a href="#142021">Tabel Asosiaasi Merujuk Dirinya Sendiri</a> untuk memecahkan kerancuan atas hubungan <tt>MANY_TO_MANY</tt>.
 </div>
 
 <p id="710023" class="block-content">Hubungan "has many" tidak diambil secara otomatis ketika anda menggunakan salah satu metode finder Rekaman Aktif.
@@ -595,6 +620,11 @@ Query kedua dipakai untuk mengambil obyek <tt>PlayerRecord</tt> terkait.
 Penggunaan dua query mirip dengan query tunggal menggunakan Left-Outer join dengan eksepsi bahwa hasil null pada tabel kanan tidak dikembalikan. Konsekuensi pemakaian dua tau lebih query adalah kondisi agregat dan join tidak layak menggunakan Rekaman Aktif. Untuk query di luar lingkup Rekaman Aktif, <a href="?page=Database.SqlMap">Pemeta Data SqlMap</a> diapat dupertimbangkan.
 </div>
 
+<div class="info"><b class="info">Info:</b>
+Pendekatan <tt>with</tt> di atas juga bekerja dengan properti terkait yang dideklarasikan secara implisit (diperkenalkan dalam versi 3.1.2). Lalu apa perbedaan antara pendekatan <tt>with</tt> dan pendekatan pengambilan malas? Pengambilan malas berarti kita menerbitkan query SQL jika obyek terkait awalnya diakses dan tidak siap,
+sementara query pendekatan <tt>with</tt> untuk obyek terkait sekaligus, tida peduli obyek terkait diakses atau tidak. Pendekatan pengambilan malas sangat cocok karena kita tidak perlu secara eksplisit mengambil obyek terkait, sementara pendekatan <tt>with</tt> lebih efisien jika multipel rekaman yang dikembalikan, masing-masing dengan beberapa obyek terkait.
+</div>
+
 <h3 id="142018">Hubungan Belongs To</h3>
 <p id="710025" class="block-content">Hubungan "has many" dalam bagian di atas mendefinisikan koleksi obyek asing. Dalam keadaan tertentu, kita mempunyai <tt>TeamRecord</tt> memiliki banyak (nol atau lebih) obyek <tt>PlayerRecord</tt>. Kita juga dapat menambah penunjuk kembali dengan menambahkan properti dalam kelas <tt>PlayerRecord</tt> yang mengaitkan kembali ke obyek <tt>TeamRecord</tt>, secara efektif membuat asosiasi dua arah.
 Kita katakan bahwa properti <tt>$team</tt> dalam kelas <tt>PlayerRecord</tt> <tt>belongs to</tt> obyek <tt>TeamRecord</tt>.
@@ -604,9 +634,9 @@ Kode berikut mendefinisikan kelas <tt>PlayerRecord</tt> lengkap dengan 3 hubunga
 class PlayerRecord extends TActiveRecord
 {
     const TABLE='Players';
-    public $player_id;
-    public $age;
-    public $team_name;
+    public $player_id;	// deklarasi ini tidak diperlukan lagi sejak v3.1.2
+    public $age;	// deklarasi ini tidak diperlukan lagi sejak v3.1.2
+    public $team_name;	// deklarasi ini tidak diperlukan lagi sejak v3.1.2
 
     public $team;
     public $skills=array();
@@ -656,7 +686,7 @@ class ProfileRecord extends TActiveRecord
     public $player_id;
     public $salary;
 
-    public $player;
+    public $player;	// deklarasi ini tidak diperlukan lagi sejak v3.1.2
 
     public static $RELATIONS=array
     (
@@ -695,8 +725,8 @@ class Category extends TActiveRecord
     public $category_name;
     public $parent_cat_id;
 
-    public $parent_category;
-    public $child_categories=array();
+    public $parent_category;	// deklarasi ini tidak diperlukan lagi sejak v3.1.2
+    public $child_categories=array();	// deklarasi ini tidak diperlukan lagi sejak v3.1.2
 
     public static $RELATIONS=array
     (
@@ -722,7 +752,7 @@ Anggap pengambilan koleksi <tt>SkillRecord</tt> untuk daftar obyek <tt>PlayerRec
 Dalam hal ini, anda melakukan query dalam dua tahap.  Tahap pertama meng-query tabel <tt>Players</tt> untuk mencari seluruh baris dari pemain yang anda inginkan. Tahap kedua mencari obyek <tt>SkillRecord</tt> ID pemain terkait untuk setiap barisnya dalam tabel asosiasi  <tt>Player_Skills</tt> menggunakan sebuah inner join.
 </p>
 
-<p id="710035" class="block-content">Desain Rekaman Aktif Prado mengimplementasikan dua tahap pendekatan. Untuk hubungan entitas <tt>Players</tt>-<tt>Skills</tt> M-N (banyak-ke-banyak), kita perlu mendefinisikan sebuah hubungan <b>has many</b> dalam kelas <tt>PlayerRecord</tt> dan sebagai tambahan mendefinisikan hubungan <b>has many</b> dalam kelas <tt>SkillRecord</tt> juga.
+<p id="710035" class="block-content">Desain Rekaman Aktif Prado mengimplementasikan dua tahap pendekatan. Untuk hubungan entitas <tt>Players</tt>-<tt>Skills</tt> M-N (many-to-many), kita perlu mendefinisikan sebuah hubungan <b>has many</b> dalam kelas <tt>PlayerRecord</tt> dan sebagai tambahan mendefinisikan hubungan <b>has many</b> dalam kelas <tt>SkillRecord</tt> juga.
 Kode contoh berikut mendefinisikan kelas <tt>SkillRecord</tt> lengkap dengan hubungan banyak-ke-banyak dengan kelas <tt>PlayerRecord</tt>. (Lihat definisi kelas <tt>PlayerRecord</tt> di atas untuk mengaitkan hubungan banyak-ke-banyak dengan kelas <tt>SkillRecord</tt>.)
 </p>
 
@@ -733,7 +763,7 @@ class SkillRecord extends TActiveRecord
     public $skill_id;
     public $name;
 
-    public $players=array();
+    public $players=array();	// deklarasi ini tidak diperlukan lagi sejak v3.1.2
 
     public static $RELATIONS=array
     (
@@ -752,6 +782,11 @@ Properti statis <tt>$RELATIONS</tt> dari SkillRecord mendefinisikan bahwa proper
 Dalam <tt>array(self::MANY_TO_MANY, 'PlayerRecord', 'Player_Skills')</tt>, elemen pertama mendefinisikan tipe hubungan, dalam hal ini <strong><tt>self::HAS_MANY</tt></strong>,
 elemen kedua adalah string <tt>'PlayerRecord'</tt> yang terkait ke nama kelas dari kelas <tt>PlayerRecord</tt>, dan elemen ketiga adalah nama dari nama tabel asosiasi. 
 </p>
+
+<div class="note"><b class="note">Catatan:</b>
+Sebelum versi <b>3.1.2</b> (versi sampai dengan 3.1.1), hubungan many-to-many didefinisikan menggunakan <tt>self::HAS_MANY</tt>. Untuk versi <b>3.1.2</b> dan seterusnya, ini harus diubah ke <tt>self::MANY_TO_MANY</tt>. Ini bisa dikerjakan dengan mencari <tt>HAS_MANY</tt> dalam kode sumber dan hati-hati mengubah definisi terkait.
+</div>
+
 <p id="710037" class="block-content">
 Daftar obyek pemain dengan koleksi obyek skil terkait bisa diambil seperti berikut.
 </p>
@@ -801,7 +836,7 @@ class Item extends TActiveRecord
 
     //id item asing tambahan didefinisikan dalam tabel asosiasi
     public $related_item_id; 
-    public $related_items=array();
+    public $related_items=array();	// deklarasi ini tidak diperlukan lagi sejak v3.1.2
 
     public static $RELATIONS=array
     (
@@ -814,6 +849,7 @@ class Item extends TActiveRecord
 Kunci gabungan dalam tabel asing dapat ditetapkan sebagai nilai dipisahkan koma diantara kurung buka/tutup. Contohnya <tt>'related_items.(id1,id2)'</tt>. 
 </div>
 
+<!---
 <h2 id="142014">Menambah/Menghapus/Memutakhirkan Obyek Terkait</h2>
 
 <p id="710041" class="block-content">Obyek terkait dapat disisipkan/dimutakhirkan dengan menambahkan obyek terkait itu ke obyek sumber saat ini (misalnya obyek yang saat ini sedang bekerja) dan kemudian memanggil metode <tt>save()</tt> pada obyek sumber. Referensi obyek terkait dan referensi asosiasi (jika diperlukan) akan ditambahkan dan/atau dimutakhirkan.
@@ -842,8 +878,14 @@ PlayerSkillAssocation::finder()->deleteByPk(array('fk1','fk2'));
 //di mana 'fk1' adalah nilai kunci primer dari seorang player
 // dan 'fk2' adalah nilai kunci primer dari skill
 </com:TTextHighlighter>
+--->
 
-<h2 id="142015">Lazy Loading Terkait Obyek</h2>
+<h2 id="142015">Pengambilan Malas Obyek Terkait</h2>
+
+<div class="note"><b class="note">Catatan:</b>
+Secara implisit mendeklarasikan properti terkait yang diperkenalkan dalam  versi 3.1.2 secara otomatis memiliki fitur pengambilan malas. Oleh karena itu, teknik pengambilan malas dijelaskan berikut ini tidak lagi diperlukan dalam banyak kasus, kecuali anda ingin memanipulasi obyek terkait melalui pengambil/penyetel.
+</div>
+
 <p id="710045" class="block-content">Menggunakan metode <tt>with_xxx()</tt> akan mengambil hubungan rekaman sesuai permintaan. Mengambil rekaman terkait dengan  lazy loading (yaitu, hanya obyek terkait itu saja yang diakses) bisa dicapai dengan menggunakan sebuah fitur <tt>TComponent</tt> yang menyediakan metode pengakses. Dalam keadaan tertentu, kita mendefinisikan pasangan metode pengambil dan penentu di mana metode pengambil akan mengambil hubungan secara kondisional. Contoh berikut menggambarkan bahwa <tt>PlayerRecord</tt> dapat mengambil obyek asing <tt>$skills</tt> secara kondisional.
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content">
@@ -875,12 +917,12 @@ class PlayerRecord extends BaseFkRecord
     }
 }
 </com:TTextHighlighter>
-<p id="710046" class="block-content">Pertama kita perlu mengubah deklarasi <tt>$skills=array()</tt> ke properti privat <tt>$_skills</tt> (perhatikan garis bawah) dan sebaliknya setel ke null. Ini membolehkan kita untuk mendifinisikan properti <tt>skills</tt> menggunakan metode pengambil/penentu
-(lihat <a href="?page=Fundamentals.Components">Komponen</a> untuk lebih jelasnya). Metode pengambil <tt>getSkills()</tt> untuk properti <tt>skills</tt> akan mengambil lambat rekaman skill terkait saat ia dipakai sebagai berikut. Catatan bahwa kita hanya melakukan pengambilan lambat ketika  <tt>$player_id</tt> tidak null (ykni, ketika rekaman sudah diambil dari database ataau id player sudah disetel).
+<p id="710046" class="block-content">Pertama kita perlu mengubah deklarasi <tt>$skills=array()</tt> ke properti private <tt>$_skills</tt> (perhatikan garis bawah) dan sebaliknya setel ke null. Ini membolehkan kita untuk mendefinisikan properti <tt>skills</tt> menggunakan metode pengambil/penyetel
+(lihat <a href="?page=Fundamentals.Components">Komponen</a> untuk lebih jelasnya). Metode pengambil <tt>getSkills()</tt> untuk properti <tt>skills</tt> akan mengambil malas rekaman skill terkait saat ia dipakai sebagai berikut. Catatan bahwa kita hanya melakukan pengambilan malas ketika  <tt>$player_id</tt> tidak null (yakni, ketika rekaman sudah diambil dari database ataau id player sudah disetel).
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content">
 $player = PlayerRecord::finder()->findByPk(1);
-var_dump($player->skills); //mengambilnya saat akses pertama
+var_dump($player->skills); //pengambilan malas saat akses pertama
 var_dump($player->skills[0]); //properti skills sudah diambil
 $player->skills[] = new SkillRecord(); //menambah skill
 </com:TTextHighlighter>
@@ -927,11 +969,11 @@ class UserRecord extends TActiveRecord
 }
 </com:TTextHighlighter>
 <p>
-Dengan pemetaan kolom di atas, kita menambahkan alamat <tt>first_name</tt> menggunakan <tt>$userRecord->firstName</tt>
+Dengan pemetaan kolom di atas, kita mengalamatkan <tt>first_name</tt> menggunakan <tt>$userRecord->firstName</tt>
 daripada <tt>$userRecord->first_name</tt>. Ini membantu pemisahan dari logika dan model.
 </p>
 
-<h2 id="138054">References</h2>
+<h2 id="138054">Referensi</h2>
 <ul id="u3" class="block-content">
     <li>Fowler et. al. <i>Patterns of Enterprise Application Architecture</i>,
     Addison Wesley, 2002.</li>
@@ -941,4 +983,4 @@ daripada <tt>$userRecord->first_name</tt>. Ini membantu pemisahan dari logika da
 
 </ul>
 
-<div class="last-modified">$Id: ActiveRecord.page 2262 2007-09-28 18:26:03Z xue $</div></com:TContent>
+<div class="last-modified">$Id: ActiveRecord.page 2323 2007-10-21 20:52:05Z xue $</div></com:TContent>
