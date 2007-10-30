@@ -181,7 +181,7 @@ class TJavaScript
 				return "$value";
 		}
 		else if(is_object($value))
-			return self::encode(get_object_vars($this->data),$toMap);
+			return self::encode(get_object_vars($value),$toMap);
 		else if($value===null)
 			return 'null';
 		else
