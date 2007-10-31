@@ -263,7 +263,7 @@ class TDbCommand extends TComponent
 	 * This is a convenient method of {@link query} when only a single scalar
 	 * value is needed (e.g. obtaining the count of the records).
 	 * @return mixed the value of the first column in the first row of the query result. False is returned if there is no value.
-	 * @throws TDbException execution failed or there is no data
+	 * @throws TDbException execution failed
 	 */
 	public function queryScalar()
 	{
