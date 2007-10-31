@@ -66,10 +66,10 @@ Untuk berganti mode aplikasi, konfigurasi itu dalam konfigurasi aplikasi:
 Standarnya PRADO menyimpan kondisi halaman dalam field tersembunyi dari output HTML. Kondisi halaman bisa berukuran sangat besar jika menggunakan kontrol yang kompleks, seperti <tt>TDataGrid</tt>. Guna mengurangi ukuran besarnya halaman yang dikirimkan melalui jaringan, dua strategi dapat dipakai.
 </p>
 <p id="810689" class="block-content">
-Pertama, anda dapat mematikan kondisi tampilan dengan menyetel <tt>EnableViewState</tt> menjadi false untuk halaman atau beberapa kontrol pada halaman jika pengguna tidak perlu berinteraksi dengan halaman/kontrol.
+Pertama, Anda dapat mematikan kondisi tampilan dengan menyetel <tt>EnableViewState</tt> menjadi false untuk halaman atau beberapa kontrol pada halaman jika pengguna tidak perlu berinteraksi dengan halaman/kontrol.
 </p>
 <p id="810690" class="block-content">
-Kedua, anda bisa menggunakan penyimpanan kondisi halaman berbeda. Sebagai contoh, kondisi halaman bisa disimpan dalam sesi, yang menyimpan kondisi halamaa terutama pada sisi server dan menghemat waktu transmisi jaringan. Properti <tt>StatePersisterClass</tt> dari halaman menentukan kelas persisten kondisi yang dipakai. Standarnya menggunakan <tt>System.Web.UI.TPageStatePersister</tt> untuk menyimpan kondisi persisten dalam field tersembunyi. Anda bisa mengubah properti ini ke kelas persisten anda sendiri, selama kelas persister menerapkan antarmuka <tt>IPageStatePersister</tt>. Anda dapat mengkonfigurasi properti ini dalam beberapa tempat, seperti konfigurasi aplikasi atau konfigurasi halaman menggunakan tag &lt;pages&gt; or &lt;page&gt;,
+Kedua, Anda bisa menggunakan penyimpanan kondisi halaman berbeda. Sebagai contoh, kondisi halaman bisa disimpan dalam sesi, yang menyimpan kondisi halamaa terutama pada sisi server dan menghemat waktu transmisi jaringan. Properti <tt>StatePersisterClass</tt> dari halaman menentukan kelas persisten kondisi yang dipakai. Standarnya menggunakan <tt>System.Web.UI.TPageStatePersister</tt> untuk menyimpan kondisi persisten dalam field tersembunyi. Anda bisa mengubah properti ini ke kelas persisten Anda sendiri, selama kelas persister menerapkan antarmuka <tt>IPageStatePersister</tt>. Anda dapat mengkonfigurasi properti ini dalam beberapa tempat, seperti konfigurasi aplikasi atau konfigurasi halaman menggunakan tag &lt;pages&gt; or &lt;page&gt;,
 </p>
 <com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_810232">
 &lt;pages StatePersisterClass="MyPersister1" ... &gt;
@@ -77,7 +77,7 @@ Kedua, anda bisa menggunakan penyimpanan kondisi halaman berbeda. Sebagai contoh
 &lt;/pages&gt;
 </com:TTextHighlighter>
 <p id="810691" class="block-content">
-Catatan, dalam <tt>SpecialPage</tt> di atas akan menggunakan <tt>MyPersister2</tt> sebagai kelas persisternya, sementara halaman lainnya akan menggunakan <tt>MyPersister1</tt>. Oleh karena itu, anda dapat memiliki strategi perister kondisi untuk halaman yang berbeda.
+Catatan, dalam <tt>SpecialPage</tt> di atas akan menggunakan <tt>MyPersister2</tt> sebagai kelas persisternya, sementara halaman lainnya akan menggunakan <tt>MyPersister1</tt>. Oleh karena itu, Anda dapat memiliki strategi perister kondisi untuk halaman yang berbeda.
 </p>
 
 <h2 id="6406">Teknik Lainnya</h2>

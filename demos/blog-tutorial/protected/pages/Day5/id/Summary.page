@@ -30,7 +30,7 @@ Tidak seperti urutan dalam tutorial kita, pengendalian kesalahan dan pembuatan t
 </p>
 
 <p>
-Sebagai tips terakhir, coba untuk berpikir dalam cara terorientasi-obyek selama mendesain dan mengimplementasikan. Gunakan turunan kelas dan komposisi secara luas, dan anda akan menemukan seluruh proyek lebih mudah dikembangkan secara paralel oleh multipel pengembang. Kode juga lebih banya memiliki kesempatan dipakai ulang agar proyek mendatang dapat diselesaikan dalam waktu yang lebih cepat.
+Sebagai tips terakhir, coba untuk berpikir dalam cara terorientasi-obyek selama mendesain dan mengimplementasikan. Gunakan turunan kelas dan komposisi secara luas, dan Anda akan menemukan seluruh proyek lebih mudah dikembangkan secara paralel oleh multipel pengembang. Kode juga lebih banya memiliki kesempatan dipakai ulang agar proyek mendatang dapat diselesaikan dalam waktu yang lebih cepat.
 </p>
 
 </com:TContent>

@@ -6,16 +6,16 @@ Catatan Pengembang untuk prototype.js</a> oleh Sergio Pereira.
 
 <h2 id="6603">Apa itu?</h2>
 <p id="830726" class="block-content">
-Dalam hal anda tidak pernah menggunakannya, <a href="http://prototype.conio.net">prototype.js</a> adalah librari 
+Dalam hal Anda tidak pernah menggunakannya, <a href="http://prototype.conio.net">prototype.js</a> adalah librari 
     JavaScript yang ditulis oleh <a href="http://www.conio.net">Sam Stephenson</a>.
-    Pemikiran yang hebat ini dan kode <b>sesuai-standar</b> yang ditulis dengan baik mengambil banyak beban terkait dengan pembuatan halaman web sangat interaktif dan kaya yang mengkarakterkan Web 2.0 di belakang anda.
+    Pemikiran yang hebat ini dan kode <b>sesuai-standar</b> yang ditulis dengan baik mengambil banyak beban terkait dengan pembuatan halaman web sangat interaktif dan kaya yang mengkarakterkan Web 2.0 di belakang Anda.
 </p>
 
 <p id="830727" class="block-content">
-    Jika anda baru saja mencoba menggunakan librari ini, anda mungkin mencatat bahwa dokumentasi bukanlah salah satu titik yang terkuat. Seperti banyak pengembang lain sebelum saya, saya mempelajari prototype.js dengan membaca kode sumber dan melakukan percobaan denganya. Saya pikir akan baik jika mengambil catatan selama saya mempelajari dan berbagi dengan orang lain.
+    Jika Anda baru saja mencoba menggunakan librari ini, Anda mungkin mencatat bahwa dokumentasi bukanlah salah satu titik yang terkuat. Seperti banyak pengembang lain sebelum saya, saya mempelajari prototype.js dengan membaca kode sumber dan melakukan percobaan denganya. Saya pikir akan baik jika mengambil catatan selama saya mempelajari dan berbagi dengan orang lain.
 </p>
 <p id="830728" class="block-content">
-    Setelah anda membaca contoh dan referensi, para pengembang yang terbiasa dengan bahasa pemrograman Ruby akan mencatat kesamaan maksud antara kelas  built-in Ruby dan banyak ekstensi diimplementasikan oleh librari ini.
+    Setelah Anda membaca contoh dan referensi, para pengembang yang terbiasa dengan bahasa pemrograman Ruby akan mencatat kesamaan maksud antara kelas  built-in Ruby dan banyak ekstensi diimplementasikan oleh librari ini.
 </p>
 
 
@@ -61,7 +61,7 @@ function test2()
 </script>
 </com:TTextHighlighter>
 <p id="830733" class="block-content">
-    Hal baik lainnya dari fungsi ini adalah bahwa anda bisa mengirimkan baik string <tt>id</tt> ataupun elemen obyek itu sendiri, yang menjadikan fungsi ini sangat berguna ketika membuat fungsi lain yang juga mengambil bentuk argumen.
+    Hal baik lainnya dari fungsi ini adalah bahwa Anda bisa mengirimkan baik string <tt>id</tt> ataupun elemen obyek itu sendiri, yang menjadikan fungsi ini sangat berguna ketika membuat fungsi lain yang juga mengambil bentuk argumen.
 </p>
 
 <h2 id="6605">Menggunakan fungsi <tt>$F()</tt></h2>

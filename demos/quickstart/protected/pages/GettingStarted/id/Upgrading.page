@@ -26,7 +26,7 @@ public function setEnabled($value)
 }
 </com:TTextHighlighter>
 <p id="40027" class="block-content">
-di mana <tt>TPropertyValue::ensureBoolean()</tt> dipakai untuk memastikan bahwa nilai input adalah boolean. Ini adalah karena ketika properti dikonfigurasi dalam template, nilai string dikirimkan ke penyetel. Dalam versi sebelumnya, PRADO mengetahui tipe properti berdasarkan file spesifikasi  komponen dan melakukan konversi tipe bagi anda.
+di mana <tt>TPropertyValue::ensureBoolean()</tt> dipakai untuk memastikan bahwa nilai input adalah boolean. Ini adalah karena ketika properti dikonfigurasi dalam template, nilai string dikirimkan ke penyetel. Dalam versi sebelumnya, PRADO mengetahui tipe properti berdasarkan file spesifikasi  komponen dan melakukan konversi tipe bagi Anda.
 </p>
 
 <h2 id="503">Pengontrol Aplikasi</h2>

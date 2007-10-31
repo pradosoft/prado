@@ -5,7 +5,7 @@
 Koleksi adalah struktur data dasar dalam pemrograman. Sebagai tambahan pada pemrograman PHP, array dipakai secara luas untuk mewakili koleksi struktur data. Array PHP adalah campuran dari array berindeks-kardinal dan tabel campuran.
 </p>
 <p id="710530" class="block-content">
-Untuk menghidupkan manipulasi obyek-terorientasi atas koleksi, PRADO menyediakan kelas koleksi bertenaga. Diantaranya, <tt>TList</tt> dan <tt>TMap</tt> adalah yang paling mendasar dan biasanya melayani sebagai basis kelas untuk kelas koleksi lainnya. Karena banyak komponen PRADO memiliki properti yang bertipe koleksi, penting bagi para pengembang untuk menguasai pemakaian kelas koleksi PRADO.
+Untuk menghidupkan manipulasi obyek-terorientasi atas koleksi, PRADO menyediakan kelas koleksi yang bertenaga. Diantaranya, <tt>TList</tt> dan <tt>TMap</tt> adalah yang paling mendasar dan biasanya melayani sebagai basis kelas untuk kelas koleksi lainnya. Karena banyak komponen PRADO memiliki properti yang bertipe koleksi, penting bagi para pengembang untuk menguasai pemakaian kelas koleksi PRADO.
 </p>
 
 <h2 id="5502">Menggunakan <tt>TList</tt></h2>
@@ -64,7 +64,7 @@ Controh lain adalah properti <tt>Items</tt>, tersedia dalam kontrol list, <tt>TR
 
 <h3 id="5505">Memperluas <tt>TList</tt></h3>
 <p id="710539" class="block-content">
-Seringkali kita ingin memperluas <tt>TList</tt> untuk melakukan operasi tambahan untuk setiap penambahan atau penghapusan sebuah item. Satu-satunya metode yang diperlukan kelas anak untuk mengganti adalah <tt>insertAt()</tt> dan <tt>removeAt()</tt>. Sebagai contoh, untuk memastikan daftar hanya berisi item yang bertipe <tt>TControl</tt>, kita dapat mengganti <tt>insertAt()</tt> sebagai berikut,
+Seringkali kita ingin memperluas <tt>TList</tt> untuk melakukan operasi tambahan untuk setiap penambahan atau penghapusan sebuah item. Satu-satunya metode yang diperlukan kelas anak untuk mengganti adalah <tt>insertAt()</tt> dan <tt>removeAt()</tt>. Sebagai contoh, guna memastikan daftar hanya berisi item yang bertipe <tt>TControl</tt>, kita dapat mengganti <tt>insertAt()</tt> sebagai berikut,
 </p>
 <com:TTextHighlighter CssClass="source block-content" id="code4">
 public function insertAt($index,$item)

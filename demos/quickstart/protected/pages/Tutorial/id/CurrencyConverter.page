@@ -1,12 +1,12 @@
 <com:TContent ID="body">
 	<h1 id="16001">Membangun Pengubah Kurs Sederhana</h1>
-	<p id="80053" class="block-content">Tutorial ini memperkenalkan kerangka kerja aplikasi web Prado dan mengajarkan anda bagaimana untuk
+	<p id="80053" class="block-content">Tutorial ini memperkenalkan kerangka kerja aplikasi web Prado dan mengajarkan Anda bagaimana untuk
 		membangun aplikasi web sederhana dalam beberapa langkah sederhana. Tutorial 
-		ini menganggap bahwa anda terbiasa dengan PHP dan anda telah mengakses 
+		ini menganggap bahwa Anda terbiasa dengan PHP dan Anda telah mengakses 
 		server web yang dapat melayani naskah PHP5.
 	</p>
 
-	<p id="80054" class="block-content">Dalam tutorial ini anda akan membangun aplikasi web sederhana yang mengubah
+	<p id="80054" class="block-content">Dalam tutorial ini Anda akan membangun aplikasi web sederhana yang mengubah
 		nilai dolar ke kurs lain, nilai kurs yang disediakan untuk kurs tersebut relatif terhadap dolar. Aplikasi lengkap ditampilkan di bawah ini.
 		<img src=<%~ example2.png %> class="figure" />
 		Anda dapat mencoba aplikasi <a href="../currency-converter/index.php">secara lokal</a> atau di
@@ -17,13 +17,13 @@
 	<h1 id="download">Men-download dan Menginstalasi Prado</h1>
 	<p id="80055" class="block-content">Untuk menginstalasi Prado, cukup download versi terbaru Prado dari
 		<a href="http://www.pradosoft.com/">http://www.pradosoft.com</a>
-		dan uraikan file ke sebuah direktori yang <b>tidak</b> dapat diakses oleh server web anda (anda dapat menguraikannya ke sebuah direktori yang dapat diakses oleh server web jika anda ingin melihat demo dan pengujian). Untuk instalasi lebih rinci, lihat bimbingan
+		dan uraikan file ke sebuah direktori yang <b>tidak</b> dapat diakses oleh server web Anda (Anda dapat menguraikannya ke sebuah direktori yang dapat diakses oleh server web jika Anda ingin melihat demo dan pengujian). Untuk instalasi lebih rinci, lihat bimbingan
 		<a href="?page=GettingStarted.Installation">Instalasi Cepat</a>.
 	</p>
 
 	<h1 id="16002">Membuat Aplikasi web Prado baru</h1>
 	<p id="80056" class="block-content">Cara tercepat dan termudah untuk membuat aplikasi web Prado baru adalah menggunakan piranti perintah <tt>prado-cli.php</tt> yang ditemukan dalam direktori <tt>framework</tt>
-		pada distribusi Prado.  Kita membuat aplikasi baru dengan menjalankan perintah berikut dalam prompt perintah atau konsol anda. Perintah membuat direktori baru bernama <tt>currency-converter</tt> dalam direktori kerja anda saat ini.
+		pada distribusi Prado.  Kita membuat aplikasi baru dengan menjalankan perintah berikut dalam prompt perintah atau konsol Anda. Perintah membuat direktori baru bernama <tt>currency-converter</tt> dalam direktori kerja Anda saat ini.
 		Anda perlu mengubahnya ke direktori yang benar terlebih dahulu.
 		Lihat <a href="?page=GettingStarted.CommandLine">Piranti Baris Perintah</a>
 		untuk lebih jelasnya.
@@ -33,8 +33,8 @@ php prado/framework/prado-cli.php -c currency-converter
 </com:TTextHighlighter>
 
 	<p id="80057" class="block-content">Perintah di atas membuat struktur direktori yang diperlukan dan file minimal (termasuk "index.php" dan "Home.page") untuk menjalankan aplikasi Prado.
-		Sekarang anda dapat mengarahkan url browser anda ke server web untuk melayani naskah <tt>index.php</tt> dalam direktori <tt>currency-converter</tt>.
-		Seharusnya anda melihat pesan "Welcome to Prado!"
+		Sekarang Anda dapat mengarahkan url browser Anda ke server web untuk melayani naskah <tt>index.php</tt> dalam direktori <tt>currency-converter</tt>.
+		Seharusnya Anda melihat pesan "Welcome to Prado!"
 	</p>
 
 	<h1 id="16003">Membuat Antarmuka Pengguna Pengubah Kurs</h1>
@@ -64,7 +64,7 @@ php prado/framework/prado-cli.php -c currency-converter
 &lt;/com:TForm&gt;
 </com:TTextHighlighter>
 	<p id="refresh" class="block-content">
-	Jika anda menyegarkan halaman, anda akan melihat sesuatu mirip dengan gambar berikut.
+	Jika Anda menyegarkan halaman, Anda akan melihat sesuatu mirip dengan gambar berikut.
 	Ia mungkin terlihat tidak cukup bagus atau berurut, tapi kita akan mengubahnya nanti dengan menggunakan CSS.
 	<img src=<%~ example1.png %> class="figure" />
 	</p>
@@ -86,7 +86,7 @@ php prado/framework/prado-cli.php -c currency-converter
 		diperuntukan. Ini membolehkan pengguna aplikasi mengklik pada label
 		untuk memfokuskan pada field (hal yang baik). Anda mungkin telah menggunakan elemen
 		biasa HTML <tt>&lt;label&gt;</tt> untuk melakukan hal yang sama, tapi
-		anda harus mencari <tt>ID</tt> yang benar pada kotak teks (atau
+		Anda harus mencari <tt>ID</tt> yang benar pada kotak teks (atau
 		<tt>&lt;input&gt;</tt> dalam HTML) karena komponen Prado dapat/mungkin menyajikan
 		nilai <tt>ID</tt> secara berbeda dalam output HTML.
 	</p>
@@ -106,7 +106,7 @@ php prado/framework/prado-cli.php -c currency-converter
 
 	<h1 id="16004">Mengimplementasikan Konversi Kurs</h1>
 
-	<p id="80063" class="block-content">Jika anda mencoba mengklik pada tombol "Convert" kemudian halaman akan menyegarkan
+	<p id="80063" class="block-content">Jika Anda mencoba mengklik pada tombol "Convert" kemudian halaman akan menyegarkan
 		dan tidak melakukan apapun. Agar tombol melakukan beberapa pekerjaan, kita perlu
 		menambahkan "Home.php" ke di mana "Home.page" berada. Kelas <tt>Home</tt> harus
 		memperluas <com:DocLink ClassPath="System.Web.UI.TPage" Text="TPage" />, basis kelas standar untuk semua halaman Prado.
@@ -156,8 +156,8 @@ class Home extends TPage
 </com:TTextHighlighter>
 <div id="3332" class="block-content">
 	<p id="333">
-		Jika anda menjalankan aplikasi dalam web browser anda, masukkan beberapa nilai
-		dan klik tombol "Convert" kemudian anda akan melihat nilai yang dihitung ditampilkan
+		Jika Anda menjalankan aplikasi dalam web browser Anda, masukkan beberapa nilai
+		dan klik tombol "Convert" kemudian Anda akan melihat nilai yang dihitung ditampilkan
 		di dekat label "Amount in Other Currency".
 	</p>
 
@@ -249,7 +249,7 @@ $this->total->Text = $rate * $dollars;
 </com:TTextHighlighter>
 	</p>
 
-	<p id="80072" class="block-content">Sekarang jika anda mencoba memasukan beberapa data tidak benar dalam aplikasi atau membiarkan field kosong 
+	<p id="80072" class="block-content">Sekarang jika Anda mencoba memasukan beberapa data tidak benar dalam aplikasi atau membiarkan field kosong 
 		validators akan diaktifkan dan menyajikan pesan kesalahan kepada pengguna. Catatan bahwa pesan kesalahan disajikan tanpa mengambil ulang halaman. Validator Prado standarnya memvalidasi javascript dan di dalam server. Validasi di dalam server <b>selalu dilakukan</b>. Untuk sisi server, kita harus melewati perhitungan jika validator tidak memuaskan. Ini dapat dilakukan seperti berikut.
 	</p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code10" >
@@ -295,7 +295,7 @@ memperbaiki pengalaman pengguna dengan meningkatkan tanggapan aplikasi. Satu car
 Prado::using('System.Web.UI.ActiveControls.*');
 </com:TTextHighlighter>
 
-	<p id="80075" class="block-content">Jika anda mencoba aplikasi sekarang, anda akan melihat bahwa halaman tidak perlu lagi mengambil ulang untuk menghitung dan menampilkan jumlah total yang dikonversi.
+	<p id="80075" class="block-content">Jika Anda mencoba aplikasi sekarang, Anda akan melihat bahwa halaman tidak perlu lagi mengambil ulang untuk menghitung dan menampilkan jumlah total yang dikonversi.
 		Akan tetapi, karena di sana tidak ada pengambilan halaman ulang, tidak ada petunjuk atau tidak jelas bahwa dengan mengklik pada tombol "Convert" telah terjadi.
 		Selanjutnya kita bisa memperbaiki pengalaman pengguna dengan mengunah label teks "total" menjadi "calculating..." saat pengguna mengklik tombol "Convert". Label teks "total" masih dimutakhirkan dengan jumlah perhitungan baru seperti sebelumnya.
 	</p>

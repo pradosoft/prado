@@ -73,7 +73,7 @@ dan "<tt>\d+</tt>" (1 atau lebih digit).
 Intinya, nama dan nilai atribut <tt>Parameters</tt> digunakan sebagai substrings dalam penggantian tempat pada string <tt>Pattern</tt> untuk membentuk string ekspresi reguler lengkap.
 </p>
 
-<div class="note"><b class="tip">Catatan:</b> Jika anda bermaksud untuk menggunakan properti <tt>RegularExpression</tt> anda perlu mengulang garis miring dalam ekspresi reguler.
+<div class="note"><b class="tip">Catatan:</b> Jika Anda bermaksud untuk menggunakan properti <tt>RegularExpression</tt> Anda perlu mengulang garis miring dalam ekspresi reguler.
 </div>
 
 <p id="230230" class="block-content">Berikut dari contoh pola di atas,

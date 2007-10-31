@@ -3,8 +3,8 @@
 
 <h1 id="140062">Pemeta Data</h1>
 <com:SinceVersion Version="3.1a" />
-<p id="700505" class="block-content">Pemeta Data memindahkan data antara obyek dan database sementara memeliharanya berdiri sendiri satu sama lain dan pemetanya sendiri. Jika anda mulai dengan
-    <a href="?page=Database.ActiveRecord">Active Records</a>, mungkin nantinya anda dihadapkan dengan obyek bisnis lebih kompleks seiring denga kemajuan proyek anda. Ketika anda membangun model obyek dengan banyak logika bisnis, sangat berharga untuk memakai mekanisme ini untuk mengatur data lebih baik dan perilaku bersamanya. Melakukan itu menyebabkan skema varian; yakni skema obyek dan skema relasional tidak sama.
+<p id="700505" class="block-content">Pemeta Data memindahkan data antara obyek dan database sementara memeliharanya berdiri sendiri satu sama lain dan pemetanya sendiri. Jika Anda mulai dengan
+    <a href="?page=Database.ActiveRecord">Active Records</a>, mungkin nantinya Anda dihadapkan dengan obyek bisnis lebih kompleks seiring denga kemajuan proyek Anda. Ketika Anda membangun model obyek dengan banyak logika bisnis, sangat berharga untuk memakai mekanisme ini untuk mengatur data lebih baik dan perilaku bersamanya. Melakukan itu menyebabkan skema varian; yakni skema obyek dan skema relasional tidak sama.
 </p>
 
 <p id="700506" class="block-content">Pemeta Data memisahkan obyek dalam-memori dari database. Tanggung jawabnya adalah mentransfer data diantara keduanya dan juga saling mengisolasinya. 
@@ -12,21 +12,21 @@
 </p>
 
 <h2 id="140063">Kapan Menggunakannya</h2>
-<p id="700507" class="block-content">Tujuan utama menggunakan Pemeta Data ialah ketika anda menginginkan skema database dan model obyek tumbuh secara independen. Keuntungan utama dari Pemeta Data adalah bahwa saat bekerja pada obyek bisnis (atau domain) anda bisa mengabaikan database, baik dalam desain maupun pembangunan propes pengujian. Obyek domain tidak mengetahui struktur databasenya karena semua ini dikerjakan oleh pemeta.
+<p id="700507" class="block-content">Tujuan utama menggunakan Pemeta Data ialah ketika Anda menginginkan skema database dan model obyek tumbuh secara independen. Keuntungan utama dari Pemeta Data adalah bahwa saat bekerja pada obyek bisnis (atau domain) Anda bisa mengabaikan database, baik dalam desain maupun pembangunan propes pengujian. Obyek domain tidak mengetahui struktur databasenya karena semua ini dikerjakan oleh pemeta.
 </p>
 
-<p id="700508" class="block-content">Ini membantu anda dalam kode karena anda bisa mengerti serta bekerja dengan obyek domain tanpa harus mengerti bagaimana ia disimpan dalam . Anda bisa memodifikasi model bisnis atau database tanpa harus mengubahnya. Dengan pemetaan rumit, terutama yang menyangkut <b>database yang sudah ada</b>, ini sangat berharga.
+<p id="700508" class="block-content">Ini membantu Anda dalam kode karena Anda bisa mengerti serta bekerja dengan obyek domain tanpa harus mengerti bagaimana ia disimpan dalam. Anda bisa memodifikasi model bisnis atau database tanpa harus mengubahnya. Dengan pemetaan rumit, terutama yang menyangkut <b>database yang sudah ada</b>, ini sangat berharga.
 </p>
 
-<p id="700509" class="block-content">Harga tentunya merupakan lapisan ekstra yang tidak anda peroleh dengan <a href="?page=Database.ActiveRecord">Rekaman Aktif</a>, maka pengujian menggunakan pola ini adalah kompleksitas dari logika bisnis. Jika anda memiliki logika bisa cukup sederhana, <a href="?page=Database.ActiveRecord">Rekaman Aktif</a> mungkin akan mencukupi.
+<p id="700509" class="block-content">Harga tentunya merupakan lapisan ekstra yang tidak Anda peroleh dengan <a href="?page=Database.ActiveRecord">Rekaman Aktif</a>, maka pengujian menggunakan pola ini adalah kompleksitas dari logika bisnis. Jika Anda memiliki logika bisa cukup sederhana, <a href="?page=Database.ActiveRecord">Rekaman Aktif</a> mungkin akan mencukupi.
 Untuk logika yang lebih rumit, Pemeta Data mungkin lebih cocok.
 </p>
 
 <h2 id="140064">Pemeta Data SqlMap</h2>
 <p id="700510" class="block-content">Kerangka kerja Pemeta Data SqlMap memudahkan untuk menggunakan database dengan aplikasi PHP. 
-    PemetaData SqlMap memasangkan obyek dengan prosedur tersimpan atau pernyataan SQL menggunakan deskriptor XML. Kesederhanaan adalah keuntungan terbesar dari PemetaData SqlMap di atas piranti pemetaan relasional obyek. Untuk menggunakan PemetaData SqlMap anda bergantung pada obyek anda sendiri, 
-    XML, dan SQL. Anda sedikit yang harus dipelajari yang belum anda ketahui. 
-    Dengan Pemeta Data SqlMap anda mempunyai tenaga penuh pada SQL dan prosedur tersimpan di tangan anda.
+    PemetaData SqlMap memasangkan obyek dengan prosedur tersimpan atau pernyataan SQL menggunakan deskriptor XML. Kesederhanaan adalah keuntungan terbesar dari PemetaData SqlMap di atas piranti pemetaan relasional obyek. Untuk menggunakan PemetaData SqlMap Anda bergantung pada obyek Anda sendiri, 
+    XML, dan SQL. Anda sedikit yang harus mempelajari yang belum Anda ketahui. 
+    Dengan Pemeta Data SqlMap Anda mempunyai tenaga penuh pada SQL dan prosedur tersimpan di tangan Anda.
 </p>
 
 <p id="700511" class="block-content">
@@ -35,7 +35,7 @@ Untuk logika yang lebih rumit, Pemeta Data mungkin lebih cocok.
     Ini adalah penjelasan tingkat tinggi atas alur kerja yang dilukiskan pada gambar di atas. 
     Menyediakan parameter, baik sebagai obyek ataupun tipe primitif. Parameter bisa dipakai untuk menyetel nilai runtime dalam pernyataan SQL atau prosedur. Jika nilai runtime tidak diperlukan, parameter dapat diabaikan.
 </p>
-<p id="700512" class="block-content">Menjalankan pemetaan dengan mengirimkan parameter dan nama yang anda berikan pada deskriptor XML anda. Langkah ini adalah saat di mana keajaiban terjadi. Kerangka kerja akan menyiapkan pernyataan SQL atau prosedur tersimpan, menyetel setiap nilai runtime menggunakan parameter anda, menjalankan prosedur atau pernyataan, dan mengembalikan hasil.
+<p id="700512" class="block-content">Menjalankan pemetaan dengan mengirimkan parameter dan nama yang Anda berikan pada deskriptor XML Anda. Langkah ini adalah saat di mana keajaiban terjadi. Kerangka kerja akan menyiapkan pernyataan SQL atau prosedur tersimpan, menyetel setiap nilai runtime menggunakan parameter Anda, menjalankan prosedur atau pernyataan, dan mengembalikan hasil.
 </p>
 
 <p id="700513" class="block-content">Dalam hal pemutakhiran, jumlah baris yang dipengaruhi dikembalikan. Dalam hal query, obyek tunggal, atau koleksi obyek dikembalikan. Seperti parameter, obyek hasil, atau koleksi obyek, bisa berupa obyek biasa ataupun tipe PHP primitif.
@@ -78,7 +78,7 @@ $sqlmap = $manager->getSqlMapGateway();
     
     <div class="tip"><b class="note">Tip:</b>
         Atribut <tt>EnableCache</tt> saat disetel "true" akan men-cache 
-        konfigurasi yang diurai. Anda harus membersihkan atau menghapus cache jika anda mengubah file konfigurasi anda. 
+        konfigurasi yang diurai. Anda harus membersihkan atau menghapus cache jika Anda mengubah file konfigurasinya. 
         <a href="?page=Advanced.Performance#6402">modul cache</a> juga harus didefinisikan agar cache berfungsi.
     </div>  
 </p>
@@ -136,7 +136,7 @@ class User
 //anggap bahwa $sqlmap adalah turunan TSqlMapGateway
 $userList = $sqlmap->queryForList("SelectUsers");
 
-//Atau hanya satu, jika hanya itu yang anda butuhkan:
+//Atau hanya satu, jika hanya itu yang Anda butuhkan:
 $user = $sqlmap->queryForObject("SelectUsers");
 </com:TTextHighlighter>
 </p>

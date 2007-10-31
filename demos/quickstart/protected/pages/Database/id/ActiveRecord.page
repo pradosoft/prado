@@ -19,20 +19,20 @@
     seperti membuat, membaca, memutakhirkan, dan menghapus. Derivasi dan validasi
     didasarkan pada satu rekaman yang bekerja denga baik dalam struktur ini. Rekaman Aktif mempunyai kuntungan utama dalam hal kesederhanaan. Mudah untuk membangun Rekaman Aktif, dan mudah untuk dimengerti.</p>
 
-    <p id="690480" class="block-content">Akan tetapi, seiring dengan perkembangan logika bisnis anda dalm hal kompleksitas, anda akan segera ingin menggunakan hubungan langsung obyek anda, koleksi, turunan, dan seterusnya. Ini tidak mudah diterapkan ke dalam Rekaman Aktif, dan menambahkannya sedikit demi sedikit menjadi sangat kacau.
+    <p id="690480" class="block-content">Akan tetapi, seiring dengan perkembangan logika bisnis Anda dalm hal kompleksitas, Anda akan segera ingin menggunakan hubungan langsung obyek Anda, koleksi, turunan, dan seterusnya. Ini tidak mudah diterapkan ke dalam Rekaman Aktif, dan menambahkannya sedikit demi sedikit menjadi sangat kacau.
     Argumen lain terhadap Rekaman Aktif adalah kenyataan bahwa ia menyandingkan desin obyek ke desain database. Ini menjadikannya lebih sulit untuk merefraktorisasi karena proyek terus berjalan.</p>
     
     <p id="690481" class="block-content">Alternatifnya adalah menggunakan Pemeta Data yang yang memisahkan aturan dari obyek bisnis dan bagaimana obyek ini disimpan.       
         Prado menyediakan pilihan tambahan antara Rekaman Aktif dan
         <a href="?page=Database.SqlMap">Pemeta Data SqlMap</a>. 
         Pemeta Data SqlMap bisa dipakai untuk mengambil obyek Rekaman Aktif, hasilnya; obyek Rekaman Aktif ini bisa dipakai untuk memutakhirkan database. 
-        "Hubungan" andara Rekaman Aktif dan <a href="?page=Database.SqlMap">SqlMap</a> digambarkan dalam diagram berikut. Lebih rinci mengenai Pemeta Data SqlMap dapat ditemukan dalam
+        "Hubungan" antara Rekaman Aktif dan <a href="?page=Database.SqlMap">SqlMap</a> digambarkan dalam diagram berikut. Lebih rinci mengenai Pemeta Data SqlMap dapat ditemukan dalam
     <a href="http://www.pradosoft.com/demos/sqlmap/">Manual SqlMap</a>.
     <img src=<%~ sqlmap_active_record.png %> alt="Rekaman Aktif dan SqlMap DataMapper" id="fig:diagram.png" class="figure"/>
     </p>
     
     <p id="690482" class="block-content">
-        Kelas Rekaman Aktif mempunyai fungsionalitas untuk melakukan tugas-tugas berikut.
+        Kelas Rekaman Aktif berfungsi untuk melakukan tugas-tugas berikut.
     </p>
     <ul id="u1" class="block-content">
         <li>Membuat, Mengambil, Memutakhirkan dan Menghapus rekaman.</li>
@@ -42,15 +42,15 @@
     </ul>
 <h2>Implikasi Desain</h2>
 <p>
-Implementasi Prado terhadap Rekaman Aktif tidak memelihara identitas referensial. Setiap obyek diperoleh menggunakan Rekaman Aktif pada data dalam database. Sebagai contoh, jika anda meminta kustomer tertentu dan mendapatkan kembali obyek <tt>Customer</tt>, kali berikutnya anda meminta kustomer itu, anda akan kembali mendapatkan turunan lain dari obyek <tt>Customer</tt>. Ini berarti bahwa perbandingan tepat (misalnya menggunakan <tt>===</tt>) akan mengembalikan false, sementara perbandingan bebas (misalnya menggunakan <tt>==</tt>) akan mengembalikan true jika nilai obyek sama menurut perbandingan bebas. 
+Implementasi Prado terhadap Rekaman Aktif tidak memelihara identitas referensial. Setiap obyek diperoleh menggunakan Rekaman Aktif pada data dalam database. Sebagai contoh, jika Anda meminta kustomer tertentu dan mendapatkan kembali obyek <tt>Customer</tt>, kali berikutnya Anda meminta kustomer itu, Anda akan kembali mendapatkan turunan lain dari obyek <tt>Customer</tt>. Ini berarti bahwa perbandingan tepat (misalnya menggunakan <tt>===</tt>) akan mengembalikan false, sementara perbandingan bebas (misalnya menggunakan <tt>==</tt>) akan mengembalikan true jika nilai obyek sama menurut perbandingan bebas. 
 <p>
 <p>
 Implikasi desain ini terkait dengan pertanyaan berikut.
 <i>"Anda pikir kustomer sebagai obyek, di mana hanya satu, 
-atau anda pikir obyek yang anda operasikan sebagai <b>duplikat</b> dari database?"</i>
+atau Anda pikir obyek yang Anda operasikan sebagai <b>duplikat</b> dari database?"</i>
 Pemetaan O/R lain akan mengartikan bahwa hanya ada satu obyek Kustomer dengan custID 100, dan secara literal ia adalah kustomer. 
-Jika anda mendapatkan kustomer dan mengubah field-nya, maka anda sekarang telah mengubah kustomer itu. 
-<i>"Itu berbatasan dengan: anda telah mengubah duplikat kustomer ini, tapi bukan pada duplikat itu. 
+Jika Anda mendapatkan kustomer dan mengubah field-nya, maka Anda sekarang telah mengubah kustomer itu. 
+<i>"Itu berbatasan dengan: Anda telah mengubah duplikat kustomer ini, tapi bukan pada duplikat itu. 
 Dan jika dua orang memutakhirkan kustomer pada dua duplikat obyek, siapapun yang memutakhirkan pertama kali, atau mungkin yang terakhir yang menang."</i> [A. Hejlsberg 2003]
 </p>
 
@@ -101,10 +101,10 @@ class UserRecord extends TActiveRecord
 </com:TTextHighlighter>
 </p>
 <p id="690485" class="block-content">Setiap kolom dari tabel "<tt>users</tt>" harus mempunyai properti terkait atas nama yang sama seperti nama kolom dalam kelas <tt>UserRecord</tt>.
-    Tentunya, anda juga mendefinisikan variabel atau properti tambahan yang tidak ada dalam struktur tabel.
+    Tentunya, Anda juga mendefinisikan variabel atau properti tambahan yang tidak ada dalam struktur tabel.
     Konstan kelas
     <tt>TABLE</tt> adalah opsional saat nama kelas adalah sama seperti nama tabel dalam database, sebaliknya <tt>TABLE</tt> harus
-    menetapkan nama tabel yang terkait dengan kelas Rekaman Aktif anda.
+    menetapkan nama tabel yang terkait dengan kelas Rekaman Aktif Anda.
 </p>
 
 <div class="tip"><b class="note">Tip:</b>
@@ -112,7 +112,7 @@ Anda dapat menetapkan nama-nama tabel yang memenuhi syarat. Contohnya untuk MySQ
 </div>
 
 <p class="block-content" id="ar_as_component">
-    Karena <tt>TActiveRecord</tt> memperluas <tt>TComponent</tt>, metode penentu dan pengambil dapat didefinisikan guna membolehkan kontrol melalui bagaimana variabel disetel dan dikembalikan. Sebagai contoh, menambah properti <tt>$level</tt> untuk menggunakan kelas UserRecord:
+    Karena <tt>TActiveRecord</tt> memperluas <tt>TComponent</tt>, metode penyetel dan pengambil dapat didefinisikan guna membolehkan kontrol melalui bagaimana variabel disetel dan dikembalikan. Sebagai contoh, menambah properti <tt>$level</tt> untuk menggunakan kelas UserRecord:
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690149">
 class UserRecord extends TActiveRecord {
@@ -155,7 +155,7 @@ $conn = new TDbConnection($dsn, 'dbuser','dbpass');
 TActiveRecordManager::getInstance()->setDbConnection($conn);
 </com:TTextHighlighter> 
 
-<p id="710011" class="block-content">Alternatifnya, anda dapat membuat basis kelas dan mengganti metode <tt>getDbConnection()</tt> untuk mengembalikan
+<p id="710011" class="block-content">Alternatifnya, Anda dapat membuat basis kelas dan mengganti metode <tt>getDbConnection()</tt> untuk mengembalikan
 koneksi database. Ini adalah cara sederhana untuk mengijinkan koneksi database multipel. Kode berikut mendemonstrasikan penetapan koneksi database dalam sebuah basis kelas (tidak perlu menyetel koneksi DB di manapun juga).
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content">
@@ -196,7 +196,7 @@ class MyDb2Record extends TActiveRecord
 </modules>  
 </com:TTextHighlighter> 
 <div class="tip"><b class="note">Tip:</b>
-    Atribut <tt>EnableCache</tt> ketika disetel ke "true" akan melakukan cache meta data tabel, yakni nama kolom tabel, indeks dan batasan yang disimpan dalam cache dan dipakai ulang. Anda harus membersihkan atau mematikan cache jika anda ingin melihat perubahan terhadap definisi tabel anda. <a href="?page=Advanced.Performance#6402">Modul cache</a> juga harus didefinisikan agar cache berfungsi.
+    Atribut <tt>EnableCache</tt> ketika disetel ke "true" akan melakukan cache meta data tabel, yakni nama kolom tabel, indeks dan batasan yang disimpan dalam cache dan dipakai ulang. Anda harus membersihkan atau mematikan cache jika Anda ingin melihat perubahan terhadap definisi tabel Anda. <a href="?page=Advanced.Performance#6402">Modul cache</a> juga harus didefinisikan agar cache berfungsi.
 </div>
 </p>
 
@@ -369,7 +369,7 @@ $user2->save(); //sisipkan rekaman baru
 </com:TTextHighlighter>
 <div class="tip"><b class="note">Tip:</b>
 Obyek dimutakhirkan dengan kunci primer dari tabel itu yang berisi definisi yang secara otomatis membuat kunci primer untuk rekaman yang baru saja disisipkan.
-Sebagai contoh, jika anda menyisipkan sebuah rekaman baru ke dalam tabel MySQL yang kolomnya didefinisikan dengan "autoincrement", obyek Rekaman Aktif akan dimutakhirkan dengan nilai yang ditambahkan.</div>
+Sebagai contoh, jika Anda menyisipkan sebuah rekaman baru ke dalam tabel MySQL yang kolomnya didefinisikan dengan "autoincrement", obyek Rekaman Aktif akan dimutakhirkan dengan nilai yang ditambahkan.</div>
 
 <p id="690500" class="block-content">
 Untuk memutakhirkan rekaman dalam database, cukup ubah satu atau lebih properti obyek Rekaman Aktif yang sudah diambil dari database dan kemudian panggil metode <tt>save()</tt>.    
@@ -387,7 +387,7 @@ Obyek Rekaman Aktif mempunyai masa-hidup sederhana seperti digambarkan dalam dia
 <img src=<%~ object_states.png %> alt="Active Records Life Cycle" id="fig:cycle.png" class="figure"/>
 <p id="690501" class="block-content">
 Kita melihat bahwa obyek TActiveRecord baru dibuat dengan menggunakan salah satu metode <tt>find*()</tt> ataupun membuat turunan baru dengan menggunakan kata kunci PHP <tt>new</tt>. Obyek yang dibuat dengan metode <tt>find*()</tt> dimulai dengan kondisi <tt>clean</tt>. Turunan baru TActiveRecord membuat selain metode <tt>find*()</tt> yang dimulai dengan kondisi <tt>new</tt>.
-Kapan saja anda memanggil metode <tt>save()</tt> pada obyek TActiveRecord, obyek memasuki keadaan <tt>clean</tt>. Obyek dalam <tt>clean</tt> menjadi <tt>dirty</tt> ketika satu atau lebih keadaan internalnya diubah. Pemanggilan metode <tt>delete()</tt> pada obyek mengakhiri masa-hidup obyek, tidak ada aksi lanjutan yang dilakukan pada obyek.
+Kapan saja Anda memanggil metode <tt>save()</tt> pada obyek TActiveRecord, obyek memasuki keadaan <tt>clean</tt>. Obyek dalam <tt>clean</tt> menjadi <tt>dirty</tt> ketika satu atau lebih keadaan internalnya diubah. Pemanggilan metode <tt>delete()</tt> pada obyek mengakhiri masa-hidup obyek, tidak ada aksi lanjutan yang dilakukan pada obyek.
 </p>
 
 <h2 id="138052">Menghapus rekaman yang sudah ada</h2>
@@ -517,7 +517,7 @@ Dalam bagian berikut kita akan menganggap hubungan tabel antara
 Ada ketidak cocokan antara hubungan dengan obyek dan hubungan tabel. Pertama, ada perbedaan dalam penyajian. Penghubung kendali obyek dengen menyimpan referensi yang dipegang oleh lingkungan memori-teratur runtime. Database relasional menangani kaitan dengan membentuk sebuah kunci ke dalam tabel lainnya. Keuda, obyek dapat dengan mudah menggunakan koleksi guna menangani multipel referensi dari satu field, sementara normalisasi memaksa seluruh relasi entitas mengaitkan ke nilai tunggal. Ini menyebabkan pembalikan struktur data antara obyek dan tabel. Pendekatan yang diambil dalam desain Rekaman Aktif Prado adalah untuk menggunakan batasan kunci asing guna memperoleh hubungan obyek. Ini berarti bahwa database di bawahnya harus mendukung batasan kunci asing.
 </p>
 <div class="tip"><b class="note">Tip:</b>
-Untuk database SQLite, anda dapat membuat tabel yang mendefinisikan batasan kunci asing seperti contoh di bawah ini. Akan tetapi, batasan ini <b>TIDAK</b>
+Untuk database SQLite, Anda dapat membuat tabel yang mendefinisikan batasan kunci asing seperti contoh di bawah ini. Akan tetapi, batasan ini <b>TIDAK</b>
 dipaksakan oleh database SQLite itu sendiri.
 <com:TTextHighlighter Language="sql" CssClass="source block-content">
 CREATE TABLE foo
@@ -603,7 +603,7 @@ Ini berlaku untuk hubungan termasuk <tt>BELONGS_TO</tt>, <tt>HAS_ONE</tt> dan
 <tt>HAS_MANY</tt>. Lihat seksi <a href="#142021">Tabel Asosiaasi Merujuk Dirinya Sendiri</a> untuk memecahkan kerancuan atas hubungan <tt>MANY_TO_MANY</tt>.
 </div>
 
-<p id="710023" class="block-content">Hubungan "has many" tidak diambil secara otomatis ketika anda menggunakan salah satu metode finder Rekaman Aktif.
+<p id="710023" class="block-content">Hubungan "has many" tidak diambil secara otomatis ketika Anda menggunakan salah satu metode finder Rekaman Aktif.
 Anda perlu untuk mengambil secara eksplisit obyek terkait seperti berikut. Dalam kode di bawah ini, kedua baris adalah sama dan nama metode tidak sensitif huruf.
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content">
@@ -739,7 +739,7 @@ class Category extends TActiveRecord
 
 <h2 id="142013">Pemetaan Tabel Asosiasi</h2>
 <p id="710032" class="block-content">
-Obyek dapat dengan mudah menangani field multi nilai dengan menggunakan koleksi sebagai nilai field. Database relasional tidak memiliki fitur ini dan dibatasi hanya ke field nilai-tunggal.  Ketika anda memetakan asosiasi satu-ke-banyak, anda bisa menangani ini menggunakan hubungan <b>has many</b>, intinya menggunakan kunci asing untuk nilai-tunggal akhir dari asosiasi. Tapi asosiasi banyak-ke-banyak tidak bisa melakukan ini karena tidak ada nilai-tunggal akhir ke kunci asing yang dipegangnya.
+Obyek dapat dengan mudah menangani field multi nilai dengan menggunakan koleksi sebagai nilai field. Database relasional tidak memiliki fitur ini dan dibatasi hanya ke field nilai-tunggal.  Ketika Anda memetakan asosiasi satu-ke-banyak, Anda bisa menangani ini menggunakan hubungan <b>has many</b>, intinya menggunakan kunci asing untuk nilai-tunggal akhir dari asosiasi. Tapi asosiasi banyak-ke-banyak tidak bisa melakukan ini karena tidak ada nilai-tunggal akhir ke kunci asing yang dipegangnya.
 </p>
 <p id="710033" class="block-content">
 Jawabannya adalah resolusi klasik yang telah dipakai oleh orang selama dekade ini yakni: buat tabel ekstra (tabel asosiasi) untuk merekam asosiasi. 
@@ -747,9 +747,9 @@ Ide dasarnya adalah menggunakan tabel asosiasi untuk menyimpan asosiasi. Tabel i
 </p>
 <p id="710034" class="block-content">
 Tabel asosiasi tidak mempunyai kaitan obyek dalam-memori dan kunci primernya adalah gabungan dari dua kunci primer dari tabel yang diasosiasikan.
-Dalam batasan yang sederhana, tuntuk mengambil data dari tabel asosiasi, anda melakukan dua query (secara umum, ini juga bisa dicapai menggunakan satu query yang terdiri dari join). 
+Dalam batasan yang sederhana, tuntuk mengambil data dari tabel asosiasi, Anda melakukan dua query (secara umum, ini juga bisa dicapai menggunakan satu query yang terdiri dari join). 
 Anggap pengambilan koleksi <tt>SkillRecord</tt> untuk daftar obyek <tt>PlayerRecord</tt>. 
-Dalam hal ini, anda melakukan query dalam dua tahap.  Tahap pertama meng-query tabel <tt>Players</tt> untuk mencari seluruh baris dari pemain yang anda inginkan. Tahap kedua mencari obyek <tt>SkillRecord</tt> ID pemain terkait untuk setiap barisnya dalam tabel asosiasi  <tt>Player_Skills</tt> menggunakan sebuah inner join.
+Dalam hal ini, Anda melakukan query dalam dua tahap.  Tahap pertama meng-query tabel <tt>Players</tt> untuk mencari seluruh baris dari pemain yang Anda inginkan. Tahap kedua mencari obyek <tt>SkillRecord</tt> ID pemain terkait untuk setiap barisnya dalam tabel asosiasi  <tt>Player_Skills</tt> menggunakan sebuah inner join.
 </p>
 
 <p id="710035" class="block-content">Desain Rekaman Aktif Prado mengimplementasikan dua tahap pendekatan. Untuk hubungan entitas <tt>Players</tt>-<tt>Skills</tt> M-N (many-to-many), kita perlu mendefinisikan sebuah hubungan <b>has many</b> dalam kelas <tt>PlayerRecord</tt> dan sebagai tambahan mendefinisikan hubungan <b>has many</b> dalam kelas <tt>SkillRecord</tt> juga.
@@ -883,10 +883,10 @@ PlayerSkillAssocation::finder()->deleteByPk(array('fk1','fk2'));
 <h2 id="142015">Pengambilan Malas Obyek Terkait</h2>
 
 <div class="note"><b class="note">Catatan:</b>
-Secara implisit mendeklarasikan properti terkait yang diperkenalkan dalam  versi 3.1.2 secara otomatis memiliki fitur pengambilan malas. Oleh karena itu, teknik pengambilan malas dijelaskan berikut ini tidak lagi diperlukan dalam banyak kasus, kecuali anda ingin memanipulasi obyek terkait melalui pengambil/penyetel.
+Secara implisit mendeklarasikan properti terkait yang diperkenalkan dalam  versi 3.1.2 secara otomatis memiliki fitur pengambilan malas. Oleh karena itu, teknik pengambilan malas dijelaskan berikut ini tidak lagi diperlukan dalam banyak kasus, kecuali Anda ingin memanipulasi obyek terkait melalui pengambil/penyetel.
 </div>
 
-<p id="710045" class="block-content">Menggunakan metode <tt>with_xxx()</tt> akan mengambil hubungan rekaman sesuai permintaan. Mengambil rekaman terkait dengan  lazy loading (yaitu, hanya obyek terkait itu saja yang diakses) bisa dicapai dengan menggunakan sebuah fitur <tt>TComponent</tt> yang menyediakan metode pengakses. Dalam keadaan tertentu, kita mendefinisikan pasangan metode pengambil dan penentu di mana metode pengambil akan mengambil hubungan secara kondisional. Contoh berikut menggambarkan bahwa <tt>PlayerRecord</tt> dapat mengambil obyek asing <tt>$skills</tt> secara kondisional.
+<p id="710045" class="block-content">Menggunakan metode <tt>with_xxx()</tt> akan mengambil hubungan rekaman sesuai permintaan. Mengambil rekaman terkait dengan  lazy loading (yaitu, hanya obyek terkait itu saja yang diakses) bisa dicapai dengan menggunakan sebuah fitur <tt>TComponent</tt> yang menyediakan metode pengakses. Dalam keadaan tertentu, kita mendefinisikan pasangan metode pengambil dan penyetel di mana metode pengambil akan mengambil hubungan secara kondisional. Contoh berikut menggambarkan bahwa <tt>PlayerRecord</tt> dapat mengambil obyek asing <tt>$skills</tt> secara kondisional.
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content">
 class PlayerRecord extends BaseFkRecord
@@ -970,7 +970,7 @@ class UserRecord extends TActiveRecord
 </com:TTextHighlighter>
 <p>
 Dengan pemetaan kolom di atas, kita mengalamatkan <tt>first_name</tt> menggunakan <tt>$userRecord->firstName</tt>
-daripada <tt>$userRecord->first_name</tt>. Ini membantu pemisahan dari logika dan model.
+daripada <tt>$userRecord->first_name</tt>. Ini membantu pemisahan dari logika dengan model.
 </p>
 
 <h2 id="138054">Referensi</h2>

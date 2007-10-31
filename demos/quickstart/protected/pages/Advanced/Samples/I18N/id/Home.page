@@ -3,10 +3,10 @@
 <com:TContent ID="body">
 
 <h1>Internasionlisasi dalam PRADO</h1>
-<p>Demo ini memperlihatkan komponen dasar yang tersedia dalam PRADO untuk memproses Internasionalisasi dan Lokalisasi aplikasi web. Halam ini memanfaatkan template siap multipel lokal (atau kultur) untuk memperlihatkan halaman terlokalisasi yang tersedia. Untuk melihat versi dilokalisasi yang berbeda, silahkan ganti setelan bahasa dalam browser anda.</p>
+<p>Demo ini memperlihatkan komponen dasar yang tersedia dalam PRADO untuk memproses Internasionalisasi dan Lokalisasi aplikasi web. Halam ini memanfaatkan template siap multipel lokal (atau kultur) untuk memperlihatkan halaman terlokalisasi yang tersedia. Untuk melihat versi dilokalisasi yang berbeda, silahkan ganti setelan bahasa dalam browser Anda.</p>
 
 <p>
-Saat ini kultur anda adalah <%= $this->Page->CurrentCulture %>.
+Saat ini kultur Anda adalah <%= $this->Page->CurrentCulture %>.
 <div class="links">
 	Versi lokalisasi tersedia: 
 	<com:LanguageList />

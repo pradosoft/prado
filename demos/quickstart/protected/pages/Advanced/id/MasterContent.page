@@ -48,7 +48,7 @@ Master sangat mirip dengan template eksternal yang diperkenalkan sejak versi 3.0
 Baik template master maupun eksternal bisa dipakai untuk berbagi konten yang sama diantara halaman. Master adalah kontrol template yang berisi konten umum dan file kelasnya berisi logika terkait dengan master. Dilain pihak, template eksternal adalah file template murni tanpa file kelas apapun.
 </p>
 <p id="750594" class="block-content">
-Oleh karena itu, gunakan kontrol master jika konten umum harus dikaitkan dengan beberapa logika, seperti header halaman dengan kotak pencarian atau kotak  login. Kontrol master membolehkan anda untuk menetapkan bagaimana konten umum harus berinteraksi dengan pengguna akhir. Jika anda menggunakan template eksternal, anda harus menyimpan logika yang diperlukan dalam halaman atau kelas kontrol yang memiliki basis template.
+Oleh karena itu, gunakan kontrol master jika konten umum harus dikaitkan dengan beberapa logika, seperti header halaman dengan kotak pencarian atau kotak  login. Kontrol master membolehkan Anda untuk menetapkan bagaimana konten umum harus berinteraksi dengan pengguna akhir. Jika Anda menggunakan template eksternal, Anda harus menyimpan logika yang diperlukan dalam halaman atau kelas kontrol yang memiliki basis template.
 </p>
 <p id="750595" class="block-content">
 Performansinya, template eksternal lebih ringan daripada master seperti berisi kontrol sendiri yang berparisipasi dalam masa hidup halaman, karena pembentuk hanya dipakai saat template sedang diuraikan.

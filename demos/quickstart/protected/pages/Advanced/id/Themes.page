@@ -14,7 +14,7 @@ Tema adalah sebuah direktori yang terdiri dari file skin, file javascript dan fi
 
 <h2 id="5904">Menggunakan Tema</h2>
 <p id="760598" class="block-content">
-Untuk menggunakan sebuah tema, anda perlu menyetel properti <tt>Theme</tt> dari halaman dengan nama tema, yaitu nama direktori tema. Anda dapat menyetelnya dalam <a href="?page=Configurations.PageConfig">konfigurasi halaman</a> atau dalam konstruktor atau metode <tt>onPreInit()</tt> dari halaman. Anda tidak bisa menyetel properti setelah <tt>onPreInit()</tt> karena saat itu, kontrol anak dari halaman sudah dibuat (skin harus diterapkan ke kontrol setelah kontrol tersebut dibuat.)
+Untuk menggunakan sebuah tema, Anda perlu menyetel properti <tt>Theme</tt> dari halaman dengan nama tema, yaitu nama direktori tema. Anda dapat menyetelnya dalam <a href="?page=Configurations.PageConfig">konfigurasi halaman</a> atau dalam konstruktor atau metode <tt>onPreInit()</tt> dari halaman. Anda tidak bisa menyetel properti setelah <tt>onPreInit()</tt> karena saat itu, kontrol anak dari halaman sudah dibuat (skin harus diterapkan ke kontrol setelah kontrol tersebut dibuat.)
 </p>
 <p id="760599" class="block-content">
 Untuk menggunakan skin tertentu dalam tema untuk sebuah kontrol, setel properti <tt>SkinID</tt> dari kontrol dalam template seperti berikut,
@@ -23,7 +23,7 @@ Untuk menggunakan skin tertentu dalam tema untuk sebuah kontrol, setel properti 
 &lt;com:TButton SkinID="Blue" ... /&gt;
 </com:TTextHighlighter>
 <p id="760600" class="block-content">
-Ini akan menerapkan skin 'Blue' ke tombol. Catatan, nilai properti awal yang ditetapkan oleh skin 'Blue' akan mengganti setiap nilai properti tombol. Gunakan tema  stylesheet jika anda tidak ingi diganti. Untuk menggunakan tema stylesheet, setel properti <tt>StyleSheetTheme</tt> dari halaman daripada <tt>Theme</tt> (anda bisa memiliki keduanya <tt>StyleSheetTheme</tt> dan <tt>Theme</tt>).
+Ini akan menerapkan skin 'Blue' ke tombol. Catatan, nilai properti awal yang ditetapkan oleh skin 'Blue' akan mengganti setiap nilai properti tombol. Gunakan tema  stylesheet jika Anda tidak ingi diganti. Untuk menggunakan tema stylesheet, setel properti <tt>StyleSheetTheme</tt> dari halaman daripada <tt>Theme</tt> (Anda bisa memiliki keduanya <tt>StyleSheetTheme</tt> dan <tt>Theme</tt>).
 </p>
 <p id="760601" class="block-content">
 Untuk menggunakan file Javascript dan file CSS yang berada dalam sebuah tema, kontrol <tt>THead</tt> harus ditempatkan pada template halaman. Ini dikarenakan tema akan meregistrasi file itu dengan halaman dan <tt>THead</tt> adalah tempat yang tepat untuk menempatkan mengambil file tersebut.
@@ -34,7 +34,7 @@ Dimungkinkan untuk menetapkan tipe media dari file CSS yang berisikan sebuah tem
 
 <h2 id="5905">Penyimpanan Tema</h2>
 <p id="760603" class="block-content">
-Semua tema standarnya harus ditempatkan di bawah direktori <tt>[AppEntryPath]/themes</tt>, di mana <tt>AppEntryPath</tt> merujuk ke direktori yang berisi naskah entri aplikasi. Jika anda ingin menggunakan direktori berbeda, konfigurasi properti <tt>BasePath</tt> dan <tt>BaseUrl</tt> dari modul <tt>System.Web.UI.TThemeManager</tt> dalam konfigurasi aplikasi,
+Semua tema standarnya harus ditempatkan di bawah direktori <tt>[AppEntryPath]/themes</tt>, di mana <tt>AppEntryPath</tt> merujuk ke direktori yang berisi naskah entri aplikasi. Jika Anda ingin menggunakan direktori berbeda, konfigurasi properti <tt>BasePath</tt> dan <tt>BaseUrl</tt> dari modul <tt>System.Web.UI.TThemeManager</tt> dalam konfigurasi aplikasi,
 </p>
 <com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_760195">
 &lt;service id="page" class="TPageService"&gt;
@@ -49,12 +49,12 @@ Semua tema standarnya harus ditempatkan di bawah direktori <tt>[AppEntryPath]/th
 
 <h2 id="5906">Membuat Tema</h2>
 <p id="760604" class="block-content">
-Membuat sebuah tema melibatkan pembuatan direktori tema dan penulisan file skin (dan kemungkinan file Javascript serta CSS). Nama file skin harus diakhiri dengan <tt>.skin</tt>. Format file skin adalah sama seperti file template kontrol. Karena file skin tidak mendefinisikan penyajian hubungan leluhur-aak diantara kontrolnya, anda tidak bisa menempatkan tag komponen di dalam yang lainnya. Dan setiap teks statis antara tag komponen diabaikan. Untuk mendefinisikan skin 'Blue' seperti telah disebutkan di atas untuk <tt>TButton</tt>, tulis yang berikut dalam file skin,
+Membuat sebuah tema melibatkan pembuatan direktori tema dan penulisan file skin (dan kemungkinan file Javascript serta CSS). Nama file skin harus diakhiri dengan <tt>.skin</tt>. Format file skin adalah sama seperti file template kontrol. Karena file skin tidak mendefinisikan penyajian hubungan leluhur-aak diantara kontrolnya, Anda tidak bisa menempatkan tag komponen di dalam yang lainnya. Dan setiap teks statis antara tag komponen diabaikan. Untuk mendefinisikan skin 'Blue' seperti telah disebutkan di atas untuk <tt>TButton</tt>, tulis yang berikut dalam file skin,
 </p>
 <com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_760196">
 &lt;com:TButton SkinID="Blue" BackColor="blue" /&gt;
 </com:TTextHighlighter>
 <p id="760605" class="block-content">
-Seperti sudah disebutan di atas, anda dapat menyimpan beberapa skin dalam satu file skin, atau memisahkannya ke dalam beberapa file. Strategi yang umum digunakan adalah bahwa setiap file skin hanya berisi skin untuk satu tipe kontrol. Sebagai contoh, <tt>Button.skin</tt> akan berisi skin hanya untuk tipe kontrol <tt>TButton</tt>.
+Seperti sudah disebutan di atas, Anda dapat menyimpan beberapa skin dalam satu file skin, atau memisahkannya ke dalam beberapa file. Strategi yang umum digunakan adalah bahwa setiap file skin hanya berisi skin untuk satu tipe kontrol. Sebagai contoh, <tt>Button.skin</tt> akan berisi skin hanya untuk tipe kontrol <tt>TButton</tt>.
 </p>
 <div class="last-modified">$Id: Themes.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

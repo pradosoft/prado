@@ -2,10 +2,10 @@
 <h1 id="101">Selamat datang di Tutorial Cepat PRADO</h1>
 <div id="intro" class="block-content">
 <p id="10001">
-Tutorial Cepat ini disediakan untuk membantu anda secara cepat membangun aplikasi Web anda sendiri berbasis PRADO versi 3.x.
+Tutorial Cepat ini disediakan untuk membantu Anda secara cepat membangun aplikasi Web Anda sendiri berbasis PRADO versi 3.x.
 </p>
 <p id="10001" class="block-content">
-Jika anda adalah pengguna yang sudah mengenal PRADO 3.x dan ingin mempelajari peningkatan apa yang tersedia pada versi baru, silahkan periksa halaman <a href="?page=GettingStarted.NewFeatures">fitur baru</a>. Sebaliknya, seksi berikut sangat membantu bagi para pemula.
+Jika Anda adalah pengguna yang sudah mengenal PRADO 3.x dan ingin mempelajari peningkatan apa yang tersedia pada versi baru, silahkan periksa halaman <a href="?page=GettingStarted.NewFeatures">fitur baru</a>. Sebaliknya, seksi berikut sangat membantu bagi para pemula.
 </p>
 <!--
 <div class="start-page">
@@ -16,7 +16,7 @@ Jika anda adalah pengguna yang sudah mengenal PRADO 3.x dan ingin mempelajari pe
 		<li><a href="#">Membangun aplikasi web dengan PRADO</a></li>
 		<li><a href="#">Kontrol dan event Web</a></li>
 		<li><a href="#">Memvalidasi input pengguna</a></li>
-		<li><a href="#">Menyabung ke database anda</a></li>
+		<li><a href="#">Menyambung ke database Anda</a></li>
 		<li><a href="#">Menampilkan data dari database</a></li>
 	</ol>
 	</div>
@@ -31,7 +31,7 @@ Jika anda adalah pengguna yang sudah mengenal PRADO 3.x dan ingin mempelajari pe
 		<li><a href="../time-tracker/">Pelacak Waktu Proyek</a></li>
 	</ul>
 	<p id="10003" class="block-content">Lebih banyak contoh di <a href="?page=Controls.Standard">Kontrol Standar</a>,
-	<a href="?page=Controls.Validation">Memvalidatsi Kontrol</a> dan
+	<a href="?page=Controls.Validation">Memvalidasi Kontrol</a> dan
 	<a href="?page=Controls.Data">Kontrol Data</a>.
 	</div>
 
@@ -39,16 +39,16 @@ Jika anda adalah pengguna yang sudah mengenal PRADO 3.x dan ingin mempelajari pe
 	<h2 id="2003">Tutorial dan Bantuan</h2>
 	<ul>
 		<li><a href="?page=GettingStarted.HelloWorld">Hello World secara rinci</a></li>
-		<li><a href="?page=Tutorial.CurrencyConverter">Currency Converter Tutorial</a></li>
+		<li><a href="?page=Tutorial.CurrencyConverter">Tutorial Pengubah Kurs</a></li>
 		<li><a href="?page=Tutorial.AddressBook">Tutorial Buku Alamat</a></li>
-		<li><a href="?page=Tutorial.AjaxChat">Tutorial Chat AJAX</a></li>
+		<li><a href="?page=Tutorial.AjaxChat">Tutorial Obrolan AJAX</a></li>
 	</ul>
 	</div>
 </div>
 -->
 
 <p id="10002">
-Anda dapat merujuk ke sumber daya berikut jika anda mendapatkan tutorial ini tidak memenuhi semua kebutuhan anda.
+Anda dapat merujuk ke sumber daya berikut jika Anda mendapatkan tutorial ini tidak memenuhi semua kebutuhan Anda.
 </p>
 </div>
 <ul class="block-content" id="intro-links">

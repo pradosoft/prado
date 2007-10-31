@@ -6,14 +6,14 @@
 <p id="620419" class="block-content">
 <tt>TActiveCheckBox</tt> adalah kontrol aktif selain 
 <a href="?page=Controls.CheckBox">TCheckbox</a>. Properti <tt>AutoPostBack</tt>
- dari <tt>TActiveCheckBox</tt> standarnya disetel menjadi true.
+ dari <tt>TActiveCheckBox</tt> standarnya disetel true.
  Selanjutnya, saat kotak centang diklik, event <tt>OnCallback</tt> muncul setelah event <tt>OnCheckedChanged</tt>.
  </p>
 
  <p id="620420" class="block-content">
  Properti <tt>Text</tt> dan <tt>Checked</tt> dari <tt>TActiveCheckBox</tt>
  bisa diubah selama permintaan callback. Properti <tt>TextAlign</tt> dari
- <tt>TActiveCheckBox</tt> <strong>tidak bisa</strong> diubah selama permintaan
+ <tt>TActiveCheckBox</tt> <strong>tidak bisa</strong> diubah saat permintaan
  callback.
 </p>
 

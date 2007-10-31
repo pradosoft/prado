@@ -124,7 +124,7 @@ Untuk menguji halaman <tt>NewPost</tt>, masuk lebih dulu dan klik pada link tomb
 </p>
 
 <com:InfoBox>
-Ketika anda mengunjungi halaman <tt>NewPost</tt> untuk pertama kali, anda bisa melihat bahwa ia memerlukan beberapa detik sebelum halaman ditampilkan. Ini dikarenakan PRADO perlu mengurai dan mempublikasikan kode javascript dan gambar untuk kontrol <tt>THtmlArea</tt> yang dipakai dalam halaman. Ini dikerjakan sekali dan untuk semuanya.
+Ketika Anda mengunjungi halaman <tt>NewPost</tt> untuk pertama kali, Anda bisa melihat bahwa diperlukan beberapa detik sebelum halaman ditampilkan. Ini dikarenakan PRADO perlu mengurai dan mempublikasikan kode javascript dan gambar untuk kontrol <tt>THtmlArea</tt> yang dipakai dalam halaman. Ini dikerjakan sekali dan untuk semuanya.
 </com:InfoBox>
 
 <com:TipBox>

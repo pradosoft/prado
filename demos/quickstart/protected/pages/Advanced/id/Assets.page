@@ -2,7 +2,7 @@
 
 <h1 id="5701">Assets</h1>
 <p id="740577" class="block-content">
-Asset adalah file sumber daya (seperti gambar, suara, video, CSS stylesheet, javascript, dll.) yang dimiliki oleh kelas komponen tertentu. Assets disediakan bagi para pengguna Web. Untuk usabilitas dan kemudahan penyebaran kelas komponen terkait, asset harus berada bersama dengan file kelas komponen. Sebagai contoh, tombol toggle dapat memakai dua gambar, disimpan dalam file <tt>down.gif</tt> dan <tt>up.gif</tt>, untuk menampilkan kondisi toggle berbeda. Jika kita ingin file gambar disimpan di bawah direktori <tt>images</tt> di bawah akar dokumen server Web, tidak akan menjadi nyaman bagi para pengguna komponen tombol toggle, karena setiap kali mereka mengembangkan atau menyebarkan aplikasi baru, mereka harus meng-copy file gambar ke direktori tertentu itu secara manual. Untuk mengeliminir persyaratan ini, direktori relatif ke file kelas komponen harus digunakan untuk menyimpan file gambar. Strategi umum adalah menggunakan direktori yang berisi file kelas komponen untuk menyimpan file asset.
+Asset adalah file sumber daya (seperti gambar, suara, video, CSS stylesheet, javascript, dll.) yang dimiliki oleh kelas komponen tertentu. Assets disediakan bagi para pengguna Web. Untuk kegunaan dan kemudahan penyebaran kelas komponen terkait, asset harus berada bersama dengan file kelas komponen. Sebagai contoh, tombol toggle dapat memakai dua gambar, disimpan dalam file <tt>down.gif</tt> dan <tt>up.gif</tt>, untuk menampilkan kondisi toggle berbeda. Jika kita ingin file gambar disimpan di bawah direktori <tt>images</tt> di bawah akar dokumen server Web, tidak akan memembuat nyaman bagi para pengguna komponen tombol toggle, karena setiap kali mereka mengembangkan atau menyebarkan aplikasi baru, mereka harus meng-copy file gambar ke direktori tertentu itu secara manual. Untuk mengeliminir persyaratan ini, direktori relatif ke file kelas komponen harus digunakan untuk menyimpan file gambar. Strategi umum adalah menggunakan direktori yang berisi file kelas komponen untuk menyimpan file asset.
 </p>
 <p id="740578" class="block-content">
 Karena direktori yang berisi file kelas komponen biasanya tidak bisa diakses oleh pengguna Web, PRADO menerapkan skema penerbitan asset untuk menjadikan assets tersedia bagi para pengguna Web. Sebuah asset, setelah diterbitkan, akan mempunyai URL di mana para pengguna bisa mengambil file asset.
@@ -10,15 +10,15 @@ Karena direktori yang berisi file kelas komponen biasanya tidak bisa diakses ole
 
 <h2 id="5702">Penerbitan Asset</h2>
 <p id="740579" class="block-content">
-PRADO menyediakan beberapa metode untuk penerbitan asset atu direktori yang berisi asset:
+PRADO menyediakan beberapa metode untuk penerbitan asset atau direktori yang berisi asset:
 </p>
 <ul id="u1" class="block-content">
-<li>Dalam file template, anda dapat menggunakan <a href="?page=Configurations.Templates2#at">tag asset</a> guna menerbitkan asset dan mendapatkan URL-nya. Catatan, asset harus relatif ke direktori yang berisi file template.</li>
-<li>Dalam kode PHP, anda dapat memanggil <tt>$object->publishAsset($assetPath)</tt> untuk menerbitkan asset dan mendapatkan URL-nya. <tt>$object</tt> di sini merujuk ke turunan <tt>TApplicationComponent</tt> atau kelas asalnya, dan <tt>$assetPath</tt> adalah file atau direktori relatif ke direktori yang berisi file kelas.</li>
-<li>Jika anda ingin menerbitkan asset sesukanya, anda perlu memanggil <tt>TAssetManager::publishFilePath($path)</tt>.</li>
+<li>Dalam file template, Anda dapat menggunakan <a href="?page=Configurations.Templates2#at">tag asset</a> guna menerbitkan asset dan mendapatkan URL-nya. Catatan, asset harus relatif ke direktori yang berisi file template.</li>
+<li>Dalam kode PHP, Anda dapat memanggil <tt>$object->publishAsset($assetPath)</tt> untuk menerbitkan asset dan mendapatkan URL-nya. <tt>$object</tt> di sini merujuk ke turunan <tt>TApplicationComponent</tt> atau kelas asalnya, dan <tt>$assetPath</tt> adalah file atau direktori relatif ke direktori yang berisi file kelas.</li>
+<li>Jika Anda ingin menerbitkan asset sesuka hati, Anda perlu memanggil <tt>TAssetManager::publishFilePath($path)</tt>.</li>
 </ul>
 <p id="740580" class="block-content">
-HATI-HATI: Sangat berhati-hatilah dengan penerbitan asset, karena ia memberikan para pengguna Web akses ke file yang sebelumnya tidak dapat diakses. Pastikan bahwa anda tidak menerbitkan file yang tidak ingin pengguna lain melihatnya.
+HATI-HATI: Berhati-hatilah dengan penerbitan asset, karena ia memberikan para pengguna Web mengakses ke file yang sebelumnya tidak dapat diakses. Pastikan bahwa Anda tidak menerbitkan file yang tidak ingin dilihat pengguna lain.
 </p>
 
 <h2 id="5703">Kustomisasi</h2>
@@ -36,10 +36,10 @@ Penerbitan asset diatur oleh modul <tt>System.Web.TAssetManager</tt>. Standarnya
 
 <h2 id="5704">Performansi</h2>
 <p id="740582" class="block-content">
-PRADO menggunakan teknik cache guna memastikan efisiensi penerbitan asset. Menerbitkan asset intinya memerlukan operasi copy file, yang mahal. Untuk menyimpan operasi copy file yang tidak diperlukan, <tt>System.Web.TAssetManager</tt> hanya menerbitkan asset saat ia memiliki waktu modifikasi file lebih baru daripada file yang pernah diterbitkan. Ketika aplikasi dijalankan di bawah mode <tt>Performance</tt>, pemeriksaan cap waktu tersebut juga diabaikan.
+PRADO menggunakan teknik cache guna memastikan efisiensi penerbitan asset. Menerbitkan asset intinya memerlukan operasi copy file, yang mahal. Untuk menyimpan operasi copy file yang tidak diperlukan, <tt>System.Web.TAssetManager</tt> hanya menerbitkan asset saat ia memiliki waktu modifikasi file lebih baru daripada file yang pernah diterbitkan. Ketika aplikasi dijalankan dengan mode <tt>Performance</tt>, pemeriksaan cap waktu tersebut juga diabaikan.
 </p>
 <p id="740583" class="block-content">
-SARAN: Jangan menggunakan penerbitan asset secara berlebihan. Konsep asset dipakai terutama untuk membantu pemakaian ulang dan redistribusi kelas komponen lebih baik. Normalnya, anda tidak akan menggunakan penerbitan asset untuk sumberdaya yang tidak terikat ke komponen manapun dalam aplikasi. Sebagai contoh, anda jangan menggunakan penerbitan asset untuk gambar yang digunakan terutama sebagai elemen desain (misalnya logo, gambar latar belakang, dll). Biarkan server Web melayani gambar ini secara langsung yang akan membantu meningkatkan performansi aplikasi anda.
+SARAN: Jangan menggunakan penerbitan asset secara berlebihan. Konsep asset dipakai terutama untuk membantu pemakaian ulang dan redistribusi kelas komponen agar lebih baik. Normalnya, Anda tidak akan menggunakan penerbitan asset untuk sumberdaya yang tidak terikat ke komponen mana pun dalam aplikasi. Sebagai contoh, Anda jangan menggunakan penerbitan asset untuk gambar yang digunakan terutama sebagai elemen desain (misalnya logo, gambar latar belakang, dll). Biarkan server Web melayani gambar ini secara langsung yang akan membantu meningkatkan performansi aplikasi Anda.
 </p>
 
 <h2 id="5705">Contoh Tombol Toggle</h2>

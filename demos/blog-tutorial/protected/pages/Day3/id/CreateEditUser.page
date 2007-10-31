@@ -21,7 +21,7 @@ Kita membuat dua file <tt>protected/pages/users/EditUser.page</tt> dan <tt>prote
 
 <h2>Membuat Template Halaman</h2>
 <p>
-Seperti yang telah anda tebak, template halaman <tt>EditUser</tt> sebagian besar sama seperti pada <tt>NewUser</tt>. Selain perbedaan dalam judul halaman dan judul tombol submit, ada tiga perbedaan utama.
+Seperti yang telah Anda tebak, template halaman <tt>EditUser</tt> sebagian besar sama seperti pada <tt>NewUser</tt>. Selain perbedaan dalam judul halaman dan judul tombol submit, ada tiga perbedaan utama.
 </p>
 <ul>
 <li>Kotak teks "username" diganti oleh kontrol <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.Label">TLabel</a> karena kita tidak membolehkan memodifikasi nama pengguna;</li>
@@ -189,7 +189,7 @@ Metode <tt>onInit()</tt> dipanggil oleh PRADO selama salah satu <a href="http://
 
 <h2>Pengujian</h2>
 <p>
-Untuk menguji halaman <tt>EditUser</tt>, kunjungi URL <tt>http://hostname/blog/index.php?page=users.EditUser&username=demo</tt>. Anda mungkin perlu masuk lebih dulu jika anda belum melakukannya. Coba masuk dengan akun berbeda (e.g. admin/demo, demo/demo) dan lihat bagaimana halaman ditampilkan secara berbeda.
+Untuk menguji halaman <tt>EditUser</tt>, kunjungi URL <tt>http://hostname/blog/index.php?page=users.EditUser&username=demo</tt>. Anda mungkin perlu masuk lebih dulu jika Anda belum melakukannya. Coba masuk dengan akun berbeda (e.g. admin/demo, demo/demo) dan lihat bagaimana halaman ditampilkan secara berbeda.
 </p>
 
 </com:TContent>

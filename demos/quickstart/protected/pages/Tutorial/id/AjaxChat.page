@@ -1,9 +1,9 @@
 <com:TContent ID="body">
-	<h1 id="18008">Membangun Aplikasi Chat AJAX</h1>
+	<h1 id="18008">Membangun Aplikasi Obrolan AJAX</h1>
 	<com:RequiresVersion Version="3.1a" />
 	<p id="90081" class="block-content">Tutorial ini memperkenalkan kerangka kerja aplikasi web Prado
 	<a href="?page=Database.ActiveRecord">ActiveRecord</a>
-	dan <a href="?page=ActiveControls.Home">Kontrol Aktif</a> untuk membangun aplikasi web Chat. Diasumsikan bahwa anda sudah terbiasa dengan PHP dan akan telah mengakses server web yang dapat melayani naskah PHP5.
+	dan <a href="?page=ActiveControls.Home">Kontrol Aktif</a> untuk membangun aplikasi web Chat. Diasumsikan bahwa Anda sudah terbiasa dengan PHP dan akan telah mengakses server web yang dapat melayani naskah PHP5.
 	Aplikasi chat dasar ini akan memanfaatkan ide/komponen berikut dalam Prado.
 	</p>
 	<ul id="u1" class="block-content">
@@ -14,7 +14,7 @@
 		<li>Memisahkan logika aplikasi dan alur aplikasi.</li>
 	</ul>
 
-	<p id="90082" class="block-content">Dalam tutorial ini anda akan membangun sebuah aplikasi web Chat AJAX yang membolehkan
+	<p id="90082" class="block-content">Dalam tutorial ini Anda akan membangun sebuah aplikasi web Chat AJAX yang membolehkan
 		multipel pengguna untuk berkomunikasi melalui web browser mereka.
 		Aplikasi terdiri dari dua halaman: halaman masuk yang menanyakan pada
 		pengguna untuk memasukkan nama panggilannya dan halaman aplikasi chat utama.
@@ -36,7 +36,7 @@ php prado/framework/prado-cli.php -c chat
 	</p>
 
 	<p id="90084" class="block-content">Perintah di atas membuat struktur direktori yang diperlukan dan file minimal (termasuk "index.php" dan "Home.page") untuk menjalankan aplikasi web Prado.
-		Sekarang anda dapat mengarahkan URL browser anda ke server web untuk melayani
+		Sekarang Anda dapat mengarahkan URL browser Anda ke server web untuk melayani
 		naskah <tt>index.php</tt> dalam direktori <tt>chat</tt>.
 		Anda seharusnya melihat pesan "Welcome to Prado!"
 	</p>
@@ -90,7 +90,7 @@ class Login extends TPage
 	a <com:DocLink ClassPath="System.Web.UI.WebControls.TRequiredFieldValidator" Text="TRequiredFieldValidator" />
 	dan <com:DocLink ClassPath="System.Web.UI.WebControls.TButton" Text="TButton" />. Halaman yang dihasilkan terlihat seperti berikut (setelah menerapkan beberapa style sheet).
 	<img src=<%~ chat2.png %> class="figure" />
-	Jika anda mengklik pada tombol <tt>Login</tt> tanpa memasukan teks
+	Jika Anda mengklik pada tombol <tt>Login</tt> tanpa memasukan teks
 	apapun dalam kotak teks nama pengguna, pesan kesalahan ditampilkan. Ini dikarenakan <com:DocLink ClassPath="System.Web.UI.WebControls.TRequiredFieldValidator" Text="TRequiredFieldValidator" />
 	memerlukan pengguna untuk memasukan beberapa teks dalam kotak teks sebelum melanjutkan.
 	</p>
@@ -129,8 +129,8 @@ Kita membolehkan setiap pengguna dengan aturan yang sama dengan "normal" (didefi
 Terakhir, kita menolak semua pengguna tanpa aturan apapun untuk mengakses setiap halaman. Aturan otorisasi dijalankan pada basis sama pertama kali.
 </p>
 
-<p id="90088" class="block-content">Jika anda mencoba untuk mengakses halaman <tt>Home</tt> dengan mengarahkan browser anda ke
-<tt>index.php</tt> anda akan dialihkan ke halaman <tt>Login</tt>.
+<p id="90088" class="block-content">Jika Anda mencoba untuk mengakses halaman <tt>Home</tt> dengan mengarahkan browser Anda ke
+<tt>index.php</tt> Anda akan dialihkan ke halaman <tt>Login</tt>.
 </p>
 
 <h1 id="18011">Rekaman Aktif untuk tabel <tt>chat_users</tt></h1>
@@ -145,7 +145,7 @@ CREATE TABLE chat_users
 	last_activity INTEGER NOT NULL DEFAULT "0"
 );
 </com:TTextHighlighter>
-Selanjutnya kita mendefinisikan kelas <tt>ChatUserRecord</tt> dan menyimpannya sebagai <tt>chat/protected/App_Code/ChatUserRecord.php</tt> (anda perlu untuk membuat direktori <tt>App_Code</tt> juga). Kita juga menyimpan file database sqlite sebagai <tt>App_Code/chat.db</tt>.
+Selanjutnya kita mendefinisikan kelas <tt>ChatUserRecord</tt> dan menyimpannya sebagai <tt>chat/protected/App_Code/ChatUserRecord.php</tt> (Anda perlu untuk membuat direktori <tt>App_Code</tt> juga). Kita juga menyimpan file database sqlite sebagai <tt>App_Code/chat.db</tt>.
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_90033">
 class ChatUserRecord extends TActiveRecord
 {
@@ -301,7 +301,7 @@ Akhirnya, kita mengalihkan klien ke halaman standar <tt>Home</tt>.
 </p>
 
 <h2 id="18021">Nilai Standar untuk ActiveRecord</h2>
-<p id="90096" class="block-content">Jika anda mencoba untuk melakukan login sekarang, anda akan menerima pesan kesalahan seperti
+<p id="90096" class="block-content">Jika Anda mencoba untuk melakukan login sekarang, Anda akan menerima pesan kesalahan seperti
 "<i>Property '<tt>ChatUserRecord::$last_activity</tt>' must not be null as defined
 by column '<tt>last_activity</tt>' in table '<tt>chat_users</tt>'.</i>". Ini berarti bahwa nilai properti <tt>$last_activity</tt> adalah null dalam kolom terkait pada tabel dan memboleh nilai null atau menetapkan nilai standar dalam kelas <tt>ChatUserRecord</tt>. Kita akan mendemonstrasikannya nanti dengan mengubah <tt>ChatUserRecord</tt> dengan tambahan dari metode setelan pengambil/pengetap untuk properti <tt>last_activity</tt>.
 
@@ -417,7 +417,7 @@ class Home extends TPage
     }
 }
 </com:TTextHighlighter>
-Jika anda sekarang mengetikan sesuatu dalam kotak teks aplikasi utama dan mengklik tombol kirim, anda seharusnya melihat apapun yang anda ketikan muncul dalam konsol <tt>TJavascriptLogger</tt>.
+Jika Anda sekarang mengetikan sesuatu dalam kotak teks aplikasi utama dan mengklik tombol kirim, Anda seharusnya melihat apapun yang Anda ketikan muncul dalam konsol <tt>TJavascriptLogger</tt>.
 </p>
 
 <p id="90099" class="block-content">Untuk menambah atau menambahkan beberapa konten ke panel daftar pesan, kita perlu memakai beberapa metode dalam kelas
@@ -569,7 +569,7 @@ Kita cukup menyimpan pesan ke bufer chat dan kemudian meminta semua pesan untuk 
 (gaya AJAX).
 </p>
 
-<p id="90104" class="block-content">Pada titik ini aplikasi sebenarnya sudah berfungsi, cuma tidak bersahabat. Jika anda membuka dua browser berbeda, anda seharusnya bisa berkomunikasi diantara dua pengguna kapan saja tombol <tt>Send</tt> diklik.
+<p id="90104" class="block-content">Pada titik ini aplikasi sebenarnya sudah berfungsi, cuma tidak bersahabat. Jika Anda membuka dua browser berbeda, Anda seharusnya bisa berkomunikasi diantara dua pengguna kapan saja tombol <tt>Send</tt> diklik.
 </p>
 
 <p id="90105" class="block-content">Bagian berikutnya barangkali lebih rumit dan mengakali daripada tugas lainnya. Kita perlu untuk meningkatkan pengalaman pengguna. Pertama, kita menginginkan daftar pengguna saat ini juga. Maka kita menambahkan metode berikut ke <tt>Home.php</tt>, kita dapat memanggil metode ini kapan saja beberapa event callback dimunculkan, misalnya saat tombol  <tt>Send</tt> diklik.
@@ -680,7 +680,7 @@ Rincian sehubungan dengan javascript bisa dilihat dalam seksi
 <a href="?page=Advanced.Scripts">Pengenalan Javascript</a> pada tutorial cepat.
 </p>
 
-<p id="90110" class="block-content">Ini melengkapi tutorial untuk membuat aplikasi chat web menggunakan kerangka kerja Prado. Diharapkan anda menikmatinya.
+<p id="90110" class="block-content">Ini melengkapi tutorial untuk membuat aplikasi chat web menggunakan kerangka kerja Prado. Diharapkan Anda menikmatinya.
 </p>
 
 <div class="last-modified">$Id: AjaxChat.page 1846 2007-04-07 10:35:16Z wei $</div></com:TContent>

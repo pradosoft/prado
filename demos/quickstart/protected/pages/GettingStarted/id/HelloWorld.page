@@ -2,10 +2,10 @@
 <h1 id="401">Aplikasi PRADO Pertama Saya</h1>
 <div id="hello1"  class="block-content">
 <p id="50034">
-Dalam seksi ini, kami membimbing anda melalui pembuatan aplikasi PRADO pertama anda, aplikasi terkenal "Hello World".
+Dalam seksi ini, kami membimbing Anda melalui pembuatan aplikasi PRADO pertama Anda, aplikasi terkenal "Hello World".
 </p>
 <p id="50035">
-"Hello World" barangkali adalah aplikasi PRADO <i>interaktif</i> paling sederhana yang bisa anda buat. Ia menampilkan kepada pengguna-akhir sebuah halaman dengan tombol kirim yang judulnya adalah <tt>Click Me</tt>. Setelah pengguna mengklik tombol, judulnya diubah ke <tt>Hello World</tt>.
+"Hello World" barangkali adalah aplikasi PRADO <i>interaktif</i> paling sederhana yang bisa Anda buat. Ia menampilkan kepada pengguna-akhir sebuah halaman dengan tombol kirim yang judulnya adalah <tt>Click Me</tt>. Setelah pengguna mengklik tombol, judulnya diubah ke <tt>Hello World</tt>.
 </p>
 <p id="50036">
 Ada banyak pendekatan yang dapat mencapai tujuan di atas. Seseorang dapat mengirim halaman ke server, menentukan variabel POST, dan membuat halaman baru dengan judul tombol yang dimutakhirkan. Atau seseorang cukup menggunakan JavaScript untuk memutakhirkan judul tombol setelah event klien <tt>onclick</tt>.
@@ -19,7 +19,7 @@ PRADO mempromosikan pemrograman Web berbasis-komponen dan kendali-event. Tombol 
 Aplikasi PRADO kita terdiri dari tiga file, <tt>index.php</tt>, <tt>Home.page</tt> dan <tt>Home.php</tt>, yang diatur sebagai berikut,
 <img src="<%~directory.gif%>" class="figure"/>
 
-di mana setiap direktori dijelaskan sebagai berikut. Catatan, struktur direktori di atas bisa dikustomisasi. Sebagai contoh, seseorang dapat memindahkan direktori <tt>protected</tt> ke luar direktori Web. Anda akan mengetahui bagaimana melakukan ini setelah anda melewati tutorial ini.
+di mana setiap direktori dijelaskan sebagai berikut. Catatan, struktur direktori di atas bisa dikustomisasi. Sebagai contoh, seseorang dapat memindahkan direktori <tt>protected</tt> ke luar direktori Web. Anda akan mengetahui bagaimana melakukan ini setelah Anda melewati tutorial ini.
 </p>
 <ul id="dir-struct" class="block-content">
 <li><tt>assets</tt> - direktori yang menyimpan file pribadi yang dipublikasikan. Lihat seksi <a href="?page=Advanced.Assets">assets</a> untuk lebih jelasnya. Direktori ini harus bisa ditulisi oleh proses server Web.</li>
@@ -32,7 +32,7 @@ di mana setiap direktori dijelaskan sebagai berikut. Catatan, struktur direktori
 <b class="tip">Tip:</b>Anda juga dapat menggunakan <tt>framework/prado-cli.php</tt>
 <a href="?page=GettingStarted.CommandLine">naskah baris perintah</a>
 untuk membuat struktur direktori Prado. Sebagai contoh, ketik perintah
-<tt>php path/to/prado-cli.php -c helloworld</tt> dalam direktori di mana anda ingin membuat proyek <tt>helloworld</tt>.
+<tt>php path/to/prado-cli.php -c helloworld</tt> dalam direktori di mana Anda ingin membuat proyek <tt>helloworld</tt>.
 </div>
 
 <p id="50040">

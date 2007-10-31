@@ -4,7 +4,7 @@
 <a name="dpt"></a>
 <h2 id="1702">Tag Properti Dinamis</h2>
 <p id="200196" class="block-content">
-Tag properti dinamis sangat mirip dengan tag konten dinamis, kecuali bahwa ia berlaku untuk properti komponen. Kegunaan tag properti dinamis adalah untuk membolehkan konfigurasi properti komponen lebih serba guna. Catatan, anda tidak perlu memakai tag properti dinamis karena apa yang bisa dikerjakan oleh tag properti dinamis juga bisa dilakukan dalam kode PHP. Akan tetapi, menggunakan tag properti dinamis membawa anda jauh lebih nyaman saat menyempurnakan tugas yang sama. Pemakaian dasar dari tag properti dinamis adalah sebagai berikut,
+Tag properti dinamis sangat mirip dengan tag konten dinamis, kecuali bahwa ia berlaku untuk properti komponen. Kegunaan tag properti dinamis adalah untuk membolehkan konfigurasi properti komponen lebih serba guna. Catatan, Anda tidak perlu memakai tag properti dinamis karena apa yang bisa dikerjakan oleh tag properti dinamis juga bisa dilakukan dalam kode PHP. Akan tetapi, menggunakan tag properti dinamis membawa Anda jauh lebih nyaman saat menyempurnakan tugas yang sama. Pemakaian dasar dari tag properti dinamis adalah sebagai berikut,
 </p>
 <com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_200087">
 &lt;com:ComponentType PropertyName=DynamicPropertyTag ...&gt;
@@ -12,7 +12,7 @@ body content
 &lt;/com:ComponentType&gt;
 </com:TTextHighlighter>
 <p id="200197" class="block-content">
-di mana anda dapat mengurung <tt>DynamicPropertyTag</tt> di dalam tanda kutip tunggal atau dua agar pembacaannya lebih baik.
+di mana Anda dapat mengurung <tt>DynamicPropertyTag</tt> di dalam tanda kutip tunggal atau dua agar pembacaannya lebih baik.
 </p>
 <p id="200198" class="block-content">
 Seperti tag konten dinamis, kami mempunyai <a href="#et">tag ekspresi</a>, <a href="#dt">tag databind</a>, <a href="#pt">tag parameter</a>, <a href="#at">tag asset</a> dan <a href="#lot">tag lokalisasi</a>. (Catatan, tidak ada tag pernyataan di sini.)
@@ -45,7 +45,7 @@ Format tag databind adalah sebagai berikut,
 &lt;%# PhpExpression %&gt;
 </com:TTextHighlighter>
 <p id="200203" class="block-content">
-Sejak v3.0.2, tag ekspresi dan tag databind dapat direkatkan di dalam string statis. Sebagai contoh, anda bisa menulis yang berikut dalam template,
+Sejak v3.0.2, tag ekspresi dan tag databind dapat direkatkan di dalam string statis. Sebagai contoh, Anda bisa menulis yang berikut dalam template,
 </p>
 <com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_200091">
 &lt;com:TLabel&gt;
@@ -56,7 +56,7 @@ Sejak v3.0.2, tag ekspresi dan tag databind dapat direkatkan di dalam string sta
 &lt;/com:TLabel&gt;
 </com:TTextHighlighter>
 <p id="200204" class="block-content">
-Sebelumnya, anda harus menggunakan ekspresi tunggal dengan penggabungan string untuk mendapatkan efek yang sama.
+Sebelumnya, Anda harus menggunakan ekspresi tunggal dengan penggabungan string untuk mendapatkan efek yang sama.
 </p>
 
 <a name="pt"></a>
@@ -74,7 +74,7 @@ Catatan, parameter aplikasi biasanya didefinisikan konfigurasi aplikasi atau kon
 <a name="at"></a>
 <h3 id="1706">Tag Asset</h3>
 <p id="200207" class="block-content">
-Tag asset dipakai untuk mempublikasikan file pribadi dan menampilkan URL terkait. Sebagai contoh, jika anda mempunyai file gambar yang tidak bisa diakses Web dan anda ingin menjadikannya terlihat bagi pengguna-akhir, anda dapat menggunakan tag asset untuk mempublikasikan file ini dan menampilkan URL ke pengguna-akhir agar mereka dapat mengambil gambar yang dipublikasikan. Tag asset dievaluasi ketika template diberi contoh.
+Tag asset dipakai untuk mempublikasikan file pribadi dan menampilkan URL terkait. Sebagai contoh, jika Anda mempunyai file gambar yang tidak bisa diakses Web dan Anda ingin menjadikannya terlihat bagi pengguna-akhir, Anda dapat menggunakan tag asset untuk mempublikasikan file ini dan menampilkan URL ke pengguna-akhir agar mereka dapat mengambil gambar yang dipublikasikan. Tag asset dievaluasi ketika template diberi contoh.
 </p>
 <p id="200208" class="block-content">
 Format tag asset adalah sebagai berikut,
@@ -86,13 +86,13 @@ Format tag asset adalah sebagai berikut,
 di mana <tt>LocalFileName</tt> merujuk ke path file yang relatif ke direktori yang berisi file template saat ini. Path file bisa berupa file tunggal atau sebuah direktori. Jika direktori, konten dalam seluruh direktori akan dibuat dapat diakses oleh pengguna-akhir.
 </p>
 <p id="200210" class="block-content">
-HARAP SANGAT BERHATI-HATI ketika anda menggunakan tag asset karena ia dapat memperlihatkan ke pengguna-akhir file yang tidak ingin anda perlihatkan kepada mereka.
+HARAP SANGAT BERHATI-HATI ketika Anda menggunakan tag asset karena ia dapat memperlihatkan ke pengguna-akhir file yang tidak ingin Anda perlihatkan kepada mereka.
 </p>
 
 <a name="lot"></a>
 <h3 id="1707">Tag Lokalisasi</h3>
 <p id="200211" class="block-content">
-Tag lokalisasi mewakili teks yang dilokalisasi. Formatnya adalah sebagai berikut,
+Tag lokalisasi mewakili teks yang dilokalisir. Formatnya adalah sebagai berikut,
 </p>
 <com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_200094">
 &lt;%[string]%&gt;

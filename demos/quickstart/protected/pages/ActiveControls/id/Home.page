@@ -9,12 +9,12 @@ sub-properti <a href="?page=ActiveControls.CallbackClientSide">ClientSide</a>
 yang menyediakan banyak properti untuk mengkustomisasi kontrol. Properti
 <a href="?page=TCallbackClientScript">CallbackClient</a> dari kelas
 <tt>TPage</tt> menyediakan metode untuk memutakhirkan dan mengubah konten sisi-klien
-selama permintaan callback. Kontrol aktif bergantung pada koleksi
+saat permintaan callback. Kontrol aktif bergantung pada koleksi
 <a href="?page=ActiveControl.ClientSideJavascript">kelas javascript</a>.
 </p>
 
 <p id="640424" class="block-content">Untuk demo cepat atas kontrol aktif, coba kontrol <a href="?page=ActiveControls.ActiveButton">
-TActiveButton</a>. Lihat juga bagian akhir dari tutorial <a href="?page=Tutorial.CurrencyConverter">Pengubah Kurs</a> untuk conton lebih mendalam.
+TActiveButton</a>. Lihat juga bagian akhir dari tutorial <a href="?page=Tutorial.CurrencyConverter">Pengubah Kurs</a> untuk contoh lebih mendalam.
 </p>
 
 <p id="640425" class="block-content">* tutorial untuk kontrol ini belum lengkap.</p>
@@ -29,7 +29,7 @@ TActiveButton</a>. Lihat juga bagian akhir dari tutorial <a href="?page=Tutorial
   <li>
   <a href="?page=ActiveControls.ActiveCheckBox">TActiveCheckBox</a>
   mewakili kotak centang pada halaman Web. Ia dapat dipakai untuk mengoleksi input dua-kondisi pengguna 
-  dan memicu permintaan callback.
+  serta memicu permintaan callback.
   </li>
 
   <li>
@@ -74,8 +74,8 @@ TActiveButton</a>. Lihat juga bagian akhir dari tutorial <a href="?page=Tutorial
   <li>
   * <a href="?page=ActiveControls.ActiveRadioButton">TActiveRadioButton</a>
   mewakili tombol radio pada halaman Web.
-  Ia dipakai terutama dalam sebuah grup di mana pengguna bisa memilih. Ini
-  dapat digunakan untul melakukan permintaan callback.
+  Dipakai terutama dalam sebuah grup di mana pengguna bisa memilih. Ini
+  dapat digunakan untuk melakukan permintaan callback.
   </li>
 
   <li>
@@ -96,20 +96,20 @@ TActiveButton</a>. Lihat juga bagian akhir dari tutorial <a href="?page=Tutorial
 <ul id="u2" class="block-content">
   <li>
   * <a href="?page=ActiveControls.ActiveCheckBoxList">TActiveCheckBoxList</a>
-  menampilkan daftar kotak centang pada halaman Web dans setiap kotak centang
+  menampilkan daftar kotak centang pada halaman Web dan setiap kotak centang
   	dapat memicu permintaan callback.
   </li>
 
   <li>
   * <a href="?page=ActiveControls.ActiveDropDownList">TActiveDropDownList</a>
   menampilkan kotak daftar dropdown yang membolehkan para pengguna untuk memilih
-  satu opsi dari beberapa yang telah ditetapkan. Ia dapat dipakai untuk melakukan
+  satu opsi dari beberapa yang telah ditetapkan. Dapat dipakai untuk melakukan
   permintaan callback.
   </li>
 
   <li>
   * <a href="?page=ActiveControls.ActiveListBox">TActiveListBox</a>
-  menampilkan kotak daftar yang membolehkan satu pilihan atau multipel. Ia dapat
+  menampilkan kotak daftar yang membolehkan satu pilihan atau multipel. Dapat
   dipakai untuk melakukan permintaan callback.
   </li>
 
@@ -320,7 +320,7 @@ TActiveButton</a>. Lihat juga bagian akhir dari tutorial <a href="?page=Tutorial
 
 	<li>
 	* <a href="?page=ActiveControls.ActivePageAdapter">TActivePageAdapter</a>
-	memproses masa-hidup halaman untuk permintaan callback.
+	memroses masa-hidup halaman untuk permintaan callback.
 	</li>
 
 	<li>

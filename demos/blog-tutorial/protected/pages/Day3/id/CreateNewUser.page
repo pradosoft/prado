@@ -174,7 +174,7 @@ Untuk menguji halaman <tt>NewUser</tt>, kunjungi URL <tt>http://hostname/blog/in
 
 <h2>Menambahkan Pemeriksaan Perijinan</h2>
 <p>
-Selama pengujian, anda mungkin bertanya: apakah halaman <tt>NewUser</tt> seharusnya hanya bisa diakses oleh pengguna administrator? Ya, ini disebut <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.Auth">otorisasi</a>. Sekarang kami menjelaskan bagaimana kita menambahkan pemeriksaan perijinan ini ke halaman <tt>NewUser</tt>.
+Selama pengujian, Anda mungkin bertanya: apakah halaman <tt>NewUser</tt> seharusnya hanya bisa diakses oleh pengguna administrator? Ya, ini disebut <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.Auth">otorisasi</a>. Sekarang kami menjelaskan bagaimana kita menambahkan pemeriksaan perijinan ini ke halaman <tt>NewUser</tt>.
 </p>
 
 <p>

@@ -62,7 +62,7 @@ Validasi cookie standarnya dimatikan. Untuk menghidupkannya, konfigurasi modul <
 </modules>
 </com:TTextHighlighter>
 <p id="730575" class="block-content">
-Untuk menggunakan skema validasi cookie yang disediakan oleh PRADO, anda juga perlu mengambil cookie melalui koleksi <tt>Cookies</tt> dari <tt>THttpRequest</tt> dengan menggunakan pernyataan PHP berikut,
+Untuk menggunakan skema validasi cookie yang disediakan oleh PRADO, Anda juga perlu mengambil cookie melalui koleksi <tt>Cookies</tt> dari <tt>THttpRequest</tt> dengan menggunakan pernyataan PHP berikut,
 </p>
 <com:TTextHighlighter CssClass="source block-content" id="code_730188">
 foreach($this->Request->Cookies as $cookie)

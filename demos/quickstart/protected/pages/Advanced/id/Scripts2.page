@@ -51,7 +51,7 @@ Event.observe('search', 'keypress', function(event)
 
 <p id="840740" class="block-content">Prototipe mendefinisikan properti di dalam obyek event untuk beberapa dari tombol yang lebih umum, maka jangan ragu-ragu untuk mencari di sekitar Prototype guna melihat yang mana saja itu.</p>
 
-<p id="840741" class="block-content">Catatan terakhir pada event tekanan tombol; Jika anda ingin mendeteksi klik kiri anda bisa menggunakan <tt>Event.isLeftClick(event)</tt>.</p>
+<p id="840741" class="block-content">Catatan terakhir pada event tekanan tombol; Jika Anda ingin mendeteksi klik kiri, Anda bisa menggunakan <tt>Event.isLeftClick(event)</tt>.</p>
 
 <h2 id="6704">Mendapatkan koordinat dari penunjuk mouse</h2>
 
@@ -73,9 +73,9 @@ Event.observe(document, 'mousemove', function(event)
 
 <h2 id="6706">Event, Penyatuan, dan Obyek</h2>
 
-<p id="840745" class="block-content">Sejauh ini semuanya sudah jelas, tapi sesuatu mulai menjadi sedikit lebih rumit ketika anda perlu bekerja dengan event dalam lingkungan obyek-terorientasi. Anda harus berhadapan dengan penyatuan dan sintaks yang terlihat aneh yang memerlukan beberapa waktu bagi anda untuk mengetahuinya.</p>
+<p id="840745" class="block-content">Sejauh ini semuanya sudah jelas, tapi sesuatu mulai menjadi sedikit lebih rumit ketika Anda perlu bekerja dengan event dalam lingkungan obyek-terorientasi. Anda harus berhadapan dengan penyatuan dan sintaks yang terlihat aneh yang memerlukan beberapa waktu bagi Anda untuk mengetahuinya.</p>
 
-<p id="840746" class="block-content">Mari kita lihat pada beberapa kode agar anda bisa mendapatkan pengertian yang lebih baik atas apa yang sedang saya bicarakan.</p>
+<p id="840746" class="block-content">Mari kita lihat pada beberapa kode agar Anda bisa mendapatkan pengertian yang lebih baik atas apa yang sedang saya bicarakan.</p>
 <com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840260">
 EventDispenser = Class.create();
 EventDispenser.prototype =
@@ -148,11 +148,11 @@ Setelah kita menemukan daftar item kita berhadapan dengan apa yang kita kirim ke
 Event.observe(item, 'click', this.showTagName.bindEvent(this));
 </com:TTextHighlighter>
 
-<p id="840751" class="block-content">Sekarang, melihat kode di atas, anda akan mencatat fungsi <tt>bindEvent</tt>. Ini mengambil metode sebelumnya <tt>showTagName</tt> dan memperlakukannya sebagai metode yang akan dipicu ketika seseorang mengklik salah satu dari item daftar kita.</p>
+<p id="840751" class="block-content">Sekarang, melihat kode di atas, Anda akan mencatat fungsi <tt>bindEvent</tt>. Ini mengambil metode sebelumnya <tt>showTagName</tt> dan memperlakukannya sebagai metode yang akan dipicu ketika seseorang mengklik salah satu dari item daftar kita.</p>
 
 <p id="840752" class="block-content">Anda juga akan mencatat bahwa kita mengirimkan ini sebagai argumen ke fungsi <tt>bindEvent</tt>.
 Ini membolehkan kita untuk mereferensi obyek dalam konteks <tt>EventDispenser</tt>
-di dalam fungsi <tt>showTagName(event)</tt> kita. Jika fungsi <tt>showTagName</tt> memerlukan parameter tambahan, anda melampirkannya ke parameter terakhir dari <tt>bindEvent</tt>. Sebagai contoh</p>
+di dalam fungsi <tt>showTagName(event)</tt> kita. Jika fungsi <tt>showTagName</tt> memerlukan parameter tambahan, Anda melampirkannya ke parameter terakhir dari <tt>bindEvent</tt>. Sebagai contoh</p>
 <com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840263">
 this.showTagName.bindEvent(this, param1, param2);
 
@@ -160,7 +160,7 @@ this.showTagName.bindEvent(this, param1, param2);
 showTime : function (event, param1, param2) { ... }
 </com:TTextHighlighter>
 
-<p id="840753" class="block-content">Selanjutnya, anda akan melihat <tt>bind(this)</tt> yang dilampirkan ke fungsi iterator.
+<p id="840753" class="block-content">Selanjutnya, Anda akan melihat <tt>bind(this)</tt> yang dilampirkan ke fungsi iterator.
 Ini sama sekali tidak berkaitan dengan event, ia berada di sini untuk membolehkan saya menggunakan <tt>this</tt> di dalam iterator. Jika kita tidak menggunakan <tt>bind(this)</tt>, saya tidak bisa mereferensi metode <tt>showTagName</tt> di dalam iterator.</p>
 
 <p id="840754" class="block-content">Ok, kita berlanjut untuk melihat metode kita yang sebenarnya dipanggil saat terjadi event. Karena kita sudah berhadapan dengan <tt>showTagName</tt>, mari kita lihat itu.</p>
@@ -172,10 +172,10 @@ showTagName: function(event)
 }
 </com:TTextHighlighter>
 
-<p id="840755" class="block-content">Seperti yang anda lihat, fungsi ini menerima satu argumen--event.
+<p id="840755" class="block-content">Seperti yang Anda lihat, fungsi ini menerima satu argumen--event.
 Agar kita mendapatkan elemen yang memicu event kita perlu mengirimkan argumen ke <tt>Event.element</tt>. Sekarang kita dapat memanipulasinya kapan saja.</p>
 
-<p id="840756" class="block-content">Ini mencakup bagian yang paling membingungkan dari kode kita. Teks di atas juga relevan untuk bagian sisa dari kode kita. Jika ada sesuatu mengenai ini yang tidak anda mengerti, jangan ragu-ragu untuk mengajukan pertanyaan dalam forum.</p>
+<p id="840756" class="block-content">Ini mencakup bagian yang paling membingungkan dari kode kita. Teks di atas juga relevan untuk bagian sisa dari kode kita. Jika ada sesuatu mengenai ini yang tidak Anda mengerti, jangan ragu-ragu untuk mengajukan pertanyaan dalam forum.</p>
 
 <h2 id="6707">Menghapus Pendengar Event</h2>
 

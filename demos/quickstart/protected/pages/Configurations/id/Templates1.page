@@ -66,10 +66,10 @@ Tag kontrol template digunakan untuk mengkonfigurasi nilai properti awal dari ko
 Seperti dalam tag komponen, <tt>PropertyName</tt> adalah tidak sensitif-huruf dan bisa berupa nama properti atau subproperti.
 </p>
 <p id="180175" class="block-content">
-Nilai awal yang ditetapkan melalui tag kontrol template ditempatkan ke properti terkait saat kontrol template dibentuk. Oleh karena itu, anda dapat mengganti nilai properti ini dalam langkah berikutnya, seperti tahap <tt>Init</tt> dari kontrol.
+Nilai awal yang ditetapkan melalui tag kontrol template ditempatkan ke properti terkait saat kontrol template dibentuk. Oleh karena itu, Anda dapat mengganti nilai properti ini dalam langkah berikutnya, seperti tahap <tt>Init</tt> dari kontrol.
 </p>
 <p id="180176" class="block-content">
-Tag kontrol template adalah opsional dalam sebuah template. Setiap template dapat berisi paling banyak satu tag kontrol template. Anda dapat menempatkan tag kontrol template di mana saja di dalam template. Direkomendasikan bahwa anda menempatkannya di awal template untuk visibilitas lebih baik.
+Tag kontrol template adalah opsional dalam sebuah template. Setiap template dapat berisi paling banyak satu tag kontrol template. Anda dapat menempatkan tag kontrol template di mana saja di dalam template. Direkomendasikan bahwa Anda menempatkannya di awal template untuk visibilitas lebih baik.
 </p>
 
 <a name="cot"></a>
@@ -97,7 +97,7 @@ Sejak versi 3.0.5, PRADO mulai mendukung penyertaan template eksternal. Ini dila
 Template eksternal akan disisipkan di tempat di mana tag include terjadi dalam basis template.
 </p>
 <p id="180180" class="block-content">
-Catatan, pengulangan penyertaan template tidak didukung, misalnya anda tidak dapat mempunyai tag include di dalam template eksternal.
+Catatan, pengulangan penyertaan template tidak didukung, misalnya Anda tidak dapat mempunyai tag include di dalam template eksternal.
 </p>
 
 <div class="last-modified">$Id: Templates1.page 1902 2007-05-07 04:17:37Z wei $</div></com:TContent>

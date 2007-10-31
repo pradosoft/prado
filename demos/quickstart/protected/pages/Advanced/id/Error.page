@@ -71,7 +71,7 @@ Konvensi penamaan untuk file template yang dipakai bagi semua eksepsi adalah seb
 Sekali lagi, jika bahasa yang diinginkan tidak ditemukan, sebaliknya PRADO akan mencoba menggunakan <tt>exception.html</tt>.
 </p>
 <div class="note">
-<b class="tip">PERHATIAN:</b> Ketika menyimpan file template, pastikan file disimpan menggunakan pengkodean UTF-8. Pada Windows, anda bisa menggunakan <tt>Notepad.exe</tt> untuk melakukan penyimpanan tersebut.
+<b class="tip">PERHATIAN:</b> Ketika menyimpan file template, pastikan file disimpan menggunakan pengkodean UTF-8. Pada Windows, Anda bisa menggunakan <tt>Notepad.exe</tt> untuk melakukan penyimpanan tersebut.
 </div>
 
 <div class="last-modified">$Id: Error.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

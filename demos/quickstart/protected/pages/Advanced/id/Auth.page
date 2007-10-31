@@ -53,7 +53,7 @@ Aturan otorisasi untuk halaman ditetapkan dalam <a href="?page=Configurations.Pa
 &lt;/authorization&gt;
 </com:TTextHighlighter>
 <p id="720557" class="block-content">
-Aturan otorisasi bisa berupa aturan <tt>mengijinkan</tt> atau aturan <tt>menolak</tt>. Setiap aturan terdiri dari empat properti opsional:
+Aturan otorisasi bisa berupa aturan <tt>allow</tt> atau aturan <tt>deny</tt>. Setiap aturan terdiri dari empat properti opsional:
 </p>
 <ul id="u1" class="block-content">
 <li><tt>pages</tt> - daftar nama halaman dipisahkan koma yang menerapkan aturan ini. Jika kosong atau tidak disetel, aturan ini akan berlaku ke semua halaman di bawah direktori saat ini dan seluruh subdirektorinya secara rekursif.</li>
@@ -67,7 +67,7 @@ Ketika permintaan halaman sedang diproses, daftar aturan otorisassi menjadi ters
 </p>
 <ul id="u2" class="block-content">
 <li>Aturan diurut dari bawah-ke atas, misalnya aturan yang berisi dalam konfigurasi dari folder halaman saat ini menjadi yang pertama. Aturan dalam konfigurasi dari folder halaman leluhurnya menjadi yang berikutnya.</li>
-<li>Sebuah aturan efektif jika halaman saat ini dalam halaman yang didaftarkan pada aturan DAN aksi pengguna saat ini (<tt>get</tt> ata <tt>post</tt>) dalam aksi terdaftar.</li>
+<li>Sebuah aturan efektif jika halaman saat ini dalam halaman yang didaftarkan pada aturan DAN aksi pengguna saat ini (<tt>get</tt> atau <tt>post</tt>) dalam aksi terdaftar.</li>
 <li>Sebuah aturan sama terjadi jika nama pengguna saat ini ada dalam daftar nama pengguna pada aturan <i>efektif</i> ATAU jika aturan pengguna ada dalam aturan terdaftar yang mengaturnya.</li>
 <li>Jika tidak ada aturan yang sama, pengguna diotorisasi.</li>
 </ul>
@@ -88,7 +88,7 @@ Juga diperkenalkan dalam versi 3.1.1 adalah aturan IP. Ini ditetapkan oleh atrib
 Seperti telah disebutkan di atas, <tt>TUserManager</tt> menerapkan database pengguna hanya-baca. Informasi pengguna ditetapkan baik dalam konfigurasi aplikasi ataupun file XML eksternal.
 </p>
 <p id="720561" class="block-content">
-Kita telah melihat contoh di atas yang menggunakan duapengguna ditetapkan dalam konfigurasi aplikasi. Sintaks lengkap atas penetapan pengguna dan informasi aturan adalah sebagi berikut,
+Kita telah melihat contoh di atas yang menggunakan dua pengguna ditetapkan dalam konfigurasi aplikasi. Sintaks lengkap atas penetapan pengguna dan informasi aturan adalah sebagai berikut,
 </p>
 <com:TTextHighlighter Language="xml" CssClass="source block-content" id="code3">
 &lt;user name="demo" password="demo" roles="demo,admin" /&gt;
@@ -100,7 +100,7 @@ di mana atribut <tt>roles</tt> dalam elemen <tt>user</tt> adalah opsional. Atura
 
 <h2 id="5505">Menggunakan <tt>TDbUserManager</tt></h2>
 <p id="720563" class="block-content">
-<tt>TDbUserManager</tt> diperkenalkan dalam v3.1.0. Tujuan utamanya adalah untuk menyederhanakan tugas pengaturan akun pengguna yang disimpan dalam sebuah database. Ini membutuhkan para pengembang untuk menulis kelaspengguna yang mewakili informasi yang diperlukan untuk akun pengguna. Kelas pengguna harus diperluas dari <tt>TDbUser</tt>.
+<tt>TDbUserManager</tt> diperkenalkan dalam v3.1.0. Tujuan utamanya adalah untuk menyederhanakan tugas pengaturan akun pengguna yang disimpan dalam sebuah database. Ini membutuhkan para pengembang untuk menulis kelas pengguna yang mewakili informasi yang diperlukan untuk akun pengguna. Kelas pengguna harus diperluas dari <tt>TDbUser</tt>.
 </p>
 <p id="720564" class="block-content">
 Untuk menggunakan <tt>TDbUserManager</tt>, konfigurasi itu dalam konfigurasi aplikasi seperti berikut:

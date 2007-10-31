@@ -2,7 +2,7 @@
 <h1 id="301">Menginstalasi PRADO</h1>
 <div id="install-info" class="block-content">
 <p id="30018">
-Jika anda sedang melihat halaman ini dari server Web anda, anda sudah selesai dengan instalasi.
+Jika Anda sedang melihat halaman ini dari server Web Anda, maka Anda sudah selesai dengan instalasi.
 </p>
 <p id="30019">
 Persyaratan minimum PRADO adalah server Web yang mendukung PHP 5. PRADO sudah diuji dengan server Web Apache pada Windows dan Linux. Sangat dimungkinkan ia juga berjalan pada platform lain dengan server Web lain, selama PHP 5 didukung.
@@ -20,10 +20,10 @@ Instalasi PRADO sebagian besar menyangkut download dan penguraian.
 </div>
 <div id="install-after" class="block-content">
 <p id="30021">
-Instalasi PRADO anda selesai dan anda dapat mulai bermain dengan demo aplikasi yang disertakan dalam rilis PRADO via URL <tt>http://web-server-address/prado/demos/</tt>. Di sini kami menganggap PRADO diurai ke subdirektori <tt>prado</tt> di bawah <tt>DocumentRoot</tt> pada server Web.
+Instalasi PRADO Anda selesai dan dapat mulai bermain dengan demo aplikasi yang disertakan dalam rilis PRADO via URL <tt>http://web-server-address/prado/demos/</tt>. Di sini kami menganggap PRADO diurai ke subdirektori <tt>prado</tt> di bawah <tt>DocumentRoot</tt> pada server Web.
 </p>
 <p id="30022">
-Jika anda menemukan masalah dengan demo aplikasi, silahkan gunakan naskah pemeriksa persyaratan, yang dapapt diakses melalui <tt>http://web-server-address/prado/requirements/index.php</tt>, untuk terlebih dahulu memeriksa apakah konfigurasi server anda memenuhi kondisi yang dibutuhkan oleh PRADO.
+Jika Anda menemukan masalah dengan demo aplikasi, silahkan gunakan naskah pemeriksa persyaratan, yang dapapt diakses melalui <tt>http://web-server-address/prado/requirements/index.php</tt>, untuk terlebih dahulu memeriksa apakah konfigurasi server Anda memenuhi kondisi yang dibutuhkan oleh PRADO.
 </p>
 </div>
 <div class="last-modified">$Id: Installation.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

@@ -78,7 +78,7 @@ di mana <tt>$callback</tt> merujuk ke callback PHP yang benar (misalnya nama fun
 
 <h2 id="704">Namespace</h2>
 <p id="110121" class="block-content">
-Namespace merujuk ke pengelompokan logis dari beberapa nama kelas agar dapat dibedakan dari nama kelas lain meskipun jika namanya sama. Karena PHP pada hakekatnya tidak mendukung namespace, anda tidak bisa membuat turunan dari dua kelas yang mempunyai nama sama tapi dengan definisi berbeda. Untuk membedakan dari kelas didefinisikan pengguna, semua kelas PRADO diawali dengan huruf 'T' (berarti 'Type'). Para pengguna disarankan untuk tidak menamai kelasnya seperti ini. Sebaiknya mengawali nama kelasnya dengan huruf yang lainnya.
+Namespace merujuk ke pengelompokan logis dari beberapa nama kelas agar dapat dibedakan dari nama kelas lain meskipun jika namanya sama. Karena PHP pada hakekatnya tidak mendukung namespace, Anda tidak bisa membuat turunan dari dua kelas yang mempunyai nama sama tapi dengan definisi berbeda. Untuk membedakan dari kelas didefinisikan pengguna, semua kelas PRADO diawali dengan huruf 'T' (berarti 'Type'). Para pengguna disarankan untuk tidak menamai kelasnya seperti ini. Sebaiknya mengawali nama kelasnya dengan huruf yang lainnya.
 </p>
 <p id="110122" class="block-content">
 Namespace dalam PRADO dianggap sebagai direktori yang berisi satu atau beberapa file kelas. Sebuah kelas dapat ditetapkan tanpa dwimakna menggunakan namespace demikian diikuti oleh nama kelas. Setiap namespace dalam PRADO ditetapkan dalam format berikut,

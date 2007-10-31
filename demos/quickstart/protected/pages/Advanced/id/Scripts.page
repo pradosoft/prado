@@ -3,9 +3,9 @@
 Bimbingan ini berdasarkan pada <a href="http://www.sergiopereira.com/articles/advjs.html">
 Bimbingan cepat bagi tur JavaScript tingkat lanjut dengan beberapa fitur OO</a> oleh Sergio Pereira.
 
-<h2 id="6502">Hey, Saya tidak tahu anda bisa melakukannya</h2>
+<h2 id="6502">Hey, Saya tidak tahu Anda bisa melakukannya</h2>
 <p id="820693" class="block-content">
-    Jika anda adalah seorang pengembang web developer dan datang dari tempat yang sama seperti saya, anda mungkin telah mengenal sedikit Javascript dalam halaman web anda, terutama sebagai perekat UI.
+    Jika Anda adalah seorang pengembang web developer dan datang dari tempat yang sama seperti saya, Anda mungkin telah mengenal sedikit Javascript dalam halaman web Anda, terutama sebagai perekat UI.
 </p>
 <p id="820694" class="block-content">
 
@@ -17,13 +17,13 @@ Bimbingan cepat bagi tur JavaScript tingkat lanjut dengan beberapa fitur OO</a> 
 </p>
 <p id="820696" class="block-content">
     Dalam banyak cata kita dapat mengatakan bahwa dengan tiba-tiba palang ditaruh lebih tinggi dari sebelumnya. Ia mengambil palang pintu lebih ahli menulis aplikasi untuk Web baru dan kita perlu mengingkatkan keahlian Javascript kita agar bisa sampai ke sana.
-    Jika anda mencoba untuk menggunakan banyak librari javascript yang ada di luar sana, seperti
+    Jika Anda mencoba untuk menggunakan banyak librari javascript yang ada di luar sana, seperti
     <a href="http://prototype.conio.net/">Prototipe.js</a>,
     <a href="http://script.aculo.us/">Scriptaculous</a>,
     <a href="http://moofx.mad4milk.net/">moo.fx</a>,
     <a href="http://bennolan.com/behaviour/">Perilaku</a>,
     <a href="http://developer.yahoo.net/yui/">YUI</a>,
-    dan lain-lain, anda secara kebetulan akan menemukan diri anda sendiri sedang membaca kode JS. Mungkin dikarenakan anda ingin mempelajari bagaimana mereka melakukannya, atau karena anda penasaran, atau lebih sering karena itulah satu-satunya cara untuk memahami bagaimana untuk memakainya, karena dokumentasi nampaknya tidak banyak ditujukan terutama terhadap librari ini. Apapun kasusnya, anda akan menghadapi teknik kung-fu yang akan menjadi asing dan menakutkan jika anda belum melihat itu sebelumnya.
+    dan lain-lain, Anda secara kebetulan akan menemukan diri Anda sendiri sedang membaca kode JS. Mungkin dikarenakan Anda ingin mempelajari bagaimana mereka melakukannya, atau karena Anda penasaran, atau lebih sering karena itulah satu-satunya cara untuk memahami bagaimana untuk memakainya, karena dokumentasi nampaknya tidak banyak ditujukan terutama terhadap librari ini. Apapun kasusnya, Anda akan menghadapi teknik kung-fu yang akan menjadi asing dan menakutkan jika Anda belum melihat itu sebelumnya.
 </p>
 
 <p id="820697" class="block-content">
@@ -65,16 +65,16 @@ var myPet =
 <com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820235">
 alert('my pet is ' + myPet.color);
 alert('my pet has ' + myPet.legCount + ' legs');
-//jika anda anjing, mengonggong tiga kali:
+//jika Anda anjing, mengonggong tiga kali:
 myPet.communicate(3);
 </com:TTextHighlighter>
 <p id="820701" class="block-content">
     Anda akan melihat JSON banyak dipakai di mana saja dalam JS baru-baru ini, sebagai argumen bagi fungsi, sebagai nilai hasil, sebagai respon server (dalam string,) dll.
 </p>
 
-<h2 id="6504">Apa yang anda maksud? Fungsi juga adalah sebuah obyek?</h2>
+<h2 id="6504">Apa yang Anda maksud? Fungsi juga adalah sebuah obyek?</h2>
 <p id="820702" class="block-content">
-    Ini mungkin tidak biasa bagi para pengembang yang tidak pernah memikirkan tentang itu, tapi dalam fungsi JS adalah sebuah obyek. Anda bisa mengirimkan sebuah fungsi sebagai argumen terhadap fungsi lain sama seperti anda mengirimkan sebuah string, misalnya. Ini sering dipakai dan siap digunakan.
+    Ini mungkin tidak biasa bagi para pengembang yang tidak pernah memikirkan tentang itu, tapi dalam fungsi JS adalah sebuah obyek. Anda bisa mengirimkan sebuah fungsi sebagai argumen terhadap fungsi lain sama seperti Anda mengirimkan sebuah string, misalnya. Ini sering dipakai dan siap digunakan.
 </p>
 
 <p id="820703" class="block-content">
@@ -113,7 +113,7 @@ annoyThePet(myCat.meow);
 </p>
 
 <p id="820705" class="block-content">
-    Jika anda ingin membuat kucing malas mulai mengeong, anda dapat dengan mudah melakukan ini:
+    Jika Anda ingin membuat kucing malas mulai mengeong, Anda dapat dengan mudah melakukan ini:
 </p>
 <com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820237">
 myCat.meow = myDog.bark;
@@ -130,7 +130,7 @@ var a = new Array();
 var b = [];
 </com:TTextHighlighter>
 <p id="820707" class="block-content">
-    Karena saya yakin anda sudah mengetahuinya, anda dapat mengakses item individual dalam sebuah array menggunakan tanda kurung kotak:
+    Karena saya yakin Anda sudah mengetahuinya, anda dapat mengakses item individual dalam sebuah array menggunakan tanda kurung kotak:
 </p>
 <com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820239">
 var a = ['first', 'second', 'third'];
@@ -140,7 +140,7 @@ var v3 = a[2];
 </com:TTextHighlighter>
 <p id="820708" class="block-content">
 
-    Tetapi anda tidak dibatasi pada indeks numerik. Anda bisa mengakses banyak obyek JS dengan menggunakan namanya, dalam sebuah string. Contoh berikut membuat obyek kosong, dan menambah beberapa anggotanya dengan nama.
+    Tetapi Anda tidak dibatasi pada indeks numerik. Anda bisa mengakses banyak obyek JS dengan menggunakan namanya, dalam sebuah string. Contoh berikut membuat obyek kosong, dan menambah beberapa anggotanya dengan nama.
 </p>
 <com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820240">
 var obj = {}; //baru, obyek kosong
@@ -172,7 +172,7 @@ obj['some_function']();
 <h2 id="6506">Cukup tentang obyek, boleh saya memiliki kelas sekarang?</h2>
 <p id="820711" class="block-content">
 
-    Kekuatan besar dari bahasa pemrograman obyek berasal dari pemakaian kelas. Saya tidak berpikir telah menebak bagaimana kelas didefinisikan dalam JS hanya menggunakan pengalaman saya sebelumnya dengan bahasa lainnya. Nilailah bagi diri anda sendiri.
+    Kekuatan besar dari bahasa pemrograman obyek berasal dari pemakaian kelas. Saya tidak berpikir telah menebak bagaimana kelas didefinisikan dalam JS hanya menggunakan pengalaman saya sebelumnya dengan bahasa lainnya. Nilailah bagi diri Anda sendiri.
 </p>
 <com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820243">
 //mendefinisikan kelas baru bernama Pet
@@ -221,7 +221,7 @@ Pet.prototype =
 
 <h2 id="6507">Fungsi sebagai argumen, pola yang menarik</h2>
 <p id="820714" class="block-content">
-    Jika anda tidak pernah bekerja dengan bahasa yang mendukung klosur anda akan mendapatkan idion berikut terlalu busuk.
+    Jika Anda tidak pernah bekerja dengan bahasa yang mendukung klosur Anda akan mendapatkan idion berikut terlalu busuk.
 </p>
 <com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820246">
 var myArray = ['first', 'second', 'third'];
@@ -232,7 +232,7 @@ myArray.each( function(item, index)
 </com:TTextHighlighter>
 <p id="820715" class="block-content">
 
-    Wah! Mari kita jelaskan apa yang terjadi di sini sebelum anda memutuskan saya telah pergi terlalu jauh dan beralih ke artikel yang lebih baik dari yang ini.
+    Wah! Mari kita jelaskan apa yang terjadi di sini sebelum Anda memutuskan saya telah pergi terlalu jauh dan beralih ke artikel yang lebih baik dari yang ini.
 </p>
 <p id="820716" class="block-content">
     Pertama, dalam contoh di atas kita menggunakan librari prototype.js, yang menambahkan setiap fungsi ke kelas array. Setiap fungsi menerima satu argumen yang adalah obyek fungsi. Fungsi ini, silah berganti akan dipanggil sekali untuk setiap item dalam array, mengirimkan dua argumen saat dipanggil, item dan indeks untuk item saat ini. Mari kita panggil fungsi ini sebagai fungsi pengulang kita.
@@ -276,7 +276,7 @@ myButton2.onclick = buttonClicked;
 </com:TTextHighlighter>
 <p id="820721" class="block-content">
     Karena fungsi buttonClicked didefinisikan di luar obyek manapun kita cenderung berpikir kata kunci <tt>this</tt> akan berisi referensi ke
-    obyek <tt>window</tt> atau <tt>document</tt> (menganggap kode ini ada ditengah halaman HTML yang dilihat dalam browser.)
+    obyek <tt>window</tt> atau <tt>document</tt> (menganggap kode ini ada di tengah halaman HTML yang dilihat dalam browser.)
 </p>
 
 <p id="820722" class="block-content">
@@ -287,7 +287,7 @@ myButton.onclick();
 </com:TTextHighlighter>
 <p id="820723" class="block-content">
 
-    Itu tidak membingungkan sama sekali bukan? Tapi lihat apa yang terjadi, anda mulai memiliki obyek lain yang berhadapan dengannya dan anda ingi betindak pada obyek ini terhadap event seperti klik tombol.
+    Itu tidak membingungkan sama sekali bukan? Tapi lihat apa yang terjadi, Anda mulai memiliki obyek lain yang berhadapan dengannya dan Anda ingin betindak pada obyek ini terhadap event seperti klik tombol.
 </p>
 <com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820250">
 var myHelper =
@@ -316,7 +316,7 @@ var clearButton = document.getElementById('btnClear');
 clearButton.onclick = myHelper.emptyAllFields;
 </com:TTextHighlighter>
 <p id="820724" class="block-content">
-    Anda pikir bagus, sekarang saya dapat mengklik tombol Clear pada halaman saya dan tiga kotak teks itu akan dikosongkan. Kemudian anda mencoba mengklik tombol hanya untuk mendapatkan kesalahan runtime. Kesalahan akan terkait dengan
+    Anda pikir bagus, sekarang saya dapat mengklik tombol Clear pada halaman saya dan tiga kotak teks itu akan dikosongkan. Kemudian Anda mencoba mengklik tombol hanya untuk mendapatkan kesalahan runtime. Kesalahan akan terkait dengan
     (tebak apa?) kata kunci <tt>this</tt>.
     Masalahnya adalah bahwa <tt>this.formFields</tt> tidak didefinisikan jika
     <tt>this</tt> berisi sebuah referensi ke tombol, tepatnya itulah apa yang terjadi. Satu solusi cepat adalah menulis ulang baris kode terakhir.

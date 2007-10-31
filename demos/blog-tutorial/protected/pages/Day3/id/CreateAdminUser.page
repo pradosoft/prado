@@ -143,7 +143,7 @@ Karena <tt>AdminUser</tt> hanya bisa diakses oleh administrator, maka kita perlu
 
 <h2>Pengujian</h2>
 <p>
-Untuk menguji halaman <tt>AdminUser</tt>, kunjungi URL <tt>http://hostname/blog/index.php?page=users.AdminUser</tt>. Anda mungkin perlu masuk sebagai administrator lebih dahulu jika anda belum melakukannya. Kita akan melihat hasil seperti berikut.
+Untuk menguji halaman <tt>AdminUser</tt>, kunjungi URL <tt>http://hostname/blog/index.php?page=users.AdminUser</tt>. Anda mungkin perlu masuk sebagai administrator lebih dahulu jika Anda belum melakukannya. Kita akan melihat hasil seperti berikut.
 </p>
 
 <img src="<%~ output3.gif %>" class="output" />

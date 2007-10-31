@@ -121,14 +121,14 @@ class ContactManager {
     }
 }
 </com:TTextHighlighter>
-<p id="670457" class="block-content">Untuk obyek soap kompleks, properti obyek ditetapkan dengan kata kunci <tt>@soapproperty</tt> dalam phpdocs. Selanjutnya, nama tipe properti harus ditetapkan sebagai <tt>@var type $name</tt> di mana <tt>type</tt> adalah tipe apapun yang benar seperti telah disebutkan sebelumnya dan <tt>$name</tt> akan mendefinisikan properti <tt>name</tt> (catatan bahwa jika kelas anda adalah TComponent, anda bisa menyediakan properti pengambil/penentu).
+<p id="670457" class="block-content">Untuk obyek soap kompleks, properti obyek ditetapkan dengan kata kunci <tt>@soapproperty</tt> dalam phpdocs. Selanjutnya, nama tipe properti harus ditetapkan sebagai <tt>@var type $name</tt> di mana <tt>type</tt> adalah tipe apapun yang benar seperti telah disebutkan sebelumnya dan <tt>$name</tt> akan mendefinisikan properti <tt>name</tt> (catatan bahwa jika kelas Anda adalah TComponent, Anda bisa menyediakan properti pengambil/penentu).
 </p>
 <p id="670458" class="block-content">
 Sebuah array dari obyek yang kompleks juga bisa dihasilkan dengan menambahkan pasangan yang dilindungi kurung kotak setelah nama tipe. Sebagai contoh, untuk menghasilkan array dari tipe <tt>Contact</tt>, kita mendefinisikan <tt>@return Contact[] ...</tt>.
 </p>
 
 <div class="tip"><b class="note">Tip:</b>
-Piranti sangat berguna untuk menguji layanan web anda adalah piranti bebas 
+Piranti sangat berguna untuk menguji layanan web Anda adalah piranti bebas 
 <a href="http://www.gotdotnet.com/Community/UserSamples/Details.aspx?SampleGuid=65a1d4ea-0f7a-41bd-8494-e916ebc4159c">WebServiceStudio 2.0</a>. Ia bisa memanggil webmethods secara interaktif. Pengguna dapat menyediakan sebuah titik akhir WSDL. Pada saat mengklik tombol Get piranti mengambil WSDL, membuat proxy .NET dari WSDL dan menampilkan daftar metode yang tersedia. Pengguna bisa memilih setiap metode dan menyediakan parameter input yang diplerukan.
 Piranti membutuhkan MS .NET runtime terinstalasi.
 

@@ -9,7 +9,7 @@ Obyek Akses Data atau Data Access Object (DAO) memisahkan data sumber daya antar
 Sejak versi 3.1, PRADO mulai menyediakan DAO yang adalah pelapis tipis sekitar <a href="http://www.php.net/manual/en/ref.pdo.php">PHP Data Objects (PDO)</a>. Meskipun PDO memiliki set fitur bagus dan API yang baik, kami memilih untuk mengimplementasikan PRADO DAO di atas PDO karena kelas PRADO DAO adalah kelas komponen dan bisa dikonfigurasi dalam aplikasi PRADO. Para pengguna dapat menggunakan kelas DAO ini dalam cara yang lebih disukai-PRADO.
 </p>
 <div class="note"><b class="tip">Catatan:</b>
-Karena PRADO DAO didasarkan pada PDO, ekstensi PDO PHP perlu diinstalasi. Sebagai tambahan, anda perlu menginstalasi driver PDO database terkait untuk  digunakan dalam aplikasi anda. Lihat lebih jelasnya dalam <a href="http://www.php.net/manual/en/ref.pdo.php">PHP Manual</a>.
+Karena PRADO DAO didasarkan pada PDO, ekstensi PDO PHP perlu diinstalasi. Sebagai tambahan, Anda perlu menginstalasi driver PDO database terkait untuk  digunakan dalam aplikasi Anda. Lihat lebih jelasnya dalam <a href="http://www.php.net/manual/en/ref.pdo.php">PHP Manual</a>.
 </div>
 <p id="680463" class="block-content">
 PRADO DAO sebagian besar terdiri dari empat kelas (kebalikan dari PDO yang hanya dua kelas, <tt>PDO</tt> dan <tt>PDOStatement</tt>):
@@ -108,7 +108,7 @@ try
     //.... eksekusi SQL lain
     $transaction->commit();
 }
-catch(Exception $e) // kekecualian dimunculkan jika query gagal
+catch(Exception $e) // eksepsi dimunculkan jika query gagal
 {
     $transaction->rollBack();
 }
@@ -120,7 +120,7 @@ catch(Exception $e) // kekecualian dimunculkan jika query gagal
 Guna menghindari <a href="http://en.wikipedia.org/wiki/SQL_injection">serangan injeksi SQL</a> dan untuk meningkatkan performansi dari eksekusi pernyataan SQL yang dipakai secara berulang-ulang, seseorang dapat "menyiapkan" pernyataan SQL dengan tempat parameter opsional yang akan diganti dengan parameter sebenarnya selama proses pengikatan parameter.
 </p>
 <p id="680474" class="block-content">
-Tempat parameter dapat bernama (diwakili dengan token unik) ataupun tidak bernama (diwakili dengan tanda tanya). Panggil <tt>TDbCommand.bindParameter()</tt> atau <tt>TDbCommand.bindValue()</tt> untuk mengganti tempat ini dengan parameter aktual. Parameter tidak perlu diberi tanda kutip: driver database melakukan ini bagi anda. Pengikatan parameter harus dikerjakan sebelum pernyataan SQL dijalankan.
+Tempat parameter dapat bernama (diwakili dengan token unik) ataupun tidak bernama (diwakili dengan tanda tanya). Panggil <tt>TDbCommand.bindParameter()</tt> atau <tt>TDbCommand.bindValue()</tt> untuk mengganti tempat ini dengan parameter aktual. Parameter tidak perlu diberi tanda kutip: driver database melakukan ini bagi Anda. Pengikatan parameter harus dikerjakan sebelum pernyataan SQL dijalankan.
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_680145">
 // sebuah SQL dengan dua tempat ":username" dan ":email"

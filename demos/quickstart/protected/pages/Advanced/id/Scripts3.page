@@ -28,9 +28,9 @@ Paket librari yang tersedia disertakan dalam Prado adalah
 </ul>
 
 <p id="850761" class="block-content">Ketergantungan masing-masing librari secara otomatis dipecahkan. Komponen yang memerlukan libari tertentu juga akan secara otomatis mengambil librari yang diperlukan.
-Sebagai contoh, jika anda menambah komponen <tt>TDatePicker</tt> pada halaman, <tt>datepicker</tt> dan dependensinya akan secara otomatis disertakan pada halaman.</p>
+Sebagai contoh, jika Anda menambah komponen <tt>TDatePicker</tt> pada halaman, <tt>datepicker</tt> dan dependensinya akan secara otomatis disertakan pada halaman.</p>
 
-<p id="850762" class="block-content">Lihat <a href="?page=Controls.ClientScript">TClientScript</a> untuk opsi penambahan kode Javascript kustom anda ke halaman.</p>
+<p id="850762" class="block-content">Lihat <a href="?page=Controls.ClientScript">TClientScript</a> untuk opsi penambahan kode Javascript kustom Anda ke halaman.</p>
 
 <h2 id="176028">Menerbitkan Librari Javascript sebagai Assets</h2>
 <com:SinceVersion Version="3.1b" />
@@ -62,7 +62,7 @@ class MyJavascriptLib extends TComponent
 
     protected function registerScriptLoader()
     {
-        $dir = dirname(__FILE__).'/myscripts'; //berisi file my javascript
+        $dir = dirname(__FILE__).'/myscripts'; //berisi file javascript
         $scripts = array_keys($this->_packages);
         $url = $this->_manager->registerJavascriptPackages($dir, $scripts);
         $this->_manager->registerScriptFile($url,$url);

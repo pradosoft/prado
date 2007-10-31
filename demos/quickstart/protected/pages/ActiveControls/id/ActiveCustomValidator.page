@@ -6,7 +6,7 @@
 <p id="630421" class="block-content">Melakukan validasi kustom hanya menggunakan event validasi <tt>OnServerValidate</tt>
  sisi-server. Sisi-klien menggunakan callback untuk memunculkan event
  <tt>onServerValidate</tt>. Properti <tt>ClientValidationFunction</tt> dimatikan
- dan akan mengeluarkan kekecualian jika mencoba untuk menyetel properti ini.
+ dan akan mengeluarkan eksepsi jika mencoba untuk menyetel properti ini.
 </p>
 
 <p id="630422" class="block-content"> Harap berhati-hati <tt>onServerValidate</tt> dapat

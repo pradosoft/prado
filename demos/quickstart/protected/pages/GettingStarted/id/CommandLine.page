@@ -6,12 +6,12 @@ menyediakan piranti baris perintah untuk melakukan berbagai hal membosankan dala
 </p>
 <h2 id="502">Persyaratan</h2>
 <p id="70047" class="block-content">
-Untuk menggunakan piranti baris perintah, anda perlu memakai prompt perintah anda, konsol perintah atau terminal. Sebagai tambahan, PHP harus dapat menjalankan naskah PHP dari baris perintah.
+Untuk menggunakan piranti baris perintah, Anda perlu memakai prompt perintah Anda, konsol perintah atau terminal. Sebagai tambahan, PHP harus dapat menjalankan naskah PHP dari baris perintah.
 </p>
 
 <h2 id="503">Usage</h2>
 <p id="70048" class="block-content">
-Jika anda ketik <tt>php path/ke/framework/prado-cli.php</tt>, anda seharusnya melihat informasi berikut. Alternatifnya, jika anda tidak pada Windows, anda dapat mencoba untuk mengubah <tt>prado-cli.php</tt> ke dalam eksecutabel dan menjalankannya seperti sebuah naskah</p>
+Jika Anda ketik <tt>php path/ke/framework/prado-cli.php</tt>, Anda seharusnya melihat informasi berikut. Alternatifnya, jika Anda tidak pada Windows, Anda dapat mencoba untuk mengubah <tt>prado-cli.php</tt> ke dalam eksecutabel dan menjalankannya seperti sebuah naskah</p>
 <com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70006">
 Command line tools for Prado 3.0.5.
 usage: php prado-cli.php action <parameter> [optional]
@@ -35,16 +35,16 @@ actions:
 
 <p id="70050" class="block-content">Untuk membuat kerangka proyek Prado, lakukan yang berikut:</p>
 <ol>
-	<li>Ubah direktori di mana anda ingin membuat kerangka proyek.</li>
+	<li>Ubah direktori di mana Anda ingin membuat kerangka proyek.</li>
 	<li>Ketik, <tt>php ../prado/framework/prado-cli.php -c helloworld</tt>, sedangkan
-	<tt>helloworld</tt> adalah nama direktori di mana file kerangka proyek ingin anda buat.</li>
+	<tt>helloworld</tt> adalah nama direktori di mana file kerangka proyek ingin Anda buat.</li>
 	<li>Ketik, <tt>php ../prado/framework/prado-cli.php <b>-t</b> helloworld</tt> untuk membuat perlengkapan pengujian untuk proyek <tt>helloworld</tt>.</li>
 </ol>
 
 <h2 id="505">Shell Interaktif</h2>
 <p id="70051" class="block-content">
-Shell interaktif membolehkan anda untuk mengevaluasi pernyataan PHP dari baris perintah.
-Naskah <tt>prado-cli.php</tt> dapat dipakai untuk memulai shell dan mengambil proyek Prado yang sudah ada. Sebagai contoh, mari kita ambil proyek demo blog. Anggap bahwa baris perintah anda ada dalam direktori distribusi <tt>prado</tt> dan anda mengetikan.
+Shell interaktif membolehkan Anda untuk mengevaluasi pernyataan PHP dari baris perintah.
+Naskah <tt>prado-cli.php</tt> dapat dipakai untuk memulai shell dan mengambil proyek Prado yang sudah ada. Sebagai contoh, mari kita ambil proyek demo blog. Anggap bahwa baris perintah Anda ada dalam direktori distribusi <tt>prado</tt> dan Anda mengetikkannya.
 </p>
 <p id="70052" class="block-content">
 <com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70007">
@@ -72,7 +72,7 @@ Terakhir, kita ingin menggunakan modul data untuk meng-query sebuah tulisan deng
 <com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70010">
 >> $db->queryPostByID(1)
 </com:TTextHighlighter>
-Di sana seharusnya tidak terjadi kesalahan apapun dan seharusnya anda melihat yang berikut. 
+Di sana seharusnya tidak terjadi kesalahan apapun dan seharusnya Anda melihat yang berikut. 
 <com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70011">
 PostRecord#1
 (
