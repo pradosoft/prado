@@ -32,7 +32,7 @@ class Table1 extends MultipleFKSqliteRecord
 	public $fk3;
 
 	public $object1;
-	public $object2;
+	//public $object2; //commented out for testing __get/__set
 	public $object3;
 
 	public static $RELATIONS = array
@@ -57,7 +57,7 @@ class Table2 extends MultipleFKSqliteRecord
 	public $field1;
 
 	private $_state1;
-	public $state2;
+	//public $state2; //commented out for testing __get/__set
 	public $state3;
 
 	public static $RELATIONS = array
@@ -173,6 +173,19 @@ class MultipleForeignKeyTestCase extends UnitTestCase
 		$this->assertEqual($obj->child_categories[1]->cat_id, 4);
 
 		$this->assertEqual($obj->parent_category->cat_id, 1);
+	}
+
+	function testLazyLoadingGetterSetter_hasMany()
+	{
+		$arr = Table2::finder()->findByPk(2);
+
+		$this->assertNotNull($arr->state2); //lazy load
+		$this->assertEqual(count($arr->state2), 1);
+		$this->assertEqual($arr->state2[0]->id, "1");
+		$this->assertNotNull($arr->state2[0]->object2);
+		$this->assertEqual($arr->state2[0]->object2->id, "2");
+
+		$this->assertNotIdentical($arr, $arr->state2[0]->object2);
 	}
 }
 

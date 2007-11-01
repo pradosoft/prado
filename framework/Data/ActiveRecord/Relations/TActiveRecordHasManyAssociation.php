@@ -189,7 +189,6 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	{
 		$criteria = $this->getCriteria();
 		$finder = $this->getContext()->getForeignRecordFinder();
-		$registry = $finder->getRecordManager()->getObjectStateRegistry();
 		$type = get_class($finder);
 		$command = $this->createCommand($criteria, $foreignKeys,$indexValues,$sourceKeys);
 		$srcProps = array_keys($sourceKeys);
@@ -201,7 +200,6 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 				unset($row[$column]);
 			$obj = $this->createFkObject($type,$row,$foreignKeys);
 			$collections[$hash][] = $obj;
-			$registry->registerClean($obj);
 		}
 		$this->setResultCollection($results, $collections, array_values($sourceKeys));
 	}
@@ -214,7 +212,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	 */
 	protected function createFkObject($type,$row,$foreignKeys)
 	{
-		$obj = new $type($row);
+		$obj = TActiveRecord::createRecordInstance($type, $row, TActiveRecord::STATE_LOADED);
 		if(count($this->_association_columns) > 0)
 		{
 			$i=0;
@@ -309,13 +307,9 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		if(($total = count($fkObjects))> 0)
 		{
 			$source = $this->getSourceRecord();
-			$registry = $source->getRecordManager()->getObjectStateRegistry();
 			$builder = $this->getAssociationTableCommandBuilder();
 			for($i=0;$i<$total;$i++)
-			{
-				if($registry->shouldPersistObject($fkObjects[$i]))
-					$success = $fkObjects[$i]->save() && $success;
-			}
+				$success = $fkObjects[$i]->save() && $success;
 			return $this->updateAssociationTable($obj, $fkObjects, $builder) && $success;
 		}
 		return $success;

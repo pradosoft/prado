@@ -108,6 +108,27 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationContext');
  * fetched in a lazy way, which avoids unnecessary overhead if the foreign objects are not accessed
  * at all.
  *
+ * Since v3.1.2, new events OnInsert, OnUpdate and OnDelete are available.
+ * The event OnInsert, OnUpdate and OnDelete methods are executed before
+ * inserting, updating, and deleting the current record, respectively. You may override
+ * these methods; a TActiveRecordChangeEventParameter parameter is passed to these methods.
+ * The property {@link TActiveRecordChangeEventParameter::setIsValid IsValid} of the parameter
+ * can be set to false to prevent the change action to be executed. This can be used,
+ * for example, to validate the record before the action is executed. For example,
+ * in the following the password property is hashed before a new record is inserted.
+ * <code>
+ * class UserRecord extends TActiveRecord
+ * {
+ *      function OnInsert($param)
+ *      {
+ *          //parent method should be called to raise the event
+ *          parent::OnInsert($param);
+ *          $this->nounce = md5(time());
+ *          $this->password = md5($this->password.$this->nounce);
+ *      }
+ * }
+ * </code>
+ *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$
  * @package System.Data.ActiveRecord
@@ -119,6 +140,16 @@ abstract class TActiveRecord extends TComponent
 	const HAS_ONE='HAS_ONE';
 	const HAS_MANY='HAS_MANY';
 	const MANY_TO_MANY='MANY_TO_MANY';
+
+	const STATE_NEW=0;
+	const STATE_LOADED=1;
+	const STATE_DELETED=2;
+
+	/**
+	 * @var integer object state: 0 = new, 1 = loaded, 2 = deleted.
+	 * @since 3.1.2
+	 */
+	private $_objectState=0;
 
 	/**
 	 * This static variable defines the column mapping.
@@ -177,11 +208,12 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function __construct($data=array(), $connection=null)
 	{
-		$this->copyFrom($data);
 		if($connection!==null)
-			$this->_connection=$connection;
+			$this->setDbConnection($connection);
 		$this->setupColumnMapping();
 		$this->setupRelations();
+		if(!empty($data)) //$data may be an object
+			$this->copyFrom($data);
 	}
 
 	/**
@@ -242,7 +274,7 @@ abstract class TActiveRecord extends TComponent
 			$class=new ReflectionClass($className);
 			$relations=array();
 			foreach($class->getStaticPropertyValue('RELATIONS') as $key=>$value)
-				$relations[strtolower($key)]=$value;
+				$relations[strtolower($key)]=array($key,$value);
 			self::$_relations[$className]=$relations;
 		}
 	}
@@ -258,7 +290,7 @@ abstract class TActiveRecord extends TComponent
 		if(!is_array($data))
 			throw new TActiveRecordException('ar_must_copy_from_array_or_object', get_class($this));
 		foreach($data as $name=>$value)
-				$this->$name = $value;
+			$this->setColumnValue($name,$value);
 		return $this;
 	}
 
@@ -270,11 +302,7 @@ abstract class TActiveRecord extends TComponent
 	public function getDbConnection()
 	{
 		if($this->_connection===null)
-		{
-			$this->setDbConnection(self::getRecordManager()->getDbConnection());
-			if($this->_connection===null) //check it
-				throw new TActiveRecordException('ar_invalid_db_connection',get_class($this));
-		}
+			return self::getRecordManager()->getDbConnection();
 		return $this->_connection;
 	}
 
@@ -367,19 +395,31 @@ abstract class TActiveRecord extends TComponent
 	}
 
 	/**
-	 * Commit changes to the record, may insert, update or delete depending
-	 * on the record state given in TObjectStateRegistery.
+	 * Commit changes to the record: insert, update or delete depending on the object state.
 	 * @return boolean true if changes were made.
 	 */
 	protected function commitChanges()
 	{
-		$registry = $this->getRecordManager()->getObjectStateRegistry();
 		$gateway = $this->getRecordGateway();
 		if(!$this->_readOnly)
 			$this->_readOnly = $gateway->getRecordTableInfo($this)->getIsView();
 		if($this->_readOnly)
 			throw new TActiveRecordException('ar_readonly_exception',get_class($this));
-		return $registry->commit($this,$gateway);
+		$param = new TActiveRecordChangeEventParameter();
+		switch($this->_objectState)
+		{
+			case self::STATE_NEW:
+				$this->onInsert($param);
+				return $param->getIsValid() ? $gateway->insert($this) : false;
+			case self::STATE_LOADED:
+				$this->onUpdate($param);
+				return $param->getIsValid() ? $gateway->update($this) : false;
+			case self::STATE_DELETED:
+				$this->onDelete($param);
+				return $param->getIsValid() ? $gateway->delete($this) : false;
+			default:
+				throw new TActiveRecordException('ar_invalid_state', get_class($this));
+		}
 	}
 
 	/**
@@ -389,8 +429,7 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function delete()
 	{
-		$registry = $this->getRecordManager()->getObjectStateRegistry();
-		$registry->registerRemoved($this);
+		$this->_objectState = self::STATE_DELETED;
 		return $this->commitChanges();
 	}
 
@@ -456,19 +495,22 @@ abstract class TActiveRecord extends TComponent
 	{
 		if(empty($data))
 			return null;
-		//create and populate the object
+		$obj = self::createRecordInstance($type, $data, self::STATE_LOADED);
+		return $obj;
+	}
+
+	/**
+	 * Create an instance of ActiveRecord class given by $type.
+	 * This static method should only be used internally within core ActiveRecord classes.
+	 */
+	public static function createRecordInstance($type, $data=array(), $state=self::STATE_NEW)
+	{
 		$obj = Prado::createComponent($type);
-		$tableInfo = $this->getRecordGateway()->getRecordTableInfo($obj);
-		foreach($data as $name=>$value)
-			$obj->setColumnValue($name,$value);
-		/*
-		foreach($tableInfo->getColumns()->getKeys() as $name)
-		{
-			if(isset($data[$name]))
-				$obj->setColumnValue($name,$data[$name]);
-		}*/
-		$obj->_readOnly = $tableInfo->getIsView();
-		$this->getRecordManager()->getObjectStateRegistry()->registerClean($obj);
+		$obj->_objectState=$state;
+		$tableInfo = $obj->getRecordGateway()->getRecordTableInfo($obj);
+		$obj->_readOnly=$tableInfo->getIsView();
+		if(!empty($data))
+			$obj->copyFrom($data);
 		return $obj;
 	}
 
@@ -642,9 +684,9 @@ abstract class TActiveRecord extends TComponent
 	 * @param array method call arguments.
 	 * @return TActiveRecordRelation, null if the context or the handler doesn't exist
 	 */
-	protected function getRelationHandler($property,$args=array())
+	protected function getRelationHandler($name,$args=array())
 	{
-		if(($context=$this->getRelationContext($property)) !== null)
+		if(($context=$this->getRelationContext($name)) !== null)
 		{
 			$criteria = $this->getCriteria(count($args)>0 ? $args[0] : null, array_slice($args,1));
 			return $context->getRelationHandler($criteria);
@@ -662,10 +704,10 @@ abstract class TActiveRecord extends TComponent
 	 * the active record relationships for given property, null if invalid relationship
 	 * @since 3.1.2
 	 */
-	protected function getRelationContext($property)
+	protected function getRelationContext($name)
 	{
-		if(($relation=$this->getRelation($property))!==null)
-			return new TActiveRecordRelationContext($this,strtolower($property),$relation);
+		if(list($property, $relation) = $this->getRelation($name))
+			return new TActiveRecordRelationContext($this,$property,$relation);
 		else
 			return null;
 	}
@@ -825,6 +867,36 @@ abstract class TActiveRecord extends TComponent
 	}
 
 	/**
+	 * Raised before the record attempt to insert its data into the database.
+	 * To prevent the insert operation, set the TActiveRecordChangeEventParameter::IsValid parameter to false.
+	 * @param TActiveRecordChangeEventParameter event parameter to be passed to the event handlers
+	 */
+	public function onInsert($param)
+	{
+		$this->raiseEvent('OnInsert', $this, $param);
+	}
+
+	/**
+	 * Raised before the record attempt to delete its data from the database.
+	 * To prevent the insert operation, set the TActiveRecordChangeEventParameter::IsValid parameter to false.
+	 * @param TActiveRecordChangeEventParameter event parameter to be passed to the event handlers
+	 */
+	public function onDelete($param)
+	{
+		$this->raiseEvent('OnDelete', $this, $param);
+	}
+
+	/**
+	 * Raised before the record attempt to update its data in the database.
+	 * To prevent the insert operation, set the TActiveRecordChangeEventParameter::IsValid parameter to false.
+	 * @param TActiveRecordChangeEventParameter event parameter to be passed to the event handlers
+	 */
+	public function onUpdate($param)
+	{
+		$this->raiseEvent('OnUpdate', $this, $param);
+	}
+
+	/**
 	 * Retrieves the column value according to column name.
 	 * This method is used internally.
 	 * @param string the column name (as defined in database schema)
@@ -885,4 +957,41 @@ abstract class TActiveRecord extends TComponent
 		return isset(self::$_relations[get_class($this)][strtolower($property)]);
 	}
 }
+
+/**
+ * TActiveRecordChangeEventParameter class
+ *
+ * TActiveRecordChangeEventParameter encapsulates the parameter data for
+ * ActiveRecord change commit events that are broadcasted. The following change events
+ * may be raise: {@link TActiveRecord::OnInsert}, {@link TActiveRecord::OnUpdate} and
+ * {@link TActiveRecord::OnDelete}. The {@link setIsValid IsValid} parameter can
+ * be set to false to prevent the requested change event to be performed.
+ *
+ * @author Wei Zhuo<weizhuo@gmail.com>
+ * @version $Id$
+ * @package System.Data.ActiveRecord
+ * @since 3.1.2
+ */
+
+class TActiveRecordChangeEventParameter extends TEventParameter
+{
+	private $_isValid=true;
+
+	/**
+	 * @return boolean whether the event should be performed.
+	 */
+	public function getIsValid()
+	{
+		return $this->_isValid;
+	}
+
+	/**
+	 * @param boolean set to false to prevent the event.
+	 */
+	public function setIsValid($value)
+	{
+		$this->_isValid = TPropertyValue::ensureBoolean($value);
+	}
+}
+
 ?>

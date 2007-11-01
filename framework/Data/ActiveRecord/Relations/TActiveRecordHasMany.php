@@ -88,7 +88,7 @@ class TActiveRecordHasMany extends TActiveRecordRelation
 	/**
 	 * @return array foreign key field names as key and object properties as value.
 	 * @since 3.1.2
-	 */	
+	 */
 	public function getRelationForeignKeys()
 	{
 		$fkObject = $this->getContext()->getForeignRecordFinder();
@@ -107,16 +107,12 @@ class TActiveRecordHasMany extends TActiveRecordRelation
 		if(($total = count($fkObjects))> 0)
 		{
 			$source = $this->getSourceRecord();
-			$registry = $source->getRecordManager()->getObjectStateRegistry();
 			$fkeys = $this->findForeignKeys($fkObjects[0], $source);
 			for($i=0;$i<$total;$i++)
 			{
-				if($registry->shouldPersistObject($fkObjects[$i]))
-				{
-					foreach($fkeys as $fKey => $srcKey)
-						$fkObjects[$i]->setColumnValue($fKey, $source->getColumnValue($srcKey));
-					$success = $fkObjects[$i]->save() && $success;
-				}
+				foreach($fkeys as $fKey => $srcKey)
+					$fkObjects[$i]->setColumnValue($fKey, $source->getColumnValue($srcKey));
+				$success = $fkObjects[$i]->save() && $success;
 			}
 		}
 		return $success;

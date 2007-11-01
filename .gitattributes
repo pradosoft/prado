@@ -2028,7 +2028,6 @@ framework/Data/ActiveRecord/TActiveRecordConfig.php -text
 framework/Data/ActiveRecord/TActiveRecordCriteria.php -text
 framework/Data/ActiveRecord/TActiveRecordGateway.php -text
 framework/Data/ActiveRecord/TActiveRecordManager.php -text
-framework/Data/ActiveRecord/TActiveRecordStateRegistry.php -text
 framework/Data/Common/IbmDb2/TIbmColumnMetaData.php -text
 framework/Data/Common/IbmDb2/TIbmMetaData.php -text
 framework/Data/Common/IbmDb2/TIbmMetaDataInspector.php -text

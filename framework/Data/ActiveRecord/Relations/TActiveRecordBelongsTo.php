@@ -123,20 +123,16 @@ class TActiveRecordBelongsTo extends TActiveRecordRelation
 	{
 		$obj = $this->getContext()->getSourceRecord();
 		$fkObject = $obj->getColumnValue($this->getContext()->getProperty());
-		$registry = $fkObject->getRecordManager()->getObjectStateRegistry();
-		if($registry->shouldPersistObject($fkObject))
+		if($fkObject!==null)
 		{
-			if($fkObject!==null)
-			{
-				$fkObject->save();
-				$source = $this->getSourceRecord();
-				$fkeys = $this->findForeignKeys($source, $fkObject);
-				foreach($fkeys as $srcKey => $fKey)
-					$source->setColumnValue($srcKey, $fkObject->getColumnValue($fKey));
-				return true;
-			}
+			$fkObject->save();
+			$source = $this->getSourceRecord();
+			$fkeys = $this->findForeignKeys($source, $fkObject);
+			foreach($fkeys as $srcKey => $fKey)
+				$source->setColumnValue($srcKey, $fkObject->getColumnValue($fKey));
+			return true;
 		}
-		return true;
+		return false;
 	}
 }
 

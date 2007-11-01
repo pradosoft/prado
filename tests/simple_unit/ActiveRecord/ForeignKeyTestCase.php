@@ -159,7 +159,6 @@ class ForeignKeyTestCase extends UnitTestCase
 	function test_self_reference_fk()
 	{
 		$item = ItemRecord::finder()->withRelated_Items()->findByPk(1);
-
 		$this->assertNotNull($item);
 		$this->assertEqual($item->name, "Professional Work Attire");
 

@@ -14,11 +14,10 @@ Prado::using('System.Data.TDbConnection');
 Prado::using('System.Data.ActiveRecord.TActiveRecord');
 Prado::using('System.Data.ActiveRecord.Exceptions.TActiveRecordException');
 Prado::using('System.Data.ActiveRecord.TActiveRecordGateway');
-Prado::using('System.Data.ActiveRecord.TActiveRecordStateRegistry');
 
 /**
- * TActiveRecordManager provides the default DB connection, default object state
- * registry, default active record gateway, and table meta data inspector.
+ * TActiveRecordManager provides the default DB connection,
+ * default active record gateway, and table meta data inspector.
  *
  * The default connection can be set as follows:
  * <code>
@@ -38,7 +37,6 @@ Prado::using('System.Data.ActiveRecord.TActiveRecordStateRegistry');
  */
 class TActiveRecordManager extends TComponent
 {
-	private $_objectRegistry;
 	private $_gateway;
 	private $_meta=array();
 	private $_connection;
@@ -88,24 +86,6 @@ class TActiveRecordManager extends TComponent
 		else if($instance===null)
 			$instance = new self;
 		return $instance;
-	}
-
-	/**
-	 * @return TActiveRecordStateRegistry record object registry.
-	 */
-	public function getObjectStateRegistry()
-	{
-		if(is_null($this->_objectRegistry))
-			$this->_objectRegistry = $this->createObjectStateRegistry();
-		return $this->_objectRegistry;
-	}
-
-	/**
-	 * @return TActiveRecordStateRegistry default object registry.
-	 */
-	protected function createObjectStateRegistry()
-	{
-		return new TActiveRecordStateRegistry();
 	}
 
 	/**

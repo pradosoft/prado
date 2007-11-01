@@ -182,8 +182,9 @@ class TActiveRecordRelationContext
 	public function updateAssociatedRecords($updateBelongsTo=false)
 	{
 		$success=true;
-		foreach($this->_record->getRelations() as $property=>$relation)
+		foreach($this->_record->getRelations() as $data)
 		{
+			list($property, $relation) = $data;
 			$belongsTo = $relation[0]==TActiveRecord::BELONGS_TO;
 			if(($updateBelongsTo && $belongsTo) || (!$updateBelongsTo && !$belongsTo))
 			{

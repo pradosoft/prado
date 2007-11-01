@@ -283,7 +283,7 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 			}
 		}
 	},
-	
+
 	setReadOnly : function(id, value)
 	{
 		var textbox = Prado.WebUI.TInPlaceTextBox.textboxes[id];
@@ -291,5 +291,5 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 		{
 			textbox.readOnly=value;
 		}
-	},
+	}
 });

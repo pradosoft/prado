@@ -100,7 +100,7 @@ class TActiveRecordHasOne extends TActiveRecordRelation
 		$fkObjects = $this->findForeignObjects($fields,$indexValues);
 		$this->populateResult($results,$properties,$fkObjects,$fields);
 	}
-	
+
 	/**
 	 * @return array foreign key field names as key and object properties as value.
 	 * @since 3.1.2
@@ -135,16 +135,11 @@ class TActiveRecordHasOne extends TActiveRecordRelation
 	public function updateAssociatedRecords()
 	{
 		$fkObject = $this->getContext()->getPropertyValue();
-		$registry = $fkObject->getRecordManager()->getObjectStateRegistry();
-		if($registry->shouldPersistObject($fkObject))
-		{
-			$source = $this->getSourceRecord();
-			$fkeys = $this->findForeignKeys($fkObject, $source);
-			foreach($fkeys as $fKey => $srcKey)
-				$fkObject->setColumnValue($fKey, $source->getColumnValue($srcKey));
-			return $fkObject->save();
-		}
-		return true;
+		$source = $this->getSourceRecord();
+		$fkeys = $this->findForeignKeys($fkObject, $source);
+		foreach($fkeys as $fKey => $srcKey)
+			$fkObject->setColumnValue($fKey, $source->getColumnValue($srcKey));
+		return $fkObject->save();
 	}
 }
 
