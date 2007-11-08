@@ -187,6 +187,7 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function __sleep()
 	{
+		$this->_connection=null;
 		return array_keys(get_object_vars($this));
 	}
 
@@ -226,7 +227,7 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function __get($name)
 	{
-		if($this->hasRelation($name) && !$this->canGetProperty($name))
+		if($this->hasRecordRelation($name) && !$this->canGetProperty($name))
 		{
 			$this->fetchResultsFor($name);
 			return $this->$name;
@@ -244,7 +245,7 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function __set($name,$value)
 	{
-		if($this->hasRelation($name) && !$this->canSetProperty($name))
+		if($this->hasRecordRelation($name) && !$this->canSetProperty($name))
 			$this->$name=$value;
 		else
 			parent::__set($name,$value);
@@ -282,16 +283,15 @@ abstract class TActiveRecord extends TComponent
 	/**
 	 * Copies data from an array or another object.
 	 * @throws TActiveRecordException if data is not array or not object.
-	 * @return TActiveRecord current instance.
 	 */
 	public function copyFrom($data)
 	{
-		$data = is_object($data) ? get_object_vars($data) : $data;
+		if(is_object($data))
+			$data=get_object_vars($data);
 		if(!is_array($data))
-			throw new TActiveRecordException('ar_must_copy_from_array_or_object', get_class($this));
+			throw new TActiveRecordException('ar_data_invalid', get_class($this));
 		foreach($data as $name=>$value)
 			$this->setColumnValue($name,$value);
-		return $this;
 	}
 
 	/**
@@ -317,14 +317,14 @@ abstract class TActiveRecord extends TComponent
 	/**
 	 * Compare two records using their primary key values (all column values if
 	 * table does not defined primary keys). The default uses simple == for
-	 * comparison of their values. Set $strict=true for identity comparison.
+	 * comparison of their values. Set $strict=true for identity comparison (===).
 	 * @param TActiveRecord another record to compare with.
 	 * @param boolean true to perform strict identity comparison
 	 * @return boolean true if $record equals, false otherwise.
 	 */
 	public function equals(TActiveRecord $record, $strict=false)
 	{
-		if($record===null)
+		if($record===null || get_class($this)!==get_class($record))
 			return false;
 		$tableInfo = $this->getRecordGateway()->getRecordTableInfo($this);
 		$pks = $tableInfo->getPrimaryKeys();
@@ -350,13 +350,9 @@ abstract class TActiveRecord extends TComponent
 	 * event handlers to object instance.
 	 * @param string active record class name.
 	 * @return TActiveRecord active record finder instance.
-	 * @throws TActiveRecordException if class name equals 'TActiveRecord'.
 	 */
 	public static function finder($className=__CLASS__)
 	{
-		if($className===__CLASS__)
-			throw new TActiveRecordException('ar_invalid_finder_class_name');
-
 		static $finders = array();
 		if(!isset($finders[$className]))
 		{
@@ -372,7 +368,7 @@ abstract class TActiveRecord extends TComponent
 	 * TActiveRecordManager::getInstance().
 	 * @return TActiveRecordManager default active record manager.
 	 */
-	public function getRecordManager()
+	public static function getRecordManager()
 	{
 		return TActiveRecordManager::getInstance();
 	}
@@ -380,9 +376,9 @@ abstract class TActiveRecord extends TComponent
 	/**
 	 * @return TActiveRecordGateway record table gateway.
 	 */
-	public function getRecordGateway()
+	public static function getRecordGateway()
 	{
-		return $this->getRecordManager()->getRecordGateway();
+		return TActiveRecordManager::getInstance()->getRecordGateway();
 	}
 
 	/**
@@ -401,10 +397,12 @@ abstract class TActiveRecord extends TComponent
 	protected function commitChanges()
 	{
 		$gateway = $this->getRecordGateway();
+		/** Qiang: no need to check if it is view (developer should know that and an error will occur anyway)
 		if(!$this->_readOnly)
 			$this->_readOnly = $gateway->getRecordTableInfo($this)->getIsView();
+		*/
 		if($this->_readOnly)
-			throw new TActiveRecordException('ar_readonly_exception',get_class($this));
+			throw new TActiveRecordException('ar_read_only',get_class($this));
 		$param = new TActiveRecordChangeEventParameter();
 		switch($this->_objectState)
 		{
@@ -481,50 +479,54 @@ abstract class TActiveRecord extends TComponent
 	public function deleteAll($criteria=null, $parameters=array())
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
-		$criteria = $this->getCriteria($criteria,$parameters, $args);
+		$criteria = $this->getRecordCriteria($criteria,$parameters, $args);
 		return $this->getRecordGateway()->deleteRecordsByCriteria($this, $criteria);
 	}
 
 	/**
-	 * Populate the record with data, registers the object as clean.
-	 * @param string new record name
-	 * @param array name value pair record data
+	 * Populate the record with the query result.
+	 * @param array name value pair of record data
 	 * @return TActiveRecord object record, null if data is empty.
 	 */
-	protected function populateObject($type, $data)
+	protected function populateObject($data)
 	{
-		if(empty($data))
-			return null;
-		$obj = self::createRecordInstance($type, $data, self::STATE_LOADED);
-		return $obj;
-	}
-
-	/**
-	 * Create an instance of ActiveRecord class given by $type.
-	 * This static method should only be used internally within core ActiveRecord classes.
-	 */
-	public static function createRecordInstance($type, $data=array(), $state=self::STATE_NEW)
-	{
-		$obj = Prado::createComponent($type);
-		$obj->_objectState=$state;
-		$tableInfo = $obj->getRecordGateway()->getRecordTableInfo($obj);
-		$obj->_readOnly=$tableInfo->getIsView();
-		if(!empty($data))
-			$obj->copyFrom($data);
-		return $obj;
+		return self::createRecordInstance(get_class($this), $data);
 	}
 
 	/**
 	 * @param TDbDataReader data reader
-	 * @return array
+	 * @return array the AR objects populated by the query result
 	 */
-	protected function collectObjects($reader)
+	protected function populateObjects($reader)
 	{
 		$result=array();
 		$class = get_class($this);
 		foreach($reader as $data)
-			$result[] = $this->populateObject($class, $data);
+			$result[] = self::createRecordInstance($class, $data);
 		return $result;
+	}
+
+	/**
+	 * Create an AR instance specified by the AR class name and initial data.
+	 * If the initial data is empty, the AR object will not be created and null will be returned.
+	 * (You should use the "new" operator to create the AR instance in that case.)
+	 * @param string the AR class name
+	 * @param array initial data to be populated into the AR object.
+	 * @param integer the AR object state
+	 * @return TActiveRecord the initialized AR object. Null if the initial data is empty.
+	 */
+	public static function createRecordInstance($type, $data, $state=self::STATE_LOADED)
+	{
+		if(empty($data))
+			return null;
+		$record=new $type($data);
+		$record->_objectState=$state;
+		/** Qiang: no need to check if it is a view
+		$tableInfo = $record->getRecordGateway()->getRecordTableInfo($obj);
+		$record->_readOnly=$tableInfo->getIsView();
+		*/
+		$record->copyFrom($data);
+		return $record;
 	}
 
 	/**
@@ -547,9 +549,9 @@ abstract class TActiveRecord extends TComponent
 	public function find($criteria,$parameters=array())
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
-		$criteria = $this->getCriteria($criteria,$parameters, $args);
+		$criteria = $this->getRecordCriteria($criteria,$parameters, $args);
 		$data = $this->getRecordGateway()->findRecordsByCriteria($this,$criteria);
-		return $this->populateObject(get_class($this), $data);
+		return $this->populateObject($data);
 	}
 
 	/**
@@ -563,9 +565,9 @@ abstract class TActiveRecord extends TComponent
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		if($criteria!==null)
-			$criteria = $this->getCriteria($criteria,$parameters, $args);
+			$criteria = $this->getRecordCriteria($criteria,$parameters, $args);
 		$result = $this->getRecordGateway()->findRecordsByCriteria($this,$criteria,true);
-		return $this->collectObjects($result);
+		return $this->populateObjects($result);
 	}
 
 	/**
@@ -585,7 +587,7 @@ abstract class TActiveRecord extends TComponent
 		if(func_num_args() > 1)
 			$keys = func_get_args();
 		$data = $this->getRecordGateway()->findRecordByPK($this,$keys);
-		return $this->populateObject(get_class($this), $data);
+		return $this->populateObject($data);
 	}
 
 	/**
@@ -610,7 +612,7 @@ abstract class TActiveRecord extends TComponent
 		if(func_num_args() > 1)
 			$keys = func_get_args();
 		$result = $this->getRecordGateway()->findRecordsByPks($this,(array)$keys);
-		return $this->collectObjects($result);
+		return $this->populateObjects($result);
 	}
 
 	/**
@@ -624,9 +626,9 @@ abstract class TActiveRecord extends TComponent
 	public function findBySql($sql,$parameters=array())
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
-		$criteria = $this->getCriteria($sql,$parameters, $args);
+		$criteria = $this->getRecordCriteria($sql,$parameters, $args);
 		$data = $this->getRecordGateway()->findRecordBySql($this,$criteria);
-		return $this->populateObject(get_class($this), $data);
+		return $this->populateObject($data);
 	}
 
 	/**
@@ -640,9 +642,9 @@ abstract class TActiveRecord extends TComponent
 	public function findAllBySql($sql,$parameters=array())
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
-		$criteria = $this->getCriteria($sql,$parameters, $args);
+		$criteria = $this->getRecordCriteria($sql,$parameters, $args);
 		$result = $this->getRecordGateway()->findRecordsBySql($this,$criteria);
-		return $this->collectObjects($result);
+		return $this->populateObjects($result);
 	}
 
 	/**
@@ -660,7 +662,7 @@ abstract class TActiveRecord extends TComponent
 	public function findAllByIndex($criteria,$fields,$values)
 	{
 		$result = $this->getRecordGateway()->findRecordsByIndex($this,$criteria,$fields,$values);
-		return $this->collectObjects($result);
+		return $this->populateObjects($result);
 	}
 
 	/**
@@ -673,7 +675,7 @@ abstract class TActiveRecord extends TComponent
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		if($criteria!==null)
-			$criteria = $this->getCriteria($criteria,$parameters, $args);
+			$criteria = $this->getRecordCriteria($criteria,$parameters, $args);
 		return $this->getRecordGateway()->countRecords($this,$criteria);
 	}
 
@@ -686,9 +688,9 @@ abstract class TActiveRecord extends TComponent
 	 */
 	protected function getRelationHandler($name,$args=array())
 	{
-		if(($context=$this->getRelationContext($name)) !== null)
+		if(($context=$this->createRelationContext($name)) !== null)
 		{
-			$criteria = $this->getCriteria(count($args)>0 ? $args[0] : null, array_slice($args,1));
+			$criteria = $this->getRecordCriteria(count($args)>0 ? $args[0] : null, array_slice($args,1));
 			return $context->getRelationHandler($criteria);
 		}
 		else
@@ -704,10 +706,13 @@ abstract class TActiveRecord extends TComponent
 	 * the active record relationships for given property, null if invalid relationship
 	 * @since 3.1.2
 	 */
-	protected function getRelationContext($name)
+	protected function createRelationContext($name)
 	{
-		if(list($property, $relation) = $this->getRelation($name))
+		if(($definition=$this->getRecordRelation($name))!==null)
+		{
+			list($property, $relation) = $definition;
 			return new TActiveRecordRelationContext($this,$property,$relation);
+		}
 		else
 			return null;
 	}
@@ -749,7 +754,7 @@ abstract class TActiveRecord extends TComponent
 	 */
 	protected function fetchResultsFor($property)
 	{
-		if( ($context=$this->getRelationContext($property)) !== null)
+		if( ($context=$this->createRelationContext($property)) !== null)
 			return $context->getRelationHandler()->fetchResultsInto($this);
 		else
 			return false;
@@ -819,7 +824,7 @@ abstract class TActiveRecord extends TComponent
 	 * @param array additional parameters obtained from function_get_args().
 	 * @return TSqlCriteria criteria object.
 	 */
-	protected function getCriteria($criteria, $parameters, $args=array())
+	protected function getRecordCriteria($criteria, $parameters, $args=array())
 	{
 		if(is_string($criteria))
 		{
@@ -878,7 +883,7 @@ abstract class TActiveRecord extends TComponent
 
 	/**
 	 * Raised before the record attempt to delete its data from the database.
-	 * To prevent the insert operation, set the TActiveRecordChangeEventParameter::IsValid parameter to false.
+	 * To prevent the delete operation, set the TActiveRecordChangeEventParameter::IsValid parameter to false.
 	 * @param TActiveRecordChangeEventParameter event parameter to be passed to the event handlers
 	 */
 	public function onDelete($param)
@@ -888,7 +893,7 @@ abstract class TActiveRecord extends TComponent
 
 	/**
 	 * Raised before the record attempt to update its data in the database.
-	 * To prevent the insert operation, set the TActiveRecordChangeEventParameter::IsValid parameter to false.
+	 * To prevent the update operation, set the TActiveRecordChangeEventParameter::IsValid parameter to false.
 	 * @param TActiveRecordChangeEventParameter event parameter to be passed to the event handlers
 	 */
 	public function onUpdate($param)
@@ -931,7 +936,7 @@ abstract class TActiveRecord extends TComponent
 	 * @return array relation definition for the specified property
 	 * @since 3.1.2
 	 */
-	public function getRelation($property)
+	public function getRecordRelation($property)
 	{
 		$className=get_class($this);
 		$property=strtolower($property);
@@ -942,7 +947,7 @@ abstract class TActiveRecord extends TComponent
 	 * @return array all relation definitions declared in the AR class
 	 * @since 3.1.2
 	 */
-	public function getRelations()
+	public function getRecordRelations()
 	{
 		return self::$_relations[get_class($this)];
 	}
@@ -952,7 +957,7 @@ abstract class TActiveRecord extends TComponent
 	 * @return boolean whether a relation is declared for the specified AR property
 	 * @since 3.1.2
 	 */
-	public function hasRelation($property)
+	public function hasRecordRelation($property)
 	{
 		return isset(self::$_relations[get_class($this)][strtolower($property)]);
 	}
@@ -972,7 +977,6 @@ abstract class TActiveRecord extends TComponent
  * @package System.Data.ActiveRecord
  * @since 3.1.2
  */
-
 class TActiveRecordChangeEventParameter extends TEventParameter
 {
 	private $_isValid=true;
