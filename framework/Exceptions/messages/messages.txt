@@ -456,5 +456,5 @@ conditional_condition_invalid			= TConditional.Condition '{0}' is not a valid PH
 db_cachetable_inexistent				= TDbCache cannot find DB table '{0}' to store cached data.
 
 ar_data_invalid							= {0}.copyFrom() can only take an object or array as parameter.
-ar_read_only							= The {0} instance is in a read-only state and cannot be saved.
-ar_invalid_state						= The {0} instance is in a state that prevents it from being changed.
+ar_save_invalid							= The {0} instance cannot be saved because it is either deleted or in an unknown state.
+ar_delete_invalid						= The {0} instance cannot be deleted because it is either a new record or a record already deleted.

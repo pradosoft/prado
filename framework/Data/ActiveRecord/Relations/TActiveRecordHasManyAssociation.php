@@ -212,7 +212,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	 */
 	protected function createFkObject($type,$row,$foreignKeys)
 	{
-		$obj = TActiveRecord::createRecordInstance($type, $row, TActiveRecord::STATE_LOADED);
+		$obj = TActiveRecord::createRecord($type, $row);
 		if(count($this->_association_columns) > 0)
 		{
 			$i=0;

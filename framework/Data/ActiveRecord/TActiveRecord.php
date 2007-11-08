@@ -146,10 +146,10 @@ abstract class TActiveRecord extends TComponent
 	const STATE_DELETED=2;
 
 	/**
-	 * @var integer object state: 0 = new, 1 = loaded, 2 = deleted.
+	 * @var integer record state: 0 = new, 1 = loaded, 2 = deleted.
 	 * @since 3.1.2
 	 */
-	private $_objectState=0;
+	private $_recordState=0;
 
 	/**
 	 * This static variable defines the column mapping.
@@ -171,11 +171,6 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public static $RELATIONS=array();
 	private static $_relations=array();
-
-	/**
-	 * @var boolean true if this class is read only.
-	 */
-	private $_readOnly=false;
 
 	/**
 	 * @var TDbConnection database connection object.
@@ -357,7 +352,6 @@ abstract class TActiveRecord extends TComponent
 		if(!isset($finders[$className]))
 		{
 			$f = Prado::createComponent($className);
-			$f->_readOnly=true;
 			$finders[$className]=$f;
 		}
 		return $finders[$className];
@@ -387,37 +381,27 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function save()
 	{
-		return $this->commitChanges();
-	}
-
-	/**
-	 * Commit changes to the record: insert, update or delete depending on the object state.
-	 * @return boolean true if changes were made.
-	 */
-	protected function commitChanges()
-	{
 		$gateway = $this->getRecordGateway();
-		/** Qiang: no need to check if it is view (developer should know that and an error will occur anyway)
-		if(!$this->_readOnly)
-			$this->_readOnly = $gateway->getRecordTableInfo($this)->getIsView();
-		*/
-		if($this->_readOnly)
-			throw new TActiveRecordException('ar_read_only',get_class($this));
 		$param = new TActiveRecordChangeEventParameter();
-		switch($this->_objectState)
+		if($this->_recordState===self::STATE_NEW)
 		{
-			case self::STATE_NEW:
-				$this->onInsert($param);
-				return $param->getIsValid() ? $gateway->insert($this) : false;
-			case self::STATE_LOADED:
-				$this->onUpdate($param);
-				return $param->getIsValid() ? $gateway->update($this) : false;
-			case self::STATE_DELETED:
-				$this->onDelete($param);
-				return $param->getIsValid() ? $gateway->delete($this) : false;
-			default:
-				throw new TActiveRecordException('ar_invalid_state', get_class($this));
+			$this->onInsert($param);
+			if($param->getIsValid() && $gateway->insert($this))
+			{
+				$this->_recordState = self::STATE_LOADED;
+				return true;
+			}
 		}
+		else if($this->_recordState===self::STATE_LOADED)
+		{
+			$this->onUpdate($param);
+			if($param->getIsValid() && $gateway->update($this))
+				return true;
+		}
+		else
+			throw new TActiveRecordException('ar_save_invalid', get_class($this));
+
+		return false;
 	}
 
 	/**
@@ -427,8 +411,21 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function delete()
 	{
-		$this->_objectState = self::STATE_DELETED;
-		return $this->commitChanges();
+		if($this->_recordState===self::STATE_LOADED)
+		{
+			$gateway = $this->getRecordGateway();
+			$param = new TActiveRecordChangeEventParameter();
+			$this->onDelete($param);
+			if($param->getIsValid() && $gateway->delete($this))
+			{
+				$this->_recordState=self::STATE_DELETED;
+				return true;
+			}
+		}
+		else
+			throw new TActiveRecordException('ar_delete_invalid', get_class($this));
+
+		return false;
 	}
 
 	/**
@@ -484,25 +481,27 @@ abstract class TActiveRecord extends TComponent
 	}
 
 	/**
-	 * Populate the record with the query result.
+	 * Populates a new record with the query result.
+	 * This is a wrapper of {@link createRecord}.
 	 * @param array name value pair of record data
 	 * @return TActiveRecord object record, null if data is empty.
 	 */
 	protected function populateObject($data)
 	{
-		return self::createRecordInstance(get_class($this), $data);
+		return self::createRecord(get_class($this), $data);
 	}
 
 	/**
 	 * @param TDbDataReader data reader
 	 * @return array the AR objects populated by the query result
+	 * @since 3.1.2
 	 */
 	protected function populateObjects($reader)
 	{
 		$result=array();
 		$class = get_class($this);
 		foreach($reader as $data)
-			$result[] = self::createRecordInstance($class, $data);
+			$result[] = self::createRecord($class, $data);
 		return $result;
 	}
 
@@ -512,19 +511,15 @@ abstract class TActiveRecord extends TComponent
 	 * (You should use the "new" operator to create the AR instance in that case.)
 	 * @param string the AR class name
 	 * @param array initial data to be populated into the AR object.
-	 * @param integer the AR object state
 	 * @return TActiveRecord the initialized AR object. Null if the initial data is empty.
+	 * @since 3.1.2
 	 */
-	public static function createRecordInstance($type, $data, $state=self::STATE_LOADED)
+	public static function createRecord($type, $data)
 	{
 		if(empty($data))
 			return null;
 		$record=new $type($data);
-		$record->_objectState=$state;
-		/** Qiang: no need to check if it is a view
-		$tableInfo = $record->getRecordGateway()->getRecordTableInfo($obj);
-		$record->_readOnly=$tableInfo->getIsView();
-		*/
+		$record->_recordState=self::STATE_LOADED;
 		$record->copyFrom($data);
 		return $record;
 	}
