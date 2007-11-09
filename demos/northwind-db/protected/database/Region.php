@@ -9,7 +9,8 @@ class Region extends TActiveRecord
 	public $RegionID;
 	public $RegionDescription;
 
-	public $Territories=array();
+	//comment out the following line to use lazy loading
+	//public $Territories=array();
 
 	public static $RELATIONS = array
 	(

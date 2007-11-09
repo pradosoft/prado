@@ -152,13 +152,13 @@
   <target name="compact-collections" description="Collections">
     <mkdir dir="${build.compact.dir}" />
 	<mkdir dir="${build.compact.dir}/docs" />
-	<mkdir dir="${build.compact.dir}/prado-db" />
-    <compact-package output="${build.compact.dir}/prado-db/collections.php" strip="${compact-strip-comments}">
+	<mkdir dir="${build.compact.dir}/prado-dao" />
+    <compact-package output="${build.compact.dir}/prado-dao/collections.php" strip="${compact-strip-comments}">
       <filelist dir="framework" files="PradoBase.php,TComponent.php,Exceptions/TException.php,interfaces.php" />
       <filelist dir="framework/Collections" files="TList.php,TMap.php,TAttributeCollection.php,TPagedList.php,TPagedDataSource.php" />
     </compact-package>
-    <delete file="${build.compact.dir}/prado-db/messages.txt" />
-    <copy file="framework/Exceptions/messages.txt" tofile="${build.compact.dir}/prado-db/messages.txt" />
+    <delete file="${build.compact.dir}/prado-dao/messages.txt" />
+    <copy file="framework/Exceptions/messages/messages.txt" tofile="${build.compact.dir}/prado-dao/messages.txt" />
     <copy file="COPYRIGHT" tofile="${build.compact.dir}/COPYRIGHT" />
     <copy file="HISTORY" tofile="${build.compact.dir}/HISTORY" />
     <delete file="${build.compact.dir}/readme.txt" />
@@ -169,7 +169,7 @@
   </target>
 
   <target name="compact-db" description="Database" depends="compact-collections">
-    <compact-package output="${build.compact.dir}/prado-db/db.php"  strip="${compact-strip-comments}">
+    <compact-package output="${build.compact.dir}/prado-dao/db.php"  strip="${compact-strip-comments}">
       <filelist dir="framework/Data"
         files="TDbConnection.php, TDbCommand.php, TDbDataReader.php, TDbTransaction.php"/>
       <filelist dir="framework/Data/Common"
@@ -179,28 +179,28 @@
   </target>
 
   <target name="compact-db-sqlite" description="Sqlite Database" depends="compact-db">
-    <compact-package output="${build.compact.dir}/prado-db/db-sqlite.php"  strip="${compact-strip-comments}">
+    <compact-package output="${build.compact.dir}/prado-dao/db-sqlite.php"  strip="${compact-strip-comments}">
       <filelist dir="framework/Data/Common/Sqlite"
         files="TSqliteCommandBuilder.php,TSqliteMetaData.php,TSqliteTableColumn.php,TSqliteTableInfo.php" />
     </compact-package>
   </target>
 
   <target name="compact-db-mysql" description="Mysql Database" depends="compact-db">
-    <compact-package output="${build.compact.dir}/prado-db/db-mysql.php"  strip="${compact-strip-comments}">
+    <compact-package output="${build.compact.dir}/prado-dao/db-mysql.php"  strip="${compact-strip-comments}">
       <filelist dir="framework/Data/Common/Mysql"
         files="TMysqlCommandBuilder.php,TMysqlMetaData.php,TMysqlTableColumn.php,TMysqlTableInfo.php" />
     </compact-package>
   </target>
 
   <target name="compact-db-pgsql" description="Pgsql Database" depends="compact-db">
-    <compact-package output="${build.compact.dir}/prado-db/db-pgsql.php" strip="${compact-strip-comments}">
+    <compact-package output="${build.compact.dir}/prado-dao/db-pgsql.php" strip="${compact-strip-comments}">
       <filelist dir="framework/Data/Common/Pgsql"
         files="TPgsqlCommandBuilder.php,TPgsqlMetaData.php,TPgsqlTableColumn.php,TPgsqlTableInfo.php" />
     </compact-package>
   </target>
 
   <target name="compact-db-mssql" description="Mssql Database" depends="compact-db">
-    <compact-package output="${build.compact.dir}/prado-db/db-mssql.php" strip="${compact-strip-comments}">
+    <compact-package output="${build.compact.dir}/prado-dao/db-mssql.php" strip="${compact-strip-comments}">
       <filelist dir="framework/Data/Common/Mssql"
         files="TMssqlCommandBuilder.php,TMssqlMetaData.php,TMssqlTableColumn.php,TMssqlTableInfo.php" />
     </compact-package>
@@ -210,26 +210,26 @@
   <target name="compact-db-all" depends="compact-db-sqlite,compact-db-mysql,compact-db-pgsql,compact-db-mssql" />
 
   <target name="compact-table-gateway" description="Package Active Record" depends="compact-db-all">
-    <compact-package output="${build.compact.dir}/prado-db/table-gateway.php" strip="${compact-strip-comments}">
+    <compact-package output="${build.compact.dir}/prado-dao/table-gateway.php" strip="${compact-strip-comments}">
       <filelist dir="framework/Data/DataGateway"
         files="TDataGatewayCommand.php, TSqlCriteria.php, TTableGateway.php"/>
     </compact-package>
   </target>
 
   <target name="compact-active-record" description="Package Active Record" depends="compact-table-gateway">
-    <compact-package output="${build.compact.dir}/prado-db/active-record.php" strip="${compact-strip-comments}">
+    <compact-package output="${build.compact.dir}/prado-dao/active-record.php" strip="${compact-strip-comments}">
       <filelist dir="framework/Data/ActiveRecord"
-        files="TActiveRecord.php,TActiveRecordManager.php,Exceptions/TActiveRecordException.php,TActiveRecordCriteria.php,TActiveRecordGateway.php,TActiveRecordStateRegistry.php" />
+        files="TActiveRecord.php,TActiveRecordManager.php,Exceptions/TActiveRecordException.php,TActiveRecordCriteria.php,TActiveRecordGateway.php" />
       <filelist dir="framework/Data/ActiveRecord/Relations"
         files="TActiveRecordRelation.php,TActiveRecordRelationContext.php,TActiveRecordHasOne.php,TActiveRecordHasManyAssociation.php,TActiveRecordHasMany.php,TActiveRecordBelongsTo.php" />
     </compact-package>
     <append file="framework/Data/ActiveRecord/Exceptions/messages.txt"
-      destfile="${build.compact.dir}/prado-db/messages.txt" />
+      destfile="${build.compact.dir}/prado-dao/messages.txt" />
 	<prado-quickstart-docs output="${build.compact.dir}/docs" pages="Database/ActiveRecord.page" />
   </target>
 
   <target name="compact-sqlmap" description="Package SqlMap" depends="compact-db-all">
-    <compact-package output="${build.compact.dir}/prado-db/sqlmap.php" strip="${compact-strip-comments}">
+    <compact-package output="${build.compact.dir}/prado-dao/sqlmap.php" strip="${compact-strip-comments}">
       <filelist dir="framework/Data/SqlMap" files="TSqlMapManager.php,TSqlMapGateway.php" />
       <filelist dir="framework/Data/SqlMap/DataMapper"
         files="TSqlMapException.php,TSqlMapTypeHandlerRegistry.php,TSqlMapCache.php,TPropertyAccess.php,TLazyLoadList.php,TSqlMapPagedList.php"/>
@@ -239,7 +239,7 @@
         files="IMappedStatement.php,TMappedStatement.php,TCachingStatement.php,TUpdateMappedStatement.php,TDeleteMappedStatement.php,TInsertMappedStatement.php,TPreparedCommand.php,TPreparedStatement.php,TPreparedStatementFactory.php,TSelectMappedStatement.php,TSimpleDynamicSql.php,TStaticSql.php"/>
     </compact-package>
     <append file="framework/Data/SqlMap/DataMapper/messages.txt"
-      destfile="${build.compact.dir}/prado-db/messages.txt" />
+      destfile="${build.compact.dir}/prado-dao/messages.txt" />
 	<prado-quickstart-docs output="${build.compact.dir}/docs" pages="Database/SqlMap.page" />
   </target>
 
@@ -253,12 +253,12 @@
     <delete file="${build.compact.dir}/examples/example.php" />
 	<append destfile="${build.compact.dir}/examples/example.php"><![CDATA[<?php
 
-include('../prado-db/collections.php');
-include('../prado-db/db.php');
-include('../prado-db/db-sqlite.php');
-include('../prado-db/table-gateway.php');
-include('../prado-db/active-record.php');
-include('../prado-db/sqlmap.php');
+include('../prado-dao/collections.php');
+include('../prado-dao/db.php');
+include('../prado-dao/db-sqlite.php');
+include('../prado-dao/table-gateway.php');
+include('../prado-dao/active-record.php');
+include('../prado-dao/sqlmap.php');
 
 $sqlite_dir = './data';
 $sqlite_db = $sqlite_dir.'/Northwind.db';
@@ -273,20 +273,18 @@ if(!is_writable($sqlite_db))
 $class_dir = realpath(dirname(__FILE__).'/database');
 set_include_path(get_include_path().PATH_SEPARATOR.$class_dir);
 spl_autoload_register(array('PradoBase', 'autoload'));
+//other forms of auto load may be used.
 
 $conn = new TDbConnection("sqlite:$sqlite_db");
 //set default database connection
 TActiveRecordManager::getInstance()->setDbConnection($conn);
-
-$manager = new TSqlMapManager($conn);
-$manager->configureXml('./database/sqlmap.xml');
-$sqlmap = $manager->getSqlMapGateway();
 
 //start playing
 
 foreach(Employee::finder()->findAll() as $employee)
 	var_dump($employee->LastName);
 
+//fetch all regions and its territories.
 foreach(Region::finder()->withTerritories()->findAll() as $region)
 {
 	var_dump($region->RegionDescription);
@@ -294,11 +292,19 @@ foreach(Region::finder()->withTerritories()->findAll() as $region)
 		var_dump($territory->TerritoryDescription);
 }
 
+//sqlmap example
+$manager = new TSqlMapManager($conn);
+$manager->configureXml('./database/sqlmap.xml');
+$sqlmap = $manager->getSqlMapGateway();
+
 var_dump($sqlmap->queryForList('products-with-price', 50));
+
+//similar query, but not identical
+//Product::finder()->withCategory()->findAll('UnitPrice < ?', 50)
 
 ?>]]></append>
   </target>
-  <target name="compact-all" description="All packages" depends="compact-active-record,compact-sqlmap" />
+  <target name="compact-dao" description="All packages" depends="compact-active-record,compact-sqlmap,compact-northwind" />
 
 <!-- end compact packaging -->
 
