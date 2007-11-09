@@ -118,6 +118,16 @@ class TTableGateway extends TComponent
 		$this->initCommandBuilder($meta->createCommandBuilder($tableName));
 	}
 
+	public function getTableInfo()
+	{
+		return $this->getCommand()->getTableInfo();
+	}
+
+	public function getTableName()
+	{
+		return $this->getTableInfo()->getTableName();
+	}
+
 	/**
 	 * @param TDbCommandBuilder database specific command builder.
 	 */

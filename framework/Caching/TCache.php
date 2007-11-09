@@ -38,12 +38,15 @@ Prado::using('System.Collections.TList');
  * - {@link deleteValue}
  * and optionally {@link flush}
  *
+ * Since version 3.1.2, TCache implements the ArrayAccess interface such that
+ * the cache acts as an array.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Id$
  * @package System.Caching
  * @since 3.0
  */
-abstract class TCache extends TModule implements ICache
+abstract class TCache extends TModule implements ICache, ArrayAccess
 {
 	private $_prefix=null;
 	private $_primary=true;
@@ -231,6 +234,52 @@ abstract class TCache extends TModule implements ICache
 	 * @return boolean if no error happens during deletion
 	 */
 	abstract protected function deleteValue($key);
+
+	/**
+	 * Returns whether there is a cache entry with a specified key.
+	 * This method is required by the interface ArrayAccess.
+	 * @param string a key identifying the cached value
+	 * @return boolean
+	 */
+	public function offsetExists($id)
+	{
+		return $this->get($id) !== false;
+	}
+
+	/*
+	 * Retrieves the value from cache with a specified key.
+	 * This method is required by the interface ArrayAccess.
+	 * @param string a key identifying the cached value
+	 * @return mixed the value stored in cache, false if the value is not in the cache or expired.
+	 */
+	public function offsetGet($id)
+	{
+		return $this->get($id);
+	}
+
+	/*
+	 * Stores the value identified by a key into cache.
+	 * If the cache already contains such a key, the existing value will be
+	 * replaced with the new ones. To add expiration and dependencies, use the set() method.
+	 * This method is required by the interface ArrayAccess.
+	 * @param string the key identifying the value to be cached
+	 * @param mixed the value to be cached
+	 */
+	public function offsetSet($id, $value)
+	{
+		$this->set($id, $value);
+	}
+
+	/*
+	 * Deletes the value with the specified key from cache
+	 * This method is required by the interface ArrayAccess.
+	 * @param string the key of the value to be deleted
+	 * @return boolean if no error happens during deletion
+	 */
+	public function offsetUnset($id)
+	{
+		$this->delete($id);
+	}
 }
 
 

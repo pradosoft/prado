@@ -520,7 +520,6 @@ abstract class TActiveRecord extends TComponent
 			return null;
 		$record=new $type($data);
 		$record->_recordState=self::STATE_LOADED;
-		$record->copyFrom($data);
 		return $record;
 	}
 
