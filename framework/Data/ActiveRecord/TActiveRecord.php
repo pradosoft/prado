@@ -289,6 +289,14 @@ abstract class TActiveRecord extends TComponent
 			$this->setColumnValue($name,$value);
 	}
 
+
+	public static function getActiveDbConnection()
+	{
+		if(($db=self::getRecordManager()->getDbConnection())!==null)
+			$db->setActive(true);
+		return $db;
+	}
+
 	/**
 	 * Gets the current Db connection, the connection object is obtained from
 	 * the TActiveRecordManager if connection is currently null.
@@ -297,7 +305,7 @@ abstract class TActiveRecord extends TComponent
 	public function getDbConnection()
 	{
 		if($this->_connection===null)
-			return self::getRecordManager()->getDbConnection();
+			$this->_connection=self::getActiveDbConnection();
 		return $this->_connection;
 	}
 
