@@ -458,3 +458,5 @@ db_cachetable_inexistent				= TDbCache cannot find DB table '{0}' to store cache
 ar_data_invalid							= {0}.copyFrom() can only take an object or array as parameter.
 ar_save_invalid							= The {0} instance cannot be saved because it is either deleted or in an unknown state.
 ar_delete_invalid						= The {0} instance cannot be deleted because it is either a new record or a record already deleted.
+
+datasource_dbconnection_invalid			= TDataSourceConfig.DbConnection '{0}' is invalid. Please make sure it points to a valid application module.

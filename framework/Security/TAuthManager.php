@@ -349,7 +349,8 @@ class TAuthManager extends TModule
 	{
 		if($this->_userManager->validateUser($username,$password))
 		{
-			$user=$this->_userManager->getUser($username);
+			if(($user=$this->_userManager->getUser($username))===null)
+				return false;
 			$this->updateSessionUser($user);
 			$this->getApplication()->setUser($user);
 
