@@ -338,6 +338,7 @@ class TDbCache extends TCache
 	 */
 	protected function addValue($key,$value,$expire)
 	{
+		$expire=($expire<=0)?0:time()+$expire;
 		$sql="INSERT INTO {$this->_cacheTable} (itemkey,value,expire) VALUES(:key,:value,$expire)";
 		try
 		{

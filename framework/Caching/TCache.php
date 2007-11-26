@@ -147,7 +147,6 @@ abstract class TCache extends TModule implements ICache, ArrayAccess
 	public function set($id,$value,$expire=0,$dependency=null)
 	{
 		$data=array($value,$dependency);
-		$expire=($expire<=0)?0:time()+$expire;
 		return $this->setValue($this->generateUniqueKey($id),serialize($data),$expire);
 	}
 
@@ -163,7 +162,6 @@ abstract class TCache extends TModule implements ICache, ArrayAccess
 	public function add($id,$value,$expire=0,$dependency=null)
 	{
 		$data=array($value,$dependency);
-		$expire=($expire<=0)?0:time()+$expire;
 		return $this->addValue($this->generateUniqueKey($id),serialize($data),$expire);
 	}
 

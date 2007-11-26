@@ -178,6 +178,7 @@ class TSqliteCache extends TCache
 	 */
 	protected function setValue($key,$value,$expire)
 	{
+		$expire=($expire<=0)?0:time()+$expire;
 		$sql='REPLACE INTO '.self::CACHE_TABLE.' VALUES(\''.$key.'\',\''.sqlite_escape_string($value).'\','.$expire.')';
 		return $this->_db->query($sql)!==false;
 	}
@@ -193,6 +194,7 @@ class TSqliteCache extends TCache
 	 */
 	protected function addValue($key,$value,$expire)
 	{
+		$expire=($expire<=0)?0:time()+$expire;
 		$sql='INSERT INTO '.self::CACHE_TABLE.' VALUES(\''.$key.'\',\''.sqlite_escape_string($value).'\','.$expire.')';
 		return @$this->_db->query($sql)!==false;
 	}
