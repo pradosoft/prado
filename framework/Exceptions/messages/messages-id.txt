@@ -458,3 +458,5 @@ db_cachetable_inexistent				= TDbCache tidak bisa menemukan tabel DB '{0}' untuk
 ar_data_invalid							= {0}.copyFrom() hanya bisa menggunakan obyek atay array sebagai parameter.
 ar_save_invalid							= Turunan {0} tidak bisa disimpan karena kondisi sudah dihapus ataupun tidak dikenal.
 ar_delete_invalid						= Turunan {0} tidak bisa dihapus karena ada rekaman baru atau rekaman sudah dihapus.
+
+datasource_dbconnection_invalid			= TDataSourceConfig.DbConnection '{0}' tidak benar. ia merujuk ke modul aplikasi yang benar.
