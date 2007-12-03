@@ -17,7 +17,7 @@ Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
  * The value of the input field can be accessed via {@link getValue Value} property.
  *
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
- * @package System.Web.UI.WebControls
+ * @package System.Web.UI.ActiveControls
  * @since 3.1
  */
 class TActiveHiddenField extends THiddenField implements ICallbackEventHandler, IActiveControl
@@ -32,7 +32,7 @@ class TActiveHiddenField extends THiddenField implements ICallbackEventHandler, 
 		parent::__construct();
 		$this->setAdapter(new TActiveControlAdapter($this));
 	}
-	
+
 	/**
 	 * @return TBaseActiveCallbackControl standard callback control options.
 	 */
@@ -48,7 +48,7 @@ class TActiveHiddenField extends THiddenField implements ICallbackEventHandler, 
 	{
 		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
 	}
-	
+
 	/**
 	 * Client-side Value property can only be updated after the OnLoad stage.
 	 * @param string text content for the hidden field
