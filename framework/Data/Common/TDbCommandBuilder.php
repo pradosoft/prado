@@ -159,10 +159,10 @@ class TDbCommandBuilder extends TComponent
 	 */
 	public function createFindCommand($where='1=1', $parameters=array(), $ordering=array(), $limit=-1, $offset=-1)
 	{
-		if($where===null)
-			$where='1=1';
 		$table = $this->getTableInfo()->getTableFullName();
-		$sql = "SELECT * FROM {$table} WHERE {$where}";
+		$sql = "SELECT * FROM {$table}";
+		if(!empty($where))
+			$sql .= " WHERE {$where}";
 		return $this->applyCriterias($sql, $parameters, $ordering, $limit, $offset);
 	}
 
@@ -185,10 +185,10 @@ class TDbCommandBuilder extends TComponent
 	 */
 	public function createCountCommand($where='1=1', $parameters=array(),$ordering=array(), $limit=-1, $offset=-1)
 	{
-		if($where===null)
-			$where='1=1';
 		$table = $this->getTableInfo()->getTableFullName();
-		$sql = "SELECT COUNT(*) FROM {$table} WHERE {$where}";
+		$sql = "SELECT COUNT(*) FROM {$table}";
+		if(!empty($where))
+			$sql .= " WHERE {$where}";
 		return $this->applyCriterias($sql, $parameters, $ordering, $limit, $offset);
 	}
 
@@ -204,8 +204,8 @@ class TDbCommandBuilder extends TComponent
 	{
 		$table = $this->getTableInfo()->getTableFullName();
 		if (!empty($where))
-			$where = 'WHERE '.$where;
-		$command = $this->createCommand("DELETE FROM {$table} ".$where);
+			$where = ' WHERE '.$where;
+		$command = $this->createCommand("DELETE FROM {$table}".$where);
 		$this->bindArrayValues($command, $parameters);
 		return $command;
 	}
@@ -242,7 +242,10 @@ class TDbCommandBuilder extends TComponent
 			$fields = implode(', ', $this->getColumnBindings($data, true));
 		else
 			$fields = implode(', ', $this->getColumnBindings($data));
-		$command = $this->createCommand("UPDATE {$table} SET {$fields} WHERE {$where}");
+
+		if (!empty($where))
+			$where = ' WHERE '.$where;
+		$command = $this->createCommand("UPDATE {$table} SET {$fields}".$where);
 		$this->bindArrayValues($command, array_merge($data, $parameters));
 		return $command;
 	}

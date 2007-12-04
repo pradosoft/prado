@@ -69,14 +69,6 @@ class TActiveRecordRelationContext
 	}
 
 	/**
-	 * @return string foreign record class name.
-	 */
-	public function getForeignRecordClass()
-	{
-		return $this->_relation[1];
-	}
-
-	/**
 	 * @return array foreign key of this relations, the keys is dependent on the
 	 * relationship type.
 	 * @since 3.1.2
@@ -97,12 +89,38 @@ class TActiveRecordRelationContext
 	}
 
 	/**
+	 * @return string foreign record class name.
+	 */
+	public function getForeignRecordClass()
+	{
+		return $this->_relation[1];
+	}
+
+	/**
 	 * @return string foreign key field names, comma delimited.
 	 * @since 3.1.2
 	 */
 	public function getFkField()
 	{
 		return $this->_relation[2];
+	}
+
+	/**
+	 * @return string the query condition for the relation as specified in RELATIONS
+	 * @since 3.1.2
+	 */
+	public function getCondition()
+	{
+		return isset($this->_relation[3])?$this->_relation[3]:null;
+	}
+
+	/**
+	 * @return array the query parameters for the relation as specified in RELATIONS
+	 * @since 3.1.2
+	 */
+	public function getParameters()
+	{
+		return isset($this->_relation[4])?$this->_relation[4]:array();
 	}
 
 	/**
@@ -156,7 +174,7 @@ class TActiveRecordRelationContext
 				$this->_property, get_class($this->_record), 'RELATIONS');
 		}
 		if($criteria===null)
-			$criteria = new TActiveRecordCriteria;
+			$criteria = new TActiveRecordCriteria($this->getCondition(), $this->getParameters());
 		switch($this->getRelationType())
 		{
 			case TActiveRecord::HAS_MANY:

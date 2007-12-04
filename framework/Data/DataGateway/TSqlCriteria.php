@@ -51,6 +51,7 @@ class TSqlCriteria extends TComponent
 		$this->_parameters->copyFrom((array)$parameters);
 		$this->_ordersBy=new TAttributeCollection;
 		$this->_ordersBy->setCaseSensitive(true);
+
 		$this->setCondition($condition);
 	}
 
@@ -68,7 +69,14 @@ class TSqlCriteria extends TComponent
 	 */
 	public function setCondition($value)
 	{
-		$this->_condition=$value;
+		if(!empty($value) && preg_match('/ORDER\s+BY\s+(.*?)$/i',$value,$matches)>0)
+		{
+			// condition contains ORDER BY, we need to strip it output
+			$this->_condition=substr($value,0,strpos($value,$matches[0]));
+			$this->setOrdersBy($matches[1]);
+		}
+		else
+			$this->_condition=$value;
 	}
 
 	/**
@@ -107,13 +115,23 @@ class TSqlCriteria extends TComponent
 	}
 
 	/**
-	 * @param ArrayAccess ordering clause.
+	 * @param mixed ordering clause.
 	 */
 	public function setOrdersBy($value)
 	{
-		if(!(is_array($value) || $value instanceof ArrayAccess))
-			throw new TException('value must be array or ArrayAccess');
-		$this->_ordersBy->copyFrom($value);
+		if(is_array($value) || $value instanceof Traversable)
+			$this->_ordersBy->copyFrom($value);
+		else
+		{
+			$value=trim(preg_replace('/\s+/',' ',(string)$value));
+			$orderBys=array();
+			foreach(explode(',',$value) as $orderBy)
+			{
+				$vs=explode(' ',trim($orderBy));
+				$orderBys[$vs[0]]=isset($vs[1])?$vs[1]:'asc';
+			}
+			$this->_ordersBy->copyFrom($orderBys);
+		}
 	}
 
 	/**

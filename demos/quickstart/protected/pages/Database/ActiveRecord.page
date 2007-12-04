@@ -612,7 +612,8 @@ CREATE TABLE bar
 as an 1-M relationship. That is, one Team may contain 0 or more Players. In terms of
 object relationships, we say that a <tt>TeamRecord</tt> object <b>has many</b> <tt>PlayerRecord</tt> objects.
 (Notice the reversal of the direction of relationships between tables and objects.)
-<p id="710019" class="block-content">
+</p>
+
 <h3 id="142017">Has Many Relationship</h3>
 <p id="710020" class="block-content">
 We model the <tt>Team</tt> object as the following Active Record classes.
@@ -629,7 +630,7 @@ class TeamRecord extends TActiveRecord
     //define the $player member having has many relationship with PlayerRecord
     public static $RELATIONS=array
     (
-        'players' => array(self::HAS_MANY, 'PlayerRecord'),
+        'players' => array(self::HAS_MANY, 'PlayerRecord', 'team_name'),
     );
 
     public static function finder($className=__CLASS__)
@@ -644,10 +645,12 @@ property <tt>$players</tt> <b>has many</b> <tt>PlayerRecord</tt>s. Multiple rela
 is permitted by defining each relationship with an entry in the <tt>$RELATIONS</tt>
 array where array key for the entry corresponds to the property name.
 In <tt>array(self::HAS_MANY, 'PlayerRecord')</tt>, the first element defines the
-relationship type, the valid types are <tt>self::HAS_MANY</tt>,
-<tt>self::HAS_ONE</tt> and <tt>self::BELONGS_TO</tt>.
+relationship type, the valid types are <tt>self::HAS_MANY</tt>, <tt>self::HAS_ONE</tt>,
+<tt>self::BELONGS_TO</tt> and <tt>self::MANY_TO_MANY</tt>.
 The second element is a string <tt>'PlayerRecord'</tt> that corresponds to the
 class name of the <tt>PlayerRecord</tt> class.
+And the third element 'team_name' refers to the foreign key column in the Players table that
+references to the Teams table.
 </p>
 
 <div class="note"><b class="note">Note:</b>
@@ -670,8 +673,8 @@ in Active Record by inspecting the <tt>Players</tt> and <tt>Teams</tt> table def
 Since version <b>3.1.2</b>, Active Record supports multiple foreign key
 references of the same table. Ambiguity between multiple foreign key references to the same table is
 resolved by providing the foreign key column name as the 3rd parameter in the relationship array.
-For example, both the following foreign keys <tt>owner_id</tt> and <tt>reporter_id</tt>
-references the same table defined in <tt>UserRecord</tt>.
+For example, both of the following foreign keys <tt>owner_id</tt> and <tt>reporter_id</tt>
+references to the same table defined in <tt>UserRecord</tt>.
 <com:TTextHighlighter Language="php" CssClass="source block-content">
 class TicketRecord extends TActiveRecord
 {
@@ -729,6 +732,13 @@ load the related objects, while the <tt>with</tt> approach is more efficient if 
 returned, each with some related objects.
 </div>
 
+<h3 id="142019">Has One Relationship</h3>
+<p id="710030" class="block-content">The entity relationship between <tt>Players</tt> and <tt>Profiles</tt> is one to one. That is,
+each <tt>PlayerRecord</tt> object <b>has one</b> <tt>ProfileRecord</tt> object (may be none or null).
+A <b>has one</b> relationship is nearly identical to a <b>has many</b> relationship with the exception
+that the related object is only one object (not a collection of objects).
+</p>
+
 <h3 id="142018">Belongs To Relationship</h3>
 <p id="710025" class="block-content">The "has many" relationship in the above section defines a collection of foreign
 objects. In particular, we have that a <tt>TeamRecord</tt> has many (zero or more)
@@ -752,9 +762,9 @@ class PlayerRecord extends TActiveRecord
 
     public static $RELATIONS=array
     (
-        'team' => array(self::BELONGS_TO, 'TeamRecord'),
+        'team' => array(self::BELONGS_TO, 'TeamRecord', 'team_name'),
         'skills' => array(self::MANY_TO_MANY, 'SkillRecord', 'Player_Skills'),
-        'profile' => array(self::HAS_ONE, 'ProfileRecord'),
+        'profile' => array(self::HAS_ONE, 'ProfileRecord', 'player_id'),
     );
 
     public static function finder($className=__CLASS__)
@@ -768,10 +778,11 @@ The static <tt>$RELATIONS</tt> property of <tt>PlayerRecord</tt> defines that th
 property <tt>$team</tt> <b>belongs to</b> a <tt>TeamRecord</tt>.
 The <tt>$RELATIONS</tt> array also defines two other relationships that we
 shall examine in later sections below.
-In <tt>array(self::BELONGS_TO, 'TeamRecord')</tt>, the first element defines the
-relationship type, in this case <strong><tt>self::BELONGS_TO</tt></strong> and
+In <tt>array(self::BELONGS_TO, 'TeamRecord', 'team_name')</tt>, the first element defines the
+relationship type, in this case <strong><tt>self::BELONGS_TO</tt></strong>;
 the second element is a string <tt>'TeamRecord'</tt> that corresponds to the
-class name of the <tt>TeamRecord</tt> class.
+class name of the <tt>TeamRecord</tt> class; and the third element 'team_name' refers
+to the foreign key of Players referencing Teams.
 A player object with the corresponding team object may be fetched as follows.
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content">
@@ -830,13 +841,6 @@ Thus, the <tt>PlayerRecord</tt> object has a property (<tt>$team</tt>) that <b>b
 <tt>TeamRecord</tt> object.
 </p>
 
-<h3 id="142019">Has One Relationship</h3>
-<p id="710030" class="block-content">The entity relationship between <tt>Players</tt> and <tt>Profiles</tt> is one to one. That is,
-each <tt>PlayerRecord</tt> object <b>has one</b> <tt>ProfileRecord</tt> object (may be none or null).
-A <b>has one</b> relationship is nearly identical to a <b>has many</b> relationship with the exception
-that the related object is only one object (not a collection of objects).
-</p>
-
 <h3 id="142020">Parent Child Relationships</h3>
 <p id="710031" class="block-content">A parent child relationship can be defined using a combination of <tt>has many</tt> and <tt>belongs to</tt>
 relationship that refers to the same class. The following example shows a parent children relationship between
@@ -855,11 +859,27 @@ class Category extends TActiveRecord
 
     public static $RELATIONS=array
     (
-        'parent_category' => array(self::BELONGS_TO, 'Category'),
-        'child_categories' => array(self::HAS_MANY, 'Category'),
+        'parent_category' => array(self::BELONGS_TO, 'Category', 'parent_cat_id'),
+        'child_categories' => array(self::HAS_MANY, 'Category', 'parent_cat_id'),
     );
 }
 </com:TTextHighlighter>
+
+<h3>Query Criteria for Related Objects</h3>
+<p>
+In the above, we show that an Active Record object can reference to its related objects by
+declaring a static class member $RELATIONS which specifies a list of relations. Each relation
+is specified as an array consisting of three elements: relation type, related AR class name,
+and the foreign key(s). For example, we use <tt>array(self::HAS_MANY, 'PlayerRecord', 'team_name')</tt>
+to specify the players in a team. There are two more optional elements that can be specified
+in this array: query condition (the fourth element) and parameters (the fifth element).
+They are used to control how to query for the related objects. For example, if we want to obtain
+the players ordered by their age, we can specify <tt>array(self::HAS_MANY, 'PlayerRecord', 'team_name', 'ORDER BY age')</tt>.
+If we want to obtain players whose age is smaller than 30, we could use
+<tt>array(self::HAS_MANY, 'PlayerRecord', 'team_name', 'age<:age', array(':age'=>30))</tt>. In general,
+these two additional elements are similar as the parameters passed to the <tt>find()</tt> method in AR.
+</p>
+
 
 
 <h2 id="142013">Association Table Mapping</h2>
