@@ -538,6 +538,7 @@ CREATE TABLE bar
 <p class="block-content">Hubungan entitas antara tabel <tt>Teams</tt> dan <tt>Players</tt> adalah apa yang dikenal sebagai hubungan 1-M. Yaitu, satu Tim dapat berisi 0 atau lebih Pemain. Dalam batasan hubungan obyek, kita katakan bahwa obyek <tt>TeamRecord</tt> <b>memiliki banyak</b> obyek <tt>PlayerRecord</tt>. 
 (Perhatikan kebalikan dari arah hubungan antara tabel dan obyek.)
 <p id="710019" class="block-content">
+
 <h3 id="142017">Hubungan Has Many</h3>
 <p id="710020" class="block-content">
 Kita membuat model obyek <tt>Team</tt> sebagai kelas Rekaman Aktif berikut.
@@ -554,7 +555,7 @@ class TeamRecord extends TActiveRecord
     //mendefinisikan anggota $player yang memiliki hubungan banyak dengan PlayerRecord
     public static $RELATIONS=array
     (
-        'players' => array(self::HAS_MANY, 'PlayerRecord'),
+        'players' => array(self::HAS_MANY, 'PlayerRecord', 'team_name'),
     );
 
     public static function finder($className=__CLASS__)
@@ -634,19 +635,19 @@ Kode berikut mendefinisikan kelas <tt>PlayerRecord</tt> lengkap dengan 3 hubunga
 class PlayerRecord extends TActiveRecord
 {
     const TABLE='Players';
-    public $player_id;	// deklarasi ini tidak diperlukan lagi sejak v3.1.2
-    public $age;	// deklarasi ini tidak diperlukan lagi sejak v3.1.2
-    public $team_name;	// deklarasi ini tidak diperlukan lagi sejak v3.1.2
+    public $player_id;	
+    public $age;	
+    public $team_name;	
 
-    public $team;
-    public $skills=array();
-    public $profile;
+    public $team;		// deklarasi ini tidak diperlukan lagi sejak v3.1.2
+    public $skills=array();	// deklarasi ini tidak diperlukan lagi sejak v3.1.2
+    public $profile;		// deklarasi ini tidak diperlukan lagi sejak v3.1.2
 
     public static $RELATIONS=array
     (
-        'team' => array(self::BELONGS_TO, 'TeamRecord'),
+        'team' => array(self::BELONGS_TO, 'TeamRecord', 'team_name'),
         'skills' => array(self::MANY_TO_MANY, 'SkillRecord', 'Player_Skills'),
-        'profile' => array(self::HAS_ONE, 'ProfileRecord'),
+        'profile' => array(self::HAS_ONE, 'ProfileRecord', 'player_id'),
     );
 
     public static function finder($className=__CLASS__)
@@ -686,7 +687,7 @@ class ProfileRecord extends TActiveRecord
     public $player_id;
     public $salary;
 
-    public $player;	// deklarasi ini tidak diperlukan lagi sejak v3.1.2
+    public $player;  // deklarasi ini tidak diperlukan lagi sejak v3.1.2
 
     public static $RELATIONS=array
     (
@@ -730,12 +731,26 @@ class Category extends TActiveRecord
 
     public static $RELATIONS=array
     (
-        'parent_category' => array(self::BELONGS_TO, 'Category'),
-        'child_categories' => array(self::HAS_MANY, 'Category'),
+        'parent_category' => array(self::BELONGS_TO, 'Category', 'parent_cat_id'),
+        'child_categories' => array(self::HAS_MANY, 'Category', 'parent_cat_id'),
     );
 }
 </com:TTextHighlighter>
 
+<h3>Kriteria Query untuk Obyek Terkait</h3>
+<p>
+Dalam contoh di atas, kami memperlihatkan bahwa obyek Rekaman Aktif dapat mereferensi ke obyek terkaitnya sendiri dengan
+mendeklarasikan anggota kelas statis $RELATIONS yang menetapkan sebuah daftar relasi. Setiap relasi
+ditetapkan sebagai array yang terdiri dari tiga elemen: tipe relasi, nama kelas AR terkait,
+dan kunci asing. Sebagai contoh, kami menggunakan <tt>array(self::HAS_MANY, 'PlayerRecord', 'team_name')</tt>
+untuk menetapkan pemain dalam sebuah tim. Ada dua elemen opsional berikutnya yang dapat ditetapkan
+dalam array ini: kondisi query (elemen keempat) dan parameters (elemen kelima).
+Elemen tersebut dipakai untuk mengontrol bagaimana untuk melakukan query terhadap obyek terkait. Sebagai contoh, jika kita ingin memperoleh
+para pemain yang diurut dengan usianya, kita dapat menetapkan <tt>array(self::HAS_MANY, 'PlayerRecord', 'team_name', 'ORDER BY age')</tt>.
+Jika kita ingin mendapatkan para pemain yang usianya kurang dari  30, kita dapat menggunakan
+<tt>array(self::HAS_MANY, 'PlayerRecord', 'team_name', 'age<:age', array(':age'=>30))</tt>. Secara umum,
+dua elemen tambahan ini mirip seperti parameter yang dikirimkan ke metode <tt>find()</tt> dalam AR.
+</p>
 
 <h2 id="142013">Pemetaan Tabel Asosiasi</h2>
 <p id="710032" class="block-content">
