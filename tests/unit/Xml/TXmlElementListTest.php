@@ -11,7 +11,7 @@ class TXmlElementListTest extends PHPUnit_Framework_TestCase {
 	public function testConstruct() {
 		$element=new TXmlElement('tag');
 		$list=new TXmlElementList($element);
-		self::assertEquals($element,self::getAttribute($list, '_o'));
+		self::assertEquals($element,self::readAttribute($list, '_o'));
 	}
 
 	public function testInsertAt() {

@@ -66,7 +66,7 @@ class THtmlWriterTest extends PHPUnit_Framework_TestCase {
 		$writer=new THtmlWriter(self::$output);
 		$writer->addAttributes(array ('type' => 'text', 'value' => 'Prado & Cie'));
 		// get the private var _attributes
-		$result=self::getAttribute($writer, '_attributes');
+		$result=self::readAttribute($writer, '_attributes');
 		self::assertEquals('text',$result['type']);
 		self::assertEquals(THttpUtility::htmlEncode('Prado & Cie'), $result['value']);
 	}
@@ -75,7 +75,7 @@ class THtmlWriterTest extends PHPUnit_Framework_TestCase {
 		$writer=new THtmlWriter(self::$output);
 		$writer->addAttribute('type','text');
 		$writer->addAttribute('value','Prado & Cie');
-		$result=self::getAttribute($writer, '_attributes');
+		$result=self::readAttribute($writer, '_attributes');
 		self::assertEquals('text',$result['type']);
 		self::assertEquals(THttpUtility::htmlEncode('Prado & Cie'), $result['value']);		
 	}
@@ -85,7 +85,7 @@ class THtmlWriterTest extends PHPUnit_Framework_TestCase {
 		$writer->addAttribute('type','text');
 		$writer->addAttribute('value','Prado & Cie');
 		$writer->removeAttribute('value');
-		$result=self::getAttribute($writer, '_attributes');
+		$result=self::readAttribute($writer, '_attributes');
 		// 'type' should be present, 'value' not
 		self::assertTrue(isset($result['type']));
 		self::assertFalse(isset($result['value']));
@@ -94,7 +94,7 @@ class THtmlWriterTest extends PHPUnit_Framework_TestCase {
 	public function testAddStyleAttributes() {
 		$writer=new THtmlWriter(self::$output);
 		$writer->addStyleAttributes(array ('font-size' => '1em', 'background-image'=>'url(image.gif)'));
-		$result=self::getAttribute($writer, '_styles');
+		$result=self::readAttribute($writer, '_styles');
 		self::assertEquals('1em', $result['font-size']);
 		self::assertEquals(THttpUtility::htmlEncode('url(image.gif)'), $result['background-image']);
 	}
@@ -103,7 +103,7 @@ class THtmlWriterTest extends PHPUnit_Framework_TestCase {
 		$writer=new THtmlWriter(self::$output);
 		$writer->addStyleAttribute('font-size','1em');
 		$writer->addStyleAttribute('background-image','url(image.gif)');
-		$result=self::getAttribute($writer, '_styles');
+		$result=self::readAttribute($writer, '_styles');
 		self::assertEquals('1em', $result['font-size']);
 		self::assertEquals(THttpUtility::htmlEncode('url(image.gif)'), $result['background-image']);
 	}
@@ -113,7 +113,7 @@ class THtmlWriterTest extends PHPUnit_Framework_TestCase {
 		$writer->addStyleAttribute('font-size','1em');
 		$writer->addStyleAttribute('background-image','url(image.gif)');
 		$writer->removeStyleAttribute('font-size');
-		$result=self::getAttribute($writer, '_styles');
+		$result=self::readAttribute($writer, '_styles');
 		self::assertTrue(isset($result['background-image']));
 		self::assertFalse(isset($result['font-size']));
 	}
