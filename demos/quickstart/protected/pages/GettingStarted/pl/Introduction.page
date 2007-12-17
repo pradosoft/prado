@@ -4,6 +4,10 @@
 <p id="10001">
 Niniejszy przewodnik powstał by pomóc Tobie w szybkim rozpoczęciu budowania Twojej własnej aplikacji internetowej bazującej na PRADO w wersji 3.x
 </p>
+<p id="10001" class="block-content">
+Jeśli jesteś już użytkownikiem PRADO #.x i chciałbyś dowiedzieć się jakie rozszerzenia są dostępne dla każdej nowej wersji, proszę sprawdź <a href="?page=GettingStarted.NewFeatures">nowe właściwości</a>. 
+Następujące sekcje są pomocne dla początkujących.
+</p>
 <p id="10002">
 Możesz odwoływać się do następujących zasobów jeśli czujesz, że ten przewodnik nie spełnia wszystkich twoich oczekiwań.
 </p>

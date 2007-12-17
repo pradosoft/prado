@@ -17,7 +17,8 @@
     <li><a href="?page=GettingStarted.HelloWorld">Tworzenie pierwszej aplikacji PRADO</a></li>
     <li><a href="?page=Fundamentals.Hangman">Przykład: gra wisielec</a></li>
     <li><a href="?page=Tutorial.CurrencyConverter">Konwenter walut</a></li>
-	<li><a href="?page=Tutorial.AjaxChat">AJAX-owy klient czat</a></li>
+    <li><a href="?page=Tutorial.AddressBook">Książka adresowa</a></li>    
+	  <li><a href="?page=Tutorial.AjaxChat">AJAX-owy klient czat</a></li>
     <li><a href="?page=GettingStarted.CommandLine">Narzędzie linii poleceń</a></li>
 </ul>
 </div>
@@ -54,7 +55,7 @@
     <li><a href="?page=Controls.Standard">Kontrolki standardowe</a></li>
     <li><a href="?page=Controls.Validation">Kontrolki walidujące</a></li>
     <li><a href="?page=Controls.List">Kontrolki listujące</a></li>
-    <li><a href="?page=Controls.Data">Kontrolki dancy</a></li>
+    <li><a href="?page=Controls.Data">Kontrolki danych</a></li>
     <li><a href="?page=ActiveControls.Home">Kontrolki aktywne (AJAX)</a></li>
     <li><a href="?page=Controls.NewControl">Tworzenie nowych kontrolek</a></li>
 </ul>
@@ -72,7 +73,7 @@
 <div>Operacje na bazach dancyh</div>
 <ul>
     <li><a href="?page=Database.DAO">Data Access Objects</a></li>
-    <li><a href="?page=Database.ActiveRecord">Rekord aktywny</a></li>
+    <li><a href="?page=Database.ActiveRecord">Rekord aktywny (Active Record)</a></li>
     <li><a href="?page=Database.Scaffold">Szkielet rekordu aktywnego (Scafold)</a></li>
     <li><a href="?page=Database.SqlMap">Mapa danych SqlMap</a></li>
 </ul>

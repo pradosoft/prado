@@ -31,7 +31,7 @@ PRADO jest najczęściej postrzegane jako jedyny w swoim rodzaju framework. W rz
 <li>Wsparcie dla I18N oraz L10N - PRADO zawiera kompletne wsparcie dla tworzenia aplikacji wielojęzycznych i lokalnych</li>
 <li>Zgodność z XHTML - Strony internetowe generowanie przez PRADO są zgodne z XHTML.</li>
 <li>Przystosowanie istniejących prac - PRADO jest ogólnym frameworkiem skupiającym się na warstwie prezentacyjnej. Nie pozbawia on developerów możliwości używania istniejących bibliotek klas czy też narzędzi. Na przykład, kazdy może używać AdoDB czy też Creole do obsługi baz danych w aplikacjach PRADO.
-ś<li>Pozostałe cechy - Wszechstronna obsługa błędów/wyjątków oraz logowania komunikatów; standardowe keszowanie oraz selektywne kaszowanie danych wyściowych; rozszerzalna oraz lokalizowalna obsługa błędów; elastyczna autentykacja oraz autoryzacja; przedsięwzięcie króków chroniących przed atakami cross-site script (CSS), ochrona plików cookie, itd.</li>
+ś<li>Pozostałe cechy - Wszechstronna obsługa błędów/wyjątków oraz logowania komunikatów; standardowe keszowanie oraz selektywne kaszowanie danych wyściowych; rozszerzalna oraz lokalizowalna obsługa błędów; elastyczna autentykacja oraz autoryzacja; przedsięwzięcie króków chroniących przed atakami cross-site script (XSS), ochrona plików cookie, itd.</li>
 </ul>
 
 <h2 id="203">Do czego najlepiej nadaje się PRADO?</h2>
@@ -50,8 +50,8 @@ PRADO często jest postrzegane jako jedyny w swoim rodzaju framework. Jego unika
 Większość frameworków PHP skupia się głównie na odseparowaniu warstwy prezentacji i logiki promując wzorzec programowania MVC (przyp. tłum. od pierwszych liter <i>model</i> - model <i>view</i> - widok <i>controler</i> - kontroler). PRADO osiąga te same cele naturalnie poprzez potrzebę prechowywania logiki w klasach a prezetnacji w szablonach (ang. <i>templates</i>). PRADO robi dużo więcej w sprawach innych niż MVC. Wypełnia wiele białych plam w programowaniu webowym w PHP, swoim bazującym na komponentach paradygmacie programowania, jego bogatym zestawem kontrolek webowych, jego wszechstronną obsługą baz danych, jego elastyczną obsługą błędów oraz ich logowania oraz wiele wiele innych.
 </p>
 
-<h2>Czy PRADO jest wystarczająco stabilne?</h2>
-<p>
+<h2 id="4004">Czy PRADO jest wystarczająco stabilne?</h2>
+<p id="20004" class="block-content">
 Tak. PRADO zostało pierwszy raz opublikowane w sierpniu 2004 roku. Wiele zestawów testów zostało od tego czasu napisanych oraz często przeprowadzanych by upewnić sie o jakości PRADO. Framework był używany przez tysiące użytkowników oraz developerów a wiele aplikacji internetowych powstało w oparciu o niego. Bugi oraz żądania rozszerzeń są zarządzane poprzez system TRAC, posiadamy także wspaniałą społeczność użytkowników oraz zespół developerów by być pewnym, że żadne pytanie nie pozostanie bez odpowiedzi.
 </p>
 
