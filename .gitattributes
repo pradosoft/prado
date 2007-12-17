@@ -1648,7 +1648,13 @@ demos/quickstart/protected/pages/Fundamentals/lifecycles.gif -text
 demos/quickstart/protected/pages/Fundamentals/lifecycles.vsd -text
 demos/quickstart/protected/pages/Fundamentals/objectdiagram.gif -text
 demos/quickstart/protected/pages/Fundamentals/objectdiagram.vsd -text
+demos/quickstart/protected/pages/Fundamentals/pl/Applications.page -text
 demos/quickstart/protected/pages/Fundamentals/pl/Hangman.page -text
+demos/quickstart/protected/pages/Fundamentals/pl/applifecycles.gif -text
+demos/quickstart/protected/pages/Fundamentals/pl/classtree.gif -text
+demos/quickstart/protected/pages/Fundamentals/pl/directory.gif -text
+demos/quickstart/protected/pages/Fundamentals/pl/lifecycles.gif -text
+demos/quickstart/protected/pages/Fundamentals/pl/objectdiagram.gif -text
 demos/quickstart/protected/pages/GettingStarted/AboutPrado.page -text
 demos/quickstart/protected/pages/GettingStarted/CommandLine.page -text
 demos/quickstart/protected/pages/GettingStarted/HelloWorld.page -text
@@ -1688,6 +1694,7 @@ demos/quickstart/protected/pages/GettingStarted/ja/Upgrading.page -text
 demos/quickstart/protected/pages/GettingStarted/ja/directory.gif -text
 demos/quickstart/protected/pages/GettingStarted/ja/sequence.gif -text
 demos/quickstart/protected/pages/GettingStarted/pl/AboutPrado.page -text
+demos/quickstart/protected/pages/GettingStarted/pl/CommandLine.page -text
 demos/quickstart/protected/pages/GettingStarted/pl/HelloWorld.page -text
 demos/quickstart/protected/pages/GettingStarted/pl/Installation.page -text
 demos/quickstart/protected/pages/GettingStarted/pl/Introduction.page -text
