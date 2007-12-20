@@ -578,11 +578,11 @@ class TPropertyValue
 	{
 		if(is_string($value))
 		{
-			$trimmed = trim($value);
+			$value = trim($value);
 			$len = strlen($value);
-			if ($len >= 2 && $trimmed[0] == '(' && $trimmed[$len-1] == ')')
+			if ($len >= 2 && $value[0] == '(' && $value[$len-1] == ')')
 			{
-				eval('$array=array'.$trimmed.';');
+				eval('$array=array'.$value.';');
 				return $array;
 			}
 			else
