@@ -158,7 +158,7 @@ class TJavaScript
 			{
 				foreach($value as $k=>$v)
 					if($v!=='')
-						$results[]=(is_string($k)?"'{$k}':":'').self::encode($v,$toMap);
+						$results[]="'{$k}':".self::encode($v,$toMap);
 				return '{'.implode(',',$results).'}';
 			}
 			else
