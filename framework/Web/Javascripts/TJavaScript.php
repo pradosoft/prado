@@ -153,20 +153,26 @@ class TJavaScript
 			return $value?'true':'false';
 		else if(is_array($value))
 		{
-			$results=array();
-			if($toMap)
+			$results='';
+			if(($n=count($value))>0 && array_keys($value)!==range(0,$n-1))
 			{
 				foreach($value as $k=>$v)
-					if($v!=='')
-						$results[]="'{$k}':".self::encode($v,$toMap);
-				return '{'.implode(',',$results).'}';
+				{
+					if($results!=='')
+						$results.=',';
+					$results.="'$k':".self::encode($v,$toMap);
+				}
+				return '{'.$results.'}';
 			}
 			else
 			{
-				foreach($value as $k=>$v)
-					if($v!=='')
-						$results[]=self::encode($v,$toMap);
-				return '['.implode(',',$results).']';
+				foreach($value as $v)
+				{
+					if($results!=='')
+						$results.=',';
+					$results.=self::encode($v,$toMap);
+				}
+				return '['.$results.']';
 			}
 		}
 		else if(is_integer($value))

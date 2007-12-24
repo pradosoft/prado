@@ -50,7 +50,7 @@ class TDataFieldAccessor
 	 */
 	public static function getDataFieldValue($data,$field)
 	{
-		if(Prado::getApplication()->getMode()===TApplicationMode::Performance)
+		try
 		{
 			if(is_array($data) || ($data instanceof ArrayAccess))
 				return $data[$field];
@@ -67,50 +67,16 @@ class TDataFieldAccessor
 				{
 					$object=$data;
 					foreach(explode('.',$field) as $f)
-						$object=call_user_func(array($object,'get'.$f));
+						$object=$object->$f;
 					return $object;
 				}
 			}
-			else
-				throw new TInvalidDataValueException('datafieldaccessor_data_invalid',$field);
 		}
-		else
+		catch(Exception $e)
 		{
-			if(is_array($data) || ($data instanceof ArrayAccess))
-			{
-				if(isset($data[$field]) || $data[$field]===null)
-					return $data[$field];
-				else
-					throw new TInvalidDataValueException('datafieldaccessor_datafield_invalid',$field);
-			}
-			else if(is_object($data))
-			{
-				if(strpos($field,'.')===false)  // simple field
-				{
-					if(property_exists($data,$field))
-						return $data->{$field};
-					else if(is_callable(array($data,'get'.$field)))
-						return call_user_func(array($data,'get'.$field));
-					else
-						throw new TInvalidDataValueException('datafieldaccessor_datafield_invalid',$field);
-				}
-				else // field in the format of xxx.yyy.zzz
-				{
-					$object=$data;
-					foreach(explode('.',$field) as $f)
-					{
-						$getter='get'.$f;
-						if(is_callable(array($object,$getter)))
-							$object=call_user_func(array($object,$getter));
-						else
-							throw new TInvalidDataValueException('datafieldaccessor_datafield_invalid',$field);
-					}
-					return $object;
-				}
-			}
-			else
-				throw new TInvalidDataValueException('datafieldaccessor_data_invalid',$field);
+			throw new TInvalidDataValueException('datafieldaccessor_datafield_invalid',$field,$e->getMessage());
 		}
+		throw new TInvalidDataValueException('datafieldaccessor_data_invalid',$field);
 	}
 }
 

@@ -283,7 +283,7 @@ datagridcolumncollection_datagridcolumn_required = TDataGridColumnCollection can
 datagridpagerstyle_pagebuttoncount_invalid = TDataGridPagerStyle.PageButtonCount must be greater than 0.
 
 datafieldaccessor_data_invalid			= TDataFieldAccessor is trying to evaluate a field value of an invalid data. Make sure the data is an array, TMap, TList, or object that contains the specified field '{0}'.
-datafieldaccessor_datafield_invalid		= TDataFieldAccessor is trying to evaluate data value of an unknown field '{0}'.
+datafieldaccessor_datafield_invalid		= TDataFieldAccessor is trying to evaluate data value of an unknown field '{0}': {1}.
 
 tablerowcollection_tablerow_required	= TTableRowCollection can only accept TTableRow objects.
 
