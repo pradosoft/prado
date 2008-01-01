@@ -1,5 +1,8 @@
 /.project
 /assets
+demos/quickstart/.cache
+demos/quickstart/.project
+demos/quickstart/.settings
 demos/quickstart/assets/274d44dc
 demos/quickstart/assets/56624407
 demos/quickstart/assets/587c9c16
@@ -9,6 +12,7 @@ demos/quickstart/assets/ba811377
 demos/quickstart/assets/d8c27ba3
 demos/quickstart/assets/dd11c427
 demos/quickstart/assets/ee054f3e
+demos/quickstart/index_pl.php
 demos/quickstart/protected/runtime/application.xml
 tests/FunctionalTests/results.dat
 tests/FunctionalTests/tickets/assets/93f32b8c

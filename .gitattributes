@@ -1649,7 +1649,13 @@ demos/quickstart/protected/pages/Fundamentals/lifecycles.vsd -text
 demos/quickstart/protected/pages/Fundamentals/objectdiagram.gif -text
 demos/quickstart/protected/pages/Fundamentals/objectdiagram.vsd -text
 demos/quickstart/protected/pages/Fundamentals/pl/Applications.page -text
+demos/quickstart/protected/pages/Fundamentals/pl/Architecture.page -text
+demos/quickstart/protected/pages/Fundamentals/pl/Components.page -text
+demos/quickstart/protected/pages/Fundamentals/pl/Controls.page -text
 demos/quickstart/protected/pages/Fundamentals/pl/Hangman.page -text
+demos/quickstart/protected/pages/Fundamentals/pl/Modules.page -text
+demos/quickstart/protected/pages/Fundamentals/pl/Pages.page -text
+demos/quickstart/protected/pages/Fundamentals/pl/Services.page -text
 demos/quickstart/protected/pages/Fundamentals/pl/applifecycles.gif -text
 demos/quickstart/protected/pages/Fundamentals/pl/classtree.gif -text
 demos/quickstart/protected/pages/Fundamentals/pl/directory.gif -text
