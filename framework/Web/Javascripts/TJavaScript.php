@@ -158,9 +158,12 @@ class TJavaScript
 			{
 				foreach($value as $k=>$v)
 				{
-					if($results!=='')
-						$results.=',';
-					$results.="'$k':".self::encode($v,$toMap);
+					if($v!=='')
+					{
+						if($results!=='')
+							$results.=',';
+						$results.="'$k':".self::encode($v,$toMap);
+					}
 				}
 				return '{'.$results.'}';
 			}
@@ -168,9 +171,12 @@ class TJavaScript
 			{
 				foreach($value as $v)
 				{
-					if($results!=='')
-						$results.=',';
-					$results.=self::encode($v,$toMap);
+					if($v!=='')
+					{
+						if($results!=='')
+							$results.=',';
+						$results.=self::encode($v,$toMap);
+					}
 				}
 				return '['.$results.']';
 			}
