@@ -2,7 +2,7 @@
 
 <h1 id="1001">Moduły (ang. modules)</h1>
 <p id="140141" class="block-content">
-Moduł jest instancją klasy implementującej interfejs <tt>IModule</tt>. Moduł jest (~#?commonly) zaprojektowany by dostarczać określonej funkcjonalności, która może być podłączona do aplikacji PRADO i dzielona wśród wszystkich komponentów aplikacji.
+Moduł jest instancją klasy implementującej interfejs <tt>IModule</tt>. Moduł jest zazwyczaj zaprojektowany by dostarczać określonej funkcjonalności, która może być podłączona do aplikacji PRADO i dzielona wśród wszystkich komponentów aplikacji.
 </p>
 <p id="140142" class="block-content">
 PRADO używa konfiguracji aby określić kiedy załadować moduł, jaki rodzaj modułu i jak zainicjalizować załadowane moduły. Deweloper może zastąpić zródłowe (ang. core) moduły własnymi implementacjami poprzez konfigurację aplikacji lub może napisać nowe moduły by dostarczać dodatkowe funkcjonalności. Na przykład można stworzyć moduł, który będzie dostarczał wspólną logikę baz danych dla jednej lub więcej stron. Aby dowiedzieć się więcej zobacz sekcję <a href="?page=Configurations.Overview">konfiguracja</a>.
@@ -32,7 +32,7 @@ Moduł sesji enkapsuluje funkcjonalność związaną z zarządzaniem sesji użyt
 <a name="error"></a>
 <h2 id="1005">moduł zarządzania błędami (ang. error handler module)</h2>
 <p id="140147" class="block-content">
-Moduł zarządzzania błędami jest użuwany by przechwycić i obsłużyć wszystkie przypadki/warunki (!#ang. condition) błędów w aplikacji. PRADO używa <tt>TErrorHandler</tt> jako moduł zarządzania błędami. Przechwytuje on wszystkie ostrzeżenia PHP (ang. warnings), wiadomości (ang. notices) oraz wyjątki (ang. exceptions) i wyświetla w odpowiedniej formie użytkownikowi końcowemu. Moduł zarządzania błędami jest dostępny poprzez właściwość <tt>ErrorHandler</tt> instancji aplikacji.
+Moduł zarządzzania błędami jest użuwany by przechwycić i obsłużyć wszystkie przypadki błędów w aplikacji. PRADO używa <tt>TErrorHandler</tt> jako moduł zarządzania błędami. Przechwytuje on wszystkie ostrzeżenia PHP (ang. warnings), wiadomości (ang. notices) oraz wyjątki (ang. exceptions) i wyświetla w odpowiedniej formie użytkownikowi końcowemu. Moduł zarządzania błędami jest dostępny poprzez właściwość <tt>ErrorHandler</tt> instancji aplikacji.
 </p>
 
 <a name="custom"></a>
@@ -41,7 +41,7 @@ Moduł zarządzzania błędami jest użuwany by przechwycić i obsłużyć wszys
 PRADO zostało wydane z większą ilością modułów niż wymienione moduły źródłowe. PRADO zawiera moduły keszujące (<tt>TSqliteCache</tt> oraz <tt>TMemCache</tt>), moduły zarządzające użytkownikami (<tt>TUserManager</tt>), moduły autentykacji i autoryzacji (<tt>TAuthManager</tt>), itd.
 </p>
 <p id="140149" class="block-content">
-Kiedy wystąpi żądanie <tt>TPageService</tt> ładowane są także określone moduły dla serwisu stron, włączając menedżer (!#? assets manager) (<tt>TAssetManager</tt>), menedżer szablonów (<tt>TTemplateManager</tt>), menedżer tematów/skórek (ang. theme/skin manager) (<tt>TThemeManager</tt>).
+Kiedy wystąpi żądanie <tt>TPageService</tt> ładowane są także określone moduły dla serwisu stron, włączając menedżer elementów aktywnych (ang. assets manager) (<tt>TAssetManager</tt>), menedżer szablonów (<tt>TTemplateManager</tt>), menedżer tematów/skórek (ang. theme/skin manager) (<tt>TThemeManager</tt>).
 </p>
 <p id="140150" class="block-content">
 Dodatkowe moduły oraz moduły źródłowe są konfigurowalne poprzez <a href="?page=Configurations.Overview">konfigurację</a>.

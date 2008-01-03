@@ -5,7 +5,7 @@
 Serwis jest instancją klasy implementującej interfejs <tt>IService</tt>. Każdy rodzaj serwisu przetwarza specyficzny typ żądania użytkownika. Na przykład serwis strony (ang. page service) odpowiada na żądania użytkownika dla stron PRADO.
 </p>
 <p id="150152" class="block-content">
-Serwis jest jednoznacznie identyfikowany poprzez swoją właściwość <tt>ID</tt>. Domyślnie kiedy <tt>THttpRequest</tt> jest używany jako <a href="?page=Fundamentals.Modules#request">moduł żądania</a> (ang. request module), nazwy zmiennych GET są używane by zidentyfikować serwis żadany przez użytkownika. Jeśli nazwa zmiennej GET zgadza się z jakimś <tt>ID</tt> serwisu, żądanie jest (!#? considered) dla tego serwisu oraz wartość parametru GET jest przekazywana jako parametr serwisu. Dla serwisu strony nazwą zmiennej GET musi być <tt>page</tt>. Na przykład następujący adres URL żadą strony <tt>Fundamentals.Services</tt>,
+Serwis jest jednoznacznie identyfikowany poprzez swoją właściwość <tt>ID</tt>. Domyślnie kiedy <tt>THttpRequest</tt> jest używany jako <a href="?page=Fundamentals.Modules#request">moduł żądania</a> (ang. request module), nazwy zmiennych GET są używane by zidentyfikować serwis żadany przez użytkownika. Jeśli nazwa zmiennej GET zgadza się z jakimś <tt>ID</tt> serwisu, żądanie jest przetwarzane przez ten serwis oraz wartość parametru GET jest przekazywana jako parametr serwisu. Dla serwisu strony nazwą zmiennej GET musi być <tt>page</tt>. Na przykład następujący adres URL żadą strony <tt>Fundamentals.Services</tt>,
 <com:TTextHighlighter Language="none" CssClass="source block-content" id="code_150069">
 http://hostname/index.php?page=Fundamentals.Services
 </com:TTextHighlighter>
