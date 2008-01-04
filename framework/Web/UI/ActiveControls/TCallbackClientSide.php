@@ -31,12 +31,12 @@
  * - <b>onFailure</b> executed when callback request returns and fails.
  * - <b>onException</b> raised when callback request fails due to request/response errors.
  *
- * - <b>PostInputs</b> true to collect the form inputs and post them during callback, default is true.
+ * - <b>PostState</b> true to collect the form inputs and post them during callback, default is true.
  * - <b>RequestTimeOut</b> The request timeout in milliseconds.
- * - <b>HasPriority</b> true to ensure that the callback request will be sent 
- *   immediately and will abort existing prioritized requests. It does not affect 
+ * - <b>HasPriority</b> true to ensure that the callback request will be sent
+ *   immediately and will abort existing prioritized requests. It does not affect
  *   callbacks that are not prioritized.
- * - <b>EnablePageStateUpdate</b> enable the callback response to enable the 
+ * - <b>EnablePageStateUpdate</b> enable the callback response to enable the
  *   viewstate update. This will automatically set HasPrority to true when enabled.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
