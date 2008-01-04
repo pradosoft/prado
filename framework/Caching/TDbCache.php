@@ -33,6 +33,9 @@ Prado::using('System.Data.TDbConnection');
  * exist in the database, it will be automatically created with the following structure:
  * (key CHAR(128) PRIMARY KEY, value BLOB, expire INT)
  *
+ * Note, if you are using MySQL, you may want to manually create the DB table by relacing
+ * BLOB with LONGBLOB. Some users reported that BLOB may cause problems in MySQL.
+ *
  * If you want to change the cache table name, or if you want to create the table by yourself,
  * you may set {@link setCacheTableName CacheTableName} and {@link setAutoCreateCacheTable AutoCreateCacheTableName} properties.
  *
