@@ -138,10 +138,7 @@ class TPropertyAccess
 		{
 			$setter = 'set'.$prop;
 			if(is_callable(array($object, $setter)))
-			{
-				if($object->{$setter}($value) === null)
-					$object->{$prop} = $value;
-			}
+				$object->{$setter}($value);
 			else
 				$object->{$prop} = $value;
 		}
