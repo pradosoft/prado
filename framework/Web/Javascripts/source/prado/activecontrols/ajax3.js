@@ -230,7 +230,10 @@ Object.extend(Prado.CallbackRequest,
 		"on500" : function(request, transport, data)
 		{
 			var e = request.getHeaderData(Prado.CallbackRequest.ERROR_HEADER);
-			Logger.error("Callback Server Error "+e.code, this.formatException(e));
+			if (e)
+				Logger.error("Callback Server Error "+e.code, this.formatException(e));
+			else
+				Logger.error("Callback Server Error Unknown",'');
 		},
 
 		/**
