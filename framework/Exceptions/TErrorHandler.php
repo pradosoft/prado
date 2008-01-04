@@ -165,6 +165,7 @@ class TErrorHandler extends TModule
 			'%%Version%%' => $version,
 			'%%Time%%' => @strftime('%Y-%m-%d %H:%M',time())
 		);
+		header("HTTP/1.0 $statusCode ".$exception->getErrorMessage());
 		echo strtr($content,$tokens);
 	}
 

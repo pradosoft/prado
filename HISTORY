@@ -11,6 +11,7 @@ CHG: Active Record many-to-many relationship change from self::HAS_MANY to self:
 CHG: Active Record no longer automatically performs adding/removing/updating related objects (Qiang)
 CHG: TJavaScript::encode() will encode data as a list if integer indices are detected (Qiang)
 ENH: Ticket#722 - Add Read Only capabilities to TInPlaceTextBox (Christophe)
+ENH: Ticket#743 - Added status code header in HTTP response when in error (Qiang)
 ENH: Active Record supports multiple foreign references of the same table (Wei)
 ENH: Added TDbCommand.queryColumn() (Qiang)
 ENH: Active Record now supports implicitly declared related properties (Qiang)
