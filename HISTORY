@@ -4,6 +4,7 @@ BUG: Ticket#707 - TPropertyAccess sets property twice on object when using sette
 BUG: Ticket#719 - TAutoCompleter should not trigger Validation if CausesValidation=False (Christophe)
 BUG: Ticket#744 - Callback error handling is improved (Qiang)
 BUG: Ticket#750 - The "expire" parameter is used inconsistently in cache modules (Qiang)
+BUG: Ticket#753 - Themes not allways being set (Qiang)
 BUG: Fixed a bug in TPropertyValue::ensureArray() (Qiang)
 CHG: Changed TConditional so that the controls in its template behave like they are in its parent (Qiang)
 CHG: Active Record many-to-many relationship change from self::HAS_MANY to self::MANY_TO_MANY (Wei)

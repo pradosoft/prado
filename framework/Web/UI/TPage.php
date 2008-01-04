@@ -645,18 +645,20 @@ class TPage extends TTemplateControl
 	{
 		$this->raiseEvent('OnPreRenderComplete',$this,$param);
 		$cs=$this->getClientScript();
-		if($this->_theme instanceof ITheme)
+		$theme=$this->getTheme();
+		if($theme instanceof ITheme)
 		{
-			foreach($this->_theme->getStyleSheetFiles() as $url)
+			foreach($theme->getStyleSheetFiles() as $url)
 				$cs->registerStyleSheetFile($url,$url,$this->getCssMediaType($url));
-			foreach($this->_theme->getJavaScriptFiles() as $url)
+			foreach($theme->getJavaScriptFiles() as $url)
 				$cs->registerHeadScriptFile($url,$url);
 		}
-		if($this->_styleSheet instanceof ITheme)
+		$styleSheet=$this->getStyleSheetTheme();
+		if($styleSheet instanceof ITheme)
 		{
-			foreach($this->_styleSheet->getStyleSheetFiles() as $url)
+			foreach($stylesheet->getStyleSheetFiles() as $url)
 				$cs->registerStyleSheetFile($url,$url,$this->getCssMediaType($url));
-			foreach($this->_styleSheet->getJavaScriptFiles() as $url)
+			foreach($styleSheet->getJavaScriptFiles() as $url)
 				$cs->registerHeadScriptFile($url,$url);
 		}
 
