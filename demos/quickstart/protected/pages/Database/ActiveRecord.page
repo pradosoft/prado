@@ -47,7 +47,7 @@
     <ul id="u1" class="block-content">
         <li>Create, Retrieve, Update and Delete records.</li>
         <li>Finder methods to wrap commonly used SQL queries and return Active Record objects.</li>
-        <li>Fetch relationships (related foreign objects) such as "has many", "has one", "belongs to" and "has many" via association table.</li>
+        <li>Fetch relationships (related foreign objects) such as "has many", "has one", "belongs to" and "many to many" via association table.</li>
         <li>Lazy loading of relationships.</li>
     </ul>
 <h2>Design Implications</h2>
