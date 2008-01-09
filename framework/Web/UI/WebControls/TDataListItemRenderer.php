@@ -134,7 +134,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 			$this->renderEndTag($writer);
 		}
 		else
-			$this->renderContents();
+			$this->renderContents($writer);
 	}
 
 	/**
