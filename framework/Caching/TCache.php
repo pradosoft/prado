@@ -592,7 +592,7 @@ class TGlobalStateCacheDependency extends TCacheDependency
 	 */
 	public function getHasChanged()
 	{
-		return $this->_stateValue!==Prado::getApplication()->getGlobalState($value);
+		return $this->_stateValue!==Prado::getApplication()->getGlobalState($this->_stateName);
 	}
 }
 
