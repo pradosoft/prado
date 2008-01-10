@@ -1172,6 +1172,10 @@ demos/quickstart/protected/controls/ja/Layout.tpl -text
 demos/quickstart/protected/controls/ja/RunBar.tpl -text
 demos/quickstart/protected/controls/ja/SearchBox.tpl -text
 demos/quickstart/protected/controls/ja/TopicList.tpl -text
+demos/quickstart/protected/controls/pl/Layout.tpl -text
+demos/quickstart/protected/controls/pl/RequiresVersion.tpl -text
+demos/quickstart/protected/controls/pl/SearchBox.tpl -text
+demos/quickstart/protected/controls/pl/SinceVersion.tpl -text
 demos/quickstart/protected/controls/pl/TopicList.tpl -text
 demos/quickstart/protected/controls/zh/TopicList.tpl -text
 demos/quickstart/protected/index/Zend/Exception.php -text
@@ -1595,6 +1599,12 @@ demos/quickstart/protected/pages/Database/id/diagram.png -text
 demos/quickstart/protected/pages/Database/id/object_states.png -text
 demos/quickstart/protected/pages/Database/id/sqlmap_active_record.png -text
 demos/quickstart/protected/pages/Database/object_states.png -text
+demos/quickstart/protected/pages/Database/pl/ActiveRecord.page -text
+demos/quickstart/protected/pages/Database/pl/ar_objects.png -text
+demos/quickstart/protected/pages/Database/pl/ar_relations.png -text
+demos/quickstart/protected/pages/Database/pl/diagram.png -text
+demos/quickstart/protected/pages/Database/pl/object_states.png -text
+demos/quickstart/protected/pages/Database/pl/sqlmap_active_record.png -text
 demos/quickstart/protected/pages/Database/sqlmap_active_record.png -text
 demos/quickstart/protected/pages/Fundamentals/Applications.page -text
 demos/quickstart/protected/pages/Fundamentals/Architecture.page -text
@@ -1738,6 +1748,9 @@ demos/quickstart/protected/pages/Tutorial/id/example2.png -text
 demos/quickstart/protected/pages/ViewSource.page -text
 demos/quickstart/protected/pages/ViewSource.php -text
 demos/quickstart/protected/pages/config.xml -text
+demos/quickstart/protected/pages/pl/Construction.page -text
+demos/quickstart/protected/pages/pl/Search.page -text
+demos/quickstart/protected/pages/pl/ViewSource.page -text
 demos/quickstart/themes/PradoSoft/arrowdown.gif -text
 demos/quickstart/themes/PradoSoft/comment.gif -text
 demos/quickstart/themes/PradoSoft/comment_add.gif -text
