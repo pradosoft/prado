@@ -337,6 +337,21 @@ class TAuthManager extends TModule
 	}
 
 	/**
+	 * Switches to a new user.
+	 * This method will logout the current user first and login with a new one (without password.)
+	 * @param string the new username
+	 * @return boolean if the switch is successful
+	 */
+	public function switchUser($username)
+	{
+		if(($user=$this->_userManager->getUser($username))===null)
+			return false;
+		$this->updateSessionUser($user);
+		$this->getApplication()->setUser($user);
+		return true;
+	}
+
+	/**
 	 * Logs in a user with username and password.
 	 * The username and password will be used to validate if login is successful.
 	 * If yes, a user object will be created for the application.
