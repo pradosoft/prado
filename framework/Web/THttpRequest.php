@@ -358,7 +358,12 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function getBaseUrl($forceSecureConnection=false)
 	{
-		return ($this->getIsSecureConnection() || $forceSecureConnection ? "https://" : "http://") . $_SERVER ['HTTP_HOST'];
+		$secure=$this->getIsSecureConnection() || $forceSecureConnection;
+		$url=($secure ? "https://" : "http://") . $_SERVER ['HTTP_HOST'];
+		$port=$_SERVER['SERVER_PORT'];
+		if(($port!=80 && !$secure) || ($port!=443 && $secure))
+			$url.=':'.$port;
+		return $url;
 	}
 
 	/**
