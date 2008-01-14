@@ -273,7 +273,7 @@ $record = $finder->findAllByPks($keys);
 
 
 <h3 id="138057"><tt>find()</tt></h3>
-<p id="690493" class="block-content">Znajduj <b>pojedyńczy rekord</b>, który spełnia kryteria. Kryteria mogą być częściowym łąńcuchem SQL lub obiektem <tt>TActiveRecordCriteria</tt></p>
+<p id="690493" class="block-content">Znajduje <b>pojedyńczy rekord</b>, który spełnia kryteria. Kryteria mogą być częściowym łąńcuchem SQL lub obiektem <tt>TActiveRecordCriteria</tt></p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690156">
 $finder = UserRecord::finder();
 
@@ -297,7 +297,7 @@ $finder->find($criteria); //drugi parametr dla find() jest zignorowany.
         <li><tt>OrdersBy</tt> -- nazwa kolumny i sortowanie par</li>
         <li><tt>Condition</tt> -- część WHERE zapytania SQL</li>
         <li><tt>Limit</tt> -- maksymalna ilość rekordów, któe zostaną zwrócone.</li>
-        <li><tt>Offset</tt> -- ofset rekordów w tablicy.</li>
+        <li><tt>Offset</tt> -- offset rekordów w tablicy.</li>
     </ul>
 
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690157">
@@ -311,7 +311,7 @@ $criteria->Limit = 10;
 $criteria->Offset = 20;
 </com:TTextHighlighter>
 
-<div class="note"><b class="note">Note:</b>
+<div class="note"><b class="note">Przypis:</b>
 For MSSQL and when <tt>Limit</tt> and <tt>Offset</tt> are positive integer values. The
 actual query to be executed is modified by the
 <com:DocLink ClassPath="System.Data.ActiveRecord.Common.Mssql.TMssqlCommandBuilder"
@@ -323,15 +323,14 @@ to emulate the <tt>Limit</tt> and <tt>Offset</tt> conditions.
 </div>
 
 <h3 id="138058"><tt>findAll()</tt></h3>
-<p id="690495" class="block-content">Same as <tt>find()</tt> but returns an array of objects.</p>
+<p id="690495" class="block-content">Podobnie jak <tt>find()</tt> ale zwraca tablicę obiektów.</p>
 
-<h3 id="138059"><tt>findBy*()</tt> and <tt>findAllBy*()</tt></h3>
-<p id="690496" class="block-content">Dynamic find method using parts of the method name as search criteria.
-Method names starting with <tt>findBy</tt> return 1 record only
-and method names starting with <tt>findAllBy</tt> return an array of records.
-The condition is taken as part of the method name after <tt>findBy</tt> or <tt>findAllBy</tt>.
+<h3 id="138059"><tt>findBy*()</tt> oraz <tt>findAllBy*()</tt></h3>
+<p id="690496" class="block-content">Dynamiczne metody wyszukujące używające część nazwy metody jako kryteria wyszukiwania.
+Metody zaczynające się od słów <tt>findBy</tt> zwracają tylko 1 rekord natomiast metody zaczynające się  <tt>findAllBy</tt> zwracają tablicę obiektów.
+Warunej jest wzięty jako część nazwy metody po przedrostku <tt>findBy</tt> lub <tt>findAllBy</tt>.
 
-The following blocks of code are equivalent:
+Następujące bloki kodów są sobie równoważne:
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690158">
 $finder->findByName($name)
@@ -350,14 +349,13 @@ $finder->findAll('Age = ?', $age);
 </com:TTextHighlighter>
 
 <div class="tip"><b class="note">Tip:</b>
-You may also use a combination of <tt>AND</tt> and <tt>OR</tt> as a condition in the dynamic methods.
+Możesz również użyć połączenia <tt>AND</tt> oraz <tt>OR</tt> jako warunek w dynamicznych metodach.
 </div>
 
-<h3 id="138060"><tt>findBySql()</tt> and <tt>findAllBySql()</tt></h3>
-<p id="690497" class="block-content">Finds records using full SQL where <tt>findBySql()</tt>
-return an Active Record and <tt>findAllBySql()</tt>returns an array of record objects.
-For each column returned, the corresponding Active Record class must define a member variable or
-property for each corresponding column name.
+<h3 id="138060"><tt>findBySql()</tt> oraz <tt>findAllBySql()</tt></h3>
+<p id="690497" class="block-content">Znajdują rekordy używając pełnego zapytania SQL z tym, że <tt>findBySql()</tt> 
+zwraca Rekord Aktywny a <tt>findAllBySql()</tt>zwraca tablicę obiektów rekordów. 
+Dla każdej zwróconej kolumny, odpowiadająca klasa Rekordu Aktywnego musi posiadać zdefiniowaną zmienną lub właściwość odpowiadającą nazwie kolumny.
 <com:TTextHighlighter Language="php" CssClass="source block-content">
 class UserRecord2 extends UserRecord
 {
@@ -368,140 +366,130 @@ $users = TActiveRecord::finder('UserRecord2')->findAllBySql($sql);
 </com:TTextHighlighter>
 </p>
 <h3 id="138061"><tt>count()</tt></h3>
-<p id="690498" class="block-content">Find the number of matchings records, accepts same parameters as the <tt>findAll()</tt> method.</p>
+<p id="690498" class="block-content">Zlicza ilość pasujących rekordów, akceptuje te same parametry co metoda <tt>findAll()</tt></p>
 
-<h2 id="138051">Inserting and updating records</h2>
+<h2 id="138051">Wstawianie i aktualizowanie rekordów</h2>
 <p id="690499" class="block-content">
-Add a new record using TActiveRecord is very simple, just create a new Active
-Record object and call the <tt>save()</tt> method. E.g.
+Dodanie nowego rekordu za pomocą TActiveRecord jest bardzo łatwe, po prostu stwórz nowy obiekt Rekordu Aktywnego i wywołaj metodę <tt>save()</tt>. Na przykład
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690161">
 $user1 = new UserRecord();
 $user1->username = "admin";
 $user1->email = "admin@example.com";
-$user1->save(); //insert a new record
+$user1->save(); //wstaw nowy rekord
 
 $data = array('username'=>'admin', 'email'=>'admin@example.com');
-$user2 = new UserRecord($data); //create by passing some existing data
-$user2->save(); //insert a new record
+$user2 = new UserRecord($data); //stwórz przekazując istniejące dane
+$user2->save(); //wstaw nowy rekord
 </com:TTextHighlighter>
-<div class="tip"><b class="note">Tip:</b>
-The objects are update with the primary key of those the tables that contains
-definitions that automatically creates a primary key for the newly insert records.
-For example, if you insert a new record into a MySQL table that has columns
-defined with "autoincrement", the Active Record objects will be updated with the new
-incremented value.</div>
+<div class="tip"><b class="note">Wskazówka:</b>
+Obiekty są aktualizowe automatycznie o wartość klucza głównego dla tych tablic, które zawierają definicję 
+określającą automatyczne tworzenie klucza głównego dla nowo tworzonych rekordów (przyp. tłum. autoincrement).
+Na przykład jeśli wstawiasz nowy rekord do tablicy MySQL która posiada kolumnę zdefiniowaną jako to obiekt Rekordu Aktywnego
+zostanie zaktualizowant o nową zwiększoną wartość.</div>
 
 <p id="690500" class="block-content">
-To update a record in the database, just change one or more properties of
-the Active Record object that has been loaded from the database and then
-call the <tt>save()</tt> method.
+Aby zaktualizować rekord w bazie danych po prostu zmień jedną lub więcej właściwości obiektu Rekordu Aktywnego które zostały odczytane z bazy a następnie wywołaj metodę <tt>save()</tt>.
 
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690162">
 $user = UserRecord::finder()->findByName('admin');
-$user->email="test@example.com"; //change property
-$user->save(); //update it.
+$user->email="test@example.com"; //zmiana właściwości
+$user->save(); //zaktualizuj ją
 </com:TTextHighlighter>
 </p>
 
 <p id="710012" class="block-content">
-Active Record objects have a simple life-cycle illustrated in the following diagram.
+Obiekt Rekordu Aktywnego posiada prosty cykl życia zilustrowany następujący diagram.
 </p>
 <img src=<%~ object_states.png %> alt="Active Records Life Cycle" id="fig:cycle.png" class="figure"/>
 <p id="690501" class="block-content">
-We see that new TActiveRecord objects are created by either using one of the <tt>find*()</tt>
-methods or using creating a new instance by using PHP's <tt>new</tt> keyword. Objects
-created by a <tt>find*()</tt> method starts with <tt>clean</tt> state. New instance of
-TActiveRecord created other than by a <tt>find*()</tt> method starts with <tt>new</tt> state.
-Whenever you
-call the <tt>save()</tt> method on the TActiveRecord object, the object enters the <tt>clean</tt>
-state. Objects in the <tt>clean</tt> becomes <tt>dirty</tt> whenever one of more of its
-internal states are changed. Calling the <tt>delete()</tt> method on the object
-ends the object life-cycle, no further actions can be performed on the object.
+Widzimy, że nowe obiekty Rekordu Aktywnego są tworzone zarówno przez jedną z metod <tt>find*()</tt>
+lub poprzez stworzenie nowej instancji poprzez użycie polecenia PHP <tt>new</tt>. Obiekty stworzone przez metodę <tt>find*()</tt> 
+zaczynają ze stanem <tt>czysty (ang. clean)</tt>. Nowa instancja TActiveRecord stworzona inaczej niż za pomocą metod <tt>find*()</tt> zaczyna ze stanem <tt>nowy (ang. new)</tt>.
+Kiedykolwiek wywołasz metodę <tt>save()</tt> na obiekcie TActiveRecord, obiekt przyjmuje stan <tt>czysty</tt>. 
+Obiekty będące <tt>czystymi</tt> stają się <tt>brudne (ang. dirty)</tt> kiedy jeden lub więcej ze stwoich wewnętrznych stanów ulegnie zmianie. 
+Wywoałanie metody <tt>delete()</tt> obiektu kończy cykl życia, żadne inne akcje nie mogą być wywołane na obiekcie.
 </p>
 
-<h2 id="138052">Deleting existing records</h2>
+<h2 id="138052">Usuwanie istniejących obiektów</h2>
 <p id="690502" class="block-content">
-    To delete an existing record that is already loaded, just call the <tt>delete()</tt> method.
-    You can also delete records in the database by primary keys without
-    loading any records using the <tt>deleteByPk()</tt> method (and equivalently the <tt>deleteAllByPks()</tt> method).
-    For example, to delete one or several records with tables using one or more primary keys.
+  Aby usunąc istniejący rekord, który jest załadowany, po prostu wywołaj metodę <tt>delete</tt>.
+  Możesz rónież usunąć rekord w bazie danych poprzez klucz główny bez ładowania żadnego rekordu używając metody
+  <tt>deleteByPk()</tt> (również metoda <tt>deleteAllByPks()</tt>).
+  Na przykład, aby usunąć jeden lub więcej rekordów z tabeli używając jednego lub wielu kluczów głównych:
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690163">
-$finder->deleteByPk($primaryKey); //delete 1 record
-$finder->deleteAllByPks($key1,$key2,...); //delete multiple records
-$finder->deleteAllByPks(array($key1,$key2,...)); //delete multiple records
+$finder->deleteByPk($primaryKey); //usuwanie 1 rekordu
+$finder->deleteAllByPks($key1,$key2,...); //usuwanie wielu rekordów
+$finder->deleteAllByPks(array($key1,$key2,...)); //usuwanie wielu rekordów
 </com:TTextHighlighter>
 
 <p id="690503" class="block-content">
-For composite keys (determined automatically from the table definitions):
+Dla klucza złożonego (ustalanego automatycznie na podstawie definicji tablicy):
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690164">
-$finder->deleteByPk(array($key1,$key2)); //delete 1 record
+$finder->deleteByPk(array($key1,$key2)); //usuwanie 1 rekordu
 
-//delete multiple records
+//usuwanie wielu rekordów
 $finder->deleteAllByPks(array($key1,$key2), array($key3,$key4),...);
 
-//delete multiple records
+//usuwanie wielu rekordów
 $finder->deleteAllByPks(array( array($key1,$key2), array($key3,$key4), .. ));
 </com:TTextHighlighter>
 
-<h3 id="138052a"><tt>deleteAll()</tt> and <tt>deleteBy*()</tt></h3>
+<h3 id="138052a"><tt>deleteAll()</tt> oraz <tt>deleteBy*()</tt></h3>
 <p id="690502a" class="block-content">
-To delete by a criteria, use <tt>deleteAll($criteria)</tt> and <tt>deleteBy*()</tt>
-with similar syntax to <tt>findAll($criteria)</tt> and <tt>findAllBy*()</tt> as
-described above.
+Aby usunąć używając kryteria użyj <tt>deleteAll($criteria)</tt> oraz <tt>deleteBy*()</tt>
+z podobną składnią jak <tt>findAll($criteria)</tt> oraz <tt>findAllBy*()</tt> opisaną wcześniej.
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690163a">
-//delete all records with matching Name
+//usuwanie wszystkich rekordów z pasującym Name
 $finder->deleteAll('Name = ?', $name);
 $finder->deleteByName($name);
 
-//delete by username and password
+//usuwanie na podstawie Name oraz Password
 $finder->deleteBy_Username_And_Password($name,$pass);
 </com:TTextHighlighter>
 
-<h2 id="138053">Transactions</h2>
-<p id="690504" class="block-content">All Active Record objects contain the property <tt>DbConnection</tt>
-    that can be used to obtain a transaction object.
+<h2 id="138053">Tranzakcje</h2>
+<p id="690504" class="block-content">Wszystkie obiekkty Rekordu Aktywnego zawierają właściwość <tt>DbConnection</tt>, 
+ która może być używana by uzyskać obiekt tranzakcyjny.
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690165">
 $finder = UserRecord::finder();
-$finder->DbConnection->Active=true; //open if necessary
+$finder->DbConnection->Active=true; //otwórz jeśli to konieczne
 $transaction = $finder->DbConnection->beginTransaction();
 try
 {
     $user = $finder->findByPk('admin');
-    $user->email = 'test@example.com'; //alter the $user object
+    $user->email = 'test@example.com'; //zmień obiekt użytkownika $user
     $user->save();
     $transaction->commit();
 }
-catch(Exception $e) // an exception is raised if a query fails
+catch(Exception $e) // wyjątek jest wołany jeśli zapytanie nie powiedzie się
 {
     $transaction->rollBack();
 }
 </com:TTextHighlighter>
 
-<h2 id="142011">Events</h2>
+<h2 id="142011">Zdarzenia</h2>
 <p id="710013" class="block-content">
-The TActiveRecord offers two events, <tt>OnCreateCommand</tt> and <tt>OnExecuteCommand</tt>.
+Rekord Aktywny oferuje dwa zdarzenia: <tt>OnCreateCommand</tt> oraz <tt>OnExecuteCommand</tt>.
 </p>
 
-<p id="710014" class="block-content">The <tt>OnCreateCommand</tt> event is raised when a command is prepared and
-parameter binding is completed. The parameter object is <tt>TDataGatewayEventParameter</tt> of which the
-<tt>Command</tt> property can be inspected to obtain the SQL query to be executed.
+<p id="710014" class="block-content">Zdarzenie <tt>OnCreateCommand</tt> jest wołane gdy polecenie jest przygotowywane i przypisywanie (ang. binding) parametrów jest zakończone.
+ Parametrem obiektu jest <tt>TDataGatewayEventParameter</tt>, którego właściwość <tt>Command</tt> może być sprawdzona by otrzymać zapytanie, które będzie wykonane wykonywane.
 </p>
 
 <p id="710015" class="block-content">
-The <tt>OnExecuteCommand</tt> event is raised when a command is executed and the
-result from the database was returned. The parameter object is <tt>TDataGatewayResultEventParameter</tt>
-of which the <tt>Result</tt> property contains the data return from the database.
-The data returned can be changed by setting the <tt>Result</tt> property.
+Zdarzenie <tt>OnExecuteCommand</tt> jest wywoływane kiedy polecenie jest wykonane i rezultat z bazy danych został zwrócony.
+ Parametrem obiektu jest <tt>TDataGatewayResultEventParameter</tt>, którego właściwość <tt>Result</tt> zawiera dane zwrócone z bazy danych.
+ Dane zwrócone mogą zostać zmienione poprzez ustawienie właściwości <tt>Result</tt>.
 </p>
 
-<h3 id="142016">Logging Example</h3>
-<p id="710016" class="block-content">Using the <tt>OnExecuteCommand</tt> we can attach an event handler to log
-the entire SQL query executed for a given TActiveRecord class or instance. For example, we define
-a base class and override either the <tt>getDbConnection()</tt> or the constructor.
+<h3 id="142016">Przykład z logowaniem</h3>
+<p id="710016" class="block-content">Używając <tt>OnExecuteCommand</tt> możemy przypiąć uchwyt zdarzenia by logować całe 
+zapytanie SQL wwywoływane dla danej instancji lub klasy TActiveRecord. Na przykład definiujemy klasę bazową i nadpisujemy 
+metodę <tt>getDbConnection()</tt> lub konstruktor.
 </p>
 
 <com:TTextHighlighter Language="php" CssClass="source block-content">
@@ -528,45 +516,40 @@ function logger($sender,$param)
     var_dump($param->Command->Text);
 }
 TActiveRecord::finder('MyRecord')->OnExecuteCommand[] = 'logger';
-$obj->OnExecuteCommand[] = array($logger, 'log'); //any valid PHP callback.
+$obj->OnExecuteCommand[] = array($logger, 'log'); //dowolny poprawny callback PHP
 </com:TTextHighlighter>
 
-<h1 id="ar_relations">Active Record Relationships</h1>
+<h1 id="ar_relations">Relacje dla Rekordu Aktywnego</h1>
 <com:SinceVersion Version="3.1rc1" />
 <p id="690504a" class="block-content">
-The Prado Active Record implementation supports the foreign key mappings for database
-that supports foreign key constraints. For Active Record relationships to function the
-underlying database must support foreign key constraints (e.g. MySQL using InnoDB).
+Implementacja Rekordu Aktywnego w Prado wspiera mapowanie kluczów obcych dla baz, które wspierają ograniczenia (ang. constraints) kluczów obcych.
+ Aby relacje dla Rekordu Aktywnego działały używana baza danych musi wspierać ograniczenia klucza głównego (np. MySQL używająca InnoDB)
 </p>
 
 <p id="710017" class="block-content">
-In the following sections we will consider the following table relationships between
-<tt>Teams</tt>, <tt>Players</tt>, <tt>Skills</tt> and <tt>Profiles</tt>.
+W następnych sekcjach będziemy rozważać nastepujące relacje pomiędzy tabelami <tt>Teams</tt>, <tt>Players</tt>, <tt>Skills</tt> oraz <tt>Profiles</tt>.
 </p>
 <img src=<%~ ar_relations.png %> class="figure" />
 
 
-<p id="710018" class="block-content">The goal is to obtain object models that represent to some degree the entity
-relationships in the above figure.
+<p id="710018" class="block-content">Celem jest uzyskanie modelu obiektowego, który będzie reprezetnował w pewnym stopniu relacje pomiędzy polami z powyższego rysunku.
 </p>
 
 <img src=<%~ ar_objects.png %> class="figure" />
 
 <p class="block-content">
-There is a mismatch between relationships with objects and table relationships.
-First there's a difference in representation. Objects handle links by storing references
-that are held by the runtime memory-managed environment. Relational databases handle
-links by forming a key into another table. Second, objects can easily use collections
-to handle multiple references from a single field, while normalization forces
-all entity relation links to be single valued. This leads to reversals of the data
-structure between objects and tables. The approach taken in the Prado Active Record
-design is to use the table foreign key constraints to derive object relationships. This implies
-that the underlying database must support foreign key constraints.
+Istnieje rozbieżność pomiędzy relacjami w obiektach i relacjami w tablicach. 
+ Po pierwsze jest różnica w reprezentacji. Obiekty trzymają powiązanie poprzez przechowywanie referencji,
+które są trzymane poprzez zarządzające pamięcią środowiko uruchomieniowe. Bazy relacyjne trzymają powiązanie poprzez utworzenie klucza do innej tablicy.
+ Po drugie, obiekty mogą łatwo uzywać kolekcji by trzymać wielokrotnie referencje z jednego pola, 
+to handle multiple references from a single field, gdyż normalizacja zmusza wszystkie powiązania relacji encji by były pojedyńczymi wartościami. 
+To prowadzi do odwrócenia struktury danych pomiędzy obiektami i tablicami. 
+Podejście zastosowane w modelu Rekordu Aktywnego Prado uzywa ograniczeń kluczów obcych tablicy do wyprowadzenia relacji obiektów.
+To implikuje fakt wspierania ograniczeń kluczów obcych dla bazy danych.
 </p>
 <div class="tip"><b class="note">Tip:</b>
-For SQLite database, you may create tables that defines the foreign key
-constraints such as the example below. However, these constraints are <b>NOT</b>
-enforced by the SQLite database itself.
+Dla baz danych SQLite możesz stworzyć tablice, które definiują ograniczenia kluczó obcych tak jak na przykładzie poniżej.
+Jednakże te ograniczenia <b>NIE SĄ</b> narzucane przez samą bazę SQLite.
 <com:TTextHighlighter Language="sql" CssClass="source block-content">
 CREATE TABLE foo
 (
@@ -582,16 +565,15 @@ CREATE TABLE bar
 </com:TTextHighlighter>
 </div>
 
-<h2 id="142012">Foreign Key Mapping</h2>
-<p class="block-content">The entity relationship between the <tt>Teams</tt> and <tt>Players</tt> table is what is known
-as an 1-M relationship. That is, one Team may contain 0 or more Players. In terms of
-object relationships, we say that a <tt>TeamRecord</tt> object <b>has many</b> <tt>PlayerRecord</tt> objects.
-(Notice the reversal of the direction of relationships between tables and objects.)
+<h2 id="142012">Mapowanie kluczów obcych</h2> 
+<p class="block-content">Relacja pól pomiędzy tablicami <tt>Teams</tt> and <tt>Players</tt> jest znana jako relacja jeden-do-wielu (ang. 1-M). Oznacza to, że jeden Team moze zawierać zero lub więcej Players. Z punktu widzenia relacji obiektów 
+powiemy, że obiekt <tt>TeamRecord</tt> <b>posiada wiele</b> (ang. has many) obiektów <tt>PlayerRecord</tt>.
+(Zauważ odwrócenie kierunku relacji pomiędzy tablicami a obiektami)
 </p>
 
-<h3 id="142017">Has Many Relationship</h3>
+<h3 id="142017">Relacja posiada wiele (ang. has Many Relationship)</h3>
 <p id="710020" class="block-content">
-We model the <tt>Team</tt> object as the following Active Record classes.
+Zamodelujemy obiekt <tt>Team</tt> jako następującą klasę Rekordu Aktywnego.
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content">
 class TeamRecord extends TActiveRecord
