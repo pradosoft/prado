@@ -656,7 +656,7 @@ class TPage extends TTemplateControl
 		$styleSheet=$this->getStyleSheetTheme();
 		if($styleSheet instanceof ITheme)
 		{
-			foreach($stylesheet->getStyleSheetFiles() as $url)
+			foreach($styleSheet->getStyleSheetFiles() as $url)
 				$cs->registerStyleSheetFile($url,$url,$this->getCssMediaType($url));
 			foreach($styleSheet->getJavaScriptFiles() as $url)
 				$cs->registerHeadScriptFile($url,$url);
