@@ -161,7 +161,7 @@ abstract class TActiveRecordRelation
 	{
 		$ids=array();
 		foreach($properties as $property)
-			$ids[] = is_object($obj) ? $obj->getColumnValue($property) : $obj[$property];
+			$ids[] = is_object($obj) ? (string)$obj->getColumnValue($property) : (string)$obj[$property];
 		return serialize($ids);
 	}
 
