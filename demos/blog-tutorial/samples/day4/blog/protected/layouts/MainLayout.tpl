@@ -31,7 +31,8 @@
 
 <com:TLinkButton Text="Logout"
 	OnClick="logoutButtonClicked"
-	Visible="<%= !$this->User->IsGuest %>" />
+	Visible="<%= !$this->User->IsGuest %>"
+	CausesValidation="false" />
 
 <br/>
 <%= PRADO::poweredByPrado() %>

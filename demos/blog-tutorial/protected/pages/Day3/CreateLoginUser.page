@@ -126,7 +126,8 @@ We modify the footer section of the <tt>MainLayout</tt>'s template as follows. T
 
 &lt;com:TLinkButton Text="Logout"
     OnClick="logoutButtonClicked"
-    Visible="&lt;%= !$this->User->IsGuest %>" />
+    Visible="&lt;%= !$this->User->IsGuest %>"
+	CausesValidation="false" />
 
 <br/>
 &lt;%= PRADO::poweredByPrado() %>
