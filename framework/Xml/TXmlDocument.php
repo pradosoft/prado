@@ -222,7 +222,7 @@ class TXmlElement extends TComponent
 		else
 			return $prefix."<{$this->_tagName}$attr />";
 	}
-	
+
 	/**
 	 * Magic-method override. Called whenever this element is used as a string.
 	 * <code>
@@ -248,9 +248,9 @@ class TXmlElement extends TComponent
 			'<'=>'&lt;',
 			'&'=>'&amp;',
 			'"'=>'&quot;',
-			"\r"=>'&#xA;',
+			"\r"=>'&#xD;',
 			"\t"=>'&#x9;',
-			"\n"=>'&#xD;'));
+			"\n"=>'&#xA;'));
 	}
 }
 
@@ -433,7 +433,7 @@ class TXmlDocument extends TXmlElement
 		$encoding=empty($this->_encoding)?'':' encoding="'.$this->_encoding.'"';
 		return "<?xml{$version}{$encoding}?>\n".$this->toString(0);
 	}
-	
+
 	/**
 	 * Magic-method override. Called whenever this document is used as a string.
 	 * <code>
