@@ -113,16 +113,19 @@ abstract class TActiveRecordRelation
 		$tableInfo=$from;
 		if($from instanceof TActiveRecord)
 			$tableInfo = $gateway->getRecordTableInfo($from);
+		//find first non-empty FK
 		foreach($tableInfo->getForeignKeys() as $fkeys)
 		{
 			if(strtolower($fkeys['table'])===strtolower($matchingTableName))
 			{
-				if(!$loose && $this->getContext()->hasFkField())
-					return $this->getFkFields($fkeys['keys']);
-				else
-					return $fkeys['keys'];
+				$hasFkField = !$loose && $this->getContext()->hasFkField();
+				$key = $hasFkField ? $this->getFkFields($fkeys['keys']) : $fkeys['keys'];
+				if(!empty($key))
+					return $key;
 			}
 		}
+
+		//none found
 		$matching = $gateway->getRecordTableInfo($matchesRecord)->getTableFullName();
 		throw new TActiveRecordException('ar_relations_missing_fk',
 			$tableInfo->getTableFullName(), $matching);
