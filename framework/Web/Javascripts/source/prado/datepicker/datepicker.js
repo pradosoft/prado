@@ -83,6 +83,27 @@ Prado.WebUI.TDatePicker.prototype =
 		Object.extend(this,options);
 
 		Event.observe(this.trigger, triggerEvent, this.show.bindEvent(this));
+		
+		// Listen to change event if needed
+		if (typeof(this.options.OnDateChanged) == "function")
+		{
+			if(this.options.InputMode == "TextBox")
+			{
+				Event.observe(this.control, "change", this.onDateChanged.bindEvent(this));
+			} 
+			else
+			{
+				var day = Prado.WebUI.TDatePicker.getDayListControl(this.control);
+				var month = Prado.WebUI.TDatePicker.getMonthListControl(this.control);
+				var year = Prado.WebUI.TDatePicker.getYearListControl(this.control);
+				Event.observe (day, "change", this.onDateChanged.bindEvent(this));
+				Event.observe (month, "change", this.onDateChanged.bindEvent(this));
+				Event.observe (year, "change", this.onDateChanged.bindEvent(this));
+				
+			}
+			
+			
+		}
 
 	},
 
@@ -430,6 +451,28 @@ Prado.WebUI.TDatePicker.prototype =
 		return false;
 	},
 
+	// Respond to change event on the textbox or dropdown list
+	// This method raises OnDateChanged event on client side if it has been defined
+	onDateChanged : function ()
+	{
+		if (this.options.OnDateChanged)
+		{
+		 	var date;
+		 	if (this.options.InputMode == "TextBox")
+		 	{
+		 		date=this.control.value;
+		 	} 
+		 	else
+		 	{
+		 		var day = Prado.WebUI.TDatePicker.getDayListControl(this.control).selectedIndex+1;
+				var month = Prado.WebUI.TDatePicker.getMonthListControl(this.control).selectedIndex;
+				var year = Prado.WebUI.TDatePicker.getYearListControl(this.control).value;
+				date=new Date(year, month, day, 0,0,0).SimpleFormat(this.Format, this);
+			}
+			this.options.OnDateChanged(this, date);
+		}
+	},
+	
 	onChange : function()
 	{
 		if(this.options.InputMode == "TextBox")
@@ -480,11 +523,12 @@ Prado.WebUI.TDatePicker.prototype =
 	{
 		if (date == null)
 			return;
+		var old=this.selectedDate;
 		this.selectedDate = this.newDate(date);
 
 		this.updateHeader();
 		this.update();
-		if (typeof(this.onChange) == "function")
+		if (old - this.selectedDate !=0 && typeof(this.onChange) == "function")
 			this.onChange(this, date);
 	},
 
