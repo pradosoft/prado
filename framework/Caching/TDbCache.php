@@ -31,10 +31,10 @@ Prado::using('System.Data.TDbConnection');
  * The cached data is stored in a table in the specified database.
  * By default, the name of the table is called 'pradocache'. If the table does not
  * exist in the database, it will be automatically created with the following structure:
- * (key CHAR(128) PRIMARY KEY, value BLOB, expire INT)
+ * (itemkey CHAR(128) PRIMARY KEY, value BLOB, expire INT)
  *
- * Note, if you are using MySQL, you may want to manually create the DB table by relacing
- * BLOB with LONGBLOB. Some users reported that BLOB may cause problems in MySQL.
+ * Note, some DBMS might not support BLOB type. In this case, replace 'BLOB' with a suitable
+ * binary data type (e.g. LONGBLOB in MySQL, BYTEA in PostgreSQL.)
  *
  * If you want to change the cache table name, or if you want to create the table by yourself,
  * you may set {@link setCacheTableName CacheTableName} and {@link setAutoCreateCacheTable AutoCreateCacheTableName} properties.
@@ -134,7 +134,15 @@ class TDbCache extends TCache
 			// DB table not exists
 			if($this->_autoCreate)
 			{
-				$sql='CREATE TABLE '.$this->_cacheTable.' (itemkey CHAR(128) PRIMARY KEY, value BLOB, expire INT)';
+				$driver=$db->getDriverName();
+				if($driver==='mysql')
+					$blob='LONGBLOB';
+				else if($driver==='pgsql')
+					$blob='BYTEA';
+				else
+					$blob='BLOB';
+
+				$sql='CREATE TABLE '.$this->_cacheTable." (itemkey CHAR(128) PRIMARY KEY, value $blob, expire INT)";
 				$db->createCommand($sql)->execute();
 			}
 			else
@@ -276,7 +284,9 @@ class TDbCache extends TCache
 	 * Note, if {@link setAutoCreateCacheTable AutoCreateCacheTable} is false
 	 * and you want to create the DB table manually by yourself,
 	 * you need to make sure the DB table is of the following structure:
-	 * (key CHAR(128) PRIMARY KEY, value BLOB, expire INT)
+	 * (itemkey CHAR(128) PRIMARY KEY, value BLOB, expire INT)
+	 * Note, some DBMS might not support BLOB type. In this case, replace 'BLOB' with a suitable
+	 * binary data type (e.g. LONGBLOB in MySQL, BYTEA in PostgreSQL.)
 	 * @param string the name of the DB table to store cache content
 	 * @see setAutoCreateCacheTable
 	 */

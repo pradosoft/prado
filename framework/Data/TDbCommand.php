@@ -276,7 +276,10 @@ class TDbCommand extends TComponent
 				$this->_statement=$this->getConnection()->getPdoInstance()->query($this->getText());
 			$result=$this->_statement->fetchColumn();
 			$this->_statement->closeCursor();
-			return $result;
+			if(is_resource($result) && get_resource_type($result)==='stream')
+				return stream_get_contents($result);
+			else
+				return $result;
 		}
 		catch(Exception $e)
 		{
