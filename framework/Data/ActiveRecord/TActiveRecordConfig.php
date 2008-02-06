@@ -93,7 +93,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 	 */
 	public function setEnableCache($value)
 	{
-		$this->_enableCache = TPropertyValue::ensureBoolean($value, false);
+		$this->_enableCache = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
