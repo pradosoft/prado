@@ -72,6 +72,12 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   </li>
 
   <li>
+  <a href="?page=ActiveControls.ActivePager">TActivePager</a>
+  generates UI that allows users to interactively specify which page of
+  data to be displayed in a data-bound control.
+  </li>
+  
+  <li>
   * <a href="?page=ActiveControls.ActiveRadioButton">TActiveRadioButton</a>
   represents a radiobutton on a Web page.
   It is mainly used in a group from which users make a choice. It can

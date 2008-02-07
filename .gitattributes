@@ -1225,6 +1225,7 @@ demos/quickstart/protected/pages/ActiveControls/ActiveButton.page -text
 demos/quickstart/protected/pages/ActiveControls/ActiveCheckBox.page -text
 demos/quickstart/protected/pages/ActiveControls/ActiveCustomValidator.page -text
 demos/quickstart/protected/pages/ActiveControls/ActiveHyperLink.page -text
+demos/quickstart/protected/pages/ActiveControls/ActivePager.page -text
 demos/quickstart/protected/pages/ActiveControls/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Introduction.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveButton/Home.page -text
@@ -1236,6 +1237,7 @@ demos/quickstart/protected/pages/ActiveControls/Samples/TActiveCustomValidator/H
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveHyperLink/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveHyperLink/Home.php -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveHyperLink/hello_world.gif -text
+demos/quickstart/protected/pages/ActiveControls/Samples/TActivePager/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/config.xml -text
 demos/quickstart/protected/pages/ActiveControls/TActiveButtonClass.png -text
 demos/quickstart/protected/pages/ActiveControls/TActiveButtonClass.vsd -text
@@ -2535,6 +2537,7 @@ framework/Web/UI/ActiveControls/TActiveCustomValidator.php -text
 framework/Web/UI/ActiveControls/TActiveHiddenField.php -text
 framework/Web/UI/ActiveControls/TActiveLabel.php -text
 framework/Web/UI/ActiveControls/TActivePageAdapter.php -text
+framework/Web/UI/ActiveControls/TActivePager.php -text
 framework/Web/UI/ActiveControls/TActivePanel.php -text
 framework/Web/UI/ActiveControls/TActiveRatingList.php -text
 framework/Web/UI/ActiveControls/TActiveTextBox.php -text
