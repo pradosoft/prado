@@ -47,6 +47,28 @@ Prado::using('System.I18N.TTranslate');
  * Properties
  * - <b>Value</b>, float,
  *   <br>Gets or sets the Value that determines which string choice to display.
+ * Since version 3.1.2 the following set notation is also possible.
+ *
+ *  # <tt>{n: n % 10 > 1 && n % 10 < 5}</tt> --  matches numbers like 2, 3, 4, 22, 23, 24
+ *
+ * Where set is defined by the expression after <tt>n:</tt>. In particular, the expression
+ * accepts the following mathematical/logical operators to form a set of logical conditions
+ * on the value given by <tt>n</tt>:
+ *   # <tt>&lt;</tt> -- less than.
+ *   # <tt>&lt;=</tt> -- less than equals.
+ *   # <tt>&gt;</tt> -- greater than.
+ *   # <tt>&gt=</tt> -- greater than equals.
+ *   # <tt>==</tt> -- of equal value.
+ *   # <tt>%</tt> -- modulo, e.g., 1 % 10 equals 1, 11 % 10 equals 1.
+ *   # <tt>-</tt> -- minus, negative.
+ *   # <tt>+</tt> -- addition.
+ *   # <tt>&amp;</tt> -- conditional AND.
+ *   # <tt>&amp;&amp;</tt> -- condition AND with short circuit.
+ *   # <tt>|</tt> -- conditional OR.
+ *   # <tt>||</tt> -- conditional OR with short circuit. 
+ *   # <tt>!</tt> -- negation.
+ *
+ * Additional round brackets can also be used to perform grouping.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version v1.0, last update on Fri Dec 24 21:38:49 EST 2004
