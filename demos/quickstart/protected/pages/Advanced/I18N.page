@@ -385,9 +385,9 @@ represents ordinal values in English such as: "0th", "1st", "2nd", "3rd", "4th",
 
 <com:TTextHighlighter Language="prado" CssClass="source block-content" >
 &lt;com:TChoiceFormat Value="21"&gt;
- {n: (n > 0) && (n < 10 || n > 20) && n % 10 == 1} {Value}st 
-|{n: (n > 0) && (n < 10 || n > 20) && n % 10 == 2} {Value}nd 
-|{n: (n > 0) && (n < 10 || n > 20) && n % 10 == 3} {Value}rd 
+ {n: n > 0 && n % 10 == 1 && n % 100 != 11} {Value}st 
+|{n: n > 0 && n % 10 == 2 && n % 100 != 12} {Value}nd 
+|{n: n > 0 && n % 10 == 3 && n % 100 != 13} {Value}rd 
 |{n: n > -1 } {Value}th
 |(-Inf, 0) {Value}
 &lt;/com:TChoiceFormat&gt;
