@@ -1245,6 +1245,7 @@ demos/quickstart/protected/pages/ActiveControls/id/ActiveButton.page -text
 demos/quickstart/protected/pages/ActiveControls/id/ActiveCheckBox.page -text
 demos/quickstart/protected/pages/ActiveControls/id/ActiveCustomValidator.page -text
 demos/quickstart/protected/pages/ActiveControls/id/ActiveHyperLink.page -text
+demos/quickstart/protected/pages/ActiveControls/id/ActivePager.page -text
 demos/quickstart/protected/pages/ActiveControls/id/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/id/TActiveButtonClass.png -text
 demos/quickstart/protected/pages/ActiveControls/id/postback-callback.png -text
