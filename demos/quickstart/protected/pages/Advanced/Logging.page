@@ -20,12 +20,13 @@ The difference between <tt>Prado::log()</tt> and <tt>Prado::trace()</tt> is  tha
 
 <h2 id="6103">Message Routing</h2>
 <p id="780618" class="block-content">
-Messages logged using the above two functions are kept in memory. To make use of the messages, developers need to route them to specific destinations, such as files, emails, or browser windows. The message routing is managed by <tt>System.Util.TLogRouter</tt> module. When plugged into an application, it can route the messages to different destination in parallel. Currently, PRADO provides three types of routes:
+Messages logged using the above two functions are kept in memory. To make use of the messages, developers need to route them to specific destinations, such as files, emails, or browser windows. The message routing is managed by <tt>System.Util.TLogRouter</tt> module. When plugged into an application, it can route the messages to different destination in parallel. Currently, PRADO provides four types of routes:
 </p>
 <ul id="u1" class="block-content">
   <li><tt>TFileLogRoute</tt> - filtered messages are stored in a specified log file. By default, this file is named <tt>prado.log</tt> under the runtime directory of the application. File rotation is provided.</li>
   <li><tt>TEmailLogRoute</tt> - filtered messages are sent to pre-specified email addresses.</li>
   <li><tt>TBrowserLogRoute</tt> - filtered messages are appended to the end of the current page output.</li>
+  <li><tt>TFirebugLogRoute</tt> - filtered messages are sent to the <a href="http:/www.getfirebug.com">Firebug</a> console</li>
 </ul>
 <p id="780619" class="block-content">
 To enable message routing, plug in and configure the <tt>TLogRouter</tt> module in application configuration,

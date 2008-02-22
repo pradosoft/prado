@@ -27,6 +27,7 @@ NEW: Added TDbLogRoute (Qiang)
 NEW: Added TDataRenderer and TItemDataRenderer (Qiang)
 NEW: Ticket#544 - Added TXCache (Wei)
 NEW: Ticket#729 - Added TActivePager (Christophe)
+NEW: Ticket#791 - Added TFirebugLogRoute (Christophe)
 
 Version 3.1.1 October 1, 2007
 =============================

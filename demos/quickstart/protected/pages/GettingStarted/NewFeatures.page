@@ -9,6 +9,7 @@ This page summarizes the main new features that are introduced in each PRADO rel
 <h2>Version 3.1.2</h2>
 <ul>
 <li>Added a new active control <a href="?page=ActiveControls.ActivePager">TActivePager</a> that allows to paginate a databound control with an ajax callback.</li>
+<li>Added TFirebugLogRoute to send logs to the Firebug console</li>
 </ul>
 
 <h2>Version 3.1.1</h2>
