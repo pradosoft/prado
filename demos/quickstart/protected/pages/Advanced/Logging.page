@@ -26,7 +26,7 @@ Messages logged using the above two functions are kept in memory. To make use of
   <li><tt>TFileLogRoute</tt> - filtered messages are stored in a specified log file. By default, this file is named <tt>prado.log</tt> under the runtime directory of the application. File rotation is provided.</li>
   <li><tt>TEmailLogRoute</tt> - filtered messages are sent to pre-specified email addresses.</li>
   <li><tt>TBrowserLogRoute</tt> - filtered messages are appended to the end of the current page output.</li>
-  <li><tt>TFirebugLogRoute</tt> - filtered messages are sent to the <a href="http:/www.getfirebug.com">Firebug</a> console</li>
+  <li><tt>TFirebugLogRoute</tt> - filtered messages are sent to the <a href="http://www.getfirebug.com">Firebug</a> console</li>
 </ul>
 <p id="780619" class="block-content">
 To enable message routing, plug in and configure the <tt>TLogRouter</tt> module in application configuration,
