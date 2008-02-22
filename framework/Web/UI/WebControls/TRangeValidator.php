@@ -200,8 +200,8 @@ class TRangeValidator extends TBaseValidator
 		$minValue=$this->getMinValue();
 		$maxValue=$this->getMaxValue();
 
+		$valid=preg_match('/^[-+]?[0-9]+$/',trim($value));
 		$value=intval($value);
-		$valid=true;
 		if($minValue!=='')
 			$valid=$valid && $this->isGreaterThan($value, intval($minValue));
 		if($maxValue!=='')
@@ -229,8 +229,8 @@ class TRangeValidator extends TBaseValidator
 		$minValue=$this->getMinValue();
 		$maxValue=$this->getMaxValue();
 
+		$valid=preg_match('/^[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?$/',trim($value));
 		$value=floatval($value);
-		$valid=true;
 		if($minValue!=='')
 			$valid=$valid && $this->isGreaterThan($value,floatval($minValue));
 		if($maxValue!=='')
