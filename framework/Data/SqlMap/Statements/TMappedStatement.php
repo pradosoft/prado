@@ -560,8 +560,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 			$obj = $this->fillResultClass($resultClass, $row, $resultObject);
 		else
 			$obj = $this->fillDefaultResultMap(null, $row, $resultObject);
-		if(class_exists('TActiveRecord',false) && $obj instanceof TActiveRecord)
-			TActiveRecordManager::getInstance()->getObjectStateRegistry()->registerClean($obj);
+
 		return $obj;
 	}
 
