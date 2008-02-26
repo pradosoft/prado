@@ -137,7 +137,7 @@ class TPropertyAccess
 		else if(is_object($object))
 		{
 			$setter = 'set'.$prop;
-			if(is_callable(array($object, $setter)))
+			if (method_exists($object,$setter))
 				$object->{$setter}($value);
 			else
 				$object->{$prop} = $value;
