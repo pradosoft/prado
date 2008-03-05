@@ -3,7 +3,7 @@
 <body>
 <h1>Northwind Database</h1>
 <com:TForm>
-	<com:TDropDownList ID="class_list" AutoPostBack="true"/>
+	<com:TDropDownList ID="class_list" AutoPostBack="true" SelectedIndex="0"/>
 	<com:TScaffoldView ID="scaffold1" RecordClass="<%= $this->class_list->selectedItem->Text %>" />
 </com:TForm>
 </body>
