@@ -9,6 +9,7 @@ BUG: Ticket#750 - The "expire" parameter is used inconsistently in cache modules
 BUG: Ticket#753 - Themes not allways being set (Qiang)
 BUG: Ticket#776 - Logout button should not cause validation in blog tutorial (Qiang)
 BUG: Ticket#785 - TDatePicker OnDateChanged event problem (Christophe)
+BUG: Ticket#787 - Typo in validation3.js (Christophe)
 BUG: Ticket#766, #786 - TDbCache does not work with MySQL and PostgreSQL (Qiang)
 BUG: Ticket#799 - Fixed several link errors in documentation about PDO (Qiang)
 BUG: Fixed a bug in TPropertyValue::ensureArray() (Qiang)

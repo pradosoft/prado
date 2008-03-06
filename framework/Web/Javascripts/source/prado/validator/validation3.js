@@ -85,7 +85,7 @@ Object.extend(Prado.Validation,
 		}
 		else
 		{
-			throw new Error("Form '"+form+"' is not registered with Prado.Validation");
+			throw new Error("Form '"+formID+"' is not registered with Prado.Validation");
 		}
 	},
 
