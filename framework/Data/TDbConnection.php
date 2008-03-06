@@ -94,7 +94,7 @@ class TDbConnection extends TComponent
 	 * @param string The Data Source Name, or DSN, contains the information required to connect to the database.
 	 * @param string The user name for the DSN string.
 	 * @param string The password for the DSN string.
-	 * @see http://www.php.net/manual/en/function.pdo-construct.php
+	 * @see http://www.php.net/manual/en/function.PDO-construct.php
 	 */
 	public function __construct($dsn='',$username='',$password='')
 	{
@@ -114,7 +114,7 @@ class TDbConnection extends TComponent
 
 	/**
 	 * @return array list of available PDO drivers
-	 * @see http://www.php.net/manual/en/function.pdo-getavailabledrivers.php
+	 * @see http://www.php.net/manual/en/function.PDO-getAvailableDrivers.php
 	 */
 	public static function getAvailableDrivers()
 	{
@@ -188,7 +188,7 @@ class TDbConnection extends TComponent
 
 	/**
 	 * @param string The Data Source Name, or DSN, contains the information required to connect to the database.
-	 * @see http://www.php.net/manual/en/function.pdo-construct.php
+	 * @see http://www.php.net/manual/en/function.PDO-construct.php
 	 */
 	public function setConnectionString($value)
 	{
@@ -269,7 +269,7 @@ class TDbConnection extends TComponent
 	 * Returns the ID of the last inserted row or sequence value.
 	 * @param string name of the sequence object (required by some DBMS)
 	 * @return string the row ID of the last row inserted, or the last value retrieved from the sequence object
-	 * @see http://www.php.net/manual/en/function.pdo-lastinsertid.php
+	 * @see http://www.php.net/manual/en/function.PDO-lastInsertId.php
 	 */
 	public function getLastInsertID($sequenceName='')
 	{
@@ -283,7 +283,7 @@ class TDbConnection extends TComponent
 	 * Quotes a string for use in a query.
 	 * @param string string to be quoted
 	 * @return string the properly quoted string
-	 * @see http://www.php.net/manual/en/function.pdo-quote.php
+	 * @see http://www.php.net/manual/en/function.PDO-quote.php
 	 */
 	public function quoteString($str)
 	{
@@ -462,7 +462,7 @@ class TDbConnection extends TComponent
 	 * Obtains a specific DB connection attribute information.
 	 * @param int the attribute to be queried
 	 * @return mixed the corresponding attribute information
-	 * @see http://www.php.net/manual/en/function.pdo-getattribute.php
+	 * @see http://www.php.net/manual/en/function.PDO-getAttribute.php
 	 */
 	public function getAttribute($name)
 	{
@@ -476,7 +476,7 @@ class TDbConnection extends TComponent
 	 * Sets an attribute on the database connection.
 	 * @param int the attribute to be set
 	 * @param mixed the attribute value
-	 * @see http://www.php.net/manual/en/function.pdo-setattribute.php
+	 * @see http://www.php.net/manual/en/function.PDO-setAttribute.php
 	 */
 	public function setAttribute($name,$value)
 	{

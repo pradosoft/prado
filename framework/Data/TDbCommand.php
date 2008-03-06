@@ -137,7 +137,7 @@ class TDbCommand extends TComponent
 	 * @param mixed Name of the PHP variable to bind to the SQL statement parameter
 	 * @param int SQL data type of the parameter
 	 * @param int length of the data type
-	 * @see http://www.php.net/manual/en/function.pdostatement-bindparam.php
+	 * @see http://www.php.net/manual/en/function.PDOStatement-bindParam.php
 	 */
 	public function bindParameter($name, &$value, $dataType=null, $length=null)
 	{
@@ -158,7 +158,7 @@ class TDbCommand extends TComponent
 	 * placeholders, this will be the 1-indexed position of the parameter.
 	 * @param mixed The value to bind to the parameter
 	 * @param int SQL data type of the parameter
-	 * @see http://www.php.net/manual/en/function.pdostatement-bindvalue.php
+	 * @see http://www.php.net/manual/en/function.PDOStatement-bindValue.php
 	 */
 	public function bindValue($name, $value, $dataType=null)
 	{

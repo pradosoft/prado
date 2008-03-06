@@ -187,9 +187,9 @@ abstract class TActiveRecord extends TComponent
 	}
 
 	/**
-	 * Prevent __call() method creating __wake() when unserializing.
+	 * Prevent __call() method creating __wakeup() when unserializing.
 	 */
-	public function __wake()
+	public function __wakeup()
 	{
 		$this->setupColumnMapping();
 		$this->setupRelations();
