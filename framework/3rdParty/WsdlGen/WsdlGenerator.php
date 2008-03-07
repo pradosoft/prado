@@ -224,6 +224,15 @@ class WsdlGenerator
              case 'bool':
                  return 'xsd:boolean';
                  break;
+             case 'date':
+                 return 'xsd:date';
+                 break;
+             case 'time':
+                 return 'xsd:time';
+                 break;
+             case 'dateTime':
+                 return 'xsd:dateTime';
+                 break;
              case 'array':
                  return 'soap-enc:Array';
                  break;

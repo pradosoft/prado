@@ -78,7 +78,7 @@ class Wsdl
 
 	private $_encoding='';
 
-	private static $_primitiveTypes = array('string', 'int', 'float', 'boolean');
+	private static $_primitiveTypes = array('string', 'int', 'float', 'boolean', 'date', 'time', 'dateTime');
 
 	/**
 	 * Creates a new Wsdl thing
