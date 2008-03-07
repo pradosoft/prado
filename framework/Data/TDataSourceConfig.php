@@ -32,7 +32,7 @@ Prado::using('System.Data.TDbConnection');
  * 		function onLoad($param)
  * 		{
  * 			$db = $this->Application->Modules['db1']->DbConnection;
- * 			$command->createCommand('...'); //...
+ * 			$db->createCommand('...'); //...
  * 		}
  * }
  * </code>
