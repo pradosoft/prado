@@ -13,6 +13,7 @@
 {
 	width: 210px;
 	height: 14px;
+	text-align: left;
 }
 
 /* Class for vertical slider */
@@ -40,17 +41,17 @@
 	
 	height: 3px;
 	top: 5px;
-	width: 200px;
-	left: 3px;
+	width: 97%;
+	left: 1%;
 }
 
 /* Vertical Track */
 .VerticalSlider .Track
 {
-	height: 200px;
+	height: 97%;
 	width: 3px;
 	left: 5px;
-	top: 3px;
+	top: 1%;
 }
 
 /* Class for the progress indicator */
