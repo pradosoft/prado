@@ -948,7 +948,7 @@ class TPage extends TTemplateControl
 			$this->getClientScript()->registerFocusControl($focus);
 		}
 		else if($this->_postData && ($lastFocus=$this->_postData->itemAt(self::FIELD_LASTFOCUS))!==null)
-			$cs->registerFocusControl($lastFocus);
+			$this->getClientScript()->registerFocusControl($lastFocus);
 		$this->_inFormRender=false;
 	}
 
