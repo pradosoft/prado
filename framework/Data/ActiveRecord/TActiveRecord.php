@@ -149,7 +149,7 @@ abstract class TActiveRecord extends TComponent
 	 * @var integer record state: 0 = new, 1 = loaded, 2 = deleted.
 	 * @since 3.1.2
 	 */
-	private $_recordState=0;
+	protected $_recordState=0; // use protected so that serialization is fine
 
 	/**
 	 * This static variable defines the column mapping.
