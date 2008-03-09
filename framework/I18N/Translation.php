@@ -28,18 +28,19 @@ Prado::using('System.I18N.core.MessageFormat');
 class Translation extends TComponent
 {
 	/**
-	 * The string formatter. This is a class static variable.
-	 * @var MessageFormat
+	 * The array of formatters. We define 1 formatter per translation catalog
+	 * This is a class static variable.
+	 * @var array
 	 */
-	protected static $formatter;
+	protected static $formatters=array();
 
 	/**
 	 * Initialize the TTranslate translation components
 	 */
-	public static function init()
+	public static function init($catalogue='messages')
 	{
 		//initialized the default class wide formatter
-		if(is_null(self::$formatter))
+		if(is_null(self::$formatters[$catalogue]))
 		{
 			$app = Prado::getApplication()->getGlobalization();
 			$config = $app->getTranslationConfiguration();
@@ -52,11 +53,11 @@ class Translation extends TComponent
 			if($config['cache'])
 				$source->setCache(new MessageCache($config['cache']));
 
-			self::$formatter = new MessageFormat($source, $app->getCharset());
+			self::$formatters[$catalogue] = new MessageFormat($source, $app->getCharset());
 
 			//mark untranslated text
 			if($ps=$config['marker'])
-				self::$formatter->setUntranslatedPS(array($ps,$ps));
+				self::$formatters[$catalogue]->setUntranslatedPS(array($ps,$ps));
 
 			//save the message on end request
 			Prado::getApplication()->attachEventHandler(
@@ -69,9 +70,9 @@ class Translation extends TComponent
 	 * @return MessageFormat formattter.
 	 * @see localize()
 	 */
-	public static function formatter()
+	public static function formatter($catalogue='messages')
 	{
-		return self::$formatter;
+		return self::$formatters[$catalogue];
 	}
 
 	/**
@@ -81,14 +82,17 @@ class Translation extends TComponent
 	{
 		static $onceonly = true;
 
-		if($onceonly && !is_null($formatter = self::$formatter))
+		if($onceonly)
 		{
-			$app = Prado::getApplication()->getGlobalization();
-			$config = $app->getTranslationConfiguration();
-			if(isset($config['autosave']))
+			foreach (self::$formatters as $catalogue=>$formatter)
 			{
-				$formatter->getSource()->setCulture($app->getCulture());
-				$formatter->getSource()->save($config['catalogue']);
+				$app = Prado::getApplication()->getGlobalization();
+				$config = $app->getTranslationConfiguration();
+				if(isset($config['autosave']))
+				{
+					$formatter->getSource()->setCulture($app->getCulture());
+					$formatter->getSource()->save($catalogue);
+				}
 			}
 			$onceonly = false;
 		}

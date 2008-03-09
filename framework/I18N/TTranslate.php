@@ -239,17 +239,17 @@ class TTranslate extends TI18NControl
 		if(is_null($config = $app->getTranslationConfiguration()))
 			return strtr($text, $subs);
 
-		Translation::init();
-
 		$catalogue = $this->getCatalogue();
 		if(empty($catalogue) && isset($config['catalogue']))
 			$catalogue = $config['catalogue'];
-
+		if (empty($catalogue)) $catalogue='messages';
+		Translation::init($catalogue);
+			
 		$key = $this->getKey();
 		if(!empty($key)) $text = $key;
 
 		//translate it
-		return Translation::formatter()->format($text,
+		return Translation::formatter($catalogue)->format($text,
 										$subs, $catalogue, $this->getCharset());
 	}
 }
