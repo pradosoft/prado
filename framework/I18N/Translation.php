@@ -39,8 +39,10 @@ class Translation extends TComponent
 	 */
 	public static function init($catalogue='messages')
 	{
+		static $saveEventHandlerAttached=false;
+		
 		//initialized the default class wide formatter
-		if(is_null(self::$formatters[$catalogue]))
+		if(!isset(self::$formatters[$catalogue]))
 		{
 			$app = Prado::getApplication()->getGlobalization();
 			$config = $app->getTranslationConfiguration();
@@ -60,8 +62,13 @@ class Translation extends TComponent
 				self::$formatters[$catalogue]->setUntranslatedPS(array($ps,$ps));
 
 			//save the message on end request
-			Prado::getApplication()->attachEventHandler(
+			// Do it only once !
+			if (!$saveEventHandlerAttached)
+			{
+				Prado::getApplication()->attachEventHandler(
 				'OnEndRequest', array('Translation', 'saveMessages'));
+				$saveEventHandlerAttached=true;
+			}
 		}
 	}
 
