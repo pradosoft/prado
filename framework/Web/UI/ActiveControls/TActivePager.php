@@ -190,7 +190,8 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	{
 		if($this->getHasPreRendered())
 		{
-			parent::render($writer);
+			$this->setDisplay(($this->getPageCount()==1)?TDisplayStyle::None:TDisplayStyle::Dynamic);
+			TWebControl::render($writer);
 			if($this->getActiveControl()->canUpdateClientSide())
 				$this->getPage()->getCallbackClient()->replaceContent($this,$writer);
 		}
