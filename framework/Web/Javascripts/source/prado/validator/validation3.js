@@ -987,17 +987,9 @@ Prado.WebUI.TRequiredFieldValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	 */
 	evaluateIsValid : function()
 	{
-		var inputType = this.control.getAttribute("type");
-    	if(inputType == 'file')
-    	{
-        	return true;
-    	}
-	    else
-	    {
-        	var a = this.getValidationValue();
-        	var b = this.trim(this.options.InitialValue);
-        	return(a != b);
-    	}
+    	var a = this.getValidationValue();
+    	var b = this.trim(this.options.InitialValue);
+    	return(a != b);
 	}
 });
 
