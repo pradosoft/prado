@@ -2607,6 +2607,7 @@ framework/Web/UI/WebControls/TFont.php -text
 framework/Web/UI/WebControls/THead.php -text
 framework/Web/UI/WebControls/THiddenField.php -text
 framework/Web/UI/WebControls/THtmlArea.php -text
+framework/Web/UI/WebControls/THtmlElement.php -text
 framework/Web/UI/WebControls/THyperLink.php -text
 framework/Web/UI/WebControls/THyperLinkColumn.php -text
 framework/Web/UI/WebControls/TImage.php -text
