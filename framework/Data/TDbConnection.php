@@ -251,7 +251,7 @@ class TDbConnection extends TComponent
 	}
 
 	/**
-	 * @return CDbTransaction the currently active transaction. Null if no active transaction.
+	 * @return TDbTransaction the currently active transaction. Null if no active transaction.
 	 */
 	public function getCurrentTransaction()
 	{
