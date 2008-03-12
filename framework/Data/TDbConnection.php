@@ -85,6 +85,7 @@ class TDbConnection extends TComponent
 	private $_attributes=array();
 	private $_active=false;
 	private $_pdo=null;
+	private $_transaction;
 
 	/**
 	 * Constructor.
@@ -250,6 +251,19 @@ class TDbConnection extends TComponent
 	}
 
 	/**
+	 * @return CDbTransaction the currently active transaction. Null if no active transaction.
+	 */
+	public function getCurrentTransaction()
+	{
+		if($this->_transaction!==null)
+		{
+			if($this->_transaction->getActive())
+				return $this->_transaction;
+		}
+		return null;
+	}
+
+	/**
 	 * Starts a transaction.
 	 * @return TDbTransaction the transaction initiated
 	 * @throws TDbException if the connection is not active
@@ -259,7 +273,7 @@ class TDbConnection extends TComponent
 		if($this->getActive())
 		{
 			$this->_pdo->beginTransaction();
-			return new TDbTransaction($this);
+			return $this->_transaction=new TDbTransaction($this);
 		}
 		else
 			throw new TDbException('dbconnection_connection_inactive');
