@@ -220,7 +220,7 @@ class CultureInfo
 	 */
 	public function validCulture($culture)
 	{
-		if(preg_match('/^[a-z]{2}(_[A-Z]{2,5}){0,2}$/', $culture))
+		if(preg_match('/^[_\\w]+$/', $culture))
 			return is_file(self::dataDir().$culture.self::fileExt());
 
 		return false;
@@ -235,7 +235,7 @@ class CultureInfo
 	{
 		if(!empty($culture))
 		{
-			if (!preg_match('/^[a-z]{2}(_[A-Z]{2,5}){0,2}$/', $culture))
+			if (!preg_match('/^[_\\w]+$/', $culture))
 				throw new Exception('Invalid culture supplied: ' . $culture);
 		}
 
