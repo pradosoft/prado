@@ -14,7 +14,7 @@ of <a href="?page=ActiveControl.ClientSideJavascript">javascript classes</a>.
 </p>
 
 <p id="640424" class="block-content">For a quick demo of active controls, try the <a href="?page=ActiveControls.ActiveButton">
-TActiveButton</a> control. See also the later part of the <a href="?page=Tutorial.CurrencyConverter">Current Converter</a> tutorial for a more indepth example.
+TActiveButton</a> control. See also the later part of the <a href="?page=Tutorial.CurrencyConverter">Currency Converter</a> tutorial for a more in depth example.
 </p>
 
 <p id="640425" class="block-content">* the tutorial for this control is not completed yet.</p>
@@ -76,7 +76,7 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   generates UI that allows users to interactively specify which page of
   data to be displayed in a data-bound control.
   </li>
-  
+
   <li>
   * <a href="?page=ActiveControls.ActiveRadioButton">TActiveRadioButton</a>
   represents a radiobutton on a Web page.
@@ -165,8 +165,8 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
 </ul>
 
 <h2 id="128035">Active Control Abilities</h2>
-<p id="640426" class="block-content">The following table shows the Active Controls that can trigger a 
-callback event and whether the control will raise a PostBack event 
+<p id="640426" class="block-content">The following table shows the Active Controls that can trigger a
+callback event and whether the control will raise a PostBack event
 if Javascript was disabled on the client's browser.</p>
 <!-- tabular: align=|l|l|l|, width=(0.35 0.25 0.25) -->
 <table class="tabular">
