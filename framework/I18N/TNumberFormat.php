@@ -61,7 +61,7 @@ Prado::using('System.I18N.TI18NControl');
   * @version v1.0, last update on Sat Dec 11 17:49:56 EST 2004
   * @package System.I18N
   */
-class TNumberFormat extends TI18NControl
+class TNumberFormat extends TI18NControl implements IDataRenderer
 {
 	/**
 	 * Default NumberFormat, set to the application culture.
@@ -103,6 +103,33 @@ class TNumberFormat extends TI18NControl
 	public function setValue($value)
 	{
 		$this->setViewState('Value',$value,'');
+	}
+
+
+	/**
+	 * Get the numberic value for this control.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link getValue()}.
+	 * @return string number
+	 * @see getValue
+	 * @since 3.1.2
+	 */
+	public function getData()
+	{
+		return $this->getValue();
+	}
+
+	/**
+	 * Set the numberic value for this control.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link setValue()}.
+	 * @param string the number value
+	 * @see setValue
+	 * @since 3.1.2
+	 */
+	public function setData($value)
+	{
+		$this->setValue($value);
 	}
 
 	/**

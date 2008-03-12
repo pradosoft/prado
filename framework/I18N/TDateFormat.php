@@ -56,7 +56,7 @@ Prado::using('System.I18N.TI18NControl');
  * @version v1.0, last update on Sat Dec 11 15:25:11 EST 2004
  * @package System.I18N
  */
-class TDateFormat extends TI18NControl
+class TDateFormat extends TI18NControl implements IDataRenderer
 {
 	/**
 	 * Default DateFormat, set to the application culture.
@@ -157,6 +157,32 @@ class TDateFormat extends TI18NControl
 	public function setValue($value)
 	{
 		$this->setViewState('Value',$value,'');
+	}
+
+	/**
+	 * Get the date-time value for this control.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link getValue()}.
+	 * @return string date time value.
+	 * @see getValue
+	 * @since 3.1.2
+	 */
+	public function getData()
+	{
+		return $this->getValue();
+	}
+
+	/**
+	 * Set the date-time value for this control.
+	 * This method is required by {@link IDataRenderer}.
+	 * It is the same as {@link setValue()}.
+	 * @param string the date-time value.
+	 * @see setValue
+	 * @since 3.1.2
+	 */
+	public function setData($value)
+	{
+		$this->setValue($value);
 	}
 
 	/**
