@@ -10,6 +10,7 @@ BUG: Ticket#750 - The "expire" parameter is used inconsistently in cache modules
 BUG: Ticket#753 - Themes not allways being set (Qiang)
 BUG: Ticket#754 - CultureInfo constructor errors (Qiang)
 BUG: Ticket#759 - TSlider wrong layout with horizontal with center horizontal align (Christophe)
+BUG: Ticket#769 - Problem with Validator inside TActivePanel (Christophe)
 BUG: Ticket#776 - Logout button should not cause validation in blog tutorial (Qiang)
 BUG: Ticket#785 - TDatePicker OnDateChanged event problem (Christophe)
 BUG: Ticket#787 - Typo in validation3.js (Christophe)

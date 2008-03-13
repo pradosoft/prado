@@ -186,14 +186,25 @@ Prado.ValidationManager.prototype =
 	 */
 	initialize : function(options)
 	{
-		this.validators = []; // list of validators
-		this.summaries = []; // validation summaries
-		this.groups = []; // validation groups
-		this.options = {};
-
-		this.options = options;
 		if(!Prado.Validation.managers[options.FormID])
+		{
+			this.validators = []; // list of validators
+			this.summaries = []; // validation summaries
+			this.groups = []; // validation groups
+			this.options = {};
+
+			this.options = options;
+		
 			Prado.Validation.managers[options.FormID] = this;
+		} 
+		else
+		{
+			var manager = Prado.Validation.managers[options.FormID];
+			this.validators = manager.validators;
+			this.summaries = manager.summaries;
+			this.groups = manager.groups;
+			this.options = manager.options;
+		}
 	},
 
 	/**
@@ -286,6 +297,11 @@ Prado.ValidationManager.prototype =
 	 */
 	addValidator : function(validator)
 	{
+		// Erase any existing validator with same options
+		this.validators = this.validators.reject(function(v)
+		{
+			return (v.options.ID==validator.options.ID);
+		});
 		this.validators.push(validator);
 		if(validator.group && !this.groups.include(validator.group))
 			this.groups.push(validator.group);
