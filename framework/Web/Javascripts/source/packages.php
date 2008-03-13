@@ -62,9 +62,6 @@ $packages = array(
 		'prado/controls/tabpanel.js'
 	),
 	
-	'maskedtextbox'=>array(
-		'prado/controls/maskedtextbox.js'
-	),
 );
 
 
@@ -81,7 +78,6 @@ $dependencies = array(
 		'slider'		=> array('prado', 'slider'),
 		'keyboard'		=> array('prado', 'keyboard'),
 		'tabpanel'		=> array('prado', 'tabpanel'),
-		'maskedtextbox'	=> array('prado', 'maskedtextbox'),
 );
 
 return array($packages, $dependencies);

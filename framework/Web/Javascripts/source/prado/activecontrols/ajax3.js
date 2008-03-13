@@ -230,7 +230,10 @@ Object.extend(Prado.CallbackRequest,
 		"on500" : function(request, transport, data)
 		{
 			var e = request.getHeaderData(Prado.CallbackRequest.ERROR_HEADER);
-			Logger.error("Callback Server Error "+e.code, this.formatException(e));
+			if (e)
+				Logger.error("Callback Server Error "+e.code, this.formatException(e));
+			else
+				Logger.error("Callback Server Error Unknown",'');
 		},
 
 		/**
@@ -430,8 +433,11 @@ Object.extend(Prado.CallbackRequest,
  */
 Ajax.Responders.register({onComplete : function(request)
 {
-	if(request.ActiveControl.HasPriority)
-		Prado.CallbackRequest.tryNextRequest();
+	if(request && request instanceof Prado.AjaxRequest)
+	{
+		if(request.ActiveControl.HasPriority)
+			Prado.CallbackRequest.tryNextRequest();
+	}
 }});
 
 //Add HTTP exception respones when logger is enabled.
