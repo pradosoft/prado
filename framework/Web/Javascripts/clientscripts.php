@@ -179,12 +179,12 @@ function save_javascript($content, $filename)
  */
 function get_saved_javascript($filename)
 {
+	$fn=$filename;
 	if(supports_gzip_encoding())
-		$filename .= '.gz';
-	if(is_file($filename))
-		return file_get_contents($filename);
-	else
-		error_log('Prado client script: no such file '.$filename);
+		$fn .= '.gz';
+	if(!is_file($fn))
+		save_javascript(get_javascript_code(true), $filename);
+	return file_get_contents($fn);
 }
 
 /**
