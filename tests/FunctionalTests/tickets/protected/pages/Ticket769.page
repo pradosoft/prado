@@ -1,0 +1,18 @@
+<com:TContent ID="Content">
+
+<com:TActivePanel ID="Main">
+<com:TPanel ID="A" Visible="true">
+  <label>T1</label>
+  <com:TTextBox ID="T1" />
+  <com:TActiveButton Text="T1" ValidationGroup="G1" OnClick="clicked"  />
+  <com:TRequiredFieldValidator ControlToValidate="T1" Text="T1-error"
+    ValidationGroup="G1" />
+</com:TPanel>
+
+<com:TPanel ID="B" Visible="false">                                                                                                
+  This is B
+</com:TPanel>                                                                                                        
+<com:TActiveButton Text="showB" OnCallback="showBcallback" />                                                                
+<com:TActiveButton Text="showA" OnCallback="showAcallback" />
+</com:TActivePanel>
+</com:TContent>
