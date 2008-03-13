@@ -334,7 +334,7 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 	{
 		if(!this.showing)
 		{
-			var pos = Position.positionedOffset(this.input);
+			var pos = this.input.positionedOffset();
 			pos[1] += this.input.offsetHeight;
 
 			this.element.style.top = (pos[1]-1) + "px";
@@ -641,7 +641,7 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 	{
 		var px = Event.pointerX(ev);
 		var py = Event.pointerY(ev);
-		var pos = Position.cumulativeOffset(this.inputs.background);
+		var pos = this.inputs.background.cumulativeOffset();
 
 		var x = this.truncate(px - pos[0],0,255);
 		var y = this.truncate(py - pos[1],0,255);
@@ -672,7 +672,7 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 	changeH : function(ev)
 	{
 		var py = Event.pointerY(ev);
-		var pos = Position.cumulativeOffset(this.inputs.background);
+		var pos = this.inputs.background.cumulativeOffset();
 		var y = this.truncate(py - pos[1],0,255);
 
 		var h = (255-y)/255;

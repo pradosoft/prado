@@ -1,4 +1,4 @@
-// script.aculo.us builder.js v1.7.1_beta1, Mon Mar 12 14:40:50 +0100 2007
+// script.aculo.us builder.js v1.8.1, Thu Jan 03 22:07:12 -0500 2008
 
 // Copyright (c) 2005-2007 Thomas Fuchs (http://script.aculo.us, http://mir.aculo.us)
 //
@@ -89,7 +89,7 @@ var Builder = {
     var attrs = [];
     for(attribute in attributes)
       attrs.push((attribute in this.ATTR_MAP ? this.ATTR_MAP[attribute] : attribute) +
-          '="' + attributes[attribute].toString().escapeHTML() + '"');
+          '="' + attributes[attribute].toString().escapeHTML().gsub(/"/,'&quot;') + '"');
     return attrs.join(" ");
   },
   _children: function(element, children) {

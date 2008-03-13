@@ -2,11 +2,15 @@
 
 //$Id$
 
+// To make future upgrades easier
+if (!defined('PROTOTYPE_DIR')) define ('PROTOTYPE_DIR', 'prototype-1.6.0.2');
+if (!defined('SCRIPTACULOUS_DIR')) define ('SCRIPTACULOUS_DIR', 'scriptaculous-1.8.1');
+
 //package names and its contents (files relative to the current directory)
 $packages = array(
 	'prado' => array(
-		'prototype/prototype.js',
-		'scriptaculous/builder.js',
+		PROTOTYPE_DIR.'/prototype.js',
+		SCRIPTACULOUS_DIR.'/builder.js',
 		'prado/prado.js',
 		'prado/scriptaculous-adapter.js',
 		'prado/controls/controls.js',
@@ -14,7 +18,7 @@ $packages = array(
 	),
 
 	'effects' => array(
-		'scriptaculous/effects.js'
+		SCRIPTACULOUS_DIR.'/effects.js'
 	),
 
 	'logger' => array(
@@ -34,7 +38,7 @@ $packages = array(
 	),
 
 	'ajax' => array(
-		'scriptaculous/controls.js',
+		SCRIPTACULOUS_DIR.'/controls.js',
 		'prado/activecontrols/json.js',
 		'prado/activecontrols/ajax3.js',
 		'prado/activecontrols/activecontrols3.js',
@@ -43,22 +47,23 @@ $packages = array(
 	),
 
 	'dragdrop'=>array(
-		'scriptaculous/dragdrop.js'
+		SCRIPTACULOUS_DIR.'/dragdrop.js'
 	),
 
 	'slider'=>array(
 		'prado/controls/slider.js'
 	),
-	'slider2'=>array(
-		'scriptaculous/slider.js',
-		'prado/controls/slider2.js'
-	),
+
 	'keyboard'=>array(
 		'prado/controls/keyboard.js'
 	),
 
 	'tabpanel'=>array(
 		'prado/controls/tabpanel.js'
+	),
+	
+	'maskedtextbox'=>array(
+		'prado/controls/maskedtextbox.js'
 	),
 );
 
@@ -76,6 +81,7 @@ $dependencies = array(
 		'slider'		=> array('prado', 'slider'),
 		'keyboard'		=> array('prado', 'keyboard'),
 		'tabpanel'		=> array('prado', 'tabpanel'),
+		'maskedtextbox'	=> array('prado', 'maskedtextbox'),
 );
 
 return array($packages, $dependencies);

@@ -553,22 +553,22 @@ Prado.Element.Insert =
 {
 	append: function(element, content)
 	{
-		new Insertion.Bottom(element, content);
+		$(element).insert(content);
 	},
 
 	prepend: function(element, content)
 	{
-		new Insertion.Top(element, content);
+		$(element).insert({top:content});
 	},
 
 	after: function(element, content)
 	{
-		new Insertion.After(element, content);
+		$(element).insert({after:content});
 	},
 
 	before: function(element, content)
 	{
-		new Insertion.Before(element, content);
+		$(element).insert({before:content});
 	}
 };
 
@@ -1034,3 +1034,11 @@ Object.extend(Date,
 		return newdate;
 	}
 });
+
+Prado.Effect = 
+{
+	Highlight : function (element,options)
+	{
+		new Effect.Highlight(element,options);
+	}
+};

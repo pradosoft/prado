@@ -419,7 +419,7 @@ Prado.WebUI.TValidationSummary.prototype =
 	{
 		while(this.messages.childNodes.length > 0)
 			this.messages.removeChild(this.messages.lastChild);
-		new Insertion.Bottom(this.messages, this.formatSummary(messages));
+		this.messages.insert(this.formatSummary(messages));
 	},
 
 	/**

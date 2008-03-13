@@ -296,7 +296,12 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function setStyle($element, $styles)
 	{
-		$this->callClientFunction('Element.setStyle', array($element, $styles));
+		$s=array();
+		foreach ($styles as $key=>$value)
+		{
+			$s[]=$key.": ".$value;
+		}
+		$this->callClientFunction('Element.setStyle', array($element, $s));
 	}
 
 	/**

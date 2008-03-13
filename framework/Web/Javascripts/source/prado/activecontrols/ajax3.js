@@ -230,10 +230,7 @@ Object.extend(Prado.CallbackRequest,
 		"on500" : function(request, transport, data)
 		{
 			var e = request.getHeaderData(Prado.CallbackRequest.ERROR_HEADER);
-			if (e)
-				Logger.error("Callback Server Error "+e.code, this.formatException(e));
-			else
-				Logger.error("Callback Server Error Unknown",'');
+			Logger.error("Callback Server Error "+e.code, this.formatException(e));
 		},
 
 		/**
@@ -340,8 +337,8 @@ Object.extend(Prado.CallbackRequest,
 			//else
 				//Logger.warn('empty queque');
 		}
-//		else
-	//		Logger.warn('current request ' + self.currentRequest.id);
+		//else
+			//Logger.warn('current request ' + self.currentRequest.id);
 	},
 
 	/**
@@ -363,15 +360,15 @@ Object.extend(Prado.CallbackRequest,
 			{
 				if(typeof(Logger) != "undefined")
 					Logger.warn("Missing page state:"+data);
-//				Logger.warn('## bad state: setting current request to null');
+				//Logger.warn('## bad state: setting current request to null');
 				self.endCurrentRequest();
 				//self.tryNextRequest();
 				return false;
 			}
 		}
 		self.endCurrentRequest();
-	//	Logger.warn('## state updated: setting current request to null');
-	//	self.tryNextRequest();
+		//Logger.warn('## state updated: setting current request to null');
+		//self.tryNextRequest();
 		return true;
 	},
 
@@ -433,11 +430,8 @@ Object.extend(Prado.CallbackRequest,
  */
 Ajax.Responders.register({onComplete : function(request)
 {
-	if(request && request instanceof Prado.AjaxRequest)
-	{
-		if(request.ActiveControl.HasPriority)
-			Prado.CallbackRequest.tryNextRequest();
-	}
+	if(request.ActiveControl.HasPriority)
+		Prado.CallbackRequest.tryNextRequest();
 }});
 
 //Add HTTP exception respones when logger is enabled.
@@ -463,25 +457,19 @@ Prado.CallbackRequest.prototype = Object.extend(Prado.AjaxRequest.prototype,
 	 */
 	initialize : function(id, options)
 	{
-	/**
-	 * Callback URL, same url as the current page.
-	 */
-		this.url = this.getCallbackUrl();
-
-		this.transport = Ajax.getTransport();
-//		this.setOptions(request.options);
-//		this.request(request.url);
 		/**
-		 * Current callback request.
+		 * Callback URL, same url as the current page.
 		 */
-		//this.request = null;
-
+		this.url = this.getCallbackUrl();
+		
+		this.transport = Ajax.getTransport();
 		this.Enabled = true;
-
 		this.id = id;
-		if(typeof(id)=="string")
+		
+		if(typeof(id)=="string"){
 			Prado.CallbackRequest.requests[id] = this;
-
+		}
+		
 		this.setOptions(Object.extend(
 		{
 			RequestTimeOut : 30000, // 30 second timeout.
@@ -494,7 +482,31 @@ Prado.CallbackRequest.prototype = Object.extend(Prado.AjaxRequest.prototype,
 
 		this.ActiveControl = this.options;
 	},
+	
+	/**
+	 * Sets the request options
+	 * @return {Array} request options.
+	 */
+	setOptions: function(options){
+		
+		this.options = {
+			method:       'post',
+			asynchronous: true,
+			contentType:  'application/x-www-form-urlencoded',
+			encoding:     'UTF-8',
+			parameters:   '',
+			evalJSON:     true,
+			evalJS:       true
+		};
+		
+		Object.extend(this.options, options || { });
 
+		this.options.method = this.options.method.toLowerCase();
+		if(Object.isString(this.options.parameters)){
+			this.options.parameters = this.options.parameters.toQueryParams();
+		}
+	},
+	
 	/**
 	 * Gets the url from the forms that contains the PRADO_PAGESTATE
 	 * @return {String} callback url.

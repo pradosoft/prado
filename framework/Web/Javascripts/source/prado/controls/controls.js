@@ -84,7 +84,7 @@ Object.extend(Prado.WebUI.TImageButton.prototype,
 	 */
 	addXYInput : function(event,options)
 	{
-		imagePos = Position.cumulativeOffset(this.element);
+		imagePos = this.element.cumulativeOffset();
 		clickedPos = [event.clientX, event.clientY];
 		x = clickedPos[0]-imagePos[0]+1;
 		y = clickedPos[1]-imagePos[1]+1;

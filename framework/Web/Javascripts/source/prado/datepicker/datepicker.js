@@ -599,7 +599,7 @@ Prado.WebUI.TDatePicker.prototype =
 
 		if(!this.showing)
 		{
-			var pos = Position.positionedOffset(this.control);
+			var pos = this.control.positionedOffset();
 
 			pos[1] += this.getDatePickerOffsetHeight();
 

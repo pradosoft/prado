@@ -46,6 +46,10 @@
  * @since 3.1
  */
 
+//run script for as long as needed
+set_time_limit(0);
+
+//set error_reporting directive 
 @error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
 function get_client_script_files()
@@ -138,7 +142,7 @@ function combine_javascript($files)
  */
 function minify_javascript($content, $files)
 {
-	return jsm_minify($content);
+	return JSMin::minify($content);
 }
 
 /**
@@ -175,12 +179,12 @@ function save_javascript($content, $filename)
  */
 function get_saved_javascript($filename)
 {
-	$fn=$filename;
 	if(supports_gzip_encoding())
-		$fn .= '.gz';
-	if(!is_file($fn))
-		save_javascript(get_javascript_code(true), $filename);
-	return file_get_contents($fn);
+		$filename .= '.gz';
+	if(is_file($filename))
+		return file_get_contents($filename);
+	else
+		error_log('Prado client script: no such file '.$filename);
 }
 
 /**
@@ -249,17 +253,19 @@ function supports_gzip_encoding()
 }
 
 /**
- * JSMin: the following jsm_* functions are adapted from JSMin_lib.php
- * written by Douglas Crockford. Below is the original copyright notice:
+ * jsmin.php - PHP implementation of Douglas Crockford's JSMin.
  *
- * PHP adaptation of JSMin, published by Douglas Crockford as jsmin.c, also based
- * on its Java translation by John Reilly.
+ * This is pretty much a direct port of jsmin.c to PHP with just a few
+ * PHP-specific performance tweaks. Also, whereas jsmin.c reads from stdin and
+ * outputs to stdout, this library accepts a string as input and returns another
+ * string as output.
  *
- * Permission is hereby granted to use the PHP version under the same conditions
- * as jsmin.c, which has the following notice :
+ * PHP 5 or higher is required.
  *
- * ----------------------------------------------------------------------------
+ * Permission is hereby granted to use this version of the library under the
+ * same terms as jsmin.c, which has the following license:
  *
+ * --
  * Copyright (c) 2002 Douglas Crockford  (www.crockford.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -271,251 +277,276 @@ function supports_gzip_encoding()
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
+ *
+ * The Software shall be used for Good, not Evil.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ * --
+ *
+ * @package JSMin
+ * @author Ryan Grove <ryan@wonko.com>
+ * @copyright 2002 Douglas Crockford <douglas@crockford.com> (jsmin.c)
+ * @copyright 2007 Ryan Grove <ryan@wonko.com> (PHP port)
+ * @license http://opensource.org/licenses/mit-license.php MIT License
+ * @version 1.1.0 (2007-06-01)
+ * @link http://code.google.com/p/jsmin-php/
  */
 
-$jsm_in='';
-$jsm_out='';
-$jsm_length=0;
-$jsm_pos=0;
-$jsm_c1='';
-$jsm_c2='';
+class JSMin {
+  const ORD_LF    = 10;
+  const ORD_SPACE = 32;
 
-function jsm_minify($jsCode)
-{
-	global $jsm_in, $jsm_out, $jsm_length, $jsm_pos, $jsm_c1, $jsm_c2;
+  protected $a           = '';
+  protected $b           = '';
+  protected $input       = '';
+  protected $inputIndex  = 0;
+  protected $inputLength = 0;
+  protected $lookAhead   = null;
+  protected $output      = array();
 
-	$jsm_in=$jsCode;
-	$jsm_out='';
-	$jsm_length=strlen($jsCode);
-	$jsm_pos=0;
+  // -- Public Static Methods --------------------------------------------------
 
-    // Initialize A and run the first (minimal) action
-    $jsm_c1="\n";
-    jsm_next();
+  public static function minify($js) {
+    $jsmin = new JSMin($js);
+    return $jsmin->min();
+  }
 
-    // Proceed all the way to the end of the input file
-	while($jsm_c1!==false)
-	{
-		if($jsm_c1===' ')
-		{
-			if(jsm_isAlphaNum($jsm_c2))
-                jsm_write($jsm_c1);
-            else
-                jsm_buffer();
-		}
-		else if($jsm_c1==="\n")
-		{
-			if($jsm_c2===' ')
-				jsm_next();
-			else if(jsm_isAlphaNum($jsm_c2) || $jsm_c2==='{' || $jsm_c2==='[' || $jsm_c2==='(' || $jsm_c2==='+' || $jsm_c2==='-')
-				jsm_write($jsm_c1);
-			else
-				jsm_buffer();
-		}
-		else
-		{
-			if($jsm_c2===' ')
-			{
-				if(jsm_isAlphaNum($jsm_c1))
-					jsm_write($jsm_c1);
-				else
-					jsm_next();
-			}
-			else if($jsm_c2==="\n")
-			{
-				if(jsm_isAlphaNum($jsm_c1) || $jsm_c1==='}' || $jsm_c1===']' || $jsm_c1===')' || $jsm_c1==='+' || $jsm_c1==='-' || $jsm_c1==='"' || $jsm_c1==='\'')
-					jsm_write($jsm_c1);
-				else
-					jsm_next();
-			}
-			else
-				jsm_write($jsm_c1);
-		}
-	}
+  // -- Public Instance Methods ------------------------------------------------
 
-    return $jsm_out;
-}
+  public function __construct($input) {
+    $this->input       = str_replace("\r\n", "\n", $input);
+    $this->inputLength = strlen($this->input);
+  }
 
-function jsm_write()
-{
-	global $jsm_c1;
+  // -- Protected Instance Methods ---------------------------------------------
 
-	jsm_put($jsm_c1);
-	jsm_buffer();
-}
+  protected function action($d) {
+    switch($d) {
+      case 1:
+        $this->output[] = $this->a;
 
-function jsm_buffer()
-{
-	global $jsm_c1, $jsm_c2;
+      case 2:
+        $this->a = $this->b;
 
-    $tmpA=$jsm_c1=$jsm_c2;
+        if ($this->a === "'" || $this->a === '"') {
+          for (;;) {
+            $this->output[] = $this->a;
+            $this->a        = $this->get();
 
-    // Treating a string as a single char : outputting it whole
-    // Note that the string-opening char (" or ') is memorized in B
-
-    if($tmpA==='\'' || $tmpA==='"')
-    {
-	    while (true)
-	    {
-			// Output string contents
-	        jsm_put($tmpA);
-
-	        // Get next character, watching out for termination of the current string,
-	        // new line & co (then the string is not terminated !), or a backslash
-	        // (upon which the following char is directly output to serve the escape mechanism)
-
-	        $tmpA=$jsm_c1=jsm_get();
-
-	        if($tmpA===$jsm_c2) // String terminated
-	            break; // from while(true)
-
-	        if(ord($tmpA) <= ord("\n"))
-	            die('Unterminated string literal');
-
-	        if($tmpA==='\\')
-	        {
-	            // Escape next char immediately
-	            jsm_put($tmpA);
-	            $tmpA=$jsm_c1=jsm_get();
-	        }
-	    }
-	}
-
-    jsm_next();
-}
-
-function jsm_next()
-{
-	global $jsm_c1, $jsm_c2;
-
-    // Get the next B
-    $jsm_c2=jsm_get2();
-
-    // Special case of recognising regular expressions (beginning with /) that are
-    // preceded by '(', ',' or '='
-    $tmpA=$jsm_c1;
-
-    if($jsm_c2==='/' && ($tmpA==='(' || $tmpA===',' || $tmpA==='='))
-    {
-        // Output the two successive chars
-        jsm_put($tmpA);
-        jsm_put($jsm_c2);
-
-        // Look for the end of the RE literal, watching out for escaped chars or a control /
-        // end of line char (the RE literal then being unterminated !)
-        while (true)
-        {
-		    $tmpA=$jsm_c1=jsm_get();
-
-            if($tmpA==='/')
-                break; // from while(true)
-
-            if($tmpA==='\\')
-            {
-                // Escape next char immediately
-                jsm_put($tmpA);
-                $tmpA=$jsm_c1=jsm_get();
+            if ($this->a === $this->b) {
+              break;
             }
-            else if(ord($tmpA) <= ord("\n"))
-                die('Unterminated regexp literal');
 
-            // Output RE characters
-            jsm_put($tmpA);
+            if (ord($this->a) <= self::ORD_LF) {
+              throw new JSMinException('Unterminated string literal.');
+            }
+
+            if ($this->a === '\\') {
+              $this->output[] = $this->a;
+              $this->a        = $this->get();
+            }
+          }
         }
 
-        // Move forward after the RE literal
-        $jsm_c2=jsm_get2();
+      case 3:
+        $this->b = $this->next();
+
+        if ($this->b === '/' && (
+            $this->a === '(' || $this->a === ',' || $this->a === '=' ||
+            $this->a === ':' || $this->a === '[' || $this->a === '!' ||
+            $this->a === '&' || $this->a === '|' || $this->a === '?')) {
+
+          $this->output[] = $this->a;
+          $this->output[] = $this->b;
+
+          for (;;) {
+            $this->a = $this->get();
+
+            if ($this->a === '/') {
+              break;
+            }
+            elseif ($this->a === '\\') {
+              $this->output[] = $this->a;
+              $this->a        = $this->get();
+            }
+            elseif (ord($this->a) <= self::ORD_LF) {
+              throw new JSMinException('Unterminated regular expression '.
+                  'literal.');
+            }
+
+            $this->output[] = $this->a;
+          }
+
+          $this->b = $this->next();
+        }
     }
-}
+  }
 
-function jsm_get()
-{
-	global $jsm_pos, $jsm_length, $jsm_in;
+  protected function get() {
+    $c = $this->lookAhead;
+    $this->lookAhead = null;
 
-    // Get next input character and advance position in file
-	if($jsm_pos < $jsm_length)
-	{
-		$c=$jsm_in[$jsm_pos++];
-	    if($c==="\n" || ord($c) >= ord(' '))
-	        return $c;
-		else if($c==="\r")
-	        return "\n";
-		else
-		    return ' ';
-	}
-	else
-		return false;
+    if ($c === null) {
+      if ($this->inputIndex < $this->inputLength) {
+        $c = $this->input[$this->inputIndex];
+        $this->inputIndex += 1;
+      }
+      else {
+        $c = null;
+      }
+    }
 
-}
+    if ($c === "\r") {
+      return "\n";
+    }
 
-function jsm_peek()
-{
-	global $jsm_pos, $jsm_length, $jsm_in;
-	if($jsm_pos < $jsm_length)
-		return $jsm_in[$jsm_pos];
-	else
-		return false;
-}
+    if ($c === null || $c === "\n" || ord($c) >= self::ORD_SPACE) {
+      return $c;
+    }
 
-function jsm_put($c)
-{
-	global $jsm_out;
-	$jsm_out .= $c;
-}
+    return ' ';
+  }
 
-/**
- * Get the next character from the input stream, excluding comments.
- */
-function jsm_get2()
-{
-    // Get next char from input, translated if necessary
-    if(($c=jsm_get())!=='/')
-    	return $c;
+  protected function isAlphaNum($c) {
+    return ord($c) > 126 || $c === '\\' || preg_match('/^[\w\$]$/', $c) === 1;
+  }
 
-    // Look ahead : a comment is two slashes or slashes followed by asterisk (to be closed)
-	if(($c=jsm_peek())==='/')
-	{
-        // Comment is up to the end of the line
-        while (true)
-        {
-            $c=jsm_get();
-            if(ord($c)<=ord("\n"))
-                return $c;
-        }
-	}
-	else if($c==='*')
-	{
-        // Comment is up to comment close.
-        // Might not be terminated, if we hit the end of file.
-        while(true)
-        {
-            // N.B. not using switch() because of having to test EOF with ===
-            $c=jsm_get();
-            if($c==='*')
-            {
-			    // Comment termination if the char ahead is a slash
-                if(jsm_peek()==='/')
-                {
-                    // Advance again and make into a single space
-                    jsm_get();
-                    return ' ';
-                }
+  protected function min() {
+    $this->a = "\n";
+    $this->action(3);
+
+    while ($this->a !== null) {
+      switch ($this->a) {
+        case ' ':
+          if ($this->isAlphaNum($this->b)) {
+            $this->action(1);
+          }
+          else {
+            $this->action(2);
+          }
+          break;
+
+        case "\n":
+          switch ($this->b) {
+            case '{':
+            case '[':
+            case '(':
+            case '+':
+            case '-':
+              $this->action(1);
+              break;
+
+            case ' ':
+              $this->action(3);
+              break;
+
+            default:
+              if ($this->isAlphaNum($this->b)) {
+                $this->action(1);
+              }
+              else {
+                $this->action(2);
+              }
+          }
+          break;
+
+        default:
+          switch ($this->b) {
+            case ' ':
+              if ($this->isAlphaNum($this->a)) {
+                $this->action(1);
+                break;
+              }
+
+              $this->action(3);
+              break;
+
+            case "\n":
+              switch ($this->a) {
+                case '}':
+                case ']':
+                case ')':
+                case '+':
+                case '-':
+                case '"':
+                case "'":
+                  $this->action(1);
+                  break;
+
+                default:
+                  if ($this->isAlphaNum($this->a)) {
+                    $this->action(1);
+                  }
+                  else {
+                    $this->action(3);
+                  }
+              }
+              break;
+
+            default:
+              $this->action(1);
+              break;
+          }
+      }
+    }
+
+    return implode('', $this->output);
+  }
+
+  protected function next() {
+    $c = $this->get();
+
+    if ($c === '/') {
+      switch($this->peek()) {
+        case '/':
+          for (;;) {
+            $c = $this->get();
+
+            if (ord($c) <= self::ORD_LF) {
+              return $c;
             }
-            else if($c===false)
-                die('Unterminated comment');
-        }
-	}
-	else
-		return '/';
+          }
+
+        case '*':
+          $this->get();
+
+          for (;;) {
+            switch($this->get()) {
+              case '*':
+                if ($this->peek() === '/') {
+                  $this->get();
+                  return ' ';
+                }
+                break;
+
+              case null:
+                throw new JSMinException('Unterminated comment.');
+            }
+          }
+
+        default:
+          return $c;
+      }
+    }
+
+    return $c;
+  }
+
+  protected function peek() {
+    $this->lookAhead = $this->get();
+    return $this->lookAhead;
+  }
 }
 
-/**
- * Indicates whether a character is alphanumeric or _, $, \ or non-ASCII.
- */
-function jsm_isAlphaNum($c)
-{
-    return ctype_alnum($c) || $c==='_' || $c==='$' || $c==='\\' || ord($c)>126;
-}
+// -- Exceptions ---------------------------------------------------------------
+class JSMinException extends Exception {}
+
 
 /************** OUTPUT *****************/
 
@@ -533,6 +564,8 @@ if(count(get_script_requests()) > 0)
 	{
 		if(($filename = compressed_js_filename()) !== null)
 		{
+			if(!is_file($filename))
+				save_javascript(get_javascript_code(true), $filename);
 			print_headers();
 			echo get_saved_javascript($filename);
 		}

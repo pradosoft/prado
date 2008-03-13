@@ -165,17 +165,17 @@ Prado.WebUI.TSlider = Class.extend(Prado.WebUI.PostBackControl,
 				var pointer  = [Event.pointerX(event), Event.pointerY(event)];
 				var track = handle;
 				if(track==this.track) {
-					var offsets  = Position.cumulativeOffset(this.track); 
+					var offsets  = this.track.cumulativeOffset(); 
 					this.event = event;
 					this.setValue(this.translateToValue( 
 						(this.isVertical() ? pointer[1]-offsets[1] : pointer[0]-offsets[0])-(this.handleLength/2)
 					));
-					var offsets  = Position.cumulativeOffset(this.handle);
+					var offsets  = this.handle.cumulativeOffset();
 					this.offsetX = (pointer[0] - offsets[0]);
 					this.offsetY = (pointer[1] - offsets[1]);
 				} else {
 					this.updateStyles();
-					var offsets  = Position.cumulativeOffset(this.handle);
+					var offsets  = this.handle.cumulativeOffset();
 					this.offsetX = (pointer[0] - offsets[0]);
 					this.offsetY = (pointer[1] - offsets[1]);
 				}
@@ -195,7 +195,7 @@ Prado.WebUI.TSlider = Class.extend(Prado.WebUI.PostBackControl,
 	
 	draw: function(event) {
 		var pointer = [Event.pointerX(event), Event.pointerY(event)];
-		var offsets = Position.cumulativeOffset(this.track);
+		var offsets = this.track.cumulativeOffset();
 		pointer[0] -= this.offsetX + offsets[0];
 		pointer[1] -= this.offsetY + offsets[1];
 		this.event = event;
