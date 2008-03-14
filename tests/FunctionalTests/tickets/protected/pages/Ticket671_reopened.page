@@ -1,0 +1,41 @@
+<com:TContent ID="Content">
+	<div style="margin: 20px auto 0px auto; width: 700px;">
+		<com:TLabel Text="TestField:" ForControl="testField" />
+		<com:TActiveTextBox
+			ID="testField"
+			CssClass="DialogInput"
+			ValidationGroup="group"
+			Style="text-align: left;"
+			AutoPostback="False"
+		/>
+		<br />
+		<com:TRequiredFieldValidator
+		        ControlToValidate="testField"
+		        Display="Dynamic"
+		        ControlCssClass="inputerror"
+		        ValidationGroup="group"
+		        CssClass="error"
+		        ErrorMessage="Please insert some Data." />
+		<com:TActiveCustomValidator
+		        ControlToValidate="testField"
+		        OnServerValidate="Page.check"
+		        ValidationGroup="group"
+		        Display="Dynamic"
+		        ControlCssClass="inputerror"
+		        CssClass="error"
+				ErrorMessage="Please insert the right Data."
+				 />
+		<br />
+		<com:TLabel Text="TestField2:" ForControl="testField2" />
+		<com:TActiveTextBox
+			ID="testField2"
+			CssClass="DialogInput"
+			ValidationGroup="coran"
+			Style="text-align: left;"
+		/>
+		<br />
+		<com:TActiveButton Text="Start" OnCallback="Page.save" ValidationGroup="group" />
+		<com:TActiveLabel id="Result"/>
+	</div>				  
+
+</com:TContent>
