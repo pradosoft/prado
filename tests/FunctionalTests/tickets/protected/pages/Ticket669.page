@@ -1,0 +1,71 @@
+<com:TContent id="Content">
+<com:THyperLink Text="1 - Test without callback" NavigateUrl="<%= $_SERVER['REQUEST_URI'] %>" /><br />
+<com:TActiveLinkButton Text="2 - Test callback with 2nd ActivePanel" OnCallback="Page.load1" /><br />
+<com:TActiveLinkButton Text="3 - Test callback without 2nd ActivePanel" OnCallback="Page.load2" /><br />
+<hr />
+
+<com:TActivePanel ID="panel1" Style="padding: 5px" GroupingText="panel1">
+<com:TMultiView ID="multiView" ActiveViewIndex="0">
+<com:TView>
+1 - Test without callback
+<pre style="color:#006600">
+&lt;com:TActivePanel ID=&quot;panel2&quot;&gt;
+	&lt;com:TActiveTextBox ID=&quot;tb1&quot; Columns=&quot;30&quot; Text=&quot;ActiveTextBox&quot; /&gt;
+	&lt;com:TActivePanel ID=&quot;panel3&quot;&gt;
+		&lt;com:TTextBox ID=&quot;tb2&quot; Columns=&quot;30&quot; Text=&quot;TextBox in ActivePanel&quot; /&gt;
+	&lt;/com:TActivePanel&gt;
+&lt;/com:TActivePanel&gt;
+</pre>
+
+	<com:TActiveButton Text="Test" OnCallback="Page.test1" /><br />
+	<com:TActivePanel ID="panel2"  GroupingText="panel2">
+		<com:TActiveTextBox ID="tb1" Columns="30" Text="ActiveTextBox" />
+		<com:TActivePanel ID="panel3"  Style="padding: 5px" GroupingText="panel3">
+		<com:TTextBox ID="tb2" Columns="30" Text="TextBox in ActivePanel"  />
+		</com:TActivePanel>
+	</com:TActivePanel>
+</com:TView>
+<com:TView>
+2 - Test callback with 2nd ActivePanel
+<pre style="color:#006600">
+&lt;com:TActivePanel ID=&quot;panel4&quot;&gt;
+	&lt;com:TActiveTextBox ID=&quot;tb3&quot; Columns=&quot;30&quot; Text=&quot;ActiveTextBox&quot; /&gt;
+	&lt;com:TActivePanel ID=&quot;panel5&quot;&gt;
+		&lt;com:TTextBox ID=&quot;tb4&quot; Columns=&quot;30&quot; Text=&quot;TextBox in ActivePanel&quot; /&gt;
+	&lt;/com:TActivePanel&gt;
+&lt;/com:TActivePanel&gt;
+</pre>
+<com:TActiveButton Text="Test" OnCallback="Page.test2" /><br />
+<com:TActivePanel ID="panel4" Style="padding: 5px" GroupingText="panel4" >
+	<com:TActiveTextBox ID="tb3" Columns="30" Text="ActiveTextBox" />
+	<com:TActivePanel ID="panel5" Style="padding: 5px" GroupingText="panel5">
+		<com:TTextBox ID="tb4" Columns="30" Text="TextBox in ActivePanel" />
+		<com:TActivePanel ID="panel6" Style="padding: 5px" GroupingText="panel6">
+		<com:TTextBox ID="tb5" Columns="30" Text="TextBox in ActivePanel" />
+	
+		</com:TActivePanel>
+	</com:TActivePanel>
+</com:TActivePanel>
+</com:TView>
+
+<com:TView>
+3 - Test callback without 2nd ActivePanel
+<pre style="color:#006600">
+&lt;com:TActivePanel ID=&quot;panel6&quot;&gt;
+	&lt;com:TActiveTextBox ID=&quot;tb5&quot; Columns=&quot;30&quot; Text=&quot;ActiveTextBox&quot; /&gt;
+	&lt;com:TPanel ID=&quot;panel7&quot;&gt;
+		&lt;com:TTextBox ID=&quot;tb6&quot; Columns=&quot;30&quot; Text=&quot;TextBox in Panel&quot; /&gt;
+	&lt;/com:TPanel&gt;
+&lt;/com:TActivePanel&gt;
+</pre>
+<com:TActiveButton Text="Test" OnCallback="Page.test3" /><br />
+<com:TActivePanel ID="panel7"  Style="padding: 5px" GroupingText="panel7">
+	<com:TActiveTextBox ID="tb6" Columns="30" Text="ActiveTextBox" />
+	<com:TPanel ID="panel8" Style="padding: 5px" GroupingText="panel8">
+	<com:TTextBox ID="tb7" Columns="30" Text="TextBox in Panel" />
+	</com:TPanel>
+</com:TActivePanel>
+</com:TView>
+</com:TMultiView>
+</com:TActivePanel>
+</com:TContent>
