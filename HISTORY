@@ -1,8 +1,10 @@
 Version 3.1.2 To be released
 ============================
 BUG: Ticket#636 - I18N catalogue problem (Christophe)
+BUG: Ticket#671 - TActiveCustomValidator Callback Problem (Christophe)
 BUG: Ticket#707 - TPropertyAccess sets property twice on object when using setters (Qiang)
 BUG: Ticket#719 - TAutoCompleter should not trigger Validation if CausesValidation=False (Christophe)
+BUG: Ticket#721 - TActiveCustomValidator + TValidationSummary problem (Christophe)
 BUG: Ticket#736 - Files never created in clientscript.php (Qiang)
 BUG: Ticket#744 - Callback error handling is improved (Qiang)
 BUG: Ticket#747 - TRangeValidator accept letters when type Integer is specified (Christophe)

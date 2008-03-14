@@ -410,8 +410,11 @@ Prado.WebUI.TValidationSummary.prototype =
 			return;
 		}
 
-		var refresh = update || this.visible == false || this.options.Refresh != false;
-
+		var refresh = update || this.visible == false || this.options.Refresh != false; 
+		// Also, do not refresh summary if at least 1 validator is waiting for callback response.
+		// This will avoid the flickering of summary if the validator passes its test
+		refresh = refresh && validators.any(function(v) { return !v.requestDispatched; });
+		
 		if(this.options.ShowSummary != false && refresh)
 		{
 			this.updateHTMLMessages(this.getMessages(validators));
@@ -1150,7 +1153,50 @@ Prado.WebUI.TCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 {
 	validatingValue : null,
+	invoker : null,
 
+	/**
+	 * Override the parent implementation to store the invoker, in order to 
+	 * re-validate after the callback has returned
+	 * Calls evaluateIsValid() function to set the value of isValid property.
+	 * Triggers onValidate event and onSuccess or onError event.
+	 * @param HTMLElement element that calls for validation
+	 * @return boolean true if valid.
+	 */
+	validate : function(invoker)
+	{
+		this.invoker = invoker;
+		
+		//try to find the control.
+		if(!this.control)
+			this.control = $(this.options.ControlToValidate);
+
+		if(!this.control || this.control.disabled)
+		{
+			this.isValid = true;
+			return this.isValid;
+		}
+
+		if(typeof(this.options.OnValidate) == "function")
+		{
+			if(this.requestDispatched == false)
+				this.options.OnValidate(this, invoker);
+		}
+
+		if(this.enabled && !this.control.getAttribute('disabled'))
+			this.isValid = this.evaluateIsValid();
+		else
+			this.isValid = true;
+
+		// Only update the message if the callback has already return !
+		if (!this.requestDispatched)
+			this.updateValidationDisplay(invoker);
+			
+		this.observeChanges(this.control);
+
+		return this.isValid;
+	},
+	
 	/**
 	 * Calls custom validation function.
 	 */
@@ -1158,7 +1204,6 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	{
 		value = this.getValidationValue();
 		if(!this.requestDispatched && (""+value) != (""+this.validatingValue))
-		//if((""+value) != (""+this.validatingValue))
 		{
 			this.validatingValue = value;
 			request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
@@ -1182,6 +1227,13 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 		if(typeof(this.options.onSuccess) == "function")
 			this.options.onSuccess(request,data);
 		this.updateValidationDisplay();
+		this.manager.updateSummary(this.group);
+		// Redispatch initial request if any
+		if (this.invoker instanceof Prado.CallbackRequest)
+		{
+			this.invoker.dispatch();
+		}
+		
 	},
 
 	callbackOnFailure : function(request, data)
