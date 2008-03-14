@@ -75,6 +75,16 @@ class TActivePanel extends TPanel implements IActiveControl
 		else
 		{
 			$this->getPage()->getAdapter()->registerControlToRender($this,$writer);
+			if ($this->getHasControls())
+			{
+				// If we update a TActivePanel on callback,
+				// We shouldn't update all childs, because the whole content will be replaced by 
+				// the parent
+				foreach ($this->findControlsByType('IActiveControl', false) as $control)
+				{
+						$control->getActiveControl()->setEnableUpdate(false);
+				}
+			}
 		}
 	}
 }
