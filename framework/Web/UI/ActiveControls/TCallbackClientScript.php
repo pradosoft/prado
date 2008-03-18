@@ -296,12 +296,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function setStyle($element, $styles)
 	{
-		$s=array();
-		foreach ($styles as $key=>$value)
-		{
-			$s[]=$key.": ".$value;
-		}
-		$this->callClientFunction('Element.setStyle', array($element, $s));
+		$this->callClientFunction('Prado.Element.setStyle', array($element, $styles));
 	}
 
 	/**

@@ -356,6 +356,17 @@ Prado.Element =
 	evaluateScript : function(content)
 	{
 		content.evalScripts();
+	},
+	
+	setStyle : function (element, styles)
+	{
+		var s = {}
+		// Camelize all styles keys
+		for (var property in styles)
+		{
+			s[property.camelize()]=styles[property].camelize();
+		}
+		Element.setStyle(element, s);
 	}
 };
 
