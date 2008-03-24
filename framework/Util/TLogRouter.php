@@ -277,7 +277,7 @@ abstract class TLogRoute extends TApplicationComponent
 	 */
 	protected function formatLogMessage($message,$level,$category,$time)
 	{
-		return @date('M d H:i:s',$time).' ['.$this->getLevelName($level).'] ['.$category.'] '.$message."\n";
+		return @gmdate('M d H:i:s',$time).' ['.$this->getLevelName($level).'] ['.$category.'] '.$message."\n";
 	}
 
 	/**
@@ -915,12 +915,12 @@ class TFirebugLogRoute extends TBrowserLogRoute
 if (typeof(console) == 'object')
 {
 	console.log ("[Cumulated Time] [Time] [Level] [Category] [Message]");
-	
+
 EOD;
 
 		return $string;
 	}
-	
+
 	protected function renderMessage ($log, $info)
 	{
 		$logfunc = $this->getFirebugLoggingFunction($log[1]);
@@ -934,7 +934,7 @@ EOD;
 		return $string;
 	}
 
-	
+
 	protected function renderFooter ()
 	{
 		$string = <<<EOD
@@ -946,10 +946,10 @@ EOD;
 
 		return $string;
 	}
-	
+
 	protected function getFirebugLoggingFunction($level)
 	{
-		switch ($level) 
+		switch ($level)
 		{
 			case TLogger::DEBUG:
 			case TLogger::INFO:
@@ -964,6 +964,6 @@ EOD;
 		}
 		return 'console.log';
 	}
-	
+
 }
 ?>
