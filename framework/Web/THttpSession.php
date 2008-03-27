@@ -126,6 +126,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 			$this->open();
 		$this->_initialized=true;
 		$this->getApplication()->setSession($this);
+		register_shutdown_function(array($this, "close"));
 	}
 
 	/**
