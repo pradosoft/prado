@@ -15,9 +15,8 @@ demos/quickstart/assets/ee054f3e
 demos/quickstart/index_pl.php
 demos/quickstart/protected/runtime/application.xml
 tests/FunctionalTests/results.dat
-tests/FunctionalTests/tickets/assets/93f32b8c
-tests/FunctionalTests/tickets/assets/961aa02b
-tests/FunctionalTests/tickets/protected/runtime/global.cache
+tests/FunctionalTests/tickets/assets/*
+tests/FunctionalTests/tickets/protected/runtime/*
 tests/FunctionalTests/validators/assets/905759a2
 tests/FunctionalTests/validators/assets/93f32b8c
 tests/FunctionalTests/validators/protected/runtime/global.cache

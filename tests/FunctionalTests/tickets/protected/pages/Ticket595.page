@@ -1,0 +1,18 @@
+<com:TContent ID="Content">
+
+<com:TTextBox ID="A" />
+<com:TRequiredFieldValidator ControlToValidate="A" Text="Required!" ControlCssClass="errorclassA" ValidationGroup="A"/>
+<com:TEmailAddressValidator ControlToValidate="A" Text="No Email!" ControlCssClass="errorclassA" ValidationGroup="A"/>
+<com:TButton Text="Click" ValidationGroup="A" />
+
+<br />
+
+<com:TTextBox ID="B" />
+<com:TRequiredFieldValidator ControlToValidate="B" Text="Required!" ControlCssClass="errorclassB" 
+        ValidationGroup="B" EnableClientScript="False" />
+<com:TEmailAddressValidator ControlToValidate="B" Text="No Email!" ControlCssClass="errorclassB" 
+    ValidationGroup="B" EnableClientScript="False" />
+<com:TButton Text="Click" ValidationGroup="B" />
+
+</com:TContent>
+
