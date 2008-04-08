@@ -143,17 +143,16 @@ class TActiveControlAdapter extends TControlAdapter
 	}
 
 	/**
-	 * Loads additional persistent control state. Starts viewstate tracking
-	 * if necessary.
+	 * Starts viewstate tracking if necessary after when controls has been loaded
 	 */
-	public function loadState()
+	public function onLoad($param)
 	{
 		if($this->getIsTrackingPageState())
 		{
 			$this->_stateTracker = new TCallbackPageStateTracker($this->getControl());
 			$this->_stateTracker->trackChanges();
 		}
-		parent::loadState();
+		parent::onLoad($param);
 	}
 
 	/**
