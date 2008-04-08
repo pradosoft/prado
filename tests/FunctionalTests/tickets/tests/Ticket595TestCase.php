@@ -15,7 +15,7 @@ class Ticket595TestCase extends SeleniumTestCase
 		$this->click($base.'ctl2');
         $this->assertAttribute($base.'A@class','errorclassA');
 		
-		$this->type($base.'A', 'test@example.com');
+		$this->type($base.'A', 'test@pradosoft.com');
 		$this->click($base.'ctl2');
 		$this->pause(800);
         $this->assertAttribute($base.'A@class','');
@@ -30,7 +30,7 @@ class Ticket595TestCase extends SeleniumTestCase
 		$this->pause(800);
         $this->assertAttribute($base.'B@class','errorclassB');
 		
-		$this->type($base.'B', 'test@example.com');
+		$this->type($base.'B', 'test@pradosoft.com');
 		$this->click($base.'ctl5');
 		$this->pause(800);
         $this->assertAttribute($base.'B@class','');

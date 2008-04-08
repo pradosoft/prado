@@ -1,5 +1,9 @@
 <com:TContent ID="Content">
-
+<style type="text/css">
+	.errorclassA, .errorclassB {
+		background-color:pink;
+	}
+</style>
 <com:TTextBox ID="A" />
 <com:TRequiredFieldValidator ControlToValidate="A" Text="Required!" ControlCssClass="errorclassA" ValidationGroup="A"/>
 <com:TEmailAddressValidator ControlToValidate="A" Text="No Email!" ControlCssClass="errorclassA" ValidationGroup="A"/>

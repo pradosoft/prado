@@ -667,9 +667,18 @@ Prado.WebUI.TBaseValidator.prototype =
 		if(typeof(CssClass) == "string" && CssClass.length > 0)
 		{
 			if(valid)
-				control.removeClassName(CssClass);
+			{
+				if (control.lastValidator == this.options.ID)
+				{
+					control.lastValidator = null;
+					control.removeClassName(CssClass);
+				}
+			}
 			else
+			{
+				control.lastValidator = this.options.ID;
 				control.addClassName(CssClass);
+			}
 		}
 	},
 

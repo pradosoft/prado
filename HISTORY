@@ -1,5 +1,6 @@
 Version 3.1.2 To be released
 ============================
+BUG: Ticket#595 - ControlCssClass not applied correctly if using multiple validators on same control (Christophe)
 BUG: Ticket#636 - I18N catalogue problem (Christophe)
 BUG: Ticket#669 - Strange rendering behaviour with TActivePanel (Christophe)
 BUG: Ticket#671 - TActiveCustomValidator Callback Problem (Christophe)

@@ -243,9 +243,18 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		}
 		if($this->getEnableClientScript() & $this->getEnabled(true))
 			$this->registerClientScriptValidator();
-		$this->updateControlCssClass();
 	}
 
+	/**
+	 * Override parent implementation to update the control CSS Class before 
+	 * the validated control is rendered 
+	 */
+	public function onPreRender ($param)
+	{
+		parent::onPreRender($param);
+		$this->updateControlCssClass();
+	}
+	
 	/**
 	 * Update the ControlToValidate component's css class depending
 	 * if the ControlCssClass property is set, and whether this is valid.
