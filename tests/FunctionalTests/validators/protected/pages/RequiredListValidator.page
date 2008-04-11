@@ -2,7 +2,7 @@
 
 <div>
 	<div class="lista">
-		<com:TCheckBoxList ID="list1">
+		<com:TCheckBoxList ID="list1" RepeatLayout="Raw">
 			<com:TListItem Value="1" Text="One" />
 			<com:TListItem Value="2" Text="Two" />
 			<com:TListItem Value="3" Text="Three" />
