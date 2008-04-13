@@ -1,0 +1,7 @@
+<com:TContent ID="Content">
+
+<com:TActiveTextBox ID="ATB"  AutoPostBack="True" onTextChanged="onATB" /><br />
+<com:TTextBox ID="TB"/><br />
+Callbacks: <com:TActiveLabel ID="X" Text="0"/>
+
+</com:TContent>
