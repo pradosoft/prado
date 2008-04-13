@@ -1,0 +1,17 @@
+<com:TContent ID="Content">
+
+<h2>This test only passes only with "<i>Highlight elements</i>" deactivated!</h2>
+
+<com:TActiveLinkButton ID="ALB" Text="Test" Display="None" /><br />
+
+<!-- spans added to access embedded id-less span via CSS selector from selenium -->
+<span id="acb">
+<com:TActiveCheckBox ID="ACB" Text="Test" Display="None" /><br />
+</span>
+
+<span id="arb">
+<com:TActiveRadioButton ID="ARB" Text="Test" Display="None" /><br />
+</span>
+
+<com:TActiveButton OnClick="changeA" Text="Click!"/>
+</com:TContent>
