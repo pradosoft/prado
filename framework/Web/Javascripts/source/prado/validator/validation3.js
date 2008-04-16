@@ -194,9 +194,9 @@ Prado.ValidationManager.prototype =
 			this.options = {};
 
 			this.options = options;
-		
+
 			Prado.Validation.managers[options.FormID] = this;
-		} 
+		}
 		else
 		{
 			var manager = Prado.Validation.managers[options.FormID];
@@ -410,11 +410,11 @@ Prado.WebUI.TValidationSummary.prototype =
 			return;
 		}
 
-		var refresh = update || this.visible == false || this.options.Refresh != false; 
+		var refresh = update || this.visible == false || this.options.Refresh != false;
 		// Also, do not refresh summary if at least 1 validator is waiting for callback response.
 		// This will avoid the flickering of summary if the validator passes its test
 		refresh = refresh && validators.any(function(v) { return !v.requestDispatched; });
-		
+
 		if(this.options.ShowSummary != false && refresh)
 		{
 			this.updateHTMLMessages(this.getMessages(validators));
@@ -607,6 +607,10 @@ Prado.WebUI.TBaseValidator.prototype =
 
 		this.options = options;
 		this.control = $(options.ControlToValidate);
+		if (!this.control && this.isListControlType()){
+			this.control = $(options.ControlToValidate + '_c0').parentNode;
+		}
+
 		this.message = $(options.ID);
 		if(this.control && this.message)
 		{
@@ -1165,7 +1169,7 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	invoker : null,
 
 	/**
-	 * Override the parent implementation to store the invoker, in order to 
+	 * Override the parent implementation to store the invoker, in order to
 	 * re-validate after the callback has returned
 	 * Calls evaluateIsValid() function to set the value of isValid property.
 	 * Triggers onValidate event and onSuccess or onError event.
@@ -1175,7 +1179,7 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	validate : function(invoker)
 	{
 		this.invoker = invoker;
-		
+
 		//try to find the control.
 		if(!this.control)
 			this.control = $(this.options.ControlToValidate);
@@ -1200,12 +1204,12 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 		// Only update the message if the callback has already return !
 		if (!this.requestDispatched)
 			this.updateValidationDisplay(invoker);
-			
+
 		this.observeChanges(this.control);
 
 		return this.isValid;
 	},
-	
+
 	/**
 	 * Calls custom validation function.
 	 */
@@ -1242,7 +1246,7 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 		{
 			this.invoker.dispatch();
 		}
-		
+
 	},
 
 	callbackOnFailure : function(request, data)
