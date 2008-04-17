@@ -2152,6 +2152,22 @@ interface IButtonControl
 }
 
 /**
+ * IControlContainer interface
+ *
+ * If a control can have an additional surrounding tag, it should implement this interface.
+ *
+ * @package System.Web.UI
+ * @since 3.1.2
+ */
+interface IControlContainer
+{
+	/**
+	 * @return string the id of the container html tag or of the input control itself if no container present.
+	 */
+	public function getContainerClientID();
+}
+
+/**
  * TBroadcastEventParameter class
  *
  * TBroadcastEventParameter encapsulates the parameter data for

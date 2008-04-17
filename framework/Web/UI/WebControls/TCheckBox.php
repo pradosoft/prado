@@ -40,7 +40,7 @@
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatable, IDataRenderer
+class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatable, IDataRenderer, IControlContainer
 {
 	private $_dataChanged=false;
 
@@ -268,6 +268,14 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	}
 
 	/**
+	 * @return string the id of the surrounding tag or this clientID if no such tag present
+	 */
+	public function getContainerClientID()
+	{
+        return $this->getSpanNeeded() ? $this->getClientID().'_parent' : $this->getClientID();
+	}
+
+	/**
 	 * Renders the checkbox control.
 	 * This method overrides the parent implementation by rendering a checkbox input element
 	 * and a span element if needed.
@@ -276,17 +284,10 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	public function render($writer)
 	{
 		$this->getPage()->ensureRenderInForm($this);
-		$needSpan=false;
 		if($this->getHasStyle())
-		{
 			$this->getStyle()->addAttributesToRender($writer);
-			$needSpan=true;
-		}
 		if(($tooltip=$this->getToolTip())!=='')
-		{
 			$writer->addAttribute('title',$tooltip);
-			$needSpan=true;
-		}
 		if($this->getHasAttributes())
 		{
 			$attributes=$this->getAttributes();
@@ -295,17 +296,17 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 			if(($onclick=$attributes->remove('onclick'))===null)
 				$onclick='';
 			if($attributes->getCount())
-			{
 				$writer->addAttributes($attributes);
-				$needSpan=true;
-			}
 			if($value!==null)
 				$attributes->add('value',$value);
 		}
 		else
 			$onclick='';
-		if($needSpan)
+        if($needspan=$this->getSpanNeeded())
+        {
+            $writer->addAttribute('id',$this->getContainerClientID());
 			$writer->renderBeginTag('span');
+        }
 		$clientID=$this->getClientID();
 		if(($text=$this->getText())!=='')
 		{
@@ -322,7 +323,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 		}
 		else
 			$this->renderInputTag($writer,$clientID,$onclick);
-		if($needSpan)
+		if($needspan)
 			$writer->renderEndTag();
 	}
 
@@ -390,6 +391,16 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	{
 		$this->setViewState('EnableClientScript',TPropertyValue::ensureBoolean($value),true);
 	}
+
+    /**
+     * Check if we need a span tag to surround this control. The span tag will be created if
+     * the Text property is set for this control. 
+     *
+     * @return bool wether this control needs a surrounding span tag
+     */
+    protected function getSpanNeeded() {
+        return $this->getText()!=='';
+    }
 
 	/**
 	 * Renders a label beside the checkbox.
