@@ -1392,7 +1392,22 @@ class TWizard extends TWebControl implements INamingContainer
 			{
 				if($this->_cancelNavigation)  // may be set in onSideBarButtonClick
 					$navParam->setCancelNavigation(true);
-				$navParam->setNextStepIndex(TPropertyValue::ensureInteger($param->getCommandParameter()));
+				$requestedStep=$param->getCommandParameter();
+				if (!is_numeric($requestedStep))
+				{
+					$requestedIndex=-1;
+					foreach ($this->getWizardSteps() as $index=>$step)
+						if ($step->getId()===$requestedStep)
+						{
+							$requestedIndex=$index;
+							break;
+						}
+					if ($requestedIndex<0)
+						throw new TConfigurationException('wizard_step_invalid');
+				}
+				else
+					$requestedIndex=TPropertyValue::ensureInteger($requestedStep);
+				$navParam->setNextStepIndex($requestedIndex);
 				$handled=true;
 			}
 
