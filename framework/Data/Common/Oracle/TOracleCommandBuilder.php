@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TOracleCommandBuilder class file.
  *
@@ -10,7 +11,7 @@
  * @package System.Data.Common
  */
 
-Prado::using('System.Data.Common.TDbCommandBuilder');
+Prado :: using('System.Data.Common.TDbCommandBuilder');
 
 /**
  * TOracleCommandBuilder provides specifics methods to create limit/offset query commands
@@ -21,8 +22,7 @@ Prado::using('System.Data.Common.TDbCommandBuilder');
  * @package System.Data.Common
  * @since 3.1
  */
-class TOracleCommandBuilder extends TDbCommandBuilder
-{
+class TOracleCommandBuilder extends TDbCommandBuilder {
 
 	/**
 	 * Overrides parent implementation. Only column of type text or character (and its variants)
@@ -31,25 +31,21 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 	 * @param string string of keywords
 	 * @return string SQL search condition matching on a set of columns.
 	 */
-	public function getSearchExpression($fields, $keywords)
-	{
-		$columns = array();
-		foreach($fields as $field)
-		{
-			if($this->isSearchableColumn($this->getTableInfo()->getColumn($field)))
+	public function getSearchExpression($fields, $keywords) {
+		$columns = array ();
+		foreach ($fields as $field) {
+			if ($this->isSearchableColumn($this->getTableInfo()->getColumn($field)))
 				$columns[] = $field;
 		}
-		return parent::getSearchExpression($columns, $keywords);
+		return parent :: getSearchExpression($columns, $keywords);
 	}
 	/**
 	 *
 	 * @return boolean true if column can be used for LIKE searching.
 	 */
-	protected function isSearchableColumn($column)
-	{
+	protected function isSearchableColumn($column) {
 		$type = strtolower($column->getDbType());
-		return $type === 'character varying' || $type === 'varchar2' ||
-				$type === 'character' || $type === 'char' || $type === 'text';
+		return $type === 'character varying' || $type === 'varchar2' || $type === 'character' || $type === 'char' || $type === 'text';
 	}
 
 	/**
@@ -58,10 +54,10 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 	 * @param array keywords
 	 * @return string search condition for all words in one column.
 	 */
-	 /*
-	 *
-	 *	how Oracle don't implements ILIKE, this method won't be overrided
-	 *
+	/*
+	*
+	*	how Oracle don't implements ILIKE, this method won't be overrided
+	*
 	protected function getSearchCondition($column, $words)
 	{
 		$conditions=array();
@@ -71,7 +67,6 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 	}
 	*/
 
-
 	/**
 	 * Overrides parent implementation to use Oracle way of get paginated RecordSet instead of using LIMIT sql clause.
 	 * @param string SQL query string.
@@ -79,56 +74,65 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 	 * @param integer row offset, -1 to ignore offset.
 	 * @return string SQL with limit and offset in Oracle way.
 	 */
-	public function applyLimitOffset($sql, $limit=-1, $offset=-1)
-	{
-		if( (int)$limit <= 0 && (int)$offset <= 0 )
+	public function applyLimitOffset($sql, $limit = -1, $offset = -1) {
+		if ((int) $limit <= 0 && (int) $offset <= 0)
 			return $sql;
-	
+
 		$pradoNUMLIN = 'pradoNUMLIN';
 		$fieldsALIAS = 'xyz';
 
-		$nfimDaSQL	 = strlen($sql);
-		$nfimDoWhere = ( strpos($sql,'ORDER') !== false ? strpos($sql,'ORDER') : $nfimDaSQL );
-		$niniDoSelect= strpos($sql,'SELECT')+6;
-		$nfimDoSelect= ( strpos($sql,'FROM') !== false ? strpos($sql,'FROM') : $nfimDaSQL );
+		$nfimDaSQL = strlen($sql);
+		$nfimDoWhere = (strpos($sql, 'ORDER') !== false ? strpos($sql, 'ORDER') : $nfimDaSQL);
+		$niniDoSelect = strpos($sql, 'SELECT') + 6;
+		$nfimDoSelect = (strpos($sql, 'FROM') !== false ? strpos($sql, 'FROM') : $nfimDaSQL);
 
-		$sORDERBY	 = '';
-		if( stripos($sql,'ORDER') !== false ) {
-			$p = stripos($sql,'ORDER');
-			$sORDERBY = substr( $sql, $p+8, 10000 );
+		$niniDoWhere = strpos($sql, 'WHERE') + 5;
+
+		$WhereConstraint = substr($sql, $niniDoWhere, $nfimDoWhere - $niniDoWhere);
+
+		$WhereInSubSelect = "";
+		if (trim($WhereConstraint) !== "") {
+			$WhereInSubSelect = "WHERE " . $WhereConstraint;
 		}
 
-		$fields		 	= substr( $sql, 0, $nfimDoSelect );
-		$fields		 	= trim( substr( $fields, $niniDoSelect ) );
-		$aliasedFields	= ', ';
+		$sORDERBY = '';
+		if (stripos($sql, 'ORDER') !== false) {
+			$p = stripos($sql, 'ORDER');
+			$sORDERBY = substr($sql, $p +8, 10000);
 
-		if( trim($fields) == '*' ) {
-			$aliasedFields	= ", {$fieldsALIAS}.{$fields}";
-			$fields			= '';
-			$arr 			= $this->getTableInfo()->getColumns();
-			foreach( $arr as $field )
-			{
-				$fields .= strtolower( $field->getColumnName() ).', ';
+		}
+
+		$fields = substr($sql, 0, $nfimDoSelect);
+		$fields = trim(substr($fields, $niniDoSelect));
+		$aliasedFields = ', ';
+
+		if (trim($fields) == '*') {
+			$aliasedFields = ", {$fieldsALIAS}.{$fields}";
+			$fields = '';
+			$arr = $this->getTableInfo()->getColumns();
+			foreach ($arr as $field) {
+				$fields .= strtolower($field->getColumnName()) . ', ';
 			}
-			$fields = str_replace( '"', '', $fields );
+			$fields = str_replace('"', '', $fields);
 			$fields = trim($fields);
-			$fields = substr( $fields, 0, strlen($fields)-1 );
+			$fields = substr($fields, 0, strlen($fields) - 1);
 		} else {
-			if( strpos( $fields, ',' ) !== false )
-			{
-				foreach( $arr as $field )
-				{
-					$field = strtolower( $field );
-					$existAS = str_ireplace( ' as ', '-as-', $field );
-					if( strpos( $existAS, '-as-' ) === false )
-						$aliasedFields .= "{$fieldsALIAS}.".trim($field).", ";
+			if (strpos($fields, ',') !== false) {
+				$arr = $this->getTableInfo()->getColumns();
+				foreach ($arr as $field) {
+					$field = strtolower($field);
+					$existAS = str_ireplace(' as ', '-as-', $field);
+					if (strpos($existAS, '-as-') === false)
+						$aliasedFields .= "{$fieldsALIAS}." . trim($field) . ", ";
 					else
 						$aliasedFields .= "{$field}, ";
 				}
 				$aliasedFields = trim($aliasedFields);
-				$aliasedFields = substr( $aliasedFields, 0, strlen($aliasedFields)-1 );
+				$aliasedFields = substr($aliasedFields, 0, strlen($aliasedFields) - 1);
 			}
 		}
+		if ($aliasedFields == ', ')
+			$aliasedFields = " , $fieldsALIAS.* ";
 
 		/* ************************
 		$newSql = " SELECT $fields FROM ".
@@ -136,30 +140,28 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 				  "		SELECT rownum as {$pradoNUMLIN} {$aliasedFields} FROM ".
 				  " ($sql) {$fieldsALIAS} WHERE rownum <= {$limit} ".
 				  ") WHERE {$pradoNUMLIN} >= {$offset} ";
-
+		
 		************************* */
-		$toReg = $offset + $limit;
+		$toReg = $offset + $limit -1;
 		$fullTableName = $this->getTableInfo()->getTableFullName();
-		if( empty($sORDERBY) )
-		{
+		if (empty ($sORDERBY)) {
 			$newSql = " SELECT $fields FROM " .
-					  "(					" .
-					  "		SELECT ROW_NUMBER() OVER ( ORDER BY ROWNUM ) as {$pradoNUMLIN} {$aliasedFields} " .
-					  "		FROM {$fullTableName} {$fieldsALIAS}" .
-					  ") nn					" .
-					  " WHERE nn.{$pradoNUMLIN} >= {$offset} AND nn.{$pradoNUMLIN} <= {$toReg} " ;
+			"(					" .
+			"		SELECT ROW_NUMBER() OVER ( ORDER BY ROWNUM ) as {$pradoNUMLIN} {$aliasedFields} " .
+			"		FROM {$fullTableName} {$fieldsALIAS}" .
+			") nn					" .
+			" WHERE nn.{$pradoNUMLIN} >= {$offset} AND nn.{$pradoNUMLIN} <= {$toReg} ";
 		} else {
 			$newSql = " SELECT $fields FROM " .
-					  "(					" .
-					  "		SELECT ROW_NUMBER() OVER ( ORDER BY {$sORDERBY} ) as {$pradoNUMLIN} {$aliasedFields} " .
-					  "		FROM {$fullTableName} {$fieldsALIAS}" .
-					  ") nn					" .
-					  " WHERE nn.{$pradoNUMLIN} >= {$offset} AND nn.{$pradoNUMLIN} <= {$toReg} " ;
+			"(					" .
+			"		SELECT ROW_NUMBER() OVER ( ORDER BY {$sORDERBY} ) as {$pradoNUMLIN} {$aliasedFields} " .
+			"		FROM {$fullTableName} {$fieldsALIAS} $WhereInSubSelect" .
+			") nn					" .
+			" WHERE nn.{$pradoNUMLIN} >= {$offset} AND nn.{$pradoNUMLIN} <= {$toReg} ";
 		}
+		//echo $newSql."\n<br>\n";
 		return $newSql;
 	}
 
-
 }
-
 ?>
